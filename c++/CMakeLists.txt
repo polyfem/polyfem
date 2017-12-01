@@ -1,0 +1,71 @@
+cmake_minimum_required(VERSION 3.1)
+project(PolyFEM)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
+# libigl
+option(LIBIGL_USE_STATIC_LIBRARY 	"Use libigl as static library" OFF)
+option(LIBIGL_WITH_ANTTWEAKBAR      "Use AntTweakBar"    OFF)
+option(LIBIGL_WITH_CGAL             "Use CGAL"           OFF)
+option(LIBIGL_WITH_COMISO           "Use CoMiso"         OFF)
+option(LIBIGL_WITH_CORK             "Use Cork"           OFF)
+option(LIBIGL_WITH_EMBREE           "Use Embree"         OFF)
+option(LIBIGL_WITH_LIM              "Use LIM"            OFF)
+option(LIBIGL_WITH_MATLAB           "Use Matlab"         OFF)
+option(LIBIGL_WITH_MOSEK            "Use MOSEK"          OFF)
+option(LIBIGL_WITH_NANOGUI          "Use Nanogui menu"   OFF)
+option(LIBIGL_WITH_OPENGL           "Use OpenGL"         ON)
+option(LIBIGL_WITH_OPENGL_GLFW      "Use GLFW"           ON)
+option(LIBIGL_WITH_PNG              "Use PNG"            OFF)
+option(LIBIGL_WITH_PYTHON           "Use Python"         OFF)
+option(LIBIGL_WITH_TETGEN           "Use Tetgen"         ON)
+option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       ON)
+option(LIBIGL_WITH_VIEWER           "Use OpenGL viewer"  ON)
+option(LIBIGL_WITH_XML              "Use XML"            OFF)
+
+find_package(LIBIGL REQUIRED QUIET)
+
+include(SetWarnings)
+
+
+
+SET(SRCFILES
+	src/main.cpp
+
+	src/quadrature/Quadrature.hpp
+	src/quadrature/LineQuadrature.hpp
+	src/quadrature/LineQuadrature.cpp
+	src/quadrature/QuadQuadrature.cpp
+	src/quadrature/QuadQuadrature.hpp
+	src/quadrature/HexQuadrature.cpp
+	src/quadrature/HexQuadrature.hpp
+
+	src/basis/Basis.hpp
+	src/basis/QuadBasis.cpp
+	src/basis/QuadBasis.hpp
+	src/basis/HexBasis.cpp
+	src/basis/HexBasis.hpp
+
+	src/assembler/AssemblyValues.hpp
+	src/assembler/ElementAssemblyValues.hpp
+
+	src/assembler/Assembler.hpp
+	src/assembler/Laplacian.hpp
+	src/assembler/Laplacian.cpp
+
+	src/problem/Problem.hpp
+	src/problem/Linear.hpp
+	src/problem/Linear.cpp
+	src/problem/Quadratic.hpp
+	src/problem/Quadratic.cpp
+	src/problem/TwoDFranke.hpp
+	src/problem/TwoDFranke.cpp
+
+	)
+
+
+add_executable(${PROJECT_NAME} ${SRCFILES})
+target_link_libraries(${PROJECT_NAME} igl::core igl::viewer)
+target_include_directories(${PROJECT_NAME} PUBLIC src src/quadrature src/basis src/assembler src/problem)
+target_compile_options(${PROJECT_NAME} PRIVATE ${ALL_WARNINGS})
+
