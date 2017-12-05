@@ -48,8 +48,11 @@ namespace poly_fem
 				tmp.row(0) = dx.row(i);
 				tmp.row(1) = dy.row(i);
 
-				for(std::size_t j = 0; j < basis_values.size(); ++j)
+				det(i) = fabs(tmp.determinant());
+
+				for(std::size_t j = 0; j < basis_values.size(); ++j){
 					basis_values[j].finalize(tmp.inverse().transpose());
+				}
 			}
 		}
 	};

@@ -2,27 +2,44 @@
 #define BASIS_HPP
 
 #include <Eigen/Dense>
+#include <functional>
+
+#include <vector>
 
 namespace poly_fem
 {
 	class Basis
 	{
+
 	public:
-		Basis(const int global_index, const Eigen::MatrixXd &coeff)
-		: global_index_(global_index), coeff_(coeff)
-		{ }
+		typedef std::function<void(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)> Fun;
 
-		virtual ~Basis() { }
 
-		virtual void basis(const Eigen::MatrixXd &uv, const int index, Eigen::MatrixXd &val) const = 0;
-		virtual void grad(const Eigen::MatrixXd &uv, const int index, Eigen::MatrixXd &val) const = 0;
+		Basis();
+
+		void init(const int global_index, const int local_index, const Eigen::MatrixXd &node);
+
+
+		void basis(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const;
+		void grad(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const;
 
 		inline int global_index() const { return global_index_; }
-		inline const Eigen::MatrixXd &coeff() const { return coeff_; }
+		inline const Eigen::MatrixXd &node() const { return node_; }
 
+		inline void set_basis(const Fun &fun) { basis_ = fun; }
+		inline void set_grad(const Fun &fun) { grad_ = fun; }
+
+
+		static void eval_geom_mapping(const Eigen::MatrixXd &samples, const std::vector<Basis> &local_bases, Eigen::MatrixXd &mapped);
 	private:
 		int global_index_;
-		Eigen::MatrixXd coeff_;
+		int local_index_;
+
+		Eigen::MatrixXd node_;
+
+
+		Fun basis_;
+		Fun grad_;
 	};
 }
 

@@ -1,8 +1,11 @@
 #ifndef ASSEMBLER_HPP
 #define ASSEMBLER_HPP
 
+#include "Mesh.hpp"
+
 #include "ElementAssemblyValues.hpp"
 #include "Problem.hpp"
+#include "Basis.hpp"
 
 #include <Eigen/Sparse>
 #include <vector>
@@ -37,6 +40,9 @@ namespace poly_fem
 
 					const Eigen::MatrixXd &vali  = values_i.val;
 					const Eigen::MatrixXd &gradi = values_i.grad_t_m;
+
+					// std::cout<<vali<<"\n\n"<<std::endl;
+					// std::cout<<gradi<<"\n\n"<<std::endl;
 
 					for(int j = 0; j < n_loc_bases; ++j)
 					{
@@ -111,20 +117,145 @@ namespace poly_fem
 			}
 		}
 
-		void bc(const Eigen::MatrixXd &pts, const std::vector<int> &bounday_nodes, const Problem &problem, Eigen::MatrixXd &rhs) const
+		void bc(const std::vector< std::vector<Basis> > &bases, const Mesh &mesh, const std::vector<int> &bounday_nodes, const int resolution,  const Problem &problem, Eigen::MatrixXd &rhs) const
 		{
-			Eigen::MatrixXd val;
-			for(std::size_t i = 0; i < bounday_nodes.size(); ++i)
-			{
-				const int index = bounday_nodes[i];
-				problem.bc(pts.row(index), val);
+			const int n_el=int(bases.size());
 
-				rhs(index) = val(0,0);
+			Eigen::MatrixXd samples, tmp, rhs_fun;
+
+			int index = 0;
+			std::vector<int> indices; indices.reserve(n_el*10);
+			std::map<int, int> global_index_to_col;
+
+			for(int e = 0; e < n_el; ++e)
+			{
+				const std::vector<Basis> &bs = bases[e];
+				const int n_local_bases = int(bs.size());
+
+				for(int j = 0; j < n_local_bases; ++j)
+				{
+					const Basis &b=bs[j];
+
+					if(std::find(bounday_nodes.begin(), bounday_nodes.end(), b.global_index()) != bounday_nodes.end()) //pt found
+					{
+						if(global_index_to_col.find( b.global_index() ) == global_index_to_col.end())
+						{
+							global_index_to_col[b.global_index()] = index++;
+							indices.push_back(b.global_index());
+						}
+					}
+				}
+			}
+
+			Eigen::MatrixXd global_mat = Eigen::MatrixXd::Zero(n_el*4*resolution, indices.size());
+			Eigen::MatrixXd global_rhs = Eigen::MatrixXd::Zero(n_el*4*resolution, 1);
+
+			int global_counter = 0;
+
+			for(int e = 0; e < n_el; ++e)
+			{
+				bool has_samples = sample_boundary(e, mesh, resolution, samples);
+
+				if(!has_samples)
+					continue;
+
+				const std::vector<Basis> &bs = bases[e];
+				const int n_local_bases = int(bs.size());
+
+				Eigen::MatrixXd mapped = Eigen::MatrixXd::Zero(samples.rows(), samples.cols());
+
+				for(int j = 0; j < n_local_bases; ++j)
+				{
+					const Basis &b=bs[j];
+
+					b.basis(samples, tmp);
+					if(std::find(bounday_nodes.begin(), bounday_nodes.end(), b.global_index()) != bounday_nodes.end()) //pt found
+						global_mat.block(e*4*resolution, global_index_to_col[b.global_index()], tmp.size(), 1) = tmp;
+
+					for (long k = 0; k < tmp.rows(); ++k){
+						mapped.row(k) += tmp(k,0) * b.node();
+					}
+				}
+
+				// std::cout<<samples<<"\n"<<std::endl;
+
+				problem.bc(mapped, rhs_fun);
+				global_rhs.block(e*4*resolution, 0, rhs_fun.size(), 1) = rhs_fun;
+			}
+
+			Eigen::MatrixXd coeffs = global_mat.colPivHouseholderQr().solve(global_rhs);
+
+			// std::cout<<global_mat<<"\n"<<std::endl;
+			// std::cout<<coeffs<<"\n"<<std::endl;
+			// std::cout<<global_rhs<<"\n\n\n"<<std::endl;
+			for(long i = 0; i < coeffs.size(); ++i){
+				// problem.bc(mesh.pts.row(indices[i]), rhs_fun);
+
+				// std::cout<<indices[i]<<" "<<coeffs(i)<<" vs " <<rhs_fun<<std::endl;
+				rhs(indices[i]) = coeffs(i);
 			}
 		}
 
 	private:
 		LocalAssembler local_assembler_;
+
+		bool sample_boundary(const int el_index, const Mesh &mesh, const int resolution, Eigen::MatrixXd &samples) const
+		{
+			auto el = mesh.els.row(el_index);
+
+			const int n_x = mesh.n_x;
+			const int n_y = mesh.n_y;
+
+			const bool has_left = el(0) % (n_x + 1) != 0;
+			const bool has_right = el(2) % (n_x + 1) != n_x;
+
+			const bool has_bottom = el(0) / (n_x + 1) != 0;
+			const bool has_top = el(2) / (n_x + 1) != n_y;
+
+			int n = 0;
+			if(!has_left) n+=resolution;
+			if(!has_right) n+=resolution;
+			if(!has_bottom) n+=resolution;
+			if(!has_top) n+=resolution;
+
+			if(n <= 0) return false;
+
+			const Eigen::MatrixXd t = Eigen::VectorXd::LinSpaced(resolution, 0, 1);
+
+			samples.resize(n, 2);
+			n = 0;
+			if(!has_left){
+				samples.block(n, 0, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);
+				samples.block(n, 1, resolution, 1) = t;
+
+				n += resolution;
+			}
+
+			if(!has_bottom){
+				samples.block(n, 0, resolution, 1) = t;
+				samples.block(n, 1, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);
+
+				n += resolution;
+			}
+
+			if(!has_right){
+				samples.block(n, 0, resolution, 1) = Eigen::MatrixXd::Ones(resolution, 1);
+				samples.block(n, 1, resolution, 1) = t;
+
+				n += resolution;
+			}
+
+			if(!has_top){
+				samples.block(n, 0, resolution, 1) = t;
+				samples.block(n, 1, resolution, 1) = Eigen::MatrixXd::Ones(resolution, 1);
+
+				n += resolution;
+			}
+
+			assert(long(n) == samples.rows());
+
+			return true;
+		}
 	};
 }
 

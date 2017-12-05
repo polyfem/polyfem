@@ -4,22 +4,45 @@
 
 namespace poly_fem
 {
-	HexBasis::HexBasis(const int global_index, const Eigen::MatrixXd &coeff, const int disc_order)
-	: Basis(global_index, coeff), disc_order_(disc_order)
-	{ }
 
+	int HexBasis::build_bases(const Mesh &mesh, std::vector< std::vector<Basis> > &bases, std::vector< int > &bounday_nodes)
+	{
+		assert(mesh.is_volume);
 
-	void HexBasis::basis(const Eigen::MatrixXd &xne, const int index, Eigen::MatrixXd &val) const
+		int disc_order = 1;
+
+		bases.resize(mesh.els.rows());
+		int n_bases = int(mesh.pts.rows());
+
+		for(long i=0; i < mesh.els.rows(); ++i)
+		{
+			std::vector<Basis> &b=bases[i];
+			b.reserve(8);
+
+			for(int j = 0; j < 8; ++j)
+			{
+				const int global_index = mesh.els(i,j);
+				b[j].init(global_index, j, mesh.pts.row(global_index));
+
+				b[j].set_basis([disc_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { HexBasis::basis(disc_order, j, uv, val); });
+				b[j].set_grad( [disc_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  HexBasis::grad(disc_order, j, uv, val); });
+			}
+		}
+
+		return n_bases;
+	}
+
+	void HexBasis::basis(const int disc_order, const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val)
 	{
 		auto x=xne.col(0).array();
 		auto n=xne.col(1).array();
 		auto e=xne.col(2).array();
 
-		switch(disc_order_)
+		switch(disc_order)
 		{
 			case 1:
 			{
-				switch(index)
+				switch(local_index)
 				{
 					case 0: val = (1-x)*(1-n)*(1-e); break;
 					case 1: val = (  x)*(1-n)*(1-e); break;
@@ -40,7 +63,7 @@ namespace poly_fem
 		}
 	}
 
-	void HexBasis::grad(const Eigen::MatrixXd &xne, const int index, Eigen::MatrixXd &val) const
+	void HexBasis::grad(const int disc_order, const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val)
 	{
 		val.resize(xne.rows(), 3);
 
@@ -48,11 +71,11 @@ namespace poly_fem
 		auto n=xne.col(1).array();
 		auto e=xne.col(2).array();
 
-		switch(disc_order_)
+		switch(disc_order)
 		{
 			case 1:
 			{
-				switch(index)
+				switch(local_index)
 				{
 					case 0:
 					{

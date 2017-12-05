@@ -4,7 +4,7 @@ project(PolyFEM)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 # libigl
-option(LIBIGL_USE_STATIC_LIBRARY 	"Use libigl as static library" OFF)
+option(LIBIGL_USE_STATIC_LIBRARY 	"Use libigl as static library" ON)
 option(LIBIGL_WITH_ANTTWEAKBAR      "Use AntTweakBar"    OFF)
 option(LIBIGL_WITH_CGAL             "Use CGAL"           OFF)
 option(LIBIGL_WITH_COMISO           "Use CoMiso"         OFF)
@@ -13,7 +13,7 @@ option(LIBIGL_WITH_EMBREE           "Use Embree"         OFF)
 option(LIBIGL_WITH_LIM              "Use LIM"            OFF)
 option(LIBIGL_WITH_MATLAB           "Use Matlab"         OFF)
 option(LIBIGL_WITH_MOSEK            "Use MOSEK"          OFF)
-option(LIBIGL_WITH_NANOGUI          "Use Nanogui menu"   OFF)
+option(LIBIGL_WITH_NANOGUI          "Use Nanogui menu"   ON)
 option(LIBIGL_WITH_OPENGL           "Use OpenGL"         ON)
 option(LIBIGL_WITH_OPENGL_GLFW      "Use GLFW"           ON)
 option(LIBIGL_WITH_PNG              "Use PNG"            OFF)
@@ -32,6 +32,11 @@ include(SetWarnings)
 SET(SRCFILES
 	src/main.cpp
 
+	src/State.hpp
+	src/State.cpp
+
+	src/mesh.hpp
+
 	src/quadrature/Quadrature.hpp
 	src/quadrature/LineQuadrature.hpp
 	src/quadrature/LineQuadrature.cpp
@@ -41,6 +46,23 @@ SET(SRCFILES
 	src/quadrature/HexQuadrature.hpp
 
 	src/basis/Basis.hpp
+	src/basis/Basis.cpp
+
+	src/basis/QuadraticBSpline.cpp
+	src/basis/QuadraticBSpline.hpp
+
+	src/basis/BSpline.cpp
+	src/basis/BSpline.hpp
+
+	src/basis/QuadraticTPBSpline.cpp
+	src/basis/QuadraticTPBSpline.hpp
+
+	src/basis/TPBSpline.cpp
+	src/basis/TPBSpline.hpp
+
+	src/basis/Spline2dBasis.cpp
+	src/basis/Spline2dBasis.hpp
+
 	src/basis/QuadBasis.cpp
 	src/basis/QuadBasis.hpp
 	src/basis/HexBasis.cpp
@@ -54,12 +76,7 @@ SET(SRCFILES
 	src/assembler/Laplacian.cpp
 
 	src/problem/Problem.hpp
-	src/problem/Linear.hpp
-	src/problem/Linear.cpp
-	src/problem/Quadratic.hpp
-	src/problem/Quadratic.cpp
-	src/problem/TwoDFranke.hpp
-	src/problem/TwoDFranke.cpp
+	src/problem/Problem.cpp
 
 	)
 

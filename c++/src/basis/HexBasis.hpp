@@ -2,20 +2,21 @@
 #define HEX_BASIS_HPP
 
 #include "Basis.hpp"
+#include "Mesh.hpp"
+
 
 #include <Eigen/Dense>
+#include <vector>
 
 namespace poly_fem
 {
-	class HexBasis : public Basis
+	class HexBasis
 	{
 	public:
-		HexBasis(const int global_index, const Eigen::MatrixXd &coeff, const int disc_order = 1);
+		static int build_bases(const Mesh &mesh, std::vector< std::vector<Basis> > &bases, std::vector< int > &bounday_nodes);
 
-		void basis(const Eigen::MatrixXd &uv, const int index, Eigen::MatrixXd &val) const override;
-		void grad(const Eigen::MatrixXd &uv, const int index, Eigen::MatrixXd &val) const override;
-	private:
-		int disc_order_;
+		static void basis(const int disc_order, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
+		static void grad(const int disc_order, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
 	};
 }
 
