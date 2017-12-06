@@ -2,6 +2,9 @@
 
 #include "Mesh.hpp"
 
+#include "QuadraticBSpline.hpp"
+#include "QuadraticTPBSpline.hpp"
+
 #include <fstream>
 #include <iostream>
 
@@ -45,17 +48,23 @@ void save_obj(const std::string &path, const Mesh &mesh)
 
 int main(int argc, char *argv[])
 {
-    // const int quadrature_order = 2;
-    // const int n_boundary_samples = 10;
+    // QuadraticBSpline spline({0, 0, 1, 1});
+    // std::cout<<spline.derivative(0)<<std::endl;
+    // std::cout<<spline.derivative(0.5)<<std::endl;
+    // std::cout<<spline.derivative(1)<<std::endl;
+    // exit(0);
 
-    // Problem *problem = NULL;
-    // Mesh mesh;
+    // QuadraticTensorProductBSpline spline({0, 1, 1, 1}, {0, 1, 1, 1});
+    // MatrixXd tmp, ts(3,2);
+    // ts.row(0)=Vector2d(0, 0); ts.row(1)=Vector2d(0.5, 0 ); ts.row(2)=Vector2d(1, 0.5);
 
-    // int n_bases;
+    // spline.interpolate(ts, tmp);
+    // std::cout<<tmp<<std::endl;
 
-    // std::vector< std::vector<Basis *> >  bases;
-    // std::vector< ElementAssemblyValues > values;
-    // std::vector< int >                   bounday_nodes;
+    // spline.derivative(ts, tmp);
+    // std::cout<<tmp<<std::endl;
+    
+    // exit(0);
 
     bool use_hex = false;
     if(argc>=2 && std::string(argv[1])=="hex")

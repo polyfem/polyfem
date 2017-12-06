@@ -220,9 +220,9 @@ namespace poly_fem
     		node(0) = (p1(0)+p2(0))/2;
 
     	else if(h_knots[x][0] == h_knots[x][1])
-    		node(0) = (2*p1(0)+p2(0))/3;
+    		node(0) = (p1(0)+p2(0))/2;
     	else if(h_knots[x][2] == h_knots[x][3])
-    		node(0) = (p1(0)+2*p2(0))/3;
+    		node(0) = (p1(0)+p2(0))/2;
     	else
     		node(0) = (p1(0)+p2(0))/2;
 
@@ -235,9 +235,9 @@ namespace poly_fem
     		node(1) = (p1(1)+p4(1))/2;
 
     	else if(v_knots[y][0] == v_knots[y][1])
-    		node(1) = (2*p1(1)+p4(1))/3;
+    		node(1) = (p1(1)+p4(1))/2;
     	else if(v_knots[y][2] == v_knots[y][3])
-    		node(1) = (p1(1)+2*p4(1))/3;
+    		node(1) = (p1(1)+p4(1))/2;
     	else
     		node(1) = (p1(1)+p4(1))/2;
     }
@@ -291,7 +291,6 @@ namespace poly_fem
         		h_knots[2] = {0, 1, 2, 3};
         	}
 
-
         	if(space(1,0) >= n_els && space(1,2) >= n_els) //top and bottom neigh are absent
         	{
         		v_knots[0] = {0, 0, 0, 1};
@@ -323,36 +322,83 @@ namespace poly_fem
 
         	Vector2d node;
 
+        	// print_local_space(space);
+
         	for(int y = 0; y < 3; ++y)
         	{
         		for(int x = 0; x < 3; ++x)
         		{
         			const int global_index = space(x, y);
 
-        			if(global_index >= n_els || global_index == e)
+        			if(h_knots[x][1]>=0 && h_knots[x][2]<=1 && v_knots[y][1]>=0 && v_knots[y][2]<=1)
         			{
         				get_node(x, y, h_knots, v_knots, p1, p2, p4, node);
         			}
         			else
         			{
-        				auto &p1o = mesh.pts.row(mesh.els(global_index,0));
-        				auto &p2o = mesh.pts.row(mesh.els(global_index,1));
-        				auto &p4o = mesh.pts.row(mesh.els(global_index,3));
+        				//auto &p1o = mesh.pts.row(mesh.els(global_index,0));
+        				//auto &p2o = mesh.pts.row(mesh.els(global_index,1));
+        				//auto &p4o = mesh.pts.row(mesh.els(global_index,3));
 
-        				get_node(x, y, h_knots, v_knots, p1o, p2o, p4o, node);
+        				//get_node(x, y, h_knots, v_knots, p1o, p2o, p4o, node);
+        				node(0) = node(1) = std::numeric_limits<double>::max();
         			}
 
         			if(space(x, y) >= n_els)
-        				bounday_nodes.push_back(space(x, y));
+        				bounday_nodes.push_back(global_index);
 
         		// b.push_back(new Spline2dBasis(space(x, y), node.transpose(), h_knots[x], v_knots[y]));
         			const int local_index = y*3 + x;
         			b[local_index].init(global_index, local_index, node.transpose());
 
+        			// std::cout<<global_index<<" "<<v_knots[y][0]<<" "<<v_knots[y][1]<<" "<<v_knots[y][2]<<" "<<v_knots[y][3]<<" "<<std::endl;
         			const QuadraticTensorProductBSpline spline(h_knots[x], v_knots[y]);
         			b[local_index].set_basis([spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.interpolate(uv, val); });
         			b[local_index].set_grad( [spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.derivative(uv, val); });
         		}
+        	}
+        }
+
+        for(long e = 0; e < mesh.els.rows(); ++e)
+        {
+        	std::vector<Basis> &bs=bases[e];
+        	const Matrix3i &space = spaces[e];
+
+        	for(std::size_t i = 0; i < bs.size(); ++i)
+        	{
+        		Basis &b = bs[i];
+        		if(b.node()(0) != std::numeric_limits<double>::max())
+        			continue;
+
+        		bool found = false;
+        		for(int y = 0; y < 3; ++y)
+        		{
+        			for(int x = 0; x < 3; ++x)
+        			{
+        				const int global_index = space(x, y);
+
+        				if(global_index == e || global_index >= n_els)
+        					continue;
+
+        				const std::vector<Basis> &other_bases = bases[global_index];
+        				for(std::size_t j = 0; j < other_bases.size(); ++j)
+        				{
+        					if(other_bases[j].global_index() == b.global_index() && other_bases[j].node()(0) != std::numeric_limits<double>::max())
+        					{
+        						b.set_node(other_bases[j].node());
+        						found = true;
+        						break;
+        					}
+        				}
+
+        				if(found) break;
+        			}
+
+        			if(found) break;
+        		}
+
+        		assert(found);
+
         	}
         }
 

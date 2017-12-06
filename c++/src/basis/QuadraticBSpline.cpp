@@ -25,8 +25,12 @@ namespace poly_fem {
 		if(t >= knots_[1] && t < knots_[2])
 			return (t - knots_[0]) / (knots_[2] - knots_[0]) * (knots_[2] - t) / (knots_[2] - knots_[1]) + (knots_[3] - t) / (knots_[3] - knots_[1]) * (t - knots_[1]) / (knots_[2] - knots_[1]);
 
-		if(t >= knots_[2] && t < knots_[3])
+		if(t >= knots_[2] && t <= knots_[3]){
+			if(fabs(knots_[3] - knots_[2])<1e-12 && fabs(knots_[3] - knots_[1]) < 1e-12) return knots_[3];
+			if(fabs(knots_[3] - knots_[2])<1e-12) return 0;
+
 			return (knots_[3] - t) * (knots_[3] - t) / (knots_[3] - knots_[1]) / (knots_[3] - knots_[2]);
+		}
 
 		return 0;
 	}
@@ -47,8 +51,12 @@ namespace poly_fem {
 		if(t >= knots_[1] && t < knots_[2])
 			return ((-2 * t + 2 * knots_[0]) * knots_[1] + (2 * t - 2 * knots_[3]) * knots_[2] - 2 * t * (knots_[0] - knots_[3])) / (-knots_[2] + knots_[0]) / (-knots_[2] + knots_[1]) / (-knots_[3] + knots_[1]);
 
-		if(t >= knots_[2] && t < knots_[3])
+		if(t >= knots_[2] && t <= knots_[3]){
+			if(fabs(knots_[3] - knots_[2])<1e-12 && fabs(knots_[3] - knots_[1]) < 1e-12) return 2*knots_[3];
+			if(fabs(knots_[3] - knots_[2])<1e-12) return -2*knots_[3];
+
 			return (2 * t - 2 * knots_[3]) / (-knots_[3] + knots_[1]) / (-knots_[3] + knots_[2]);
+		}
 
 		return 0;
 	}

@@ -12,6 +12,7 @@
 
 #include <iostream>
 
+#include <igl/colormap.h>
 #include <nanogui/formhelper.h>
 #include <nanogui/screen.h>
 
@@ -316,24 +317,28 @@ namespace poly_fem
 		};
 
 		auto show_nodes_func = [&](){
-			for(std::size_t i = 0; i < bounday_nodes.size(); ++i)
-				std::cout<<bounday_nodes[i]<<std::endl;
+			// for(std::size_t i = 0; i < bounday_nodes.size(); ++i)
+			// 	std::cout<<bounday_nodes[i]<<std::endl;
 
 			for(std::size_t i = 0; i < bases.size(); ++i)
 			{
 				const std::vector<Basis> &basis = bases[i];
 				for(std::size_t j = 0; j < basis.size(); ++j)
 				{
-					auto p = basis[j].node();
-					for(long k = 0; k < p.size(); ++k)
-						p(k) += 0.02;
+					MatrixXd nn = MatrixXd::Zero(basis[j].node().rows(), 3);
+					nn.block(0, 0, nn.rows(), basis[j].node().cols()) = basis[j].node();
+
+					VectorXd txt_p = nn.row(0);
+					for(long k = 0; k < txt_p.size(); ++k)
+						txt_p(k) += 0.02;
 
 					MatrixXd col = MatrixXd::Zero(basis[j].node().rows(), 3);
 					if(std::find(bounday_nodes.begin(), bounday_nodes.end(), basis[j].global_index()) != bounday_nodes.end())
 						col.col(0).setOnes();
 
-					viewer.data.add_points(basis[j].node(), col);
-					viewer.data.add_label(p, std::to_string(basis[j].global_index()));
+
+					viewer.data.add_points(nn, col);
+					viewer.data.add_label(txt_p, std::to_string(basis[j].global_index()));
 				}
 			}
 		};
@@ -343,16 +348,96 @@ namespace poly_fem
 			{
 				const ElementAssemblyValues &vals = values[i];
 				viewer.data.add_points(vals.val, MatrixXd::Zero(vals.val.rows(), 3));
+
+				for(long j = 0; j < vals.val.rows(); ++j)
+					viewer.data.add_label(vals.val.row(j), std::to_string(j));
 			}
 		};
 
-		// auto show_rhs_func = [&](){
-		// 	for(long i = 0; i < rhs.size(); ++i)
-		// 	{
-		// 		const ElementAssemblyValues &vals = values[i];
-		// 		viewer.data.add_points(vals.val, MatrixXd::Zero(vals.val.rows(), 3));
-		// 	}
-		// };
+		auto show_rhs_func = [&](){
+			const int res = 5;
+			MatrixXd pts(res*res, 2); //TODO
+
+			auto t = VectorXd::LinSpaced(res, 0, 1);
+
+			for(int i = 0; i < res; ++i)
+			{
+				for(int j = 0; j < res; ++j)
+				{
+					pts.row(i*res+j) = Vector2d(t(i), t(j));
+				}
+			}
+
+			MatrixXd mapped, tmp;
+			for(std::size_t i = 0; i < bases.size(); ++i)
+			{
+				const std::vector<Basis> &bs = bases[i];
+				Basis::eval_geom_mapping(pts, bs, mapped);
+
+				MatrixXd rhs_eval = MatrixXd::Zero(pts.rows(), 1);
+
+				for(std::size_t j = 0; j < bs.size(); ++j)
+				{
+					const Basis &b = bs[j];
+
+					b.basis(pts, tmp);
+					rhs_eval += tmp * rhs(b.global_index());
+				}
+
+				MatrixXd toView(mapped.rows(), 3);
+				toView.col(0)=mapped.col(0);
+				toView.col(1)=mapped.col(1);
+				toView.col(2)=rhs_eval;
+
+				MatrixXd col;
+				igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, rhs_eval, 0, 1, col);
+
+				viewer.data.add_points(toView, col);
+			}
+		};
+
+
+		auto show_sol_func = [&](){
+			const int res = 5;
+			MatrixXd pts(res*res, 2); //TODO
+
+			auto t = VectorXd::LinSpaced(res, 0, 1);
+
+			for(int i = 0; i < res; ++i)
+			{
+				for(int j = 0; j < res; ++j)
+				{
+					pts.row(i*res+j) = Vector2d(t(i), t(j));
+				}
+			}
+
+			MatrixXd mapped, tmp;
+			for(std::size_t i = 0; i < bases.size(); ++i)
+			{
+				const std::vector<Basis> &bs = bases[i];
+				Basis::eval_geom_mapping(pts, bs, mapped);
+
+				MatrixXd sol_eval = MatrixXd::Zero(pts.rows(), 1);
+
+				for(std::size_t j = 0; j < bs.size(); ++j)
+				{
+					const Basis &b = bs[j];
+
+					b.basis(pts, tmp);
+					sol_eval += tmp * sol(b.global_index());
+				}
+
+				MatrixXd toView(mapped.rows(), 3);
+				toView.col(0)=mapped.col(0);
+				toView.col(1)=mapped.col(1);
+				toView.col(2)=sol_eval;
+
+				MatrixXd col;
+				igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, sol_eval, 0, 1, col);
+
+				viewer.data.add_points(toView, col);
+			}
+		};
 
 
 		///////////////////////////////////////////////////////
@@ -423,12 +508,20 @@ namespace poly_fem
 			rhs *= -1;
 			assembler.bc(bases, mesh, bounday_nodes, n_boundary_samples, problem, rhs);
     		// std::cout<<rhs<<"\n\n"<<std::endl;
+
+			clear_func();
+			show_mesh_func();
+			show_rhs_func();
 		};
 
 		auto solve_problem_func = [&]() {
 			BiCGSTAB<SparseMatrix<double, Eigen::RowMajor> > solver;
     		// SparseLU<SparseMatrix<double, Eigen::RowMajor> > solver;
 			sol = solver.compute(stiffness).solve(rhs);
+
+			clear_func();
+			show_mesh_func();
+			show_sol_func();
 		};
 
 		auto compute_errors_func = [&]() {
@@ -477,6 +570,8 @@ namespace poly_fem
 			viewer_.ngui->addButton("Show mesh", show_mesh_func);
 			viewer_.ngui->addButton("Show nodes", show_nodes_func);
 			viewer_.ngui->addButton("Show quadrature", show_quadrature_func);
+			viewer_.ngui->addButton("Show rhs", show_rhs_func);
+			viewer_.ngui->addButton("Show sol", show_sol_func);
 
 
 			viewer_.screen->performLayout();

@@ -29,7 +29,7 @@ namespace poly_fem
 				tmp.row(1) = dy.row(i);
 				tmp.row(2) = dz.row(i);
 
-				det(i) = fabs(tmp.determinant());
+				det(i) = (tmp.determinant());
 
 				for(std::size_t j = 0; j < basis_values.size(); ++j)
 					basis_values[j].finalize(tmp.inverse().transpose());
@@ -48,7 +48,7 @@ namespace poly_fem
 				tmp.row(0) = dx.row(i);
 				tmp.row(1) = dy.row(i);
 
-				det(i) = fabs(tmp.determinant());
+				det(i) = (tmp.determinant());
 
 				for(std::size_t j = 0; j < basis_values.size(); ++j){
 					basis_values[j].finalize(tmp.inverse().transpose());

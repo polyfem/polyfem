@@ -1,5 +1,7 @@
 #include "Basis.hpp"
 
+#include <iostream>
+
 namespace poly_fem
 {
 	Basis::Basis()
