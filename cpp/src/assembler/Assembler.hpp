@@ -9,6 +9,7 @@
 
 #include <Eigen/Sparse>
 #include <vector>
+#include <iostream>
 
 namespace poly_fem
 {
@@ -127,10 +128,19 @@ namespace poly_fem
 			std::vector<int> indices; indices.reserve(n_el*10);
 			std::map<int, int> global_index_to_col;
 
+			long total_size = 0;
+
 			for(int e = 0; e < n_el; ++e)
 			{
+				bool has_samples = sample_boundary(e, mesh, resolution, samples);
+
+				if(!has_samples)
+					continue;
+
 				const std::vector<Basis> &bs = bases[e];
 				const int n_local_bases = int(bs.size());
+
+				total_size += samples.rows();
 
 				for(int j = 0; j < n_local_bases; ++j)
 				{
@@ -147,8 +157,8 @@ namespace poly_fem
 				}
 			}
 
-			Eigen::MatrixXd global_mat = Eigen::MatrixXd::Zero(n_el*4*resolution, indices.size());
-			Eigen::MatrixXd global_rhs = Eigen::MatrixXd::Zero(n_el*4*resolution, 1);
+			Eigen::MatrixXd global_mat = Eigen::MatrixXd::Zero(total_size, indices.size());
+			Eigen::MatrixXd global_rhs = Eigen::MatrixXd::Zero(total_size, 1);
 
 			index = 0;
 
@@ -171,8 +181,10 @@ namespace poly_fem
 					const Basis &b=bs[j];
 
 					b.basis(samples, tmp);
-					if(std::find(bounday_nodes.begin(), bounday_nodes.end(), b.global_index()) != bounday_nodes.end()) //pt found
-						global_mat.block(global_counter, global_index_to_col[b.global_index()], tmp.size(), 1) = tmp;
+					// if(std::find(bounday_nodes.begin(), bounday_nodes.end(), b.global_index()) != bounday_nodes.end()) //pt found
+					auto item = global_index_to_col.find(b.global_index());
+					if(item != global_index_to_col.end())
+						global_mat.block(global_counter, item->second, tmp.size(), 1) = tmp;
 
 					for (long k = 0; k < tmp.rows(); ++k){
 						mapped.row(k) += tmp(k,0) * b.node();
@@ -186,10 +198,23 @@ namespace poly_fem
 				global_counter += rhs_fun.size();
 			}
 
-			const Eigen::MatrixXd global_mat_small = global_mat.block(0, 0, global_counter, global_mat.cols());
-			const Eigen::MatrixXd global_rhs_small = global_rhs.block(0, 0, global_counter, global_rhs.cols());
+			assert(global_counter == total_size);
 
-			Eigen::MatrixXd coeffs = global_mat_small.colPivHouseholderQr().solve(global_rhs_small);
+			// const Eigen::MatrixXd global_mat_small = global_mat.block(0, 0, global_counter, global_mat.cols());
+			// const Eigen::MatrixXd global_rhs_small = global_rhs.block(0, 0, global_counter, global_rhs.cols());
+
+			auto &A = global_mat.transpose() * global_mat;
+			auto &b = global_mat.transpose() * global_rhs;
+			// std::cout<<A.rows()<<" "<<A.cols()<<std::endl;
+
+			Eigen::MatrixXd coeffs;
+			// if(A.rows() > 500)
+			// {
+			// 	Eigen::BiCGSTAB< Eigen::MatrixXd > solver;
+			// 	coeffs = solver.compute(A).solve(b);
+			// }
+			// else
+				coeffs = A.ldlt().solve(b);
 
 			// std::cout<<global_mat<<"\n"<<std::endl;
 			// std::cout<<coeffs<<"\n"<<std::endl;
