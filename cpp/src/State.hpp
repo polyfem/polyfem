@@ -29,7 +29,6 @@ namespace poly_fem
 
 		void sertialize(const std::string &name);
 
-
 		int quadrature_order = 2;
 		int n_boundary_samples = 10;
 
@@ -39,6 +38,7 @@ namespace poly_fem
 
 		bool use_hex = false;
 		bool use_splines = true;
+		bool skip_visualization = false;
 
 		Problem problem;
 
@@ -54,6 +54,8 @@ namespace poly_fem
 
 
 		Mesh mesh;
+		Mesh visualization_mesh, local_mesh;
+
 		Eigen::Matrix<int, Eigen::Dynamic, 3> vis_faces;
 
 
@@ -62,6 +64,9 @@ namespace poly_fem
 		Eigen::MatrixXd sol;
 
 		double l2_err, linf_err;
+
+	private:
+		void interpolate_function(const Eigen::MatrixXd &fun, Eigen::MatrixXd &result);
 	};
 
 }

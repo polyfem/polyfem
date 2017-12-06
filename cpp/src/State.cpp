@@ -6,6 +6,7 @@
 #include "HexQuadrature.hpp"
 #include "QuadQuadrature.hpp"
 
+
 #include "Assembler.hpp"
 #include "Laplacian.hpp"
 
@@ -13,6 +14,9 @@
 #include <iostream>
 
 #include <igl/colormap.h>
+#include <igl/triangle/triangulate.h>
+#include <igl/Timer.h>
+
 #include <nanogui/formhelper.h>
 #include <nanogui/screen.h>
 
@@ -288,6 +292,31 @@ namespace poly_fem
 	}
 
 
+	void State::interpolate_function(const MatrixXd &fun, MatrixXd &result)
+	{
+		MatrixXd tmp;
+
+		result.resize(visualization_mesh.pts.rows(), 1);
+
+		for(std::size_t i = 0; i < bases.size(); ++i)
+		{
+			const std::vector<Basis> &bs = bases[i];
+
+			MatrixXd local_res = MatrixXd::Zero(local_mesh.pts.rows(), 1);
+
+			for(std::size_t j = 0; j < bs.size(); ++j)
+			{
+				const Basis &b = bs[j];
+
+				b.basis(local_mesh.pts, tmp);
+				local_res += tmp * fun(b.global_index());
+			}
+
+			result.block(i*local_mesh.pts.rows(), 0, local_mesh.pts.rows(), 1) = local_res;
+		}
+	}
+
+
 
 	State &State::state(){
 		static State instance;
@@ -313,7 +342,13 @@ namespace poly_fem
 		auto clear_func = [&](){viewer.data.clear(); };
 
 		auto show_mesh_func = [&](){
+			clear_func();
 			viewer.data.set_mesh(mesh.pts, vis_faces);
+		};
+
+		auto show_vis_mesh_func = [&](){
+			clear_func();
+			viewer.data.set_mesh(visualization_mesh.pts, visualization_mesh.els);
 		};
 
 		auto show_nodes_func = [&](){
@@ -355,88 +390,64 @@ namespace poly_fem
 		};
 
 		auto show_rhs_func = [&](){
-			const int res = 5;
-			MatrixXd pts(res*res, 2); //TODO
+			MatrixXd tmp;
 
-			auto t = VectorXd::LinSpaced(res, 0, 1);
+			MatrixXd global_rhs;
+			interpolate_function(rhs, global_rhs);
 
-			for(int i = 0; i < res; ++i)
-			{
-				for(int j = 0; j < res; ++j)
-				{
-					pts.row(i*res+j) = Vector2d(t(i), t(j));
-				}
-			}
+			MatrixXd col;
+			igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, global_rhs, 0, 1, col);
 
-			MatrixXd mapped, tmp;
-			for(std::size_t i = 0; i < bases.size(); ++i)
-			{
-				const std::vector<Basis> &bs = bases[i];
-				Basis::eval_geom_mapping(pts, bs, mapped);
+			tmp.resize(global_rhs.rows(),3);
+			tmp.col(0)=visualization_mesh.pts.col(0);
+			tmp.col(1)=visualization_mesh.pts.col(1);
+			tmp.col(2)=global_rhs;
 
-				MatrixXd rhs_eval = MatrixXd::Zero(pts.rows(), 1);
-
-				for(std::size_t j = 0; j < bs.size(); ++j)
-				{
-					const Basis &b = bs[j];
-
-					b.basis(pts, tmp);
-					rhs_eval += tmp * rhs(b.global_index());
-				}
-
-				MatrixXd toView(mapped.rows(), 3);
-				toView.col(0)=mapped.col(0);
-				toView.col(1)=mapped.col(1);
-				toView.col(2)=rhs_eval;
-
-				MatrixXd col;
-				igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, rhs_eval, 0, 1, col);
-
-				viewer.data.add_points(toView, col);
-			}
+			viewer.data.set_mesh(tmp, visualization_mesh.els);
+			viewer.data.set_colors(col);
 		};
 
 
 		auto show_sol_func = [&](){
-			const int res = 5;
-			MatrixXd pts(res*res, 2); //TODO
-
-			auto t = VectorXd::LinSpaced(res, 0, 1);
-
-			for(int i = 0; i < res; ++i)
-			{
-				for(int j = 0; j < res; ++j)
-				{
-					pts.row(i*res+j) = Vector2d(t(i), t(j));
-				}
-			}
-
 			MatrixXd mapped, tmp;
-			for(std::size_t i = 0; i < bases.size(); ++i)
-			{
-				const std::vector<Basis> &bs = bases[i];
-				Basis::eval_geom_mapping(pts, bs, mapped);
 
-				MatrixXd sol_eval = MatrixXd::Zero(pts.rows(), 1);
+			MatrixXd global_sol;
+			interpolate_function(sol, global_sol);
 
-				for(std::size_t j = 0; j < bs.size(); ++j)
-				{
-					const Basis &b = bs[j];
+			MatrixXd col;
+			igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, global_sol, 0, 1, col);
 
-					b.basis(pts, tmp);
-					sol_eval += tmp * sol(b.global_index());
-				}
+			tmp.resize(global_sol.rows(),3);
+			tmp.col(0)=visualization_mesh.pts.col(0);
+			tmp.col(1)=visualization_mesh.pts.col(1);
+			tmp.col(2)=global_sol;
 
-				MatrixXd toView(mapped.rows(), 3);
-				toView.col(0)=mapped.col(0);
-				toView.col(1)=mapped.col(1);
-				toView.col(2)=sol_eval;
+			viewer.data.set_mesh(tmp, visualization_mesh.els);
+			viewer.data.set_colors(col);
+		};
 
-				MatrixXd col;
-				igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, sol_eval, 0, 1, col);
 
-				viewer.data.add_points(toView, col);
-			}
+		auto show_error_func = [&](){
+			MatrixXd mapped, tmp;
+
+			MatrixXd global_sol;
+			interpolate_function(sol, global_sol);
+
+			MatrixXd exact_sol;
+			problem.exact(visualization_mesh.pts, exact_sol);
+
+			const MatrixXd err = (global_sol - exact_sol).array().abs();
+
+			MatrixXd col;
+			igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, err, true, col);
+
+			tmp.resize(err.rows(),3);
+			tmp.col(0)=visualization_mesh.pts.col(0);
+			tmp.col(1)=visualization_mesh.pts.col(1);
+			tmp.col(2)=err;
+
+			viewer.data.set_mesh(tmp, visualization_mesh.els);
+			viewer.data.set_colors(col);
 		};
 
 
@@ -445,7 +456,50 @@ namespace poly_fem
 		///////////////////////////////////////////////////////
 		//Algo phases
 		///////////////////////////////////////////////////////
+		auto build_vis_mesh_func = [&](){
+			MatrixXd pts(4,2); pts <<
+			0,0,
+			0,1,
+			1,1,
+			1,0;
+
+			MatrixXi E(4,2); E <<
+			0,1,
+			1,2,
+			2,3,
+			3,0;
+
+			igl::Timer timer; timer.start();
+			std::cout<<"Building vis mesh..."<<std::flush;
+
+			MatrixXd H(0,2);
+			igl::triangle::triangulate(pts, E, H, "Qqa0.001", local_mesh.pts, local_mesh.els);
+			visualization_mesh.pts.resize(local_mesh.pts.rows()*mesh.els.rows(), 2);
+			visualization_mesh.els.resize(local_mesh.els.rows()*mesh.els.rows(), 3);
+
+			MatrixXd mapped, tmp;
+			for(std::size_t i = 0; i < bases.size(); ++i)
+			{
+				const std::vector<Basis> &bs = bases[i];
+				Basis::eval_geom_mapping(local_mesh.pts, bs, mapped);
+				visualization_mesh.pts.block(i*local_mesh.pts.rows(), 0, local_mesh.pts.rows(), 2) = mapped;
+				visualization_mesh.els.block(i*local_mesh.els.rows(), 0, local_mesh.els.rows(), 3) = local_mesh.els.array() + int(i)*int(local_mesh.pts.rows());
+			}
+
+			timer.stop();
+			std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
+
+			if(skip_visualization) return;
+
+			clear_func();
+			show_vis_mesh_func();
+		};
+
+
 		auto build_mesh_func = [&](){
+			igl::Timer timer; timer.start();
+			std::cout<<"Building mesh..."<<std::flush;
+
 			bounday_nodes.clear();
 			if(use_hex)
 			{
@@ -457,12 +511,19 @@ namespace poly_fem
 				build_quad_mesh(n_x_el, n_y_el, mesh, bounday_nodes);
 				triangulate_quad_mesh(mesh, vis_faces);
 			}
+			timer.stop();
+			std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
+
+			if(skip_visualization) return;
 
 			clear_func();
 			show_mesh_func();
 		};
 
 		auto build_basis_func = [&](){
+			igl::Timer timer; timer.start();
+			std::cout<<"Building basis..."<<std::flush;
+
 			if(mesh.is_volume)
 			{
 				if(use_splines)
@@ -477,7 +538,12 @@ namespace poly_fem
 				else
 					n_bases = QuadBasis::build_bases(mesh, bases, bounday_nodes);
 			}
+			timer.stop();
+			std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
 
+			std::cout<<"n bases: "<<n_bases<<std::endl;
+
+			if(skip_visualization) return;
 			clear_func();
 			show_mesh_func();
 			show_nodes_func();
@@ -485,48 +551,90 @@ namespace poly_fem
 
 
 		auto compute_assembly_vals_func = [&]() {
+			igl::Timer timer; timer.start();
+			std::cout<<"Computing assembly values..."<<std::flush;
+
 			std::sort(bounday_nodes.begin(), bounday_nodes.end());
 			compute_assembly_values(use_hex, quadrature_order, bases, values);
 
+			timer.stop();
+			std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
+
+			if(skip_visualization) return;
 			clear_func();
 			show_mesh_func();
 			show_quadrature_func();
 		};
 
 		auto assemble_stiffness_mat_func = [&]() {
+			igl::Timer timer; timer.start();
+			std::cout<<"Assembling stiffness mat..."<<std::flush;
+
 			Assembler<Laplacian> assembler;
 			assembler.assemble(n_bases, values, values, stiffness);
     		// std::cout<<MatrixXd(stiffness)-MatrixXd(stiffness.transpose())<<"\n\n"<<std::endl;
     		// std::cout<<MatrixXd(stiffness).rowwise().sum()<<"\n\n"<<std::endl;
 			assembler.set_identity(bounday_nodes, stiffness);
+
+			timer.stop();
+			std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
+
+			std::cout<<"sparsity: "<<stiffness.nonZeros()<<"/"<<stiffness.size()<<std::endl;
 		};
 
 
 		auto assemble_rhs_func = [&]() {
+			igl::Timer timer; timer.start();
+			std::cout<<"Assigning rhs..."<<std::flush;
+
 			Assembler<Laplacian> assembler;
 			assembler.rhs(n_bases, values, values, problem, rhs);
 			rhs *= -1;
+			timer.stop();
+			std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
+
+			std::cout<<"Assigning boundary rhs..."<<std::flush;
 			assembler.bc(bases, mesh, bounday_nodes, n_boundary_samples, problem, rhs);
     		// std::cout<<rhs<<"\n\n"<<std::endl;
 
+    		timer.stop();
+			std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
+
+			if(skip_visualization) return;
 			clear_func();
-			show_mesh_func();
 			show_rhs_func();
 		};
 
 		auto solve_problem_func = [&]() {
+			igl::Timer timer; timer.start();
+			std::cout<<"Solving..."<<std::flush;
+
 			BiCGSTAB<SparseMatrix<double, Eigen::RowMajor> > solver;
     		// SparseLU<SparseMatrix<double, Eigen::RowMajor> > solver;
 			sol = solver.compute(stiffness).solve(rhs);
 
+			timer.stop();
+			std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
+
+			if(skip_visualization) return;
 			clear_func();
-			show_mesh_func();
 			show_sol_func();
 		};
 
 		auto compute_errors_func = [&]() {
+			igl::Timer timer; timer.start();
+			std::cout<<"Computing errors..."<<std::flush;
+
 			compute_errors(values, values, problem, sol, l2_err, linf_err);
+
+			timer.stop();
+			std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
+
 			std::cout<<l2_err<<" "<<linf_err<<std::endl;
+
+			if(skip_visualization) return;
+			clear_func();
+			show_error_func();
 		};
 
 
@@ -553,25 +661,45 @@ namespace poly_fem
 				[&]() { return ProblemType(problem.problem_num()); }
 				)->setItems({"Linear","Quadratic","Franke"});
 
-
+			viewer_.ngui->addVariable("skip visualization", skip_visualization);
 
 			viewer_.ngui->addGroup("Runners");
 			viewer_.ngui->addButton("Build  mesh", build_mesh_func);
 			viewer_.ngui->addButton("Build  basis", build_basis_func);
 			viewer_.ngui->addButton("Compute vals", compute_assembly_vals_func);
+			viewer_.ngui->addButton("Build vis mesh", build_vis_mesh_func);
+
 			viewer_.ngui->addButton("Assemble stiffness", assemble_stiffness_mat_func);
 			viewer_.ngui->addButton("Assemble rhs", assemble_rhs_func);
 			viewer_.ngui->addButton("Solve", solve_problem_func);
-			viewer_.ngui->addButton("compute errors", compute_errors_func);
+			viewer_.ngui->addButton("Compute errors", compute_errors_func);
 
+			viewer_.ngui->addButton("Run all", [&](){
+				build_mesh_func();
+				build_basis_func();
 
-			viewer_.ngui->addGroup("Debug");
+				if(!skip_visualization)
+					build_vis_mesh_func();
+
+				compute_assembly_vals_func();
+				assemble_stiffness_mat_func();
+				assemble_rhs_func();
+				solve_problem_func();
+				compute_errors_func();
+			});
+
+			viewer_.ngui->addWindow(Eigen::Vector2i(400,10),"Debug");
 			viewer_.ngui->addButton("Clear", clear_func);
 			viewer_.ngui->addButton("Show mesh", show_mesh_func);
+			viewer_.ngui->addButton("Show vis mesh", show_vis_mesh_func);
 			viewer_.ngui->addButton("Show nodes", show_nodes_func);
 			viewer_.ngui->addButton("Show quadrature", show_quadrature_func);
 			viewer_.ngui->addButton("Show rhs", show_rhs_func);
 			viewer_.ngui->addButton("Show sol", show_sol_func);
+			viewer_.ngui->addButton("Show error", show_error_func);
+
+			// viewer_.ngui->addGroup("Stats");
+			// viewer_.ngui->addVariable("NNZ", Type &value)
 
 
 			viewer_.screen->performLayout();

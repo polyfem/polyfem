@@ -82,7 +82,7 @@ SET(SRCFILES
 
 
 add_executable(${PROJECT_NAME} ${SRCFILES})
-target_link_libraries(${PROJECT_NAME} igl::core igl::viewer)
+target_link_libraries(${PROJECT_NAME} igl::core igl::viewer igl::triangle igl::tetgen)
 target_include_directories(${PROJECT_NAME} PUBLIC src src/quadrature src/basis src/assembler src/problem)
 target_compile_options(${PROJECT_NAME} PRIVATE ${ALL_WARNINGS})
 

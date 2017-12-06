@@ -150,6 +150,8 @@ namespace poly_fem
 			Eigen::MatrixXd global_mat = Eigen::MatrixXd::Zero(n_el*4*resolution, indices.size());
 			Eigen::MatrixXd global_rhs = Eigen::MatrixXd::Zero(n_el*4*resolution, 1);
 
+			index = 0;
+
 			int global_counter = 0;
 
 			for(int e = 0; e < n_el; ++e)
@@ -170,7 +172,7 @@ namespace poly_fem
 
 					b.basis(samples, tmp);
 					if(std::find(bounday_nodes.begin(), bounday_nodes.end(), b.global_index()) != bounday_nodes.end()) //pt found
-						global_mat.block(e*4*resolution, global_index_to_col[b.global_index()], tmp.size(), 1) = tmp;
+						global_mat.block(global_counter, global_index_to_col[b.global_index()], tmp.size(), 1) = tmp;
 
 					for (long k = 0; k < tmp.rows(); ++k){
 						mapped.row(k) += tmp(k,0) * b.node();
@@ -180,10 +182,14 @@ namespace poly_fem
 				// std::cout<<samples<<"\n"<<std::endl;
 
 				problem.bc(mapped, rhs_fun);
-				global_rhs.block(e*4*resolution, 0, rhs_fun.size(), 1) = rhs_fun;
+				global_rhs.block(global_counter, 0, rhs_fun.size(), 1) = rhs_fun;
+				global_counter += rhs_fun.size();
 			}
 
-			Eigen::MatrixXd coeffs = global_mat.colPivHouseholderQr().solve(global_rhs);
+			const Eigen::MatrixXd global_mat_small = global_mat.block(0, 0, global_counter, global_mat.cols());
+			const Eigen::MatrixXd global_rhs_small = global_rhs.block(0, 0, global_counter, global_rhs.cols());
+
+			Eigen::MatrixXd coeffs = global_mat_small.colPivHouseholderQr().solve(global_rhs_small);
 
 			// std::cout<<global_mat<<"\n"<<std::endl;
 			// std::cout<<coeffs<<"\n"<<std::endl;
