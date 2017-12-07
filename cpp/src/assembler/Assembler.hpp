@@ -157,8 +157,13 @@ namespace poly_fem
 				}
 			}
 
-			Eigen::MatrixXd global_mat = Eigen::MatrixXd::Zero(total_size, indices.size());
+			// Eigen::MatrixXd global_mat = Eigen::MatrixXd::Zero(total_size, indices.size());
 			Eigen::MatrixXd global_rhs = Eigen::MatrixXd::Zero(total_size, 1);
+
+			const long buffer_size = total_size * long(indices.size());
+			std::vector< Eigen::Triplet<double> > entries, entries_t;
+			entries.reserve(buffer_size);
+			entries_t.reserve(buffer_size);
 
 			index = 0;
 
@@ -183,8 +188,14 @@ namespace poly_fem
 					b.basis(samples, tmp);
 					// if(std::find(bounday_nodes.begin(), bounday_nodes.end(), b.global_index()) != bounday_nodes.end()) //pt found
 					auto item = global_index_to_col.find(b.global_index());
-					if(item != global_index_to_col.end())
-						global_mat.block(global_counter, item->second, tmp.size(), 1) = tmp;
+					if(item != global_index_to_col.end()){
+						for(int k = 0; k < int(tmp.size()); ++k)
+						{
+							entries.push_back(Eigen::Triplet<double>(global_counter+k, item->second, tmp(k)));
+							entries_t.push_back(Eigen::Triplet<double>(item->second, global_counter+k, tmp(k)));
+						}
+						// global_mat.block(global_counter, item->second, tmp.size(), 1) = tmp;
+					}
 
 					for (long k = 0; k < tmp.rows(); ++k){
 						mapped.row(k) += tmp(k,0) * b.node();
@@ -203,18 +214,24 @@ namespace poly_fem
 			// const Eigen::MatrixXd global_mat_small = global_mat.block(0, 0, global_counter, global_mat.cols());
 			// const Eigen::MatrixXd global_rhs_small = global_rhs.block(0, 0, global_counter, global_rhs.cols());
 
-			auto &A = global_mat.transpose() * global_mat;
-			auto &b = global_mat.transpose() * global_rhs;
-			// std::cout<<A.rows()<<" "<<A.cols()<<std::endl;
+			// tmp = global_mat.transpose() * global_mat;
+			Eigen::SparseMatrix<double> mat(int(total_size), int(indices.size()));
+			mat.setFromTriplets(entries.begin(), entries.end());
+
+			Eigen::SparseMatrix<double> mat_t(int(indices.size()), int(total_size));
+			mat_t.setFromTriplets(entries_t.begin(), entries_t.end());
+
+			Eigen::SparseMatrix<double> A = mat_t * mat;
+			Eigen::MatrixXd b = mat_t * global_rhs;
 
 			Eigen::MatrixXd coeffs;
-			// if(A.rows() > 500)
-			// {
-			// 	Eigen::BiCGSTAB< Eigen::MatrixXd > solver;
-			// 	coeffs = solver.compute(A).solve(b);
-			// }
+			// if(A.rows() > 2000)
+			{
+				Eigen::BiCGSTAB< Eigen::SparseMatrix<double> > solver;
+				coeffs = solver.compute(A).solve(b);
+			}
 			// else
-			coeffs = A.ldlt().solve(b);
+				// coeffs = A.ldlt().solve(b);
 
 			// std::cout<<global_mat<<"\n"<<std::endl;
 			// std::cout<<coeffs<<"\n"<<std::endl;
@@ -234,8 +251,6 @@ namespace poly_fem
 		{
 			auto el = mesh.els.row(el_index);
 
-			std::cout<<el<<std::endl;
-
 			if(mesh.is_volume)
 			{
 				const int resolution = resolution_one_d *resolution_one_d;
@@ -252,11 +267,6 @@ namespace poly_fem
 
 				const bool has_front = el(4) < (n_x + 1) * (n_y + 1) * n_z;
 				const bool has_back = el(0) >= (n_x + 1) * (n_y + 1);
-
-
-				std::cout<<has_left<< " "<<has_right<<std::endl;
-				std::cout<<has_bottom<<" "<<has_top<<std::endl;
-				std::cout<<has_front<<" "<<has_back<<std::endl;
 
 				int n = 0;
 				if(!has_left) n+=resolution;
@@ -332,7 +342,6 @@ namespace poly_fem
 
 					n += resolution;
 				}
-
 
 
 

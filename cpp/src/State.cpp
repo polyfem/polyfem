@@ -499,7 +499,7 @@ namespace poly_fem
 				clear_func();
 
 				MatrixXi tets;
-				igl::copyleft::tetgen::tetrahedralize(pts, faces, "pq1.414a0.001", local_mesh.pts, tets, local_mesh.els);
+				igl::copyleft::tetgen::tetrahedralize(pts, faces, "Qpq1.414a0.001", local_mesh.pts, tets, local_mesh.els);
 				visualization_mesh.is_volume = true;
 			}
 			else
