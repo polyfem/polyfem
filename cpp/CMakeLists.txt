@@ -2,7 +2,13 @@ cmake_minimum_required(VERSION 3.1)
 project(PolyFEM)
 
 set(THIRD_PARTY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
+# Color output
+include(UseColors)
+
+# Geogram
+include(geogram)
 
 # libigl
 option(LIBIGL_USE_STATIC_LIBRARY 	"Use libigl as static library" ON)
@@ -23,11 +29,10 @@ option(LIBIGL_WITH_TETGEN           "Use Tetgen"         ON)
 option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       ON)
 option(LIBIGL_WITH_VIEWER           "Use OpenGL viewer"  ON)
 option(LIBIGL_WITH_XML              "Use XML"            OFF)
-
 find_package(LIBIGL REQUIRED QUIET)
 
+# Extra warnings
 include(SetWarnings)
-
 
 
 set(SRCFILES
@@ -89,3 +94,6 @@ target_link_libraries(${PROJECT_NAME} igl::core igl::viewer igl::triangle igl::t
 target_include_directories(${PROJECT_NAME} PUBLIC src src/quadrature src/basis src/assembler src/problem)
 target_compile_options(${PROJECT_NAME} PRIVATE ${ALL_WARNINGS})
 
+################################################################################
+
+add_subdirectory(tests)
