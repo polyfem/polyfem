@@ -186,6 +186,7 @@ namespace poly_fem
 					const Basis &b=bs[j];
 
 					b.basis(samples, tmp);
+
 					// if(std::find(bounday_nodes.begin(), bounday_nodes.end(), b.global_index()) != bounday_nodes.end()) //pt found
 					auto item = global_index_to_col.find(b.global_index());
 					if(item != global_index_to_col.end()){
@@ -204,6 +205,9 @@ namespace poly_fem
 
 				// std::cout<<samples<<"\n"<<std::endl;
 
+				// igl::viewer::Viewer &viewer = State::state().viewer;
+				// viewer.data.add_points(mapped, Eigen::MatrixXd::Zero(mapped.rows(), 3));
+
 				problem.bc(mapped, rhs_fun);
 				global_rhs.block(global_counter, 0, rhs_fun.size(), 1) = rhs_fun;
 				global_counter += rhs_fun.size();
@@ -211,10 +215,6 @@ namespace poly_fem
 
 			assert(global_counter == total_size);
 
-			// const Eigen::MatrixXd global_mat_small = global_mat.block(0, 0, global_counter, global_mat.cols());
-			// const Eigen::MatrixXd global_rhs_small = global_rhs.block(0, 0, global_counter, global_rhs.cols());
-
-			// tmp = global_mat.transpose() * global_mat;
 			Eigen::SparseMatrix<double> mat(int(total_size), int(indices.size()));
 			mat.setFromTriplets(entries.begin(), entries.end());
 
@@ -227,7 +227,9 @@ namespace poly_fem
 			Eigen::MatrixXd coeffs;
 			// if(A.rows() > 2000)
 			{
-				Eigen::BiCGSTAB< Eigen::SparseMatrix<double> > solver;
+				// Eigen::BiCGSTAB< Eigen::SparseMatrix<double> > solver;
+				// coeffs = solver.compute(A).solve(b);
+				Eigen::SimplicialLDLT<Eigen::SparseMatrix<double> > solver;
 				coeffs = solver.compute(A).solve(b);
 			}
 			// else
@@ -262,8 +264,8 @@ namespace poly_fem
 				const bool has_left = (el(0) % ((n_x + 1)*(n_y + 1))) % (n_x + 1) != 0;
 				const bool has_right = (el(2) % ((n_x + 1)*(n_y + 1))) % (n_x + 1) != n_x;
 
-				const bool has_bottom = (el(0) % ((n_x + 1)*(n_y + 1))) / (n_x + 1) != 0;
-				const bool has_top = (el(2) % ((n_x + 1)*(n_y + 1))) / (n_x + 1) != n_y;
+				const bool has_top = (el(0) % ((n_x + 1)*(n_y + 1))) / (n_x + 1) != 0;
+				const bool has_bottom = (el(2) % ((n_x + 1)*(n_y + 1))) / (n_x + 1) != n_y;
 
 				const bool has_front = el(4) < (n_x + 1) * (n_y + 1) * n_z;
 				const bool has_back = el(0) >= (n_x + 1) * (n_y + 1);
@@ -346,7 +348,7 @@ namespace poly_fem
 
 
 				// std::cout<<samples<<std::endl;
-				// igl::viewer::Viewer viewer;
+				// igl::viewer::Viewer &viewer = State::state().viewer;
 				// viewer.data.add_points(samples, Eigen::MatrixXd::Zero(samples.rows(), 3));
 				// viewer.launch();
 

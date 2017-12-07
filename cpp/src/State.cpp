@@ -650,8 +650,8 @@ namespace poly_fem
 			std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
 
 			if(skip_visualization) return;
-			clear_func();
-			show_rhs_func();
+			// clear_func();
+			// show_rhs_func();
 		};
 
 		auto solve_problem_func = [&]() {
