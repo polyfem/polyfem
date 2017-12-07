@@ -230,70 +230,122 @@ namespace poly_fem
 	private:
 		LocalAssembler local_assembler_;
 
-		bool sample_boundary(const int el_index, const Mesh &mesh, const int resolution, Eigen::MatrixXd &samples) const
+		bool sample_boundary(const int el_index, const Mesh &mesh, const int resolution_one_d, Eigen::MatrixXd &samples) const
 		{
 			auto el = mesh.els.row(el_index);
 
+			std::cout<<el<<std::endl;
+
 			if(mesh.is_volume)
 			{
-				assert(false);
-				// const int n_x = mesh.n_x;
-				// const int n_y = mesh.n_y;
-				// const int n_z = mesh.n_z;
+				const int resolution = resolution_one_d *resolution_one_d;
 
-				// const bool has_left = el(0) % (n_x + 1) != 0;
-				// const bool has_right = el(2) % (n_x + 1) != n_x;
+				const int n_x = mesh.n_x;
+				const int n_y = mesh.n_y;
+				const int n_z = mesh.n_z;
 
-				// const bool has_bottom = el(0) / (n_x + 1) != 0;
-				// const bool has_top = el(2) / (n_x + 1) != n_y;
+				const bool has_left = (el(0) % ((n_x + 1)*(n_y + 1))) % (n_x + 1) != 0;
+				const bool has_right = (el(2) % ((n_x + 1)*(n_y + 1))) % (n_x + 1) != n_x;
 
-				// const bool has_front = el(0) / (n_x + 1) != 0;
-				// const bool has_back = el(2) / (n_x + 1) != n_y;
+				const bool has_bottom = (el(0) % ((n_x + 1)*(n_y + 1))) / (n_x + 1) != 0;
+				const bool has_top = (el(2) % ((n_x + 1)*(n_y + 1))) / (n_x + 1) != n_y;
 
-				// int n = 0;
-				// if(!has_left) n+=resolution;
-				// if(!has_right) n+=resolution;
-				// if(!has_bottom) n+=resolution;
-				// if(!has_top) n+=resolution;
+				const bool has_front = el(4) < (n_x + 1) * (n_y + 1) * n_z;
+				const bool has_back = el(0) >= (n_x + 1) * (n_y + 1);
 
-				// if(n <= 0) return false;
 
-				// const Eigen::MatrixXd t = Eigen::VectorXd::LinSpaced(resolution, 0, 1);
+				std::cout<<has_left<< " "<<has_right<<std::endl;
+				std::cout<<has_bottom<<" "<<has_top<<std::endl;
+				std::cout<<has_front<<" "<<has_back<<std::endl;
 
-				// samples.resize(n, 2);
-				// n = 0;
-				// if(!has_left){
-				// 	samples.block(n, 0, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);
-				// 	samples.block(n, 1, resolution, 1) = t;
+				int n = 0;
+				if(!has_left) n+=resolution;
+				if(!has_right) n+=resolution;
+				if(!has_bottom) n+=resolution;
+				if(!has_top) n+=resolution;
+				if(!has_front) n+=resolution;
+				if(!has_back) n+=resolution;
 
-				// 	n += resolution;
-				// }
+				if(n <= 0) return false;
 
-				// if(!has_bottom){
-				// 	samples.block(n, 0, resolution, 1) = t;
-				// 	samples.block(n, 1, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);
+				const Eigen::MatrixXd t = Eigen::VectorXd::LinSpaced(resolution_one_d, 0, 1);
 
-				// 	n += resolution;
-				// }
+				Eigen::MatrixXd tx(resolution, 1);
+				Eigen::MatrixXd ty(resolution, 1);
 
-				// if(!has_right){
-				// 	samples.block(n, 0, resolution, 1) = Eigen::MatrixXd::Ones(resolution, 1);
-				// 	samples.block(n, 1, resolution, 1) = t;
+				for(int i = 0; i < resolution_one_d; ++i)
+				{
+					for(int j = 0; j < resolution_one_d; ++j)
+					{
+						tx(i * resolution_one_d + j) = t(i);
+						ty(i * resolution_one_d + j) = t(j);
+					}
+				}
 
-				// 	n += resolution;
-				// }
+				samples.resize(n, 3);
+				n = 0;
 
-				// if(!has_top){
-				// 	samples.block(n, 0, resolution, 1) = t;
-				// 	samples.block(n, 1, resolution, 1) = Eigen::MatrixXd::Ones(resolution, 1);
+				if(!has_left){
+					samples.block(n, 0, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);
+					samples.block(n, 1, resolution, 1) = tx;
+					samples.block(n, 2, resolution, 1) = ty;
 
-				// 	n += resolution;
-				// }
+					n += resolution;
+				}
+				if(!has_right){
+					samples.block(n, 0, resolution, 1) = Eigen::MatrixXd::Ones(resolution, 1);
+					samples.block(n, 1, resolution, 1) = tx;
+					samples.block(n, 2, resolution, 1) = ty;
 
-				// assert(long(n) == samples.rows());
+					n += resolution;
+				}
+
+
+
+				if(!has_bottom){
+					samples.block(n, 0, resolution, 1) = tx;
+					samples.block(n, 1, resolution, 1) = Eigen::MatrixXd::Ones(resolution, 1);
+					samples.block(n, 2, resolution, 1) = ty;
+
+					n += resolution;
+				}
+				if(!has_top){
+					samples.block(n, 0, resolution, 1) = tx;
+					samples.block(n, 1, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);
+					samples.block(n, 2, resolution, 1) = ty;
+
+					n += resolution;
+				}
+
+
+				if(!has_front){
+					samples.block(n, 0, resolution, 1) = tx;
+					samples.block(n, 1, resolution, 1) = ty;
+					samples.block(n, 2, resolution, 1) = Eigen::MatrixXd::Ones(resolution, 1);
+
+					n += resolution;
+				}
+				if(!has_back){
+					samples.block(n, 0, resolution, 1) = tx;
+					samples.block(n, 1, resolution, 1) = ty;
+					samples.block(n, 2, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);
+
+					n += resolution;
+				}
+
+
+
+
+				// std::cout<<samples<<std::endl;
+				// igl::viewer::Viewer viewer;
+				// viewer.data.add_points(samples, Eigen::MatrixXd::Zero(samples.rows(), 3));
+				// viewer.launch();
+
+				assert(long(n) == samples.rows());
 			}
 			else
 			{
+				const int resolution = resolution_one_d;
 				const int n_x = mesh.n_x;
 				const int n_y = mesh.n_y;
 
