@@ -40,6 +40,8 @@ namespace poly_fem
 		bool use_splines = false;
 		bool skip_visualization = false;
 
+		int vis_basis = 0;
+
 		Problem problem;
 
 		int n_bases;
@@ -64,9 +66,11 @@ namespace poly_fem
 		Eigen::MatrixXd sol;
 
 		double l2_err, linf_err;
+		long nn_zero, mat_size;
 
 	private:
 		void interpolate_function(const Eigen::MatrixXd &fun, Eigen::MatrixXd &result);
+		void plot_function(const Eigen::MatrixXd &fun, double min=0, double max=-1);
 	};
 
 }

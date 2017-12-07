@@ -318,6 +318,30 @@ namespace poly_fem
 	}
 
 
+	void State::plot_function(const MatrixXd &fun, double min, double max)
+	{
+		MatrixXd col;
+		if(min < max)
+			igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, fun, 0, 1, col);
+		else
+			igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, fun, true, col);
+
+		if(visualization_mesh.is_volume)
+			viewer.data.set_mesh(visualization_mesh.pts, visualization_mesh.els);
+		else
+		{
+			MatrixXd tmp;
+			tmp.resize(fun.rows(),3);
+			tmp.col(0)=visualization_mesh.pts.col(0);
+			tmp.col(1)=visualization_mesh.pts.col(1);
+			tmp.col(2)=fun;
+			viewer.data.set_mesh(tmp, visualization_mesh.els);
+		}
+
+		viewer.data.set_colors(col);
+	}
+
+
 
 	State &State::state(){
 		static State instance;
@@ -391,54 +415,21 @@ namespace poly_fem
 		};
 
 		auto show_rhs_func = [&](){
-			MatrixXd tmp;
-
 			MatrixXd global_rhs;
 			interpolate_function(rhs, global_rhs);
 
-			MatrixXd col;
-			igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, global_rhs, 0, 1, col);
-
-			if(visualization_mesh.is_volume)
-				viewer.data.set_mesh(visualization_mesh.pts, visualization_mesh.els);
-			else
-			{
-				tmp.resize(global_rhs.rows(),3);
-				tmp.col(0)=visualization_mesh.pts.col(0);
-				tmp.col(1)=visualization_mesh.pts.col(1);
-				tmp.col(2)=global_rhs;
-				viewer.data.set_mesh(tmp, visualization_mesh.els);
-			}
-			viewer.data.set_colors(col);
+			plot_function(global_rhs, 0, 1);
 		};
 
 
 		auto show_sol_func = [&](){
-			MatrixXd mapped, tmp;
-
 			MatrixXd global_sol;
 			interpolate_function(sol, global_sol);
-
-			MatrixXd col;
-			igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, global_sol, 0, 1, col);
-
-			if(visualization_mesh.is_volume)
-				viewer.data.set_mesh(visualization_mesh.pts, visualization_mesh.els);
-			else
-			{
-				tmp.resize(global_sol.rows(),3);
-				tmp.col(0)=visualization_mesh.pts.col(0);
-				tmp.col(1)=visualization_mesh.pts.col(1);
-				tmp.col(2)=global_sol;
-				viewer.data.set_mesh(tmp, visualization_mesh.els);
-			}
-
-			viewer.data.set_colors(col);
+			plot_function(global_sol, 0, 1);
 		};
 
 
 		auto show_error_func = [&](){
-			MatrixXd mapped, tmp;
 
 			MatrixXd global_sol;
 			interpolate_function(sol, global_sol);
@@ -447,21 +438,20 @@ namespace poly_fem
 			problem.exact(visualization_mesh.pts, exact_sol);
 
 			const MatrixXd err = (global_sol - exact_sol).array().abs();
+			plot_function(err);
+		};
 
-			MatrixXd col;
-			igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, err, true, col);
 
-			if(visualization_mesh.is_volume)
-				viewer.data.set_mesh(visualization_mesh.pts, visualization_mesh.els);
-			else
-			{
-				tmp.resize(err.rows(),3);
-				tmp.col(0)=visualization_mesh.pts.col(0);
-				tmp.col(1)=visualization_mesh.pts.col(1);
-				tmp.col(2)=err;
-				viewer.data.set_mesh(tmp, visualization_mesh.els);
-			}
-			viewer.data.set_colors(col);
+		auto show_basis_func = [&](){
+			if(vis_basis < 0 || vis_basis >= n_bases) return;
+
+			MatrixXd fun = MatrixXd::Zero(n_bases, 1);
+			fun(vis_basis) = 1;
+
+			MatrixXd global_fun;
+			interpolate_function(fun, global_fun);
+			// global_fun /= 100;
+			plot_function(global_fun, 0, 1.);
 		};
 
 
@@ -636,7 +626,9 @@ namespace poly_fem
 			timer.stop();
 			std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
 
-			std::cout<<"sparsity: "<<stiffness.nonZeros()<<"/"<<stiffness.size()<<std::endl;
+			nn_zero = stiffness.nonZeros();
+			mat_size = stiffness.size();
+			std::cout<<"sparsity: "<<nn_zero<<"/"<<mat_size<<std::endl;
 		};
 
 
@@ -754,6 +746,9 @@ namespace poly_fem
 			viewer_.ngui->addButton("Show rhs", show_rhs_func);
 			viewer_.ngui->addButton("Show sol", show_sol_func);
 			viewer_.ngui->addButton("Show error", show_error_func);
+
+			viewer_.ngui->addVariable("basis num",vis_basis);
+			viewer_.ngui->addButton("Show basis", show_basis_func);
 
 			// viewer_.ngui->addGroup("Stats");
 			// viewer_.ngui->addVariable("NNZ", Type &value)
