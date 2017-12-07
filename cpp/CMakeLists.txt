@@ -75,11 +75,13 @@ set(SRCFILES
 	src/assembler/Assembler.hpp
 	src/assembler/Laplacian.hpp
 	src/assembler/Laplacian.cpp
+	src/assembler/LinearElasticity.hpp
+	src/assembler/LinearElasticity.cpp
 
 	src/problem/Problem.hpp
 	src/problem/Problem.cpp
 
-)
+	)
 
 
 add_executable(${PROJECT_NAME} ${SRCFILES})

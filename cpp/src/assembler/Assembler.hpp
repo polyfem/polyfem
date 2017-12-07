@@ -33,6 +33,9 @@ namespace poly_fem
 				const ElementAssemblyValues &gvals = geom_values[e];
 
 				const Quadrature &quadrature = vals.quadrature;
+
+				const Eigen::MatrixXd da = gvals.det.array() * quadrature.weights.array();
+
 				const int n_loc_bases = int(vals.basis_values.size());
 
 				for(int i = 0; i < n_loc_bases; ++i)
@@ -52,16 +55,16 @@ namespace poly_fem
 						const Eigen::MatrixXd &valj  = values_j.val;
 						const Eigen::MatrixXd &gradj = values_j.grad_t_m;
 
-						local_assembler_.assemble(gradi, gradj, local_val);
-						const auto stiffness_val = (  local_val.array() * gvals.det.array() * quadrature.weights.array() ).colwise().sum();
-						assert(stiffness_val.rows() == local_assembler_.size());
-						assert(stiffness_val.cols() == local_assembler_.size());
+						local_assembler_.assemble(gradi, gradj, da, local_val);
+
+						const auto stiffness_val = local_val.array().colwise().sum();
+						assert(stiffness_val.size() == local_assembler_.size() * local_assembler_.size());
 
 						for(int m = 0; m < local_assembler_.size(); ++m)
 						{
 							for(int n = 0; n < local_assembler_.size(); ++n)
 							{
-								entries.push_back(Eigen::Triplet<double>(values_i.global_index*local_assembler_.size()+m, values_j.global_index*local_assembler_.size()+n, stiffness_val(m,n)));
+								entries.push_back(Eigen::Triplet<double>(values_i.global_index*local_assembler_.size()+m, values_j.global_index*local_assembler_.size()+n, stiffness_val(m*local_assembler_.size()+n)));
 							}
 						}
 					}
@@ -89,7 +92,7 @@ namespace poly_fem
 
 		void rhs(const int n_basis, const std::vector< ElementAssemblyValues > &values, const std::vector< ElementAssemblyValues > &geom_values, const Problem &problem, Eigen::MatrixXd &rhs) const
 		{
-			rhs = Eigen::MatrixXd::Zero(n_basis, 1);
+			rhs = Eigen::MatrixXd::Zero(n_basis * local_assembler_.size(), 1);
 			Eigen::MatrixXd rhs_fun;
 
 			const int n_values = int(values.size());
@@ -102,7 +105,8 @@ namespace poly_fem
 
 				// std::cout<<e<<"\n"<<gvals.val<<"\n"<<rhs_fun<<"\n\n"<<std::endl;
 
-				rhs_fun = rhs_fun.array() * gvals.det.array() * vals.quadrature.weights.array();
+				for(int d = 0; d < local_assembler_.size(); ++d)
+					rhs_fun.col(d) = rhs_fun.col(d).array() * gvals.det.array() * vals.quadrature.weights.array();
 
 				// std::cout<<"after:\n"<<rhs_fun<<std::endl;
 
@@ -111,9 +115,12 @@ namespace poly_fem
 				{
 					const AssemblyValues &v = vals.basis_values[i];
 
-					const double rhs_value = (rhs_fun.array() * v.val.array()).sum();
-					// std::cout<<i<<" "<<rhs_value<<std::endl;
-					rhs(v.global_index) +=  rhs_value;
+					for(int d = 0; d < local_assembler_.size(); ++d)
+					{
+						const double rhs_value = (rhs_fun.col(d).array() * v.val.array()).sum();
+						// std::cout<<i<<" "<<rhs_value<<std::endl;
+						rhs(v.global_index*local_assembler_.size()+d) +=  rhs_value;
+					}
 				}
 			}
 		}
@@ -146,7 +153,7 @@ namespace poly_fem
 				{
 					const Basis &b=bs[j];
 
-					if(std::find(bounday_nodes.begin(), bounday_nodes.end(), b.global_index()) != bounday_nodes.end()) //pt found
+					if(std::find(bounday_nodes.begin(), bounday_nodes.end(), local_assembler_.size() * b.global_index()) != bounday_nodes.end()) //pt found
 					{
 						if(global_index_to_col.find( b.global_index() ) == global_index_to_col.end())
 						{
@@ -158,7 +165,7 @@ namespace poly_fem
 			}
 
 			// Eigen::MatrixXd global_mat = Eigen::MatrixXd::Zero(total_size, indices.size());
-			Eigen::MatrixXd global_rhs = Eigen::MatrixXd::Zero(total_size, 1);
+			Eigen::MatrixXd global_rhs = Eigen::MatrixXd::Zero(total_size, local_assembler_.size());
 
 			const long buffer_size = total_size * long(indices.size());
 			std::vector< Eigen::Triplet<double> > entries, entries_t;
@@ -209,8 +216,8 @@ namespace poly_fem
 				// viewer.data.add_points(mapped, Eigen::MatrixXd::Zero(mapped.rows(), 3));
 
 				problem.bc(mapped, rhs_fun);
-				global_rhs.block(global_counter, 0, rhs_fun.size(), 1) = rhs_fun;
-				global_counter += rhs_fun.size();
+				global_rhs.block(global_counter, 0, rhs_fun.rows(), rhs_fun.cols()) = rhs_fun;
+				global_counter += rhs_fun.rows();
 			}
 
 			assert(global_counter == total_size);
@@ -223,6 +230,8 @@ namespace poly_fem
 
 			Eigen::SparseMatrix<double> A = mat_t * mat;
 			Eigen::MatrixXd b = mat_t * global_rhs;
+
+
 
 			Eigen::MatrixXd coeffs;
 			// if(A.rows() > 2000)
@@ -238,13 +247,18 @@ namespace poly_fem
 			// std::cout<<global_mat<<"\n"<<std::endl;
 			// std::cout<<coeffs<<"\n"<<std::endl;
 			// std::cout<<global_rhs<<"\n\n\n"<<std::endl;
-			for(long i = 0; i < coeffs.size(); ++i){
+			for(long i = 0; i < coeffs.rows(); ++i){
 				// problem.bc(mesh.pts.row(indices[i]), rhs_fun);
 
 				// std::cout<<indices[i]<<" "<<coeffs(i)<<" vs " <<rhs_fun<<std::endl;
-				rhs(indices[i]) = coeffs(i);
+				for(int d = 0; d < local_assembler_.size(); ++d){
+					rhs(indices[i]*local_assembler_.size()+d) = coeffs(i, d);
+				}
 			}
 		}
+
+		inline LocalAssembler &local_assembler() { return local_assembler_; }
+		inline const LocalAssembler &local_assembler() const { return local_assembler_; }
 
 	private:
 		LocalAssembler local_assembler_;

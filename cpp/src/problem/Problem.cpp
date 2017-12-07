@@ -14,7 +14,7 @@ namespace poly_fem
 			case 0: val = Eigen::MatrixXd::Zero(pts.rows(), 1); return;
 			case 1: val = 2*Eigen::MatrixXd::Ones(pts.rows(), 1); return;
 
-			default: {
+			case 2: {
 
 				auto cx2 = (9*x-2) * (9*x-2);
 				auto cy2 = (9*y-2) * (9*y-2);
@@ -43,7 +43,13 @@ namespace poly_fem
 				0.75 * s5 * (-0.25 * cx2 - 0.25 *cy2).exp()  - 0.5 * s6 * (-0.25 * cx7 - 0.25 * cy3).exp() +
 				0.2 * s7 * (-cx4-cy7).exp();
 				val*=-1;
+
+				return;
 			}
+
+			case 3: val = Eigen::MatrixXd::Zero(pts.rows(), 2); return;
+
+			default: assert(false);
 		}
 	}
 
@@ -62,7 +68,7 @@ namespace poly_fem
 		{
 			case 0: val = x; return;
 			case 1: val = x * x; return;
-			default:
+			case 2:
 			{
 				auto cx2 = (9*x-2) * (9*x-2);
 				auto cy2 = (9*y-2) * (9*y-2);
@@ -81,7 +87,13 @@ namespace poly_fem
 		// 0.2 * (-cx4-cy7).exp();
 
 				val = (3./4.)*exp(-(1./4.)*cx2-(1./4.)*cy2)+(3./4.)*exp(-(1./49.)*cx1-(9./10.)*y-1./10.)+(1./2.)*exp(-(1./4.)*cx7-(1./4.)*cy3)-(1./5.)*exp(-cx4-cy7);
+
+				return;
 			}
+
+			case 3: val = Eigen::MatrixXd::Ones(pts.rows(), 2); return;
+
+			default: assert(false);
 		}
 	}
 }

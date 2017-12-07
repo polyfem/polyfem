@@ -18,7 +18,8 @@ namespace poly_fem
 	{
 		Linear = 0,
 		Quadratic,
-		Franke
+		Franke,
+		Elastic
 	};
 
 	class State
@@ -39,6 +40,8 @@ namespace poly_fem
 		bool use_hex = false;
 		bool use_splines = false;
 		bool skip_visualization = false;
+
+		bool linear_elasticity = true;
 
 		int vis_basis = 0;
 

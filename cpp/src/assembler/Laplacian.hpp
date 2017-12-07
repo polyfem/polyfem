@@ -8,7 +8,7 @@ namespace poly_fem
 	class Laplacian
 	{
 	public:
-		void assemble(const Eigen::MatrixXd &gradi, const Eigen::MatrixXd &gradj, Eigen::MatrixXd &res) const;
+		void assemble(const Eigen::MatrixXd &gradi, const Eigen::MatrixXd &gradj, const Eigen::MatrixXd &da, Eigen::MatrixXd &res) const;
 
 		inline int size() const { return 1; }
 	};

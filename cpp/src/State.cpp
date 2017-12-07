@@ -9,6 +9,7 @@
 
 #include "Assembler.hpp"
 #include "Laplacian.hpp"
+#include "LinearElasticity.hpp"
 
 
 #include <iostream>
@@ -297,23 +298,28 @@ namespace poly_fem
 	{
 		MatrixXd tmp;
 
-		result.resize(visualization_mesh.pts.rows(), 1);
+		int actual_dim = 1;
+		if(linear_elasticity)
+			actual_dim = mesh.is_volume ? 3:2;
+
+		result.resize(visualization_mesh.pts.rows(), actual_dim);
 
 		for(std::size_t i = 0; i < bases.size(); ++i)
 		{
 			const std::vector<Basis> &bs = bases[i];
 
-			MatrixXd local_res = MatrixXd::Zero(local_mesh.pts.rows(), 1);
+			MatrixXd local_res = MatrixXd::Zero(local_mesh.pts.rows(), actual_dim);
 
 			for(std::size_t j = 0; j < bs.size(); ++j)
 			{
 				const Basis &b = bs[j];
 
 				b.basis(local_mesh.pts, tmp);
-				local_res += tmp * fun(b.global_index());
+				for(int d = 0; d < actual_dim; ++d)
+					local_res.col(d) += tmp * fun(b.global_index()*actual_dim + d);
 			}
 
-			result.block(i*local_mesh.pts.rows(), 0, local_mesh.pts.rows(), 1) = local_res;
+			result.block(i*local_mesh.pts.rows(), 0, local_mesh.pts.rows(), actual_dim) = local_res;
 		}
 	}
 
@@ -321,21 +327,42 @@ namespace poly_fem
 	void State::plot_function(const MatrixXd &fun, double min, double max)
 	{
 		MatrixXd col;
-		if(min < max)
-			igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, fun, 0, 1, col);
-		else
-			igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, fun, true, col);
 
-		if(visualization_mesh.is_volume)
-			viewer.data.set_mesh(visualization_mesh.pts, visualization_mesh.els);
+		if(linear_elasticity)
+		{
+			const MatrixXd ffun = (fun.array()*fun.array()).colwise().sum().sqrt(); //norm of displacement, maybe replace with stress
+
+			if(min < max)
+				igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, fun, min, max, col);
+			else
+				igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, fun, true, col);
+
+			MatrixXd tmp = visualization_mesh.pts;
+
+			for(long i = 0; i < fun.cols(); ++i) //apply displacement
+				tmp.col(i) += fun.col(i);
+
+			viewer.data.set_mesh(tmp, visualization_mesh.els);
+		}
 		else
 		{
-			MatrixXd tmp;
-			tmp.resize(fun.rows(),3);
-			tmp.col(0)=visualization_mesh.pts.col(0);
-			tmp.col(1)=visualization_mesh.pts.col(1);
-			tmp.col(2)=fun;
-			viewer.data.set_mesh(tmp, visualization_mesh.els);
+
+			if(min < max)
+				igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, fun, min, max, col);
+			else
+				igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, fun, true, col);
+
+			if(visualization_mesh.is_volume)
+				viewer.data.set_mesh(visualization_mesh.pts, visualization_mesh.els);
+			else
+			{
+				MatrixXd tmp;
+				tmp.resize(fun.rows(),3);
+				tmp.col(0)=visualization_mesh.pts.col(0);
+				tmp.col(1)=visualization_mesh.pts.col(1);
+				tmp.col(2)=fun;
+				viewer.data.set_mesh(tmp, visualization_mesh.els);
+			}
 		}
 
 		viewer.data.set_colors(col);
@@ -601,7 +628,23 @@ namespace poly_fem
 			igl::Timer timer; timer.start();
 			std::cout<<"Computing assembly values..."<<std::flush;
 
+			if(linear_elasticity)
+			{
+				const int dim = mesh.is_volume ? 3:2;
+				const std::size_t n_b_nodes = bounday_nodes.size();
+
+				for(std::size_t i = 0; i < n_b_nodes; ++i)
+				{
+					bounday_nodes[i] *= dim;
+					for(int d = 1; d < dim; ++d)
+						bounday_nodes.push_back(bounday_nodes[i]+d);
+				}
+			}
+
 			std::sort(bounday_nodes.begin(), bounday_nodes.end());
+
+
+
 			compute_assembly_values(use_hex, quadrature_order, bases, values);
 
 			timer.stop();
@@ -617,11 +660,27 @@ namespace poly_fem
 			igl::Timer timer; timer.start();
 			std::cout<<"Assembling stiffness mat..."<<std::flush;
 
-			Assembler<Laplacian> assembler;
-			assembler.assemble(n_bases, values, values, stiffness);
     		// std::cout<<MatrixXd(stiffness)-MatrixXd(stiffness.transpose())<<"\n\n"<<std::endl;
     		// std::cout<<MatrixXd(stiffness).rowwise().sum()<<"\n\n"<<std::endl;
-			assembler.set_identity(bounday_nodes, stiffness);
+
+			if(linear_elasticity)
+			{
+				Assembler<LinearElasticity> assembler;
+				assembler.local_assembler().size() = mesh.is_volume ? 3:2;
+
+				// std::cout<<stiffness.rows()<<std::endl;
+				// for(std::size_t i = 0; i < bounday_nodes.size(); ++i)
+				// 	std::cout<<bounday_nodes[i]<<std::endl;
+
+				assembler.assemble(n_bases, values, values, stiffness);
+				assembler.set_identity(bounday_nodes, stiffness);
+			}
+			else
+			{
+				Assembler<Laplacian> assembler;
+				assembler.assemble(n_bases, values, values, stiffness);
+				assembler.set_identity(bounday_nodes, stiffness);
+			}
 
 			timer.stop();
 			std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
@@ -636,22 +695,28 @@ namespace poly_fem
 			igl::Timer timer; timer.start();
 			std::cout<<"Assigning rhs..."<<std::flush;
 
-			Assembler<Laplacian> assembler;
-			assembler.rhs(n_bases, values, values, problem, rhs);
-			rhs *= -1;
-			timer.stop();
-			std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
-
-			std::cout<<"Assigning boundary rhs..."<<std::flush;
-			assembler.bc(bases, mesh, bounday_nodes, n_boundary_samples, problem, rhs);
-    		// std::cout<<rhs<<"\n\n"<<std::endl;
+			if(linear_elasticity)
+			{
+				Assembler<LinearElasticity> assembler;
+				assembler.local_assembler().size() = mesh.is_volume ? 3:2;
+				assembler.rhs(n_bases, values, values, problem, rhs);
+				rhs *= -1;
+				assembler.bc(bases, mesh, bounday_nodes, n_boundary_samples, problem, rhs);
+			}
+			else
+			{
+				Assembler<Laplacian> assembler;
+				assembler.rhs(n_bases, values, values, problem, rhs);
+				rhs *= -1;
+				assembler.bc(bases, mesh, bounday_nodes, n_boundary_samples, problem, rhs);
+			}
 
 			timer.stop();
 			std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
 
 			if(skip_visualization) return;
-			// clear_func();
-			// show_rhs_func();
+			clear_func();
+			show_rhs_func();
 		};
 
 		auto solve_problem_func = [&]() {
@@ -671,6 +736,8 @@ namespace poly_fem
 		};
 
 		auto compute_errors_func = [&]() {
+			if(linear_elasticity) return;
+
 			igl::Timer timer; timer.start();
 			std::cout<<"Computing errors..."<<std::flush;
 
@@ -705,10 +772,12 @@ namespace poly_fem
 			viewer_.ngui->addVariable("hex mesh", use_hex);
 			viewer_.ngui->addVariable("spline basis", use_splines);
 
+			viewer_.ngui->addVariable("elasticity", linear_elasticity);
+
 			viewer_.ngui->addVariable<ProblemType>("Problem",
 				[&](ProblemType val) { problem.set_problem_num(val); },
 				[&]() { return ProblemType(problem.problem_num()); }
-				)->setItems({"Linear","Quadratic","Franke"});
+				)->setItems({"Linear","Quadratic","Franke", "Elastic"});
 
 			viewer_.ngui->addVariable("skip visualization", skip_visualization);
 
