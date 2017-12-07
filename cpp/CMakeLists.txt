@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 project(PolyFEM)
 
+set(THIRD_PARTY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 # libigl
@@ -29,13 +30,13 @@ include(SetWarnings)
 
 
 
-SET(SRCFILES
+set(SRCFILES
 	src/main.cpp
 
 	src/State.hpp
 	src/State.cpp
 
-	src/mesh.hpp
+	src/Mesh.hpp
 
 	src/quadrature/Quadrature.hpp
 	src/quadrature/LineQuadrature.hpp
@@ -78,7 +79,7 @@ SET(SRCFILES
 	src/problem/Problem.hpp
 	src/problem/Problem.cpp
 
-	)
+)
 
 
 add_executable(${PROJECT_NAME} ${SRCFILES})
