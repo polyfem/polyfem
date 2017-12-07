@@ -17,7 +17,7 @@ namespace poly_fem
 		for(long i=0; i < mesh.els.rows(); ++i)
 		{
 			std::vector<Basis> &b=bases[i];
-			b.reserve(8);
+			b.resize(8);
 
 			for(int j = 0; j < 8; ++j)
 			{

@@ -214,7 +214,7 @@ namespace poly_fem
 			// 	coeffs = solver.compute(A).solve(b);
 			// }
 			// else
-				coeffs = A.ldlt().solve(b);
+			coeffs = A.ldlt().solve(b);
 
 			// std::cout<<global_mat<<"\n"<<std::endl;
 			// std::cout<<coeffs<<"\n"<<std::endl;
@@ -234,56 +234,117 @@ namespace poly_fem
 		{
 			auto el = mesh.els.row(el_index);
 
-			const int n_x = mesh.n_x;
-			const int n_y = mesh.n_y;
+			if(mesh.is_volume)
+			{
+				assert(false);
+				// const int n_x = mesh.n_x;
+				// const int n_y = mesh.n_y;
+				// const int n_z = mesh.n_z;
 
-			const bool has_left = el(0) % (n_x + 1) != 0;
-			const bool has_right = el(2) % (n_x + 1) != n_x;
+				// const bool has_left = el(0) % (n_x + 1) != 0;
+				// const bool has_right = el(2) % (n_x + 1) != n_x;
 
-			const bool has_bottom = el(0) / (n_x + 1) != 0;
-			const bool has_top = el(2) / (n_x + 1) != n_y;
+				// const bool has_bottom = el(0) / (n_x + 1) != 0;
+				// const bool has_top = el(2) / (n_x + 1) != n_y;
 
-			int n = 0;
-			if(!has_left) n+=resolution;
-			if(!has_right) n+=resolution;
-			if(!has_bottom) n+=resolution;
-			if(!has_top) n+=resolution;
+				// const bool has_front = el(0) / (n_x + 1) != 0;
+				// const bool has_back = el(2) / (n_x + 1) != n_y;
 
-			if(n <= 0) return false;
+				// int n = 0;
+				// if(!has_left) n+=resolution;
+				// if(!has_right) n+=resolution;
+				// if(!has_bottom) n+=resolution;
+				// if(!has_top) n+=resolution;
 
-			const Eigen::MatrixXd t = Eigen::VectorXd::LinSpaced(resolution, 0, 1);
+				// if(n <= 0) return false;
 
-			samples.resize(n, 2);
-			n = 0;
-			if(!has_left){
-				samples.block(n, 0, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);
-				samples.block(n, 1, resolution, 1) = t;
+				// const Eigen::MatrixXd t = Eigen::VectorXd::LinSpaced(resolution, 0, 1);
 
-				n += resolution;
+				// samples.resize(n, 2);
+				// n = 0;
+				// if(!has_left){
+				// 	samples.block(n, 0, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);
+				// 	samples.block(n, 1, resolution, 1) = t;
+
+				// 	n += resolution;
+				// }
+
+				// if(!has_bottom){
+				// 	samples.block(n, 0, resolution, 1) = t;
+				// 	samples.block(n, 1, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);
+
+				// 	n += resolution;
+				// }
+
+				// if(!has_right){
+				// 	samples.block(n, 0, resolution, 1) = Eigen::MatrixXd::Ones(resolution, 1);
+				// 	samples.block(n, 1, resolution, 1) = t;
+
+				// 	n += resolution;
+				// }
+
+				// if(!has_top){
+				// 	samples.block(n, 0, resolution, 1) = t;
+				// 	samples.block(n, 1, resolution, 1) = Eigen::MatrixXd::Ones(resolution, 1);
+
+				// 	n += resolution;
+				// }
+
+				// assert(long(n) == samples.rows());
 			}
+			else
+			{
+				const int n_x = mesh.n_x;
+				const int n_y = mesh.n_y;
 
-			if(!has_bottom){
-				samples.block(n, 0, resolution, 1) = t;
-				samples.block(n, 1, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);
+				const bool has_left = el(0) % (n_x + 1) != 0;
+				const bool has_right = el(2) % (n_x + 1) != n_x;
 
-				n += resolution;
+				const bool has_bottom = el(0) / (n_x + 1) != 0;
+				const bool has_top = el(2) / (n_x + 1) != n_y;
+
+				int n = 0;
+				if(!has_left) n+=resolution;
+				if(!has_right) n+=resolution;
+				if(!has_bottom) n+=resolution;
+				if(!has_top) n+=resolution;
+
+				if(n <= 0) return false;
+
+				const Eigen::MatrixXd t = Eigen::VectorXd::LinSpaced(resolution, 0, 1);
+
+				samples.resize(n, 2);
+				n = 0;
+				if(!has_left){
+					samples.block(n, 0, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);
+					samples.block(n, 1, resolution, 1) = t;
+
+					n += resolution;
+				}
+
+				if(!has_bottom){
+					samples.block(n, 0, resolution, 1) = t;
+					samples.block(n, 1, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);
+
+					n += resolution;
+				}
+
+				if(!has_right){
+					samples.block(n, 0, resolution, 1) = Eigen::MatrixXd::Ones(resolution, 1);
+					samples.block(n, 1, resolution, 1) = t;
+
+					n += resolution;
+				}
+
+				if(!has_top){
+					samples.block(n, 0, resolution, 1) = t;
+					samples.block(n, 1, resolution, 1) = Eigen::MatrixXd::Ones(resolution, 1);
+
+					n += resolution;
+				}
+
+				assert(long(n) == samples.rows());
 			}
-
-			if(!has_right){
-				samples.block(n, 0, resolution, 1) = Eigen::MatrixXd::Ones(resolution, 1);
-				samples.block(n, 1, resolution, 1) = t;
-
-				n += resolution;
-			}
-
-			if(!has_top){
-				samples.block(n, 0, resolution, 1) = t;
-				samples.block(n, 1, resolution, 1) = Eigen::MatrixXd::Ones(resolution, 1);
-
-				n += resolution;
-			}
-
-			assert(long(n) == samples.rows());
 
 			return true;
 		}

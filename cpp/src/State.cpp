@@ -15,6 +15,7 @@
 
 #include <igl/colormap.h>
 #include <igl/triangle/triangulate.h>
+#include <igl/copyleft/tetgen/tetrahedralize.h>
 #include <igl/Timer.h>
 
 #include <nanogui/formhelper.h>
@@ -398,12 +399,16 @@ namespace poly_fem
 			MatrixXd col;
 			igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, global_rhs, 0, 1, col);
 
-			tmp.resize(global_rhs.rows(),3);
-			tmp.col(0)=visualization_mesh.pts.col(0);
-			tmp.col(1)=visualization_mesh.pts.col(1);
-			tmp.col(2)=global_rhs;
-
-			viewer.data.set_mesh(tmp, visualization_mesh.els);
+			if(visualization_mesh.is_volume)
+				viewer.data.set_mesh(visualization_mesh.pts, visualization_mesh.els);
+			else
+			{
+				tmp.resize(global_rhs.rows(),3);
+				tmp.col(0)=visualization_mesh.pts.col(0);
+				tmp.col(1)=visualization_mesh.pts.col(1);
+				tmp.col(2)=global_rhs;
+				viewer.data.set_mesh(tmp, visualization_mesh.els);
+			}
 			viewer.data.set_colors(col);
 		};
 
@@ -417,12 +422,17 @@ namespace poly_fem
 			MatrixXd col;
 			igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, global_sol, 0, 1, col);
 
-			tmp.resize(global_sol.rows(),3);
-			tmp.col(0)=visualization_mesh.pts.col(0);
-			tmp.col(1)=visualization_mesh.pts.col(1);
-			tmp.col(2)=global_sol;
+			if(visualization_mesh.is_volume)
+				viewer.data.set_mesh(visualization_mesh.pts, visualization_mesh.els);
+			else
+			{
+				tmp.resize(global_sol.rows(),3);
+				tmp.col(0)=visualization_mesh.pts.col(0);
+				tmp.col(1)=visualization_mesh.pts.col(1);
+				tmp.col(2)=global_sol;
+				viewer.data.set_mesh(tmp, visualization_mesh.els);
+			}
 
-			viewer.data.set_mesh(tmp, visualization_mesh.els);
 			viewer.data.set_colors(col);
 		};
 
@@ -441,12 +451,16 @@ namespace poly_fem
 			MatrixXd col;
 			igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, err, true, col);
 
-			tmp.resize(err.rows(),3);
-			tmp.col(0)=visualization_mesh.pts.col(0);
-			tmp.col(1)=visualization_mesh.pts.col(1);
-			tmp.col(2)=err;
-
-			viewer.data.set_mesh(tmp, visualization_mesh.els);
+			if(visualization_mesh.is_volume)
+				viewer.data.set_mesh(visualization_mesh.pts, visualization_mesh.els);
+			else
+			{
+				tmp.resize(err.rows(),3);
+				tmp.col(0)=visualization_mesh.pts.col(0);
+				tmp.col(1)=visualization_mesh.pts.col(1);
+				tmp.col(2)=err;
+				viewer.data.set_mesh(tmp, visualization_mesh.els);
+			}
 			viewer.data.set_colors(col);
 		};
 
@@ -457,24 +471,67 @@ namespace poly_fem
 		//Algo phases
 		///////////////////////////////////////////////////////
 		auto build_vis_mesh_func = [&](){
-			MatrixXd pts(4,2); pts <<
-			0,0,
-			0,1,
-			1,1,
-			1,0;
-
-			MatrixXi E(4,2); E <<
-			0,1,
-			1,2,
-			2,3,
-			3,0;
-
 			igl::Timer timer; timer.start();
 			std::cout<<"Building vis mesh..."<<std::flush;
 
-			MatrixXd H(0,2);
-			igl::triangle::triangulate(pts, E, H, "Qqa0.001", local_mesh.pts, local_mesh.els);
-			visualization_mesh.pts.resize(local_mesh.pts.rows()*mesh.els.rows(), 2);
+			if(mesh.is_volume)
+			{
+				MatrixXd pts(8,3); pts <<
+				0, 0, 0,
+				0, 1, 0,
+				1, 1, 0,
+				1, 0, 0,
+
+				0, 0, 1, //4
+				0, 1, 1,
+				1, 1, 1,
+				1, 0, 1;
+
+				Eigen::MatrixXi faces(12,3); faces <<
+				1, 2, 0,
+				0, 2, 3,
+
+				5, 4, 6,
+				4, 7, 6,
+
+				1, 0, 4,
+				1, 4, 5,
+
+				2, 1, 5,
+				2, 5, 6,
+
+				3, 2, 6,
+				3, 6, 7,
+
+				0, 3, 7,
+				0, 7, 4;
+
+				clear_func();
+
+				MatrixXi tets;
+				igl::copyleft::tetgen::tetrahedralize(pts, faces, "pq1.414a0.001", local_mesh.pts, tets, local_mesh.els);
+				visualization_mesh.is_volume = true;
+			}
+			else
+			{
+				MatrixXd pts(4,2); pts <<
+				0,0,
+				0,1,
+				1,1,
+				1,0;
+
+				MatrixXi E(4,2); E <<
+				0,1,
+				1,2,
+				2,3,
+				3,0;
+
+				MatrixXd H(0,2);
+				igl::triangle::triangulate(pts, E, H, "Qqa0.001", local_mesh.pts, local_mesh.els);
+				visualization_mesh.is_volume = false;
+			}
+
+			visualization_mesh.pts.resize(local_mesh.pts.rows()*mesh.els.rows(), local_mesh.pts.cols());
 			visualization_mesh.els.resize(local_mesh.els.rows()*mesh.els.rows(), 3);
 
 			MatrixXd mapped, tmp;
@@ -482,7 +539,7 @@ namespace poly_fem
 			{
 				const std::vector<Basis> &bs = bases[i];
 				Basis::eval_geom_mapping(local_mesh.pts, bs, mapped);
-				visualization_mesh.pts.block(i*local_mesh.pts.rows(), 0, local_mesh.pts.rows(), 2) = mapped;
+				visualization_mesh.pts.block(i*local_mesh.pts.rows(), 0, local_mesh.pts.rows(), mapped.cols()) = mapped;
 				visualization_mesh.els.block(i*local_mesh.els.rows(), 0, local_mesh.els.rows(), 3) = local_mesh.els.array() + int(i)*int(local_mesh.pts.rows());
 			}
 
@@ -597,7 +654,7 @@ namespace poly_fem
 			assembler.bc(bases, mesh, bounday_nodes, n_boundary_samples, problem, rhs);
     		// std::cout<<rhs<<"\n\n"<<std::endl;
 
-    		timer.stop();
+			timer.stop();
 			std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
 
 			if(skip_visualization) return;

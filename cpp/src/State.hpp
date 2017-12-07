@@ -37,7 +37,7 @@ namespace poly_fem
 		int n_z_el=2;
 
 		bool use_hex = false;
-		bool use_splines = true;
+		bool use_splines = false;
 		bool skip_visualization = false;
 
 		Problem problem;
