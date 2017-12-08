@@ -8,7 +8,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(UseColors)
 
 # Geogram
-include(geogram)
+
 
 # libigl
 option(LIBIGL_USE_STATIC_LIBRARY 	"Use libigl as static library" ON)
@@ -31,8 +31,11 @@ option(LIBIGL_WITH_VIEWER           "Use OpenGL viewer"  ON)
 option(LIBIGL_WITH_XML              "Use XML"            OFF)
 find_package(LIBIGL REQUIRED QUIET)
 
+include(geogram)
+
 # Extra warnings
 include(SetWarnings)
+
 
 
 set(SRCFILES
