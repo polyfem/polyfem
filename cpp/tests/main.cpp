@@ -12,10 +12,9 @@
 namespace {
 	using namespace std;
 	using namespace GEO;
+	using namespace poly_fem;
 
-	int v_;
-	int e_;
-	int f_;
+	Navigation::Key key_;
 
 	class DemoGlupApplication : public SimpleMeshApplication {
 	public:
@@ -34,10 +33,55 @@ namespace {
 			ImGui::GetStyle().GrabRounding = 0.0f;
 		}
 
+		virtual bool load(const std::string &filename) override {
+			if(!GEO::FileSystem::is_file(filename)) {
+				GEO::Logger::out("I/O") << "is not a file" << std::endl;
+				return false;
+			}
+			SimpleMeshApplication::load(filename);
+
+			// Compute mesh connectivity
+			Navigation::prepare_mesh(mesh_);
+
+
+			// Initialize the key
+			key_.fc = mesh_.facets.corner(0, 0);
+			key_.v = mesh_.facet_corners.vertex(key_.fc);
+			key_.f = 0;
+			index_t c2 = mesh_.facets.next_corner_around_facet(key_.f, key_.fc);
+			index_t v2 = mesh_.facet_corners.vertex(c2);
+			auto minmax = [] (int a, int b) {
+				return std::make_pair(std::min(a, b), std::max(a, b));
+			};
+			auto e0 = minmax(key_.v, v2);
+			for (int e = 0; mesh_.edges.nb(); ++e) {
+				auto e1 = minmax(mesh_.edges.vertex(e, 0), mesh_.edges.vertex(e, 1));
+				if (e0 == e1) {
+					key_.e = e;
+					break;
+				}
+			}
+
+			return true;
+		}
+
+
 		virtual void draw_viewer_properties() override {
-			ImGui::InputInt("Vtx", &v_);
-			ImGui::InputInt("Edg", &e_);
-			ImGui::InputInt("Fct", &f_);
+			ImGui::InputInt("Vtx", &key_.v);
+			ImGui::InputInt("Edg", &key_.e);
+			ImGui::InputInt("Fct", &key_.f);
+			key_.v = std::max(0, std::min((int) mesh_.vertices.nb(), key_.v));
+			key_.e = std::max(0, std::min((int) mesh_.edges.nb(), key_.e));
+			key_.f = std::max(0, std::min((int) mesh_.facets.nb(), key_.f));
+			if (ImGui::Button("Switch Vertex", ImVec2(-1, 0))) {
+				key_ = Navigation::switch_vertex(mesh_, key_);
+			}
+			if (ImGui::Button("Switch Edge", ImVec2(-1, 0))) {
+				key_ = Navigation::switch_edge(mesh_, key_);
+			}
+			if (ImGui::Button("Switch Face", ImVec2(-1, 0))) {
+
+			}
 		}
 
 		virtual void draw_scene() override {
@@ -63,22 +107,29 @@ namespace {
 
 			// Selected vertex
 			glupBegin(GLUP_POINTS);
-			glupVertex(mesh_vertex(mesh_, v_));
+			glupVertex(mesh_vertex(mesh_, key_.v));
 			glupEnd();
 
 			// Selected edge
-			// glupBegin(GLUP_LINES);
-			// glupVertex(mesh_vertex(mesh_, v_));
-			// glupVertex(mesh_vertex(mesh_, v_));
-			// glupEnd();
+			glupSetMeshWidth(5);
+			glupColor3f(0.7f, 0.0f, 0.0f);
+			glupBegin(GLUP_LINES);
+			{
+				int v0 = mesh_.edges.vertex(key_.e, 0);
+				int v1 = mesh_.edges.vertex(key_.e, 1);
+				glupVertex(mesh_vertex(mesh_, v0));
+				glupVertex(mesh_vertex(mesh_, v1));
+			}
+			glupEnd();
 
 			// Selected facet
 			glupSetMeshWidth(0);
+			glupColor3f(1.0f, 0.0f, 0.0f);
 			glupBegin(GLUP_TRIANGLES);
-			for (int lv = 1; lv + 1 < (int) mesh_.facets.nb_vertices(f_); ++lv) {
-				int v0 = mesh_.facets.vertex(f_, 0);
-				int v1 = mesh_.facets.vertex(f_, lv);
-				int v2 = mesh_.facets.vertex(f_, lv+1);
+			for (int lv = 1; lv + 1 < (int) mesh_.facets.nb_vertices(key_.f); ++lv) {
+				int v0 = mesh_.facets.vertex(key_.f, 0);
+				int v1 = mesh_.facets.vertex(key_.f, lv);
+				int v2 = mesh_.facets.vertex(key_.f, lv+1);
 				glupVertex(mesh_vertex(mesh_, v0));
 				glupVertex(mesh_vertex(mesh_, v1));
 				glupVertex(mesh_vertex(mesh_, v2));
