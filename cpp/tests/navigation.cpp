@@ -54,7 +54,7 @@ void poly_fem::Navigation::prepare_mesh(GEO::Mesh &M) {
 	}
 }
 
-poly_fem::Navigation::Key poly_fem::Navigation::switch_vertex(const GEO::Mesh &M, Key idx)
+poly_fem::Navigation::Index poly_fem::Navigation::switch_vertex(const GEO::Mesh &M, Index idx)
 {
 	index_t c1 = M.facets.next_corner_around_facet(idx.f, idx.fc);
 	index_t v1 = M.facet_corners.vertex(c1);
@@ -72,7 +72,7 @@ poly_fem::Navigation::Key poly_fem::Navigation::switch_vertex(const GEO::Mesh &M
 	}
 }
 
-poly_fem::Navigation::Key poly_fem::Navigation::switch_edge(const GEO::Mesh &M, Key idx)
+poly_fem::Navigation::Index poly_fem::Navigation::switch_edge(const GEO::Mesh &M, Index idx)
 {
 	index_t v2 = M.edges.vertex(idx.e, 0);
 	if (v2 == (index_t) idx.v) {
@@ -108,8 +108,30 @@ poly_fem::Navigation::Key poly_fem::Navigation::switch_edge(const GEO::Mesh &M, 
 	}
 }
 
-poly_fem::Navigation::Key poly_fem::Navigation::switch_face(const GEO::Mesh &M, Key idx)
+poly_fem::Navigation::Index poly_fem::Navigation::switch_face(const GEO::Mesh &M, Index idx)
 {
-	return {};
+	GEO::Attribute<index_t> c2e(M.facet_corners.attributes(), "edge_id");
+	index_t c1 = idx.fc;
+	if (c2e[c1] != (index_t) idx.e) {
+		c1 = M.facets.prev_corner_around_facet(idx.f, c1);
+	}
+	index_t f2 = M.facet_corners.adjacent_facet(c1);
+	if (f2 == NO_FACET) {
+		std::cout << "No facet" << std::endl;
+		idx.f = -1;
+		return idx;
+	} else {
+		for (index_t c2 = M.facets.corners_begin(f2); c2 < M.facets.corners_end(f2); ++c2) {
+			index_t v2 = M.facet_corners.vertex(c2);
+			if (v2 == (index_t) idx.v) {
+				idx.f = f2;
+				idx.fc = c2;
+				return idx;
+			}
+		}
+		std::cout << "Not found" << std::endl;
+		assert(false); // This should not happen
+		return idx;
+	}
 }
 

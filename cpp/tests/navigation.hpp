@@ -9,7 +9,7 @@ namespace poly_fem
 	namespace Navigation
 	{
 
-	struct Key
+	struct Index
 	{
 		int v;  // vertex
 		int e;  // edge
@@ -19,11 +19,11 @@ namespace poly_fem
 
 	void prepare_mesh(GEO::Mesh &M);
 
-	Key switch_vertex(const GEO::Mesh &M, Key idx);
+	Index switch_vertex(const GEO::Mesh &M, Index idx);
 
-	Key switch_edge(const GEO::Mesh &M, Key idx);
+	Index switch_edge(const GEO::Mesh &M, Index idx);
 
-	Key switch_face(const GEO::Mesh &M, Key idx);
+	Index switch_face(const GEO::Mesh &M, Index idx);
 
 	} // namespace Navigation
 
