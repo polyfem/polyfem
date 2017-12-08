@@ -7,8 +7,8 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 # Color output
 include(UseColors)
 
-# Geogram
-
+# Generate position independent code by default
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # libigl
 option(LIBIGL_USE_STATIC_LIBRARY 	"Use libigl as static library" ON)
@@ -31,6 +31,7 @@ option(LIBIGL_WITH_VIEWER           "Use OpenGL viewer"  ON)
 option(LIBIGL_WITH_XML              "Use XML"            OFF)
 find_package(LIBIGL REQUIRED QUIET)
 
+# Geogram
 include(geogram)
 
 # Extra warnings
@@ -89,7 +90,7 @@ set(SRCFILES
 	src/problem/Problem.hpp
 	src/problem/Problem.cpp
 
-	)
+)
 
 
 add_executable(${PROJECT_NAME} ${SRCFILES})
