@@ -5,6 +5,10 @@
 #include "QuadraticBSpline.hpp"
 #include "QuadraticTPBSpline.hpp"
 
+#include <geogram/basic/file_system.h>
+#include <geogram/mesh/mesh_io.h>
+#include <geogram/mesh/mesh.h>
+
 #include <fstream>
 #include <iostream>
 
@@ -63,8 +67,21 @@ int main(int argc, char *argv[])
 
     // spline.derivative(ts, tmp);
     // std::cout<<tmp<<std::endl;
-    
+
     // exit(0);
+
+    std::string filename;
+    GEO::Mesh mesh_;
+    if(!GEO::FileSystem::is_file(filename)) {
+        std::cerr << "is not a file" << std::endl;
+    }
+
+    mesh_.clear(false,false);
+
+    GEO::MeshIOFlags flags;
+    if(!mesh_load(filename, mesh_, flags)) {
+        std::cerr << "unable to load mesh" << std::endl;
+    }
 
     bool use_hex = false;
     if(argc>=2 && std::string(argv[1])=="hex")
