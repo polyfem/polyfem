@@ -36,165 +36,6 @@ using namespace Eigen;
 
 namespace poly_fem
 {
-
-	void build_hex_mesh(const int n_x_el, const int n_y_el, const int n_z_el, Mesh &mesh, std::vector< int > &bounday_nodes)
-	{
-		const int n_pts = (n_x_el+1)*(n_y_el+1)*(n_z_el+1);
-		const int n_els = n_x_el*n_y_el*n_z_el;
-
-		mesh.pts.resize(n_pts, 3);
-		mesh.els.resize(n_els, 8);
-
-		for(int k=0; k<=n_z_el;++k)
-		{
-			for(int j=0; j<=n_y_el;++j)
-			{
-				for(int i=0; i<=n_x_el;++i)
-				{
-					const int index = k*(n_x_el+1)*(n_y_el+1)+j*(n_x_el+1)+i;
-
-					if( j == 0 || j == n_y_el || i == 0 || i == n_x_el || k == 0 || k == n_z_el)
-						bounday_nodes.push_back(index);
-
-					mesh.pts.row(index)=Vector3d(i,j,k);
-				}
-			}
-		}
-
-		mesh.pts.col(0)/=n_x_el;
-		mesh.pts.col(1)/=n_y_el;
-		mesh.pts.col(2)/=n_z_el;
-
-		Matrix<int, 1, 8> el;
-		for(int k=0; k<n_z_el;++k)
-		{
-			for(int j=0; j<n_y_el;++j)
-			{
-				for(int i=0; i<n_x_el;++i)
-				{
-					const int i1 = k*(n_x_el+1)*(n_y_el+1)+j*(n_x_el+1)+i;
-					const int i2 = k*(n_x_el+1)*(n_y_el+1)+j*(n_x_el+1)+i+1;
-					const int i3 = k*(n_x_el+1)*(n_y_el+1)+(j+1)*(n_x_el+1)+i+1;
-					const int i4 = k*(n_x_el+1)*(n_y_el+1)+(j+1)*(n_x_el+1)+i;
-
-					const int i5 = (k+1)*(n_x_el+1)*(n_y_el+1)+j*(n_x_el+1)+i;
-					const int i6 = (k+1)*(n_x_el+1)*(n_y_el+1)+j*(n_x_el+1)+i+1;
-					const int i7 = (k+1)*(n_x_el+1)*(n_y_el+1)+(j+1)*(n_x_el+1)+i+1;
-					const int i8 = (k+1)*(n_x_el+1)*(n_y_el+1)+(j+1)*(n_x_el+1)+i;
-
-					el << i1, i2, i3, i4, i5, i6, i7, i8;
-					mesh.els.row(k*n_x_el*n_y_el+j*n_x_el+i)=el;
-				}
-			}
-		}
-
-		mesh.n_x = n_x_el;
-		mesh.n_y = n_y_el;
-		mesh.n_z = n_z_el;
-
-		mesh.is_volume = true;
-	}
-
-	void triangulate_hex_mesh(const Mesh &mesh, Matrix<int, Dynamic, 3> &vis_faces)
-	{
-		assert(mesh.els.cols()==8);
-
-		const long n_els = mesh.els.rows();
-
-		const long n_vis_faces = n_els*6*2;
-		vis_faces.resize(n_vis_faces, 3);
-
-		long index = 0;
-		for (long i = 0; i < n_els; ++i)
-		{
-			const auto el = mesh.els.row(i);
-
-			vis_faces.row(index++)=Vector3i(el(0),el(1),el(2));
-			vis_faces.row(index++)=Vector3i(el(0),el(2),el(3));
-
-			vis_faces.row(index++)=Vector3i(el(4),el(5),el(6));
-			vis_faces.row(index++)=Vector3i(el(4),el(6),el(7));
-
-			vis_faces.row(index++)=Vector3i(el(0),el(1),el(5));
-			vis_faces.row(index++)=Vector3i(el(0),el(5),el(4));
-
-			vis_faces.row(index++)=Vector3i(el(1),el(2),el(5));
-			vis_faces.row(index++)=Vector3i(el(5),el(2),el(6));
-
-			vis_faces.row(index++)=Vector3i(el(3),el(2),el(7));
-			vis_faces.row(index++)=Vector3i(el(7),el(2),el(6));
-
-			vis_faces.row(index++)=Vector3i(el(0),el(3),el(4));
-			vis_faces.row(index++)=Vector3i(el(4),el(3),el(7));
-		}
-	}
-
-
-	void build_quad_mesh(const int n_x_el, const int n_y_el, Mesh &mesh, std::vector< int > &bounday_nodes)
-	{
-		const int n_pts = (n_x_el+1)*(n_y_el+1);
-		const int n_els = n_x_el*n_y_el;
-
-		mesh.pts.resize(n_pts, 2);
-		mesh.els.resize(n_els, 4);
-
-		for(int j=0; j<=n_y_el;++j)
-		{
-			for(int i=0; i<=n_x_el;++i)
-			{
-				const int index = j*(n_x_el+1)+i;
-
-				if( j == 0 || j == n_y_el || i == 0 || i == n_x_el)
-					bounday_nodes.push_back(index);
-
-				mesh.pts.row(index)=Vector2d(i, j);
-			}
-		}
-
-		mesh.pts.col(0)/=n_x_el;
-		mesh.pts.col(1)/=n_y_el;
-
-		Matrix<int, 1, 4> el;
-
-		for(int j=0; j<n_y_el;++j)
-		{
-			for(int i=0; i<n_x_el;++i)
-			{
-				const int i1 = j*(n_x_el+1)+i;
-				const int i2 = j*(n_x_el+1)+i+1;
-				const int i3 = (j+1)*(n_x_el+1)+i+1;
-				const int i4 = (j+1)*(n_x_el+1)+i;
-
-				el << i1, i2, i3, i4;
-				mesh.els.row(j*n_x_el+i)=el;
-			}
-		}
-
-		mesh.n_x = n_x_el;
-		mesh.n_y = n_y_el;
-
-		mesh.is_volume = false;
-	}
-
-	void triangulate_quad_mesh(const Mesh &mesh, Matrix<int, Dynamic, 3> &vis_faces)
-	{
-		assert(mesh.els.cols()==4);
-		const long n_els = mesh.els.rows();
-
-		const long n_vis_faces = n_els*2;
-		vis_faces.resize(n_vis_faces, 3);
-
-		long index = 0;
-		for (long i = 0; i < n_els; ++i)
-		{
-			const auto el = mesh.els.row(i);
-
-			vis_faces.row(index++)=Vector3i(el(0),el(1),el(2));
-			vis_faces.row(index++)=Vector3i(el(0),el(2),el(3));
-		}
-	}
-
-
 	void compute_errors(const std::vector< ElementAssemblyValues > &values, const std::vector< ElementAssemblyValues > &geom_values, const Problem &problem, const Eigen::MatrixXd &sol, double &l2_err, double &linf_err)
 	{
 		using std::max;
@@ -300,26 +141,26 @@ namespace poly_fem
 
 		int actual_dim = 1;
 		if(linear_elasticity)
-			actual_dim = mesh.is_volume ? 3:2;
+			actual_dim = mesh.is_volume() ? 3:2;
 
-		result.resize(visualization_mesh.pts.rows(), actual_dim);
+		result.resize(vis_pts.rows(), actual_dim);
 
 		for(std::size_t i = 0; i < bases.size(); ++i)
 		{
 			const std::vector<Basis> &bs = bases[i];
 
-			MatrixXd local_res = MatrixXd::Zero(local_mesh.pts.rows(), actual_dim);
+			MatrixXd local_res = MatrixXd::Zero(local_vis_pts.rows(), actual_dim);
 
 			for(std::size_t j = 0; j < bs.size(); ++j)
 			{
 				const Basis &b = bs[j];
 
-				b.basis(local_mesh.pts, tmp);
+				b.basis(local_vis_pts, tmp);
 				for(int d = 0; d < actual_dim; ++d)
 					local_res.col(d) += tmp * fun(b.global_index()*actual_dim + d);
 			}
 
-			result.block(i*local_mesh.pts.rows(), 0, local_mesh.pts.rows(), actual_dim) = local_res;
+			result.block(i*local_vis_pts.rows(), 0, local_vis_pts.rows(), actual_dim) = local_res;
 		}
 	}
 
@@ -337,12 +178,12 @@ namespace poly_fem
 			else
 				igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, fun, true, col);
 
-			MatrixXd tmp = visualization_mesh.pts;
+			MatrixXd tmp = vis_pts;
 
 			for(long i = 0; i < fun.cols(); ++i) //apply displacement
 				tmp.col(i) += fun.col(i);
 
-			viewer.data.set_mesh(tmp, visualization_mesh.els);
+			viewer.data.set_mesh(tmp, vis_faces);
 		}
 		else
 		{
@@ -352,16 +193,16 @@ namespace poly_fem
 			else
 				igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, fun, true, col);
 
-			if(visualization_mesh.is_volume)
-				viewer.data.set_mesh(visualization_mesh.pts, visualization_mesh.els);
+			if(mesh.is_volume())
+				viewer.data.set_mesh(vis_pts, vis_faces);
 			else
 			{
 				MatrixXd tmp;
 				tmp.resize(fun.rows(),3);
-				tmp.col(0)=visualization_mesh.pts.col(0);
-				tmp.col(1)=visualization_mesh.pts.col(1);
+				tmp.col(0)=vis_pts.col(0);
+				tmp.col(1)=vis_pts.col(1);
 				tmp.col(2)=fun;
-				viewer.data.set_mesh(tmp, visualization_mesh.els);
+				viewer.data.set_mesh(tmp, vis_faces);
 			}
 		}
 
@@ -376,13 +217,10 @@ namespace poly_fem
 		return instance;
 	}
 
-	void State::init(const int n_x, const int n_y, const int n_z, const bool use_hex_, const int problem_num)
+	void State::init(const std::string &mesh_path_, const int n_refs_, const int problem_num)
 	{
-		n_x_el = n_x;
-		n_y_el = n_y;
-		n_z_el = n_z;
-
-		use_hex = use_hex_;
+		n_refs = n_refs_;
+		mesh_path = mesh_path_;
 
 		problem.set_problem_num(problem_num);
 
@@ -395,12 +233,12 @@ namespace poly_fem
 
 		auto show_mesh_func = [&](){
 			clear_func();
-			viewer.data.set_mesh(mesh.pts, vis_faces);
+			viewer.data.set_mesh(tri_pts, tri_faces);
 		};
 
 		auto show_vis_mesh_func = [&](){
 			clear_func();
-			viewer.data.set_mesh(visualization_mesh.pts, visualization_mesh.els);
+			viewer.data.set_mesh(vis_pts, vis_faces);
 		};
 
 		auto show_nodes_func = [&](){
@@ -462,7 +300,7 @@ namespace poly_fem
 			interpolate_function(sol, global_sol);
 
 			MatrixXd exact_sol;
-			problem.exact(visualization_mesh.pts, exact_sol);
+			problem.exact(vis_pts, exact_sol);
 
 			const MatrixXd err = (global_sol - exact_sol).array().abs();
 			plot_function(err);
@@ -491,7 +329,7 @@ namespace poly_fem
 			igl::Timer timer; timer.start();
 			std::cout<<"Building vis mesh..."<<std::flush;
 
-			if(mesh.is_volume)
+			if(mesh.is_volume())
 			{
 				MatrixXd pts(8,3); pts <<
 				0, 0, 0,
@@ -526,8 +364,7 @@ namespace poly_fem
 				clear_func();
 
 				MatrixXi tets;
-				igl::copyleft::tetgen::tetrahedralize(pts, faces, "Qpq1.414a0.001", local_mesh.pts, tets, local_mesh.els);
-				visualization_mesh.is_volume = true;
+				igl::copyleft::tetgen::tetrahedralize(pts, faces, "Qpq1.414a0.001", local_vis_pts, tets, local_vis_faces);
 			}
 			else
 			{
@@ -544,20 +381,19 @@ namespace poly_fem
 				3,0;
 
 				MatrixXd H(0,2);
-				igl::triangle::triangulate(pts, E, H, "Qqa0.001", local_mesh.pts, local_mesh.els);
-				visualization_mesh.is_volume = false;
+				igl::triangle::triangulate(pts, E, H, "Qqa0.001", local_vis_pts, local_vis_faces);
 			}
 
-			visualization_mesh.pts.resize(local_mesh.pts.rows()*mesh.els.rows(), local_mesh.pts.cols());
-			visualization_mesh.els.resize(local_mesh.els.rows()*mesh.els.rows(), 3);
+			vis_pts.resize(local_vis_pts.rows()*mesh.n_elements(), local_vis_pts.cols());
+			vis_faces.resize(local_vis_faces.rows()*mesh.n_elements(), 3);
 
 			MatrixXd mapped, tmp;
 			for(std::size_t i = 0; i < bases.size(); ++i)
 			{
 				const std::vector<Basis> &bs = bases[i];
-				Basis::eval_geom_mapping(local_mesh.pts, bs, mapped);
-				visualization_mesh.pts.block(i*local_mesh.pts.rows(), 0, local_mesh.pts.rows(), mapped.cols()) = mapped;
-				visualization_mesh.els.block(i*local_mesh.els.rows(), 0, local_mesh.els.rows(), 3) = local_mesh.els.array() + int(i)*int(local_mesh.pts.rows());
+				Basis::eval_geom_mapping(local_vis_pts, bs, mapped);
+				vis_pts.block(i*local_vis_pts.rows(), 0, local_vis_pts.rows(), mapped.cols()) = mapped;
+				vis_faces.block(i*local_vis_faces.rows(), 0, local_vis_faces.rows(), 3) = local_vis_faces.array() + int(i)*int(local_vis_pts.rows());
 			}
 
 			timer.stop();
@@ -570,21 +406,14 @@ namespace poly_fem
 		};
 
 
-		auto build_mesh_func = [&](){
+		auto load_mesh_func = [&](){
 			igl::Timer timer; timer.start();
-			std::cout<<"Building mesh..."<<std::flush;
+			std::cout<<"Loading mesh..."<<std::flush;
 
-			bounday_nodes.clear();
-			if(use_hex)
-			{
-				build_hex_mesh(n_x_el, n_y_el, n_z_el, mesh, bounday_nodes);
-				triangulate_hex_mesh(mesh, vis_faces);
-			}
-			else
-			{
-				build_quad_mesh(n_x_el, n_y_el, mesh, bounday_nodes);
-				triangulate_quad_mesh(mesh, vis_faces);
-			}
+			mesh.load(mesh_path);
+			//TODO refine
+			mesh.triangulate_faces(tri_faces, tri_pts);
+
 			timer.stop();
 			std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
 
@@ -598,7 +427,7 @@ namespace poly_fem
 			igl::Timer timer; timer.start();
 			std::cout<<"Building basis..."<<std::flush;
 
-			if(mesh.is_volume)
+			if(mesh.is_volume())
 			{
 				if(use_splines)
 					assert(false);
@@ -630,7 +459,7 @@ namespace poly_fem
 
 			if(linear_elasticity)
 			{
-				const int dim = mesh.is_volume ? 3:2;
+				const int dim = mesh.is_volume() ? 3:2;
 				const std::size_t n_b_nodes = bounday_nodes.size();
 
 				for(std::size_t i = 0; i < n_b_nodes; ++i)
@@ -645,7 +474,7 @@ namespace poly_fem
 
 
 
-			compute_assembly_values(use_hex, quadrature_order, bases, values);
+			compute_assembly_values(mesh.is_volume(), quadrature_order, bases, values);
 
 			timer.stop();
 			std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
@@ -666,7 +495,7 @@ namespace poly_fem
 			if(linear_elasticity)
 			{
 				Assembler<LinearElasticity> assembler;
-				assembler.local_assembler().size() = mesh.is_volume ? 3:2;
+				assembler.local_assembler().size() = mesh.is_volume() ? 3:2;
 
 				// std::cout<<stiffness.rows()<<std::endl;
 				// for(std::size_t i = 0; i < bounday_nodes.size(); ++i)
@@ -698,7 +527,7 @@ namespace poly_fem
 			if(linear_elasticity)
 			{
 				Assembler<LinearElasticity> assembler;
-				assembler.local_assembler().size() = mesh.is_volume ? 3:2;
+				assembler.local_assembler().size() = mesh.is_volume() ? 3:2;
 				assembler.rhs(n_bases, values, values, problem, rhs);
 				rhs *= -1;
 				assembler.bc(bases, mesh, bounday_nodes, n_boundary_samples, problem, rhs);
@@ -765,11 +594,9 @@ namespace poly_fem
 			viewer_.ngui->addVariable("quad order", quadrature_order);
 			viewer_.ngui->addVariable("b samples", n_boundary_samples);
 
-			viewer_.ngui->addVariable("n_x",n_x_el);
-			viewer_.ngui->addVariable("n_y",n_y_el);
-			viewer_.ngui->addVariable("n_z",n_z_el);
+			viewer_.ngui->addVariable("mesh path", mesh_path);
+			viewer_.ngui->addVariable("n refs", n_refs);
 
-			viewer_.ngui->addVariable("hex mesh", use_hex);
 			viewer_.ngui->addVariable("spline basis", use_splines);
 
 			viewer_.ngui->addVariable("elasticity", linear_elasticity);
@@ -782,7 +609,7 @@ namespace poly_fem
 			viewer_.ngui->addVariable("skip visualization", skip_visualization);
 
 			viewer_.ngui->addGroup("Runners");
-			viewer_.ngui->addButton("Build  mesh", build_mesh_func);
+			viewer_.ngui->addButton("Load mesh", load_mesh_func);
 			viewer_.ngui->addButton("Build  basis", build_basis_func);
 			viewer_.ngui->addButton("Compute vals", compute_assembly_vals_func);
 			viewer_.ngui->addButton("Build vis mesh", build_vis_mesh_func);
@@ -793,7 +620,7 @@ namespace poly_fem
 			viewer_.ngui->addButton("Compute errors", compute_errors_func);
 
 			viewer_.ngui->addButton("Run all", [&](){
-				build_mesh_func();
+				load_mesh_func();
 				build_basis_func();
 
 				if(!skip_visualization)

@@ -265,7 +265,7 @@ namespace poly_fem
 
 		bool sample_boundary(const int el_index, const Mesh &mesh, const int resolution_one_d, Eigen::MatrixXd &samples) const
 		{
-			auto el = mesh.els.row(el_index);
+			/*auto el = mesh.els.row(el_index);
 
 			if(mesh.is_volume)
 			{
@@ -421,7 +421,7 @@ namespace poly_fem
 				}
 
 				assert(long(n) == samples.rows());
-			}
+			}*/
 
 			return true;
 		}

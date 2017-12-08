@@ -56,7 +56,7 @@ void poly_fem::Navigation::prepare_mesh(GEO::Mesh &M) {
 }
 
 // Retrieve the index (v,e,f) of one vertex incident to the given face
-Index get_index_from_face(const GEO::Mesh &M, int f) {
+Index poly_fem::Navigation::get_index_from_face(const GEO::Mesh &M, int f) {
 	GEO::Attribute<index_t> c2e(M.facet_corners.attributes(), "edge_id");
 	Index idx;
 	idx.face_corner = M.facets.corner(f, 0);

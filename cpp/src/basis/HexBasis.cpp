@@ -7,29 +7,31 @@ namespace poly_fem
 
 	int HexBasis::build_bases(const Mesh &mesh, std::vector< std::vector<Basis> > &bases, std::vector< int > &bounday_nodes)
 	{
-		assert(mesh.is_volume);
+		assert(mesh.is_volume());
+		assert(false);
+		return 0;
 
-		int disc_order = 1;
+		// int disc_order = 1;
 
-		bases.resize(mesh.els.rows());
-		int n_bases = int(mesh.pts.rows());
+		// bases.resize(mesh.els.rows());
+		// int n_bases = int(mesh.pts.rows());
 
-		for(long i=0; i < mesh.els.rows(); ++i)
-		{
-			std::vector<Basis> &b=bases[i];
-			b.resize(8);
+		// for(long i=0; i < mesh.els.rows(); ++i)
+		// {
+		// 	std::vector<Basis> &b=bases[i];
+		// 	b.resize(8);
 
-			for(int j = 0; j < 8; ++j)
-			{
-				const int global_index = mesh.els(i,j);
-				b[j].init(global_index, j, mesh.pts.row(global_index));
+		// 	for(int j = 0; j < 8; ++j)
+		// 	{
+		// 		const int global_index = mesh.els(i,j);
+		// 		b[j].init(global_index, j, mesh.pts.row(global_index));
 
-				b[j].set_basis([disc_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { HexBasis::basis(disc_order, j, uv, val); });
-				b[j].set_grad( [disc_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  HexBasis::grad(disc_order, j, uv, val); });
-			}
-		}
+		// 		b[j].set_basis([disc_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { HexBasis::basis(disc_order, j, uv, val); });
+		// 		b[j].set_grad( [disc_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  HexBasis::grad(disc_order, j, uv, val); });
+		// 	}
+		// }
 
-		return n_bases;
+		// return n_bases;
 	}
 
 	void HexBasis::basis(const int disc_order, const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val)

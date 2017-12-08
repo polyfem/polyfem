@@ -26,18 +26,17 @@ namespace poly_fem
 	{
 	public:
 		static State &state();
-		void init(const int n_x_el, const int n_y_el, const int n_z_el, const bool use_hex_, const int problem_num_);
+		void init(const std::string &mesh_path, const int n_refs, const int problem_num_);
 
 		void sertialize(const std::string &name);
 
 		int quadrature_order = 2;
 		int n_boundary_samples = 10;
 
-		int n_x_el=2;
-		int n_y_el=2;
-		int n_z_el=2;
+		std::string mesh_path;
+		int n_refs = 0;
 
-		bool use_hex = false;
+
 		bool use_splines = false;
 		bool skip_visualization = false;
 
@@ -59,9 +58,9 @@ namespace poly_fem
 
 
 		Mesh mesh;
-		Mesh visualization_mesh, local_mesh;
 
-		Eigen::Matrix<int, Eigen::Dynamic, 3> vis_faces;
+		Eigen::MatrixXi tri_faces, local_vis_faces, vis_faces;
+		Eigen::MatrixXd tri_pts, local_vis_pts, vis_pts;
 
 
 		Eigen::SparseMatrix<double, Eigen::RowMajor> stiffness;

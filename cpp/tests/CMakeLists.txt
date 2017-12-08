@@ -3,8 +3,8 @@ project(navigation)
 
 add_executable(${PROJECT_NAME}
 	main.cpp
-	navigation.cpp
-	navigation.hpp
+	../src/mesh/navigation.cpp
+	../src/mesh/navigation.hpp
 )
 
 target_link_libraries(${PROJECT_NAME} geogram geogram_gfx)
@@ -16,6 +16,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE ${ALL_WARNINGS})
 # Use C++11
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 11)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD_REQUIRED ON)
+target_include_directories(${PROJECT_NAME} PUBLIC ../src/mesh)
 
 # Output directory for binaries
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")

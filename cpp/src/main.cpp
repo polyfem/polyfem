@@ -5,9 +5,8 @@
 #include "QuadraticBSpline.hpp"
 #include "QuadraticTPBSpline.hpp"
 
-#include <geogram/basic/file_system.h>
-#include <geogram/mesh/mesh_io.h>
-#include <geogram/mesh/mesh.h>
+#include <geogram/basic/command_line.h>
+#include <geogram/basic/command_line_args.h>
 
 #include <fstream>
 #include <iostream>
@@ -17,41 +16,25 @@ using namespace poly_fem;
 using namespace Eigen;
 
 
-void save_obj(const std::string &path, const Mesh &mesh)
-{
-    std::ofstream file;
-    file.open(path.c_str());
-
-    IOFormat format(10, DontAlignCols, " ");
-
-    if(file.good())
-    {
-
-        for(long i = 0; i < mesh.pts.rows(); ++i)
-        {
-            file << "v " << mesh.pts.row(i).format(format) << "\n";
-        }
-
-        file << "\n\n";
-
-        for(long i = 0; i < mesh.els.rows(); ++i)
-        {
-            file << "f " << (mesh.els.row(i).array()+1).format(format) << "\n";
-        }
-
-        file.close();
-    }
-}
-
-
-
-
 
 
 
 
 int main(int argc, char *argv[])
 {
+#ifndef WIN32
+    setenv("GEO_NO_SIGNAL_HANDLERS", "1", 1);
+#endif
+
+    GEO::initialize();
+
+    // Import standard command line arguments, and custom ones
+    GEO::CmdLine::import_arg_group("standard");
+    GEO::CmdLine::import_arg_group("pre");
+
+    // GEO::Logger::set_quiet(true);
+
+
     // QuadraticBSpline spline({0, 0, 1, 1});
     // std::cout<<spline.derivative(0)<<std::endl;
     // std::cout<<spline.derivative(0.5)<<std::endl;
@@ -70,39 +53,20 @@ int main(int argc, char *argv[])
 
     // exit(0);
 
-    std::string filename;
-    GEO::Mesh mesh_;
-    if(!GEO::FileSystem::is_file(filename)) {
-        std::cerr << "is not a file" << std::endl;
-    }
+    std::string path = "";
+    if(argc>=2)
+        path = argv[1];
 
-    mesh_.clear(false,false);
-
-    GEO::MeshIOFlags flags;
-    if(!mesh_load(filename, mesh_, flags)) {
-        std::cerr << "unable to load mesh" << std::endl;
-    }
-
-    bool use_hex = false;
-    if(argc>=2 && std::string(argv[1])=="hex")
-        use_hex = true;
-
-    int n_x_el=2;
-    int n_y_el=2;
-    int n_z_el=2;
+    int n_refs = 0;
 
     if(argc>=3)
-        n_x_el=atoi(argv[2]);
-    if(argc>=4)
-        n_y_el=atoi(argv[3]);
-    if(argc>=5)
-        n_z_el=atoi(argv[4]);
+        n_refs=atoi(argv[2]);
 
     int problem_num = 0;
-    if(argc>=6)
-        problem_num = atoi(argv[5]);
+    if(argc>=4)
+        problem_num = atoi(argv[3]);
 
-    State::state().init(n_x_el, n_y_el, n_z_el, use_hex, problem_num);
+    State::state().init(path, n_refs, problem_num);
 
 
 

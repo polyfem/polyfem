@@ -44,22 +44,31 @@ namespace poly_fem
 
 	int QuadBasis::build_bases(const Mesh &mesh, std::vector< std::vector<Basis> > &bases, std::vector< int > &bounday_nodes)
 	{
-		assert(!mesh.is_volume);
+		assert(!mesh.is_volume());
 
 		const int disc_order = 1;
 
-		bases.resize(mesh.els.rows());
-		const int n_bases = int(mesh.pts.rows());;
+		bases.resize(mesh.n_elements());
+		const int n_bases = int(mesh.n_pts());
 
-		for(long i = 0; i < mesh.els.rows(); ++i)
+		Eigen::MatrixXd node;
+
+		for(int e = 0; e < mesh.n_elements(); ++e)
 		{
-			std::vector<Basis> &b=bases[i];
-			b.resize(4);
+			const int n_el_vertices = mesh.n_element_vertices(e);
+			assert(n_el_vertices == 4);
 
-			for(int j = 0; j < 4; ++j)
+			std::vector<Basis> &b=bases[e];
+			b.resize(n_el_vertices);
+
+
+
+			for(int j = 0; j < n_el_vertices; ++j)
 			{
-				const int global_index = mesh.els(i,j);
-				b[j].init(global_index, j, mesh.pts.row(global_index));
+				const int global_index = mesh.vertex_global_index(e, j);
+
+				mesh.point(global_index, node);
+				b[j].init(global_index, j, node);
 
 				b[j].set_basis([disc_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { QuadBasis::basis(disc_order, j,uv, val); });
 				b[j].set_grad( [disc_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  QuadBasis::grad(disc_order, j,uv, val); });

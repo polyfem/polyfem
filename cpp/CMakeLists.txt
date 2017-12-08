@@ -45,7 +45,10 @@ set(SRCFILES
 	src/State.hpp
 	src/State.cpp
 
-	src/Mesh.hpp
+	src/mesh/Mesh.hpp
+	src/mesh/Mesh.cpp
+	src/mesh/navigation.hpp
+	src/mesh/navigation.cpp
 
 	src/quadrature/Quadrature.hpp
 	src/quadrature/LineQuadrature.hpp
@@ -90,12 +93,12 @@ set(SRCFILES
 	src/problem/Problem.hpp
 	src/problem/Problem.cpp
 
-)
+	)
 
 
 add_executable(${PROJECT_NAME} ${SRCFILES})
 target_link_libraries(${PROJECT_NAME} igl::core igl::viewer igl::triangle igl::tetgen geogram)
-target_include_directories(${PROJECT_NAME} PUBLIC src src/quadrature src/basis src/assembler src/problem)
+target_include_directories(${PROJECT_NAME} PUBLIC src src/mesh src/quadrature src/basis src/assembler src/problem)
 target_compile_options(${PROJECT_NAME} PRIVATE ${ALL_WARNINGS})
 
 ################################################################################
