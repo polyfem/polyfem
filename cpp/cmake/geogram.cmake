@@ -50,9 +50,6 @@ option(GEOGRAM_LIB_ONLY "Libraries only (no example programs/no viewer)" ON)
 option(GEOGRAM_WITH_FPG "Predicate generator (Sylvain Pion's FPG)" OFF)
 option(GEOGRAM_USE_SYSTEM_GLFW3 "Use the version of GLFW3 installed in the system if found" ON)
 
-# Generate position independent code by default
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-
 ################################################################################
 
 add_subdirectory(${GEOGRAM_ROOT} geogram)
