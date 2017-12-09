@@ -1,6 +1,8 @@
 #include "QuadBasis.hpp"
+#include "navigation.hpp"
 
 #include <cassert>
+#include <algorithm>
 
 namespace poly_fem
 {
@@ -44,14 +46,17 @@ namespace poly_fem
 
 	int QuadBasis::build_bases(const Mesh &mesh, std::vector< std::vector<Basis> > &bases, std::vector< int > &bounday_nodes)
 	{
+		using namespace Navigation;
 		assert(!mesh.is_volume());
 
-		const int disc_order = 1;
+		const int discr_order = 1;
 
 		bases.resize(mesh.n_elements());
 		const int n_bases = int(mesh.n_pts());
 
 		Eigen::MatrixXd node;
+
+		const int remap[] = {0, 3, 2, 1};
 
 		for(int e = 0; e < mesh.n_elements(); ++e)
 		{
@@ -61,27 +66,36 @@ namespace poly_fem
 			std::vector<Basis> &b=bases[e];
 			b.resize(n_el_vertices);
 
+			Index index = get_index_from_face(mesh.mesh(), e);
+			for (int j = 0; j < n_el_vertices; ++j) {
+				if (switch_face(mesh.mesh(), index).face < 0) {
+					bounday_nodes.push_back(index.vertex);
+					bounday_nodes.push_back(switch_vertex(mesh.mesh(), index).vertex);
+				}
 
-
-			for(int j = 0; j < n_el_vertices; ++j)
-			{
-				const int global_index = mesh.vertex_global_index(e, j);
+				const int global_index = index.vertex;
 
 				mesh.point(global_index, node);
 				b[j].init(global_index, j, node);
 
-				b[j].set_basis([disc_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { QuadBasis::basis(disc_order, j,uv, val); });
-				b[j].set_grad( [disc_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  QuadBasis::grad(disc_order, j,uv, val); });
+				b[j].set_basis([discr_order, remap, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { QuadBasis::basis(discr_order, remap[j], uv, val); });
+				b[j].set_grad( [discr_order, remap, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  QuadBasis::grad(discr_order, remap[j], uv, val); });
+
+				index = next_around_face(mesh.mesh(), index);
 			}
 		}
+
+		std::sort(bounday_nodes.begin(), bounday_nodes.end());
+		auto it = std::unique(bounday_nodes.begin(), bounday_nodes.end());
+		bounday_nodes.resize(std::distance(bounday_nodes.begin(), it));
 
 		return n_bases;
 	}
 
 
-	void QuadBasis::basis(const int disc_order, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+	void QuadBasis::basis(const int discr_order, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
 	{
-		switch(disc_order)
+		switch(discr_order)
 		{
 			case 1:
 			{
@@ -123,11 +137,11 @@ namespace poly_fem
 		}
 	}
 
-	void QuadBasis::grad(const int disc_order, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+	void QuadBasis::grad(const int discr_order, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
 	{
 		val.resize(uv.rows(),2);
 
-		switch(disc_order)
+		switch(discr_order)
 		{
 			case 1:
 			{

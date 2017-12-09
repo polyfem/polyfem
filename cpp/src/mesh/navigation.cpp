@@ -56,13 +56,18 @@ void poly_fem::Navigation::prepare_mesh(GEO::Mesh &M) {
 }
 
 // Retrieve the index (v,e,f) of one vertex incident to the given face
-Index poly_fem::Navigation::get_index_from_face(const GEO::Mesh &M, int f) {
+Index poly_fem::Navigation::get_index_from_face(const GEO::Mesh &M, int f, int lv) {
 	GEO::Attribute<index_t> c2e(M.facet_corners.attributes(), "edge_id");
 	Index idx;
-	idx.face_corner = M.facets.corner(f, 0);
+	idx.face_corner = M.facets.corner(f, lv);
 	idx.vertex = M.facet_corners.vertex(idx.face_corner);
 	idx.face = f;
 	idx.edge = c2e[idx.face_corner];
+	int v2 = int(M.facets.vertex(f, (lv+1)%M.facets.nb_vertices(f)));
+	if (switch_vertex(M, idx).vertex != v2) {
+		assert(false);
+		return switch_edge(M, idx);
+	}
 	return idx;
 }
 
@@ -114,7 +119,7 @@ Index poly_fem::Navigation::switch_face(const GEO::Mesh &M, Index idx)
 	}
 	index_t f2 = M.facet_corners.adjacent_facet(c1);
 	if (f2 == NO_FACET) {
-		std::cout << "No facet" << std::endl;
+		// std::cout << "No facet" << std::endl;
 		idx.face = -1;
 		return idx;
 	} else {

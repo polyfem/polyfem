@@ -40,7 +40,7 @@ namespace poly_fem
 		bool use_splines = false;
 		bool skip_visualization = false;
 
-		bool linear_elasticity = true;
+		bool linear_elasticity = false;
 
 		int vis_basis = 0;
 

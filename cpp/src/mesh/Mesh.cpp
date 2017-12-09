@@ -1,4 +1,5 @@
 #include "Mesh.hpp"
+#include "navigation.hpp"
 
 #include <igl/triangle/triangulate.h>
 #include <igl/copyleft/tetgen/tetrahedralize.h>
@@ -17,6 +18,7 @@ namespace poly_fem
 		if(!mesh_load(path, mesh_))
 			return false;
 
+		Navigation::prepare_mesh(mesh_);
 		return true;
 	}
 

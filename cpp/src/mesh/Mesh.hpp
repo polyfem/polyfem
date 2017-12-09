@@ -23,6 +23,8 @@ namespace poly_fem
 
 		bool load(const std::string &path);
 		bool save(const std::string &path) const;
+
+		inline const GEO::Mesh  &mesh() const { return mesh_; }
 	private:
 		GEO::Mesh mesh_;
 	};

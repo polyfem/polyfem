@@ -71,7 +71,7 @@ namespace poly_fem
 			l2_err += (err.array() * err.array() * gvalues.det.array() * vals.quadrature.weights.array()).sum();
 		}
 
-		l2_err = sqrt(l2_err);
+		l2_err = sqrt(fabs(l2_err));
 	}
 
 
