@@ -43,16 +43,27 @@ void poly_fem::Navigation::prepare_mesh(GEO::Mesh &M) {
 	M.edges.clear();
 	Edge prev_e(-1, -1);
 	index_t current_id = -1;
+	std::vector<bool> boundary_edges;
 	for (const auto &kv : e2c) {
 		Edge e = kv.first;
 		index_t c = kv.second;
 		if (e != prev_e) {
 			M.edges.create_edge(e.first, e.second);
+			boundary_edges.push_back(true);
 			++current_id;
 			prev_e = e;
+		} else {
+			boundary_edges.back() = false;
 		}
 		c2e[c] = current_id;
 	}
+
+	GEO::Attribute<bool> boundary_edges_attr(M.edges.attributes(), "boundary_edge");
+	assert(M.edges.nb() == (index_t) boundary_edges.size());
+	for (index_t e = 0; e < M.edges.nb(); ++e) {
+		boundary_edges_attr[e] = boundary_edges[e];
+	}
+
 }
 
 // Retrieve the index (v,e,f) of one vertex incident to the given face

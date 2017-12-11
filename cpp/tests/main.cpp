@@ -114,13 +114,24 @@ namespace {
 
 			// Selected edge
 			glupSetMeshWidth(5);
-			glupColor3f(0.7f, 0.0f, 0.5f);
+			glupColor3f(0.0f, 0.8f, 0.0f);
 			glupBegin(GLUP_LINES);
 			{
 				int v0 = mesh_.edges.vertex(idx_.edge, 0);
 				int v1 = mesh_.edges.vertex(idx_.edge, 1);
 				glupVertex(mesh_vertex(mesh_, v0));
 				glupVertex(mesh_vertex(mesh_, v1));
+			}
+			// Boundary edges
+			GEO::Attribute<bool> boundary(mesh_.edges.attributes(), "boundary_edge");
+			glupColor3f(0.7f, 0.7f, 0.0f);
+			for (int e = 0; e < (int) mesh_.edges.nb(); ++e) {
+				if (boundary[e]) {
+					int v0 = mesh_.edges.vertex(e, 0);
+					int v1 = mesh_.edges.vertex(e, 1);
+					glupVertex(mesh_vertex(mesh_, v0));
+					glupVertex(mesh_vertex(mesh_, v1));
+				}
 			}
 			glupEnd();
 
