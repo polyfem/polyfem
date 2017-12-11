@@ -27,9 +27,9 @@ namespace poly_fem
 		Eigen::MatrixXi tri_faces, local_vis_faces, vis_faces;
 		Eigen::MatrixXd tri_pts, local_vis_pts, vis_pts;
 
+		State &state;
 	private:
 		void plot_function(const Eigen::MatrixXd &fun, double min=0, double max=-1);
-		State &state;
 	};
 
 }

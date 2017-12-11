@@ -44,7 +44,7 @@ namespace {
 			Navigation::prepare_mesh(mesh_);
 
 			// Initialize the key
-			idx_ = Navigation::get_index_from_face(mesh_, 0);
+			idx_ = Navigation::get_index_from_face(mesh_, 0, 0);
 			idx_.face_corner = mesh_.facets.corner(0, 0);
 			idx_.vertex = mesh_.facet_corners.vertex(idx_.face_corner);
 			idx_.face = 0;

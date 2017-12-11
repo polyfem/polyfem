@@ -1,17 +1,10 @@
 #include "State.hpp"
 #include "UIState.hpp"
 
-#include "Mesh.hpp"
-
-#include "QuadraticBSpline.hpp"
-#include "QuadraticTPBSpline.hpp"
+#include "CommandLine.hpp"
 
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
-
-#include <fstream>
-#include <iostream>
-
 
 using namespace poly_fem;
 using namespace Eigen;
@@ -20,8 +13,27 @@ using namespace Eigen;
 
 
 
-
-int main(int argc, char *argv[])
+/**
+* no ui:
+* <exec> -mesh <pat> -problem <0,1,2,3> -cmd
+*
+* ui:
+* <exec> -mesh <pat> -problem <0,1,2,3>
+*
+* args:
+*   -mesh <path to the mesh>
+*   -n_refs <refinements>
+*   -problem <0: linear, 1: quadratic, 2: franke, 3: linear elasiticity>
+*   -quad <quadrature order>
+*   -b_samples <number of boundary samples>
+*   -spline <use spline basis>
+*   -fem <use standard fem with quad/hex meshes>
+*   -elasticity <use linear elasitcity>
+*   -poisson <use poisson problem>
+*   -cmd <runs without ui>
+*   -ui <runs with ui>
+**/
+int main(int argc, const char **argv)
 {
 #ifndef WIN32
     setenv("GEO_NO_SIGNAL_HANDLERS", "1", 1);
@@ -36,38 +48,64 @@ int main(int argc, char *argv[])
     // GEO::Logger::set_quiet(true);
 
 
-    // QuadraticBSpline spline({0, 0, 1, 1});
-    // std::cout<<spline.derivative(0)<<std::endl;
-    // std::cout<<spline.derivative(0.5)<<std::endl;
-    // std::cout<<spline.derivative(1)<<std::endl;
-    // exit(0);
 
-    // QuadraticTensorProductBSpline spline({0, 1, 1, 1}, {0, 1, 1, 1});
-    // MatrixXd tmp, ts(3,2);
-    // ts.row(0)=Vector2d(0, 0); ts.row(1)=Vector2d(0.5, 0 ); ts.row(2)=Vector2d(1, 0.5);
-
-    // spline.interpolate(ts, tmp);
-    // std::cout<<tmp<<std::endl;
-
-    // spline.derivative(ts, tmp);
-    // std::cout<<tmp<<std::endl;
-
-    // exit(0);
+    CommandLine command_line;
 
     std::string path = "";
-    if(argc>=2)
-        path = argv[1];
-
     int n_refs = 0;
-
-    if(argc>=3)
-        n_refs=atoi(argv[2]);
-
     int problem_num = 0;
-    if(argc>=4)
-        problem_num = atoi(argv[3]);
 
-    UIState::ui_state().init(path, n_refs, problem_num);
+    int quadrature_order = 2;
+    int n_boundary_samples = 10;
+
+
+    bool use_splines = false;
+    bool linear_elasticity = false;
+
+    bool no_ui = false;
+
+    command_line.add_option("-mesh", path);
+    command_line.add_option("-n_refs", n_refs);
+    command_line.add_option("-problem", problem_num);
+
+
+    command_line.add_option("-quad", quadrature_order);
+    command_line.add_option("-b_samples", n_boundary_samples);
+    command_line.add_option("-spline", "-fem", use_splines);
+    command_line.add_option("-elasticity", "-poisson", linear_elasticity);
+
+    command_line.add_option("-cmd", "-ui", no_ui);
+
+    command_line.parse(argc, argv);
+
+    if(no_ui)
+    {
+        State &state = State::state();
+
+        state.quadrature_order = quadrature_order;
+        state.use_splines = use_splines;
+        state.linear_elasticity = linear_elasticity;
+        state.n_boundary_samples = n_boundary_samples;
+
+        state.init(path, n_refs, problem_num);
+
+        state.load_mesh();
+        state.build_basis();
+        state.compute_assembly_vals();
+        state.assemble_stiffness_mat();
+        state.assemble_rhs();
+        state.solve_problem();
+        state.compute_errors();
+    }
+    else
+    {
+        UIState::ui_state().state.quadrature_order = quadrature_order;
+        UIState::ui_state().state.use_splines = use_splines;
+        UIState::ui_state().state.linear_elasticity = linear_elasticity;
+        UIState::ui_state().state.n_boundary_samples = n_boundary_samples;
+
+        UIState::ui_state().init(path, n_refs, problem_num);
+    }
 
 
 

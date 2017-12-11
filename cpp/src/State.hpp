@@ -24,6 +24,7 @@ namespace poly_fem
 	{
 	public:
 		static State &state();
+		
 		void init(const std::string &mesh_path, const int n_refs, const int problem_num_);
 
 		void sertialize(const std::string &name);

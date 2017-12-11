@@ -42,6 +42,9 @@ include(SetWarnings)
 set(SRCFILES
 	src/main.cpp
 
+	src/utils/CommandLine.hpp
+	src/utils/CommandLine.cpp
+
 	src/State.hpp
 	src/State.cpp
 
@@ -101,7 +104,7 @@ set(SRCFILES
 
 add_executable(${PROJECT_NAME} ${SRCFILES})
 target_link_libraries(${PROJECT_NAME} igl::core igl::viewer igl::triangle igl::tetgen geogram)
-target_include_directories(${PROJECT_NAME} PUBLIC src src/mesh src/quadrature src/basis src/assembler src/problem)
+target_include_directories(${PROJECT_NAME} PUBLIC src src/utils src/mesh src/quadrature src/basis src/assembler src/problem)
 target_compile_options(${PROJECT_NAME} PRIVATE ${ALL_WARNINGS})
 
 ################################################################################
