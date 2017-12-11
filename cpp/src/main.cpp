@@ -15,10 +15,10 @@ using namespace Eigen;
 
 /**
 * no ui:
-* <exec> -mesh <pat> -problem <0,1,2,3> -cmd
+* <exec> -mesh <path> -problem <0,1,2,3> -cmd
 *
 * ui:
-* <exec> -mesh <pat> -problem <0,1,2,3>
+* <exec> -mesh <path> -problem <0,1,2,3>
 *
 * args:
 *   -mesh <path to the mesh>
@@ -106,30 +106,6 @@ int main(int argc, const char **argv)
 
         UIState::ui_state().init(path, n_refs, problem_num);
     }
-
-
-
-//     Eigen::MatrixXd u_exact;
-//     problem->exact(mesh.pts, u_exact);
-
-//     Eigen::MatrixXd err = (u - u_exact).cwiseAbs();
-//     // Eigen::MatrixXd err = u_exact;
-
-//     Matrix<double,Dynamic, 3> col;
-//     igl::jet(err, true, col);
-//     auto vis_pts = mesh.pts;
-
-//     if(vis_pts.cols() == 2)
-//     {
-//         vis_pts = MatrixXd(vis_pts.rows(), 3);
-//         vis_pts.col(0) = mesh.pts.col(0);
-//         vis_pts.col(1) = mesh.pts.col(1);
-//         vis_pts.col(2) = err;
-//     }
-
-
-//     viewer.data.set_mesh(vis_pts, vis_faces);
-//     viewer.data.set_colors(col);
 
 
     return EXIT_SUCCESS;

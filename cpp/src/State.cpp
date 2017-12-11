@@ -80,6 +80,22 @@ namespace poly_fem
 			else
 				n_bases = QuadBasis::build_bases(mesh, bases, bounday_nodes);
 		}
+
+		problem.remove_neumann_nodes(bases, bounday_nodes);
+
+		if(linear_elasticity)
+		{
+			const int dim = mesh.is_volume() ? 3:2;
+			const std::size_t n_b_nodes = bounday_nodes.size();
+
+			for(std::size_t i = 0; i < n_b_nodes; ++i)
+			{
+				bounday_nodes[i] *= dim;
+				for(int d = 1; d < dim; ++d)
+					bounday_nodes.push_back(bounday_nodes[i]+d);
+			}
+		}
+
 		timer.stop();
 		std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
 
@@ -98,19 +114,6 @@ namespace poly_fem
 	{
 		igl::Timer timer; timer.start();
 		std::cout<<"Computing assembly values..."<<std::flush;
-
-		if(linear_elasticity)
-		{
-			const int dim = mesh.is_volume() ? 3:2;
-			const std::size_t n_b_nodes = bounday_nodes.size();
-
-			for(std::size_t i = 0; i < n_b_nodes; ++i)
-			{
-				bounday_nodes[i] *= dim;
-				for(int d = 1; d < dim; ++d)
-					bounday_nodes.push_back(bounday_nodes[i]+d);
-			}
-		}
 
 		std::sort(bounday_nodes.begin(), bounday_nodes.end());
 

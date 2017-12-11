@@ -96,9 +96,47 @@ namespace poly_fem
 				return;
 			}
 
-			case 3: val = Eigen::MatrixXd::Ones(pts.rows(), 2); return;
+			case 3:
+			{
+				val = Eigen::MatrixXd::Zero(pts.rows(), 2);
+
+				for(long i = 0; i < x.size(); ++i)
+				{
+					if(fabs(x(i)-1)<1e-8)
+						val(i, 0)=0.05;
+					else if(fabs(x(i))<1e-8)
+						val(i, 0)=-0.05;
+				}
+
+				return;
+			}
 
 			default: assert(false);
+		}
+	}
+
+	void Problem::remove_neumann_nodes(const std::vector< std::vector<Basis> > &bases, std::vector< int > &boundary_nodes)
+	{
+		if(problem_num_ < 3)
+			return;
+
+		std::vector<int> old_b_nodes = boundary_nodes;
+		boundary_nodes.clear();
+
+		for(std::size_t i = 0; i < bases.size(); ++i)
+		{
+			const std::vector<Basis> &bs = bases[i];
+
+			for(std::size_t j = 0; j < bs.size(); ++j)
+			{
+				if(std::find(old_b_nodes.begin(), old_b_nodes.end(), bs[j].global_index()) != old_b_nodes.end())
+				{
+					const auto &node = bs[j].node();
+
+					if(fabs(node(0)-1)<1e-8 || fabs(node(0))<1e-8)
+						boundary_nodes.push_back(bs[j].global_index());
+				}
+			}
 		}
 	}
 }

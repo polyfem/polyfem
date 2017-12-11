@@ -1,6 +1,9 @@
 #ifndef PROBLEM_HPP
 #define PROBLEM_HPP
 
+#include "Basis.hpp"
+
+#include <vector>
 #include <Eigen/Dense>
 
 namespace poly_fem
@@ -17,6 +20,8 @@ namespace poly_fem
 		inline int problem_num() const { return problem_num_; }
 
 		bool has_exact_sol() const;
+
+		void remove_neumann_nodes(const std::vector< std::vector<Basis> > &bases, std::vector< int > &boundary_nodes);
 
 	private:
 		int problem_num_;

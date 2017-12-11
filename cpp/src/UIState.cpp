@@ -33,12 +33,12 @@ namespace poly_fem
 
 		if(state.linear_elasticity)
 		{
-			const MatrixXd ffun = (fun.array()*fun.array()).colwise().sum().sqrt(); //norm of displacement, maybe replace with stress
+			const MatrixXd ffun = (fun.array()*fun.array()).rowwise().sum().sqrt(); //norm of displacement, maybe replace with stress
 
 			if(min < max)
-				igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, fun, min, max, col);
+				igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, ffun, min, max, col);
 			else
-				igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, fun, true, col);
+				igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, ffun, true, col);
 
 			MatrixXd tmp = vis_pts;
 
@@ -103,6 +103,11 @@ namespace poly_fem
 				const std::vector<Basis> &basis = state.bases[i];
 				for(std::size_t j = 0; j < basis.size(); ++j)
 				{
+					int g_index = basis[j].global_index();
+
+					if(state.linear_elasticity)
+						g_index *= 2;
+
 					MatrixXd nn = MatrixXd::Zero(basis[j].node().rows(), 3);
 					nn.block(0, 0, nn.rows(), basis[j].node().cols()) = basis[j].node();
 
@@ -111,12 +116,12 @@ namespace poly_fem
 						txt_p(k) += 0.02;
 
 					MatrixXd col = MatrixXd::Zero(basis[j].node().rows(), 3);
-					if(std::find(state.bounday_nodes.begin(), state.bounday_nodes.end(), basis[j].global_index()) != state.bounday_nodes.end())
+					if(std::find(state.bounday_nodes.begin(), state.bounday_nodes.end(), g_index) != state.bounday_nodes.end())
 						col.col(0).setOnes();
 
 
 					viewer.data.add_points(nn, col);
-					viewer.data.add_label(txt_p, std::to_string(basis[j].global_index()));
+					viewer.data.add_label(txt_p, std::to_string(g_index));
 				}
 			}
 		};
@@ -143,7 +148,10 @@ namespace poly_fem
 		auto show_sol_func = [&](){
 			MatrixXd global_sol;
 			state.interpolate_function(state.sol, local_vis_pts, global_sol);
-			plot_function(global_sol, 0, 1);
+			if(state.linear_elasticity)
+				plot_function(global_sol);
+			else
+				plot_function(global_sol, 0, 1);
 		};
 
 
