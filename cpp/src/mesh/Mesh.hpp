@@ -1,6 +1,8 @@
 #ifndef MESH_HPP
 #define MESH_HPP
 
+#include "navigation.hpp"
+
 #include <Eigen/Dense>
 #include <geogram/mesh/mesh.h>
 
@@ -25,6 +27,19 @@ namespace poly_fem
 		bool save(const std::string &path) const;
 
 		inline const GEO::Mesh  &mesh() const { return mesh_; }
+
+		Navigation::Index get_index_from_face(int f, int lv = 0) const;
+
+	// Navigation in a surface mesh
+		Navigation::Index switch_vertex(Navigation::Index idx) const;
+		Navigation::Index switch_edge(Navigation::Index idx) const;
+		Navigation::Index switch_face(Navigation::Index idx) const;
+
+		// Iterate in a mesh
+		inline Navigation::Index next_around_face(Navigation::Index idx) const { return switch_edge(switch_vertex(idx)); }
+		inline Navigation::Index next_around_edge(Navigation::Index idx) const { return switch_vertex(switch_face(idx)); }
+		inline Navigation::Index next_around_vertex(Navigation::Index idx) const { return switch_face(switch_edge(idx)); }
+
 	private:
 		GEO::Mesh mesh_;
 	};

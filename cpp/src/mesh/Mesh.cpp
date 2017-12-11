@@ -41,6 +41,27 @@ namespace poly_fem
 			pt(2) = pt_ptr[2];
 	}
 
+	Navigation::Index Mesh::get_index_from_face(int f, int lv) const
+	{
+		return Navigation::get_index_from_face(mesh_, f, lv);
+	}
+
+
+	Navigation::Index Mesh::switch_vertex(Navigation::Index idx) const
+	{
+		return Navigation::switch_vertex(mesh_, idx);
+	}
+
+	Navigation::Index Mesh::switch_edge(Navigation::Index idx) const
+	{
+		return Navigation::switch_edge(mesh_, idx);
+	}
+
+	Navigation::Index Mesh::switch_face(Navigation::Index idx) const
+	{
+		return Navigation::switch_face(mesh_, idx);
+	}
+
 	void Mesh::triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts) const
 	{
 		if(is_volume())

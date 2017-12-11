@@ -46,7 +46,8 @@ namespace poly_fem
 
 	int QuadBasis::build_bases(const Mesh &mesh, std::vector< std::vector<Basis> > &bases, std::vector< int > &bounday_nodes)
 	{
-		using namespace Navigation;
+		bounday_nodes.clear();
+
 		assert(!mesh.is_volume());
 
 		const int discr_order = 1;
@@ -56,7 +57,8 @@ namespace poly_fem
 
 		Eigen::MatrixXd node;
 
-		const int remap[] = {0, 3, 2, 1};
+		const int remap[4] = {0, 3, 2, 1};
+		// const int remap[4] = {0, 1, 2, 3};
 
 		for(int e = 0; e < mesh.n_elements(); ++e)
 		{
@@ -66,11 +68,11 @@ namespace poly_fem
 			std::vector<Basis> &b=bases[e];
 			b.resize(n_el_vertices);
 
-			Index index = get_index_from_face(mesh.mesh(), e);
+			Navigation::Index index = mesh.get_index_from_face(e);
 			for (int j = 0; j < n_el_vertices; ++j) {
-				if (switch_face(mesh.mesh(), index).face < 0) {
+				if (mesh.switch_face(index).face < 0) {
 					bounday_nodes.push_back(index.vertex);
-					bounday_nodes.push_back(switch_vertex(mesh.mesh(), index).vertex);
+					bounday_nodes.push_back(mesh.switch_vertex(index).vertex);
 				}
 
 				const int global_index = index.vertex;

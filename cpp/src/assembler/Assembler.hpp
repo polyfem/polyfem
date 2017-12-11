@@ -213,8 +213,8 @@ namespace poly_fem
 
 				// std::cout<<samples<<"\n"<<std::endl;
 
-				// igl::viewer::Viewer &viewer = State::state().viewer;
-				// viewer.data.add_points(mapped, Eigen::MatrixXd::Constant(mapped.rows(), 3, e/(n_el -1.)));
+				igl::viewer::Viewer &viewer = State::state().viewer;
+				viewer.data.add_points(mapped, Eigen::MatrixXd::Constant(mapped.rows(), 3, e/(n_el -1.)));
 
 				problem.bc(mapped, rhs_fun);
 				global_rhs.block(global_counter, 0, rhs_fun.rows(), rhs_fun.cols()) = rhs_fun;
@@ -266,8 +266,6 @@ namespace poly_fem
 
 		bool sample_boundary(const int el_index, const Mesh &mesh, const int resolution_one_d, Eigen::MatrixXd &samples) const
 		{
-			using namespace Navigation;
-
 			if(mesh.is_volume())
 			{
 				assert(false);
@@ -374,17 +372,17 @@ namespace poly_fem
 			{
 				const int resolution = resolution_one_d;
 
-				Index index = get_index_from_face(mesh.mesh(), el_index);
-				const bool has_right = switch_face(mesh.mesh(), index).face >= 0;
+				Navigation::Index index = mesh.get_index_from_face(el_index);
+				const bool has_right = mesh.switch_face(index).face >= 0;
 
-				index = next_around_face(mesh.mesh(), index);
-				const bool has_bottom = switch_face(mesh.mesh(), index).face >= 0;
+				index = mesh.next_around_face(index);
+				const bool has_bottom = mesh.switch_face(index).face >= 0;
 
-				index = next_around_face(mesh.mesh(), index);
-				const bool has_left = switch_face(mesh.mesh(), index).face >= 0;
+				index = mesh.next_around_face(index);
+				const bool has_left = mesh.switch_face(index).face >= 0;
 
-				index = next_around_face(mesh.mesh(), index);
-				const bool has_top = switch_face(mesh.mesh(), index).face >= 0;
+				index = mesh.next_around_face(index);
+				const bool has_top = mesh.switch_face(index).face >= 0;
 
 				int n = 0;
 				if(!has_right) n+=resolution;
