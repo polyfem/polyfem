@@ -12,12 +12,63 @@
 #include <vector>
 #include <iostream>
 
+#include "UIState.hpp"
+
 namespace poly_fem
 {
 	template<class LocalAssembler>
 	class Assembler
 	{
 	public:
+		template<class Quadrature>
+		void compute_assembly_values(const bool is_volume, const Quadrature &quadrature, const std::vector< std::vector<Basis> > &bases, std::vector< ElementAssemblyValues > &values)
+		{
+			values.resize(bases.size());
+
+			for(std::size_t i = 0; i < bases.size(); ++i)
+			{
+				const std::vector<Basis> &bs = bases[i];
+				ElementAssemblyValues &vals = values[i];
+				vals.basis_values.resize(bs.size());
+				vals.quadrature = quadrature;
+
+				Eigen::MatrixXd mval = Eigen::MatrixXd::Zero(quadrature.points.rows(), quadrature.points.cols());
+
+				Eigen::MatrixXd dxmv = Eigen::MatrixXd::Zero(quadrature.points.rows(), quadrature.points.cols());
+				Eigen::MatrixXd dymv = Eigen::MatrixXd::Zero(quadrature.points.rows(), quadrature.points.cols());
+				Eigen::MatrixXd dzmv = Eigen::MatrixXd::Zero(quadrature.points.rows(), quadrature.points.cols());
+
+				const int n_local_bases = int(bs.size());
+				for(int j = 0; j < n_local_bases; ++j)
+				{
+					const Basis &b=bs[j];
+					AssemblyValues &val = vals.basis_values[j];
+
+					val.global_index = b.global_index();
+
+
+					b.basis(quadrature.points, val.val);
+					b.grad(quadrature.points, val.grad);
+
+					for (long k = 0; k < val.val.rows(); ++k){
+						mval.row(k) += val.val(k,0)    * b.node();
+
+						dxmv.row(k) += val.grad(k,0) * b.node();
+						dymv.row(k) += val.grad(k,1) * b.node();
+						if(is_volume)
+							dzmv.row(k) += val.grad(k,2) * b.node();
+					}
+				}
+
+				if(is_volume)
+					vals.finalize(mval, dxmv, dymv, dzmv);
+				else
+					vals.finalize(mval, dxmv, dymv);
+			}
+		}
+
+
+
 		void assemble(const int n_basis, const std::vector< ElementAssemblyValues > &values, const std::vector< ElementAssemblyValues > &geom_values, Eigen::SparseMatrix<double, Eigen::RowMajor> &stiffness) const
 		{
 			const int buffer_size = n_basis * 10 * local_assembler_.size();
@@ -213,7 +264,7 @@ namespace poly_fem
 
 				// std::cout<<samples<<"\n"<<std::endl;
 
-				igl::viewer::Viewer &viewer = State::state().viewer;
+				igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
 				viewer.data.add_points(mapped, Eigen::MatrixXd::Constant(mapped.rows(), 3, e/(n_el -1.)));
 
 				problem.bc(mapped, rhs_fun);

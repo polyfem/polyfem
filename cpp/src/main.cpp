@@ -1,4 +1,5 @@
 #include "State.hpp"
+#include "UIState.hpp"
 
 #include "Mesh.hpp"
 
@@ -66,7 +67,7 @@ int main(int argc, char *argv[])
     if(argc>=4)
         problem_num = atoi(argv[3]);
 
-    State::state().init(path, n_refs, problem_num);
+    UIState::ui_state().init(path, n_refs, problem_num);
 
 
 

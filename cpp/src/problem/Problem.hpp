@@ -15,6 +15,9 @@ namespace poly_fem
 
 		inline void set_problem_num(const int num) { problem_num_ = num; }
 		inline int problem_num() const { return problem_num_; }
+
+		bool has_exact_sol() const;
+
 	private:
 		int problem_num_;
 	};

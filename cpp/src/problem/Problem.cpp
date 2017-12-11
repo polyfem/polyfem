@@ -4,6 +4,11 @@
 
 namespace poly_fem
 {
+	bool Problem::has_exact_sol() const
+	{
+		return problem_num_ < 3;
+	}
+
 	void Problem::rhs(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		auto &x = pts.col(0).array();

@@ -7,8 +7,6 @@
 #include "Mesh.hpp"
 #include "Problem.hpp"
 
-#include <igl/viewer/Viewer.h>
-
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
@@ -36,21 +34,12 @@ namespace poly_fem
 		std::string mesh_path;
 		int n_refs = 0;
 
-
 		bool use_splines = false;
-		bool skip_visualization = false;
-
 		bool linear_elasticity = false;
-
-		int vis_basis = 0;
 
 		Problem problem;
 
 		int n_bases;
-
-
-		igl::viewer::Viewer viewer;
-
 
 		std::vector< std::vector<Basis> >    bases;
 		std::vector< ElementAssemblyValues > values;
@@ -58,9 +47,6 @@ namespace poly_fem
 
 
 		Mesh mesh;
-
-		Eigen::MatrixXi tri_faces, local_vis_faces, vis_faces;
-		Eigen::MatrixXd tri_pts, local_vis_pts, vis_pts;
 
 
 		Eigen::SparseMatrix<double, Eigen::RowMajor> stiffness;
@@ -70,9 +56,15 @@ namespace poly_fem
 		double l2_err, linf_err;
 		long nn_zero, mat_size;
 
-	private:
-		void interpolate_function(const Eigen::MatrixXd &fun, Eigen::MatrixXd &result);
-		void plot_function(const Eigen::MatrixXd &fun, double min=0, double max=-1);
+		void load_mesh();
+		void build_basis();
+		void compute_assembly_vals();
+		void assemble_stiffness_mat();
+		void assemble_rhs();
+		void solve_problem();
+		void compute_errors();
+
+		void interpolate_function(const Eigen::MatrixXd &fun, const Eigen::MatrixXd &local_pts, Eigen::MatrixXd &result);
 	};
 
 }

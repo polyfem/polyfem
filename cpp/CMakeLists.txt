@@ -45,6 +45,9 @@ set(SRCFILES
 	src/State.hpp
 	src/State.cpp
 
+	src/UIState.hpp
+	src/UIState.cpp
+
 	src/mesh/Mesh.hpp
 	src/mesh/Mesh.cpp
 	src/mesh/navigation.hpp
