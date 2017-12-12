@@ -32,6 +32,24 @@ namespace poly_fem
 		return true;
 	}
 
+	double Mesh::compute_mesh_size() const
+	{
+		Eigen::MatrixXd p0, p1, p;
+		double sum = 0;
+		for(GEO::index_t e = 0; e < mesh_.edges.nb(); ++e)
+		{
+
+			const int v0 = mesh_.edges.vertex(e, 0);
+			const int v1 = mesh_.edges.vertex(e, 1);
+			point(v0, p0); point(v1, p1);
+
+			p = p0-p1;
+			sum += p.norm();
+		}
+
+		return sum/double(mesh_.edges.nb());
+	}
+
 	void Mesh::point(const int global_index, Eigen::MatrixXd &pt) const
 	{
 		pt.resize(1, is_volume() ? 3 : 2);
@@ -41,6 +59,43 @@ namespace poly_fem
 
 		if(is_volume())
 			pt(2) = pt_ptr[2];
+	}
+
+	void Mesh::set_boundary_tags(std::vector<int> &tags) const
+	{
+		if(is_volume())
+		{
+			assert(false);
+		}
+		else
+		{
+			tags.resize(mesh_.edges.nb());
+			std::fill(tags.begin(), tags.end(), -1);
+
+			Eigen::MatrixXd p0, p1, p;
+
+			const GEO::Attribute<bool> boundary(mesh_.edges.attributes(), "boundary_edge");
+			for(GEO::index_t e = 0; e < mesh_.edges.nb(); ++e)
+			{
+				if(!boundary[e])
+					continue;
+
+				const int v0 = mesh_.edges.vertex(e, 0);
+				const int v1 = mesh_.edges.vertex(e, 1);
+				point(v0, p0); point(v1, p1);
+
+				p = (p0 + p1)/2;
+
+				if(fabs(p(0))<1e-8)
+					tags[e]=1;
+				if(fabs(p(1))<1e-8)
+					tags[e]=2;
+				if(fabs(p(0)-1)<1e-8)
+					tags[e]=3;
+				if(fabs(p(1)-1)<1e-8)
+					tags[e]=4;
+			}
+		}
 	}
 
 	Navigation::Index Mesh::get_index_from_face(int f, int lv) const

@@ -44,7 +44,7 @@ namespace poly_fem
 		return 4-8*t;
 	}
 
-	int QuadBasis::build_bases(const Mesh &mesh, std::vector< std::vector<Basis> > &bases, std::vector< int > &bounday_nodes)
+	int QuadBasis::build_bases(const Mesh &mesh, std::vector< std::vector<Basis> > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes)
 	{
 		bounday_nodes.clear();
 
@@ -53,6 +53,8 @@ namespace poly_fem
 		const int discr_order = 1;
 
 		bases.resize(mesh.n_elements());
+		local_boundary.resize(mesh.n_elements());
+
 		const int n_bases = int(mesh.n_pts());
 
 		Eigen::MatrixXd node;
@@ -73,6 +75,14 @@ namespace poly_fem
 				if (mesh.switch_face(index).face < 0) {
 					bounday_nodes.push_back(index.vertex);
 					bounday_nodes.push_back(mesh.switch_vertex(index).vertex);
+
+					switch(j)
+					{
+						case 0: local_boundary[e].set_right_edge_id(index.edge); local_boundary[e].set_right_boundary(); break;
+						case 1: local_boundary[e].set_bottom_edge_id(index.edge); local_boundary[e].set_bottom_boundary(); break;
+						case 2: local_boundary[e].set_left_edge_id(index.edge); local_boundary[e].set_left_boundary(); break;
+						case 3: local_boundary[e].set_top_edge_id(index.edge); local_boundary[e].set_top_boundary(); break;
+					}
 				}
 
 				const int global_index = index.vertex;

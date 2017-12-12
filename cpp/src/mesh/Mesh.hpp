@@ -19,6 +19,8 @@ namespace poly_fem
 		inline int n_element_vertices(const int element_index) const { return is_volume() ? mesh_.cells.nb_vertices(element_index) : mesh_.facets.nb_vertices(element_index);}
 		inline int vertex_global_index(const int element_index, const int local_index) const { return is_volume() ? mesh_.cells.vertex(element_index, local_index) : mesh_.facets.vertex(element_index, local_index); }
 
+		double compute_mesh_size() const;
+
 		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts) const;
 
 		void point(const int global_index, Eigen::MatrixXd &pt) const;
@@ -29,6 +31,8 @@ namespace poly_fem
 		//get nodes ids
 		int edge_node_id(const int edge_id) const;
 		int vertex_node_id(const int vertex_id) const;
+
+		void set_boundary_tags(std::vector<int> &tags) const;
 
 		inline int node_id_from_edge_index(const Navigation::Index &index) const
 		{

@@ -48,7 +48,7 @@ namespace poly_fem
         space(1, 1) = el_index;
         node(1, 1) = mesh.node_from_face(el_index);
 
-//////////////////////////////////////////
+        //////////////////////////////////////////
         index = mesh.get_index_from_face(el_index);
         const int left = mesh.node_id_from_edge_index(index);
         space(0, 1) = left;
@@ -69,7 +69,7 @@ namespace poly_fem
             node(0,0) = mesh.node_from_edge_index(edge2);
         }
 
-//////////////////////////////////////////
+        //////////////////////////////////////////
         index = mesh.next_around_face(index);
         const int bottom = mesh.node_id_from_edge_index(index);
         space(1, 0) = bottom;
@@ -89,7 +89,7 @@ namespace poly_fem
             node(2,0) = mesh.node_from_edge_index(edge2);
         }
 
-//////////////////////////////////////////
+        //////////////////////////////////////////
         index = mesh.next_around_face(index);
         const int right = mesh.node_id_from_edge_index(index);
         space(2, 1) = right;
@@ -110,7 +110,7 @@ namespace poly_fem
             node(2,2) = mesh.node_from_edge_index(edge2);
         }
 
-//////////////////////////////////////////
+        //////////////////////////////////////////
         index = mesh.next_around_face(index);
         const int top = mesh.node_id_from_edge_index(index);
         space(1, 2) = top;
@@ -131,7 +131,7 @@ namespace poly_fem
             node(0,2) = mesh.node_from_edge_index(edge2);
         }
 
-//////////////////////////////////////////
+        //////////////////////////////////////////
         if(bottom >= mesh.n_elements() && left >= mesh.n_elements())
         {
             Navigation::Index start_index = mesh.get_index_from_face(el_index);
@@ -172,46 +172,26 @@ namespace poly_fem
     }
 
 
-    int build_local_parameterization_space(const Mesh &mesh, std::vector<Matrix3i> &spaces, std::vector<Matrix<MatrixXd, 3, 3> > &nodes)
+    int Spline2dBasis::build_bases(const Mesh &mesh, std::vector< std::vector<Basis> > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes)
     {
         using std::max;
-        const int n_els = mesh.n_elements();
-
-        spaces.resize(n_els);
-        nodes.resize(n_els);
-
-        int boundary_bases = 0;
-
-        for(int e = 0; e < n_els; ++e)
-        {
-            Matrix3i &space = spaces[e];
-            Matrix<MatrixXd, 3, 3> &node = nodes[e];
-
-            const int max_local_base = build_local_space(mesh, e, space, node);
-            boundary_bases = max(boundary_bases, max_local_base);
-
-        }
-
-        return boundary_bases;
-    }
-
-    int Spline2dBasis::build_bases(const Mesh &mesh, std::vector< std::vector<Basis> > &bases, std::vector< int > &bounday_nodes)
-    {
         assert(!mesh.is_volume());
 
         const int n_els = mesh.n_elements();
         bases.resize(n_els);
+        local_boundary.resize(n_els);
 
         bounday_nodes.clear();
 
-        std::vector<Matrix3i> spaces;
-        std::vector<Matrix<MatrixXd, 3, 3> > nodes;
-        const int boundary_bases = build_local_parameterization_space(mesh, spaces, nodes);
+        Matrix3i space;
+        Matrix<MatrixXd, 3, 3> loc_nodes;
+
+        int n_bases = n_els;
 
         for(int e = 0; e < n_els; ++e)
         {
-            const Matrix3i &space = spaces[e];
-            const Matrix<MatrixXd, 3, 3> &loc_nodes = nodes[e];
+            const int max_local_base = build_local_space(mesh, e, space, loc_nodes);
+            n_bases = max(n_bases, max_local_base);
 
             std::vector<Basis> &b=bases[e];
             b.resize(9);
@@ -225,6 +205,9 @@ namespace poly_fem
                 h_knots[0] = {0, 0, 0, 1};
                 h_knots[1] = {0, 0, 1, 1};
                 h_knots[2] = {0, 1, 1, 1};
+
+                local_boundary[e].set_left_boundary();
+                local_boundary[e].set_right_boundary();
             }
              //left neigh is absent
             else if(space(0,1) >= n_els)
@@ -232,6 +215,8 @@ namespace poly_fem
                 h_knots[0] = {0, 0, 0, 1};
                 h_knots[1] = {0, 0, 1, 2};
                 h_knots[2] = {0, 1, 2, 3};
+
+                local_boundary[e].set_right_boundary();
             }
             //right neigh is absent
             else if(space(2,1) >= n_els)
@@ -239,6 +224,8 @@ namespace poly_fem
                 h_knots[0] = {-2, -1, 0, 1};
                 h_knots[1] = {-1, 0, 1, 1};
                 h_knots[2] = {0, 1, 1, 1};
+
+                local_boundary[e].set_left_boundary();
             }
             else
             {
@@ -254,6 +241,9 @@ namespace poly_fem
                 v_knots[0] = {0, 0, 0, 1};
                 v_knots[1] = {0, 0, 1, 1};
                 v_knots[2] = {0, 1, 1, 1};
+
+                local_boundary[e].set_top_boundary();
+                local_boundary[e].set_bottom_boundary();
             }
             //bottom neigh is absent
             else if(space(1,0) >= n_els)
@@ -261,6 +251,8 @@ namespace poly_fem
                 v_knots[0] = {0, 0, 0, 1};
                 v_knots[1] = {0, 0, 1, 2};
                 v_knots[2] = {0, 1, 2, 3};
+
+                local_boundary[e].set_top_boundary();
             }
             //top neigh is absent
             else if(space(1,2) >= n_els)
@@ -268,6 +260,8 @@ namespace poly_fem
                 v_knots[0] = {-2, -1, 0, 1};
                 v_knots[1] = {-1, 0, 1, 1};
                 v_knots[2] = {0, 1, 1, 1};
+
+                local_boundary[e].set_bottom_boundary();
             }
             else
             {
@@ -299,7 +293,7 @@ namespace poly_fem
             }
         }
 
-        return n_els + boundary_bases;
+        return n_bases+1;
     }
 
 }

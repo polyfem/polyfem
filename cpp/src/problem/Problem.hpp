@@ -2,6 +2,7 @@
 #define PROBLEM_HPP
 
 #include "Basis.hpp"
+#include "LocalBoundary.hpp"
 
 #include <vector>
 #include <Eigen/Dense>
@@ -21,7 +22,7 @@ namespace poly_fem
 
 		bool has_exact_sol() const;
 
-		void remove_neumann_nodes(const std::vector< std::vector<Basis> > &bases, std::vector< int > &boundary_nodes);
+		void remove_neumann_nodes(const std::vector< std::vector<Basis> > &bases, const std::vector<int> &boundary_tag, std::vector< LocalBoundary > &local_boundary, std::vector< int > &boundary_nodes);
 
 	private:
 		int problem_num_;

@@ -5,7 +5,7 @@
 namespace poly_fem
 {
 
-	int HexBasis::build_bases(const Mesh &mesh, std::vector< std::vector<Basis> > &bases, std::vector< int > &bounday_nodes)
+	int HexBasis::build_bases(const Mesh &mesh, std::vector< std::vector<Basis> > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes)
 	{
 		assert(mesh.is_volume());
 		assert(false);

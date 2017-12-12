@@ -57,8 +57,11 @@ namespace poly_fem
 		mesh.load(mesh_path);
 		//TODO refine
 
+		mesh.set_boundary_tags(boundary_tag);
 		timer.stop();
 		std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
+
+		std::cout<<" h: "<<mesh.compute_mesh_size()<<std::endl;
 	}
 
 	void State::build_basis()
@@ -71,17 +74,17 @@ namespace poly_fem
 			if(use_splines)
 				assert(false);
 			else
-				n_bases = HexBasis::build_bases(mesh, bases, bounday_nodes);
+				n_bases = HexBasis::build_bases(mesh, bases, local_boundary, bounday_nodes);
 		}
 		else
 		{
 			if(use_splines)
-				n_bases = Spline2dBasis::build_bases(mesh, bases, bounday_nodes);
+				n_bases = Spline2dBasis::build_bases(mesh, bases, local_boundary, bounday_nodes);
 			else
-				n_bases = QuadBasis::build_bases(mesh, bases, bounday_nodes);
+				n_bases = QuadBasis::build_bases(mesh, bases, local_boundary, bounday_nodes);
 		}
 
-		problem.remove_neumann_nodes(bases, bounday_nodes);
+		problem.remove_neumann_nodes(bases, boundary_tag, local_boundary, bounday_nodes);
 
 		if(linear_elasticity)
 		{
@@ -181,14 +184,14 @@ namespace poly_fem
 			assembler.local_assembler().size() = mesh.is_volume() ? 3:2;
 			assembler.rhs(n_bases, values, values, problem, rhs);
 			rhs *= -1;
-			assembler.bc(bases, mesh, bounday_nodes, n_boundary_samples, problem, rhs);
+			assembler.bc(bases, mesh, local_boundary, bounday_nodes, n_boundary_samples, problem, rhs);
 		}
 		else
 		{
 			Assembler<Laplacian> assembler;
 			assembler.rhs(n_bases, values, values, problem, rhs);
 			rhs *= -1;
-			assembler.bc(bases, mesh, bounday_nodes, n_boundary_samples, problem, rhs);
+			assembler.bc(bases, mesh, local_boundary, bounday_nodes, n_boundary_samples, problem, rhs);
 		}
 
 		timer.stop();

@@ -51,6 +51,8 @@ set(SRCFILES
 	src/UIState.hpp
 	src/UIState.cpp
 
+	src/mesh/LocalBoundary.hpp
+
 	src/mesh/Mesh.hpp
 	src/mesh/Mesh.cpp
 	src/mesh/navigation.hpp

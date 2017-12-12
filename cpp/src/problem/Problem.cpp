@@ -115,10 +115,24 @@ namespace poly_fem
 		}
 	}
 
-	void Problem::remove_neumann_nodes(const std::vector< std::vector<Basis> > &bases, std::vector< int > &boundary_nodes)
+	void Problem::remove_neumann_nodes(const std::vector< std::vector<Basis> > &bases, const std::vector<int> &boundary_tag, std::vector< LocalBoundary > &local_boundary, std::vector< int > &boundary_nodes)
 	{
 		if(problem_num_ < 3)
 			return;
+
+		//TODO use b tag for everything
+		for(std::size_t j = 0; j < local_boundary.size(); ++j)
+		{
+			if(!local_boundary[j].is_boundary()) continue;
+
+			for(std::size_t i = 0; i < boundary_tag.size(); ++i)
+			{
+				const int tag = boundary_tag[i];
+				if(tag != 2 && tag != 4) continue;
+
+				// local_boundary[j].clear_edge_tag(i);
+			}
+		}
 
 		std::vector<int> old_b_nodes = boundary_nodes;
 		boundary_nodes.clear();

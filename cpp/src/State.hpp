@@ -6,6 +6,7 @@
 #include "Problem.hpp"
 #include "Mesh.hpp"
 #include "Problem.hpp"
+#include "LocalBoundary.hpp"
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
@@ -24,7 +25,7 @@ namespace poly_fem
 	{
 	public:
 		static State &state();
-		
+
 		void init(const std::string &mesh_path, const int n_refs, const int problem_num_);
 
 		void sertialize(const std::string &name);
@@ -45,6 +46,9 @@ namespace poly_fem
 		std::vector< std::vector<Basis> >    bases;
 		std::vector< ElementAssemblyValues > values;
 		std::vector< int >                   bounday_nodes;
+		std::vector< LocalBoundary >         local_boundary;
+
+		std::vector<int> boundary_tag;
 
 
 		Mesh mesh;

@@ -6,7 +6,7 @@
 #include "ElementAssemblyValues.hpp"
 #include "Problem.hpp"
 #include "Basis.hpp"
-#include "navigation.hpp"
+#include "LocalBoundary.hpp"
 
 #include <Eigen/Sparse>
 #include <vector>
@@ -177,7 +177,7 @@ namespace poly_fem
 			}
 		}
 
-		void bc(const std::vector< std::vector<Basis> > &bases, const Mesh &mesh, const std::vector<int> &bounday_nodes, const int resolution,  const Problem &problem, Eigen::MatrixXd &rhs) const
+		void bc(const std::vector< std::vector<Basis> > &bases, const Mesh &mesh, const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution,  const Problem &problem, Eigen::MatrixXd &rhs) const
 		{
 			const int n_el=int(bases.size());
 
@@ -191,7 +191,7 @@ namespace poly_fem
 
 			for(int e = 0; e < n_el; ++e)
 			{
-				bool has_samples = sample_boundary(e, mesh, resolution, samples);
+				bool has_samples = sample_boundary(e, mesh, local_boundary[e], resolution, samples);
 
 				if(!has_samples)
 					continue;
@@ -230,7 +230,7 @@ namespace poly_fem
 
 			for(int e = 0; e < n_el; ++e)
 			{
-				bool has_samples = sample_boundary(e, mesh, resolution, samples);
+				bool has_samples = sample_boundary(e, mesh, local_boundary[e], resolution, samples);
 
 				if(!has_samples)
 					continue;
@@ -315,7 +315,7 @@ namespace poly_fem
 	private:
 		LocalAssembler local_assembler_;
 
-		bool sample_boundary(const int el_index, const Mesh &mesh, const int resolution_one_d, Eigen::MatrixXd &samples) const
+		bool sample_boundary(const int el_index, const Mesh &mesh, const LocalBoundary &local_boundary, const int resolution_one_d, Eigen::MatrixXd &samples) const
 		{
 			if(mesh.is_volume())
 			{
@@ -423,23 +423,18 @@ namespace poly_fem
 			{
 				const int resolution = resolution_one_d;
 
-				Navigation::Index index = mesh.get_index_from_face(el_index);
-				const bool has_right = mesh.switch_face(index).face >= 0;
+				// std::cout<<local_boundary.flags()<<std::endl;
 
-				index = mesh.next_around_face(index);
-				const bool has_bottom = mesh.switch_face(index).face >= 0;
-
-				index = mesh.next_around_face(index);
-				const bool has_left = mesh.switch_face(index).face >= 0;
-
-				index = mesh.next_around_face(index);
-				const bool has_top = mesh.switch_face(index).face >= 0;
+				const bool is_right_boundary  = local_boundary.is_right_boundary();
+				const bool is_bottom_boundary = local_boundary.is_bottom_boundary();
+				const bool is_left_boundary   = local_boundary.is_left_boundary();
+				const bool is_top_boundary    = local_boundary.is_top_boundary();
 
 				int n = 0;
-				if(!has_right) n+=resolution;
-				if(!has_left) n+=resolution;
-				if(!has_top) n+=resolution;
-				if(!has_bottom) n+=resolution;
+				if(is_right_boundary) n+=resolution;
+				if(is_left_boundary) n+=resolution;
+				if(is_top_boundary) n+=resolution;
+				if(is_bottom_boundary) n+=resolution;
 
 				if(n <= 0) return false;
 
@@ -447,28 +442,28 @@ namespace poly_fem
 
 				samples.resize(n, 2);
 				n = 0;
-				if(!has_right){
+				if(is_right_boundary){
 					samples.block(n, 0, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);
 					samples.block(n, 1, resolution, 1) = t;
 
 					n += resolution;
 				}
 
-				if(!has_top){
+				if(is_top_boundary){
 					samples.block(n, 0, resolution, 1) = t;
 					samples.block(n, 1, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);
 
 					n += resolution;
 				}
 
-				if(!has_left){
+				if(is_left_boundary){
 					samples.block(n, 0, resolution, 1) = Eigen::MatrixXd::Ones(resolution, 1);
 					samples.block(n, 1, resolution, 1) = t;
 
 					n += resolution;
 				}
 
-				if(!has_bottom){
+				if(is_bottom_boundary){
 					samples.block(n, 0, resolution, 1) = t;
 					samples.block(n, 1, resolution, 1) = Eigen::MatrixXd::Ones(resolution, 1);
 
