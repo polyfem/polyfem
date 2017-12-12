@@ -40,7 +40,7 @@ namespace poly_fem
 			const ElementBases &bs = state.bases[i];
 			MatrixXd local_pts;
 
-			if(int(bs.bases.size()) == 4)
+			if(int(bs.bases.size()) == 4 || int(bs.bases.size()) == 9)
 				local_pts = local_vis_pts_quad;
 			else if(int(bs.bases.size()) == 3)
 				local_pts = local_vis_pts_tri;
@@ -315,7 +315,7 @@ namespace poly_fem
 			{
 				const ElementBases &bs = state.bases[i];
 
-				if(int(bs.bases.size()) == 4){
+				if(int(bs.bases.size()) == 4 || int(bs.bases.size()) == 9){
 					faces_total_size   += local_vis_faces_quad.rows();
 					points_total_size += local_vis_pts_quad.rows();
 				}
@@ -338,7 +338,7 @@ namespace poly_fem
 			for(std::size_t i = 0; i < state.bases.size(); ++i)
 			{
 				const ElementBases &bs = state.bases[i];
-				if(int(bs.bases.size()) == 4)
+				if(int(bs.bases.size()) == 4 || int(bs.bases.size()) == 9)
 				{
 					Basis::eval_geom_mapping(local_vis_pts_quad, bs.bases, mapped);
 					vis_faces.block(face_index, 0, local_vis_faces_quad.rows(), 3) = local_vis_faces_quad.array() + point_index;
