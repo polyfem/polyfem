@@ -91,10 +91,10 @@ namespace poly_fem
 
 			Eigen::MatrixXd p0, p1, p;
 
-			const GEO::Attribute<bool> boundary(mesh_.edges.attributes(), "boundary_edge");
+			const GEO::Attribute<int> boundary(mesh_.edges.attributes(), "boundary_edge");
 			for(GEO::index_t e = 0; e < mesh_.edges.nb(); ++e)
 			{
-				if(!boundary[e])
+				if(boundary[e] == 1)
 					continue;
 
 				const int v0 = mesh_.edges.vertex(e, 0);
@@ -155,7 +155,8 @@ namespace poly_fem
 		int id = switch_face(index).face;
 		if(id >= 0)
 		{
-			return node_from_face(id);
+			if(mesh_.facets.nb_vertices(id) == 4)
+				return node_from_face(id);
 		}
 
 		id = edge_node_id(index.edge);
@@ -197,7 +198,23 @@ namespace poly_fem
 
 	void Mesh::create_boundary_nodes()
 	{
-		const GEO::Attribute<bool> boundary(mesh_.edges.attributes(), "boundary_edge");
+		GEO::Attribute<int> boundary(mesh_.edges.attributes(), "boundary_edge");
+
+		for(GEO::index_t f = 0; f < mesh_.facets.nb(); ++f)
+		{
+			const int n_vertices = mesh_.facets.nb_vertices(f);
+			if(n_vertices <= 4) continue;
+
+			Navigation::Index index = get_index_from_face(f);
+
+			for(int j = 0; j < n_vertices; ++j)
+			{
+				if(boundary[index.edge] == 0)
+					boundary[index.edge] = 2;
+
+				index = next_around_face(index);
+			}
+		}
 
 		GEO::Attribute<int> edges_node_id(mesh_.edges.attributes(), "edges_node_id");
 		GEO::Attribute<std::array<double, 3> > edges_node(mesh_.edges.attributes(), "edges_node");
@@ -210,7 +227,7 @@ namespace poly_fem
 
 		for (int e = 0; e < (int) mesh_.edges.nb(); ++e)
 		{
-			if(!boundary[e])
+			if(boundary[e] == 0)
 			{
 				edges_node_id[e] = -1;
 				continue;
@@ -235,12 +252,12 @@ namespace poly_fem
 		{
 			Navigation::Index index = get_index_from_face(e);
 
-			bool was_boundary = boundary[get_index_from_face(e, n_element_vertices(e)-1).edge];
+			bool was_boundary = boundary[get_index_from_face(e, n_element_vertices(e)-1).edge] != 0;
 			for(int i = 0; i < n_element_vertices(e); ++i)
 			{
 				if(was_boundary)
 				{
-					if(boundary[index.edge])
+					if(boundary[index.edge] != 0)
 					{
 						const int v_id = index.vertex;
 						vertices_node_id[v_id] = counter++;
@@ -251,7 +268,7 @@ namespace poly_fem
 					}
 				}
 
-				was_boundary = boundary[index.edge];
+				was_boundary = boundary[index.edge] != 0;
 				index = next_around_face(index);
 			}
 		}

@@ -193,6 +193,9 @@ namespace poly_fem
 
         for(int e = 0; e < n_els; ++e)
         {
+            if(mesh.n_element_vertices(e) != 4)
+                continue;
+            
             const int max_local_base = build_local_space(mesh, e, space, loc_nodes);
             n_bases = max(n_bases, max_local_base);
 

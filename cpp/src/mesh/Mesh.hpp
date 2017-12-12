@@ -39,7 +39,11 @@ namespace poly_fem
 		inline int node_id_from_edge_index(const Navigation::Index &index) const
 		{
 			int id = switch_face(index).face;
-			if(id >= 0) return id;
+			if(id >= 0)
+			{
+				if(mesh_.facets.nb_vertices(id) == 4)
+					return id;
+			}
 
 			id = edge_node_id(index.edge);
 			assert(id >= 0);

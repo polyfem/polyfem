@@ -58,10 +58,10 @@ void poly_fem::Navigation::prepare_mesh(GEO::Mesh &M) {
 		c2e[c] = current_id;
 	}
 
-	GEO::Attribute<bool> boundary_edges_attr(M.edges.attributes(), "boundary_edge");
+	GEO::Attribute<int> boundary_edges_attr(M.edges.attributes(), "boundary_edge");
 	assert(M.edges.nb() == (index_t) boundary_edges.size());
 	for (index_t e = 0; e < M.edges.nb(); ++e) {
-		boundary_edges_attr[e] = boundary_edges[e];
+		boundary_edges_attr[e] = boundary_edges[e] ? 1 : 0;
 	}
 
 }
