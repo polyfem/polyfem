@@ -191,7 +191,7 @@ namespace poly_fem
 
 			for(int e = 0; e < n_el; ++e)
 			{
-				bool has_samples = sample_boundary(e, mesh, local_boundary[e], resolution, samples);
+				bool has_samples = sample_boundary(e, mesh, local_boundary[e], resolution, true, samples);
 
 				if(!has_samples)
 					continue;
@@ -230,7 +230,7 @@ namespace poly_fem
 
 			for(int e = 0; e < n_el; ++e)
 			{
-				bool has_samples = sample_boundary(e, mesh, local_boundary[e], resolution, samples);
+				bool has_samples = sample_boundary(e, mesh, local_boundary[e], resolution, false, samples);
 
 				if(!has_samples)
 					continue;
@@ -315,7 +315,7 @@ namespace poly_fem
 	private:
 		LocalAssembler local_assembler_;
 
-		bool sample_boundary(const int el_index, const Mesh &mesh, const LocalBoundary &local_boundary, const int resolution_one_d, Eigen::MatrixXd &samples) const
+		bool sample_boundary(const int el_index, const Mesh &mesh, const LocalBoundary &local_boundary, const int resolution_one_d, const bool skip_computation, Eigen::MatrixXd &samples) const
 		{
 			if(mesh.is_volume())
 			{
@@ -438,9 +438,11 @@ namespace poly_fem
 
 				if(n <= 0) return false;
 
+				samples.resize(n, 2);
+				if(skip_computation) return true;
+
 				const Eigen::MatrixXd t = Eigen::VectorXd::LinSpaced(resolution, 0, 1);
 
-				samples.resize(n, 2);
 				n = 0;
 				if(is_right_boundary){
 					samples.block(n, 0, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);

@@ -84,6 +84,8 @@ namespace poly_fem
 				n_bases = QuadBasis::build_bases(mesh, bases, local_boundary, bounday_nodes);
 		}
 
+		boundary_tag.clear();
+		local_boundary.clear();
 		problem.remove_neumann_nodes(bases, boundary_tag, local_boundary, bounday_nodes);
 
 		if(linear_elasticity)
