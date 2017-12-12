@@ -98,7 +98,7 @@ namespace poly_fem
 		return res;
 	}
 
-	Eigen::MatrixXd Mesh::node_from_vertex(const int &vertex_id) const
+	Eigen::MatrixXd Mesh::node_from_vertex(const int vertex_id) const
 	{
 		GEO::Attribute<int> vertices_node_id(mesh_.vertices.attributes(), "vertices_node_id");
 		assert(vertices_node_id[vertex_id] >= 0);

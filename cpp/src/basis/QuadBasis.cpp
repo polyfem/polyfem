@@ -83,7 +83,7 @@ namespace poly_fem
 				b[j].set_basis([discr_order, remap, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { QuadBasis::basis(discr_order, remap[j], uv, val); });
 				b[j].set_grad( [discr_order, remap, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  QuadBasis::grad(discr_order, remap[j], uv, val); });
 
-				index = next_around_face(mesh.mesh(), index);
+				index = mesh.next_around_face(index);
 			}
 		}
 

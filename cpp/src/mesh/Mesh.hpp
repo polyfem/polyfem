@@ -26,6 +26,7 @@ namespace poly_fem
 		bool load(const std::string &path);
 		bool save(const std::string &path) const;
 
+		//get nodes ids
 		int edge_node_id(const int edge_id) const;
 		int vertex_node_id(const int vertex_id) const;
 
@@ -40,15 +41,15 @@ namespace poly_fem
 			return id;
 		}
 
+		//get nodes positions
 		Eigen::MatrixXd node_from_edge_index(const Navigation::Index &index) const;
 		Eigen::MatrixXd node_from_face(const int face_id) const;
-		Eigen::MatrixXd node_from_vertex(const int &vertex_id) const;
+		Eigen::MatrixXd node_from_vertex(const int vertex_id) const;
 
-		inline const GEO::Mesh  &mesh() const { return mesh_; }
-
+		//navigation wrapper
 		Navigation::Index get_index_from_face(int f, int lv = 0) const;
 
-	// Navigation in a surface mesh
+		// Navigation in a surface mesh
 		Navigation::Index switch_vertex(Navigation::Index idx) const;
 		Navigation::Index switch_edge(Navigation::Index idx) const;
 		Navigation::Index switch_face(Navigation::Index idx) const;
