@@ -82,11 +82,17 @@ namespace poly_fem
 	{
 		state.init(mesh_path, n_refs, problem_num);
 
-		auto clear_func = [&](){viewer.data.clear(); };
+		auto clear_func = [&](){ viewer.data.clear(); };
 
 		auto show_mesh_func = [&](){
 			clear_func();
+			viewer.data.set_face_based(false);
 			viewer.data.set_mesh(tri_pts, tri_faces);
+			viewer.data.set_face_based(false);
+
+			MatrixXd p0, p1;
+			state.mesh.get_edges(p0, p1);
+			viewer.data.add_edges(p0, p1, MatrixXd::Zero(p0.rows(), 3));
 		};
 
 		auto show_vis_mesh_func = [&](){
@@ -100,26 +106,26 @@ namespace poly_fem
 
 			for(std::size_t i = 0; i < state.bases.size(); ++i)
 			{
-				const std::vector<Basis> &basis = state.bases[i];
-				for(std::size_t j = 0; j < basis.size(); ++j)
+				const ElementBases &basis = state.bases[i];
+				for(std::size_t j = 0; j < basis.bases.size(); ++j)
 				{
-					int g_index = basis[j].global_index();
+					int g_index = basis.bases[j].global_index();
 
 					if(state.linear_elasticity)
 						g_index *= 2;
 
-					MatrixXd node = basis[j].node();
+					MatrixXd node = basis.bases[j].node();
 					// node += MatrixXd::Random(node.rows(), node.cols())/100;
 					MatrixXd txt_p = node;
 					for(long k = 0; k < txt_p.size(); ++k)
 						txt_p(k) += 0.02;
 
-					MatrixXd col = MatrixXd::Zero(basis[j].node().rows(), 3);
+					MatrixXd col = MatrixXd::Zero(basis.bases[j].node().rows(), 3);
 					if(std::find(state.bounday_nodes.begin(), state.bounday_nodes.end(), g_index) != state.bounday_nodes.end())
 						col.col(0).setOnes();
 
 
-					viewer.data.add_points(basis[j].node(), col);
+					viewer.data.add_points(basis.bases[j].node(), col);
 					viewer.data.add_label(txt_p.transpose(), std::to_string(g_index));
 				}
 			}
@@ -249,8 +255,8 @@ namespace poly_fem
 			MatrixXd mapped, tmp;
 			for(std::size_t i = 0; i < state.bases.size(); ++i)
 			{
-				const std::vector<Basis> &bs = state.bases[i];
-				Basis::eval_geom_mapping(local_vis_pts, bs, mapped);
+				const ElementBases &bs = state.bases[i];
+				Basis::eval_geom_mapping(local_vis_pts, bs.bases, mapped);
 				vis_pts.block(i*local_vis_pts.rows(), 0, local_vis_pts.rows(), mapped.cols()) = mapped;
 				vis_faces.block(i*local_vis_faces.rows(), 0, local_vis_faces.rows(), 3) = local_vis_faces.array() + int(i)*int(local_vis_pts.rows());
 			}

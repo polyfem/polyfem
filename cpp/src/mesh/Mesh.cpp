@@ -32,13 +32,30 @@ namespace poly_fem
 		return true;
 	}
 
+	void Mesh::get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1)
+	{
+		p0.resize(mesh_.edges.nb(), is_volume() ? 3 : 2);
+		p1.resize(p0.rows(), p0.cols());
+
+		Eigen::MatrixXd p0t, p1t;
+		for(GEO::index_t e = 0; e < mesh_.edges.nb(); ++e)
+		{
+			const int v0 = mesh_.edges.vertex(e, 0);
+			const int v1 = mesh_.edges.vertex(e, 1);
+
+			point(v0, p0t); point(v1, p1t);
+
+			p0.row(e) = p0t;
+			p1.row(e) = p1t;
+		}
+	}
+
 	double Mesh::compute_mesh_size() const
 	{
 		Eigen::MatrixXd p0, p1, p;
 		double sum = 0;
 		for(GEO::index_t e = 0; e < mesh_.edges.nb(); ++e)
 		{
-
 			const int v0 = mesh_.edges.vertex(e, 0);
 			const int v1 = mesh_.edges.vertex(e, 1);
 			point(v0, p0); point(v1, p1);

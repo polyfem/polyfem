@@ -61,10 +61,14 @@ set(SRCFILES
 	src/quadrature/Quadrature.hpp
 	src/quadrature/LineQuadrature.hpp
 	src/quadrature/LineQuadrature.cpp
+	src/quadrature/TriQuadrature.cpp
+	src/quadrature/TriQuadrature.hpp
 	src/quadrature/QuadQuadrature.cpp
 	src/quadrature/QuadQuadrature.hpp
 	src/quadrature/HexQuadrature.cpp
 	src/quadrature/HexQuadrature.hpp
+
+	src/basis/ElementBases.hpp
 
 	src/basis/Basis.hpp
 	src/basis/Basis.cpp
@@ -72,20 +76,18 @@ set(SRCFILES
 	src/basis/QuadraticBSpline.cpp
 	src/basis/QuadraticBSpline.hpp
 
-	src/basis/BSpline.cpp
-	src/basis/BSpline.hpp
-
 	src/basis/QuadraticTPBSpline.cpp
 	src/basis/QuadraticTPBSpline.hpp
-
-	src/basis/TPBSpline.cpp
-	src/basis/TPBSpline.hpp
 
 	src/basis/Spline2dBasis.cpp
 	src/basis/Spline2dBasis.hpp
 
+	src/basis/TriBasis.cpp
+	src/basis/TriBasis.hpp
+
 	src/basis/QuadBasis.cpp
 	src/basis/QuadBasis.hpp
+
 	src/basis/HexBasis.cpp
 	src/basis/HexBasis.hpp
 

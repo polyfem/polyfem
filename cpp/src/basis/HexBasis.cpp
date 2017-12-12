@@ -5,11 +5,14 @@
 namespace poly_fem
 {
 
-	int HexBasis::build_bases(const Mesh &mesh, std::vector< std::vector<Basis> > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes)
+	int HexBasis::build_bases(const Mesh &mesh, const int quadrature_order, std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes)
 	{
 		assert(mesh.is_volume());
 		assert(false);
 		return 0;
+
+		// HexQuadrature quad_quadrature;
+		// 	quad_quadrature.get_quadrature(quadrature_order, quadrature);
 
 		// int disc_order = 1;
 

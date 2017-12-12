@@ -1,6 +1,8 @@
 #ifndef BASIS_HPP
 #define BASIS_HPP
 
+#include "Quadrature.hpp"
+
 #include <Eigen/Dense>
 #include <functional>
 

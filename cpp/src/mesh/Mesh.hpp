@@ -28,6 +28,8 @@ namespace poly_fem
 		bool load(const std::string &path);
 		bool save(const std::string &path) const;
 
+		void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1);
+
 		//get nodes ids
 		int edge_node_id(const int edge_id) const;
 		int vertex_node_id(const int vertex_id) const;

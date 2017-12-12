@@ -1,7 +1,7 @@
 #ifndef STATE_HPP
 #define STATE_HPP
 
-#include "Basis.hpp"
+#include "ElementBases.hpp"
 #include "ElementAssemblyValues.hpp"
 #include "Problem.hpp"
 #include "Mesh.hpp"
@@ -43,7 +43,7 @@ namespace poly_fem
 
 		int n_bases;
 
-		std::vector< std::vector<Basis> >    bases;
+		std::vector< ElementBases >    bases;
 		std::vector< ElementAssemblyValues > values;
 		std::vector< int >                   bounday_nodes;
 		std::vector< LocalBoundary >         local_boundary;

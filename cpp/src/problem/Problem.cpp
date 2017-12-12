@@ -103,9 +103,11 @@ namespace poly_fem
 				for(long i = 0; i < x.size(); ++i)
 				{
 					if(fabs(x(i)-1)<1e-8)
-						val(i, 0)=0.05;
+						val(i, 0)=0.2;
 					else if(fabs(x(i))<1e-8)
-						val(i, 0)=-0.05;
+						val(i, 0)=-0.2;
+					// else
+						// assert(false);
 				}
 
 				return;
@@ -115,7 +117,7 @@ namespace poly_fem
 		}
 	}
 
-	void Problem::remove_neumann_nodes(const std::vector< std::vector<Basis> > &bases, const std::vector<int> &boundary_tag, std::vector< LocalBoundary > &local_boundary, std::vector< int > &boundary_nodes)
+	void Problem::remove_neumann_nodes(const std::vector< ElementBases > &bases, const std::vector<int> &boundary_tag, std::vector< LocalBoundary > &local_boundary, std::vector< int > &boundary_nodes)
 	{
 		if(problem_num_ < 3)
 			return;
@@ -124,11 +126,11 @@ namespace poly_fem
 		for(std::size_t j = 0; j < local_boundary.size(); ++j)
 		{
 			if(!local_boundary[j].is_boundary()) continue;
-
-			for(std::size_t i = 0; i < boundary_tag.size(); ++i)
+			for(int i = 0; i < int(boundary_tag.size()); ++i)
 			{
 				const int tag = boundary_tag[i];
-				if(tag != 2 && tag != 4) continue;
+
+				if(tag == 1 || tag == 3) continue;
 
 				// local_boundary[j].clear_edge_tag(i);
 			}
@@ -139,16 +141,16 @@ namespace poly_fem
 
 		for(std::size_t i = 0; i < bases.size(); ++i)
 		{
-			const std::vector<Basis> &bs = bases[i];
+			const ElementBases &bs = bases[i];
 
-			for(std::size_t j = 0; j < bs.size(); ++j)
+			for(std::size_t j = 0; j < bs.bases.size(); ++j)
 			{
-				if(std::find(old_b_nodes.begin(), old_b_nodes.end(), bs[j].global_index()) != old_b_nodes.end())
+				if(std::find(old_b_nodes.begin(), old_b_nodes.end(), bs.bases[j].global_index()) != old_b_nodes.end())
 				{
-					const auto &node = bs[j].node();
+					const auto &node = bs.bases[j].node();
 
 					if(fabs(node(0)-1)<1e-8 || fabs(node(0))<1e-8)
-						boundary_nodes.push_back(bs[j].global_index());
+						boundary_nodes.push_back(bs.bases[j].global_index());
 				}
 			}
 		}

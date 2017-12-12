@@ -1,5 +1,8 @@
 #include "QuadBasis.hpp"
-#include "navigation.hpp"
+#include "TriBasis.hpp"
+
+#include "QuadQuadrature.hpp"
+#include "TriQuadrature.hpp"
 
 #include <cassert>
 #include <algorithm>
@@ -44,7 +47,7 @@ namespace poly_fem
 		return 4-8*t;
 	}
 
-	int QuadBasis::build_bases(const Mesh &mesh, std::vector< std::vector<Basis> > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes)
+	int QuadBasis::build_bases(const Mesh &mesh, const int quadrature_order, std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes)
 	{
 		bounday_nodes.clear();
 
@@ -60,40 +63,83 @@ namespace poly_fem
 		Eigen::MatrixXd node;
 
 		const int remap[4] = {0, 3, 2, 1};
-		// const int remap[4] = {0, 1, 2, 3};
+
+		QuadQuadrature quad_quadrature;
+		TriQuadrature tri_quadrature;
 
 		for(int e = 0; e < mesh.n_elements(); ++e)
 		{
 			const int n_el_vertices = mesh.n_element_vertices(e);
-			assert(n_el_vertices == 4);
+			ElementBases &b=bases[e];
 
-			std::vector<Basis> &b=bases[e];
-			b.resize(n_el_vertices);
+			if(n_el_vertices == 4)
+			{
+				quad_quadrature.get_quadrature(quadrature_order, b.quadrature);
 
-			Navigation::Index index = mesh.get_index_from_face(e);
-			for (int j = 0; j < n_el_vertices; ++j) {
-				if (mesh.switch_face(index).face < 0) {
-					bounday_nodes.push_back(index.vertex);
-					bounday_nodes.push_back(mesh.switch_vertex(index).vertex);
+				b.bases.resize(n_el_vertices);
 
-					switch(j)
-					{
-						case 0: local_boundary[e].set_right_edge_id(index.edge); local_boundary[e].set_right_boundary(); break;
-						case 1: local_boundary[e].set_bottom_edge_id(index.edge); local_boundary[e].set_bottom_boundary(); break;
-						case 2: local_boundary[e].set_left_edge_id(index.edge); local_boundary[e].set_left_boundary(); break;
-						case 3: local_boundary[e].set_top_edge_id(index.edge); local_boundary[e].set_top_boundary(); break;
+				Navigation::Index index = mesh.get_index_from_face(e);
+				for (int j = 0; j < n_el_vertices; ++j)
+				{
+					if (mesh.switch_face(index).face < 0) {
+						bounday_nodes.push_back(index.vertex);
+						bounday_nodes.push_back(mesh.switch_vertex(index).vertex);
+
+						switch(j)
+						{
+							case 0: local_boundary[e].set_right_edge_id(index.edge); local_boundary[e].set_right_boundary(); break;
+							case 1: local_boundary[e].set_bottom_edge_id(index.edge); local_boundary[e].set_bottom_boundary(); break;
+							case 2: local_boundary[e].set_left_edge_id(index.edge); local_boundary[e].set_left_boundary(); break;
+							case 3: local_boundary[e].set_top_edge_id(index.edge); local_boundary[e].set_top_boundary(); break;
+						}
 					}
+
+					const int global_index = index.vertex;
+
+					mesh.point(global_index, node);
+					b.bases[j].init(global_index, j, node);
+
+					b.bases[j].set_basis([discr_order, remap, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { QuadBasis::basis(discr_order, remap[j], uv, val); });
+					b.bases[j].set_grad( [discr_order, remap, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  QuadBasis::grad(discr_order, remap[j], uv, val); });
+
+					index = mesh.next_around_face(index);
 				}
+			}
+			else if(n_el_vertices == 3)
+			{
+				tri_quadrature.get_quadrature(quadrature_order, b.quadrature);
 
-				const int global_index = index.vertex;
+				b.bases.resize(n_el_vertices);
 
-				mesh.point(global_index, node);
-				b[j].init(global_index, j, node);
+				Navigation::Index index = mesh.get_index_from_face(e);
+				for (int j = 0; j < n_el_vertices; ++j) {
+					if (mesh.switch_face(index).face < 0) {
+						bounday_nodes.push_back(index.vertex);
+						bounday_nodes.push_back(mesh.switch_vertex(index).vertex);
 
-				b[j].set_basis([discr_order, remap, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { QuadBasis::basis(discr_order, remap[j], uv, val); });
-				b[j].set_grad( [discr_order, remap, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  QuadBasis::grad(discr_order, remap[j], uv, val); });
+						switch(j)
+						{
+							case 0: local_boundary[e].set_right_edge_id(index.edge); local_boundary[e].set_right_boundary(); break;
+							case 1: local_boundary[e].set_bottom_edge_id(index.edge); local_boundary[e].set_bottom_boundary(); break;
+							case 2: local_boundary[e].set_left_edge_id(index.edge); local_boundary[e].set_left_boundary(); break;
+						}
+					}
 
-				index = mesh.next_around_face(index);
+					const int global_index = index.vertex;
+
+					mesh.point(global_index, node);
+					b.bases[j].init(global_index, j, node);
+
+					b.bases[j].set_basis([discr_order, remap, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { TriBasis::basis(discr_order, remap[j], uv, val); });
+					b.bases[j].set_grad( [discr_order, remap, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  TriBasis::grad(discr_order, remap[j], uv, val); });
+
+					index = mesh.next_around_face(index);
+				}
+			}
+			else
+			{
+				assert(false);
+				//TODO triangulate element...
 			}
 		}
 

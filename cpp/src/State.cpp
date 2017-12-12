@@ -32,13 +32,13 @@ namespace poly_fem
 
 		for(std::size_t i = 0; i < bases.size(); ++i)
 		{
-			const std::vector<Basis> &bs = bases[i];
+			const ElementBases &bs = bases[i];
 
 			MatrixXd local_res = MatrixXd::Zero(local_pts.rows(), actual_dim);
 
-			for(std::size_t j = 0; j < bs.size(); ++j)
+			for(std::size_t j = 0; j < bs.bases.size(); ++j)
 			{
-				const Basis &b = bs[j];
+				const Basis &b = bs.bases[j];
 
 				b.basis(local_pts, tmp);
 				for(int d = 0; d < actual_dim; ++d)
@@ -69,23 +69,24 @@ namespace poly_fem
 		igl::Timer timer; timer.start();
 		std::cout<<"Building basis..."<<std::flush;
 
+		local_boundary.clear();
+		bounday_nodes.clear();
+
 		if(mesh.is_volume())
 		{
 			if(use_splines)
 				assert(false);
 			else
-				n_bases = HexBasis::build_bases(mesh, bases, local_boundary, bounday_nodes);
+				n_bases = HexBasis::build_bases(mesh, quadrature_order, bases, local_boundary, bounday_nodes);
 		}
 		else
 		{
 			if(use_splines)
-				n_bases = Spline2dBasis::build_bases(mesh, bases, local_boundary, bounday_nodes);
+				n_bases = Spline2dBasis::build_bases(mesh, quadrature_order, bases, local_boundary, bounday_nodes);
 			else
-				n_bases = QuadBasis::build_bases(mesh, bases, local_boundary, bounday_nodes);
+				n_bases = QuadBasis::build_bases(mesh, quadrature_order, bases, local_boundary, bounday_nodes);
 		}
 
-		boundary_tag.clear();
-		local_boundary.clear();
 		problem.remove_neumann_nodes(bases, boundary_tag, local_boundary, bounday_nodes);
 
 		if(linear_elasticity)
@@ -108,11 +109,11 @@ namespace poly_fem
 	}
 
 
-	template<class Assembler, class Quadrature>
-	void compute_assembly_values(const Mesh &mesh, const Quadrature &quadrature, const std::vector< std::vector<Basis> > &bases, std::vector< ElementAssemblyValues > &values)
+	template<class Assembler>
+	void compute_assembly_values(const Mesh &mesh, const std::vector< ElementBases > &bases, std::vector< ElementAssemblyValues > &values)
 	{
 		Assembler assmbler;
-		assmbler.compute_assembly_values(mesh.is_volume(), quadrature, bases, values);
+		assmbler.compute_assembly_values(mesh.is_volume(), bases, values);
 	}
 
 	void State::compute_assembly_vals()
@@ -122,22 +123,10 @@ namespace poly_fem
 
 		std::sort(bounday_nodes.begin(), bounday_nodes.end());
 
-		Quadrature quadrature;
-		if(mesh.is_volume())
-		{
-			HexQuadrature quad_quadrature;
-			quad_quadrature.get_quadrature(quadrature_order, quadrature);
-		}
-		else
-		{
-			QuadQuadrature quad_quadrature;
-			quad_quadrature.get_quadrature(quadrature_order, quadrature);
-		}
-
 		if(linear_elasticity)
-			compute_assembly_values<Assembler<LinearElasticity> >(mesh, quadrature, bases, values);
+			compute_assembly_values<Assembler<LinearElasticity> >(mesh, bases, values);
 		else
-			compute_assembly_values<Assembler<Laplacian> >(mesh, quadrature, bases, values);
+			compute_assembly_values<Assembler<Laplacian> >(mesh, bases, values);
 
 		timer.stop();
 		std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;

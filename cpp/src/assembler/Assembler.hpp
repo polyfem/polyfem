@@ -20,16 +20,16 @@ namespace poly_fem
 	class Assembler
 	{
 	public:
-		template<class Quadrature>
-		void compute_assembly_values(const bool is_volume, const Quadrature &quadrature, const std::vector< std::vector<Basis> > &bases, std::vector< ElementAssemblyValues > &values)
+		void compute_assembly_values(const bool is_volume, const std::vector< ElementBases > &bases, std::vector< ElementAssemblyValues > &values)
 		{
 			values.resize(bases.size());
 
 			for(std::size_t i = 0; i < bases.size(); ++i)
 			{
-				const std::vector<Basis> &bs = bases[i];
+				const Quadrature &quadrature = bases[i].quadrature;
+				const ElementBases &bs = bases[i];
 				ElementAssemblyValues &vals = values[i];
-				vals.basis_values.resize(bs.size());
+				vals.basis_values.resize(bs.bases.size());
 				vals.quadrature = quadrature;
 
 				Eigen::MatrixXd mval = Eigen::MatrixXd::Zero(quadrature.points.rows(), quadrature.points.cols());
@@ -38,10 +38,10 @@ namespace poly_fem
 				Eigen::MatrixXd dymv = Eigen::MatrixXd::Zero(quadrature.points.rows(), quadrature.points.cols());
 				Eigen::MatrixXd dzmv = Eigen::MatrixXd::Zero(quadrature.points.rows(), quadrature.points.cols());
 
-				const int n_local_bases = int(bs.size());
+				const int n_local_bases = int(bs.bases.size());
 				for(int j = 0; j < n_local_bases; ++j)
 				{
-					const Basis &b=bs[j];
+					const Basis &b=bs.bases[j];
 					AssemblyValues &val = vals.basis_values[j];
 
 					val.global_index = b.global_index();
@@ -177,7 +177,7 @@ namespace poly_fem
 			}
 		}
 
-		void bc(const std::vector< std::vector<Basis> > &bases, const Mesh &mesh, const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution,  const Problem &problem, Eigen::MatrixXd &rhs) const
+		void bc(const std::vector< ElementBases > &bases, const Mesh &mesh, const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution,  const Problem &problem, Eigen::MatrixXd &rhs) const
 		{
 			const int n_el=int(bases.size());
 
@@ -196,14 +196,14 @@ namespace poly_fem
 				if(!has_samples)
 					continue;
 
-				const std::vector<Basis> &bs = bases[e];
-				const int n_local_bases = int(bs.size());
+				const ElementBases &bs = bases[e];
+				const int n_local_bases = int(bs.bases.size());
 
 				total_size += samples.rows();
 
 				for(int j = 0; j < n_local_bases; ++j)
 				{
-					const Basis &b=bs[j];
+					const Basis &b=bs.bases[j];
 
 					if(std::find(bounday_nodes.begin(), bounday_nodes.end(), local_assembler_.size() * b.global_index()) != bounday_nodes.end()) //pt found
 					{
@@ -235,14 +235,14 @@ namespace poly_fem
 				if(!has_samples)
 					continue;
 
-				const std::vector<Basis> &bs = bases[e];
-				const int n_local_bases = int(bs.size());
+				const ElementBases &bs = bases[e];
+				const int n_local_bases = int(bs.bases.size());
 
 				Eigen::MatrixXd mapped = Eigen::MatrixXd::Zero(samples.rows(), samples.cols());
 
 				for(int j = 0; j < n_local_bases; ++j)
 				{
-					const Basis &b=bs[j];
+					const Basis &b=bs.bases[j];
 
 					b.basis(samples, tmp);
 

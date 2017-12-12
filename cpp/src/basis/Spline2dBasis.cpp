@@ -1,6 +1,7 @@
 #include "Spline2dBasis.hpp"
 
 #include "QuadraticTPBSpline.hpp"
+#include "QuadQuadrature.hpp"
 #include "navigation.hpp"
 
 #include <cassert>
@@ -172,7 +173,7 @@ namespace poly_fem
     }
 
 
-    int Spline2dBasis::build_bases(const Mesh &mesh, std::vector< std::vector<Basis> > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes)
+    int Spline2dBasis::build_bases(const Mesh &mesh, const int quadrature_order, std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes)
     {
         using std::max;
         assert(!mesh.is_volume());
@@ -188,13 +189,16 @@ namespace poly_fem
 
         int n_bases = n_els;
 
+        QuadQuadrature quad_quadrature;
+
         for(int e = 0; e < n_els; ++e)
         {
             const int max_local_base = build_local_space(mesh, e, space, loc_nodes);
             n_bases = max(n_bases, max_local_base);
 
-            std::vector<Basis> &b=bases[e];
-            b.resize(9);
+            ElementBases &b=bases[e];
+            quad_quadrature.get_quadrature(quadrature_order, b.quadrature);
+            b.bases.resize(9);
 
             std::vector<std::vector<double> > h_knots(3);
             std::vector<std::vector<double> > v_knots(3);
@@ -284,11 +288,11 @@ namespace poly_fem
                         bounday_nodes.push_back(global_index);
 
                     const int local_index = y*3 + x;
-                    b[local_index].init(global_index, local_index, node);
+                    b.bases[local_index].init(global_index, local_index, node);
 
                     const QuadraticTensorProductBSpline spline(h_knots[x], v_knots[y]);
-                    b[local_index].set_basis([spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.interpolate(uv, val); });
-                    b[local_index].set_grad( [spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.derivative(uv, val); });
+                    b.bases[local_index].set_basis([spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.interpolate(uv, val); });
+                    b.bases[local_index].set_grad( [spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.derivative(uv, val); });
                 }
             }
         }
