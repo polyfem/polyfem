@@ -108,10 +108,9 @@ namespace poly_fem
 					if(state.linear_elasticity)
 						g_index *= 2;
 
-					MatrixXd nn = MatrixXd::Zero(basis[j].node().rows(), 3);
-					nn.block(0, 0, nn.rows(), basis[j].node().cols()) = basis[j].node();
-
-					VectorXd txt_p = nn.row(0);
+					MatrixXd node = basis[j].node();
+					// node += MatrixXd::Random(node.rows(), node.cols())/100;
+					MatrixXd txt_p = node;
 					for(long k = 0; k < txt_p.size(); ++k)
 						txt_p(k) += 0.02;
 
@@ -120,8 +119,8 @@ namespace poly_fem
 						col.col(0).setOnes();
 
 
-					viewer.data.add_points(nn, col);
-					viewer.data.add_label(txt_p, std::to_string(g_index));
+					viewer.data.add_points(basis[j].node(), col);
+					viewer.data.add_label(txt_p.transpose(), std::to_string(g_index));
 				}
 			}
 		};
