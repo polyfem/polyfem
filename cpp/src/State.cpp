@@ -153,6 +153,7 @@ namespace poly_fem
 		{
 			Assembler<Laplacian> assembler;
 			assembler.assemble(n_bases, values, values, stiffness);
+			// std::cout<<MatrixXd(stiffness)<<std::endl;
 			assembler.set_identity(bounday_nodes, stiffness);
 		}
 

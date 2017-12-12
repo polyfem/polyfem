@@ -55,7 +55,7 @@ int main(int argc, const char **argv)
     int n_refs = 0;
     int problem_num = 0;
 
-    int quadrature_order = 2;
+    int quadrature_order = 4;
     int n_boundary_samples = 10;
 
 

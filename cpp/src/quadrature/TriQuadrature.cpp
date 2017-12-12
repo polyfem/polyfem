@@ -307,6 +307,9 @@ namespace poly_fem
 
                     break;
                 }
+
+                default:
+                assert(false);
             };
         }
     }
@@ -319,5 +322,7 @@ namespace poly_fem
         Quadrature tmp;
 
         get_weight_and_points(order, quad.points, quad.weights);
+
+        quad.weights/=2;
     }
 }

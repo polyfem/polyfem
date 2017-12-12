@@ -87,31 +87,42 @@ namespace poly_fem
 				const Quadrature &quadrature = vals.quadrature;
 
 				const Eigen::MatrixXd da = gvals.det.array() * quadrature.weights.array();
-
 				const int n_loc_bases = int(vals.basis_values.size());
+
+				// if(n_loc_bases == 3)
+				// {
+				// 	std::cout<<"gvals.det "<<gvals.det<<std::endl;
+				// 	std::cout<<"quadrature.weights "<<quadrature.weights<<std::endl;
+				// }
 
 				for(int i = 0; i < n_loc_bases; ++i)
 				{
 					const AssemblyValues &values_i = vals.basis_values[i];
 
-					const Eigen::MatrixXd &vali  = values_i.val;
+					// const Eigen::MatrixXd &vali  = values_i.val;
 					const Eigen::MatrixXd &gradi = values_i.grad_t_m;
 
 					// std::cout<<vali<<"\n\n"<<std::endl;
-					// std::cout<<gradi<<"\n\n"<<std::endl;
+					// if(n_loc_bases == 3)
+					// 	std::cout<<"gradi "<<gradi<<"\n\n"<<std::endl;
 
 					for(int j = 0; j < n_loc_bases; ++j)
 					{
 						const AssemblyValues &values_j = vals.basis_values[j];
 
-						const Eigen::MatrixXd &valj  = values_j.val;
+						// const Eigen::MatrixXd &valj  = values_j.val;
 						const Eigen::MatrixXd &gradj = values_j.grad_t_m;
+						// if(n_loc_bases == 3)
+						// 	std::cout<<"gradj "<<gradj<<"\n\n"<<std::endl;
+
 
 						local_assembler_.assemble(gradi, gradj, da, local_val);
 
 						const auto stiffness_val = local_val.array().colwise().sum();
 						assert(stiffness_val.size() == local_assembler_.size() * local_assembler_.size());
-
+						// if(n_loc_bases == 3)
+						// 	std::cout<<e<<" "<<i<<" "<<j<<" "<<stiffness_val<<std::endl;
+						// exit(0);
 						for(int m = 0; m < local_assembler_.size(); ++m)
 						{
 							for(int n = 0; n < local_assembler_.size(); ++n)

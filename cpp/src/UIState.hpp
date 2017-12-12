@@ -24,12 +24,16 @@ namespace poly_fem
 
 		igl::viewer::Viewer viewer;
 
-		Eigen::MatrixXi tri_faces, local_vis_faces, vis_faces;
-		Eigen::MatrixXd tri_pts, local_vis_pts, vis_pts;
+		Eigen::MatrixXi tri_faces, vis_faces;
+		Eigen::MatrixXd tri_pts, vis_pts;
+
+		Eigen::MatrixXi local_vis_faces_tri, local_vis_faces_quad;
+		Eigen::MatrixXd local_vis_pts_tri, local_vis_pts_quad;
 
 		State &state;
 	private:
 		void plot_function(const Eigen::MatrixXd &fun, double min=0, double max=-1);
+		void interpolate_function(const Eigen::MatrixXd &fun, Eigen::MatrixXd &result);
 	};
 
 }

@@ -4710,7 +4710,9 @@ namespace poly_fem
 			return xi[i1] < xi[i2];   
 		});
 
-		std::sort(xi.begin(), xi.end());
+		std::sort(xi.begin(), xi.end(), [xi](int i1, int i2) {
+			return xi[i1] < xi[i2];   
+		});
 
 		quad.points = Eigen::Map<Eigen::MatrixXd>(&xi[0], xi.size(), 1);
 		quad.weights = Eigen::Map<Eigen::MatrixXd>(&wi[0], wi.size(), 1);

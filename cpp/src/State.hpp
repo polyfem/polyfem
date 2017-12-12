@@ -30,7 +30,7 @@ namespace poly_fem
 
 		void sertialize(const std::string &name);
 
-		int quadrature_order = 2;
+		int quadrature_order = 4;
 		int n_boundary_samples = 10;
 
 		std::string mesh_path;

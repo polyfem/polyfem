@@ -62,8 +62,6 @@ namespace poly_fem
 
 		Eigen::MatrixXd node;
 
-		const int remap[4] = {0, 3, 2, 1};
-
 		QuadQuadrature quad_quadrature;
 		TriQuadrature tri_quadrature;
 
@@ -87,10 +85,10 @@ namespace poly_fem
 
 						switch(j)
 						{
-							case 0: local_boundary[e].set_right_edge_id(index.edge); local_boundary[e].set_right_boundary(); break;
-							case 1: local_boundary[e].set_bottom_edge_id(index.edge); local_boundary[e].set_bottom_boundary(); break;
-							case 2: local_boundary[e].set_left_edge_id(index.edge); local_boundary[e].set_left_boundary(); break;
-							case 3: local_boundary[e].set_top_edge_id(index.edge); local_boundary[e].set_top_boundary(); break;
+							case 0: local_boundary[e].set_top_edge_id(index.edge); local_boundary[e].set_top_boundary(); break;
+							case 1: local_boundary[e].set_left_edge_id(index.edge); local_boundary[e].set_left_boundary(); break;
+							case 2: local_boundary[e].set_bottom_edge_id(index.edge); local_boundary[e].set_bottom_boundary(); break;
+							case 3: local_boundary[e].set_right_edge_id(index.edge); local_boundary[e].set_right_boundary(); break;
 						}
 					}
 
@@ -99,8 +97,8 @@ namespace poly_fem
 					mesh.point(global_index, node);
 					b.bases[j].init(global_index, j, node);
 
-					b.bases[j].set_basis([discr_order, remap, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { QuadBasis::basis(discr_order, remap[j], uv, val); });
-					b.bases[j].set_grad( [discr_order, remap, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  QuadBasis::grad(discr_order, remap[j], uv, val); });
+					b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { QuadBasis::basis(discr_order, j, uv, val); });
+					b.bases[j].set_grad( [discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  QuadBasis::grad(discr_order, j, uv, val); });
 
 					index = mesh.next_around_face(index);
 				}
@@ -130,8 +128,8 @@ namespace poly_fem
 					mesh.point(global_index, node);
 					b.bases[j].init(global_index, j, node);
 
-					b.bases[j].set_basis([discr_order, remap, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { TriBasis::basis(discr_order, remap[j], uv, val); });
-					b.bases[j].set_grad( [discr_order, remap, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  TriBasis::grad(discr_order, remap[j], uv, val); });
+					b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { TriBasis::basis(discr_order, j, uv, val); });
+					b.bases[j].set_grad( [discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  TriBasis::grad(discr_order, j, uv, val); });
 
 					index = mesh.next_around_face(index);
 				}

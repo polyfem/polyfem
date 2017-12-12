@@ -23,6 +23,47 @@ using namespace Eigen;
 
 namespace poly_fem
 {
+	void UIState::interpolate_function(const MatrixXd &fun, MatrixXd &result)
+	{
+		MatrixXd tmp;
+
+		int actual_dim = 1;
+		if(state.linear_elasticity)
+			actual_dim = state.mesh.is_volume() ? 3:2;
+
+		result.resize(vis_pts.rows(), actual_dim);
+
+		int index = 0;
+
+		for(std::size_t i = 0; i < state.bases.size(); ++i)
+		{
+			const ElementBases &bs = state.bases[i];
+			MatrixXd local_pts;
+
+			if(int(bs.bases.size()) == 4)
+				local_pts = local_vis_pts_quad;
+			else if(int(bs.bases.size()) == 3)
+				local_pts = local_vis_pts_tri;
+			else
+				assert(false);
+
+			MatrixXd local_res = MatrixXd::Zero(local_pts.rows(), actual_dim);
+
+			for(std::size_t j = 0; j < bs.bases.size(); ++j)
+			{
+				const Basis &b = bs.bases[j];
+
+				b.basis(local_pts, tmp);
+				for(int d = 0; d < actual_dim; ++d)
+					local_res.col(d) += tmp * fun(b.global_index()*actual_dim + d);
+			}
+
+			result.block(index, 0, local_res.rows(), actual_dim) = local_res;
+			index += local_res.rows();
+		}
+	}
+
+
 	UIState::UIState()
 	: state(State::state())
 	{ }
@@ -144,7 +185,7 @@ namespace poly_fem
 
 		auto show_rhs_func = [&](){
 			MatrixXd global_rhs;
-			state.interpolate_function(state.rhs, local_vis_pts, global_rhs);
+			state.interpolate_function(state.rhs, local_vis_pts_quad, global_rhs);
 
 			plot_function(global_rhs, 0, 1);
 		};
@@ -152,7 +193,7 @@ namespace poly_fem
 
 		auto show_sol_func = [&](){
 			MatrixXd global_sol;
-			state.interpolate_function(state.sol, local_vis_pts, global_sol);
+			interpolate_function(state.sol, global_sol);
 			if(state.linear_elasticity)
 				plot_function(global_sol);
 			else
@@ -160,10 +201,10 @@ namespace poly_fem
 		};
 
 
-		auto show_error_func = [&](){
-
+		auto show_error_func = [&]()
+		{
 			MatrixXd global_sol;
-			state.interpolate_function(state.sol, local_vis_pts, global_sol);
+			interpolate_function(state.sol, global_sol);
 
 			MatrixXd exact_sol;
 			state.problem.exact(vis_pts, exact_sol);
@@ -180,7 +221,7 @@ namespace poly_fem
 			fun(vis_basis) = 1;
 
 			MatrixXd global_fun;
-			state.interpolate_function(fun, local_vis_pts, global_fun);
+			interpolate_function(fun, global_fun);
 			// global_fun /= 100;
 			plot_function(global_fun, 0, 1.);
 		};
@@ -225,40 +266,96 @@ namespace poly_fem
 				clear_func();
 
 				MatrixXi tets;
-				igl::copyleft::tetgen::tetrahedralize(pts, faces, "Qpq1.414a0.001", local_vis_pts, tets, local_vis_faces);
+				igl::copyleft::tetgen::tetrahedralize(pts, faces, "Qpq1.414a0.001", local_vis_pts_quad, tets, local_vis_faces_quad);
 			}
 			else
 			{
-				MatrixXd pts(4,2); pts <<
-				0,0,
-				0,1,
-				1,1,
-				1,0;
+				{
+					MatrixXd pts(4,2); pts <<
+					0,0,
+					0,1,
+					1,1,
+					1,0;
 
-				MatrixXi E(4,2); E <<
-				0,1,
-				1,2,
-				2,3,
-				3,0;
+					MatrixXi E(4,2); E <<
+					0,1,
+					1,2,
+					2,3,
+					3,0;
 
-				MatrixXd H(0,2);
-				std::stringstream buf;
-				buf.precision(100);
-				buf.setf(std::ios::fixed, std::ios::floatfield);
-				buf<<"Qqa"<<(0.0001*state.mesh.n_elements());
-				igl::triangle::triangulate(pts, E, H, buf.str(), local_vis_pts, local_vis_faces);
+					MatrixXd H(0,2);
+					std::stringstream buf;
+					buf.precision(100);
+					buf.setf(std::ios::fixed, std::ios::floatfield);
+					buf<<"Qqa"<<(0.0001*state.mesh.n_elements());
+					igl::triangle::triangulate(pts, E, H, buf.str(), local_vis_pts_quad, local_vis_faces_quad);
+				}
+				{
+					MatrixXd pts(3,2); pts <<
+					0,0,
+					1,0,
+					0,1;
+
+					MatrixXi E(3,2); E <<
+					0,1,
+					1,2,
+					2,0;
+
+					MatrixXd H(0,2);
+					std::stringstream buf;
+					buf.precision(100);
+					buf.setf(std::ios::fixed, std::ios::floatfield);
+					buf<<"Qqa"<<(0.0001*state.mesh.n_elements());
+					igl::triangle::triangulate(pts, E, H, buf.str(), local_vis_pts_tri, local_vis_faces_tri);
+				}
 			}
 
-			vis_pts.resize(local_vis_pts.rows()*state.mesh.n_elements(), local_vis_pts.cols());
-			vis_faces.resize(local_vis_faces.rows()*state.mesh.n_elements(), 3);
-
-			MatrixXd mapped, tmp;
+			int faces_total_size = 0, points_total_size = 0;
 			for(std::size_t i = 0; i < state.bases.size(); ++i)
 			{
 				const ElementBases &bs = state.bases[i];
-				Basis::eval_geom_mapping(local_vis_pts, bs.bases, mapped);
-				vis_pts.block(i*local_vis_pts.rows(), 0, local_vis_pts.rows(), mapped.cols()) = mapped;
-				vis_faces.block(i*local_vis_faces.rows(), 0, local_vis_faces.rows(), 3) = local_vis_faces.array() + int(i)*int(local_vis_pts.rows());
+
+				if(int(bs.bases.size()) == 4){
+					faces_total_size   += local_vis_faces_quad.rows();
+					points_total_size += local_vis_pts_quad.rows();
+				}
+				else if(int(bs.bases.size()) == 3)
+				{
+					faces_total_size   += local_vis_faces_tri.rows();
+					points_total_size += local_vis_pts_tri.rows();
+				}
+				else
+				{
+					assert(false);
+				}
+			}
+
+			vis_pts.resize(points_total_size, local_vis_pts_quad.cols());
+			vis_faces.resize(faces_total_size, 3);
+
+			MatrixXd mapped, tmp;
+			int face_index = 0, point_index = 0;
+			for(std::size_t i = 0; i < state.bases.size(); ++i)
+			{
+				const ElementBases &bs = state.bases[i];
+				if(int(bs.bases.size()) == 4)
+				{
+					Basis::eval_geom_mapping(local_vis_pts_quad, bs.bases, mapped);
+					vis_faces.block(face_index, 0, local_vis_faces_quad.rows(), 3) = local_vis_faces_quad.array() + point_index;
+					face_index += local_vis_faces_quad.rows();
+				}
+				else if(int(bs.bases.size()) == 3)
+				{
+					Basis::eval_geom_mapping(local_vis_pts_tri, bs.bases, mapped);
+					vis_faces.block(face_index, 0, local_vis_faces_tri.rows(), 3) = local_vis_faces_tri.array() + point_index;
+
+					face_index += local_vis_faces_tri.rows();
+				}
+				else
+					assert(false);
+
+				vis_pts.block(point_index, 0, mapped.rows(), mapped.cols()) = mapped;
+				point_index += mapped.rows();
 			}
 
 			timer.stop();
