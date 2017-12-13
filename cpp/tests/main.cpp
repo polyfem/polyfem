@@ -1,6 +1,6 @@
 // A dummy GLUP application
 
-#include "navigation.hpp"
+#include "Navigation.hpp"
 #include <geogram/basic/file_system.h>
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>

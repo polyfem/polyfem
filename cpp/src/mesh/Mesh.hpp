@@ -1,7 +1,7 @@
 #ifndef MESH_HPP
 #define MESH_HPP
 
-#include "navigation.hpp"
+#include "Navigation.hpp"
 
 #include <Eigen/Dense>
 #include <geogram/mesh/mesh.h>
