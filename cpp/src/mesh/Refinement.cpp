@@ -5,6 +5,7 @@
 #include <igl/remove_unreferenced.h>
 #include <iostream>
 #include <vector>
+#include <array>
 ////////////////////////////////////////////////////////////////////////////////
 
 void poly_fem::edge_adjacency_graph(

@@ -118,12 +118,12 @@ target_include_directories(polyfem PUBLIC src src/assembler src/basis src/mesh s
 target_compile_options(polyfem PUBLIC ${ALL_WARNINGS})
 
 # Main executable
-add_executable(${PROJECT_NAME}
+add_executable(${PROJECT_NAME}_bin
 	src/main.cpp
 	src/UIState.hpp
 	src/UIState.cpp
 )
-target_link_libraries(${PROJECT_NAME} PUBLIC polyfem igl::viewer)
+target_link_libraries(${PROJECT_NAME}_bin PUBLIC polyfem igl::viewer)
 
 ################################################################################
 

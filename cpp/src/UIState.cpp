@@ -40,12 +40,16 @@ namespace poly_fem
 			const ElementBases &bs = state.bases[i];
 			MatrixXd local_pts;
 
+			bool flag=false;
+
 			if(int(bs.bases.size()) == 4 || int(bs.bases.size()) == 9)
 				local_pts = local_vis_pts_quad;
 			else if(int(bs.bases.size()) == 3)
 				local_pts = local_vis_pts_tri;
-			else
+			else{
 				local_pts = vis_pts_poly[i];
+				flag=true;
+			}
 
 			MatrixXd local_res = MatrixXd::Zero(local_pts.rows(), actual_dim);
 
@@ -54,8 +58,16 @@ namespace poly_fem
 				const Basis &b = bs.bases[j];
 
 				b.basis(local_pts, tmp);
-				for(int d = 0; d < actual_dim; ++d)
+				for(int d = 0; d < actual_dim; ++d){
 					local_res.col(d) += tmp * fun(b.global_index()*actual_dim + d);
+					if(flag)
+					{
+
+						std::cout.precision(100);
+						std::cout<<"\n\n"<<local_pts<<"\n\n"<<std::endl;
+						std::cout<<"\n\n"<<tmp<<"\n\n"<<std::endl;
+					}
+				}
 			}
 
 			result.block(index, 0, local_res.rows(), actual_dim) = local_res;
@@ -339,6 +351,19 @@ namespace poly_fem
 						}
 
 						igl::triangle::triangulate(poly, E, MatrixXd(0,2), "Qpqa0.00005", vis_pts_poly[i], vis_faces_poly[i]);
+
+						// std::cout.precision(100);
+						// Eigen::MatrixXd asd, pts(2,2);
+						// pts.setZero();
+						// pts(0,1)=0.05;
+						// bs.bases[2].basis(vis_pts_poly[i], asd);
+						// std::cout.precision(100);
+						// std::cout<<"asd =[\n "<<asd<<"];"<<std::endl;
+
+						// bs.bases[2].grad(vis_pts_poly[i], asd);
+						// std::cout<<"asdg =[\n "<<asd<<"];"<<std::endl;
+
+						// std::cout<<"pts=[\n"<<vis_pts_poly[i]<<"];"<<std::endl;
 
 						faces_total_size   += vis_faces_poly[i].rows();
 						points_total_size += vis_pts_poly[i].rows();

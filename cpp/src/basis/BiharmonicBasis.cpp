@@ -38,7 +38,7 @@ namespace poly_fem
 
 		for(long i = 0; i < uv.rows(); ++i)
 		{
-			const auto &p = uv.row(i);
+			const Eigen::MatrixXd p = uv.row(i);
 			for(long k = 0; k < centers_.rows(); ++k)
 				val(i) += w(k) * kernel((centers_.row(k)-p).norm());
 
@@ -100,6 +100,7 @@ namespace poly_fem
 
 		weights_ = mat.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(rhs);
 
+		// std::cout.precision(100);
 		// std::cout<<"mat=[\n"<<mat<<"];"<<std::endl;
 		// std::cout<<"weights=[\n"<<weights_<<"];"<<std::endl;
 	}

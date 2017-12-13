@@ -70,7 +70,7 @@ namespace poly_fem
 				tmp.row(0) = dx.row(i);
 				tmp.row(1) = dy.row(i);
 
-				det(i) = tmp.determinant();
+				det(i) = fabs(tmp.determinant());
 
 				// std::cout<<"tmp.inverse().transpose() "<<tmp.inverse().transpose()<<std::endl;
 				Eigen::MatrixXd jac_it = tmp.inverse().transpose();
