@@ -9,7 +9,7 @@ function(add_application APP_SOURCE)
 	message(STATUS "Compiling single-source application: ${APP_NAME}")
 
 	# Dependencies
-	target_link_libraries(${APP_NAME} PRIVATE polyfem geogram_gfx)
+	target_link_libraries(${APP_NAME} PRIVATE ${ARGN})
 
 	# Output directory for binaries
 	set_target_properties(${APP_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
@@ -18,3 +18,4 @@ endfunction()
 ################################################################################
 
 add_application(test_navigation.cpp polyfem geogram_gfx)
+add_application(test_refinement.cpp polyfem cli11)

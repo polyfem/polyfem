@@ -117,6 +117,7 @@ target_link_libraries(polyfem igl::core igl::triangle igl::tetgen geogram)
 target_include_directories(polyfem PUBLIC src src/assembler src/basis src/mesh src/problem src/quadrature src/utils)
 target_compile_options(polyfem PUBLIC ${ALL_WARNINGS})
 
+
 # Main executable
 add_executable(${PROJECT_NAME}
 	src/main.cpp
@@ -124,6 +125,7 @@ add_executable(${PROJECT_NAME}
 	src/UIState.cpp
 )
 target_link_libraries(${PROJECT_NAME} PUBLIC polyfem igl::viewer)
+
 
 ################################################################################
 

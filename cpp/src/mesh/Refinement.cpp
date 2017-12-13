@@ -345,3 +345,32 @@ bool poly_fem::instanciate_pattern(
 
 	return true;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+
+void poly_fem::refine_quad_mesh(
+	const Eigen::MatrixXd &IV, const Eigen::MatrixXi &IF,
+	Eigen::MatrixXd &OV, Eigen::MatrixXi &OF)
+{
+	Eigen::MatrixXd PV(9, 3);
+	Eigen::MatrixXi PF(4, 4);
+	PV <<
+		-1, 0, 0,
+		0, 0, 0,
+		0, 1, 0,
+		-1, 1, 0,
+		1, 1, 0,
+		1, 0, 0,
+		1, -1, 0,
+		0, -1, 0,
+		-1, -1, 0;
+	PF <<
+		1, 2, 3, 4,
+		3, 2, 6, 5,
+		6, 2, 8, 7,
+		2, 1, 9, 8;
+	PF = PF.array() - 1;
+	// std::cout << PF << std::endl;
+	bool res = instanciate_pattern(IV, IF, PV, PF, OV, OF);
+	assert(res);
+}
