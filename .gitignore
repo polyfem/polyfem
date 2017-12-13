@@ -1,5 +1,57 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Matlab
 *.m~
 *.mat
+
+# Python cache
+__pycache__
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Mesh files
+*.obj
+*.off
+*.ply
+*.msh
+*.mesh
+*.vtk
+
+# Extra directories
+.vscode/
+.idea/
+build/
+cmake-build-*/
+bin/
+data
 cpp/bin
 cpp/bin_rel
 cpp/build
