@@ -38,9 +38,10 @@ include(geogram)
 include(SetWarnings)
 
 
-
-set(SRCFILES
-	src/main.cpp
+# Polyfem library
+add_library(polyfem
+	src/State.hpp
+	src/State.cpp
 
 	src/utils/CommandLine.hpp
 	src/utils/CommandLine.cpp
@@ -48,18 +49,14 @@ set(SRCFILES
 	src/utils/QuadBoundarySampler.hpp
 	src/utils/QuadBoundarySampler.cpp
 
-	src/State.hpp
-	src/State.cpp
-
-	src/UIState.hpp
-	src/UIState.cpp
-
 	src/mesh/LocalBoundary.hpp
 
 	src/mesh/Mesh.hpp
 	src/mesh/Mesh.cpp
 	src/mesh/Navigation.hpp
 	src/mesh/Navigation.cpp
+	src/mesh/Refinement.hpp
+	src/mesh/Refinement.cpp
 
 	src/quadrature/Quadrature.hpp
 	src/quadrature/LineQuadrature.hpp
@@ -110,14 +107,19 @@ set(SRCFILES
 
 	src/problem/Problem.hpp
 	src/problem/Problem.cpp
-
 )
 
+target_link_libraries(polyfem igl::core igl::triangle igl::tetgen geogram)
+target_include_directories(polyfem PUBLIC src src/assembler src/basis src/mesh src/problem src/quadrature src/utils)
+target_compile_options(polyfem PUBLIC ${ALL_WARNINGS})
 
-add_executable(${PROJECT_NAME} ${SRCFILES})
-target_link_libraries(${PROJECT_NAME} igl::core igl::viewer igl::triangle igl::tetgen geogram)
-target_include_directories(${PROJECT_NAME} PUBLIC src src/utils src/mesh src/quadrature src/basis src/assembler src/problem)
-target_compile_options(${PROJECT_NAME} PRIVATE ${ALL_WARNINGS})
+# Main executable
+add_executable(${PROJECT_NAME}
+	src/main.cpp
+	src/UIState.hpp
+	src/UIState.cpp
+)
+target_link_libraries(${PROJECT_NAME} PUBLIC polyfem igl::viewer)
 
 ################################################################################
 
