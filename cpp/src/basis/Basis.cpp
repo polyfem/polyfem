@@ -25,8 +25,14 @@ namespace poly_fem
 		grad_(uv, val);
 	}
 
-	void Basis::eval_geom_mapping(const Eigen::MatrixXd &samples, const std::vector<Basis> &local_bases, Eigen::MatrixXd &mapped)
+	void Basis::eval_geom_mapping(const bool has_parameterization, const Eigen::MatrixXd &samples, const std::vector<Basis> &local_bases, Eigen::MatrixXd &mapped)
 	{
+		if(!has_parameterization)
+		{
+			mapped = samples;
+			return;
+		}
+		
 		mapped = Eigen::MatrixXd::Zero(samples.rows(), samples.cols());
 		Eigen::MatrixXd tmp;
 

@@ -7,6 +7,7 @@
 #include "Problem.hpp"
 #include "Basis.hpp"
 #include "LocalBoundary.hpp"
+#include "QuadBoundarySampler.hpp"
 
 #include <Eigen/Sparse>
 #include <vector>
@@ -20,6 +21,7 @@ namespace poly_fem
 	class Assembler
 	{
 	public:
+		//TODO refactor this and set identity? and maybe rhs to another file
 		void compute_assembly_values(const bool is_volume, const std::vector< ElementBases > &bases, std::vector< ElementAssemblyValues > &values)
 		{
 			values.resize(bases.size());
@@ -50,6 +52,8 @@ namespace poly_fem
 					b.basis(quadrature.points, val.val);
 					b.grad(quadrature.points, val.grad);
 
+					if(!bs.has_parameterization) continue;
+
 					for (long k = 0; k < val.val.rows(); ++k){
 						mval.row(k) += val.val(k,0)    * b.node();
 
@@ -60,10 +64,15 @@ namespace poly_fem
 					}
 				}
 
-				if(is_volume)
-					vals.finalize(mval, dxmv, dymv, dzmv);
+				if(!bs.has_parameterization)
+					vals.finalize_global_element(quadrature.points);
 				else
-					vals.finalize(mval, dxmv, dymv);
+				{
+					if(is_volume)
+						vals.finalize(mval, dxmv, dymv, dzmv);
+					else
+						vals.finalize(mval, dxmv, dymv);
+				}
 			}
 		}
 
@@ -202,7 +211,7 @@ namespace poly_fem
 
 			for(int e = 0; e < n_el; ++e)
 			{
-				bool has_samples = sample_boundary(e, mesh, local_boundary[e], resolution, true, samples);
+				bool has_samples = sample_boundary(mesh.is_volume(), local_boundary[e], resolution, true, samples);
 
 				if(!has_samples)
 					continue;
@@ -241,7 +250,7 @@ namespace poly_fem
 
 			for(int e = 0; e < n_el; ++e)
 			{
-				bool has_samples = sample_boundary(e, mesh, local_boundary[e], resolution, false, samples);
+				bool has_samples = sample_boundary(mesh.is_volume(), local_boundary[e], resolution, false, samples);
 
 				if(!has_samples)
 					continue;
@@ -326,109 +335,11 @@ namespace poly_fem
 	private:
 		LocalAssembler local_assembler_;
 
-		bool sample_boundary(const int el_index, const Mesh &mesh, const LocalBoundary &local_boundary, const int resolution_one_d, const bool skip_computation, Eigen::MatrixXd &samples) const
+		bool sample_boundary(const bool is_volume, const LocalBoundary &local_boundary, const int resolution_one_d, const bool skip_computation, Eigen::MatrixXd &samples) const
 		{
-			if(mesh.is_volume())
+			if(is_volume)
 			{
 				assert(false);
-				// const int resolution = resolution_one_d *resolution_one_d;
-
-				// const int n_x = mesh.n_x;
-				// const int n_y = mesh.n_y;
-				// const int n_z = mesh.n_z;
-
-				// const bool has_left = (el(0) % ((n_x + 1)*(n_y + 1))) % (n_x + 1) != 0;
-				// const bool has_right = (el(2) % ((n_x + 1)*(n_y + 1))) % (n_x + 1) != n_x;
-
-				// const bool has_top = (el(0) % ((n_x + 1)*(n_y + 1))) / (n_x + 1) != 0;
-				// const bool has_bottom = (el(2) % ((n_x + 1)*(n_y + 1))) / (n_x + 1) != n_y;
-
-				// const bool has_front = el(4) < (n_x + 1) * (n_y + 1) * n_z;
-				// const bool has_back = el(0) >= (n_x + 1) * (n_y + 1);
-
-				// int n = 0;
-				// if(!has_left) n+=resolution;
-				// if(!has_right) n+=resolution;
-				// if(!has_bottom) n+=resolution;
-				// if(!has_top) n+=resolution;
-				// if(!has_front) n+=resolution;
-				// if(!has_back) n+=resolution;
-
-				// if(n <= 0) return false;
-
-				// const Eigen::MatrixXd t = Eigen::VectorXd::LinSpaced(resolution_one_d, 0, 1);
-
-				// Eigen::MatrixXd tx(resolution, 1);
-				// Eigen::MatrixXd ty(resolution, 1);
-
-				// for(int i = 0; i < resolution_one_d; ++i)
-				// {
-				// 	for(int j = 0; j < resolution_one_d; ++j)
-				// 	{
-				// 		tx(i * resolution_one_d + j) = t(i);
-				// 		ty(i * resolution_one_d + j) = t(j);
-				// 	}
-				// }
-
-				// samples.resize(n, 3);
-				// n = 0;
-
-				// if(!has_left){
-				// 	samples.block(n, 0, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);
-				// 	samples.block(n, 1, resolution, 1) = tx;
-				// 	samples.block(n, 2, resolution, 1) = ty;
-
-				// 	n += resolution;
-				// }
-				// if(!has_right){
-				// 	samples.block(n, 0, resolution, 1) = Eigen::MatrixXd::Ones(resolution, 1);
-				// 	samples.block(n, 1, resolution, 1) = tx;
-				// 	samples.block(n, 2, resolution, 1) = ty;
-
-				// 	n += resolution;
-				// }
-
-
-
-				// if(!has_bottom){
-				// 	samples.block(n, 0, resolution, 1) = tx;
-				// 	samples.block(n, 1, resolution, 1) = Eigen::MatrixXd::Ones(resolution, 1);
-				// 	samples.block(n, 2, resolution, 1) = ty;
-
-				// 	n += resolution;
-				// }
-				// if(!has_top){
-				// 	samples.block(n, 0, resolution, 1) = tx;
-				// 	samples.block(n, 1, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);
-				// 	samples.block(n, 2, resolution, 1) = ty;
-
-				// 	n += resolution;
-				// }
-
-
-				// if(!has_front){
-				// 	samples.block(n, 0, resolution, 1) = tx;
-				// 	samples.block(n, 1, resolution, 1) = ty;
-				// 	samples.block(n, 2, resolution, 1) = Eigen::MatrixXd::Ones(resolution, 1);
-
-				// 	n += resolution;
-				// }
-				// if(!has_back){
-				// 	samples.block(n, 0, resolution, 1) = tx;
-				// 	samples.block(n, 1, resolution, 1) = ty;
-				// 	samples.block(n, 2, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);
-
-				// 	n += resolution;
-				// }
-
-
-
-				// // std::cout<<samples<<std::endl;
-				// // igl::viewer::Viewer &viewer = State::state().viewer;
-				// // viewer.data.add_points(samples, Eigen::MatrixXd::Zero(samples.rows(), 3));
-				// // viewer.launch();
-
-				// assert(long(n) == samples.rows());
 			}
 			else
 			{
@@ -441,49 +352,7 @@ namespace poly_fem
 				const bool is_left_boundary   = local_boundary.is_left_boundary();
 				const bool is_top_boundary    = local_boundary.is_top_boundary();
 
-				int n = 0;
-				if(is_right_boundary) n+=resolution;
-				if(is_left_boundary) n+=resolution;
-				if(is_top_boundary) n+=resolution;
-				if(is_bottom_boundary) n+=resolution;
-
-				if(n <= 0) return false;
-
-				samples.resize(n, 2);
-				if(skip_computation) return true;
-
-				const Eigen::MatrixXd t = Eigen::VectorXd::LinSpaced(resolution, 0, 1);
-
-				n = 0;
-				if(is_right_boundary){
-					samples.block(n, 0, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);
-					samples.block(n, 1, resolution, 1) = t;
-
-					n += resolution;
-				}
-
-				if(is_top_boundary){
-					samples.block(n, 0, resolution, 1) = t;
-					samples.block(n, 1, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);
-
-					n += resolution;
-				}
-
-				if(is_left_boundary){
-					samples.block(n, 0, resolution, 1) = Eigen::MatrixXd::Ones(resolution, 1);
-					samples.block(n, 1, resolution, 1) = t;
-
-					n += resolution;
-				}
-
-				if(is_bottom_boundary){
-					samples.block(n, 0, resolution, 1) = t;
-					samples.block(n, 1, resolution, 1) = Eigen::MatrixXd::Ones(resolution, 1);
-
-					n += resolution;
-				}
-
-				assert(long(n) == samples.rows());
+				return QuadBoundarySampler::sample(is_right_boundary, is_bottom_boundary, is_left_boundary, is_top_boundary, resolution_one_d, skip_computation, samples);
 			}
 
 			return true;

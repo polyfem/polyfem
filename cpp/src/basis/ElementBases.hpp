@@ -14,6 +14,8 @@ namespace poly_fem
 		std::vector<Basis> bases;
 
 		Quadrature quadrature;
+
+		bool has_parameterization = true;
 	};
 }
 

@@ -53,6 +53,8 @@ namespace poly_fem
 
 		Mesh mesh;
 
+		std::map<int, Eigen::MatrixXd> polys;
+
 
 		Eigen::SparseMatrix<double, Eigen::RowMajor> stiffness;
 		Eigen::MatrixXd rhs;

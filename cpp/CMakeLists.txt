@@ -45,6 +45,9 @@ set(SRCFILES
 	src/utils/CommandLine.hpp
 	src/utils/CommandLine.cpp
 
+	src/utils/QuadBoundarySampler.hpp
+	src/utils/QuadBoundarySampler.cpp
+
 	src/State.hpp
 	src/State.cpp
 
@@ -65,6 +68,8 @@ set(SRCFILES
 	src/quadrature/TriQuadrature.hpp
 	src/quadrature/QuadQuadrature.cpp
 	src/quadrature/QuadQuadrature.hpp
+	src/quadrature/PolygonQuadrature.cpp
+	src/quadrature/PolygonQuadrature.hpp
 	src/quadrature/HexQuadrature.cpp
 	src/quadrature/HexQuadrature.hpp
 
@@ -87,6 +92,9 @@ set(SRCFILES
 
 	src/basis/QuadBasis.cpp
 	src/basis/QuadBasis.hpp
+
+	src/basis/BiharmonicBasis.cpp
+	src/basis/BiharmonicBasis.hpp
 
 	src/basis/HexBasis.cpp
 	src/basis/HexBasis.hpp

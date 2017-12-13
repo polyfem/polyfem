@@ -33,7 +33,7 @@ namespace poly_fem
 		inline void set_grad(const Fun &fun) { grad_ = fun; }
 
 
-		static void eval_geom_mapping(const Eigen::MatrixXd &samples, const std::vector<Basis> &local_bases, Eigen::MatrixXd &mapped);
+		static void eval_geom_mapping(const bool has_parameterization, const Eigen::MatrixXd &samples, const std::vector<Basis> &local_bases, Eigen::MatrixXd &mapped);
 	private:
 		int global_index_;
 		int local_index_;

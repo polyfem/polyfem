@@ -24,6 +24,8 @@ namespace poly_fem
 		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts) const;
 		void element_bounday_polygon(const int index, Eigen::MatrixXd &poly) const;
 
+		void set_boundary_tags(std::vector<int> &tags) const;
+
 		void point(const int global_index, Eigen::MatrixXd &pt) const;
 
 		bool load(const std::string &path);
@@ -34,23 +36,8 @@ namespace poly_fem
 		//get nodes ids
 		int edge_node_id(const int edge_id) const;
 		int vertex_node_id(const int vertex_id) const;
+		bool node_id_from_edge_index(const Navigation::Index &index, int &id) const;
 
-		void set_boundary_tags(std::vector<int> &tags) const;
-
-		inline int node_id_from_edge_index(const Navigation::Index &index) const
-		{
-			int id = switch_face(index).face;
-			if(id >= 0)
-			{
-				if(mesh_.facets.nb_vertices(id) == 4)
-					return id;
-			}
-
-			id = edge_node_id(index.edge);
-			assert(id >= 0);
-
-			return id;
-		}
 
 		//get nodes positions
 		Eigen::MatrixXd node_from_edge_index(const Navigation::Index &index) const;

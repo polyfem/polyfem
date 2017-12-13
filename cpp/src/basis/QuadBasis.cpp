@@ -9,42 +9,45 @@
 
 namespace poly_fem
 {
-	template<typename T>
-	Eigen::MatrixXd theta1(T &t)
+	namespace
 	{
-		return (1-t) * (1-2 * t);
-	}
-
 	template<typename T>
-	Eigen::MatrixXd theta2(T &t)
-	{
-		return t * (2 * t - 1);
-	}
+		Eigen::MatrixXd theta1(T &t)
+		{
+			return (1-t) * (1-2 * t);
+		}
 
 	template<typename T>
-	Eigen::MatrixXd theta3(T &t)
-	{
-		return 4 * t * (1 - t);
-	}
+		Eigen::MatrixXd theta2(T &t)
+		{
+			return t * (2 * t - 1);
+		}
+
+	template<typename T>
+		Eigen::MatrixXd theta3(T &t)
+		{
+			return 4 * t * (1 - t);
+		}
 
 
 
 	template<typename T>
-	Eigen::MatrixXd dtheta1(T &t)
-	{
-		return -3+4*t;
-	}
+		Eigen::MatrixXd dtheta1(T &t)
+		{
+			return -3+4*t;
+		}
 
 	template<typename T>
-	Eigen::MatrixXd dtheta2(T &t)
-	{
-		return -1+4*t;
-	}
+		Eigen::MatrixXd dtheta2(T &t)
+		{
+			return -1+4*t;
+		}
 
 	template<typename T>
-	Eigen::MatrixXd dtheta3(T &t)
-	{
-		return 4-8*t;
+		Eigen::MatrixXd dtheta3(T &t)
+		{
+			return 4-8*t;
+		}
 	}
 
 	int QuadBasis::build_bases(const Mesh &mesh, const int quadrature_order, std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes)

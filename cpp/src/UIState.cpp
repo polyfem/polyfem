@@ -148,6 +148,8 @@ namespace poly_fem
 			for(std::size_t i = 0; i < state.bases.size(); ++i)
 			{
 				const ElementBases &basis = state.bases[i];
+				if(!basis.has_parameterization) continue;
+				
 				for(std::size_t j = 0; j < basis.bases.size(); ++j)
 				{
 					int g_index = basis.bases[j].global_index();
@@ -328,8 +330,7 @@ namespace poly_fem
 						assert(false);
 					else
 					{
-						MatrixXd poly;
-						state.mesh.element_bounday_polygon(i, poly);
+						MatrixXd poly = state.polys[i];
 						MatrixXi E(poly.rows(),2);
 						for(int e = 0; e < int(poly.rows()); ++e)
 						{
@@ -337,7 +338,7 @@ namespace poly_fem
 							E(e, 1) = (e+1) % poly.rows();
 						}
 
-						igl::triangle::triangulate(poly, E, MatrixXd(0,2), buf.str(), vis_pts_poly[i], vis_faces_poly[i]);
+						igl::triangle::triangulate(poly, E, MatrixXd(0,2), "Qpqa0.00005", vis_pts_poly[i], vis_faces_poly[i]);
 
 						faces_total_size   += vis_faces_poly[i].rows();
 						points_total_size += vis_pts_poly[i].rows();
@@ -355,7 +356,7 @@ namespace poly_fem
 				const ElementBases &bs = state.bases[i];
 				if(int(bs.bases.size()) == 4 || int(bs.bases.size()) == 9)
 				{
-					Basis::eval_geom_mapping(local_vis_pts_quad, bs.bases, mapped);
+					Basis::eval_geom_mapping(bs.has_parameterization, local_vis_pts_quad, bs.bases, mapped);
 					vis_faces.block(face_index, 0, local_vis_faces_quad.rows(), 3) = local_vis_faces_quad.array() + point_index;
 					face_index += local_vis_faces_quad.rows();
 
@@ -364,7 +365,7 @@ namespace poly_fem
 				}
 				else if(int(bs.bases.size()) == 3)
 				{
-					Basis::eval_geom_mapping(local_vis_pts_tri, bs.bases, mapped);
+					Basis::eval_geom_mapping(bs.has_parameterization, local_vis_pts_tri, bs.bases, mapped);
 					vis_faces.block(face_index, 0, local_vis_faces_tri.rows(), 3) = local_vis_faces_tri.array() + point_index;
 
 					face_index += local_vis_faces_tri.rows();
@@ -406,8 +407,8 @@ namespace poly_fem
 			state.build_basis();
 
 			if(skip_visualization) return;
-			clear_func();
-			show_mesh_func();
+			// clear_func();
+			// show_mesh_func();
 			show_nodes_func();
 		};
 

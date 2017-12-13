@@ -37,7 +37,7 @@ namespace poly_fem {
 		{
 			const double u = ts(i,0);
 			const double v = ts(i,1);
-			
+
 			result(i,0) = spline_u_.derivative(u) * spline_v_.interpolate(v);
 			result(i,1) = spline_u_.interpolate(u) * spline_v_.derivative(v);
 		}

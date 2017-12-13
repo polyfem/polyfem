@@ -82,7 +82,7 @@ namespace poly_fem
 		else
 		{
 			if(use_splines)
-				n_bases = Spline2dBasis::build_bases(mesh, quadrature_order, bases, local_boundary, bounday_nodes);
+				n_bases = Spline2dBasis::build_bases(mesh, quadrature_order, bases, local_boundary, bounday_nodes, polys);
 			else
 				n_bases = QuadBasis::build_bases(mesh, quadrature_order, bases, local_boundary, bounday_nodes);
 		}

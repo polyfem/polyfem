@@ -196,6 +196,24 @@ namespace poly_fem
 		return vertices_node_id[vertex_id];
 	}
 
+	bool Mesh::node_id_from_edge_index(const Navigation::Index &index, int &id) const
+	{
+		id = switch_face(index).face;
+		bool is_real_boundary = true;
+		if(id >= 0)
+		{
+			is_real_boundary = false;
+			if(mesh_.facets.nb_vertices(id) == 4)
+				return is_real_boundary;
+
+		}
+
+		id = edge_node_id(index.edge);
+		assert(id >= 0);
+
+		return is_real_boundary;
+	}
+
 	void Mesh::element_bounday_polygon(const int index, Eigen::MatrixXd &poly) const
 	{
 		if(is_volume())
