@@ -40,15 +40,12 @@ namespace poly_fem
 			const ElementBases &bs = state.bases[i];
 			MatrixXd local_pts;
 
-			bool flag=false;
-
 			if(int(bs.bases.size()) == 4 || int(bs.bases.size()) == 9)
 				local_pts = local_vis_pts_quad;
 			else if(int(bs.bases.size()) == 3)
 				local_pts = local_vis_pts_tri;
 			else{
 				local_pts = vis_pts_poly[i];
-				flag=true;
 			}
 
 			MatrixXd local_res = MatrixXd::Zero(local_pts.rows(), actual_dim);
@@ -60,13 +57,6 @@ namespace poly_fem
 				b.basis(local_pts, tmp);
 				for(int d = 0; d < actual_dim; ++d){
 					local_res.col(d) += tmp * fun(b.global_index()*actual_dim + d);
-					if(flag)
-					{
-
-						std::cout.precision(100);
-						std::cout<<"\n\n"<<local_pts<<"\n\n"<<std::endl;
-						std::cout<<"\n\n"<<tmp<<"\n\n"<<std::endl;
-					}
 				}
 			}
 
