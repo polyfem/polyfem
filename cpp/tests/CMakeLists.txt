@@ -3,8 +3,8 @@ project(navigation)
 
 add_executable(${PROJECT_NAME}
 	main.cpp
-	../src/mesh/navigation.cpp
-	../src/mesh/navigation.hpp
+	../src/mesh/Navigation.cpp
+	../src/mesh/Navigation.hpp
 )
 
 target_link_libraries(${PROJECT_NAME} geogram geogram_gfx)

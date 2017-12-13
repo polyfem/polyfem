@@ -55,8 +55,8 @@ set(SRCFILES
 
 	src/mesh/Mesh.hpp
 	src/mesh/Mesh.cpp
-	src/mesh/navigation.hpp
-	src/mesh/navigation.cpp
+	src/mesh/Navigation.hpp
+	src/mesh/Navigation.cpp
 
 	src/quadrature/Quadrature.hpp
 	src/quadrature/LineQuadrature.hpp
@@ -103,7 +103,7 @@ set(SRCFILES
 	src/problem/Problem.hpp
 	src/problem/Problem.cpp
 
-	)
+)
 
 
 add_executable(${PROJECT_NAME} ${SRCFILES})

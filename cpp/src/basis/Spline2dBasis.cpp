@@ -2,7 +2,7 @@
 
 #include "QuadraticTPBSpline.hpp"
 #include "QuadQuadrature.hpp"
-#include "navigation.hpp"
+#include "Navigation.hpp"
 
 #include <cassert>
 #include <iostream>

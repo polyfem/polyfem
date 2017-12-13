@@ -1,5 +1,5 @@
 #include "Mesh.hpp"
-#include "navigation.hpp"
+#include "Navigation.hpp"
 
 #include <igl/triangle/triangulate.h>
 #include <igl/copyleft/tetgen/tetrahedralize.h>
