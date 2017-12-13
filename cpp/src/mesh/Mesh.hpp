@@ -22,6 +22,7 @@ namespace poly_fem
 		double compute_mesh_size() const;
 
 		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts) const;
+		void element_bounday_polygon(const int index, Eigen::MatrixXd &poly) const;
 
 		void point(const int global_index, Eigen::MatrixXd &pt) const;
 

@@ -195,7 +195,7 @@ namespace poly_fem
         {
             if(mesh.n_element_vertices(e) != 4)
                 continue;
-            
+
             const int max_local_base = build_local_space(mesh, e, space, loc_nodes);
             n_bases = max(n_bases, max_local_base);
 
@@ -298,6 +298,14 @@ namespace poly_fem
                     b.bases[local_index].set_grad( [spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.derivative(uv, val); });
                 }
             }
+        }
+
+        for(int e = 0; e < n_els; ++e)
+        {
+            if(mesh.n_element_vertices(e) == 4)
+                continue;
+
+            Navigation::Index index = mesh.get_index_from_face(e);
         }
 
         return n_bases+1;

@@ -196,6 +196,26 @@ namespace poly_fem
 		return vertices_node_id[vertex_id];
 	}
 
+	void Mesh::element_bounday_polygon(const int index, Eigen::MatrixXd &poly) const
+	{
+		if(is_volume())
+		{
+			assert(false);
+		}
+		else
+		{
+			poly.resize(mesh_.facets.nb_vertices(index), 2);
+			Eigen::MatrixXd p;
+
+			for(GEO::index_t i = 0; i < mesh_.facets.nb_vertices(index); ++i)
+			{
+				const GEO::index_t vid = mesh_.facets.vertex(index, i);
+				point(vid, p);
+				poly.row(i) = p;
+			}
+		}
+	}
+
 	void Mesh::create_boundary_nodes()
 	{
 		GEO::Attribute<int> boundary(mesh_.edges.attributes(), "boundary_edge");

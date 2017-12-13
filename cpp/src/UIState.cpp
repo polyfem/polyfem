@@ -35,7 +35,7 @@ namespace poly_fem
 
 		int index = 0;
 
-		for(std::size_t i = 0; i < state.bases.size(); ++i)
+		for(int i = 0; i < int(state.bases.size()); ++i)
 		{
 			const ElementBases &bs = state.bases[i];
 			MatrixXd local_pts;
@@ -45,7 +45,7 @@ namespace poly_fem
 			else if(int(bs.bases.size()) == 3)
 				local_pts = local_vis_pts_tri;
 			else
-				assert(false);
+				local_pts = vis_pts_poly[i];
 
 			MatrixXd local_res = MatrixXd::Zero(local_pts.rows(), actual_dim);
 
@@ -231,6 +231,12 @@ namespace poly_fem
 			igl::Timer timer; timer.start();
 			std::cout<<"Building vis mesh..."<<std::flush;
 
+			const double area_param = 0.0001*state.mesh.n_elements();
+
+			std::stringstream buf;
+			buf.precision(100);
+			buf.setf(std::ios::fixed, std::ios::floatfield);
+
 			if(state.mesh.is_volume())
 			{
 				MatrixXd pts(8,3); pts <<
@@ -270,6 +276,7 @@ namespace poly_fem
 			}
 			else
 			{
+				buf<<"Qqa"<<area_param;
 				{
 					MatrixXd pts(4,2); pts <<
 					0,0,
@@ -284,10 +291,6 @@ namespace poly_fem
 					3,0;
 
 					MatrixXd H(0,2);
-					std::stringstream buf;
-					buf.precision(100);
-					buf.setf(std::ios::fixed, std::ios::floatfield);
-					buf<<"Qqa"<<(0.0001*state.mesh.n_elements());
 					igl::triangle::triangulate(pts, E, H, buf.str(), local_vis_pts_quad, local_vis_faces_quad);
 				}
 				{
@@ -301,17 +304,12 @@ namespace poly_fem
 					1,2,
 					2,0;
 
-					MatrixXd H(0,2);
-					std::stringstream buf;
-					buf.precision(100);
-					buf.setf(std::ios::fixed, std::ios::floatfield);
-					buf<<"Qqa"<<(0.0001*state.mesh.n_elements());
-					igl::triangle::triangulate(pts, E, H, buf.str(), local_vis_pts_tri, local_vis_faces_tri);
+					igl::triangle::triangulate(pts, E, MatrixXd(0,2), buf.str(), local_vis_pts_tri, local_vis_faces_tri);
 				}
 			}
 
 			int faces_total_size = 0, points_total_size = 0;
-			for(std::size_t i = 0; i < state.bases.size(); ++i)
+			for(int i = 0; i < int(state.bases.size()); ++i)
 			{
 				const ElementBases &bs = state.bases[i];
 
@@ -326,7 +324,24 @@ namespace poly_fem
 				}
 				else
 				{
-					assert(false);
+					if(state.mesh.is_volume())
+						assert(false);
+					else
+					{
+						MatrixXd poly;
+						state.mesh.element_bounday_polygon(i, poly);
+						MatrixXi E(poly.rows(),2);
+						for(int e = 0; e < int(poly.rows()); ++e)
+						{
+							E(e, 0) = e;
+							E(e, 1) = (e+1) % poly.rows();
+						}
+
+						igl::triangle::triangulate(poly, E, MatrixXd(0,2), buf.str(), vis_pts_poly[i], vis_faces_poly[i]);
+
+						faces_total_size   += vis_faces_poly[i].rows();
+						points_total_size += vis_pts_poly[i].rows();
+					}
 				}
 			}
 
@@ -335,7 +350,7 @@ namespace poly_fem
 
 			MatrixXd mapped, tmp;
 			int face_index = 0, point_index = 0;
-			for(std::size_t i = 0; i < state.bases.size(); ++i)
+			for(int i = 0; i < int(state.bases.size()); ++i)
 			{
 				const ElementBases &bs = state.bases[i];
 				if(int(bs.bases.size()) == 4 || int(bs.bases.size()) == 9)
@@ -343,6 +358,9 @@ namespace poly_fem
 					Basis::eval_geom_mapping(local_vis_pts_quad, bs.bases, mapped);
 					vis_faces.block(face_index, 0, local_vis_faces_quad.rows(), 3) = local_vis_faces_quad.array() + point_index;
 					face_index += local_vis_faces_quad.rows();
+
+					vis_pts.block(point_index, 0, mapped.rows(), mapped.cols()) = mapped;
+					point_index += mapped.rows();
 				}
 				else if(int(bs.bases.size()) == 3)
 				{
@@ -350,12 +368,18 @@ namespace poly_fem
 					vis_faces.block(face_index, 0, local_vis_faces_tri.rows(), 3) = local_vis_faces_tri.array() + point_index;
 
 					face_index += local_vis_faces_tri.rows();
-				}
-				else
-					assert(false);
 
-				vis_pts.block(point_index, 0, mapped.rows(), mapped.cols()) = mapped;
-				point_index += mapped.rows();
+					vis_pts.block(point_index, 0, mapped.rows(), mapped.cols()) = mapped;
+					point_index += mapped.rows();
+				}
+				else{
+					vis_faces.block(face_index, 0, vis_faces_poly[i].rows(), 3) = vis_faces_poly[i].array() + point_index;
+
+					face_index += local_vis_faces_tri.rows();
+
+					vis_pts.block(point_index, 0, vis_pts_poly[i].rows(), vis_pts_poly[i].cols()) = vis_pts_poly[i];
+					point_index += vis_pts_poly[i].rows();
+				}
 			}
 
 			timer.stop();
