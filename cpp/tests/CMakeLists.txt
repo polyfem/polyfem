@@ -1,22 +1,20 @@
 cmake_minimum_required(VERSION 3.1)
-project(navigation)
 
-add_executable(${PROJECT_NAME}
-	main.cpp
-	../src/mesh/Navigation.cpp
-	../src/mesh/Navigation.hpp
-)
+################################################################################
 
-target_link_libraries(${PROJECT_NAME} geogram geogram_gfx)
+function(add_application APP_SOURCE)
+	# Add executable
+	get_filename_component(APP_NAME ${APP_SOURCE} NAME_WE)
+	add_executable(${APP_NAME} ${APP_SOURCE})
+	message(STATUS "Compiling single-source application: ${APP_NAME}")
 
-# Let's get a little bit paranoid
-include(SetWarnings)
-target_compile_options(${PROJECT_NAME} PRIVATE ${ALL_WARNINGS})
+	# Dependencies
+	target_link_libraries(${APP_NAME} PRIVATE polyfem geogram_gfx)
 
-# Use C++11
-set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 11)
-set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD_REQUIRED ON)
-target_include_directories(${PROJECT_NAME} PUBLIC ../src/mesh)
+	# Output directory for binaries
+	set_target_properties(${APP_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+endfunction()
 
-# Output directory for binaries
-set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+################################################################################
+
+add_application(test_navigation.cpp polyfem geogram_gfx)

@@ -246,6 +246,7 @@ bool poly_fem::instanciate_pattern(
 		return false;
 	case PatternType::DOUBLE_PERIODIC:
 		// std::cout << "Pattern double periodic" << std::endl;
+		// Not implemented
 		break;
 	default:
 		std::cerr << "Unknown patter type" << std::endl;

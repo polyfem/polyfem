@@ -34,6 +34,10 @@ find_package(LIBIGL REQUIRED QUIET)
 # Geogram
 include(geogram)
 
+# CLI11
+add_library(cli11 INTERFACE)
+target_include_directories(cli11 SYSTEM INTERFACE ${THIRD_PARTY_DIR}/cli11)
+
 # Extra warnings
 include(SetWarnings)
 
