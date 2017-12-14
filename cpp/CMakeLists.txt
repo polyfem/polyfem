@@ -61,6 +61,8 @@ add_library(polyfem
 	src/mesh/Navigation.cpp
 	src/mesh/Refinement.hpp
 	src/mesh/Refinement.cpp
+	src/mesh/Singularities.hpp
+	src/mesh/Singularities.cpp
 
 	src/quadrature/Quadrature.hpp
 	src/quadrature/LineQuadrature.hpp

@@ -1,6 +1,7 @@
 // A dummy GLUP application
 
 #include "Navigation.hpp"
+#include "Singularities.hpp"
 #include <geogram/basic/file_system.h>
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
@@ -8,6 +9,7 @@
 #include <geogram_gfx/glup_viewer/glup_viewer.h>
 #include <geogram_gfx/glup_viewer/glup_viewer_gui.h>
 #include <geogram_gfx/mesh/mesh_gfx.h>
+#include <Eigen/Dense>
 
 namespace {
 	using namespace std;
@@ -15,6 +17,9 @@ namespace {
 	using namespace poly_fem;
 
 	Navigation::Index idx_;
+
+	Eigen::VectorXi singular_vertices_;
+	Eigen::MatrixX2i singular_edges_;
 
 	class DemoGlupApplication : public SimpleMeshApplication {
 	public:
@@ -62,6 +67,9 @@ namespace {
 				}
 			}
 
+			// Compute singularities
+			poly_fem::singularity_graph(mesh_, singular_vertices_, singular_edges_);
+
 			return true;
 		}
 
@@ -89,6 +97,7 @@ namespace {
 		virtual void draw_scene() override {
 			if (mesh()) {
 				draw_selected();
+				draw_singular();
 			}
 			SimpleMeshApplication::draw_scene();
 		}
@@ -129,8 +138,8 @@ namespace {
 				if (boundary[e]) {
 					int v0 = mesh_.edges.vertex(e, 0);
 					int v1 = mesh_.edges.vertex(e, 1);
-					glupVertex(mesh_vertex(mesh_, v0));
-					glupVertex(mesh_vertex(mesh_, v1));
+					// glupVertex(mesh_vertex(mesh_, v0));
+					// glupVertex(mesh_vertex(mesh_, v1));
 				}
 			}
 			glupEnd();
@@ -149,6 +158,31 @@ namespace {
 			}
 			glupEnd();
 
+			glupDisable(GLUP_VERTEX_COLORS);
+		}
+
+		void draw_singular() {
+			glupSetPointSize(GLfloat(10));
+			glupEnable(GLUP_VERTEX_COLORS);
+			glupColor3f(0.0f, 0.0f, 0.8f);
+
+			// Selected vertex
+			glupBegin(GLUP_POINTS);
+			for (int i = 0; i < singular_vertices_.size(); ++i) {
+				glupVertex(mesh_vertex(mesh_, singular_vertices_[i]));
+			}
+			glupEnd();
+
+			// Selected edge
+			glupSetMeshWidth(5);
+			glupBegin(GLUP_LINES);
+			for (int e = 0; e < singular_edges_.rows(); ++e) {
+				int v0 = singular_edges_(e, 0);
+				int v1 = singular_edges_(e, 1);
+				glupVertex(mesh_vertex(mesh_, v0));
+				glupVertex(mesh_vertex(mesh_, v1));
+			}
+			glupEnd();
 			glupDisable(GLUP_VERTEX_COLORS);
 		}
 
