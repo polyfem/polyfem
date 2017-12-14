@@ -75,11 +75,11 @@ namespace poly_fem
                 assert(start_index.vertex == index.vertex);
 
                 Navigation::Index edge1 = mesh.switch_edge(start_index);
-                real_boundary = mesh.node_id_from_edge_index(edge1, space(0,2));
+                mesh.node_id_from_edge_index(edge1, space(0,2));
                 node(0,2) = mesh.node_from_edge_index(edge1);
 
                 Navigation::Index edge2 = mesh.switch_edge(mesh.switch_vertex(start_index));
-                real_boundary = mesh.node_id_from_edge_index(edge2, space(0,0));
+                mesh.node_id_from_edge_index(edge2, space(0,0));
                 node(0,0) = mesh.node_from_edge_index(edge2);
             }
             else
@@ -112,11 +112,11 @@ namespace poly_fem
                 assert(start_index.vertex == index.vertex);
 
                 Navigation::Index edge1 = mesh.switch_edge(start_index);
-                real_boundary = mesh.node_id_from_edge_index(edge1, space(0,0));
+                mesh.node_id_from_edge_index(edge1, space(0,0));
                 node(0,0) = mesh.node_from_edge_index(edge1);
 
                 Navigation::Index edge2 = mesh.switch_edge(mesh.switch_vertex(start_index));
-                real_boundary = mesh.node_id_from_edge_index(edge2, space(2,0));
+                mesh.node_id_from_edge_index(edge2, space(2,0));
                 node(2,0) = mesh.node_from_edge_index(edge2);
             }
             else
@@ -150,11 +150,11 @@ namespace poly_fem
                 assert(start_index.vertex == index.vertex);
 
                 Navigation::Index edge1 = mesh.switch_edge(start_index);
-                real_boundary = mesh.node_id_from_edge_index(edge1, space(2,0));
+                mesh.node_id_from_edge_index(edge1, space(2,0));
                 node(2,0) = mesh.node_from_edge_index(edge1);
 
                 Navigation::Index edge2 = mesh.switch_edge(mesh.switch_vertex(start_index));
-                real_boundary = mesh.node_id_from_edge_index(edge2, space(2,2));
+                mesh.node_id_from_edge_index(edge2, space(2,2));
                 node(2,2) = mesh.node_from_edge_index(edge2);
             }
             else
@@ -188,11 +188,11 @@ namespace poly_fem
                 assert(start_index.vertex == index.vertex);
 
                 Navigation::Index edge1 = mesh.switch_edge(start_index);
-                real_boundary = mesh.node_id_from_edge_index(edge1, space(2,2));
+                mesh.node_id_from_edge_index(edge1, space(2,2));
                 node(2,2) = mesh.node_from_edge_index(edge1);
 
                 Navigation::Index edge2 = mesh.switch_edge(mesh.switch_vertex(start_index));
-                real_boundary = mesh.node_id_from_edge_index(edge2, space(0,2));
+                mesh.node_id_from_edge_index(edge2, space(0,2));
                 node(0,2) = mesh.node_from_edge_index(edge2);
             }
             else
@@ -221,6 +221,8 @@ namespace poly_fem
 
                 space(0,0) = mesh.vertex_node_id(start_index.vertex);
                 node(0,0) = mesh.node_from_vertex(start_index.vertex);
+
+                bounday_nodes.push_back(space(0,0));
             }
 
             if(top >= mesh.n_elements() && left >= mesh.n_elements())
@@ -228,6 +230,8 @@ namespace poly_fem
                 Navigation::Index start_index = mesh.get_index_from_face(el_index);
                 space(0,2) = mesh.vertex_node_id(start_index.vertex);
                 node(0,2) = mesh.node_from_vertex(start_index.vertex);
+
+                bounday_nodes.push_back(space(0,2));
             }
 
             if(bottom >= mesh.n_elements() && right >= mesh.n_elements())
@@ -236,6 +240,8 @@ namespace poly_fem
                 start_index = mesh.switch_vertex(mesh.next_around_face(start_index));
                 space(2,0) = mesh.vertex_node_id(start_index.vertex);
                 node(2,0) = mesh.node_from_vertex(start_index.vertex);
+
+                bounday_nodes.push_back(space(2,0));
             }
 
             if(top >= mesh.n_elements() && right >= mesh.n_elements())
@@ -244,6 +250,8 @@ namespace poly_fem
                 start_index = mesh.switch_vertex(mesh.switch_edge(start_index));
                 space(2,2) = mesh.vertex_node_id(start_index.vertex);
                 node(2,2) = mesh.node_from_vertex(start_index.vertex);
+
+                bounday_nodes.push_back(space(2,2));
             }
 
             // std::cout<<std::endl;
@@ -473,7 +481,7 @@ namespace poly_fem
 
                 QuadBoundarySampler::sample(bdata.flag == RIGHT_FLAG, bdata.flag == BOTTOM_FLAG, bdata.flag == LEFT_FLAG, bdata.flag == TOP_FLAG, samples_res, false, samples);
                 samples = samples.block(0, 0, samples.rows()-1, samples.cols());
-                Basis::eval_geom_mapping(b.has_parameterization, samples, b.bases, mapped);
+                b.eval_geom_mapping(samples, mapped);
                 mapped = mapped.colwise().reverse().eval();
                 boundary_samples.block(i*(samples_res-1), 0, mapped.rows(), mapped.cols()) = mapped;
 
@@ -485,7 +493,7 @@ namespace poly_fem
                 for(std::size_t bi = 0; bi < bdata.node_id.size(); ++bi)
                 {
                     const int local_index = bdata.y[bi] * 3 + bdata.x[bi];
-                    assert(b.bases[local_index].global_index() == bdata.node_id[bi]);
+                    // assert(b.bases[local_index].global_index() == bdata.node_id[bi]);
                     const long basis_index = std::distance(local_to_global.begin(), std::find(local_to_global.begin(), local_to_global.end(), bdata.node_id[bi]));
 
                     b.bases[local_index].basis(samples, basis_val);

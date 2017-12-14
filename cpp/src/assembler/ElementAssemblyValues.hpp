@@ -25,7 +25,7 @@ namespace poly_fem
 
 			has_parameterization = false;
 			det.resize(v.rows(), 1);
-			det.setOnes();
+			det.setConstant(-1);
 
 			for(std::size_t j = 0; j < basis_values.size(); ++j)
 				basis_values[j].grad_t_m = basis_values[j].grad;
@@ -70,7 +70,7 @@ namespace poly_fem
 				tmp.row(0) = dx.row(i);
 				tmp.row(1) = dy.row(i);
 
-				det(i) = fabs(tmp.determinant());
+				det(i) = (tmp.determinant());
 
 				// std::cout<<"tmp.inverse().transpose() "<<tmp.inverse().transpose()<<std::endl;
 				Eigen::MatrixXd jac_it = tmp.inverse().transpose();

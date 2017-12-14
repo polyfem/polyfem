@@ -23,7 +23,7 @@ using namespace Eigen;
 * args:
 *   -mesh <path to the mesh>
 *   -n_refs <refinements>
-*   -problem <0: linear, 1: quadratic, 2: franke, 3: linear elasiticity>
+*   -problem <0: linear, 1: quadratic, 2: franke, 3: linear elasticity>
 *   -quad <quadrature order>
 *   -b_samples <number of boundary samples>
 *   -spline <use spline basis>

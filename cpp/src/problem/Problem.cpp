@@ -103,9 +103,9 @@ namespace poly_fem
 				for(long i = 0; i < x.size(); ++i)
 				{
 					if(fabs(x(i)-1)<1e-8)
-						val(i, 0)=0.2;
+						val(i, 0)=0.1;
 					else if(fabs(x(i))<1e-8)
-						val(i, 0)=-0.2;
+						val(i, 0)=-0.1;
 					// else
 						// assert(false);
 				}
@@ -123,36 +123,37 @@ namespace poly_fem
 			return;
 
 		//TODO use b tag for everything
-		for(std::size_t j = 0; j < local_boundary.size(); ++j)
-		{
-			if(!local_boundary[j].is_boundary()) continue;
-			for(int i = 0; i < int(boundary_tag.size()); ++i)
-			{
-				const int tag = boundary_tag[i];
+		// for(std::size_t j = 0; j < local_boundary.size(); ++j)
+		// {
+		// 	if(!local_boundary[j].is_boundary()) continue;
+		// 	for(int i = 0; i < int(boundary_tag.size()); ++i)
+		// 	{
+		// 		const int tag = boundary_tag[i];
 
-				if(tag == 1 || tag == 3) continue;
+		// 		if(tag == 1 || tag == 3) continue;
+		// 		std::cout<<local_boundary[j].flags()<<std::endl;
+		// 		local_boundary[j].clear_edge_tag(i);
+		// 		std::cout<<local_boundary[j].flags()<<std::endl;
+		// 	}
+		// }
 
-				// local_boundary[j].clear_edge_tag(i);
-			}
-		}
+		// std::vector<int> old_b_nodes = boundary_nodes;
+		// boundary_nodes.clear();
 
-		std::vector<int> old_b_nodes = boundary_nodes;
-		boundary_nodes.clear();
+		// for(std::size_t i = 0; i < bases.size(); ++i)
+		// {
+		// 	const ElementBases &bs = bases[i];
 
-		for(std::size_t i = 0; i < bases.size(); ++i)
-		{
-			const ElementBases &bs = bases[i];
+		// 	for(std::size_t j = 0; j < bs.bases.size(); ++j)
+		// 	{
+		// 		if(std::find(old_b_nodes.begin(), old_b_nodes.end(), bs.bases[j].global_index()) != old_b_nodes.end())
+		// 		{
+		// 			const auto &node = bs.bases[j].node();
 
-			for(std::size_t j = 0; j < bs.bases.size(); ++j)
-			{
-				if(std::find(old_b_nodes.begin(), old_b_nodes.end(), bs.bases[j].global_index()) != old_b_nodes.end())
-				{
-					const auto &node = bs.bases[j].node();
-
-					if(fabs(node(0)-1)<1e-8 || fabs(node(0))<1e-8)
-						boundary_nodes.push_back(bs.bases[j].global_index());
-				}
-			}
-		}
+		// 			if(fabs(node(0)-1)<1e-8 || fabs(node(0))<1e-8)
+		// 				boundary_nodes.push_back(bs.bases[j].global_index());
+		// 		}
+		// 	}
+		// }
 	}
 }

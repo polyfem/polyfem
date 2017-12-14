@@ -41,8 +41,13 @@ namespace poly_fem
 				const Basis &b = bs.bases[j];
 
 				b.basis(local_pts, tmp);
-				for(int d = 0; d < actual_dim; ++d)
-					local_res.col(d) += tmp * fun(b.global_index()*actual_dim + d);
+				for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+				{
+					for(int d = 0; d < actual_dim; ++d)
+					{
+						local_res.col(d) += b.global()[ii].val * tmp * fun(b.global()[ii].index*actual_dim + d);
+					}
+				}
 			}
 
 			result.block(i*local_pts.rows(), 0, local_pts.rows(), actual_dim) = local_res;
@@ -233,7 +238,8 @@ namespace poly_fem
 			{
 				auto val=vals.basis_values[i];
 
-				v_approx = v_approx + sol(val.global_index) * val.val;
+				for(std::size_t ii = 0; ii < val.global.size(); ++ii)
+					v_approx += val.global[ii].val * sol(val.global[ii].index) * val.val;
 			}
 
 			auto err = (v_exact-v_approx).cwiseAbs();
