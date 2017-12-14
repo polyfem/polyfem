@@ -49,7 +49,7 @@ namespace poly_fem
         void explore_direction(const Navigation::Index &index, const Mesh &mesh, const int x, const int y, const bool is_x, const bool invert, const int b_flag, Matrix3i &space, Matrix<MatrixXd, 3, 3> &node, LocalBoundary &local_boundary, std::map<int, BoundaryData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
         {
             int node_id;
-            bool real_boundary = mesh.node_id_from_edge_index(index, node_id);
+            const bool real_boundary = mesh.node_id_from_edge_index(index, node_id);
 
             space(x, y) = node_id;
             node(x, y) = mesh.node_from_edge_index(index);
@@ -80,10 +80,10 @@ namespace poly_fem
                 {
                     switch(b_flag)
                     {
-                        case RIGHT_FLAG: local_boundary.set_right_boundary(); break;
-                        case BOTTOM_FLAG: local_boundary.set_bottom_boundary(); break;
-                        case LEFT_FLAG: local_boundary.set_left_boundary(); break;
-                        case TOP_FLAG: local_boundary.set_top_boundary(); break;
+                        case RIGHT_FLAG: local_boundary.set_right_boundary(); local_boundary.set_right_edge_id(index.edge); break;
+                        case BOTTOM_FLAG: local_boundary.set_bottom_boundary(); local_boundary.set_bottom_edge_id(index.edge); break;
+                        case LEFT_FLAG: local_boundary.set_left_boundary(); local_boundary.set_left_edge_id(index.edge); break;
+                        case TOP_FLAG: local_boundary.set_top_boundary(); local_boundary.set_top_edge_id(index.edge); break;
                     }
                     bounday_nodes.push_back(node_id);
                 }
@@ -118,8 +118,6 @@ namespace poly_fem
 
         int build_local_space(const Mesh &mesh, const int el_index,  Matrix3i &space, Matrix<MatrixXd, 3, 3> &node, LocalBoundary &local_boundary, std::map<int, BoundaryData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
         {
-            bool real_boundary;
-            // int left, bottom, right, top;
 
             assert(!mesh.is_volume());
 

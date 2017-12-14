@@ -94,7 +94,7 @@ namespace poly_fem
 			const GEO::Attribute<int> boundary(mesh_.edges.attributes(), "boundary_edge");
 			for(GEO::index_t e = 0; e < mesh_.edges.nb(); ++e)
 			{
-				if(boundary[e] == 1)
+				if(boundary[e] != 1)
 					continue;
 
 				const int v0 = mesh_.edges.vertex(e, 0);

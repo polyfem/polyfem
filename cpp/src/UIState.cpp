@@ -462,6 +462,8 @@ namespace poly_fem
 		auto assemble_rhs_func = [&]() {
 			state.assemble_rhs();
 
+			// std::cout<<state.rhs<<std::endl;
+
 			if(skip_visualization) return;
 			// clear_func();
 			// show_rhs_func();
