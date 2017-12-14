@@ -284,8 +284,8 @@ namespace poly_fem
 
 				// std::cout<<samples<<"\n"<<std::endl;
 
-				igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
-				viewer.data.add_points(mapped, Eigen::MatrixXd::Constant(mapped.rows(), 3, e/(n_el -1.)));
+				// igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
+				// viewer.data.add_points(mapped, Eigen::MatrixXd::Constant(mapped.rows(), 3, e/(n_el -1.)));
 
 				problem.bc(mapped, rhs_fun);
 				global_rhs.block(global_counter, 0, rhs_fun.rows(), rhs_fun.cols()) = rhs_fun;

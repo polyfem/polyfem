@@ -398,6 +398,20 @@ namespace poly_fem
 				}
 			}
 
+			Matrix2d mmat;
+			for(long i = 0; i < vis_faces.rows(); ++i)
+			{
+				mmat.row(0) = vis_pts.row(vis_faces(i, 2)) - vis_pts.row(vis_faces(i, 0));
+				mmat.row(1) = vis_pts.row(vis_faces(i, 1)) - vis_pts.row(vis_faces(i, 0));
+
+				if(mmat.determinant() > 0)
+				{
+					int tmpc = vis_faces(i, 2);
+					vis_faces(i, 2) = vis_faces(i, 1);
+					vis_faces(i, 1) = tmpc;
+				}
+			}
+
 			timer.stop();
 			std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
 
@@ -422,8 +436,8 @@ namespace poly_fem
 			state.build_basis();
 
 			if(skip_visualization) return;
-			// clear_func();
-			// show_mesh_func();
+			clear_func();
+			show_mesh_func();
 			show_nodes_func();
 		};
 

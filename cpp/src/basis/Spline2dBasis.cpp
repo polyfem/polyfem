@@ -428,7 +428,7 @@ namespace poly_fem
             }
         }
 
-        const int samples_res = 10;
+        const int samples_res = 5;
 
         PolygonQuadrature poly_quad;
 
@@ -500,18 +500,6 @@ namespace poly_fem
 
             BiharmonicBasis biharmonic(poly_samples, boundary_samples, rhs);
 
-            // std::cout.precision(100);
-            // std::cout<<"poly_samples=[\n"<<poly_samples<<"];"<<std::endl;
-            // std::cout<<"boundary_samples=[\n"<<boundary_samples<<"];"<<std::endl;
-            // std::cout<<"rhs=[\n"<<rhs<<"];"<<std::endl;
-
-
-            // igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
-            // viewer.data.add_points(boundary_samples, Eigen::MatrixXd::Constant(boundary_samples.rows(), 3, 1));
-            // viewer.data.add_points(poly_samples, Eigen::MatrixXd::Constant(poly_samples.rows(), 3, 0.3));
-            // for(long asd = 0; asd < boundary_samples.rows(); ++asd)
-            //     viewer.data.add_label(boundary_samples.row(asd), std::to_string(asd));
-
             ElementBases &b=bases[e];
             b.has_parameterization = false;
             poly_quad.get_quadrature(boundary_samples, quadrature_order, b.quadrature);
@@ -522,25 +510,12 @@ namespace poly_fem
             b.bases.resize(n_poly_bases);
 
 
-            // std::cout<<"pts =[\n "<<b.quadrature.points<<"];"<<std::endl;
-            // viewer.data.add_points(b.quadrature.points, Eigen::MatrixXd::Constant(b.quadrature.points.rows(), 3, 0.6));
-
             for(int i = 0; i < n_poly_bases; ++i)
             {
                 b.bases[i].init(local_to_global[i], i, Eigen::MatrixXd(1,2));
                 b.bases[i].set_basis([biharmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { biharmonic.basis(i, uv, val); });
                 b.bases[i].set_grad( [biharmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { biharmonic.grad(i, uv, val); });
             }
-
-            // Eigen::MatrixXd asd, pts(2,2);
-            // pts.setZero();
-            // pts(0,1)=0.05;
-            // b.bases[2].basis(pts, asd);
-            // std::cout.precision(100);
-            // std::cout<<"asd =[\n "<<asd<<"];"<<std::endl;
-
-            // b.bases[2].grad(pts, asd);
-            // std::cout<<"asdg =[\n "<<asd<<"];"<<std::endl;
         }
 
         return n_bases+1;
