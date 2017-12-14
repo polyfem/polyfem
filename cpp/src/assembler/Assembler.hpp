@@ -298,8 +298,12 @@ namespace poly_fem
 
 				// std::cout<<samples<<"\n"<<std::endl;
 
+				Eigen::MatrixXd asd(mapped.rows(), 3);
+				asd.col(0) = mapped.col(0);
+				asd.col(1) = mapped.col(1);
+				asd.col(2).setZero();
 				igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
-				viewer.data.add_points(mapped, Eigen::MatrixXd::Constant(mapped.rows(), 3, 0));
+				viewer.data.add_points(asd, Eigen::MatrixXd::Constant(asd.rows(), 3, 0));
 
 				// std::cout<<mapped<<std::endl;
 

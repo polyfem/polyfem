@@ -46,11 +46,80 @@ namespace poly_fem
             }
         }
 
+        void explore_direction(const Navigation::Index &index, const Mesh &mesh, const int x, const int y, const bool is_x, const bool invert, const int b_flag, Matrix3i &space, Matrix<MatrixXd, 3, 3> &node, LocalBoundary &local_boundary, std::map<int, BoundaryData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
+        {
+            int node_id;
+            bool real_boundary = mesh.node_id_from_edge_index(index, node_id);
+
+            space(x, y) = node_id;
+            node(x, y) = mesh.node_from_edge_index(index);
+
+            const int x1 =  is_x ? x : (invert? 2 : 0);
+            const int y1 = !is_x ? y : (invert? 2 : 0);
+
+            const int x2 =  is_x ? x : (invert? 0 : 2);
+            const int y2 = !is_x ? y : (invert? 0 : 2);
+
+            if(node_id < mesh.n_elements())
+            {
+                Navigation::Index start_index = mesh.switch_face(index);
+                assert(start_index.face == node_id);
+                assert(start_index.vertex == index.vertex);
+
+                Navigation::Index edge1 = mesh.switch_edge(start_index);
+                mesh.node_id_from_edge_index(edge1, space(x1, y1));
+                node(x1, y1) = mesh.node_from_edge_index(edge1);
+
+                Navigation::Index edge2 = mesh.switch_edge(mesh.switch_vertex(start_index));
+                mesh.node_id_from_edge_index(edge2, space(x2, y2));
+                node(x2, y2) = mesh.node_from_edge_index(edge2);
+            }
+            else
+            {
+                if(real_boundary)
+                {
+                    switch(b_flag)
+                    {
+                        case RIGHT_FLAG: local_boundary.set_right_boundary(); break;
+                        case BOTTOM_FLAG: local_boundary.set_bottom_boundary(); break;
+                        case LEFT_FLAG: local_boundary.set_left_boundary(); break;
+                        case TOP_FLAG: local_boundary.set_top_boundary(); break;
+                    }
+                    bounday_nodes.push_back(node_id);
+                }
+                else
+                {
+                    BoundaryData &data = poly_edge_to_data[index.edge];
+                    // data.face_id = el_index;
+                    data.face_id = index.face;
+                    data.node_id.push_back(node_id);
+                    data.flag = b_flag;
+                    data.x.push_back(x);
+                    data.y.push_back(y);
+                }
+            }
+        }
+
+        void add_id_for_poly(const Navigation::Index &index, const int x1, const int y1, const int x2, const int y2, const Matrix3i &space, std::map<int, BoundaryData> &poly_edge_to_data)
+        {
+            auto it = poly_edge_to_data.find(index.edge);
+            if(it != poly_edge_to_data.end())
+            {
+                BoundaryData &data = it->second;
+                data.node_id.push_back(space(x1, y1));
+                data.x.push_back(x1);
+                data.y.push_back(y1);
+
+                data.node_id.push_back(space(x2, y2));
+                data.x.push_back(x2);
+                data.y.push_back(y2);
+            }
+        }
 
         int build_local_space(const Mesh &mesh, const int el_index,  Matrix3i &space, Matrix<MatrixXd, 3, 3> &node, LocalBoundary &local_boundary, std::map<int, BoundaryData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
         {
             bool real_boundary;
-            int left, bottom, right, top;
+            // int left, bottom, right, top;
 
             assert(!mesh.is_volume());
 
@@ -63,158 +132,22 @@ namespace poly_fem
 
             //////////////////////////////////////////
             index = mesh.get_index_from_face(el_index);
-
-            real_boundary = mesh.node_id_from_edge_index(index, left);
-            space(0, 1) = left;
-            node(0, 1) = mesh.node_from_edge_index(index);
-
-            if(left < mesh.n_elements())
-            {
-                Navigation::Index start_index = mesh.switch_face(index);
-                assert(start_index.face == left);
-                assert(start_index.vertex == index.vertex);
-
-                Navigation::Index edge1 = mesh.switch_edge(start_index);
-                mesh.node_id_from_edge_index(edge1, space(0,2));
-                node(0,2) = mesh.node_from_edge_index(edge1);
-
-                Navigation::Index edge2 = mesh.switch_edge(mesh.switch_vertex(start_index));
-                mesh.node_id_from_edge_index(edge2, space(0,0));
-                node(0,0) = mesh.node_from_edge_index(edge2);
-            }
-            else
-            {
-                if(real_boundary)
-                {
-                    local_boundary.set_right_boundary();
-                    bounday_nodes.push_back(left);
-                }
-                else
-                {
-                    BoundaryData &data = poly_edge_to_data[index.edge];
-                    data.face_id = el_index;
-                    data.node_id.push_back(left);
-                    data.flag = RIGHT_FLAG;
-                    data.x.push_back(0);
-                    data.y.push_back(1);
-                }
-            }
+            explore_direction(index, mesh, 0, 1, true, true, RIGHT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             //////////////////////////////////////////
             index = mesh.next_around_face(index);
-            real_boundary = mesh.node_id_from_edge_index(index, bottom);
-            space(1, 0) = bottom;
-            node(1, 0) = mesh.node_from_edge_index(index);
-
-            if(bottom < mesh.n_elements()){
-                Navigation::Index start_index = mesh.switch_face(index);
-                assert(start_index.face == bottom);
-                assert(start_index.vertex == index.vertex);
-
-                Navigation::Index edge1 = mesh.switch_edge(start_index);
-                mesh.node_id_from_edge_index(edge1, space(0,0));
-                node(0,0) = mesh.node_from_edge_index(edge1);
-
-                Navigation::Index edge2 = mesh.switch_edge(mesh.switch_vertex(start_index));
-                mesh.node_id_from_edge_index(edge2, space(2,0));
-                node(2,0) = mesh.node_from_edge_index(edge2);
-            }
-            else
-            {
-                if(real_boundary)
-                {
-                    local_boundary.set_top_boundary();
-                    bounday_nodes.push_back(bottom);
-                }
-                else
-                {
-                    BoundaryData &data = poly_edge_to_data[index.edge];
-                    data.face_id = el_index;
-                    data.node_id.push_back(bottom);
-                    data.flag = TOP_FLAG;
-                    data.x.push_back(1);
-                    data.y.push_back(0);
-                }
-            }
+            explore_direction(index, mesh, 1, 0, false, false, TOP_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             //////////////////////////////////////////
             index = mesh.next_around_face(index);
-            real_boundary = mesh.node_id_from_edge_index(index, right);
-            space(2, 1) = right;
-            node(2, 1) = mesh.node_from_edge_index(index);
-
-            if(right < mesh.n_elements())
-            {
-                Navigation::Index start_index = mesh.switch_face(index);
-                assert(start_index.face == right);
-                assert(start_index.vertex == index.vertex);
-
-                Navigation::Index edge1 = mesh.switch_edge(start_index);
-                mesh.node_id_from_edge_index(edge1, space(2,0));
-                node(2,0) = mesh.node_from_edge_index(edge1);
-
-                Navigation::Index edge2 = mesh.switch_edge(mesh.switch_vertex(start_index));
-                mesh.node_id_from_edge_index(edge2, space(2,2));
-                node(2,2) = mesh.node_from_edge_index(edge2);
-            }
-            else
-            {
-                if(real_boundary)
-                {
-                    local_boundary.set_left_boundary();
-                    bounday_nodes.push_back(right);
-                }
-                else
-                {
-                    BoundaryData &data = poly_edge_to_data[index.edge];
-                    data.face_id = el_index;
-                    data.node_id.push_back(right);
-                    data.flag = LEFT_FLAG;
-                    data.x.push_back(2);
-                    data.y.push_back(1);
-                }
-            }
+            explore_direction(index, mesh, 2, 1, true, false, LEFT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             //////////////////////////////////////////
             index = mesh.next_around_face(index);
-            real_boundary = mesh.node_id_from_edge_index(index, top);
-            space(1, 2) = top;
-            node(1, 2) = mesh.node_from_edge_index(index);
-
-            if(top < mesh.n_elements())
-            {
-                Navigation::Index start_index = mesh.switch_face(index);
-                assert(start_index.face == top);
-                assert(start_index.vertex == index.vertex);
-
-                Navigation::Index edge1 = mesh.switch_edge(start_index);
-                mesh.node_id_from_edge_index(edge1, space(2,2));
-                node(2,2) = mesh.node_from_edge_index(edge1);
-
-                Navigation::Index edge2 = mesh.switch_edge(mesh.switch_vertex(start_index));
-                mesh.node_id_from_edge_index(edge2, space(0,2));
-                node(0,2) = mesh.node_from_edge_index(edge2);
-            }
-            else
-            {
-                if(real_boundary)
-                {
-                    local_boundary.set_bottom_boundary();
-                    bounday_nodes.push_back(top);
-                }
-                else
-                {
-                    BoundaryData &data = poly_edge_to_data[index.edge];
-                    data.face_id = el_index;
-                    data.node_id.push_back(top);
-                    data.flag = BOTTOM_FLAG;
-                    data.x.push_back(1);
-                    data.y.push_back(2);
-                }
-            }
+            explore_direction(index, mesh, 1, 2, false, true, BOTTOM_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             //////////////////////////////////////////
-            if(bottom >= mesh.n_elements() && left >= mesh.n_elements())
+            if(space(1, 0) >= mesh.n_elements() && space(0, 1) >= mesh.n_elements())
             {
                 Navigation::Index start_index = mesh.get_index_from_face(el_index);
                 start_index = mesh.switch_vertex(start_index);
@@ -225,7 +158,7 @@ namespace poly_fem
                 bounday_nodes.push_back(space(0,0));
             }
 
-            if(top >= mesh.n_elements() && left >= mesh.n_elements())
+            if(space(1, 2) >= mesh.n_elements() && space(0, 1) >= mesh.n_elements())
             {
                 Navigation::Index start_index = mesh.get_index_from_face(el_index);
                 space(0,2) = mesh.vertex_node_id(start_index.vertex);
@@ -234,7 +167,7 @@ namespace poly_fem
                 bounday_nodes.push_back(space(0,2));
             }
 
-            if(bottom >= mesh.n_elements() && right >= mesh.n_elements())
+            if(space(1, 0) >= mesh.n_elements() && space(2, 1) >= mesh.n_elements())
             {
                 Navigation::Index start_index = mesh.get_index_from_face(el_index);
                 start_index = mesh.switch_vertex(mesh.next_around_face(start_index));
@@ -244,7 +177,7 @@ namespace poly_fem
                 bounday_nodes.push_back(space(2,0));
             }
 
-            if(top >= mesh.n_elements() && right >= mesh.n_elements())
+            if(space(1, 2) >= mesh.n_elements() && space(2, 1) >= mesh.n_elements())
             {
                 Navigation::Index start_index = mesh.get_index_from_face(el_index);
                 start_index = mesh.switch_vertex(mesh.switch_edge(start_index));
@@ -262,61 +195,17 @@ namespace poly_fem
 
             ////////////////////////////////////////////////////////////////////////
             index = mesh.get_index_from_face(el_index);
-            auto it1 = poly_edge_to_data.find(index.edge);
-            if(it1 != poly_edge_to_data.end())
-            {
-                BoundaryData &data = it1->second;
-                data.node_id.push_back(space(0, 0));
-                data.x.push_back(0);
-                data.y.push_back(0);
-
-                data.node_id.push_back(space(0, 2));
-                data.x.push_back(0);
-                data.y.push_back(2);
-            }
+            add_id_for_poly(index, 0, 0, 0, 2, space, poly_edge_to_data);
 
             index = mesh.next_around_face(index);
-            auto it2 = poly_edge_to_data.find(index.edge);
-            if(it2 != poly_edge_to_data.end())
-            {
-                BoundaryData &data = it2->second;
-                data.face_id = el_index;
-                data.node_id.push_back(space(0, 0));
-                data.x.push_back(0);
-                data.y.push_back(0);
-
-                data.node_id.push_back(space(2, 0));
-                data.x.push_back(2);
-                data.y.push_back(0);
-            }
+            add_id_for_poly(index, 0, 0, 2, 0, space, poly_edge_to_data);
 
             index = mesh.next_around_face(index);
-            auto it3 = poly_edge_to_data.find(index.edge);
-            if(it3 != poly_edge_to_data.end())
-            {
-                BoundaryData &data = it3->second;
-                data.node_id.push_back(space(2, 0));
-                data.x.push_back(2);
-                data.y.push_back(0);
+            add_id_for_poly(index, 2, 0, 2, 2, space, poly_edge_to_data);
 
-                data.node_id.push_back(space(2, 2));
-                data.x.push_back(2);
-                data.y.push_back(2);
-            }
 
             index = mesh.next_around_face(index);
-            auto it4 = poly_edge_to_data.find(index.edge);
-            if(it4 != poly_edge_to_data.end())
-            {
-                BoundaryData &data = it4->second;
-                data.node_id.push_back(space(0, 2));
-                data.x.push_back(0);
-                data.y.push_back(2);
-
-                data.node_id.push_back(space(2, 2));
-                data.x.push_back(2);
-                data.y.push_back(2);
-            }
+            add_id_for_poly(index, 0, 2, 2, 2, space, poly_edge_to_data);
 
 
             assert(space.minCoeff() >= 0);
