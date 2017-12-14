@@ -17,10 +17,11 @@ namespace poly_fem
 		int face_corner;
 	};
 
-	// Compute connectivity information on a surface mesh
+	// Computes connectivity information on a surface mesh
+	// Marks both boundary edges and vertices
 	void prepare_mesh(GEO::Mesh &M);
 
-	// Retrieve the index (v,e,f) of one vertex incident to the given face
+	// Retrieves the index (v,e,f) of one vertex incident to the given face
 	Index get_index_from_face(const GEO::Mesh &M, int f, int lv);
 
 	// Navigation in a surface mesh

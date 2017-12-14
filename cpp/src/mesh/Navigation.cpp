@@ -64,6 +64,14 @@ void poly_fem::Navigation::prepare_mesh(GEO::Mesh &M) {
 		boundary_edges_attr[e] = boundary_edges[e] ? 1 : 0;
 	}
 
+	GEO::Attribute<int> boundary_vertices(M.vertices.attributes(), "boundary_vertex");
+	boundary_vertices.fill(0);
+	for (index_t e = 0; e < M.edges.nb(); ++e) {
+		if (boundary_edges[e]) {
+			boundary_vertices[M.edges.vertex(e, 0)] = 1;
+			boundary_vertices[M.edges.vertex(e, 1)] = 1;
+		}
+	}
 }
 
 // Retrieve the index (v,e,f) of one vertex incident to the given face
