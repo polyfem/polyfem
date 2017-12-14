@@ -17,5 +17,5 @@ endfunction()
 
 ################################################################################
 
-add_application(test_navigation.cpp polyfem geogram_gfx)
-add_application(test_refinement.cpp polyfem cli11)
+add_application(navigation_test.cpp polyfem geogram_gfx)
+add_application(refinement_test.cpp polyfem cli11)
