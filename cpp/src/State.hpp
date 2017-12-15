@@ -64,6 +64,14 @@ namespace poly_fem
 		double l2_err, linf_err;
 		long nn_zero, mat_size;
 
+		double building_basis_time;
+		double loading_mesh_time;
+		double computing_assembly_values_time;
+		double assembling_stiffness_mat_time;
+		double assigning_rhs_time;
+		double solving_time;
+		double computing_errors_time;
+
 		void load_mesh();
 		void build_basis();
 		void compute_assembly_vals();

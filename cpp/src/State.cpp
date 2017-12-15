@@ -48,6 +48,16 @@ namespace poly_fem
 		j["mat_size"] = mat_size;
 
 
+		j["building_basis_time"] = building_basis_time;
+		j["loading_mesh_time"] = loading_mesh_time;
+		j["computing_assembly_values_time"] = computing_assembly_values_time;
+		j["assembling_stiffness_mat_time"] = assembling_stiffness_mat_time;
+		j["assigning_rhs_time"] = assigning_rhs_time;
+		j["solving"] = solving_time;
+		j["computing_errors_time"] = computing_errors_time;
+
+
+
 		std::ofstream o(name);
 		o << std::setw(4) << j << std::endl;
 		o.close();
@@ -142,7 +152,9 @@ namespace poly_fem
 		}
 
 		timer.stop();
-		std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
+		building_basis_time = timer.getElapsedTime();
+		std::cout<<" took "<<building_basis_time<<"s"<<std::endl;
+
 
 		std::cout<<"n bases: "<<n_bases<<std::endl;
 	}
@@ -168,7 +180,8 @@ namespace poly_fem
 			compute_assembly_values<Assembler<Laplacian> >(mesh, bases, values);
 
 		timer.stop();
-		std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
+		computing_assembly_values_time = timer.getElapsedTime();
+		std::cout<<" took "<<computing_assembly_values_time<<"s"<<std::endl;
 	}
 
 	void State::assemble_stiffness_mat()
@@ -197,7 +210,8 @@ namespace poly_fem
 		}
 
 		timer.stop();
-		std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
+		assembling_stiffness_mat_time = timer.getElapsedTime();
+		std::cout<<" took "<<assembling_stiffness_mat_time<<"s"<<std::endl;
 
 		nn_zero = stiffness.nonZeros();
 		mat_size = stiffness.size();
@@ -226,7 +240,8 @@ namespace poly_fem
 		}
 
 		timer.stop();
-		std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
+		assigning_rhs_time = timer.getElapsedTime();
+		std::cout<<" took "<<assigning_rhs_time<<"s"<<std::endl;
 	}
 
 	void State::solve_problem()
@@ -239,7 +254,8 @@ namespace poly_fem
 		sol = solver.compute(stiffness).solve(rhs);
 
 		timer.stop();
-		std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
+		solving_time = timer.getElapsedTime();
+		std::cout<<" took "<<solving_time<<"s"<<std::endl;
 	}
 
 	void State::compute_errors()
@@ -285,7 +301,8 @@ namespace poly_fem
 		l2_err = sqrt(fabs(l2_err));
 
 		timer.stop();
-		std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
+		computing_errors_time = timer.getElapsedTime();
+		std::cout<<" took "<<computing_errors_time<<"s"<<std::endl;
 
 		std::cout<<l2_err<<" "<<linf_err<<std::endl;
 	}
