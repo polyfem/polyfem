@@ -53,7 +53,7 @@ namespace poly_fem
 		j["computing_assembly_values_time"] = computing_assembly_values_time;
 		j["assembling_stiffness_mat_time"] = assembling_stiffness_mat_time;
 		j["assigning_rhs_time"] = assigning_rhs_time;
-		j["solving"] = solving_time;
+		j["solving_time"] = solving_time;
 		j["computing_errors_time"] = computing_errors_time;
 
 
