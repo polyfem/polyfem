@@ -101,7 +101,6 @@ int main(int argc, const char **argv)
         state.compute_errors();
 
         if(!output.empty()){
-            std::cout<<"saving in "<<output<<std::endl;
             state.save_json(output);
         }
     }
