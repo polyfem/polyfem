@@ -38,6 +38,10 @@ include(geogram)
 add_library(cli11 INTERFACE)
 target_include_directories(cli11 SYSTEM INTERFACE ${THIRD_PARTY_DIR}/cli11)
 
+# Json library
+add_library(json INTERFACE)
+target_include_directories(json SYSTEM INTERFACE ${THIRD_PARTY_DIR}/json/src)
+
 # Extra warnings
 include(SetWarnings)
 
