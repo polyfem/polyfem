@@ -46,7 +46,7 @@ namespace poly_fem
 					const Basis &b=bs.bases[j];
 					AssemblyValues &val = vals.basis_values[j];
 
-					val.global_index = b.global_index();
+					val.global = b.global();
 
 
 					b.basis(quadrature.points, val.val);
@@ -54,13 +54,16 @@ namespace poly_fem
 
 					if(!bs.has_parameterization) continue;
 
-					for (long k = 0; k < val.val.rows(); ++k){
-						mval.row(k) += val.val(k,0)    * b.node();
+					for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+					{
+						for (long k = 0; k < val.val.rows(); ++k){
+							mval.row(k) += val.val(k,0)    * b.global()[ii].node * b.global()[ii].val;
 
-						dxmv.row(k) += val.grad(k,0) * b.node();
-						dymv.row(k) += val.grad(k,1) * b.node();
-						if(is_volume)
-							dzmv.row(k) += val.grad(k,2) * b.node();
+							dxmv.row(k) += val.grad(k,0) * b.global()[ii].node  * b.global()[ii].val;
+							dymv.row(k) += val.grad(k,1) * b.global()[ii].node  * b.global()[ii].val;
+							if(is_volume)
+								dzmv.row(k) += val.grad(k,2) * b.global()[ii].node  * b.global()[ii].val;
+						}
 					}
 				}
 
@@ -132,11 +135,17 @@ namespace poly_fem
 						// if(n_loc_bases == 3)
 						// 	std::cout<<e<<" "<<i<<" "<<j<<" "<<stiffness_val<<std::endl;
 						// exit(0);
-						for(int m = 0; m < local_assembler_.size(); ++m)
+						for(std::size_t ii = 0; ii < values_i.global.size(); ++ii)
 						{
-							for(int n = 0; n < local_assembler_.size(); ++n)
+							for(std::size_t jj = 0; jj < values_j.global.size(); ++jj)
 							{
-								entries.push_back(Eigen::Triplet<double>(values_i.global_index*local_assembler_.size()+m, values_j.global_index*local_assembler_.size()+n, stiffness_val(m*local_assembler_.size()+n)));
+								for(int m = 0; m < local_assembler_.size(); ++m)
+								{
+									for(int n = 0; n < local_assembler_.size(); ++n)
+									{
+										entries.push_back(Eigen::Triplet<double>(values_i.global[ii].index*local_assembler_.size()+m, values_j.global[jj].index*local_assembler_.size()+n, stiffness_val(m*local_assembler_.size()+n) * values_i.global[ii].val * values_j.global[jj].val ));
+									}
+								}
 							}
 						}
 					}
@@ -190,8 +199,8 @@ namespace poly_fem
 					for(int d = 0; d < local_assembler_.size(); ++d)
 					{
 						const double rhs_value = (rhs_fun.col(d).array() * v.val.array()).sum();
-						// std::cout<<i<<" "<<rhs_value<<std::endl;
-						rhs(v.global_index*local_assembler_.size()+d) +=  rhs_value;
+						for(std::size_t ii = 0; ii < v.global.size(); ++ii)
+							rhs(v.global[ii].index*local_assembler_.size()+d) +=  rhs_value * v.global[ii].val;
 					}
 				}
 			}
@@ -225,12 +234,15 @@ namespace poly_fem
 				{
 					const Basis &b=bs.bases[j];
 
-					if(std::find(bounday_nodes.begin(), bounday_nodes.end(), local_assembler_.size() * b.global_index()) != bounday_nodes.end()) //pt found
+					for(std::size_t ii = 0; ii < b.global().size(); ++ii)
 					{
-						if(global_index_to_col.find( b.global_index() ) == global_index_to_col.end())
+						if(std::find(bounday_nodes.begin(), bounday_nodes.end(), local_assembler_.size() * b.global()[ii].index) != bounday_nodes.end()) //pt found
 						{
-							global_index_to_col[b.global_index()] = index++;
-							indices.push_back(b.global_index());
+							if(global_index_to_col.find( b.global()[ii].index ) == global_index_to_col.end())
+							{
+								global_index_to_col[b.global()[ii].index] = index++;
+								indices.push_back(b.global()[ii].index);
+							}
 						}
 					}
 				}
@@ -266,26 +278,34 @@ namespace poly_fem
 
 					b.basis(samples, tmp);
 
-					// if(std::find(bounday_nodes.begin(), bounday_nodes.end(), b.global_index()) != bounday_nodes.end()) //pt found
-					auto item = global_index_to_col.find(b.global_index());
-					if(item != global_index_to_col.end()){
-						for(int k = 0; k < int(tmp.size()); ++k)
-						{
-							entries.push_back(Eigen::Triplet<double>(global_counter+k, item->second, tmp(k)));
-							entries_t.push_back(Eigen::Triplet<double>(item->second, global_counter+k, tmp(k)));
-						}
+					for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+					{
+						auto item = global_index_to_col.find(b.global()[ii].index);
+						if(item != global_index_to_col.end()){
+							for(int k = 0; k < int(tmp.size()); ++k)
+							{
+								entries.push_back(Eigen::Triplet<double>(global_counter+k, item->second, tmp(k)));
+								entries_t.push_back(Eigen::Triplet<double>(item->second, global_counter+k, tmp(k)));
+							}
 						// global_mat.block(global_counter, item->second, tmp.size(), 1) = tmp;
-					}
+						}
 
-					for (long k = 0; k < tmp.rows(); ++k){
-						mapped.row(k) += tmp(k,0) * b.node();
+						for (long k = 0; k < tmp.rows(); ++k){
+							mapped.row(k) += tmp(k,0) * b.global()[ii].node * b.global()[ii].val;
+						}
 					}
 				}
 
 				// std::cout<<samples<<"\n"<<std::endl;
 
+				Eigen::MatrixXd asd(mapped.rows(), 3);
+				asd.col(0) = mapped.col(0);
+				asd.col(1) = mapped.col(1);
+				asd.col(2).setZero();
 				// igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
-				// viewer.data.add_points(mapped, Eigen::MatrixXd::Constant(mapped.rows(), 3, e/(n_el -1.)));
+				// viewer.data.add_points(asd, Eigen::MatrixXd::Constant(asd.rows(), 3, 0));
+
+				// std::cout<<mapped<<std::endl;
 
 				problem.bc(mapped, rhs_fun);
 				global_rhs.block(global_counter, 0, rhs_fun.rows(), rhs_fun.cols()) = rhs_fun;

@@ -115,7 +115,8 @@ add_library(polyfem
 	src/problem/Problem.cpp
 )
 
-target_link_libraries(polyfem igl::core igl::triangle igl::tetgen geogram)
+# target_link_libraries(polyfem igl::core igl::triangle igl::tetgen geogram)
+target_link_libraries(polyfem igl::core igl::triangle igl::tetgen igl::viewer geogram)
 target_include_directories(polyfem PUBLIC src src/assembler src/basis src/mesh src/problem src/quadrature src/utils)
 target_compile_options(polyfem PUBLIC ${ALL_WARNINGS})
 

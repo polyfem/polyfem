@@ -3,6 +3,7 @@
 
 
 #include "Quadrature.hpp"
+#include "Basis.hpp"
 
 #include <Eigen/Dense>
 #include <iostream>
@@ -12,7 +13,7 @@ namespace poly_fem
 	class AssemblyValues
 	{
 	public:
-		int global_index;
+		std::vector< Local2Global > global;
 		Eigen::MatrixXd val;
 		Eigen::MatrixXd grad;
 

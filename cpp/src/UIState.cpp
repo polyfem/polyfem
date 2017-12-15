@@ -55,8 +55,10 @@ namespace poly_fem
 				const Basis &b = bs.bases[j];
 
 				b.basis(local_pts, tmp);
-				for(int d = 0; d < actual_dim; ++d){
-					local_res.col(d) += tmp * fun(b.global_index()*actual_dim + d);
+				for(int d = 0; d < actual_dim; ++d)
+				{
+					for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+						local_res.col(d) += b.global()[ii].val * tmp * fun(b.global()[ii].index*actual_dim + d);
 				}
 			}
 
@@ -154,23 +156,24 @@ namespace poly_fem
 				
 				for(std::size_t j = 0; j < basis.bases.size(); ++j)
 				{
-					int g_index = basis.bases[j].global_index();
+					const Local2Global &l2g = basis.bases[j].global().front();
+					int g_index = l2g.index;
 
 					if(state.linear_elasticity)
 						g_index *= 2;
 
-					MatrixXd node = basis.bases[j].node();
+					MatrixXd node = l2g.node;
 					// node += MatrixXd::Random(node.rows(), node.cols())/100;
 					MatrixXd txt_p = node;
 					for(long k = 0; k < txt_p.size(); ++k)
 						txt_p(k) += 0.02;
 
-					MatrixXd col = MatrixXd::Zero(basis.bases[j].node().rows(), 3);
+					MatrixXd col = MatrixXd::Zero(l2g.node.rows(), 3);
 					if(std::find(state.bounday_nodes.begin(), state.bounday_nodes.end(), g_index) != state.bounday_nodes.end())
 						col.col(0).setOnes();
 
 
-					viewer.data.add_points(basis.bases[j].node(), col);
+					viewer.data.add_points(l2g.node, col);
 					viewer.data.add_label(txt_p.transpose(), std::to_string(g_index));
 				}
 			}
@@ -371,7 +374,7 @@ namespace poly_fem
 				const ElementBases &bs = state.bases[i];
 				if(int(bs.bases.size()) == 4 || int(bs.bases.size()) == 9)
 				{
-					Basis::eval_geom_mapping(bs.has_parameterization, local_vis_pts_quad, bs.bases, mapped);
+					bs.eval_geom_mapping(local_vis_pts_quad, mapped);
 					vis_faces.block(face_index, 0, local_vis_faces_quad.rows(), 3) = local_vis_faces_quad.array() + point_index;
 					face_index += local_vis_faces_quad.rows();
 
@@ -380,7 +383,7 @@ namespace poly_fem
 				}
 				else if(int(bs.bases.size()) == 3)
 				{
-					Basis::eval_geom_mapping(bs.has_parameterization, local_vis_pts_tri, bs.bases, mapped);
+					bs.eval_geom_mapping(local_vis_pts_tri, mapped);
 					vis_faces.block(face_index, 0, local_vis_faces_tri.rows(), 3) = local_vis_faces_tri.array() + point_index;
 
 					face_index += local_vis_faces_tri.rows();
@@ -458,6 +461,8 @@ namespace poly_fem
 
 		auto assemble_rhs_func = [&]() {
 			state.assemble_rhs();
+
+			// std::cout<<state.rhs<<std::endl;
 
 			if(skip_visualization) return;
 			// clear_func();

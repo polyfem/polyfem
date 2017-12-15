@@ -10,6 +10,15 @@
 
 namespace poly_fem
 {
+	class Local2Global
+	{
+	public:
+		int index;
+		double val;
+
+		Eigen::MatrixXd node;
+	};
+
 	class Basis
 	{
 
@@ -25,20 +34,16 @@ namespace poly_fem
 		void basis(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const;
 		void grad(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const;
 
-		inline int global_index() const { return global_index_; }
-		inline const Eigen::MatrixXd &node() const { return node_; }
-		inline void set_node(const Eigen::MatrixXd &v) { node_ = v; }
+		inline const std::vector< Local2Global > &global() const { return global_; }
+		inline std::vector< Local2Global > &global() { return global_; }
+		// inline const Eigen::MatrixXd &node() const { return node_; }
+		// inline void set_node(const Eigen::MatrixXd &v) { node_ = v; }
 
 		inline void set_basis(const Fun &fun) { basis_ = fun; }
 		inline void set_grad(const Fun &fun) { grad_ = fun; }
-
-
-		static void eval_geom_mapping(const bool has_parameterization, const Eigen::MatrixXd &samples, const std::vector<Basis> &local_bases, Eigen::MatrixXd &mapped);
 	private:
-		int global_index_;
+		std::vector< Local2Global > global_;
 		int local_index_;
-
-		Eigen::MatrixXd node_;
 
 
 		Fun basis_;
