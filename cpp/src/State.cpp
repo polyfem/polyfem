@@ -188,8 +188,12 @@ namespace poly_fem
 		if(problem.problem_num() == 3)
 		{
 			Assembler<LinearElasticity> assembler;
-			assembler.local_assembler().size() = mesh.is_volume() ? 3:2;
-			//todo set lame parameters
+			LinearElasticity &le = static_cast<LinearElasticity &>(assembler.local_assembler());
+			le.mu() = mu;
+			le.lambda() = lambda;
+			le.size() = mesh.is_volume()? 3:2;
+
+
 			assembler.assemble(n_bases, values, values, stiffness);
 			// std::cout<<MatrixXd(stiffness)<<std::endl;
 			assembler.set_identity(bounday_nodes, stiffness);

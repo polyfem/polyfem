@@ -526,12 +526,14 @@ namespace poly_fem
 			viewer_.ngui->addVariable("quad order", state.quadrature_order);
 			viewer_.ngui->addVariable("b samples", state.n_boundary_samples);
 
+			viewer_.ngui->addVariable("lambda", state.lambda);
+			viewer_.ngui->addVariable("mu", state.mu);
+
 			viewer_.ngui->addVariable("mesh path", state.mesh_path);
 			viewer_.ngui->addVariable("n refs", state.n_refs);
 
 			viewer_.ngui->addVariable("spline basis", state.use_splines);
 
-			// viewer_.ngui->addVariable("elasticity", state.linear_elasticity);
 
 			viewer_.ngui->addVariable<igl::ColorMapType>("Colormap", color_map)->setItems({"inferno", "jet", "magma", "parula", "plasma", "viridis"});
 

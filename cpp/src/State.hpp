@@ -58,6 +58,8 @@ namespace poly_fem
 		Eigen::MatrixXd rhs;
 		Eigen::MatrixXd sol;
 
+		double lambda = 1, mu = 1;
+
 		double mesh_size;
 		double l2_err, linf_err;
 		long nn_zero, mat_size;
