@@ -35,6 +35,7 @@ namespace poly_fem
 		void grad(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const;
 
 		inline const std::vector< Local2Global > &global() const { return global_; }
+		inline std::vector< Local2Global > &global() { return global_; }
 		// inline const Eigen::MatrixXd &node() const { return node_; }
 		// inline void set_node(const Eigen::MatrixXd &v) { node_ = v; }
 

@@ -19,6 +19,9 @@ namespace poly_fem
 
     namespace
     {
+        typedef Matrix<std::vector<int>, 3, 3> SpaceMatrix;
+        typedef Matrix<std::vector<MatrixXd>, 3, 3> NodeMatrix;
+
         static const int LEFT_FLAG = 1;
         static const int TOP_FLAG = 2;
         static const int RIGHT_FLAG = 4;
@@ -46,13 +49,14 @@ namespace poly_fem
             }
         }
 
-        void explore_direction(const Navigation::Index &index, const Mesh &mesh, const int x, const int y, const bool is_x, const bool invert, const int b_flag, Matrix3i &space, Matrix<MatrixXd, 3, 3> &node, LocalBoundary &local_boundary, std::map<int, BoundaryData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
+        void explore_direction(const Navigation::Index &index, const Mesh &mesh, const int x, const int y, const bool is_x, const bool invert, const int b_flag, SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, BoundaryData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
         {
             int node_id;
             const bool real_boundary = mesh.node_id_from_edge_index(index, node_id);
 
-            space(x, y) = node_id;
-            node(x, y) = mesh.node_from_edge_index(index);
+            assert(std::find(space(x, y).begin(), space(x, y).end(), node_id) == space(x, y).end());
+            space(x, y).push_back(node_id);
+            node(x, y).push_back(mesh.node_from_edge_index(index));
 
             const int x1 =  is_x ? x : (invert? 2 : 0);
             const int y1 = !is_x ? y : (invert? 2 : 0);
@@ -67,12 +71,20 @@ namespace poly_fem
                 assert(start_index.vertex == index.vertex);
 
                 Navigation::Index edge1 = mesh.switch_edge(start_index);
-                mesh.node_id_from_edge_index(edge1, space(x1, y1));
-                node(x1, y1) = mesh.node_from_edge_index(edge1);
+                mesh.node_id_from_edge_index(edge1, node_id);
+                if(std::find(space(x1, y1).begin(), space(x1, y1).end(), node_id) == space(x1, y1).end())
+                {
+                    space(x1, y1).push_back(node_id);
+                    node(x1, y1).push_back(mesh.node_from_edge_index(edge1));
+                }
 
                 Navigation::Index edge2 = mesh.switch_edge(mesh.switch_vertex(start_index));
-                mesh.node_id_from_edge_index(edge2, space(x2, y2));
-                node(x2, y2) = mesh.node_from_edge_index(edge2);
+                mesh.node_id_from_edge_index(edge2, node_id);
+                if(std::find(space(x2, y2).begin(), space(x2, y2).end(), node_id) == space(x2, y2).end())
+                {
+                    space(x2, y2).push_back(node_id);
+                    node(x2, y2).push_back(mesh.node_from_edge_index(edge2));
+                }
             }
             else
             {
@@ -100,33 +112,35 @@ namespace poly_fem
             }
         }
 
-        void add_id_for_poly(const Navigation::Index &index, const int x1, const int y1, const int x2, const int y2, const Matrix3i &space, std::map<int, BoundaryData> &poly_edge_to_data)
+        void add_id_for_poly(const Navigation::Index &index, const int x1, const int y1, const int x2, const int y2, const SpaceMatrix &space, std::map<int, BoundaryData> &poly_edge_to_data)
         {
             auto it = poly_edge_to_data.find(index.edge);
             if(it != poly_edge_to_data.end())
             {
                 BoundaryData &data = it->second;
-                data.node_id.push_back(space(x1, y1));
+
+                assert(space(x1, y1).size() == 1);
+                data.node_id.push_back(space(x1, y1).front());
                 data.x.push_back(x1);
                 data.y.push_back(y1);
 
-                data.node_id.push_back(space(x2, y2));
+                assert(space(x2, y2).size() == 1);
+                data.node_id.push_back(space(x2, y2).front());
                 data.x.push_back(x2);
                 data.y.push_back(y2);
             }
         }
 
-        int build_local_space(const Mesh &mesh, const int el_index,  Matrix3i &space, Matrix<MatrixXd, 3, 3> &node, LocalBoundary &local_boundary, std::map<int, BoundaryData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
+        int build_local_space(const Mesh &mesh, const int el_index,  SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, BoundaryData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
         {
-
             assert(!mesh.is_volume());
 
             Navigation::Index index;
-            space.setConstant(-1);
+            // space.setConstant(-1);
 
 
-            space(1, 1) = el_index;
-            node(1, 1) = mesh.node_from_face(el_index);
+            space(1, 1).push_back(el_index);
+            node(1, 1).push_back(mesh.node_from_face(el_index));
 
             //////////////////////////////////////////
             index = mesh.get_index_from_face(el_index);
@@ -145,44 +159,51 @@ namespace poly_fem
             explore_direction(index, mesh, 1, 2, false, true, BOTTOM_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             //////////////////////////////////////////
-            if(space(1, 0) >= mesh.n_elements() && space(0, 1) >= mesh.n_elements())
+            if(space(1, 0).front() >= mesh.n_elements() && space(0, 1).front() >= mesh.n_elements())
             {
                 Navigation::Index start_index = mesh.get_index_from_face(el_index);
                 start_index = mesh.switch_vertex(start_index);
 
-                space(0,0) = mesh.vertex_node_id(start_index.vertex);
-                node(0,0) = mesh.node_from_vertex(start_index.vertex);
+                const int node_id = mesh.vertex_node_id(start_index.vertex);
+                space(0,0).push_back(node_id);
+                node(0,0).push_back(mesh.node_from_vertex(start_index.vertex));
 
-                bounday_nodes.push_back(space(0,0));
+                bounday_nodes.push_back(node_id);
             }
 
-            if(space(1, 2) >= mesh.n_elements() && space(0, 1) >= mesh.n_elements())
+            if(space(1, 2).front() >= mesh.n_elements() && space(0, 1).front() >= mesh.n_elements())
             {
                 Navigation::Index start_index = mesh.get_index_from_face(el_index);
-                space(0,2) = mesh.vertex_node_id(start_index.vertex);
-                node(0,2) = mesh.node_from_vertex(start_index.vertex);
 
-                bounday_nodes.push_back(space(0,2));
+                const int node_id = mesh.vertex_node_id(start_index.vertex);
+                space(0,2).push_back(node_id);
+                node(0,2).push_back(mesh.node_from_vertex(start_index.vertex));
+
+                bounday_nodes.push_back(node_id);
             }
 
-            if(space(1, 0) >= mesh.n_elements() && space(2, 1) >= mesh.n_elements())
+            if(space(1, 0).front() >= mesh.n_elements() && space(2, 1).front() >= mesh.n_elements())
             {
                 Navigation::Index start_index = mesh.get_index_from_face(el_index);
                 start_index = mesh.switch_vertex(mesh.next_around_face(start_index));
-                space(2,0) = mesh.vertex_node_id(start_index.vertex);
-                node(2,0) = mesh.node_from_vertex(start_index.vertex);
 
-                bounday_nodes.push_back(space(2,0));
+                const int node_id = mesh.vertex_node_id(start_index.vertex);
+                space(2,0).push_back(node_id);
+                node(2,0).push_back(mesh.node_from_vertex(start_index.vertex));
+
+                bounday_nodes.push_back(node_id);
             }
 
-            if(space(1, 2) >= mesh.n_elements() && space(2, 1) >= mesh.n_elements())
+            if(space(1, 2).front() >= mesh.n_elements() && space(2, 1).front() >= mesh.n_elements())
             {
                 Navigation::Index start_index = mesh.get_index_from_face(el_index);
                 start_index = mesh.switch_vertex(mesh.switch_edge(start_index));
-                space(2,2) = mesh.vertex_node_id(start_index.vertex);
-                node(2,2) = mesh.node_from_vertex(start_index.vertex);
 
-                bounday_nodes.push_back(space(2,2));
+                const int node_id = mesh.vertex_node_id(start_index.vertex);
+                space(2,2).push_back(node_id);
+                node(2,2).push_back(mesh.node_from_vertex(start_index.vertex));
+
+                bounday_nodes.push_back(node_id);
             }
 
             // std::cout<<std::endl;
@@ -205,9 +226,24 @@ namespace poly_fem
             index = mesh.next_around_face(index);
             add_id_for_poly(index, 0, 2, 2, 2, space, poly_edge_to_data);
 
+            int minCoeff = 0;
+            int maxCoeff = -1;
 
-            assert(space.minCoeff() >= 0);
-            return space.maxCoeff();
+            for(int i = 0; i < 3; ++i)
+            {
+                for(int j = 0; j < 3; ++j)
+                {
+                    assert(space(i,j).size() >= 1);
+                    for(std::size_t k = 0; k < space(i,j).size(); ++k)
+                    {
+                        minCoeff = std::min(space(i,j)[k], minCoeff);
+                        maxCoeff = std::max(space(i,j)[k], maxCoeff);
+                    }
+                }
+            }
+
+            assert(minCoeff >= 0);
+            return maxCoeff;
         }
     }
 
@@ -223,9 +259,6 @@ namespace poly_fem
 
         bounday_nodes.clear();
 
-        Matrix3i space;
-        Matrix<MatrixXd, 3, 3> loc_nodes;
-
         int n_bases = n_els;
 
         QuadQuadrature quad_quadrature;
@@ -236,6 +269,9 @@ namespace poly_fem
         {
             if(mesh.n_element_vertices(e) != 4)
                 continue;
+
+            SpaceMatrix space;
+            NodeMatrix loc_nodes;
 
             const int max_local_base = build_local_space(mesh, e, space, loc_nodes, local_boundary[e], poly_edge_to_data, bounday_nodes);
             n_bases = max(n_bases, max_local_base);
@@ -248,21 +284,21 @@ namespace poly_fem
             std::vector<std::vector<double> > v_knots(3);
 
             //left and right neigh are absent
-            if(space(0,1) >= n_els && space(2,1) >= n_els)
+            if(space(0,1).front() >= n_els && space(2,1).front() >= n_els)
             {
                 h_knots[0] = {0, 0, 0, 1};
                 h_knots[1] = {0, 0, 1, 1};
                 h_knots[2] = {0, 1, 1, 1};
             }
              //left neigh is absent
-            else if(space(0,1) >= n_els)
+            else if(space(0,1).front() >= n_els)
             {
                 h_knots[0] = {0, 0, 0, 1};
                 h_knots[1] = {0, 0, 1, 2};
                 h_knots[2] = {0, 1, 2, 3};
             }
             //right neigh is absent
-            else if(space(2,1) >= n_els)
+            else if(space(2,1).front() >= n_els)
             {
                 h_knots[0] = {-2, -1, 0, 1};
                 h_knots[1] = {-1, 0, 1, 1};
@@ -277,21 +313,21 @@ namespace poly_fem
 
 
             //top and bottom neigh are absent
-            if(space(1,0) >= n_els && space(1,2) >= n_els)
+            if(space(1,0).front() >= n_els && space(1,2).front() >= n_els)
             {
                 v_knots[0] = {0, 0, 0, 1};
                 v_knots[1] = {0, 0, 1, 1};
                 v_knots[2] = {0, 1, 1, 1};
             }
             //bottom neigh is absent
-            else if(space(1,0) >= n_els)
+            else if(space(1,0).front() >= n_els)
             {
                 v_knots[0] = {0, 0, 0, 1};
                 v_knots[1] = {0, 0, 1, 2};
                 v_knots[2] = {0, 1, 2, 3};
             }
             //top neigh is absent
-            else if(space(1,2) >= n_els)
+            else if(space(1,2).front() >= n_els)
             {
                 v_knots[0] = {-2, -1, 0, 1};
                 v_knots[1] = {-1, 0, 1, 1};
@@ -310,15 +346,65 @@ namespace poly_fem
             {
                 for(int x = 0; x < 3; ++x)
                 {
-                    const int global_index = space(x, y);
-                    const Eigen::MatrixXd &node = loc_nodes(x,y);
+                    if(space(x,y).size() == 1)
+                    {
+                        const int global_index = space(x, y).front();
+                        const Eigen::MatrixXd &node = loc_nodes(x,y).front();
 
-                    const int local_index = y*3 + x;
-                    b.bases[local_index].init(global_index, local_index, node);
+                        const int local_index = y*3 + x;
+                        b.bases[local_index].init(global_index, local_index, node);
 
-                    const QuadraticTensorProductBSpline spline(h_knots[x], v_knots[y]);
-                    b.bases[local_index].set_basis([spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.interpolate(uv, val); });
-                    b.bases[local_index].set_grad( [spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.derivative(uv, val); });
+                        const QuadraticTensorProductBSpline spline(h_knots[x], v_knots[y]);
+                        b.bases[local_index].set_basis([spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.interpolate(uv, val); });
+                        b.bases[local_index].set_grad( [spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.derivative(uv, val); });
+                    }
+                }
+            }
+
+            for(int y = 0; y < 3; ++y)
+            {
+                for(int x = 0; x < 3; ++x)
+                {
+                    if(space(x,y).size() > 1)
+                    {
+                        const int mpx = 1;
+                        const int mpy = y;
+
+                        const int mmx = x;
+                        const int mmy = 1;
+
+                        const int local_index = y*3 + x;
+                        auto &base = b.bases[local_index];
+
+                        base.global().resize(5); //TODO
+
+                        base.global()[0].index = b.bases[1*3 + 1].global().front().index;
+                        base.global()[0].val = -1./5;
+                        base.global()[0].node = b.bases[1*3 + 1].global().front().node;
+
+                        base.global()[1].index = b.bases[mpy*3 + mpx].global().front().index;
+                        base.global()[1].val = -1./5;
+                        base.global()[1].node = b.bases[mpy*3 + mpx].global().front().node;
+
+                        base.global()[2].index = b.bases[mmy*3 + mmx].global().front().index;
+                        base.global()[2].val = -1./5;
+                        base.global()[2].node = b.bases[mmy*3 + mmx].global().front().node;
+
+
+
+                        base.global()[3].index = space(x,y)[0];
+                        base.global()[3].val = 4./5;
+                        base.global()[3].node = mesh.node_from_face(space(x,y)[0]);
+
+                        base.global()[4].index = space(x,y)[1];
+                        base.global()[4].val = 4./5;
+                        base.global()[4].node = mesh.node_from_face(space(x,y)[1]);
+
+
+                        const QuadraticTensorProductBSpline spline(h_knots[x], v_knots[y]);
+                        b.bases[local_index].set_basis([spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.interpolate(uv, val); });
+                        b.bases[local_index].set_grad( [spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.derivative(uv, val); });
+                    }
                 }
             }
         }
