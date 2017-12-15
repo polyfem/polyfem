@@ -108,8 +108,13 @@ add_library(polyfem
 
 	src/assembler/AssemblyValues.hpp
 	src/assembler/ElementAssemblyValues.hpp
+	src/assembler/ElementAssemblyValues.cpp
 
 	src/assembler/Assembler.hpp
+
+	src/assembler/RhsAssembler.hpp
+	src/assembler/RhsAssembler.cpp
+	
 	src/assembler/Laplacian.hpp
 	src/assembler/Laplacian.cpp
 	src/assembler/LinearElasticity.hpp

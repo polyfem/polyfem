@@ -61,7 +61,7 @@ int main(int argc, const char **argv)
 
 
     bool use_splines = false;
-    bool linear_elasticity = false;
+    // bool linear_elasticity = false;
 
     bool no_ui = false;
 
@@ -73,7 +73,7 @@ int main(int argc, const char **argv)
     command_line.add_option("-quad", quadrature_order);
     command_line.add_option("-b_samples", n_boundary_samples);
     command_line.add_option("-spline", "-fem", use_splines);
-    command_line.add_option("-elasticity", "-poisson", linear_elasticity);
+    // command_line.add_option("-elasticity", "-poisson", linear_elasticity);
 
     command_line.add_option("-cmd", "-ui", no_ui);
 
@@ -87,7 +87,7 @@ int main(int argc, const char **argv)
 
         state.quadrature_order = quadrature_order;
         state.use_splines = use_splines;
-        state.linear_elasticity = linear_elasticity;
+        // state.linear_elasticity = linear_elasticity;
         state.n_boundary_samples = n_boundary_samples;
 
         state.init(path, n_refs, problem_num);
@@ -108,7 +108,7 @@ int main(int argc, const char **argv)
     {
         UIState::ui_state().state.quadrature_order = quadrature_order;
         UIState::ui_state().state.use_splines = use_splines;
-        UIState::ui_state().state.linear_elasticity = linear_elasticity;
+        // UIState::ui_state().state.linear_elasticity = linear_elasticity;
         UIState::ui_state().state.n_boundary_samples = n_boundary_samples;
 
         UIState::ui_state().init(path, n_refs, problem_num);

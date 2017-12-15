@@ -8,6 +8,7 @@
 
 
 #include "Assembler.hpp"
+#include "RhsAssembler.hpp"
 #include "Laplacian.hpp"
 #include "LinearElasticity.hpp"
 
@@ -69,7 +70,7 @@ namespace poly_fem
 		MatrixXd tmp;
 
 		int actual_dim = 1;
-		if(linear_elasticity)
+		if(problem.problem_num() == 3)
 			actual_dim = mesh.is_volume() ? 3:2;
 
 		result.resize(local_pts.rows() * mesh.n_elements(), actual_dim);
@@ -138,7 +139,7 @@ namespace poly_fem
 
 		problem.remove_neumann_nodes(bases, boundary_tag, local_boundary, bounday_nodes);
 
-		if(linear_elasticity)
+		if(problem.problem_num() == 3)
 		{
 			const int dim = mesh.is_volume() ? 3:2;
 			const std::size_t n_b_nodes = bounday_nodes.size();
@@ -159,14 +160,6 @@ namespace poly_fem
 		std::cout<<"n bases: "<<n_bases<<std::endl;
 	}
 
-
-	template<class Assembler>
-	void compute_assembly_values(const Mesh &mesh, const std::vector< ElementBases > &bases, std::vector< ElementAssemblyValues > &values)
-	{
-		Assembler assmbler;
-		assmbler.compute_assembly_values(mesh.is_volume(), bases, values);
-	}
-
 	void State::compute_assembly_vals()
 	{
 		igl::Timer timer; timer.start();
@@ -174,10 +167,7 @@ namespace poly_fem
 
 		std::sort(bounday_nodes.begin(), bounday_nodes.end());
 
-		if(linear_elasticity)
-			compute_assembly_values<Assembler<LinearElasticity> >(mesh, bases, values);
-		else
-			compute_assembly_values<Assembler<Laplacian> >(mesh, bases, values);
+		ElementAssemblyValues::compute_assembly_values(mesh.is_volume(), bases, values);
 
 		timer.stop();
 		computing_assembly_values_time = timer.getElapsedTime();
@@ -192,13 +182,13 @@ namespace poly_fem
     	// std::cout<<MatrixXd(stiffness)-MatrixXd(stiffness.transpose())<<"\n\n"<<std::endl;
     	// std::cout<<MatrixXd(stiffness).rowwise().sum()<<"\n\n"<<std::endl;
 
-		if(linear_elasticity)
+		if(problem.problem_num() == 3)
 		{
 			Assembler<LinearElasticity> assembler;
 			assembler.local_assembler().size() = mesh.is_volume() ? 3:2;
 			//todo set lame parameters
-
 			assembler.assemble(n_bases, values, values, stiffness);
+			// std::cout<<MatrixXd(stiffness)<<std::endl;
 			assembler.set_identity(bounday_nodes, stiffness);
 		}
 		else
@@ -223,21 +213,11 @@ namespace poly_fem
 		igl::Timer timer; timer.start();
 		std::cout<<"Assigning rhs..."<<std::flush;
 
-		if(linear_elasticity)
-		{
-			Assembler<LinearElasticity> assembler;
-			assembler.local_assembler().size() = mesh.is_volume() ? 3:2;
-			assembler.rhs(n_bases, values, values, problem, rhs);
-			rhs *= -1;
-			assembler.bc(bases, mesh, local_boundary, bounday_nodes, n_boundary_samples, problem, rhs);
-		}
-		else
-		{
-			Assembler<Laplacian> assembler;
-			assembler.rhs(n_bases, values, values, problem, rhs);
-			rhs *= -1;
-			assembler.bc(bases, mesh, local_boundary, bounday_nodes, n_boundary_samples, problem, rhs);
-		}
+		const int size = problem.problem_num() == 3 ? (mesh.is_volume() ? 3:2) : 1;
+		RhsAssembler rhs_assembler;
+		rhs_assembler.assemble(n_bases, size, values, values, problem, rhs);
+		rhs *= -1;
+		rhs_assembler.set_bc(size, bases, mesh, local_boundary, bounday_nodes, n_boundary_samples, problem, rhs);
 
 		timer.stop();
 		assigning_rhs_time = timer.getElapsedTime();

@@ -28,7 +28,7 @@ namespace poly_fem
 		MatrixXd tmp;
 
 		int actual_dim = 1;
-		if(state.linear_elasticity)
+		if(state.problem.problem_num() == 3)
 			actual_dim = state.mesh.is_volume() ? 3:2;
 
 		result.resize(vis_pts.rows(), actual_dim);
@@ -76,9 +76,10 @@ namespace poly_fem
 	{
 		MatrixXd col;
 
-		if(state.linear_elasticity)
+		if(state.problem.problem_num() == 3)
 		{
 			const MatrixXd ffun = (fun.array()*fun.array()).rowwise().sum().sqrt(); //norm of displacement, maybe replace with stress
+			// const MatrixXd ffun = fun.col(1); //y component
 
 			if(min < max)
 				igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, ffun, min, max, col);
@@ -159,7 +160,7 @@ namespace poly_fem
 					const Local2Global &l2g = basis.bases[j].global().front();
 					int g_index = l2g.index;
 
-					if(state.linear_elasticity)
+					if(state.problem.problem_num() == 3)
 						g_index *= 2;
 
 					MatrixXd node = l2g.node;
@@ -201,7 +202,7 @@ namespace poly_fem
 		auto show_sol_func = [&](){
 			MatrixXd global_sol;
 			interpolate_function(state.sol, global_sol);
-			if(state.linear_elasticity)
+			if(state.problem.problem_num() == 3)
 				plot_function(global_sol);
 			else
 				plot_function(global_sol, 0, 1);
@@ -502,7 +503,7 @@ namespace poly_fem
 
 			viewer_.ngui->addVariable("spline basis", state.use_splines);
 
-			viewer_.ngui->addVariable("elasticity", state.linear_elasticity);
+			// viewer_.ngui->addVariable("elasticity", state.linear_elasticity);
 
 			viewer_.ngui->addVariable<ProblemType>("Problem",
 				[&](ProblemType val) { state.problem.set_problem_num(val); },

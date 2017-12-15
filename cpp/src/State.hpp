@@ -37,7 +37,7 @@ namespace poly_fem
 		int n_refs = 0;
 
 		bool use_splines = false;
-		bool linear_elasticity = false;
+		// bool linear_elasticity = false;
 
 		Problem problem;
 
