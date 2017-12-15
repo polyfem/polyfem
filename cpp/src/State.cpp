@@ -14,7 +14,10 @@
 
 #include "json.hpp"
 
+#include "CustomSerialization.hpp"
+
 #include <igl/Timer.h>
+#include <igl/serialize.h>
 
 #include <iostream>
 
@@ -301,9 +304,50 @@ namespace poly_fem
 		problem.set_problem_num(problem_num);
 	}
 
-	void State::sertialize(const std::string &name)
+	void State::sertialize(const std::string &file_name)
 	{
+		igl::serialize(quadrature_order, "quadrature_order", file_name, true);
+		igl::serialize(n_boundary_samples, "n_boundary_samples", file_name);
 
+		igl::serialize(mesh_path, "mesh_path", file_name);
+		igl::serialize(n_refs, "n_refs", file_name);
+
+		igl::serialize(use_splines, "use_splines", file_name);
+
+		igl::serialize(problem, "problem", file_name);
+
+		igl::serialize(n_bases, "n_bases", file_name);
+
+		igl::serialize(bases, "bases", file_name);
+		igl::serialize(values, "values", file_name);
+		igl::serialize(bounday_nodes, "bounday_nodes", file_name);
+		igl::serialize(local_boundary, "local_boundary", file_name);
+
+		igl::serialize(boundary_tag, "boundary_tag", file_name);
+
+
+		igl::serialize(mesh, "mesh", file_name);
+
+		igl::serialize(polys, "polys", file_name);
+
+
+		igl::serialize(stiffness, "stiffness", file_name);
+		igl::serialize(rhs, "rhs", file_name);
+		igl::serialize(sol, "sol", file_name);
+
+		igl::serialize(mesh_size, "mesh_size", file_name);
+		igl::serialize(l2_err, "l2_err", file_name);
+		igl::serialize(linf_err, "linf_err", file_name);
+		igl::serialize(nn_zero, "nn_zero", file_name);
+		igl::serialize(mat_size, "mat_size", file_name);
+
+		igl::serialize(building_basis_time, "building_basis_time", file_name);
+		igl::serialize(loading_mesh_time, "loading_mesh_time", file_name);
+		igl::serialize(computing_assembly_values_time, "computing_assembly_values_time", file_name);
+		igl::serialize(assembling_stiffness_mat_time, "assembling_stiffness_mat_time", file_name);
+		igl::serialize(assigning_rhs_time, "assigning_rhs_time", file_name);
+		igl::serialize(solving_time, "solving_time", file_name);
+		igl::serialize(computing_errors_time, "computing_errors_time", file_name);
 	}
 
 }

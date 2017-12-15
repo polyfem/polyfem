@@ -28,8 +28,6 @@ namespace poly_fem
 
 		void init(const std::string &mesh_path, const int n_refs, const int problem_num_);
 
-		void sertialize(const std::string &name);
-
 		int quadrature_order = 4;
 		int n_boundary_samples = 10;
 
@@ -80,9 +78,11 @@ namespace poly_fem
 		void solve_problem();
 		void compute_errors();
 
-		void save_json(const std::string &name);
-
 		void interpolate_function(const Eigen::MatrixXd &fun, const Eigen::MatrixXd &local_pts, Eigen::MatrixXd &result);
+
+		void save_json(const std::string &name);
+		void sertialize(const std::string &file_name);
+
 	};
 
 }

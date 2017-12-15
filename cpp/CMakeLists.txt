@@ -51,6 +51,8 @@ add_library(polyfem
 	src/State.hpp
 	src/State.cpp
 
+	src/utils/CustomSerialization.hpp
+
 	src/utils/CommandLine.hpp
 	src/utils/CommandLine.cpp
 
