@@ -60,6 +60,7 @@ namespace poly_fem
 		Eigen::MatrixXd rhs;
 		Eigen::MatrixXd sol;
 
+		double mesh_size;
 		double l2_err, linf_err;
 		long nn_zero, mat_size;
 
@@ -70,6 +71,8 @@ namespace poly_fem
 		void assemble_rhs();
 		void solve_problem();
 		void compute_errors();
+
+		void save_json(const std::string &name);
 
 		void interpolate_function(const Eigen::MatrixXd &fun, const Eigen::MatrixXd &local_pts, Eigen::MatrixXd &result);
 	};

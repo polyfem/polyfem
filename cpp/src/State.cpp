@@ -11,6 +11,8 @@
 #include "Laplacian.hpp"
 #include "LinearElasticity.hpp"
 
+#include "json.hpp"
+
 #include <igl/Timer.h>
 
 #include <iostream>
@@ -20,6 +22,38 @@ using namespace Eigen;
 
 namespace poly_fem
 {
+
+	void State::save_json(const std::string &name)
+	{
+		using json = nlohmann::json;
+		json j;
+
+		j["quadrature_order"] = quadrature_order;
+		j["n_boundary_samples"] = n_boundary_samples;
+
+		j["mesh_path"] = mesh_path;
+		j["n_refs"] = n_refs;
+
+		j["use_splines"] = use_splines;
+		j["problem"] = problem.problem_num();
+
+		j["n_bases"] = n_bases;
+
+		j["mesh_size"] = mesh_size;
+
+		j["l2_err"] = l2_err;
+		j["linf_err"] = linf_err;
+
+		j["nn_zero"] = nn_zero;
+		j["mat_size"] = mat_size;
+
+
+		std::ofstream o(name);
+		o << std::setw(4) << j << std::endl;
+		o.close();
+
+	}
+
 	void State::interpolate_function(const MatrixXd &fun, const MatrixXd &local_pts, MatrixXd &result)
 	{
 		MatrixXd tmp;
@@ -65,8 +99,8 @@ namespace poly_fem
 		mesh.set_boundary_tags(boundary_tag);
 		timer.stop();
 		std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
-
-		std::cout<<" h: "<<mesh.compute_mesh_size()<<std::endl;
+		mesh_size = mesh.compute_mesh_size();
+		std::cout<<" h: "<<mesh_size<<std::endl;
 	}
 
 	void State::build_basis()

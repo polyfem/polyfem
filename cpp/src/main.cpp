@@ -52,6 +52,7 @@ int main(int argc, const char **argv)
     CommandLine command_line;
 
     std::string path = "";
+    std::string output = "";
     int n_refs = 0;
     int problem_num = 0;
 
@@ -76,6 +77,8 @@ int main(int argc, const char **argv)
 
     command_line.add_option("-cmd", "-ui", no_ui);
 
+    command_line.add_option("-output", output);
+
     command_line.parse(argc, argv);
 
     if(no_ui)
@@ -96,6 +99,11 @@ int main(int argc, const char **argv)
         state.assemble_rhs();
         state.solve_problem();
         state.compute_errors();
+
+        if(!output.empty()){
+            std::cout<<"saving in "<<output<<std::endl;
+            state.save_json(output);
+        }
     }
     else
     {
