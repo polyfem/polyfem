@@ -103,9 +103,9 @@ namespace poly_fem
 				for(long i = 0; i < x.size(); ++i)
 				{
 					if(fabs(x(i)-1)<1e-8)
-						val(i, 0)=0.1;
-					else if(fabs(x(i))<1e-8)
 						val(i, 0)=-0.1;
+					else if(fabs(x(i))<1e-8)
+						val(i, 0)=0.1;
 					// else
 						// assert(false);
 				}

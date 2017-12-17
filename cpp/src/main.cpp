@@ -28,8 +28,8 @@ using namespace Eigen;
 *   -b_samples <number of boundary samples>
 *   -spline <use spline basis>
 *   -fem <use standard fem with quad/hex meshes>
-*   -elasticity <use linear elasitcity>
-*   -poisson <use poisson problem>
+*   -lambda <first lame parameter>
+*   -mu <second lame parameter>
 *   -cmd <runs without ui>
 *   -ui <runs with ui>
 **/
@@ -52,15 +52,18 @@ int main(int argc, const char **argv)
     CommandLine command_line;
 
     std::string path = "";
+    std::string output = "";
     int n_refs = 0;
     int problem_num = 0;
 
     int quadrature_order = 4;
     int n_boundary_samples = 10;
 
+    double lambda = 1, mu = 1;
+
 
     bool use_splines = false;
-    bool linear_elasticity = false;
+    // bool linear_elasticity = false;
 
     bool no_ui = false;
 
@@ -72,9 +75,16 @@ int main(int argc, const char **argv)
     command_line.add_option("-quad", quadrature_order);
     command_line.add_option("-b_samples", n_boundary_samples);
     command_line.add_option("-spline", "-fem", use_splines);
-    command_line.add_option("-elasticity", "-poisson", linear_elasticity);
+
+
+    command_line.add_option("-lambda", lambda);
+    command_line.add_option("-mu", mu);
+
+    // command_line.add_option("-elasticity", "-poisson", linear_elasticity);
 
     command_line.add_option("-cmd", "-ui", no_ui);
+
+    command_line.add_option("-output", output);
 
     command_line.parse(argc, argv);
 
@@ -84,7 +94,9 @@ int main(int argc, const char **argv)
 
         state.quadrature_order = quadrature_order;
         state.use_splines = use_splines;
-        state.linear_elasticity = linear_elasticity;
+        state.lambda = lambda;
+        state.mu = mu;
+        // state.linear_elasticity = linear_elasticity;
         state.n_boundary_samples = n_boundary_samples;
 
         state.init(path, n_refs, problem_num);
@@ -96,12 +108,18 @@ int main(int argc, const char **argv)
         state.assemble_rhs();
         state.solve_problem();
         state.compute_errors();
+
+        if(!output.empty()){
+            state.save_json(output);
+        }
     }
     else
     {
         UIState::ui_state().state.quadrature_order = quadrature_order;
         UIState::ui_state().state.use_splines = use_splines;
-        UIState::ui_state().state.linear_elasticity = linear_elasticity;
+        UIState::ui_state().state.lambda = lambda;
+        UIState::ui_state().state.mu = mu;
+        // UIState::ui_state().state.linear_elasticity = linear_elasticity;
         UIState::ui_state().state.n_boundary_samples = n_boundary_samples;
 
         UIState::ui_state().init(path, n_refs, problem_num);

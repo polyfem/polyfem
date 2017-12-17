@@ -1,6 +1,7 @@
 #include "UIState.hpp"
 
-#include <igl/colormap.h>
+#include "LinearElasticity.hpp"
+
 #include <igl/triangle/triangulate.h>
 #include <igl/copyleft/tetgen/tetrahedralize.h>
 #include <igl/Timer.h>
@@ -28,7 +29,7 @@ namespace poly_fem
 		MatrixXd tmp;
 
 		int actual_dim = 1;
-		if(state.linear_elasticity)
+		if(state.problem.problem_num() == 3)
 			actual_dim = state.mesh.is_volume() ? 3:2;
 
 		result.resize(vis_pts.rows(), actual_dim);
@@ -76,14 +77,42 @@ namespace poly_fem
 	{
 		MatrixXd col;
 
-		if(state.linear_elasticity)
+		if(state.problem.problem_num() == 3)
 		{
 			const MatrixXd ffun = (fun.array()*fun.array()).rowwise().sum().sqrt(); //norm of displacement, maybe replace with stress
+			// const MatrixXd ffun = fun.col(1); //y component
+
+			// LinearElasticity lin_elast;
+			// MatrixXd ffun(vis_pts.rows(), 1);
+
+			// int size = 1;
+			// if(state.problem.problem_num() == 3)
+			// 	size = state.mesh.is_volume() ? 3:2;
+
+			// MatrixXd stresses;
+			// int counter = 0;
+			// for(int i = 0; i < int(state.bases.size()); ++i)
+			// {
+			// 	const ElementBases &bs = state.bases[i];
+
+			// 	MatrixXd local_pts;
+
+			// 	if(int(bs.bases.size()) == 4 || int(bs.bases.size()) == 9)
+			// 		local_pts = local_vis_pts_quad;
+			// 	else if(int(bs.bases.size()) == 3)
+			// 		local_pts = local_vis_pts_tri;
+			// 	else{
+			// 		local_pts = vis_pts_poly[i];
+			// 	}
+			// 	lin_elast.compute_von_mises_stresses(size, bs, local_pts, fun, stresses);
+			// 	ffun.block(counter, 0, stresses.rows(), stresses.cols()) = stresses;
+			// 	counter += stresses.rows();
+			// }
 
 			if(min < max)
-				igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, ffun, min, max, col);
+				igl::colormap(color_map, ffun, min, max, col);
 			else
-				igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, ffun, true, col);
+				igl::colormap(color_map, ffun, true, col);
 
 			MatrixXd tmp = vis_pts;
 
@@ -96,9 +125,9 @@ namespace poly_fem
 		{
 
 			if(min < max)
-				igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, fun, min, max, col);
+				igl::colormap(color_map, fun, min, max, col);
 			else
-				igl::colormap(igl::COLOR_MAP_TYPE_INFERNO, fun, true, col);
+				igl::colormap(color_map, fun, true, col);
 
 			if(state.mesh.is_volume())
 				viewer.data.set_mesh(vis_pts, vis_faces);
@@ -159,7 +188,7 @@ namespace poly_fem
 					const Local2Global &l2g = basis.bases[j].global().front();
 					int g_index = l2g.index;
 
-					if(state.linear_elasticity)
+					if(state.problem.problem_num() == 3)
 						g_index *= 2;
 
 					MatrixXd node = l2g.node;
@@ -201,7 +230,7 @@ namespace poly_fem
 		auto show_sol_func = [&](){
 			MatrixXd global_sol;
 			interpolate_function(state.sol, global_sol);
-			if(state.linear_elasticity)
+			if(state.problem.problem_num() == 3)
 				plot_function(global_sol);
 			else
 				plot_function(global_sol, 0, 1);
@@ -497,12 +526,16 @@ namespace poly_fem
 			viewer_.ngui->addVariable("quad order", state.quadrature_order);
 			viewer_.ngui->addVariable("b samples", state.n_boundary_samples);
 
+			viewer_.ngui->addVariable("lambda", state.lambda);
+			viewer_.ngui->addVariable("mu", state.mu);
+
 			viewer_.ngui->addVariable("mesh path", state.mesh_path);
 			viewer_.ngui->addVariable("n refs", state.n_refs);
 
 			viewer_.ngui->addVariable("spline basis", state.use_splines);
 
-			viewer_.ngui->addVariable("elasticity", state.linear_elasticity);
+
+			viewer_.ngui->addVariable<igl::ColorMapType>("Colormap", color_map)->setItems({"inferno", "jet", "magma", "parula", "plasma", "viridis"});
 
 			viewer_.ngui->addVariable<ProblemType>("Problem",
 				[&](ProblemType val) { state.problem.set_problem_num(val); },

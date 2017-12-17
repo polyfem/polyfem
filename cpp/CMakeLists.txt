@@ -51,6 +51,8 @@ add_library(polyfem
 	src/State.hpp
 	src/State.cpp
 
+	src/utils/CustomSerialization.hpp
+
 	src/utils/CommandLine.hpp
 	src/utils/CommandLine.cpp
 
@@ -108,8 +110,13 @@ add_library(polyfem
 
 	src/assembler/AssemblyValues.hpp
 	src/assembler/ElementAssemblyValues.hpp
+	src/assembler/ElementAssemblyValues.cpp
 
 	src/assembler/Assembler.hpp
+
+	src/assembler/RhsAssembler.hpp
+	src/assembler/RhsAssembler.cpp
+	
 	src/assembler/Laplacian.hpp
 	src/assembler/Laplacian.cpp
 	src/assembler/LinearElasticity.hpp
@@ -120,7 +127,7 @@ add_library(polyfem
 )
 
 # target_link_libraries(polyfem igl::core igl::triangle igl::tetgen geogram)
-target_link_libraries(polyfem igl::core igl::triangle igl::tetgen igl::viewer geogram)
+target_link_libraries(polyfem igl::core igl::triangle igl::tetgen igl::viewer geogram json)
 target_include_directories(polyfem PUBLIC src src/assembler src/basis src/mesh src/problem src/quadrature src/utils)
 target_compile_options(polyfem PUBLIC ${ALL_WARNINGS})
 

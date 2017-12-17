@@ -373,32 +373,65 @@ namespace poly_fem
                         const int mmx = x;
                         const int mmy = 1;
 
+                        std::vector<int> other_indices;
+                        const auto &center = b.bases[1*3 + 1].global().front();
+
+                        const auto &el1 = b.bases[mpy*3 + mpx].global().front();
+                        const auto &el2 = b.bases[mmy*3 + mmx].global().front();
+
+                        Navigation::Index index = mesh.get_index_from_face(center.index);
+                        while(mesh.next_around_vertex(index).face != el1.index && mesh.next_around_vertex(index).face != el2.index)
+                        {
+                            index = mesh.next_around_face(index);
+                        }
+
+                        index = mesh.next_around_vertex(index);
+
+                        Navigation::Index i1 = mesh.next_around_vertex(index);
+                        if(i1.face == space(x,y)[0] || i1.face == space(x,y)[1])
+                            index = i1;
+                        else
+                            index = mesh.next_around_vertex(mesh.switch_vertex(index));
+
+                        const int start = index.face == space(x,y)[0] ? space(x,y)[0] : space(x,y)[1];
+                        const int end = start == space(x,y)[0] ? space(x,y)[1] : space(x,y)[0];
+                        assert(index.face == space(x,y)[0] || index.face == space(x,y)[1]);
+
+                        while(index.face != end)
+                        {
+                            other_indices.push_back(index.face);
+                            index = mesh.next_around_vertex(index);
+                        }
+                        other_indices.push_back(end);
+
+
                         const int local_index = y*3 + x;
                         auto &base = b.bases[local_index];
 
-                        base.global().resize(5); //TODO
-
-                        base.global()[0].index = b.bases[1*3 + 1].global().front().index;
-                        base.global()[0].val = -1./5;
-                        base.global()[0].node = b.bases[1*3 + 1].global().front().node;
-
-                        base.global()[1].index = b.bases[mpy*3 + mpx].global().front().index;
-                        base.global()[1].val = -1./5;
-                        base.global()[1].node = b.bases[mpy*3 + mpx].global().front().node;
-
-                        base.global()[2].index = b.bases[mmy*3 + mmx].global().front().index;
-                        base.global()[2].val = -1./5;
-                        base.global()[2].node = b.bases[mmy*3 + mmx].global().front().node;
+                        const int k = int(other_indices.size()) + 3;
 
 
+                        base.global().resize(k);
 
-                        base.global()[3].index = space(x,y)[0];
-                        base.global()[3].val = 4./5;
-                        base.global()[3].node = mesh.node_from_face(space(x,y)[0]);
+                        base.global()[0].index = center.index;
+                        base.global()[0].val = (4. - k) / k;
+                        base.global()[0].node = center.node;
 
-                        base.global()[4].index = space(x,y)[1];
-                        base.global()[4].val = 4./5;
-                        base.global()[4].node = mesh.node_from_face(space(x,y)[1]);
+                        base.global()[1].index = el1.index;
+                        base.global()[1].val = (4. - k) / k;
+                        base.global()[1].node = el1.node;
+
+                        base.global()[2].index = el2.index;
+                        base.global()[2].val = (4. - k) / k;
+                        base.global()[2].node = el2.node;
+
+
+                        for(std::size_t n = 0; n < other_indices.size(); ++n)
+                        {
+                            base.global()[3+n].index = other_indices[n];
+                            base.global()[3+n].val = 4./k;
+                            base.global()[3+n].node = mesh.node_from_face(other_indices[n]);
+                        }
 
 
                         const QuadraticTensorProductBSpline spline(h_knots[x], v_knots[y]);

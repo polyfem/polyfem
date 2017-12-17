@@ -28,8 +28,6 @@ namespace poly_fem
 
 		void init(const std::string &mesh_path, const int n_refs, const int problem_num_);
 
-		void sertialize(const std::string &name);
-
 		int quadrature_order = 4;
 		int n_boundary_samples = 10;
 
@@ -37,7 +35,7 @@ namespace poly_fem
 		int n_refs = 0;
 
 		bool use_splines = false;
-		bool linear_elasticity = false;
+		// bool linear_elasticity = false;
 
 		Problem problem;
 
@@ -50,6 +48,8 @@ namespace poly_fem
 
 		std::vector<int> boundary_tag;
 
+		std::vector<double> errors;
+
 
 		Mesh mesh;
 
@@ -60,8 +60,19 @@ namespace poly_fem
 		Eigen::MatrixXd rhs;
 		Eigen::MatrixXd sol;
 
+		double lambda = 1, mu = 1;
+
+		double mesh_size;
 		double l2_err, linf_err;
 		long nn_zero, mat_size;
+
+		double building_basis_time;
+		double loading_mesh_time;
+		double computing_assembly_values_time;
+		double assembling_stiffness_mat_time;
+		double assigning_rhs_time;
+		double solving_time;
+		double computing_errors_time;
 
 		void load_mesh();
 		void build_basis();
@@ -72,6 +83,10 @@ namespace poly_fem
 		void compute_errors();
 
 		void interpolate_function(const Eigen::MatrixXd &fun, const Eigen::MatrixXd &local_pts, Eigen::MatrixXd &result);
+
+		void save_json(const std::string &name);
+		void sertialize(const std::string &file_name);
+
 	};
 
 }

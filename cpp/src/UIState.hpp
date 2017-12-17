@@ -3,6 +3,7 @@
 
 #include "State.hpp"
 
+#include <igl/colormap.h>
 #include <igl/viewer/Viewer.h>
 #include <map>
 
@@ -33,6 +34,8 @@ namespace poly_fem
 
 		std::map<int, Eigen::MatrixXi> vis_faces_poly;
 		std::map<int, Eigen::MatrixXd> vis_pts_poly;
+
+		igl::ColorMapType color_map = igl::COLOR_MAP_TYPE_INFERNO;
 
 		State &state;
 	private:
