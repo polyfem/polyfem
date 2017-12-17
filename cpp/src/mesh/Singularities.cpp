@@ -172,17 +172,17 @@ void poly_fem::create_patch_around_singularities(
 		// c. Navigate around until another marked edge is found (assert it is different from the previous one)
 		Index idx2 = Navigation::switch_edge(M, idx1);
 		GEO::vector<index_t> unmarked_vertices;
-		std::cout << f << ' ' << std::endl;
+		// std::cout << f << ' ' << std::endl;
 		for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv) {
 			assert(!is_singular[idx2.vertex]);
 			unmarked_vertices.push_back(idx2.vertex);
-			std::cout << idx2.edge << ':' << idx2.vertex << ' ';
+			// std::cout << idx2.edge << ':' << idx2.vertex << ' ';
 			if (edge_to_midpoint[idx2.edge] != -1) {
 				break;
 			}
 			idx2 = Navigation::next_around_face(M, idx2);
 		}
-		std::cout << std::endl;
+		// std::cout << std::endl;
 		assert(edge_to_midpoint[idx2.edge] != -1);
 		assert(idx1.edge != idx2.edge);
 		assert(unmarked_vertices.front() == idx1.vertex);
@@ -258,7 +258,7 @@ void poly_fem::create_patch_around_singularities(
 			assert(vi != -1);
 			hole.push_back(vi);
 			marked[vi] = true;
-			std::cout << vi << ';';
+			// std::cout << vi << ';';
 		} while (vi != (int) v);
 		M.facets.create_polygon(hole);
 	}

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <geogram/mesh/mesh.h>
 #include <Eigen/Dense>
 #include <vector>
 
@@ -51,5 +52,13 @@ bool instanciate_pattern(
 //
 void refine_quad_mesh(const Eigen::MatrixXd &IV, const Eigen::MatrixXi &IF,
 	Eigen::MatrixXd &OV, Eigen::MatrixXi &OF);
+
+///
+/// Refine a polygonal mesh. Quads and triangles are split into quads.
+///
+/// @param[in]  M_in   { Surface mesh to subdivide }
+/// @param[out] M_out  { Refined mesh }
+///
+void refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out);
 
 } // namespace poly_fem

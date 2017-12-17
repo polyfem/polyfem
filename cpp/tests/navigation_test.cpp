@@ -2,6 +2,7 @@
 
 #include "Navigation.hpp"
 #include "Singularities.hpp"
+#include "Refinement.hpp"
 #include <geogram/basic/file_system.h>
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
@@ -53,22 +54,6 @@ namespace {
 
 			// Initialize the key
 			idx_ = Navigation::get_index_from_face(mesh_, 0, 0);
-			idx_.face_corner = mesh_.facets.corner(0, 0);
-			idx_.vertex = mesh_.facet_corners.vertex(idx_.face_corner);
-			idx_.face = 0;
-			index_t c2 = mesh_.facets.next_corner_around_facet(idx_.face, idx_.face_corner);
-			index_t v2 = mesh_.facet_corners.vertex(c2);
-			auto minmax = [] (int a, int b) {
-				return std::make_pair(std::min(a, b), std::max(a, b));
-			};
-			auto e0 = minmax(idx_.vertex, v2);
-			for (int e = 0; mesh_.edges.nb(); ++e) {
-				auto e1 = minmax(mesh_.edges.vertex(e, 0), mesh_.edges.vertex(e, 1));
-				if (e0 == e1) {
-					idx_.edge = e;
-					break;
-				}
-			}
 
 			// Compute singularities
 			poly_fem::singularity_graph(mesh_, singular_vertices_, singular_edges_);
@@ -95,11 +80,23 @@ namespace {
 					idx_ = tmp;
 				}
 			}
-			if (ImGui::Button("Remove Singularities")) {
+
+			ImGui::Separator();
+
+			if (ImGui::Button("Kill Singularities", ImVec2(-1, 0))) {
 				poly_fem::create_patch_around_singularities(mesh_, singular_vertices_, singular_edges_);
 				Navigation::prepare_mesh(mesh_);
-				GEO::mesh_save(mesh_, "foo.obj");
 				poly_fem::singularity_graph(mesh_, singular_vertices_, singular_edges_);
+				GEO::mesh_save(mesh_, "foo.obj");
+			}
+
+			if (ImGui::Button("Refine", ImVec2(-1, 0))) {
+				GEO::Mesh tmp;
+				poly_fem::refine_polygonal_mesh(mesh_, tmp);
+				mesh_.copy(tmp);
+				Navigation::prepare_mesh(mesh_);
+				poly_fem::singularity_graph(mesh_, singular_vertices_, singular_edges_);
+				GEO::mesh_save(mesh_, "foo.obj");
 			}
 		}
 

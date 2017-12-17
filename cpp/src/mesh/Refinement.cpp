@@ -1,5 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "Refinement.hpp"
+#include "Navigation.hpp"
 #include <igl/is_border_vertex.h>
 #include <igl/remove_duplicate_vertices.h>
 #include <igl/remove_unreferenced.h>
@@ -374,4 +375,128 @@ void poly_fem::refine_quad_mesh(
 	// std::cout << PF << std::endl;
 	bool res = instanciate_pattern(IV, IF, PV, PF, OV, OF);
 	assert(res);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void poly_fem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out) {
+	using GEO::index_t;
+	using Navigation::Index;
+
+	// [Helper] Retrieve vertex position
+	auto mesh_point = [] (const GEO::Mesh &M, index_t v) {
+		GEO::vec3 p(0, 0, 0);
+		for (index_t d = 0; d < std::min(3u, (index_t) M.vertices.dimension()); ++d) {
+			if (M.vertices.double_precision()) {
+				p[d] = M.vertices.point_ptr(v)[d];
+			} else {
+				p[d] = M.vertices.single_precision_point_ptr(v)[d];
+			}
+		}
+		return p;
+	};
+
+	// [Helper] Create a new vertex and set vertex coordinates
+	auto mesh_create_vertex = [] (GEO::Mesh &M, const GEO::vec3 &p) {
+		auto v = M.vertices.create_vertex();
+		for (index_t d = 0; d < std::min(3u, (index_t) M.vertices.dimension()); ++d) {
+			if (M.vertices.double_precision()) {
+				M.vertices.point_ptr(v)[d] = p[d];
+			} else {
+				M.vertices.single_precision_point_ptr(v)[d] = (float) p[d];
+			}
+		}
+		return v;
+	};
+
+	// [Helper] Retrieve facet barycenter
+	auto facet_barycenter = [&mesh_point](const GEO::Mesh &M, index_t f) {
+		GEO::vec3 p(0, 0, 0);
+		for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv) {
+			p += mesh_point(M, M.facets.vertex(f, lv));
+		}
+		return p / M.facets.nb_vertices(f);
+	};
+
+	// Step 0: Clear output mesh, and fill it with M_in's vertices
+	assert(&M_in != &M_out);
+	M_out.copy(M_in);
+	M_out.edges.clear();
+	M_out.facets.clear();
+
+	// Step 1: Chain vertices around polygonal facets
+	std::vector<int> next_vertex_around_hole(M_in.vertices.nb(), -1);
+	for (index_t f = 0; f < M_in.facets.nb(); ++f) {
+		if (M_in.facets.nb_vertices(f) > 4) {
+			for (index_t lv = 0; lv < M_in.facets.nb_vertices(f); ++lv) {
+				index_t v1 = M_in.facets.vertex(f, lv);
+				index_t v2 = M_in.facets.vertex(f, (lv+1)%M_in.facets.nb_vertices(f));
+				next_vertex_around_hole[v1] = v2;
+			}
+		}
+	}
+
+	// Step 2: Iterate over facets and refine triangles and quads
+	std::vector<int> edge_to_midpoint(M_in.edges.nb(), -1);
+	for (index_t f = 0; f < M_in.facets.nb(); ++f) {
+		index_t nv = M_in.facets.nb_vertices(f);
+		assert(nv > 2);
+		if (nv == 3 || nv == 4) {
+			Index idx = Navigation::get_index_from_face(M_in, f, 0);
+			assert(Navigation::switch_vertex(M_in, idx).vertex == (int) M_in.facets.vertex(f, 1));
+			// Create mid-edge vertices
+			for (index_t lv = 0; lv < M_in.facets.nb_vertices(f); ++lv, idx = Navigation::next_around_face(M_in, idx)) {
+				assert(idx.vertex == (int) M_in.facets.vertex(f, lv));
+				if (edge_to_midpoint[idx.edge] == -1) {
+					GEO::vec3 coords = 0.5 * (mesh_point(M_in, idx.vertex) + mesh_point(M_in, Navigation::switch_vertex(M_in, idx).vertex));
+					edge_to_midpoint[idx.edge] = mesh_create_vertex(M_out, coords);
+					assert(edge_to_midpoint[idx.edge] + 1 == (int) M_out.vertices.nb());
+					next_vertex_around_hole.push_back(-1);
+				}
+				// Chain vertices around holes
+				int v1 = idx.vertex;
+				int v2 = Navigation::switch_vertex(M_in, idx).vertex;
+				if (next_vertex_around_hole[v2] == v1) {
+					// printf("v1: %d, v2: %d, v12: %d, n(v1): %d, n(v2): %d\n",
+					// 	v1, v2, edge_to_midpoint[idx.edge], next_vertex_around_hole[v1], next_vertex_around_hole[v2]);
+					int v12 = edge_to_midpoint[idx.edge];
+					next_vertex_around_hole[v2] = v12;
+					next_vertex_around_hole[v12] = v1;
+				}
+			}
+			// Create mid-face vertex
+			index_t vf = mesh_create_vertex(M_out, facet_barycenter(M_in, f));
+			assert(vf + 1 == M_out.vertices.nb());
+			next_vertex_around_hole.push_back(-1);
+			// Create quads
+			for (index_t lv = 0; lv < M_in.facets.nb_vertices(f); ++lv) {
+				idx = Navigation::get_index_from_face(M_in, f, lv);
+				assert(Navigation::switch_vertex(M_in, idx).vertex == (int) M_in.facets.vertex(f, (lv+1)%M_in.facets.nb_vertices(f)));
+				int v1 = idx.vertex;
+				int v12 = edge_to_midpoint[idx.edge];
+				int v01 = edge_to_midpoint[Navigation::switch_edge(M_in, idx).edge];
+				assert(v12 != -1 && v01 != -1);
+				M_out.facets.create_quad(v1, v12, vf, v01);
+			}
+		}
+	}
+
+	// Step 3: Create polygonal faces following vertices around holes
+	std::vector<bool> marked(M_out.vertices.nb(), false);
+	for (index_t v = 0; v < M_out.vertices.nb(); ++v) {
+		if (next_vertex_around_hole[v] == -1 || marked[v]) {
+			continue;
+		}
+		GEO::vector<index_t> hole;
+		int vi = v;
+		do {
+			// std::cout << vi << ';';
+			vi = next_vertex_around_hole[vi];
+			assert(vi != -1);
+			hole.push_back(vi);
+			marked[vi] = true;
+		} while (vi != (int) v);
+		std::cout << std::endl;
+		M_out.facets.create_polygon(hole);
+	}
 }
