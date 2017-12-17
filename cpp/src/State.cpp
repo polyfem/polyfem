@@ -48,6 +48,8 @@ namespace poly_fem
 		j["l2_err"] = l2_err;
 		j["linf_err"] = linf_err;
 
+		j["errors"] = errors;
+
 		j["nn_zero"] = nn_zero;
 		j["mat_size"] = mat_size;
 
@@ -257,6 +259,8 @@ namespace poly_fem
 
 		MatrixXd v_exact, v_approx;
 
+		errors.clear();
+
 		l2_err = 0;
 		linf_err = 0;
 
@@ -279,7 +283,10 @@ namespace poly_fem
 					v_approx += val.global[ii].val * sol(val.global[ii].index) * val.val;
 			}
 
-			auto err = (v_exact-v_approx).cwiseAbs();
+			const auto err = (v_exact-v_approx).cwiseAbs();
+
+			for(long i = 0; i < err.size(); ++i)
+				errors.push_back(err(i));
 
 			linf_err = max(linf_err, err.maxCoeff());
 			l2_err += (err.array() * err.array() * gvalues.det.array() * vals.quadrature.weights.array()).sum();

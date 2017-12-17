@@ -48,6 +48,8 @@ namespace poly_fem
 
 		std::vector<int> boundary_tag;
 
+		std::vector<double> errors;
+
 
 		Mesh mesh;
 
