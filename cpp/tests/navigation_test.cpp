@@ -6,6 +6,7 @@
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
 #include <geogram/mesh/mesh_geometry.h>
+#include <geogram/mesh/mesh_io.h>
 #include <geogram_gfx/glup_viewer/glup_viewer.h>
 #include <geogram_gfx/glup_viewer/glup_viewer_gui.h>
 #include <geogram_gfx/mesh/mesh_gfx.h>
@@ -36,6 +37,8 @@ namespace {
 			ImGui::GetStyle().WindowRounding = 7.0f;
 			ImGui::GetStyle().FrameRounding = 0.0f;
 			ImGui::GetStyle().GrabRounding = 0.0f;
+			retina_mode_ = false;
+			scaling_ = 1.0f;
 		}
 
 		virtual bool load(const std::string &filename) override {
@@ -74,9 +77,9 @@ namespace {
 		}
 
 		virtual void draw_viewer_properties() override {
-			ImGui::InputInt("Vtx", &idx_.vertex);
-			ImGui::InputInt("Edg", &idx_.edge);
-			ImGui::InputInt("Fct", &idx_.face);
+			ImGui::Text("Vertex: %d", idx_.vertex);
+			ImGui::Text("Edge:   %d", idx_.edge);
+			ImGui::Text("Facet:  %d", idx_.face);
 			idx_.vertex = std::max(0, std::min((int) mesh_.vertices.nb(), idx_.vertex));
 			idx_.edge = std::max(0, std::min((int) mesh_.edges.nb(), idx_.edge));
 			idx_.face = std::max(0, std::min((int) mesh_.facets.nb(), idx_.face));
@@ -91,6 +94,12 @@ namespace {
 				if (tmp.face != -1) {
 					idx_ = tmp;
 				}
+			}
+			if (ImGui::Button("Remove Singularities")) {
+				poly_fem::create_patch_around_singularities(mesh_, singular_vertices_, singular_edges_);
+				Navigation::prepare_mesh(mesh_);
+				GEO::mesh_save(mesh_, "foo.obj");
+				poly_fem::singularity_graph(mesh_, singular_vertices_, singular_edges_);
 			}
 		}
 

@@ -51,6 +51,6 @@ void singularity_graph(const GEO::Mesh &M, Eigen::VectorXi &V, Eigen::MatrixX2i 
 // @param[in]     t     { Interpolation parameter to place the subdivided
 //                      vertices around the singularities (between 0 and 1) }
 //
-void create_patch_around_singularities(GEO::Mesh &M, const Eigen::VectorXi &V, const Eigen::MatrixX2i &E, double t);
+void create_patch_around_singularities(GEO::Mesh &M, const Eigen::VectorXi &V, const Eigen::MatrixX2i &E, double t = 0.5);
 
 } // namespace poly_fem
