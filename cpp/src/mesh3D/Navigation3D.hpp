@@ -1,5 +1,5 @@
 #pragma once
-#include "global_types3D.hpp"
+#include "GlobalTypes3D.hpp"
 using namespace std;
 
 namespace poly_fem{

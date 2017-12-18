@@ -43,12 +43,12 @@ option(GEOGRAM_WITH_GRAPHICS "Viewers and geogram_gfx library" ON)
 option(GEOGRAM_WITH_LEGACY_NUMERICS "Legacy numerical libraries" OFF)
 option(GEOGRAM_WITH_HLBFGS "Non-linear solver (Yang Liu's HLBFGS)" OFF)
 option(GEOGRAM_WITH_TETGEN "Tetrahedral mesher (Hang Si's TetGen)" OFF)
-option(GEOGRAM_WITH_TRIANGLE "Triangle mesher (Jonathan Shewchuk's triangle)" ON)
+option(GEOGRAM_WITH_TRIANGLE "Triangle mesher (Jonathan Shewchuk's triangle)" OFF)
 option(GEOGRAM_WITH_EXPLORAGRAM "Experimental code (hexahedral meshing vpipeline and optimal transport)" OFF)
 option(GEOGRAM_WITH_LUA "Built-in LUA interpreter" OFF)
 option(GEOGRAM_LIB_ONLY "Libraries only (no example programs/no viewer)" ON)
 option(GEOGRAM_WITH_FPG "Predicate generator (Sylvain Pion's FPG)" OFF)
-option(GEOGRAM_USE_SYSTEM_GLFW3 "Use the version of GLFW3 installed in the system if found" ON)
+option(GEOGRAM_USE_SYSTEM_GLFW3 "Use the version of GLFW3 installed in the system if found" OFF)
 
 ################################################################################
 
@@ -60,11 +60,11 @@ target_include_directories(geogram SYSTEM PUBLIC ${GEOGRAM_SOURCE_INCLUDE_DIR})
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	# remove warning for multiply defined symbols (caused by multiple
 	# instanciations of STL templates)
-	target_compile_options(geogram INTERFACE /wd4251)
+	#target_compile_options(geogram INTERFACE /wd4251)
 
 	# remove all unused stuff from windows.h
-	target_compile_definitions(geogram INTERFACE -DWIN32_LEAN_AND_MEAN)
-	target_compile_definitions(geogram INTERFACE -DVC_EXTRALEAN)
+	# target_compile_definitions(geogram INTERFACE -DWIN32_LEAN_AND_MEAN)
+	# target_compile_definitions(geogram INTERFACE -DVC_EXTRALEAN)
 
 	# do not define a min() and a max() macro, breaks
 	# std::min() and std::max() !!

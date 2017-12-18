@@ -8,9 +8,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(UseColors)
 
 # Geogram
-#include(geogram)
-include(geogram.cmake)
-set_property(TARGET geogram PROPERTY FOLDER "dependencies")
+include(geogram)
 
 # Generate position independent code by default
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -76,7 +74,7 @@ add_library(polyfem
 	src/mesh3D/Mesh3D.cpp
 	src/mesh3D/Navigation3D.hpp
 	src/mesh3D/Navigation3D.cpp
-	src/mesh3D/Global_types3D.hpp
+	src/mesh3D/GlobalTypes3D.hpp
 
 	src/quadrature/Quadrature.hpp
 	src/quadrature/LineQuadrature.hpp
@@ -124,7 +122,7 @@ add_library(polyfem
 
 	src/assembler/RhsAssembler.hpp
 	src/assembler/RhsAssembler.cpp
-	
+
 	src/assembler/Laplacian.hpp
 	src/assembler/Laplacian.cpp
 	src/assembler/LinearElasticity.hpp
@@ -134,7 +132,6 @@ add_library(polyfem
 	src/problem/Problem.cpp
 )
 
-# target_link_libraries(polyfem igl::core igl::triangle igl::tetgen geogram)
 target_link_libraries(polyfem geogram igl::core igl::triangle igl::tetgen igl::viewer json)
 target_include_directories(polyfem PUBLIC src src/assembler src/basis src/mesh src/problem src/quadrature src/utils)
 target_compile_options(polyfem PUBLIC ${ALL_WARNINGS})
