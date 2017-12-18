@@ -110,7 +110,7 @@ namespace poly_fem
 		std::cout<<"Loading mesh..."<<std::flush;
 
 		mesh.load(mesh_path);
-		//TODO refine
+		mesh.refine(n_refs);
 
 		mesh.set_boundary_tags(boundary_tag);
 		timer.stop();

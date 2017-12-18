@@ -247,6 +247,7 @@ namespace poly_fem
 
 			const MatrixXd err = (global_sol - exact_sol).array().abs();
 			plot_function(err);
+			// viewer.data.V_material_specular *=0.;
 		};
 
 

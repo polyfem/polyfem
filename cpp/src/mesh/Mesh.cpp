@@ -1,6 +1,8 @@
 #include "Mesh.hpp"
 #include "Navigation.hpp"
 
+#include "Refinement.hpp"
+
 #include <igl/triangle/triangulate.h>
 #include <igl/copyleft/tetgen/tetrahedralize.h>
 
@@ -12,6 +14,23 @@
 
 namespace poly_fem
 {
+	void Mesh::refine(const int n_refiniment)
+	{
+		if(n_refiniment <= 0) return;
+
+		for(int i = 0; i < n_refiniment; ++i)
+		{
+			GEO::Mesh mesh;
+			mesh.copy(mesh_);
+			mesh_.clear(false,false);
+
+			refine_polygonal_mesh(mesh, mesh_);
+
+			Navigation::prepare_mesh(mesh_);
+		}
+		create_boundary_nodes();
+	}
+
 	bool Mesh::load(const std::string &path)
 	{
 		mesh_.clear(false,false);
@@ -214,25 +233,25 @@ namespace poly_fem
 		return is_real_boundary;
 	}
 
-	void Mesh::element_bounday_polygon(const int index, Eigen::MatrixXd &poly) const
-	{
-		if(is_volume())
-		{
-			assert(false);
-		}
-		else
-		{
-			poly.resize(mesh_.facets.nb_vertices(index), 2);
-			Eigen::MatrixXd p;
+	// void Mesh::element_bounday_polygon(const int index, Eigen::MatrixXd &poly) const
+	// {
+	// 	if(is_volume())
+	// 	{
+	// 		assert(false);
+	// 	}
+	// 	else
+	// 	{
+	// 		poly.resize(mesh_.facets.nb_vertices(index), 2);
+	// 		Eigen::MatrixXd p;
 
-			for(GEO::index_t i = 0; i < mesh_.facets.nb_vertices(index); ++i)
-			{
-				const GEO::index_t vid = mesh_.facets.vertex(index, i);
-				point(vid, p);
-				poly.row(i) = p;
-			}
-		}
-	}
+	// 		for(GEO::index_t i = 0; i < mesh_.facets.nb_vertices(index); ++i)
+	// 		{
+	// 			const GEO::index_t vid = mesh_.facets.vertex(index, i);
+	// 			point(vid, p);
+	// 			poly.row(i) = p;
+	// 		}
+	// 	}
+	// }
 
 	void Mesh::create_boundary_nodes()
 	{

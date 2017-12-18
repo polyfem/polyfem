@@ -11,6 +11,8 @@ namespace poly_fem
 	class Mesh
 	{
 	public:
+		void refine(const int n_refiniment);
+
 		inline bool is_volume() const { return mesh_.cells.nb() > 0; }
 
 		inline int n_elements() const { return is_volume() ? mesh_.cells.nb() : mesh_.facets.nb(); }
@@ -22,7 +24,7 @@ namespace poly_fem
 		double compute_mesh_size() const;
 
 		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts) const;
-		void element_bounday_polygon(const int index, Eigen::MatrixXd &poly) const;
+		// void element_bounday_polygon(const int index, Eigen::MatrixXd &poly) const;
 
 		void set_boundary_tags(std::vector<int> &tags) const;
 
