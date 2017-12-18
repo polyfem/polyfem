@@ -44,11 +44,11 @@ namespace poly_fem
 		}
 	}
 
-	void RhsAssembler::set_bc(const int size, const std::vector< ElementBases > &bases, const Mesh &mesh, const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution,  const Problem &problem, Eigen::MatrixXd &rhs) const
+	void RhsAssembler::set_bc(const int size, const std::vector< ElementBases > &bases, const std::vector< ElementBases > &geom_bases, const Mesh &mesh, const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution,  const Problem &problem, Eigen::MatrixXd &rhs) const
 	{
 		const int n_el=int(bases.size());
 
-		Eigen::MatrixXd samples, tmp, rhs_fun;
+		Eigen::MatrixXd samples, tmp, gtmp, rhs_fun;
 
 		int index = 0;
 		std::vector<int> indices; indices.reserve(n_el*10);
@@ -107,16 +107,17 @@ namespace poly_fem
 				continue;
 
 			const ElementBases &bs = bases[e];
+			const ElementBases &gbs = geom_bases[e];
 			const int n_local_bases = int(bs.bases.size());
 
-			Eigen::MatrixXd mapped = Eigen::MatrixXd::Zero(samples.rows(), samples.cols());
+			Eigen::MatrixXd mapped;
+			gbs.eval_geom_mapping(samples, mapped);
 
 			for(int j = 0; j < n_local_bases; ++j)
 			{
 				const Basis &b=bs.bases[j];
 
 				b.basis(samples, tmp);
-
 				for(std::size_t ii = 0; ii < b.global().size(); ++ii)
 				{
 					auto item = global_index_to_col.find(b.global()[ii].index);
@@ -128,21 +129,13 @@ namespace poly_fem
 						}
 						// global_mat.block(global_counter, item->second, tmp.size(), 1) = tmp;
 					}
-
-					for (long k = 0; k < tmp.rows(); ++k){
-						mapped.row(k) += tmp(k,0) * b.global()[ii].node * b.global()[ii].val;
-					}
 				}
 			}
 
 				// std::cout<<samples<<"\n"<<std::endl;
 
-			// Eigen::MatrixXd asd(mapped.rows(), 3);
-			// asd.col(0) = mapped.col(0);
-			// asd.col(1) = mapped.col(1);
-			// asd.col(2).setZero();
 				// igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
-				// viewer.data.add_points(asd, Eigen::MatrixXd::Constant(asd.rows(), 3, 0));
+				// viewer.data.add_points(mapped, Eigen::MatrixXd::Constant(mapped.rows(), 3, 0));
 
 				// std::cout<<mapped<<std::endl;
 

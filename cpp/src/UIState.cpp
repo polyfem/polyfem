@@ -167,6 +167,12 @@ namespace poly_fem
 			MatrixXd p0, p1;
 			state.mesh.get_edges(p0, p1);
 			viewer.data.add_edges(p0, p1, MatrixXd::Zero(p0.rows(), 3));
+
+			// for(int i = 0; i < state.mesh.n_elements(); ++i)
+			// {
+			// 	MatrixXd p = state.mesh.node_from_face(i);
+			// 	viewer.data.add_label(p.transpose(), std::to_string(i));
+			// }
 		};
 
 		auto show_vis_mesh_func = [&](){
@@ -182,28 +188,31 @@ namespace poly_fem
 			{
 				const ElementBases &basis = state.bases[i];
 				if(!basis.has_parameterization) continue;
-				
+
 				for(std::size_t j = 0; j < basis.bases.size(); ++j)
 				{
-					const Local2Global &l2g = basis.bases[j].global().front();
-					int g_index = l2g.index;
+					for(std::size_t kk = 0; kk < basis.bases[j].global().size(); ++kk)
+					{
+						const Local2Global &l2g = basis.bases[j].global()[kk];
+						int g_index = l2g.index;
 
-					if(state.problem.problem_num() == 3)
-						g_index *= 2;
+						if(state.problem.problem_num() == 3)
+							g_index *= 2;
 
-					MatrixXd node = l2g.node;
+						MatrixXd node = l2g.node;
 					// node += MatrixXd::Random(node.rows(), node.cols())/100;
-					MatrixXd txt_p = node;
-					for(long k = 0; k < txt_p.size(); ++k)
-						txt_p(k) += 0.02;
+						MatrixXd txt_p = node;
+						for(long k = 0; k < txt_p.size(); ++k)
+							txt_p(k) += 0.02;
 
-					MatrixXd col = MatrixXd::Zero(l2g.node.rows(), 3);
-					if(std::find(state.bounday_nodes.begin(), state.bounday_nodes.end(), g_index) != state.bounday_nodes.end())
-						col.col(0).setOnes();
+						MatrixXd col = MatrixXd::Zero(l2g.node.rows(), 3);
+						if(std::find(state.bounday_nodes.begin(), state.bounday_nodes.end(), g_index) != state.bounday_nodes.end())
+							col.col(0).setOnes();
 
 
-					viewer.data.add_points(l2g.node, col);
-					viewer.data.add_label(txt_p.transpose(), std::to_string(g_index));
+						viewer.data.add_points(l2g.node, col);
+						viewer.data.add_label(txt_p.transpose(), std::to_string(g_index));
+					}
 				}
 			}
 		};
@@ -247,7 +256,6 @@ namespace poly_fem
 
 			const MatrixXd err = (global_sol - exact_sol).array().abs();
 			plot_function(err);
-			// viewer.data.V_material_specular *=0.;
 		};
 
 
@@ -346,9 +354,9 @@ namespace poly_fem
 			}
 
 			int faces_total_size = 0, points_total_size = 0;
-			for(int i = 0; i < int(state.bases.size()); ++i)
+			for(int i = 0; i < int(state.geom_bases.size()); ++i)
 			{
-				const ElementBases &bs = state.bases[i];
+				const ElementBases &bs = state.geom_bases[i];
 
 				if(int(bs.bases.size()) == 4 || int(bs.bases.size()) == 9){
 					faces_total_size   += local_vis_faces_quad.rows();
@@ -399,9 +407,9 @@ namespace poly_fem
 
 			MatrixXd mapped, tmp;
 			int face_index = 0, point_index = 0;
-			for(int i = 0; i < int(state.bases.size()); ++i)
+			for(int i = 0; i < int(state.geom_bases.size()); ++i)
 			{
-				const ElementBases &bs = state.bases[i];
+				const ElementBases &bs = state.geom_bases[i];
 				if(int(bs.bases.size()) == 4 || int(bs.bases.size()) == 9)
 				{
 					bs.eval_geom_mapping(local_vis_pts_quad, mapped);
@@ -469,8 +477,8 @@ namespace poly_fem
 			state.build_basis();
 
 			if(skip_visualization) return;
-			clear_func();
-			show_mesh_func();
+			// clear_func();
+			// show_mesh_func();
 			show_nodes_func();
 		};
 

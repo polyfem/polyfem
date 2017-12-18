@@ -39,10 +39,13 @@ namespace poly_fem
 
 		Problem problem;
 
-		int n_bases;
+		int n_bases, n_geom_bases;
 
 		std::vector< ElementBases >    bases;
+		std::vector< ElementBases >    geom_bases;
 		std::vector< ElementAssemblyValues > values;
+		std::vector< ElementAssemblyValues > geom_values;
+
 		std::vector< int >                   bounday_nodes;
 		std::vector< LocalBoundary >         local_boundary;
 

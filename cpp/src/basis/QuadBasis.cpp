@@ -88,10 +88,10 @@ namespace poly_fem
 
 						switch(j)
 						{
-							case 0: local_boundary[e].set_top_edge_id(index.edge); local_boundary[e].set_top_boundary(); break;
-							case 1: local_boundary[e].set_left_edge_id(index.edge); local_boundary[e].set_left_boundary(); break;
-							case 2: local_boundary[e].set_bottom_edge_id(index.edge); local_boundary[e].set_bottom_boundary(); break;
-							case 3: local_boundary[e].set_right_edge_id(index.edge); local_boundary[e].set_right_boundary(); break;
+							case 1: local_boundary[e].set_top_edge_id(index.edge); local_boundary[e].set_top_boundary(); break;
+							case 2: local_boundary[e].set_left_edge_id(index.edge); local_boundary[e].set_left_boundary(); break;
+							case 3: local_boundary[e].set_bottom_edge_id(index.edge); local_boundary[e].set_bottom_boundary(); break;
+							case 0: local_boundary[e].set_right_edge_id(index.edge); local_boundary[e].set_right_boundary(); break;
 						}
 					}
 
@@ -158,12 +158,16 @@ namespace poly_fem
 		{
 			case 1:
 			{
+				auto &u = uv.col(1).array();
+				auto &v = uv.col(0).array();
+
 				switch(local_index)
 				{
-					case 0: val = (1-uv.col(0).array())*(1-uv.col(1).array()); break;
-					case 1: val = uv.col(0).array()*(1-uv.col(1).array()); break;
-					case 2: val = uv.col(0).array()*uv.col(1).array(); break;
-					case 3: val = (1-uv.col(0).array())*uv.col(1).array(); break;
+
+					case 0: val = u*(1-v); break;
+					case 1: val = (1-u)*(1-v); break;
+					case 2: val = (1-u)*v; break;
+					case 3: val = u*v; break;
 					default: assert(false);
 				}
 
@@ -204,33 +208,36 @@ namespace poly_fem
 		{
 			case 1:
 			{
+				auto &u = 1-uv.col(1).array();
+				auto &v = uv.col(0).array();
+
 				switch(local_index)
 				{
 					case 0:
 					{
-						val.col(0) = -(1-uv.col(1).array());
-						val.col(1) = -(1-uv.col(0).array());
+						val.col(0) = (1-v);
+						val.col(1) = -u;
 
 						break;
 					}
 					case 1:
 					{
-						val.col(0) = (1-uv.col(1).array());
-						val.col(1) =   -uv.col(0);
+						val.col(0) = -(1-v);
+						val.col(1) = -(1-u);
 
 						break;
 					}
 					case 2:
 					{
-						val.col(0) = uv.col(1);
-						val.col(1) = uv.col(0);
+						val.col(0) = -v;
+						val.col(1) = (1-u);
 
 						break;
 					}
 					case 3:
 					{
-						val.col(0) = -uv.col(1);
-						val.col(1) = 1-uv.col(0).array();
+						val.col(0) = v;
+						val.col(1) = u;
 
 						break;
 					}

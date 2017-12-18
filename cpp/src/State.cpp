@@ -5,7 +5,7 @@
 #include "Spline2dBasis.hpp"
 #include "HexQuadrature.hpp"
 #include "QuadQuadrature.hpp"
-
+#include "QuadBoundarySampler.hpp"
 
 #include "Assembler.hpp"
 #include "RhsAssembler.hpp"
@@ -115,8 +115,6 @@ namespace poly_fem
 		mesh.set_boundary_tags(boundary_tag);
 		timer.stop();
 		std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
-		mesh_size = mesh.compute_mesh_size();
-		std::cout<<" h: "<<mesh_size<<std::endl;
 	}
 
 	void State::build_basis()
@@ -136,10 +134,20 @@ namespace poly_fem
 		}
 		else
 		{
-			if(use_splines)
+			if(use_splines){
+				// n_geom_bases = QuadBasis::build_bases(mesh, quadrature_order, geom_bases, local_boundary, bounday_nodes);
+			// n_geom_bases = Spline2dBasis::build_bases(mesh, quadrature_order, geom_bases, local_boundary, bounday_nodes, polys);
 				n_bases = Spline2dBasis::build_bases(mesh, quadrature_order, bases, local_boundary, bounday_nodes, polys);
+				n_geom_bases = n_bases;
+				geom_bases = bases;
+			}
 			else
+			{
+				// n_geom_bases = QuadBasis::build_bases(mesh, quadrature_order, geom_bases, local_boundary, bounday_nodes);
 				n_bases = QuadBasis::build_bases(mesh, quadrature_order, bases, local_boundary, bounday_nodes);
+				n_geom_bases = n_bases;
+				geom_bases = bases;
+			}
 		}
 
 		problem.remove_neumann_nodes(bases, boundary_tag, local_boundary, bounday_nodes);
@@ -157,6 +165,39 @@ namespace poly_fem
 			}
 		}
 
+		// if(use_splines)
+		{
+			const int n_samples = 10;
+			mesh_size = 0;
+			Eigen::MatrixXd samples, mapped, p, p0, p1;
+			QuadBoundarySampler::sample(true, true, true, true, n_samples, false, samples);
+
+			for(std::size_t i = 0; i < geom_bases.size(); ++i){
+				if(mesh.n_element_vertices(int(i)) != 4) continue;
+
+				geom_bases[i].eval_geom_mapping(samples, mapped);
+
+				for(int j = 0; j < 4; ++j)
+				{
+					double current_edge = 0;
+					for(int k = 0; k < n_samples-1; ++k){
+						p0 = mapped.row(j*n_samples + k);
+						p1 = mapped.row(j*n_samples + k+1);
+						p = p0-p1;
+
+						current_edge += p.norm();
+					}
+
+					mesh_size = std::max(current_edge, mesh_size);
+				}
+			}
+		}
+		// else
+		// {
+		// 	mesh_size = mesh.compute_mesh_size();
+		// }
+		std::cout<<" h: "<<mesh_size<<std::endl;
+
 		timer.stop();
 		building_basis_time = timer.getElapsedTime();
 		std::cout<<" took "<<building_basis_time<<"s"<<std::endl;
@@ -172,6 +213,7 @@ namespace poly_fem
 
 		std::sort(bounday_nodes.begin(), bounday_nodes.end());
 
+		ElementAssemblyValues::compute_assembly_values(mesh.is_volume(), geom_bases, geom_values);
 		ElementAssemblyValues::compute_assembly_values(mesh.is_volume(), bases, values);
 
 		timer.stop();
@@ -196,14 +238,14 @@ namespace poly_fem
 			le.size() = mesh.is_volume()? 3:2;
 
 
-			assembler.assemble(n_bases, values, values, stiffness);
+			assembler.assemble(n_bases, values, geom_values, stiffness);
 			// std::cout<<MatrixXd(stiffness)<<std::endl;
 			assembler.set_identity(bounday_nodes, stiffness);
 		}
 		else
 		{
 			Assembler<Laplacian> assembler;
-			assembler.assemble(n_bases, values, values, stiffness);
+			assembler.assemble(n_bases, values, geom_values, stiffness);
 			// std::cout<<MatrixXd(stiffness)<<std::endl;
 			assembler.set_identity(bounday_nodes, stiffness);
 		}
@@ -224,9 +266,9 @@ namespace poly_fem
 
 		const int size = problem.problem_num() == 3 ? (mesh.is_volume() ? 3:2) : 1;
 		RhsAssembler rhs_assembler;
-		rhs_assembler.assemble(n_bases, size, values, values, problem, rhs);
+		rhs_assembler.assemble(n_bases, size, values, geom_values, problem, rhs);
 		rhs *= -1;
-		rhs_assembler.set_bc(size, bases, mesh, local_boundary, bounday_nodes, n_boundary_samples, problem, rhs);
+		rhs_assembler.set_bc(size, bases, geom_bases, mesh, local_boundary, bounday_nodes, n_boundary_samples, problem, rhs);
 
 		timer.stop();
 		assigning_rhs_time = timer.getElapsedTime();
@@ -267,7 +309,7 @@ namespace poly_fem
 		for(int e = 0; e < n_el; ++e)
 		{
 			auto vals    = values[e];
-			auto gvalues = values[e];
+			auto gvalues = geom_values[e];
 
 			problem.exact(gvalues.val, v_exact);
 
