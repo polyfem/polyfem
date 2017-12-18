@@ -7,6 +7,9 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 # Color output
 include(UseColors)
 
+# Geogram
+include(geogram)
+
 # Generate position independent code by default
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -30,9 +33,6 @@ option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       ON)
 option(LIBIGL_WITH_VIEWER           "Use OpenGL viewer"  ON)
 option(LIBIGL_WITH_XML              "Use XML"            OFF)
 find_package(LIBIGL REQUIRED QUIET)
-
-# Geogram
-include(geogram)
 
 # CLI11
 add_library(cli11 INTERFACE)
@@ -69,6 +69,12 @@ add_library(polyfem
 	src/mesh/Refinement.cpp
 	src/mesh/Singularities.hpp
 	src/mesh/Singularities.cpp
+
+	src/mesh3D/Mesh3D.hpp
+	src/mesh3D/Mesh3D.cpp
+	src/mesh3D/Navigation3D.hpp
+	src/mesh3D/Navigation3D.cpp
+	src/mesh3D/GlobalTypes3D.hpp
 
 	src/quadrature/Quadrature.hpp
 	src/quadrature/LineQuadrature.hpp
@@ -116,7 +122,7 @@ add_library(polyfem
 
 	src/assembler/RhsAssembler.hpp
 	src/assembler/RhsAssembler.cpp
-	
+
 	src/assembler/Laplacian.hpp
 	src/assembler/Laplacian.cpp
 	src/assembler/LinearElasticity.hpp
@@ -126,8 +132,7 @@ add_library(polyfem
 	src/problem/Problem.cpp
 )
 
-# target_link_libraries(polyfem igl::core igl::triangle igl::tetgen geogram)
-target_link_libraries(polyfem igl::core igl::triangle igl::tetgen igl::viewer geogram json)
+target_link_libraries(polyfem geogram igl::core igl::triangle igl::tetgen igl::viewer json)
 target_include_directories(polyfem PUBLIC src src/assembler src/basis src/mesh src/problem src/quadrature src/utils)
 target_compile_options(polyfem PUBLIC ${ALL_WARNINGS})
 
