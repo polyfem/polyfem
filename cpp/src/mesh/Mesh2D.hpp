@@ -1,6 +1,7 @@
-#ifndef MESH_HPP
-#define MESH_HPP
+#ifndef MESH_2D_HPP
+#define MESH_2D_HPP
 
+#include "Mesh.hpp"
 #include "Navigation.hpp"
 
 #include <Eigen/Dense>
@@ -8,32 +9,32 @@
 
 namespace poly_fem
 {
-	class Mesh2D
+	class Mesh2D : public Mesh
 	{
 	public:
-		void refine(const int n_refiniment);
+		void refine(const int n_refiniment) override;
 
-		inline bool is_volume() const { return false; }
+		inline bool is_volume() const override { return false; }
 
-		inline int n_elements() const { return mesh_.facets.nb(); }
-		inline int n_pts() const { return mesh_.vertices.nb(); }
+		inline int n_elements() const override { return mesh_.facets.nb(); }
+		inline int n_pts() const override { return mesh_.vertices.nb(); }
 
-		inline int n_element_vertices(const int element_index) const { return mesh_.facets.nb_vertices(element_index);}
-		inline int vertex_global_index(const int element_index, const int local_index) const { return mesh_.facets.vertex(element_index, local_index); }
+		inline int n_element_vertices(const int element_index) const override { return mesh_.facets.nb_vertices(element_index);}
+		inline int vertex_global_index(const int element_index, const int local_index) const override { return mesh_.facets.vertex(element_index, local_index); }
 
-		double compute_mesh_size() const;
+		double compute_mesh_size() const override;
 
-		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts) const;
+		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts) const override;
 		// void element_bounday_polygon(const int index, Eigen::MatrixXd &poly) const;
 
-		void set_boundary_tags(std::vector<int> &tags) const;
+		void set_boundary_tags(std::vector<int> &tags) const override;
 
-		void point(const int global_index, Eigen::MatrixXd &pt) const;
+		void point(const int global_index, Eigen::MatrixXd &pt) const override;
 
-		bool load(const std::string &path);
-		bool save(const std::string &path) const;
+		bool load(const std::string &path) override;
+		bool save(const std::string &path) const override;
 
-		void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1);
+		void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const override;
 
 		//get nodes ids
 		int edge_node_id(const int edge_id) const;
@@ -66,4 +67,4 @@ namespace poly_fem
 	};
 }
 
-#endif //MESH_HPP
+#endif //MESH_2D_HPP

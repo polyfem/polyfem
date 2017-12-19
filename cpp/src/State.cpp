@@ -1,5 +1,8 @@
 #include "State.hpp"
 
+#include "Mesh2D.hpp"
+#include "Mesh3D.hpp"
+
 #include "HexBasis.hpp"
 #include "QuadBasis.hpp"
 #include "Spline2dBasis.hpp"
@@ -20,6 +23,7 @@
 #include <igl/serialize.h>
 
 #include <iostream>
+#include <algorithm>
 
 using namespace Eigen;
 
@@ -76,9 +80,9 @@ namespace poly_fem
 
 		int actual_dim = 1;
 		if(problem.problem_num() == 3)
-			actual_dim = mesh.is_volume() ? 3:2;
+			actual_dim = mesh->is_volume() ? 3:2;
 
-		result.resize(local_pts.rows() * mesh.n_elements(), actual_dim);
+		result.resize(local_pts.rows() * mesh->n_elements(), actual_dim);
 
 		for(std::size_t i = 0; i < bases.size(); ++i)
 		{
@@ -108,11 +112,19 @@ namespace poly_fem
 	{
 		igl::Timer timer; timer.start();
 		std::cout<<"Loading mesh..."<<std::flush;
+		std::string extension = mesh_path.substr(mesh_path.find_last_of(".") + 1);
+		std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+		const bool is_volume = extension == "hybrid";
 
-		mesh.load(mesh_path);
-		mesh.refine(n_refs);
+		if(is_volume)
+			mesh = new Mesh3D();
+		else
+			mesh = new Mesh2D();
 
-		mesh.set_boundary_tags(boundary_tag);
+		mesh->load(mesh_path);
+		mesh->refine(n_refs);
+
+		mesh->set_boundary_tags(boundary_tag);
 		timer.stop();
 		std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
 	}
@@ -125,26 +137,28 @@ namespace poly_fem
 		local_boundary.clear();
 		bounday_nodes.clear();
 
-		if(mesh.is_volume())
+		if(mesh->is_volume())
 		{
-			// if(use_splines)
-			// 	assert(false);
-			// else
-			// 	n_bases = HexBasis::build_bases(mesh, quadrature_order, bases, local_boundary, bounday_nodes);
+			const Mesh3D &tmp_mesh = *static_cast<Mesh3D *>(mesh);
+			if(use_splines)
+				assert(false);
+			else
+				n_bases = HexBasis::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, bounday_nodes);
 		}
 		else
 		{
+			const Mesh2D &tmp_mesh = *static_cast<Mesh2D *>(mesh);
 			if(use_splines){
 				// n_geom_bases = QuadBasis::build_bases(mesh, quadrature_order, geom_bases, local_boundary, bounday_nodes);
 			// n_geom_bases = Spline2dBasis::build_bases(mesh, quadrature_order, geom_bases, local_boundary, bounday_nodes, polys);
-				n_bases = Spline2dBasis::build_bases(mesh, quadrature_order, bases, local_boundary, bounday_nodes, polys);
+				n_bases = Spline2dBasis::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, bounday_nodes, polys);
 				n_geom_bases = n_bases;
 				geom_bases = bases;
 			}
 			else
 			{
 				// n_geom_bases = QuadBasis::build_bases(mesh, quadrature_order, geom_bases, local_boundary, bounday_nodes);
-				n_bases = QuadBasis::build_bases(mesh, quadrature_order, bases, local_boundary, bounday_nodes);
+				n_bases = QuadBasis::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, bounday_nodes);
 				n_geom_bases = n_bases;
 				geom_bases = bases;
 			}
@@ -154,7 +168,7 @@ namespace poly_fem
 
 		if(problem.problem_num() == 3)
 		{
-			const int dim = mesh.is_volume() ? 3:2;
+			const int dim = mesh->is_volume() ? 3:2;
 			const std::size_t n_b_nodes = bounday_nodes.size();
 
 			for(std::size_t i = 0; i < n_b_nodes; ++i)
@@ -173,7 +187,7 @@ namespace poly_fem
 			QuadBoundarySampler::sample(true, true, true, true, n_samples, false, samples);
 
 			for(std::size_t i = 0; i < geom_bases.size(); ++i){
-				if(mesh.n_element_vertices(int(i)) != 4) continue;
+				if(mesh->n_element_vertices(int(i)) != 4) continue;
 
 				geom_bases[i].eval_geom_mapping(samples, mapped);
 
@@ -194,7 +208,7 @@ namespace poly_fem
 		}
 		// else
 		// {
-		// 	mesh_size = mesh.compute_mesh_size();
+		// 	mesh_size = mesh->compute_mesh_size();
 		// }
 		std::cout<<" h: "<<mesh_size<<std::endl;
 
@@ -213,8 +227,8 @@ namespace poly_fem
 
 		std::sort(bounday_nodes.begin(), bounday_nodes.end());
 
-		ElementAssemblyValues::compute_assembly_values(mesh.is_volume(), geom_bases, geom_values);
-		ElementAssemblyValues::compute_assembly_values(mesh.is_volume(), bases, values);
+		ElementAssemblyValues::compute_assembly_values(mesh->is_volume(), geom_bases, geom_values);
+		ElementAssemblyValues::compute_assembly_values(mesh->is_volume(), bases, values);
 
 		timer.stop();
 		computing_assembly_values_time = timer.getElapsedTime();
@@ -235,7 +249,7 @@ namespace poly_fem
 			LinearElasticity &le = static_cast<LinearElasticity &>(assembler.local_assembler());
 			le.mu() = mu;
 			le.lambda() = lambda;
-			le.size() = mesh.is_volume()? 3:2;
+			le.size() = mesh->is_volume()? 3:2;
 
 
 			assembler.assemble(n_bases, values, geom_values, stiffness);
@@ -264,11 +278,11 @@ namespace poly_fem
 		igl::Timer timer; timer.start();
 		std::cout<<"Assigning rhs..."<<std::flush;
 
-		const int size = problem.problem_num() == 3 ? (mesh.is_volume() ? 3:2) : 1;
+		const int size = problem.problem_num() == 3 ? (mesh->is_volume() ? 3:2) : 1;
 		RhsAssembler rhs_assembler;
 		rhs_assembler.assemble(n_bases, size, values, geom_values, problem, rhs);
 		rhs *= -1;
-		rhs_assembler.set_bc(size, bases, geom_bases, mesh.is_volume(), local_boundary, bounday_nodes, n_boundary_samples, problem, rhs);
+		rhs_assembler.set_bc(size, bases, geom_bases, mesh->is_volume(), local_boundary, bounday_nodes, n_boundary_samples, problem, rhs);
 
 		timer.stop();
 		assigning_rhs_time = timer.getElapsedTime();
@@ -379,7 +393,7 @@ namespace poly_fem
 		igl::serialize(boundary_tag, "boundary_tag", file_name);
 
 
-		igl::serialize(mesh, "mesh", file_name);
+		igl::serialize(*mesh, "mesh", file_name);
 
 		igl::serialize(polys, "polys", file_name);
 

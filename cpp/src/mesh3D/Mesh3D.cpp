@@ -1,12 +1,12 @@
 #include "Mesh3D.hpp"
 
+#include <igl/copyleft/tetgen/tetrahedralize.h>
 
 namespace poly_fem
 {
 	void Mesh3D::refine(const int n_refiniment)
 	{
 		//TODO implement me
-		assert(false);
 	}
 
 	bool Mesh3D::load(const std::string &path)
@@ -57,7 +57,7 @@ namespace poly_fem
 			}
 
 			for (auto fid : h.fs)h.vs.insert(h.vs.end(), mesh_.faces[fid].vs.begin(), mesh_.faces[fid].vs.end());
-			sort(h.vs.begin(), h.vs.end()); h.vs.erase(unique(h.vs.begin(), h.vs.end()), h.vs.end());
+				sort(h.vs.begin(), h.vs.end()); h.vs.erase(unique(h.vs.begin(), h.vs.end()), h.vs.end());
 
 			int tmp; fscanf(f, "%d", &tmp);
 			for (int j = 0; j<nf; j++) {
@@ -122,25 +122,95 @@ namespace poly_fem
 
 	void Mesh3D::triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts) const
 	{
-		//TODO implement me
-		assert(false);
+		std::vector<Eigen::MatrixXi> local_tris(mesh_.elements.size());
+		std::vector<Eigen::MatrixXd> local_pts(mesh_.elements.size());
+		Eigen::MatrixXi tets;
+
+		int total_tris = 0;
+		int total_pts  = 0;
+
+		for(std::size_t e = 0; e < mesh_.elements.size(); ++e)
+		{
+			const Element &el = mesh_.elements[e];
+
+			const int n_vertices = el.vs.size();
+			const int n_faces = el.fs.size();
+
+			Eigen::MatrixXd local_pt(n_vertices, 3);
+			Eigen::MatrixXi local_faces(2*n_faces, 3);
+
+			std::map<int, int> global_to_local;
+
+			for(int i = 0; i < n_vertices; ++i)
+			{
+				const int global_index = el.vs[i];
+				local_pt.row(i) = mesh_.points.col(global_index).transpose();
+				global_to_local[global_index] = i;
+			}
+
+			for(int i = 0; i < n_faces; ++i)
+			{
+				const Face &f = mesh_.faces[el.fs[i]];
+				assert(f.vs.size() == 4); //TODO only quad faces;
+
+				local_faces(2*i, 0) = global_to_local[f.vs[0]];
+				local_faces(2*i, 1) = global_to_local[f.vs[1]];
+				local_faces(2*i, 2) = global_to_local[f.vs[2]];
+
+				local_faces(2*i+1, 0) = global_to_local[f.vs[0]];
+				local_faces(2*i+1, 1) = global_to_local[f.vs[2]];
+				local_faces(2*i+1, 2) = global_to_local[f.vs[3]];
+			}
+
+			igl::copyleft::tetgen::tetrahedralize(local_pt, local_faces, "QpYS0", local_pts[e], tets, local_tris[e]);
+
+			total_tris += local_tris[e].rows();
+			total_pts  += local_pts[e].rows();
+
+			assert(local_pts[e].rows() == local_pt.rows());
+		}
+
+
+		tris.resize(total_tris, 3);
+		pts.resize(total_pts, 3);
+
+		int tri_index = 0;
+		int pts_index = 0;
+		for(std::size_t i = 0; i < local_tris.size(); ++i){
+			tris.block(tri_index, 0, local_tris[i].rows(), local_tris[i].cols()) = local_tris[i].array() + pts_index;
+			tri_index += local_tris[i].rows();
+
+			pts.block(pts_index, 0, local_pts[i].rows(), local_pts[i].cols()) = local_pts[i];
+			pts_index += local_pts[i].rows();
+		}
 	}
 
 	void Mesh3D::set_boundary_tags(std::vector<int> &tags) const
 	{
 		//TODO implement me
-		assert(false);
 	}
 
 	void Mesh3D::point(const int global_index, Eigen::MatrixXd &pt) const
 	{
-		pt = mesh_.points.row(global_index);
+		pt = mesh_.points.col(global_index).transpose();
 	}
 
-	void Mesh3D::get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1)
+	void Mesh3D::get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const
 	{
-		//TODO implement me
-		assert(false);
+		p0.resize(mesh_.edges.size(), 3);
+		p1.resize(p0.rows(), p0.cols());
+
+		Eigen::MatrixXd p0t, p1t;
+		for(std::size_t e = 0; e < mesh_.edges.size(); ++e)
+		{
+			const int v0 = mesh_.edges[e].vs[0];
+			const int v1 = mesh_.edges[e].vs[1];
+
+			point(v0, p0t); point(v1, p1t);
+
+			p0.row(e) = p0t;
+			p1.row(e) = p1t;
+		}
 	}
 
 		//get nodes ids

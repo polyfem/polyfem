@@ -61,6 +61,8 @@ add_library(polyfem
 
 	src/mesh/LocalBoundary.hpp
 
+	src/mesh/Mesh.hpp
+
 	src/mesh/Mesh2D.hpp
 	src/mesh/Mesh2D.cpp
 	src/mesh/Navigation.hpp

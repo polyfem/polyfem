@@ -30,7 +30,7 @@ namespace poly_fem
 
 		int actual_dim = 1;
 		if(state.problem.problem_num() == 3)
-			actual_dim = state.mesh.is_volume() ? 3:2;
+			actual_dim = state.mesh->is_volume() ? 3:2;
 
 		result.resize(vis_pts.rows(), actual_dim);
 
@@ -87,7 +87,7 @@ namespace poly_fem
 
 			// int size = 1;
 			// if(state.problem.problem_num() == 3)
-			// 	size = state.mesh.is_volume() ? 3:2;
+			// 	size = state.mesh->is_volume() ? 3:2;
 
 			// MatrixXd stresses;
 			// int counter = 0;
@@ -129,7 +129,7 @@ namespace poly_fem
 			else
 				igl::colormap(color_map, fun, true, col);
 
-			if(state.mesh.is_volume())
+			if(state.mesh->is_volume())
 				viewer.data.set_mesh(vis_pts, vis_faces);
 			else
 			{
@@ -165,12 +165,12 @@ namespace poly_fem
 			viewer.data.set_face_based(false);
 
 			MatrixXd p0, p1;
-			state.mesh.get_edges(p0, p1);
+			state.mesh->get_edges(p0, p1);
 			viewer.data.add_edges(p0, p1, MatrixXd::Zero(p0.rows(), 3));
 
-			// for(int i = 0; i < state.mesh.n_elements(); ++i)
+			// for(int i = 0; i < state.mesh->n_elements(); ++i)
 			// {
-			// 	MatrixXd p = state.mesh.node_from_face(i);
+			// 	MatrixXd p = state.mesh->node_from_face(i);
 			// 	viewer.data.add_label(p.transpose(), std::to_string(i));
 			// }
 		};
@@ -276,13 +276,13 @@ namespace poly_fem
 			igl::Timer timer; timer.start();
 			std::cout<<"Building vis mesh..."<<std::flush;
 
-			const double area_param = 0.0001*state.mesh.n_elements();
+			const double area_param = 0.0001*state.mesh->n_elements();
 
 			std::stringstream buf;
 			buf.precision(100);
 			buf.setf(std::ios::fixed, std::ios::floatfield);
 
-			if(state.mesh.is_volume())
+			if(state.mesh->is_volume())
 			{
 				MatrixXd pts(8,3); pts <<
 				0, 0, 0,
@@ -369,7 +369,7 @@ namespace poly_fem
 				}
 				else
 				{
-					if(state.mesh.is_volume())
+					if(state.mesh->is_volume())
 						assert(false);
 					else
 					{
@@ -465,7 +465,7 @@ namespace poly_fem
 
 		auto load_mesh_func = [&](){
 			state.load_mesh();
-			state.mesh.triangulate_faces(tri_faces, tri_pts);
+			state.mesh->triangulate_faces(tri_faces, tri_pts);
 
 			if(skip_visualization) return;
 

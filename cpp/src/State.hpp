@@ -4,7 +4,7 @@
 #include "ElementBases.hpp"
 #include "ElementAssemblyValues.hpp"
 #include "Problem.hpp"
-#include "Mesh2D.hpp"
+#include "Mesh.hpp"
 #include "Problem.hpp"
 #include "LocalBoundary.hpp"
 
@@ -25,6 +25,7 @@ namespace poly_fem
 	{
 	public:
 		static State &state();
+		~State() { delete mesh; }
 
 		void init(const std::string &mesh_path, const int n_refs, const int problem_num_);
 
@@ -54,7 +55,7 @@ namespace poly_fem
 		std::vector<double> errors;
 
 
-		Mesh2D mesh;
+		Mesh *mesh = NULL;
 
 		std::map<int, Eigen::MatrixXd> polys;
 

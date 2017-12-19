@@ -51,7 +51,7 @@ namespace poly_fem
 		return true;
 	}
 
-	void Mesh2D::get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1)
+	void Mesh2D::get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const
 	{
 		p0.resize(mesh_.edges.nb(), 2);
 		p1.resize(p0.rows(), p0.cols());

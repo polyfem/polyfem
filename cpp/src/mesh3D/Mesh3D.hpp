@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Mesh.hpp"
+
 #include "Navigation3D.hpp"
 #include "Mesh3DStorage.hpp"
 #include <iostream>
@@ -9,32 +11,32 @@
 
 namespace poly_fem
 {
-	class Mesh3D
+	class Mesh3D : public Mesh
 	{
 	public:
-		void refine(const int n_refiniment);
+		void refine(const int n_refiniment) override;
 
-		inline bool is_volume() const { return true; }
+		inline bool is_volume() const override { return true; }
 
-		inline int n_elements() const { return int(mesh_.elements.size()); }
-		inline int n_pts() const { return int(mesh_.points.size()); }
+		inline int n_elements() const override { return int(mesh_.elements.size()); }
+		inline int n_pts() const override { return int(mesh_.points.size()); }
 
-		inline int n_element_vertices(const int element_index) const { return int(mesh_.elements[element_index].vs.size());}
-		inline int vertex_global_index(const int element_index, const int local_index) const { return mesh_.elements[element_index].vs[local_index]; }
+		inline int n_element_vertices(const int element_index) const override { return int(mesh_.elements[element_index].vs.size());}
+		inline int vertex_global_index(const int element_index, const int local_index) const override { return mesh_.elements[element_index].vs[local_index]; }
 
-		double compute_mesh_size() const;
+		double compute_mesh_size() const override;
 
-		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts) const;
+		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts) const override;
 		// void element_bounday_polygon(const int index, Eigen::MatrixXd &poly) const;
 
-		void set_boundary_tags(std::vector<int> &tags) const;
+		void set_boundary_tags(std::vector<int> &tags) const override;
 
-		void point(const int global_index, Eigen::MatrixXd &pt) const;
+		void point(const int global_index, Eigen::MatrixXd &pt) const override;
 
-		bool load(const std::string &path);
-		bool save(const std::string &path) const;
+		bool load(const std::string &path) override;
+		bool save(const std::string &path) const override;
 
-		void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1);
+		void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const override;
 
 		//get nodes ids
 		int face_node_id(const int edge_id) const;
