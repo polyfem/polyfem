@@ -57,6 +57,7 @@ int main(int argc, const char **argv)
     int problem_num = 0;
 
     int quadrature_order = 4;
+    int discr_order = 1;
     int n_boundary_samples = 10;
 
     double lambda = 1, mu = 1;
@@ -73,6 +74,7 @@ int main(int argc, const char **argv)
 
 
     command_line.add_option("-quad", quadrature_order);
+    command_line.add_option("-q", discr_order);
     command_line.add_option("-b_samples", n_boundary_samples);
     command_line.add_option("-spline", "-fem", use_splines);
 
@@ -96,6 +98,7 @@ int main(int argc, const char **argv)
         state.use_splines = use_splines;
         state.lambda = lambda;
         state.mu = mu;
+        state.discr_order = discr_order;
         // state.linear_elasticity = linear_elasticity;
         state.n_boundary_samples = n_boundary_samples;
 
@@ -116,6 +119,7 @@ int main(int argc, const char **argv)
     else
     {
         UIState::ui_state().state.quadrature_order = quadrature_order;
+        UIState::ui_state().state.discr_order = discr_order;
         UIState::ui_state().state.use_splines = use_splines;
         UIState::ui_state().state.lambda = lambda;
         UIState::ui_state().state.mu = mu;

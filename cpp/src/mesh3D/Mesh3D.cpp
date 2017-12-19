@@ -6,7 +6,7 @@ namespace poly_fem
 {
 	void Mesh3D::refine(const int n_refiniment)
 	{
-		//TODO implement me
+//TODO implement me
 	}
 
 	bool Mesh3D::load(const std::string &path)
@@ -116,8 +116,9 @@ namespace poly_fem
 
 	double Mesh3D::compute_mesh_size() const
 	{
-		//TODO implement me
+//TODO implement me
 		assert(false);
+		return -1;
 	}
 
 	void Mesh3D::triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts) const
@@ -151,7 +152,9 @@ namespace poly_fem
 			for(int i = 0; i < n_faces; ++i)
 			{
 				const Face &f = mesh_.faces[el.fs[i]];
-				assert(f.vs.size() == 4); //TODO only quad faces;
+				//TODO only quad faces;
+				assert(f.vs.size() == 4);
+
 
 				local_faces(2*i, 0) = global_to_local[f.vs[0]];
 				local_faces(2*i, 1) = global_to_local[f.vs[1]];
@@ -187,7 +190,7 @@ namespace poly_fem
 
 	void Mesh3D::set_boundary_tags(std::vector<int> &tags) const
 	{
-		//TODO implement me
+//TODO implement me
 	}
 
 	void Mesh3D::point(const int global_index, Eigen::MatrixXd &pt) const
@@ -213,66 +216,74 @@ namespace poly_fem
 		}
 	}
 
-		//get nodes ids
+//get nodes ids
 
 	int Mesh3D::face_node_id(const int edge_id) const
 	{
-		//TODO implement me
+//TODO implement me
 		assert(false);
+		return -1;
 	}
 
 	int Mesh3D::edge_node_id(const int edge_id) const
 	{
-		//TODO implement me
+//TODO implement me
 		assert(false);
+		return -1;
 	}
 
 	int Mesh3D::vertex_node_id(const int vertex_id) const
 	{
-		//TODO implement me
+//TODO implement me
 		assert(false);
+		return -1;
 	}
 
 	bool Mesh3D::node_id_from_face_index(const Navigation3D::Index &index, int &id) const
 	{
-		//TODO implement me
+//TODO implement me
 		assert(false);
+		return -1;
 	}
 
 
-		//get nodes positions
+//get nodes positions
 
 	Eigen::MatrixXd Mesh3D::node_from_element(const int el_id) const
 	{
-		//TODO implement me
+//TODO implement me
 		assert(false);
+		return Eigen::MatrixXd();
 	}
 
 	Eigen::MatrixXd Mesh3D::node_from_edge_index(const Navigation3D::Index &index) const
 	{
-		//TODO implement me
+//TODO implement me
 		assert(false);
+		return Eigen::MatrixXd();
 	}
 
 	Eigen::MatrixXd Mesh3D::node_from_face(const int face_id) const
 	{
-		//TODO implement me
+//TODO implement me
 		assert(false);
-	}
-	
-	Eigen::MatrixXd Mesh3D::node_from_vertex(const int vertex_id) const
-	{
-		//TODO implement me
-		assert(false);
+		return Eigen::MatrixXd();
 	}
 
-		//navigation wrapper
+	Eigen::MatrixXd Mesh3D::node_from_vertex(const int vertex_id) const
+	{
+//TODO implement me
+		assert(false);
+		return Eigen::MatrixXd();
+	}
+
+//navigation wrapper
 	Navigation3D::Index Mesh3D::get_index_from_element_face(int hi, int lf, int lv) const
 	{
 		return Navigation3D::get_index_from_element_face(mesh_, hi, lf, lv);
 	}
 
-		// Navigation in a surface mesh
+// Navigation in a surface mesh
 	Navigation3D::Index Mesh3D::switch_vertex(Navigation3D::Index idx) const
 	{
 		return Navigation3D::switch_vertex(mesh_, idx);

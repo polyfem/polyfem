@@ -533,6 +533,7 @@ namespace poly_fem
 			viewer_.ngui->addGroup("Settings");
 
 			viewer_.ngui->addVariable("quad order", state.quadrature_order);
+			viewer_.ngui->addVariable("discr order", state.discr_order);
 			viewer_.ngui->addVariable("b samples", state.n_boundary_samples);
 
 			viewer_.ngui->addVariable("lambda", state.lambda);

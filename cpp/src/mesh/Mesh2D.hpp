@@ -16,6 +16,7 @@ namespace poly_fem
 
 		inline bool is_volume() const override { return false; }
 
+		inline int n_edges() const { return mesh_.edges.nb(); }
 		inline int n_elements() const override { return mesh_.facets.nb(); }
 		inline int n_pts() const override { return mesh_.vertices.nb(); }
 
@@ -35,6 +36,8 @@ namespace poly_fem
 		bool save(const std::string &path) const override;
 
 		void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const override;
+
+		Eigen::MatrixXd edge_mid_point(const int edge_id) const;
 
 		//get nodes ids
 		int edge_node_id(const int edge_id) const;

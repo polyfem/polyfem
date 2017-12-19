@@ -223,6 +223,15 @@ namespace poly_fem
 		return is_real_boundary;
 	}
 
+	Eigen::MatrixXd Mesh2D::edge_mid_point(const int edge_id) const
+	{
+		Eigen::MatrixXd p0, p1;
+		const int v0 = mesh_.edges.vertex(edge_id, 0);
+		const int v1 = mesh_.edges.vertex(edge_id, 1);
+		point(v0, p0); point(v1, p1);
+		return (p0 + p1)/2;
+	}
+
 	void Mesh2D::create_boundary_nodes()
 	{
 		GEO::Attribute<int> boundary(mesh_.edges.attributes(), "boundary_edge");

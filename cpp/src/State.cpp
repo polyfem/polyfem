@@ -52,7 +52,7 @@ namespace poly_fem
 		j["l2_err"] = l2_err;
 		j["linf_err"] = linf_err;
 
-		j["errors"] = errors;
+		// j["errors"] = errors;
 
 		j["nn_zero"] = nn_zero;
 		j["mat_size"] = mat_size;
@@ -158,7 +158,7 @@ namespace poly_fem
 			else
 			{
 				// n_geom_bases = QuadBasis::build_bases(mesh, quadrature_order, geom_bases, local_boundary, bounday_nodes);
-				n_bases = QuadBasis::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, bounday_nodes);
+				n_bases = QuadBasis::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, bounday_nodes);
 				n_geom_bases = n_bases;
 				geom_bases = bases;
 			}

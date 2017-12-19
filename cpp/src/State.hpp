@@ -30,6 +30,7 @@ namespace poly_fem
 		void init(const std::string &mesh_path, const int n_refs, const int problem_num_);
 
 		int quadrature_order = 4;
+		int discr_order = 1;
 		int n_boundary_samples = 10;
 
 		std::string mesh_path;
