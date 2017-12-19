@@ -4,7 +4,7 @@
 #include "ElementBases.hpp"
 #include "ElementAssemblyValues.hpp"
 #include "Problem.hpp"
-#include "Mesh.hpp"
+#include "Mesh2D.hpp"
 #include "Problem.hpp"
 #include "LocalBoundary.hpp"
 
@@ -54,7 +54,7 @@ namespace poly_fem
 		std::vector<double> errors;
 
 
-		Mesh mesh;
+		Mesh2D mesh;
 
 		std::map<int, Eigen::MatrixXd> polys;
 

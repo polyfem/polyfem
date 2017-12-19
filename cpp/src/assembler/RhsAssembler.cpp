@@ -44,7 +44,7 @@ namespace poly_fem
 		}
 	}
 
-	void RhsAssembler::set_bc(const int size, const std::vector< ElementBases > &bases, const std::vector< ElementBases > &geom_bases, const Mesh &mesh, const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution,  const Problem &problem, Eigen::MatrixXd &rhs) const
+	void RhsAssembler::set_bc(const int size, const std::vector< ElementBases > &bases, const std::vector< ElementBases > &geom_bases, const bool is_volume, const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution,  const Problem &problem, Eigen::MatrixXd &rhs) const
 	{
 		const int n_el=int(bases.size());
 
@@ -58,7 +58,7 @@ namespace poly_fem
 
 		for(int e = 0; e < n_el; ++e)
 		{
-			bool has_samples = sample_boundary(mesh.is_volume(), local_boundary[e], resolution, true, samples);
+			bool has_samples = sample_boundary(is_volume, local_boundary[e], resolution, true, samples);
 
 			if(!has_samples)
 				continue;
@@ -101,7 +101,7 @@ namespace poly_fem
 
 		for(int e = 0; e < n_el; ++e)
 		{
-			bool has_samples = sample_boundary(mesh.is_volume(), local_boundary[e], resolution, false, samples);
+			bool has_samples = sample_boundary(is_volume, local_boundary[e], resolution, false, samples);
 
 			if(!has_samples)
 				continue;

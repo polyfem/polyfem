@@ -5,7 +5,8 @@
 #include "ElementBases.hpp"
 #include "ElementAssemblyValues.hpp"
 #include "LocalBoundary.hpp"
-#include "Mesh.hpp"
+#include "Mesh2D.hpp"
+#include "Mesh3D.hpp"
 
 #include <igl/serialize.h>
 
@@ -89,15 +90,29 @@ namespace igl
         }
         ///////////////////////////////
 
-        //////////////poly_fem::Mesh
+        //////////////poly_fem::Mesh2D
         template <>
-        inline void serialize(const poly_fem::Mesh &obj,std::vector<char>& buffer)
+        inline void serialize(const poly_fem::Mesh2D &obj,std::vector<char>& buffer)
         {
             //TODO
         }
 
         template <>
-        inline void deserialize(poly_fem::Mesh &obj,const std::vector<char>& buffer)
+        inline void deserialize(poly_fem::Mesh2D &obj,const std::vector<char>& buffer)
+        {
+            //TODO
+        }
+        ///////////////////////////////
+
+                //////////////poly_fem::Mesh3D
+        template <>
+        inline void serialize(const poly_fem::Mesh3D &obj,std::vector<char>& buffer)
+        {
+            //TODO
+        }
+
+        template <>
+        inline void deserialize(poly_fem::Mesh3D &obj,const std::vector<char>& buffer)
         {
             //TODO
         }

@@ -1,8 +1,6 @@
 #ifndef ASSEMBLER_HPP
 #define ASSEMBLER_HPP
 
-#include "Mesh.hpp"
-
 #include "ElementAssemblyValues.hpp"
 #include "Problem.hpp"
 #include "Basis.hpp"

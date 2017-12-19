@@ -127,10 +127,10 @@ namespace poly_fem
 
 		if(mesh.is_volume())
 		{
-			if(use_splines)
-				assert(false);
-			else
-				n_bases = HexBasis::build_bases(mesh, quadrature_order, bases, local_boundary, bounday_nodes);
+			// if(use_splines)
+			// 	assert(false);
+			// else
+			// 	n_bases = HexBasis::build_bases(mesh, quadrature_order, bases, local_boundary, bounday_nodes);
 		}
 		else
 		{
@@ -268,7 +268,7 @@ namespace poly_fem
 		RhsAssembler rhs_assembler;
 		rhs_assembler.assemble(n_bases, size, values, geom_values, problem, rhs);
 		rhs *= -1;
-		rhs_assembler.set_bc(size, bases, geom_bases, mesh, local_boundary, bounday_nodes, n_boundary_samples, problem, rhs);
+		rhs_assembler.set_bc(size, bases, geom_bases, mesh.is_volume(), local_boundary, bounday_nodes, n_boundary_samples, problem, rhs);
 
 		timer.stop();
 		assigning_rhs_time = timer.getElapsedTime();

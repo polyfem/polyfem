@@ -8,18 +8,18 @@
 
 namespace poly_fem
 {
-	class Mesh
+	class Mesh2D
 	{
 	public:
 		void refine(const int n_refiniment);
 
-		inline bool is_volume() const { return mesh_.cells.nb() > 0; }
+		inline bool is_volume() const { return false; }
 
-		inline int n_elements() const { return is_volume() ? mesh_.cells.nb() : mesh_.facets.nb(); }
+		inline int n_elements() const { return mesh_.facets.nb(); }
 		inline int n_pts() const { return mesh_.vertices.nb(); }
 
-		inline int n_element_vertices(const int element_index) const { return is_volume() ? mesh_.cells.nb_vertices(element_index) : mesh_.facets.nb_vertices(element_index);}
-		inline int vertex_global_index(const int element_index, const int local_index) const { return is_volume() ? mesh_.cells.vertex(element_index, local_index) : mesh_.facets.vertex(element_index, local_index); }
+		inline int n_element_vertices(const int element_index) const { return mesh_.facets.nb_vertices(element_index);}
+		inline int vertex_global_index(const int element_index, const int local_index) const { return mesh_.facets.vertex(element_index, local_index); }
 
 		double compute_mesh_size() const;
 

@@ -1,4 +1,4 @@
-#include "Mesh.hpp"
+#include "Mesh2D.hpp"
 #include "Navigation.hpp"
 
 #include "Refinement.hpp"
@@ -14,7 +14,7 @@
 
 namespace poly_fem
 {
-	void Mesh::refine(const int n_refiniment)
+	void Mesh2D::refine(const int n_refiniment)
 	{
 		if(n_refiniment <= 0) return;
 
@@ -31,7 +31,7 @@ namespace poly_fem
 		create_boundary_nodes();
 	}
 
-	bool Mesh::load(const std::string &path)
+	bool Mesh2D::load(const std::string &path)
 	{
 		mesh_.clear(false,false);
 
@@ -43,7 +43,7 @@ namespace poly_fem
 		return true;
 	}
 
-	bool Mesh::save(const std::string &path) const
+	bool Mesh2D::save(const std::string &path) const
 	{
 		if(!mesh_save(mesh_, path))
 			return false;
@@ -51,9 +51,9 @@ namespace poly_fem
 		return true;
 	}
 
-	void Mesh::get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1)
+	void Mesh2D::get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1)
 	{
-		p0.resize(mesh_.edges.nb(), is_volume() ? 3 : 2);
+		p0.resize(mesh_.edges.nb(), 2);
 		p1.resize(p0.rows(), p0.cols());
 
 		Eigen::MatrixXd p0t, p1t;
@@ -69,7 +69,7 @@ namespace poly_fem
 		}
 	}
 
-	double Mesh::compute_mesh_size() const
+	double Mesh2D::compute_mesh_size() const
 	{
 		Eigen::MatrixXd p0, p1, p;
 		double sum = 0;
@@ -86,78 +86,68 @@ namespace poly_fem
 		return sum/double(mesh_.edges.nb());
 	}
 
-	void Mesh::point(const int global_index, Eigen::MatrixXd &pt) const
+	void Mesh2D::point(const int global_index, Eigen::MatrixXd &pt) const
 	{
-		pt.resize(1, is_volume() ? 3 : 2);
+		pt.resize(1, 2);
 		const double *pt_ptr = mesh_.vertices.point_ptr(global_index);
 		pt(0) = pt_ptr[0];
 		pt(1) = pt_ptr[1];
-
-		if(is_volume())
-			pt(2) = pt_ptr[2];
 	}
 
-	void Mesh::set_boundary_tags(std::vector<int> &tags) const
+	void Mesh2D::set_boundary_tags(std::vector<int> &tags) const
 	{
-		if(is_volume())
+		tags.resize(mesh_.edges.nb());
+		std::fill(tags.begin(), tags.end(), -1);
+
+		Eigen::MatrixXd p0, p1, p;
+
+		const GEO::Attribute<int> boundary(mesh_.edges.attributes(), "boundary_edge");
+		for(GEO::index_t e = 0; e < mesh_.edges.nb(); ++e)
 		{
-			assert(false);
-		}
-		else
-		{
-			tags.resize(mesh_.edges.nb());
-			std::fill(tags.begin(), tags.end(), -1);
+			if(boundary[e] != 1)
+				continue;
 
-			Eigen::MatrixXd p0, p1, p;
+			const int v0 = mesh_.edges.vertex(e, 0);
+			const int v1 = mesh_.edges.vertex(e, 1);
+			point(v0, p0); point(v1, p1);
 
-			const GEO::Attribute<int> boundary(mesh_.edges.attributes(), "boundary_edge");
-			for(GEO::index_t e = 0; e < mesh_.edges.nb(); ++e)
-			{
-				if(boundary[e] != 1)
-					continue;
+			p = (p0 + p1)/2;
 
-				const int v0 = mesh_.edges.vertex(e, 0);
-				const int v1 = mesh_.edges.vertex(e, 1);
-				point(v0, p0); point(v1, p1);
-
-				p = (p0 + p1)/2;
-
-				if(fabs(p(0))<1e-8)
-					tags[e]=1;
-				if(fabs(p(1))<1e-8)
-					tags[e]=2;
-				if(fabs(p(0)-1)<1e-8)
-					tags[e]=3;
-				if(fabs(p(1)-1)<1e-8)
-					tags[e]=4;
-			}
+			if(fabs(p(0))<1e-8)
+				tags[e]=1;
+			if(fabs(p(1))<1e-8)
+				tags[e]=2;
+			if(fabs(p(0)-1)<1e-8)
+				tags[e]=3;
+			if(fabs(p(1)-1)<1e-8)
+				tags[e]=4;
 		}
 	}
 
-	Navigation::Index Mesh::get_index_from_face(int f, int lv) const
+	Navigation::Index Mesh2D::get_index_from_face(int f, int lv) const
 	{
 		return Navigation::get_index_from_face(mesh_, f, lv);
 	}
 
 
-	Navigation::Index Mesh::switch_vertex(Navigation::Index idx) const
+	Navigation::Index Mesh2D::switch_vertex(Navigation::Index idx) const
 	{
 		return Navigation::switch_vertex(mesh_, idx);
 	}
 
-	Navigation::Index Mesh::switch_edge(Navigation::Index idx) const
+	Navigation::Index Mesh2D::switch_edge(Navigation::Index idx) const
 	{
 		return Navigation::switch_edge(mesh_, idx);
 	}
 
-	Navigation::Index Mesh::switch_face(Navigation::Index idx) const
+	Navigation::Index Mesh2D::switch_face(Navigation::Index idx) const
 	{
 		return Navigation::switch_face(mesh_, idx);
 	}
 
-	Eigen::MatrixXd Mesh::node_from_face(const int face_id) const
+	Eigen::MatrixXd Mesh2D::node_from_face(const int face_id) const
 	{
-		Eigen::MatrixXd res=Eigen::MatrixXd::Zero(1, is_volume()? 3:2);
+		Eigen::MatrixXd res=Eigen::MatrixXd::Zero(1, 2);
 		Eigen::MatrixXd pt;
 
 		for(int i = 0; i < n_element_vertices(face_id); ++i)
@@ -169,7 +159,7 @@ namespace poly_fem
 		return res / n_element_vertices(face_id);
 	}
 
-	Eigen::MatrixXd Mesh::node_from_edge_index(const Navigation::Index &index) const
+	Eigen::MatrixXd Mesh2D::node_from_edge_index(const Navigation::Index &index) const
 	{
 		int id = switch_face(index).face;
 		if(id >= 0)
@@ -182,7 +172,7 @@ namespace poly_fem
 		assert(id >= 0);
 
 		GEO::Attribute<std::array<double, 3> > edges_node(mesh_.edges.attributes(), "edges_node");
-		Eigen::MatrixXd res(1, is_volume()? 3:2);
+		Eigen::MatrixXd res(1, 2);
 
 		for(long i = 0; i < res.size(); ++i)
 			res(i) = edges_node[index.edge][i];
@@ -190,32 +180,32 @@ namespace poly_fem
 		return res;
 	}
 
-	Eigen::MatrixXd Mesh::node_from_vertex(const int vertex_id) const
+	Eigen::MatrixXd Mesh2D::node_from_vertex(const int vertex_id) const
 	{
 		GEO::Attribute<int> vertices_node_id(mesh_.vertices.attributes(), "vertices_node_id");
 		assert(vertices_node_id[vertex_id] >= 0);
 
 		GEO::Attribute<std::array<double, 3>> vertices_node(mesh_.vertices.attributes(), "vertices_node");
-		Eigen::MatrixXd res(1, is_volume()? 3:2);
+		Eigen::MatrixXd res(1, 2);
 		for(long i = 0; i < res.size(); ++i)
 			res(i) = vertices_node[vertex_id][i];
 
 		return res;
 	}
 
-	int Mesh::edge_node_id(const int edge_id) const
+	int Mesh2D::edge_node_id(const int edge_id) const
 	{
 		GEO::Attribute<int> edges_node_id(mesh_.edges.attributes(), "edges_node_id");
 		return edges_node_id[edge_id];
 	}
 
-	int Mesh::vertex_node_id(const int vertex_id) const
+	int Mesh2D::vertex_node_id(const int vertex_id) const
 	{
 		GEO::Attribute<int> vertices_node_id(mesh_.vertices.attributes(), "vertices_node_id");
 		return vertices_node_id[vertex_id];
 	}
 
-	bool Mesh::node_id_from_edge_index(const Navigation::Index &index, int &id) const
+	bool Mesh2D::node_id_from_edge_index(const Navigation::Index &index, int &id) const
 	{
 		id = switch_face(index).face;
 		bool is_real_boundary = true;
@@ -233,27 +223,7 @@ namespace poly_fem
 		return is_real_boundary;
 	}
 
-	// void Mesh::element_bounday_polygon(const int index, Eigen::MatrixXd &poly) const
-	// {
-	// 	if(is_volume())
-	// 	{
-	// 		assert(false);
-	// 	}
-	// 	else
-	// 	{
-	// 		poly.resize(mesh_.facets.nb_vertices(index), 2);
-	// 		Eigen::MatrixXd p;
-
-	// 		for(GEO::index_t i = 0; i < mesh_.facets.nb_vertices(index); ++i)
-	// 		{
-	// 			const GEO::index_t vid = mesh_.facets.vertex(index, i);
-	// 			point(vid, p);
-	// 			poly.row(i) = p;
-	// 		}
-	// 	}
-	// }
-
-	void Mesh::create_boundary_nodes()
+	void Mesh2D::create_boundary_nodes()
 	{
 		GEO::Attribute<int> boundary(mesh_.edges.attributes(), "boundary_edge");
 
@@ -331,60 +301,52 @@ namespace poly_fem
 		}
 	}
 
-	void Mesh::triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts) const
+	void Mesh2D::triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts) const
 	{
-		if(is_volume())
-		{
-			//TODO
-			assert(false);
-		}
-		else
-		{
-			std::vector<Eigen::MatrixXi> local_tris(mesh_.facets.nb());
-			std::vector<Eigen::MatrixXd> local_pts(mesh_.facets.nb());
+		std::vector<Eigen::MatrixXi> local_tris(mesh_.facets.nb());
+		std::vector<Eigen::MatrixXd> local_pts(mesh_.facets.nb());
 
-			int total_tris = 0;
-			int total_pts  = 0;
+		int total_tris = 0;
+		int total_pts  = 0;
 
-			for(GEO::index_t f = 0; f < mesh_.facets.nb(); ++f)
+		for(GEO::index_t f = 0; f < mesh_.facets.nb(); ++f)
+		{
+			const int n_vertices = mesh_.facets.nb_vertices(f);
+
+			Eigen::MatrixXd face_pts(n_vertices, 2);
+			Eigen::MatrixXi edges(n_vertices,2);
+
+			for(int i = 0; i < n_vertices; ++i)
 			{
-				const int n_vertices = mesh_.facets.nb_vertices(f);
+				const int vertex = mesh_.facets.vertex(f,i);
+				const double *pt = mesh_.vertices.point_ptr(vertex);
+				face_pts(i, 0) = pt[0];
+				face_pts(i, 1) = pt[1];
 
-				Eigen::MatrixXd face_pts(n_vertices, 2);
-				Eigen::MatrixXi edges(n_vertices,2);
-
-				for(int i = 0; i < n_vertices; ++i)
-				{
-					const int vertex = mesh_.facets.vertex(f,i);
-					const double *pt = mesh_.vertices.point_ptr(vertex);
-					face_pts(i, 0) = pt[0];
-					face_pts(i, 1) = pt[1];
-
-					edges(i, 0) = i;
-					edges(i, 1) = (i+1) % n_vertices;
-				}
-
-				igl::triangle::triangulate(face_pts, edges, Eigen::MatrixXd(0,2), "QqYS0", local_pts[f], local_tris[f]);
-
-				total_tris += local_tris[f].rows();
-				total_pts  += local_pts[f].rows();
-
-				assert(local_pts[f].rows() == face_pts.rows());
+				edges(i, 0) = i;
+				edges(i, 1) = (i+1) % n_vertices;
 			}
 
+			igl::triangle::triangulate(face_pts, edges, Eigen::MatrixXd(0,2), "QqYS0", local_pts[f], local_tris[f]);
 
-			tris.resize(total_tris, 3);
-			pts.resize(total_pts, 2);
+			total_tris += local_tris[f].rows();
+			total_pts  += local_pts[f].rows();
 
-			int tri_index = 0;
-			int pts_index = 0;
-			for(std::size_t i = 0; i < local_tris.size(); ++i){
-				tris.block(tri_index, 0, local_tris[i].rows(), local_tris[i].cols()) = local_tris[i].array() + pts_index;
-				tri_index += local_tris[i].rows();
+			assert(local_pts[f].rows() == face_pts.rows());
+		}
 
-				pts.block(pts_index, 0, local_pts[i].rows(), local_pts[i].cols()) = local_pts[i];
-				pts_index += local_pts[i].rows();
-			}
+
+		tris.resize(total_tris, 3);
+		pts.resize(total_pts, 2);
+
+		int tri_index = 0;
+		int pts_index = 0;
+		for(std::size_t i = 0; i < local_tris.size(); ++i){
+			tris.block(tri_index, 0, local_tris[i].rows(), local_tris[i].cols()) = local_tris[i].array() + pts_index;
+			tri_index += local_tris[i].rows();
+
+			pts.block(pts_index, 0, local_pts[i].rows(), local_pts[i].cols()) = local_pts[i];
+			pts_index += local_pts[i].rows();
 		}
 	}
 }

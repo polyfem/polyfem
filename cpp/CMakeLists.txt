@@ -61,8 +61,8 @@ add_library(polyfem
 
 	src/mesh/LocalBoundary.hpp
 
-	src/mesh/Mesh.hpp
-	src/mesh/Mesh.cpp
+	src/mesh/Mesh2D.hpp
+	src/mesh/Mesh2D.cpp
 	src/mesh/Navigation.hpp
 	src/mesh/Navigation.cpp
 	src/mesh/Refinement.hpp
@@ -70,6 +70,7 @@ add_library(polyfem
 	src/mesh/Singularities.hpp
 	src/mesh/Singularities.cpp
 
+	src/mesh3D/Mesh3DStorage.hpp
 	src/mesh3D/Mesh3D.hpp
 	src/mesh3D/Mesh3D.cpp
 	src/mesh3D/Navigation3D.hpp
@@ -132,7 +133,7 @@ add_library(polyfem
 )
 
 target_link_libraries(polyfem geogram igl::core igl::triangle igl::tetgen igl::viewer json)
-target_include_directories(polyfem PUBLIC src src/assembler src/basis src/mesh src/problem src/quadrature src/utils)
+target_include_directories(polyfem PUBLIC src src/assembler src/basis src/mesh src/mesh3D src/problem src/quadrature src/utils)
 target_compile_options(polyfem PUBLIC ${ALL_WARNINGS})
 
 
