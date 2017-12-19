@@ -50,6 +50,11 @@ option(GEOGRAM_LIB_ONLY "Libraries only (no example programs/no viewer)" ON)
 option(GEOGRAM_WITH_FPG "Predicate generator (Sylvain Pion's FPG)" OFF)
 option(GEOGRAM_USE_SYSTEM_GLFW3 "Use the version of GLFW3 installed in the system if found" OFF)
 
+# Workaround CMake limitation with geogram 1.5.4
+if(TARGET glfw AND NOT TARGET glfw3)
+	add_library(glfw3 INTERFACE)
+endif()
+
 ################################################################################
 
 add_subdirectory(${GEOGRAM_ROOT} geogram)
