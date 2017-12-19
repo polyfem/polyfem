@@ -2,7 +2,7 @@
 #define HEX_BASIS_HPP
 
 #include "ElementBases.hpp"
-#include "Mesh.hpp"
+#include "Mesh3D.hpp"
 #include "LocalBoundary.hpp"
 
 #include <Eigen/Dense>
@@ -13,7 +13,7 @@ namespace poly_fem
 	class HexBasis
 	{
 	public:
-		static int build_bases(const Mesh &mesh, const int quadrature_order, std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes);
+		static int build_bases(const Mesh3D &mesh, const int quadrature_order, std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes);
 
 		static void basis(const int disc_order, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
 		static void grad(const int disc_order, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);

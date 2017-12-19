@@ -1,24 +1,14 @@
 #include "HexBasis.hpp"
 
+#include "HexQuadrature.hpp"
+
 #include <cassert>
 
 namespace poly_fem
 {
 
-	int HexBasis::build_bases(const Mesh &mesh, const int quadrature_order, std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes)
+	int HexBasis::build_bases(const Mesh3D &mesh, const int quadrature_order, std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes)
 	{
-		assert(mesh.is_volume());
-		assert(false);
-		return 0;
-
-		// HexQuadrature quad_quadrature;
-		// 	quad_quadrature.get_quadrature(quadrature_order, quadrature);
-
-		// int disc_order = 1;
-
-		// bases.resize(mesh.els.rows());
-		// int n_bases = int(mesh.pts.rows());
-
 		// for(long i=0; i < mesh.els.rows(); ++i)
 		// {
 		// 	std::vector<Basis> &b=bases[i];
@@ -35,6 +25,74 @@ namespace poly_fem
 		// }
 
 		// return n_bases;
+
+
+
+		bounday_nodes.clear();
+
+		assert(mesh.is_volume());
+
+		const int discr_order = 1;
+
+		bases.resize(mesh.n_elements());
+		local_boundary.resize(mesh.n_elements());
+
+		const int n_bases = int(mesh.n_pts());
+
+		Eigen::MatrixXd node;
+
+		HexQuadrature hex_quadrature;
+
+		for(int e = 0; e < mesh.n_elements(); ++e)
+		{
+			const int n_el_vertices = mesh.n_element_vertices(e);
+			ElementBases &b=bases[e];
+
+			if(n_el_vertices == 8)
+			{
+				hex_quadrature.get_quadrature(quadrature_order, b.quadrature);
+
+				b.bases.resize(n_el_vertices);
+
+				Navigation3D::Index index = mesh.get_index_from_element_face(e);
+				for (int j = 0; j < n_el_vertices; ++j)
+				{
+					if (mesh.switch_element(index).element < 0) {
+						bounday_nodes.push_back(index.vertex);
+						bounday_nodes.push_back(mesh.switch_vertex(index).vertex);
+
+						switch(j)
+						{
+							case 1: local_boundary[e].set_top_edge_id(index.edge); local_boundary[e].set_top_boundary(); break;
+							case 2: local_boundary[e].set_left_edge_id(index.edge); local_boundary[e].set_left_boundary(); break;
+							case 3: local_boundary[e].set_bottom_edge_id(index.edge); local_boundary[e].set_bottom_boundary(); break;
+							case 0: local_boundary[e].set_right_edge_id(index.edge); local_boundary[e].set_right_boundary(); break;
+						}
+					}
+
+					const int global_index = index.vertex;
+
+					mesh.point(global_index, node);
+					b.bases[j].init(global_index, j, node);
+
+					b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { HexBasis::basis(discr_order, j, uv, val); });
+					b.bases[j].set_grad( [discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  HexBasis::grad(discr_order, j, uv, val); });
+
+					index = mesh.next_around_element(index);
+				}
+			}
+			else if(n_el_vertices == 3)
+			{
+				assert(false);
+				//TODO triangulate element and implement tets...
+			}
+		}
+
+		std::sort(bounday_nodes.begin(), bounday_nodes.end());
+		auto it = std::unique(bounday_nodes.begin(), bounday_nodes.end());
+		bounday_nodes.resize(std::distance(bounday_nodes.begin(), it));
+
+		return n_bases;
 	}
 
 	void HexBasis::basis(const int disc_order, const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val)

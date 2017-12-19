@@ -11,58 +11,30 @@ namespace poly_fem
 	class Mesh
 	{
 	public:
-		void refine(const int n_refiniment);
+		virtual ~Mesh() { }
 
-		inline bool is_volume() const { return mesh_.cells.nb() > 0; }
+		virtual void refine(const int n_refiniment) = 0;
 
-		inline int n_elements() const { return is_volume() ? mesh_.cells.nb() : mesh_.facets.nb(); }
-		inline int n_pts() const { return mesh_.vertices.nb(); }
+		virtual inline bool is_volume() const = 0;
 
-		inline int n_element_vertices(const int element_index) const { return is_volume() ? mesh_.cells.nb_vertices(element_index) : mesh_.facets.nb_vertices(element_index);}
-		inline int vertex_global_index(const int element_index, const int local_index) const { return is_volume() ? mesh_.cells.vertex(element_index, local_index) : mesh_.facets.vertex(element_index, local_index); }
+		virtual inline int n_elements() const = 0;
+		virtual inline int n_pts() const = 0;
 
-		double compute_mesh_size() const;
+		virtual inline int n_element_vertices(const int element_index) const = 0;
+		virtual inline int vertex_global_index(const int element_index, const int local_index) const = 0;
 
-		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts) const;
-		// void element_bounday_polygon(const int index, Eigen::MatrixXd &poly) const;
+		virtual double compute_mesh_size() const = 0;
 
-		void set_boundary_tags(std::vector<int> &tags) const;
+		virtual void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts) const = 0;
 
-		void point(const int global_index, Eigen::MatrixXd &pt) const;
+		virtual void set_boundary_tags(std::vector<int> &tags) const = 0;
 
-		bool load(const std::string &path);
-		bool save(const std::string &path) const;
+		virtual void point(const int global_index, Eigen::MatrixXd &pt) const = 0;
 
-		void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1);
+		virtual bool load(const std::string &path) = 0;
+		virtual bool save(const std::string &path) const = 0;
 
-		//get nodes ids
-		int edge_node_id(const int edge_id) const;
-		int vertex_node_id(const int vertex_id) const;
-		bool node_id_from_edge_index(const Navigation::Index &index, int &id) const;
-
-
-		//get nodes positions
-		Eigen::MatrixXd node_from_edge_index(const Navigation::Index &index) const;
-		Eigen::MatrixXd node_from_face(const int face_id) const;
-		Eigen::MatrixXd node_from_vertex(const int vertex_id) const;
-
-		//navigation wrapper
-		Navigation::Index get_index_from_face(int f, int lv = 0) const;
-
-		// Navigation in a surface mesh
-		Navigation::Index switch_vertex(Navigation::Index idx) const;
-		Navigation::Index switch_edge(Navigation::Index idx) const;
-		Navigation::Index switch_face(Navigation::Index idx) const;
-
-		// Iterate in a mesh
-		inline Navigation::Index next_around_face(Navigation::Index idx) const { return switch_edge(switch_vertex(idx)); }
-		inline Navigation::Index next_around_edge(Navigation::Index idx) const { return switch_vertex(switch_face(idx)); }
-		inline Navigation::Index next_around_vertex(Navigation::Index idx) const { return switch_face(switch_edge(idx)); }
-
-		void create_boundary_nodes();
-
-	private:
-		GEO::Mesh mesh_;
+		virtual void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const = 0;
 	};
 }
 
