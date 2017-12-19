@@ -149,18 +149,23 @@ namespace poly_fem
 		{
 			const Mesh2D &tmp_mesh = *static_cast<Mesh2D *>(mesh);
 			if(use_splines){
-				// n_geom_bases = QuadBasis::build_bases(mesh, quadrature_order, geom_bases, local_boundary, bounday_nodes);
-			// n_geom_bases = Spline2dBasis::build_bases(mesh, quadrature_order, geom_bases, local_boundary, bounday_nodes, polys);
-				n_bases = Spline2dBasis::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, bounday_nodes, polys);
-				n_geom_bases = n_bases;
-				geom_bases = bases;
+				if(iso_parametric)
+					n_bases = Spline2dBasis::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, bounday_nodes, polys);
+				else
+				{
+					n_geom_bases = QuadBasis::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, bounday_nodes);
+					n_bases = Spline2dBasis::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, bounday_nodes, polys);
+				}
 			}
 			else
 			{
-				// n_geom_bases = QuadBasis::build_bases(mesh, quadrature_order, geom_bases, local_boundary, bounday_nodes);
-				n_bases = QuadBasis::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, bounday_nodes);
-				n_geom_bases = n_bases;
-				geom_bases = bases;
+				if(iso_parametric)
+					n_bases = QuadBasis::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, bounday_nodes);
+				else
+				{
+					n_geom_bases = QuadBasis::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, bounday_nodes);
+					n_bases = QuadBasis::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, bounday_nodes);
+				}
 			}
 		}
 
@@ -186,10 +191,11 @@ namespace poly_fem
 			Eigen::MatrixXd samples, mapped, p, p0, p1;
 			QuadBoundarySampler::sample(true, true, true, true, n_samples, false, samples);
 
-			for(std::size_t i = 0; i < geom_bases.size(); ++i){
+			auto &curret_bases =  iso_parametric ? bases : geom_bases;
+			for(std::size_t i = 0; i < curret_bases.size(); ++i){
 				if(mesh->n_element_vertices(int(i)) != 4) continue;
 
-				geom_bases[i].eval_geom_mapping(samples, mapped);
+				curret_bases[i].eval_geom_mapping(samples, mapped);
 
 				for(int j = 0; j < 4; ++j)
 				{
@@ -227,8 +233,13 @@ namespace poly_fem
 
 		std::sort(bounday_nodes.begin(), bounday_nodes.end());
 
-		ElementAssemblyValues::compute_assembly_values(mesh->is_volume(), geom_bases, geom_values);
-		ElementAssemblyValues::compute_assembly_values(mesh->is_volume(), bases, values);
+		if(iso_parametric)
+			ElementAssemblyValues::compute_assembly_values(mesh->is_volume(), bases, values);
+		else
+		{
+			ElementAssemblyValues::compute_assembly_values(mesh->is_volume(), geom_bases, geom_values);
+			ElementAssemblyValues::compute_assembly_values(mesh->is_volume(), bases, values);
+		}
 
 		timer.stop();
 		computing_assembly_values_time = timer.getElapsedTime();
@@ -251,15 +262,21 @@ namespace poly_fem
 			le.lambda() = lambda;
 			le.size() = mesh->is_volume()? 3:2;
 
+			if(iso_parametric)
+				assembler.assemble(n_bases, values, values, stiffness);
+			else
+				assembler.assemble(n_bases, values, geom_values, stiffness);
 
-			assembler.assemble(n_bases, values, geom_values, stiffness);
 			// std::cout<<MatrixXd(stiffness)<<std::endl;
 			assembler.set_identity(bounday_nodes, stiffness);
 		}
 		else
 		{
 			Assembler<Laplacian> assembler;
-			assembler.assemble(n_bases, values, geom_values, stiffness);
+			if(iso_parametric)
+				assembler.assemble(n_bases, values, values, stiffness);
+			else
+				assembler.assemble(n_bases, values, geom_values, stiffness);
 			// std::cout<<MatrixXd(stiffness)<<std::endl;
 			assembler.set_identity(bounday_nodes, stiffness);
 		}
@@ -280,9 +297,18 @@ namespace poly_fem
 
 		const int size = problem.problem_num() == 3 ? (mesh->is_volume() ? 3:2) : 1;
 		RhsAssembler rhs_assembler;
-		rhs_assembler.assemble(n_bases, size, values, geom_values, problem, rhs);
-		rhs *= -1;
-		rhs_assembler.set_bc(size, bases, geom_bases, mesh->is_volume(), local_boundary, bounday_nodes, n_boundary_samples, problem, rhs);
+		if(iso_parametric)
+		{
+			rhs_assembler.assemble(n_bases, size, values, values, problem, rhs);
+			rhs *= -1;
+			rhs_assembler.set_bc(size, bases, bases, mesh->is_volume(), local_boundary, bounday_nodes, n_boundary_samples, problem, rhs);
+		}
+		else
+		{
+			rhs_assembler.assemble(n_bases, size, values, geom_values, problem, rhs);
+			rhs *= -1;
+			rhs_assembler.set_bc(size, bases, geom_bases, mesh->is_volume(), local_boundary, bounday_nodes, n_boundary_samples, problem, rhs);
+		}
 
 		timer.stop();
 		assigning_rhs_time = timer.getElapsedTime();
@@ -322,8 +348,8 @@ namespace poly_fem
 
 		for(int e = 0; e < n_el; ++e)
 		{
-			auto vals    = values[e];
-			auto gvalues = geom_values[e];
+			const auto &vals    = values[e];
+			const auto &gvalues = iso_parametric ? values[e] : geom_values[e];
 
 			problem.exact(gvalues.val, v_exact);
 

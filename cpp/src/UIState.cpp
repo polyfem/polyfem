@@ -353,10 +353,11 @@ namespace poly_fem
 				}
 			}
 
+			const auto &current_bases = state.iso_parametric ? state.bases : state.geom_bases;
 			int faces_total_size = 0, points_total_size = 0;
-			for(int i = 0; i < int(state.geom_bases.size()); ++i)
+			for(int i = 0; i < int(current_bases.size()); ++i)
 			{
-				const ElementBases &bs = state.geom_bases[i];
+				const ElementBases &bs = current_bases[i];
 
 				if(int(bs.bases.size()) == 4 || int(bs.bases.size()) == 9){
 					faces_total_size   += local_vis_faces_quad.rows();
@@ -407,9 +408,9 @@ namespace poly_fem
 
 			MatrixXd mapped, tmp;
 			int face_index = 0, point_index = 0;
-			for(int i = 0; i < int(state.geom_bases.size()); ++i)
+			for(int i = 0; i < int(current_bases.size()); ++i)
 			{
-				const ElementBases &bs = state.geom_bases[i];
+				const ElementBases &bs = current_bases[i];
 				if(int(bs.bases.size()) == 4 || int(bs.bases.size()) == 9)
 				{
 					bs.eval_geom_mapping(local_vis_pts_quad, mapped);
