@@ -305,7 +305,55 @@ namespace poly_fem
 	}
 
 	void Mesh3D::assign_element_tag(std::vector<ElementType> &ele_tag) {
+		ele_tag.resize(mesh_.elements.size());
+		for (auto &t : ele_tag)t = ElementType::Regular_Hex;
 
+		for (auto &ele:mesh_.elements) {
+			if (ele.hex) {
+				//type 3
+				bool on_boundary = false, attaching_non_hex = false;
+				for (auto vid : ele.vs){
+					if (mesh_.vertices[vid].boundary) {
+						on_boundary = true; break;
+					}
+					for (auto eleid : mesh_.vertices[vid].neighbor_hs) if (!mesh_.elements[eleid].hex) {
+						attaching_non_hex = true; break;
+					}
+					if (on_boundary || attaching_non_hex) break;
+				}
+				if (on_boundary || attaching_non_hex) {
+					ele_tag[ele.id] = ElementType::Boundary_Hex;
+					continue;
+				}
+
+				//type 1
+				bool has_irregular_v = false;
+				for (auto vid : ele.vs)  if (mesh_.vertices[vid].neighbor_hs.size() != 8) {
+					has_irregular_v = true; break;
+				}
+				if(!has_irregular_v){
+					ele_tag[ele.id] = ElementType::Regular_Hex;
+					continue;
+				}
+				//type 2
+				bool has_singular_v = false; int n_irregular_v = 0;
+				for (auto vid : ele.vs){
+					if (mesh_.vertices[vid].neighbor_hs.size() != 8) n_irregular_v++; 
+					int n_irregular_e = 0;
+					for (auto eid : mesh_.vertices[vid].neighbor_es)if (mesh_.edges[eid].neighbor_hs.size() != 4) n_irregular_e++;
+					if (n_irregular_e != 2) {
+						has_singular_v = true; break;
+					}
+				}
+				if (!has_singular_v && n_irregular_v == 2) {
+					ele_tag[ele.id] = ElementType::Onesingular_Hex;
+					continue;
+				}
+
+				ele_tag[ele.id] = ElementType::Multisingular_Hex;
+			}
+			else
+				ele_tag[ele.id] = ElementType::Non_Hex;
+		}
 	}
-
 }
