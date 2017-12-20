@@ -363,4 +363,14 @@ namespace poly_fem
 			pts_index += local_pts[i].rows();
 		}
 	}
+
+	void Mesh2D::compute_barycenter(Eigen::MatrixXd &barycenters) const
+	{
+		barycenters.resize(n_elements(), 2);
+
+		for(GEO::index_t f = 0; f < mesh_.facets.nb(); ++f)
+		{
+			barycenters.row(f) = node_from_face(f);
+		}
+	}
 }

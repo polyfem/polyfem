@@ -65,6 +65,7 @@ namespace poly_fem
 
 		void create_boundary_nodes();
 
+		void compute_barycenter(Eigen::MatrixXd &barycenters) const override;
 	private:
 		GEO::Mesh mesh_;
 	};

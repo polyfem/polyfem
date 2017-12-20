@@ -39,6 +39,11 @@ namespace poly_fem
 
 		igl::ColorMapType color_map = igl::COLOR_MAP_TYPE_INFERNO;
 
+		int slice_coord = 0;
+		int is_slicing = false;
+		double slice_position = 0.5;
+		Eigen::MatrixXd normalized_barycenter;
+
 		State &state;
 	private:
 		void plot_function(const Eigen::MatrixXd &fun, double min=0, double max=-1);

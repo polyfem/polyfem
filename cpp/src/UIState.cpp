@@ -176,12 +176,54 @@ namespace poly_fem
 		auto clear_func = [&](){ viewer.data.clear(); };
 
 		auto show_mesh_func = [&](){
+			std::vector<bool> valid_elements(normalized_barycenter.rows());
+
+			if(is_slicing)
+			{
+				for (long i = 0; i<normalized_barycenter.rows();++i)
+					valid_elements[i] = normalized_barycenter(i, slice_coord) < slice_position;
+			}
+			else
+				std::fill(valid_elements.begin(), valid_elements.end(), true);
+
+
+
 			clear_func();
 			viewer.data.set_face_based(false);
-			viewer.data.set_mesh(tri_pts, tri_faces);
+
+			int n_vis_valid_pts = 0;
+			int n_vis_valid_tri = 0;
+
+			for (long i = 0; i<normalized_barycenter.rows();++i)
+			{
+				if(valid_elements[i])
+				{
+					n_vis_valid_pts += state.mesh->n_element_vertices(i);
+					n_vis_valid_tri += element_ranges[i+1] - element_ranges[i];
+				}
+			}
+
+			MatrixXd valid_pts = tri_pts;//(n_vis_valid_pts, tri_pts.rows());
+			MatrixXi valid_tri(n_vis_valid_tri, tri_faces.cols());
+
+			int from = 0;
+			for(std::size_t i = 1; i < element_ranges.size(); ++i)
+			{
+				if(!valid_elements[i-1]) continue;
+
+				const int range = element_ranges[i]-element_ranges[i-1];
+
+				valid_tri.block(from, 0, range, tri_faces.cols()) = tri_faces.block(element_ranges[i-1], 0, range, tri_faces.cols());
+
+				from += range;
+			}
+
+
+
+			viewer.data.set_mesh(valid_pts, valid_tri);
 			viewer.data.set_face_based(false);
 			MatrixXd normals;
-			igl::per_face_normals(tri_pts,tri_faces, normals);
+			igl::per_face_normals(valid_pts,valid_tri, normals);
 			viewer.data.set_normals(normals);
 
 
@@ -191,7 +233,7 @@ namespace poly_fem
 				std::vector<ElementType> ele_tag;
 				mesh->compute_element_tag(ele_tag);
 
-				Eigen::MatrixXd cols(tri_faces.rows(), 3);
+				Eigen::MatrixXd cols(valid_tri.rows(), 3);
 				cols.setZero();
 
 				int regular_hex_count = 0;
@@ -200,31 +242,40 @@ namespace poly_fem
 				int boundary_hex_count = 0;
 				int non_hex_count = 0;
 
+				from = 0;
 				for(std::size_t i = 1; i < element_ranges.size(); ++i)
 				{
+					if(!valid_elements[i-1]) continue;
+
 					const ElementType type = ele_tag[i-1];
-					const int from = element_ranges[i-1];
 					const int range = element_ranges[i]-element_ranges[i-1];
 
 					switch(type)
 					{
+						//green
 						case Regular_Hex: regular_hex_count++;
-							cols.block(from, 1, range, 1).setOnes(); break; //green
+						cols.block(from, 1, range, 1).setOnes(); break;
 
+						//orange
 						case Onesingular_Hex: onesingular_hex_count++;
-							cols.block(from, 0, range, 1).setOnes();
-							cols.block(from, 1, range, 1).setConstant(0.5); break; //orange
+						cols.block(from, 0, range, 1).setOnes();
+						cols.block(from, 1, range, 1).setConstant(0.5); break;
 
-					  	case Multisingular_Hex: multisingular_hex_count++;
-					  		cols.block(from, 0, range, 1).setOnes(); break; //red
+ 						//red
+						case Multisingular_Hex: multisingular_hex_count++;
+						cols.block(from, 0, range, 1).setOnes(); break;
 
-					  	case Boundary_Hex: boundary_hex_count++;
-					  		cols.block(from, 2, range, 1).setOnes(); break; //blue
+						//blue
+						case Boundary_Hex: boundary_hex_count++;
+						cols.block(from, 2, range, 1).setOnes(); break;
 
-					  	case Non_Hex: non_hex_count++;
-					  		cols.block(from, 2, range, 1).setOnes();
-					  		cols.block(from, 1, range, 1).setConstant(0.5); break; //light blue
+				  		 //light blue
+						case Non_Hex: non_hex_count++;
+						cols.block(from, 2, range, 1).setOnes();
+						cols.block(from, 1, range, 1).setConstant(0.5); break;
 					}
+
+					from += range;
 				}
 
 				viewer.data.set_colors(cols);
@@ -235,11 +286,11 @@ namespace poly_fem
 			state.mesh->get_edges(p0, p1);
 			viewer.data.add_edges(p0, p1, MatrixXd::Zero(1, 3));
 
-			// for(int i = 0; i < state.mesh->n_elements(); ++i)
-			// {
-			// 	MatrixXd p = state.mesh->node_from_face(i);
-			// 	viewer.data.add_label(p.transpose(), std::to_string(i));
-			// }
+	// for(int i = 0; i < state.mesh->n_elements(); ++i)
+	// {
+	// 	MatrixXd p = state.mesh->node_from_face(i);
+	// 	viewer.data.add_label(p.transpose(), std::to_string(i));
+	// }
 		};
 
 		auto show_vis_mesh_func = [&](){
@@ -537,6 +588,15 @@ namespace poly_fem
 		auto load_mesh_func = [&](){
 			state.load_mesh();
 			state.mesh->triangulate_faces(tri_faces, tri_pts, element_ranges);
+			state.mesh->compute_barycenter(normalized_barycenter);
+
+			// std::cout<<"normalized_barycenter\n"<<normalized_barycenter<<"\n\n"<<std::endl;
+			for(long i = 0; i < normalized_barycenter.cols(); ++i){
+				normalized_barycenter.col(i) = MatrixXd(normalized_barycenter.col(i).array() - normalized_barycenter.col(i).minCoeff());
+				normalized_barycenter.col(i) /= normalized_barycenter.col(i).maxCoeff();
+			}
+
+			// std::cout<<"normalized_barycenter\n"<<normalized_barycenter<<"\n\n"<<std::endl;
 
 			if(skip_visualization) return;
 
@@ -593,8 +653,6 @@ namespace poly_fem
 			clear_func();
 			show_error_func();
 		};
-
-
 
 
 		viewer.callback_init = [&](igl::viewer::Viewer& viewer_)
@@ -662,6 +720,32 @@ namespace poly_fem
 
 			viewer_.ngui->addVariable("basis num",vis_basis);
 			viewer_.ngui->addButton("Show basis", show_basis_func);
+
+			viewer_.ngui->addGroup("Slicing");
+			viewer_.ngui->addVariable<int>("coord",[&](int val) {
+				slice_coord = val;
+				if(is_slicing)
+					show_mesh_func();
+			},[&]() {
+				return slice_coord;
+			});
+			viewer_.ngui->addVariable<double>("pos",[&](double val) {
+				slice_position = val;
+				if(is_slicing)
+					show_mesh_func();
+			},[&]() {
+				return slice_position;
+			});
+
+			viewer_.ngui->addButton("+0.1", [&](){ slice_position += 0.1; if(is_slicing) show_mesh_func();});
+			viewer_.ngui->addButton("-0.1", [&](){ slice_position -= 0.1; if(is_slicing) show_mesh_func();});
+
+			viewer_.ngui->addVariable<bool>("enable",[&](bool val) {
+				is_slicing = val;
+				show_mesh_func();
+			},[&]() {
+				return is_slicing;
+			});
 
 			// viewer_.ngui->addGroup("Stats");
 			// viewer_.ngui->addVariable("NNZ", Type &value)

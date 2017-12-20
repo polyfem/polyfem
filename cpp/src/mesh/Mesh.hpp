@@ -35,6 +35,8 @@ namespace poly_fem
 		virtual bool save(const std::string &path) const = 0;
 
 		virtual void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const = 0;
+
+		virtual void compute_barycenter(Eigen::MatrixXd &barycenters) const = 0;
 	};
 }
 

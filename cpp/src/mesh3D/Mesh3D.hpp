@@ -71,6 +71,8 @@ namespace poly_fem
 		void create_boundary_nodes();
 		//for visualizing different types of elements
 		void compute_element_tag(std::vector<ElementType> &ele_tag) const;
+
+		void compute_barycenter(Eigen::MatrixXd &barycenters) const override;
 	private:
 
 		Mesh3DStorage mesh_;
