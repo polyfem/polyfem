@@ -139,8 +139,10 @@ Index poly_fem::Navigation3D::switch_face(const Mesh3DStorage &M, Index idx) {
 }
 Index poly_fem::Navigation3D::switch_element(const Mesh3DStorage &M, Index idx) {
 
-	if (M.faces[idx.face].neighbor_hs.size() == 1)
+	if (M.faces[idx.face].neighbor_hs.size() == 1) {
 		idx.element = -1;
+		return idx;
+	}
 	else {
 		if (M.faces[idx.face].neighbor_hs[0] == idx.element)
 			idx.element = M.faces[idx.face].neighbor_hs[1];
