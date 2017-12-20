@@ -62,12 +62,15 @@ namespace poly_fem
 		Navigation3D::Index switch_element(Navigation3D::Index idx) const;
 
 		// Iterate in a mesh
-		inline Navigation3D::Index next_around_element(Navigation3D::Index idx) const { return Navigation3D::next_around_element(mesh_, idx); }
-		inline Navigation3D::Index next_around_face(Navigation3D::Index idx) const { return Navigation3D::next_around_face(mesh_, idx); }
-		inline Navigation3D::Index next_around_edge(Navigation3D::Index idx) const { return Navigation3D::next_around_edge(mesh_, idx); }
-		inline Navigation3D::Index next_around_vertex(Navigation3D::Index idx) const { return Navigation3D::next_around_vertex(mesh_, idx); }
+		inline Navigation3D::Index next_around_face(Navigation3D::Index idx) const { return Navigation3D::next_around_2Dface(mesh_, idx); }
+		inline Navigation3D::Index next_around_edge(Navigation3D::Index idx) const { return Navigation3D::next_around_2Dedge(mesh_, idx); }
+		inline Navigation3D::Index next_around_vertex(Navigation3D::Index idx) const { return Navigation3D::next_around_2Dvertex(mesh_, idx); }
+
+		inline Navigation3D::Index next_around_element(Navigation3D::Index idx) const { return Navigation3D::next_around_3Delement(mesh_, idx); }
 
 		void create_boundary_nodes();
+		//for visualizing different types of elements
+		void assign_element_tag(std::vector<bool> &ele_tag);
 	private:
 
 		Mesh3DStorage mesh_;

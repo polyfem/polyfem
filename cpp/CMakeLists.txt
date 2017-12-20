@@ -10,6 +10,13 @@ include(UseColors)
 # Generate position independent code by default
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+	foreach(config ${CMAKE_CONFIGURATION_TYPES})
+		string(TOUPPER ${config} config)
+		string(REPLACE /MD /MT CMAKE_C_FLAGS_${config} "${CMAKE_C_FLAGS_${config}}")
+		string(REPLACE /MD /MT CMAKE_CXX_FLAGS_${config} "${CMAKE_CXX_FLAGS_${config}}")
+	endforeach()
+endif()
 # libigl
 option(LIBIGL_USE_STATIC_LIBRARY 	"Use libigl as static library" ON)
 option(LIBIGL_WITH_ANTTWEAKBAR      "Use AntTweakBar"    OFF)
@@ -33,7 +40,6 @@ find_package(LIBIGL REQUIRED QUIET)
 
 # Geogram
 include(geogram)
-
 # CLI11
 add_library(cli11 INTERFACE)
 target_include_directories(cli11 SYSTEM INTERFACE ${THIRD_PARTY_DIR}/cli11)
@@ -150,4 +156,4 @@ target_link_libraries(${PROJECT_NAME}_bin PUBLIC polyfem igl::viewer)
 
 ################################################################################
 
-add_subdirectory(tests)
+#add_subdirectory(tests)
