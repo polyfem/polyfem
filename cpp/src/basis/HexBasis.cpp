@@ -71,7 +71,7 @@ namespace poly_fem
 					}
 
 					const int global_index = index.vertex;
-
+					std::cout<<node<<std::endl;
 					mesh.point(global_index, node);
 					b.bases[j].init(global_index, j, node);
 
