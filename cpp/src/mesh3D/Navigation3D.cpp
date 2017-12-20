@@ -1,6 +1,7 @@
 #include "Navigation3D.hpp"
 #include <algorithm>
 #include <iterator>
+#include <set>
 #include <cassert>
 
 using namespace poly_fem::Navigation3D;
@@ -76,6 +77,87 @@ namespace
 				}
 				std::sort(nhs.begin(), nhs.end()); nhs.erase(std::unique(nhs.begin(), nhs.end()), nhs.end());
 				hmi.edges[i].neighbor_hs = nhs;
+			}
+//v_nhs; ordering fs for hex
+			for (uint32_t i = 0; i < hmi.elements.size(); i++) {
+				vector<uint32_t> vs;
+				for (auto fid : hmi.elements[i].fs)vs.insert(vs.end(), hmi.faces[fid].vs.begin(), hmi.faces[fid].vs.end());
+				sort(vs.begin(), vs.end()); vs.erase(unique(vs.begin(), vs.end()), vs.end());
+
+
+				if (hmi.elements[i].hex) {
+					int top_fid = hmi.elements[i].fs[0];
+					hmi.elements[i].vs = hmi.faces[top_fid].vs;
+
+					std::set<uint32_t> s_model(vs.begin(), vs.end());
+					std::set<uint32_t> s_pattern(hmi.faces[top_fid].vs.begin(), hmi.faces[top_fid].vs.end());
+					vector<uint32_t> vs_left;
+					std::set_difference(s_model.begin(), s_model.end(), s_pattern.begin(), s_pattern.end(), std::back_inserter(vs_left));
+
+					for (auto vid : hmi.faces[top_fid].vs)for (auto nvid : hmi.vertices[vid].neighbor_vs)
+						if (find(vs_left.begin(), vs_left.end(), nvid) != vs.end()) {
+							hmi.elements[i].vs.push_back(nvid); break;
+						}
+
+					function<int(vector<uint32_t> &)> WHICH_F = [&](vector<uint32_t> &vs0)->int {
+						int which_f = -1;
+						sort(vs0.begin(), vs0.end());
+						bool found_f = false;
+						for (auto fid : hmi.elements[i].fs) {
+							vector<uint32_t> vs1 = hmi.faces[fid].vs;
+							sort(vs1.begin(), vs1.end());
+							if (equal(vs0.begin(), vs0.end(), vs1.begin(), vs1.end())) {
+								which_f = fid; break;
+							}
+						}
+						return which_f;
+					};
+
+					vector<uint32_t> fs;
+					fs.push_back(top_fid);
+					vector<uint32_t> vs_temp;
+
+					vs_temp.insert(vs_temp.end(), hmi.elements[i].vs.begin() + 4, hmi.elements[i].vs.end());
+					int bottom_fid = WHICH_F(vs_temp);
+					fs.push_back(bottom_fid);
+
+					vs_temp.clear();
+					vs_temp.push_back(hmi.elements[i].vs[0]);
+					vs_temp.push_back(hmi.elements[i].vs[1]);
+					vs_temp.push_back(hmi.elements[i].vs[4]);
+					vs_temp.push_back(hmi.elements[i].vs[5]);
+					int front_fid = WHICH_F(vs_temp);
+					fs.push_back(front_fid);
+
+					vs_temp.clear();
+					vs_temp.push_back(hmi.elements[i].vs[2]);
+					vs_temp.push_back(hmi.elements[i].vs[3]);
+					vs_temp.push_back(hmi.elements[i].vs[6]);
+					vs_temp.push_back(hmi.elements[i].vs[7]);
+					int back_fid = WHICH_F(vs_temp);
+					fs.push_back(back_fid);
+
+					vs_temp.clear();
+					vs_temp.push_back(hmi.elements[i].vs[1]);
+					vs_temp.push_back(hmi.elements[i].vs[2]);
+					vs_temp.push_back(hmi.elements[i].vs[5]);
+					vs_temp.push_back(hmi.elements[i].vs[6]);
+					int left_fid = WHICH_F(vs_temp);
+					fs.push_back(left_fid);
+
+					vs_temp.clear();
+					vs_temp.push_back(hmi.elements[i].vs[3]);
+					vs_temp.push_back(hmi.elements[i].vs[0]);
+					vs_temp.push_back(hmi.elements[i].vs[7]);
+					vs_temp.push_back(hmi.elements[i].vs[4]);
+					int right_fid = WHICH_F(vs_temp);
+					fs.push_back(right_fid);
+
+					hmi.elements[i].fs = fs;
+				}
+				else hmi.elements[i].vs = vs;
+
+				for (uint32_t j = 0; j < hmi.elements[i].vs.size(); j++) hmi.vertices[hmi.elements[i].vs[j]].neighbor_hs.push_back(i);
 			}
 		}
 	}

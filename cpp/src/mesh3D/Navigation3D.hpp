@@ -30,7 +30,7 @@ namespace poly_fem{
 
 		inline Index next_around_3Dedge(const Mesh3DStorage &M, Index idx) { return switch_element(M, switch_face(M, idx)); }
 		inline Index next_around_3Dface(const Mesh3DStorage &M, Index idx) { return switch_face(M, idx); }
-		inline Index next_around_3Delement(const Mesh3DStorage &M, Index idx) { return idx; }
+		inline Index next_around_3Delement(const Mesh3DStorage &M, Index idx) { return get_index_from_element_face(M, idx.element,idx.element_patch,idx.face_corner); }
 	} // namespace Navigation3D
 } // namespace poly_fem
 
