@@ -245,6 +245,7 @@ namespace poly_fem
 			cols.setZero();
 
 			int regular_count = 0;
+			int regular_boundary_count = 0;
 			int one_singular_count = 0;
 			int multi_singular_count = 0;
 			int boundary_count = 0;
@@ -265,7 +266,7 @@ namespace poly_fem
 					cols.block(from, 1, range, 1).setOnes(); break;
 
 						//dark green
-					case regular_boundary: regular_count++;
+					case regular_boundary: regular_boundary_count++;
 					cols.block(from, 1, range, 1).setConstant(0.5); break;
 
 						//orange
@@ -291,7 +292,7 @@ namespace poly_fem
 			}
 
 			viewer.data.set_colors(cols);
-			std::cout <<"regular_count: " << regular_count << " one_singular_count: " << one_singular_count << " multi_singular_count: " << multi_singular_count << " boundary_count: " << boundary_count << " non_regular_count: " <<  non_regular_count <<std::endl;
+			std::cout <<"regular_count: " << regular_count <<" regular_boundary_count: " << regular_boundary_count << " one_singular_count: " << one_singular_count << " multi_singular_count: " << multi_singular_count << " boundary_count: " << boundary_count << " non_regular_count: " <<  non_regular_count <<std::endl;
 
 
 			MatrixXd p0, p1;
