@@ -74,7 +74,7 @@ namespace poly_fem
 
 		fclose(f);
 
-		// Navigation3D::prepare_mesh(mesh_);
+		Navigation3D::prepare_mesh(mesh_);
 		return true;
 	}
 
