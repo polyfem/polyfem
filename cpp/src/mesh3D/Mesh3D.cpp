@@ -304,7 +304,8 @@ namespace poly_fem
 		return Navigation3D::switch_element(mesh_, idx);
 	}
 
-	void Mesh3D::assign_element_tag(std::vector<bool> &ele_tag) {
+	void Mesh3D::assign_element_tag(std::vector<ElementType> &ele_tag) {
+
 	}
 
 }
