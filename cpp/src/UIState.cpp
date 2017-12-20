@@ -1,7 +1,10 @@
 #include "UIState.hpp"
+#include "Mesh3D.hpp"
 
 #include "LinearElasticity.hpp"
 
+
+#include <igl/per_face_normals.h>
 #include <igl/triangle/triangulate.h>
 #include <igl/copyleft/tetgen/tetrahedralize.h>
 #include <igl/Timer.h>
@@ -120,6 +123,10 @@ namespace poly_fem
 				tmp.col(i) += fun.col(i);
 
 			viewer.data.set_mesh(tmp, vis_faces);
+
+			MatrixXd normals;
+			igl::per_face_normals(tmp,vis_faces, normals);
+			viewer.data.set_normals(normals);
 		}
 		else
 		{
@@ -130,7 +137,13 @@ namespace poly_fem
 				igl::colormap(color_map, fun, true, col);
 
 			if(state.mesh->is_volume())
+			{
 				viewer.data.set_mesh(vis_pts, vis_faces);
+
+				MatrixXd normals;
+				igl::per_face_normals(vis_pts,vis_faces, normals);
+				viewer.data.set_normals(normals);
+			}
 			else
 			{
 				MatrixXd tmp;
@@ -139,6 +152,10 @@ namespace poly_fem
 				tmp.col(1)=vis_pts.col(1);
 				tmp.col(2)=fun;
 				viewer.data.set_mesh(tmp, vis_faces);
+
+				MatrixXd normals;
+				igl::per_face_normals(tmp,vis_faces, normals);
+				viewer.data.set_normals(normals);
 			}
 		}
 
@@ -163,10 +180,60 @@ namespace poly_fem
 			viewer.data.set_face_based(false);
 			viewer.data.set_mesh(tri_pts, tri_faces);
 			viewer.data.set_face_based(false);
+			MatrixXd normals;
+			igl::per_face_normals(tri_pts,tri_faces, normals);
+			viewer.data.set_normals(normals);
+
+
+			if(state.mesh->is_volume())
+			{
+				const Mesh3D *mesh = static_cast<Mesh3D *>(state.mesh);
+				std::vector<ElementType> ele_tag;
+				mesh->compute_element_tag(ele_tag);
+
+				Eigen::MatrixXd cols(tri_faces.rows(), 3);
+				cols.setZero();
+
+				int regular_hex_count = 0;
+				int onesingular_hex_count = 0;
+				int multisingular_hex_count = 0;
+				int boundary_hex_count = 0;
+				int non_hex_count = 0;
+
+				for(std::size_t i = 1; i < element_ranges.size(); ++i)
+				{
+					const ElementType type = ele_tag[i-1];
+					const int from = element_ranges[i-1];
+					const int range = element_ranges[i]-element_ranges[i-1];
+
+					switch(type)
+					{
+						case Regular_Hex: regular_hex_count++;
+							cols.block(from, 1, range, 1).setOnes(); break; //green
+
+						case Onesingular_Hex: onesingular_hex_count++;
+							cols.block(from, 0, range, 1).setOnes();
+							cols.block(from, 1, range, 1).setConstant(0.5); break; //orange
+
+					  	case Multisingular_Hex: multisingular_hex_count++;
+					  		cols.block(from, 0, range, 1).setOnes(); break; //red
+
+					  	case Boundary_Hex: boundary_hex_count++;
+					  		cols.block(from, 2, range, 1).setOnes(); break; //blue
+
+					  	case Non_Hex: non_hex_count++;
+					  		cols.block(from, 2, range, 1).setOnes();
+					  		cols.block(from, 1, range, 1).setConstant(0.5); break; //light blue
+					}
+				}
+
+				viewer.data.set_colors(cols);
+				std::cout <<"regular_hex_count: " << regular_hex_count << " onesingular_hex_count: " << onesingular_hex_count << " multisingular_hex_count: " << multisingular_hex_count << " boundary_hex_count: " << boundary_hex_count << " non_hex_count: " <<  non_hex_count <<std::endl;
+			}
 
 			MatrixXd p0, p1;
 			state.mesh->get_edges(p0, p1);
-			viewer.data.add_edges(p0, p1, MatrixXd::Zero(p0.rows(), 3));
+			viewer.data.add_edges(p0, p1, MatrixXd::Zero(1, 3));
 
 			// for(int i = 0; i < state.mesh->n_elements(); ++i)
 			// {
@@ -178,6 +245,9 @@ namespace poly_fem
 		auto show_vis_mesh_func = [&](){
 			clear_func();
 			viewer.data.set_mesh(vis_pts, vis_faces);
+			MatrixXd normals;
+			igl::per_face_normals(vis_pts,vis_faces, normals);
+			viewer.data.set_normals(normals);
 		};
 
 		auto show_nodes_func = [&](){
@@ -466,7 +536,7 @@ namespace poly_fem
 
 		auto load_mesh_func = [&](){
 			state.load_mesh();
-			state.mesh->triangulate_faces(tri_faces, tri_pts);
+			state.mesh->triangulate_faces(tri_faces, tri_pts, element_ranges);
 
 			if(skip_visualization) return;
 

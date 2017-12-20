@@ -26,6 +26,8 @@ namespace poly_fem
 
 		igl::viewer::Viewer viewer;
 
+		std::vector<int> element_ranges;
+
 		Eigen::MatrixXi tri_faces, vis_faces;
 		Eigen::MatrixXd tri_pts, vis_pts;
 

@@ -74,7 +74,7 @@ namespace poly_fem
 
 		fclose(f);
 
-		Navigation3D::prepare_mesh(mesh_);
+		// Navigation3D::prepare_mesh(mesh_);
 		return true;
 	}
 
@@ -121,7 +121,7 @@ namespace poly_fem
 		return -1;
 	}
 
-	void Mesh3D::triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts) const
+	void Mesh3D::triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const
 	{
 		std::vector<Eigen::MatrixXi> local_tris(mesh_.elements.size());
 		std::vector<Eigen::MatrixXd> local_pts(mesh_.elements.size());
@@ -130,6 +130,8 @@ namespace poly_fem
 		int total_tris = 0;
 		int total_pts  = 0;
 
+		ranges.push_back(0);
+
 		for(std::size_t e = 0; e < mesh_.elements.size(); ++e)
 		{
 			const Element &el = mesh_.elements[e];
@@ -137,8 +139,7 @@ namespace poly_fem
 			const int n_vertices = el.vs.size();
 			const int n_faces = el.fs.size();
 
-			Eigen::MatrixXd local_pt(n_vertices, 3);
-			Eigen::MatrixXi local_faces(2*n_faces, 3);
+			Eigen::MatrixXd local_pt(n_vertices+n_faces, 3);
 
 			std::map<int, int> global_to_local;
 
@@ -149,26 +150,43 @@ namespace poly_fem
 				global_to_local[global_index] = i;
 			}
 
+			int n_local_faces = 0;
 			for(int i = 0; i < n_faces; ++i)
 			{
 				const Face &f = mesh_.faces[el.fs[i]];
-				//TODO only quad faces;
-				assert(f.vs.size() == 4);
+				n_local_faces += f.vs.size();
 
-
-				local_faces(2*i, 0) = global_to_local[f.vs[0]];
-				local_faces(2*i, 1) = global_to_local[f.vs[1]];
-				local_faces(2*i, 2) = global_to_local[f.vs[2]];
-
-				local_faces(2*i+1, 0) = global_to_local[f.vs[0]];
-				local_faces(2*i+1, 1) = global_to_local[f.vs[2]];
-				local_faces(2*i+1, 2) = global_to_local[f.vs[3]];
+				local_pt.row(n_vertices+i) = node_from_face(f.id);
 			}
 
-			igl::copyleft::tetgen::tetrahedralize(local_pt, local_faces, "QpYS0", local_pts[e], tets, local_tris[e]);
+
+			Eigen::MatrixXi local_faces(n_local_faces, 3);
+
+			int face_index = 0;
+			for(int i = 0; i < n_faces; ++i)
+			{
+				const Face &f = mesh_.faces[el.fs[i]];
+				const int n_face_vertices = f.vs.size();
+
+				for(int j = 0; j < n_face_vertices; ++j)
+				{
+					const int jp = (j + 1) % n_face_vertices;
+					local_faces(face_index, 0) = global_to_local[f.vs[j]];
+					local_faces(face_index, 1) = global_to_local[f.vs[jp]];
+					local_faces(face_index, 2) = n_vertices + i;
+
+					++face_index;
+				}
+			}
+
+			local_pts[e] = local_pt;
+			local_tris[e] = local_faces;
+			// igl::copyleft::tetgen::tetrahedralize(local_pt, local_faces, "QpYS0", local_pts[e], tets, local_tris[e]);
 
 			total_tris += local_tris[e].rows();
 			total_pts  += local_pts[e].rows();
+
+			ranges.push_back(total_tris);
 
 			assert(local_pts[e].rows() == local_pt.rows());
 		}
@@ -265,9 +283,16 @@ namespace poly_fem
 
 	Eigen::MatrixXd Mesh3D::node_from_face(const int face_id) const
 	{
-//TODO implement me
-		assert(false);
-		return Eigen::MatrixXd();
+		Eigen::MatrixXd res=Eigen::MatrixXd::Zero(1, 3);
+		Eigen::MatrixXd pt;
+
+		for(std::size_t i = 0; i < mesh_.faces[face_id].vs.size(); ++i)
+		{
+			point(mesh_.faces[face_id].vs[i], pt);
+			res += pt;
+		}
+
+		return res / mesh_.faces[face_id].vs.size();
 	}
 
 	Eigen::MatrixXd Mesh3D::node_from_vertex(const int vertex_id) const
@@ -304,56 +329,57 @@ namespace poly_fem
 		return Navigation3D::switch_element(mesh_, idx);
 	}
 
-	void Mesh3D::assign_element_tag(std::vector<ElementType> &ele_tag) {
+	void Mesh3D::compute_element_tag(std::vector<ElementType> &ele_tag) const
+	{
 		ele_tag.resize(mesh_.elements.size());
 		for (auto &t : ele_tag)t = ElementType::Regular_Hex;
 
-		for (auto &ele:mesh_.elements) {
-			if (ele.hex) {
+			for (auto &ele:mesh_.elements) {
+				if (ele.hex) {
 				//type 3
-				bool on_boundary = false, attaching_non_hex = false;
-				for (auto vid : ele.vs){
-					if (mesh_.vertices[vid].boundary) {
-						on_boundary = true; break;
+					bool on_boundary = false, attaching_non_hex = false;
+					for (auto vid : ele.vs){
+						if (mesh_.vertices[vid].boundary) {
+							on_boundary = true; break;
+						}
+						for (auto eleid : mesh_.vertices[vid].neighbor_hs) if (!mesh_.elements[eleid].hex) {
+							attaching_non_hex = true; break;
+						}
+						if (on_boundary || attaching_non_hex) break;
 					}
-					for (auto eleid : mesh_.vertices[vid].neighbor_hs) if (!mesh_.elements[eleid].hex) {
-						attaching_non_hex = true; break;
+					if (on_boundary || attaching_non_hex) {
+						ele_tag[ele.id] = ElementType::Boundary_Hex;
+						continue;
 					}
-					if (on_boundary || attaching_non_hex) break;
-				}
-				if (on_boundary || attaching_non_hex) {
-					ele_tag[ele.id] = ElementType::Boundary_Hex;
-					continue;
-				}
 
 				//type 1
-				bool has_irregular_v = false;
-				for (auto vid : ele.vs)  if (mesh_.vertices[vid].neighbor_hs.size() != 8) {
-					has_irregular_v = true; break;
-				}
-				if(!has_irregular_v){
-					ele_tag[ele.id] = ElementType::Regular_Hex;
-					continue;
-				}
-				//type 2
-				bool has_singular_v = false; int n_irregular_v = 0;
-				for (auto vid : ele.vs){
-					if (mesh_.vertices[vid].neighbor_hs.size() != 8) n_irregular_v++; 
-					int n_irregular_e = 0;
-					for (auto eid : mesh_.vertices[vid].neighbor_es)if (mesh_.edges[eid].neighbor_hs.size() != 4) n_irregular_e++;
-					if (n_irregular_e != 2) {
-						has_singular_v = true; break;
+					bool has_irregular_v = false;
+					for (auto vid : ele.vs)  if (mesh_.vertices[vid].neighbor_hs.size() != 8) {
+						has_irregular_v = true; break;
 					}
-				}
-				if (!has_singular_v && n_irregular_v == 2) {
-					ele_tag[ele.id] = ElementType::Onesingular_Hex;
-					continue;
-				}
+					if(!has_irregular_v){
+						ele_tag[ele.id] = ElementType::Regular_Hex;
+						continue;
+					}
+				//type 2
+					bool has_singular_v = false; int n_irregular_v = 0;
+					for (auto vid : ele.vs){
+						if (mesh_.vertices[vid].neighbor_hs.size() != 8) n_irregular_v++; 
+						int n_irregular_e = 0;
+						for (auto eid : mesh_.vertices[vid].neighbor_es)if (mesh_.edges[eid].neighbor_hs.size() != 4) n_irregular_e++;
+							if (n_irregular_e != 2) {
+								has_singular_v = true; break;
+							}
+						}
+						if (!has_singular_v && n_irregular_v == 2) {
+							ele_tag[ele.id] = ElementType::Onesingular_Hex;
+							continue;
+						}
 
-				ele_tag[ele.id] = ElementType::Multisingular_Hex;
+						ele_tag[ele.id] = ElementType::Multisingular_Hex;
+					}
+					else
+						ele_tag[ele.id] = ElementType::Non_Hex;
+				}
 			}
-			else
-				ele_tag[ele.id] = ElementType::Non_Hex;
 		}
-	}
-}

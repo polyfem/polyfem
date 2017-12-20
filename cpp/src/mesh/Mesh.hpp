@@ -25,7 +25,7 @@ namespace poly_fem
 
 		virtual double compute_mesh_size() const = 0;
 
-		virtual void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts) const = 0;
+		virtual void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const = 0;
 
 		virtual void set_boundary_tags(std::vector<int> &tags) const = 0;
 

@@ -25,7 +25,7 @@ namespace poly_fem
 
 		double compute_mesh_size() const override;
 
-		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts) const override;
+		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
 		// void element_bounday_polygon(const int index, Eigen::MatrixXd &poly) const;
 
 		void set_boundary_tags(std::vector<int> &tags) const override;
