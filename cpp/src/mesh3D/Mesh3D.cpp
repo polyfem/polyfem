@@ -126,6 +126,7 @@ namespace poly_fem
 		std::vector<Eigen::MatrixXi> local_tris(mesh_.elements.size());
 		std::vector<Eigen::MatrixXd> local_pts(mesh_.elements.size());
 		Eigen::MatrixXi tets;
+		Eigen::MatrixXd p;
 
 		int total_tris = 0;
 		int total_pts  = 0;
@@ -168,11 +169,28 @@ namespace poly_fem
 				const Face &f = mesh_.faces[el.fs[i]];
 				const int n_face_vertices = f.vs.size();
 
+				point(f.vs[0], p);
+				const Eigen::Vector3d e0 = (p - local_pt.row(n_vertices+i)).transpose();
+				point(f.vs[1], p);
+				const Eigen::Vector3d e1 = (p - local_pt.row(n_vertices+i)).transpose();
+				const Eigen::Vector3d normal = e0.cross(e1);
+				const Eigen::Vector3d check_dir = (node_from_element(e)-p).transpose();
+
+				const bool reverse_order = normal.dot(check_dir) > 0;
+
 				for(int j = 0; j < n_face_vertices; ++j)
 				{
 					const int jp = (j + 1) % n_face_vertices;
-					local_faces(face_index, 0) = global_to_local[f.vs[j]];
-					local_faces(face_index, 1) = global_to_local[f.vs[jp]];
+					if(reverse_order)
+					{
+						local_faces(face_index, 0) = global_to_local[f.vs[jp]];
+						local_faces(face_index, 1) = global_to_local[f.vs[j]];
+					}
+					else
+					{
+						local_faces(face_index, 0) = global_to_local[f.vs[j]];
+						local_faces(face_index, 1) = global_to_local[f.vs[jp]];
+					}
 					local_faces(face_index, 2) = n_vertices + i;
 
 					++face_index;
@@ -269,9 +287,19 @@ namespace poly_fem
 
 	Eigen::MatrixXd Mesh3D::node_from_element(const int el_id) const
 	{
-//TODO implement me
-		assert(false);
-		return Eigen::MatrixXd();
+		//warning, if change my have side effects
+		Eigen::MatrixXd res(1,3), p;
+		res.setZero();
+
+		for(std::size_t j = 0; j < mesh_.elements[el_id].vs.size(); ++j)
+		{
+			point(mesh_.elements[el_id].vs[j], p);
+			res += p;
+		}
+
+		res /= mesh_.elements[el_id].vs.size();
+
+		return res;
 	}
 
 	Eigen::MatrixXd Mesh3D::node_from_edge_index(const Navigation3D::Index &index) const
@@ -395,13 +423,7 @@ namespace poly_fem
 		Eigen::MatrixXd p;
 		for(std::size_t e = 0; e < mesh_.elements.size(); ++e)
 		{
-			for(std::size_t j = 0; j < mesh_.elements[e].vs.size(); ++j)
-			{
-				point(mesh_.elements[e].vs[j], p);
-				barycenters.row(e) += p;
-			}
-
-			barycenters.row(e) /= mesh_.elements[e].vs.size();
+			barycenters.row(e) = node_from_element(e);
 		}
 	}
 }
