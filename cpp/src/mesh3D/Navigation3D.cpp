@@ -98,7 +98,7 @@ namespace
 					std::set_difference(s_model.begin(), s_model.end(), s_pattern.begin(), s_pattern.end(), std::back_inserter(vs_left));
 
 					for (auto vid : hmi.faces[top_fid].vs)for (auto nvid : hmi.vertices[vid].neighbor_vs)
-						if (find(vs_left.begin(), vs_left.end(), nvid) != vs.end()) {
+						if (find(vs_left.begin(), vs_left.end(), nvid) != vs_left.end()) {
 							hmi.elements[i].vs.push_back(nvid); break;
 						}
 
