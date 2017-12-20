@@ -6,14 +6,6 @@
 
 namespace poly_fem
 {
-	enum ElementType {
-		Regular_Hex = 0,//an interior hex, all its 12 edges are non-singular
-		Onesingular_Hex,//an interior hex, one out of its 12 edges is singular
-		Multisingular_Hex,//an interior hex, more than one of its 12 edges is singular
-		Boundary_Hex,//either on boundary or attaching to a Non_hex
-		Non_Hex,
-	};
-
 	struct Vertex
 	{
 		int id;

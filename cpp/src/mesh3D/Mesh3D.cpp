@@ -361,7 +361,7 @@ namespace poly_fem
 	{
 		ele_tag.resize(mesh_.elements.size());
 		for (auto &t : ele_tag)
-			t = ElementType::Regular_Hex;
+			t = ElementType::regular;
 
 		for (auto &ele:mesh_.elements) {
 			if (ele.hex) {
@@ -377,7 +377,7 @@ namespace poly_fem
 					if (on_boundary || attaching_non_hex) break;
 				}
 				if (on_boundary || attaching_non_hex) {
-					ele_tag[ele.id] = ElementType::Boundary_Hex;
+					ele_tag[ele.id] = ElementType::boundary;
 					continue;
 				}
 
@@ -387,7 +387,7 @@ namespace poly_fem
 					has_irregular_v = true; break;
 				}
 				if(!has_irregular_v){
-					ele_tag[ele.id] = ElementType::Regular_Hex;
+					ele_tag[ele.id] = ElementType::regular;
 					continue;
 				}
 				//type 2
@@ -405,14 +405,14 @@ namespace poly_fem
 					}
 				}
 				if (!has_singular_v && n_irregular_v == 2) {
-					ele_tag[ele.id] = ElementType::Onesingular_Hex;
+					ele_tag[ele.id] = ElementType::one_singular;
 					continue;
 				}
 
-				ele_tag[ele.id] = ElementType::Multisingular_Hex;
+				ele_tag[ele.id] = ElementType::multi_singular;
 			}
 			else
-				ele_tag[ele.id] = ElementType::Non_Hex;
+				ele_tag[ele.id] = ElementType::non_regular;
 		}
 	}
 

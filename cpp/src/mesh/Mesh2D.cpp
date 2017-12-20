@@ -373,4 +373,10 @@ namespace poly_fem
 			barycenters.row(f) = node_from_face(f);
 		}
 	}
+	
+	void Mesh2D::compute_element_tag(std::vector<ElementType> &ele_tag) const
+	{
+		ele_tag.resize(n_elements());
+		std::fill(ele_tag.begin(), ele_tag.end(), ElementType::regular);
+	}
 }
