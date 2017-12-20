@@ -24,11 +24,13 @@ namespace poly_fem{
 		Index switch_element(const Mesh3DStorage &M, Index idx);
 
 		// Iterate in a Mesh3DStorage
-		inline Index next_around_element(const Mesh3DStorage &M, Index idx) { return switch_element(M, switch_face(M, idx)); }
-		inline Index next_around_face(const Mesh3DStorage &M, Index idx) { return switch_edge(M, switch_vertex(M, idx)); }
-		inline Index next_around_edge(const Mesh3DStorage &M, Index idx) { return switch_vertex(M, switch_face(M, idx)); }
-		inline Index next_around_vertex(const Mesh3DStorage &M, Index idx) { return switch_face(M, switch_edge(M, idx)); }
+		inline Index next_around_2Dface(const Mesh3DStorage &M, Index idx) { return switch_edge(M, switch_vertex(M, idx)); }
+		inline Index next_around_2Dedge(const Mesh3DStorage &M, Index idx) { return switch_vertex(M, switch_face(M, idx)); }
+		inline Index next_around_2Dvertex(const Mesh3DStorage &M, Index idx) { return switch_face(M, switch_edge(M, idx)); }
 
+		inline Index next_around_3Dedge(const Mesh3DStorage &M, Index idx) { return switch_element(M, switch_face(M, idx)); }
+		inline Index next_around_3Dface(const Mesh3DStorage &M, Index idx) { return switch_face(M, idx); }
+		inline Index next_around_3Delement(const Mesh3DStorage &M, Index idx) { return idx; }
 	} // namespace Navigation3D
 } // namespace poly_fem
 
