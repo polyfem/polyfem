@@ -1,6 +1,7 @@
 #include "Mesh2D.hpp"
 #include "Navigation.hpp"
 
+#include "MeshUtils.hpp"
 #include "Refinement.hpp"
 
 #include <igl/triangle/triangulate.h>
@@ -376,6 +377,6 @@ namespace poly_fem
 
 	void Mesh2D::compute_element_tag(std::vector<ElementType> &ele_tag) const
 	{
-		ele_tag.assign(n_elements(), ElementType::RegularInteriorCube);
+		poly_fem::compute_element_tags(mesh_, ele_tag);
 	}
 }

@@ -18,6 +18,10 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	endforeach()
 endif()
 # libigl
+# option(ENABLE_CHOLMOD     "Enable Cholmod library"  ON)
+option(ENABLE_UMFPACK     "Enable UmfPack library"  ON)
+
+
 option(LIBIGL_USE_STATIC_LIBRARY 	"Use libigl as static library" ON)
 option(LIBIGL_WITH_ANTTWEAKBAR      "Use AntTweakBar"    OFF)
 option(LIBIGL_WITH_CGAL             "Use CGAL"           OFF)
@@ -47,6 +51,10 @@ target_include_directories(cli11 SYSTEM INTERFACE ${THIRD_PARTY_DIR}/cli11)
 # Json library
 add_library(json INTERFACE)
 target_include_directories(json SYSTEM INTERFACE ${THIRD_PARTY_DIR}/json/src)
+
+
+
+
 
 # Extra warnings
 include(SetWarnings)
@@ -142,7 +150,26 @@ add_library(polyfem
 	src/problem/Problem.cpp
 )
 
-target_link_libraries(polyfem geogram igl::core igl::triangle igl::tetgen igl::viewer json)
+
+# if(ENABLE_CHOLMOD)
+# 	find_package(Cholmod)
+# 	if(CHOLMOD_FOUND)
+# 		target_include_directories(polyfem PUBLIC ${CHOLMOD_INCLUDES})
+# 		target_link_libraries(polyfem PUBLIC ${CHOLMOD_LIBRARIES})
+# 		target_compile_definitions(polyfem PUBLIC -DPOLY_FEM_WITH_CHOLMOD)
+# 	endif()
+# endif()
+
+if(ENABLE_UMFPACK)
+	find_package(Umfpack)
+	if(UMFPACK_FOUND)
+		target_include_directories(polyfem PUBLIC ${UMFPACK_INCLUDES})
+		target_link_libraries(polyfem PUBLIC ${UMFPACK_LIBRARIES})
+		target_compile_definitions(polyfem PUBLIC -DPOLY_FEM_WITH_UMFPACK)
+	endif()
+endif()
+
+target_link_libraries(polyfem PUBLIC geogram igl::core igl::triangle igl::tetgen igl::viewer json)
 target_include_directories(polyfem PUBLIC src src/assembler src/basis src/mesh src/mesh3D src/problem src/quadrature src/utils)
 target_compile_options(polyfem PUBLIC ${ALL_WARNINGS})
 

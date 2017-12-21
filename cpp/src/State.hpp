@@ -93,6 +93,8 @@ namespace poly_fem
 		void save_json(const std::string &name);
 		void sertialize(const std::string &file_name);
 
+		void compute_mesh_stats();
+
 	};
 
 }

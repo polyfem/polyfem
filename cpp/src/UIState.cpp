@@ -246,7 +246,7 @@ namespace poly_fem
 
 			int regular_count = 0;
 			int regular_boundary_count = 0;
-			int one_singular_count = 0;
+			int simple_singular_count = 0;
 			int multi_singular_count = 0;
 			int boundary_count = 0;
 			int non_regular_count = 0;
@@ -270,7 +270,7 @@ namespace poly_fem
 					cols.block(from, 1, range, 1).setConstant(0.5); break;
 
 						//orange
-					case ElementType::SimpleSingularInteriorCube: one_singular_count++;
+					case ElementType::SimpleSingularInteriorCube: simple_singular_count++;
 					cols.block(from, 0, range, 1).setOnes();
 					cols.block(from, 1, range, 1).setConstant(0.5); break;
 
@@ -283,6 +283,7 @@ namespace poly_fem
 					cols.block(from, 2, range, 1).setOnes(); break;
 
 				  		 //light blue
+					case ElementType::BoundaryPolytope:
 					case ElementType::InteriorPolytope: non_regular_count++;
 					cols.block(from, 2, range, 1).setOnes();
 					cols.block(from, 1, range, 1).setConstant(0.5); break;
@@ -292,7 +293,7 @@ namespace poly_fem
 			}
 
 			viewer.data.set_colors(cols);
-			std::cout <<"regular_count: " << regular_count <<" regular_boundary_count: " << regular_boundary_count << " one_singular_count: " << one_singular_count << " multi_singular_count: " << multi_singular_count << " boundary_count: " << boundary_count << " non_regular_count: " <<  non_regular_count <<std::endl;
+			std::cout <<"regular_count: " << regular_count <<" regular_boundary_count: " << regular_boundary_count << " simple_singular_count: " << simple_singular_count << " multi_singular_count: " << multi_singular_count << " boundary_count: " << boundary_count << " non_regular_count: " <<  non_regular_count <<std::endl;
 
 
 			MatrixXd p0, p1;

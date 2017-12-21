@@ -25,6 +25,14 @@
 #include <iostream>
 #include <algorithm>
 
+
+//POLY_FEM_WITH_CHOLMOD
+// #include <Eigen/CholmodSupport>
+
+#ifdef POLY_FEM_WITH_UMFPACK
+#include <Eigen/UmfPackSupport>
+#endif
+
 using namespace Eigen;
 
 
@@ -71,6 +79,52 @@ namespace poly_fem
 		std::ofstream o(name);
 		o << std::setw(4) << j << std::endl;
 		o.close();
+
+	}
+
+
+	void State::compute_mesh_stats()
+	{
+		std::vector<ElementType> ele_tag;
+		mesh->compute_element_tag(ele_tag);
+
+		int regular_count = 0;
+		int regular_boundary_count = 0;
+		int simple_singular_count = 0;
+		int multi_singular_count = 0;
+		int boundary_count = 0;
+		int non_regular_boundary_count = 0;
+		int non_regular_count = 0;
+
+		for(std::size_t i = 0; i < ele_tag.size(); ++i)
+		{
+			const ElementType type = ele_tag[i];
+
+			switch(type)
+			{
+						//green
+				case ElementType::RegularInteriorCube: regular_count++; break;
+
+						//dark green
+				case ElementType::RegularBoundaryCube: regular_boundary_count++; break;
+
+						//orange
+				case ElementType::SimpleSingularInteriorCube: simple_singular_count++; break;
+
+ 						//red
+				case ElementType::MultiSingularInteriorCube: multi_singular_count++; break;
+
+						//blue
+				case ElementType::SingularBoundaryCube: boundary_count++; break;
+
+				  		 //light blue
+				case ElementType::BoundaryPolytope: non_regular_boundary_count++; break;
+
+				case ElementType::InteriorPolytope: non_regular_count++; break;
+			}
+		}
+
+		std::cout <<"regular_count: " << regular_count <<" regular_boundary_count: " << regular_boundary_count << " simple_singular_count: " << simple_singular_count << " multi_singular_count: " << multi_singular_count << " boundary_count: " << boundary_count << " non_regular_count: " <<  non_regular_count << " non_regular_boundary_count: " << non_regular_boundary_count <<std::endl;
 
 	}
 
@@ -318,11 +372,21 @@ namespace poly_fem
 	void State::solve_problem()
 	{
 		igl::Timer timer; timer.start();
-		std::cout<<"Solving..."<<std::flush;
+		std::cout<<"Solving ";
 
+		// CholmodSupernodalLLT< SparseMatrix<double, Eigen::RowMajor> > solver;
+#ifdef POLY_FEM_WITH_UMFPACK
+		UmfPackLU<SparseMatrix<double, Eigen::RowMajor> > solver;
+		solver.compute(stiffness);
+		sol = solver.solve(rhs);
+		std::cout<<"with UmfPack direct solver";
+#else
 		BiCGSTAB<SparseMatrix<double, Eigen::RowMajor> > solver;
-    		// SparseLU<SparseMatrix<double, Eigen::RowMajor> > solver;
 		sol = solver.compute(stiffness).solve(rhs);
+		std::cout<<"with bicgstap iterative solver";
+#endif
+
+		std::cout<<"..."<<std::flush;
 
 		timer.stop();
 		solving_time = timer.getElapsedTime();
