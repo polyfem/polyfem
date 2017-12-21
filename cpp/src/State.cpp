@@ -270,13 +270,12 @@ namespace poly_fem
 		// {
 		// 	mesh_size = mesh->compute_mesh_size();
 		// }
-		std::cout<<" h: "<<mesh_size<<std::endl;
 
 		timer.stop();
 		building_basis_time = timer.getElapsedTime();
 		std::cout<<" took "<<building_basis_time<<"s"<<std::endl;
 
-
+		std::cout<<" h: "<<mesh_size<<std::endl;
 		std::cout<<"n bases: "<<n_bases<<std::endl;
 	}
 

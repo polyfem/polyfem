@@ -331,7 +331,7 @@ namespace poly_fem
 	}
 
 //navigation wrapper
-	Navigation3D::Index Mesh3D::get_index_from_element_face(int hi, int lf, int lv) const
+	Navigation3D::Index Mesh3D::get_index_from_element(int hi, int lf, int lv) const
 	{
 		return Navigation3D::get_index_from_element_face(mesh_, hi, lf, lv);
 	}

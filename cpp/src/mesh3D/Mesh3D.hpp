@@ -52,7 +52,7 @@ namespace poly_fem
 		Eigen::MatrixXd node_from_vertex(const int vertex_id) const;
 
 		//navigation wrapper
-		Navigation3D::Index get_index_from_element_face(int hi, int lf = 0, int lv = 0) const;
+		Navigation3D::Index get_index_from_element(int hi, int lf = 0, int lv = 0) const;
 
 
 		// Navigation in a surface mesh
@@ -67,6 +67,8 @@ namespace poly_fem
 		// inline Navigation3D::Index next_around_vertex(Navigation3D::Index idx) const { return Navigation3D::next_around_2Dvertex(mesh_, idx); }
 
 		inline Navigation3D::Index next_around_element(Navigation3D::Index idx) const { return Navigation3D::next_around_3Delement(mesh_, idx); }
+
+		 inline Navigation3D::Index next_around_face_of_element(Navigation3D::Index idx) const { return Navigation3D::next_around_2Dface(mesh_, idx); }
 
 		void create_boundary_nodes();
 		//for visualizing different types of elements

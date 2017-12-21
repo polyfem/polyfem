@@ -51,34 +51,44 @@ namespace poly_fem
 			if(n_el_vertices == 8)
 			{
 				hex_quadrature.get_quadrature(quadrature_order, b.quadrature);
-
 				b.bases.resize(n_el_vertices);
 
-				Navigation3D::Index index = mesh.get_index_from_element_face(e);
-				for (int j = 0; j < n_el_vertices; ++j)
+				Navigation3D::Index index = mesh.get_index_from_element(e);
+				for (int i = 0; i < n_el_vertices; ++i)
 				{
-					if (mesh.switch_element(index).element < 0) {
-						bounday_nodes.push_back(index.vertex);
-						bounday_nodes.push_back(mesh.switch_vertex(index).vertex);
+					if (mesh.switch_element(index).element < 0)
+					{
 
-						switch(j)
-						{
-							case 1: local_boundary[e].set_top_edge_id(index.edge); local_boundary[e].set_top_boundary(); break;
-							case 2: local_boundary[e].set_left_edge_id(index.edge); local_boundary[e].set_left_boundary(); break;
-							case 3: local_boundary[e].set_bottom_edge_id(index.edge); local_boundary[e].set_bottom_boundary(); break;
-							case 0: local_boundary[e].set_right_edge_id(index.edge); local_boundary[e].set_right_boundary(); break;
-						}
+						// switch(i)
+						// {
+						// 	case 1: local_boundary[e].set_top_edge_id(face_index.edge); local_boundary[e].set_top_boundary(); break;
+						// 	case 2: local_boundary[e].set_left_edge_id(face_index.edge); local_boundary[e].set_left_boundary(); break;
+						// 	case 3: local_boundary[e].set_bottom_edge_id(face_index.edge); local_boundary[e].set_bottom_boundary(); break;
+						// 	case 0: local_boundary[e].set_right_edge_id(face_index.edge); local_boundary[e].set_right_boundary(); break;
+						// }
 					}
 
-					const int global_index = index.vertex;
-					std::cout<<node<<std::endl;
-					mesh.point(global_index, node);
-					b.bases[j].init(global_index, j, node);
+					Navigation3D::Index face_index = index;
+					for(int k = 0; k < 4; ++k)
+					{
+						const int j = face_index.face_corner;
+						const int global_index = face_index.vertex;
 
-					b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { HexBasis::basis(discr_order, j, uv, val); });
-					b.bases[j].set_grad( [discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  HexBasis::grad(discr_order, j, uv, val); });
+						if (mesh.switch_element(index).element < 0) {
+							bounday_nodes.push_back(global_index);
+						}
+
+						mesh.point(global_index, node);
+						b.bases[j].init(global_index, j, node);
+
+						b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { HexBasis::basis(discr_order, j, uv, val); });
+						b.bases[j].set_grad( [discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  HexBasis::grad(discr_order, j, uv, val); });
+
+						face_index = mesh.next_around_face_of_element(face_index);
+					}
 
 					index = mesh.next_around_element(index);
+					std::cout<<index.face<<std::endl;
 				}
 			}
 			else if(n_el_vertices == 3)
