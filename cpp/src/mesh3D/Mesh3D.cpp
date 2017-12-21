@@ -361,7 +361,7 @@ namespace poly_fem
 	{
 		ele_tag.resize(mesh_.elements.size());
 		for (auto &t : ele_tag)
-			t = ElementType::regular;
+			t = ElementType::RegularInteriorCube;
 
 		for (auto &ele:mesh_.elements) {
 			if (ele.hex) {
@@ -377,7 +377,7 @@ namespace poly_fem
 					if (on_boundary || attaching_non_hex) break;
 				}
 				if (on_boundary || attaching_non_hex) {
-					ele_tag[ele.id] = ElementType::boundary;
+					ele_tag[ele.id] = ElementType::RegularBoundaryCube;
 					continue;
 				}
 
@@ -387,14 +387,14 @@ namespace poly_fem
 					has_irregular_v = true; break;
 				}
 				if(!has_irregular_v){
-					ele_tag[ele.id] = ElementType::regular;
+					ele_tag[ele.id] = ElementType::RegularInteriorCube;
 					continue;
 				}
 				//type 2
 				bool has_singular_v = false; int n_irregular_v = 0;
 				for (auto vid : ele.vs){
 					if (mesh_.vertices[vid].neighbor_hs.size() != 8)
-						n_irregular_v++; 
+						n_irregular_v++;
 					int n_irregular_e = 0;
 					for (auto eid : mesh_.vertices[vid].neighbor_es){
 						if (mesh_.edges[eid].neighbor_hs.size() != 4)
@@ -405,14 +405,14 @@ namespace poly_fem
 					}
 				}
 				if (!has_singular_v && n_irregular_v == 2) {
-					ele_tag[ele.id] = ElementType::one_singular;
+					ele_tag[ele.id] = ElementType::SimpleSingularInteriorCube;
 					continue;
 				}
 
-				ele_tag[ele.id] = ElementType::multi_singular;
+				ele_tag[ele.id] = ElementType::MultiSingularInteriorCube;
 			}
 			else
-				ele_tag[ele.id] = ElementType::non_regular;
+				ele_tag[ele.id] = ElementType::InteriorPolytope;
 		}
 	}
 

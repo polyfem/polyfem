@@ -262,28 +262,28 @@ namespace poly_fem
 				switch(type)
 				{
 						//green
-					case regular: regular_count++;
+					case ElementType::RegularInteriorCube: regular_count++;
 					cols.block(from, 1, range, 1).setOnes(); break;
 
 						//dark green
-					case regular_boundary: regular_boundary_count++;
+					case ElementType::RegularBoundaryCube: regular_boundary_count++;
 					cols.block(from, 1, range, 1).setConstant(0.5); break;
 
 						//orange
-					case one_singular: one_singular_count++;
+					case ElementType::SimpleSingularInteriorCube: one_singular_count++;
 					cols.block(from, 0, range, 1).setOnes();
 					cols.block(from, 1, range, 1).setConstant(0.5); break;
 
  						//red
-					case multi_singular: multi_singular_count++;
+					case ElementType::MultiSingularInteriorCube: multi_singular_count++;
 					cols.block(from, 0, range, 1).setOnes(); break;
 
 						//blue
-					case boundary: boundary_count++;
+					case ElementType::SingularBoundaryCube: boundary_count++;
 					cols.block(from, 2, range, 1).setOnes(); break;
 
 				  		 //light blue
-					case non_regular: non_regular_count++;
+					case ElementType::InteriorPolytope: non_regular_count++;
 					cols.block(from, 2, range, 1).setOnes();
 					cols.block(from, 1, range, 1).setConstant(0.5); break;
 				}

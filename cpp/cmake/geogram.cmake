@@ -52,7 +52,7 @@ option(GEOGRAM_USE_SYSTEM_GLFW3 "Use the version of GLFW3 installed in the syste
 
 # Workaround CMake limitation with geogram 1.5.4
 if(TARGET glfw AND NOT TARGET glfw3)
-	add_library(glfw3 INTERFACE)
+	add_library(glfw3 ALIAS glfw)
 endif()
 
 ################################################################################

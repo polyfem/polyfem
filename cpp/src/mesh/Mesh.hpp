@@ -8,13 +8,14 @@
 
 namespace poly_fem
 {
-	enum ElementType {
-		regular = 0,		//an interior hex, all its 12 edges are non-singular. an interior regular quad
-		one_singular,		//an interior hex, one out of its 12 edges is singular. a quad with an irregular vertex
-		multi_singular,		//an interior hex, more than one of its 12 edges is singular. does not apply for quad
-		regular_boundary,	//regular boundary or attaching to a non regular that locally looks like a sliced grid
-		boundary,			//either on boundary or attaching to a non regular
-		non_regular			//polygon or polyhedron
+	enum class ElementType {
+		RegularInteriorCube,        // Regular square/hex inside a 3^n patch
+		SimpleSingularInteriorCube, // Square/hex incident to exactly 1 singular vertex (in 2D) or edge (in 3D)
+		MultiSingularInteriorCube,  // Square/Hex incident to more than 1 singular vertices (should not happen in 2D)
+		RegularBoundaryCube,        // Boundary square/hex, where all boundary vertices are incident to at most 2 squares/hexes
+		SingularBoundaryCube,       // Boundary square/hex that is not regular
+		InteriorPolytope,           // Interior polytope
+		BoundaryPolytope,           // Boundary polytope
 	};
 
 	class Mesh
