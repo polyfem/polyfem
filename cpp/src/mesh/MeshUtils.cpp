@@ -62,7 +62,10 @@ void poly_fem::compute_element_tags(const GEO::Mesh &M, std::vector<ElementType>
 							break;
 						}
 					} else {
-						assert(is_regular_vertex[v]);
+						if (!is_regular_vertex[v]) {
+							element_tags[f] = ElementType::Undefined;
+							break;
+						}
 					}
 				}
 

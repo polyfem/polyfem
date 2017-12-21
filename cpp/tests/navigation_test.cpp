@@ -59,11 +59,30 @@ namespace {
 			// Compute singularities
 			poly_fem::singularity_graph(mesh_, singular_vertices_, singular_edges_);
 
-			// Compute types
-			std::vector<ElementType> tags;
-			poly_fem::compute_element_tags(mesh_, tags);
+			// Compute element types
+			compute_types();
 
 			return true;
+		}
+
+		void compute_types() {
+			std::vector<ElementType> tags;
+			poly_fem::compute_element_tags(mesh_, tags);
+			GEO::Attribute<int> attrs(mesh_.facets.attributes(), "tags");
+			for (index_t f = 0; f < mesh_.facets.nb(); ++f) {
+				switch (tags[f]) {
+				case ElementType::RegularInteriorCube:        attrs[f] = 0; break;
+				case ElementType::SimpleSingularInteriorCube: attrs[f] = 1; break;
+				case ElementType::MultiSingularInteriorCube:  attrs[f] = 2; break;
+				case ElementType::RegularBoundaryCube:        attrs[f] = 3; break;
+				case ElementType::SingularBoundaryCube:       attrs[f] = 4; break;
+				case ElementType::InteriorPolytope:           attrs[f] = 5; break;
+				case ElementType::BoundaryPolytope:           attrs[f] = 6; break;
+				case ElementType::Undefined:                  attrs[f] = 7; break;
+				default: attrs[f] = -1; break;
+				}
+				std::cout << attrs[f] << std::endl;
+			}
 		}
 
 		virtual void draw_viewer_properties() override {
@@ -92,6 +111,7 @@ namespace {
 				poly_fem::create_patch_around_singularities(mesh_, singular_vertices_, singular_edges_);
 				Navigation::prepare_mesh(mesh_);
 				poly_fem::singularity_graph(mesh_, singular_vertices_, singular_edges_);
+				compute_types();
 				GEO::mesh_save(mesh_, "foo.obj");
 			}
 
@@ -101,13 +121,14 @@ namespace {
 				mesh_.copy(tmp);
 				Navigation::prepare_mesh(mesh_);
 				poly_fem::singularity_graph(mesh_, singular_vertices_, singular_edges_);
+				compute_types();
 				GEO::mesh_save(mesh_, "foo.obj");
 			}
 		}
 
 		virtual void draw_scene() override {
 			if (mesh()) {
-				draw_selected();
+				//draw_selected();
 				draw_singular();
 			}
 			SimpleMeshApplication::draw_scene();

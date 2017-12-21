@@ -16,6 +16,7 @@ namespace poly_fem
 		SingularBoundaryCube,       // Boundary quad/hex that is not regular
 		InteriorPolytope,           // Interior polytope
 		BoundaryPolytope,           // Boundary polytope
+		Undefined,                  // For invalid configurations
 	};
 
 	class Mesh
