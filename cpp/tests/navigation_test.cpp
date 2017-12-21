@@ -35,7 +35,7 @@ namespace {
 		virtual void init_graphics() override {
 			SimpleMeshApplication::init_graphics();
 			glup_viewer_disable(GLUP_VIEWER_BACKGROUND);
-			//glup_viewer_disable(GLUP_VIEWER_3D);
+			glup_viewer_disable(GLUP_VIEWER_3D);
 			ImGui::GetStyle().WindowRounding = 7.0f;
 			ImGui::GetStyle().FrameRounding = 0.0f;
 			ImGui::GetStyle().GrabRounding = 0.0f;
@@ -81,7 +81,7 @@ namespace {
 				case ElementType::Undefined:                  attrs[f] = 7; break;
 				default: attrs[f] = -1; break;
 				}
-				std::cout << attrs[f] << std::endl;
+				// std::cout << attrs[f] << std::endl;
 			}
 		}
 
@@ -129,7 +129,7 @@ namespace {
 		virtual void draw_scene() override {
 			if (mesh()) {
 				//draw_selected();
-				draw_singular();
+				//draw_singular();
 			}
 			SimpleMeshApplication::draw_scene();
 		}
