@@ -1,6 +1,7 @@
 // A dummy GLUP application
 
 #include "Navigation.hpp"
+#include "MeshUtils.hpp"
 #include "Singularities.hpp"
 #include "Refinement.hpp"
 #include <geogram/basic/file_system.h>
@@ -58,6 +59,10 @@ namespace {
 			// Compute singularities
 			poly_fem::singularity_graph(mesh_, singular_vertices_, singular_edges_);
 
+			// Compute types
+			std::vector<ElementType> tags;
+			poly_fem::compute_element_tags(mesh_, tags);
+
 			return true;
 		}
 
@@ -108,7 +113,7 @@ namespace {
 			SimpleMeshApplication::draw_scene();
 		}
 
-		static vec3 mesh_vertex(const Mesh &M, int i) {
+		static vec3 mesh_vertex(const GEO::Mesh &M, int i) {
 			if (M.vertices.single_precision()) {
 				const float *p = M.vertices.single_precision_point_ptr(i);
 				return vec3(p[0], p[1], p[2]);

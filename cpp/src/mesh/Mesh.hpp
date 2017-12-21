@@ -9,11 +9,11 @@
 namespace poly_fem
 {
 	enum class ElementType {
-		RegularInteriorCube,        // Regular square/hex inside a 3^n patch
-		SimpleSingularInteriorCube, // Square/hex incident to exactly 1 singular vertex (in 2D) or edge (in 3D)
-		MultiSingularInteriorCube,  // Square/Hex incident to more than 1 singular vertices (should not happen in 2D)
-		RegularBoundaryCube,        // Boundary square/hex, where all boundary vertices are incident to at most 2 squares/hexes
-		SingularBoundaryCube,       // Boundary square/hex that is not regular
+		RegularInteriorCube,        // Regular quad/hex inside a 3^n patch
+		SimpleSingularInteriorCube, // Quad/hex incident to exactly 1 singular vertex (in 2D) or edge (in 3D)
+		MultiSingularInteriorCube,  // Quad/Hex incident to more than 1 singular vertices (should not happen in 2D)
+		RegularBoundaryCube,        // Boundary quad/hex, where all boundary vertices are incident to at most 2 quads/hexes
+		SingularBoundaryCube,       // Boundary quad/hex that is not regular
 		InteriorPolytope,           // Interior polytope
 		BoundaryPolytope,           // Boundary polytope
 	};

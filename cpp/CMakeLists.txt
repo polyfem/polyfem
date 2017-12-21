@@ -71,6 +71,8 @@ add_library(polyfem
 
 	src/mesh/Mesh2D.hpp
 	src/mesh/Mesh2D.cpp
+	src/mesh/MeshUtils.cpp
+	src/mesh/MeshUtils.hpp
 	src/mesh/Navigation.hpp
 	src/mesh/Navigation.cpp
 	src/mesh/Refinement.hpp
