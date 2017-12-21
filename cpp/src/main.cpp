@@ -103,19 +103,19 @@ int main(int argc, const char **argv)
         state.n_boundary_samples = n_boundary_samples;
 
         state.init(path, n_refs, problem_num);
-        std::cout<<path<<std::endl;
+        // std::cout<<path<<std::endl;
         state.load_mesh();
-        state.compute_mesh_stats();
-        // state.build_basis();
-        // state.compute_assembly_vals();
-        // state.assemble_stiffness_mat();
-        // state.assemble_rhs();
-        // state.solve_problem();
-        // state.compute_errors();
+        // state.compute_mesh_stats();
+        state.build_basis();
+        state.compute_assembly_vals();
+        state.assemble_stiffness_mat();
+        state.assemble_rhs();
+        state.solve_problem();
+        state.compute_errors();
 
-        // if(!output.empty()){
-        //     state.save_json(output);
-        // }
+        if(!output.empty()){
+            state.save_json(output);
+        }
     }
     else
     {
