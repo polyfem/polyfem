@@ -341,6 +341,12 @@ namespace poly_fem
 		nn_zero = stiffness.nonZeros();
 		mat_size = stiffness.size();
 		std::cout<<"sparsity: "<<nn_zero<<"/"<<mat_size<<std::endl;
+
+		// std::ofstream of;
+		// of.open("mat.txt");
+		// of.precision(100);
+		// of<<MatrixXd(stiffness)<<std::endl;
+		// of.close();
 	}
 
 	void State::assemble_rhs()

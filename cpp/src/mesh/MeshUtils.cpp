@@ -40,7 +40,7 @@ void poly_fem::compute_element_tags(const GEO::Mesh &M, std::vector<ElementType>
 		}
 	}
 	for (index_t v = 0; v < M.vertices.nb(); ++v) {
-		assert(degree[v] > 0); // We assume there are no isolated vertices here
+		// assert(degree[v] > 0); // We assume there are no isolated vertices here
 		if (is_boundary_vertex[v]) {
 			is_regular_vertex[v] = (degree[v] <= 2);
 		} else {

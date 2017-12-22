@@ -1,4 +1,6 @@
 #include "UIState.hpp"
+
+#include "Mesh2D.hpp"
 #include "Mesh3D.hpp"
 
 #include "LinearElasticity.hpp"
@@ -185,6 +187,8 @@ namespace poly_fem
 		auto clear_func = [&](){ viewer.data.clear(); };
 
 		auto show_mesh_func = [&](){
+			clear_func();
+
 			std::vector<bool> valid_elements(normalized_barycenter.rows());
 
 			if(is_slicing)
@@ -196,8 +200,6 @@ namespace poly_fem
 				std::fill(valid_elements.begin(), valid_elements.end(), true);
 
 
-
-			clear_func();
 			viewer.data.set_face_based(false);
 
 			int n_vis_valid_pts = 0;
@@ -300,11 +302,11 @@ namespace poly_fem
 			state.mesh->get_edges(p0, p1);
 			viewer.data.add_edges(p0, p1, MatrixXd::Zero(1, 3));
 
-	// for(int i = 0; i < state.mesh->n_elements(); ++i)
-	// {
-	// 	MatrixXd p = state.mesh->node_from_face(i);
-	// 	viewer.data.add_label(p.transpose(), std::to_string(i));
-	// }
+			// for(int i = 0; i < state.mesh->n_elements(); ++i)
+			// {
+			// 	MatrixXd p = static_cast<Mesh2D *>(state.mesh)->node_from_face(i);
+			// 	viewer.data.add_label(p.transpose(), std::to_string(i));
+			// }
 		};
 
 		auto show_vis_mesh_func = [&](){
@@ -520,7 +522,7 @@ namespace poly_fem
 							E(e, 1) = (e+1) % poly.rows();
 						}
 
-						igl::triangle::triangulate(poly, E, MatrixXd(0,2), "Qpqa0.00005", vis_pts_poly[i], vis_faces_poly[i]);
+						igl::triangle::triangulate(poly, E, MatrixXd(0,2), "Qpqa0.0005", vis_pts_poly[i], vis_faces_poly[i]);
 
 						// std::cout.precision(100);
 						// Eigen::MatrixXd asd, pts(2,2);
@@ -627,7 +629,7 @@ namespace poly_fem
 			if(skip_visualization) return;
 			// clear_func();
 			// show_mesh_func();
-			show_nodes_func();
+			// show_nodes_func();
 		};
 
 

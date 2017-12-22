@@ -442,7 +442,7 @@ namespace poly_fem
             }
         }
 
-        const int samples_res = 5;
+        const int samples_res = 15;
 
         PolygonQuadrature poly_quad;
 
@@ -461,7 +461,7 @@ namespace poly_fem
 
             Eigen::MatrixXd boundary_samples(n_samples, 2);
             Eigen::MatrixXd poly_samples(n_poly_samples, 2);
-            Eigen::MatrixXd rhs = Eigen::MatrixXd::Zero(n_samples, n_edges);
+
 
             std::vector<int> local_to_global;
 
@@ -476,38 +476,119 @@ namespace poly_fem
 
             std::sort( local_to_global.begin(), local_to_global.end() );
             local_to_global.erase( std::unique( local_to_global.begin(), local_to_global.end() ), local_to_global.end() );
-            assert(int(local_to_global.size()) == n_edges);
+            // assert(int(local_to_global.size()) <= n_edges);
+
+            Eigen::MatrixXd rhs = Eigen::MatrixXd::Zero(n_samples, local_to_global.size());
 
             index = mesh.get_index_from_face(e);
+            Eigen::MatrixXd prev; //TODO compute first prev!
             for(int i = 0; i < n_edges; ++i)
             {
-                const BoundaryData &bdata = poly_edge_to_data[index.edge];
-                const ElementBases &b=bases[bdata.face_id];
-                assert(bdata.face_id == mesh.switch_face(index).face);
+                if(mesh.switch_face(index).face >= 0)
+                {
+                    const BoundaryData &bdata = poly_edge_to_data[index.edge];
+                    const ElementBases &b=bases[bdata.face_id];
+                    assert(bdata.face_id == mesh.switch_face(index).face);
 
-                QuadBoundarySampler::sample(bdata.flag == RIGHT_FLAG, bdata.flag == BOTTOM_FLAG, bdata.flag == LEFT_FLAG, bdata.flag == TOP_FLAG, samples_res, false, samples);
-                samples = samples.block(0, 0, samples.rows()-1, samples.cols());
-                b.eval_geom_mapping(samples, mapped);
-                mapped = mapped.colwise().reverse().eval();
+                    QuadBoundarySampler::sample(bdata.flag == RIGHT_FLAG, bdata.flag == BOTTOM_FLAG, bdata.flag == LEFT_FLAG, bdata.flag == TOP_FLAG, samples_res, false, samples);
+
+                    b.eval_geom_mapping(samples, mapped);
+
+                    bool must_reverse = true;
+                    if(prev.size() > 0)
+                    {
+                        const double dist_first = (mapped.row(0)-prev).norm();
+
+                        if(dist_first < 1e-8)
+                        {
+                            samples = samples.block(1, 0, samples.rows()-1, samples.cols());
+                            mapped = mapped.block(1, 0, mapped.rows()-1, mapped.cols());
+
+                            must_reverse = false;
+                        }
+                        else
+                        {
+                            assert((mapped.row(mapped.rows()-1) - prev).norm() < 1e-8);
+
+                            samples = samples.block(0, 0, samples.rows()-1, samples.cols());
+                            mapped = mapped.block(0, 0, mapped.rows()-1, mapped.cols());
+
+                            mapped = mapped.colwise().reverse().eval();
+                        }
+                    }
+                    else //TODO
+                    {
+                        samples = samples.block(0, 0, samples.rows()-1, samples.cols());
+                        mapped = mapped.block(0, 0, mapped.rows()-1, mapped.cols());
+
+                        mapped = mapped.colwise().reverse().eval();
+                    }
+
+                    assert(bdata.node_id.size() == 3);
+                    for(std::size_t bi = 0; bi < bdata.node_id.size(); ++bi)
+                    {
+                        const int local_index = bdata.y[bi] * 3 + bdata.x[bi];
+                    // assert(b.bases[local_index].global_index() == bdata.node_id[bi]);
+                        const long basis_index = std::distance(local_to_global.begin(), std::find(local_to_global.begin(), local_to_global.end(), bdata.node_id[bi]));
+
+                        b.bases[local_index].basis(samples, basis_val);
+
+                        if(must_reverse)
+                            basis_val = basis_val.reverse().eval();
+                        rhs.block(i*(samples_res-1), basis_index, basis_val.rows(), 1) = basis_val;
+
+                    }
+                }
+                else
+                {
+                    Eigen::MatrixXd t = Eigen::VectorXd::LinSpaced(samples_res, 0, 1);
+
+                    const int v0 = index.vertex;
+                    const int v1 = mesh.switch_vertex(index).vertex;
+
+                    Eigen::MatrixXd p0, p1;
+                    mesh.point(v0, p0);
+                    mesh.point(v1, p1);
+
+                    mapped.resize(t.size(), 2);
+                    mapped.col(0) = (1-t.array())*p0(0) + t.array()*p1(0);
+                    mapped.col(1) = (1-t.array())*p0(1) + t.array()*p1(1);
+
+                    if(prev.size() > 0)
+                    {
+                        const double dist_first = (mapped.row(0)-prev).norm();
+
+                        if(dist_first < 1e-8)
+                        {
+                            mapped = mapped.block(1, 0, mapped.rows()-1, mapped.cols());
+                            t = t.block(1, 0, t.rows()-1, t.cols());
+                        }
+                        else
+                        {
+                            assert((mapped.row(mapped.rows()-1) - prev).norm() < 1e-8);
+                            mapped = mapped.block(0, 0, mapped.rows()-1, mapped.cols());
+                            mapped = mapped.colwise().reverse().eval();
+
+                            t = t.block(0, 0, t.rows()-1, t.cols());
+                            t = t.colwise().reverse().eval();
+                        }
+                    }
+
+                    const int global_index0 = mesh.vertex_node_id(v0);
+                    const int global_index1 = mesh.vertex_node_id(v1);
+
+                    const long basis_index0 = std::distance(local_to_global.begin(), std::find(local_to_global.begin(), local_to_global.end(), global_index0));
+                    const long basis_index1 = std::distance(local_to_global.begin(), std::find(local_to_global.begin(), local_to_global.end(), global_index1));
+
+                    rhs.block(i*(samples_res-1), basis_index1, t.rows(), 1) = t;
+                    rhs.block(i*(samples_res-1), basis_index0, t.rows(), 1) = 1-t.array();
+                }
+
+                prev = mapped.row(mapped.rows()-1);
                 boundary_samples.block(i*(samples_res-1), 0, mapped.rows(), mapped.cols()) = mapped;
-
                 const int offset = int(mapped.rows())/(poly_local_n+1);
                 for(int j = 0; j < poly_local_n; ++j)
                     poly_samples.row(i*poly_local_n+j) = mapped.row((j+1)*offset-1);
-
-                assert(bdata.node_id.size() == 3);
-                for(std::size_t bi = 0; bi < bdata.node_id.size(); ++bi)
-                {
-                    const int local_index = bdata.y[bi] * 3 + bdata.x[bi];
-                    // assert(b.bases[local_index].global_index() == bdata.node_id[bi]);
-                    const long basis_index = std::distance(local_to_global.begin(), std::find(local_to_global.begin(), local_to_global.end(), bdata.node_id[bi]));
-
-                    b.bases[local_index].basis(samples, basis_val);
-
-                    basis_val = basis_val.reverse().eval();
-                    rhs.block(i*(samples_res-1), basis_index, basis_val.rows(), 1) = basis_val;
-
-                }
 
                 index = mesh.next_around_face(index);
             }
@@ -517,6 +598,11 @@ namespace poly_fem
             ElementBases &b=bases[e];
             b.has_parameterization = false;
             poly_quad.get_quadrature(boundary_samples, quadrature_order, b.quadrature);
+
+            igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
+            viewer.data.add_points(boundary_samples, Eigen::Vector3d(0,1,1).transpose());
+            for(int asd = 0; asd < boundary_samples.rows(); ++asd)
+                viewer.data.add_label(boundary_samples.row(asd), std::to_string(asd));
 
             polys[e] = boundary_samples;
 

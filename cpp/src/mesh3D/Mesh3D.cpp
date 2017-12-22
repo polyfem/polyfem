@@ -123,6 +123,8 @@ namespace poly_fem
 
 	void Mesh3D::triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const
 	{
+		ranges.clear();
+		
 		std::vector<Eigen::MatrixXi> local_tris(mesh_.elements.size());
 		std::vector<Eigen::MatrixXd> local_pts(mesh_.elements.size());
 		Eigen::MatrixXi tets;
