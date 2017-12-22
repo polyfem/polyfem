@@ -1,6 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "Refinement.hpp"
 #include "Navigation.hpp"
+#include "PolygonUtils.hpp"
 #include <igl/is_border_vertex.h>
 #include <igl/remove_duplicate_vertices.h>
 #include <igl/remove_unreferenced.h>
@@ -379,7 +380,28 @@ void poly_fem::refine_quad_mesh(
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void poly_fem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out) {
+void poly_fem::polar_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, std::vector<std::vector<int>> &OF, double t) {
+	assert(IV.cols() == 2 || IV.cols() == 3);
+	Eigen::RowVector3d bary;
+	if (is_star_shaped(IV, bary)) {
+		// Create 1-ring around the central point
+		OV.resize(2 * IV.rows(), IV.cols());
+		OV.topRows(IV.rows()) = IV;
+		OV.bottomRows(IV.rows()) = (t * IV).rowwise() + (1.0 - t) * bary.head(IV.cols());
+		int n = (int) IV.rows();
+		OF.push_back({});
+		for (int i = 0; i < IV.rows(); ++i) {
+			OF.front().push_back(i + n);
+			OF.push_back({i, (i+1)%n, (i+1)%n + n, i + n});
+		}
+	} else {
+		throw std::invalid_argument("Non star-shaped input polygon.");
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void poly_fem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, bool refine_polygons, double t) {
 	using GEO::index_t;
 	using Navigation::Index;
 
@@ -483,7 +505,7 @@ void poly_fem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out) {
 
 	// Step 3: Create polygonal faces following vertices around holes
 	std::vector<bool> marked(M_out.vertices.nb(), false);
-	for (index_t v = 0; v < M_out.vertices.nb(); ++v) {
+	for (index_t v = 0, vmax = M_out.vertices.nb(); v < vmax; ++v) {
 		if (next_vertex_around_hole[v] == -1 || marked[v]) {
 			continue;
 		}
@@ -496,7 +518,44 @@ void poly_fem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out) {
 			hole.push_back(vi);
 			marked[vi] = true;
 		} while (vi != (int) v);
-		std::cout << std::endl;
-		M_out.facets.create_polygon(hole);
+		// std::cout << std::endl;
+
+		// Record facet
+		if (refine_polygons) {
+			if (M_in.vertices.dimension() != 2) {
+				std::cerr << "WARNING: Input mesh has dimension > 2, but polygonal facets will be split considering their XY coordinates only." << std::endl;
+			}
+
+			// Subdivide the hole using polar refinement
+			index_t n = hole.size();
+			Eigen::MatrixXd P(n, 2), V;
+			std::vector<std::vector<int>> F;
+			for (index_t k = 0; k < n; ++k) {
+				GEO::vec3 pk = mesh_point(M_out, hole[k]);
+				P.row(k) << pk[0], pk[1];
+			}
+			polar_split(P, V, F, t);
+			std::vector<int> remap(n);
+			assert(V.rows() == 2*n);
+			for (index_t k = 0; k < n; ++k) {
+				GEO::vec3 qk = GEO::vec3(V(k+n, 0), V(k+n, 1), 0);
+				remap[k] = mesh_create_vertex(M_out, qk);
+			}
+			for (const auto &poly : F) {
+				GEO::vector<index_t> vertices;
+				for (int vk : poly) {
+					if (vk < (int) n) { vertices.push_back(hole[vk]); }
+					else { vertices.push_back(remap[vk - n]); }
+					// std::cout << vertices.back() << ',';
+				}
+				// std::cout << std::endl;
+				M_out.facets.create_polygon(vertices);
+			}
+
+		} else {
+			// Keep the hole as-is
+			M_out.facets.create_polygon(hole);
+		}
 	}
 }
+
