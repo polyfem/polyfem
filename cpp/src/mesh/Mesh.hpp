@@ -8,12 +8,15 @@
 
 namespace poly_fem
 {
+	// NOTE:
+	// For the purpose of the tagging, elements (facets in 2D, cells in 3D) adjacent to a polytope are tagged as boundary,
+	// and vertices incident to a polytope are also considered as boundary.
 	enum class ElementType {
 		RegularInteriorCube,        // Regular quad/hex inside a 3^n patch
 		SimpleSingularInteriorCube, // Quad/hex incident to exactly 1 singular vertex (in 2D) or edge (in 3D)
 		MultiSingularInteriorCube,  // Quad/Hex incident to more than 1 singular vertices (should not happen in 2D)
-		RegularBoundaryCube,        // Boundary quad/hex, where all boundary vertices are incident to at most 2 quads/hexes
-		SingularBoundaryCube,       // Boundary quad/hex that is not regular
+		RegularBoundaryCube,        // Boundary (internal or external) quad/hex, where all boundary vertices are incident to at most 2 quads/hexes
+		SingularBoundaryCube,       // Boundary (internal or external) quad/hex that is not regular
 		AttachPolytope,				// quad/hex that is attaching to non-quads/hexes
 		InteriorPolytope,           // Interior polytope
 		BoundaryPolytope,           // Boundary polytope
