@@ -329,8 +329,10 @@ namespace poly_fem
 				const ElementBases &basis = state.bases[i];
 				if(!basis.has_parameterization) continue;
 
+
 				for(std::size_t j = 0; j < basis.bases.size(); ++j)
 				{
+					std::cout<<"asdasd"<<j<<std::endl;
 					for(std::size_t kk = 0; kk < basis.bases[j].global().size(); ++kk)
 					{
 						const Local2Global &l2g = basis.bases[j].global()[kk];
@@ -340,6 +342,7 @@ namespace poly_fem
 							g_index *= 2;
 
 						MatrixXd node = l2g.node;
+						std::cout<<node<<std::endl;
 					// node += MatrixXd::Random(node.rows(), node.cols())/100;
 						MatrixXd txt_p = node;
 						for(long k = 0; k < txt_p.size(); ++k)
@@ -350,7 +353,7 @@ namespace poly_fem
 							col.col(0).setOnes();
 
 
-						viewer.data.add_points(l2g.node, col);
+						viewer.data.add_points(node, col);
 						viewer.data.add_label(txt_p.transpose(), std::to_string(g_index));
 					}
 				}
@@ -627,9 +630,9 @@ namespace poly_fem
 			state.build_basis();
 
 			if(skip_visualization) return;
-			// clear_func();
-			// show_mesh_func();
-			// show_nodes_func();
+			clear_func();
+			show_mesh_func();
+			show_nodes_func();
 		};
 
 

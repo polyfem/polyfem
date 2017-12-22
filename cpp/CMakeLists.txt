@@ -93,6 +93,8 @@ add_library(polyfem
 	src/mesh3D/Mesh3D.cpp
 	src/mesh3D/Navigation3D.hpp
 	src/mesh3D/Navigation3D.cpp
+	src/mesh3D/MeshProcessing3D.hpp
+	src/mesh3D/MeshProcessing3D.cpp
 
 	src/quadrature/Quadrature.hpp
 	src/quadrature/LineQuadrature.hpp

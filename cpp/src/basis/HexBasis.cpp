@@ -54,7 +54,7 @@ namespace poly_fem
 				b.bases.resize(n_el_vertices);
 
 				Navigation3D::Index index = mesh.get_index_from_element(e);
-				for (int i = 0; i < n_el_vertices; ++i)
+				for (int i = 0; i < 6; ++i)
 				{
 					if (mesh.switch_element(index).element < 0)
 					{
@@ -71,14 +71,17 @@ namespace poly_fem
 					Navigation3D::Index face_index = index;
 					for(int k = 0; k < 4; ++k)
 					{
-						const int j = face_index.face_corner;
+						const int j = mesh.vertex_global_index_from_local_face(face_index.face, face_index.face_corner);
 						const int global_index = face_index.vertex;
+
+						std::cout<<j<<" "<<index.face<<" "<<index.face_corner<<std::endl;
 
 						if (mesh.switch_element(index).element < 0) {
 							bounday_nodes.push_back(global_index);
 						}
 
 						mesh.point(global_index, node);
+						// std::cout<<node<<std::endl;
 						b.bases[j].init(global_index, j, node);
 
 						b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { HexBasis::basis(discr_order, j, uv, val); });
@@ -88,7 +91,7 @@ namespace poly_fem
 					}
 
 					index = mesh.next_around_element(index);
-					std::cout<<index.face<<std::endl;
+					std::cout<<std::endl;
 				}
 			}
 			else if(n_el_vertices == 3)

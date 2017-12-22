@@ -23,6 +23,7 @@ namespace poly_fem
 
 		inline int n_element_vertices(const int element_index) const override { return int(mesh_.elements[element_index].vs.size());}
 		inline int vertex_global_index(const int element_index, const int local_index) const override { return mesh_.elements[element_index].vs[local_index]; }
+		inline int vertex_global_index_from_local_face(const int face_index, const int local_face_index) const { return mesh_.faces[face_index].vs[local_face_index]; }
 
 		double compute_mesh_size() const override;
 

@@ -580,8 +580,8 @@ namespace poly_fem
                     const long basis_index0 = std::distance(local_to_global.begin(), std::find(local_to_global.begin(), local_to_global.end(), global_index0));
                     const long basis_index1 = std::distance(local_to_global.begin(), std::find(local_to_global.begin(), local_to_global.end(), global_index1));
 
-                    rhs.block(i*(samples_res-1), basis_index1, t.rows(), 1) = t;
-                    rhs.block(i*(samples_res-1), basis_index0, t.rows(), 1) = 1-t.array();
+                    rhs.block(i*(samples_res-1), basis_index1, t.rows(), 1) = t.array() * t.array();
+                    rhs.block(i*(samples_res-1), basis_index0, t.rows(), 1) = (1-t.array()) * (1-t.array());
                 }
 
                 prev = mapped.row(mapped.rows()-1);
