@@ -29,6 +29,17 @@ using namespace Eigen;
 
 namespace poly_fem
 {
+
+	bool UIState::is_quad(const ElementBases &bs) const
+	{
+		return (state.mesh->is_volume() && int(bs.bases.size()) == 8) || (!state.mesh->is_volume() && (int(bs.bases.size()) == 4 || int(bs.bases.size()) == 9));
+	}
+
+	bool UIState::is_tri(const ElementBases &bs) const
+	{
+		return !state.mesh->is_volume() && int(bs.bases.size()) == 3;
+	}
+
 	void UIState::interpolate_function(const MatrixXd &fun, MatrixXd &result)
 	{
 		MatrixXd tmp;
@@ -46,9 +57,9 @@ namespace poly_fem
 			const ElementBases &bs = state.bases[i];
 			MatrixXd local_pts;
 
-			if(int(bs.bases.size()) == 4 || int(bs.bases.size()) == 9)
+			if(is_quad(bs))
 				local_pts = local_vis_pts_quad;
-			else if(int(bs.bases.size()) == 3)
+			else if(is_tri(bs))
 				local_pts = local_vis_pts_tri;
 			else{
 				local_pts = vis_pts_poly[i];
@@ -102,9 +113,9 @@ namespace poly_fem
 
 			// 	MatrixXd local_pts;
 
-			// 	if(int(bs.bases.size()) == 4 || int(bs.bases.size()) == 9)
+			// 	if(is_quad(bs))
 			// 		local_pts = local_vis_pts_quad;
-			// 	else if(int(bs.bases.size()) == 3)
+			// 	else if(is_tri(bs))
 			// 		local_pts = local_vis_pts_tri;
 			// 	else{
 			// 		local_pts = vis_pts_poly[i];
@@ -302,6 +313,18 @@ namespace poly_fem
 			state.mesh->get_edges(p0, p1);
 			viewer.data.add_edges(p0, p1, MatrixXd::Zero(1, 3));
 
+			// for(int i = 0; i < static_cast<Mesh3D *>(state.mesh)->n_faces(); ++i)
+			// {
+			// 	MatrixXd p = static_cast<Mesh3D *>(state.mesh)->node_from_face(i);
+			// 	viewer.data.add_label(p.transpose(), std::to_string(i));
+			// }
+
+			// for(int i = 0; i < static_cast<Mesh3D *>(state.mesh)->n_pts(); ++i)
+			// {
+			// 	MatrixXd p; static_cast<Mesh3D *>(state.mesh)->point(i, p);
+			// 	viewer.data.add_label(p.transpose(), std::to_string(i));
+			// }
+
 			// for(int i = 0; i < state.mesh->n_elements(); ++i)
 			// {
 			// 	MatrixXd p = static_cast<Mesh2D *>(state.mesh)->node_from_face(i);
@@ -332,7 +355,6 @@ namespace poly_fem
 
 				for(std::size_t j = 0; j < basis.bases.size(); ++j)
 				{
-					std::cout<<"asdasd"<<j<<std::endl;
 					for(std::size_t kk = 0; kk < basis.bases[j].global().size(); ++kk)
 					{
 						const Local2Global &l2g = basis.bases[j].global()[kk];
@@ -342,7 +364,6 @@ namespace poly_fem
 							g_index *= 2;
 
 						MatrixXd node = l2g.node;
-						std::cout<<node<<std::endl;
 					// node += MatrixXd::Random(node.rows(), node.cols())/100;
 						MatrixXd txt_p = node;
 						for(long k = 0; k < txt_p.size(); ++k)
@@ -427,6 +448,7 @@ namespace poly_fem
 
 			if(state.mesh->is_volume())
 			{
+				buf<<"Qpq1.414a"<<area_param;
 				MatrixXd pts(8,3); pts <<
 				0, 0, 0,
 				0, 1, 0,
@@ -460,7 +482,7 @@ namespace poly_fem
 				clear_func();
 
 				MatrixXi tets;
-				igl::copyleft::tetgen::tetrahedralize(pts, faces, "Qpq1.414a0.001", local_vis_pts_quad, tets, local_vis_faces_quad);
+				igl::copyleft::tetgen::tetrahedralize(pts, faces, buf.str(), local_vis_pts_quad, tets, local_vis_faces_quad);
 			}
 			else
 			{
@@ -502,11 +524,11 @@ namespace poly_fem
 			{
 				const ElementBases &bs = current_bases[i];
 
-				if(int(bs.bases.size()) == 4 || int(bs.bases.size()) == 9){
+				if(is_quad(bs)){
 					faces_total_size   += local_vis_faces_quad.rows();
 					points_total_size += local_vis_pts_quad.rows();
 				}
-				else if(int(bs.bases.size()) == 3)
+				else if(is_tri(bs))
 				{
 					faces_total_size   += local_vis_faces_tri.rows();
 					points_total_size += local_vis_pts_tri.rows();
@@ -514,7 +536,9 @@ namespace poly_fem
 				else
 				{
 					if(state.mesh->is_volume())
+					{
 						assert(false);
+					}
 					else
 					{
 						MatrixXd poly = state.polys[i];
@@ -526,19 +550,6 @@ namespace poly_fem
 						}
 
 						igl::triangle::triangulate(poly, E, MatrixXd(0,2), "Qpqa0.0005", vis_pts_poly[i], vis_faces_poly[i]);
-
-						// std::cout.precision(100);
-						// Eigen::MatrixXd asd, pts(2,2);
-						// pts.setZero();
-						// pts(0,1)=0.05;
-						// bs.bases[2].basis(vis_pts_poly[i], asd);
-						// std::cout.precision(100);
-						// std::cout<<"asd =[\n "<<asd<<"];"<<std::endl;
-
-						// bs.bases[2].grad(vis_pts_poly[i], asd);
-						// std::cout<<"asdg =[\n "<<asd<<"];"<<std::endl;
-
-						// std::cout<<"pts=[\n"<<vis_pts_poly[i]<<"];"<<std::endl;
 
 						faces_total_size   += vis_faces_poly[i].rows();
 						points_total_size += vis_pts_poly[i].rows();
@@ -554,7 +565,7 @@ namespace poly_fem
 			for(int i = 0; i < int(current_bases.size()); ++i)
 			{
 				const ElementBases &bs = current_bases[i];
-				if(int(bs.bases.size()) == 4 || int(bs.bases.size()) == 9)
+				if(is_quad(bs))
 				{
 					bs.eval_geom_mapping(local_vis_pts_quad, mapped);
 					vis_faces.block(face_index, 0, local_vis_faces_quad.rows(), 3) = local_vis_faces_quad.array() + point_index;
@@ -563,7 +574,7 @@ namespace poly_fem
 					vis_pts.block(point_index, 0, mapped.rows(), mapped.cols()) = mapped;
 					point_index += mapped.rows();
 				}
-				else if(int(bs.bases.size()) == 3)
+				else if(is_tri(bs))
 				{
 					bs.eval_geom_mapping(local_vis_pts_tri, mapped);
 					vis_faces.block(face_index, 0, local_vis_faces_tri.rows(), 3) = local_vis_faces_tri.array() + point_index;
@@ -583,17 +594,20 @@ namespace poly_fem
 				}
 			}
 
-			Matrix2d mmat;
-			for(long i = 0; i < vis_faces.rows(); ++i)
+			if(!state.mesh->is_volume())
 			{
-				mmat.row(0) = vis_pts.row(vis_faces(i, 2)) - vis_pts.row(vis_faces(i, 0));
-				mmat.row(1) = vis_pts.row(vis_faces(i, 1)) - vis_pts.row(vis_faces(i, 0));
-
-				if(mmat.determinant() > 0)
+				Matrix2d mmat;
+				for(long i = 0; i < vis_faces.rows(); ++i)
 				{
-					int tmpc = vis_faces(i, 2);
-					vis_faces(i, 2) = vis_faces(i, 1);
-					vis_faces(i, 1) = tmpc;
+					mmat.row(0) = vis_pts.row(vis_faces(i, 2)) - vis_pts.row(vis_faces(i, 0));
+					mmat.row(1) = vis_pts.row(vis_faces(i, 1)) - vis_pts.row(vis_faces(i, 0));
+
+					if(mmat.determinant() > 0)
+					{
+						int tmpc = vis_faces(i, 2);
+						vis_faces(i, 2) = vis_faces(i, 1);
+						vis_faces(i, 1) = tmpc;
+					}
 				}
 			}
 

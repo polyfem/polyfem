@@ -1,6 +1,7 @@
 #include "RhsAssembler.hpp"
 
 #include "QuadBoundarySampler.hpp"
+#include "HexBoundarySampler.hpp"
 
 #include <iostream>
 
@@ -134,8 +135,8 @@ namespace poly_fem
 
 				// std::cout<<samples<<"\n"<<std::endl;
 
-				// igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
-				// viewer.data.add_points(mapped, Eigen::MatrixXd::Constant(mapped.rows(), 3, 0));
+				igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
+				viewer.data.add_points(mapped, Eigen::MatrixXd::Constant(1, 3, 0));
 
 				// std::cout<<mapped<<std::endl;
 
@@ -186,7 +187,18 @@ namespace poly_fem
 	{
 		if(is_volume)
 		{
-			assert(false);
+			const int resolution = resolution_one_d;
+
+				// std::cout<<local_boundary.flags()<<std::endl;
+
+			const bool is_right_boundary  = local_boundary.is_right_boundary();
+			const bool is_bottom_boundary = local_boundary.is_bottom_boundary();
+			const bool is_left_boundary   = local_boundary.is_left_boundary();
+			const bool is_top_boundary    = local_boundary.is_top_boundary();
+			const bool is_front_boundary  = local_boundary.is_front_boundary();
+			const bool is_back_boundary   = local_boundary.is_back_boundary();
+
+			return HexBoundarySampler::sample(is_right_boundary, is_bottom_boundary, is_left_boundary, is_top_boundary, is_front_boundary, is_back_boundary, resolution_one_d, skip_computation, samples);
 		}
 		else
 		{

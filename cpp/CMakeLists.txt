@@ -73,6 +73,9 @@ add_library(polyfem
 	src/utils/QuadBoundarySampler.hpp
 	src/utils/QuadBoundarySampler.cpp
 
+	src/utils/HexBoundarySampler.hpp
+	src/utils/HexBoundarySampler.cpp
+
 	src/mesh/LocalBoundary.hpp
 
 	src/mesh/Mesh.hpp

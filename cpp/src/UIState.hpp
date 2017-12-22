@@ -46,6 +46,9 @@ namespace poly_fem
 
 		State &state;
 	private:
+		bool is_quad(const ElementBases &bs) const;
+		bool is_tri(const ElementBases &bs) const;
+
 		void plot_function(const Eigen::MatrixXd &fun, double min=0, double max=-1);
 		void interpolate_function(const Eigen::MatrixXd &fun, Eigen::MatrixXd &result);
 	};
