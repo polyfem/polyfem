@@ -72,6 +72,22 @@ namespace poly_fem
 			mesh_.elements[i].hex = tmp;
 		}
 
+		char s[1024], sread[1024];
+		int find = false, num = 0;
+		while (!feof(f) && !find) {
+			fgets(s, 1024, f);
+			if (sscanf(s, "%s%d", &sread, &num) == 2 && (strcmp(sread, "KERNEL") == 0)) find = true;
+		}
+		if (find) {
+			for (int i = 0; i<nh; i++) {
+				double x, y, z;
+				fscanf(f, "%lf %lf %lf", &x, &y, &z);
+				mesh_.elements[i].v_in_Kernel.push_back(x);
+				mesh_.elements[i].v_in_Kernel.push_back(y);
+				mesh_.elements[i].v_in_Kernel.push_back(z);
+			}
+		}
+
 		fclose(f);
 
 		Navigation3D::prepare_mesh(mesh_);
@@ -108,6 +124,10 @@ namespace poly_fem
 			f << mesh_.elements[i].hex << std::endl;
 		}
 
+		f << "KERNEL" << " " << mesh_.elements.size() << std::endl;
+		for (uint32_t i = 0; i < mesh_.elements.size(); i++) {
+			f << mesh_.elements[i].v_in_Kernel[0] <<" " << mesh_.elements[i].v_in_Kernel[1] << " " << mesh_.elements[i].v_in_Kernel[2]<< std::endl;
+		}
 		f.close();
 
 		return true;
@@ -367,7 +387,7 @@ namespace poly_fem
 		for (auto &ele:mesh_.elements) {
 			if (ele.hex) {
 				//AttachPolytope
-				bool on_boundary = false, attaching_non_hex = false;
+				bool attaching_non_hex = false;
 				for (auto vid : ele.vs){
 					for (auto eleid : mesh_.vertices[vid].neighbor_hs) if (!mesh_.elements[eleid].hex) {
 						attaching_non_hex = true; break;
@@ -379,7 +399,7 @@ namespace poly_fem
 					continue;
 				}
 				//
-				bool on_boundary = false, attaching_non_hex = false;
+				bool on_boundary = false;
 				for (auto vid : ele.vs) {
 					if (mesh_.vertices[vid].boundary) {
 						on_boundary = true; break;

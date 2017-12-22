@@ -43,15 +43,16 @@ namespace poly_fem
 		std::vector<uint32_t> fs;
 		std::vector<bool> fs_flag;
 		bool hex = false;
+		std::vector<double> v_in_Kernel;
 	};
 
 	enum MeshType {
 		Tri = 0,
 		Qua,
+		HSur,
 		Tet,
 		Hyb,
-		Hex,
-		PHr
+		Hex
 	};
 
 	struct Mesh3DStorage

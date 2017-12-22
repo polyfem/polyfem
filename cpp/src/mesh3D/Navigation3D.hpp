@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Mesh3DStorage.hpp"
-
+#include "MeshProcessing3D.hpp"
 namespace poly_fem{
 	namespace Navigation3D{
 
