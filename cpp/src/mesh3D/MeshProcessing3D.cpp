@@ -91,7 +91,9 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi) {
 	//f_nhs;
 	for (auto &f : hmi.faces)f.neighbor_hs.clear();
 	for (uint32_t i = 0; i < hmi.elements.size(); i++) {
-		for (uint32_t j = 0; j < hmi.elements[i].fs.size(); j++) hmi.faces[hmi.elements[i].fs[j]].neighbor_hs.push_back(i);
+		for (uint32_t j = 0; j < hmi.elements[i].fs.size(); j++) {
+			hmi.faces[hmi.elements[i].fs[j]].neighbor_hs.push_back(i);
+		}
 	}
 	//e_nfs, v_nfs
 	for (auto &e : hmi.edges) e.neighbor_fs.clear();
@@ -376,7 +378,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter) {
 					v_.id = vn++;
 					v_.v.resize(3);
 
-					for (int j = 0; j < 3; j++)v_.v[j] = M_.vertices[vid].v[j];
+					for (int j = 0; j < 3; j++)v_.v[j] = (M_.vertices[vid].v[j] + ele.v_in_Kernel[j])*0.5;
 					M_.vertices.push_back(v_);
 
 					local_V2V[vid] = v_.id;
@@ -459,10 +461,10 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter) {
 						ele_vs[2] = local_E2V[fes[j]];
 						ele_vs[3] = local_F2V[fid];
 
-						ele_vs[4] = fes[(j - 1 + fvn) % fvn];
+						ele_vs[4] = E2V[fes[(j - 1 + fvn) % fvn]];
 						ele_vs[5] = fvs[j];
-						ele_vs[6] = fes[j];
-						ele_vs[7] = fid;
+						ele_vs[6] = E2V[fes[j]];
+						ele_vs[7] = F2V[fid];
 
 						//fs
 						for (short j = 0; j < 6; j++) {
@@ -474,8 +476,8 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter) {
 						//hex
 						Element ele_;
 						ele_.id = elen++;
-						ele_.fs.resize(local_fn);
-						ele_.fs_flag.resize(local_fn, 1);
+						ele_.fs.resize(6);
+						ele_.fs_flag.resize(6, 1);
 						ele_.hex = true;
 						ele_.v_in_Kernel.resize(3);
 
@@ -484,9 +486,6 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter) {
 						for (auto vid : ele_vs) for (int j = 0; j < 3; j++) center[j] += M_.vertices[vid].v[j];
 						center /= ele_vs.size();
 						for (int j = 0; j < 3; j++)ele_.v_in_Kernel[j] = center[j];
-
-						ele_.v_in_Kernel = ele.v_in_Kernel;
-
 						M_.elements.push_back(ele_);
 					}
 				}
@@ -546,7 +545,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter) {
 		//volume orienting
 		vector<bool> F_tag(M_.faces.size(), true);
 		std::vector<short> F_visit(M_.faces.size(), 0);//0 un-visited, 1 visited once, 2 visited twice
-		for (uint32_t j = 0; j < M_.faces.size(); j++)if (M_.faces[j].boundary) { F_visit[j]++; F_tag[i] = true; }
+		for (uint32_t j = 0; j < M_.faces.size(); j++)if (M_.faces[j].boundary) { F_visit[j]++; }
 		std::vector<bool> F_state(M_.faces.size(), false);//false is the reverse direction, true is the same direction
 		std::vector<bool> P_visit(M_.elements.size(), false);
 		while (true) {
@@ -560,9 +559,9 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter) {
 				if (P_visit[pid]) {
 					cout << "bug" << endl;
 				}
-
 				auto &fs = M_.elements[pid].fs;
-				for (auto fid : fs)F_tag[fid] = false;
+				for (auto fid : fs) F_tag[fid] = false;
+
 				uint32_t start_f = ca;
 				F_tag[start_f] = true; F_visit[ca]++; if (F_state[ca]) F_state[ca] = false; else F_state[ca] = true;
 
@@ -570,6 +569,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter) {
 				while (!pf_temp.empty()) {
 					uint32_t fid = pf_temp.front(); pf_temp.pop();
 					for (auto eid : M_.faces[fid].es) for (auto nfid : M_.edges[eid].neighbor_fs) {
+
 						if (F_tag[nfid]) continue;
 						uint32_t v0 = M_.edges[eid].vs[0], v1 = M_.edges[eid].vs[1];
 						int32_t v0_pos = std::find(M_.faces[fid].vs.begin(), M_.faces[fid].vs.end(), v0) - M_.faces[fid].vs.begin();
@@ -595,7 +595,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter) {
 					}
 				}
 				P_visit[pid] = true;
-				for (auto fid : fs) M_.elements[pid].fs_flag.push_back(F_state[fid]);
+				for (uint32_t j = 0; j < fs.size();j++) M_.elements[pid].fs_flag[j] = F_state[fs[j]];
 			}
 		}
 
