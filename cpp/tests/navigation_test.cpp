@@ -2,6 +2,7 @@
 
 #include "Navigation.hpp"
 #include "MeshUtils.hpp"
+#include "PolygonUtils.hpp"
 #include "Singularities.hpp"
 #include "Refinement.hpp"
 #include <geogram/basic/file_system.h>
@@ -24,12 +25,18 @@ namespace {
 	Eigen::VectorXi singular_vertices_;
 	Eigen::MatrixX2i singular_edges_;
 
+	float t_;
+
+	bool show_index_;
+
 	class DemoGlupApplication : public SimpleMeshApplication {
 	public:
 		DemoGlupApplication(int argc, char** argv) :
 			SimpleMeshApplication(argc, argv, "<filename>")
 		{
 			name_ = "[Float] Navigation";
+			t_ = 0.5;
+			show_index_ = true;
 		}
 
 		virtual void init_graphics() override {
@@ -85,6 +92,34 @@ namespace {
 			}
 		}
 
+		void compute_visibility_kernel() {
+			index_t f = idx_.face;
+			if (f < mesh_.facets.nb()) {
+				Eigen::MatrixXd IV(mesh_.facets.nb_vertices(f), 2);
+				for (index_t lv = 0; lv < mesh_.facets.nb_vertices(f); ++lv) {
+					index_t v = mesh_.facets.vertex(f, lv);
+					vec3 p = mesh_vertex(mesh_, v);
+					// std::cout << p << std::endl;
+					IV.row(lv) << p[0], p[1];
+				}
+				Eigen::MatrixXd OV;
+				poly_fem::compute_visibility_kernel(IV, OV);
+				mesh_.clear();
+				GEO::vector<index_t> poly;
+				// std::cout << OV << std::endl;
+				for (index_t v = 0; v < OV.rows(); ++v) {
+					index_t vv = mesh_.vertices.create_vertex();
+					assert(v == vv);
+					float *p = mesh_.vertices.single_precision_point_ptr(v);
+					p[0] = (float) OV(v, 0);
+					p[1] = (float) OV(v, 1);
+					poly.push_back(v);
+					// std::cout << v << ' ' << p[0] << ' ' << p[1] << std::endl;
+				}
+				mesh_.facets.create_polygon(poly);
+			}
+		}
+
 		virtual void draw_viewer_properties() override {
 			ImGui::Text("Vertex: %d", idx_.vertex);
 			ImGui::Text("Edge:   %d", idx_.edge);
@@ -92,6 +127,7 @@ namespace {
 			idx_.vertex = std::max(0, std::min((int) mesh_.vertices.nb(), idx_.vertex));
 			idx_.edge = std::max(0, std::min((int) mesh_.edges.nb(), idx_.edge));
 			idx_.face = std::max(0, std::min((int) mesh_.facets.nb(), idx_.face));
+			ImGui::Checkbox("Show Index", &show_index_);
 			if (ImGui::Button("Switch Vertex", ImVec2(-1, 0))) {
 				idx_ = Navigation::switch_vertex(mesh_, idx_);
 			}
@@ -115,32 +151,50 @@ namespace {
 				GEO::mesh_save(mesh_, "foo.obj");
 			}
 
+			ImGui::DragFloat("t", &t_, 0.01f, 0.0f, 1.0f);
+			static bool split_polygons = false;
+			ImGui::Checkbox("Split Polygons", &split_polygons);
 			if (ImGui::Button("Refine", ImVec2(-1, 0))) {
 				GEO::Mesh tmp;
-				poly_fem::refine_polygonal_mesh(mesh_, tmp);
+				poly_fem::refine_polygonal_mesh(mesh_, tmp, split_polygons, t_);
 				mesh_.copy(tmp);
+				// std::cout << mesh_.vertices.nb() << std::endl;
 				Navigation::prepare_mesh(mesh_);
 				poly_fem::singularity_graph(mesh_, singular_vertices_, singular_edges_);
 				compute_types();
+				idx_ = Navigation::get_index_from_face(mesh_, 0, 0);
 				GEO::mesh_save(mesh_, "foo.obj");
+			}
+
+			if (ImGui::Button("Visibility Kernel", ImVec2(-1, 0))) {
+				compute_visibility_kernel();
+				Navigation::prepare_mesh(mesh_);
+				poly_fem::singularity_graph(mesh_, singular_vertices_, singular_edges_);
+				compute_types();
+				idx_ = Navigation::get_index_from_face(mesh_, 0, 0);
 			}
 		}
 
 		virtual void draw_scene() override {
 			if (mesh()) {
-				//draw_selected();
+				if (show_index_) {
+					draw_selected();
+				}
 				//draw_singular();
 			}
 			SimpleMeshApplication::draw_scene();
 		}
 
 		static vec3 mesh_vertex(const GEO::Mesh &M, int i) {
-			if (M.vertices.single_precision()) {
-				const float *p = M.vertices.single_precision_point_ptr(i);
-				return vec3(p[0], p[1], p[2]);
-			} else {
-				return M.vertices.point(i);
+			GEO::vec3 p(0, 0, 0);
+			for (index_t d = 0; d < std::min(3u, (index_t) M.vertices.dimension()); ++d) {
+				if (M.vertices.double_precision()) {
+					p[d] = M.vertices.point_ptr(i)[d];
+				} else {
+					p[d] = M.vertices.single_precision_point_ptr(i)[d];
+				}
 			}
+			return p;
 		}
 
 		virtual void draw_selected() {
@@ -223,7 +277,7 @@ namespace {
 
 int main(int argc, char** argv) {
 	#ifndef WIN32
-	setenv("GEO_NO_SIGNAL_HANDLERS", "1", 1);
+	setenv("GEO_NO_SIGNAL_HANDLER", "1", 1);
 	#endif
 	GEO::initialize();
 	GEO::CmdLine::import_arg_group("standard");
