@@ -175,14 +175,14 @@ namespace
 	{
 		Index idx;
 
-		if (hi > M.elements.size()) hi = hi % M.elements.size();
+		if (hi >= M.elements.size()) hi = hi % M.elements.size();
 		idx.element = hi;
 
-		if (lf > M.elements[hi].fs.size()) lf = lf % M.elements[hi].fs.size();
+		if (lf >= M.elements[hi].fs.size()) lf = lf % M.elements[hi].fs.size();
 		idx.element_patch = lf;
 		idx.face = M.elements[hi].fs[idx.element_patch];
 
-		if (lv > M.faces[idx.face].vs.size()) lv = lv % M.faces[idx.face].vs.size();
+		if (lv >= M.faces[idx.face].vs.size()) lv = lv % M.faces[idx.face].vs.size();
 		idx.face_corner = lv;
 		if (!M.elements[hi].fs_flag[idx.element_patch]) idx.face_corner = M.faces[idx.face].vs.size() - 1 - idx.face_corner;
 		idx.vertex = M.faces[idx.face].vs[idx.face_corner];
