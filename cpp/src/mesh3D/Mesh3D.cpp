@@ -362,19 +362,27 @@ namespace poly_fem
 	void Mesh3D::compute_element_tag(std::vector<ElementType> &ele_tag) const
 	{
 		ele_tag.resize(mesh_.elements.size());
-		for (auto &t : ele_tag)
-			t = ElementType::RegularInteriorCube;
+		for (auto &t : ele_tag) t = ElementType::RegularInteriorCube;
 
 		for (auto &ele:mesh_.elements) {
 			if (ele.hex) {
-				//type 3
+				//AttachPolytope
 				bool on_boundary = false, attaching_non_hex = false;
 				for (auto vid : ele.vs){
-					if (mesh_.vertices[vid].boundary) {
-						on_boundary = true; break;
-					}
 					for (auto eleid : mesh_.vertices[vid].neighbor_hs) if (!mesh_.elements[eleid].hex) {
 						attaching_non_hex = true; break;
+					}
+					if (attaching_non_hex) break;
+				}
+				if (attaching_non_hex) {
+					ele_tag[ele.id] = ElementType::AttachPolytope;
+					continue;
+				}
+				//
+				bool on_boundary = false, attaching_non_hex = false;
+				for (auto vid : ele.vs) {
+					if (mesh_.vertices[vid].boundary) {
+						on_boundary = true; break;
 					}
 					if (on_boundary || attaching_non_hex) break;
 				}
@@ -413,8 +421,10 @@ namespace poly_fem
 
 				ele_tag[ele.id] = ElementType::MultiSingularInteriorCube;
 			}
-			else
+			else {
 				ele_tag[ele.id] = ElementType::InteriorPolytope;
+				for (auto fid : ele.fs)if (mesh_.faces[fid].boundary) { ele_tag[ele.id] = ElementType::BoundaryPolytope; break; }
+			}
 		}
 	}
 
