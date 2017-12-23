@@ -19,6 +19,32 @@ GEO::vec3 poly_fem::mesh_vertex(const GEO::Mesh &M, GEO::index_t v) {
 	return p;
 }
 
+// -----------------------------------------------------------------------------
+
+GEO::vec3 poly_fem::facet_barycenter(const GEO::Mesh &M, GEO::index_t f) {
+	using GEO::index_t;
+	GEO::vec3 p(0, 0, 0);
+	for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv) {
+		p += poly_fem::mesh_vertex(M, M.facets.vertex(f, lv));
+	}
+	return p / M.facets.nb_vertices(f);
+}
+
+// -----------------------------------------------------------------------------
+
+GEO::index_t poly_fem::mesh_create_vertex(GEO::Mesh &M, const GEO::vec3 &p) {
+	using GEO::index_t;
+	auto v = M.vertices.create_vertex();
+	for (index_t d = 0; d < std::min(3u, (index_t) M.vertices.dimension()); ++d) {
+		if (M.vertices.double_precision()) {
+			M.vertices.point_ptr(v)[d] = p[d];
+		} else {
+			M.vertices.single_precision_point_ptr(v)[d] = (float) p[d];
+		}
+	}
+	return v;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 void poly_fem::compute_element_tags(const GEO::Mesh &M, std::vector<ElementType> &element_tags) {

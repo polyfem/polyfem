@@ -189,18 +189,6 @@ namespace {
 			SimpleMeshApplication::draw_scene();
 		}
 
-		static vec3 mesh_vertex(const GEO::Mesh &M, int i) {
-			GEO::vec3 p(0, 0, 0);
-			for (index_t d = 0; d < std::min(3u, (index_t) M.vertices.dimension()); ++d) {
-				if (M.vertices.double_precision()) {
-					p[d] = M.vertices.point_ptr(i)[d];
-				} else {
-					p[d] = M.vertices.single_precision_point_ptr(i)[d];
-				}
-			}
-			return p;
-		}
-
 		virtual void draw_selected() {
 			glupSetPointSize(GLfloat(10));
 			glupEnable(GLUP_VERTEX_COLORS);

@@ -21,6 +21,24 @@ namespace poly_fem
 ///
 GEO::vec3 mesh_vertex(const GEO::Mesh &M, GEO::index_t v);
 
+// Compute facet barycenter.
+//
+// @param[in]  M     { Input mesh }
+// @param[in]  f     { Facet whose barycenter to compute }
+//
+// @return     { Barycenter position in 3D }
+//
+GEO::vec3 facet_barycenter(const GEO::Mesh &M, GEO::index_t f);
+
+// Create a new mesh vertex with given coordinates.
+//
+// @param      M     { Mesh to modify }
+// @param[in]  p     { New vertex position }
+//
+// @return     { Index of the newly created vertex }
+//
+GEO::index_t mesh_create_vertex(GEO::Mesh &M, const GEO::vec3 &p);
+
 ///
 /// @brief      Compute the type of each facet in a surface mesh.
 ///
