@@ -10,6 +10,7 @@
 #include <geogram/basic/command_line_args.h>
 #include <geogram/mesh/mesh_geometry.h>
 #include <geogram/mesh/mesh_io.h>
+#include <geogram/mesh/mesh_preprocessing.h>
 #include <geogram_gfx/glup_viewer/glup_viewer.h>
 #include <geogram_gfx/glup_viewer/glup_viewer_gui.h>
 #include <geogram_gfx/mesh/mesh_gfx.h>
@@ -56,6 +57,9 @@ namespace {
 				return false;
 			}
 			SimpleMeshApplication::load(filename);
+			mesh_.vertices.set_double_precision();
+			poly_fem::orient_normals_2d(mesh_);
+			mesh_.vertices.set_single_precision();
 
 			// Compute mesh connectivity
 			Navigation::prepare_mesh(mesh_);
