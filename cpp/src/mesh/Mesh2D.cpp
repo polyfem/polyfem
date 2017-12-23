@@ -25,7 +25,7 @@ namespace poly_fem
 			mesh.copy(mesh_);
 			mesh_.clear(false,false);
 
-			refine_polygonal_mesh(mesh, mesh_);
+			refine_polygonal_mesh(mesh, mesh_, true);
 
 			Navigation::prepare_mesh(mesh_);
 		}

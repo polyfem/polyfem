@@ -176,7 +176,7 @@ namespace poly_fem
 			mesh = new Mesh2D();
 
 		mesh->load(mesh_path);
-		mesh->refine(n_refs);
+		mesh->refine(std::max(1, n_refs));
 
 		mesh->set_boundary_tags(boundary_tag);
 		timer.stop();

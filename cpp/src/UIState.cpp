@@ -587,20 +587,28 @@ namespace poly_fem
 				else{
 					vis_faces.block(face_index, 0, vis_faces_poly[i].rows(), 3) = vis_faces_poly[i].array() + point_index;
 
-					face_index += local_vis_faces_tri.rows();
+					face_index += vis_faces_poly[i].rows();
 
 					vis_pts.block(point_index, 0, vis_pts_poly[i].rows(), vis_pts_poly[i].cols()) = vis_pts_poly[i];
 					point_index += vis_pts_poly[i].rows();
 				}
 			}
 
+			std::cout<<vis_faces.rows()<<std::endl;
+			assert(point_index == vis_pts.rows());
+			assert(face_index == vis_faces.rows());
+
 			if(!state.mesh->is_volume())
 			{
 				Matrix2d mmat;
 				for(long i = 0; i < vis_faces.rows(); ++i)
 				{
-					mmat.row(0) = vis_pts.row(vis_faces(i, 2)) - vis_pts.row(vis_faces(i, 0));
-					mmat.row(1) = vis_pts.row(vis_faces(i, 1)) - vis_pts.row(vis_faces(i, 0));
+					const int v0 = vis_faces(i, 0);
+					const int v1 = vis_faces(i, 1);
+					const int v2 = vis_faces(i, 2);
+
+					mmat.row(0) = vis_pts.row(v2) - vis_pts.row(v0);
+					mmat.row(1) = vis_pts.row(v1) - vis_pts.row(v0);
 
 					if(mmat.determinant() > 0)
 					{
