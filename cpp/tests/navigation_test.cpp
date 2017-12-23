@@ -10,6 +10,7 @@
 #include <geogram/basic/command_line_args.h>
 #include <geogram/mesh/mesh_geometry.h>
 #include <geogram/mesh/mesh_io.h>
+#include <geogram/mesh/mesh_preprocessing.h>
 #include <geogram_gfx/glup_viewer/glup_viewer.h>
 #include <geogram_gfx/glup_viewer/glup_viewer_gui.h>
 #include <geogram_gfx/mesh/mesh_gfx.h>
@@ -56,6 +57,9 @@ namespace {
 				return false;
 			}
 			SimpleMeshApplication::load(filename);
+			mesh_.vertices.set_double_precision();
+			poly_fem::orient_normals_2d(mesh_);
+			mesh_.vertices.set_single_precision();
 
 			// Compute mesh connectivity
 			Navigation::prepare_mesh(mesh_);
@@ -183,18 +187,6 @@ namespace {
 				//draw_singular();
 			}
 			SimpleMeshApplication::draw_scene();
-		}
-
-		static vec3 mesh_vertex(const GEO::Mesh &M, int i) {
-			GEO::vec3 p(0, 0, 0);
-			for (index_t d = 0; d < std::min(3u, (index_t) M.vertices.dimension()); ++d) {
-				if (M.vertices.double_precision()) {
-					p[d] = M.vertices.point_ptr(i)[d];
-				} else {
-					p[d] = M.vertices.single_precision_point_ptr(i)[d];
-				}
-			}
-			return p;
 		}
 
 		virtual void draw_selected() {

@@ -1,5 +1,51 @@
+////////////////////////////////////////////////////////////////////////////////
 #include "MeshUtils.hpp"
+#include <geogram/basic/geometry.h>
+#include <geogram/mesh/mesh_preprocessing.h>
+#include <geogram/mesh/mesh_topology.h>
+#include <geogram/mesh/mesh_geometry.h>
+////////////////////////////////////////////////////////////////////////////////
 
+GEO::vec3 poly_fem::mesh_vertex(const GEO::Mesh &M, GEO::index_t v) {
+	using GEO::index_t;
+	GEO::vec3 p(0, 0, 0);
+	for (index_t d = 0; d < std::min(3u, (index_t) M.vertices.dimension()); ++d) {
+		if (M.vertices.double_precision()) {
+			p[d] = M.vertices.point_ptr(v)[d];
+		} else {
+			p[d] = M.vertices.single_precision_point_ptr(v)[d];
+		}
+	}
+	return p;
+}
+
+// -----------------------------------------------------------------------------
+
+GEO::vec3 poly_fem::facet_barycenter(const GEO::Mesh &M, GEO::index_t f) {
+	using GEO::index_t;
+	GEO::vec3 p(0, 0, 0);
+	for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv) {
+		p += poly_fem::mesh_vertex(M, M.facets.vertex(f, lv));
+	}
+	return p / M.facets.nb_vertices(f);
+}
+
+// -----------------------------------------------------------------------------
+
+GEO::index_t poly_fem::mesh_create_vertex(GEO::Mesh &M, const GEO::vec3 &p) {
+	using GEO::index_t;
+	auto v = M.vertices.create_vertex();
+	for (index_t d = 0; d < std::min(3u, (index_t) M.vertices.dimension()); ++d) {
+		if (M.vertices.double_precision()) {
+			M.vertices.point_ptr(v)[d] = p[d];
+		} else {
+			M.vertices.single_precision_point_ptr(v)[d] = (float) p[d];
+		}
+	}
+	return v;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 
 void poly_fem::compute_element_tags(const GEO::Mesh &M, std::vector<ElementType> &element_tags) {
 	using GEO::index_t;
@@ -118,6 +164,45 @@ void poly_fem::compute_element_tags(const GEO::Mesh &M, std::vector<ElementType>
 			}
 
 			element_tags[f] = tag;
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+namespace {
+
+	// Signed area of a polygonal facet
+	double signed_area(const GEO::Mesh& M, GEO::index_t f) {
+		using namespace GEO;
+		double result = 0;
+		index_t v0 = M.facet_corners.vertex(M.facets.corners_begin(f));
+		const vec3& p0 = Geom::mesh_vertex(M, v0);
+		for(index_t c =
+			M.facets.corners_begin(f) + 1; c + 1 < M.facets.corners_end(f); c++
+		) {
+			index_t v1 = M.facet_corners.vertex(c);
+			const vec3& p1 = poly_fem::mesh_vertex(M, v1);
+			index_t v2 = M.facet_corners.vertex(c + 1);
+			const vec3& p2 = poly_fem::mesh_vertex(M, v2);
+			result += Geom::triangle_signed_area(vec2(&p0[0]), vec2(&p1[0]), vec2(&p2[0]));
+		}
+		return result;
+	}
+
+} // anonymous namespace
+
+void poly_fem::orient_normals_2d(GEO::Mesh &M) {
+	using namespace GEO;
+	vector<index_t> component;
+	index_t nb_components = get_connected_components(M, component);
+	vector<double> comp_signed_volume(nb_components, 0.0);
+	for (index_t f = 0; f < M.facets.nb(); ++f) {
+		comp_signed_volume[component[f]] += signed_area(M, f);
+	}
+	for (index_t f = 0; f < M.facets.nb(); ++f) {
+		if (comp_signed_volume[component[f]] < 0.0) {
+			M.facets.flip(f);
 		}
 	}
 }

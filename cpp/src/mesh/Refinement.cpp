@@ -1,6 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "Refinement.hpp"
 #include "Navigation.hpp"
+#include "MeshUtils.hpp"
 #include "PolygonUtils.hpp"
 #include <igl/is_border_vertex.h>
 #include <igl/remove_duplicate_vertices.h>
@@ -405,41 +406,6 @@ void poly_fem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, bo
 	using GEO::index_t;
 	using Navigation::Index;
 
-	// [Helper] Retrieve vertex position
-	auto mesh_point = [] (const GEO::Mesh &M, index_t v) {
-		GEO::vec3 p(0, 0, 0);
-		for (index_t d = 0; d < std::min(3u, (index_t) M.vertices.dimension()); ++d) {
-			if (M.vertices.double_precision()) {
-				p[d] = M.vertices.point_ptr(v)[d];
-			} else {
-				p[d] = M.vertices.single_precision_point_ptr(v)[d];
-			}
-		}
-		return p;
-	};
-
-	// [Helper] Create a new vertex and set vertex coordinates
-	auto mesh_create_vertex = [] (GEO::Mesh &M, const GEO::vec3 &p) {
-		auto v = M.vertices.create_vertex();
-		for (index_t d = 0; d < std::min(3u, (index_t) M.vertices.dimension()); ++d) {
-			if (M.vertices.double_precision()) {
-				M.vertices.point_ptr(v)[d] = p[d];
-			} else {
-				M.vertices.single_precision_point_ptr(v)[d] = (float) p[d];
-			}
-		}
-		return v;
-	};
-
-	// [Helper] Retrieve facet barycenter
-	auto facet_barycenter = [&mesh_point](const GEO::Mesh &M, index_t f) {
-		GEO::vec3 p(0, 0, 0);
-		for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv) {
-			p += mesh_point(M, M.facets.vertex(f, lv));
-		}
-		return p / M.facets.nb_vertices(f);
-	};
-
 	// Step 0: Clear output mesh, and fill it with M_in's vertices
 	assert(&M_in != &M_out);
 	M_out.copy(M_in);
@@ -470,7 +436,8 @@ void poly_fem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, bo
 			for (index_t lv = 0; lv < M_in.facets.nb_vertices(f); ++lv, idx = Navigation::next_around_face(M_in, idx)) {
 				assert(idx.vertex == (int) M_in.facets.vertex(f, lv));
 				if (edge_to_midpoint[idx.edge] == -1) {
-					GEO::vec3 coords = 0.5 * (mesh_point(M_in, idx.vertex) + mesh_point(M_in, Navigation::switch_vertex(M_in, idx).vertex));
+					GEO::vec3 coords = 0.5 * (mesh_vertex(M_in, idx.vertex)
+						+ mesh_vertex(M_in, Navigation::switch_vertex(M_in, idx).vertex));
 					edge_to_midpoint[idx.edge] = mesh_create_vertex(M_out, coords);
 					assert(edge_to_midpoint[idx.edge] + 1 == (int) M_out.vertices.nb());
 					next_vertex_around_hole.push_back(-1);
@@ -531,7 +498,7 @@ void poly_fem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, bo
 			Eigen::MatrixXd P(n, 2), V;
 			std::vector<std::vector<int>> F;
 			for (index_t k = 0; k < n; ++k) {
-				GEO::vec3 pk = mesh_point(M_out, hole[k]);
+				GEO::vec3 pk = poly_fem::mesh_vertex(M_out, hole[k]);
 				P.row(k) << pk[0], pk[1];
 			}
 			polar_split(P, V, F, t);

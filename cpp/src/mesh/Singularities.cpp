@@ -1,6 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "Singularities.hpp"
 #include "Navigation.hpp"
+#include "MeshUtils.hpp"
 #include <algorithm>
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -76,41 +77,6 @@ void poly_fem::create_patch_around_singularities(
 
 	assert(M.vertices.dimension() == 2 || M.vertices.dimension() == 3);
 
-	// [Helper] Retrieve vertex position
-	auto mesh_point = [&M](index_t v) {
-		GEO::vec3 p(0, 0, 0);
-		for (index_t d = 0; d < std::min(3u, (index_t) M.vertices.dimension()); ++d) {
-			if (M.vertices.double_precision()) {
-				p[d] = M.vertices.point_ptr(v)[d];
-			} else {
-				p[d] = M.vertices.single_precision_point_ptr(v)[d];
-			}
-		}
-		return p;
-	};
-
-	// [Helper] Create a new vertex and set vertex coordinates
-	auto mesh_create_vertex = [&M](const GEO::vec3 &p) {
-		auto v = M.vertices.create_vertex();
-		for (index_t d = 0; d < std::min(3u, (index_t) M.vertices.dimension()); ++d) {
-			if (M.vertices.double_precision()) {
-				M.vertices.point_ptr(v)[d] = p[d];
-			} else {
-				M.vertices.single_precision_point_ptr(v)[d] = (float) p[d];
-			}
-		}
-		return v;
-	};
-
-	// [Helper] Retrieve facet barycenter
-	auto facet_barycenter = [&M, &mesh_point](index_t f) {
-		GEO::vec3 p(0, 0, 0);
-		for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv) {
-			p += mesh_point(M.facets.vertex(f, lv));
-		}
-		return p / M.facets.nb_vertices(f);
-	};
-
 	// Step 0: Make sure all endpoints of E are in V
 	std::vector<int> singulars;
 	singulars.reserve(V.size() + E.size());
@@ -130,8 +96,8 @@ void poly_fem::create_patch_around_singularities(
 			int v1 = M.edges.vertex(e, lv);
 			int v2 = M.edges.vertex(e, (lv+1)%2);
 			if (is_singular[v1] && !is_singular[v2]) {
-				GEO::vec3 coords = t * mesh_point(v1) + (1.0 - t) * mesh_point(v2);
-				edge_to_midpoint[e] = mesh_create_vertex(coords);
+				GEO::vec3 coords = t * mesh_vertex(M, v1) + (1.0 - t) * mesh_vertex(M, v2);
+				edge_to_midpoint[e] = mesh_create_vertex(M, coords);
 			}
 		}
 	}
@@ -221,8 +187,8 @@ void poly_fem::create_patch_around_singularities(
 		int ve1 = edge_to_midpoint[idx1.edge];
 		int ve2 = edge_to_midpoint[idx2.edge];
 		if (create_midfacet_point) {
-			GEO::vec3 coords = facet_barycenter(f);
-			index_t vf = mesh_create_vertex(coords);
+			GEO::vec3 coords = facet_barycenter(M, f);
+			index_t vf = mesh_create_vertex(M, coords);
 			next_vertex_around_hole.resize(vf + 1);
 			assert(next_vertex_around_hole[ve1] == -1);
 			next_vertex_around_hole[ve1] = vf;
