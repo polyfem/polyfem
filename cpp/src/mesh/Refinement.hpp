@@ -54,11 +54,32 @@ void refine_quad_mesh(const Eigen::MatrixXd &IV, const Eigen::MatrixXi &IF,
 	Eigen::MatrixXd &OV, Eigen::MatrixXi &OF);
 
 ///
-/// Refine a polygonal mesh. Quads and triangles are split into quads.
+/// Split a polygon using polar refinement. The input polygon must be
+/// star-shaped. A one-ring of quads are create on the outer ring of the
+/// polygon, while at the center a new polygonal facet is created around the
+/// barycenter of the kernel polygon.
 ///
-/// @param[in]  M_in   { Surface mesh to subdivide }
-/// @param[out] M_out  { Refined mesh }
+/// @param[in]  IV    { #IV x (2|3) of vertex positions around the polygon }
+/// @param[out] OV    { #OF v (2|3) output vertex positions }
+/// @param[out] OF    { list of output polygonal face indices }
+/// @param[in]  t     { Interpolation parameter to place the new vertices on the
+///                   edge from the barycenter to the outer polygon vertices (0
+///                   being at the center, 1 being at the boundary) }
 ///
-void refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out);
+void polar_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, std::vector<std::vector<int>> &OF, double t = 0.5);
+
+///
+/// Refine a polygonal mesh. Quads and triangles are split into quads. If
+/// `refine_polygons` is set to `true`, then polygonal facets are also split
+/// into a layer of padding quads, and a new polygon is created around the
+/// barycenter
+///
+/// @param[in]  M_in             { Surface mesh to subdivide }
+/// @param[out] M_out            { Refined mesh }
+/// @param[in]  refine_polygons  { Whether to refine polygons using polar
+///                              refinement }
+/// @param[in]  t                { Interpolation parameter }
+///
+void refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, bool refine_polygons = false, double t = 0.5);
 
 } // namespace poly_fem

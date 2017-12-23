@@ -395,7 +395,7 @@ namespace poly_fem
 					if (attaching_non_hex) break;
 				}
 				if (attaching_non_hex) {
-					ele_tag[ele.id] = ElementType::AttachPolytope;
+					// ele_tag[ele.id] = ElementType::AttachPolytope; //WARNING
 					continue;
 				}
 				//

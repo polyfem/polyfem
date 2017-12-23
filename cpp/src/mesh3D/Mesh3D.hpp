@@ -18,12 +18,19 @@ namespace poly_fem
 
 		inline bool is_volume() const override { return true; }
 
+		inline bool is_boundary_vertex(const int vertex_global_id) const { return mesh_.vertices[vertex_global_id].boundary; }
+
 		inline int n_elements() const override { return int(mesh_.elements.size()); }
-		inline int n_pts() const override { return int(mesh_.points.size()); }
+		inline int n_faces() const { return int(mesh_.faces.size()); }
+		inline int n_pts() const override { return int(mesh_.points.cols()); }
 
 		inline int n_element_vertices(const int element_index) const override { return int(mesh_.elements[element_index].vs.size());}
+		inline int n_element_faces(const int element_index) const { return int(mesh_.elements[element_index].fs.size());}
+
 		inline int vertex_global_index(const int element_index, const int local_index) const override { return mesh_.elements[element_index].vs[local_index]; }
-		inline int vertex_global_index_from_local_face(const int face_index, const int local_face_index) const { return mesh_.faces[face_index].vs[local_face_index]; }
+		inline int vertex_local_index(const int element_index, const int vertex_global_index) const {
+			return (int) std::distance(mesh_.elements[element_index].vs.begin(), std::find(mesh_.elements[element_index].vs.begin(), mesh_.elements[element_index].vs.end(), vertex_global_index));
+		}
 
 		double compute_mesh_size() const override;
 
@@ -67,7 +74,7 @@ namespace poly_fem
 		inline Navigation3D::Index next_around_edge(Navigation3D::Index idx) const { return Navigation3D::next_around_3Dedge(mesh_, idx); }
 		// inline Navigation3D::Index next_around_vertex(Navigation3D::Index idx) const { return Navigation3D::next_around_2Dvertex(mesh_, idx); }
 
-		inline Navigation3D::Index next_around_element(Navigation3D::Index idx) const { return Navigation3D::next_around_3Delement(mesh_, idx); }
+		// inline Navigation3D::Index next_around_element(Navigation3D::Index idx) const { return Navigation3D::next_around_3Delement(mesh_, idx); }
 
 		 inline Navigation3D::Index next_around_face_of_element(Navigation3D::Index idx) const { return Navigation3D::next_around_2Dface(mesh_, idx); }
 
