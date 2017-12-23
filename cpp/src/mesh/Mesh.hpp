@@ -17,7 +17,6 @@ namespace poly_fem
 		MultiSingularInteriorCube,  // Quad/Hex incident to more than 1 singular vertices (should not happen in 2D)
 		RegularBoundaryCube,        // Boundary (internal or external) quad/hex, where all boundary vertices are incident to at most 2 quads/hexes
 		SingularBoundaryCube,       // Boundary (internal or external) quad/hex that is not regular
-		AttachPolytope,				// quad/hex that is attaching to non-quads/hexes
 		InteriorPolytope,           // Interior polytope
 		BoundaryPolytope,           // Boundary polytope
 		Undefined,                   // For invalid configurations

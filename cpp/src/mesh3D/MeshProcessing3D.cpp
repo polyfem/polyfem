@@ -132,6 +132,16 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi) {
 		for (auto fid : hmi.elements[i].fs)vs.insert(vs.end(), hmi.faces[fid].vs.begin(), hmi.faces[fid].vs.end());
 		sort(vs.begin(), vs.end()); vs.erase(unique(vs.begin(), vs.end()), vs.end());
 
+		bool degree3 = true;
+		for (auto vid : vs) {
+			int nv = 0;
+			for (auto nvid : hmi.vertices[vid].neighbor_vs) if (find(vs.begin(), vs.end(), nvid) != vs.end()) nv++;
+			if (nv != 3) { degree3 = false; break; }
+		}
+
+		if (hmi.elements[i].hex && (vs.size() != 8 || !degree3))hmi.elements[i].hex = false;
+		hmi.elements[i].vs.clear();
+
 		hmi.elements[i].vs.clear();
 
 		if (hmi.elements[i].hex) {
@@ -328,8 +338,10 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter) {
 					vector<uint32_t> sharedfs, fs0 = M.edges[e_pre].neighbor_fs, fs1 = M.edges[e_per].neighbor_fs;
 					sort(fs0.begin(), fs0.end()); sort(fs1.begin(), fs1.end());
 					set_intersection(fs0.begin(), fs0.end(), fs1.begin(), fs1.end(), back_inserter(sharedfs));
-					assert(sharedfs.size());
-					f_pre = sharedfs[0];
+					for (auto sfid : sharedfs)if (find(ele.fs.begin(), ele.fs.end(), sfid) != ele.fs.end()) {
+						f_pre = sfid; break;
+					}
+					assert(f_pre != -1);
 
 					int f_aft = -1;
 					sharedfs.clear();
@@ -337,8 +349,10 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter) {
 					fs1 = M.edges[e_per].neighbor_fs;
 					sort(fs0.begin(), fs0.end()); sort(fs1.begin(), fs1.end());
 					set_intersection(fs0.begin(), fs0.end(), fs1.begin(), fs1.end(), back_inserter(sharedfs));
-					assert(sharedfs.size());
-					f_aft = sharedfs[0];
+					for (auto sfid : sharedfs)if (find(ele.fs.begin(), ele.fs.end(), sfid) != ele.fs.end()) {
+						f_aft = sfid; break;
+					}
+					assert(f_aft != -1);
 
 					bottom_vs[1] = F2V[f_pre];
 					bottom_vs[3] = F2V[f_aft];
@@ -355,7 +369,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter) {
 					//new ele
 					Element ele_;
 					ele_.id = elen++;
-					ele_.fs.resize(6);
+					ele_.fs.resize(6, -1);
 					ele_.fs_flag.resize(6, 1);
 
 					ele_.hex = true;
@@ -442,7 +456,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter) {
 				//polyhedron
 				Element ele_;
 				ele_.id = elen++;
-				ele_.fs.resize(local_fn);
+				ele_.fs.resize(local_fn, -1);
 				ele_.fs_flag.resize(local_fn, 1);
 
 				ele_.hex = false;
@@ -476,7 +490,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter) {
 						//hex
 						Element ele_;
 						ele_.id = elen++;
-						ele_.fs.resize(6);
+						ele_.fs.resize(6, -1);
 						ele_.fs_flag.resize(6, 1);
 						ele_.hex = true;
 						ele_.v_in_Kernel.resize(3);
