@@ -172,22 +172,9 @@ void poly_fem::compute_element_tags(const GEO::Mesh &M, std::vector<ElementType>
 
 namespace {
 
-	using namespace GEO;
-
-	/**
-	 * \brief
-	 * Compute the signed volume of the pyramid that connects
-	 * the origin to facet f.
-	 * \details Summing all the signed volumes
-	 * of the facets of a closed surface results in the signed
-	 * volume of the interior of the surface (volumes outside
-	 * the surface cancel-out).
-	 * \param[in] M the mesh
-	 * \param[in] f index of the facet
-	 * \return the signed volume of the pyramid that connects facet \p f to
-	 *  the origin
-	 */
-	double signed_area(const Mesh& M, index_t f) {
+	// Signed area of a polygonal facet
+	double signed_area(const GEO::Mesh& M, GEO::index_t f) {
+		using namespace GEO;
 		double result = 0;
 		index_t v0 = M.facet_corners.vertex(M.facets.corners_begin(f));
 		const vec3& p0 = Geom::mesh_vertex(M, v0);
@@ -210,11 +197,11 @@ void poly_fem::orient_normals_2d(GEO::Mesh &M) {
 	vector<index_t> component;
 	index_t nb_components = get_connected_components(M, component);
 	vector<double> comp_signed_volume(nb_components, 0.0);
-	for(index_t f = 0; f < M.facets.nb(); ++f) {
+	for (index_t f = 0; f < M.facets.nb(); ++f) {
 		comp_signed_volume[component[f]] += signed_area(M, f);
 	}
-	for(index_t f = 0; f < M.facets.nb(); ++f) {
-		if(comp_signed_volume[component[f]] < 0.0) {
+	for (index_t f = 0; f < M.facets.nb(); ++f) {
+		if (comp_signed_volume[component[f]] < 0.0) {
 			M.facets.flip(f);
 		}
 	}
