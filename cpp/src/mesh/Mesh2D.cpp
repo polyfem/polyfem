@@ -39,6 +39,7 @@ namespace poly_fem
 		if(!mesh_load(path, mesh_))
 			return false;
 
+		orient_normals_2d(mesh_);
 		Navigation::prepare_mesh(mesh_);
 		create_boundary_nodes();
 		return true;

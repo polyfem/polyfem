@@ -69,7 +69,7 @@ namespace poly_fem
 			}
 
 			val(i, 0) += 2 * w(end-5)*p(0) + 2 * w(end-4)*p(1);
-    		val(i, 1) += 2 * w(end-3)*p(1) + 2 * w(end-4)*p(0);
+			val(i, 1) += 2 * w(end-3)*p(1) + 2 * w(end-4)*p(0);
 		}
 	}
 
@@ -77,8 +77,16 @@ namespace poly_fem
 
 	void BiharmonicBasis::compute(const Eigen::MatrixXd &samples, const Eigen::MatrixXd &rhs)
 	{
+		const int offset = (int) samples.rows();
+
+		const bool impose_c1 = rhs.rows() != offset;
+
+		const int size = offset + (impose_c1?(2*offset):0);
+
+		assert(size == rhs.rows());
+
 		//+3 bilinear, +2 linear, +1 constant
-		Eigen::MatrixXd mat(samples.rows(), centers_.rows() + 3 + 2 + 1);
+		Eigen::MatrixXd mat(size, centers_.rows() + 3 + 2 + 1);
 
 		const int end = int(mat.cols())-1;
 		mat.col(end).setOnes();
@@ -95,6 +103,43 @@ namespace poly_fem
 			for(long j = 0; j < centers_.rows(); ++j)
 			{
 				mat(i,j)=kernel((centers_.row(j)-samples.row(i)).norm());
+			}
+		}
+
+		if(impose_c1)
+		{
+			mat.block(offset, end, 2*offset, 1).setZero();
+			mat.block(offset, end-1, 2*offset, 1).setZero();
+			mat.block(offset, end-2, 2*offset, 1).setZero();
+
+			for(long i = 0; i < samples.rows(); ++i)
+			{
+				mat(offset + 2*i,   end - 1) = 0;
+				mat(offset + 2*i+1, end - 1) = 1;
+
+				mat(offset + 2*i,   end - 2) = 1;
+				mat(offset + 2*i+1, end - 2) = 0;
+
+				mat(offset + 2*i,   end - 3) = 0;
+				mat(offset + 2*i+1, end - 3) = 2*samples(i, 1);
+
+				mat(offset + 2*i,   end - 4) = 2*samples(i, 1);
+				mat(offset + 2*i+1, end - 4) = 2*samples(i, 0);
+
+				mat(offset + 2*i,   end - 5) = 2*samples(i, 0);
+				mat(offset + 2*i+1, end - 5) = 0;
+
+				const auto &p = samples.row(i);
+				for(long j = 0; j < centers_.rows(); ++j)
+				{
+					const double r = (centers_.row(j)-p).norm();
+
+					if(r > 1e-8)
+					{
+						mat(offset + 2*i,   j) = (p(0)-centers_(j,0))*kernel_prime(r)/r;
+						mat(offset + 2*i+1, j) = (p(1)-centers_(j,1))*kernel_prime(r)/r;
+					}
+				}
 			}
 		}
 

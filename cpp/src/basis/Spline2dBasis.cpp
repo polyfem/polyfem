@@ -414,6 +414,8 @@ namespace poly_fem
 
         void sample_polygon(const int element_index, const int samples_res, const Mesh2D &mesh, std::map<int, BoundaryData> &poly_edge_to_data, const std::vector< ElementBases > &bases, std::vector<int> &local_to_global, Eigen::MatrixXd &boundary_samples, Eigen::MatrixXd &poly_samples, Eigen::MatrixXd &rhs)
         {
+            const bool c1_continuous = false;
+
             const int n_edges = mesh.n_element_vertices(element_index);
 
             const int poly_local_n = (samples_res - 1)/3;
@@ -423,8 +425,7 @@ namespace poly_fem
             boundary_samples.resize(n_samples, 2);
             poly_samples.resize(n_poly_samples, 2);
 
-            Eigen::MatrixXd samples, mapped, basis_val;
-            
+            Eigen::MatrixXd samples, mapped, basis_val, grad_basis_val;
 
             Navigation::Index index = mesh.get_index_from_face(element_index);
             for(int i = 0; i < n_edges; ++i)
@@ -439,7 +440,7 @@ namespace poly_fem
             local_to_global.erase( std::unique( local_to_global.begin(), local_to_global.end() ), local_to_global.end() );
             // assert(int(local_to_global.size()) <= n_edges);
 
-            rhs = Eigen::MatrixXd::Zero(n_samples, local_to_global.size());
+            rhs = Eigen::MatrixXd::Zero(n_samples + (c1_continuous? (2*n_samples): 0), local_to_global.size());
 
             index = mesh.get_index_from_face(element_index);
 
@@ -500,6 +501,17 @@ namespace poly_fem
                     if(must_reverse)
                         basis_val = basis_val.reverse().eval();
                     rhs.block(i*(samples_res-1), basis_index, basis_val.rows(), 1) = basis_val;
+
+                    if(c1_continuous)
+                    {
+                        b.bases[local_index].grad(samples, grad_basis_val);
+
+                        if(must_reverse)
+                            grad_basis_val = grad_basis_val.colwise().reverse().eval();
+
+                        rhs.block(n_samples + 2*i*(samples_res-1),   basis_index, grad_basis_val.rows(), 1) = grad_basis_val.col(0);
+                        rhs.block(n_samples + 2*i*(samples_res-1)+1, basis_index, grad_basis_val.rows(), 1) = grad_basis_val.col(1);
+                    }
 
                 }
 
@@ -582,10 +594,10 @@ namespace poly_fem
             b.has_parameterization = false;
             poly_quad.get_quadrature(boundary_samples, quadrature_order, b.quadrature);
 
-            igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
-            viewer.data.add_points(boundary_samples, Eigen::Vector3d(0,1,1).transpose());
-            for(int asd = 0; asd < boundary_samples.rows(); ++asd)
-                viewer.data.add_label(boundary_samples.row(asd), std::to_string(asd));
+            // igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
+            // viewer.data.add_points(boundary_samples, Eigen::Vector3d(0,1,1).transpose());
+            // for(int asd = 0; asd < boundary_samples.rows(); ++asd)
+            //     viewer.data.add_label(boundary_samples.row(asd), std::to_string(asd));
 
             polys[e] = boundary_samples;
 
