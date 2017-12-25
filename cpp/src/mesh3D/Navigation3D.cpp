@@ -16,10 +16,31 @@ namespace
 
 	void poly_fem::Navigation3D::prepare_mesh(Mesh3DStorage &M) {
 		M.type = MeshType::Hyb;
-		poly_fem::MeshProcessing3D::build_connectivity(M);
+		MeshProcessing3D::build_connectivity(M);
+		MeshProcessing3D::global_orientation_hexes(M);
 	}
 
+	Index poly_fem::Navigation3D::get_index_from_element_face(const Mesh3DStorage &M, int hi) 
+	{
+		Index idx;
 
+		if (hi >= M.elements.size()) hi = hi % M.elements.size();
+		idx.element = hi;
+		idx.element_patch = 0;
+		idx.face = M.elements[hi].fs[idx.element_patch];
+
+		idx.vertex = M.elements[hi].vs[0];
+		idx.face_corner = find(M.faces[idx.face].vs.begin(), M.faces[idx.face].vs.end(),idx.vertex) - M.faces[idx.face].vs.begin();
+
+		int v0 = idx.vertex, v1 = M.elements[hi].vs[1];
+		vector<uint32_t> ves0 = M.vertices[v0].neighbor_es, ves1 = M.vertices[v1].neighbor_es, sharedes;
+		sort(ves0.begin(), ves0.end()); sort(ves1.begin(), ves1.end());
+		set_intersection(ves0.begin(), ves0.end(), ves1.begin(), ves1.end(), back_inserter(sharedes));
+		assert(sharedes.size() == 1);
+		idx.edge = sharedes[0];
+
+		return idx;
+	}
 	Index poly_fem::Navigation3D::get_index_from_element_face(const Mesh3DStorage &M, int hi, int lf, int lv)
 	{
 		Index idx;

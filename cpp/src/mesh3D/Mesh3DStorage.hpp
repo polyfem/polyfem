@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <Eigen/Dense>
+using namespace Eigen;
 
 namespace poly_fem
 {
@@ -46,7 +47,8 @@ namespace poly_fem
 		std::vector<double> v_in_Kernel;
 	};
 
-	enum MeshType {
+	enum MeshType 
+	{
 		Tri = 0,
 		Qua,
 		HSur,
@@ -63,6 +65,18 @@ namespace poly_fem
 		std::vector<Edge> edges;
 		std::vector<Face> faces;
 		std::vector<Element> elements;
+	};
+
+	struct Mesh_Quality
+	{
+		std::string Name;
+		double min_Jacobian;
+		double ave_Jacobian;
+		double deviation_Jacobian;
+		VectorXd V_Js;
+		VectorXd H_Js;
+		VectorXd Num_Js;
+		int32_t V_num, H_num;
 	};
 }
 
