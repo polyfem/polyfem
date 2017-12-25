@@ -60,7 +60,7 @@ namespace poly_fem
 		j["l2_err"] = l2_err;
 		j["linf_err"] = linf_err;
 
-		// j["errors"] = errors;
+		j["errors"] = errors;
 
 		j["nn_zero"] = nn_zero;
 		j["mat_size"] = mat_size;

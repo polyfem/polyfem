@@ -358,6 +358,11 @@ namespace poly_fem
 		return Navigation3D::get_index_from_element_face(mesh_, hi, lf, lv);
 	}
 
+	Navigation3D::Index Mesh3D::get_index_from_element(int hi) const
+	{
+		return Navigation3D::get_index_from_element_face(mesh_, hi);
+	}
+
 // Navigation in a surface mesh
 	Navigation3D::Index Mesh3D::switch_vertex(Navigation3D::Index idx) const
 	{
@@ -384,67 +389,67 @@ namespace poly_fem
 		ele_tag.resize(mesh_.elements.size());
 		for (auto &t : ele_tag) t = ElementType::RegularInteriorCube;
 
-		for (auto &ele:mesh_.elements) {
-			if (ele.hex) {
+			for (auto &ele:mesh_.elements) {
+				if (ele.hex) {
 				//AttachPolytope
-				bool attaching_non_hex = false;
-				for (auto vid : ele.vs){
-					for (auto eleid : mesh_.vertices[vid].neighbor_hs) if (!mesh_.elements[eleid].hex) {
-						attaching_non_hex = true; break;
+					bool attaching_non_hex = false;
+					for (auto vid : ele.vs){
+						for (auto eleid : mesh_.vertices[vid].neighbor_hs) if (!mesh_.elements[eleid].hex) {
+							attaching_non_hex = true; break;
+						}
+						if (attaching_non_hex) break;
 					}
-					if (attaching_non_hex) break;
-				}
-				if (attaching_non_hex) {
+					if (attaching_non_hex) {
 					// ele_tag[ele.id] = ElementType::AttachPolytope; //WARNING
-					continue;
-				}
-				//
-				bool on_boundary = false;
-				for (auto vid : ele.vs) {
-					if (mesh_.vertices[vid].boundary) {
-						on_boundary = true; break;
+						continue;
 					}
-					if (on_boundary || attaching_non_hex) break;
-				}
-				if (on_boundary || attaching_non_hex) {
-					ele_tag[ele.id] = ElementType::RegularBoundaryCube;
-					continue;
-				}
+				//
+					bool on_boundary = false;
+					for (auto vid : ele.vs) {
+						if (mesh_.vertices[vid].boundary) {
+							on_boundary = true; break;
+						}
+						if (on_boundary || attaching_non_hex) break;
+					}
+					if (on_boundary || attaching_non_hex) {
+						ele_tag[ele.id] = ElementType::RegularBoundaryCube;
+						continue;
+					}
 
 				//type 1
-				bool has_irregular_v = false;
-				for (auto vid : ele.vs)  if (mesh_.vertices[vid].neighbor_hs.size() != 8) {
-					has_irregular_v = true; break;
-				}
-				if(!has_irregular_v){
-					ele_tag[ele.id] = ElementType::RegularInteriorCube;
-					continue;
-				}
+					bool has_irregular_v = false;
+					for (auto vid : ele.vs)  if (mesh_.vertices[vid].neighbor_hs.size() != 8) {
+						has_irregular_v = true; break;
+					}
+					if(!has_irregular_v){
+						ele_tag[ele.id] = ElementType::RegularInteriorCube;
+						continue;
+					}
 				//type 2
-				bool has_singular_v = false; int n_irregular_v = 0;
-				for (auto vid : ele.vs){
-					if (mesh_.vertices[vid].neighbor_hs.size() != 8)
-						n_irregular_v++;
-					int n_irregular_e = 0;
-					for (auto eid : mesh_.vertices[vid].neighbor_es){
-						if (mesh_.edges[eid].neighbor_hs.size() != 4)
-							n_irregular_e++;
+					bool has_singular_v = false; int n_irregular_v = 0;
+					for (auto vid : ele.vs){
+						if (mesh_.vertices[vid].neighbor_hs.size() != 8)
+							n_irregular_v++;
+						int n_irregular_e = 0;
+						for (auto eid : mesh_.vertices[vid].neighbor_es){
+							if (mesh_.edges[eid].neighbor_hs.size() != 4)
+								n_irregular_e++;
+						}
+						if (n_irregular_e != 2) {
+							has_singular_v = true; break;
+						}
 					}
-					if (n_irregular_e != 2) {
-						has_singular_v = true; break;
+					if (!has_singular_v && n_irregular_v == 2) {
+						ele_tag[ele.id] = ElementType::SimpleSingularInteriorCube;
+						continue;
 					}
-				}
-				if (!has_singular_v && n_irregular_v == 2) {
-					ele_tag[ele.id] = ElementType::SimpleSingularInteriorCube;
-					continue;
-				}
 
-				ele_tag[ele.id] = ElementType::MultiSingularInteriorCube;
-			}
-			else {
-				ele_tag[ele.id] = ElementType::InteriorPolytope;
-				for (auto fid : ele.fs)if (mesh_.faces[fid].boundary) { ele_tag[ele.id] = ElementType::BoundaryPolytope; break; }
-			}
+					ele_tag[ele.id] = ElementType::MultiSingularInteriorCube;
+				}
+				else {
+					ele_tag[ele.id] = ElementType::InteriorPolytope;
+					for (auto fid : ele.fs)if (mesh_.faces[fid].boundary) { ele_tag[ele.id] = ElementType::BoundaryPolytope; break; }
+				}
 		}
 	}
 

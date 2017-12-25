@@ -60,7 +60,8 @@ namespace poly_fem
 		Eigen::MatrixXd node_from_vertex(const int vertex_id) const;
 
 		//navigation wrapper
-		Navigation3D::Index get_index_from_element(int hi, int lf = 0, int lv = 0) const;
+		Navigation3D::Index get_index_from_element(int hi, int lf, int lv) const;
+		Navigation3D::Index get_index_from_element(int hi) const;
 
 
 		// Navigation in a surface mesh
