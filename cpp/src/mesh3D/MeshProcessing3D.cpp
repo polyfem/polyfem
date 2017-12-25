@@ -209,7 +209,6 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi) {
 		}
 
 		if (hmi.elements[i].hex && (vs.size() != 8 || !degree3))hmi.elements[i].hex = false;
-		hmi.elements[i].vs.clear();
 
 		hmi.elements[i].vs.clear();
 

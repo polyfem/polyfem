@@ -26,7 +26,18 @@ namespace
 
 		if (hi >= M.elements.size()) hi = hi % M.elements.size();
 		idx.element = hi;
-		idx.element_patch = 0;
+
+		vector<uint32_t> fvs, fvs_;
+		fvs.insert(fvs.end(), M.elements[hi].vs.begin(), M.elements[hi].vs.begin() + 4);
+		sort(fvs.begin(), fvs.end());
+		idx.element_patch = -1;
+		for (uint32_t i = 0; i < 6; i++) {
+			idx.element_patch = i;
+			fvs_ = M.faces[M.elements[hi].fs[i]].vs;
+			sort(fvs_.begin(), fvs_.end());
+			if (std::equal(fvs.begin(), fvs.end(), fvs_.begin())) break;
+		}
+		assert(idx.element_patch != -1);
 		idx.face = M.elements[hi].fs[idx.element_patch];
 
 		idx.vertex = M.elements[hi].vs[0];
