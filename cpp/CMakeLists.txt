@@ -179,6 +179,8 @@ endif()
 target_link_libraries(polyfem PUBLIC geogram igl::core igl::triangle igl::tetgen igl::viewer json)
 target_include_directories(polyfem PUBLIC src src/assembler src/basis src/mesh src/mesh3D src/problem src/quadrature src/utils)
 target_compile_options(polyfem PUBLIC ${ALL_WARNINGS})
+# set_property(TARGET polyfem PROPERTY CXX_STANDARD 14)
+
 
 
 # Main executable

@@ -30,6 +30,66 @@ using namespace Eigen;
 namespace poly_fem
 {
 
+	long UIState::clip_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, std::vector<bool> &valid_elements)
+	{
+		valid_elements.resize(normalized_barycenter.rows());
+
+		if(!is_slicing)
+		{
+			std::fill(valid_elements.begin(), valid_elements.end(), true);
+			viewer.data.set_mesh(pts, tris);
+			viewer.data.set_face_based(false);
+			if(state.mesh->is_volume())
+			{
+				MatrixXd normals;
+				igl::per_face_normals(pts, tris, normals);
+				viewer.data.set_normals(normals);
+			}
+
+			return tris.rows();
+		}
+
+		for (long i = 0; i<normalized_barycenter.rows();++i)
+			valid_elements[i] = normalized_barycenter(i, slice_coord) < slice_position;
+
+		viewer.data.set_face_based(false);
+
+		int n_vis_valid_tri = 0;
+
+		for (long i = 0; i<normalized_barycenter.rows();++i)
+		{
+			if(valid_elements[i])
+				n_vis_valid_tri += ranges[i+1] - ranges[i];
+		}
+
+		MatrixXi valid_tri(n_vis_valid_tri, tris.cols());
+
+		int from = 0;
+		for(std::size_t i = 1; i < ranges.size(); ++i)
+		{
+			if(!valid_elements[i-1]) continue;
+
+			const int range = ranges[i]-ranges[i-1];
+
+			valid_tri.block(from, 0, range, tri_faces.cols()) = tris.block(ranges[i-1], 0, range, tris.cols());
+
+			from += range;
+		}
+
+
+
+		viewer.data.set_mesh(pts, valid_tri);
+		viewer.data.set_face_based(false);
+		if(state.mesh->is_volume())
+		{
+			MatrixXd normals;
+			igl::per_face_normals(pts, valid_tri, normals);
+			viewer.data.set_normals(normals);
+		}
+
+		return valid_tri.rows();
+	}
+
 	bool UIState::is_quad(const ElementBases &bs) const
 	{
 		return (state.mesh->is_volume() && int(bs.bases.size()) == 8) || (!state.mesh->is_volume() && (int(bs.bases.size()) == 4 || int(bs.bases.size()) == 9));
@@ -92,6 +152,7 @@ namespace poly_fem
 	void UIState::plot_function(const MatrixXd &fun, double min, double max)
 	{
 		MatrixXd col;
+		std::vector<bool> valid_elements;
 
 		if(state.problem.problem_num() == 3)
 		{
@@ -135,14 +196,7 @@ namespace poly_fem
 			for(long i = 0; i < fun.cols(); ++i) //apply displacement
 				tmp.col(i) += fun.col(i);
 
-			viewer.data.set_mesh(tmp, vis_faces);
-
-			if(state.mesh->is_volume())
-			{
-				MatrixXd normals;
-				igl::per_face_normals(tmp,vis_faces, normals);
-				viewer.data.set_normals(normals);
-			}
+			clip_elements(tmp, vis_faces, vis_element_ranges, valid_elements);
 		}
 		else
 		{
@@ -153,16 +207,7 @@ namespace poly_fem
 				igl::colormap(color_map, fun, true, col);
 
 			if(state.mesh->is_volume())
-			{
-				viewer.data.set_mesh(vis_pts, vis_faces);
-
-				if(state.mesh->is_volume())
-				{
-					MatrixXd normals;
-					igl::per_face_normals(vis_pts,vis_faces, normals);
-					viewer.data.set_normals(normals);
-				}
-			}
+				clip_elements(vis_pts, vis_faces, vis_element_ranges, valid_elements);
 			else
 			{
 				MatrixXd tmp;
@@ -170,14 +215,7 @@ namespace poly_fem
 				tmp.col(0)=vis_pts.col(0);
 				tmp.col(1)=vis_pts.col(1);
 				tmp.col(2)=fun;
-				viewer.data.set_mesh(tmp, vis_faces);
-
-				if(state.mesh->is_volume())
-				{
-					MatrixXd normals;
-					igl::per_face_normals(tmp,vis_faces, normals);
-					viewer.data.set_normals(normals);
-				}
+				clip_elements(tmp, vis_faces, vis_element_ranges, valid_elements);
 			}
 		}
 
@@ -199,62 +237,15 @@ namespace poly_fem
 
 		auto show_mesh_func = [&](){
 			clear_func();
+			current_visualization = Visualizing::InputMesh;
 
-			std::vector<bool> valid_elements(normalized_barycenter.rows());
-
-			if(is_slicing)
-			{
-				for (long i = 0; i<normalized_barycenter.rows();++i)
-					valid_elements[i] = normalized_barycenter(i, slice_coord) < slice_position;
-			}
-			else
-				std::fill(valid_elements.begin(), valid_elements.end(), true);
-
-
-			viewer.data.set_face_based(false);
-
-			int n_vis_valid_pts = 0;
-			int n_vis_valid_tri = 0;
-
-			for (long i = 0; i<normalized_barycenter.rows();++i)
-			{
-				if(valid_elements[i])
-				{
-					n_vis_valid_pts += state.mesh->n_element_vertices(i);
-					n_vis_valid_tri += element_ranges[i+1] - element_ranges[i];
-				}
-			}
-
-			MatrixXd valid_pts = tri_pts;//(n_vis_valid_pts, tri_pts.rows());
-			MatrixXi valid_tri(n_vis_valid_tri, tri_faces.cols());
-
-			int from = 0;
-			for(std::size_t i = 1; i < element_ranges.size(); ++i)
-			{
-				if(!valid_elements[i-1]) continue;
-
-				const int range = element_ranges[i]-element_ranges[i-1];
-
-				valid_tri.block(from, 0, range, tri_faces.cols()) = tri_faces.block(element_ranges[i-1], 0, range, tri_faces.cols());
-
-				from += range;
-			}
-
-
-
-			viewer.data.set_mesh(valid_pts, valid_tri);
-			viewer.data.set_face_based(false);
-			if(state.mesh->is_volume())
-			{
-				MatrixXd normals;
-				igl::per_face_normals(valid_pts,valid_tri, normals);
-				viewer.data.set_normals(normals);
-			}
+			std::vector<bool> valid_elements;
+			const long n_tris = clip_elements(tri_pts, tri_faces, element_ranges, valid_elements);
 
 			std::vector<ElementType> ele_tag;
 			state.mesh->compute_element_tag(ele_tag);
 
-			Eigen::MatrixXd cols(valid_tri.rows(), 3);
+			Eigen::MatrixXd cols(n_tris, 3);
 			cols.setZero();
 
 			int regular_count = 0;
@@ -263,8 +254,9 @@ namespace poly_fem
 			int multi_singular_count = 0;
 			int boundary_count = 0;
 			int non_regular_count = 0;
+			int undefined_cout = 0;
 
-			from = 0;
+			int from = 0;
 			for(std::size_t i = 1; i < element_ranges.size(); ++i)
 			{
 				if(!valid_elements[i-1]) continue;
@@ -300,13 +292,17 @@ namespace poly_fem
 					case ElementType::InteriorPolytope: non_regular_count++;
 					cols.block(from, 2, range, 1).setOnes();
 					cols.block(from, 1, range, 1).setConstant(0.5); break;
+
+					//grey
+					case ElementType::Undefined: undefined_cout++;
+					cols.block(from, 0, range, 3).setConstant(0.5); break;
 				}
 
 				from += range;
 			}
 
 			viewer.data.set_colors(cols);
-			std::cout <<"regular_count: " << regular_count <<" regular_boundary_count: " << regular_boundary_count << " simple_singular_count: " << simple_singular_count << " multi_singular_count: " << multi_singular_count << " boundary_count: " << boundary_count << " non_regular_count: " <<  non_regular_count <<std::endl;
+			std::cout <<"regular_count: " << regular_count <<" regular_boundary_count: " << regular_boundary_count << " simple_singular_count: " << simple_singular_count << " multi_singular_count: " << multi_singular_count << " boundary_count: " << boundary_count << " non_regular_count: " <<  non_regular_count << " undefined_cout: "<<undefined_cout<<std::endl;
 
 
 			MatrixXd p0, p1;
@@ -334,6 +330,11 @@ namespace poly_fem
 
 		auto show_vis_mesh_func = [&](){
 			clear_func();
+			current_visualization = Visualizing::VisMesh;
+
+			std::vector<bool> valid_elements;
+			clip_elements(vis_pts, vis_faces, vis_element_ranges, valid_elements);
+
 			viewer.data.set_mesh(vis_pts, vis_faces);
 			if(state.mesh->is_volume())
 			{
@@ -393,6 +394,7 @@ namespace poly_fem
 		};
 
 		auto show_rhs_func = [&](){
+			current_visualization = Visualizing::Rhs;
 			MatrixXd global_rhs;
 			state.interpolate_function(state.rhs, local_vis_pts_quad, global_rhs);
 
@@ -401,6 +403,7 @@ namespace poly_fem
 
 
 		auto show_sol_func = [&](){
+			current_visualization = Visualizing::Solution;
 			MatrixXd global_sol;
 			interpolate_function(state.sol, global_sol);
 			if(state.problem.problem_num() == 3)
@@ -412,6 +415,7 @@ namespace poly_fem
 
 		auto show_error_func = [&]()
 		{
+			current_visualization = Visualizing::Error;
 			MatrixXd global_sol;
 			interpolate_function(state.sol, global_sol);
 
@@ -425,6 +429,8 @@ namespace poly_fem
 
 		auto show_basis_func = [&](){
 			if(vis_basis < 0 || vis_basis >= state.n_bases) return;
+
+			current_visualization = Visualizing::VisBasis;
 
 			MatrixXd fun = MatrixXd::Zero(state.n_bases, 1);
 			fun(vis_basis) = 1;
@@ -520,6 +526,8 @@ namespace poly_fem
 
 			const auto &current_bases = state.iso_parametric ? state.bases : state.geom_bases;
 			int faces_total_size = 0, points_total_size = 0;
+			vis_element_ranges.push_back(0);
+
 			for(int i = 0; i < int(current_bases.size()); ++i)
 			{
 				const ElementBases &bs = current_bases[i];
@@ -555,6 +563,8 @@ namespace poly_fem
 						points_total_size += vis_pts_poly[i].rows();
 					}
 				}
+
+				vis_element_ranges.push_back(faces_total_size);
 			}
 
 			vis_pts.resize(points_total_size, local_vis_pts_quad.cols());
@@ -598,7 +608,21 @@ namespace poly_fem
 			assert(point_index == vis_pts.rows());
 			assert(face_index == vis_faces.rows());
 
-			if(!state.mesh->is_volume())
+			if(state.mesh->is_volume())
+			{
+				//reverse all faces
+				for(long i = 0; i < vis_faces.rows(); ++i)
+				{
+					const int v0 = vis_faces(i, 0);
+					const int v1 = vis_faces(i, 1);
+					const int v2 = vis_faces(i, 2);
+
+					int tmpc = vis_faces(i, 2);
+					vis_faces(i, 2) = vis_faces(i, 1);
+					vis_faces(i, 1) = tmpc;
+				}
+			}
+			else
 			{
 				Matrix2d mmat;
 				for(long i = 0; i < vis_faces.rows(); ++i)
@@ -699,6 +723,20 @@ namespace poly_fem
 		};
 
 
+		auto update_slices = [&]() {
+			clear_func();
+			switch(current_visualization)
+			{
+				case Visualizing::InputMesh: show_mesh_func(); break;
+				case Visualizing::VisMesh: show_vis_mesh_func(); break;
+				case Visualizing::Solution: show_sol_func(); break;
+				case Visualizing::Rhs: break;
+				case Visualizing::Error: show_error_func(); break;
+				case Visualizing::VisBasis: show_basis_func(); break;
+			}
+		};
+
+
 		viewer.callback_init = [&](igl::viewer::Viewer& viewer_)
 		{
 			viewer_.ngui->addWindow(Eigen::Vector2i(220,10),"PolyFEM");
@@ -781,12 +819,12 @@ namespace poly_fem
 				return slice_position;
 			});
 
-			viewer_.ngui->addButton("+0.1", [&](){ slice_position += 0.1; if(is_slicing) show_mesh_func();});
-			viewer_.ngui->addButton("-0.1", [&](){ slice_position -= 0.1; if(is_slicing) show_mesh_func();});
+			viewer_.ngui->addButton("+0.1", [&](){ slice_position += 0.1; if(is_slicing) update_slices();});
+			viewer_.ngui->addButton("-0.1", [&](){ slice_position -= 0.1; if(is_slicing) update_slices();});
 
 			viewer_.ngui->addVariable<bool>("enable",[&](bool val) {
 				is_slicing = val;
-				show_mesh_func();
+				update_slices();
 			},[&]() {
 				return is_slicing;
 			});

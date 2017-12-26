@@ -95,6 +95,7 @@ namespace poly_fem
 		int boundary_count = 0;
 		int non_regular_boundary_count = 0;
 		int non_regular_count = 0;
+		int undefined_count = 0;
 
 		for(std::size_t i = 0; i < ele_tag.size(); ++i)
 		{
@@ -102,29 +103,25 @@ namespace poly_fem
 
 			switch(type)
 			{
-						//green
 				case ElementType::RegularInteriorCube: regular_count++; break;
 
-						//dark green
 				case ElementType::RegularBoundaryCube: regular_boundary_count++; break;
 
-						//orange
 				case ElementType::SimpleSingularInteriorCube: simple_singular_count++; break;
 
- 						//red
 				case ElementType::MultiSingularInteriorCube: multi_singular_count++; break;
 
-						//blue
 				case ElementType::SingularBoundaryCube: boundary_count++; break;
 
-				  		 //light blue
 				case ElementType::BoundaryPolytope: non_regular_boundary_count++; break;
 
 				case ElementType::InteriorPolytope: non_regular_count++; break;
+
+				case ElementType::Undefined: undefined_count++; break;
 			}
 		}
 
-		std::cout <<"regular_count: " << regular_count <<" regular_boundary_count: " << regular_boundary_count << " simple_singular_count: " << simple_singular_count << " multi_singular_count: " << multi_singular_count << " boundary_count: " << boundary_count << " non_regular_count: " <<  non_regular_count << " non_regular_boundary_count: " << non_regular_boundary_count <<std::endl;
+		std::cout <<"regular_count: " << regular_count <<" regular_boundary_count: " << regular_boundary_count << " simple_singular_count: " << simple_singular_count << " multi_singular_count: " << multi_singular_count << " boundary_count: " << boundary_count << " non_regular_count: " <<  non_regular_count << " non_regular_boundary_count: " << non_regular_boundary_count << " undefined_count: " << undefined_count <<std::endl;
 
 	}
 
