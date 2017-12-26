@@ -6,7 +6,8 @@ namespace poly_fem
 {
 	void Mesh3D::refine(const int n_refiniment)
 	{
-//TODO implement me
+		MeshProcessing3D::refine_catmul_clark_polar(mesh_, n_refiniment);
+		Navigation3D::prepare_mesh(mesh_);
 	}
 
 	bool Mesh3D::load(const std::string &path)

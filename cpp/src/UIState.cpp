@@ -248,14 +248,6 @@ namespace poly_fem
 			Eigen::MatrixXd cols(n_tris, 3);
 			cols.setZero();
 
-			int regular_count = 0;
-			int regular_boundary_count = 0;
-			int simple_singular_count = 0;
-			int multi_singular_count = 0;
-			int boundary_count = 0;
-			int non_regular_count = 0;
-			int undefined_cout = 0;
-
 			int from = 0;
 			for(std::size_t i = 1; i < element_ranges.size(); ++i)
 			{
@@ -267,34 +259,34 @@ namespace poly_fem
 				switch(type)
 				{
 						//green
-					case ElementType::RegularInteriorCube: regular_count++;
+					case ElementType::RegularInteriorCube:
 					cols.block(from, 1, range, 1).setOnes(); break;
 
 						//dark green
-					case ElementType::RegularBoundaryCube: regular_boundary_count++;
+					case ElementType::RegularBoundaryCube:
 					cols.block(from, 1, range, 1).setConstant(0.5); break;
 
 						//orange
-					case ElementType::SimpleSingularInteriorCube: simple_singular_count++;
+					case ElementType::SimpleSingularInteriorCube:
 					cols.block(from, 0, range, 1).setOnes();
 					cols.block(from, 1, range, 1).setConstant(0.5); break;
 
  						//red
-					case ElementType::MultiSingularInteriorCube: multi_singular_count++;
+					case ElementType::MultiSingularInteriorCube:
 					cols.block(from, 0, range, 1).setOnes(); break;
 
 						//blue
-					case ElementType::SingularBoundaryCube: boundary_count++;
+					case ElementType::SingularBoundaryCube:
 					cols.block(from, 2, range, 1).setOnes(); break;
 
 				  		 //light blue
 					case ElementType::BoundaryPolytope:
-					case ElementType::InteriorPolytope: non_regular_count++;
+					case ElementType::InteriorPolytope:
 					cols.block(from, 2, range, 1).setOnes();
 					cols.block(from, 1, range, 1).setConstant(0.5); break;
 
 					//grey
-					case ElementType::Undefined: undefined_cout++;
+					case ElementType::Undefined:
 					cols.block(from, 0, range, 3).setConstant(0.5); break;
 				}
 
@@ -302,8 +294,6 @@ namespace poly_fem
 			}
 
 			viewer.data.set_colors(cols);
-			std::cout <<"regular_count: " << regular_count <<" regular_boundary_count: " << regular_boundary_count << " simple_singular_count: " << simple_singular_count << " multi_singular_count: " << multi_singular_count << " boundary_count: " << boundary_count << " non_regular_count: " <<  non_regular_count << " undefined_cout: "<<undefined_cout<<std::endl;
-
 
 			MatrixXd p0, p1;
 			state.mesh->get_edges(p0, p1);
@@ -655,6 +645,7 @@ namespace poly_fem
 
 		auto load_mesh_func = [&](){
 			state.load_mesh();
+			state.compute_mesh_stats();
 			state.mesh->triangulate_faces(tri_faces, tri_pts, element_ranges);
 			state.mesh->compute_barycenter(normalized_barycenter);
 
@@ -814,7 +805,7 @@ namespace poly_fem
 			viewer_.ngui->addVariable<double>("pos",[&](double val) {
 				slice_position = val;
 				if(is_slicing)
-					show_mesh_func();
+					update_slices();
 			},[&]() {
 				return slice_position;
 			});

@@ -105,7 +105,7 @@ int main(int argc, const char **argv)
         state.init(path, n_refs, problem_num);
         // std::cout<<path<<std::endl;
         state.load_mesh();
-        // state.compute_mesh_stats();
+        state.compute_mesh_stats();
         state.build_basis();
         state.compute_assembly_vals();
         state.assemble_stiffness_mat();

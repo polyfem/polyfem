@@ -24,6 +24,10 @@ namespace poly_fem
 		for(std::size_t j = 0; j < basis_values.size(); ++j)
 			basis_values[j].finalize();
 
+		// std::cout<<"\n\ndx:\n"<<dx<<std::endl;
+		// std::cout<<"\n\ndy:\n"<<dy<<std::endl;
+		// std::cout<<"\n\ndz:\n"<<dz<<std::endl;
+
 		Eigen::Matrix3d tmp;
 		for(long i=0; i < v.rows(); ++i)
 		{
@@ -32,7 +36,7 @@ namespace poly_fem
 			tmp.row(2) = dz.row(i);
 
 			det(i) = (tmp.determinant());
-			std::cout<<(tmp.determinant())<<std::endl;
+			std::cout<<det(i)<<std::endl;
 
 			Eigen::MatrixXd jac_it = tmp.inverse().transpose();
 			for(std::size_t j = 0; j < basis_values.size(); ++j)

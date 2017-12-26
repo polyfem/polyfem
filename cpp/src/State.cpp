@@ -6,12 +6,13 @@
 #include "HexBasis.hpp"
 #include "QuadBasis.hpp"
 #include "Spline2dBasis.hpp"
-#include "HexQuadrature.hpp"
-#include "QuadQuadrature.hpp"
+
 #include "QuadBoundarySampler.hpp"
+#include "HexBoundarySampler.hpp"
 
 #include "Assembler.hpp"
 #include "RhsAssembler.hpp"
+
 #include "Laplacian.hpp"
 #include "LinearElasticity.hpp"
 
@@ -60,7 +61,7 @@ namespace poly_fem
 		j["l2_err"] = l2_err;
 		j["linf_err"] = linf_err;
 
-		j["errors"] = errors;
+		// j["errors"] = errors;
 
 		j["nn_zero"] = nn_zero;
 		j["mat_size"] = mat_size;
@@ -235,14 +236,105 @@ namespace poly_fem
 			}
 		}
 
-		// if(use_splines)
+
+		const int n_samples = 10;
+		mesh_size = 0;
+		Eigen::MatrixXd samples, mapped, p0, p1, p;
+		auto &curret_bases =  iso_parametric ? bases : geom_bases;
+
+		if(mesh->is_volume())
 		{
-			const int n_samples = 10;
-			mesh_size = 0;
-			Eigen::MatrixXd samples, mapped, p, p0, p1;
+			samples.resize(12*n_samples, 3);
+			const Eigen::MatrixXd t = Eigen::VectorXd::LinSpaced(n_samples, 0, 1);
+
+			//X
+			int ii = 0;
+			samples.block(ii*n_samples, 0, n_samples, 1) = t;
+			samples.block(ii*n_samples, 1, n_samples, 1).setZero();
+			samples.block(ii*n_samples, 2, n_samples, 1).setZero();
+
+			++ii;
+			samples.block(ii*n_samples, 0, n_samples, 1) = t;
+			samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
+			samples.block(ii*n_samples, 2, n_samples, 1).setZero();
+
+			++ii;
+			samples.block(ii*n_samples, 0, n_samples, 1) = t;
+			samples.block(ii*n_samples, 1, n_samples, 1).setZero();
+			samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
+
+			++ii;
+			samples.block(ii*n_samples, 0, n_samples, 1) = t;
+			samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
+			samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
+
+			//Y
+			++ii;
+			samples.block(ii*n_samples, 0, n_samples, 1).setZero();
+			samples.block(ii*n_samples, 1, n_samples, 1) = t;
+			samples.block(ii*n_samples, 2, n_samples, 1).setZero();
+
+			++ii;
+			samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
+			samples.block(ii*n_samples, 1, n_samples, 1) = t;
+			samples.block(ii*n_samples, 2, n_samples, 1).setZero();
+
+			++ii;
+			samples.block(ii*n_samples, 0, n_samples, 1).setZero();
+			samples.block(ii*n_samples, 1, n_samples, 1) = t;
+			samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
+
+			++ii;
+			samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
+			samples.block(ii*n_samples, 1, n_samples, 1) = t;
+			samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
+
+			//Z
+			++ii;
+			samples.block(ii*n_samples, 0, n_samples, 1).setZero();
+			samples.block(ii*n_samples, 1, n_samples, 1).setZero();
+			samples.block(ii*n_samples, 2, n_samples, 1) = t;
+
+			++ii;
+			samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
+			samples.block(ii*n_samples, 1, n_samples, 1).setZero();
+			samples.block(ii*n_samples, 2, n_samples, 1) = t;
+
+			++ii;
+			samples.block(ii*n_samples, 0, n_samples, 1).setZero();
+			samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
+			samples.block(ii*n_samples, 2, n_samples, 1) = t;
+
+			++ii;
+			samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
+			samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
+			samples.block(ii*n_samples, 2, n_samples, 1) = t;
+
+
+			for(std::size_t i = 0; i < curret_bases.size(); ++i){
+				if(mesh->n_element_vertices(int(i)) != 8) continue;
+
+				curret_bases[i].eval_geom_mapping(samples, mapped);
+
+				for(int j = 0; j < 12; ++j)
+				{
+					double current_edge = 0;
+					for(int k = 0; k < n_samples-1; ++k){
+						p0 = mapped.row(j*n_samples + k);
+						p1 = mapped.row(j*n_samples + k+1);
+						p = p0-p1;
+
+						current_edge += p.norm();
+					}
+
+					mesh_size = std::max(current_edge, mesh_size);
+				}
+			}
+		}
+		else
+		{
 			QuadBoundarySampler::sample(true, true, true, true, n_samples, false, samples);
 
-			auto &curret_bases =  iso_parametric ? bases : geom_bases;
 			for(std::size_t i = 0; i < curret_bases.size(); ++i){
 				if(mesh->n_element_vertices(int(i)) != 4) continue;
 
@@ -263,10 +355,6 @@ namespace poly_fem
 				}
 			}
 		}
-		// else
-		// {
-		// 	mesh_size = mesh->compute_mesh_size();
-		// }
 
 		timer.stop();
 		building_basis_time = timer.getElapsedTime();
@@ -379,20 +467,26 @@ namespace poly_fem
 		// CholmodSupernodalLLT< SparseMatrix<double, Eigen::RowMajor> > solver;
 #ifdef POLY_FEM_WITH_UMFPACK
 		UmfPackLU<SparseMatrix<double, Eigen::RowMajor> > solver;
+		std::cout<<"with UmfPack direct solver..."<<std::flush;
+
 		solver.compute(stiffness);
 		sol = solver.solve(rhs);
-		std::cout<<"with UmfPack direct solver";
 #else
 		BiCGSTAB<SparseMatrix<double, Eigen::RowMajor> > solver;
+		std::cout<<"with BiCGSTAB iterative solver..."<<std::flush;
+
 		sol = solver.compute(stiffness).solve(rhs);
-		std::cout<<"with bicgstap iterative solver";
 #endif
-
-		std::cout<<"..."<<std::flush;
-
 		timer.stop();
 		solving_time = timer.getElapsedTime();
 		std::cout<<" took "<<solving_time<<"s"<<std::endl;
+		std::cout<<"Solver error: "<<(stiffness*sol-rhs).norm()<<std::endl;
+
+		std::ofstream of;
+		of.open("stiffness.txt");
+		of.precision(100);
+		of<<Eigen::MatrixXd(stiffness);
+		of.close();
 	}
 
 	void State::compute_errors()
