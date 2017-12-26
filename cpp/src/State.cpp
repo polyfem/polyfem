@@ -482,11 +482,11 @@ namespace poly_fem
 		std::cout<<" took "<<solving_time<<"s"<<std::endl;
 		std::cout<<"Solver error: "<<(stiffness*sol-rhs).norm()<<std::endl;
 
-		std::ofstream of;
-		of.open("stiffness.txt");
-		of.precision(100);
-		of<<Eigen::MatrixXd(stiffness);
-		of.close();
+		// std::ofstream of;
+		// of.open("stiffness.txt");
+		// of.precision(100);
+		// of<<Eigen::MatrixXd(stiffness);
+		// of.close();
 	}
 
 	void State::compute_errors()
