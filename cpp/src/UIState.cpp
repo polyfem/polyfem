@@ -357,12 +357,14 @@ namespace poly_fem
 						MatrixXd node = l2g.node;
 					// node += MatrixXd::Random(node.rows(), node.cols())/100;
 						MatrixXd txt_p = node;
-						for(long k = 0; k < txt_p.size(); ++k)
-							txt_p(k) += 0.02;
+						// for(long k = 0; k < txt_p.size(); ++k)
+							// txt_p(k) += 0.02;
 
 						MatrixXd col = MatrixXd::Zero(l2g.node.rows(), 3);
 						if(std::find(state.bounday_nodes.begin(), state.bounday_nodes.end(), g_index) != state.bounday_nodes.end())
 							col.col(0).setOnes();
+						else
+							col.col(1).setOnes();
 
 
 						viewer.data.add_points(node, col);
@@ -378,8 +380,8 @@ namespace poly_fem
 				const ElementAssemblyValues &vals = state.values[i];
 				viewer.data.add_points(vals.val, MatrixXd::Zero(vals.val.rows(), 3));
 
-				for(long j = 0; j < vals.val.rows(); ++j)
-					viewer.data.add_label(vals.val.row(j), std::to_string(j));
+				// for(long j = 0; j < vals.val.rows(); ++j)
+					// viewer.data.add_label(vals.val.row(j), std::to_string(j));
 			}
 		};
 
@@ -547,7 +549,7 @@ namespace poly_fem
 							E(e, 1) = (e+1) % poly.rows();
 						}
 
-						igl::triangle::triangulate(poly, E, MatrixXd(0,2), "Qpqa0.0005", vis_pts_poly[i], vis_faces_poly[i]);
+						igl::triangle::triangulate(poly, E, MatrixXd(0,2), "Qpqa0.00001", vis_pts_poly[i], vis_faces_poly[i]);
 
 						faces_total_size   += vis_faces_poly[i].rows();
 						points_total_size += vis_pts_poly[i].rows();
@@ -594,7 +596,6 @@ namespace poly_fem
 				}
 			}
 
-			std::cout<<vis_faces.rows()<<std::endl;
 			assert(point_index == vis_pts.rows());
 			assert(face_index == vis_faces.rows());
 
@@ -667,9 +668,9 @@ namespace poly_fem
 			state.build_basis();
 
 			if(skip_visualization) return;
-			clear_func();
-			show_mesh_func();
-			show_nodes_func();
+			// clear_func();
+			// show_mesh_func();
+			// show_nodes_func();
 		};
 
 

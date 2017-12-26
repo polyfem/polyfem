@@ -428,9 +428,9 @@ namespace poly_fem
 		std::cout<<"sparsity: "<<nn_zero<<"/"<<mat_size<<std::endl;
 
 		// std::ofstream of;
-		// of.open("mat.txt");
+		// of.open("stifness.txt");
 		// of.precision(100);
-		// of<<MatrixXd(stiffness)<<std::endl;
+		// of<<stiffness<<std::endl;
 		// of.close();
 	}
 
@@ -481,12 +481,6 @@ namespace poly_fem
 		solving_time = timer.getElapsedTime();
 		std::cout<<" took "<<solving_time<<"s"<<std::endl;
 		std::cout<<"Solver error: "<<(stiffness*sol-rhs).norm()<<std::endl;
-
-		// std::ofstream of;
-		// of.open("stiffness.txt");
-		// of.precision(100);
-		// of<<Eigen::MatrixXd(stiffness);
-		// of.close();
 	}
 
 	void State::compute_errors()

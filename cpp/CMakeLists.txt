@@ -133,6 +133,9 @@ add_library(polyfem
 	src/basis/QuadBasis.cpp
 	src/basis/QuadBasis.hpp
 
+	src/basis/HarmonicBasis.cpp
+	src/basis/HarmonicBasis.hpp
+
 	src/basis/BiharmonicBasis.cpp
 	src/basis/BiharmonicBasis.hpp
 

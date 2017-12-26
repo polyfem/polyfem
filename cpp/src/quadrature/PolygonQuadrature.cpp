@@ -34,16 +34,36 @@ namespace poly_fem
 
     void PolygonQuadrature::get_quadrature(const Eigen::MatrixXd &poly, const int order, Quadrature &quad)
     {
+        double area = 0;
         Eigen::MatrixXi E(poly.rows(),2);
+        Eigen::Matrix2d tmp;
         for(int e = 0; e < int(poly.rows()); ++e)
         {
+            const int ep = (e+1) % poly.rows();
+
             E(e, 1) = e;
-            E(e, 0) = (e+1) % poly.rows();
+            E(e, 0) = ep;
+
+            tmp.row(0) = poly.row(e);
+            tmp.row(1) = poly.row(ep);
+
+            area += tmp.determinant();
         }
+
+        area = fabs(area);
 
         Eigen::MatrixXi tris;
         Eigen::MatrixXd pts;
-        igl::triangle::triangulate(poly, E, Eigen::MatrixXd(0,2), "Qpa0.1", pts, tris);
+        std::stringstream ss;
+        ss.precision(100);
+        ss.setf(std::ios::fixed, std::ios::floatfield);
+        ss<<"Qpa"<<0.00001/area;
+
+        Eigen::MatrixXd poly_tmp(poly.rows()+1, 2);
+        poly_tmp.block(0, 0, poly.rows(), 2) = poly;
+        poly_tmp.block(poly.rows(), 0, 1, 2) = poly.colwise().mean(); //TODO replace with point in kernel
+
+        igl::triangle::triangulate(poly_tmp, E, Eigen::MatrixXd(0,2), ss.str(), pts, tris);
 
         Quadrature tri_quad_pts;
         TriQuadrature tri_quad;

@@ -4,7 +4,10 @@
 #include "QuadQuadrature.hpp"
 #include "PolygonQuadrature.hpp"
 #include "QuadBoundarySampler.hpp"
+
+#include "HarmonicBasis.hpp"
 #include "BiharmonicBasis.hpp"
+
 
 #include <cassert>
 #include <iostream>
@@ -412,7 +415,7 @@ namespace poly_fem
             }
         }
 
-        void sample_polygon(const int element_index, const int samples_res, const Mesh2D &mesh, std::map<int, BoundaryData> &poly_edge_to_data, const std::vector< ElementBases > &bases, std::vector<int> &local_to_global, Eigen::MatrixXd &boundary_samples, Eigen::MatrixXd &poly_samples, Eigen::MatrixXd &rhs)
+        void sample_polygon(const int element_index, const int samples_res, const Mesh2D &mesh, std::map<int, BoundaryData> &poly_edge_to_data, const std::vector< ElementBases > &bases, std::vector<int> &local_to_global, const double eps, Eigen::MatrixXd &boundary_samples, Eigen::MatrixXd &poly_samples, Eigen::MatrixXd &rhs)
         {
             const bool c1_continuous = false;
 
@@ -520,7 +523,26 @@ namespace poly_fem
                 boundary_samples.block(i*(samples_res-1), 0, mapped.rows(), mapped.cols()) = mapped;
                 const int offset = int(mapped.rows())/(poly_local_n+1);
                 for(int j = 0; j < poly_local_n; ++j)
-                    poly_samples.row(i*poly_local_n+j) = mapped.row((j+1)*offset-1);
+                {
+                    const int poly_index = (j+1)*offset-1;
+
+                    if(eps > 0)
+                    {
+                        const int im = poly_index - 1;
+                        const int ip = poly_index + 1;
+
+                        const Eigen::MatrixXd e0 = (mapped.row(poly_index) - mapped.row(im)).normalized();
+                        const Eigen::MatrixXd e1 = (mapped.row(ip) - mapped.row(poly_index)).normalized();
+
+                        const Eigen::Vector2d n0(e0(1), -e0(0));
+                        const Eigen::Vector2d n1(e1(1), -e1(0));
+                        const Eigen::Vector2d n = (n0+n1).normalized(); //TODO discad point if inside
+
+                        poly_samples.row(i*poly_local_n+j) = n.transpose()*eps + mapped.row(poly_index);
+                    }
+                    else
+                        poly_samples.row(i*poly_local_n+j) = mapped.row(poly_index);
+                }
 
                 index = mesh.next_around_face(index);
             }
@@ -572,8 +594,12 @@ namespace poly_fem
         }
 
         const int samples_res = 5;
+        const bool use_harmonic = true;
+
 
         PolygonQuadrature poly_quad;
+        Eigen::Matrix2d det_mat;
+        Eigen::MatrixXd p0, p1;
 
         for(int e = 0; e < n_els; ++e)
         {
@@ -582,34 +608,62 @@ namespace poly_fem
             if(n_edges == 4)
                 continue;
 
+            double area = 0;
+            for(int i = 0; i < n_edges; ++i)
+            {
+                const int ip = (i + 1) % n_edges;
+
+                mesh.point(mesh.vertex_global_index(e, i), p0);
+                mesh.point(mesh.vertex_global_index(e, ip), p1);
+                det_mat.row(0) = p0;
+                det_mat.row(1) = p1;
+
+                area += det_mat.determinant();
+            }
+            area = fabs(area);
+            const double eps = use_harmonic ? (0.08*area) : 0;
+
             std::vector<int> local_to_global;
             Eigen::MatrixXd boundary_samples, poly_samples;
             Eigen::MatrixXd rhs;
 
-            sample_polygon(e, samples_res, mesh, poly_edge_to_data, bases, local_to_global, boundary_samples, poly_samples, rhs);
-
-            BiharmonicBasis biharmonic(poly_samples, boundary_samples, rhs);
+            sample_polygon(e, samples_res, mesh, poly_edge_to_data, bases, local_to_global, eps, boundary_samples, poly_samples, rhs);
 
             ElementBases &b=bases[e];
             b.has_parameterization = false;
             poly_quad.get_quadrature(boundary_samples, quadrature_order, b.quadrature);
-
-            // igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
-            // viewer.data.add_points(boundary_samples, Eigen::Vector3d(0,1,1).transpose());
-            // for(int asd = 0; asd < boundary_samples.rows(); ++asd)
-            //     viewer.data.add_label(boundary_samples.row(asd), std::to_string(asd));
 
             polys[e] = boundary_samples;
 
             const int n_poly_bases = int(local_to_global.size());
             b.bases.resize(n_poly_bases);
 
-
-            for(int i = 0; i < n_poly_bases; ++i)
+            if(use_harmonic)
             {
-                b.bases[i].init(local_to_global[i], i, Eigen::MatrixXd(1,2));
-                b.bases[i].set_basis([biharmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { biharmonic.basis(i, uv, val); });
-                b.bases[i].set_grad( [biharmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { biharmonic.grad(i, uv, val); });
+                HarmonicBasis harmonic(poly_samples, boundary_samples, rhs);
+
+                igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
+                viewer.data.add_points(poly_samples, Eigen::Vector3d(0,1,1).transpose());
+            // for(int asd = 0; asd < boundary_samples.rows(); ++asd)
+                // viewer.data.add_label(boundary_samples.row(asd), std::to_string(asd));
+
+                for(int i = 0; i < n_poly_bases; ++i)
+                {
+                    b.bases[i].init(local_to_global[i], i, Eigen::MatrixXd(1,2));
+                    b.bases[i].set_basis([harmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { harmonic.basis(i, uv, val); });
+                    b.bases[i].set_grad( [harmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { harmonic.grad(i, uv, val); });
+                }
+            }
+            else
+            {
+                BiharmonicBasis biharmonic(poly_samples, boundary_samples, rhs);
+
+                for(int i = 0; i < n_poly_bases; ++i)
+                {
+                    b.bases[i].init(local_to_global[i], i, Eigen::MatrixXd(1,2));
+                    b.bases[i].set_basis([biharmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { biharmonic.basis(i, uv, val); });
+                    b.bases[i].set_grad( [biharmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { biharmonic.grad(i, uv, val); });
+                }
             }
         }
 

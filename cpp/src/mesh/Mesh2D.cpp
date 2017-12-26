@@ -17,6 +17,7 @@ namespace poly_fem
 {
 	void Mesh2D::refine(const int n_refiniment)
 	{
+		// return;
 		if(n_refiniment <= 0) return;
 
 		for(int i = 0; i < n_refiniment; ++i)
@@ -25,11 +26,13 @@ namespace poly_fem
 			mesh.copy(mesh_);
 			mesh_.clear(false,false);
 
-			refine_polygonal_mesh(mesh, mesh_, true, 0.4);
+			refine_polygonal_mesh(mesh, mesh_, true, 0.5);
 
 			Navigation::prepare_mesh(mesh_);
 		}
 		create_boundary_nodes();
+
+		// save("test.obj");
 	}
 
 	bool Mesh2D::load(const std::string &path)
