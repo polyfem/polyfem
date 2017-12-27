@@ -642,8 +642,8 @@ namespace poly_fem
             {
                 HarmonicBasis harmonic(poly_samples, boundary_samples, rhs);
 
-                igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
-                viewer.data.add_points(poly_samples, Eigen::Vector3d(0,1,1).transpose());
+                // igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
+                // viewer.data.add_points(poly_samples, Eigen::Vector3d(0,1,1).transpose());
             // for(int asd = 0; asd < boundary_samples.rows(); ++asd)
                 // viewer.data.add_label(boundary_samples.row(asd), std::to_string(asd));
 
