@@ -3,6 +3,8 @@
 
 #include "CommandLine.hpp"
 
+#include "BiharmonicBasis.hpp"
+
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
 
@@ -35,6 +37,43 @@ using namespace Eigen;
 **/
 int main(int argc, const char **argv)
 {
+    // const int n_samples = 1000;
+    // const int n_poly_samples = n_samples/3;
+    // Eigen::MatrixXd boundary_samples(n_samples, 2);
+    // Eigen::MatrixXd poly_samples(n_poly_samples, 2);
+
+    // for(int i = 0; i < n_samples; ++i)
+    // {
+    //     boundary_samples(i,0) = cos((2.*i)*M_PI/n_samples);
+    //     boundary_samples(i,1) = sin((2.*i)*M_PI/n_samples);
+    // }
+
+    // for(int i = 0; i < n_poly_samples; ++i)
+    // {
+    //     poly_samples(i,0) = 1.01*cos((2.*i)*M_PI/n_samples);
+    //     poly_samples(i,1) = 1.01*sin((2.*i)*M_PI/n_samples);
+    // }
+
+    // Eigen::MatrixXd rhs(3*n_samples, 1);
+    // rhs.setZero();
+
+    // for(int i = 0; i < n_samples; ++i)
+    // {
+    //     rhs(n_samples + 2*i)   = -10*sin((2.*i)*M_PI/n_samples);
+    //     rhs(n_samples + 2*i+1) = -10*sin((2.*i)*M_PI/n_samples);
+    // }
+
+
+    // BiharmonicBasis biharmonic(poly_samples, boundary_samples, rhs);
+
+    // exit(0);
+
+
+
+
+
+
+
 #ifndef WIN32
     setenv("GEO_NO_SIGNAL_HANDLERS", "1", 1);
 #endif

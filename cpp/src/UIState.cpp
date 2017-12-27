@@ -97,7 +97,7 @@ namespace poly_fem
 
 	bool UIState::is_tri(const ElementBases &bs) const
 	{
-		return !state.mesh->is_volume() && int(bs.bases.size()) == 3;
+		return !state.mesh->is_volume() && (int(bs.bases.size()) == 3 || int(bs.bases.size()) == 6);
 	}
 
 	void UIState::interpolate_function(const MatrixXd &fun, MatrixXd &result)
@@ -669,9 +669,9 @@ namespace poly_fem
 			state.build_basis();
 
 			if(skip_visualization) return;
-			// clear_func();
-			// show_mesh_func();
-			// show_nodes_func();
+			clear_func();
+			show_mesh_func();
+			show_nodes_func();
 		};
 
 

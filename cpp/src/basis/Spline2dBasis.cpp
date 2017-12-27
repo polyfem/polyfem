@@ -518,7 +518,7 @@ namespace poly_fem
 
                         for(long k = 0; k < grad_basis_val.rows(); ++k)
                         {
-                            const Eigen::MatrixXd trans_grad = -grad_basis_val.row(k) * grads[k];
+                            const Eigen::MatrixXd trans_grad = grad_basis_val.row(k) * grads[k];
 
                             rhs(n_samples + 2*i*(samples_res-1) + 2*k,     basis_index) = trans_grad(0);
                             rhs(n_samples + 2*i*(samples_res-1) + 2*k + 1, basis_index) = trans_grad(1);

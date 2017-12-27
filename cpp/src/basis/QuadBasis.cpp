@@ -145,7 +145,7 @@ namespace poly_fem
 
 			const int n_vertex_nodes = mesh.n_pts();
 			const int n_edge_nodes = mesh.n_edges();
-			const int n_face_nodes = mesh.n_elements();
+			int n_face_nodes = 0;
 
 			std::vector<Eigen::Matrix<double, 1, 2> > edge_nodes(mesh.n_edges());
 
@@ -159,13 +159,13 @@ namespace poly_fem
 				BasisValue &bv = values[e];
 				const int n_el_vertices = mesh.n_element_vertices(e);
 				bv.n_el_vertices = n_el_vertices;
-				bv.n_bases = 9;
 
 				std::vector<BasisLocValue> &lvals = bv.values;
-				lvals.resize(bv.n_bases);
 
 				if(n_el_vertices == 4)
 				{
+					bv.n_bases = 9;
+					lvals.resize(bv.n_bases);
 
 					Navigation::Index index = mesh.get_index_from_face(e);
 					for (int j = 0; j < n_el_vertices; ++j)
@@ -193,13 +193,31 @@ namespace poly_fem
 						index = mesh.next_around_face(index);
 					}
 
-					lvals[8].global_index = n_vertex_nodes + n_edge_nodes + e;
+					lvals[8].global_index = n_vertex_nodes + n_edge_nodes + n_face_nodes;
 					lvals[8].node = mesh.node_from_face(e);
+					++n_face_nodes;
+				}
+				else if(n_el_vertices == 3)
+				{
+					bv.n_bases = 6;
+					lvals.resize(bv.n_bases);
+
+					Navigation::Index index = mesh.get_index_from_face(e);
+					for (int j = 0; j < n_el_vertices; ++j)
+					{
+						lvals[j].global_index = index.vertex;
+						mesh.point(index.vertex, lvals[j].node);
+
+						lvals[n_el_vertices + j].global_index = index.edge + n_vertex_nodes;
+						lvals[n_el_vertices + j].node = edge_nodes[index.edge];
+
+						index = mesh.next_around_face(index);
+					}
 				}
 				else
 				{
 					assert(false);
-					//TODO triangulate element and implement p2...
+					//TODO triangulate element...
 				}
 
 			}
