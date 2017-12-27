@@ -114,6 +114,7 @@ add_library(polyfem
 	src/quadrature/HexQuadrature.hpp
 
 	src/basis/ElementBases.hpp
+	src/basis/ElementBases.cpp
 
 	src/basis/Basis.hpp
 	src/basis/Basis.cpp

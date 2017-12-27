@@ -114,6 +114,8 @@ namespace poly_fem
 
 			for(long i = 0; i < samples.rows(); ++i)
 			{
+				const auto &p = samples.row(i);
+
 				mat(offset + 2*i,   end - 1) = 0;
 				mat(offset + 2*i+1, end - 1) = 1;
 
@@ -121,24 +123,21 @@ namespace poly_fem
 				mat(offset + 2*i+1, end - 2) = 0;
 
 				mat(offset + 2*i,   end - 3) = 0;
-				mat(offset + 2*i+1, end - 3) = 2*samples(i, 1);
+				mat(offset + 2*i+1, end - 3) = 2*p(1);
 
-				mat(offset + 2*i,   end - 4) = 2*samples(i, 1);
-				mat(offset + 2*i+1, end - 4) = 2*samples(i, 0);
+				mat(offset + 2*i,   end - 4) = 2*p(1);
+				mat(offset + 2*i+1, end - 4) = 2*p(0);
 
-				mat(offset + 2*i,   end - 5) = 2*samples(i, 0);
+				mat(offset + 2*i,   end - 5) = 2*p(0);
 				mat(offset + 2*i+1, end - 5) = 0;
 
-				const auto &p = samples.row(i);
+
 				for(long j = 0; j < centers_.rows(); ++j)
 				{
 					const double r = (centers_.row(j)-p).norm();
 
-					if(r > 1e-8)
-					{
-						mat(offset + 2*i,   j) = (p(0)-centers_(j,0))*kernel_prime(r)/r;
-						mat(offset + 2*i+1, j) = (p(1)-centers_(j,1))*kernel_prime(r)/r;
-					}
+					mat(offset + 2*i,   j) = (p(0)-centers_(j,0))*kernel_prime(r)/r;
+					mat(offset + 2*i+1, j) = (p(1)-centers_(j,1))*kernel_prime(r)/r;
 				}
 			}
 		}
@@ -146,7 +145,10 @@ namespace poly_fem
 		weights_ = mat.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(rhs);
 
 		// std::cout.precision(100);
+		// std::cout<<"cc=[\n"<<centers_<<"];"<<std::endl;
+		// std::cout<<"ss=[\n"<<samples<<"];"<<std::endl;
 		// std::cout<<"mat=[\n"<<mat<<"];"<<std::endl;
-		// std::cout<<"weights=[\n"<<weights_<<"];"<<std::endl;
+		// std::cout<<"rr=[\n"<<rhs<<"];"<<std::endl;
+		// std::cout<<"ww=[\n"<<weights_<<"];"<<std::endl;
 	}
 }

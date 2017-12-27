@@ -60,6 +60,7 @@ namespace poly_fem
 
 		j["l2_err"] = l2_err;
 		j["linf_err"] = linf_err;
+		j["lp_err"] = lp_err;
 
 		// j["errors"] = errors;
 
@@ -499,6 +500,7 @@ namespace poly_fem
 
 		l2_err = 0;
 		linf_err = 0;
+		lp_err = 0;
 
 		for(int e = 0; e < n_el; ++e)
 		{
@@ -526,15 +528,17 @@ namespace poly_fem
 
 			linf_err = max(linf_err, err.maxCoeff());
 			l2_err += (err.array() * err.array() * gvalues.det.array() * vals.quadrature.weights.array()).sum();
+			lp_err += (err.array().pow(8.) * gvalues.det.array() * vals.quadrature.weights.array()).sum();
 		}
 
 		l2_err = sqrt(fabs(l2_err));
+		lp_err = pow(fabs(lp_err), 1./8.);
 
 		timer.stop();
 		computing_errors_time = timer.getElapsedTime();
 		std::cout<<" took "<<computing_errors_time<<"s"<<std::endl;
 
-		std::cout<<l2_err<<" "<<linf_err<<std::endl;
+		std::cout<<l2_err<<" "<<linf_err<<" "<<lp_err<<std::endl;
 	}
 
 	State &State::state(){

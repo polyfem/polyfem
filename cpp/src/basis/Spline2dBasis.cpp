@@ -415,10 +415,8 @@ namespace poly_fem
             }
         }
 
-        void sample_polygon(const int element_index, const int samples_res, const Mesh2D &mesh, std::map<int, BoundaryData> &poly_edge_to_data, const std::vector< ElementBases > &bases, std::vector<int> &local_to_global, const double eps, Eigen::MatrixXd &boundary_samples, Eigen::MatrixXd &poly_samples, Eigen::MatrixXd &rhs)
+        void sample_polygon(const int element_index, const int samples_res, const Mesh2D &mesh, std::map<int, BoundaryData> &poly_edge_to_data, const std::vector< ElementBases > &bases, std::vector<int> &local_to_global, const double eps, const bool c1_continuous, Eigen::MatrixXd &boundary_samples, Eigen::MatrixXd &poly_samples, Eigen::MatrixXd &rhs)
         {
-            const bool c1_continuous = false;
-
             const int n_edges = mesh.n_element_vertices(element_index);
 
             const int poly_local_n = (samples_res - 1)/3;
@@ -429,6 +427,7 @@ namespace poly_fem
             poly_samples.resize(n_poly_samples, 2);
 
             Eigen::MatrixXd samples, mapped, basis_val, grad_basis_val;
+            std::vector<Eigen::MatrixXd> grads;
 
             Navigation::Index index = mesh.get_index_from_face(element_index);
             for(int i = 0; i < n_edges; ++i)
@@ -461,6 +460,11 @@ namespace poly_fem
                 QuadBoundarySampler::sample(bdata.flag == RIGHT_FLAG, bdata.flag == BOTTOM_FLAG, bdata.flag == LEFT_FLAG, bdata.flag == TOP_FLAG, samples_res, false, samples);
 
                 b.eval_geom_mapping(samples, mapped);
+
+                if(c1_continuous)
+                {
+                    b.eval_geom_mapping_grads(samples, grads);
+                }
 
                 bool must_reverse = true;
                 if(prev.size() > 0)
@@ -512,8 +516,13 @@ namespace poly_fem
                         if(must_reverse)
                             grad_basis_val = grad_basis_val.colwise().reverse().eval();
 
-                        rhs.block(n_samples + 2*i*(samples_res-1),   basis_index, grad_basis_val.rows(), 1) = grad_basis_val.col(0);
-                        rhs.block(n_samples + 2*i*(samples_res-1)+1, basis_index, grad_basis_val.rows(), 1) = grad_basis_val.col(1);
+                        for(long k = 0; k < grad_basis_val.rows(); ++k)
+                        {
+                            const Eigen::MatrixXd trans_grad = -grad_basis_val.row(k) * grads[k];
+
+                            rhs(n_samples + 2*i*(samples_res-1) + 2*k,     basis_index) = trans_grad(0);
+                            rhs(n_samples + 2*i*(samples_res-1) + 2*k + 1, basis_index) = trans_grad(1);
+                        }
                     }
 
                 }
@@ -595,6 +604,7 @@ namespace poly_fem
 
         const int samples_res = 5;
         const bool use_harmonic = true;
+        const bool c1_continuous = !use_harmonic && true;
 
 
         PolygonQuadrature poly_quad;
@@ -621,13 +631,14 @@ namespace poly_fem
                 area += det_mat.determinant();
             }
             area = fabs(area);
-            const double eps = use_harmonic ? (0.08*area) : 0;
+            // const double eps = use_harmonic ? (0.08*area) : 0;
+            const double eps = 0.08*area;
 
             std::vector<int> local_to_global;
             Eigen::MatrixXd boundary_samples, poly_samples;
             Eigen::MatrixXd rhs;
 
-            sample_polygon(e, samples_res, mesh, poly_edge_to_data, bases, local_to_global, eps, boundary_samples, poly_samples, rhs);
+            sample_polygon(e, samples_res, mesh, poly_edge_to_data, bases, local_to_global, eps, c1_continuous, boundary_samples, poly_samples, rhs);
 
             ElementBases &b=bases[e];
             b.has_parameterization = false;

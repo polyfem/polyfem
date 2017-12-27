@@ -430,7 +430,8 @@ namespace poly_fem
 			MatrixXd global_fun;
 			interpolate_function(fun, global_fun);
 			// global_fun /= 100;
-			plot_function(global_fun, 0, 1.);
+			std::cout<<global_fun.minCoeff()<<" "<<global_fun.maxCoeff()<<std::endl;
+			plot_function(global_fun);
 		};
 
 
@@ -438,7 +439,7 @@ namespace poly_fem
 			igl::Timer timer; timer.start();
 			std::cout<<"Building vis mesh..."<<std::flush;
 
-			const double area_param = 0.0001*state.mesh->n_elements();
+			const double area_param = 0.00001*state.mesh->n_elements();
 
 			std::stringstream buf;
 			buf.precision(100);
