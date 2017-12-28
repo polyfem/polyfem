@@ -508,18 +508,18 @@ namespace poly_fem
 // 		solver.compute(SolverMat(stiffness));
 // 		sol = solver.solve(rhs);
 // #else // POLY_FEM_WITH_SUPERLU
-#ifdef POLY_FEM_WITH_UMFPACK
-		UmfPackLU<SparseMatrix<double, Eigen::RowMajor> > solver;
-		std::cout<<"with UmfPack direct solver..."<<std::flush;
+// #ifdef POLY_FEM_WITH_UMFPACK
+// 		UmfPackLU<SparseMatrix<double, Eigen::RowMajor> > solver;
+// 		std::cout<<"with UmfPack direct solver..."<<std::flush;
 
-		solver.compute(stiffness);
-		sol = solver.solve(rhs);
-#else //POLY_FEM_WITH_UMFPACK
+// 		solver.compute(stiffness);
+// 		sol = solver.solve(rhs);
+// #else //POLY_FEM_WITH_UMFPACK
 		BiCGSTAB<SparseMatrix<double, Eigen::RowMajor> > solver;
 		std::cout<<"with BiCGSTAB iterative solver..."<<std::flush;
 
 		sol = solver.compute(stiffness).solve(rhs);
-#endif //POLY_FEM_WITH_UMFPACK
+// #endif //POLY_FEM_WITH_UMFPACK
 // #endif  //POLY_FEM_WITH_SUPERLU
 
 		timer.stop();
