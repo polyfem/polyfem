@@ -1,4 +1,4 @@
-#include "HexBasis.hpp"
+#include "FEBasis3d.hpp"
 
 #include "HexQuadrature.hpp"
 
@@ -8,8 +8,139 @@
 namespace poly_fem
 {
 
+	namespace
+	{
+		void hex_basis_basis(const int disc_order, const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val)
+		{
+			auto x=xne.col(0).array();
+			auto n=xne.col(1).array();
+			auto e=xne.col(2).array();
 
-	int HexBasis::build_bases(const Mesh3D &mesh, const int quadrature_order, std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes)
+			switch(disc_order)
+			{
+				case 1:
+				{
+					switch(local_index)
+					{
+						case 0: val = (1-x)*(1-n)*(1-e); break;
+						case 1: val = (  x)*(1-n)*(1-e); break;
+						case 2: val = (  x)*(  n)*(1-e); break;
+						case 3: val = (1-x)*(  n)*(1-e); break;
+
+						case 4: val = (1-x)*(1-n)*(  e); break;
+						case 5: val = (  x)*(1-n)*(  e); break;
+						case 6: val = (  x)*(  n)*(  e); break;
+						case 7: val = (1-x)*(  n)*(  e); break;
+						default: assert(false);
+					}
+
+					break;
+				}
+
+			//No H2 implemented
+				default: assert(false);
+			}
+		}
+
+		void hex_basis_grad(const int disc_order, const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val)
+		{
+			val.resize(xne.rows(), 3);
+
+			auto x=xne.col(0).array();
+			auto n=xne.col(1).array();
+			auto e=xne.col(2).array();
+
+			switch(disc_order)
+			{
+				case 1:
+				{
+					switch(local_index)
+					{
+						case 0:
+						{
+						//(1-x)*(1-n)*(1-e);
+							val.col(0) = -      (1-n)*(1-e);
+							val.col(1) = -(1-x)      *(1-e);
+							val.col(2) = -(1-x)*(1-n);
+
+							break;
+						}
+						case 1:
+						{
+						//(  x)*(1-n)*(1-e)
+							val.col(0) =        (1-n)*(1-e);
+							val.col(1) = -(  x)      *(1-e);
+							val.col(2) = -(  x)*(1-n);
+
+							break;
+						}
+						case 2:
+						{
+						//(  x)*(  n)*(1-e)
+							val.col(0) =        (  n)*(1-e);
+							val.col(1) =  (  x)      *(1-e);
+							val.col(2) = -(  x)*(  n);
+
+							break;
+						}
+						case 3:
+						{
+						//(1-x)*(  n)*(1-e);
+							val.col(0) = -       (  n)*(1-e);
+							val.col(1) =  (1-x)       *(1-e);
+							val.col(2) = -(1-x)*(  n);
+
+							break;
+						}
+						case 4:
+						{
+						//(1-x)*(1-n)*(  e);
+							val.col(0) = -      (1-n)*(  e);
+							val.col(1) = -(1-x)      *(  e);
+							val.col(2) =  (1-x)*(1-n);
+
+							break;
+						}
+						case 5:
+						{
+						//(  x)*(1-n)*(  e);
+							val.col(0) =        (1-n)*(  e);
+							val.col(1) = -(  x)      *(  e);
+							val.col(2) =  (  x)*(1-n);
+
+							break;
+						}
+						case 6:
+						{
+						//(  x)*(  n)*(  e);
+							val.col(0) =       (  n)*(  e);
+							val.col(1) = (  x)      *(  e);
+							val.col(2) = (  x)*(  n);
+
+							break;
+						}
+						case 7:
+						{
+						//(1-x)*(  n)*(  e);
+							val.col(0) = -      (  n)*(  e);
+							val.col(1) =  (1-x)      *(  e);
+							val.col(2) =  (1-x)*(  n);
+
+							break;
+						}
+
+						default: assert(false);
+					}
+
+					break;
+				}
+
+				default: assert(false);
+			}
+		}
+	}
+
+	int FEBasis3d::build_bases(const Mesh3D &mesh, const int quadrature_order, std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes)
 	{
 		bounday_nodes.clear();
 
@@ -97,8 +228,8 @@ namespace poly_fem
 						// std::cout<<node<<std::endl;
 					b.bases[j].init(global_index, j, node);
 
-					b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { HexBasis::basis(discr_order, j, uv, val); });
-					b.bases[j].set_grad( [discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  HexBasis::grad(discr_order, j, uv, val); });
+					b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { hex_basis_basis(discr_order, j, uv, val); });
+					b.bases[j].set_grad( [discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  hex_basis_grad(discr_order, j, uv, val); });
 				}
 					// std::cout<<std::endl;
 			}
@@ -114,134 +245,5 @@ namespace poly_fem
 		bounday_nodes.resize(std::distance(bounday_nodes.begin(), it));
 
 		return n_bases;
-	}
-
-	void HexBasis::basis(const int disc_order, const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val)
-	{
-		auto x=xne.col(0).array();
-		auto n=xne.col(1).array();
-		auto e=xne.col(2).array();
-
-		switch(disc_order)
-		{
-			case 1:
-			{
-				switch(local_index)
-				{
-					case 0: val = (1-x)*(1-n)*(1-e); break;
-					case 1: val = (  x)*(1-n)*(1-e); break;
-					case 2: val = (  x)*(  n)*(1-e); break;
-					case 3: val = (1-x)*(  n)*(1-e); break;
-
-					case 4: val = (1-x)*(1-n)*(  e); break;
-					case 5: val = (  x)*(1-n)*(  e); break;
-					case 6: val = (  x)*(  n)*(  e); break;
-					case 7: val = (1-x)*(  n)*(  e); break;
-					default: assert(false);
-				}
-
-				break;
-			}
-
-			//No H2 implemented
-			default: assert(false);
-		}
-	}
-
-	void HexBasis::grad(const int disc_order, const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val)
-	{
-		val.resize(xne.rows(), 3);
-
-		auto x=xne.col(0).array();
-		auto n=xne.col(1).array();
-		auto e=xne.col(2).array();
-
-		switch(disc_order)
-		{
-			case 1:
-			{
-				switch(local_index)
-				{
-					case 0:
-					{
-						//(1-x)*(1-n)*(1-e);
-						val.col(0) = -      (1-n)*(1-e);
-						val.col(1) = -(1-x)      *(1-e);
-						val.col(2) = -(1-x)*(1-n);
-
-						break;
-					}
-					case 1:
-					{
-						//(  x)*(1-n)*(1-e)
-						val.col(0) =        (1-n)*(1-e);
-						val.col(1) = -(  x)      *(1-e);
-						val.col(2) = -(  x)*(1-n);
-
-						break;
-					}
-					case 2:
-					{
-						//(  x)*(  n)*(1-e)
-						val.col(0) =        (  n)*(1-e);
-						val.col(1) =  (  x)      *(1-e);
-						val.col(2) = -(  x)*(  n);
-
-						break;
-					}
-					case 3:
-					{
-						//(1-x)*(  n)*(1-e);
-						val.col(0) = -       (  n)*(1-e);
-						val.col(1) =  (1-x)       *(1-e);
-						val.col(2) = -(1-x)*(  n);
-
-						break;
-					}
-					case 4:
-					{
-						//(1-x)*(1-n)*(  e);
-						val.col(0) = -      (1-n)*(  e);
-						val.col(1) = -(1-x)      *(  e);
-						val.col(2) =  (1-x)*(1-n);
-
-						break;
-					}
-					case 5:
-					{
-						//(  x)*(1-n)*(  e);
-						val.col(0) =        (1-n)*(  e);
-						val.col(1) = -(  x)      *(  e);
-						val.col(2) =  (  x)*(1-n);
-
-						break;
-					}
-					case 6:
-					{
-						//(  x)*(  n)*(  e);
-						val.col(0) =       (  n)*(  e);
-						val.col(1) = (  x)      *(  e);
-						val.col(2) = (  x)*(  n);
-
-						break;
-					}
-					case 7:
-					{
-						//(1-x)*(  n)*(  e);
-						val.col(0) = -      (  n)*(  e);
-						val.col(1) =  (1-x)      *(  e);
-						val.col(2) =  (1-x)*(  n);
-
-						break;
-					}
-
-					default: assert(false);
-				}
-
-				break;
-			}
-
-			default: assert(false);
-		}
 	}
 }

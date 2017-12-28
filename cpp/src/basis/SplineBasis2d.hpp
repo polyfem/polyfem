@@ -1,5 +1,5 @@
-#ifndef SPLINE_2D_BASIS_HPP
-#define SPLINE_2D_BASIS_HPP
+#ifndef SPLINE_BASIS_2D_HPP
+#define SPLINE_BASIS_2D_HPP
 
 #include "Mesh2D.hpp"
 #include "ElementBases.hpp"
@@ -11,7 +11,7 @@
 
 namespace poly_fem
 {
-	class Spline2dBasis
+	class SplineBasis2d
 	{
 	public:
 		static int build_bases(const Mesh2D &mesh, const int quadrature_order, std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes, std::map<int, Eigen::MatrixXd> &polys);
@@ -20,4 +20,4 @@ namespace poly_fem
 	};
 }
 
-#endif //SPLINE_2D_BASIS_HPP
+#endif //SPLINE_BASIS_2D_HPP

@@ -1,15 +1,15 @@
-#include "QuadraticTPBSpline.hpp"
+#include "QuadraticBSpline2d.hpp"
 
 
 
 namespace poly_fem {
-	void QuadraticTensorProductBSpline::init(const std::vector<double> &knots_u, const std::vector<double> &knots_v)
+	void QuadraticBSpline2d::init(const std::vector<double> &knots_u, const std::vector<double> &knots_v)
 	{
 		spline_u_.init(knots_u);
 		spline_v_.init(knots_v);
 	}
 
-	void QuadraticTensorProductBSpline::interpolate(const Eigen::MatrixXd &ts, Eigen::MatrixXd &result) const
+	void QuadraticBSpline2d::interpolate(const Eigen::MatrixXd &ts, Eigen::MatrixXd &result) const
 	{
 		const int n_t = int(ts.rows());
 		assert(ts.cols() == 2);
@@ -20,13 +20,13 @@ namespace poly_fem {
 			result(i) = interpolate(ts(i,0), ts(i,1));
 	}
 
-	double QuadraticTensorProductBSpline::interpolate(const double u, const double v) const
+	double QuadraticBSpline2d::interpolate(const double u, const double v) const
 	{
 		return spline_u_.interpolate(u) * spline_v_.interpolate(v);
 	}
 
 
-	void QuadraticTensorProductBSpline::derivative(const Eigen::MatrixXd &ts, Eigen::MatrixXd &result) const
+	void QuadraticBSpline2d::derivative(const Eigen::MatrixXd &ts, Eigen::MatrixXd &result) const
 	{
 		const int n_t = int(ts.rows());
 		assert(ts.cols() == 2);

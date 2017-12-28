@@ -3,9 +3,10 @@
 #include "Mesh2D.hpp"
 #include "Mesh3D.hpp"
 
-#include "HexBasis.hpp"
-#include "QuadBasis.hpp"
-#include "Spline2dBasis.hpp"
+#include "FEBasis2d.hpp"
+#include "FEBasis3d.hpp"
+
+#include "SplineBasis2d.hpp"
 
 #include "QuadBoundarySampler.hpp"
 #include "HexBoundarySampler.hpp"
@@ -211,28 +212,28 @@ namespace poly_fem
 			if(use_splines)
 				assert(false);
 			else
-				n_bases = HexBasis::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, bounday_nodes);
+				n_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, bounday_nodes);
 		}
 		else
 		{
 			const Mesh2D &tmp_mesh = *static_cast<Mesh2D *>(mesh);
 			if(use_splines){
 				if(iso_parametric)
-					n_bases = Spline2dBasis::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, bounday_nodes, polys);
+					n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, bounday_nodes, polys);
 				else
 				{
-					n_geom_bases = QuadBasis::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, bounday_nodes);
-					n_bases = Spline2dBasis::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, bounday_nodes, polys);
+					n_geom_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, bounday_nodes);
+					n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, bounday_nodes, polys);
 				}
 			}
 			else
 			{
 				if(iso_parametric)
-					n_bases = QuadBasis::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, bounday_nodes);
+					n_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, bounday_nodes);
 				else
 				{
-					n_geom_bases = QuadBasis::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, bounday_nodes);
-					n_bases = QuadBasis::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, bounday_nodes);
+					n_geom_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, bounday_nodes);
+					n_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, bounday_nodes);
 				}
 			}
 		}

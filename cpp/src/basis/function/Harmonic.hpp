@@ -1,14 +1,14 @@
-#ifndef BIHARMONIC_BASIS_HPP
-#define BIHARMONIC_BASIS_HPP
+#ifndef HARMONIC_HPP
+#define HARMONIC_HPP
 
 #include <Eigen/Dense>
 
 namespace poly_fem
 {
-	class BiharmonicBasis
+	class Harmonic
 	{
 	public:
-		BiharmonicBasis(const Eigen::MatrixXd &centers, const Eigen::MatrixXd &samples, const Eigen::MatrixXd &rhs);
+		Harmonic(const Eigen::MatrixXd &centers, const Eigen::MatrixXd &samples, const Eigen::MatrixXd &rhs);
 
 		void basis(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const;
 		void grad(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const;

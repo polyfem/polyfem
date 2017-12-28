@@ -1,12 +1,12 @@
-#include "Spline2dBasis.hpp"
+#include "SplineBasis2d.hpp"
 
-#include "QuadraticTPBSpline.hpp"
+#include "QuadraticBSpline2d.hpp"
 #include "QuadQuadrature.hpp"
 #include "PolygonQuadrature.hpp"
 #include "QuadBoundarySampler.hpp"
 
-#include "HarmonicBasis.hpp"
-#include "BiharmonicBasis.hpp"
+#include "Harmonic.hpp"
+#include "Biharmonic.hpp"
 
 
 #include <cassert>
@@ -324,7 +324,7 @@ namespace poly_fem
                         const int local_index = y*3 + x;
                         b.bases[local_index].init(global_index, local_index, node);
 
-                        const QuadraticTensorProductBSpline spline(h_knots[x], v_knots[y]);
+                        const QuadraticBSpline2d spline(h_knots[x], v_knots[y]);
                         b.bases[local_index].set_basis([spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.interpolate(uv, val); });
                         b.bases[local_index].set_grad( [spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.derivative(uv, val); });
                     }
@@ -407,7 +407,7 @@ namespace poly_fem
                         }
 
 
-                        const QuadraticTensorProductBSpline spline(h_knots[x], v_knots[y]);
+                        const QuadraticBSpline2d spline(h_knots[x], v_knots[y]);
                         b.bases[local_index].set_basis([spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.interpolate(uv, val); });
                         b.bases[local_index].set_grad( [spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.derivative(uv, val); });
                     }
@@ -559,7 +559,7 @@ namespace poly_fem
     }
 
 
-    int Spline2dBasis::build_bases(const Mesh2D &mesh, const int quadrature_order, std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes, std::map<int, Eigen::MatrixXd> &polys)
+    int SplineBasis2d::build_bases(const Mesh2D &mesh, const int quadrature_order, std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes, std::map<int, Eigen::MatrixXd> &polys)
     {
         using std::max;
         assert(!mesh.is_volume());
@@ -651,7 +651,7 @@ namespace poly_fem
 
             if(use_harmonic)
             {
-                HarmonicBasis harmonic(poly_samples, boundary_samples, rhs);
+                Harmonic harmonic(poly_samples, boundary_samples, rhs);
 
                 // igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
                 // viewer.data.add_points(poly_samples, Eigen::Vector3d(0,1,1).transpose());
@@ -669,7 +669,7 @@ namespace poly_fem
             }
             else
             {
-                BiharmonicBasis biharmonic(poly_samples, boundary_samples, rhs);
+                Biharmonic biharmonic(poly_samples, boundary_samples, rhs);
 
                 for(int i = 0; i < n_poly_bases; ++i)
                 {

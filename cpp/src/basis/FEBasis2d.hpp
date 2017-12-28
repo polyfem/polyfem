@@ -1,5 +1,5 @@
-#ifndef QUAD_BASIS_HPP
-#define QUAD_BASIS_HPP
+#ifndef FE_BASIS_2D_HPP
+#define FE_BASIS_2D_HPP
 
 #include "ElementBases.hpp"
 #include "Mesh2D.hpp"
@@ -10,14 +10,11 @@
 
 namespace poly_fem
 {
-	class QuadBasis
+	class FEBasis2d
 	{
 	public:
 		static int build_bases(const Mesh2D &mesh, const int quadrature_order, const int discr_order, std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes);
-
-		static void basis(const int disc_order, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
-		static void grad(const int disc_order, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
 	};
 }
 
-#endif //QUAD_BASIS_HPP
+#endif //FE_BASIS_2D_HPP

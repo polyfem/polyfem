@@ -76,22 +76,21 @@ add_library(polyfem
 	src/utils/HexBoundarySampler.hpp
 	src/utils/HexBoundarySampler.cpp
 
+	src/mesh/Mesh.hpp
 	src/mesh/LocalBoundary.hpp
 
-	src/mesh/Mesh.hpp
-
-	src/mesh/Mesh2D.hpp
-	src/mesh/Mesh2D.cpp
-	src/mesh/MeshUtils.cpp
-	src/mesh/MeshUtils.hpp
-	src/mesh/Navigation.hpp
-	src/mesh/Navigation.cpp
-	src/mesh/PolygonUtils.hpp
-	src/mesh/PolygonUtils.cpp
-	src/mesh/Refinement.hpp
-	src/mesh/Refinement.cpp
-	src/mesh/Singularities.hpp
-	src/mesh/Singularities.cpp
+	src/mesh2D/Mesh2D.hpp
+	src/mesh2D/Mesh2D.cpp
+	src/mesh2D/MeshUtils.cpp
+	src/mesh2D/MeshUtils.hpp
+	src/mesh2D/Navigation.hpp
+	src/mesh2D/Navigation.cpp
+	src/mesh2D/PolygonUtils.hpp
+	src/mesh2D/PolygonUtils.cpp
+	src/mesh2D/Refinement.hpp
+	src/mesh2D/Refinement.cpp
+	src/mesh2D/Singularities.hpp
+	src/mesh2D/Singularities.cpp
 
 	src/mesh3D/Mesh3DStorage.hpp
 	src/mesh3D/Mesh3D.hpp
@@ -102,6 +101,7 @@ add_library(polyfem
 	src/mesh3D/MeshProcessing3D.cpp
 
 	src/quadrature/Quadrature.hpp
+
 	src/quadrature/LineQuadrature.hpp
 	src/quadrature/LineQuadrature.cpp
 	src/quadrature/TriQuadrature.cpp
@@ -119,29 +119,33 @@ add_library(polyfem
 	src/basis/Basis.hpp
 	src/basis/Basis.cpp
 
-	src/basis/QuadraticBSpline.cpp
-	src/basis/QuadraticBSpline.hpp
 
-	src/basis/QuadraticTPBSpline.cpp
-	src/basis/QuadraticTPBSpline.hpp
+	src/basis/FEBasis2d.cpp
+	src/basis/FEBasis2d.hpp
 
-	src/basis/Spline2dBasis.cpp
-	src/basis/Spline2dBasis.hpp
+	src/basis/SplineBasis2d.cpp
+	src/basis/SplineBasis2d.hpp
 
-	src/basis/TriBasis.cpp
-	src/basis/TriBasis.hpp
+	src/basis/FEBasis3d.cpp
+	src/basis/FEBasis3d.hpp
 
-	src/basis/QuadBasis.cpp
-	src/basis/QuadBasis.hpp
 
-	src/basis/HarmonicBasis.cpp
-	src/basis/HarmonicBasis.hpp
+	src/basis/function/QuadraticBSpline.cpp
+	src/basis/function/QuadraticBSpline.hpp
 
-	src/basis/BiharmonicBasis.cpp
-	src/basis/BiharmonicBasis.hpp
+	src/basis/function/QuadraticBSpline2d.cpp
+	src/basis/function/QuadraticBSpline2d.hpp
 
-	src/basis/HexBasis.cpp
-	src/basis/HexBasis.hpp
+	src/basis/function/QuadraticBSpline3d.cpp
+	src/basis/function/QuadraticBSpline3d.hpp
+
+
+	src/basis/function/Harmonic.cpp
+	src/basis/function/Harmonic.hpp
+
+	src/basis/function/Biharmonic.cpp
+	src/basis/function/Biharmonic.hpp
+
 
 	src/assembler/AssemblyValues.hpp
 	src/assembler/ElementAssemblyValues.hpp
@@ -194,7 +198,7 @@ endif()
 # endif()
 
 target_link_libraries(polyfem PUBLIC geogram igl::core igl::triangle igl::tetgen igl::viewer json)
-target_include_directories(polyfem PUBLIC src src/assembler src/basis src/mesh src/mesh3D src/problem src/quadrature src/utils)
+target_include_directories(polyfem PUBLIC src src/assembler src/basis src/basis/function src/mesh src/mesh2D src/mesh3D src/problem src/quadrature src/utils)
 target_compile_options(polyfem PUBLIC ${ALL_WARNINGS})
 # set_property(TARGET polyfem PROPERTY CXX_STANDARD 14)
 

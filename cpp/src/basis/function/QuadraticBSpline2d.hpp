@@ -1,5 +1,5 @@
-#ifndef QUADRATIC_TP_B_SPLINE_HPP
-#define QUADRATIC_TP_B_SPLINE_HPP
+#ifndef QUADRATIC_B_SPLINE_2D_HPP
+#define QUADRATIC_B_SPLINE_2D_HPP
 
 #include "QuadraticBSpline.hpp"
 
@@ -10,12 +10,12 @@
 
 
 namespace poly_fem {
-	class QuadraticTensorProductBSpline {
+	class QuadraticBSpline2d {
 	public:
-		QuadraticTensorProductBSpline()
+		QuadraticBSpline2d()
 		{ }
 
-		QuadraticTensorProductBSpline(const std::vector<double> &knots_u, const std::vector<double> &knots_v)
+		QuadraticBSpline2d(const std::vector<double> &knots_u, const std::vector<double> &knots_v)
 		: spline_u_(knots_u), spline_v_(knots_v)
 		{ }
 		
@@ -30,4 +30,4 @@ namespace poly_fem {
 		QuadraticBSpline spline_v_;
 	};
 }
-#endif //QUADRATIC_TP_B_SPLINE_HPP
+#endif //QUADRATIC_B_SPLINE_2D_HPP
