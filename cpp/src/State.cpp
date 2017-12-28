@@ -190,7 +190,7 @@ namespace poly_fem
 			mesh = new Mesh2D();
 
 		mesh->load(mesh_path);
-		mesh->refine(n_refs);
+		mesh->refine(n_refs, refinenemt_location);
 
 		mesh->set_boundary_tags(boundary_tag);
 		timer.stop();

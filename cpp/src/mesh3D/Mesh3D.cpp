@@ -4,7 +4,7 @@
 
 namespace poly_fem
 {
-	void Mesh3D::refine(const int n_refiniment)
+	void Mesh3D::refine(const int n_refiniment, const double t)
 	{
 		MeshProcessing3D::refine_catmul_clark_polar(mesh_, n_refiniment);
 		MeshProcessing3D::global_orientation_hexes(mesh_);

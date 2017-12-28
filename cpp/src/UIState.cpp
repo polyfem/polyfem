@@ -751,6 +751,7 @@ namespace poly_fem
 
 			viewer_.ngui->addVariable("mesh path", state.mesh_path);
 			viewer_.ngui->addVariable("n refs", state.n_refs);
+			viewer_.ngui->addVariable("refinenemt t", state.refinenemt_location);
 
 			viewer_.ngui->addVariable("spline basis", state.use_splines);
 

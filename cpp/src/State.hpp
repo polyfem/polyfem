@@ -72,6 +72,8 @@ namespace poly_fem
 		double l2_err, linf_err, lp_err;
 		long nn_zero, mat_size;
 
+		double refinenemt_location = 0.5;
+
 		double building_basis_time;
 		double loading_mesh_time;
 		double computing_assembly_values_time;

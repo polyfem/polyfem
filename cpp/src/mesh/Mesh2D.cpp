@@ -15,7 +15,7 @@
 
 namespace poly_fem
 {
-	void Mesh2D::refine(const int n_refiniment)
+	void Mesh2D::refine(const int n_refiniment, const double t)
 	{
 		// return;
 		if(n_refiniment <= 0) return;
@@ -26,7 +26,7 @@ namespace poly_fem
 			mesh.copy(mesh_);
 			mesh_.clear(false,false);
 
-			refine_polygonal_mesh(mesh, mesh_, true, 0.5);
+			refine_polygonal_mesh(mesh, mesh_, true, t);
 
 			Navigation::prepare_mesh(mesh_);
 		}
