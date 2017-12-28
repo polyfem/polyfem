@@ -34,9 +34,9 @@ namespace poly_fem
 
     void PolygonQuadrature::get_quadrature(const Eigen::MatrixXd &poly, const int order, Quadrature &quad)
     {
-        double area = 0;
+        // double area = 0;
+        // Eigen::Matrix2d tmp;
         Eigen::MatrixXi E(poly.rows(),2);
-        Eigen::Matrix2d tmp;
         for(int e = 0; e < int(poly.rows()); ++e)
         {
             const int ep = (e+1) % poly.rows();
@@ -44,30 +44,32 @@ namespace poly_fem
             E(e, 1) = e;
             E(e, 0) = ep;
 
-            tmp.row(0) = poly.row(e);
-            tmp.row(1) = poly.row(ep);
+            // tmp.row(0) = poly.row(e);
+            // tmp.row(1) = poly.row(ep);
 
-            area += tmp.determinant();
+            // area += tmp.determinant();
         }
 
-        area = fabs(area);
+        // area = fabs(area);
 
         Eigen::MatrixXi tris;
         Eigen::MatrixXd pts;
         std::stringstream ss;
         ss.precision(100);
         ss.setf(std::ios::fixed, std::ios::floatfield);
-        ss<<"Qpa"<<0.00001/area;
+        // ss<<"Qpa"<<0.00001/area;
+        ss<<"Qpa"<<(0.01/poly.rows())/order;
 
-        Eigen::MatrixXd poly_tmp(poly.rows()+1, 2);
-        poly_tmp.block(0, 0, poly.rows(), 2) = poly;
-        poly_tmp.block(poly.rows(), 0, 1, 2) = poly.colwise().mean(); //TODO replace with point in kernel
+        // Eigen::MatrixXd poly_tmp(poly.rows()+1, 2);
+        // poly_tmp.block(0, 0, poly.rows(), 2) = poly;
+        // poly_tmp.block(poly.rows(), 0, 1, 2) = poly.colwise().mean(); //TODO replace with point in kernel
+        // igl::triangle::triangulate(poly_tmp, E, Eigen::MatrixXd(0,2), ss.str(), pts, tris);
 
-        igl::triangle::triangulate(poly_tmp, E, Eigen::MatrixXd(0,2), ss.str(), pts, tris);
+        igl::triangle::triangulate(poly, E, Eigen::MatrixXd(0,2), ss.str(), pts, tris);
 
         Quadrature tri_quad_pts;
         TriQuadrature tri_quad;
-        tri_quad.get_quadrature(order, tri_quad_pts);
+        tri_quad.get_quadrature(0, tri_quad_pts);
 
         const long offset = tri_quad_pts.weights.rows();
         quad.points.resize(tris.rows()*offset, 2);

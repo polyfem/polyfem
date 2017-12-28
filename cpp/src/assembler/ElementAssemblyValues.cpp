@@ -36,7 +36,7 @@ namespace poly_fem
 			tmp.row(2) = dz.row(i);
 
 			det(i) = (tmp.determinant());
-			std::cout<<det(i)<<std::endl;
+			// std::cout<<det(i)<<std::endl;
 
 			Eigen::MatrixXd jac_it = tmp.inverse().transpose();
 			for(std::size_t j = 0; j < basis_values.size(); ++j)

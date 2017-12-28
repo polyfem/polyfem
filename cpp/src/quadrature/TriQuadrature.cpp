@@ -23,6 +23,23 @@ namespace poly_fem
                     break;
                 }
 
+                case 1: {
+                    points.resize(3, 2);
+                    weights.resize(3, 1);
+
+                    points <<
+                    2./3., 1./6.,
+                    1./6., 1./6.,
+                    1./6., 2./3.;
+
+                    weights <<
+                    1./3.,
+                    1./3.,
+                    1./3.;
+
+                    break;
+                }
+
                 case 3: {
                     points.resize(6, 2);
                     weights.resize(6, 1);

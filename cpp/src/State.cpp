@@ -163,6 +163,19 @@ namespace poly_fem
 
 	void State::load_mesh()
 	{
+		bases.clear();
+		geom_bases.clear();
+		values.clear();
+		geom_values.clear();
+		bounday_nodes.clear();
+		local_boundary.clear();
+		boundary_tag.clear();
+		errors.clear();
+		polys.clear();
+		delete mesh;
+
+
+
 		igl::Timer timer; timer.start();
 		std::cout<<"Loading mesh..."<<std::flush;
 		std::string extension = mesh_path.substr(mesh_path.find_last_of(".") + 1);

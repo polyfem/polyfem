@@ -646,6 +646,12 @@ namespace poly_fem
 
 
 		auto load_mesh_func = [&](){
+			element_ranges.clear();
+			vis_element_ranges.clear();
+
+			vis_faces_poly.clear();
+			vis_pts_poly.clear();
+
 			state.load_mesh();
 			state.compute_mesh_stats();
 			state.mesh->triangulate_faces(tri_faces, tri_pts, element_ranges);
@@ -669,9 +675,9 @@ namespace poly_fem
 			state.build_basis();
 
 			if(skip_visualization) return;
-			clear_func();
-			show_mesh_func();
-			show_nodes_func();
+			// clear_func();
+			// show_mesh_func();
+			// show_nodes_func();
 		};
 
 
@@ -800,7 +806,7 @@ namespace poly_fem
 			viewer_.ngui->addVariable<int>("coord",[&](int val) {
 				slice_coord = val;
 				if(is_slicing)
-					show_mesh_func();
+					update_slices();
 			},[&]() {
 				return slice_coord;
 			});
