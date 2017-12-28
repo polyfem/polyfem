@@ -385,15 +385,30 @@ void poly_fem::polar_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, std::
 	assert(IV.cols() == 2 || IV.cols() == 3);
 	Eigen::RowVector3d bary;
 	if (is_star_shaped(IV, bary)) {
-		// Create 1-ring around the central point
-		OV.resize(2 * IV.rows(), IV.cols());
-		OV.topRows(IV.rows()) = IV;
-		OV.bottomRows(IV.rows()) = (t * IV).rowwise() + (1.0 - t) * bary.head(IV.cols());
-		int n = (int) IV.rows();
-		OF.push_back({});
-		for (int i = 0; i < IV.rows(); ++i) {
-			OF.front().push_back(i + n);
-			OF.push_back({i, (i+1)%n, (i+1)%n + n, i + n});
+		if (t == 0.0) {
+			// Special case 1: collapse the remaining polygon into a single vertex
+			OV.resize(IV.rows() + 1, IV.cols());
+			OV.topRows(IV.rows()) = IV;
+			OV.bottomRows(1) = bary.head(IV.cols());
+			int n = (int) IV.rows();
+			for (int i = 0; i < IV.rows(); ++i) {
+				OF.push_back({i, (i+1)%n, n});
+			}
+		} else if (t < 0.0) {
+			throw std::invalid_argument("Value t should be >= 0.0.");
+		} else if (t >= 1.0) {
+			throw std::invalid_argument("Value t >= 1.0 would create degenerate elements.");
+		} else {
+			// Create 1-ring around the central point
+			OV.resize(2 * IV.rows(), IV.cols());
+			OV.topRows(IV.rows()) = IV;
+			OV.bottomRows(IV.rows()) = (t * IV).rowwise() + (1.0 - t) * bary.head(IV.cols());
+			int n = (int) IV.rows();
+			OF.push_back({});
+			for (int i = 0; i < IV.rows(); ++i) {
+				OF.front().push_back(i + n);
+				OF.push_back({i, (i+1)%n, (i+1)%n + n, i + n});
+			}
 		}
 	} else {
 		throw std::invalid_argument("Non star-shaped input polygon.");
@@ -432,6 +447,7 @@ void poly_fem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, bo
 		if (nv == 3 || nv == 4) {
 			Index idx = Navigation::get_index_from_face(M_in, f, 0);
 			assert(Navigation::switch_vertex(M_in, idx).vertex == (int) M_in.facets.vertex(f, 1));
+
 			// Create mid-edge vertices
 			for (index_t lv = 0; lv < M_in.facets.nb_vertices(f); ++lv, idx = Navigation::next_around_face(M_in, idx)) {
 				assert(idx.vertex == (int) M_in.facets.vertex(f, lv));
@@ -453,10 +469,12 @@ void poly_fem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, bo
 					next_vertex_around_hole[v12] = v1;
 				}
 			}
+
 			// Create mid-face vertex
 			index_t vf = mesh_create_vertex(M_out, facet_barycenter(M_in, f));
 			assert(vf + 1 == M_out.vertices.nb());
 			next_vertex_around_hole.push_back(-1);
+
 			// Create quads
 			for (index_t lv = 0; lv < M_in.facets.nb_vertices(f); ++lv) {
 				idx = Navigation::get_index_from_face(M_in, f, lv);
@@ -502,11 +520,11 @@ void poly_fem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, bo
 				P.row(k) << pk[0], pk[1];
 			}
 			polar_split(P, V, F, t);
-			std::vector<int> remap(n);
-			assert(V.rows() == 2*n);
-			for (index_t k = 0; k < n; ++k) {
-				GEO::vec3 qk = GEO::vec3(V(k+n, 0), V(k+n, 1), 0);
-				remap[k] = mesh_create_vertex(M_out, qk);
+			assert(V.rows() > n);
+			std::vector<int> remap(V.rows() - n);
+			for (index_t k = n, lk = 0; k < V.rows(); ++k, ++lk) {
+				GEO::vec3 qk = GEO::vec3(V(k, 0), V(k, 1), 0);
+				remap[lk] = mesh_create_vertex(M_out, qk);
 			}
 			for (const auto &poly : F) {
 				GEO::vector<index_t> vertices;
