@@ -20,6 +20,8 @@ endif()
 # libigl
 # option(ENABLE_CHOLMOD     "Enable Cholmod library"  ON)
 option(ENABLE_UMFPACK     "Enable UmfPack library"  ON)
+# option(ENABLE_SUPERLU     "Enable SuperLU library"  ON)
+
 
 
 option(LIBIGL_USE_STATIC_LIBRARY 	"Use libigl as static library" ON)
@@ -171,7 +173,10 @@ add_library(polyfem
 # 	endif()
 # endif()
 
+
+
 if(ENABLE_UMFPACK)
+	find_package(Blas)
 	find_package(Umfpack)
 	if(UMFPACK_FOUND)
 		target_include_directories(polyfem PUBLIC ${UMFPACK_INCLUDES})
@@ -179,6 +184,16 @@ if(ENABLE_UMFPACK)
 		target_compile_definitions(polyfem PUBLIC -DPOLY_FEM_WITH_UMFPACK)
 	endif()
 endif()
+
+# if(ENABLE_SUPERLU)
+# 	find_package(SuperLU)
+# 	if(SUPERLU_FOUND AND BLAS_FOUND)
+# 		target_include_directories(polyfem PUBLIC ${SUPERLU_INCLUDES})
+# 		target_link_libraries(polyfem PUBLIC ${SUPERLU_LIBRARIES})
+# 		target_compile_definitions(polyfem PUBLIC ${SUPERLU_DEFINES})
+# 		target_compile_definitions(polyfem PUBLIC -DPOLY_FEM_WITH_SUPERLU)
+# 	endif()
+# endif()
 
 target_link_libraries(polyfem PUBLIC geogram igl::core igl::triangle igl::tetgen igl::viewer json)
 target_include_directories(polyfem PUBLIC src src/assembler src/basis src/mesh src/mesh3D src/problem src/quadrature src/utils)

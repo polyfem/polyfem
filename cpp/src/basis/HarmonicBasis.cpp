@@ -1,6 +1,7 @@
 #include "HarmonicBasis.hpp"
 
 #include <iostream>
+#include <fstream>
 
 namespace poly_fem
 {
@@ -97,5 +98,45 @@ namespace poly_fem
 		// std::cout.precision(100);
 		// std::cout<<"mat=[\n"<<mat<<"];"<<std::endl;
 		// std::cout<<"weights=[\n"<<weights_<<"];"<<std::endl;
+
+		// {
+		// 	std::ofstream os;
+		// 	os.open("cc.txt");
+		// 	os.precision(100);
+		// 	os<<centers_<<std::endl;
+		// 	os.close();
+		// }
+
+		// {
+		// 	std::ofstream os;
+		// 	os.open("ss.txt");
+		// 	os.precision(100);
+		// 	os<<samples<<std::endl;
+		// 	os.close();
+		// }
+
+		// // {
+		// // 	std::ofstream os;
+		// // 	os.open("mat.txt");
+		// // 	os.precision(100);
+		// // 	os<<mat<<std::endl;
+		// // 	os.close();
+		// // }
+
+		// {
+		// 	std::ofstream os;
+		// 	os.open("rr.txt");
+		// 	os.precision(100);
+		// 	os<<rhs<<std::endl;
+		// 	os.close();
+		// }
+
+		// {
+		// 	std::ofstream os;
+		// 	os.open("ww.txt");
+		// 	os.precision(100);
+		// 	os<<weights_<<std::endl;
+		// 	os.close();
+		// }
 	}
 }

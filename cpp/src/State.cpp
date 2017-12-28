@@ -27,12 +27,14 @@
 #include <algorithm>
 
 
-//POLY_FEM_WITH_CHOLMOD
-// #include <Eigen/CholmodSupport>
+// #ifdef POLY_FEM_WITH_SUPERLU
+// #include <Eigen/SuperLUSupport>
+// #endif
 
 #ifdef POLY_FEM_WITH_UMFPACK
 #include <Eigen/UmfPackSupport>
 #endif
+#include<Eigen/SparseLU>
 
 using namespace Eigen;
 
@@ -441,11 +443,23 @@ namespace poly_fem
 		mat_size = stiffness.size();
 		std::cout<<"sparsity: "<<nn_zero<<"/"<<mat_size<<std::endl;
 
-		// std::ofstream of;
-		// of.open("stifness.txt");
-		// of.precision(100);
-		// of<<stiffness<<std::endl;
-		// of.close();
+
+
+
+
+		// {
+		// 	std::ofstream of;
+		// 	of.open("stiffness.txt");
+		// 	of.precision(100);
+		// 	for(long i = 0; i < stiffness.rows(); ++i)
+		// 	{
+		// 		for (Eigen::SparseMatrix<double, Eigen::RowMajor>::InnerIterator it(stiffness, i); it; ++it)
+		// 		{
+		// 			of << it.row() << " " << it.col() << " "<<it.valueRef() <<"\n";
+		// 		}
+		// 	}
+		// 	of.close();
+		// }
 	}
 
 	void State::assemble_rhs()
@@ -471,6 +485,14 @@ namespace poly_fem
 		timer.stop();
 		assigning_rhs_time = timer.getElapsedTime();
 		std::cout<<" took "<<assigning_rhs_time<<"s"<<std::endl;
+
+		// {
+		// 	std::ofstream of;
+		// 	of.open("rhs.txt");
+		// 	of.precision(100);
+		// 	of<<rhs;
+		// 	of.close();
+		// }
 	}
 
 	void State::solve_problem()
@@ -478,19 +500,33 @@ namespace poly_fem
 		igl::Timer timer; timer.start();
 		std::cout<<"Solving ";
 
-		// CholmodSupernodalLLT< SparseMatrix<double, Eigen::RowMajor> > solver;
+// #ifndef POLY_FEM_WITH_SUPERLU
+// 		typedef SparseMatrix<double> SolverMat;
+// 		SuperLU<SolverMat> solver;
+// 		std::cout<<"with SuperLU direct solver..."<<std::flush;
+
+// 		solver.compute(SolverMat(stiffness));
+// 		sol = solver.solve(rhs);
+// #else // POLY_FEM_WITH_SUPERLU
 #ifdef POLY_FEM_WITH_UMFPACK
-		UmfPackLU<SparseMatrix<double, Eigen::RowMajor> > solver;
+		UmfPackLU<SparseMatrix<double> > solver;
 		std::cout<<"with UmfPack direct solver..."<<std::flush;
 
-		solver.compute(stiffness);
+		// SparseLU<SparseMatrix<double, Eigen::RowMajor> > solver;
+		// std::cout<<"with SparseLU direct solver..."<<std::flush;
+
+		solver.compute(SparseMatrix<double>(stiffness));
+		// solver.umfpackReportInfo();
+		// solver.umfpackReportStatus();
 		sol = solver.solve(rhs);
-#else
+#else //POLY_FEM_WITH_UMFPACK
 		BiCGSTAB<SparseMatrix<double, Eigen::RowMajor> > solver;
 		std::cout<<"with BiCGSTAB iterative solver..."<<std::flush;
 
 		sol = solver.compute(stiffness).solve(rhs);
-#endif
+#endif //POLY_FEM_WITH_UMFPACK
+// #endif  //POLY_FEM_WITH_SUPERLU
+
 		timer.stop();
 		solving_time = timer.getElapsedTime();
 		std::cout<<" took "<<solving_time<<"s"<<std::endl;
