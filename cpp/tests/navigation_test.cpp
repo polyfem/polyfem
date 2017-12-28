@@ -158,9 +158,17 @@ namespace {
 			ImGui::DragFloat("t", &t_, 0.01f, 0.0f, 1.0f);
 			static bool split_polygons = false;
 			ImGui::Checkbox("Split Polygons", &split_polygons);
+			static bool force_quad_ring = false;
+			ImGui::Checkbox("Force quad ring", &force_quad_ring);
 			if (ImGui::Button("Refine", ImVec2(-1, 0))) {
 				GEO::Mesh tmp;
-				poly_fem::refine_polygonal_mesh(mesh_, tmp, split_polygons, t_);
+				if (split_polygons == false) {
+					poly_fem::refine_polygonal_mesh(mesh_, tmp, poly_fem::Polygons::no_split_func());
+				} else if (force_quad_ring) {
+					poly_fem::refine_polygonal_mesh(mesh_, tmp, poly_fem::Polygons::catmul_clark_split_func());
+				} else {
+					poly_fem::refine_polygonal_mesh(mesh_, tmp, poly_fem::Polygons::polar_split_func(t_));
+				}
 				mesh_.copy(tmp);
 				// std::cout << mesh_.vertices.nb() << std::endl;
 				Navigation::prepare_mesh(mesh_);
