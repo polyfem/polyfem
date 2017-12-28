@@ -109,7 +109,7 @@ namespace poly_fem
 				}
 				else
 				{
-					assert(false);
+					// assert(false);
 				//TODO triangulate element...
 				}
 
@@ -197,7 +197,7 @@ namespace poly_fem
 				}
 				else
 				{
-					assert(false);
+					// assert(false);
 					//TODO triangulate element...
 				}
 
@@ -569,7 +569,7 @@ namespace poly_fem
 			}
 			else
 			{
-				assert(false);
+				// assert(false);
 			}
 		}
 

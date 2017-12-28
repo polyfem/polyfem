@@ -105,7 +105,6 @@ int main(int argc, const char **argv)
 
 
     bool use_splines = false;
-    // bool linear_elasticity = false;
 
     bool no_ui = false;
 
@@ -124,8 +123,6 @@ int main(int argc, const char **argv)
     command_line.add_option("-lambda", lambda);
     command_line.add_option("-mu", mu);
 
-    // command_line.add_option("-elasticity", "-poisson", linear_elasticity);
-
     command_line.add_option("-cmd", "-ui", no_ui);
 
     command_line.add_option("-output", output);
@@ -141,7 +138,6 @@ int main(int argc, const char **argv)
         state.lambda = lambda;
         state.mu = mu;
         state.discr_order = discr_order;
-        // state.linear_elasticity = linear_elasticity;
         state.n_boundary_samples = n_boundary_samples;
         state.refinenemt_location = refinenemt_location;
 
@@ -167,7 +163,6 @@ int main(int argc, const char **argv)
         UIState::ui_state().state.use_splines = use_splines;
         UIState::ui_state().state.lambda = lambda;
         UIState::ui_state().state.mu = mu;
-        // UIState::ui_state().state.linear_elasticity = linear_elasticity;
         UIState::ui_state().state.n_boundary_samples = n_boundary_samples;
         UIState::ui_state().state.refinenemt_location = refinenemt_location;
 
