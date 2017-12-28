@@ -9,6 +9,7 @@
 #include <iostream>
 #include <vector>
 #include <array>
+#include <numeric>
 ////////////////////////////////////////////////////////////////////////////////
 
 void poly_fem::edge_adjacency_graph(
@@ -381,7 +382,7 @@ void poly_fem::refine_quad_mesh(
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void poly_fem::polar_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, std::vector<std::vector<int>> &OF, double t) {
+void poly_fem::Polygons::polar_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, std::vector<std::vector<int>> &OF, double t) {
 	assert(IV.cols() == 2 || IV.cols() == 3);
 	Eigen::RowVector3d bary;
 	if (is_star_shaped(IV, bary)) {
@@ -415,9 +416,40 @@ void poly_fem::polar_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, std::
 	}
 }
 
+// -----------------------------------------------------------------------------
+
+void poly_fem::Polygons::catmul_clark_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, std::vector<std::vector<int>> &OF) {
+	assert(IV.cols() == 2 || IV.cols() == 3);
+	std::cout << IV.rows() << std::endl;
+	assert(IV.rows() % 2 == 0);
+	Eigen::RowVector3d bary;
+	if (is_star_shaped(IV, bary)) {
+		// Create 1-ring around the central point
+		OV.resize(IV.rows() + 1, IV.cols());
+		OV.topRows(IV.rows()) = IV;
+		OV.bottomRows(1) = bary.head(IV.cols());
+		int n = (int) IV.rows();
+		for (int i = 1; i < IV.rows(); i += 2) {
+			OF.push_back({i, (i+1)%n, (i+2)%n, n});
+		}
+	} else {
+		throw std::invalid_argument("Non star-shaped input polygon.");
+	}
+}
+
+// -----------------------------------------------------------------------------
+
+void poly_fem::Polygons::no_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, std::vector<std::vector<int>> &OF) {
+	OV = IV;
+	OF.clear();
+	OF.push_back({});
+	OF.front().resize(IV.rows());
+	std::iota(OF.front().begin(), OF.front().end(), 0);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
-void poly_fem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, bool refine_polygons, double t) {
+void poly_fem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, Polygons::SplitFunction split_func) {
 	using GEO::index_t;
 	using Navigation::Index;
 
@@ -444,32 +476,36 @@ void poly_fem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, bo
 	for (index_t f = 0; f < M_in.facets.nb(); ++f) {
 		index_t nv = M_in.facets.nb_vertices(f);
 		assert(nv > 2);
-		if (nv == 3 || nv == 4) {
-			Index idx = Navigation::get_index_from_face(M_in, f, 0);
-			assert(Navigation::switch_vertex(M_in, idx).vertex == (int) M_in.facets.vertex(f, 1));
+		Index idx = Navigation::get_index_from_face(M_in, f, 0);
+		assert(Navigation::switch_vertex(M_in, idx).vertex == (int) M_in.facets.vertex(f, 1));
 
-			// Create mid-edge vertices
-			for (index_t lv = 0; lv < M_in.facets.nb_vertices(f); ++lv, idx = Navigation::next_around_face(M_in, idx)) {
-				assert(idx.vertex == (int) M_in.facets.vertex(f, lv));
-				if (edge_to_midpoint[idx.edge] == -1) {
-					GEO::vec3 coords = 0.5 * (mesh_vertex(M_in, idx.vertex)
-						+ mesh_vertex(M_in, Navigation::switch_vertex(M_in, idx).vertex));
-					edge_to_midpoint[idx.edge] = mesh_create_vertex(M_out, coords);
-					assert(edge_to_midpoint[idx.edge] + 1 == (int) M_out.vertices.nb());
-					next_vertex_around_hole.push_back(-1);
-				}
-				// Chain vertices around holes
-				int v1 = idx.vertex;
-				int v2 = Navigation::switch_vertex(M_in, idx).vertex;
-				if (next_vertex_around_hole[v2] == v1) {
-					// printf("v1: %d, v2: %d, v12: %d, n(v1): %d, n(v2): %d\n",
-					// 	v1, v2, edge_to_midpoint[idx.edge], next_vertex_around_hole[v1], next_vertex_around_hole[v2]);
-					int v12 = edge_to_midpoint[idx.edge];
-					next_vertex_around_hole[v2] = v12;
-					next_vertex_around_hole[v12] = v1;
-				}
+		// Create mid-edge vertices
+		for (index_t lv = 0; lv < M_in.facets.nb_vertices(f); ++lv, idx = Navigation::next_around_face(M_in, idx)) {
+			assert(idx.vertex == (int) M_in.facets.vertex(f, lv));
+			if (edge_to_midpoint[idx.edge] == -1) {
+				GEO::vec3 coords = 0.5 * (mesh_vertex(M_in, idx.vertex)
+					+ mesh_vertex(M_in, Navigation::switch_vertex(M_in, idx).vertex));
+				edge_to_midpoint[idx.edge] = mesh_create_vertex(M_out, coords);
+				assert(edge_to_midpoint[idx.edge] + 1 == (int) M_out.vertices.nb());
+				next_vertex_around_hole.push_back(-1);
 			}
+			// Chain vertices around holes
+			int v1 = idx.vertex;
+			int v2 = Navigation::switch_vertex(M_in, idx).vertex;
+			if (next_vertex_around_hole[v2] == v1) {
+				// printf("v1: %d, v2: %d, v12: %d, n(v1): %d, n(v2): %d\n",
+				// 	v1, v2, edge_to_midpoint[idx.edge], next_vertex_around_hole[v1], next_vertex_around_hole[v2]);
+				int v12 = edge_to_midpoint[idx.edge];
+				next_vertex_around_hole[v2] = v12;
+				next_vertex_around_hole[v12] = v1;
+			} else if (next_vertex_around_hole[v1] == v2) {
+				int v12 = edge_to_midpoint[idx.edge];
+				next_vertex_around_hole[v1] = v12;
+				next_vertex_around_hole[v12] = v2;
+			}
+		}
 
+		if (nv == 3 || nv == 4) {
 			// Create mid-face vertex
 			index_t vf = mesh_create_vertex(M_out, facet_barycenter(M_in, f));
 			assert(vf + 1 == M_out.vertices.nb());
@@ -490,57 +526,58 @@ void poly_fem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, bo
 
 	// Step 3: Create polygonal faces following vertices around holes
 	std::vector<bool> marked(M_out.vertices.nb(), false);
-	for (index_t v = 0, vmax = M_out.vertices.nb(); v < vmax; ++v) {
-		if (next_vertex_around_hole[v] == -1 || marked[v]) {
+	for (index_t v0 = 0, vmax = M_out.vertices.nb(); v0 < vmax; ++v0) {
+		if (next_vertex_around_hole[v0] == -1 || marked[v0]) {
 			continue;
 		}
+
+		// Build indices of the vertices around the hole
+		// Note that since we start from vertices with lower indices, vertices
+		// from the original mesh will show up first, and the local vertex 0 in
+		// the polygon will belong to the coarser mesh (this is important for the
+		// catmul_clark subdivision scheme).
 		GEO::vector<index_t> hole;
-		int vi = v;
+		int vi = v0;
 		do {
 			// std::cout << vi << ';';
-			vi = next_vertex_around_hole[vi];
-			assert(vi != -1);
 			hole.push_back(vi);
 			marked[vi] = true;
-		} while (vi != (int) v);
+			vi = next_vertex_around_hole[vi];
+			assert(vi != -1);
+		} while (vi != (int) v0);
 		// std::cout << std::endl;
 
 		// Record facet
-		if (refine_polygons) {
-			if (M_in.vertices.dimension() != 2) {
-				std::cerr << "WARNING: Input mesh has dimension > 2, but polygonal facets will be split considering their XY coordinates only." << std::endl;
-			}
-
-			// Subdivide the hole using polar refinement
-			index_t n = hole.size();
-			Eigen::MatrixXd P(n, 2), V;
-			std::vector<std::vector<int>> F;
-			for (index_t k = 0; k < n; ++k) {
-				GEO::vec3 pk = poly_fem::mesh_vertex(M_out, hole[k]);
-				P.row(k) << pk[0], pk[1];
-			}
-			polar_split(P, V, F, t);
-			assert(V.rows() > n);
-			std::vector<int> remap(V.rows() - n);
-			for (index_t k = n, lk = 0; k < V.rows(); ++k, ++lk) {
-				GEO::vec3 qk = GEO::vec3(V(k, 0), V(k, 1), 0);
-				remap[lk] = mesh_create_vertex(M_out, qk);
-			}
-			for (const auto &poly : F) {
-				GEO::vector<index_t> vertices;
-				for (int vk : poly) {
-					if (vk < (int) n) { vertices.push_back(hole[vk]); }
-					else { vertices.push_back(remap[vk - n]); }
-					// std::cout << vertices.back() << ',';
-				}
-				// std::cout << std::endl;
-				M_out.facets.create_polygon(vertices);
-			}
-
-		} else {
-			// Keep the hole as-is
-			M_out.facets.create_polygon(hole);
+		if (M_in.vertices.dimension() != 2) {
+			std::cerr << "WARNING: Input mesh has dimension > 2, but polygonal facets will be split considering their XY coordinates only." << std::endl;
 		}
+
+		// Subdivide the hole using polar refinement
+		index_t n = hole.size();
+		Eigen::MatrixXd P(n, 2), V;
+		std::vector<std::vector<int>> F;
+		for (index_t k = 0; k < n; ++k) {
+			GEO::vec3 pk = poly_fem::mesh_vertex(M_out, hole[k]);
+			P.row(k) << pk[0], pk[1];
+		}
+		split_func(P, V, F);
+		assert(V.rows() >= n);
+		std::vector<int> remap(V.rows() - n);
+		for (index_t k = n, lk = 0; k < V.rows(); ++k, ++lk) {
+			GEO::vec3 qk = GEO::vec3(V(k, 0), V(k, 1), 0);
+			remap[lk] = mesh_create_vertex(M_out, qk);
+		}
+		for (const auto &poly : F) {
+			GEO::vector<index_t> vertices;
+			for (int vk : poly) {
+				if (vk < (int) n) { vertices.push_back(hole[vk]); }
+				else { vertices.push_back(remap[vk - n]); }
+				// std::cout << vertices.back() << ',';
+			}
+			// std::cout << std::endl;
+			M_out.facets.create_polygon(vertices);
+		}
+
 	}
 }
 

@@ -46,6 +46,7 @@ find_package(LIBIGL REQUIRED QUIET)
 
 # Geogram
 include(geogram)
+
 # CLI11
 add_library(cli11 INTERFACE)
 target_include_directories(cli11 SYSTEM INTERFACE ${THIRD_PARTY_DIR}/cli11)
@@ -53,9 +54,6 @@ target_include_directories(cli11 SYSTEM INTERFACE ${THIRD_PARTY_DIR}/cli11)
 # Json library
 add_library(json INTERFACE)
 target_include_directories(json SYSTEM INTERFACE ${THIRD_PARTY_DIR}/json/src)
-
-
-
 
 
 # Extra warnings
@@ -200,6 +198,9 @@ target_include_directories(polyfem PUBLIC src src/assembler src/basis src/mesh s
 target_compile_options(polyfem PUBLIC ${ALL_WARNINGS})
 # set_property(TARGET polyfem PROPERTY CXX_STANDARD 14)
 
+# Use C++14
+include(CXXFeatures)
+target_compile_features(polyfem PUBLIC ${CXX14_FEATURES})
 
 
 # Main executable
