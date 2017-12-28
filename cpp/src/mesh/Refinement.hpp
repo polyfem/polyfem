@@ -64,7 +64,8 @@ void refine_quad_mesh(const Eigen::MatrixXd &IV, const Eigen::MatrixXi &IF,
 /// @param[out] OF    { list of output polygonal face indices }
 /// @param[in]  t     { Interpolation parameter to place the new vertices on the
 ///                   edge from the barycenter to the outer polygon vertices (0
-///                   being at the center, 1 being at the boundary) }
+///                   being at the center, 1 being at the boundary).t should be
+///                   >= 0.0 and < 1.0 }
 ///
 void polar_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, std::vector<std::vector<int>> &OF, double t = 0.5);
 
@@ -78,7 +79,11 @@ void polar_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, std::vector<std
 /// @param[out] M_out            { Refined mesh }
 /// @param[in]  refine_polygons  { Whether to refine polygons using polar
 ///                              refinement }
-/// @param[in]  t                { Interpolation parameter }
+/// @param[in]  t                { Interpolation parameter. Should >= 0.0 and <
+///                              1.0. If t = 0, the remaining polygonal facets
+///                              are collapsed into single vertices, and
+///                              polygons are subdivided into quads (instead of
+///                              triangles). }
 ///
 void refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, bool refine_polygons = false, double t = 0.5);
 
