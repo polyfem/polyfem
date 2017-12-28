@@ -795,6 +795,12 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter) {
 		}
 		build_connectivity(M_sur);
 		orient_surface_mesh(M_sur);
+
+		//int fn_ = 0;
+		//for (auto &f : M_.faces)if (f.boundary) {
+		//	for (int j = 0; j < f.vs.size(); j++) f.vs[j] = V_map_reverse[M_sur.faces[fn_].vs[j]];
+		//	fn_++;
+		//}
 		//volume orienting
 		vector<bool> F_tag(M_.faces.size(), true);
 		std::vector<short> F_visit(M_.faces.size(), 0);//0 un-visited, 1 visited once, 2 visited twice
