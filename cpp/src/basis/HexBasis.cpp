@@ -8,34 +8,6 @@
 namespace poly_fem
 {
 
-	namespace
-	{
-		int index_for_face(const int face, const int vertex)
-		{
-			static int top[] 	= {0, 1, 2, 3};
-			static int bottom[] = {4, 5, 6, 7};
-
-			static int front[] 	= {0, 4, 7, 1};
-			static int back[] 	= {4, 3, 2, 6};
-
-			static int left[] 	= {0, 1, 5, 4};
-			static int right[]	= {1, 7, 6, 2};
-
-			switch(face)
-			{
-				case 0: return top[vertex];
-				case 1: return bottom[vertex];
-
-				case 2: return front[vertex];
-				case 3: return back[vertex];
-
-				case 4: return left[vertex];
-				case 5: return right[vertex];
-			}
-
-			return -1;
-		}
-	}
 
 	int HexBasis::build_bases(const Mesh3D &mesh, const int quadrature_order, std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes)
 	{
@@ -130,7 +102,7 @@ namespace poly_fem
 				}
 					// std::cout<<std::endl;
 			}
-			else if(n_el_vertices == 3)
+			else
 			{
 				assert(false);
 				//TODO triangulate element and implement tets...

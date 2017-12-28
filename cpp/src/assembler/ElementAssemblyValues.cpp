@@ -35,7 +35,8 @@ namespace poly_fem
 			tmp.row(1) = dy.row(i);
 			tmp.row(2) = dz.row(i);
 
-			det(i) = (tmp.determinant());
+			det(i) = tmp.determinant();
+			assert(det(i)>0);
 			// std::cout<<det(i)<<std::endl;
 
 			Eigen::MatrixXd jac_it = tmp.inverse().transpose();
@@ -59,7 +60,8 @@ namespace poly_fem
 			tmp.row(0) = dx.row(i);
 			tmp.row(1) = dy.row(i);
 
-			det(i) = (tmp.determinant());
+			det(i) = tmp.determinant();
+			assert(det(i)>0);
 
 				// std::cout<<"tmp.inverse().transpose() "<<tmp.inverse().transpose()<<std::endl;
 			Eigen::MatrixXd jac_it = tmp.inverse().transpose();
@@ -84,7 +86,10 @@ namespace poly_fem
 
 			Eigen::MatrixXd dxmv = Eigen::MatrixXd::Zero(quadrature.points.rows(), quadrature.points.cols());
 			Eigen::MatrixXd dymv = Eigen::MatrixXd::Zero(quadrature.points.rows(), quadrature.points.cols());
-			Eigen::MatrixXd dzmv = Eigen::MatrixXd::Zero(quadrature.points.rows(), quadrature.points.cols());
+			Eigen::MatrixXd dzmv;
+
+			if(is_volume)
+				dzmv = Eigen::MatrixXd::Zero(quadrature.points.rows(), quadrature.points.cols());
 
 			const int n_local_bases = int(bs.bases.size());
 			for(int j = 0; j < n_local_bases; ++j)
@@ -96,14 +101,18 @@ namespace poly_fem
 
 
 				b.basis(quadrature.points, val.val);
+				assert(val.val.cols()==1);
+
 				b.grad(quadrature.points, val.grad);
+				assert(val.grad.cols() == quadrature.points.cols());
 
 				if(!bs.has_parameterization) continue;
 
 				for(std::size_t ii = 0; ii < b.global().size(); ++ii)
 				{
-					for (long k = 0; k < val.val.rows(); ++k){
-						mval.row(k) += val.val(k,0)    * b.global()[ii].node * b.global()[ii].val;
+					for (long k = 0; k < val.val.rows(); ++k)
+					{
+						mval.row(k) += val.val(k)    * b.global()[ii].node * b.global()[ii].val;
 
 						dxmv.row(k) += val.grad(k,0) * b.global()[ii].node  * b.global()[ii].val;
 						dymv.row(k) += val.grad(k,1) * b.global()[ii].node  * b.global()[ii].val;

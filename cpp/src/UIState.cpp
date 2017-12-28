@@ -32,6 +32,8 @@ namespace poly_fem
 
 	long UIState::clip_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, std::vector<bool> &valid_elements)
 	{
+		viewer.data.clear();
+
 		valid_elements.resize(normalized_barycenter.rows());
 
 		if(!is_slicing)
@@ -324,14 +326,6 @@ namespace poly_fem
 
 			std::vector<bool> valid_elements;
 			clip_elements(vis_pts, vis_faces, vis_element_ranges, valid_elements);
-
-			viewer.data.set_mesh(vis_pts, vis_faces);
-			if(state.mesh->is_volume())
-			{
-				MatrixXd normals;
-				igl::per_face_normals(vis_pts,vis_faces, normals);
-				viewer.data.set_normals(normals);
-			}
 		};
 
 		auto show_nodes_func = [&](){
@@ -398,10 +392,7 @@ namespace poly_fem
 			current_visualization = Visualizing::Solution;
 			MatrixXd global_sol;
 			interpolate_function(state.sol, global_sol);
-			if(state.problem.problem_num() == 3)
-				plot_function(global_sol);
-			else
-				plot_function(global_sol, 0, 1);
+			plot_function(global_sol);
 		};
 
 
@@ -675,9 +666,9 @@ namespace poly_fem
 			state.build_basis();
 
 			if(skip_visualization) return;
-			// clear_func();
-			// show_mesh_func();
-			// show_nodes_func();
+			clear_func();
+			show_mesh_func();
+			show_nodes_func();
 		};
 
 

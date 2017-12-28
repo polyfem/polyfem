@@ -3,7 +3,8 @@
 
 #include "CommandLine.hpp"
 
-#include "BiharmonicBasis.hpp"
+// #include "BiharmonicBasis.hpp"
+#include "HexBasis.hpp"
 
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
@@ -37,6 +38,39 @@ using namespace Eigen;
 **/
 int main(int argc, const char **argv)
 {
+    // Eigen::MatrixXd pt(1,3); pt.setConstant(0.8);
+    // Eigen::MatrixXd ptdx = pt; ptdx(0)+=1e-6;
+    // Eigen::MatrixXd ptdy = pt; ptdy(1)+=1e-6;
+    // Eigen::MatrixXd ptdz = pt; ptdz(2)+=1e-6;
+    // Eigen::MatrixXd val, vald, valdf;
+
+    // for(int i = 0; i < 8; ++i)
+    // {
+    //     HexBasis::basis(1, i, pt, val);
+
+    //     HexBasis::basis(1, i, ptdx, vald);
+    //     valdf = (vald-val)/1e-6;
+    //     assert(valdf.size()==1);
+    //     const double dxfd = valdf(0);
+
+    //     HexBasis::basis(1, i, ptdy, vald);
+    //     valdf = (vald-val)/1e-6;
+    //     assert(valdf.size()==1);
+    //     const double dyfd = valdf(0);
+
+    //     HexBasis::basis(1, i, ptdz, vald);
+    //     valdf = (vald-val)/1e-6;
+    //     assert(valdf.size()==1);
+    //     const double dzfd = valdf(0);
+
+    //     HexBasis::grad(1,i,pt, vald);
+    //     std::cout<<vald(0)-dxfd<<std::endl;
+    //     std::cout<<vald(1)-dyfd<<std::endl;
+    //     std::cout<<vald(2)-dzfd<<std::endl;
+    // }
+
+    // exit(0);
+
     // const int n_samples = 1000;
     // const int n_poly_samples = n_samples/3;
     // Eigen::MatrixXd boundary_samples(n_samples, 2);

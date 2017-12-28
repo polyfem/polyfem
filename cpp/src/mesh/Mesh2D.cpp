@@ -26,7 +26,10 @@ namespace poly_fem
 			mesh.copy(mesh_);
 			mesh_.clear(false,false);
 
-			refine_polygonal_mesh(mesh, mesh_, true, t);
+			if(t<=0)
+				refine_polygonal_mesh(mesh, mesh_, Polygons::catmul_clark_split_func());
+			else
+				refine_polygonal_mesh(mesh, mesh_, Polygons::polar_split_func(t));
 
 			Navigation::prepare_mesh(mesh_);
 		}
