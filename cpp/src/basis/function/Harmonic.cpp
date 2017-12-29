@@ -84,8 +84,8 @@ namespace poly_fem
 
 		for(long i = 0; i < samples.rows(); ++i)
 		{
-			mat(i, end - 1) = samples(i, 1);
 			mat(i, end - 2) = samples(i, 0);
+			mat(i, end - 1) = samples(i, 1);
 
 			for(long j = 0; j < centers_.rows(); ++j)
 			{

@@ -5,6 +5,12 @@
 
 namespace poly_fem
 {
+	///
+	/// @brief      Descriptor storing which edge of the canonical element is on
+	///             the boundary of the mesh. Boundary edges are labeled
+	///             left/right/top/bottom for quads, left/right/bottom for
+	///             triangles, and left/right/top/bottom/front/back for hexes.
+	///
 	class LocalBoundary
 	{
 	public:

@@ -13,12 +13,15 @@ namespace poly_fem
 	class Local2Global
 	{
 	public:
-		int index;
-		double val;
+		int index; // global index of the actual dof
+		double val; // weight
 
-		Eigen::MatrixXd node;
+		Eigen::MatrixXd node; // dof position
 	};
 
+	///
+	/// @brief      Represents one basis function and its gradient.
+	///
 	class Basis
 	{
 
@@ -30,9 +33,22 @@ namespace poly_fem
 
 		void init(const int global_index, const int local_index, const Eigen::MatrixXd &node);
 
+		///
+		/// @brief      Evaluates the basis function over a set of uv
+		///             parameters.
+		///
+		/// @param[in]  uv    { #uv x dim matrix of parameters to evaluate }
+		/// @param[out] val   { #uv x 1 vector of computed values }
+		///
+		void basis(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const { basis_(uv, val); }
 
-		void basis(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const;
-		void grad(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const;
+		///
+		/// @brief      Evaluate the gradient of the basis function.
+		///
+		/// @param[in]  uv    { #uv x dim matrix of parameters to evaluate }
+		/// @param[out] val   { #uv x dim matrix of computed gradients }
+		///
+		void grad(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const { grad_(uv, val); }
 
 		inline const std::vector< Local2Global > &global() const { return global_; }
 		inline std::vector< Local2Global > &global() { return global_; }
@@ -42,8 +58,8 @@ namespace poly_fem
 		inline void set_basis(const Fun &fun) { basis_ = fun; }
 		inline void set_grad(const Fun &fun) { grad_ = fun; }
 	private:
-		std::vector< Local2Global > global_;
-		int local_index_;
+		std::vector< Local2Global > global_; // real global dofs influencing the basis
+		int local_index_; // local index inside the element (for debugging purposes)
 
 
 		Fun basis_;

@@ -19,13 +19,4 @@ namespace poly_fem
 		local_index_ = local_index;
 	}
 
-	void Basis::basis(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const
-	{
-		basis_(uv, val);
-	}
-
-	void Basis::grad(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const
-	{
-		grad_(uv, val);
-	}
 }

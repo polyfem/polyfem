@@ -14,7 +14,15 @@ namespace poly_fem
 	class SplineBasis2d
 	{
 	public:
-		static int build_bases(const Mesh2D &mesh, const int quadrature_order, std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes, std::map<int, Eigen::MatrixXd> &polys);
+
+		static int build_bases(
+			const Mesh2D &mesh,
+			const int quadrature_order,
+			std::vector< ElementBases > &bases,
+			std::vector< LocalBoundary > &local_boundary,
+			std::vector< int > &bounday_nodes,
+			std::map<int, Eigen::MatrixXd> &polys);
+
 		// static void basis(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
 		// static void grad(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
 	};
