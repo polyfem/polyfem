@@ -16,11 +16,15 @@ namespace poly_fem
 	class ElementBases
 	{
 	public:
-		std::vector<Basis> bases; // one basis function per dof for the element
+		// one basis function per dof for the element
+		std::vector<Basis> bases;
 
-		Quadrature quadrature; // quadrature points to evaluate the basis functions inside the element
+		// quadrature points to evaluate the basis functions inside the element
+		Quadrature quadrature;
 
-		bool has_parameterization = true; // is it a parametric ele
+		// whether the basis functions should be evaluated in the parametric domain (FE bases),
+		// or directly in the object domain (harmonic bases)
+		bool has_parameterization = true;
 
 		void eval_geom_mapping_grads(const Eigen::MatrixXd &samples, std::vector<Eigen::MatrixXd> &grads) const;
 		void eval_geom_mapping(const Eigen::MatrixXd &samples, Eigen::MatrixXd &mapped) const;
