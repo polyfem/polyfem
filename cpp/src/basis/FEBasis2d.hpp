@@ -31,7 +31,7 @@ namespace poly_fem
 		///
 		/// @return     The number of basis functions created.
 		///
-		int build_bases(
+		static int build_bases(
 			const Mesh2D &mesh,
 			const int quadrature_order,
 			const int discr_order,
