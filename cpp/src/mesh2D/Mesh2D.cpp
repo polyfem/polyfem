@@ -77,23 +77,6 @@ namespace poly_fem
 		}
 	}
 
-	double Mesh2D::compute_mesh_size() const
-	{
-		Eigen::MatrixXd p0, p1, p;
-		double sum = 0;
-		for(GEO::index_t e = 0; e < mesh_.edges.nb(); ++e)
-		{
-			const int v0 = mesh_.edges.vertex(e, 0);
-			const int v1 = mesh_.edges.vertex(e, 1);
-			point(v0, p0); point(v1, p1);
-
-			p = p0-p1;
-			sum += p.norm();
-		}
-
-		return sum/double(mesh_.edges.nb());
-	}
-
 	void Mesh2D::point(const int global_index, Eigen::MatrixXd &pt) const
 	{
 		pt.resize(1, 2);

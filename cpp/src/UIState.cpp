@@ -94,7 +94,7 @@ namespace poly_fem
 
 	bool UIState::is_quad(const ElementBases &bs) const
 	{
-		return (state.mesh->is_volume() && int(bs.bases.size()) == 8) || (!state.mesh->is_volume() && (int(bs.bases.size()) == 4 || int(bs.bases.size()) == 9));
+		return (state.mesh->is_volume() && (int(bs.bases.size()) == 8 || int(bs.bases.size()) == 27)) || (!state.mesh->is_volume() && (int(bs.bases.size()) == 4 || int(bs.bases.size()) == 9));
 	}
 
 	bool UIState::is_tri(const ElementBases &bs) const
@@ -304,6 +304,12 @@ namespace poly_fem
 			// for(int i = 0; i < static_cast<Mesh3D *>(state.mesh)->n_faces(); ++i)
 			// {
 			// 	MatrixXd p = static_cast<Mesh3D *>(state.mesh)->node_from_face(i);
+			// 	viewer.data.add_label(p.transpose(), std::to_string(i));
+			// }
+
+			// for(int i = 0; i < state.mesh->n_elements(); ++i)
+			// {
+			// 	MatrixXd p = static_cast<Mesh3D *>(state.mesh)->node_from_element(i);
 			// 	viewer.data.add_label(p.transpose(), std::to_string(i));
 			// }
 

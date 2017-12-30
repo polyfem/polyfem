@@ -1,5 +1,6 @@
 #include "Mesh3D.hpp"
 
+#include <fstream>
 #include <igl/copyleft/tetgen/tetrahedralize.h>
 
 namespace poly_fem
@@ -8,6 +9,7 @@ namespace poly_fem
 	{
 		MeshProcessing3D::refine_catmul_clark_polar(mesh_, n_refiniment);
 		MeshProcessing3D::global_orientation_hexes(mesh_);
+		create_boundary_nodes();
 	}
 
 	bool Mesh3D::load(const std::string &path)
@@ -92,6 +94,7 @@ namespace poly_fem
 		fclose(f);
 
 		Navigation3D::prepare_mesh(mesh_);
+		create_boundary_nodes();
 		return true;
 	}
 
@@ -132,14 +135,6 @@ namespace poly_fem
 		f.close();
 
 		return true;
-	}
-
-
-	double Mesh3D::compute_mesh_size() const
-	{
-//TODO implement me
-		assert(false);
-		return -1;
 	}
 
 	void Mesh3D::triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const
@@ -249,7 +244,7 @@ namespace poly_fem
 
 	void Mesh3D::set_boundary_tags(std::vector<int> &tags) const
 	{
-//TODO implement me
+		//TODO implement me
 	}
 
 	void Mesh3D::point(const int global_index, Eigen::MatrixXd &pt) const
@@ -275,38 +270,39 @@ namespace poly_fem
 		}
 	}
 
-//get nodes ids
-
-	int Mesh3D::face_node_id(const int edge_id) const
+	int Mesh3D::face_node_id(const int face_id) const
 	{
-//TODO implement me
-		assert(false);
-		return -1;
+		return faces_node_id_[face_id];
 	}
 
 	int Mesh3D::edge_node_id(const int edge_id) const
 	{
-//TODO implement me
-		assert(false);
-		return -1;
+		return edges_node_id_[edge_id];
 	}
 
 	int Mesh3D::vertex_node_id(const int vertex_id) const
 	{
-//TODO implement me
-		assert(false);
-		return -1;
+		return vertices_node_id_[vertex_id];
 	}
 
 	bool Mesh3D::node_id_from_face_index(const Navigation3D::Index &index, int &id) const
 	{
-//TODO implement me
-		assert(false);
-		return -1;
+		id = switch_element(index).element;
+		bool is_real_boundary = true;
+		if(id >= 0)
+		{
+			is_real_boundary = false;
+			if(n_element_vertices(id) == 8 && n_element_faces(id) == 6)
+				return is_real_boundary;
+
+		}
+
+		id = face_node_id(index.face);
+		assert(id >= 0);
+
+		return is_real_boundary;
 	}
 
-
-//get nodes positions
 
 	Eigen::MatrixXd Mesh3D::node_from_element(const int el_id) const
 	{
@@ -325,35 +321,36 @@ namespace poly_fem
 		return res;
 	}
 
-	Eigen::MatrixXd Mesh3D::node_from_edge_index(const Navigation3D::Index &index) const
+	Eigen::MatrixXd Mesh3D::node_from_face_index(const Navigation3D::Index &index) const
 	{
-//TODO implement me
-		assert(false);
-		return Eigen::MatrixXd();
+		int id = switch_element(index).element;
+		if(id >= 0)
+		{
+			if(n_element_vertices(id) == 8 && n_element_faces(id) == 6)
+				return node_from_element(id);
+		}
+
+		id = face_node_id(index.face);
+		assert(id >= 0);
+
+		return faces_node_[index.face];
 	}
 
 	Eigen::MatrixXd Mesh3D::node_from_face(const int face_id) const
 	{
-		Eigen::MatrixXd res=Eigen::MatrixXd::Zero(1, 3);
-		Eigen::MatrixXd pt;
+		return faces_node_[face_id];
+	}
 
-		for(std::size_t i = 0; i < mesh_.faces[face_id].vs.size(); ++i)
-		{
-			point(mesh_.faces[face_id].vs[i], pt);
-			res += pt;
-		}
-
-		return res / mesh_.faces[face_id].vs.size();
+	Eigen::MatrixXd Mesh3D::node_from_edge(const int edge_id) const
+	{
+		return edges_node_[edge_id];
 	}
 
 	Eigen::MatrixXd Mesh3D::node_from_vertex(const int vertex_id) const
 	{
-//TODO implement me
-		assert(false);
-		return Eigen::MatrixXd();
+		return vertices_node_[vertex_id];
 	}
 
-//navigation wrapper
 	Navigation3D::Index Mesh3D::get_index_from_element(int hi, int lf, int lv) const
 	{
 		return Navigation3D::get_index_from_element_face(mesh_, hi, lf, lv);
@@ -364,7 +361,6 @@ namespace poly_fem
 		return Navigation3D::get_index_from_element_face(mesh_, hi);
 	}
 
-// Navigation in a surface mesh
 	Navigation3D::Index Mesh3D::switch_vertex(Navigation3D::Index idx) const
 	{
 		return Navigation3D::switch_vertex(mesh_, idx);
@@ -462,6 +458,118 @@ namespace poly_fem
 		for(std::size_t e = 0; e < mesh_.elements.size(); ++e)
 		{
 			barycenters.row(e) = node_from_element(e);
+		}
+	}
+
+	void Mesh3D::to_face_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 6> &to_face) const
+	{
+        //top
+		to_face[0]= [this](Navigation3D::Index idx) { return this->switch_face(this->switch_edge(this->switch_vertex(this->switch_edge(this->switch_face(idx))))); };
+        //bottom
+		to_face[1]= [this](Navigation3D::Index idx) { return idx; };
+
+        //left
+		to_face[2]= [this](Navigation3D::Index idx) { return this->switch_face(this->switch_edge(this->switch_vertex(idx))); };
+        //right
+		to_face[3]= [this](Navigation3D::Index idx) { return this->switch_face(this->switch_edge(idx)); };
+
+        //back
+		to_face[4]= [this](Navigation3D::Index idx) { return this->switch_face(this->switch_edge(this->switch_vertex(this->switch_edge(this->switch_vertex(idx))))); };
+        //front
+		to_face[5]= [this](Navigation3D::Index idx) { return this->switch_face(idx); };
+	}
+
+	void Mesh3D::to_vertex_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 8> &to_vertex) const
+	{
+		to_vertex[0]= [this](Navigation3D::Index idx) { return idx; };
+		to_vertex[1]= [this](Navigation3D::Index idx) { return this->switch_vertex(idx); };
+		to_vertex[2]= [this](Navigation3D::Index idx) { return this->switch_vertex(this->switch_edge(this->switch_vertex(idx))); };
+		to_vertex[3]= [this](Navigation3D::Index idx) { return this->switch_vertex(this->switch_edge(idx)); };
+
+		to_vertex[4]= [this](Navigation3D::Index idx) { return this->switch_vertex(this->switch_edge(this->switch_face(idx))); };
+		to_vertex[5]= [this](Navigation3D::Index idx) { return this->switch_vertex(this->switch_edge(this->switch_vertex(this->switch_edge(this->switch_face(idx))))); };
+		to_vertex[6]= [this](Navigation3D::Index idx) { return this->switch_vertex(this->switch_edge(this->switch_face(this->switch_vertex(this->switch_edge(this->switch_vertex(idx)))))); };
+		to_vertex[7]= [this](Navigation3D::Index idx) { return this->switch_vertex(this->switch_edge(this->switch_face(this->switch_vertex(this->switch_edge(idx))))); };
+	}
+
+	void Mesh3D::to_edge_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 12> &to_edge) const
+	{
+		to_edge[0]= [this](Navigation3D::Index idx) { return idx; };
+		to_edge[1]= [this](Navigation3D::Index idx) { return switch_edge(switch_vertex(idx)); };
+		to_edge[2]= [this](Navigation3D::Index idx) { return switch_edge(switch_vertex(switch_edge(switch_vertex(idx)))); };
+		to_edge[3]= [this](Navigation3D::Index idx) { return switch_edge(switch_vertex(switch_edge(switch_vertex(switch_edge(switch_vertex(idx)))))); };
+
+		to_edge[4]= [this](Navigation3D::Index idx) { return switch_edge(switch_face(idx)); };
+		to_edge[5]= [this](Navigation3D::Index idx) { return switch_edge(switch_face(switch_edge(switch_vertex(idx)))); };
+		to_edge[6]= [this](Navigation3D::Index idx) { return switch_edge(switch_face(switch_edge(switch_vertex(switch_edge(switch_vertex(idx)))))); };
+		to_edge[7]= [this](Navigation3D::Index idx) { return switch_edge(switch_face(switch_edge(switch_vertex(switch_edge(switch_vertex(switch_edge(switch_vertex(idx)))))))); };
+
+		//TODO
+		to_edge[8]= [this](Navigation3D::Index idx) { return switch_edge(switch_vertex(switch_edge(switch_face(idx)))); };
+		to_edge[9]= [this](Navigation3D::Index idx) { return switch_edge(switch_vertex(switch_edge(switch_face(switch_edge(switch_vertex(idx)))))); };
+		to_edge[10]= [this](Navigation3D::Index idx) { return switch_edge(switch_vertex(switch_edge(switch_face(switch_edge(switch_vertex(switch_edge(switch_vertex(idx)))))))); };
+		to_edge[11]= [this](Navigation3D::Index idx) { return switch_edge(switch_vertex(switch_edge(switch_face(switch_edge(switch_vertex(switch_edge(switch_vertex(switch_edge(switch_vertex(idx)))))))))); };
+	}
+
+	void Mesh3D::create_boundary_nodes()
+	{
+		faces_node_id_.resize(mesh_.faces.size());
+		faces_node_.resize(mesh_.faces.size());
+
+		int counter = n_elements();
+
+		Eigen::Matrix<double, 1, 3> bary;
+		Eigen::MatrixXd p, p0, p1;
+
+		for (int f = 0; f < (int) mesh_.faces.size(); ++f)
+		{
+			const Face &face = mesh_.faces[f];
+			if(!face.boundary)
+				faces_node_id_[f] = -1;
+			else
+				faces_node_id_[f] = counter++;
+
+			bary.setZero();
+
+			for(std::size_t i = 0; i < face.vs.size(); ++i){
+				point(face.vs[i], p);
+				bary += p;
+			}
+
+			bary /= face.vs.size();
+			faces_node_[f]=bary;
+		}
+
+		edges_node_id_.resize(mesh_.edges.size());
+		edges_node_.resize(mesh_.edges.size());
+
+		for (int e = 0; e < (int) mesh_.edges.size(); ++e)
+		{
+			const Edge &edge = mesh_.edges[e];
+			if(!edge.boundary)
+				edges_node_id_[e] = -1;
+			else
+				edges_node_id_[e] = counter++;
+
+			const int v0 = edge.vs[0];
+			const int v1 = edge.vs[1];
+			point(v0, p0); point(v1, p1);
+			edges_node_[e]=(p0 + p1)/2;
+		}
+
+		vertices_node_id_.resize(mesh_.vertices.size());
+		vertices_node_.resize(mesh_.vertices.size());
+
+		for (int v = 0; v < (int) mesh_.vertices.size(); ++v)
+		{
+			const Vertex &vertex = mesh_.vertices[v];
+			if(!vertex.boundary)
+				vertices_node_id_[v] = -1;
+			else
+				vertices_node_id_[v] = counter++;
+
+			point(vertex.id, p);
+			vertices_node_[v] = p;
 		}
 	}
 }

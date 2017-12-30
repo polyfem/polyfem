@@ -5,9 +5,9 @@
 #include "Navigation3D.hpp"
 #include "Mesh3DStorage.hpp"
 #include <iostream>
-#include <fstream>
 #include <Eigen/Dense>
 #include <vector>
+#include <array>
 
 namespace poly_fem
 {
@@ -22,17 +22,15 @@ namespace poly_fem
 
 		inline int n_elements() const override { return int(mesh_.elements.size()); }
 		inline int n_faces() const { return int(mesh_.faces.size()); }
-		inline int n_pts() const override { return int(mesh_.points.cols()); }
+		inline int n_pts() const { return int(mesh_.points.cols()); }
 
 		inline int n_element_vertices(const int element_index) const override { return int(mesh_.elements[element_index].vs.size());}
 		inline int n_element_faces(const int element_index) const { return int(mesh_.elements[element_index].fs.size());}
 
-		inline int vertex_global_index(const int element_index, const int local_index) const override { return mesh_.elements[element_index].vs[local_index]; }
+		inline int vertex_global_index(const int element_index, const int local_index) const { return mesh_.elements[element_index].vs[local_index]; }
 		inline int vertex_local_index(const int element_index, const int vertex_global_index) const {
 			return (int) std::distance(mesh_.elements[element_index].vs.begin(), std::find(mesh_.elements[element_index].vs.begin(), mesh_.elements[element_index].vs.end(), vertex_global_index));
 		}
-
-		double compute_mesh_size() const override;
 
 		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
 		// void element_bounday_polygon(const int index, Eigen::MatrixXd &poly) const;
@@ -47,7 +45,7 @@ namespace poly_fem
 		void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const override;
 
 		//get nodes ids
-		int face_node_id(const int edge_id) const;
+		int face_node_id(const int face_id) const;
 		int edge_node_id(const int edge_id) const;
 		int vertex_node_id(const int vertex_id) const;
 		bool node_id_from_face_index(const Navigation3D::Index &index, int &id) const;
@@ -56,7 +54,8 @@ namespace poly_fem
 		//get nodes positions
 		Eigen::MatrixXd node_from_element(const int el_id) const;
 		Eigen::MatrixXd node_from_face(const int face_id) const;
-		Eigen::MatrixXd node_from_edge_index(const Navigation3D::Index &index) const;
+		Eigen::MatrixXd node_from_face_index(const Navigation3D::Index &index) const;
+		Eigen::MatrixXd node_from_edge(const int edge_id) const;
 		Eigen::MatrixXd node_from_vertex(const int vertex_id) const;
 
 		//navigation wrapper
@@ -84,8 +83,20 @@ namespace poly_fem
 		void compute_element_tag(std::vector<ElementType> &ele_tag) const override;
 
 		void compute_barycenter(Eigen::MatrixXd &barycenters) const override;
-	private:
 
+		void to_face_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 6> &to_face) const;
+		void to_vertex_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 8> &to_vertex) const;
+		void to_edge_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 12> &to_edge) const;
+	private:
 		Mesh3DStorage mesh_;
+
+		std::vector<int> faces_node_id_;
+		std::vector< Eigen::Matrix<double, 1, 3> > faces_node_;
+
+		std::vector<int> edges_node_id_;
+		std::vector< Eigen::Matrix<double, 1, 3> > edges_node_;
+
+		std::vector<int> vertices_node_id_;
+		std::vector< Eigen::Matrix<double, 1, 3> > vertices_node_;
 	};
 }

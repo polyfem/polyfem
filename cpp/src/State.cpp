@@ -7,6 +7,7 @@
 #include "FEBasis3d.hpp"
 
 #include "SplineBasis2d.hpp"
+#include "SplineBasis3d.hpp"
 
 #include "QuadBoundarySampler.hpp"
 #include "HexBoundarySampler.hpp"
@@ -210,7 +211,7 @@ namespace poly_fem
 		{
 			const Mesh3D &tmp_mesh = *static_cast<Mesh3D *>(mesh);
 			if(use_splines)
-				assert(false);
+				n_bases = SplineBasis3d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, bounday_nodes, polys);
 			else
 				n_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, bounday_nodes);
 		}

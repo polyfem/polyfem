@@ -18,12 +18,10 @@ namespace poly_fem
 
 		inline int n_edges() const { return mesh_.edges.nb(); }
 		inline int n_elements() const override { return mesh_.facets.nb(); }
-		inline int n_pts() const override { return mesh_.vertices.nb(); }
+		inline int n_pts() const { return mesh_.vertices.nb(); }
 
 		inline int n_element_vertices(const int element_index) const override { return mesh_.facets.nb_vertices(element_index);}
-		inline int vertex_global_index(const int element_index, const int local_index) const override { return mesh_.facets.vertex(element_index, local_index); }
-
-		double compute_mesh_size() const override;
+		inline int vertex_global_index(const int element_index, const int local_index) const { return mesh_.facets.vertex(element_index, local_index); }
 
 		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
 		// void element_bounday_polygon(const int index, Eigen::MatrixXd &poly) const;
