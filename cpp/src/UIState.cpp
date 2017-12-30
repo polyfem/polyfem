@@ -748,6 +748,13 @@ namespace poly_fem
 			viewer_.ngui->addVariable("mu", state.mu);
 
 			viewer_.ngui->addVariable("mesh path", state.mesh_path);
+			viewer_.ngui->addButton("browser", [&]() {
+				std::string File_address = nanogui::file_dialog({ { "HYBRID", "General polyhedral mesh" },
+				{ "OBJ", "" }}, false);
+				if (File_address.empty()) return;
+				state.mesh_path = File_address;
+
+			});
 			viewer_.ngui->addVariable("n refs", state.n_refs);
 			viewer_.ngui->addVariable("refinenemt t", state.refinenemt_location);
 
