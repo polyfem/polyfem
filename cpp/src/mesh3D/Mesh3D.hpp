@@ -49,12 +49,16 @@ namespace poly_fem
 		int edge_node_id(const int edge_id) const;
 		int vertex_node_id(const int vertex_id) const;
 		bool node_id_from_face_index(const Navigation3D::Index &index, int &id) const;
+		bool node_id_from_edge_index(const Navigation3D::Index &index, int &id) const;
+		bool node_id_from_vertex_index(const Navigation3D::Index &index, int &id) const;
 
 
 		//get nodes positions
 		Eigen::MatrixXd node_from_element(const int el_id) const;
 		Eigen::MatrixXd node_from_face(const int face_id) const;
 		Eigen::MatrixXd node_from_face_index(const Navigation3D::Index &index) const;
+		Eigen::MatrixXd node_from_edge_index(const Navigation3D::Index &index) const;
+		Eigen::MatrixXd node_from_vertex_index(const Navigation3D::Index &index) const;
 		Eigen::MatrixXd node_from_edge(const int edge_id) const;
 		Eigen::MatrixXd node_from_vertex(const int vertex_id) const;
 
@@ -98,5 +102,7 @@ namespace poly_fem
 
 		std::vector<int> vertices_node_id_;
 		std::vector< Eigen::Matrix<double, 1, 3> > vertices_node_;
+
+		int node_id_from_vertex_index_explore(const Navigation3D::Index &index, int &id, Eigen::MatrixXd &node) const;
 	};
 }

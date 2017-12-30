@@ -140,7 +140,7 @@ namespace poly_fem
 	void Mesh3D::triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const
 	{
 		ranges.clear();
-		
+
 		std::vector<Eigen::MatrixXi> local_tris(mesh_.elements.size());
 		std::vector<Eigen::MatrixXd> local_pts(mesh_.elements.size());
 		Eigen::MatrixXi tets;
@@ -301,6 +301,142 @@ namespace poly_fem
 		assert(id >= 0);
 
 		return is_real_boundary;
+	}
+
+	bool Mesh3D::node_id_from_edge_index(const Navigation3D::Index &index, int &id) const
+	{
+		Navigation3D::Index new_index = switch_element(index);
+		id = new_index.element;
+
+		if(id < 0)
+		{
+			new_index = switch_element(switch_face(index));
+			id = new_index.element;
+
+			if(id < 0)
+			{
+				id = edge_node_id(index.edge);
+				return true;
+			}
+
+			return node_id_from_face_index(switch_face(new_index), id);
+		}
+
+		return node_id_from_face_index(switch_face(new_index), id);
+	}
+
+
+	int Mesh3D::node_id_from_vertex_index_explore(const Navigation3D::Index &index, int &id, Eigen::MatrixXd &node) const
+	{
+		Navigation3D::Index new_index = switch_element(index);
+
+		id = new_index.element;
+
+		if(id < 0)
+		{
+			id = vertex_node_id(index.vertex);
+			node = node_from_vertex(index.vertex);
+			return 3;
+		}
+
+		new_index = switch_element(switch_face(new_index));
+		id = new_index.element;
+
+		if(id < 0)
+		{
+			id = edge_node_id(switch_edge(new_index).edge);
+			node = node_from_edge(switch_edge(new_index).edge);
+			return 2;
+		}
+
+		new_index = switch_element(switch_face(switch_edge(new_index)));
+		id = new_index.element;
+
+		if(id < 0)
+		{
+			id = face_node_id(new_index.face);
+			node = node_from_face(new_index.face);
+			return 1;
+		}
+
+		node = node_from_element(id);
+		return 0;
+	}
+
+	bool Mesh3D::node_id_from_vertex_index(const Navigation3D::Index &index, int &id) const
+	{
+		std::array<int, 6> path;
+		std::array<int, 6> ids;
+		Eigen::MatrixXd node;
+
+		path[0] = node_id_from_vertex_index_explore(index, ids[0], node);
+		path[1] = node_id_from_vertex_index_explore(switch_face(index), ids[1], node);
+
+		path[2] = node_id_from_vertex_index_explore(switch_edge(index), ids[2], node);
+		path[3] = node_id_from_vertex_index_explore(switch_face(switch_edge(index)), ids[3], node);
+
+		path[4] = node_id_from_vertex_index_explore(switch_edge(switch_face(index)), ids[4], node);
+		path[5] = node_id_from_vertex_index_explore(switch_face(switch_edge(switch_face(index))), ids[5], node);
+
+		const int min_path = *std::min_element(path.begin(), path.end());
+
+		for(int i = 0 ; i < 6; ++i)
+		{
+			if(path[i]==min_path)
+			{
+				id = ids[i];
+				break;
+			}
+		}
+
+		return min_path > 0;
+	}
+
+	Eigen::MatrixXd Mesh3D::node_from_edge_index(const Navigation3D::Index &index) const
+	{
+		Navigation3D::Index new_index = switch_element(index);
+		int id = new_index.element;
+
+		if(id < 0)
+		{
+			new_index = switch_element(switch_face(index));
+			id = new_index.element;
+			if(id < 0)
+				return node_from_edge(index.edge);
+
+			return node_from_face_index(switch_face(new_index));
+		}
+
+		return node_from_face_index(switch_face(new_index));
+	}
+
+	Eigen::MatrixXd Mesh3D::node_from_vertex_index(const Navigation3D::Index &index) const
+	{
+		std::array<int, 6> path;
+		std::array<Eigen::MatrixXd, 6> nodes;
+		int id;
+
+		path[0] = node_id_from_vertex_index_explore(index, id, nodes[0]);
+		path[1] = node_id_from_vertex_index_explore(switch_face(index), id, nodes[1]);
+
+		path[2] = node_id_from_vertex_index_explore(switch_edge(index), id, nodes[2]);
+		path[3] = node_id_from_vertex_index_explore(switch_face(switch_edge(index)), id, nodes[3]);
+
+		path[4] = node_id_from_vertex_index_explore(switch_edge(switch_face(index)), id, nodes[4]);
+		path[5] = node_id_from_vertex_index_explore(switch_face(switch_edge(switch_face(index))), id, nodes[5]);
+
+		const int min_path = *std::min_element(path.begin(), path.end());
+
+		for(int i = 0 ; i < 6; ++i)
+		{
+			if(path[i]==min_path)
+			{
+				return nodes[i];
+			}
+		}
+
+		assert(false);
+		return nodes[0];
 	}
 
 
