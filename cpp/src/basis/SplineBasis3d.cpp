@@ -107,60 +107,93 @@ namespace poly_fem
             space(x, y, z).push_back(node_id);
             node(x, y, z).push_back(mesh.node_from_face_index(index));
 
-            const bool is_x = is_xyz == 0;
-            const bool is_y = is_xyz == 1;
-            const bool is_z = is_xyz == 2;
+            // const bool is_x = is_xyz == 0;
+            // const bool is_y = is_xyz == 1;
+            // const bool is_z = is_xyz == 2;
 
-            const int index1[] = {0, 1, 2, 1};
-            const int index2[] = {1, 2, 1, 0};
+            // const int index1[] = {0, 1, 2, 1};
+            // const int index2[] = {1, 2, 1, 0};
 
-            const int index1i[] = {0, 1, 2, 1};
-            const int index2i[] = {1, 0, 1, 2};
+            // const int index1i[] = {0, 1, 2, 1};
+            // const int index2i[] = {1, 0, 1, 2};
+
+            // const int index12[] = {0, 0, 2, 2};
+            // const int index22[] = {0, 2, 0, 2};
+
+            // const int index12i[] = {2, 0, 2, 0};
+            // const int index22i[] = {0, 2, 2, 0};
 
 
             if(node_id < mesh.n_elements())
             {
-                Navigation3D::Index start_index = mesh.switch_element(index);
-                assert(start_index.element == node_id);
-                assert(start_index.vertex == index.vertex);
+                // Navigation3D::Index start_index = mesh.switch_element(index);
+                // assert(start_index.element == node_id);
+                // assert(start_index.vertex == index.vertex);
 
-                Navigation3D::Index face_circ = start_index;
-                for(int i = 0; i < 4; ++i)
-                {
-                    int x1, y1, z1;
+                // Navigation3D::Index face_circ = start_index;
+                // for(int i = 0; i < 4; ++i)
+                // {
+                //     int x1, y1, z1;
+                //     int x2, y2, z2;
 
-                    if(is_x)
-                    {
-                        x1 = x;
-                        y1 = index1i[i];
-                        z1 = index2i[i];
-                    }
-                    else if(is_y)
-                    {
-                        y1 = y;
-                        x1 = index1[i];
-                        z1 = index2[i];
-                    }
-                    else
-                    {
-                        assert(is_z);
-                        z1 = z;
-                        x1 = index1i[i];
-                        y1 = index2i[i];
-                    }
+                //     if(is_x)
+                //     {
+                //         x1 = x;
+                //         y1 = index1i[i];
+                //         z1 = index2i[i];
 
-                    const Navigation3D::Index face = mesh.switch_face(face_circ);
+                //         x2 = x;
+                //         y2 = index12i[i];
+                //         z2 = index22i[i];
+                //     }
+                //     else if(is_y)
+                //     {
+                //         y1 = y;
+                //         x1 = index1[i];
+                //         z1 = index2[i];
 
-                    mesh.node_id_from_face_index(face, node_id);
-                    
-                    if(std::find(space(x1, y1, z1).begin(), space(x1, y1, z1).end(), node_id) == space(x1, y1, z1).end())
-                    {
-                        space(x1, y1, z1).push_back(node_id);
-                        node(x1, y1, z1).push_back(mesh.node_from_face_index(face));
-                    }
+                //         y2 = y;
+                //         x2 = index12[i];
+                //         z2 = index22[i];
+                //     }
+                //     else
+                //     {
+                //         assert(is_z);
+                //         z1 = z;
+                //         x1 = index1i[i];
+                //         y1 = index2i[i];
 
-                    face_circ = mesh.switch_vertex(mesh.switch_edge(face_circ));
-                }
+                //         z2 = z;
+                //         x2 = index12i[i];
+                //         y2 = index22i[i];
+                //     }
+
+                //     const Navigation3D::Index face = mesh.switch_face(face_circ);
+
+                //     mesh.node_id_from_face_index(face, node_id);
+
+                //     if(std::find(space(x1, y1, z1).begin(), space(x1, y1, z1).end(), node_id) == space(x1, y1, z1).end())
+                //     {
+                //         space(x1, y1, z1).push_back(node_id);
+                //         node(x1, y1, z1).push_back(mesh.node_from_face_index(face));
+                //     }
+
+                //     if(node_id < mesh.n_elements() && is_x)
+                //     {
+                //         const Navigation3D::Index corner_index = mesh.switch_face(mesh.switch_edge(mesh.switch_element(face)));
+
+                //         mesh.node_id_from_face_index(corner_index, node_id);
+                //         std::cout<<node_id<<" "<<x2<<" "<<y2<<" "<<z2<<std::endl;
+
+                //         if(std::find(space(x2, y2, z2).begin(), space(x2, y2, z2).end(), node_id) == space(x2, y2, z2).end())
+                //         {
+                //             space(x2, y2, z2).push_back(node_id);
+                //             node(x2, y2, z2).push_back(mesh.node_from_face_index(corner_index));
+                //         }
+                //     }
+
+                //     face_circ = mesh.switch_vertex(mesh.switch_edge(face_circ));
+                // }
             }
             else
             {
@@ -201,14 +234,14 @@ namespace poly_fem
             }
         }
 
-        void explore_other_edge(const Mesh3D &mesh, const Navigation3D::Index &face_index, const Navigation3D::Index &start_index, std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 12> &to_edge, const int e_index, const int x, const int y, const int z, SpaceMatrix &space, NodeMatrix &node, std::vector< int > &bounday_nodes)
+        void explore_other_edge(const Mesh3D &mesh, const Navigation3D::Index &face_index, std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 12> &to_edge, const int e_index, const int x, const int y, const int z, SpaceMatrix &space, NodeMatrix &node, std::vector< int > &bounday_nodes)
         {
             if(space(x, y, z).empty())
             {
                 const Navigation3D::Index el_index = mesh.switch_element(face_index);
                 Navigation3D::Index index;
                 if(el_index.element < 0)
-                    index = to_edge[e_index](start_index);
+                    return;
                 else
                     index = to_edge[e_index](el_index);
 
@@ -258,108 +291,135 @@ namespace poly_fem
             const Navigation3D::Index start_index = mesh.get_index_from_element(el_index);
             Navigation3D::Index index;
 
-
-            space(1, 1, 1).push_back(el_index);
-            node(1, 1, 1).push_back(mesh.node_from_element(el_index));
-
             std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 6> to_face;
             mesh.to_face_functions(to_face);
-
-            std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 8> to_vertex;
-            mesh.to_vertex_functions(to_vertex);
 
             std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 12> to_edge;
             mesh.to_edge_functions(to_edge);
 
-            //////////////////////////////////////////
+            std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 8> to_vertex;
+            mesh.to_vertex_functions(to_vertex);
+
+
+
+            space(1, 1, 1).push_back(el_index);
+            node(1, 1, 1).push_back(mesh.node_from_element(el_index));
+
+
             index = to_face[0](start_index);
             explore_direction(index, mesh, 2, 1, 1, 0, RIGHT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             index = to_face[1](start_index);
             explore_direction(index, mesh, 0, 1, 1, 0, RIGHT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
-            // //////////////////////////////////////////
             index = to_face[2](start_index);
             explore_direction(index, mesh, 1, 1, 2, 2, RIGHT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             index = to_face[3](start_index);
             explore_direction(index, mesh, 1, 1, 0, 2, RIGHT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
-            // //////////////////////////////////////////
             index = to_face[4](start_index);
             explore_direction(index, mesh, 1, 2, 1, 1, RIGHT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             index = to_face[5](start_index);
             explore_direction(index, mesh, 1, 0, 1, 1, RIGHT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
+vector<int> cubes;
+            for(int i=0; i < 12; ++i)
+            {
+                index = to_edge[i](start_index);
+            }
 
 
-            // //////////////////////////////////////////
-            explore_central_edge(mesh, start_index, to_edge, 0,  0, 0, 1, space, node, bounday_nodes);
-            explore_central_edge(mesh, start_index, to_edge, 8,  2, 0, 1, space, node, bounday_nodes);
-            explore_central_edge(mesh, start_index, to_edge, 10,  2, 2, 1, space, node, bounday_nodes);
-            explore_central_edge(mesh, start_index, to_edge, 2,  0, 2, 1, space, node, bounday_nodes);
-
-            explore_central_edge(mesh, start_index, to_edge, 1,  0, 1, 2, space, node, bounday_nodes);
-            explore_central_edge(mesh, start_index, to_edge, 5,  1, 0, 2, space, node, bounday_nodes);
-            explore_central_edge(mesh, start_index, to_edge, 6,  1, 2, 2, space, node, bounday_nodes);
-            explore_central_edge(mesh, start_index, to_edge, 9,  2, 1, 2, space, node, bounday_nodes);
 
 
-            explore_central_edge(mesh, start_index, to_edge, 3,  0, 1, 0, space, node, bounday_nodes);
-            explore_central_edge(mesh, start_index, to_edge, 4,  1, 0, 0, space, node, bounday_nodes);
-            explore_central_edge(mesh, start_index, to_edge, 7,  1, 2, 0, space, node, bounday_nodes);
-            explore_central_edge(mesh, start_index, to_edge, 11,  2, 1, 0, space, node, bounday_nodes);
 
-            //
-            // explore_other_edge(mesh, to_face[4](start_index), start_index, to_edge, 5,  0, 1, 0, space, node, bounday_nodes);
+
+
+
 
             // //////////////////////////////////////////
-            explore_corner(mesh, start_index, to_vertex, 0,  0, 0, 0, space, node, bounday_nodes); //22
-            explore_corner(mesh, start_index, to_vertex, 1,  0, 0, 2, space, node, bounday_nodes); //20
-            explore_corner(mesh, start_index, to_vertex, 2,  0, 2, 2, space, node, bounday_nodes); //19
-            explore_corner(mesh, start_index, to_vertex, 3,  0, 2, 0, space, node, bounday_nodes); //23
+            // index = to_face[0](start_index);
+            // explore_direction(index, mesh, 2, 1, 1, 0, RIGHT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
-            explore_corner(mesh, start_index, to_vertex, 4,  2, 0, 0, space, node, bounday_nodes);
-            explore_corner(mesh, start_index, to_vertex, 5,  2, 0, 2, space, node, bounday_nodes);
-            explore_corner(mesh, start_index, to_vertex, 6,  2, 2, 2, space, node, bounday_nodes);
-            explore_corner(mesh, start_index, to_vertex, 7,  2, 2, 0, space, node, bounday_nodes);
+            // // // explore_other_edge(mesh, index, to_edge, 5,  2, 0, 2, space, node, bounday_nodes);
+            // // // explore_other_edge(mesh, index, to_edge, 6,  2, 2, 2, space, node, bounday_nodes);
+            // // // explore_other_edge(mesh, index, to_edge, 4,  2, 0, 0, space, node, bounday_nodes);
+            // // // explore_other_edge(mesh, index, to_edge, 7,  2, 2, 0, space, node, bounday_nodes);
+
+            // index = to_face[1](start_index);
+            // explore_direction(index, mesh, 0, 1, 1, 0, RIGHT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
+
+            // // // explore_other_edge(mesh, index, to_edge, 5,  0, 0, 2, space, node, bounday_nodes);
+            // // // explore_other_edge(mesh, index, to_edge, 6,  0, 2, 2, space, node, bounday_nodes);
+            // // // explore_other_edge(mesh, index, to_edge, 4,  0, 0, 0, space, node, bounday_nodes);
+            // // // explore_other_edge(mesh, index, to_edge, 7,  0, 2, 0, space, node, bounday_nodes);
+
+            // // // //////////////////////////////////////////
+            // index = to_face[2](start_index);
+            // explore_direction(index, mesh, 1, 1, 2, 2, RIGHT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
+
+            // // // explore_other_edge(mesh, index, to_edge, 5,  0, 2, 2, space, node, bounday_nodes);
+            // // // explore_other_edge(mesh, index, to_edge, 6,  2, 2, 2, space, node, bounday_nodes);
+            // // // explore_other_edge(mesh, index, to_edge, 4,  0, 0, 2, space, node, bounday_nodes);
+            // // // explore_other_edge(mesh, index, to_edge, 7,  2, 0, 2, space, node, bounday_nodes);
+
+            // index = to_face[3](start_index);
+            // explore_direction(index, mesh, 1, 1, 0, 2, RIGHT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
+
+            // // // explore_other_edge(mesh, index, to_edge, 5,  0, 2, 0, space, node, bounday_nodes);
+            // // // explore_other_edge(mesh, index, to_edge, 6,  2, 2, 0, space, node, bounday_nodes);
+            // // // explore_other_edge(mesh, index, to_edge, 4,  0, 0, 0, space, node, bounday_nodes);
+            // // // explore_other_edge(mesh, index, to_edge, 7,  2, 0, 0, space, node, bounday_nodes);
+
+            // // // //////////////////////////////////////////
+            // index = to_face[4](start_index);
+            // explore_direction(index, mesh, 1, 2, 1, 1, RIGHT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
+
+            // // // explore_other_edge(mesh, index, to_edge, 5,  0, 2, 0, space, node, bounday_nodes);
+            // // // explore_other_edge(mesh, index, to_edge, 6,  2, 2, 0, space, node, bounday_nodes);
+            // // // explore_other_edge(mesh, index, to_edge, 4,  0, 2, 2, space, node, bounday_nodes);
+            // // // explore_other_edge(mesh, index, to_edge, 7,  2, 2, 2, space, node, bounday_nodes);
+
+            // index = to_face[5](start_index);
+            // explore_direction(index, mesh, 1, 0, 1, 1, RIGHT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
+
+            // // explore_other_edge(mesh, index, to_edge, 5,  0, 0, 0, space, node, bounday_nodes);
+            // // explore_other_edge(mesh, index, to_edge, 6,  2, 0, 0, space, node, bounday_nodes);
+            // // explore_other_edge(mesh, index, to_edge, 4,  0, 0, 2, space, node, bounday_nodes);
+            // // explore_other_edge(mesh, index, to_edge, 7,  2, 0, 2, space, node, bounday_nodes);
 
 
-            // if(space(1, 2).front() >= mesh.n_elements() && space(0, 1).front() >= mesh.n_elements())
-            // {
-            //     Navigation3D::Index start_index = mesh.get_index_from_face(el_index);
 
-            //     const int node_id = mesh.vertex_node_id(start_index.vertex);
-            //     space(0,2).push_back(node_id);
-            //     node(0,2).push_back(mesh.node_from_vertex(start_index.vertex));
+            // // //////////////////////////////////////////
+            // // explore_central_edge(mesh, start_index, to_edge, 0,  0, 0, 1, space, node, bounday_nodes);
+            // // explore_central_edge(mesh, start_index, to_edge, 8,  2, 0, 1, space, node, bounday_nodes);
+            // // explore_central_edge(mesh, start_index, to_edge, 10,  2, 2, 1, space, node, bounday_nodes);
+            // // explore_central_edge(mesh, start_index, to_edge, 2,  0, 2, 1, space, node, bounday_nodes);
 
-            //     bounday_nodes.push_back(node_id);
-            // }
+            // // explore_central_edge(mesh, start_index, to_edge, 1,  0, 1, 2, space, node, bounday_nodes);
+            // // explore_central_edge(mesh, start_index, to_edge, 5,  1, 0, 2, space, node, bounday_nodes);
+            // // explore_central_edge(mesh, start_index, to_edge, 6,  1, 2, 2, space, node, bounday_nodes);
+            // // explore_central_edge(mesh, start_index, to_edge, 9,  2, 1, 2, space, node, bounday_nodes);
 
-            // if(space(1, 0).front() >= mesh.n_elements() && space(2, 1).front() >= mesh.n_elements())
-            // {
-            //     Navigation3D::Index start_index = mesh.get_index_from_face(el_index);
-            //     start_index = mesh.switch_vertex(mesh.next_around_face(start_index));
 
-            //     const int node_id = mesh.vertex_node_id(start_index.vertex);
-            //     space(2,0).push_back(node_id);
-            //     node(2,0).push_back(mesh.node_from_vertex(start_index.vertex));
+            // // explore_central_edge(mesh, start_index, to_edge, 3,  0, 1, 0, space, node, bounday_nodes);
+            // // explore_central_edge(mesh, start_index, to_edge, 4,  1, 0, 0, space, node, bounday_nodes);
+            // // explore_central_edge(mesh, start_index, to_edge, 7,  1, 2, 0, space, node, bounday_nodes);
+            // // explore_central_edge(mesh, start_index, to_edge, 11,  2, 1, 0, space, node, bounday_nodes);
 
-            //     bounday_nodes.push_back(node_id);
-            // }
 
-            // if(space(1, 2).front() >= mesh.n_elements() && space(2, 1).front() >= mesh.n_elements())
-            // {
-            //     Navigation3D::Index start_index = mesh.get_index_from_face(el_index);
-            //     start_index = mesh.switch_vertex(mesh.switch_edge(start_index));
+            // // //////////////////////////////////////////
+            // // explore_corner(mesh, start_index, to_vertex, 0,  0, 0, 0, space, node, bounday_nodes);
+            // // explore_corner(mesh, start_index, to_vertex, 1,  0, 0, 2, space, node, bounday_nodes);
+            // // explore_corner(mesh, start_index, to_vertex, 2,  0, 2, 2, space, node, bounday_nodes);
+            // // explore_corner(mesh, start_index, to_vertex, 3,  0, 2, 0, space, node, bounday_nodes);
 
-            //     const int node_id = mesh.vertex_node_id(start_index.vertex);
-            //     space(2,2).push_back(node_id);
-            //     node(2,2).push_back(mesh.node_from_vertex(start_index.vertex));
+            // // explore_corner(mesh, start_index, to_vertex, 4,  2, 0, 0, space, node, bounday_nodes);
+            // // explore_corner(mesh, start_index, to_vertex, 5,  2, 0, 2, space, node, bounday_nodes);
+            // // explore_corner(mesh, start_index, to_vertex, 6,  2, 2, 2, space, node, bounday_nodes);
+            // // explore_corner(mesh, start_index, to_vertex, 7,  2, 2, 0, space, node, bounday_nodes);
 
-            //     bounday_nodes.push_back(node_id);
-            // }
 
             std::cout<<std::endl;
             print_local_space(space);
@@ -501,13 +561,23 @@ namespace poly_fem
                 {
                     for(int x = 0; x < 3; ++x)
                     {
-                        if(space(x, y, z).size() == 1)
+                        // if(space(x, y, z).size() == 1)
                         {
-                            const int global_index = space(x, y, z).front();
-                            const Eigen::MatrixXd &node = loc_nodes(x, y, z).front();
+                            // const int global_index = space(x, y, z).front();
+                            // const Eigen::MatrixXd &node = loc_nodes(x, y, z).front();
 
                             const int local_index = z*9 + y*3 + x;
-                            b.bases[local_index].init(global_index, local_index, node);
+                            // b.bases[local_index].init(global_index, local_index, node);
+
+
+                            for(int asd = 0; asd < space(x, y, z).size(); ++asd)
+                            {
+                                Local2Global l2g;
+                                l2g.index = space(x,y,z)[asd];
+                                l2g.node = loc_nodes(x,y,z)[asd];
+                                l2g.val =1;
+                                b.bases[local_index].global().push_back(l2g);
+                            }
 
                             const QuadraticBSpline3d spline(h_knots[x], v_knots[y], w_knots[z]);
                             b.bases[local_index].set_basis([spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.interpolate(uv, val); });

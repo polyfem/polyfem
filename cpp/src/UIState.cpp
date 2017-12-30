@@ -338,10 +338,11 @@ namespace poly_fem
 			// for(std::size_t i = 0; i < bounday_nodes.size(); ++i)
 			// 	std::cout<<bounday_nodes[i]<<std::endl;
 
-			for(std::size_t i = 0; i < state.bases.size(); ++i)
+			// for(std::size_t i = 0; i < state.bases.size(); ++i)
+			for(std::size_t i = 0; i < 1; ++i)
 			{
 				const ElementBases &basis = state.bases[i];
-				if(!basis.has_parameterization) continue;
+				// if(!basis.has_parameterization) continue;
 
 
 				for(std::size_t j = 0; j < basis.bases.size(); ++j)
