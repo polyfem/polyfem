@@ -63,6 +63,8 @@ namespace poly_fem
         static const int TOP_FLAG = 2;
         static const int RIGHT_FLAG = 4;
         static const int BOTTOM_FLAG = 8;
+        static const int FRONT_FLAG = 16;
+        static const int BACK_FLAG = 32;
 
         struct BoundaryData
         {
@@ -140,13 +142,15 @@ namespace poly_fem
             {
                 if(real_boundary)
                 {
-            //         switch(b_flag)
-            //         {
-            //             case RIGHT_FLAG: local_boundary.set_right_boundary(); local_boundary.set_right_edge_id(index.edge); break;
-            //             case BOTTOM_FLAG: local_boundary.set_bottom_boundary(); local_boundary.set_bottom_edge_id(index.edge); break;
-            //             case LEFT_FLAG: local_boundary.set_left_boundary(); local_boundary.set_left_edge_id(index.edge); break;
-            //             case TOP_FLAG: local_boundary.set_top_boundary(); local_boundary.set_top_edge_id(index.edge); break;
-            //         }
+                    switch(b_flag)
+                    {
+                        case RIGHT_FLAG: local_boundary.set_right_boundary(); local_boundary.set_right_edge_id(index.face); break;
+                        case BOTTOM_FLAG: local_boundary.set_bottom_boundary(); local_boundary.set_bottom_edge_id(index.face); break;
+                        case LEFT_FLAG: local_boundary.set_left_boundary(); local_boundary.set_left_edge_id(index.face); break;
+                        case TOP_FLAG: local_boundary.set_top_boundary(); local_boundary.set_top_edge_id(index.face); break;
+                        case FRONT_FLAG: local_boundary.set_front_boundary(); local_boundary.set_front_edge_id(index.face); break;
+                        case BACK_FLAG: local_boundary.set_back_boundary(); local_boundary.set_back_edge_id(index.face); break;
+                    }
                     bounday_nodes.push_back(node_id);
                 }
                 else
@@ -209,19 +213,19 @@ namespace poly_fem
             explore_face(index, mesh, 2, 1, 1, RIGHT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             index = to_face[1](start_index);
-            explore_face(index, mesh, 0, 1, 1, RIGHT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
+            explore_face(index, mesh, 0, 1, 1, LEFT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             index = to_face[2](start_index);
-            explore_face(index, mesh, 1, 1, 2, RIGHT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
+            explore_face(index, mesh, 1, 1, 2, TOP_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             index = to_face[3](start_index);
-            explore_face(index, mesh, 1, 1, 0, RIGHT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
+            explore_face(index, mesh, 1, 1, 0, BOTTOM_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             index = to_face[4](start_index);
-            explore_face(index, mesh, 1, 2, 1, RIGHT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
+            explore_face(index, mesh, 1, 2, 1, FRONT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             index = to_face[5](start_index);
-            explore_face(index, mesh, 1, 0, 1, RIGHT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
+            explore_face(index, mesh, 1, 0, 1, BACK_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
 
             ///////////////////////
@@ -427,23 +431,13 @@ namespace poly_fem
                 {
                     for(int x = 0; x < 3; ++x)
                     {
-                        // if(space(x, y, z).size() == 1)
+                        if(space(x, y, z).size() == 1)
                         {
-                            // const int global_index = space(x, y, z).front();
-                            // const Eigen::MatrixXd &node = loc_nodes(x, y, z).front();
+                            const int global_index = space(x, y, z).front();
+                            const Eigen::MatrixXd &node = loc_nodes(x, y, z).front();
 
                             const int local_index = z*9 + y*3 + x;
-                            // b.bases[local_index].init(global_index, local_index, node);
-
-
-                            for(int asd = 0; asd < space(x, y, z).size(); ++asd)
-                            {
-                                Local2Global l2g;
-                                l2g.index = space(x,y,z)[asd];
-                                l2g.node = loc_nodes(x,y,z)[asd];
-                                l2g.val =1;
-                                b.bases[local_index].global().push_back(l2g);
-                            }
+                            b.bases[local_index].init(global_index, local_index, node);
 
                             const QuadraticBSpline3d spline(h_knots[x], v_knots[y], w_knots[z]);
                             b.bases[local_index].set_basis([spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.interpolate(uv, val); });

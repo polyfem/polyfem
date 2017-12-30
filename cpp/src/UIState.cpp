@@ -749,10 +749,12 @@ namespace poly_fem
 
 			viewer_.ngui->addVariable("mesh path", state.mesh_path);
 			viewer_.ngui->addButton("browser", [&]() {
-				std::string File_address = nanogui::file_dialog({ { "HYBRID", "General polyhedral mesh" },
-				{ "OBJ", "" }}, false);
-				if (File_address.empty()) return;
-				state.mesh_path = File_address;
+				std::string path = nanogui::file_dialog({
+					{ "HYBRID", "General polyhedral mesh" }, { "OBJ", "Obj 2D mesh" }
+				}, false);
+
+				if (!path.empty())
+					state.mesh_path = path;
 
 			});
 			viewer_.ngui->addVariable("n refs", state.n_refs);

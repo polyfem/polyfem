@@ -362,7 +362,7 @@ void MeshProcessing3D::reorder_hex_mesh_propogation(Mesh3DStorage &hmi) {
 		Groups.push_back(group);
 	}
 	//direction
-	cout << "correct orientation " << endl;
+	// cout << "correct orientation " << endl;
 	for (auto group : Groups) {
 		Mesh_Quality mq1, mq2;
 		Mesh3DStorage m1, m2;
@@ -371,12 +371,12 @@ void MeshProcessing3D::reorder_hex_mesh_propogation(Mesh3DStorage &hmi) {
 		m2.points = m1.points = hmi.points;
 		for (auto hid : group)m1.elements.push_back(hmi.elements[hid]);
 		scaled_jacobian(m1, mq1);
-		cout << "m1 jacobian " << mq1.min_Jacobian << " " << mq1.ave_Jacobian << endl;
+		// cout << "m1 jacobian " << mq1.min_Jacobian << " " << mq1.ave_Jacobian << endl;
 		if (mq1.min_Jacobian > 0) continue;
 		m2.elements = m1.elements;
 		for (auto &h : m2.elements) { swap(h.vs[1], h.vs[3]); swap(h.vs[5], h.vs[7]); }
 		scaled_jacobian(m2, mq2);
-		cout << "m2 jacobian " << mq2.min_Jacobian << " " << mq2.ave_Jacobian << endl;
+		// cout << "m2 jacobian " << mq2.min_Jacobian << " " << mq2.ave_Jacobian << endl;
 		if (mq2.ave_Jacobian > mq1.ave_Jacobian) {
 			for (auto &h : m2.elements) hmi.elements[h.id] = h;
 		}
