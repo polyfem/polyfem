@@ -386,67 +386,98 @@ namespace poly_fem
 		ele_tag.resize(mesh_.elements.size());
 		for (auto &t : ele_tag) t = ElementType::RegularInteriorCube;
 
-			for (auto &ele:mesh_.elements) {
-				if (ele.hex) {
-				//AttachPolytope
-					bool attaching_non_hex = false;
-					for (auto vid : ele.vs){
-						for (auto eleid : mesh_.vertices[vid].neighbor_hs) if (!mesh_.elements[eleid].hex) {
-							attaching_non_hex = true; break;
+		//boundary flags
+		std::vector<bool> bv_flag(mesh_.vertices.size(), false), be_flag(mesh_.edges.size(), false), bf_flag(mesh_.faces.size(), false);
+		for (auto f : mesh_.faces)if (f.boundary)bf_flag[f.id] = true;
+		else {
+			for(auto nhid:f.neighbor_hs)if(!mesh_.elements[nhid].hex)bf_flag[f.id] = true;
+		}
+		for (uint32_t i = 0; i < mesh_.faces.size(); ++i)
+			if (bf_flag[i]) for (uint32_t j = 0; j < mesh_.faces[i].vs.size(); ++j) {
+				uint32_t eid = mesh_.faces[i].es[j];
+				be_flag[eid] = true;
+				bv_flag[mesh_.faces[i].vs[j]] = true;
+			}
+
+
+		for (auto &ele:mesh_.elements) {
+			if (ele.hex) {
+				bool attaching_non_hex = false, on_boundary = false;;
+				for (auto vid : ele.vs){
+					for (auto eleid : mesh_.vertices[vid].neighbor_hs) if (!mesh_.elements[eleid].hex) {
+						attaching_non_hex = true; break;
+					}
+					if (mesh_.vertices[vid].boundary) {
+						on_boundary = true; break;
+					}
+					if (on_boundary || attaching_non_hex) break;
+				}
+				if (on_boundary || attaching_non_hex) {
+					ele_tag[ele.id] = ElementType::SingularBoundaryCube;
+					//has no boundary edge--> singular
+					bool boundary_edge = false, boundary_edge_singular = false, interior_edge_singular = false;
+					for (auto eid : ele.es) {
+						int en = 0;
+						if (be_flag[eid]) {
+							for (auto nhid : mesh_.edges[eid].neighbor_hs)if (mesh_.elements[nhid].hex)en++;
+							if (en > 2)boundary_edge_singular = true;
 						}
-						if (attaching_non_hex) break;
+						else {
+							for (auto nhid : mesh_.edges[eid].neighbor_hs)if (mesh_.elements[nhid].hex)en++;
+							if (en != 4)interior_edge_singular = true;
+						}
 					}
-					if (attaching_non_hex) {
-					// ele_tag[ele.id] = ElementType::AttachPolytope; //WARNING
-						continue;
-					}
-				//
-					bool on_boundary = false;
+					if (!boundary_edge || boundary_edge_singular || interior_edge_singular)continue;
+
+					bool interior_vertex_singular = false;
 					for (auto vid : ele.vs) {
-						if (mesh_.vertices[vid].boundary) {
-							on_boundary = true; break;
+						int vn = 0;
+						if (bv_flag[vid]) {
+							continue;//not sure the conditions
 						}
-						if (on_boundary || attaching_non_hex) break;
-					}
-					if (on_boundary || attaching_non_hex) {
-						ele_tag[ele.id] = ElementType::RegularBoundaryCube;
-						continue;
-					}
-
-				//type 1
-					bool has_irregular_v = false;
-					for (auto vid : ele.vs)  if (mesh_.vertices[vid].neighbor_hs.size() != 8) {
-						has_irregular_v = true; break;
-					}
-					if(!has_irregular_v){
-						ele_tag[ele.id] = ElementType::RegularInteriorCube;
-						continue;
-					}
-				//type 2
-					bool has_singular_v = false; int n_irregular_v = 0;
-					for (auto vid : ele.vs){
-						if (mesh_.vertices[vid].neighbor_hs.size() != 8)
-							n_irregular_v++;
-						int n_irregular_e = 0;
-						for (auto eid : mesh_.vertices[vid].neighbor_es){
-							if (mesh_.edges[eid].neighbor_hs.size() != 4)
-								n_irregular_e++;
-						}
-						if (n_irregular_e != 2) {
-							has_singular_v = true; break;
+						else {
+							if (mesh_.vertices[vid].neighbor_hs.size() != 8)interior_vertex_singular = true;
 						}
 					}
-					if (!has_singular_v && n_irregular_v == 2) {
-						ele_tag[ele.id] = ElementType::SimpleSingularInteriorCube;
-						continue;
-					}
-
-					ele_tag[ele.id] = ElementType::MultiSingularInteriorCube;
+					if (interior_vertex_singular)continue;
+					ele_tag[ele.id] = ElementType::RegularBoundaryCube;
+					continue;
 				}
-				else {
-					ele_tag[ele.id] = ElementType::InteriorPolytope;
-					for (auto fid : ele.fs)if (mesh_.faces[fid].boundary) { ele_tag[ele.id] = ElementType::BoundaryPolytope; break; }
+
+			//type 1
+				bool has_irregular_v = false;
+				for (auto vid : ele.vs)  if (mesh_.vertices[vid].neighbor_hs.size() != 8) {
+					has_irregular_v = true; break;
 				}
+				if(!has_irregular_v){
+					ele_tag[ele.id] = ElementType::RegularInteriorCube;
+					continue;
+				}
+			//type 2
+				bool has_singular_v = false; int n_irregular_v = 0;
+				for (auto vid : ele.vs){
+					if (mesh_.vertices[vid].neighbor_hs.size() != 8)
+						n_irregular_v++;
+					int n_irregular_e = 0;
+					for (auto eid : mesh_.vertices[vid].neighbor_es){
+						if (mesh_.edges[eid].neighbor_hs.size() != 4)
+							n_irregular_e++;
+					}
+					if (n_irregular_e != 2) {
+						has_singular_v = true; break;
+					}
+				}
+				if (!has_singular_v && n_irregular_v == 2) {
+					ele_tag[ele.id] = ElementType::SimpleSingularInteriorCube;
+					continue;
+				}
+
+				ele_tag[ele.id] = ElementType::MultiSingularInteriorCube;
+			}
+			else {
+				ele_tag[ele.id] = ElementType::InteriorPolytope;
+				for (auto fid : ele.fs)if (mesh_.faces[fid].boundary) { ele_tag[ele.id] = ElementType::BoundaryPolytope; break; }
+			}
 		}
 	}
 

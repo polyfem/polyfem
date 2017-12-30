@@ -183,6 +183,7 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi) {
 	}
 	//e_nhs
 	for (auto &e : hmi.edges) e.neighbor_hs.clear();
+	for (auto &ele : hmi.elements) ele.es.clear();
 	for (uint32_t i = 0; i < hmi.edges.size(); i++) {
 		std::vector<uint32_t> nhs;
 		for (uint32_t j = 0; j < hmi.edges[i].neighbor_fs.size(); j++) {
@@ -191,6 +192,7 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi) {
 		}
 		std::sort(nhs.begin(), nhs.end()); nhs.erase(std::unique(nhs.begin(), nhs.end()), nhs.end());
 		hmi.edges[i].neighbor_hs = nhs;
+		for (auto nhid : nhs)hmi.elements[nhid].es.push_back(i);
 	}
 	//v_nhs; ordering fs for hex
 	if (hmi.type != MeshType::Hyb) return;
@@ -796,11 +798,11 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter) {
 		build_connectivity(M_sur);
 		orient_surface_mesh(M_sur);
 
-		//int fn_ = 0;
-		//for (auto &f : M_.faces)if (f.boundary) {
-		//	for (int j = 0; j < f.vs.size(); j++) f.vs[j] = V_map_reverse[M_sur.faces[fn_].vs[j]];
-		//	fn_++;
-		//}
+		int fn_ = 0;
+		for (auto &f : M_.faces)if (f.boundary) {
+			for (int j = 0; j < f.vs.size(); j++) f.vs[j] = V_map_reverse[M_sur.faces[fn_].vs[j]];
+			fn_++;
+		}
 		//volume orienting
 		vector<bool> F_tag(M_.faces.size(), true);
 		std::vector<short> F_visit(M_.faces.size(), 0);//0 un-visited, 1 visited once, 2 visited twice
