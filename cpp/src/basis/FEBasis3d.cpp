@@ -158,26 +158,11 @@ namespace poly_fem
 		HexQuadrature hex_quadrature;
 
 		std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 8> to_vertex;
-		to_vertex[0]= [mesh](Navigation3D::Index idx) { return idx; };
-		to_vertex[1]= [mesh](Navigation3D::Index idx) { return mesh.switch_vertex(idx); };
-		to_vertex[2]= [mesh](Navigation3D::Index idx) { return mesh.switch_vertex(mesh.switch_edge(mesh.switch_vertex(idx))); };
-		to_vertex[3]= [mesh](Navigation3D::Index idx) { return mesh.switch_vertex(mesh.switch_edge(idx)); };
-
-		to_vertex[4]= [mesh](Navigation3D::Index idx) { return mesh.switch_vertex(mesh.switch_edge(mesh.switch_face(idx))); };
-		to_vertex[5]= [mesh](Navigation3D::Index idx) { return mesh.switch_vertex(mesh.switch_edge(mesh.switch_vertex(mesh.switch_edge(mesh.switch_face(idx))))); };
-		to_vertex[6]= [mesh](Navigation3D::Index idx) { return mesh.switch_vertex(mesh.switch_edge(mesh.switch_face(mesh.switch_vertex(mesh.switch_edge(mesh.switch_vertex(idx)))))); };
-		to_vertex[7]= [mesh](Navigation3D::Index idx) { return mesh.switch_vertex(mesh.switch_edge(mesh.switch_face(mesh.switch_vertex(mesh.switch_edge(idx))))); };
+		mesh.to_vertex_functions(to_vertex);
 
 
 		std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 6> to_face;
-		to_face[0]= [mesh](Navigation3D::Index idx) { return mesh.switch_face(mesh.switch_edge(mesh.switch_vertex(mesh.switch_edge(mesh.switch_face(idx))))); };
-		to_face[1]= [mesh](Navigation3D::Index idx) { return idx; };
-
-		to_face[2]= [mesh](Navigation3D::Index idx) { return mesh.switch_face(mesh.switch_edge(mesh.switch_vertex(idx))); };
-		to_face[3]= [mesh](Navigation3D::Index idx) { return mesh.switch_face(mesh.switch_edge(idx)); };
-
-		to_face[4]= [mesh](Navigation3D::Index idx) { return mesh.switch_face(mesh.switch_edge(mesh.switch_vertex(mesh.switch_edge(mesh.switch_vertex(idx))))); };
-		to_face[5]= [mesh](Navigation3D::Index idx) { return mesh.switch_face(idx); };
+		mesh.to_face_functions(to_face);
 
 		for(int e = 0; e < mesh.n_elements(); ++e)
 		{

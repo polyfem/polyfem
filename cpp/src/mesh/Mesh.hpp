@@ -19,7 +19,7 @@ namespace poly_fem
 		SingularBoundaryCube,       // Boundary (internal or external) quad/hex that is not regular
 		InteriorPolytope,           // Interior polytope
 		BoundaryPolytope,           // Boundary polytope
-		Undefined,                  // For invalid configurations
+		Undefined                   // For invalid configurations
 	};
 
 	class Mesh
@@ -32,12 +32,8 @@ namespace poly_fem
 		virtual inline bool is_volume() const = 0;
 
 		virtual inline int n_elements() const = 0;
-		virtual inline int n_pts() const = 0;
 
 		virtual inline int n_element_vertices(const int element_index) const = 0;
-		virtual inline int vertex_global_index(const int element_index, const int local_index) const = 0;
-
-		virtual double compute_mesh_size() const = 0;
 
 		virtual void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const = 0;
 

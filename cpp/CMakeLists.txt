@@ -129,6 +129,9 @@ add_library(polyfem
 	src/basis/FEBasis3d.cpp
 	src/basis/FEBasis3d.hpp
 
+	src/basis/SplineBasis3d.cpp
+	src/basis/SplineBasis3d.hpp
+
 
 	src/basis/function/QuadraticBSpline.cpp
 	src/basis/function/QuadraticBSpline.hpp
