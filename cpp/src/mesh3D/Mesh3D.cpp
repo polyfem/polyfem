@@ -419,6 +419,7 @@ namespace poly_fem
 					for (auto eid : ele.es) {
 						int en = 0;
 						if (be_flag[eid]) {
+							boundary_edge = true;
 							for (auto nhid : mesh_.edges[eid].neighbor_hs)if (mesh_.elements[nhid].hex)en++;
 							if (en > 2)boundary_edge_singular = true;
 						}

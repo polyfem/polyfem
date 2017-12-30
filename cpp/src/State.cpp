@@ -127,7 +127,7 @@ namespace poly_fem
 			}
 		}
 
-		std::cout <<"regular_count: " << regular_count <<" regular_boundary_count: " << regular_boundary_count << " simple_singular_count: " << simple_singular_count << " multi_singular_count: " << multi_singular_count << " boundary_count: " << boundary_count << " non_regular_count: " <<  non_regular_count << " non_regular_boundary_count: " << non_regular_boundary_count << " undefined_count: " << undefined_count <<std::endl;
+		std::cout <<"regular_count: " << regular_count <<" regular_boundary_count: " << regular_boundary_count << " simple_singular_count: " << simple_singular_count << " multi_singular_count: " << multi_singular_count << " singular_boundary_count: " << boundary_count << " non_regular_count: " <<  non_regular_count << " non_regular_boundary_count: " << non_regular_boundary_count << " undefined_count: " << undefined_count <<std::endl;
 
 	}
 
