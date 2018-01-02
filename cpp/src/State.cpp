@@ -195,6 +195,7 @@ namespace poly_fem
 		mesh->refine(n_refs, refinenemt_location);
 
 		mesh->set_boundary_tags(boundary_tag);
+
 		timer.stop();
 		std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
 	}
@@ -407,9 +408,6 @@ namespace poly_fem
 		igl::Timer timer; timer.start();
 		std::cout<<"Assembling stiffness mat..."<<std::flush;
 
-    	// std::cout<<MatrixXd(stiffness)-MatrixXd(stiffness.transpose())<<"\n\n"<<std::endl;
-    	// std::cout<<MatrixXd(stiffness).rowwise().sum()<<"\n\n"<<std::endl;
-
 		if(problem.problem_num() == 3)
 		{
 			Assembler<LinearElasticity> assembler;
@@ -433,7 +431,10 @@ namespace poly_fem
 				assembler.assemble(n_bases, values, values, stiffness);
 			else
 				assembler.assemble(n_bases, values, geom_values, stiffness);
-			// std::cout<<MatrixXd(stiffness)<<std::endl;
+
+			// std::cout<<MatrixXd(stiffness)-MatrixXd(stiffness.transpose())<<"\n\n"<<std::endl;
+			// std::cout<<MatrixXd(stiffness).rowwise().sum()<<"\n\n"<<std::endl;
+
 			assembler.set_identity(bounday_nodes, stiffness);
 		}
 
@@ -528,6 +529,14 @@ namespace poly_fem
 		solving_time = timer.getElapsedTime();
 		std::cout<<" took "<<solving_time<<"s"<<std::endl;
 		std::cout<<"Solver error: "<<(stiffness*sol-rhs).norm()<<std::endl;
+
+		// {
+		// 	std::ofstream of;
+		// 	of.open("sol.txt");
+		// 	of.precision(100);
+		// 	of<<sol;
+		// 	of.close();
+		// }
 	}
 
 	void State::compute_errors()

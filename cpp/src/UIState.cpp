@@ -301,11 +301,11 @@ namespace poly_fem
 			state.mesh->get_edges(p0, p1);
 			viewer.data.add_edges(p0, p1, MatrixXd::Zero(1, 3));
 
-			// for(int i = 0; i < static_cast<Mesh3D *>(state.mesh)->n_faces(); ++i)
-			// {
-			// 	MatrixXd p = static_cast<Mesh3D *>(state.mesh)->node_from_face(i);
-			// 	viewer.data.add_label(p.transpose(), std::to_string(i));
-			// }
+			for(int i = 0; i < static_cast<Mesh3D *>(state.mesh)->n_faces(); ++i)
+			{
+				MatrixXd p = static_cast<Mesh3D *>(state.mesh)->node_from_face(i);
+				viewer.data.add_label(p.transpose(), std::to_string(i));
+			}
 
 			// for(int i = 0; i < state.mesh->n_elements(); ++i)
 			// {
@@ -313,11 +313,11 @@ namespace poly_fem
 			// 	viewer.data.add_label(p.transpose(), std::to_string(i));
 			// }
 
-			// for(int i = 0; i < static_cast<Mesh3D *>(state.mesh)->n_pts(); ++i)
-			// {
-			// 	MatrixXd p; static_cast<Mesh3D *>(state.mesh)->point(i, p);
-			// 	viewer.data.add_label(p.transpose(), std::to_string(i));
-			// }
+			for(int i = 0; i < static_cast<Mesh3D *>(state.mesh)->n_pts(); ++i)
+			{
+				MatrixXd p; static_cast<Mesh3D *>(state.mesh)->point(i, p);
+				viewer.data.add_label(p.transpose(), std::to_string(i));
+			}
 
 			// for(int i = 0; i < state.mesh->n_elements(); ++i)
 			// {
@@ -377,9 +377,13 @@ namespace poly_fem
 
 		auto show_quadrature_func = [&](){
 			for(std::size_t i = 0; i < state.values.size(); ++i)
+			// for(std::size_t i = 0; i < 1; ++i)
 			{
 				const ElementAssemblyValues &vals = state.values[i];
-				viewer.data.add_points(vals.val, MatrixXd::Zero(vals.val.rows(), 3));
+				if(state.mesh->is_volume())
+					viewer.data.add_points(vals.val, vals.quadrature.points);
+				else
+					viewer.data.add_points(vals.val, MatrixXd::Zero(vals.val.rows(), 3));
 
 				// for(long j = 0; j < vals.val.rows(); ++j)
 					// viewer.data.add_label(vals.val.row(j), std::to_string(j));
@@ -768,7 +772,7 @@ namespace poly_fem
 			viewer_.ngui->addVariable<ProblemType>("Problem",
 				[&](ProblemType val) { state.problem.set_problem_num(val); },
 				[&]() { return ProblemType(state.problem.problem_num()); }
-				)->setItems({"Linear","Quadratic","Franke", "Elastic"});
+				)->setItems({"Linear","Quadratic","Franke", "Elastic", "Zero BC"});
 
 			viewer_.ngui->addVariable("skip visualization", skip_visualization);
 

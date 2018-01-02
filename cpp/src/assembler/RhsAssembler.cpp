@@ -135,8 +135,8 @@ namespace poly_fem
 
 				// std::cout<<samples<<"\n"<<std::endl;
 
-				// igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
-				// viewer.data.add_points(mapped, Eigen::MatrixXd::Constant(1, 3, 0));
+				igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
+				viewer.data.add_points(mapped, Eigen::MatrixXd::Constant(1, 3, 0));
 
 				// std::cout<<mapped<<std::endl;
 

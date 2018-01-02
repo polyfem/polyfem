@@ -14,6 +14,8 @@ namespace poly_fem
 	class Mesh3D : public Mesh
 	{
 	public:
+		void scale(const double scaling) override { mesh_.points *= scaling; }
+
 		void refine(const int n_refiniment, const double t) override;
 
 		inline bool is_volume() const override { return true; }

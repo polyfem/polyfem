@@ -9,6 +9,15 @@
 
 namespace poly_fem
 {
+	enum ProblemType
+	{
+		Linear = 0,
+		Quadratic,
+		Franke,
+		Elastic,
+		Zero_BC
+	};
+
 	class Problem
 	{
 	public:

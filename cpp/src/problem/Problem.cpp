@@ -6,7 +6,7 @@ namespace poly_fem
 {
 	bool Problem::has_exact_sol() const
 	{
-		return problem_num_ < 3;
+		return problem_num_ != 3;
 	}
 
 	void Problem::rhs(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
@@ -53,6 +53,15 @@ namespace poly_fem
 			}
 
 			case 3: val = Eigen::MatrixXd::Zero(pts.rows(), 2); return;
+
+			case 4: {
+				auto &z = pts.col(2).array();
+				val =  -4 * x * y * (1 - y) *(1 - y) * z * (1 - z) + 2 * (1 - x) * y * (1 - y) * (1 - y) * z * (1 - z) - 4 * (1 - x) * x * x * (1 - y) * z * (1 - z) + 2 * (1 - x) * x * x * y * z * (1 - z) - 2 * (1 - x) * x * y * (1 - y) * (1 - y);
+
+				// val = -4 * x * y * (1 - y) * (1 - y) + 2 * (1 - x) * y * (1 - y) *(1 - y) - 4 * (1 - x) * x * x * (1 - y) + 2 * (1 - x) * x * x * y;
+				return;
+			}
+
 
 			default: assert(false);
 		}
@@ -113,13 +122,23 @@ namespace poly_fem
 				return;
 			}
 
+
+			case 4:
+			{
+				auto &z = pts.col(2).array();
+
+				val = (1 - x)  * x * x * y * (1-y) *(1-y) * z * (1 - z);
+
+				return;
+			}
+
 			default: assert(false);
 		}
 	}
 
 	void Problem::remove_neumann_nodes(const std::vector< ElementBases > &bases, const std::vector<int> &boundary_tag, std::vector< LocalBoundary > &local_boundary, std::vector< int > &boundary_nodes)
 	{
-		if(problem_num_ < 3)
+		if(problem_num_ != 3)
 			return;
 
 		//TODO use b tag for everything

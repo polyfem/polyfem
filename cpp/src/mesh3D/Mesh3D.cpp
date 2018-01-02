@@ -9,6 +9,7 @@ namespace poly_fem
 	{
 		MeshProcessing3D::refine_catmul_clark_polar(mesh_, n_refiniment);
 		MeshProcessing3D::global_orientation_hexes(mesh_);
+		// scale(100);
 		create_boundary_nodes();
 	}
 
