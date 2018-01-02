@@ -213,7 +213,7 @@ namespace poly_fem
 			if(use_splines)
 				n_bases = SplineBasis3d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, bounday_nodes, polys);
 			else
-				n_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, bounday_nodes);
+				n_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, bounday_nodes);
 		}
 		else
 		{

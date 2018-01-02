@@ -26,6 +26,8 @@ namespace poly_fem
 		inline int n_edges() const { assert(false); return 0; /* TODO */ }
 		inline int n_pts() const { return int(mesh_.points.cols()); }
 
+		inline int n_face_vertices(const int face_index) const { assert(false); return 0; /* TODO */ }
+
 		inline int n_element_vertices(const int element_index) const override { return int(mesh_.elements[element_index].vs.size());}
 		inline int n_element_faces(const int element_index) const { return int(mesh_.elements[element_index].fs.size());}
 

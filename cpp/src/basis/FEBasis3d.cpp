@@ -8,9 +8,16 @@
 /*
 
 Axes:
- z y
- │╱
- o──x
+  z
+  │
+  o──x
+ ╱
+y
+
+Boundaries:
+X axis: left/right
+Y axis: back/front
+Z axis: bottom/top
 
 Corner nodes:
       v7──────x─────v6
@@ -29,23 +36,50 @@ v4─────┼x─────v5  ┆╱ │
  │╱     ┆      │╱
 v0──────x─────v1
 
+v0 = (0, 1, 0)
+v1 = (1, 1, 0)
+v2 = (1, 0, 0)
+v3 = (0, 0, 0)
+v4 = (0, 1, 1)
+v5 = (1, 1, 1)
+v6 = (1, 0, 1)
+v7 = (0, 0, 1)
 
 Edge nodes:
-       x─────e11─────x
+       x─────e10─────x
       ╱┆     ╱      ╱│
      ╱ ┆    ╱      ╱ │
-   e12┄┼┄┄┄x┄┄┄┄┄e10 │
-   ╱  e8  ╱      ╱┆ e7
+   e11┄┼┄┄┄x┄┄┄┄┄e9  │
+   ╱  e7  ╱      ╱┆ e6
   ╱    ┆ ╱      ╱ ┆ ╱│
- x─────e9──────x  ┆╱ │
+ x─────e8──────x  ┆╱ │
  │     ┆┆      │  x  │
  │     x┼┄┄┄┄┄e2┄⌿┼┄┄x
  │    ╱ ┆      │╱ ┆ ╱
-e5┄┄┄⌿┄┄x┄┄┄┄┄e6  ┆╱
- │ e4   ┆      │ e1
+e4┄┄┄⌿┄┄x┄┄┄┄┄e5  ┆╱
+ │ e3   ┆      │ e1
  │ ╱    ┆      │ ╱
  │╱     ┆      │╱
  x─────e0──────x
+
+e0  = (0.5,   1,   0)
+e1  = (  1, 0.5,   0)
+e2  = (0.5,   0,   0)
+e3  = (  0, 0.5,   0)
+e4  = (  0,   1, 0.5)
+e5  = (  1,   1, 0.5)
+e6  = (  1,   0, 0.5)
+e7  = (  0,   0, 0.5)
+e8  = (0.5,   1,   1)
+e9  = (  1, 0.5,   1)
+e10 = (0.5,   0,   1)
+e11 = (  0, 0.5,   1)
+
+  z
+  │
+  o──x
+ ╱
+y
 
 Face nodes:
       v7──────x─────v6
@@ -64,156 +98,191 @@ v4─────┼x─────v5  ┆╱ │
  │╱     ┆      │╱
 v0──────x─────v1
 
+f0  = (0.5, 0.5,   0)
+f1  = (0.5, 0.5,   1)
+f2  = (0.5,   1, 0.5)
+f3  = (0.5,   0, 0.5)
+f4  = (  0, 0.5, 0.5)
+f5  = (  1, 0.5, 0.5)
+
 */
 
 
 namespace {
 
 template<typename T>
-Eigen::MatrixXd theta1(T &t) { return (1-t) * (1-2 * t); }
+Eigen::MatrixXd theta(int i, T &t) {
+	switch (i) {
+		case 0: return (1-t) * (1-2 * t);
+		case 1: return 4 * t * (1 - t);
+		case 2: return t * (2 * t - 1);
+		default: assert(false);
+	}
+	throw std::runtime_error("Invalid index");
+}
 
 template<typename T>
-Eigen::MatrixXd theta2(T &t) { return 4 * t * (1 - t); }
+Eigen::MatrixXd dtheta(int i, T &t) {
+	switch (i) {
+		case 0: return -3+4*t;
+		case 1: return 4-8*t;
+		case 2: return -1+4*t;
+		default: assert(false);
+	}
+	throw std::runtime_error("Invalid index");
+}
 
-template<typename T>
-Eigen::MatrixXd theta3(T &t) { return t * (2 * t - 1); }
+// -----------------------------------------------------------------------------
 
-template<typename T>
-Eigen::MatrixXd dtheta1(T &t) { return -3+4*t; }
+constexpr std::array<std::array<int, 3>, 27> quadr_hex_dofs = {{
+	{{0, 2, 0}}, // v0  = (0, 1, 0)
+	{{2, 2, 0}}, // v1  = (1, 1, 0)
+	{{2, 0, 0}}, // v2  = (1, 0, 0)
+	{{0, 0, 0}}, // v3  = (0, 0, 0)
+	{{0, 2, 2}}, // v4  = (0, 1, 1)
+	{{2, 2, 2}}, // v5  = (1, 1, 1)
+	{{2, 0, 2}}, // v6  = (1, 0, 1)
+	{{0, 0, 2}}, // v7  = (0, 0, 1)
+	{{1, 2, 0}}, // e0  = (0.5,   1,   0)
+	{{2, 1, 0}}, // e1  = (  1, 0.5,   0)
+	{{1, 0, 0}}, // e2  = (0.5,   0,   0)
+	{{0, 1, 0}}, // e3  = (  0, 0.5,   0)
+	{{0, 2, 1}}, // e4  = (  0,   1, 0.5)
+	{{2, 2, 1}}, // e5  = (  1,   1, 0.5)
+	{{2, 0, 1}}, // e6  = (  1,   0, 0.5)
+	{{0, 0, 1}}, // e7  = (  0,   0, 0.5)
+	{{1, 2, 2}}, // e8  = (0.5,   1,   1)
+	{{2, 1, 2}}, // e9  = (  1, 0.5,   1)
+	{{1, 0, 2}}, // e10 = (0.5,   0,   1)
+	{{0, 1, 2}}, // e11 = (  0, 0.5,   1)
+	{{1, 1, 0}}, // f0  = (0.5, 0.5,   0)
+	{{1, 1, 2}}, // f1  = (0.5, 0.5,   1)
+	{{1, 2, 1}}, // f2  = (0.5,   1, 0.5)
+	{{1, 0, 1}}, // f3  = (0.5,   0, 0.5)
+	{{0, 1, 1}}, // f4  = (  0, 0.5, 0.5)
+	{{2, 1, 1}}, // f5  = (  1, 0.5, 0.5)
+	{{1, 1, 1}}, // c0  = (0.5, 0.5, 0.5)
+}};
 
-template<typename T>
-Eigen::MatrixXd dtheta2(T &t) { return 4-8*t; }
-
-template<typename T>
-Eigen::MatrixXd dtheta3(T &t) { return -1+4*t; }
-
-
-void hex_basis_basis(const int disc_order, const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
+void quadr_hex_basis(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
 	auto x=xne.col(0).array();
 	auto n=xne.col(1).array();
 	auto e=xne.col(2).array();
 
-	switch (disc_order) {
-		case 1: {
-			switch (local_index) {
-				case 0: val = (1-x)*(1-n)*(1-e); break;
-				case 1: val = (  x)*(1-n)*(1-e); break;
-				case 2: val = (  x)*(  n)*(1-e); break;
-				case 3: val = (1-x)*(  n)*(1-e); break;
+	std::array<int, 3> idx = quadr_hex_dofs[local_index];
+	val = theta(idx[0], x).array() * theta(idx[1], n).array() * theta(idx[2], e).array();
+}
 
-				case 4: val = (1-x)*(1-n)*(  e); break;
-				case 5: val = (  x)*(1-n)*(  e); break;
-				case 6: val = (  x)*(  n)*(  e); break;
-				case 7: val = (1-x)*(  n)*(  e); break;
-				default: assert(false);
-			}
+void quadr_hex_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
+	auto x=xne.col(0).array();
+	auto n=xne.col(1).array();
+	auto e=xne.col(2).array();
 
-			break;
-		}
-		case 2: {
-			switch (local_index) {
+	std::array<int, 3> idx = quadr_hex_dofs[local_index];
 
-			}
-		}
+	val.resize(xne.rows(), 3);
+	val.col(0) = dtheta(idx[0], x).array() * theta(idx[1], n).array() * theta(idx[2], e).array();
+	val.col(1) = theta(idx[0], x).array() * dtheta(idx[1], n).array() * theta(idx[2], e).array();
+	val.col(2) = theta(idx[0], x).array() * theta(idx[1], n).array() * dtheta(idx[2], e).array();
+}
+
+// -----------------------------------------------------------------------------
+
+void linear_hex_basis(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
+	auto x=xne.col(0).array();
+	auto n=xne.col(1).array();
+	auto e=xne.col(2).array();
+
+	switch (local_index) {
+		case 0: val = (1-x)*(1-n)*(1-e); break;
+		case 1: val = (  x)*(1-n)*(1-e); break;
+		case 2: val = (  x)*(  n)*(1-e); break;
+		case 3: val = (1-x)*(  n)*(1-e); break;
+
+		case 4: val = (1-x)*(1-n)*(  e); break;
+		case 5: val = (  x)*(1-n)*(  e); break;
+		case 6: val = (  x)*(  n)*(  e); break;
+		case 7: val = (1-x)*(  n)*(  e); break;
 		default: assert(false);
 	}
 }
 
-void hex_basis_grad(const int disc_order, const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val)
-{
+void linear_hex_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
 	val.resize(xne.rows(), 3);
 
 	auto x=xne.col(0).array();
 	auto n=xne.col(1).array();
 	auto e=xne.col(2).array();
 
-	switch(disc_order)
-	{
-		case 1:
-		{
-			switch(local_index)
-			{
-				case 0:
-				{
-				//(1-x)*(1-n)*(1-e);
-					val.col(0) = -      (1-n)*(1-e);
-					val.col(1) = -(1-x)      *(1-e);
-					val.col(2) = -(1-x)*(1-n);
+	switch(local_index) {
+		case 0: {
+			//(1-x)*(1-n)*(1-e);
+			val.col(0) = -      (1-n)*(1-e);
+			val.col(1) = -(1-x)      *(1-e);
+			val.col(2) = -(1-x)*(1-n);
 
-					break;
-				}
-				case 1:
-				{
-				//(  x)*(1-n)*(1-e)
-					val.col(0) =        (1-n)*(1-e);
-					val.col(1) = -(  x)      *(1-e);
-					val.col(2) = -(  x)*(1-n);
+			break;
+		}
+		case 1: {
+			//(  x)*(1-n)*(1-e)
+			val.col(0) =        (1-n)*(1-e);
+			val.col(1) = -(  x)      *(1-e);
+			val.col(2) = -(  x)*(1-n);
 
-					break;
-				}
-				case 2:
-				{
-				//(  x)*(  n)*(1-e)
-					val.col(0) =        (  n)*(1-e);
-					val.col(1) =  (  x)      *(1-e);
-					val.col(2) = -(  x)*(  n);
+			break;
+		}
+		case 2: {
+			//(  x)*(  n)*(1-e)
+			val.col(0) =        (  n)*(1-e);
+			val.col(1) =  (  x)      *(1-e);
+			val.col(2) = -(  x)*(  n);
 
-					break;
-				}
-				case 3:
-				{
-				//(1-x)*(  n)*(1-e);
-					val.col(0) = -       (  n)*(1-e);
-					val.col(1) =  (1-x)       *(1-e);
-					val.col(2) = -(1-x)*(  n);
+			break;
+		}
+		case 3: {
+			//(1-x)*(  n)*(1-e);
+			val.col(0) = -       (  n)*(1-e);
+			val.col(1) =  (1-x)       *(1-e);
+			val.col(2) = -(1-x)*(  n);
 
-					break;
-				}
-				case 4:
-				{
-				//(1-x)*(1-n)*(  e);
-					val.col(0) = -      (1-n)*(  e);
-					val.col(1) = -(1-x)      *(  e);
-					val.col(2) =  (1-x)*(1-n);
+			break;
+		}
+		case 4: {
+			//(1-x)*(1-n)*(  e);
+			val.col(0) = -      (1-n)*(  e);
+			val.col(1) = -(1-x)      *(  e);
+			val.col(2) =  (1-x)*(1-n);
 
-					break;
-				}
-				case 5:
-				{
-				//(  x)*(1-n)*(  e);
-					val.col(0) =        (1-n)*(  e);
-					val.col(1) = -(  x)      *(  e);
-					val.col(2) =  (  x)*(1-n);
+			break;
+		}
+		case 5: {
+			//(  x)*(1-n)*(  e);
+			val.col(0) =        (1-n)*(  e);
+			val.col(1) = -(  x)      *(  e);
+			val.col(2) =  (  x)*(1-n);
 
-					break;
-				}
-				case 6:
-				{
-				//(  x)*(  n)*(  e);
-					val.col(0) =       (  n)*(  e);
-					val.col(1) = (  x)      *(  e);
-					val.col(2) = (  x)*(  n);
+			break;
+		}
+		case 6: {
+			//(  x)*(  n)*(  e);
+			val.col(0) =       (  n)*(  e);
+			val.col(1) = (  x)      *(  e);
+			val.col(2) = (  x)*(  n);
 
-					break;
-				}
-				case 7:
-				{
-				//(1-x)*(  n)*(  e);
-					val.col(0) = -      (  n)*(  e);
-					val.col(1) =  (1-x)      *(  e);
-					val.col(2) =  (1-x)*(  n);
-
-					break;
-				}
-
-				default: assert(false);
-			}
+			break;
+		}
+		case 7: {
+			//(1-x)*(  n)*(  e);
+			val.col(0) = -      (  n)*(  e);
+			val.col(1) =  (1-x)      *(  e);
+			val.col(2) =  (1-x)*(  n);
 
 			break;
 		}
 
 		default: assert(false);
 	}
+
 }
 
 // -----------------------------------------------------------------------------
@@ -221,12 +290,38 @@ void hex_basis_grad(const int disc_order, const int local_index, const Eigen::Ma
 int find_edge(const poly_fem::Mesh3D &mesh, int c, int v1, int v2) {
 	std::array<int, 2> v = {{v1, v2}};
 	std::sort(v.begin(), v.end());
-	return 0;
+	for (int lf = 0; lf < mesh.n_element_faces(c); ++lf) {
+		auto idx = mesh.get_index_from_element(c, lf, 0);
+		for (int lv = 0; lv < mesh.n_face_vertices(idx.face); ++lv) {
+			std::array<int, 2> u;
+			u[0] = idx.vertex;
+			u[1] = mesh.switch_vertex(idx).vertex;
+			std::sort(u.begin(), u.end());
+			if (u == v) {
+				return idx.edge;
+			}
+			idx = mesh.next_around_face_of_element(idx);
+		}
+	}
+	throw std::runtime_error("Edge not found");
 }
 
 int find_face(const poly_fem::Mesh3D &mesh, int c, int v1, int v2, int v3, int v4) {
 	std::array<int, 4> v = {{v1, v2, v3, v4}};
 	std::sort(v.begin(), v.end());
+	for (int lf = 0; lf < mesh.n_element_faces(c); ++lf) {
+		auto idx = mesh.get_index_from_element(c, lf, 0);
+		assert(mesh.n_face_vertices(idx.face) == 4);
+		std::array<int, 4> u;
+		for (int lv = 0; lv < mesh.n_face_vertices(idx.face); ++lv) {
+			u[lv] = idx.vertex;
+			idx = mesh.next_around_face_of_element(idx);
+		}
+		std::sort(u.begin(), u.end());
+		if (u == v) {
+			return idx.face;
+		}
+	}
 	return 0;
 }
 
@@ -471,6 +566,18 @@ void compute_dofs(
 }
 
 /*
+Axes:
+  z
+  │
+  o──x
+ ╱
+y
+
+Boundaries:
+X axis: left/right
+Y axis: back/front
+Z axis: bottom/top
+
 Face dofs:
       v7──────x─────v6
       ╱┆     ╱      ╱│
@@ -527,8 +634,15 @@ int poly_fem::FEBasis3d::build_bases(
 
 				b.bases[j].init(global_index, j, nodes.row(global_index));
 
-				b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { hex_basis_basis(discr_order, j, uv, val); });
-				b.bases[j].set_grad( [discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  hex_basis_grad(discr_order, j, uv, val); });
+				if (discr_order == 1) {
+					b.bases[j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { linear_hex_basis(j, uv, val); });
+					b.bases[j].set_grad( [j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { linear_hex_basis_grad(j, uv, val); });
+				} else if (discr_order == 2) {
+					b.bases[j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { quadr_hex_basis(j, uv, val); });
+					b.bases[j].set_grad( [j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { quadr_hex_basis_grad(j, uv, val); });
+				} else {
+					assert(false);
+				}
 			}
 		} else {
 			assert(false);
