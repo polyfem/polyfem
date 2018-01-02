@@ -447,9 +447,6 @@ namespace poly_fem
 		std::cout<<"sparsity: "<<nn_zero<<"/"<<mat_size<<std::endl;
 
 
-
-
-
 		// {
 		// 	std::ofstream of;
 		// 	of.open("stiffness.txt");

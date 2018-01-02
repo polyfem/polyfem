@@ -71,7 +71,12 @@ namespace poly_fem
 						const auto stiffness_val = local_val.array().colwise().sum();
 						assert(stiffness_val.size() == local_assembler_.size() * local_assembler_.size());
 						// if(n_loc_bases == 3)
-							// std::cout<<e<<" "<<i<<" "<<j<<" "<<stiffness_val<<std::endl;
+						// if(values_i.global[0].index == 0 && values_j.global[0].index == 0){
+						// 	// std::cout<<e<<" "<<i<<" "<<j<<" "<<values_i.global[0].index<<" "<<values_j.global[0].index<<"\n--------------\n"<<gradi<<"\n"<<gradj<<std::endl;
+						// 			// std::cout<<(gradi.array() * gradj.array()).rowwise().sum()<<" "<<da<<std::endl;
+						// 	std::cout<<e<<" "<<values_i.global[0].index*local_assembler_.size() <<" "<< values_j.global[0].index*local_assembler_.size() <<" "<< stiffness_val <<std::endl;
+
+						// }
 						// exit(0);
 						for(std::size_t ii = 0; ii < values_i.global.size(); ++ii)
 						{
@@ -82,6 +87,7 @@ namespace poly_fem
 									for(int n = 0; n < local_assembler_.size(); ++n)
 									{
 										entries.push_back(Eigen::Triplet<double>(values_i.global[ii].index*local_assembler_.size()+m, values_j.global[jj].index*local_assembler_.size()+n, stiffness_val(n*local_assembler_.size()+m) * values_i.global[ii].val * values_j.global[jj].val ));
+										// std::cout<<e<<" "<<values_i.global[ii].index*local_assembler_.size()+m <<" "<< values_j.global[jj].index*local_assembler_.size()+n <<" "<< stiffness_val(n*local_assembler_.size()+m) * values_i.global[ii].val * values_j.global[jj].val <<std::endl;
 									}
 								}
 							}

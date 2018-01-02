@@ -166,8 +166,6 @@ namespace poly_fem
             }
         }
 
-        
-
         void add_id_for_poly(const Navigation3D::Index &index, const int x1, const int y1, const int x2, const int y2, const SpaceMatrix &space, std::map<int, BoundaryData> &poly_edge_to_data)
         {
             // auto it = poly_edge_to_data.find(index.edge);
@@ -294,8 +292,8 @@ namespace poly_fem
             index = to_vertex[7](start_index);
             explore_vertex(index, mesh, 0, 0, 0, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
-            std::cout<<std::endl;
-            print_local_space(space);
+            // std::cout<<std::endl;
+            // print_local_space(space);
 
 
 
@@ -323,7 +321,7 @@ namespace poly_fem
                 {
                     for(int j = 0; j < 3; ++j)
                     {
-                        // assert(space(i,j,l).size() >= 1);
+                        assert(space(i,j,l).size() >= 1);
                         for(std::size_t k = 0; k < space(i,j,l).size(); ++k)
                         {
                             minCoeff = std::min(space(i,j,l)[k], minCoeff);
@@ -333,7 +331,7 @@ namespace poly_fem
                 }
             }
 
-            // assert(minCoeff >= 0);
+            assert(minCoeff >= 0);
             return maxCoeff;
         }
 
@@ -443,6 +441,15 @@ namespace poly_fem
                             b.bases[local_index].init(global_index, local_index, node);
 
                             const QuadraticBSpline3d spline(h_knots[x], v_knots[y], w_knots[z]);
+
+                            // if(global_index == 0)
+                            // {
+                            //     std::cout<<x<<" "<<y<<" "<<z<<std::endl;
+                            //     std::cout<<h_knots[x][0]<<" "<<h_knots[x][1]<<" "<<h_knots[x][2]<<" "<<h_knots[x][3]<<std::endl;
+                            //     std::cout<<v_knots[y][0]<<" "<<v_knots[y][1]<<" "<<v_knots[y][2]<<" "<<v_knots[y][3]<<std::endl;
+                            //     std::cout<<w_knots[z][0]<<" "<<w_knots[z][1]<<" "<<w_knots[z][2]<<" "<<w_knots[z][3]<<std::endl;
+                            // }
+
                             b.bases[local_index].set_basis([spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.interpolate(uv, val); });
                             b.bases[local_index].set_grad( [spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.derivative(uv, val); });
 

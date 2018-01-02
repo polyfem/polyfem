@@ -301,11 +301,11 @@ namespace poly_fem
 			state.mesh->get_edges(p0, p1);
 			viewer.data.add_edges(p0, p1, MatrixXd::Zero(1, 3));
 
-			for(int i = 0; i < static_cast<Mesh3D *>(state.mesh)->n_faces(); ++i)
-			{
-				MatrixXd p = static_cast<Mesh3D *>(state.mesh)->node_from_face(i);
-				viewer.data.add_label(p.transpose(), std::to_string(i));
-			}
+			// for(int i = 0; i < static_cast<Mesh3D *>(state.mesh)->n_faces(); ++i)
+			// {
+			// 	MatrixXd p = static_cast<Mesh3D *>(state.mesh)->node_from_face(i);
+			// 	viewer.data.add_label(p.transpose(), std::to_string(i));
+			// }
 
 			// for(int i = 0; i < state.mesh->n_elements(); ++i)
 			// {
@@ -313,11 +313,11 @@ namespace poly_fem
 			// 	viewer.data.add_label(p.transpose(), std::to_string(i));
 			// }
 
-			for(int i = 0; i < static_cast<Mesh3D *>(state.mesh)->n_pts(); ++i)
-			{
-				MatrixXd p; static_cast<Mesh3D *>(state.mesh)->point(i, p);
-				viewer.data.add_label(p.transpose(), std::to_string(i));
-			}
+			// for(int i = 0; i < static_cast<Mesh3D *>(state.mesh)->n_pts(); ++i)
+			// {
+			// 	MatrixXd p; static_cast<Mesh3D *>(state.mesh)->point(i, p);
+			// 	viewer.data.add_label(p.transpose(), std::to_string(i));
+			// }
 
 			// for(int i = 0; i < state.mesh->n_elements(); ++i)
 			// {
