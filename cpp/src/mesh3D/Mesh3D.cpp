@@ -517,6 +517,14 @@ namespace poly_fem
 		return Navigation3D::switch_element(mesh_, idx);
 	}
 
+	bool Mesh3D::is_boundary_edge(int eid) {
+		return mesh_.edges[eid].boundary_hex;
+	}
+	bool Mesh3D::is_boundary_vertex(int vid) {
+		return mesh_.vertices[vid].boundary_hex;
+	}
+
+
 	void Mesh3D::compute_element_tag(std::vector<ElementType> &ele_tag) const
 	{
 		ele_tag.resize(mesh_.elements.size());
