@@ -27,7 +27,7 @@ namespace poly_fem
 	public:
 		virtual ~Mesh() { }
 
-		virtual void refine(const int n_refiniment, const double t) = 0;
+		virtual void refine(const int n_refinement, const double t) = 0;
 
 		virtual inline bool is_volume() const = 0;
 

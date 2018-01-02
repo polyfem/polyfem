@@ -19,9 +19,11 @@ namespace poly_fem
 		inline bool is_volume() const override { return true; }
 
 		inline bool is_boundary_vertex(const int vertex_global_id) const { return mesh_.vertices[vertex_global_id].boundary; }
+		inline bool is_boundary_face(const int face_global_id) const { assert(false); return true; /* TODO */ }
 
 		inline int n_elements() const override { return int(mesh_.elements.size()); }
 		inline int n_faces() const { return int(mesh_.faces.size()); }
+		inline int n_edges() const { assert(false); return 0; /* TODO */ }
 		inline int n_pts() const { return int(mesh_.points.cols()); }
 
 		inline int n_element_vertices(const int element_index) const override { return int(mesh_.elements[element_index].vs.size());}

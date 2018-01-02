@@ -28,9 +28,15 @@ namespace poly_fem
 	public:
 		typedef std::function<void(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)> Fun;
 
-
 		Basis();
 
+		///
+		/// @brief      Initialize a basis function within an element
+		///
+		/// @param[in]  global_index  { Global index of the dof associated to the basis }
+		/// @param[in]  local_index   { Local index of the dof within the element }
+		/// @param[in]  node          { 1 x dim position of the node associated to the dof }
+		///
 		void init(const int global_index, const int local_index, const Eigen::MatrixXd &node);
 
 		///
@@ -58,7 +64,6 @@ namespace poly_fem
 	private:
 		std::vector< Local2Global > global_; // real global dofs influencing the basis
 		int local_index_; // local index inside the element (for debugging purposes)
-
 
 		Fun basis_;
 		Fun grad_;
