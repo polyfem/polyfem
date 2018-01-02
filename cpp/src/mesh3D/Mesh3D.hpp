@@ -86,8 +86,8 @@ namespace poly_fem
 
 		void create_boundary_nodes();
 
-		bool is_boundary_edge(int eid);
-		bool is_boundary_vertex(int vid);
+		// bool is_boundary_edge(int eid);
+		// bool is_boundary_vertex(int vid);
 		//for visualizing different types of elements
 		void compute_element_tag(std::vector<ElementType> &ele_tag) const override;
 
