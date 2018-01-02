@@ -535,7 +535,6 @@ namespace poly_fem
 				bv_flag[mesh_.faces[i].vs[j]] = true;
 			}
 
-
 		for (auto &ele:mesh_.elements) {
 			if (ele.hex) {
 				bool attaching_non_hex = false, on_boundary = false;;
