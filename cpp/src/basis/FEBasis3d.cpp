@@ -1,6 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "FEBasis3d.hpp"
 #include "HexQuadrature.hpp"
+#include <igl/viewer/Viewer.h>
 #include <cassert>
 #include <array>
 ////////////////////////////////////////////////////////////////////////////////
@@ -104,9 +105,29 @@ f5  = (  1, 0.5, 0.5)
 namespace {
 
 template<typename T>
+Eigen::MatrixXd alpha(int i, T &t) {
+	switch (i) {
+		case 0: return (1-t);
+		case 1: return t;
+		default: assert(false);
+	}
+	throw std::runtime_error("Invalid index");
+}
+
+template<typename T>
+Eigen::MatrixXd dalpha(int i, T &t) {
+	switch (i) {
+		case 0: return -1+0*t;
+		case 1: return 1+0*t;;
+		default: assert(false);
+	}
+	throw std::runtime_error("Invalid index");
+}
+
+template<typename T>
 Eigen::MatrixXd theta(int i, T &t) {
 	switch (i) {
-		case 0: return (1-t) * (1-2 * t);
+		case 0: return (1 - t) * (1 - 2 * t);
 		case 1: return 4 * t * (1 - t);
 		case 2: return t * (2 * t - 1);
 		default: assert(false);
@@ -123,6 +144,41 @@ Eigen::MatrixXd dtheta(int i, T &t) {
 		default: assert(false);
 	}
 	throw std::runtime_error("Invalid index");
+}
+
+// -----------------------------------------------------------------------------
+
+constexpr std::array<std::array<int, 3>, 8> linear_hex_dofs = {{
+	{{0, 1, 0}}, // v0  = (0, 1, 0)
+	{{1, 1, 0}}, // v1  = (1, 1, 0)
+	{{1, 0, 0}}, // v2  = (1, 0, 0)
+	{{0, 0, 0}}, // v3  = (0, 0, 0)
+	{{0, 1, 1}}, // v4  = (0, 1, 1)
+	{{1, 1, 1}}, // v5  = (1, 1, 1)
+	{{1, 0, 1}}, // v6  = (1, 0, 1)
+	{{0, 0, 1}}, // v7  = (0, 0, 1)
+}};
+
+void linear_hex_basis(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
+	auto x=xne.col(0).array();
+	auto n=xne.col(1).array();
+	auto e=xne.col(2).array();
+
+	std::array<int, 3> idx = linear_hex_dofs[local_index];
+	val = alpha(idx[0], x).array() * alpha(idx[1], n).array() * alpha(idx[2], e).array();
+}
+
+void linear_hex_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
+	auto x=xne.col(0).array();
+	auto n=xne.col(1).array();
+	auto e=xne.col(2).array();
+
+	std::array<int, 3> idx = linear_hex_dofs[local_index];
+
+	val.resize(xne.rows(), 3);
+	val.col(0) = dalpha(idx[0], x).array() * alpha(idx[1], n).array() * alpha(idx[2], e).array();
+	val.col(1) = alpha(idx[0], x).array() * dalpha(idx[1], n).array() * alpha(idx[2], e).array();
+	val.col(2) = alpha(idx[0], x).array() * alpha(idx[1], n).array() * dalpha(idx[2], e).array();
 }
 
 // -----------------------------------------------------------------------------
@@ -177,105 +233,6 @@ void quadr_hex_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Eig
 	val.col(0) = dtheta(idx[0], x).array() * theta(idx[1], n).array() * theta(idx[2], e).array();
 	val.col(1) = theta(idx[0], x).array() * dtheta(idx[1], n).array() * theta(idx[2], e).array();
 	val.col(2) = theta(idx[0], x).array() * theta(idx[1], n).array() * dtheta(idx[2], e).array();
-}
-
-// -----------------------------------------------------------------------------
-
-void linear_hex_basis(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
-	auto x=xne.col(0).array();
-	auto n=xne.col(1).array();
-	auto e=xne.col(2).array();
-
-	switch (local_index) {
-		case 0: val = (1-x)*(1-n)*(1-e); break;
-		case 1: val = (  x)*(1-n)*(1-e); break;
-		case 2: val = (  x)*(  n)*(1-e); break;
-		case 3: val = (1-x)*(  n)*(1-e); break;
-
-		case 4: val = (1-x)*(1-n)*(  e); break;
-		case 5: val = (  x)*(1-n)*(  e); break;
-		case 6: val = (  x)*(  n)*(  e); break;
-		case 7: val = (1-x)*(  n)*(  e); break;
-		default: assert(false);
-	}
-}
-
-void linear_hex_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
-	val.resize(xne.rows(), 3);
-
-	auto x=xne.col(0).array();
-	auto n=xne.col(1).array();
-	auto e=xne.col(2).array();
-
-	switch(local_index) {
-		case 0: {
-			//(1-x)*(1-n)*(1-e);
-			val.col(0) = -      (1-n)*(1-e);
-			val.col(1) = -(1-x)      *(1-e);
-			val.col(2) = -(1-x)*(1-n);
-
-			break;
-		}
-		case 1: {
-			//(  x)*(1-n)*(1-e)
-			val.col(0) =        (1-n)*(1-e);
-			val.col(1) = -(  x)      *(1-e);
-			val.col(2) = -(  x)*(1-n);
-
-			break;
-		}
-		case 2: {
-			//(  x)*(  n)*(1-e)
-			val.col(0) =        (  n)*(1-e);
-			val.col(1) =  (  x)      *(1-e);
-			val.col(2) = -(  x)*(  n);
-
-			break;
-		}
-		case 3: {
-			//(1-x)*(  n)*(1-e);
-			val.col(0) = -       (  n)*(1-e);
-			val.col(1) =  (1-x)       *(1-e);
-			val.col(2) = -(1-x)*(  n);
-
-			break;
-		}
-		case 4: {
-			//(1-x)*(1-n)*(  e);
-			val.col(0) = -      (1-n)*(  e);
-			val.col(1) = -(1-x)      *(  e);
-			val.col(2) =  (1-x)*(1-n);
-
-			break;
-		}
-		case 5: {
-			//(  x)*(1-n)*(  e);
-			val.col(0) =        (1-n)*(  e);
-			val.col(1) = -(  x)      *(  e);
-			val.col(2) =  (  x)*(1-n);
-
-			break;
-		}
-		case 6: {
-			//(  x)*(  n)*(  e);
-			val.col(0) =       (  n)*(  e);
-			val.col(1) = (  x)      *(  e);
-			val.col(2) = (  x)*(  n);
-
-			break;
-		}
-		case 7: {
-			//(1-x)*(  n)*(  e);
-			val.col(0) = -      (  n)*(  e);
-			val.col(1) =  (1-x)      *(  e);
-			val.col(2) =  (1-x)*(  n);
-
-			break;
-		}
-
-		default: assert(false);
-	}
-
 }
 
 // -----------------------------------------------------------------------------
@@ -392,11 +349,11 @@ void compute_dofs(
 			Eigen::Matrix<int, 6, 1> f;
 			Eigen::Matrix<int, 6, 4> fv;
 			fv.row(0) << v[0], v[3], v[4], v[7];
-			fv.row(0) << v[1], v[2], v[5], v[6];
-			fv.row(0) << v[0], v[1], v[5], v[4];
-			fv.row(0) << v[3], v[2], v[6], v[7];
-			fv.row(0) << v[0], v[1], v[2], v[3];
-			fv.row(0) << v[4], v[5], v[6], v[7];
+			fv.row(1) << v[1], v[2], v[5], v[6];
+			fv.row(2) << v[0], v[1], v[5], v[4];
+			fv.row(3) << v[3], v[2], v[6], v[7];
+			fv.row(4) << v[0], v[1], v[2], v[3];
+			fv.row(5) << v[4], v[5], v[6], v[7];
 			for (int lf = 0; lf < f.rows(); ++lf) {
 				f[lf] = find_face(mesh, c, fv(lf, 0), fv(lf, 1), fv(lf, 2), fv(lf, 3));
 			}
@@ -526,6 +483,18 @@ void compute_dofs(
 				element_dofs.back().push_back(f_offset + f[lf]);
 			}
 			element_dofs.back().push_back(c_offset + c);
+
+			// Eigen::MatrixXd vv(27, 3);
+			// int cnt = 0;
+			// igl::viewer::Viewer viewer;
+			// for (int i : element_dofs.back()) {
+			// 	viewer.data.add_label(nodes.row(i), std::to_string(cnt));
+			// 	vv.row(cnt++) = nodes.row(i);
+			// }
+			// viewer.data.set_points(vv, Eigen::RowVector3d(0, 0, 0));
+			// viewer.core.align_camera_center(vv);
+			// viewer.core.set_rotation_type(igl::viewer::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
+			// viewer.launch();
 
 			// Set boundary faces
 			if (mesh.is_boundary_face(f[0])) {
