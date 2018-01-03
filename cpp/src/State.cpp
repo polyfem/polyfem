@@ -91,8 +91,7 @@ namespace poly_fem
 
 	void State::compute_mesh_stats()
 	{
-		std::vector<ElementType> ele_tag;
-		mesh->compute_element_tag(ele_tag);
+		mesh->compute_element_tag(els_tag);
 
 		int regular_count = 0;
 		int regular_boundary_count = 0;
@@ -103,9 +102,9 @@ namespace poly_fem
 		int non_regular_count = 0;
 		int undefined_count = 0;
 
-		for(std::size_t i = 0; i < ele_tag.size(); ++i)
+		for(std::size_t i = 0; i < els_tag.size(); ++i)
 		{
-			const ElementType type = ele_tag[i];
+			const ElementType type = els_tag[i];
 
 			switch(type)
 			{
@@ -128,7 +127,6 @@ namespace poly_fem
 		}
 
 		std::cout <<"regular_count: " << regular_count <<" regular_boundary_count: " << regular_boundary_count << " simple_singular_count: " << simple_singular_count << " multi_singular_count: " << multi_singular_count << " singular_boundary_count: " << boundary_count << " non_regular_count: " <<  non_regular_count << " non_regular_boundary_count: " << non_regular_boundary_count << " undefined_count: " << undefined_count <<std::endl;
-
 	}
 
 	void State::interpolate_function(const MatrixXd &fun, const MatrixXd &local_pts, MatrixXd &result)
@@ -221,11 +219,11 @@ namespace poly_fem
 			const Mesh2D &tmp_mesh = *static_cast<Mesh2D *>(mesh);
 			if(use_splines){
 				if(iso_parametric)
-					n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, bounday_nodes, polys);
+					n_bases = SplineBasis2d::build_bases(tmp_mesh, els_tag, quadrature_order, bases, local_boundary, bounday_nodes, polys);
 				else
 				{
 					n_geom_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, bounday_nodes);
-					n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, bounday_nodes, polys);
+					n_bases = SplineBasis2d::build_bases(tmp_mesh, els_tag, quadrature_order, bases, local_boundary, bounday_nodes, polys);
 				}
 			}
 			else

@@ -52,6 +52,7 @@ namespace poly_fem
 		Mesh *mesh = NULL;
 
 		std::map<int, Eigen::MatrixXd> polys;
+		std::vector<ElementType> els_tag;
 
 
 		Eigen::SparseMatrix<double, Eigen::RowMajor> stiffness;

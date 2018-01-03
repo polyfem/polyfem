@@ -559,7 +559,7 @@ namespace poly_fem
     }
 
 
-    int SplineBasis2d::build_bases(const Mesh2D &mesh, const int quadrature_order, std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes, std::map<int, Eigen::MatrixXd> &polys)
+    int SplineBasis2d::build_bases(const Mesh2D &mesh, const std::vector<ElementType> &els_tag, const int quadrature_order, std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes, std::map<int, Eigen::MatrixXd> &polys)
     {
         using std::max;
         assert(!mesh.is_volume());
@@ -578,7 +578,7 @@ namespace poly_fem
 
         for(int e = 0; e < n_els; ++e)
         {
-            if(mesh.n_element_vertices(e) != 4)
+            if(els_tag[e] != ElementType::RegularInteriorCube && els_tag[e] != ElementType::RegularBoundaryCube && els_tag[e] != ElementType::SimpleSingularInteriorCube)
                 continue;
 
             SpaceMatrix space;
@@ -602,6 +602,14 @@ namespace poly_fem
             basis_for_irregulard_quad(mesh, space, loc_nodes, h_knots, v_knots, b);
         }
 
+        for(int e = 0; e < n_els; ++e)
+        {
+            if(els_tag[e] != ElementType::MultiSingularInteriorCube && els_tag[e] != ElementType::SingularBoundaryCube)
+                continue;
+
+            std::cout<<"asd"<<std::endl;
+        }
+
         const int samples_res = 5;
         const bool use_harmonic = true;
         const bool c1_continuous = !use_harmonic && true;
@@ -613,11 +621,10 @@ namespace poly_fem
 
         for(int e = 0; e < n_els; ++e)
         {
-            const int n_edges = mesh.n_element_vertices(e);
-
-            if(n_edges == 4)
+            if(els_tag[e] != ElementType::InteriorPolytope && els_tag[e] != ElementType::BoundaryPolytope)
                 continue;
 
+            const int n_edges = mesh.n_element_vertices(e);
             double area = 0;
             for(int i = 0; i < n_edges; ++i)
             {
