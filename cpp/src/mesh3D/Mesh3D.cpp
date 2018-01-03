@@ -687,6 +687,30 @@ namespace poly_fem
 		to_edge[11]= [this](Navigation3D::Index idx) { return switch_edge(switch_vertex(switch_edge(switch_face(switch_edge(switch_vertex(switch_edge(switch_vertex(switch_edge(switch_vertex(idx)))))))))); };
 	}
 
+	//   v7────v6
+	//   ╱┆    ╱│
+	// v4─┼──v5 │
+	//  │v3┄┄┄┼v2
+	//  │╱    │╱
+	// v0────v1
+	std::array<int, 8> Mesh3D::get_ordered_vertices_from_hex(const int element_index) const {
+		assert(n_element_vertices(element_index) == 8);
+		assert(n_element_faces(element_index) == 6);
+		auto idx = get_index_from_element(element_index);
+		std::array<int, 8> v;
+		for (int lv = 0; lv < 4; ++lv) {
+			v[lv] = idx.vertex;
+			idx = next_around_face_of_element(idx);
+		}
+		// assert(idx == get_index_from_element(element_index));
+		idx = switch_face(switch_edge(switch_vertex(switch_edge(switch_face(idx)))));
+		for (int lv = 0; lv < 4; ++lv) {
+			v[4+lv] = idx.vertex;
+			idx = next_around_face_of_element(idx);
+		}
+		return v;
+	}
+
 	void Mesh3D::create_boundary_nodes()
 	{
 		faces_node_id_.resize(mesh_.faces.size());

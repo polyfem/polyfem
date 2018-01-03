@@ -93,12 +93,12 @@ v4─────┼x─────v5  ┆╱ │
  │╱     ┆      │╱
 v0──────x─────v1
 
-f0  = (0.5, 0.5,   0)
-f1  = (0.5, 0.5,   1)
+f0  = (  0, 0.5, 0.5)
+f1  = (  1, 0.5, 0.5)
 f2  = (0.5,   1, 0.5)
 f3  = (0.5,   0, 0.5)
-f4  = (  0, 0.5, 0.5)
-f5  = (  1, 0.5, 0.5)
+f4  = (0.5, 0.5,   0)
+f5  = (0.5, 0.5,   1)
 
 */
 
@@ -204,12 +204,12 @@ constexpr std::array<std::array<int, 3>, 27> quadr_hex_dofs = {{
 	{{2, 1, 2}}, // e9  = (  1, 0.5,   1)
 	{{1, 0, 2}}, // e10 = (0.5,   0,   1)
 	{{0, 1, 2}}, // e11 = (  0, 0.5,   1)
-	{{1, 1, 0}}, // f0  = (0.5, 0.5,   0)
-	{{1, 1, 2}}, // f1  = (0.5, 0.5,   1)
+	{{0, 1, 1}}, // f0  = (  0, 0.5, 0.5)
+	{{2, 1, 1}}, // f1  = (  1, 0.5, 0.5)
 	{{1, 2, 1}}, // f2  = (0.5,   1, 0.5)
 	{{1, 0, 1}}, // f3  = (0.5,   0, 0.5)
-	{{0, 1, 1}}, // f4  = (  0, 0.5, 0.5)
-	{{2, 1, 1}}, // f5  = (  1, 0.5, 0.5)
+	{{1, 1, 0}}, // f4  = (0.5, 0.5,   0)
+	{{1, 1, 2}}, // f5  = (0.5, 0.5,   1)
 	{{1, 1, 1}}, // c0  = (0.5, 0.5, 0.5)
 }};
 
@@ -336,14 +336,12 @@ void compute_dofs(
 		for (int c = 0; c < mesh.n_elements(); ++c) {
 			// Vertices
 			Eigen::Matrix<int, 8, 1> v;
-			v[0] = mesh.vertex_global_index(c, 0);
-			v[1] = mesh.vertex_global_index(c, 1);
-			v[2] = mesh.vertex_global_index(c, 2);
-			v[3] = mesh.vertex_global_index(c, 3);
-			v[4] = mesh.vertex_global_index(c, 4);
-			v[5] = mesh.vertex_global_index(c, 5);
-			v[6] = mesh.vertex_global_index(c, 6);
-			v[7] = mesh.vertex_global_index(c, 7);
+			{
+				int lv = 0;
+				for (int vi : mesh.get_ordered_vertices_from_hex(c)) {
+					v[lv++] = vi;
+				}
+			}
 
 			// Faces
 			Eigen::Matrix<int, 6, 1> f;
@@ -400,14 +398,12 @@ void compute_dofs(
 
 			// Corner dofs position + is boundary
 			Eigen::Matrix<int, 8, 1> v;
-			v[0] = mesh.vertex_global_index(c, 0);
-			v[1] = mesh.vertex_global_index(c, 1);
-			v[2] = mesh.vertex_global_index(c, 2);
-			v[3] = mesh.vertex_global_index(c, 3);
-			v[4] = mesh.vertex_global_index(c, 4);
-			v[5] = mesh.vertex_global_index(c, 5);
-			v[6] = mesh.vertex_global_index(c, 6);
-			v[7] = mesh.vertex_global_index(c, 7);
+			{
+				int lv = 0;
+				for (int vi : mesh.get_ordered_vertices_from_hex(c)) {
+					v[lv++] = vi;
+				}
+			}
 			for (int lv = 0; lv < v.rows(); ++lv) {
 				mesh.point(v[lv], tmp);
 				nodes.row(v[lv]) = tmp;
