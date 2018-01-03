@@ -4,6 +4,7 @@
 #include <vector>
 #include <cassert>
 #include <cmath>
+#include <iostream>
 
 namespace poly_fem
 {
@@ -29,10 +30,16 @@ namespace poly_fem
             {
                 for (long k = 0; k < n_quad_pts; ++k)
                 {
-                    quad.points.row((i*n_quad_pts+j)*n_quad_pts+k) = Eigen::Vector3d(tmp.points(k), tmp.points(j), tmp.points(i));
-                    quad.weights((i*n_quad_pts+j)*n_quad_pts+k) = tmp.weights(i)*tmp.weights(j)*tmp.weights(i);
+                    const long index = (i*n_quad_pts+j)*n_quad_pts+k;
+                    quad.points.row(index) = Eigen::Vector3d(tmp.points(k), tmp.points(j), tmp.points(i));
+                    quad.weights(index) = tmp.weights(i)*tmp.weights(j)*tmp.weights(k);
                 }
             }
         }
+
+        assert(fabs(quad.weights.sum()-1)<1e-14);
+        assert(quad.points.minCoeff()>=0 && quad.points.maxCoeff()<=1);
+
+        assert((quad.points.rows()==quad.weights.size()));
     }
 }

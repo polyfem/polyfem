@@ -302,6 +302,39 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi) {
 		else hmi.elements[i].vs = vs;
 		for (uint32_t j = 0; j < hmi.elements[i].vs.size(); j++) hmi.vertices[hmi.elements[i].vs[j]].neighbor_hs.push_back(i);
 	}
+
+	//boundary flags for hybrid mesh
+	std::vector<bool> bv_flag(hmi.vertices.size(), false), be_flag(hmi.edges.size(), false), bf_flag(hmi.faces.size(), false);
+	for (auto f : hmi.faces)if (f.boundary && hmi.elements[f.neighbor_hs[0]].hex)bf_flag[f.id] = true;
+	else if(!f.boundary) {
+		int ele0 = f.neighbor_hs[0], ele1 = f.neighbor_hs[1];
+		if((hmi.elements[ele0].hex && !hmi.elements[ele1].hex)|| (!hmi.elements[ele0].hex && hmi.elements[ele1].hex))
+			bf_flag[f.id] = true;
+	} 
+	for (uint32_t i = 0; i < hmi.faces.size(); ++i)
+		if (bf_flag[i]) for (uint32_t j = 0; j < hmi.faces[i].vs.size(); ++j) {
+			uint32_t eid = hmi.faces[i].es[j];
+			be_flag[eid] = true;
+			bv_flag[hmi.faces[i].vs[j]] = true;
+		}
+	//boundary_hex for hybrid mesh
+	for (auto &v : hmi.vertices)v.boundary_hex = false;
+	for (auto &e : hmi.edges)e.boundary_hex = false;
+	for (auto &f : hmi.faces)f.boundary_hex = bf_flag[f.id];
+	for (auto &ele : hmi.elements) if (ele.hex) {
+		for (auto vid : ele.vs) {
+			if (!bv_flag[vid])continue;
+			int fn = 0;
+			for (auto nfid : hmi.vertices[vid].neighbor_fs) if (bf_flag[nfid] && std::find(ele.fs.begin(), ele.fs.end(), nfid) != ele.fs.end()) fn++;
+			if (fn == 3)hmi.vertices[vid].boundary_hex = true;
+		}
+		for (auto eid : ele.es) {
+			if (!be_flag[eid])continue;
+			int fn = 0;
+			for (auto nfid : hmi.edges[eid].neighbor_fs) if (bf_flag[nfid] && std::find(ele.fs.begin(), ele.fs.end(), nfid) != ele.fs.end()) fn++;
+			if (fn == 2)hmi.edges[eid].boundary_hex = true;
+		}
+	}
 }
 void MeshProcessing3D::reorder_hex_mesh_propogation(Mesh3DStorage &hmi) {
 	//connected components
@@ -362,7 +395,7 @@ void MeshProcessing3D::reorder_hex_mesh_propogation(Mesh3DStorage &hmi) {
 		Groups.push_back(group);
 	}
 	//direction
-	cout << "correct orientation " << endl;
+	// cout << "correct orientation " << endl;
 	for (auto group : Groups) {
 		Mesh_Quality mq1, mq2;
 		Mesh3DStorage m1, m2;
@@ -371,12 +404,12 @@ void MeshProcessing3D::reorder_hex_mesh_propogation(Mesh3DStorage &hmi) {
 		m2.points = m1.points = hmi.points;
 		for (auto hid : group)m1.elements.push_back(hmi.elements[hid]);
 		scaled_jacobian(m1, mq1);
-		cout << "m1 jacobian " << mq1.min_Jacobian << " " << mq1.ave_Jacobian << endl;
+		// cout << "m1 jacobian " << mq1.min_Jacobian << " " << mq1.ave_Jacobian << endl;
 		if (mq1.min_Jacobian > 0) continue;
 		m2.elements = m1.elements;
 		for (auto &h : m2.elements) { swap(h.vs[1], h.vs[3]); swap(h.vs[5], h.vs[7]); }
 		scaled_jacobian(m2, mq2);
-		cout << "m2 jacobian " << mq2.min_Jacobian << " " << mq2.ave_Jacobian << endl;
+		// cout << "m2 jacobian " << mq2.min_Jacobian << " " << mq2.ave_Jacobian << endl;
 		if (mq2.ave_Jacobian > mq1.ave_Jacobian) {
 			for (auto &h : m2.elements) hmi.elements[h.id] = h;
 		}

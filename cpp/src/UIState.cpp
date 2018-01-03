@@ -377,9 +377,13 @@ namespace poly_fem
 
 		auto show_quadrature_func = [&](){
 			for(std::size_t i = 0; i < state.values.size(); ++i)
+			// for(std::size_t i = 0; i < 1; ++i)
 			{
 				const ElementAssemblyValues &vals = state.values[i];
-				viewer.data.add_points(vals.val, MatrixXd::Zero(vals.val.rows(), 3));
+				if(state.mesh->is_volume())
+					viewer.data.add_points(vals.val, vals.quadrature.points);
+				else
+					viewer.data.add_points(vals.val, MatrixXd::Zero(vals.val.rows(), 3));
 
 				// for(long j = 0; j < vals.val.rows(); ++j)
 					// viewer.data.add_label(vals.val.row(j), std::to_string(j));
@@ -749,10 +753,12 @@ namespace poly_fem
 
 			viewer_.ngui->addVariable("mesh path", state.mesh_path);
 			viewer_.ngui->addButton("browser", [&]() {
-				std::string File_address = nanogui::file_dialog({ { "HYBRID", "General polyhedral mesh" },
-				{ "OBJ", "" }}, false);
-				if (File_address.empty()) return;
-				state.mesh_path = File_address;
+				std::string path = nanogui::file_dialog({
+					{ "HYBRID", "General polyhedral mesh" }, { "OBJ", "Obj 2D mesh" }
+				}, false);
+
+				if (!path.empty())
+					state.mesh_path = path;
 
 			});
 			viewer_.ngui->addVariable("n refs", state.n_refs);
@@ -766,7 +772,7 @@ namespace poly_fem
 			viewer_.ngui->addVariable<ProblemType>("Problem",
 				[&](ProblemType val) { state.problem.set_problem_num(val); },
 				[&]() { return ProblemType(state.problem.problem_num()); }
-				)->setItems({"Linear","Quadratic","Franke", "Elastic"});
+				)->setItems({"Linear","Quadratic","Franke", "Elastic", "Zero BC"});
 
 			viewer_.ngui->addVariable("skip visualization", skip_visualization);
 

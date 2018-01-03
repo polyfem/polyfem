@@ -17,6 +17,7 @@ namespace poly_fem
 		std::vector<uint32_t> neighbor_hs;
 
 		bool boundary;
+		bool boundary_hex;
 	};
 	struct Edge
 	{
@@ -26,6 +27,7 @@ namespace poly_fem
 		std::vector<uint32_t> neighbor_hs;
 
 		bool boundary;
+		bool boundary_hex;
 	};
 	struct Face
 	{
@@ -34,6 +36,7 @@ namespace poly_fem
 		std::vector<uint32_t> es;
 		std::vector<uint32_t> neighbor_hs;
 		bool boundary;
+		bool boundary_hex;
 	};
 
 	struct Element

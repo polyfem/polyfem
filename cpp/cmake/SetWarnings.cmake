@@ -10,7 +10,7 @@ set(MY_FLAGS
 		-Wextra
 		-pedantic
 
-		-Wconversion
+		# -Wconversion
 		#-Wunsafe-loop-optimizations # broken with C++11 loops
 		-Wunused
 

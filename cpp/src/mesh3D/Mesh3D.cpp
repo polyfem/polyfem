@@ -9,6 +9,7 @@ namespace poly_fem
 	{
 		MeshProcessing3D::refine_catmul_clark_polar(mesh_, n_refiniment);
 		MeshProcessing3D::global_orientation_hexes(mesh_);
+		// scale(100);
 		create_boundary_nodes();
 	}
 
@@ -517,6 +518,14 @@ namespace poly_fem
 		return Navigation3D::switch_element(mesh_, idx);
 	}
 
+	// bool Mesh3D::is_boundary_edge(int eid) {
+	// 	return mesh_.edges[eid].boundary_hex;
+	// }
+	// bool Mesh3D::is_boundary_vertex(int vid) {
+	// 	return mesh_.vertices[vid].boundary_hex;
+	// }
+
+
 	void Mesh3D::compute_element_tag(std::vector<ElementType> &ele_tag) const
 	{
 		ele_tag.resize(mesh_.elements.size());
@@ -534,7 +543,6 @@ namespace poly_fem
 				be_flag[eid] = true;
 				bv_flag[mesh_.faces[i].vs[j]] = true;
 			}
-
 
 		for (auto &ele:mesh_.elements) {
 			if (ele.hex) {
@@ -692,7 +700,7 @@ namespace poly_fem
 		for (int f = 0; f < (int) mesh_.faces.size(); ++f)
 		{
 			const Face &face = mesh_.faces[f];
-			if(!face.boundary)
+			if(!face.boundary_hex)
 				faces_node_id_[f] = -1;
 			else
 				faces_node_id_[f] = counter++;
@@ -714,7 +722,7 @@ namespace poly_fem
 		for (int e = 0; e < (int) mesh_.edges.size(); ++e)
 		{
 			const Edge &edge = mesh_.edges[e];
-			if(!edge.boundary)
+			if(!edge.boundary_hex)
 				edges_node_id_[e] = -1;
 			else
 				edges_node_id_[e] = counter++;
@@ -731,7 +739,7 @@ namespace poly_fem
 		for (int v = 0; v < (int) mesh_.vertices.size(); ++v)
 		{
 			const Vertex &vertex = mesh_.vertices[v];
-			if(!vertex.boundary)
+			if(!vertex.boundary_hex)
 				vertices_node_id_[v] = -1;
 			else
 				vertices_node_id_[v] = counter++;

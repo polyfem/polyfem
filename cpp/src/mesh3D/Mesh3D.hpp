@@ -14,6 +14,8 @@ namespace poly_fem
 	class Mesh3D : public Mesh
 	{
 	public:
+		void scale(const double scaling) override { mesh_.points *= scaling; }
+
 		void refine(const int n_refiniment, const double t) override;
 
 		inline bool is_volume() const override { return true; }
@@ -87,6 +89,9 @@ namespace poly_fem
 		 inline Navigation3D::Index next_around_face_of_element(Navigation3D::Index idx) const { return Navigation3D::next_around_2Dface(mesh_, idx); }
 
 		void create_boundary_nodes();
+
+		// bool is_boundary_edge(int eid);
+		// bool is_boundary_vertex(int vid);
 		//for visualizing different types of elements
 		void compute_element_tag(std::vector<ElementType> &ele_tag) const override;
 

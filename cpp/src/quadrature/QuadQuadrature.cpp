@@ -31,5 +31,10 @@ namespace poly_fem
                 quad.weights(i*n_quad_pts+j) = tmp.weights(i)*tmp.weights(j);
             }
         }
+
+        assert(fabs(quad.weights.sum()-1)<1e-14);
+        assert(quad.points.minCoeff()>=0 && quad.points.maxCoeff()<=1);
+        
+        assert((quad.points.rows()==quad.weights.size()));
     }
 }

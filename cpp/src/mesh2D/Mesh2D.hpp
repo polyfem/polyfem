@@ -12,6 +12,8 @@ namespace poly_fem
 	class Mesh2D : public Mesh
 	{
 	public:
+		void scale(const double scaling) override { assert(false); }
+
 		void refine(const int n_refiniment, const double t) override;
 
 		inline bool is_volume() const override { return false; }

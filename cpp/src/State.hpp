@@ -13,14 +13,6 @@
 
 namespace poly_fem
 {
-	enum ProblemType
-	{
-		Linear = 0,
-		Quadratic,
-		Franke,
-		Elastic
-	};
-
 	class State
 	{
 	public:
