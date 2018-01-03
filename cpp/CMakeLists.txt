@@ -181,7 +181,6 @@ add_library(polyfem
 
 
 if(ENABLE_UMFPACK)
-	find_package(Blas)
 	find_package(Umfpack)
 	if(UMFPACK_FOUND)
 		target_include_directories(polyfem PUBLIC ${UMFPACK_INCLUDES})
