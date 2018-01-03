@@ -460,8 +460,8 @@ void compute_dofs(
 			}
 
 			// Edge dofs position + is boundary
-			Eigen::Matrix<int, 11, 1> e;
-			Eigen::Matrix<int, 11, 2> ev;
+			Eigen::Matrix<int, 12, 1> e;
+			Eigen::Matrix<int, 12, 2> ev;
 			ev.row(0)  << v[0], v[1];
 			ev.row(1)  << v[1], v[2];
 			ev.row(2)  << v[2], v[3];
@@ -492,11 +492,11 @@ void compute_dofs(
 			Eigen::Matrix<int, 6, 1> f;
 			Eigen::Matrix<int, 6, 4> fv;
 			fv.row(0) << v[0], v[3], v[4], v[7];
-			fv.row(0) << v[1], v[2], v[5], v[6];
-			fv.row(0) << v[0], v[1], v[5], v[4];
-			fv.row(0) << v[3], v[2], v[6], v[7];
-			fv.row(0) << v[0], v[1], v[2], v[3];
-			fv.row(0) << v[4], v[5], v[6], v[7];
+			fv.row(1) << v[1], v[2], v[5], v[6];
+			fv.row(2) << v[0], v[1], v[5], v[4];
+			fv.row(3) << v[3], v[2], v[6], v[7];
+			fv.row(4) << v[0], v[1], v[2], v[3];
+			fv.row(5) << v[4], v[5], v[6], v[7];
 			for (int lf = 0; lf < f.rows(); ++lf) {
 				f[lf] = find_face(mesh, c, fv(lf, 0), fv(lf, 1), fv(lf, 2), fv(lf, 3));
 				nodes.row(f_offset + f[lf]) = barycenter(nodes, {{ fv(lf, 0), fv(lf, 1), fv(lf, 2), fv(lf, 3) }});
