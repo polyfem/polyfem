@@ -731,13 +731,13 @@ namespace poly_fem
                         mesh.point(index.vertex, current_vertex_node);
                     }
 
-                    switch(j)
-                    {
-                        case 0: local_boundary[e].set_top_edge_id(index.edge); local_boundary[e].set_top_boundary(); break;
-                        case 1: local_boundary[e].set_left_edge_id(index.edge); local_boundary[e].set_left_boundary(); break;
-                        case 2: local_boundary[e].set_bottom_edge_id(index.edge); local_boundary[e].set_bottom_boundary(); break;
-                        case 3: local_boundary[e].set_right_edge_id(index.edge); local_boundary[e].set_right_boundary(); break;
-                    }
+                    // switch(j)
+                    // {
+                    //     case 3: local_boundary[e].set_top_edge_id(index.edge); local_boundary[e].set_top_boundary(); break;
+                    //     case 0: local_boundary[e].set_left_edge_id(index.edge); local_boundary[e].set_left_boundary(); break;
+                    //     case 1: local_boundary[e].set_bottom_edge_id(index.edge); local_boundary[e].set_bottom_boundary(); break;
+                    //     case 2: local_boundary[e].set_right_edge_id(index.edge); local_boundary[e].set_right_boundary(); break;
+                    // }
                 }
                 else
                 {
@@ -840,13 +840,13 @@ namespace poly_fem
                         global.push_back(Local2Global(bottom_right_node_id, bottom_right_node, 1./16.));
 
 
-                    if(right_node_id >= n_els)
+                    if(right_node_id >= n_els || left_node_id >= n_els)
                         global.push_back(Local2Global(bottom_node_id, bottom_node, 5./16.));
                     else
                         global.push_back(Local2Global(bottom_node_id, bottom_node, 3./8.));
 
 
-                    if(right_node_id >= n_els || left_node_id >= n_els)
+                    if(left_node_id >= n_els) //|| left_node_id >= n_els)
                         global.push_back(Local2Global(bottom_left_node_id, bottom_left_node, 1./8.));
                     else
                         global.push_back(Local2Global(bottom_left_node_id, bottom_left_node, 1./16.));

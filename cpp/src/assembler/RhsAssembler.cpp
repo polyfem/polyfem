@@ -125,24 +125,26 @@ namespace poly_fem
 					if(item != global_index_to_col.end()){
 						for(int k = 0; k < int(tmp.size()); ++k)
 						{
-							entries.push_back(Eigen::Triplet<double>(global_counter+k, item->second, tmp(k)));
-							entries_t.push_back(Eigen::Triplet<double>(item->second, global_counter+k, tmp(k)));
+							entries.push_back(Eigen::Triplet<double>(global_counter+k, item->second, tmp(k) * b.global()[ii].val));
+							entries_t.push_back(Eigen::Triplet<double>(item->second, global_counter+k, tmp(k) * b.global()[ii].val));
 						}
 						// global_mat.block(global_counter, item->second, tmp.size(), 1) = tmp;
 					}
 				}
 			}
 
-				// std::cout<<samples<<"\n"<<std::endl;
-
-				// igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
-				// viewer.data.add_points(mapped, Eigen::MatrixXd::Constant(1, 3, 0));
-
-				// std::cout<<mapped<<std::endl;
-
 			problem.bc(mapped, rhs_fun);
 			global_rhs.block(global_counter, 0, rhs_fun.rows(), rhs_fun.cols()) = rhs_fun;
 			global_counter += rhs_fun.rows();
+
+			// igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
+			// viewer.data.add_points(mapped, Eigen::MatrixXd::Constant(1, 3, 0));
+
+			// Eigen::MatrixXd asd(mapped.rows(), 3);
+			// asd.col(0)=mapped.col(0);
+			// asd.col(1)=mapped.col(1);
+			// asd.col(0)=rhs_fun;
+			// viewer.data.add_points(asd, Eigen::MatrixXd::Constant(1, 3, 0));
 		}
 
 		assert(global_counter == total_size);
