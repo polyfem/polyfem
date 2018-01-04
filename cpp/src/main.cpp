@@ -5,6 +5,9 @@
 
 // #include "Biharmonic.hpp"
 
+#include "Mesh2D.hpp"
+#include "Mesh3D.hpp"
+
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
 
@@ -37,6 +40,25 @@ using namespace Eigen;
 **/
 int main(int argc, const char **argv)
 {
+    Mesh2D mesh;
+    mesh.load("/Users/teseo/Documents/scuola/polyfem/mesh5.obj");
+
+    Mesh3DStorage tmp;
+    tmp.type = MeshType::HSur;
+    Mesh3D mesh_3d;
+    Mesh3D::geomesh_2_mesh_storage(mesh.geo_mesh(), tmp);
+    MeshProcessing3D::straight_sweeping(tmp, 2, 1, 1, mesh_3d.mesh_storge());
+
+    mesh_3d.save("text.HYBRID");
+
+
+    exit(0);
+
+
+
+
+
+
     // const int n_samples = 1000;
     // const int n_poly_samples = n_samples/3;
     // Eigen::MatrixXd boundary_samples(n_samples, 2);

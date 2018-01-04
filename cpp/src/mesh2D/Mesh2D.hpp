@@ -67,6 +67,8 @@ namespace poly_fem
 
 		void compute_element_tag(std::vector<ElementType> &ele_tag) const override;
 		void compute_barycenter(Eigen::MatrixXd &barycenters) const override;
+
+		const GEO::Mesh &geo_mesh() const { std::cerr<<"never user this function"<<std::endl; return mesh_; }
 	private:
 		GEO::Mesh mesh_;
 	};

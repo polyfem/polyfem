@@ -773,7 +773,7 @@ namespace poly_fem
 		}
 	}
 
-	void Mesh3D::geomesh2mesh(GEO::Mesh &gm, Mesh3DStorage &m) {
+	void Mesh3D::geomesh_2_mesh_storage(const GEO::Mesh &gm, Mesh3DStorage &m) {
 		m.vertices.clear(); m.edges.clear(); m.faces.clear();
 		m.vertices.resize(gm.vertices.nb());
 		m.faces.resize(gm.facets.nb());

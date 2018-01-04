@@ -809,7 +809,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter) {
 		M = M_;
 	}
 }
-void MeshProcessing3D::straight_sweeping(Mesh3DStorage &Mi, int sweep_coord, double height, int nlayer, Mesh3DStorage &Mo) {
+void MeshProcessing3D::straight_sweeping(const Mesh3DStorage &Mi, int sweep_coord, double height, int nlayer, Mesh3DStorage &Mo) {
 	if (sweep_coord > 2 || sweep_coord < 0) { std::cout << "invalid sweeping direction!"; return; }
 	if (Mi.type != MeshType::HSur && Mi.type != MeshType::Tri && Mi.type != MeshType::Qua) { std::cout << "invalid planar surface!"; return; }
 	if (height <= 0 || nlayer < 1) { std::cout << "invalid height or number of layers!"; return; }

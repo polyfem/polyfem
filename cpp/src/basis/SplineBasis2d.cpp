@@ -831,7 +831,6 @@ namespace poly_fem
                 for(int j = 0; j < poly_local_n; ++j)
                 {
                     const int poly_index = (j+1)*offset;
-                    std::cout<<poly_index<<std::endl;
 
                     if(eps > 0)
                     {
