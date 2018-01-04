@@ -57,14 +57,14 @@ namespace poly_fem
         std::stringstream ss;
         ss.precision(100);
         ss.setf(std::ios::fixed, std::ios::floatfield);
-        ss<<"Qp";
+        // ss<<"Qp";
 
         // ss<<"Qpa"<<0.00001/area;
-        // ss<<"Qpa"<<(0.01/poly.rows())/order;
+        ss<<"Qpa"<<(0.01/poly.rows())/order;
 
         // Eigen::MatrixXd poly_tmp(poly.rows()+1, 2);
         // poly_tmp.block(0, 0, poly.rows(), 2) = poly;
-        // poly_tmp.block(poly.rows(), 0, 1, 2) = poly.colwise().mean(); //TODO replace with point in kernel
+        // poly_tmp.block(poly.rows(), 0, 1, 2) = poly.colwise().mean();
         // igl::triangle::triangulate(poly_tmp, E, Eigen::MatrixXd(0,2), ss.str(), pts, tris);
 
         igl::triangle::triangulate(poly, E, Eigen::MatrixXd(0,2), ss.str(), pts, tris);
