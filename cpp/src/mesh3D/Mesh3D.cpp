@@ -772,4 +772,36 @@ namespace poly_fem
 			vertices_node_[v] = p;
 		}
 	}
+
+	void Mesh3D::geomesh2mesh(GEO::Mesh &gm, Mesh3DStorage &m) {
+		m.vertices.clear(); m.edges.clear(); m.faces.clear();
+		m.vertices.resize(gm.vertices.nb());
+		m.faces.resize(gm.facets.nb());
+		for (uint32_t i = 0; i < m.vertices.size(); i++) {
+			Vertex v;
+			v.id = i;
+			v.v.push_back(gm.vertices.point_ptr(i)[0]);
+			v.v.push_back(gm.vertices.point_ptr(i)[1]);
+			v.v.push_back(gm.vertices.point_ptr(i)[2]);
+			m.vertices[i] = v;
+		}
+		m.points.resize(3, m.vertices.size());
+		for (uint32_t i = 0; i < m.vertices.size(); i++) {
+			m.points(0, i) = m.vertices[i].v[0];
+			m.points(1, i) = m.vertices[i].v[1];
+			m.points(2, i) = m.vertices[i].v[2];
+		}
+
+		if (m.type == MeshType::Tri || m.type == MeshType::Qua || m.type == MeshType::HSur) {
+			for (uint32_t i = 0; i < m.faces.size(); i++) {
+				Face f;
+				f.id = i;
+				f.vs.resize(gm.facets.nb_vertices(i));
+				for (uint32_t j = 0; j < f.vs.size(); j++) {
+					f.vs[j] = gm.facets.vertex(i, j);
+				}
+				m.faces[i] = f;
+			}
+		}
+	}
 }

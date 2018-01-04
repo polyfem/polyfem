@@ -110,6 +110,7 @@ namespace poly_fem
 		// v0────v1
 		std::array<int, 8> get_ordered_vertices_from_hex(const int element_index) const;
 
+		void geomesh2mesh(GEO::Mesh &gm, Mesh3DStorage &m);
 	private:
 		Mesh3DStorage mesh_;
 
