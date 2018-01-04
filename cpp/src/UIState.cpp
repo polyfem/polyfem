@@ -278,7 +278,7 @@ namespace poly_fem
 					cols.block(from, 0, range, 1).setOnes(); break;
 
 						//blue
-					case ElementType::SingularBoundaryCube:
+					case ElementType::SimpleSingularBoundaryCube:
 					cols.block(from, 2, range, 1).setConstant(0.6); break;
 
 				  		 //light blue

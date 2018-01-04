@@ -130,7 +130,7 @@ void poly_fem::compute_element_tags(const GEO::Mesh &M, std::vector<ElementType>
 				}
 
 				if (is_singular) {
-					element_tags[f] = ElementType::SingularBoundaryCube;
+					element_tags[f] = ElementType::SimpleSingularBoundaryCube;
 				} else {
 					element_tags[f] = ElementType::RegularBoundaryCube;
 				}
