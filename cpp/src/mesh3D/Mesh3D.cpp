@@ -802,6 +802,7 @@ namespace poly_fem
 				}
 				m.faces[i] = f;
 			}
+			MeshProcessing3D::build_connectivity(m);
 		}
 	}
 }
