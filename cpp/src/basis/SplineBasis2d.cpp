@@ -39,7 +39,6 @@ namespace poly_fem
             int flag;
             std::vector<int> node_id;
 
-            std::vector<int> x, y;
             std::vector<int> local_indices;
         };
 
@@ -120,8 +119,7 @@ namespace poly_fem
                     data.face_id = index.face;
                     data.node_id.push_back(node_id);
                     data.flag = b_flag;
-                    data.x.push_back(x);
-                    data.y.push_back(y);
+                    data.local_indices.push_back(y * 3 + x);
                 }
             }
         }
@@ -135,13 +133,11 @@ namespace poly_fem
 
                 assert(space(x1, y1).size() == 1);
                 data.node_id.push_back(space(x1, y1).front());
-                data.x.push_back(x1);
-                data.y.push_back(y1);
+                data.local_indices.push_back(y1 * 3 + x1);
 
                 assert(space(x2, y2).size() == 1);
                 data.node_id.push_back(space(x2, y2).front());
-                data.x.push_back(x2);
-                data.y.push_back(y2);
+                data.local_indices.push_back(y2 * 3 + x2);
             }
         }
 
@@ -514,7 +510,8 @@ namespace poly_fem
                 const int other_face = mesh.switch_face(mesh.switch_edge(index)).face;
                 const bool is_vertex_q2 = other_face < 0 || mesh.n_element_vertices(other_face) > 4 || is_q2(other_face);
 
-                if (opposite_face < 0 || mesh.n_element_vertices(opposite_face) > 4) {
+                if (opposite_face < 0 || mesh.n_element_vertices(opposite_face) > 4)
+                {
                     current_edge_node_id = mesh.edge_node_id(index.edge);
                     current_edge_node = mesh.node_from_edge_index(index);
                     if(opposite_face < 0)
@@ -574,22 +571,34 @@ namespace poly_fem
                     }
                 }
 
+
+                const bool is_neigh_poly = (opposite_face >= 0 && mesh.n_element_vertices(opposite_face) > 4);
+                const bool is_other_neigh_poly = (other_face >= 0 && mesh.n_element_vertices(other_face) > 4);
+
                 if(current_vertex_node_id >= 0)
                 {
-                    b.bases[2*j].init(current_vertex_node_id, 2*j+1, current_vertex_node);
-
-                    if(opposite_face >= 0 && mesh.n_element_vertices(opposite_face) > 4)
+                    b.bases[2*j].init(current_vertex_node_id, 2*j, current_vertex_node);
+                    if(current_vertex_node_id==105){
+                        std::cout<<current_vertex_node_id<<" "<<is_neigh_poly<<" "<<el_index<<std::endl;
+                    }
+                    if(is_neigh_poly)
                     {
                         BoundaryData &data = poly_edge_to_data[index.edge];
-                        if(data.x.empty())
+                        data.face_id = index.face;
+                        data.node_id.push_back(current_vertex_node_id);
+                        data.flag = b_flag;
+                        data.local_indices.push_back(2*j);
+                    }
+                    if(is_other_neigh_poly)
+                    {
+                        BoundaryData &data = poly_edge_to_data[mesh.switch_edge(index).edge];
+                        if(data.face_id < 0)
                         {
                             data.face_id = index.face;
-                            data.node_id.push_back(current_vertex_node_id);
-                            data.flag = b_flag;
-                            data.local_indices.push_back(2*j);
+                            data.flag = (b_flag+3)%4;
                         }
-                        else
-                            std::cout<<data.face_id<<std::endl;
+                        data.node_id.push_back(current_vertex_node_id);
+                        data.local_indices.push_back(2*j);
                     }
 
                 }
@@ -623,21 +632,17 @@ namespace poly_fem
                 }
 
 
-
                 if(current_edge_node_id >= 0)
                 {
                     b.bases[2*j+1].init(current_edge_node_id, 2*j+1, current_edge_node);
 
-                    if(opposite_face >= 0 && mesh.n_element_vertices(opposite_face) > 4)
+                    if(is_neigh_poly)
                     {
                         BoundaryData &data = poly_edge_to_data[index.edge];
-                        if(data.x.empty())
-                        {
-                            data.face_id = index.face;
-                            data.node_id.push_back(current_edge_node_id);
-                            data.flag = b_flag;
-                            data.local_indices.push_back(2*j+1);
-                        }
+                        data.face_id = index.face;
+                        data.node_id.push_back(current_edge_node_id);
+                        data.flag = b_flag;
+                        data.local_indices.push_back(2*j+1);
                     }
                 }
                 else
@@ -794,7 +799,7 @@ namespace poly_fem
                 // assert(bdata.node_id.size() == 3);
                 for(std::size_t bi = 0; bi < bdata.node_id.size(); ++bi)
                 {
-                    const int local_index = bdata.local_indices.empty() ? (bdata.y[bi] * 3 + bdata.x[bi]) : bdata.local_indices[bi];
+                    const int local_index = bdata.local_indices[bi];
                     // assert(b.bases[local_index].global_index() == bdata.node_id[bi]);
                     const long basis_index = std::distance(local_to_global.begin(), std::find(local_to_global.begin(), local_to_global.end(), bdata.node_id[bi]));
 
@@ -973,7 +978,11 @@ namespace poly_fem
                 igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
                 viewer.data.add_points(poly_samples, Eigen::Vector3d(0,1,1).transpose());
 
-                viewer.data.add_points(boundary_samples, Eigen::Vector3d(1,0,1).transpose());
+                Eigen::MatrixXd asd(boundary_samples.rows(), 3);
+                asd.col(0)=boundary_samples.col(0);
+                asd.col(1)=boundary_samples.col(1);
+                asd.col(2)=rhs.col(0);
+                viewer.data.add_points(asd, Eigen::Vector3d(1,0,1).transpose());
                 // for(int asd = 0; asd < boundary_samples.rows(); ++asd)
                     // viewer.data.add_label(boundary_samples.row(asd), std::to_string(asd));
 
