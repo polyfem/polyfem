@@ -40,6 +40,20 @@ using namespace Eigen;
 **/
 int main(int argc, const char **argv)
 {
+#ifndef WIN32
+    setenv("GEO_NO_SIGNAL_HANDLERS", "1", 1);
+#endif
+
+    GEO::initialize();
+
+    // Import standard command line arguments, and custom ones
+    GEO::CmdLine::import_arg_group("standard");
+    GEO::CmdLine::import_arg_group("pre");
+
+
+
+
+
     // Mesh2D mesh;
     // mesh.load("/Users/teseo/Documents/scuola/polyfem/mesh5.obj");
 
@@ -47,7 +61,7 @@ int main(int argc, const char **argv)
     // tmp.type = MeshType::HSur;
     // Mesh3D mesh_3d;
     // Mesh3D::geomesh_2_mesh_storage(mesh.geo_mesh(), tmp);
-    // MeshProcessing3D::straight_sweeping(tmp, 2, 1, 1, mesh_3d.mesh_storge());
+    // MeshProcessing3D::straight_sweeping(tmp, 2, 1, 5, mesh_3d.mesh_storge());
 
     // mesh_3d.save("text.HYBRID");
 
@@ -89,24 +103,6 @@ int main(int argc, const char **argv)
     // Biharmonic biharmonic(poly_samples, boundary_samples, rhs);
 
     // exit(0);
-
-
-
-
-
-
-
-#ifndef WIN32
-    setenv("GEO_NO_SIGNAL_HANDLERS", "1", 1);
-#endif
-
-    GEO::initialize();
-
-    // Import standard command line arguments, and custom ones
-    GEO::CmdLine::import_arg_group("standard");
-    GEO::CmdLine::import_arg_group("pre");
-
-    // GEO::Logger::set_quiet(true);
 
 
 

@@ -572,35 +572,12 @@ namespace poly_fem
                 }
 
 
-                const bool is_neigh_poly = (opposite_face >= 0 && mesh.n_element_vertices(opposite_face) > 4);
-                const bool is_other_neigh_poly = (other_face >= 0 && mesh.n_element_vertices(other_face) > 4);
+                // const bool is_neigh_poly = (opposite_face >= 0 && mesh.n_element_vertices(opposite_face) > 4);
+                // const bool is_other_neigh_poly = (other_face >= 0 && mesh.n_element_vertices(other_face) > 4);
 
                 if(current_vertex_node_id >= 0)
                 {
                     b.bases[2*j].init(current_vertex_node_id, 2*j, current_vertex_node);
-                    if(current_vertex_node_id==105){
-                        std::cout<<current_vertex_node_id<<" "<<is_neigh_poly<<" "<<el_index<<std::endl;
-                    }
-                    if(is_neigh_poly)
-                    {
-                        BoundaryData &data = poly_edge_to_data[index.edge];
-                        data.face_id = index.face;
-                        data.node_id.push_back(current_vertex_node_id);
-                        data.flag = b_flag;
-                        data.local_indices.push_back(2*j);
-                    }
-                    if(is_other_neigh_poly)
-                    {
-                        BoundaryData &data = poly_edge_to_data[mesh.switch_edge(index).edge];
-                        if(data.face_id < 0)
-                        {
-                            data.face_id = index.face;
-                            data.flag = (b_flag+3)%4;
-                        }
-                        data.node_id.push_back(current_vertex_node_id);
-                        data.local_indices.push_back(2*j);
-                    }
-
                 }
                 else
                 {
@@ -635,15 +612,6 @@ namespace poly_fem
                 if(current_edge_node_id >= 0)
                 {
                     b.bases[2*j+1].init(current_edge_node_id, 2*j+1, current_edge_node);
-
-                    if(is_neigh_poly)
-                    {
-                        BoundaryData &data = poly_edge_to_data[index.edge];
-                        data.face_id = index.face;
-                        data.node_id.push_back(current_edge_node_id);
-                        data.flag = b_flag;
-                        data.local_indices.push_back(2*j+1);
-                    }
                 }
                 else
                 {
@@ -702,6 +670,25 @@ namespace poly_fem
             b.bases[8].init(++n_bases, 8, mesh.node_from_face(el_index));
             b.bases[8].set_basis([](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quad_basis_basis(2, 8, uv, val); });
             b.bases[8].set_grad( [](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quad_basis_grad(2, 8, uv, val); });
+
+
+            index = mesh.get_index_from_face(el_index);
+            for (int j = 0; j < 4; ++j)
+            {
+                const int opposite_face = mesh.switch_face(index).face;
+                const bool is_neigh_poly = (opposite_face >= 0 && mesh.n_element_vertices(opposite_face) > 4);
+
+                // if(is_neigh_poly)
+                //     {
+                //         BoundaryData &data = poly_edge_to_data[index.edge];
+                //         data.face_id = index.face;
+                //         data.node_id.push_back(current_vertex_node_id);
+                //         data.flag = b_flag;
+                //         data.local_indices.push_back(2*j);
+                //     }
+
+                index = mesh.next_around_face(index);
+            }
         }
 
         void sample_polygon(const int element_index, const int samples_res, const Mesh2D &mesh, std::map<int, BoundaryData> &poly_edge_to_data, const std::vector< ElementBases > &bases, std::vector<int> &local_to_global, const double eps, const bool c1_continuous, Eigen::MatrixXd &boundary_samples, Eigen::MatrixXd &poly_samples, Eigen::MatrixXd &rhs)

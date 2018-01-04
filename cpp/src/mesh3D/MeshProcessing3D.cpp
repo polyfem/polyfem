@@ -830,12 +830,13 @@ void MeshProcessing3D::straight_sweeping(const Mesh3DStorage &Mi, int sweep_coor
 		for (auto v : Mi.vertices) {
 			Vertex v_;
 			v_.id = Mo.vertices.size();
+			v_.v.resize(3);
 			for (int j = 0; j < 3; j++)v_.v[j] = v.v[j] + i * interval[j];
 
 			Mo.vertices.push_back(v_);
 			a_layer.push_back(v_.id);
 		}
-		Vlayers.push_back(a_layer);
+		Vlayers[i] = a_layer;
 	}
 	//f
 	std::vector<std::vector<int>> Flayers(nlayer + 1);
@@ -849,7 +850,7 @@ void MeshProcessing3D::straight_sweeping(const Mesh3DStorage &Mi, int sweep_coor
 			Mo.faces.push_back(f_);
 			a_layer.push_back(f_.id);
 		}
-		Flayers.push_back(a_layer);
+		Flayers[i] = a_layer;
 	}
 	//ef
 	std::vector<std::vector<int>> EFlayers(nlayer);
@@ -867,7 +868,7 @@ void MeshProcessing3D::straight_sweeping(const Mesh3DStorage &Mi, int sweep_coor
 			Mo.faces.push_back(f_);
 			a_layer.push_back(f_.id);
 		}
-		EFlayers.push_back(a_layer);
+		EFlayers[i] = a_layer;
 	}
 	//ele
 	for (int i = 0; i < nlayer; i++) {
@@ -881,6 +882,17 @@ void MeshProcessing3D::straight_sweeping(const Mesh3DStorage &Mi, int sweep_coor
 			for(auto eid:f.es)ele.fs.push_back(EFlayers[i][eid]);
 
 			ele.fs_flag.resize(ele.fs.size(), false);
+
+
+			ele.v_in_Kernel.resize(3, 0);
+			int nv = 0;
+			for (int j = 0; j < 2; j++) {
+				nv += Mo.faces[ele.fs[j]].vs.size();
+				for (auto vid : Mo.faces[ele.fs[j]].vs)
+					for (int k = 0; k < 3; k++)ele.v_in_Kernel[k] += Mo.vertices[vid].v[k];
+			}
+			for (int k = 0; k < 3; k++)ele.v_in_Kernel[k] /= nv;
+
 			Mo.elements.push_back(ele);
 		}
 	}
