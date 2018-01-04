@@ -794,7 +794,8 @@ namespace poly_fem
                     if(bottom_right_node_id < n_els)
                         global.push_back(Local2Global(e, mesh.node_from_face(e), 1./4.));
 
-                    if(!is_q2(right_node_id)){
+                    // if(!is_q2(right_node_id))
+                    {
                          if(bottom_right_node_id < n_els)
                             global.push_back(Local2Global(right_node_id, right_node, 1./4.));
                         else if(right_node_id >= n_els)
@@ -802,7 +803,7 @@ namespace poly_fem
                     }
 
 
-                    if(!is_q2(bottom_right_node_id))
+                    // if(!is_q2(bottom_right_node_id))
                     {
                         if(bottom_right_node_id >= n_els)
                             global.push_back(Local2Global(bottom_right_node_id, bottom_right_node, 1./2.));
@@ -810,7 +811,8 @@ namespace poly_fem
                             global.push_back(Local2Global(bottom_right_node_id, bottom_right_node, 1./4.));
                     }
 
-                    if(!is_q2(bottom_node_id)){
+                    // if(!is_q2(bottom_node_id))
+                    {
                          if(bottom_right_node_id < n_els)
                             global.push_back(Local2Global(bottom_node_id, bottom_node, 1./4.));
                         else if(bottom_node_id >= n_els)
@@ -844,7 +846,8 @@ namespace poly_fem
                         global.push_back(Local2Global(e, mesh.node_from_face(e), 3./8.));
 
 
-                    if(!is_q2(right_node_id)){
+                    // if(!is_q2(right_node_id))
+                    {
                         if(right_node_id >= n_els)
                             global.push_back(Local2Global(right_node_id, right_node, 1./8.));
                         else
@@ -852,7 +855,8 @@ namespace poly_fem
                     }
 
 
-                    if(!is_q2(bottom_right_node_id)){
+                    // if(!is_q2(bottom_right_node_id))
+                    {
                         if(right_node_id >= n_els)
                             global.push_back(Local2Global(bottom_right_node_id, bottom_right_node, 1./8.));
                         else
@@ -860,7 +864,7 @@ namespace poly_fem
                     }
 
 
-                    if(!is_q2(bottom_node_id))
+                    // if(!is_q2(bottom_node_id))
                     {
                         if(right_node_id >= n_els || left_node_id >= n_els)
                             global.push_back(Local2Global(bottom_node_id, bottom_node, 5./16.));
@@ -869,14 +873,16 @@ namespace poly_fem
                     }
 
 
-                    if(!is_q2(bottom_left_node_id)){
+                    // if(!is_q2(bottom_left_node_id))
+                    {
                         if(right_node_id >= n_els || left_node_id >= n_els)
                             global.push_back(Local2Global(bottom_left_node_id, bottom_left_node, 1./8.));
                         else
                             global.push_back(Local2Global(bottom_left_node_id, bottom_left_node, 1./16.));
                     }
 
-                    if(!is_q2(left_node_id)){
+                    // if(!is_q2(left_node_id))
+                    {
                         if(right_node_id >= n_els || left_node_id >= n_els)
                             global.push_back(Local2Global(left_node_id, left_node, 1./8.));
                         else
