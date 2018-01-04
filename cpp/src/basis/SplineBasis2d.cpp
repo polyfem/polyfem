@@ -711,10 +711,6 @@ namespace poly_fem
                 const bool is_vertex_q2 = other_face < 0 || is_q2(other_face);
 
                 if (opposite_face < 0) {
-                    // bounday_nodes.push_back(index.vertex);
-                    // bounday_nodes.push_back(index.edge + n_vertex_nodes);
-                    // bounday_nodes.push_back(mesh.switch_vertex(index).vertex);
-
                     current_edge_node_id = mesh.edge_node_id(index.edge);
                     current_edge_node = mesh.node_from_edge_index(index);
                     bounday_nodes.push_back(current_edge_node_id);
