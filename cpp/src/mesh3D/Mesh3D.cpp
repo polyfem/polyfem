@@ -608,7 +608,7 @@ namespace poly_fem
 						if (mesh_.edges[eid].neighbor_hs.size() != 4)
 							n_irregular_e++;
 					}
-					if (n_irregular_e != 2) {
+					if (n_irregular_e!=0 && n_irregular_e != 2) {
 						has_singular_v = true; break;
 					}
 				}
