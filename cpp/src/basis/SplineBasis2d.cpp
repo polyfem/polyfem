@@ -5,6 +5,8 @@
 #include "PolygonQuadrature.hpp"
 #include "QuadBoundarySampler.hpp"
 
+#include "FEBasis2d.hpp"
+
 #include "Harmonic.hpp"
 #include "Biharmonic.hpp"
 
@@ -41,13 +43,20 @@ namespace poly_fem
         };
 
 
-        void print_local_space(const Matrix3i &space)
+        void print_local_space(const SpaceMatrix &space)
         {
             for(int j=2; j >=0; --j)
             {
                 for(int i=0; i < 3; ++i)
                 {
-                    std::cout<<space(i,j)<<" ";
+                    if(space(i, j).size() > 0){
+                        for(std::size_t l = 0; l < space(i, j).size(); ++l)
+                            std::cout<<space(i, j)[l]<<",";
+
+                        std::cout<<"\t";
+                    }
+                    else
+                        std::cout<<"x\t";
                 }
                 std::cout<<std::endl;
             }
@@ -602,12 +611,307 @@ namespace poly_fem
             basis_for_irregulard_quad(mesh, space, loc_nodes, h_knots, v_knots, b);
         }
 
+
+
+        std::map<int, int > edge_id;
+        std::map<int, int > vertex_id;
+
+        auto is_q2 = [els_tag](const int face_id){ return els_tag[face_id] == ElementType::MultiSingularInteriorCube || els_tag[face_id] == ElementType::SingularBoundaryCube; };
+
         for(int e = 0; e < n_els; ++e)
         {
             if(els_tag[e] != ElementType::MultiSingularInteriorCube && els_tag[e] != ElementType::SingularBoundaryCube)
                 continue;
 
-            std::cout<<"asd"<<std::endl;
+            SpaceMatrix space;
+            NodeMatrix loc_nodes;
+
+            build_local_space(mesh, e, space, loc_nodes, local_boundary[e], poly_edge_to_data, bounday_nodes);
+            std::cout<<"\n"<<e<<std::endl;
+            print_local_space(space);
+
+
+
+
+            ElementBases &b=bases[e];
+            quad_quadrature.get_quadrature(quadrature_order, b.quadrature);
+            b.bases.resize(9);
+
+            Navigation::Index index = mesh.get_index_from_face(e);
+            for (int j = 0; j < 4; ++j)
+            {
+                int current_vertex_node_id = -1;
+                int current_edge_node_id = -1;
+                Eigen::Matrix<double, 1, 2> current_edge_node;
+                Eigen::MatrixXd current_vertex_node;
+
+
+                int right_node_id, bottom_right_node_id, bottom_node_id, bottom_left_node_id, left_node_id;
+                Eigen::MatrixXd right_node, bottom_right_node, bottom_node, bottom_left_node, left_node;
+
+                if(j == 1)
+                {
+                    right_node_id          = space(0, 1).front();
+                    bottom_right_node_id   = space(0, 0).front();
+                    bottom_node_id         = space(1, 0).front();
+                    bottom_left_node_id    = space(2, 0).front();
+                    left_node_id           = space(2, 1).front();
+
+                    right_node          = loc_nodes(0, 1).front();
+                    bottom_right_node   = loc_nodes(0, 0).front();
+                    bottom_node         = loc_nodes(1, 0).front();
+                    bottom_left_node    = loc_nodes(2, 0).front();
+                    left_node           = loc_nodes(2, 1).front();
+                }
+                else if( j == 2)
+                {
+                    right_node_id          = space(1, 0).front();
+                    bottom_right_node_id   = space(2, 0).front();
+                    bottom_node_id         = space(2, 1).front();
+                    bottom_left_node_id    = space(2, 2).front();
+                    left_node_id           = space(1, 2).front();
+
+                    right_node          = loc_nodes(1, 0).front();
+                    bottom_right_node   = loc_nodes(2, 0).front();
+                    bottom_node         = loc_nodes(2, 1).front();
+                    bottom_left_node    = loc_nodes(2, 2).front();
+                    left_node           = loc_nodes(1, 2).front();
+                }
+                else if( j == 3)
+                {
+                    right_node_id          = space(2, 1).front();
+                    bottom_right_node_id   = space(2, 2).front();
+                    bottom_node_id         = space(1, 2).front();
+                    bottom_left_node_id    = space(0, 2).front();
+                    left_node_id           = space(0, 1).front();
+
+                    right_node          = loc_nodes(2, 1).front();
+                    bottom_right_node   = loc_nodes(2, 2).front();
+                    bottom_node         = loc_nodes(1, 2).front();
+                    bottom_left_node    = loc_nodes(0, 2).front();
+                    left_node           = loc_nodes(0, 1).front();
+                }
+                else
+                {
+                    right_node_id          = space(1, 2).front();
+                    bottom_right_node_id   = space(0, 2).front();
+                    bottom_node_id         = space(0, 1).front();
+                    bottom_left_node_id    = space(0, 0).front();
+                    left_node_id           = space(1, 0).front();
+
+                    right_node          = loc_nodes(1, 2).front();
+                    bottom_right_node   = loc_nodes(0, 2).front();
+                    bottom_node         = loc_nodes(0, 1).front();
+                    bottom_left_node    = loc_nodes(0, 0).front();
+                    left_node           = loc_nodes(1, 0).front();
+                }
+
+                const int opposite_face = mesh.switch_face(index).face;
+                const int other_face = mesh.switch_face(mesh.switch_edge(index)).face;
+                const bool is_vertex_q2 = other_face < 0 || is_q2(other_face);
+
+                if (opposite_face < 0) {
+                    // bounday_nodes.push_back(index.vertex);
+                    // bounday_nodes.push_back(index.edge + n_vertex_nodes);
+                    // bounday_nodes.push_back(mesh.switch_vertex(index).vertex);
+
+                    current_edge_node_id = mesh.edge_node_id(index.edge);
+                    current_edge_node = mesh.node_from_edge_index(index);
+                    bounday_nodes.push_back(current_edge_node_id);
+
+                    if(is_vertex_q2)
+                    {
+                        auto it = vertex_id.find(index.vertex);
+
+                        if(it == vertex_id.end())
+                        {
+                            current_vertex_node_id = ++n_bases;
+                            vertex_id[index.vertex] = current_vertex_node_id;
+                        }
+                        else
+                            current_vertex_node_id = it->second;
+
+                        bounday_nodes.push_back(current_vertex_node_id);
+                        mesh.point(index.vertex, current_vertex_node);
+                    }
+
+                    switch(j)
+                    {
+                        case 0: local_boundary[e].set_top_edge_id(index.edge); local_boundary[e].set_top_boundary(); break;
+                        case 1: local_boundary[e].set_left_edge_id(index.edge); local_boundary[e].set_left_boundary(); break;
+                        case 2: local_boundary[e].set_bottom_edge_id(index.edge); local_boundary[e].set_bottom_boundary(); break;
+                        case 3: local_boundary[e].set_right_edge_id(index.edge); local_boundary[e].set_right_boundary(); break;
+                    }
+                }
+                else
+                {
+                    const bool is_edge_q2 = is_q2(opposite_face);
+
+                    if(is_edge_q2)
+                    {
+                        if(is_vertex_q2)
+                        {
+                            auto it = vertex_id.find(index.vertex);
+
+                            if(it == vertex_id.end())
+                            {
+                                current_vertex_node_id = ++n_bases;
+                                vertex_id[index.vertex] = current_vertex_node_id;
+                            }
+                            else
+                                current_vertex_node_id = it->second;
+
+                            if(other_face < 0)
+                                bounday_nodes.push_back(current_vertex_node_id);
+                            mesh.point(index.vertex, current_vertex_node);
+                        }
+
+                        auto it = edge_id.find(index.edge);
+
+                        if(it == edge_id.end())
+                        {
+                            current_edge_node_id = ++n_bases;
+                            edge_id[index.edge] = current_edge_node_id;
+                        }
+                        else
+                            current_edge_node_id = it->second;
+
+                        current_edge_node = mesh.edge_mid_point(index.edge);
+                    }
+                }
+
+                if(current_vertex_node_id >= 0)
+                {
+                    b.bases[2*j].init(current_vertex_node_id, 2*j+1, current_vertex_node);
+                }
+                else
+                {
+                    std::cout<<j<<" n "<<right_node_id<< " "<<bottom_right_node_id<< " "<<bottom_node_id<<" "<<bottom_left_node_id<< " "<<left_node_id<<std::endl;
+
+                    auto &global = b.bases[2*j].global();
+
+                    //central
+                    if(bottom_right_node_id < n_els)
+                        global.push_back(Local2Global(e, mesh.node_from_face(e), 1./4.));
+
+                    if(!is_q2(right_node_id)){
+                         if(bottom_right_node_id < n_els)
+                            global.push_back(Local2Global(right_node_id, right_node, 1./4.));
+                        else if(right_node_id >= n_els)
+                            global.push_back(Local2Global(right_node_id, right_node, 1./2.));
+                    }
+
+
+                    if(!is_q2(bottom_right_node_id))
+                    {
+                        if(bottom_right_node_id >= n_els)
+                            global.push_back(Local2Global(bottom_right_node_id, bottom_right_node, 1./2.));
+                        else
+                            global.push_back(Local2Global(bottom_right_node_id, bottom_right_node, 1./4.));
+                    }
+
+                    if(!is_q2(bottom_node_id)){
+                         if(bottom_right_node_id < n_els)
+                            global.push_back(Local2Global(bottom_node_id, bottom_node, 1./4.));
+                        else if(bottom_node_id >= n_els)
+                            global.push_back(Local2Global(bottom_node_id, bottom_node, 1./2.));
+                    }
+
+                    // if(!is_q2(left_node_id)){
+                    //     if(left_node_id >= n_els)
+                    //         global.push_back(Local2Global(left_node_id, left_node, 1./2.));
+                    // }
+
+
+                }
+
+
+
+                if(current_edge_node_id >= 0)
+                {
+                    b.bases[2*j+1].init(current_edge_node_id, 2*j+1, current_edge_node);
+                }
+                else
+                {
+                    std::cout<<j<<" e "<<right_node_id<< " "<<bottom_right_node_id<< " "<<bottom_node_id<<" "<<bottom_left_node_id<< " "<<left_node_id<<std::endl;
+
+                    auto &global = b.bases[2*j+1].global();
+
+                     //central
+                    if(right_node_id >= n_els || left_node_id >= n_els)
+                        global.push_back(Local2Global(e, mesh.node_from_face(e), 5./16.));
+                    else
+                        global.push_back(Local2Global(e, mesh.node_from_face(e), 3./8.));
+
+
+                    if(!is_q2(right_node_id)){
+                        if(right_node_id >= n_els)
+                            global.push_back(Local2Global(right_node_id, right_node, 1./8.));
+                        else
+                            global.push_back(Local2Global(right_node_id, right_node, 1./16.));
+                    }
+
+
+                    if(!is_q2(bottom_right_node_id)){
+                        if(right_node_id >= n_els)
+                            global.push_back(Local2Global(bottom_right_node_id, bottom_right_node, 1./8.));
+                        else
+                            global.push_back(Local2Global(bottom_right_node_id, bottom_right_node, 1./16.));
+                    }
+
+
+                    if(!is_q2(bottom_node_id))
+                    {
+                        if(right_node_id >= n_els || left_node_id >= n_els)
+                            global.push_back(Local2Global(bottom_node_id, bottom_node, 5./16.));
+                        else
+                            global.push_back(Local2Global(bottom_node_id, bottom_node, 3./8.));
+                    }
+
+
+                    if(!is_q2(bottom_left_node_id)){
+                        if(right_node_id >= n_els || left_node_id >= n_els)
+                            global.push_back(Local2Global(bottom_left_node_id, bottom_left_node, 1./8.));
+                        else
+                            global.push_back(Local2Global(bottom_left_node_id, bottom_left_node, 1./16.));
+                    }
+
+                    if(!is_q2(left_node_id)){
+                        if(right_node_id >= n_els || left_node_id >= n_els)
+                            global.push_back(Local2Global(left_node_id, left_node, 1./8.));
+                        else
+                            global.push_back(Local2Global(left_node_id, left_node, 1./16.));
+                    }
+                }
+
+                const int nj = (j+3)%4;
+
+                b.bases[2*j].set_basis([nj](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quad_basis_basis(2, 2*nj, uv, val); });
+                b.bases[2*j].set_grad( [nj](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quad_basis_grad(2, 2*nj, uv, val); });
+
+                b.bases[2*j+1].set_basis([nj](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quad_basis_basis(2, 2*nj+1, uv, val); });
+                b.bases[2*j+1].set_grad( [nj](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quad_basis_grad(2, 2*nj+1, uv, val); });
+
+
+                // if(e==6 && j==0)
+                // {
+                //     std::cout<<"Qweqwe"<<std::endl;
+                //     igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
+                //     viewer.data.add_points(mesh.edge_mid_point(index.edge), Eigen::MatrixXd::Constant(1, 3, 0));
+                //     Eigen::MatrixXd asd;
+                //     mesh.point(index.vertex, asd);
+                //     viewer.data.add_points(asd, Eigen::MatrixXd::Constant(1, 3, 0));
+                // }
+
+                index = mesh.next_around_face(index);
+            }
+
+            b.bases[8].init(++n_bases, 8, mesh.node_from_face(e));
+            b.bases[8].set_basis([](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quad_basis_basis(2, 8, uv, val); });
+            b.bases[8].set_grad( [](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quad_basis_grad(2, 8, uv, val); });
+
+            std::cout<<b<<std::endl;
+
         }
 
         const int samples_res = 5;

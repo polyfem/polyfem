@@ -46,6 +46,15 @@ namespace poly_fem
 		/// @param[out] grads    { #S list of dim x dim matrices of gradients }
 		///
 		void eval_geom_mapping_grads(const Eigen::MatrixXd &samples, std::vector<Eigen::MatrixXd> &grads) const;
+
+
+		friend std::ostream& operator<< (std::ostream& os, const ElementBases &obj)
+		{
+			for(std::size_t i = 0; i < obj.bases.size(); ++i)
+				os << "local base "<<i <<":\n" << obj.bases[i] <<"\n";
+
+			return os;
+		}
 	};
 }
 

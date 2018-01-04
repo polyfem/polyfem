@@ -279,7 +279,7 @@ namespace poly_fem
 
 						//blue
 					case ElementType::SingularBoundaryCube:
-					cols.block(from, 2, range, 1).setOnes(); break;
+					cols.block(from, 2, range, 1).setConstant(0.6); break;
 
 				  		 //light blue
 					case ElementType::BoundaryPolytope:
@@ -677,7 +677,7 @@ namespace poly_fem
 			state.build_basis();
 
 			if(skip_visualization) return;
-			clear_func();
+			// clear_func();
 			show_mesh_func();
 			show_nodes_func();
 		};
@@ -752,7 +752,7 @@ namespace poly_fem
 			viewer_.ngui->addVariable("mu", state.mu);
 
 			viewer_.ngui->addVariable("mesh path", state.mesh_path);
-			viewer_.ngui->addButton("browser", [&]() {
+			viewer_.ngui->addButton("browse...", [&]() {
 				std::string path = nanogui::file_dialog({
 					{ "HYBRID", "General polyhedral mesh" }, { "OBJ", "Obj 2D mesh" }
 				}, false);

@@ -17,6 +17,15 @@ namespace poly_fem
 		double val; // weight
 
 		Eigen::MatrixXd node; // dof position
+
+
+		Local2Global()
+		: index(-1), val(0)
+		{ }
+
+		Local2Global(const int index, const Eigen::MatrixXd &node, const double val)
+		: index(index), val(val), node(node)
+		{ }
 	};
 
 	///
@@ -61,6 +70,16 @@ namespace poly_fem
 
 		inline void set_basis(const Fun &fun) { basis_ = fun; }
 		inline void set_grad(const Fun &fun) { grad_ = fun; }
+
+
+		friend std::ostream& operator<< (std::ostream& os, const Basis &obj)
+		{
+			os << obj.local_index_ <<":\n";
+			for(auto l2g : obj.global_)
+				os <<"\tl2g: " << l2g.index << " ("<< l2g.node <<") "<< l2g.val <<"\n";
+
+			return os;
+		}
 	private:
 		std::vector< Local2Global > global_; // real global dofs influencing the basis
 		int local_index_; // local index inside the element (for debugging purposes)

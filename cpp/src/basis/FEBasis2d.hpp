@@ -38,6 +38,10 @@ namespace poly_fem
 			std::vector<ElementBases> &bases,
 			std::vector<LocalBoundary> &local_boundary,
 			std::vector<int> &boundary_nodes);
+
+
+		static void quad_basis_basis(const int discr_order, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
+		static void quad_basis_grad(const int discr_order, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
 	};
 }
 

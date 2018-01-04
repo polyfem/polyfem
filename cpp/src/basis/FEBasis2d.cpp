@@ -206,177 +206,6 @@ namespace poly_fem
 			return n_vertex_nodes + n_edge_nodes + n_face_nodes;
 		}
 
-
-
-		void quad_basis_basis(const int discr_order, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-		{
-			switch(discr_order)
-			{
-				case 1:
-				{
-					auto &u = uv.col(1).array();
-					auto &v = uv.col(0).array();
-
-					switch(local_index)
-					{
-
-						case 0: val = u*(1-v); break;
-						case 1: val = (1-u)*(1-v); break;
-						case 2: val = (1-u)*v; break;
-						case 3: val = u*v; break;
-						default: assert(false);
-					}
-
-					break;
-				}
-
-				case 2:
-				{
-					auto &u = uv.col(0).array();
-					auto &v = uv.col(1).array();
-
-					switch(local_index)
-					{
-						case 0: val = theta1(u).array() * theta1(v).array(); break;
-						case 2: val = theta2(u).array() * theta1(v).array(); break;
-						case 4: val = theta2(u).array() * theta2(v).array(); break;
-						case 6: val = theta1(u).array() * theta2(v).array(); break;
-						case 1: val = theta3(u).array() * theta1(v).array(); break;
-						case 3: val = theta2(u).array() * theta3(v).array(); break;
-						case 5: val = theta3(u).array() * theta2(v).array(); break;
-						case 7: val = theta1(u).array() * theta3(v).array(); break;
-						case 8: val = theta3(u).array() * theta3(v).array(); break;
-						default: assert(false);
-					}
-
-					break;
-				}
-			//No Q3 implemented
-				default: assert(false);
-			}
-		}
-
-		void quad_basis_grad(const int discr_order, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-		{
-			val.resize(uv.rows(),2);
-
-			switch(discr_order)
-			{
-				case 1:
-				{
-					auto &u = 1-uv.col(1).array();
-					auto &v = uv.col(0).array();
-
-					switch(local_index)
-					{
-						case 0:
-						{
-							val.col(0) = (1-v);
-							val.col(1) = -u;
-
-							break;
-						}
-						case 1:
-						{
-							val.col(0) = -(1-v);
-							val.col(1) = -(1-u);
-
-							break;
-						}
-						case 2:
-						{
-							val.col(0) = -v;
-							val.col(1) = (1-u);
-
-							break;
-						}
-						case 3:
-						{
-							val.col(0) = v;
-							val.col(1) = u;
-
-							break;
-						}
-
-						default: assert(false);
-					}
-
-					break;
-				}
-
-				case 2:
-				{
-					auto u=uv.col(0).array();
-					auto v=uv.col(1).array();
-
-					switch(local_index)
-					{
-						case 0:
-						{
-							val.col(0) = dtheta1(u).array() * theta1(v).array();
-							val.col(1) = theta1(u).array() * dtheta1(v).array();
-							break;
-						}
-						case 2:
-						{
-							val.col(0) = dtheta2(u).array() * theta1(v).array();
-							val.col(1) = theta2(u).array() * dtheta1(v).array();
-							break;
-						}
-						case 4:
-						{
-							val.col(0) = dtheta2(u).array() * theta2(v).array();
-							val.col(1) = theta2(u).array() * dtheta2(v).array();
-							break;
-						}
-						case 6:
-						{
-							val.col(0) = dtheta1(u).array() * theta2(v).array();
-							val.col(1) = theta1(u).array() * dtheta2(v).array();
-							break;
-						}
-						case 1:
-						{
-							val.col(0) = dtheta3(u).array() * theta1(v).array();
-							val.col(1) = theta3(u).array() * dtheta1(v).array();
-							break;
-						}
-						case 3:
-						{
-							val.col(0) = dtheta2(u).array() * theta3(v).array();
-							val.col(1) = theta2(u).array() * dtheta3(v).array();
-							break;
-						}
-						case 5:
-						{
-							val.col(0) = dtheta3(u).array() * theta2(v).array();
-							val.col(1) = theta3(u).array() * dtheta2(v).array();
-							break;
-						}
-						case 7:
-						{
-							val.col(0) = dtheta1(u).array() * theta3(v).array();
-							val.col(1) = theta1(u).array() * dtheta3(v).array();
-							break;
-						}
-						case 8:
-						{
-							val.col(0) = dtheta3(u).array() * theta3(v).array();
-							val.col(1) = theta3(u).array() * dtheta3(v).array();
-							break;
-						}
-
-						default: assert(false);
-					}
-
-					break;
-				}
-				default: assert(false);
-			}
-		}
-
-
-
 		void tri_basis_basis(const int discr_order, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
 		{
 			switch(discr_order)
@@ -507,6 +336,174 @@ namespace poly_fem
 
 	}
 
+
+	void FEBasis2d::quad_basis_basis(const int discr_order, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+	{
+		switch(discr_order)
+		{
+			case 1:
+			{
+				auto &u = uv.col(1).array();
+				auto &v = uv.col(0).array();
+
+				switch(local_index)
+				{
+
+					case 0: val = u*(1-v); break;
+					case 1: val = (1-u)*(1-v); break;
+					case 2: val = (1-u)*v; break;
+					case 3: val = u*v; break;
+					default: assert(false);
+				}
+
+				break;
+			}
+
+			case 2:
+			{
+				auto &u = uv.col(0).array();
+				auto &v = uv.col(1).array();
+
+				switch(local_index)
+				{
+					case 0: val = theta1(u).array() * theta1(v).array(); break;
+					case 2: val = theta2(u).array() * theta1(v).array(); break;
+					case 4: val = theta2(u).array() * theta2(v).array(); break;
+					case 6: val = theta1(u).array() * theta2(v).array(); break;
+					case 1: val = theta3(u).array() * theta1(v).array(); break;
+					case 3: val = theta2(u).array() * theta3(v).array(); break;
+					case 5: val = theta3(u).array() * theta2(v).array(); break;
+					case 7: val = theta1(u).array() * theta3(v).array(); break;
+					case 8: val = theta3(u).array() * theta3(v).array(); break;
+					default: assert(false);
+				}
+
+				break;
+			}
+			//No Q3 implemented
+			default: assert(false);
+		}
+	}
+
+	void FEBasis2d::quad_basis_grad(const int discr_order, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+	{
+		val.resize(uv.rows(),2);
+
+		switch(discr_order)
+		{
+			case 1:
+			{
+				auto &u = 1-uv.col(1).array();
+				auto &v = uv.col(0).array();
+
+				switch(local_index)
+				{
+					case 0:
+					{
+						val.col(0) = (1-v);
+						val.col(1) = -u;
+
+						break;
+					}
+					case 1:
+					{
+						val.col(0) = -(1-v);
+						val.col(1) = -(1-u);
+
+						break;
+					}
+					case 2:
+					{
+						val.col(0) = -v;
+						val.col(1) = (1-u);
+
+						break;
+					}
+					case 3:
+					{
+						val.col(0) = v;
+						val.col(1) = u;
+
+						break;
+					}
+
+					default: assert(false);
+				}
+
+				break;
+			}
+
+			case 2:
+			{
+				auto u=uv.col(0).array();
+				auto v=uv.col(1).array();
+
+				switch(local_index)
+				{
+					case 0:
+					{
+						val.col(0) = dtheta1(u).array() * theta1(v).array();
+						val.col(1) = theta1(u).array() * dtheta1(v).array();
+						break;
+					}
+					case 2:
+					{
+						val.col(0) = dtheta2(u).array() * theta1(v).array();
+						val.col(1) = theta2(u).array() * dtheta1(v).array();
+						break;
+					}
+					case 4:
+					{
+						val.col(0) = dtheta2(u).array() * theta2(v).array();
+						val.col(1) = theta2(u).array() * dtheta2(v).array();
+						break;
+					}
+					case 6:
+					{
+						val.col(0) = dtheta1(u).array() * theta2(v).array();
+						val.col(1) = theta1(u).array() * dtheta2(v).array();
+						break;
+					}
+					case 1:
+					{
+						val.col(0) = dtheta3(u).array() * theta1(v).array();
+						val.col(1) = theta3(u).array() * dtheta1(v).array();
+						break;
+					}
+					case 3:
+					{
+						val.col(0) = dtheta2(u).array() * theta3(v).array();
+						val.col(1) = theta2(u).array() * dtheta3(v).array();
+						break;
+					}
+					case 5:
+					{
+						val.col(0) = dtheta3(u).array() * theta2(v).array();
+						val.col(1) = theta3(u).array() * dtheta2(v).array();
+						break;
+					}
+					case 7:
+					{
+						val.col(0) = dtheta1(u).array() * theta3(v).array();
+						val.col(1) = theta1(u).array() * dtheta3(v).array();
+						break;
+					}
+					case 8:
+					{
+						val.col(0) = dtheta3(u).array() * theta3(v).array();
+						val.col(1) = theta3(u).array() * dtheta3(v).array();
+						break;
+					}
+
+					default: assert(false);
+				}
+
+				break;
+			}
+			default: assert(false);
+		}
+	}
+
 	int FEBasis2d::build_bases(const Mesh2D &mesh, const int quadrature_order, const int discr_order, std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes)
 	{
 		bounday_nodes.clear();
@@ -548,8 +545,8 @@ namespace poly_fem
 
 					b.bases[j].init(global_index, j, lbv.node);
 
-					b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { quad_basis_basis(discr_order, j, uv, val); });
-					b.bases[j].set_grad( [discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  quad_basis_grad(discr_order, j, uv, val); });
+					b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quad_basis_basis(discr_order, j, uv, val); });
+					b.bases[j].set_grad( [discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quad_basis_grad(discr_order, j, uv, val); });
 				}
 			}
 			else if(n_el_vertices == 3)
