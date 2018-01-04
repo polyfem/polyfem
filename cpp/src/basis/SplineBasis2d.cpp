@@ -40,6 +40,7 @@ namespace poly_fem
             std::vector<int> node_id;
 
             std::vector<int> local_indices;
+            std::vector<double> vals;
         };
 
 
@@ -115,11 +116,12 @@ namespace poly_fem
                 else
                 {
                     BoundaryData &data = poly_edge_to_data[index.edge];
-// data.face_id = el_index;
+                    // data.face_id = el_index;
                     data.face_id = index.face;
                     data.node_id.push_back(node_id);
                     data.flag = b_flag;
                     data.local_indices.push_back(y * 3 + x);
+                    data.vals.push_back(1);
                 }
             }
         }
@@ -134,10 +136,12 @@ namespace poly_fem
                 assert(space(x1, y1).size() == 1);
                 data.node_id.push_back(space(x1, y1).front());
                 data.local_indices.push_back(y1 * 3 + x1);
+                data.vals.push_back(1);
 
                 assert(space(x2, y2).size() == 1);
                 data.node_id.push_back(space(x2, y2).front());
                 data.local_indices.push_back(y2 * 3 + x2);
+                data.vals.push_back(1);
             }
         }
 
@@ -433,7 +437,6 @@ namespace poly_fem
             {
                 int current_vertex_node_id = -1;
                 int current_edge_node_id = -1;
-                int b_flag;
                 Eigen::Matrix<double, 1, 2> current_edge_node;
                 Eigen::MatrixXd current_vertex_node;
 
@@ -454,8 +457,6 @@ namespace poly_fem
                     bottom_node         = loc_nodes(1, 0).front();
                     bottom_left_node    = loc_nodes(2, 0).front();
                     left_node           = loc_nodes(2, 1).front();
-
-                    b_flag = TOP_FLAG;
                 }
                 else if( j == 2)
                 {
@@ -470,8 +471,6 @@ namespace poly_fem
                     bottom_node         = loc_nodes(2, 1).front();
                     bottom_left_node    = loc_nodes(2, 2).front();
                     left_node           = loc_nodes(1, 2).front();
-
-                    b_flag = LEFT_FLAG;
                 }
                 else if( j == 3)
                 {
@@ -486,8 +485,6 @@ namespace poly_fem
                     bottom_node         = loc_nodes(1, 2).front();
                     bottom_left_node    = loc_nodes(0, 2).front();
                     left_node           = loc_nodes(0, 1).front();
-
-                    b_flag = BOTTOM_FLAG;
                 }
                 else
                 {
@@ -502,8 +499,6 @@ namespace poly_fem
                     bottom_node         = loc_nodes(0, 1).front();
                     bottom_left_node    = loc_nodes(0, 0).front();
                     left_node           = loc_nodes(1, 0).front();
-
-                    b_flag = RIGHT_FLAG;
                 }
 
                 const int opposite_face = mesh.switch_face(index).face;
@@ -678,14 +673,48 @@ namespace poly_fem
                 const int opposite_face = mesh.switch_face(index).face;
                 const bool is_neigh_poly = (opposite_face >= 0 && mesh.n_element_vertices(opposite_face) > 4);
 
-                // if(is_neigh_poly)
-                //     {
-                //         BoundaryData &data = poly_edge_to_data[index.edge];
-                //         data.face_id = index.face;
-                //         data.node_id.push_back(current_vertex_node_id);
-                //         data.flag = b_flag;
-                //         data.local_indices.push_back(2*j);
-                //     }
+                int b_flag;
+
+                if(j == 1)
+                    b_flag = TOP_FLAG;
+                else if( j == 2)
+                    b_flag = LEFT_FLAG;
+                else if( j == 3)
+                    b_flag = BOTTOM_FLAG;
+                else
+                    b_flag = RIGHT_FLAG;
+
+                if(is_neigh_poly)
+                {
+                    BoundaryData &data = poly_edge_to_data[index.edge];
+                    data.face_id = index.face;
+                    data.flag = b_flag;
+
+                    auto &bases_e = b.bases[2*j+1];
+                    for(std::size_t i = 0; i < bases_e.global().size(); ++i)
+                    {
+                        data.node_id.push_back(bases_e.global()[i].index);
+                        data.local_indices.push_back(2*j+1);
+                        data.vals.push_back(bases_e.global()[i].val);
+                    }
+
+                    auto &bases_v1 = b.bases[2*j];
+                    for(std::size_t i = 0; i < bases_v1.global().size(); ++i)
+                    {
+                        data.node_id.push_back(bases_v1.global()[i].index);
+                        data.local_indices.push_back(2*j);
+                        data.vals.push_back(bases_v1.global()[i].val);
+                    }
+
+                    const int ii = (2*j+2) >= 8 ? 0 : (2*j+2);
+                    auto &bases_v2 = b.bases[ii];
+                    for(std::size_t i = 0; i < bases_v2.global().size(); ++i)
+                    {
+                        data.node_id.push_back(bases_v2.global()[i].index);
+                        data.local_indices.push_back(ii);
+                        data.vals.push_back(bases_v2.global()[i].val);
+                    }
+                }
 
                 index = mesh.next_around_face(index);
             }
@@ -794,7 +823,7 @@ namespace poly_fem
 
                     if(must_reverse)
                         basis_val = basis_val.reverse().eval();
-                    rhs.block(i*(samples_res-1), basis_index, basis_val.rows(), 1) = basis_val;
+                    rhs.block(i*(samples_res-1), basis_index, basis_val.rows(), 1) += basis_val * bdata.vals[bi];
 
                     if(c1_continuous)
                     {
