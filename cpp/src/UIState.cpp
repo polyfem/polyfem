@@ -552,7 +552,7 @@ namespace poly_fem
 							E(e, 1) = (e+1) % poly.rows();
 						}
 
-						igl::triangle::triangulate(poly, E, MatrixXd(0,2), "Qpqa0.00001", vis_pts_poly[i], vis_faces_poly[i]);
+						igl::triangle::triangulate(poly, E, MatrixXd(0,2), "Qpqa0.0001", vis_pts_poly[i], vis_faces_poly[i]);
 
 						faces_total_size   += vis_faces_poly[i].rows();
 						points_total_size += vis_pts_poly[i].rows();
@@ -678,8 +678,8 @@ namespace poly_fem
 
 			if(skip_visualization) return;
 			// clear_func();
-			show_mesh_func();
-			show_nodes_func();
+			// show_mesh_func();
+			// show_nodes_func();
 		};
 
 

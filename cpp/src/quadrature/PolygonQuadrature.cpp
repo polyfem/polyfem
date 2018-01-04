@@ -34,8 +34,8 @@ namespace poly_fem
 
     void PolygonQuadrature::get_quadrature(const Eigen::MatrixXd &poly, const int order, Quadrature &quad)
     {
-        // double area = 0;
-        // Eigen::Matrix2d tmp;
+        double area = 0;
+        Eigen::Matrix2d tmp;
         Eigen::MatrixXi E(poly.rows(),2);
         for(int e = 0; e < int(poly.rows()); ++e)
         {
@@ -44,21 +44,23 @@ namespace poly_fem
             E(e, 1) = e;
             E(e, 0) = ep;
 
-            // tmp.row(0) = poly.row(e);
-            // tmp.row(1) = poly.row(ep);
+            tmp.row(0) = poly.row(e);
+            tmp.row(1) = poly.row(ep);
 
-            // area += tmp.determinant();
+            area += tmp.determinant();
         }
 
-        // area = fabs(area);
+        area = fabs(area);
 
         Eigen::MatrixXi tris;
         Eigen::MatrixXd pts;
         std::stringstream ss;
         ss.precision(100);
         ss.setf(std::ios::fixed, std::ios::floatfield);
+        ss<<"Qp";
+
         // ss<<"Qpa"<<0.00001/area;
-        ss<<"Qpa"<<(0.01/poly.rows())/order;
+        // ss<<"Qpa"<<(0.01/poly.rows())/order;
 
         // Eigen::MatrixXd poly_tmp(poly.rows()+1, 2);
         // poly_tmp.block(0, 0, poly.rows(), 2) = poly;
