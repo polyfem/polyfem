@@ -687,6 +687,30 @@ namespace poly_fem
 		to_edge[11]= [this](Navigation3D::Index idx) { return switch_edge(switch_vertex(switch_edge(switch_face(switch_edge(switch_vertex(switch_edge(switch_vertex(switch_edge(switch_vertex(idx)))))))))); };
 	}
 
+	//   v7────v6
+	//   ╱┆    ╱│
+	// v4─┼──v5 │
+	//  │v3┄┄┄┼v2
+	//  │╱    │╱
+	// v0────v1
+	std::array<int, 8> Mesh3D::get_ordered_vertices_from_hex(const int element_index) const {
+		assert(n_element_vertices(element_index) == 8);
+		assert(n_element_faces(element_index) == 6);
+		auto idx = get_index_from_element(element_index);
+		std::array<int, 8> v;
+		for (int lv = 0; lv < 4; ++lv) {
+			v[lv] = idx.vertex;
+			idx = next_around_face_of_element(idx);
+		}
+		// assert(idx == get_index_from_element(element_index));
+		idx = switch_face(switch_edge(switch_vertex(switch_edge(switch_face(idx)))));
+		for (int lv = 0; lv < 4; ++lv) {
+			v[4+lv] = idx.vertex;
+			idx = next_around_face_of_element(idx);
+		}
+		return v;
+	}
+
 	void Mesh3D::create_boundary_nodes()
 	{
 		faces_node_id_.resize(mesh_.faces.size());
@@ -746,6 +770,38 @@ namespace poly_fem
 
 			point(vertex.id, p);
 			vertices_node_[v] = p;
+		}
+	}
+
+	void Mesh3D::geomesh2mesh(GEO::Mesh &gm, Mesh3DStorage &m) {
+		m.vertices.clear(); m.edges.clear(); m.faces.clear();
+		m.vertices.resize(gm.vertices.nb());
+		m.faces.resize(gm.facets.nb());
+		for (uint32_t i = 0; i < m.vertices.size(); i++) {
+			Vertex v;
+			v.id = i;
+			v.v.push_back(gm.vertices.point_ptr(i)[0]);
+			v.v.push_back(gm.vertices.point_ptr(i)[1]);
+			v.v.push_back(gm.vertices.point_ptr(i)[2]);
+			m.vertices[i] = v;
+		}
+		m.points.resize(3, m.vertices.size());
+		for (uint32_t i = 0; i < m.vertices.size(); i++) {
+			m.points(0, i) = m.vertices[i].v[0];
+			m.points(1, i) = m.vertices[i].v[1];
+			m.points(2, i) = m.vertices[i].v[2];
+		}
+
+		if (m.type == MeshType::Tri || m.type == MeshType::Qua || m.type == MeshType::HSur) {
+			for (uint32_t i = 0; i < m.faces.size(); i++) {
+				Face f;
+				f.id = i;
+				f.vs.resize(gm.facets.nb_vertices(i));
+				for (uint32_t j = 0; j < f.vs.size(); j++) {
+					f.vs[j] = gm.facets.vertex(i, j);
+				}
+				m.faces[i] = f;
+			}
 		}
 	}
 }

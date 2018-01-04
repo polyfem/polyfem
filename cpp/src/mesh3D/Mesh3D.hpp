@@ -100,6 +100,17 @@ namespace poly_fem
 		void to_face_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 6> &to_face) const;
 		void to_vertex_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 8> &to_vertex) const;
 		void to_edge_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 12> &to_edge) const;
+
+		// Retrieves hex vertices numbered as follows:
+		//   v7────v6
+		//   ╱┆    ╱│
+		// v4─┼──v5 │
+		//  │v3┄┄┄┼v2
+		//  │╱    │╱
+		// v0────v1
+		std::array<int, 8> get_ordered_vertices_from_hex(const int element_index) const;
+
+		void geomesh2mesh(GEO::Mesh &gm, Mesh3DStorage &m);
 	private:
 		Mesh3DStorage mesh_;
 

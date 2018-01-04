@@ -803,101 +803,97 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter) {
 		for (auto v : M_.vertices)for (int j = 0; j < 3; j++)M_.points(j, v.id) = v.v[j];
 
 		build_connectivity(M_);
-		//surface orienting
-		Mesh3DStorage M_sur; M_sur.type = MeshType::HSur;
-		int bvn = 0;
-		for (auto v : M_.vertices)if (v.boundary)bvn++;
-		M_sur.points.resize(3, bvn);
-		bvn = 0;
-		vector<int> V_map(M_.vertices.size(),-1), V_map_reverse;
-		for (auto v : M_.vertices)if (v.boundary) {
-			M_sur.points.col(bvn++) = M_.points.col(v.id);
-			Vertex v_;
-			v_.id = M_sur.vertices.size();
-			M_sur.vertices.push_back(v_);
-
-			V_map[v.id] = v_.id; V_map_reverse.push_back(v.id);
-		}
-		for (auto f : M_.faces)if (f.boundary) {
-			for (int j = 0; j < f.vs.size(); j++) {
-				f.id = M_sur.faces.size();
-				f.es.clear();
-				f.neighbor_hs.clear();
-				f.vs[j] = V_map[f.vs[j]];
-				M_sur.vertices[f.vs[j]].neighbor_fs.push_back(f.id);
-			}
-			M_sur.faces.push_back(f);
-		}
-		build_connectivity(M_sur);
-		orient_surface_mesh(M_sur);
-
-		int fn_ = 0;
-		for (auto &f : M_.faces)if (f.boundary) {
-			for (int j = 0; j < f.vs.size(); j++) f.vs[j] = V_map_reverse[M_sur.faces[fn_].vs[j]];
-			fn_++;
-		}
-		//volume orienting
-		vector<bool> F_tag(M_.faces.size(), true);
-		std::vector<short> F_visit(M_.faces.size(), 0);//0 un-visited, 1 visited once, 2 visited twice
-		for (uint32_t j = 0; j < M_.faces.size(); j++)if (M_.faces[j].boundary) { F_visit[j]++; }
-		std::vector<bool> F_state(M_.faces.size(), false);//false is the reverse direction, true is the same direction
-		std::vector<bool> P_visit(M_.elements.size(), false);
-		while (true) {
-			std::vector<uint32_t> candidates;
-			for (uint32_t j = 0; j < F_visit.size(); j++)if (F_visit[j] == 1)candidates.push_back(j);
-			if (!candidates.size()) break;
-			for (auto ca : candidates) {
-				if (F_visit[ca] == 2) continue;
-				uint32_t pid = M_.faces[ca].neighbor_hs[0];
-				if (P_visit[pid]) if (M_.faces[ca].neighbor_hs.size() == 2) pid = M_.faces[ca].neighbor_hs[1];
-				if (P_visit[pid]) {
-					cout << "bug" << endl;
-				}
-				auto &fs = M_.elements[pid].fs;
-				for (auto fid : fs) F_tag[fid] = false;
-
-				uint32_t start_f = ca;
-				F_tag[start_f] = true; F_visit[ca]++; if (F_state[ca]) F_state[ca] = false; else F_state[ca] = true;
-
-				std::queue<uint32_t> pf_temp; pf_temp.push(start_f);
-				while (!pf_temp.empty()) {
-					uint32_t fid = pf_temp.front(); pf_temp.pop();
-					for (auto eid : M_.faces[fid].es) for (auto nfid : M_.edges[eid].neighbor_fs) {
-
-						if (F_tag[nfid]) continue;
-						uint32_t v0 = M_.edges[eid].vs[0], v1 = M_.edges[eid].vs[1];
-						int32_t v0_pos = std::find(M_.faces[fid].vs.begin(), M_.faces[fid].vs.end(), v0) - M_.faces[fid].vs.begin();
-						int32_t v1_pos = std::find(M_.faces[fid].vs.begin(), M_.faces[fid].vs.end(), v1) - M_.faces[fid].vs.begin();
-
-						if ((v0_pos + 1) % M_.faces[fid].vs.size() != v1_pos) std::swap(v0, v1);
-
-						int32_t v0_pos_ = std::find(M_.faces[nfid].vs.begin(), M_.faces[nfid].vs.end(), v0) - M_.faces[nfid].vs.begin();
-						int32_t v1_pos_ = std::find(M_.faces[nfid].vs.begin(), M_.faces[nfid].vs.end(), v1) - M_.faces[nfid].vs.begin();
-
-						if (F_state[fid]) {
-							if ((v0_pos_ + 1) % M_.faces[nfid].vs.size() == v1_pos_) F_state[nfid] = false;
-							else F_state[nfid] = true;
-						}
-						else if (!F_state[fid]) {
-							if ((v0_pos_ + 1) % M_.faces[nfid].vs.size() == v1_pos_) F_state[nfid] = true;
-							else F_state[nfid] = false;
-						}
-
-						F_visit[nfid]++;
-
-						pf_temp.push(nfid); F_tag[nfid] = true;
-					}
-				}
-				P_visit[pid] = true;
-				for (uint32_t j = 0; j < fs.size();j++) M_.elements[pid].fs_flag[j] = F_state[fs[j]];
-			}
-		}
-
+		orient_volume_mesh(M_);
 		build_connectivity(M_);
+
 		M = M_;
 	}
-
 }
+void MeshProcessing3D::straight_sweeping(Mesh3DStorage &Mi, int sweep_coord, double height, int nlayer, Mesh3DStorage &Mo) {
+	if (sweep_coord > 2 || sweep_coord < 0) { std::cout << "invalid sweeping direction!"; return; }
+	if (Mi.type != MeshType::HSur && Mi.type != MeshType::Tri && Mi.type != MeshType::Qua) { std::cout << "invalid planar surface!"; return; }
+	if (height <= 0 || nlayer < 1) { std::cout << "invalid height or number of layers!"; return; }
+
+	Mo.points.resize(3, 0);
+	Mo.vertices.clear();
+	Mo.edges.clear();
+	Mo.faces.clear();
+	Mo.elements.clear();
+	Mo.type = MeshType::Hyb;
+	//v, layers
+	std::vector<std::vector<int>> Vlayers(nlayer + 1);
+	std::vector<double> interval(3, 0);
+	interval[sweep_coord] = height / nlayer;
+
+	for (int i = 0; i < nlayer + 1; i++) {
+		std::vector<int> a_layer;
+		for (auto v : Mi.vertices) {
+			Vertex v_;
+			v_.id = Mo.vertices.size();
+			for (int j = 0; j < 3; j++)v_.v[j] = v.v[j] + i * interval[j];
+
+			Mo.vertices.push_back(v_);
+			a_layer.push_back(v_.id);
+		}
+		Vlayers.push_back(a_layer);
+	}
+	//f
+	std::vector<std::vector<int>> Flayers(nlayer + 1);
+	for (int i = 0; i < nlayer + 1; i++) {
+		std::vector<int> a_layer;
+		for (auto f : Mi.faces) {
+			Face f_;
+			f_.id = Mo.faces.size();
+			for(auto vid:f.vs) f_.vs.push_back(Vlayers[i][vid]);
+
+			Mo.faces.push_back(f_);
+			a_layer.push_back(f_.id);
+		}
+		Flayers.push_back(a_layer);
+	}
+	//ef
+	std::vector<std::vector<int>> EFlayers(nlayer);
+	for (int i = 0; i < nlayer; i++) {
+		std::vector<int> a_layer;
+		for (auto e : Mi.edges) {
+			Face f_;
+			f_.id = Mo.faces.size();
+			int v0 = e.vs[0], v1 = e.vs[1];
+			f_.vs.push_back(Vlayers[i][v0]);
+			f_.vs.push_back(Vlayers[i][v1]);
+			f_.vs.push_back(Vlayers[i + 1][v1]);
+			f_.vs.push_back(Vlayers[i + 1][v0]);
+			
+			Mo.faces.push_back(f_);
+			a_layer.push_back(f_.id);
+		}
+		EFlayers.push_back(a_layer);
+	}
+	//ele
+	for (int i = 0; i < nlayer; i++) {
+		for (auto f : Mi.faces) {
+			Element ele;
+			ele.id = Mo.elements.size();
+			ele.hex = (f.vs.size() == 4);
+
+			ele.fs.push_back(Flayers[i][f.id]);
+			ele.fs.push_back(Flayers[i + 1][f.id]);
+			for(auto eid:f.es)ele.fs.push_back(EFlayers[i][eid]);
+
+			ele.fs_flag.resize(ele.fs.size(), false);
+			Mo.elements.push_back(ele);
+		}
+	}
+
+	Mo.points.resize(3, Mo.vertices.size());
+	for (auto v : Mo.vertices)for (int j = 0; j < 3; j++)Mo.points(j, v.id) = v.v[j];
+
+	build_connectivity(Mo);
+	orient_volume_mesh(Mo);
+	build_connectivity(Mo);
+}
+
+
 void  MeshProcessing3D::orient_surface_mesh(Mesh3DStorage &hmi) {
 
 	vector<bool> flag(hmi.faces.size(), true);
@@ -935,5 +931,96 @@ void  MeshProcessing3D::orient_surface_mesh(Mesh3DStorage &hmi) {
 	}
 	if (res > 0) {
 		for (uint32_t i = 0; i < hmi.faces.size(); i++) std::reverse(hmi.faces[i].vs.begin(), hmi.faces[i].vs.end());
+	}
+}
+void  MeshProcessing3D::orient_volume_mesh(Mesh3DStorage &hmi) {
+	//surface orienting
+	Mesh3DStorage M_sur; M_sur.type = MeshType::HSur;
+	int bvn = 0;
+	for (auto v : hmi.vertices)if (v.boundary)bvn++;
+	M_sur.points.resize(3, bvn);
+	bvn = 0;
+	vector<int> V_map(hmi.vertices.size(), -1), V_map_reverse;
+	for (auto v : hmi.vertices)if (v.boundary) {
+		M_sur.points.col(bvn++) = hmi.points.col(v.id);
+		Vertex v_;
+		v_.id = M_sur.vertices.size();
+		M_sur.vertices.push_back(v_);
+
+		V_map[v.id] = v_.id; V_map_reverse.push_back(v.id);
+	}
+	for (auto f : hmi.faces)if (f.boundary) {
+		for (int j = 0; j < f.vs.size(); j++) {
+			f.id = M_sur.faces.size();
+			f.es.clear();
+			f.neighbor_hs.clear();
+			f.vs[j] = V_map[f.vs[j]];
+			M_sur.vertices[f.vs[j]].neighbor_fs.push_back(f.id);
+		}
+		M_sur.faces.push_back(f);
+	}
+	build_connectivity(M_sur);
+	orient_surface_mesh(M_sur);
+
+	int fn_ = 0;
+	for (auto &f : hmi.faces)if (f.boundary) {
+		for (int j = 0; j < f.vs.size(); j++) f.vs[j] = V_map_reverse[M_sur.faces[fn_].vs[j]];
+		fn_++;
+	}
+	//volume orienting
+	vector<bool> F_tag(hmi.faces.size(), true);
+	std::vector<short> F_visit(hmi.faces.size(), 0);//0 un-visited, 1 visited once, 2 visited twice
+	for (uint32_t j = 0; j < hmi.faces.size(); j++)if (hmi.faces[j].boundary) { F_visit[j]++; }
+	std::vector<bool> F_state(hmi.faces.size(), false);//false is the reverse direction, true is the same direction
+	std::vector<bool> P_visit(hmi.elements.size(), false);
+	while (true) {
+		std::vector<uint32_t> candidates;
+		for (uint32_t j = 0; j < F_visit.size(); j++)if (F_visit[j] == 1)candidates.push_back(j);
+		if (!candidates.size()) break;
+		for (auto ca : candidates) {
+			if (F_visit[ca] == 2) continue;
+			uint32_t pid = hmi.faces[ca].neighbor_hs[0];
+			if (P_visit[pid]) if (hmi.faces[ca].neighbor_hs.size() == 2) pid = hmi.faces[ca].neighbor_hs[1];
+			if (P_visit[pid]) {
+				cout << "bug" << endl;
+			}
+			auto &fs = hmi.elements[pid].fs;
+			for (auto fid : fs) F_tag[fid] = false;
+
+			uint32_t start_f = ca;
+			F_tag[start_f] = true; F_visit[ca]++; if (F_state[ca]) F_state[ca] = false; else F_state[ca] = true;
+
+			std::queue<uint32_t> pf_temp; pf_temp.push(start_f);
+			while (!pf_temp.empty()) {
+				uint32_t fid = pf_temp.front(); pf_temp.pop();
+				for (auto eid : hmi.faces[fid].es) for (auto nfid : hmi.edges[eid].neighbor_fs) {
+
+					if (F_tag[nfid]) continue;
+					uint32_t v0 = hmi.edges[eid].vs[0], v1 = hmi.edges[eid].vs[1];
+					int32_t v0_pos = std::find(hmi.faces[fid].vs.begin(), hmi.faces[fid].vs.end(), v0) - hmi.faces[fid].vs.begin();
+					int32_t v1_pos = std::find(hmi.faces[fid].vs.begin(), hmi.faces[fid].vs.end(), v1) - hmi.faces[fid].vs.begin();
+
+					if ((v0_pos + 1) % hmi.faces[fid].vs.size() != v1_pos) std::swap(v0, v1);
+
+					int32_t v0_pos_ = std::find(hmi.faces[nfid].vs.begin(), hmi.faces[nfid].vs.end(), v0) - hmi.faces[nfid].vs.begin();
+					int32_t v1_pos_ = std::find(hmi.faces[nfid].vs.begin(), hmi.faces[nfid].vs.end(), v1) - hmi.faces[nfid].vs.begin();
+
+					if (F_state[fid]) {
+						if ((v0_pos_ + 1) % hmi.faces[nfid].vs.size() == v1_pos_) F_state[nfid] = false;
+						else F_state[nfid] = true;
+					}
+					else if (!F_state[fid]) {
+						if ((v0_pos_ + 1) % hmi.faces[nfid].vs.size() == v1_pos_) F_state[nfid] = true;
+						else F_state[nfid] = false;
+					}
+
+					F_visit[nfid]++;
+
+					pf_temp.push(nfid); F_tag[nfid] = true;
+				}
+			}
+			P_visit[pid] = true;
+			for (uint32_t j = 0; j < fs.size(); j++) hmi.elements[pid].fs_flag[j] = F_state[fs[j]];
+		}
 	}
 }
