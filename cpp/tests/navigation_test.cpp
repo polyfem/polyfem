@@ -86,10 +86,11 @@ namespace {
 				case ElementType::SimpleSingularInteriorCube: attrs[f] = 1; break;
 				case ElementType::MultiSingularInteriorCube:  attrs[f] = 2; break;
 				case ElementType::RegularBoundaryCube:        attrs[f] = 3; break;
-				case ElementType::SingularBoundaryCube:       attrs[f] = 4; break;
-				case ElementType::InteriorPolytope:           attrs[f] = 5; break;
-				case ElementType::BoundaryPolytope:           attrs[f] = 6; break;
-				case ElementType::Undefined:                  attrs[f] = 7; break;
+				case ElementType::SimpleSingularBoundaryCube: attrs[f] = 4; break;
+				case ElementType::MultiSingularBoundaryCube:  attrs[f] = 5; break;
+				case ElementType::InteriorPolytope:           attrs[f] = 6; break;
+				case ElementType::BoundaryPolytope:           attrs[f] = 7; break;
+				case ElementType::Undefined:                  attrs[f] = 8; break;
 				default: attrs[f] = -1; break;
 				}
 				// std::cout << attrs[f] << std::endl;
