@@ -270,14 +270,14 @@ namespace poly_fem
 
 					//orange
 					case ElementType::SimpleSingularInteriorCube:
-						cols.block(from, 0, range, 1).setOnes();
-						cols.block(from, 1, range, 1).setConstant(0.5); break;
+					cols.block(from, 0, range, 1).setOnes();
+					cols.block(from, 1, range, 1).setConstant(0.5); break;
 
 
 						//orange
 					case ElementType::SimpleSingularBoundaryCube:
-						cols.block(from, 0, range, 1).setOnes();
-						cols.block(from, 1, range, 1).setConstant(0.2); break;
+					cols.block(from, 0, range, 1).setOnes();
+					cols.block(from, 1, range, 1).setConstant(0.2); break;
 
  						//red
 					case ElementType::MultiSingularInteriorCube:
@@ -429,38 +429,6 @@ namespace poly_fem
 
 		auto show_basis_func = [&]()
 		{
-			// MatrixXd fun = MatrixXd::Zero(state.n_bases, 1);
-
-			// for(std::size_t i = 0; i < state.bases.size(); ++i)
-			// {
-			// 	const ElementBases &basis = state.bases[i];
-			// 	if(!basis.has_parameterization) continue;
-			// 	for(std::size_t j = 0; j < basis.bases.size(); ++j)
-			// 	{
-			// 		for(std::size_t kk = 0; kk < basis.bases[j].global().size(); ++kk)
-			// 		{
-			// 			const Local2Global &l2g = basis.bases[j].global()[kk];
-			// 			const int g_index = l2g.index;
-
-			// 			const MatrixXd node = l2g.node;
-			// 			// std::cout<<node<<std::endl;
-			// 			fun(g_index) = -0.1 + .3*node(0) - .5*node(1);// + 0.1 * node(0)*node(1);
-			// 		}
-			// 	}
-			// }
-
-			// MatrixXd tmp;
-			// interpolate_function(fun, tmp);
-
-			// // std::cout<<fun.maxCoeff()<<std::endl;
-
-			// MatrixXd exact_sol(vis_pts.rows(), 1);
-			// for(long i = 0; i < vis_pts.rows(); ++i)
-			// 	exact_sol(i) =  -0.1 + .3*vis_pts(i, 0) - .5*vis_pts(i, 1);// + 0.1 * vis_pts(i, 0)*vis_pts(i, 1);
-
-			// const MatrixXd global_fun = (exact_sol - tmp).array().abs();
-
-
 			if(vis_basis < 0 || vis_basis >= state.n_bases) return;
 
 			current_visualization = Visualizing::VisBasis;
@@ -472,6 +440,43 @@ namespace poly_fem
 			interpolate_function(fun, global_fun);
 			// global_fun /= 100;
 
+
+			std::cout<<global_fun.minCoeff()<<" "<<global_fun.maxCoeff()<<std::endl;
+			plot_function(global_fun);
+		};
+
+		auto linear_reproduction_func = [&]()
+		{
+			auto ff = [](double x, double y) {return -0.1 + .3*x - .5*y;};
+
+			MatrixXd fun = MatrixXd::Zero(state.n_bases, 1);
+
+			for(std::size_t i = 0; i < state.bases.size(); ++i)
+			{
+				const ElementBases &basis = state.bases[i];
+				if(!basis.has_parameterization) continue;
+				for(std::size_t j = 0; j < basis.bases.size(); ++j)
+				{
+					for(std::size_t kk = 0; kk < basis.bases[j].global().size(); ++kk)
+					{
+						const Local2Global &l2g = basis.bases[j].global()[kk];
+						const int g_index = l2g.index;
+
+						const MatrixXd node = l2g.node;
+						// std::cout<<node<<std::endl;
+						fun(g_index) = ff(node(0),node(1));
+					}
+				}
+			}
+
+			MatrixXd tmp;
+			interpolate_function(fun, tmp);
+
+			MatrixXd exact_sol(vis_pts.rows(), 1);
+			for(long i = 0; i < vis_pts.rows(); ++i)
+				exact_sol(i) =  ff(vis_pts(i, 0),vis_pts(i, 1));
+
+			const MatrixXd global_fun = (exact_sol - tmp).array().abs();
 
 			std::cout<<global_fun.minCoeff()<<" "<<global_fun.maxCoeff()<<std::endl;
 			plot_function(global_fun);
@@ -851,6 +856,8 @@ namespace poly_fem
 			viewer_.ngui->addButton("Show rhs", show_rhs_func);
 			viewer_.ngui->addButton("Show sol", show_sol_func);
 			viewer_.ngui->addButton("Show error", show_error_func);
+
+			viewer_.ngui->addButton("Show linear r", linear_reproduction_func);
 
 			viewer_.ngui->addVariable("basis num",vis_basis);
 			viewer_.ngui->addButton("Show basis", show_basis_func);
