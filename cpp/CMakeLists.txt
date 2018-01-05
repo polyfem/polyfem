@@ -195,8 +195,8 @@ target_include_directories(polyfem PUBLIC
 
 # Eigen
 # Uncomment to use the system's version of Eigen (e.g. to use Eigen 3.3)
-find_package(Eigen3 REQUIRED)
-target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
+# find_package(Eigen3 REQUIRED)
+# target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
 
 # libigl
 find_package(LIBIGL REQUIRED)
