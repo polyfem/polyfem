@@ -19,6 +19,8 @@ if(CMAKE_MINOR_VERSION GREATER 4)
 	endif()
 endif()
 
+
+unset(MKL_LIBRARIES)
 foreach(LIB ${MKL_LIBS})
 	find_library(TMP
 			${LIB}
