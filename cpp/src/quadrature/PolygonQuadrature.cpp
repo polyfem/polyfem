@@ -98,5 +98,7 @@ namespace poly_fem
             quad.points.block(i*offset, 0, trafod_pts.rows(), trafod_pts.cols()) = trafod_pts;
             quad.weights.block(i*offset, 0, tri_quad_pts.weights.rows(), tri_quad_pts.weights.cols()) = tri_quad_pts.weights * det;
         }
+
+        assert(quad.weights.minCoeff()>=0);
     }
 }

@@ -421,16 +421,49 @@ namespace poly_fem
 		};
 
 
-		auto show_basis_func = [&](){
-			if(vis_basis < 0 || vis_basis >= state.n_bases) return;
-
-			current_visualization = Visualizing::VisBasis;
-
+		auto show_basis_func = [&]()
+		{
 			MatrixXd fun = MatrixXd::Zero(state.n_bases, 1);
-			fun(vis_basis) = 1;
 
-			MatrixXd global_fun;
-			interpolate_function(fun, global_fun);
+			for(std::size_t i = 0; i < state.bases.size(); ++i)
+			{
+				const ElementBases &basis = state.bases[i];
+				if(!basis.has_parameterization) continue;
+				for(std::size_t j = 0; j < basis.bases.size(); ++j)
+				{
+					for(std::size_t kk = 0; kk < basis.bases[j].global().size(); ++kk)
+					{
+						const Local2Global &l2g = basis.bases[j].global()[kk];
+						const int g_index = l2g.index;
+
+						const MatrixXd node = l2g.node;
+						// std::cout<<node<<std::endl;
+						fun(g_index) = -0.1 + .3*node(0) - .5*node(1) + 0.1 * node(0)*node(1);
+					}
+				}
+			}
+
+			MatrixXd tmp;
+			interpolate_function(fun, tmp);
+
+			// std::cout<<fun.maxCoeff()<<std::endl;
+
+			MatrixXd exact_sol(vis_pts.rows(), 1);
+			for(long i = 0; i < vis_pts.rows(); ++i)
+				exact_sol(i) =  -0.1 + .3*vis_pts(i, 0) - .5*vis_pts(i, 1) + 0.1 * vis_pts(i, 0)*vis_pts(i, 1);
+
+			const MatrixXd global_fun = (exact_sol - tmp).array().abs();
+
+
+			// if(vis_basis < 0 || vis_basis >= state.n_bases) return;
+
+			// current_visualization = Visualizing::VisBasis;
+
+			// MatrixXd fun = MatrixXd::Zero(state.n_bases, 1);
+			// fun(vis_basis) = 1;
+
+			// MatrixXd global_fun;
+			// interpolate_function(fun, global_fun);
 			// global_fun /= 100;
 			std::cout<<global_fun.minCoeff()<<" "<<global_fun.maxCoeff()<<std::endl;
 			plot_function(global_fun);
@@ -552,7 +585,7 @@ namespace poly_fem
 							E(e, 1) = (e+1) % poly.rows();
 						}
 
-						igl::triangle::triangulate(poly, E, MatrixXd(0,2), "Qpqa0.0001", vis_pts_poly[i], vis_faces_poly[i]);
+						igl::triangle::triangulate(poly, E, MatrixXd(0,2), "Qpqa0.00001", vis_pts_poly[i], vis_faces_poly[i]);
 
 						faces_total_size   += vis_faces_poly[i].rows();
 						points_total_size += vis_pts_poly[i].rows();
@@ -677,9 +710,9 @@ namespace poly_fem
 			state.build_basis();
 
 			if(skip_visualization) return;
-			// clear_func();
-			// show_mesh_func();
-			// show_nodes_func();
+			clear_func();
+			show_mesh_func();
+			show_nodes_func();
 		};
 
 

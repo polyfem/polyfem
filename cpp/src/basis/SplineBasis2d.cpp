@@ -991,8 +991,8 @@ namespace poly_fem
 
             if(use_harmonic)
             {
-                igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
-                viewer.data.add_points(poly_samples, Eigen::Vector3d(0,1,1).transpose());
+                // igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
+                // viewer.data.add_points(poly_samples, Eigen::Vector3d(0,1,1).transpose());
 
                 // Eigen::MatrixXd asd(boundary_samples.rows(), 3);
                 // asd.col(0)=boundary_samples.col(0);
@@ -1006,7 +1006,7 @@ namespace poly_fem
 
                 for(int i = 0; i < n_poly_bases; ++i)
                 {
-                    b.bases[i].init(local_to_global[i], i, Eigen::MatrixXd(1,2));
+                    b.bases[i].init(local_to_global[i], i, Eigen::MatrixXd::Zero(1,2));
                     b.bases[i].set_basis([harmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { harmonic.basis(i, uv, val); });
                     b.bases[i].set_grad( [harmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { harmonic.grad(i, uv, val); });
                 }
@@ -1017,7 +1017,7 @@ namespace poly_fem
 
                 for(int i = 0; i < n_poly_bases; ++i)
                 {
-                    b.bases[i].init(local_to_global[i], i, Eigen::MatrixXd(1,2));
+                    b.bases[i].init(local_to_global[i], i, Eigen::MatrixXd::Zero(1,2));
                     b.bases[i].set_basis([biharmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { biharmonic.basis(i, uv, val); });
                     b.bases[i].set_grad( [biharmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { biharmonic.grad(i, uv, val); });
                 }
