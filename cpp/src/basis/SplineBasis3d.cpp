@@ -687,7 +687,7 @@ namespace poly_fem
     }
 
 
-    int SplineBasis3d::build_bases(const Mesh3D &mesh, const int quadrature_order, std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes, std::map<int, Eigen::MatrixXd> &polys)
+    int SplineBasis3d::build_bases(const Mesh3D &mesh, const std::vector<ElementType> &els_tag, const int quadrature_order, std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes, std::map<int, Eigen::MatrixXd> &polys)
     {
         using std::max;
         assert(mesh.is_volume());
@@ -710,8 +710,11 @@ namespace poly_fem
 
         for(int e = 0; e < n_els; ++e)
         {
-            // if(mesh.n_element_vertices(e) != 8) //TODO use flags
-                // continue;
+            if(els_tag[e] != ElementType::RegularInteriorCube && els_tag[e] != ElementType::RegularBoundaryCube && els_tag[e] != ElementType::SimpleSingularInteriorCube)
+                continue;
+
+            //needs to be implemented
+            assert(els_tag[e] != ElementType::SimpleSingularInteriorCube);
 
             SpaceMatrix space;
             NodeMatrix loc_nodes;
@@ -730,6 +733,27 @@ namespace poly_fem
 
             basis_for_regular_hex(space, loc_nodes, h_knots, v_knots, w_knots, b);
             // basis_for_irregulard_hex(mesh, space, loc_nodes, h_knots, v_knots, b);
+        }
+
+
+        std::map<int, int > edge_id;
+        std::map<int, int > vertex_id;
+
+        for(int e = 0; e < n_els; ++e)
+        {
+            if(els_tag[e] != ElementType::MultiSingularInteriorCube && els_tag[e] != ElementType::MultiSingularBoundaryCube)
+                continue;
+
+            // SpaceMatrix space;
+            // NodeMatrix loc_nodes;
+            // std::map<int, BoundaryData> dummy;
+            // build_local_space(mesh, e, space, loc_nodes, local_boundary[e], dummy, bounday_nodes);
+            // ElementBases &b=bases[e];
+            // quad_quadrature.get_quadrature(quadrature_order, b.quadrature);
+
+            // basis_for_q2(mesh, els_tag, e, vertex_id, edge_id, space, loc_nodes, b, poly_edge_to_data, bounday_nodes, n_bases);
+            // std::cout<<b<<std::endl;
+
         }
 
         // const int samples_res = 5;

@@ -101,6 +101,7 @@ namespace poly_fem
 		int non_regular_boundary_count = 0;
 		int non_regular_count = 0;
 		int undefined_count = 0;
+		int multi_singular_boundary_count = 0;
 
 		for(std::size_t i = 0; i < els_tag.size(); ++i)
 		{
@@ -118,6 +119,8 @@ namespace poly_fem
 
 				case ElementType::SimpleSingularBoundaryCube: boundary_count++; break;
 
+				case ElementType::MultiSingularBoundaryCube: multi_singular_boundary_count++; break;
+
 				case ElementType::BoundaryPolytope: non_regular_boundary_count++; break;
 
 				case ElementType::InteriorPolytope: non_regular_count++; break;
@@ -126,7 +129,7 @@ namespace poly_fem
 			}
 		}
 
-		std::cout <<"regular_count: " << regular_count <<" regular_boundary_count: " << regular_boundary_count << " simple_singular_count: " << simple_singular_count << " multi_singular_count: " << multi_singular_count << " singular_boundary_count: " << boundary_count << " non_regular_count: " <<  non_regular_count << " non_regular_boundary_count: " << non_regular_boundary_count << " undefined_count: " << undefined_count <<std::endl;
+		std::cout <<"regular_count: " << regular_count <<" regular_boundary_count: " << regular_boundary_count << " simple_singular_count: " << simple_singular_count << " multi_singular_count: " << multi_singular_count << " singular_boundary_count: " << boundary_count <<" multi_singular_boundary_count: " << multi_singular_boundary_count << " non_regular_count: " <<  non_regular_count << " non_regular_boundary_count: " << non_regular_boundary_count << " undefined_count: " << undefined_count <<std::endl;
 	}
 
 	void State::interpolate_function(const MatrixXd &fun, const MatrixXd &local_pts, MatrixXd &result)
@@ -210,7 +213,7 @@ namespace poly_fem
 		{
 			const Mesh3D &tmp_mesh = *static_cast<Mesh3D *>(mesh);
 			if(use_splines)
-				n_bases = SplineBasis3d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, bounday_nodes, polys);
+				n_bases = SplineBasis3d::build_bases(tmp_mesh, els_tag, quadrature_order, bases, local_boundary, bounday_nodes, polys);
 			else
 				n_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, bounday_nodes);
 		}

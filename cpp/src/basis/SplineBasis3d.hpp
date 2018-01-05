@@ -16,6 +16,7 @@ namespace poly_fem
 	public:
 		static int build_bases(
 			const Mesh3D &mesh,
+			const std::vector<ElementType> &els_tag,
 			const int quadrature_order,
 			std::vector< ElementBases > &bases,
 			std::vector< LocalBoundary > &local_boundary,
