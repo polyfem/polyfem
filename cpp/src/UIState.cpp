@@ -268,17 +268,23 @@ namespace poly_fem
 					case ElementType::RegularBoundaryCube:
 					cols.block(from, 1, range, 1).setConstant(0.5); break;
 
-						//orange
+					//orange
 					case ElementType::SimpleSingularInteriorCube:
-					cols.block(from, 0, range, 1).setOnes();
-					cols.block(from, 1, range, 1).setConstant(0.5); break;
+						cols.block(from, 0, range, 1).setOnes();
+						cols.block(from, 1, range, 1).setConstant(0.5); break;
+
+
+						//orange
+					case ElementType::SimpleSingularBoundaryCube:
+						cols.block(from, 0, range, 1).setOnes();
+						cols.block(from, 1, range, 1).setConstant(0.2); break;
 
  						//red
 					case ElementType::MultiSingularInteriorCube:
 					cols.block(from, 0, range, 1).setOnes(); break;
 
 						//blue
-					case ElementType::SingularBoundaryCube:
+					case ElementType::MultiSingularBoundaryCube:
 					cols.block(from, 2, range, 1).setConstant(0.6); break;
 
 				  		 //light blue

@@ -116,7 +116,7 @@ namespace poly_fem
 
 				case ElementType::MultiSingularInteriorCube: multi_singular_count++; break;
 
-				case ElementType::SingularBoundaryCube: boundary_count++; break;
+				case ElementType::SimpleSingularBoundaryCube: boundary_count++; break;
 
 				case ElementType::BoundaryPolytope: non_regular_boundary_count++; break;
 

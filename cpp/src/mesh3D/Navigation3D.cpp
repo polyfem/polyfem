@@ -16,7 +16,7 @@ void poly_fem::Navigation3D::prepare_mesh(Mesh3DStorage &M) {
 	MeshProcessing3D::global_orientation_hexes(M);
 }
 
-Index poly_fem::Navigation3D::get_index_from_element_face(const Mesh3DStorage &M, int hi) 
+poly_fem::Navigation3D::Index poly_fem::Navigation3D::get_index_from_element_face(const Mesh3DStorage &M, int hi)
 {
 	Index idx;
 
@@ -48,7 +48,8 @@ Index poly_fem::Navigation3D::get_index_from_element_face(const Mesh3DStorage &M
 
 	return idx;
 }
-Index poly_fem::Navigation3D::get_index_from_element_face(const Mesh3DStorage &M, int hi, int lf, int lv)
+
+poly_fem::Navigation3D::Index poly_fem::Navigation3D::get_index_from_element_face(const Mesh3DStorage &M, int hi, int lf, int lv)
 {
 	Index idx;
 
@@ -67,8 +68,9 @@ Index poly_fem::Navigation3D::get_index_from_element_face(const Mesh3DStorage &M
 
 	return idx;
 }
+
 // Navigation in a surface mesh
-Index poly_fem::Navigation3D::switch_vertex(const Mesh3DStorage &M, Index idx) {
+poly_fem::Navigation3D::Index poly_fem::Navigation3D::switch_vertex(const Mesh3DStorage &M, Index idx) {
 
 	if(idx.vertex == M.edges[idx.edge].vs[0])idx.vertex = M.edges[idx.edge].vs[1];
 	else idx.vertex = M.edges[idx.edge].vs[0];
@@ -77,7 +79,8 @@ Index poly_fem::Navigation3D::switch_vertex(const Mesh3DStorage &M, Index idx) {
 
 	return idx;
 }
-Index poly_fem::Navigation3D::switch_edge(const Mesh3DStorage &M, Index idx) {
+
+poly_fem::Navigation3D::Index poly_fem::Navigation3D::switch_edge(const Mesh3DStorage &M, Index idx) {
 
 	vector<uint32_t> ves = M.vertices[idx.vertex].neighbor_es, fes = M.faces[idx.face].es, sharedes;
 	sort(fes.begin(), fes.end()); sort(ves.begin(), ves.end());
@@ -87,7 +90,8 @@ Index poly_fem::Navigation3D::switch_edge(const Mesh3DStorage &M, Index idx) {
 
 	return idx;
 }
-Index poly_fem::Navigation3D::switch_face(const Mesh3DStorage &M, Index idx) {
+
+poly_fem::Navigation3D::Index poly_fem::Navigation3D::switch_face(const Mesh3DStorage &M, Index idx) {
 
 	vector<uint32_t> efs = M.edges[idx.edge].neighbor_fs, hfs = M.elements[idx.element].fs, sharedfs;
 	sort(hfs.begin(), hfs.end()); sort(efs.begin(), efs.end());
@@ -99,7 +103,8 @@ Index poly_fem::Navigation3D::switch_face(const Mesh3DStorage &M, Index idx) {
 
 	return idx;
 }
-Index poly_fem::Navigation3D::switch_element(const Mesh3DStorage &M, Index idx) {
+
+poly_fem::Navigation3D::Index poly_fem::Navigation3D::switch_element(const Mesh3DStorage &M, Index idx) {
 
 	if (M.faces[idx.face].neighbor_hs.size() == 1) {
 		idx.element = -1;

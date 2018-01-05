@@ -20,11 +20,11 @@ namespace poly_fem
 
 
 		Local2Global()
-		: index(-1), val(0)
+			: index(-1), val(0)
 		{ }
 
-		Local2Global(const int index, const Eigen::MatrixXd &node, const double val)
-		: index(index), val(val), node(node)
+		Local2Global(const int _index, const Eigen::MatrixXd &_node, const double _val)
+			: index(_index), val(_val), node(_node)
 		{ }
 	};
 

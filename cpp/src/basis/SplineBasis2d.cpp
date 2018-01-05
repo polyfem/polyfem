@@ -427,7 +427,7 @@ namespace poly_fem
 
         void basis_for_q2(const Mesh2D &mesh, const std::vector<ElementType> &els_tag, const int el_index, std::map<int, int > &vertex_id, std::map<int, int > &edge_id, const SpaceMatrix &space, const NodeMatrix &loc_nodes, ElementBases &b, std::map<int, BoundaryData> &poly_edge_to_data, std::vector< int > &bounday_nodes, int &n_bases)
         {
-            static const auto is_q2 = [els_tag](const int face_id){ return els_tag[face_id] == ElementType::MultiSingularInteriorCube || els_tag[face_id] == ElementType::SingularBoundaryCube; };
+            static const auto is_q2 = [els_tag](const int face_id){ return els_tag[face_id] == ElementType::MultiSingularInteriorCube || els_tag[face_id] == ElementType::SimpleSingularBoundaryCube; };
             const int n_els = mesh.n_elements();
 
             b.bases.resize(9);
@@ -928,7 +928,7 @@ namespace poly_fem
 
         for(int e = 0; e < n_els; ++e)
         {
-            if(els_tag[e] != ElementType::MultiSingularInteriorCube && els_tag[e] != ElementType::SingularBoundaryCube)
+            if(els_tag[e] != ElementType::MultiSingularInteriorCube && els_tag[e] != ElementType::SimpleSingularBoundaryCube)
                 continue;
 
             SpaceMatrix space;

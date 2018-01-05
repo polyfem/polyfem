@@ -77,6 +77,7 @@ set(MY_FLAGS
 		-Wnon-virtual-dtor
 		-Wdelete-non-virtual-dtor
 
+		-wno-sign-compare
 
 		###########
 		# GCC 6.1 #
