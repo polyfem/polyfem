@@ -19,3 +19,4 @@ endfunction()
 
 add_application(navigation_test.cpp polyfem geogram_gfx)
 add_application(refinement_test.cpp polyfem cli11)
+add_application(solver_test.cpp polyfem cli11)

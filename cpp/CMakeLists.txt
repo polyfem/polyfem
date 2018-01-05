@@ -1,5 +1,7 @@
+################################################################################
 cmake_minimum_required(VERSION 3.1)
 project(PolyFEM)
+################################################################################
 
 set(THIRD_PARTY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
@@ -10,6 +12,8 @@ include(UseColors)
 # Generate position independent code by default
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+################################################################################
+
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	foreach(config ${CMAKE_CONFIGURATION_TYPES})
 		string(TOUPPER ${config} config)
@@ -17,13 +21,17 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 		string(REPLACE /MD /MT CMAKE_CXX_FLAGS_${config} "${CMAKE_CXX_FLAGS_${config}}")
 	endforeach()
 endif()
-# libigl
-# option(ENABLE_CHOLMOD     "Enable Cholmod library"  ON)
+
+################################################################################
+
+# Options for enabling/disabling optional libraries
+option(ENABLE_CHOLMOD     "Enable Cholmod library"  ON)
 option(ENABLE_UMFPACK     "Enable UmfPack library"  ON)
-# option(ENABLE_SUPERLU     "Enable SuperLU library"  ON)
+option(ENABLE_SUPERLU     "Enable SuperLU library"  ON)
+option(ENABLE_MKL         "Enable MKL library"      ON)
+option(ENABLE_PARDISO     "Enable Pardiso library"  ON)
 
-
-
+# Options for libigl modules
 option(LIBIGL_USE_STATIC_LIBRARY 	"Use libigl as static library" ON)
 option(LIBIGL_WITH_ANTTWEAKBAR      "Use AntTweakBar"    OFF)
 option(LIBIGL_WITH_CGAL             "Use CGAL"           OFF)
@@ -42,26 +50,23 @@ option(LIBIGL_WITH_TETGEN           "Use Tetgen"         ON)
 option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       ON)
 option(LIBIGL_WITH_VIEWER           "Use OpenGL viewer"  ON)
 option(LIBIGL_WITH_XML              "Use XML"            OFF)
-find_package(LIBIGL REQUIRED QUIET)
 
-# Geogram
-include(geogram)
+################################################################################
 
-# CLI11
-add_library(cli11 INTERFACE)
-target_include_directories(cli11 SYSTEM INTERFACE ${THIRD_PARTY_DIR}/cli11)
+# Uncomment the following lines to force options which are already cached
+# set(PREFER_LOCAL_LIBS  ON  CACHE BOOL "" FORCE)
+# set(ENABLE_CHOLMOD     OFF CACHE BOOL "" FORCE)
+# set(ENABLE_UMFPACK     OFF CACHE BOOL "" FORCE)
+# set(ENABLE_SUPERLU     OFF CACHE BOOL "" FORCE)
+# set(ENABLE_MKL         OFF CACHE BOOL "" FORCE)
+# set(ENABLE_PARDISO     OFF CACHE BOOL "" FORCE)
 
-# Json library
-add_library(json INTERFACE)
-target_include_directories(json SYSTEM INTERFACE ${THIRD_PARTY_DIR}/json/src)
-
-
-# Extra warnings
-include(SetWarnings)
-
+################################################################################
 
 # Polyfem library
 add_library(polyfem
+	src/Common.hpp
+
 	src/State.hpp
 	src/State.cpp
 
@@ -166,48 +171,119 @@ add_library(polyfem
 
 	src/problem/Problem.hpp
 	src/problem/Problem.cpp
+
+	src/solver/LinearSolver.cpp
 )
 
+target_include_directories(polyfem PUBLIC
+	src
+	src/assembler
+	src/basis
+	src/basis/function
+	src/mesh
+	src/mesh2D
+	src/mesh3D
+	src/problem
+	src/quadrature
+	src/solver
+	src/utils
+)
 
-# if(ENABLE_CHOLMOD)
-# 	find_package(Cholmod)
-# 	if(CHOLMOD_FOUND)
-# 		target_include_directories(polyfem PUBLIC ${CHOLMOD_INCLUDES})
-# 		target_link_libraries(polyfem PUBLIC ${CHOLMOD_LIBRARIES})
-# 		target_compile_definitions(polyfem PUBLIC -DPOLY_FEM_WITH_CHOLMOD)
-# 	endif()
-# endif()
+################################################################################
+# Required libraries
+################################################################################
 
+# Eigen
+# Uncomment to use the system's version of Eigen (e.g. to use Eigen 3.3)
+find_package(Eigen3 REQUIRED)
+target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
 
+# libigl
+find_package(LIBIGL REQUIRED)
+target_link_libraries(polyfem PUBLIC igl::core igl::triangle igl::tetgen igl::viewer)
 
+# Geogram
+include(geogram)
+target_link_libraries(polyfem PUBLIC geogram)
+
+# CLI11
+add_library(cli11 INTERFACE)
+target_include_directories(cli11 SYSTEM INTERFACE ${THIRD_PARTY_DIR}/cli11)
+
+# Json library
+add_library(json INTERFACE)
+target_include_directories(json SYSTEM INTERFACE ${THIRD_PARTY_DIR}/json/src)
+target_link_libraries(polyfem PUBLIC json)
+
+################################################################################
+# Optional libraries
+################################################################################
+
+# Cholmod solver
+if(ENABLE_CHOLMOD)
+	find_package(Cholmod)
+	if(CHOLMOD_FOUND)
+		target_include_directories(polyfem PUBLIC ${CHOLMOD_INCLUDES})
+		target_link_libraries(polyfem PUBLIC ${CHOLMOD_LIBRARIES})
+		target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_CHOLMOD)
+	endif()
+endif()
+
+# MKL library
+if(ENABLE_MKL)
+	find_package(MKL)
+	if(MKL_FOUND)
+		target_include_directories(polyfem PUBLIC ${MKL_INCLUDE_DIR})
+		target_link_libraries(polyfem PUBLIC ${MKL_LIBRARIES})
+		target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_MKL)
+	endif()
+endif()
+
+# Pardiso solver
+if(ENABLE_PARDISO AND NOT (ENABLE_MKL AND MKL_FOUND))
+	find_package(Pardiso)
+	if(PARDISO_FOUND)
+		target_link_libraries(polyfem PUBLIC ${PARDISO_LIBRARIES})
+		target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_PARDISO)
+	endif()
+endif()
+
+# UmfPack solver
 if(ENABLE_UMFPACK)
 	find_package(Umfpack)
 	if(UMFPACK_FOUND)
 		target_include_directories(polyfem PUBLIC ${UMFPACK_INCLUDES})
 		target_link_libraries(polyfem PUBLIC ${UMFPACK_LIBRARIES})
-		target_compile_definitions(polyfem PUBLIC -DPOLY_FEM_WITH_UMFPACK)
+		target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_UMFPACK)
 	endif()
 endif()
 
-# if(ENABLE_SUPERLU)
-# 	find_package(SuperLU)
-# 	if(SUPERLU_FOUND AND BLAS_FOUND)
-# 		target_include_directories(polyfem PUBLIC ${SUPERLU_INCLUDES})
-# 		target_link_libraries(polyfem PUBLIC ${SUPERLU_LIBRARIES})
-# 		target_compile_definitions(polyfem PUBLIC ${SUPERLU_DEFINES})
-# 		target_compile_definitions(polyfem PUBLIC -DPOLY_FEM_WITH_SUPERLU)
-# 	endif()
-# endif()
+# SuperLU solver
+if(ENABLE_SUPERLU AND NOT (ENABLE_MKL AND MKL_FOUND))
+	find_package(SuperLU)
+	if(SUPERLU_FOUND)
+		target_include_directories(polyfem PUBLIC ${SUPERLU_INCLUDES})
+		target_link_libraries(polyfem PUBLIC ${SUPERLU_LIBRARIES})
+		target_compile_definitions(polyfem PUBLIC ${SUPERLU_DEFINES})
+		target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_SUPERLU)
+	endif()
+endif()
 
-target_link_libraries(polyfem PUBLIC geogram igl::core igl::triangle igl::tetgen igl::viewer json)
-target_include_directories(polyfem PUBLIC src src/assembler src/basis src/basis/function src/mesh src/mesh2D src/mesh3D src/problem src/quadrature src/utils)
+################################################################################
+# Extra compilation options
+################################################################################
+
+# Extra warnings
+include(SetWarnings)
 target_compile_options(polyfem PUBLIC ${ALL_WARNINGS})
-# set_property(TARGET polyfem PROPERTY CXX_STANDARD 14)
 
 # Use C++14
 include(CXXFeatures)
 target_compile_features(polyfem PUBLIC ${CXX14_FEATURES})
 
+################################################################################
+# Applications
+################################################################################
 
 # Main executable
 add_executable(${PROJECT_NAME}_bin
@@ -216,7 +292,6 @@ add_executable(${PROJECT_NAME}_bin
 	src/UIState.cpp
 )
 target_link_libraries(${PROJECT_NAME}_bin PUBLIC polyfem igl::viewer)
-
 
 ################################################################################
 
