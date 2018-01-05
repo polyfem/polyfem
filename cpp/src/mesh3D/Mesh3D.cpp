@@ -557,9 +557,10 @@ namespace poly_fem
 					if (on_boundary || attaching_non_hex) break;
 				}
 				if (on_boundary || attaching_non_hex) {
-					ele_tag[ele.id] = ElementType::SingularBoundaryCube;
+					ele_tag[ele.id] = ElementType::MultiSingularBoundaryCube;
 					//has no boundary edge--> singular
 					bool boundary_edge = false, boundary_edge_singular = false, interior_edge_singular = false;
+					int n_interior_edge_singular = 0;
 					for (auto eid : ele.es) {
 						int en = 0;
 						if (be_flag[eid]) {
@@ -569,23 +570,37 @@ namespace poly_fem
 						}
 						else {
 							for (auto nhid : mesh_.edges[eid].neighbor_hs)if (mesh_.elements[nhid].hex)en++;
-							if (en != 4)interior_edge_singular = true;
+							if (en != 4) {
+								interior_edge_singular = true; n_interior_edge_singular++;
+							}
 						}
 					}
-					if (!boundary_edge || boundary_edge_singular || interior_edge_singular)continue;
+					if (!boundary_edge || boundary_edge_singular || n_interior_edge_singular > 1)continue;
 
-					bool interior_vertex_singular = false;
+					bool has_singular_v = false; int n_irregular_v = 0;
 					for (auto vid : ele.vs) {
 						int vn = 0;
 						if (bv_flag[vid]) {
 							continue;//not sure the conditions
 						}
 						else {
-							if (mesh_.vertices[vid].neighbor_hs.size() != 8)interior_vertex_singular = true;
+							if (mesh_.vertices[vid].neighbor_hs.size() != 8)n_irregular_v++;
+							int n_irregular_e = 0;
+							for (auto eid : mesh_.vertices[vid].neighbor_es) {
+								if (mesh_.edges[eid].neighbor_hs.size() != 4)
+									n_irregular_e++;
+							}
+							if (n_irregular_e != 0 && n_irregular_e != 2) {
+								has_singular_v = true; break;
+							}
 						}
 					}
-					if (interior_vertex_singular)continue;
-					ele_tag[ele.id] = ElementType::RegularBoundaryCube;
+					if (has_singular_v) continue;
+					if (!has_singular_v) {
+						if(n_irregular_v == 1) ele_tag[ele.id] = ElementType::SimpleSingularBoundaryCube;
+						else if(n_irregular_v == 0) ele_tag[ele.id] = ElementType::RegularBoundaryCube;
+						else continue;
+					}
 					continue;
 				}
 
@@ -608,7 +623,7 @@ namespace poly_fem
 						if (mesh_.edges[eid].neighbor_hs.size() != 4)
 							n_irregular_e++;
 					}
-					if (n_irregular_e != 2) {
+					if (n_irregular_e!=0 && n_irregular_e != 2) {
 						has_singular_v = true; break;
 					}
 				}
@@ -773,7 +788,7 @@ namespace poly_fem
 		}
 	}
 
-	void Mesh3D::geomesh2mesh(GEO::Mesh &gm, Mesh3DStorage &m) {
+	void Mesh3D::geomesh_2_mesh_storage(const GEO::Mesh &gm, Mesh3DStorage &m) {
 		m.vertices.clear(); m.edges.clear(); m.faces.clear();
 		m.vertices.resize(gm.vertices.nb());
 		m.faces.resize(gm.facets.nb());
@@ -802,6 +817,7 @@ namespace poly_fem
 				}
 				m.faces[i] = f;
 			}
+			MeshProcessing3D::build_connectivity(m);
 		}
 	}
 }

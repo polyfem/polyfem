@@ -37,7 +37,7 @@ namespace poly_fem{
 		void refine_catmul_clark_polar(Mesh3DStorage &M, int iter);
 
 		//Mi is a planar surface mesh
-		void straight_sweeping(Mesh3DStorage &Mi, int sweep_coord, double height, int nlayer, Mesh3DStorage &Mo);
+		void straight_sweeping(const Mesh3DStorage &Mi, int sweep_coord, double height, int nlayer, Mesh3DStorage &Mo);
 
 		void  orient_surface_mesh(Mesh3DStorage &hmi);
 		void  orient_volume_mesh(Mesh3DStorage &hmi);

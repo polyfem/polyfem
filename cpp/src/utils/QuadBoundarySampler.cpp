@@ -22,6 +22,7 @@ namespace poly_fem {
 		if(skip_computation) return true;
 
 		const Eigen::MatrixXd t = Eigen::VectorXd::LinSpaced(resolution, 0, 1);
+		samples.setConstant(-1);
 
 		n = 0;
 		if(is_right_boundary){
@@ -53,6 +54,8 @@ namespace poly_fem {
 		}
 
 		assert(long(n) == samples.rows());
+		assert(samples.minCoeff()  >= 0);
+		assert(samples.maxCoeff()  <= 1);
 
 		return true;
 	}

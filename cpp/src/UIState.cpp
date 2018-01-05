@@ -268,17 +268,23 @@ namespace poly_fem
 					case ElementType::RegularBoundaryCube:
 					cols.block(from, 1, range, 1).setConstant(0.5); break;
 
-						//orange
+					//orange
 					case ElementType::SimpleSingularInteriorCube:
-					cols.block(from, 0, range, 1).setOnes();
-					cols.block(from, 1, range, 1).setConstant(0.5); break;
+						cols.block(from, 0, range, 1).setOnes();
+						cols.block(from, 1, range, 1).setConstant(0.5); break;
+
+
+						//orange
+					case ElementType::SimpleSingularBoundaryCube:
+						cols.block(from, 0, range, 1).setOnes();
+						cols.block(from, 1, range, 1).setConstant(0.2); break;
 
  						//red
 					case ElementType::MultiSingularInteriorCube:
 					cols.block(from, 0, range, 1).setOnes(); break;
 
 						//blue
-					case ElementType::SingularBoundaryCube:
+					case ElementType::MultiSingularBoundaryCube:
 					cols.block(from, 2, range, 1).setConstant(0.6); break;
 
 				  		 //light blue
@@ -552,7 +558,7 @@ namespace poly_fem
 							E(e, 1) = (e+1) % poly.rows();
 						}
 
-						igl::triangle::triangulate(poly, E, MatrixXd(0,2), "Qpqa0.00001", vis_pts_poly[i], vis_faces_poly[i]);
+						igl::triangle::triangulate(poly, E, MatrixXd(0,2), "Qpqa0.0001", vis_pts_poly[i], vis_faces_poly[i]);
 
 						faces_total_size   += vis_faces_poly[i].rows();
 						points_total_size += vis_pts_poly[i].rows();
@@ -678,8 +684,8 @@ namespace poly_fem
 
 			if(skip_visualization) return;
 			// clear_func();
-			show_mesh_func();
-			show_nodes_func();
+			// show_mesh_func();
+			// show_nodes_func();
 		};
 
 
