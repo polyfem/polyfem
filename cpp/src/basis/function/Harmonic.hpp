@@ -26,7 +26,7 @@ namespace poly_fem
 		///                      the element should evaluate over the evaluation
 		///                      samples }
 		///
-		Harmonic(const Eigen::MatrixXd &centers, const Eigen::MatrixXd &samples, const Eigen::MatrixXd &rhs);
+		Harmonic(const Eigen::MatrixXd &centers, const Eigen::MatrixXd &samples, const Eigen::MatrixXd &local_basis_integral, Eigen::MatrixXd &rhs);
 
 		///
 		/// @brief      { Evaluates one harmonic function over a list of
@@ -52,7 +52,7 @@ namespace poly_fem
 
 	private:
 		// Compute the weights
-		void compute(const Eigen::MatrixXd &samples, const Eigen::MatrixXd &rhs);
+		void compute(const Eigen::MatrixXd &samples, const Eigen::MatrixXd &local_basis_integral, Eigen::MatrixXd &rhs);
 
 		// #C x dim matrix of centers positions
 		Eigen::MatrixXd centers_;

@@ -4,6 +4,7 @@
 #include "QuadQuadrature.hpp"
 #include "PolygonQuadrature.hpp"
 #include "QuadBoundarySampler.hpp"
+#include "ElementAssemblyValues.hpp"
 
 #include "FEBasis2d.hpp"
 
@@ -720,7 +721,7 @@ namespace poly_fem
             }
         }
 
-        void sample_polygon(const int element_index, const int samples_res, const Mesh2D &mesh, std::map<int, BoundaryData> &poly_edge_to_data, const std::vector< ElementBases > &bases, std::vector<int> &local_to_global, const double eps, const bool c1_continuous, Eigen::MatrixXd &boundary_samples, Eigen::MatrixXd &poly_samples, Eigen::MatrixXd &rhs)
+        void sample_polygon(const int element_index, const int samples_res, const Mesh2D &mesh, std::map<int, BoundaryData> &poly_edge_to_data, const std::vector< ElementBases > &bases, std::vector<int> &local_to_global, const double eps, const bool c1_continuous, Eigen::MatrixXd &boundary_samples, Eigen::MatrixXd &poly_samples, const Eigen::MatrixXd &basis_integrals, Eigen::MatrixXd &rhs)
         {
             const int n_edges = mesh.n_element_vertices(element_index);
 
@@ -749,6 +750,8 @@ namespace poly_fem
             // assert(int(local_to_global.size()) <= n_edges);
 
             rhs = Eigen::MatrixXd::Zero(n_samples + (c1_continuous? (2*n_samples): 0), local_to_global.size());
+            // rhs.resize(n_samples + (c1_continuous? (2*n_samples): 0), local_to_global.size());
+
 
             index = mesh.get_index_from_face(element_index);
 
@@ -943,6 +946,30 @@ namespace poly_fem
 
         }
 
+        Eigen::MatrixXd basis_integrals(n_bases, 2);
+        Eigen::MatrixXd grad_tmp;
+        basis_integrals.setZero();
+        std::vector< ElementAssemblyValues > values;
+        ElementAssemblyValues::compute_assembly_values(false, bases, values);
+        for(int e = 0; e < n_els; ++e)
+        {
+            const ElementAssemblyValues &vals = values[e];
+
+            const int n_local_bases = int(vals.basis_values.size());
+            for(int j = 0; j < n_local_bases; ++j)
+            {
+                const AssemblyValues &v=vals.basis_values[j];
+                const double integralx = (v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+                const double integraly = (v.grad_t_m.col(1).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+
+                for(std::size_t ii = 0; ii < v.global.size(); ++ii)
+                {
+                    basis_integrals(v.global[ii].index, 0) += integralx * v.global[ii].val;
+                    basis_integrals(v.global[ii].index, 1) += integraly * v.global[ii].val;
+                }
+            }
+        }
+
         const int samples_res = 10;
         const bool use_harmonic = true;
         const bool c1_continuous = !use_harmonic && true;
@@ -978,7 +1005,7 @@ namespace poly_fem
             Eigen::MatrixXd boundary_samples, poly_samples;
             Eigen::MatrixXd rhs;
 
-            sample_polygon(e, samples_res, mesh, poly_edge_to_data, bases, local_to_global, eps, c1_continuous, boundary_samples, poly_samples, rhs);
+            sample_polygon(e, samples_res, mesh, poly_edge_to_data, bases, local_to_global, eps, c1_continuous, boundary_samples, poly_samples, basis_integrals, rhs);
 
             ElementBases &b=bases[e];
             b.has_parameterization = false;
@@ -991,18 +1018,26 @@ namespace poly_fem
 
             if(use_harmonic)
             {
-                // igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
-                // viewer.data.add_points(poly_samples, Eigen::Vector3d(0,1,1).transpose());
+                igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
+                viewer.data.add_points(poly_samples, Eigen::Vector3d(0,1,1).transpose());
 
-                // Eigen::MatrixXd asd(boundary_samples.rows(), 3);
-                // asd.col(0)=boundary_samples.col(0);
-                // asd.col(1)=boundary_samples.col(1);
-                // asd.col(2)=rhs.col(0);
-                // viewer.data.add_points(asd, Eigen::Vector3d(1,0,1).transpose());
+                Eigen::MatrixXd asd(boundary_samples.rows(), 3);
+                asd.col(0)=boundary_samples.col(0);
+                asd.col(1)=boundary_samples.col(1);
+                asd.col(2)=rhs.col(0);
+                viewer.data.add_points(asd, Eigen::Vector3d(1,0,1).transpose());
+
                 // for(int asd = 0; asd < boundary_samples.rows(); ++asd)
                     // viewer.data.add_label(boundary_samples.row(asd), std::to_string(asd));
 
-                Harmonic harmonic(poly_samples, boundary_samples, rhs);
+                Eigen::MatrixXd local_basis_integral(rhs.cols(), 2);
+                for(long k = 0; k < rhs.cols(); ++k)
+                {
+                    local_basis_integral(k, 0) = -basis_integrals(local_to_global[k],0);
+                    local_basis_integral(k, 1) = -basis_integrals(local_to_global[k],1);
+                }
+
+                Harmonic harmonic(poly_samples, boundary_samples, local_basis_integral, rhs);
 
                 for(int i = 0; i < n_poly_bases; ++i)
                 {

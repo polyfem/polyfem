@@ -57,10 +57,10 @@ namespace poly_fem
         std::stringstream ss;
         ss.precision(100);
         ss.setf(std::ios::fixed, std::ios::floatfield);
-        // ss<<"Qp";
+        ss<<"Qpa0.001";
 
         // ss<<"Qpa"<<0.00001/area;
-        ss<<"Qpa"<<(0.01/poly.rows())/order;
+        // ss<<"Qpa"<<(1/poly.rows())/order;
 
         // Eigen::MatrixXd poly_tmp(poly.rows()+1, 2);
         // poly_tmp.block(0, 0, poly.rows(), 2) = poly;
@@ -100,5 +100,6 @@ namespace poly_fem
         }
 
         assert(quad.weights.minCoeff()>=0);
+        std::cout<<quad.weights.size()<<" "<<quad.weights.sum()<<std::endl;
     }
 }
