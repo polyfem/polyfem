@@ -214,7 +214,7 @@ namespace poly_fem
 
 		local_boundary.clear();
 		bounday_nodes.clear();
-		std::map<int, BoundaryData> poly_edge_to_data_geom; //temp dummy variable
+		std::map<int, InterfaceData> poly_edge_to_data_geom; //temp dummy variable
 
 		if(mesh->is_volume())
 		{

@@ -510,7 +510,7 @@ namespace poly_fem
 		std::vector< ElementBases > &bases,
 		std::vector< LocalBoundary > &local_boundary,
 		std::vector< int > &bounday_nodes,
-		std::map<int, BoundaryData> &poly_edge_to_data)
+		std::map<int, InterfaceData> &poly_edge_to_data)
 	{
 		//TODO fill poly_edge_to_data when elements are neigh of a polygon
 		bounday_nodes.clear();

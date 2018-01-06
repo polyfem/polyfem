@@ -4,7 +4,7 @@
 #include "Mesh2D.hpp"
 #include "ElementBases.hpp"
 #include "ElementAssemblyValues.hpp"
-#include "HarmonicBoundaryData.hpp"
+#include "InterfaceData.hpp"
 
 #include <Eigen/Dense>
 #include <vector>
@@ -27,7 +27,7 @@ namespace poly_fem
 			const std::vector< ElementAssemblyValues > &gvalues,
 			std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
-			std::map<int, BoundaryData> &poly_edge_to_data,
+			std::map<int, InterfaceData> &poly_edge_to_data,
 			std::map<int, Eigen::MatrixXd> &polys);
 	};
 }

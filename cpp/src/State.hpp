@@ -7,7 +7,7 @@
 #include "Mesh.hpp"
 #include "Problem.hpp"
 #include "LocalBoundary.hpp"
-#include "HarmonicBoundaryData.hpp"
+#include "InterfaceData.hpp"
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
@@ -45,7 +45,7 @@ namespace poly_fem
 
 		std::vector< int >                   bounday_nodes;
 		std::vector< LocalBoundary >         local_boundary;
-		std::map<int, BoundaryData> 		 poly_edge_to_data;
+		std::map<int, InterfaceData> 		 poly_edge_to_data;
 
 		std::vector<int> boundary_tag;
 

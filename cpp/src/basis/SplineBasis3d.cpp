@@ -91,7 +91,7 @@ namespace poly_fem
             }
         }
 
-        void explore_edge(const Navigation3D::Index &index, const Mesh3D &mesh, const int x, const int y, const int z, SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, BoundaryData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
+        void explore_edge(const Navigation3D::Index &index, const Mesh3D &mesh, const int x, const int y, const int z, SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, InterfaceData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
         {
             int node_id;
             bool boundary = mesh.node_id_from_edge_index(index, node_id);
@@ -104,7 +104,7 @@ namespace poly_fem
                 bounday_nodes.push_back(node_id);
         }
 
-        void explore_vertex(const Navigation3D::Index &index, const Mesh3D &mesh, const int x, const int y, const int z, SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, BoundaryData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
+        void explore_vertex(const Navigation3D::Index &index, const Mesh3D &mesh, const int x, const int y, const int z, SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, InterfaceData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
         {
             int node_id;
             bool boundary = mesh.node_id_from_vertex_index(index, node_id);
@@ -117,7 +117,7 @@ namespace poly_fem
                 bounday_nodes.push_back(node_id);
         }
 
-        void explore_face(const Navigation3D::Index &index, const Mesh3D &mesh, const int x, const int y, const int z,  const int b_flag, SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, BoundaryData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
+        void explore_face(const Navigation3D::Index &index, const Mesh3D &mesh, const int x, const int y, const int z,  const int b_flag, SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, InterfaceData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
         {
             int node_id;
             const bool real_boundary = mesh.node_id_from_face_index(index, node_id);
@@ -157,12 +157,12 @@ namespace poly_fem
             }
         }
 
-        void add_id_for_poly(const Navigation3D::Index &index, const int x1, const int y1, const int x2, const int y2, const SpaceMatrix &space, std::map<int, BoundaryData> &poly_edge_to_data)
+        void add_id_for_poly(const Navigation3D::Index &index, const int x1, const int y1, const int x2, const int y2, const SpaceMatrix &space, std::map<int, InterfaceData> &poly_edge_to_data)
         {
             // auto it = poly_edge_to_data.find(index.edge);
             // if(it != poly_edge_to_data.end())
             // {
-            //     BoundaryData &data = it->second;
+            //     InterfaceData &data = it->second;
 
             //     assert(space(x1, y1).size() == 1);
             //     data.node_id.push_back(space(x1, y1).front());
@@ -176,7 +176,7 @@ namespace poly_fem
             // }
         }
 
-        int build_local_space(const Mesh3D &mesh, const int el_index,  SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, BoundaryData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
+        int build_local_space(const Mesh3D &mesh, const int el_index,  SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, InterfaceData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
         {
             assert(mesh.is_volume());
 
@@ -533,148 +533,6 @@ namespace poly_fem
             //     }
             // }
         }
-
-        void sample_polygon(const int element_index, const int samples_res, const Mesh3D &mesh, std::map<int, BoundaryData> &poly_edge_to_data, const std::vector< ElementBases > &bases, std::vector<int> &local_to_global, const double eps, const bool c1_continuous, Eigen::MatrixXd &boundary_samples, Eigen::MatrixXd &poly_samples, Eigen::MatrixXd &rhs)
-        {
-            // const int n_edges = mesh.n_element_vertices(element_index);
-
-            // const int poly_local_n = (samples_res - 1)/3;
-            // const int n_samples      = (samples_res - 1) * n_edges;
-            // const int n_poly_samples = poly_local_n * n_edges;
-
-            // boundary_samples.resize(n_samples, 2);
-            // poly_samples.resize(n_poly_samples, 2);
-
-            // Eigen::MatrixXd samples, mapped, basis_val, grad_basis_val;
-            // std::vector<Eigen::MatrixXd> grads;
-
-            // Navigation::Index index = mesh.get_index_from_face(element_index);
-            // for(int i = 0; i < n_edges; ++i)
-            // {
-            //     const BoundaryData &bdata = poly_edge_to_data[index.edge];
-            //     local_to_global.insert(local_to_global.end(), bdata.node_id.begin(), bdata.node_id.end());
-
-            //     index = mesh.next_around_face(index);
-            // }
-
-            // std::sort( local_to_global.begin(), local_to_global.end() );
-            // local_to_global.erase( std::unique( local_to_global.begin(), local_to_global.end() ), local_to_global.end() );
-            // // assert(int(local_to_global.size()) <= n_edges);
-
-            // rhs = Eigen::MatrixXd::Zero(n_samples + (c1_continuous? (2*n_samples): 0), local_to_global.size());
-
-            // index = mesh.get_index_from_face(element_index);
-
-            // Eigen::MatrixXd prev;
-
-            // for(int i = 0; i < n_edges; ++i)
-            // {
-            //     //no boundary polygons
-            //     assert(mesh.switch_face(index).face >= 0);
-
-            //     const BoundaryData &bdata = poly_edge_to_data[index.edge];
-            //     const ElementBases &b=bases[bdata.face_id];
-            //     assert(bdata.face_id == mesh.switch_face(index).face);
-
-            //     QuadBoundarySampler::sample(bdata.flag == RIGHT_FLAG, bdata.flag == BOTTOM_FLAG, bdata.flag == LEFT_FLAG, bdata.flag == TOP_FLAG, samples_res, false, samples);
-
-            //     b.eval_geom_mapping(samples, mapped);
-
-            //     if(c1_continuous)
-            //     {
-            //         b.eval_geom_mapping_grads(samples, grads);
-            //     }
-
-            //     bool must_reverse = true;
-            //     if(prev.size() > 0)
-            //     {
-            //         const double dist_first = (mapped.row(0)-prev).norm();
-
-            //         if(dist_first < 1e-8)
-            //         {
-            //             samples = samples.block(1, 0, samples.rows()-1, samples.cols());
-            //             mapped = mapped.block(1, 0, mapped.rows()-1, mapped.cols());
-
-            //             must_reverse = false;
-            //         }
-            //         else
-            //         {
-            //             assert((mapped.row(mapped.rows()-1) - prev).norm() < 1e-8);
-
-            //             samples = samples.block(0, 0, samples.rows()-1, samples.cols());
-            //             mapped = mapped.block(0, 0, mapped.rows()-1, mapped.cols());
-
-            //             mapped = mapped.colwise().reverse().eval();
-            //         }
-            //     }
-            //     else
-            //     {
-            //         samples = samples.block(0, 0, samples.rows()-1, samples.cols());
-            //         mapped = mapped.block(0, 0, mapped.rows()-1, mapped.cols());
-
-            //         mapped = mapped.colwise().reverse().eval();
-            //     }
-
-            //     assert(bdata.node_id.size() == 3);
-            //     for(std::size_t bi = 0; bi < bdata.node_id.size(); ++bi)
-            //     {
-            //         const int local_index = bdata.y[bi] * 3 + bdata.x[bi];
-            //         // assert(b.bases[local_index].global_index() == bdata.node_id[bi]);
-            //         const long basis_index = std::distance(local_to_global.begin(), std::find(local_to_global.begin(), local_to_global.end(), bdata.node_id[bi]));
-
-            //         b.bases[local_index].basis(samples, basis_val);
-
-            //         if(must_reverse)
-            //             basis_val = basis_val.reverse().eval();
-            //         rhs.block(i*(samples_res-1), basis_index, basis_val.rows(), 1) = basis_val;
-
-            //         if(c1_continuous)
-            //         {
-            //             b.bases[local_index].grad(samples, grad_basis_val);
-
-            //             if(must_reverse)
-            //                 grad_basis_val = grad_basis_val.colwise().reverse().eval();
-
-            //             for(long k = 0; k < grad_basis_val.rows(); ++k)
-            //             {
-            //                 const Eigen::MatrixXd trans_grad = grad_basis_val.row(k) * grads[k];
-
-            //                 rhs(n_samples + 2*i*(samples_res-1) + 2*k,     basis_index) = trans_grad(0);
-            //                 rhs(n_samples + 2*i*(samples_res-1) + 2*k + 1, basis_index) = trans_grad(1);
-            //             }
-            //         }
-
-            //     }
-
-
-            //     prev = mapped.row(mapped.rows()-1);
-            //     boundary_samples.block(i*(samples_res-1), 0, mapped.rows(), mapped.cols()) = mapped;
-            //     const int offset = int(mapped.rows())/(poly_local_n+1);
-            //     for(int j = 0; j < poly_local_n; ++j)
-            //     {
-            //         const int poly_index = (j+1)*offset-1;
-
-            //         if(eps > 0)
-            //         {
-            //             const int im = poly_index - 1;
-            //             const int ip = poly_index + 1;
-
-            //             const Eigen::MatrixXd e0 = (mapped.row(poly_index) - mapped.row(im)).normalized();
-            //             const Eigen::MatrixXd e1 = (mapped.row(ip) - mapped.row(poly_index)).normalized();
-
-            //             const Eigen::Vector2d n0(e0(1), -e0(0));
-            //             const Eigen::Vector2d n1(e1(1), -e1(0));
-            //             const Eigen::Vector2d n = (n0+n1).normalized(); //TODO discad point if inside
-
-            //             poly_samples.row(i*poly_local_n+j) = n.transpose()*eps + mapped.row(poly_index);
-            //         }
-            //         else
-            //             poly_samples.row(i*poly_local_n+j) = mapped.row(poly_index);
-            //     }
-
-            //     index = mesh.next_around_face(index);
-            // }
-        }
     }
 
 
@@ -693,7 +551,7 @@ namespace poly_fem
 
         HexQuadrature hex_quadrature;
 
-        std::map<int, BoundaryData> poly_edge_to_data;
+        std::map<int, InterfaceData> poly_edge_to_data;
 
         std::array<std::vector<double>, 3> h_knots;
         std::array<std::vector<double>, 3> v_knots;

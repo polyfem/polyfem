@@ -10,15 +10,15 @@ namespace poly_fem
 {
 	namespace
 	{
-		Eigen::MatrixXd compute_first_prev(const BoundaryData &bdata0, const BoundaryData &bdata1, const std::vector< ElementBases > &gbases)
+		Eigen::MatrixXd compute_first_prev(const InterfaceData &bdata0, const InterfaceData &bdata1, const std::vector< ElementBases > &gbases)
 		{
 			Eigen::MatrixXd samples0, samples1;
 			Eigen::MatrixXd mapped0, mapped1;
 
-			bool has_samples = QuadBoundarySampler::sample(bdata0.flag == BoundaryData::RIGHT_FLAG, bdata0.flag == BoundaryData::BOTTOM_FLAG, bdata0.flag == BoundaryData::LEFT_FLAG, bdata0.flag == BoundaryData::TOP_FLAG, 2, false, samples0);
+			bool has_samples = QuadBoundarySampler::sample(bdata0.flag == InterfaceData::RIGHT_FLAG, bdata0.flag == InterfaceData::BOTTOM_FLAG, bdata0.flag == InterfaceData::LEFT_FLAG, bdata0.flag == InterfaceData::TOP_FLAG, 2, false, samples0);
 			assert(has_samples);
 
-			has_samples = QuadBoundarySampler::sample(bdata1.flag == BoundaryData::RIGHT_FLAG, bdata1.flag == BoundaryData::BOTTOM_FLAG, bdata1.flag == BoundaryData::LEFT_FLAG, bdata1.flag == BoundaryData::TOP_FLAG, 2, false, samples1);
+			has_samples = QuadBoundarySampler::sample(bdata1.flag == InterfaceData::RIGHT_FLAG, bdata1.flag == InterfaceData::BOTTOM_FLAG, bdata1.flag == InterfaceData::LEFT_FLAG, bdata1.flag == InterfaceData::TOP_FLAG, 2, false, samples1);
 			assert(has_samples);
 
 			const ElementBases &gb0=gbases[bdata0.face_id];
@@ -43,7 +43,7 @@ namespace poly_fem
 			return mapped0.row(1);
 		}
 
-		void sample_polygon(const int element_index, const int samples_res, const Mesh2D &mesh, std::map<int, BoundaryData> &poly_edge_to_data, const std::vector< ElementBases > &bases, const std::vector< ElementBases > &gbases, std::vector<int> &local_to_global, const double eps, const bool c1_continuous, Eigen::MatrixXd &boundary_samples, Eigen::MatrixXd &poly_samples, const Eigen::MatrixXd &basis_integrals, Eigen::MatrixXd &rhs)
+		void sample_polygon(const int element_index, const int samples_res, const Mesh2D &mesh, std::map<int, InterfaceData> &poly_edge_to_data, const std::vector< ElementBases > &bases, const std::vector< ElementBases > &gbases, std::vector<int> &local_to_global, const double eps, const bool c1_continuous, Eigen::MatrixXd &boundary_samples, Eigen::MatrixXd &poly_samples, const Eigen::MatrixXd &basis_integrals, Eigen::MatrixXd &rhs)
 		{
 			const int n_edges = mesh.n_element_vertices(element_index);
 
@@ -61,7 +61,7 @@ namespace poly_fem
 			Navigation::Index index = mesh.get_index_from_face(element_index);
 			for(int i = 0; i < n_edges; ++i)
 			{
-				const BoundaryData &bdata = poly_edge_to_data[index.edge];
+				const InterfaceData &bdata = poly_edge_to_data[index.edge];
 				local_to_global.insert(local_to_global.end(), bdata.node_id.begin(), bdata.node_id.end());
 
 				index = mesh.next_around_face(index);
@@ -84,14 +84,14 @@ namespace poly_fem
                 //no boundary polygons
 				assert(mesh.switch_face(index).face >= 0);
 
-				const BoundaryData &bdata = poly_edge_to_data[index.edge];
+				const InterfaceData &bdata = poly_edge_to_data[index.edge];
 
 				const ElementBases &b=bases[bdata.face_id];
 				const ElementBases &gb=gbases[bdata.face_id];
 
 				assert(bdata.face_id == mesh.switch_face(index).face);
 
-				const bool has_samples = QuadBoundarySampler::sample(bdata.flag == BoundaryData::RIGHT_FLAG, bdata.flag == BoundaryData::BOTTOM_FLAG, bdata.flag == BoundaryData::LEFT_FLAG, bdata.flag == BoundaryData::TOP_FLAG, samples_res, false, samples);
+				const bool has_samples = QuadBoundarySampler::sample(bdata.flag == InterfaceData::RIGHT_FLAG, bdata.flag == InterfaceData::BOTTOM_FLAG, bdata.flag == InterfaceData::LEFT_FLAG, bdata.flag == InterfaceData::TOP_FLAG, samples_res, false, samples);
 				assert(has_samples);
 
 				gb.eval_geom_mapping(samples, mapped);
@@ -200,7 +200,7 @@ namespace poly_fem
 		const std::vector< ElementAssemblyValues > &gvalues,
 		std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
-		std::map<int, BoundaryData> &poly_edge_to_data,
+		std::map<int, InterfaceData> &poly_edge_to_data,
 		std::map<int, Eigen::MatrixXd> &polys)
 	{
 		using std::max;

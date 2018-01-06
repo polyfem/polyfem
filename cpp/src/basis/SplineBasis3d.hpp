@@ -4,7 +4,7 @@
 #include "Mesh3D.hpp"
 #include "ElementBases.hpp"
 #include "LocalBoundary.hpp"
-#include "HarmonicBoundaryData.hpp"
+#include "InterfaceData.hpp"
 
 #include <Eigen/Dense>
 #include <vector>
