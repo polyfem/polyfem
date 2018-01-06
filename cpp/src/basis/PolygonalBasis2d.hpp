@@ -4,6 +4,7 @@
 #include "Mesh2D.hpp"
 #include "ElementBases.hpp"
 #include "ElementAssemblyValues.hpp"
+#include "HarmonicBoundaryData.hpp"
 
 #include <Eigen/Dense>
 #include <vector>
@@ -13,25 +14,9 @@
 namespace poly_fem
 {
 
-
-	struct BoundaryData
-	{
-		int face_id = -1;
-		int flag;
-		std::vector<int> node_id;
-
-		std::vector<int> local_indices;
-		std::vector<double> vals;
-	};
-
 	class PolygonalBasis2d
 	{
 	public:
-		static const int LEFT_FLAG = 1;
-		static const int TOP_FLAG = 2;
-		static const int RIGHT_FLAG = 4;
-		static const int BOTTOM_FLAG = 8;
-
 		static void build_bases(
 			const int samples_res,
 			const Mesh2D &mesh,

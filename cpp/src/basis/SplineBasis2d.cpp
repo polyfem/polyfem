@@ -87,10 +87,10 @@ namespace poly_fem
                 {
                     switch(b_flag)
                     {
-                        case PolygonalBasis2d::RIGHT_FLAG: local_boundary.set_right_boundary(); local_boundary.set_right_edge_id(index.edge); break;
-                        case PolygonalBasis2d::BOTTOM_FLAG: local_boundary.set_bottom_boundary(); local_boundary.set_bottom_edge_id(index.edge); break;
-                        case PolygonalBasis2d::LEFT_FLAG: local_boundary.set_left_boundary(); local_boundary.set_left_edge_id(index.edge); break;
-                        case PolygonalBasis2d::TOP_FLAG: local_boundary.set_top_boundary(); local_boundary.set_top_edge_id(index.edge); break;
+                        case BoundaryData::RIGHT_FLAG: local_boundary.set_right_boundary(); local_boundary.set_right_edge_id(index.edge); break;
+                        case BoundaryData::BOTTOM_FLAG: local_boundary.set_bottom_boundary(); local_boundary.set_bottom_edge_id(index.edge); break;
+                        case BoundaryData::LEFT_FLAG: local_boundary.set_left_boundary(); local_boundary.set_left_edge_id(index.edge); break;
+                        case BoundaryData::TOP_FLAG: local_boundary.set_top_boundary(); local_boundary.set_top_edge_id(index.edge); break;
                     }
                     bounday_nodes.push_back(node_id);
                 }
@@ -139,19 +139,19 @@ namespace poly_fem
 
             //////////////////////////////////////////
             index = mesh.get_index_from_face(el_index);
-            explore_direction(index, mesh, 0, 1, true, true, PolygonalBasis2d::RIGHT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
+            explore_direction(index, mesh, 0, 1, true, true, BoundaryData::RIGHT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             //////////////////////////////////////////
             index = mesh.next_around_face(index);
-            explore_direction(index, mesh, 1, 0, false, false, PolygonalBasis2d::TOP_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
+            explore_direction(index, mesh, 1, 0, false, false, BoundaryData::TOP_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             //////////////////////////////////////////
             index = mesh.next_around_face(index);
-            explore_direction(index, mesh, 2, 1, true, false, PolygonalBasis2d::LEFT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
+            explore_direction(index, mesh, 2, 1, true, false, BoundaryData::LEFT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             //////////////////////////////////////////
             index = mesh.next_around_face(index);
-            explore_direction(index, mesh, 1, 2, false, true, PolygonalBasis2d::BOTTOM_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
+            explore_direction(index, mesh, 1, 2, false, true, BoundaryData::BOTTOM_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             //////////////////////////////////////////
             if(space(1, 0).front() >= mesh.n_elements() && space(0, 1).front() >= mesh.n_elements())
@@ -666,13 +666,13 @@ namespace poly_fem
                 int b_flag;
 
                 if(j == 1)
-                    b_flag = PolygonalBasis2d::TOP_FLAG;
+                    b_flag = BoundaryData::TOP_FLAG;
                 else if( j == 2)
-                    b_flag = PolygonalBasis2d::LEFT_FLAG;
+                    b_flag = BoundaryData::LEFT_FLAG;
                 else if( j == 3)
-                    b_flag = PolygonalBasis2d::BOTTOM_FLAG;
+                    b_flag = BoundaryData::BOTTOM_FLAG;
                 else
-                    b_flag = PolygonalBasis2d::RIGHT_FLAG;
+                    b_flag = BoundaryData::RIGHT_FLAG;
 
                 if(is_neigh_poly)
                 {

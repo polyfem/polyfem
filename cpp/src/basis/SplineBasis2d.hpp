@@ -5,7 +5,7 @@
 #include "ElementBases.hpp"
 #include "LocalBoundary.hpp"
 
-#include "PolygonalBasis2d.hpp"
+#include "HarmonicBoundaryData.hpp"
 
 #include <Eigen/Dense>
 #include <vector>

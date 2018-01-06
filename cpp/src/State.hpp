@@ -7,7 +7,7 @@
 #include "Mesh.hpp"
 #include "Problem.hpp"
 #include "LocalBoundary.hpp"
-#include "PolygonalBasis2d.hpp"
+#include "HarmonicBoundaryData.hpp"
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>

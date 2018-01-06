@@ -7,8 +7,6 @@
 
 // #include "Harmonic.hpp"
 // #include "Biharmonic.hpp"
-//TODO
-#include "PolygonalBasis2d.hpp"
 
 
 #include <cassert>
@@ -567,7 +565,7 @@ namespace poly_fem
 
             // index = mesh.get_index_from_face(element_index);
 
-            // Eigen::MatrixXd prev; //TODO compute first prev!
+            // Eigen::MatrixXd prev;
 
             // for(int i = 0; i < n_edges; ++i)
             // {

@@ -124,6 +124,8 @@ add_library(polyfem
 	src/basis/Basis.hpp
 	src/basis/Basis.cpp
 
+	src/basis/HarmonicBoundaryData.hpp
+
 
 	src/basis/FEBasis2d.cpp
 	src/basis/FEBasis2d.hpp
