@@ -78,67 +78,71 @@ namespace poly_fem
 		}
 	}
 
+	void ElementAssemblyValues::compute(const bool is_volume, const ElementBases &basis)
+	{
+		quadrature = basis.quadrature;
+
+		basis_values.resize(basis.bases.size());
+		quadrature = quadrature;
+
+		Eigen::MatrixXd mval = Eigen::MatrixXd::Zero(quadrature.points.rows(), quadrature.points.cols());
+
+		Eigen::MatrixXd dxmv = Eigen::MatrixXd::Zero(quadrature.points.rows(), quadrature.points.cols());
+		Eigen::MatrixXd dymv = Eigen::MatrixXd::Zero(quadrature.points.rows(), quadrature.points.cols());
+		Eigen::MatrixXd dzmv;
+
+		if(is_volume)
+			dzmv = Eigen::MatrixXd::Zero(quadrature.points.rows(), quadrature.points.cols());
+
+		const int n_local_bases = int(basis.bases.size());
+		for(int j = 0; j < n_local_bases; ++j)
+		{
+			const Basis &b=basis.bases[j];
+			AssemblyValues &ass_val = basis_values[j];
+
+			ass_val.global = b.global();
+
+
+			b.basis(quadrature.points, ass_val.val);
+			assert(ass_val.val.cols()==1);
+
+			b.grad(quadrature.points, ass_val.grad);
+			assert(ass_val.grad.cols() == quadrature.points.cols());
+
+			if(!basis.has_parameterization) continue;
+
+			for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+			{
+				for (long k = 0; k < ass_val.val.rows(); ++k)
+				{
+					mval.row(k) += ass_val.val(k)    * b.global()[ii].node * b.global()[ii].val;
+
+					dxmv.row(k) += ass_val.grad(k,0) * b.global()[ii].node  * b.global()[ii].val;
+					dymv.row(k) += ass_val.grad(k,1) * b.global()[ii].node  * b.global()[ii].val;
+					if(is_volume)
+						dzmv.row(k) += ass_val.grad(k,2) * b.global()[ii].node  * b.global()[ii].val;
+				}
+			}
+		}
+
+		if(!basis.has_parameterization)
+			finalize_global_element(quadrature.points);
+		else
+		{
+			if(is_volume)
+				finalize(mval, dxmv, dymv, dzmv);
+			else
+				finalize(mval, dxmv, dymv);
+		}
+	}
+
 	void ElementAssemblyValues::compute_assembly_values(const bool is_volume, const std::vector< ElementBases > &bases, std::vector< ElementAssemblyValues > &values)
 	{
 		values.resize(bases.size());
 
 		for(std::size_t i = 0; i < bases.size(); ++i)
 		{
-			const Quadrature &quadrature = bases[i].quadrature;
-			const ElementBases &bs = bases[i];
-			ElementAssemblyValues &vals = values[i];
-			vals.basis_values.resize(bs.bases.size());
-			vals.quadrature = quadrature;
-
-			Eigen::MatrixXd mval = Eigen::MatrixXd::Zero(quadrature.points.rows(), quadrature.points.cols());
-
-			Eigen::MatrixXd dxmv = Eigen::MatrixXd::Zero(quadrature.points.rows(), quadrature.points.cols());
-			Eigen::MatrixXd dymv = Eigen::MatrixXd::Zero(quadrature.points.rows(), quadrature.points.cols());
-			Eigen::MatrixXd dzmv;
-
-			if(is_volume)
-				dzmv = Eigen::MatrixXd::Zero(quadrature.points.rows(), quadrature.points.cols());
-
-			const int n_local_bases = int(bs.bases.size());
-			for(int j = 0; j < n_local_bases; ++j)
-			{
-				const Basis &b=bs.bases[j];
-				AssemblyValues &val = vals.basis_values[j];
-
-				val.global = b.global();
-
-
-				b.basis(quadrature.points, val.val);
-				assert(val.val.cols()==1);
-
-				b.grad(quadrature.points, val.grad);
-				assert(val.grad.cols() == quadrature.points.cols());
-
-				if(!bs.has_parameterization) continue;
-
-				for(std::size_t ii = 0; ii < b.global().size(); ++ii)
-				{
-					for (long k = 0; k < val.val.rows(); ++k)
-					{
-						mval.row(k) += val.val(k)    * b.global()[ii].node * b.global()[ii].val;
-
-						dxmv.row(k) += val.grad(k,0) * b.global()[ii].node  * b.global()[ii].val;
-						dymv.row(k) += val.grad(k,1) * b.global()[ii].node  * b.global()[ii].val;
-						if(is_volume)
-							dzmv.row(k) += val.grad(k,2) * b.global()[ii].node  * b.global()[ii].val;
-					}
-				}
-			}
-
-			if(!bs.has_parameterization)
-				vals.finalize_global_element(quadrature.points);
-			else
-			{
-				if(is_volume)
-					vals.finalize(mval, dxmv, dymv, dzmv);
-				else
-					vals.finalize(mval, dxmv, dymv);
-			}
+			values[i].compute(is_volume, bases[i]);
 		}
 	}
 }

@@ -5,6 +5,8 @@
 #include "ElementBases.hpp"
 #include "LocalBoundary.hpp"
 
+#include "PolygonalBasis2d.hpp"
+
 #include <Eigen/Dense>
 #include <vector>
 #include <map>
@@ -22,7 +24,7 @@ namespace poly_fem
 			std::vector< ElementBases > &bases,
 			std::vector< LocalBoundary > &local_boundary,
 			std::vector< int > &bounday_nodes,
-			std::map<int, Eigen::MatrixXd> &polys);
+			std::map<int, BoundaryData> &poly_edge_to_data);
 	};
 }
 

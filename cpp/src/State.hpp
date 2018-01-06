@@ -7,6 +7,7 @@
 #include "Mesh.hpp"
 #include "Problem.hpp"
 #include "LocalBoundary.hpp"
+#include "PolygonalBasis2d.hpp"
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
@@ -24,6 +25,7 @@ namespace poly_fem
 		int quadrature_order = 4;
 		int discr_order = 1;
 		int n_boundary_samples = 10;
+		int harminic_samples_res = 10;
 
 		std::string mesh_path;
 		int n_refs = 0;
@@ -43,6 +45,7 @@ namespace poly_fem
 
 		std::vector< int >                   bounday_nodes;
 		std::vector< LocalBoundary >         local_boundary;
+		std::map<int, BoundaryData> 		 poly_edge_to_data;
 
 		std::vector<int> boundary_tag;
 

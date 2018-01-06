@@ -180,6 +180,7 @@ namespace poly_fem
 		errors.clear();
 		polys.clear();
 		els_tag.clear();
+		poly_edge_to_data.clear();
 		delete mesh;
 
 
@@ -225,11 +226,11 @@ namespace poly_fem
 			const Mesh2D &tmp_mesh = *static_cast<Mesh2D *>(mesh);
 			if(use_splines){
 				if(iso_parametric)
-					n_bases = SplineBasis2d::build_bases(tmp_mesh, els_tag, quadrature_order, bases, local_boundary, bounday_nodes, polys);
+					n_bases = SplineBasis2d::build_bases(tmp_mesh, els_tag, quadrature_order, bases, local_boundary, bounday_nodes, poly_edge_to_data);
 				else
 				{
 					n_geom_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, bounday_nodes);
-					n_bases = SplineBasis2d::build_bases(tmp_mesh, els_tag, quadrature_order, bases, local_boundary, bounday_nodes, polys);
+					n_bases = SplineBasis2d::build_bases(tmp_mesh, els_tag, quadrature_order, bases, local_boundary, bounday_nodes, poly_edge_to_data);
 				}
 			}
 			else
@@ -394,13 +395,49 @@ namespace poly_fem
 
 		std::sort(bounday_nodes.begin(), bounday_nodes.end());
 
-		if(iso_parametric)
+		if(iso_parametric){
 			ElementAssemblyValues::compute_assembly_values(mesh->is_volume(), bases, values);
+
+			if(mesh->is_volume())
+			{
+				if(!poly_edge_to_data.empty())
+					assert(false);
+			}
+			else
+				PolygonalBasis2d::build_bases(harminic_samples_res, *static_cast<Mesh2D *>(mesh), n_bases, els_tag, quadrature_order, values, values, bases, bases, poly_edge_to_data, polys);
+
+			for(std::size_t e = 0; e < bases.size(); ++e)
+			{
+				if(els_tag[e] != ElementType::InteriorPolytope && els_tag[e] != ElementType::BoundaryPolytope)
+					continue;
+
+				values[e].compute(mesh->is_volume(), bases[e]);
+			}
+		}
 		else
 		{
 			ElementAssemblyValues::compute_assembly_values(mesh->is_volume(), geom_bases, geom_values);
 			ElementAssemblyValues::compute_assembly_values(mesh->is_volume(), bases, values);
+
+			if(mesh->is_volume())
+			{
+				if(!poly_edge_to_data.empty())
+					assert(false);
+			}
+			else
+				PolygonalBasis2d::build_bases(harminic_samples_res, *static_cast<Mesh2D *>(mesh), n_bases, els_tag, quadrature_order, values, geom_values, bases, geom_bases, poly_edge_to_data, polys);
+
+			for(std::size_t e = 0; e < bases.size(); ++e)
+			{
+				if(els_tag[e] != ElementType::InteriorPolytope && els_tag[e] != ElementType::BoundaryPolytope)
+					continue;
+
+				geom_values[e].compute(mesh->is_volume(), geom_bases[e]);
+				values[e].compute(mesh->is_volume(), bases[e]);
+			}
 		}
+
+
 
 		timer.stop();
 		computing_assembly_values_time = timer.getElapsedTime();

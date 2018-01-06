@@ -245,7 +245,30 @@ namespace poly_fem
 
 	void Mesh3D::set_boundary_tags(std::vector<int> &tags) const
 	{
-		//TODO implement me
+		tags.resize(mesh_.faces.size());
+		std::fill(tags.begin(), tags.end(), -1);
+
+		for(std::size_t f = 0; f < mesh_.faces.size(); ++f)
+		{
+			if(!mesh_.faces[f].boundary)
+				continue;
+
+			const auto p = node_from_face(f);
+
+
+			if(fabs(p(0))<1e-8)
+				tags[f]=1;
+			if(fabs(p(1))<1e-8)
+				tags[f]=2;
+			if(fabs(p(2))<1e-8)
+				tags[f]=5;
+			if(fabs(p(0)-1)<1e-8)
+				tags[f]=3;
+			if(fabs(p(1)-1)<1e-8)
+				tags[f]=4;
+			if(fabs(p(2)-1)<1e-8)
+				tags[f]=6;
+		}
 	}
 
 	void Mesh3D::point(const int global_index, Eigen::MatrixXd &pt) const
@@ -695,7 +718,6 @@ namespace poly_fem
 		to_edge[6]= [this](Navigation3D::Index idx) { return switch_edge(switch_face(switch_edge(switch_vertex(switch_edge(switch_vertex(idx)))))); };
 		to_edge[7]= [this](Navigation3D::Index idx) { return switch_edge(switch_face(switch_edge(switch_vertex(switch_edge(switch_vertex(switch_edge(switch_vertex(idx)))))))); };
 
-		//TODO
 		to_edge[8]= [this](Navigation3D::Index idx) { return switch_edge(switch_vertex(switch_edge(switch_face(idx)))); };
 		to_edge[9]= [this](Navigation3D::Index idx) { return switch_edge(switch_vertex(switch_edge(switch_face(switch_edge(switch_vertex(idx)))))); };
 		to_edge[10]= [this](Navigation3D::Index idx) { return switch_edge(switch_vertex(switch_edge(switch_face(switch_edge(switch_vertex(switch_edge(switch_vertex(idx)))))))); };

@@ -7,6 +7,8 @@
 
 // #include "Harmonic.hpp"
 // #include "Biharmonic.hpp"
+//TODO
+#include "PolygonalBasis2d.hpp"
 
 
 #include <cassert>
@@ -65,15 +67,6 @@ namespace poly_fem
         static const int BOTTOM_FLAG = 8;
         static const int FRONT_FLAG = 16;
         static const int BACK_FLAG = 32;
-
-        struct BoundaryData
-        {
-            int face_id;
-            int flag;
-            std::vector<int> node_id;
-
-            std::vector<int> x, y;
-        };
 
 
         void print_local_space(const SpaceMatrix &space)
