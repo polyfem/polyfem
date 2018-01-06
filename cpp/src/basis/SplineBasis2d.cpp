@@ -963,7 +963,7 @@ namespace poly_fem
         if(!has_polygons)
             return n_bases+1;
 
-        Eigen::MatrixXd basis_integrals(n_bases, 2);
+        Eigen::MatrixXd basis_integrals(n_bases+1, 2);
         Eigen::MatrixXd grad_tmp;
         basis_integrals.setZero();
         std::vector< ElementAssemblyValues > values;
