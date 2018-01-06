@@ -508,22 +508,31 @@ namespace poly_fem
 
                 if (opposite_face < 0 || mesh.n_element_vertices(opposite_face) > 4)
                 {
-                    current_edge_node_id = mesh.edge_node_id(index.edge);
-                    current_edge_node = mesh.node_from_edge_index(index);
+                    auto eit = edge_id.find(index.edge);
+
+                    if(eit == edge_id.end())
+                    {
+                        current_edge_node_id = ++n_bases;
+                        edge_id[index.edge] = current_edge_node_id;
+                    }
+                    else
+                        current_edge_node_id = eit->second;
+
+                    current_edge_node = mesh.edge_mid_point(index.edge);
                     if(opposite_face < 0)
                         bounday_nodes.push_back(current_edge_node_id);
 
                     if(is_vertex_q2)
                     {
-                        auto it = vertex_id.find(index.vertex);
+                        auto vit = vertex_id.find(index.vertex);
 
-                        if(it == vertex_id.end())
+                        if(vit == vertex_id.end())
                         {
                             current_vertex_node_id = ++n_bases;
                             vertex_id[index.vertex] = current_vertex_node_id;
                         }
                         else
-                            current_vertex_node_id = it->second;
+                            current_vertex_node_id = vit->second;
 
                         if(opposite_face < 0)
                             bounday_nodes.push_back(current_vertex_node_id);
@@ -929,8 +938,13 @@ namespace poly_fem
         std::map<int, int > edge_id;
         std::map<int, int > vertex_id;
 
+        bool has_polygons = false;
+
         for(int e = 0; e < n_els; ++e)
         {
+            if(els_tag[e] == ElementType::InteriorPolytope || els_tag[e] == ElementType::BoundaryPolytope)
+                has_polygons = true;
+
             if(els_tag[e] != ElementType::MultiSingularInteriorCube && els_tag[e] != ElementType::SimpleSingularBoundaryCube)
                 continue;
 
@@ -945,6 +959,9 @@ namespace poly_fem
             // std::cout<<b<<std::endl;
 
         }
+
+        if(!has_polygons)
+            return n_bases+1;
 
         Eigen::MatrixXd basis_integrals(n_bases, 2);
         Eigen::MatrixXd grad_tmp;

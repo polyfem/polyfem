@@ -82,6 +82,7 @@ namespace poly_fem
 						{
 							global_index_to_col[b.global()[ii].index] = index++;
 							indices.push_back(b.global()[ii].index);
+							assert(indices.size() == index);
 						}
 					}
 				}

@@ -177,6 +177,7 @@ namespace poly_fem
 		boundary_tag.clear();
 		errors.clear();
 		polys.clear();
+		els_tag.clear();
 		delete mesh;
 
 
