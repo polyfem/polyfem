@@ -735,16 +735,23 @@ namespace poly_fem
 		assert(n_element_faces(element_index) == 6);
 		auto idx = get_index_from_element(element_index);
 		std::array<int, 8> v;
-		for (int lv = 0; lv < 4; ++lv) {
-			v[lv] = idx.vertex;
-			idx = next_around_face_of_element(idx);
-		}
-		// assert(idx == get_index_from_element(element_index));
-		idx = switch_face(switch_edge(switch_vertex(switch_edge(switch_face(idx)))));
-		for (int lv = 0; lv < 4; ++lv) {
-			v[4+lv] = idx.vertex;
-			idx = next_around_face_of_element(idx);
-		}
+
+        std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 8> to_vertex;
+        to_vertex_functions(to_vertex);
+        for(int i=0;i<8;++i)
+        	v[i] = to_vertex[i](idx).vertex;
+
+
+		// for (int lv = 0; lv < 4; ++lv) {
+		// 	v[lv] = idx.vertex;
+		// 	idx = next_around_face_of_element(idx);
+		// }
+		// // assert(idx == get_index_from_element(element_index));
+		// idx = switch_face(switch_edge(switch_vertex(switch_edge(switch_face(idx)))));
+		// for (int lv = 0; lv < 4; ++lv) {
+		// 	v[4+lv] = idx.vertex;
+		// 	idx = next_around_face_of_element(idx);
+		// }
 		return v;
 	}
 

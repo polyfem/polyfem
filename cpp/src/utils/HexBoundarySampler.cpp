@@ -79,14 +79,14 @@ namespace poly_fem {
 
 		if(is_front_boundary){
 			samples.block(n, 0, resolution, 1) = tx;
-			samples.block(n, 1, resolution, 1) = Eigen::MatrixXd::Ones(resolution, 1);
+			samples.block(n, 1, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);
 			samples.block(n, 2, resolution, 1) = ty;
 
 			n += resolution;
 		}
 		if(is_back_boundary){
 			samples.block(n, 0, resolution, 1) = tx;
-			samples.block(n, 1, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);
+			samples.block(n, 1, resolution, 1) = Eigen::MatrixXd::Ones(resolution, 1);
 			samples.block(n, 2, resolution, 1) = ty;
 
 			n += resolution;

@@ -561,9 +561,6 @@ namespace poly_fem
 // #else //POLY_FEM_WITH_UMFPACK
 		BiCGSTAB<SparseMatrix<double, Eigen::RowMajor> > solver;
 		std::cout<<"with BiCGSTAB iterative solver..."<<std::flush;
-
-		Eigen::saveMarket(stiffness, "A.mat");
-		Eigen::saveMarketVector(rhs, "b.mat");
 		sol = solver.compute(stiffness).solve(rhs);
 // #endif //POLY_FEM_WITH_UMFPACK
 // #endif  //POLY_FEM_WITH_SUPERLU
