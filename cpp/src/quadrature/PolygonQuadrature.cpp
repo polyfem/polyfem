@@ -100,6 +100,6 @@ namespace poly_fem
         }
 
         assert(quad.weights.minCoeff()>=0);
-        std::cout<<quad.weights.size()<<" "<<quad.weights.sum()<<std::endl;
+        // std::cout<<quad.weights.size()<<" "<<quad.weights.sum()<<std::endl;
     }
 }

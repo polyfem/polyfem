@@ -812,16 +812,16 @@ namespace poly_fem
                 }
                 else
                 {
-                    // samples = samples.block(0, 0, samples.rows()-1, samples.cols()).eval();
-                    // mapped = mapped.block(0, 0, mapped.rows()-1, mapped.cols()).eval();
+                    samples = samples.block(0, 0, samples.rows()-1, samples.cols()).eval();
+                    mapped = mapped.block(0, 0, mapped.rows()-1, mapped.cols()).eval();
 
-                    // mapped = mapped.colwise().reverse().eval();
-                    // must_reverse = true;
+                    mapped = mapped.colwise().reverse().eval();
+                    must_reverse = true;
 
-                    samples = samples.block(1, 0, samples.rows()-1, samples.cols()).eval();
-                    mapped = mapped.block(1, 0, mapped.rows()-1, mapped.cols()).eval();
+                    // samples = samples.block(1, 0, samples.rows()-1, samples.cols()).eval();
+                    // mapped = mapped.block(1, 0, mapped.rows()-1, mapped.cols()).eval();
 
-                    must_reverse = false;
+                    // must_reverse = false;
                 }
 
                 // assert(bdata.node_id.size() == 3);
@@ -1035,14 +1035,14 @@ namespace poly_fem
 
             if(use_harmonic)
             {
-                igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
-                viewer.data.add_points(poly_samples, Eigen::Vector3d(0,1,1).transpose());
+                // igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
+                // viewer.data.add_points(poly_samples, Eigen::Vector3d(0,1,1).transpose());
 
-                Eigen::MatrixXd asd(boundary_samples.rows(), 3);
-                asd.col(0)=boundary_samples.col(0);
-                asd.col(1)=boundary_samples.col(1);
-                asd.col(2)=rhs.col(0);
-                viewer.data.add_points(asd, Eigen::Vector3d(1,0,1).transpose());
+                // Eigen::MatrixXd asd(boundary_samples.rows(), 3);
+                // asd.col(0)=boundary_samples.col(0);
+                // asd.col(1)=boundary_samples.col(1);
+                // asd.col(2)=rhs.col(0);
+                // viewer.data.add_points(asd, Eigen::Vector3d(1,0,1).transpose());
 
                 // for(int asd = 0; asd < boundary_samples.rows(); ++asd)
                     // viewer.data.add_label(boundary_samples.row(asd), std::to_string(asd));
