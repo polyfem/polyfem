@@ -106,9 +106,13 @@ int main(int argc, char * argv[]) {
 
 	// Read input
 	std::cout << "-- Reading triplets" << std::endl;
-	read_triplets(args.matrix, A);
+	//read_triplets(args.matrix, A);
+	//Eigen::saveMarket(A, "A.mat");
+	Eigen::loadMarket(A, args.matrix);
 	std::cout << "-- Reading rhs" << std::endl;
-	read_vector(args.rhs, b);
+	// read_vector(args.rhs, b);
+	// Eigen::saveMarketVector(b, "b.mat");
+	Eigen::loadMarketVector(b, args.rhs);
 	x.resizeLike(b);
 	x.setZero();
 

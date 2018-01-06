@@ -14,10 +14,12 @@ namespace poly_fem
 	{
 	public:
 		std::vector< Local2Global > global;
-		Eigen::MatrixXd val;
-		Eigen::MatrixXd grad;
 
-		Eigen::MatrixXd grad_t_m;
+		// Evaluation of the basis over the quadrature points of the element
+		Eigen::MatrixXd val; // R^m
+		Eigen::MatrixXd grad; // R^{m x dim}
+
+		Eigen::MatrixXd grad_t_m; // J^{-T}*∇φi per row R^{m x dim}
 
 
 		void finalize()

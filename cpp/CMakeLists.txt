@@ -28,7 +28,7 @@ endif()
 option(ENABLE_CHOLMOD     "Enable Cholmod library"  ON)
 option(ENABLE_UMFPACK     "Enable UmfPack library"  ON)
 option(ENABLE_SUPERLU     "Enable SuperLU library"  ON)
-option(ENABLE_MKL         "Enable MKL library"      ON)
+option(ENABLE_MKL         "Enable MKL library"     OFF)
 option(ENABLE_PARDISO     "Enable Pardiso library"  ON)
 
 # Options for libigl modules
@@ -173,6 +173,7 @@ add_library(polyfem
 	src/problem/Problem.cpp
 
 	src/solver/LinearSolver.cpp
+	src/solver/LinearSolverPardiso.cpp
 )
 
 target_include_directories(polyfem PUBLIC
