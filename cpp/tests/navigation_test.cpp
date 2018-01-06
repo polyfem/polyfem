@@ -176,7 +176,8 @@ namespace {
 				poly_fem::singularity_graph(mesh_, singular_vertices_, singular_edges_);
 				compute_types();
 				idx_ = Navigation::get_index_from_face(mesh_, 0, 0);
-				GEO::mesh_save(mesh_, "foo.obj");
+				// GEO::mesh_save(mesh_, "foo.obj");
+				mesh_gfx_.set_mesh(&mesh_);
 			}
 
 			if (ImGui::Button("Visibility Kernel", ImVec2(-1, 0))) {

@@ -459,19 +459,7 @@ void poly_fem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, Po
 	M_out.edges.clear();
 	M_out.facets.clear();
 
-	// Step 1: Chain vertices around polygonal facets
-	std::vector<int> next_vertex_around_hole(M_in.vertices.nb(), -1);
-	for (index_t f = 0; f < M_in.facets.nb(); ++f) {
-		if (M_in.facets.nb_vertices(f) > 4) {
-			for (index_t lv = 0; lv < M_in.facets.nb_vertices(f); ++lv) {
-				index_t v1 = M_in.facets.vertex(f, lv);
-				index_t v2 = M_in.facets.vertex(f, (lv+1)%M_in.facets.nb_vertices(f));
-				next_vertex_around_hole[v1] = v2;
-			}
-		}
-	}
-
-	// Step 2: Iterate over facets and refine triangles and quads
+	// Step 1: Iterate over facets and refine triangles and quads
 	std::vector<int> edge_to_midpoint(M_in.edges.nb(), -1);
 	for (index_t f = 0; f < M_in.facets.nb(); ++f) {
 		index_t nv = M_in.facets.nb_vertices(f);
@@ -487,21 +475,6 @@ void poly_fem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, Po
 					+ mesh_vertex(M_in, Navigation::switch_vertex(M_in, idx).vertex));
 				edge_to_midpoint[idx.edge] = mesh_create_vertex(M_out, coords);
 				assert(edge_to_midpoint[idx.edge] + 1 == (int) M_out.vertices.nb());
-				next_vertex_around_hole.push_back(-1);
-			}
-			// Chain vertices around holes
-			int v1 = idx.vertex;
-			int v2 = Navigation::switch_vertex(M_in, idx).vertex;
-			if (next_vertex_around_hole[v2] == v1) {
-				// printf("v1: %d, v2: %d, v12: %d, n(v1): %d, n(v2): %d\n",
-				// 	v1, v2, edge_to_midpoint[idx.edge], next_vertex_around_hole[v1], next_vertex_around_hole[v2]);
-				int v12 = edge_to_midpoint[idx.edge];
-				next_vertex_around_hole[v2] = v12;
-				next_vertex_around_hole[v12] = v1;
-			} else if (next_vertex_around_hole[v1] == v2) {
-				int v12 = edge_to_midpoint[idx.edge];
-				next_vertex_around_hole[v1] = v12;
-				next_vertex_around_hole[v12] = v2;
 			}
 		}
 
@@ -509,7 +482,6 @@ void poly_fem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, Po
 			// Create mid-face vertex
 			index_t vf = mesh_create_vertex(M_out, facet_barycenter(M_in, f));
 			assert(vf + 1 == M_out.vertices.nb());
-			next_vertex_around_hole.push_back(-1);
 
 			// Create quads
 			for (index_t lv = 0; lv < M_in.facets.nb_vertices(f); ++lv) {
@@ -524,30 +496,19 @@ void poly_fem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, Po
 		}
 	}
 
-	// Step 3: Create polygonal faces following vertices around holes
-	std::vector<bool> marked(M_out.vertices.nb(), false);
-	for (index_t v0 = 0, vmax = M_out.vertices.nb(); v0 < vmax; ++v0) {
-		if (next_vertex_around_hole[v0] == -1 || marked[v0]) {
-			continue;
+	// Step 2: Create polygonal faces following vertices around holes
+	for (index_t f = 0; f < M_in.facets.nb(); ++f) {
+		if (M_in.facets.nb_vertices(f) <= 4) { continue; }
+		GEO::vector<index_t> hole;
+		{
+			auto idx = Navigation::get_index_from_face(M_in, f, 0);
+			for (index_t lv = 0; lv < M_in.facets.nb_vertices(f); ++lv) {
+				hole.push_back(idx.vertex);
+				hole.push_back(edge_to_midpoint[idx.edge]);
+				idx = Navigation::next_around_face(M_in, idx);
+			}
 		}
 
-		// Build indices of the vertices around the hole
-		// Note that since we start from vertices with lower indices, vertices
-		// from the original mesh will show up first, and the local vertex 0 in
-		// the polygon will belong to the coarser mesh (this is important for the
-		// catmul_clark subdivision scheme).
-		GEO::vector<index_t> hole;
-		int vi = v0;
-		do {
-			// std::cout << vi << ';';
-			hole.push_back(vi);
-			marked[vi] = true;
-			vi = next_vertex_around_hole[vi];
-			assert(vi != -1);
-		} while (vi != (int) v0);
-		// std::cout << std::endl;
-
-		// Record facet
 		if (M_in.vertices.dimension() != 2) {
 			std::cerr << "WARNING: Input mesh has dimension > 2, but polygonal facets will be split considering their XY coordinates only." << std::endl;
 		}
