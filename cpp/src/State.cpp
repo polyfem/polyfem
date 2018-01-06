@@ -12,6 +12,8 @@
 #include "QuadBoundarySampler.hpp"
 #include "HexBoundarySampler.hpp"
 
+#include "PolygonalBasis2d.hpp"
+
 #include "Assembler.hpp"
 #include "RhsAssembler.hpp"
 
@@ -212,6 +214,7 @@ namespace poly_fem
 
 		local_boundary.clear();
 		bounday_nodes.clear();
+		std::map<int, InterfaceData> poly_edge_to_data_geom; //temp dummy variable
 
 		if(mesh->is_volume())
 		{
@@ -229,18 +232,18 @@ namespace poly_fem
 					n_bases = SplineBasis2d::build_bases(tmp_mesh, els_tag, quadrature_order, bases, local_boundary, bounday_nodes, poly_edge_to_data);
 				else
 				{
-					n_geom_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, bounday_nodes);
+					n_geom_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, bounday_nodes, poly_edge_to_data_geom);
 					n_bases = SplineBasis2d::build_bases(tmp_mesh, els_tag, quadrature_order, bases, local_boundary, bounday_nodes, poly_edge_to_data);
 				}
 			}
 			else
 			{
 				if(iso_parametric)
-					n_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, bounday_nodes);
+					n_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, bounday_nodes, poly_edge_to_data);
 				else
 				{
-					n_geom_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, bounday_nodes);
-					n_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, bounday_nodes);
+					n_geom_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, bounday_nodes, poly_edge_to_data_geom);
+					n_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, bounday_nodes, poly_edge_to_data_geom);
 				}
 			}
 		}
@@ -558,9 +561,6 @@ namespace poly_fem
 // #else //POLY_FEM_WITH_UMFPACK
 		BiCGSTAB<SparseMatrix<double, Eigen::RowMajor> > solver;
 		std::cout<<"with BiCGSTAB iterative solver..."<<std::flush;
-
-		Eigen::saveMarket(stiffness, "A.mat");
-		Eigen::saveMarketVector(rhs, "b.mat");
 		sol = solver.compute(stiffness).solve(rhs);
 // #endif //POLY_FEM_WITH_UMFPACK
 // #endif  //POLY_FEM_WITH_SUPERLU

@@ -44,7 +44,7 @@ namespace poly_fem
             }
         }
 
-        void explore_direction(const Navigation::Index &index, const Mesh2D &mesh, const int x, const int y, const bool is_x, const bool invert, const int b_flag, SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, BoundaryData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
+        void explore_direction(const Navigation::Index &index, const Mesh2D &mesh, const int x, const int y, const bool is_x, const bool invert, const int b_flag, SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, InterfaceData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
         {
             int node_id;
             const bool real_boundary = mesh.node_id_from_edge_index(index, node_id);
@@ -87,16 +87,16 @@ namespace poly_fem
                 {
                     switch(b_flag)
                     {
-                        case PolygonalBasis2d::RIGHT_FLAG: local_boundary.set_right_boundary(); local_boundary.set_right_edge_id(index.edge); break;
-                        case PolygonalBasis2d::BOTTOM_FLAG: local_boundary.set_bottom_boundary(); local_boundary.set_bottom_edge_id(index.edge); break;
-                        case PolygonalBasis2d::LEFT_FLAG: local_boundary.set_left_boundary(); local_boundary.set_left_edge_id(index.edge); break;
-                        case PolygonalBasis2d::TOP_FLAG: local_boundary.set_top_boundary(); local_boundary.set_top_edge_id(index.edge); break;
+                        case InterfaceData::RIGHT_FLAG: local_boundary.set_right_boundary(); local_boundary.set_right_edge_id(index.edge); break;
+                        case InterfaceData::BOTTOM_FLAG: local_boundary.set_bottom_boundary(); local_boundary.set_bottom_edge_id(index.edge); break;
+                        case InterfaceData::LEFT_FLAG: local_boundary.set_left_boundary(); local_boundary.set_left_edge_id(index.edge); break;
+                        case InterfaceData::TOP_FLAG: local_boundary.set_top_boundary(); local_boundary.set_top_edge_id(index.edge); break;
                     }
                     bounday_nodes.push_back(node_id);
                 }
                 else
                 {
-                    BoundaryData &data = poly_edge_to_data[index.edge];
+                    InterfaceData &data = poly_edge_to_data[index.edge];
                     // data.face_id = el_index;
                     data.face_id = index.face;
                     data.node_id.push_back(node_id);
@@ -107,12 +107,12 @@ namespace poly_fem
             }
         }
 
-        void add_id_for_poly(const Navigation::Index &index, const int x1, const int y1, const int x2, const int y2, const SpaceMatrix &space, std::map<int, BoundaryData> &poly_edge_to_data)
+        void add_id_for_poly(const Navigation::Index &index, const int x1, const int y1, const int x2, const int y2, const SpaceMatrix &space, std::map<int, InterfaceData> &poly_edge_to_data)
         {
             auto it = poly_edge_to_data.find(index.edge);
             if(it != poly_edge_to_data.end())
             {
-                BoundaryData &data = it->second;
+                InterfaceData &data = it->second;
 
                 assert(space(x1, y1).size() == 1);
                 data.node_id.push_back(space(x1, y1).front());
@@ -126,7 +126,7 @@ namespace poly_fem
             }
         }
 
-        int build_local_space(const Mesh2D &mesh, const int el_index,  SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, BoundaryData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
+        int build_local_space(const Mesh2D &mesh, const int el_index,  SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, InterfaceData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
         {
             assert(!mesh.is_volume());
 
@@ -139,19 +139,19 @@ namespace poly_fem
 
             //////////////////////////////////////////
             index = mesh.get_index_from_face(el_index);
-            explore_direction(index, mesh, 0, 1, true, true, PolygonalBasis2d::RIGHT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
+            explore_direction(index, mesh, 0, 1, true, true, InterfaceData::RIGHT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             //////////////////////////////////////////
             index = mesh.next_around_face(index);
-            explore_direction(index, mesh, 1, 0, false, false, PolygonalBasis2d::TOP_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
+            explore_direction(index, mesh, 1, 0, false, false, InterfaceData::TOP_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             //////////////////////////////////////////
             index = mesh.next_around_face(index);
-            explore_direction(index, mesh, 2, 1, true, false, PolygonalBasis2d::LEFT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
+            explore_direction(index, mesh, 2, 1, true, false, InterfaceData::LEFT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             //////////////////////////////////////////
             index = mesh.next_around_face(index);
-            explore_direction(index, mesh, 1, 2, false, true, PolygonalBasis2d::BOTTOM_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
+            explore_direction(index, mesh, 1, 2, false, true, InterfaceData::BOTTOM_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             //////////////////////////////////////////
             if(space(1, 0).front() >= mesh.n_elements() && space(0, 1).front() >= mesh.n_elements())
@@ -406,7 +406,7 @@ namespace poly_fem
             }
         }
 
-        void basis_for_q2(const Mesh2D &mesh, const std::vector<ElementType> &els_tag, const int el_index, std::map<int, int > &vertex_id, std::map<int, int > &edge_id, const SpaceMatrix &space, const NodeMatrix &loc_nodes, ElementBases &b, std::map<int, BoundaryData> &poly_edge_to_data, std::vector< int > &bounday_nodes, int &n_bases)
+        void basis_for_q2(const Mesh2D &mesh, const std::vector<ElementType> &els_tag, const int el_index, std::map<int, int > &vertex_id, std::map<int, int > &edge_id, const SpaceMatrix &space, const NodeMatrix &loc_nodes, ElementBases &b, std::map<int, InterfaceData> &poly_edge_to_data, std::vector< int > &bounday_nodes, int &n_bases)
         {
             static const auto is_q2 = [els_tag](const int face_id){ return els_tag[face_id] == ElementType::MultiSingularInteriorCube || els_tag[face_id] == ElementType::SimpleSingularBoundaryCube; };
             const int n_els = mesh.n_elements();
@@ -666,17 +666,17 @@ namespace poly_fem
                 int b_flag;
 
                 if(j == 1)
-                    b_flag = PolygonalBasis2d::TOP_FLAG;
+                    b_flag = InterfaceData::TOP_FLAG;
                 else if( j == 2)
-                    b_flag = PolygonalBasis2d::LEFT_FLAG;
+                    b_flag = InterfaceData::LEFT_FLAG;
                 else if( j == 3)
-                    b_flag = PolygonalBasis2d::BOTTOM_FLAG;
+                    b_flag = InterfaceData::BOTTOM_FLAG;
                 else
-                    b_flag = PolygonalBasis2d::RIGHT_FLAG;
+                    b_flag = InterfaceData::RIGHT_FLAG;
 
                 if(is_neigh_poly)
                 {
-                    BoundaryData &data = poly_edge_to_data[index.edge];
+                    InterfaceData &data = poly_edge_to_data[index.edge];
                     data.face_id = index.face;
                     data.flag = b_flag;
 
@@ -712,7 +712,7 @@ namespace poly_fem
     }
 
 
-    int SplineBasis2d::build_bases(const Mesh2D &mesh, const std::vector<ElementType> &els_tag, const int quadrature_order, std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes, std::map<int, BoundaryData> &poly_edge_to_data)
+    int SplineBasis2d::build_bases(const Mesh2D &mesh, const std::vector<ElementType> &els_tag, const int quadrature_order, std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes, std::map<int, InterfaceData> &poly_edge_to_data)
     {
         using std::max;
         assert(!mesh.is_volume());
@@ -763,7 +763,7 @@ namespace poly_fem
 
             SpaceMatrix space;
             NodeMatrix loc_nodes;
-            std::map<int, BoundaryData> dummy;
+            std::map<int, InterfaceData> dummy;
             build_local_space(mesh, e, space, loc_nodes, local_boundary[e], dummy, bounday_nodes);
             ElementBases &b=bases[e];
             quad_quadrature.get_quadrature(quadrature_order, b.quadrature);

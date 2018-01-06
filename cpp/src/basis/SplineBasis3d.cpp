@@ -7,8 +7,6 @@
 
 // #include "Harmonic.hpp"
 // #include "Biharmonic.hpp"
-//TODO
-#include "PolygonalBasis2d.hpp"
 
 
 #include <cassert>
@@ -93,7 +91,7 @@ namespace poly_fem
             }
         }
 
-        void explore_edge(const Navigation3D::Index &index, const Mesh3D &mesh, const int x, const int y, const int z, SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, BoundaryData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
+        void explore_edge(const Navigation3D::Index &index, const Mesh3D &mesh, const int x, const int y, const int z, SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, InterfaceData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
         {
             int node_id;
             bool boundary = mesh.node_id_from_edge_index(index, node_id);
@@ -106,7 +104,7 @@ namespace poly_fem
                 bounday_nodes.push_back(node_id);
         }
 
-        void explore_vertex(const Navigation3D::Index &index, const Mesh3D &mesh, const int x, const int y, const int z, SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, BoundaryData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
+        void explore_vertex(const Navigation3D::Index &index, const Mesh3D &mesh, const int x, const int y, const int z, SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, InterfaceData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
         {
             int node_id;
             bool boundary = mesh.node_id_from_vertex_index(index, node_id);
@@ -119,7 +117,7 @@ namespace poly_fem
                 bounday_nodes.push_back(node_id);
         }
 
-        void explore_face(const Navigation3D::Index &index, const Mesh3D &mesh, const int x, const int y, const int z,  const int b_flag, SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, BoundaryData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
+        void explore_face(const Navigation3D::Index &index, const Mesh3D &mesh, const int x, const int y, const int z,  const int b_flag, SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, InterfaceData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
         {
             int node_id;
             const bool real_boundary = mesh.node_id_from_face_index(index, node_id);
@@ -159,26 +157,7 @@ namespace poly_fem
             }
         }
 
-        void add_id_for_poly(const Navigation3D::Index &index, const int x1, const int y1, const int x2, const int y2, const SpaceMatrix &space, std::map<int, BoundaryData> &poly_edge_to_data)
-        {
-            // auto it = poly_edge_to_data.find(index.edge);
-            // if(it != poly_edge_to_data.end())
-            // {
-            //     BoundaryData &data = it->second;
-
-            //     assert(space(x1, y1).size() == 1);
-            //     data.node_id.push_back(space(x1, y1).front());
-            //     data.x.push_back(x1);
-            //     data.y.push_back(y1);
-
-            //     assert(space(x2, y2).size() == 1);
-            //     data.node_id.push_back(space(x2, y2).front());
-            //     data.x.push_back(x2);
-            //     data.y.push_back(y2);
-            // }
-        }
-
-        int build_local_space(const Mesh3D &mesh, const int el_index,  SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, BoundaryData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
+        int build_local_space(const Mesh3D &mesh, const int el_index,  SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, InterfaceData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
         {
             assert(mesh.is_volume());
 
@@ -211,10 +190,10 @@ namespace poly_fem
             explore_face(index, mesh, 2, 1, 1, RIGHT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             index = to_face[4](start_index);
-            explore_face(index, mesh, 1, 0, 1, BACK_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
+            explore_face(index, mesh, 1, 0, 1, FRONT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             index = to_face[5](start_index);
-            explore_face(index, mesh, 1, 2, 1, FRONT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
+            explore_face(index, mesh, 1, 2, 1, BACK_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
 
             ///////////////////////
@@ -453,229 +432,309 @@ namespace poly_fem
             }
         }
 
-        void basis_for_irregulard_hex(const Mesh3D &mesh, const SpaceMatrix &space, const NodeMatrix &loc_nodes, const std::array<std::vector<double>, 3> &h_knots, const std::array<std::vector<double>, 3> &v_knots, ElementBases &b)
+
+        void basis_for_q2(const Mesh3D &mesh, const std::vector<ElementType> &els_tag, const int el_index, std::map<int, int > &vertex_id, std::map<int, int > &edge_id, const SpaceMatrix &space, const NodeMatrix &loc_nodes, ElementBases &b, std::map<int, InterfaceData> &poly_edge_to_data, std::vector< int > &bounday_nodes, int &n_bases)
         {
-            // for(int y = 0; y < 3; ++y)
-            // {
-            //     for(int x = 0; x < 3; ++x)
-            //     {
-            //         if(space(x, y).size() > 1)
-            //         {
-            //             const int mpx = 1;
-            //             const int mpy = y;
+        //     static const auto is_q2 = [els_tag](const int face_id){ return els_tag[face_id] == ElementType::MultiSingularInteriorCube || els_tag[face_id] == ElementType::MultiSingularBoundaryCube; };
+        //     const int n_els = mesh.n_elements();
 
-            //             const int mmx = x;
-            //             const int mmy = 1;
+        //     b.bases.resize(9);
 
-            //             std::vector<int> other_indices;
-            //             const auto &center = b.bases[1*3 + 1].global().front();
-
-            //             const auto &el1 = b.bases[mpy*3 + mpx].global().front();
-            //             const auto &el2 = b.bases[mmy*3 + mmx].global().front();
-
-            //             Navigation::Index index = mesh.get_index_from_face(center.index);
-            //             while(mesh.next_around_vertex(index).face != el1.index && mesh.next_around_vertex(index).face != el2.index)
-            //             {
-            //                 index = mesh.next_around_face(index);
-            //             }
-
-            //             index = mesh.next_around_vertex(index);
-
-            //             Navigation::Index i1 = mesh.next_around_vertex(index);
-            //             if(i1.face == space(x,y)[0] || i1.face == space(x,y)[1])
-            //                 index = i1;
-            //             else
-            //                 index = mesh.next_around_vertex(mesh.switch_vertex(index));
-
-            //             const int start = index.face == space(x,y)[0] ? space(x,y)[0] : space(x,y)[1];
-            //             const int end = start == space(x,y)[0] ? space(x,y)[1] : space(x,y)[0];
-            //             assert(index.face == space(x,y)[0] || index.face == space(x,y)[1]);
-
-            //             while(index.face != end)
-            //             {
-            //                 other_indices.push_back(index.face);
-            //                 index = mesh.next_around_vertex(index);
-            //             }
-            //             other_indices.push_back(end);
+        //     Navigation::Index index = mesh.get_index_from_face(el_index);
+        //     for (int j = 0; j < 4; ++j)
+        //     {
+        //         int current_vertex_node_id = -1;
+        //         int current_edge_node_id = -1;
+        //         Eigen::Matrix<double, 1, 2> current_edge_node;
+        //         Eigen::MatrixXd current_vertex_node;
 
 
-            //             const int local_index = y*3 + x;
-            //             auto &base = b.bases[local_index];
+        //         int right_node_id, bottom_right_node_id, bottom_node_id, bottom_left_node_id, left_node_id;
+        //         Eigen::MatrixXd right_node, bottom_right_node, bottom_node, bottom_left_node, left_node;
 
-            //             const int k = int(other_indices.size()) + 3;
+        //         if(j == 1)
+        //         {
+        //             right_node_id          = space(0, 1).front();
+        //             bottom_right_node_id   = space(0, 0).front();
+        //             bottom_node_id         = space(1, 0).front();
+        //             bottom_left_node_id    = space(2, 0).front();
+        //             left_node_id           = space(2, 1).front();
 
+        //             right_node          = loc_nodes(0, 1).front();
+        //             bottom_right_node   = loc_nodes(0, 0).front();
+        //             bottom_node         = loc_nodes(1, 0).front();
+        //             bottom_left_node    = loc_nodes(2, 0).front();
+        //             left_node           = loc_nodes(2, 1).front();
+        //         }
+        //         else if( j == 2)
+        //         {
+        //             right_node_id          = space(1, 0).front();
+        //             bottom_right_node_id   = space(2, 0).front();
+        //             bottom_node_id         = space(2, 1).front();
+        //             bottom_left_node_id    = space(2, 2).front();
+        //             left_node_id           = space(1, 2).front();
 
-            //             base.global().resize(k);
+        //             right_node          = loc_nodes(1, 0).front();
+        //             bottom_right_node   = loc_nodes(2, 0).front();
+        //             bottom_node         = loc_nodes(2, 1).front();
+        //             bottom_left_node    = loc_nodes(2, 2).front();
+        //             left_node           = loc_nodes(1, 2).front();
+        //         }
+        //         else if( j == 3)
+        //         {
+        //             right_node_id          = space(2, 1).front();
+        //             bottom_right_node_id   = space(2, 2).front();
+        //             bottom_node_id         = space(1, 2).front();
+        //             bottom_left_node_id    = space(0, 2).front();
+        //             left_node_id           = space(0, 1).front();
 
-            //             base.global()[0].index = center.index;
-            //             base.global()[0].val = (4. - k) / k;
-            //             base.global()[0].node = center.node;
+        //             right_node          = loc_nodes(2, 1).front();
+        //             bottom_right_node   = loc_nodes(2, 2).front();
+        //             bottom_node         = loc_nodes(1, 2).front();
+        //             bottom_left_node    = loc_nodes(0, 2).front();
+        //             left_node           = loc_nodes(0, 1).front();
+        //         }
+        //         else
+        //         {
+        //             right_node_id          = space(1, 2).front();
+        //             bottom_right_node_id   = space(0, 2).front();
+        //             bottom_node_id         = space(0, 1).front();
+        //             bottom_left_node_id    = space(0, 0).front();
+        //             left_node_id           = space(1, 0).front();
 
-            //             base.global()[1].index = el1.index;
-            //             base.global()[1].val = (4. - k) / k;
-            //             base.global()[1].node = el1.node;
+        //             right_node          = loc_nodes(1, 2).front();
+        //             bottom_right_node   = loc_nodes(0, 2).front();
+        //             bottom_node         = loc_nodes(0, 1).front();
+        //             bottom_left_node    = loc_nodes(0, 0).front();
+        //             left_node           = loc_nodes(1, 0).front();
+        //         }
 
-            //             base.global()[2].index = el2.index;
-            //             base.global()[2].val = (4. - k) / k;
-            //             base.global()[2].node = el2.node;
+        //         const int opposite_face = mesh.switch_face(index).face;
+        //         const int other_face = mesh.switch_face(mesh.switch_edge(index)).face;
+        //         const bool is_vertex_q2 = other_face < 0 || mesh.n_element_vertices(other_face) > 4 || is_q2(other_face);
 
+        //         if (opposite_face < 0 || mesh.n_element_vertices(opposite_face) > 4)
+        //         {
+        //             auto eit = edge_id.find(index.edge);
 
-            //             for(std::size_t n = 0; n < other_indices.size(); ++n)
-            //             {
-            //                 base.global()[3+n].index = other_indices[n];
-            //                 base.global()[3+n].val = 4./k;
-            //                 base.global()[3+n].node = mesh.node_from_face(other_indices[n]);
-            //             }
+        //             if(eit == edge_id.end())
+        //             {
+        //                 current_edge_node_id = ++n_bases;
+        //                 edge_id[index.edge] = current_edge_node_id;
+        //             }
+        //             else
+        //                 current_edge_node_id = eit->second;
 
+        //             current_edge_node = mesh.edge_mid_point(index.edge);
+        //             if(opposite_face < 0)
+        //                 bounday_nodes.push_back(current_edge_node_id);
 
-            //             const QuadraticBSpline2d spline(h_knots[x], v_knots[y]);
-            //             b.bases[local_index].set_basis([spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.interpolate(uv, val); });
-            //             b.bases[local_index].set_grad( [spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.derivative(uv, val); });
-            //         }
-            //     }
-            // }
-        }
+        //             if(is_vertex_q2)
+        //             {
+        //                 auto vit = vertex_id.find(index.vertex);
 
-        void sample_polygon(const int element_index, const int samples_res, const Mesh3D &mesh, std::map<int, BoundaryData> &poly_edge_to_data, const std::vector< ElementBases > &bases, std::vector<int> &local_to_global, const double eps, const bool c1_continuous, Eigen::MatrixXd &boundary_samples, Eigen::MatrixXd &poly_samples, Eigen::MatrixXd &rhs)
-        {
-            // const int n_edges = mesh.n_element_vertices(element_index);
+        //                 if(vit == vertex_id.end())
+        //                 {
+        //                     current_vertex_node_id = ++n_bases;
+        //                     vertex_id[index.vertex] = current_vertex_node_id;
+        //                 }
+        //                 else
+        //                     current_vertex_node_id = vit->second;
 
-            // const int poly_local_n = (samples_res - 1)/3;
-            // const int n_samples      = (samples_res - 1) * n_edges;
-            // const int n_poly_samples = poly_local_n * n_edges;
+        //                 if(opposite_face < 0)
+        //                     bounday_nodes.push_back(current_vertex_node_id);
+        //                 mesh.point(index.vertex, current_vertex_node);
+        //             }
+        //         }
+        //         else
+        //         {
+        //             const bool is_edge_q2 = is_q2(opposite_face);
 
-            // boundary_samples.resize(n_samples, 2);
-            // poly_samples.resize(n_poly_samples, 2);
+        //             if(is_edge_q2)
+        //             {
+        //                 if(is_vertex_q2)
+        //                 {
+        //                     auto it = vertex_id.find(index.vertex);
 
-            // Eigen::MatrixXd samples, mapped, basis_val, grad_basis_val;
-            // std::vector<Eigen::MatrixXd> grads;
+        //                     if(it == vertex_id.end())
+        //                     {
+        //                         current_vertex_node_id = ++n_bases;
+        //                         vertex_id[index.vertex] = current_vertex_node_id;
+        //                     }
+        //                     else
+        //                         current_vertex_node_id = it->second;
 
-            // Navigation::Index index = mesh.get_index_from_face(element_index);
-            // for(int i = 0; i < n_edges; ++i)
-            // {
-            //     const BoundaryData &bdata = poly_edge_to_data[index.edge];
-            //     local_to_global.insert(local_to_global.end(), bdata.node_id.begin(), bdata.node_id.end());
+        //                     if(other_face < 0)
+        //                         bounday_nodes.push_back(current_vertex_node_id);
+        //                     mesh.point(index.vertex, current_vertex_node);
+        //                 }
 
-            //     index = mesh.next_around_face(index);
-            // }
+        //                 auto it = edge_id.find(index.edge);
 
-            // std::sort( local_to_global.begin(), local_to_global.end() );
-            // local_to_global.erase( std::unique( local_to_global.begin(), local_to_global.end() ), local_to_global.end() );
-            // // assert(int(local_to_global.size()) <= n_edges);
+        //                 if(it == edge_id.end())
+        //                 {
+        //                     current_edge_node_id = ++n_bases;
+        //                     edge_id[index.edge] = current_edge_node_id;
+        //                 }
+        //                 else
+        //                     current_edge_node_id = it->second;
 
-            // rhs = Eigen::MatrixXd::Zero(n_samples + (c1_continuous? (2*n_samples): 0), local_to_global.size());
-
-            // index = mesh.get_index_from_face(element_index);
-
-            // Eigen::MatrixXd prev; //TODO compute first prev!
-
-            // for(int i = 0; i < n_edges; ++i)
-            // {
-            //     //no boundary polygons
-            //     assert(mesh.switch_face(index).face >= 0);
-
-            //     const BoundaryData &bdata = poly_edge_to_data[index.edge];
-            //     const ElementBases &b=bases[bdata.face_id];
-            //     assert(bdata.face_id == mesh.switch_face(index).face);
-
-            //     QuadBoundarySampler::sample(bdata.flag == RIGHT_FLAG, bdata.flag == BOTTOM_FLAG, bdata.flag == LEFT_FLAG, bdata.flag == TOP_FLAG, samples_res, false, samples);
-
-            //     b.eval_geom_mapping(samples, mapped);
-
-            //     if(c1_continuous)
-            //     {
-            //         b.eval_geom_mapping_grads(samples, grads);
-            //     }
-
-            //     bool must_reverse = true;
-            //     if(prev.size() > 0)
-            //     {
-            //         const double dist_first = (mapped.row(0)-prev).norm();
-
-            //         if(dist_first < 1e-8)
-            //         {
-            //             samples = samples.block(1, 0, samples.rows()-1, samples.cols());
-            //             mapped = mapped.block(1, 0, mapped.rows()-1, mapped.cols());
-
-            //             must_reverse = false;
-            //         }
-            //         else
-            //         {
-            //             assert((mapped.row(mapped.rows()-1) - prev).norm() < 1e-8);
-
-            //             samples = samples.block(0, 0, samples.rows()-1, samples.cols());
-            //             mapped = mapped.block(0, 0, mapped.rows()-1, mapped.cols());
-
-            //             mapped = mapped.colwise().reverse().eval();
-            //         }
-            //     }
-            //     else
-            //     {
-            //         samples = samples.block(0, 0, samples.rows()-1, samples.cols());
-            //         mapped = mapped.block(0, 0, mapped.rows()-1, mapped.cols());
-
-            //         mapped = mapped.colwise().reverse().eval();
-            //     }
-
-            //     assert(bdata.node_id.size() == 3);
-            //     for(std::size_t bi = 0; bi < bdata.node_id.size(); ++bi)
-            //     {
-            //         const int local_index = bdata.y[bi] * 3 + bdata.x[bi];
-            //         // assert(b.bases[local_index].global_index() == bdata.node_id[bi]);
-            //         const long basis_index = std::distance(local_to_global.begin(), std::find(local_to_global.begin(), local_to_global.end(), bdata.node_id[bi]));
-
-            //         b.bases[local_index].basis(samples, basis_val);
-
-            //         if(must_reverse)
-            //             basis_val = basis_val.reverse().eval();
-            //         rhs.block(i*(samples_res-1), basis_index, basis_val.rows(), 1) = basis_val;
-
-            //         if(c1_continuous)
-            //         {
-            //             b.bases[local_index].grad(samples, grad_basis_val);
-
-            //             if(must_reverse)
-            //                 grad_basis_val = grad_basis_val.colwise().reverse().eval();
-
-            //             for(long k = 0; k < grad_basis_val.rows(); ++k)
-            //             {
-            //                 const Eigen::MatrixXd trans_grad = grad_basis_val.row(k) * grads[k];
-
-            //                 rhs(n_samples + 2*i*(samples_res-1) + 2*k,     basis_index) = trans_grad(0);
-            //                 rhs(n_samples + 2*i*(samples_res-1) + 2*k + 1, basis_index) = trans_grad(1);
-            //             }
-            //         }
-
-            //     }
+        //                 current_edge_node = mesh.edge_mid_point(index.edge);
+        //             }
+        //         }
 
 
-            //     prev = mapped.row(mapped.rows()-1);
-            //     boundary_samples.block(i*(samples_res-1), 0, mapped.rows(), mapped.cols()) = mapped;
-            //     const int offset = int(mapped.rows())/(poly_local_n+1);
-            //     for(int j = 0; j < poly_local_n; ++j)
-            //     {
-            //         const int poly_index = (j+1)*offset-1;
+        //         // const bool is_neigh_poly = (opposite_face >= 0 && mesh.n_element_vertices(opposite_face) > 4);
+        //         // const bool is_other_neigh_poly = (other_face >= 0 && mesh.n_element_vertices(other_face) > 4);
 
-            //         if(eps > 0)
-            //         {
-            //             const int im = poly_index - 1;
-            //             const int ip = poly_index + 1;
+        //         if(current_vertex_node_id >= 0)
+        //         {
+        //             b.bases[2*j].init(current_vertex_node_id, 2*j, current_vertex_node);
+        //         }
+        //         else
+        //         {
+        //             // std::cout<<j<<" n "<<right_node_id<< " "<<bottom_right_node_id<< " "<<bottom_node_id<<" "<<bottom_left_node_id<< " "<<left_node_id<<std::endl;
 
-            //             const Eigen::MatrixXd e0 = (mapped.row(poly_index) - mapped.row(im)).normalized();
-            //             const Eigen::MatrixXd e1 = (mapped.row(ip) - mapped.row(poly_index)).normalized();
+        //             auto &global = b.bases[2*j].global();
 
-            //             const Eigen::Vector2d n0(e0(1), -e0(0));
-            //             const Eigen::Vector2d n1(e1(1), -e1(0));
-            //             const Eigen::Vector2d n = (n0+n1).normalized(); //TODO discad point if inside
+        //             //central
+        //             if(bottom_right_node_id < n_els)
+        //                 global.push_back(Local2Global(el_index, mesh.node_from_face(el_index), 1./4.));
 
-            //             poly_samples.row(i*poly_local_n+j) = n.transpose()*eps + mapped.row(poly_index);
-            //         }
-            //         else
-            //             poly_samples.row(i*poly_local_n+j) = mapped.row(poly_index);
-            //     }
 
-            //     index = mesh.next_around_face(index);
-            // }
+        //             if(bottom_right_node_id < n_els)
+        //                 global.push_back(Local2Global(right_node_id, right_node, 1./4.));
+        //             else if(right_node_id >= n_els)
+        //                 global.push_back(Local2Global(right_node_id, right_node, 1./2.));
+
+
+        //             if(bottom_right_node_id >= n_els)
+        //                 global.push_back(Local2Global(bottom_right_node_id, bottom_right_node, 1./2.));
+        //             else
+        //                 global.push_back(Local2Global(bottom_right_node_id, bottom_right_node, 1./4.));
+
+
+        //             if(bottom_right_node_id < n_els)
+        //                 global.push_back(Local2Global(bottom_node_id, bottom_node, 1./4.));
+        //             else if(bottom_node_id >= n_els)
+        //                 global.push_back(Local2Global(bottom_node_id, bottom_node, 1./2.));
+        //         }
+
+
+        //         if(current_edge_node_id >= 0)
+        //         {
+        //             b.bases[2*j+1].init(current_edge_node_id, 2*j+1, current_edge_node);
+        //         }
+        //         else
+        //         {
+        //             // std::cout<<j<<" e "<<right_node_id<< " "<<bottom_right_node_id<< " "<<bottom_node_id<<" "<<bottom_left_node_id<< " "<<left_node_id<<std::endl;
+
+        //             auto &global = b.bases[2*j+1].global();
+
+        //             //central
+        //             if(right_node_id >= n_els || left_node_id >= n_els)
+        //                 global.push_back(Local2Global(el_index, mesh.node_from_face(el_index), 5./16.));
+        //             else
+        //                 global.push_back(Local2Global(el_index, mesh.node_from_face(el_index), 3./8.));
+
+
+        //             if(right_node_id >= n_els)
+        //                 global.push_back(Local2Global(right_node_id, right_node, 1./8.));
+        //             else
+        //                 global.push_back(Local2Global(right_node_id, right_node, 1./16.));
+
+
+        //             if(right_node_id >= n_els)
+        //                 global.push_back(Local2Global(bottom_right_node_id, bottom_right_node, 1./8.));
+        //             else
+        //                 global.push_back(Local2Global(bottom_right_node_id, bottom_right_node, 1./16.));
+
+
+        //             if(right_node_id >= n_els || left_node_id >= n_els)
+        //                 global.push_back(Local2Global(bottom_node_id, bottom_node, 5./16.));
+        //             else
+        //                 global.push_back(Local2Global(bottom_node_id, bottom_node, 3./8.));
+
+
+        //             if(left_node_id >= n_els)
+        //                 global.push_back(Local2Global(bottom_left_node_id, bottom_left_node, 1./8.));
+        //             else
+        //                 global.push_back(Local2Global(bottom_left_node_id, bottom_left_node, 1./16.));
+
+
+        //             if(left_node_id >= n_els)
+        //                 global.push_back(Local2Global(left_node_id, left_node, 1./8.));
+        //             else
+        //                 global.push_back(Local2Global(left_node_id, left_node, 1./16.));
+        //         }
+
+        //         const int nj = (j+3)%4;
+
+        //         b.bases[2*j].set_basis([nj](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quad_basis_basis(2, 2*nj, uv, val); });
+        //         b.bases[2*j].set_grad( [nj](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quad_basis_grad(2, 2*nj, uv, val); });
+
+        //         b.bases[2*j+1].set_basis([nj](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quad_basis_basis(2, 2*nj+1, uv, val); });
+        //         b.bases[2*j+1].set_grad( [nj](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quad_basis_grad(2, 2*nj+1, uv, val); });
+
+        //         index = mesh.next_around_face(index);
+        //     }
+
+        //     b.bases[8].init(++n_bases, 8, mesh.node_from_face(el_index));
+        //     b.bases[8].set_basis([](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quad_basis_basis(2, 8, uv, val); });
+        //     b.bases[8].set_grad( [](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quad_basis_grad(2, 8, uv, val); });
+
+
+        //     index = mesh.get_index_from_face(el_index);
+        //     for (int j = 0; j < 4; ++j)
+        //     {
+        //         const int opposite_face = mesh.switch_face(index).face;
+        //         const bool is_neigh_poly = (opposite_face >= 0 && mesh.n_element_vertices(opposite_face) > 4);
+
+        //         int b_flag;
+
+        //         if(j == 1)
+        //             b_flag = InterfaceData::TOP_FLAG;
+        //         else if( j == 2)
+        //             b_flag = InterfaceData::LEFT_FLAG;
+        //         else if( j == 3)
+        //             b_flag = InterfaceData::BOTTOM_FLAG;
+        //         else
+        //             b_flag = InterfaceData::RIGHT_FLAG;
+
+        //         if(is_neigh_poly)
+        //         {
+        //             InterfaceData &data = poly_edge_to_data[index.edge];
+        //             data.face_id = index.face;
+        //             data.flag = b_flag;
+
+        //             auto &bases_e = b.bases[2*j+1];
+        //             for(std::size_t i = 0; i < bases_e.global().size(); ++i)
+        //             {
+        //                 data.node_id.push_back(bases_e.global()[i].index);
+        //                 data.local_indices.push_back(2*j+1);
+        //                 data.vals.push_back(bases_e.global()[i].val);
+        //             }
+
+        //             auto &bases_v1 = b.bases[2*j];
+        //             for(std::size_t i = 0; i < bases_v1.global().size(); ++i)
+        //             {
+        //                 data.node_id.push_back(bases_v1.global()[i].index);
+        //                 data.local_indices.push_back(2*j);
+        //                 data.vals.push_back(bases_v1.global()[i].val);
+        //             }
+
+        //             const int ii = (2*j+2) >= 8 ? 0 : (2*j+2);
+        //             auto &bases_v2 = b.bases[ii];
+        //             for(std::size_t i = 0; i < bases_v2.global().size(); ++i)
+        //             {
+        //                 data.node_id.push_back(bases_v2.global()[i].index);
+        //                 data.local_indices.push_back(ii);
+        //                 data.vals.push_back(bases_v2.global()[i].val);
+        //             }
+        //         }
+
+        //         index = mesh.next_around_face(index);
+        //     }
         }
     }
 
@@ -695,7 +754,7 @@ namespace poly_fem
 
         HexQuadrature hex_quadrature;
 
-        std::map<int, BoundaryData> poly_edge_to_data;
+        std::map<int, InterfaceData> poly_edge_to_data;
 
         std::array<std::vector<double>, 3> h_knots;
         std::array<std::vector<double>, 3> v_knots;
@@ -703,11 +762,11 @@ namespace poly_fem
 
         for(int e = 0; e < n_els; ++e)
         {
-            if(els_tag[e] != ElementType::RegularInteriorCube && els_tag[e] != ElementType::RegularBoundaryCube && els_tag[e] != ElementType::SimpleSingularInteriorCube)
+            if(els_tag[e] != ElementType::RegularInteriorCube && els_tag[e] != ElementType::RegularBoundaryCube && els_tag[e] != ElementType::SimpleSingularInteriorCube && els_tag[e] != ElementType::SimpleSingularBoundaryCube)
                 continue;
 
             //needs to be implemented
-            assert(els_tag[e] != ElementType::SimpleSingularInteriorCube);
+            assert(els_tag[e] != ElementType::SimpleSingularInteriorCube && els_tag[e] != ElementType::SimpleSingularBoundaryCube);
 
             SpaceMatrix space;
             NodeMatrix loc_nodes;
@@ -721,7 +780,6 @@ namespace poly_fem
 
 
             setup_knots_vectors(n_els, space, h_knots, v_knots, w_knots);
-
             // print_local_space(space);
 
             basis_for_regular_hex(space, loc_nodes, h_knots, v_knots, w_knots, b);
@@ -737,95 +795,17 @@ namespace poly_fem
             if(els_tag[e] != ElementType::MultiSingularInteriorCube && els_tag[e] != ElementType::MultiSingularBoundaryCube)
                 continue;
 
-            // SpaceMatrix space;
-            // NodeMatrix loc_nodes;
-            // std::map<int, BoundaryData> dummy;
-            // build_local_space(mesh, e, space, loc_nodes, local_boundary[e], dummy, bounday_nodes);
-            // ElementBases &b=bases[e];
-            // quad_quadrature.get_quadrature(quadrature_order, b.quadrature);
+            SpaceMatrix space;
+            NodeMatrix loc_nodes;
+            std::map<int, InterfaceData> dummy;
+            build_local_space(mesh, e, space, loc_nodes, local_boundary[e], dummy, bounday_nodes);
+            ElementBases &b=bases[e];
+            hex_quadrature.get_quadrature(quadrature_order, b.quadrature);
 
-            // basis_for_q2(mesh, els_tag, e, vertex_id, edge_id, space, loc_nodes, b, poly_edge_to_data, bounday_nodes, n_bases);
-            // std::cout<<b<<std::endl;
+            basis_for_q2(mesh, els_tag, e, vertex_id, edge_id, space, loc_nodes, b, poly_edge_to_data, bounday_nodes, n_bases);
+            std::cout<<b<<std::endl;
 
         }
-
-        // const int samples_res = 5;
-        // const bool use_harmonic = true;
-        // const bool c1_continuous = !use_harmonic && true;
-
-
-        // PolygonQuadrature poly_quad;
-        // Eigen::Matrix2d det_mat;
-        // Eigen::MatrixXd p0, p1;
-
-        // for(int e = 0; e < n_els; ++e)
-        // {
-        //     const int n_edges = mesh.n_element_vertices(e);
-
-        //     if(n_edges == 4)
-        //         continue;
-
-        //     double area = 0;
-        //     for(int i = 0; i < n_edges; ++i)
-        //     {
-        //         const int ip = (i + 1) % n_edges;
-
-        //         mesh.point(mesh.vertex_global_index(e, i), p0);
-        //         mesh.point(mesh.vertex_global_index(e, ip), p1);
-        //         det_mat.row(0) = p0;
-        //         det_mat.row(1) = p1;
-
-        //         area += det_mat.determinant();
-        //     }
-        //     area = fabs(area);
-        //     // const double eps = use_harmonic ? (0.08*area) : 0;
-        //     const double eps = 0.08*area;
-
-        //     std::vector<int> local_to_global;
-        //     Eigen::MatrixXd boundary_samples, poly_samples;
-        //     Eigen::MatrixXd rhs;
-
-        //     sample_polygon(e, samples_res, mesh, poly_edge_to_data, bases, local_to_global, eps, c1_continuous, boundary_samples, poly_samples, rhs);
-
-        //     ElementBases &b=bases[e];
-        //     b.has_parameterization = false;
-        //     poly_quad.get_quadrature(boundary_samples, quadrature_order, b.quadrature);
-
-        //     polys[e] = boundary_samples;
-
-        //     const int n_poly_bases = int(local_to_global.size());
-        //     b.bases.resize(n_poly_bases);
-
-        //     if(use_harmonic)
-        //     {
-        //         Harmonic harmonic(poly_samples, boundary_samples, rhs);
-
-        //         // igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
-        //         // viewer.data.add_points(poly_samples, Eigen::Vector3d(0,1,1).transpose());
-
-        //         // viewer.data.add_points(boundary_samples, Eigen::Vector3d(1,0,1).transpose());
-        //     // for(int asd = 0; asd < boundary_samples.rows(); ++asd)
-        //         // viewer.data.add_label(boundary_samples.row(asd), std::to_string(asd));
-
-        //         for(int i = 0; i < n_poly_bases; ++i)
-        //         {
-        //             b.bases[i].init(local_to_global[i], i, Eigen::MatrixXd(1,2));
-        //             b.bases[i].set_basis([harmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { harmonic.basis(i, uv, val); });
-        //             b.bases[i].set_grad( [harmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { harmonic.grad(i, uv, val); });
-        //         }
-        //     }
-        //     else
-        //     {
-        //         Biharmonic biharmonic(poly_samples, boundary_samples, rhs);
-
-        //         for(int i = 0; i < n_poly_bases; ++i)
-        //         {
-        //             b.bases[i].init(local_to_global[i], i, Eigen::MatrixXd(1,2));
-        //             b.bases[i].set_basis([biharmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { biharmonic.basis(i, uv, val); });
-        //             b.bases[i].set_grad( [biharmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { biharmonic.grad(i, uv, val); });
-        //         }
-        //     }
-        // }
 
         return n_bases+1;
     }

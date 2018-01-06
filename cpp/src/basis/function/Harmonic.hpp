@@ -61,6 +61,8 @@ namespace poly_fem
 		// harmonic functions over the element
 		Eigen::MatrixXd weights_;
 
+		bool is_volume_;
+
 	};
 }
 

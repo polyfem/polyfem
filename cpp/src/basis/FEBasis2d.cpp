@@ -110,7 +110,7 @@ namespace poly_fem
 				else
 				{
 					// assert(false);
-				//TODO triangulate element...
+				//TODO build polygonal basis by filling poly_edge_to_data...
 				}
 
 			}
@@ -198,7 +198,7 @@ namespace poly_fem
 				else
 				{
 					// assert(false);
-					//TODO triangulate element...
+					//TODO build polygonal basis by filling poly_edge_to_data...
 				}
 
 			}
@@ -504,8 +504,15 @@ namespace poly_fem
 		}
 	}
 
-	int FEBasis2d::build_bases(const Mesh2D &mesh, const int quadrature_order, const int discr_order, std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes)
+	int FEBasis2d::build_bases(const Mesh2D &mesh,
+		const int quadrature_order,
+		const int discr_order,
+		std::vector< ElementBases > &bases,
+		std::vector< LocalBoundary > &local_boundary,
+		std::vector< int > &bounday_nodes,
+		std::map<int, InterfaceData> &poly_edge_to_data)
 	{
+		//TODO fill poly_edge_to_data when elements are neigh of a polygon
 		bounday_nodes.clear();
 
 		assert(!mesh.is_volume());
