@@ -16,7 +16,7 @@
 #include <Eigen/PardisoSupport>
 #endif
 #ifdef POLYFEM_WITH_PARDISO
-// #include "LinearSolverPardiso.h"
+#include "LinearSolverPardiso.h"
 #endif
 #include <unsupported/Eigen/IterativeSolvers>
 ////////////////////////////////////////////////////////////////////////////////
@@ -152,8 +152,8 @@ std::unique_ptr<LinearSolver> LinearSolver::create(const std::string &solver, co
 		RETURN_DIRECT_SOLVER_PTR(PardisoLU);
 #endif
 #ifdef POLYFEM_WITH_PARDISO
-	// } else if (solver == "PardisoSolver") {
-	// 	return std::make_unique<LinearSolverEigenDirect<PardisoSolver> >();
+	} else if (solver == "Pardiso") {
+		return std::make_unique<LinearSolverPardiso>();
 #endif
 #if EIGEN_VERSION_AT_LEAST(3,3,0)
 	// Available only with Eigen 3.3.0 and newer
@@ -195,6 +195,7 @@ std::vector<std::string> LinearSolver::availableSolvers() {
 		"Eigen::PardisoLU",
 #endif
 #ifdef POLYFEM_WITH_PARDISO
+		"Pardiso",
 #endif
 #if EIGEN_VERSION_AT_LEAST(3,3,0)
 		"Eigen::LeastSquaresConjugateGradient",

@@ -25,6 +25,8 @@
 #include <igl/Timer.h>
 #include <igl/serialize.h>
 
+#include <unsupported/Eigen/SparseExtra>
+
 #include <iostream>
 #include <algorithm>
 
@@ -519,6 +521,8 @@ namespace poly_fem
 		BiCGSTAB<SparseMatrix<double, Eigen::RowMajor> > solver;
 		std::cout<<"with BiCGSTAB iterative solver..."<<std::flush;
 
+		Eigen::saveMarket(stiffness, "A.mat");
+		Eigen::saveMarketVector(rhs, "b.mat");
 		sol = solver.compute(stiffness).solve(rhs);
 // #endif //POLY_FEM_WITH_UMFPACK
 // #endif  //POLY_FEM_WITH_SUPERLU

@@ -12,10 +12,14 @@ namespace poly_fem
 	{
 	public:
 		std::vector<AssemblyValues> basis_values;
+
 		Quadrature quadrature;
 
-		Eigen::MatrixXd val;
-		Eigen::MatrixXd det;
+		// img of quadrature points through the geom mapping (global pos in the mesh)
+		Eigen::MatrixXd val; // R^{m x dim}
+
+		// det(∑∇φi.Ni) det fo the jacobian of geometric mapping (constant for P1)
+		Eigen::MatrixXd det; // R^{m x 1}
 
 		bool has_parameterization = true;
 

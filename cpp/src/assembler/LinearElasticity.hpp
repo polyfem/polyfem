@@ -10,6 +10,7 @@ namespace poly_fem
 	class LinearElasticity
 	{
 	public:
+		// res is R^{m x dim²}
 		void assemble(const Eigen::MatrixXd &gradi, const Eigen::MatrixXd &gradj, const Eigen::MatrixXd &da, Eigen::MatrixXd &res) const;
 
 		void compute_von_mises_stresses(const int size, const ElementBases &bs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const;
