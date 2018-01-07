@@ -826,7 +826,7 @@ namespace poly_fem
 
 
 			auto solvers = LinearSolver::availableSolvers();
-			if (state.solver_type.empty()) {
+			if (std::find(solvers.begin(), solvers.end(), state.solver_type) == solvers.end()) {
 				state.solver_type = LinearSolver::defaultSolver();
 			}
 			viewer_.ngui->addVariable<Foo>("Solver",
@@ -836,7 +836,7 @@ namespace poly_fem
 				)->setItems(solvers);
 
 			auto precond = LinearSolver::availablePrecond();
-			if (state.precond_type.empty()) {
+			if (std::find(precond.begin(), precond.end(), state.precond_type) == precond.end()) {
 				state.precond_type = LinearSolver::defaultPrecond();
 			}
 			viewer_.ngui->addVariable<Foo>("Precond",

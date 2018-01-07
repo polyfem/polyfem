@@ -18,18 +18,22 @@ namespace poly_fem
 		///
 		/// @brief      Builds FE basis functions over the entire mesh (P1, P2
 		///             over triangles, Q1, Q2 over quads). Polygonal facets
-		///             with > 4 vertices should be triangulated...
+		///             with > 4 vertices are dealt later on by the
+		///             PolygonalBasis2d class.
 		///
-		/// @param[in]  mesh              The input surface mesh
-		/// @param[in]  quadrature_order  The quadrature order
-		/// @param[in]  discr_order       The order of the elements (1 or 2)
-		/// @param[out] bases             List of basis functions per element
-		/// @param[out] local_boundary    List of descriptor per element,
-		///                               indicating which edge of the canonical
-		///                               elements lie on the boundary of the
-		///                               mesh
-		/// @param[out] boundary_nodes    List of dofs which are on the boundary
-		/// @param[out] poly_edge_to_data    Map from edge to InterfaceData for harmonic basis
+		/// @param[in]  mesh               The input surface mesh
+		/// @param[in]  quadrature_order   The quadrature order
+		/// @param[in]  discr_order        The order of the elements (1 or 2)
+		/// @param[out] bases              List of basis functions per element
+		/// @param[out] local_boundary     List of descriptor per element,
+		///                                indicating which edge of the
+		///                                canonical elements lie on the
+		///                                boundary of the mesh
+		/// @param[out] boundary_nodes     List of nodes which are on the
+		///                                boundary of the mesh
+		/// @param[out] poly_edge_to_data  InterfaceData for edges at the
+		///                                interface with a polygon for harmonic
+		///                                basis
 		///
 		/// @return     The number of basis functions created.
 		///
@@ -42,9 +46,31 @@ namespace poly_fem
 			std::vector<int> &boundary_nodes,
 			std::map<int, InterfaceData> &poly_edge_to_data);
 
+		///
+		/// @brief      { Evaluates one local basis function over a set of
+		///             parametric samples in the element }
+		///
+		/// @param[in]  discr_order  { Discretization order }
+		/// @param[in]  local_index  { Local index of the basis to evaluate }
+		/// @param[in]  uv           { #n x dim matrix with coordinates of the
+		///                          parametric samples to evaluate }
+		/// @param[out] val          { #n x 1 matrix of computed values}
+		///
+		static void quad_basis_value(const int discr_order, const int local_index,
+			const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
 
-		static void quad_basis_basis(const int discr_order, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
-		static void quad_basis_grad(const int discr_order, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
+		///
+		/// @brief      { Evaluates the gradient of one local basis function
+		///             over a set of parametric samples in the element }
+		///
+		/// @param[in]  discr_order  { Discretization order }
+		/// @param[in]  local_index  { Local index of the basis to evaluate }
+		/// @param[in]  uv           { #n x dim matrix with coordinates of the
+		///                          parametric samples to evaluate }
+		/// @param[out] val          { #n x 1 matrix of computed gradients }
+		///
+		static void quad_basis_grad(const int discr_order, const int local_index,
+			const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
 	};
 }
 

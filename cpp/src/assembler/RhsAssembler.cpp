@@ -89,13 +89,13 @@ namespace poly_fem
 			}
 		}
 
-			// Eigen::MatrixXd global_mat = Eigen::MatrixXd::Zero(total_size, indices.size());
+		// Eigen::MatrixXd global_mat = Eigen::MatrixXd::Zero(total_size, indices.size());
 		Eigen::MatrixXd global_rhs = Eigen::MatrixXd::Zero(total_size, size);
 
 		const long buffer_size = total_size * long(indices.size());
 		std::vector< Eigen::Triplet<double> > entries, entries_t;
-		entries.reserve(buffer_size);
-		entries_t.reserve(buffer_size);
+		// entries.reserve(buffer_size);
+		// entries_t.reserve(buffer_size);
 
 		index = 0;
 

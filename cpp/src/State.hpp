@@ -57,7 +57,7 @@ namespace poly_fem
 		std::map<int, Eigen::MatrixXd> polys;
 		std::vector<ElementType> els_tag;
 
-		std::string solver_type;
+		std::string solver_type = "Pardiso";
 		std::string precond_type;
 
 		Eigen::SparseMatrix<double, Eigen::RowMajor> stiffness;

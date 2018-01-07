@@ -17,6 +17,10 @@ namespace poly_fem
 	class PolygonalBasis2d
 	{
 	public:
+
+		///
+		/// @brief      Build bases over the remaining polygons of a mesh.
+		///
 		static void build_bases(
 			const int samples_res,
 			const Mesh2D &mesh,

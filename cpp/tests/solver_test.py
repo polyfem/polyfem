@@ -14,10 +14,10 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../..
 import paths
 
 
-def main():
+def timings(base_path):
     file_exe = paths.get_executable("solver_test", os.path.join(paths.CPP_DIR, 'build'))
-    file_mat = os.path.join(paths.DATA_DIR, 'mats/stiffness.txt')
-    file_rhs = os.path.join(paths.DATA_DIR, 'mats/rhs.txt')
+    file_mat = base_path + '_A.mat'
+    file_rhs = base_path + '_b.mat'
     base_args = [file_exe, file_mat, file_rhs]
     res = subprocess.run(base_args + ['-S', '1'], stdout=subprocess.PIPE, check=True)
     solvers = res.stdout.decode("utf-8").split()
@@ -26,7 +26,7 @@ def main():
         # print(solver)
         with tempfile.NamedTemporaryFile(suffix=".json") as tmp:
             args = base_args + ['--solver', solver, '--json', tmp.name]
-            # print(' '.join(args))
+            print(' '.join(args))
             subprocess.check_call(args)
             with open(tmp.name, 'r') as f:
                 try:
@@ -35,9 +35,22 @@ def main():
                 except ValueError:
                     print("[Solver] Warning: output json file is empty!")
 
-    file_db = 'timings.json'
+    file_db = base_path + '_timings.json'
     with open(file_db, 'w') as f:
         f.write(json.dumps(db, indent=4))
+
+
+def main():
+    candidates = [
+        'regular_cube3_q1',
+        'regular_cube3_spline',
+        'regular_cube3_q2',
+        'regular_cube4_q1',
+        'regular_cube4_spline',
+    ]
+    for name in candidates:
+        base_path = os.path.join(paths.DATA_DIR, 'mats/unit_tests', name)
+        timings(base_path)
 
 
 if __name__ == "__main__":

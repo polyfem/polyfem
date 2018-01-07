@@ -118,6 +118,10 @@ int main(int argc, char * argv[]) {
 	x.resizeLike(b);
 	x.setZero();
 
+	params["size"] = x.size();
+	params["non_zeros"] = A.nonZeros();
+	std::cout << "-- Sparsity: " << A.nonZeros() << " / " << A.size() << std::endl;
+
 	// Check whether the system is SPD
 	if (args.check_spd) {
 		Eigen::SparseMatrix<double> AT = A.transpose();

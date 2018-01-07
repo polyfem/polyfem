@@ -27,7 +27,7 @@ endif()
 # Options for enabling/disabling optional libraries
 option(ENABLE_CHOLMOD     "Enable Cholmod library"  ON)
 option(ENABLE_UMFPACK     "Enable UmfPack library"  ON)
-option(ENABLE_SUPERLU     "Enable SuperLU library"  ON)
+option(ENABLE_SUPERLU     "Enable SuperLU library" OFF)
 option(ENABLE_MKL         "Enable MKL library"     OFF)
 option(ENABLE_PARDISO     "Enable Pardiso library"  ON)
 

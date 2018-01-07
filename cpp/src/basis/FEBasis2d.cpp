@@ -337,7 +337,7 @@ namespace poly_fem
 	}
 
 
-	void FEBasis2d::quad_basis_basis(const int discr_order, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+	void FEBasis2d::quad_basis_value(const int discr_order, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
 	{
 		switch(discr_order)
 		{
@@ -552,7 +552,7 @@ namespace poly_fem
 
 					b.bases[j].init(global_index, j, lbv.node);
 
-					b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quad_basis_basis(discr_order, j, uv, val); });
+					b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quad_basis_value(discr_order, j, uv, val); });
 					b.bases[j].set_grad( [discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quad_basis_grad(discr_order, j, uv, val); });
 				}
 			}

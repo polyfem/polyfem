@@ -157,7 +157,7 @@ constexpr std::array<std::array<int, 3>, 8> linear_hex_dofs = {{
 	{{0, 1, 1}}, // v7  = (0, 0, 1)
 }};
 
-void linear_hex_basis(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
+void linear_hex_basis_value(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
 	auto x=xne.col(0).array();
 	auto n=xne.col(1).array();
 	auto e=xne.col(2).array();
@@ -211,7 +211,7 @@ constexpr std::array<std::array<int, 3>, 27> quadr_hex_dofs = {{
 	{{1, 1, 1}}, // c0  = (0.5, 0.5, 0.5)
 }};
 
-void quadr_hex_basis(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
+void quadr_hex_basis_value(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
 	auto x=xne.col(0).array();
 	auto n=xne.col(1).array();
 	auto e=xne.col(2).array();
@@ -591,11 +591,15 @@ int poly_fem::FEBasis3d::build_bases(
 				b.bases[j].init(global_index, j, nodes.row(global_index));
 
 				if (discr_order == 1) {
-					b.bases[j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { linear_hex_basis(j, uv, val); });
-					b.bases[j].set_grad( [j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { linear_hex_basis_grad(j, uv, val); });
+					b.bases[j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+						{ linear_hex_basis_value(j, uv, val); });
+					b.bases[j].set_grad([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+						{ linear_hex_basis_grad(j, uv, val); });
 				} else if (discr_order == 2) {
-					b.bases[j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { quadr_hex_basis(j, uv, val); });
-					b.bases[j].set_grad( [j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { quadr_hex_basis_grad(j, uv, val); });
+					b.bases[j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+						{ quadr_hex_basis_value(j, uv, val); });
+					b.bases[j].set_grad([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+						{ quadr_hex_basis_grad(j, uv, val); });
 				} else {
 					assert(false);
 				}

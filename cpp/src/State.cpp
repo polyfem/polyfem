@@ -546,7 +546,6 @@ namespace poly_fem
 		igl::Timer timer; timer.start();
 		std::cout<<"Solving ";
 
-
 // #ifndef POLY_FEM_WITH_SUPERLU
 // 		typedef SparseMatrix<double> SolverMat;
 // 		SuperLU<SolverMat> solver;
