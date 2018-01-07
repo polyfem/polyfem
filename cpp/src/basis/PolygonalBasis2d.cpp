@@ -277,6 +277,7 @@ namespace poly_fem
 			poly_quad.get_quadrature(boundary_samples, quadrature_order, b.quadrature);
 
 			polys[e] = boundary_samples;
+			// std::cout<<e<<std::endl;
 
 			const int n_poly_bases = int(local_to_global.size());
 			b.bases.resize(n_poly_bases);
@@ -289,7 +290,7 @@ namespace poly_fem
                 // Eigen::MatrixXd asd(boundary_samples.rows(), 3);
                 // asd.col(0)=boundary_samples.col(0);
                 // asd.col(1)=boundary_samples.col(1);
-                // asd.col(2)=rhs.col(0);
+                // asd.col(2).setZero();//=rhs.col(0);
                 // viewer.data.add_points(asd, Eigen::Vector3d(1,0,1).transpose());
 
                 // for(int asd = 0; asd < boundary_samples.rows(); ++asd)

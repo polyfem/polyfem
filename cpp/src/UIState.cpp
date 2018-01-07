@@ -95,12 +95,14 @@ namespace poly_fem
 
 	bool UIState::is_quad(const ElementBases &bs) const
 	{
-		return (state.mesh->is_volume() && (int(bs.bases.size()) == 8 || int(bs.bases.size()) == 27)) || (!state.mesh->is_volume() && (int(bs.bases.size()) == 4 || int(bs.bases.size()) == 9));
+		return bs.has_parameterization;
+		//(state.mesh->is_volume() && (int(bs.bases.size()) == 8 || int(bs.bases.size()) == 27)) || (!state.mesh->is_volume() && (int(bs.bases.size()) == 4 || int(bs.bases.size()) == 9));
 	}
 
 	bool UIState::is_tri(const ElementBases &bs) const
 	{
-		return !state.mesh->is_volume() && (int(bs.bases.size()) == 3 || int(bs.bases.size()) == 6);
+		return false;
+		//!state.mesh->is_volume() && (int(bs.bases.size()) == 3 || int(bs.bases.size()) == 6);
 	}
 
 	void UIState::interpolate_function(const MatrixXd &fun, MatrixXd &result)
@@ -124,9 +126,8 @@ namespace poly_fem
 				local_pts = local_vis_pts_quad;
 			else if(is_tri(bs))
 				local_pts = local_vis_pts_tri;
-			else{
+			else
 				local_pts = vis_pts_poly[i];
-			}
 
 			MatrixXd local_res = MatrixXd::Zero(local_pts.rows(), actual_dim);
 
@@ -749,7 +750,7 @@ namespace poly_fem
 
 			// std::cout<<state.rhs<<std::endl;
 
-			if(skip_visualization) return;
+			// if(skip_visualization) return;
 			// clear_func();
 			// show_rhs_func();
 		};

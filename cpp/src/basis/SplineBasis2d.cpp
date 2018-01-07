@@ -724,7 +724,7 @@ namespace poly_fem
 
         for(int e = 0; e < n_els; ++e)
         {
-            if(els_tag[e] != ElementType::RegularInteriorCube && els_tag[e] != ElementType::RegularBoundaryCube)
+            if(els_tag[e] != ElementType::RegularInteriorCube && els_tag[e] != ElementType::RegularBoundaryCube && els_tag[e] != ElementType::SimpleSingularInteriorCube)
                 continue;
 
             SpaceMatrix space;
