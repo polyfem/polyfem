@@ -134,7 +134,7 @@ namespace poly_fem
 
 		Quadrature quad;
 		PolygonQuadrature p_quad;
-		p_quad.get_quadrature(samples, 4, quad);
+		p_quad.get_quadrature(samples, 1, quad);
 
 		for(long i = 0; i < samples.rows(); ++i)
 		{

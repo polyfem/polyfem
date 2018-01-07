@@ -2,6 +2,7 @@
 
 #include "QuadraticBSpline2d.hpp"
 #include "QuadQuadrature.hpp"
+#include "QuadBoundarySampler.hpp"
 #include "ElementAssemblyValues.hpp"
 
 #include "FEBasis2d.hpp"
@@ -406,7 +407,7 @@ namespace poly_fem
             }
         }
 
-        void basis_for_q2(const Mesh2D &mesh, const std::vector<ElementType> &els_tag, const int el_index, std::map<int, int > &vertex_id, std::map<int, int > &edge_id, const SpaceMatrix &space, const NodeMatrix &loc_nodes, ElementBases &b, std::map<int, InterfaceData> &poly_edge_to_data, std::vector< int > &bounday_nodes, int &n_bases)
+        void create_q2_nodes(const Mesh2D &mesh, const std::vector<ElementType> &els_tag, const int el_index, std::map<int, int > &vertex_id, std::map<int, int > &edge_id, ElementBases &b, std::vector< int > &bounday_nodes, int &n_bases)
         {
             static const auto is_q2 = [els_tag](const int face_id){ return els_tag[face_id] == ElementType::MultiSingularInteriorCube || els_tag[face_id] == ElementType::SimpleSingularBoundaryCube; };
             const int n_els = mesh.n_elements();
@@ -421,72 +422,14 @@ namespace poly_fem
                 Eigen::Matrix<double, 1, 2> current_edge_node;
                 Eigen::MatrixXd current_vertex_node;
 
-
-                int right_node_id, bottom_right_node_id, bottom_node_id, bottom_left_node_id, left_node_id;
-                Eigen::MatrixXd right_node, bottom_right_node, bottom_node, bottom_left_node, left_node;
-
-                if(j == 1)
-                {
-                    right_node_id          = space(0, 1).front();
-                    bottom_right_node_id   = space(0, 0).front();
-                    bottom_node_id         = space(1, 0).front();
-                    bottom_left_node_id    = space(2, 0).front();
-                    left_node_id           = space(2, 1).front();
-
-                    right_node          = loc_nodes(0, 1).front();
-                    bottom_right_node   = loc_nodes(0, 0).front();
-                    bottom_node         = loc_nodes(1, 0).front();
-                    bottom_left_node    = loc_nodes(2, 0).front();
-                    left_node           = loc_nodes(2, 1).front();
-                }
-                else if( j == 2)
-                {
-                    right_node_id          = space(1, 0).front();
-                    bottom_right_node_id   = space(2, 0).front();
-                    bottom_node_id         = space(2, 1).front();
-                    bottom_left_node_id    = space(2, 2).front();
-                    left_node_id           = space(1, 2).front();
-
-                    right_node          = loc_nodes(1, 0).front();
-                    bottom_right_node   = loc_nodes(2, 0).front();
-                    bottom_node         = loc_nodes(2, 1).front();
-                    bottom_left_node    = loc_nodes(2, 2).front();
-                    left_node           = loc_nodes(1, 2).front();
-                }
-                else if( j == 3)
-                {
-                    right_node_id          = space(2, 1).front();
-                    bottom_right_node_id   = space(2, 2).front();
-                    bottom_node_id         = space(1, 2).front();
-                    bottom_left_node_id    = space(0, 2).front();
-                    left_node_id           = space(0, 1).front();
-
-                    right_node          = loc_nodes(2, 1).front();
-                    bottom_right_node   = loc_nodes(2, 2).front();
-                    bottom_node         = loc_nodes(1, 2).front();
-                    bottom_left_node    = loc_nodes(0, 2).front();
-                    left_node           = loc_nodes(0, 1).front();
-                }
-                else
-                {
-                    right_node_id          = space(1, 2).front();
-                    bottom_right_node_id   = space(0, 2).front();
-                    bottom_node_id         = space(0, 1).front();
-                    bottom_left_node_id    = space(0, 0).front();
-                    left_node_id           = space(1, 0).front();
-
-                    right_node          = loc_nodes(1, 2).front();
-                    bottom_right_node   = loc_nodes(0, 2).front();
-                    bottom_node         = loc_nodes(0, 1).front();
-                    bottom_left_node    = loc_nodes(0, 0).front();
-                    left_node           = loc_nodes(1, 0).front();
-                }
-
                 const int opposite_face = mesh.switch_face(index).face;
                 const int other_face = mesh.switch_face(mesh.switch_edge(index)).face;
-                const bool is_vertex_q2 = other_face < 0 || mesh.n_element_vertices(other_face) > 4 || is_q2(other_face);
 
-                if (opposite_face < 0 || mesh.n_element_vertices(opposite_face) > 4)
+                //if the edge/vertex is boundary the it is a Q2 edge
+                const bool is_vertex_q2 = other_face < 0 || mesh.n_element_vertices(other_face) > 4 || is_q2(other_face);
+                const bool is_edge_q2 = opposite_face < 0 || mesh.n_element_vertices(opposite_face) > 4 || is_q2(opposite_face);
+
+                if (is_edge_q2)
                 {
                     auto eit = edge_id.find(index.edge);
 
@@ -494,13 +437,12 @@ namespace poly_fem
                     {
                         current_edge_node_id = ++n_bases;
                         edge_id[index.edge] = current_edge_node_id;
-                    }
-                    else
-                        current_edge_node_id = eit->second;
 
-                    current_edge_node = mesh.edge_mid_point(index.edge);
-                    if(opposite_face < 0)
-                        bounday_nodes.push_back(current_edge_node_id);
+                        current_edge_node = mesh.edge_mid_point(index.edge);
+
+                        if(opposite_face < 0)
+                            bounday_nodes.push_back(current_edge_node_id);
+                    }
 
                     if(is_vertex_q2)
                     {
@@ -510,139 +452,24 @@ namespace poly_fem
                         {
                             current_vertex_node_id = ++n_bases;
                             vertex_id[index.vertex] = current_vertex_node_id;
-                        }
-                        else
-                            current_vertex_node_id = vit->second;
 
-                        if(opposite_face < 0)
-                            bounday_nodes.push_back(current_vertex_node_id);
-                        mesh.point(index.vertex, current_vertex_node);
-                    }
-                }
-                else
-                {
-                    const bool is_edge_q2 = is_q2(opposite_face);
-
-                    if(is_edge_q2)
-                    {
-                        if(is_vertex_q2)
-                        {
-                            auto it = vertex_id.find(index.vertex);
-
-                            if(it == vertex_id.end())
-                            {
-                                current_vertex_node_id = ++n_bases;
-                                vertex_id[index.vertex] = current_vertex_node_id;
-                            }
-                            else
-                                current_vertex_node_id = it->second;
-
-                            if(other_face < 0)
+                            if(mesh.is_vertex_boundary(index.vertex))
                                 bounday_nodes.push_back(current_vertex_node_id);
                             mesh.point(index.vertex, current_vertex_node);
                         }
-
-                        auto it = edge_id.find(index.edge);
-
-                        if(it == edge_id.end())
-                        {
-                            current_edge_node_id = ++n_bases;
-                            edge_id[index.edge] = current_edge_node_id;
-                        }
-                        else
-                            current_edge_node_id = it->second;
-
-                        current_edge_node = mesh.edge_mid_point(index.edge);
                     }
                 }
 
-
-                // const bool is_neigh_poly = (opposite_face >= 0 && mesh.n_element_vertices(opposite_face) > 4);
-                // const bool is_other_neigh_poly = (other_face >= 0 && mesh.n_element_vertices(other_face) > 4);
-
+                //init new Q2 nodes
                 if(current_vertex_node_id >= 0)
-                {
                     b.bases[2*j].init(current_vertex_node_id, 2*j, current_vertex_node);
-                }
-                else
-                {
-                    // std::cout<<j<<" n "<<right_node_id<< " "<<bottom_right_node_id<< " "<<bottom_node_id<<" "<<bottom_left_node_id<< " "<<left_node_id<<std::endl;
-
-                    auto &global = b.bases[2*j].global();
-
-                    //central
-                    if(bottom_right_node_id < n_els)
-                        global.push_back(Local2Global(el_index, mesh.node_from_face(el_index), 1./4.));
-
-
-                    if(bottom_right_node_id < n_els)
-                        global.push_back(Local2Global(right_node_id, right_node, 1./4.));
-                    else if(right_node_id >= n_els)
-                        global.push_back(Local2Global(right_node_id, right_node, 1./2.));
-
-
-                    if(bottom_right_node_id >= n_els)
-                        global.push_back(Local2Global(bottom_right_node_id, bottom_right_node, 1./2.));
-                    else
-                        global.push_back(Local2Global(bottom_right_node_id, bottom_right_node, 1./4.));
-
-
-                    if(bottom_right_node_id < n_els)
-                        global.push_back(Local2Global(bottom_node_id, bottom_node, 1./4.));
-                    else if(bottom_node_id >= n_els)
-                        global.push_back(Local2Global(bottom_node_id, bottom_node, 1./2.));
-                }
-
 
                 if(current_edge_node_id >= 0)
-                {
                     b.bases[2*j+1].init(current_edge_node_id, 2*j+1, current_edge_node);
-                }
-                else
-                {
-                    // std::cout<<j<<" e "<<right_node_id<< " "<<bottom_right_node_id<< " "<<bottom_node_id<<" "<<bottom_left_node_id<< " "<<left_node_id<<std::endl;
-
-                    auto &global = b.bases[2*j+1].global();
-
-                    //central
-                    if(right_node_id >= n_els || left_node_id >= n_els)
-                        global.push_back(Local2Global(el_index, mesh.node_from_face(el_index), 5./16.));
-                    else
-                        global.push_back(Local2Global(el_index, mesh.node_from_face(el_index), 3./8.));
-
-
-                    if(right_node_id >= n_els)
-                        global.push_back(Local2Global(right_node_id, right_node, 1./8.));
-                    else
-                        global.push_back(Local2Global(right_node_id, right_node, 1./16.));
-
-
-                    if(right_node_id >= n_els)
-                        global.push_back(Local2Global(bottom_right_node_id, bottom_right_node, 1./8.));
-                    else
-                        global.push_back(Local2Global(bottom_right_node_id, bottom_right_node, 1./16.));
-
-
-                    if(right_node_id >= n_els || left_node_id >= n_els)
-                        global.push_back(Local2Global(bottom_node_id, bottom_node, 5./16.));
-                    else
-                        global.push_back(Local2Global(bottom_node_id, bottom_node, 3./8.));
-
-
-                    if(left_node_id >= n_els)
-                        global.push_back(Local2Global(bottom_left_node_id, bottom_left_node, 1./8.));
-                    else
-                        global.push_back(Local2Global(bottom_left_node_id, bottom_left_node, 1./16.));
-
-
-                    if(left_node_id >= n_els)
-                        global.push_back(Local2Global(left_node_id, left_node, 1./8.));
-                    else
-                        global.push_back(Local2Global(left_node_id, left_node, 1./16.));
-                }
 
                 const int nj = (j+3)%4;
 
+                //set the basis functions
                 b.bases[2*j].set_basis([nj](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quad_basis_basis(2, 2*nj, uv, val); });
                 b.bases[2*j].set_grad( [nj](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quad_basis_grad(2, 2*nj, uv, val); });
 
@@ -652,35 +479,171 @@ namespace poly_fem
                 index = mesh.next_around_face(index);
             }
 
+            //central node always present
             b.bases[8].init(++n_bases, 8, mesh.node_from_face(el_index));
             b.bases[8].set_basis([](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quad_basis_basis(2, 8, uv, val); });
             b.bases[8].set_grad( [](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quad_basis_grad(2, 8, uv, val); });
+        }
 
+        void insert_into_global(const Local2Global &data, std::vector<Local2Global> &vec)
+        {
+            //ignore small weights
+            if(fabs(data.val) <1e-10 )
+                return;
 
-            index = mesh.get_index_from_face(el_index);
+            bool found = false;
+
+            for(std::size_t i = 0; i < vec.size(); ++i)
+            {
+                if(vec[i].index == data.index)
+                {
+                    // std::cout<<vec[i].val <<" "<< data.val<<" "<<fabs(vec[i].val - data.val)<<std::endl;
+                    assert(fabs(vec[i].val - data.val) < 1e-10);
+                    assert((vec[i].node - data.node).norm() < 1e-10);
+                    found = true;
+                    break;
+                }
+            }
+
+            if(!found)
+                vec.push_back(data);
+        }
+
+        void compute_param_p(const Mesh2D &mesh, const  Navigation::Index &index, Eigen::MatrixXd &param_p)
+        {
+            Navigation::Index local_index = mesh.get_index_from_face(mesh.switch_face(index).face);
+
+            int j;
+            for (j = 0; j < 4; ++j)
+            {
+                if(local_index.edge == index.edge)
+                    break;
+
+                local_index = mesh.next_around_face(local_index);
+            }
+
+            assert(j < 4);
+            assert(index.vertex == local_index.vertex || index.vertex == mesh.switch_vertex(local_index).vertex);
+
+            const bool invert = j ==1 || j == 2; //index.vertex != local_index.vertex;
+
+            QuadBoundarySampler::sample(j==0, j==3, j==2, j==1, 3, false, param_p);
+            assert(param_p.rows() == 3);
+            assert(param_p.cols() == 2);
+
+            if(invert)
+            {
+                auto tmp = param_p.row(0).eval();
+
+                param_p.row(0) = param_p.row(2);
+                param_p.row(2) = tmp;
+            }
+        }
+
+        void assign_q2_weights(const Mesh2D &mesh, const int el_index, std::vector< ElementBases > &bases)
+        {
+            Eigen::MatrixXd param_p;
+            Eigen::MatrixXd eval_p;
+            Navigation::Index index = mesh.get_index_from_face(el_index);
+            ElementBases &b = bases[el_index];
+
+            for (int j = 0; j < 4; ++j)
+            {
+                const int opposite_face = mesh.switch_face(index).face;
+
+                if(opposite_face < 0 || mesh.n_element_vertices(opposite_face) != 4)
+                {
+                    index = mesh.next_around_face(index);
+                    continue;
+                }
+
+                compute_param_p(mesh, index, param_p);
+                // std::cout<<param_p<<"\n---------\n"<<std::endl;
+
+                const int i0 = 2*j;
+                const int i1 = 2*j+1;
+                const int i2 = (2*j+2) >= 8 ? 0 : (2*j+2);
+
+                const auto &other_bases = bases[opposite_face];
+
+                // other_bases.eval_geom_mapping(param_p, eval_p);
+                // igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
+                // if(el_index == 32)
+                // {
+                //     std::cout<<param_p<<"\n---------\n"<<std::endl;
+                //     viewer.data.add_points(eval_p, Eigen::MatrixXd::Constant(1, 3, 0.5));
+                // }
+
+                for(std::size_t i = 0; i < other_bases.bases.size(); ++i)
+                {
+                    const auto &other_b = other_bases.bases[i];
+
+                    if(other_b.global().empty()) continue;
+
+                    other_b.basis(param_p, eval_p);
+                    assert(eval_p.size() == 3);
+
+                    //basis i of element opposite face is zero on this elements
+                    if(eval_p.cwiseAbs().maxCoeff() <= 1e-10)
+                        continue;
+
+                    for(std::size_t k = 0; k < other_b.global().size(); ++k)
+                    {
+                        auto glob0 = other_b.global()[k]; glob0.val *= eval_p(0);
+                        auto glob1 = other_b.global()[k]; glob1.val *= eval_p(1);
+                        auto glob2 = other_b.global()[k]; glob2.val *= eval_p(2);
+
+                        // if(el_index == 6)
+                        // {
+                        //     std::cout<<opposite_face<<" "<<other_b.global()[k].val<<std::endl;
+                        //     std::cout<<i0<< " "<<other_b.global()[k].index<<"->"<<glob0.val<<std::endl;
+                        //     std::cout<<i1<< " "<<other_b.global()[k].index<<"->"<<glob1.val<<std::endl;
+                        //     std::cout<<i2<< " "<<other_b.global()[k].index<<"->"<<glob2.val<<std::endl;
+                        // }
+
+                        insert_into_global(glob0, b.bases[i0].global());
+                        insert_into_global(glob1, b.bases[i1].global());
+                        insert_into_global(glob2, b.bases[i2].global());
+                    }
+                }
+
+                index = mesh.next_around_face(index);
+            }
+
+            // if(el_index == 6)
+            // {
+            //     std::cout<<b<<std::endl;
+            // }
+        }
+
+        void setup_data_for_polygons(const Mesh2D &mesh, const int el_index, const ElementBases &b, std::map<int, InterfaceData> &poly_edge_to_data)
+        {
+            Navigation::Index index = mesh.get_index_from_face(el_index);
             for (int j = 0; j < 4; ++j)
             {
                 const int opposite_face = mesh.switch_face(index).face;
                 const bool is_neigh_poly = (opposite_face >= 0 && mesh.n_element_vertices(opposite_face) > 4);
 
-                int b_flag;
-
-                if(j == 1)
-                    b_flag = InterfaceData::TOP_FLAG;
-                else if( j == 2)
-                    b_flag = InterfaceData::LEFT_FLAG;
-                else if( j == 3)
-                    b_flag = InterfaceData::BOTTOM_FLAG;
-                else
-                    b_flag = InterfaceData::RIGHT_FLAG;
+                                    // std::cout<<"eaaaa "<<opposite_face<<" "<<mesh.n_element_vertices(opposite_face)<<std::endl;
 
                 if(is_neigh_poly)
                 {
+                    int b_flag;
+
+                    if(j == 1)
+                        b_flag = InterfaceData::TOP_FLAG;
+                    else if( j == 2)
+                        b_flag = InterfaceData::LEFT_FLAG;
+                    else if( j == 3)
+                        b_flag = InterfaceData::BOTTOM_FLAG;
+                    else
+                        b_flag = InterfaceData::RIGHT_FLAG;
+
                     InterfaceData &data = poly_edge_to_data[index.edge];
                     data.face_id = index.face;
                     data.flag = b_flag;
 
-                    auto &bases_e = b.bases[2*j+1];
+                    const auto &bases_e = b.bases[2*j+1];
                     for(std::size_t i = 0; i < bases_e.global().size(); ++i)
                     {
                         data.node_id.push_back(bases_e.global()[i].index);
@@ -688,7 +651,7 @@ namespace poly_fem
                         data.vals.push_back(bases_e.global()[i].val);
                     }
 
-                    auto &bases_v1 = b.bases[2*j];
+                    const auto &bases_v1 = b.bases[2*j];
                     for(std::size_t i = 0; i < bases_v1.global().size(); ++i)
                     {
                         data.node_id.push_back(bases_v1.global()[i].index);
@@ -697,7 +660,7 @@ namespace poly_fem
                     }
 
                     const int ii = (2*j+2) >= 8 ? 0 : (2*j+2);
-                    auto &bases_v2 = b.bases[ii];
+                    const auto &bases_v2 = b.bases[ii];
                     for(std::size_t i = 0; i < bases_v2.global().size(); ++i)
                     {
                         data.node_id.push_back(bases_v2.global()[i].index);
@@ -729,7 +692,7 @@ namespace poly_fem
 
         for(int e = 0; e < n_els; ++e)
         {
-            if(els_tag[e] != ElementType::RegularInteriorCube && els_tag[e] != ElementType::RegularBoundaryCube && els_tag[e] != ElementType::SimpleSingularInteriorCube)
+            if(els_tag[e] != ElementType::RegularInteriorCube && els_tag[e] != ElementType::RegularBoundaryCube)
                 continue;
 
             SpaceMatrix space;
@@ -761,16 +724,39 @@ namespace poly_fem
             if(els_tag[e] != ElementType::MultiSingularInteriorCube && els_tag[e] != ElementType::SimpleSingularBoundaryCube)
                 continue;
 
+            //necessary to set bc
             SpaceMatrix space;
             NodeMatrix loc_nodes;
             std::map<int, InterfaceData> dummy;
             build_local_space(mesh, e, space, loc_nodes, local_boundary[e], dummy, bounday_nodes);
+
             ElementBases &b=bases[e];
             quad_quadrature.get_quadrature(quadrature_order, b.quadrature);
+            create_q2_nodes(mesh, els_tag, e, vertex_id, edge_id, b, bounday_nodes, n_bases);
+        }
 
-            basis_for_q2(mesh, els_tag, e, vertex_id, edge_id, space, loc_nodes, b, poly_edge_to_data, bounday_nodes, n_bases);
-            // std::cout<<b<<std::endl;
 
+        for(int e = 0; e < n_els; ++e)
+        {
+            if(els_tag[e] != ElementType::MultiSingularInteriorCube && els_tag[e] != ElementType::SimpleSingularBoundaryCube)
+                continue;
+            // std::cout<<"adasda"<<std::endl;
+            assign_q2_weights(mesh, e, bases);
+        }
+
+        for(int e = 0; e < n_els; ++e)
+        {
+            if(els_tag[e] != ElementType::MultiSingularInteriorCube && els_tag[e] != ElementType::SimpleSingularBoundaryCube)
+                continue;
+            assign_q2_weights(mesh, e, bases);
+        }
+
+        for(int e = 0; e < n_els; ++e)
+        {
+            if(els_tag[e] != ElementType::MultiSingularInteriorCube && els_tag[e] != ElementType::SimpleSingularBoundaryCube)
+                continue;
+            const ElementBases &b=bases[e];
+            setup_data_for_polygons(mesh, e, b, poly_edge_to_data);
         }
 
         return n_bases+1;

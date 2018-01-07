@@ -32,6 +32,12 @@ namespace poly_fem
 
 		void point(const int global_index, Eigen::MatrixXd &pt) const override;
 
+		inline bool is_vertex_boundary(const int v_id) const
+		{
+			GEO::Attribute<bool> vertices_real_boundary(mesh_.vertices.attributes(), "vertices_real_boundary");
+			return vertices_real_boundary[v_id];
+		}
+
 		bool load(const std::string &path) override;
 		bool save(const std::string &path) const override;
 

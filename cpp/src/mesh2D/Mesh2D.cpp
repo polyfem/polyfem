@@ -274,6 +274,30 @@ namespace poly_fem
 		vertices_node_id.fill(-1);
 
 		GEO::Attribute<std::array<double, 3>> vertices_node(mesh_.vertices.attributes(), "vertices_node");
+		GEO::Attribute<bool> vertices_real_boundary(mesh_.vertices.attributes(), "vertices_real_boundary");
+		vertices_real_boundary.fill(false);
+
+		for (int e = 0; e < n_elements(); ++e)
+		{
+			Navigation::Index index = get_index_from_face(e);
+
+			bool was_boundary = boundary[get_index_from_face(e, n_element_vertices(e)-1).edge] == 1;
+			for(int i = 0; i < n_element_vertices(e); ++i)
+			{
+				if(was_boundary)
+				{
+					if(boundary[index.edge] == 1)
+					{
+						const int v_id = index.vertex;
+
+						vertices_real_boundary[v_id]=true;
+					}
+				}
+
+				was_boundary = boundary[index.edge] == 1;
+				index = next_around_face(index);
+			}
+		}
 
 		for (int e = 0; e < n_elements(); ++e)
 		{
