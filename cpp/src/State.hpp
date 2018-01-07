@@ -43,7 +43,7 @@ namespace poly_fem
 		std::vector< ElementAssemblyValues > values;
 		std::vector< ElementAssemblyValues > geom_values;
 
-		std::vector< int >                   bounday_nodes;
+		std::vector< int >                   boundary_nodes;
 		std::vector< LocalBoundary >         local_boundary;
 		std::map<int, InterfaceData> 		 poly_edge_to_data;
 
@@ -57,6 +57,8 @@ namespace poly_fem
 		std::map<int, Eigen::MatrixXd> polys;
 		std::vector<ElementType> els_tag;
 
+		std::string solver_type;
+		std::string precond_type;
 
 		Eigen::SparseMatrix<double, Eigen::RowMajor> stiffness;
 		Eigen::MatrixXd rhs;
@@ -84,6 +86,7 @@ namespace poly_fem
 		void assemble_stiffness_mat();
 		void assemble_rhs();
 		void solve_problem();
+		void solve_problem_old();
 		void compute_errors();
 
 		void interpolate_function(const Eigen::MatrixXd &fun, const Eigen::MatrixXd &local_pts, Eigen::MatrixXd &result);

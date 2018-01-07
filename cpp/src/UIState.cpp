@@ -5,6 +5,7 @@
 
 #include "LinearElasticity.hpp"
 
+#include "LinearSolver.hpp"
 
 #include <igl/per_face_normals.h>
 #include <igl/triangle/triangulate.h>
@@ -341,8 +342,8 @@ namespace poly_fem
 		};
 
 		auto show_nodes_func = [&](){
-			// for(std::size_t i = 0; i < bounday_nodes.size(); ++i)
-			// 	std::cout<<bounday_nodes[i]<<std::endl;
+			// for(std::size_t i = 0; i < boundary_nodes.size(); ++i)
+			// 	std::cout<<boundary_nodes[i]<<std::endl;
 
 			for(std::size_t i = 0; i < state.bases.size(); ++i)
 			// for(std::size_t i = 0; i < 1; ++i)
@@ -368,7 +369,7 @@ namespace poly_fem
 							// txt_p(k) += 0.02;
 
 						MatrixXd col = MatrixXd::Zero(l2g.node.rows(), 3);
-						if(std::find(state.bounday_nodes.begin(), state.bounday_nodes.end(), g_index) != state.bounday_nodes.end())
+						if(std::find(state.boundary_nodes.begin(), state.boundary_nodes.end(), g_index) != state.boundary_nodes.end())
 							col.col(0).setOnes();
 						else
 							col.col(1).setOnes();
@@ -783,6 +784,7 @@ namespace poly_fem
 			}
 		};
 
+		enum Foo : int { A=0 };
 
 		viewer.callback_init = [&](igl::viewer::Viewer& viewer_)
 		{
@@ -819,6 +821,27 @@ namespace poly_fem
 				[&](ProblemType val) { state.problem.set_problem_num(val); },
 				[&]() { return ProblemType(state.problem.problem_num()); }
 				)->setItems({"Linear","Quadratic","Franke", "Elastic", "Zero BC"});
+
+
+			auto solvers = LinearSolver::availableSolvers();
+			if (state.solver_type.empty()) {
+				state.solver_type = LinearSolver::defaultSolver();
+			}
+			viewer_.ngui->addVariable<Foo>("Solver",
+				[&,solvers](Foo i) { state.solver_type = solvers[i]; },
+				[&,solvers]() { return (Foo) std::distance(solvers.begin(),
+					std::find(solvers.begin(), solvers.end(), state.solver_type)); }
+				)->setItems(solvers);
+
+			auto precond = LinearSolver::availablePrecond();
+			if (state.precond_type.empty()) {
+				state.precond_type = LinearSolver::defaultPrecond();
+			}
+			viewer_.ngui->addVariable<Foo>("Precond",
+				[&,precond](Foo i) { state.precond_type = precond[i]; },
+				[&,precond]() { return (Foo) std::distance(precond.begin(),
+					std::find(precond.begin(), precond.end(), state.precond_type)); }
+				)->setItems(precond);
 
 			viewer_.ngui->addVariable("skip visualization", skip_visualization);
 

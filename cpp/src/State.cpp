@@ -20,6 +20,9 @@
 #include "Laplacian.hpp"
 #include "LinearElasticity.hpp"
 
+#include "LinearSolver.hpp"
+#include "FEMSolver.hpp"
+
 #include "json.hpp"
 
 #include "CustomSerialization.hpp"
@@ -176,7 +179,7 @@ namespace poly_fem
 		geom_bases.clear();
 		values.clear();
 		geom_values.clear();
-		bounday_nodes.clear();
+		boundary_nodes.clear();
 		local_boundary.clear();
 		boundary_tag.clear();
 		errors.clear();
@@ -213,53 +216,53 @@ namespace poly_fem
 		std::cout<<"Building basis..."<<std::flush;
 
 		local_boundary.clear();
-		bounday_nodes.clear();
+		boundary_nodes.clear();
 		std::map<int, InterfaceData> poly_edge_to_data_geom; //temp dummy variable
 
 		if(mesh->is_volume())
 		{
 			const Mesh3D &tmp_mesh = *static_cast<Mesh3D *>(mesh);
 			if(use_splines)
-				n_bases = SplineBasis3d::build_bases(tmp_mesh, els_tag, quadrature_order, bases, local_boundary, bounday_nodes, polys);
+				n_bases = SplineBasis3d::build_bases(tmp_mesh, els_tag, quadrature_order, bases, local_boundary, boundary_nodes, polys);
 			else
-				n_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, bounday_nodes);
+				n_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes);
 		}
 		else
 		{
 			const Mesh2D &tmp_mesh = *static_cast<Mesh2D *>(mesh);
 			if(use_splines){
 				if(iso_parametric)
-					n_bases = SplineBasis2d::build_bases(tmp_mesh, els_tag, quadrature_order, bases, local_boundary, bounday_nodes, poly_edge_to_data);
+					n_bases = SplineBasis2d::build_bases(tmp_mesh, els_tag, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
 				else
 				{
-					n_geom_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, bounday_nodes, poly_edge_to_data_geom);
-					n_bases = SplineBasis2d::build_bases(tmp_mesh, els_tag, quadrature_order, bases, local_boundary, bounday_nodes, poly_edge_to_data);
+					n_geom_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
+					n_bases = SplineBasis2d::build_bases(tmp_mesh, els_tag, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
 				}
 			}
 			else
 			{
 				if(iso_parametric)
-					n_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, bounday_nodes, poly_edge_to_data);
+					n_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
 				else
 				{
-					n_geom_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, bounday_nodes, poly_edge_to_data_geom);
-					n_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, bounday_nodes, poly_edge_to_data_geom);
+					n_geom_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
+					n_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
 				}
 			}
 		}
 
-		problem.remove_neumann_nodes(bases, boundary_tag, local_boundary, bounday_nodes);
+		problem.remove_neumann_nodes(bases, boundary_tag, local_boundary, boundary_nodes);
 
 		if(problem.problem_num() == 3)
 		{
 			const int dim = mesh->is_volume() ? 3:2;
-			const std::size_t n_b_nodes = bounday_nodes.size();
+			const std::size_t n_b_nodes = boundary_nodes.size();
 
 			for(std::size_t i = 0; i < n_b_nodes; ++i)
 			{
-				bounday_nodes[i] *= dim;
+				boundary_nodes[i] *= dim;
 				for(int d = 1; d < dim; ++d)
-					bounday_nodes.push_back(bounday_nodes[i]+d);
+					boundary_nodes.push_back(boundary_nodes[i]+d);
 			}
 		}
 
@@ -396,7 +399,7 @@ namespace poly_fem
 		igl::Timer timer; timer.start();
 		std::cout<<"Computing assembly values..."<<std::flush;
 
-		std::sort(bounday_nodes.begin(), bounday_nodes.end());
+		std::sort(boundary_nodes.begin(), boundary_nodes.end());
 
 		if(iso_parametric){
 			ElementAssemblyValues::compute_assembly_values(mesh->is_volume(), bases, values);
@@ -466,7 +469,7 @@ namespace poly_fem
 				assembler.assemble(n_bases, values, geom_values, stiffness);
 
 			// std::cout<<MatrixXd(stiffness)<<std::endl;
-			assembler.set_identity(bounday_nodes, stiffness);
+			// assembler.set_identity(boundary_nodes, stiffness);
 		}
 		else
 		{
@@ -478,8 +481,7 @@ namespace poly_fem
 
 			// std::cout<<MatrixXd(stiffness)-MatrixXd(stiffness.transpose())<<"\n\n"<<std::endl;
 			// std::cout<<MatrixXd(stiffness).rowwise().sum()<<"\n\n"<<std::endl;
-
-			assembler.set_identity(bounday_nodes, stiffness);
+			// assembler.set_identity(boundary_nodes, stiffness);
 		}
 
 		timer.stop();
@@ -517,13 +519,13 @@ namespace poly_fem
 		{
 			rhs_assembler.assemble(n_bases, size, values, values, problem, rhs);
 			rhs *= -1;
-			rhs_assembler.set_bc(size, bases, bases, mesh->is_volume(), local_boundary, bounday_nodes, n_boundary_samples, problem, rhs);
+			rhs_assembler.set_bc(size, bases, bases, mesh->is_volume(), local_boundary, boundary_nodes, n_boundary_samples, problem, rhs);
 		}
 		else
 		{
 			rhs_assembler.assemble(n_bases, size, values, geom_values, problem, rhs);
 			rhs *= -1;
-			rhs_assembler.set_bc(size, bases, geom_bases, mesh->is_volume(), local_boundary, bounday_nodes, n_boundary_samples, problem, rhs);
+			rhs_assembler.set_bc(size, bases, geom_bases, mesh->is_volume(), local_boundary, boundary_nodes, n_boundary_samples, problem, rhs);
 		}
 
 		timer.stop();
@@ -539,10 +541,11 @@ namespace poly_fem
 		// }
 	}
 
-	void State::solve_problem()
+	void State::solve_problem_old()
 	{
 		igl::Timer timer; timer.start();
 		std::cout<<"Solving ";
+
 
 // #ifndef POLY_FEM_WITH_SUPERLU
 // 		typedef SparseMatrix<double> SolverMat;
@@ -559,6 +562,10 @@ namespace poly_fem
 // 		solver.compute(stiffness);
 // 		sol = solver.solve(rhs);
 // #else //POLY_FEM_WITH_UMFPACK
+		{
+			Assembler<Laplacian> assembler;
+			assembler.set_identity(boundary_nodes, stiffness);
+		}
 		BiCGSTAB<SparseMatrix<double, Eigen::RowMajor> > solver;
 		std::cout<<"with BiCGSTAB iterative solver..."<<std::flush;
 		sol = solver.compute(stiffness).solve(rhs);
@@ -577,6 +584,30 @@ namespace poly_fem
 		// 	of<<sol;
 		// 	of.close();
 		// }
+	}
+
+	void State::solve_problem()
+	{
+		igl::Timer timer; timer.start();
+		std::cout<<"Solving ";
+
+		json params = {
+			{"mtype", 2}, // matrix type for Pardiso (2 = SPD)
+			// {"max_iter", 0}, // for iterative solvers
+			// {"tolerance", 1e-9}, // for iterative solvers
+		};
+		auto solver = LinearSolver::create(solver_type, precond_type);
+		solver->setParameters(params);
+
+		Eigen::SparseMatrix<double> A = stiffness;
+		Eigen::VectorXd x, b = rhs;
+		dirichlet_solve(*solver, A, b, boundary_nodes, x);
+		sol = x;
+
+		timer.stop();
+		solving_time = timer.getElapsedTime();
+		std::cout<<" took "<<solving_time<<"s"<<std::endl;
+		std::cout<<"Solver error: "<<(A*sol-b).norm()<<std::endl;
 	}
 
 	void State::compute_errors()
@@ -666,7 +697,7 @@ namespace poly_fem
 
 		igl::serialize(bases, "bases", file_name);
 		igl::serialize(values, "values", file_name);
-		igl::serialize(bounday_nodes, "bounday_nodes", file_name);
+		igl::serialize(boundary_nodes, "boundary_nodes", file_name);
 		igl::serialize(local_boundary, "local_boundary", file_name);
 
 		igl::serialize(boundary_tag, "boundary_tag", file_name);

@@ -37,9 +37,11 @@ public:
 
 	// List available solvers
 	static std::vector<std::string> availableSolvers();
+	static std::string defaultSolver();
 
 	// List available preconditioners
 	static std::vector<std::string> availablePrecond();
+	static std::string defaultPrecond();
 
 protected:
 	// Default constructor

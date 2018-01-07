@@ -86,7 +86,10 @@ namespace poly_fem
 								{
 									for(int n = 0; n < local_assembler_.size(); ++n)
 									{
-										entries.push_back(Eigen::Triplet<double>(values_i.global[ii].index*local_assembler_.size()+m, values_j.global[jj].index*local_assembler_.size()+n, stiffness_val(n*local_assembler_.size()+m) * values_i.global[ii].val * values_j.global[jj].val ));
+										entries.emplace_back(
+											values_i.global[ii].index*local_assembler_.size()+m,
+											values_j.global[jj].index*local_assembler_.size()+n,
+											stiffness_val(n*local_assembler_.size()+m) * values_i.global[ii].val * values_j.global[jj].val);
 										// std::cout<<e<<" "<<values_i.global[ii].index*local_assembler_.size()+m <<" "<< values_j.global[jj].index*local_assembler_.size()+n <<" "<< stiffness_val(n*local_assembler_.size()+m) * values_i.global[ii].val * values_j.global[jj].val <<std::endl;
 									}
 								}
@@ -100,11 +103,11 @@ namespace poly_fem
 			stiffness.setFromTriplets(entries.begin(), entries.end());
 		}
 
-		void set_identity(const std::vector<int> &bounday_nodes, Eigen::SparseMatrix<double, Eigen::RowMajor> &stiffness) const
+		void set_identity(const std::vector<int> &boundary_nodes, Eigen::SparseMatrix<double, Eigen::RowMajor> &stiffness) const
 		{
-			for(std::size_t i = 0; i < bounday_nodes.size(); ++i)
+			for(std::size_t i = 0; i < boundary_nodes.size(); ++i)
 			{
-				const int index = bounday_nodes[i];
+				const int index = boundary_nodes[i];
 				for (Eigen::SparseMatrix<double, Eigen::RowMajor>::InnerIterator it(stiffness, index); it; ++it)
 				{
 					if(it.row() == it.col())

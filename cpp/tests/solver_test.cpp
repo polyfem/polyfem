@@ -65,6 +65,7 @@ int main(int argc, char * argv[]) {
 		std::string precond = "";
 		bool list_solvers = false;
 		bool list_precond = false;
+		bool check_spd = false;
 	} args;
 
 	// Parse arguments
@@ -77,6 +78,7 @@ int main(int argc, char * argv[]) {
 	app.add_option("-p,--precond", args.precond, "Preconditioner (for iterative solvers).");
 	app.add_option("-S,--list_solvers", args.list_solvers);
 	app.add_option("-P,--list_precond", args.list_precond);
+	app.add_option("--check_spd", args.check_spd);
 	try {
 		app.parse(argc, argv);
 	} catch (const CLI::ParseError &e) {
@@ -115,6 +117,35 @@ int main(int argc, char * argv[]) {
 	Eigen::loadMarketVector(b, args.rhs);
 	x.resizeLike(b);
 	x.setZero();
+
+	// Check whether the system is SPD
+	if (args.check_spd) {
+		Eigen::SparseMatrix<double> AT = A.transpose();
+		// std::cout << std::endl << std::endl;
+		std::cout << A << std::endl;
+		// std::cout << std::endl << std::endl;
+		// std::cout << AT << std::endl;
+		// std::cout << std::endl << std::endl;
+		if (A.isApprox(AT)) {
+			std::cout << "-- Matrix is symmetric" << std::endl;
+		} else {
+			std::cout << "-- Matrix is not symmetric" << std::endl;
+		}
+		// Compute the Cholesky decomposition of A
+		Eigen::LLT<Eigen::MatrixXd> lltOfA(A);
+		if (lltOfA.info() == Eigen::NumericalIssue) {
+			std::cout << "-- Possibly indefinite matrix!" << std::endl;
+		} else {
+			//std::cout << "-- Matrix is positive or negative semidefinite." << std::endl;
+			std::cout << "-- Matrix is positive definite." << std::endl;
+		}
+		Eigen::LDLT<Eigen::MatrixXd> ldltOfA(A);
+		if (ldltOfA.info() == Eigen::NumericalIssue) {
+			std::cout << "-- Possibly indefinite matrix!" << std::endl;
+		} else {
+			std::cout << "-- Matrix is positive or negative semidefinite." << std::endl;
+		}
+	}
 
 	// Solve
 	igl::Timer timer;
