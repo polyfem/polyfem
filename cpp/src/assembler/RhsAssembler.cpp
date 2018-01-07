@@ -144,7 +144,7 @@ namespace poly_fem
 			// Eigen::MatrixXd asd(mapped.rows(), 3);
 			// asd.col(0)=mapped.col(0);
 			// asd.col(1)=mapped.col(1);
-			// asd.col(0)=rhs_fun;
+			// asd.col(2)=rhs_fun;
 			// viewer.data.add_points(asd, Eigen::MatrixXd::Constant(1, 3, 0));
 		}
 
@@ -164,10 +164,14 @@ namespace poly_fem
 		Eigen::MatrixXd coeffs;
 			// if(A.rows() > 2000)
 		{
-				// Eigen::BiCGSTAB< Eigen::SparseMatrix<double> > solver;
-				// coeffs = solver.compute(A).solve(b);
-			Eigen::SimplicialLDLT<Eigen::SparseMatrix<double> > solver;
-			coeffs = solver.compute(A).solve(b);
+				Eigen::BiCGSTAB< Eigen::SparseMatrix<double> > solver;
+				coeffs = solver.compute(A).solve(b);
+			// Eigen::SimplicialLDLT<Eigen::SparseMatrix<double> > solver;
+			// coeffs = solver.compute(-A).solve(-b);
+			// coeffs*=-1;
+				// Eigen::MatrixXd asd(A);
+				// std::cout<<(asd-asd.transpose()).norm()<<std::endl;
+			std::cout<<"RHS solve error "<< (A*coeffs-b).norm()<<std::endl;
 		}
 			// else
 				// coeffs = A.ldlt().solve(b);

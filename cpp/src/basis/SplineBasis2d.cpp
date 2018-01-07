@@ -48,7 +48,7 @@ namespace poly_fem
         void explore_direction(const Navigation::Index &index, const Mesh2D &mesh, const int x, const int y, const bool is_x, const bool invert, const int b_flag, SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, InterfaceData> &poly_edge_to_data, std::vector< int > &bounday_nodes)
         {
             int node_id;
-            const bool real_boundary = mesh.node_id_from_edge_index(index, node_id);
+            bool real_boundary = mesh.node_id_from_edge_index(index, node_id);
 
             assert(std::find(space(x, y).begin(), space(x, y).end(), node_id) == space(x, y).end());
             space(x, y).push_back(node_id);
@@ -67,7 +67,9 @@ namespace poly_fem
                 assert(start_index.vertex == index.vertex);
 
                 Navigation::Index edge1 = mesh.switch_edge(start_index);
-                mesh.node_id_from_edge_index(edge1, node_id);
+                real_boundary = mesh.node_id_from_edge_index(edge1, node_id);
+                if(real_boundary)
+                    bounday_nodes.push_back(node_id);
                 if(std::find(space(x1, y1).begin(), space(x1, y1).end(), node_id) == space(x1, y1).end())
                 {
                     space(x1, y1).push_back(node_id);
@@ -75,7 +77,9 @@ namespace poly_fem
                 }
 
                 Navigation::Index edge2 = mesh.switch_edge(mesh.switch_vertex(start_index));
-                mesh.node_id_from_edge_index(edge2, node_id);
+                real_boundary = mesh.node_id_from_edge_index(edge2, node_id);
+                if(real_boundary)
+                    bounday_nodes.push_back(node_id);
                 if(std::find(space(x2, y2).begin(), space(x2, y2).end(), node_id) == space(x2, y2).end())
                 {
                     space(x2, y2).push_back(node_id);
@@ -407,9 +411,9 @@ namespace poly_fem
             }
         }
 
-        void create_q2_nodes(const Mesh2D &mesh, const std::vector<ElementType> &els_tag, const int el_index, std::map<int, int > &vertex_id, std::map<int, int > &edge_id, ElementBases &b, std::vector< int > &bounday_nodes, int &n_bases)
+        void create_q2_nodes(const Mesh2D &mesh, const std::vector<ElementType> &els_tag, const int el_index, std::map<int, int > &vertex_id, std::map<int, int > &edge_id, ElementBases &b, std::vector< int > &bounday_nodes, LocalBoundary &local_boundary, int &n_bases)
         {
-            static const auto is_q2 = [els_tag](const int face_id){ return els_tag[face_id] == ElementType::MultiSingularInteriorCube || els_tag[face_id] == ElementType::SimpleSingularBoundaryCube; };
+            const auto is_q2 = [els_tag](const int face_id){ return els_tag[face_id] == ElementType::MultiSingularInteriorCube || els_tag[face_id] == ElementType::SimpleSingularBoundaryCube; };
             const int n_els = mesh.n_elements();
 
             b.bases.resize(9);
@@ -423,10 +427,50 @@ namespace poly_fem
                 Eigen::MatrixXd current_vertex_node;
 
                 const int opposite_face = mesh.switch_face(index).face;
-                const int other_face = mesh.switch_face(mesh.switch_edge(index)).face;
 
                 //if the edge/vertex is boundary the it is a Q2 edge
-                const bool is_vertex_q2 = other_face < 0 || mesh.n_element_vertices(other_face) > 4 || is_q2(other_face);
+                bool is_vertex_q2 = true;
+                bool is_vertex_boundary = false;
+
+                Navigation::Index vindex=index;
+
+                do
+                {
+                    if(vindex.face < 0)
+                    {
+                        is_vertex_boundary = true;
+                        break;
+                    }
+                    if(!is_q2(vindex.face) && mesh.n_element_vertices(vindex.face) == 4)
+                    {
+                        is_vertex_q2 = false;
+                        break;
+                    }
+                    vindex = mesh.next_around_vertex(vindex);
+                }
+                while(vindex.edge != index.edge);
+
+                if(is_vertex_q2)
+                {
+                    vindex=index;
+                    do
+                    {
+                        if(vindex.face < 0)
+                        {
+                            is_vertex_boundary = true;
+                            break;
+                        }
+
+                        if(!is_q2(vindex.face) && mesh.n_element_vertices(vindex.face) == 4)
+                        {
+                            is_vertex_q2 = false;
+                            break;
+                        }
+                        vindex = mesh.next_around_vertex_inv(vindex);
+                    }
+                    while(vindex.edge != index.edge);
+                }
+
                 const bool is_edge_q2 = opposite_face < 0 || mesh.n_element_vertices(opposite_face) > 4 || is_q2(opposite_face);
 
                 if (is_edge_q2)
@@ -441,22 +485,33 @@ namespace poly_fem
                         current_edge_node = mesh.edge_mid_point(index.edge);
 
                         if(opposite_face < 0)
-                            bounday_nodes.push_back(current_edge_node_id);
-                    }
-
-                    if(is_vertex_q2)
-                    {
-                        auto vit = vertex_id.find(index.vertex);
-
-                        if(vit == vertex_id.end())
                         {
-                            current_vertex_node_id = ++n_bases;
-                            vertex_id[index.vertex] = current_vertex_node_id;
+                            bounday_nodes.push_back(current_edge_node_id);
 
-                            if(mesh.is_vertex_boundary(index.vertex))
-                                bounday_nodes.push_back(current_vertex_node_id);
-                            mesh.point(index.vertex, current_vertex_node);
+                            switch(j)
+                            {
+                                case 0: local_boundary.set_right_boundary(); local_boundary.set_right_edge_id(index.edge); break;
+                                case 3: local_boundary.set_bottom_boundary(); local_boundary.set_bottom_edge_id(index.edge); break;
+                                case 2: local_boundary.set_left_boundary(); local_boundary.set_left_edge_id(index.edge); break;
+                                case 1: local_boundary.set_top_boundary(); local_boundary.set_top_edge_id(index.edge); break;
+                            }
                         }
+                    }
+                }
+
+                if(is_vertex_q2)
+                {
+                    assert(is_edge_q2);
+                    auto vit = vertex_id.find(index.vertex);
+
+                    if(vit == vertex_id.end())
+                    {
+                        current_vertex_node_id = ++n_bases;
+                        vertex_id[index.vertex] = current_vertex_node_id;
+
+                        if(is_vertex_boundary)//mesh.is_vertex_boundary(index.vertex))
+                            bounday_nodes.push_back(current_vertex_node_id);
+                        mesh.point(index.vertex, current_vertex_node);
                     }
                 }
 
@@ -566,14 +621,6 @@ namespace poly_fem
 
                 const auto &other_bases = bases[opposite_face];
 
-                // other_bases.eval_geom_mapping(param_p, eval_p);
-                // igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
-                // if(el_index == 32)
-                // {
-                //     std::cout<<param_p<<"\n---------\n"<<std::endl;
-                //     viewer.data.add_points(eval_p, Eigen::MatrixXd::Constant(1, 3, 0.5));
-                // }
-
                 for(std::size_t i = 0; i < other_bases.bases.size(); ++i)
                 {
                     const auto &other_b = other_bases.bases[i];
@@ -593,14 +640,6 @@ namespace poly_fem
                         auto glob1 = other_b.global()[k]; glob1.val *= eval_p(1);
                         auto glob2 = other_b.global()[k]; glob2.val *= eval_p(2);
 
-                        // if(el_index == 6)
-                        // {
-                        //     std::cout<<opposite_face<<" "<<other_b.global()[k].val<<std::endl;
-                        //     std::cout<<i0<< " "<<other_b.global()[k].index<<"->"<<glob0.val<<std::endl;
-                        //     std::cout<<i1<< " "<<other_b.global()[k].index<<"->"<<glob1.val<<std::endl;
-                        //     std::cout<<i2<< " "<<other_b.global()[k].index<<"->"<<glob2.val<<std::endl;
-                        // }
-
                         insert_into_global(glob0, b.bases[i0].global());
                         insert_into_global(glob1, b.bases[i1].global());
                         insert_into_global(glob2, b.bases[i2].global());
@@ -609,11 +648,6 @@ namespace poly_fem
 
                 index = mesh.next_around_face(index);
             }
-
-            // if(el_index == 6)
-            // {
-            //     std::cout<<b<<std::endl;
-            // }
         }
 
         void setup_data_for_polygons(const Mesh2D &mesh, const int el_index, const ElementBases &b, std::map<int, InterfaceData> &poly_edge_to_data)
@@ -623,8 +657,6 @@ namespace poly_fem
             {
                 const int opposite_face = mesh.switch_face(index).face;
                 const bool is_neigh_poly = (opposite_face >= 0 && mesh.n_element_vertices(opposite_face) > 4);
-
-                                    // std::cout<<"eaaaa "<<opposite_face<<" "<<mesh.n_element_vertices(opposite_face)<<std::endl;
 
                 if(is_neigh_poly)
                 {
@@ -724,15 +756,10 @@ namespace poly_fem
             if(els_tag[e] != ElementType::MultiSingularInteriorCube && els_tag[e] != ElementType::SimpleSingularBoundaryCube)
                 continue;
 
-            //necessary to set bc
-            SpaceMatrix space;
-            NodeMatrix loc_nodes;
-            std::map<int, InterfaceData> dummy;
-            build_local_space(mesh, e, space, loc_nodes, local_boundary[e], dummy, bounday_nodes);
-
             ElementBases &b=bases[e];
             quad_quadrature.get_quadrature(quadrature_order, b.quadrature);
-            create_q2_nodes(mesh, els_tag, e, vertex_id, edge_id, b, bounday_nodes, n_bases);
+
+            create_q2_nodes(mesh, els_tag, e, vertex_id, edge_id, b, bounday_nodes, local_boundary[e], n_bases);
         }
 
 
@@ -740,7 +767,6 @@ namespace poly_fem
         {
             if(els_tag[e] != ElementType::MultiSingularInteriorCube && els_tag[e] != ElementType::SimpleSingularBoundaryCube)
                 continue;
-            // std::cout<<"adasda"<<std::endl;
             assign_q2_weights(mesh, e, bases);
         }
 

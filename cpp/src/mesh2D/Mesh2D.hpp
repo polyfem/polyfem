@@ -32,12 +32,6 @@ namespace poly_fem
 
 		void point(const int global_index, Eigen::MatrixXd &pt) const override;
 
-		inline bool is_vertex_boundary(const int v_id) const
-		{
-			GEO::Attribute<bool> vertices_real_boundary(mesh_.vertices.attributes(), "vertices_real_boundary");
-			return vertices_real_boundary[v_id];
-		}
-
 		bool load(const std::string &path) override;
 		bool save(const std::string &path) const override;
 
@@ -68,6 +62,11 @@ namespace poly_fem
 		inline Navigation::Index next_around_face(Navigation::Index idx) const { return switch_edge(switch_vertex(idx)); }
 		// inline Navigation::Index next_around_edge(Navigation::Index idx) const { return switch_vertex(switch_face(idx)); }
 		inline Navigation::Index next_around_vertex(Navigation::Index idx) const { return switch_face(switch_edge(idx)); }
+		inline Navigation::Index next_around_vertex_inv(Navigation::Index idx) const {
+			auto tmp = switch_face(idx);
+			if(tmp.face < 0) return tmp;
+			return switch_edge(tmp);
+		}
 
 		void create_boundary_nodes();
 

@@ -756,6 +756,7 @@ namespace poly_fem
 
 		auto solve_problem_func = [&]() {
 			state.solve_problem();
+			// state.solve_problem_old();
 
 			if(skip_visualization) return;
 			clear_func();
