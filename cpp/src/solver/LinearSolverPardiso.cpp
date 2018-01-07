@@ -63,7 +63,7 @@ void LinearSolverPardiso::init() {
 		}
 		throw std::runtime_error("[Pardiso] Unknown error in pardisoinit");
 	} else {
-		printf("[Pardiso]: License check was successful ... \n");
+		printf("[Pardiso] License check was successful ... \n");
 	}
 
 	// Numbers of processors, value of OMP_NUM_THREADS
@@ -74,7 +74,7 @@ void LinearSolverPardiso::init() {
 	} else {
 		throw std::runtime_error("[Pardiso] Set environment OMP_NUM_THREADS to 1");
 	}
-	iparm[2] = num_procs;
+	iparm[2] = 1; //num_procs;
 
 	maxfct = 1; // Maximum number of numerical factorizations
 	mnum = 1;   // Which factorization to use

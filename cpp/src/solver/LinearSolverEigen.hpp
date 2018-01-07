@@ -83,5 +83,6 @@ template<typename SparseSolver>
 void poly_fem::LinearSolverEigenIterative<SparseSolver>::solve(
 	const Ref<const VectorXd> b, Ref<VectorXd> x)
 {
+	assert(x.size() == b.size());
 	x = m_Solver.solveWithGuess(b, x);
 }

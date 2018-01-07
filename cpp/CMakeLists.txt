@@ -177,6 +177,7 @@ add_library(polyfem
 	src/problem/Problem.hpp
 	src/problem/Problem.cpp
 
+	src/solver/FEMSolver.cpp
 	src/solver/LinearSolver.cpp
 	src/solver/LinearSolverPardiso.cpp
 )

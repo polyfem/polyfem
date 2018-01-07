@@ -208,6 +208,14 @@ std::vector<std::string> LinearSolver::availableSolvers() {
 	}};
 }
 
+std::string LinearSolver::defaultSolver() {
+#ifdef POLYFEM_WITH_PARDISO
+	return "Pardiso";
+#else
+	return "Eigen::BiCGSTAB";
+#endif
+}
+
 // -----------------------------------------------------------------------------
 
 // List available preconditioners
@@ -221,4 +229,8 @@ std::vector<std::string> LinearSolver::availablePrecond() {
 #endif
 		"Eigen::IncompleteLUT",
 	}};
+}
+
+std::string LinearSolver::defaultPrecond() {
+	return "Eigen::DiagonalPreconditioner";
 }
