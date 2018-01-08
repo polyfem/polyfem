@@ -12,21 +12,27 @@ namespace poly_fem
 		static const int RIGHT_FLAG = 4;
 		static const int BOTTOM_FLAG = 8;
 
-		//ID of the neighoubring face, for debugging only
-		int face_id = -1;
+		// Global index of the incident element (other than the polygon)
+		int element_id = -1;
 
-		//one of the top 6 flags, to know which parameterization boundary to sample
+		// One of the 6 flags above, to know which boundary to sample in the parameterization domain
 		int flag;
-		//list of nodes of this edge/face
+
+		// The field on the interface edge/face is defined as a linear combination
+		// of a certain number of basis. For regular Q1 or Q2 elements the weight
+		// of the linear combination are always 1, but in the presence of irregular
+		// or mixed elements, this may not always be the case.
+
+		// list of nodes on this edge/face
 		std::vector<int> node_id;
 
-		//list of local basis indices
+		// list of local basis indices
 		std::vector<int> local_indices;
 
-		//list of local weights
+		// list of local weights
 		std::vector<double> vals;
 
-		//vital! the 3 arrays MUST have the same lenght
+		// vital! the 3 arrays MUST have the same length
 	};
 
 }

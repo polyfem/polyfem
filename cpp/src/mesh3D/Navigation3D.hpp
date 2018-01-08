@@ -2,6 +2,7 @@
 
 #include "Mesh3DStorage.hpp"
 #include "MeshProcessing3D.hpp"
+
 namespace poly_fem{
 	namespace Navigation3D{
 
@@ -32,4 +33,3 @@ namespace poly_fem{
 		// inline Index next_around_3Delement(const Mesh3DStorage &M, Index idx) { idx.element_patch++; return get_index_from_element_face(M, idx.element,idx.element_patch,idx.face_corner); }
 	} // namespace Navigation3D
 } // namespace poly_fem
-

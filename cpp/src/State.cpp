@@ -88,7 +88,6 @@ namespace poly_fem
 		j["computing_errors_time"] = computing_errors_time;
 
 
-
 		std::ofstream o(name);
 		o << std::setw(4) << j << std::endl;
 		o.close();
@@ -401,21 +400,21 @@ namespace poly_fem
 
 		std::sort(boundary_nodes.begin(), boundary_nodes.end());
 
-		if(iso_parametric){
+		if(iso_parametric) {
 			ElementAssemblyValues::compute_assembly_values(mesh->is_volume(), bases, values);
 
-			if(mesh->is_volume())
-			{
-				if(!poly_edge_to_data.empty())
+			if(mesh->is_volume()) {
+				if(!poly_edge_to_data.empty()) {
 					assert(false);
-			}
-			else
+				}
+			} else {
 				PolygonalBasis2d::build_bases(harminic_samples_res, *static_cast<Mesh2D *>(mesh), n_bases, els_tag, quadrature_order, values, values, bases, bases, poly_edge_to_data, polys);
+			}
 
-			for(std::size_t e = 0; e < bases.size(); ++e)
-			{
-				if(els_tag[e] != ElementType::InteriorPolytope && els_tag[e] != ElementType::BoundaryPolytope)
+			for(std::size_t e = 0; e < bases.size(); ++e) {
+				if(els_tag[e] != ElementType::InteriorPolytope && els_tag[e] != ElementType::BoundaryPolytope) {
 					continue;
+				}
 
 				values[e].compute(mesh->is_volume(), bases[e]);
 			}
@@ -545,7 +544,6 @@ namespace poly_fem
 	{
 		igl::Timer timer; timer.start();
 		std::cout<<"Solving ";
-
 
 // #ifndef POLY_FEM_WITH_SUPERLU
 // 		typedef SparseMatrix<double> SolverMat;
@@ -679,6 +677,14 @@ namespace poly_fem
 		mesh_path = mesh_path_;
 
 		problem.set_problem_num(problem_num);
+		auto solvers = LinearSolver::availableSolvers();
+		if (std::find(solvers.begin(), solvers.end(), solver_type) == solvers.end()) {
+			solver_type = LinearSolver::defaultSolver();
+		}
+		auto precond = LinearSolver::availablePrecond();
+		if (std::find(precond.begin(), precond.end(), precond_type) == precond.end()) {
+			precond_type = LinearSolver::defaultPrecond();
+		}
 	}
 
 	void State::sertialize(const std::string &file_name)

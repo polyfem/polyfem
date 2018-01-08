@@ -41,7 +41,7 @@ using namespace Eigen;
 int main(int argc, const char **argv)
 {
 #ifndef WIN32
-    setenv("GEO_NO_SIGNAL_HANDLERS", "1", 1);
+    setenv("GEO_NO_SIGNAL_HANDLER", "1", 1);
 #endif
 
     GEO::initialize();

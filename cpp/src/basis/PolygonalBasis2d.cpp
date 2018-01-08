@@ -6,323 +6,342 @@
 #include "Harmonic.hpp"
 #include "Biharmonic.hpp"
 
-// #include "UIState.hpp"
+#include "UIState.hpp"
 
-namespace poly_fem
+namespace poly_fem {
+namespace {
+
+Eigen::MatrixXd compute_first_prev(
+	const InterfaceData &bdata0, const InterfaceData &bdata1, const std::vector< ElementBases > &gbases)
 {
-	namespace
+	Eigen::MatrixXd samples0, samples1;
+	Eigen::MatrixXd mapped0, mapped1;
+
+	bool has_samples = QuadBoundarySampler::sample(bdata0.flag == InterfaceData::RIGHT_FLAG, bdata0.flag == InterfaceData::BOTTOM_FLAG, bdata0.flag == InterfaceData::LEFT_FLAG, bdata0.flag == InterfaceData::TOP_FLAG, 2, false, samples0);
+	assert(has_samples);
+
+	has_samples = QuadBoundarySampler::sample(bdata1.flag == InterfaceData::RIGHT_FLAG, bdata1.flag == InterfaceData::BOTTOM_FLAG, bdata1.flag == InterfaceData::LEFT_FLAG, bdata1.flag == InterfaceData::TOP_FLAG, 2, false, samples1);
+	assert(has_samples);
+
+	const ElementBases &gb0=gbases[bdata0.element_id];
+	const ElementBases &gb1=gbases[bdata1.element_id];
+
+	gb0.eval_geom_mapping(samples0, mapped0);
+	gb1.eval_geom_mapping(samples1, mapped1);
+
+	if((mapped0.row(1)-mapped1.row(0)).squaredNorm() < 1e-8)
+		return mapped0.row(0);
+
+	if((mapped0.row(1)-mapped1.row(1)).squaredNorm() < 1e-8)
+		return mapped0.row(0);
+
+	if((mapped0.row(0)-mapped1.row(0)).squaredNorm() < 1e-8)
+		return mapped0.row(1);
+
+	if((mapped0.row(0)-mapped1.row(1)).squaredNorm() < 1e-8)
+		return mapped0.row(1);
+
+	assert(false);
+	return mapped0.row(1);
+}
+
+///
+/// @brief      { Compute boundary sample points + centers of harmonic bases for
+///             the polygonal element }
+///
+void sample_polygon(
+	const int element_index,
+	const int n_samples_per_edge,
+	const Mesh2D &mesh,
+	const std::map<int, InterfaceData> &poly_edge_to_data,
+	const std::vector< ElementBases > &bases,
+	const std::vector< ElementBases > &gbases,
+	std::vector<int> &local_to_global,
+	const double eps,
+	const bool c1_continuous,
+	Eigen::MatrixXd &boundary_samples,
+	Eigen::MatrixXd &poly_samples,
+	const Eigen::MatrixXd &basis_integrals,
+	Eigen::MatrixXd &rhs)
+{
+	const int n_edges = mesh.n_element_vertices(element_index);
+
+	const int poly_local_n = (n_samples_per_edge - 1)/3;
+	const int n_samples      = (n_samples_per_edge - 1) * n_edges;
+	const int n_poly_samples = poly_local_n * n_edges;
+
+	boundary_samples.resize(n_samples, 2);
+	boundary_samples.setConstant(0);
+	poly_samples.resize(n_poly_samples, 2);
+
+	Eigen::MatrixXd samples, mapped, basis_val, grad_basis_val;
+	std::vector<Eigen::MatrixXd> grads;
+
+	Navigation::Index index = mesh.get_index_from_face(element_index);
+	for(int i = 0; i < n_edges; ++i)
 	{
-		Eigen::MatrixXd compute_first_prev(const InterfaceData &bdata0, const InterfaceData &bdata1, const std::vector< ElementBases > &gbases)
+		const InterfaceData &bdata = poly_edge_to_data.at(index.edge);
+		local_to_global.insert(local_to_global.end(), bdata.node_id.begin(), bdata.node_id.end());
+
+		index = mesh.next_around_face(index);
+	}
+
+	std::sort( local_to_global.begin(), local_to_global.end() );
+	local_to_global.erase( std::unique( local_to_global.begin(), local_to_global.end() ), local_to_global.end() );
+    // assert(int(local_to_global.size()) <= n_edges);
+
+	rhs = Eigen::MatrixXd::Zero(n_samples + (c1_continuous? (2*n_samples): 0), local_to_global.size());
+    // rhs.resize(n_samples + (c1_continuous? (2*n_samples): 0), local_to_global.size());
+
+	index = mesh.get_index_from_face(element_index);
+
+	Eigen::MatrixXd prev = compute_first_prev(poly_edge_to_data.at(index.edge), poly_edge_to_data.at(mesh.next_around_face(index).edge), gbases);
+
+	for(int i = 0; i < n_edges; ++i)
+	{
+        //no boundary polygons
+		assert(mesh.switch_face(index).face >= 0);
+
+		const InterfaceData &bdata = poly_edge_to_data.at(index.edge);
+
+		const ElementBases &b=bases[bdata.element_id];
+		const ElementBases &gb=gbases[bdata.element_id];
+
+		assert(bdata.element_id == mesh.switch_face(index).face);
+
+		const bool has_samples = QuadBoundarySampler::sample(bdata.flag == InterfaceData::RIGHT_FLAG, bdata.flag == InterfaceData::BOTTOM_FLAG, bdata.flag == InterfaceData::LEFT_FLAG, bdata.flag == InterfaceData::TOP_FLAG, n_samples_per_edge, false, samples);
+		assert(has_samples);
+
+		gb.eval_geom_mapping(samples, mapped);
+
+		if(c1_continuous)
 		{
-			Eigen::MatrixXd samples0, samples1;
-			Eigen::MatrixXd mapped0, mapped1;
-
-			bool has_samples = QuadBoundarySampler::sample(bdata0.flag == InterfaceData::RIGHT_FLAG, bdata0.flag == InterfaceData::BOTTOM_FLAG, bdata0.flag == InterfaceData::LEFT_FLAG, bdata0.flag == InterfaceData::TOP_FLAG, 2, false, samples0);
-			assert(has_samples);
-
-			has_samples = QuadBoundarySampler::sample(bdata1.flag == InterfaceData::RIGHT_FLAG, bdata1.flag == InterfaceData::BOTTOM_FLAG, bdata1.flag == InterfaceData::LEFT_FLAG, bdata1.flag == InterfaceData::TOP_FLAG, 2, false, samples1);
-			assert(has_samples);
-
-			const ElementBases &gb0=gbases[bdata0.face_id];
-			const ElementBases &gb1=gbases[bdata1.face_id];
-
-			gb0.eval_geom_mapping(samples0, mapped0);
-			gb1.eval_geom_mapping(samples1, mapped1);
-
-			if((mapped0.row(1)-mapped1.row(0)).squaredNorm() < 1e-8)
-				return mapped0.row(0);
-
-			if((mapped0.row(1)-mapped1.row(1)).squaredNorm() < 1e-8)
-				return mapped0.row(0);
-
-			if((mapped0.row(0)-mapped1.row(0)).squaredNorm() < 1e-8)
-				return mapped0.row(1);
-
-			if((mapped0.row(0)-mapped1.row(1)).squaredNorm() < 1e-8)
-				return mapped0.row(1);
-
-			assert(false);
-			return mapped0.row(1);
+			gb.eval_geom_mapping_grads(samples, grads);
 		}
 
-		void sample_polygon(const int element_index, const int samples_res, const Mesh2D &mesh, std::map<int, InterfaceData> &poly_edge_to_data, const std::vector< ElementBases > &bases, const std::vector< ElementBases > &gbases, std::vector<int> &local_to_global, const double eps, const bool c1_continuous, Eigen::MatrixXd &boundary_samples, Eigen::MatrixXd &poly_samples, const Eigen::MatrixXd &basis_integrals, Eigen::MatrixXd &rhs)
+		bool must_reverse = true;
 		{
-			const int n_edges = mesh.n_element_vertices(element_index);
+			const double dist_first = (mapped.row(0)-prev).norm();
 
-			const int poly_local_n = (samples_res - 1)/3;
-			const int n_samples      = (samples_res - 1) * n_edges;
-			const int n_poly_samples = poly_local_n * n_edges;
-
-			boundary_samples.resize(n_samples, 2);
-			boundary_samples.setConstant(0);
-			poly_samples.resize(n_poly_samples, 2);
-
-			Eigen::MatrixXd samples, mapped, basis_val, grad_basis_val;
-			std::vector<Eigen::MatrixXd> grads;
-
-			Navigation::Index index = mesh.get_index_from_face(element_index);
-			for(int i = 0; i < n_edges; ++i)
+			if(dist_first < 1e-8)
 			{
-				const InterfaceData &bdata = poly_edge_to_data[index.edge];
-				local_to_global.insert(local_to_global.end(), bdata.node_id.begin(), bdata.node_id.end());
+				samples = samples.block(1, 0, samples.rows()-1, samples.cols()).eval();
+				mapped = mapped.block(1, 0, mapped.rows()-1, mapped.cols()).eval();
 
-				index = mesh.next_around_face(index);
+				must_reverse = false;
+			}
+			else
+			{
+                assert((mapped.row(mapped.rows()-1) - prev).norm() < 1e-8);
+
+				samples = samples.block(0, 0, samples.rows()-1, samples.cols()).eval();
+				mapped = mapped.block(0, 0, mapped.rows()-1, mapped.cols()).eval();
+
+				mapped = mapped.colwise().reverse().eval();
+
+				must_reverse = true;
+			}
+		}
+
+        // assert(bdata.node_id.size() == 3);
+		for(size_t bi = 0; bi < bdata.node_id.size(); ++bi)
+		{
+			const int local_index = bdata.local_indices[bi];
+            // assert(b.bases[local_index].global_index() == bdata.node_id[bi]);
+			const long basis_index = std::distance(local_to_global.begin(), std::find(local_to_global.begin(), local_to_global.end(), bdata.node_id[bi]));
+
+			b.bases[local_index].basis(samples, basis_val);
+
+			if(must_reverse)
+				basis_val = basis_val.reverse().eval();
+			rhs.block(i*(n_samples_per_edge-1), basis_index, basis_val.rows(), 1) += basis_val * bdata.vals[bi];
+
+			if(c1_continuous)
+			{
+				b.bases[local_index].grad(samples, grad_basis_val);
+
+				if(must_reverse)
+					grad_basis_val = grad_basis_val.colwise().reverse().eval();
+
+				for(long k = 0; k < grad_basis_val.rows(); ++k)
+				{
+					const Eigen::MatrixXd trans_grad = grad_basis_val.row(k) * grads[k];
+
+					rhs(n_samples + 2*i*(n_samples_per_edge-1) + 2*k,     basis_index) = trans_grad(0);
+					rhs(n_samples + 2*i*(n_samples_per_edge-1) + 2*k + 1, basis_index) = trans_grad(1);
+				}
 			}
 
-			std::sort( local_to_global.begin(), local_to_global.end() );
-			local_to_global.erase( std::unique( local_to_global.begin(), local_to_global.end() ), local_to_global.end() );
-            // assert(int(local_to_global.size()) <= n_edges);
+		}
 
-			rhs = Eigen::MatrixXd::Zero(n_samples + (c1_continuous? (2*n_samples): 0), local_to_global.size());
-            // rhs.resize(n_samples + (c1_continuous? (2*n_samples): 0), local_to_global.size());
+		prev = mapped.row(mapped.rows()-1);
+		assert(mapped.rows() == (n_samples_per_edge-1));
+		boundary_samples.block(i*(n_samples_per_edge-1), 0, mapped.rows(), mapped.cols()) = mapped;
+		const double offset = double(n_samples_per_edge-1)/(poly_local_n+1);
 
+		for(int j = 0; j < poly_local_n; ++j)
+		{
+			const int poly_index = (j+1)*offset;
 
-			index = mesh.get_index_from_face(element_index);
-
-			Eigen::MatrixXd prev = compute_first_prev(poly_edge_to_data[index.edge], poly_edge_to_data[mesh.next_around_face(index).edge], gbases);
-
-			for(int i = 0; i < n_edges; ++i)
+			if(eps > 0)
 			{
-                //no boundary polygons
-				assert(mesh.switch_face(index).face >= 0);
+				const int im = poly_index - 1;
+				const int ip = poly_index + 1;
 
-				const InterfaceData &bdata = poly_edge_to_data[index.edge];
+				const Eigen::MatrixXd e0 = (mapped.row(poly_index) - mapped.row(im)).normalized();
+				const Eigen::MatrixXd e1 = (mapped.row(ip) - mapped.row(poly_index)).normalized();
 
-				const ElementBases &b=bases[bdata.face_id];
-				const ElementBases &gb=gbases[bdata.face_id];
+				const Eigen::Vector2d n0(e0(1), -e0(0));
+				const Eigen::Vector2d n1(e1(1), -e1(0));
+				//TODO discard point if inside
+				const Eigen::Vector2d n = (n0+n1).normalized();
 
-				assert(bdata.face_id == mesh.switch_face(index).face);
+				poly_samples.row(i*poly_local_n+j) = n.transpose()*eps + mapped.row(poly_index);
+			}
+			else {
+				poly_samples.row(i*poly_local_n+j) = mapped.row(poly_index);
+			}
+		}
 
-				const bool has_samples = QuadBoundarySampler::sample(bdata.flag == InterfaceData::RIGHT_FLAG, bdata.flag == InterfaceData::BOTTOM_FLAG, bdata.flag == InterfaceData::LEFT_FLAG, bdata.flag == InterfaceData::TOP_FLAG, samples_res, false, samples);
-				assert(has_samples);
+		index = mesh.next_around_face(index);
+	}
+}
 
-				gb.eval_geom_mapping(samples, mapped);
+} // anonymous namespace
 
-				if(c1_continuous)
-				{
-					gb.eval_geom_mapping_grads(samples, grads);
-				}
+void PolygonalBasis2d::build_bases(
+	const int n_samples_per_edge,
+	const Mesh2D &mesh,
+	const int n_bases,
+	const std::vector<ElementType> &element_type,
+	const int quadrature_order,
+	const std::vector< ElementAssemblyValues > &values,
+	const std::vector< ElementAssemblyValues > &gvalues,
+	std::vector< ElementBases > &bases,
+	const std::vector< ElementBases > &gbases,
+	std::map<int, InterfaceData> &poly_edge_to_data,
+	std::map<int, Eigen::MatrixXd> &polys)
+{
+	assert(!mesh.is_volume());
 
-				bool must_reverse = true;
-				{
-					const double dist_first = (mapped.row(0)-prev).norm();
+	const int n_elements = mesh.n_elements();
 
-					if(dist_first < 1e-8)
-					{
-						samples = samples.block(1, 0, samples.rows()-1, samples.cols()).eval();
-						mapped = mapped.block(1, 0, mapped.rows()-1, mapped.cols()).eval();
+	if(poly_edge_to_data.empty()) {
+		return;
+	}
 
-						must_reverse = false;
-					}
-					else
-					{
-                        assert((mapped.row(mapped.rows()-1) - prev).norm() < 1e-8);
+	// Step 1: Compute the integral of the PDE over each element
+	Eigen::MatrixXd basis_integrals(n_bases, 2);
+	basis_integrals.setZero();
 
-						samples = samples.block(0, 0, samples.rows()-1, samples.cols()).eval();
-						mapped = mapped.block(0, 0, mapped.rows()-1, mapped.cols()).eval();
+	for(int e = 0; e < n_elements; ++e) {
+		const ElementAssemblyValues &vals = values[e];
+		const ElementAssemblyValues &gvals = gvalues[e];
 
-						mapped = mapped.colwise().reverse().eval();
+		// Computes the discretized integral of the PDE over the element
+		const int n_local_bases = int(vals.basis_values.size());
+		for(int j = 0; j < n_local_bases; ++j) {
+			const AssemblyValues &v=vals.basis_values[j];
+			const double integralx = (v.grad_t_m.col(0).array() * gvals.det.array() * vals.quadrature.weights.array()).sum();
+			const double integraly = (v.grad_t_m.col(1).array() * gvals.det.array() * vals.quadrature.weights.array()).sum();
 
-						must_reverse = true;
-					}
-				}
-
-                // assert(bdata.node_id.size() == 3);
-				for(std::size_t bi = 0; bi < bdata.node_id.size(); ++bi)
-				{
-					const int local_index = bdata.local_indices[bi];
-                    // assert(b.bases[local_index].global_index() == bdata.node_id[bi]);
-					const long basis_index = std::distance(local_to_global.begin(), std::find(local_to_global.begin(), local_to_global.end(), bdata.node_id[bi]));
-
-					b.bases[local_index].basis(samples, basis_val);
-
-					if(must_reverse)
-						basis_val = basis_val.reverse().eval();
-					rhs.block(i*(samples_res-1), basis_index, basis_val.rows(), 1) += basis_val * bdata.vals[bi];
-
-					if(c1_continuous)
-					{
-						b.bases[local_index].grad(samples, grad_basis_val);
-
-						if(must_reverse)
-							grad_basis_val = grad_basis_val.colwise().reverse().eval();
-
-						for(long k = 0; k < grad_basis_val.rows(); ++k)
-						{
-							const Eigen::MatrixXd trans_grad = grad_basis_val.row(k) * grads[k];
-
-							rhs(n_samples + 2*i*(samples_res-1) + 2*k,     basis_index) = trans_grad(0);
-							rhs(n_samples + 2*i*(samples_res-1) + 2*k + 1, basis_index) = trans_grad(1);
-						}
-					}
-
-				}
-
-
-				prev = mapped.row(mapped.rows()-1);
-				assert(mapped.rows() == (samples_res-1));
-				boundary_samples.block(i*(samples_res-1), 0, mapped.rows(), mapped.cols()) = mapped;
-				const double offset = double(samples_res-1)/(poly_local_n+1);
-
-				for(int j = 0; j < poly_local_n; ++j)
-				{
-					const int poly_index = (j+1)*offset;
-
-					if(eps > 0)
-					{
-						const int im = poly_index - 1;
-						const int ip = poly_index + 1;
-
-						const Eigen::MatrixXd e0 = (mapped.row(poly_index) - mapped.row(im)).normalized();
-						const Eigen::MatrixXd e1 = (mapped.row(ip) - mapped.row(poly_index)).normalized();
-
-						const Eigen::Vector2d n0(e0(1), -e0(0));
-						const Eigen::Vector2d n1(e1(1), -e1(0));
-                        //TODO discad point if inside
-						const Eigen::Vector2d n = (n0+n1).normalized();
-
-						poly_samples.row(i*poly_local_n+j) = n.transpose()*eps + mapped.row(poly_index);
-					}
-					else
-						poly_samples.row(i*poly_local_n+j) = mapped.row(poly_index);
-				}
-
-				index = mesh.next_around_face(index);
+			for(size_t ii = 0; ii < v.global.size(); ++ii) {
+				basis_integrals(v.global[ii].index, 0) += integralx * v.global[ii].val;
+				basis_integrals(v.global[ii].index, 1) += integraly * v.global[ii].val;
 			}
 		}
 	}
 
-	void PolygonalBasis2d::build_bases(
-		const int samples_res,
-		const Mesh2D &mesh,
-		const int n_bases,
-		const std::vector<ElementType> &els_tag,
-		const int quadrature_order,
-		const std::vector< ElementAssemblyValues > &values,
-		const std::vector< ElementAssemblyValues > &gvalues,
-		std::vector< ElementBases > &bases,
-		const std::vector< ElementBases > &gbases,
-		std::map<int, InterfaceData> &poly_edge_to_data,
-		std::map<int, Eigen::MatrixXd> &polys)
+	const bool use_harmonic = true;
+	const bool c1_continuous = !use_harmonic && true;
+
+	PolygonQuadrature poly_quadr;
+	Eigen::Matrix2d det_mat;
+	Eigen::MatrixXd p0, p1;
+
+	for(int e = 0; e < n_elements; ++e)
 	{
-		using std::max;
-		assert(!mesh.is_volume());
-
-		const int n_els = mesh.n_elements();
-
-		if(poly_edge_to_data.empty())
-			return;
-
-		Eigen::MatrixXd basis_integrals(n_bases, 2);
-		basis_integrals.setZero();
-
-		for(int e = 0; e < n_els; ++e)
-		{
-			const ElementAssemblyValues &vals = values[e];
-			const ElementAssemblyValues &gvals = gvalues[e];
-
-			const int n_local_bases = int(vals.basis_values.size());
-			for(int j = 0; j < n_local_bases; ++j)
-			{
-				const AssemblyValues &v=vals.basis_values[j];
-				const double integralx = (v.grad_t_m.col(0).array() * gvals.det.array() * vals.quadrature.weights.array()).sum();
-				const double integraly = (v.grad_t_m.col(1).array() * gvals.det.array() * vals.quadrature.weights.array()).sum();
-
-				for(std::size_t ii = 0; ii < v.global.size(); ++ii)
-				{
-					basis_integrals(v.global[ii].index, 0) += integralx * v.global[ii].val;
-					basis_integrals(v.global[ii].index, 1) += integraly * v.global[ii].val;
-				}
-			}
+		if(element_type[e] != ElementType::InteriorPolytope && element_type[e] != ElementType::BoundaryPolytope) {
+			continue;
 		}
 
-		const bool use_harmonic = true;
-		const bool c1_continuous = !use_harmonic && true;
-
-
-		PolygonQuadrature poly_quad;
-		Eigen::Matrix2d det_mat;
-		Eigen::MatrixXd p0, p1;
-
-		for(int e = 0; e < n_els; ++e)
+		const int n_edges = mesh.n_element_vertices(e);
+		double area = 0;
+		for(int i = 0; i < n_edges; ++i)
 		{
-			if(els_tag[e] != ElementType::InteriorPolytope && els_tag[e] != ElementType::BoundaryPolytope)
-				continue;
+			const int ip = (i + 1) % n_edges;
 
-			const int n_edges = mesh.n_element_vertices(e);
-			double area = 0;
-			for(int i = 0; i < n_edges; ++i)
+			mesh.point(mesh.vertex_global_index(e, i), p0);
+			mesh.point(mesh.vertex_global_index(e, ip), p1);
+			det_mat.row(0) = p0;
+			det_mat.row(1) = p1;
+
+			area += det_mat.determinant();
+		}
+		area = fabs(area);
+        // const double eps = use_harmonic ? (0.08*area) : 0;
+		const double eps = 0.08*area;
+
+		std::vector<int> local_to_global;
+		Eigen::MatrixXd boundary_samples, poly_samples;
+		Eigen::MatrixXd rhs;
+
+		sample_polygon(e, n_samples_per_edge, mesh, poly_edge_to_data, bases, gbases,
+			local_to_global, eps, c1_continuous, boundary_samples, poly_samples, basis_integrals, rhs);
+
+		ElementBases &b=bases[e];
+		b.has_parameterization = false;
+		poly_quadr.get_quadrature(boundary_samples, quadrature_order, b.quadrature);
+
+		polys[e] = boundary_samples;
+		// std::cout<<e<<std::endl;
+
+		const int n_poly_bases = int(local_to_global.size());
+		b.bases.resize(n_poly_bases);
+
+		if(use_harmonic)
+		{
+			igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
+            viewer.data.add_points(poly_samples, Eigen::Vector3d(0,1,1).transpose());
+
+            Eigen::MatrixXd asd(boundary_samples.rows(), 3);
+            asd.col(0)=boundary_samples.col(0);
+            asd.col(1)=boundary_samples.col(1);
+            asd.col(2)=rhs.col(0);
+            viewer.data.add_points(asd, Eigen::Vector3d(1,0,1).transpose());
+
+            // for(int asd = 0; asd < boundary_samples.rows(); ++asd) {
+            //     viewer.data.add_label(boundary_samples.row(asd), std::to_string(asd));
+            // }
+
+			Eigen::MatrixXd local_basis_integral(rhs.cols(), 2);
+			for(long k = 0; k < rhs.cols(); ++k)
 			{
-				const int ip = (i + 1) % n_edges;
-
-				mesh.point(mesh.vertex_global_index(e, i), p0);
-				mesh.point(mesh.vertex_global_index(e, ip), p1);
-				det_mat.row(0) = p0;
-				det_mat.row(1) = p1;
-
-				area += det_mat.determinant();
+				local_basis_integral(k, 0) = basis_integrals(local_to_global[k],0);
+				local_basis_integral(k, 1) = basis_integrals(local_to_global[k],1);
 			}
-			area = fabs(area);
-            // const double eps = use_harmonic ? (0.08*area) : 0;
-			const double eps = 0.08*area;
 
-			std::vector<int> local_to_global;
-			Eigen::MatrixXd boundary_samples, poly_samples;
-			Eigen::MatrixXd rhs;
+			Harmonic harmonic(poly_samples, boundary_samples, local_basis_integral, rhs);
 
-			sample_polygon(e, samples_res, mesh, poly_edge_to_data, bases, gbases, local_to_global, eps, c1_continuous, boundary_samples, poly_samples, basis_integrals, rhs);
-
-			ElementBases &b=bases[e];
-			b.has_parameterization = false;
-			poly_quad.get_quadrature(boundary_samples, quadrature_order, b.quadrature);
-
-			polys[e] = boundary_samples;
-			// std::cout<<e<<std::endl;
-
-			const int n_poly_bases = int(local_to_global.size());
-			b.bases.resize(n_poly_bases);
-
-			if(use_harmonic)
+			for(int i = 0; i < n_poly_bases; ++i)
 			{
-                // igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
-                // viewer.data.add_points(poly_samples, Eigen::Vector3d(0,1,1).transpose());
-
-                // Eigen::MatrixXd asd(boundary_samples.rows(), 3);
-                // asd.col(0)=boundary_samples.col(0);
-                // asd.col(1)=boundary_samples.col(1);
-                // asd.col(2).setZero();//=rhs.col(0);
-                // viewer.data.add_points(asd, Eigen::Vector3d(1,0,1).transpose());
-
-                // for(int asd = 0; asd < boundary_samples.rows(); ++asd)
-                    // viewer.data.add_label(boundary_samples.row(asd), std::to_string(asd));
-
-				Eigen::MatrixXd local_basis_integral(rhs.cols(), 2);
-				for(long k = 0; k < rhs.cols(); ++k)
-				{
-					local_basis_integral(k, 0) = -basis_integrals(local_to_global[k],0);
-					local_basis_integral(k, 1) = -basis_integrals(local_to_global[k],1);
-				}
-
-				Harmonic harmonic(poly_samples, boundary_samples, local_basis_integral, rhs);
-
-				for(int i = 0; i < n_poly_bases; ++i)
-				{
-					b.bases[i].init(local_to_global[i], i, Eigen::MatrixXd::Zero(1,2));
-					b.bases[i].set_basis([harmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { harmonic.basis(i, uv, val); });
-					b.bases[i].set_grad( [harmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { harmonic.grad(i, uv, val); });
-				}
+				b.bases[i].init(local_to_global[i], i, Eigen::MatrixXd::Zero(1,2));
+				b.bases[i].set_basis([harmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { harmonic.basis(i, uv, val); });
+				b.bases[i].set_grad( [harmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { harmonic.grad(i, uv, val); });
 			}
-			else
-			{
-				Biharmonic biharmonic(poly_samples, boundary_samples, rhs);
+		}
+		else
+		{
+			Biharmonic biharmonic(poly_samples, boundary_samples, rhs);
 
-				for(int i = 0; i < n_poly_bases; ++i)
-				{
-					b.bases[i].init(local_to_global[i], i, Eigen::MatrixXd::Zero(1,2));
-					b.bases[i].set_basis([biharmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { biharmonic.basis(i, uv, val); });
-					b.bases[i].set_grad( [biharmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { biharmonic.grad(i, uv, val); });
-				}
+			for(int i = 0; i < n_poly_bases; ++i)
+			{
+				b.bases[i].init(local_to_global[i], i, Eigen::MatrixXd::Zero(1,2));
+				b.bases[i].set_basis([biharmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { biharmonic.basis(i, uv, val); });
+				b.bases[i].set_grad( [biharmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { biharmonic.grad(i, uv, val); });
 			}
 		}
 	}
 }
+
+} // namespace poly_fem

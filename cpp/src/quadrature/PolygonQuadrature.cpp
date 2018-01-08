@@ -32,7 +32,7 @@ namespace poly_fem
     PolygonQuadrature::PolygonQuadrature()
     { }
 
-    void PolygonQuadrature::get_quadrature(const Eigen::MatrixXd &poly, const int order, Quadrature &quad)
+    void PolygonQuadrature::get_quadrature(const Eigen::MatrixXd &poly, const int order, Quadrature &quadr)
     {
         double area = 0;
         Eigen::Matrix2d tmp;
@@ -57,7 +57,7 @@ namespace poly_fem
         std::stringstream ss;
         ss.precision(100);
         ss.setf(std::ios::fixed, std::ios::floatfield);
-        ss<<"Qpa0.001";
+        ss<<"Qpa0.01";
 
         // ss<<"Qpa"<<0.00001/area;
         // ss<<"Qpa"<<(1/poly.rows())/order;
@@ -69,13 +69,13 @@ namespace poly_fem
 
         igl::triangle::triangulate(poly, E, Eigen::MatrixXd(0,2), ss.str(), pts, tris);
 
-        Quadrature tri_quad_pts;
-        TriQuadrature tri_quad;
-        tri_quad.get_quadrature(0, tri_quad_pts);
+        Quadrature tri_quadr_pts;
+        TriQuadrature tri_quadr;
+        tri_quadr.get_quadrature(0, tri_quadr_pts);
 
-        const long offset = tri_quad_pts.weights.rows();
-        quad.points.resize(tris.rows()*offset, 2);
-        quad.weights.resize(tris.rows()*offset, 1);
+        const long offset = tri_quadr_pts.weights.rows();
+        quadr.points.resize(tris.rows()*offset, 2);
+        quadr.weights.resize(tris.rows()*offset, 1);
 
         Eigen::MatrixXd trafod_pts;
         Eigen::Matrix<double, 3, 2> triangle;
@@ -94,12 +94,12 @@ namespace poly_fem
             // viewer.data.add_edges(triangle.row(0), triangle.row(2), Eigen::Vector3d(1,0,0).transpose());
             // viewer.data.add_edges(triangle.row(2), triangle.row(1), Eigen::Vector3d(1,0,0).transpose());
 
-            const double det = transform_pts(triangle, tri_quad_pts.points, trafod_pts);
-            quad.points.block(i*offset, 0, trafod_pts.rows(), trafod_pts.cols()) = trafod_pts;
-            quad.weights.block(i*offset, 0, tri_quad_pts.weights.rows(), tri_quad_pts.weights.cols()) = tri_quad_pts.weights * det;
+            const double det = transform_pts(triangle, tri_quadr_pts.points, trafod_pts);
+            quadr.points.block(i*offset, 0, trafod_pts.rows(), trafod_pts.cols()) = trafod_pts;
+            quadr.weights.block(i*offset, 0, tri_quadr_pts.weights.rows(), tri_quadr_pts.weights.cols()) = tri_quadr_pts.weights * det;
         }
 
-        assert(quad.weights.minCoeff()>=0);
-        // std::cout<<quad.weights.size()<<" "<<quad.weights.sum()<<std::endl;
+        assert(quadr.weights.minCoeff()>=0);
+        // std::cout<<quadr.weights.size()<<" "<<quadr.weights.sum()<<std::endl;
     }
 }

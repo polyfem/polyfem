@@ -102,8 +102,8 @@ namespace poly_fem
                 else
                 {
                     InterfaceData &data = poly_edge_to_data[index.edge];
-                    // data.face_id = el_index;
-                    data.face_id = index.face;
+                    // data.element_id = el_index;
+                    data.element_id = index.face;
                     data.node_id.push_back(node_id);
                     data.flag = b_flag;
                     data.local_indices.push_back(y * 3 + x);
@@ -522,10 +522,10 @@ namespace poly_fem
                 const int nj = (j+3)%4;
 
                 //set the basis functions
-                b.bases[2*j].set_basis([nj](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quad_basis_basis(2, 2*nj, uv, val); });
+                b.bases[2*j].set_basis([nj](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quad_basis_value(2, 2*nj, uv, val); });
                 b.bases[2*j].set_grad( [nj](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quad_basis_grad(2, 2*nj, uv, val); });
 
-                b.bases[2*j+1].set_basis([nj](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quad_basis_basis(2, 2*nj+1, uv, val); });
+                b.bases[2*j+1].set_basis([nj](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quad_basis_value(2, 2*nj+1, uv, val); });
                 b.bases[2*j+1].set_grad( [nj](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quad_basis_grad(2, 2*nj+1, uv, val); });
 
                 index = mesh.next_around_face(index);
@@ -533,7 +533,7 @@ namespace poly_fem
 
             //central node always present
             b.bases[8].init(++n_bases, 8, mesh.node_from_face(el_index));
-            b.bases[8].set_basis([](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quad_basis_basis(2, 8, uv, val); });
+            b.bases[8].set_basis([](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quad_basis_value(2, 8, uv, val); });
             b.bases[8].set_grad( [](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quad_basis_grad(2, 8, uv, val); });
         }
 
@@ -669,7 +669,7 @@ namespace poly_fem
                         b_flag = InterfaceData::RIGHT_FLAG;
 
                     InterfaceData &data = poly_edge_to_data[index.edge];
-                    data.face_id = index.face;
+                    data.element_id = index.face;
                     data.flag = b_flag;
 
                     const auto &bases_e = b.bases[2*j+1];

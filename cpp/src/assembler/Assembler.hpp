@@ -19,7 +19,11 @@ namespace poly_fem
 	class Assembler
 	{
 	public:
-		void assemble(const int n_basis, const std::vector< ElementAssemblyValues > &values, const std::vector< ElementAssemblyValues > &geom_values, Eigen::SparseMatrix<double, Eigen::RowMajor> &stiffness) const
+		void assemble(
+			const int n_basis,
+			const std::vector< ElementAssemblyValues > &values,
+			const std::vector< ElementAssemblyValues > &geom_values,
+			Eigen::SparseMatrix<double, Eigen::RowMajor> &stiffness) const
 		{
 			const int buffer_size = n_basis * 10 * local_assembler_.size();
 

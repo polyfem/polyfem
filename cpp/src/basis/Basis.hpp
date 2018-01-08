@@ -10,14 +10,19 @@
 
 namespace poly_fem
 {
+	///
+	/// @brief      Represents a virtual node of the FEM mesh as a weighted sum
+	///             of real (unknown) nodes. This class stores the id, weights
+	///             and positions of the real mesh nodes to use in the weighted
+	///             sum.
+	///
 	class Local2Global
 	{
 	public:
-		int index; // global index of the actual dof
+		int index; // global index of the actual node
 		double val; // weight
 
-		Eigen::MatrixXd node; // dof position
-
+		Eigen::MatrixXd node; // node position
 
 		Local2Global()
 			: index(-1), val(0)
@@ -42,9 +47,9 @@ namespace poly_fem
 		///
 		/// @brief      Initialize a basis function within an element
 		///
-		/// @param[in]  global_index  { Global index of the dof associated to the basis }
-		/// @param[in]  local_index   { Local index of the dof within the element }
-		/// @param[in]  node          { 1 x dim position of the node associated to the dof }
+		/// @param[in]  global_index  { Global index of the node associated to the basis }
+		/// @param[in]  local_index   { Local index of the node within the element }
+		/// @param[in]  node          { 1 x dim position of the node associated to the basis }
 		///
 		void init(const int global_index, const int local_index, const Eigen::MatrixXd &node);
 
@@ -71,6 +76,7 @@ namespace poly_fem
 		inline void set_basis(const Fun &fun) { basis_ = fun; }
 		inline void set_grad(const Fun &fun) { grad_ = fun; }
 
+		inline bool is_defined() const { return (basis_ ? true : false); }
 
 		friend std::ostream& operator<< (std::ostream& os, const Basis &obj)
 		{
@@ -80,8 +86,9 @@ namespace poly_fem
 
 			return os;
 		}
+
 	private:
-		std::vector< Local2Global > global_; // real global dofs influencing the basis
+		std::vector< Local2Global > global_; // list of real nodes influencing the basis
 		int local_index_; // local index inside the element (for debugging purposes)
 
 		Fun basis_;
