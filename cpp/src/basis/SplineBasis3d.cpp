@@ -698,9 +698,23 @@ namespace poly_fem
             else
                 HexBoundarySampler::sample(j==2, j==0, j==3, j==1, j==4, j==5, 3, false, param_p);
 
-            // std::cout<<"jjjj "<<j<<std::endl;
+            std::cout<<"jjjj "<<j<<std::endl;
             assert(param_p.rows() == 9);
             assert(param_p.cols() == 3);
+
+            if(j == 1)
+            {
+                auto tmp = param_p;
+                param_p.row(0) = tmp.row(2);
+                param_p.row(1) = tmp.row(1);
+                param_p.row(2) = tmp.row(0);
+                param_p.row(3) = tmp.row(3);
+                param_p.row(4) = tmp.row(6);
+                param_p.row(5) = tmp.row(7);
+                param_p.row(6) = tmp.row(8);
+                param_p.row(7) = tmp.row(5);
+                param_p.row(8) = tmp.row(4);
+            }
 
             // if(invert)
             // {
@@ -730,14 +744,14 @@ namespace poly_fem
                 if(opposite_element < 0 || mesh.n_element_vertices(opposite_element) != 8)
                     continue;
 
-                if(opposite_element != 6)
+                if(opposite_element != 8)
                     continue;
 
                 // std::cout<<"oooo "<<opposite_element<<""<<std::endl;
                 compute_param_p(mesh, is_q2(opposite_element), index, param_p);
             //     // std::cout<<param_p<<"\n---------\n"<<std::endl;
 
-                const auto &indices = indices_for_face[j];
+                const auto &indices = FEBasis3d::quadr_hex_face_local_nodes(mesh, index);
                 const auto &other_bases = bases[opposite_element];
 
 
@@ -746,7 +760,7 @@ namespace poly_fem
                 if(el_index == 1)
                 {
                     // std::cout<<"oooo "<<opposite_element<<"\n"<<"\n---------\n"<<std::endl;
-                    if(opposite_element == 6)
+                    // if(opposite_element == 6)
                     {
                         std::cout<<"local_face "<<j<<std::endl;
                         viewer.data.add_points(eval_p, Eigen::MatrixXd::Constant(1, 3, 0.));
@@ -777,8 +791,8 @@ namespace poly_fem
                     {
                         for(int l = 0; l < 9; ++l)
                         {
-                            if(l == 4)
-                                std::cout<<eval_p(l)<<std::endl;
+                            if(l == 8)
+                                std::cout<<other_b.global()[k].index<<" "<<eval_p(l)<<std::endl;
                             auto glob = other_b.global()[k];
                             glob.val *= eval_p(l);
                             insert_into_global(glob, b.bases[indices[l]].global());
