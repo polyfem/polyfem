@@ -45,7 +45,20 @@ namespace poly_fem
 			return mapped0.row(1);
 		}
 
-		void sample_polygon(const int element_index, const int samples_res, const Mesh2D &mesh, std::map<int, InterfaceData> &poly_edge_to_data, const std::vector< ElementBases > &bases, const std::vector< ElementBases > &gbases, std::vector<int> &local_to_global, const double eps, const bool c1_continuous, Eigen::MatrixXd &boundary_samples, Eigen::MatrixXd &poly_samples, const Eigen::MatrixXd &basis_integrals, Eigen::MatrixXd &rhs)
+		void sample_polygon(
+			const int element_index,
+			const int samples_res,
+			const Mesh2D &mesh,
+			std::map<int, InterfaceData> &poly_edge_to_data,
+			const std::vector< ElementBases > &bases,
+			const std::vector< ElementBases > &gbases,
+			std::vector<int> &local_to_global,
+			const double eps,
+			const bool c1_continuous,
+			Eigen::MatrixXd &boundary_samples,
+			Eigen::MatrixXd &poly_samples,
+			const Eigen::MatrixXd &basis_integrals,
+			Eigen::MatrixXd &rhs)
 		{
 			const int n_edges = mesh.n_element_vertices(element_index);
 

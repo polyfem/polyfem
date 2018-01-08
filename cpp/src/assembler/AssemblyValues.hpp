@@ -21,7 +21,6 @@ namespace poly_fem
 
 		Eigen::MatrixXd grad_t_m; // J^{-T}*∇φi per row R^{m x dim}
 
-
 		void finalize()
 		{
 			grad_t_m.resize(grad.rows(), grad.cols());
