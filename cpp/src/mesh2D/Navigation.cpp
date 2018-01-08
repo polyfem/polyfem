@@ -58,13 +58,13 @@ void poly_fem::Navigation::prepare_mesh(GEO::Mesh &M) {
 		c2e[c] = current_id;
 	}
 
-	GEO::Attribute<int> boundary_edges_attr(M.edges.attributes(), "boundary_edge");
+	GEO::Attribute<bool> boundary_edges_attr(M.edges.attributes(), "boundary_edge");
 	assert(M.edges.nb() == (index_t) boundary_edges.size());
 	for (index_t e = 0; e < M.edges.nb(); ++e) {
 		boundary_edges_attr[e] = boundary_edges[e] ? 1 : 0;
 	}
 
-	GEO::Attribute<int> boundary_vertices(M.vertices.attributes(), "boundary_vertex");
+	GEO::Attribute<bool> boundary_vertices(M.vertices.attributes(), "boundary_vertex");
 	boundary_vertices.fill(0);
 	for (index_t e = 0; e < M.edges.nb(); ++e) {
 		if (boundary_edges[e]) {

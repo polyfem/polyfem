@@ -54,7 +54,7 @@ void poly_fem::compute_element_tags(const GEO::Mesh &M, std::vector<ElementType>
 	// Step 0: Compute boundary vertices as true boundary + vertices incident to a polygon
 	std::vector<bool> is_boundary_vertex(M.vertices.nb(), false);
 	{
-		GEO::Attribute<int> boundary_vertices(M.vertices.attributes(), "boundary_vertex");
+		GEO::Attribute<bool> boundary_vertices(M.vertices.attributes(), "boundary_vertex");
 		for (index_t f = 0; f < M.facets.nb(); ++f) {
 			if (M.facets.nb_vertices(f) != 4) {
 				// Vertices incident to polygonal facets (triangles or > 4 vertices) are marked as boundary

@@ -728,9 +728,9 @@ namespace poly_fem
 				std::cout<<state.bases[1]<<std::endl;
 
 			if(skip_visualization) return;
-			// clear_func();
-			// show_mesh_func();
-			// show_nodes_func();
+			clear_func();
+			show_mesh_func();
+			show_nodes_func();
 		};
 
 
