@@ -411,7 +411,7 @@ namespace poly_fem
             }
         }
 
-        void create_q2_nodes(const Mesh2D &mesh, const std::vector<ElementType> &els_tag, const int el_index, std::map<int, int > &vertex_id, std::map<int, int > &edge_id, ElementBases &b, std::vector< int > &bounday_nodes, LocalBoundary &local_boundary, int &n_bases)
+        void create_q2_nodes(const Mesh2D &mesh, const std::vector<ElementType> &els_tag, const int el_index, std::set<int> &vertex_id, std::set<int> &edge_id, ElementBases &b, std::vector< int > &bounday_nodes, LocalBoundary &local_boundary, int &n_bases)
         {
             const auto is_q2 = [els_tag](const int face_id){ return els_tag[face_id] == ElementType::MultiSingularInteriorCube || els_tag[face_id] == ElementType::SimpleSingularBoundaryCube; };
             const int n_els = mesh.n_elements();
@@ -475,13 +475,11 @@ namespace poly_fem
 
                 if (is_edge_q2)
                 {
-                    auto eit = edge_id.find(index.edge);
+                    const bool is_new_edge = edge_id.insert(index.edge).second;
 
-                    if(eit == edge_id.end())
+                    if(is_new_edge)
                     {
                         current_edge_node_id = ++n_bases;
-                        edge_id[index.edge] = current_edge_node_id;
-
                         current_edge_node = mesh.edge_mid_point(index.edge);
 
                         if(opposite_face < 0)
@@ -502,16 +500,15 @@ namespace poly_fem
                 if(is_vertex_q2)
                 {
                     assert(is_edge_q2);
-                    auto vit = vertex_id.find(index.vertex);
+                    const bool is_new_vertex = vertex_id.insert(index.vertex).second;
 
-                    if(vit == vertex_id.end())
+                    if(is_new_vertex)
                     {
                         current_vertex_node_id = ++n_bases;
-                        vertex_id[index.vertex] = current_vertex_node_id;
+                        mesh.point(index.vertex, current_vertex_node);
 
                         if(is_vertex_boundary)//mesh.is_vertex_boundary(index.vertex))
                             bounday_nodes.push_back(current_vertex_node_id);
-                        mesh.point(index.vertex, current_vertex_node);
                     }
                 }
 
@@ -748,8 +745,8 @@ namespace poly_fem
             basis_for_irregulard_quad(mesh, space, loc_nodes, h_knots, v_knots, b);
         }
 
-        std::map<int, int > edge_id;
-        std::map<int, int > vertex_id;
+        std::set<int> edge_id;
+        std::set<int> vertex_id;
 
         for(int e = 0; e < n_els; ++e)
         {

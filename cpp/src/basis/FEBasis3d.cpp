@@ -190,7 +190,7 @@ constexpr std::array<std::array<int, 3>, 27> quadr_hex_dofs = {{
 	{{2, 0, 2}}, // v5  = (1, 1, 1)
 	{{2, 2, 2}}, // v6  = (1, 0, 1)
 	{{0, 2, 2}}, // v7  = (0, 0, 1)
-	{{1, 0, 0}}, // e0  = (0.5,   1,   0)
+	{{1, 0, 0}}, // e0  = (0.5,   1,   0) //8
 	{{2, 1, 0}}, // e1  = (  1, 0.5,   0)
 	{{1, 2, 0}}, // e2  = (0.5,   0,   0)
 	{{0, 1, 0}}, // e3  = (  0, 0.5,   0)
@@ -202,36 +202,14 @@ constexpr std::array<std::array<int, 3>, 27> quadr_hex_dofs = {{
 	{{2, 1, 2}}, // e9  = (  1, 0.5,   1)
 	{{1, 2, 2}}, // e10 = (0.5,   0,   1)
 	{{0, 1, 2}}, // e11 = (  0, 0.5,   1)
-	{{0, 1, 1}}, // f0  = (  0, 0.5, 0.5)
+	{{0, 1, 1}}, // f0  = (  0, 0.5, 0.5) //20
 	{{2, 1, 1}}, // f1  = (  1, 0.5, 0.5)
 	{{1, 0, 1}}, // f2  = (0.5,   1, 0.5)
 	{{1, 2, 1}}, // f3  = (0.5,   0, 0.5)
 	{{1, 1, 0}}, // f4  = (0.5, 0.5,   0)
 	{{1, 1, 2}}, // f5  = (0.5, 0.5,   1)
-	{{1, 1, 1}}, // c0  = (0.5, 0.5, 0.5)
+	{{1, 1, 1}}, // c0  = (0.5, 0.5, 0.5)//26
 }};
-
-void quadr_hex_basis(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
-	auto x=xne.col(0).array();
-	auto n=xne.col(1).array();
-	auto e=xne.col(2).array();
-
-	std::array<int, 3> idx = quadr_hex_dofs[local_index];
-	val = theta(idx[0], x).array() * theta(idx[1], n).array() * theta(idx[2], e).array();
-}
-
-void quadr_hex_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
-	auto x=xne.col(0).array();
-	auto n=xne.col(1).array();
-	auto e=xne.col(2).array();
-
-	std::array<int, 3> idx = quadr_hex_dofs[local_index];
-
-	val.resize(xne.rows(), 3);
-	val.col(0) = dtheta(idx[0], x).array() * theta(idx[1], n).array() * theta(idx[2], e).array();
-	val.col(1) = theta(idx[0], x).array() * dtheta(idx[1], n).array() * theta(idx[2], e).array();
-	val.col(2) = theta(idx[0], x).array() * theta(idx[1], n).array() * dtheta(idx[2], e).array();
-}
 
 // -----------------------------------------------------------------------------
 
@@ -556,6 +534,29 @@ v0──────x─────v1
 
 
 } // anonymous namespace
+
+
+void poly_fem::FEBasis3d::quadr_hex_basis(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
+	auto x=xne.col(0).array();
+	auto n=xne.col(1).array();
+	auto e=xne.col(2).array();
+
+	std::array<int, 3> idx = quadr_hex_dofs[local_index];
+	val = theta(idx[0], x).array() * theta(idx[1], n).array() * theta(idx[2], e).array();
+}
+
+void poly_fem::FEBasis3d::quadr_hex_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
+	auto x=xne.col(0).array();
+	auto n=xne.col(1).array();
+	auto e=xne.col(2).array();
+
+	std::array<int, 3> idx = quadr_hex_dofs[local_index];
+
+	val.resize(xne.rows(), 3);
+	val.col(0) = dtheta(idx[0], x).array() * theta(idx[1], n).array() * theta(idx[2], e).array();
+	val.col(1) = theta(idx[0], x).array() * dtheta(idx[1], n).array() * theta(idx[2], e).array();
+	val.col(2) = theta(idx[0], x).array() * theta(idx[1], n).array() * dtheta(idx[2], e).array();
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
