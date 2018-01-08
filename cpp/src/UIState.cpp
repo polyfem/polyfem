@@ -724,10 +724,13 @@ namespace poly_fem
 		auto build_basis_func = [&](){
 			state.build_basis();
 
+			if(!state.use_splines)
+				std::cout<<state.bases[1]<<std::endl;
+
 			if(skip_visualization) return;
-			clear_func();
-			show_mesh_func();
-			show_nodes_func();
+			// clear_func();
+			// show_mesh_func();
+			// show_nodes_func();
 		};
 
 

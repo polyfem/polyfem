@@ -55,6 +55,9 @@ namespace poly_fem
 		// Then this functions returns the local node indices in the following order:
 		// (v0, e0, v1, e1, v2, e2, v3, e3, f0)
 		static std::array<int, 9> quadr_hex_face_local_nodes(const Mesh3D &mesh, Navigation3D::Index index);
+
+		static void quadr_hex_basis_value(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val);
+		static void quadr_hex_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val);
 	};
 }
 

@@ -211,28 +211,6 @@ constexpr std::array<std::array<int, 3>, 27> quadr_hex_local_node = {{
 	{{1, 1, 1}}, // c0  = (0.5, 0.5, 0.5)
 }};
 
-void quadr_hex_basis_value(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
-	auto x=xne.col(0).array();
-	auto n=xne.col(1).array();
-	auto e=xne.col(2).array();
-
-	std::array<int, 3> idx = quadr_hex_local_node[local_index];
-	val = theta(idx[0], x).array() * theta(idx[1], n).array() * theta(idx[2], e).array();
-}
-
-void quadr_hex_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
-	auto x=xne.col(0).array();
-	auto n=xne.col(1).array();
-	auto e=xne.col(2).array();
-
-	std::array<int, 3> idx = quadr_hex_local_node[local_index];
-
-	val.resize(xne.rows(), 3);
-	val.col(0) = dtheta(idx[0], x).array() * theta(idx[1], n).array() * theta(idx[2], e).array();
-	val.col(1) = theta(idx[0], x).array() * dtheta(idx[1], n).array() * theta(idx[2], e).array();
-	val.col(2) = theta(idx[0], x).array() * theta(idx[1], n).array() * dtheta(idx[2], e).array();
-}
-
 // -----------------------------------------------------------------------------
 
 int find_edge(const poly_fem::Mesh3D &mesh, int c, int v1, int v2) {
@@ -634,6 +612,29 @@ std::array<int, 9> poly_fem::FEBasis3d::quadr_hex_face_local_nodes(
 }
 
 // -----------------------------------------------------------------------------
+
+void poly_fem::FEBasis3d::quadr_hex_basis_value(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
+	auto x=xne.col(0).array();
+	auto n=xne.col(1).array();
+	auto e=xne.col(2).array();
+
+	std::array<int, 3> idx = quadr_hex_local_node[local_index];
+	val = theta(idx[0], x).array() * theta(idx[1], n).array() * theta(idx[2], e).array();
+}
+
+void poly_fem::FEBasis3d::quadr_hex_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
+	auto x=xne.col(0).array();
+	auto n=xne.col(1).array();
+	auto e=xne.col(2).array();
+
+	std::array<int, 3> idx = quadr_hex_local_node[local_index];
+
+	val.resize(xne.rows(), 3);
+	val.col(0) = dtheta(idx[0], x).array() * theta(idx[1], n).array() * theta(idx[2], e).array();
+	val.col(1) = theta(idx[0], x).array() * dtheta(idx[1], n).array() * theta(idx[2], e).array();
+	val.col(2) = theta(idx[0], x).array() * theta(idx[1], n).array() * dtheta(idx[2], e).array();
+}
+
 
 int poly_fem::FEBasis3d::build_bases(
 	const Mesh3D &mesh,
