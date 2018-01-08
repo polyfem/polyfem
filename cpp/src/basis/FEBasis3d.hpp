@@ -4,6 +4,7 @@
 #include "ElementBases.hpp"
 #include "Mesh3D.hpp"
 #include "LocalBoundary.hpp"
+#include "Navigation3D.hpp"
 
 #include <Eigen/Dense>
 #include <vector>
@@ -37,7 +38,25 @@ namespace poly_fem
 			std::vector< LocalBoundary > &local_boundary,
 			std::vector< int > &boundary_nodes);
 
-		static void quadr_hex_basis(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val);
+		//	Given a 3d navigation index (v0, e0, f0, c0), this function returns
+		//	the local node indices on the face f0. If the Q2 nodes are labeled
+		//	as follows:
+		//
+		// v3─────e2─────v2
+		//  │      ┆      │
+		//  │      ┆      │
+		//  │      ┆      │
+		// e3┄┄┄┄┄f0┄┄┄┄┄e1
+		//  │      ┆      │
+		//  │      ┆      │
+		//  │      ┆      │
+		// v0─────e0─────v1
+		//
+		// Then this functions returns the local node indices in the following order:
+		// (v0, e0, v1, e1, v2, e2, v3, e3, f0)
+		static std::array<int, 9> quadr_hex_face_local_nodes(const Mesh3D &mesh, Navigation3D::Index index);
+
+		static void quadr_hex_basis_value(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val);
 		static void quadr_hex_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val);
 	};
 }

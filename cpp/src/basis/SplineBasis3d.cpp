@@ -533,7 +533,7 @@ namespace poly_fem
                 if(current_vertex_node_id >= 0)
                     b.bases[j].init(current_vertex_node_id, j, current_vertex_node);
 
-                b.bases[j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis(j, uv, val); });
+                b.bases[j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_value(j, uv, val); });
                 b.bases[j].set_grad( [j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_grad(j, uv, val); });
             }
 
@@ -578,7 +578,7 @@ namespace poly_fem
                 if(current_edge_node_id >= 0)
                     b.bases[8+j].init(current_edge_node_id, 8+j, current_edge_node);
 
-                b.bases[8+j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis(8+j, uv, val); });
+                b.bases[8+j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_value(8+j, uv, val); });
                 b.bases[8+j].set_grad( [j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_grad(8+j, uv, val); });
             }
 
@@ -640,13 +640,13 @@ namespace poly_fem
                 if(current_face_node_id >= 0)
                     b.bases[20+j].init(current_face_node_id, j, current_face_node);
 
-                b.bases[20+j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis(20+j, uv, val); });
+                b.bases[20+j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_value(20+j, uv, val); });
                 b.bases[20+j].set_grad( [j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_grad(20+j, uv, val); });
             }
 
             // //central node always present
             b.bases[26].init(++n_bases, 26, mesh.node_from_element(el_index));
-            b.bases[26].set_basis([](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis(26, uv, val); });
+            b.bases[26].set_basis([](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_value(26, uv, val); });
             b.bases[26].set_grad( [](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_grad(26, uv, val); });
         }
 
