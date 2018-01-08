@@ -618,10 +618,13 @@ namespace poly_fem
 							}
 						}
 					}
+					int n_irregular_e = 0;
+					for(auto eid:ele.es) if (!be_flag[eid] && mesh_.edges[eid].neighbor_hs.size() != 4)
+						n_irregular_e++;
 					if (has_singular_v) continue;
 					if (!has_singular_v) {
-						if(n_irregular_v == 1) ele_tag[ele.id] = ElementType::SimpleSingularBoundaryCube;
-						else if(n_irregular_v == 0) ele_tag[ele.id] = ElementType::RegularBoundaryCube;
+						if(n_irregular_e==1) ele_tag[ele.id] = ElementType::SimpleSingularBoundaryCube;
+						else if(n_irregular_e == 0 && n_irregular_v == 0) ele_tag[ele.id] = ElementType::RegularBoundaryCube;
 						else continue;
 					}
 					continue;
