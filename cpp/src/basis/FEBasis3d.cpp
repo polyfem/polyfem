@@ -146,7 +146,7 @@ Eigen::MatrixXd dtheta(int i, T &t) {
 
 // -----------------------------------------------------------------------------
 
-constexpr std::array<std::array<int, 3>, 8> linear_hex_dofs = {{
+constexpr std::array<std::array<int, 3>, 8> linear_hex_local_node = {{
 	{{0, 0, 0}}, // v0  = (0, 0, 0)
 	{{1, 0, 0}}, // v1  = (1, 0, 0)
 	{{1, 1, 0}}, // v2  = (1, 1, 0)
@@ -162,7 +162,7 @@ void linear_hex_basis_value(const int local_index, const Eigen::MatrixXd &xne, E
 	auto n=xne.col(1).array();
 	auto e=xne.col(2).array();
 
-	std::array<int, 3> idx = linear_hex_dofs[local_index];
+	std::array<int, 3> idx = linear_hex_local_node[local_index];
 	val = alpha(idx[0], x).array() * alpha(idx[1], n).array() * alpha(idx[2], e).array();
 }
 
@@ -171,7 +171,7 @@ void linear_hex_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Ei
 	auto n=xne.col(1).array();
 	auto e=xne.col(2).array();
 
-	std::array<int, 3> idx = linear_hex_dofs[local_index];
+	std::array<int, 3> idx = linear_hex_local_node[local_index];
 
 	val.resize(xne.rows(), 3);
 	val.col(0) = dalpha(idx[0], x).array() * alpha(idx[1], n).array() * alpha(idx[2], e).array();
@@ -181,7 +181,7 @@ void linear_hex_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Ei
 
 // -----------------------------------------------------------------------------
 
-constexpr std::array<std::array<int, 3>, 27> quadr_hex_dofs = {{
+constexpr std::array<std::array<int, 3>, 27> quadr_hex_local_node = {{
 	{{0, 0, 0}}, // v0  = (  0,   0,   0)
 	{{2, 0, 0}}, // v1  = (  1,   0,   0)
 	{{2, 2, 0}}, // v2  = (  1,   1,   0)
@@ -216,7 +216,7 @@ void quadr_hex_basis_value(const int local_index, const Eigen::MatrixXd &xne, Ei
 	auto n=xne.col(1).array();
 	auto e=xne.col(2).array();
 
-	std::array<int, 3> idx = quadr_hex_dofs[local_index];
+	std::array<int, 3> idx = quadr_hex_local_node[local_index];
 	val = theta(idx[0], x).array() * theta(idx[1], n).array() * theta(idx[2], e).array();
 }
 
@@ -225,7 +225,7 @@ void quadr_hex_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Eig
 	auto n=xne.col(1).array();
 	auto e=xne.col(2).array();
 
-	std::array<int, 3> idx = quadr_hex_dofs[local_index];
+	std::array<int, 3> idx = quadr_hex_local_node[local_index];
 
 	val.resize(xne.rows(), 3);
 	val.col(0) = dtheta(idx[0], x).array() * theta(idx[1], n).array() * theta(idx[2], e).array();
@@ -394,7 +394,7 @@ void compute_dofs(
 			assert(mesh.n_element_vertices(c) == 8);
 			assert(mesh.n_element_faces(c) == 6);
 
-			// Corner dofs position + is boundary
+			// Corner node positions + boundary tags
 			Eigen::Matrix<int, 8, 1> v;
 			{
 				int lv = 0;
@@ -410,7 +410,7 @@ void compute_dofs(
 				}
 			}
 
-			// Edge dofs position + is boundary
+			// Edge node positions + boundary tags
 			Eigen::Matrix<int, 12, 1> e;
 			Eigen::Matrix<int, 12, 2> ev;
 			ev.row(0)  << v[0], v[1];
@@ -439,7 +439,7 @@ void compute_dofs(
 				}
 			}
 
-			// Face dofs position + is boundary
+			// Face node positions + boundary tags
 			Eigen::Matrix<int, 6, 1> f;
 			Eigen::Matrix<int, 6, 4> fv;
 			fv.row(0) << v[0], v[3], v[4], v[7];
@@ -462,7 +462,7 @@ void compute_dofs(
 				}
 			}
 
-			// Cell dofs position
+			// Cell node position
 			nodes.row(c_offset + c) = barycenter(nodes, {{ v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7] }});
 
 			// Assign global ids to dofs
@@ -554,10 +554,98 @@ v0──────x─────v1
 
 // -----------------------------------------------------------------------------
 
+template<class InputIterator, class T>
+	int find_index(InputIterator first, InputIterator last, const T& val)
+{
+	return std::distance(first, std::find(first, last, val));
+}
 
 } // anonymous namespace
 
 ////////////////////////////////////////////////////////////////////////////////
+
+std::array<int, 9> poly_fem::FEBasis3d::quadr_hex_face_local_nodes(
+	const Mesh3D &mesh, Navigation3D::Index index)
+{
+	int c = index.element;
+	assert(mesh.n_face_vertices(index.face) == 4);
+	assert(mesh.n_element_vertices(c) == 8);
+	assert(mesh.n_element_faces(c) == 6);
+
+	int e_offset = mesh.n_pts();
+	int f_offset = e_offset + mesh.n_edges();
+	int c_offset = f_offset + mesh.n_faces();
+
+	// Corner nodes
+	Eigen::Matrix<int, 8, 1> v;
+	{
+		int lv = 0;
+		for (int vi : mesh.get_ordered_vertices_from_hex(c)) {
+			v[lv++] = vi;
+		}
+	}
+
+	// Edge nodes
+	Eigen::Matrix<int, 12, 1> e;
+	Eigen::Matrix<int, 12, 2> ev;
+	ev.row(0)  << v[0], v[1];
+	ev.row(1)  << v[1], v[2];
+	ev.row(2)  << v[2], v[3];
+	ev.row(3)  << v[3], v[0];
+	ev.row(4)  << v[0], v[4];
+	ev.row(5)  << v[1], v[5];
+	ev.row(6)  << v[2], v[6];
+	ev.row(7)  << v[3], v[7];
+	ev.row(8)  << v[4], v[5];
+	ev.row(9)  << v[5], v[6];
+	ev.row(10) << v[6], v[7];
+	ev.row(11) << v[7], v[4];
+	for (int le = 0; le < e.rows(); ++le) {
+		e[le] = find_edge(mesh, c, ev(le, 0), ev(le, 1));
+	}
+
+	// Face nodes
+	Eigen::Matrix<int, 6, 1> f;
+	Eigen::Matrix<int, 6, 4> fv;
+	fv.row(0) << v[0], v[3], v[4], v[7];
+	fv.row(1) << v[1], v[2], v[5], v[6];
+	fv.row(2) << v[0], v[1], v[5], v[4];
+	fv.row(3) << v[3], v[2], v[6], v[7];
+	fv.row(4) << v[0], v[1], v[2], v[3];
+	fv.row(5) << v[4], v[5], v[6], v[7];
+	for (int lf = 0; lf < f.rows(); ++lf) {
+		f[lf] = find_face(mesh, c, fv(lf, 0), fv(lf, 1), fv(lf, 2), fv(lf, 3));
+	}
+
+	// Local to global mapping of node indices
+	std::array<int, 27> l2g;
+
+	// Assign global ids to dofs
+	{
+		int i = 0;
+		for (int lv = 0; lv < v.rows(); ++lv) {
+			l2g[i++] = v[lv];
+		}
+		for (int le = 0; le < e.rows(); ++le) {
+			l2g[i++] = e_offset + e[le];
+		}
+		for (int lf = 0; lf < f.rows(); ++lf) {
+			l2g[i++] = f_offset + f[lf];
+		}
+		l2g[i++] = c_offset + c;
+	}
+
+	std::array<int, 9> result;
+	for (int lv = 0, i = 0; lv < 4; ++lv) {
+		result[i++] = find_index(l2g.begin(), l2g.end(), index.vertex);
+		result[i++] = find_index(l2g.begin(), l2g.end(), e_offset + index.edge);
+		index = mesh.next_around_face_of_element(index);
+	}
+	result[8] = find_index(l2g.begin(), l2g.end(), f_offset + index.face);
+	return result;
+}
+
+// -----------------------------------------------------------------------------
 
 int poly_fem::FEBasis3d::build_bases(
 	const Mesh3D &mesh,
