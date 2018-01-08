@@ -92,11 +92,11 @@ namespace poly_fem
 
 		Eigen::MatrixXd p0, p1, p;
 
-		const GEO::Attribute<int> boundary(mesh_.edges.attributes(), "boundary_edge");
 		for(GEO::index_t e = 0; e < mesh_.edges.nb(); ++e)
 		{
-			if(boundary[e] != 1)
+			if(!is_boundary_edge((int) e)) {
 				continue;
+			}
 
 			const int v0 = mesh_.edges.vertex(e, 0);
 			const int v1 = mesh_.edges.vertex(e, 1);
@@ -225,21 +225,19 @@ namespace poly_fem
 
 	void Mesh2D::create_boundary_nodes()
 	{
-		GEO::Attribute<int> boundary(mesh_.edges.attributes(), "boundary_edge");
-
-		for(GEO::index_t f = 0; f < mesh_.facets.nb(); ++f)
-		{
+		// Edge is on the mesh boundary, or at the interface with a polygon
+		std::vector<bool> boundary_or_interface(mesh_.edges.nb(), false);
+		for(GEO::index_t e = 0; e < mesh_.edges.nb(); ++e) {
+			if (is_boundary_edge((int) e)) { boundary_or_interface[e] = true; }
+		}
+		for(GEO::index_t f = 0; f < mesh_.facets.nb(); ++f) {
 			const int n_vertices = mesh_.facets.nb_vertices(f);
-			if(n_vertices <= 4) continue;
-
-			Navigation::Index index = get_index_from_face(f);
-
-			for(int j = 0; j < n_vertices; ++j)
-			{
-				if(boundary[index.edge] == 0)
-					boundary[index.edge] = 2;
-
-				index = next_around_face(index);
+			if(n_vertices > 4) {
+				Navigation::Index index = get_index_from_face(f);
+				for(int j = 0; j < n_vertices; ++j) {
+					boundary_or_interface[index.edge] = true;
+					index = next_around_face(index);
+				}
 			}
 		}
 
@@ -252,10 +250,8 @@ namespace poly_fem
 
 		Eigen::MatrixXd p0, p1;
 
-		for (int e = 0; e < (int) mesh_.edges.nb(); ++e)
-		{
-			if(boundary[e] == 0)
-			{
+		for (int e = 0; e < (int) mesh_.edges.nb(); ++e) {
+			if(!boundary_or_interface[e]) {
 				edges_node_id[e] = -1;
 				continue;
 			}
@@ -266,8 +262,9 @@ namespace poly_fem
 			const int v1 = mesh_.edges.vertex(e, 1);
 			point(v0, p0); point(v1, p1);
 			auto &val = (p0 + p1)/2;
-			for(long d = 0; d < val.size(); ++d)
+			for(long d = 0; d < val.size(); ++d) {
 				edges_node[e][d] = val(d);
+			}
 		}
 
 		GEO::Attribute<int> vertices_node_id(mesh_.vertices.attributes(), "vertices_node_id");
@@ -275,27 +272,21 @@ namespace poly_fem
 
 		GEO::Attribute<std::array<double, 3>> vertices_node(mesh_.vertices.attributes(), "vertices_node");
 
-		for (int e = 0; e < n_elements(); ++e)
-		{
+		for (int e = 0; e < n_elements(); ++e) {
 			Navigation::Index index = get_index_from_face(e);
 
-			bool was_boundary = boundary[get_index_from_face(e, n_element_vertices(e)-1).edge] != 0;
-			for(int i = 0; i < n_element_vertices(e); ++i)
-			{
-				if(was_boundary)
-				{
-					if(boundary[index.edge] != 0)
-					{
-						const int v_id = index.vertex;
-						vertices_node_id[v_id] = counter++;
-						point(v_id, p0);
+			for(int i = 0; i < n_element_vertices(e); ++i) {
+				int prev = switch_edge(index).edge;
+				if (boundary_or_interface[prev] && boundary_or_interface[index.edge]) {
+					const int v_id = index.vertex;
+					vertices_node_id[v_id] = counter++;
+					point(v_id, p0);
 
-						for(long d = 0; d < p0.size(); ++d)
-							vertices_node[v_id][d] = p0(d);
+					for(long d = 0; d < p0.size(); ++d) {
+						vertices_node[v_id][d] = p0(d);
 					}
 				}
 
-				was_boundary = boundary[index.edge] != 0;
 				index = next_around_face(index);
 			}
 		}
@@ -304,7 +295,7 @@ namespace poly_fem
 	void Mesh2D::triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const
 	{
 		ranges.clear();
-		
+
 		std::vector<Eigen::MatrixXi> local_tris(mesh_.facets.nb());
 		std::vector<Eigen::MatrixXd> local_pts(mesh_.facets.nb());
 

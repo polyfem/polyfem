@@ -19,7 +19,7 @@ void poly_fem::singular_vertices(
 
 	// Ignore border vertices if requested
 	if (ignore_border) {
-		GEO::Attribute<int> boundary_vertices(M.vertices.attributes(), "boundary_vertex");
+		GEO::Attribute<bool> boundary_vertices(M.vertices.attributes(), "boundary_vertex");
 		for (index_t v = 0; v < M.vertices.nb(); ++v) {
 			if (boundary_vertices[v]) {
 				degree[v] = regular_degree;

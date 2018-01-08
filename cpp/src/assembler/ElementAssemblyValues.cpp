@@ -69,7 +69,7 @@ namespace poly_fem
 
 			det(i) = tmp.determinant();
 			// assert(det(i)>0);
-			std::cout<<det(i)<<std::endl;
+			// std::cout<<det(i)<<std::endl;
 
 				// std::cout<<"tmp.inverse().transpose() "<<tmp.inverse().transpose()<<std::endl;
 			Eigen::MatrixXd jac_it = tmp.inverse().transpose();

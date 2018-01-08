@@ -301,14 +301,14 @@ void PolygonalBasis2d::build_bases(
 
 		if(use_harmonic)
 		{
-			igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
-            viewer.data.add_points(poly_samples, Eigen::Vector3d(0,1,1).transpose());
+			// igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
+   //          viewer.data.add_points(poly_samples, Eigen::Vector3d(0,1,1).transpose());
 
-            Eigen::MatrixXd asd(boundary_samples.rows(), 3);
-            asd.col(0)=boundary_samples.col(0);
-            asd.col(1)=boundary_samples.col(1);
-            asd.col(2)=rhs.col(0);
-            viewer.data.add_points(asd, Eigen::Vector3d(1,0,1).transpose());
+   //          Eigen::MatrixXd asd(boundary_samples.rows(), 3);
+   //          asd.col(0)=boundary_samples.col(0);
+   //          asd.col(1)=boundary_samples.col(1);
+   //          asd.col(2)=rhs.col(0);
+   //          viewer.data.add_points(asd, Eigen::Vector3d(1,0,1).transpose());
 
             // for(int asd = 0; asd < boundary_samples.rows(); ++asd) {
             //     viewer.data.add_label(boundary_samples.row(asd), std::to_string(asd));
@@ -317,8 +317,8 @@ void PolygonalBasis2d::build_bases(
 			Eigen::MatrixXd local_basis_integral(rhs.cols(), 2);
 			for(long k = 0; k < rhs.cols(); ++k)
 			{
-				local_basis_integral(k, 0) = basis_integrals(local_to_global[k],0);
-				local_basis_integral(k, 1) = basis_integrals(local_to_global[k],1);
+				local_basis_integral(k, 0) = -basis_integrals(local_to_global[k],0);
+				local_basis_integral(k, 1) = -basis_integrals(local_to_global[k],1);
 			}
 
 			Harmonic harmonic(poly_samples, boundary_samples, local_basis_integral, rhs);
