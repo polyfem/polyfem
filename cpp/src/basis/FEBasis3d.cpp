@@ -61,17 +61,17 @@ e4┄┄┄⌿┄┄x┄┄┄┄┄e5  ┆╱
  │╱     ┆      │╱
  x─────e0──────x
 
-e0  = (0.5,   1,   0)
+e0  = (0.5,   0,   0)
 e1  = (  1, 0.5,   0)
-e2  = (0.5,   0,   0)
+e2  = (0.5,   1,   0)
 e3  = (  0, 0.5,   0)
-e4  = (  0,   1, 0.5)
-e5  = (  1,   1, 0.5)
-e6  = (  1,   0, 0.5)
-e7  = (  0,   0, 0.5)
-e8  = (0.5,   1,   1)
+e4  = (  0,   0, 0.5)
+e5  = (  1,   0, 0.5)
+e6  = (  1,   1, 0.5)
+e7  = (  0,   1, 0.5)
+e8  = (0.5,   0,   1)
 e9  = (  1, 0.5,   1)
-e10 = (0.5,   0,   1)
+e10 = (0.5,   1,   1)
 e11 = (  0, 0.5,   1)
 
 Face nodes:
@@ -93,8 +93,8 @@ v0──────x─────v1
 
 f0  = (  0, 0.5, 0.5)
 f1  = (  1, 0.5, 0.5)
-f2  = (0.5,   1, 0.5)
-f3  = (0.5,   0, 0.5)
+f2  = (0.5,   0, 0.5)
+f3  = (0.5,   1, 0.5)
 f4  = (0.5, 0.5,   0)
 f5  = (0.5, 0.5,   1)
 
@@ -273,7 +273,7 @@ int find_face(const poly_fem::Mesh3D &mesh, int c, int v1, int v2, int v3, int v
 	return 0;
 }
 
-Eigen::Vector3d barycenter(const Eigen::MatrixXd &nodes, const std::vector<int> ids) {
+Eigen::Vector3d barycenter(const Eigen::MatrixXd &nodes, const std::vector<int> & ids) {
 	Eigen::Vector3d p;
 	p.setZero();
 	for (int i : ids) {
@@ -285,20 +285,20 @@ Eigen::Vector3d barycenter(const Eigen::MatrixXd &nodes, const std::vector<int> 
 // -----------------------------------------------------------------------------
 
 ///
-/// @brief      Compute the list of global dofs for the mesh. If discr_order is
+/// @brief      Compute the list of global nodes for the mesh. If discr_order is
 ///             1 then this is the same as the vertices of the input mesh. If
-///             discr_order is 2, then dofs are inserted in the middle of each
-///             simplex (edge, facet, cell), and dofs per elements are numbered
+///             discr_order is 2, then nodes are inserted in the middle of each
+///             simplex (edge, facet, cell), and node per elements are numbered
 ///             accordingly.
 ///
 /// @param[in]  mesh            The input mesh
 /// @param[in]  discr_order     The discretization order
-/// @param[out] nodes           The dofs positions
-/// @param[out] boundary_nodes  List of boundary dof indices
-/// @param[out] element_dofs    List of dof indices per element
+/// @param[out] nodes           The node positions
+/// @param[out] boundary_nodes  List of boundary node indices
+/// @param[out] element_dofs    List of node indices per element
 /// @param[out] local_boundary  Which facet of the element are on the boundary
 ///
-void compute_dofs(
+void compute_nodes(
 	const poly_fem::Mesh3D &mesh,
 	const int discr_order,
 	Eigen::MatrixXd &nodes,
@@ -428,13 +428,7 @@ void compute_dofs(
 			for (int le = 0; le < e.rows(); ++le) {
 				e[le] = find_edge(mesh, c, ev(le, 0), ev(le, 1));
 				nodes.row(e_offset + e[le]) = barycenter(nodes, {{ ev(le, 0), ev(le, 1) }});
-				bool boundary = true;
-				for (int k = 0; k < ev.cols(); ++k) {
-					if (!mesh.is_boundary_vertex(ev(le, k))) {
-						boundary = false;
-					}
-				}
-				if (boundary) {
+				if (mesh.is_boundary_edge(e[le])) {
 					boundary_nodes.push_back(e_offset + e[le]);
 				}
 			}
@@ -451,13 +445,7 @@ void compute_dofs(
 			for (int lf = 0; lf < f.rows(); ++lf) {
 				f[lf] = find_face(mesh, c, fv(lf, 0), fv(lf, 1), fv(lf, 2), fv(lf, 3));
 				nodes.row(f_offset + f[lf]) = barycenter(nodes, {{ fv(lf, 0), fv(lf, 1), fv(lf, 2), fv(lf, 3) }});
-				bool boundary = true;
-				for (int k = 0; k < fv.cols(); ++k) {
-					if (!mesh.is_boundary_vertex(fv(lf, k))) {
-						boundary = false;
-					}
-				}
-				if (boundary) {
+				if (mesh.is_boundary_face(f[lf])) {
 					boundary_nodes.push_back(f_offset + f[lf]);
 				}
 			}
@@ -659,7 +647,7 @@ int poly_fem::FEBasis3d::build_bases(
 
 	Eigen::MatrixXd nodes;
 	std::vector<std::vector<int>> element_dofs;
-	compute_dofs(mesh, discr_order, nodes, boundary_nodes, element_dofs, local_boundary);
+	compute_nodes(mesh, discr_order, nodes, boundary_nodes, element_dofs, local_boundary);
 
 	HexQuadrature hex_quadrature;
 	bases.resize(mesh.n_elements());
