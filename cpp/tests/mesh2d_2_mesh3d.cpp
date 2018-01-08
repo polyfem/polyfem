@@ -10,6 +10,9 @@ using namespace poly_fem;
 using namespace Eigen;
 
 int main(int argc, char * argv[]) {
+#ifndef WIN32
+    setenv("GEO_NO_SIGNAL_HANDLER", "1", 1);
+#endif
 	GEO::initialize();
 
     // Import standard command line arguments, and custom ones
