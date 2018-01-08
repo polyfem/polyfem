@@ -16,7 +16,7 @@ namespace poly_fem
 	class ElementBases
 	{
 	public:
-		// one basis function per dof for the element
+		// one basis function per node in the element
 		std::vector<Basis> bases;
 
 		// quadrature points to evaluate the basis functions inside the element

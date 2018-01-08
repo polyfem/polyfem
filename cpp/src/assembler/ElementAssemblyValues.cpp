@@ -69,7 +69,7 @@ namespace poly_fem
 
 			det(i) = tmp.determinant();
 			// assert(det(i)>0);
-			// std::cout<<det(i)<<std::endl;
+			std::cout<<det(i)<<std::endl;
 
 				// std::cout<<"tmp.inverse().transpose() "<<tmp.inverse().transpose()<<std::endl;
 			Eigen::MatrixXd jac_it = tmp.inverse().transpose();
@@ -142,7 +142,9 @@ namespace poly_fem
 
 		for(std::size_t i = 0; i < bases.size(); ++i)
 		{
-			values[i].compute(is_volume, bases[i]);
+			if (!bases[i].bases.empty() && bases[i].bases.front().is_defined()) {
+				values[i].compute(is_volume, bases[i]);
+			}
 		}
 	}
 }

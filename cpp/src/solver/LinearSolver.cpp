@@ -209,6 +209,7 @@ std::vector<std::string> LinearSolver::availableSolvers() {
 }
 
 std::string LinearSolver::defaultSolver() {
+	// return "Eigen::BiCGSTAB";
 #ifdef POLYFEM_WITH_PARDISO
 	return "Pardiso";
 #else

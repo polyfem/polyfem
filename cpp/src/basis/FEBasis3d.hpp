@@ -36,6 +36,8 @@ namespace poly_fem
 			std::vector< ElementBases > &bases,
 			std::vector< LocalBoundary > &local_boundary,
 			std::vector< int > &boundary_nodes);
+
+		// static std::array<int, 9> quadr_hex_face_local_nodes();
 	};
 }
 

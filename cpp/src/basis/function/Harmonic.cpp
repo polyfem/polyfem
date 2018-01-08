@@ -102,28 +102,28 @@ namespace poly_fem
 	{
 		is_volume_ = samples.cols() == 3;
 
-		// const int size = (int) samples.rows();
+#if 0
+		const int size = (int) samples.rows();
 
-		// //+2 linear, +1 constant
-		// Eigen::MatrixXd mat(size, centers_.rows() + 2 + 1);
+		//+2 linear, +1 constant
+		Eigen::MatrixXd mat(size, centers_.rows() + 2 + 1);
 
-		// const int end = int(mat.cols())-1;
-		// mat.col(end).setOnes();
+		const int end = int(mat.cols())-1;
+		mat.col(end).setOnes();
 
-		// for(long i = 0; i < samples.rows(); ++i)
-		// {
-		// 	mat(i, end - 2) = samples(i, 0);
-		// 	mat(i, end - 1) = samples(i, 1);
+		for(long i = 0; i < samples.rows(); ++i)
+		{
+			mat(i, end - 2) = samples(i, 0);
+			mat(i, end - 1) = samples(i, 1);
 
-		// 	for(long j = 0; j < centers_.rows(); ++j)
-		// 	{
-		// 		mat(i,j)=kernel((centers_.row(j)-samples.row(i)).norm());
-		// 	}
-		// }
+			for(long j = 0; j < centers_.rows(); ++j)
+			{
+				mat(i,j)=kernel(is_volume_, (centers_.row(j)-samples.row(i)).norm());
+			}
+		}
 
-		// weights_ = mat.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(rhs);
-
-
+		weights_ = mat.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(rhs);
+#else
 		const int size = (int) samples.rows();
 
 		//+1 constant
@@ -301,5 +301,6 @@ namespace poly_fem
 		// 	os<<weights_<<std::endl;
 		// 	os.close();
 		// }
+#endif
 	}
 }

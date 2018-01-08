@@ -102,8 +102,8 @@ namespace poly_fem
                 else
                 {
                     InterfaceData &data = poly_edge_to_data[index.edge];
-                    // data.face_id = el_index;
-                    data.face_id = index.face;
+                    // data.element_id = el_index;
+                    data.element_id = index.face;
                     data.node_id.push_back(node_id);
                     data.flag = b_flag;
                     data.local_indices.push_back(y * 3 + x);
@@ -672,7 +672,7 @@ namespace poly_fem
                         b_flag = InterfaceData::RIGHT_FLAG;
 
                     InterfaceData &data = poly_edge_to_data[index.edge];
-                    data.face_id = index.face;
+                    data.element_id = index.face;
                     data.flag = b_flag;
 
                     const auto &bases_e = b.bases[2*j+1];

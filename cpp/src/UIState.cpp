@@ -826,9 +826,6 @@ namespace poly_fem
 
 
 			auto solvers = LinearSolver::availableSolvers();
-			if (std::find(solvers.begin(), solvers.end(), state.solver_type) == solvers.end()) {
-				state.solver_type = LinearSolver::defaultSolver();
-			}
 			viewer_.ngui->addVariable<Foo>("Solver",
 				[&,solvers](Foo i) { state.solver_type = solvers[i]; },
 				[&,solvers]() { return (Foo) std::distance(solvers.begin(),
@@ -836,9 +833,6 @@ namespace poly_fem
 				)->setItems(solvers);
 
 			auto precond = LinearSolver::availablePrecond();
-			if (std::find(precond.begin(), precond.end(), state.precond_type) == precond.end()) {
-				state.precond_type = LinearSolver::defaultPrecond();
-			}
 			viewer_.ngui->addVariable<Foo>("Precond",
 				[&,precond](Foo i) { state.precond_type = precond[i]; },
 				[&,precond]() { return (Foo) std::distance(precond.begin(),
@@ -922,6 +916,7 @@ namespace poly_fem
 			return false;
 		};
 
+		viewer.core.set_rotation_type(igl::viewer::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
 		viewer.launch();
 	}
 

@@ -76,6 +76,7 @@ namespace poly_fem
 		inline void set_basis(const Fun &fun) { basis_ = fun; }
 		inline void set_grad(const Fun &fun) { grad_ = fun; }
 
+		inline bool is_defined() const { return (basis_ ? true : false); }
 
 		friend std::ostream& operator<< (std::ostream& os, const Basis &obj)
 		{
