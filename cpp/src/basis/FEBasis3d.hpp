@@ -56,6 +56,13 @@ namespace poly_fem
 		// (v0, e0, v1, e1, v2, e2, v3, e3, f0)
 		static std::array<int, 9> quadr_hex_face_local_nodes(const Mesh3D &mesh, Navigation3D::Index index);
 
+		static Eigen::MatrixXd quadr_hex_face_local_nodes_coordinates(
+			const Mesh3D &mesh, Navigation3D::Index index);
+
+		// Return the coordinates in the parametric domain corresponding to the
+		// local node index
+		static Eigen::RowVector3d quadr_hex_local_node_coordinates(int local_index);
+
 		static void quadr_hex_basis_value(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val);
 		static void quadr_hex_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val);
 	};
