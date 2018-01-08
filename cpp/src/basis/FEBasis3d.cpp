@@ -613,6 +613,25 @@ std::array<int, 9> poly_fem::FEBasis3d::quadr_hex_face_local_nodes(
 
 // -----------------------------------------------------------------------------
 
+Eigen::RowVector3d poly_fem::FEBasis3d::quadr_hex_local_node_coordinates(int local_index) {
+	auto p = quadr_hex_local_node[local_index];
+	return Eigen::RowVector3d(p[0], p[1], p[2]) / 2.0;
+}
+
+Eigen::MatrixXd poly_fem::FEBasis3d::quadr_hex_face_local_nodes_coordinates(
+	const Mesh3D &mesh, Navigation3D::Index index)
+{
+	auto idx = quadr_hex_face_local_nodes(mesh, index);
+	Eigen::MatrixXd res(idx.size(), 3);
+	int cnt = 0;
+	for (int i : idx) {
+		res.row(cnt++) = quadr_hex_local_node_coordinates(i);
+	}
+	return res;
+}
+
+// -----------------------------------------------------------------------------
+
 void poly_fem::FEBasis3d::quadr_hex_basis_value(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
 	auto x=xne.col(0).array();
 	auto n=xne.col(1).array();
