@@ -465,6 +465,7 @@ namespace poly_fem
                             int zz = 1;
 
                             int edge_id = -1;
+                            int dir = -1;
 
                             if(space(x, y, 1).size() > 1)
                             {
@@ -481,6 +482,7 @@ namespace poly_fem
                                 mmz = z;
 
                                 zz = z;
+                                dir = z;
                             }
                             else if(space(x, 1, z).size() > 1)
                             {
@@ -497,6 +499,7 @@ namespace poly_fem
                                 mmz = 1;
 
                                 yy = y;
+                                dir = y;
 
                             }
                             else if(space(1, y, z).size() > 1)
@@ -514,29 +517,46 @@ namespace poly_fem
                                 mmz = z;
 
                                 xx = x;
+                                dir = x;
                             }
                             else
                                 assert(false);
 
+                            const int el_index = b.bases[1*9 + 1*3 + 1].global().front().index;
 
                             const auto &center = b.bases[zz*9 + yy*3 + xx].global().front();
 
                             const auto &el1 = b.bases[mpz*9 + mpy*3 + mpx].global().front();
                             const auto &el2 = b.bases[mmz*9 + mmy*3 + mmx].global().front();
 
-                            std::cout<<"center "<<center.index<<std::endl;
-                            std::cout<<"el1 "<<el1.index<<std::endl;
-                            std::cout<<"el2 "<<el2.index<<std::endl;
+                            // std::cout<<"el_index "<<el_index<<std::endl;
+                            // std::cout<<"center "<<center.index<<std::endl;
+                            // std::cout<<"el1 "<<el1.index<<std::endl;
+                            // std::cout<<"el2 "<<el2.index<<std::endl;
 
                             std::vector<int> ids;
-                            mesh.get_edge_elements_neighs(edge_id, ids);
+                            std::vector<Eigen::MatrixXd> nds;
+                            mesh.get_edge_elements_neighs(el_index, edge_id, dir, ids, nds);
+
+                            if(ids.front() != center.index)
+                            {
+                                assert(dir != 1);
+                                ids.clear();
+                                nds.clear();
+                                mesh.get_edge_elements_neighs(el_index, edge_id, dir == 2 ? 0 : 2, ids, nds);
+                            }
+
+                            assert(ids.front() == center.index);
 
                             std::vector<int> other_indices;
-                            // for(size_t i = 0; i < ids.size(); ++i)
-                            // {
-                            //     if(ids[i] != center.index && ids[i] != el1.index && ids[i] != el2.index)
-                            //         other_indices.push_back(ids[i]);
-                            // }
+                            std::vector<Eigen::MatrixXd> other_nodes;
+                            for(size_t i = 0; i < ids.size(); ++i)
+                            {
+                                if(ids[i] != center.index && ids[i] != el1.index && ids[i] != el2.index){
+                                    other_indices.push_back(ids[i]);
+                                    other_nodes.push_back(nds[i]);
+                                }
+                            }
 
                             std::cout<<ids.size()<< " " << other_indices.size()<<std::endl;
 
@@ -565,7 +585,7 @@ namespace poly_fem
                             {
                                 base.global()[3+n].index = other_indices[n];
                                 base.global()[3+n].val = 4./k;
-                                base.global()[3+n].node = mesh.node_from_face(other_indices[n]);
+                                base.global()[3+n].node = other_nodes[n];
                             }
 
 
