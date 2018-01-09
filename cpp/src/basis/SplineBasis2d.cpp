@@ -144,40 +144,30 @@ namespace poly_fem
 
             //////////////////////////////////////////
             index = mesh.get_index_from_face(el_index);
-            explore_direction(index, mesh, 0, 1, true, true, InterfaceData::RIGHT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
+            explore_direction(index, mesh, 1, 0, false, false, InterfaceData::BOTTOM_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             //////////////////////////////////////////
             index = mesh.next_around_face(index);
-            explore_direction(index, mesh, 1, 0, false, false, InterfaceData::TOP_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
+            explore_direction(index, mesh, 2, 1, true, false, InterfaceData::RIGHT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             //////////////////////////////////////////
             index = mesh.next_around_face(index);
-            explore_direction(index, mesh, 2, 1, true, false, InterfaceData::LEFT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
+            explore_direction(index, mesh, 1, 2, false, true, InterfaceData::TOP_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             //////////////////////////////////////////
             index = mesh.next_around_face(index);
-            explore_direction(index, mesh, 1, 2, false, true, InterfaceData::BOTTOM_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
+            explore_direction(index, mesh, 0, 1, true, true, InterfaceData::LEFT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             //////////////////////////////////////////
-            if(space(1, 0).front() >= mesh.n_elements() && space(0, 1).front() >= mesh.n_elements())
+            if(space(1, 2).front() >= mesh.n_elements() && space(2, 1).front() >= mesh.n_elements())
             {
                 Navigation::Index start_index = mesh.get_index_from_face(el_index);
-                start_index = mesh.switch_vertex(start_index);
+                start_index = mesh.next_around_face(start_index);
+                start_index = mesh.next_around_face(start_index);
 
                 const int node_id = mesh.vertex_node_id(start_index.vertex);
-                space(0,0).push_back(node_id);
-                node(0,0).push_back(mesh.node_from_vertex(start_index.vertex));
-
-                bounday_nodes.push_back(node_id);
-            }
-
-            if(space(1, 2).front() >= mesh.n_elements() && space(0, 1).front() >= mesh.n_elements())
-            {
-                Navigation::Index start_index = mesh.get_index_from_face(el_index);
-
-                const int node_id = mesh.vertex_node_id(start_index.vertex);
-                space(0,2).push_back(node_id);
-                node(0,2).push_back(mesh.node_from_vertex(start_index.vertex));
+                space(2,2).push_back(node_id);
+                node(2,2).push_back(mesh.node_from_vertex(start_index.vertex));
 
                 bounday_nodes.push_back(node_id);
             }
@@ -185,7 +175,7 @@ namespace poly_fem
             if(space(1, 0).front() >= mesh.n_elements() && space(2, 1).front() >= mesh.n_elements())
             {
                 Navigation::Index start_index = mesh.get_index_from_face(el_index);
-                start_index = mesh.switch_vertex(mesh.next_around_face(start_index));
+                start_index = mesh.next_around_face(start_index);
 
                 const int node_id = mesh.vertex_node_id(start_index.vertex);
                 space(2,0).push_back(node_id);
@@ -194,14 +184,27 @@ namespace poly_fem
                 bounday_nodes.push_back(node_id);
             }
 
-            if(space(1, 2).front() >= mesh.n_elements() && space(2, 1).front() >= mesh.n_elements())
+            if(space(1, 2).front() >= mesh.n_elements() && space(0, 1).front() >= mesh.n_elements())
             {
                 Navigation::Index start_index = mesh.get_index_from_face(el_index);
-                start_index = mesh.switch_vertex(mesh.switch_edge(start_index));
+                start_index = mesh.next_around_face(start_index);
+                start_index = mesh.next_around_face(start_index);
+                start_index = mesh.next_around_face(start_index);
 
                 const int node_id = mesh.vertex_node_id(start_index.vertex);
-                space(2,2).push_back(node_id);
-                node(2,2).push_back(mesh.node_from_vertex(start_index.vertex));
+                space(0,2).push_back(node_id);
+                node(0,2).push_back(mesh.node_from_vertex(start_index.vertex));
+
+                bounday_nodes.push_back(node_id);
+            }
+
+            if(space(1, 0).front() >= mesh.n_elements() && space(0, 1).front() >= mesh.n_elements())
+            {
+                Navigation::Index start_index = mesh.get_index_from_face(el_index);
+
+                const int node_id = mesh.vertex_node_id(start_index.vertex);
+                space(0,0).push_back(node_id);
+                node(0,0).push_back(mesh.node_from_vertex(start_index.vertex));
 
                 bounday_nodes.push_back(node_id);
             }
@@ -214,17 +217,16 @@ namespace poly_fem
 
             ////////////////////////////////////////////////////////////////////////
             index = mesh.get_index_from_face(el_index);
-            add_id_for_poly(index, 0, 0, 0, 2, space, poly_edge_to_data);
-
-            index = mesh.next_around_face(index);
             add_id_for_poly(index, 0, 0, 2, 0, space, poly_edge_to_data);
 
             index = mesh.next_around_face(index);
             add_id_for_poly(index, 2, 0, 2, 2, space, poly_edge_to_data);
 
+            index = mesh.next_around_face(index);
+            add_id_for_poly(index, 2, 2, 0, 2, space, poly_edge_to_data);
 
             index = mesh.next_around_face(index);
-            add_id_for_poly(index, 0, 2, 2, 2, space, poly_edge_to_data);
+            add_id_for_poly(index, 0, 2, 0, 0, space, poly_edge_to_data);
 
             int minCoeff = 0;
             int maxCoeff = -1;
@@ -426,6 +428,10 @@ namespace poly_fem
                 Eigen::Matrix<double, 1, 2> current_edge_node;
                 Eigen::MatrixXd current_vertex_node;
 
+                auto e2l = FEBasis2d::quadr_quad_edge_local_nodes(mesh, index);
+                int vertex_basis_id = e2l[0];
+                int edge_basis_id = e2l[1];
+
                 const int opposite_face = mesh.switch_face(index).face;
 
                 //if the edge/vertex is boundary the it is a Q2 edge
@@ -485,13 +491,12 @@ namespace poly_fem
                         if(opposite_face < 0)
                         {
                             bounday_nodes.push_back(current_edge_node_id);
-
-                            switch(j)
+                            switch(edge_basis_id - 4)
                             {
-                                case 0: local_boundary.set_right_boundary(); local_boundary.set_right_edge_id(index.edge); break;
-                                case 3: local_boundary.set_bottom_boundary(); local_boundary.set_bottom_edge_id(index.edge); break;
-                                case 2: local_boundary.set_left_boundary(); local_boundary.set_left_edge_id(index.edge); break;
-                                case 1: local_boundary.set_top_boundary(); local_boundary.set_top_edge_id(index.edge); break;
+                                case 1: local_boundary.set_right_boundary(); local_boundary.set_right_edge_id(index.edge); break;
+                                case 0: local_boundary.set_bottom_boundary(); local_boundary.set_bottom_edge_id(index.edge); break;
+                                case 3: local_boundary.set_left_boundary(); local_boundary.set_left_edge_id(index.edge); break;
+                                case 2: local_boundary.set_top_boundary(); local_boundary.set_top_edge_id(index.edge); break;
                             }
                         }
                     }
@@ -514,27 +519,26 @@ namespace poly_fem
 
                 //init new Q2 nodes
                 if(current_vertex_node_id >= 0)
-                    b.bases[2*j].init(current_vertex_node_id, 2*j, current_vertex_node);
+                    b.bases[vertex_basis_id].init(current_vertex_node_id, vertex_basis_id, current_vertex_node);
 
                 if(current_edge_node_id >= 0)
-                    b.bases[2*j+1].init(current_edge_node_id, 2*j+1, current_edge_node);
-
-                const int nj = (j+3)%4;
+                    b.bases[edge_basis_id].init(current_edge_node_id, edge_basis_id, current_edge_node);
 
                 //set the basis functions
-                b.bases[2*j].set_basis([nj](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quadr_quad_basis_value(2*nj, uv, val); });
-                b.bases[2*j].set_grad( [nj](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quadr_quad_basis_grad(2*nj, uv, val); });
+                b.bases[vertex_basis_id].set_basis([vertex_basis_id](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quadr_quad_basis_value(vertex_basis_id, uv, val); });
+                b.bases[vertex_basis_id].set_grad( [vertex_basis_id](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quadr_quad_basis_grad(vertex_basis_id, uv, val); });
 
-                b.bases[2*j+1].set_basis([nj](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quadr_quad_basis_value(2*nj+1, uv, val); });
-                b.bases[2*j+1].set_grad( [nj](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quadr_quad_basis_grad(2*nj+1, uv, val); });
+                b.bases[edge_basis_id].set_basis([edge_basis_id](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quadr_quad_basis_value(edge_basis_id, uv, val); });
+                b.bases[edge_basis_id].set_grad( [edge_basis_id](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quadr_quad_basis_grad(edge_basis_id, uv, val); });
 
                 index = mesh.next_around_face(index);
             }
 
             //central node always present
-            b.bases[8].init(++n_bases, 8, mesh.node_from_face(el_index));
-            b.bases[8].set_basis([](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quadr_quad_basis_value(8, uv, val); });
-            b.bases[8].set_grad( [](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quadr_quad_basis_grad(8, uv, val); });
+            constexpr int face_basis_id = 8;
+            b.bases[face_basis_id].init(++n_bases, face_basis_id, mesh.node_from_face(el_index));
+            b.bases[face_basis_id].set_basis([](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quadr_quad_basis_value(face_basis_id, uv, val); });
+            b.bases[face_basis_id].set_grad( [](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quadr_quad_basis_grad(face_basis_id, uv, val); });
         }
 
         void insert_into_global(const Local2Global &data, std::vector<Local2Global> &vec)
@@ -561,40 +565,8 @@ namespace poly_fem
                 vec.push_back(data);
         }
 
-        void compute_param_p(const Mesh2D &mesh, const  Navigation::Index &index, Eigen::MatrixXd &param_p)
-        {
-            Navigation::Index local_index = mesh.get_index_from_face(mesh.switch_face(index).face);
-
-            int j;
-            for (j = 0; j < 4; ++j)
-            {
-                if(local_index.edge == index.edge)
-                    break;
-
-                local_index = mesh.next_around_face(local_index);
-            }
-
-            assert(j < 4);
-            assert(index.vertex == local_index.vertex || index.vertex == mesh.switch_vertex(local_index).vertex);
-
-            const bool invert = j ==1 || j == 2; //index.vertex != local_index.vertex;
-
-            QuadBoundarySampler::sample(j==0, j==3, j==2, j==1, 3, false, param_p);
-            assert(param_p.rows() == 3);
-            assert(param_p.cols() == 2);
-
-            if(invert)
-            {
-                auto tmp = param_p.row(0).eval();
-
-                param_p.row(0) = param_p.row(2);
-                param_p.row(2) = tmp;
-            }
-        }
-
         void assign_q2_weights(const Mesh2D &mesh, const int el_index, std::vector< ElementBases > &bases)
         {
-            Eigen::MatrixXd param_p;
             Eigen::MatrixXd eval_p;
             Navigation::Index index = mesh.get_index_from_face(el_index);
             ElementBases &b = bases[el_index];
@@ -609,12 +581,13 @@ namespace poly_fem
                     continue;
                 }
 
-                compute_param_p(mesh, index, param_p);
+                const auto param_p = FEBasis2d::quadr_quad_edge_local_nodes_coordinates(mesh, mesh.switch_face(index));
+                const auto indices = FEBasis2d::quadr_quad_edge_local_nodes(mesh, index);
                 // std::cout<<param_p<<"\n---------\n"<<std::endl;
 
-                const int i0 = 2*j;
-                const int i1 = 2*j+1;
-                const int i2 = (2*j+2) >= 8 ? 0 : (2*j+2);
+                const int i0 = indices[0];
+                const int i1 = indices[1];
+                const int i2 = indices[2];
 
                 const auto &other_bases = bases[opposite_face];
 
@@ -659,41 +632,45 @@ namespace poly_fem
                 {
                     int b_flag;
 
-                    if(j == 1)
-                        b_flag = InterfaceData::TOP_FLAG;
-                    else if( j == 2)
-                        b_flag = InterfaceData::LEFT_FLAG;
-                    else if( j == 3)
+                    auto e2l = FEBasis2d::quadr_quad_edge_local_nodes(mesh, index);
+                    int vertex_basis_id = e2l[0];
+                    int edge_basis_id = e2l[1];
+                    int vertex_basis_id2 = e2l[2];
+
+                    if(edge_basis_id-4 == 0)
                         b_flag = InterfaceData::BOTTOM_FLAG;
-                    else
+                    else if(edge_basis_id-4 == 1)
                         b_flag = InterfaceData::RIGHT_FLAG;
+                    else if(edge_basis_id-4 == 2)
+                        b_flag = InterfaceData::TOP_FLAG;
+                    else
+                        b_flag = InterfaceData::LEFT_FLAG;
 
                     InterfaceData &data = poly_edge_to_data[index.edge];
                     data.element_id = index.face;
                     data.flag = b_flag;
 
-                    const auto &bases_e = b.bases[2*j+1];
+                    const auto &bases_e = b.bases[edge_basis_id];
                     for(std::size_t i = 0; i < bases_e.global().size(); ++i)
                     {
                         data.node_id.push_back(bases_e.global()[i].index);
-                        data.local_indices.push_back(2*j+1);
+                        data.local_indices.push_back(edge_basis_id);
                         data.vals.push_back(bases_e.global()[i].val);
                     }
 
-                    const auto &bases_v1 = b.bases[2*j];
+                    const auto &bases_v1 = b.bases[vertex_basis_id];
                     for(std::size_t i = 0; i < bases_v1.global().size(); ++i)
                     {
                         data.node_id.push_back(bases_v1.global()[i].index);
-                        data.local_indices.push_back(2*j);
+                        data.local_indices.push_back(vertex_basis_id);
                         data.vals.push_back(bases_v1.global()[i].val);
                     }
 
-                    const int ii = (2*j+2) >= 8 ? 0 : (2*j+2);
-                    const auto &bases_v2 = b.bases[ii];
+                    const auto &bases_v2 = b.bases[vertex_basis_id2];
                     for(std::size_t i = 0; i < bases_v2.global().size(); ++i)
                     {
                         data.node_id.push_back(bases_v2.global()[i].index);
-                        data.local_indices.push_back(ii);
+                        data.local_indices.push_back(vertex_basis_id2);
                         data.vals.push_back(bases_v2.global()[i].val);
                     }
                 }
