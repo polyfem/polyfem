@@ -22,48 +22,6 @@ namespace poly_fem
 
     namespace
     {
-        constexpr std::array<std::array<int, 9>, 6> indices_for_face = {{
-            {{4, 16, 5,  19, 25, 17,  7, 18, 6}}, //0 OK
-            {{0, 8, 1,  11, 24, 9,  3, 10, 2}},   //1
-
-            //1, 9, 2,  13, 21, 14,  5, 17, 6
-            {{5, 13, 1,  17, 21, 9,  6, 14, 2}},  //2 ok
-            {{0, 11, 3,  12, 20, 15,  4, 19, 7}},
-
-
-            {{0, 8, 1,  12, 22, 13,  4, 16, 5}},
-            {{3, 10, 2, 15, 23, 14,  7, 18, 6}}
-
-        }};
-                // {{0, 0, 0}}, // v0  = (0, 1, 0)
-                // {{2, 0, 0}}, // v1  = (1, 1, 0)
-                // {{2, 2, 0}}, // v2  = (1, 0, 0)
-                // {{0, 2, 0}}, // v3  = (0, 0, 0)
-                // {{0, 0, 2}}, // v4  = (0, 1, 1)
-                // {{2, 0, 2}}, // v5  = (1, 1, 1)
-                // {{2, 2, 2}}, // v6  = (1, 0, 1)
-                // {{0, 2, 2}}, // v7  = (0, 0, 1)
-                // {{1, 0, 0}}, // e0  = (0.5,   1,   0) //8
-                // {{2, 1, 0}}, // e1  = (  1, 0.5,   0)
-                // {{1, 2, 0}}, // e2  = (0.5,   0,   0)
-                // {{0, 1, 0}}, // e3  = (  0, 0.5,   0)
-                // {{0, 0, 1}}, // e4  = (  0,   1, 0.5) //12
-                // {{2, 0, 1}}, // e5  = (  1,   1, 0.5)
-                // {{2, 2, 1}}, // e6  = (  1,   0, 0.5)
-                // {{0, 2, 1}}, // e7  = (  0,   0, 0.5)
-                // {{1, 0, 2}}, // e8  = (0.5,   1,   1) //16
-                // {{2, 1, 2}}, // e9  = (  1, 0.5,   1)
-                // {{1, 2, 2}}, // e10 = (0.5,   0,   1)
-                // {{0, 1, 2}}, // e11 = (  0, 0.5,   1)
-                // {{0, 1, 1}}, // f0  = (  0, 0.5, 0.5) //20
-                // {{2, 1, 1}}, // f1  = (  1, 0.5, 0.5)
-                // {{1, 0, 1}}, // f2  = (0.5,   1, 0.5)
-                // {{1, 2, 1}}, // f3  = (0.5,   0, 0.5)
-                // {{1, 1, 0}}, // f4  = (0.5, 0.5,   0)
-                // {{1, 1, 2}}, // f5  = (0.5, 0.5,   1)
-                // {{1, 1, 1}}, // c0  = (0.5, 0.5, 0.5)//26
-
-
         typedef Matrix<std::vector<int>, 3, 3> Space2d;
         typedef Matrix<std::vector<MatrixXd>, 3, 3> Node2d;
 
@@ -107,6 +65,13 @@ namespace poly_fem
         static const int FRONT_FLAG = 16;
         static const int BACK_FLAG = 32;
 
+        bool is_edge_singular(const Navigation3D::Index &index, const Mesh3D &mesh)
+        {
+            std::vector<int> ids;
+            mesh.get_edge_elements_neighs(index.edge, ids);
+            return ids.size() != 4 && !mesh.is_boundary_edge(index.edge);
+        }
+
 
         void print_local_space(const SpaceMatrix &space)
         {
@@ -140,6 +105,16 @@ namespace poly_fem
             assert(std::find(space(x, y, z).begin(), space(x, y, z).end(), node_id) == space(x, y, z).end());
             space(x, y, z).push_back(node_id);
             node(x, y, z).push_back(mesh.node_from_edge_index(index));
+
+            std::vector<int> ids;
+            mesh.get_edge_elements_neighs(index.edge, ids);
+
+            if(is_edge_singular(index, mesh))
+            {
+                //irregular edge
+                space(x, y, z).push_back(index.edge);
+                node(x, y, z).push_back(mesh.node_from_edge_index(index));
+            }
 
             if(node_id >= mesh.n_elements() && boundary)
                 bounday_nodes.push_back(node_id);
@@ -439,15 +414,15 @@ namespace poly_fem
 
         void basis_for_regular_hex(const SpaceMatrix &space, const NodeMatrix &loc_nodes, const std::array<std::vector<double>, 3> &h_knots, const std::array<std::vector<double>, 3> &v_knots, const std::array<std::vector<double>, 3> &w_knots, ElementBases &b)
         {
-            int local_index = 0;
             for(int z = 0; z < 3; ++z)
             {
                 for(int y = 0; y < 3; ++y)
                 {
                     for(int x = 0; x < 3; ++x)
                     {
-                        if(space(x, y, z).size() == 1)
+                        if(space(1, y, z).size() <= 1 && space(x, 1, z).size() <= 1 && space(x, y, 1).size() <= 1)
                         {
+                            const int local_index = 9*z + 3*y + x;
                             const int global_index = space(x, y, z).front();
                             const Eigen::MatrixXd &node = loc_nodes(x, y, z).front();
 
@@ -455,18 +430,169 @@ namespace poly_fem
 
                             const QuadraticBSpline3d spline(h_knots[x], v_knots[y], w_knots[z]);
 
-                            // if(global_index == 0)
-                            // {
-                            //     std::cout<<x<<" "<<y<<" "<<z<<std::endl;
-                            //     std::cout<<h_knots[x][0]<<" "<<h_knots[x][1]<<" "<<h_knots[x][2]<<" "<<h_knots[x][3]<<std::endl;
-                            //     std::cout<<v_knots[y][0]<<" "<<v_knots[y][1]<<" "<<v_knots[y][2]<<" "<<v_knots[y][3]<<std::endl;
-                            //     std::cout<<w_knots[z][0]<<" "<<w_knots[z][1]<<" "<<w_knots[z][2]<<" "<<w_knots[z][3]<<std::endl;
-                            // }
+                            b.bases[local_index].set_basis([spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.interpolate(uv, val); });
+                            b.bases[local_index].set_grad( [spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.derivative(uv, val); });
+                        }
+                    }
+                }
+            }
+        }
+
+
+        void basis_for_irregulard_hex(const Mesh3D &mesh, const SpaceMatrix &space, const NodeMatrix &loc_nodes, const std::array<std::vector<double>, 3> &h_knots, const std::array<std::vector<double>, 3> &v_knots, const std::array<std::vector<double>, 3> &w_knots, ElementBases &b)
+        {
+            for(int z = 0; z < 3; ++z)
+            {
+                for(int y = 0; y < 3; ++y)
+                {
+                    for(int x = 0; x < 3; ++x)
+                    {
+                        if(space(1, y, z).size() > 1 || space(x, 1, z).size() > 1 || space(x, y, 1).size() > 1)
+                        {
+                            const int local_index = 9*z + 3*y + x;
+
+
+                            int mpx = -1;
+                            int mpy = -1;
+                            int mpz = -1;
+
+                            int mmx = -1;
+                            int mmy = -1;
+                            int mmz = -1;
+
+                            int xx = 1;
+                            int yy = 1;
+                            int zz = 1;
+
+                            int edge_id = -1;
+                            int dir = -1;
+
+                            if(space(x, y, 1).size() > 1)
+                            {
+                                assert(space(x, y, 1).size() == 2);
+                                edge_id = space(x, y, 1)[1];
+
+
+                                mpx = 1;
+                                mpy = y;
+                                mpz = z;
+
+                                mmx = x;
+                                mmy = 1;
+                                mmz = z;
+
+                                zz = z;
+                                dir = z;
+                            }
+                            else if(space(x, 1, z).size() > 1)
+                            {
+                                assert(space(x, 1, z).size() == 2);
+                                edge_id = space(x, 1, z)[1];
+
+
+                                mpx = 1;
+                                mpy = y;
+                                mpz = z;
+
+                                mmx = x;
+                                mmy = y;
+                                mmz = 1;
+
+                                yy = y;
+                                dir = y;
+
+                            }
+                            else if(space(1, y, z).size() > 1)
+                            {
+                                assert(space(1, y, z).size() == 2);
+                                edge_id = space(1, y, z)[1];
+
+
+                                mpx = x;
+                                mpy = y;
+                                mpz = 1;
+
+                                mmx = x;
+                                mmy = 1;
+                                mmz = z;
+
+                                xx = x;
+                                dir = x;
+                            }
+                            else
+                                assert(false);
+
+                            const int el_index = b.bases[1*9 + 1*3 + 1].global().front().index;
+
+                            const auto &center = b.bases[zz*9 + yy*3 + xx].global().front();
+
+                            const auto &el1 = b.bases[mpz*9 + mpy*3 + mpx].global().front();
+                            const auto &el2 = b.bases[mmz*9 + mmy*3 + mmx].global().front();
+
+                            // std::cout<<"el_index "<<el_index<<std::endl;
+                            // std::cout<<"center "<<center.index<<std::endl;
+                            // std::cout<<"el1 "<<el1.index<<std::endl;
+                            // std::cout<<"el2 "<<el2.index<<std::endl;
+
+                            std::vector<int> ids;
+                            std::vector<Eigen::MatrixXd> nds;
+                            mesh.get_edge_elements_neighs(el_index, edge_id, dir, ids, nds);
+
+                            if(ids.front() != center.index)
+                            {
+                                assert(dir != 1);
+                                ids.clear();
+                                nds.clear();
+                                mesh.get_edge_elements_neighs(el_index, edge_id, dir == 2 ? 0 : 2, ids, nds);
+                            }
+
+                            assert(ids.front() == center.index);
+
+                            std::vector<int> other_indices;
+                            std::vector<Eigen::MatrixXd> other_nodes;
+                            for(size_t i = 0; i < ids.size(); ++i)
+                            {
+                                if(ids[i] != center.index && ids[i] != el1.index && ids[i] != el2.index){
+                                    other_indices.push_back(ids[i]);
+                                    other_nodes.push_back(nds[i]);
+                                }
+                            }
+
+                            // std::cout<<ids.size()<< " " << other_indices.size()<<std::endl;
+
+
+                            auto &base = b.bases[local_index];
+
+                            const int k = int(other_indices.size()) + 3;
+
+
+                            base.global().resize(k);
+
+                            base.global()[0].index = center.index;
+                            base.global()[0].val = (4. - k) / k;
+                            base.global()[0].node = center.node;
+
+                            base.global()[1].index = el1.index;
+                            base.global()[1].val = (4. - k) / k;
+                            base.global()[1].node = el1.node;
+
+                            base.global()[2].index = el2.index;
+                            base.global()[2].val = (4. - k) / k;
+                            base.global()[2].node = el2.node;
+
+
+                            for(std::size_t n = 0; n < other_indices.size(); ++n)
+                            {
+                                base.global()[3+n].index = other_indices[n];
+                                base.global()[3+n].val = 4./k;
+                                base.global()[3+n].node = other_nodes[n];
+                            }
+
+
+                            const QuadraticBSpline3d spline(h_knots[x], v_knots[y], w_knots[z]);
 
                             b.bases[local_index].set_basis([spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.interpolate(uv, val); });
                             b.bases[local_index].set_grad( [spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.derivative(uv, val); });
-
-                            ++local_index;
                         }
                     }
                 }
@@ -827,8 +953,6 @@ namespace poly_fem
             if(els_tag[e] != ElementType::RegularInteriorCube && els_tag[e] != ElementType::RegularBoundaryCube && els_tag[e] != ElementType::SimpleSingularInteriorCube && els_tag[e] != ElementType::SimpleSingularBoundaryCube)
                 continue;
 
-            //needs to be implemented
-            assert(els_tag[e] != ElementType::SimpleSingularInteriorCube && els_tag[e] != ElementType::SimpleSingularBoundaryCube);
 
             SpaceMatrix space;
             NodeMatrix loc_nodes;
@@ -845,7 +969,7 @@ namespace poly_fem
             // print_local_space(space);
 
             basis_for_regular_hex(space, loc_nodes, h_knots, v_knots, w_knots, b);
-            // basis_for_irregulard_hex(mesh, space, loc_nodes, h_knots, v_knots, b);
+            basis_for_irregulard_hex(mesh, space, loc_nodes, h_knots, v_knots, w_knots, b);
         }
 
 

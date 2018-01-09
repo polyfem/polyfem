@@ -53,6 +53,7 @@ namespace poly_fem
 
 	void State::save_json(const std::string &name)
 	{
+		std::cout<<"Saving json..."<<std::flush;
 		using json = nlohmann::json;
 		json j;
 
@@ -92,51 +93,9 @@ namespace poly_fem
 		o << std::setw(4) << j << std::endl;
 		o.close();
 
+		std::cout<<"done"<<std::endl;
 	}
 
-
-	void State::compute_mesh_stats()
-	{
-		mesh->compute_element_tag(els_tag);
-
-		int regular_count = 0;
-		int regular_boundary_count = 0;
-		int simple_singular_count = 0;
-		int multi_singular_count = 0;
-		int boundary_count = 0;
-		int non_regular_boundary_count = 0;
-		int non_regular_count = 0;
-		int undefined_count = 0;
-		int multi_singular_boundary_count = 0;
-
-		for(std::size_t i = 0; i < els_tag.size(); ++i)
-		{
-			const ElementType type = els_tag[i];
-
-			switch(type)
-			{
-				case ElementType::RegularInteriorCube: regular_count++; break;
-
-				case ElementType::RegularBoundaryCube: regular_boundary_count++; break;
-
-				case ElementType::SimpleSingularInteriorCube: simple_singular_count++; break;
-
-				case ElementType::MultiSingularInteriorCube: multi_singular_count++; break;
-
-				case ElementType::SimpleSingularBoundaryCube: boundary_count++; break;
-
-				case ElementType::MultiSingularBoundaryCube: multi_singular_boundary_count++; break;
-
-				case ElementType::BoundaryPolytope: non_regular_boundary_count++; break;
-
-				case ElementType::InteriorPolytope: non_regular_count++; break;
-
-				case ElementType::Undefined: undefined_count++; break;
-			}
-		}
-
-		std::cout <<"regular_count: " << regular_count <<" regular_boundary_count: " << regular_boundary_count << " simple_singular_count: " << simple_singular_count << " multi_singular_count: " << multi_singular_count << " singular_boundary_count: " << boundary_count <<" multi_singular_boundary_count: " << multi_singular_boundary_count << " non_regular_count: " <<  non_regular_count << " non_regular_boundary_count: " << non_regular_boundary_count << " undefined_count: " << undefined_count <<std::endl;
-	}
 
 	void State::interpolate_function(const MatrixXd &fun, const MatrixXd &local_pts, MatrixXd &result)
 	{
@@ -187,6 +146,13 @@ namespace poly_fem
 		poly_edge_to_data.clear();
 		delete mesh;
 
+		stiffness.resize(0, 0);
+		rhs.resize(0, 0);
+		sol.resize(0, 0);
+
+		n_bases = 0;
+		n_geom_bases = 0;
+
 
 
 		igl::Timer timer; timer.start();
@@ -209,8 +175,86 @@ namespace poly_fem
 		std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
 	}
 
+	void State::compute_mesh_stats()
+	{
+		bases.clear();
+		geom_bases.clear();
+		values.clear();
+		geom_values.clear();
+		boundary_nodes.clear();
+		local_boundary.clear();
+		errors.clear();
+		polys.clear();
+		els_tag.clear();
+		poly_edge_to_data.clear();
+
+		stiffness.resize(0, 0);
+		rhs.resize(0, 0);
+		sol.resize(0, 0);
+
+		n_bases = 0;
+		n_geom_bases = 0;
+
+		mesh->compute_element_tag(els_tag);
+
+		int regular_count = 0;
+		int regular_boundary_count = 0;
+		int simple_singular_count = 0;
+		int multi_singular_count = 0;
+		int boundary_count = 0;
+		int non_regular_boundary_count = 0;
+		int non_regular_count = 0;
+		int undefined_count = 0;
+		int multi_singular_boundary_count = 0;
+
+		for(std::size_t i = 0; i < els_tag.size(); ++i)
+		{
+			const ElementType type = els_tag[i];
+
+			switch(type)
+			{
+				case ElementType::RegularInteriorCube: regular_count++; break;
+
+				case ElementType::RegularBoundaryCube: regular_boundary_count++; break;
+
+				case ElementType::SimpleSingularInteriorCube: simple_singular_count++; break;
+
+				case ElementType::MultiSingularInteriorCube: multi_singular_count++; break;
+
+				case ElementType::SimpleSingularBoundaryCube: boundary_count++; break;
+
+				case ElementType::MultiSingularBoundaryCube: multi_singular_boundary_count++; break;
+
+				case ElementType::BoundaryPolytope: non_regular_boundary_count++; break;
+
+				case ElementType::InteriorPolytope: non_regular_count++; break;
+
+				case ElementType::Undefined: undefined_count++; break;
+			}
+		}
+
+		std::cout <<"regular_count: " << regular_count <<" regular_boundary_count: " << regular_boundary_count << " simple_singular_count: " << simple_singular_count << " multi_singular_count: " << multi_singular_count << " singular_boundary_count: " << boundary_count <<" multi_singular_boundary_count: " << multi_singular_boundary_count << " non_regular_count: " <<  non_regular_count << " non_regular_boundary_count: " << non_regular_boundary_count << " undefined_count: " << undefined_count <<std::endl;
+	}
+
 	void State::build_basis()
 	{
+		bases.clear();
+		geom_bases.clear();
+		values.clear();
+		geom_values.clear();
+		boundary_nodes.clear();
+		local_boundary.clear();
+		errors.clear();
+		polys.clear();
+		poly_edge_to_data.clear();
+		stiffness.resize(0, 0);
+		rhs.resize(0, 0);
+		sol.resize(0, 0);
+
+		n_bases = 0;
+		n_geom_bases = 0;
+
+
 		igl::Timer timer; timer.start();
 		std::cout<<"Building basis..."<<std::flush;
 
@@ -395,6 +439,13 @@ namespace poly_fem
 
 	void State::compute_assembly_vals()
 	{
+		values.clear();
+		geom_values.clear();
+		errors.clear();
+		stiffness.resize(0, 0);
+		rhs.resize(0, 0);
+		sol.resize(0, 0);
+
 		igl::Timer timer; timer.start();
 		std::cout<<"Computing assembly values..."<<std::flush;
 
@@ -408,7 +459,7 @@ namespace poly_fem
 					assert(false);
 				}
 			} else {
-				PolygonalBasis2d::build_bases(harminic_samples_res, *static_cast<Mesh2D *>(mesh), n_bases, els_tag, quadrature_order, values, values, bases, bases, poly_edge_to_data, polys);
+				PolygonalBasis2d::build_bases(harmonic_samples_res, *static_cast<Mesh2D *>(mesh), n_bases, els_tag, quadrature_order, values, values, bases, bases, poly_edge_to_data, polys);
 			}
 
 			for(std::size_t e = 0; e < bases.size(); ++e) {
@@ -430,7 +481,7 @@ namespace poly_fem
 					assert(false);
 			}
 			else
-				PolygonalBasis2d::build_bases(harminic_samples_res, *static_cast<Mesh2D *>(mesh), n_bases, els_tag, quadrature_order, values, geom_values, bases, geom_bases, poly_edge_to_data, polys);
+				PolygonalBasis2d::build_bases(harmonic_samples_res, *static_cast<Mesh2D *>(mesh), n_bases, els_tag, quadrature_order, values, geom_values, bases, geom_bases, poly_edge_to_data, polys);
 
 			for(std::size_t e = 0; e < bases.size(); ++e)
 			{
@@ -451,6 +502,11 @@ namespace poly_fem
 
 	void State::assemble_stiffness_mat()
 	{
+		errors.clear();
+		stiffness.resize(0, 0);
+		rhs.resize(0, 0);
+		sol.resize(0, 0);
+
 		igl::Timer timer; timer.start();
 		std::cout<<"Assembling stiffness mat..."<<std::flush;
 
@@ -509,6 +565,10 @@ namespace poly_fem
 
 	void State::assemble_rhs()
 	{
+		errors.clear();
+		rhs.resize(0, 0);
+		sol.resize(0, 0);
+
 		igl::Timer timer; timer.start();
 		std::cout<<"Assigning rhs..."<<std::flush;
 
@@ -542,6 +602,9 @@ namespace poly_fem
 
 	void State::solve_problem_old()
 	{
+		errors.clear();
+		sol.resize(0, 0);
+
 		igl::Timer timer; timer.start();
 		std::cout<<"Solving ";
 
@@ -586,6 +649,9 @@ namespace poly_fem
 
 	void State::solve_problem()
 	{
+		errors.clear();
+		sol.resize(0, 0);
+
 		igl::Timer timer; timer.start();
 		std::cout<<"Solving ";
 
@@ -610,6 +676,8 @@ namespace poly_fem
 
 	void State::compute_errors()
 	{
+		errors.clear();
+		
 		if(!problem.has_exact_sol()) return;
 
 		igl::Timer timer; timer.start();

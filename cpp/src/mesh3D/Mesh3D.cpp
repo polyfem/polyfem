@@ -865,4 +865,77 @@ namespace poly_fem
 			MeshProcessing3D::build_connectivity(m);
 		}
 	}
+
+	void Mesh3D::get_edge_elements_neighs(const int element_id, const int edge_id, int dir, std::vector<int> &ids, std::vector<Eigen::MatrixXd> &nodes) const
+	{
+		assert(!mesh_.edges[edge_id].boundary_hex);
+
+		std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 12> to_edge;
+		to_edge_functions(to_edge);
+
+		Navigation3D::Index index;
+		for(int i = 0; i < 12; ++i)
+		{
+			index = to_edge[i](get_index_from_element(element_id));
+
+			if(index.edge == edge_id)
+				break;
+		}
+
+		assert(index.edge == edge_id);
+
+		if(dir == 1)
+		{
+			int id;
+			do
+			{
+				ids.push_back(index.element);
+				nodes.push_back(node_from_element(index.element));
+
+				index = next_around_edge(index);
+			}
+			while(index.element != element_id);
+
+			return;
+		}
+
+		if(dir == 0)
+		{
+			int id;
+			do
+			{
+				const Navigation3D::Index f_index = switch_face(switch_edge(index));
+
+				node_id_from_face_index(f_index, id);
+				ids.push_back(id);
+				nodes.push_back(node_from_face_index(f_index));
+
+				index = next_around_edge(index);
+			}
+			while(index.element != element_id);
+
+			return;
+		}
+
+		if(dir == 2)
+		{
+			int id;
+			do
+			{
+				const Navigation3D::Index f_index = switch_face(switch_edge(switch_vertex(index)));
+
+				node_id_from_face_index(f_index, id);
+				ids.push_back(id);
+				nodes.push_back(node_from_face_index(f_index));
+
+				index = next_around_edge(index);
+			}
+			while(index.element != element_id);
+
+			return;
+		}
+
+		assert(false);
+
+	}
 }
