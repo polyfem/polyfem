@@ -52,6 +52,10 @@ namespace poly_fem
 		virtual void compute_element_tag(std::vector<ElementType> &ele_tag) const = 0;
 
 		virtual void compute_barycenter(Eigen::MatrixXd &barycenters) const = 0;
+
+		virtual void edge_barycenters(Eigen::MatrixXd &barycenters) const = 0;
+		virtual void face_barycenters(Eigen::MatrixXd &barycenters) const = 0;
+		virtual void cell_barycenters(Eigen::MatrixXd &barycenters) const = 0;
 	};
 }
 

@@ -5,6 +5,7 @@
 
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
+#include <geogram/mesh/mesh_io.h>
 
 using namespace poly_fem;
 using namespace Eigen;
@@ -37,13 +38,13 @@ int main(int argc, char * argv[]) {
         return app.exit(e);
     }
 
-    Mesh2D mesh;
-    mesh.load(args.mesh_path+".obj");
+    GEO::Mesh mesh;
+    GEO::mesh_load(args.mesh_path+".obj", mesh);
 
     Mesh3DStorage tmp;
     tmp.type = MeshType::HSur;
     Mesh3D mesh_3d;
-    Mesh3D::geomesh_2_mesh_storage(mesh.geo_mesh(), tmp);
+    Mesh3D::geomesh_2_mesh_storage(mesh, tmp);
     MeshProcessing3D::straight_sweeping(tmp, 2, args.height, args.layers, mesh_3d.mesh_storge());
 
     mesh_3d.save(args.mesh_path+".HYBRID");

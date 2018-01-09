@@ -38,6 +38,7 @@ namespace poly_fem
 		void set_boundary_tags(std::vector<int> &tags) const override;
 
 		void point(const int global_index, Eigen::MatrixXd &pt) const override;
+		Eigen::RowVector2d point(const int global_index) const;
 
 		bool load(const std::string &path) override;
 		bool save(const std::string &path) const override;
@@ -80,7 +81,11 @@ namespace poly_fem
 		void compute_element_tag(std::vector<ElementType> &ele_tag) const override;
 		void compute_barycenter(Eigen::MatrixXd &barycenters) const override;
 
-		const GEO::Mesh &geo_mesh() const { std::cerr<<"never user this function"<<std::endl; return mesh_; }
+		void edge_barycenters(Eigen::MatrixXd &barycenters) const override;
+		void face_barycenters(Eigen::MatrixXd &barycenters) const override;
+		void cell_barycenters(Eigen::MatrixXd &barycenters) const override { }
+
+		//const GEO::Mesh &geo_mesh() const { std::cerr<<"never user this function"<<std::endl; return mesh_; }
 	private:
 		GEO::Mesh mesh_;
 	};

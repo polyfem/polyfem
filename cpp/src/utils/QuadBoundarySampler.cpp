@@ -26,7 +26,7 @@ namespace poly_fem {
 
 		n = 0;
 		if(is_right_boundary){
-			samples.block(n, 0, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);
+			samples.block(n, 0, resolution, 1) = Eigen::MatrixXd::Ones(resolution, 1);
 			samples.block(n, 1, resolution, 1) = t;
 
 			n += resolution;
@@ -34,13 +34,13 @@ namespace poly_fem {
 
 		if(is_top_boundary){
 			samples.block(n, 0, resolution, 1) = t;
-			samples.block(n, 1, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);
+			samples.block(n, 1, resolution, 1) = Eigen::MatrixXd::Ones(resolution, 1);
 
 			n += resolution;
 		}
 
 		if(is_left_boundary){
-			samples.block(n, 0, resolution, 1) = Eigen::MatrixXd::Ones(resolution, 1);
+			samples.block(n, 0, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);
 			samples.block(n, 1, resolution, 1) = t;
 
 			n += resolution;
@@ -48,7 +48,7 @@ namespace poly_fem {
 
 		if(is_bottom_boundary){
 			samples.block(n, 0, resolution, 1) = t;
-			samples.block(n, 1, resolution, 1) = Eigen::MatrixXd::Ones(resolution, 1);
+			samples.block(n, 1, resolution, 1) = Eigen::MatrixXd::Zero(resolution, 1);
 
 			n += resolution;
 		}
