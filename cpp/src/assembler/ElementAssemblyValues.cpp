@@ -68,7 +68,7 @@ namespace poly_fem
 			tmp.row(1) = dy.row(i);
 
 			det(i) = tmp.determinant();
-			// assert(det(i)>0);
+			assert(det(i)>0);
 			// std::cout<<det(i)<<std::endl;
 
 				// std::cout<<"tmp.inverse().transpose() "<<tmp.inverse().transpose()<<std::endl;

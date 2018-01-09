@@ -138,14 +138,14 @@ namespace poly_fem
 			global_rhs.block(global_counter, 0, rhs_fun.rows(), rhs_fun.cols()) = rhs_fun;
 			global_counter += rhs_fun.rows();
 
-			// igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
-			// viewer.data.add_points(mapped, Eigen::MatrixXd::Constant(1, 3, 0));
+			igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
+			viewer.data.add_points(mapped, Eigen::MatrixXd::Constant(1, 3, 0));
 
-			// Eigen::MatrixXd asd(mapped.rows(), 3);
-			// asd.col(0)=mapped.col(0);
-			// asd.col(1)=mapped.col(1);
-			// asd.col(2)=rhs_fun;
-			// viewer.data.add_points(asd, Eigen::MatrixXd::Constant(1, 3, 0));
+			Eigen::MatrixXd asd(mapped.rows(), 3);
+			asd.col(0)=mapped.col(0);
+			asd.col(1)=mapped.col(1);
+			asd.col(2)=rhs_fun;
+			viewer.data.add_points(asd, Eigen::MatrixXd::Constant(1, 3, 0));
 		}
 
 		assert(global_counter == total_size);

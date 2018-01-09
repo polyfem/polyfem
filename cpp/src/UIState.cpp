@@ -858,11 +858,11 @@ namespace poly_fem
 			viewer_.ngui->addButton("Run all", [&](){
 				load_mesh_func();
 				build_basis_func();
+				compute_assembly_vals_func();
 
 				if(!skip_visualization)
 					build_vis_mesh_func();
 
-				compute_assembly_vals_func();
 				assemble_stiffness_mat_func();
 				assemble_rhs_func();
 				solve_problem_func();

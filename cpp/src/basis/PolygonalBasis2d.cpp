@@ -150,6 +150,7 @@ void sample_polygon(
             // assert(b.bases[local_index].global_index() == bdata.node_id[bi]);
 			const long basis_index = std::distance(local_to_global.begin(), std::find(local_to_global.begin(), local_to_global.end(), bdata.node_id[bi]));
 
+			// std::cout << "li: " << local_index << std::endl;
 			b.bases[local_index].basis(samples, basis_val);
 
 			if(must_reverse)
@@ -301,14 +302,14 @@ void PolygonalBasis2d::build_bases(
 
 		if(use_harmonic)
 		{
-			// igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
-   //          viewer.data.add_points(poly_samples, Eigen::Vector3d(0,1,1).transpose());
+			igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
+            viewer.data.add_points(poly_samples, Eigen::Vector3d(0,1,1).transpose());
 
-   //          Eigen::MatrixXd asd(boundary_samples.rows(), 3);
-   //          asd.col(0)=boundary_samples.col(0);
-   //          asd.col(1)=boundary_samples.col(1);
-   //          asd.col(2)=rhs.col(0);
-   //          viewer.data.add_points(asd, Eigen::Vector3d(1,0,1).transpose());
+            Eigen::MatrixXd asd(boundary_samples.rows(), 3);
+            asd.col(0)=boundary_samples.col(0);
+            asd.col(1)=boundary_samples.col(1);
+            asd.col(2)=rhs.col(0);
+            viewer.data.add_points(asd, Eigen::Vector3d(1,0,1).transpose());
 
             // for(int asd = 0; asd < boundary_samples.rows(); ++asd) {
             //     viewer.data.add_label(boundary_samples.row(asd), std::to_string(asd));

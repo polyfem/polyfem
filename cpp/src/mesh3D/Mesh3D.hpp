@@ -98,6 +98,10 @@ namespace poly_fem
 
 		void compute_barycenter(Eigen::MatrixXd &barycenters) const override;
 
+		void edge_barycenters(Eigen::MatrixXd &barycenters) const override;
+		void face_barycenters(Eigen::MatrixXd &barycenters) const override;
+		void cell_barycenters(Eigen::MatrixXd &barycenters) const override;
+
 		void to_face_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 6> &to_face) const;
 		void to_vertex_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 8> &to_vertex) const;
 		void to_edge_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 12> &to_edge) const;

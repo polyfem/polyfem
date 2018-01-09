@@ -85,6 +85,14 @@ namespace poly_fem
 		pt(1) = pt_ptr[1];
 	}
 
+	Eigen::RowVector2d Mesh2D::point(const int global_index) const {
+		const double *ptr = mesh_.vertices.point_ptr(global_index);
+		Eigen::RowVector2d p;
+		p(0) = ptr[0];
+		p(1) = ptr[1];
+		return p;
+	}
+
 	void Mesh2D::set_boundary_tags(std::vector<int> &tags) const
 	{
 		tags.resize(mesh_.edges.nb());
@@ -362,4 +370,19 @@ namespace poly_fem
 	{
 		poly_fem::compute_element_tags(mesh_, ele_tag);
 	}
+
+	void Mesh2D::edge_barycenters(Eigen::MatrixXd &barycenters) const {
+		barycenters.resize(n_edges(), 2);
+		for (int e = 0; e < n_edges(); ++e) {
+			barycenters.row(e) = edge_mid_point(e);
+		}
+	}
+
+	void Mesh2D::face_barycenters(Eigen::MatrixXd &barycenters) const {
+		barycenters.resize(n_elements(), 2);
+		for(GEO::index_t f = 0; f < mesh_.facets.nb(); ++f) {
+			barycenters.row(f) = node_from_face(f);
+		}
+	}
+
 }

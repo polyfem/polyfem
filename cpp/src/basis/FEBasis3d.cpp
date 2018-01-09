@@ -269,23 +269,23 @@ Eigen::Vector3d barycenter(const Eigen::MatrixXd &nodes, const std::vector<int> 
 ///             simplex (edge, facet, cell), and node per elements are numbered
 ///             accordingly.
 ///
-/// @param[in]  mesh            The input mesh
-/// @param[in]  discr_order     The discretization order
-/// @param[out] nodes           The node positions
-/// @param[out] boundary_nodes  List of boundary node indices
-/// @param[out] element_dofs    List of node indices per element
-/// @param[out] local_boundary  Which facet of the element are on the boundary
+/// @param[in]  mesh              The input mesh
+/// @param[in]  discr_order       The discretization order
+/// @param[out] nodes             The node positions
+/// @param[out] boundary_nodes    List of boundary node indices
+/// @param[out] element_nodes_id  List of node indices per element
+/// @param[out] local_boundary    Which facet of the element are on the boundary
 ///
 void compute_nodes(
 	const poly_fem::Mesh3D &mesh,
 	const int discr_order,
 	Eigen::MatrixXd &nodes,
 	std::vector<int> &boundary_nodes,
-	std::vector<std::vector<int> > &element_dofs,
+	std::vector<std::vector<int> > &element_nodes_id,
 	std::vector<poly_fem::LocalBoundary> &local_boundary)
 {
 	if (discr_order == 1) {
-		// Compute dofs positions + whether it is a boundary dof
+		// Compute node positions + whether it is a boundary node
 		nodes.resize(mesh.n_pts(), 3);
 		Eigen::MatrixXd tmp(1, 3);
 		for (int v = 0; v < mesh.n_pts(); ++v) {
@@ -295,14 +295,14 @@ void compute_nodes(
 			mesh.point(v, tmp);
 			nodes.row(v) = tmp;
 		}
-		// Assign global ids to dofs
-		element_dofs.reserve(mesh.n_elements());
+		// Assign global ids to nodes
+		element_nodes_id.reserve(mesh.n_elements());
 		for (int c = 0; c < mesh.n_elements(); ++c) {
-			element_dofs.emplace_back();
+			element_nodes_id.emplace_back();
 			assert(mesh.n_element_vertices(c) == 8);
 			assert(mesh.n_element_faces(c) == 6);
 			for (int lv = 0; lv < mesh.n_element_vertices(c); ++lv) {
-				element_dofs.back().push_back(mesh.vertex_global_index(c, lv));
+				element_nodes_id.back().push_back(mesh.vertex_global_index(c, lv));
 			}
 		}
 
@@ -362,10 +362,10 @@ void compute_nodes(
 		int e_offset = mesh.n_pts();
 		int f_offset = e_offset + mesh.n_edges();
 		int c_offset = f_offset + mesh.n_faces();
-		int ndofs = c_offset + mesh.n_elements();
-		nodes.resize(ndofs, 3);
+		int n_nodes = c_offset + mesh.n_elements();
+		nodes.resize(n_nodes, 3);
 		Eigen::MatrixXd tmp(1, 3);
-		element_dofs.reserve(mesh.n_elements());
+		element_nodes_id.reserve(mesh.n_elements());
 		local_boundary.clear();
 		local_boundary.resize(mesh.n_elements());
 		for (int c = 0; c < mesh.n_elements(); ++c) {
@@ -431,23 +431,23 @@ void compute_nodes(
 			// Cell node position
 			nodes.row(c_offset + c) = barycenter(nodes, {{ v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7] }});
 
-			// Assign global ids to dofs
-			element_dofs.emplace_back();
+			// Assign global ids to nodes
+			element_nodes_id.emplace_back();
 			for (int lv = 0; lv < v.rows(); ++lv) {
-				element_dofs.back().push_back(v[lv]);
+				element_nodes_id.back().push_back(v[lv]);
 			}
 			for (int le = 0; le < e.rows(); ++le) {
-				element_dofs.back().push_back(e_offset + e[le]);
+				element_nodes_id.back().push_back(e_offset + e[le]);
 			}
 			for (int lf = 0; lf < f.rows(); ++lf) {
-				element_dofs.back().push_back(f_offset + f[lf]);
+				element_nodes_id.back().push_back(f_offset + f[lf]);
 			}
-			element_dofs.back().push_back(c_offset + c);
+			element_nodes_id.back().push_back(c_offset + c);
 
 			// Eigen::MatrixXd vv(27, 3);
 			// int cnt = 0;
 			// igl::viewer::Viewer viewer;
-			// for (int i : element_dofs.back()) {
+			// for (int i : element_nodes_id.back()) {
 			// 	viewer.data.add_label(nodes.row(i), std::to_string(cnt));
 			// 	vv.row(cnt++) = nodes.row(i);
 			// }
@@ -485,6 +485,11 @@ void compute_nodes(
 	} else {
 		throw std::runtime_error("Not implemented");
 	}
+
+	// Sort + unique boundary nodes
+	std::sort(boundary_nodes.begin(), boundary_nodes.end());
+	auto it = std::unique(boundary_nodes.begin(), boundary_nodes.end());
+	boundary_nodes.resize(std::distance(boundary_nodes.begin(), it));
 }
 
 /*
@@ -500,7 +505,7 @@ X axis: left/right
 Y axis: back/front
 Z axis: bottom/top
 
-Face dofs:
+Face nodes:
       v7──────x─────v6
       ╱┆     ╱      ╱│
      ╱ ┆    ╱      ╱ │
@@ -586,7 +591,7 @@ std::array<int, 9> poly_fem::FEBasis3d::quadr_hex_face_local_nodes(
 	// Local to global mapping of node indices
 	std::array<int, 27> l2g;
 
-	// Assign global ids to dofs
+	// Assign global ids to nodes
 	{
 		int i = 0;
 		for (int lv = 0; lv < v.rows(); ++lv) {
@@ -613,10 +618,14 @@ std::array<int, 9> poly_fem::FEBasis3d::quadr_hex_face_local_nodes(
 
 // -----------------------------------------------------------------------------
 
-Eigen::RowVector3d poly_fem::FEBasis3d::quadr_hex_local_node_coordinates(int local_index) {
+namespace {
+
+Eigen::RowVector3d quadr_hex_local_node_coordinates(int local_index) {
 	auto p = quadr_hex_local_node[local_index];
 	return Eigen::RowVector3d(p[0], p[1], p[2]) / 2.0;
 }
+
+} // anonymous namespace
 
 Eigen::MatrixXd poly_fem::FEBasis3d::quadr_hex_face_local_nodes_coordinates(
 	const Mesh3D &mesh, Navigation3D::Index index)
@@ -654,7 +663,6 @@ void poly_fem::FEBasis3d::quadr_hex_basis_grad(const int local_index, const Eige
 	val.col(2) = theta(idx[0], x).array() * theta(idx[1], n).array() * dtheta(idx[2], e).array();
 }
 
-
 int poly_fem::FEBasis3d::build_bases(
 	const Mesh3D &mesh,
 	const int quadrature_order,
@@ -666,15 +674,15 @@ int poly_fem::FEBasis3d::build_bases(
 	assert(mesh.is_volume());
 
 	Eigen::MatrixXd nodes;
-	std::vector<std::vector<int>> element_dofs;
-	compute_nodes(mesh, discr_order, nodes, boundary_nodes, element_dofs, local_boundary);
+	std::vector<std::vector<int>> element_nodes_id;
+	compute_nodes(mesh, discr_order, nodes, boundary_nodes, element_nodes_id, local_boundary);
 
 	HexQuadrature hex_quadrature;
 	bases.resize(mesh.n_elements());
 	for (int e = 0; e < mesh.n_elements(); ++e) {
 		ElementBases &b = bases[e];
 		const int n_el_vertices = mesh.n_element_vertices(e);
-		const int n_el_bases = (int) element_dofs[e].size();
+		const int n_el_bases = (int) element_nodes_id[e].size();
 		b.bases.resize(n_el_bases);
 
 		if (n_el_vertices == 8) {
@@ -682,7 +690,7 @@ int poly_fem::FEBasis3d::build_bases(
 			b.bases.resize(n_el_bases);
 
 			for (int j = 0; j < n_el_bases; ++j) {
-				const int global_index = element_dofs[e][j];
+				const int global_index = element_nodes_id[e][j];
 
 				b.bases[j].init(global_index, j, nodes.row(global_index));
 

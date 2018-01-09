@@ -675,6 +675,19 @@ namespace poly_fem
 		}
 	}
 
+	void Mesh3D::edge_barycenters(Eigen::MatrixXd &barycenters) const {
+
+	}
+
+	void Mesh3D::face_barycenters(Eigen::MatrixXd &barycenters) const {
+
+	}
+
+	void Mesh3D::cell_barycenters(Eigen::MatrixXd &barycenters) const {
+		compute_barycenter(barycenters);
+	}
+
+
 	void Mesh3D::to_face_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 6> &to_face) const
 	{
         //top
