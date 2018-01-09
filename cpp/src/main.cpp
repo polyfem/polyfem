@@ -3,19 +3,11 @@
 
 #include "CommandLine.hpp"
 
-// #include "Biharmonic.hpp"
-
-#include "Mesh2D.hpp"
-#include "Mesh3D.hpp"
-
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
 
 using namespace poly_fem;
 using namespace Eigen;
-
-
-
 
 
 /**
@@ -49,61 +41,6 @@ int main(int argc, const char **argv)
     // Import standard command line arguments, and custom ones
     GEO::CmdLine::import_arg_group("standard");
     GEO::CmdLine::import_arg_group("pre");
-
-
-
-
-
-    // Mesh2D mesh;
-    // mesh.load("/Users/teseo/Documents/scuola/polyfem/meshes/l_fine.obj");
-
-    // Mesh3DStorage tmp;
-    // tmp.type = MeshType::HSur;
-    // Mesh3D mesh_3d;
-    // Mesh3D::geomesh_2_mesh_storage(mesh.geo_mesh(), tmp);
-    // MeshProcessing3D::straight_sweeping(tmp, 2, 0.5, 1, mesh_3d.mesh_storge());
-
-    // mesh_3d.save("l_fine.HYBRID");
-
-
-    // exit(0);
-
-
-
-
-
-
-    // const int n_samples = 1000;
-    // const int n_poly_samples = n_samples/3;
-    // Eigen::MatrixXd boundary_samples(n_samples, 2);
-    // Eigen::MatrixXd poly_samples(n_poly_samples, 2);
-
-    // for(int i = 0; i < n_samples; ++i)
-    // {
-    //     boundary_samples(i,0) = cos((2.*i)*M_PI/n_samples);
-    //     boundary_samples(i,1) = sin((2.*i)*M_PI/n_samples);
-    // }
-
-    // for(int i = 0; i < n_poly_samples; ++i)
-    // {
-    //     poly_samples(i,0) = 1.01*cos((2.*i)*M_PI/n_samples);
-    //     poly_samples(i,1) = 1.01*sin((2.*i)*M_PI/n_samples);
-    // }
-
-    // Eigen::MatrixXd rhs(3*n_samples, 1);
-    // rhs.setZero();
-
-    // for(int i = 0; i < n_samples; ++i)
-    // {
-    //     rhs(n_samples + 2*i)   = -10*sin((2.*i)*M_PI/n_samples);
-    //     rhs(n_samples + 2*i+1) = -10*sin((2.*i)*M_PI/n_samples);
-    // }
-
-
-    // Biharmonic biharmonic(poly_samples, boundary_samples, rhs);
-
-    // exit(0);
-
 
 
     CommandLine command_line;
@@ -190,3 +127,51 @@ int main(int argc, const char **argv)
 
     return EXIT_SUCCESS;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // const int n_samples = 1000;
+    // const int n_poly_samples = n_samples/3;
+    // Eigen::MatrixXd boundary_samples(n_samples, 2);
+    // Eigen::MatrixXd poly_samples(n_poly_samples, 2);
+
+    // for(int i = 0; i < n_samples; ++i)
+    // {
+    //     boundary_samples(i,0) = cos((2.*i)*M_PI/n_samples);
+    //     boundary_samples(i,1) = sin((2.*i)*M_PI/n_samples);
+    // }
+
+    // for(int i = 0; i < n_poly_samples; ++i)
+    // {
+    //     poly_samples(i,0) = 1.01*cos((2.*i)*M_PI/n_samples);
+    //     poly_samples(i,1) = 1.01*sin((2.*i)*M_PI/n_samples);
+    // }
+
+    // Eigen::MatrixXd rhs(3*n_samples, 1);
+    // rhs.setZero();
+
+    // for(int i = 0; i < n_samples; ++i)
+    // {
+    //     rhs(n_samples + 2*i)   = -10*sin((2.*i)*M_PI/n_samples);
+    //     rhs(n_samples + 2*i+1) = -10*sin((2.*i)*M_PI/n_samples);
+    // }
+
+
+    // Biharmonic biharmonic(poly_samples, boundary_samples, rhs);
+
+    // exit(0);
+
