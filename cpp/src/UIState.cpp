@@ -343,15 +343,9 @@ namespace poly_fem
 		};
 
 		auto show_nodes_func = [&](){
-			// for(std::size_t i = 0; i < boundary_nodes.size(); ++i)
-			// 	std::cout<<boundary_nodes[i]<<std::endl;
-
 			for(std::size_t i = 0; i < state.bases.size(); ++i)
-			// for(std::size_t i = 0; i < 1; ++i)
 			{
 				const ElementBases &basis = state.bases[i];
-				// if(!basis.has_parameterization) continue;
-
 
 				for(std::size_t j = 0; j < basis.bases.size(); ++j)
 				{
@@ -364,12 +358,8 @@ namespace poly_fem
 							g_index *= 2;
 
 						MatrixXd node = l2g.node;
-					// node += MatrixXd::Random(node.rows(), node.cols())/100;
-						MatrixXd txt_p = node;
-						// for(long k = 0; k < txt_p.size(); ++k)
-							// txt_p(k) += 0.02;
-
 						MatrixXd col = MatrixXd::Zero(l2g.node.rows(), 3);
+
 						if(std::find(state.boundary_nodes.begin(), state.boundary_nodes.end(), g_index) != state.boundary_nodes.end())
 							col.col(0).setOnes();
 						else
@@ -377,7 +367,7 @@ namespace poly_fem
 
 
 						viewer.data.add_points(node, col);
-						viewer.data.add_label(txt_p.transpose(), std::to_string(g_index));
+						viewer.data.add_label(node.transpose(), std::to_string(g_index));
 					}
 				}
 			}
@@ -385,7 +375,6 @@ namespace poly_fem
 
 		auto show_quadrature_func = [&](){
 			for(std::size_t i = 0; i < state.values.size(); ++i)
-			// for(std::size_t i = 0; i < 1; ++i)
 			{
 				const ElementAssemblyValues &vals = state.values[i];
 				if(state.mesh->is_volume())
@@ -485,7 +474,14 @@ namespace poly_fem
 		};
 
 
-		auto build_vis_mesh_func = [&](){
+		auto build_vis_mesh_func = [&]()
+		{
+			vis_element_ranges.clear();
+
+
+			vis_faces_poly.clear();
+			vis_pts_poly.clear();
+
 			igl::Timer timer; timer.start();
 			std::cout<<"Building vis mesh..."<<std::flush;
 

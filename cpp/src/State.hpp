@@ -25,14 +25,13 @@ namespace poly_fem
 		int quadrature_order = 4;
 		int discr_order = 1;
 		int n_boundary_samples = 10;
-		int harminic_samples_res = 10;
+		int harmonic_samples_res = 10;
 
 		std::string mesh_path;
 		int n_refs = 0;
 
 		bool use_splines = false;
 		bool iso_parametric = true;
-		// bool linear_elasticity = false;
 
 		Problem problem;
 
