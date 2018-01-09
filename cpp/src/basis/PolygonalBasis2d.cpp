@@ -1,6 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "PolygonalBasis2d.hpp"
-#include "QuadBoundarySampler.hpp"
 #include "PolygonQuadrature.hpp"
 #include "PolygonUtils.hpp"
 #include "FEBasis2d.hpp"
@@ -210,7 +209,7 @@ void PolygonalBasis2d::build_bases(
 	std::vector< ElementBases > &bases,
 	const std::vector< ElementBases > &gbases,
 	const std::map<int, InterfaceData> &poly_edge_to_data,
-	std::map<int, Eigen::MatrixXd> &mapped_polygons)
+	std::map<int, Eigen::MatrixXd> &mapped_boundary)
 {
 	assert(!mesh.is_volume());
 	if (poly_edge_to_data.empty()) {
@@ -280,7 +279,7 @@ void PolygonalBasis2d::build_bases(
 		}
 
 		// Polygon boundary after geometric mapping from neighboring elements
-		mapped_polygons[e] = collocation_points;
+		mapped_boundary[e] = collocation_points;
 	}
 }
 
