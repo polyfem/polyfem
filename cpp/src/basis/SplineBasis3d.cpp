@@ -558,7 +558,7 @@ namespace poly_fem
                                 }
                             }
 
-                            std::cout<<ids.size()<< " " << other_indices.size()<<std::endl;
+                            // std::cout<<ids.size()<< " " << other_indices.size()<<std::endl;
 
 
                             auto &base = b.bases[local_index];
