@@ -53,6 +53,7 @@ namespace poly_fem
 
 	void State::save_json(const std::string &name)
 	{
+		std::cout<<"Saving json..."<<std::flush;
 		using json = nlohmann::json;
 		json j;
 
@@ -92,6 +93,7 @@ namespace poly_fem
 		o << std::setw(4) << j << std::endl;
 		o.close();
 
+		std::cout<<"done"<<std::endl;
 	}
 
 
