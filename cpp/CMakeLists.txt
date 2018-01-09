@@ -210,6 +210,7 @@ target_include_directories(polyfem PUBLIC
 # libigl
 find_package(LIBIGL REQUIRED)
 target_link_libraries(polyfem PUBLIC igl::core igl::triangle igl::tetgen igl::viewer)
+#remove the igl::viewer for cluster deployment
 
 # Geogram
 include(geogram)
@@ -301,6 +302,13 @@ add_executable(${PROJECT_NAME}_bin
 	src/UIState.cpp
 )
 target_link_libraries(${PROJECT_NAME}_bin PUBLIC polyfem igl::viewer)
+
+
+# Main executable without gui, uncomment when not debugging gui is necessary
+# add_executable(${PROJECT_NAME}_exec
+# 	src/main_no_gui.cpp
+# )
+# target_link_libraries(${PROJECT_NAME}_exec PUBLIC polyfem)
 
 ################################################################################
 
