@@ -1,6 +1,5 @@
 #include "QuadBoundarySampler.hpp"
 
-
 namespace poly_fem {
 	bool QuadBoundarySampler::sample(const bool is_right_boundary,
 		const bool is_bottom_boundary,

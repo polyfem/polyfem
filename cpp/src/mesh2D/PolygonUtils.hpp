@@ -37,4 +37,33 @@ void compute_visibility_kernel(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV);
 ///
 bool is_star_shaped(const Eigen::MatrixXd &IV, Eigen::RowVector3d &bary);
 
+///
+/// Compute offset polygon
+///
+/// @param[in]  IV    { #IV x 2 of vertex positions for the input polygon }
+/// @param[out] OV    { #OV x 2 of vertex positions for the offset polygon }
+/// @param[in]  eps   { Offset distance }
+///
+void offset_polygon(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, double eps);
+
+///
+/// Compute whether points are inside a polygon
+///
+/// @param[in]  IV      { #IV x 2 of vertex positions for the input polygon }
+/// @param[in]  Q       { #Q x 2 of query point positions }
+/// @param[out] inside  { Whether the i-th query point is inside or not }
+///
+/// @return     Number of points inside
+///
+int is_inside(const Eigen::MatrixXd &IV, const Eigen::MatrixXd &Q, std::vector<bool> &inside);
+
+///
+/// Sample points on a polygon, evenly spaced from each other
+///
+/// @param[in]  IV           { #IV x 2 vertex positions for the input polygon }
+/// @param[in]  num_samples  { Desired number of samples }
+/// @param[out] S            { #S x 2 output sample positions }
+///
+void sample_polygon(const Eigen::MatrixXd &IV, int num_samples, Eigen::MatrixXd &S);
+
 } // namespace poly_fem

@@ -289,8 +289,12 @@ namespace poly_fem
 					case ElementType::MultiSingularBoundaryCube:
 					cols.block(from, 2, range, 1).setConstant(0.6); break;
 
-				  		 //light blue
+				  		//dark blue
 					case ElementType::BoundaryPolytope:
+					cols.block(from, 2, range, 1).setOnes();
+					cols.block(from, 1, range, 1).setConstant(0.2); break;
+
+				  		//light blue
 					case ElementType::InteriorPolytope:
 					cols.block(from, 2, range, 1).setOnes();
 					cols.block(from, 1, range, 1).setConstant(0.5); break;
@@ -735,9 +739,9 @@ namespace poly_fem
 			state.compute_assembly_vals();
 
 			if(skip_visualization) return;
-			clear_func();
-			show_mesh_func();
-			show_quadrature_func();
+			// clear_func();
+			// show_mesh_func();
+			// show_quadrature_func();
 		};
 
 		auto assemble_stiffness_mat_func = [&]() {

@@ -29,10 +29,11 @@ namespace poly_fem
 		}
 	}
 
-	Harmonic::Harmonic(const Eigen::MatrixXd &centers, const Eigen::MatrixXd &samples, const Eigen::MatrixXd &local_basis_integral, Eigen::MatrixXd &rhs)
+	Harmonic::Harmonic(const Eigen::MatrixXd &centers, const Eigen::MatrixXd &samples,
+		const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr, Eigen::MatrixXd &rhs)
 	: centers_(centers)
 	{
-		compute(samples, local_basis_integral, rhs);
+		compute(samples, local_basis_integral, quadr, rhs);
 	}
 
 
@@ -98,7 +99,8 @@ namespace poly_fem
 
 
 
-	void Harmonic::compute(const Eigen::MatrixXd &samples, const Eigen::MatrixXd &local_basis_integral, Eigen::MatrixXd &rhs)
+	void Harmonic::compute(const Eigen::MatrixXd &samples, const Eigen::MatrixXd &local_basis_integral,
+		const Quadrature &quad, Eigen::MatrixXd &rhs)
 	{
 		is_volume_ = samples.cols() == 3;
 
@@ -131,10 +133,6 @@ namespace poly_fem
 
 		const int end = int(mat.cols())-1;
 		mat.col(end).setOnes();
-
-		Quadrature quad;
-		PolygonQuadrature p_quad;
-		p_quad.get_quadrature(samples, 1, quad);
 
 		for(long i = 0; i < samples.rows(); ++i)
 		{

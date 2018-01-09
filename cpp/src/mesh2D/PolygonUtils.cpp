@@ -1,5 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "PolygonUtils.hpp"
+#include <clipper/clipper.hpp>
 #include <geogram/numerics/predicates.h>
 #include <igl/barycenter.h>
 ////////////////////////////////////////////////////////////////////////////////
@@ -151,5 +152,153 @@ bool poly_fem::is_star_shaped(const Eigen::MatrixXd &IV, Eigen::RowVector3d &bar
 		bary.setZero();
 		bary.head(n) = BC.row(0).head(n);
 		return true;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+namespace {
+
+constexpr int FACTOR = 1<<23;
+
+namespace Point {
+	ClipperLib::IntPoint toClipper(const Eigen::RowVector2d& p) {
+		ClipperLib::IntPoint r;
+		r.X = (ClipperLib::cInt)std::round(p.x() * FACTOR);
+		r.Y = (ClipperLib::cInt)std::round(p.y() * FACTOR);
+		return r;
+	}
+
+	Eigen::RowVector2d fromClipper(const ClipperLib::IntPoint& p) {
+		return Eigen::RowVector2d(p.X, p.Y) / FACTOR;
+	}
+}
+
+ClipperLib::Path toClipper(const Eigen::MatrixXd &V) {
+	ClipperLib::Path path(V.rows());
+	for (size_t i = 0; i < path.size(); ++i) {
+		path[i] = Point::toClipper(V.row(i));
+	}
+	return path;
+}
+
+Eigen::MatrixXd fromClipper(const ClipperLib::Path &path) {
+	Eigen::MatrixXd V(path.size(), 2);
+	for (size_t i = 0; i < path.size(); ++i) {
+		V.row(i) = Point::fromClipper(path[i]);
+	}
+	return V;
+}
+
+} // anonymous namespace
+
+// -----------------------------------------------------------------------------
+
+void poly_fem::offset_polygon(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, double eps) {
+	using namespace ClipperLib;
+
+	// Convert input polygon to integer grid
+	ClipperOffset co;
+	co.AddPath(toClipper(IV), jtSquare, etClosedPolygon);
+
+	// Compute offset in the integer grid
+	Paths solution;
+	co.Execute(solution, cInt(eps * FACTOR));
+	assert(solution.size() == 1);
+
+	// Convert back to double
+	OV = fromClipper(solution.front());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+namespace {
+
+typedef Eigen::RowVector2d Vec2d;
+
+double inline det(Vec2d u, Vec2d v) {
+	return u[0]*v[1] - u[1]*v[0];
+}
+
+// Return true iff [a,b] intersects [c,d], and store the intersection in ans
+bool intersect_segment(const Vec2d &a, const Vec2d &b, Vec2d c, Vec2d d, Vec2d &ans) {
+	const double eps = 1e-10; // small epsilon for numerical precision
+	double x = det(c - a, d - c);
+	double y = det(b - a, a - c);
+	double z = det(b - a, d - c);
+	if (std::abs(z) < eps || x*z < 0 || x*z > z*z || y*z < 0 || y*z > z*z) return false;
+	ans = c + (d - c) * y / z;
+	return true;
+}
+
+bool is_point_inside(const Eigen::MatrixXd &poly, const Vec2d & outside, const Vec2d &query) {
+	int n = poly.rows();
+	bool tmp, ans = false;
+	for (long i = 0; i < poly.rows(); ++i) {
+		Vec2d m; // Coordinates of intersection point
+		tmp = intersect_segment(query, outside, poly.row(i), poly.row((i + 1) % n), m);
+		ans = (ans != tmp);
+	}
+	return ans;
+}
+
+} // anonymous namespace
+
+// -----------------------------------------------------------------------------
+
+int poly_fem::is_inside(const Eigen::MatrixXd &IV, const Eigen::MatrixXd &Q, std::vector<bool> &inside) {
+	assert(IV.cols() == 2);
+	Eigen::RowVector2d minV = IV.colwise().minCoeff().array();
+	Eigen::RowVector2d maxV = IV.colwise().maxCoeff().array();
+	Eigen::RowVector2d center = 0.5 * (maxV + minV);
+	Eigen::RowVector2d outside(2.0 * minV(0) - center(0), center(1));
+	inside.resize(Q.rows());
+	int num_inside = 0;
+	for (long i = 0; i < Q.rows(); ++i) {
+		inside[i] = is_point_inside(IV, outside, Q.row(i));
+		if (inside[i]) {
+			++num_inside;
+		}
+	}
+	return num_inside;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void poly_fem::sample_polygon(const Eigen::MatrixXd &poly, int num_samples, Eigen::MatrixXd &S) {
+	assert(poly.rows() >= 2);
+	int n = poly.rows();
+
+	auto length = [&] (int i) {
+		return (poly.row(i) - poly.row((i+1)%n)).norm();
+	};
+
+	// Step 1: compute starting edge + total length of the polygon
+	int i0 = 0;
+	double max_length = 0;
+	double total_length = 0;
+	for (int i = 0; i < n; ++i) {
+		double len = length(i);
+		total_length += len;
+		if (len > max_length) {
+			max_length = len;
+			i0 = i;
+		}
+	}
+
+	// Step 2: place a sample at regular intervals along the polygon,
+	// starting from the middle of edge i0
+	S.resize(num_samples, poly.cols());
+	double spacing = total_length / num_samples; // sampling distance
+	double offset = length(i0) / 2.0; // distance from first sample to vertex i0
+	double distance_to_next = length(i0);
+	for (int s = 0, i = i0; s < num_samples; ++s) {
+		double distance_to_sample = s * spacing + offset; // next sample length
+		while (distance_to_sample > distance_to_next) {
+			i = (i+1)%n;
+			distance_to_next += length(i);
+		}
+		double t = (distance_to_next - distance_to_sample) / length(i);
+		S.row(s) = t * poly.row(i) + (1.0 - t) * poly.row((i+1)%n);
 	}
 }
