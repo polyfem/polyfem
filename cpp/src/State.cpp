@@ -196,6 +196,8 @@ namespace poly_fem
 		n_geom_bases = 0;
 
 		mesh->compute_element_tag(els_tag);
+		// els_tag[4]=ElementType::MultiSingularInteriorCube;
+		// els_tag[24]=ElementType::MultiSingularInteriorCube;
 
 		int regular_count = 0;
 		int regular_boundary_count = 0;

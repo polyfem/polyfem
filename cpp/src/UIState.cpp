@@ -16,6 +16,8 @@
 #include <nanogui/formhelper.h>
 #include <nanogui/screen.h>
 
+#include <stdlib.h>
+
 
 // ... or using a custom callback
   //       viewer_.ngui->addVariable<bool>("bool",[&](bool val) {
@@ -28,8 +30,116 @@
 using namespace Eigen;
 
 
+
 namespace poly_fem
 {
+
+	namespace
+	{
+		Navigation3D::Index current_3d_index;
+
+		const std::vector<std::string> explode(const std::string &s, const char &c)
+		{
+			std::string buff{""};
+			std::vector<std::string> v;
+
+			for(auto n: s)
+			{
+				if(n != c) buff+=n; else
+				if(n == c && buff != "") { v.push_back(buff); buff = ""; }
+			}
+			if(buff != "") v.push_back(buff);
+
+			return v;
+		}
+	}
+
+	void UIState::plot_selection_and_index()
+	{
+		std::vector<bool> valid_elements(normalized_barycenter.rows(), false);
+		auto v{explode(selected_elements, ',')};
+		for(auto idx : v)
+			valid_elements[atoi(idx.c_str())] = true;
+
+		viewer.data.clear();
+
+
+		const long n_tris = show_clipped_elements(tri_pts, tri_faces, element_ranges, valid_elements);
+		color_mesh(n_tris, valid_elements);
+
+		if(state.mesh->is_volume())
+		{
+			Eigen::MatrixXd p, p1;
+			state.mesh->point(current_3d_index.vertex, p);
+			state.mesh->point(static_cast<Mesh3D *>(state.mesh)->switch_vertex(current_3d_index).vertex, p1);
+
+			viewer.data.add_points(p, MatrixXd::Zero(1, 3));
+			viewer.data.add_edges(p, p1, RowVector3d(1, 1, 0));
+
+			viewer.data.add_points(static_cast<Mesh3D *>(state.mesh)->node_from_face(current_3d_index.face), RowVector3d(1, 0, 0));
+		}
+	}
+
+	void UIState::color_mesh(const int n_tris, const std::vector<bool> &valid_elements)
+	{
+		std::vector<ElementType> &ele_tag = state.els_tag;
+
+		Eigen::MatrixXd cols(n_tris, 3);
+		cols.setZero();
+
+		int from = 0;
+		for(std::size_t i = 1; i < element_ranges.size(); ++i)
+		{
+			if(!valid_elements[i-1]) continue;
+
+			const ElementType type = ele_tag[i-1];
+			const int range = element_ranges[i]-element_ranges[i-1];
+
+			switch(type)
+			{
+						//green
+				case ElementType::RegularInteriorCube:
+				cols.block(from, 1, range, 1).setOnes(); break;
+
+						//dark green
+				case ElementType::RegularBoundaryCube:
+				cols.block(from, 1, range, 1).setConstant(0.5); break;
+
+					//orange
+				case ElementType::SimpleSingularInteriorCube:
+				cols.block(from, 0, range, 1).setOnes();
+				cols.block(from, 1, range, 1).setConstant(0.5); break;
+
+
+						//orange
+				case ElementType::SimpleSingularBoundaryCube:
+				cols.block(from, 0, range, 1).setOnes();
+				cols.block(from, 1, range, 1).setConstant(0.2); break;
+
+ 						//red
+				case ElementType::MultiSingularInteriorCube:
+				cols.block(from, 0, range, 1).setOnes(); break;
+
+						//blue
+				case ElementType::MultiSingularBoundaryCube:
+				cols.block(from, 2, range, 1).setConstant(0.6); break;
+
+				  		 //light blue
+				case ElementType::BoundaryPolytope:
+				case ElementType::InteriorPolytope:
+				cols.block(from, 2, range, 1).setOnes();
+				cols.block(from, 1, range, 1).setConstant(0.5); break;
+
+					//grey
+				case ElementType::Undefined:
+				cols.block(from, 0, range, 3).setConstant(0.5); break;
+			}
+
+			from += range;
+		}
+
+		viewer.data.set_colors(cols);
+	}
 
 	long UIState::clip_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, std::vector<bool> &valid_elements)
 	{
@@ -55,6 +165,11 @@ namespace poly_fem
 		for (long i = 0; i<normalized_barycenter.rows();++i)
 			valid_elements[i] = normalized_barycenter(i, slice_coord) < slice_position;
 
+		return show_clipped_elements(pts, tris, ranges, valid_elements);
+	}
+
+	long UIState::show_clipped_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, const std::vector<bool> &valid_elements)
+	{
 		viewer.data.set_face_based(false);
 
 		int n_vis_valid_tri = 0;
@@ -246,68 +361,7 @@ namespace poly_fem
 			std::vector<bool> valid_elements;
 			const long n_tris = clip_elements(tri_pts, tri_faces, element_ranges, valid_elements);
 
-			std::vector<ElementType> ele_tag;
-			state.mesh->compute_element_tag(ele_tag);
-
-			Eigen::MatrixXd cols(n_tris, 3);
-			cols.setZero();
-
-			int from = 0;
-			for(std::size_t i = 1; i < element_ranges.size(); ++i)
-			{
-				if(!valid_elements[i-1]) continue;
-
-				const ElementType type = ele_tag[i-1];
-				const int range = element_ranges[i]-element_ranges[i-1];
-
-				switch(type)
-				{
-						//green
-					case ElementType::RegularInteriorCube:
-					cols.block(from, 1, range, 1).setOnes(); break;
-
-						//dark green
-					case ElementType::RegularBoundaryCube:
-					cols.block(from, 1, range, 1).setConstant(0.5); break;
-
-					//orange
-					case ElementType::SimpleSingularInteriorCube:
-					cols.block(from, 0, range, 1).setOnes();
-					cols.block(from, 1, range, 1).setConstant(0.5); break;
-
-
-						//orange
-					case ElementType::SimpleSingularBoundaryCube:
-					cols.block(from, 0, range, 1).setOnes();
-					cols.block(from, 1, range, 1).setConstant(0.2); break;
-
- 						//red
-					case ElementType::MultiSingularInteriorCube:
-					cols.block(from, 0, range, 1).setOnes(); break;
-
-						//blue
-					case ElementType::MultiSingularBoundaryCube:
-					cols.block(from, 2, range, 1).setConstant(0.6); break;
-
-				  		//dark blue
-					case ElementType::BoundaryPolytope:
-					cols.block(from, 2, range, 1).setOnes();
-					cols.block(from, 1, range, 1).setConstant(0.2); break;
-
-				  		//light blue
-					case ElementType::InteriorPolytope:
-					cols.block(from, 2, range, 1).setOnes();
-					cols.block(from, 1, range, 1).setConstant(0.5); break;
-
-					//grey
-					case ElementType::Undefined:
-					cols.block(from, 0, range, 3).setConstant(0.5); break;
-				}
-
-				from += range;
-			}
-
-			viewer.data.set_colors(cols);
+			color_mesh(n_tris, valid_elements);
 
 			MatrixXd p0, p1;
 			state.mesh->get_edges(p0, p1);
@@ -736,9 +790,9 @@ namespace poly_fem
 			state.compute_assembly_vals();
 
 			if(skip_visualization) return;
-			// clear_func();
-			// show_mesh_func();
-			// show_quadrature_func();
+			clear_func();
+			show_mesh_func();
+			show_quadrature_func();
 		};
 
 		auto assemble_stiffness_mat_func = [&]() {
@@ -896,7 +950,7 @@ namespace poly_fem
 			},[&]() {
 				return slice_coord;
 			});
-			viewer_.ngui->addVariable<double>("pos",[&](double val) {
+			viewer_.ngui->addVariable<float>("pos",[&](float val) {
 				slice_position = val;
 				if(is_slicing)
 					update_slices();
@@ -917,6 +971,59 @@ namespace poly_fem
 			// viewer_.ngui->addGroup("Stats");
 			// viewer_.ngui->addVariable("NNZ", Type &value)
 
+			viewer_.ngui->addGroup("Selection");
+			viewer_.ngui->addVariable("element ids", selected_elements);
+			viewer_.ngui->addButton("Show", [&]{
+				if(state.mesh->is_volume())
+				{
+					auto v{explode(selected_elements, ',')};
+					current_3d_index = static_cast<Mesh3D *>(state.mesh)->get_index_from_element(atoi(v.front().c_str()));
+					std::cout<<"e:"<<current_3d_index.element<<" f:"<<current_3d_index.face<<" e:"<<current_3d_index.edge<<" v:"<<current_3d_index.vertex<<std::endl;
+				}
+
+				plot_selection_and_index();
+			});
+
+			viewer_.ngui->addButton("Swith vertex", [&]{
+				if(state.mesh->is_volume())
+				{
+					current_3d_index = static_cast<Mesh3D *>(state.mesh)->switch_vertex(current_3d_index);
+					std::cout<<"e:"<<current_3d_index.element<<" f:"<<current_3d_index.face<<" e:"<<current_3d_index.edge<<" v:"<<current_3d_index.vertex<<std::endl;
+				}
+
+				plot_selection_and_index();
+			});
+
+			viewer_.ngui->addButton("Swith edge", [&]{
+				if(state.mesh->is_volume())
+				{
+					current_3d_index = static_cast<Mesh3D *>(state.mesh)->switch_edge(current_3d_index);
+					std::cout<<"e:"<<current_3d_index.element<<" f:"<<current_3d_index.face<<" e:"<<current_3d_index.edge<<" v:"<<current_3d_index.vertex<<std::endl;
+				}
+
+				plot_selection_and_index();
+			});
+
+			viewer_.ngui->addButton("Swith face", [&]{
+				if(state.mesh->is_volume())
+				{
+					current_3d_index = static_cast<Mesh3D *>(state.mesh)->switch_face(current_3d_index);
+					std::cout<<"e:"<<current_3d_index.element<<" f:"<<current_3d_index.face<<" e:"<<current_3d_index.edge<<" v:"<<current_3d_index.vertex<<std::endl;
+				}
+
+				plot_selection_and_index();
+			});
+
+			viewer_.ngui->addButton("Swith element", [&]{
+				if(state.mesh->is_volume())
+				{
+					current_3d_index = static_cast<Mesh3D *>(state.mesh)->switch_element(current_3d_index);
+					selected_elements += ","+std::to_string(current_3d_index.element);
+					std::cout<<"e:"<<current_3d_index.element<<" f:"<<current_3d_index.face<<" e:"<<current_3d_index.edge<<" v:"<<current_3d_index.vertex<<std::endl;
+				}
+
+				plot_selection_and_index();
+			});
 
 			viewer_.screen->performLayout();
 
