@@ -73,6 +73,22 @@ namespace poly_fem
         }
 
 
+        bool is_spline_compatible(const std::vector<ElementType> &els_tag, const int el_id)
+        {
+            return
+                els_tag[el_id] == ElementType::RegularInteriorCube ||
+                els_tag[el_id] == ElementType::RegularBoundaryCube ||
+                els_tag[el_id] == ElementType::SimpleSingularInteriorCube ||
+                els_tag[el_id] == ElementType::SimpleSingularBoundaryCube;
+        }
+
+
+        bool is_q2(const std::vector<ElementType> &els_tag, const int el_id)
+        {
+            return els_tag[el_id] != ElementType::InteriorPolytope && els_tag[el_id] != ElementType::BoundaryPolytope && !is_spline_compatible(els_tag, el_id);
+        }
+
+
         void print_local_space(const SpaceMatrix &space)
         {
             for(int k = 2; k >= 0; --k)
@@ -193,11 +209,11 @@ namespace poly_fem
             node(1, 1, 1).push_back(mesh.node_from_element(el_index));
 
             ///////////////////////
-            index = to_face[0](start_index);
-            explore_face(index, mesh, 1, 1, 2, TOP_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
-
             index = to_face[1](start_index);
             explore_face(index, mesh, 1, 1, 0, BOTTOM_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
+
+            index = to_face[0](start_index);
+            explore_face(index, mesh, 1, 1, 2, TOP_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
 
             index = to_face[3](start_index);
             explore_face(index, mesh, 0, 1, 1, LEFT_FLAG, space, node, local_boundary, poly_edge_to_data, bounday_nodes);
@@ -602,7 +618,6 @@ namespace poly_fem
 
         void create_q2_nodes(const Mesh3D &mesh, const std::vector<ElementType> &els_tag, const int el_index, std::set<int> &vertex_id, std::set<int> &edge_id, std::set<int> &face_id, ElementBases &b, std::vector< int > &bounday_nodes, LocalBoundary &local_boundary, int &n_bases)
         {
-            const auto is_q2 = [els_tag](const int el_id){ return els_tag[el_id] == ElementType::MultiSingularInteriorCube || els_tag[el_id] == ElementType::MultiSingularBoundaryCube; };
             const int n_els = mesh.n_elements();
 
             b.bases.resize(27);
@@ -634,7 +649,7 @@ namespace poly_fem
 
                 for(size_t i = 0; i < vertex_neighs.size(); ++i)
                 {
-                    if(!is_q2(vertex_neighs[i]) && mesh.n_element_vertices(vertex_neighs[i]) == 8)
+                    if(!is_q2(els_tag, vertex_neighs[i]) && mesh.n_element_vertices(vertex_neighs[i]) == 8)
                     {
                         is_vertex_q2 = false;
                         break;
@@ -681,7 +696,7 @@ namespace poly_fem
 
                 for(size_t i = 0; i < edge_neighs.size(); ++i)
                 {
-                    if(!is_q2(edge_neighs[i]) && mesh.n_element_vertices(edge_neighs[i]) == 8)
+                    if(!is_q2(els_tag, edge_neighs[i]) && mesh.n_element_vertices(edge_neighs[i]) == 8)
                     {
                         is_edge_q2 = false;
                         break;
@@ -719,7 +734,7 @@ namespace poly_fem
 
                 Eigen::Matrix<double, 1, 3> current_face_node;
                 const int opposite_element = mesh.switch_element(index).element;
-                const bool is_face_q2 = opposite_element < 0 || mesh.n_element_vertices(opposite_element) > 8 || is_q2(opposite_element);
+                const bool is_face_q2 = opposite_element < 0 || mesh.n_element_vertices(opposite_element) > 8 || is_q2(els_tag, opposite_element);
                 const int loc_index = FEBasis3d::quadr_hex_face_local_nodes(mesh, index)[8];
 
 
@@ -783,7 +798,7 @@ namespace poly_fem
             b.bases[26].set_grad( [](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_grad(26, uv, val); });
         }
 
-        void insert_into_global(const Local2Global &data, std::vector<Local2Global> &vec)
+        void insert_into_global(const int el_index, const Local2Global &data, std::vector<Local2Global> &vec)
         {
             //ignore small weights
             if(fabs(data.val) <1e-10 )
@@ -795,9 +810,10 @@ namespace poly_fem
             {
                 if(vec[i].index == data.index)
                 {
-                    // std::cout<<vec[i].val <<" "<< data.val<<" "<<fabs(vec[i].val - data.val)<<std::endl;
-                    assert(fabs(vec[i].val - data.val) < 1e-10);
-                    assert((vec[i].node - data.node).norm() < 1e-10);
+                    if(fabs(vec[i].val - data.val))
+                        std::cout<<el_index <<" "<<vec[i].val <<" "<< data.val<<" "<<fabs(vec[i].val - data.val)<<std::endl;
+                    // assert(fabs(vec[i].val - data.val) < 1e-10);
+                    // assert((vec[i].node - data.node).norm() < 1e-10);
                     found = true;
                     break;
                 }
@@ -809,8 +825,6 @@ namespace poly_fem
 
         void assign_q2_weights(const Mesh3D &mesh, const std::vector<ElementType> &els_tag, const int el_index, std::vector< ElementBases > &bases)
         {
-            const auto is_q2 = [els_tag](const int el_id){ return els_tag[el_id] == ElementType::MultiSingularInteriorCube || els_tag[el_id] == ElementType::MultiSingularBoundaryCube; };
-
             Eigen::MatrixXd eval_p;
             const Navigation3D::Index start_index = mesh.get_index_from_element(el_index);
             ElementBases &b = bases[el_index];
@@ -862,67 +876,12 @@ namespace poly_fem
                             Local2Global glob = other_b.global()[k];
                             glob.val *= eval_p(l);
 
-                            insert_into_global(glob, b.bases[indices[l]].global());
+                            insert_into_global(el_index, glob, b.bases[indices[l]].global());
                         }
                     }
                 }
             }
 
-        }
-
-        void setup_data_for_polygons(const Mesh3D &mesh, const int el_index, const ElementBases &b, std::map<int, InterfaceData> &poly_edge_to_data)
-        {
-            // Navigation::Index index = mesh.get_index_from_face(el_index);
-            // for (int j = 0; j < 4; ++j)
-            // {
-            //     const int opposite_face = mesh.switch_face(index).face;
-            //     const bool is_neigh_poly = (opposite_face >= 0 && mesh.n_element_vertices(opposite_face) > 4);
-
-            //     if(is_neigh_poly)
-            //     {
-            //         int b_flag;
-
-            //         if(j == 1)
-            //             b_flag = InterfaceData::TOP_FLAG;
-            //         else if( j == 2)
-            //             b_flag = InterfaceData::LEFT_FLAG;
-            //         else if( j == 3)
-            //             b_flag = InterfaceData::BOTTOM_FLAG;
-            //         else
-            //             b_flag = InterfaceData::RIGHT_FLAG;
-
-            //         InterfaceData &data = poly_edge_to_data[index.edge];
-            //         data.face_id = index.face;
-            //         data.flag = b_flag;
-
-            //         const auto &bases_e = b.bases[2*j+1];
-            //         for(std::size_t i = 0; i < bases_e.global().size(); ++i)
-            //         {
-            //             data.node_id.push_back(bases_e.global()[i].index);
-            //             data.local_indices.push_back(2*j+1);
-            //             data.vals.push_back(bases_e.global()[i].val);
-            //         }
-
-            //         const auto &bases_v1 = b.bases[2*j];
-            //         for(std::size_t i = 0; i < bases_v1.global().size(); ++i)
-            //         {
-            //             data.node_id.push_back(bases_v1.global()[i].index);
-            //             data.local_indices.push_back(2*j);
-            //             data.vals.push_back(bases_v1.global()[i].val);
-            //         }
-
-            //         const int ii = (2*j+2) >= 8 ? 0 : (2*j+2);
-            //         const auto &bases_v2 = b.bases[ii];
-            //         for(std::size_t i = 0; i < bases_v2.global().size(); ++i)
-            //         {
-            //             data.node_id.push_back(bases_v2.global()[i].index);
-            //             data.local_indices.push_back(ii);
-            //             data.vals.push_back(bases_v2.global()[i].val);
-            //         }
-            //     }
-
-            //     index = mesh.next_around_face(index);
-            // }
         }
     }
 
@@ -950,7 +909,7 @@ namespace poly_fem
 
         for(int e = 0; e < n_els; ++e)
         {
-            if(els_tag[e] != ElementType::RegularInteriorCube && els_tag[e] != ElementType::RegularBoundaryCube && els_tag[e] != ElementType::SimpleSingularInteriorCube && els_tag[e] != ElementType::SimpleSingularBoundaryCube)
+            if(!is_spline_compatible(els_tag, e))
                 continue;
 
 
@@ -979,7 +938,7 @@ namespace poly_fem
 
         for(int e = 0; e < n_els; ++e)
         {
-            if(els_tag[e] != ElementType::MultiSingularInteriorCube && els_tag[e] != ElementType::MultiSingularBoundaryCube)
+            if(!is_q2(els_tag, e))
                 continue;
 
             ElementBases &b=bases[e];
@@ -991,21 +950,21 @@ namespace poly_fem
 
         for(int e = 0; e < n_els; ++e)
         {
-            if(els_tag[e] != ElementType::MultiSingularInteriorCube && els_tag[e] != ElementType::MultiSingularBoundaryCube)
+            if(!is_q2(els_tag, e))
                 continue;
             assign_q2_weights(mesh, els_tag, e, bases);
         }
 
         for(int e = 0; e < n_els; ++e)
         {
-            if(els_tag[e] != ElementType::MultiSingularInteriorCube && els_tag[e] != ElementType::MultiSingularBoundaryCube)
+            if(!is_q2(els_tag, e))
                 continue;
             assign_q2_weights(mesh, els_tag, e, bases);
         }
 
         // for(int e = 0; e < n_els; ++e)
         // {
-        //     if(els_tag[e] != ElementType::MultiSingularInteriorCube && els_tag[e] != ElementType::MultiSingularBoundaryCube)
+        //     if(!is_q2(els_tag, e))
         //         continue;
         //     const ElementBases &b=bases[e];
         //     setup_data_for_polygons(mesh, e, b, poly_edge_to_data);

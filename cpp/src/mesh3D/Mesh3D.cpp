@@ -8,8 +8,8 @@ namespace poly_fem
 	void Mesh3D::refine(const int n_refiniment, const double t)
 	{
 		MeshProcessing3D::refine_catmul_clark_polar(mesh_, n_refiniment);
-		MeshProcessing3D::global_orientation_hexes(mesh_);
-		// scale(100);
+		Navigation3D::prepare_mesh(mesh_);
+
 		create_boundary_nodes();
 	}
 
@@ -694,32 +694,32 @@ namespace poly_fem
 	void Mesh3D::to_face_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 6> &to_face) const
 	{
         //top
-		to_face[0]= [this](Navigation3D::Index idx) { return this->switch_face(this->switch_edge(this->switch_vertex(this->switch_edge(this->switch_face(idx))))); };
+		to_face[0]= [this](Navigation3D::Index idx) { return switch_face(switch_edge(switch_vertex(switch_edge(switch_face(idx))))); };
         //bottom
 		to_face[1]= [this](Navigation3D::Index idx) { return idx; };
 
         //left
-		to_face[2]= [this](Navigation3D::Index idx) { return this->switch_face(this->switch_edge(this->switch_vertex(idx))); };
+		to_face[2]= [this](Navigation3D::Index idx) { return switch_face(switch_edge(switch_vertex(idx))); };
         //right
-		to_face[3]= [this](Navigation3D::Index idx) { return this->switch_face(this->switch_edge(idx)); };
+		to_face[3]= [this](Navigation3D::Index idx) { return switch_face(switch_edge(idx)); };
 
         //back
-		to_face[4]= [this](Navigation3D::Index idx) { return this->switch_face(this->switch_edge(this->switch_vertex(this->switch_edge(this->switch_vertex(idx))))); };
+		to_face[4]= [this](Navigation3D::Index idx) { return switch_face(switch_edge(switch_vertex(switch_edge(switch_vertex(idx))))); };
         //front
-		to_face[5]= [this](Navigation3D::Index idx) { return this->switch_face(idx); };
+		to_face[5]= [this](Navigation3D::Index idx) { return switch_face(idx); };
 	}
 
 	void Mesh3D::to_vertex_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 8> &to_vertex) const
 	{
 		to_vertex[0]= [this](Navigation3D::Index idx) { return idx; };
-		to_vertex[1]= [this](Navigation3D::Index idx) { return this->switch_vertex(idx); };
-		to_vertex[2]= [this](Navigation3D::Index idx) { return this->switch_vertex(this->switch_edge(this->switch_vertex(idx))); };
-		to_vertex[3]= [this](Navigation3D::Index idx) { return this->switch_vertex(this->switch_edge(idx)); };
+		to_vertex[1]= [this](Navigation3D::Index idx) { return switch_vertex(idx); };
+		to_vertex[2]= [this](Navigation3D::Index idx) { return switch_vertex(switch_edge(switch_vertex(idx))); };
+		to_vertex[3]= [this](Navigation3D::Index idx) { return switch_vertex(switch_edge(idx)); };
 
-		to_vertex[4]= [this](Navigation3D::Index idx) { return this->switch_vertex(this->switch_edge(this->switch_face(idx))); };
-		to_vertex[5]= [this](Navigation3D::Index idx) { return this->switch_vertex(this->switch_edge(this->switch_vertex(this->switch_edge(this->switch_face(idx))))); };
-		to_vertex[6]= [this](Navigation3D::Index idx) { return this->switch_vertex(this->switch_edge(this->switch_face(this->switch_vertex(this->switch_edge(this->switch_vertex(idx)))))); };
-		to_vertex[7]= [this](Navigation3D::Index idx) { return this->switch_vertex(this->switch_edge(this->switch_face(this->switch_vertex(this->switch_edge(idx))))); };
+		to_vertex[4]= [this](Navigation3D::Index idx) { return switch_vertex(switch_edge(switch_face(idx))); };
+		to_vertex[5]= [this](Navigation3D::Index idx) { return switch_vertex(switch_edge(switch_vertex(switch_edge(switch_face(idx))))); };
+		to_vertex[6]= [this](Navigation3D::Index idx) { return switch_vertex(switch_edge(switch_face(switch_vertex(switch_edge(switch_vertex(idx)))))); };
+		to_vertex[7]= [this](Navigation3D::Index idx) { return switch_vertex(switch_edge(switch_face(switch_vertex(switch_edge(idx))))); };
 	}
 
 	void Mesh3D::to_edge_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 12> &to_edge) const
