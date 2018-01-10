@@ -49,6 +49,7 @@ namespace poly_fem
 		bool load(const std::string &path) override;
 		bool save(const std::string &path) const override;
 
+		bool save(const std::vector<int> &fs, const int ringN, const std::string &path) const;
 		void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const override;
 
 		//get nodes ids
