@@ -288,7 +288,8 @@ bool poly_fem::instanciate_pattern(
 	if (SF) { SF->resize(V.rows()); }
 
 	// Remapped vertex id (after duplicate removal)
-	Eigen::VectorXi remap = Eigen::VectorXi::LinSpaced((int) V.rows(), 0, (int) V.rows()-1);
+	Eigen::VectorXi remap(V.rows());
+	remap.setConstant(-1);
 
 	for (int q = 0; q < IQ.rows(); ++q) {
 		evalFunc(PVN, mapped, q);
@@ -307,6 +308,7 @@ bool poly_fem::instanciate_pattern(
 
 	if (getAdjLocalEdge) {
 		// Adjacency function has already been provided
+		int cnt = 0;
 		for (int q1 = 0; q1 < IQ.rows(); ++q1) {
 			const int v1 = (int) PVN.rows() * q1;
 			for (int lv1 = 0; lv1 < 4; ++lv1) {
@@ -315,19 +317,23 @@ bool poly_fem::instanciate_pattern(
 				const int v2 = (int) PVN.rows() * q2;
 				const int lv2 = std::get<1>(res);
 				const bool rev = std::get<2>(res);
-				if (q2 >= 0) {
+				if (q2 > q1) {
 					Eigen::VectorXi side1 = border_vertices[lv1].array() + v1;
 					Eigen::VectorXi side2 = border_vertices[lv2].array() + v2;
 					if (rev) { side2.reverseInPlace(); }
 					// std::cout << side1.transpose() << std::endl;
 					// std::cout << side2.transpose() << std::endl << std::endl;
 					for (int ii = 0; ii < (int) side1.size(); ++ii) {
-						remap(side2[ii]) = side1[ii];
+						const int x1 = side1[ii];
+						const int x2 = side2[ii];
+						if (remap(x1) < 0) { remap(x1) = cnt++; }
+						remap(x2) = remap(x1);
 					}
-				} else {
-					std::cout << "-- foo" << std::endl;
 				}
 			}
+		}
+		for (int v = 0; v < V.rows(); ++v) {
+			if (remap(v) < 0) { remap(v) = cnt++; }
 		}
 	} else {
 		// Compute adjacency info on the quad mesh
@@ -373,7 +379,12 @@ bool poly_fem::instanciate_pattern(
 	// OF = F;
 	// return true;
 
-	// Remap vertices according to 'remap' + remove unreferenced vertices
+	// Remap vertices according to 'remap'
+	int num_remapped = remap.maxCoeff() + 1;
+	OV.resize(num_remapped, V.cols());
+	for (int v = 0; v < V.rows(); ++v) {
+		OV.row(remap(v)) = V.row(v);
+	}
 	for (int f = 0; f < F.rows(); ++f) {
 		for (int lv = 0; lv < F.cols(); ++lv) {
 			int ov = F(f, lv);
@@ -381,8 +392,9 @@ bool poly_fem::instanciate_pattern(
 			F(f, lv) = nv;
 		}
 	}
-	Eigen::VectorXi I;
-	igl::remove_unreferenced(V, F, OV, OF, I);
+	OF = F;
+	// Eigen::VectorXi I;
+	// igl::remove_unreferenced(V, F, OV, OF, I);
 
 	// Remap tags on vertices
 	if (SF) {
@@ -390,9 +402,7 @@ bool poly_fem::instanciate_pattern(
 		SF->resize(OV.rows());
 		SF->setZero();
 		for (int v = 0; v < V.rows(); ++v) {
-			if (I(v) >= 0 && I(v) < OV.rows()) {
-				(*SF)(I(v)) = tmp(v);
-			}
+			(*SF)(remap(v)) = tmp(v);
 		}
 	}
 
