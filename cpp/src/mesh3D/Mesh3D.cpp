@@ -276,6 +276,11 @@ namespace poly_fem
 		pt = mesh_.points.col(global_index).transpose();
 	}
 
+	Eigen::RowVector3d Mesh3D::point(const int global_index) const {
+		Eigen::RowVector3d pt = mesh_.points.col(global_index).transpose();
+		return pt;
+	}
+
 	void Mesh3D::get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const
 	{
 		p0.resize(mesh_.edges.size(), 3);
@@ -679,11 +684,17 @@ namespace poly_fem
 	}
 
 	void Mesh3D::edge_barycenters(Eigen::MatrixXd &barycenters) const {
-
+		barycenters.resize(n_edges(), 3);
+		for (int e = 0; e < n_edges(); ++e) {
+			barycenters.row(e) = edges_node_[e].transpose();
+		}
 	}
 
 	void Mesh3D::face_barycenters(Eigen::MatrixXd &barycenters) const {
-
+		barycenters.resize(n_faces(), 3);
+		for (int f = 0; f < n_faces(); ++f) {
+			barycenters.row(f) = faces_node_[f].transpose();
+		}
 	}
 
 	void Mesh3D::cell_barycenters(Eigen::MatrixXd &barycenters) const {

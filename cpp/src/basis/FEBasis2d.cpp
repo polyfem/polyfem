@@ -188,10 +188,7 @@ std::array<int, 9> quadr_quad_local_to_global(const poly_fem::Mesh2D &mesh, int 
 	int f_offset = e_offset + mesh.n_edges();
 
 	// Vertex nodes
-	Eigen::Matrix<int, 4, 1> v;
-	for (int lv = 0; lv < 4; ++lv) {
-		v[lv] = mesh.vertex_global_index(f, lv);
-	}
+	auto v = linear_quad_local_to_global(mesh, f);
 
 	// Edge nodes
 	Eigen::Matrix<int, 4, 1> e;
@@ -210,7 +207,7 @@ std::array<int, 9> quadr_quad_local_to_global(const poly_fem::Mesh2D &mesh, int 
 	// Assign global ids to local nodes
 	{
 		int i = 0;
-		for (int lv = 0; lv < v.rows(); ++lv) {
+		for (size_t lv = 0; lv < v.size(); ++lv) {
 			l2g[i++] = v[lv];
 		}
 		for (int le = 0; le < e.rows(); ++le) {
@@ -225,20 +222,18 @@ std::array<int, 9> quadr_quad_local_to_global(const poly_fem::Mesh2D &mesh, int 
 // -----------------------------------------------------------------------------
 
 ///
-/// @brief      Compute the list of global nodes for the mesh. If discr_order is
-///             1 then this is the same as the vertices of the input mesh. If
-///             discr_order is 2, then nodes are inserted in the middle of each
-///             simplex (edge, facet, cell), and nodes per elements are numbered
-///             accordingly.
+/// @brief      Compute the list of global nodes for the mesh. If discr_order is 1 then this is the
+///             same as the vertices of the input mesh. If discr_order is 2, then nodes are inserted
+///             in the middle of each simplex (edge, facet, cell), and nodes per elements are
+///             numbered accordingly.
 ///
 /// @param[in]  mesh               The input mesh
 /// @param[in]  discr_order        The discretization order
 /// @param[out] nodes              The nodes positions
 /// @param[out] boundary_nodes     List of boundary node indices
 /// @param[out] element_nodes_id   List of node indices per element
-/// @param[out] local_boundary     Which facet of the element are on the
-///                                boundary
-/// @param[out] poly_edge_to_data  Data for edges at interface with polygons
+/// @param[out] local_boundary     Which facet of the element are on the boundary
+/// @param[out] poly_edge_to_data  Data for edges at the interface with a polygon
 ///
 void compute_nodes(
 	const poly_fem::Mesh2D &mesh,
@@ -557,7 +552,7 @@ int poly_fem::FEBasis2d::build_bases(
 				}
 			}
 		} else {
-			// Polygonal bases are built later on
+			// Polygon bases are built later on
 			// assert(false);
 		}
 	}

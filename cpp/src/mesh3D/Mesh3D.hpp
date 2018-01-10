@@ -45,6 +45,7 @@ namespace poly_fem
 		void set_boundary_tags(std::vector<int> &tags) const override;
 
 		void point(const int global_index, Eigen::MatrixXd &pt) const override;
+		Eigen::RowVector3d point(const int global_index) const;
 
 		bool load(const std::string &path) override;
 		bool save(const std::string &path) const override;
