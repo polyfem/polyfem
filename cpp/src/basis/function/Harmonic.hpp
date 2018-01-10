@@ -1,6 +1,7 @@
 #ifndef HARMONIC_HPP
 #define HARMONIC_HPP
 
+#include "Quadrature.hpp"
 #include <Eigen/Dense>
 
 namespace poly_fem
@@ -12,21 +13,24 @@ namespace poly_fem
 		///
 		/// @brief      { Initialize a harmonic function over an element. }
 		///
-		/// @param[in]  centers  { #C x dim matrix containing the positions of
-		///                      the centers of the RBFs defining the harmonic
-		///                      functions over the element. The centers are
-		///                      placed at a small offset distance from the
-		///                      boundary of the element, due to the singularity
-		///                      at the centers }
-		/// @param[in]  samples  { #S x dim matrix of evaluation points, used to
-		///                      approximate the harmonic functions over the
-		///                      boundary of the element }
-		/// @param[in]  rhs      { #S x #dofs of boundary conditions. Each
-		///                      column define how the i-th harmonic function of
-		///                      the element should evaluate over the evaluation
-		///                      samples }
+		/// @param[in]  centers               { #C x dim matrix containing the positions of the
+		///                                   centers of the RBFs defining the harmonic functions
+		///                                   over the element. The centers are placed at a small
+		///                                   offset distance from the boundary of the element, due
+		///                                   to the singularity at the centers }
+		/// @param[in]  samples               { #S x dim matrix of collocation points, used to
+		///                                   approximate the harmonic functions over the boundary
+		///                                   of the element }
+		/// @param[in]  local_basis_integral  { #C x dim containing the expected value of the
+		///                                   integral of each basis over the polytope element }
+		/// @param[in]  quadr                 { Quadrature points and weights inside the polytope }
+		/// @param[in]  rhs                   { #S x #dofs of boundary conditions. Each column
+		///                                   define how the i-th harmonic function of the element
+		///                                   should evaluate over the evaluation samples }
 		///
-		Harmonic(const Eigen::MatrixXd &centers, const Eigen::MatrixXd &samples, const Eigen::MatrixXd &local_basis_integral, Eigen::MatrixXd &rhs);
+		Harmonic(const Eigen::MatrixXd &centers, const Eigen::MatrixXd &samples,
+			const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
+			Eigen::MatrixXd &rhs);
 
 		///
 		/// @brief      { Evaluates one harmonic function over a list of
@@ -52,7 +56,8 @@ namespace poly_fem
 
 	private:
 		// Compute the weights
-		void compute(const Eigen::MatrixXd &samples, const Eigen::MatrixXd &local_basis_integral, Eigen::MatrixXd &rhs);
+		void compute(const Eigen::MatrixXd &samples, const Eigen::MatrixXd &local_basis_integral,
+			const Quadrature &quadr, Eigen::MatrixXd &rhs);
 
 		// #C x dim matrix of centers positions
 		Eigen::MatrixXd centers_;

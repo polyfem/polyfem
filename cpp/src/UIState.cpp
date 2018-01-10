@@ -773,6 +773,7 @@ namespace poly_fem
 
 			clear_func();
 			show_mesh_func();
+			viewer.core.align_camera_center(tri_pts);
 		};
 
 		auto build_basis_func = [&](){
@@ -1029,6 +1030,7 @@ namespace poly_fem
 			return false;
 		};
 
+		viewer.core.set_rotation_type(igl::viewer::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
 		viewer.launch();
 	}
 

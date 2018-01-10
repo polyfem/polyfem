@@ -7,13 +7,14 @@ namespace poly_fem {
 
 	class QuadBoundarySampler {
 	public:
+
 		static bool sample(const bool is_right_boundary,
-		const bool is_bottom_boundary,
-		const bool is_left_boundary,
-		const bool is_top_boundary,
-		const int resolution,
-		const bool skip_computation,
-		Eigen::MatrixXd &samples);
+			const bool is_bottom_boundary,
+			const bool is_left_boundary,
+			const bool is_top_boundary,
+			const int resolution,
+			const bool skip_computation,
+			Eigen::MatrixXd &samples);
 	};
 }
 

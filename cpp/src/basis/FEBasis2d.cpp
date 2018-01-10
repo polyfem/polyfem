@@ -407,6 +407,22 @@ template<class InputIterator, class T>
 
 ////////////////////////////////////////////////////////////////////////////////
 
+namespace {
+
+	Eigen::RowVector2d linear_quad_local_node_coordinates(int local_index) {
+		auto p = linear_quad_local_node[local_index];
+		return Eigen::RowVector2d(p[0], p[1]);
+	}
+
+	Eigen::RowVector2d quadr_quad_local_node_coordinates(int local_index) {
+		auto p = quadr_quad_local_node[local_index];
+		return Eigen::RowVector2d(p[0], p[1]) / 2.0;
+	}
+
+} // anonymous namespace
+
+// -----------------------------------------------------------------------------
+
 std::array<int, 2> poly_fem::FEBasis2d::linear_quad_edge_local_nodes(
 	const Mesh2D &mesh, Navigation::Index index)
 {
@@ -422,6 +438,20 @@ std::array<int, 2> poly_fem::FEBasis2d::linear_quad_edge_local_nodes(
 	result[1] = find_index(l2g.begin(), l2g.end(), mesh.switch_vertex(index).vertex);
 	return result;
 }
+
+Eigen::MatrixXd poly_fem::FEBasis2d::linear_quad_edge_local_nodes_coordinates(
+	const Mesh2D &mesh, Navigation::Index index)
+{
+	auto idx = linear_quad_edge_local_nodes(mesh, index);
+	Eigen::MatrixXd res(idx.size(), 2);
+	int cnt = 0;
+	for (int i : idx) {
+		res.row(cnt++) = linear_quad_local_node_coordinates(i);
+	}
+	return res;
+}
+
+// -----------------------------------------------------------------------------
 
 std::array<int, 3> poly_fem::FEBasis2d::quadr_quad_edge_local_nodes(
 	const Mesh2D &mesh, Navigation::Index index)
@@ -440,15 +470,6 @@ std::array<int, 3> poly_fem::FEBasis2d::quadr_quad_edge_local_nodes(
 	result[2] = find_index(l2g.begin(), l2g.end(), mesh.switch_vertex(index).vertex);
 	return result;
 }
-
-namespace {
-
-	Eigen::RowVector2d quadr_quad_local_node_coordinates(int local_index) {
-		auto p = quadr_quad_local_node[local_index];
-		return Eigen::RowVector2d(p[0], p[1]) / 2.0;
-	}
-
-} // anonymous namespace
 
 Eigen::MatrixXd poly_fem::FEBasis2d::quadr_quad_edge_local_nodes_coordinates(
 	const Mesh2D &mesh, Navigation::Index index)

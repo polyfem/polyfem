@@ -220,6 +220,10 @@ target_link_libraries(polyfem PUBLIC geogram)
 add_library(cli11 INTERFACE)
 target_include_directories(cli11 SYSTEM INTERFACE ${THIRD_PARTY_DIR}/cli11)
 
+# Clipper
+add_subdirectory(${THIRD_PARTY_DIR}/clipper)
+target_link_libraries(polyfem PUBLIC polyclipping)
+
 # Json library
 add_library(json INTERFACE)
 target_include_directories(json SYSTEM INTERFACE ${THIRD_PARTY_DIR}/json/src)
