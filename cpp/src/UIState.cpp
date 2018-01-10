@@ -63,9 +63,15 @@ namespace poly_fem
 
 		viewer.data.clear();
 
-
-		const long n_tris = show_clipped_elements(tri_pts, tri_faces, element_ranges, valid_elements, recenter);
-		color_mesh(n_tris, valid_elements);
+		if(current_visualization == Visualizing::InputMesh)
+		{
+			const long n_tris = show_clipped_elements(tri_pts, tri_faces, element_ranges, valid_elements, recenter);
+			color_mesh(n_tris, valid_elements);
+		}
+		else
+		{
+			show_clipped_elements(vis_pts, vis_faces, vis_element_ranges, valid_elements, recenter);
+		}
 
 		if(state.mesh->is_volume())
 		{

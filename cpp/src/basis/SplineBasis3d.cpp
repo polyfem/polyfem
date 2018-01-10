@@ -77,9 +77,9 @@ namespace poly_fem
         {
             return
                 els_tag[el_id] == ElementType::RegularInteriorCube ||
-                els_tag[el_id] == ElementType::RegularBoundaryCube; //||
-                // els_tag[el_id] == ElementType::SimpleSingularInteriorCube ||
-                // els_tag[el_id] == ElementType::SimpleSingularBoundaryCube;
+                els_tag[el_id] == ElementType::RegularBoundaryCube ||
+                els_tag[el_id] == ElementType::SimpleSingularInteriorCube ||
+                els_tag[el_id] == ElementType::SimpleSingularBoundaryCube;
         }
 
 
@@ -798,7 +798,7 @@ namespace poly_fem
             b.bases[26].set_grad( [](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_grad(26, uv, val); });
         }
 
-        void insert_into_global(const int el_index, const Local2Global &data, std::vector<Local2Global> &vec)
+        void insert_into_global(const int el_index, const Local2Global &data, std::vector<Local2Global> &vec, const int size)
         {
             //ignore small weights
             if(fabs(data.val) <1e-10 )
@@ -806,14 +806,16 @@ namespace poly_fem
 
             bool found = false;
 
-            for(std::size_t i = 0; i < vec.size(); ++i)
+            for(int i = 0; i < size; ++i)
             {
                 if(vec[i].index == data.index)
                 {
-                    if(fabs(vec[i].val - data.val))
-                        std::cout<<el_index <<" "<<vec[i].val <<" "<< data.val<<" "<<fabs(vec[i].val - data.val)<<std::endl;
+                    // if(fabs(vec[i].val - data.val) > 1e-10){
+                    //     std::cout<<el_index <<" "<<vec[i].val <<" "<< data.val<<" "<<fabs(vec[i].val - data.val)<<std::endl;
+                    //     // vec[i].val += data.val;
+                    // }
                     // assert(fabs(vec[i].val - data.val) < 1e-10);
-                    // assert((vec[i].node - data.node).norm() < 1e-10);
+                    assert((vec[i].node - data.node).norm() < 1e-10);
                     found = true;
                     break;
                 }
@@ -844,17 +846,10 @@ namespace poly_fem
 
                 const auto &indices     = FEBasis3d::quadr_hex_face_local_nodes(mesh, index);
 
+                std::array<int, 9> sizes;
 
-                // other_bases.eval_geom_mapping(param_p, eval_p);
-                // igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
-                // if(!is_q2(opposite_element))
-                // {
-                //     std::cout<<"local_face "<<f<<std::endl;
-                //     viewer.data.add_points(eval_p, Eigen::MatrixXd::Constant(1, 3, 0.));
-
-                //     for(int asd =0; asd<9;++asd)
-                //         viewer.data.add_label(eval_p.row(asd), std::to_string(asd));
-                // }
+                for(int l = 0; l < 9; ++l)
+                    sizes[l] = b.bases[indices[l]].global().size();
 
                 for(std::size_t i = 0; i < other_bases.bases.size(); ++i)
                 {
@@ -876,7 +871,7 @@ namespace poly_fem
                             Local2Global glob = other_b.global()[k];
                             glob.val *= eval_p(l);
 
-                            insert_into_global(el_index, glob, b.bases[indices[l]].global());
+                            insert_into_global(el_index, glob, b.bases[indices[l]].global(), sizes[l]);
                         }
                     }
                 }
