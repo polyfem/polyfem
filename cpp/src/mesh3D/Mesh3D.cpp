@@ -166,7 +166,7 @@ namespace poly_fem
 			f_.vs = f.vs;
 			F_map[f.id] = f_.id;
 			F_map_reverse.push_back(f.id);
-			
+
 			mesh.faces.push_back(f_);
 		}
 
@@ -417,12 +417,16 @@ namespace poly_fem
 		Navigation3D::Index new_index = switch_element(index);
 		id = new_index.element;
 
-		if(id < 0)
+		auto is_polyhedron = [this](int e) {
+			return (n_element_vertices(e) != 8) || (n_element_faces(e) != 6);
+		};
+
+		if(id < 0 || is_polyhedron(id))
 		{
 			new_index = switch_element(switch_face(index));
 			id = new_index.element;
 
-			if(id < 0)
+			if(id < 0 || is_polyhedron(id))
 			{
 				id = edge_node_id(index.edge);
 				return true;
@@ -441,7 +445,11 @@ namespace poly_fem
 
 		id = new_index.element;
 
-		if(id < 0)
+		auto is_polyhedron = [this](int e) {
+			return (n_element_vertices(e) != 8) || (n_element_faces(e) != 6);
+		};
+
+		if(id < 0 || is_polyhedron(id))
 		{
 			id = vertex_node_id(index.vertex);
 			node = node_from_vertex(index.vertex);
@@ -451,7 +459,7 @@ namespace poly_fem
 		new_index = switch_element(switch_face(new_index));
 		id = new_index.element;
 
-		if(id < 0)
+		if(id < 0 || is_polyhedron(id))
 		{
 			id = edge_node_id(switch_edge(new_index).edge);
 			node = node_from_edge(switch_edge(new_index).edge);
@@ -461,7 +469,7 @@ namespace poly_fem
 		new_index = switch_element(switch_face(switch_edge(new_index)));
 		id = new_index.element;
 
-		if(id < 0)
+		if(id < 0 || is_polyhedron(id))
 		{
 			id = face_node_id(new_index.face);
 			node = node_from_face(new_index.face);
@@ -506,11 +514,15 @@ namespace poly_fem
 		Navigation3D::Index new_index = switch_element(index);
 		int id = new_index.element;
 
-		if(id < 0)
+		auto is_polyhedron = [this](int e) {
+			return (n_element_vertices(e) != 8) || (n_element_faces(e) != 6);
+		};
+
+		if(id < 0 || is_polyhedron(id))
 		{
 			new_index = switch_element(switch_face(index));
 			id = new_index.element;
-			if(id < 0)
+			if(id < 0 || is_polyhedron(id))
 				return node_from_edge(index.edge);
 
 			return node_from_face_index(switch_face(new_index));

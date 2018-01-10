@@ -315,11 +315,17 @@ bool poly_fem::instanciate_pattern(
 				const int v2 = (int) PVN.rows() * q2;
 				const int lv2 = std::get<1>(res);
 				const bool rev = std::get<2>(res);
-				Eigen::VectorXi side1 = border_vertices[lv1].array() + v1;
-				Eigen::VectorXi side2 = border_vertices[lv2].array() + v2;
-				if (rev) { side2.reverseInPlace(); }
-				for (int ii = 0; ii < (int) side1.size(); ++ii) {
-					remap(side2[ii]) = side1[ii];
+				if (q2 >= 0) {
+					Eigen::VectorXi side1 = border_vertices[lv1].array() + v1;
+					Eigen::VectorXi side2 = border_vertices[lv2].array() + v2;
+					if (rev) { side2.reverseInPlace(); }
+					// std::cout << side1.transpose() << std::endl;
+					// std::cout << side2.transpose() << std::endl << std::endl;
+					for (int ii = 0; ii < (int) side1.size(); ++ii) {
+						remap(side2[ii]) = side1[ii];
+					}
+				} else {
+					std::cout << "-- foo" << std::endl;
 				}
 			}
 		}
@@ -362,6 +368,10 @@ bool poly_fem::instanciate_pattern(
 			}
 		}
 	}
+
+	// OV = V;
+	// OF = F;
+	// return true;
 
 	// Remap vertices according to 'remap' + remove unreferenced vertices
 	for (int f = 0; f < F.rows(); ++f) {

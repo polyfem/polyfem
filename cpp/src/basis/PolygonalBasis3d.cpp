@@ -8,7 +8,7 @@
 #include "UIState.hpp"
 #include <igl/triangle/triangulate.h>
 #include <igl/per_vertex_normals.h>
-#include <igl/slice.h>
+#include <igl/write_triangle_mesh.h>
 #include <random>
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -137,25 +137,25 @@ GetAdjacentLocalEdge compute_quad_mesh_from_cell(
 
 void compute_offset_kernels(const Eigen::MatrixXd &QV, const Eigen::MatrixXi &QF,
 	int n_kernels_per_edge, double eps, Eigen::MatrixXd &kernel_centers,
-	EvalParametersFunc evalFuncGeom)
+	EvalParametersFunc evalFuncGeom, GetAdjacentLocalEdge getAdjLocalEdge)
 {
 	Eigen::MatrixXd PV, KV, KN;
 	Eigen::MatrixXi PF, KF;
 	Eigen::VectorXd D;
 	compute_canonical_pattern(n_kernels_per_edge, PV, PF);
-	instanciate_pattern(QV, QF, PV, PF, KV, KF, nullptr, evalFuncGeom);
+	instanciate_pattern(QV, QF, PV, PF, KV, KF, nullptr, evalFuncGeom, getAdjLocalEdge);
 	igl::per_vertex_normals(KV, KF, KN);
 	kernel_centers = KV + eps * KN;
-	std::default_random_engine gen;
-	std::uniform_real_distribution<double> dist(-1.0, 1.0);
-	for (int v = 0; v < kernel_centers.rows(); ++v) {
-		kernel_centers.row(v) = KV.row(v) + dist(gen) * KN.row(v);
-	}
+	// std::default_random_engine gen;
+	// std::uniform_real_distribution<double> dist(-1.0, 1.0);
+	// for (int v = 0; v < kernel_centers.rows(); ++v) {
+	// 	kernel_centers.row(v) = KV.row(v) + dist(gen) * KN.row(v);
+	// }
 	assert(kernel_centers.cols() == 3);
 	signed_squared_distances(KV, KF, kernel_centers, D);
 	std::vector<Eigen::RowVector3d> remap;
 	for (int v = 0; v < kernel_centers.rows(); ++v) {
-		if (D(v) > 0.1 * eps) {
+		if (D(v) > 0.0 * eps) {
 			remap.push_back(kernel_centers.row(v));
 		}
 	}
@@ -163,8 +163,11 @@ void compute_offset_kernels(const Eigen::MatrixXd &QV, const Eigen::MatrixXi &QF
 	for (int v = 0; v < kernel_centers.rows(); ++v) {
 		kernel_centers.row(v) = remap[v];
 	}
+	// std::cout << "nkernels: " << KV.rows() << std::endl;
 	// igl::viewer::Viewer viewer;
-	// viewer.data.add_points(kernel_centers, Eigen::RowVector3d(0,1,1));
+	// igl::write_triangle_mesh("foo.obj", KV, KF);
+	// viewer.data.set_mesh(KV, KF);
+	// // viewer.data.add_points(kernel_centers, Eigen::RowVector3d(0,1,1));
 	// viewer.launch();
 }
 
@@ -208,6 +211,9 @@ void sample_polyhedra(
 			+ (u*(1-v)).matrix()*b
 			+ (u*v).matrix()*c
 			+ ((1-u)*v).matrix()*d;
+		mapped = mapped.array().max(0.0).min(1.0);
+		assert(mapped.maxCoeff() >= 0.0);
+		assert(mapped.maxCoeff() <= 1.0);
 	};
 	auto evalFuncGeom = [&] (const Eigen::MatrixXd &uv, Eigen::MatrixXd &mapped, int lf) {
 		Eigen::MatrixXd samples;
@@ -234,25 +240,27 @@ void sample_polyhedra(
 	assert(uv_ranges.size() == mesh.n_element_faces(element_index) + 1);
 
 	// Compute kernel centers
-	compute_offset_kernels(QV, QF, n_kernels_per_edge, eps, kernel_centers, evalFuncGeom);
+	compute_offset_kernels(QV, QF, n_kernels_per_edge, eps, kernel_centers, evalFuncGeom, getAdjLocalEdge);
 
-	{
-		Eigen::MatrixXd V;
-		evalFuncGeom(PV, V, 0);
-		igl::viewer::Viewer viewer;
-		// viewer.data.set_points(QV, Eigen::RowVector3d(0,0,1));
-		viewer.data.set_mesh(collocation_points, collocation_faces);
-		viewer.launch();
-	}
-
-	// igl::viewer::Viewer viewer;
-	// viewer.data.set_mesh(UV, UF);
-	// for (int lf = 0; lf < mesh.n_element_faces(element_index); ++lf) {
-	// 	Eigen::MatrixXd samples;
-	// 	samples = UV.middleRows(uv_ranges(lf), uv_ranges(lf+1) - uv_ranges(lf));
-	// 	Eigen::RowVector3d c = Eigen::RowVector3d::Random();
-	// 	viewer.data.add_points(samples, c);
+	// {
+	// 	Eigen::MatrixXd V;
+	// 	evalFuncGeom(PV, V, 0);
+	// 	igl::viewer::Viewer viewer;
+	// 	// viewer.data.set_points(QV, Eigen::RowVector3d(0,0,1));
+	// 	viewer.data.set_mesh(collocation_points, collocation_faces);
+	// 	viewer.launch();
 	// }
+
+	// igl::write_triangle_mesh("foo.obj", collocation_points, collocation_faces);
+	// igl::viewer::Viewer viewer;
+	// viewer.data.set_mesh(collocation_points, collocation_faces);
+	// viewer.data.add_points(kernel_centers, Eigen::RowVector3d(0,1,1));
+	// // for (int lf = 0; lf < mesh.n_element_faces(element_index); ++lf) {
+	// // 	Eigen::MatrixXd samples;
+	// // 	samples = UV.middleRows(uv_ranges(lf), uv_ranges(lf+1) - uv_ranges(lf));
+	// // 	Eigen::RowVector3d c = Eigen::RowVector3d::Random();
+	// // 	viewer.data.add_points(samples, c);
+	// // }
 	// viewer.launch();
 
 	return;
@@ -346,7 +354,7 @@ double compute_epsilon(const Mesh3D &mesh, int e) {
 	// // const double eps = use_harmonic ? (0.08*area) : 0;
 	// const double eps = 0.08*area;
 
-	return 0.01;
+	return 0.1;
 }
 
 // -----------------------------------------------------------------------------
