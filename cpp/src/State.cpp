@@ -475,7 +475,7 @@ namespace poly_fem
 					continue;
 				}
 
-				values[e].compute(mesh->is_volume(), bases[e]);
+				values[e].compute(e, mesh->is_volume(), bases[e]);
 			}
 		}
 		else
@@ -496,8 +496,8 @@ namespace poly_fem
 				if(els_tag[e] != ElementType::InteriorPolytope && els_tag[e] != ElementType::BoundaryPolytope)
 					continue;
 
-				geom_values[e].compute(mesh->is_volume(), geom_bases[e]);
-				values[e].compute(mesh->is_volume(), bases[e]);
+				geom_values[e].compute(e, mesh->is_volume(), geom_bases[e]);
+				values[e].compute(e, mesh->is_volume(), bases[e]);
 			}
 		}
 

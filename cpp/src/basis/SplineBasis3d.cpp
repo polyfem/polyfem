@@ -957,6 +957,13 @@ namespace poly_fem
             assign_q2_weights(mesh, els_tag, e, bases);
         }
 
+        for(int e = 0; e < n_els; ++e)
+        {
+            if(!is_q2(els_tag, e))
+                continue;
+            assign_q2_weights(mesh, els_tag, e, bases);
+        }
+
         // for(int e = 0; e < n_els; ++e)
         // {
         //     if(!is_q2(els_tag, e))

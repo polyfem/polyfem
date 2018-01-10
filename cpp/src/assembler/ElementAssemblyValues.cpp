@@ -15,7 +15,7 @@ namespace poly_fem
 			basis_values[j].grad_t_m = basis_values[j].grad;
 	}
 
-	void ElementAssemblyValues::finalize(const Eigen::MatrixXd &v, const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy, const Eigen::MatrixXd &dz)
+	void ElementAssemblyValues::finalize(const int el_index, const Eigen::MatrixXd &v, const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy, const Eigen::MatrixXd &dz)
 	{
 		val = v;
 
@@ -45,6 +45,9 @@ namespace poly_fem
 			det(i) = tmp.determinant();
 			// std::cout<<tmp<<std::endl;
 			assert(det(i)>0);
+
+			if(det(i) <= 0)
+				std::cout<<"Badd "<<el_index<<std::endl;
 
 			Eigen::MatrixXd jac_it = tmp.inverse().transpose();
 			for(std::size_t j = 0; j < basis_values.size(); ++j)
@@ -78,7 +81,7 @@ namespace poly_fem
 		}
 	}
 
-	void ElementAssemblyValues::compute(const bool is_volume, const ElementBases &basis)
+	void ElementAssemblyValues::compute(const int el_index, const bool is_volume, const ElementBases &basis)
 	{
 		quadrature = basis.quadrature;
 
@@ -130,7 +133,7 @@ namespace poly_fem
 		else
 		{
 			if(is_volume)
-				finalize(mval, dxmv, dymv, dzmv);
+				finalize(el_index, mval, dxmv, dymv, dzmv);
 			else
 				finalize(mval, dxmv, dymv);
 		}
@@ -143,7 +146,7 @@ namespace poly_fem
 		for(std::size_t i = 0; i < bases.size(); ++i)
 		{
 			if (!bases[i].bases.empty() && bases[i].bases.front().is_defined()) {
-				values[i].compute(is_volume, bases[i]);
+				values[i].compute(i, is_volume, bases[i]);
 			}
 		}
 	}
