@@ -3,7 +3,7 @@
 
 
 namespace poly_fem {
-	void QuadraticBSpline3d::init(const std::vector<double> &knots_u, const std::vector<double> &knots_v, const std::vector<double> &knots_w)
+	void QuadraticBSpline3d::init(const std::array<double, 4> &knots_u, const std::array<double, 4> &knots_v, const std::array<double, 4> &knots_w)
 	{
 		spline_u_.init(knots_u);
 		spline_v_.init(knots_v);

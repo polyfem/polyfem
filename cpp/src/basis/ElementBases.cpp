@@ -2,6 +2,16 @@
 
 namespace poly_fem
 {
+	bool ElementBases::is_complete() const
+	{
+		for(auto &b : bases)
+		{
+			if(!b.is_complete())
+				return false;
+		}
+
+		return true;
+	}
 	void ElementBases::eval_geom_mapping(const Eigen::MatrixXd &samples, Eigen::MatrixXd &mapped) const
 	{
 		if(!has_parameterization)

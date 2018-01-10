@@ -54,6 +54,11 @@ namespace poly_fem
 		void init(const int global_index, const int local_index, const Eigen::MatrixXd &node);
 
 		///
+		/// @brief      Checks if global is empty or not
+		///
+		inline bool is_complete() const { return !global_.empty(); }
+
+		///
 		/// @brief      Evaluates the basis function over a set of uv
 		///             parameters.
 		///

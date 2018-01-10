@@ -22,21 +22,35 @@ namespace poly_fem
 
     namespace
     {
-        typedef Matrix<std::vector<int>, 3, 3> Space2d;
-        typedef Matrix<std::vector<MatrixXd>, 3, 3> Node2d;
+        typedef Matrix<int, 3, 3> Space2d;
+        typedef Matrix<Matrix<double, 1, 3>, 3, 3> Node2d;
 
         class SpaceMatrix
         {
         public:
-            inline const std::vector<int> &operator()(const int i, const int j, const int k) const
+            inline const int &operator()(const int i, const int j, const int k) const
             {
                 return space_[k](i,j);
             }
 
-            inline std::vector<int> &operator()(const int i, const int j, const int k)
+            inline int &operator()(const int i, const int j, const int k)
             {
                 return space_[k](i,j);
             }
+
+            bool is_k_regular = false;
+            int x,y,z;
+            int edge_id;
+
+
+            bool is_regular(const int xx, const int yy, const int zz) const
+            {
+                if(!is_k_regular) return true;
+
+                return !((x == 1 && y == yy && z == zz) || (x == xx && y == 1 && z == zz) || (x == xx && y == yy && z == 1));
+                // space(1, y, z).size() <= 1 && space(x, 1, z).size() <= 1 && space(x, y, 1).size() <= 1
+            }
+
         private:
             std::array<Space2d, 3> space_;
         };
@@ -44,12 +58,12 @@ namespace poly_fem
         class NodeMatrix
         {
         public:
-            inline const std::vector<MatrixXd> &operator()(const int i, const int j, const int k) const
+            inline const Matrix<double, 1, 3> &operator()(const int i, const int j, const int k) const
             {
                 return node_[k](i,j);
             }
 
-            inline std::vector<MatrixXd> &operator()(const int i, const int j, const int k)
+            inline Matrix<double, 1, 3> &operator()(const int i, const int j, const int k)
             {
                 return node_[k](i,j);
             }
@@ -73,11 +87,11 @@ namespace poly_fem
             if(ids.size() == 4 || mesh.is_boundary_edge(index.edge))
                 return false;
 
-            for(auto idx : ids)
-            {
-                if(mesh.is_poly_boundary_face(idx))
-                    return false;
-            }
+            // for(auto idx : ids)
+            // {
+            //     if(mesh.is_poly_boundary_face(idx))
+            //         return false;
+            // }
 
             return true;
         }
@@ -107,14 +121,12 @@ namespace poly_fem
                 {
                     for(int i=0; i < 3; ++i)
                     {
-                        if(space(i, j, k).size() > 0){
-                            for(std::size_t l = 0; l < space(i, j, k).size(); ++l)
-                                std::cout<<space(i, j, k)[l]<<",";
-
-                            std::cout<<"\t";
-                        }
-                        else
-                            std::cout<<"x\t";
+                        // if(space(i, j, k).size() > 0){
+                            // for(std::size_t l = 0; l < space(i, j, k).size(); ++l)
+                                std::cout<<space(i, j, k)<<"\t";
+                        // }
+                        // else
+                            // std::cout<<"x\t";
                     }
                     std::cout<<std::endl;
                 }
@@ -128,9 +140,9 @@ namespace poly_fem
             int node_id;
             bool boundary = mesh.node_id_from_edge_index(index, node_id);
 
-            assert(std::find(space(x, y, z).begin(), space(x, y, z).end(), node_id) == space(x, y, z).end());
-            space(x, y, z).push_back(node_id);
-            node(x, y, z).push_back(mesh.node_from_edge_index(index));
+            // assert(std::find(space(x, y, z).begin(), space(x, y, z).end(), node_id) == space(x, y, z).end());
+            space(x, y, z) = node_id;
+            node(x, y, z) = mesh.node_from_edge_index(index);
 
 
             if(is_edge_singular(index, mesh))
@@ -138,8 +150,11 @@ namespace poly_fem
                 std::vector<int> ids;
                 mesh.get_edge_elements_neighs(index.edge, ids);
                 //irregular edge
-                space(x, y, z).push_back(index.edge);
-                node(x, y, z).push_back(mesh.node_from_edge_index(index));
+
+                assert(!space.is_k_regular);
+                space.is_k_regular = true;
+                space.x = x; space.y = y; space.z = z;
+                space.edge_id = index.edge;
             }
 
             if(node_id >= mesh.n_elements() && boundary)
@@ -151,9 +166,9 @@ namespace poly_fem
             int node_id;
             bool boundary = mesh.node_id_from_vertex_index(index, node_id);
 
-            assert(std::find(space(x, y, z).begin(), space(x, y, z).end(), node_id) == space(x, y, z).end());
-            space(x, y, z).push_back(node_id);
-            node(x, y, z).push_back(mesh.node_from_vertex_index(index));
+            // assert(std::find(space(x, y, z).begin(), space(x, y, z).end(), node_id) == space(x, y, z).end());
+            space(x, y, z) = node_id;
+            node(x, y, z) = mesh.node_from_vertex_index(index);
 
             if(node_id >= mesh.n_elements() && boundary)
                 bounday_nodes.push_back(node_id);
@@ -164,9 +179,9 @@ namespace poly_fem
             int node_id;
             const bool real_boundary = mesh.node_id_from_face_index(index, node_id);
 
-            assert(std::find(space(x, y, z).begin(), space(x, y, z).end(), node_id) == space(x, y, z).end());
-            space(x, y, z).push_back(node_id);
-            node(x, y, z).push_back(mesh.node_from_face_index(index));
+            // assert(std::find(space(x, y, z).begin(), space(x, y, z).end(), node_id) == space(x, y, z).end());
+            space(x, y, z) = node_id;
+            node(x, y, z) = mesh.node_from_face_index(index);
 
 
 
@@ -214,8 +229,8 @@ namespace poly_fem
             std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 8> to_vertex;
             mesh.to_vertex_functions(to_vertex);
 
-            space(1, 1, 1).push_back(el_index);
-            node(1, 1, 1).push_back(mesh.node_from_element(el_index));
+            space(1, 1, 1) = el_index;
+            node(1, 1, 1) = mesh.node_from_element(el_index);
 
             ///////////////////////
             index = to_face[1](start_index);
@@ -334,12 +349,12 @@ namespace poly_fem
                 {
                     for(int j = 0; j < 3; ++j)
                     {
-                        assert(space(i,j,l).size() >= 1);
-                        for(std::size_t k = 0; k < space(i,j,l).size(); ++k)
-                        {
-                            minCoeff = std::min(space(i,j,l)[k], minCoeff);
-                            maxCoeff = std::max(space(i,j,l)[k], maxCoeff);
-                        }
+                        // assert(space(i,j,l).size() >= 1);
+                        // for(std::size_t k = 0; k < space(i,j,l).size(); ++k)
+                        // {
+                            minCoeff = std::min(space(i,j,l), minCoeff);
+                            maxCoeff = std::max(space(i,j,l), maxCoeff);
+                        // }
                     }
                 }
             }
@@ -348,96 +363,96 @@ namespace poly_fem
             return maxCoeff;
         }
 
-        void setup_knots_vectors(const int n_els, const SpaceMatrix &space, std::array<std::vector<double>, 3> &h_knots, std::array<std::vector<double>, 3> &v_knots, std::array<std::vector<double>, 3> &w_knots)
+        void setup_knots_vectors(const int n_els, const SpaceMatrix &space, std::array<std::array<double, 4>, 3> &h_knots, std::array<std::array<double, 4>, 3> &v_knots, std::array<std::array<double, 4>, 3> &w_knots)
         {
             //left and right neigh are absent
-            if(space(0, 1, 1).front() >= n_els && space(2, 1, 1).front() >= n_els)
+            if(space(0, 1, 1) >= n_els && space(2, 1, 1) >= n_els)
             {
-                h_knots[0] = {0, 0, 0, 1};
-                h_knots[1] = {0, 0, 1, 1};
-                h_knots[2] = {0, 1, 1, 1};
+                h_knots[0] = {{0, 0, 0, 1}};
+                h_knots[1] = {{0, 0, 1, 1}};
+                h_knots[2] = {{0, 1, 1, 1}};
             }
              //left neigh is absent
-            else if(space(0, 1, 1).front() >= n_els)
+            else if(space(0, 1, 1) >= n_els)
             {
-                h_knots[0] = {0, 0, 0, 1};
-                h_knots[1] = {0, 0, 1, 2};
-                h_knots[2] = {0, 1, 2, 3};
+                h_knots[0] = {{0, 0, 0, 1}};
+                h_knots[1] = {{0, 0, 1, 2}};
+                h_knots[2] = {{0, 1, 2, 3}};
             }
             //right neigh is absent
-            else if(space(2,1,1).front() >= n_els)
+            else if(space(2,1,1) >= n_els)
             {
-                h_knots[0] = {-2, -1, 0, 1};
-                h_knots[1] = {-1, 0, 1, 1};
-                h_knots[2] = {0, 1, 1, 1};
+                h_knots[0] = {{-2, -1, 0, 1}};
+                h_knots[1] = {{-1, 0, 1, 1}};
+                h_knots[2] = {{0, 1, 1, 1}};
             }
             else
             {
-                h_knots[0] = {-2, -1, 0, 1};
-                h_knots[1] = {-1, 0, 1, 2};
-                h_knots[2] = {0, 1, 2, 3};
+                h_knots[0] = {{-2, -1, 0, 1}};
+                h_knots[1] = {{-1, 0, 1, 2}};
+                h_knots[2] = {{0, 1, 2, 3}};
             }
 
 
             //top and bottom neigh are absent
-            if(space(1,0,1).front() >= n_els && space(1,2,1).front() >= n_els)
+            if(space(1,0,1) >= n_els && space(1,2,1) >= n_els)
             {
-                v_knots[0] = {0, 0, 0, 1};
-                v_knots[1] = {0, 0, 1, 1};
-                v_knots[2] = {0, 1, 1, 1};
+                v_knots[0] = {{0, 0, 0, 1}};
+                v_knots[1] = {{0, 0, 1, 1}};
+                v_knots[2] = {{0, 1, 1, 1}};
             }
             //bottom neigh is absent
-            else if(space(1,0,1).front() >= n_els)
+            else if(space(1,0,1) >= n_els)
             {
-                v_knots[0] = {0, 0, 0, 1};
-                v_knots[1] = {0, 0, 1, 2};
-                v_knots[2] = {0, 1, 2, 3};
+                v_knots[0] = {{0, 0, 0, 1}};
+                v_knots[1] = {{0, 0, 1, 2}};
+                v_knots[2] = {{0, 1, 2, 3}};
             }
             //top neigh is absent
-            else if(space(1,2,1).front() >= n_els)
+            else if(space(1,2,1) >= n_els)
             {
-                v_knots[0] = {-2, -1, 0, 1};
-                v_knots[1] = {-1, 0, 1, 1};
-                v_knots[2] = {0, 1, 1, 1};
+                v_knots[0] = {{-2, -1, 0, 1}};
+                v_knots[1] = {{-1, 0, 1, 1}};
+                v_knots[2] = {{0, 1, 1, 1}};
             }
             else
             {
-                v_knots[0] = {-2, -1, 0, 1};
-                v_knots[1] = {-1, 0, 1, 2};
-                v_knots[2] = {0, 1, 2, 3};
+                v_knots[0] = {{-2, -1, 0, 1}};
+                v_knots[1] = {{-1, 0, 1, 2}};
+                v_knots[2] = {{0, 1, 2, 3}};
             }
 
 
             //front and back neigh are absent
-            if(space(1,1,0).front() >= n_els && space(1,1,2).front() >= n_els)
+            if(space(1,1,0) >= n_els && space(1,1,2) >= n_els)
             {
-                w_knots[0] = {0, 0, 0, 1};
-                w_knots[1] = {0, 0, 1, 1};
-                w_knots[2] = {0, 1, 1, 1};
+                w_knots[0] = {{0, 0, 0, 1}};
+                w_knots[1] = {{0, 0, 1, 1}};
+                w_knots[2] = {{0, 1, 1, 1}};
             }
             //back neigh is absent
-            else if(space(1,1,0).front() >= n_els)
+            else if(space(1,1,0) >= n_els)
             {
-                w_knots[0] = {0, 0, 0, 1};
-                w_knots[1] = {0, 0, 1, 2};
-                w_knots[2] = {0, 1, 2, 3};
+                w_knots[0] = {{0, 0, 0, 1}};
+                w_knots[1] = {{0, 0, 1, 2}};
+                w_knots[2] = {{0, 1, 2, 3}};
             }
             //front neigh is absent
-            else if(space(1,1,2).front() >= n_els)
+            else if(space(1,1,2) >= n_els)
             {
-                w_knots[0] = {-2, -1, 0, 1};
-                w_knots[1] = {-1, 0, 1, 1};
-                w_knots[2] = {0, 1, 1, 1};
+                w_knots[0] = {{-2, -1, 0, 1}};
+                w_knots[1] = {{-1, 0, 1, 1}};
+                w_knots[2] = {{0, 1, 1, 1}};
             }
             else
             {
-                w_knots[0] = {-2, -1, 0, 1};
-                w_knots[1] = {-1, 0, 1, 2};
-                w_knots[2] = {0, 1, 2, 3};
+                w_knots[0] = {{-2, -1, 0, 1}};
+                w_knots[1] = {{-1, 0, 1, 2}};
+                w_knots[2] = {{0, 1, 2, 3}};
             }
         }
 
-        void basis_for_regular_hex(const SpaceMatrix &space, const NodeMatrix &loc_nodes, const std::array<std::vector<double>, 3> &h_knots, const std::array<std::vector<double>, 3> &v_knots, const std::array<std::vector<double>, 3> &w_knots, ElementBases &b)
+        void basis_for_regular_hex(const SpaceMatrix &space, const NodeMatrix &loc_nodes, const std::array<std::array<double, 4>, 3> &h_knots, const std::array<std::array<double, 4>, 3> &v_knots, const std::array<std::array<double, 4>, 3> &w_knots, ElementBases &b)
         {
             for(int z = 0; z < 3; ++z)
             {
@@ -445,11 +460,11 @@ namespace poly_fem
                 {
                     for(int x = 0; x < 3; ++x)
                     {
-                        if(space(1, y, z).size() <= 1 && space(x, 1, z).size() <= 1 && space(x, y, 1).size() <= 1)
+                        if(space.is_regular(x,y,z)) //space(1, y, z).size() <= 1 && space(x, 1, z).size() <= 1 && space(x, y, 1).size() <= 1)
                         {
                             const int local_index = 9*z + 3*y + x;
-                            const int global_index = space(x, y, z).front();
-                            const Eigen::MatrixXd &node = loc_nodes(x, y, z).front();
+                            const int global_index = space(x, y, z);
+                            const Eigen::MatrixXd &node = loc_nodes(x, y, z);
 
                             b.bases[local_index].init(global_index, local_index, node);
 
@@ -464,7 +479,7 @@ namespace poly_fem
         }
 
 
-        void basis_for_irregulard_hex(const Mesh3D &mesh, const SpaceMatrix &space, const NodeMatrix &loc_nodes, const std::array<std::vector<double>, 3> &h_knots, const std::array<std::vector<double>, 3> &v_knots, const std::array<std::vector<double>, 3> &w_knots, ElementBases &b)
+        void basis_for_irregulard_hex(const Mesh3D &mesh, const SpaceMatrix &space, const NodeMatrix &loc_nodes, const std::array<std::array<double, 4>, 3> &h_knots, const std::array<std::array<double, 4>, 3> &v_knots, const std::array<std::array<double, 4>, 3> &w_knots, ElementBases &b)
         {
             for(int z = 0; z < 3; ++z)
             {
@@ -472,7 +487,7 @@ namespace poly_fem
                 {
                     for(int x = 0; x < 3; ++x)
                     {
-                        if(space(1, y, z).size() > 1 || space(x, 1, z).size() > 1 || space(x, y, 1).size() > 1)
+                        if(!space.is_regular(x,y,z)) //space(1, y, z).size() > 1 || space(x, 1, z).size() > 1 || space(x, y, 1).size() > 1)
                         {
                             const int local_index = 9*z + 3*y + x;
 
@@ -489,15 +504,11 @@ namespace poly_fem
                             int yy = 1;
                             int zz = 1;
 
-                            int edge_id = -1;
+                            const int edge_id = space.edge_id;
                             int dir = -1;
 
-                            if(space(x, y, 1).size() > 1)
+                            if(space.x == x && space.y == y && space.z == 1)
                             {
-                                assert(space(x, y, 1).size() == 2);
-                                edge_id = space(x, y, 1)[1];
-
-
                                 mpx = 1;
                                 mpy = y;
                                 mpz = z;
@@ -509,12 +520,8 @@ namespace poly_fem
                                 zz = z;
                                 dir = z;
                             }
-                            else if(space(x, 1, z).size() > 1)
+                            else if(space.x == x && space.y == 1 && space.z == z)
                             {
-                                assert(space(x, 1, z).size() == 2);
-                                edge_id = space(x, 1, z)[1];
-
-
                                 mpx = 1;
                                 mpy = y;
                                 mpz = z;
@@ -527,12 +534,8 @@ namespace poly_fem
                                 dir = y;
 
                             }
-                            else if(space(1, y, z).size() > 1)
+                            else if(space.x == 1 && space.y == y && space.z == z)
                             {
-                                assert(space(1, y, z).size() == 2);
-                                edge_id = space(1, y, z)[1];
-
-
                                 mpx = x;
                                 mpy = y;
                                 mpz = 1;
@@ -941,9 +944,9 @@ namespace poly_fem
 
         std::map<int, InterfaceData> poly_edge_to_data;
 
-        std::array<std::vector<double>, 3> h_knots;
-        std::array<std::vector<double>, 3> v_knots;
-        std::array<std::vector<double>, 3> w_knots;
+        std::array<std::array<double, 4>, 3> h_knots;
+        std::array<std::array<double, 4>, 3> v_knots;
+        std::array<std::array<double, 4>, 3> w_knots;
 
         for(int e = 0; e < n_els; ++e)
         {
@@ -986,26 +989,39 @@ namespace poly_fem
         }
 
 
-        for(int e = 0; e < n_els; ++e)
+        bool missing_bases = false;
+        do
         {
-            if(!is_q2(els_tag, e))
-                continue;
-            assign_q2_weights(mesh, els_tag, e, bases);
-        }
+            missing_bases = false;
+            for(int e = 0; e < n_els; ++e)
+            {
+                if(!is_q2(els_tag, e))
+                    continue;
 
-        for(int e = 0; e < n_els; ++e)
-        {
-            if(!is_q2(els_tag, e))
-                continue;
-            assign_q2_weights(mesh, els_tag, e, bases);
-        }
+                auto &b=bases[e];
+                if(b.is_complete())
+                    continue;
 
-        for(int e = 0; e < n_els; ++e)
-        {
-            if(!is_q2(els_tag, e))
-                continue;
-            assign_q2_weights(mesh, els_tag, e, bases);
+                assign_q2_weights(mesh, els_tag, e, bases);
+
+                missing_bases = missing_bases || b.is_complete();
+            }
         }
+        while(missing_bases);
+
+        // for(int e = 0; e < n_els; ++e)
+        // {
+        //     if(!is_q2(els_tag, e))
+        //         continue;
+        //     assign_q2_weights(mesh, els_tag, e, bases);
+        // }
+
+        // for(int e = 0; e < n_els; ++e)
+        // {
+        //     if(!is_q2(els_tag, e))
+        //         continue;
+        //     assign_q2_weights(mesh, els_tag, e, bases);
+        // }
 
         for(int e = 0; e < n_els; ++e)
         {
