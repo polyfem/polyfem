@@ -54,7 +54,7 @@ namespace poly_fem
 		}
 	}
 
-	void UIState::plot_selection_and_index()
+	void UIState::plot_selection_and_index(const bool recenter)
 	{
 		std::vector<bool> valid_elements(normalized_barycenter.rows(), false);
 		auto v{explode(selected_elements, ',')};
@@ -63,9 +63,15 @@ namespace poly_fem
 
 		viewer.data.clear();
 
-
-		const long n_tris = show_clipped_elements(tri_pts, tri_faces, element_ranges, valid_elements);
-		color_mesh(n_tris, valid_elements);
+		if(current_visualization == Visualizing::InputMesh)
+		{
+			const long n_tris = show_clipped_elements(tri_pts, tri_faces, element_ranges, valid_elements, recenter);
+			color_mesh(n_tris, valid_elements);
+		}
+		else
+		{
+			show_clipped_elements(vis_pts, vis_faces, vis_element_ranges, valid_elements, recenter);
+		}
 
 		if(state.mesh->is_volume())
 		{
@@ -168,7 +174,7 @@ namespace poly_fem
 		return show_clipped_elements(pts, tris, ranges, valid_elements);
 	}
 
-	long UIState::show_clipped_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, const std::vector<bool> &valid_elements)
+	long UIState::show_clipped_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, const std::vector<bool> &valid_elements, const bool recenter)
 	{
 		viewer.data.set_face_based(false);
 
@@ -205,6 +211,8 @@ namespace poly_fem
 			viewer.data.set_normals(normals);
 		}
 
+		if(recenter)
+			viewer.core.align_camera_center(pts, valid_tri);
 		return valid_tri.rows();
 	}
 
@@ -981,10 +989,10 @@ namespace poly_fem
 					std::cout<<"e:"<<current_3d_index.element<<" f:"<<current_3d_index.face<<" e:"<<current_3d_index.edge<<" v:"<<current_3d_index.vertex<<std::endl;
 				}
 
-				plot_selection_and_index();
+				plot_selection_and_index(true);
 			});
 
-			viewer_.ngui->addButton("Swith vertex", [&]{
+			viewer_.ngui->addButton("Switch vertex", [&]{
 				if(state.mesh->is_volume())
 				{
 					current_3d_index = static_cast<Mesh3D *>(state.mesh)->switch_vertex(current_3d_index);
@@ -994,7 +1002,7 @@ namespace poly_fem
 				plot_selection_and_index();
 			});
 
-			viewer_.ngui->addButton("Swith edge", [&]{
+			viewer_.ngui->addButton("Switch edge", [&]{
 				if(state.mesh->is_volume())
 				{
 					current_3d_index = static_cast<Mesh3D *>(state.mesh)->switch_edge(current_3d_index);
@@ -1004,7 +1012,7 @@ namespace poly_fem
 				plot_selection_and_index();
 			});
 
-			viewer_.ngui->addButton("Swith face", [&]{
+			viewer_.ngui->addButton("Switch face", [&]{
 				if(state.mesh->is_volume())
 				{
 					current_3d_index = static_cast<Mesh3D *>(state.mesh)->switch_face(current_3d_index);
@@ -1014,7 +1022,7 @@ namespace poly_fem
 				plot_selection_and_index();
 			});
 
-			viewer_.ngui->addButton("Swith element", [&]{
+			viewer_.ngui->addButton("Switch element", [&]{
 				if(state.mesh->is_volume())
 				{
 					current_3d_index = static_cast<Mesh3D *>(state.mesh)->switch_element(current_3d_index);
@@ -1023,6 +1031,20 @@ namespace poly_fem
 				}
 
 				plot_selection_and_index();
+			});
+
+			viewer_.ngui->addButton("Save selection", [&]{
+				if(state.mesh->is_volume())
+				{
+					auto v{explode(selected_elements, ',')};
+					std::set<int> idx;
+					for(auto s : v)
+						idx.insert(atoi(s.c_str()));
+
+					std::vector<int> idx_v(idx.begin(), idx.end());
+
+					static_cast<Mesh3D *>(state.mesh)->save(idx_v, 2, "mesh.HYBRID");
+				}
 			});
 
 			viewer_.screen->performLayout();

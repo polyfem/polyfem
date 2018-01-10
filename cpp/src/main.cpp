@@ -104,7 +104,8 @@ int main(int argc, const char **argv)
         state.compute_assembly_vals();
         state.assemble_stiffness_mat();
         state.assemble_rhs();
-        state.solve_problem();
+        // state.solve_problem();
+        state.solve_problem_old();
         state.compute_errors();
 
         if(!output.empty()){

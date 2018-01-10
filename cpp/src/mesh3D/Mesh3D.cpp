@@ -159,7 +159,7 @@ namespace poly_fem
 			for(auto fid:mesh_.elements[i].fs) F_flag[fid] = true;
 		}
 
-		std::vector<int32_t> F_map, F_map_reverse;
+		std::vector<int32_t> F_map(mesh_.faces.size(), -1), F_map_reverse;
 		for (auto f : mesh_.faces)if (F_flag[f.id]) {
 			Face f_;
 			f_.id = mesh.faces.size();
