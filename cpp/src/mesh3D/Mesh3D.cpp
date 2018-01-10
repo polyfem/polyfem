@@ -429,7 +429,7 @@ namespace poly_fem
 			if(id < 0 || is_polyhedron(id))
 			{
 				id = edge_node_id(index.edge);
-				return true;
+				return id < 0;
 			}
 
 			return node_id_from_face_index(switch_face(new_index), id);
@@ -439,7 +439,7 @@ namespace poly_fem
 	}
 
 
-	int Mesh3D::node_id_from_vertex_index_explore(const Navigation3D::Index &index, int &id, Eigen::MatrixXd &node) const
+	int Mesh3D::node_id_from_vertex_index_explore(const Navigation3D::Index &index, int &id, Eigen::MatrixXd &node, bool &real_b) const
 	{
 		Navigation3D::Index new_index = switch_element(index);
 
@@ -453,6 +453,7 @@ namespace poly_fem
 		{
 			id = vertex_node_id(index.vertex);
 			node = node_from_vertex(index.vertex);
+			real_b = id < 0;
 			return 3;
 		}
 
@@ -463,6 +464,7 @@ namespace poly_fem
 		{
 			id = edge_node_id(switch_edge(new_index).edge);
 			node = node_from_edge(switch_edge(new_index).edge);
+			real_b = id < 0;
 			return 2;
 		}
 
@@ -473,10 +475,12 @@ namespace poly_fem
 		{
 			id = face_node_id(new_index.face);
 			node = node_from_face(new_index.face);
+			real_b = id < 0;
 			return 1;
 		}
 
 		node = node_from_element(id);
+		real_b = id < 0;
 		return 0;
 	}
 
@@ -484,29 +488,32 @@ namespace poly_fem
 	{
 		std::array<int, 6> path;
 		std::array<int, 6> ids;
+		std::array<bool, 6> real_b;
 		Eigen::MatrixXd node;
 
-		path[0] = node_id_from_vertex_index_explore(index, ids[0], node);
-		path[1] = node_id_from_vertex_index_explore(switch_face(index), ids[1], node);
+		path[0] = node_id_from_vertex_index_explore(index, ids[0], node, real_b[0]);
+		path[1] = node_id_from_vertex_index_explore(switch_face(index), ids[1], node, real_b[1]);
 
-		path[2] = node_id_from_vertex_index_explore(switch_edge(index), ids[2], node);
-		path[3] = node_id_from_vertex_index_explore(switch_face(switch_edge(index)), ids[3], node);
+		path[2] = node_id_from_vertex_index_explore(switch_edge(index), ids[2], node, real_b[2]);
+		path[3] = node_id_from_vertex_index_explore(switch_face(switch_edge(index)), ids[3], node, real_b[3]);
 
-		path[4] = node_id_from_vertex_index_explore(switch_edge(switch_face(index)), ids[4], node);
-		path[5] = node_id_from_vertex_index_explore(switch_face(switch_edge(switch_face(index))), ids[5], node);
+		path[4] = node_id_from_vertex_index_explore(switch_edge(switch_face(index)), ids[4], node, real_b[4]);
+		path[5] = node_id_from_vertex_index_explore(switch_face(switch_edge(switch_face(index))), ids[5], node, real_b[5]);
 
 		const int min_path = *std::min_element(path.begin(), path.end());
 
+		bool res = min_path > 0;
 		for(int i = 0 ; i < 6; ++i)
 		{
 			if(path[i]==min_path)
 			{
 				id = ids[i];
+				res = real_b[i];
 				break;
 			}
 		}
 
-		return min_path > 0;
+		return res;
 	}
 
 	Eigen::MatrixXd Mesh3D::node_from_edge_index(const Navigation3D::Index &index) const
@@ -536,15 +543,16 @@ namespace poly_fem
 		std::array<int, 6> path;
 		std::array<Eigen::MatrixXd, 6> nodes;
 		int id;
+		bool real_b;
 
-		path[0] = node_id_from_vertex_index_explore(index, id, nodes[0]);
-		path[1] = node_id_from_vertex_index_explore(switch_face(index), id, nodes[1]);
+		path[0] = node_id_from_vertex_index_explore(index, id, nodes[0], real_b);
+		path[1] = node_id_from_vertex_index_explore(switch_face(index), id, nodes[1], real_b);
 
-		path[2] = node_id_from_vertex_index_explore(switch_edge(index), id, nodes[2]);
-		path[3] = node_id_from_vertex_index_explore(switch_face(switch_edge(index)), id, nodes[3]);
+		path[2] = node_id_from_vertex_index_explore(switch_edge(index), id, nodes[2], real_b);
+		path[3] = node_id_from_vertex_index_explore(switch_face(switch_edge(index)), id, nodes[3], real_b);
 
-		path[4] = node_id_from_vertex_index_explore(switch_edge(switch_face(index)), id, nodes[4]);
-		path[5] = node_id_from_vertex_index_explore(switch_face(switch_edge(switch_face(index))), id, nodes[5]);
+		path[4] = node_id_from_vertex_index_explore(switch_edge(switch_face(index)), id, nodes[4], real_b);
+		path[5] = node_id_from_vertex_index_explore(switch_face(switch_edge(switch_face(index))), id, nodes[5], real_b);
 
 		const int min_path = *std::min_element(path.begin(), path.end());
 
