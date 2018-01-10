@@ -20,7 +20,7 @@ std::vector<int> compute_nonzero_bases_ids(const Mesh2D &mesh, const int element
 
 	Navigation::Index index = mesh.get_index_from_face(element_index);
 	const int n_edges = mesh.n_element_vertices(element_index);
-	for(int i = 0; i < n_edges; ++i) {
+	for (int i = 0; i < n_edges; ++i) {
 		const InterfaceData &bdata = poly_edge_to_data.at(index.edge);
 		local_to_global.insert(local_to_global.end(), bdata.node_id.begin(), bdata.node_id.end());
 
@@ -37,9 +37,11 @@ std::vector<int> compute_nonzero_bases_ids(const Mesh2D &mesh, const int element
 
 // -----------------------------------------------------------------------------
 
-void sample_edge(const Mesh2D &mesh, Navigation::Index index, int n_samples, Eigen::MatrixXd &samples) {
+void sample_parametric_edge(
+	const Mesh2D &mesh, Navigation::Index index, int n_samples, Eigen::MatrixXd &samples)
+{
 	Eigen::MatrixXd endpoints = FEBasis2d::linear_quad_edge_local_nodes_coordinates(mesh, index);
-	const Eigen::MatrixXd t = Eigen::VectorXd::LinSpaced(n_samples, 0, 1);
+	const Eigen::VectorXd t = Eigen::VectorXd::LinSpaced(n_samples, 0, 1);
 	samples.resize(n_samples, endpoints.cols());
 	for (int c = 0; c < 2; ++c) {
 		samples.col(c) = (1.0 - t.array()).matrix() * endpoints(0, c) + t * endpoints(1, c);
@@ -112,10 +114,14 @@ void sample_polygon(
 
 		assert(bdata.element_id == mesh.switch_face(index).face);
 
-		sample_edge(mesh, mesh.switch_face(index), n_samples_per_edge, samples);
+		// Sample collocation points on the boundary edge
+		sample_parametric_edge(mesh, mesh.switch_face(index), n_samples_per_edge, samples);
 		samples.conservativeResize(samples.rows() - 1, samples.cols());
 		gb.eval_geom_mapping(samples, mapped);
+		assert(mapped.rows() == (n_samples_per_edge-1));
+		collocation_points.block(i*(n_samples_per_edge-1), 0, mapped.rows(), mapped.cols()) = mapped;
 
+		// Evaluate field basis and set up the rhs
 		for(size_t bi = 0; bi < bdata.node_id.size(); ++bi) {
 			const int local_index = bdata.local_indices[bi];
 			const long local_basis_id = std::distance(local_to_global.begin(), std::find(local_to_global.begin(), local_to_global.end(), bdata.node_id[bi]));
@@ -124,9 +130,6 @@ void sample_polygon(
 
 			rhs.block(i*(n_samples_per_edge-1), local_basis_id, basis_val.rows(), 1) += basis_val * bdata.vals[bi];
 		}
-
-		assert(mapped.rows() == (n_samples_per_edge-1));
-		collocation_points.block(i*(n_samples_per_edge-1), 0, mapped.rows(), mapped.cols()) = mapped;
 
 		index = mesh.next_around_face(index);
 	}

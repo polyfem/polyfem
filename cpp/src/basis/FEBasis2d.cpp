@@ -398,25 +398,21 @@ template<class InputIterator, class T>
 	return std::distance(first, std::find(first, last, val));
 }
 
+// -----------------------------------------------------------------------------
+
+Eigen::RowVector2d linear_quad_local_node_coordinates(int local_index) {
+	auto p = linear_quad_local_node[local_index];
+	return Eigen::RowVector2d(p[0], p[1]);
+}
+
+Eigen::RowVector2d quadr_quad_local_node_coordinates(int local_index) {
+	auto p = quadr_quad_local_node[local_index];
+	return Eigen::RowVector2d(p[0], p[1]) / 2.0;
+}
+
 } // anonymous namespace
 
 ////////////////////////////////////////////////////////////////////////////////
-
-namespace {
-
-	Eigen::RowVector2d linear_quad_local_node_coordinates(int local_index) {
-		auto p = linear_quad_local_node[local_index];
-		return Eigen::RowVector2d(p[0], p[1]);
-	}
-
-	Eigen::RowVector2d quadr_quad_local_node_coordinates(int local_index) {
-		auto p = quadr_quad_local_node[local_index];
-		return Eigen::RowVector2d(p[0], p[1]) / 2.0;
-	}
-
-} // anonymous namespace
-
-// -----------------------------------------------------------------------------
 
 std::array<int, 2> poly_fem::FEBasis2d::linear_quad_edge_local_nodes(
 	const Mesh2D &mesh, Navigation::Index index)
@@ -478,7 +474,7 @@ Eigen::MatrixXd poly_fem::FEBasis2d::quadr_quad_edge_local_nodes_coordinates(
 	return res;
 }
 
-// -----------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
 
 void poly_fem::FEBasis2d::quadr_quad_basis_value(
 	const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)

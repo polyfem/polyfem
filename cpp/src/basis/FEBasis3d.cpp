@@ -545,9 +545,53 @@ template<class InputIterator, class T>
 	return std::distance(first, std::find(first, last, val));
 }
 
+Eigen::RowVector3d linear_hex_local_node_coordinates(int local_index) {
+	auto p = linear_hex_local_node[local_index];
+	return Eigen::RowVector3d(p[0], p[1], p[2]);
+}
+
+Eigen::RowVector3d quadr_hex_local_node_coordinates(int local_index) {
+	auto p = quadr_hex_local_node[local_index];
+	return Eigen::RowVector3d(p[0], p[1], p[2]) / 2.0;
+}
+
 } // anonymous namespace
 
 ////////////////////////////////////////////////////////////////////////////////
+
+std::array<int, 4> poly_fem::FEBasis3d::linear_hex_face_local_nodes(
+	const Mesh3D &mesh, Navigation3D::Index index)
+{
+	int c = index.element;
+	assert(mesh.n_face_vertices(index.face) == 4);
+	assert(mesh.n_element_vertices(c) == 8);
+	assert(mesh.n_element_faces(c) == 6);
+
+	// Local to global mapping of node indices
+	auto l2g = linear_hex_local_to_global(mesh, c);
+
+	// Extract requested interface
+	std::array<int, 4> result;
+	for (int lv = 0, i = 0; lv < 4; ++lv) {
+		result[i++] = find_index(l2g.begin(), l2g.end(), index.vertex);
+		index = mesh.next_around_face_of_element(index);
+	}
+	return result;
+}
+
+Eigen::MatrixXd poly_fem::FEBasis3d::linear_hex_face_local_nodes_coordinates(
+	const Mesh3D &mesh, Navigation3D::Index index)
+{
+	auto idx = linear_hex_face_local_nodes(mesh, index);
+	Eigen::MatrixXd res(idx.size(), 3);
+	int cnt = 0;
+	for (int i : idx) {
+		res.row(cnt++) = linear_hex_local_node_coordinates(i);
+	}
+	return res;
+}
+
+// -----------------------------------------------------------------------------
 
 std::array<int, 9> poly_fem::FEBasis3d::quadr_hex_face_local_nodes(
 	const Mesh3D &mesh, Navigation3D::Index index)
@@ -556,70 +600,13 @@ std::array<int, 9> poly_fem::FEBasis3d::quadr_hex_face_local_nodes(
 	assert(mesh.n_face_vertices(index.face) == 4);
 	assert(mesh.n_element_vertices(c) == 8);
 	assert(mesh.n_element_faces(c) == 6);
-
 	int e_offset = mesh.n_pts();
 	int f_offset = e_offset + mesh.n_edges();
-	int c_offset = f_offset + mesh.n_faces();
-
-	// Corner nodes
-	Eigen::Matrix<int, 8, 1> v;
-	{
-		int lv = 0;
-		for (int vi : mesh.get_ordered_vertices_from_hex(c)) {
-			v[lv++] = vi;
-		}
-	}
-
-	// Edge nodes
-	Eigen::Matrix<int, 12, 1> e;
-	Eigen::Matrix<int, 12, 2> ev;
-	ev.row(0)  << v[0], v[1];
-	ev.row(1)  << v[1], v[2];
-	ev.row(2)  << v[2], v[3];
-	ev.row(3)  << v[3], v[0];
-	ev.row(4)  << v[0], v[4];
-	ev.row(5)  << v[1], v[5];
-	ev.row(6)  << v[2], v[6];
-	ev.row(7)  << v[3], v[7];
-	ev.row(8)  << v[4], v[5];
-	ev.row(9)  << v[5], v[6];
-	ev.row(10) << v[6], v[7];
-	ev.row(11) << v[7], v[4];
-	for (int le = 0; le < e.rows(); ++le) {
-		e[le] = find_edge(mesh, c, ev(le, 0), ev(le, 1));
-	}
-
-	// Face nodes
-	Eigen::Matrix<int, 6, 1> f;
-	Eigen::Matrix<int, 6, 4> fv;
-	fv.row(0) << v[0], v[3], v[4], v[7];
-	fv.row(1) << v[1], v[2], v[5], v[6];
-	fv.row(2) << v[0], v[1], v[5], v[4];
-	fv.row(3) << v[3], v[2], v[6], v[7];
-	fv.row(4) << v[0], v[1], v[2], v[3];
-	fv.row(5) << v[4], v[5], v[6], v[7];
-	for (int lf = 0; lf < f.rows(); ++lf) {
-		f[lf] = find_face(mesh, c, fv(lf, 0), fv(lf, 1), fv(lf, 2), fv(lf, 3));
-	}
 
 	// Local to global mapping of node indices
-	std::array<int, 27> l2g;
+	auto l2g = quadr_hex_local_to_global(mesh, c);
 
-	// Assign global ids to nodes
-	{
-		int i = 0;
-		for (int lv = 0; lv < v.rows(); ++lv) {
-			l2g[i++] = v[lv];
-		}
-		for (int le = 0; le < e.rows(); ++le) {
-			l2g[i++] = e_offset + e[le];
-		}
-		for (int lf = 0; lf < f.rows(); ++lf) {
-			l2g[i++] = f_offset + f[lf];
-		}
-		l2g[i++] = c_offset + c;
-	}
-
+	// Extract requested interface
 	std::array<int, 9> result;
 	for (int lv = 0, i = 0; lv < 4; ++lv) {
 		result[i++] = find_index(l2g.begin(), l2g.end(), index.vertex);
@@ -629,17 +616,6 @@ std::array<int, 9> poly_fem::FEBasis3d::quadr_hex_face_local_nodes(
 	result[8] = find_index(l2g.begin(), l2g.end(), f_offset + index.face);
 	return result;
 }
-
-// -----------------------------------------------------------------------------
-
-namespace {
-
-Eigen::RowVector3d quadr_hex_local_node_coordinates(int local_index) {
-	auto p = quadr_hex_local_node[local_index];
-	return Eigen::RowVector3d(p[0], p[1], p[2]) / 2.0;
-}
-
-} // anonymous namespace
 
 Eigen::MatrixXd poly_fem::FEBasis3d::quadr_hex_face_local_nodes_coordinates(
 	const Mesh3D &mesh, Navigation3D::Index index)
@@ -653,7 +629,7 @@ Eigen::MatrixXd poly_fem::FEBasis3d::quadr_hex_face_local_nodes_coordinates(
 	return res;
 }
 
-// -----------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
 
 void poly_fem::FEBasis3d::quadr_hex_basis_value(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
 	auto x=xne.col(0).array();

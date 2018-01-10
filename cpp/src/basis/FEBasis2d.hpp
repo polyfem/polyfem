@@ -45,11 +45,8 @@ namespace poly_fem
 		static std::array<int, 2> linear_quad_edge_local_nodes(const Mesh2D &mesh, Navigation::Index index);
 		static std::array<int, 3> quadr_quad_edge_local_nodes(const Mesh2D &mesh, Navigation::Index index);
 
-		static Eigen::MatrixXd linear_quad_edge_local_nodes_coordinates(
-			const Mesh2D &mesh, Navigation::Index index);
-
-		static Eigen::MatrixXd quadr_quad_edge_local_nodes_coordinates(
-			const Mesh2D &mesh, Navigation::Index index);
+		static Eigen::MatrixXd linear_quad_edge_local_nodes_coordinates(const Mesh2D &mesh, Navigation::Index index);
+		static Eigen::MatrixXd quadr_quad_edge_local_nodes_coordinates(const Mesh2D &mesh, Navigation::Index index);
 
 		///
 		/// @brief      { Evaluates one local quadratic basis function over a

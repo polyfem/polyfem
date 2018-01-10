@@ -39,7 +39,8 @@ namespace poly_fem
 		///
 		/// @brief         Build bases over the remaining polygons of a mesh.
 		///
-		/// @param[in]     n_samples_per_edge  { Number of collocation samples per polygon edge }
+		/// @param[in]     n_samples_per_edge  { Number of collocation samples per polygon edge
+		///                                    (including endpoints) }
 		/// @param[in]     mesh                { Input surface mesh }
 		/// @param[in]     n_bases             { Total number of bases functions in the mesh }
 		/// @param[in]     element_types       { Per-element tag indicating the type of each element
@@ -57,7 +58,7 @@ namespace poly_fem
 		///                                    geometry of the mesh }
 		/// @param[in]     poly_edge_to_data   { Additional data computed for edges at the interface
 		///                                    with a polygon }
-		/// @param[out]    mapped_boundary    { Map element id -> #S x dim polyline formed by the
+		/// @param[out]    mapped_boundary     { Map element id -> #S x dim polyline formed by the
 		///                                    collocation points on the boundary of the polygon.
 		///                                    The collocation points are mapped through the
 		///                                    geometric mapping of the element across the edge, so

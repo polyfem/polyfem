@@ -226,7 +226,8 @@ Eigen::VectorXi vertex_degree(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F
 bool poly_fem::instanciate_pattern(
 	const Eigen::MatrixXd &IV, const Eigen::MatrixXi &IF,
 	const Eigen::MatrixXd &PV, const Eigen::MatrixXi &PF,
-	Eigen::MatrixXd &OV, Eigen::MatrixXi &OF)
+	Eigen::MatrixXd &OV, Eigen::MatrixXi &OF,
+	EvalParametersFunc evalFunc)
 {
 	// Copy input quads (may be reordered)
 	Eigen::MatrixXi IQ = IF;
@@ -277,18 +278,27 @@ bool poly_fem::instanciate_pattern(
 	// Remapped vertex id (after duplicate removal)
 	Eigen::VectorXi remap = Eigen::VectorXi::LinSpaced((int) V.rows(), 0, (int) V.rows()-1);
 
+	// If the eval function is undefined, don't do any remapping
+	if (!evalFunc) {
+		evalFunc = [&] (const Eigen::MatrixXd &uv, Eigen::MatrixXd &mapped, int q) {
+			const auto & u = mapped.col(0).array();
+			const auto & v = mapped.col(1).array();
+			Eigen::RowVector3d a = IV.row(IQ(q, 0));
+			Eigen::RowVector3d b = IV.row(IQ(q, 1));
+			Eigen::RowVector3d c = IV.row(IQ(q, 2));
+			Eigen::RowVector3d d = IV.row(IQ(q, 3));
+			mapped = ((1-u)*(1-v)).matrix()*a
+				+ (u*(1-v)).matrix()*b
+				+ (u*v).matrix()*c
+				+ ((1-u)*v).matrix()*d;
+		};
+	}
+
+	Eigen::MatrixXd mapped; // Mapped uv samples
 	for (int q = 0; q < IQ.rows(); ++q) {
-		const auto & u = PVN.col(0).array();
-		const auto & v = PVN.col(1).array();
-		Eigen::RowVector3d a = IV.row(IQ(q, 0));
-		Eigen::RowVector3d b = IV.row(IQ(q, 1));
-		Eigen::RowVector3d c = IV.row(IQ(q, 2));
-		Eigen::RowVector3d d = IV.row(IQ(q, 3));
+		evalFunc(PVN, mapped, q);
 		int v0 = (int) PVN.rows() * q;
-		V.middleRows(v0, PVN.rows()) = ((1-u)*(1-v)).matrix()*a
-			+ (u*(1-v)).matrix()*b
-			+ (u*v).matrix()*c
-			+ ((1-u)*v).matrix()*d;
+		V.middleRows(v0, PVN.rows()) = mapped;
 		int f0 = (int) PF.rows() * q;
 		F.middleRows(f0, PF.rows()) = PF.array() + v0;
 	}
