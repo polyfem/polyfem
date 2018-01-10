@@ -251,245 +251,259 @@ int find_face(const poly_fem::Mesh3D &mesh, int c, int v1, int v2, int v3, int v
 	return 0;
 }
 
-Eigen::Vector3d barycenter(const Eigen::MatrixXd &nodes, const std::vector<int> & ids) {
-	Eigen::Vector3d p;
-	p.setZero();
-	for (int i : ids) {
-		p += nodes.row(i);
+// -----------------------------------------------------------------------------
+
+constexpr std::array<int, 4> local_edge_to_interface_flag = {{
+	poly_fem::InterfaceData::BOTTOM_FLAG,
+	poly_fem::InterfaceData::RIGHT_FLAG,
+	poly_fem::InterfaceData::TOP_FLAG,
+	poly_fem::InterfaceData::LEFT_FLAG,
+}};
+
+// -----------------------------------------------------------------------------
+
+std::array<int, 8> linear_hex_local_to_global(const poly_fem::Mesh3D &mesh, int c) {
+	assert(mesh.n_element_vertices(c) == 8);
+	assert(mesh.n_element_faces(c) == 6);
+
+	// Vertex nodes
+	std::array<int, 8> l2g;
+	int lv = 0;
+	for (int vi : mesh.get_ordered_vertices_from_hex(c)) {
+		l2g[lv++] = vi;
 	}
-	return p / ids.size();
+
+	return l2g;
+}
+
+// -----------------------------------------------------------------------------
+
+std::array<int, 27> quadr_hex_local_to_global(const poly_fem::Mesh3D &mesh, int c) {
+	assert(mesh.n_element_vertices(c) == 8);
+	assert(mesh.n_element_faces(c) == 6);
+
+	int e_offset = mesh.n_pts();
+	int f_offset = e_offset + mesh.n_edges();
+	int c_offset = f_offset + mesh.n_faces();
+
+	// Vertex nodes
+	auto v = linear_hex_local_to_global(mesh, c);
+
+	// Edge nodes
+	Eigen::Matrix<int, 12, 1> e;
+	Eigen::Matrix<int, 12, 2> ev;
+	ev.row(0)  << v[0], v[1];
+	ev.row(1)  << v[1], v[2];
+	ev.row(2)  << v[2], v[3];
+	ev.row(3)  << v[3], v[0];
+	ev.row(4)  << v[0], v[4];
+	ev.row(5)  << v[1], v[5];
+	ev.row(6)  << v[2], v[6];
+	ev.row(7)  << v[3], v[7];
+	ev.row(8)  << v[4], v[5];
+	ev.row(9)  << v[5], v[6];
+	ev.row(10) << v[6], v[7];
+	ev.row(11) << v[7], v[4];
+	for (int le = 0; le < e.rows(); ++le) {
+		e[le] = find_edge(mesh, c, ev(le, 0), ev(le, 1));
+	}
+
+	// Face nodes
+	Eigen::Matrix<int, 6, 1> f;
+	Eigen::Matrix<int, 6, 4> fv;
+	fv.row(0) << v[0], v[3], v[4], v[7];
+	fv.row(1) << v[1], v[2], v[5], v[6];
+	fv.row(2) << v[0], v[1], v[5], v[4];
+	fv.row(3) << v[3], v[2], v[6], v[7];
+	fv.row(4) << v[0], v[1], v[2], v[3];
+	fv.row(5) << v[4], v[5], v[6], v[7];
+	for (int lf = 0; lf < f.rows(); ++lf) {
+		f[lf] = find_face(mesh, c, fv(lf, 0), fv(lf, 1), fv(lf, 2), fv(lf, 3));
+	}
+
+	// Local to global mapping of node indices
+	std::array<int, 27> l2g;
+
+	// Assign global ids to local nodes
+	{
+		int i = 0;
+		for (size_t lv = 0; lv < v.size(); ++lv) {
+			l2g[i++] = v[lv];
+		}
+		for (int le = 0; le < e.rows(); ++le) {
+			l2g[i++] = e_offset + e[le];
+		}
+		for (int lf = 0; lf < f.rows(); ++lf) {
+			l2g[i++] = f_offset + f[lf];
+		}
+		l2g[i++] = c_offset + c;
+	}
+
+	return l2g;
 }
 
 // -----------------------------------------------------------------------------
 
 ///
-/// @brief      Compute the list of global nodes for the mesh. If discr_order is
-///             1 then this is the same as the vertices of the input mesh. If
-///             discr_order is 2, then nodes are inserted in the middle of each
-///             simplex (edge, facet, cell), and node per elements are numbered
-///             accordingly.
+/// @brief      Compute the list of global nodes for the mesh. If discr_order is 1 then this is the
+///             same as the vertices of the input mesh. If discr_order is 2, then nodes are inserted
+///             in the middle of each simplex (edge, facet, cell), and node per elements are
+///             numbered accordingly.
 ///
-/// @param[in]  mesh              The input mesh
-/// @param[in]  discr_order       The discretization order
-/// @param[out] nodes             The node positions
-/// @param[out] boundary_nodes    List of boundary node indices
-/// @param[out] element_nodes_id  List of node indices per element
-/// @param[out] local_boundary    Which facet of the element are on the boundary
+/// @param[in]  mesh               The input mesh
+/// @param[in]  discr_order        The discretization order
+/// @param[out] nodes              The node positions
+/// @param[out] boundary_nodes     List of boundary node indices
+/// @param[out] element_nodes_id   List of node indices per element
+/// @param[out] local_boundary     Which facet of the element are on the boundary
+/// @param[out] poly_face_to_data  Data for faces at the interface with a polyhedra
 ///
 void compute_nodes(
 	const poly_fem::Mesh3D &mesh,
 	const int discr_order,
-	Eigen::MatrixXd &nodes,
+	std::vector<Eigen::RowVector3d> &nodes,
 	std::vector<int> &boundary_nodes,
 	std::vector<std::vector<int> > &element_nodes_id,
-	std::vector<poly_fem::LocalBoundary> &local_boundary)
+	std::vector<poly_fem::LocalBoundary> &local_boundary,
+	std::map<int, poly_fem::InterfaceData> &poly_face_to_data)
 {
-	if (discr_order == 1) {
-		// Compute node positions + whether it is a boundary node
-		nodes.resize(mesh.n_pts(), 3);
-		Eigen::MatrixXd tmp(1, 3);
+	const int n_nodes = mesh.n_pts() + (discr_order > 1 ? mesh.n_edges() + mesh.n_faces() + mesh.n_elements() : 0);
+	const int e_offset = mesh.n_pts();
+	const int f_offset = e_offset + mesh.n_edges();
+	const int c_offset = f_offset + mesh.n_faces();
+	Eigen::MatrixXd all_nodes(n_nodes, 3);
+	std::vector<bool> is_boundary(n_nodes, false);
+	std::vector<int> remapped_node(n_nodes, -1);
+
+	// Step 1: Compute all node positions + node boundary tag
+	{
 		for (int v = 0; v < mesh.n_pts(); ++v) {
-			if (mesh.is_boundary_vertex(v)) {
-				boundary_nodes.push_back(v);
-			}
-			mesh.point(v, tmp);
-			nodes.row(v) = tmp;
+			all_nodes.row(v) = mesh.point(v);
+			is_boundary[v] = mesh.is_boundary_vertex(v);
 		}
-		// Assign global ids to nodes
-		element_nodes_id.reserve(mesh.n_elements());
-		for (int c = 0; c < mesh.n_elements(); ++c) {
-			element_nodes_id.emplace_back();
-			assert(mesh.n_element_vertices(c) == 8);
-			assert(mesh.n_element_faces(c) == 6);
-			for (int lv = 0; lv < mesh.n_element_vertices(c); ++lv) {
-				element_nodes_id.back().push_back(mesh.vertex_global_index(c, lv));
+		if (discr_order > 1) {
+			Eigen::MatrixXd bary;
+			mesh.edge_barycenters(bary);
+			for (int e = 0; e < mesh.n_edges(); ++e) {
+				all_nodes.row(e_offset + e) = bary.row(e);
+				is_boundary[e_offset + e] = mesh.is_boundary_edge(e);
 			}
-		}
-
-		// Compute boundary facets
-		local_boundary.clear();
-		local_boundary.resize(mesh.n_elements());
-		for (int c = 0; c < mesh.n_elements(); ++c) {
-			// Vertices
-			Eigen::Matrix<int, 8, 1> v;
-			{
-				int lv = 0;
-				for (int vi : mesh.get_ordered_vertices_from_hex(c)) {
-					v[lv++] = vi;
-				}
+			mesh.face_barycenters(bary);
+			for (int f = 0; f < mesh.n_faces(); ++f) {
+				all_nodes.row(f_offset + f) = bary.row(f);
+				is_boundary[f_offset + f] = mesh.is_boundary_face(f);
 			}
-
-			// Faces
-			Eigen::Matrix<int, 6, 1> f;
-			Eigen::Matrix<int, 6, 4> fv;
-			fv.row(0) << v[0], v[3], v[4], v[7];
-			fv.row(1) << v[1], v[2], v[5], v[6];
-			fv.row(2) << v[0], v[1], v[5], v[4];
-			fv.row(3) << v[3], v[2], v[6], v[7];
-			fv.row(4) << v[0], v[1], v[2], v[3];
-			fv.row(5) << v[4], v[5], v[6], v[7];
-			for (int lf = 0; lf < f.rows(); ++lf) {
-				f[lf] = find_face(mesh, c, fv(lf, 0), fv(lf, 1), fv(lf, 2), fv(lf, 3));
-			}
-
-			// Set boundary faces
-			if (mesh.is_boundary_face(f[0])) {
-				local_boundary[c].set_left_edge_id(f[0]);
-				local_boundary[c].set_left_boundary();
-			}
-			if (mesh.is_boundary_face(f[1])) {
-				local_boundary[c].set_right_edge_id(f[1]);
-				local_boundary[c].set_right_boundary();
-			}
-			if (mesh.is_boundary_face(f[2])) {
-				local_boundary[c].set_front_edge_id(f[2]);
-				local_boundary[c].set_front_boundary();
-			}
-			if (mesh.is_boundary_face(f[3])) {
-				local_boundary[c].set_back_edge_id(f[3]);
-				local_boundary[c].set_back_boundary();
-			}
-			if (mesh.is_boundary_face(f[4])) {
-				local_boundary[c].set_bottom_edge_id(f[4]);
-				local_boundary[c].set_bottom_boundary();
-			}
-			if (mesh.is_boundary_face(f[5])) {
-				local_boundary[c].set_top_edge_id(f[5]);
-				local_boundary[c].set_top_boundary();
+			mesh.cell_barycenters(bary);
+			for (int c = 0; c < mesh.n_elements(); ++c) {
+				all_nodes.row(c_offset + c) = bary.row(c);
+				is_boundary[c_offset + c] = false;
 			}
 		}
-	} else if (discr_order == 2) {
-		int e_offset = mesh.n_pts();
-		int f_offset = e_offset + mesh.n_edges();
-		int c_offset = f_offset + mesh.n_faces();
-		int n_nodes = c_offset + mesh.n_elements();
-		nodes.resize(n_nodes, 3);
-		Eigen::MatrixXd tmp(1, 3);
-		element_nodes_id.reserve(mesh.n_elements());
-		local_boundary.clear();
-		local_boundary.resize(mesh.n_elements());
-		for (int c = 0; c < mesh.n_elements(); ++c) {
-			assert(mesh.n_element_vertices(c) == 8);
-			assert(mesh.n_element_faces(c) == 6);
-
-			// Corner node positions + boundary tags
-			Eigen::Matrix<int, 8, 1> v;
-			{
-				int lv = 0;
-				for (int vi : mesh.get_ordered_vertices_from_hex(c)) {
-					v[lv++] = vi;
-				}
-			}
-			for (int lv = 0; lv < v.rows(); ++lv) {
-				mesh.point(v[lv], tmp);
-				nodes.row(v[lv]) = tmp;
-				if (mesh.is_boundary_vertex(v[lv])) {
-					boundary_nodes.push_back(v[lv]);
-				}
-			}
-
-			// Edge node positions + boundary tags
-			Eigen::Matrix<int, 12, 1> e;
-			Eigen::Matrix<int, 12, 2> ev;
-			ev.row(0)  << v[0], v[1];
-			ev.row(1)  << v[1], v[2];
-			ev.row(2)  << v[2], v[3];
-			ev.row(3)  << v[3], v[0];
-			ev.row(4)  << v[0], v[4];
-			ev.row(5)  << v[1], v[5];
-			ev.row(6)  << v[2], v[6];
-			ev.row(7)  << v[3], v[7];
-			ev.row(8)  << v[4], v[5];
-			ev.row(9)  << v[5], v[6];
-			ev.row(10) << v[6], v[7];
-			ev.row(11) << v[7], v[4];
-			for (int le = 0; le < e.rows(); ++le) {
-				e[le] = find_edge(mesh, c, ev(le, 0), ev(le, 1));
-				nodes.row(e_offset + e[le]) = barycenter(nodes, {{ ev(le, 0), ev(le, 1) }});
-				if (mesh.is_boundary_edge(e[le])) {
-					boundary_nodes.push_back(e_offset + e[le]);
-				}
-			}
-
-			// Face node positions + boundary tags
-			Eigen::Matrix<int, 6, 1> f;
-			Eigen::Matrix<int, 6, 4> fv;
-			fv.row(0) << v[0], v[3], v[4], v[7];
-			fv.row(1) << v[1], v[2], v[5], v[6];
-			fv.row(2) << v[0], v[1], v[5], v[4];
-			fv.row(3) << v[3], v[2], v[6], v[7];
-			fv.row(4) << v[0], v[1], v[2], v[3];
-			fv.row(5) << v[4], v[5], v[6], v[7];
-			for (int lf = 0; lf < f.rows(); ++lf) {
-				f[lf] = find_face(mesh, c, fv(lf, 0), fv(lf, 1), fv(lf, 2), fv(lf, 3));
-				nodes.row(f_offset + f[lf]) = barycenter(nodes, {{ fv(lf, 0), fv(lf, 1), fv(lf, 2), fv(lf, 3) }});
-				if (mesh.is_boundary_face(f[lf])) {
-					boundary_nodes.push_back(f_offset + f[lf]);
-				}
-			}
-
-			// Cell node position
-			nodes.row(c_offset + c) = barycenter(nodes, {{ v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7] }});
-
-			// Assign global ids to nodes
-			element_nodes_id.emplace_back();
-			for (int lv = 0; lv < v.rows(); ++lv) {
-				element_nodes_id.back().push_back(v[lv]);
-			}
-			for (int le = 0; le < e.rows(); ++le) {
-				element_nodes_id.back().push_back(e_offset + e[le]);
-			}
-			for (int lf = 0; lf < f.rows(); ++lf) {
-				element_nodes_id.back().push_back(f_offset + f[lf]);
-			}
-			element_nodes_id.back().push_back(c_offset + c);
-
-			// Eigen::MatrixXd vv(27, 3);
-			// int cnt = 0;
-			// igl::viewer::Viewer viewer;
-			// for (int i : element_nodes_id.back()) {
-			// 	viewer.data.add_label(nodes.row(i), std::to_string(cnt));
-			// 	vv.row(cnt++) = nodes.row(i);
-			// }
-			// viewer.data.set_points(vv, Eigen::RowVector3d(0, 0, 0));
-			// viewer.core.align_camera_center(vv);
-			// viewer.core.set_rotation_type(igl::viewer::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
-			// viewer.launch();
-
-			// Set boundary faces
-			if (mesh.is_boundary_face(f[0])) {
-				local_boundary[c].set_left_edge_id(f[0]);
-				local_boundary[c].set_left_boundary();
-			}
-			if (mesh.is_boundary_face(f[1])) {
-				local_boundary[c].set_right_edge_id(f[1]);
-				local_boundary[c].set_right_boundary();
-			}
-			if (mesh.is_boundary_face(f[2])) {
-				local_boundary[c].set_front_edge_id(f[2]);
-				local_boundary[c].set_front_boundary();
-			}
-			if (mesh.is_boundary_face(f[3])) {
-				local_boundary[c].set_back_edge_id(f[3]);
-				local_boundary[c].set_back_boundary();
-			}
-			if (mesh.is_boundary_face(f[4])) {
-				local_boundary[c].set_bottom_edge_id(f[4]);
-				local_boundary[c].set_bottom_boundary();
-			}
-			if (mesh.is_boundary_face(f[5])) {
-				local_boundary[c].set_top_edge_id(f[5]);
-				local_boundary[c].set_top_boundary();
-			}
-		}
-	} else {
-		throw std::runtime_error("Not implemented");
 	}
 
-	// Sort + unique boundary nodes
-	std::sort(boundary_nodes.begin(), boundary_nodes.end());
-	auto it = std::unique(boundary_nodes.begin(), boundary_nodes.end());
-	boundary_nodes.resize(std::distance(boundary_nodes.begin(), it));
+	nodes.clear();
+	local_boundary.clear();
+	local_boundary.resize(mesh.n_elements());
+	element_nodes_id.resize(mesh.n_elements());
+
+	// Step 2: Keep only read real nodes + compute parametric boundary tag
+	for (int c = 0; c < mesh.n_elements(); ++c) {
+		bool is_hex = (mesh.n_element_vertices(c) == 8) && (mesh.n_element_faces(c) == 6);
+		if (!is_hex) { continue; } // Skip polytopes
+
+		// Create remapped node array for element
+		auto remap_nodes = [&] (auto l2g) {
+			std::vector<int> res;
+			res.reserve(l2g.size());
+			for (int id : l2g) {
+				if (remapped_node[id] < 0) {
+					remapped_node[id] = nodes.size();
+					Eigen::RowVector3d pos = all_nodes.row(id);
+					nodes.push_back(pos);
+					if (is_boundary[id]) {
+						boundary_nodes.push_back(remapped_node[id]);
+					}
+				}
+				res.push_back(remapped_node[id]);
+			}
+			return res;
+		};
+		if (discr_order == 1) {
+			element_nodes_id[c] = remap_nodes(linear_hex_local_to_global(mesh, c));
+		} else {
+			element_nodes_id[c] = remap_nodes(quadr_hex_local_to_global(mesh, c));
+		}
+
+		// List of faces around the quad
+		std::array<int, 6> f;
+		{
+			auto l2g = quadr_hex_local_to_global(mesh, c);
+			for (int lf = 0; lf < 6; ++lf) {
+				f[lf] = l2g[8+12+lf] - f_offset;
+			}
+		}
+
+		// Set boundary faces
+		if (mesh.is_boundary_face(f[0])) {
+			local_boundary[c].set_left_edge_id(f[0]);
+			local_boundary[c].set_left_boundary();
+		}
+		if (mesh.is_boundary_face(f[1])) {
+			local_boundary[c].set_right_edge_id(f[1]);
+			local_boundary[c].set_right_boundary();
+		}
+		if (mesh.is_boundary_face(f[2])) {
+			local_boundary[c].set_front_edge_id(f[2]);
+			local_boundary[c].set_front_boundary();
+		}
+		if (mesh.is_boundary_face(f[3])) {
+			local_boundary[c].set_back_edge_id(f[3]);
+			local_boundary[c].set_back_boundary();
+		}
+		if (mesh.is_boundary_face(f[4])) {
+			local_boundary[c].set_bottom_edge_id(f[4]);
+			local_boundary[c].set_bottom_boundary();
+		}
+		if (mesh.is_boundary_face(f[5])) {
+			local_boundary[c].set_top_edge_id(f[5]);
+			local_boundary[c].set_top_boundary();
+		}
+	}
+
+	// Step 3: Iterate over edges of polygons and compute interface weights
+	for (int f = 0; f < mesh.n_elements(); ++f) {
+		if (mesh.n_element_vertices(f) == 4) { continue; } // Skip quads
+
+		// auto index = mesh.get_index_from_face(f, 0);
+		// for (int lv = 0; lv < mesh.n_element_vertices(f); ++lv) {
+		// 	auto index2 = mesh.switch_face(index);
+		// 	if (index2.face >= 0) {
+		// 		// Opposite face is a quad, we need to set interface data
+		// 		int f2 = index2.face;
+		// 		assert(mesh.n_element_vertices(f2) == 4);
+		// 		auto abc = poly_fem::FEBasis3d::quadr_quad_edge_local_nodes(mesh, index2);
+		// 		poly_fem::InterfaceData data;
+		// 		data.element_id = index2.face;
+		// 		data.flag = local_edge_to_interface_flag[abc[1] - 4];
+		// 		if (discr_order == 2) {
+		// 			for (auto local_node : abc) {
+		// 				data.node_id.push_back(element_nodes_id[f2][local_node]);
+		// 			}
+		// 			data.local_indices.assign(abc.begin(), abc.end());
+		// 		} else {
+		// 			assert(discr_order == 1);
+		// 			auto ab = poly_fem::FEBasis2d::linear_quad_edge_local_nodes(mesh, index2);
+		// 			for (auto local_node : ab) {
+		// 				data.node_id.push_back(element_nodes_id[f2][local_node]);
+		// 			}
+		// 			data.local_indices.assign(ab.begin(), ab.end());
+		// 		}
+		// 		data.vals.assign(data.local_indices.size(), 1);
+		// 		poly_face_to_data[index2.edge] = data;
+		// 	}
+		// 	index = mesh.next_around_face(index);
+		// }
+	}
 }
 
 /*
@@ -669,13 +683,14 @@ int poly_fem::FEBasis3d::build_bases(
 	const int discr_order,
 	std::vector< ElementBases > &bases,
 	std::vector< LocalBoundary > &local_boundary,
-	std::vector< int > &boundary_nodes)
+	std::vector< int > &boundary_nodes,
+	std::map<int, InterfaceData> &poly_face_to_data)
 {
 	assert(mesh.is_volume());
 
-	Eigen::MatrixXd nodes;
+	std::vector<Eigen::RowVector3d> nodes;
 	std::vector<std::vector<int>> element_nodes_id;
-	compute_nodes(mesh, discr_order, nodes, boundary_nodes, element_nodes_id, local_boundary);
+	compute_nodes(mesh, discr_order, nodes, boundary_nodes, element_nodes_id, local_boundary, poly_face_to_data);
 
 	HexQuadrature hex_quadrature;
 	bases.resize(mesh.n_elements());
@@ -692,7 +707,7 @@ int poly_fem::FEBasis3d::build_bases(
 			for (int j = 0; j < n_el_bases; ++j) {
 				const int global_index = element_nodes_id[e][j];
 
-				b.bases[j].init(global_index, j, nodes.row(global_index));
+				b.bases[j].init(global_index, j, nodes[global_index]);
 
 				if (discr_order == 1) {
 					b.bases[j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
@@ -709,9 +724,10 @@ int poly_fem::FEBasis3d::build_bases(
 				}
 			}
 		} else {
-			assert(false);
+			// Polyhedra bases are built later on
+			// assert(false);
 		}
 	}
 
-	return (int) nodes.rows();
+	return (int) nodes.size();
 }

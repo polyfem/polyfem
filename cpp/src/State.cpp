@@ -266,15 +266,21 @@ namespace poly_fem
 
 		if(mesh->is_volume())
 		{
-			const Mesh3D &tmp_mesh = *static_cast<Mesh3D *>(mesh);
+			const Mesh3D &tmp_mesh = *dynamic_cast<Mesh3D *>(mesh);
 			if(use_splines)
 				n_bases = SplineBasis3d::build_bases(tmp_mesh, els_tag, quadrature_order, bases, local_boundary, boundary_nodes, polys);
-			else
-				n_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes);
+			else {
+				if (iso_parametric) {
+					n_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+				} else {
+					n_geom_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
+					n_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+				}
+			}
 		}
 		else
 		{
-			const Mesh2D &tmp_mesh = *static_cast<Mesh2D *>(mesh);
+			const Mesh2D &tmp_mesh = *dynamic_cast<Mesh2D *>(mesh);
 			if(use_splines){
 				if(iso_parametric)
 					n_bases = SplineBasis2d::build_bases(tmp_mesh, els_tag, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
@@ -679,7 +685,7 @@ namespace poly_fem
 	void State::compute_errors()
 	{
 		errors.clear();
-		
+
 		if(!problem.has_exact_sol()) return;
 
 		igl::Timer timer; timer.start();

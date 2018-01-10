@@ -17,24 +17,19 @@ namespace poly_fem
 	public:
 
 		///
-		/// @brief      Builds FE basis functions over the entire mesh (P1, P2
-		///             over triangles, Q1, Q2 over quads). Polygonal facets
-		///             with > 4 vertices are dealt later on by the
+		/// @brief      Builds FE basis functions over the entire mesh (P1, P2 over triangles, Q1,
+		///             Q2 over quads). Polygonal facets with > 4 vertices are dealt later on by the
 		///             PolygonalBasis2d class.
 		///
 		/// @param[in]  mesh               The input surface mesh
 		/// @param[in]  quadrature_order   The quadrature order
 		/// @param[in]  discr_order        The order of the elements (1 or 2)
 		/// @param[out] bases              List of basis functions per element
-		/// @param[out] local_boundary     List of descriptor per element,
-		///                                indicating which edge of the
-		///                                canonical elements lie on the
-		///                                boundary of the mesh
-		/// @param[out] boundary_nodes     List of nodes which are on the
-		///                                boundary of the mesh
-		/// @param[out] poly_edge_to_data  InterfaceData for edges at the
-		///                                interface with a polygon for harmonic
-		///                                basis
+		/// @param[out] local_boundary     List of descriptor per element, indicating which edge of
+		///                                the canonical elements lie on the boundary of the mesh
+		/// @param[out] boundary_nodes     List of nodes which are on the boundary of the mesh
+		/// @param[out] poly_edge_to_data  Data for edges at the interface with a polygon (used to
+		///                                build the harmonics inside polygons)
 		///
 		/// @return     The number of basis functions created.
 		///

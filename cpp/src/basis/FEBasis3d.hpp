@@ -4,6 +4,7 @@
 #include "ElementBases.hpp"
 #include "Mesh3D.hpp"
 #include "LocalBoundary.hpp"
+#include "InterfaceData.hpp"
 #include "Navigation3D.hpp"
 
 #include <Eigen/Dense>
@@ -18,15 +19,14 @@ namespace poly_fem
 		///
 		/// @brief      Builds FE basis functions over the entire mesh (Q1, Q2).
 		///
-		/// @param[in]  mesh              The input volume mesh
-		/// @param[in]  quadrature_order  The quadrature order
-		/// @param[in]  discr_order       The order of the elements (1 or 2)
-		/// @param[out] bases             List of basis functions per element
-		/// @param[out] local_boundary    List of descriptor per element,
-		///                               indicating which facet of the
-		///                               canonical hex lie on the boundary of
-		///                               the mesh
-		/// @param[out] boundary_nodes    List of dofs which are on the boundary
+		/// @param[in]  mesh               The input volume mesh
+		/// @param[in]  quadrature_order   The quadrature order
+		/// @param[in]  discr_order        The order of the elements (1 or 2)
+		/// @param[out] bases              List of basis functions per element
+		/// @param[out] local_boundary     List of descriptor per element, indicating which facet of
+		///                                the canonical hex lie on the boundary of the mesh
+		/// @param[out] boundary_nodes     List of dofs which are on the boundary
+		/// @param      poly_face_to_data  Data for faces at the interface with a polyhedra
 		///
 		/// @return     The number of basis functions created.
 		///
@@ -36,7 +36,8 @@ namespace poly_fem
 			const int discr_order,
 			std::vector< ElementBases > &bases,
 			std::vector< LocalBoundary > &local_boundary,
-			std::vector< int > &boundary_nodes);
+			std::vector< int > &boundary_nodes,
+			std::map<int, InterfaceData> &poly_face_to_data);
 
 		//	Given a 3d navigation index (v0, e0, f0, c0), this function returns
 		//	the local node indices on the face f0. If the Q2 nodes are labeled
