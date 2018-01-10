@@ -798,9 +798,9 @@ namespace poly_fem
 			state.compute_assembly_vals();
 
 			if(skip_visualization) return;
-			clear_func();
-			show_mesh_func();
-			show_quadrature_func();
+			// clear_func();
+			// show_mesh_func();
+			// show_quadrature_func();
 		};
 
 		auto assemble_stiffness_mat_func = [&]() {

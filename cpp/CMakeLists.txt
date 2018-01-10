@@ -144,6 +144,8 @@ add_library(polyfem
 	src/basis/SplineBasis3d.cpp
 	src/basis/SplineBasis3d.hpp
 
+	src/basis/PolygonalBasis3d.cpp
+	src/basis/PolygonalBasis3d.hpp
 
 	src/basis/function/QuadraticBSpline.cpp
 	src/basis/function/QuadraticBSpline.hpp

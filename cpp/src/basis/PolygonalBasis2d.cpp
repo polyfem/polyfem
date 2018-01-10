@@ -223,10 +223,8 @@ void PolygonalBasis2d::build_bases(
 	Eigen::MatrixXd basis_integrals;
 	compute_integral_constraints(mesh, n_bases, values, gvalues, basis_integrals);
 
+	// Step 2: Compute the rest =)
 	PolygonQuadrature poly_quadr;
-	Eigen::Matrix2d det_mat;
-	Eigen::MatrixXd p0, p1;
-
 	for (int e = 0; e < mesh.n_elements(); ++e) {
 		if (element_type[e] != ElementType::InteriorPolytope && element_type[e] != ElementType::BoundaryPolytope) {
 			continue;

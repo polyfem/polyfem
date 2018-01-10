@@ -13,6 +13,7 @@
 #include "HexBoundarySampler.hpp"
 
 #include "PolygonalBasis2d.hpp"
+#include "PolygonalBasis3d.hpp"
 
 #include "Assembler.hpp"
 #include "RhsAssembler.hpp"
@@ -463,11 +464,9 @@ namespace poly_fem
 			ElementAssemblyValues::compute_assembly_values(mesh->is_volume(), bases, values);
 
 			if(mesh->is_volume()) {
-				if(!poly_edge_to_data.empty()) {
-					assert(false);
-				}
+				PolygonalBasis3d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh3D *>(mesh), n_bases, els_tag, quadrature_order, values, values, bases, bases, poly_edge_to_data, polys_3d);
 			} else {
-				PolygonalBasis2d::build_bases(harmonic_samples_res, *static_cast<Mesh2D *>(mesh), n_bases, els_tag, quadrature_order, values, values, bases, bases, poly_edge_to_data, polys);
+				PolygonalBasis2d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh2D *>(mesh), n_bases, els_tag, quadrature_order, values, values, bases, bases, poly_edge_to_data, polys);
 			}
 
 			for(std::size_t e = 0; e < bases.size(); ++e) {
@@ -485,11 +484,10 @@ namespace poly_fem
 
 			if(mesh->is_volume())
 			{
-				if(!poly_edge_to_data.empty())
-					assert(false);
+				PolygonalBasis3d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh3D *>(mesh), n_bases, els_tag, quadrature_order, values, values, bases, bases, poly_edge_to_data, polys_3d);
 			}
 			else
-				PolygonalBasis2d::build_bases(harmonic_samples_res, *static_cast<Mesh2D *>(mesh), n_bases, els_tag, quadrature_order, values, geom_values, bases, geom_bases, poly_edge_to_data, polys);
+				PolygonalBasis2d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh2D *>(mesh), n_bases, els_tag, quadrature_order, values, geom_values, bases, geom_bases, poly_edge_to_data, polys);
 
 			for(std::size_t e = 0; e < bases.size(); ++e)
 			{
