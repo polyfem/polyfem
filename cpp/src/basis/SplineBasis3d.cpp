@@ -69,17 +69,27 @@ namespace poly_fem
         {
             std::vector<int> ids;
             mesh.get_edge_elements_neighs(index.edge, ids);
-            return ids.size() != 4 && !mesh.is_boundary_edge(index.edge);
+
+            if(ids.size() == 4 || mesh.is_boundary_edge(index.edge))
+                return false;
+
+            for(auto idx : ids)
+            {
+                if(mesh.is_poly_boundary_face(idx))
+                    return false;
+            }
+
+            return true;
         }
 
 
         bool is_spline_compatible(const std::vector<ElementType> &els_tag, const int el_id)
         {
             return
-                els_tag[el_id] == ElementType::RegularInteriorCube ||
-                els_tag[el_id] == ElementType::RegularBoundaryCube ||
-                els_tag[el_id] == ElementType::SimpleSingularInteriorCube ||
-                els_tag[el_id] == ElementType::SimpleSingularBoundaryCube;
+            els_tag[el_id] == ElementType::RegularInteriorCube ||
+            els_tag[el_id] == ElementType::RegularBoundaryCube ||
+            els_tag[el_id] == ElementType::SimpleSingularInteriorCube ||
+            els_tag[el_id] == ElementType::SimpleSingularBoundaryCube;
         }
 
 
@@ -122,11 +132,11 @@ namespace poly_fem
             space(x, y, z).push_back(node_id);
             node(x, y, z).push_back(mesh.node_from_edge_index(index));
 
-            std::vector<int> ids;
-            mesh.get_edge_elements_neighs(index.edge, ids);
 
             if(is_edge_singular(index, mesh))
             {
+                std::vector<int> ids;
+                mesh.get_edge_elements_neighs(index.edge, ids);
                 //irregular edge
                 space(x, y, z).push_back(index.edge);
                 node(x, y, z).push_back(mesh.node_from_edge_index(index));
@@ -178,13 +188,12 @@ namespace poly_fem
                 }
                 else
                 {
-            //         BoundaryData &data = poly_edge_to_data[index.edge];
-            //         // data.face_id = el_index;
-            //         data.face_id = index.face;
-            //         data.node_id.push_back(node_id);
-            //         data.flag = b_flag;
-            //         data.x.push_back(x);
-            //         data.y.push_back(y);
+                    InterfaceData &data = poly_edge_to_data[index.face];
+                    data.element_id = index.element;
+                    data.node_id.push_back(node_id);
+                    data.flag = b_flag;
+                    data.local_indices.push_back(9*z + 3*y + x);
+                    data.vals.push_back(1);
                 }
             }
         }
@@ -876,9 +885,43 @@ namespace poly_fem
                     }
                 }
             }
+        }
 
+        void setup_data_for_polygons(const Mesh3D &mesh, const int el_index, const ElementBases &b, std::map<int, InterfaceData> &poly_edge_to_data)
+        {
+            const Navigation3D::Index start_index = mesh.get_index_from_element(el_index);
+            std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 6> to_face;
+            mesh.to_face_functions(to_face);
+            for (int f = 0; f < 6; ++f)
+            {
+                const Navigation3D::Index index = to_face[f](start_index);
+                const int opposite_face = mesh.switch_face(index).face;
+                const bool is_neigh_poly = (opposite_face >= 0 && mesh.n_element_vertices(opposite_face) > 8);
+
+                if(is_neigh_poly)
+                {
+                    int b_flag;
+
+                    auto e2l = FEBasis3d::quadr_hex_face_local_nodes(mesh, index);
+
+                    InterfaceData &data = poly_edge_to_data[index.face];
+                    data.element_id = index.element;
+
+                    for(auto idx : e2l)
+                    {
+                        const auto &bases = b.bases[idx];
+                        for(std::size_t i = 0; i < bases.global().size(); ++i)
+                        {
+                            data.node_id.push_back(bases.global()[i].index);
+                            data.local_indices.push_back(idx);
+                            data.vals.push_back(bases.global()[i].val);
+                        }
+                    }
+                }
+            }
         }
     }
+
 
 
     int SplineBasis3d::build_bases(const Mesh3D &mesh, const std::vector<ElementType> &els_tag, const int quadrature_order, std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &bounday_nodes, std::map<int, Eigen::MatrixXd> &polys)
@@ -964,13 +1007,13 @@ namespace poly_fem
             assign_q2_weights(mesh, els_tag, e, bases);
         }
 
-        // for(int e = 0; e < n_els; ++e)
-        // {
-        //     if(!is_q2(els_tag, e))
-        //         continue;
-        //     const ElementBases &b=bases[e];
-        //     setup_data_for_polygons(mesh, e, b, poly_edge_to_data);
-        // }
+        for(int e = 0; e < n_els; ++e)
+        {
+            if(!is_q2(els_tag, e))
+                continue;
+            const ElementBases &b=bases[e];
+            setup_data_for_polygons(mesh, e, b, poly_edge_to_data);
+        }
 
         return n_bases+1;
     }
