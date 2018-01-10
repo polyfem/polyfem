@@ -54,7 +54,7 @@ namespace poly_fem
 		}
 	}
 
-	void UIState::plot_selection_and_index()
+	void UIState::plot_selection_and_index(const bool recenter)
 	{
 		std::vector<bool> valid_elements(normalized_barycenter.rows(), false);
 		auto v{explode(selected_elements, ',')};
@@ -64,7 +64,7 @@ namespace poly_fem
 		viewer.data.clear();
 
 
-		const long n_tris = show_clipped_elements(tri_pts, tri_faces, element_ranges, valid_elements);
+		const long n_tris = show_clipped_elements(tri_pts, tri_faces, element_ranges, valid_elements, recenter);
 		color_mesh(n_tris, valid_elements);
 
 		if(state.mesh->is_volume())
@@ -168,7 +168,7 @@ namespace poly_fem
 		return show_clipped_elements(pts, tris, ranges, valid_elements);
 	}
 
-	long UIState::show_clipped_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, const std::vector<bool> &valid_elements)
+	long UIState::show_clipped_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, const std::vector<bool> &valid_elements, const bool recenter)
 	{
 		viewer.data.set_face_based(false);
 
@@ -205,6 +205,8 @@ namespace poly_fem
 			viewer.data.set_normals(normals);
 		}
 
+		if(recenter)
+			viewer.core.align_camera_center(pts, valid_tri);
 		return valid_tri.rows();
 	}
 
@@ -981,7 +983,7 @@ namespace poly_fem
 					std::cout<<"e:"<<current_3d_index.element<<" f:"<<current_3d_index.face<<" e:"<<current_3d_index.edge<<" v:"<<current_3d_index.vertex<<std::endl;
 				}
 
-				plot_selection_and_index();
+				plot_selection_and_index(true);
 			});
 
 			viewer_.ngui->addButton("Swith vertex", [&]{

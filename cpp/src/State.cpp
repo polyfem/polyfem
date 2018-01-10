@@ -608,7 +608,7 @@ namespace poly_fem
 		sol.resize(0, 0);
 
 		igl::Timer timer; timer.start();
-		std::cout<<"Solving ";
+		std::cout<<"Solving..."<<std::flush;
 
 // #ifndef POLY_FEM_WITH_SUPERLU
 // 		typedef SparseMatrix<double> SolverMat;
@@ -655,7 +655,7 @@ namespace poly_fem
 		sol.resize(0, 0);
 
 		igl::Timer timer; timer.start();
-		std::cout<<"Solving ";
+		std::cout<<"Solving... "<<std::flush;
 
 		json params = {
 			{"mtype", 2}, // matrix type for Pardiso (2 = SPD)

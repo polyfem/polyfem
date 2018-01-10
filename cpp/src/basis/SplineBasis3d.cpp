@@ -77,9 +77,9 @@ namespace poly_fem
         {
             return
                 els_tag[el_id] == ElementType::RegularInteriorCube ||
-                els_tag[el_id] == ElementType::RegularBoundaryCube ||
-                els_tag[el_id] == ElementType::SimpleSingularInteriorCube ||
-                els_tag[el_id] == ElementType::SimpleSingularBoundaryCube;
+                els_tag[el_id] == ElementType::RegularBoundaryCube; //||
+                // els_tag[el_id] == ElementType::SimpleSingularInteriorCube ||
+                // els_tag[el_id] == ElementType::SimpleSingularBoundaryCube;
         }
 
 

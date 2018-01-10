@@ -68,9 +68,9 @@ namespace poly_fem
 		void interpolate_function(const Eigen::MatrixXd &fun, Eigen::MatrixXd &result);
 
 		long clip_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, std::vector<bool> &valid_elements);
-		long show_clipped_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, const std::vector<bool> &valid_elements);
+		long show_clipped_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, const std::vector<bool> &valid_elements, const bool recenter = false);
 		void color_mesh(const int n_tris, const std::vector<bool> &valid_elements);
-		void plot_selection_and_index();
+		void plot_selection_and_index(const bool recenter = false);
 	};
 
 }
