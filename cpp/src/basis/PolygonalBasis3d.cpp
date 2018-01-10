@@ -72,24 +72,54 @@ void compute_canonical_pattern(int n_samples_per_edge, Eigen::MatrixXd &V, Eigen
 
 // -----------------------------------------------------------------------------
 
+// Needs to be consistent between `evalFunc` and `compute_quad_mesh_from_cell`
+constexpr int lv0 = 3;
+
 // Assemble the surface quad mesh (V, F) corresponding to the polyhedron c
-void compute_quad_mesh_from_cell(const Mesh3D &mesh, int c, Eigen::MatrixXd &V, Eigen::MatrixXi &F) {
+GetAdjacentLocalEdge compute_quad_mesh_from_cell(
+	const Mesh3D &mesh, int c, Eigen::MatrixXd &V, Eigen::MatrixXi &F)
+{
 	std::vector<std::array<int, 4>> quads(mesh.n_element_faces(c));
-	std::map<int, int> global_to_local;
+	typedef std::tuple<int, int, bool> QuadLocalEdge;
+	std::vector<std::array<QuadLocalEdge, 4>> adj(mesh.n_element_faces(c));
 	int num_vertices = 0;
+	std::map<int, int> vertex_g2l;
+	std::map<int, int> face_g2l;
 	for (int lf = 0; lf < mesh.n_element_faces(c); ++lf) {
-		auto index = mesh.get_index_from_element(c, lf, 0);
+		face_g2l.emplace(mesh.get_index_from_element(c, lf, lv0).face, lf);
+	}
+	for (int lf = 0; lf < mesh.n_element_faces(c); ++lf) {
+		auto index = mesh.get_index_from_element(c, lf, lv0);
 		assert(mesh.n_face_vertices(index.face) == 4);
 		for (int lv = 0; lv < 4; ++lv) {
-			if (!global_to_local.count(index.vertex)) {
-				global_to_local.emplace(index.vertex, num_vertices++);
+			if (!vertex_g2l.count(index.vertex)) {
+				vertex_g2l.emplace(index.vertex, num_vertices++);
 			}
-			quads[lf][lv] = global_to_local.at(index.vertex);
+			quads[lf][lv] = vertex_g2l.at(index.vertex);
+
+			// Set adjacency info
+			auto index2 = mesh.switch_face(index);
+			int lf2 = face_g2l.at(index2.face);
+			std::get<0>(adj[lf][lv]) = lf2;
+			auto index3 = mesh.get_index_from_element(c, lf2, lv0);
+			for (int lv2 = 0; lv2 < 4; ++lv2) {
+				if (index3.edge == index2.edge) {
+					std::get<1>(adj[lf][lv]) = lv2;
+					if (index2.vertex != index3.vertex) {
+						assert(mesh.switch_vertex(index3).vertex == index2.vertex);
+						std::get<2>(adj[lf][lv]) = true;
+					} else {
+						std::get<2>(adj[lf][lv]) = false;
+					}
+				}
+				index3 = mesh.next_around_face_of_element(index3);
+			}
+
 			index = mesh.next_around_face_of_element(index);
 		}
 	}
 	V.resize(num_vertices, 3);
-	for (const auto &kv : global_to_local) {
+	for (const auto &kv : vertex_g2l) {
 		V.row(kv.second) = mesh.point(kv.first);
 	}
 	F.resize(quads.size(), 4);
@@ -97,6 +127,10 @@ void compute_quad_mesh_from_cell(const Mesh3D &mesh, int c, Eigen::MatrixXd &V, 
 	for (auto q : quads) {
 		F.row(f++) << q[0], q[1], q[2], q[3];
 	}
+
+	return [adj](int q, int lv) {
+		return adj[q][lv];
+	};
 }
 
 // -----------------------------------------------------------------------------
@@ -156,14 +190,14 @@ void sample_polyhedra(
 	Eigen::MatrixXd &rhs)
 {
 	// Local ids of nonzero bases over the polygon
-	local_to_global = compute_nonzero_bases_ids(mesh, element_index, poly_face_to_data);
+	// local_to_global = compute_nonzero_bases_ids(mesh, element_index, poly_face_to_data);
 
 	// Compute the image of the canonical pattern vertices through the geometric mapping
 	// of the given local face
 	auto evalFunc = [&] (const Eigen::MatrixXd &uv, Eigen::MatrixXd &mapped, int lf) {
 		const auto & u = uv.col(0).array();
 		const auto & v = uv.col(1).array();
-		auto index = mesh.get_index_from_element(element_index, lf, 0);
+		auto index = mesh.get_index_from_element(element_index, lf, lv0);
 		index = mesh.switch_element(index);
 		Eigen::MatrixXd abcd = FEBasis3d::linear_hex_face_local_nodes_coordinates(mesh, index);
 		Eigen::RowVector3d a = abcd.row(0);
@@ -178,25 +212,38 @@ void sample_polyhedra(
 	auto evalFuncGeom = [&] (const Eigen::MatrixXd &uv, Eigen::MatrixXd &mapped, int lf) {
 		Eigen::MatrixXd samples;
 		evalFunc(uv, samples, lf);
-		auto index = mesh.get_index_from_element(element_index, lf, 0);
+		auto index = mesh.get_index_from_element(element_index, lf, lv0);
 		index = mesh.switch_element(index);
 		const ElementBases &gb=gbases[index.element];
 		gb.eval_geom_mapping(samples, mapped);
 	};
 
+	Eigen::MatrixXd QV;
+	Eigen::MatrixXi QF;
+	auto getAdjLocalEdge = compute_quad_mesh_from_cell(mesh, element_index, QV, QF);
+
 	// Compute collocation points
-	Eigen::MatrixXd QV, PV, OV, UV;
-	Eigen::MatrixXi QF, PF, OF, UF;
+	Eigen::MatrixXd PV, UV;
+	Eigen::MatrixXi PF, UF;
 	Eigen::VectorXi uv_sources, uv_ranges;
-	compute_quad_mesh_from_cell(mesh, element_index, QV, QF);
 	compute_canonical_pattern(n_samples_per_edge, PV, PF);
-	instanciate_pattern(QV, QF, PV, PF, UV, UF, &uv_sources, evalFunc);
-	instanciate_pattern(QV, QF, PV, PF, collocation_points, collocation_faces, nullptr, evalFuncGeom);
+	instanciate_pattern(QV, QF, PV, PF, UV, UF, &uv_sources, evalFunc, getAdjLocalEdge);
+	instanciate_pattern(QV, QF, PV, PF, collocation_points, collocation_faces, nullptr,
+		evalFuncGeom, getAdjLocalEdge);
 	reorder_mesh(UV, UF, uv_sources, uv_ranges);
 	assert(uv_ranges.size() == mesh.n_element_faces(element_index) + 1);
 
 	// Compute kernel centers
 	compute_offset_kernels(QV, QF, n_kernels_per_edge, eps, kernel_centers, evalFuncGeom);
+
+	{
+		Eigen::MatrixXd V;
+		evalFuncGeom(PV, V, 0);
+		igl::viewer::Viewer viewer;
+		// viewer.data.set_points(QV, Eigen::RowVector3d(0,0,1));
+		viewer.data.set_mesh(collocation_points, collocation_faces);
+		viewer.launch();
+	}
 
 	// igl::viewer::Viewer viewer;
 	// viewer.data.set_mesh(UV, UF);
@@ -207,6 +254,8 @@ void sample_polyhedra(
 	// 	viewer.data.add_points(samples, c);
 	// }
 	// viewer.launch();
+
+	return;
 
 	// Compute right-hand side constraints for setting the harmonic kernels
 	Eigen::MatrixXd samples, basis_val;

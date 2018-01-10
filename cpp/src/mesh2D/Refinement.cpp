@@ -224,15 +224,11 @@ Eigen::VectorXi vertex_degree(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F
 ////////////////////////////////////////////////////////////////////////////////
 
 bool poly_fem::instanciate_pattern(
-	const Eigen::MatrixXd &IV, const Eigen::MatrixXi &IF,
+	const Eigen::MatrixXd &IV, const Eigen::MatrixXi &IQ,
 	const Eigen::MatrixXd &PV, const Eigen::MatrixXi &PF,
-	Eigen::MatrixXd &OV, Eigen::MatrixXi &OF,
-	Eigen::VectorXi *SF,
-	EvalParametersFunc evalFunc)
+	Eigen::MatrixXd &OV, Eigen::MatrixXi &OF, Eigen::VectorXi *SF,
+	EvalParametersFunc evalFunc, GetAdjacentLocalEdge getAdjLocalEdge)
 {
-	// Copy input quads (may be reordered)
-	Eigen::MatrixXi IQ = IF;
-
 	// List of vertices along each border (from lv to (lv+1)%4)
 	std::array<Eigen::VectorXi, 4> border_vertices;
 
@@ -264,13 +260,6 @@ bool poly_fem::instanciate_pattern(
 	auto lower = PV.colwise().minCoeff();
 	auto upper = PV.colwise().maxCoeff();
 	Eigen::MatrixXd PVN = (PV.rowwise() - lower).array().rowwise() / (upper - lower).cwiseMax(1e-5).array();
-
-	// Number edges of the input quad mesh
-	Eigen::MatrixXi edge_index;
-	std::vector<std::vector<int>> adj;
-	std::vector<std::pair<int, int>> pairs_of_edges;
-	std::vector<std::pair<int, int>> pairs_of_quads;
-	edge_adjacency_graph(IQ, edge_index, adj, &pairs_of_edges, &pairs_of_quads);
 
 	// If the eval function is undefined, don't do any remapping
 	if (!evalFunc) {
@@ -316,34 +305,59 @@ bool poly_fem::instanciate_pattern(
 		return std::make_pair(std::min(x, y), std::max(x, y));
 	};
 
-	// Stitch vertices from adjacent quads
-	for (const auto &qq : pairs_of_quads) {
-		int q1 = qq.first;
-		int q2 = qq.second;
-		if (q2 > q1) { std::swap(q1, q2); }
-		const int v1 = (int) PVN.rows() * q1;
-		const int v2 = (int) PVN.rows() * q2;
-		int lv1 = 0;
-		int lv2 = 0;
-		for (; lv1 < 4; ++lv1) {
-			int x1 = IQ(q1, lv1);
-			int y1 = IQ(q1, (lv1+1)%4);
-			for (lv2 = 0; lv2 < 4; ++lv2) {
-				int x2 = IQ(q2, lv2);
-				int y2 = IQ(q2, (lv2+1)%4);
-				if (min_max(x1, y1) == min_max(x2, y2)) {
-					int e = edge_index(q1, lv1);
-					// tfm::printf("quads: (%s, %s) and (%s, %s)\n", q1, lv1, q2, lv2);
-					// tfm::printf("└ edge: %s-%s (id: %e)\n", x1, y1, e);
-					assert(edge_index(q2, lv2) == e);
-					Eigen::VectorXi side1 = border_vertices[lv1].array() + v1;
-					Eigen::VectorXi side2 = border_vertices[lv2].array() + v2;
-					if (x1 > y1) { side1.reverseInPlace(); }
-					if (x2 > y2) { side2.reverseInPlace(); }
-					for (int ii = 0; ii < (int) side1.size(); ++ii) {
-						remap(side2[ii]) = side1[ii];
+	if (getAdjLocalEdge) {
+		// Adjacency function has already been provided
+		for (int q1 = 0; q1 < IQ.rows(); ++q1) {
+			const int v1 = (int) PVN.rows() * q1;
+			for (int lv1 = 0; lv1 < 4; ++lv1) {
+				const auto res = getAdjLocalEdge(q1, lv1);
+				const int q2 = std::get<0>(res);
+				const int v2 = (int) PVN.rows() * q2;
+				const int lv2 = std::get<1>(res);
+				const bool rev = std::get<2>(res);
+				Eigen::VectorXi side1 = border_vertices[lv1].array() + v1;
+				Eigen::VectorXi side2 = border_vertices[lv2].array() + v2;
+				if (rev) { side2.reverseInPlace(); }
+				for (int ii = 0; ii < (int) side1.size(); ++ii) {
+					remap(side2[ii]) = side1[ii];
+				}
+			}
+		}
+	} else {
+		// Compute adjacency info on the quad mesh
+		Eigen::MatrixXi edge_index;
+		std::vector<std::vector<int>> adj;
+		std::vector<std::pair<int, int>> pairs_of_quads;
+		edge_adjacency_graph(IQ, edge_index, adj, nullptr, &pairs_of_quads);
+		// Stitch vertices from adjacent quads
+		for (const auto &qq : pairs_of_quads) {
+			int q1 = qq.first;
+			int q2 = qq.second;
+			if (q2 > q1) { std::swap(q1, q2); }
+			const int v1 = (int) PVN.rows() * q1;
+			const int v2 = (int) PVN.rows() * q2;
+			int lv1 = 0;
+			int lv2 = 0;
+			for (; lv1 < 4; ++lv1) {
+				int x1 = IQ(q1, lv1);
+				int y1 = IQ(q1, (lv1+1)%4);
+				for (lv2 = 0; lv2 < 4; ++lv2) {
+					int x2 = IQ(q2, lv2);
+					int y2 = IQ(q2, (lv2+1)%4);
+					if (min_max(x1, y1) == min_max(x2, y2)) {
+						int e = edge_index(q1, lv1);
+						// tfm::printf("quads: (%s, %s) and (%s, %s)\n", q1, lv1, q2, lv2);
+						// tfm::printf("└ edge: %s-%s (id: %e)\n", x1, y1, e);
+						assert(edge_index(q2, lv2) == e);
+						Eigen::VectorXi side1 = border_vertices[lv1].array() + v1;
+						Eigen::VectorXi side2 = border_vertices[lv2].array() + v2;
+						if (x1 > y1) { side1.reverseInPlace(); }
+						if (x2 > y2) { side2.reverseInPlace(); }
+						for (int ii = 0; ii < (int) side1.size(); ++ii) {
+							remap(side2[ii]) = side1[ii];
+						}
+						lv1 = 4; lv2 = 4;
 					}
-					lv1 = 4; lv2 = 4;
 				}
 			}
 		}
@@ -355,9 +369,6 @@ bool poly_fem::instanciate_pattern(
 			int ov = F(f, lv);
 			int nv = remap(ov);
 			F(f, lv) = nv;
-			// if (SF) {
-			// 	(*SF)(nv) = (*SF)(ov);
-			// }
 		}
 	}
 	Eigen::VectorXi I;
@@ -374,10 +385,6 @@ bool poly_fem::instanciate_pattern(
 			}
 		}
 	}
-
-	// Remove duplicate vertices
-	// Eigen::MatrixXi OVI, OVJ;
-	// igl::remove_duplicate_vertices(V, F, 0.0, OV, OVI, OVJ, OF);
 
 	return true;
 }

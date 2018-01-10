@@ -27,6 +27,7 @@ void edge_adjacency_graph(const Eigen::MatrixXi &Q, Eigen::MatrixXi &edge_index,
 	Eigen::MatrixXi *quad_index = nullptr);
 
 typedef std::function<void(const Eigen::MatrixXd &, Eigen::MatrixXd &, int)> EvalParametersFunc;
+typedef std::function<std::tuple<int, int, bool>(int, int)> GetAdjacentLocalEdge;
 
 // Instantiate a periodic 2D pattern (triangle-mesh) on a given quad mesh
 //
@@ -47,7 +48,8 @@ bool instanciate_pattern(
 	const Eigen::MatrixXd &PV, const Eigen::MatrixXi &PF,
 	Eigen::MatrixXd &OV, Eigen::MatrixXi &OF,
 	Eigen::VectorXi *SF = nullptr,
-	EvalParametersFunc evalFunc = nullptr);
+	EvalParametersFunc evalFunc = nullptr,
+	GetAdjacentLocalEdge getAdjLocalEdge = nullptr);
 
 //
 // Refine a quad-mesh by splitting each quad into 4 quads.
