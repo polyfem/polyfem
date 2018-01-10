@@ -58,12 +58,14 @@ void compute_offset_kernels(const Eigen::MatrixXd &polygon, int n_kernels, doubl
 	offset_polygon(polygon, offset, eps);
 	sample_polygon(offset, n_kernels, samples);
 	int n_inside = is_inside(polygon, samples, inside);
-	kernel_centers.resize(samples.rows() - n_inside, samples.cols());
-	for (int i = 0, j = 0; i < samples.rows(); ++i) {
-		if (!inside[i]) {
-			kernel_centers.row(j++) = samples.row(i);
-		}
-	}
+	assert(n_inside == 0);
+	kernel_centers = samples;
+	// kernel_centers.resize(samples.rows() - n_inside, samples.cols());
+	// for (int i = 0, j = 0; i < samples.rows(); ++i) {
+	// 	if (!inside[i]) {
+	// 		kernel_centers.row(j++) = samples.row(i);
+	// 	}
+	// }
 
 	// igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
 	// viewer.data.add_points(samples, Eigen::Vector3d(0,1,1).transpose());

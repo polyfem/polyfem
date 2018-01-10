@@ -2,6 +2,7 @@
 #include "PolygonalBasis3d.hpp"
 // #include "PolyhedronQuadrature.hpp"
 #include "FEBasis3d.hpp"
+#include "MeshUtils.hpp"
 #include "Refinement.hpp"
 #include "Harmonic.hpp"
 #include "UIState.hpp"
@@ -137,7 +138,7 @@ void sample_polyhedra(
 	Eigen::MatrixXd &rhs)
 {
 	// Local ids of nonzero bases over the polygon
-	// local_to_global = compute_nonzero_bases_ids(mesh, element_index, poly_face_to_data);
+	local_to_global = compute_nonzero_bases_ids(mesh, element_index, poly_face_to_data);
 
 	// Compute the image of the canonical pattern vertices through the geometric mapping
 	// of the given local face
@@ -151,50 +152,69 @@ void sample_polyhedra(
 		Eigen::RowVector3d b = abcd.row(1);
 		Eigen::RowVector3d c = abcd.row(2);
 		Eigen::RowVector3d d = abcd.row(3);
-		Eigen::MatrixXd samples =
-			((1-u)*(1-v)).matrix()*a
+		mapped = ((1-u)*(1-v)).matrix()*a
 			+ (u*(1-v)).matrix()*b
 			+ (u*v).matrix()*c
 			+ ((1-u)*v).matrix()*d;
+	};
+	auto evalFuncGeom = [&] (const Eigen::MatrixXd &uv, Eigen::MatrixXd &mapped, int lf) {
+		Eigen::MatrixXd samples;
+		evalFunc(uv, samples, lf);
+		auto index = mesh.get_index_from_element(element_index, lf, 0);
+		index = mesh.switch_element(index);
 		const ElementBases &gb=gbases[index.element];
 		gb.eval_geom_mapping(samples, mapped);
 	};
 
 	// Compute collocation points
-	Eigen::MatrixXd IV, PV, OV;
-	Eigen::MatrixXi IF, PF, OF;
-	Eigen::VectorXi collocation_sources;
+	Eigen::MatrixXd IV, PV, OV, UV;
+	Eigen::MatrixXi IF, PF, OF, UF;
+	Eigen::VectorXi uv_sources, uv_ranges;
 	compute_quad_mesh_from_cell(mesh, element_index, IV, IF);
 	compute_canonical_pattern(n_samples_per_edge, PV, PF);
-	instanciate_pattern(IV, IF, PV, PF, collocation_points, collocation_faces, &collocation_sources, evalFunc);
+	instanciate_pattern(IV, IF, PV, PF, UV, UF, &uv_sources, evalFunc);
+	instanciate_pattern(IV, IF, PV, PF, collocation_points, collocation_faces, nullptr, evalFuncGeom);
+	reorder_mesh(UV, UF, uv_sources, uv_ranges);
+	assert(uv_ranges.size() == mesh.n_element_faces(element_index) + 1);
 
 	// Compute kernel centers
 	// compute_offset_kernels(collocation_points, n_kernels, eps, kernel_centers);
 
+	// igl::viewer::Viewer viewer;
+	// viewer.data.set_mesh(UV, UF);
+	// for (int lf = 0; lf < mesh.n_element_faces(element_index); ++lf) {
+	// 	Eigen::MatrixXd samples;
+	// 	samples = UV.middleRows(uv_ranges(lf), uv_ranges(lf+1) - uv_ranges(lf));
+	// 	Eigen::RowVector3d c = Eigen::RowVector3d::Random();
+	// 	viewer.data.add_points(samples, c);
+	// }
+	// viewer.launch();
+
 	// Compute right-hand side constraints for setting the harmonic kernels
-	Eigen::MatrixXd samples, mapped, basis_val;
-	// rhs.resize(n_collocation_points, local_to_global.size());
-	// rhs.setZero();
+	Eigen::MatrixXd samples, basis_val;
+	rhs.resize(UV.rows(), local_to_global.size());
+	rhs.setZero();
 	for (int lf = 0; lf < mesh.n_element_faces(element_index); ++lf) {
 		auto index = mesh.get_index_from_element(element_index, lf, 0);
 		assert(mesh.switch_element(index).element >= 0); // no boundary polygons
 
-		// const InterfaceData &bdata = poly_face_to_data.at(index.edge);
-		// const ElementBases &b=bases[bdata.element_id];
+		const InterfaceData &bdata = poly_face_to_data.at(index.face);
+		const ElementBases &b=bases[bdata.element_id];
 
-		// assert(bdata.element_id == mesh.switch_face(index).face);
+		assert(bdata.element_id == mesh.switch_element(index).element);
 
-		// // Evaluate field basis and set up the rhs
-		// for(size_t bi = 0; bi < bdata.node_id.size(); ++bi) {
-		// 	const int local_index = bdata.local_indices[bi];
-		// 	const long local_basis_id = std::distance(local_to_global.begin(), std::find(local_to_global.begin(), local_to_global.end(), bdata.node_id[bi]));
+		// Evaluate field basis and set up the rhs
+		for(size_t bi = 0; bi < bdata.node_id.size(); ++bi) {
+			const int local_index = bdata.local_indices[bi];
+			const long local_basis_id = std::distance(local_to_global.begin(),
+				std::find(local_to_global.begin(), local_to_global.end(), bdata.node_id[bi]));
 
-		// 	b.bases[local_index].basis(samples, basis_val);
+			samples = UV.middleRows(uv_ranges(lf), uv_ranges(lf+1) - uv_ranges(lf));
+			b.bases[local_index].basis(samples, basis_val);
 
-		// 	rhs.block(i*(n_samples_per_edge-1), local_basis_id, basis_val.rows(), 1) += basis_val * bdata.vals[bi];
-		// }
-
-		// index = mesh.next_around_face(index);
+			MatrixXd m = basis_val * bdata.vals[bi];
+			rhs.block(uv_ranges(lf), local_basis_id, basis_val.rows(), 1) += basis_val * bdata.vals[bi];
+		}
 	}
 }
 
@@ -306,11 +326,12 @@ void PolygonalBasis3d::build_bases(
 		sample_polyhedra(e, n_samples_per_edge, mesh, poly_face_to_data, bases, gbases,
 			eps, local_to_global, collocation_points, collocation_faces, kernel_centers, rhs);
 
-		igl::viewer::Viewer viewer;
-		viewer.data.set_mesh(collocation_points, collocation_faces);
-		viewer.launch();
+		// igl::viewer::Viewer viewer;
+		// viewer.data.set_mesh(collocation_points, collocation_faces);
+		// viewer.launch();
 		// viewer.data.add_points(kernel_centers, Eigen::Vector3d(0,1,1).transpose());
 
+		// igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
 		// Eigen::MatrixXd asd(collocation_points.rows(), 3);
 		// asd.col(0)=collocation_points.col(0);
 		// asd.col(1)=collocation_points.col(1);
@@ -332,17 +353,17 @@ void PolygonalBasis3d::build_bases(
 		for (long k = 0; k < rhs.cols(); ++k) {
 			local_basis_integrals.row(k) = -basis_integrals.row(local_to_global[k]);
 		}
-		Harmonic harmonic(kernel_centers, collocation_points, local_basis_integrals, b.quadrature, rhs);
+		// Harmonic harmonic(kernel_centers, collocation_points, local_basis_integrals, b.quadrature, rhs);
 
 		// Set the bases which are nonzero inside the polygon
 		const int n_poly_bases = int(local_to_global.size());
 		b.bases.resize(n_poly_bases);
 		for (int i = 0; i < n_poly_bases; ++i) {
 			b.bases[i].init(local_to_global[i], i, Eigen::MatrixXd::Zero(1, 2));
-			b.bases[i].set_basis([harmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-				{ harmonic.basis(i, uv, val); });
-			b.bases[i].set_grad( [harmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-				{ harmonic.grad(i, uv, val); });
+			// b.bases[i].set_basis([harmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+			// 	{ harmonic.basis(i, uv, val); });
+			// b.bases[i].set_grad( [harmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+			// 	{ harmonic.grad(i, uv, val); });
 		}
 
 		// Polygon boundary after geometric mapping from neighboring elements

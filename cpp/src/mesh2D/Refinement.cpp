@@ -275,8 +275,8 @@ bool poly_fem::instanciate_pattern(
 	// If the eval function is undefined, don't do any remapping
 	if (!evalFunc) {
 		evalFunc = [&] (const Eigen::MatrixXd &uv, Eigen::MatrixXd &mapped, int q) {
-			const auto & u = mapped.col(0).array();
-			const auto & v = mapped.col(1).array();
+			const auto & u = uv.col(0).array();
+			const auto & v = uv.col(1).array();
 			Eigen::RowVector3d a = IV.row(IQ(q, 0));
 			Eigen::RowVector3d b = IV.row(IQ(q, 1));
 			Eigen::RowVector3d c = IV.row(IQ(q, 2));
@@ -350,22 +350,29 @@ bool poly_fem::instanciate_pattern(
 	}
 
 	// Remap vertices according to 'remap' + remove unreferenced vertices
-	// We also average remapped vertices positions, in case they mismatch too much
 	for (int f = 0; f < F.rows(); ++f) {
 		for (int lv = 0; lv < F.cols(); ++lv) {
 			int ov = F(f, lv);
 			int nv = remap(ov);
-			V.row(nv) = 0.5 * (V.row(ov) + V.row(nv)).eval();
 			F(f, lv) = nv;
-			if (SF) {
-				(*SF)(nv) = (*SF)(ov);
-			}
+			// if (SF) {
+			// 	(*SF)(nv) = (*SF)(ov);
+			// }
 		}
 	}
 	Eigen::VectorXi I;
 	igl::remove_unreferenced(V, F, OV, OF, I);
+
+	// Remap tags on vertices
 	if (SF) {
-		SF->conservativeResize(V.rows());
+		Eigen::VectorXi tmp = *SF;
+		SF->resize(OV.rows());
+		SF->setZero();
+		for (int v = 0; v < V.rows(); ++v) {
+			if (I(v) >= 0 && I(v) < OV.rows()) {
+				(*SF)(I(v)) = tmp(v);
+			}
+		}
 	}
 
 	// Remove duplicate vertices

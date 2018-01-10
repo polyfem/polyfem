@@ -208,3 +208,38 @@ void poly_fem::orient_normals_2d(GEO::Mesh &M) {
 		}
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////
+
+void poly_fem::reorder_mesh(Eigen::MatrixXd &V, Eigen::MatrixXi &F, const Eigen::VectorXi &C, Eigen::VectorXi &R) {
+	assert(V.rows() == C.size());
+	int num_colors = C.maxCoeff() + 1;
+	Eigen::VectorXi count(num_colors);
+	count.setZero();
+	for (int i = 0; i < C.size(); ++i) {
+		++count[C(i)];
+	}
+	R.resize(num_colors + 1);
+	R(0) = 0;
+	for (int c = 0; c < num_colors; ++c) {
+		R(c+1) = R(c) + count(c);
+	}
+	count.setZero();
+	Eigen::VectorXi remap(C.size());
+	for (int i = 0; i < C.size(); ++i) {
+		remap[i] = R(C(i)) + count[C(i)];
+		++count[C(i)];
+	}
+	// Remap vertices
+	Eigen::MatrixXd NV(V.rows(), V.cols());
+	for (int v = 0; v < V.rows(); ++v) {
+		NV.row(remap(v)) = V.row(v);
+	}
+	V = NV;
+	// Remap face indices
+	for (int f = 0; f < F.rows(); ++f) {
+		for (int lv = 0; lv < F.cols(); ++lv) {
+			F(f, lv) = remap(F(f, lv));
+		}
+	}
+}
