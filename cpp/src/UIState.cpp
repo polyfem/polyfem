@@ -986,7 +986,7 @@ namespace poly_fem
 				plot_selection_and_index(true);
 			});
 
-			viewer_.ngui->addButton("Swith vertex", [&]{
+			viewer_.ngui->addButton("Switch vertex", [&]{
 				if(state.mesh->is_volume())
 				{
 					current_3d_index = static_cast<Mesh3D *>(state.mesh)->switch_vertex(current_3d_index);
@@ -996,7 +996,7 @@ namespace poly_fem
 				plot_selection_and_index();
 			});
 
-			viewer_.ngui->addButton("Swith edge", [&]{
+			viewer_.ngui->addButton("Switch edge", [&]{
 				if(state.mesh->is_volume())
 				{
 					current_3d_index = static_cast<Mesh3D *>(state.mesh)->switch_edge(current_3d_index);
@@ -1006,7 +1006,7 @@ namespace poly_fem
 				plot_selection_and_index();
 			});
 
-			viewer_.ngui->addButton("Swith face", [&]{
+			viewer_.ngui->addButton("Switch face", [&]{
 				if(state.mesh->is_volume())
 				{
 					current_3d_index = static_cast<Mesh3D *>(state.mesh)->switch_face(current_3d_index);
@@ -1016,7 +1016,7 @@ namespace poly_fem
 				plot_selection_and_index();
 			});
 
-			viewer_.ngui->addButton("Swith element", [&]{
+			viewer_.ngui->addButton("Switch element", [&]{
 				if(state.mesh->is_volume())
 				{
 					current_3d_index = static_cast<Mesh3D *>(state.mesh)->switch_element(current_3d_index);
@@ -1025,6 +1025,20 @@ namespace poly_fem
 				}
 
 				plot_selection_and_index();
+			});
+
+			viewer_.ngui->addButton("Save selection", [&]{
+				if(state.mesh->is_volume())
+				{
+					auto v{explode(selected_elements, ',')};
+					std::set<int> idx;
+					for(auto s : v)
+						idx.insert(atoi(s.c_str()));
+
+					std::vector<int> idx_v(idx.begin(), idx.end());
+
+					static_cast<Mesh3D *>(state.mesh)->save(idx_v, 2, "mesh.HYBRID");
+				}
 			});
 
 			viewer_.screen->performLayout();
