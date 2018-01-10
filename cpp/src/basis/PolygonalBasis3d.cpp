@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "PolygonalBasis3d.hpp"
-#include "PolyhedronQuadrature.hpp"
+// #include "PolyhedronQuadrature.hpp"
 #include "FEBasis3d.hpp"
 #include "Refinement.hpp"
 #include "Harmonic.hpp"
@@ -163,9 +163,10 @@ void sample_polyhedra(
 	// Compute collocation points
 	Eigen::MatrixXd IV, PV, OV;
 	Eigen::MatrixXi IF, PF, OF;
+	Eigen::VectorXi collocation_sources;
 	compute_quad_mesh_from_cell(mesh, element_index, IV, IF);
 	compute_canonical_pattern(n_samples_per_edge, PV, PF);
-	instanciate_pattern(IV, IF, PV, PF, collocation_points, collocation_faces, evalFunc);
+	instanciate_pattern(IV, IF, PV, PF, collocation_points, collocation_faces, &collocation_sources, evalFunc);
 
 	// Compute kernel centers
 	// compute_offset_kernels(collocation_points, n_kernels, eps, kernel_centers);

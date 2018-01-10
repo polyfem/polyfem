@@ -227,6 +227,7 @@ bool poly_fem::instanciate_pattern(
 	const Eigen::MatrixXd &IV, const Eigen::MatrixXi &IF,
 	const Eigen::MatrixXd &PV, const Eigen::MatrixXi &PF,
 	Eigen::MatrixXd &OV, Eigen::MatrixXi &OF,
+	Eigen::VectorXi *SF,
 	EvalParametersFunc evalFunc)
 {
 	// Copy input quads (may be reordered)
@@ -271,13 +272,6 @@ bool poly_fem::instanciate_pattern(
 	std::vector<std::pair<int, int>> pairs_of_quads;
 	edge_adjacency_graph(IQ, edge_index, adj, &pairs_of_edges, &pairs_of_quads);
 
-	// Instantiate (duplicating vertices)
-	Eigen::MatrixXd V(IQ.rows() * PV.rows(), 3);
-	Eigen::MatrixXi F(IQ.rows() * PF.rows(), PF.cols());
-
-	// Remapped vertex id (after duplicate removal)
-	Eigen::VectorXi remap = Eigen::VectorXi::LinSpaced((int) V.rows(), 0, (int) V.rows()-1);
-
 	// If the eval function is undefined, don't do any remapping
 	if (!evalFunc) {
 		evalFunc = [&] (const Eigen::MatrixXd &uv, Eigen::MatrixXd &mapped, int q) {
@@ -294,13 +288,28 @@ bool poly_fem::instanciate_pattern(
 		};
 	}
 
-	Eigen::MatrixXd mapped; // Mapped uv samples
+	// Mapped uv samples
+	Eigen::MatrixXd mapped;
+
+	// Instantiate (duplicating vertices)
+	Eigen::MatrixXd P0 = PVN.row(0);
+	evalFunc(P0, mapped, 0);
+	Eigen::MatrixXd V(IQ.rows() * PV.rows(), mapped.cols());
+	Eigen::MatrixXi F(IQ.rows() * PF.rows(), PF.cols());
+	if (SF) { SF->resize(V.rows()); }
+
+	// Remapped vertex id (after duplicate removal)
+	Eigen::VectorXi remap = Eigen::VectorXi::LinSpaced((int) V.rows(), 0, (int) V.rows()-1);
+
 	for (int q = 0; q < IQ.rows(); ++q) {
 		evalFunc(PVN, mapped, q);
 		int v0 = (int) PVN.rows() * q;
-		V.middleRows(v0, PVN.rows()) = mapped;
+		V.middleRows(v0, mapped.rows()) = mapped;
 		int f0 = (int) PF.rows() * q;
 		F.middleRows(f0, PF.rows()) = PF.array() + v0;
+		if (SF) {
+			SF->segment(v0, mapped.rows()).setConstant(q);
+		}
 	}
 
 	auto min_max = [](int x, int y) {
@@ -346,13 +355,18 @@ bool poly_fem::instanciate_pattern(
 		for (int lv = 0; lv < F.cols(); ++lv) {
 			int ov = F(f, lv);
 			int nv = remap(ov);
-			Eigen::RowVector3d p_avg = 0.5 * (V.row(ov) + V.row(nv));
+			V.row(nv) = 0.5 * (V.row(ov) + V.row(nv)).eval();
 			F(f, lv) = nv;
-			V.row(nv) = p_avg;
+			if (SF) {
+				(*SF)(nv) = (*SF)(ov);
+			}
 		}
 	}
 	Eigen::VectorXi I;
 	igl::remove_unreferenced(V, F, OV, OF, I);
+	if (SF) {
+		SF->conservativeResize(V.rows());
+	}
 
 	// Remove duplicate vertices
 	// Eigen::MatrixXi OVI, OVJ;

@@ -36,7 +36,9 @@ typedef std::function<void(const Eigen::MatrixXd &, Eigen::MatrixXd &, int)> Eva
 // @param[in]  PF        { #PF x (3|4) input pattern facets }
 // @param[out] OV        { #OV x 3 output mesh vertices }
 // @param[out] OF        { #OF x 3 output mesh facets }
-// @param[in]  evalFunc  { Evaluate the uv param of the pattern into a 2d or 3d position }
+// @param[in]  SF        { #OV x 1 matrix of input source quad index, filled if pointer is non-zero }
+// @param[in]  evalFunc  { Evaluate the uv param of the pattern into a 2d or 3d
+//                       position }
 //
 // @return     { Return true in case of success. }
 //
@@ -44,6 +46,7 @@ bool instanciate_pattern(
 	const Eigen::MatrixXd &IV, const Eigen::MatrixXi &IF,
 	const Eigen::MatrixXd &PV, const Eigen::MatrixXi &PF,
 	Eigen::MatrixXd &OV, Eigen::MatrixXi &OF,
+	Eigen::VectorXi *SF = nullptr,
 	EvalParametersFunc evalFunc = nullptr);
 
 //
