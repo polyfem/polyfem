@@ -7,6 +7,9 @@
 #include "Harmonic.hpp"
 #include "UIState.hpp"
 #include <igl/triangle/triangulate.h>
+#include <igl/per_vertex_normals.h>
+#include <igl/slice.h>
+#include <random>
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace poly_fem {
@@ -98,23 +101,37 @@ void compute_quad_mesh_from_cell(const Mesh3D &mesh, int c, Eigen::MatrixXd &V, 
 
 // -----------------------------------------------------------------------------
 
-void compute_offset_kernels(const Eigen::MatrixXd &polygon, int n_kernels, double eps,
-	Eigen::MatrixXd &kernel_centers)
+void compute_offset_kernels(const Eigen::MatrixXd &QV, const Eigen::MatrixXi &QF,
+	int n_kernels_per_edge, double eps, Eigen::MatrixXd &kernel_centers,
+	EvalParametersFunc evalFuncGeom)
 {
-	// Eigen::MatrixXd offset, samples;
-	// std::vector<bool> inside;
-	// offset_polygon(polygon, offset, eps);
-	// sample_polygon(offset, n_kernels, samples);
-	// int n_inside = is_inside(polygon, samples, inside);
-	// kernel_centers.resize(samples.rows() - n_inside, samples.cols());
-	// for (int i = 0, j = 0; i < samples.rows(); ++i) {
-	// 	if (!inside[i]) {
-	// 		kernel_centers.row(j++) = samples.row(i);
-	// 	}
-	// }
-
-	// igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
-	// viewer.data.add_points(samples, Eigen::Vector3d(0,1,1).transpose());
+	Eigen::MatrixXd PV, KV, KN;
+	Eigen::MatrixXi PF, KF;
+	Eigen::VectorXd D;
+	compute_canonical_pattern(n_kernels_per_edge, PV, PF);
+	instanciate_pattern(QV, QF, PV, PF, KV, KF, nullptr, evalFuncGeom);
+	igl::per_vertex_normals(KV, KF, KN);
+	kernel_centers = KV + eps * KN;
+	std::default_random_engine gen;
+	std::uniform_real_distribution<double> dist(-1.0, 1.0);
+	for (int v = 0; v < kernel_centers.rows(); ++v) {
+		kernel_centers.row(v) = KV.row(v) + dist(gen) * KN.row(v);
+	}
+	assert(kernel_centers.cols() == 3);
+	signed_squared_distances(KV, KF, kernel_centers, D);
+	std::vector<Eigen::RowVector3d> remap;
+	for (int v = 0; v < kernel_centers.rows(); ++v) {
+		if (D(v) > 0.1 * eps) {
+			remap.push_back(kernel_centers.row(v));
+		}
+	}
+	kernel_centers.resize(remap.size(), 3);
+	for (int v = 0; v < kernel_centers.rows(); ++v) {
+		kernel_centers.row(v) = remap[v];
+	}
+	// igl::viewer::Viewer viewer;
+	// viewer.data.add_points(kernel_centers, Eigen::RowVector3d(0,1,1));
+	// viewer.launch();
 }
 
 // -----------------------------------------------------------------------------
@@ -125,6 +142,7 @@ void compute_offset_kernels(const Eigen::MatrixXd &polygon, int n_kernels, doubl
 ///
 void sample_polyhedra(
 	const int element_index,
+	const int n_kernels_per_edge,
 	const int n_samples_per_edge,
 	const Mesh3D &mesh,
 	const std::map<int, InterfaceData> &poly_face_to_data,
@@ -167,18 +185,18 @@ void sample_polyhedra(
 	};
 
 	// Compute collocation points
-	Eigen::MatrixXd IV, PV, OV, UV;
-	Eigen::MatrixXi IF, PF, OF, UF;
+	Eigen::MatrixXd QV, PV, OV, UV;
+	Eigen::MatrixXi QF, PF, OF, UF;
 	Eigen::VectorXi uv_sources, uv_ranges;
-	compute_quad_mesh_from_cell(mesh, element_index, IV, IF);
+	compute_quad_mesh_from_cell(mesh, element_index, QV, QF);
 	compute_canonical_pattern(n_samples_per_edge, PV, PF);
-	instanciate_pattern(IV, IF, PV, PF, UV, UF, &uv_sources, evalFunc);
-	instanciate_pattern(IV, IF, PV, PF, collocation_points, collocation_faces, nullptr, evalFuncGeom);
+	instanciate_pattern(QV, QF, PV, PF, UV, UF, &uv_sources, evalFunc);
+	instanciate_pattern(QV, QF, PV, PF, collocation_points, collocation_faces, nullptr, evalFuncGeom);
 	reorder_mesh(UV, UF, uv_sources, uv_ranges);
 	assert(uv_ranges.size() == mesh.n_element_faces(element_index) + 1);
 
 	// Compute kernel centers
-	// compute_offset_kernels(collocation_points, n_kernels, eps, kernel_centers);
+	compute_offset_kernels(QV, QF, n_kernels_per_edge, eps, kernel_centers, evalFuncGeom);
 
 	// igl::viewer::Viewer viewer;
 	// viewer.data.set_mesh(UV, UF);
@@ -301,6 +319,7 @@ void PolygonalBasis3d::build_bases(
 	// if (poly_face_to_data.empty()) {
 	// 	return;
 	// }
+	int n_kernels_per_edge = (int) std::round(n_samples_per_edge / 3.0);
 
 	// Step 1: Compute integral constraints
 	Eigen::MatrixXd basis_integrals;
@@ -323,8 +342,8 @@ void PolygonalBasis3d::build_bases(
 		Eigen::MatrixXi collocation_faces;
 		Eigen::MatrixXd rhs; // 1 row per collocation point, 1 column per basis that is nonzero on the polygon boundary
 
-		sample_polyhedra(e, n_samples_per_edge, mesh, poly_face_to_data, bases, gbases,
-			eps, local_to_global, collocation_points, collocation_faces, kernel_centers, rhs);
+		sample_polyhedra(e, n_kernels_per_edge, n_samples_per_edge, mesh, poly_face_to_data, bases,
+			gbases, eps, local_to_global, collocation_points, collocation_faces, kernel_centers, rhs);
 
 		// igl::viewer::Viewer viewer;
 		// viewer.data.set_mesh(collocation_points, collocation_faces);

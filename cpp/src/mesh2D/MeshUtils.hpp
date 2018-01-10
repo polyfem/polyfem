@@ -67,4 +67,19 @@ void orient_normals_2d(GEO::Mesh &M);
 ///
 void reorder_mesh(Eigen::MatrixXd &V, Eigen::MatrixXi &F, const Eigen::VectorXi &C, Eigen::VectorXi &R);
 
+///
+/// @brief      Computes the signed squared distance from a list of points to a triangle mesh. This
+///             function build a AABB tree of the input mesh, computes the distance for each query
+///             point to the closest triangle, and then determines the sign by casting a vertical
+///             ray from the query point and counting the number of intersections with the input
+///             mesh
+///
+/// @param[in]  V     { #V x 3 input mesh vertices }
+/// @param[in]  F     { #F x 3 input mesh faces }
+/// @param[in]  P     { #P x 3 query points }
+/// @param      D     { #P x 1 computed signed distances, negative inside, positive outside }
+///
+void signed_squared_distances(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
+	const Eigen::MatrixXd &P, Eigen::VectorXd &D);
+
 } // namespace poly_fem

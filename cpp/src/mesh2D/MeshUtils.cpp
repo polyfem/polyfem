@@ -4,6 +4,7 @@
 #include <geogram/mesh/mesh_preprocessing.h>
 #include <geogram/mesh/mesh_topology.h>
 #include <geogram/mesh/mesh_geometry.h>
+#include <geogram/mesh/mesh_AABB.h>
 ////////////////////////////////////////////////////////////////////////////////
 
 GEO::vec3 poly_fem::mesh_vertex(const GEO::Mesh &M, GEO::index_t v) {
@@ -242,4 +243,215 @@ void poly_fem::reorder_mesh(Eigen::MatrixXd &V, Eigen::MatrixXi &F, const Eigen:
 			F(f, lv) = remap(F(f, lv));
 		}
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+namespace {
+
+void compute_unsigned_distance_field(const GEO::Mesh &M,
+	const GEO::MeshFacetsAABB &aabb_tree, const Eigen::MatrixXd &P, Eigen::VectorXd &D)
+{
+	assert(P.cols() == 3);
+	D.resize(P.rows());
+	#pragma omp parallel for
+	for (int i = 0; i < P.rows(); ++i) {
+		GEO::vec3 pos(P(i, 0), P(i, 1), P(i, 2));
+		double sq_dist = aabb_tree.squared_distance(pos);
+		D(i) = sq_dist;
+	}
+}
+
+// calculate twice signed area of triangle (0,0)-(x1,y1)-(x2,y2)
+// return an SOS-determined sign (-1, +1, or 0 only if it's a truly degenerate triangle)
+int orientation(
+	double x1, double y1, double x2, double y2, double &twice_signed_area)
+{
+	twice_signed_area=y1*x2-x1*y2;
+	if(twice_signed_area>0) return 1;
+	else if(twice_signed_area<0) return -1;
+	else if(y2>y1) return 1;
+	else if(y2<y1) return -1;
+	else if(x1>x2) return 1;
+	else if(x1<x2) return -1;
+	else return 0; // only true when x1==x2 and y1==y2
+}
+
+// robust test of (x0,y0) in the triangle (x1,y1)-(x2,y2)-(x3,y3)
+// if true is returned, the barycentric coordinates are set in a,b,c.
+//
+// Note: This function comes from SDFGen by Christopher Batty.
+// https://github.com/christopherbatty/SDFGen/blob/master/makelevelset3.cpp
+bool point_in_triangle_2d(
+	double x0, double y0, double x1, double y1,
+	double x2, double y2, double x3, double y3,
+	double &a, double &b, double &c)
+{
+	x1-=x0; x2-=x0; x3-=x0;
+	y1-=y0; y2-=y0; y3-=y0;
+	int signa=orientation(x2, y2, x3, y3, a);
+	if(signa==0) return false;
+	int signb=orientation(x3, y3, x1, y1, b);
+	if(signb!=signa) return false;
+	int signc=orientation(x1, y1, x2, y2, c);
+	if(signc!=signa) return false;
+	double sum=a+b+c;
+	geo_assert(sum!=0); // if the SOS signs match and are nonzero, there's no way all of a, b, and c are zero.
+	a/=sum;
+	b/=sum;
+	c/=sum;
+	return true;
+}
+
+// -----------------------------------------------------------------------------
+
+// \brief Computes the (approximate) orientation predicate in 2d.
+// \details Computes the sign of the (approximate) signed volume of
+//  the triangle p0, p1, p2
+// \param[in] p0 first vertex of the triangle
+// \param[in] p1 second vertex of the triangle
+// \param[in] p2 third vertex of the triangle
+// \retval POSITIVE if the triangle is oriented positively
+// \retval ZERO if the triangle is flat
+// \retval NEGATIVE if the triangle is oriented negatively
+// \todo check whether orientation is inverted as compared to
+//   Shewchuk's version.
+// Taken from geogram/src/lib/geogram/delaunay/delaunay_2d.cpp
+inline GEO::Sign orient_2d_inexact(GEO::vec2 p0, GEO::vec2 p1, GEO::vec2 p2) {
+	double a11 = p1[0] - p0[0] ;
+	double a12 = p1[1] - p0[1] ;
+
+	double a21 = p2[0] - p0[0] ;
+	double a22 = p2[1] - p0[1] ;
+
+	double Delta = GEO::det2x2(
+		a11, a12,
+		a21, a22
+	);
+
+	return GEO::geo_sgn(Delta);
+}
+
+// -----------------------------------------------------------------------------
+
+/**
+ * @brief      { Intersect a vertical ray with a triangle }
+ *
+ * @param[in]  M     { Mesh containing the triangle to intersect }
+ * @param[in]  f     { Index of the facet to intersect }
+ * @param[in]  q     { Query point (only XY coordinates are used) }
+ * @param[out] z     { Intersection }
+ *
+ * @return     { {-1,0,1} depending on the sign of the intersection. }
+ */
+template<int X = 0, int Y = 1, int Z = 2>
+int intersect_ray_z(const GEO::Mesh &M, GEO::index_t f, const GEO::vec3 &q, double &z) {
+	using namespace GEO;
+
+	index_t c = M.facets.corners_begin(f);
+	const vec3& p1 = Geom::mesh_vertex(M, M.facet_corners.vertex(c++));
+	const vec3& p2 = Geom::mesh_vertex(M, M.facet_corners.vertex(c++));
+	const vec3& p3 = Geom::mesh_vertex(M, M.facet_corners.vertex(c));
+
+	double u, v, w;
+	if (point_in_triangle_2d(
+		q[X], q[Y], p1[X], p1[Y], p2[X], p2[Y], p3[X], p3[Y], u, v, w))
+	{
+		z = u*p1[Z] + v*p2[Z] + w*p3[Z];
+		auto sign = orient_2d_inexact(vec2(p1[X], p1[Y]), vec2(p2[X], p2[Y]), vec2(p3[X], p3[Y]));
+		switch (sign) {
+		case GEO::POSITIVE: return 1;
+		case GEO::NEGATIVE: return -1;
+		case GEO::ZERO:
+		default: return 0;
+		}
+	}
+
+	return 0;
+}
+
+// -----------------------------------------------------------------------------
+
+void compute_sign(const GEO::Mesh &M, const GEO::MeshFacetsAABB &aabb_tree,
+	const Eigen::MatrixXd &P, Eigen::VectorXd &D)
+{
+	assert(P.cols() == 3);
+	assert(D.size() == P.rows());
+
+	GEO::vec3 min_corner, max_corner;
+	GEO::get_bbox(M, &min_corner[0], &max_corner[0]);
+
+	#pragma omp parallel for
+	for (int k = 0; k < P.rows(); ++k) {
+		GEO::vec3 center(P(k, 0), P(k, 1), P(k, 2));
+
+		GEO::Box box;
+		box.xyz_min[0] = box.xyz_max[0] = center[0];
+		box.xyz_min[1] = box.xyz_max[1] = center[1];
+		box.xyz_min[2] = min_corner[2];
+		box.xyz_max[2] = max_corner[2];
+
+		std::vector<std::pair<double, int>> inter;
+		auto action = [&M, &inter, &center] (GEO::index_t f) {
+			double z;
+			if (int s = intersect_ray_z(M, f, center, z)) {
+				inter.emplace_back(z, s);
+			}
+		};
+		aabb_tree.compute_bbox_facet_bbox_intersections(box, action);
+		std::sort(inter.begin(), inter.end());
+
+		std::vector<double> reduced;
+		for (int i = 0, s = 0; i < (int) inter.size(); ++i) {
+			const int ds = inter[i].second;
+			s += ds;
+			if ((s == -1 && ds < 0) || (s == 0 && ds > 0)) {
+				reduced.push_back(inter[i].first);
+			}
+		}
+
+		int num_before = 0;
+		for (double z : reduced) {
+			if (z < center[2]) { ++num_before; }
+		}
+		if (num_before % 2 == 1) {
+			// Point is inside
+			D(k) *= -1.0;
+		}
+	}
+}
+
+// -----------------------------------------------------------------------------
+
+void create_geogram_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, GEO::Mesh &M) {
+	M.clear();
+	// Setup vertices
+	M.vertices.create_vertices((int) V.rows());
+	for (int i = 0; i < (int) M.vertices.nb(); ++i) {
+		GEO::vec3 &p = M.vertices.point(i);
+		p[0] = V(i, 0);
+		p[1] = V(i, 1);
+		p[2] = V(i, 2);
+	}
+	// Setup faces
+	M.facets.create_triangles((int) F.rows());
+	for (int c = 0; c < (int) M.facets.nb(); ++c) {
+		for (int lv = 0; lv < 3; ++lv) {
+			M.facets.set_vertex(c, lv, F(c, lv));
+		}
+	}
+}
+
+} // anonymous namespace
+
+////////////////////////////////////////////////////////////////////////////////
+
+void poly_fem::signed_squared_distances(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
+	const Eigen::MatrixXd &P, Eigen::VectorXd &D)
+{
+	GEO::Mesh M;
+	create_geogram_mesh(V, F, M);
+	GEO::MeshFacetsAABB aabb_tree(M);
+	compute_unsigned_distance_field(M, aabb_tree, P, D);
+	compute_sign(M, aabb_tree, P, D);
 }
