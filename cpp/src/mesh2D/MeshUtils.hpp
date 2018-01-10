@@ -55,4 +55,16 @@ void compute_element_tags(const GEO::Mesh &M, std::vector<ElementType> &element_
 ///
 void orient_normals_2d(GEO::Mesh &M);
 
+///
+/// @brief         Reorder vertices of a mesh using color tags, so that vertices are ordered by
+///                increasing colors
+///
+/// @param[in,out] V     { #V x d input mesh vertices }
+/// @param[in,out] F     { #F x k input mesh faces }
+/// @param[in]     C     { #V per vertex color tag }
+/// @param[out]    R     { max(C)+1 vector of starting indices for each colors (last value is the
+///                      total number of vertices) }
+///
+void reorder_mesh(Eigen::MatrixXd &V, Eigen::MatrixXi &F, const Eigen::VectorXi &C, Eigen::VectorXi &R);
+
 } // namespace poly_fem

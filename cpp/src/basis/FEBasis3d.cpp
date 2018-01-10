@@ -375,6 +375,10 @@ void compute_nodes(
 	std::vector<bool> is_boundary(n_nodes, false);
 	std::vector<int> remapped_node(n_nodes, -1);
 
+	auto is_hex = [&] (int c) {
+		return (mesh.n_element_vertices(c) == 8) && (mesh.n_element_faces(c) == 6);
+	};
+
 	// Step 1: Compute all node positions + node boundary tag
 	{
 		for (int v = 0; v < mesh.n_pts(); ++v) {
@@ -408,8 +412,7 @@ void compute_nodes(
 
 	// Step 2: Keep only read real nodes + compute parametric boundary tag
 	for (int c = 0; c < mesh.n_elements(); ++c) {
-		bool is_hex = (mesh.n_element_vertices(c) == 8) && (mesh.n_element_faces(c) == 6);
-		if (!is_hex) { continue; } // Skip polytopes
+		if (!is_hex(c)) { continue; } // Skip polytopes
 
 		// Create remapped node array for element
 		auto remap_nodes = [&] (auto l2g) {
@@ -471,8 +474,35 @@ void compute_nodes(
 	}
 
 	// Step 3: Iterate over edges of polygons and compute interface weights
-	for (int f = 0; f < mesh.n_elements(); ++f) {
-		if (mesh.n_element_vertices(f) == 4) { continue; } // Skip quads
+	for (int c = 0; c < mesh.n_elements(); ++c) {
+		if (is_hex(c)) { continue; } // Skip hexes
+
+		for (int lf = 0; lf < mesh.n_element_faces(c); ++lf) {
+			auto index = mesh.get_index_from_element(c, lf, 0);
+			auto index2 = mesh.switch_element(index);
+			int c2 = index2.element;
+			assert(c2 >= 0);
+			assert(is_hex(c2));
+
+			auto abcd = poly_fem::FEBasis3d::quadr_hex_face_local_nodes(mesh, index2);
+			poly_fem::InterfaceData data;
+			data.element_id = c2;
+			if (discr_order == 2) {
+				for (auto local_node : abcd) {
+					data.node_id.push_back(element_nodes_id[c2][local_node]);
+				}
+				data.local_indices.assign(abcd.begin(), abcd.end());
+			} else {
+				assert(discr_order == 1);
+				auto ab = poly_fem::FEBasis3d::linear_hex_face_local_nodes(mesh, index2);
+				for (auto local_node : ab) {
+					data.node_id.push_back(element_nodes_id[c2][local_node]);
+				}
+				data.local_indices.assign(ab.begin(), ab.end());
+			}
+			data.vals.assign(data.local_indices.size(), 1);
+			poly_face_to_data[index2.face] = data;
+		}
 
 		// auto index = mesh.get_index_from_face(f, 0);
 		// for (int lv = 0; lv < mesh.n_element_vertices(f); ++lv) {
