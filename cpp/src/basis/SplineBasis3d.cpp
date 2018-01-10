@@ -164,7 +164,7 @@ namespace poly_fem
         void explore_vertex(const Navigation3D::Index &index, const Mesh3D &mesh, const int x, const int y, const int z, SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, InterfaceData> &poly_face_to_data, std::vector< int > &bounday_nodes)
         {
             int node_id;
-            bool boundary = mesh.node_id_from_vertex_index(index, node_id);
+            const bool boundary = mesh.node_id_from_vertex_index(index, node_id);
 
             // assert(std::find(space(x, y, z).begin(), space(x, y, z).end(), node_id) == space(x, y, z).end());
             space(x, y, z) = node_id;
@@ -761,7 +761,7 @@ namespace poly_fem
 
                         const int b_index = loc_index - 20;
 
-                        if(opposite_element < 0)
+                        if(opposite_element < 0 && mesh.n_element_faces(opposite_element) == 6 && mesh.n_element_vertices(opposite_element) == 8)
                         {
                             bounday_nodes.push_back(current_face_node_id);
 

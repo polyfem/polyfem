@@ -137,6 +137,6 @@ namespace poly_fem
 		std::vector<int> vertices_node_id_;
 		std::vector< Eigen::Matrix<double, 1, 3> > vertices_node_;
 
-		int node_id_from_vertex_index_explore(const Navigation3D::Index &index, int &id, Eigen::MatrixXd &node) const;
+		int node_id_from_vertex_index_explore(const Navigation3D::Index &index, int &id, Eigen::MatrixXd &node, bool &real_b) const;
 	};
 }

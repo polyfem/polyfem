@@ -8,6 +8,7 @@
 #include "LinearSolver.hpp"
 
 #include <igl/per_face_normals.h>
+#include <igl/per_corner_normals.h>
 #include <igl/triangle/triangulate.h>
 #include <igl/copyleft/tetgen/tetrahedralize.h>
 #include <igl/Timer.h>
@@ -161,7 +162,10 @@ namespace poly_fem
 			if(state.mesh->is_volume())
 			{
 				MatrixXd normals;
-				igl::per_face_normals(pts, tris, normals);
+				// igl::per_face_normals(pts, tris, normals);
+				// viewer.data.set_normals(normals);
+
+				igl::per_corner_normals(pts, tris, 20, normals);
 				viewer.data.set_normals(normals);
 			}
 
@@ -207,7 +211,10 @@ namespace poly_fem
 		if(state.mesh->is_volume())
 		{
 			MatrixXd normals;
-			igl::per_face_normals(pts, valid_tri, normals);
+			// igl::per_face_normals(pts, valid_tri, normals);
+			// viewer.data.set_normals(normals);
+
+			igl::per_corner_normals(pts, valid_tri, 20, normals);
 			viewer.data.set_normals(normals);
 		}
 
@@ -433,7 +440,7 @@ namespace poly_fem
 
 
 						viewer.data.add_points(node, col);
-						viewer.data.add_label(node.transpose(), std::to_string(g_index));
+						// viewer.data.add_label(node.transpose(), std::to_string(g_index));
 					}
 				}
 			}
