@@ -22,7 +22,7 @@ namespace poly_fem
 			std::vector< ElementBases > &bases,
 			std::vector< LocalBoundary > &local_boundary,
 			std::vector< int > &bounday_nodes,
-			std::map<int, Eigen::MatrixXd> &polys);
+			std::map<int, InterfaceData> &poly_face_to_data);
 	};
 }
 

@@ -248,67 +248,67 @@ namespace poly_fem
             return maxCoeff;
         }
 
-        void setup_knots_vectors(const int n_els, const SpaceMatrix &space, std::array<std::vector<double>, 3> &h_knots, std::array<std::vector<double>, 3> &v_knots)
+        void setup_knots_vectors(const int n_els, const SpaceMatrix &space, std::array<std::array<double, 4>, 3> &h_knots, std::array<std::array<double, 4>, 3> &v_knots)
         {
             //left and right neigh are absent
             if(space(0,1).front() >= n_els && space(2,1).front() >= n_els)
             {
-                h_knots[0] = {0, 0, 0, 1};
-                h_knots[1] = {0, 0, 1, 1};
-                h_knots[2] = {0, 1, 1, 1};
+                h_knots[0] = {{0, 0, 0, 1}};
+                h_knots[1] = {{0, 0, 1, 1}};
+                h_knots[2] = {{0, 1, 1, 1}};
             }
             //left neigh is absent
             else if(space(0,1).front() >= n_els)
             {
-                h_knots[0] = {0, 0, 0, 1};
-                h_knots[1] = {0, 0, 1, 2};
-                h_knots[2] = {0, 1, 2, 3};
+                h_knots[0] = {{0, 0, 0, 1}};
+                h_knots[1] = {{0, 0, 1, 2}};
+                h_knots[2] = {{0, 1, 2, 3}};
             }
             //right neigh is absent
             else if(space(2,1).front() >= n_els)
             {
-                h_knots[0] = {-2, -1, 0, 1};
-                h_knots[1] = {-1, 0, 1, 1};
-                h_knots[2] = {0, 1, 1, 1};
+                h_knots[0] = {{-2, -1, 0, 1}};
+                h_knots[1] = {{-1, 0, 1, 1}};
+                h_knots[2] = {{0, 1, 1, 1}};
             }
             else
             {
-                h_knots[0] = {-2, -1, 0, 1};
-                h_knots[1] = {-1, 0, 1, 2};
-                h_knots[2] = {0, 1, 2, 3};
+                h_knots[0] = {{-2, -1, 0, 1}};
+                h_knots[1] = {{-1, 0, 1, 2}};
+                h_knots[2] = {{0, 1, 2, 3}};
             }
 
 
             //top and bottom neigh are absent
             if(space(1,0).front() >= n_els && space(1,2).front() >= n_els)
             {
-                v_knots[0] = {0, 0, 0, 1};
-                v_knots[1] = {0, 0, 1, 1};
-                v_knots[2] = {0, 1, 1, 1};
+                v_knots[0] = {{0, 0, 0, 1}};
+                v_knots[1] = {{0, 0, 1, 1}};
+                v_knots[2] = {{0, 1, 1, 1}};
             }
             //bottom neigh is absent
             else if(space(1,0).front() >= n_els)
             {
-                v_knots[0] = {0, 0, 0, 1};
-                v_knots[1] = {0, 0, 1, 2};
-                v_knots[2] = {0, 1, 2, 3};
+                v_knots[0] = {{0, 0, 0, 1}};
+                v_knots[1] = {{0, 0, 1, 2}};
+                v_knots[2] = {{0, 1, 2, 3}};
             }
             //top neigh is absent
             else if(space(1,2).front() >= n_els)
             {
-                v_knots[0] = {-2, -1, 0, 1};
-                v_knots[1] = {-1, 0, 1, 1};
-                v_knots[2] = {0, 1, 1, 1};
+                v_knots[0] = {{-2, -1, 0, 1}};
+                v_knots[1] = {{-1, 0, 1, 1}};
+                v_knots[2] = {{0, 1, 1, 1}};
             }
             else
             {
-                v_knots[0] = {-2, -1, 0, 1};
-                v_knots[1] = {-1, 0, 1, 2};
-                v_knots[2] = {0, 1, 2, 3};
+                v_knots[0] = {{-2, -1, 0, 1}};
+                v_knots[1] = {{-1, 0, 1, 2}};
+                v_knots[2] = {{0, 1, 2, 3}};
             }
         }
 
-        void basis_for_regular_quad(const SpaceMatrix &space, const NodeMatrix &loc_nodes, const std::array<std::vector<double>, 3> &h_knots, const std::array<std::vector<double>, 3> &v_knots, ElementBases &b)
+        void basis_for_regular_quad(const SpaceMatrix &space, const NodeMatrix &loc_nodes, const std::array<std::array<double, 4>, 3> &h_knots, const std::array<std::array<double, 4>, 3> &v_knots, ElementBases &b)
         {
             for(int y = 0; y < 3; ++y)
             {
@@ -330,7 +330,7 @@ namespace poly_fem
             }
         }
 
-        void basis_for_irregulard_quad(const Mesh2D &mesh, const SpaceMatrix &space, const NodeMatrix &loc_nodes, const std::array<std::vector<double>, 3> &h_knots, const std::array<std::vector<double>, 3> &v_knots, ElementBases &b)
+        void basis_for_irregulard_quad(const Mesh2D &mesh, const SpaceMatrix &space, const NodeMatrix &loc_nodes, const std::array<std::array<double, 4>, 3> &h_knots, const std::array<std::array<double, 4>, 3> &v_knots, ElementBases &b)
         {
             for(int y = 0; y < 3; ++y)
             {
@@ -711,8 +711,8 @@ namespace poly_fem
             quad_quadrature.get_quadrature(quadrature_order, b.quadrature);
             b.bases.resize(9);
 
-            std::array<std::vector<double>, 3> h_knots;
-            std::array<std::vector<double>, 3> v_knots;
+            std::array<std::array<double, 4>, 3> h_knots;
+            std::array<std::array<double, 4>, 3> v_knots;
 
             setup_knots_vectors(n_els, space, h_knots, v_knots);
 

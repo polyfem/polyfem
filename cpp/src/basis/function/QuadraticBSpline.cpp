@@ -3,10 +3,9 @@
 #include <cmath>
 
 namespace poly_fem {
-	void QuadraticBSpline::init(const std::vector<double> &knots)
+	void QuadraticBSpline::init(const std::array<double, 4> &knots)
 	{
 		knots_ = knots;
-		assert(knots_.size() == 4);
 	}
 
 	void QuadraticBSpline::interpolate(const Eigen::MatrixXd &ts, Eigen::MatrixXd &result) const

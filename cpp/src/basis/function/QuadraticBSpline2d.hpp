@@ -3,7 +3,7 @@
 
 #include "QuadraticBSpline.hpp"
 
-#include <vector>
+#include <array>
 #include <cassert>
 
 #include <Eigen/Dense>
@@ -15,11 +15,11 @@ namespace poly_fem {
 		QuadraticBSpline2d()
 		{ }
 
-		QuadraticBSpline2d(const std::vector<double> &knots_u, const std::vector<double> &knots_v)
+		QuadraticBSpline2d(const std::array<double, 4> &knots_u, const std::array<double, 4> &knots_v)
 		: spline_u_(knots_u), spline_v_(knots_v)
 		{ }
 		
-		void init(const std::vector<double> &knots_u, const std::vector<double> &knots_v);
+		void init(const std::array<double, 4> &knots_u, const std::array<double, 4> &knots_v);
 
 		void interpolate(const Eigen::MatrixXd &ts, Eigen::MatrixXd &result) const;
 		double interpolate(const double u, const double v) const;
