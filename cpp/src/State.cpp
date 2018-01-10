@@ -236,7 +236,17 @@ namespace poly_fem
 			}
 		}
 
-		std::cout <<"regular_count: " << regular_count <<" regular_boundary_count: " << regular_boundary_count << " simple_singular_count: " << simple_singular_count << " multi_singular_count: " << multi_singular_count << " singular_boundary_count: " << boundary_count <<" multi_singular_boundary_count: " << multi_singular_boundary_count << " non_regular_count: " <<  non_regular_count << " non_regular_boundary_count: " << non_regular_boundary_count << " undefined_count: " << undefined_count <<std::endl;
+		std::cout <<
+		"regular_count:\t " << regular_count <<"\n"<<
+		"regular_boundary_count:\t " << regular_boundary_count <<"\n"<<
+		"simple_singular_count:\t " << simple_singular_count <<"\n"<<
+		"multi_singular_count:\t " << multi_singular_count <<"\n"<<
+		"singular_boundary_count:\t " << boundary_count <<"\n"<<
+		"multi_singular_boundary_count:\t " << multi_singular_boundary_count <<"\n"<<
+		"polytope_count:\t " <<  non_regular_count <<"\n"<<
+		"polytope_boundary_count:\t " << non_regular_boundary_count <<"\n"<<
+		"undefined_count:\t " << undefined_count <<"\n"<<
+		std::endl;
 	}
 
 	void State::build_basis()
@@ -269,7 +279,7 @@ namespace poly_fem
 		{
 			const Mesh3D &tmp_mesh = *dynamic_cast<Mesh3D *>(mesh);
 			if(use_splines)
-				n_bases = SplineBasis3d::build_bases(tmp_mesh, els_tag, quadrature_order, bases, local_boundary, boundary_nodes, polys);
+				n_bases = SplineBasis3d::build_bases(tmp_mesh, els_tag, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
 			else {
 				if (iso_parametric) {
 					n_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
