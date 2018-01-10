@@ -22,6 +22,7 @@ namespace poly_fem
 
 		inline bool is_boundary_vertex(const int vertex_global_id) const { return mesh_.vertices[vertex_global_id].boundary; }
 		inline bool is_boundary_edge(const int edge_global_id) const { return mesh_.edges[edge_global_id].boundary; }
+		inline bool is_poly_boundary_face(const int face_global_id) const { return mesh_.faces[face_global_id].boundary_hex; }
 		inline bool is_boundary_face(const int face_global_id) const { return mesh_.faces[face_global_id].boundary; }
 
 		inline int n_elements() const override { return int(mesh_.elements.size()); }
