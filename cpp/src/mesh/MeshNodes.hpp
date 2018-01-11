@@ -12,41 +12,39 @@ public:
 	MeshNodes(const Mesh &mesh, bool vertices_only = false);
 
 	// Number of currently assigned nodes
-	int n_nodes() const { return node_to_simplex_.size(); }
+	int n_nodes() const { return node_to_primitive_.size(); }
 
 	// Lazy retrieval of node ids
 	int node_id_from_vertex(int v);
 	int node_id_from_edge(int e);
 	int node_id_from_face(int f);
 	int node_id_from_cell(int c);
+	int node_id_from_primitive(int primitive_id);
 
 	// Node position from node id
-	RowVectorNd node_position(int node_id) const { return nodes_.row(node_to_simplex_[node_id]); }
+	RowVectorNd node_position(int node_id) const { return nodes_.row(node_to_primitive_[node_id]); }
 
 	// Whether a node is on the mesh boundary or not
-	bool is_boundary(int node_id) const { return is_boundary_[node_to_simplex_[node_id]]; }
+	bool is_boundary(int node_id) const { return is_boundary_[node_to_primitive_[node_id]]; }
 
 	// Whether an edge node (in 2D) or face node (in 3D) is at the interface with a polytope
-	bool is_interface(int node_id) const { return is_interface_[node_to_simplex_[node_id]]; }
+	bool is_interface(int node_id) const { return is_interface_[node_to_primitive_[node_id]]; }
 
+	// Either boundary or interface
 	bool is_boundary_or_interface(const int node_id) const { return is_boundary(node_id) || is_interface(node_id); }
 
 	// Retrieve a list of nodes which are marked as boundary
 	std::vector<int> boundary_nodes() const;
 
 private:
-	// Lazy assignment of a node id from the offset simplex id (vertex, edge, face or cell)
-	int node_id_from_simplex(int packed_simplex_id);
+	// Offset to pack primitives ids into a single vector
+	const int edge_offset_;
+	const int face_offset_;
+	const int cell_offset_;
 
-private:
-	// Offset to pack simplices ids into a single vector
-	int edge_offset_;
-	int face_offset_;
-	int cell_offset_;
-
-	// Map simplices to nodes back and forth
-	std::vector<int> simplex_to_node_; // #v + #e + #f + #c
-	std::vector<int> node_to_simplex_; // #assigned nodes
+	// Map primitives to nodes back and forth
+	std::vector<int> primitive_to_node_; // #v + #e + #f + #c
+	std::vector<int> node_to_primitive_; // #assigned nodes
 
 	// Precomputed node data (#v + #e + #f + #c)
 	Eigen::MatrixXd nodes_;

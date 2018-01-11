@@ -39,10 +39,10 @@ namespace poly_fem
 		void compute_elements_tag() override;
 
 
-		RowVectorNd point(const int global_index) const override;
-		RowVectorNd edge_barycenter(const int index) const override {assert(false); return RowVectorNd(3);}
-		RowVectorNd face_barycenter(const int index) const override {assert(false); return RowVectorNd(3);}
-		RowVectorNd cell_barycenter(const int index) const override { assert(false); return RowVectorNd(3); }
+		RowVectorNd point(const int vertex_id) const override;
+		RowVectorNd edge_barycenter(const int e) const override;
+		RowVectorNd face_barycenter(const int f) const override;
+		RowVectorNd cell_barycenter(const int c) const override;
 
 		//navigation wrapper
 		Navigation3D::Index get_index_from_element(int hi, int lf, int lv) const { return Navigation3D::get_index_from_element_face(mesh_, hi, lf, lv); }

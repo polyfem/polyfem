@@ -1,10 +1,13 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "FEBasis3d.hpp"
+#include "MeshNodes.hpp"
 #include "HexQuadrature.hpp"
 #include <igl/viewer/Viewer.h>
 #include <cassert>
 #include <array>
 ////////////////////////////////////////////////////////////////////////////////
+
+using namespace poly_fem;
 
 /*
 
@@ -253,7 +256,7 @@ int find_face(const poly_fem::Mesh3D &mesh, int c, int v1, int v2, int v3, int v
 
 // -----------------------------------------------------------------------------
 
-std::array<int, 8> linear_hex_local_to_global(const poly_fem::Mesh3D &mesh, int c) {
+std::array<int, 8> linear_hex_local_to_global(const Mesh3D &mesh, int c) {
 	assert(mesh.is_cube(c));
 
 	// Vertex nodes
@@ -268,12 +271,12 @@ std::array<int, 8> linear_hex_local_to_global(const poly_fem::Mesh3D &mesh, int 
 
 // -----------------------------------------------------------------------------
 
-std::array<int, 27> quadr_hex_local_to_global(const poly_fem::Mesh3D &mesh, int c) {
+std::array<int, 27> quadr_hex_local_to_global(const Mesh3D &mesh, int c) {
 	assert(mesh.is_cube(c));
 
-	int e_offset = mesh.n_vertices();
-	int f_offset = e_offset + mesh.n_edges();
-	int c_offset = f_offset + mesh.n_faces();
+	int edge_offset = mesh.n_vertices();
+	int face_offset = edge_offset + mesh.n_edges();
+	int cell_offset = face_offset + mesh.n_faces();
 
 	// Vertex nodes
 	auto v = linear_hex_local_to_global(mesh, c);
@@ -320,12 +323,12 @@ std::array<int, 27> quadr_hex_local_to_global(const poly_fem::Mesh3D &mesh, int 
 			l2g[i++] = v[lv];
 		}
 		for (int le = 0; le < e.rows(); ++le) {
-			l2g[i++] = e_offset + e[le];
+			l2g[i++] = edge_offset + e[le];
 		}
 		for (int lf = 0; lf < f.rows(); ++lf) {
-			l2g[i++] = f_offset + f[lf];
+			l2g[i++] = face_offset + f[lf];
 		}
-		l2g[i++] = c_offset + c;
+		l2g[i++] = cell_offset + c;
 	}
 
 	return l2g;
@@ -341,8 +344,7 @@ std::array<int, 27> quadr_hex_local_to_global(const poly_fem::Mesh3D &mesh, int 
 ///
 /// @param[in]  mesh               The input mesh
 /// @param[in]  discr_order        The discretization order
-/// @param[out] nodes              The node positions
-/// @param[out] boundary_nodes     List of boundary node indices
+/// @param[in]  nodes              Lazy evaluator for node ids
 /// @param[out] element_nodes_id   List of node indices per element
 /// @param[out] local_boundary     Which facet of the element are on the boundary
 /// @param[out] poly_face_to_data  Data for faces at the interface with a polyhedra
@@ -350,76 +352,26 @@ std::array<int, 27> quadr_hex_local_to_global(const poly_fem::Mesh3D &mesh, int 
 void compute_nodes(
 	const poly_fem::Mesh3D &mesh,
 	const int discr_order,
-	std::vector<Eigen::RowVector3d> &nodes,
-	std::vector<int> &boundary_nodes,
+	MeshNodes &nodes,
 	std::vector<std::vector<int> > &element_nodes_id,
 	std::vector<poly_fem::LocalBoundary> &local_boundary,
 	std::map<int, poly_fem::InterfaceData> &poly_face_to_data)
 {
-	const int n_nodes = mesh.n_vertices() + (discr_order > 1 ? mesh.n_edges() + mesh.n_faces() + mesh.n_cells() : 0);
-	const int e_offset = mesh.n_vertices();
-	const int f_offset = e_offset + mesh.n_edges();
-	const int c_offset = f_offset + mesh.n_faces();
-	Eigen::MatrixXd all_nodes(n_nodes, 3);
-	std::vector<bool> is_boundary(n_nodes, false);
-	std::vector<int> remapped_node(n_nodes, -1);
-
-	// Step 1: Compute all node positions + node boundary tag
-	{
-		for (int v = 0; v < mesh.n_vertices(); ++v) {
-			all_nodes.row(v) = mesh.point(v);
-			is_boundary[v] = mesh.is_boundary_vertex(v);
-		}
-		if (discr_order > 1) {
-			Eigen::MatrixXd bary;
-			mesh.edge_barycenters(bary);
-			for (int e = 0; e < mesh.n_edges(); ++e) {
-				all_nodes.row(e_offset + e) = bary.row(e);
-				is_boundary[e_offset + e] = mesh.is_boundary_edge(e);
-			}
-			mesh.face_barycenters(bary);
-			for (int f = 0; f < mesh.n_faces(); ++f) {
-				all_nodes.row(f_offset + f) = bary.row(f);
-				is_boundary[f_offset + f] = mesh.is_boundary_face(f);
-			}
-			mesh.cell_barycenters(bary);
-			for (int c = 0; c < mesh.n_cells(); ++c) {
-				all_nodes.row(c_offset + c) = bary.row(c);
-				is_boundary[c_offset + c] = false;
-			}
-		}
-	}
-
-	nodes.clear();
+	// Step 1: Assign global node ids for each quads
 	local_boundary.clear();
-	local_boundary.resize(mesh.n_cells());
-	element_nodes_id.resize(mesh.n_cells());
-
-	// Step 2: Keep only read real nodes + compute parametric boundary tag
+	local_boundary.resize(mesh.n_faces());
+	element_nodes_id.resize(mesh.n_faces());
 	for (int c = 0; c < mesh.n_cells(); ++c) {
 		if (mesh.is_polytope(c)) { continue; } // Skip polytopes
 
-		// Create remapped node array for element
-		auto remap_nodes = [&] (auto l2g) {
-			std::vector<int> res;
-			res.reserve(l2g.size());
-			for (int id : l2g) {
-				if (remapped_node[id] < 0) {
-					remapped_node[id] = nodes.size();
-					Eigen::RowVector3d pos = all_nodes.row(id);
-					nodes.push_back(pos);
-					if (is_boundary[id]) {
-						boundary_nodes.push_back(remapped_node[id]);
-					}
-				}
-				res.push_back(remapped_node[id]);
-			}
-			return res;
-		};
 		if (discr_order == 1) {
-			element_nodes_id[c] = remap_nodes(linear_hex_local_to_global(mesh, c));
+			for (int id : linear_hex_local_to_global(mesh, c)) {
+				element_nodes_id[c].push_back(nodes.node_id_from_primitive(id));
+			}
 		} else {
-			element_nodes_id[c] = remap_nodes(quadr_hex_local_to_global(mesh, c));
+			for (int id : quadr_hex_local_to_global(mesh, c)) {
+				element_nodes_id[c].push_back(nodes.node_id_from_primitive(id));
+			}
 		}
 
 		// List of faces around the quad
@@ -427,7 +379,7 @@ void compute_nodes(
 		{
 			auto l2g = quadr_hex_local_to_global(mesh, c);
 			for (int lf = 0; lf < 6; ++lf) {
-				f[lf] = l2g[8+12+lf] - f_offset;
+				f[lf] = l2g[8+12+lf] - mesh.n_vertices() - mesh.n_edges();
 			}
 		}
 
@@ -458,7 +410,7 @@ void compute_nodes(
 		}
 	}
 
-	// Step 3: Iterate over edges of polygons and compute interface weights
+	// Step 2: Iterate over edges of polygons and compute interface weights
 	for (int c = 0; c < mesh.n_cells(); ++c) {
 		if (mesh.is_cube(c)) { continue; } // Skip hexes
 
@@ -574,8 +526,8 @@ std::array<int, 9> poly_fem::FEBasis3d::quadr_hex_face_local_nodes(
 	int c = index.element;
 	assert(mesh.is_cube(c));
 
-	int e_offset = mesh.n_vertices();
-	int f_offset = e_offset + mesh.n_edges();
+	int edge_offset = mesh.n_vertices();
+	int face_offset = edge_offset + mesh.n_edges();
 
 	// Local to global mapping of node indices
 	auto l2g = quadr_hex_local_to_global(mesh, c);
@@ -584,10 +536,10 @@ std::array<int, 9> poly_fem::FEBasis3d::quadr_hex_face_local_nodes(
 	std::array<int, 9> result;
 	for (int lv = 0, i = 0; lv < 4; ++lv) {
 		result[i++] = find_index(l2g.begin(), l2g.end(), index.vertex);
-		result[i++] = find_index(l2g.begin(), l2g.end(), e_offset + index.edge);
+		result[i++] = find_index(l2g.begin(), l2g.end(), edge_offset + index.edge);
 		index = mesh.next_around_face(index);
 	}
-	result[8] = find_index(l2g.begin(), l2g.end(), f_offset + index.face);
+	result[8] = find_index(l2g.begin(), l2g.end(), face_offset + index.face);
 	return result;
 }
 
@@ -638,9 +590,10 @@ int poly_fem::FEBasis3d::build_bases(
 {
 	assert(mesh.is_volume());
 
-	std::vector<Eigen::RowVector3d> nodes;
+	MeshNodes nodes(mesh, discr_order == 1);
 	std::vector<std::vector<int>> element_nodes_id;
-	compute_nodes(mesh, discr_order, nodes, boundary_nodes, element_nodes_id, local_boundary, poly_face_to_data);
+	compute_nodes(mesh, discr_order, nodes, element_nodes_id, local_boundary, poly_face_to_data);
+	boundary_nodes = nodes.boundary_nodes();
 
 	HexQuadrature hex_quadrature;
 	bases.resize(mesh.n_cells());
@@ -657,7 +610,7 @@ int poly_fem::FEBasis3d::build_bases(
 			for (int j = 0; j < n_el_bases; ++j) {
 				const int global_index = element_nodes_id[e][j];
 
-				b.bases[j].init(global_index, j, nodes[global_index]);
+				b.bases[j].init(global_index, j, nodes.node_position(global_index));
 
 				if (discr_order == 1) {
 					b.bases[j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
@@ -679,5 +632,5 @@ int poly_fem::FEBasis3d::build_bases(
 		}
 	}
 
-	return (int) nodes.size();
+	return nodes.n_nodes();
 }
