@@ -59,8 +59,8 @@ void poly_fem::dirichlet_solve(
 
 	// std::cout << A << std::endl;
 
-	Eigen::saveMarket(A, "A.mat");
-	Eigen::saveMarketVector(g, "b.mat");
+	// Eigen::saveMarket(A, "A.mat");
+	// Eigen::saveMarketVector(g, "b.mat");
 
 	if (u.size() != n) {
 		u.resize(n);
