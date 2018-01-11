@@ -235,7 +235,7 @@ void compute_nodes(
 	std::vector<poly_fem::LocalBoundary> &local_boundary,
 	std::map<int, poly_fem::InterfaceData> &poly_edge_to_data)
 {
-	const int n_nodes = mesh.n_vertices() + (discr_order > 1 ? mesh.n_edges() + mesh.n_elements() : 0);
+	const int n_nodes = mesh.n_vertices() + (discr_order > 1 ? mesh.n_edges() + mesh.n_faces() : 0);
 	const int e_offset = mesh.n_vertices();
 	const int f_offset = e_offset + mesh.n_edges();
 	Eigen::MatrixXd all_nodes(n_nodes, 2);
@@ -256,7 +256,7 @@ void compute_nodes(
 				is_boundary[e_offset + e] = mesh.is_boundary_edge(e);
 			}
 			mesh.face_barycenters(bary);
-			for (int f = 0; f < mesh.n_elements(); ++f) {
+			for (int f = 0; f < mesh.n_faces(); ++f) {
 				all_nodes.row(f_offset + f) = bary.row(f);
 				is_boundary[f_offset + f] = false;
 			}
@@ -265,11 +265,11 @@ void compute_nodes(
 
 	nodes.clear();
 	local_boundary.clear();
-	local_boundary.resize(mesh.n_elements());
-	element_nodes_id.resize(mesh.n_elements());
+	local_boundary.resize(mesh.n_faces());
+	element_nodes_id.resize(mesh.n_faces());
 
 	// Step 2: Keep only read real nodes + compute parametric boundary tag
-	for (int f = 0; f < mesh.n_elements(); ++f) {
+	for (int f = 0; f < mesh.n_faces(); ++f) {
 		if (mesh.is_polytope(f)) { continue; } // Skip polygons
 
 		// Create remapped node array for element
@@ -324,7 +324,7 @@ void compute_nodes(
 	}
 
 	// Step 3: Iterate over edges of polygons and compute interface weights
-	for (int f = 0; f < mesh.n_elements(); ++f) {
+	for (int f = 0; f < mesh.n_faces(); ++f) {
 		if (mesh.is_cube(f)) { continue; } // Skip quads
 
 		auto index = mesh.get_index_from_face(f, 0);
@@ -499,8 +499,8 @@ int poly_fem::FEBasis2d::build_bases(
 	compute_nodes(mesh, discr_order, nodes, boundary_nodes, element_nodes_id, local_boundary, poly_edge_to_data);
 
 	QuadQuadrature quad_quadrature;
-	bases.resize(mesh.n_elements());
-	for (int e = 0; e < mesh.n_elements(); ++e) {
+	bases.resize(mesh.n_faces());
+	for (int e = 0; e < mesh.n_faces(); ++e) {
 		ElementBases &b = bases[e];
 		const int n_el_bases = (int) element_nodes_id[e].size();
 		b.bases.resize(n_el_bases);

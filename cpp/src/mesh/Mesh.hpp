@@ -27,7 +27,7 @@ namespace poly_fem
 	class Mesh
 	{
 	public:
-		virtual ~Mesh() { }
+		virtual ~Mesh() = default;
 
 		virtual void refine(const int n_refinement, const double t) = 0;
 
@@ -35,7 +35,7 @@ namespace poly_fem
 		virtual bool is_volume() const = 0;
 		int dimension() const { return (is_volume() ? 3 : 2); }
 
-		inline int n_elements() const { return (is_volume() ? n_cells() : n_faces()); }
+		int n_elements() const { return (is_volume() ? n_cells() : n_faces()); }
 
 		virtual int n_cells() const = 0;
 		virtual int n_faces() const = 0;
@@ -64,11 +64,11 @@ namespace poly_fem
 		virtual void cell_barycenters(Eigen::MatrixXd &barycenters) const = 0;
 
 		//Queries on the tags
-		inline bool is_spline_compatible(const int el_id) const;
-		inline bool is_cube(const int el_id) const;
-		inline bool is_polytope(const int el_id) const;
+		bool is_spline_compatible(const int el_id) const;
+		bool is_cube(const int el_id) const;
+		bool is_polytope(const int el_id) const;
 
-		inline const std::vector<ElementType> &elements_tag() const { return elements_tag_; }
+		const std::vector<ElementType> &elements_tag() const { return elements_tag_; }
 
 
 		//Boundary condition handling

@@ -356,7 +356,7 @@ void compute_nodes(
 	std::vector<poly_fem::LocalBoundary> &local_boundary,
 	std::map<int, poly_fem::InterfaceData> &poly_face_to_data)
 {
-	const int n_nodes = mesh.n_vertices() + (discr_order > 1 ? mesh.n_edges() + mesh.n_faces() + mesh.n_elements() : 0);
+	const int n_nodes = mesh.n_vertices() + (discr_order > 1 ? mesh.n_edges() + mesh.n_faces() + mesh.n_cells() : 0);
 	const int e_offset = mesh.n_vertices();
 	const int f_offset = e_offset + mesh.n_edges();
 	const int c_offset = f_offset + mesh.n_faces();
@@ -383,7 +383,7 @@ void compute_nodes(
 				is_boundary[f_offset + f] = mesh.is_boundary_face(f);
 			}
 			mesh.cell_barycenters(bary);
-			for (int c = 0; c < mesh.n_elements(); ++c) {
+			for (int c = 0; c < mesh.n_cells(); ++c) {
 				all_nodes.row(c_offset + c) = bary.row(c);
 				is_boundary[c_offset + c] = false;
 			}
@@ -392,11 +392,11 @@ void compute_nodes(
 
 	nodes.clear();
 	local_boundary.clear();
-	local_boundary.resize(mesh.n_elements());
-	element_nodes_id.resize(mesh.n_elements());
+	local_boundary.resize(mesh.n_cells());
+	element_nodes_id.resize(mesh.n_cells());
 
 	// Step 2: Keep only read real nodes + compute parametric boundary tag
-	for (int c = 0; c < mesh.n_elements(); ++c) {
+	for (int c = 0; c < mesh.n_cells(); ++c) {
 		if (mesh.is_polytope(c)) { continue; } // Skip polytopes
 
 		// Create remapped node array for element
@@ -459,7 +459,7 @@ void compute_nodes(
 	}
 
 	// Step 3: Iterate over edges of polygons and compute interface weights
-	for (int c = 0; c < mesh.n_elements(); ++c) {
+	for (int c = 0; c < mesh.n_cells(); ++c) {
 		if (mesh.is_cube(c)) { continue; } // Skip hexes
 
 		for (int lf = 0; lf < mesh.n_cell_faces(c); ++lf) {
@@ -643,8 +643,8 @@ int poly_fem::FEBasis3d::build_bases(
 	compute_nodes(mesh, discr_order, nodes, boundary_nodes, element_nodes_id, local_boundary, poly_face_to_data);
 
 	HexQuadrature hex_quadrature;
-	bases.resize(mesh.n_elements());
-	for (int e = 0; e < mesh.n_elements(); ++e) {
+	bases.resize(mesh.n_cells());
+	for (int e = 0; e < mesh.n_cells(); ++e) {
 		ElementBases &b = bases[e];
 		const int n_el_vertices = mesh.n_cell_vertices(e);
 		const int n_el_bases = (int) element_nodes_id[e].size();
