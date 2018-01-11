@@ -123,26 +123,7 @@ namespace poly_fem
 		}
 	}
 
-	Navigation::Index Mesh2D::get_index_from_face(int f, int lv) const
-	{
-		return Navigation::get_index_from_face(mesh_, f, lv);
-	}
 
-
-	Navigation::Index Mesh2D::switch_vertex(Navigation::Index idx) const
-	{
-		return Navigation::switch_vertex(mesh_, idx);
-	}
-
-	Navigation::Index Mesh2D::switch_edge(Navigation::Index idx) const
-	{
-		return Navigation::switch_edge(mesh_, idx);
-	}
-
-	Navigation::Index Mesh2D::switch_face(Navigation::Index idx) const
-	{
-		return Navigation::switch_face(mesh_, idx);
-	}
 
 	Eigen::MatrixXd Mesh2D::node_from_face(const int face_id) const
 	{
