@@ -59,9 +59,9 @@ namespace poly_fem
 		virtual RowVectorNd edge_barycenter(const int e) const = 0;
 		virtual RowVectorNd face_barycenter(const int f) const = 0;
 		virtual RowVectorNd cell_barycenter(const int c) const = 0;
-		virtual void edge_barycenters(Eigen::MatrixXd &barycenters) const = 0;
-		virtual void face_barycenters(Eigen::MatrixXd &barycenters) const = 0;
-		virtual void cell_barycenters(Eigen::MatrixXd &barycenters) const = 0;
+		void edge_barycenters(Eigen::MatrixXd &barycenters) const;
+		void face_barycenters(Eigen::MatrixXd &barycenters) const;
+		void cell_barycenters(Eigen::MatrixXd &barycenters) const;
 
 		//Queries on the tags
 		bool is_spline_compatible(const int el_id) const;
