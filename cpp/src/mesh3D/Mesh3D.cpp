@@ -746,6 +746,34 @@ namespace poly_fem
 		}
 	}
 
+	RowVectorNd Mesh3D::edge_barycenter(const int e) const {
+		const int v0 = mesh_.edges[e].vs[0];
+		const int v1 = mesh_.edges[e].vs[1];
+		return 0.5*(point(v0) + point(v1));
+	}
+
+	RowVectorNd Mesh3D::face_barycenter(const int f) const {
+		const int n_vertices = n_face_vertices(f);
+		RowVectorNd bary(3); bary.setZero();
+
+		const auto &vertices = mesh_.faces[f].vs;
+		for(int lv = 0; lv < n_vertices; ++lv) {
+			bary += point(vertices[lv]);
+		}
+		return bary / n_vertices;
+	}
+
+	RowVectorNd Mesh3D::cell_barycenter(const int c) const {
+		const int n_vertices = n_cell_vertices(c);
+		RowVectorNd bary(3); bary.setZero();
+
+		const auto &vertices = mesh_.elements[c].vs;
+		for(int lv = 0; lv < n_vertices; ++lv)
+		{
+			bary += point(vertices[lv]);
+		}
+		return bary / n_vertices;
+	}
 
 	void Mesh3D::to_face_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 6> &to_face) const
 	{
