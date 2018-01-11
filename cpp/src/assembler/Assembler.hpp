@@ -108,13 +108,13 @@ namespace poly_fem
 					}
 				}
 
-				if(entries.size() > 1e8)
+				if(entries.size() >= 1e8)
 				{
 					tmp.setFromTriplets(entries.begin(), entries.end());
 					stiffness += tmp;
 
 					entries.clear();
-					entries.reserve(buffer_size);
+					//entries.reserve(buffer_size); // not needed (a std::vector never frees memory)
 					std::cout<<"cleaning memory..."<<std::endl;
 				}
 			}

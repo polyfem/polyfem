@@ -259,8 +259,11 @@ void sample_polyhedra(
 	PolyhedronQuadrature::get_quadrature(triangulated_vertices, triangulated_faces,
 		quadrature_order, quadrature);
 
-	triangulated_vertices = collocation_points;
-	triangulated_faces = CF;
+	triangulated_vertices = KV;
+	triangulated_faces = KF;
+	// for (int f = 0; f < KF.rows(); ++f) {
+	// 	triangulated_faces.row(f) = KF.row(f).reverse();
+	// }
 
 	// {
 	// 	Eigen::MatrixXd V;
