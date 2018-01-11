@@ -19,7 +19,7 @@ std::vector<int> compute_nonzero_bases_ids(const Mesh2D &mesh, const int element
 	std::vector<int> local_to_global;
 
 	Navigation::Index index = mesh.get_index_from_face(element_index);
-	const int n_edges = mesh.n_element_vertices(element_index);
+	const int n_edges = mesh.n_face_vertices(element_index);
 	for (int i = 0; i < n_edges; ++i) {
 		const InterfaceData &bdata = poly_edge_to_data.at(index.edge);
 		local_to_global.insert(local_to_global.end(), bdata.node_id.begin(), bdata.node_id.end());
@@ -90,7 +90,7 @@ void sample_polygon(
 	Eigen::MatrixXd &kernel_centers,
 	Eigen::MatrixXd &rhs)
 {
-	const int n_edges = mesh.n_element_vertices(element_index);
+	const int n_edges = mesh.n_face_vertices(element_index);
 
 	const int n_kernel_per_edges = (n_samples_per_edge - 1)/3;
 	const int n_collocation_points = (n_samples_per_edge - 1) * n_edges;
@@ -181,18 +181,17 @@ void PolygonalBasis2d::compute_integral_constraints(
 // Distance from harmonic kernels to polygon boundary
 double compute_epsilon(const Mesh2D &mesh, int e) {
 	double area = 0;
-	const int n_edges = mesh.n_element_vertices(e);
+	const int n_edges = mesh.n_face_vertices(e);
+	Navigation::Index index = mesh.get_index_from_face(e);
+
 	for (int i = 0; i < n_edges; ++i) {
-		const int ip = (i + 1) % n_edges;
-
-		Eigen::RowVector2d p0 = mesh.point(mesh.vertex_global_index(e, i));
-		Eigen::RowVector2d p1 = mesh.point(mesh.vertex_global_index(e, ip));
-
 		Eigen::Matrix2d det_mat;
-		det_mat.row(0) = p0;
-		det_mat.row(1) = p1;
+		det_mat.row(0) = mesh.point(index.vertex);
+		det_mat.row(1) = mesh.point(mesh.switch_vertex(index).vertex);
 
 		area += det_mat.determinant();
+		
+		index = mesh.next_around_face(index);
 	}
 	area = std::fabs(area);
 	// const double eps = use_harmonic ? (0.08*area) : 0;
@@ -207,7 +206,6 @@ void PolygonalBasis2d::build_bases(
 	const int n_samples_per_edge,
 	const Mesh2D &mesh,
 	const int n_bases,
-	const std::vector<ElementType> &element_type,
 	const int quadrature_order,
 	const std::vector< ElementAssemblyValues > &values,
 	const std::vector< ElementAssemblyValues > &gvalues,
@@ -228,11 +226,11 @@ void PolygonalBasis2d::build_bases(
 	// Step 2: Compute the rest =)
 	PolygonQuadrature poly_quadr;
 	for (int e = 0; e < mesh.n_elements(); ++e) {
-		if (element_type[e] != ElementType::InteriorPolytope && element_type[e] != ElementType::BoundaryPolytope) {
+		if (!mesh.is_polytope(e)) {
 			continue;
 		}
 		// No boundary polytope
-		assert(element_type[e] != ElementType::BoundaryPolytope);
+		// assert(element_type[e] != ElementType::BoundaryPolytope);
 
 		// Kernel distance to polygon boundary
 		const double eps = compute_epsilon(mesh, e);

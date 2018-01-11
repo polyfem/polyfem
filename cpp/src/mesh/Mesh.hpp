@@ -2,6 +2,7 @@
 #define MESH_HPP
 
 #include "Navigation.hpp"
+#include "Types.hpp"
 
 #include <Eigen/Dense>
 #include <geogram/mesh/mesh.h>
@@ -50,55 +51,55 @@ namespace poly_fem
 
 
 		//Tagging of the elements
-		virtual void compute_elements_tag() const = 0;
+		virtual void compute_elements_tag() = 0;
 
 		//Nodal access
-		virtual void point(const int global_index, Eigen::MatrixXd &pt) const = 0;
+		virtual RowVectorNd point(const int global_index) const = 0;
 		virtual void edge_barycenters(Eigen::MatrixXd &barycenters) const = 0;
 		virtual void face_barycenters(Eigen::MatrixXd &barycenters) const = 0;
 		virtual void cell_barycenters(Eigen::MatrixXd &barycenters) const = 0;
 
 
 		//Queries on the tags
-		inline bool is_spline_compatible(const int el_id)
+		inline bool is_spline_compatible(const int el_id) const
 		{
 			if(is_volume()){
 				return
-				elments_tag_[el_id] == ElementType::RegularInteriorCube ||
-				elments_tag_[el_id] == ElementType::RegularBoundaryCube ||
-				elments_tag_[el_id] == ElementType::SimpleSingularInteriorCube ||
-				elments_tag_[el_id] == ElementType::SimpleSingularBoundaryCube;
+				elements_tag_[el_id] == ElementType::RegularInteriorCube ||
+				elements_tag_[el_id] == ElementType::RegularBoundaryCube ||
+				elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube ||
+				elements_tag_[el_id] == ElementType::SimpleSingularBoundaryCube;
 			}
 			else
 			{
 				return
-				elments_tag_[el_id] == ElementType::RegularInteriorCube ||
-				elments_tag_[el_id] == ElementType::RegularBoundaryCube ||
-				elments_tag_[el_id] == ElementType::SimpleSingularInteriorCube;
+				elements_tag_[el_id] == ElementType::RegularInteriorCube ||
+				elements_tag_[el_id] == ElementType::RegularBoundaryCube ||
+				elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube;
 			}
 		}
 
-		inline bool is_cube(const int el_id)
+		inline bool is_cube(const int el_id) const
 		{
 			return
-			elments_tag_[el_id] == ElementType::RegularInteriorCube ||
-			elments_tag_[el_id] == ElementType::RegularBoundaryCube ||
+			elements_tag_[el_id] == ElementType::RegularInteriorCube ||
+			elements_tag_[el_id] == ElementType::RegularBoundaryCube ||
 
-			elments_tag_[el_id] == ElementType::SimpleSingularInteriorCube ||
-			elments_tag_[el_id] == ElementType::SimpleSingularBoundaryCube ||
+			elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube ||
+			elements_tag_[el_id] == ElementType::SimpleSingularBoundaryCube ||
 
-			elments_tag_[el_id] == ElementType::MultiSingularInteriorCube ||
-			elments_tag_[el_id] == ElementType::MultiSingularBoundaryCube;
+			elements_tag_[el_id] == ElementType::MultiSingularInteriorCube ||
+			elements_tag_[el_id] == ElementType::MultiSingularBoundaryCube;
 		}
 
-		inline bool is_polytope(const int el_id)
+		inline bool is_polytope(const int el_id) const
 		{
 			return
-			elments_tag_[el_id] == ElementType::InteriorPolytope ||
-			elments_tag_[el_id] == ElementType::BoundaryPolytope;
+			elements_tag_[el_id] == ElementType::InteriorPolytope ||
+			elements_tag_[el_id] == ElementType::BoundaryPolytope;
 		}
 
-		inline const std::vector<ElementType> &elments_tag() const { return elments_tag_; }
+		inline const std::vector<ElementType> &elements_tag() const { return elements_tag_; }
 
 
 		//Boundary condition handling
@@ -110,7 +111,7 @@ namespace poly_fem
 		virtual void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const = 0;
 
 	protected:
-		std::vector<ElementType> elments_tag_;
+		std::vector<ElementType> elements_tag_;
 	};
 }
 

@@ -65,7 +65,6 @@ namespace poly_fem
 			const int n_samples_per_edge,
 			const Mesh3D &mesh,
 			const int n_bases,
-			const std::vector<ElementType> &element_types,
 			const int quadrature_order,
 			const std::vector< ElementAssemblyValues > &values,
 			const std::vector< ElementAssemblyValues > &gvalues,

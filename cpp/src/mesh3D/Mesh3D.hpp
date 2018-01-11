@@ -23,6 +23,11 @@ namespace poly_fem
 		int n_edges() const override { return int(mesh_.edges.size()); }
 		int n_vertices() const override { return int(mesh_.points.cols()); }
 
+		inline int n_face_vertices(const int f_id) const {return mesh_.faces[f_id].vs.size(); }
+		inline int n_cell_vertices(const int c_id) const {return mesh_.elements[c_id].vs.size(); }
+		inline int n_cell_faces(const int c_id) const {return mesh_.elements[c_id].fs.size(); }
+
+
 		bool is_boundary_vertex(const int vertex_global_id) const override { return mesh_.vertices[vertex_global_id].boundary; }
 		bool is_boundary_edge(const int edge_global_id) const override { return mesh_.edges[edge_global_id].boundary; }
 		bool is_boundary_face(const int face_global_id) const override { return mesh_.faces[face_global_id].boundary; }
@@ -31,30 +36,29 @@ namespace poly_fem
 		bool save(const std::string &path) const override;
 		bool save(const std::vector<int> &fs, const int ringN, const std::string &path) const;
 
-		void compute_elements_tag() const override;
+		void compute_elements_tag() override;
 
 
-		void point(const int global_index, Eigen::MatrixXd &pt) const override;
-		Eigen::RowVector3d point(const int global_index) const;
+		RowVectorNd point(const int global_index) const override;
 		void edge_barycenters(Eigen::MatrixXd &barycenters) const override;
 		void face_barycenters(Eigen::MatrixXd &barycenters) const override;
 		void cell_barycenters(Eigen::MatrixXd &barycenters) const override;
 
 
 		//navigation wrapper
-		Navigation3D::Index get_index_from_element(int hi, int lf, int lv) const;
-		Navigation3D::Index get_index_from_element(int hi) const;
+		Navigation3D::Index get_index_from_element(int hi, int lf, int lv) const { return Navigation3D::get_index_from_element_face(mesh_, hi, lf, lv); }
+		Navigation3D::Index get_index_from_element(int hi) const { return Navigation3D::get_index_from_element_face(mesh_, hi); }
 
 
 		// Navigation in a surface mesh
-		Navigation3D::Index switch_vertex(Navigation3D::Index idx) const;
-		Navigation3D::Index switch_edge(Navigation3D::Index idx) const;
-		Navigation3D::Index switch_face(Navigation3D::Index idx) const;
-		Navigation3D::Index switch_element(Navigation3D::Index idx) const;
+		Navigation3D::Index switch_vertex(Navigation3D::Index idx) const { return Navigation3D::switch_vertex(mesh_, idx); }
+		Navigation3D::Index switch_edge(Navigation3D::Index idx) const { return Navigation3D::switch_edge(mesh_, idx); }
+		Navigation3D::Index switch_face(Navigation3D::Index idx) const { return Navigation3D::switch_face(mesh_, idx); }
+		Navigation3D::Index switch_element(Navigation3D::Index idx) const { return Navigation3D::switch_element(mesh_, idx); }
 
 		// Iterate in a mesh
 		inline Navigation3D::Index next_around_edge(Navigation3D::Index idx) const { return Navigation3D::next_around_3Dedge(mesh_, idx); }
-		inline Navigation3D::Index next_around_face_of_element(Navigation3D::Index idx) const { return Navigation3D::next_around_2Dface(mesh_, idx); }
+		inline Navigation3D::Index next_around_face(Navigation3D::Index idx) const { return Navigation3D::next_around_2Dface(mesh_, idx); }
 
 
 		void to_face_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 6> &to_face) const;
@@ -77,7 +81,7 @@ namespace poly_fem
 
 		void fill_boundary_tags(std::vector<int> &tags) const override;
 
-		void compute_element_barycenters(Eigen::MatrixXd &barycenters) const override;
+		void compute_element_barycenters(Eigen::MatrixXd &barycenters) const override { cell_barycenters(barycenters); }
 		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
 		void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const override;
 
@@ -87,15 +91,15 @@ namespace poly_fem
 	private:
 		Mesh3DStorage mesh_;
 
-		std::vector<int> faces_node_id_;
-		std::vector< Eigen::Matrix<double, 1, 3> > faces_node_;
+		// std::vector<int> faces_node_id_;
+		// std::vector< Eigen::Matrix<double, 1, 3> > faces_node_;
 
-		std::vector<int> edges_node_id_;
-		std::vector< Eigen::Matrix<double, 1, 3> > edges_node_;
+		// std::vector<int> edges_node_id_;
+		// std::vector< Eigen::Matrix<double, 1, 3> > edges_node_;
 
-		std::vector<int> vertices_node_id_;
-		std::vector< Eigen::Matrix<double, 1, 3> > vertices_node_;
+		// std::vector<int> vertices_node_id_;
+		// std::vector< Eigen::Matrix<double, 1, 3> > vertices_node_;
 
-		int node_id_from_vertex_index_explore(const Navigation3D::Index &index, int &id, Eigen::MatrixXd &node, bool &real_b) const;
+		// int node_id_from_vertex_index_explore(const Navigation3D::Index &index, int &id, Eigen::MatrixXd &node, bool &real_b) const;
 	};
 }

@@ -209,7 +209,7 @@ namespace poly_fem
 		int undefined_count = 0;
 		int multi_singular_boundary_count = 0;
 
-		const auto &els_tag = mesh->elments_tag();
+		const auto &els_tag = mesh->elements_tag();
 
 		for(std::size_t i = 0; i < els_tag.size(); ++i)
 		{
@@ -271,8 +271,9 @@ namespace poly_fem
 		if(mesh->is_volume())
 		{
 			const Mesh3D &tmp_mesh = *dynamic_cast<Mesh3D *>(mesh);
-			if(use_splines)
-				n_bases = SplineBasis3d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+			if(use_splines){
+				// n_bases = SplineBasis3d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+			}
 			else {
 				if (iso_parametric) {
 					n_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
@@ -286,12 +287,13 @@ namespace poly_fem
 		{
 			const Mesh2D &tmp_mesh = *dynamic_cast<Mesh2D *>(mesh);
 			if(use_splines){
-				if(iso_parametric)
-					n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+				if(iso_parametric){
+					// n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+				}
 				else
 				{
 					n_geom_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
-					n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+					// n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
 				}
 			}
 			else
@@ -397,7 +399,7 @@ namespace poly_fem
 
 
 			for(std::size_t i = 0; i < curret_bases.size(); ++i){
-				if(mesh->n_element_vertices(int(i)) != 8) continue;
+				if(mesh->is_polytope(i)) continue;
 
 				curret_bases[i].eval_geom_mapping(samples, mapped);
 
@@ -421,7 +423,7 @@ namespace poly_fem
 			QuadBoundarySampler::sample(true, true, true, true, n_samples, false, samples);
 
 			for(std::size_t i = 0; i < curret_bases.size(); ++i){
-				if(mesh->n_element_vertices(int(i)) != 4) continue;
+				if(mesh->is_polytope(i)) continue;
 
 				curret_bases[i].eval_geom_mapping(samples, mapped);
 
@@ -473,11 +475,9 @@ namespace poly_fem
 			}
 
 			for(std::size_t e = 0; e < bases.size(); ++e) {
-				if(!mesh->is_polytope(e)) {
-					continue;
+				if(mesh->is_polytope(e)){
+					values[e].compute(e, mesh->is_volume(), bases[e]);
 				}
-
-				values[e].compute(e, mesh->is_volume(), bases[e]);
 			}
 		}
 		else
@@ -487,18 +487,17 @@ namespace poly_fem
 
 			if(mesh->is_volume())
 			{
-				PolygonalBasis3d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh3D *>(mesh), n_bases, els_tag, quadrature_order, values, values, bases, bases, poly_edge_to_data, polys_3d);
+				PolygonalBasis3d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh3D *>(mesh), n_bases, quadrature_order, values, values, bases, bases, poly_edge_to_data, polys_3d);
 			}
 			else
-				PolygonalBasis2d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh2D *>(mesh), n_bases, els_tag, quadrature_order, values, geom_values, bases, geom_bases, poly_edge_to_data, polys);
+				PolygonalBasis2d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh2D *>(mesh), n_bases, quadrature_order, values, geom_values, bases, geom_bases, poly_edge_to_data, polys);
 
 			for(std::size_t e = 0; e < bases.size(); ++e)
 			{
-				if(els_tag[e] != ElementType::InteriorPolytope && els_tag[e] != ElementType::BoundaryPolytope)
-					continue;
-
-				geom_values[e].compute(e, mesh->is_volume(), geom_bases[e]);
-				values[e].compute(e, mesh->is_volume(), bases[e]);
+				if(mesh->is_polytope(e)){
+					geom_values[e].compute(e, mesh->is_volume(), geom_bases[e]);
+					values[e].compute(e, mesh->is_volume(), bases[e]);
+				}
 			}
 		}
 

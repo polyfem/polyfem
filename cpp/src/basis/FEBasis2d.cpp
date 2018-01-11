@@ -143,7 +143,7 @@ poly_fem::Navigation::Index find_edge(const poly_fem::Mesh2D &mesh, int f, int v
 	std::array<int, 2> v = {{v1, v2}};
 	std::sort(v.begin(), v.end());
 	auto idx = mesh.get_index_from_face(f, 0);
-	for (int lv = 0; lv < mesh.n_element_vertices(idx.face); ++lv) {
+	for (int lv = 0; lv < mesh.n_face_vertices(idx.face); ++lv) {
 		std::array<int, 2> u;
 		u[0] = idx.vertex;
 		u[1] = mesh.switch_vertex(idx).vertex;
@@ -168,12 +168,12 @@ constexpr std::array<int, 4> local_edge_to_interface_flag = {{
 // -----------------------------------------------------------------------------
 
 std::array<int, 4> linear_quad_local_to_global(const poly_fem::Mesh2D &mesh, int f) {
-	assert(mesh.n_element_vertices(f) == 4);
+	assert(mesh.is_cube(f));
 
 	// Vertex nodes
 	std::array<int, 4> l2g;
 	for (int lv = 0; lv < 4; ++lv) {
-		l2g[lv] = mesh.vertex_global_index(f, lv);
+		l2g[lv] = mesh.face_vertex(f, lv);
 	}
 
 	return l2g;
@@ -182,9 +182,9 @@ std::array<int, 4> linear_quad_local_to_global(const poly_fem::Mesh2D &mesh, int
 // -----------------------------------------------------------------------------
 
 std::array<int, 9> quadr_quad_local_to_global(const poly_fem::Mesh2D &mesh, int f) {
-	assert(mesh.n_element_vertices(f) == 4);
+	assert(mesh.is_cube(f));
 
-	int e_offset = mesh.n_pts();
+	int e_offset = mesh.n_vertices();
 	int f_offset = e_offset + mesh.n_edges();
 
 	// Vertex nodes
@@ -244,8 +244,8 @@ void compute_nodes(
 	std::vector<poly_fem::LocalBoundary> &local_boundary,
 	std::map<int, poly_fem::InterfaceData> &poly_edge_to_data)
 {
-	const int n_nodes = mesh.n_pts() + (discr_order > 1 ? mesh.n_edges() + mesh.n_elements() : 0);
-	const int e_offset = mesh.n_pts();
+	const int n_nodes = mesh.n_vertices() + (discr_order > 1 ? mesh.n_edges() + mesh.n_elements() : 0);
+	const int e_offset = mesh.n_vertices();
 	const int f_offset = e_offset + mesh.n_edges();
 	Eigen::MatrixXd all_nodes(n_nodes, 2);
 	std::vector<bool> is_boundary(n_nodes, false);
@@ -253,7 +253,7 @@ void compute_nodes(
 
 	// Step 1: Compute all node positions + node boundary tag
 	{
-		for (int v = 0; v < mesh.n_pts(); ++v) {
+		for (int v = 0; v < mesh.n_vertices(); ++v) {
 			all_nodes.row(v) = mesh.point(v);
 			is_boundary[v] = mesh.is_boundary_vertex(v);
 		}
@@ -279,7 +279,7 @@ void compute_nodes(
 
 	// Step 2: Keep only read real nodes + compute parametric boundary tag
 	for (int f = 0; f < mesh.n_elements(); ++f) {
-		if (mesh.n_element_vertices(f) != 4) { continue; } // Skip polygons
+		if (mesh.is_polytope(f)) { continue; } // Skip polygons
 
 		// Create remapped node array for element
 		auto remap_nodes = [&] (auto l2g) {
@@ -334,15 +334,15 @@ void compute_nodes(
 
 	// Step 3: Iterate over edges of polygons and compute interface weights
 	for (int f = 0; f < mesh.n_elements(); ++f) {
-		if (mesh.n_element_vertices(f) == 4) { continue; } // Skip quads
+		if (mesh.is_cube(f)) { continue; } // Skip quads
 
 		auto index = mesh.get_index_from_face(f, 0);
-		for (int lv = 0; lv < mesh.n_element_vertices(f); ++lv) {
+		for (int lv = 0; lv < mesh.n_face_vertices(f); ++lv) {
 			auto index2 = mesh.switch_face(index);
 			if (index2.face >= 0) {
 				// Opposite face is a quad, we need to set interface data
 				int f2 = index2.face;
-				assert(mesh.n_element_vertices(f2) == 4);
+				assert(mesh.is_cube(f2));
 				auto abc = poly_fem::FEBasis2d::quadr_quad_edge_local_nodes(mesh, index2);
 				poly_fem::InterfaceData data;
 				data.element_id = index2.face;
@@ -418,7 +418,7 @@ std::array<int, 2> poly_fem::FEBasis2d::linear_quad_edge_local_nodes(
 	const Mesh2D &mesh, Navigation::Index index)
 {
 	int f = index.face;
-	assert(mesh.n_element_vertices(f) == 4);
+	assert(mesh.is_cube(f));
 
 	// Local to global mapping of node indices
 	auto l2g = linear_quad_local_to_global(mesh, f);
@@ -448,8 +448,8 @@ std::array<int, 3> poly_fem::FEBasis2d::quadr_quad_edge_local_nodes(
 	const Mesh2D &mesh, Navigation::Index index)
 {
 	int f = index.face;
-	assert(mesh.n_element_vertices(f) == 4);
-	int e_offset = mesh.n_pts();
+	assert(mesh.is_cube(f));
+	int e_offset = mesh.n_vertices();
 
 	// Local to global mapping of node indices
 	auto l2g = quadr_quad_local_to_global(mesh, f);
@@ -520,11 +520,10 @@ int poly_fem::FEBasis2d::build_bases(
 	bases.resize(mesh.n_elements());
 	for (int e = 0; e < mesh.n_elements(); ++e) {
 		ElementBases &b = bases[e];
-		const int n_el_vertices = mesh.n_element_vertices(e);
 		const int n_el_bases = (int) element_nodes_id[e].size();
 		b.bases.resize(n_el_bases);
 
-		if (n_el_vertices == 4) {
+		if (mesh.is_cube(e)) {
 			quad_quadrature.get_quadrature(quadrature_order, b.quadrature);
 			b.bases.resize(n_el_bases);
 
@@ -549,7 +548,6 @@ int poly_fem::FEBasis2d::build_bases(
 			}
 		} else {
 			// Polygon bases are built later on
-			// assert(false);
 		}
 	}
 

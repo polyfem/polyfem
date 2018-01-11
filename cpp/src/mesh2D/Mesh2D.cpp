@@ -26,6 +26,7 @@ namespace poly_fem
 			mesh.copy(mesh_);
 			mesh_.clear(false,false);
 
+			//TODO add tags to the refiniment
 			if(t<=0)
 				refine_polygonal_mesh(mesh, mesh_, Polygons::catmul_clark_split_func());
 			else
@@ -33,7 +34,8 @@ namespace poly_fem
 
 			Navigation::prepare_mesh(mesh_);
 		}
-		create_boundary_nodes();
+
+		compute_elements_tag();
 
 		// save("test.obj");
 	}
@@ -46,8 +48,8 @@ namespace poly_fem
 			return false;
 
 		orient_normals_2d(mesh_);
+		compute_elements_tag();
 		Navigation::prepare_mesh(mesh_);
-		create_boundary_nodes();
 		return true;
 	}
 
@@ -64,222 +66,212 @@ namespace poly_fem
 		p0.resize(mesh_.edges.nb(), 2);
 		p1.resize(p0.rows(), p0.cols());
 
-		Eigen::MatrixXd p0t, p1t;
 		for(GEO::index_t e = 0; e < mesh_.edges.nb(); ++e)
 		{
 			const int v0 = mesh_.edges.vertex(e, 0);
 			const int v1 = mesh_.edges.vertex(e, 1);
 
-			point(v0, p0t); point(v1, p1t);
-
-			p0.row(e) = p0t;
-			p1.row(e) = p1t;
+			p0.row(e) = point(v0);
+			p1.row(e) = point(v1);
 		}
 	}
 
-	void Mesh2D::point(const int global_index, Eigen::MatrixXd &pt) const
-	{
-		pt.resize(1, 2);
-		const double *pt_ptr = mesh_.vertices.point_ptr(global_index);
-		pt(0) = pt_ptr[0];
-		pt(1) = pt_ptr[1];
-	}
-
-	Eigen::RowVector2d Mesh2D::point(const int global_index) const {
+	RowVectorNd Mesh2D::point(const int global_index) const {
 		const double *ptr = mesh_.vertices.point_ptr(global_index);
-		Eigen::RowVector2d p;
+		RowVectorNd p(2);
 		p(0) = ptr[0];
 		p(1) = ptr[1];
 		return p;
 	}
 
-	void Mesh2D::set_boundary_tags(std::vector<int> &tags) const
+	void Mesh2D::fill_boundary_tags(std::vector<int> &tags) const
 	{
-		tags.resize(mesh_.edges.nb());
-		std::fill(tags.begin(), tags.end(), -1);
+		//TODO implement me correctly
+		// tags.resize(mesh_.edges.nb());
+		// std::fill(tags.begin(), tags.end(), -1);
 
-		Eigen::MatrixXd p0, p1, p;
+		// Eigen::MatrixXd p0, p1, p;
 
-		for(GEO::index_t e = 0; e < mesh_.edges.nb(); ++e)
-		{
-			if(!is_boundary_edge((int) e)) {
-				continue;
-			}
+		// for(GEO::index_t e = 0; e < mesh_.edges.nb(); ++e)
+		// {
+		// 	if(!is_boundary_edge((int) e)) {
+		// 		continue;
+		// 	}
 
-			const int v0 = mesh_.edges.vertex(e, 0);
-			const int v1 = mesh_.edges.vertex(e, 1);
-			point(v0, p0); point(v1, p1);
+		// 	const int v0 = mesh_.edges.vertex(e, 0);
+		// 	const int v1 = mesh_.edges.vertex(e, 1);
+		// 	point(v0, p0); point(v1, p1);
 
-			p = (p0 + p1)/2;
+		// 	p = (p0 + p1)/2;
 
-			if(fabs(p(0))<1e-8)
-				tags[e]=1;
-			if(fabs(p(1))<1e-8)
-				tags[e]=2;
-			if(fabs(p(0)-1)<1e-8)
-				tags[e]=3;
-			if(fabs(p(1)-1)<1e-8)
-				tags[e]=4;
-		}
+		// 	if(fabs(p(0))<1e-8)
+		// 		tags[e]=1;
+		// 	if(fabs(p(1))<1e-8)
+		// 		tags[e]=2;
+		// 	if(fabs(p(0)-1)<1e-8)
+		// 		tags[e]=3;
+		// 	if(fabs(p(1)-1)<1e-8)
+		// 		tags[e]=4;
+		// }
 	}
 
 
 
-	Eigen::MatrixXd Mesh2D::node_from_face(const int face_id) const
-	{
-		Eigen::MatrixXd res=Eigen::MatrixXd::Zero(1, 2);
-		Eigen::MatrixXd pt;
+	// Eigen::MatrixXd Mesh2D::node_from_face(const int face_id) const
+	// {
+	// 	Eigen::MatrixXd res=Eigen::MatrixXd::Zero(1, 2);
+	// 	Eigen::MatrixXd pt;
 
-		for(int i = 0; i < n_element_vertices(face_id); ++i)
-		{
-			point(vertex_global_index(face_id, i), pt);
-			res += pt;
-		}
+	// 	for(int i = 0; i < n_element_vertices(face_id); ++i)
+	// 	{
+	// 		point(vertex_global_index(face_id, i), pt);
+	// 		res += pt;
+	// 	}
 
-		return res / n_element_vertices(face_id);
-	}
+	// 	return res / n_element_vertices(face_id);
+	// }
 
-	Eigen::MatrixXd Mesh2D::node_from_edge_index(const Navigation::Index &index) const
-	{
-		int id = switch_face(index).face;
-		if(id >= 0)
-		{
-			if(mesh_.facets.nb_vertices(id) == 4)
-				return node_from_face(id);
-		}
+	// Eigen::MatrixXd Mesh2D::node_from_edge_index(const Navigation::Index &index) const
+	// {
+	// 	int id = switch_face(index).face;
+	// 	if(id >= 0)
+	// 	{
+	// 		if(mesh_.facets.nb_vertices(id) == 4)
+	// 			return node_from_face(id);
+	// 	}
 
-		id = edge_node_id(index.edge);
-		assert(id >= 0);
+	// 	id = edge_node_id(index.edge);
+	// 	assert(id >= 0);
 
-		GEO::Attribute<std::array<double, 3> > edges_node(mesh_.edges.attributes(), "edges_node");
-		Eigen::MatrixXd res(1, 2);
+	// 	GEO::Attribute<std::array<double, 3> > edges_node(mesh_.edges.attributes(), "edges_node");
+	// 	Eigen::MatrixXd res(1, 2);
 
-		for(long i = 0; i < res.size(); ++i)
-			res(i) = edges_node[index.edge][i];
+	// 	for(long i = 0; i < res.size(); ++i)
+	// 		res(i) = edges_node[index.edge][i];
 
-		return res;
-	}
+	// 	return res;
+	// }
 
-	Eigen::MatrixXd Mesh2D::node_from_vertex(const int vertex_id) const
-	{
-		GEO::Attribute<int> vertices_node_id(mesh_.vertices.attributes(), "vertices_node_id");
-		assert(vertices_node_id[vertex_id] >= 0);
+	// Eigen::MatrixXd Mesh2D::node_from_vertex(const int vertex_id) const
+	// {
+	// 	GEO::Attribute<int> vertices_node_id(mesh_.vertices.attributes(), "vertices_node_id");
+	// 	assert(vertices_node_id[vertex_id] >= 0);
 
-		GEO::Attribute<std::array<double, 3>> vertices_node(mesh_.vertices.attributes(), "vertices_node");
-		Eigen::MatrixXd res(1, 2);
-		for(long i = 0; i < res.size(); ++i)
-			res(i) = vertices_node[vertex_id][i];
+	// 	GEO::Attribute<std::array<double, 3>> vertices_node(mesh_.vertices.attributes(), "vertices_node");
+	// 	Eigen::MatrixXd res(1, 2);
+	// 	for(long i = 0; i < res.size(); ++i)
+	// 		res(i) = vertices_node[vertex_id][i];
 
-		return res;
-	}
+	// 	return res;
+	// }
 
-	int Mesh2D::edge_node_id(const int edge_id) const
-	{
-		GEO::Attribute<int> edges_node_id(mesh_.edges.attributes(), "edges_node_id");
-		return edges_node_id[edge_id];
-	}
+	// int Mesh2D::edge_node_id(const int edge_id) const
+	// {
+	// 	GEO::Attribute<int> edges_node_id(mesh_.edges.attributes(), "edges_node_id");
+	// 	return edges_node_id[edge_id];
+	// }
 
-	int Mesh2D::vertex_node_id(const int vertex_id) const
-	{
-		GEO::Attribute<int> vertices_node_id(mesh_.vertices.attributes(), "vertices_node_id");
-		return vertices_node_id[vertex_id];
-	}
+	// int Mesh2D::vertex_node_id(const int vertex_id) const
+	// {
+	// 	GEO::Attribute<int> vertices_node_id(mesh_.vertices.attributes(), "vertices_node_id");
+	// 	return vertices_node_id[vertex_id];
+	// }
 
-	bool Mesh2D::node_id_from_edge_index(const Navigation::Index &index, int &id) const
-	{
-		id = switch_face(index).face;
-		bool is_real_boundary = true;
-		if(id >= 0)
-		{
-			is_real_boundary = false;
-			if(mesh_.facets.nb_vertices(id) == 4)
-				return is_real_boundary;
+	// bool Mesh2D::node_id_from_edge_index(const Navigation::Index &index, int &id) const
+	// {
+	// 	id = switch_face(index).face;
+	// 	bool is_real_boundary = true;
+	// 	if(id >= 0)
+	// 	{
+	// 		is_real_boundary = false;
+	// 		if(mesh_.facets.nb_vertices(id) == 4)
+	// 			return is_real_boundary;
 
-		}
+	// 	}
 
-		id = edge_node_id(index.edge);
-		assert(id >= 0);
+	// 	id = edge_node_id(index.edge);
+	// 	assert(id >= 0);
 
-		return is_real_boundary;
-	}
+	// 	return is_real_boundary;
+	// }
 
-	Eigen::MatrixXd Mesh2D::edge_mid_point(const int edge_id) const
-	{
-		Eigen::MatrixXd p0, p1;
-		const int v0 = mesh_.edges.vertex(edge_id, 0);
-		const int v1 = mesh_.edges.vertex(edge_id, 1);
-		point(v0, p0); point(v1, p1);
-		return (p0 + p1)/2;
-	}
+	// Eigen::MatrixXd Mesh2D::edge_mid_point(const int edge_id) const
+	// {
+	// 	Eigen::MatrixXd p0, p1;
+	// 	const int v0 = mesh_.edges.vertex(edge_id, 0);
+	// 	const int v1 = mesh_.edges.vertex(edge_id, 1);
+	// 	point(v0, p0); point(v1, p1);
+	// 	return (p0 + p1)/2;
+	// }
 
-	void Mesh2D::create_boundary_nodes()
-	{
-		// Edge is on the mesh boundary, or at the interface with a polygon
-		std::vector<bool> boundary_or_interface(mesh_.edges.nb(), false);
-		for(GEO::index_t e = 0; e < mesh_.edges.nb(); ++e) {
-			if (is_boundary_edge((int) e)) { boundary_or_interface[e] = true; }
-		}
-		for(GEO::index_t f = 0; f < mesh_.facets.nb(); ++f) {
-			const int n_vertices = mesh_.facets.nb_vertices(f);
-			if(n_vertices > 4) {
-				Navigation::Index index = get_index_from_face(f);
-				for(int j = 0; j < n_vertices; ++j) {
-					boundary_or_interface[index.edge] = true;
-					index = next_around_face(index);
-				}
-			}
-		}
+	// void Mesh2D::create_boundary_nodes()
+	// {
+	// 	// Edge is on the mesh boundary, or at the interface with a polygon
+	// 	std::vector<bool> boundary_or_interface(mesh_.edges.nb(), false);
+	// 	for(GEO::index_t e = 0; e < mesh_.edges.nb(); ++e) {
+	// 		if (is_boundary_edge((int) e)) { boundary_or_interface[e] = true; }
+	// 	}
+	// 	for(GEO::index_t f = 0; f < mesh_.facets.nb(); ++f) {
+	// 		const int n_vertices = mesh_.facets.nb_vertices(f);
+	// 		if(n_vertices > 4) {
+	// 			Navigation::Index index = get_index_from_face(f);
+	// 			for(int j = 0; j < n_vertices; ++j) {
+	// 				boundary_or_interface[index.edge] = true;
+	// 				index = next_around_face(index);
+	// 			}
+	// 		}
+	// 	}
 
-		GEO::Attribute<int> edges_node_id(mesh_.edges.attributes(), "edges_node_id");
-		GEO::Attribute<std::array<double, 3> > edges_node(mesh_.edges.attributes(), "edges_node");
+	// 	GEO::Attribute<int> edges_node_id(mesh_.edges.attributes(), "edges_node_id");
+	// 	GEO::Attribute<std::array<double, 3> > edges_node(mesh_.edges.attributes(), "edges_node");
 
-		std::vector<int> vertex_counter(n_pts(), 0);
+	// 	std::vector<int> vertex_counter(n_pts(), 0);
 
-		int counter = n_elements();
+	// 	int counter = n_elements();
 
-		Eigen::MatrixXd p0, p1;
+	// 	Eigen::MatrixXd p0, p1;
 
-		for (int e = 0; e < (int) mesh_.edges.nb(); ++e) {
-			if(!boundary_or_interface[e]) {
-				edges_node_id[e] = -1;
-				continue;
-			}
+	// 	for (int e = 0; e < (int) mesh_.edges.nb(); ++e) {
+	// 		if(!boundary_or_interface[e]) {
+	// 			edges_node_id[e] = -1;
+	// 			continue;
+	// 		}
 
-			edges_node_id[e] = counter++;
+	// 		edges_node_id[e] = counter++;
 
-			const int v0 = mesh_.edges.vertex(e, 0);
-			const int v1 = mesh_.edges.vertex(e, 1);
-			point(v0, p0); point(v1, p1);
-			auto &val = (p0 + p1)/2;
-			for(long d = 0; d < val.size(); ++d) {
-				edges_node[e][d] = val(d);
-			}
-		}
+	// 		const int v0 = mesh_.edges.vertex(e, 0);
+	// 		const int v1 = mesh_.edges.vertex(e, 1);
+	// 		point(v0, p0); point(v1, p1);
+	// 		auto &val = (p0 + p1)/2;
+	// 		for(long d = 0; d < val.size(); ++d) {
+	// 			edges_node[e][d] = val(d);
+	// 		}
+	// 	}
 
-		GEO::Attribute<int> vertices_node_id(mesh_.vertices.attributes(), "vertices_node_id");
-		vertices_node_id.fill(-1);
+	// 	GEO::Attribute<int> vertices_node_id(mesh_.vertices.attributes(), "vertices_node_id");
+	// 	vertices_node_id.fill(-1);
 
-		GEO::Attribute<std::array<double, 3>> vertices_node(mesh_.vertices.attributes(), "vertices_node");
+	// 	GEO::Attribute<std::array<double, 3>> vertices_node(mesh_.vertices.attributes(), "vertices_node");
 
-		for (int e = 0; e < n_elements(); ++e) {
-			Navigation::Index index = get_index_from_face(e);
+	// 	for (int e = 0; e < n_elements(); ++e) {
+	// 		Navigation::Index index = get_index_from_face(e);
 
-			for(int i = 0; i < n_element_vertices(e); ++i) {
-				int prev = switch_edge(index).edge;
-				if (boundary_or_interface[prev] && boundary_or_interface[index.edge]) {
-					const int v_id = index.vertex;
-					vertices_node_id[v_id] = counter++;
-					point(v_id, p0);
+	// 		for(int i = 0; i < n_element_vertices(e); ++i) {
+	// 			int prev = switch_edge(index).edge;
+	// 			if (boundary_or_interface[prev] && boundary_or_interface[index.edge]) {
+	// 				const int v_id = index.vertex;
+	// 				vertices_node_id[v_id] = counter++;
+	// 				point(v_id, p0);
 
-					for(long d = 0; d < p0.size(); ++d) {
-						vertices_node[v_id][d] = p0(d);
-					}
-				}
+	// 				for(long d = 0; d < p0.size(); ++d) {
+	// 					vertices_node[v_id][d] = p0(d);
+	// 				}
+	// 			}
 
-				index = next_around_face(index);
-			}
-		}
-	}
+	// 			index = next_around_face(index);
+	// 		}
+	// 	}
+	// }
 
 	void Mesh2D::triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const
 	{
@@ -337,32 +329,34 @@ namespace poly_fem
 		}
 	}
 
-	void Mesh2D::compute_barycenter(Eigen::MatrixXd &barycenters) const
+	void Mesh2D::compute_elements_tag()
 	{
-		barycenters.resize(n_elements(), 2);
-
-		for(GEO::index_t f = 0; f < mesh_.facets.nb(); ++f)
-		{
-			barycenters.row(f) = node_from_face(f);
-		}
-	}
-
-	void Mesh2D::compute_element_tag(std::vector<ElementType> &ele_tag) const
-	{
-		poly_fem::compute_element_tags(mesh_, ele_tag);
+		poly_fem::compute_element_tags(mesh_, elements_tag_);
 	}
 
 	void Mesh2D::edge_barycenters(Eigen::MatrixXd &barycenters) const {
 		barycenters.resize(n_edges(), 2);
 		for (int e = 0; e < n_edges(); ++e) {
-			barycenters.row(e) = edge_mid_point(e);
+			const int v0 = mesh_.edges.vertex(e, 0);
+			const int v1 = mesh_.edges.vertex(e, 1);
+
+			barycenters.row(e) = 0.5*(point(v0) + point(v1));
 		}
 	}
 
 	void Mesh2D::face_barycenters(Eigen::MatrixXd &barycenters) const {
-		barycenters.resize(n_elements(), 2);
-		for(GEO::index_t f = 0; f < mesh_.facets.nb(); ++f) {
-			barycenters.row(f) = node_from_face(f);
+		barycenters.resize(n_faces(), 2);
+		for(int f = 0; f < n_faces(); ++f) {
+			const int n_vertices = n_face_vertices(f);
+			RowVectorNd bary(2); bary.setZero();
+
+			Navigation::Index index = get_index_from_face(f);
+			for(int lv = 0; lv < n_vertices; ++lv)
+			{
+				bary += point(index.vertex);
+				index = next_around_face(index);
+			}
+			barycenters.row(f) = bary / n_vertices;
 		}
 	}
 

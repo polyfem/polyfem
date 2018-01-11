@@ -76,20 +76,20 @@ namespace poly_fem
 
 		if(state.mesh->is_volume())
 		{
-			Eigen::MatrixXd p, p1;
-			state.mesh->point(current_3d_index.vertex, p);
-			state.mesh->point(static_cast<Mesh3D *>(state.mesh)->switch_vertex(current_3d_index).vertex, p1);
+			const auto p = state.mesh->point(current_3d_index.vertex);
+			const auto p1 = state.mesh->point(static_cast<Mesh3D *>(state.mesh)->switch_vertex(current_3d_index).vertex);
 
 			viewer.data.add_points(p, MatrixXd::Zero(1, 3));
 			viewer.data.add_edges(p, p1, RowVector3d(1, 1, 0));
 
-			viewer.data.add_points(static_cast<Mesh3D *>(state.mesh)->node_from_face(current_3d_index.face), RowVector3d(1, 0, 0));
+			//TODO
+			// viewer.data.add_points(static_cast<Mesh3D *>(state.mesh)->node_from_face(current_3d_index.face), RowVector3d(1, 0, 0));
 		}
 	}
 
 	void UIState::color_mesh(const int n_tris, const std::vector<bool> &valid_elements)
 	{
-		std::vector<ElementType> &ele_tag = state.els_tag;
+		const std::vector<ElementType> &ele_tag = state.mesh->elements_tag();
 
 		Eigen::MatrixXd cols(n_tris, 3);
 		cols.setZero();
@@ -225,18 +225,6 @@ namespace poly_fem
 		return valid_tri.rows();
 	}
 
-	bool UIState::is_quad(const ElementBases &bs) const
-	{
-		return bs.has_parameterization;
-		//(state.mesh->is_volume() && (int(bs.bases.size()) == 8 || int(bs.bases.size()) == 27)) || (!state.mesh->is_volume() && (int(bs.bases.size()) == 4 || int(bs.bases.size()) == 9));
-	}
-
-	bool UIState::is_tri(const ElementBases &bs) const
-	{
-		return false;
-		//!state.mesh->is_volume() && (int(bs.bases.size()) == 3 || int(bs.bases.size()) == 6);
-	}
-
 	void UIState::interpolate_function(const MatrixXd &fun, MatrixXd &result)
 	{
 		MatrixXd tmp;
@@ -254,10 +242,8 @@ namespace poly_fem
 			const ElementBases &bs = state.bases[i];
 			MatrixXd local_pts;
 
-			if(is_quad(bs))
+			if(state.mesh->is_cube(i))
 				local_pts = local_vis_pts_quad;
-			else if(is_tri(bs))
-				local_pts = local_vis_pts_tri;
 			else
 				local_pts = vis_pts_poly[i];
 
@@ -413,6 +399,7 @@ namespace poly_fem
 			clear_func();
 			current_visualization = Visualizing::VisMesh;
 
+			std::cout<<vis_faces.rows()<<" "<<vis_faces.cols()<<std::endl;
 			std::vector<bool> valid_elements;
 			clip_elements(vis_pts, vis_faces, vis_element_ranges, valid_elements);
 		};
@@ -599,8 +586,6 @@ namespace poly_fem
 				0, 3, 7,
 				0, 7, 4;
 
-				clear_func();
-
 				MatrixXi tets;
 				igl::copyleft::tetgen::tetrahedralize(pts, faces, buf.str(), local_vis_pts_quad, tets, local_vis_faces_quad);
 			}
@@ -623,19 +608,19 @@ namespace poly_fem
 					MatrixXd H(0,2);
 					igl::triangle::triangulate(pts, E, H, buf.str(), local_vis_pts_quad, local_vis_faces_quad);
 				}
-				{
-					MatrixXd pts(3,2); pts <<
-					0,0,
-					1,0,
-					0,1;
+				// {
+				// 	MatrixXd pts(3,2); pts <<
+				// 	0,0,
+				// 	1,0,
+				// 	0,1;
 
-					MatrixXi E(3,2); E <<
-					0,1,
-					1,2,
-					2,0;
+				// 	MatrixXi E(3,2); E <<
+				// 	0,1,
+				// 	1,2,
+				// 	2,0;
 
-					igl::triangle::triangulate(pts, E, MatrixXd(0,2), buf.str(), local_vis_pts_tri, local_vis_faces_tri);
-				}
+				// 	igl::triangle::triangulate(pts, E, MatrixXd(0,2), buf.str(), local_vis_pts_tri, local_vis_faces_tri);
+				// }
 			}
 
 			const auto &current_bases = state.iso_parametric ? state.bases : state.geom_bases;
@@ -646,15 +631,15 @@ namespace poly_fem
 			{
 				const ElementBases &bs = current_bases[i];
 
-				if(is_quad(bs)){
+				if(state.mesh->is_cube(i)){
 					faces_total_size   += local_vis_faces_quad.rows();
 					points_total_size += local_vis_pts_quad.rows();
 				}
-				else if(is_tri(bs))
-				{
-					faces_total_size   += local_vis_faces_tri.rows();
-					points_total_size += local_vis_pts_tri.rows();
-				}
+				// else if(is_tri(bs))
+				// {
+				// 	faces_total_size   += local_vis_faces_tri.rows();
+				// 	points_total_size += local_vis_pts_tri.rows();
+				// }
 				else
 				{
 					if(state.mesh->is_volume())
@@ -693,7 +678,7 @@ namespace poly_fem
 			for(int i = 0; i < int(current_bases.size()); ++i)
 			{
 				const ElementBases &bs = current_bases[i];
-				if(is_quad(bs))
+				if(state.mesh->is_cube(i))
 				{
 					bs.eval_geom_mapping(local_vis_pts_quad, mapped);
 					vis_faces.block(face_index, 0, local_vis_faces_quad.rows(), 3) = local_vis_faces_quad.array() + point_index;
@@ -702,16 +687,16 @@ namespace poly_fem
 					vis_pts.block(point_index, 0, mapped.rows(), mapped.cols()) = mapped;
 					point_index += mapped.rows();
 				}
-				else if(is_tri(bs))
-				{
-					bs.eval_geom_mapping(local_vis_pts_tri, mapped);
-					vis_faces.block(face_index, 0, local_vis_faces_tri.rows(), 3) = local_vis_faces_tri.array() + point_index;
+				// else if(is_tri(bs))
+				// {
+				// 	bs.eval_geom_mapping(local_vis_pts_tri, mapped);
+				// 	vis_faces.block(face_index, 0, local_vis_faces_tri.rows(), 3) = local_vis_faces_tri.array() + point_index;
 
-					face_index += local_vis_faces_tri.rows();
+				// 	face_index += local_vis_faces_tri.rows();
 
-					vis_pts.block(point_index, 0, mapped.rows(), mapped.cols()) = mapped;
-					point_index += mapped.rows();
-				}
+				// 	vis_pts.block(point_index, 0, mapped.rows(), mapped.cols()) = mapped;
+				// 	point_index += mapped.rows();
+				// }
 				else{
 					vis_faces.block(face_index, 0, vis_faces_poly[i].rows(), 3) = vis_faces_poly[i].array() + point_index;
 
@@ -780,7 +765,7 @@ namespace poly_fem
 			state.load_mesh();
 			state.compute_mesh_stats();
 			state.mesh->triangulate_faces(tri_faces, tri_pts, element_ranges);
-			state.mesh->compute_barycenter(normalized_barycenter);
+			state.mesh->compute_element_barycenters(normalized_barycenter);
 
 			// std::cout<<"normalized_barycenter\n"<<normalized_barycenter<<"\n\n"<<std::endl;
 			for(long i = 0; i < normalized_barycenter.cols(); ++i){

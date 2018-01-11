@@ -23,7 +23,7 @@ std::vector<int> compute_nonzero_bases_ids(const Mesh3D &mesh, const int c,
 {
 	std::vector<int> local_to_global;
 
-	for (int lf = 0; lf < mesh.n_element_faces(c); ++lf) {
+	for (int lf = 0; lf < mesh.n_cell_faces(c); ++lf) {
 		int f = mesh.get_index_from_element(c, lf, 0).face;
 		const InterfaceData &bdata = poly_face_to_data.at(f);
 		local_to_global.insert(local_to_global.end(), bdata.node_id.begin(), bdata.node_id.end());
@@ -80,16 +80,16 @@ constexpr int lv0 = 3;
 GetAdjacentLocalEdge compute_quad_mesh_from_cell(
 	const Mesh3D &mesh, int c, Eigen::MatrixXd &V, Eigen::MatrixXi &F)
 {
-	std::vector<std::array<int, 4>> quads(mesh.n_element_faces(c));
+	std::vector<std::array<int, 4>> quads(mesh.n_cell_faces(c));
 	typedef std::tuple<int, int, bool> QuadLocalEdge;
-	std::vector<std::array<QuadLocalEdge, 4>> adj(mesh.n_element_faces(c));
+	std::vector<std::array<QuadLocalEdge, 4>> adj(mesh.n_cell_faces(c));
 	int num_vertices = 0;
 	std::map<int, int> vertex_g2l;
 	std::map<int, int> face_g2l;
-	for (int lf = 0; lf < mesh.n_element_faces(c); ++lf) {
+	for (int lf = 0; lf < mesh.n_cell_faces(c); ++lf) {
 		face_g2l.emplace(mesh.get_index_from_element(c, lf, lv0).face, lf);
 	}
-	for (int lf = 0; lf < mesh.n_element_faces(c); ++lf) {
+	for (int lf = 0; lf < mesh.n_cell_faces(c); ++lf) {
 		auto index = mesh.get_index_from_element(c, lf, lv0);
 		assert(mesh.n_face_vertices(index.face) == 4);
 		for (int lv = 0; lv < 4; ++lv) {
@@ -113,10 +113,10 @@ GetAdjacentLocalEdge compute_quad_mesh_from_cell(
 						std::get<2>(adj[lf][lv]) = false;
 					}
 				}
-				index3 = mesh.next_around_face_of_element(index3);
+				index3 = mesh.next_around_face(index3);
 			}
 
-			index = mesh.next_around_face_of_element(index);
+			index = mesh.next_around_face(index);
 		}
 	}
 	V.resize(num_vertices, 3);
@@ -248,7 +248,7 @@ void sample_polyhedra(
 	instanciate_pattern(QV, QF, PV, PF, collocation_points, CF, nullptr, evalFuncGeom, getAdjLocalEdge);
 	reorder_mesh(collocation_points, CF, uv_sources, uv_ranges);
 	reorder_mesh(UV, UF, uv_sources, uv_ranges);
-	assert(uv_ranges.size() == mesh.n_element_faces(element_index) + 1);
+	assert(uv_ranges.size() == mesh.n_cell_faces(element_index) + 1);
 
 	// Compute coarse surface surface for visualization
 	compute_canonical_pattern(n_quadrature_vertices_per_edge, PV, PF);
@@ -291,7 +291,7 @@ void sample_polyhedra(
 	Eigen::MatrixXd samples, basis_val;
 	rhs.resize(UV.rows(), local_to_global.size());
 	rhs.setZero();
-	for (int lf = 0; lf < mesh.n_element_faces(element_index); ++lf) {
+	for (int lf = 0; lf < mesh.n_cell_faces(element_index); ++lf) {
 		auto index = mesh.get_index_from_element(element_index, lf, 0);
 		assert(mesh.switch_element(index).element >= 0); // no boundary polygons
 
@@ -385,7 +385,6 @@ void PolygonalBasis3d::build_bases(
 	const int nn_samples_per_edge,
 	const Mesh3D &mesh,
 	const int n_bases,
-	const std::vector<ElementType> &element_type,
 	const int quadrature_order,
 	const std::vector< ElementAssemblyValues > &values,
 	const std::vector< ElementAssemblyValues > &gvalues,
@@ -407,11 +406,11 @@ void PolygonalBasis3d::build_bases(
 
 	// Step 2: Compute the rest =)
 	for (int e = 0; e < mesh.n_elements(); ++e) {
-		if (element_type[e] != ElementType::InteriorPolytope && element_type[e] != ElementType::BoundaryPolytope) {
+		if (!mesh.is_polytope(e)) {
 			continue;
 		}
 		// No boundary polytope
-		assert(element_type[e] != ElementType::BoundaryPolytope);
+		// assert(element_type[e] != ElementType::BoundaryPolytope);
 
 		// Kernel distance to polygon boundary
 		const double eps = compute_epsilon(mesh, e);

@@ -216,7 +216,7 @@ constexpr std::array<std::array<int, 3>, 27> quadr_hex_local_node = {{
 int find_edge(const poly_fem::Mesh3D &mesh, int c, int v1, int v2) {
 	std::array<int, 2> v = {{v1, v2}};
 	std::sort(v.begin(), v.end());
-	for (int lf = 0; lf < mesh.n_element_faces(c); ++lf) {
+	for (int lf = 0; lf < mesh.n_cell_faces(c); ++lf) {
 		auto idx = mesh.get_index_from_element(c, lf, 0);
 		for (int lv = 0; lv < mesh.n_face_vertices(idx.face); ++lv) {
 			std::array<int, 2> u;
@@ -226,7 +226,7 @@ int find_edge(const poly_fem::Mesh3D &mesh, int c, int v1, int v2) {
 			if (u == v) {
 				return idx.edge;
 			}
-			idx = mesh.next_around_face_of_element(idx);
+			idx = mesh.next_around_face(idx);
 		}
 	}
 	throw std::runtime_error("Edge not found");
@@ -235,13 +235,13 @@ int find_edge(const poly_fem::Mesh3D &mesh, int c, int v1, int v2) {
 int find_face(const poly_fem::Mesh3D &mesh, int c, int v1, int v2, int v3, int v4) {
 	std::array<int, 4> v = {{v1, v2, v3, v4}};
 	std::sort(v.begin(), v.end());
-	for (int lf = 0; lf < mesh.n_element_faces(c); ++lf) {
+	for (int lf = 0; lf < mesh.n_cell_faces(c); ++lf) {
 		auto idx = mesh.get_index_from_element(c, lf, 0);
 		assert(mesh.n_face_vertices(idx.face) == 4);
 		std::array<int, 4> u;
 		for (int lv = 0; lv < mesh.n_face_vertices(idx.face); ++lv) {
 			u[lv] = idx.vertex;
-			idx = mesh.next_around_face_of_element(idx);
+			idx = mesh.next_around_face(idx);
 		}
 		std::sort(u.begin(), u.end());
 		if (u == v) {
@@ -263,8 +263,7 @@ constexpr std::array<int, 4> local_edge_to_interface_flag = {{
 // -----------------------------------------------------------------------------
 
 std::array<int, 8> linear_hex_local_to_global(const poly_fem::Mesh3D &mesh, int c) {
-	assert(mesh.n_element_vertices(c) == 8);
-	assert(mesh.n_element_faces(c) == 6);
+	assert(mesh.is_cube(c));
 
 	// Vertex nodes
 	std::array<int, 8> l2g;
@@ -279,10 +278,9 @@ std::array<int, 8> linear_hex_local_to_global(const poly_fem::Mesh3D &mesh, int 
 // -----------------------------------------------------------------------------
 
 std::array<int, 27> quadr_hex_local_to_global(const poly_fem::Mesh3D &mesh, int c) {
-	assert(mesh.n_element_vertices(c) == 8);
-	assert(mesh.n_element_faces(c) == 6);
+	assert(mesh.is_cube(c));
 
-	int e_offset = mesh.n_pts();
+	int e_offset = mesh.n_vertices();
 	int f_offset = e_offset + mesh.n_edges();
 	int c_offset = f_offset + mesh.n_faces();
 
@@ -367,21 +365,17 @@ void compute_nodes(
 	std::vector<poly_fem::LocalBoundary> &local_boundary,
 	std::map<int, poly_fem::InterfaceData> &poly_face_to_data)
 {
-	const int n_nodes = mesh.n_pts() + (discr_order > 1 ? mesh.n_edges() + mesh.n_faces() + mesh.n_elements() : 0);
-	const int e_offset = mesh.n_pts();
+	const int n_nodes = mesh.n_vertices() + (discr_order > 1 ? mesh.n_edges() + mesh.n_faces() + mesh.n_elements() : 0);
+	const int e_offset = mesh.n_vertices();
 	const int f_offset = e_offset + mesh.n_edges();
 	const int c_offset = f_offset + mesh.n_faces();
 	Eigen::MatrixXd all_nodes(n_nodes, 3);
 	std::vector<bool> is_boundary(n_nodes, false);
 	std::vector<int> remapped_node(n_nodes, -1);
 
-	auto is_hex = [&] (int c) {
-		return (mesh.n_element_vertices(c) == 8) && (mesh.n_element_faces(c) == 6);
-	};
-
 	// Step 1: Compute all node positions + node boundary tag
 	{
-		for (int v = 0; v < mesh.n_pts(); ++v) {
+		for (int v = 0; v < mesh.n_vertices(); ++v) {
 			all_nodes.row(v) = mesh.point(v);
 			is_boundary[v] = mesh.is_boundary_vertex(v);
 		}
@@ -412,7 +406,7 @@ void compute_nodes(
 
 	// Step 2: Keep only read real nodes + compute parametric boundary tag
 	for (int c = 0; c < mesh.n_elements(); ++c) {
-		if (!is_hex(c)) { continue; } // Skip polytopes
+		if (mesh.is_polytope(c)) { continue; } // Skip polytopes
 
 		// Create remapped node array for element
 		auto remap_nodes = [&] (auto l2g) {
@@ -475,14 +469,14 @@ void compute_nodes(
 
 	// Step 3: Iterate over edges of polygons and compute interface weights
 	for (int c = 0; c < mesh.n_elements(); ++c) {
-		if (is_hex(c)) { continue; } // Skip hexes
+		if (mesh.is_cube(c)) { continue; } // Skip hexes
 
-		for (int lf = 0; lf < mesh.n_element_faces(c); ++lf) {
+		for (int lf = 0; lf < mesh.n_cell_faces(c); ++lf) {
 			auto index = mesh.get_index_from_element(c, lf, 0);
 			auto index2 = mesh.switch_element(index);
 			int c2 = index2.element;
 			assert(c2 >= 0);
-			assert(is_hex(c2));
+			assert(mesh.is_cube(c2));
 
 			auto abcd = poly_fem::FEBasis3d::quadr_hex_face_local_nodes(mesh, index2);
 			poly_fem::InterfaceData data;
@@ -593,9 +587,7 @@ std::array<int, 4> poly_fem::FEBasis3d::linear_hex_face_local_nodes(
 	const Mesh3D &mesh, Navigation3D::Index index)
 {
 	int c = index.element;
-	assert(mesh.n_face_vertices(index.face) == 4);
-	assert(mesh.n_element_vertices(c) == 8);
-	assert(mesh.n_element_faces(c) == 6);
+	assert(mesh.is_cube(c));
 
 	// Local to global mapping of node indices
 	auto l2g = linear_hex_local_to_global(mesh, c);
@@ -604,7 +596,7 @@ std::array<int, 4> poly_fem::FEBasis3d::linear_hex_face_local_nodes(
 	std::array<int, 4> result;
 	for (int lv = 0, i = 0; lv < 4; ++lv) {
 		result[i++] = find_index(l2g.begin(), l2g.end(), index.vertex);
-		index = mesh.next_around_face_of_element(index);
+		index = mesh.next_around_face(index);
 	}
 	return result;
 }
@@ -627,10 +619,9 @@ std::array<int, 9> poly_fem::FEBasis3d::quadr_hex_face_local_nodes(
 	const Mesh3D &mesh, Navigation3D::Index index)
 {
 	int c = index.element;
-	assert(mesh.n_face_vertices(index.face) == 4);
-	assert(mesh.n_element_vertices(c) == 8);
-	assert(mesh.n_element_faces(c) == 6);
-	int e_offset = mesh.n_pts();
+	assert(mesh.is_cube(c));
+
+	int e_offset = mesh.n_vertices();
 	int f_offset = e_offset + mesh.n_edges();
 
 	// Local to global mapping of node indices
@@ -641,7 +632,7 @@ std::array<int, 9> poly_fem::FEBasis3d::quadr_hex_face_local_nodes(
 	for (int lv = 0, i = 0; lv < 4; ++lv) {
 		result[i++] = find_index(l2g.begin(), l2g.end(), index.vertex);
 		result[i++] = find_index(l2g.begin(), l2g.end(), e_offset + index.edge);
-		index = mesh.next_around_face_of_element(index);
+		index = mesh.next_around_face(index);
 	}
 	result[8] = find_index(l2g.begin(), l2g.end(), f_offset + index.face);
 	return result;
@@ -702,7 +693,7 @@ int poly_fem::FEBasis3d::build_bases(
 	bases.resize(mesh.n_elements());
 	for (int e = 0; e < mesh.n_elements(); ++e) {
 		ElementBases &b = bases[e];
-		const int n_el_vertices = mesh.n_element_vertices(e);
+		const int n_el_vertices = mesh.n_cell_vertices(e);
 		const int n_el_bases = (int) element_nodes_id[e].size();
 		b.bases.resize(n_el_bases);
 
