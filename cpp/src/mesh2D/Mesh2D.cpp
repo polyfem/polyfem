@@ -331,6 +331,7 @@ namespace poly_fem
 
 	void Mesh2D::compute_elements_tag()
 	{
+		elements_tag_.clear();
 		poly_fem::compute_element_tags(mesh_, elements_tag_);
 	}
 

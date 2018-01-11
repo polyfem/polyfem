@@ -628,6 +628,7 @@ namespace poly_fem
 	void Mesh3D::compute_elements_tag()
 	{
 		std::vector<ElementType> &ele_tag = elements_tag_;
+		ele_tag.clear();
 
 		ele_tag.resize(mesh_.elements.size());
 		for (auto &t : ele_tag) t = ElementType::RegularInteriorCube;

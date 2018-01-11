@@ -29,6 +29,7 @@ namespace poly_fem
 
         void print_local_space(const SpaceMatrix &space)
         {
+            std::cout<<std::endl;
             for(int j=2; j >=0; --j)
             {
                 for(int i=0; i < 3; ++i)
@@ -72,7 +73,7 @@ namespace poly_fem
             const int y2 = !is_x ? y : (invert? 0 : 2);
 
             const bool is_boundary = mesh_nodes.is_boundary(node_id);
-            const bool is_interface = false; //mesh_nodes.is_interface(node_id);
+            const bool is_interface = mesh_nodes.is_interface(node_id);
 
             if(is_boundary)
             {
@@ -732,7 +733,7 @@ namespace poly_fem
 
         for(int e = 0; e < n_els; ++e)
         {
-            if(!mesh.is_cube(e) || mesh.is_spline_compatible(e))
+            if(mesh.is_polytope(e) || mesh.is_spline_compatible(e))
                 continue;
 
             ElementBases &b=bases[e];
@@ -744,21 +745,23 @@ namespace poly_fem
 
         for(int e = 0; e < n_els; ++e)
         {
-            if(!mesh.is_cube(e) || mesh.is_spline_compatible(e))
+            if(mesh.is_polytope(e) || mesh.is_spline_compatible(e))
                 continue;
+
             assign_q2_weights(mesh, e, bases);
         }
 
         for(int e = 0; e < n_els; ++e)
         {
-            if(!mesh.is_cube(e) || mesh.is_spline_compatible(e))
+            if(mesh.is_polytope(e) || mesh.is_spline_compatible(e))
                 continue;
+
             assign_q2_weights(mesh, e, bases);
         }
 
         for(int e = 0; e < n_els; ++e)
         {
-            if(!mesh.is_cube(e) || mesh.is_spline_compatible(e))
+            if(mesh.is_polytope(e) || mesh.is_spline_compatible(e))
                 continue;
             const ElementBases &b=bases[e];
             setup_data_for_polygons(mesh, e, b, poly_edge_to_data);
