@@ -10,8 +10,9 @@
 #include <Eigen/Sparse>
 #include <vector>
 #include <iostream>
+#include <cmath>
 
-#include "UIState.hpp"
+//#include "UIState.hpp"
 
 namespace poly_fem
 {
@@ -25,7 +26,7 @@ namespace poly_fem
 			const std::vector< ElementAssemblyValues > &geom_values,
 			Eigen::SparseMatrix<double, Eigen::RowMajor> &stiffness) const
 		{
-			const int buffer_size = std::min(1e8, n_basis * local_assembler_.size());
+			const int buffer_size = std::min(long(1e8), long(n_basis) * local_assembler_.size());
 
 			std::vector< Eigen::Triplet<double> > entries;
 			entries.reserve(buffer_size);
