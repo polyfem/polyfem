@@ -82,6 +82,8 @@ add_library(polyfem
 	src/utils/HexBoundarySampler.cpp
 
 	src/mesh/Mesh.hpp
+	src/mesh/MeshNodes.cpp
+	src/mesh/MeshNodes.hpp
 	src/mesh/LocalBoundary.hpp
 
 	src/mesh2D/Mesh2D.hpp
