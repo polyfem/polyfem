@@ -10,8 +10,9 @@
 #include <Eigen/Sparse>
 #include <vector>
 #include <iostream>
+#include <cmath>
 
-#include "UIState.hpp"
+//#include "UIState.hpp"
 
 namespace poly_fem
 {
@@ -25,12 +26,17 @@ namespace poly_fem
 			const std::vector< ElementAssemblyValues > &geom_values,
 			Eigen::SparseMatrix<double, Eigen::RowMajor> &stiffness) const
 		{
-			const int buffer_size = n_basis * 10 * local_assembler_.size();
+			const int buffer_size = std::min(long(1e8), long(n_basis) * local_assembler_.size());
 
 			std::vector< Eigen::Triplet<double> > entries;
 			entries.reserve(buffer_size);
+			std::cout<<"buffer_size "<<buffer_size<<std::endl;
 
 			Eigen::MatrixXd local_val;
+			stiffness.resize(n_basis*local_assembler_.size(), n_basis*local_assembler_.size());
+			stiffness.setZero();
+
+			Eigen::SparseMatrix<double, Eigen::RowMajor> tmp(stiffness.rows(), stiffness.cols());
 
 			const int n_values = int(values.size());
 			for(int e=0; e < n_values; ++e)
@@ -101,10 +107,23 @@ namespace poly_fem
 						}
 					}
 				}
+
+				if(entries.size() > 1e8)
+				{
+					tmp.setFromTriplets(entries.begin(), entries.end());
+					stiffness += tmp;
+
+					entries.clear();
+					entries.reserve(buffer_size);
+					std::cout<<"cleaning memory..."<<std::endl;
+				}
 			}
 
-			stiffness.resize(n_basis*local_assembler_.size(), n_basis*local_assembler_.size());
-			stiffness.setFromTriplets(entries.begin(), entries.end());
+			tmp.setFromTriplets(entries.begin(), entries.end());
+			stiffness += tmp;
+
+			// stiffness.resize(n_basis*local_assembler_.size(), n_basis*local_assembler_.size());
+			// stiffness.setFromTriplets(entries.begin(), entries.end());
 		}
 
 		void set_identity(const std::vector<int> &boundary_nodes, Eigen::SparseMatrix<double, Eigen::RowMajor> &stiffness) const

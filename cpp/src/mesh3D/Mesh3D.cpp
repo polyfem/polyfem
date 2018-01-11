@@ -428,8 +428,9 @@ namespace poly_fem
 
 			if(id < 0 || is_polyhedron(id))
 			{
+				const bool is_boundary = id < 0;
 				id = edge_node_id(index.edge);
-				return id < 0;
+				return is_boundary;
 			}
 
 			return node_id_from_face_index(switch_face(new_index), id);
@@ -441,46 +442,45 @@ namespace poly_fem
 
 	int Mesh3D::node_id_from_vertex_index_explore(const Navigation3D::Index &index, int &id, Eigen::MatrixXd &node, bool &real_b) const
 	{
-		Navigation3D::Index new_index = switch_element(index);
-
-		id = new_index.element;
-
 		auto is_polyhedron = [this](int e) {
 			return (n_element_vertices(e) != 8) || (n_element_faces(e) != 6);
 		};
+
+		Navigation3D::Index new_index = switch_element(index);
+
+		id = new_index.element;
+		real_b = id < 0;
 
 		if(id < 0 || is_polyhedron(id))
 		{
 			id = vertex_node_id(index.vertex);
 			node = node_from_vertex(index.vertex);
-			real_b = id < 0;
 			return 3;
 		}
 
 		new_index = switch_element(switch_face(new_index));
 		id = new_index.element;
+		real_b = id < 0;
 
 		if(id < 0 || is_polyhedron(id))
 		{
 			id = edge_node_id(switch_edge(new_index).edge);
 			node = node_from_edge(switch_edge(new_index).edge);
-			real_b = id < 0;
 			return 2;
 		}
 
 		new_index = switch_element(switch_face(switch_edge(new_index)));
 		id = new_index.element;
+		real_b = id < 0;
 
 		if(id < 0 || is_polyhedron(id))
 		{
 			id = face_node_id(new_index.face);
 			node = node_from_face(new_index.face);
-			real_b = id < 0;
 			return 1;
 		}
 
 		node = node_from_element(id);
-		real_b = id < 0;
 		return 0;
 	}
 
