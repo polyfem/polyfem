@@ -33,6 +33,7 @@ namespace poly_fem
 
 		//Queries
 		virtual bool is_volume() const = 0;
+		int dimension() const { return (is_volume() ? 3 : 2); }
 
 		inline int n_elements() const { return (is_volume() ? n_cells() : n_faces()); }
 
@@ -55,49 +56,17 @@ namespace poly_fem
 
 		//Nodal access
 		virtual RowVectorNd point(const int global_index) const = 0;
+		virtual RowVectorNd edge_barycenter(const int e) const = 0;
+		virtual RowVectorNd face_barycenter(const int f) const = 0;
+		virtual RowVectorNd cell_barycenter(const int c) const = 0;
 		virtual void edge_barycenters(Eigen::MatrixXd &barycenters) const = 0;
 		virtual void face_barycenters(Eigen::MatrixXd &barycenters) const = 0;
 		virtual void cell_barycenters(Eigen::MatrixXd &barycenters) const = 0;
 
-
 		//Queries on the tags
-		inline bool is_spline_compatible(const int el_id) const
-		{
-			if(is_volume()){
-				return
-				elements_tag_[el_id] == ElementType::RegularInteriorCube ||
-				elements_tag_[el_id] == ElementType::RegularBoundaryCube ||
-				elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube ||
-				elements_tag_[el_id] == ElementType::SimpleSingularBoundaryCube;
-			}
-			else
-			{
-				return
-				elements_tag_[el_id] == ElementType::RegularInteriorCube ||
-				elements_tag_[el_id] == ElementType::RegularBoundaryCube ||
-				elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube;
-			}
-		}
-
-		inline bool is_cube(const int el_id) const
-		{
-			return
-			elements_tag_[el_id] == ElementType::RegularInteriorCube ||
-			elements_tag_[el_id] == ElementType::RegularBoundaryCube ||
-
-			elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube ||
-			elements_tag_[el_id] == ElementType::SimpleSingularBoundaryCube ||
-
-			elements_tag_[el_id] == ElementType::MultiSingularInteriorCube ||
-			elements_tag_[el_id] == ElementType::MultiSingularBoundaryCube;
-		}
-
-		inline bool is_polytope(const int el_id) const
-		{
-			return
-			elements_tag_[el_id] == ElementType::InteriorPolytope ||
-			elements_tag_[el_id] == ElementType::BoundaryPolytope;
-		}
+		inline bool is_spline_compatible(const int el_id) const;
+		inline bool is_cube(const int el_id) const;
+		inline bool is_polytope(const int el_id) const;
 
 		inline const std::vector<ElementType> &elements_tag() const { return elements_tag_; }
 

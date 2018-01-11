@@ -83,6 +83,7 @@ add_library(polyfem
 	src/utils/HexBoundarySampler.hpp
 	src/utils/HexBoundarySampler.cpp
 
+	src/mesh/Mesh.cpp
 	src/mesh/Mesh.hpp
 	src/mesh/MeshNodes.cpp
 	src/mesh/MeshNodes.hpp

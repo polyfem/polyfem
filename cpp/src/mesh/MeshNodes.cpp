@@ -59,6 +59,7 @@ int poly_fem::MeshNodes::node_id_from_simplex(int simplex_id) {
 }
 
 // -----------------------------------------------------------------------------
+
 int poly_fem::MeshNodes::node_id_from_vertex(int v) {
 	return node_id_from_simplex(v);
 }
