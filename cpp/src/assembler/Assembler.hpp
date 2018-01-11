@@ -106,13 +106,19 @@ namespace poly_fem
 					}
 				}
 
-				if(entries.size() > 1000)
+				if(entries.size() > 1e10)
 				{
 					tmp.setFromTriplets(entries.begin(), entries.end());
 					stiffness += tmp;
+
 					entries.clear();
+					entries.reserve(buffer_size);
+					std::cout<<"cleaning memory..."<<std::endl;
 				}
 			}
+
+			tmp.setFromTriplets(entries.begin(), entries.end());
+			stiffness += tmp;
 
 			// stiffness.resize(n_basis*local_assembler_.size(), n_basis*local_assembler_.size());
 			// stiffness.setFromTriplets(entries.begin(), entries.end());
