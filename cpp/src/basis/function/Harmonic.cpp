@@ -13,7 +13,7 @@ namespace poly_fem
 			if(r < 1e-8) return 0;
 
 			if(is_volume)
-				return -1/r;
+				return 1/r;
 
 			return log(r);
 		}
@@ -23,7 +23,7 @@ namespace poly_fem
 			if(r < 1e-8) return 0;
 
 			if(is_volume)
-				return 1/(r*r);
+				return -1/(r*r);
 
 			return 1/r;
 		}
@@ -35,7 +35,6 @@ namespace poly_fem
 	{
 		compute(samples, local_basis_integral, quadr, rhs);
 	}
-
 
 	void Harmonic::basis(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const
 	{
@@ -97,26 +96,34 @@ namespace poly_fem
 		}
 	}
 
-
-
 	void Harmonic::compute(const Eigen::MatrixXd &samples, const Eigen::MatrixXd &local_basis_integral,
-		const Quadrature &quad, Eigen::MatrixXd &rhs)
+		const Quadrature &quadr, Eigen::MatrixXd &rhs)
 	{
 		is_volume_ = samples.cols() == 3;
 
+		std::cout << centers_.rows() << " " << centers_.cols() << std::endl;
+		std::cout << samples.rows() << ' ' << samples.cols() << std::endl;
+
 #if 0
+		const int dim = samples.cols();
 		const int size = (int) samples.rows();
 
-		//+2 linear, +1 constant
-		Eigen::MatrixXd mat(size, centers_.rows() + 2 + 1);
+		//+dim linear, +1 constant
+		Eigen::MatrixXd mat(size, centers_.rows() + dim + 1);
 
 		const int end = int(mat.cols())-1;
 		mat.col(end).setOnes();
 
 		for(long i = 0; i < samples.rows(); ++i)
 		{
-			mat(i, end - 2) = samples(i, 0);
-			mat(i, end - 1) = samples(i, 1);
+			if (is_volume_) {
+				mat(i, end - 3) = samples(i, 0);
+				mat(i, end - 2) = samples(i, 1);
+				mat(i, end - 1) = samples(i, 2);
+			} else {
+				mat(i, end - 2) = samples(i, 0);
+				mat(i, end - 1) = samples(i, 1);
+			}
 
 			for(long j = 0; j < centers_.rows(); ++j)
 			{
@@ -124,8 +131,12 @@ namespace poly_fem
 			}
 		}
 
-		weights_ = mat.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(rhs);
+		std::cout << "solving system of size " << centers_.rows() << " x " << centers_.rows() << std::endl;
+		// weights_ = mat.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(rhs);
+		weights_ = (mat.transpose() * mat).ldlt().solve(mat.transpose() * rhs);
+		std::cout << "done" << std::endl;
 #else
+		const int dim = samples.cols();
 		const int size = (int) samples.rows();
 
 		//+1 constant
@@ -134,76 +145,15 @@ namespace poly_fem
 		const int end = int(mat.cols())-1;
 		mat.col(end).setOnes();
 
-		for(long i = 0; i < samples.rows(); ++i)
-		{
-			const double x = samples(i, 0);
-			const double y = samples(i, 1);
-			const double z = is_volume_ ? samples(i, 2) : 0;
-
-			rhs.row(i) -= (local_basis_integral.col(0).transpose() * x + local_basis_integral.col(1).transpose() * y)/quad.weights.sum();
-			if(is_volume_)
-				rhs.row(i) -= local_basis_integral.col(2).transpose() * z / quad.weights.sum();
-
-			for(long j = 0; j < centers_.rows(); ++j)
-			{
-				const double r = (centers_.row(j)-samples.row(i)).norm();
-				const Eigen::MatrixXd diff_r_x = quad.points.col(0).array() - centers_(j, 0);
-				const Eigen::MatrixXd diff_r_y = quad.points.col(1).array() - centers_(j, 1);
-				Eigen::MatrixXd diff_r_z;
-				if(is_volume_)
-					diff_r_z = quad.points.col(2).array() - centers_(j, 2);
-
-				const Eigen::MatrixXd rr = is_volume_ ?
-				(diff_r_x.array() * diff_r_x.array() + diff_r_y.array() * diff_r_y.array() + diff_r_z.array() * diff_r_z.array()).sqrt().eval() :
-				(diff_r_x.array() * diff_r_x.array() + diff_r_y.array() * diff_r_y.array()).sqrt().eval();
-
-				double KxI = 0;
-				double KyI = 0;
-				double KzI = 0;
-
-				for(long k = 0; k < rr.size(); ++k)
-				{
-					KxI += diff_r_x(k) / rr(k) * kernel_prime(is_volume_, rr(k)) * quad.weights(k);
-					KyI += diff_r_y(k) / rr(k) * kernel_prime(is_volume_, rr(k)) * quad.weights(k);
-
-					if(is_volume_)
-						KzI += diff_r_z(k) / rr(k) * kernel_prime(is_volume_, rr(k)) * quad.weights(k);
-				}
-
-				KxI /= quad.weights.sum();
-				KyI /= quad.weights.sum();
-				KzI /= quad.weights.sum();
-
-				mat(i,j)=kernel(is_volume_, r) - x*KxI - y*KyI - KzI*z;
-			}
-		}
-
-		Eigen::MatrixXd tmp = mat.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(rhs);
-		weights_.resize(centers_.rows() + (is_volume_?3:2) + 1, tmp.cols());
-		weights_.block(0, 0, centers_.rows(), tmp.cols()) = tmp.block(0, 0, centers_.rows(), tmp.cols());
-
-		const int wend = weights_.rows()-1;
-
-		weights_.row(wend) = tmp.row(tmp.rows()-1);
-		if(is_volume_)
-		{
-			weights_.row(wend-3) = local_basis_integral.col(0).transpose()/quad.weights.sum();
-			weights_.row(wend-2) = local_basis_integral.col(1).transpose()/quad.weights.sum();
-			weights_.row(wend-1) = local_basis_integral.col(2).transpose()/quad.weights.sum();
-		}
-		else
-		{
-			weights_.row(wend-2) = local_basis_integral.col(0).transpose()/quad.weights.sum();
-			weights_.row(wend-1) = local_basis_integral.col(1).transpose()/quad.weights.sum();
-		}
-
+		Eigen::MatrixXd KI(centers_.rows(), dim);
 		for(long j = 0; j < centers_.rows(); ++j)
 		{
-			const Eigen::MatrixXd diff_r_x = quad.points.col(0).array() - centers_(j, 0);
-			const Eigen::MatrixXd diff_r_y = quad.points.col(1).array() - centers_(j, 1);
+			// const double r = (centers_.row(j)-samples.row(i)).norm();
+			const Eigen::MatrixXd diff_r_x = quadr.points.col(0).array() - centers_(j, 0);
+			const Eigen::MatrixXd diff_r_y = quadr.points.col(1).array() - centers_(j, 1);
 			Eigen::MatrixXd diff_r_z;
 			if(is_volume_)
-				diff_r_z = quad.points.col(2).array() - centers_(j, 2);
+				diff_r_z = quadr.points.col(2).array() - centers_(j, 2);
 
 			const Eigen::MatrixXd rr = is_volume_ ?
 			(diff_r_x.array() * diff_r_x.array() + diff_r_y.array() * diff_r_y.array() + diff_r_z.array() * diff_r_z.array()).sqrt().eval() :
@@ -215,16 +165,90 @@ namespace poly_fem
 
 			for(long k = 0; k < rr.size(); ++k)
 			{
-				KxI += diff_r_x(k) / rr(k) * kernel_prime(is_volume_, rr(k)) * quad.weights(k);
-				KyI += diff_r_y(k) / rr(k) * kernel_prime(is_volume_, rr(k)) * quad.weights(k);
+				KxI += diff_r_x(k) / rr(k) * kernel_prime(is_volume_, rr(k)) * quadr.weights(k);
+				KyI += diff_r_y(k) / rr(k) * kernel_prime(is_volume_, rr(k)) * quadr.weights(k);
 
 				if(is_volume_)
-					KzI += diff_r_z(k) / rr(k) * kernel_prime(is_volume_, rr(k)) * quad.weights(k);
+					KzI += diff_r_z(k) / rr(k) * kernel_prime(is_volume_, rr(k)) * quadr.weights(k);
 			}
 
-			KxI /= quad.weights.sum();
-			KyI /= quad.weights.sum();
-			KzI /= quad.weights.sum();
+			if (is_volume_) { KI.row(j) << KxI, KyI, KzI; } else { KI.row(j) << KxI, KyI; }
+			KI.row(j) /= quadr.weights.sum();
+		}
+
+		for(long i = 0; i < samples.rows(); ++i)
+		{
+			const double x = samples(i, 0);
+			const double y = samples(i, 1);
+			const double z = is_volume_ ? samples(i, 2) : 0;
+			Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> xyz(dim);
+			if (is_volume_) {
+				xyz << x, y, z;
+			} else {
+				xyz << x, y;
+			}
+
+			rhs.row(i) -= (local_basis_integral.col(0).transpose() * x + local_basis_integral.col(1).transpose() * y)/quadr.weights.sum();
+			if(is_volume_)
+				rhs.row(i) -= local_basis_integral.col(2).transpose() * z / quadr.weights.sum();
+
+			for(long j = 0; j < centers_.rows(); ++j)
+			{
+				const double r = (centers_.row(j)-samples.row(i)).norm();
+				mat(i,j)=kernel(is_volume_, r) - KI.row(j).dot(xyz);
+			}
+		}
+
+		// Eigen::MatrixXd tmp = mat.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(rhs);
+		std::cout << "solving system of size " << centers_.rows() << " x " << centers_.rows() << std::endl;
+		Eigen::MatrixXd tmp = (mat.transpose() * mat).ldlt().solve(mat.transpose() * rhs);
+		std::cout << "solved!" << std::endl;
+		weights_.resize(centers_.rows() + (is_volume_?3:2) + 1, tmp.cols());
+		weights_.block(0, 0, centers_.rows(), tmp.cols()) = tmp.block(0, 0, centers_.rows(), tmp.cols());
+
+		const int wend = weights_.rows()-1;
+
+		weights_.row(wend) = tmp.row(tmp.rows()-1);
+		if(is_volume_)
+		{
+			weights_.row(wend-3) = local_basis_integral.col(0).transpose()/quadr.weights.sum();
+			weights_.row(wend-2) = local_basis_integral.col(1).transpose()/quadr.weights.sum();
+			weights_.row(wend-1) = local_basis_integral.col(2).transpose()/quadr.weights.sum();
+		}
+		else
+		{
+			weights_.row(wend-2) = local_basis_integral.col(0).transpose()/quadr.weights.sum();
+			weights_.row(wend-1) = local_basis_integral.col(1).transpose()/quadr.weights.sum();
+		}
+
+		for(long j = 0; j < centers_.rows(); ++j)
+		{
+			const Eigen::MatrixXd diff_r_x = quadr.points.col(0).array() - centers_(j, 0);
+			const Eigen::MatrixXd diff_r_y = quadr.points.col(1).array() - centers_(j, 1);
+			Eigen::MatrixXd diff_r_z;
+			if(is_volume_)
+				diff_r_z = quadr.points.col(2).array() - centers_(j, 2);
+
+			const Eigen::MatrixXd rr = is_volume_ ?
+			(diff_r_x.array() * diff_r_x.array() + diff_r_y.array() * diff_r_y.array() + diff_r_z.array() * diff_r_z.array()).sqrt().eval() :
+			(diff_r_x.array() * diff_r_x.array() + diff_r_y.array() * diff_r_y.array()).sqrt().eval();
+
+			double KxI = 0;
+			double KyI = 0;
+			double KzI = 0;
+
+			for(long k = 0; k < rr.size(); ++k)
+			{
+				KxI += diff_r_x(k) / rr(k) * kernel_prime(is_volume_, rr(k)) * quadr.weights(k);
+				KyI += diff_r_y(k) / rr(k) * kernel_prime(is_volume_, rr(k)) * quadr.weights(k);
+
+				if(is_volume_)
+					KzI += diff_r_z(k) / rr(k) * kernel_prime(is_volume_, rr(k)) * quadr.weights(k);
+			}
+
+			KxI /= quadr.weights.sum();
+			KyI /= quadr.weights.sum();
+			KzI /= quadr.weights.sum();
 
 			if(is_volume_)
 			{
@@ -242,12 +266,12 @@ namespace poly_fem
 		// Eigen::MatrixXd integralx = Eigen::MatrixXd::Zero(weights_.cols(), 1);
 		// Eigen::MatrixXd integraly = Eigen::MatrixXd::Zero(weights_.cols(), 1);
 		// Eigen::MatrixXd gradv;
-		// for(long asd = 0; asd < quad.weights.rows(); ++asd)
+		// for(long asd = 0; asd < quadr.weights.rows(); ++asd)
 		// {
 		// 	for(long k = 0; k < weights_.cols(); ++k){
-		// 		grad(k, quad.points.row(asd), gradv);
-		// 		integralx(k) += gradv(0)*quad.weights(asd);
-		// 		integraly(k) += gradv(1)*quad.weights(asd);
+		// 		grad(k, quadr.points.row(asd), gradv);
+		// 		integralx(k) += gradv(0)*quadr.weights(asd);
+		// 		integraly(k) += gradv(1)*quadr.weights(asd);
 		// 	}
 		// }
 

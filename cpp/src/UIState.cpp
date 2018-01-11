@@ -440,7 +440,7 @@ namespace poly_fem
 
 
 						viewer.data.add_points(node, col);
-						// viewer.data.add_label(node.transpose(), std::to_string(g_index));
+						viewer.data.add_label(node.transpose(), std::to_string(g_index));
 					}
 				}
 			}
@@ -657,7 +657,11 @@ namespace poly_fem
 				{
 					if(state.mesh->is_volume())
 					{
-						assert(false);
+						vis_pts_poly[i] = state.polys_3d[i].first;
+						vis_faces_poly[i] = state.polys_3d[i].second;
+
+						faces_total_size   += vis_faces_poly[i].rows();
+						points_total_size += vis_pts_poly[i].rows();
 					}
 					else
 					{

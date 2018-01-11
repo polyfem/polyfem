@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "PolygonalBasis3d.hpp"
-// #include "PolyhedronQuadrature.hpp"
+#include "PolyhedronQuadrature.hpp"
 #include "FEBasis3d.hpp"
 #include "MeshUtils.hpp"
 #include "Refinement.hpp"
@@ -9,6 +9,7 @@
 #include <igl/triangle/triangulate.h>
 #include <igl/per_vertex_normals.h>
 #include <igl/write_triangle_mesh.h>
+#include <igl/colormap.h>
 #include <random>
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -137,10 +138,11 @@ GetAdjacentLocalEdge compute_quad_mesh_from_cell(
 
 void compute_offset_kernels(const Eigen::MatrixXd &QV, const Eigen::MatrixXi &QF,
 	int n_kernels_per_edge, double eps, Eigen::MatrixXd &kernel_centers,
+	Eigen::MatrixXd &KV, Eigen::MatrixXi &KF,
 	EvalParametersFunc evalFuncGeom, GetAdjacentLocalEdge getAdjLocalEdge)
 {
-	Eigen::MatrixXd PV, KV, KN;
-	Eigen::MatrixXi PF, KF;
+	Eigen::MatrixXd PV, KN;
+	Eigen::MatrixXi PF;
 	Eigen::VectorXd D;
 	compute_canonical_pattern(n_kernels_per_edge, PV, PF);
 	instanciate_pattern(QV, QF, PV, PF, KV, KF, nullptr, evalFuncGeom, getAdjLocalEdge);
@@ -163,6 +165,7 @@ void compute_offset_kernels(const Eigen::MatrixXd &QV, const Eigen::MatrixXi &QF
 	for (int v = 0; v < kernel_centers.rows(); ++v) {
 		kernel_centers.row(v) = remap[v];
 	}
+	// igl::write_triangle_mesh("foo_medium.obj", KV, KF);
 	// std::cout << "nkernels: " << KV.rows() << std::endl;
 	// igl::viewer::Viewer viewer;
 	// igl::write_triangle_mesh("foo.obj", KV, KF);
@@ -179,8 +182,10 @@ void compute_offset_kernels(const Eigen::MatrixXd &QV, const Eigen::MatrixXi &QF
 ///
 void sample_polyhedra(
 	const int element_index,
+	const int n_quadrature_vertices_per_edge,
 	const int n_kernels_per_edge,
 	const int n_samples_per_edge,
+	const int quadrature_order,
 	const Mesh3D &mesh,
 	const std::map<int, InterfaceData> &poly_face_to_data,
 	const std::vector< ElementBases > &bases,
@@ -188,12 +193,14 @@ void sample_polyhedra(
 	const double eps,
 	std::vector<int> &local_to_global,
 	Eigen::MatrixXd &collocation_points,
-	Eigen::MatrixXi &collocation_faces,
 	Eigen::MatrixXd &kernel_centers,
-	Eigen::MatrixXd &rhs)
+	Eigen::MatrixXd &rhs,
+	Eigen::MatrixXd &triangulated_vertices,
+	Eigen::MatrixXi &triangulated_faces,
+	Quadrature &quadrature)
 {
 	// Local ids of nonzero bases over the polygon
-	// local_to_global = compute_nonzero_bases_ids(mesh, element_index, poly_face_to_data);
+	local_to_global = compute_nonzero_bases_ids(mesh, element_index, poly_face_to_data);
 
 	// Compute the image of the canonical pattern vertices through the geometric mapping
 	// of the given local face
@@ -224,46 +231,58 @@ void sample_polyhedra(
 		gb.eval_geom_mapping(samples, mapped);
 	};
 
-	Eigen::MatrixXd QV;
-	Eigen::MatrixXi QF;
+	Eigen::MatrixXd QV, KV;
+	Eigen::MatrixXi QF, KF;
 	auto getAdjLocalEdge = compute_quad_mesh_from_cell(mesh, element_index, QV, QF);
 
 	// Compute kernel centers
-	compute_offset_kernels(QV, QF, n_kernels_per_edge, eps, kernel_centers, evalFuncGeom, getAdjLocalEdge);
+	compute_offset_kernels(QV, QF, n_kernels_per_edge, eps, kernel_centers, KV, KF,
+		evalFuncGeom, getAdjLocalEdge);
 
 	// Compute collocation points
 	Eigen::MatrixXd PV, UV;
-	Eigen::MatrixXi PF, UF;
+	Eigen::MatrixXi PF, CF, UF;
 	Eigen::VectorXi uv_sources, uv_ranges;
 	compute_canonical_pattern(n_samples_per_edge, PV, PF);
 	instanciate_pattern(QV, QF, PV, PF, UV, UF, &uv_sources, evalFunc, getAdjLocalEdge);
-	instanciate_pattern(QV, QF, PV, PF, collocation_points, collocation_faces, nullptr,
-		evalFuncGeom, getAdjLocalEdge);
+	instanciate_pattern(QV, QF, PV, PF, collocation_points, CF, nullptr, evalFuncGeom, getAdjLocalEdge);
+	reorder_mesh(collocation_points, CF, uv_sources, uv_ranges);
 	reorder_mesh(UV, UF, uv_sources, uv_ranges);
 	assert(uv_ranges.size() == mesh.n_element_faces(element_index) + 1);
 
-	{
-		Eigen::MatrixXd V;
-		evalFuncGeom(PV, V, 0);
-		igl::viewer::Viewer viewer;
-		// igl::write_triangle_mesh("foo.obj", collocation_points, collocation_faces);
-		viewer.data.set_points(kernel_centers, Eigen::RowVector3d(1,0,1));
-		viewer.data.set_mesh(collocation_points, collocation_faces);
-		viewer.launch();
-	}
+	// Compute coarse surface surface for visualization
+	compute_canonical_pattern(n_quadrature_vertices_per_edge, PV, PF);
+	instanciate_pattern(QV, QF, PV, PF, triangulated_vertices, triangulated_faces,
+		nullptr, evalFuncGeom, getAdjLocalEdge);
+
+	// Compute quadrature points
+	PolyhedronQuadrature::get_quadrature(triangulated_vertices, triangulated_faces,
+		quadrature_order, quadrature);
+
+	triangulated_vertices = collocation_points;
+	triangulated_faces = CF;
+
+	// {
+	// 	Eigen::MatrixXd V;
+	// 	evalFuncGeom(PV, V, 0);
+	// igl::write_triangle_mesh("foo_dense.obj", collocation_points, CF);
+	// igl::write_triangle_mesh("foo_small.obj", triangulated_vertices, triangulated_faces);
+	// 	igl::viewer::Viewer viewer;
+	//  viewer.data.set_points(kernel_centers, Eigen::RowVector3d(1,0,1));
+	// 	viewer.data.set_mesh(collocation_points, collocation_faces);
+	// 	viewer.launch();
+	// }
 
 	// igl::viewer::Viewer viewer;
-	// viewer.data.set_mesh(collocation_points, collocation_faces);
-	// viewer.data.add_points(kernel_centers, Eigen::RowVector3d(0,1,1));
-	// // for (int lf = 0; lf < mesh.n_element_faces(element_index); ++lf) {
-	// // 	Eigen::MatrixXd samples;
-	// // 	samples = UV.middleRows(uv_ranges(lf), uv_ranges(lf+1) - uv_ranges(lf));
-	// // 	Eigen::RowVector3d c = Eigen::RowVector3d::Random();
-	// // 	viewer.data.add_points(samples, c);
-	// // }
+	// viewer.data.set_mesh(collocation_points, CF);
+	// // viewer.data.add_points(kernel_centers, Eigen::RowVector3d(0,1,1));
+	// for (int lf = 0; lf < mesh.n_element_faces(element_index); ++lf) {
+	// 	Eigen::MatrixXd samples;
+	// 	samples = UV.middleRows(uv_ranges(lf), uv_ranges(lf+1) - uv_ranges(lf));
+	// 	Eigen::RowVector3d c = Eigen::RowVector3d::Random();
+	// 	viewer.data.add_points(samples, c);
+	// }
 	// viewer.launch();
-
-	return;
 
 	// Compute right-hand side constraints for setting the harmonic kernels
 	Eigen::MatrixXd samples, basis_val;
@@ -354,13 +373,13 @@ double compute_epsilon(const Mesh3D &mesh, int e) {
 	// // const double eps = use_harmonic ? (0.08*area) : 0;
 	// const double eps = 0.08*area;
 
-	return 0.1;
+	return 0.05;
 }
 
 // -----------------------------------------------------------------------------
 
 void PolygonalBasis3d::build_bases(
-	const int n_samples_per_edge,
+	const int nn_samples_per_edge,
 	const Mesh3D &mesh,
 	const int n_bases,
 	const std::vector<ElementType> &element_type,
@@ -376,14 +395,14 @@ void PolygonalBasis3d::build_bases(
 	// if (poly_face_to_data.empty()) {
 	// 	return;
 	// }
-	int n_kernels_per_edge = (int) std::round(n_samples_per_edge / 3.0);
+	int n_kernels_per_edge = 3; //(int) std::round(n_samples_per_edge / 3.0);
+	int n_samples_per_edge = 10*n_kernels_per_edge;
 
 	// Step 1: Compute integral constraints
 	Eigen::MatrixXd basis_integrals;
 	compute_integral_constraints(mesh, n_bases, values, gvalues, basis_integrals);
 
 	// Step 2: Compute the rest =)
-	// PolyhedronQuadrature poly_quadr;
 	for (int e = 0; e < mesh.n_elements(); ++e) {
 		if (element_type[e] != ElementType::InteriorPolytope && element_type[e] != ElementType::BoundaryPolytope) {
 			continue;
@@ -395,56 +414,59 @@ void PolygonalBasis3d::build_bases(
 		const double eps = compute_epsilon(mesh, e);
 
 		std::vector<int> local_to_global; // map local basis id (the ones that are nonzero on the polygon boundary) to global basis id
-		Eigen::MatrixXd collocation_points, kernel_centers;
-		Eigen::MatrixXi collocation_faces;
+		Eigen::MatrixXd collocation_points, kernel_centers, triangulated_vertices;
+		Eigen::MatrixXi triangulated_faces;
 		Eigen::MatrixXd rhs; // 1 row per collocation point, 1 column per basis that is nonzero on the polygon boundary
-
-		sample_polyhedra(e, n_kernels_per_edge, n_samples_per_edge, mesh, poly_face_to_data, bases,
-			gbases, eps, local_to_global, collocation_points, collocation_faces, kernel_centers, rhs);
-
-		// igl::viewer::Viewer viewer;
-		// viewer.data.set_mesh(collocation_points, collocation_faces);
-		// viewer.launch();
-		// viewer.data.add_points(kernel_centers, Eigen::Vector3d(0,1,1).transpose());
-
-		// igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
-		// Eigen::MatrixXd asd(collocation_points.rows(), 3);
-		// asd.col(0)=collocation_points.col(0);
-		// asd.col(1)=collocation_points.col(1);
-		// asd.col(2)=rhs.col(0);
-		// viewer.data.add_points(asd, Eigen::Vector3d(1,0,1).transpose());
-
-		// for(int asd = 0; asd < collocation_points.rows(); ++asd) {
-		//     viewer.data.add_label(collocation_points.row(asd), std::to_string(asd));
-		// }
 
 		ElementBases &b=bases[e];
 		b.has_parameterization = false;
 
-		// Compute quadrature points for the polygon
-		// poly_quadr.get_quadrature(collocation_points, quadrature_order, b.quadrature);
+		sample_polyhedra(e, 2, n_kernels_per_edge, n_samples_per_edge, quadrature_order,
+			mesh, poly_face_to_data, bases, gbases, eps, local_to_global,
+			collocation_points, kernel_centers, rhs, triangulated_vertices,
+			triangulated_faces, b.quadrature);
+
+		// igl::viewer::Viewer viewer;
+		// viewer.data.set_mesh(triangulated_vertices, triangulated_faces);
+		// viewer.data.add_points(kernel_centers, Eigen::Vector3d(0,1,1).transpose());
+		// viewer.launch();
+
+		// igl::viewer::Viewer viewer;
+		// Eigen::MatrixXd asd(collocation_points.rows(), 3);
+		// asd.col(0)=collocation_points.col(0);
+		// asd.col(1)=collocation_points.col(1);
+		// asd.col(2)=collocation_points.col(2);
+		// Eigen::VectorXd S = rhs.col(0);
+		// Eigen::MatrixXd C;
+		// igl::colormap(igl::COLOR_MAP_TYPE_VIRIDIS, S, true, C);
+		// viewer.data.add_points(asd, C);
+		// viewer.launch();
+
+		// for(int asd = 0; asd < collocation_points.rows(); ++asd) {
+		//     viewer.data.add_label(collocation_points.row(asd), std::to_string(asd));
+		// }
 
 		// Compute the weights of the harmonic kernels
 		Eigen::MatrixXd local_basis_integrals(rhs.cols(), basis_integrals.cols());
 		for (long k = 0; k < rhs.cols(); ++k) {
 			local_basis_integrals.row(k) = -basis_integrals.row(local_to_global[k]);
 		}
-		// Harmonic harmonic(kernel_centers, collocation_points, local_basis_integrals, b.quadrature, rhs);
+		Harmonic harmonic(kernel_centers, collocation_points, local_basis_integrals, b.quadrature, rhs);
 
 		// Set the bases which are nonzero inside the polygon
 		const int n_poly_bases = int(local_to_global.size());
 		b.bases.resize(n_poly_bases);
 		for (int i = 0; i < n_poly_bases; ++i) {
 			b.bases[i].init(local_to_global[i], i, Eigen::MatrixXd::Zero(1, 2));
-			// b.bases[i].set_basis([harmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-			// 	{ harmonic.basis(i, uv, val); });
-			// b.bases[i].set_grad( [harmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-			// 	{ harmonic.grad(i, uv, val); });
+			b.bases[i].set_basis([harmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+				{ harmonic.basis(i, uv, val); });
+			b.bases[i].set_grad( [harmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+				{ harmonic.grad(i, uv, val); });
 		}
 
 		// Polygon boundary after geometric mapping from neighboring elements
-		mapped_boundary[e].first = collocation_points;
-		mapped_boundary[e].second = collocation_faces;
+		mapped_boundary[e].first = triangulated_vertices;
+		mapped_boundary[e].second = triangulated_faces;
 	}
 }
 

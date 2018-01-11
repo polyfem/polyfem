@@ -421,9 +421,11 @@ void compute_sign(const GEO::Mesh &M, const GEO::MeshFacetsAABB &aabb_tree,
 	}
 }
 
-// -----------------------------------------------------------------------------
+} // anonymous namespace
 
-void create_geogram_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, GEO::Mesh &M) {
+////////////////////////////////////////////////////////////////////////////////
+
+void poly_fem::to_geogram_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, GEO::Mesh &M) {
 	M.clear();
 	// Setup vertices
 	M.vertices.create_vertices((int) V.rows());
@@ -442,16 +444,58 @@ void create_geogram_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, GEO
 	}
 }
 
-} // anonymous namespace
+// -----------------------------------------------------------------------------
 
-////////////////////////////////////////////////////////////////////////////////
+void poly_fem::from_geogram_mesh(const GEO::Mesh &M, Eigen::MatrixXd &V, Eigen::MatrixXi &F, Eigen::MatrixXi &T) {
+	V.resize(M.vertices.nb(), 3);
+	for (int i = 0; i < (int) M.vertices.nb(); ++i) {
+		GEO::vec3 p = M.vertices.point(i);
+		V.row(i) << p[0], p[1], p[2];
+	}
+	assert(M.facets.are_simplices());
+	F.resize(M.facets.nb(), 3);
+	for (int c = 0; c < (int) M.facets.nb(); ++c) {
+		for (int lv = 0; lv < 3; ++lv) {
+			F(c, lv) = M.facets.vertex(c, lv);
+		}
+	}
+	assert(M.cells.are_simplices());
+	T.resize(M.cells.nb(), 4);
+	for (int c = 0; c < (int) M.cells.nb(); ++c) {
+		for (int lv = 0; lv < 4; ++lv) {
+			T(c, lv) = M.cells.vertex(c, lv);
+		}
+	}
+}
+
+// -----------------------------------------------------------------------------
 
 void poly_fem::signed_squared_distances(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
 	const Eigen::MatrixXd &P, Eigen::VectorXd &D)
 {
 	GEO::Mesh M;
-	create_geogram_mesh(V, F, M);
+	to_geogram_mesh(V, F, M);
 	GEO::MeshFacetsAABB aabb_tree(M);
 	compute_unsigned_distance_field(M, aabb_tree, P, D);
 	compute_sign(M, aabb_tree, P, D);
 }
+
+// -----------------------------------------------------------------------------
+
+// // Compute volume of a mesh (M can be surface mesh)
+// double volume(const GEO::Mesh &M) {
+// 	GEO::vec3 t[4];
+// 	t[3] = GEO::vec3(0, 0, 0);
+// 	double volume_total = 0;
+// 	for (int f = 0; f < (int) M.facets.nb(); ++f) {
+// 		for(GEO::index_t c = M.facets.corners_begin(f), i = 0;
+// 			c < M.facets.corners_end(f); ++c, ++i)
+// 		{
+// 			geo_assert(i < 3);
+// 			t[i] = M.vertices.point(M.facet_corners.vertex(c));
+// 		}
+// 		double vol = GEO::Geom::tetra_signed_volume(t[0], t[1], t[2], t[3]);
+// 		volume_total += vol;
+// 	}
+// 	return volume_total;
+// }

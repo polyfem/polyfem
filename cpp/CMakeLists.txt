@@ -115,6 +115,8 @@ add_library(polyfem
 	src/quadrature/QuadQuadrature.hpp
 	src/quadrature/PolygonQuadrature.cpp
 	src/quadrature/PolygonQuadrature.hpp
+	src/quadrature/PolyhedronQuadrature.cpp
+	src/quadrature/PolyhedronQuadrature.hpp
 	src/quadrature/HexQuadrature.cpp
 	src/quadrature/HexQuadrature.hpp
 	src/quadrature/TetQuadrature.cpp
