@@ -228,6 +228,9 @@ void sample_polyhedra(
 	Eigen::MatrixXi QF;
 	auto getAdjLocalEdge = compute_quad_mesh_from_cell(mesh, element_index, QV, QF);
 
+	// Compute kernel centers
+	compute_offset_kernels(QV, QF, n_kernels_per_edge, eps, kernel_centers, evalFuncGeom, getAdjLocalEdge);
+
 	// Compute collocation points
 	Eigen::MatrixXd PV, UV;
 	Eigen::MatrixXi PF, UF;
@@ -239,19 +242,16 @@ void sample_polyhedra(
 	reorder_mesh(UV, UF, uv_sources, uv_ranges);
 	assert(uv_ranges.size() == mesh.n_element_faces(element_index) + 1);
 
-	// Compute kernel centers
-	compute_offset_kernels(QV, QF, n_kernels_per_edge, eps, kernel_centers, evalFuncGeom, getAdjLocalEdge);
+	{
+		Eigen::MatrixXd V;
+		evalFuncGeom(PV, V, 0);
+		igl::viewer::Viewer viewer;
+		// igl::write_triangle_mesh("foo.obj", collocation_points, collocation_faces);
+		viewer.data.set_points(kernel_centers, Eigen::RowVector3d(1,0,1));
+		viewer.data.set_mesh(collocation_points, collocation_faces);
+		viewer.launch();
+	}
 
-	// {
-	// 	Eigen::MatrixXd V;
-	// 	evalFuncGeom(PV, V, 0);
-	// 	igl::viewer::Viewer viewer;
-	// 	// viewer.data.set_points(QV, Eigen::RowVector3d(0,0,1));
-	// 	viewer.data.set_mesh(collocation_points, collocation_faces);
-	// 	viewer.launch();
-	// }
-
-	// igl::write_triangle_mesh("foo.obj", collocation_points, collocation_faces);
 	// igl::viewer::Viewer viewer;
 	// viewer.data.set_mesh(collocation_points, collocation_faces);
 	// viewer.data.add_points(kernel_centers, Eigen::RowVector3d(0,1,1));
