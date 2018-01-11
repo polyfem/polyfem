@@ -653,29 +653,20 @@ namespace poly_fem
                 if(is_neigh_poly)
                 {
                     auto e2l = FEBasis2d::quadr_quad_edge_local_nodes(mesh, index);
-                    int vertex_basis_id = e2l[0];
-                    int edge_basis_id = e2l[1];
-                    int vertex_basis_id2 = e2l[2];
+                    const int vertex_basis_id = e2l[0];
+                    const int edge_basis_id = e2l[1];
+                    const int vertex_basis_id2 = e2l[2];
 
                     InterfaceData &data = poly_edge_to_data[index.edge];
 
                     const auto &bases_e = b.bases[edge_basis_id];
-                    for(std::size_t i = 0; i < bases_e.global().size(); ++i)
-                    {
-                        data.local_indices.push_back(edge_basis_id);
-                    }
+                    data.local_indices.push_back(edge_basis_id);
 
                     const auto &bases_v1 = b.bases[vertex_basis_id];
-                    for(std::size_t i = 0; i < bases_v1.global().size(); ++i)
-                    {
-                        data.local_indices.push_back(vertex_basis_id);
-                    }
+                    data.local_indices.push_back(vertex_basis_id);
 
                     const auto &bases_v2 = b.bases[vertex_basis_id2];
-                    for(std::size_t i = 0; i < bases_v2.global().size(); ++i)
-                    {
-                        data.local_indices.push_back(vertex_basis_id2);
-                    }
+                    data.local_indices.push_back(vertex_basis_id2);
                 }
 
                 index = mesh.next_around_face(index);
@@ -707,7 +698,7 @@ namespace poly_fem
             SpaceMatrix space;
             NodeMatrix loc_nodes;
 
-            // const int max_local_base = 
+            // const int max_local_base =
             build_local_space(mesh, mesh_nodes, e, space, loc_nodes, local_boundary[e], poly_edge_to_data, bounday_nodes);
             // n_bases = max(n_bases, max_local_base);
 
