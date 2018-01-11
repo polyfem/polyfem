@@ -143,7 +143,6 @@ namespace poly_fem
 		boundary_tag.clear();
 		errors.clear();
 		polys.clear();
-		els_tag.clear();
 		poly_edge_to_data.clear();
 		delete mesh;
 
@@ -168,9 +167,11 @@ namespace poly_fem
 			mesh = new Mesh2D();
 
 		mesh->load(mesh_path);
+		
 		mesh->refine(n_refs, refinenemt_location);
+		mesh->compute_elements_tag();
 
-		mesh->set_boundary_tags(boundary_tag);
+		mesh->fill_boundary_tags(boundary_tag);
 
 		timer.stop();
 		std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
@@ -186,7 +187,6 @@ namespace poly_fem
 		local_boundary.clear();
 		errors.clear();
 		polys.clear();
-		els_tag.clear();
 		poly_edge_to_data.clear();
 
 		stiffness.resize(0, 0);
@@ -196,7 +196,6 @@ namespace poly_fem
 		n_bases = 0;
 		n_geom_bases = 0;
 
-		mesh->compute_element_tag(els_tag);
 		// els_tag[4]=ElementType::MultiSingularInteriorCube;
 		// els_tag[24]=ElementType::MultiSingularInteriorCube;
 
@@ -210,6 +209,8 @@ namespace poly_fem
 		int undefined_count = 0;
 		int multi_singular_boundary_count = 0;
 
+		const auto &els_tag = mesh->elments_tag();
+
 		for(std::size_t i = 0; i < els_tag.size(); ++i)
 		{
 			const ElementType type = els_tag[i];
@@ -217,21 +218,13 @@ namespace poly_fem
 			switch(type)
 			{
 				case ElementType::RegularInteriorCube: regular_count++; break;
-
 				case ElementType::RegularBoundaryCube: regular_boundary_count++; break;
-
 				case ElementType::SimpleSingularInteriorCube: simple_singular_count++; break;
-
 				case ElementType::MultiSingularInteriorCube: multi_singular_count++; break;
-
 				case ElementType::SimpleSingularBoundaryCube: boundary_count++; break;
-
 				case ElementType::MultiSingularBoundaryCube: multi_singular_boundary_count++; break;
-
 				case ElementType::BoundaryPolytope: non_regular_boundary_count++; break;
-
 				case ElementType::InteriorPolytope: non_regular_count++; break;
-
 				case ElementType::Undefined: undefined_count++; break;
 			}
 		}
@@ -279,7 +272,7 @@ namespace poly_fem
 		{
 			const Mesh3D &tmp_mesh = *dynamic_cast<Mesh3D *>(mesh);
 			if(use_splines)
-				n_bases = SplineBasis3d::build_bases(tmp_mesh, els_tag, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+				n_bases = SplineBasis3d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
 			else {
 				if (iso_parametric) {
 					n_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
@@ -294,11 +287,11 @@ namespace poly_fem
 			const Mesh2D &tmp_mesh = *dynamic_cast<Mesh2D *>(mesh);
 			if(use_splines){
 				if(iso_parametric)
-					n_bases = SplineBasis2d::build_bases(tmp_mesh, els_tag, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+					n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
 				else
 				{
 					n_geom_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
-					n_bases = SplineBasis2d::build_bases(tmp_mesh, els_tag, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+					n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
 				}
 			}
 			else
@@ -474,13 +467,13 @@ namespace poly_fem
 			ElementAssemblyValues::compute_assembly_values(mesh->is_volume(), bases, values);
 
 			if(mesh->is_volume()) {
-				PolygonalBasis3d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh3D *>(mesh), n_bases, els_tag, quadrature_order, values, values, bases, bases, poly_edge_to_data, polys_3d);
+				PolygonalBasis3d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh3D *>(mesh), n_bases, quadrature_order, values, values, bases, bases, poly_edge_to_data, polys_3d);
 			} else {
-				PolygonalBasis2d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh2D *>(mesh), n_bases, els_tag, quadrature_order, values, values, bases, bases, poly_edge_to_data, polys);
+				PolygonalBasis2d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh2D *>(mesh), n_bases, quadrature_order, values, values, bases, bases, poly_edge_to_data, polys);
 			}
 
 			for(std::size_t e = 0; e < bases.size(); ++e) {
-				if(els_tag[e] != ElementType::InteriorPolytope && els_tag[e] != ElementType::BoundaryPolytope) {
+				if(!mesh->is_polytope(e)) {
 					continue;
 				}
 

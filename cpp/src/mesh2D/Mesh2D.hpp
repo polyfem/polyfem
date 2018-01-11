@@ -12,63 +12,53 @@ namespace poly_fem
 	class Mesh2D : public Mesh
 	{
 	public:
-		void scale(const double scaling) override { assert(false); }
-
 		void refine(const int n_refiniment, const double t) override;
 
-		inline bool is_volume() const override { return false; }
+		bool is_volume() const override { return false; }
 
-		inline int n_edges() const { return mesh_.edges.nb(); }
-		inline int n_elements() const override { return mesh_.facets.nb(); }
-		inline int n_pts() const { return mesh_.vertices.nb(); }
+		int n_cells() const override { return 0; }
+		int n_faces() const override { return mesh_.facets.nb(); }
+		int n_edges() const override { return mesh_.edges.nb(); }
+		int n_vertices() const override { return mesh_.vertices.nb(); }
 
-		inline int n_element_vertices(const int element_index) const override { return mesh_.facets.nb_vertices(element_index);}
-		inline int vertex_global_index(const int element_index, const int local_index) const { return mesh_.facets.vertex(element_index, local_index); }
-
-		inline bool is_boundary_vertex(const int vertex_global_id) const {
+		bool is_boundary_vertex(const int vertex_global_id) const override {
 			GEO::Attribute<bool> boundary_vertices(mesh_.vertices.attributes(), "boundary_vertex");
-			return boundary_vertices[vertex_global_id]; }
-		inline bool is_boundary_edge(const int edge_global_id) const {
+			return boundary_vertices[vertex_global_id];
+		}
+		bool is_boundary_edge(const int edge_global_id) const override {
 			GEO::Attribute<bool> boundary_edges(mesh_.edges.attributes(), "boundary_edge");
-			return boundary_edges[edge_global_id]; }
+			return boundary_edges[edge_global_id];
+		}
+		bool is_boundary_face(const int face_global_id) const override {
+			assert(false);
+			return false;
+		}
 
-		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
-		// void element_bounday_polygon(const int index, Eigen::MatrixXd &poly) const;
-
-		void set_boundary_tags(std::vector<int> &tags) const override;
-
-		void point(const int global_index, Eigen::MatrixXd &pt) const override;
-		Eigen::RowVector2d point(const int global_index) const;
 
 		bool load(const std::string &path) override;
 		bool save(const std::string &path) const override;
 
-		void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const override;
-
-		Eigen::MatrixXd edge_mid_point(const int edge_id) const;
-
-		//get nodes ids
-		int edge_node_id(const int edge_id) const;
-		int vertex_node_id(const int vertex_id) const;
-		bool node_id_from_edge_index(const Navigation::Index &index, int &id) const;
+		void compute_elements_tag() const override;
 
 
-		//get nodes positions
-		Eigen::MatrixXd node_from_edge_index(const Navigation::Index &index) const;
-		Eigen::MatrixXd node_from_face(const int face_id) const;
-		Eigen::MatrixXd node_from_vertex(const int vertex_id) const;
+		void point(const int global_index, Eigen::MatrixXd &pt) const override;
+		Eigen::RowVector2d point(const int global_index) const;
+		void edge_barycenters(Eigen::MatrixXd &barycenters) const override;
+		void face_barycenters(Eigen::MatrixXd &barycenters) const override;
+		void cell_barycenters(Eigen::MatrixXd &barycenters) const override { }
+
+
 
 		//navigation wrapper
-		Navigation::Index get_index_from_face(int f, int lv = 0) const;
+		inline Navigation::Index get_index_from_face(int f, int lv = 0) const { return Navigation::get_index_from_face(mesh_, f, lv); }
 
 		// Navigation in a surface mesh
-		Navigation::Index switch_vertex(Navigation::Index idx) const;
-		Navigation::Index switch_edge(Navigation::Index idx) const;
-		Navigation::Index switch_face(Navigation::Index idx) const;
+		inline Navigation::Index switch_vertex(Navigation::Index idx) const { return Navigation::switch_vertex(mesh_, idx); }
+		inline Navigation::Index switch_edge(Navigation::Index idx) const { return Navigation::switch_edge(mesh_, idx); }
+		inline Navigation::Index switch_face(Navigation::Index idx) const { return Navigation::switch_face(mesh_, idx); }
 
 		// Iterate in a mesh
 		inline Navigation::Index next_around_face(Navigation::Index idx) const { return switch_edge(switch_vertex(idx)); }
-		// inline Navigation::Index next_around_edge(Navigation::Index idx) const { return switch_vertex(switch_face(idx)); }
 		inline Navigation::Index next_around_vertex(Navigation::Index idx) const { return switch_face(switch_edge(idx)); }
 		inline Navigation::Index next_around_vertex_inv(Navigation::Index idx) const {
 			auto tmp = switch_face(idx);
@@ -76,16 +66,12 @@ namespace poly_fem
 			return switch_edge(tmp);
 		}
 
-		void create_boundary_nodes();
 
-		void compute_element_tag(std::vector<ElementType> &ele_tag) const override;
-		void compute_barycenter(Eigen::MatrixXd &barycenters) const override;
+		void fill_boundary_tags(std::vector<int> &tags) const override;
 
-		void edge_barycenters(Eigen::MatrixXd &barycenters) const override;
-		void face_barycenters(Eigen::MatrixXd &barycenters) const override;
-		void cell_barycenters(Eigen::MatrixXd &barycenters) const override { }
-
-		//const GEO::Mesh &geo_mesh() const { std::cerr<<"never user this function"<<std::endl; return mesh_; }
+		void compute_element_barycenters(Eigen::MatrixXd &barycenters) const override;
+		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
+		void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const override;
 	private:
 		GEO::Mesh mesh_;
 	};

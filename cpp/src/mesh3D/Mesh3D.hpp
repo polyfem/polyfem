@@ -14,63 +14,32 @@ namespace poly_fem
 	class Mesh3D : public Mesh
 	{
 	public:
-		void scale(const double scaling) override { mesh_.points *= scaling; }
-
 		void refine(const int n_refiniment, const double t) override;
 
 		inline bool is_volume() const override { return true; }
 
-		inline bool is_boundary_vertex(const int vertex_global_id) const { return mesh_.vertices[vertex_global_id].boundary; }
-		inline bool is_boundary_edge(const int edge_global_id) const { return mesh_.edges[edge_global_id].boundary; }
-		inline bool is_poly_boundary_face(const int face_global_id) const { return mesh_.faces[face_global_id].boundary_hex; }
-		inline bool is_boundary_face(const int face_global_id) const { return mesh_.faces[face_global_id].boundary; }
+		int n_cells() const override { return int(mesh_.elements.size()); }
+		int n_faces() const override { return int(mesh_.faces.size()); }
+		int n_edges() const override { return int(mesh_.edges.size()); }
+		int n_vertices() const override { return int(mesh_.points.cols()); }
 
-		inline int n_elements() const override { return int(mesh_.elements.size()); }
-		inline int n_faces() const { return int(mesh_.faces.size()); }
-		inline int n_edges() const { return int(mesh_.edges.size()); }
-		inline int n_pts() const { return int(mesh_.points.cols()); }
-
-		inline int n_face_vertices(const int face_index) const { return int(mesh_.faces[face_index].vs.size()); }
-
-		inline int n_element_vertices(const int element_index) const override { return int(mesh_.elements[element_index].vs.size());}
-		inline int n_element_faces(const int element_index) const { return int(mesh_.elements[element_index].fs.size());}
-
-		inline int vertex_global_index(const int element_index, const int local_index) const { return mesh_.elements[element_index].vs[local_index]; }
-		inline int vertex_local_index(const int element_index, const int vertex_global_index) const {
-			return (int) std::distance(mesh_.elements[element_index].vs.begin(), std::find(mesh_.elements[element_index].vs.begin(), mesh_.elements[element_index].vs.end(), vertex_global_index));
-		}
-
-		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
-		// void element_bounday_polygon(const int index, Eigen::MatrixXd &poly) const;
-
-		void set_boundary_tags(std::vector<int> &tags) const override;
-
-		void point(const int global_index, Eigen::MatrixXd &pt) const override;
-		Eigen::RowVector3d point(const int global_index) const;
+		bool is_boundary_vertex(const int vertex_global_id) const override { return mesh_.vertices[vertex_global_id].boundary; }
+		bool is_boundary_edge(const int edge_global_id) const override { return mesh_.edges[edge_global_id].boundary; }
+		bool is_boundary_face(const int face_global_id) const override { return mesh_.faces[face_global_id].boundary; }
 
 		bool load(const std::string &path) override;
 		bool save(const std::string &path) const override;
-
 		bool save(const std::vector<int> &fs, const int ringN, const std::string &path) const;
-		void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const override;
 
-		//get nodes ids
-		int face_node_id(const int face_id) const;
-		int edge_node_id(const int edge_id) const;
-		int vertex_node_id(const int vertex_id) const;
-		bool node_id_from_face_index(const Navigation3D::Index &index, int &id) const;
-		bool node_id_from_edge_index(const Navigation3D::Index &index, int &id) const;
-		bool node_id_from_vertex_index(const Navigation3D::Index &index, int &id) const;
+		void compute_elements_tag() const override;
 
 
-		//get nodes positions
-		Eigen::MatrixXd node_from_element(const int el_id) const;
-		Eigen::MatrixXd node_from_face(const int face_id) const;
-		Eigen::MatrixXd node_from_face_index(const Navigation3D::Index &index) const;
-		Eigen::MatrixXd node_from_edge_index(const Navigation3D::Index &index) const;
-		Eigen::MatrixXd node_from_vertex_index(const Navigation3D::Index &index) const;
-		Eigen::MatrixXd node_from_edge(const int edge_id) const;
-		Eigen::MatrixXd node_from_vertex(const int vertex_id) const;
+		void point(const int global_index, Eigen::MatrixXd &pt) const override;
+		Eigen::RowVector3d point(const int global_index) const;
+		void edge_barycenters(Eigen::MatrixXd &barycenters) const override;
+		void face_barycenters(Eigen::MatrixXd &barycenters) const override;
+		void cell_barycenters(Eigen::MatrixXd &barycenters) const override;
+
 
 		//navigation wrapper
 		Navigation3D::Index get_index_from_element(int hi, int lf, int lv) const;
@@ -84,26 +53,9 @@ namespace poly_fem
 		Navigation3D::Index switch_element(Navigation3D::Index idx) const;
 
 		// Iterate in a mesh
-		// inline Navigation3D::Index next_around_face(Navigation3D::Index idx) const { return Navigation3D::next_around_face(mesh_, idx); }
 		inline Navigation3D::Index next_around_edge(Navigation3D::Index idx) const { return Navigation3D::next_around_3Dedge(mesh_, idx); }
-		// inline Navigation3D::Index next_around_vertex(Navigation3D::Index idx) const { return Navigation3D::next_around_2Dvertex(mesh_, idx); }
+		inline Navigation3D::Index next_around_face_of_element(Navigation3D::Index idx) const { return Navigation3D::next_around_2Dface(mesh_, idx); }
 
-		// inline Navigation3D::Index next_around_element(Navigation3D::Index idx) const { return Navigation3D::next_around_3Delement(mesh_, idx); }
-
-		 inline Navigation3D::Index next_around_face_of_element(Navigation3D::Index idx) const { return Navigation3D::next_around_2Dface(mesh_, idx); }
-
-		void create_boundary_nodes();
-
-		// bool is_boundary_edge(int eid);
-		// bool is_boundary_vertex(int vid);
-		//for visualizing different types of elements
-		void compute_element_tag(std::vector<ElementType> &ele_tag) const override;
-
-		void compute_barycenter(Eigen::MatrixXd &barycenters) const override;
-
-		void edge_barycenters(Eigen::MatrixXd &barycenters) const override;
-		void face_barycenters(Eigen::MatrixXd &barycenters) const override;
-		void cell_barycenters(Eigen::MatrixXd &barycenters) const override;
 
 		void to_face_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 6> &to_face) const;
 		void to_vertex_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 8> &to_vertex) const;
@@ -122,9 +74,16 @@ namespace poly_fem
 		void get_edge_elements_neighs(const int e_id, std::vector<int> &ids) const { ids.clear(); ids.insert(ids.begin(), mesh_.edges[e_id].neighbor_hs.begin(), mesh_.edges[e_id].neighbor_hs.end()); }
 		void get_edge_elements_neighs(const int element_id, const int edge_id, int dir, std::vector<int> &ids, std::vector<Eigen::MatrixXd> &nodes) const;
 
-		static void geomesh_2_mesh_storage(const GEO::Mesh &gm, Mesh3DStorage &m);
 
+		void fill_boundary_tags(std::vector<int> &tags) const override;
+
+		void compute_element_barycenters(Eigen::MatrixXd &barycenters) const override;
+		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
+		void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const override;
+
+		//used for sweeping 2D mesh
 		Mesh3DStorage &mesh_storge() { std::cerr<<"never user this function"<<std::endl; return mesh_; }
+		static void geomesh_2_mesh_storage(const GEO::Mesh &gm, Mesh3DStorage &m);
 	private:
 		Mesh3DStorage mesh_;
 

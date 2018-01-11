@@ -28,34 +28,89 @@ namespace poly_fem
 	public:
 		virtual ~Mesh() { }
 
-		virtual void scale(const double scaling) = 0;
-
 		virtual void refine(const int n_refinement, const double t) = 0;
 
-		virtual inline bool is_volume() const = 0;
+		//Queries
+		virtual bool is_volume() const = 0;
 
-		virtual inline int n_elements() const = 0;
+		inline int n_elements() const { return (is_volume() ? n_cells() : n_faces()); }
 
-		virtual inline int n_element_vertices(const int element_index) const = 0;
+		virtual int n_cells() const = 0;
+		virtual int n_faces() const = 0;
+		virtual int n_edges() const = 0;
+		virtual int n_vertices() const = 0;
 
-		virtual void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const = 0;
+		virtual bool is_boundary_vertex(const int vertex_global_id) const = 0;
+		virtual bool is_boundary_edge(const int edge_global_id) const = 0;
+		virtual bool is_boundary_face(const int face_global_id) const = 0;
 
-		virtual void set_boundary_tags(std::vector<int> &tags) const = 0;
-
-		virtual void point(const int global_index, Eigen::MatrixXd &pt) const = 0;
-
+		//IO
 		virtual bool load(const std::string &path) = 0;
 		virtual bool save(const std::string &path) const = 0;
 
-		virtual void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const = 0;
 
-		virtual void compute_element_tag(std::vector<ElementType> &ele_tag) const = 0;
+		//Tagging of the elements
+		virtual void compute_elements_tag() const = 0;
 
-		virtual void compute_barycenter(Eigen::MatrixXd &barycenters) const = 0;
-
+		//Nodal access
+		virtual void point(const int global_index, Eigen::MatrixXd &pt) const = 0;
 		virtual void edge_barycenters(Eigen::MatrixXd &barycenters) const = 0;
 		virtual void face_barycenters(Eigen::MatrixXd &barycenters) const = 0;
 		virtual void cell_barycenters(Eigen::MatrixXd &barycenters) const = 0;
+
+
+		//Queries on the tags
+		inline bool is_spline_compatible(const int el_id)
+		{
+			if(is_volume()){
+				return
+				elments_tag_[el_id] == ElementType::RegularInteriorCube ||
+				elments_tag_[el_id] == ElementType::RegularBoundaryCube ||
+				elments_tag_[el_id] == ElementType::SimpleSingularInteriorCube ||
+				elments_tag_[el_id] == ElementType::SimpleSingularBoundaryCube;
+			}
+			else
+			{
+				return
+				elments_tag_[el_id] == ElementType::RegularInteriorCube ||
+				elments_tag_[el_id] == ElementType::RegularBoundaryCube ||
+				elments_tag_[el_id] == ElementType::SimpleSingularInteriorCube;
+			}
+		}
+
+		inline bool is_cube(const int el_id)
+		{
+			return
+			elments_tag_[el_id] == ElementType::RegularInteriorCube ||
+			elments_tag_[el_id] == ElementType::RegularBoundaryCube ||
+
+			elments_tag_[el_id] == ElementType::SimpleSingularInteriorCube ||
+			elments_tag_[el_id] == ElementType::SimpleSingularBoundaryCube ||
+
+			elments_tag_[el_id] == ElementType::MultiSingularInteriorCube ||
+			elments_tag_[el_id] == ElementType::MultiSingularBoundaryCube;
+		}
+
+		inline bool is_polytope(const int el_id)
+		{
+			return
+			elments_tag_[el_id] == ElementType::InteriorPolytope ||
+			elments_tag_[el_id] == ElementType::BoundaryPolytope;
+		}
+
+		inline const std::vector<ElementType> &elments_tag() const { return elments_tag_; }
+
+
+		//Boundary condition handling
+		virtual void fill_boundary_tags(std::vector<int> &tags) const = 0;
+
+		//Visualization methods
+		virtual void compute_element_barycenters(Eigen::MatrixXd &barycenters) const = 0;
+		virtual void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const = 0;
+		virtual void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const = 0;
+
+	protected:
+		std::vector<ElementType> elments_tag_;
 	};
 }
 
