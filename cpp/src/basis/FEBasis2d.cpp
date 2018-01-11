@@ -158,15 +158,6 @@ poly_fem::Navigation::Index find_edge(const poly_fem::Mesh2D &mesh, int f, int v
 
 // -----------------------------------------------------------------------------
 
-constexpr std::array<int, 4> local_edge_to_interface_flag = {{
-	poly_fem::InterfaceData::BOTTOM_FLAG,
-	poly_fem::InterfaceData::RIGHT_FLAG,
-	poly_fem::InterfaceData::TOP_FLAG,
-	poly_fem::InterfaceData::LEFT_FLAG,
-}};
-
-// -----------------------------------------------------------------------------
-
 std::array<int, 4> linear_quad_local_to_global(const poly_fem::Mesh2D &mesh, int f) {
 	assert(mesh.is_cube(f));
 
@@ -345,22 +336,13 @@ void compute_nodes(
 				assert(mesh.is_cube(f2));
 				auto abc = poly_fem::FEBasis2d::quadr_quad_edge_local_nodes(mesh, index2);
 				poly_fem::InterfaceData data;
-				data.element_id = index2.face;
-				data.flag = local_edge_to_interface_flag[abc[1] - 4];
 				if (discr_order == 2) {
-					for (auto local_node : abc) {
-						data.node_id.push_back(element_nodes_id[f2][local_node]);
-					}
 					data.local_indices.assign(abc.begin(), abc.end());
 				} else {
 					assert(discr_order == 1);
 					auto ab = poly_fem::FEBasis2d::linear_quad_edge_local_nodes(mesh, index2);
-					for (auto local_node : ab) {
-						data.node_id.push_back(element_nodes_id[f2][local_node]);
-					}
 					data.local_indices.assign(ab.begin(), ab.end());
 				}
-				data.vals.assign(data.local_indices.size(), 1);
 				poly_edge_to_data[index2.edge] = data;
 			}
 			index = mesh.next_around_face(index);

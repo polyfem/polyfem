@@ -14,15 +14,24 @@ namespace {
 // -----------------------------------------------------------------------------
 
 std::vector<int> compute_nonzero_bases_ids(const Mesh2D &mesh, const int element_index,
+	const std::vector< ElementBases > &bases,
 	const std::map<int, InterfaceData> &poly_edge_to_data)
 {
 	std::vector<int> local_to_global;
 
-	Navigation::Index index = mesh.get_index_from_face(element_index);
 	const int n_edges = mesh.n_face_vertices(element_index);
+	Navigation::Index index = mesh.get_index_from_face(element_index);
 	for (int i = 0; i < n_edges; ++i) {
+		const int f2 = mesh.switch_face(index).face;
+		assert(f2 >= 0); // no boundary polygons
 		const InterfaceData &bdata = poly_edge_to_data.at(index.edge);
-		local_to_global.insert(local_to_global.end(), bdata.node_id.begin(), bdata.node_id.end());
+		const ElementBases &b=bases[f2];
+		for (int other_local_basis_id : bdata.local_indices) {
+			for (const auto &x : b.bases[other_local_basis_id].global()) {
+				const int global_node_id = x.index;
+				local_to_global.push_back(global_node_id);
+			}
+		}
 
 		index = mesh.next_around_face(index);
 	}
@@ -97,7 +106,7 @@ void sample_polygon(
 	const int n_kernels = n_kernel_per_edges * n_edges;
 
 	// Local ids of nonzero bases over the polygon
-	local_to_global = compute_nonzero_bases_ids(mesh, element_index, poly_edge_to_data);
+	local_to_global = compute_nonzero_bases_ids(mesh, element_index, bases, poly_edge_to_data);
 
 	collocation_points.resize(n_collocation_points, 2);
 	collocation_points.setZero();
@@ -108,13 +117,12 @@ void sample_polygon(
 	Eigen::MatrixXd samples, mapped, basis_val;
 	auto index = mesh.get_index_from_face(element_index);
 	for(int i = 0; i < n_edges; ++i) {
-		assert(mesh.switch_face(index).face >= 0); // no boundary polygons
+		const int f2 = mesh.switch_face(index).face;
+		assert(f2 >= 0); // no boundary polygons
 
 		const InterfaceData &bdata = poly_edge_to_data.at(index.edge);
-		const ElementBases &b=bases[bdata.element_id];
-		const ElementBases &gb=gbases[bdata.element_id];
-
-		assert(bdata.element_id == mesh.switch_face(index).face);
+		const ElementBases &b=bases[f2];
+		const ElementBases &gb=gbases[f2];
 
 		// Sample collocation points on the boundary edge
 		sample_parametric_edge(mesh, mesh.switch_face(index), n_samples_per_edge, samples);
@@ -124,13 +132,17 @@ void sample_polygon(
 		collocation_points.block(i*(n_samples_per_edge-1), 0, mapped.rows(), mapped.cols()) = mapped;
 
 		// Evaluate field basis and set up the rhs
-		for(size_t bi = 0; bi < bdata.node_id.size(); ++bi) {
-			const int local_index = bdata.local_indices[bi];
-			const long local_basis_id = std::distance(local_to_global.begin(), std::find(local_to_global.begin(), local_to_global.end(), bdata.node_id[bi]));
+		for (int other_local_basis_id : bdata.local_indices) {
+			b.bases[other_local_basis_id].basis(samples, basis_val);
 
-			b.bases[local_index].basis(samples, basis_val);
+			for (const auto &x : b.bases[other_local_basis_id].global()) {
+				const int global_node_id = x.index;
+				const double weight = x.val;
 
-			rhs.block(i*(n_samples_per_edge-1), local_basis_id, basis_val.rows(), 1) += basis_val * bdata.vals[bi];
+				const int poly_local_basis_id = std::distance(local_to_global.begin(),
+					std::find(local_to_global.begin(), local_to_global.end(), global_node_id));
+				rhs.block(i*(n_samples_per_edge-1), poly_local_basis_id, basis_val.rows(), 1) += basis_val * weight;
+			}
 		}
 
 		index = mesh.next_around_face(index);
@@ -190,7 +202,7 @@ double compute_epsilon(const Mesh2D &mesh, int e) {
 		det_mat.row(1) = mesh.point(mesh.switch_vertex(index).vertex);
 
 		area += det_mat.determinant();
-		
+
 		index = mesh.next_around_face(index);
 	}
 	area = std::fabs(area);

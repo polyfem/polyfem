@@ -253,15 +253,6 @@ int find_face(const poly_fem::Mesh3D &mesh, int c, int v1, int v2, int v3, int v
 
 // -----------------------------------------------------------------------------
 
-constexpr std::array<int, 4> local_edge_to_interface_flag = {{
-	poly_fem::InterfaceData::BOTTOM_FLAG,
-	poly_fem::InterfaceData::RIGHT_FLAG,
-	poly_fem::InterfaceData::TOP_FLAG,
-	poly_fem::InterfaceData::LEFT_FLAG,
-}};
-
-// -----------------------------------------------------------------------------
-
 std::array<int, 8> linear_hex_local_to_global(const poly_fem::Mesh3D &mesh, int c) {
 	assert(mesh.is_cube(c));
 
@@ -480,53 +471,15 @@ void compute_nodes(
 
 			auto abcd = poly_fem::FEBasis3d::quadr_hex_face_local_nodes(mesh, index2);
 			poly_fem::InterfaceData data;
-			data.element_id = c2;
 			if (discr_order == 2) {
-				for (auto local_node : abcd) {
-					data.node_id.push_back(element_nodes_id[c2][local_node]);
-				}
 				data.local_indices.assign(abcd.begin(), abcd.end());
 			} else {
 				assert(discr_order == 1);
 				auto ab = poly_fem::FEBasis3d::linear_hex_face_local_nodes(mesh, index2);
-				for (auto local_node : ab) {
-					data.node_id.push_back(element_nodes_id[c2][local_node]);
-				}
 				data.local_indices.assign(ab.begin(), ab.end());
 			}
-			data.vals.assign(data.local_indices.size(), 1);
 			poly_face_to_data[index2.face] = data;
 		}
-
-		// auto index = mesh.get_index_from_face(f, 0);
-		// for (int lv = 0; lv < mesh.n_element_vertices(f); ++lv) {
-		// 	auto index2 = mesh.switch_face(index);
-		// 	if (index2.face >= 0) {
-		// 		// Opposite face is a quad, we need to set interface data
-		// 		int f2 = index2.face;
-		// 		assert(mesh.n_element_vertices(f2) == 4);
-		// 		auto abc = poly_fem::FEBasis3d::quadr_quad_edge_local_nodes(mesh, index2);
-		// 		poly_fem::InterfaceData data;
-		// 		data.element_id = index2.face;
-		// 		data.flag = local_edge_to_interface_flag[abc[1] - 4];
-		// 		if (discr_order == 2) {
-		// 			for (auto local_node : abc) {
-		// 				data.node_id.push_back(element_nodes_id[f2][local_node]);
-		// 			}
-		// 			data.local_indices.assign(abc.begin(), abc.end());
-		// 		} else {
-		// 			assert(discr_order == 1);
-		// 			auto ab = poly_fem::FEBasis2d::linear_quad_edge_local_nodes(mesh, index2);
-		// 			for (auto local_node : ab) {
-		// 				data.node_id.push_back(element_nodes_id[f2][local_node]);
-		// 			}
-		// 			data.local_indices.assign(ab.begin(), ab.end());
-		// 		}
-		// 		data.vals.assign(data.local_indices.size(), 1);
-		// 		poly_face_to_data[index2.edge] = data;
-		// 	}
-		// 	index = mesh.next_around_face(index);
-		// }
 	}
 }
 

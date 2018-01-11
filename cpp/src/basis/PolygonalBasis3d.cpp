@@ -19,14 +19,23 @@ namespace {
 // -----------------------------------------------------------------------------
 
 std::vector<int> compute_nonzero_bases_ids(const Mesh3D &mesh, const int c,
+	const std::vector< ElementBases > &bases,
 	const std::map<int, InterfaceData> &poly_face_to_data)
 {
 	std::vector<int> local_to_global;
 
 	for (int lf = 0; lf < mesh.n_cell_faces(c); ++lf) {
-		int f = mesh.get_index_from_element(c, lf, 0).face;
-		const InterfaceData &bdata = poly_face_to_data.at(f);
-		local_to_global.insert(local_to_global.end(), bdata.node_id.begin(), bdata.node_id.end());
+		auto index = mesh.get_index_from_element(c, lf, 0);
+		const int c2 = mesh.switch_element(index).element;
+		assert(c2 >= 0); // no boundary polytope
+		const InterfaceData &bdata = poly_face_to_data.at(index.face);
+		const ElementBases &b=bases[c2];
+		for (int other_local_basis_id : bdata.local_indices) {
+			for (const auto &x : b.bases[other_local_basis_id].global()) {
+				const int global_node_id = x.index;
+				local_to_global.push_back(global_node_id);
+			}
+		}
 	}
 
 	std::sort(local_to_global.begin(), local_to_global.end());
@@ -200,7 +209,7 @@ void sample_polyhedra(
 	Quadrature &quadrature)
 {
 	// Local ids of nonzero bases over the polygon
-	local_to_global = compute_nonzero_bases_ids(mesh, element_index, poly_face_to_data);
+	local_to_global = compute_nonzero_bases_ids(mesh, element_index, bases, poly_face_to_data);
 
 	// Compute the image of the canonical pattern vertices through the geometric mapping
 	// of the given local face
@@ -293,24 +302,25 @@ void sample_polyhedra(
 	rhs.setZero();
 	for (int lf = 0; lf < mesh.n_cell_faces(element_index); ++lf) {
 		auto index = mesh.get_index_from_element(element_index, lf, 0);
-		assert(mesh.switch_element(index).element >= 0); // no boundary polygons
+		const int c2 = mesh.switch_element(index).element;
+		assert(c2 >= 0); // no boundary polytope
 
 		const InterfaceData &bdata = poly_face_to_data.at(index.face);
-		const ElementBases &b=bases[bdata.element_id];
-
-		assert(bdata.element_id == mesh.switch_element(index).element);
+		const ElementBases &b=bases[c2];
 
 		// Evaluate field basis and set up the rhs
-		for(size_t bi = 0; bi < bdata.node_id.size(); ++bi) {
-			const int local_index = bdata.local_indices[bi];
-			const long local_basis_id = std::distance(local_to_global.begin(),
-				std::find(local_to_global.begin(), local_to_global.end(), bdata.node_id[bi]));
-
+		for (int other_local_basis_id : bdata.local_indices) {
 			samples = UV.middleRows(uv_ranges(lf), uv_ranges(lf+1) - uv_ranges(lf));
-			b.bases[local_index].basis(samples, basis_val);
+			b.bases[other_local_basis_id].basis(samples, basis_val);
 
-			MatrixXd m = basis_val * bdata.vals[bi];
-			rhs.block(uv_ranges(lf), local_basis_id, basis_val.rows(), 1) += basis_val * bdata.vals[bi];
+			for (const auto &x : b.bases[other_local_basis_id].global()) {
+				const int global_node_id = x.index;
+				const double weight = x.val;
+
+				const int poly_local_basis_id = std::distance(local_to_global.begin(),
+					std::find(local_to_global.begin(), local_to_global.end(), global_node_id));
+				rhs.block(uv_ranges(lf), poly_local_basis_id, basis_val.rows(), 1) += basis_val * weight;
+			}
 		}
 	}
 }

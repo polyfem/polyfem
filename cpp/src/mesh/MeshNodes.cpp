@@ -14,7 +14,6 @@ poly_fem::MeshNodes::MeshNodes(const Mesh &mesh, bool vertices_only)
 	is_boundary_.assign(n_nodes, false);
 	is_interface_.assign(n_nodes, false);
 
-
 	// Vertex nodes
 	for (int v = 0; v < mesh.n_vertices(); ++v) {
 		nodes_.row(v) = mesh.point(v);
@@ -45,6 +44,8 @@ poly_fem::MeshNodes::MeshNodes(const Mesh &mesh, bool vertices_only)
 			is_boundary_[cell_offset_ + c] = false;
 		}
 	}
+
+	// TODO is_interface_
 }
 
 ////////////////////////////////////////////////////////////////////////////////
