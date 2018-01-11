@@ -106,10 +106,11 @@ namespace poly_fem
 					}
 				}
 
-				if(entries.size() > 1e6)
+				if(entries.size() > 1000)
 				{
 					tmp.setFromTriplets(entries.begin(), entries.end());
 					stiffness += tmp;
+					entries.clear();
 				}
 			}
 
