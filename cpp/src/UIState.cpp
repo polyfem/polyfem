@@ -158,15 +158,16 @@ namespace poly_fem
 		{
 			std::fill(valid_elements.begin(), valid_elements.end(), true);
 			viewer.data.set_mesh(pts, tris);
-			viewer.data.set_face_based(false);
+			
 			if(state.mesh->is_volume())
 			{
 				MatrixXd normals;
-				// igl::per_face_normals(pts, tris, normals);
-				// viewer.data.set_normals(normals);
+				igl::per_face_normals(pts, tris, normals);
+				viewer.data.set_normals(normals);
 
 				igl::per_corner_normals(pts, tris, 20, normals);
 				viewer.data.set_normals(normals);
+				viewer.data.set_face_based(false);
 			}
 
 			return tris.rows();
@@ -207,15 +208,16 @@ namespace poly_fem
 
 
 		viewer.data.set_mesh(pts, valid_tri);
-		viewer.data.set_face_based(false);
+		
 		if(state.mesh->is_volume())
 		{
 			MatrixXd normals;
-			// igl::per_face_normals(pts, valid_tri, normals);
-			// viewer.data.set_normals(normals);
+			igl::per_face_normals(pts, valid_tri, normals);
+			viewer.data.set_normals(normals);
 
 			igl::per_corner_normals(pts, valid_tri, 20, normals);
 			viewer.data.set_normals(normals);
+			viewer.data.set_face_based(false);
 		}
 
 		if(recenter)
