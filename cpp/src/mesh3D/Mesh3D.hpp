@@ -40,10 +40,9 @@ namespace poly_fem
 
 
 		RowVectorNd point(const int global_index) const override;
-		void edge_barycenters(Eigen::MatrixXd &barycenters) const override;
-		void face_barycenters(Eigen::MatrixXd &barycenters) const override;
-		void cell_barycenters(Eigen::MatrixXd &barycenters) const override;
-
+		RowVectorNd edge_barycenter(const int index) const override {assert(false); return RowVectorNd(3);}
+		RowVectorNd face_barycenter(const int index) const override {assert(false); return RowVectorNd(3);}
+		RowVectorNd cell_barycenter(const int index) const override { assert(false); return RowVectorNd(3); }
 
 		//navigation wrapper
 		Navigation3D::Index get_index_from_element(int hi, int lf, int lv) const { return Navigation3D::get_index_from_element_face(mesh_, hi, lf, lv); }

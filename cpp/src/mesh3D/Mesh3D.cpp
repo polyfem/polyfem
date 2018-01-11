@@ -746,48 +746,6 @@ namespace poly_fem
 	}
 
 
-	void Mesh3D::edge_barycenters(Eigen::MatrixXd &barycenters) const {
-		barycenters.resize(n_edges(), 3);
-		for (int e = 0; e < n_edges(); ++e) {
-			const int v0 = mesh_.edges[e].vs[0];
-			const int v1 = mesh_.edges[e].vs[1];
-			barycenters.row(e) = 0.5*(point(v0) + point(v1));
-		}
-	}
-
-	void Mesh3D::face_barycenters(Eigen::MatrixXd &barycenters) const {
-		barycenters.resize(n_faces(), 3);
-
-		for (int f = 0; f < n_faces(); ++f) {
-			const int n_vertices = n_face_vertices(f);
-			RowVectorNd bary(3); bary.setZero();
-
-			const auto &vertices = mesh_.faces[f].vs;
-			for(int lv = 0; lv < n_vertices; ++lv)
-			{
-				bary += point(vertices[lv]);
-			}
-			barycenters.row(f) = bary / n_vertices;
-		}
-	}
-
-	void Mesh3D::cell_barycenters(Eigen::MatrixXd &barycenters) const {
-		barycenters.resize(n_cells(), 3);
-
-		for (int c = 0; c < n_cells(); ++c) {
-			const int n_vertices = n_cell_vertices(c);
-			RowVectorNd bary(3); bary.setZero();
-
-			const auto &vertices = mesh_.elements[c].vs;
-			for(int lv = 0; lv < n_vertices; ++lv)
-			{
-				bary += point(vertices[lv]);
-			}
-			barycenters.row(c) = bary / n_vertices;
-		}
-	}
-
-
 	void Mesh3D::to_face_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 6> &to_face) const
 	{
         //top

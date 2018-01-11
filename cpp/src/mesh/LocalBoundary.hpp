@@ -14,6 +14,13 @@ namespace poly_fem
 	class LocalBoundary
 	{
 	public:
+		static const int LEFT_MASK = 1;
+		static const int TOP_MASK = 2;
+		static const int RIGHT_MASK = 4;
+		static const int BOTTOM_MASK = 8;
+		static const int FRONT_MASK = 16;
+		static const int BACK_MASK = 32;
+		
 		LocalBoundary()
 		: flags_(0)
 		{ }
@@ -87,13 +94,6 @@ namespace poly_fem
 	private:
 		char flags_;
 		int edge_id_[6] = {-1, -1, -1, -1, -1, -1};
-
-		static const int LEFT_MASK = 1;
-		static const int TOP_MASK = 2;
-		static const int RIGHT_MASK = 4;
-		static const int BOTTOM_MASK = 8;
-		static const int FRONT_MASK = 16;
-		static const int BACK_MASK = 32;
 	};
 }
 

@@ -334,30 +334,27 @@ namespace poly_fem
 		poly_fem::compute_element_tags(mesh_, elements_tag_);
 	}
 
-	void Mesh2D::edge_barycenters(Eigen::MatrixXd &barycenters) const {
-		barycenters.resize(n_edges(), 2);
-		for (int e = 0; e < n_edges(); ++e) {
-			const int v0 = mesh_.edges.vertex(e, 0);
-			const int v1 = mesh_.edges.vertex(e, 1);
+	RowVectorNd Mesh2D::edge_barycenter(const int index) const
+	{
+		const int v0 = mesh_.edges.vertex(index, 0);
+		const int v1 = mesh_.edges.vertex(index, 1);
 
-			barycenters.row(e) = 0.5*(point(v0) + point(v1));
-		}
+		return 0.5*(point(v0) + point(v1));
 	}
 
-	void Mesh2D::face_barycenters(Eigen::MatrixXd &barycenters) const {
-		barycenters.resize(n_faces(), 2);
-		for(int f = 0; f < n_faces(); ++f) {
-			const int n_vertices = n_face_vertices(f);
-			RowVectorNd bary(2); bary.setZero();
+	RowVectorNd Mesh2D::face_barycenter(const int face_index) const
+	{
+		RowVectorNd bary(2); bary.setZero();
 
-			Navigation::Index index = get_index_from_face(f);
-			for(int lv = 0; lv < n_vertices; ++lv)
-			{
-				bary += point(index.vertex);
-				index = next_around_face(index);
-			}
-			barycenters.row(f) = bary / n_vertices;
+		const int n_vertices = n_face_vertices(face_index);
+		Navigation::Index index = get_index_from_face(face_index);
+
+		for(int lv = 0; lv < n_vertices; ++lv)
+		{
+			bary += point(index.vertex);
+			index = next_around_face(index);
 		}
+		return bary / n_vertices;
 	}
 
 }

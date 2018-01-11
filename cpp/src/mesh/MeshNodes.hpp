@@ -21,13 +21,15 @@ public:
 	int node_id_from_cell(int c);
 
 	// Node position from node id
-	RowVectorNd node_position(int node_id) const { return nodes_.row(node_id); }
+	RowVectorNd node_position(int node_id) const { return nodes_.row(node_to_simplex_[node_id]); }
 
 	// Whether a node is on the mesh boundary or not
-	bool is_boundary(int node_id) const { return is_boundary_[(size_t) node_id]; }
+	bool is_boundary(int node_id) const { return is_boundary_[node_to_simplex_[node_id]]; }
 
 	// Whether an edge node (in 2D) or face node (in 3D) is at the interface with a polytope
-	bool is_interface(int node_id) const { return is_interface_[(size_t) node_id]; }
+	bool is_interface(int node_id) const { return is_interface_[node_to_simplex_[node_id]]; }
+
+	bool is_boundary_or_interface(const int node_id) const { return is_boundary(node_id) || is_interface(node_id); }
 
 	// Retrieve a list of nodes which are marked as boundary
 	std::vector<int> boundary_nodes() const;
