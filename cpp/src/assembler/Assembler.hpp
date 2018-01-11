@@ -106,6 +106,7 @@ namespace poly_fem
 										{
 											tmp.setFromTriplets(entries.begin(), entries.end());
 											stiffness += tmp;
+											stiffness.makeCompressed();
 
 											entries.clear();
 											//entries.reserve(buffer_size); // not needed (a std::vector never frees memory)
@@ -122,6 +123,7 @@ namespace poly_fem
 
 			tmp.setFromTriplets(entries.begin(), entries.end());
 			stiffness += tmp;
+			stiffness.makeCompressed();
 
 			// stiffness.resize(n_basis*local_assembler_.size(), n_basis*local_assembler_.size());
 			// stiffness.setFromTriplets(entries.begin(), entries.end());

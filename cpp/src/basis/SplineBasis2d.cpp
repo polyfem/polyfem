@@ -352,7 +352,7 @@ namespace poly_fem
             }
         }
 
-        void basis_for_irregulard_quad(const Mesh2D &mesh, MeshNodes &mesh_nodes, const SpaceMatrix &space, const NodeMatrix &loc_nodes, const std::array<std::array<double, 4>, 3> &h_knots, const std::array<std::array<double, 4>, 3> &v_knots, ElementBases &b)
+        void basis_for_irregulard_quad(const int el_id, const Mesh2D &mesh, MeshNodes &mesh_nodes, const SpaceMatrix &space, const NodeMatrix &loc_nodes, const std::array<std::array<double, 4>, 3> &h_knots, const std::array<std::array<double, 4>, 3> &v_knots, ElementBases &b)
         {
             for(int y = 0; y < 3; ++y)
             {
@@ -372,30 +372,32 @@ namespace poly_fem
                         const auto &el1 = b.bases[mpy*3 + mpx].global().front();
                         const auto &el2 = b.bases[mmy*3 + mmx].global().front();
 
-                        Navigation::Index index = mesh.get_index_from_face(center.index);
-                        while(mesh.next_around_vertex(index).face != el1.index && mesh.next_around_vertex(index).face != el2.index)
+
+                        Navigation::Index start_index = mesh.get_index_from_face(el_id);
+                        bool found = false;
+                        for(int i =0; i < 4; ++i)
                         {
-                            index = mesh.next_around_face(index);
+                            other_indices.clear();
+                            int n_neighs = 0;
+                            Navigation::Index index = start_index;
+                            do
+                            {
+                                const int f_index = mesh_nodes.node_id_from_face(index.face);
+                                if(f_index != el1.index && f_index != el2.index && f_index != center.index)
+                                    other_indices.push_back(f_index);
+
+                                ++n_neighs;
+                                index = mesh.next_around_vertex(index);
+                            }
+                            while(index.face != start_index.face);
+                            if(n_neighs != 4){
+                                found = true;
+                                break;
+                            }
+
+                            start_index = mesh.next_around_face(start_index);
                         }
-
-                        index = mesh.next_around_vertex(index);
-
-                        Navigation::Index i1 = mesh.next_around_vertex(index);
-                        if(i1.face == space(x,y)[0] || i1.face == space(x,y)[1])
-                            index = i1;
-                        else
-                            index = mesh.next_around_vertex(mesh.switch_vertex(index));
-
-                        const int start = index.face == space(x,y)[0] ? space(x,y)[0] : space(x,y)[1];
-                        const int end = start == space(x,y)[0] ? space(x,y)[1] : space(x,y)[0];
-                        assert(index.face == space(x,y)[0] || index.face == space(x,y)[1]);
-
-                        while(index.face != end)
-                        {
-                            other_indices.push_back(index.face);
-                            index = mesh.next_around_vertex(index);
-                        }
-                        other_indices.push_back(end);
+                        assert(found);
 
 
                         const int local_index = y*3 + x;
@@ -641,61 +643,42 @@ namespace poly_fem
 
         void setup_data_for_polygons(const Mesh2D &mesh, const int el_index, const ElementBases &b, std::map<int, InterfaceData> &poly_edge_to_data)
         {
-            // Navigation::Index index = mesh.get_index_from_face(el_index);
-            // for (int j = 0; j < 4; ++j)
-            // {
-            //     const int opposite_face = mesh.switch_face(index).face;
-            //     const bool is_neigh_poly = (opposite_face >= 0 && mesh.n_element_vertices(opposite_face) > 4);
+            Navigation::Index index = mesh.get_index_from_face(el_index);
+            for (int j = 0; j < 4; ++j)
+            {
+                const int opposite_face = mesh.switch_face(index).face;
+                const bool is_neigh_poly = opposite_face >= 0 && mesh.is_polytope(opposite_face);
 
-            //     if(is_neigh_poly)
-            //     {
-            //         int b_flag;
+                if(is_neigh_poly)
+                {
+                    auto e2l = FEBasis2d::quadr_quad_edge_local_nodes(mesh, index);
+                    int vertex_basis_id = e2l[0];
+                    int edge_basis_id = e2l[1];
+                    int vertex_basis_id2 = e2l[2];
 
-            //         auto e2l = FEBasis2d::quadr_quad_edge_local_nodes(mesh, index);
-            //         int vertex_basis_id = e2l[0];
-            //         int edge_basis_id = e2l[1];
-            //         int vertex_basis_id2 = e2l[2];
+                    InterfaceData &data = poly_edge_to_data[index.edge];
 
-            //         if(edge_basis_id-4 == 0)
-            //             b_flag = InterfaceData::BOTTOM_FLAG;
-            //         else if(edge_basis_id-4 == 1)
-            //             b_flag = InterfaceData::RIGHT_FLAG;
-            //         else if(edge_basis_id-4 == 2)
-            //             b_flag = InterfaceData::TOP_FLAG;
-            //         else
-            //             b_flag = InterfaceData::LEFT_FLAG;
+                    const auto &bases_e = b.bases[edge_basis_id];
+                    for(std::size_t i = 0; i < bases_e.global().size(); ++i)
+                    {
+                        data.local_indices.push_back(edge_basis_id);
+                    }
 
-            //         InterfaceData &data = poly_edge_to_data[index.edge];
-            //         data.element_id = index.face;
-            //         data.flag = b_flag;
+                    const auto &bases_v1 = b.bases[vertex_basis_id];
+                    for(std::size_t i = 0; i < bases_v1.global().size(); ++i)
+                    {
+                        data.local_indices.push_back(vertex_basis_id);
+                    }
 
-            //         const auto &bases_e = b.bases[edge_basis_id];
-            //         for(std::size_t i = 0; i < bases_e.global().size(); ++i)
-            //         {
-            //             data.node_id.push_back(bases_e.global()[i].index);
-            //             data.local_indices.push_back(edge_basis_id);
-            //             data.vals.push_back(bases_e.global()[i].val);
-            //         }
+                    const auto &bases_v2 = b.bases[vertex_basis_id2];
+                    for(std::size_t i = 0; i < bases_v2.global().size(); ++i)
+                    {
+                        data.local_indices.push_back(vertex_basis_id2);
+                    }
+                }
 
-            //         const auto &bases_v1 = b.bases[vertex_basis_id];
-            //         for(std::size_t i = 0; i < bases_v1.global().size(); ++i)
-            //         {
-            //             data.node_id.push_back(bases_v1.global()[i].index);
-            //             data.local_indices.push_back(vertex_basis_id);
-            //             data.vals.push_back(bases_v1.global()[i].val);
-            //         }
-
-            //         const auto &bases_v2 = b.bases[vertex_basis_id2];
-            //         for(std::size_t i = 0; i < bases_v2.global().size(); ++i)
-            //         {
-            //             data.node_id.push_back(bases_v2.global()[i].index);
-            //             data.local_indices.push_back(vertex_basis_id2);
-            //             data.vals.push_back(bases_v2.global()[i].val);
-            //         }
-            //     }
-
-            //     index = mesh.next_around_face(index);
-            // }
+                index = mesh.next_around_face(index);
+            }
         }
     }
 
@@ -739,7 +722,7 @@ namespace poly_fem
             // print_local_space(space);
 
             basis_for_regular_quad(space, loc_nodes, h_knots, v_knots, b);
-            basis_for_irregulard_quad(mesh, mesh_nodes, space, loc_nodes, h_knots, v_knots, b);
+            basis_for_irregulard_quad(e, mesh, mesh_nodes, space, loc_nodes, h_knots, v_knots, b);
         }
 
         std::set<int> edge_id;
