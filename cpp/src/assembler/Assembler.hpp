@@ -25,10 +25,11 @@ namespace poly_fem
 			const std::vector< ElementAssemblyValues > &geom_values,
 			Eigen::SparseMatrix<double, Eigen::RowMajor> &stiffness) const
 		{
-			const int buffer_size = n_basis * local_assembler_.size();
+			const int buffer_size = std::min(1e8, n_basis * local_assembler_.size());
 
 			std::vector< Eigen::Triplet<double> > entries;
 			entries.reserve(buffer_size);
+			std::cout<<"buffer_size "<<buffer_size<<std::endl;
 
 			Eigen::MatrixXd local_val;
 			stiffness.resize(n_basis*local_assembler_.size(), n_basis*local_assembler_.size());
@@ -106,7 +107,7 @@ namespace poly_fem
 					}
 				}
 
-				if(entries.size() > 1e10)
+				if(entries.size() > 1e8)
 				{
 					tmp.setFromTriplets(entries.begin(), entries.end());
 					stiffness += tmp;
