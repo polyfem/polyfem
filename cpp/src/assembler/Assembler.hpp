@@ -101,6 +101,16 @@ namespace poly_fem
 											values_j.global[jj].index*local_assembler_.size()+n,
 											stiffness_val(n*local_assembler_.size()+m) * values_i.global[ii].val * values_j.global[jj].val);
 										// std::cout<<e<<" "<<values_i.global[ii].index*local_assembler_.size()+m <<" "<< values_j.global[jj].index*local_assembler_.size()+n <<" "<< stiffness_val(n*local_assembler_.size()+m) * values_i.global[ii].val * values_j.global[jj].val <<std::endl;
+
+										if(entries.size() >= 1e8)
+										{
+											tmp.setFromTriplets(entries.begin(), entries.end());
+											stiffness += tmp;
+
+											entries.clear();
+											//entries.reserve(buffer_size); // not needed (a std::vector never frees memory)
+											std::cout<<"cleaning memory..."<<std::endl;
+										}
 									}
 								}
 							}
@@ -108,15 +118,6 @@ namespace poly_fem
 					}
 				}
 
-				if(entries.size() >= 1e8)
-				{
-					tmp.setFromTriplets(entries.begin(), entries.end());
-					stiffness += tmp;
-
-					entries.clear();
-					//entries.reserve(buffer_size); // not needed (a std::vector never frees memory)
-					std::cout<<"cleaning memory..."<<std::endl;
-				}
 			}
 
 			tmp.setFromTriplets(entries.begin(), entries.end());
