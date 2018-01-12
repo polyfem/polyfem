@@ -509,8 +509,13 @@ void MeshProcessing3D::global_orientation_hexes(Mesh3DStorage &hmi) {
 
 	for (const auto &ele : mesh.elements) hmi.elements[Ele_map_reverse[ele.id]].vs = ele.vs;
 }
-void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter) {
+void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, std::vector<int> & Parents) {
+
 	for (int i = 0; i < iter; i++) {
+
+		std::vector<int> Refinement_Levels;
+		ele_subdivison_levels(M, Refinement_Levels);
+
 		Mesh3DStorage M_;
 		M_.type = MeshType::Hyb;
 
@@ -656,20 +661,28 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter) {
 					for (int j = 0; j < 3; j++)ele_.v_in_Kernel[j] = center[j];
 
 					M_.elements.push_back(ele_);
+					Parents.push_back(ele.id);
 				}
 			}
 			else {
+				int level = Refinement_Levels[ele.id];
 				//local_V2V
-				std::map<int, int> local_V2V;
+				std::vector<std::vector<int>> local_V2Vs;
+				std::map<int, int> local_vi_map;
 				for (auto vid : ele.vs) {
-					Vertex v_;
-					v_.id = vn++;
-					v_.v.resize(3);
+					std::vector<int> v2v;
+					v2v.push_back(vid);
+					for (int r = 0; r < level; r++) {
+						Vertex v_;
+						v_.id = vn++;
+						v_.v.resize(3);
 
-					for (int j = 0; j < 3; j++)v_.v[j] = (M_.vertices[vid].v[j] + ele.v_in_Kernel[j])*0.5;
-					M_.vertices.push_back(v_);
-
-					local_V2V[vid] = v_.id;
+						for (int j = 0; j < 3; j++)v_.v[j] = M_.vertices[vid].v[j] + (ele.v_in_Kernel[j] - M_.vertices[vid].v[j])*(r + 1.0) / (double)(level + 1);
+						M_.vertices.push_back(v_);
+						v2v.push_back(v_.id);
+					}
+					local_vi_map[vid] = local_V2Vs.size();
+					local_V2Vs.push_back(v2v);
  				}
 				//local_E2V
 				vector<uint32_t> es;
@@ -677,38 +690,50 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter) {
 				sort(es.begin(), es.end());
 				es.erase(unique(es.begin(), es.end()), es.end());
 
-				std::map<int, int> local_E2V;
+				std::vector<std::vector<int>> local_E2Vs;
+				std::map<int, int> local_ei_map;
 				for (auto eid : es) {
-					Vertex v_;
-					v_.id = vn++;
-					v_.v.resize(3);
+					std::vector<int> e2v;
+					e2v.push_back(E2V[eid]);
+					for (int r = 0; r < level; r++) {
+						Vertex v_;
+						v_.id = vn++;
+						v_.v.resize(3);
 
-					Vector3d center;
-					center.setZero();
-					for (auto vid : M.edges[eid].vs) for (int j = 0; j < 3;j++) center[j] += M_.vertices[local_V2V[vid]].v[j];
-					center /= M.edges[eid].vs.size();
-					for (int j = 0; j < 3; j++)v_.v[j] = center[j];
+						Vector3d center;
+						center.setZero();
+						for (auto vid : M.edges[eid].vs) for (int j = 0; j < 3; j++) center[j] += M_.vertices[local_V2Vs[local_vi_map[vid]][r + 1]].v[j];
+						center /= M.edges[eid].vs.size();
+						for (int j = 0; j < 3; j++)v_.v[j] = center[j];
 
-					M_.vertices.push_back(v_);
-
-					local_E2V[eid] = v_.id;
+						M_.vertices.push_back(v_);
+						e2v.push_back(v_.id);
+					}
+					local_ei_map[eid] = local_E2Vs.size();
+					local_E2Vs.push_back(e2v);
 				}
 				//local_F2V
-				std::map<int, int> local_F2V;
+				std::vector<std::vector<int>> local_F2Vs;
+				std::map<int, int> local_fi_map;
 				for (auto fid : ele.fs) {
-					Vertex v_;
-					v_.id = vn++;
-					v_.v.resize(3);
+					std::vector<int> f2v;
+					f2v.push_back(F2V[fid]);
+					for (int r = 0; r < level; r++) {
+						Vertex v_;
+						v_.id = vn++;
+						v_.v.resize(3);
 
-					Vector3d center;
-					center.setZero();
-					for (auto vid : M.faces[fid].vs) for (int j = 0; j < 3; j++) center[j] += M_.vertices[local_V2V[vid]].v[j];
-					center /= M.faces[fid].vs.size();
-					for (int j = 0; j < 3; j++)v_.v[j] = center[j];
+						Vector3d center;
+						center.setZero();
+						for (auto vid : M.faces[fid].vs) for (int j = 0; j < 3; j++) center[j] += M_.vertices[local_V2Vs[local_vi_map[vid]][r + 1]].v[j];
+						center /= M.faces[fid].vs.size();
+						for (int j = 0; j < 3; j++)v_.v[j] = center[j];
 
-					M_.vertices.push_back(v_);
-
-					local_F2V[fid] = v_.id;
+						M_.vertices.push_back(v_);
+						f2v.push_back(v_.id);
+					}
+					local_fi_map[fid] = local_F2Vs.size();
+					local_F2Vs.push_back(f2v);
 				}
 				//polyhedron fs
 				int local_fn = 0;
@@ -717,10 +742,10 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter) {
 					auto &fes = M.faces[fid].es;
 					int fvn = M.faces[fid].vs.size();
 					for (uint32_t j = 0; j < fvn; j++) {
-						vs[0] = local_E2V[fes[(j - 1 + fvn) % fvn]];
-						vs[1] = local_V2V[fvs[j]];
-						vs[2] = local_E2V[fes[j]];
-						vs[3] = local_F2V[fid];
+						vs[0] = local_E2Vs[local_ei_map[fes[(j - 1 + fvn) % fvn]]][level];
+						vs[1] = local_V2Vs[local_vi_map[fvs[j]]][level];
+						vs[2] = local_E2Vs[local_ei_map[fes[j]]][level];
+						vs[3] = local_F2Vs[local_fi_map[fid]][level];
 
 						total_fs.push_back(vs);
 						std::sort(vs.begin(), vs.end());
@@ -736,45 +761,48 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter) {
 				ele_.hex = false;
 				ele_.v_in_Kernel = ele.v_in_Kernel;
 				M_.elements.push_back(ele_);
-
+				Parents.push_back(ele.id);
 				//hex
-				for (auto fid : ele.fs) {
-					auto &fvs = M.faces[fid].vs;
-					auto &fes = M.faces[fid].es;
-					int fvn = M.faces[fid].vs.size();
-					for (uint32_t j = 0; j < fvn; j++) {
-						vector<int> ele_vs(8);
-						ele_vs[0] = local_E2V[fes[(j - 1 + fvn) % fvn]];
-						ele_vs[1] = local_V2V[fvs[j]];
-						ele_vs[2] = local_E2V[fes[j]];
-						ele_vs[3] = local_F2V[fid];
+				for (int r = 0; r < level; r++) {
+					for (auto fid : ele.fs) {
+						auto &fvs = M.faces[fid].vs;
+						auto &fes = M.faces[fid].es;
+						int fvn = M.faces[fid].vs.size();
+						for (uint32_t j = 0; j < fvn; j++) {
+							vector<int> ele_vs(8);
+							ele_vs[0] = local_E2Vs[local_ei_map[fes[(j - 1 + fvn) % fvn]]][r+1];
+							ele_vs[1] = local_V2Vs[local_vi_map[fvs[j]]][r + 1];
+							ele_vs[2] = local_E2Vs[local_ei_map[fes[j]]][r + 1];
+							ele_vs[3] = local_F2Vs[local_fi_map[fid]][r + 1];
 
-						ele_vs[4] = E2V[fes[(j - 1 + fvn) % fvn]];
-						ele_vs[5] = fvs[j];
-						ele_vs[6] = E2V[fes[j]];
-						ele_vs[7] = F2V[fid];
+							ele_vs[4] = local_E2Vs[local_ei_map[fes[(j - 1 + fvn) % fvn]]][r];
+							ele_vs[5] = local_V2Vs[local_vi_map[fvs[j]]][r];
+							ele_vs[6] = local_E2Vs[local_ei_map[fes[j]]][r];
+							ele_vs[7] = local_F2Vs[local_fi_map[fid]][r];
 
-						//fs
-						for (short j = 0; j < 6; j++) {
-							for (short k = 0; k < 4; k++) vs[k] = ele_vs[hex_face_table[j][k]];
-							total_fs.push_back(vs);
-							std::sort(vs.begin(), vs.end());
-							tempF.push_back(std::make_tuple(vs[0], vs[1], vs[2], vs[3], fn++, elen, j));
+							//fs
+							for (short j = 0; j < 6; j++) {
+								for (short k = 0; k < 4; k++) vs[k] = ele_vs[hex_face_table[j][k]];
+								total_fs.push_back(vs);
+								std::sort(vs.begin(), vs.end());
+								tempF.push_back(std::make_tuple(vs[0], vs[1], vs[2], vs[3], fn++, elen, j));
+							}
+							//hex
+							Element ele_;
+							ele_.id = elen++;
+							ele_.fs.resize(6, -1);
+							ele_.fs_flag.resize(6, 1);
+							ele_.hex = true;
+							ele_.v_in_Kernel.resize(3);
+
+							Vector3d center;
+							center.setZero();
+							for (auto vid : ele_vs) for (int j = 0; j < 3; j++) center[j] += M_.vertices[vid].v[j];
+							center /= ele_vs.size();
+							for (int j = 0; j < 3; j++)ele_.v_in_Kernel[j] = center[j];
+							M_.elements.push_back(ele_);
+							Parents.push_back(ele.id);
 						}
-						//hex
-						Element ele_;
-						ele_.id = elen++;
-						ele_.fs.resize(6, -1);
-						ele_.fs_flag.resize(6, 1);
-						ele_.hex = true;
-						ele_.v_in_Kernel.resize(3);
-
-						Vector3d center;
-						center.setZero();
-						for (auto vid : ele_vs) for (int j = 0; j < 3; j++) center[j] += M_.vertices[vid].v[j];
-						center /= ele_vs.size();
-						for (int j = 0; j < 3; j++)ele_.v_in_Kernel[j] = center[j];
-						M_.elements.push_back(ele_);
 					}
 				}
 			}
@@ -1034,5 +1062,34 @@ void  MeshProcessing3D::orient_volume_mesh(Mesh3DStorage &hmi) {
 			P_visit[pid] = true;
 			for (uint32_t j = 0; j < fs.size(); j++) hmi.elements[pid].fs_flag[j] = F_state[fs[j]];
 		}
+	}
+}
+void  MeshProcessing3D::ele_subdivison_levels(const Mesh3DStorage &hmi, std::vector<int> & Ls) {
+
+	Ls.clear(); Ls.resize(hmi.elements.size(), 1);
+	std::vector<double> volumes(hmi.elements.size(), 0);
+
+	auto compute_volume = [&](const int id, double & vol) {
+		Vector3d ori; ori.setZero();
+		for (auto f : hmi.elements[id].fs) {
+			auto &fvs = hmi.faces[f].vs;
+			Vector3d center; center.setZero(); for (auto vid : fvs) center += hmi.points.col(vid); center /= fvs.size();
+
+			for (uint32_t j = 0; j < fvs.size(); j++) {
+				Vector3d x = hmi.points.col(fvs[j]) - ori, y = hmi.points.col(fvs[(j + 1) % fvs.size()]) - ori, z = center - ori;
+				vol += -((x[0] * y[1] * z[2] + x[1] * y[2] * z[0] + x[2] * y[0] * z[1]) - (x[2] * y[1] * z[0] + x[1] * y[0] * z[2] + x[0] * y[2] * z[1]));
+			}
+		}
+		vol = std::abs(vol);
+	};
+
+	for (const auto &ele : hmi.elements) compute_volume(ele.id,volumes[ele.id]);
+
+	double ave_volume = 0;
+	for (const auto &v : volumes)ave_volume += v;
+	ave_volume /= volumes.size();
+	for (int i = 0; i < Ls.size(); i++)if (!hmi.elements[i].hex) {
+		Ls[i] = volumes[i] / ave_volume;
+		if (Ls[i] < 1)Ls[i] = 1;
 	}
 }
