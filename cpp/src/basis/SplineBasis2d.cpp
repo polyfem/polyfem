@@ -2,8 +2,6 @@
 
 #include "QuadraticBSpline2d.hpp"
 #include "QuadQuadrature.hpp"
-#include "QuadBoundarySampler.hpp"
-#include "ElementAssemblyValues.hpp"
 #include "MeshNodes.hpp"
 
 #include "FEBasis2d.hpp"
@@ -15,7 +13,6 @@
 #include <array>
 #include <map>
 
-#include "UIState.hpp"
 
 namespace poly_fem
 {
@@ -559,8 +556,8 @@ namespace poly_fem
             //central node always present
             constexpr int face_basis_id = 8;
             b.bases[face_basis_id].init(n_bases++, face_basis_id, mesh.face_barycenter(el_index));
-            b.bases[face_basis_id].set_basis([](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quadr_quad_basis_value(face_basis_id, uv, val); });
-            b.bases[face_basis_id].set_grad( [](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quadr_quad_basis_grad(face_basis_id, uv, val); });
+            b.bases[face_basis_id].set_basis([face_basis_id](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quadr_quad_basis_value(face_basis_id, uv, val); });
+            b.bases[face_basis_id].set_grad( [face_basis_id](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quadr_quad_basis_grad(face_basis_id, uv, val); });
         }
 
         void insert_into_global(const Local2Global &data, std::vector<Local2Global> &vec)
@@ -659,13 +656,8 @@ namespace poly_fem
 
                     InterfaceData &data = poly_edge_to_data[index.edge];
 
-                    const auto &bases_e = b.bases[edge_basis_id];
                     data.local_indices.push_back(edge_basis_id);
-
-                    const auto &bases_v1 = b.bases[vertex_basis_id];
                     data.local_indices.push_back(vertex_basis_id);
-
-                    const auto &bases_v2 = b.bases[vertex_basis_id2];
                     data.local_indices.push_back(vertex_basis_id2);
                 }
 

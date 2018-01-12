@@ -679,14 +679,15 @@ namespace poly_fem
 					}
 					if (!boundary_edge || boundary_edge_singular || n_interior_edge_singular > 1)continue;
 
-					bool has_singular_v = false; int n_irregular_v = 0;
+					bool has_singular_v = false, has_iregular_v = false; int n_in_irregular_v = 0;
 					for (auto vid : ele.vs) {
 						int vn = 0;
 						if (bv_flag[vid]) {
+							if (mesh_.vertices[vid].neighbor_hs.size() > 4)has_iregular_v = true;
 							continue;//not sure the conditions
 						}
 						else {
-							if (mesh_.vertices[vid].neighbor_hs.size() != 8)n_irregular_v++;
+							if (mesh_.vertices[vid].neighbor_hs.size() != 8)n_in_irregular_v++;
 							int n_irregular_e = 0;
 							for (auto eid : mesh_.vertices[vid].neighbor_es) {
 								if (mesh_.edges[eid].neighbor_hs.size() != 4)
@@ -698,12 +699,12 @@ namespace poly_fem
 						}
 					}
 					int n_irregular_e = 0;
-					for(auto eid:ele.es) if (!be_flag[eid] && mesh_.edges[eid].neighbor_hs.size() != 4)
+					for (auto eid : ele.es) if (!be_flag[eid] && mesh_.edges[eid].neighbor_hs.size() != 4)
 						n_irregular_e++;
 					if (has_singular_v) continue;
 					if (!has_singular_v) {
-						if(n_irregular_e==1) ele_tag[ele.id] = ElementType::SimpleSingularBoundaryCube;
-						else if(n_irregular_e == 0 && n_irregular_v == 0) ele_tag[ele.id] = ElementType::RegularBoundaryCube;
+						if (n_irregular_e == 1) ele_tag[ele.id] = ElementType::SimpleSingularBoundaryCube;
+						else if (n_irregular_e == 0 && n_in_irregular_v == 0 && !has_iregular_v) ele_tag[ele.id] = ElementType::RegularBoundaryCube;
 						else continue;
 					}
 					continue;
@@ -915,84 +916,6 @@ namespace poly_fem
 	// 		vertices_node_[v] = p;
 	// 	}
 	// }
-
-	void Mesh3D::get_edge_elements_neighs(const int element_id, const int edge_id, int dir, std::vector<int> &ids, std::vector<Eigen::MatrixXd> &nodes) const
-	{
-		//TODO implement me
-		assert(false);
-		// assert(!mesh_.edges[edge_id].boundary_hex);
-
-		// std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 12> to_edge;
-		// to_edge_functions(to_edge);
-
-		// Navigation3D::Index index;
-		// for(int i = 0; i < 12; ++i)
-		// {
-		// 	index = to_edge[i](get_index_from_element(element_id));
-
-		// 	if(index.edge == edge_id)
-		// 		break;
-		// }
-
-		// assert(index.edge == edge_id);
-
-		// if(dir == 1)
-		// {
-		// 	int id;
-		// 	do
-		// 	{
-		// 		ids.push_back(index.element);
-		// 		nodes.push_back(node_from_element(index.element));
-
-		// 		index = next_around_edge(index);
-		// 	}
-		// 	while(index.element != element_id);
-
-		// 	return;
-		// }
-
-		// if(dir == 0)
-		// {
-		// 	int id;
-		// 	do
-		// 	{
-		// 		const Navigation3D::Index f_index = switch_face(switch_edge(index));
-
-		// 		node_id_from_face_index(f_index, id);
-		// 		ids.push_back(id);
-		// 		nodes.push_back(node_from_face_index(f_index));
-
-		// 		index = next_around_edge(index);
-		// 	}
-		// 	while(index.element != element_id);
-
-		// 	return;
-		// }
-
-		// if(dir == 2)
-		// {
-		// 	int id;
-		// 	do
-		// 	{
-		// 		const Navigation3D::Index f_index = switch_face(switch_edge(switch_vertex(index)));
-
-		// 		node_id_from_face_index(f_index, id);
-		// 		ids.push_back(id);
-		// 		nodes.push_back(node_from_face_index(f_index));
-
-		// 		index = next_around_edge(index);
-		// 	}
-		// 	while(index.element != element_id);
-
-		// 	return;
-		// }
-
-		assert(false);
-
-	}
-
-
-
 
 
 

@@ -39,10 +39,10 @@ namespace poly_fem
 		void compute_elements_tag() override;
 
 
-		RowVectorNd point(const int vertex_id) const override;
-		RowVectorNd edge_barycenter(const int e) const override;
-		RowVectorNd face_barycenter(const int f) const override;
-		RowVectorNd cell_barycenter(const int c) const override;
+		virtual RowVectorNd point(const int vertex_id) const override;
+		virtual RowVectorNd edge_barycenter(const int e) const override;
+		virtual RowVectorNd face_barycenter(const int f) const override;
+		virtual RowVectorNd cell_barycenter(const int c) const override;
 
 		//navigation wrapper
 		Navigation3D::Index get_index_from_element(int hi, int lf, int lv) const { return Navigation3D::get_index_from_element_face(mesh_, hi, lf, lv); }
@@ -75,7 +75,6 @@ namespace poly_fem
 
 		void get_vertex_elements_neighs(const int v_id, std::vector<int> &ids) const { ids.clear(); ids.insert(ids.begin(), mesh_.vertices[v_id].neighbor_hs.begin(), mesh_.vertices[v_id].neighbor_hs.end()); }
 		void get_edge_elements_neighs(const int e_id, std::vector<int> &ids) const { ids.clear(); ids.insert(ids.begin(), mesh_.edges[e_id].neighbor_hs.begin(), mesh_.edges[e_id].neighbor_hs.end()); }
-		void get_edge_elements_neighs(const int element_id, const int edge_id, int dir, std::vector<int> &ids, std::vector<Eigen::MatrixXd> &nodes) const;
 
 
 		void fill_boundary_tags(std::vector<int> &tags) const override;
