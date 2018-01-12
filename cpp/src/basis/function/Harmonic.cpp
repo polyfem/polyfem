@@ -169,7 +169,7 @@ namespace poly_fem
 		weights_ = (mat.transpose() * mat).ldlt().solve(mat.transpose() * rhs);
 		std::cout << "done" << std::endl;
 #endif
-#if 0
+#if 1
 		// For each basis function f that is nonzero on the element E, we want to
 		// solve the least square system A w = rhs, where:
 		//     ┏                    ┓
@@ -268,6 +268,8 @@ namespace poly_fem
 		// Solve the system
 		std::cout << "-- Solving system of size " << num_kernels << " x " << num_kernels << std::endl;
 		weights_ += L * (L.transpose() * A.transpose() * A * L).ldlt().solve(L.transpose() * A.transpose() * rhs);
+		std::cout << "solved!" << std::endl;
+
 		// Eigen::MatrixXd M = samples * local_basis_integral.transpose();
 		// std::cout << "t: " << M.rows() << " x " << M.cols() << std::endl;
 		// + samples * local_basis_integral.transpose();
