@@ -73,6 +73,7 @@ namespace poly_fem
 
 		//Boundary condition handling
 		virtual void fill_boundary_tags(std::vector<int> &tags) const = 0;
+		void set_tag(const int el, const ElementType type) { elements_tag_[el] = type; }
 
 		//Visualization methods
 		virtual void compute_element_barycenters(Eigen::MatrixXd &barycenters) const = 0;

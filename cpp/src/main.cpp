@@ -60,6 +60,7 @@ int main(int argc, const char **argv)
 
 
     bool use_splines = false;
+    bool iso_parametric = true;
 
     bool no_ui = false;
 
@@ -73,6 +74,7 @@ int main(int argc, const char **argv)
     command_line.add_option("-q", discr_order);
     command_line.add_option("-b_samples", n_boundary_samples);
     command_line.add_option("-spline", "-fem", use_splines);
+    command_line.add_option("-iso", "-no_iso", iso_parametric);
 
 
     command_line.add_option("-lambda", lambda);
@@ -95,6 +97,7 @@ int main(int argc, const char **argv)
         state.discr_order = discr_order;
         state.n_boundary_samples = n_boundary_samples;
         state.refinenemt_location = refinenemt_location;
+        state.iso_parametric = iso_parametric;
 
         state.init(path, n_refs, problem_num);
         // std::cout<<path<<std::endl;
@@ -121,6 +124,7 @@ int main(int argc, const char **argv)
         UIState::ui_state().state.mu = mu;
         UIState::ui_state().state.n_boundary_samples = n_boundary_samples;
         UIState::ui_state().state.refinenemt_location = refinenemt_location;
+        UIState::ui_state().state.iso_parametric = iso_parametric;
 
         UIState::ui_state().init(path, n_refs, problem_num);
     }
