@@ -679,14 +679,15 @@ namespace poly_fem
 					}
 					if (!boundary_edge || boundary_edge_singular || n_interior_edge_singular > 1)continue;
 
-					bool has_singular_v = false; int n_irregular_v = 0;
+					bool has_singular_v = false, has_iregular_v = false; int n_in_irregular_v = 0;
 					for (auto vid : ele.vs) {
 						int vn = 0;
 						if (bv_flag[vid]) {
+							if (mesh_.vertices[vid].neighbor_hs.size() > 4)has_iregular_v = true;
 							continue;//not sure the conditions
 						}
 						else {
-							if (mesh_.vertices[vid].neighbor_hs.size() != 8)n_irregular_v++;
+							if (mesh_.vertices[vid].neighbor_hs.size() != 8)n_in_irregular_v++;
 							int n_irregular_e = 0;
 							for (auto eid : mesh_.vertices[vid].neighbor_es) {
 								if (mesh_.edges[eid].neighbor_hs.size() != 4)
@@ -698,12 +699,12 @@ namespace poly_fem
 						}
 					}
 					int n_irregular_e = 0;
-					for(auto eid:ele.es) if (!be_flag[eid] && mesh_.edges[eid].neighbor_hs.size() != 4)
+					for (auto eid : ele.es) if (!be_flag[eid] && mesh_.edges[eid].neighbor_hs.size() != 4)
 						n_irregular_e++;
 					if (has_singular_v) continue;
 					if (!has_singular_v) {
-						if(n_irregular_e==1) ele_tag[ele.id] = ElementType::SimpleSingularBoundaryCube;
-						else if(n_irregular_e == 0 && n_irregular_v == 0) ele_tag[ele.id] = ElementType::RegularBoundaryCube;
+						if (n_irregular_e == 1) ele_tag[ele.id] = ElementType::SimpleSingularBoundaryCube;
+						else if (n_irregular_e == 0 && n_in_irregular_v == 0 && !has_iregular_v) ele_tag[ele.id] = ElementType::RegularBoundaryCube;
 						else continue;
 					}
 					continue;
