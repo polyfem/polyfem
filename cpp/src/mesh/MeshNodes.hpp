@@ -21,6 +21,11 @@ public:
 	int node_id_from_cell(int c);
 	int node_id_from_primitive(int primitive_id);
 
+	int primitive_from_vertex(int v) const { return v; }
+	int primitive_from_edge(int e) const { return edge_offset_ + e; }
+	int primitive_from_face(int f) const { return face_offset_ + f; }
+	int primitive_from_cell(int c) const { return cell_offset_ + c; }
+
 	// Node position from node id
 	RowVectorNd node_position(int node_id) const { return nodes_.row(node_to_primitive_[node_id]); }
 

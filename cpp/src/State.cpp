@@ -272,7 +272,7 @@ namespace poly_fem
 		{
 			const Mesh3D &tmp_mesh = *dynamic_cast<Mesh3D *>(mesh);
 			if(use_splines){
-				// n_bases = SplineBasis3d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+				n_bases = SplineBasis3d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
 			}
 			else {
 				if (iso_parametric) {
