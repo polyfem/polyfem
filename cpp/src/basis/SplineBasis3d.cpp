@@ -22,7 +22,7 @@ namespace poly_fem
     namespace
     {
         typedef Matrix<int, 3, 3> Space2d;
-        typedef Matrix<Matrix<double, 1, 3>, 3, 3> Node2d;
+        // typedef Matrix<Matrix<double, 1, 3>, 3, 3> Node2d;
 
         class SpaceMatrix
         {
@@ -54,29 +54,21 @@ namespace poly_fem
             std::array<Space2d, 3> space_;
         };
 
-        class NodeMatrix
-        {
-        public:
-            inline const Matrix<double, 1, 3> &operator()(const int i, const int j, const int k) const
-            {
-                return node_[k](i,j);
-            }
+        // class NodeMatrix
+        // {
+        // public:
+        //     inline const Matrix<double, 1, 3> &operator()(const int i, const int j, const int k) const
+        //     {
+        //         return node_[k](i,j);
+        //     }
 
-            inline Matrix<double, 1, 3> &operator()(const int i, const int j, const int k)
-            {
-                return node_[k](i,j);
-            }
-        private:
-            std::array<Node2d, 3> node_;
-        };
-
-
-        static const int LEFT_FLAG = 1;
-        static const int TOP_FLAG = 2;
-        static const int RIGHT_FLAG = 4;
-        static const int BOTTOM_FLAG = 8;
-        static const int FRONT_FLAG = 16;
-        static const int BACK_FLAG = 32;
+        //     inline Matrix<double, 1, 3> &operator()(const int i, const int j, const int k)
+        //     {
+        //         return node_[k](i,j);
+        //     }
+        // private:
+        //     std::array<Node2d, 3> node_;
+        // };
 
         bool is_edge_singular(const Navigation3D::Index &index, const Mesh3D &mesh)
         {
@@ -86,11 +78,11 @@ namespace poly_fem
             if(ids.size() == 4 || mesh.is_boundary_edge(index.edge))
                 return false;
 
-            // for(auto idx : ids)
-            // {
-            //     if(mesh.n_element_vertices(idx) > 8)
-            //         return false;
-            // }
+            for(auto idx : ids)
+            {
+                if(mesh.is_polytope(idx))
+                    return false;
+            }
 
             return true;
         }
@@ -287,11 +279,11 @@ namespace poly_fem
             assert(false);
         }
 
-        void explore_edge(const Navigation3D::Index &index, const Mesh3D &mesh, MeshNodes &mesh_nodes, const int x, const int y, const int z, SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, InterfaceData> &poly_face_to_data, std::vector< int > &bounday_nodes)
+        void explore_edge(const Navigation3D::Index &index, const Mesh3D &mesh, MeshNodes &mesh_nodes, const int x, const int y, const int z, SpaceMatrix &space, LocalBoundary &local_boundary, std::map<int, InterfaceData> &poly_face_to_data, std::vector< int > &bounday_nodes)
         {
             int node_id = node_id_from_edge_index(mesh, mesh_nodes, index);
             space(x, y, z) = node_id;
-            node(x, y, z) = mesh_nodes.node_position(node_id);
+            // node(x, y, z) = mesh_nodes.node_position(node_id);
 
 
             if(is_edge_singular(index, mesh))
@@ -308,34 +300,46 @@ namespace poly_fem
 
             if(mesh_nodes.is_boundary(node_id))
                 bounday_nodes.push_back(node_id);
+            else if(mesh_nodes.is_interface(node_id))
+            {
+                InterfaceData &data = poly_face_to_data[index.face];
+                data.local_indices.push_back(9*z + 3*y + x);
+                bounday_nodes.push_back(node_id);
+            }
         }
 
-        void explore_vertex(const Navigation3D::Index &index, const Mesh3D &mesh, MeshNodes &mesh_nodes, const int x, const int y, const int z, SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, InterfaceData> &poly_face_to_data, std::vector< int > &bounday_nodes)
+        void explore_vertex(const Navigation3D::Index &index, const Mesh3D &mesh, MeshNodes &mesh_nodes, const int x, const int y, const int z, SpaceMatrix &space, LocalBoundary &local_boundary, std::map<int, InterfaceData> &poly_face_to_data, std::vector< int > &bounday_nodes)
         {
             int node_id = node_id_from_vertex_index(mesh, mesh_nodes, index);
             space(x, y, z) = node_id;
-            node(x, y, z) = mesh_nodes.node_position(node_id);
+            // node(x, y, z) = mesh_nodes.node_position(node_id);
 
             if(mesh_nodes.is_boundary(node_id))
                 bounday_nodes.push_back(node_id);
+            else if(mesh_nodes.is_interface(node_id))
+            {
+                InterfaceData &data = poly_face_to_data[index.face];
+                data.local_indices.push_back(9*z + 3*y + x);
+                bounday_nodes.push_back(node_id);
+            }
         }
 
-        void explore_face(const Navigation3D::Index &index, const Mesh3D &mesh, MeshNodes &mesh_nodes, const int x, const int y, const int z,  const int b_flag, SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, InterfaceData> &poly_face_to_data, std::vector< int > &bounday_nodes)
+        void explore_face(const Navigation3D::Index &index, const Mesh3D &mesh, MeshNodes &mesh_nodes, const int x, const int y, const int z,  const int b_flag, SpaceMatrix &space, LocalBoundary &local_boundary, std::map<int, InterfaceData> &poly_face_to_data, std::vector< int > &bounday_nodes)
         {
             int node_id = node_id_from_face_index(mesh, mesh_nodes, index);
             space(x, y, z) = node_id;
-            node(x, y, z) = mesh_nodes.node_position(node_id);
+            // node(x, y, z) = mesh_nodes.node_position(node_id);
 
             if(mesh_nodes.is_boundary(node_id))
             {
                 switch(b_flag)
                 {
-                    case RIGHT_FLAG: local_boundary.set_right_boundary(); local_boundary.set_right_edge_id(index.face); break;
-                    case BOTTOM_FLAG: local_boundary.set_bottom_boundary(); local_boundary.set_bottom_edge_id(index.face); break;
-                    case LEFT_FLAG: local_boundary.set_left_boundary(); local_boundary.set_left_edge_id(index.face); break;
-                    case TOP_FLAG: local_boundary.set_top_boundary(); local_boundary.set_top_edge_id(index.face); break;
-                    case FRONT_FLAG: local_boundary.set_front_boundary(); local_boundary.set_front_edge_id(index.face); break;
-                    case BACK_FLAG: local_boundary.set_back_boundary(); local_boundary.set_back_edge_id(index.face); break;
+                    case LocalBoundary::RIGHT_MASK: local_boundary.set_right_boundary(); local_boundary.set_right_edge_id(index.face); break;
+                    case LocalBoundary::BOTTOM_MASK: local_boundary.set_bottom_boundary(); local_boundary.set_bottom_edge_id(index.face); break;
+                    case LocalBoundary::LEFT_MASK: local_boundary.set_left_boundary(); local_boundary.set_left_edge_id(index.face); break;
+                    case LocalBoundary::TOP_MASK: local_boundary.set_top_boundary(); local_boundary.set_top_edge_id(index.face); break;
+                    case LocalBoundary::FRONT_MASK: local_boundary.set_front_boundary(); local_boundary.set_front_edge_id(index.face); break;
+                    case LocalBoundary::BACK_MASK: local_boundary.set_back_boundary(); local_boundary.set_back_edge_id(index.face); break;
                 }
                 bounday_nodes.push_back(node_id);
             }
@@ -347,7 +351,7 @@ namespace poly_fem
             }
         }
 
-        void build_local_space(const Mesh3D &mesh,  MeshNodes &mesh_nodes, const int el_index,  SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, InterfaceData> &poly_face_to_data, std::vector< int > &bounday_nodes)
+        void build_local_space(const Mesh3D &mesh,  MeshNodes &mesh_nodes, const int el_index,  SpaceMatrix &space, LocalBoundary &local_boundary, std::map<int, InterfaceData> &poly_face_to_data, std::vector< int > &bounday_nodes)
         {
             assert(mesh.is_volume());
 
@@ -365,95 +369,95 @@ namespace poly_fem
 
             const int node_id = mesh_nodes.node_id_from_cell(el_index);
             space(1, 1, 1) = node_id;
-            node(1, 1, 1) = mesh_nodes.node_position(node_id);
+            // node(1, 1, 1) = mesh_nodes.node_position(node_id);
 
             ///////////////////////
             index = to_face[1](start_index);
-            explore_face(index, mesh, mesh_nodes, 1, 1, 0, BOTTOM_FLAG, space, node, local_boundary, poly_face_to_data, bounday_nodes);
+            explore_face(index, mesh, mesh_nodes, 1, 1, 0, LocalBoundary::BOTTOM_MASK, space, local_boundary, poly_face_to_data, bounday_nodes);
 
             index = to_face[0](start_index);
-            explore_face(index, mesh, mesh_nodes, 1, 1, 2, TOP_FLAG, space, node, local_boundary, poly_face_to_data, bounday_nodes);
+            explore_face(index, mesh, mesh_nodes, 1, 1, 2, LocalBoundary::TOP_MASK, space, local_boundary, poly_face_to_data, bounday_nodes);
 
             index = to_face[3](start_index);
-            explore_face(index, mesh, mesh_nodes, 0, 1, 1, LEFT_FLAG, space, node, local_boundary, poly_face_to_data, bounday_nodes);
+            explore_face(index, mesh, mesh_nodes, 0, 1, 1, LocalBoundary::LEFT_MASK, space, local_boundary, poly_face_to_data, bounday_nodes);
 
             index = to_face[2](start_index);
-            explore_face(index, mesh, mesh_nodes, 2, 1, 1, RIGHT_FLAG, space, node, local_boundary, poly_face_to_data, bounday_nodes);
+            explore_face(index, mesh, mesh_nodes, 2, 1, 1, LocalBoundary::RIGHT_MASK, space, local_boundary, poly_face_to_data, bounday_nodes);
 
             index = to_face[5](start_index);
-            explore_face(index, mesh, mesh_nodes, 1, 0, 1, FRONT_FLAG, space, node, local_boundary, poly_face_to_data, bounday_nodes);
+            explore_face(index, mesh, mesh_nodes, 1, 0, 1, LocalBoundary::FRONT_MASK, space, local_boundary, poly_face_to_data, bounday_nodes);
 
             index = to_face[4](start_index);
-            explore_face(index, mesh, mesh_nodes, 1, 2, 1, BACK_FLAG, space, node, local_boundary, poly_face_to_data, bounday_nodes);
+            explore_face(index, mesh, mesh_nodes, 1, 2, 1, LocalBoundary::BACK_MASK, space, local_boundary, poly_face_to_data, bounday_nodes);
 
 
             ///////////////////////
             index = to_edge[0](start_index);
-            explore_edge(index, mesh, mesh_nodes, 1, 0, 0, space, node, local_boundary, poly_face_to_data, bounday_nodes);
+            explore_edge(index, mesh, mesh_nodes, 1, 0, 0, space, local_boundary, poly_face_to_data, bounday_nodes);
 
             index = to_edge[1](start_index);
-            explore_edge(index, mesh, mesh_nodes, 2, 1, 0, space, node, local_boundary, poly_face_to_data, bounday_nodes);
+            explore_edge(index, mesh, mesh_nodes, 2, 1, 0, space, local_boundary, poly_face_to_data, bounday_nodes);
 
             index = to_edge[2](start_index);
-            explore_edge(index, mesh, mesh_nodes, 1, 2, 0, space, node, local_boundary, poly_face_to_data, bounday_nodes);
+            explore_edge(index, mesh, mesh_nodes, 1, 2, 0, space, local_boundary, poly_face_to_data, bounday_nodes);
 
             index = to_edge[3](start_index);
-            explore_edge(index, mesh, mesh_nodes, 0, 1, 0, space, node, local_boundary, poly_face_to_data, bounday_nodes);
+            explore_edge(index, mesh, mesh_nodes, 0, 1, 0, space, local_boundary, poly_face_to_data, bounday_nodes);
 
 
             index = to_edge[4](start_index);
-            explore_edge(index, mesh, mesh_nodes, 0, 0, 1, space, node, local_boundary, poly_face_to_data, bounday_nodes);
+            explore_edge(index, mesh, mesh_nodes, 0, 0, 1, space, local_boundary, poly_face_to_data, bounday_nodes);
 
             index = to_edge[5](start_index);
-            explore_edge(index, mesh, mesh_nodes, 2, 0, 1, space, node, local_boundary, poly_face_to_data, bounday_nodes);
+            explore_edge(index, mesh, mesh_nodes, 2, 0, 1, space, local_boundary, poly_face_to_data, bounday_nodes);
 
             index = to_edge[6](start_index);
-            explore_edge(index, mesh, mesh_nodes, 2, 2, 1, space, node, local_boundary, poly_face_to_data, bounday_nodes);
+            explore_edge(index, mesh, mesh_nodes, 2, 2, 1, space, local_boundary, poly_face_to_data, bounday_nodes);
 
             index = to_edge[7](start_index);
-            explore_edge(index, mesh, mesh_nodes, 0, 2, 1, space, node, local_boundary, poly_face_to_data, bounday_nodes);
+            explore_edge(index, mesh, mesh_nodes, 0, 2, 1, space, local_boundary, poly_face_to_data, bounday_nodes);
 
 
 
             index = to_edge[8](start_index);
-            explore_edge(index, mesh, mesh_nodes, 1, 0, 2, space, node, local_boundary, poly_face_to_data, bounday_nodes);
+            explore_edge(index, mesh, mesh_nodes, 1, 0, 2, space, local_boundary, poly_face_to_data, bounday_nodes);
 
             index = to_edge[9](start_index);
-            explore_edge(index, mesh, mesh_nodes, 2, 1, 2, space, node, local_boundary, poly_face_to_data, bounday_nodes);
+            explore_edge(index, mesh, mesh_nodes, 2, 1, 2, space, local_boundary, poly_face_to_data, bounday_nodes);
 
             index = to_edge[10](start_index);
-            explore_edge(index, mesh, mesh_nodes, 1, 2, 2, space, node, local_boundary, poly_face_to_data, bounday_nodes);
+            explore_edge(index, mesh, mesh_nodes, 1, 2, 2, space, local_boundary, poly_face_to_data, bounday_nodes);
 
             index = to_edge[11](start_index);
-            explore_edge(index, mesh, mesh_nodes, 0, 1, 2, space, node, local_boundary, poly_face_to_data, bounday_nodes);
+            explore_edge(index, mesh, mesh_nodes, 0, 1, 2, space, local_boundary, poly_face_to_data, bounday_nodes);
 
 
             ////////////////////////////////////////////////////////////////////////
             index = to_vertex[0](start_index);
-            explore_vertex(index, mesh, mesh_nodes, 0, 0, 0, space, node, local_boundary, poly_face_to_data, bounday_nodes);
+            explore_vertex(index, mesh, mesh_nodes, 0, 0, 0, space, local_boundary, poly_face_to_data, bounday_nodes);
 
             index = to_vertex[1](start_index);
-            explore_vertex(index, mesh, mesh_nodes, 2, 0, 0, space, node, local_boundary, poly_face_to_data, bounday_nodes);
+            explore_vertex(index, mesh, mesh_nodes, 2, 0, 0, space, local_boundary, poly_face_to_data, bounday_nodes);
 
             index = to_vertex[2](start_index);
-            explore_vertex(index, mesh, mesh_nodes, 2, 2, 0, space, node, local_boundary, poly_face_to_data, bounday_nodes);
+            explore_vertex(index, mesh, mesh_nodes, 2, 2, 0, space, local_boundary, poly_face_to_data, bounday_nodes);
 
             index = to_vertex[3](start_index);
-            explore_vertex(index, mesh, mesh_nodes, 0, 2, 0, space, node, local_boundary, poly_face_to_data, bounday_nodes);
+            explore_vertex(index, mesh, mesh_nodes, 0, 2, 0, space, local_boundary, poly_face_to_data, bounday_nodes);
 
 
 
             index = to_vertex[4](start_index);
-            explore_vertex(index, mesh, mesh_nodes, 0, 0, 2, space, node, local_boundary, poly_face_to_data, bounday_nodes);
+            explore_vertex(index, mesh, mesh_nodes, 0, 0, 2, space, local_boundary, poly_face_to_data, bounday_nodes);
 
             index = to_vertex[5](start_index);
-            explore_vertex(index, mesh, mesh_nodes, 2, 0, 2, space, node, local_boundary, poly_face_to_data, bounday_nodes);
+            explore_vertex(index, mesh, mesh_nodes, 2, 0, 2, space, local_boundary, poly_face_to_data, bounday_nodes);
 
             index = to_vertex[6](start_index);
-            explore_vertex(index, mesh, mesh_nodes, 2, 2, 2, space, node, local_boundary, poly_face_to_data, bounday_nodes);
+            explore_vertex(index, mesh, mesh_nodes, 2, 2, 2, space, local_boundary, poly_face_to_data, bounday_nodes);
 
             index = to_vertex[7](start_index);
-            explore_vertex(index, mesh, mesh_nodes, 0, 2, 2, space, node, local_boundary, poly_face_to_data, bounday_nodes);
+            explore_vertex(index, mesh, mesh_nodes, 0, 2, 2, space, local_boundary, poly_face_to_data, bounday_nodes);
         }
 
         void setup_knots_vectors(MeshNodes &mesh_nodes, const SpaceMatrix &space, std::array<std::array<double, 4>, 3> &h_knots, std::array<std::array<double, 4>, 3> &v_knots, std::array<std::array<double, 4>, 3> &w_knots)
@@ -545,7 +549,7 @@ namespace poly_fem
             }
         }
 
-        void basis_for_regular_hex(const SpaceMatrix &space, const NodeMatrix &loc_nodes, const std::array<std::array<double, 4>, 3> &h_knots, const std::array<std::array<double, 4>, 3> &v_knots, const std::array<std::array<double, 4>, 3> &w_knots, ElementBases &b)
+        void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, const std::array<std::array<double, 4>, 3> &h_knots, const std::array<std::array<double, 4>, 3> &v_knots, const std::array<std::array<double, 4>, 3> &w_knots, ElementBases &b)
         {
             for(int z = 0; z < 3; ++z)
             {
@@ -557,7 +561,8 @@ namespace poly_fem
                         {
                             const int local_index = 9*z + 3*y + x;
                             const int global_index = space(x, y, z);
-                            const Eigen::MatrixXd &node = loc_nodes(x, y, z);
+                            const auto node = mesh_nodes.node_position(global_index);
+                            // loc_nodes(x, y, z);
 
                             b.bases[local_index].init(global_index, local_index, node);
 
@@ -572,7 +577,7 @@ namespace poly_fem
         }
 
 
-        void basis_for_irregulard_hex(const int el_index, const Mesh3D &mesh, MeshNodes &mesh_nodes, const SpaceMatrix &space, const NodeMatrix &loc_nodes, const std::array<std::array<double, 4>, 3> &h_knots, const std::array<std::array<double, 4>, 3> &v_knots, const std::array<std::array<double, 4>, 3> &w_knots, ElementBases &b)
+        void basis_for_irregulard_hex(const int el_index, const Mesh3D &mesh, MeshNodes &mesh_nodes, const SpaceMatrix &space, const std::array<std::array<double, 4>, 3> &h_knots, const std::array<std::array<double, 4>, 3> &v_knots, const std::array<std::array<double, 4>, 3> &w_knots, ElementBases &b, std::map<int, InterfaceData> &poly_face_to_data)
         {
             for(int z = 0; z < 3; ++z)
             {
@@ -676,11 +681,17 @@ namespace poly_fem
                             }
 
                             // std::cout<<ids.size()<< " " << other_indices.size()<<std::endl;
-
+                            if(el_index == 2)
+                            {
+                                std::cout<<"blalala"<<std::endl;
+                            }
 
                             auto &base = b.bases[local_index];
 
                             const int k = int(other_indices.size()) + 3;
+
+                            const bool is_interface = mesh_nodes.is_interface(center.index);
+                            const int face_id = is_interface ? mesh_nodes.face_from_node_id(center.index) : -1;
 
 
                             base.global().resize(k);
@@ -697,12 +708,26 @@ namespace poly_fem
                             base.global()[2].val = (4. - k) / k;
                             base.global()[2].node = el2.node;
 
+                            if(is_interface)
+                            {
+                                assert(face_id >= 0);
+                                poly_face_to_data[face_id].local_indices.push_back(0);
+                                poly_face_to_data[face_id].local_indices.push_back(1);
+                                poly_face_to_data[face_id].local_indices.push_back(2);
+                            }
+
 
                             for(std::size_t n = 0; n < other_indices.size(); ++n)
                             {
                                 base.global()[3+n].index = other_indices[n];
                                 base.global()[3+n].val = 4./k;
                                 base.global()[3+n].node = mesh_nodes.node_position(other_indices[n]);
+
+                                if(is_interface)
+                                {
+                                    assert(face_id >= 0);
+                                    poly_face_to_data[face_id].local_indices.push_back(3+n);
+                                }
                             }
 
 
@@ -1030,11 +1055,9 @@ namespace poly_fem
             if(!mesh.is_spline_compatible(e))
                 continue;
 
-
             SpaceMatrix space;
-            NodeMatrix loc_nodes;
 
-            build_local_space(mesh, mesh_nodes, e, space, loc_nodes, local_boundary[e], poly_face_to_data, bounday_nodes);
+            build_local_space(mesh, mesh_nodes, e, space, local_boundary[e], poly_face_to_data, bounday_nodes);
 
             ElementBases &b=bases[e];
             hex_quadrature.get_quadrature(quadrature_order, b.quadrature);
@@ -1044,8 +1067,8 @@ namespace poly_fem
             setup_knots_vectors(mesh_nodes, space, h_knots, v_knots, w_knots);
             // print_local_space(space);
 
-            basis_for_regular_hex(space, loc_nodes, h_knots, v_knots, w_knots, b);
-            basis_for_irregulard_hex(e, mesh, mesh_nodes, space, loc_nodes, h_knots, v_knots, w_knots, b);
+            basis_for_regular_hex(mesh_nodes, space, h_knots, v_knots, w_knots, b);
+            basis_for_irregulard_hex(e, mesh, mesh_nodes, space, h_knots, v_knots, w_knots, b, poly_face_to_data);
         }
 
         int n_bases = mesh_nodes.n_nodes();

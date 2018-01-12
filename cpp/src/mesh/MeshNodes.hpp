@@ -26,6 +26,31 @@ public:
 	int primitive_from_face(int f) const { return face_offset_ + f; }
 	int primitive_from_cell(int c) const { return cell_offset_ + c; }
 
+	int vertex_from_node_id(int node_id) const
+	{
+		const int res = node_to_primitive_[node_id];
+		assert(res >= 0 && res < edge_offset_);
+		return res;
+	}
+	int edge_from_node_id(int node_id) const {
+		const int res = node_to_primitive_[node_id];
+		assert(res >= edge_offset_ && res < face_offset_);
+
+		return res-edge_offset_;
+	}
+	int face_from_node_id(int node_id) const {
+		const int res = node_to_primitive_[node_id];
+		assert(res >= face_offset_ && res < cell_offset_);
+
+		return res-face_offset_;
+	}
+	int cell_from_node_id(int node_id) const {
+		const int res = node_to_primitive_[node_id];
+		assert(res >= cell_offset_ && res < n_nodes());
+
+		return res-cell_offset_;
+	}
+
 	// Node position from node id
 	RowVectorNd node_position(int node_id) const { return nodes_.row(node_to_primitive_[node_id]); }
 

@@ -44,7 +44,7 @@ namespace poly_fem
 
 			det(i) = tmp.determinant();
 			// std::cout<<tmp<<std::endl;
-			assert(det(i)>0);
+			// assert(det(i)>0);
 
 			if(det(i) <= 0)
 				std::cout<<"Badd "<<el_index<<std::endl;

@@ -28,6 +28,7 @@ std::vector<int> compute_nonzero_bases_ids(const Mesh3D &mesh, const int c,
 		auto index = mesh.get_index_from_element(c, lf, 0);
 		const int c2 = mesh.switch_element(index).element;
 		assert(c2 >= 0); // no boundary polytope
+		assert(poly_face_to_data.count(index.face) > 0);
 		const InterfaceData &bdata = poly_face_to_data.at(index.face);
 		const ElementBases &b=bases[c2];
 		for (int other_local_basis_id : bdata.local_indices) {
@@ -288,7 +289,7 @@ void sample_polyhedra(
 	// igl::viewer::Viewer viewer;
 	// viewer.data.set_mesh(collocation_points, CF);
 	// // viewer.data.add_points(kernel_centers, Eigen::RowVector3d(0,1,1));
-	// for (int lf = 0; lf < mesh.n_element_faces(element_index); ++lf) {
+	// for (int lf = 0; lf < mesh.n_cell_faces(element_index); ++lf) {
 	// 	Eigen::MatrixXd samples;
 	// 	samples = UV.middleRows(uv_ranges(lf), uv_ranges(lf+1) - uv_ranges(lf));
 	// 	Eigen::RowVector3d c = Eigen::RowVector3d::Random();

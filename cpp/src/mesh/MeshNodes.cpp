@@ -36,7 +36,7 @@ namespace {
 				auto index = mesh.get_index_from_element(c, lf, 0);
 				auto index2 = mesh.switch_element(index);
 				if (index2.element >= 0) {
-					is_interface[index.edge] = true;
+					is_interface[index.face] = true;
 				}
 			}
 		}

@@ -82,8 +82,7 @@ namespace poly_fem
 			viewer.data.add_points(p, MatrixXd::Zero(1, 3));
 			viewer.data.add_edges(p, p1, RowVector3d(1, 1, 0));
 
-			//TODO
-			// viewer.data.add_points(static_cast<Mesh3D *>(state.mesh)->node_from_face(current_3d_index.face), RowVector3d(1, 0, 0));
+			viewer.data.add_points(static_cast<Mesh3D *>(state.mesh)->face_barycenter(current_3d_index.face), RowVector3d(1, 0, 0));
 		}
 	}
 
@@ -104,24 +103,23 @@ namespace poly_fem
 
 			switch(type)
 			{
-						//green
+					//green
 				case ElementType::RegularInteriorCube:
 				cols.block(from, 1, range, 1).setOnes(); break;
 
-						//dark green
+					//dark green
 				case ElementType::RegularBoundaryCube:
 				cols.block(from, 1, range, 1).setConstant(0.5); break;
 
-					//orange
+					//yellow
 				case ElementType::SimpleSingularInteriorCube:
 				cols.block(from, 0, range, 1).setOnes();
-				cols.block(from, 1, range, 1).setConstant(0.5); break;
+				cols.block(from, 1, range, 1).setOnes(); break;
 
-
-						//orange
+					//orange
 				case ElementType::SimpleSingularBoundaryCube:
 				cols.block(from, 0, range, 1).setOnes();
-				cols.block(from, 1, range, 1).setConstant(0.2); break;
+				cols.block(from, 1, range, 1).setConstant(0.5); break;
 
  						//red
 				case ElementType::MultiSingularInteriorCube:
@@ -983,7 +981,7 @@ namespace poly_fem
 				if(state.mesh->is_volume())
 				{
 					auto v{explode(selected_elements, ',')};
-					current_3d_index = static_cast<Mesh3D *>(state.mesh)->get_index_from_element(atoi(v.front().c_str()));
+					current_3d_index = static_cast<Mesh3D *>(state.mesh)->get_index_from_element(atoi(v.front().c_str()), 1, 0);
 					std::cout<<"e:"<<current_3d_index.element<<" f:"<<current_3d_index.face<<" e:"<<current_3d_index.edge<<" v:"<<current_3d_index.vertex<<std::endl;
 				}
 
