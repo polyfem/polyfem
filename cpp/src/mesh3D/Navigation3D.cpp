@@ -21,30 +21,35 @@ poly_fem::Navigation3D::Index poly_fem::Navigation3D::get_index_from_element_fac
 	Index idx;
 
 	if (hi >= M.elements.size()) hi = hi % M.elements.size();
-	idx.element = hi;
+	if (M.elements[hi].hex) {
+		idx.element = hi;
 
-	vector<uint32_t> fvs, fvs_;
-	fvs.insert(fvs.end(), M.elements[hi].vs.begin(), M.elements[hi].vs.begin() + 4);
-	sort(fvs.begin(), fvs.end());
-	idx.element_patch = -1;
-	for (uint32_t i = 0; i < 6; i++) {
-		idx.element_patch = i;
-		fvs_ = M.faces[M.elements[hi].fs[i]].vs;
-		sort(fvs_.begin(), fvs_.end());
-		if (std::equal(fvs.begin(), fvs.end(), fvs_.begin())) break;
+		vector<uint32_t> fvs, fvs_;
+		fvs.insert(fvs.end(), M.elements[hi].vs.begin(), M.elements[hi].vs.begin() + 4);
+		sort(fvs.begin(), fvs.end());
+		idx.element_patch = -1;
+		for (uint32_t i = 0; i < 6; i++) {
+			idx.element_patch = i;
+			fvs_ = M.faces[M.elements[hi].fs[i]].vs;
+			sort(fvs_.begin(), fvs_.end());
+			if (std::equal(fvs.begin(), fvs.end(), fvs_.begin())) break;
+		}
+		assert(idx.element_patch != -1);
+		idx.face = M.elements[hi].fs[idx.element_patch];
+
+		idx.vertex = M.elements[hi].vs[0];
+		idx.face_corner = find(M.faces[idx.face].vs.begin(), M.faces[idx.face].vs.end(), idx.vertex) - M.faces[idx.face].vs.begin();
+
+		int v0 = idx.vertex, v1 = M.elements[hi].vs[1];
+		vector<uint32_t> ves0 = M.vertices[v0].neighbor_es, ves1 = M.vertices[v1].neighbor_es, sharedes;
+		sort(ves0.begin(), ves0.end()); sort(ves1.begin(), ves1.end());
+		set_intersection(ves0.begin(), ves0.end(), ves1.begin(), ves1.end(), back_inserter(sharedes));
+		assert(sharedes.size() == 1);
+		idx.edge = sharedes[0];
 	}
-	assert(idx.element_patch != -1);
-	idx.face = M.elements[hi].fs[idx.element_patch];
-
-	idx.vertex = M.elements[hi].vs[0];
-	idx.face_corner = find(M.faces[idx.face].vs.begin(), M.faces[idx.face].vs.end(),idx.vertex) - M.faces[idx.face].vs.begin();
-
-	int v0 = idx.vertex, v1 = M.elements[hi].vs[1];
-	vector<uint32_t> ves0 = M.vertices[v0].neighbor_es, ves1 = M.vertices[v1].neighbor_es, sharedes;
-	sort(ves0.begin(), ves0.end()); sort(ves1.begin(), ves1.end());
-	set_intersection(ves0.begin(), ves0.end(), ves1.begin(), ves1.end(), back_inserter(sharedes));
-	assert(sharedes.size() == 1);
-	idx.edge = sharedes[0];
+	else {
+		idx = get_index_from_element_face(M, hi, 0, 0);
+	}
 
 	return idx;
 }

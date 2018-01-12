@@ -683,7 +683,9 @@ namespace poly_fem
 					for (auto vid : ele.vs) {
 						int vn = 0;
 						if (bv_flag[vid]) {
-							if (mesh_.vertices[vid].neighbor_hs.size() > 4)has_iregular_v = true;
+							int nh = 0;
+							for (auto nhid : mesh_.vertices[vid].neighbor_hs)if (mesh_.elements[nhid].hex)nh++;
+							if (nh > 4)has_iregular_v = true;
 							continue;//not sure the conditions
 						}
 						else {
