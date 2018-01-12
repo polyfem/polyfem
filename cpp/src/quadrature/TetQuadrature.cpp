@@ -9,7 +9,7 @@ namespace poly_fem
 {
     namespace
     {
-        void get_weight_and_points(const int order, Eigen::MatrixXd &points, Eigen::MatrixXd &weights)
+        void get_weight_and_points(const int order, Eigen::MatrixXd &points, Eigen::VectorXd &weights)
         {
             switch(order)
             {
