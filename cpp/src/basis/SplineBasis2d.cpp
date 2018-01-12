@@ -556,8 +556,8 @@ namespace poly_fem
             //central node always present
             constexpr int face_basis_id = 8;
             b.bases[face_basis_id].init(n_bases++, face_basis_id, mesh.face_barycenter(el_index));
-            b.bases[face_basis_id].set_basis([](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quadr_quad_basis_value(face_basis_id, uv, val); });
-            b.bases[face_basis_id].set_grad( [](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quadr_quad_basis_grad(face_basis_id, uv, val); });
+            b.bases[face_basis_id].set_basis([face_basis_id](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quadr_quad_basis_value(face_basis_id, uv, val); });
+            b.bases[face_basis_id].set_grad( [face_basis_id](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quadr_quad_basis_grad(face_basis_id, uv, val); });
         }
 
         void insert_into_global(const Local2Global &data, std::vector<Local2Global> &vec)
