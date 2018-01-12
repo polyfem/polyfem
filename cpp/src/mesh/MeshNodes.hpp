@@ -59,6 +59,9 @@ public:
 
 	// Whether an edge node (in 2D) or face node (in 3D) is at the interface with a polytope
 	bool is_interface(int node_id) const { return is_interface_[node_to_primitive_[node_id]]; }
+	bool is_primitive_interface(int primitive) const { return is_interface_[primitive]; }
+
+
 
 	// Either boundary or interface
 	bool is_boundary_or_interface(const int node_id) const { return is_boundary(node_id) || is_interface(node_id); }

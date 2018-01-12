@@ -444,16 +444,19 @@ void PolygonalBasis3d::build_bases(
 		// viewer.data.add_points(kernel_centers, Eigen::Vector3d(0,1,1).transpose());
 		// viewer.launch();
 
-		// igl::viewer::Viewer viewer;
-		// Eigen::MatrixXd asd(collocation_points.rows(), 3);
-		// asd.col(0)=collocation_points.col(0);
-		// asd.col(1)=collocation_points.col(1);
-		// asd.col(2)=collocation_points.col(2);
-		// Eigen::VectorXd S = rhs.col(0);
-		// Eigen::MatrixXd C;
-		// igl::colormap(igl::COLOR_MAP_TYPE_VIRIDIS, S, true, C);
-		// viewer.data.add_points(asd, C);
-		// viewer.launch();
+	// 	for(int a = 0; rhs.cols();++a)
+	// 	{
+	// 	igl::viewer::Viewer viewer;
+	// 	Eigen::MatrixXd asd(collocation_points.rows(), 3);
+	// 	asd.col(0)=collocation_points.col(0);
+	// 	asd.col(1)=collocation_points.col(1);
+	// 	asd.col(2)=collocation_points.col(2);
+	// 	Eigen::VectorXd S = rhs.col(a);
+	// 	Eigen::MatrixXd C;
+	// 	igl::colormap(igl::COLOR_MAP_TYPE_VIRIDIS, S, true, C);
+	// 	viewer.data.add_points(asd, C);
+	// 	viewer.launch();
+	// }
 
 		// for(int asd = 0; asd < collocation_points.rows(); ++asd) {
 		//     viewer.data.add_label(collocation_points.row(asd), std::to_string(asd));

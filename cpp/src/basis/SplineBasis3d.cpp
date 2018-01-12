@@ -13,7 +13,9 @@
 #include <vector>
 #include <array>
 #include <map>
+#include <numeric>
 
+// #include "UIState.hpp"
 
 namespace poly_fem
 {
@@ -279,6 +281,56 @@ namespace poly_fem
             assert(false);
         }
 
+        void add_edge_id_for_poly(const Navigation3D::Index &index, const Mesh3D &mesh, MeshNodes &mesh_nodes, const int global_index, std::map<int, InterfaceData> &poly_face_to_data)
+        {
+             const int f1 = index.face;
+             const int f2 = mesh.switch_face(index).face;
+
+             const int id1 = mesh_nodes.primitive_from_face(f1);
+             const int id2 = mesh_nodes.primitive_from_face(f2);
+
+             if(mesh_nodes.is_primitive_interface(id1))
+             {
+                InterfaceData &data = poly_face_to_data[f1];
+                data.local_indices.push_back(global_index);
+             }
+
+             if(mesh_nodes.is_primitive_interface(id2))
+             {
+                InterfaceData &data = poly_face_to_data[f2];
+                data.local_indices.push_back(global_index);
+             }
+        }
+
+        void add_vertex_id_for_poly(const Navigation3D::Index &index, const Mesh3D &mesh, MeshNodes &mesh_nodes, const int global_index, std::map<int, InterfaceData> &poly_face_to_data)
+        {
+             const int f1 = index.face;
+             const int f2 = mesh.switch_face(index).face;
+             const int f3 = mesh.switch_face(mesh.switch_edge(index)).face;
+
+             const int id1 = mesh_nodes.primitive_from_face(f1);
+             const int id2 = mesh_nodes.primitive_from_face(f2);
+             const int id3 = mesh_nodes.primitive_from_face(f3);
+
+             if(mesh_nodes.is_primitive_interface(id1))
+             {
+                InterfaceData &data = poly_face_to_data[f1];
+                data.local_indices.push_back(global_index);
+             }
+
+             if(mesh_nodes.is_primitive_interface(id2))
+             {
+                InterfaceData &data = poly_face_to_data[f2];
+                data.local_indices.push_back(global_index);
+             }
+
+             if(mesh_nodes.is_primitive_interface(id3))
+             {
+                InterfaceData &data = poly_face_to_data[f3];
+                data.local_indices.push_back(global_index);
+             }
+        }
+
         void explore_edge(const Navigation3D::Index &index, const Mesh3D &mesh, MeshNodes &mesh_nodes, const int x, const int y, const int z, SpaceMatrix &space, LocalBoundary &local_boundary, std::map<int, InterfaceData> &poly_face_to_data, std::vector< int > &bounday_nodes)
         {
             int node_id = node_id_from_edge_index(mesh, mesh_nodes, index);
@@ -300,12 +352,8 @@ namespace poly_fem
 
             if(mesh_nodes.is_boundary(node_id))
                 bounday_nodes.push_back(node_id);
-            else if(mesh_nodes.is_interface(node_id))
-            {
-                InterfaceData &data = poly_face_to_data[index.face];
-                data.local_indices.push_back(9*z + 3*y + x);
-                bounday_nodes.push_back(node_id);
-            }
+
+            add_edge_id_for_poly(index, mesh, mesh_nodes, 9*z + 3*y + x, poly_face_to_data);
         }
 
         void explore_vertex(const Navigation3D::Index &index, const Mesh3D &mesh, MeshNodes &mesh_nodes, const int x, const int y, const int z, SpaceMatrix &space, LocalBoundary &local_boundary, std::map<int, InterfaceData> &poly_face_to_data, std::vector< int > &bounday_nodes)
@@ -316,12 +364,8 @@ namespace poly_fem
 
             if(mesh_nodes.is_boundary(node_id))
                 bounday_nodes.push_back(node_id);
-            else if(mesh_nodes.is_interface(node_id))
-            {
-                InterfaceData &data = poly_face_to_data[index.face];
-                data.local_indices.push_back(9*z + 3*y + x);
-                bounday_nodes.push_back(node_id);
-            }
+
+            add_vertex_id_for_poly(index, mesh, mesh_nodes, 9*z + 3*y + x, poly_face_to_data);
         }
 
         void explore_face(const Navigation3D::Index &index, const Mesh3D &mesh, MeshNodes &mesh_nodes, const int x, const int y, const int z,  const int b_flag, SpaceMatrix &space, LocalBoundary &local_boundary, std::map<int, InterfaceData> &poly_face_to_data, std::vector< int > &bounday_nodes)
@@ -347,7 +391,8 @@ namespace poly_fem
             {
                 InterfaceData &data = poly_face_to_data[index.face];
                 data.local_indices.push_back(9*z + 3*y + x);
-                bounday_nodes.push_back(node_id);
+                // igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
+                // viewer.data.add_points(mesh_nodes.node_position(node_id), Eigen::MatrixXd::Constant(1, 3, 0));
             }
         }
 
@@ -686,8 +731,8 @@ namespace poly_fem
 
                             const int k = int(other_indices.size()) + 3;
 
-                            const bool is_interface = mesh_nodes.is_interface(center.index);
-                            const int face_id = is_interface ? mesh_nodes.face_from_node_id(center.index) : -1;
+                            // const bool is_interface = mesh_nodes.is_interface(center.index);
+                            // const int face_id = is_interface ? mesh_nodes.face_from_node_id(center.index) : -1;
 
 
                             base.global().resize(k);
@@ -704,8 +749,9 @@ namespace poly_fem
                             base.global()[2].val = (4. - k) / k;
                             base.global()[2].node = el2.node;
 
-                            if(is_interface)
-                                poly_face_to_data[face_id].local_indices.push_back(local_index);
+                            // if(is_interface){
+                                // poly_face_to_data[face_id].local_indices.push_back(local_index);
+                            // }
 
                             for(std::size_t n = 0; n < other_indices.size(); ++n)
                             {
@@ -1102,6 +1148,32 @@ namespace poly_fem
 
             const ElementBases &b=bases[e];
             setup_data_for_polygons(mesh, e, b, poly_face_to_data);
+        }
+
+        // for(int e = 0; e < n_els; ++e)
+        // {
+        //     if(!mesh.is_polytope(e))
+        //         continue;
+
+        //     for (int lf = 0; lf < mesh.n_cell_faces(e); ++lf)
+        //     {
+        //         auto index = mesh.get_index_from_element(e, lf, 0);
+        //         auto index2 = mesh.switch_element(index);
+        //         if (index2.element >= 0) {
+        //             auto &array = poly_face_to_data[index.face].local_indices;
+        //             auto &b = bases[index2.element];
+        //             array.resize(b.bases.size());
+        //             std::iota(array.begin(), array.end(), 0);
+        //         }
+        //     }
+        // }
+
+        for(auto &k : poly_face_to_data)
+        {
+            auto &array = k.second.local_indices;
+            std::sort(array.begin(), array.end());
+            auto it = std::unique(array.begin(), array.end());
+            array.resize(std::distance(array.begin(), it));
         }
 
         return n_bases;
