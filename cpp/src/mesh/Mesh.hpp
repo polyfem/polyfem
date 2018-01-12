@@ -29,7 +29,7 @@ namespace poly_fem
 	public:
 		virtual ~Mesh() = default;
 
-		virtual void refine(const int n_refinement, const double t) = 0;
+		virtual void refine(const int n_refinement, const double t, std::vector<int> &parent_nodes) = 0;
 
 		//Queries
 		virtual bool is_volume() const = 0;

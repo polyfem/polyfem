@@ -55,6 +55,7 @@ namespace poly_fem
 
 		std::map<int, Eigen::MatrixXd> polys;
 		std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi> > polys_3d;
+		std::vector<int> parent_nodes;
 
 		std::string solver_type;
 		std::string precond_type;

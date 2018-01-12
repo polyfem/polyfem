@@ -5,11 +5,11 @@
 
 namespace poly_fem
 {
-	void Mesh3D::refine(const int n_refiniment, const double t)
+	void Mesh3D::refine(const int n_refiniment, const double t, std::vector<int> &parent_nodes)
 	{
 		//TODO to aware refiniement
-		std::vector<int> Parents;
-		MeshProcessing3D::refine_catmul_clark_polar(mesh_, n_refiniment, Parents);
+		
+		MeshProcessing3D::refine_catmul_clark_polar(mesh_, n_refiniment, parent_nodes);
 		Navigation3D::prepare_mesh(mesh_);
 
 		compute_elements_tag();

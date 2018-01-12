@@ -144,6 +144,7 @@ namespace poly_fem
 		errors.clear();
 		polys.clear();
 		poly_edge_to_data.clear();
+		parent_nodes.clear();
 		delete mesh;
 
 		stiffness.resize(0, 0);
@@ -168,7 +169,7 @@ namespace poly_fem
 
 		mesh->load(mesh_path);
 
-		mesh->refine(n_refs, refinenemt_location);
+		mesh->refine(n_refs, refinenemt_location, parent_nodes);
 		mesh->compute_elements_tag();
 
 		mesh->fill_boundary_tags(boundary_tag);

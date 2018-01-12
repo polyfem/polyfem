@@ -14,7 +14,7 @@ namespace poly_fem
 	class Mesh3D : public Mesh
 	{
 	public:
-		void refine(const int n_refiniment, const double t) override;
+		void refine(const int n_refiniment, const double t, std::vector<int> &parent_nodes) override;
 
 		inline bool is_volume() const override { return true; }
 
