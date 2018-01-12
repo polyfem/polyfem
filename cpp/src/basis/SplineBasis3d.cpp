@@ -705,25 +705,13 @@ namespace poly_fem
                             base.global()[2].node = el2.node;
 
                             if(is_interface)
-                            {
-                                assert(face_id >= 0);
-                                poly_face_to_data[face_id].local_indices.push_back(0);
-                                poly_face_to_data[face_id].local_indices.push_back(1);
-                                poly_face_to_data[face_id].local_indices.push_back(2);
-                            }
-
+                                poly_face_to_data[face_id].local_indices.push_back(local_index);
 
                             for(std::size_t n = 0; n < other_indices.size(); ++n)
                             {
                                 base.global()[3+n].index = other_indices[n];
                                 base.global()[3+n].val = 4./k;
                                 base.global()[3+n].node = mesh_nodes.node_position(other_indices[n]);
-
-                                if(is_interface)
-                                {
-                                    assert(face_id >= 0);
-                                    poly_face_to_data[face_id].local_indices.push_back(3+n);
-                                }
                             }
 
 
