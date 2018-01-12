@@ -9,7 +9,7 @@ namespace poly_fem
 	{
 	public:
 		Eigen::MatrixXd points;
-		Eigen::MatrixXd weights;
+		Eigen::VectorXd weights;
 	};
 }
 

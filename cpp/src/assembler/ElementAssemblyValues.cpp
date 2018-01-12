@@ -1,5 +1,5 @@
 #include "ElementAssemblyValues.hpp"
-
+#include <igl/Timer.h>
 
 namespace poly_fem
 {
@@ -85,6 +85,8 @@ namespace poly_fem
 	{
 		quadrature = basis.quadrature;
 
+		bool poly = (quadrature.weights.size() > 1000);
+
 		basis_values.resize(basis.bases.size());
 		quadrature = quadrature;
 
@@ -97,6 +99,7 @@ namespace poly_fem
 		if(is_volume)
 			dzmv = Eigen::MatrixXd::Zero(quadrature.points.rows(), quadrature.points.cols());
 
+		double t = 0;
 		const int n_local_bases = int(basis.bases.size());
 		for(int j = 0; j < n_local_bases; ++j)
 		{
@@ -105,12 +108,17 @@ namespace poly_fem
 
 			ass_val.global = b.global();
 
+			igl::Timer timer0;
+			timer0.start();
 
 			b.basis(quadrature.points, ass_val.val);
 			assert(ass_val.val.cols()==1);
 
 			b.grad(quadrature.points, ass_val.grad);
 			assert(ass_val.grad.cols() == quadrature.points.cols());
+
+			timer0.stop();
+			t += timer0.getElapsedTime();
 
 			if(!basis.has_parameterization) continue;
 
@@ -127,9 +135,11 @@ namespace poly_fem
 				}
 			}
 		}
+		if (poly) { std::cout << "-- eval quadr points: " << t << std::endl; }
 
-		if(!basis.has_parameterization)
+		if(!basis.has_parameterization) {
 			finalize_global_element(quadrature.points);
+		}
 		else
 		{
 			if(is_volume)
@@ -137,6 +147,7 @@ namespace poly_fem
 			else
 				finalize(mval, dxmv, dymv);
 		}
+
 	}
 
 	void ElementAssemblyValues::compute_assembly_values(const bool is_volume, const std::vector< ElementBases > &bases, std::vector< ElementAssemblyValues > &values)

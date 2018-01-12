@@ -2,6 +2,7 @@
 #define BASIS_HPP
 
 #include "Quadrature.hpp"
+#include "Types.hpp"
 
 #include <Eigen/Dense>
 #include <functional>
@@ -22,13 +23,13 @@ namespace poly_fem
 		int index; // global index of the actual node
 		double val; // weight
 
-		Eigen::MatrixXd node; // node position
+		RowVectorNd node; // node position
 
 		Local2Global()
 			: index(-1), val(0)
 		{ }
 
-		Local2Global(const int _index, const Eigen::MatrixXd &_node, const double _val)
+		Local2Global(const int _index, const RowVectorNd &_node, const double _val)
 			: index(_index), val(_val), node(_node)
 		{ }
 	};

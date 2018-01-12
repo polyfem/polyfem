@@ -408,7 +408,7 @@ void PolygonalBasis3d::build_bases(
 	// 	return;
 	// }
 	int n_kernels_per_edge = 3; //(int) std::round(n_samples_per_edge / 3.0);
-	int n_samples_per_edge = 10*n_kernels_per_edge;
+	int n_samples_per_edge = 3*n_kernels_per_edge;
 
 	// Step 1: Compute integral constraints
 	Eigen::MatrixXd basis_integrals;

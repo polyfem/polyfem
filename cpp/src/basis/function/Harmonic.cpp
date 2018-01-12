@@ -1,6 +1,7 @@
 #include "Harmonic.hpp"
 #include "PolygonQuadrature.hpp"
-
+#include "Types.hpp"
+#include <igl/Timer.h>
 #include <iostream>
 #include <fstream>
 
@@ -96,13 +97,24 @@ namespace poly_fem
 		}
 	}
 
+	double sparsity(const Eigen::MatrixXd &M) {
+		long cnt = 0;
+		for (long i = 0; i < M.size(); ++i) {
+			if (std::fabs(M.data()[i]) > 1e-7) {
+				++cnt;
+			}
+		}
+		return 100.0 * cnt / M.size();
+	}
+
 	void Harmonic::compute(const Eigen::MatrixXd &samples, const Eigen::MatrixXd &local_basis_integral,
 		const Quadrature &quadr, Eigen::MatrixXd &rhs)
 	{
 		is_volume_ = samples.cols() == 3;
 
-		std::cout << centers_.rows() << " " << centers_.cols() << std::endl;
-		std::cout << samples.rows() << ' ' << samples.cols() << std::endl;
+		std::cout << "#kernel centers: " << centers_.rows() << std::endl;
+		std::cout << "#collocation points: " << samples.rows() << std::endl;
+		std::cout << "#non-vanishing bases: " << rhs.cols() << std::endl;
 
 #if 0
 		const int dim = samples.cols();
@@ -113,6 +125,8 @@ namespace poly_fem
 
 		const int end = int(mat.cols())-1;
 		mat.col(end).setOnes();
+
+		igl::Timer timer; timer.start();
 
 		for(long i = 0; i < samples.rows(); ++i)
 		{
@@ -130,11 +144,139 @@ namespace poly_fem
 				mat(i,j)=kernel(is_volume_, (centers_.row(j)-samples.row(i)).norm());
 			}
 		}
+		timer.stop();
+		std::cout << "-- matrix A computed, took: " << timer.getElapsedTime() << std::endl;
+
+
+		// Compute A
+		// igl::Timer timer; timer.start();
+		const int num_kernels = centers_.rows();
+		Eigen::MatrixXd A(samples.rows(), num_kernels + dim + 1);
+		for (int j = 0; j < num_kernels; ++j) {
+			A.col(j) = (samples.rowwise() - centers_.row(j)).rowwise().norm().unaryExpr([this](double x)
+				{ return kernel(is_volume_, x); });
+		}
+		A.middleCols(num_kernels, dim) = samples;
+		A.rightCols<1>().setOnes();
+		// timer.stop();
+		std::cout << "-- Computed A: " << timer.getElapsedTime() << std::endl;
+
+		std::cout << "-- A diff: " << (A-mat).norm() << std::endl;
+
 
 		std::cout << "solving system of size " << centers_.rows() << " x " << centers_.rows() << std::endl;
 		// weights_ = mat.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(rhs);
 		weights_ = (mat.transpose() * mat).ldlt().solve(mat.transpose() * rhs);
 		std::cout << "done" << std::endl;
+#endif
+#if 0
+		// For each basis function f that is nonzero on the element E, we want to
+		// solve the least square system A w = rhs, where:
+		//     ┏                    ┓
+		//     ┃ φj(pi) ... xi yi 1 ┃
+		// A = ┃   ┊        ┊  ┊  ┊ ┃ ∊ ℝ^{#S x (#K+dim+1)}
+		//     ┃   ┊        ┊  ┊  ┊ ┃
+		//     ┗                    ┛
+		//     ┏                ┓^⊤
+		// w = ┃ wj ... ax ay c ┃   ∊ ℝ^{#K+dim+1}
+		//     ┗                ┛
+		// - A is the RBF kernels evaluated over the collocation points (#S)
+		// - b is the expected value of the basis sampled on the boundary (#S)
+		// - w is the weight of the kernels defining the basis
+		// - pi = (xi, yi) is the i-th collocation point
+		//
+		// Moreover, we want to impose a constraint on the gradients of the kernels
+		// so that the integral of the gradients over the polytope must be equal to
+		// the value specified in the argument `local_basis_integral` (#K)
+		//
+		// Let `lb` be the precomputed expected value of ∫f over the rest of the mesh.
+		// We write down the constraint as:
+		//
+		// ∫_{p ∊ E} Σ_j wj ∇x(φj)(p) + ∇x(a^⊤·p + c) dp = lb       (1)
+		// (1) ⇔ ∫_{p ∊ E} Σ_j wj ∇x(φj)(p) + ax dp = lb
+		//     ⇔ lb - Σ_j wj ∫_{p ∊ E} ∇x(φj)(p) dp = ax Vol(E)
+		//
+		// We now have a relationship w = Lv + t, where the weights (and esp. the
+		// linear terms in the weight vector w), are expressed as an affine
+		// combination of unknowns v = [wj ... c] ∊ ℝ^{#K+1} and a translation t
+		//
+		// After solving the new least square system A L v = rhs - A t, we can retrieve
+		// w = L v
+
+		//
+		//     ┏                      ┓^⊤
+		// t = ┃ 0  ┈  ┈  0 lbx lby 0 ┃   / Vol(E) ∊ ℝ^{#K+dim+1}
+		//     ┗                      ┛
+		//
+		//     ┏                  ┓
+		//     ┃   1              ┃
+		//     ┃       1          ┃
+		//     ┃          ·       ┃
+		// L = ┃             ·    ┃ ∊ ℝ^{ (#K+dim+1) x (#K+1}) }
+		//     ┃ Lx_j  ┈        0 ┃
+		//     ┃ Ly_j  ┈        0 ┃
+		//     ┃                1 ┃
+		//     ┗                  ┛
+		// Where Lx_j = -∫∇xφj / Vol(E) = -∫_{p ∊ E} ∇x(φj)(p) / Vol(E) is integrated numerically
+		//
+
+		const int num_bases = rhs.cols();
+		const int num_kernels = centers_.rows();
+		const int dim = centers_.cols();
+
+		// Compute KI
+		Eigen::MatrixXd KI(num_kernels, dim);
+		for (int j = 0; j < num_kernels; ++j) {
+			// ∫∇x(φj)(p) = Σ_q (xq - xk) * 1/r * h'(r) * wq
+			// - xq is the x coordinate of the q-th quadrature point
+			// - wq is the q-th quadrature weight
+			// - r is the distance from pq to the kernel center
+			// - h is the harmonic RBF kernel (scalar function)
+			const Eigen::MatrixXd drdp = quadr.points.rowwise() - centers_.row(j);
+			const Eigen::VectorXd r = drdp.rowwise().norm();
+			KI.row(j) = (drdp.array().colwise() * (quadr.weights.array() * r.unaryExpr([this](double x)
+				{ return kernel_prime(is_volume_, x); }).array() / r.array())).colwise().sum();
+		}
+		KI /= quadr.weights.sum();
+
+		// Compute L
+		Eigen::MatrixXd L(num_kernels + dim + 1, num_kernels + 1);
+		L.setZero();
+		L.diagonal().setOnes();
+		L.bottomRightCorner(dim+1, 1).setZero();
+		L.bottomRightCorner(1, 1).setOnes();
+		L.block(num_kernels, 0, dim, num_kernels) = -KI.transpose();
+		// std::cout << L.bottomRightCorner(10, 10) << std::endl;
+
+		// Compute A
+		Eigen::MatrixXd A(samples.rows(), num_kernels + dim + 1);
+		for (int j = 0; j < num_kernels; ++j) {
+			A.col(j) = (samples.rowwise() - centers_.row(j)).rowwise().norm().unaryExpr([this](double x)
+				{ return kernel(is_volume_, x); });
+		}
+		A.middleCols(num_kernels, dim) = samples;
+		A.rightCols<1>().setOnes();
+
+		// Compute t
+		weights_.resize(num_kernels + dim + 1, num_bases);
+		weights_.setZero();
+		weights_.middleRows(num_kernels, dim) = local_basis_integral.transpose() / quadr.weights.sum();
+
+		// Compute b = rhs - A t
+		rhs -= A * weights_;
+
+		// Solve the system
+		std::cout << "-- Solving system of size " << num_kernels << " x " << num_kernels << std::endl;
+		weights_ += L * (L.transpose() * A.transpose() * A * L).ldlt().solve(L.transpose() * A.transpose() * rhs);
+		// Eigen::MatrixXd M = samples * local_basis_integral.transpose();
+		// std::cout << "t: " << M.rows() << " x " << M.cols() << std::endl;
+		// + samples * local_basis_integral.transpose();
+
+		// weights_ = (A.transpose() * A).ldlt().solve(A.transpose() * rhs);
+
+		// v = rhs;
+		// rhs = rhs2;
+		// weights_.setZero();
 #else
 		const int dim = samples.cols();
 		const int size = (int) samples.rows();
@@ -145,7 +287,10 @@ namespace poly_fem
 		const int end = int(mat.cols())-1;
 		mat.col(end).setOnes();
 
+		// igl::Timer timer; timer.start();
 		Eigen::MatrixXd KI(centers_.rows(), dim);
+
+		// Eigen::MatrixXd KI(centers_.rows(), dim);
 		for(long j = 0; j < centers_.rows(); ++j)
 		{
 			// const double r = (centers_.row(j)-samples.row(i)).norm();
@@ -173,8 +318,13 @@ namespace poly_fem
 			}
 
 			if (is_volume_) { KI.row(j) << KxI, KyI, KzI; } else { KI.row(j) << KxI, KyI; }
+			if (j == 0) { std::cout << KI.row(j) << std::endl; }
 			KI.row(j) /= quadr.weights.sum();
 		}
+
+		// timer.stop();
+		// std::cout << "-- KI computed, took: " << timer.getElapsedTime() << std::endl;
+		// timer.start();
 
 		for(long i = 0; i < samples.rows(); ++i)
 		{
@@ -199,11 +349,20 @@ namespace poly_fem
 			}
 		}
 
+		// timer.stop();
+		// std::cout << "-- matrix A computed, took: " << timer.getElapsedTime() << std::endl;
+		// timer.start();
+
+
 		// Eigen::MatrixXd tmp = mat.jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(rhs);
 		std::cout << "solving system of size " << centers_.rows() << " x " << centers_.rows() << std::endl;
+
 		Eigen::MatrixXd tmp = (mat.transpose() * mat).ldlt().solve(mat.transpose() * rhs);
-		std::cout << "solved!" << std::endl;
+		// timer.stop();
+		// std::cout << "-- solved, took: " << timer.getElapsedTime() << std::endl;
+		// timer.start();
 		weights_.resize(centers_.rows() + (is_volume_?3:2) + 1, tmp.cols());
+		weights_.setZero();
 		weights_.block(0, 0, centers_.rows(), tmp.cols()) = tmp.block(0, 0, centers_.rows(), tmp.cols());
 
 		const int wend = weights_.rows()-1;
@@ -262,6 +421,8 @@ namespace poly_fem
 				weights_.row(wend-1) -= weights_.row(j)*KyI;
 			}
 		}
+
+		// std::cout << "-- W diff: " << (weights_ - v).norm() << std::endl;
 
 		// Eigen::MatrixXd integralx = Eigen::MatrixXd::Zero(weights_.cols(), 1);
 		// Eigen::MatrixXd integraly = Eigen::MatrixXd::Zero(weights_.cols(), 1);
@@ -323,6 +484,10 @@ namespace poly_fem
 		// 	os<<weights_<<std::endl;
 		// 	os.close();
 		// }
+
+		// std::cout << "#weights: " << weights_.rows() << " x " << weights_.cols() << std::endl;
+		// timer.stop();
+		// std::cout << "-- computed harmonic, took: " << timer.getElapsedTime() << std::endl;
 #endif
 	}
 }
