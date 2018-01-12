@@ -8,7 +8,8 @@ namespace poly_fem
 	void Mesh3D::refine(const int n_refiniment, const double t)
 	{
 		//TODO to aware refiniement
-		MeshProcessing3D::refine_catmul_clark_polar(mesh_, n_refiniment);
+		std::vector<int> Parents;
+		MeshProcessing3D::refine_catmul_clark_polar(mesh_, n_refiniment, Parents);
 		Navigation3D::prepare_mesh(mesh_);
 
 		compute_elements_tag();
