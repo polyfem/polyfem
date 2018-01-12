@@ -119,6 +119,8 @@ namespace poly_fem
         }
 
 
+
+
         int node_id_from_face_index(const Mesh3D &mesh, MeshNodes &mesh_nodes, const Navigation3D::Index &index)
         {
             int el_id = mesh.switch_element(index).element;
@@ -220,6 +222,69 @@ namespace poly_fem
             }
 
             return mesh_nodes.node_id_from_primitive(primitive_id);
+        }
+
+
+        void get_edge_elements_neighs(const Mesh3D &mesh, MeshNodes &mesh_nodes, const int element_id, const int edge_id, int dir, std::vector<int> &ids)
+        {
+            std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 12> to_edge;
+            mesh.to_edge_functions(to_edge);
+
+            Navigation3D::Index index;
+            for(int i = 0; i < 12; ++i)
+            {
+                index = to_edge[i](mesh.get_index_from_element(element_id));
+
+                if(index.edge == edge_id)
+                    break;
+            }
+
+            assert(index.edge == edge_id);
+
+            if(dir == 1)
+            {
+                int id;
+                do
+                {
+                    ids.push_back(mesh_nodes.node_id_from_cell(index.element));
+                    index = mesh.next_around_edge(index);
+                }
+                while(index.element != element_id);
+
+                return;
+            }
+
+            if(dir == 0)
+            {
+                int id;
+                do
+                {
+                    const Navigation3D::Index f_index = mesh.switch_face(mesh.switch_edge(index));
+                    ids.push_back(node_id_from_face_index(mesh, mesh_nodes, f_index));
+
+                    index = mesh.next_around_edge(index);
+                }
+                while(index.element != element_id);
+
+                return;
+            }
+
+            if(dir == 2)
+            {
+                int id;
+                do
+                {
+                    const Navigation3D::Index f_index = mesh.switch_face(mesh.switch_edge(mesh.switch_vertex(index)));
+                    ids.push_back(node_id_from_face_index(mesh, mesh_nodes, f_index));
+
+                    index = mesh.next_around_edge(index);
+                }
+                while(index.element != element_id);
+
+                return;
+            }
+
+            assert(false);
         }
 
         void explore_edge(const Navigation3D::Index &index, const Mesh3D &mesh, MeshNodes &mesh_nodes, const int x, const int y, const int z, SpaceMatrix &space, NodeMatrix &node, LocalBoundary &local_boundary, std::map<int, InterfaceData> &poly_face_to_data, std::vector< int > &bounday_nodes)
@@ -587,23 +652,24 @@ namespace poly_fem
                             // std::cout<<"el1 "<<el1.index<<std::endl;
                             // std::cout<<"el2 "<<el2.index<<std::endl;
 
-                            std::vector<int> ids;
-                            mesh.get_edge_elements_neighs(el_index, edge_id, dir, ids);
 
-                            if(mesh_nodes.primitive_from_cell(ids.front()) != center.index)
+                            std::vector<int> ids;
+                            get_edge_elements_neighs(mesh, mesh_nodes, el_index, edge_id, dir, ids);
+
+                            if(ids.front() != center.index)
                             {
                                 assert(dir != 1);
                                 ids.clear();
-                                mesh.get_edge_elements_neighs(el_index, edge_id, dir == 2 ? 0 : 2, ids);
+                                get_edge_elements_neighs(mesh, mesh_nodes, el_index, edge_id, dir == 2 ? 0 : 2, ids);
                             }
 
-                            assert(mesh_nodes.primitive_from_cell(ids.front()) == center.index);
+                            assert(ids.front() == center.index);
 
                             std::vector<int> other_indices;
                             std::vector<Eigen::MatrixXd> other_nodes;
                             for(size_t i = 0; i < ids.size(); ++i)
                             {
-                                const int node_id = mesh_nodes.node_id_from_cell(ids[i]);
+                                const int node_id = ids[i];
                                 if(node_id != center.index && node_id != el1.index && node_id != el2.index){
                                     other_indices.push_back(node_id);
                                 }
