@@ -31,7 +31,7 @@ namespace poly_fem
 		int n_refs = 0;
 
 		bool use_splines = false;
-		bool iso_parametric = false;
+		bool iso_parametric = true;
 
 		Problem problem;
 

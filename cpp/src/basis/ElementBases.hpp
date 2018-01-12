@@ -16,11 +16,13 @@ namespace poly_fem
 	class ElementBases
 	{
 	public:
+		typedef std::function<void(Quadrature &quadrature)> QuadratureFunction;
+
 		// one basis function per node in the element
 		std::vector<Basis> bases;
 
 		// quadrature points to evaluate the basis functions inside the element
-		Quadrature quadrature;
+		void compute_quadrature(Quadrature &quadrature) const { quadrature_builder_(quadrature); }
 
 		// whether the basis functions should be evaluated in the parametric domain (FE bases),
 		// or directly in the object domain (harmonic bases)
@@ -59,6 +61,11 @@ namespace poly_fem
 
 			return os;
 		}
+
+		void set_quadrature(const QuadratureFunction &fun) { quadrature_builder_ = fun; }
+
+	private:
+		QuadratureFunction quadrature_builder_;
 	};
 }
 

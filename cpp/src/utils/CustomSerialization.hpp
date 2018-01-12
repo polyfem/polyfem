@@ -18,15 +18,15 @@ namespace igl
         template <>
         inline void serialize(const poly_fem::Problem &obj,std::vector<char>& buffer)
         {
-            ::igl::serialize(obj.problem_num(),std::string("problem_num"),buffer);
+            // ::igl::serialize(obj.problem_num(),std::string("problem_num"),buffer);
         }
 
         template <>
         inline void deserialize(poly_fem::Problem &obj,const std::vector<char>& buffer)
         {
-            int val;
-            ::igl::deserialize(val,std::string("problem_num"),buffer);
-            obj.set_problem_num(val);
+            // int val;
+            // ::igl::deserialize(val,std::string("problem_num"),buffer);
+            // obj.set_problem_num(val);
         }
         ///////////////////////////////
 
@@ -34,17 +34,17 @@ namespace igl
         template <>
         inline void serialize(const poly_fem::ElementBases &obj,std::vector<char>& buffer)
         {
-            ::igl::serialize(obj.bases, std::string("bases"), buffer);
-            ::igl::serialize(obj.quadrature, std::string("quadrature"), buffer);
-            ::igl::serialize(obj.has_parameterization, std::string("has_parameterization"), buffer);
+            // ::igl::serialize(obj.bases, std::string("bases"), buffer);
+            // ::igl::serialize(obj.quadrature, std::string("quadrature"), buffer);
+            // ::igl::serialize(obj.has_parameterization, std::string("has_parameterization"), buffer);
         }
 
         template <>
         inline void deserialize(poly_fem::ElementBases &obj,const std::vector<char>& buffer)
         {
-            ::igl::deserialize(obj.bases, std::string("bases"), buffer);
-            ::igl::deserialize(obj.quadrature, std::string("quadrature"), buffer);
-            ::igl::deserialize(obj.has_parameterization, std::string("has_parameterization"), buffer);
+            // ::igl::deserialize(obj.bases, std::string("bases"), buffer);
+            // ::igl::deserialize(obj.quadrature, std::string("quadrature"), buffer);
+            // ::igl::deserialize(obj.has_parameterization, std::string("has_parameterization"), buffer);
         }
         ///////////////////////////////
 

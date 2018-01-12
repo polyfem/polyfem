@@ -271,14 +271,17 @@ void PolygonalBasis2d::build_bases(
 		b.has_parameterization = false;
 
 		// Compute quadrature points for the polygon
-		poly_quadr.get_quadrature(collocation_points, quadrature_order, b.quadrature);
+		Quadrature tmp_quadrature;
+		poly_quadr.get_quadrature(collocation_points, quadrature_order, tmp_quadrature);
+		
+		b.set_quadrature([tmp_quadrature](Quadrature &quad){ quad = tmp_quadrature; });
 
 		// Compute the weights of the harmonic kernels
 		Eigen::MatrixXd local_basis_integrals(rhs.cols(), basis_integrals.cols());
 		for (long k = 0; k < rhs.cols(); ++k) {
 			local_basis_integrals.row(k) = -basis_integrals.row(local_to_global[k]);
 		}
-		Harmonic harmonic(kernel_centers, collocation_points, local_basis_integrals, b.quadrature, rhs);
+		Harmonic harmonic(kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs);
 
 		// Set the bases which are nonzero inside the polygon
 		const int n_poly_bases = int(local_to_global.size());

@@ -1074,7 +1074,7 @@ namespace poly_fem
 
         bounday_nodes.clear();
 
-        HexQuadrature hex_quadrature;
+        // HexQuadrature hex_quadrature;
 
         std::array<std::array<double, 4>, 3> h_knots;
         std::array<std::array<double, 4>, 3> v_knots;
@@ -1090,7 +1090,11 @@ namespace poly_fem
             build_local_space(mesh, mesh_nodes, e, space, local_boundary[e], poly_face_to_data, bounday_nodes);
 
             ElementBases &b=bases[e];
-            hex_quadrature.get_quadrature(quadrature_order, b.quadrature);
+            b.set_quadrature([quadrature_order](Quadrature &quad){
+                HexQuadrature hex_quadrature;
+                hex_quadrature.get_quadrature(quadrature_order, quad);
+            });
+            // hex_quadrature.get_quadrature(quadrature_order, b.quadrature);
             b.bases.resize(27);
 
 
@@ -1114,7 +1118,11 @@ namespace poly_fem
                 continue;
 
             ElementBases &b=bases[e];
-            hex_quadrature.get_quadrature(quadrature_order, b.quadrature);
+            // hex_quadrature.get_quadrature(quadrature_order, b.quadrature);
+            b.set_quadrature([quadrature_order](Quadrature &quad){
+                HexQuadrature hex_quadrature;
+                hex_quadrature.get_quadrature(quadrature_order, quad);
+            });
 
             create_q2_nodes(mesh, e, vertex_id, edge_id, face_id, b, bounday_nodes, local_boundary[e], n_bases);
         }

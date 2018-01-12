@@ -457,7 +457,7 @@ int poly_fem::FEBasis2d::build_bases(
 	compute_nodes(mesh, discr_order, nodes, element_nodes_id, local_boundary, poly_edge_to_data);
 	boundary_nodes = nodes.boundary_nodes();
 
-	QuadQuadrature quad_quadrature;
+
 	bases.resize(mesh.n_faces());
 	for (int e = 0; e < mesh.n_faces(); ++e) {
 		ElementBases &b = bases[e];
@@ -465,7 +465,11 @@ int poly_fem::FEBasis2d::build_bases(
 		b.bases.resize(n_el_bases);
 
 		if (mesh.is_cube(e)) {
-			quad_quadrature.get_quadrature(quadrature_order, b.quadrature);
+			b.set_quadrature([quadrature_order](Quadrature &quad){
+				QuadQuadrature quad_quadrature;
+				quad_quadrature.get_quadrature(quadrature_order, quad);
+			});
+			// quad_quadrature.get_quadrature(quadrature_order, b.quadrature);
 			b.bases.resize(n_el_bases);
 
 			for (int j = 0; j < n_el_bases; ++j) {

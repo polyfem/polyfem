@@ -83,7 +83,7 @@ namespace poly_fem
 
 	void ElementAssemblyValues::compute(const int el_index, const bool is_volume, const ElementBases &basis)
 	{
-		quadrature = basis.quadrature;
+		basis.compute_quadrature(quadrature);
 
 		bool poly = (quadrature.weights.size() > 1000);
 

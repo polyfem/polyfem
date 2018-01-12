@@ -434,10 +434,13 @@ void PolygonalBasis3d::build_bases(
 		ElementBases &b=bases[e];
 		b.has_parameterization = false;
 
+		Quadrature tmp_quadrature;
 		sample_polyhedra(e, 2, n_kernels_per_edge, n_samples_per_edge, quadrature_order,
 			mesh, poly_face_to_data, bases, gbases, eps, local_to_global,
 			collocation_points, kernel_centers, rhs, triangulated_vertices,
-			triangulated_faces, b.quadrature);
+			triangulated_faces, tmp_quadrature);
+
+		b.set_quadrature([tmp_quadrature](Quadrature &quad){ quad = tmp_quadrature; });
 
 		// igl::viewer::Viewer viewer;
 		// viewer.data.set_mesh(triangulated_vertices, triangulated_faces);
@@ -467,7 +470,7 @@ void PolygonalBasis3d::build_bases(
 		for (long k = 0; k < rhs.cols(); ++k) {
 			local_basis_integrals.row(k) = -basis_integrals.row(local_to_global[k]);
 		}
-		Harmonic harmonic(kernel_centers, collocation_points, local_basis_integrals, b.quadrature, rhs);
+		Harmonic harmonic(kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs);
 
 		// Set the bases which are nonzero inside the polygon
 		const int n_poly_bases = int(local_to_global.size());

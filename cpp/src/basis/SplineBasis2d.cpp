@@ -680,7 +680,7 @@ namespace poly_fem
 
         bounday_nodes.clear();
 
-        QuadQuadrature quad_quadrature;
+        // QuadQuadrature quad_quadrature;
 
         for(int e = 0; e < n_els; ++e)
         {
@@ -695,7 +695,11 @@ namespace poly_fem
             // n_bases = max(n_bases, max_local_base);
 
             ElementBases &b=bases[e];
-            quad_quadrature.get_quadrature(quadrature_order, b.quadrature);
+            // quad_quadrature.get_quadrature(quadrature_order, b.quadrature);
+            b.set_quadrature([quadrature_order](Quadrature &quad){
+                QuadQuadrature quad_quadrature;
+                quad_quadrature.get_quadrature(quadrature_order, quad);
+            });
             b.bases.resize(9);
 
             std::array<std::array<double, 4>, 3> h_knots;
@@ -720,7 +724,11 @@ namespace poly_fem
                 continue;
 
             ElementBases &b=bases[e];
-            quad_quadrature.get_quadrature(quadrature_order, b.quadrature);
+            // quad_quadrature.get_quadrature(quadrature_order, b.quadrature);
+            b.set_quadrature([quadrature_order](Quadrature &quad){
+                QuadQuadrature quad_quadrature;
+                quad_quadrature.get_quadrature(quadrature_order, quad);
+            });
 
             create_q2_nodes(mesh, e, vertex_id, edge_id, b, bounday_nodes, local_boundary[e], n_bases);
         }

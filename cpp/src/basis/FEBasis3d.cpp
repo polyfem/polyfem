@@ -595,7 +595,7 @@ int poly_fem::FEBasis3d::build_bases(
 	compute_nodes(mesh, discr_order, nodes, element_nodes_id, local_boundary, poly_face_to_data);
 	boundary_nodes = nodes.boundary_nodes();
 
-	HexQuadrature hex_quadrature;
+	// HexQuadrature hex_quadrature;
 	bases.resize(mesh.n_cells());
 	for (int e = 0; e < mesh.n_cells(); ++e) {
 		ElementBases &b = bases[e];
@@ -604,7 +604,11 @@ int poly_fem::FEBasis3d::build_bases(
 		b.bases.resize(n_el_bases);
 
 		if (n_el_vertices == 8) {
-			hex_quadrature.get_quadrature(quadrature_order, b.quadrature);
+			// hex_quadrature.get_quadrature(quadrature_order, b.quadrature);
+			b.set_quadrature([quadrature_order](Quadrature &quad){
+				HexQuadrature hex_quadrature;
+				hex_quadrature.get_quadrature(quadrature_order, quad);
+			});
 			b.bases.resize(n_el_bases);
 
 			for (int j = 0; j < n_el_bases; ++j) {
