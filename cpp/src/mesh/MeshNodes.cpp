@@ -141,6 +141,35 @@ int poly_fem::MeshNodes::node_id_from_cell(int c) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+int poly_fem::MeshNodes::vertex_from_node_id(int node_id) const {
+	const int res = node_to_primitive_[node_id];
+	assert(res >= 0 && res < edge_offset_);
+	return res;
+}
+
+int poly_fem::MeshNodes::edge_from_node_id(int node_id) const {
+	const int res = node_to_primitive_[node_id];
+	assert(res >= edge_offset_ && res < face_offset_);
+
+	return res-edge_offset_;
+}
+
+int poly_fem::MeshNodes::face_from_node_id(int node_id) const {
+	const int res = node_to_primitive_[node_id];
+	assert(res >= face_offset_ && res < cell_offset_);
+
+	return res-face_offset_;
+}
+
+int poly_fem::MeshNodes::cell_from_node_id(int node_id) const {
+	const int res = node_to_primitive_[node_id];
+	assert(res >= cell_offset_ && res < n_nodes());
+
+	return res-cell_offset_;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 std::vector<int> poly_fem::MeshNodes::boundary_nodes() const {
 	std::vector<int> res;
 	res.reserve(n_nodes());
