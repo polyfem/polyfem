@@ -45,10 +45,10 @@ namespace poly_fem
 
 		void compute_elements_tag() override;
 
-		RowVectorNd point(const int global_index) const override;
-		RowVectorNd edge_barycenter(const int index) const override;
-		RowVectorNd face_barycenter(const int index) const override;
-		RowVectorNd cell_barycenter(const int index) const override { assert(false); return RowVectorNd(2); }
+		virtual RowVectorNd point(const int global_index) const override;
+		virtual RowVectorNd edge_barycenter(const int index) const override;
+		virtual RowVectorNd face_barycenter(const int index) const override;
+		virtual RowVectorNd cell_barycenter(const int index) const override { assert(false); return RowVectorNd(2); }
 
 
 
