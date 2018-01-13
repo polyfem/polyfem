@@ -4,7 +4,8 @@
 #include "FEBasis3d.hpp"
 #include "MeshUtils.hpp"
 #include "Refinement.hpp"
-#include "Harmonic.hpp"
+#include "RBFWithLinear.hpp"
+// #include "RBFWithQuadratic.hpp"
 // #include "UIState.hpp"
 #include <igl/triangle/triangulate.h>
 #include <igl/per_vertex_normals.h>
@@ -281,7 +282,7 @@ void sample_polyhedra(
 	// 	Eigen::MatrixXd V;
 	// 	evalFuncGeom(PV, V, 0);
 	// igl::write_triangle_mesh("foo_dense.obj", collocation_points, CF);
-	igl::write_triangle_mesh("foo_small.obj", triangulated_vertices, triangulated_faces);
+	// igl::write_triangle_mesh("foo_small.obj", triangulated_vertices, triangulated_faces);
 	// 	igl::viewer::Viewer viewer;
 	//  viewer.data.set_points(kernel_centers, Eigen::RowVector3d(1,0,1));
 	// 	viewer.data.set_mesh(collocation_points, collocation_faces);
@@ -480,22 +481,22 @@ void PolygonalBasis3d::build_bases(
 		//     viewer.data.add_label(collocation_points.row(asd), std::to_string(asd));
 		// }
 
-		// Compute the weights of the harmonic kernels
+		// Compute the weights of the RBF kernels
 		Eigen::MatrixXd local_basis_integrals(rhs.cols(), basis_integrals.cols());
 		for (long k = 0; k < rhs.cols(); ++k) {
 			local_basis_integrals.row(k) = -basis_integrals.row(local_to_global[k]);
 		}
-		Harmonic harmonic(kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs);
+		RBFWithLinear rbf(kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs);
 
 		// Set the bases which are nonzero inside the polygon
 		const int n_poly_bases = int(local_to_global.size());
 		b.bases.resize(n_poly_bases);
 		for (int i = 0; i < n_poly_bases; ++i) {
 			b.bases[i].init(local_to_global[i], i, Eigen::MatrixXd::Zero(1, 2));
-			b.bases[i].set_basis([harmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-				{ harmonic.basis(i, uv, val); });
-			b.bases[i].set_grad( [harmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-				{ harmonic.grad(i, uv, val); });
+			b.bases[i].set_basis([rbf, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+				{ rbf.basis(i, uv, val); });
+			b.bases[i].set_grad( [rbf, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+				{ rbf.grad(i, uv, val); });
 		}
 
 		// Polygon boundary after geometric mapping from neighboring elements
