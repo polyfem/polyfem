@@ -163,13 +163,8 @@ add_library(polyfem
 	src/basis/function/QuadraticBSpline3d.cpp
 	src/basis/function/QuadraticBSpline3d.hpp
 
-
-	src/basis/function/Harmonic.cpp
-	src/basis/function/Harmonic.hpp
-
-	src/basis/function/Biharmonic.cpp
-	src/basis/function/Biharmonic.hpp
-
+	src/basis/function/RBFWithLinear.cpp
+	src/basis/function/RBFWithLinear.hpp
 
 	src/assembler/AssemblyValues.hpp
 	src/assembler/ElementAssemblyValues.hpp

@@ -1,26 +1,24 @@
-#ifndef HARMONIC_HPP
-#define HARMONIC_HPP
+#pragma once
 
 #include "Quadrature.hpp"
 #include <Eigen/Dense>
 
 namespace poly_fem
 {
-	class Harmonic
+	class RBFWithLinear
 	{
 	public:
 
 		///
-		/// @brief      { Initialize a harmonic function over an element. }
+		/// @brief      { Initialize RBF functions over a polytope element. }
 		///
-		/// @param[in]  centers               { #C x dim positions of the centers of the harmonic
-		///                                   kernels used to define functions over the polytope.
-		///                                   The centers are placed at a small offset distance from
-		///                                   the boundary of the element, due to the singularity at
-		///                                   the centers }
+		/// @param[in]  centers               { #C x dim positions of the kernels used to define
+		///                                   functions over the polytope. The centers are placed at
+		///                                   a small offset distance from the boundary of the
+		///                                   element, due to the singularity at the centers }
 		/// @param[in]  samples               { #S x dim positions of the collocation points, used
-		///                                   to approximate the harmonic functions over the
-		///                                   boundary of the element }
+		///                                   to approximate the RBF functions over the boundary of
+		///                                   the element }
 		/// @param[in]  local_basis_integral  { #B x dim containing the expected value of the
 		///                                   integral of each basis over the polytope }
 		/// @param[in]  quadr                 { Quadrature points and weights inside the polytope }
@@ -29,14 +27,14 @@ namespace poly_fem
 		///                                   collocation points sampled on the boundary of the
 		///                                   polytope }
 		///
-		Harmonic(const Eigen::MatrixXd &centers, const Eigen::MatrixXd &samples,
+		RBFWithLinear(const Eigen::MatrixXd &centers, const Eigen::MatrixXd &samples,
 			const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
 			Eigen::MatrixXd &rhs);
 
 		///
-		/// @brief      { Evaluates one harmonic function over a list of coordinates }
+		/// @brief      { Evaluates one RBF function over a list of coordinates }
 		///
-		/// @param[in]  local_index  { i-th harmonic function to evaluate }
+		/// @param[in]  local_index  { i-th RBF function to evaluate }
 		/// @param[in]  uv           { #uv x dim matrix of coordinates to evaluate (in object
 		///                          domain) }
 		/// @param[out] val          { #uv x 1 matrix of computed values }
@@ -44,12 +42,11 @@ namespace poly_fem
 		void basis(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const;
 
 		///
-		/// @brief      { Evaluates the gradient of one harmonic function over a
-		///             list of coordinates }
+		/// @brief      { Evaluates the gradient of one RBF function over a list of coordinates }
 		///
-		/// @param[in]  local_index  { i-th harmonic function to evaluate }
-		/// @param[in]  uv           { #uv x dim matrix of coordinates to
-		///                          evaluate (in object domain) }
+		/// @param[in]  local_index  { i-th RBF function to evaluate }
+		/// @param[in]  uv           { #uv x dim matrix of coordinates to evaluate (in object
+		///                          domain) }
 		/// @param[out] val          { #uv x dim matrix of computed gradients }
 		///
 		void grad(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const;
@@ -71,5 +68,3 @@ namespace poly_fem
 
 	};
 }
-
-#endif
