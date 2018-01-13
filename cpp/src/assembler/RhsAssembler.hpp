@@ -13,7 +13,7 @@ namespace poly_fem
 	class RhsAssembler
 	{
 	public:
-		void assemble(const int n_basis, const int size, const std::vector< ElementAssemblyValues > &values, const std::vector< ElementAssemblyValues > &geom_values, const Problem &problem, Eigen::MatrixXd &rhs) const;
+		void assemble(const int n_basis, const int size, const std::vector< ElementBases > &bases, const std::vector< ElementBases > &gbases, const bool is_volume, const Problem &problem, Eigen::MatrixXd &rhs) const;
 		void set_bc(const int size, const std::vector< ElementBases > &bases, const std::vector< ElementBases > &geom_bases, const bool is_volume, const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution,  const Problem &problem, Eigen::MatrixXd &rhs) const;
 
 	private:

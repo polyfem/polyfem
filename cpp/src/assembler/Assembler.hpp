@@ -21,9 +21,10 @@ namespace poly_fem
 	{
 	public:
 		void assemble(
+			const bool is_volume,
 			const int n_basis,
-			const std::vector< ElementAssemblyValues > &values,
-			const std::vector< ElementAssemblyValues > &geom_values,
+			const std::vector< ElementBases > &bases,
+			const std::vector< ElementBases > &gbases,
 			Eigen::SparseMatrix<double, Eigen::RowMajor> &stiffness) const
 		{
 			const int buffer_size = std::min(long(1e8), long(n_basis) * local_assembler_.size());
@@ -38,16 +39,28 @@ namespace poly_fem
 
 			Eigen::SparseMatrix<double, Eigen::RowMajor> tmp(stiffness.rows(), stiffness.cols());
 
-			const int n_values = int(values.size());
-			for(int e=0; e < n_values; ++e)
+			const int n_bases = int(bases.size());
+			for(int e=0; e < n_bases; ++e)
 			{
-				const ElementAssemblyValues &vals  = values[e];
-				const ElementAssemblyValues &gvals = geom_values[e];
+				// const ElementAssemblyValues &vals  = values[e];
+				// const ElementAssemblyValues &gvals = geom_values[e];
 
-				const Quadrature &quadrature = vals.quadrature;
+				std::shared_ptr<ElementAssemblyValues> vals = std::make_shared<ElementAssemblyValues>();
+				std::shared_ptr<ElementAssemblyValues> gvals;
+				vals->compute(e, is_volume, bases[e]);
 
-				const Eigen::MatrixXd da = gvals.det.array() * quadrature.weights.array();
-				const int n_loc_bases = int(vals.basis_values.size());
+				if(&bases[e] == &gbases[e])
+					gvals = vals;
+				else
+				{
+					gvals = std::make_shared<ElementAssemblyValues>();
+					gvals->compute(e, is_volume, gbases[e]);
+				}
+
+				const Quadrature &quadrature = vals->quadrature;
+
+				const Eigen::MatrixXd da = gvals->det.array() * quadrature.weights.array();
+				const int n_loc_bases = int(vals->basis_values.size());
 
 				// if(n_loc_bases == 3)
 				// {
@@ -57,7 +70,7 @@ namespace poly_fem
 
 				for(int i = 0; i < n_loc_bases; ++i)
 				{
-					const AssemblyValues &values_i = vals.basis_values[i];
+					const AssemblyValues &values_i = vals->basis_values[i];
 
 					// const Eigen::MatrixXd &vali  = values_i.val;
 					const Eigen::MatrixXd &gradi = values_i.grad_t_m;
@@ -68,7 +81,7 @@ namespace poly_fem
 
 					for(int j = 0; j < n_loc_bases; ++j)
 					{
-						const AssemblyValues &values_j = vals.basis_values[j];
+						const AssemblyValues &values_j = vals->basis_values[j];
 
 						// const Eigen::MatrixXd &valj  = values_j.val;
 						const Eigen::MatrixXd &gradj = values_j.grad_t_m;

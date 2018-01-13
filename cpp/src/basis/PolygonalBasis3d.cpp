@@ -334,8 +334,8 @@ void sample_polyhedra(
 void PolygonalBasis3d::compute_integral_constraints(
 	const Mesh3D &mesh,
 	const int n_bases,
-	const std::vector< ElementAssemblyValues > &values,
-	const std::vector< ElementAssemblyValues > &gvalues,
+	const std::vector< ElementBases > &bases,
+	const std::vector< ElementBases > &gbases,
 	Eigen::MatrixXd &basis_integrals)
 {
 	assert(mesh.is_volume());
@@ -345,16 +345,31 @@ void PolygonalBasis3d::compute_integral_constraints(
 
 	const int n_elements = mesh.n_elements();
 	for(int e = 0; e < n_elements; ++e) {
-		const ElementAssemblyValues &vals = values[e];
-		const ElementAssemblyValues &gvals = gvalues[e];
+		if (mesh.is_polytope(e)) {
+			continue;
+		}
+		// const ElementAssemblyValues &vals = values[e];
+		// const ElementAssemblyValues &gvals = gvalues[e];
+
+		std::shared_ptr<ElementAssemblyValues> vals = std::make_shared<ElementAssemblyValues>();
+		std::shared_ptr<ElementAssemblyValues> gvals;
+		vals->compute(e, true, bases[e]);
+
+		if(&bases[e] == &gbases[e])
+			gvals = vals;
+		else
+		{
+			gvals = std::make_shared<ElementAssemblyValues>();
+			gvals->compute(e, true, gbases[e]);
+		}
 
 		// Computes the discretized integral of the PDE over the element
-		const int n_local_bases = int(vals.basis_values.size());
+		const int n_local_bases = int(vals->basis_values.size());
 		for(int j = 0; j < n_local_bases; ++j) {
-			const AssemblyValues &v=vals.basis_values[j];
-			const double integralx = (v.grad_t_m.col(0).array() * gvals.det.array() * vals.quadrature.weights.array()).sum();
-			const double integraly = (v.grad_t_m.col(1).array() * gvals.det.array() * vals.quadrature.weights.array()).sum();
-			const double integralz = (v.grad_t_m.col(2).array() * gvals.det.array() * vals.quadrature.weights.array()).sum();
+			const AssemblyValues &v=vals->basis_values[j];
+			const double integralx = (v.grad_t_m.col(0).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+			const double integraly = (v.grad_t_m.col(1).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+			const double integralz = (v.grad_t_m.col(2).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
 
 			for(size_t ii = 0; ii < v.global.size(); ++ii) {
 				basis_integrals(v.global[ii].index, 0) += integralx * v.global[ii].val;
@@ -397,8 +412,6 @@ void PolygonalBasis3d::build_bases(
 	const Mesh3D &mesh,
 	const int n_bases,
 	const int quadrature_order,
-	const std::vector< ElementAssemblyValues > &values,
-	const std::vector< ElementAssemblyValues > &gvalues,
 	std::vector< ElementBases > &bases,
 	const std::vector< ElementBases > &gbases,
 	const std::map<int, InterfaceData> &poly_face_to_data,
@@ -413,7 +426,7 @@ void PolygonalBasis3d::build_bases(
 
 	// Step 1: Compute integral constraints
 	Eigen::MatrixXd basis_integrals;
-	compute_integral_constraints(mesh, n_bases, values, gvalues, basis_integrals);
+	compute_integral_constraints(mesh, n_bases, bases, gbases, basis_integrals);
 
 	// Step 2: Compute the rest =)
 	for (int e = 0; e < mesh.n_elements(); ++e) {

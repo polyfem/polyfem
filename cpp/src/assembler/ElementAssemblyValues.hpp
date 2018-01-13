@@ -30,7 +30,7 @@ namespace poly_fem
 
 		void compute(const int el_index, const bool is_volume, const ElementBases &basis);
 
-		static void compute_assembly_values(const bool is_volume, const std::vector< ElementBases > &bases, std::vector< ElementAssemblyValues > &values);
+		// static void compute_assembly_values(const bool is_volume, const std::vector< ElementBases > &bases, std::vector< ElementAssemblyValues > &values);
 	};
 }
 

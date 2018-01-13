@@ -39,8 +39,8 @@ namespace poly_fem
 
 		std::vector< ElementBases >    bases;
 		std::vector< ElementBases >    geom_bases;
-		std::vector< ElementAssemblyValues > values;
-		std::vector< ElementAssemblyValues > geom_values;
+		// std::vector< ElementAssemblyValues > values;
+		// std::vector< ElementAssemblyValues > geom_values;
 
 		std::vector< int >                   boundary_nodes;
 		std::vector< LocalBoundary >         local_boundary;

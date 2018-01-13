@@ -136,8 +136,8 @@ namespace poly_fem
 	{
 		bases.clear();
 		geom_bases.clear();
-		values.clear();
-		geom_values.clear();
+		// values.clear();
+		// geom_values.clear();
 		boundary_nodes.clear();
 		local_boundary.clear();
 		boundary_tag.clear();
@@ -195,8 +195,8 @@ namespace poly_fem
 	{
 		bases.clear();
 		geom_bases.clear();
-		values.clear();
-		geom_values.clear();
+		// values.clear();
+		// geom_values.clear();
 		boundary_nodes.clear();
 		local_boundary.clear();
 		errors.clear();
@@ -260,8 +260,8 @@ namespace poly_fem
 	{
 		bases.clear();
 		geom_bases.clear();
-		values.clear();
-		geom_values.clear();
+		// values.clear();
+		// geom_values.clear();
 		boundary_nodes.clear();
 		local_boundary.clear();
 		errors.clear();
@@ -464,52 +464,52 @@ namespace poly_fem
 
 	void State::compute_assembly_vals()
 	{
-		values.clear();
-		geom_values.clear();
+		// values.clear();
+		// geom_values.clear();
 		errors.clear();
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
 		sol.resize(0, 0);
 
 		igl::Timer timer; timer.start();
-		std::cout<<"Computing assembly values..."<<std::flush;
+		std::cout<<"Computing polygonal basis..."<<std::flush;
 
 		std::sort(boundary_nodes.begin(), boundary_nodes.end());
 
 		if(iso_parametric) {
-			ElementAssemblyValues::compute_assembly_values(mesh->is_volume(), bases, values);
+			// ElementAssemblyValues::compute_assembly_values(mesh->is_volume(), bases, values);
 
 			if(mesh->is_volume()) {
-				PolygonalBasis3d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh3D *>(mesh), n_bases, quadrature_order, values, values, bases, bases, poly_edge_to_data, polys_3d);
+				PolygonalBasis3d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh3D *>(mesh), n_bases, quadrature_order, bases, bases, poly_edge_to_data, polys_3d);
 			} else {
-				PolygonalBasis2d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh2D *>(mesh), n_bases, quadrature_order, values, values, bases, bases, poly_edge_to_data, polys);
+				PolygonalBasis2d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh2D *>(mesh), n_bases, quadrature_order, bases, bases, poly_edge_to_data, polys);
 			}
 
-			for(std::size_t e = 0; e < bases.size(); ++e) {
-				if(mesh->is_polytope(e)){
-					values[e].compute(e, mesh->is_volume(), bases[e]);
-				}
-			}
+			// for(std::size_t e = 0; e < bases.size(); ++e) {
+			// 	if(mesh->is_polytope(e)){
+			// 		values[e].compute(e, mesh->is_volume(), bases[e]);
+			// 	}
+			// }
 		}
 		else
 		{
-			ElementAssemblyValues::compute_assembly_values(mesh->is_volume(), geom_bases, geom_values);
-			ElementAssemblyValues::compute_assembly_values(mesh->is_volume(), bases, values);
+			// ElementAssemblyValues::compute_assembly_values(mesh->is_volume(), geom_bases, geom_values);
+			// ElementAssemblyValues::compute_assembly_values(mesh->is_volume(), bases, values);
 
 			if(mesh->is_volume())
 			{
-				PolygonalBasis3d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh3D *>(mesh), n_bases, quadrature_order, values, values, bases, bases, poly_edge_to_data, polys_3d);
+				PolygonalBasis3d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh3D *>(mesh), n_bases, quadrature_order, bases, geom_bases, poly_edge_to_data, polys_3d);
 			}
 			else
-				PolygonalBasis2d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh2D *>(mesh), n_bases, quadrature_order, values, geom_values, bases, geom_bases, poly_edge_to_data, polys);
+				PolygonalBasis2d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh2D *>(mesh), n_bases, quadrature_order, bases, geom_bases, poly_edge_to_data, polys);
 
-			for(std::size_t e = 0; e < bases.size(); ++e)
-			{
-				if(mesh->is_polytope(e)){
-					geom_values[e].compute(e, mesh->is_volume(), geom_bases[e]);
-					values[e].compute(e, mesh->is_volume(), bases[e]);
-				}
-			}
+			// for(std::size_t e = 0; e < bases.size(); ++e)
+			// {
+			// 	if(mesh->is_polytope(e)){
+			// 		geom_values[e].compute(e, mesh->is_volume(), geom_bases[e]);
+			// 		values[e].compute(e, mesh->is_volume(), bases[e]);
+			// 	}
+			// }
 		}
 
 
@@ -538,9 +538,9 @@ namespace poly_fem
 			le.size() = mesh->is_volume()? 3:2;
 
 			if(iso_parametric)
-				assembler.assemble(n_bases, values, values, stiffness);
+				assembler.assemble(mesh->is_volume(), n_bases, bases, bases, stiffness);
 			else
-				assembler.assemble(n_bases, values, geom_values, stiffness);
+				assembler.assemble(mesh->is_volume(), n_bases, bases, geom_bases, stiffness);
 
 			// std::cout<<MatrixXd(stiffness)<<std::endl;
 			// assembler.set_identity(boundary_nodes, stiffness);
@@ -549,9 +549,9 @@ namespace poly_fem
 		{
 			Assembler<Laplacian> assembler;
 			if(iso_parametric)
-				assembler.assemble(n_bases, values, values, stiffness);
+				assembler.assemble(mesh->is_volume(), n_bases, bases, bases, stiffness);
 			else
-				assembler.assemble(n_bases, values, geom_values, stiffness);
+				assembler.assemble(mesh->is_volume(), n_bases, bases, geom_bases, stiffness);
 
 			// std::cout<<MatrixXd(stiffness)-MatrixXd(stiffness.transpose())<<"\n\n"<<std::endl;
 			// std::cout<<MatrixXd(stiffness).rowwise().sum()<<"\n\n"<<std::endl;
@@ -595,13 +595,13 @@ namespace poly_fem
 		RhsAssembler rhs_assembler;
 		if(iso_parametric)
 		{
-			rhs_assembler.assemble(n_bases, size, values, values, problem, rhs);
+			rhs_assembler.assemble(n_bases, size, bases, bases, mesh->is_volume(), problem, rhs);
 			rhs *= -1;
 			rhs_assembler.set_bc(size, bases, bases, mesh->is_volume(), local_boundary, boundary_nodes, n_boundary_samples, problem, rhs);
 		}
 		else
 		{
-			rhs_assembler.assemble(n_bases, size, values, geom_values, problem, rhs);
+			rhs_assembler.assemble(n_bases, size, bases, geom_bases, mesh->is_volume(), problem, rhs);
 			rhs *= -1;
 			rhs_assembler.set_bc(size, bases, geom_bases, mesh->is_volume(), local_boundary, boundary_nodes, n_boundary_samples, problem, rhs);
 		}
@@ -703,7 +703,7 @@ namespace poly_fem
 		std::cout<<"Computing errors..."<<std::flush;
 		using std::max;
 
-		const int n_el=int(values.size());
+		const int n_el=int(bases.size());
 
 		MatrixXd v_exact, v_approx;
 
@@ -715,18 +715,31 @@ namespace poly_fem
 
 		for(int e = 0; e < n_el; ++e)
 		{
-			const auto &vals    = values[e];
-			const auto &gvalues = iso_parametric ? values[e] : geom_values[e];
+			// const auto &vals    = values[e];
+			// const auto &gvalues = iso_parametric ? values[e] : geom_values[e];
 
-			problem.exact(gvalues.val, v_exact);
+			std::shared_ptr<ElementAssemblyValues> vals = std::make_shared<ElementAssemblyValues>();
+			std::shared_ptr<ElementAssemblyValues> gvals;
+			vals->compute(e, mesh->is_volume(), bases[e]);
+
+			if(iso_parametric){
+				gvals = vals;
+			}
+			else
+			{
+				gvals = std::make_shared<ElementAssemblyValues>();
+				gvals->compute(e, mesh->is_volume(), geom_bases[e]);
+			}
+
+			problem.exact(gvals->val, v_exact);
 
 			v_approx = MatrixXd::Zero(v_exact.rows(), v_exact.cols());
 
-			const int n_loc_bases=int(vals.basis_values.size());
+			const int n_loc_bases=int(vals->basis_values.size());
 
 			for(int i = 0; i < n_loc_bases; ++i)
 			{
-				auto val=vals.basis_values[i];
+				auto val=vals->basis_values[i];
 
 				for(std::size_t ii = 0; ii < val.global.size(); ++ii)
 					v_approx += val.global[ii].val * sol(val.global[ii].index) * val.val;
@@ -738,8 +751,8 @@ namespace poly_fem
 				errors.push_back(err(i));
 
 			linf_err = max(linf_err, err.maxCoeff());
-			l2_err += (err.array() * err.array() * gvalues.det.array() * vals.quadrature.weights.array()).sum();
-			lp_err += (err.array().pow(8.) * gvalues.det.array() * vals.quadrature.weights.array()).sum();
+			l2_err += (err.array() * err.array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+			lp_err += (err.array().pow(8.) * gvals->det.array() * vals->quadrature.weights.array()).sum();
 		}
 
 		l2_err = sqrt(fabs(l2_err));
@@ -789,7 +802,6 @@ namespace poly_fem
 		igl::serialize(n_bases, "n_bases", file_name);
 
 		igl::serialize(bases, "bases", file_name);
-		igl::serialize(values, "values", file_name);
 		igl::serialize(boundary_nodes, "boundary_nodes", file_name);
 		igl::serialize(local_boundary, "local_boundary", file_name);
 

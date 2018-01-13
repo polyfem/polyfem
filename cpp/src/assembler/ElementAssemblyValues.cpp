@@ -150,15 +150,15 @@ namespace poly_fem
 
 	}
 
-	void ElementAssemblyValues::compute_assembly_values(const bool is_volume, const std::vector< ElementBases > &bases, std::vector< ElementAssemblyValues > &values)
-	{
-		values.resize(bases.size());
+	// void ElementAssemblyValues::compute_assembly_values(const bool is_volume, const std::vector< ElementBases > &bases, std::vector< ElementAssemblyValues > &values)
+	// {
+	// 	values.resize(bases.size());
 
-		for(std::size_t i = 0; i < bases.size(); ++i)
-		{
-			if (!bases[i].bases.empty() && bases[i].bases.front().is_defined()) {
-				values[i].compute(i, is_volume, bases[i]);
-			}
-		}
-	}
+	// 	for(std::size_t i = 0; i < bases.size(); ++i)
+	// 	{
+	// 		if (!bases[i].bases.empty() && bases[i].bases.front().is_defined()) {
+	// 			values[i].compute(i, is_volume, bases[i]);
+	// 		}
+	// 	}
+	// }
 }
