@@ -168,7 +168,7 @@ void PolygonalBasis2d::compute_integral_constraints(
 {
 	assert(!mesh.is_volume());
 
-	basis_integrals.resize(n_bases, 2);
+	basis_integrals.resize(n_bases, 5);
 	basis_integrals.setZero();
 
 	const int n_elements = mesh.n_elements();
@@ -194,12 +194,21 @@ void PolygonalBasis2d::compute_integral_constraints(
 		const int n_local_bases = int(vals->basis_values.size());
 		for(int j = 0; j < n_local_bases; ++j) {
 			const AssemblyValues &v=vals->basis_values[j];
-			const double integralx = (v.grad_t_m.col(0).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
-			const double integraly = (v.grad_t_m.col(1).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+			const double integral_10 = (v.grad_t_m.col(0).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+			const double integral_01 = (v.grad_t_m.col(1).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+
+			const double integral_11 = 	((vals->quadrature.points.col(1).array() * v.grad_t_m.col(0).array() + vals->quadrature.points.col(0).array() * v.grad_t_m.col(1).array()) * gvals->det.array() * vals->quadrature.weights.array()).sum();
+			const double integral_20 = 2*(vals->quadrature.points.col(0).array() * v.grad_t_m.col(0).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+			const double integral_02 = 2*(vals->quadrature.points.col(1).array() * v.grad_t_m.col(1).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
 
 			for(size_t ii = 0; ii < v.global.size(); ++ii) {
-				basis_integrals(v.global[ii].index, 0) += integralx * v.global[ii].val;
-				basis_integrals(v.global[ii].index, 1) += integraly * v.global[ii].val;
+				basis_integrals(v.global[ii].index, 0) += integral_10 * v.global[ii].val;
+				basis_integrals(v.global[ii].index, 1) += integral_01 * v.global[ii].val;
+
+				basis_integrals(v.global[ii].index, 2) += integral_11 * v.global[ii].val;
+
+				basis_integrals(v.global[ii].index, 3) += integral_20 * v.global[ii].val;
+				basis_integrals(v.global[ii].index, 4) += integral_02 * v.global[ii].val;
 			}
 		}
 	}
