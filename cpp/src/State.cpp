@@ -35,6 +35,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <memory>
 
 
 // #ifdef POLY_FEM_WITH_SUPERLU

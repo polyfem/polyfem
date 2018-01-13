@@ -5,12 +5,14 @@
 #include "MeshUtils.hpp"
 #include "Refinement.hpp"
 #include "Harmonic.hpp"
-#include "UIState.hpp"
+// #include "UIState.hpp"
 #include <igl/triangle/triangulate.h>
 #include <igl/per_vertex_normals.h>
 #include <igl/write_triangle_mesh.h>
 #include <igl/colormap.h>
 #include <random>
+#include <memory>
+
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace poly_fem {
@@ -418,9 +420,9 @@ void PolygonalBasis3d::build_bases(
 	std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi> > &mapped_boundary)
 {
 	assert(mesh.is_volume());
-	// if (poly_face_to_data.empty()) {
-	// 	return;
-	// }
+	if (poly_face_to_data.empty()) {
+		return;
+	}
 	int n_kernels_per_edge = 3; //(int) std::round(n_samples_per_edge / 3.0);
 	int n_samples_per_edge = 3*n_kernels_per_edge;
 

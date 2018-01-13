@@ -3,9 +3,13 @@
 #include "QuadBoundarySampler.hpp"
 #include "HexBoundarySampler.hpp"
 
-#include <iostream>
+#include <Eigen/Sparse>
 
-#include "UIState.hpp"
+#include <iostream>
+#include <map>
+#include <memory>
+
+// #include "UIState.hpp"
 
 namespace poly_fem
 {

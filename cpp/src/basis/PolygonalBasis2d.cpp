@@ -5,8 +5,11 @@
 #include "FEBasis2d.hpp"
 #include "Harmonic.hpp"
 #include "Biharmonic.hpp"
-#include "UIState.hpp"
+// #include "UIState.hpp"
 ////////////////////////////////////////////////////////////////////////////////
+
+#include <memory>
+
 
 namespace poly_fem {
 namespace {
