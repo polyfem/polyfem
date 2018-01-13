@@ -15,6 +15,37 @@ namespace poly_fem
 			basis_values[j].grad_t_m = basis_values[j].grad;
 	}
 
+	bool ElementAssemblyValues::is_geom_mapping_positive(const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy, const Eigen::MatrixXd &dz) const
+	{
+		Eigen::Matrix3d tmp;
+		for(long i=0; i < dx.rows(); ++i)
+		{
+			tmp.row(0) = dx.row(i);
+			tmp.row(1) = dy.row(i);
+			tmp.row(2) = dz.row(i);
+
+			if(tmp.determinant() <= 0)
+				return false;
+		}
+
+		return true;
+	}
+
+	bool ElementAssemblyValues::is_geom_mapping_positive(const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy) const
+	{
+		Eigen::Matrix2d tmp;
+		for(long i = 0; i < dx.rows(); ++i)
+		{
+			tmp.row(0) = dx.row(i);
+			tmp.row(1) = dy.row(i);
+
+			if(tmp.determinant() <= 0)
+				return false;
+		}
+
+		return true;
+	}
+
 	void ElementAssemblyValues::finalize(const int el_index, const Eigen::MatrixXd &v, const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy, const Eigen::MatrixXd &dz)
 	{
 		val = v;
@@ -24,10 +55,6 @@ namespace poly_fem
 		for(std::size_t j = 0; j < basis_values.size(); ++j)
 			basis_values[j].finalize();
 
-		// std::cout<<"\n\ndx:\n"<<dx<<std::endl;
-		// std::cout<<"\n\ndy:\n"<<dy<<std::endl;
-		// std::cout<<"\n\ndz:\n"<<dz<<std::endl;
-
 		Eigen::Matrix3d tmp;
 		for(long i=0; i < v.rows(); ++i)
 		{
@@ -35,19 +62,10 @@ namespace poly_fem
 			tmp.row(1) = dy.row(i);
 			tmp.row(2) = dz.row(i);
 
-			// for(int k=0; k < 3;++k){
-			// 	for(int l=0; l < 3;++l)
-			// 	{
-			// 		tmp(k,l) = fabs(tmp(k,l))<1e-10 ? 0 : tmp(k,l);
-			// 	}
-			// }
-
 			det(i) = tmp.determinant();
 			// std::cout<<tmp<<std::endl;
 			// assert(det(i)>0);
 
-			if(det(i) <= 0)
-				std::cout<<"Badd "<<el_index<<std::endl;
 
 			Eigen::MatrixXd jac_it = tmp.inverse().transpose();
 			for(std::size_t j = 0; j < basis_values.size(); ++j)
@@ -88,7 +106,6 @@ namespace poly_fem
 		bool poly = (quadrature.weights.size() > 1000);
 
 		basis_values.resize(basis.bases.size());
-		quadrature = quadrature;
 
 		Eigen::MatrixXd mval = Eigen::MatrixXd::Zero(quadrature.points.rows(), quadrature.points.cols());
 
@@ -148,6 +165,47 @@ namespace poly_fem
 				finalize(mval, dxmv, dymv);
 		}
 
+	}
+
+	bool ElementAssemblyValues::is_geom_mapping_positive(const bool is_volume, const ElementBases &basis) const
+	{
+		if(!basis.has_parameterization)
+			return true;
+
+		Quadrature quad;
+		basis.compute_quadrature(quad);
+
+
+		Eigen::MatrixXd dxmv = Eigen::MatrixXd::Zero(quad.points.rows(), quad.points.cols());
+		Eigen::MatrixXd dymv = Eigen::MatrixXd::Zero(quad.points.rows(), quad.points.cols());
+		Eigen::MatrixXd dzmv;
+		Eigen::MatrixXd grad;
+
+		if(is_volume)
+			dzmv = Eigen::MatrixXd::Zero(quad.points.rows(), quad.points.cols());
+
+		double t = 0;
+		const int n_local_bases = int(basis.bases.size());
+		for(int j = 0; j < n_local_bases; ++j)
+		{
+			const Basis &b=basis.bases[j];
+
+			b.grad(quad.points, grad);
+			assert(grad.cols() == quad.points.cols());
+
+			for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+			{
+				for (long k = 0; k < grad.rows(); ++k)
+				{
+					dxmv.row(k) += grad(k,0) * b.global()[ii].node  * b.global()[ii].val;
+					dymv.row(k) += grad(k,1) * b.global()[ii].node  * b.global()[ii].val;
+					if(is_volume)
+						dzmv.row(k) += grad(k,2) * b.global()[ii].node  * b.global()[ii].val;
+				}
+			}
+		}
+
+		return is_volume ? is_geom_mapping_positive(dxmv, dymv, dzmv) : is_geom_mapping_positive(dxmv, dxmv);
 	}
 
 	// void ElementAssemblyValues::compute_assembly_values(const bool is_volume, const std::vector< ElementBases > &bases, std::vector< ElementAssemblyValues > &values)

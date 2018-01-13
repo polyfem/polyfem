@@ -368,11 +368,11 @@ namespace poly_fem
 			state.mesh->get_edges(p0, p1);
 			viewer.data.add_edges(p0, p1, MatrixXd::Zero(1, 3));
 
-			for(int i = 0; i < state.mesh->n_faces(); ++i)
-			{
-				MatrixXd p = state.mesh->face_barycenter(i);
-				viewer.data.add_label(p.transpose(), std::to_string(i));
-			}
+			// for(int i = 0; i < state.mesh->n_faces(); ++i)
+			// {
+			// 	MatrixXd p = state.mesh->face_barycenter(i);
+			// 	viewer.data.add_label(p.transpose(), std::to_string(i));
+			// }
 
 			// for(int i = 0; i < state.mesh->n_elements(); ++i)
 			// {

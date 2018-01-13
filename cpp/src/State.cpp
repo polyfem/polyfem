@@ -145,7 +145,7 @@ namespace poly_fem
 		errors.clear();
 		polys.clear();
 		poly_edge_to_data.clear();
-		parent_nodes.clear();
+		parent_elements.clear();
 		delete mesh;
 
 		stiffness.resize(0, 0);
@@ -170,7 +170,7 @@ namespace poly_fem
 
 		mesh->load(mesh_path);
 
-		mesh->refine(n_refs, refinenemt_location, parent_nodes);
+		mesh->refine(n_refs, refinenemt_location, parent_elements);
 		mesh->compute_elements_tag();
 
 		mesh->fill_boundary_tags(boundary_tag);
@@ -317,6 +317,16 @@ namespace poly_fem
 					n_geom_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, 1, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
 
 				n_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+			}
+		}
+
+		auto &bs = iso_parametric ? bases : geom_bases;
+		for(size_t i = 0; i < bs.size(); ++i)
+		{
+			ElementAssemblyValues vals;
+			if(!vals.is_geom_mapping_positive(mesh->is_volume(), bs[i]))
+			{
+				std::cout<<"Basis "<< i << ( parent_elements.size() > 0 ? (" -> " + std::to_string(parent_elements[i])) : "") << " has negative volume"<<std::endl;
 			}
 		}
 
