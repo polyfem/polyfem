@@ -39,8 +39,8 @@ namespace poly_fem
 
 		std::vector< ElementBases >    bases;
 		std::vector< ElementBases >    geom_bases;
-		std::vector< ElementAssemblyValues > values;
-		std::vector< ElementAssemblyValues > geom_values;
+		// std::vector< ElementAssemblyValues > values;
+		// std::vector< ElementAssemblyValues > geom_values;
 
 		std::vector< int >                   boundary_nodes;
 		std::vector< LocalBoundary >         local_boundary;
@@ -55,6 +55,7 @@ namespace poly_fem
 
 		std::map<int, Eigen::MatrixXd> polys;
 		std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi> > polys_3d;
+		std::vector<int> parent_nodes;
 
 		std::string solver_type;
 		std::string precond_type;

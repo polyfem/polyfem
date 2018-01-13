@@ -15,7 +15,7 @@
 
 namespace poly_fem
 {
-	void Mesh2D::refine(const int n_refiniment, const double t)
+	void Mesh2D::refine(const int n_refiniment, const double t, std::vector<int> &parent_nodes)
 	{
 		// return;
 		if(n_refiniment <= 0) return;

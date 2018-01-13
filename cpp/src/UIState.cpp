@@ -368,15 +368,15 @@ namespace poly_fem
 			state.mesh->get_edges(p0, p1);
 			viewer.data.add_edges(p0, p1, MatrixXd::Zero(1, 3));
 
-			// for(int i = 0; i < static_cast<Mesh3D *>(state.mesh)->n_faces(); ++i)
-			// {
-			// 	MatrixXd p = static_cast<Mesh3D *>(state.mesh)->node_from_face(i);
-			// 	viewer.data.add_label(p.transpose(), std::to_string(i));
-			// }
+			for(int i = 0; i < state.mesh->n_faces(); ++i)
+			{
+				MatrixXd p = state.mesh->face_barycenter(i);
+				viewer.data.add_label(p.transpose(), std::to_string(i));
+			}
 
 			// for(int i = 0; i < state.mesh->n_elements(); ++i)
 			// {
-			// 	MatrixXd p = static_cast<Mesh3D *>(state.mesh)->node_from_element(i);
+			// 	MatrixXd p = state.mesh->cell_barycenter(i);
 			// 	viewer.data.add_label(p.transpose(), std::to_string(i));
 			// }
 
@@ -433,19 +433,19 @@ namespace poly_fem
 			}
 		};
 
-		auto show_quadrature_func = [&](){
-			for(std::size_t i = 0; i < state.values.size(); ++i)
-			{
-				const ElementAssemblyValues &vals = state.values[i];
-				if(state.mesh->is_volume())
-					viewer.data.add_points(vals.val, vals.quadrature.points);
-				else
-					viewer.data.add_points(vals.val, MatrixXd::Zero(vals.val.rows(), 3));
+		// auto show_quadrature_func = [&](){
+		// 	for(std::size_t i = 0; i < state.values.size(); ++i)
+		// 	{
+		// 		const ElementAssemblyValues &vals = state.values[i];
+		// 		if(state.mesh->is_volume())
+		// 			viewer.data.add_points(vals.val, vals.quadrature.points);
+		// 		else
+		// 			viewer.data.add_points(vals.val, MatrixXd::Zero(vals.val.rows(), 3));
 
-				// for(long j = 0; j < vals.val.rows(); ++j)
-					// viewer.data.add_label(vals.val.row(j), std::to_string(j));
-			}
-		};
+		// 		// for(long j = 0; j < vals.val.rows(); ++j)
+		// 			// viewer.data.add_label(vals.val.row(j), std::to_string(j));
+		// 	}
+		// };
 
 		auto show_rhs_func = [&](){
 			current_visualization = Visualizing::Rhs;
@@ -945,7 +945,7 @@ namespace poly_fem
 			viewer_.ngui->addGroup("Runners");
 			viewer_.ngui->addButton("Load mesh", load_mesh_func);
 			viewer_.ngui->addButton("Build  basis", build_basis_func);
-			viewer_.ngui->addButton("Compute vals", compute_assembly_vals_func);
+			viewer_.ngui->addButton("Compute poly bases", compute_assembly_vals_func);
 			viewer_.ngui->addButton("Build vis mesh", build_vis_mesh_func);
 
 			viewer_.ngui->addButton("Assemble stiffness", assemble_stiffness_mat_func);
@@ -972,7 +972,7 @@ namespace poly_fem
 			viewer_.ngui->addButton("Show mesh", show_mesh_func);
 			viewer_.ngui->addButton("Show vis mesh", show_vis_mesh_func);
 			viewer_.ngui->addButton("Show nodes", show_nodes_func);
-			viewer_.ngui->addButton("Show quadrature", show_quadrature_func);
+			// viewer_.ngui->addButton("Show quadrature", show_quadrature_func);
 			viewer_.ngui->addButton("Show rhs", show_rhs_func);
 			viewer_.ngui->addButton("Show sol", show_sol_func);
 			viewer_.ngui->addButton("Show error", show_error_func);

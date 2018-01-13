@@ -5,12 +5,14 @@
 #include "MeshUtils.hpp"
 #include "Refinement.hpp"
 #include "Harmonic.hpp"
-#include "UIState.hpp"
+// #include "UIState.hpp"
 #include <igl/triangle/triangulate.h>
 #include <igl/per_vertex_normals.h>
 #include <igl/write_triangle_mesh.h>
 #include <igl/colormap.h>
 #include <random>
+#include <memory>
+
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace poly_fem {
@@ -334,8 +336,8 @@ void sample_polyhedra(
 void PolygonalBasis3d::compute_integral_constraints(
 	const Mesh3D &mesh,
 	const int n_bases,
-	const std::vector< ElementAssemblyValues > &values,
-	const std::vector< ElementAssemblyValues > &gvalues,
+	const std::vector< ElementBases > &bases,
+	const std::vector< ElementBases > &gbases,
 	Eigen::MatrixXd &basis_integrals)
 {
 	assert(mesh.is_volume());
@@ -345,16 +347,31 @@ void PolygonalBasis3d::compute_integral_constraints(
 
 	const int n_elements = mesh.n_elements();
 	for(int e = 0; e < n_elements; ++e) {
-		const ElementAssemblyValues &vals = values[e];
-		const ElementAssemblyValues &gvals = gvalues[e];
+		if (mesh.is_polytope(e)) {
+			continue;
+		}
+		// const ElementAssemblyValues &vals = values[e];
+		// const ElementAssemblyValues &gvals = gvalues[e];
+
+		std::shared_ptr<ElementAssemblyValues> vals = std::make_shared<ElementAssemblyValues>();
+		std::shared_ptr<ElementAssemblyValues> gvals;
+		vals->compute(e, true, bases[e]);
+
+		if(&bases[e] == &gbases[e])
+			gvals = vals;
+		else
+		{
+			gvals = std::make_shared<ElementAssemblyValues>();
+			gvals->compute(e, true, gbases[e]);
+		}
 
 		// Computes the discretized integral of the PDE over the element
-		const int n_local_bases = int(vals.basis_values.size());
+		const int n_local_bases = int(vals->basis_values.size());
 		for(int j = 0; j < n_local_bases; ++j) {
-			const AssemblyValues &v=vals.basis_values[j];
-			const double integralx = (v.grad_t_m.col(0).array() * gvals.det.array() * vals.quadrature.weights.array()).sum();
-			const double integraly = (v.grad_t_m.col(1).array() * gvals.det.array() * vals.quadrature.weights.array()).sum();
-			const double integralz = (v.grad_t_m.col(2).array() * gvals.det.array() * vals.quadrature.weights.array()).sum();
+			const AssemblyValues &v=vals->basis_values[j];
+			const double integralx = (v.grad_t_m.col(0).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+			const double integraly = (v.grad_t_m.col(1).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+			const double integralz = (v.grad_t_m.col(2).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
 
 			for(size_t ii = 0; ii < v.global.size(); ++ii) {
 				basis_integrals(v.global[ii].index, 0) += integralx * v.global[ii].val;
@@ -397,23 +414,21 @@ void PolygonalBasis3d::build_bases(
 	const Mesh3D &mesh,
 	const int n_bases,
 	const int quadrature_order,
-	const std::vector< ElementAssemblyValues > &values,
-	const std::vector< ElementAssemblyValues > &gvalues,
 	std::vector< ElementBases > &bases,
 	const std::vector< ElementBases > &gbases,
 	const std::map<int, InterfaceData> &poly_face_to_data,
 	std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi> > &mapped_boundary)
 {
 	assert(mesh.is_volume());
-	// if (poly_face_to_data.empty()) {
-	// 	return;
-	// }
+	if (poly_face_to_data.empty()) {
+		return;
+	}
 	int n_kernels_per_edge = 3; //(int) std::round(n_samples_per_edge / 3.0);
 	int n_samples_per_edge = 3*n_kernels_per_edge;
 
 	// Step 1: Compute integral constraints
 	Eigen::MatrixXd basis_integrals;
-	compute_integral_constraints(mesh, n_bases, values, gvalues, basis_integrals);
+	compute_integral_constraints(mesh, n_bases, bases, gbases, basis_integrals);
 
 	// Step 2: Compute the rest =)
 	for (int e = 0; e < mesh.n_elements(); ++e) {
@@ -434,26 +449,32 @@ void PolygonalBasis3d::build_bases(
 		ElementBases &b=bases[e];
 		b.has_parameterization = false;
 
+		Quadrature tmp_quadrature;
 		sample_polyhedra(e, 2, n_kernels_per_edge, n_samples_per_edge, quadrature_order,
 			mesh, poly_face_to_data, bases, gbases, eps, local_to_global,
 			collocation_points, kernel_centers, rhs, triangulated_vertices,
-			triangulated_faces, b.quadrature);
+			triangulated_faces, tmp_quadrature);
+
+		b.set_quadrature([tmp_quadrature](Quadrature &quad){ quad = tmp_quadrature; });
 
 		// igl::viewer::Viewer viewer;
 		// viewer.data.set_mesh(triangulated_vertices, triangulated_faces);
 		// viewer.data.add_points(kernel_centers, Eigen::Vector3d(0,1,1).transpose());
 		// viewer.launch();
 
-		// igl::viewer::Viewer viewer;
-		// Eigen::MatrixXd asd(collocation_points.rows(), 3);
-		// asd.col(0)=collocation_points.col(0);
-		// asd.col(1)=collocation_points.col(1);
-		// asd.col(2)=collocation_points.col(2);
-		// Eigen::VectorXd S = rhs.col(0);
-		// Eigen::MatrixXd C;
-		// igl::colormap(igl::COLOR_MAP_TYPE_VIRIDIS, S, true, C);
-		// viewer.data.add_points(asd, C);
-		// viewer.launch();
+	// 	for(int a = 0; rhs.cols();++a)
+	// 	{
+	// 	igl::viewer::Viewer viewer;
+	// 	Eigen::MatrixXd asd(collocation_points.rows(), 3);
+	// 	asd.col(0)=collocation_points.col(0);
+	// 	asd.col(1)=collocation_points.col(1);
+	// 	asd.col(2)=collocation_points.col(2);
+	// 	Eigen::VectorXd S = rhs.col(a);
+	// 	Eigen::MatrixXd C;
+	// 	igl::colormap(igl::COLOR_MAP_TYPE_VIRIDIS, S, true, C);
+	// 	viewer.data.add_points(asd, C);
+	// 	viewer.launch();
+	// }
 
 		// for(int asd = 0; asd < collocation_points.rows(); ++asd) {
 		//     viewer.data.add_label(collocation_points.row(asd), std::to_string(asd));
@@ -464,7 +485,7 @@ void PolygonalBasis3d::build_bases(
 		for (long k = 0; k < rhs.cols(); ++k) {
 			local_basis_integrals.row(k) = -basis_integrals.row(local_to_global[k]);
 		}
-		Harmonic harmonic(kernel_centers, collocation_points, local_basis_integrals, b.quadrature, rhs);
+		Harmonic harmonic(kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs);
 
 		// Set the bases which are nonzero inside the polygon
 		const int n_poly_bases = int(local_to_global.size());

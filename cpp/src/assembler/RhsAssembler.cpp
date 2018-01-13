@@ -3,37 +3,53 @@
 #include "QuadBoundarySampler.hpp"
 #include "HexBoundarySampler.hpp"
 
-#include <iostream>
+#include <Eigen/Sparse>
 
-#include "UIState.hpp"
+#include <iostream>
+#include <map>
+#include <memory>
+
+// #include "UIState.hpp"
 
 namespace poly_fem
 {
 
-	void RhsAssembler::assemble(const int n_basis, const int size, const std::vector< ElementAssemblyValues > &values, const std::vector< ElementAssemblyValues > &geom_values, const Problem &problem, Eigen::MatrixXd &rhs) const
+	void RhsAssembler::assemble(const int n_basis, const int size, const std::vector< ElementBases > &bases, const std::vector< ElementBases > &gbases, const bool is_volume, const Problem &problem, Eigen::MatrixXd &rhs) const
 	{
 		rhs = Eigen::MatrixXd::Zero(n_basis * size, 1);
 		Eigen::MatrixXd rhs_fun;
 
-		const int n_values = int(values.size());
-		for(int e = 0; e < n_values; ++e)
+		const int n_elements = int(bases.size());
+		for(int e = 0; e < n_elements; ++e)
 		{
-			const ElementAssemblyValues &vals  = values[e];
-			const ElementAssemblyValues &gvals = geom_values[e];
+			// const ElementAssemblyValues &vals  = values[e];
+			// const ElementAssemblyValues &gvals = geom_values[e];
 
-			problem.rhs(gvals.val, rhs_fun);
+			std::shared_ptr<ElementAssemblyValues> vals = std::make_shared<ElementAssemblyValues>();
+			std::shared_ptr<ElementAssemblyValues> gvals;
+			vals->compute(e, is_volume, bases[e]);
+
+			if(&bases[e] == &gbases[e])
+				gvals = vals;
+			else
+			{
+				gvals = std::make_shared<ElementAssemblyValues>();
+				gvals->compute(e, is_volume, gbases[e]);
+			}
+
+			problem.rhs(gvals->val, rhs_fun);
 
 				// std::cout<<e<<"\n"<<gvals.val<<"\n"<<rhs_fun<<"\n\n"<<std::endl;
 
 			for(int d = 0; d < size; ++d)
-				rhs_fun.col(d) = rhs_fun.col(d).array() * gvals.det.array() * vals.quadrature.weights.array();
+				rhs_fun.col(d) = rhs_fun.col(d).array() * gvals->det.array() * vals->quadrature.weights.array();
 
 				// std::cout<<"after:\n"<<rhs_fun<<std::endl;
 
-			const int n_loc_bases = int(vals.basis_values.size());
+			const int n_loc_bases = int(vals->basis_values.size());
 			for(int i = 0; i < n_loc_bases; ++i)
 			{
-				const AssemblyValues &v = vals.basis_values[i];
+				const AssemblyValues &v = vals->basis_values[i];
 
 				for(int d = 0; d < size; ++d)
 				{
@@ -164,8 +180,8 @@ namespace poly_fem
 		Eigen::MatrixXd coeffs;
 			// if(A.rows() > 2000)
 		{
-				Eigen::BiCGSTAB< Eigen::SparseMatrix<double> > solver;
-				coeffs = solver.compute(A).solve(b);
+			Eigen::BiCGSTAB< Eigen::SparseMatrix<double> > solver;
+			coeffs = solver.compute(A).solve(b);
 			// Eigen::SimplicialLDLT<Eigen::SparseMatrix<double> > solver;
 			// coeffs = solver.compute(-A).solve(-b);
 			// coeffs*=-1;

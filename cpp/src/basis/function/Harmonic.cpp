@@ -2,8 +2,11 @@
 #include "PolygonQuadrature.hpp"
 #include "Types.hpp"
 #include <igl/Timer.h>
+#include <Eigen/Dense>
 #include <iostream>
 #include <fstream>
+#include <array>
+
 
 namespace poly_fem
 {

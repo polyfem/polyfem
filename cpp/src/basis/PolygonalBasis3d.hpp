@@ -31,8 +31,8 @@ namespace poly_fem
 		static void compute_integral_constraints(
 			const Mesh3D &mesh,
 			const int n_bases,
-			const std::vector< ElementAssemblyValues > &values,
-			const std::vector< ElementAssemblyValues > &gvalues,
+			const std::vector< ElementBases > &bases,
+			const std::vector< ElementBases > &gbases,
 			Eigen::MatrixXd &basis_integrals);
 
 		///
@@ -66,8 +66,6 @@ namespace poly_fem
 			const Mesh3D &mesh,
 			const int n_bases,
 			const int quadrature_order,
-			const std::vector< ElementAssemblyValues > &values,
-			const std::vector< ElementAssemblyValues > &gvalues,
 			std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
 			const std::map<int, InterfaceData> &poly_face_to_data,
