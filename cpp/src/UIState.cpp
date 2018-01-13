@@ -156,7 +156,7 @@ namespace poly_fem
 		{
 			std::fill(valid_elements.begin(), valid_elements.end(), true);
 			viewer.data.set_mesh(pts, tris);
-			
+
 			if(state.mesh->is_volume())
 			{
 				MatrixXd normals;
@@ -206,7 +206,7 @@ namespace poly_fem
 
 
 		viewer.data.set_mesh(pts, valid_tri);
-		
+
 		if(state.mesh->is_volume())
 		{
 			MatrixXd normals;
@@ -533,6 +533,42 @@ namespace poly_fem
 			plot_function(global_fun);
 		};
 
+		auto quadra_reproduction_func = [&]()
+		{
+			auto ff = [](double x, double y) {return -0.1 + .3*x - .5*y + .4*x*y - 0.9*y*y + 0.1*x*x;};
+
+			MatrixXd fun = MatrixXd::Zero(state.n_bases, 1);
+
+			for(std::size_t i = 0; i < state.bases.size(); ++i)
+			{
+				const ElementBases &basis = state.bases[i];
+				if(!basis.has_parameterization) continue;
+				for(std::size_t j = 0; j < basis.bases.size(); ++j)
+				{
+					for(std::size_t kk = 0; kk < basis.bases[j].global().size(); ++kk)
+					{
+						const Local2Global &l2g = basis.bases[j].global()[kk];
+						const int g_index = l2g.index;
+
+						const MatrixXd node = l2g.node;
+						// std::cout<<node<<std::endl;
+						fun(g_index) = ff(node(0),node(1));
+					}
+				}
+			}
+
+			MatrixXd tmp;
+			interpolate_function(fun, tmp);
+
+			MatrixXd exact_sol(vis_pts.rows(), 1);
+			for(long i = 0; i < vis_pts.rows(); ++i)
+				exact_sol(i) =  ff(vis_pts(i, 0),vis_pts(i, 1));
+
+			const MatrixXd global_fun = (exact_sol - tmp).array().abs();
+
+			std::cout<<global_fun.minCoeff()<<" "<<global_fun.maxCoeff()<<std::endl;
+			plot_function(global_fun);
+		};
 
 		auto build_vis_mesh_func = [&]()
 		{
@@ -942,6 +978,7 @@ namespace poly_fem
 			viewer_.ngui->addButton("Show error", show_error_func);
 
 			viewer_.ngui->addButton("Show linear r", linear_reproduction_func);
+			viewer_.ngui->addButton("Show quadra r", quadra_reproduction_func);
 
 			viewer_.ngui->addVariable("basis num",vis_basis);
 			viewer_.ngui->addButton("Show basis", show_basis_func);

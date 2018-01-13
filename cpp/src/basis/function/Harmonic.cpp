@@ -37,18 +37,37 @@ namespace poly_fem
 		compute(samples, local_basis_integral, quadr, rhs);
 	}
 
-	void Harmonic::basis(const int local_index, const Eigen::MatrixXd &samples, Eigen::MatrixXd &val) const
-	{
+	void Harmonic::create_matrix(const Eigen::MatrixXd &samples, Eigen::MatrixXd &A) const {
 		// Compute A
 		const int num_kernels = centers_.rows();
 		const int dim = centers_.cols();
-		Eigen::MatrixXd A(samples.rows(), num_kernels + dim + 1);
+		// const int num_cols = num_kernels + dim + 1;
+		const int num_cols = num_kernels + dim*(dim+1)/2 + dim + 1;
+		const int num_squared = dim;
+
+		A.resize(samples.rows(), num_cols);
 		for (int j = 0; j < num_kernels; ++j) {
 			A.col(j) = (samples.rowwise() - centers_.row(j)).rowwise().norm().unaryExpr([this](double x)
 				{ return kernel(is_volume_, x); });
 		}
-		A.middleCols(num_kernels, dim) = samples;
+		A.middleCols(num_kernels, dim) = samples.array().square(); // quadratic terms
+		if (dim == 2) {
+			A.middleCols(num_kernels + num_squared, 1) = samples.rowwise().prod(); // mixed terms
+		} else if (dim == 3) {
+			A.middleCols(num_kernels + num_squared, 3) = samples;
+			A.middleCols(num_kernels + num_squared + 0, 1) *= samples.col(1);
+			A.middleCols(num_kernels + num_squared + 1, 1) *= samples.col(2);
+			A.middleCols(num_kernels + num_squared + 2, 1) *= samples.col(0);
+		}
+		A.middleCols(A.cols() - dim - 1, dim) = samples; // linear terms
 		A.rightCols<1>().setOnes();
+	}
+
+	void Harmonic::basis(const int local_index, const Eigen::MatrixXd &samples, Eigen::MatrixXd &val) const
+	{
+		// Compute A
+		Eigen::MatrixXd A;
+		create_matrix(samples, A);
 
 		// Multiply by the weights
 		val = A * weights_.col(local_index);
@@ -59,9 +78,13 @@ namespace poly_fem
 		// Compute Ar
 		const int num_kernels = centers_.rows();
 		const int dim = centers_.cols();
+		// const int num_cols = num_kernels + dim + 1;
+		const int num_cols = num_kernels + dim*(dim+1)/2 + dim + 1;
+		const int num_squared = dim;
+
 		std::array<Eigen::MatrixXd, 3> Axyz;
 		for (int d = 0; d < dim; ++d) {
-			Axyz[d].resize(samples.rows(), num_kernels + dim + 1);
+			Axyz[d].resize(samples.rows(), num_cols);
 			Axyz[d].setZero();
 		}
 		for (int j = 0; j < num_kernels; ++j) {
@@ -71,8 +94,21 @@ namespace poly_fem
 				Axyz[d].col(j) = (samples.col(d).array() - centers_(j, d)) * Axyz[0].col(j).array();
 			}
 		}
+		// Quadratic terms
 		for (int d = 0; d < dim; ++d) {
-			Axyz[d].middleCols(num_kernels + d, 1).setOnes();
+			Axyz[d].middleCols(num_kernels + d, 1) = 2.0 * samples.col(d);
+		}
+		// Mixed terms
+		for (int d = 0; d < dim; ++d) {
+			if (dim == 2) {
+				Axyz[d].middleCols(num_kernels + num_squared, 1) = samples.col(1 - d);
+			} else {
+				assert(false);
+			}
+		}
+		// Linear terms
+		for (int d = 0; d < dim; ++d) {
+			Axyz[d].middleCols(num_cols - dim - 1 + d, 1).setOnes();
 		}
 
 		// Apply weights
@@ -92,19 +128,12 @@ namespace poly_fem
 		std::cout << "#non-vanishing bases: " << rhs.cols() << std::endl;
 
 #if 0
-		const int num_kernels = centers_.rows();
-		const int dim = centers_.cols();
-
 		// Compute A
-		Eigen::MatrixXd A(samples.rows(), num_kernels + dim + 1);
-		for (int j = 0; j < num_kernels; ++j) {
-			A.col(j) = (samples.rowwise() - centers_.row(j)).rowwise().norm().unaryExpr([this](double x)
-				{ return kernel(is_volume_, x); });
-		}
-		A.middleCols(num_kernels, dim) = samples;
-		A.rightCols<1>().setOnes();
+		Eigen::MatrixXd A;
+		create_matrix(samples, A);
 
 		// Solve the system
+		const int num_kernels = centers_.rows();
 		std::cout << "-- Solving system of size " << num_kernels << " x " << num_kernels << std::endl;
 		weights_ = (A.transpose() * A).ldlt().solve(A.transpose() * rhs);
 		std::cout << "-- Solved!" << std::endl;
@@ -163,6 +192,8 @@ namespace poly_fem
 		const int num_kernels = centers_.rows();
 		const int dim = centers_.cols();
 
+		const double volume_element = quadr.weights.sum();
+
 		// Compute KI
 		Eigen::MatrixXd KI(num_kernels, dim);
 		for (int j = 0; j < num_kernels; ++j) {
@@ -176,30 +207,32 @@ namespace poly_fem
 			KI.row(j) = (drdp.array().colwise() * (quadr.weights.array() * r.unaryExpr([this](double x)
 				{ return kernel_prime(is_volume_, x); }).array() / r.array())).colwise().sum();
 		}
-		KI /= quadr.weights.sum();
+		KI /= volume_element;
+
+		// Compute Ix = ∫_{p ∊ E}x, Iy ...
+		Eigen::RowVectorXd I = (quadr.points.array().colwise() * quadr.weights.array()).colwise().sum()
+			/ volume_element;
+
+		// Compute A
+		Eigen::MatrixXd A;
+		create_matrix(samples, A);
 
 		// Compute L
-		Eigen::MatrixXd L(num_kernels + dim + 1, num_kernels + 1);
+		Eigen::MatrixXd L(A.cols(), A.cols() - dim);
 		L.setZero();
 		L.diagonal().setOnes();
 		L.bottomRightCorner(dim+1, 1).setZero();
 		L.bottomRightCorner(1, 1).setOnes();
-		L.block(num_kernels, 0, dim, num_kernels) = -KI.transpose();
-		// std::cout << L.bottomRightCorner(10, 10) << std::endl;
-
-		// Compute A
-		Eigen::MatrixXd A(samples.rows(), num_kernels + dim + 1);
-		for (int j = 0; j < num_kernels; ++j) {
-			A.col(j) = (samples.rowwise() - centers_.row(j)).rowwise().norm().unaryExpr([this](double x)
-				{ return kernel(is_volume_, x); });
-		}
-		A.middleCols(num_kernels, dim) = samples;
-		A.rightCols<1>().setOnes();
+		L.block(L.rows() - dim - 1, 0, dim, num_kernels) = -KI.transpose();
+		L.block(L.rows() - dim - 1, num_kernels, dim, dim) = -2.0 * I.asDiagonal();
+		L(L.rows() - dim - 1, num_kernels + 2) = -I(1);
+		L(L.rows() - dim - 1 + 1, num_kernels + 2) = -I(0);
+		std::cout << L.bottomRightCorner(10, 10) << std::endl;
 
 		// Compute t
-		weights_.resize(num_kernels + dim + 1, num_bases);
+		weights_.resize(A.cols(), num_bases);
 		weights_.setZero();
-		weights_.middleRows(num_kernels, dim) = local_basis_integral.transpose() / quadr.weights.sum();
+		weights_.middleRows(L.rows() - dim - 1, dim) = local_basis_integral.transpose() / quadr.weights.sum();
 
 		// Compute b = rhs - A t
 		rhs -= A * weights_;
@@ -208,6 +241,19 @@ namespace poly_fem
 		std::cout << "-- Solving system of size " << num_kernels << " x " << num_kernels << std::endl;
 		weights_ += L * (L.transpose() * A.transpose() * A * L).ldlt().solve(L.transpose() * A.transpose() * rhs);
 		std::cout << "-- Solved!" << std::endl;
+
+		std::cout << weights_.bottomRows(10) << std::endl;
+
+		Eigen::MatrixXd M, x, dx;
+		grad(0, quadr.points, M);
+		for (int d = 0; d < dim; ++d) {
+			basis(0, quadr.points, x);
+			auto asd = quadr.points;
+			asd.col(d).array() += 1e-7;
+			basis(0, asd, dx);
+			std::cout << (dx - x) / 1e-7 - M.col(d) << std::endl;
+			std::cout << (M.col(d).array() * quadr.weights.array()).sum() - local_basis_integral(0, d) << std::endl;
+		}
 #endif
 	}
 }

@@ -279,6 +279,7 @@ void PolygonalBasis2d::build_bases(
 			local_basis_integrals.row(k) = -basis_integrals.row(local_to_global[k]);
 		}
 		Harmonic harmonic(kernel_centers, collocation_points, local_basis_integrals, b.quadrature, rhs);
+		// Biharmonic harmonic(kernel_centers, collocation_points, rhs);
 
 		// Set the bases which are nonzero inside the polygon
 		const int n_poly_bases = int(local_to_global.size());

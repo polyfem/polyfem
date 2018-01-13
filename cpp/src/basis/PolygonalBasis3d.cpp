@@ -279,7 +279,7 @@ void sample_polyhedra(
 	// 	Eigen::MatrixXd V;
 	// 	evalFuncGeom(PV, V, 0);
 	// igl::write_triangle_mesh("foo_dense.obj", collocation_points, CF);
-	// igl::write_triangle_mesh("foo_small.obj", triangulated_vertices, triangulated_faces);
+	igl::write_triangle_mesh("foo_small.obj", triangulated_vertices, triangulated_faces);
 	// 	igl::viewer::Viewer viewer;
 	//  viewer.data.set_points(kernel_centers, Eigen::RowVector3d(1,0,1));
 	// 	viewer.data.set_mesh(collocation_points, collocation_faces);

@@ -59,6 +59,8 @@ namespace poly_fem
 		void compute(const Eigen::MatrixXd &samples, const Eigen::MatrixXd &local_basis_integral,
 			const Quadrature &quadr, Eigen::MatrixXd &rhs);
 
+		void create_matrix(const Eigen::MatrixXd &samples, Eigen::MatrixXd &A) const;
+
 		// #C x dim matrix of kernel center positions
 		Eigen::MatrixXd centers_;
 

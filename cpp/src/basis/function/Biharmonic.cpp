@@ -7,18 +7,31 @@ namespace poly_fem
 {
 	namespace
 	{
+		// double kernel(const double r)
+		// {
+		// 	if(r < 1e-8) return 0;
+
+		// 	return r * r * (log(r)-1);
+		// }
+
+		// double kernel_prime(const double r)
+		// {
+		// 	if(r < 1e-8) return 0;
+
+		// 	return r * ( 2 * log(r) - 1);
+		// }
 		double kernel(const double r)
 		{
 			if(r < 1e-8) return 0;
 
-			return r * r * (log(r)-1);
+			return log(r);
 		}
 
 		double kernel_prime(const double r)
 		{
 			if(r < 1e-8) return 0;
 
-			return r * ( 2 * log(r) - 1);
+			return 1/r;
 		}
 	}
 

@@ -48,7 +48,7 @@ namespace poly_fem
 		std::map<int, Eigen::MatrixXi> vis_faces_poly;
 		std::map<int, Eigen::MatrixXd> vis_pts_poly;
 
-		igl::ColorMapType color_map = igl::COLOR_MAP_TYPE_INFERNO;
+		igl::ColorMapType color_map = igl::COLOR_MAP_TYPE_VIRIDIS;
 
 		int slice_coord = 0;
 		int is_slicing = false;
