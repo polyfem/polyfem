@@ -172,20 +172,24 @@ namespace poly_fem
 		if(!basis.has_parameterization)
 			return true;
 
+		const int n_local_bases = int(basis.bases.size());
+
+		if(n_local_bases <= 0)
+			return true;
+
+
 		Quadrature quad;
 		basis.compute_quadrature(quad);
-
 
 		Eigen::MatrixXd dxmv = Eigen::MatrixXd::Zero(quad.points.rows(), quad.points.cols());
 		Eigen::MatrixXd dymv = Eigen::MatrixXd::Zero(quad.points.rows(), quad.points.cols());
 		Eigen::MatrixXd dzmv;
+
 		Eigen::MatrixXd grad;
 
 		if(is_volume)
 			dzmv = Eigen::MatrixXd::Zero(quad.points.rows(), quad.points.cols());
 
-		double t = 0;
-		const int n_local_bases = int(basis.bases.size());
 		for(int j = 0; j < n_local_bases; ++j)
 		{
 			const Basis &b=basis.bases[j];
@@ -205,7 +209,7 @@ namespace poly_fem
 			}
 		}
 
-		return is_volume ? is_geom_mapping_positive(dxmv, dymv, dzmv) : is_geom_mapping_positive(dxmv, dxmv);
+		return is_volume ? is_geom_mapping_positive(dxmv, dymv, dzmv) : is_geom_mapping_positive(dxmv, dymv);
 	}
 
 	// void ElementAssemblyValues::compute_assembly_values(const bool is_volume, const std::vector< ElementBases > &bases, std::vector< ElementAssemblyValues > &values)

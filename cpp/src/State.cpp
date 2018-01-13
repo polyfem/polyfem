@@ -323,6 +323,8 @@ namespace poly_fem
 		auto &bs = iso_parametric ? bases : geom_bases;
 		for(size_t i = 0; i < bs.size(); ++i)
 		{
+			if(mesh->is_polytope(i)) continue;
+			
 			ElementAssemblyValues vals;
 			if(!vals.is_geom_mapping_positive(mesh->is_volume(), bs[i]))
 			{
