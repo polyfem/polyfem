@@ -72,7 +72,7 @@ namespace poly_fem
 		void bases_grads(const int axis, const Eigen::MatrixXd &samples, Eigen::MatrixXd &val) const;
 
 	private:
-		bool is_volume() const { return centers_.rows() == 3; }
+		bool is_volume() const { return centers_.cols() == 3; }
 
 		// Computes the matrix that evaluates the kernels + polynomial terms on the given sample points
 		void compute_kernels_matrix(const Eigen::MatrixXd &samples, Eigen::MatrixXd &A) const;
