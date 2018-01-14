@@ -314,7 +314,7 @@ void PolygonalBasis2d::build_bases(
 		for (long k = 0; k < rhs.cols(); ++k) {
 			local_basis_integrals.row(k) = -basis_integrals.row(local_to_global[k]);
 		}
-		RBFWithQuadratic harmonic(kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs);
+		RBFWithLinear harmonic(kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs);
 
 		// Set the bases which are nonzero inside the polygon
 		const int n_poly_bases = int(local_to_global.size());
