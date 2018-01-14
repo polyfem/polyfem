@@ -590,11 +590,11 @@ void compute_integral_constraints(
 		}
 
 
-		Eigen::MatrixXd c;
-		compute_integral_constraints(*dynamic_cast<Mesh2D *>(mesh), n_bases, bases, bases, c);
-		for (int r = 0; r < c.rows(); ++r) {
-			std::cout << r << ": " << c.row(r) << std::endl;
-		}
+		// Eigen::MatrixXd c;
+		// compute_integral_constraints(*dynamic_cast<Mesh2D *>(mesh), n_bases, bases, bases, c);
+		// for (int r = 0; r < c.rows(); ++r) {
+		// 	std::cout << r << ": " << c.row(r) << std::endl;
+		// }
 
 		timer.stop();
 		computing_assembly_values_time = timer.getElapsedTime();

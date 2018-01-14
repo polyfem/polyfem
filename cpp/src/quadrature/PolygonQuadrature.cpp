@@ -57,7 +57,7 @@ namespace poly_fem
         std::stringstream ss;
         ss.precision(100);
         ss.setf(std::ios::fixed, std::ios::floatfield);
-        ss<<"Qpa0.001";
+        ss<<"Qpa0.01";
 
         // ss<<"Qpa"<<0.00001/area;
         // ss<<"Qpa"<<(1/poly.rows())/order;
