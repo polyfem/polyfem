@@ -5,7 +5,7 @@
 #include "MeshUtils.hpp"
 #include "Refinement.hpp"
 #include "RBFWithLinear.hpp"
-// #include "RBFWithQuadratic.hpp"
+#include "RBFWithQuadratic.hpp"
 // #include "UIState.hpp"
 #include <igl/triangle/triangulate.h>
 #include <igl/per_vertex_normals.h>
@@ -312,10 +312,11 @@ void sample_polyhedra(
 		const InterfaceData &bdata = poly_face_to_data.at(index.face);
 		const ElementBases &b=bases[c2];
 
-		// Evaluate field basis and set up the rhs
+		samples = UV.middleRows(uv_ranges(lf), uv_ranges(lf+1) - uv_ranges(lf));
 		b.evaluate_bases(samples, basis_val);
+
+		// Evaluate field basis and set up the rhs
 		for (int other_local_basis_id : bdata.local_indices) {
-			samples = UV.middleRows(uv_ranges(lf), uv_ranges(lf+1) - uv_ranges(lf));
 			// b.bases[other_local_basis_id].basis(samples, basis_val);
 
 			for (const auto &x : b.bases[other_local_basis_id].global()) {
@@ -335,6 +336,55 @@ void sample_polyhedra(
 ////////////////////////////////////////////////////////////////////////////////
 
 // Compute the integral constraints for each basis of the mesh
+// void PolygonalBasis3d::compute_integral_constraints(
+// 	const Mesh3D &mesh,
+// 	const int n_bases,
+// 	const std::vector< ElementBases > &bases,
+// 	const std::vector< ElementBases > &gbases,
+// 	Eigen::MatrixXd &basis_integrals)
+// {
+// 	assert(mesh.is_volume());
+
+// 	basis_integrals.resize(n_bases, 3);
+// 	basis_integrals.setZero();
+
+// 	const int n_elements = mesh.n_elements();
+// 	for(int e = 0; e < n_elements; ++e) {
+// 		if (mesh.is_polytope(e)) {
+// 			continue;
+// 		}
+// 		// const ElementAssemblyValues &vals = values[e];
+// 		// const ElementAssemblyValues &gvals = gvalues[e];
+
+// 		ElementAssemblyValues vals;
+// 		vals.compute(e, true, bases[e], bases[e]);
+
+// 		// if(&bases[e] == &gbases[e])
+// 		// 	gvals = vals;
+// 		// else
+// 		// {
+// 		// 	gvals = std::make_shared<ElementAssemblyValues>();
+// 		// 	gvals->compute(e, true, gbases[e]);
+// 		// }
+
+// 		// Computes the discretized integral of the PDE over the element
+// 		const int n_local_bases = int(vals.basis_values.size());
+// 		for(int j = 0; j < n_local_bases; ++j) {
+// 			const AssemblyValues &v=vals.basis_values[j];
+// 			const double integralx = (v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+// 			const double integraly = (v.grad_t_m.col(1).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+// 			const double integralz = (v.grad_t_m.col(2).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+
+// 			for(size_t ii = 0; ii < v.global.size(); ++ii) {
+// 				basis_integrals(v.global[ii].index, 0) += integralx * v.global[ii].val;
+// 				basis_integrals(v.global[ii].index, 1) += integraly * v.global[ii].val;
+// 				basis_integrals(v.global[ii].index, 2) += integralz * v.global[ii].val;
+// 			}
+// 		}
+// 	}
+// }
+
+// Compute the integral constraints for each basis of the mesh
 void PolygonalBasis3d::compute_integral_constraints(
 	const Mesh3D &mesh,
 	const int n_bases,
@@ -344,43 +394,61 @@ void PolygonalBasis3d::compute_integral_constraints(
 {
 	assert(mesh.is_volume());
 
-	basis_integrals.resize(n_bases, 3);
+	basis_integrals.resize(n_bases, 9);
 	basis_integrals.setZero();
+	Eigen::MatrixXd rhs(n_bases, 9);
+	rhs.setZero();
 
 	const int n_elements = mesh.n_elements();
 	for(int e = 0; e < n_elements; ++e) {
 		if (mesh.is_polytope(e)) {
 			continue;
 		}
-		// const ElementAssemblyValues &vals = values[e];
+		// ElementAssemblyValues vals = values[e];
 		// const ElementAssemblyValues &gvals = gvalues[e];
-
 		ElementAssemblyValues vals;
-		vals.compute(e, true, bases[e], bases[e]);
+		vals.compute(e, mesh.is_volume(), bases[e], gbases[e]);
 
-		// if(&bases[e] == &gbases[e])
-		// 	gvals = vals;
-		// else
-		// {
-		// 	gvals = std::make_shared<ElementAssemblyValues>();
-		// 	gvals->compute(e, true, gbases[e]);
-		// }
 
 		// Computes the discretized integral of the PDE over the element
 		const int n_local_bases = int(vals.basis_values.size());
 		for(int j = 0; j < n_local_bases; ++j) {
 			const AssemblyValues &v=vals.basis_values[j];
-			const double integralx = (v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-			const double integraly = (v.grad_t_m.col(1).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-			const double integralz = (v.grad_t_m.col(2).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+			const double integral_100 = (v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+			const double integral_010 = (v.grad_t_m.col(1).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+			const double integral_001 = (v.grad_t_m.col(2).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+
+			const double integral_110 = ((vals.val.col(1).array() * v.grad_t_m.col(0).array() + vals.val.col(0).array() * v.grad_t_m.col(1).array()) * vals.det.array() * vals.quadrature.weights.array()).sum();
+			const double integral_011 = ((vals.val.col(2).array() * v.grad_t_m.col(1).array() + vals.val.col(1).array() * v.grad_t_m.col(2).array()) * vals.det.array() * vals.quadrature.weights.array()).sum();
+			const double integral_101 = ((vals.val.col(0).array() * v.grad_t_m.col(2).array() + vals.val.col(2).array() * v.grad_t_m.col(0).array()) * vals.det.array() * vals.quadrature.weights.array()).sum();
+
+			const double integral_200 = 2*(vals.val.col(0).array() * v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+			const double integral_020 = 2*(vals.val.col(1).array() * v.grad_t_m.col(1).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+			const double integral_002 = 2*(vals.val.col(2).array() * v.grad_t_m.col(2).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+
+			const double area = (v.val.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
 
 			for(size_t ii = 0; ii < v.global.size(); ++ii) {
-				basis_integrals(v.global[ii].index, 0) += integralx * v.global[ii].val;
-				basis_integrals(v.global[ii].index, 1) += integraly * v.global[ii].val;
-				basis_integrals(v.global[ii].index, 2) += integralz * v.global[ii].val;
+				basis_integrals(v.global[ii].index, 0) += integral_100 * v.global[ii].val;
+				basis_integrals(v.global[ii].index, 1) += integral_010 * v.global[ii].val;
+				basis_integrals(v.global[ii].index, 2) += integral_001 * v.global[ii].val;
+
+				basis_integrals(v.global[ii].index, 3) += integral_110 * v.global[ii].val;
+				basis_integrals(v.global[ii].index, 4) += integral_011 * v.global[ii].val;
+				basis_integrals(v.global[ii].index, 5) += integral_101 * v.global[ii].val;
+
+				basis_integrals(v.global[ii].index, 6) += integral_200 * v.global[ii].val;
+				basis_integrals(v.global[ii].index, 7) += integral_020 * v.global[ii].val;
+				basis_integrals(v.global[ii].index, 8) += integral_002 * v.global[ii].val;
+
+				rhs(v.global[ii].index, 6) += -2.0 * area * v.global[ii].val;
+				rhs(v.global[ii].index, 7) += -2.0 * area * v.global[ii].val;
+				rhs(v.global[ii].index, 8) += -2.0 * area * v.global[ii].val;
 			}
 		}
 	}
+
+	basis_integrals -= rhs;
 }
 
 // -----------------------------------------------------------------------------
@@ -486,17 +554,17 @@ void PolygonalBasis3d::build_bases(
 		for (long k = 0; k < rhs.cols(); ++k) {
 			local_basis_integrals.row(k) = -basis_integrals.row(local_to_global[k]);
 		}
-		RBFWithLinear rbf(kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs);
+		auto rbf = std::make_shared<RBFWithQuadratic>(kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs);
+		b.set_bases_func([rbf] (const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+			{ rbf->bases_values(uv, val); } );
+		b.set_grads_func([rbf] (const Eigen::MatrixXd &uv, int axis, Eigen::MatrixXd &grad)
+			{ rbf->bases_grads(axis, uv, grad); } );
 
 		// Set the bases which are nonzero inside the polygon
 		const int n_poly_bases = int(local_to_global.size());
 		b.bases.resize(n_poly_bases);
 		for (int i = 0; i < n_poly_bases; ++i) {
 			b.bases[i].init(local_to_global[i], i, Eigen::MatrixXd::Zero(1, 2));
-			b.bases[i].set_basis([rbf, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-				{ rbf.basis(i, uv, val); });
-			b.bases[i].set_grad( [rbf, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-				{ rbf.grad(i, uv, val); });
 		}
 
 		// Polygon boundary after geometric mapping from neighboring elements

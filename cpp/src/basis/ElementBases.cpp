@@ -38,7 +38,7 @@ namespace poly_fem
 		}
 	}
 
-	void ElementBases::evaluate_bases(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const
+	void ElementBases::evaluate_bases_default(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const
 	{
 		val.resize(uv.rows(), bases.size());
 		Eigen::MatrixXd tmp;
@@ -48,7 +48,7 @@ namespace poly_fem
 		}
 	}
 
-	void ElementBases::evaluate_grads(const Eigen::MatrixXd &uv, const int dim, Eigen::MatrixXd &grad) const
+	void ElementBases::evaluate_grads_default(const Eigen::MatrixXd &uv, const int dim, Eigen::MatrixXd &grad) const
 	{
 		grad.resize(uv.rows(), bases.size());
 		Eigen::MatrixXd grad_tmp;

@@ -307,17 +307,17 @@ void PolygonalBasis2d::build_bases(
 		for (long k = 0; k < rhs.cols(); ++k) {
 			local_basis_integrals.row(k) = -basis_integrals.row(local_to_global[k]);
 		}
-		RBFWithQuadratic harmonic(kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs);
+		auto rbf = std::make_shared<RBFWithQuadratic>(kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs);
+		b.set_bases_func([rbf] (const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+			{ rbf->bases_values(uv, val); } );
+		b.set_grads_func([rbf] (const Eigen::MatrixXd &uv, int axis, Eigen::MatrixXd &grad)
+			{ rbf->bases_grads(axis, uv, grad); } );
 
 		// Set the bases which are nonzero inside the polygon
 		const int n_poly_bases = int(local_to_global.size());
 		b.bases.resize(n_poly_bases);
 		for (int i = 0; i < n_poly_bases; ++i) {
 			b.bases[i].init(local_to_global[i], i, Eigen::MatrixXd::Zero(1, 2));
-			b.bases[i].set_basis([harmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-				{ harmonic.basis(i, uv, val); });
-			b.bases[i].set_grad( [harmonic, i](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-				{ harmonic.grad(i, uv, val); });
 		}
 
 		// Polygon boundary after geometric mapping from neighboring elements

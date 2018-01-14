@@ -16,6 +16,8 @@ namespace poly_fem
 	class ElementBases
 	{
 	public:
+		typedef std::function<void(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)> EvalBasesFunc;
+		typedef std::function<void(const Eigen::MatrixXd &uv, const int dim, Eigen::MatrixXd &grad)> EvalGradsFunc;
 		typedef std::function<void(Quadrature &quadrature)> QuadratureFunction;
 
 		// one basis function per node in the element
@@ -49,10 +51,6 @@ namespace poly_fem
 		///
 		void eval_geom_mapping_grads(const Eigen::MatrixXd &samples, std::vector<Eigen::MatrixXd> &grads) const;
 
-		void evaluate_bases(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const;
-		void evaluate_grads(const Eigen::MatrixXd &uv, const int dim, Eigen::MatrixXd &grad) const;
-
-
 		///
 		/// @brief      {Checks if all the bases are complete }
 		bool is_complete() const;
@@ -67,7 +65,22 @@ namespace poly_fem
 
 		void set_quadrature(const QuadratureFunction &fun) { quadrature_builder_ = fun; }
 
+		void evaluate_bases(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const { if (eval_bases_func_) { eval_bases_func_(uv, val); } else { evaluate_bases_default(uv, val); } }
+
+		void evaluate_grads(const Eigen::MatrixXd &uv, const int dim, Eigen::MatrixXd &grad) const { if (eval_grads_func_) { eval_grads_func_(uv, dim, grad); } else { evaluate_grads_default(uv, dim, grad); } }
+
+		void set_bases_func(EvalBasesFunc fun) { eval_bases_func_ = fun; }
+
+		void set_grads_func(EvalGradsFunc fun) { eval_grads_func_ = fun; }
+
 	private:
+		void evaluate_bases_default(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const;
+
+		void evaluate_grads_default(const Eigen::MatrixXd &uv, const int dim, Eigen::MatrixXd &grad) const;
+
+	private:
+		EvalBasesFunc eval_bases_func_;
+		EvalGradsFunc eval_grads_func_;
 		QuadratureFunction quadrature_builder_;
 	};
 }

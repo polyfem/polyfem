@@ -73,13 +73,17 @@ namespace poly_fem
 		void bases_grads(const int axis, const Eigen::MatrixXd &samples, Eigen::MatrixXd &val) const;
 
 	private:
-		bool is_volume() const { return centers_.rows() == 3; }
+		bool is_volume() const { return centers_.cols() == 3; }
 
 		// Computes the matrix that evaluates the kernels + polynomial terms on the given sample points
 		void compute_kernels_matrix(const Eigen::MatrixXd &samples, Eigen::MatrixXd &A) const;
 
 		// Computes the relationship w = L v + t between the unknowns (v) and the weights w
-		void compute_constraints_matrix(const int num_bases, const Quadrature &quadr,
+		void compute_constraints_matrix_2d(const int num_bases, const Quadrature &quadr,
+			const Eigen::MatrixXd &local_basis_integral, Eigen::MatrixXd &L, Eigen::MatrixXd &t) const;
+
+		// Computes the relationship w = L v + t between the unknowns (v) and the weights w
+		void compute_constraints_matrix_3d(const int num_bases, const Quadrature &quadr,
 			const Eigen::MatrixXd &local_basis_integral, Eigen::MatrixXd &L, Eigen::MatrixXd &t) const;
 
 		// Computes the weights by solving a (possibly constrained) linear least square
