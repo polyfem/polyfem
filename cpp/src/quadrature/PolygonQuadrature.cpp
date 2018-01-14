@@ -57,6 +57,7 @@ namespace poly_fem
         std::stringstream ss;
         ss.precision(100);
         ss.setf(std::ios::fixed, std::ios::floatfield);
+        // ss<<"Qpa0.01";
         ss<<"Qpa0.01";
 
         // ss<<"Qpa"<<0.00001/area;
@@ -71,7 +72,7 @@ namespace poly_fem
 
         Quadrature tri_quadr_pts;
         TriQuadrature tri_quadr;
-        tri_quadr.get_quadrature(6, tri_quadr_pts);
+        tri_quadr.get_quadrature(3, tri_quadr_pts);
 
         const long offset = tri_quadr_pts.weights.rows();
         quadr.points.resize(tris.rows()*offset, 2);

@@ -15,7 +15,8 @@ namespace poly_fem
 		Quadratic,
 		Franke,
 		Elastic,
-		Zero_BC
+		Zero_BC,
+		Franke3d
 	};
 
 	class Problem
