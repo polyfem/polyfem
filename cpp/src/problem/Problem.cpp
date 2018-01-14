@@ -17,8 +17,8 @@ namespace poly_fem
 		switch(problem_num_)
 		{
 			case 0: val = Eigen::MatrixXd::Zero(pts.rows(), 1); return;
-			case 1: val = Eigen::MatrixXd::Zero(pts.rows(), 1); return;
-			// case 1: val = 2*Eigen::MatrixXd::Ones(pts.rows(), 1); return;
+			// case 1: val = Eigen::MatrixXd::Zero(pts.rows(), 1); return;
+			case 1: val = 2*Eigen::MatrixXd::Ones(pts.rows(), 1); return;
 
 			case 2: {
 
@@ -82,8 +82,8 @@ namespace poly_fem
 		switch(problem_num_)
 		{
 			case 0: val = x; return;
-			// case 1: val = x * x; return;
-			case 1: val = x * y; return;
+			case 1: val = x * x; return;
+			// case 1: val = x * y; return;
 			case 2:
 			{
 				auto cx2 = (9*x-2) * (9*x-2);

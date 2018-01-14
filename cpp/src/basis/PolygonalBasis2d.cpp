@@ -192,9 +192,6 @@ void PolygonalBasis2d::compute_integral_constraints(
 			gvals->compute(e, false, gbases[e]);
 		}
 
-		Eigen::MatrixXd mapped;
-		gbases[e].eval_geom_mapping(vals->quadrature.points, mapped);
-
 		// Computes the discretized integral of the PDE over the element
 		const int n_local_bases = int(vals->basis_values.size());
 		for(int j = 0; j < n_local_bases; ++j) {
@@ -202,9 +199,9 @@ void PolygonalBasis2d::compute_integral_constraints(
 			const double integral_10 = (v.grad_t_m.col(0).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
 			const double integral_01 = (v.grad_t_m.col(1).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
 
-			const double integral_11 = 	((mapped.col(1).array() * v.grad_t_m.col(0).array() + mapped.col(0).array() * v.grad_t_m.col(1).array()) * gvals->det.array() * vals->quadrature.weights.array()).sum();
-			const double integral_20 = 2*(mapped.col(0).array() * v.grad_t_m.col(0).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
-			const double integral_02 = 2*(mapped.col(1).array() * v.grad_t_m.col(1).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+			const double integral_11 = 	((gvals->val.col(1).array() * v.grad_t_m.col(0).array() + gvals->val.col(0).array() * v.grad_t_m.col(1).array()) * gvals->det.array() * vals->quadrature.weights.array()).sum();
+			const double integral_20 = 2*(gvals->val.col(0).array() * v.grad_t_m.col(0).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+			const double integral_02 = 2*(gvals->val.col(1).array() * v.grad_t_m.col(1).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
 
 			const double area = (v.val.array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
 
@@ -217,8 +214,8 @@ void PolygonalBasis2d::compute_integral_constraints(
 				basis_integrals(v.global[ii].index, 3) += integral_20 * v.global[ii].val;
 				basis_integrals(v.global[ii].index, 4) += integral_02 * v.global[ii].val;
 
-				rhs(v.global[ii].index, 3) -= 2 * area * v.global[ii].val;
-				rhs(v.global[ii].index, 4) -= 2 * area * v.global[ii].val;
+				rhs(v.global[ii].index, 3) += -2.0 * area * v.global[ii].val;
+				rhs(v.global[ii].index, 4) += -2.0 * area * v.global[ii].val;
 			}
 		}
 	}
