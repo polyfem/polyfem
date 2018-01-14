@@ -489,7 +489,7 @@ namespace poly_fem
 
 			MatrixXd global_fun;
 			interpolate_function(fun, global_fun);
-			// global_fun /= 100;
+			global_fun /= 10;
 
 
 			std::cout<<global_fun.minCoeff()<<" "<<global_fun.maxCoeff()<<std::endl;

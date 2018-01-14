@@ -1,5 +1,4 @@
 #include "RBFWithLinear.hpp"
-#include "PolygonQuadrature.hpp"
 #include "Types.hpp"
 #include <igl/Timer.h>
 #include <Eigen/Dense>
@@ -37,6 +36,7 @@ namespace poly_fem
 		const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr, Eigen::MatrixXd &rhs)
 	: centers_(centers)
 	{
+		centers_.resize(0, 2);
 		compute(samples, local_basis_integral, quadr, rhs);
 	}
 
@@ -45,7 +45,7 @@ namespace poly_fem
 		const int num_kernels = centers_.rows();
 		const int dim = centers_.cols();
 
-		A.resize(samples.rows(), num_kernels + dim + 1);
+		A.resize(samples.rows(), num_kernels + 1 + dim);
 		for (int j = 0; j < num_kernels; ++j) {
 			A.col(j) = (samples.rowwise() - centers_.row(j)).rowwise().norm().unaryExpr([this](double x)
 				{ return kernel(is_volume_, x); });
@@ -72,7 +72,7 @@ namespace poly_fem
 
 		std::array<Eigen::MatrixXd, 3> Axyz;
 		for (int d = 0; d < dim; ++d) {
-			Axyz[d].resize(samples.rows(), num_kernels + dim + 1);
+			Axyz[d].resize(samples.rows(), num_kernels + 1 + dim);
 			Axyz[d].setZero();
 		}
 		for (int j = 0; j < num_kernels; ++j) {
@@ -97,7 +97,7 @@ namespace poly_fem
 	void RBFWithLinear::compute(const Eigen::MatrixXd &samples, const Eigen::MatrixXd &local_basis_integral,
 		const Quadrature &quadr, Eigen::MatrixXd &rhs)
 	{
-		is_volume_ = samples.cols() == 3;
+		is_volume_ = (samples.cols() == 3);
 
 		std::cout << "#kernel centers: " << centers_.rows() << std::endl;
 		std::cout << "#collocation points: " << samples.rows() << std::endl;
@@ -118,11 +118,11 @@ namespace poly_fem
 		// solve the least square system A w = rhs, where:
 		//     ┏                    ┓
 		//     ┃ φj(pi) ... 1 xi yi ┃
-		// A = ┃   ┊        ┊  ┊  ┊ ┃ ∊ ℝ^{#S x (#K+dim+1)}
+		// A = ┃   ┊        ┊  ┊  ┊ ┃ ∊ ℝ^{#S x (#K+1+dim)}
 		//     ┃   ┊        ┊  ┊  ┊ ┃
 		//     ┗                    ┛
 		//     ┏                    ┓^⊤
-		// w = ┃ wj ... a00 a10 a01 ┃   ∊ ℝ^{#K+dim+1}
+		// w = ┃ wj ... a00 a10 a01 ┃   ∊ ℝ^{#K+1+dim}
 		//     ┗                    ┛
 		// - A is the RBF kernels evaluated over the collocation points (#S)
 		// - b is the expected value of the basis sampled on the boundary (#S)
@@ -149,14 +149,14 @@ namespace poly_fem
 
 		//
 		//     ┏                      ┓^⊤
-		// t = ┃ 0  ┈  ┈  0 0 lbx lby ┃   / Vol(E) ∊ ℝ^{#K+dim+1}
+		// t = ┃ 0  ┈  ┈  0 0 lbx lby ┃   / Vol(E) ∊ ℝ^{#K+1+dim}
 		//     ┗                      ┛
 		//
 		//     ┏                  ┓
 		//     ┃   1              ┃
 		//     ┃       1          ┃
 		//     ┃          ·       ┃
-		// L = ┃             ·    ┃ ∊ ℝ^{ (#K+dim+1) x (#K+1}) }
+		// L = ┃             ·    ┃ ∊ ℝ^{ (#K+1+dim) x (#K+1}) }
 		//     ┃                1 ┃
 		//     ┃ Lx_j  ┈        0 ┃
 		//     ┃ Ly_j  ┈        0 ┃
@@ -197,7 +197,7 @@ namespace poly_fem
 		// Compute t
 		weights_.resize(A.cols(), num_bases);
 		weights_.setZero();
-		weights_.bottomRows(dim) = local_basis_integral.transpose() / quadr.weights.sum();
+		weights_.bottomRows(dim) = local_basis_integral.transpose().topRows(dim) / quadr.weights.sum();
 
 		// Compute b = rhs - A t
 		rhs -= A * weights_;

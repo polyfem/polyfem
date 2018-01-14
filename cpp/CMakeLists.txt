@@ -166,6 +166,9 @@ add_library(polyfem
 	src/basis/function/RBFWithLinear.cpp
 	src/basis/function/RBFWithLinear.hpp
 
+	src/basis/function/RBFWithQuadratic.cpp
+	src/basis/function/RBFWithQuadratic.hpp
+
 	src/assembler/AssemblyValues.hpp
 	src/assembler/ElementAssemblyValues.hpp
 	src/assembler/ElementAssemblyValues.cpp

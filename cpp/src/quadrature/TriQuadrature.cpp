@@ -87,8 +87,8 @@ namespace poly_fem
                 }
 
                 case 6: {
-                    points.resize(11, 2);
-                    weights.resize(11, 1);
+                    points.resize(12, 2);
+                    weights.resize(12, 1);
 
                     points <<
                     0.063089014491502228340331602870819, 0.063089014491502228340331602870819,

@@ -324,7 +324,7 @@ namespace poly_fem
 		for(size_t i = 0; i < bs.size(); ++i)
 		{
 			if(mesh->is_polytope(i)) continue;
-			
+
 			ElementAssemblyValues vals;
 			if(!vals.is_geom_mapping_positive(mesh->is_volume(), bs[i]))
 			{
@@ -475,6 +475,73 @@ namespace poly_fem
 		std::cout<<"n bases: "<<n_bases<<std::endl;
 	}
 
+
+// Compute the integral constraints for each basis of the mesh
+void compute_integral_constraints(
+	const Mesh2D &mesh,
+	const int n_bases,
+	const std::vector< ElementBases > &bases,
+	const std::vector< ElementBases > &gbases,
+	Eigen::MatrixXd &basis_integrals)
+{
+	assert(!mesh.is_volume());
+
+	basis_integrals.resize(n_bases, 5);
+	basis_integrals.setZero();
+	Eigen::MatrixXd rhs(n_bases, 5);
+	rhs.setZero();
+
+	const int n_elements = mesh.n_elements();
+	for(int e = 0; e < n_elements; ++e) {
+		// ElementAssemblyValues vals = values[e];
+		// const ElementAssemblyValues &gvals = gvalues[e];
+		std::shared_ptr<ElementAssemblyValues> vals = std::make_shared<ElementAssemblyValues>();
+		std::shared_ptr<ElementAssemblyValues> gvals;
+		vals->compute(e, false, bases[e]);
+
+		if(&bases[e] == &gbases[e])
+			gvals = vals;
+		else
+		{
+			gvals = std::make_shared<ElementAssemblyValues>();
+			gvals->compute(e, false, gbases[e]);
+		}
+
+		Eigen::MatrixXd mapped;
+		gbases[e].eval_geom_mapping(vals->quadrature.points, mapped);
+
+		// Computes the discretized integral of the PDE over the element
+		const int n_local_bases = int(vals->basis_values.size());
+		for(int j = 0; j < n_local_bases; ++j) {
+			const AssemblyValues &v=vals->basis_values[j];
+			const double integral_10 = (v.grad_t_m.col(0).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+			const double integral_01 = (v.grad_t_m.col(1).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+
+			const double integral_11 = 	((mapped.col(1).array() * v.grad_t_m.col(0).array() + mapped.col(0).array() * v.grad_t_m.col(1).array()) * gvals->det.array() * vals->quadrature.weights.array()).sum();
+			const double integral_20 = 2*(mapped.col(0).array() * v.grad_t_m.col(0).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+			const double integral_02 = 2*(mapped.col(1).array() * v.grad_t_m.col(1).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+
+			const double area = (v.val.array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+
+			for(size_t ii = 0; ii < v.global.size(); ++ii) {
+				basis_integrals(v.global[ii].index, 0) += integral_10 * v.global[ii].val;
+				basis_integrals(v.global[ii].index, 1) += integral_01 * v.global[ii].val;
+
+				basis_integrals(v.global[ii].index, 2) += integral_11 * v.global[ii].val;
+
+				basis_integrals(v.global[ii].index, 3) += integral_20 * v.global[ii].val;
+				basis_integrals(v.global[ii].index, 4) += integral_02 * v.global[ii].val;
+
+				rhs(v.global[ii].index, 3) -= 2 * area * v.global[ii].val;
+				rhs(v.global[ii].index, 4) -= 2 * area * v.global[ii].val;
+			}
+		}
+	}
+
+	basis_integrals -= rhs;
+}
+
+
 	void State::compute_assembly_vals()
 	{
 		// values.clear();
@@ -525,6 +592,10 @@ namespace poly_fem
 			// }
 		}
 
+
+		Eigen::MatrixXd c;
+		compute_integral_constraints(*dynamic_cast<Mesh2D *>(mesh), n_bases, bases, bases, c);
+		std::cout << c << std::endl;
 
 
 		timer.stop();

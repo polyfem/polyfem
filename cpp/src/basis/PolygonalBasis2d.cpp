@@ -4,7 +4,7 @@
 #include "PolygonUtils.hpp"
 #include "FEBasis2d.hpp"
 #include "RBFWithLinear.hpp"
-// #include "RBFWithQuadratic.hpp"
+#include "RBFWithQuadratic.hpp"
 // #include "UIState.hpp"
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -170,6 +170,8 @@ void PolygonalBasis2d::compute_integral_constraints(
 
 	basis_integrals.resize(n_bases, 5);
 	basis_integrals.setZero();
+	Eigen::MatrixXd rhs(n_bases, 5);
+	rhs.setZero();
 
 	const int n_elements = mesh.n_elements();
 	for(int e = 0; e < n_elements; ++e) {
@@ -190,6 +192,9 @@ void PolygonalBasis2d::compute_integral_constraints(
 			gvals->compute(e, false, gbases[e]);
 		}
 
+		Eigen::MatrixXd mapped;
+		gbases[e].eval_geom_mapping(vals->quadrature.points, mapped);
+
 		// Computes the discretized integral of the PDE over the element
 		const int n_local_bases = int(vals->basis_values.size());
 		for(int j = 0; j < n_local_bases; ++j) {
@@ -197,9 +202,11 @@ void PolygonalBasis2d::compute_integral_constraints(
 			const double integral_10 = (v.grad_t_m.col(0).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
 			const double integral_01 = (v.grad_t_m.col(1).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
 
-			const double integral_11 = 	((vals->quadrature.points.col(1).array() * v.grad_t_m.col(0).array() + vals->quadrature.points.col(0).array() * v.grad_t_m.col(1).array()) * gvals->det.array() * vals->quadrature.weights.array()).sum();
-			const double integral_20 = 2*(vals->quadrature.points.col(0).array() * v.grad_t_m.col(0).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
-			const double integral_02 = 2*(vals->quadrature.points.col(1).array() * v.grad_t_m.col(1).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+			const double integral_11 = 	((mapped.col(1).array() * v.grad_t_m.col(0).array() + mapped.col(0).array() * v.grad_t_m.col(1).array()) * gvals->det.array() * vals->quadrature.weights.array()).sum();
+			const double integral_20 = 2*(mapped.col(0).array() * v.grad_t_m.col(0).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+			const double integral_02 = 2*(mapped.col(1).array() * v.grad_t_m.col(1).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+
+			const double area = (v.val.array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
 
 			for(size_t ii = 0; ii < v.global.size(); ++ii) {
 				basis_integrals(v.global[ii].index, 0) += integral_10 * v.global[ii].val;
@@ -209,9 +216,14 @@ void PolygonalBasis2d::compute_integral_constraints(
 
 				basis_integrals(v.global[ii].index, 3) += integral_20 * v.global[ii].val;
 				basis_integrals(v.global[ii].index, 4) += integral_02 * v.global[ii].val;
+
+				rhs(v.global[ii].index, 3) -= 2 * area * v.global[ii].val;
+				rhs(v.global[ii].index, 4) -= 2 * area * v.global[ii].val;
 			}
 		}
 	}
+
+	basis_integrals -= rhs;
 }
 
 // -----------------------------------------------------------------------------
@@ -305,7 +317,7 @@ void PolygonalBasis2d::build_bases(
 		for (long k = 0; k < rhs.cols(); ++k) {
 			local_basis_integrals.row(k) = -basis_integrals.row(local_to_global[k]);
 		}
-		RBFWithLinear harmonic(kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs);
+		RBFWithQuadratic harmonic(kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs);
 
 		// Set the bases which are nonzero inside the polygon
 		const int n_poly_bases = int(local_to_global.size());

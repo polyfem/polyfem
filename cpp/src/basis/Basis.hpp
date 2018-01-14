@@ -66,7 +66,7 @@ namespace poly_fem
 		/// @param[in]  uv    { #uv x dim matrix of parameters to evaluate }
 		/// @param[out] val   { #uv x 1 vector of computed values }
 		///
-		void basis(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const { basis_(uv, val); }
+		void basis(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const { assert(basis_); basis_(uv, val); }
 
 		///
 		/// @brief      Evaluate the gradient of the basis function.
@@ -74,7 +74,7 @@ namespace poly_fem
 		/// @param[in]  uv    { #uv x dim matrix of parameters to evaluate }
 		/// @param[out] val   { #uv x dim matrix of computed gradients }
 		///
-		void grad(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const { grad_(uv, val); }
+		void grad(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const { assert(grad_); grad_(uv, val); }
 
 		inline const std::vector< Local2Global > &global() const { return global_; }
 		inline std::vector< Local2Global > &global() { return global_; }
