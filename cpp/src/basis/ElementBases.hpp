@@ -49,6 +49,9 @@ namespace poly_fem
 		///
 		void eval_geom_mapping_grads(const Eigen::MatrixXd &samples, std::vector<Eigen::MatrixXd> &grads) const;
 
+		void evaluate_bases(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const;
+		void evaluate_grads(const Eigen::MatrixXd &uv, const int dim, Eigen::MatrixXd &grad) const;
+
 
 		///
 		/// @brief      {Checks if all the bases are complete }

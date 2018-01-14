@@ -313,9 +313,10 @@ void sample_polyhedra(
 		const ElementBases &b=bases[c2];
 
 		// Evaluate field basis and set up the rhs
+		b.evaluate_bases(samples, basis_val);
 		for (int other_local_basis_id : bdata.local_indices) {
 			samples = UV.middleRows(uv_ranges(lf), uv_ranges(lf+1) - uv_ranges(lf));
-			b.bases[other_local_basis_id].basis(samples, basis_val);
+			// b.bases[other_local_basis_id].basis(samples, basis_val);
 
 			for (const auto &x : b.bases[other_local_basis_id].global()) {
 				const int global_node_id = x.index;
@@ -323,7 +324,7 @@ void sample_polyhedra(
 
 				const int poly_local_basis_id = std::distance(local_to_global.begin(),
 					std::find(local_to_global.begin(), local_to_global.end(), global_node_id));
-				rhs.block(uv_ranges(lf), poly_local_basis_id, basis_val.rows(), 1) += basis_val * weight;
+				rhs.block(uv_ranges(lf), poly_local_basis_id, basis_val.rows(), 1) += basis_val.col(other_local_basis_id) * weight;
 			}
 		}
 	}
@@ -354,25 +355,24 @@ void PolygonalBasis3d::compute_integral_constraints(
 		// const ElementAssemblyValues &vals = values[e];
 		// const ElementAssemblyValues &gvals = gvalues[e];
 
-		std::shared_ptr<ElementAssemblyValues> vals = std::make_shared<ElementAssemblyValues>();
-		std::shared_ptr<ElementAssemblyValues> gvals;
-		vals->compute(e, true, bases[e]);
+		ElementAssemblyValues vals;
+		vals.compute(e, true, bases[e], bases[e]);
 
-		if(&bases[e] == &gbases[e])
-			gvals = vals;
-		else
-		{
-			gvals = std::make_shared<ElementAssemblyValues>();
-			gvals->compute(e, true, gbases[e]);
-		}
+		// if(&bases[e] == &gbases[e])
+		// 	gvals = vals;
+		// else
+		// {
+		// 	gvals = std::make_shared<ElementAssemblyValues>();
+		// 	gvals->compute(e, true, gbases[e]);
+		// }
 
 		// Computes the discretized integral of the PDE over the element
-		const int n_local_bases = int(vals->basis_values.size());
+		const int n_local_bases = int(vals.basis_values.size());
 		for(int j = 0; j < n_local_bases; ++j) {
-			const AssemblyValues &v=vals->basis_values[j];
-			const double integralx = (v.grad_t_m.col(0).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
-			const double integraly = (v.grad_t_m.col(1).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
-			const double integralz = (v.grad_t_m.col(2).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+			const AssemblyValues &v=vals.basis_values[j];
+			const double integralx = (v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+			const double integraly = (v.grad_t_m.col(1).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+			const double integralz = (v.grad_t_m.col(2).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
 
 			for(size_t ii = 0; ii < v.global.size(); ++ii) {
 				basis_integrals(v.global[ii].index, 0) += integralx * v.global[ii].val;

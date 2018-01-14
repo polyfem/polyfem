@@ -246,16 +246,15 @@ namespace poly_fem
 				local_pts = vis_pts_poly[i];
 
 			MatrixXd local_res = MatrixXd::Zero(local_pts.rows(), actual_dim);
-
+			bs.evaluate_bases(local_pts, tmp);
 			for(std::size_t j = 0; j < bs.bases.size(); ++j)
 			{
 				const Basis &b = bs.bases[j];
 
-				b.basis(local_pts, tmp);
 				for(int d = 0; d < actual_dim; ++d)
 				{
 					for(std::size_t ii = 0; ii < b.global().size(); ++ii)
-						local_res.col(d) += b.global()[ii].val * tmp * fun(b.global()[ii].index*actual_dim + d);
+						local_res.col(d) += b.global()[ii].val * tmp.col(j) * fun(b.global()[ii].index*actual_dim + d);
 				}
 			}
 

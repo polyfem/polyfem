@@ -112,6 +112,7 @@ namespace poly_fem
 		for(std::size_t i = 0; i < bases.size(); ++i)
 		{
 			const ElementBases &bs = bases[i];
+			bs.evaluate_bases(local_pts, tmp);
 
 			MatrixXd local_res = MatrixXd::Zero(local_pts.rows(), actual_dim);
 
@@ -119,12 +120,12 @@ namespace poly_fem
 			{
 				const Basis &b = bs.bases[j];
 
-				b.basis(local_pts, tmp);
+				// b.basis(local_pts, tmp);
 				for(std::size_t ii = 0; ii < b.global().size(); ++ii)
 				{
 					for(int d = 0; d < actual_dim; ++d)
 					{
-						local_res.col(d) += b.global()[ii].val * tmp * fun(b.global()[ii].index*actual_dim + d);
+						local_res.col(d) += b.global()[ii].val * tmp.col(j) * fun(b.global()[ii].index*actual_dim + d);
 					}
 				}
 			}
@@ -153,7 +154,6 @@ namespace poly_fem
 		sol.resize(0, 0);
 
 		n_bases = 0;
-		n_geom_bases = 0;
 
 
 
@@ -209,7 +209,6 @@ namespace poly_fem
 		sol.resize(0, 0);
 
 		n_bases = 0;
-		n_geom_bases = 0;
 
 		// els_tag[4]=ElementType::MultiSingularInteriorCube;
 		// els_tag[24]=ElementType::MultiSingularInteriorCube;
@@ -273,7 +272,6 @@ namespace poly_fem
 		sol.resize(0, 0);
 
 		n_bases = 0;
-		n_geom_bases = 0;
 
 
 		igl::Timer timer; timer.start();
@@ -289,14 +287,14 @@ namespace poly_fem
 			if(use_splines)
 			{
 				if(!iso_parametric)
-					n_geom_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
+					FEBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
 
 				n_bases = SplineBasis3d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
 			}
 			else
 			{
 				if (!iso_parametric)
-					n_geom_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, 1, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
+					FEBasis3d::build_bases(tmp_mesh, quadrature_order, 1, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
 
 				n_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
 			}
@@ -307,14 +305,14 @@ namespace poly_fem
 			if(use_splines)
 			{
 				if(!iso_parametric)
-					n_geom_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
+					FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
 
 				n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
 			}
 			else
 			{
 				if(!iso_parametric)
-					n_geom_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, 1, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
+					FEBasis2d::build_bases(tmp_mesh, quadrature_order, 1, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
 
 				n_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
 			}
@@ -480,67 +478,58 @@ namespace poly_fem
 	}
 
 
-// Compute the integral constraints for each basis of the mesh
-void compute_integral_constraints(
-	const Mesh2D &mesh,
-	const int n_bases,
-	const std::vector< ElementBases > &bases,
-	const std::vector< ElementBases > &gbases,
-	Eigen::MatrixXd &basis_integrals)
-{
-	assert(!mesh.is_volume());
+// // Compute the integral constraints for each basis of the mesh
+// void compute_integral_constraints(
+// 	const Mesh2D &mesh,
+// 	const int n_bases,
+// 	const std::vector< ElementBases > &bases,
+// 	const std::vector< ElementBases > &gbases,
+// 	Eigen::MatrixXd &basis_integrals)
+// {
+// 	assert(!mesh.is_volume());
 
-	basis_integrals.resize(n_bases, 5);
-	basis_integrals.setZero();
-	Eigen::MatrixXd rhs(n_bases, 5);
-	rhs.setZero();
+// 	basis_integrals.resize(n_bases, 5);
+// 	basis_integrals.setZero();
+// 	Eigen::MatrixXd rhs(n_bases, 5);
+// 	rhs.setZero();
 
-	const int n_elements = mesh.n_elements();
-	for(int e = 0; e < n_elements; ++e) {
-		// ElementAssemblyValues vals = values[e];
-		// const ElementAssemblyValues &gvals = gvalues[e];
-		std::shared_ptr<ElementAssemblyValues> vals = std::make_shared<ElementAssemblyValues>();
-		std::shared_ptr<ElementAssemblyValues> gvals;
-		vals->compute(e, false, bases[e]);
+// 	const int n_elements = mesh.n_elements();
+// 	for(int e = 0; e < n_elements; ++e) {
+// 		// ElementAssemblyValues vals = values[e];
+// 		// const ElementAssemblyValues &gvals = gvalues[e];
+// 		ElementAssemblyValues vals;
+// 		vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
 
-		if(&bases[e] == &gbases[e])
-			gvals = vals;
-		else
-		{
-			gvals = std::make_shared<ElementAssemblyValues>();
-			gvals->compute(e, false, gbases[e]);
-		}
+// 		// Computes the discretized integral of the PDE over the element
+// 		const int n_local_bases = int(vals->basis_values.size());
+// 		for(int j = 0; j < n_local_bases; ++j) {
+// 			const AssemblyValues &v=vals->basis_values[j];
+// 			const double integral_10 = (v.grad_t_m.col(0).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+// 			const double integral_01 = (v.grad_t_m.col(1).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
 
-		// Computes the discretized integral of the PDE over the element
-		const int n_local_bases = int(vals->basis_values.size());
-		for(int j = 0; j < n_local_bases; ++j) {
-			const AssemblyValues &v=vals->basis_values[j];
-			const double integral_10 = (v.grad_t_m.col(0).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
-			const double integral_01 = (v.grad_t_m.col(1).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+// 			const double integral_11 = 	((gvals->val.col(1).array() * v.grad_t_m.col(0).array() + gvals->val.col(0).array() * v.grad_t_m.col(1).array()) * gvals->det.array() * vals->quadrature.weights.array()).sum();
+// 			const double integral_20 = 2*(gvals->val.col(0).array() * v.grad_t_m.col(0).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+// 			const double integral_02 = 2*(gvals->val.col(1).array() * v.grad_t_m.col(1).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
 
-			const double integral_11 = 	((gvals->val.col(1).array() * v.grad_t_m.col(0).array() + gvals->val.col(0).array() * v.grad_t_m.col(1).array()) * gvals->det.array() * vals->quadrature.weights.array()).sum();
-			const double integral_20 = 2*(gvals->val.col(0).array() * v.grad_t_m.col(0).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
-			const double integral_02 = 2*(gvals->val.col(1).array() * v.grad_t_m.col(1).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+// 			const double area = (v.val.array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
 
-			const double area = (v.val.array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+// 			for(size_t ii = 0; ii < v.global.size(); ++ii) {
+// 				basis_integrals(v.global[ii].index, 0) += integral_10 * v.global[ii].val;
+// 				basis_integrals(v.global[ii].index, 1) += integral_01 * v.global[ii].val;
 
-			for(size_t ii = 0; ii < v.global.size(); ++ii) {
-				basis_integrals(v.global[ii].index, 0) += integral_10 * v.global[ii].val;
-				basis_integrals(v.global[ii].index, 1) += integral_01 * v.global[ii].val;
+// 				basis_integrals(v.global[ii].index, 2) += integral_11 * v.global[ii].val;
 
-				basis_integrals(v.global[ii].index, 2) += integral_11 * v.global[ii].val;
+// 				basis_integrals(v.global[ii].index, 3) += integral_20 * v.global[ii].val;
+// 				basis_integrals(v.global[ii].index, 4) += integral_02 * v.global[ii].val;
 
-				basis_integrals(v.global[ii].index, 3) += integral_20 * v.global[ii].val;
-				basis_integrals(v.global[ii].index, 4) += integral_02 * v.global[ii].val;
+// 				rhs(v.global[ii].index, 3) += -2.0 * area * v.global[ii].val;
+// 				rhs(v.global[ii].index, 4) += -2.0 * area * v.global[ii].val;
+// 			}
+// 		}
+// 	}
 
-				rhs(v.global[ii].index, 3) += -2.0 * area * v.global[ii].val;
-				rhs(v.global[ii].index, 4) += -2.0 * area * v.global[ii].val;
-			}
-		}
-	}
-
-	basis_integrals -= rhs;
-}
+// 	basis_integrals -= rhs;
+// }
 
 
 	void State::compute_assembly_vals()
@@ -804,28 +793,22 @@ void compute_integral_constraints(
 			// const auto &vals    = values[e];
 			// const auto &gvalues = iso_parametric ? values[e] : geom_values[e];
 
-			std::shared_ptr<ElementAssemblyValues> vals = std::make_shared<ElementAssemblyValues>();
-			std::shared_ptr<ElementAssemblyValues> gvals;
-			vals->compute(e, mesh->is_volume(), bases[e]);
+			ElementAssemblyValues vals;
 
-			if(iso_parametric){
-				gvals = vals;
-			}
+			if(iso_parametric)
+				vals.compute(e, mesh->is_volume(), bases[e], bases[e]);
 			else
-			{
-				gvals = std::make_shared<ElementAssemblyValues>();
-				gvals->compute(e, mesh->is_volume(), geom_bases[e]);
-			}
+				vals.compute(e, mesh->is_volume(), bases[e], geom_bases[e]);
 
-			problem.exact(gvals->val, v_exact);
+			problem.exact(vals.val, v_exact);
 
 			v_approx = MatrixXd::Zero(v_exact.rows(), v_exact.cols());
 
-			const int n_loc_bases=int(vals->basis_values.size());
+			const int n_loc_bases=int(vals.basis_values.size());
 
 			for(int i = 0; i < n_loc_bases; ++i)
 			{
-				auto val=vals->basis_values[i];
+				auto val=vals.basis_values[i];
 
 				for(std::size_t ii = 0; ii < val.global.size(); ++ii)
 					v_approx += val.global[ii].val * sol(val.global[ii].index) * val.val;
@@ -837,8 +820,8 @@ void compute_integral_constraints(
 				errors.push_back(err(i));
 
 			linf_err = max(linf_err, err.maxCoeff());
-			l2_err += (err.array() * err.array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
-			lp_err += (err.array().pow(8.) * gvals->det.array() * vals->quadrature.weights.array()).sum();
+			l2_err += (err.array() * err.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+			lp_err += (err.array().pow(8.) * vals.det.array() * vals.quadrature.weights.array()).sum();
 		}
 
 		l2_err = sqrt(fabs(l2_err));
