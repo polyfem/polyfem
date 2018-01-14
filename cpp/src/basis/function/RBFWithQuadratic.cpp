@@ -52,7 +52,7 @@ namespace poly_fem
 		const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr, Eigen::MatrixXd &rhs)
 	: centers_(centers)
 	{
-		// centers_.resize(0, 2);
+		centers_.resize(0, 2);
 		compute(samples, local_basis_integral, quadr, rhs);
 	}
 

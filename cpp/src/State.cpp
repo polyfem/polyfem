@@ -321,6 +321,7 @@ namespace poly_fem
 		}
 
 		auto &bs = iso_parametric ? bases : geom_bases;
+		int n_flipped = 0;
 		for(size_t i = 0; i < bs.size(); ++i)
 		{
 			if(mesh->is_polytope(i)) continue;
@@ -328,9 +329,12 @@ namespace poly_fem
 			ElementAssemblyValues vals;
 			if(!vals.is_geom_mapping_positive(mesh->is_volume(), bs[i]))
 			{
-				std::cout<<"Basis "<< i << ( parent_elements.size() > 0 ? (" -> " + std::to_string(parent_elements[i])) : "") << " has negative volume"<<std::endl;
+				// std::cout<<"Basis "<< i << ( parent_elements.size() > 0 ? (" -> " + std::to_string(parent_elements[i])) : "") << " has negative volume"<<std::endl;
+				++n_flipped;
 			}
 		}
+
+		std::cout<<"flipped elements "<<n_flipped<<std::endl;;
 
 		problem.remove_neumann_nodes(bases, boundary_tag, local_boundary, boundary_nodes);
 
@@ -701,52 +705,52 @@ void compute_integral_constraints(
 		// }
 	}
 
-	void State::solve_problem_old()
-	{
-		errors.clear();
-		sol.resize(0, 0);
+// 	void State::solve_problem_old()
+// 	{
+// 		errors.clear();
+// 		sol.resize(0, 0);
 
-		igl::Timer timer; timer.start();
-		std::cout<<"Solving..."<<std::flush;
+// 		igl::Timer timer; timer.start();
+// 		std::cout<<"Solving..."<<std::flush;
 
-// #ifndef POLY_FEM_WITH_SUPERLU
-// 		typedef SparseMatrix<double> SolverMat;
-// 		SuperLU<SolverMat> solver;
-// 		std::cout<<"with SuperLU direct solver..."<<std::flush;
+// // #ifndef POLY_FEM_WITH_SUPERLU
+// // 		typedef SparseMatrix<double> SolverMat;
+// // 		SuperLU<SolverMat> solver;
+// // 		std::cout<<"with SuperLU direct solver..."<<std::flush;
 
-// 		solver.compute(SolverMat(stiffness));
-// 		sol = solver.solve(rhs);
-// #else // POLY_FEM_WITH_SUPERLU
-// #ifdef POLY_FEM_WITH_UMFPACK
-// 		UmfPackLU<SparseMatrix<double, Eigen::RowMajor> > solver;
-// 		std::cout<<"with UmfPack direct solver..."<<std::flush;
+// // 		solver.compute(SolverMat(stiffness));
+// // 		sol = solver.solve(rhs);
+// // #else // POLY_FEM_WITH_SUPERLU
+// // #ifdef POLY_FEM_WITH_UMFPACK
+// // 		UmfPackLU<SparseMatrix<double, Eigen::RowMajor> > solver;
+// // 		std::cout<<"with UmfPack direct solver..."<<std::flush;
 
-// 		solver.compute(stiffness);
-// 		sol = solver.solve(rhs);
-// #else //POLY_FEM_WITH_UMFPACK
-		{
-			Assembler<Laplacian> assembler;
-			assembler.set_identity(boundary_nodes, stiffness);
-		}
-		BiCGSTAB<SparseMatrix<double, Eigen::RowMajor> > solver;
-		std::cout<<"with BiCGSTAB iterative solver..."<<std::flush;
-		sol = solver.compute(stiffness).solve(rhs);
-// #endif //POLY_FEM_WITH_UMFPACK
-// #endif  //POLY_FEM_WITH_SUPERLU
+// // 		solver.compute(stiffness);
+// // 		sol = solver.solve(rhs);
+// // #else //POLY_FEM_WITH_UMFPACK
+// 		{
+// 			Assembler<Laplacian> assembler;
+// 			assembler.set_identity(boundary_nodes, stiffness);
+// 		}
+// 		BiCGSTAB<SparseMatrix<double, Eigen::RowMajor> > solver;
+// 		std::cout<<"with BiCGSTAB iterative solver..."<<std::flush;
+// 		sol = solver.compute(stiffness).solve(rhs);
+// // #endif //POLY_FEM_WITH_UMFPACK
+// // #endif  //POLY_FEM_WITH_SUPERLU
 
-		timer.stop();
-		solving_time = timer.getElapsedTime();
-		std::cout<<" took "<<solving_time<<"s"<<std::endl;
-		std::cout<<"Solver error: "<<(stiffness*sol-rhs).norm()<<std::endl;
+// 		timer.stop();
+// 		solving_time = timer.getElapsedTime();
+// 		std::cout<<" took "<<solving_time<<"s"<<std::endl;
+// 		std::cout<<"Solver error: "<<(stiffness*sol-rhs).norm()<<std::endl;
 
-		// {
-		// 	std::ofstream of;
-		// 	of.open("sol.txt");
-		// 	of.precision(100);
-		// 	of<<sol;
-		// 	of.close();
-		// }
-	}
+// 		// {
+// 		// 	std::ofstream of;
+// 		// 	of.open("sol.txt");
+// 		// 	of.precision(100);
+// 		// 	of<<sol;
+// 		// 	of.close();
+// 		// }
+// 	}
 
 	void State::solve_problem()
 	{

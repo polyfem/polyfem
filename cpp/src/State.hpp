@@ -60,7 +60,7 @@ namespace poly_fem
 		std::string solver_type;
 		std::string precond_type;
 
-		Eigen::SparseMatrix<double, Eigen::RowMajor> stiffness;
+		Eigen::SparseMatrix<double> stiffness;
 		Eigen::MatrixXd rhs;
 		Eigen::MatrixXd sol;
 
@@ -86,7 +86,7 @@ namespace poly_fem
 		void assemble_stiffness_mat();
 		void assemble_rhs();
 		void solve_problem();
-		void solve_problem_old();
+		// void solve_problem_old();
 		void compute_errors();
 
 		void interpolate_function(const Eigen::MatrixXd &fun, const Eigen::MatrixXd &local_pts, Eigen::MatrixXd &result);

@@ -3,6 +3,8 @@
 #include "QuadBoundarySampler.hpp"
 #include "HexBoundarySampler.hpp"
 
+#include "LinearSolver.hpp"
+
 #include <Eigen/Sparse>
 
 #include <iostream>
@@ -177,16 +179,27 @@ namespace poly_fem
 
 
 
-		Eigen::MatrixXd coeffs;
+		Eigen::MatrixXd coeffs(b.rows(), b.cols());
 			// if(A.rows() > 2000)
 		{
-			Eigen::BiCGSTAB< Eigen::SparseMatrix<double> > solver;
-			coeffs = solver.compute(A).solve(b);
+			json params = {
+			{"mtype", -2}, // matrix type for Pardiso (2 = SPD)
+			// {"max_iter", 0}, // for iterative solvers
+			// {"tolerance", 1e-9}, // for iterative solvers
+			};
+			auto solver = LinearSolver::create("", "");
+			solver->setParameters(params);
+			solver->analyzePattern(A);
+			solver->factorize(A);
+			for(long i = 0; i < b.cols(); ++i){
+				solver->solve(b.col(i), coeffs.col(i));
+			}
+
+			// Eigen::BiCGSTAB< Eigen::SparseMatrix<double> > solver;
+			// coeffs = solver.compute(A).solve(b);
+
 			// Eigen::SimplicialLDLT<Eigen::SparseMatrix<double> > solver;
 			// coeffs = solver.compute(-A).solve(-b);
-			// coeffs*=-1;
-				// Eigen::MatrixXd asd(A);
-				// std::cout<<(asd-asd.transpose()).norm()<<std::endl;
 			std::cout<<"RHS solve error "<< (A*coeffs-b).norm()<<std::endl;
 		}
 			// else
