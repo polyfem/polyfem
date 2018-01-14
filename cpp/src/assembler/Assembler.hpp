@@ -26,7 +26,7 @@ namespace poly_fem
 			const int n_basis,
 			const std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
-			Eigen::SparseMatrix<double, Eigen::RowMajor> &stiffness) const
+			Eigen::SparseMatrix<double> &stiffness) const
 		{
 			const int buffer_size = std::min(long(1e8), long(n_basis) * local_assembler_.size());
 
@@ -38,7 +38,7 @@ namespace poly_fem
 			stiffness.resize(n_basis*local_assembler_.size(), n_basis*local_assembler_.size());
 			stiffness.setZero();
 
-			Eigen::SparseMatrix<double, Eigen::RowMajor> tmp(stiffness.rows(), stiffness.cols());
+			Eigen::SparseMatrix<double> tmp(stiffness.rows(), stiffness.cols());
 
 			const int n_bases = int(bases.size());
 			for(int e=0; e < n_bases; ++e)
@@ -143,20 +143,20 @@ namespace poly_fem
 			// stiffness.setFromTriplets(entries.begin(), entries.end());
 		}
 
-		void set_identity(const std::vector<int> &boundary_nodes, Eigen::SparseMatrix<double, Eigen::RowMajor> &stiffness) const
-		{
-			for(std::size_t i = 0; i < boundary_nodes.size(); ++i)
-			{
-				const int index = boundary_nodes[i];
-				for (Eigen::SparseMatrix<double, Eigen::RowMajor>::InnerIterator it(stiffness, index); it; ++it)
-				{
-					if(it.row() == it.col())
-						it.valueRef() = 1;
-					else
-						it.valueRef() = 0;
-				}
-			}
-		}
+		// void set_identity(const std::vector<int> &boundary_nodes, Eigen::SparseMatrix<double, Eigen::RowMajor> &stiffness) const
+		// {
+		// 	for(std::size_t i = 0; i < boundary_nodes.size(); ++i)
+		// 	{
+		// 		const int index = boundary_nodes[i];
+		// 		for (Eigen::SparseMatrix<double, Eigen::RowMajor>::InnerIterator it(stiffness, index); it; ++it)
+		// 		{
+		// 			if(it.row() == it.col())
+		// 				it.valueRef() = 1;
+		// 			else
+		// 				it.valueRef() = 0;
+		// 		}
+		// 	}
+		// }
 
 		inline LocalAssembler &local_assembler() { return local_assembler_; }
 		inline const LocalAssembler &local_assembler() const { return local_assembler_; }

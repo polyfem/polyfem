@@ -917,7 +917,7 @@ namespace poly_fem
 			viewer_.ngui->addVariable<ProblemType>("Problem",
 				[&](ProblemType val) { state.problem.set_problem_num(val); },
 				[&]() { return ProblemType(state.problem.problem_num()); }
-				)->setItems({"Linear","Quadratic","Franke", "Elastic", "Zero BC"});
+				)->setItems({"Linear","Quadratic","Franke", "Elastic", "Zero BC", "Franke3D"});
 
 
 			auto solvers = LinearSolver::availableSolvers();
