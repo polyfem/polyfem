@@ -46,22 +46,13 @@ namespace poly_fem
 				// const ElementAssemblyValues &vals  = values[e];
 				// const ElementAssemblyValues &gvals = geom_values[e];
 
-				std::shared_ptr<ElementAssemblyValues> vals = std::make_shared<ElementAssemblyValues>();
-				std::shared_ptr<ElementAssemblyValues> gvals;
-				vals->compute(e, is_volume, bases[e]);
+				ElementAssemblyValues vals;
+				vals.compute(e, is_volume, bases[e], gbases[e]);
 
-				if(&bases[e] == &gbases[e])
-					gvals = vals;
-				else
-				{
-					gvals = std::make_shared<ElementAssemblyValues>();
-					gvals->compute(e, is_volume, gbases[e]);
-				}
+				const Quadrature &quadrature = vals.quadrature;
 
-				const Quadrature &quadrature = vals->quadrature;
-
-				const Eigen::MatrixXd da = gvals->det.array() * quadrature.weights.array();
-				const int n_loc_bases = int(vals->basis_values.size());
+				const Eigen::MatrixXd da = vals.det.array() * quadrature.weights.array();
+				const int n_loc_bases = int(vals.basis_values.size());
 
 				// if(n_loc_bases == 3)
 				// {
@@ -71,7 +62,7 @@ namespace poly_fem
 
 				for(int i = 0; i < n_loc_bases; ++i)
 				{
-					const AssemblyValues &values_i = vals->basis_values[i];
+					const AssemblyValues &values_i = vals.basis_values[i];
 
 					// const Eigen::MatrixXd &vali  = values_i.val;
 					const Eigen::MatrixXd &gradi = values_i.grad_t_m;
@@ -82,7 +73,7 @@ namespace poly_fem
 
 					for(int j = 0; j < n_loc_bases; ++j)
 					{
-						const AssemblyValues &values_j = vals->basis_values[j];
+						const AssemblyValues &values_j = vals.basis_values[j];
 
 						// const Eigen::MatrixXd &valj  = values_j.val;
 						const Eigen::MatrixXd &gradj = values_j.grad_t_m;

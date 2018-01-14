@@ -1005,17 +1005,18 @@ namespace poly_fem
                 for(int l = 0; l < 9; ++l)
                     sizes[l] = b.bases[indices[l]].global().size();
 
+                other_bases.evaluate_bases(param_p, eval_p);
                 for(std::size_t i = 0; i < other_bases.bases.size(); ++i)
                 {
                     const auto &other_b = other_bases.bases[i];
 
                     if(other_b.global().empty()) continue;
 
-                    other_b.basis(param_p, eval_p);
-                    assert(eval_p.size() == 9);
+                    // other_b.basis(param_p, eval_p);
+                    assert(eval_p.col(i).size() == 9);
 
                     //basis i of element opposite element is zero on this elements
-                    if(eval_p.cwiseAbs().maxCoeff() <= 1e-10)
+                    if(eval_p.col(i).cwiseAbs().maxCoeff() <= 1e-10)
                         continue;
 
                     for(std::size_t k = 0; k < other_b.global().size(); ++k)
@@ -1023,7 +1024,7 @@ namespace poly_fem
                         for(int l = 0; l < 9; ++l)
                         {
                             Local2Global glob = other_b.global()[k];
-                            glob.val *= eval_p(l);
+                            glob.val *= eval_p(l, i);
 
                             insert_into_global(el_index, glob, b.bases[indices[l]].global(), sizes[l]);
                         }

@@ -35,7 +35,7 @@ namespace poly_fem
 
 		Problem problem;
 
-		int n_bases, n_geom_bases;
+		int n_bases;
 
 		std::vector< ElementBases >    bases;
 		std::vector< ElementBases >    geom_bases;

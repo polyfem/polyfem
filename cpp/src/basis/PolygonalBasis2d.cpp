@@ -134,9 +134,10 @@ void sample_polygon(
 		assert(mapped.rows() == (n_samples_per_edge-1));
 		collocation_points.block(i*(n_samples_per_edge-1), 0, mapped.rows(), mapped.cols()) = mapped;
 
+		b.evaluate_bases(samples, basis_val);
 		// Evaluate field basis and set up the rhs
 		for (int other_local_basis_id : bdata.local_indices) {
-			b.bases[other_local_basis_id].basis(samples, basis_val);
+			// b.bases[other_local_basis_id].basis(samples, basis_val);
 
 			for (const auto &x : b.bases[other_local_basis_id].global()) {
 				const int global_node_id = x.index;
@@ -144,7 +145,7 @@ void sample_polygon(
 
 				const int poly_local_basis_id = std::distance(local_to_global.begin(),
 					std::find(local_to_global.begin(), local_to_global.end(), global_node_id));
-				rhs.block(i*(n_samples_per_edge-1), poly_local_basis_id, basis_val.rows(), 1) += basis_val * weight;
+				rhs.block(i*(n_samples_per_edge-1), poly_local_basis_id, basis_val.rows(), 1) += basis_val.col(other_local_basis_id) * weight;
 			}
 		}
 
@@ -180,30 +181,22 @@ void PolygonalBasis2d::compute_integral_constraints(
 		}
 		// ElementAssemblyValues vals = values[e];
 		// const ElementAssemblyValues &gvals = gvalues[e];
-		std::shared_ptr<ElementAssemblyValues> vals = std::make_shared<ElementAssemblyValues>();
-		std::shared_ptr<ElementAssemblyValues> gvals;
-		vals->compute(e, false, bases[e]);
+		ElementAssemblyValues vals;
+		vals.compute(e, false, bases[e], gbases[e]);
 
-		if(&bases[e] == &gbases[e])
-			gvals = vals;
-		else
-		{
-			gvals = std::make_shared<ElementAssemblyValues>();
-			gvals->compute(e, false, gbases[e]);
-		}
 
 		// Computes the discretized integral of the PDE over the element
-		const int n_local_bases = int(vals->basis_values.size());
+		const int n_local_bases = int(vals.basis_values.size());
 		for(int j = 0; j < n_local_bases; ++j) {
-			const AssemblyValues &v=vals->basis_values[j];
-			const double integral_10 = (v.grad_t_m.col(0).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
-			const double integral_01 = (v.grad_t_m.col(1).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+			const AssemblyValues &v=vals.basis_values[j];
+			const double integral_10 = (v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+			const double integral_01 = (v.grad_t_m.col(1).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
 
-			const double integral_11 = 	((gvals->val.col(1).array() * v.grad_t_m.col(0).array() + gvals->val.col(0).array() * v.grad_t_m.col(1).array()) * gvals->det.array() * vals->quadrature.weights.array()).sum();
-			const double integral_20 = 2*(gvals->val.col(0).array() * v.grad_t_m.col(0).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
-			const double integral_02 = 2*(gvals->val.col(1).array() * v.grad_t_m.col(1).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+			const double integral_11 = 	((vals.val.col(1).array() * v.grad_t_m.col(0).array() + vals.val.col(0).array() * v.grad_t_m.col(1).array()) * vals.det.array() * vals.quadrature.weights.array()).sum();
+			const double integral_20 = 2*(vals.val.col(0).array() * v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+			const double integral_02 = 2*(vals.val.col(1).array() * v.grad_t_m.col(1).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
 
-			const double area = (v.val.array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
+			const double area = (v.val.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
 
 			for(size_t ii = 0; ii < v.global.size(); ++ii) {
 				basis_integrals(v.global[ii].index, 0) += integral_10 * v.global[ii].val;

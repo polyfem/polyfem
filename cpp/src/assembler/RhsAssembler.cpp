@@ -11,7 +11,7 @@
 #include <map>
 #include <memory>
 
-// #include "UIState.hpp"
+#include "UIState.hpp"
 
 namespace poly_fem
 {
@@ -27,31 +27,22 @@ namespace poly_fem
 			// const ElementAssemblyValues &vals  = values[e];
 			// const ElementAssemblyValues &gvals = geom_values[e];
 
-			std::shared_ptr<ElementAssemblyValues> vals = std::make_shared<ElementAssemblyValues>();
-			std::shared_ptr<ElementAssemblyValues> gvals;
-			vals->compute(e, is_volume, bases[e]);
+			ElementAssemblyValues vals;
+			vals.compute(e, is_volume, bases[e], gbases[e]);
 
-			if(&bases[e] == &gbases[e])
-				gvals = vals;
-			else
-			{
-				gvals = std::make_shared<ElementAssemblyValues>();
-				gvals->compute(e, is_volume, gbases[e]);
-			}
-
-			problem.rhs(gvals->val, rhs_fun);
+			problem.rhs(vals.val, rhs_fun);
 
 				// std::cout<<e<<"\n"<<gvals.val<<"\n"<<rhs_fun<<"\n\n"<<std::endl;
 
 			for(int d = 0; d < size; ++d)
-				rhs_fun.col(d) = rhs_fun.col(d).array() * gvals->det.array() * vals->quadrature.weights.array();
+				rhs_fun.col(d) = rhs_fun.col(d).array() * vals.det.array() * vals.quadrature.weights.array();
 
 				// std::cout<<"after:\n"<<rhs_fun<<std::endl;
 
-			const int n_loc_bases = int(vals->basis_values.size());
+			const int n_loc_bases = int(vals.basis_values.size());
 			for(int i = 0; i < n_loc_bases; ++i)
 			{
-				const AssemblyValues &v = vals->basis_values[i];
+				const AssemblyValues &v = vals.basis_values[i];
 
 				for(int d = 0; d < size; ++d)
 				{
@@ -133,19 +124,19 @@ namespace poly_fem
 			Eigen::MatrixXd mapped;
 			gbs.eval_geom_mapping(samples, mapped);
 
+			bs.evaluate_bases(samples, tmp);
 			for(int j = 0; j < n_local_bases; ++j)
 			{
 				const Basis &b=bs.bases[j];
 
-				b.basis(samples, tmp);
 				for(std::size_t ii = 0; ii < b.global().size(); ++ii)
 				{
 					auto item = global_index_to_col.find(b.global()[ii].index);
 					if(item != global_index_to_col.end()){
-						for(int k = 0; k < int(tmp.size()); ++k)
+						for(int k = 0; k < int(tmp.rows()); ++k)
 						{
-							entries.push_back(Eigen::Triplet<double>(global_counter+k, item->second, tmp(k) * b.global()[ii].val));
-							entries_t.push_back(Eigen::Triplet<double>(item->second, global_counter+k, tmp(k) * b.global()[ii].val));
+							entries.push_back(Eigen::Triplet<double>(global_counter+k, item->second, tmp(k, j) * b.global()[ii].val));
+							entries_t.push_back(Eigen::Triplet<double>(item->second, global_counter+k, tmp(k, j) * b.global()[ii].val));
 						}
 						// global_mat.block(global_counter, item->second, tmp.size(), 1) = tmp;
 					}
@@ -156,14 +147,14 @@ namespace poly_fem
 			global_rhs.block(global_counter, 0, rhs_fun.rows(), rhs_fun.cols()) = rhs_fun;
 			global_counter += rhs_fun.rows();
 
-			// igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
-			// viewer.data.add_points(mapped, Eigen::MatrixXd::Constant(1, 3, 0));
+			igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
+			viewer.data.add_points(mapped, Eigen::MatrixXd::Constant(1, 3, 0));
 
-			// Eigen::MatrixXd asd(mapped.rows(), 3);
-			// asd.col(0)=mapped.col(0);
-			// asd.col(1)=mapped.col(1);
-			// asd.col(2)=rhs_fun;
-			// viewer.data.add_points(asd, Eigen::MatrixXd::Constant(1, 3, 0));
+			Eigen::MatrixXd asd(mapped.rows(), 3);
+			asd.col(0)=mapped.col(0);
+			asd.col(1)=mapped.col(1);
+			asd.col(2)=rhs_fun;
+			viewer.data.add_points(asd, Eigen::MatrixXd::Constant(1, 3, 0));
 		}
 
 		assert(global_counter == total_size);

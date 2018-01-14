@@ -609,6 +609,7 @@ namespace poly_fem
                 const int i2 = indices[2];
 
                 const auto &other_bases = bases[opposite_face];
+                other_bases.evaluate_bases(param_p, eval_p);
 
                 for(std::size_t i = 0; i < other_bases.bases.size(); ++i)
                 {
@@ -616,18 +617,17 @@ namespace poly_fem
 
                     if(other_b.global().empty()) continue;
 
-                    other_b.basis(param_p, eval_p);
-                    assert(eval_p.size() == 3);
+                    assert(eval_p.col(i).size() == 3);
 
                     //basis i of element opposite face is zero on this elements
-                    if(eval_p.cwiseAbs().maxCoeff() <= 1e-10)
+                    if(eval_p.col(i).cwiseAbs().maxCoeff() <= 1e-10)
                         continue;
 
                     for(std::size_t k = 0; k < other_b.global().size(); ++k)
                     {
-                        auto glob0 = other_b.global()[k]; glob0.val *= eval_p(0);
-                        auto glob1 = other_b.global()[k]; glob1.val *= eval_p(1);
-                        auto glob2 = other_b.global()[k]; glob2.val *= eval_p(2);
+                        auto glob0 = other_b.global()[k]; glob0.val *= eval_p(0,i);
+                        auto glob1 = other_b.global()[k]; glob1.val *= eval_p(1,i);
+                        auto glob2 = other_b.global()[k]; glob2.val *= eval_p(2,i);
 
                         insert_into_global(glob0, b.bases[i0].global());
                         insert_into_global(glob1, b.bases[i1].global());
