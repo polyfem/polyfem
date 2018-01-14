@@ -12,7 +12,7 @@ using namespace poly_fem;
 
 namespace {
 
-// harmonic kernel
+// Harmonic kernel
 double kernel(const bool is_volume, const double r) {
 	if (r < 1e-8) { return 0; }
 
@@ -160,8 +160,9 @@ void RBFWithLinear::compute_constraints_matrix(
 
 // -----------------------------------------------------------------------------
 
-void RBFWithLinear::compute_weights(const Eigen::MatrixXd &samples, const Eigen::MatrixXd &local_basis_integral,
-	const Quadrature &quadr, Eigen::MatrixXd &rhs, bool with_constraints)
+void RBFWithLinear::compute_weights(const Eigen::MatrixXd &samples,
+	const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
+	Eigen::MatrixXd &rhs, bool with_constraints)
 {
 	std::cout << "#kernel centers: " << centers_.rows() << std::endl;
 	std::cout << "#collocation points: " << samples.rows() << std::endl;
