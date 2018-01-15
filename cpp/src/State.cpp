@@ -187,6 +187,9 @@ namespace poly_fem
 
 		mesh->load(mesh_path);
 
+		if(mesh->n_vertices() > 60000)
+                      exit(0);
+
 		mesh->refine(n_refs, refinenemt_location, parent_elements);
 		mesh->compute_elements_tag();
 

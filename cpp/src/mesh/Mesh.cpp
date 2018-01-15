@@ -31,9 +31,9 @@ bool poly_fem::Mesh::is_spline_compatible(const int el_id) const
 	if(is_volume()){
 		return
 		elements_tag_[el_id] == ElementType::RegularInteriorCube ||
-		elements_tag_[el_id] == ElementType::RegularBoundaryCube ||
-		elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube ||
-		elements_tag_[el_id] == ElementType::SimpleSingularBoundaryCube;
+		elements_tag_[el_id] == ElementType::RegularBoundaryCube; // ||
+		// elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube ||
+		// elements_tag_[el_id] == ElementType::SimpleSingularBoundaryCube;
 	}
 	else
 	{
