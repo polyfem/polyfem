@@ -60,35 +60,52 @@ namespace poly_fem
 		json j;
 
 		j["quadrature_order"] = quadrature_order;
-		j["n_boundary_samples"] = n_boundary_samples;
-
 		j["mesh_path"] = mesh_path;
-		j["n_refs"] = n_refs;
-
+		j["discr_order"] = discr_order;
+		j["harmonic_samples_res"] = harmonic_samples_res;
 		j["use_splines"] = use_splines;
+		j["iso_parametric"] = iso_parametric;
 		j["problem"] = problem.problem_num();
+		j["mat_size"] = mat_size;
+		j["solver_type"] = solver_type;
+		j["precond_type"] = precond_type;
+		j["lambda"] = lambda;
+		j["mu"] = mu;
+		j["refinenemt_location"] = refinenemt_location;
 
-		j["n_bases"] = n_bases;
+		j["num_boundary_samples"] = n_boundary_samples;
+		j["num_refs"] = n_refs;
+		j["num_bases"] = n_bases;
+		j["num_non_zero"] = nn_zero;
+		j["num_flipped"] = n_flipped;
 
 		j["mesh_size"] = mesh_size;
 
-		j["l2_err"] = l2_err;
-		j["linf_err"] = linf_err;
-		j["lp_err"] = lp_err;
+		j["err_l2"] = l2_err;
+		j["err_linf"] = linf_err;
+		j["err_lp"] = lp_err;
 
 		// j["errors"] = errors;
 
-		j["nn_zero"] = nn_zero;
-		j["mat_size"] = mat_size;
+		j["time_building_basis"] = building_basis_time;
+		j["time_loading_mesh"] = loading_mesh_time;
+		j["time_computing_assembly_values"] = computing_assembly_values_time;
+		j["time_assembling_stiffness_mat"] = assembling_stiffness_mat_time;
+		j["time_assigning_rhs"] = assigning_rhs_time;
+		j["time_solving"] = solving_time;
+		j["time_computing_errors"] = computing_errors_time;
 
 
-		j["building_basis_time"] = building_basis_time;
-		j["loading_mesh_time"] = loading_mesh_time;
-		j["computing_assembly_values_time"] = computing_assembly_values_time;
-		j["assembling_stiffness_mat_time"] = assembling_stiffness_mat_time;
-		j["assigning_rhs_time"] = assigning_rhs_time;
-		j["solving_time"] = solving_time;
-		j["computing_errors_time"] = computing_errors_time;
+
+		j["count_regular"] = regular_count;
+		j["count_regular_boundary"] = regular_boundary_count;
+		j["count_simple_singular"] = simple_singular_count;
+		j["count_multi_singular"] = multi_singular_count;
+		j["count_boundary"] = boundary_count;
+		j["count_non_regular_boundary"] = non_regular_boundary_count;
+		j["count_non_regular"] = non_regular_count;
+		j["count_undefined"] = undefined_count;
+		j["count_multi_singular_boundary"] = multi_singular_boundary_count;
 
 
 		std::ofstream o(name);
@@ -213,15 +230,15 @@ namespace poly_fem
 		// els_tag[4]=ElementType::MultiSingularInteriorCube;
 		// els_tag[24]=ElementType::MultiSingularInteriorCube;
 
-		int regular_count = 0;
-		int regular_boundary_count = 0;
-		int simple_singular_count = 0;
-		int multi_singular_count = 0;
-		int boundary_count = 0;
-		int non_regular_boundary_count = 0;
-		int non_regular_count = 0;
-		int undefined_count = 0;
-		int multi_singular_boundary_count = 0;
+		regular_count = 0;
+		regular_boundary_count = 0;
+		simple_singular_count = 0;
+		multi_singular_count = 0;
+		boundary_count = 0;
+		non_regular_boundary_count = 0;
+		non_regular_count = 0;
+		undefined_count = 0;
+		multi_singular_boundary_count = 0;
 
 		const auto &els_tag = mesh->elements_tag();
 
@@ -257,71 +274,71 @@ namespace poly_fem
 	}
 
 
-void compute_integral_constraints(
-	const Mesh3D &mesh,
-	const int n_bases,
-	const std::vector< ElementBases > &bases,
-	const std::vector< ElementBases > &gbases,
-	Eigen::MatrixXd &basis_integrals)
-{
-	assert(mesh.is_volume());
+	void compute_integral_constraints(
+		const Mesh3D &mesh,
+		const int n_bases,
+		const std::vector< ElementBases > &bases,
+		const std::vector< ElementBases > &gbases,
+		Eigen::MatrixXd &basis_integrals)
+	{
+		assert(mesh.is_volume());
 
-	basis_integrals.resize(n_bases, 9);
-	basis_integrals.setZero();
-	Eigen::MatrixXd rhs(n_bases, 9);
-	rhs.setZero();
+		basis_integrals.resize(n_bases, 9);
+		basis_integrals.setZero();
+		Eigen::MatrixXd rhs(n_bases, 9);
+		rhs.setZero();
 
-	const int n_elements = mesh.n_elements();
-	for(int e = 0; e < n_elements; ++e) {
+		const int n_elements = mesh.n_elements();
+		for(int e = 0; e < n_elements; ++e) {
 		// if (mesh.is_polytope(e)) {
 		// 	continue;
 		// }
 		// ElementAssemblyValues vals = values[e];
 		// const ElementAssemblyValues &gvals = gvalues[e];
-		ElementAssemblyValues vals;
-		vals.compute(e, mesh.is_volume(), bases[e], gbases[e]);
+			ElementAssemblyValues vals;
+			vals.compute(e, mesh.is_volume(), bases[e], gbases[e]);
 
 
 		// Computes the discretized integral of the PDE over the element
-		const int n_local_bases = int(vals.basis_values.size());
-		for(int j = 0; j < n_local_bases; ++j) {
-			const AssemblyValues &v=vals.basis_values[j];
-			const double integral_100 = (v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-			const double integral_010 = (v.grad_t_m.col(1).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-			const double integral_001 = (v.grad_t_m.col(2).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+			const int n_local_bases = int(vals.basis_values.size());
+			for(int j = 0; j < n_local_bases; ++j) {
+				const AssemblyValues &v=vals.basis_values[j];
+				const double integral_100 = (v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+				const double integral_010 = (v.grad_t_m.col(1).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+				const double integral_001 = (v.grad_t_m.col(2).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
 
-			const double integral_110 = ((vals.val.col(1).array() * v.grad_t_m.col(0).array() + vals.val.col(0).array() * v.grad_t_m.col(1).array()) * vals.det.array() * vals.quadrature.weights.array()).sum();
-			const double integral_011 = ((vals.val.col(2).array() * v.grad_t_m.col(1).array() + vals.val.col(1).array() * v.grad_t_m.col(2).array()) * vals.det.array() * vals.quadrature.weights.array()).sum();
-			const double integral_101 = ((vals.val.col(0).array() * v.grad_t_m.col(2).array() + vals.val.col(2).array() * v.grad_t_m.col(0).array()) * vals.det.array() * vals.quadrature.weights.array()).sum();
+				const double integral_110 = ((vals.val.col(1).array() * v.grad_t_m.col(0).array() + vals.val.col(0).array() * v.grad_t_m.col(1).array()) * vals.det.array() * vals.quadrature.weights.array()).sum();
+				const double integral_011 = ((vals.val.col(2).array() * v.grad_t_m.col(1).array() + vals.val.col(1).array() * v.grad_t_m.col(2).array()) * vals.det.array() * vals.quadrature.weights.array()).sum();
+				const double integral_101 = ((vals.val.col(0).array() * v.grad_t_m.col(2).array() + vals.val.col(2).array() * v.grad_t_m.col(0).array()) * vals.det.array() * vals.quadrature.weights.array()).sum();
 
-			const double integral_200 = 2*(vals.val.col(0).array() * v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-			const double integral_020 = 2*(vals.val.col(1).array() * v.grad_t_m.col(1).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-			const double integral_002 = 2*(vals.val.col(2).array() * v.grad_t_m.col(2).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+				const double integral_200 = 2*(vals.val.col(0).array() * v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+				const double integral_020 = 2*(vals.val.col(1).array() * v.grad_t_m.col(1).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+				const double integral_002 = 2*(vals.val.col(2).array() * v.grad_t_m.col(2).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
 
-			const double area = (v.val.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+				const double area = (v.val.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
 
-			for(size_t ii = 0; ii < v.global.size(); ++ii) {
-				basis_integrals(v.global[ii].index, 0) += integral_100 * v.global[ii].val;
-				basis_integrals(v.global[ii].index, 1) += integral_010 * v.global[ii].val;
-				basis_integrals(v.global[ii].index, 2) += integral_001 * v.global[ii].val;
+				for(size_t ii = 0; ii < v.global.size(); ++ii) {
+					basis_integrals(v.global[ii].index, 0) += integral_100 * v.global[ii].val;
+					basis_integrals(v.global[ii].index, 1) += integral_010 * v.global[ii].val;
+					basis_integrals(v.global[ii].index, 2) += integral_001 * v.global[ii].val;
 
-				basis_integrals(v.global[ii].index, 3) += integral_110 * v.global[ii].val;
-				basis_integrals(v.global[ii].index, 4) += integral_011 * v.global[ii].val;
-				basis_integrals(v.global[ii].index, 5) += integral_101 * v.global[ii].val;
+					basis_integrals(v.global[ii].index, 3) += integral_110 * v.global[ii].val;
+					basis_integrals(v.global[ii].index, 4) += integral_011 * v.global[ii].val;
+					basis_integrals(v.global[ii].index, 5) += integral_101 * v.global[ii].val;
 
-				basis_integrals(v.global[ii].index, 6) += integral_200 * v.global[ii].val;
-				basis_integrals(v.global[ii].index, 7) += integral_020 * v.global[ii].val;
-				basis_integrals(v.global[ii].index, 8) += integral_002 * v.global[ii].val;
+					basis_integrals(v.global[ii].index, 6) += integral_200 * v.global[ii].val;
+					basis_integrals(v.global[ii].index, 7) += integral_020 * v.global[ii].val;
+					basis_integrals(v.global[ii].index, 8) += integral_002 * v.global[ii].val;
 
-				rhs(v.global[ii].index, 6) += -2.0 * area * v.global[ii].val;
-				rhs(v.global[ii].index, 7) += -2.0 * area * v.global[ii].val;
-				rhs(v.global[ii].index, 8) += -2.0 * area * v.global[ii].val;
+					rhs(v.global[ii].index, 6) += -2.0 * area * v.global[ii].val;
+					rhs(v.global[ii].index, 7) += -2.0 * area * v.global[ii].val;
+					rhs(v.global[ii].index, 8) += -2.0 * area * v.global[ii].val;
+				}
 			}
 		}
-	}
 
-	basis_integrals -= rhs;
-}
+		basis_integrals -= rhs;
+	}
 
 	void State::build_basis()
 	{
@@ -386,7 +403,7 @@ void compute_integral_constraints(
 		}
 
 		auto &bs = iso_parametric ? bases : geom_bases;
-		int n_flipped = 0;
+		n_flipped = 0;
 		for(size_t i = 0; i < bs.size(); ++i)
 		{
 			if(mesh->is_polytope(i)) continue;

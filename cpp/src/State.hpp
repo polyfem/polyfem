@@ -80,6 +80,18 @@ namespace poly_fem
 		double solving_time;
 		double computing_errors_time;
 
+		int n_flipped;
+
+		int regular_count;
+		int regular_boundary_count;
+		int simple_singular_count;
+		int multi_singular_count;
+		int boundary_count;
+		int non_regular_boundary_count;
+		int non_regular_count;
+		int undefined_count;
+		int multi_singular_boundary_count;
+
 		void load_mesh();
 		void build_basis();
 		void compute_assembly_vals();
