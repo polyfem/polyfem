@@ -5,7 +5,7 @@
 #include "FEBasis2d.hpp"
 #include "RBFWithLinear.hpp"
 #include "RBFWithQuadratic.hpp"
-// #include "UIState.hpp"
+#include "UIState.hpp"
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <memory>
@@ -280,7 +280,7 @@ void PolygonalBasis2d::build_bases(
 		sample_polygon(e, n_samples_per_edge, mesh, poly_edge_to_data, bases, gbases,
 			eps, local_to_global, collocation_points, kernel_centers, rhs);
 
-		// igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
+		// igl::viewer::Viewer viewer;
 		// viewer.data.add_points(kernel_centers, Eigen::Vector3d(0,1,1).transpose());
 
 		// Eigen::MatrixXd asd(collocation_points.rows(), 3);
@@ -288,6 +288,7 @@ void PolygonalBasis2d::build_bases(
 		// asd.col(1)=collocation_points.col(1);
 		// asd.col(2)=rhs.col(0);
 		// viewer.data.add_points(asd, Eigen::Vector3d(1,0,1).transpose());
+		// viewer.launch();
 
 		// for(int asd = 0; asd < collocation_points.rows(); ++asd) {
 		//     viewer.data.add_label(collocation_points.row(asd), std::to_string(asd));
