@@ -839,7 +839,7 @@ namespace poly_fem
 		std::cout<<"Solving... "<<std::flush;
 
 		json params = {
-			// {"mtype", 2}, // matrix type for Pardiso (2 = SPD)
+			{"mtype", 1}, // matrix type for Pardiso (2 = SPD)
 			// {"max_iter", 0}, // for iterative solvers
 			// {"tolerance", 1e-9}, // for iterative solvers
 		};

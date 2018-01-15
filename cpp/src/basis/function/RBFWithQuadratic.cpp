@@ -211,7 +211,9 @@ void RBFWithQuadratic::compute_constraints_matrix_2d(
 	      I_lin(1),   I_lin(0), I_sqr(0)+I_sqr(1), 2*I_mix(0), 2*I_mix(0),
 	    4*I_lin(0), 2*I_lin(1),        4*I_mix(0), 6*I_sqr(0), 2*I_sqr(1),
 	    2*I_lin(0), 4*I_lin(1),        4*I_mix(0), 2*I_sqr(0), 6*I_sqr(1);
+	Eigen::FullPivLU<Eigen::Matrix<double, 5, 5>> lu(M);
 	Eigen::Matrix<double, 5, 5> Minv = M.inverse();
+	assert(lu.isInvertible());
 
 	std::cout << M << std::endl;
 	// std::cout << M.determinant() << std::endl;
@@ -224,14 +226,16 @@ void RBFWithQuadratic::compute_constraints_matrix_2d(
 	L.block(num_kernels + 1 + dim, 0, 1, num_kernels) = -K_mix.transpose().colwise().sum();
 	L.block(num_kernels + 1 + dim + 1, 0, dim, num_kernels) = -2.0 * (K_sqr.colwise() + K_cst).transpose();
 	L.bottomRightCorner(dim, 1).setConstant(-2.0 * volume);
-	L.block(num_kernels + 1, 0, 5, num_kernels + 1) = (Minv * L.block(num_kernels + 1, 0, 5, num_kernels + 1)).eval();
+	// L.block(num_kernels + 1, 0, 5, num_kernels + 1) = lu.solve(L.block(num_kernels + 1, 0, 5, num_kernels + 1));
+	L.block(num_kernels + 1, 0, 5, num_kernels + 1) = Minv * L.block(num_kernels + 1, 0, 5, num_kernels + 1);
 	// std::cout << L.bottomRightCorner(10, 10) << std::endl;
 
 	// Compute t
 	t.resize(L.rows(), num_bases);
 	t.setZero();
 	t.bottomRows(5) = local_basis_integral.transpose();
-	t.bottomRows(5) = (Minv * weights_.bottomRows(5)).eval();
+	// t.bottomRows(5) = lu.solve(weights_.bottomRows(5));
+	t.bottomRows(5) = Minv * weights_.bottomRows(5);
 }
 
 // -----------------------------------------------------------------------------
@@ -304,10 +308,11 @@ void RBFWithQuadratic::compute_constraints_matrix_3d(
 	Eigen::Matrix<double, 1, 9> M_rhs;
 	M_rhs << I_lin, I_mix, I_sqr;
 	M.bottomRows(dim).rowwise() += 2.0 * M_rhs;
-	Eigen::Matrix<double, 9, 9> M_inv = M.inverse();
+	Eigen::FullPivLU<Eigen::Matrix<double, 9, 9>> lu(M);
+	assert(lu.isInvertible());
 
 	std::cout << M << std::endl;
-	// std::cout << M.determinant() << std::endl;
+	std::cout << M.determinant() << std::endl;
 
 	// Compute L
 	L.resize(num_kernels + 1 + dim + dim*(dim+1)/2, num_kernels + 1);
@@ -317,7 +322,7 @@ void RBFWithQuadratic::compute_constraints_matrix_3d(
 	L.block(num_kernels + 1 + dim, 0, dim, num_kernels) = -K_mix.transpose();
 	L.block(num_kernels + 1 + dim + dim, 0, dim, num_kernels) = -2.0 * (K_sqr.colwise() + K_cst).transpose();
 	L.bottomRightCorner(dim, 1).setConstant(-2.0 * volume);
-	L.block(num_kernels + 1, 0, 9, num_kernels + 1) = (M_inv * L.block(num_kernels + 1, 0, 9, num_kernels + 1)).eval();
+	L.block(num_kernels + 1, 0, 9, num_kernels + 1) = lu.solve(L.block(num_kernels + 1, 0, 9, num_kernels + 1));
 	// std::cout << L.bottomRightCorner(10, 10) << std::endl;
 	// std::cout << std::endl << L << std::endl << std::endl;
 
@@ -325,7 +330,7 @@ void RBFWithQuadratic::compute_constraints_matrix_3d(
 	t.resize(L.rows(), num_bases);
 	t.setZero();
 	t.bottomRows(9) = local_basis_integral.transpose();
-	t.bottomRows(9) = (M_inv * weights_.bottomRows(9)).eval();
+	t.bottomRows(9) = lu.solve(weights_.bottomRows(9));
 }
 
 // -----------------------------------------------------------------------------
