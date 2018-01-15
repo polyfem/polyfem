@@ -187,13 +187,13 @@ namespace poly_fem
 
 		mesh->load(mesh_path);
 
+		if(mesh->n_vertices() > 60000)
+                      exit(0);
+
 		mesh->refine(n_refs, refinenemt_location, parent_elements);
 		mesh->compute_elements_tag();
 
 		mesh->fill_boundary_tags(boundary_tag);
-
-		if(mesh->n_vertices() > 5000)
-			exit(0);
 
 
 		// mesh->set_tag(196, ElementType::SimpleSingularBoundaryCube);
