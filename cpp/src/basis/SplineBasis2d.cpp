@@ -734,21 +734,26 @@ namespace poly_fem
         }
 
 
-        for(int e = 0; e < n_els; ++e)
+        bool missing_bases = false;
+        do
         {
-            if(mesh.is_polytope(e) || mesh.is_spline_compatible(e))
-                continue;
+            missing_bases = false;
+            for(int e = 0; e < n_els; ++e)
+            {
+                if(mesh.is_polytope(e) || mesh.is_spline_compatible(e))
+                    continue;
 
-            assign_q2_weights(mesh, e, bases);
+                auto &b=bases[e];
+                if(b.is_complete())
+                    continue;
+
+                assign_q2_weights(mesh, e, bases);
+
+                missing_bases = missing_bases || b.is_complete();
+            }
         }
+        while(missing_bases);
 
-        for(int e = 0; e < n_els; ++e)
-        {
-            if(mesh.is_polytope(e) || mesh.is_spline_compatible(e))
-                continue;
-
-            assign_q2_weights(mesh, e, bases);
-        }
 
         for(int e = 0; e < n_els; ++e)
         {
