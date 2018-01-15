@@ -256,6 +256,73 @@ namespace poly_fem
 		std::endl;
 	}
 
+
+void compute_integral_constraints(
+	const Mesh3D &mesh,
+	const int n_bases,
+	const std::vector< ElementBases > &bases,
+	const std::vector< ElementBases > &gbases,
+	Eigen::MatrixXd &basis_integrals)
+{
+	assert(mesh.is_volume());
+
+	basis_integrals.resize(n_bases, 9);
+	basis_integrals.setZero();
+	Eigen::MatrixXd rhs(n_bases, 9);
+	rhs.setZero();
+
+	const int n_elements = mesh.n_elements();
+	for(int e = 0; e < n_elements; ++e) {
+		// if (mesh.is_polytope(e)) {
+		// 	continue;
+		// }
+		// ElementAssemblyValues vals = values[e];
+		// const ElementAssemblyValues &gvals = gvalues[e];
+		ElementAssemblyValues vals;
+		vals.compute(e, mesh.is_volume(), bases[e], gbases[e]);
+
+
+		// Computes the discretized integral of the PDE over the element
+		const int n_local_bases = int(vals.basis_values.size());
+		for(int j = 0; j < n_local_bases; ++j) {
+			const AssemblyValues &v=vals.basis_values[j];
+			const double integral_100 = (v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+			const double integral_010 = (v.grad_t_m.col(1).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+			const double integral_001 = (v.grad_t_m.col(2).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+
+			const double integral_110 = ((vals.val.col(1).array() * v.grad_t_m.col(0).array() + vals.val.col(0).array() * v.grad_t_m.col(1).array()) * vals.det.array() * vals.quadrature.weights.array()).sum();
+			const double integral_011 = ((vals.val.col(2).array() * v.grad_t_m.col(1).array() + vals.val.col(1).array() * v.grad_t_m.col(2).array()) * vals.det.array() * vals.quadrature.weights.array()).sum();
+			const double integral_101 = ((vals.val.col(0).array() * v.grad_t_m.col(2).array() + vals.val.col(2).array() * v.grad_t_m.col(0).array()) * vals.det.array() * vals.quadrature.weights.array()).sum();
+
+			const double integral_200 = 2*(vals.val.col(0).array() * v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+			const double integral_020 = 2*(vals.val.col(1).array() * v.grad_t_m.col(1).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+			const double integral_002 = 2*(vals.val.col(2).array() * v.grad_t_m.col(2).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+
+			const double area = (v.val.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+
+			for(size_t ii = 0; ii < v.global.size(); ++ii) {
+				basis_integrals(v.global[ii].index, 0) += integral_100 * v.global[ii].val;
+				basis_integrals(v.global[ii].index, 1) += integral_010 * v.global[ii].val;
+				basis_integrals(v.global[ii].index, 2) += integral_001 * v.global[ii].val;
+
+				basis_integrals(v.global[ii].index, 3) += integral_110 * v.global[ii].val;
+				basis_integrals(v.global[ii].index, 4) += integral_011 * v.global[ii].val;
+				basis_integrals(v.global[ii].index, 5) += integral_101 * v.global[ii].val;
+
+				basis_integrals(v.global[ii].index, 6) += integral_200 * v.global[ii].val;
+				basis_integrals(v.global[ii].index, 7) += integral_020 * v.global[ii].val;
+				basis_integrals(v.global[ii].index, 8) += integral_002 * v.global[ii].val;
+
+				rhs(v.global[ii].index, 6) += -2.0 * area * v.global[ii].val;
+				rhs(v.global[ii].index, 7) += -2.0 * area * v.global[ii].val;
+				rhs(v.global[ii].index, 8) += -2.0 * area * v.global[ii].val;
+			}
+		}
+	}
+
+	basis_integrals -= rhs;
+}
+
 	void State::build_basis()
 	{
 		bases.clear();
@@ -551,6 +618,11 @@ namespace poly_fem
 
 			if(mesh->is_volume()) {
 				PolygonalBasis3d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh3D *>(mesh), n_bases, quadrature_order, bases, bases, poly_edge_to_data, polys_3d);
+				Eigen::MatrixXd I;
+				compute_integral_constraints(*dynamic_cast<Mesh3D *>(mesh), n_bases, bases, bases, I);
+				for (int r = 0; r < I.rows(); ++r) {
+					// std::cout << r << ": " << I.row(r) << std::endl;
+				}
 			} else {
 				PolygonalBasis2d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh2D *>(mesh), n_bases, quadrature_order, bases, bases, poly_edge_to_data, polys);
 			}
