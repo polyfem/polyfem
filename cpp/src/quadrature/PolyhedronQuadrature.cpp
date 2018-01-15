@@ -72,7 +72,7 @@ void PolyhedronQuadrature::get_quadrature(const Eigen::MatrixXd &V, const Eigen:
 
 	Quadrature tet_quadr_pts;
 	TetQuadrature tet_quadr;
-	tet_quadr.get_quadrature(3, tet_quadr_pts);
+	tet_quadr.get_quadrature(4, tet_quadr_pts);
 
 	const long offset = tet_quadr_pts.weights.rows();
 	quadr.points.resize(tets.rows() * offset, 3);
