@@ -9,6 +9,8 @@
 
 #include <geogram/basic/file_system.h>
 #include <geogram/mesh/mesh_io.h>
+#include <geogram/mesh/mesh_geometry.h>
+#include <geogram/mesh/mesh_repair.h>
 
 #include <cassert>
 #include <array>
@@ -46,6 +48,16 @@ namespace poly_fem
 
 		if(!mesh_load(path, mesh_))
 			return false;
+
+
+		GEO::vec3 min_corner, max_corner;
+		GEO::get_bbox(mesh_, &min_corner[0], &max_corner[0]);
+		GEO::vec3 extent = max_corner - min_corner;
+		double scaling = std::max(extent[0], std::max(extent[1], extent[2]));
+		const GEO::vec3 origin = min_corner;
+		for (GEO::index_t v = 0; v < mesh_.vertices.nb(); ++v) {
+			mesh_.vertices.point(v) = (mesh_.vertices.point(v) - origin) / scaling;
+		}
 
 		orient_normals_2d(mesh_);
 		compute_elements_tag();
