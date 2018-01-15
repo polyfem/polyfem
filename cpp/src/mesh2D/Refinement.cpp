@@ -568,7 +568,7 @@ void poly_fem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, Po
 		}
 
 		if (M_in.vertices.dimension() != 2) {
-			std::cerr << "WARNING: Input mesh has dimension > 2, but polygonal facets will be split considering their XY coordinates only." << std::endl;
+			// std::cerr << "WARNING: Input mesh has dimension > 2, but polygonal facets will be split considering their XY coordinates only." << std::endl;
 		}
 
 		// Subdivide the hole using polar refinement
