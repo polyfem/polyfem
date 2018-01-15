@@ -192,6 +192,9 @@ namespace poly_fem
 
 		mesh->fill_boundary_tags(boundary_tag);
 
+		if(mesh->n_vertices() > 5000)
+			exit(0);
+
 
 		// mesh->set_tag(196, ElementType::SimpleSingularBoundaryCube);
 		// mesh->set_tag(197, ElementType::SimpleSingularBoundaryCube);
