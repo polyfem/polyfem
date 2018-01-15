@@ -136,8 +136,11 @@ add_library(polyfem
 	src/basis/InterfaceData.hpp
 
 
-	src/basis/FEBasis2d.cpp
-	src/basis/FEBasis2d.hpp
+	src/basis/QuadBasis2d.cpp
+	src/basis/QuadBasis2d.hpp
+
+	src/basis/TriBasis2d.cpp
+	src/basis/TriBasis2d.hpp
 
 	src/basis/SplineBasis2d.cpp
 	src/basis/SplineBasis2d.hpp

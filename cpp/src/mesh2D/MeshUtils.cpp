@@ -161,7 +161,7 @@ void poly_fem::compute_element_tags(const GEO::Mesh &M, std::vector<ElementType>
 			for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv) {
 				if (boundary_vertices[M.facets.vertex(f, lv)]) {
 					tag = ElementType::BoundaryPolytope;
-					std::cout << "foo" << std::endl;
+					// std::cout << "foo" << std::endl;
 					break;
 				}
 			}

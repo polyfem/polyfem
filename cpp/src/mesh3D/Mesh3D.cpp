@@ -99,6 +99,9 @@ namespace poly_fem
 		auto &V = mesh_.points;
 		V = (V.colwise() - V.rowwise().minCoeff()) / (V.rowwise().maxCoeff() - V.rowwise().minCoeff()).maxCoeff();
 
+		//TODO not so nice to detect triangle meshes
+		is_simplicial_ = n_face_vertices(0) == 4;
+
 		Navigation3D::prepare_mesh(mesh_);
 		compute_elements_tag();
 		return true;

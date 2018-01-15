@@ -4,7 +4,7 @@
 #include "QuadQuadrature.hpp"
 #include "MeshNodes.hpp"
 
-#include "FEBasis2d.hpp"
+#include "QuadBasis2d.hpp"
 #include "Types.hpp"
 
 #include <cassert>
@@ -447,7 +447,7 @@ namespace poly_fem
                 Eigen::Matrix<double, 1, 2> current_edge_node;
                 Eigen::MatrixXd current_vertex_node;
 
-                auto e2l = FEBasis2d::quadr_quad_edge_local_nodes(mesh, index);
+                auto e2l = QuadBasis2d::quadr_quad_edge_local_nodes(mesh, index);
                 int vertex_basis_id = e2l[0];
                 int edge_basis_id = e2l[1];
 
@@ -544,11 +544,11 @@ namespace poly_fem
                     b.bases[edge_basis_id].init(current_edge_node_id, edge_basis_id, current_edge_node);
 
                 //set the basis functions
-                b.bases[vertex_basis_id].set_basis([vertex_basis_id](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quadr_quad_basis_value(vertex_basis_id, uv, val); });
-                b.bases[vertex_basis_id].set_grad( [vertex_basis_id](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quadr_quad_basis_grad(vertex_basis_id, uv, val); });
+                b.bases[vertex_basis_id].set_basis([vertex_basis_id](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { QuadBasis2d::quadr_quad_basis_value(vertex_basis_id, uv, val); });
+                b.bases[vertex_basis_id].set_grad( [vertex_basis_id](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  QuadBasis2d::quadr_quad_basis_grad(vertex_basis_id, uv, val); });
 
-                b.bases[edge_basis_id].set_basis([edge_basis_id](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quadr_quad_basis_value(edge_basis_id, uv, val); });
-                b.bases[edge_basis_id].set_grad( [edge_basis_id](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quadr_quad_basis_grad(edge_basis_id, uv, val); });
+                b.bases[edge_basis_id].set_basis([edge_basis_id](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { QuadBasis2d::quadr_quad_basis_value(edge_basis_id, uv, val); });
+                b.bases[edge_basis_id].set_grad( [edge_basis_id](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  QuadBasis2d::quadr_quad_basis_grad(edge_basis_id, uv, val); });
 
                 index = mesh.next_around_face(index);
             }
@@ -556,8 +556,8 @@ namespace poly_fem
             //central node always present
             constexpr int face_basis_id = 8;
             b.bases[face_basis_id].init(n_bases++, face_basis_id, mesh.face_barycenter(el_index));
-            b.bases[face_basis_id].set_basis([face_basis_id](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quadr_quad_basis_value(face_basis_id, uv, val); });
-            b.bases[face_basis_id].set_grad( [face_basis_id](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quadr_quad_basis_grad(face_basis_id, uv, val); });
+            b.bases[face_basis_id].set_basis([face_basis_id](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { QuadBasis2d::quadr_quad_basis_value(face_basis_id, uv, val); });
+            b.bases[face_basis_id].set_grad( [face_basis_id](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  QuadBasis2d::quadr_quad_basis_grad(face_basis_id, uv, val); });
         }
 
         void insert_into_global(const Local2Global &data, std::vector<Local2Global> &vec)
@@ -600,8 +600,8 @@ namespace poly_fem
                     continue;
                 }
 
-                const auto param_p = FEBasis2d::quadr_quad_edge_local_nodes_coordinates(mesh, mesh.switch_face(index));
-                const auto indices = FEBasis2d::quadr_quad_edge_local_nodes(mesh, index);
+                const auto param_p = QuadBasis2d::quadr_quad_edge_local_nodes_coordinates(mesh, mesh.switch_face(index));
+                const auto indices = QuadBasis2d::quadr_quad_edge_local_nodes(mesh, index);
                 // std::cout<<param_p<<"\n---------\n"<<std::endl;
 
                 const int i0 = indices[0];
@@ -649,7 +649,7 @@ namespace poly_fem
 
                 if(is_neigh_poly)
                 {
-                    auto e2l = FEBasis2d::quadr_quad_edge_local_nodes(mesh, index);
+                    auto e2l = QuadBasis2d::quadr_quad_edge_local_nodes(mesh, index);
                     const int vertex_basis_id = e2l[0];
                     const int edge_basis_id = e2l[1];
                     const int vertex_basis_id2 = e2l[2];

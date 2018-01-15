@@ -1,5 +1,5 @@
-#ifndef FE_BASIS_2D_HPP
-#define FE_BASIS_2D_HPP
+#ifndef QUAD_BASIS_2D_HPP
+#define QUAD_BASIS_2D_HPP
 
 #include "ElementBases.hpp"
 #include "Mesh2D.hpp"
@@ -12,7 +12,7 @@
 
 namespace poly_fem
 {
-	class FEBasis2d
+	class QuadBasis2d
 	{
 	public:
 
@@ -76,4 +76,4 @@ namespace poly_fem
 	};
 }
 
-#endif //FE_BASIS_2D_HPP
+#endif //QUAD_BASIS_2D_HPP

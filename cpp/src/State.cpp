@@ -3,7 +3,8 @@
 #include "Mesh2D.hpp"
 #include "Mesh3D.hpp"
 
-#include "FEBasis2d.hpp"
+#include "QuadBasis2d.hpp"
+#include "TriBasis2d.hpp"
 #include "FEBasis3d.hpp"
 
 #include "SplineBasis2d.hpp"
@@ -188,7 +189,7 @@ namespace poly_fem
 		mesh->load(mesh_path);
 
 		if(mesh->n_vertices() > 60000)
-                      exit(0);
+			exit(0);
 
 		mesh->refine(n_refs, refinenemt_location, parent_elements);
 		mesh->compute_elements_tag();
@@ -392,16 +393,23 @@ namespace poly_fem
 			if(use_splines)
 			{
 				if(!iso_parametric)
-					FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
+					QuadBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
 
 				n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
 			}
 			else
 			{
-				if(!iso_parametric)
-					FEBasis2d::build_bases(tmp_mesh, quadrature_order, 1, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
+				if(mesh->is_simplicial())
+				{
+					n_bases = TriBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+				}
+				else
+				{
+					if(!iso_parametric)
+						QuadBasis2d::build_bases(tmp_mesh, quadrature_order, 1, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
 
-				n_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+					n_bases = QuadBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+				}
 			}
 		}
 

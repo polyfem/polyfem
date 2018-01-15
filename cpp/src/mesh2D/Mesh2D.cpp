@@ -59,6 +59,9 @@ namespace poly_fem
 			mesh_.vertices.point(v) = (mesh_.vertices.point(v) - origin) / scaling;
 		}
 
+		//TODO not so nice to detect triangle meshes
+		is_simplicial_ = n_face_vertices(0) == 3;
+
 		orient_normals_2d(mesh_);
 		compute_elements_tag();
 		Navigation::prepare_mesh(mesh_);

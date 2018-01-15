@@ -33,6 +33,7 @@ namespace poly_fem
 
 		//Queries
 		virtual bool is_volume() const = 0;
+		bool is_simplicial() const { return is_simplicial_; }
 		int dimension() const { return (is_volume() ? 3 : 2); }
 
 		int n_elements() const { return (is_volume() ? n_cells() : n_faces()); }
@@ -82,6 +83,7 @@ namespace poly_fem
 
 	protected:
 		std::vector<ElementType> elements_tag_;
+		bool is_simplicial_;
 	};
 }
 
