@@ -8,7 +8,7 @@ namespace poly_fem
 	void Mesh3D::refine(const int n_refiniment, const double t, std::vector<int> &parent_nodes)
 	{
 		//TODO to aware refiniement
-		
+
 		MeshProcessing3D::refine_catmul_clark_polar(mesh_, n_refiniment, parent_nodes);
 		Navigation3D::prepare_mesh(mesh_);
 
@@ -102,7 +102,34 @@ namespace poly_fem
 		//TODO not so nice to detect triangle meshes
 		is_simplicial_ = n_cell_vertices(0) == 4;
 
+		if(is_simplicial_)
+		{
+			for(int i = 0; i < n_cells(); ++i)
+			{
+				assert(n_cell_vertices(i) == 4);
+				std::array<GEO::vec3, 4> vertices;
+				auto &face_vertices = mesh_.elements[i].vs;
+
+				for(int lv = 0; lv < 4; ++lv)
+				{
+					auto pt = point(face_vertices[lv]);
+					for(int d = 0; d < 3; ++d)
+					{
+						vertices[lv][d] = pt(d);
+					}
+				}
+
+				const double vol = GEO::Geom::tetra_signed_volume(vertices[0], vertices[1], vertices[2], vertices[4]);
+				if(vol < 0)
+				{
+					std::swap(face_vertices[1], face_vertices[2]);
+				}
+			}
+		}
+
 		Navigation3D::prepare_mesh(mesh_);
+		// if(is_simplicial())
+			MeshProcessing3D::orient_volume_mesh(mesh_);
 		compute_elements_tag();
 		return true;
 	}
@@ -876,6 +903,22 @@ namespace poly_fem
 		// assert(idx == get_index_from_element(element_index));
 		idx = switch_vertex(switch_edge(switch_face(idx)));
 		v[3] = idx.vertex;
+
+
+		std::array<GEO::vec3, 4> vertices;
+
+		for(int lv = 0; lv < 4; ++lv)
+		{
+			auto pt = point(v[lv]);
+			for(int d = 0; d < 3; ++d)
+			{
+				vertices[lv][d] = pt(d);
+			}
+		}
+
+		const double vol = GEO::Geom::tetra_signed_volume(vertices[0], vertices[1], vertices[2], vertices[4]);
+		std::cout<<vol<<std::endl;
+
 
 		return v;
 	}
