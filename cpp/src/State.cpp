@@ -658,11 +658,11 @@ namespace poly_fem
 
 			if(mesh->is_volume()) {
 				PolygonalBasis3d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh3D *>(mesh), n_bases, quadrature_order, bases, bases, poly_edge_to_data, polys_3d);
-				Eigen::MatrixXd I;
-				compute_integral_constraints(*dynamic_cast<Mesh3D *>(mesh), n_bases, bases, bases, I);
-				for (int r = 0; r < I.rows(); ++r) {
+				// Eigen::MatrixXd I;
+				// compute_integral_constraints(*dynamic_cast<Mesh3D *>(mesh), n_bases, bases, bases, I);
+				// for (int r = 0; r < I.rows(); ++r) {
 					// std::cout << r << ": " << I.row(r) << std::endl;
-				}
+				// }
 			} else {
 				PolygonalBasis2d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh2D *>(mesh), n_bases, quadrature_order, bases, bases, poly_edge_to_data, polys);
 			}
