@@ -108,6 +108,6 @@ void from_geogram_mesh(const GEO::Mesh &M, Eigen::MatrixXd &V, Eigen::MatrixXi &
 /// @param[in]  mesh   { Input volume mesh }
 /// @param[out] polys  { Extracted polyhedral surfaces }
 ///
-void extract_polyhedra(const Mesh3D &mesh, std::vector<std::unique_ptr<GEO::Mesh>> &polys);
+void extract_polyhedra(const Mesh3D &mesh, std::vector<std::unique_ptr<GEO::Mesh>> &polys, bool triangulated = false);
 
 } // namespace poly_fem

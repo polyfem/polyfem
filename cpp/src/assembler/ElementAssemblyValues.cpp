@@ -10,7 +10,7 @@ namespace poly_fem
 
 		has_parameterization = false;
 		det.resize(v.rows(), 1);
-		det.setConstant(volume);
+		det.setConstant(1);
 		for(std::size_t j = 0; j < basis_values.size(); ++j)
 			basis_values[j].grad_t_m = basis_values[j].grad;
 

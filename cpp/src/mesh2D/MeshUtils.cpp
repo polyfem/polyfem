@@ -502,8 +502,9 @@ void poly_fem::signed_squared_distances(const Eigen::MatrixXd &V, const Eigen::M
 
 // -----------------------------------------------------------------------------
 
-void poly_fem::extract_polyhedra(const Mesh3D &mesh, std::vector<std::unique_ptr<GEO::Mesh>> &polys) {
-	std::vector<int> vertex_g2l(mesh.n_vertices(), -1);
+void poly_fem::extract_polyhedra(const Mesh3D &mesh, std::vector<std::unique_ptr<GEO::Mesh>> &polys, bool triangulated)
+{
+	std::vector<int> vertex_g2l(mesh.n_vertices() + mesh.n_faces(), -1);
 	std::vector<int> vertex_l2g;
 	for (int c = 0; c < mesh.n_cells(); ++c) {
 		if (!mesh.is_polytope(c)) {
@@ -512,13 +513,13 @@ void poly_fem::extract_polyhedra(const Mesh3D &mesh, std::vector<std::unique_ptr
 		auto poly = std::make_unique<GEO::Mesh>();
 		int nv = mesh.n_cell_vertices(c);
 		int nf = mesh.n_cell_faces(c);
-		poly->vertices.create_vertices(nv);
+		poly->vertices.create_vertices(triangulated ? nv + nf : nv);
 		vertex_l2g.clear();
 		vertex_l2g.reserve(nv);
 		for (int lf = 0; lf < nf; ++lf) {
 			GEO::vector<GEO::index_t> facet_vertices;
 			auto index = mesh.get_index_from_element(c, lf, 0);
-			for (int lv = 0; lv < mesh.n_cell_vertices(c); ++lv) {
+			for (int lv = 0; lv < mesh.n_face_vertices(index.face); ++lv) {
 				Eigen::RowVector3d p = mesh.point(index.vertex);
 				if (vertex_g2l[index.vertex] < 0) {
 					vertex_g2l[index.vertex] = vertex_l2g.size();
@@ -529,9 +530,25 @@ void poly_fem::extract_polyhedra(const Mesh3D &mesh, std::vector<std::unique_ptr
 				poly->vertices.point(v1) = GEO::vec3(p.data());
 				index = mesh.next_around_face(index);
 			}
-			poly->facets.create_polygon(facet_vertices);
+			if (triangulated) {
+				GEO::vec3 p(0, 0, 0);
+				for (GEO::index_t lv = 0; lv < facet_vertices.size(); ++lv) {
+					p += poly->vertices.point(facet_vertices[lv]);
+				}
+				p /= facet_vertices.size();
+				int v0 = vertex_l2g.size();
+				vertex_l2g.push_back(0);
+				poly->vertices.point(v0) = p;
+				for (GEO::index_t lv = 0; lv < facet_vertices.size(); ++lv) {
+					int v1 = facet_vertices[lv];
+					int v2 = facet_vertices[(lv+1)%facet_vertices.size()];
+					poly->facets.create_triangle(v0, v1, v2);
+				}
+			} else {
+				poly->facets.create_polygon(facet_vertices);
+			}
 		}
-		assert(vertex_l2g.size() == nv);
+		assert(vertex_l2g.size() == (triangulated ? nv + nf : nv));
 
 		for (int v : vertex_l2g) {
 			vertex_g2l[v] = -1;

@@ -7,6 +7,7 @@
 #include <igl/copyleft/tetgen/tetrahedralize.h>
 #include <igl/writeMESH.h>
 #include <igl/readMESH.h>
+#include <igl/write_triangle_mesh.h>
 #include <vector>
 #include <cassert>
 #include <iostream>
@@ -60,9 +61,21 @@ void PolyhedronQuadrature::get_quadrature(const Eigen::MatrixXd &V, const Eigen:
 	std::string flags = "Qpq2.0";
 	Eigen::MatrixXd TV;
 	Eigen::MatrixXi TF, tets;
-	igl::copyleft::tetgen::tetrahedralize(V, F, flags, TV, tets, TF);
+	int res = igl::copyleft::tetgen::tetrahedralize(V, F, flags, TV, tets, TF);
+	assert(res == 0);
 
-	// igl::writeMESH("tet.mesh", TV, tets, TF);
+	// static int counter = 0;
+	// std::stringstream ss;
+	// ss << std::setw(6) << std::setfill('0') << counter++;
+	// std::string s = ss.str();
+
+	// if (res != 0) {
+	// 	std::cerr << "Tetgen did not succeed. Returned code: " << res << std::endl;
+	// 	igl::write_triangle_mesh("poly_" + s + ".obj", V, F);
+	// } else {
+	// 	igl::writeMESH("tet_" + s + ".mesh", TV, tets, TF);
+	// }
+
 	// GEO::Mesh M;
 	// GEO::mesh_load("tet.o.mesh", M);
 	// from_geogram_mesh(M, TV, TF, tets);

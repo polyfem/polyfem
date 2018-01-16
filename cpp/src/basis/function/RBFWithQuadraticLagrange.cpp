@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include "RBFWithQuadratic.hpp"
+#include "RBFWithQuadraticLagrange.hpp"
 #include "Types.hpp"
 #include <igl/Timer.h>
 #include <Eigen/Dense>
@@ -52,7 +52,7 @@ double kernel_prime(const bool is_volume, const double r) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-RBFWithQuadratic::RBFWithQuadratic(
+RBFWithQuadraticLagrange::RBFWithQuadraticLagrange(
 		const Eigen::MatrixXd &centers,
 		const Eigen::MatrixXd &collocation_points,
 		const Eigen::MatrixXd &local_basis_integral,
@@ -68,7 +68,7 @@ RBFWithQuadratic::RBFWithQuadratic(
 
 // -----------------------------------------------------------------------------
 
-void RBFWithQuadratic::basis(const int local_index, const Eigen::MatrixXd &samples, Eigen::MatrixXd &val) const {
+void RBFWithQuadraticLagrange::basis(const int local_index, const Eigen::MatrixXd &samples, Eigen::MatrixXd &val) const {
 	Eigen::MatrixXd tmp;
 	bases_values(samples, tmp);
 	val = tmp.col(local_index);
@@ -76,7 +76,7 @@ void RBFWithQuadratic::basis(const int local_index, const Eigen::MatrixXd &sampl
 
 // -----------------------------------------------------------------------------
 
-void RBFWithQuadratic::grad(const int local_index, const Eigen::MatrixXd &samples, Eigen::MatrixXd &val) const {
+void RBFWithQuadraticLagrange::grad(const int local_index, const Eigen::MatrixXd &samples, Eigen::MatrixXd &val) const {
 	Eigen::MatrixXd tmp;
 	const int dim = centers_.cols();
 	val.resize(samples.rows(), dim);
@@ -88,7 +88,7 @@ void RBFWithQuadratic::grad(const int local_index, const Eigen::MatrixXd &sample
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void RBFWithQuadratic::bases_values(const Eigen::MatrixXd &samples, Eigen::MatrixXd &val) const {
+void RBFWithQuadraticLagrange::bases_values(const Eigen::MatrixXd &samples, Eigen::MatrixXd &val) const {
 	// Compute A
 	Eigen::MatrixXd A;
 	compute_kernels_matrix(samples, A);
@@ -99,7 +99,7 @@ void RBFWithQuadratic::bases_values(const Eigen::MatrixXd &samples, Eigen::Matri
 
 // -----------------------------------------------------------------------------
 
-void RBFWithQuadratic::bases_grads(const int axis, const Eigen::MatrixXd &samples, Eigen::MatrixXd &val) const {
+void RBFWithQuadraticLagrange::bases_grads(const int axis, const Eigen::MatrixXd &samples, Eigen::MatrixXd &val) const {
 	const int num_kernels = centers_.rows();
 	const int dim = (is_volume() ? 3 : 2);
 
@@ -130,7 +130,7 @@ void RBFWithQuadratic::bases_grads(const int axis, const Eigen::MatrixXd &sample
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void RBFWithQuadratic::compute_kernels_matrix(const Eigen::MatrixXd &samples, Eigen::MatrixXd &A) const {
+void RBFWithQuadraticLagrange::compute_kernels_matrix(const Eigen::MatrixXd &samples, Eigen::MatrixXd &A) const {
 	// Compute A
 	const int num_kernels = centers_.rows();
 	const int dim = (is_volume() ? 3 : 2);
@@ -155,12 +155,8 @@ void RBFWithQuadratic::compute_kernels_matrix(const Eigen::MatrixXd &samples, Ei
 
 // -----------------------------------------------------------------------------
 
-void RBFWithQuadratic::compute_constraints_matrix_2d(
-	const int num_bases,
-	const Quadrature &quadr,
-	const Eigen::MatrixXd &local_basis_integral,
-	Eigen::MatrixXd &L,
-	Eigen::MatrixXd &t) const
+void RBFWithQuadraticLagrange::compute_constraints_matrix_2d(
+	const int num_bases, const Quadrature &quadr, Eigen::MatrixXd &L) const
 {
 	const int num_kernels = centers_.rows();
 	const int dim = centers_.cols();
@@ -230,27 +226,16 @@ void RBFWithQuadratic::compute_constraints_matrix_2d(
 	L.block(num_kernels + 1, 0, 5, num_kernels + 1) = Minv * L.block(num_kernels + 1, 0, 5, num_kernels + 1);
 	// std::cout << L.bottomRightCorner(10, 10) << std::endl;
 
-	// Compute t
-	t.resize(L.rows(), num_bases);
-	t.setZero();
-	t.bottomRows(5) = local_basis_integral.transpose();
-	// t.bottomRows(5) = lu.solve(weights_.bottomRows(5));
-	t.bottomRows(5) = Minv * weights_.bottomRows(5);
 }
 
 // -----------------------------------------------------------------------------
 
-void RBFWithQuadratic::compute_constraints_matrix_3d(
-	const int num_bases,
-	const Quadrature &quadr,
-	const Eigen::MatrixXd &local_basis_integral,
-	Eigen::MatrixXd &L,
-	Eigen::MatrixXd &t) const
+void RBFWithQuadraticLagrange::compute_constraints_matrix_3d(
+	const int num_bases, const Quadrature &quadr, Eigen::MatrixXd &C) const
 {
 	const int num_kernels = centers_.rows();
 	const int dim = centers_.cols();
 	assert(dim == 3);
-	assert(local_basis_integral.cols() == 9);
 
 	// K_cst = ∫φj
 	// K_lin = ∫∇x(φj), ∫∇y(φj), ∫∇z(φj)
@@ -309,49 +294,34 @@ void RBFWithQuadratic::compute_constraints_matrix_3d(
 	M_rhs << I_lin, I_mix, I_sqr;
 	M.bottomRows(dim).rowwise() += 2.0 * M_rhs;
 	Eigen::FullPivLU<Eigen::Matrix<double, 9, 9>> lu(M);
+	assert(lu.isInvertible());
 
 	std::cout << M << std::endl;
 	std::cout << M.determinant() << std::endl;
 
-	Eigen::JacobiSVD<Eigen::Matrix<double, 9, 9>> svd(M);
-	double cond = svd.singularValues()(0)
-		/ svd.singularValues()(svd.singularValues().size()-1);
-
-	std::cout << "Cond: " << cond << std::endl;
-	std::cout << "Invertible: " << lu.isInvertible() << std::endl;
-
-	// std::cerr << lu.isInvertible() << ' ' << M.determinant() << ' ' << cond << std::endl;
-	assert(lu.isInvertible());
-
 	// Compute L
-	L.resize(num_kernels + 1 + dim + dim*(dim+1)/2, num_kernels + 1);
-	L.setZero();
-	L.diagonal().setOnes();
-	L.block(num_kernels + 1, 0, dim, num_kernels) = -K_lin.transpose();
-	L.block(num_kernels + 1 + dim, 0, dim, num_kernels) = -K_mix.transpose();
-	L.block(num_kernels + 1 + dim + dim, 0, dim, num_kernels) = -2.0 * (K_sqr.colwise() + K_cst).transpose();
-	L.bottomRightCorner(dim, 1).setConstant(-2.0 * volume);
-	L.block(num_kernels + 1, 0, 9, num_kernels + 1) = lu.solve(L.block(num_kernels + 1, 0, 9, num_kernels + 1));
-	// std::cout << L.bottomRightCorner(10, 10) << std::endl;
+	C.resize(9, num_kernels + 1 + dim + dim*(dim+1)/2);
+	C.setZero();
+	C.block(0, 0, dim, num_kernels) = K_lin.transpose();
+	C.block(dim, 0, dim, num_kernels) = K_mix.transpose();
+	C.block(dim + dim, 0, dim, num_kernels) = 2.0 * (K_sqr.colwise() + K_cst).transpose();
+	C.block(dim + dim, num_kernels, dim, 1).setConstant(2.0 * volume);
+	C.bottomRightCorner(9, 9) = M;
+	// C.block(0, 0, 9, num_kernels + 1) = lu.solve(L.block(num_kernels + 1, 0, 9, num_kernels + 1));
+	std::cout << C.bottomRightCorner(9, 12) << std::endl;
 	// std::cout << std::endl << L << std::endl << std::endl;
-
-	// Compute t
-	t.resize(L.rows(), num_bases);
-	t.setZero();
-	t.bottomRows(9) = local_basis_integral.transpose();
-	t.bottomRows(9) = lu.solve(weights_.bottomRows(9));
 }
 
 // -----------------------------------------------------------------------------
 
-void RBFWithQuadratic::compute_weights(const Eigen::MatrixXd &samples,
+void RBFWithQuadraticLagrange::compute_weights(const Eigen::MatrixXd &samples,
 	const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
-	Eigen::MatrixXd &rhs, bool with_constraints)
+	Eigen::MatrixXd &b, bool with_constraints)
 {
 	std::cout << "#kernel centers: " << centers_.rows() << std::endl;
 	std::cout << "#collocation points: " << samples.rows() << std::endl;
 	std::cout << "#quadrature points: " << quadr.weights.size() << std::endl;
-	std::cout << "#non-vanishing bases: " << rhs.cols() << std::endl;
+	std::cout << "#non-vanishing bases: " << b.cols() << std::endl;
 
 	if (!with_constraints) {
 		// Compute A
@@ -361,137 +331,49 @@ void RBFWithQuadratic::compute_weights(const Eigen::MatrixXd &samples,
 		// Solve the system
 		const int num_kernels = centers_.rows();
 		std::cout << "-- Solving system of size " << num_kernels << " x " << num_kernels << std::endl;
-		weights_ = (A.transpose() * A).ldlt().solve(A.transpose() * rhs);
+		weights_ = (A.transpose() * A).ldlt().solve(A.transpose() * b);
 		std::cout << "-- Solved!" << std::endl;
 
 		return;
 	}
 
-	// For each shape function N that is nonzero on the element E, we want to
-	// solve the least square system A w = rhs, where:
-	//     ┏                                    ┓
-	//     ┃ φj(pi) ... 1 xi yi xi*yi xi^2 yi^2 ┃
-	// A = ┃   ┊        ┊  ┊  ┊   ┊    ┊    ┊   ┃ ∊ ℝ^{#S x (#K+1+dim+dim*(dim+1)/2)}
-	//     ┃   ┊        ┊  ┊  ┊   ┊    ┊    ┊   ┃
-	//     ┗                                    ┛
-	//     ┏                                ┓^⊤
-	// w = ┃ wj ... a00 a10 a01 a11 a20 a02 ┃   ∊ ℝ^{#K+1+dim+dim*(dim+1)/2}
-	//     ┗                                ┛
-	// - A is the RBF kernels evaluated over the collocation points (#S)
-	// - b is the expected value of the basis sampled on the boundary (#S)
-	// - w is the weight of the kernels defining the basis
-	// - pi = (xi, yi) is the i-th collocation point
-	//
-	// Moreover, we want to impose a constraint on the weight vectors w so that
-	// each monomial x^α*y^β with α+β <= 2 satisfies our PDE. If we want to
-	// integrate each monomial exactly for the Laplacian PDE, then each each
-	// x^α*y^β must satisfy the following:
-	//
-	//     Δ(x^α*y^β) = α*(α-1)*x^(α-2)*y^β + β*(β-1)*x^α*y^(β-2) = hαβ(x,y)
-	//
-	// In the case of (α,β) ∊ {(1,0), (0,1), (1,1), (2,0), (0,2)}, this simplifies
-	// to the five equations:
-	//
-	//     Δx  = 0      (1a)
-	//     Δy  = 0      (1b)
-	//     Δxy = 0      (1c)
-	//     Δx² = 1      (1d)
-	//     Δy² = 1      (1e)
-	//
-	// If our bases {N_k}_k integrated exactly those monomials, then the weak form
-	// of the PDE must be satisfied, for each basis/shape function N_k :
-	//
-	//     ∫_Ω ∇(x^α*y^β)·∇(N_k) = hαβ(x,y)
-	//
-	// Now, if we consider our polytope element E, and split the integral above
-	// between E and Ω\E, we arrive at the constraint that
-	//
-	//     ∫_E ∇(x^α*y^β)·∇(N_k) + cαβ = hαβ(x,y)
-	//
-	// Where cαβ is a constant term corresponding to the integral over the
-	// other elements of the mesh. Now, the five equations in (1) lead to:
-	//
-	//     ∫_E ∇x(N_k) + c10 = 0                       (2a)
-	//     ∫_E ∇y(N_k) + c01 = 0                       (2b)
-	//     ∫_E (y·∇x(N_k) + y·∇x(N_k)) + c11 = 0       (2c)
-	//     ∫_E 2x·∇x(N_k) + c20 = 2                    (2d)
-	//     ∫_E 2y·∇y(N_k) + c02 = 2                    (2e)
-	//
-	// After writing the shape function N_k as:
-	//
-	//     N_k(x,y) = Σ_j wj φj(x,y) + a00 + a10*x + a01*y + a11*x*y + a20*x² + a02*y²
-	//
-	// The five equations (2) become:
-	//
-	//    Σ_j wj ∫∇x(φj) + a10 |E| + a11 ∫y + a20 ∫2x + c10 = 0
-	//    Σ_j wj ∫∇y(φj) + a01 |E| + a11 ∫x + a02 ∫2y + c01 = 0
-	//    Σ_j wj (∫y·∇x(φj) + ∫x·∇y(φj)) + a10 ∫y + a01 ∫x + a11 (∫x²+∫y²) + a20 2∫xy + a02 2∫xy + c11 = 0
-	//    Σ_j wj 2∫x·∇x(φj) + a10 2∫x + a11 2∫xy + a20 4∫x² + c20 = 2
-	//    Σ_j wj 2∫y·∇y(φj) + a01 2∫y + a11 2∫xy + a02 4∫y² + c02 = 2
-	//
-	// This system gives us a relationship between the fives a10, a01, a11, a20, a02
-	// and the rest of the wj + a constant translation term. We can write down the
-	// following relationship:
-	//
-	//       a10   a01   a11   a20   a02
-	//     ┏                              ┓             ┏    ┓
-	//     ┃ |E|         ∫y    2∫x        ┃             ┃ wj ┃
-	//     ┃                              ┃             ┃ ┊  ┃
-	//     ┃       |E|   ∫x          2∫y  ┃             ┃ ┊  ┃
-	//     ┃                              ┃             ┃ ┊  ┃
-	// M = ┃  ∫y   ∫x  ∫x²+∫y² 2∫xy  2∫xy ┃ = \tilde{L} ┃ ┊  ┃ + \tilde{t}
-	//     ┃                              ┃             ┃ ┊  ┃
-	//     ┃ 2∫x       2∫xy    4∫x²       ┃             ┃ ┊  ┃
-	//     ┃                              ┃             ┃w_#K┃
-	//     ┃      2∫y  2∫xy          4∫y² ┃             ┃ a00┃
-	//     ┗                              ┛             ┗    ┛
-	//
-	// Now, if we want to express w as w = Lv + t, and solve our least-square
-	// system as before, we need to invert M and compute L and t in terms of
-	// \tilde{L} and \tilde{t}
-	//
-	//     ┏                  ┓
-	//     ┃   1              ┃
-	//     ┃       1          ┃
-	//     ┃          ·       ┃
-	// L = ┃             ·    ┃ ∊ ℝ^{ (#K+1+dim+dim*(dim+1)/2) x (#K+1}) }
-	//     ┃                1 ┃
-	//     ┃ M^{-1} \tilde{L} ┃
-	//     ┗                  ┛
-	//     ┏                  ┓
-	//     ┃        0         ┃
-	//     ┃        ┊         ┃
-	// t = ┃        ┊         ┃ ∊ ℝ^{#K+1+dim+dim*(dim+1)/2}
-	//     ┃        0         ┃
-	//     ┃ M^{-1} \tilde{t} ┃
-	//     ┗                  ┛
-	// After solving the new least square system A L v = rhs - A t, we can retrieve
-	// w = L v
-
-	const int num_bases = rhs.cols();
+	const int num_bases = b.cols();
 
 	// Compute A
 	Eigen::MatrixXd A;
 	compute_kernels_matrix(samples, A);
 
-	// Compute L and t
-	// Note that t is stored into `weights_` for memory efficiency reasons
-	Eigen::MatrixXd L;
+	// Compute C
+	Eigen::MatrixXd C;
 	if (is_volume()) {
-		compute_constraints_matrix_3d(num_bases, quadr, local_basis_integral, L, weights_);
+		compute_constraints_matrix_3d(num_bases, quadr, C);
 	} else {
-		compute_constraints_matrix_2d(num_bases, quadr, local_basis_integral, L, weights_);
+		compute_constraints_matrix_2d(num_bases, quadr, C);
 	}
 
-	// Compute b = rhs - A t
-	Eigen::MatrixXd b = rhs - A * weights_;
+	// Compute rhs = [ A^T b; d ]
+	assert(local_basis_integral.cols() == C.rows());
+	assert(local_basis_integral.rows() == b.cols());
+	assert(A.rows() == b.rows());
+	Eigen::MatrixXd rhs(A.cols() + local_basis_integral.cols(), b.cols());
+	rhs.topRows(A.cols()) = A.transpose() * b;
+	rhs.bottomRows(local_basis_integral.cols()) = local_basis_integral.transpose();
+
+	// Compute M = [ A^T A C^T; C 0]
+	assert(C.cols() == A.cols());
+	assert(A.rows() == b.rows());
+	Eigen::MatrixXd M(A.cols() + C.rows(), A.cols() + C.rows());
+	M.topLeftCorner(A.cols(), A.cols()) = A.transpose() * A;
+	M.topRightCorner(A.cols(), C.rows()) = C.transpose();
+	M.bottomRightCorner(C.rows(), A.cols()) = C;
+	M.bottomLeftCorner(C.rows(), C.rows()).setZero();
 
 	// Solve the system
-	std::cout << "-- Solving system of size " << L.cols() << " x " << L.cols() << std::endl;
-	weights_ += L * (L.transpose() * A.transpose() * A * L).ldlt().solve(L.transpose() * A.transpose() * b);
+	std::cout << "-- Solving system of size " << M.rows() << " x " << M.cols() << std::endl;
+	weights_ = M.ldlt().solve(rhs).topRows(A.cols());
 	std::cout << "-- Solved!" << std::endl;
 
-	std::cout << "-- Mean residual: " << (A * weights_ - rhs).array().abs().colwise().maxCoeff().mean() << std::endl;
+	std::cout << "-- Mean residual: " << (A * weights_ - b).array().abs().colwise().maxCoeff().mean() << std::endl;
 
 	Eigen::MatrixXd MM, x, dx, val;
 	basis(0, quadr.points, val);

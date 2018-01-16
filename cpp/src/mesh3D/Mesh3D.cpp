@@ -97,7 +97,7 @@ namespace poly_fem
 		fclose(f);
 
 		auto &V = mesh_.points;
-		V = (V.colwise() - V.rowwise().minCoeff()) / (V.rowwise().maxCoeff() - V.rowwise().minCoeff()).maxCoeff();
+		// V = (V.colwise() - V.rowwise().minCoeff()) / (V.rowwise().maxCoeff() - V.rowwise().minCoeff()).maxCoeff();
 
 		Navigation3D::prepare_mesh(mesh_);
 		compute_elements_tag();

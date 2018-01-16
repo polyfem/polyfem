@@ -28,6 +28,7 @@ int main(int argc, char** argv) {
 	GEO::CmdLine::import_arg_group("standard");
 	GEO::CmdLine::import_arg_group("pre");
 	GEO::CmdLine::declare_arg("refinement", 0, "Number of refinement to perform");
+	GEO::CmdLine::declare_arg("triangulated", false, "Triangulate each facet by inserting a vertex at its barycenter");
 
 	// Parse command line options and filenames
 	std::vector<std::string> filenames;
@@ -36,6 +37,7 @@ int main(int argc, char** argv) {
 	}
 
 	int num_refinement = GEO::CmdLine::get_arg_int("refinement");
+	bool triangulated = GEO::CmdLine::get_arg_bool("triangulated");
 
 	// Default output filename is "output" if unspecified
 	if (filenames.size() == 1) {
@@ -66,7 +68,7 @@ int main(int argc, char** argv) {
 	GEO::Logger::div("Extraction");
 	{
 		GEO::Stopwatch W("Extract");
-		extract_polyhedra(mesh, polys);
+		extract_polyhedra(mesh, polys, triangulated);
 	}
 
 	// Save mesh

@@ -6,6 +6,7 @@
 #include "Refinement.hpp"
 #include "RBFWithLinear.hpp"
 #include "RBFWithQuadratic.hpp"
+#include "RBFWithQuadraticLagrange.hpp"
 // #include "UIState.hpp"
 #include <igl/triangle/triangulate.h>
 #include <igl/per_vertex_normals.h>
@@ -270,7 +271,7 @@ void sample_polyhedra(
 
 	// Compute quadrature points
 	Eigen::MatrixXd NV = triangulated_vertices;
-	NV.array().rowwise() /= (NV.colwise().maxCoeff() - NV.colwise().minCoeff()).array();
+	// NV = (NV.rowwise() - NV.colwise().minCoeff()) / (NV.colwise().maxCoeff() - NV.colwise().minCoeff()).maxCoeff();
 	PolyhedronQuadrature::get_quadrature(NV, triangulated_faces, quadrature_order, quadrature);
 
 	triangulated_vertices = KV;
@@ -532,19 +533,19 @@ void PolygonalBasis3d::build_bases(
 		// viewer.data.add_points(kernel_centers, Eigen::Vector3d(0,1,1).transpose());
 		// viewer.launch();
 
-	// 	for(int a = 0; rhs.cols();++a)
-	// 	{
-	// 	igl::viewer::Viewer viewer;
-	// 	Eigen::MatrixXd asd(collocation_points.rows(), 3);
-	// 	asd.col(0)=collocation_points.col(0);
-	// 	asd.col(1)=collocation_points.col(1);
-	// 	asd.col(2)=collocation_points.col(2);
-	// 	Eigen::VectorXd S = rhs.col(a);
-	// 	Eigen::MatrixXd C;
-	// 	igl::colormap(igl::COLOR_MAP_TYPE_VIRIDIS, S, true, C);
-	// 	viewer.data.add_points(asd, C);
-	// 	viewer.launch();
-	// }
+		// 	for(int a = 0; rhs.cols();++a)
+		// 	{
+		// 	igl::viewer::Viewer viewer;
+		// 	Eigen::MatrixXd asd(collocation_points.rows(), 3);
+		// 	asd.col(0)=collocation_points.col(0);
+		// 	asd.col(1)=collocation_points.col(1);
+		// 	asd.col(2)=collocation_points.col(2);
+		// 	Eigen::VectorXd S = rhs.col(a);
+		// 	Eigen::MatrixXd C;
+		// 	igl::colormap(igl::COLOR_MAP_TYPE_VIRIDIS, S, true, C);
+		// 	viewer.data.add_points(asd, C);
+		// 	viewer.launch();
+		// }
 
 		// for(int asd = 0; asd < collocation_points.rows(); ++asd) {
 		//     viewer.data.add_label(collocation_points.row(asd), std::to_string(asd));
@@ -555,7 +556,8 @@ void PolygonalBasis3d::build_bases(
 		for (long k = 0; k < rhs.cols(); ++k) {
 			local_basis_integrals.row(k) = -basis_integrals.row(local_to_global[k]);
 		}
-		auto rbf = std::make_shared<RBFWithQuadratic>(kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs);
+		auto rbf = std::make_shared<RBFWithQuadraticLagrange>(
+			kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs);
 		b.set_bases_func([rbf] (const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
 			{ rbf->bases_values(uv, val); } );
 		b.set_grads_func([rbf] (const Eigen::MatrixXd &uv, int axis, Eigen::MatrixXd &grad)
