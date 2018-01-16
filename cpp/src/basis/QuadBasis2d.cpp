@@ -238,7 +238,7 @@ void compute_nodes(
 {
 	// Step 1: Assign global node ids for each quads
 	local_boundary.clear();
-	local_boundary.resize(mesh.n_faces());
+
 	element_nodes_id.resize(mesh.n_faces());
 	for (int f = 0; f < mesh.n_faces(); ++f) {
 		if (mesh.is_polytope(f)) { continue; } // Skip polygons
@@ -262,23 +262,17 @@ void compute_nodes(
 			}
 		}
 
-		// Set boundary edges
-		if (mesh.is_boundary_edge(e[3])) {
-			local_boundary[f].set_left_edge_id(e[3]);
-			local_boundary[f].set_left_boundary();
+		LocalBoundary lb(f, BoundaryType::QuadLine);
+
+		for(int i = 0; i < e.size(); ++i)
+		{
+			if (mesh.is_boundary_edge(e[i])){
+				lb.add_boundary_primitive(e[i], i);
+			}
 		}
-		if (mesh.is_boundary_edge(e[1])) {
-			local_boundary[f].set_right_edge_id(e[1]);
-			local_boundary[f].set_right_boundary();
-		}
-		if (mesh.is_boundary_edge(e[0])) {
-			local_boundary[f].set_bottom_edge_id(e[0]);
-			local_boundary[f].set_bottom_boundary();
-		}
-		if (mesh.is_boundary_edge(e[2])) {
-			local_boundary[f].set_top_edge_id(e[2]);
-			local_boundary[f].set_top_boundary();
-		}
+
+		if(!lb.empty())
+			local_boundary.emplace_back(lb);
 	}
 
 	// Step 2: Iterate over edges of polygons and compute interface weights
@@ -351,6 +345,15 @@ Eigen::RowVector2d quadr_quad_local_node_coordinates(int local_index) {
 }
 
 } // anonymous namespace
+
+Eigen::MatrixXd poly_fem::QuadBasis2d::quad_local_node_coordinates_from_edge(int le)
+{
+	Eigen::MatrixXd res(2,2);
+	res.row(0) = linear_quad_local_node_coordinates(le);
+	res.row(1) = linear_quad_local_node_coordinates((le+1)%4);
+
+	return res;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 

@@ -59,6 +59,8 @@ namespace poly_fem
 		static std::array<int, 3> linear_tet_face_local_nodes(const Mesh3D &mesh, Navigation3D::Index index);
 		static std::array<int, 6> quadr_tet_face_local_nodes(const Mesh3D &mesh, Navigation3D::Index index);
 
+		static Eigen::MatrixXd tet_local_node_coordinates_from_face(int lf);
+
 		static Eigen::MatrixXd linear_tet_face_local_nodes_coordinates(const Mesh3D &mesh, Navigation3D::Index index);
 		static Eigen::MatrixXd quadr_tet_face_local_nodes_coordinates(const Mesh3D &mesh, Navigation3D::Index index);
 	};

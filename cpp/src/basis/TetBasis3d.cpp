@@ -232,6 +232,26 @@ int find_edge(const poly_fem::Mesh3D &mesh, int c, int v1, int v2) {
 	throw std::runtime_error("Edge not found");
 }
 
+int find_face(const poly_fem::Mesh3D &mesh, int c, int v1, int v2, int v3) {
+	std::array<int, 3> v = {{v1, v2, v3}};
+	std::sort(v.begin(), v.end());
+	for (int lf = 0; lf < mesh.n_cell_faces(c); ++lf) {
+		auto idx = mesh.get_index_from_element(c, lf, 0);
+		assert(mesh.n_face_vertices(idx.face) == 3);
+		std::array<int, 3> u;
+		for (int lv = 0; lv < mesh.n_face_vertices(idx.face); ++lv) {
+			u[lv] = idx.vertex;
+			idx = mesh.next_around_face(idx);
+		}
+		std::sort(u.begin(), u.end());
+		if (u == v) {
+			return idx.face;
+		}
+	}
+	return 0;
+}
+
+
 // -----------------------------------------------------------------------------
 
 std::array<int, 4> linear_tet_local_to_global(const Mesh3D &mesh, int c) {
@@ -312,7 +332,7 @@ void compute_nodes(
 {
 	// Step 1: Assign global node ids for each quads
 	local_boundary.clear();
-	local_boundary.resize(mesh.n_faces());
+
 	element_nodes_id.resize(mesh.n_faces());
 	for (int c = 0; c < mesh.n_cells(); ++c) {
 
@@ -326,32 +346,23 @@ void compute_nodes(
 			}
 		}
 
-		// // List of faces around the tet
-		// std::array<int, 4> f;
-		// {
-		// 	auto l2g = quadr_tet_local_to_global(mesh, c);
-		// 	for (int lf = 0; lf < 4; ++lf) {
-		// 		f[lf] = l2g[4+6+lf] - mesh.n_vertices() - mesh.n_edges();
-		// 	}
-		// }
+		Eigen::Matrix<int, 4, 3> fv;
+		fv.row(0) << 0, 1, 2;
+		fv.row(1) << 0, 1, 3;
+		fv.row(2) << 1, 2, 3;
+		fv.row(3) << 2, 0, 3;
 
-		// // Set boundary faces
-		// if (mesh.is_boundary_face(f[0])) {
-		// 	local_boundary[c].set_left_edge_id(f[0]);
-		// 	local_boundary[c].set_left_boundary();
-		// }
-		// if (mesh.is_boundary_face(f[1])) {
-		// 	local_boundary[c].set_right_edge_id(f[1]);
-		// 	local_boundary[c].set_right_boundary();
-		// }
-		// if (mesh.is_boundary_face(f[2])) {
-		// 	local_boundary[c].set_front_edge_id(f[2]);
-		// 	local_boundary[c].set_front_boundary();
-		// }
-		// if (mesh.is_boundary_face(f[3])) {
-		// 	local_boundary[c].set_back_edge_id(f[3]);
-		// 	local_boundary[c].set_back_boundary();
-		// }
+		LocalBoundary lb(c, BoundaryType::Tri);
+		for(long i = 0; i < fv.rows(); ++i)
+		{
+			int f = find_face(mesh, c, fv(i,0), fv(i,1), fv(i,2));
+
+			if(mesh.is_boundary_face(f))
+				lb.add_boundary_primitive(f, i);
+		}
+
+		if(!lb.empty())
+			local_boundary.emplace_back(lb);
 	}
 }
 
@@ -377,6 +388,21 @@ Eigen::RowVector3d quadr_tet_local_node_coordinates(int local_index) {
 } // anonymous namespace
 
 ////////////////////////////////////////////////////////////////////////////////
+
+Eigen::MatrixXd poly_fem::TetBasis3d::tet_local_node_coordinates_from_face(int lf)
+{
+	Eigen::Matrix<int, 4, 3> fv;
+	fv.row(0) << 0, 1, 2;
+	fv.row(1) << 0, 1, 3;
+	fv.row(2) << 1, 2, 3;
+	fv.row(3) << 2, 0, 3;
+
+	Eigen::MatrixXd res(3,3);
+	for(int i = 0; i < 3; ++i)
+		res.row(i) = linear_tet_local_node_coordinates(fv(lf, i));
+
+	return res;
+}
 
 std::array<int, 3> poly_fem::TetBasis3d::linear_tet_face_local_nodes(
 	const Mesh3D &mesh, Navigation3D::Index index)

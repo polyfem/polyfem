@@ -359,7 +359,7 @@ void compute_nodes(
 {
 	// Step 1: Assign global node ids for each quads
 	local_boundary.clear();
-	local_boundary.resize(mesh.n_faces());
+	// local_boundary.resize(mesh.n_faces());
 	element_nodes_id.resize(mesh.n_faces());
 	for (int c = 0; c < mesh.n_cells(); ++c) {
 		if (mesh.is_polytope(c)) { continue; } // Skip polytopes
@@ -383,31 +383,18 @@ void compute_nodes(
 			}
 		}
 
-		// Set boundary faces
-		if (mesh.is_boundary_face(f[0])) {
-			local_boundary[c].set_left_edge_id(f[0]);
-			local_boundary[c].set_left_boundary();
+
+		LocalBoundary lb(c, BoundaryType::Quad);
+
+		for(int i = 0; i < f.size(); ++i)
+		{
+			if (mesh.is_boundary_face(f[i])){
+				lb.add_boundary_primitive(f[i], i);
+			}
 		}
-		if (mesh.is_boundary_face(f[1])) {
-			local_boundary[c].set_right_edge_id(f[1]);
-			local_boundary[c].set_right_boundary();
-		}
-		if (mesh.is_boundary_face(f[2])) {
-			local_boundary[c].set_front_edge_id(f[2]);
-			local_boundary[c].set_front_boundary();
-		}
-		if (mesh.is_boundary_face(f[3])) {
-			local_boundary[c].set_back_edge_id(f[3]);
-			local_boundary[c].set_back_boundary();
-		}
-		if (mesh.is_boundary_face(f[4])) {
-			local_boundary[c].set_bottom_edge_id(f[4]);
-			local_boundary[c].set_bottom_boundary();
-		}
-		if (mesh.is_boundary_face(f[5])) {
-			local_boundary[c].set_top_edge_id(f[5]);
-			local_boundary[c].set_top_boundary();
-		}
+
+		if(!lb.empty())
+			local_boundary.emplace_back(lb);
 	}
 
 	// Step 2: Iterate over edges of polygons and compute interface weights
@@ -487,6 +474,23 @@ Eigen::RowVector3d quadr_hex_local_node_coordinates(int local_index) {
 } // anonymous namespace
 
 ////////////////////////////////////////////////////////////////////////////////
+
+Eigen::MatrixXd poly_fem::HexBasis3d::hex_local_node_coordinates_from_face(int lf)
+{
+	Eigen::Matrix<int, 6, 4> fv;
+	fv.row(0) << 0, 3, 7, 4;
+	fv.row(1) << 1, 2, 6, 5;
+	fv.row(2) << 0, 1, 5, 4;
+	fv.row(3) << 3, 2, 6, 7;
+	fv.row(4) << 0, 1, 2, 3;
+	fv.row(5) << 4, 5, 6, 7;
+
+	Eigen::MatrixXd res(4,3);
+	for(int i = 0; i < 4; ++i)
+		res.row(i) = linear_hex_local_node_coordinates(fv(lf, i));
+
+	return res;
+}
 
 std::array<int, 4> poly_fem::HexBasis3d::linear_hex_face_local_nodes(
 	const Mesh3D &mesh, Navigation3D::Index index)

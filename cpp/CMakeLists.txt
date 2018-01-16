@@ -80,8 +80,7 @@ add_library(polyfem
 	src/utils/QuadBoundarySampler.hpp
 	src/utils/QuadBoundarySampler.cpp
 
-	src/utils/HexBoundarySampler.hpp
-	src/utils/HexBoundarySampler.cpp
+	src/utils/BoundarySampler.hpp
 
 	src/mesh/Mesh.cpp
 	src/mesh/Mesh.hpp

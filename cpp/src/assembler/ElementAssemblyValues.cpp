@@ -64,7 +64,7 @@ namespace poly_fem
 			tmp.row(2) = dz.row(i);
 
 			det(i) = tmp.determinant();
-			std::cout<<det(i)<<std::endl;
+			// std::cout<<det(i)<<std::endl;
 			// assert(det(i)>0);
 
 

@@ -48,6 +48,8 @@ namespace poly_fem
 		static Eigen::MatrixXd linear_quad_edge_local_nodes_coordinates(const Mesh2D &mesh, Navigation::Index index);
 		static Eigen::MatrixXd quadr_quad_edge_local_nodes_coordinates(const Mesh2D &mesh, Navigation::Index index);
 
+		static Eigen::MatrixXd quad_local_node_coordinates_from_edge(int le);
+
 		///
 		/// @brief      { Evaluates one local quadratic basis function over a
 		///             set of parametric samples in the element }

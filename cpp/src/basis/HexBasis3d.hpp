@@ -62,6 +62,8 @@ namespace poly_fem
 		static Eigen::MatrixXd linear_hex_face_local_nodes_coordinates(const Mesh3D &mesh, Navigation3D::Index index);
 		static Eigen::MatrixXd quadr_hex_face_local_nodes_coordinates(const Mesh3D &mesh, Navigation3D::Index index);
 
+		static Eigen::MatrixXd hex_local_node_coordinates_from_face(int lf);
+
 		static void quadr_hex_basis_value(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val);
 		static void quadr_hex_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val);
 	};

@@ -1,100 +1,57 @@
-#ifndef LOCAL_BOUNDARY_HPP
-#define LOCAL_BOUNDARY_HPP
+#ifndef LOCAL_HPP
+#define LOCAL_HPP
 
-#include <sstream>
+#include <array>
+#include <cassert>
 
 namespace poly_fem
 {
-	///
-	/// @brief      Descriptor storing which edge of the canonical element is on
-	///             the boundary of the mesh. Boundary edges are labeled
-	///             left/right/top/bottom for quads, left/right/bottom for
-	///             triangles, and left/right/top/bottom/front/back for hexes.
-	///
+	enum class BoundaryType
+	{
+		TriLine,
+		QuadLine,
+		Tri,
+		Quad,
+		Invalid
+	};
+
 	class LocalBoundary
 	{
 	public:
-		static const int LEFT_MASK = 1;
-		static const int TOP_MASK = 2;
-		static const int RIGHT_MASK = 4;
-		static const int BOTTOM_MASK = 8;
-		static const int FRONT_MASK = 16;
-		static const int BACK_MASK = 32;
-		
 		LocalBoundary()
-		: flags_(0)
+		: global_element_id_(-1), type_(BoundaryType::Invalid), counter_(0)
+		{}
+
+		LocalBoundary(const int global_id, BoundaryType type)
+		: global_element_id_(global_id), type_(type), counter_(0)
 		{ }
 
-		inline void set_left_boundary() { flags_ = flags_ | LEFT_MASK; }
-		inline void set_right_boundary() { flags_ = flags_ | RIGHT_MASK; }
-
-		inline void set_top_boundary() { flags_ = flags_ | TOP_MASK; }
-		inline void set_bottom_boundary() { flags_ = flags_ | BOTTOM_MASK; }
-
-		inline void set_front_boundary() { flags_ = flags_ | FRONT_MASK; }
-		inline void set_back_boundary() { flags_ = flags_ | BACK_MASK; }
-
-
-		inline void clear_left_boundary() { flags_ = flags_ & (63 ^ LEFT_MASK); }
-		inline void clear_right_boundary() { flags_ = flags_ & (63 ^ RIGHT_MASK); }
-
-		inline void clear_top_boundary() { flags_ = flags_ & (63 ^ TOP_MASK); }
-		inline void clear_bottom_boundary() { flags_ = flags_ & (63 ^ BOTTOM_MASK); }
-
-		inline void clear_front_boundary() { flags_ = flags_ & (63 ^ FRONT_MASK); }
-		inline void clear_back_boundary() { flags_ = flags_ & (63 ^ BACK_MASK); }
-
-
-		inline bool is_left_boundary() const { return (flags_ & LEFT_MASK) != 0; }
-		inline bool is_right_boundary() const { return (flags_ & RIGHT_MASK) != 0; }
-
-		inline bool is_top_boundary() const { return (flags_ & TOP_MASK) != 0; }
-		inline bool is_bottom_boundary() const { return (flags_ & BOTTOM_MASK) != 0; }
-
-		inline bool is_front_boundary() const { return (flags_ & FRONT_MASK) != 0; }
-		inline bool is_back_boundary() const { return (flags_ & BACK_MASK) != 0; }
-
-		inline bool is_boundary() const { return flags_ != 0; }
-
-		inline std::string flags() const
+		void add_boundary_primitive(const int global_index, const int local_index)
 		{
-			std::stringstream ss;
+			global_primitive_id_[counter_] = global_index;
+			local_primitive_id_[counter_] = local_index;
 
-			ss<<int(flags_)<<" ";
-			ss<<(is_left_boundary()?"1":"0");
-			ss<<(is_top_boundary()?"1":"0");
-			ss<<(is_right_boundary()?"1":"0");
-			ss<<(is_bottom_boundary()?"1":"0");
-
-			return ss.str();
+			++counter_;
 		}
 
-		inline void set_left_edge_id(const int id) { edge_id_[0] = id; }
-		inline void set_right_edge_id(const int id) { edge_id_[2] = id; }
+		int size() const { return counter_; }
+		bool empty() const { return counter_ <= 0; }
 
-		inline void set_top_edge_id(const int id) { edge_id_[1] = id; }
-		inline void set_bottom_edge_id(const int id) { edge_id_[3] = id; }
+		int element_id() const { return global_element_id_; }
 
-		inline void set_front_edge_id(const int id) { edge_id_[4] = id; }
-		inline void set_back_edge_id(const int id) { edge_id_[5] = id; }
+		BoundaryType type() const { return type_; }
 
-		void clear_edge_tag(const int edge_id)
-		{
-			if(!is_boundary()) return;
-
-			if(edge_id_[0] == edge_id) clear_left_boundary();
-			if(edge_id_[1] == edge_id) clear_top_boundary();
-			if(edge_id_[2] == edge_id) clear_right_boundary();
-			if(edge_id_[3] == edge_id) clear_bottom_boundary();
-
-			if(edge_id_[4] == edge_id) clear_front_boundary();
-			if(edge_id_[5] == edge_id) clear_back_boundary();
-		}
+		inline int operator[](const int index) const { assert(index<counter_); return local_primitive_id_[index];}
 
 	private:
-		char flags_;
-		int edge_id_[6] = {-1, -1, -1, -1, -1, -1};
+		std::array<int, 6> global_primitive_id_= {{-1, -1, -1, -1, -1, -1}};
+		std::array<int, 6> local_primitive_id_= {{-1, -1, -1, -1, -1, -1}};
+
+		const int global_element_id_;
+		const BoundaryType type_;
+
+		int counter_;
 	};
 }
 
-#endif //LOCAL_BOUNDARY_HPP
+#endif //LOCAL_HPP
