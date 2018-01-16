@@ -928,8 +928,6 @@ namespace poly_fem
 		}
 
 		const double vol = GEO::Geom::tetra_signed_volume(vertices[0], vertices[1], vertices[2], vertices[3]);
-		std::cout<<vol<<std::endl;
-
 		if(vol < 0)
 		{
 			std::cout << "negative vol" << std::endl;

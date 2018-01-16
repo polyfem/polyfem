@@ -346,19 +346,21 @@ void compute_nodes(
 			}
 		}
 
+		auto v = linear_tet_local_to_global(mesh, c);
 		Eigen::Matrix<int, 4, 3> fv;
-		fv.row(0) << 0, 1, 2;
-		fv.row(1) << 0, 1, 3;
-		fv.row(2) << 1, 2, 3;
-		fv.row(3) << 2, 0, 3;
+		fv.row(0) << v[0], v[1], v[2];
+		fv.row(1) << v[0], v[1], v[3];
+		fv.row(2) << v[1], v[2], v[3];
+		fv.row(3) << v[2], v[0], v[3];
 
 		LocalBoundary lb(c, BoundaryType::Tri);
 		for(long i = 0; i < fv.rows(); ++i)
 		{
 			int f = find_face(mesh, c, fv(i,0), fv(i,1), fv(i,2));
 
-			if(mesh.is_boundary_face(f))
+			if(mesh.is_boundary_face(f)){
 				lb.add_boundary_primitive(f, i);
+			}
 		}
 
 		if(!lb.empty())

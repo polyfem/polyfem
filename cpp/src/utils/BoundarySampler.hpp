@@ -57,8 +57,6 @@ namespace poly_fem
 			auto endpoints = TetBasis3d::tet_local_node_coordinates_from_face(index);
 			const Eigen::VectorXd t = Eigen::VectorXd::LinSpaced(n_samples, 0, 1);
 			samples.resize(n_samples*n_samples, endpoints.cols());
-			Eigen::MatrixXd u(n_samples, endpoints.cols());
-			Eigen::MatrixXd v(n_samples, endpoints.cols());
 
 			int counter = 0;
 			for (int u = 0; u < n_samples; ++u) {
