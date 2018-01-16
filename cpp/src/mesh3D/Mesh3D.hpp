@@ -46,12 +46,7 @@ namespace poly_fem
 
 		//navigation wrapper
 		Navigation3D::Index get_index_from_element(int hi, int lf, int lv) const { return Navigation3D::get_index_from_element_face(mesh_, hi, lf, lv); }
-		Navigation3D::Index get_index_from_element(int hi) const {
-			if(is_simplicial())
-				return Navigation3D::get_index_from_tet_face(mesh_, hi);
-			else
-				return Navigation3D::get_index_from_element_face(mesh_, hi);
-		}
+		Navigation3D::Index get_index_from_element(int hi) const { return Navigation3D::get_index_from_element_face(mesh_, hi); }
 
 
 		// Navigation in a surface mesh

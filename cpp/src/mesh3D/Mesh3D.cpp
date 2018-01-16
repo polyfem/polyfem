@@ -129,7 +129,7 @@ namespace poly_fem
 					}
 				}
 
-				const double vol = GEO::Geom::tetra_signed_volume(vertices[0], vertices[1], vertices[2], vertices[4]);
+				const double vol = GEO::Geom::tetra_signed_volume(vertices[0], vertices[1], vertices[2], vertices[3]);
 				if(vol < 0)
 				{
 					std::swap(face_vertices[1], face_vertices[2]);
@@ -139,7 +139,8 @@ namespace poly_fem
 
 		Navigation3D::prepare_mesh(mesh_);
 		// if(is_simplicial())
-			MeshProcessing3D::orient_volume_mesh(mesh_);
+			// MeshProcessing3D::orient_volume_mesh(mesh_);
+			MeshProcessing3D::build_connectivity(mesh_);
 		compute_elements_tag();
 		return true;
 	}
@@ -926,8 +927,20 @@ namespace poly_fem
 			}
 		}
 
-		const double vol = GEO::Geom::tetra_signed_volume(vertices[0], vertices[1], vertices[2], vertices[4]);
+		const double vol = GEO::Geom::tetra_signed_volume(vertices[0], vertices[1], vertices[2], vertices[3]);
 		std::cout<<vol<<std::endl;
+
+		if(vol < 0)
+		{
+			idx = switch_vertex(get_index_from_element(element_index));
+			for (int lv = 0; lv < 3; ++lv) {
+				v[lv] = idx.vertex;
+				idx = next_around_face(idx);
+			}
+		// assert(idx == get_index_from_element(element_index));
+			idx = switch_vertex(switch_edge(switch_face(idx)));
+			v[3] = idx.vertex;
+		}
 
 
 		return v;

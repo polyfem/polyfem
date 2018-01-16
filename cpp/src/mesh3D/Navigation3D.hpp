@@ -18,7 +18,6 @@ namespace poly_fem{
 		// Retrieve the index (v,e,f,h) of one vertex incident to the given face and element
 		Index get_index_from_element_face(const Mesh3DStorage &M, int hi);
 		Index get_index_from_element_face(const Mesh3DStorage &M, int hi, int lf, int lv = 0);
-		Index get_index_from_tet_face(const Mesh3DStorage &M, int hi);
 		// Navigation in a surface Mesh3DStorage
 		Index switch_vertex(const Mesh3DStorage &M, Index idx);
 		Index switch_edge(const Mesh3DStorage &M, Index idx);
