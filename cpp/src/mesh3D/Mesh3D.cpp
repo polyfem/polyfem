@@ -100,7 +100,7 @@ namespace poly_fem
 		V = (V.colwise() - V.rowwise().minCoeff()) / (V.rowwise().maxCoeff() - V.rowwise().minCoeff()).maxCoeff();
 
 		//TODO not so nice to detect triangle meshes
-		is_simplicial_ = n_face_vertices(0) == 4;
+		is_simplicial_ = n_cell_vertices(0) == 4;
 
 		Navigation3D::prepare_mesh(mesh_);
 		compute_elements_tag();
@@ -861,6 +861,22 @@ namespace poly_fem
 		// 	v[4+lv] = idx.vertex;
 		// 	idx = next_around_face_of_element(idx);
 		// }
+		return v;
+	}
+
+	std::array<int, 4> Mesh3D::get_ordered_vertices_from_tet(const int element_index) const
+	{
+		auto idx = get_index_from_element(element_index);
+		std::array<int, 4> v;
+
+       for (int lv = 0; lv < 3; ++lv) {
+			v[lv] = idx.vertex;
+			idx = next_around_face(idx);
+		}
+		// assert(idx == get_index_from_element(element_index));
+		idx = switch_vertex(switch_edge(switch_face(idx)));
+		v[3] = idx.vertex;
+
 		return v;
 	}
 

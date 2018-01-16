@@ -5,7 +5,9 @@
 
 #include "QuadBasis2d.hpp"
 #include "TriBasis2d.hpp"
-#include "FEBasis3d.hpp"
+
+#include "HexBasis3d.hpp"
+#include "TetBasis3d.hpp"
 
 #include "SplineBasis2d.hpp"
 #include "SplineBasis3d.hpp"
@@ -375,16 +377,23 @@ namespace poly_fem
 			if(use_splines)
 			{
 				if(!iso_parametric)
-					FEBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
+					HexBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
 
 				n_bases = SplineBasis3d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
 			}
 			else
 			{
-				if (!iso_parametric)
-					FEBasis3d::build_bases(tmp_mesh, quadrature_order, 1, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
+				if(mesh->is_simplicial())
+				{
+					n_bases = TetBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+				}
+				else
+				{
+					if (!iso_parametric)
+						HexBasis3d::build_bases(tmp_mesh, quadrature_order, 1, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
 
-				n_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+					n_bases = HexBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+				}
 			}
 		}
 		else
@@ -417,7 +426,7 @@ namespace poly_fem
 		n_flipped = 0;
 		for(size_t i = 0; i < bs.size(); ++i)
 		{
-			if(mesh->is_polytope(i)) continue;
+			if(!mesh->is_simplicial() && mesh->is_polytope(i)) continue;
 
 			ElementAssemblyValues vals;
 			if(!vals.is_geom_mapping_positive(mesh->is_volume(), bs[i]))
@@ -635,6 +644,9 @@ namespace poly_fem
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
 		sol.resize(0, 0);
+
+		if(mesh->is_simplicial())
+			return;
 
 		igl::Timer timer; timer.start();
 		std::cout<<"Computing polygonal basis..."<<std::flush;

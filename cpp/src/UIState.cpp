@@ -591,38 +591,57 @@ namespace poly_fem
 			if(state.mesh->is_volume())
 			{
 				buf<<"Qpq1.414a"<<area_param;
-				MatrixXd pts(8,3); pts <<
-				0, 0, 0,
-				0, 1, 0,
-				1, 1, 0,
-				1, 0, 0,
+				{
+					MatrixXd pts(8,3); pts <<
+					0, 0, 0,
+					0, 1, 0,
+					1, 1, 0,
+					1, 0, 0,
 
-				0, 0, 1, //4
-				0, 1, 1,
-				1, 1, 1,
-				1, 0, 1;
+					0, 0, 1, //4
+					0, 1, 1,
+					1, 1, 1,
+					1, 0, 1;
 
-				Eigen::MatrixXi faces(12,3); faces <<
-				1, 2, 0,
-				0, 2, 3,
+					Eigen::MatrixXi faces(12,3); faces <<
+					1, 2, 0,
+					0, 2, 3,
 
-				5, 4, 6,
-				4, 7, 6,
+					5, 4, 6,
+					4, 7, 6,
 
-				1, 0, 4,
-				1, 4, 5,
+					1, 0, 4,
+					1, 4, 5,
 
-				2, 1, 5,
-				2, 5, 6,
+					2, 1, 5,
+					2, 5, 6,
 
-				3, 2, 6,
-				3, 6, 7,
+					3, 2, 6,
+					3, 6, 7,
 
-				0, 3, 7,
-				0, 7, 4;
+					0, 3, 7,
+					0, 7, 4;
 
-				MatrixXi tets;
-				igl::copyleft::tetgen::tetrahedralize(pts, faces, buf.str(), local_vis_pts_quad, tets, local_vis_faces_quad);
+					MatrixXi tets;
+					igl::copyleft::tetgen::tetrahedralize(pts, faces, buf.str(), local_vis_pts_quad, tets, local_vis_faces_quad);
+				}
+				{
+					MatrixXd pts(4,3); pts <<
+					0, 0, 0,
+					1, 0, 0,
+					0, 1, 0,
+					0, 0, 1;
+
+					Eigen::MatrixXi faces(4,3); faces <<
+					0, 1, 2,
+
+					3, 1, 0,
+					2, 1, 3,
+					0, 2, 3;
+
+					MatrixXi tets;
+					igl::copyleft::tetgen::tetrahedralize(pts, faces, buf.str(), local_vis_pts_tri, tets, local_vis_faces_tri);
+				}
 			}
 			else
 			{

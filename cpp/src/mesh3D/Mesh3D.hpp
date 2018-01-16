@@ -72,6 +72,7 @@ namespace poly_fem
 		//  │╱    │╱
 		// v0────v1
 		std::array<int, 8> get_ordered_vertices_from_hex(const int element_index) const;
+		std::array<int, 4> get_ordered_vertices_from_tet(const int element_index) const;
 
 		void get_vertex_elements_neighs(const int v_id, std::vector<int> &ids) const { ids.clear(); ids.insert(ids.begin(), mesh_.vertices[v_id].neighbor_hs.begin(), mesh_.vertices[v_id].neighbor_hs.end()); }
 		void get_edge_elements_neighs(const int e_id, std::vector<int> &ids) const { ids.clear(); ids.insert(ids.begin(), mesh_.edges[e_id].neighbor_hs.begin(), mesh_.edges[e_id].neighbor_hs.end()); }

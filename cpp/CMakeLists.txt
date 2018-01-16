@@ -148,8 +148,11 @@ add_library(polyfem
 	src/basis/PolygonalBasis2d.cpp
 	src/basis/PolygonalBasis2d.hpp
 
-	src/basis/FEBasis3d.cpp
-	src/basis/FEBasis3d.hpp
+	src/basis/HexBasis3d.cpp
+	src/basis/HexBasis3d.hpp
+
+	src/basis/TetBasis3d.cpp
+	src/basis/TetBasis3d.hpp
 
 	src/basis/SplineBasis3d.cpp
 	src/basis/SplineBasis3d.hpp

@@ -1,5 +1,5 @@
-#ifndef FE_BASIS_3D_HPP
-#define FE_BASIS_3D_HPP
+#ifndef HEX_BASIS_3D_HPP
+#define HEX_BASIS_3D_HPP
 
 #include "ElementBases.hpp"
 #include "Mesh3D.hpp"
@@ -12,7 +12,7 @@
 
 namespace poly_fem
 {
-	class FEBasis3d
+	class HexBasis3d
 	{
 	public:
 
@@ -67,4 +67,4 @@ namespace poly_fem
 	};
 }
 
-#endif //FE_BASIS_3D_HPP
+#endif //HEX_BASIS_3D_HPP
