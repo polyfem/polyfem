@@ -269,8 +269,9 @@ void sample_polyhedra(
 		nullptr, evalFuncGeom, getAdjLocalEdge);
 
 	// Compute quadrature points
-	PolyhedronQuadrature::get_quadrature(triangulated_vertices, triangulated_faces,
-		quadrature_order, quadrature);
+	Eigen::MatrixXd NV = triangulated_vertices;
+	NV.array().rowwise() /= (NV.colwise().maxCoeff() - NV.colwise().minCoeff()).array();
+	PolyhedronQuadrature::get_quadrature(NV, triangulated_faces, quadrature_order, quadrature);
 
 	triangulated_vertices = KV;
 	triangulated_faces = KF;

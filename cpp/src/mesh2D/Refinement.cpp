@@ -536,7 +536,7 @@ void poly_fem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, Po
 			}
 		}
 
-		if (nv == 3 || nv == 4) {
+		if (/*nv == 3 ||*/ nv == 4) {
 			// Create mid-face vertex
 			index_t vf = mesh_create_vertex(M_out, facet_barycenter(M_in, f));
 			assert(vf + 1 == M_out.vertices.nb());

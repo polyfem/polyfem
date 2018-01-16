@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Mesh.hpp"
+#include "Mesh3D.hpp"
 #include <geogram/mesh/mesh.h>
 #include <Eigen/Dense>
 #include <vector>
@@ -100,5 +101,13 @@ void to_geogram_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, GEO::Me
 /// @param[out] T     { #T x 4 output mesh tets }
 ///
 void from_geogram_mesh(const GEO::Mesh &M, Eigen::MatrixXd &V, Eigen::MatrixXi &F, Eigen::MatrixXi &T);
+
+///
+/// @brief      { Extract polyhedra from a 3D volumetric mesh }
+///
+/// @param[in]  mesh   { Input volume mesh }
+/// @param[out] polys  { Extracted polyhedral surfaces }
+///
+void extract_polyhedra(const Mesh3D &mesh, std::vector<std::unique_ptr<GEO::Mesh>> &polys);
 
 } // namespace poly_fem

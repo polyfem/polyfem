@@ -101,6 +101,9 @@ namespace poly_fem
             quadr.weights.block(i*offset, 0, tri_quadr_pts.weights.rows(), tri_quadr_pts.weights.cols()) = tri_quadr_pts.weights * det;
         }
 
+        quadr.volume = quadr.weights.sum();
+        quadr.weights /= quadr.volume;
+
         assert(quadr.weights.minCoeff()>=0);
         // std::cout<<quadr.weights.size()<<" "<<quadr.weights.sum()<<std::endl;
     }

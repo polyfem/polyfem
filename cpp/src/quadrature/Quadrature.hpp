@@ -10,6 +10,7 @@ namespace poly_fem
 	public:
 		Eigen::MatrixXd points;
 		Eigen::VectorXd weights;
+		double volume = 1;
 	};
 }
 

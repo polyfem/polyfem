@@ -220,7 +220,7 @@ namespace {
 				glupVertex(mesh_vertex(mesh_, v1));
 			}
 			// Boundary edges
-			GEO::Attribute<int> boundary(mesh_.edges.attributes(), "boundary_edge");
+			GEO::Attribute<bool> boundary(mesh_.edges.attributes(), "boundary_edge");
 			glupColor3f(0.7f, 0.7f, 0.0f);
 			for (int e = 0; e < (int) mesh_.edges.nb(); ++e) {
 				if (boundary[e]) {

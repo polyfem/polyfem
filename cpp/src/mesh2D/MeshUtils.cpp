@@ -161,7 +161,7 @@ void poly_fem::compute_element_tags(const GEO::Mesh &M, std::vector<ElementType>
 			for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv) {
 				if (boundary_vertices[M.facets.vertex(f, lv)]) {
 					tag = ElementType::BoundaryPolytope;
-					std::cout << "foo" << std::endl;
+					// std::cout << "foo" << std::endl;
 					break;
 				}
 			}
@@ -499,3 +499,47 @@ void poly_fem::signed_squared_distances(const Eigen::MatrixXd &V, const Eigen::M
 // 	}
 // 	return volume_total;
 // }
+
+// -----------------------------------------------------------------------------
+
+void poly_fem::extract_polyhedra(const Mesh3D &mesh, std::vector<std::unique_ptr<GEO::Mesh>> &polys) {
+	std::vector<int> vertex_g2l(mesh.n_vertices(), -1);
+	std::vector<int> vertex_l2g;
+	for (int c = 0; c < mesh.n_cells(); ++c) {
+		if (!mesh.is_polytope(c)) {
+			continue;
+		}
+		auto poly = std::make_unique<GEO::Mesh>();
+		int nv = mesh.n_cell_vertices(c);
+		int nf = mesh.n_cell_faces(c);
+		poly->vertices.create_vertices(nv);
+		vertex_l2g.clear();
+		vertex_l2g.reserve(nv);
+		for (int lf = 0; lf < nf; ++lf) {
+			GEO::vector<GEO::index_t> facet_vertices;
+			auto index = mesh.get_index_from_element(c, lf, 0);
+			for (int lv = 0; lv < mesh.n_cell_vertices(c); ++lv) {
+				Eigen::RowVector3d p = mesh.point(index.vertex);
+				if (vertex_g2l[index.vertex] < 0) {
+					vertex_g2l[index.vertex] = vertex_l2g.size();
+					vertex_l2g.push_back(index.vertex);
+				}
+				int v1 = vertex_g2l[index.vertex];
+				facet_vertices.push_back(v1);
+				poly->vertices.point(v1) = GEO::vec3(p.data());
+				index = mesh.next_around_face(index);
+			}
+			poly->facets.create_polygon(facet_vertices);
+		}
+		assert(vertex_l2g.size() == nv);
+
+		for (int v : vertex_l2g) {
+			vertex_g2l[v] = -1;
+		}
+
+		poly->facets.compute_borders();
+		poly->facets.connect();
+
+		polys.emplace_back(std::move(poly));
+	}
+}

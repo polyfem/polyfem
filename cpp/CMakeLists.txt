@@ -323,4 +323,4 @@ target_link_libraries(${PROJECT_NAME}_bin PUBLIC polyfem igl::viewer)
 
 ################################################################################
 
-# add_subdirectory(tests)
+add_subdirectory(tests)
