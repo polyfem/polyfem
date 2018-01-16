@@ -932,14 +932,15 @@ namespace poly_fem
 
 		if(vol < 0)
 		{
-			idx = switch_vertex(get_index_from_element(element_index));
-			for (int lv = 0; lv < 3; ++lv) {
-				v[lv] = idx.vertex;
-				idx = next_around_face(idx);
-			}
-		// assert(idx == get_index_from_element(element_index));
-			idx = switch_vertex(switch_edge(switch_face(idx)));
-			v[3] = idx.vertex;
+			std::cout << "negative vol" << std::endl;
+		//	idx = switch_vertex(get_index_from_element(element_index));
+		//	for (int lv = 0; lv < 3; ++lv) {
+		//		v[lv] = idx.vertex;
+		//		idx = next_around_face(idx);
+		//	}
+		//// assert(idx == get_index_from_element(element_index));
+		//	idx = switch_vertex(switch_edge(switch_face(idx)));
+		//	v[3] = idx.vertex;
 		}
 
 
