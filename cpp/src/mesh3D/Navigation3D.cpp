@@ -16,6 +16,12 @@ void poly_fem::Navigation3D::prepare_mesh(Mesh3DStorage &M) {
 	MeshProcessing3D::global_orientation_hexes(M);
 }
 
+poly_fem::Navigation3D::Index poly_fem::Navigation3D::get_index_from_tet_face(const Mesh3DStorage &M, int hi)
+{
+	Index idx;
+	return idx;
+}
+
 poly_fem::Navigation3D::Index poly_fem::Navigation3D::get_index_from_element_face(const Mesh3DStorage &M, int hi)
 {
 	Index idx;
