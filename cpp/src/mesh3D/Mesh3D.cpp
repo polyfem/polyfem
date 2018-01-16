@@ -97,7 +97,17 @@ namespace poly_fem
 		fclose(f);
 
 		auto &V = mesh_.points;
-		V = (V.colwise() - V.rowwise().minCoeff()) / (V.rowwise().maxCoeff() - V.rowwise().minCoeff()).maxCoeff();
+		const auto shift =  V.rowwise().minCoeff().eval();
+		const double scaling = 1./ (V.rowwise().maxCoeff() - V.rowwise().minCoeff()).maxCoeff();
+		V = (V.colwise() - shift) * scaling;
+
+		for(int i = 0; i < n_cells(); ++i)
+		{
+			for(int d = 0; d < 3; ++d){
+				auto val = mesh_.elements[i].v_in_Kernel[d];
+				mesh_.elements[i].v_in_Kernel[d] = (val - shift(d)) * scaling;
+			}
+		}
 
 		//TODO not so nice to detect triangle meshes
 		is_simplicial_ = n_cell_vertices(0) == 4;
