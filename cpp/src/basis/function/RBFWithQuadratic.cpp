@@ -93,6 +93,11 @@ void RBFWithQuadratic::bases_values(const Eigen::MatrixXd &samples, Eigen::Matri
 	Eigen::MatrixXd A;
 	compute_kernels_matrix(samples, A);
 
+	// std::cout << "min uv: " << samples.colwise().minCoeff() << std::endl;
+	// std::cout << "max uv: " << samples.colwise().maxCoeff() << std::endl;
+	assert(samples.minCoeff() >= 0.0);
+	assert(samples.maxCoeff() <= 1.0);
+
 	// Multiply by the weights
 	val = A * weights_;
 }
@@ -121,7 +126,7 @@ void RBFWithQuadratic::bases_grads(const int axis, const Eigen::MatrixXd &sample
 		A_prime.col(num_kernels + 1 + dim + axis) = samples.col((axis+1)%dim);
 		A_prime.col(num_kernels + 1 + dim + (axis+2)%dim) = samples.col((axis+2)%dim);
 	}
-	// Quadratic termsm
+	// Quadratic terms
 	A_prime.rightCols(dim).col(axis) = 2.0 * samples.col(axis);
 
 	// Apply weights
@@ -353,7 +358,7 @@ void RBFWithQuadratic::compute_weights(const Eigen::MatrixXd &samples,
 	std::cout << "#quadrature points: " << quadr.weights.size() << std::endl;
 	std::cout << "#non-vanishing bases: " << rhs.cols() << std::endl;
 
-	if (!with_constraints) {
+	if (true || !with_constraints) {
 		// Compute A
 		Eigen::MatrixXd A;
 		compute_kernels_matrix(samples, A);

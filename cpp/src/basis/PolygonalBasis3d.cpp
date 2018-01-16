@@ -7,7 +7,7 @@
 #include "RBFWithLinear.hpp"
 #include "RBFWithQuadratic.hpp"
 #include "RBFWithQuadraticLagrange.hpp"
-// #include "UIState.hpp"
+#include "UIState.hpp"
 #include <igl/triangle/triangulate.h>
 #include <igl/per_vertex_normals.h>
 #include <igl/write_triangle_mesh.h>
@@ -160,6 +160,7 @@ void compute_offset_kernels(const Eigen::MatrixXd &QV, const Eigen::MatrixXi &QF
 	Eigen::VectorXd D;
 	compute_canonical_pattern(n_kernels_per_edge, PV, PF);
 	instanciate_pattern(QV, QF, PV, PF, KV, KF, nullptr, evalFuncGeom, getAdjLocalEdge);
+	std::cout << "volume 1: " << signed_volume(KV, KF) << std::endl;
 	igl::per_vertex_normals(KV, KF, KN);
 	kernel_centers = KV + eps * KN;
 	// std::default_random_engine gen;
@@ -211,7 +212,9 @@ void sample_polyhedra(
 	Eigen::MatrixXd &rhs,
 	Eigen::MatrixXd &triangulated_vertices,
 	Eigen::MatrixXi &triangulated_faces,
-	Quadrature &quadrature)
+	Quadrature &quadrature,
+	double &scaling,
+	Eigen::RowVector3d &translation)
 {
 	// Local ids of nonzero bases over the polygon
 	local_to_global = compute_nonzero_bases_ids(mesh, element_index, bases, poly_face_to_data);
@@ -269,13 +272,6 @@ void sample_polyhedra(
 	instanciate_pattern(QV, QF, PV, PF, triangulated_vertices, triangulated_faces,
 		nullptr, evalFuncGeom, getAdjLocalEdge);
 
-	// Compute quadrature points
-	Eigen::MatrixXd NV = triangulated_vertices;
-	// NV = (NV.rowwise() - NV.colwise().minCoeff()) / (NV.colwise().maxCoeff() - NV.colwise().minCoeff()).maxCoeff();
-	PolyhedronQuadrature::get_quadrature(NV, triangulated_faces, quadrature_order, quadrature);
-
-	triangulated_vertices = KV;
-	triangulated_faces = KF;
 	// for (int f = 0; f < KF.rows(); ++f) {
 	// 	triangulated_faces.row(f) = KF.row(f).reverse();
 	// }
@@ -331,6 +327,24 @@ void sample_polyhedra(
 			}
 		}
 	}
+
+	// Compute quadrature points + normalize kernels and collocation points
+	Eigen::MatrixXd NV = triangulated_vertices;
+	scaling = (NV.colwise().maxCoeff() - NV.colwise().minCoeff()).maxCoeff();
+	translation = NV.colwise().minCoeff();
+	// scaling = 1.0;
+	// translation.setZero();
+	NV = (NV.rowwise() - translation) / scaling;
+	PolyhedronQuadrature::get_quadrature(NV, triangulated_faces, quadrature_order, quadrature);
+
+	collocation_points = (collocation_points.rowwise() - translation) / scaling;
+	kernel_centers = (kernel_centers.rowwise() - translation) / scaling;
+	KV = (KV.rowwise() - translation) / scaling;
+
+	triangulated_vertices = KV;
+	triangulated_faces = KF;
+
+	std::cout << "volume: " << signed_volume(KV, KF) << std::endl;
 }
 
 } // anonymous namespace
@@ -521,19 +535,23 @@ void PolygonalBasis3d::build_bases(
 		b.has_parameterization = false;
 
 		Quadrature tmp_quadrature;
+		double scaling;
+		Eigen::RowVector3d translation;
 		sample_polyhedra(e, 2, n_kernels_per_edge, n_samples_per_edge, quadrature_order,
 			mesh, poly_face_to_data, bases, gbases, eps, local_to_global,
 			collocation_points, kernel_centers, rhs, triangulated_vertices,
-			triangulated_faces, tmp_quadrature);
+			triangulated_faces, tmp_quadrature, scaling, translation);
 
 		b.set_quadrature([tmp_quadrature](Quadrature &quad){ quad = tmp_quadrature; });
+		b.scaling_ = scaling;
+		b.translation_ = translation;
 
 		// igl::viewer::Viewer viewer;
 		// viewer.data.set_mesh(triangulated_vertices, triangulated_faces);
 		// viewer.data.add_points(kernel_centers, Eigen::Vector3d(0,1,1).transpose());
 		// viewer.launch();
 
-		// 	for(int a = 0; rhs.cols();++a)
+		// for(int a = 0; rhs.cols();++a)
 		// 	{
 		// 	igl::viewer::Viewer viewer;
 		// 	Eigen::MatrixXd asd(collocation_points.rows(), 3);
@@ -556,7 +574,7 @@ void PolygonalBasis3d::build_bases(
 		for (long k = 0; k < rhs.cols(); ++k) {
 			local_basis_integrals.row(k) = -basis_integrals.row(local_to_global[k]);
 		}
-		auto rbf = std::make_shared<RBFWithQuadraticLagrange>(
+		auto rbf = std::make_shared<RBFWithQuadratic>(
 			kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs);
 		b.set_bases_func([rbf] (const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
 			{ rbf->bases_values(uv, val); } );

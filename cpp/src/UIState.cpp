@@ -731,12 +731,13 @@ namespace poly_fem
 				// 	point_index += mapped.rows();
 				// }
 				else{
+					bs.eval_geom_mapping(vis_pts_poly[i], mapped);
 					vis_faces.block(face_index, 0, vis_faces_poly[i].rows(), 3) = vis_faces_poly[i].array() + point_index;
 
 					face_index += vis_faces_poly[i].rows();
 
-					vis_pts.block(point_index, 0, vis_pts_poly[i].rows(), vis_pts_poly[i].cols()) = vis_pts_poly[i];
-					point_index += vis_pts_poly[i].rows();
+					vis_pts.block(point_index, 0, vis_pts_poly[i].rows(), vis_pts_poly[i].cols()) = mapped;
+					point_index += mapped.rows();
 				}
 			}
 

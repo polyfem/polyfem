@@ -482,23 +482,20 @@ void poly_fem::signed_squared_distances(const Eigen::MatrixXd &V, const Eigen::M
 
 // -----------------------------------------------------------------------------
 
-// // Compute volume of a mesh (M can be surface mesh)
-// double volume(const GEO::Mesh &M) {
-// 	GEO::vec3 t[4];
-// 	t[3] = GEO::vec3(0, 0, 0);
-// 	double volume_total = 0;
-// 	for (int f = 0; f < (int) M.facets.nb(); ++f) {
-// 		for(GEO::index_t c = M.facets.corners_begin(f), i = 0;
-// 			c < M.facets.corners_end(f); ++c, ++i)
-// 		{
-// 			geo_assert(i < 3);
-// 			t[i] = M.vertices.point(M.facet_corners.vertex(c));
-// 		}
-// 		double vol = GEO::Geom::tetra_signed_volume(t[0], t[1], t[2], t[3]);
-// 		volume_total += vol;
-// 	}
-// 	return volume_total;
-// }
+double poly_fem::signed_volume(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F) {
+	assert(F.cols() == 3);
+	std::array<RowVectorXd, 4> t;
+	t[3] = RowVectorXd::Zero(V.cols());
+	double volume_total = 0;
+	for (int f = 0; f < F.rows(); ++f) {
+		for (int lv = 0; lv < F.cols(); ++lv) {
+			t[lv] = V.row(F(f, lv));
+		}
+		double vol = GEO::Geom::tetra_signed_volume(t[0].data(), t[1].data(), t[2].data(), t[3].data());
+		volume_total += vol;
+	}
+	return volume_total;
+}
 
 // -----------------------------------------------------------------------------
 

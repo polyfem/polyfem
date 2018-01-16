@@ -61,7 +61,10 @@ void PolyhedronQuadrature::get_quadrature(const Eigen::MatrixXd &V, const Eigen:
 	std::string flags = "Qpq2.0";
 	Eigen::MatrixXd TV;
 	Eigen::MatrixXi TF, tets;
+	// igl::write_triangle_mesh("poly_current.obj", V, F);
+	// std::cout << "tetgen in" << std::endl;
 	int res = igl::copyleft::tetgen::tetrahedralize(V, F, flags, TV, tets, TF);
+	// std::cout << "tetgen out" << std::endl;
 	assert(res == 0);
 
 	// static int counter = 0;

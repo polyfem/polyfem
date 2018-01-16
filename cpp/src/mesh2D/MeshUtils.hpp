@@ -103,6 +103,16 @@ void to_geogram_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, GEO::Me
 void from_geogram_mesh(const GEO::Mesh &M, Eigen::MatrixXd &V, Eigen::MatrixXi &F, Eigen::MatrixXi &T);
 
 ///
+/// @brief      { Compute the signed volume of a surface mesh }
+///
+/// @param[in]  V     { #V x 3 input mesh vertices }
+/// @param[in]  F     { #F x 3 input mesh facets }
+///
+/// @return     { Signed volume of the surface }
+///
+double signed_volume(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F);
+
+///
 /// @brief      { Extract polyhedra from a 3D volumetric mesh }
 ///
 /// @param[in]  mesh   { Input volume mesh }

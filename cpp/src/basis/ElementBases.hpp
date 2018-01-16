@@ -31,7 +31,7 @@ namespace poly_fem
 		bool has_parameterization = true;
 
 		// hack for polygons
-		double scaling_;
+		double scaling_ = 1.0;
 		RowVectorNd translation_;
 
 		///
