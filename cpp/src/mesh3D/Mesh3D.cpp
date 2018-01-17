@@ -7,7 +7,11 @@ namespace poly_fem
 {
 	void Mesh3D::refine(const int n_refiniment, const double t, std::vector<int> &parent_nodes)
 	{
-		//TODO to aware refiniement
+		for(size_t i = 0; i < elements_tag().size(); ++i)
+		{
+			if(elements_tag()[i] == ElementType::InteriorPolytope || elements_tag()[i] == ElementType::BoundaryPolytope)
+				mesh_.elements[i].hex = false;
+		}
 
 		MeshProcessing3D::refine_catmul_clark_polar(mesh_, n_refiniment, parent_nodes);
 		Navigation3D::prepare_mesh(mesh_);
@@ -927,19 +931,19 @@ namespace poly_fem
 			}
 		}
 
-		const double vol = GEO::Geom::tetra_signed_volume(vertices[0], vertices[1], vertices[2], vertices[3]);
-		if(vol < 0)
-		{
-			std::cout << "negative vol" << std::endl;
-		//	idx = switch_vertex(get_index_from_element(element_index));
-		//	for (int lv = 0; lv < 3; ++lv) {
-		//		v[lv] = idx.vertex;
-		//		idx = next_around_face(idx);
-		//	}
-		//// assert(idx == get_index_from_element(element_index));
-		//	idx = switch_vertex(switch_edge(switch_face(idx)));
-		//	v[3] = idx.vertex;
-		}
+		// const double vol = GEO::Geom::tetra_signed_volume(vertices[0], vertices[1], vertices[2], vertices[3]);
+		// if(vol < 0)
+		// {
+		// 	std::cout << "negative vol" << std::endl;
+		// //	idx = switch_vertex(get_index_from_element(element_index));
+		// //	for (int lv = 0; lv < 3; ++lv) {
+		// //		v[lv] = idx.vertex;
+		// //		idx = next_around_face(idx);
+		// //	}
+		// //// assert(idx == get_index_from_element(element_index));
+		// //	idx = switch_vertex(switch_edge(switch_face(idx)));
+		// //	v[3] = idx.vertex;
+		// }
 
 
 		return v;

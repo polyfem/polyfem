@@ -120,6 +120,8 @@ poly_fem::Navigation3D::Index poly_fem::Navigation3D::switch_element(const Mesh3
 		if (M.faces[idx.face].neighbor_hs[0] == idx.element)
 			idx.element = M.faces[idx.face].neighbor_hs[1];
 		else idx.element = M.faces[idx.face].neighbor_hs[0];
+
+		idx.element_patch = find(M.elements[idx.element].fs.begin(), M.elements[idx.element].fs.end(), idx.face) - M.elements[idx.element].fs.begin();
 	}
 	idx.face_corner = std::find(M.faces[idx.face].vs.begin(), M.faces[idx.face].vs.end(), idx.vertex) - M.faces[idx.face].vs.begin();
 	if (!M.elements[idx.element].fs_flag[idx.element_patch]) idx.face_corner = M.faces[idx.face].vs.size() - 1 - idx.face_corner;
