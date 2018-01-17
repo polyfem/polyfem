@@ -5,6 +5,7 @@
 #include "FEBasis2d.hpp"
 #include "RBFWithLinear.hpp"
 #include "RBFWithQuadratic.hpp"
+#include "RBFWithQuadraticLagrange.hpp"
 #include "UIState.hpp"
 ////////////////////////////////////////////////////////////////////////////////
 

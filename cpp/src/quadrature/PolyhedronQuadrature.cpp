@@ -51,17 +51,17 @@ void PolyhedronQuadrature::get_quadrature(const Eigen::MatrixXd &V, const Eigen:
 	Eigen::RowVector3d translation = V.colwise().minCoeff();
 
 	// std::cout << "tetgen in" << std::endl;
-	VV = (V.rowwise() - translation) / scaling;
-	igl::write_triangle_mesh("poly_current.obj", VV, F);
-	igl::simplify_polyhedron(VV, F, OV, OF, J);
-	igl::write_triangle_mesh("poly_out.obj", OV, OF);
+	// VV = (V.rowwise() - translation) / scaling;
+	// igl::write_triangle_mesh("poly_current.obj", VV, F);
+	// igl::simplify_polyhedron(VV, F, OV, OF, J);
+	// igl::write_triangle_mesh("poly_out.obj", OV, OF);
 
 	// igl::viewer::Viewer viewer;
 	// viewer.data.set_mesh(OV, OF);
 	// viewer.launch();
 
-	OV = (OV * scaling).rowwise() + translation;
-	int res = igl::copyleft::tetgen::tetrahedralize(OV, OF, flags, TV, tets, TF);
+	// OV = (OV * scaling).rowwise() + translation;
+	int res = igl::copyleft::tetgen::tetrahedralize(V, F, flags, TV, tets, TF);
 	// std::cout << "tetgen out" << std::endl;
 	assert(res == 0);
 

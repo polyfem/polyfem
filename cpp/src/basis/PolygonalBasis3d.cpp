@@ -339,12 +339,13 @@ void sample_polyhedra(
 	// translation = NV.colwise().minCoeff();
 	scaling = 1.0;
 	translation.setZero();
-	NV = (NV.rowwise() - translation) / scaling;
+	// NV = (NV.rowwise() - translation) / scaling;
 	PolyhedronQuadrature::get_quadrature(NV, triangulated_faces, quadrature_order, quadrature);
 
-	collocation_points = (collocation_points.rowwise() - translation) / scaling;
-	kernel_centers = (kernel_centers.rowwise() - translation) / scaling;
-	KV = (KV.rowwise() - translation) / scaling;
+	// Normalization
+	// collocation_points = (collocation_points.rowwise() - translation) / scaling;
+	// kernel_centers = (kernel_centers.rowwise() - translation) / scaling;
+	// KV = (KV.rowwise() - translation) / scaling;
 
 	triangulated_vertices = KV;
 	triangulated_faces = KF;
@@ -548,8 +549,8 @@ void PolygonalBasis3d::build_bases(
 			triangulated_faces, tmp_quadrature, scaling, translation);
 
 		b.set_quadrature([tmp_quadrature](Quadrature &quad){ quad = tmp_quadrature; });
-		b.scaling_ = scaling;
-		b.translation_ = translation;
+		// b.scaling_ = scaling;
+		// b.translation_ = translation;
 
 		// igl::viewer::Viewer viewer;
 		// viewer.data.set_mesh(triangulated_vertices, triangulated_faces);

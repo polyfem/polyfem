@@ -4,15 +4,15 @@
 
 namespace poly_fem
 {
-	void ElementAssemblyValues::finalize_global_element(const Eigen::MatrixXd &v, double volume, double scaling)
+	void ElementAssemblyValues::finalize_global_element(const Eigen::MatrixXd &v)
 	{
 		val = v;
 
 		has_parameterization = false;
 		det.resize(v.rows(), 1);
-		det.setConstant(volume);
+		det.setConstant(1); // volume (det of the geometric mapping)
 		for(std::size_t j = 0; j < basis_values.size(); ++j)
-			basis_values[j].grad_t_m = basis_values[j].grad / scaling;
+			basis_values[j].grad_t_m = basis_values[j].grad; // / scaling
 
 	}
 
@@ -171,13 +171,8 @@ namespace poly_fem
 		}
 
 		if(!gbasis.has_parameterization) {
-			assert(gbasis.translation_.size() != 0);
-			double volume = 1.0;
-			for (int i = 0; i < gbasis.translation_.size(); ++i) {
-				volume *= gbasis.scaling_;
-			}
-			Eigen::MatrixXd v = (gbasis.scaling_ * quadrature.points).rowwise() + gbasis.translation_;
-			finalize_global_element(v, volume, gbasis.scaling_);
+			// v = G(quadrature.points)
+			finalize_global_element(quadrature.points);
 			return;
 		}
 

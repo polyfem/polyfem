@@ -5,6 +5,7 @@
 
 namespace poly_fem
 {
+	// Version using Lagrange multipliers to solve the constrained least-square system
 	class RBFWithQuadraticLagrange
 	{
 	public:

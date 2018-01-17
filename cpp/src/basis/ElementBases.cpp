@@ -16,9 +16,8 @@ namespace poly_fem
 	{
 		if(!has_parameterization)
 		{
-			assert(translation_.size() == samples.cols());
-			mapped = (scaling_ * samples).rowwise() + translation_;
-			// mapped = samples;
+			// mapped = (scaling_ * samples).rowwise() + translation_;
+			mapped = samples;
 			return;
 		}
 
@@ -67,8 +66,8 @@ namespace poly_fem
 
 		if(!has_parameterization)
 		{
-			assert(translation_.size() != 0);
-			std::fill(grads.begin(), grads.end(), scaling_ * Eigen::MatrixXd::Identity(samples.cols(), samples.cols()));
+			// * scaling
+			std::fill(grads.begin(), grads.end(), Eigen::MatrixXd::Identity(samples.cols(), samples.cols()));
 			return;
 		}
 

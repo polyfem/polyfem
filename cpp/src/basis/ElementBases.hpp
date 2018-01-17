@@ -30,10 +30,6 @@ namespace poly_fem
 		// or directly in the object domain (harmonic bases)
 		bool has_parameterization = true;
 
-		// hack for polygons
-		double scaling_ = 1.0;
-		RowVectorNd translation_;
-
 		///
 		/// @brief      { Map the sample positions in the parametric domain to
 		///             the object domain (if the element has no

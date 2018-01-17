@@ -178,7 +178,7 @@ namespace poly_fem
 		std::cout<<"Loading mesh..."<<std::flush;
 		std::string extension = mesh_path.substr(mesh_path.find_last_of(".") + 1);
 		std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
-		const bool is_volume = true; //(extension == "hybrid");
+		const bool is_volume = (extension == "hybrid");
 
 		if(is_volume)
 			mesh = new Mesh3D();
@@ -844,7 +844,7 @@ namespace poly_fem
 		std::cout<<"Solving... "<<std::flush;
 
 		json params = {
-			{"mtype", 1}, // matrix type for Pardiso (2 = SPD)
+			// {"mtype", 1}, // matrix type for Pardiso (2 = SPD)
 			// {"max_iter", 0}, // for iterative solvers
 			// {"tolerance", 1e-9}, // for iterative solvers
 		};

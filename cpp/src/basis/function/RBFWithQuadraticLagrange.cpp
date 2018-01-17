@@ -157,7 +157,7 @@ void RBFWithQuadraticLagrange::compute_kernels_matrix(const Eigen::MatrixXd &sam
 // -----------------------------------------------------------------------------
 
 void RBFWithQuadraticLagrange::compute_constraints_matrix_2d(
-	const int num_bases, const Quadrature &quadr, Eigen::MatrixXd &L) const
+	const int num_bases, const Quadrature &quadr, Eigen::MatrixXd &C) const
 {
 	const int num_kernels = centers_.rows();
 	const int dim = centers_.cols();
@@ -209,23 +209,18 @@ void RBFWithQuadraticLagrange::compute_constraints_matrix_2d(
 	    4*I_lin(0), 2*I_lin(1),        4*I_mix(0), 6*I_sqr(0), 2*I_sqr(1),
 	    2*I_lin(0), 4*I_lin(1),        4*I_mix(0), 2*I_sqr(0), 6*I_sqr(1);
 	Eigen::FullPivLU<Eigen::Matrix<double, 5, 5>> lu(M);
-	Eigen::Matrix<double, 5, 5> Minv = M.inverse();
-	assert(lu.isInvertible());
 
-	std::cout << M << std::endl;
-	std::cout << M.determinant() << std::endl;
+	show_matrix_stats(M);
 
 	// Compute L
-	L.resize(num_kernels + 1 + dim + dim*(dim+1)/2, num_kernels + 1);
-	L.setZero();
-	L.diagonal().setOnes();
-	L.block(num_kernels + 1, 0, dim, num_kernels) = -K_lin.transpose();
-	L.block(num_kernels + 1 + dim, 0, 1, num_kernels) = -K_mix.transpose().colwise().sum();
-	L.block(num_kernels + 1 + dim + 1, 0, dim, num_kernels) = -2.0 * (K_sqr.colwise() + K_cst).transpose();
-	L.bottomRightCorner(dim, 1).setConstant(-2.0 * volume);
-	L.block(num_kernels + 1, 0, 5, num_kernels + 1) = Minv * L.block(num_kernels + 1, 0, 5, num_kernels + 1);
+	C.resize(5, num_kernels + 1 + dim + dim*(dim+1)/2);
+	C.setZero();
+	C.block(0, 0, dim, num_kernels) = K_lin.transpose();
+	C.block(dim, 0, 1, num_kernels) = K_mix.transpose().colwise().sum();
+	C.block(dim + 1, 0, dim, num_kernels) = 2.0 * (K_sqr.colwise() + K_cst).transpose();
+	C.block(dim + 1, num_kernels, dim, 1).setConstant(2.0 * volume);
+	C.bottomRightCorner(5, 5) = M;
 	// std::cout << L.bottomRightCorner(10, 10) << std::endl;
-
 }
 
 // -----------------------------------------------------------------------------
@@ -367,11 +362,16 @@ void RBFWithQuadraticLagrange::compute_weights(const Eigen::MatrixXd &samples,
 
 	// Solve the system
 	std::cout << "-- Solving system of size " << M.rows() << " x " << M.cols() << std::endl;
-	weights_ = M.ldlt().solve(rhs).topRows(A.cols());
+	auto ldlt = M.ldlt();
+	if (ldlt.info() == Eigen::NumericalIssue) {
+		std::cerr << "-- WARNING: Numerical issues when solving the harmonic least square." << std::endl;
+	}
+	weights_ = ldlt.solve(rhs).topRows(A.cols());
 	std::cout << "-- Solved!" << std::endl;
 
 	std::cout << "-- Mean residual: " << (A * weights_ - b).array().abs().colwise().maxCoeff().mean() << std::endl;
 
+#if 0
 	Eigen::MatrixXd MM, x, dx, val;
 	basis(0, quadr.points, val);
 	grad(0, quadr.points, MM);
@@ -393,4 +393,5 @@ void RBFWithQuadraticLagrange::compute_weights(const Eigen::MatrixXd &samples,
 			* quadr.weights.array()
 			).sum() - local_basis_integral(0, (dim == 2 ? (3 + d) : (dim+dim+d))) << std::endl;
 	}
+#endif
 }

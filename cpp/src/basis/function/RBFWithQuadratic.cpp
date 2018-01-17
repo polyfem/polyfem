@@ -474,11 +474,16 @@ void RBFWithQuadratic::compute_weights(const Eigen::MatrixXd &samples,
 
 	// Solve the system
 	std::cout << "-- Solving system of size " << L.cols() << " x " << L.cols() << std::endl;
-	weights_ += L * (L.transpose() * A.transpose() * A * L).ldlt().solve(L.transpose() * A.transpose() * b);
+	auto ldlt = (L.transpose() * A.transpose() * A * L).ldlt();
+	if (ldlt.info() == Eigen::NumericalIssue) {
+		std::cerr << "-- WARNING: Numerical issues when solving the harmonic least square." << std::endl;
+	}
+	weights_ += L * ldlt.solve(L.transpose() * A.transpose() * b);
 	std::cout << "-- Solved!" << std::endl;
 
 	std::cout << "-- Mean residual: " << (A * weights_ - rhs).array().abs().colwise().maxCoeff().mean() << std::endl;
 
+#if 1
 	Eigen::MatrixXd MM, x, dx, val;
 	basis(0, quadr.points, val);
 	grad(0, quadr.points, MM);
@@ -500,4 +505,5 @@ void RBFWithQuadratic::compute_weights(const Eigen::MatrixXd &samples,
 			* quadr.weights.array()
 			).sum() - local_basis_integral(0, (dim == 2 ? (3 + d) : (dim+dim+d))) << std::endl;
 	}
+#endif
 }

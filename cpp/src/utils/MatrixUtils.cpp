@@ -8,8 +8,10 @@ void poly_fem::show_matrix_stats(const Eigen::MatrixXd &M) {
 	double s2 = svd.singularValues()(svd.singularValues().size()-1);
 	double cond = s1 / s2;
 
+	std::cout << "----------------------------------------" << std::endl;
 	std::cout << "-- Determinant: " << M.determinant() << std::endl;
 	std::cout << "-- Singular values: " << s1 << " " << s2 << std::endl;
 	std::cout << "-- Cond: " << cond << std::endl;
 	std::cout << "-- Invertible: " << lu.isInvertible() << std::endl;
+	std::cout << "----------------------------------------" << std::endl;
 }
