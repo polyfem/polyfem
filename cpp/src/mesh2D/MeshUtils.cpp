@@ -527,7 +527,7 @@ void poly_fem::extract_polyhedra(const Mesh3D &mesh, std::vector<std::unique_ptr
 		auto poly = std::make_unique<GEO::Mesh>();
 		int nv = mesh.n_cell_vertices(c);
 		int nf = mesh.n_cell_faces(c);
-		poly->vertices.create_vertices(triangulated ? nv + nf : nv);
+		poly->vertices.create_vertices((triangulated ? nv + nf : nv) + 1);
 		vertex_l2g.clear();
 		vertex_l2g.reserve(nv);
 		for (int lf = 0; lf < nf; ++lf) {
@@ -561,6 +561,10 @@ void poly_fem::extract_polyhedra(const Mesh3D &mesh, std::vector<std::unique_ptr
 			} else {
 				poly->facets.create_polygon(facet_vertices);
 			}
+		}
+		{
+			Eigen::RowVector3d p = mesh.kernel(c);
+			poly->vertices.point(nv) = GEO::vec3(p.data());
 		}
 		assert(vertex_l2g.size() == (triangulated ? nv + nf : nv));
 

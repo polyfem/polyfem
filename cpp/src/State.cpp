@@ -178,14 +178,16 @@ namespace poly_fem
 		std::cout<<"Loading mesh..."<<std::flush;
 		std::string extension = mesh_path.substr(mesh_path.find_last_of(".") + 1);
 		std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
-		const bool is_volume = extension == "hybrid";
+		const bool is_volume = true; //(extension == "hybrid");
 
 		if(is_volume)
 			mesh = new Mesh3D();
 		else
 			mesh = new Mesh2D();
 
-		mesh->load(mesh_path);
+		if(!mesh->load(mesh_path)) {
+			std::cerr << "File does not exists: " << mesh_path << std::endl;
+		}
 
 		if(mesh->n_vertices() > 60000)
                       exit(0);

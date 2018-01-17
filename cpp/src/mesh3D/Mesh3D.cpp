@@ -1,7 +1,9 @@
 #include "Mesh3D.hpp"
+#include "StringUtils.hpp"
 
-#include <fstream>
 #include <igl/copyleft/tetgen/tetrahedralize.h>
+#include <geogram/mesh/mesh_io.h>
+#include <fstream>
 
 namespace poly_fem
 {
@@ -17,6 +19,12 @@ namespace poly_fem
 
 	bool Mesh3D::load(const std::string &path)
 	{
+		if (!StringUtils::endswidth(path, ".HYBRID")) {
+			GEO::Mesh M;
+			GEO::mesh_load(path, M);
+			return load(M);
+		}
+
 		FILE *f = fopen(path.data(), "rt");
 		if (!f) return false;
 
@@ -107,6 +115,72 @@ namespace poly_fem
 				auto val = mesh_.elements[i].v_in_Kernel[d];
 				mesh_.elements[i].v_in_Kernel[d] = (val - shift(d)) * scaling;
 			}
+		}
+
+		Navigation3D::prepare_mesh(mesh_);
+		compute_elements_tag();
+		return true;
+	}
+
+	// load from a geogram surface mesh (for debugging), or volume mesh
+	// if loading a surface mesh, it assumes there is only one polyhedral cell, and the last vertex id a point in the kernel
+	bool Mesh3D::load(const GEO::Mesh &M) {
+		assert(M.cells.nb() == 0); // surface only for now
+		assert(M.vertices.dimension() == 3);
+
+		int nv = M.vertices.nb() - 1;
+		mesh_.points.resize(3, nv);
+		mesh_.vertices.resize(nv);
+
+		for (int i = 0; i < nv; ++i) {
+			mesh_.points(0, i) = M.vertices.point(i)[0];
+			mesh_.points(1, i) = M.vertices.point(i)[1];
+			mesh_.points(2, i) = M.vertices.point(i)[2];
+			Vertex v;
+			v.id = i;
+			mesh_.vertices[i] = v;
+		}
+		mesh_.faces.resize(M.facets.nb());
+		for (int i = 0; i < (int) M.facets.nb(); ++i) {
+			Face &face = mesh_.faces[i];
+			face.id = i;
+
+			face.vs.resize(M.facets.nb_vertices(i));
+			for (int j = 0; j < (int) M.facets.nb_vertices(i); ++j) {
+				face.vs[j] = M.facets.vertex(i, j);
+			}
+		}
+		mesh_.elements.resize(1);
+		for (int i = 0; i < 1; ++i) {
+			Element &cell = mesh_.elements[i];
+			cell.id = i;
+
+			int nf = M.facets.nb();
+			cell.fs.resize(nf);
+
+			for (int j = 0; j < nf; ++j) {
+				cell.fs[j] = j;
+			}
+
+			for (auto fid : cell.fs) {
+				cell.vs.insert(cell.vs.end(), mesh_.faces[fid].vs.begin(), mesh_.faces[fid].vs.end());
+			}
+			sort(cell.vs.begin(), cell.vs.end());
+			cell.vs.erase(unique(cell.vs.begin(), cell.vs.end()), cell.vs.end());
+
+			for (int j = 0; j < nf; ++j) {
+				cell.fs_flag.push_back(1);
+			}
+		}
+
+		for (int i = 0; i < 1; ++i) {
+			mesh_.elements[i].hex = false;
+		}
+
+		for (int i = 0; i < 1; ++i) {
+			mesh_.elements[i].v_in_Kernel.push_back(M.vertices.point(nv)[0]);
+			mesh_.elements[i].v_in_Kernel.push_back(M.vertices.point(nv)[1]);
+			mesh_.elements[i].v_in_Kernel.push_back(M.vertices.point(nv)[2]);
 		}
 
 		Navigation3D::prepare_mesh(mesh_);
@@ -375,6 +449,12 @@ namespace poly_fem
 
 	RowVectorNd Mesh3D::point(const int global_index) const {
 		RowVectorNd pt = mesh_.points.col(global_index).transpose();
+		return pt;
+	}
+
+	RowVectorNd Mesh3D::kernel(const int c) const {
+		RowVectorNd pt(3);
+		pt << mesh_.elements[c].v_in_Kernel[0], mesh_.elements[c].v_in_Kernel[1], mesh_.elements[c].v_in_Kernel[2];
 		return pt;
 	}
 

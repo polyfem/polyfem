@@ -4,6 +4,7 @@
 
 #include "Navigation3D.hpp"
 #include "Mesh3DStorage.hpp"
+#include <geogram/mesh/mesh.h>
 #include <iostream>
 #include <Eigen/Dense>
 #include <vector>
@@ -33,12 +34,14 @@ namespace poly_fem
 		bool is_boundary_face(const int face_global_id) const override { return mesh_.faces[face_global_id].boundary; }
 
 		bool load(const std::string &path) override;
+		bool load(const GEO::Mesh &M);
+
 		bool save(const std::string &path) const override;
 		bool save(const std::vector<int> &fs, const int ringN, const std::string &path) const;
 
 		void compute_elements_tag() override;
 
-
+		RowVectorNd kernel(const int cell_id) const;
 		virtual RowVectorNd point(const int vertex_id) const override;
 		virtual RowVectorNd edge_barycenter(const int e) const override;
 		virtual RowVectorNd face_barycenter(const int f) const override;

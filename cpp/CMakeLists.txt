@@ -86,6 +86,9 @@ add_library(polyfem
 	src/utils/MatrixUtils.hpp
 	src/utils/MatrixUtils.cpp
 
+	src/utils/StringUtils.hpp
+	src/utils/StringUtils.cpp
+
 	src/mesh/Mesh.cpp
 	src/mesh/Mesh.hpp
 	src/mesh/MeshNodes.cpp
