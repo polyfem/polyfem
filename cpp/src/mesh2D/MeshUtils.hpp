@@ -5,7 +5,7 @@
 #include <geogram/mesh/mesh.h>
 #include <Eigen/Dense>
 #include <vector>
-
+#include <memory>
 
 namespace poly_fem
 {

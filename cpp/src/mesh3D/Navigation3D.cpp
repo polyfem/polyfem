@@ -69,7 +69,8 @@ poly_fem::Navigation3D::Index poly_fem::Navigation3D::get_index_from_element_fac
 	if (lv >= M.faces[idx.face].vs.size()) lv = lv % M.faces[idx.face].vs.size();
 	idx.face_corner = lv;
 	idx.vertex = M.faces[idx.face].vs[idx.face_corner];
-	if (M.elements[hi].fs_flag[idx.element_patch]) idx.face_corner = M.faces[idx.face].vs.size() - 1 - idx.face_corner;
+	//if (M.elements[hi].fs_flag[idx.element_patch]) idx.face_corner = M.faces[idx.face].vs.size() - 1 - idx.face_corner;
+	if (M.elements[hi].fs_flag[idx.element_patch]) idx.face_corner = (idx.face_corner + M.faces[idx.face].vs.size() - 1)% M.faces[idx.face].vs.size();
 	idx.edge = M.faces[idx.face].es[idx.face_corner];
 
 	return idx;
