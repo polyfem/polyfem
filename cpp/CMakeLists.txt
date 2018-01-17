@@ -269,6 +269,13 @@ endif()
 if(ENABLE_PARDISO AND NOT (ENABLE_MKL AND MKL_FOUND))
 	find_package(Pardiso)
 	if(PARDISO_FOUND)
+		find_package(LAPACK)
+		if(LAPACK_FOUND)
+			target_link_libraries(polyfem PUBLIC ${LAPACK_LIBRARIES})
+		else()
+			message(FATAL_ERROR "unable to find lapack")
+		endif()
+
 		target_link_libraries(polyfem PUBLIC ${PARDISO_LIBRARIES})
 		target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_PARDISO)
 	endif()
@@ -318,7 +325,6 @@ add_executable(${PROJECT_NAME}_bin
 	src/UIState.cpp
 )
 target_link_libraries(${PROJECT_NAME}_bin PUBLIC polyfem igl::viewer)
-
 
 # Main executable without gui, uncomment when not debugging gui is necessary
 # add_executable(${PROJECT_NAME}_exec
