@@ -40,7 +40,7 @@ double transform_pts(const TriMat &tri, const Eigen::MatrixXd &pts, Eigen::Matri
 ////////////////////////////////////////////////////////////////////////////////
 
 void PolyhedronQuadrature::get_quadrature(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
-	const int order, Quadrature &quadr)
+	const Eigen::RowVector3d &kernel, const int order, Quadrature &quadr)
 {
 	std::string flags = "Qpq2.0";
 	Eigen::VectorXi J;
@@ -52,18 +52,21 @@ void PolyhedronQuadrature::get_quadrature(const Eigen::MatrixXd &V, const Eigen:
 
 	// std::cout << "tetgen in" << std::endl;
 	// VV = (V.rowwise() - translation) / scaling;
+
+	poly_fem::tertrahedralize_star_shaped_surface(V, F, kernel, TV, TF, tets);
+
+	// igl::viewer::Viewer viewer;
+	// viewer.data.set_mesh(V, F);
+	// viewer.launch();
+
 	// igl::write_triangle_mesh("poly_current.obj", VV, F);
 	// igl::simplify_polyhedron(VV, F, OV, OF, J);
 	// igl::write_triangle_mesh("poly_out.obj", OV, OF);
 
-	// igl::viewer::Viewer viewer;
-	// viewer.data.set_mesh(OV, OF);
-	// viewer.launch();
-
 	// OV = (OV * scaling).rowwise() + translation;
-	int res = igl::copyleft::tetgen::tetrahedralize(V, F, flags, TV, tets, TF);
+	// int res = igl::copyleft::tetgen::tetrahedralize(OV, OF, flags, TV, tets, TF);
 	// std::cout << "tetgen out" << std::endl;
-	assert(res == 0);
+	// assert(res == 0);
 
 	// static int counter = 0;
 	// std::stringstream ss;
@@ -74,11 +77,11 @@ void PolyhedronQuadrature::get_quadrature(const Eigen::MatrixXd &V, const Eigen:
 	// 	std::cerr << "Tetgen did not succeed. Returned code: " << res << std::endl;
 	// 	igl::write_triangle_mesh("poly_" + s + ".obj", V, F);
 	// } else {
-	igl::writeMESH("tet_" ".mesh", TV, tets, TF);
+	// igl::writeMESH("tet_" ".mesh", TV, tets, TF);
 	// }
 
 	// GEO::Mesh M;
-	// GEO::mesh_load("tet.o.mesh", M);
+	// GEO::mesh_load("tet_.o.mesh", M);
 	// from_geogram_mesh(M, TV, TF, tets);
 	// std::cout << tets.rows() << std::endl;
 

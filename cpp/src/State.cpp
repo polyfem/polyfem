@@ -945,7 +945,9 @@ namespace poly_fem
 		computing_errors_time = timer.getElapsedTime();
 		std::cout<<" took "<<computing_errors_time<<"s"<<std::endl;
 
-		std::cout<<l2_err<<" "<<linf_err<<" "<<lp_err<<std::endl;
+		std::cout << "-- L2 error: " << l2_err << std::endl;
+		std::cout << "-- Lp error: " << lp_err << std::endl;
+		// std::cout<<l2_err<<" "<<linf_err<<" "<<lp_err<<std::endl;
 	}
 
 	State &State::state(){

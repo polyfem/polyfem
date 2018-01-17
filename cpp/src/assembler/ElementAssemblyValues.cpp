@@ -103,7 +103,7 @@ namespace poly_fem
 	{
 		basis.compute_quadrature(quadrature);
 
-		const bool poly = !gbasis.has_parameterization;
+		// const bool poly = !gbasis.has_parameterization;
 
 		basis_values.resize(basis.bases.size());
 
@@ -145,8 +145,8 @@ namespace poly_fem
 		}
 
 		timer0.stop();
-		const double t = timer0.getElapsedTime();
-		if (poly) { std::cout << "-- eval quadr points: " << t << std::endl; }
+		// const double t = timer0.getElapsedTime();
+		// if (poly) { std::cout << "-- eval quadr points: " << t << std::endl; }
 
 
 		const int n_local_bases = int(basis.bases.size());

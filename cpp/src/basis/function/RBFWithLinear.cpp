@@ -150,7 +150,7 @@ void RBFWithLinear::compute_constraints_matrix(
 	L.setZero();
 	L.diagonal().setOnes();
 	L.block(num_kernels + 1, 0, dim, num_kernels) = -KI.transpose();
-	std::cout << L.bottomRightCorner(10, 10) << std::endl;
+	// std::cout << L.bottomRightCorner(10, 10) << std::endl;
 
 	// Compute t
 	t.resize(num_kernels + 1 + dim, num_bases);

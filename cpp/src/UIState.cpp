@@ -1039,7 +1039,7 @@ namespace poly_fem
 				if(state.mesh->is_volume())
 				{
 					auto v{explode(selected_elements, ',')};
-					current_3d_index = static_cast<Mesh3D *>(state.mesh)->get_index_from_element(atoi(v.front().c_str()), 1, 0);
+					current_3d_index = static_cast<Mesh3D *>(state.mesh)->get_index_from_element(atoi(v.front().c_str()), 9, 0);
 					std::cout<<"e:"<<current_3d_index.element<<" f:"<<current_3d_index.face<<" e:"<<current_3d_index.edge<<" v:"<<current_3d_index.vertex<<std::endl;
 				}
 

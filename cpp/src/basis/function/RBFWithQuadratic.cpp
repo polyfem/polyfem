@@ -215,7 +215,7 @@ void RBFWithQuadratic::compute_constraints_matrix_2d(
 	Eigen::FullPivLU<Eigen::Matrix<double, 5, 5>> lu(M);
 	assert(lu.isInvertible());
 
-	show_matrix_stats(M);
+	// show_matrix_stats(M);
 
 	// Compute L
 	L.resize(num_kernels + 1 + dim + dim*(dim+1)/2, num_kernels + 1);
@@ -308,7 +308,7 @@ void RBFWithQuadratic::compute_constraints_matrix_3d(
 	Eigen::FullPivLU<Eigen::Matrix<double, 9, 9>> lu(M);
 	assert(lu.isInvertible());
 
-	show_matrix_stats(M);
+	// show_matrix_stats(M);
 
 	// Compute L
 	L.resize(num_kernels + 1 + dim + dim*(dim+1)/2, num_kernels + 1);
@@ -481,9 +481,9 @@ void RBFWithQuadratic::compute_weights(const Eigen::MatrixXd &samples,
 	weights_ += L * ldlt.solve(L.transpose() * A.transpose() * b);
 	std::cout << "-- Solved!" << std::endl;
 
-	std::cout << "-- Mean residual: " << (A * weights_ - rhs).array().abs().colwise().maxCoeff().mean() << std::endl;
+	// std::cout << "-- Mean residual: " << (A * weights_ - rhs).array().abs().colwise().maxCoeff().mean() << std::endl;
 
-#if 1
+#if 0
 	Eigen::MatrixXd MM, x, dx, val;
 	basis(0, quadr.points, val);
 	grad(0, quadr.points, MM);
