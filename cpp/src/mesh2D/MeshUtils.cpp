@@ -436,9 +436,15 @@ void poly_fem::to_geogram_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &
 		p[2] = V(i, 2);
 	}
 	// Setup faces
-	M.facets.create_triangles((int) F.rows());
+	if (F.cols() == 3) {
+		M.facets.create_triangles((int) F.rows());
+	} else if (F.cols() == 4) {
+		M.facets.create_quads((int) F.rows());
+	} else {
+		throw std::runtime_error("Mesh format not supported");
+	}
 	for (int c = 0; c < (int) M.facets.nb(); ++c) {
-		for (int lv = 0; lv < 3; ++lv) {
+		for (int lv = 0; lv < F.cols(); ++lv) {
 			M.facets.set_vertex(c, lv, F(c, lv));
 		}
 	}
@@ -484,8 +490,9 @@ void poly_fem::signed_squared_distances(const Eigen::MatrixXd &V, const Eigen::M
 
 double poly_fem::signed_volume(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F) {
 	assert(F.cols() == 3);
-	std::array<RowVectorXd, 4> t;
-	t[3] = RowVectorXd::Zero(V.cols());
+	assert(V.cols() == 3);
+	std::array<Eigen::RowVector3d, 4> t;
+	t[3] = Eigen::RowVector3d::Zero(V.cols());
 	double volume_total = 0;
 	for (int f = 0; f < F.rows(); ++f) {
 		for (int lv = 0; lv < F.cols(); ++lv) {
@@ -494,7 +501,17 @@ double poly_fem::signed_volume(const Eigen::MatrixXd &V, const Eigen::MatrixXi &
 		double vol = GEO::Geom::tetra_signed_volume(t[0].data(), t[1].data(), t[2].data(), t[3].data());
 		volume_total += vol;
 	}
-	return volume_total;
+	return -volume_total;
+}
+
+// -----------------------------------------------------------------------------
+
+void poly_fem::orient_closed_surface(const Eigen::MatrixXd &V, Eigen::MatrixXi &F, bool positive) {
+	if ((positive ? 1 : -1) * signed_volume(V, F) < 0) {
+		for (int f = 0; f < F.rows(); ++f) {
+			F.row(f) = F.row(f).reverse().eval();
+		}
+	}
 }
 
 // -----------------------------------------------------------------------------

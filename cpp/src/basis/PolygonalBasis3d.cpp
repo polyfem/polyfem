@@ -12,6 +12,7 @@
 #include <igl/per_vertex_normals.h>
 #include <igl/write_triangle_mesh.h>
 #include <igl/colormap.h>
+#include <geogram/mesh/mesh_io.h>
 #include <random>
 #include <memory>
 
@@ -159,10 +160,11 @@ void compute_offset_kernels(const Eigen::MatrixXd &QV, const Eigen::MatrixXi &QF
 	Eigen::MatrixXi PF;
 	Eigen::VectorXd D;
 	compute_canonical_pattern(n_kernels_per_edge, PV, PF);
-	instanciate_pattern(QV, QF, PV, PF, KV, KF, nullptr, evalFuncGeom, getAdjLocalEdge);
-	std::cout << "volume 1: " << signed_volume(KV, KF) << std::endl;
+	instantiate_pattern(QV, QF, PV, PF, KV, KF, nullptr, evalFuncGeom, getAdjLocalEdge);
+	orient_closed_surface(KV, KF);
+	double volume = signed_volume(KV, KF);
 	igl::per_vertex_normals(KV, KF, KN);
-	kernel_centers = KV + eps * KN;
+	kernel_centers = KV + eps * volume * KN;
 	// std::default_random_engine gen;
 	// std::uniform_real_distribution<double> dist(-1.0, 1.0);
 	// for (int v = 0; v < kernel_centers.rows(); ++v) {
@@ -182,10 +184,10 @@ void compute_offset_kernels(const Eigen::MatrixXd &QV, const Eigen::MatrixXi &QF
 	}
 	// igl::write_triangle_mesh("foo_medium.obj", KV, KF);
 	// std::cout << "nkernels: " << KV.rows() << std::endl;
-	// igl::viewer::Viewer viewer;
 	// igl::write_triangle_mesh("foo.obj", KV, KF);
+	// igl::viewer::Viewer viewer;
 	// viewer.data.set_mesh(KV, KF);
-	// // viewer.data.add_points(kernel_centers, Eigen::RowVector3d(0,1,1));
+	// viewer.data.add_points(kernel_centers, Eigen::RowVector3d(0,1,1));
 	// viewer.launch();
 }
 
@@ -261,16 +263,19 @@ void sample_polyhedra(
 	Eigen::MatrixXi PF, CF, UF;
 	Eigen::VectorXi uv_sources, uv_ranges;
 	compute_canonical_pattern(n_samples_per_edge, PV, PF);
-	instanciate_pattern(QV, QF, PV, PF, UV, UF, &uv_sources, evalFunc, getAdjLocalEdge);
-	instanciate_pattern(QV, QF, PV, PF, collocation_points, CF, nullptr, evalFuncGeom, getAdjLocalEdge);
+	instantiate_pattern(QV, QF, PV, PF, UV, UF, &uv_sources, evalFunc, getAdjLocalEdge);
+	orient_closed_surface(UV, UF);
+	instantiate_pattern(QV, QF, PV, PF, collocation_points, CF, nullptr, evalFuncGeom, getAdjLocalEdge);
+	orient_closed_surface(collocation_points, CF);
 	reorder_mesh(collocation_points, CF, uv_sources, uv_ranges);
 	reorder_mesh(UV, UF, uv_sources, uv_ranges);
 	assert(uv_ranges.size() == mesh.n_cell_faces(element_index) + 1);
 
 	// Compute coarse surface surface for visualization
 	compute_canonical_pattern(n_quadrature_vertices_per_edge, PV, PF);
-	instanciate_pattern(QV, QF, PV, PF, triangulated_vertices, triangulated_faces,
+	instantiate_pattern(QV, QF, PV, PF, triangulated_vertices, triangulated_faces,
 		nullptr, evalFuncGeom, getAdjLocalEdge);
+	orient_closed_surface(triangulated_vertices, triangulated_faces);
 
 	// for (int f = 0; f < KF.rows(); ++f) {
 	// 	triangulated_faces.row(f) = KF.row(f).reverse();
@@ -489,7 +494,7 @@ double compute_epsilon(const Mesh3D &mesh, int e) {
 	// // const double eps = use_harmonic ? (0.08*area) : 0;
 	// const double eps = 0.08*area;
 
-	return 0.05;
+	return 0.1; // will be relative to the volume of the poly
 }
 
 // -----------------------------------------------------------------------------
@@ -509,7 +514,7 @@ void PolygonalBasis3d::build_bases(
 		return;
 	}
 	int n_kernels_per_edge = 2; //(int) std::round(n_samples_per_edge / 3.0);
-	int n_samples_per_edge = 3*n_kernels_per_edge;
+	int n_samples_per_edge = 2*n_kernels_per_edge;
 
 	// Step 1: Compute integral constraints
 	Eigen::MatrixXd basis_integrals;
@@ -589,6 +594,7 @@ void PolygonalBasis3d::build_bases(
 		}
 
 		// Polygon boundary after geometric mapping from neighboring elements
+		orient_closed_surface(triangulated_vertices, triangulated_faces, false); // stupid viewer is flipping all the faces
 		mapped_boundary[e].first = triangulated_vertices;
 		mapped_boundary[e].second = triangulated_faces;
 	}

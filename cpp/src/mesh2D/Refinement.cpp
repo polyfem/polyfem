@@ -223,7 +223,7 @@ Eigen::VectorXi vertex_degree(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool poly_fem::instanciate_pattern(
+bool poly_fem::instantiate_pattern(
 	const Eigen::MatrixXd &IV, const Eigen::MatrixXi &IQ,
 	const Eigen::MatrixXd &PV, const Eigen::MatrixXi &PF,
 	Eigen::MatrixXd &OV, Eigen::MatrixXi &OF, Eigen::VectorXi *SF,
@@ -434,7 +434,7 @@ void poly_fem::refine_quad_mesh(
 		2, 1, 9, 8;
 	PF = PF.array() - 1;
 	// std::cout << PF << std::endl;
-	bool res = instanciate_pattern(IV, IF, PV, PF, OV, OF);
+	bool res = instantiate_pattern(IV, IF, PV, PF, OV, OF);
 	assert(res);
 }
 

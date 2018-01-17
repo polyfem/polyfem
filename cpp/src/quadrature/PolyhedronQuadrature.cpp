@@ -8,6 +8,8 @@
 #include <igl/writeMESH.h>
 #include <igl/readMESH.h>
 #include <igl/write_triangle_mesh.h>
+#include <igl/simplify_polyhedron.h>
+#include <igl/viewer/Viewer.h>
 #include <vector>
 #include <cassert>
 #include <iostream>
@@ -41,11 +43,25 @@ void PolyhedronQuadrature::get_quadrature(const Eigen::MatrixXd &V, const Eigen:
 	const int order, Quadrature &quadr)
 {
 	std::string flags = "Qpq2.0";
-	Eigen::MatrixXd TV;
-	Eigen::MatrixXi TF, tets;
-	// igl::write_triangle_mesh("poly_current.obj", V, F);
+	Eigen::VectorXi J;
+	Eigen::MatrixXd VV, OV, TV;
+	Eigen::MatrixXi OF, TF, tets;
+
+	double scaling = (V.colwise().maxCoeff() - V.colwise().minCoeff()).maxCoeff();
+	Eigen::RowVector3d translation = V.colwise().minCoeff();
+
 	// std::cout << "tetgen in" << std::endl;
-	int res = igl::copyleft::tetgen::tetrahedralize(V, F, flags, TV, tets, TF);
+	VV = (V.rowwise() - translation) / scaling;
+	igl::write_triangle_mesh("poly_current.obj", VV, F);
+	igl::simplify_polyhedron(VV, F, OV, OF, J);
+	igl::write_triangle_mesh("poly_out.obj", OV, OF);
+
+	// igl::viewer::Viewer viewer;
+	// viewer.data.set_mesh(OV, OF);
+	// viewer.launch();
+
+	OV = (OV * scaling).rowwise() + translation;
+	int res = igl::copyleft::tetgen::tetrahedralize(OV, OF, flags, TV, tets, TF);
 	// std::cout << "tetgen out" << std::endl;
 	assert(res == 0);
 
@@ -58,7 +74,7 @@ void PolyhedronQuadrature::get_quadrature(const Eigen::MatrixXd &V, const Eigen:
 	// 	std::cerr << "Tetgen did not succeed. Returned code: " << res << std::endl;
 	// 	igl::write_triangle_mesh("poly_" + s + ".obj", V, F);
 	// } else {
-	// 	igl::writeMESH("tet_" + s + ".mesh", TV, tets, TF);
+	igl::writeMESH("tet_" ".mesh", TV, tets, TF);
 	// }
 
 	// GEO::Mesh M;

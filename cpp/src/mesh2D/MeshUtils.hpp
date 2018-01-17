@@ -113,6 +113,15 @@ void from_geogram_mesh(const GEO::Mesh &M, Eigen::MatrixXd &V, Eigen::MatrixXi &
 double signed_volume(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F);
 
 ///
+/// @brief      { Orient a triangulated surface to have positive volume }
+///
+/// @param[in]  V         { #V x 3 input mesh vertices }
+/// @param[in]  F         { #F x 3 input mesh facets }
+/// @param[in]  positive  { Orient for positive volume, or negative volume }
+///
+void orient_closed_surface(const Eigen::MatrixXd &V, Eigen::MatrixXi &F, bool positive = true);
+
+///
 /// @brief      { Extract polyhedra from a 3D volumetric mesh }
 ///
 /// @param[in]  mesh   { Input volume mesh }

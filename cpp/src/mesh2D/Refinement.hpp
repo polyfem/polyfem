@@ -43,7 +43,7 @@ typedef std::function<std::tuple<int, int, bool>(int, int)> GetAdjacentLocalEdge
 //
 // @return     { Return true in case of success. }
 //
-bool instanciate_pattern(
+bool instantiate_pattern(
 	const Eigen::MatrixXd &IV, const Eigen::MatrixXi &IF,
 	const Eigen::MatrixXd &PV, const Eigen::MatrixXi &PF,
 	Eigen::MatrixXd &OV, Eigen::MatrixXi &OF,

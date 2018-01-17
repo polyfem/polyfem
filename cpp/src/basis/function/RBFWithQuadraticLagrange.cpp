@@ -1,6 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "RBFWithQuadraticLagrange.hpp"
 #include "Types.hpp"
+#include "MatrixUtils.hpp"
 #include <igl/Timer.h>
 #include <Eigen/Dense>
 #include <iostream>
@@ -121,7 +122,7 @@ void RBFWithQuadraticLagrange::bases_grads(const int axis, const Eigen::MatrixXd
 		A_prime.col(num_kernels + 1 + dim + axis) = samples.col((axis+1)%dim);
 		A_prime.col(num_kernels + 1 + dim + (axis+2)%dim) = samples.col((axis+2)%dim);
 	}
-	// Quadratic termsm
+	// Quadratic terms
 	A_prime.rightCols(dim).col(axis) = 2.0 * samples.col(axis);
 
 	// Apply weights
@@ -222,7 +223,6 @@ void RBFWithQuadraticLagrange::compute_constraints_matrix_2d(
 	L.block(num_kernels + 1 + dim, 0, 1, num_kernels) = -K_mix.transpose().colwise().sum();
 	L.block(num_kernels + 1 + dim + 1, 0, dim, num_kernels) = -2.0 * (K_sqr.colwise() + K_cst).transpose();
 	L.bottomRightCorner(dim, 1).setConstant(-2.0 * volume);
-	// L.block(num_kernels + 1, 0, 5, num_kernels + 1) = lu.solve(L.block(num_kernels + 1, 0, 5, num_kernels + 1));
 	L.block(num_kernels + 1, 0, 5, num_kernels + 1) = Minv * L.block(num_kernels + 1, 0, 5, num_kernels + 1);
 	// std::cout << L.bottomRightCorner(10, 10) << std::endl;
 
@@ -293,11 +293,8 @@ void RBFWithQuadraticLagrange::compute_constraints_matrix_3d(
 	Eigen::Matrix<double, 1, 9> M_rhs;
 	M_rhs << I_lin, I_mix, I_sqr;
 	M.bottomRows(dim).rowwise() += 2.0 * M_rhs;
-	Eigen::FullPivLU<Eigen::Matrix<double, 9, 9>> lu(M);
-	assert(lu.isInvertible());
 
-	std::cout << M << std::endl;
-	std::cout << M.determinant() << std::endl;
+	show_matrix_stats(M);
 
 	// Compute L
 	C.resize(9, num_kernels + 1 + dim + dim*(dim+1)/2);
@@ -307,9 +304,7 @@ void RBFWithQuadraticLagrange::compute_constraints_matrix_3d(
 	C.block(dim + dim, 0, dim, num_kernels) = 2.0 * (K_sqr.colwise() + K_cst).transpose();
 	C.block(dim + dim, num_kernels, dim, 1).setConstant(2.0 * volume);
 	C.bottomRightCorner(9, 9) = M;
-	// C.block(0, 0, 9, num_kernels + 1) = lu.solve(L.block(num_kernels + 1, 0, 9, num_kernels + 1));
-	std::cout << C.bottomRightCorner(9, 12) << std::endl;
-	// std::cout << std::endl << L << std::endl << std::endl;
+	// std::cout << C.bottomRightCorner(9, 12) << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -368,7 +363,7 @@ void RBFWithQuadraticLagrange::compute_weights(const Eigen::MatrixXd &samples,
 	M.bottomLeftCorner(C.rows(), A.cols()) = C;
 	M.bottomRightCorner(C.rows(), C.rows()).setZero();
 
-	std::cout << M.bottomRightCorner(10, 10) << std::endl;
+	// std::cout << M.bottomRightCorner(10, 10) << std::endl;
 
 	// Solve the system
 	std::cout << "-- Solving system of size " << M.rows() << " x " << M.cols() << std::endl;
