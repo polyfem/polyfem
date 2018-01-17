@@ -1,5 +1,54 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "Mesh.hpp"
+#include "Mesh2D.hpp"
+#include "Mesh3D.hpp"
+#include "StringUtils.hpp"
+#include <geogram/mesh/mesh_io.h>
+#include <geogram/mesh/mesh_geometry.h>
+////////////////////////////////////////////////////////////////////////////////
+
+namespace {
+
+bool is_planar(const GEO::Mesh &M) {
+	if (M.vertices.dimension() == 2) {
+		return true;
+	}
+	assert(M.vertices.dimension() == 3);
+	GEO::vec3 min_corner, max_corner;
+	GEO::get_bbox(M, &min_corner[0], &max_corner[0]);
+	return (max_corner[2] - min_corner[2]) < 1e-5;
+}
+
+} // anonymous namespace
+
+std::unique_ptr<poly_fem::Mesh> poly_fem::Mesh::create(const std::string &path) {
+	std::string lowername = path;
+	std::transform(lowername.begin(), lowername.end(), lowername.begin(), ::tolower);
+	if (StringUtils::endswidth(lowername, ".hybrid")) {
+		auto mesh = std::make_unique<Mesh3D>();
+		if (mesh->load(path)){
+			return mesh;
+		}
+	} else {
+		GEO::Mesh tmp;
+		if (GEO::mesh_load(path, tmp)) {
+			if (is_planar(tmp)) {
+				auto mesh = std::make_unique<Mesh2D>();
+				if (mesh->load(path)) {
+					return mesh;
+				}
+			} else {
+				auto mesh = std::make_unique<Mesh3D>();
+				if (mesh->load(tmp)) {
+					return mesh;
+				}
+			}
+		}
+	}
+	std::cerr << "Failed to load mesh: " << path << std::endl;
+	return nullptr;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 void poly_fem::Mesh::edge_barycenters(Eigen::MatrixXd &barycenters) const {
