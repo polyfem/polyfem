@@ -1,7 +1,6 @@
 #include "RhsAssembler.hpp"
 
-#include "QuadBoundarySampler.hpp"
-#include "HexBoundarySampler.hpp"
+#include "BoundarySampler.hpp"
 
 #include "LinearSolver.hpp"
 
@@ -66,9 +65,10 @@ namespace poly_fem
 
 		long total_size = 0;
 
-		for(int e = 0; e < n_el; ++e)
+		for(const auto &lb : local_boundary)
 		{
-			bool has_samples = sample_boundary(is_volume, local_boundary[e], resolution, true, samples);
+			const int e = lb.element_id();
+			bool has_samples = sample_boundary(lb, resolution, true, samples);
 
 			if(!has_samples)
 				continue;
@@ -110,9 +110,10 @@ namespace poly_fem
 
 		int global_counter = 0;
 
-		for(int e = 0; e < n_el; ++e)
+		for(const auto &lb : local_boundary)
 		{
-			bool has_samples = sample_boundary(is_volume, local_boundary[e], resolution, false, samples);
+			const int e = lb.element_id();
+			bool has_samples = sample_boundary(lb, resolution, false, samples);
 
 			if(!has_samples)
 				continue;
@@ -147,8 +148,8 @@ namespace poly_fem
 			global_rhs.block(global_counter, 0, rhs_fun.rows(), rhs_fun.cols()) = rhs_fun;
 			global_counter += rhs_fun.rows();
 
-			//igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
-			//viewer.data.add_points(mapped, Eigen::MatrixXd::Constant(1, 3, 0));
+			// igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
+			// viewer.data.add_points(mapped, Eigen::MatrixXd::Constant(1, 3, 0));
 
 			//Eigen::MatrixXd asd(mapped.rows(), 3);
 			//asd.col(0)=mapped.col(0);
@@ -210,36 +211,25 @@ namespace poly_fem
 	}
 
 
-	bool RhsAssembler::sample_boundary(const bool is_volume, const LocalBoundary &local_boundary, const int resolution_one_d, const bool skip_computation, Eigen::MatrixXd &samples) const
+	bool RhsAssembler::sample_boundary(const LocalBoundary &local_boundary, const int n_samples, const bool skip_computation, Eigen::MatrixXd &samples) const
 	{
-		if(is_volume)
+		samples.resize(0, 0);
+		for(int i = 0; i < local_boundary.size(); ++i)
 		{
-			const int resolution = resolution_one_d;
-
-				// std::cout<<local_boundary.flags()<<std::endl;
-
-			const bool is_right_boundary  = local_boundary.is_right_boundary();
-			const bool is_bottom_boundary = local_boundary.is_bottom_boundary();
-			const bool is_left_boundary   = local_boundary.is_left_boundary();
-			const bool is_top_boundary    = local_boundary.is_top_boundary();
-			const bool is_front_boundary  = local_boundary.is_front_boundary();
-			const bool is_back_boundary   = local_boundary.is_back_boundary();
-
-			return HexBoundarySampler::sample(is_right_boundary, is_bottom_boundary, is_left_boundary, is_top_boundary, is_front_boundary, is_back_boundary, resolution_one_d, skip_computation, samples);
+			Eigen::MatrixXd tmp;
+			switch(local_boundary.type())
+			{
+				case BoundaryType::TriLine:	 BoundarySampler::sample_parametric_tri_edge(local_boundary[i], n_samples, tmp); break;
+				case BoundaryType::QuadLine: BoundarySampler::sample_parametric_quad_edge(local_boundary[i], n_samples, tmp); break;
+				case BoundaryType::Quad: 	 BoundarySampler::sample_parametric_quad_face(local_boundary[i], n_samples, tmp); break;
+				case BoundaryType::Tri: 	 BoundarySampler::sample_parametric_tri_face(local_boundary[i], n_samples, tmp); break;
+				default: assert(false);
+			}
+			samples.conservativeResize(samples.rows() + tmp.rows(), tmp.cols());
+			samples.bottomRows(tmp.rows()) = tmp;
 		}
-		else
-		{
-			const int resolution = resolution_one_d;
 
-				// std::cout<<local_boundary.flags()<<std::endl;
 
-			const bool is_right_boundary  = local_boundary.is_right_boundary();
-			const bool is_bottom_boundary = local_boundary.is_bottom_boundary();
-			const bool is_left_boundary   = local_boundary.is_left_boundary();
-			const bool is_top_boundary    = local_boundary.is_top_boundary();
-
-			return QuadBoundarySampler::sample(is_right_boundary, is_bottom_boundary, is_left_boundary, is_top_boundary, resolution_one_d, skip_computation, samples);
-		}
 
 		return true;
 	}

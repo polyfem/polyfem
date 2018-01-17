@@ -240,7 +240,9 @@ namespace poly_fem
 			const ElementBases &bs = state.bases[i];
 			MatrixXd local_pts;
 
-			if(state.mesh->is_cube(i))
+			if(state.mesh->is_simplicial())
+				local_pts = local_vis_pts_tri;
+			else if(state.mesh->is_cube(i))
 				local_pts = local_vis_pts_quad;
 			else
 				local_pts = vis_pts_poly[i];
@@ -373,7 +375,7 @@ namespace poly_fem
 			// 	viewer.data.add_label(p.transpose(), std::to_string(i));
 			// }
 
-			// for(int i = 0; i < state.mesh->n_elements(); ++i)
+			// for(int i = 0; i < state.mesh->n_cells(); ++i)
 			// {
 			// 	MatrixXd p = state.mesh->cell_barycenter(i);
 			// 	viewer.data.add_label(p.transpose(), std::to_string(i));
@@ -589,38 +591,57 @@ namespace poly_fem
 			if(state.mesh->is_volume())
 			{
 				buf<<"Qpq1.414a"<<area_param;
-				MatrixXd pts(8,3); pts <<
-				0, 0, 0,
-				0, 1, 0,
-				1, 1, 0,
-				1, 0, 0,
+				{
+					MatrixXd pts(8,3); pts <<
+					0, 0, 0,
+					0, 1, 0,
+					1, 1, 0,
+					1, 0, 0,
 
-				0, 0, 1, //4
-				0, 1, 1,
-				1, 1, 1,
-				1, 0, 1;
+					0, 0, 1, //4
+					0, 1, 1,
+					1, 1, 1,
+					1, 0, 1;
 
-				Eigen::MatrixXi faces(12,3); faces <<
-				1, 2, 0,
-				0, 2, 3,
+					Eigen::MatrixXi faces(12,3); faces <<
+					1, 2, 0,
+					0, 2, 3,
 
-				5, 4, 6,
-				4, 7, 6,
+					5, 4, 6,
+					4, 7, 6,
 
-				1, 0, 4,
-				1, 4, 5,
+					1, 0, 4,
+					1, 4, 5,
 
-				2, 1, 5,
-				2, 5, 6,
+					2, 1, 5,
+					2, 5, 6,
 
-				3, 2, 6,
-				3, 6, 7,
+					3, 2, 6,
+					3, 6, 7,
 
-				0, 3, 7,
-				0, 7, 4;
+					0, 3, 7,
+					0, 7, 4;
 
-				MatrixXi tets;
-				igl::copyleft::tetgen::tetrahedralize(pts, faces, buf.str(), local_vis_pts_quad, tets, local_vis_faces_quad);
+					MatrixXi tets;
+					igl::copyleft::tetgen::tetrahedralize(pts, faces, buf.str(), local_vis_pts_quad, tets, local_vis_faces_quad);
+				}
+				{
+					MatrixXd pts(4,3); pts <<
+					0, 0, 0,
+					1, 0, 0,
+					0, 1, 0,
+					0, 0, 1;
+
+					Eigen::MatrixXi faces(4,3); faces <<
+					0, 1, 2,
+
+					3, 1, 0,
+					2, 1, 3,
+					0, 2, 3;
+
+					MatrixXi tets;
+					igl::copyleft::tetgen::tetrahedralize(pts, faces, buf.str(), local_vis_pts_tri, tets, local_vis_faces_tri);
+				}
 			}
 			else
 			{
@@ -641,19 +662,19 @@ namespace poly_fem
 					MatrixXd H(0,2);
 					igl::triangle::triangulate(pts, E, H, buf.str(), local_vis_pts_quad, local_vis_faces_quad);
 				}
-				// {
-				// 	MatrixXd pts(3,2); pts <<
-				// 	0,0,
-				// 	1,0,
-				// 	0,1;
+				{
+					MatrixXd pts(3,2); pts <<
+					0,0,
+					1,0,
+					0,1;
 
-				// 	MatrixXi E(3,2); E <<
-				// 	0,1,
-				// 	1,2,
-				// 	2,0;
+					MatrixXi E(3,2); E <<
+					0,1,
+					1,2,
+					2,0;
 
-				// 	igl::triangle::triangulate(pts, E, MatrixXd(0,2), buf.str(), local_vis_pts_tri, local_vis_faces_tri);
-				// }
+					igl::triangle::triangulate(pts, E, MatrixXd(0,2), buf.str(), local_vis_pts_tri, local_vis_faces_tri);
+				}
 			}
 
 			const auto &current_bases = state.iso_parametric ? state.bases : state.geom_bases;
@@ -664,15 +685,15 @@ namespace poly_fem
 			{
 				const ElementBases &bs = current_bases[i];
 
-				if(state.mesh->is_cube(i)){
+				if(state.mesh->is_simplicial())
+				{
+					faces_total_size   += local_vis_faces_tri.rows();
+					points_total_size += local_vis_pts_tri.rows();
+				}
+				else if(state.mesh->is_cube(i)){
 					faces_total_size   += local_vis_faces_quad.rows();
 					points_total_size += local_vis_pts_quad.rows();
 				}
-				// else if(is_tri(bs))
-				// {
-				// 	faces_total_size   += local_vis_faces_tri.rows();
-				// 	points_total_size += local_vis_pts_tri.rows();
-				// }
 				else
 				{
 					if(state.mesh->is_volume())
@@ -711,7 +732,17 @@ namespace poly_fem
 			for(int i = 0; i < int(current_bases.size()); ++i)
 			{
 				const ElementBases &bs = current_bases[i];
-				if(state.mesh->is_cube(i))
+				if(state.mesh->is_simplicial())
+				{
+					bs.eval_geom_mapping(local_vis_pts_tri, mapped);
+					vis_faces.block(face_index, 0, local_vis_faces_tri.rows(), 3) = local_vis_faces_tri.array() + point_index;
+
+					face_index += local_vis_faces_tri.rows();
+
+					vis_pts.block(point_index, 0, mapped.rows(), mapped.cols()) = mapped;
+					point_index += mapped.rows();
+				}
+				else if(state.mesh->is_cube(i))
 				{
 					bs.eval_geom_mapping(local_vis_pts_quad, mapped);
 					vis_faces.block(face_index, 0, local_vis_faces_quad.rows(), 3) = local_vis_faces_quad.array() + point_index;
@@ -720,16 +751,6 @@ namespace poly_fem
 					vis_pts.block(point_index, 0, mapped.rows(), mapped.cols()) = mapped;
 					point_index += mapped.rows();
 				}
-				// else if(is_tri(bs))
-				// {
-				// 	bs.eval_geom_mapping(local_vis_pts_tri, mapped);
-				// 	vis_faces.block(face_index, 0, local_vis_faces_tri.rows(), 3) = local_vis_faces_tri.array() + point_index;
-
-				// 	face_index += local_vis_faces_tri.rows();
-
-				// 	vis_pts.block(point_index, 0, mapped.rows(), mapped.cols()) = mapped;
-				// 	point_index += mapped.rows();
-				// }
 				else{
 					bs.eval_geom_mapping(vis_pts_poly[i], mapped);
 					vis_faces.block(face_index, 0, vis_faces_poly[i].rows(), 3) = vis_faces_poly[i].array() + point_index;

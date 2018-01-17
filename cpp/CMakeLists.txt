@@ -80,8 +80,7 @@ add_library(polyfem
 	src/utils/QuadBoundarySampler.hpp
 	src/utils/QuadBoundarySampler.cpp
 
-	src/utils/HexBoundarySampler.hpp
-	src/utils/HexBoundarySampler.cpp
+	src/utils/BoundarySampler.hpp
 
 	src/utils/MatrixUtils.hpp
 	src/utils/MatrixUtils.cpp
@@ -142,8 +141,11 @@ add_library(polyfem
 	src/basis/InterfaceData.hpp
 
 
-	src/basis/FEBasis2d.cpp
-	src/basis/FEBasis2d.hpp
+	src/basis/QuadBasis2d.cpp
+	src/basis/QuadBasis2d.hpp
+
+	src/basis/TriBasis2d.cpp
+	src/basis/TriBasis2d.hpp
 
 	src/basis/SplineBasis2d.cpp
 	src/basis/SplineBasis2d.hpp
@@ -151,8 +153,11 @@ add_library(polyfem
 	src/basis/PolygonalBasis2d.cpp
 	src/basis/PolygonalBasis2d.hpp
 
-	src/basis/FEBasis3d.cpp
-	src/basis/FEBasis3d.hpp
+	src/basis/HexBasis3d.cpp
+	src/basis/HexBasis3d.hpp
+
+	src/basis/TetBasis3d.cpp
+	src/basis/TetBasis3d.hpp
 
 	src/basis/SplineBasis3d.cpp
 	src/basis/SplineBasis3d.hpp
@@ -273,6 +278,13 @@ endif()
 if(ENABLE_PARDISO AND NOT (ENABLE_MKL AND MKL_FOUND))
 	find_package(Pardiso)
 	if(PARDISO_FOUND)
+		find_package(LAPACK)
+		if(LAPACK_FOUND)
+			target_link_libraries(polyfem PUBLIC ${LAPACK_LIBRARIES})
+		else()
+			message(FATAL_ERROR "unable to find lapack")
+		endif()
+
 		target_link_libraries(polyfem PUBLIC ${PARDISO_LIBRARIES})
 		target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_PARDISO)
 	endif()
@@ -322,7 +334,6 @@ add_executable(${PROJECT_NAME}_bin
 	src/UIState.cpp
 )
 target_link_libraries(${PROJECT_NAME}_bin PUBLIC polyfem igl::viewer)
-
 
 # Main executable without gui, uncomment when not debugging gui is necessary
 # add_executable(${PROJECT_NAME}_exec

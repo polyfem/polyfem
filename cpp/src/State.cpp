@@ -3,8 +3,11 @@
 #include "Mesh2D.hpp"
 #include "Mesh3D.hpp"
 
-#include "FEBasis2d.hpp"
-#include "FEBasis3d.hpp"
+#include "QuadBasis2d.hpp"
+#include "TriBasis2d.hpp"
+
+#include "HexBasis3d.hpp"
+#include "TetBasis3d.hpp"
 
 #include "SplineBasis2d.hpp"
 #include "SplineBasis3d.hpp"
@@ -189,11 +192,11 @@ namespace poly_fem
 			std::cerr << "File does not exists: " << mesh_path << std::endl;
 		}
 
-		if(mesh->n_vertices() > 60000)
-                      exit(0);
+		//remove me
+		// mesh->compute_elements_tag();
+		// mesh->set_tag(4, ElementType::InteriorPolytope);
 
 		mesh->refine(n_refs, refinenemt_location, parent_elements);
-		mesh->compute_elements_tag();
 
 		mesh->fill_boundary_tags(boundary_tag);
 
@@ -376,16 +379,23 @@ namespace poly_fem
 			if(use_splines)
 			{
 				if(!iso_parametric)
-					FEBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
+					HexBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
 
 				n_bases = SplineBasis3d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
 			}
 			else
 			{
-				if (!iso_parametric)
-					FEBasis3d::build_bases(tmp_mesh, quadrature_order, 1, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
+				if(mesh->is_simplicial())
+				{
+					n_bases = TetBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+				}
+				else
+				{
+					if (!iso_parametric)
+						HexBasis3d::build_bases(tmp_mesh, quadrature_order, 1, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
 
-				n_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+					n_bases = HexBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+				}
 			}
 		}
 		else
@@ -394,16 +404,23 @@ namespace poly_fem
 			if(use_splines)
 			{
 				if(!iso_parametric)
-					FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
+					QuadBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
 
 				n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
 			}
 			else
 			{
-				if(!iso_parametric)
-					FEBasis2d::build_bases(tmp_mesh, quadrature_order, 1, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
+				if(mesh->is_simplicial())
+				{
+					n_bases = TriBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+				}
+				else
+				{
+					if(!iso_parametric)
+						QuadBasis2d::build_bases(tmp_mesh, quadrature_order, 1, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
 
-				n_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+					n_bases = QuadBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+				}
 			}
 		}
 
@@ -411,7 +428,7 @@ namespace poly_fem
 		n_flipped = 0;
 		for(size_t i = 0; i < bs.size(); ++i)
 		{
-			if(mesh->is_polytope(i)) continue;
+			if(!mesh->is_simplicial() && mesh->is_polytope(i)) continue;
 
 			ElementAssemblyValues vals;
 			if(!vals.is_geom_mapping_positive(mesh->is_volume(), bs[i]))
@@ -630,6 +647,9 @@ namespace poly_fem
 		rhs.resize(0, 0);
 		sol.resize(0, 0);
 
+		if(mesh->is_simplicial())
+			return;
+
 		igl::Timer timer; timer.start();
 		std::cout<<"Computing polygonal basis..."<<std::flush;
 
@@ -640,11 +660,11 @@ namespace poly_fem
 
 			if(mesh->is_volume()) {
 				PolygonalBasis3d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh3D *>(mesh), n_bases, quadrature_order, bases, bases, poly_edge_to_data, polys_3d);
-				Eigen::MatrixXd I;
-				compute_integral_constraints(*dynamic_cast<Mesh3D *>(mesh), n_bases, bases, bases, I);
-				for (int r = 0; r < I.rows(); ++r) {
+				// Eigen::MatrixXd I;
+				// compute_integral_constraints(*dynamic_cast<Mesh3D *>(mesh), n_bases, bases, bases, I);
+				// for (int r = 0; r < I.rows(); ++r) {
 					// std::cout << r << ": " << I.row(r) << std::endl;
-				}
+				// }
 			} else {
 				PolygonalBasis2d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh2D *>(mesh), n_bases, quadrature_order, bases, bases, poly_edge_to_data, polys);
 			}

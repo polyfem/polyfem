@@ -1,5 +1,5 @@
-#ifndef FE_BASIS_2D_HPP
-#define FE_BASIS_2D_HPP
+#ifndef QUAD_BASIS_2D_HPP
+#define QUAD_BASIS_2D_HPP
 
 #include "ElementBases.hpp"
 #include "Mesh2D.hpp"
@@ -12,7 +12,7 @@
 
 namespace poly_fem
 {
-	class FEBasis2d
+	class QuadBasis2d
 	{
 	public:
 
@@ -48,6 +48,8 @@ namespace poly_fem
 		static Eigen::MatrixXd linear_quad_edge_local_nodes_coordinates(const Mesh2D &mesh, Navigation::Index index);
 		static Eigen::MatrixXd quadr_quad_edge_local_nodes_coordinates(const Mesh2D &mesh, Navigation::Index index);
 
+		static Eigen::MatrixXd quad_local_node_coordinates_from_edge(int le);
+
 		///
 		/// @brief      { Evaluates one local quadratic basis function over a
 		///             set of parametric samples in the element }
@@ -76,4 +78,4 @@ namespace poly_fem
 	};
 }
 
-#endif //FE_BASIS_2D_HPP
+#endif //QUAD_BASIS_2D_HPP

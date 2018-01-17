@@ -9,7 +9,11 @@ namespace poly_fem
 {
 	void Mesh3D::refine(const int n_refiniment, const double t, std::vector<int> &parent_nodes)
 	{
-		//TODO to aware refiniement
+		for(size_t i = 0; i < elements_tag().size(); ++i)
+		{
+			if(elements_tag()[i] == ElementType::InteriorPolytope || elements_tag()[i] == ElementType::BoundaryPolytope)
+				mesh_.elements[i].hex = false;
+		}
 
 		MeshProcessing3D::refine_catmul_clark_polar(mesh_, n_refiniment, parent_nodes);
 		Navigation3D::prepare_mesh(mesh_);
@@ -117,7 +121,37 @@ namespace poly_fem
 			}
 		}
 
+		//TODO not so nice to detect triangle meshes
+		is_simplicial_ = n_cell_vertices(0) == 4;
+
+		if(is_simplicial_)
+		{
+			for(int i = 0; i < n_cells(); ++i)
+			{
+				assert(n_cell_vertices(i) == 4);
+				std::array<GEO::vec3, 4> vertices;
+				auto &face_vertices = mesh_.elements[i].vs;
+
+				for(int lv = 0; lv < 4; ++lv)
+				{
+					auto pt = point(face_vertices[lv]);
+					for(int d = 0; d < 3; ++d)
+					{
+						vertices[lv][d] = pt(d);
+					}
+				}
+
+				const double vol = GEO::Geom::tetra_signed_volume(vertices[0], vertices[1], vertices[2], vertices[3]);
+				if(vol < 0)
+				{
+					std::swap(face_vertices[1], face_vertices[2]);
+				}
+			}
+		}
+
 		Navigation3D::prepare_mesh(mesh_);
+		// if(is_simplicial())
+			// MeshProcessing3D::orient_volume_mesh(mesh_);
 		compute_elements_tag();
 		return true;
 	}
@@ -184,6 +218,8 @@ namespace poly_fem
 		}
 
 		Navigation3D::prepare_mesh(mesh_);
+		// if(is_simplicial())
+			// MeshProcessing3D::orient_volume_mesh(mesh_);
 		compute_elements_tag();
 		return true;
 	}
@@ -948,6 +984,49 @@ namespace poly_fem
 		// 	v[4+lv] = idx.vertex;
 		// 	idx = next_around_face_of_element(idx);
 		// }
+		return v;
+	}
+
+	std::array<int, 4> Mesh3D::get_ordered_vertices_from_tet(const int element_index) const
+	{
+		auto idx = get_index_from_element(element_index);
+		std::array<int, 4> v;
+
+       for (int lv = 0; lv < 3; ++lv) {
+			v[lv] = idx.vertex;
+			idx = next_around_face(idx);
+		}
+		// assert(idx == get_index_from_element(element_index));
+		idx = switch_vertex(switch_edge(switch_face(idx)));
+		v[3] = idx.vertex;
+
+
+		std::array<GEO::vec3, 4> vertices;
+
+		for(int lv = 0; lv < 4; ++lv)
+		{
+			auto pt = point(v[lv]);
+			for(int d = 0; d < 3; ++d)
+			{
+				vertices[lv][d] = pt(d);
+			}
+		}
+
+		// const double vol = GEO::Geom::tetra_signed_volume(vertices[0], vertices[1], vertices[2], vertices[3]);
+		// if(vol < 0)
+		// {
+		// 	std::cout << "negative vol" << std::endl;
+		// //	idx = switch_vertex(get_index_from_element(element_index));
+		// //	for (int lv = 0; lv < 3; ++lv) {
+		// //		v[lv] = idx.vertex;
+		// //		idx = next_around_face(idx);
+		// //	}
+		// //// assert(idx == get_index_from_element(element_index));
+		// //	idx = switch_vertex(switch_edge(switch_face(idx)));
+		// //	v[3] = idx.vertex;
+		// }
+
+
 		return v;
 	}
 
