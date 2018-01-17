@@ -159,13 +159,12 @@ namespace poly_fem
 	// load from a geogram surface mesh (for debugging), or volume mesh
 	// if loading a surface mesh, it assumes there is only one polyhedral cell, and the last vertex id a point in the kernel
 	bool Mesh3D::load(const GEO::Mesh &M) {
-		assert(M.cells.nb() == 0); // surface only for now
 		assert(M.vertices.dimension() == 3);
 
-		int nv = M.vertices.nb() - 1;
+		// Set vertices
+		const int nv = M.vertices.nb() + (M.cells.nb() == 0 ? -1 : 0);
 		mesh_.points.resize(3, nv);
 		mesh_.vertices.resize(nv);
-
 		for (int i = 0; i < nv; ++i) {
 			mesh_.points(0, i) = M.vertices.point(i)[0];
 			mesh_.points(1, i) = M.vertices.point(i)[1];
@@ -174,47 +173,120 @@ namespace poly_fem
 			v.id = i;
 			mesh_.vertices[i] = v;
 		}
-		mesh_.faces.resize(M.facets.nb());
-		for (int i = 0; i < (int) M.facets.nb(); ++i) {
-			Face &face = mesh_.faces[i];
-			face.id = i;
 
-			face.vs.resize(M.facets.nb_vertices(i));
-			for (int j = 0; j < (int) M.facets.nb_vertices(i); ++j) {
-				face.vs[j] = M.facets.vertex(i, j);
-			}
-		}
-		mesh_.elements.resize(1);
-		for (int i = 0; i < 1; ++i) {
-			Element &cell = mesh_.elements[i];
-			cell.id = i;
+		// Set cells
+		if (M.cells.nb() == 0) {
 
-			int nf = M.facets.nb();
-			cell.fs.resize(nf);
+			// Set faces
+			mesh_.faces.resize(M.facets.nb());
+			for (int i = 0; i < (int) M.facets.nb(); ++i) {
+				Face &face = mesh_.faces[i];
+				face.id = i;
 
-			for (int j = 0; j < nf; ++j) {
-				cell.fs[j] = j;
+				face.vs.resize(M.facets.nb_vertices(i));
+				for (int j = 0; j < (int) M.facets.nb_vertices(i); ++j) {
+					face.vs[j] = M.facets.vertex(i, j);
+				}
 			}
 
-			for (auto fid : cell.fs) {
-				cell.vs.insert(cell.vs.end(), mesh_.faces[fid].vs.begin(), mesh_.faces[fid].vs.end());
+			// Assumes there is only 1 polyhedron described by a closed input surface
+			mesh_.elements.resize(1);
+			for (int i = 0; i < 1; ++i) {
+				Element &cell = mesh_.elements[i];
+				cell.id = i;
+
+				int nf = M.facets.nb();
+				cell.fs.resize(nf);
+
+				for (int j = 0; j < nf; ++j) {
+					cell.fs[j] = j;
+				}
+
+				for (auto fid : cell.fs) {
+					cell.vs.insert(cell.vs.end(), mesh_.faces[fid].vs.begin(), mesh_.faces[fid].vs.end());
+				}
+				sort(cell.vs.begin(), cell.vs.end());
+				cell.vs.erase(unique(cell.vs.begin(), cell.vs.end()), cell.vs.end());
+
+				for (int j = 0; j < nf; ++j) {
+					cell.fs_flag.push_back(1);
+				}
 			}
-			sort(cell.vs.begin(), cell.vs.end());
-			cell.vs.erase(unique(cell.vs.begin(), cell.vs.end()), cell.vs.end());
 
-			for (int j = 0; j < nf; ++j) {
-				cell.fs_flag.push_back(1);
+			for (int i = 0; i < 1; ++i) {
+				mesh_.elements[i].hex = false;
 			}
-		}
 
-		for (int i = 0; i < 1; ++i) {
-			mesh_.elements[i].hex = false;
-		}
+			// TODO: Detect if the last vertex is an isolated one
+			for (int i = 0; i < 1; ++i) {
+				mesh_.elements[i].v_in_Kernel.push_back(M.vertices.point(nv)[0]);
+				mesh_.elements[i].v_in_Kernel.push_back(M.vertices.point(nv)[1]);
+				mesh_.elements[i].v_in_Kernel.push_back(M.vertices.point(nv)[2]);
+			}
+			is_simplicial_ = M.facets.are_simplices();
+		} else {
 
-		for (int i = 0; i < 1; ++i) {
-			mesh_.elements[i].v_in_Kernel.push_back(M.vertices.point(nv)[0]);
-			mesh_.elements[i].v_in_Kernel.push_back(M.vertices.point(nv)[1]);
-			mesh_.elements[i].v_in_Kernel.push_back(M.vertices.point(nv)[2]);
+			// // Count facets
+			// int max_face_id = 0;
+			// for (int c = 0; c < (int) M.cells.nb(); ++c) {
+			// 	for (int lf = 0; lf < (int) M.cells.nb_facets(c); ++lf) {
+			// 		max_face_id = std::max(max_face_id, (int) M.cells.facet(c, lf));
+			// 	}
+			// }
+			// mesh_.faces.resize(max_face_id + 1);
+			// for (Face &face : mesh_.faces) {
+			// 	face.id = -1;
+			// }
+
+			// Set faces
+			mesh_.faces.resize(M.cell_facets.nb());
+			for (int i = 0; i < (int) M.cell_facets.nb(); ++i) {
+				Face &face = mesh_.faces[i];
+				face.id = i;
+			}
+
+			// Creates 1 hex or polyhedral element for each cell of the input mesh
+			mesh_.elements.resize(M.cells.nb());
+			for (int c = 0; c < (int) M.cells.nb(); ++c) {
+				Element &cell = mesh_.elements[c];
+				cell.id = c;
+				cell.hex = (M.cells.type(c) == GEO::MESH_HEX);
+
+				int nf = M.cells.nb_facets(c);
+				cell.fs.resize(nf);
+
+				for (int lf = 0; lf < nf; ++lf) {
+					cell.fs[lf] = M.cells.facet(c, lf);
+
+					Face &face = mesh_.faces[cell.fs[lf]];
+					if (face.vs.empty()) {
+						face.vs.resize(M.cells.facet_nb_vertices(c, lf));
+						for (int lv = 0; lv < (int) M.cells.facet_nb_vertices(c, lf); ++lv) {
+							face.vs[lv] = M.cells.facet_vertex(c, lf, lv);
+						}
+						cell.fs_flag.push_back(1);
+					} else {
+						cell.fs_flag.push_back(0);
+					}
+				}
+
+				for (auto fid : cell.fs) {
+					cell.vs.insert(cell.vs.end(), mesh_.faces[fid].vs.begin(), mesh_.faces[fid].vs.end());
+				}
+				sort(cell.vs.begin(), cell.vs.end());
+				cell.vs.erase(unique(cell.vs.begin(), cell.vs.end()), cell.vs.end());
+
+				// Compute a point in the kernel (assumes the barycenter is ok)
+				Eigen::RowVector3d p(0, 0, 0);
+				for (int v : cell.vs) {
+					p += mesh_.points.col(v).transpose();
+				}
+				p /= cell.vs.size();
+				mesh_.elements[c].v_in_Kernel.push_back(p[0]);
+				mesh_.elements[c].v_in_Kernel.push_back(p[1]);
+				mesh_.elements[c].v_in_Kernel.push_back(p[2]);
+			}
+			is_simplicial_ = M.cells.are_simplices();
 		}
 
 		Navigation3D::prepare_mesh(mesh_);
