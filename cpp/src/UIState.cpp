@@ -77,12 +77,12 @@ namespace poly_fem
 		if(state.mesh->is_volume())
 		{
 			const auto p = state.mesh->point(current_3d_index.vertex);
-			const auto p1 = state.mesh->point(static_cast<Mesh3D *>(state.mesh)->switch_vertex(current_3d_index).vertex);
+			const auto p1 = state.mesh->point(dynamic_cast<Mesh3D *>(state.mesh.get())->switch_vertex(current_3d_index).vertex);
 
 			viewer.data.add_points(p, MatrixXd::Zero(1, 3));
 			viewer.data.add_edges(p, p1, RowVector3d(1, 1, 0));
 
-			viewer.data.add_points(static_cast<Mesh3D *>(state.mesh)->face_barycenter(current_3d_index.face), RowVector3d(1, 0, 0));
+			viewer.data.add_points(dynamic_cast<Mesh3D *>(state.mesh.get())->face_barycenter(current_3d_index.face), RowVector3d(1, 0, 0));
 		}
 	}
 
@@ -1039,7 +1039,7 @@ namespace poly_fem
 				if(state.mesh->is_volume())
 				{
 					auto v{explode(selected_elements, ',')};
-					current_3d_index = static_cast<Mesh3D *>(state.mesh)->get_index_from_element(atoi(v.front().c_str()), 1, 0);
+					current_3d_index = dynamic_cast<Mesh3D *>(state.mesh.get())->get_index_from_element(atoi(v.front().c_str()), 9, 0);
 					std::cout<<"e:"<<current_3d_index.element<<" f:"<<current_3d_index.face<<" e:"<<current_3d_index.edge<<" v:"<<current_3d_index.vertex<<std::endl;
 				}
 
@@ -1049,7 +1049,7 @@ namespace poly_fem
 			viewer_.ngui->addButton("Switch vertex", [&]{
 				if(state.mesh->is_volume())
 				{
-					current_3d_index = static_cast<Mesh3D *>(state.mesh)->switch_vertex(current_3d_index);
+					current_3d_index = dynamic_cast<Mesh3D *>(state.mesh.get())->switch_vertex(current_3d_index);
 					std::cout<<"e:"<<current_3d_index.element<<" f:"<<current_3d_index.face<<" e:"<<current_3d_index.edge<<" v:"<<current_3d_index.vertex<<std::endl;
 				}
 
@@ -1059,7 +1059,7 @@ namespace poly_fem
 			viewer_.ngui->addButton("Switch edge", [&]{
 				if(state.mesh->is_volume())
 				{
-					current_3d_index = static_cast<Mesh3D *>(state.mesh)->switch_edge(current_3d_index);
+					current_3d_index = dynamic_cast<Mesh3D *>(state.mesh.get())->switch_edge(current_3d_index);
 					std::cout<<"e:"<<current_3d_index.element<<" f:"<<current_3d_index.face<<" e:"<<current_3d_index.edge<<" v:"<<current_3d_index.vertex<<std::endl;
 				}
 
@@ -1069,7 +1069,7 @@ namespace poly_fem
 			viewer_.ngui->addButton("Switch face", [&]{
 				if(state.mesh->is_volume())
 				{
-					current_3d_index = static_cast<Mesh3D *>(state.mesh)->switch_face(current_3d_index);
+					current_3d_index = dynamic_cast<Mesh3D *>(state.mesh.get())->switch_face(current_3d_index);
 					std::cout<<"e:"<<current_3d_index.element<<" f:"<<current_3d_index.face<<" e:"<<current_3d_index.edge<<" v:"<<current_3d_index.vertex<<std::endl;
 				}
 
@@ -1079,7 +1079,7 @@ namespace poly_fem
 			viewer_.ngui->addButton("Switch element", [&]{
 				if(state.mesh->is_volume())
 				{
-					current_3d_index = static_cast<Mesh3D *>(state.mesh)->switch_element(current_3d_index);
+					current_3d_index = dynamic_cast<Mesh3D *>(state.mesh.get())->switch_element(current_3d_index);
 					selected_elements += ","+std::to_string(current_3d_index.element);
 					std::cout<<"e:"<<current_3d_index.element<<" f:"<<current_3d_index.face<<" e:"<<current_3d_index.edge<<" v:"<<current_3d_index.vertex<<std::endl;
 				}
@@ -1097,7 +1097,7 @@ namespace poly_fem
 
 					std::vector<int> idx_v(idx.begin(), idx.end());
 
-					static_cast<Mesh3D *>(state.mesh)->save(idx_v, 2, "mesh.HYBRID");
+					dynamic_cast<Mesh3D *>(state.mesh.get())->save(idx_v, 2, "mesh.HYBRID");
 				}
 			});
 

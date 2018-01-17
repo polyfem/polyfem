@@ -6,6 +6,7 @@
 
 #include <Eigen/Dense>
 #include <geogram/mesh/mesh.h>
+#include <memory>
 
 namespace poly_fem
 {
@@ -27,6 +28,8 @@ namespace poly_fem
 	class Mesh
 	{
 	public:
+		static std::unique_ptr<Mesh> create(const std::string &path);
+
 		virtual ~Mesh() = default;
 
 		virtual void refine(const int n_refinement, const double t, std::vector<int> &parent_nodes) = 0;

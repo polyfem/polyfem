@@ -286,15 +286,15 @@ void sample_polyhedra(
 	// 	evalFuncGeom(PV, V, 0);
 	// igl::write_triangle_mesh("foo_dense.obj", collocation_points, CF);
 	// igl::write_triangle_mesh("foo_small.obj", triangulated_vertices, triangulated_faces);
-	// 	igl::viewer::Viewer viewer;
-	//  viewer.data.set_points(kernel_centers, Eigen::RowVector3d(1,0,1));
-	// 	viewer.data.set_mesh(collocation_points, collocation_faces);
-	// 	viewer.launch();
+		// igl::viewer::Viewer viewer;
+		// viewer.data.set_points(kernel_centers, Eigen::RowVector3d(1,0,1));
+		// viewer.data.set_mesh(KV, KF);
+		// viewer.launch();
 	// }
 
 	// igl::viewer::Viewer viewer;
 	// viewer.data.set_mesh(collocation_points, CF);
-	// // viewer.data.add_points(kernel_centers, Eigen::RowVector3d(0,1,1));
+	// viewer.data.add_points(kernel_centers, Eigen::RowVector3d(0,1,1));
 	// for (int lf = 0; lf < mesh.n_cell_faces(element_index); ++lf) {
 	// 	Eigen::MatrixXd samples;
 	// 	samples = UV.middleRows(uv_ranges(lf), uv_ranges(lf+1) - uv_ranges(lf));
@@ -340,7 +340,8 @@ void sample_polyhedra(
 	scaling = 1.0;
 	translation.setZero();
 	// NV = (NV.rowwise() - translation) / scaling;
-	PolyhedronQuadrature::get_quadrature(NV, triangulated_faces, quadrature_order, quadrature);
+	PolyhedronQuadrature::get_quadrature(NV, triangulated_faces, mesh.kernel(element_index),
+		quadrature_order, quadrature);
 
 	// Normalization
 	// collocation_points = (collocation_points.rowwise() - translation) / scaling;
@@ -514,8 +515,8 @@ void PolygonalBasis3d::build_bases(
 	if (poly_face_to_data.empty()) {
 		return;
 	}
-	int n_kernels_per_edge = 2; //(int) std::round(n_samples_per_edge / 3.0);
-	int n_samples_per_edge = 2*n_kernels_per_edge;
+	int n_kernels_per_edge = 3; //(int) std::round(n_samples_per_edge / 3.0);
+	int n_samples_per_edge = 3*n_kernels_per_edge;
 
 	// Step 1: Compute integral constraints
 	Eigen::MatrixXd basis_integrals;
@@ -580,7 +581,7 @@ void PolygonalBasis3d::build_bases(
 		for (long k = 0; k < rhs.cols(); ++k) {
 			local_basis_integrals.row(k) = -basis_integrals.row(local_to_global[k]);
 		}
-		auto rbf = std::make_shared<RBFWithQuadraticLagrange>(
+		auto rbf = std::make_shared<RBFWithQuadratic>(
 			kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs);
 		b.set_bases_func([rbf] (const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
 			{ rbf->bases_values(uv, val); } );
