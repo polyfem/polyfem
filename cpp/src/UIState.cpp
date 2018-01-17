@@ -375,7 +375,7 @@ namespace poly_fem
 			// 	viewer.data.add_label(p.transpose(), std::to_string(i));
 			// }
 
-			// for(int i = 0; i < state.mesh->n_elements(); ++i)
+			// for(int i = 0; i < state.mesh->n_cells(); ++i)
 			// {
 			// 	MatrixXd p = state.mesh->cell_barycenter(i);
 			// 	viewer.data.add_label(p.transpose(), std::to_string(i));

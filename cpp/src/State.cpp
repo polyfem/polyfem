@@ -190,11 +190,11 @@ namespace poly_fem
 
 		mesh->load(mesh_path);
 
-		if(mesh->n_vertices() > 60000)
-			exit(0);
+		//remove me
+		// mesh->compute_elements_tag();
+		// mesh->set_tag(4, ElementType::InteriorPolytope);
 
 		mesh->refine(n_refs, refinenemt_location, parent_elements);
-		mesh->compute_elements_tag();
 
 		mesh->fill_boundary_tags(boundary_tag);
 

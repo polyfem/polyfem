@@ -7,7 +7,11 @@ namespace poly_fem
 {
 	void Mesh3D::refine(const int n_refiniment, const double t, std::vector<int> &parent_nodes)
 	{
-		//TODO to aware refiniement
+		for(size_t i = 0; i < elements_tag().size(); ++i)
+		{
+			if(elements_tag()[i] == ElementType::InteriorPolytope || elements_tag()[i] == ElementType::BoundaryPolytope)
+				mesh_.elements[i].hex = false;
+		}
 
 		MeshProcessing3D::refine_catmul_clark_polar(mesh_, n_refiniment, parent_nodes);
 		Navigation3D::prepare_mesh(mesh_);
