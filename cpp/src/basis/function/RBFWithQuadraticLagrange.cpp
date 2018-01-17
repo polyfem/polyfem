@@ -365,8 +365,10 @@ void RBFWithQuadraticLagrange::compute_weights(const Eigen::MatrixXd &samples,
 	Eigen::MatrixXd M(A.cols() + C.rows(), A.cols() + C.rows());
 	M.topLeftCorner(A.cols(), A.cols()) = A.transpose() * A;
 	M.topRightCorner(A.cols(), C.rows()) = C.transpose();
-	M.bottomRightCorner(C.rows(), A.cols()) = C;
-	M.bottomLeftCorner(C.rows(), C.rows()).setZero();
+	M.bottomLeftCorner(C.rows(), A.cols()) = C;
+	M.bottomRightCorner(C.rows(), C.rows()).setZero();
+
+	std::cout << M.bottomRightCorner(10, 10) << std::endl;
 
 	// Solve the system
 	std::cout << "-- Solving system of size " << M.rows() << " x " << M.cols() << std::endl;

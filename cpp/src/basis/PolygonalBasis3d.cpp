@@ -330,10 +330,10 @@ void sample_polyhedra(
 
 	// Compute quadrature points + normalize kernels and collocation points
 	Eigen::MatrixXd NV = triangulated_vertices;
-	scaling = (NV.colwise().maxCoeff() - NV.colwise().minCoeff()).maxCoeff();
-	translation = NV.colwise().minCoeff();
-	// scaling = 1.0;
-	// translation.setZero();
+	// scaling = (NV.colwise().maxCoeff() - NV.colwise().minCoeff()).maxCoeff();
+	// translation = NV.colwise().minCoeff();
+	scaling = 1.0;
+	translation.setZero();
 	NV = (NV.rowwise() - translation) / scaling;
 	PolyhedronQuadrature::get_quadrature(NV, triangulated_faces, quadrature_order, quadrature);
 
@@ -508,7 +508,7 @@ void PolygonalBasis3d::build_bases(
 	if (poly_face_to_data.empty()) {
 		return;
 	}
-	int n_kernels_per_edge = 3; //(int) std::round(n_samples_per_edge / 3.0);
+	int n_kernels_per_edge = 2; //(int) std::round(n_samples_per_edge / 3.0);
 	int n_samples_per_edge = 3*n_kernels_per_edge;
 
 	// Step 1: Compute integral constraints
@@ -574,7 +574,7 @@ void PolygonalBasis3d::build_bases(
 		for (long k = 0; k < rhs.cols(); ++k) {
 			local_basis_integrals.row(k) = -basis_integrals.row(local_to_global[k]);
 		}
-		auto rbf = std::make_shared<RBFWithQuadratic>(
+		auto rbf = std::make_shared<RBFWithQuadraticLagrange>(
 			kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs);
 		b.set_bases_func([rbf] (const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
 			{ rbf->bases_values(uv, val); } );

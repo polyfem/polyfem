@@ -33,24 +33,6 @@ double transform_pts(const TriMat &tri, const Eigen::MatrixXd &pts, Eigen::Matri
 	return matrix.determinant();
 }
 
-// Compute volume of a mesh (M can be surface mesh)
-double volume(const GEO::Mesh &M) {
-	GEO::vec3 t[4];
-	t[3] = GEO::vec3(0, 0, 0);
-	double volume_total = 0;
-	for (int f = 0; f < (int) M.facets.nb(); ++f) {
-		for(GEO::index_t c = M.facets.corners_begin(f), i = 0;
-			c < M.facets.corners_end(f); ++c, ++i)
-		{
-			geo_assert(i < 3);
-			t[i] = M.vertices.point(M.facet_corners.vertex(c));
-		}
-		double vol = GEO::Geom::tetra_signed_volume(t[0], t[1], t[2], t[3]);
-		volume_total += vol;
-	}
-	return volume_total;
-}
-
 } // anonymous namespace
 
 ////////////////////////////////////////////////////////////////////////////////

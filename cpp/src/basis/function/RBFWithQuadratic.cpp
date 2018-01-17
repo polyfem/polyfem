@@ -358,7 +358,7 @@ void RBFWithQuadratic::compute_weights(const Eigen::MatrixXd &samples,
 	std::cout << "#quadrature points: " << quadr.weights.size() << std::endl;
 	std::cout << "#non-vanishing bases: " << rhs.cols() << std::endl;
 
-	if (true || !with_constraints) {
+	if (!with_constraints) {
 		// Compute A
 		Eigen::MatrixXd A;
 		compute_kernels_matrix(samples, A);
