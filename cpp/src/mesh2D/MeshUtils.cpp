@@ -5,6 +5,7 @@
 #include <geogram/mesh/mesh_topology.h>
 #include <geogram/mesh/mesh_geometry.h>
 #include <geogram/mesh/mesh_AABB.h>
+#include <geogram/voronoi/CVT.h>
 ////////////////////////////////////////////////////////////////////////////////
 
 GEO::vec3 poly_fem::mesh_vertex(const GEO::Mesh &M, GEO::index_t v) {
@@ -592,4 +593,47 @@ void poly_fem::tertrahedralize_star_shaped_surface(const Eigen::MatrixXd &V, con
 	OT.resize(OF.rows(), 4);
 	OT.col(0).setConstant(V.rows());
 	OT.rightCols(3) = F;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+#include <geogram/basic/command_line.h>
+#include <geogram/basic/command_line_args.h>
+#include <geogram/basic/progress.h>
+#include <geogram/mesh/mesh_io.h>
+
+void poly_fem::sample_surface(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, int num_samples,
+	Eigen::MatrixXd &P, Eigen::MatrixXd *N, int num_lloyd, int num_newton)
+{
+	assert(num_samples > 3);
+	GEO::Mesh M;
+	to_geogram_mesh(V, F, M);
+	GEO::CentroidalVoronoiTesselation CVT(&M);
+	// GEO::mesh_save(M, "foo.obj");
+	CVT.compute_initial_sampling(num_samples);
+
+	if (num_lloyd > 0) {
+		CVT.Lloyd_iterations(num_lloyd);
+	}
+
+	if (num_newton > 0) {
+		CVT.Newton_iterations(num_newton);
+	}
+
+	P.resize(3, num_samples);
+	std::copy_n(CVT.embedding(0), 3*num_samples, P.data());
+	P.transposeInPlace();
+
+	if (N) {
+		GEO::MeshFacetsAABB aabb(M);
+		N->resizeLike(P);
+		for (int i = 0; i < num_samples; ++i) {
+			GEO::vec3 p(P(i, 0), P(i, 1), P(i, 2));
+			GEO::vec3 nearest_point;
+			double sq_dist;
+			auto f = aabb.nearest_facet(p, nearest_point, sq_dist);
+			GEO::vec3 n = normalize(GEO::Geom::mesh_facet_normal(M, f));
+			N->row(i) << n[0], n[1], n[2];
+		}
+	}
 }

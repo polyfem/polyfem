@@ -64,7 +64,7 @@ void PolyhedronQuadrature::get_quadrature(const Eigen::MatrixXd &V, const Eigen:
 	// igl::write_triangle_mesh("poly_out.obj", OV, OF);
 
 	// OV = (OV * scaling).rowwise() + translation;
-	// int res = igl::copyleft::tetgen::tetrahedralize(OV, OF, flags, TV, tets, TF);
+	// int res = igl::copyleft::tetgen::tetrahedralize(V, F, flags, TV, tets, TF);
 	// std::cout << "tetgen out" << std::endl;
 	// assert(res == 0);
 

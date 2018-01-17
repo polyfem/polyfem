@@ -162,9 +162,21 @@ void compute_offset_kernels(const Eigen::MatrixXd &QV, const Eigen::MatrixXi &QF
 	compute_canonical_pattern(n_kernels_per_edge, PV, PF);
 	instantiate_pattern(QV, QF, PV, PF, KV, KF, nullptr, evalFuncGeom, getAdjLocalEdge);
 	orient_closed_surface(KV, KF);
-	double volume = signed_volume(KV, KF);
-	igl::per_vertex_normals(KV, KF, KN);
-	kernel_centers = KV + eps * volume * KN;
+	double volume = std::pow(signed_volume(KV, KF), 1.0 / 3.0);
+
+	const int max_num_kernels = 300;
+	if (KV.rows() < max_num_kernels) {
+		igl::per_vertex_normals(KV, KF, KN);
+		kernel_centers = KV;
+	} else {
+		// std::cout << "fancy sampling" << std::endl;
+		poly_fem::sample_surface(KV, KF, max_num_kernels, kernel_centers, &KN, 10, 10);
+		// std::cout << "size: "<< kernel_centers.size() << std::endl;
+	}
+	// std::cout << "eps: " << eps << std::endl;
+	// std::cout << eps * volume << std::endl;
+	kernel_centers += eps * volume * KN;
+
 	// std::default_random_engine gen;
 	// std::uniform_real_distribution<double> dist(-1.0, 1.0);
 	// for (int v = 0; v < kernel_centers.rows(); ++v) {
@@ -173,8 +185,9 @@ void compute_offset_kernels(const Eigen::MatrixXd &QV, const Eigen::MatrixXi &QF
 	assert(kernel_centers.cols() == 3);
 	signed_squared_distances(KV, KF, kernel_centers, D);
 	std::vector<Eigen::RowVector3d> remap;
+	std::cout << "vol:" << volume << std::endl;
 	for (int v = 0; v < kernel_centers.rows(); ++v) {
-		if (D(v) > 0.0 * eps) {
+		if (D(v) > 0.0) {
 			remap.push_back(kernel_centers.row(v));
 		}
 	}
@@ -185,6 +198,7 @@ void compute_offset_kernels(const Eigen::MatrixXd &QV, const Eigen::MatrixXi &QF
 	// igl::write_triangle_mesh("foo_medium.obj", KV, KF);
 	// std::cout << "nkernels: " << KV.rows() << std::endl;
 	// igl::write_triangle_mesh("foo.obj", KV, KF);
+
 	// igl::viewer::Viewer viewer;
 	// viewer.data.set_mesh(KV, KF);
 	// viewer.data.add_points(kernel_centers, Eigen::RowVector3d(0,1,1));

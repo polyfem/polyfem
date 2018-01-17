@@ -110,7 +110,7 @@ namespace poly_fem
 
 		auto &V = mesh_.points;
 		const auto shift =  V.rowwise().minCoeff().eval();
-		const double scaling = 1./ (V.rowwise().maxCoeff() - V.rowwise().minCoeff()).maxCoeff();
+		const double scaling = 1.0 / (V.rowwise().maxCoeff() - V.rowwise().minCoeff()).maxCoeff();
 		V = (V.colwise() - shift) * scaling;
 
 		for(int i = 0; i < n_cells(); ++i)

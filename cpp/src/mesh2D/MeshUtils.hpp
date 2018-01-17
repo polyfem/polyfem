@@ -142,4 +142,20 @@ void extract_polyhedra(const Mesh3D &mesh, std::vector<std::unique_ptr<GEO::Mesh
 void tertrahedralize_star_shaped_surface(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
 	const Eigen::RowVector3d &kernel, Eigen::MatrixXd &OV, Eigen::MatrixXi &OF, Eigen::MatrixXi &OT);
 
+
+///
+/// @brief      { Samples points on a surface }
+///
+/// @param[in]  V            { #V x 3 input mesh vertices }
+/// @param[in]  F            { #F x 3 input mesh facets }
+/// @param[in]  num_samples  { Number of desired samples }
+/// @param[out] P            { num_samples x 3 sample points positions }
+/// @param[out] N            { num_samples x 3 of normals estimated from the original surface
+///                          (optional argument) }
+/// @param[in]  num_lloyd    { Number of Lloyd iterations }
+/// @param[in]  num_newton   { Number of Newton iterations }
+///
+void sample_surface(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, int num_samples,
+	Eigen::MatrixXd &P, Eigen::MatrixXd *N = nullptr, int num_lloyd = 10, int num_newton = 10);
+
 } // namespace poly_fem

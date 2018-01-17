@@ -41,7 +41,7 @@ int main(int argc, const char **argv)
     // Import standard command line arguments, and custom ones
     GEO::CmdLine::import_arg_group("standard");
     GEO::CmdLine::import_arg_group("pre");
-
+    GEO::CmdLine::import_arg_group("algo");
 
     CommandLine command_line;
 
