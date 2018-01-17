@@ -167,7 +167,6 @@ namespace poly_fem
 		polys.clear();
 		poly_edge_to_data.clear();
 		parent_elements.clear();
-		delete mesh;
 
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
@@ -179,17 +178,9 @@ namespace poly_fem
 
 		igl::Timer timer; timer.start();
 		std::cout<<"Loading mesh..."<<std::flush;
-		std::string extension = mesh_path.substr(mesh_path.find_last_of(".") + 1);
-		std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
-		const bool is_volume = (extension == "hybrid");
-
-		if(is_volume)
-			mesh = new Mesh3D();
-		else
-			mesh = new Mesh2D();
-
-		if(!mesh->load(mesh_path)) {
-			std::cerr << "File does not exists: " << mesh_path << std::endl;
+		mesh = Mesh::create(mesh_path);
+		if (!mesh) {
+			return;
 		}
 
 		//remove me
@@ -375,7 +366,7 @@ namespace poly_fem
 
 		if(mesh->is_volume())
 		{
-			const Mesh3D &tmp_mesh = *dynamic_cast<Mesh3D *>(mesh);
+			const Mesh3D &tmp_mesh = *dynamic_cast<Mesh3D *>(mesh.get());
 			if(use_splines)
 			{
 				if(!iso_parametric)
@@ -400,7 +391,7 @@ namespace poly_fem
 		}
 		else
 		{
-			const Mesh2D &tmp_mesh = *dynamic_cast<Mesh2D *>(mesh);
+			const Mesh2D &tmp_mesh = *dynamic_cast<Mesh2D *>(mesh.get());
 			if(use_splines)
 			{
 				if(!iso_parametric)
@@ -659,14 +650,14 @@ namespace poly_fem
 			// ElementAssemblyValues::compute_assembly_values(mesh->is_volume(), bases, values);
 
 			if(mesh->is_volume()) {
-				PolygonalBasis3d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh3D *>(mesh), n_bases, quadrature_order, bases, bases, poly_edge_to_data, polys_3d);
+				PolygonalBasis3d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, quadrature_order, bases, bases, poly_edge_to_data, polys_3d);
 				// Eigen::MatrixXd I;
-				// compute_integral_constraints(*dynamic_cast<Mesh3D *>(mesh), n_bases, bases, bases, I);
+				// compute_integral_constraints(*dynamic_cast<Mesh3D *>(mesh.get()), n_bases, bases, bases, I);
 				// for (int r = 0; r < I.rows(); ++r) {
 					// std::cout << r << ": " << I.row(r) << std::endl;
 				// }
 			} else {
-				PolygonalBasis2d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh2D *>(mesh), n_bases, quadrature_order, bases, bases, poly_edge_to_data, polys);
+				PolygonalBasis2d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, quadrature_order, bases, bases, poly_edge_to_data, polys);
 			}
 
 			// for(std::size_t e = 0; e < bases.size(); ++e) {
@@ -682,10 +673,10 @@ namespace poly_fem
 
 			if(mesh->is_volume())
 			{
-				PolygonalBasis3d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh3D *>(mesh), n_bases, quadrature_order, bases, geom_bases, poly_edge_to_data, polys_3d);
+				PolygonalBasis3d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, quadrature_order, bases, geom_bases, poly_edge_to_data, polys_3d);
 			}
 			else
-				PolygonalBasis2d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh2D *>(mesh), n_bases, quadrature_order, bases, geom_bases, poly_edge_to_data, polys);
+				PolygonalBasis2d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, quadrature_order, bases, geom_bases, poly_edge_to_data, polys);
 
 			// for(std::size_t e = 0; e < bases.size(); ++e)
 			// {
@@ -721,7 +712,7 @@ namespace poly_fem
 		if(problem.problem_num() == 3)
 		{
 			Assembler<LinearElasticity> assembler;
-			LinearElasticity &le = static_cast<LinearElasticity &>(assembler.local_assembler());
+			LinearElasticity &le = assembler.local_assembler();
 			le.mu() = mu;
 			le.lambda() = lambda;
 			le.size() = mesh->is_volume()? 3:2;

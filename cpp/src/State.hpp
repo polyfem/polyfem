@@ -11,6 +11,7 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+#include <memory>
 
 namespace poly_fem
 {
@@ -18,7 +19,7 @@ namespace poly_fem
 	{
 	public:
 		static State &state();
-		~State() { delete mesh; }
+		~State() = default;
 
 		void init(const std::string &mesh_path, const int n_refs, const int problem_num_);
 
@@ -51,7 +52,7 @@ namespace poly_fem
 		std::vector<double> errors;
 
 
-		Mesh *mesh = NULL;
+		std::unique_ptr<Mesh> mesh;
 
 		std::map<int, Eigen::MatrixXd> polys;
 		std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi> > polys_3d;
