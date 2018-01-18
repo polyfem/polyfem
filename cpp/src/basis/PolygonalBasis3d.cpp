@@ -185,7 +185,6 @@ void compute_offset_kernels(const Eigen::MatrixXd &QV, const Eigen::MatrixXi &QF
 	assert(kernel_centers.cols() == 3);
 	signed_squared_distances(KV, KF, kernel_centers, D);
 	std::vector<Eigen::RowVector3d> remap;
-	std::cout << "vol:" << volume << std::endl;
 	for (int v = 0; v < kernel_centers.rows(); ++v) {
 		if (D(v) > 0.0) {
 			remap.push_back(kernel_centers.row(v));
@@ -366,7 +365,7 @@ void sample_polyhedra(
 	triangulated_vertices = KV;
 	triangulated_faces = KF;
 
-	std::cout << "volume: " << signed_volume(KV, KF) << std::endl;
+	// std::cout << "volume: " << signed_volume(KV, KF) << std::endl;
 }
 
 } // anonymous namespace

@@ -184,7 +184,7 @@ namespace poly_fem
 		}
 
 		//remove me
-		// mesh->compute_elements_tag();
+		mesh->compute_elements_tag();
 		// mesh->set_tag(0, ElementType::InteriorPolytope);
 
 		mesh->refine(n_refs, refinenemt_location, parent_elements);
@@ -424,7 +424,7 @@ namespace poly_fem
 			ElementAssemblyValues vals;
 			if(!vals.is_geom_mapping_positive(mesh->is_volume(), bs[i]))
 			{
-				// std::cout<<"Basis "<< i << ( parent_elements.size() > 0 ? (" -> " + std::to_string(parent_elements[i])) : "") << " has negative volume"<<std::endl;
+				std::cout<<"Basis "<< i << ( parent_elements.size() > 0 ? (" -> " + std::to_string(parent_elements[i])) : "") << " has negative volume"<<std::endl;
 				++n_flipped;
 			}
 		}
@@ -743,7 +743,7 @@ namespace poly_fem
 		std::cout<<" took "<<assembling_stiffness_mat_time<<"s"<<std::endl;
 
 		nn_zero = stiffness.nonZeros();
-		mat_size = stiffness.size();
+		mat_size = (long long) stiffness.rows() * (long long) stiffness.cols();
 		std::cout<<"sparsity: "<<nn_zero<<"/"<<mat_size<<std::endl;
 
 

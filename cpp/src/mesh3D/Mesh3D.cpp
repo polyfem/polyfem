@@ -121,6 +121,14 @@ namespace poly_fem
 			}
 		}
 
+		//remove horrible kernels and replace with barycenters
+		for(int c = 0; c < n_cells(); ++c)
+		{
+			auto bary = cell_barycenter(c);
+			for(int d  = 0; d < 3; ++d)
+				mesh_.elements[c].v_in_Kernel[d] = bary(d);
+		}
+
 		//TODO not so nice to detect triangle meshes
 		is_simplicial_ = n_cell_vertices(0) == 4;
 

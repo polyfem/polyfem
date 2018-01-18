@@ -9,6 +9,8 @@
 #include <array>
 ////////////////////////////////////////////////////////////////////////////////
 
+// #define VERBOSE
+
 using namespace poly_fem;
 
 namespace {
@@ -334,10 +336,12 @@ void RBFWithQuadratic::compute_weights(const Eigen::MatrixXd &samples,
 	const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
 	Eigen::MatrixXd &rhs, bool with_constraints)
 {
+	#ifdef VERBOSE
 	std::cout << "#kernel centers: " << centers_.rows() << std::endl;
 	std::cout << "#collocation points: " << samples.rows() << std::endl;
 	std::cout << "#quadrature points: " << quadr.weights.size() << std::endl;
 	std::cout << "#non-vanishing bases: " << rhs.cols() << std::endl;
+	#endif
 
 	if (!with_constraints) {
 		// Compute A
@@ -473,13 +477,17 @@ void RBFWithQuadratic::compute_weights(const Eigen::MatrixXd &samples,
 	Eigen::MatrixXd b = rhs - A * weights_;
 
 	// Solve the system
+	#ifdef VERBOSe
 	std::cout << "-- Solving system of size " << L.cols() << " x " << L.cols() << std::endl;
+	#endif
 	auto ldlt = (L.transpose() * A.transpose() * A * L).ldlt();
 	if (ldlt.info() == Eigen::NumericalIssue) {
 		std::cerr << "-- WARNING: Numerical issues when solving the harmonic least square." << std::endl;
 	}
 	weights_ += L * ldlt.solve(L.transpose() * A.transpose() * b);
+	#ifdef VERBOSE
 	std::cout << "-- Solved!" << std::endl;
+	#endif
 
 	// std::cout << "-- Mean residual: " << (A * weights_ - rhs).array().abs().colwise().maxCoeff().mean() << std::endl;
 

@@ -62,8 +62,8 @@ namespace poly_fem
 		is_simplicial_ = mesh_.facets.are_simplices();
 
 		orient_normals_2d(mesh_);
-		compute_elements_tag();
 		Navigation::prepare_mesh(mesh_);
+		compute_elements_tag();
 		return true;
 	}
 
