@@ -121,15 +121,19 @@ namespace poly_fem
 				cols.block(from, 0, range, 1).setOnes();
 				cols.block(from, 1, range, 1).setConstant(0.5); break;
 
- 						//red
+ 					//red
 				case ElementType::MultiSingularInteriorCube:
 				cols.block(from, 0, range, 1).setOnes(); break;
 
-						//blue
+					//blue
 				case ElementType::MultiSingularBoundaryCube:
 				cols.block(from, 2, range, 1).setConstant(0.6); break;
 
-				  		 //light blue
+					//rhodamine
+				case ElementType::InterfaceCube:
+				cols.middleRows(from, range).rowwise() = Eigen::RowVector3d(0.9, 0, 0.58); break;
+
+				  	//light blue
 				case ElementType::BoundaryPolytope:
 				case ElementType::InteriorPolytope:
 				cols.block(from, 2, range, 1).setOnes();
@@ -368,6 +372,7 @@ namespace poly_fem
 			MatrixXd p0, p1;
 			state.mesh->get_edges(p0, p1);
 			viewer.data.add_edges(p0, p1, MatrixXd::Zero(1, 3));
+			viewer.core.show_lines = false;
 
 			// for(int i = 0; i < state.mesh->n_faces(); ++i)
 			// {
@@ -401,6 +406,7 @@ namespace poly_fem
 			std::cout<<vis_faces.rows()<<" "<<vis_faces.cols()<<std::endl;
 			std::vector<bool> valid_elements;
 			clip_elements(vis_pts, vis_faces, vis_element_ranges, valid_elements);
+			viewer.core.show_lines = true;
 		};
 
 		auto show_nodes_func = [&](){

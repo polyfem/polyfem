@@ -55,20 +55,15 @@ void poly_fem::compute_element_tags(const GEO::Mesh &M, std::vector<ElementType>
 	element_tags.resize(M.facets.nb());
 
 	// Step 0: Compute boundary vertices as true boundary + vertices incident to a polygon
-	std::vector<bool> is_boundary_or_interface_vertex(M.vertices.nb(), false);
+	GEO::Attribute<bool> is_boundary_vertex(M.vertices.attributes(), "boundary_vertex");
+	std::vector<bool> is_interface_vertex(M.vertices.nb(), false);
 	{
-		GEO::Attribute<bool> boundary_vertices(M.vertices.attributes(), "boundary_vertex");
 		for (index_t f = 0; f < M.facets.nb(); ++f) {
 			if (M.facets.nb_vertices(f) != 4) {
-				// Vertices incident to polygonal facets (triangles or > 4 vertices) are marked as boundary
+				// Vertices incident to polygonal facets (triangles or > 4 vertices) are marked as interface
 				for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv) {
-					is_boundary_or_interface_vertex[M.facets.vertex(f, lv)] = true;
+					is_interface_vertex[M.facets.vertex(f, lv)] = true;
 				}
-			}
-		}
-		for (index_t v = 0; v < M.vertices.nb(); ++v) {
-			if (boundary_vertices[v]) {
-				is_boundary_or_interface_vertex[v] = true;
 			}
 		}
 	}
@@ -90,7 +85,7 @@ void poly_fem::compute_element_tags(const GEO::Mesh &M, std::vector<ElementType>
 	}
 	for (index_t v = 0; v < M.vertices.nb(); ++v) {
 		// assert(degree[v] > 0); // We assume there are no isolated vertices here
-		if (is_boundary_or_interface_vertex[v]) {
+		if (is_boundary_vertex[v] || is_interface_vertex[v]) {
 			is_regular_vertex[v] = (degree[v] <= 2);
 		} else {
 			is_regular_vertex[v] = (degree[v] == 4);
@@ -105,21 +100,24 @@ void poly_fem::compute_element_tags(const GEO::Mesh &M, std::vector<ElementType>
 
 			// a) Determine if it is on the mesh boundary
 			bool is_boundary_facet = false;
+			bool is_interface_facet = false;
 			for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv) {
-				if (is_boundary_or_interface_vertex[M.facets.vertex(f, lv)]) {
+				if (is_boundary_vertex[M.facets.vertex(f, lv)]) {
 					is_boundary_facet = true;
-					break;
+				}
+				if (is_interface_vertex[M.facets.vertex(f, lv)]) {
+					is_interface_facet = true;
 				}
 			}
 
 			// b) Determine if it is regular or not
-			if (is_boundary_facet) {
+			if (is_boundary_facet || is_interface_facet) {
 				// A boundary quad is regular iff all its vertices are incident to at most 2 other quads
 				// We assume that non-boundary vertices of a boundary quads are always regular
 				bool is_singular = false;
 				for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv) {
 					index_t v = M.facets.vertex(f, lv);
-					if (is_boundary_or_interface_vertex[v]) {
+					if (is_boundary_vertex[v] || is_interface_vertex[v]) {
 						if (!is_regular_vertex[v]) {
 							is_singular = true;
 							break;
@@ -132,7 +130,9 @@ void poly_fem::compute_element_tags(const GEO::Mesh &M, std::vector<ElementType>
 					}
 				}
 
-				if (is_singular) {
+				if (is_interface_facet) {
+					element_tags[f] = ElementType::InterfaceCube;
+				} else if (is_singular) {
 					element_tags[f] = ElementType::SimpleSingularBoundaryCube;
 				} else {
 					element_tags[f] = ElementType::RegularBoundaryCube;
