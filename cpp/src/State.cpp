@@ -522,7 +522,7 @@ namespace poly_fem
 
 
 			for(std::size_t i = 0; i < curret_bases.size(); ++i){
-				if(mesh->is_polytope(i)) continue;
+				if(!mesh->is_simplicial() && mesh->is_polytope(i)) continue;
 
 				curret_bases[i].eval_geom_mapping(samples, mapped);
 

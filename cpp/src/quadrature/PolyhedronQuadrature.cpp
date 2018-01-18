@@ -10,6 +10,9 @@
 #include <igl/write_triangle_mesh.h>
 #include <igl/simplify_polyhedron.h>
 #include <igl/viewer/Viewer.h>
+#ifdef POLYFEM_WITH_MMG
+#include <boost/filesystem.hpp>
+#endif
 #include <vector>
 #include <cassert>
 #include <iostream>
@@ -18,6 +21,52 @@
 namespace poly_fem {
 
 namespace {
+
+#ifdef POLYFEM_WITH_MMG
+
+// try to remesh volume if polyhedron creates more than this # of quadrature points
+const int max_num_quadrature_points = 2048;
+
+bool mmg_remesh_volume(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, const Eigen::MatrixXi &T,
+	Eigen::MatrixXd &TV, Eigen::MatrixXi &TF, Eigen::MatrixXi &TT)
+{
+	using namespace boost;
+
+	double scaling = (V.colwise().maxCoeff() - V.colwise().minCoeff()).maxCoeff();
+	Eigen::RowVector3d translation = V.colwise().minCoeff();
+
+	auto tmp_dir = filesystem::temp_directory_path();
+	auto base_path = tmp_dir / filesystem::unique_path("polyfem_%%%%-%%%%-%%%%-%%%%");
+	auto f_input = base_path; f_input += "_in.mesh";
+	auto f_output = base_path; f_output += "_out.mesh";
+	auto f_sol = base_path; f_sol += "_out.sol";
+
+	TV = (V.rowwise() - translation) / scaling;
+	igl::writeMESH(f_input.string(), TV, T, F);
+
+	std::string app(POLYFEM_MMG_PATH);
+	std::string cmd = app + " -ar 20 -hausd 0.01 -v 0 -in " + f_input.string() + " -out " + f_output.string();
+	#ifndef WIN32
+	cmd += " &> /dev/null";
+	#endif
+	std::cout << "Running command:\n" + cmd << std::endl;
+	if (::system(cmd.c_str()) == 0) {
+		GEO::Mesh M;
+		GEO::mesh_load(f_output.string(), M);
+		from_geogram_mesh(M, TV, TF, TT);
+		TV = (scaling * TV).rowwise() + translation;
+
+		filesystem::remove(f_input);
+		filesystem::remove(f_output);
+		filesystem::remove(f_sol);
+		return true;
+	} else {
+		filesystem::remove(f_input);
+		return false;
+	}
+}
+
+#endif
 
 template<class TriMat>
 double transform_pts(const TriMat &tri, const Eigen::MatrixXd &pts, Eigen::MatrixXd &transformed) {
@@ -47,17 +96,33 @@ void PolyhedronQuadrature::get_quadrature(const Eigen::MatrixXd &V, const Eigen:
 	Eigen::MatrixXd VV, OV, TV;
 	Eigen::MatrixXi OF, TF, tets;
 
+	Quadrature tet_quadr_pts;
+	TetQuadrature tet_quadr;
+	tet_quadr.get_quadrature(4, tet_quadr_pts);
+
 	double scaling = (V.colwise().maxCoeff() - V.colwise().minCoeff()).maxCoeff();
 	Eigen::RowVector3d translation = V.colwise().minCoeff();
 
-	// std::cout << "tetgen in" << std::endl;
-	// VV = (V.rowwise() - translation) / scaling;
-
 	poly_fem::tertrahedralize_star_shaped_surface(V, F, kernel, TV, TF, tets);
 
-	// igl::viewer::Viewer viewer;
-	// viewer.data.set_mesh(V, F);
-	// viewer.launch();
+	#ifdef POLYFEM_WITH_MMG
+	if (tet_quadr_pts.weights.size() * tets.rows() > max_num_quadrature_points) {
+		Eigen::MatrixXd V0;
+		Eigen::MatrixXi F0, T0;
+		bool res = mmg_remesh_volume(TV, TF, tets, V0, F0, T0);
+
+		// std::cout << "points per tet: "<< tet_quadr_pts.weights.size()<< std::endl;
+		// std::cout << "#T before: " << tets.rows() << std::endl;
+		// std::cout << "#T after: " << T0.rows() << std::endl;
+		// std::cout << "res: "<< res << std::endl;
+
+		if (res && T0.rows() < tets.rows()) {
+			TV = V0;
+			TF = F0;
+			tets = T0;
+		}
+	}
+	#endif
 
 	// igl::write_triangle_mesh("poly_current.obj", VV, F);
 	// igl::simplify_polyhedron(VV, F, OV, OF, J);
@@ -77,7 +142,7 @@ void PolyhedronQuadrature::get_quadrature(const Eigen::MatrixXd &V, const Eigen:
 	// 	std::cerr << "Tetgen did not succeed. Returned code: " << res << std::endl;
 	// 	igl::write_triangle_mesh("poly_" + s + ".obj", V, F);
 	// } else {
-	// igl::writeMESH("tet_" ".mesh", TV, tets, TF);
+	igl::writeMESH("tet_" ".mesh", TV, tets, TF);
 	// }
 
 	// GEO::Mesh M;
@@ -86,10 +151,6 @@ void PolyhedronQuadrature::get_quadrature(const Eigen::MatrixXd &V, const Eigen:
 	// std::cout << tets.rows() << std::endl;
 
 	// std::cout << "volume: " << volume(M) << std::endl;
-
-	Quadrature tet_quadr_pts;
-	TetQuadrature tet_quadr;
-	tet_quadr.get_quadrature(4, tet_quadr_pts);
 
 	const long offset = tet_quadr_pts.weights.rows();
 	quadr.points.resize(tets.rows() * offset, 3);

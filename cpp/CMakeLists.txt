@@ -30,6 +30,7 @@ option(ENABLE_UMFPACK     "Enable UmfPack library"  ON)
 option(ENABLE_SUPERLU     "Enable SuperLU library" OFF)
 option(ENABLE_MKL         "Enable MKL library"     OFF)
 option(ENABLE_PARDISO     "Enable Pardiso library"  ON)
+option(ENABLE_MMG         "Enable MMG library"     OFF)
 
 # Options for libigl modules
 option(LIBIGL_USE_STATIC_LIBRARY 	"Use libigl as static library" ON)
@@ -60,6 +61,7 @@ option(LIBIGL_WITH_XML              "Use XML"            OFF)
 # set(ENABLE_SUPERLU     OFF CACHE BOOL "" FORCE)
 # set(ENABLE_MKL         OFF CACHE BOOL "" FORCE)
 # set(ENABLE_PARDISO     OFF CACHE BOOL "" FORCE)
+# set(ENABLE_MMG         OFF CACHE BOOL "" FORCE)
 
 ################################################################################
 
@@ -245,7 +247,7 @@ target_include_directories(cli11 SYSTEM INTERFACE ${THIRD_PARTY_DIR}/cli11)
 add_subdirectory(${THIRD_PARTY_DIR}/clipper)
 target_link_libraries(polyfem PUBLIC polyclipping)
 
-# Json library
+# Json
 add_library(json INTERFACE)
 target_include_directories(json SYSTEM INTERFACE ${THIRD_PARTY_DIR}/json/src)
 target_link_libraries(polyfem PUBLIC json)
@@ -253,6 +255,35 @@ target_link_libraries(polyfem PUBLIC json)
 ################################################################################
 # Optional libraries
 ################################################################################
+
+# MMG wrapper
+if(ENABLE_MMG)
+	include(ExternalProject)
+	set(MMG_DIR "${THIRD_PARTY_DIR}/mmg")
+	ExternalProject_Add(MMG_Project
+		PREFIX "${MMG_DIR}"
+		GIT_REPOSITORY https://github.com/MmgTools/mmg.git
+		GIT_TAG "v5.3.8"
+
+		UPDATE_COMMAND ""
+		PATCH_COMMAND ""
+
+		CMAKE_ARGS
+			-DCMAKE_PREFIX_PATH=${MMG_DIR}/bin
+			-DBUILD_SHARED_LIBS=OFF
+			"-DCMAKE_INSTALL_PREFIX=${MMG_DIR}/"
+
+		TEST_COMMAND "")
+
+	set(MMG_PATH "${THIRD_PARTY_DIR}/mmg/bin/mmg3d_O3")
+	target_compile_definitions(polyfem PUBLIC -DPOLYFEM_MMG_PATH=\"${MMG_PATH}\")
+	target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_MMG)
+
+	# Boost
+	find_package(Boost 1.61 QUIET REQUIRED COMPONENTS filesystem system)
+	target_include_directories(polyfem PUBLIC ${Boost_INCLUDE_DIRS})
+	target_link_libraries(polyfem PUBLIC ${Boost_LIBRARIES})
+endif()
 
 # Cholmod solver
 if(ENABLE_CHOLMOD)
