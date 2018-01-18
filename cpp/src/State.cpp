@@ -67,8 +67,11 @@ namespace poly_fem
 			{
 				mesh.get_edges(p0, p1);
 				p = p0-p1;
-				auto edges = p.array().square().rowwise().sum().sqrt();
-				return edges.maxCoeff();
+				std::cout << std::endl;
+				std::cout << "hmin: " << p.rowwise().norm().minCoeff() << std::endl;
+				std::cout << "hmax: " << p.rowwise().norm().maxCoeff() << std::endl;
+				std::cout << "havg: " << p.rowwise().norm().mean() << std::endl;
+				return p.rowwise().norm().maxCoeff();
 			}
 
 			if(mesh.is_volume())
@@ -395,6 +398,8 @@ namespace poly_fem
 		"polytope_count:\t " <<  non_regular_count <<"\n"<<
 		"polytope_boundary_count:\t " << non_regular_boundary_count <<"\n"<<
 		"undefined_count:\t " << undefined_count <<"\n"<<
+		"\n"<<
+		"total count:\t " << mesh->n_elements() <<"\n"<<
 		std::endl;
 	}
 
