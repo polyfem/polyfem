@@ -49,6 +49,8 @@ namespace poly_fem
 
 		std::vector<int> boundary_tag;
 
+		std::vector<int> flipped_elements;
+
 		std::vector<double> errors;
 
 

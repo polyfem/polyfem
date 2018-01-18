@@ -183,26 +183,18 @@ namespace poly_fem
 			return;
 		}
 
-		//remove me
-		// mesh->compute_elements_tag();
-		// mesh->set_tag(0, ElementType::InteriorPolytope);
+		if(!flipped_elements.empty())
+		{
+			mesh->compute_elements_tag();
+			for(auto el_id : flipped_elements)
+				mesh->set_tag(el_id, ElementType::InteriorPolytope);
+		}
 
 		mesh->refine(n_refs, refinenemt_location, parent_elements);
 
 		mesh->fill_boundary_tags(boundary_tag);
 
 
-		// mesh->set_tag(196, ElementType::SimpleSingularBoundaryCube);
-		// mesh->set_tag(197, ElementType::SimpleSingularBoundaryCube);
-
-		// mesh->set_tag(204, ElementType::SimpleSingularBoundaryCube);
-		// mesh->set_tag(205, ElementType::SimpleSingularBoundaryCube);
-
-		// mesh->set_tag(212, ElementType::SimpleSingularBoundaryCube);
-		// mesh->set_tag(213, ElementType::SimpleSingularBoundaryCube);
-
-		// mesh->set_tag(220, ElementType::SimpleSingularBoundaryCube);
-		// mesh->set_tag(221, ElementType::SimpleSingularBoundaryCube);
 
 		timer.stop();
 		std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
@@ -252,6 +244,7 @@ namespace poly_fem
 				case ElementType::SimpleSingularInteriorCube: simple_singular_count++; break;
 				case ElementType::MultiSingularInteriorCube: multi_singular_count++; break;
 				case ElementType::SimpleSingularBoundaryCube: boundary_count++; break;
+				case ElementType::InterfaceCube:
 				case ElementType::MultiSingularBoundaryCube: multi_singular_boundary_count++; break;
 				case ElementType::BoundaryPolytope: non_regular_boundary_count++; break;
 				case ElementType::InteriorPolytope: non_regular_count++; break;
@@ -417,6 +410,7 @@ namespace poly_fem
 
 		auto &bs = iso_parametric ? bases : geom_bases;
 		n_flipped = 0;
+		// flipped_elements.clear();
 		for(size_t i = 0; i < bs.size(); ++i)
 		{
 			if(!mesh->is_simplicial() && mesh->is_polytope(i)) continue;
@@ -424,12 +418,17 @@ namespace poly_fem
 			ElementAssemblyValues vals;
 			if(!vals.is_geom_mapping_positive(mesh->is_volume(), bs[i]))
 			{
+				// if(!parent_elements.empty())
+				// 	flipped_elements.push_back(parent_elements[i]);
 				// std::cout<<"Basis "<< i << ( parent_elements.size() > 0 ? (" -> " + std::to_string(parent_elements[i])) : "") << " has negative volume"<<std::endl;
 				++n_flipped;
 			}
 		}
 
-		std::cout<<"flipped elements "<<n_flipped<<std::endl;;
+		// std::sort(flipped_elements.begin(), flipped_elements.end());
+		// auto it = std::unique(flipped_elements.begin(), flipped_elements.end());
+		// flipped_elements.resize(std::distance(flipped_elements.begin(), it));
+
 
 		problem.remove_neumann_nodes(bases, boundary_tag, local_boundary, boundary_nodes);
 
@@ -570,7 +569,8 @@ namespace poly_fem
 		building_basis_time = timer.getElapsedTime();
 		std::cout<<" took "<<building_basis_time<<"s"<<std::endl;
 
-		std::cout<<" h: "<<mesh_size<<std::endl;
+		std::cout<<"flipped elements "<<n_flipped<<std::endl;
+		std::cout<<"h: "<<mesh_size<<std::endl;
 		std::cout<<"n bases: "<<n_bases<<std::endl;
 	}
 
