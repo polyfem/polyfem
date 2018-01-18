@@ -56,6 +56,139 @@ using namespace Eigen;
 namespace poly_fem
 {
 
+	namespace
+	{
+		double compute_mesh_size(const Mesh &mesh, const std::vector< ElementBases > &bases, const int n_samples)
+		{
+			double mesh_size = 0;
+			Eigen::MatrixXd samples, mapped, p0, p1, p;
+
+			if(mesh.is_simplicial())
+			{
+				mesh.get_edges(p0, p1);
+				p = p0-p1;
+				auto edges = p.array().square().rowwise().sum().sqrt();
+				return edges.maxCoeff();
+			}
+
+			if(mesh.is_volume())
+			{
+				samples.resize(12*n_samples, 3);
+				const Eigen::MatrixXd t = Eigen::VectorXd::LinSpaced(n_samples, 0, 1);
+
+				//X
+				int ii = 0;
+				samples.block(ii*n_samples, 0, n_samples, 1) = t;
+				samples.block(ii*n_samples, 1, n_samples, 1).setZero();
+				samples.block(ii*n_samples, 2, n_samples, 1).setZero();
+
+				++ii;
+				samples.block(ii*n_samples, 0, n_samples, 1) = t;
+				samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
+				samples.block(ii*n_samples, 2, n_samples, 1).setZero();
+
+				++ii;
+				samples.block(ii*n_samples, 0, n_samples, 1) = t;
+				samples.block(ii*n_samples, 1, n_samples, 1).setZero();
+				samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
+
+				++ii;
+				samples.block(ii*n_samples, 0, n_samples, 1) = t;
+				samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
+				samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
+
+				//Y
+				++ii;
+				samples.block(ii*n_samples, 0, n_samples, 1).setZero();
+				samples.block(ii*n_samples, 1, n_samples, 1) = t;
+				samples.block(ii*n_samples, 2, n_samples, 1).setZero();
+
+				++ii;
+				samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
+				samples.block(ii*n_samples, 1, n_samples, 1) = t;
+				samples.block(ii*n_samples, 2, n_samples, 1).setZero();
+
+				++ii;
+				samples.block(ii*n_samples, 0, n_samples, 1).setZero();
+				samples.block(ii*n_samples, 1, n_samples, 1) = t;
+				samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
+
+				++ii;
+				samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
+				samples.block(ii*n_samples, 1, n_samples, 1) = t;
+				samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
+
+				//Z
+				++ii;
+				samples.block(ii*n_samples, 0, n_samples, 1).setZero();
+				samples.block(ii*n_samples, 1, n_samples, 1).setZero();
+				samples.block(ii*n_samples, 2, n_samples, 1) = t;
+
+				++ii;
+				samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
+				samples.block(ii*n_samples, 1, n_samples, 1).setZero();
+				samples.block(ii*n_samples, 2, n_samples, 1) = t;
+
+				++ii;
+				samples.block(ii*n_samples, 0, n_samples, 1).setZero();
+				samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
+				samples.block(ii*n_samples, 2, n_samples, 1) = t;
+
+				++ii;
+				samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
+				samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
+				samples.block(ii*n_samples, 2, n_samples, 1) = t;
+
+
+				for(std::size_t i = 0; i < bases.size(); ++i){
+					if(mesh.is_polytope(i)) continue;
+
+					bases[i].eval_geom_mapping(samples, mapped);
+
+					for(int j = 0; j < 12; ++j)
+					{
+						double current_edge = 0;
+						for(int k = 0; k < n_samples-1; ++k){
+							p0 = mapped.row(j*n_samples + k);
+							p1 = mapped.row(j*n_samples + k+1);
+							p = p0-p1;
+
+							current_edge += p.norm();
+						}
+
+						mesh_size = std::max(current_edge, mesh_size);
+					}
+				}
+			}
+			else
+			{
+				QuadBoundarySampler::sample(true, true, true, true, n_samples, false, samples);
+
+				for(std::size_t i = 0; i < bases.size(); ++i){
+					if(mesh.is_polytope(i)) continue;
+
+					bases[i].eval_geom_mapping(samples, mapped);
+
+					for(int j = 0; j < 4; ++j)
+					{
+						double current_edge = 0;
+						for(int k = 0; k < n_samples-1; ++k){
+							p0 = mapped.row(j*n_samples + k);
+							p1 = mapped.row(j*n_samples + k+1);
+							p = p0-p1;
+
+							current_edge += p.norm();
+						}
+
+						mesh_size = std::max(current_edge, mesh_size);
+					}
+				}
+			}
+
+			return mesh_size;
+		}
+	}
+
 	void State::save_json(const std::string &name)
 	{
 		std::cout<<"Saving json..."<<std::flush;
@@ -446,124 +579,10 @@ namespace poly_fem
 		}
 
 
+		
+		const auto &curret_bases =  iso_parametric ? bases : geom_bases;
 		const int n_samples = 10;
-		mesh_size = 0;
-		Eigen::MatrixXd samples, mapped, p0, p1, p;
-		auto &curret_bases =  iso_parametric ? bases : geom_bases;
-
-		if(mesh->is_volume())
-		{
-			samples.resize(12*n_samples, 3);
-			const Eigen::MatrixXd t = Eigen::VectorXd::LinSpaced(n_samples, 0, 1);
-
-			//X
-			int ii = 0;
-			samples.block(ii*n_samples, 0, n_samples, 1) = t;
-			samples.block(ii*n_samples, 1, n_samples, 1).setZero();
-			samples.block(ii*n_samples, 2, n_samples, 1).setZero();
-
-			++ii;
-			samples.block(ii*n_samples, 0, n_samples, 1) = t;
-			samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
-			samples.block(ii*n_samples, 2, n_samples, 1).setZero();
-
-			++ii;
-			samples.block(ii*n_samples, 0, n_samples, 1) = t;
-			samples.block(ii*n_samples, 1, n_samples, 1).setZero();
-			samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
-
-			++ii;
-			samples.block(ii*n_samples, 0, n_samples, 1) = t;
-			samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
-			samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
-
-			//Y
-			++ii;
-			samples.block(ii*n_samples, 0, n_samples, 1).setZero();
-			samples.block(ii*n_samples, 1, n_samples, 1) = t;
-			samples.block(ii*n_samples, 2, n_samples, 1).setZero();
-
-			++ii;
-			samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
-			samples.block(ii*n_samples, 1, n_samples, 1) = t;
-			samples.block(ii*n_samples, 2, n_samples, 1).setZero();
-
-			++ii;
-			samples.block(ii*n_samples, 0, n_samples, 1).setZero();
-			samples.block(ii*n_samples, 1, n_samples, 1) = t;
-			samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
-
-			++ii;
-			samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
-			samples.block(ii*n_samples, 1, n_samples, 1) = t;
-			samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
-
-			//Z
-			++ii;
-			samples.block(ii*n_samples, 0, n_samples, 1).setZero();
-			samples.block(ii*n_samples, 1, n_samples, 1).setZero();
-			samples.block(ii*n_samples, 2, n_samples, 1) = t;
-
-			++ii;
-			samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
-			samples.block(ii*n_samples, 1, n_samples, 1).setZero();
-			samples.block(ii*n_samples, 2, n_samples, 1) = t;
-
-			++ii;
-			samples.block(ii*n_samples, 0, n_samples, 1).setZero();
-			samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
-			samples.block(ii*n_samples, 2, n_samples, 1) = t;
-
-			++ii;
-			samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
-			samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
-			samples.block(ii*n_samples, 2, n_samples, 1) = t;
-
-
-			for(std::size_t i = 0; i < curret_bases.size(); ++i){
-				if(mesh->is_polytope(i)) continue;
-
-				curret_bases[i].eval_geom_mapping(samples, mapped);
-
-				for(int j = 0; j < 12; ++j)
-				{
-					double current_edge = 0;
-					for(int k = 0; k < n_samples-1; ++k){
-						p0 = mapped.row(j*n_samples + k);
-						p1 = mapped.row(j*n_samples + k+1);
-						p = p0-p1;
-
-						current_edge += p.norm();
-					}
-
-					mesh_size = std::max(current_edge, mesh_size);
-				}
-			}
-		}
-		else
-		{
-			QuadBoundarySampler::sample(true, true, true, true, n_samples, false, samples);
-
-			for(std::size_t i = 0; i < curret_bases.size(); ++i){
-				if(mesh->is_polytope(i)) continue;
-
-				curret_bases[i].eval_geom_mapping(samples, mapped);
-
-				for(int j = 0; j < 4; ++j)
-				{
-					double current_edge = 0;
-					for(int k = 0; k < n_samples-1; ++k){
-						p0 = mapped.row(j*n_samples + k);
-						p1 = mapped.row(j*n_samples + k+1);
-						p = p0-p1;
-
-						current_edge += p.norm();
-					}
-
-					mesh_size = std::max(current_edge, mesh_size);
-				}
-			}
-		}
+		mesh_size = compute_mesh_size(*mesh, curret_bases, n_samples);
 
 		timer.stop();
 		building_basis_time = timer.getElapsedTime();
@@ -575,61 +594,7 @@ namespace poly_fem
 	}
 
 
-// // Compute the integral constraints for each basis of the mesh
-// void compute_integral_constraints(
-// 	const Mesh2D &mesh,
-// 	const int n_bases,
-// 	const std::vector< ElementBases > &bases,
-// 	const std::vector< ElementBases > &gbases,
-// 	Eigen::MatrixXd &basis_integrals)
-// {
-// 	assert(!mesh.is_volume());
-
-// 	basis_integrals.resize(n_bases, 5);
-// 	basis_integrals.setZero();
-// 	Eigen::MatrixXd rhs(n_bases, 5);
-// 	rhs.setZero();
-
-// 	const int n_elements = mesh.n_elements();
-// 	for(int e = 0; e < n_elements; ++e) {
-// 		// ElementAssemblyValues vals = values[e];
-// 		// const ElementAssemblyValues &gvals = gvalues[e];
-// 		ElementAssemblyValues vals;
-// 		vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
-
-// 		// Computes the discretized integral of the PDE over the element
-// 		const int n_local_bases = int(vals->basis_values.size());
-// 		for(int j = 0; j < n_local_bases; ++j) {
-// 			const AssemblyValues &v=vals->basis_values[j];
-// 			const double integral_10 = (v.grad_t_m.col(0).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
-// 			const double integral_01 = (v.grad_t_m.col(1).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
-
-// 			const double integral_11 = 	((gvals->val.col(1).array() * v.grad_t_m.col(0).array() + gvals->val.col(0).array() * v.grad_t_m.col(1).array()) * gvals->det.array() * vals->quadrature.weights.array()).sum();
-// 			const double integral_20 = 2*(gvals->val.col(0).array() * v.grad_t_m.col(0).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
-// 			const double integral_02 = 2*(gvals->val.col(1).array() * v.grad_t_m.col(1).array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
-
-// 			const double area = (v.val.array() * gvals->det.array() * vals->quadrature.weights.array()).sum();
-
-// 			for(size_t ii = 0; ii < v.global.size(); ++ii) {
-// 				basis_integrals(v.global[ii].index, 0) += integral_10 * v.global[ii].val;
-// 				basis_integrals(v.global[ii].index, 1) += integral_01 * v.global[ii].val;
-
-// 				basis_integrals(v.global[ii].index, 2) += integral_11 * v.global[ii].val;
-
-// 				basis_integrals(v.global[ii].index, 3) += integral_20 * v.global[ii].val;
-// 				basis_integrals(v.global[ii].index, 4) += integral_02 * v.global[ii].val;
-
-// 				rhs(v.global[ii].index, 3) += -2.0 * area * v.global[ii].val;
-// 				rhs(v.global[ii].index, 4) += -2.0 * area * v.global[ii].val;
-// 			}
-// 		}
-// 	}
-
-// 	basis_integrals -= rhs;
-// }
-
-
-	void State::compute_assembly_vals()
+	void State::build_polygonal_basis()
 	{
 		// values.clear();
 		// geom_values.clear();

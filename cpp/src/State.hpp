@@ -97,7 +97,7 @@ namespace poly_fem
 
 		void load_mesh();
 		void build_basis();
-		void compute_assembly_vals();
+		void build_polygonal_basis();
 		void assemble_stiffness_mat();
 		void assemble_rhs();
 		void solve_problem();

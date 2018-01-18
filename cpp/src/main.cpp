@@ -110,7 +110,7 @@ int main(int argc, const char **argv)
             // if(state.n_flipped == 0)
                 // break;
         }
-        state.compute_assembly_vals();
+        state.build_polygonal_basis();
         state.assemble_stiffness_mat();
         state.assemble_rhs();
         state.solve_problem();

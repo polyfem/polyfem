@@ -853,8 +853,8 @@ namespace poly_fem
 		};
 
 
-		auto compute_assembly_vals_func = [&]() {
-			state.compute_assembly_vals();
+		auto build_polygonal_basis_func = [&]() {
+			state.build_polygonal_basis();
 
 			if(skip_visualization) return;
 			// clear_func();
@@ -972,7 +972,7 @@ namespace poly_fem
 			viewer_.ngui->addGroup("Runners");
 			viewer_.ngui->addButton("Load mesh", load_mesh_func);
 			viewer_.ngui->addButton("Build  basis", build_basis_func);
-			viewer_.ngui->addButton("Compute poly bases", compute_assembly_vals_func);
+			viewer_.ngui->addButton("Compute poly bases", build_polygonal_basis_func);
 			viewer_.ngui->addButton("Build vis mesh", build_vis_mesh_func);
 
 			viewer_.ngui->addButton("Assemble stiffness", assemble_stiffness_mat_func);
@@ -983,7 +983,7 @@ namespace poly_fem
 			viewer_.ngui->addButton("Run all", [&](){
 				load_mesh_func();
 				build_basis_func();
-				compute_assembly_vals_func();
+				build_polygonal_basis_func();
 
 				if(!skip_visualization)
 					build_vis_mesh_func();

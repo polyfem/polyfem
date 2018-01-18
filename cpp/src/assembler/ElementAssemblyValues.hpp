@@ -26,7 +26,6 @@ namespace poly_fem
 		void compute(const int el_index, const bool is_volume, const ElementBases &basis, const ElementBases &gbasis);
 		bool is_geom_mapping_positive(const bool is_volume, const ElementBases &gbasis) const;
 
-		// static void compute_assembly_values(const bool is_volume, const std::vector< ElementBases > &bases, std::vector< ElementAssemblyValues > &values);
 	private:
 		void finalize_global_element(const Eigen::MatrixXd &v);
 
