@@ -868,7 +868,12 @@ namespace poly_fem
 					}
 					if (on_boundary || attaching_non_hex) break;
 				}
-				if (on_boundary || attaching_non_hex) {
+				if (attaching_non_hex) {
+					ele_tag[ele.id] = ElementType::InterfaceCube;
+					continue;
+				}
+
+				if (on_boundary) {
 					ele_tag[ele.id] = ElementType::MultiSingularBoundaryCube;
 					//has no boundary edge--> singular
 					bool boundary_edge = false, boundary_edge_singular = false, interior_edge_singular = false;
@@ -915,7 +920,9 @@ namespace poly_fem
 						n_irregular_e++;
 					if (has_singular_v) continue;
 					if (!has_singular_v) {
-						if (n_irregular_e == 1) ele_tag[ele.id] = ElementType::SimpleSingularBoundaryCube;
+						if (n_irregular_e == 1) {
+							ele_tag[ele.id] = ElementType::SimpleSingularBoundaryCube;
+						}
 						else if (n_irregular_e == 0 && n_in_irregular_v == 0 && !has_iregular_v) ele_tag[ele.id] = ElementType::RegularBoundaryCube;
 						else continue;
 					}
