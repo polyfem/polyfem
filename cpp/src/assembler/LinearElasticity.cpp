@@ -23,26 +23,32 @@ namespace poly_fem
 		}
 	}
 
-	void LinearElasticity::assemble(const Eigen::MatrixXd &gradi, const Eigen::MatrixXd &gradj, const Eigen::MatrixXd &da, Eigen::MatrixXd &res) const
+	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
+	LinearElasticity::assemble(const Eigen::MatrixXd &gradi, const Eigen::MatrixXd &gradj, const Eigen::VectorXd &da) const
 	{
 		// mu ((gradi' gradj) Id + gradi gradj') + lambda gradi *gradj';
-		res.resize(gradi.rows(), size()*size());
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> res(size()*size());
+		res.setZero();
+
 		const auto &dot = (gradi.array() * gradj.array()).rowwise().sum();
 
 		for(long k = 0; k < gradi.rows(); ++k)
 		{
+			Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> res_k(size()*size());
+			res_k.setZero();
 			const Eigen::MatrixXd outer = gradi.row(k).transpose() * gradj.row(k);
 			for(int i = 0; i < size(); ++i)
 			{
 				for(int j = 0; j < size(); ++j)
 				{
-					res(k, i * size() + j) = outer(i * size() + j)*(lambda_ + mu_);
-					if(i == j) res(k, i * size() + j) += mu_ * dot(k);
-
-					res(k, i * size() + j) *= da(k);
+					res_k(i * size() + j) = outer(i * size() + j)*(lambda_ + mu_);
+					if(i == j) res_k(i * size() + j) += mu_ * dot(k);
 				}
 			}
+			res += res_k *= da(k);
 		}
+
+		return res;
 	}
 
 	void LinearElasticity::compute_von_mises_stresses(const int size, const ElementBases &bs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const

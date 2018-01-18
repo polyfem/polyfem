@@ -19,7 +19,7 @@ namespace poly_fem
 		Eigen::MatrixXd val; // R^{m x dim}
 
 		// det(∑∇φi.Ni) det fo the jacobian of geometric mapping (constant for P1)
-		Eigen::MatrixXd det; // R^{m x 1}
+		Eigen::VectorXd det; // R^{m x 1}
 
 		bool has_parameterization = true;
 

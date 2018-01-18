@@ -7,6 +7,7 @@
 #include "LocalBoundary.hpp"
 #include "QuadBoundarySampler.hpp"
 
+#include <igl/Timer.h>
 #include <Eigen/Sparse>
 #include <vector>
 #include <iostream>
@@ -47,11 +48,12 @@ namespace poly_fem
 				// const ElementAssemblyValues &gvals = geom_values[e];
 
 				ElementAssemblyValues vals;
+				igl::Timer timer; timer.start();
 				vals.compute(e, is_volume, bases[e], gbases[e]);
 
 				const Quadrature &quadrature = vals.quadrature;
 
-				const Eigen::MatrixXd da = vals.det.array() * quadrature.weights.array();
+				const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 				const int n_loc_bases = int(vals.basis_values.size());
 
 				// if(n_loc_bases == 3)
@@ -63,49 +65,38 @@ namespace poly_fem
 				for(int i = 0; i < n_loc_bases; ++i)
 				{
 					const AssemblyValues &values_i = vals.basis_values[i];
-
-					// const Eigen::MatrixXd &vali  = values_i.val;
 					const Eigen::MatrixXd &gradi = values_i.grad_t_m;
 
-					// std::cout<<vali<<"\n\n"<<std::endl;
-					// if(n_loc_bases == 3)
-					// 	std::cout<<"gradi "<<gradi<<"\n\n"<<std::endl;
-
-					for(int j = 0; j < n_loc_bases; ++j)
+					for(int j = 0; j <= i; ++j)
 					{
 						const AssemblyValues &values_j = vals.basis_values[j];
 
-						// const Eigen::MatrixXd &valj  = values_j.val;
 						const Eigen::MatrixXd &gradj = values_j.grad_t_m;
-						// if(n_loc_bases == 3)
-						// 	std::cout<<"gradj "<<gradj<<"\n\n"<<std::endl;
 
+						const auto stiffness_val = local_assembler_.assemble(gradi, gradj, da);
 
-						local_assembler_.assemble(gradi, gradj, da, local_val);
-
-						const auto stiffness_val = local_val.array().colwise().sum();
+						// const auto stiffness_val = local_val.array().colwise().sum();
 						assert(stiffness_val.size() == local_assembler_.size() * local_assembler_.size());
-						// if(n_loc_bases == 3)
-						// if(values_i.global[0].index == 0 && values_j.global[0].index == 0){
-						// 	// std::cout<<e<<" "<<i<<" "<<j<<" "<<values_i.global[0].index<<" "<<values_j.global[0].index<<"\n--------------\n"<<gradi<<"\n"<<gradj<<std::endl;
-						// 			// std::cout<<(gradi.array() * gradj.array()).rowwise().sum()<<" "<<da<<std::endl;
-						// 	std::cout<<e<<" "<<values_i.global[0].index*local_assembler_.size() <<" "<< values_j.global[0].index*local_assembler_.size() <<" "<< stiffness_val <<std::endl;
 
-						// }
-						// exit(0);
-						for(std::size_t ii = 0; ii < values_i.global.size(); ++ii)
+						igl::Timer t1; t1.start();
+						for(int n = 0; n < local_assembler_.size(); ++n)
 						{
-							for(std::size_t jj = 0; jj < values_j.global.size(); ++jj)
+							for(int m = 0; m < local_assembler_.size(); ++m)
 							{
-								for(int m = 0; m < local_assembler_.size(); ++m)
+								const double local_value = stiffness_val(n*local_assembler_.size()+m);
+								if (std::abs(local_value) < 1e-30) { continue; }
+								for(size_t ii = 0; ii < values_i.global.size(); ++ii)
 								{
-									for(int n = 0; n < local_assembler_.size(); ++n)
+									const auto gi = values_i.global[ii].index*local_assembler_.size()+m;
+									const auto wi = values_i.global[ii].val;
+									for(size_t jj = 0; jj < values_j.global.size(); ++jj)
 									{
-										entries.emplace_back(
-											values_i.global[ii].index*local_assembler_.size()+m,
-											values_j.global[jj].index*local_assembler_.size()+n,
-											stiffness_val(n*local_assembler_.size()+m) * values_i.global[ii].val * values_j.global[jj].val);
-										// std::cout<<e<<" "<<values_i.global[ii].index*local_assembler_.size()+m <<" "<< values_j.global[jj].index*local_assembler_.size()+n <<" "<< stiffness_val(n*local_assembler_.size()+m) * values_i.global[ii].val * values_j.global[jj].val <<std::endl;
+										const auto gj = values_j.global[jj].index*local_assembler_.size()+n;
+										const auto wj = values_j.global[jj].val;
+										entries.emplace_back(gi, gj, local_value * wi * wj);
+										if (j < i) {
+											entries.emplace_back(gj, gi, local_value * wj * wi);
+										}
 
 										if(entries.size() >= 1e8)
 										{
@@ -121,8 +112,16 @@ namespace poly_fem
 								}
 							}
 						}
+
+						// t1.stop();
+						// if (!vals.has_parameterization) { std::cout << "-- t1: " << t1.getElapsedTime() << std::endl; }
+
 					}
+
 				}
+
+				// timer.stop();
+				// if (!vals.has_parameterization) { std::cout << "-- Timer: " << timer.getElapsedTime() << std::endl; }
 
 			}
 
@@ -133,21 +132,6 @@ namespace poly_fem
 			// stiffness.resize(n_basis*local_assembler_.size(), n_basis*local_assembler_.size());
 			// stiffness.setFromTriplets(entries.begin(), entries.end());
 		}
-
-		// void set_identity(const std::vector<int> &boundary_nodes, Eigen::SparseMatrix<double, Eigen::RowMajor> &stiffness) const
-		// {
-		// 	for(std::size_t i = 0; i < boundary_nodes.size(); ++i)
-		// 	{
-		// 		const int index = boundary_nodes[i];
-		// 		for (Eigen::SparseMatrix<double, Eigen::RowMajor>::InnerIterator it(stiffness, index); it; ++it)
-		// 		{
-		// 			if(it.row() == it.col())
-		// 				it.valueRef() = 1;
-		// 			else
-		// 				it.valueRef() = 0;
-		// 		}
-		// 	}
-		// }
 
 		inline LocalAssembler &local_assembler() { return local_assembler_; }
 		inline const LocalAssembler &local_assembler() const { return local_assembler_; }

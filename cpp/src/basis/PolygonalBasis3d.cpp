@@ -215,7 +215,7 @@ void sample_polyhedra(
 	const int element_index,
 	const int n_quadrature_vertices_per_edge,
 	const int n_kernels_per_edge,
-	const int n_samples_per_edge,
+	int n_samples_per_edge,
 	const int quadrature_order,
 	const Mesh3D &mesh,
 	const std::map<int, InterfaceData> &poly_face_to_data,
@@ -271,6 +271,7 @@ void sample_polyhedra(
 	// Compute kernel centers
 	compute_offset_kernels(QV, QF, n_kernels_per_edge, eps, kernel_centers, KV, KF,
 		evalFuncGeom, getAdjLocalEdge);
+	// if (KV.rows()) { n_samples_per_edge = 2; }
 
 	// Compute collocation points
 	Eigen::MatrixXd PV, UV;
