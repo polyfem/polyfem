@@ -101,14 +101,14 @@ int main(int argc, const char **argv)
 
         state.init(path, n_refs, problem_num);
         // std::cout<<path<<std::endl;
-        for(int i = 0; i < 6; ++i)
+        // for(int i = 0; i < 6; ++i)
         {
             state.load_mesh();
             state.compute_mesh_stats();
             state.build_basis();
 
-            if(state.n_flipped == 0)
-                break;
+            // if(state.n_flipped == 0)
+                // break;
         }
         state.compute_assembly_vals();
         state.assemble_stiffness_mat();
