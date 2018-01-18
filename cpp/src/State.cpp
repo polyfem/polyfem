@@ -743,7 +743,7 @@ namespace poly_fem
 		std::cout<<" took "<<assembling_stiffness_mat_time<<"s"<<std::endl;
 
 		nn_zero = stiffness.nonZeros();
-		mat_size = stiffness.size();
+		mat_size = (long long) stiffness.rows() * (long long) stiffness.cols();
 		std::cout<<"sparsity: "<<nn_zero<<"/"<<mat_size<<std::endl;
 
 

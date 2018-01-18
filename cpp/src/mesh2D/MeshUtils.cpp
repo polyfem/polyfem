@@ -6,6 +6,7 @@
 #include <geogram/mesh/mesh_geometry.h>
 #include <geogram/mesh/mesh_AABB.h>
 #include <geogram/voronoi/CVT.h>
+#include <geogram/basic/logger.h>
 ////////////////////////////////////////////////////////////////////////////////
 
 GEO::vec3 poly_fem::mesh_vertex(const GEO::Mesh &M, GEO::index_t v) {
@@ -610,7 +611,10 @@ void poly_fem::sample_surface(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F
 	to_geogram_mesh(V, F, M);
 	GEO::CentroidalVoronoiTesselation CVT(&M);
 	// GEO::mesh_save(M, "foo.obj");
+	bool was_quiet = GEO::Logger::instance()->is_quiet();
+	GEO::Logger::instance()->set_quiet(true);
 	CVT.compute_initial_sampling(num_samples);
+	GEO::Logger::instance()->set_quiet(was_quiet);
 
 	if (num_lloyd > 0) {
 		CVT.Lloyd_iterations(num_lloyd);
