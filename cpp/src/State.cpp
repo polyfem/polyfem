@@ -579,7 +579,6 @@ namespace poly_fem
 		}
 
 
-		
 		const auto &curret_bases =  iso_parametric ? bases : geom_bases;
 		const int n_samples = 10;
 		mesh_size = compute_mesh_size(*mesh, curret_bases, n_samples);
