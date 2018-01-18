@@ -418,19 +418,17 @@ namespace poly_fem
 			ElementAssemblyValues vals;
 			if(!vals.is_geom_mapping_positive(mesh->is_volume(), bs[i]))
 			{
-				if(!parent_elements.empty())
-					flipped_elements.push_back(parent_elements[i]);
-
-				std::cout<<"Basis "<< i << ( parent_elements.size() > 0 ? (" -> " + std::to_string(parent_elements[i])) : "") << " has negative volume"<<std::endl;
+				// if(!parent_elements.empty())
+				// 	flipped_elements.push_back(parent_elements[i]);
+				// std::cout<<"Basis "<< i << ( parent_elements.size() > 0 ? (" -> " + std::to_string(parent_elements[i])) : "") << " has negative volume"<<std::endl;
 				++n_flipped;
 			}
 		}
 
-		std::sort(flipped_elements.begin(), flipped_elements.end());
-		auto it = std::unique(flipped_elements.begin(), flipped_elements.end());
-		flipped_elements.resize(std::distance(flipped_elements.begin(), it));
+		// std::sort(flipped_elements.begin(), flipped_elements.end());
+		// auto it = std::unique(flipped_elements.begin(), flipped_elements.end());
+		// flipped_elements.resize(std::distance(flipped_elements.begin(), it));
 
-		std::cout<<"flipped elements "<<n_flipped<<std::endl;;
 
 		problem.remove_neumann_nodes(bases, boundary_tag, local_boundary, boundary_nodes);
 
@@ -571,7 +569,8 @@ namespace poly_fem
 		building_basis_time = timer.getElapsedTime();
 		std::cout<<" took "<<building_basis_time<<"s"<<std::endl;
 
-		std::cout<<" h: "<<mesh_size<<std::endl;
+		std::cout<<"flipped elements "<<n_flipped<<std::endl;
+		std::cout<<"h: "<<mesh_size<<std::endl;
 		std::cout<<"n bases: "<<n_bases<<std::endl;
 	}
 
