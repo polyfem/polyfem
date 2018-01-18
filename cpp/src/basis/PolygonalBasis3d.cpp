@@ -21,6 +21,8 @@
 namespace poly_fem {
 namespace {
 
+const int max_num_kernels = 300;
+
 // -----------------------------------------------------------------------------
 
 std::vector<int> compute_nonzero_bases_ids(const Mesh3D &mesh, const int c,
@@ -164,7 +166,6 @@ void compute_offset_kernels(const Eigen::MatrixXd &QV, const Eigen::MatrixXi &QF
 	orient_closed_surface(KV, KF);
 	double volume = std::pow(signed_volume(KV, KF), 1.0 / 3.0);
 
-	const int max_num_kernels = 300;
 	if (KV.rows() < max_num_kernels) {
 		igl::per_vertex_normals(KV, KF, KN);
 		kernel_centers = KV;
@@ -270,7 +271,7 @@ void sample_polyhedra(
 	// Compute kernel centers
 	compute_offset_kernels(QV, QF, n_kernels_per_edge, eps, kernel_centers, KV, KF,
 		evalFuncGeom, getAdjLocalEdge);
-	// if (KV.rows()) { n_samples_per_edge = 2; }
+	// if (KV.rows() >= max_num_kernels) { n_samples_per_edge = 5; }
 
 	// Compute collocation points
 	Eigen::MatrixXd PV, UV;
@@ -371,55 +372,6 @@ void sample_polyhedra(
 } // anonymous namespace
 
 ////////////////////////////////////////////////////////////////////////////////
-
-// Compute the integral constraints for each basis of the mesh
-// void PolygonalBasis3d::compute_integral_constraints(
-// 	const Mesh3D &mesh,
-// 	const int n_bases,
-// 	const std::vector< ElementBases > &bases,
-// 	const std::vector< ElementBases > &gbases,
-// 	Eigen::MatrixXd &basis_integrals)
-// {
-// 	assert(mesh.is_volume());
-
-// 	basis_integrals.resize(n_bases, 3);
-// 	basis_integrals.setZero();
-
-// 	const int n_elements = mesh.n_elements();
-// 	for(int e = 0; e < n_elements; ++e) {
-// 		if (mesh.is_polytope(e)) {
-// 			continue;
-// 		}
-// 		// const ElementAssemblyValues &vals = values[e];
-// 		// const ElementAssemblyValues &gvals = gvalues[e];
-
-// 		ElementAssemblyValues vals;
-// 		vals.compute(e, true, bases[e], bases[e]);
-
-// 		// if(&bases[e] == &gbases[e])
-// 		// 	gvals = vals;
-// 		// else
-// 		// {
-// 		// 	gvals = std::make_shared<ElementAssemblyValues>();
-// 		// 	gvals->compute(e, true, gbases[e]);
-// 		// }
-
-// 		// Computes the discretized integral of the PDE over the element
-// 		const int n_local_bases = int(vals.basis_values.size());
-// 		for(int j = 0; j < n_local_bases; ++j) {
-// 			const AssemblyValues &v=vals.basis_values[j];
-// 			const double integralx = (v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-// 			const double integraly = (v.grad_t_m.col(1).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-// 			const double integralz = (v.grad_t_m.col(2).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-
-// 			for(size_t ii = 0; ii < v.global.size(); ++ii) {
-// 				basis_integrals(v.global[ii].index, 0) += integralx * v.global[ii].val;
-// 				basis_integrals(v.global[ii].index, 1) += integraly * v.global[ii].val;
-// 				basis_integrals(v.global[ii].index, 2) += integralz * v.global[ii].val;
-// 			}
-// 		}
-// 	}
-// }
 
 // Compute the integral constraints for each basis of the mesh
 void PolygonalBasis3d::compute_integral_constraints(
