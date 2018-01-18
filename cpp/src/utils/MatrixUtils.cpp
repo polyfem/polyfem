@@ -14,4 +14,5 @@ void poly_fem::show_matrix_stats(const Eigen::MatrixXd &M) {
 	std::cout << "-- Cond: " << cond << std::endl;
 	std::cout << "-- Invertible: " << lu.isInvertible() << std::endl;
 	std::cout << "----------------------------------------" << std::endl;
+	std::cout << lu.solve(M) << std::endl;
 }

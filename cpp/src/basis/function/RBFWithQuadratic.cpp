@@ -9,7 +9,7 @@
 #include <array>
 ////////////////////////////////////////////////////////////////////////////////
 
-// #define VERBOSE
+#define VERBOSE
 
 using namespace poly_fem;
 
@@ -477,7 +477,7 @@ void RBFWithQuadratic::compute_weights(const Eigen::MatrixXd &samples,
 	Eigen::MatrixXd b = rhs - A * weights_;
 
 	// Solve the system
-	#ifdef VERBOSe
+	#ifdef VERBOSE
 	std::cout << "-- Solving system of size " << L.cols() << " x " << L.cols() << std::endl;
 	#endif
 	auto ldlt = (L.transpose() * A.transpose() * A * L).ldlt();
@@ -489,7 +489,9 @@ void RBFWithQuadratic::compute_weights(const Eigen::MatrixXd &samples,
 	std::cout << "-- Solved!" << std::endl;
 	#endif
 
-	// std::cout << "-- Mean residual: " << (A * weights_ - rhs).array().abs().colwise().maxCoeff().mean() << std::endl;
+	#ifdef VERBOSE
+	std::cout << "-- Mean residual: " << (A * weights_ - rhs).array().abs().colwise().maxCoeff().mean() << std::endl;
+	#endif
 
 #if 0
 	Eigen::MatrixXd MM, x, dx, val;
