@@ -8,6 +8,7 @@
 #include "Problem.hpp"
 #include "LocalBoundary.hpp"
 #include "InterfaceData.hpp"
+#include "Common.hpp"
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
@@ -65,6 +66,7 @@ namespace poly_fem
 		Eigen::SparseMatrix<double> stiffness;
 		Eigen::MatrixXd rhs;
 		Eigen::MatrixXd sol;
+		json solver_info;
 
 		double lambda = 1, mu = 1;
 

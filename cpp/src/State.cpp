@@ -228,7 +228,7 @@ namespace poly_fem
 		j["time_solving"] = solving_time;
 		j["time_computing_errors"] = computing_errors_time;
 
-
+		j["solver_info"] = solver_info;
 
 		j["count_regular"] = regular_count;
 		j["count_regular_boundary"] = regular_boundary_count;
@@ -782,6 +782,7 @@ namespace poly_fem
 		Eigen::VectorXd x, b = rhs;
 		dirichlet_solve(*solver, A, b, boundary_nodes, x);
 		sol = x;
+		solver->getInfo(solver_info);
 
 		timer.stop();
 		solving_time = timer.getElapsedTime();
@@ -933,7 +934,7 @@ namespace poly_fem
 			std::cerr<<"Saving vtu supported only for pure hex meshes"<<std::endl;
 			return;
 		}
-		
+
 		const double area_param = 0.00001*mesh->n_elements();
 		// const double area_param = 1;
 

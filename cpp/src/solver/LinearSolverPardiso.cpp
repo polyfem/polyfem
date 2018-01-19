@@ -40,6 +40,14 @@ void LinearSolverPardiso::setParameters(const json &params) {
 	}
 }
 
+void LinearSolverPardiso::getInfo(json &params) const {
+	params["mem_symbolic_peak"] = iparm[14];
+	params["mem_symbolic_perm"] = iparm[15];
+	params["mem_numerical_fact"] = iparm[16];
+	params["mem_total_peak"] = std::max(iparm[14], iparm[15] + iparm[16]);
+	params["num_nonzero_factors"] = iparm[17];
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 void LinearSolverPardiso::init() {

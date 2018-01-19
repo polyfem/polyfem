@@ -41,8 +41,8 @@ public:
 	// Set solver parameters
 	virtual void setParameters(const json &params) override;
 
-	// Get info on the last solve step
-	// virtual void getInfo(json &params) const {};
+	// Retrieve memory information from Pardiso
+	virtual void getInfo(json &params) const override;
 
 	// Analyze sparsity pattern
 	virtual void analyzePattern(const SparseMatrixXd &A) override;
