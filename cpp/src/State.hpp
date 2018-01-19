@@ -69,7 +69,7 @@ namespace poly_fem
 
 		double mesh_size;
 		double l2_err, linf_err, lp_err;
-		long long nn_zero, mat_size;
+		long long nn_zero, mat_size, num_dofs;
 
 		double refinenemt_location = 0.5;
 

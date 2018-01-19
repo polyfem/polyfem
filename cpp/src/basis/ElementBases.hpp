@@ -52,7 +52,7 @@ namespace poly_fem
 		void eval_geom_mapping_grads(const Eigen::MatrixXd &samples, std::vector<Eigen::MatrixXd> &grads) const;
 
 		///
-		/// @brief      {Checks if all the bases are complete }
+		/// @brief      { Checks if all the bases are complete }
 		bool is_complete() const;
 
 		friend std::ostream& operator<< (std::ostream& os, const ElementBases &obj)

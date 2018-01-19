@@ -217,6 +217,7 @@ namespace poly_fem
 		j["num_bases"] = n_bases;
 		j["num_non_zero"] = nn_zero;
 		j["num_flipped"] = n_flipped;
+		j["num_dofs"] = num_dofs;
 
 		j["mesh_size"] = mesh_size;
 
@@ -709,6 +710,7 @@ namespace poly_fem
 		std::cout<<" took "<<assembling_stiffness_mat_time<<"s"<<std::endl;
 
 		nn_zero = stiffness.nonZeros();
+		num_dofs = stiffness.rows();
 		mat_size = (long long) stiffness.rows() * (long long) stiffness.cols();
 		std::cout<<"sparsity: "<<nn_zero<<"/"<<mat_size<<std::endl;
 

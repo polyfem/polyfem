@@ -992,6 +992,7 @@ namespace poly_fem
 				assemble_rhs_func();
 				solve_problem_func();
 				compute_errors_func();
+				state.save_json(std::cout);
 			});
 
 			viewer_.ngui->addWindow(Eigen::Vector2i(400,10),"Debug");
