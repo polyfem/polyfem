@@ -55,6 +55,7 @@ namespace poly_fem
 		virtual bool load(const std::string &path) = 0;
 		virtual bool save(const std::string &path) const = 0;
 
+		virtual void normalize() = 0;
 
 		//Tagging of the elements
 		virtual void compute_elements_tag() = 0;

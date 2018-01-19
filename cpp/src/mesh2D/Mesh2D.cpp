@@ -49,16 +49,6 @@ namespace poly_fem
 		if(!mesh_load(path, mesh_))
 			return false;
 
-
-		GEO::vec3 min_corner, max_corner;
-		GEO::get_bbox(mesh_, &min_corner[0], &max_corner[0]);
-		GEO::vec3 extent = max_corner - min_corner;
-		double scaling = std::max(extent[0], std::max(extent[1], extent[2]));
-		const GEO::vec3 origin = min_corner;
-		for (GEO::index_t v = 0; v < mesh_.vertices.nb(); ++v) {
-			mesh_.vertices.point(v) = (mesh_.vertices.point(v) - origin) / scaling;
-		}
-
 		is_simplicial_ = mesh_.facets.are_simplices();
 
 		orient_normals_2d(mesh_);
@@ -73,6 +63,35 @@ namespace poly_fem
 			return false;
 
 		return true;
+	}
+
+	void Mesh2D::normalize() {
+		GEO::vec3 min_corner, max_corner;
+		GEO::get_bbox(mesh_, &min_corner[0], &max_corner[0]);
+		GEO::vec3 extent = max_corner - min_corner;
+		double scaling = std::max(extent[0], std::max(extent[1], extent[2]));
+		const GEO::vec3 origin = min_corner;
+		for (GEO::index_t v = 0; v < mesh_.vertices.nb(); ++v) {
+			mesh_.vertices.point(v) = (mesh_.vertices.point(v) - origin) / scaling;
+		}
+
+		std::cout << "-- bbox before normalization:" << std::endl;
+		std::cout << "   min   : " << min_corner << std::endl;
+		std::cout << "   max   : " << max_corner << std::endl;
+		std::cout << "   extent: " << max_corner - min_corner << std::endl;
+		std::cout << "-- bbox after normalization:" << std::endl;
+		GEO::get_bbox(mesh_, &min_corner[0], &max_corner[0]);
+		std::cout << "   min   : " << min_corner << std::endl;
+		std::cout << "   max   : " << max_corner << std::endl;
+		std::cout << "   extent: " << max_corner - min_corner << std::endl;
+
+		Eigen::MatrixXd p0, p1, p;
+		get_edges(p0, p1);
+		p = p0 - p1;
+		std::cout << "-- edge length after normalization:" << std::endl;
+		std::cout << "   min: " << p.rowwise().norm().minCoeff() << std::endl;
+		std::cout << "   max: " << p.rowwise().norm().maxCoeff() << std::endl;
+		std::cout << "   avg: " << p.rowwise().norm().mean() << std::endl;
 	}
 
 	void Mesh2D::get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const

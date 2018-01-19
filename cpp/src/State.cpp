@@ -41,15 +41,6 @@
 #include <memory>
 
 
-// #ifdef POLY_FEM_WITH_SUPERLU
-// #include <Eigen/SuperLUSupport>
-// #endif
-
-#ifdef POLY_FEM_WITH_UMFPACK
-#include <Eigen/UmfPackSupport>
-#endif
-#include<Eigen/SparseLU>
-
 using namespace Eigen;
 
 
@@ -326,8 +317,9 @@ namespace poly_fem
 
 		mesh->refine(n_refs, refinenemt_location, parent_elements);
 
-		mesh->compute_boundary_ids();
+		mesh->normalize();
 
+		mesh->compute_boundary_ids();
 
 
 		timer.stop();
@@ -396,7 +388,6 @@ namespace poly_fem
 		"polytope_count:\t " <<  non_regular_count <<"\n"<<
 		"polytope_boundary_count:\t " << non_regular_boundary_count <<"\n"<<
 		"undefined_count:\t " << undefined_count <<"\n"<<
-		"\n"<<
 		"total count:\t " << mesh->n_elements() <<"\n"<<
 		std::endl;
 	}
@@ -823,7 +814,7 @@ namespace poly_fem
 		std::cout<<"Solving... "<<std::flush;
 
 		json params = {
-			// {"mtype", 1}, // matrix type for Pardiso (2 = SPD)
+			{"mtype", 1}, // matrix type for Pardiso (2 = SPD)
 			// {"max_iter", 0}, // for iterative solvers
 			// {"tolerance", 1e-9}, // for iterative solvers
 		};

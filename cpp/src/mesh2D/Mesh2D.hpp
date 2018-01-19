@@ -43,6 +43,8 @@ namespace poly_fem
 		bool load(const std::string &path) override;
 		bool save(const std::string &path) const override;
 
+		void normalize() override;
+
 		void compute_elements_tag() override;
 
 		virtual RowVectorNd point(const int global_index) const override;

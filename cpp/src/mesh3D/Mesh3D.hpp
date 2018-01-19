@@ -39,6 +39,8 @@ namespace poly_fem
 		bool save(const std::string &path) const override;
 		bool save(const std::vector<int> &fs, const int ringN, const std::string &path) const;
 
+		void normalize() override;
+
 		void compute_elements_tag() override;
 
 		RowVectorNd kernel(const int cell_id) const;

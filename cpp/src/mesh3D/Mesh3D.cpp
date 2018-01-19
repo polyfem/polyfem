@@ -108,19 +108,6 @@ namespace poly_fem
 
 		fclose(f);
 
-		auto &V = mesh_.points;
-		const auto shift =  V.rowwise().minCoeff().eval();
-		const double scaling = 1.0 / (V.rowwise().maxCoeff() - V.rowwise().minCoeff()).maxCoeff();
-		V = (V.colwise() - shift) * scaling;
-
-		for(int i = 0; i < n_cells(); ++i)
-		{
-			for(int d = 0; d < 3; ++d){
-				auto val = mesh_.elements[i].v_in_Kernel[d];
-				mesh_.elements[i].v_in_Kernel[d] = (val - shift(d)) * scaling;
-			}
-		}
-
 		//remove horrible kernels and replace with barycenters
 		for(int c = 0; c < n_cells(); ++c)
 		{
@@ -318,27 +305,6 @@ namespace poly_fem
 			is_simplicial_ = M.cells.are_simplices();
 		}
 
-		auto &V = mesh_.points;
-		const auto shift =  V.rowwise().minCoeff().eval();
-		const double scaling = 1.0 / (V.rowwise().maxCoeff() - V.rowwise().minCoeff()).maxCoeff();
-		V = (V.colwise() - shift) * scaling;
-
-		for(int i = 0; i < n_cells(); ++i)
-		{
-			for(int d = 0; d < 3; ++d){
-				auto val = mesh_.elements[i].v_in_Kernel[d];
-				mesh_.elements[i].v_in_Kernel[d] = (val - shift(d)) * scaling;
-			}
-		}
-
-		//remove horrible kernels and replace with barycenters
-		for(int c = 0; c < n_cells(); ++c)
-		{
-			auto bary = cell_barycenter(c);
-			for(int d  = 0; d < 3; ++d)
-				mesh_.elements[c].v_in_Kernel[d] = bary(d);
-		}
-
 		Navigation3D::prepare_mesh(mesh_);
 		// if (is_simplicial()) {
 		// 	MeshProcessing3D::orient_volume_mesh(mesh_);
@@ -466,6 +432,42 @@ namespace poly_fem
 		f.close();
 
 		return true;
+	}
+
+	void Mesh3D::normalize() {
+		auto &V = mesh_.points;
+		Eigen::RowVector3d minV = V.rowwise().minCoeff().transpose();
+		Eigen::RowVector3d maxV = V.rowwise().maxCoeff().transpose();
+		const auto shift =  V.rowwise().minCoeff().eval();
+		const double scaling = 1.0 / (V.rowwise().maxCoeff() - V.rowwise().minCoeff()).maxCoeff();
+		V = (V.colwise() - shift) * scaling;
+
+		for(int i = 0; i < n_cells(); ++i)
+		{
+			for(int d = 0; d < 3; ++d){
+				auto val = mesh_.elements[i].v_in_Kernel[d];
+				mesh_.elements[i].v_in_Kernel[d] = (val - shift(d)) * scaling;
+			}
+		}
+
+		std::cout << "-- bbox before normalization:" << std::endl;
+		std::cout << "   min   : " << minV << std::endl;
+		std::cout << "   max   : " << maxV << std::endl;
+		std::cout << "   extent: " << maxV - minV << std::endl;
+		minV = V.rowwise().minCoeff().transpose();
+		maxV = V.rowwise().maxCoeff().transpose();
+		std::cout << "-- bbox after normalization:" << std::endl;
+		std::cout << "   min   : " << minV << std::endl;
+		std::cout << "   max   : " << maxV << std::endl;
+		std::cout << "   extent: " << maxV - minV << std::endl;
+
+		Eigen::MatrixXd p0, p1, p;
+		get_edges(p0, p1);
+		p = p0 - p1;
+		std::cout << "-- edge length after normalization:" << std::endl;
+		std::cout << "   min: " << p.rowwise().norm().minCoeff() << std::endl;
+		std::cout << "   max: " << p.rowwise().norm().maxCoeff() << std::endl;
+		std::cout << "   avg: " << p.rowwise().norm().mean() << std::endl;
 	}
 
 	void Mesh3D::triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const
