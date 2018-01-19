@@ -30,9 +30,11 @@
 #include "json.hpp"
 
 #include "CustomSerialization.hpp"
+#include "VTUWriter.hpp"
 
 #include <igl/Timer.h>
 #include <igl/serialize.h>
+#include <igl/copyleft/tetgen/tetrahedralize.h>
 
 #include <unsupported/Eigen/SparseExtra>
 
@@ -760,53 +762,6 @@ namespace poly_fem
 		// }
 	}
 
-// 	void State::solve_problem_old()
-// 	{
-// 		errors.clear();
-// 		sol.resize(0, 0);
-
-// 		igl::Timer timer; timer.start();
-// 		std::cout<<"Solving..."<<std::flush;
-
-// // #ifndef POLY_FEM_WITH_SUPERLU
-// // 		typedef SparseMatrix<double> SolverMat;
-// // 		SuperLU<SolverMat> solver;
-// // 		std::cout<<"with SuperLU direct solver..."<<std::flush;
-
-// // 		solver.compute(SolverMat(stiffness));
-// // 		sol = solver.solve(rhs);
-// // #else // POLY_FEM_WITH_SUPERLU
-// // #ifdef POLY_FEM_WITH_UMFPACK
-// // 		UmfPackLU<SparseMatrix<double, Eigen::RowMajor> > solver;
-// // 		std::cout<<"with UmfPack direct solver..."<<std::flush;
-
-// // 		solver.compute(stiffness);
-// // 		sol = solver.solve(rhs);
-// // #else //POLY_FEM_WITH_UMFPACK
-// 		{
-// 			Assembler<Laplacian> assembler;
-// 			assembler.set_identity(boundary_nodes, stiffness);
-// 		}
-// 		BiCGSTAB<SparseMatrix<double, Eigen::RowMajor> > solver;
-// 		std::cout<<"with BiCGSTAB iterative solver..."<<std::flush;
-// 		sol = solver.compute(stiffness).solve(rhs);
-// // #endif //POLY_FEM_WITH_UMFPACK
-// // #endif  //POLY_FEM_WITH_SUPERLU
-
-// 		timer.stop();
-// 		solving_time = timer.getElapsedTime();
-// 		std::cout<<" took "<<solving_time<<"s"<<std::endl;
-// 		std::cout<<"Solver error: "<<(stiffness*sol-rhs).norm()<<std::endl;
-
-// 		// {
-// 		// 	std::ofstream of;
-// 		// 	of.open("sol.txt");
-// 		// 	of.precision(100);
-// 		// 	of<<sol;
-// 		// 	of.close();
-// 		// }
-// 	}
-
 	void State::solve_problem()
 	{
 		errors.clear();
@@ -965,6 +920,107 @@ namespace poly_fem
 		igl::serialize(assigning_rhs_time, "assigning_rhs_time", file_name);
 		igl::serialize(solving_time, "solving_time", file_name);
 		igl::serialize(computing_errors_time, "computing_errors_time", file_name);
+	}
+
+
+	void State::save_vtu(const std::string &path)
+	{
+		if(!mesh->is_volume()){
+			std::cerr<<"Saving vtu supported only for volume"<<std::endl;
+			return;
+		}
+		if(mesh->is_simplicial()){
+			std::cerr<<"Saving vtu supported only for pure hex meshes"<<std::endl;
+			return;
+		}
+		
+		const double area_param = 0.00001*mesh->n_elements();
+		// const double area_param = 1;
+
+		std::stringstream buf;
+		buf.precision(100);
+		buf.setf(std::ios::fixed, std::ios::floatfield);
+
+		Eigen::MatrixXd hex_pts;
+		Eigen::MatrixXi hex_tets;
+		Eigen::MatrixXi dummy;
+
+		buf<<"Qpq1.414a"<<area_param;
+		{
+			MatrixXd pts(8,3); pts <<
+			0, 0, 0,
+			0, 1, 0,
+			1, 1, 0,
+			1, 0, 0,
+
+			0, 0, 1, //4
+			0, 1, 1,
+			1, 1, 1,
+			1, 0, 1;
+
+			Eigen::MatrixXi faces(12,3); faces <<
+			1, 2, 0,
+			0, 2, 3,
+
+			5, 4, 6,
+			4, 7, 6,
+
+			1, 0, 4,
+			1, 4, 5,
+
+			2, 1, 5,
+			2, 5, 6,
+
+			3, 2, 6,
+			3, 6, 7,
+
+			0, 3, 7,
+			0, 7, 4;
+			igl::copyleft::tetgen::tetrahedralize(pts, faces, buf.str(), hex_pts, hex_tets, dummy);
+		}
+
+		const auto &current_bases = iso_parametric ? bases : geom_bases;
+		int tet_total_size = 0;
+		int pts_total_size = 0;
+
+		for(size_t i = 0; i < current_bases.size(); ++i)
+		{
+			const auto &bs = current_bases[i];
+
+			if(mesh->is_cube(i)){
+				pts_total_size += hex_pts.rows();
+				tet_total_size += hex_tets.rows();
+			}
+		}
+
+		Eigen::MatrixXd points(pts_total_size, 3);
+		Eigen::MatrixXi tets(tet_total_size, 4);
+
+		MatrixXd mapped, tmp;
+		int tet_index = 0, pts_index = 0;
+		for(size_t i = 0; i < current_bases.size(); ++i)
+		{
+			const auto &bs = current_bases[i];
+			if(mesh->is_cube(i))
+			{
+				bs.eval_geom_mapping(hex_pts, mapped);
+				tets.block(tet_index, 0, hex_tets.rows(), 4) = hex_tets.array() + pts_index;
+				tet_index += hex_tets.rows();
+
+				points.block(pts_index, 0, mapped.rows(), mapped.cols()) = mapped;
+				pts_index += mapped.rows();
+			}
+		}
+
+		assert(pts_index == points.rows());
+		assert(tet_index == tets.rows());
+
+		Eigen::MatrixXd fun;
+		interpolate_function(sol, hex_pts, fun);
+
+		VTUWriter writer;
+		writer.add_filed("sol", fun);
+		writer.write_tet_mesh(path, points, tets);
 	}
 
 }

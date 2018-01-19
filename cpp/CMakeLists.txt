@@ -205,6 +205,9 @@ add_library(polyfem
 	src/solver/FEMSolver.cpp
 	src/solver/LinearSolver.cpp
 	src/solver/LinearSolverPardiso.cpp
+
+	src/mesh/VTUWriter.hpp
+	src/mesh/VTUWriter.cpp
 )
 
 target_include_directories(polyfem PUBLIC

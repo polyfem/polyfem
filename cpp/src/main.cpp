@@ -47,6 +47,7 @@ int main(int argc, const char **argv)
 
     std::string path = "";
     std::string output = "";
+    std::string vtu = "";
     int n_refs = 0;
     int problem_num = 0;
 
@@ -83,6 +84,7 @@ int main(int argc, const char **argv)
     command_line.add_option("-cmd", "-ui", no_ui);
 
     command_line.add_option("-output", output);
+    command_line.add_option("-vtu", vtu);
 
     command_line.parse(argc, argv);
 
@@ -121,6 +123,9 @@ int main(int argc, const char **argv)
             std::ofstream out(output);
             state.save_json(out);
         }
+
+         if(!vtu.empty())
+        	state.save_vtu(vtu);
     }
     else
     {
