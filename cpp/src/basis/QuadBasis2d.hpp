@@ -45,6 +45,9 @@ namespace poly_fem
 		static std::array<int, 2> linear_quad_edge_local_nodes(const Mesh2D &mesh, Navigation::Index index);
 		static std::array<int, 3> quadr_quad_edge_local_nodes(const Mesh2D &mesh, Navigation::Index index);
 
+		static std::array<int, 4> linear_quad_local_to_global(const Mesh2D &mesh, int f);
+		static std::array<int, 9> quadr_quad_local_to_global(const Mesh2D &mesh, int f);
+
 		static Eigen::MatrixXd linear_quad_edge_local_nodes_coordinates(const Mesh2D &mesh, Navigation::Index index);
 		static Eigen::MatrixXd quadr_quad_edge_local_nodes_coordinates(const Mesh2D &mesh, Navigation::Index index);
 

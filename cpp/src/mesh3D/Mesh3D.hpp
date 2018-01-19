@@ -81,7 +81,7 @@ namespace poly_fem
 		void get_edge_elements_neighs(const int e_id, std::vector<int> &ids) const { ids.clear(); ids.insert(ids.begin(), mesh_.edges[e_id].neighbor_hs.begin(), mesh_.edges[e_id].neighbor_hs.end()); }
 
 
-		void fill_boundary_tags(std::vector<int> &tags) const override;
+		void compute_boundary_ids() override;
 
 		void compute_element_barycenters(Eigen::MatrixXd &barycenters) const override { cell_barycenters(barycenters); }
 		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
@@ -92,16 +92,5 @@ namespace poly_fem
 		static void geomesh_2_mesh_storage(const GEO::Mesh &gm, Mesh3DStorage &m);
 	private:
 		Mesh3DStorage mesh_;
-
-		// std::vector<int> faces_node_id_;
-		// std::vector< Eigen::Matrix<double, 1, 3> > faces_node_;
-
-		// std::vector<int> edges_node_id_;
-		// std::vector< Eigen::Matrix<double, 1, 3> > edges_node_;
-
-		// std::vector<int> vertices_node_id_;
-		// std::vector< Eigen::Matrix<double, 1, 3> > vertices_node_;
-
-		// int node_id_from_vertex_index_explore(const Navigation3D::Index &index, int &id, Eigen::MatrixXd &node, bool &real_b) const;
 	};
 }

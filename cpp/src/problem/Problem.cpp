@@ -68,17 +68,17 @@ namespace poly_fem
 				auto &z = pts.col(2).array();
 
 				val =
-					(1181472075 * x * x + 1181472075 * y * y + 1181472075 * z * z - 525098700 * x - 525098700 * y - 525098700 * z + 87516450) / 960400. *
-				 	exp(-81./4. * x * x + 9 * x - 3 - 81./4. * y * y + 9 * y - 81./4. * z * z + 9 * z) +
+				(1181472075 * x * x + 1181472075 * y * y + 1181472075 * z * z - 525098700 * x - 525098700 * y - 525098700 * z + 87516450) / 960400. *
+				exp(-81./4. * x * x + 9 * x - 3 - 81./4. * y * y + 9 * y - 81./4. * z * z + 9 * z) +
 
-				 	(787648050 * x * x + 3150592200 * y * y - 1225230300 * x - 2800526400 * y + 1040473350) / 960400. *
-				 	exp(-81./4. * x * x + 63./2. * x - 83./4. - 81./2. * y * y + 36 * y) +
+				(787648050 * x * x + 3150592200 * y * y - 1225230300 * x - 2800526400 * y + 1040473350) / 960400. *
+				exp(-81./4. * x * x + 63./2. * x - 83./4. - 81./2. * y * y + 36 * y) +
 
-				 	(7873200 * x * x + 1749600 * x - 1117314) / 960400. *
-				 	exp(-81./49. * x * x - 18./49. * x - 54./245. - 9./10. * y - 9./10. * z) -
+				(7873200 * x * x + 1749600 * x - 1117314) / 960400. *
+				exp(-81./49. * x * x - 18./49. * x - 54./245. - 9./10. * y - 9./10. * z) -
 
-				 	26244./ 5. * (x * x + 4 * y * y - 8./9. * x - 16./3. * y + 317./162.) *
-				 	exp(-81 * x * x - 162 * y * y + 72 * x + 216 * y - 90);
+				26244./ 5. * (x * x + 4 * y * y - 8./9. * x - 16./3. * y + 317./162.) *
+				exp(-81 * x * x - 162 * y * y + 72 * x + 216 * y - 90);
 
 
 				return;
@@ -173,10 +173,10 @@ namespace poly_fem
 				auto cz5 = (9*y-5) * (9*y-5);
 
 				val =
-					3./4. * exp( -1./4.*cx2 - 1./4.*cy2 - 1./4.*cz2) +
-					3./4. * exp(-1./49. * cx1 - 9./10.*y - 1./10. -  9./10.*z - 1./10.) +
-					1./2. * exp(-1./4. * cx7 - 1./4. * cy3 - 1./4. * cz5) -
-					1./5. * exp(- cx4 - cy7 - cz5);
+				3./4. * exp( -1./4.*cx2 - 1./4.*cy2 - 1./4.*cz2) +
+				3./4. * exp(-1./49. * cx1 - 9./10.*y - 1./10. -  9./10.*z - 1./10.) +
+				1./2. * exp(-1./4. * cx7 - 1./4. * cy3 - 1./4. * cz5) -
+				1./5. * exp(- cx4 - cy7 - cz5);
 
 				return;
 			}
@@ -185,29 +185,65 @@ namespace poly_fem
 		}
 	}
 
-	void Problem::remove_neumann_nodes(const std::vector< ElementBases > &bases, const std::vector<int> &boundary_tag, std::vector< LocalBoundary > &local_boundary, std::vector< int > &boundary_nodes)
+	void Problem::remove_neumann_nodes(const Mesh &mesh, std::vector< LocalBoundary > &local_boundary, std::vector< int > &boundary_nodes)
 	{
-		// if(problem_num_ != 3)
-		// 	return;
+		if(problem_num_ != 3)
+			return;
 
-		// //TODO use b tag for everything
-		// for(std::size_t j = 0; j < local_boundary.size(); ++j)
-		// {
-		// 	if(!local_boundary[j].is_boundary()) continue;
-		// 	// std::cout<<j<<" before "<<local_boundary[j].flags()<<std::endl;
-		// 	for(int i = 0; i < int(boundary_tag.size()); ++i)
-		// 	{
-		// 		const int tag = boundary_tag[i];
-		// 		// std::cout<<i<<" "<<tag<<std::endl;
-		// 		if(tag == 1 || tag == 3) continue;
+		std::vector< LocalBoundary > new_local_boundary;
+		for(auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
+		{
+			auto &lb = *it;
+			for(int i = 0; i < lb.size(); ++i)
+			{
+				const int primitive_g_id = lb.global_primitive_id(i);
+				const int tag = mesh.get_boundary_id(primitive_g_id);
 
-		// 		local_boundary[j].clear_edge_tag(i);
-		// 	}
-		// 	// std::cout<<j<<" after "<<local_boundary[j].flags()<<std::endl;
-		// }
+				if(tag == 1 || tag == 3) continue;
 
-		// std::vector<int> old_b_nodes = boundary_nodes;
+				lb.remove_tag_for_index(i);
+			}
+
+			if(!lb.empty())
+				new_local_boundary.emplace_back(lb);
+		}
+		std::swap(local_boundary, new_local_boundary);
+
+		// // std::vector<int> old_b_nodes = boundary_nodes;
 		// boundary_nodes.clear();
+
+		// if(mesh.is_volume())
+		// {
+
+		// }
+		// else
+		// {
+		// 	auto &mesh2d = dynamic_cast<Mesh2D &>(mesh);
+
+		// 	for(auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
+		// 	{
+		// 		auto &lb = *it;
+		// 		Navigation::Index index = mesh2d.get
+
+		// 		switch(lb.type())
+		// 		{
+		// 			case BoundaryType::QuadLine:
+		// 			{
+		// 				if(discr_order == 1)
+		// 				{
+		// 					linear_quad_edge_local_nodes(const Mesh2D &mesh, Navigation::Index index);
+		// 				}
+		// 			}
+		// 		}
+		// 	}
+
+		// 	static std::array<int, 2> linear_quad_edge_local_nodes(const Mesh2D &mesh, Navigation::Index index);
+		// 	static std::array<int, 3> quadr_quad_edge_local_nodes(const Mesh2D &mesh, Navigation::Index index);
+
+		// 	static std::array<int, 4> linear_quad_local_to_global(const Mesh2D &mesh, int f);
+		// 	static std::array<int, 9> quadr_quad_local_to_global(const Mesh2D &mesh, int f);
+
+		// }
 
 		// for(std::size_t i = 0; i < bases.size(); ++i)
 		// {

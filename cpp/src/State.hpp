@@ -47,8 +47,6 @@ namespace poly_fem
 		std::vector< LocalBoundary >         local_boundary;
 		std::map<int, InterfaceData> 		 poly_edge_to_data;
 
-		std::vector<int> boundary_tag;
-
 		std::vector<int> flipped_elements;
 
 		std::vector<double> errors;

@@ -77,8 +77,9 @@ namespace poly_fem
 
 
 		//Boundary condition handling
-		virtual void fill_boundary_tags(std::vector<int> &tags) const = 0;
+		virtual void compute_boundary_ids() = 0;
 		void set_tag(const int el, const ElementType type) { elements_tag_[el] = type; }
+		inline int get_boundary_id(const int primitive) const { return boundary_ids_[primitive]; }
 
 		//Visualization methods
 		virtual void compute_element_barycenters(Eigen::MatrixXd &barycenters) const = 0;
@@ -88,6 +89,7 @@ namespace poly_fem
 	protected:
 		std::vector<ElementType> elements_tag_;
 		bool is_simplicial_;
+		std::vector<int> boundary_ids_;
 	};
 }
 

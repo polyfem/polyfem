@@ -161,57 +161,6 @@ poly_fem::Navigation::Index find_edge(const poly_fem::Mesh2D &mesh, int f, int v
 
 // -----------------------------------------------------------------------------
 
-std::array<int, 4> linear_quad_local_to_global(const Mesh2D &mesh, int f) {
-	assert(mesh.is_cube(f));
-
-	// Vertex nodes
-	std::array<int, 4> l2g;
-	for (int lv = 0; lv < 4; ++lv) {
-		l2g[lv] = mesh.face_vertex(f, lv);
-	}
-
-	return l2g;
-}
-
-// -----------------------------------------------------------------------------
-
-std::array<int, 9> quadr_quad_local_to_global(const Mesh2D &mesh, int f) {
-	assert(mesh.is_cube(f));
-
-	int edge_offset = mesh.n_vertices();
-	int face_offset = edge_offset + mesh.n_edges();
-
-	// Vertex nodes
-	auto v = linear_quad_local_to_global(mesh, f);
-
-	// Edge nodes
-	Eigen::Matrix<int, 4, 1> e;
-	Eigen::Matrix<int, 4, 2> ev;
-	ev.row(0) << v[0], v[1];
-	ev.row(1) << v[1], v[2];
-	ev.row(2) << v[2], v[3];
-	ev.row(3) << v[3], v[0];
-	for (int le = 0; le < e.rows(); ++le) {
-		e[le] = find_edge(mesh, f, ev(le, 0), ev(le, 1)).edge;
-	}
-
-	// Local to global mapping of node indices
-	std::array<int, 9> l2g;
-
-	// Assign global ids to local nodes
-	{
-		int i = 0;
-		for (size_t lv = 0; lv < v.size(); ++lv) {
-			l2g[i++] = v[lv];
-		}
-		for (int le = 0; le < e.rows(); ++le) {
-			l2g[i++] = edge_offset + e[le];
-		}
-		l2g[i++] = face_offset + f;
-	}
-
-	return l2g;
-}
 
 // -----------------------------------------------------------------------------
 
@@ -244,11 +193,11 @@ void compute_nodes(
 		if (mesh.is_polytope(f)) { continue; } // Skip polygons
 
 		if (discr_order == 1) {
-			for (int id : linear_quad_local_to_global(mesh, f)) {
+			for (int id : poly_fem::QuadBasis2d::linear_quad_local_to_global(mesh, f)) {
 				element_nodes_id[f].push_back(nodes.node_id_from_primitive(id));
 			}
 		} else {
-			for (int id : quadr_quad_local_to_global(mesh, f)) {
+			for (int id : poly_fem::QuadBasis2d::quadr_quad_local_to_global(mesh, f)) {
 				element_nodes_id[f].push_back(nodes.node_id_from_primitive(id));
 			}
 		}
@@ -256,7 +205,7 @@ void compute_nodes(
 		// List of edges around the quad
 		std::array<int, 4> e;
 		{
-			auto l2g = quadr_quad_local_to_global(mesh, f);
+			auto l2g = poly_fem::QuadBasis2d::quadr_quad_local_to_global(mesh, f);
 			for (int le = 0; le < 4; ++le) {
 				e[le] = l2g[4+le] - mesh.n_vertices();
 			}
@@ -345,6 +294,59 @@ Eigen::RowVector2d quadr_quad_local_node_coordinates(int local_index) {
 }
 
 } // anonymous namespace
+
+
+std::array<int, 4> poly_fem::QuadBasis2d::linear_quad_local_to_global(const Mesh2D &mesh, int f) {
+	assert(mesh.is_cube(f));
+
+	// Vertex nodes
+	std::array<int, 4> l2g;
+	for (int lv = 0; lv < 4; ++lv) {
+		l2g[lv] = mesh.face_vertex(f, lv);
+	}
+
+	return l2g;
+}
+
+// -----------------------------------------------------------------------------
+
+std::array<int, 9> poly_fem::QuadBasis2d::quadr_quad_local_to_global(const Mesh2D &mesh, int f) {
+	assert(mesh.is_cube(f));
+
+	int edge_offset = mesh.n_vertices();
+	int face_offset = edge_offset + mesh.n_edges();
+
+	// Vertex nodes
+	auto v = linear_quad_local_to_global(mesh, f);
+
+	// Edge nodes
+	Eigen::Matrix<int, 4, 1> e;
+	Eigen::Matrix<int, 4, 2> ev;
+	ev.row(0) << v[0], v[1];
+	ev.row(1) << v[1], v[2];
+	ev.row(2) << v[2], v[3];
+	ev.row(3) << v[3], v[0];
+	for (int le = 0; le < e.rows(); ++le) {
+		e[le] = find_edge(mesh, f, ev(le, 0), ev(le, 1)).edge;
+	}
+
+	// Local to global mapping of node indices
+	std::array<int, 9> l2g;
+
+	// Assign global ids to local nodes
+	{
+		int i = 0;
+		for (size_t lv = 0; lv < v.size(); ++lv) {
+			l2g[i++] = v[lv];
+		}
+		for (int le = 0; le < e.rows(); ++le) {
+			l2g[i++] = edge_offset + e[le];
+		}
+		l2g[i++] = face_offset + f;
+	}
+
+	return l2g;
+}
 
 Eigen::MatrixXd poly_fem::QuadBasis2d::quad_local_node_coordinates_from_edge(int le)
 {

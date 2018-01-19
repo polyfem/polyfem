@@ -295,7 +295,6 @@ namespace poly_fem
 		// geom_values.clear();
 		boundary_nodes.clear();
 		local_boundary.clear();
-		boundary_tag.clear();
 		errors.clear();
 		polys.clear();
 		poly_edge_to_data.clear();
@@ -316,16 +315,16 @@ namespace poly_fem
 			return;
 		}
 
-		if(!flipped_elements.empty())
-		{
-			mesh->compute_elements_tag();
-			for(auto el_id : flipped_elements)
-				mesh->set_tag(el_id, ElementType::InteriorPolytope);
-		}
+		// if(!flipped_elements.empty())
+		// {
+		// 	mesh->compute_elements_tag();
+		// 	for(auto el_id : flipped_elements)
+		// 		mesh->set_tag(el_id, ElementType::InteriorPolytope);
+		// }
 
 		mesh->refine(n_refs, refinenemt_location, parent_elements);
 
-		mesh->fill_boundary_tags(boundary_tag);
+		mesh->compute_boundary_ids();
 
 
 
@@ -563,7 +562,7 @@ namespace poly_fem
 		// flipped_elements.resize(std::distance(flipped_elements.begin(), it));
 
 
-		problem.remove_neumann_nodes(bases, boundary_tag, local_boundary, boundary_nodes);
+		problem.remove_neumann_nodes(*mesh, local_boundary, boundary_nodes);
 
 		if(problem.problem_num() == 3)
 		{
@@ -944,8 +943,6 @@ namespace poly_fem
 		igl::serialize(bases, "bases", file_name);
 		igl::serialize(boundary_nodes, "boundary_nodes", file_name);
 		igl::serialize(local_boundary, "local_boundary", file_name);
-
-		igl::serialize(boundary_tag, "boundary_tag", file_name);
 
 
 		igl::serialize(*mesh, "mesh", file_name);

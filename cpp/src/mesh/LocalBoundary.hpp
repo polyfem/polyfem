@@ -18,8 +18,13 @@ namespace poly_fem
 	class LocalBoundary
 	{
 	public:
-		LocalBoundary()
-		: global_element_id_(-1), type_(BoundaryType::Invalid), counter_(0)
+		LocalBoundary(const LocalBoundary &other)
+		:
+		global_primitive_id_(other.global_primitive_id_),
+		local_primitive_id_(other.local_primitive_id_),
+		global_element_id_(other.global_element_id_),
+		type_(other.type_),
+		counter_(other.counter_)
 		{}
 
 		LocalBoundary(const int global_id, BoundaryType type)
@@ -42,6 +47,19 @@ namespace poly_fem
 		BoundaryType type() const { return type_; }
 
 		inline int operator[](const int index) const { assert(index<counter_); return local_primitive_id_[index];}
+
+		inline int global_primitive_id(const int index) const { return global_primitive_id_[index]; }
+
+		void remove_tag_for_index(const int index)
+		{
+			for(int i = index+1; i < size(); ++i)
+			{
+				global_primitive_id_[i-1] = global_primitive_id_[i];
+				local_primitive_id_[i-1] = local_primitive_id_[i];
+			}
+
+			--counter_;
+		}
 
 	private:
 		std::array<int, 6> global_primitive_id_= {{-1, -1, -1, -1, -1, -1}};
