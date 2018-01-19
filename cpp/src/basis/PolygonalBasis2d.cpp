@@ -248,6 +248,7 @@ void PolygonalBasis2d::build_bases(
 	const Mesh2D &mesh,
 	const int n_bases,
 	const int quadrature_order,
+	const int integral_constraints,
 	std::vector< ElementBases > &bases,
 	const std::vector< ElementBases > &gbases,
 	const std::map<int, InterfaceData> &poly_edge_to_data,
@@ -309,11 +310,24 @@ void PolygonalBasis2d::build_bases(
 		for (long k = 0; k < rhs.cols(); ++k) {
 			local_basis_integrals.row(k) = -basis_integrals.row(local_to_global[k]);
 		}
-		auto rbf = std::make_shared<RBFWithQuadratic>(kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs);
-		b.set_bases_func([rbf] (const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-			{ rbf->bases_values(uv, val); } );
-		b.set_grads_func([rbf] (const Eigen::MatrixXd &uv, int axis, Eigen::MatrixXd &grad)
-			{ rbf->bases_grads(axis, uv, grad); } );
+		auto set_rbf = [&b] (auto rbf) {
+			b.set_bases_func([rbf] (const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+				{ rbf->bases_values(uv, val); } );
+			b.set_grads_func([rbf] (const Eigen::MatrixXd &uv, int axis, Eigen::MatrixXd &grad)
+				{ rbf->bases_grads(axis, uv, grad); } );
+		};
+		if (integral_constraints == 0) {
+			set_rbf(std::make_shared<RBFWithLinear>(
+				kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs, false));
+		} else if (integral_constraints == 1) {
+			set_rbf(std::make_shared<RBFWithLinear>(
+				kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs));
+		} else if (integral_constraints == 2) {
+			set_rbf(std::make_shared<RBFWithQuadratic>(
+				kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs));
+		} else {
+			throw std::runtime_error("Unsupported constraint order: " + std::to_string(integral_constraints));
+		}
 
 		// Set the bases which are nonzero inside the polygon
 		const int n_poly_bases = int(local_to_global.size());

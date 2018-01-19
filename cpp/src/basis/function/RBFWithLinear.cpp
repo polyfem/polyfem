@@ -166,6 +166,7 @@ void RBFWithLinear::compute_weights(const Eigen::MatrixXd &samples,
 {
 	std::cout << "#kernel centers: " << centers_.rows() << std::endl;
 	std::cout << "#collocation points: " << samples.rows() << std::endl;
+	std::cout << "#quadrature points: " << quadr.weights.size() << std::endl;
 	std::cout << "#non-vanishing bases: " << rhs.cols() << std::endl;
 
 	if (!with_constraints) {
