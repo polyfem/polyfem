@@ -61,7 +61,7 @@ option(LIBIGL_WITH_XML              "Use XML"            OFF)
 # set(ENABLE_SUPERLU     OFF CACHE BOOL "" FORCE)
 # set(ENABLE_MKL         OFF CACHE BOOL "" FORCE)
 # set(ENABLE_PARDISO     OFF CACHE BOOL "" FORCE)
-set(ENABLE_MMG         ON  CACHE BOOL "" FORCE)
+# set(ENABLE_MMG         ON  CACHE BOOL "" FORCE)
 
 ################################################################################
 
