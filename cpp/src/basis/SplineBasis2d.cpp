@@ -682,6 +682,33 @@ namespace poly_fem
             });
             b.bases.resize(9);
 
+            b.set_local_node_from_primitive_func([e](const int primitive_id, const Mesh &mesh)
+            {
+                Eigen::VectorXi res(3);
+                const auto &mesh2d = dynamic_cast<const Mesh2D &>(mesh);
+                auto index = mesh2d.get_index_from_face(e);
+                int le;
+                for(le = 0; le < mesh2d.n_face_vertices(e); ++le)
+                {
+                    if(index.edge == primitive_id)
+                        break;
+                    index = mesh2d.next_around_face(index);
+                }
+                assert(index.edge == primitive_id);
+
+                switch(le)
+                {
+                    case 3: res << (3*0 + 0), (3*1 + 0), (3*2 + 0); break;
+                    case 0: res << (3*0 + 0), (3*0 + 1), (3*0 + 2); break;
+                    case 1: res << (3*0 + 2), (3*1 + 2), (3*2 + 2); break;
+                    case 2: res << (3*2 + 0), (3*2 + 1), (3*2 + 2); break;
+                    default: assert(false);
+                }
+
+
+                return res;
+            });
+
             std::array<std::array<double, 4>, 3> h_knots;
             std::array<std::array<double, 4>, 3> v_knots;
 

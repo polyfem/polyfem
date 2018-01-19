@@ -422,7 +422,7 @@ namespace poly_fem
 						int g_index = l2g.index;
 
 						if(state.problem.problem_num() == 3)
-							g_index *= 2;
+							g_index *= state.mesh->is_volume() ? 3 : 2;
 
 						MatrixXd node = l2g.node;
 						MatrixXd col = MatrixXd::Zero(l2g.node.rows(), 3);
@@ -434,7 +434,7 @@ namespace poly_fem
 
 
 						viewer.data.add_points(node, col);
-						viewer.data.add_label(node.transpose(), std::to_string(g_index));
+						// viewer.data.add_label(node.transpose(), std::to_string(l2g.index));
 					}
 				}
 			}

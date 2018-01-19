@@ -1073,6 +1073,45 @@ namespace poly_fem
             // hex_quadrature.get_quadrature(quadrature_order, b.quadrature);
             b.bases.resize(27);
 
+            b.set_local_node_from_primitive_func([e](const int primitive_id, const Mesh &mesh)
+            {
+                const auto &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
+
+                std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 6> to_face;
+                mesh3d.to_face_functions(to_face);
+
+                auto start_index = mesh3d.get_index_from_element(e);
+                auto index = start_index;
+
+                int lf;
+                for(lf = 0; lf < mesh3d.n_cell_faces(e); ++lf)
+                {
+                    index = to_face[lf](start_index);
+                    if(index.face == primitive_id)
+                        break;
+                }
+                assert(index.face == primitive_id);
+
+
+                static constexpr std::array<std::array<int, 9>, 6> face_to_index = {{
+                    {{2*9+0*3+0, 2*9+1*3+0, 2*9+2*3+0, 2*9+0*3+1, 2*9+1*3+1, 2*9+2*3+1, 2*9+0*3+2, 2*9+1*3+2, 2*9+2*3+2}}, //0
+                    {{0*9+0*3+0, 0*9+1*3+0, 0*9+2*3+0, 0*9+0*3+1, 0*9+1*3+1, 0*9+2*3+1, 0*9+0*3+2, 0*9+1*3+2, 0*9+2*3+2}}, //1
+
+                    {{0*9+0*3+2, 0*9+1*3+2, 0*9+2*3+2, 1*9+0*3+2, 1*9+1*3+2, 1*9+2*3+2, 2*9+0*3+2, 2*9+1*3+2, 2*9+2*3+2}}, //2
+                    {{0*9+0*3+0, 0*9+1*3+0, 0*9+2*3+0, 1*9+0*3+0, 1*9+1*3+0, 1*9+2*3+0, 2*9+0*3+0, 2*9+1*3+0, 2*9+2*3+0}}, //3
+
+                    {{0*9+2*3+0, 0*9+2*3+1, 0*9+2*3+2, 1*9+2*3+0, 1*9+2*3+1, 1*9+2*3+2, 2*9+2*3+0, 2*9+2*3+1, 2*9+2*3+2}}, //4
+                    {{0*9+0*3+0, 0*9+0*3+1, 0*9+0*3+2, 1*9+0*3+0, 1*9+0*3+1, 1*9+0*3+2, 2*9+0*3+0, 2*9+0*3+1, 2*9+0*3+2}}, //5
+                }};
+
+                Eigen::VectorXi res(9);
+
+                for(int i = 0; i< 9; ++i)
+                    res(i)=face_to_index[lf][i];
+
+                return res;
+            });
+
 
             setup_knots_vectors(mesh_nodes, space, h_knots, v_knots, w_knots);
             // print_local_space(space);

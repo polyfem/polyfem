@@ -14,50 +14,56 @@
 
 namespace poly_fem
 {
-
-	void RhsAssembler::assemble(const int n_basis, const int size, const std::vector< ElementBases > &bases, const std::vector< ElementBases > &gbases, const bool is_volume, const Problem &problem, Eigen::MatrixXd &rhs) const
+	RhsAssembler::RhsAssembler(const Mesh &mesh, const int n_basis, const int size, const std::vector< ElementBases > &bases, const std::vector< ElementBases > &gbases, const Problem &problem)
+	: mesh_(mesh), n_basis_(n_basis), size_(size), bases_(bases), gbases_(gbases), problem_(problem)
 	{
-		rhs = Eigen::MatrixXd::Zero(n_basis * size, 1);
+		is_volume_ = mesh_.is_volume();
+	}
+
+	void RhsAssembler::assemble(Eigen::MatrixXd &rhs) const
+	{
+		rhs = Eigen::MatrixXd::Zero(n_basis_ * size_, 1);
 		Eigen::MatrixXd rhs_fun;
 
-		const int n_elements = int(bases.size());
+		const int n_elements = int(bases_.size());
 		for(int e = 0; e < n_elements; ++e)
 		{
 			// const ElementAssemblyValues &vals  = values[e];
 			// const ElementAssemblyValues &gvals = geom_values[e];
 
 			ElementAssemblyValues vals;
-			vals.compute(e, is_volume, bases[e], gbases[e]);
+			vals.compute(e, is_volume_, bases_[e], gbases_[e]);
 
-			problem.rhs(vals.val, rhs_fun);
+			problem_.rhs(mesh_, vals.val, rhs_fun);
 
 				// std::cout<<e<<"\n"<<gvals.val<<"\n"<<rhs_fun<<"\n\n"<<std::endl;
 
-			for(int d = 0; d < size; ++d)
+			for(int d = 0; d < size_; ++d)
 				rhs_fun.col(d) = rhs_fun.col(d).array() * vals.det.array() * vals.quadrature.weights.array();
 
 				// std::cout<<"after:\n"<<rhs_fun<<std::endl;
 
-			const int n_loc_bases = int(vals.basis_values.size());
-			for(int i = 0; i < n_loc_bases; ++i)
+			const int n_loc_bases_ = int(vals.basis_values.size());
+			for(int i = 0; i < n_loc_bases_; ++i)
 			{
 				const AssemblyValues &v = vals.basis_values[i];
 
-				for(int d = 0; d < size; ++d)
+				for(int d = 0; d < size_; ++d)
 				{
 					const double rhs_value = (rhs_fun.col(d).array() * v.val.array()).sum();
 					for(std::size_t ii = 0; ii < v.global.size(); ++ii)
-						rhs(v.global[ii].index*size+d) +=  rhs_value * v.global[ii].val;
+						rhs(v.global[ii].index*size_+d) +=  rhs_value * v.global[ii].val;
 				}
 			}
 		}
 	}
 
-	void RhsAssembler::set_bc(const int size, const std::vector< ElementBases > &bases, const std::vector< ElementBases > &geom_bases, const bool is_volume, const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution,  const Problem &problem, Eigen::MatrixXd &rhs) const
+	void RhsAssembler::set_bc(const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, Eigen::MatrixXd &rhs) const
 	{
-		const int n_el=int(bases.size());
+		const int n_el=int(bases_.size());
 
 		Eigen::MatrixXd samples, tmp, gtmp, rhs_fun;
+		Eigen::VectorXi global_primitive_ids;
 
 		int index = 0;
 		std::vector<int> indices; indices.reserve(n_el*10);
@@ -68,12 +74,12 @@ namespace poly_fem
 		for(const auto &lb : local_boundary)
 		{
 			const int e = lb.element_id();
-			bool has_samples = sample_boundary(lb, resolution, true, samples);
+			bool has_samples = sample_boundary(lb, resolution, true, samples, global_primitive_ids);
 
 			if(!has_samples)
 				continue;
 
-			const ElementBases &bs = bases[e];
+			const ElementBases &bs = bases_[e];
 			const int n_local_bases = int(bs.bases.size());
 
 			total_size += samples.rows();
@@ -85,7 +91,7 @@ namespace poly_fem
 				for(std::size_t ii = 0; ii < b.global().size(); ++ii)
 				{
 					//pt found
-					if(std::find(bounday_nodes.begin(), bounday_nodes.end(), size * b.global()[ii].index) != bounday_nodes.end())
+					if(std::find(bounday_nodes.begin(), bounday_nodes.end(), size_ * b.global()[ii].index) != bounday_nodes.end())
 					{
 						if(global_index_to_col.find( b.global()[ii].index ) == global_index_to_col.end())
 						{
@@ -99,7 +105,7 @@ namespace poly_fem
 		}
 
 		// Eigen::MatrixXd global_mat = Eigen::MatrixXd::Zero(total_size, indices.size());
-		Eigen::MatrixXd global_rhs = Eigen::MatrixXd::Zero(total_size, size);
+		Eigen::MatrixXd global_rhs = Eigen::MatrixXd::Zero(total_size, size_);
 
 		const long buffer_size = total_size * long(indices.size());
 		std::vector< Eigen::Triplet<double> > entries, entries_t;
@@ -113,13 +119,13 @@ namespace poly_fem
 		for(const auto &lb : local_boundary)
 		{
 			const int e = lb.element_id();
-			bool has_samples = sample_boundary(lb, resolution, false, samples);
+			bool has_samples = sample_boundary(lb, resolution, false, samples, global_primitive_ids);
 
 			if(!has_samples)
 				continue;
 
-			const ElementBases &bs = bases[e];
-			const ElementBases &gbs = geom_bases[e];
+			const ElementBases &bs = bases_[e];
+			const ElementBases &gbs = gbases_[e];
 			const int n_local_bases = int(bs.bases.size());
 
 			Eigen::MatrixXd mapped;
@@ -144,7 +150,7 @@ namespace poly_fem
 				}
 			}
 
-			problem.bc(mapped, rhs_fun);
+			problem_.bc(mesh_, global_primitive_ids, mapped, rhs_fun);
 			global_rhs.block(global_counter, 0, rhs_fun.rows(), rhs_fun.cols()) = rhs_fun;
 			global_counter += rhs_fun.rows();
 
@@ -201,19 +207,21 @@ namespace poly_fem
 			// std::cout<<coeffs<<"\n"<<std::endl;
 			// std::cout<<global_rhs<<"\n\n\n"<<std::endl;
 		for(long i = 0; i < coeffs.rows(); ++i){
-			// problem.bc(mesh.pts.row(indices[i]), rhs_fun);
+			// problem_.bc(mesh.pts.row(indices[i]), rhs_fun);
 
 			// std::cout<<indices[i]<<" "<<coeffs(i)<<" vs " <<rhs_fun<<std::endl;
-			for(int d = 0; d < size; ++d){
-				rhs(indices[i]*size+d) = coeffs(i, d);
+			for(int d = 0; d < size_; ++d){
+				rhs(indices[i]*size_+d) = coeffs(i, d);
 			}
 		}
 	}
 
 
-	bool RhsAssembler::sample_boundary(const LocalBoundary &local_boundary, const int n_samples, const bool skip_computation, Eigen::MatrixXd &samples) const
+	bool RhsAssembler::sample_boundary(const LocalBoundary &local_boundary, const int n_samples, const bool skip_computation, Eigen::MatrixXd &samples, Eigen::VectorXi &global_primitive_ids) const
 	{
 		samples.resize(0, 0);
+		global_primitive_ids.resize(0);
+
 		for(int i = 0; i < local_boundary.size(); ++i)
 		{
 			Eigen::MatrixXd tmp;
@@ -225,10 +233,14 @@ namespace poly_fem
 				case BoundaryType::Tri: 	 BoundarySampler::sample_parametric_tri_face(local_boundary[i], n_samples, tmp); break;
 				default: assert(false);
 			}
+
 			samples.conservativeResize(samples.rows() + tmp.rows(), tmp.cols());
+			global_primitive_ids.conservativeResize(global_primitive_ids.rows() + tmp.rows());
 			samples.bottomRows(tmp.rows()) = tmp;
+			global_primitive_ids.bottomRows(tmp.rows()).setConstant(local_boundary.global_primitive_id(i));
 		}
 
+		assert(samples.rows() == global_primitive_ids.size());
 
 
 		return true;

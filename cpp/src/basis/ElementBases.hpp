@@ -3,6 +3,7 @@
 
 #include "Basis.hpp"
 #include "Quadrature.hpp"
+#include "Mesh.hpp"
 
 
 #include <vector>
@@ -16,6 +17,7 @@ namespace poly_fem
 	class ElementBases
 	{
 	public:
+		typedef std::function<Eigen::VectorXi(const int local_index, const Mesh &mesh)> LocalNodeFromPrimitiveFunc;
 		typedef std::function<void(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)> EvalBasesFunc;
 		typedef std::function<void(const Eigen::MatrixXd &uv, const int dim, Eigen::MatrixXd &grad)> EvalGradsFunc;
 		typedef std::function<void(Quadrature &quadrature)> QuadratureFunction;
@@ -25,6 +27,7 @@ namespace poly_fem
 
 		// quadrature points to evaluate the basis functions inside the element
 		void compute_quadrature(Quadrature &quadrature) const { quadrature_builder_(quadrature); }
+		Eigen::VectorXi local_nodes_for_primitive(const int local_index, const Mesh &mesh) const { return local_node_from_primitive_(local_index, mesh); }
 
 		// whether the basis functions should be evaluated in the parametric domain (FE bases),
 		// or directly in the object domain (harmonic bases)
@@ -73,6 +76,8 @@ namespace poly_fem
 
 		void set_grads_func(EvalGradsFunc fun) { eval_grads_func_ = fun; }
 
+		void set_local_node_from_primitive_func(LocalNodeFromPrimitiveFunc fun) { local_node_from_primitive_ = fun; }
+
 	private:
 		void evaluate_bases_default(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const;
 
@@ -82,6 +87,8 @@ namespace poly_fem
 		EvalBasesFunc eval_bases_func_;
 		EvalGradsFunc eval_grads_func_;
 		QuadratureFunction quadrature_builder_;
+
+		LocalNodeFromPrimitiveFunc local_node_from_primitive_;
 	};
 }
 

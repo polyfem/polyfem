@@ -23,8 +23,8 @@ namespace poly_fem
 	class Problem
 	{
 	public:
-		void rhs(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const;
-		void bc(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const;
+		void rhs(const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const;
+		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const;
 
 		void exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const;
 
@@ -33,7 +33,7 @@ namespace poly_fem
 
 		bool has_exact_sol() const;
 
-		void remove_neumann_nodes(const Mesh &mesh, std::vector< LocalBoundary > &local_boundary, std::vector< int > &boundary_nodes);
+		void remove_neumann_nodes(const Mesh &mesh, const std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &boundary_nodes);
 
 	private:
 		int problem_num_;

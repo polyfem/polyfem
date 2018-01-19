@@ -557,7 +557,7 @@ namespace poly_fem
 		// flipped_elements.resize(std::distance(flipped_elements.begin(), it));
 
 
-		problem.remove_neumann_nodes(*mesh, local_boundary, boundary_nodes);
+		problem.remove_neumann_nodes(*mesh, bases, local_boundary, boundary_nodes);
 
 		if(problem.problem_num() == 3)
 		{
@@ -731,18 +731,20 @@ namespace poly_fem
 		std::cout<<"Assigning rhs..."<<std::flush;
 
 		const int size = problem.problem_num() == 3 ? (mesh->is_volume() ? 3:2) : 1;
-		RhsAssembler rhs_assembler;
+		
 		if(iso_parametric)
 		{
-			rhs_assembler.assemble(n_bases, size, bases, bases, mesh->is_volume(), problem, rhs);
+			RhsAssembler rhs_assembler(*mesh, n_bases, size, bases, bases, problem);
+			rhs_assembler.assemble(rhs);
 			rhs *= -1;
-			rhs_assembler.set_bc(size, bases, bases, mesh->is_volume(), local_boundary, boundary_nodes, n_boundary_samples, problem, rhs);
+			rhs_assembler.set_bc(local_boundary, boundary_nodes, n_boundary_samples, rhs);
 		}
 		else
 		{
-			rhs_assembler.assemble(n_bases, size, bases, geom_bases, mesh->is_volume(), problem, rhs);
+			RhsAssembler rhs_assembler(*mesh, n_bases, size, bases, geom_bases, problem);
+			rhs_assembler.assemble(rhs);
 			rhs *= -1;
-			rhs_assembler.set_bc(size, bases, geom_bases, mesh->is_volume(), local_boundary, boundary_nodes, n_boundary_samples, problem, rhs);
+			rhs_assembler.set_bc(local_boundary, boundary_nodes, n_boundary_samples, rhs);
 		}
 
 		timer.stop();
