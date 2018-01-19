@@ -39,8 +39,8 @@ std::unique_ptr<poly_fem::Mesh> poly_fem::Mesh::create(const std::string &path) 
 				}
 			} else {
 				auto mesh = std::make_unique<Mesh3D>();
+				tmp.cells.connect();
 				if (mesh->load(tmp)) {
-					tmp.cells.connect();
 					return mesh;
 				}
 			}

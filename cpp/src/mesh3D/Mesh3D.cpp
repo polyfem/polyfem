@@ -234,26 +234,38 @@ namespace poly_fem
 			is_simplicial_ = M.facets.are_simplices();
 		} else {
 
-			// // Count facets
-			// int max_face_id = 0;
-			// for (int c = 0; c < (int) M.cells.nb(); ++c) {
-			// 	for (int lf = 0; lf < (int) M.cells.nb_facets(c); ++lf) {
-			// 		max_face_id = std::max(max_face_id, (int) M.cells.facet(c, lf));
-			// 	}
-			// }
-			// mesh_.faces.resize(max_face_id + 1);
-			// for (Face &face : mesh_.faces) {
+			// Set faces
+			mesh_.faces.clear();
+			// for (int f = 0; f < (int) M.facets.nb(); ++f) {
+			// 	Face &face = mesh_.faces[f];
 			// 	face.id = -1;
+			// 	face.vs.clear();
+			// 	// face.id = f;
+
+			// 	// face.vs.resize(M.facets.nb_vertices(f));
+			// 	// for (int lv = 0; lv < (int) M.facets.nb_vertices(f); ++lv) {
+			// 	// 	face.vs[lv] = M.facets.vertex(f, lv);
+			// 	// }
 			// }
 
-			// Set faces
-			mesh_.faces.resize(M.cell_facets.nb());
-			for (int i = 0; i < (int) M.cell_facets.nb(); ++i) {
-				Face &face = mesh_.faces[i];
-				face.id = i;
-			}
+			auto opposite_cell_facet = [&M] (int c, int cf) {
+				GEO::index_t c2 = M.cell_facets.adjacent_cell(cf);
+				if (c2 == GEO::NO_FACET) { return -1; }
+				for (int lf = 0; lf < (int) M.cells.nb_facets(c2); ++lf) {
+					// std::cout << M.cells.adjacent(c, lf) << std::endl;
+					// std::cout << c << ' ' << M.cells.facet(c2, lf) << std::endl;
+					if (c == (int) M.cells.adjacent(c2, lf)) {
+						return (int) M.cells.facet(c2, lf);
+					}
+				}
+				assert(false);
+				return -1;
+			};
+
+			std::vector<int> cell_facet_to_facet(M.cell_facets.nb(), -1);
 
 			// Creates 1 hex or polyhedral element for each cell of the input mesh
+			int facet_counter = 0;
 			mesh_.elements.resize(M.cells.nb());
 			for (int c = 0; c < (int) M.cells.nb(); ++c) {
 				Element &cell = mesh_.elements[c];
@@ -264,17 +276,26 @@ namespace poly_fem
 				cell.fs.resize(nf);
 
 				for (int lf = 0; lf < nf; ++lf) {
-					cell.fs[lf] = M.cells.facet(c, lf);
-
-					Face &face = mesh_.faces[cell.fs[lf]];
-					if (face.vs.empty()) {
+					int cf = M.cells.facet(c, lf);
+					int cf2 = opposite_cell_facet(c, cf);
+					// std::cout << "cf2: " << cf2 << std::endl;
+					// std::cout << "face_counter: " << facet_counter << std::endl;
+					if (cf2 < 0 || cell_facet_to_facet[cf2] < 0) {
+						mesh_.faces.emplace_back();
+						Face &face = mesh_.faces[facet_counter];
+						// std::cout << "fid: " << face.id << std::endl;
+						assert(face.vs.empty());
 						face.vs.resize(M.cells.facet_nb_vertices(c, lf));
 						for (int lv = 0; lv < (int) M.cells.facet_nb_vertices(c, lf); ++lv) {
 							face.vs[lv] = M.cells.facet_vertex(c, lf, lv);
 						}
-						cell.fs_flag.push_back(1);
-					} else {
 						cell.fs_flag.push_back(0);
+						cell.fs[lf] = face.id = facet_counter;
+						cell_facet_to_facet[cf] = facet_counter;
+						++facet_counter;
+					} else {
+						cell.fs[lf] = cell_facet_to_facet[cf2];
+						cell.fs_flag.push_back(1);
 					}
 				}
 
@@ -297,10 +318,31 @@ namespace poly_fem
 			is_simplicial_ = M.cells.are_simplices();
 		}
 
-		Navigation3D::prepare_mesh(mesh_);
-		if (is_simplicial()) {
-			MeshProcessing3D::orient_volume_mesh(mesh_);
+		auto &V = mesh_.points;
+		const auto shift =  V.rowwise().minCoeff().eval();
+		const double scaling = 1.0 / (V.rowwise().maxCoeff() - V.rowwise().minCoeff()).maxCoeff();
+		V = (V.colwise() - shift) * scaling;
+
+		for(int i = 0; i < n_cells(); ++i)
+		{
+			for(int d = 0; d < 3; ++d){
+				auto val = mesh_.elements[i].v_in_Kernel[d];
+				mesh_.elements[i].v_in_Kernel[d] = (val - shift(d)) * scaling;
+			}
 		}
+
+		//remove horrible kernels and replace with barycenters
+		for(int c = 0; c < n_cells(); ++c)
+		{
+			auto bary = cell_barycenter(c);
+			for(int d  = 0; d < 3; ++d)
+				mesh_.elements[c].v_in_Kernel[d] = bary(d);
+		}
+
+		Navigation3D::prepare_mesh(mesh_);
+		// if (is_simplicial()) {
+		// 	MeshProcessing3D::orient_volume_mesh(mesh_);
+		// }
 		compute_elements_tag();
 		return true;
 	}
@@ -871,7 +913,7 @@ namespace poly_fem
 		return v;
 	}
 
-	
+
 
 
 
