@@ -67,8 +67,11 @@ namespace poly_fem
 			{
 				mesh.get_edges(p0, p1);
 				p = p0-p1;
-				auto edges = p.array().square().rowwise().sum().sqrt();
-				return edges.maxCoeff();
+				std::cout << std::endl;
+				std::cout << "hmin: " << p.rowwise().norm().minCoeff() << std::endl;
+				std::cout << "hmax: " << p.rowwise().norm().maxCoeff() << std::endl;
+				std::cout << "havg: " << p.rowwise().norm().mean() << std::endl;
+				return p.rowwise().norm().maxCoeff();
 			}
 
 			if(mesh.is_volume())
@@ -189,7 +192,7 @@ namespace poly_fem
 		}
 	}
 
-	void State::save_json(const std::string &name)
+	void State::save_json(std::ostream &out)
 	{
 		std::cout<<"Saving json..."<<std::flush;
 		using json = nlohmann::json;
@@ -244,9 +247,7 @@ namespace poly_fem
 		j["count_multi_singular_boundary"] = multi_singular_boundary_count;
 
 
-		std::ofstream o(name);
-		o << std::setw(4) << j << std::endl;
-		o.close();
+		out << j.dump(4) << std::endl;
 
 		std::cout<<"done"<<std::endl;
 	}
@@ -394,6 +395,8 @@ namespace poly_fem
 		"polytope_count:\t " <<  non_regular_count <<"\n"<<
 		"polytope_boundary_count:\t " << non_regular_boundary_count <<"\n"<<
 		"undefined_count:\t " << undefined_count <<"\n"<<
+		"\n"<<
+		"total count:\t " << mesh->n_elements() <<"\n"<<
 		std::endl;
 	}
 

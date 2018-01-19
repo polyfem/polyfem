@@ -298,8 +298,9 @@ namespace poly_fem
 		}
 
 		Navigation3D::prepare_mesh(mesh_);
-		// if(is_simplicial())
-			// MeshProcessing3D::orient_volume_mesh(mesh_);
+		if (is_simplicial()) {
+			MeshProcessing3D::orient_volume_mesh(mesh_);
+		}
 		compute_elements_tag();
 		return true;
 	}
