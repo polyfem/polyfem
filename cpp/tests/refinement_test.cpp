@@ -1,57 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "Refinement.hpp"
+#include "StringUtils.hpp"
 #include "CLI11.hpp"
 #include <vector>
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace Utils {
-
-// Split a string into tokens
-std::vector<std::string> split(const std::string &str, const std::string &delimiters = " ") {
-	// Skip delimiters at beginning.
-	std::string::size_type lastPos = str.find_first_not_of(delimiters, 0);
-	// Find first "non-delimiter".
-	std::string::size_type pos     = str.find_first_of(delimiters, lastPos);
-
-	std::vector<std::string> tokens;
-	while (std::string::npos != pos || std::string::npos != lastPos) {
-		// Found a token, add it to the vector.
-		tokens.push_back(str.substr(lastPos, pos - lastPos));
-		// Skip delimiters.  Note the "not_of"
-		lastPos = str.find_first_not_of(delimiters, pos);
-		// Find next "non-delimiter"
-		pos = str.find_first_of(delimiters, lastPos);
-	}
-
-	return tokens;
-}
-
-// Skip comments in a stream
-std::istream &skip(std::istream &in, char x = '#') {
-	std::string dummy;
-	while ((in >> std::ws).peek() ==
-		std::char_traits<char>::to_int_type(x))
-	{
-		std::getline(in, dummy);
-	}
-	return in;
-}
-
-// Tests whether a string starts with a given prefix
-bool startswith(const std::string &str, const std::string &prefix) {
-	return (str.compare(0, prefix.size(), prefix) == 0);
-}
-
-// Tests whether a string ends with a given suffix
-bool endswidth(const std::string &str, const std::string &suffix) {
-	if (str.length() >= suffix.length()) {
-		return (0 == str.compare(str.length() - suffix.length(), suffix.length(), suffix));
-	} else {
-		return false;
-	}
-}
-
-} // namespace Utils
+using namespace poly_fem;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -66,13 +20,13 @@ bool loadObj(const std::string &filename, Eigen::MatrixXd &V, Eigen::MatrixXi &F
 	std::vector<Eigen::RowVector3d> VV;
 	std::vector<Eigen::Matrix<int, 1, NUM_SIDES>> FF;
 	while (std::getline(in, line)) {
-		if (Utils::startswith(line, "# Vertices:")) {
+		if (StringUtils::startswith(line, "# Vertices:")) {
 			int n;
 			std::sscanf(line.c_str(), "# Vertices: %d", &n);
 			VV.reserve(n);
 			continue;
 		}
-		if (Utils::startswith(line, "# Faces:")) {
+		if (StringUtils::startswith(line, "# Faces:")) {
 			int n;
 			std::sscanf(line.c_str(), "# Faces: %d", &n);
 			FF.reserve(n);
@@ -81,7 +35,7 @@ bool loadObj(const std::string &filename, Eigen::MatrixXd &V, Eigen::MatrixXi &F
 		std::istringstream iss(line);
 		std::string key;
 		if (iss >> key) {
-			if (Utils::startswith(key, "#")) {
+			if (StringUtils::startswith(key, "#")) {
 				continue;
 			} else if (key == "v") {
 				double x, y, z;
@@ -89,7 +43,7 @@ bool loadObj(const std::string &filename, Eigen::MatrixXd &V, Eigen::MatrixXi &F
 				VV.emplace_back();
 				VV.back() << x, y, z;
 			} else if (key == "f" || key == "l") {
-				auto tokens = Utils::split(line.substr(1));
+				auto tokens = StringUtils::split(line.substr(1));
 				if (tokens.size() != NUM_SIDES) {
 					std::cerr << "Facet has incorrect size: " << line << std::endl;
 					return false;
@@ -99,7 +53,7 @@ bool loadObj(const std::string &filename, Eigen::MatrixXd &V, Eigen::MatrixXi &F
 						std::string str = tokens[lv];
 						int v;
 						if (str.find('/') != std::string::npos) {
-							v = std::stoi(Utils::split(str, "/").front());
+							v = std::stoi(StringUtils::split(str, "/").front());
 						} else {
 							v = std::stoi(str);
 						}

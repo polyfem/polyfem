@@ -28,7 +28,7 @@ int main(int argc, char * argv[]) {
     } args;
 
 
-    CLI::App app{"mesh2d to mesh3d"};
+    CLI::App app{"extrude 2D mesh"};
     app.add_option("mesh_path,-m,--mesh_path", args.mesh_path, "Mesh without extension.")->required();
     app.add_option("--height", args.height, "Height.");
     app.add_option("-l,--layers", args.layers, "Number of layers.");
