@@ -19,7 +19,7 @@ namespace poly_fem
 		void set_bc(const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution,  Eigen::MatrixXd &rhs) const;
 
 	private:
-		bool sample_boundary(const LocalBoundary &local_boundary, const int resolution_one_d, const bool skip_computation, Eigen::MatrixXd &samples) const;
+		bool sample_boundary(const LocalBoundary &local_boundary, const int n_samples, const bool skip_computation, Eigen::MatrixXd &samples, Eigen::VectorXi &global_primitive_ids) const;
 
 		const Mesh &mesh_;
 		const int n_basis_;

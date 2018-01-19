@@ -24,7 +24,7 @@ namespace poly_fem
 	{
 	public:
 		void rhs(const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const;
-		void bc(const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const;
+		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const;
 
 		void exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const;
 

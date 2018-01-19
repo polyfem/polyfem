@@ -63,6 +63,7 @@ namespace poly_fem
 		const int n_el=int(bases_.size());
 
 		Eigen::MatrixXd samples, tmp, gtmp, rhs_fun;
+		Eigen::VectorXi global_primitive_ids;
 
 		int index = 0;
 		std::vector<int> indices; indices.reserve(n_el*10);
@@ -73,7 +74,7 @@ namespace poly_fem
 		for(const auto &lb : local_boundary)
 		{
 			const int e = lb.element_id();
-			bool has_samples = sample_boundary(lb, resolution, true, samples);
+			bool has_samples = sample_boundary(lb, resolution, true, samples, global_primitive_ids);
 
 			if(!has_samples)
 				continue;
@@ -118,7 +119,7 @@ namespace poly_fem
 		for(const auto &lb : local_boundary)
 		{
 			const int e = lb.element_id();
-			bool has_samples = sample_boundary(lb, resolution, false, samples);
+			bool has_samples = sample_boundary(lb, resolution, false, samples, global_primitive_ids);
 
 			if(!has_samples)
 				continue;
@@ -149,7 +150,7 @@ namespace poly_fem
 				}
 			}
 
-			problem_.bc(mesh_, mapped, rhs_fun);
+			problem_.bc(mesh_, global_primitive_ids, mapped, rhs_fun);
 			global_rhs.block(global_counter, 0, rhs_fun.rows(), rhs_fun.cols()) = rhs_fun;
 			global_counter += rhs_fun.rows();
 
@@ -216,9 +217,11 @@ namespace poly_fem
 	}
 
 
-	bool RhsAssembler::sample_boundary(const LocalBoundary &local_boundary, const int n_samples, const bool skip_computation, Eigen::MatrixXd &samples) const
+	bool RhsAssembler::sample_boundary(const LocalBoundary &local_boundary, const int n_samples, const bool skip_computation, Eigen::MatrixXd &samples, Eigen::VectorXi &global_primitive_ids) const
 	{
 		samples.resize(0, 0);
+		global_primitive_ids.resize(0);
+
 		for(int i = 0; i < local_boundary.size(); ++i)
 		{
 			Eigen::MatrixXd tmp;
@@ -230,10 +233,14 @@ namespace poly_fem
 				case BoundaryType::Tri: 	 BoundarySampler::sample_parametric_tri_face(local_boundary[i], n_samples, tmp); break;
 				default: assert(false);
 			}
+
 			samples.conservativeResize(samples.rows() + tmp.rows(), tmp.cols());
+			global_primitive_ids.conservativeResize(global_primitive_ids.rows() + tmp.rows());
 			samples.bottomRows(tmp.rows()) = tmp;
+			global_primitive_ids.bottomRows(tmp.rows()).setConstant(local_boundary.global_primitive_id(i));
 		}
 
+		assert(samples.rows() == global_primitive_ids.size());
 
 
 		return true;

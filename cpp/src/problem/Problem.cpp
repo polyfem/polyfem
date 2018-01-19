@@ -91,7 +91,7 @@ namespace poly_fem
 		}
 	}
 
-	void Problem::bc(const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void Problem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		auto &x = pts.col(0).array();
 		auto &y = pts.col(1).array();
@@ -102,12 +102,10 @@ namespace poly_fem
 
 			for(long i = 0; i < x.size(); ++i)
 			{
-				if(fabs(x(i)-1)<1e-8)
+				if(mesh.get_boundary_id(global_ids(i))== 1)
 					val(i, 0)=-0.1;
-				else if(fabs(x(i))<1e-8)
+				else if(mesh.get_boundary_id(global_ids(i))== 3)
 					val(i, 0)=0.1;
-					// else
-						// assert(false);
 			}
 
 			return;
