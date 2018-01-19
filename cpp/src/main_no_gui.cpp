@@ -99,7 +99,8 @@ int main(int argc, const char **argv)
     state.compute_errors();
 
     if(!output.empty()){
-        state.save_json(output);
+        std::ofstream out(output);
+        state.save_json(out);
     }
 
 

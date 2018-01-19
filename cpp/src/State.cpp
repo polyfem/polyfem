@@ -192,7 +192,7 @@ namespace poly_fem
 		}
 	}
 
-	void State::save_json(const std::string &name)
+	void State::save_json(std::ostream &out)
 	{
 		std::cout<<"Saving json..."<<std::flush;
 		using json = nlohmann::json;
@@ -247,9 +247,7 @@ namespace poly_fem
 		j["count_multi_singular_boundary"] = multi_singular_boundary_count;
 
 
-		std::ofstream o(name);
-		o << std::setw(4) << j << std::endl;
-		o.close();
+		out << j.dump(4) << std::endl;
 
 		std::cout<<"done"<<std::endl;
 	}

@@ -106,7 +106,7 @@ namespace poly_fem
 
 		void interpolate_function(const Eigen::MatrixXd &fun, const Eigen::MatrixXd &local_pts, Eigen::MatrixXd &result);
 
-		void save_json(const std::string &name);
+		void save_json(std::ostream &out);
 		void sertialize(const std::string &file_name);
 
 		void compute_mesh_stats();

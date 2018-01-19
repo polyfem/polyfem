@@ -40,6 +40,7 @@ std::unique_ptr<poly_fem::Mesh> poly_fem::Mesh::create(const std::string &path) 
 			} else {
 				auto mesh = std::make_unique<Mesh3D>();
 				if (mesh->load(tmp)) {
+					tmp.cells.connect();
 					return mesh;
 				}
 			}
@@ -79,8 +80,8 @@ bool poly_fem::Mesh::is_spline_compatible(const int el_id) const
 {
 	if(is_volume()){
 		return
-		elements_tag_[el_id] == ElementType::RegularInteriorCube; // ||
-		// elements_tag_[el_id] == ElementType::RegularBoundaryCube; // ||
+		elements_tag_[el_id] == ElementType::RegularInteriorCube ||
+		elements_tag_[el_id] == ElementType::RegularBoundaryCube; // ||
 		// elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube ||
 		// elements_tag_[el_id] == ElementType::SimpleSingularBoundaryCube;
 	}
