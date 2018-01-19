@@ -478,7 +478,7 @@ void poly_fem::Polygons::polar_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd 
 
 void poly_fem::Polygons::catmul_clark_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, std::vector<std::vector<int>> &OF) {
 	assert(IV.cols() == 2 || IV.cols() == 3);
-	std::cout << IV.rows() << std::endl;
+	// std::cout << IV.rows() << std::endl;
 	assert(IV.rows() % 2 == 0);
 	Eigen::RowVector3d bary;
 	if (is_star_shaped(IV, bary)) {

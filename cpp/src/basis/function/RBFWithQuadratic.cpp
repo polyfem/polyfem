@@ -203,9 +203,9 @@ void RBFWithQuadratic::compute_constraints_matrix_2d(
 	Eigen::RowVectorXd I_sqr = (quadr.points.array().square().colwise() * quadr.weights.array()).colwise().sum();
 	double volume = quadr.weights.sum();
 
-	std::cout << I_lin << std::endl;
-	std::cout << I_mix << std::endl;
-	std::cout << I_sqr << std::endl;
+	// std::cout << I_lin << std::endl;
+	// std::cout << I_mix << std::endl;
+	// std::cout << I_sqr << std::endl;
 
 	// Compute M
 	Eigen::Matrix<double, 5, 5> M;
