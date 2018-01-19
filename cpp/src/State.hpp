@@ -27,6 +27,7 @@ namespace poly_fem
 		int discr_order = 1;
 		int n_boundary_samples = 10;
 		int harmonic_samples_res = 10;
+		int integral_constraints = 2;
 
 		std::string mesh_path;
 		int n_refs = 0;

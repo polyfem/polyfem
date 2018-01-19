@@ -610,14 +610,14 @@ namespace poly_fem
 			// ElementAssemblyValues::compute_assembly_values(mesh->is_volume(), bases, values);
 
 			if(mesh->is_volume()) {
-				PolygonalBasis3d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, quadrature_order, bases, bases, poly_edge_to_data, polys_3d);
+				PolygonalBasis3d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, quadrature_order, integral_constraints, bases, bases, poly_edge_to_data, polys_3d);
 				// Eigen::MatrixXd I;
 				// compute_integral_constraints(*dynamic_cast<Mesh3D *>(mesh.get()), n_bases, bases, bases, I);
 				// for (int r = 0; r < I.rows(); ++r) {
 					// std::cout << r << ": " << I.row(r) << std::endl;
 				// }
 			} else {
-				PolygonalBasis2d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, quadrature_order, bases, bases, poly_edge_to_data, polys);
+				PolygonalBasis2d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, quadrature_order, integral_constraints, bases, bases, poly_edge_to_data, polys);
 			}
 
 			// for(std::size_t e = 0; e < bases.size(); ++e) {
@@ -633,10 +633,10 @@ namespace poly_fem
 
 			if(mesh->is_volume())
 			{
-				PolygonalBasis3d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, quadrature_order, bases, geom_bases, poly_edge_to_data, polys_3d);
+				PolygonalBasis3d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, quadrature_order, integral_constraints, bases, geom_bases, poly_edge_to_data, polys_3d);
 			}
 			else
-				PolygonalBasis2d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, quadrature_order, bases, geom_bases, poly_edge_to_data, polys);
+				PolygonalBasis2d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, quadrature_order, integral_constraints, bases, geom_bases, poly_edge_to_data, polys);
 
 			// for(std::size_t e = 0; e < bases.size(); ++e)
 			// {
@@ -733,7 +733,7 @@ namespace poly_fem
 		std::cout<<"Assigning rhs..."<<std::flush;
 
 		const int size = problem.problem_num() == 3 ? (mesh->is_volume() ? 3:2) : 1;
-		
+
 		if(iso_parametric)
 		{
 			RhsAssembler rhs_assembler(*mesh, n_bases, size, bases, bases, problem);

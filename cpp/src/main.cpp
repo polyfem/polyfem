@@ -54,6 +54,7 @@ int main(int argc, const char **argv)
     int quadrature_order = 4;
     int discr_order = 1;
     int n_boundary_samples = 10;
+    int integral_constraints = 2;
 
     double lambda = 1, mu = 1;
 
@@ -76,6 +77,7 @@ int main(int argc, const char **argv)
     command_line.add_option("-b_samples", n_boundary_samples);
     command_line.add_option("-spline", "-fem", use_splines);
     command_line.add_option("-iso", "-no_iso", iso_parametric);
+    command_line.add_option("-constraints", integral_constraints);
 
 
     command_line.add_option("-lambda", lambda);
@@ -100,6 +102,7 @@ int main(int argc, const char **argv)
         state.n_boundary_samples = n_boundary_samples;
         state.refinenemt_location = refinenemt_location;
         state.iso_parametric = iso_parametric;
+        state.integral_constraints = integral_constraints;
 
         state.init(path, n_refs, problem_num);
         // std::cout<<path<<std::endl;
@@ -137,6 +140,7 @@ int main(int argc, const char **argv)
         UIState::ui_state().state.n_boundary_samples = n_boundary_samples;
         UIState::ui_state().state.refinenemt_location = refinenemt_location;
         UIState::ui_state().state.iso_parametric = iso_parametric;
+        UIState::ui_state().state.integral_constraints = integral_constraints;
 
         UIState::ui_state().init(path, n_refs, problem_num);
     }
