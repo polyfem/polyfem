@@ -501,6 +501,43 @@ int poly_fem::TetBasis3d::build_bases(
 		});
 		b.bases.resize(n_el_bases);
 
+
+		b.set_local_node_from_primitive_func([discr_order, e](const int primitive_id, const Mesh &mesh)
+			{
+				const auto &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
+				Navigation3D::Index index;
+
+				for(int lf = 0; lf < mesh3d.n_cell_faces(e); ++lf)
+				{
+					index = mesh3d.get_index_from_element(e, lf, 0);
+					if(index.face == primitive_id)
+						break;
+				}
+				assert(index.face == primitive_id);
+
+				Eigen::VectorXi res;
+				if(discr_order == 1)
+				{
+					const auto indices = linear_tet_face_local_nodes(mesh3d, index);
+					res.resize(indices.size());
+
+					for(size_t i = 0; i< indices.size(); ++i)
+						res(i)=indices[i];
+				}
+				else if(discr_order == 2)
+				{
+					const auto indices = quadr_tet_face_local_nodes(mesh3d, index);
+					res.resize(indices.size());
+
+					for(size_t i = 0; i< indices.size(); ++i)
+						res(i)=indices[i];
+				}
+				else
+					assert(false);
+
+				return res;
+			});
+
 		for (int j = 0; j < n_el_bases; ++j) {
 			const int global_index = element_nodes_id[e][j];
 

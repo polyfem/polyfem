@@ -9,7 +9,7 @@ namespace poly_fem
 		return problem_num_ != 3;
 	}
 
-	void Problem::rhs(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void Problem::rhs(const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		auto &x = pts.col(0).array();
 		auto &y = pts.col(1).array();
@@ -53,9 +53,10 @@ namespace poly_fem
 				return;
 			}
 
-			case 3: val = Eigen::MatrixXd::Zero(pts.rows(), 2); return;
+			case 3: val = Eigen::MatrixXd::Zero(pts.rows(), mesh.is_volume()? 3:2); return;
 
 			case 4: {
+				assert(mesh.is_volume());
 				auto &z = pts.col(2).array();
 				val =  -4 * x * y * (1 - y) *(1 - y) * z * (1 - z) + 2 * (1 - x) * y * (1 - y) * (1 - y) * z * (1 - z) - 4 * (1 - x) * x * x * (1 - y) * z * (1 - z) + 2 * (1 - x) * x * x * y * z * (1 - z) - 2 * (1 - x) * x * y * (1 - y) * (1 - y);
 
@@ -65,6 +66,7 @@ namespace poly_fem
 
 			case 5:
 			{
+				assert(mesh.is_volume());
 				auto &z = pts.col(2).array();
 
 				val =
@@ -89,9 +91,29 @@ namespace poly_fem
 		}
 	}
 
-	void Problem::bc(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void Problem::bc(const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
-		exact(pts, val);
+		auto &x = pts.col(0).array();
+		auto &y = pts.col(1).array();
+
+		if(problem_num_ == 3)
+		{
+			val = Eigen::MatrixXd::Zero(pts.rows(), mesh.is_volume()? 3 : 2);
+
+			for(long i = 0; i < x.size(); ++i)
+			{
+				if(fabs(x(i)-1)<1e-8)
+					val(i, 0)=-0.1;
+				else if(fabs(x(i))<1e-8)
+					val(i, 0)=0.1;
+					// else
+						// assert(false);
+			}
+
+			return;
+		}
+		else
+			exact(pts, val);
 	}
 
 
@@ -124,23 +146,6 @@ namespace poly_fem
 		// 0.2 * (-cx4-cy7).exp();
 
 				val = (3./4.)*exp(-(1./4.)*cx2-(1./4.)*cy2)+(3./4.)*exp(-(1./49.)*cx1-(9./10.)*y-1./10.)+(1./2.)*exp(-(1./4.)*cx7-(1./4.)*cy3)-(1./5.)*exp(-cx4-cy7);
-
-				return;
-			}
-
-			case 3:
-			{
-				val = Eigen::MatrixXd::Zero(pts.rows(), 2);
-
-				for(long i = 0; i < x.size(); ++i)
-				{
-					if(fabs(x(i)-1)<1e-8)
-						val(i, 0)=-0.1;
-					else if(fabs(x(i))<1e-8)
-						val(i, 0)=0.1;
-					// else
-						// assert(false);
-				}
 
 				return;
 			}
@@ -193,19 +198,19 @@ namespace poly_fem
 		std::vector< LocalBoundary > new_local_boundary;
 		for(auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
 		{
-			auto &lb = *it;
+			const auto &lb = *it;
+			LocalBoundary new_lb(lb.element_id(), lb.type());
 			for(int i = 0; i < lb.size(); ++i)
 			{
 				const int primitive_g_id = lb.global_primitive_id(i);
 				const int tag = mesh.get_boundary_id(primitive_g_id);
 
-				if(tag == 1 || tag == 3) continue;
-
-				lb.remove_tag_for_index(i);
+				if(tag == 1 || tag == 3)
+					new_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
 			}
 
-			if(!lb.empty())
-				new_local_boundary.emplace_back(lb);
+			if(!new_lb.empty())
+				new_local_boundary.emplace_back(new_lb);
 		}
 		std::swap(local_boundary, new_local_boundary);
 
@@ -219,7 +224,7 @@ namespace poly_fem
 			{
 				const int primitive_global_id = lb.global_primitive_id(i);
 				const auto nodes = b.local_nodes_for_primitive(primitive_global_id, mesh);
-				std::cout<<primitive_global_id<<std::endl;
+
 				for(long n = 0; n < nodes.size(); ++n){
 					auto &bs = b.bases[nodes(n)];
 					for(size_t g = 0; g < bs.global().size(); ++g)

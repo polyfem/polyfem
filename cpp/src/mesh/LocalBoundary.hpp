@@ -18,15 +18,6 @@ namespace poly_fem
 	class LocalBoundary
 	{
 	public:
-		LocalBoundary(const LocalBoundary &other)
-		:
-		global_primitive_id_(other.global_primitive_id_),
-		local_primitive_id_(other.local_primitive_id_),
-		global_element_id_(other.global_element_id_),
-		type_(other.type_),
-		counter_(other.counter_)
-		{}
-
 		LocalBoundary(const int global_id, BoundaryType type)
 		: global_element_id_(global_id), type_(type), counter_(0)
 		{ }

@@ -23,8 +23,8 @@ namespace poly_fem
 	class Problem
 	{
 	public:
-		void rhs(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const;
-		void bc(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const;
+		void rhs(const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const;
+		void bc(const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const;
 
 		void exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const;
 
