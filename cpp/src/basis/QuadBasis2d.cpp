@@ -57,50 +57,50 @@ e3  = (  0, 0.5)
 namespace {
 
 template<typename T>
-Eigen::MatrixXd alpha(int i, T &t) {
-	switch (i) {
-		case 0: return (1-t);
-		case 1: return t;
-		default: assert(false);
+	Eigen::MatrixXd alpha(int i, T &t) {
+		switch (i) {
+			case 0: return (1-t);
+			case 1: return t;
+			default: assert(false);
+		}
+		throw std::runtime_error("Invalid index");
 	}
-	throw std::runtime_error("Invalid index");
-}
 
 template<typename T>
-Eigen::MatrixXd dalpha(int i, T &t) {
-	switch (i) {
-		case 0: return -1+0*t;
-		case 1: return 1+0*t;;
-		default: assert(false);
+	Eigen::MatrixXd dalpha(int i, T &t) {
+		switch (i) {
+			case 0: return -1+0*t;
+			case 1: return 1+0*t;;
+			default: assert(false);
+		}
+		throw std::runtime_error("Invalid index");
 	}
-	throw std::runtime_error("Invalid index");
-}
 
 template<typename T>
-Eigen::MatrixXd theta(int i, T &t) {
-	switch (i) {
-		case 0: return (1 - t) * (1 - 2 * t);
-		case 1: return 4 * t * (1 - t);
-		case 2: return t * (2 * t - 1);
-		default: assert(false);
+	Eigen::MatrixXd theta(int i, T &t) {
+		switch (i) {
+			case 0: return (1 - t) * (1 - 2 * t);
+			case 1: return 4 * t * (1 - t);
+			case 2: return t * (2 * t - 1);
+			default: assert(false);
+		}
+		throw std::runtime_error("Invalid index");
 	}
-	throw std::runtime_error("Invalid index");
-}
 
 template<typename T>
-Eigen::MatrixXd dtheta(int i, T &t) {
-	switch (i) {
-		case 0: return -3+4*t;
-		case 1: return 4-8*t;
-		case 2: return -1+4*t;
-		default: assert(false);
+	Eigen::MatrixXd dtheta(int i, T &t) {
+		switch (i) {
+			case 0: return -3+4*t;
+			case 1: return 4-8*t;
+			case 2: return -1+4*t;
+			default: assert(false);
+		}
+		throw std::runtime_error("Invalid index");
 	}
-	throw std::runtime_error("Invalid index");
-}
 
 // -----------------------------------------------------------------------------
 
-constexpr std::array<std::array<int, 2>, 4> linear_quad_local_node = {{
+	constexpr std::array<std::array<int, 2>, 4> linear_quad_local_node = {{
 	{{0, 0}}, // v0  = (0, 0)
 	{{1, 0}}, // v1  = (1, 0)
 	{{1, 1}}, // v2  = (1, 1)
@@ -276,7 +276,7 @@ e3┄┄┄┄┄┄x┄┄┄┄┄e1
 // -----------------------------------------------------------------------------
 
 template<class InputIterator, class T>
-	int find_index(InputIterator first, InputIterator last, const T& val)
+int find_index(InputIterator first, InputIterator last, const T& val)
 {
 	return std::distance(first, std::find(first, last, val));
 }
@@ -476,6 +476,42 @@ int poly_fem::QuadBasis2d::build_bases(
 			});
 			// quad_quadrature.get_quadrature(quadrature_order, b.quadrature);
 			b.bases.resize(n_el_bases);
+
+			b.set_local_node_from_primitive_func([discr_order, e](const int primitive_id, const Mesh &mesh)
+			{
+				const auto &mesh2d = dynamic_cast<const Mesh2D &>(mesh);
+				auto index = mesh2d.get_index_from_face(e);
+
+				for(int le = 0; le < mesh2d.n_face_vertices(e); ++le)
+				{
+					if(index.edge == primitive_id)
+						break;
+					index = mesh2d.next_around_face(index);
+				}
+				assert(index.edge == primitive_id);
+
+				Eigen::VectorXi res;
+				if(discr_order == 1)
+				{
+					const auto indices = linear_quad_edge_local_nodes(mesh2d, index);
+					res.resize(indices.size());
+
+					for(size_t i = 0; i< indices.size(); ++i)
+						res(i)=indices[i];
+				}
+				else if(discr_order == 2)
+				{
+					const auto indices = quadr_quad_edge_local_nodes(mesh2d, index);
+					res.resize(indices.size());
+
+					for(size_t i = 0; i< indices.size(); ++i)
+						res(i)=indices[i];
+				}
+				else
+					assert(false);
+
+				return res;
+			});
 
 			for (int j = 0; j < n_el_bases; ++j) {
 				const int global_index = element_nodes_id[e][j];

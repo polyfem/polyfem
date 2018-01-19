@@ -557,7 +557,7 @@ namespace poly_fem
 		// flipped_elements.resize(std::distance(flipped_elements.begin(), it));
 
 
-		problem.remove_neumann_nodes(*mesh, local_boundary, boundary_nodes);
+		problem.remove_neumann_nodes(*mesh, bases, local_boundary, boundary_nodes);
 
 		if(problem.problem_num() == 3)
 		{

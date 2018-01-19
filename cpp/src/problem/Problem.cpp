@@ -185,7 +185,7 @@ namespace poly_fem
 		}
 	}
 
-	void Problem::remove_neumann_nodes(const Mesh &mesh, std::vector< LocalBoundary > &local_boundary, std::vector< int > &boundary_nodes)
+	void Problem::remove_neumann_nodes(const Mesh &mesh, const std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &boundary_nodes)
 	{
 		if(problem_num_ != 3)
 			return;
@@ -209,56 +209,27 @@ namespace poly_fem
 		}
 		std::swap(local_boundary, new_local_boundary);
 
-		// // std::vector<int> old_b_nodes = boundary_nodes;
-		// boundary_nodes.clear();
+		boundary_nodes.clear();
 
-		// if(mesh.is_volume())
-		// {
+		for(auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
+		{
+			const auto &lb = *it;
+			const auto &b = bases[lb.element_id()];
+			for(int i = 0; i < lb.size(); ++i)
+			{
+				const int primitive_global_id = lb.global_primitive_id(i);
+				const auto nodes = b.local_nodes_for_primitive(primitive_global_id, mesh);
+				std::cout<<primitive_global_id<<std::endl;
+				for(long n = 0; n < nodes.size(); ++n){
+					auto &bs = b.bases[nodes(n)];
+					for(size_t g = 0; g < bs.global().size(); ++g)
+						boundary_nodes.push_back(bs.global()[g].index);
+				}
+			}
+		}
 
-		// }
-		// else
-		// {
-		// 	auto &mesh2d = dynamic_cast<Mesh2D &>(mesh);
-
-		// 	for(auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
-		// 	{
-		// 		auto &lb = *it;
-		// 		Navigation::Index index = mesh2d.get
-
-		// 		switch(lb.type())
-		// 		{
-		// 			case BoundaryType::QuadLine:
-		// 			{
-		// 				if(discr_order == 1)
-		// 				{
-		// 					linear_quad_edge_local_nodes(const Mesh2D &mesh, Navigation::Index index);
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-
-		// 	static std::array<int, 2> linear_quad_edge_local_nodes(const Mesh2D &mesh, Navigation::Index index);
-		// 	static std::array<int, 3> quadr_quad_edge_local_nodes(const Mesh2D &mesh, Navigation::Index index);
-
-		// 	static std::array<int, 4> linear_quad_local_to_global(const Mesh2D &mesh, int f);
-		// 	static std::array<int, 9> quadr_quad_local_to_global(const Mesh2D &mesh, int f);
-
-		// }
-
-		// for(std::size_t i = 0; i < bases.size(); ++i)
-		// {
-		// 	const ElementBases &bs = bases[i];
-
-		// 	for(std::size_t j = 0; j < bs.bases.size(); ++j)
-		// 	{
-		// 		if(std::find(old_b_nodes.begin(), old_b_nodes.end(), bs.bases[j].global().front().index) != old_b_nodes.end())
-		// 		{
-		// 			const auto &node = bs.bases[j].global().front().node;
-
-		// 			if(fabs(node(0)-1)<1e-8 || fabs(node(0))<1e-8)
-		// 				boundary_nodes.push_back(bs.bases[j].global().front().index);
-		// 		}
-		// 	}
-		// }
+		std::sort(boundary_nodes.begin(), boundary_nodes.end());
+		auto it = std::unique(boundary_nodes.begin(), boundary_nodes.end());
+		boundary_nodes.resize(std::distance(boundary_nodes.begin(), it));
 	}
 }

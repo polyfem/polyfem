@@ -419,6 +419,42 @@ int poly_fem::TriBasis2d::build_bases(
 
 		b.bases.resize(n_el_bases);
 
+		b.set_local_node_from_primitive_func([discr_order, e](const int primitive_id, const Mesh &mesh)
+		{
+			const auto &mesh2d = dynamic_cast<const Mesh2D &>(mesh);
+			auto index = mesh2d.get_index_from_face(e);
+
+			for(int le = 0; le < mesh2d.n_face_vertices(e); ++le)
+			{
+				if(index.edge == primitive_id)
+					break;
+				index = mesh2d.next_around_face(index);
+			}
+			assert(index.edge == primitive_id);
+
+			Eigen::VectorXi res;
+			if(discr_order == 1)
+			{
+				const auto indices = linear_tri_edge_local_nodes(mesh2d, index);
+				res.resize(indices.size());
+
+				for(size_t i = 0; i< indices.size(); ++i)
+					res(i)=indices[i];
+			}
+			else if(discr_order == 2)
+			{
+				const auto indices = quadr_tri_edge_local_nodes(mesh2d, index);
+				res.resize(indices.size());
+
+				for(size_t i = 0; i< indices.size(); ++i)
+					res(i)=indices[i];
+			}
+			else
+				assert(false);
+
+			return res;
+		});
+
 		for (int j = 0; j < n_el_bases; ++j) {
 			const int global_index = element_nodes_id[e][j];
 
