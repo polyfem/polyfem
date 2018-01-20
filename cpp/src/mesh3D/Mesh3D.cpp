@@ -157,7 +157,7 @@ namespace poly_fem
 		assert(M.vertices.dimension() == 3);
 
 		// Set vertices
-		const int nv = M.vertices.nb() + (M.cells.nb() == 0 ? -1 : 0);
+		const int nv = M.vertices.nb();
 		mesh_.points.resize(3, nv);
 		mesh_.vertices.resize(nv);
 		for (int i = 0; i < nv; ++i) {
@@ -172,6 +172,8 @@ namespace poly_fem
 		// Set cells
 		if (M.cells.nb() == 0) {
 
+			bool last_isolated = true;
+
 			// Set faces
 			mesh_.faces.resize(M.facets.nb());
 			for (int i = 0; i < (int) M.facets.nb(); ++i) {
@@ -181,6 +183,9 @@ namespace poly_fem
 				face.vs.resize(M.facets.nb_vertices(i));
 				for (int j = 0; j < (int) M.facets.nb_vertices(i); ++j) {
 					face.vs[j] = M.facets.vertex(i, j);
+					if ((int) face.vs[j] == nv) {
+						last_isolated = false;
+					}
 				}
 			}
 
@@ -206,18 +211,26 @@ namespace poly_fem
 				for (int j = 0; j < nf; ++j) {
 					cell.fs_flag.push_back(1);
 				}
+
+				if (last_isolated) {
+					cell.v_in_Kernel.push_back(M.vertices.point(nv)[0]);
+					cell.v_in_Kernel.push_back(M.vertices.point(nv)[1]);
+					cell.v_in_Kernel.push_back(M.vertices.point(nv)[2]);
+				} else {
+					// Compute a point in the kernel (assumes the barycenter is ok)
+					Eigen::RowVector3d p(0, 0, 0);
+					for (int v : cell.vs) {
+						p += mesh_.points.col(v).transpose();
+					}
+					p /= cell.vs.size();
+				}
+
 			}
 
 			for (int i = 0; i < 1; ++i) {
 				mesh_.elements[i].hex = false;
 			}
 
-			// TODO: Detect if the last vertex is an isolated one
-			for (int i = 0; i < 1; ++i) {
-				mesh_.elements[i].v_in_Kernel.push_back(M.vertices.point(nv)[0]);
-				mesh_.elements[i].v_in_Kernel.push_back(M.vertices.point(nv)[1]);
-				mesh_.elements[i].v_in_Kernel.push_back(M.vertices.point(nv)[2]);
-			}
 			is_simplicial_ = M.facets.are_simplices();
 		} else {
 
@@ -590,7 +603,7 @@ namespace poly_fem
 				continue;
 
 			const auto p = face_barycenter(f);
-			
+
 			if(fabs(p(0))<1e-8)
 				boundary_ids_[f]=1;
 			if(fabs(p(0)-1)<1e-8)
