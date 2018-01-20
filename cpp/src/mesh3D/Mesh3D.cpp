@@ -183,7 +183,7 @@ namespace poly_fem
 				face.vs.resize(M.facets.nb_vertices(i));
 				for (int j = 0; j < (int) M.facets.nb_vertices(i); ++j) {
 					face.vs[j] = M.facets.vertex(i, j);
-					if ((int) face.vs[j] == nv) {
+					if ((int) face.vs[j] == nv - 1) {
 						last_isolated = false;
 					}
 				}
@@ -213,9 +213,10 @@ namespace poly_fem
 				}
 
 				if (last_isolated) {
-					cell.v_in_Kernel.push_back(M.vertices.point(nv)[0]);
-					cell.v_in_Kernel.push_back(M.vertices.point(nv)[1]);
-					cell.v_in_Kernel.push_back(M.vertices.point(nv)[2]);
+					cell.v_in_Kernel.push_back(M.vertices.point(nv - 1)[0]);
+					cell.v_in_Kernel.push_back(M.vertices.point(nv - 1)[1]);
+					cell.v_in_Kernel.push_back(M.vertices.point(nv - 1)[2]);
+
 				} else {
 					// Compute a point in the kernel (assumes the barycenter is ok)
 					Eigen::RowVector3d p(0, 0, 0);
@@ -223,6 +224,9 @@ namespace poly_fem
 						p += mesh_.points.col(v).transpose();
 					}
 					p /= cell.vs.size();
+					cell.v_in_Kernel.push_back(p[0]);
+					cell.v_in_Kernel.push_back(p[1]);
+					cell.v_in_Kernel.push_back(p[2]);
 				}
 
 			}
