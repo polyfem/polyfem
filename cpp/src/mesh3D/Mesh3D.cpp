@@ -610,19 +610,24 @@ namespace poly_fem
 			const auto p = face_barycenter(f);
 
 			if(fabs(p(0))<1e-8)
-				boundary_ids_[f]=1;
+				boundary_ids_[f]=5;
 			if(fabs(p(0)-1)<1e-8)
+				boundary_ids_[f]=6;
+
+			if(p(1) < 0.1)
+				boundary_ids_[f]=1;
+			if(p(1) > 0.9)
 				boundary_ids_[f]=3;
 
 			if(fabs(p(1))<1e-8)
-				boundary_ids_[f]=2;
+				boundary_ids_[f]=1;
 			if(fabs(p(1)-1)<1e-8)
-				boundary_ids_[f]=4;
+				boundary_ids_[f]=3;
 
 			if(fabs(p(2))<1e-8)
-				boundary_ids_[f]=5;
+				boundary_ids_[f]=2;
 			if(fabs(p(2)-1)<1e-8)
-				boundary_ids_[f]=6;
+				boundary_ids_[f]=4;
 		}
 	}
 

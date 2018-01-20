@@ -737,6 +737,28 @@ namespace poly_fem
                 quad_quadrature.get_quadrature(quadrature_order, quad);
             });
 
+            b.set_local_node_from_primitive_func([e](const int primitive_id, const Mesh &mesh)
+            {
+                const auto &mesh2d = dynamic_cast<const Mesh2D &>(mesh);
+                auto index = mesh2d.get_index_from_face(e);
+
+                for(int le = 0; le < mesh2d.n_face_vertices(e); ++le)
+                {
+                    if(index.edge == primitive_id)
+                        break;
+                    index = mesh2d.next_around_face(index);
+                }
+                assert(index.edge == primitive_id);
+
+                const auto indices = QuadBasis2d::quadr_quad_edge_local_nodes(mesh2d, index);
+                Eigen::VectorXi res(indices.size());
+
+                for(size_t i = 0; i< indices.size(); ++i)
+                    res(i)=indices[i];
+
+                return res;
+            });
+
             create_q2_nodes(mesh, e, vertex_id, edge_id, b, bounday_nodes, local_boundary, n_bases);
         }
 

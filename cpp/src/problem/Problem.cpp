@@ -103,9 +103,9 @@ namespace poly_fem
 			for(long i = 0; i < x.size(); ++i)
 			{
 				if(mesh.get_boundary_id(global_ids(i))== 1)
-					val(i, 0)=-0.1;
+					val(i, 0)=-0.01;
 				else if(mesh.get_boundary_id(global_ids(i))== 3)
-					val(i, 0)=0.1;
+					val(i, 0)=0.01;
 			}
 
 			return;
