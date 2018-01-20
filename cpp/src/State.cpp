@@ -56,7 +56,7 @@ namespace poly_fem
 			double mesh_size = 0;
 			Eigen::MatrixXd samples, mapped, p0, p1, p;
 
-			if(mesh.is_simplicial())
+			if(true || mesh.is_simplicial())
 			{
 				mesh.get_edges(p0, p1);
 				p = p0-p1;
@@ -771,7 +771,7 @@ namespace poly_fem
 		std::cout<<"Solving... "<<std::flush;
 
 		json params = {
-			// {"mtype", 1}, // matrix type for Pardiso (2 = SPD)
+			{"mtype", 1}, // matrix type for Pardiso (2 = SPD)
 			// {"max_iter", 0}, // for iterative solvers
 			// {"tolerance", 1e-9}, // for iterative solvers
 		};

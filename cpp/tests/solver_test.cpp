@@ -126,7 +126,7 @@ int main(int argc, char * argv[]) {
 	if (args.check_spd) {
 		Eigen::SparseMatrix<double> AT = A.transpose();
 		// std::cout << std::endl << std::endl;
-		std::cout << A << std::endl;
+		// std::cout << A << std::endl;
 		// std::cout << std::endl << std::endl;
 		// std::cout << AT << std::endl;
 		// std::cout << std::endl << std::endl;
