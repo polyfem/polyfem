@@ -1139,6 +1139,28 @@ namespace poly_fem
                 hex_quadrature.get_quadrature(quadrature_order, quad);
             });
 
+            b.set_local_node_from_primitive_func([e](const int primitive_id, const Mesh &mesh)
+            {
+                const auto &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
+                Navigation3D::Index index;
+
+                for(int lf = 0; lf < 6; ++lf)
+                {
+                    index = mesh3d.get_index_from_element(e, lf, 0);
+                    if(index.face == primitive_id)
+                        break;
+                }
+                assert(index.face == primitive_id);
+
+                const auto indices = HexBasis3d::quadr_hex_face_local_nodes(mesh3d, index);
+                Eigen::VectorXi res(indices.size());
+
+                for(size_t i = 0; i< indices.size(); ++i)
+                    res(i)=indices[i];
+
+                return res;
+            });
+
             create_q2_nodes(mesh, e, vertex_id, edge_id, face_id, b, bounday_nodes, local_boundary, n_bases);
         }
 

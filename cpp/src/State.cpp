@@ -538,6 +538,101 @@ namespace poly_fem
 		}
 
 		auto &bs = iso_parametric ? bases : geom_bases;
+
+		// for(int k =0; k < 1; ++k)
+		// {
+		// 	Eigen::MatrixXd nodes(n_bases, 2);
+		// 	nodes.setZero();
+		// 	Eigen::Matrix<bool, Eigen::Dynamic, 1> nodes_setted(n_bases);
+		// 	nodes_setted.setConstant(false);
+
+		// 	for(size_t i = 0; i < bs.size(); ++i)
+		// 	{
+		// 		auto &lbs = bs[i].bases;
+				
+
+		// 		if(!mesh->is_spline_compatible(i))
+		// 		{
+		// 			for(size_t b = 0; b < lbs.size(); ++b)
+		// 			{
+		// 				if(lbs[b].global().size() > 1) continue;
+		// 				if(nodes_setted(lbs[b].global().front().index)) continue;
+		// 				auto &c_glob = lbs[b].global().front();
+						
+
+		// 				if(std::find(boundary_nodes.begin(), boundary_nodes.end(), c_glob.index) != boundary_nodes.end())
+		// 					continue;
+
+		// 				double count = 10;
+		// 				auto node = c_glob.node;
+		// 				node *= count;
+		// 				// node.setZero();
+
+		// 				for(size_t bi = 0; bi < lbs.size(); ++bi)
+		// 				{
+		// 					for(size_t ii = 0; ii < lbs[bi].global().size(); ++ii)
+		// 					{
+		// 						auto &glob = lbs[bi].global()[ii];
+		// 						double w = glob.val;
+		// 						node += glob.node*w;
+
+		// 						count+=w;
+		// 					}
+		// 				}
+
+		// 				node /= count;
+
+		// 				nodes.row(c_glob.index) = node;
+		// 				nodes_setted(c_glob.index) = true;
+		// 			}
+		// 		}
+		// 		else
+		// 		{
+		// 			if(lbs.size() != 9)
+		// 				continue;
+
+		// 			double count = 1;
+		// 			auto &c_glob = lbs[3*1+1].global().front();
+		// 			auto node = c_glob.node;
+		// 			// node.setZero();
+		// 			for(size_t b = 0; b < lbs.size(); ++b)
+		// 			{
+		// 				if(b == 3*1+1) continue;
+
+		// 				double w = 1;
+		// 				if(std::find(boundary_nodes.begin(), boundary_nodes.end(), lbs[b].global().front().index) != boundary_nodes.end())
+		// 					w = 2;
+		// 				node += lbs[b].global().front().node*w;
+
+		// 				count+=w;
+		// 			}
+
+		// 			node /= count;
+
+		// 			nodes.row(c_glob.index) = node;
+		// 			nodes_setted(c_glob.index) = true;
+		// 		}
+		// 	}
+
+		// 	for(size_t i = 0; i < bs.size(); ++i)
+		// 	{
+		// 		auto &lbs = bs[i].bases;
+		// 		for(size_t b = 0; b < lbs.size(); ++b)
+		// 		{
+		// 			for(size_t ii = 0; ii < lbs[b].global().size(); ++ii)
+		// 			{
+		// 				auto &glob = lbs[b].global()[ii];
+
+		// 				if(!nodes_setted(glob.index)) continue;
+
+		// 				glob.node = nodes.row(glob.index);
+		// 			}
+		// 		}
+		// 	}
+		// }
+
+
+
 		n_flipped = 0;
 		// flipped_elements.clear();
 		for(size_t i = 0; i < bs.size(); ++i)
