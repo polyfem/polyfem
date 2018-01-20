@@ -142,7 +142,7 @@ void PolyhedronQuadrature::get_quadrature(const Eigen::MatrixXd &V, const Eigen:
 	// 	std::cerr << "Tetgen did not succeed. Returned code: " << res << std::endl;
 	// 	igl::write_triangle_mesh("poly_" + s + ".obj", V, F);
 	// } else {
-	igl::writeMESH("tet_" ".mesh", TV, tets, TF);
+	// igl::writeMESH("tet_" ".mesh", TV, tets, TF);
 	// }
 
 	// GEO::Mesh M;
