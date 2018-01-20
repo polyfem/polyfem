@@ -66,11 +66,12 @@ namespace poly_fem
 	}
 
 	void Mesh2D::normalize() {
+		return;
 		GEO::vec3 min_corner, max_corner;
 		GEO::get_bbox(mesh_, &min_corner[0], &max_corner[0]);
 		GEO::vec3 extent = max_corner - min_corner;
 		double scaling = std::max(extent[0], std::max(extent[1], extent[2]));
-		const GEO::vec3 origin = min_corner;
+		const GEO::vec3 origin = 0.5 * (min_corner + max_corner);
 		for (GEO::index_t v = 0; v < mesh_.vertices.nb(); ++v) {
 			mesh_.vertices.point(v) = (mesh_.vertices.point(v) - origin) / scaling;
 		}
