@@ -1038,23 +1038,22 @@ namespace poly_fem
 			const ElementBases &basis = bases[i];
 			if(!basis.has_parameterization){
 				poly_index = i;
-				break;
+				continue;
 			}
 
-			// for(std::size_t j = 0; j < basis.bases.size(); ++j)
-			// {
-			// 	for(std::size_t kk = 0; kk < basis.bases[j].global().size(); ++kk)
-			// 	{
-			// 		const Local2Global &l2g = basis.bases[j].global()[kk];
-			// 		const int g_index = l2g.index;
+			for(std::size_t j = 0; j < basis.bases.size(); ++j)
+			{
+				for(std::size_t kk = 0; kk < basis.bases[j].global().size(); ++kk)
+				{
+					const Local2Global &l2g = basis.bases[j].global()[kk];
+					const int g_index = l2g.index;
 
-			// 		const MatrixXd node = l2g.node;
-			// 			// std::cout<<node<<std::endl;
+					const auto &node = l2g.node;
+					problem.exact(node, tmp);
 
-
-			// 		fun(g_index) = tmp(0);
-			// 	}
-			// }
+					fun(g_index) = tmp(0);
+				}
+			}
 		}
 
 		if(poly_index == -1)
@@ -1075,9 +1074,7 @@ namespace poly_fem
 
 			for(std::size_t ii = 0; ii < val.global.size(); ++ii)
 			{
-				const auto &node = val.global[ii].node;
-				problem.exact(node, tmp);
-				v_approx += val.global[ii].val * tmp(0) * val.val;
+				v_approx += val.global[ii].val * fun(val.global[ii].index) * val.val;
 			}
 		}
 
