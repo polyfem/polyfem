@@ -1024,4 +1024,84 @@ namespace poly_fem
 		writer.write_tet_mesh(path, points, tets);
 	}
 
+
+	void State::compute_poly_basis_error(const std::string &path)
+	{
+		MatrixXd fun = MatrixXd::Zero(n_bases, 1);
+		MatrixXd tmp, mapped;
+		MatrixXd v_approx, v_exact;
+
+		int poly_index = -1;
+
+		for(std::size_t i = 0; i < bases.size(); ++i)
+		{
+			const ElementBases &basis = bases[i];
+			if(!basis.has_parameterization){
+				poly_index = i;
+				break;
+			}
+
+			// for(std::size_t j = 0; j < basis.bases.size(); ++j)
+			// {
+			// 	for(std::size_t kk = 0; kk < basis.bases[j].global().size(); ++kk)
+			// 	{
+			// 		const Local2Global &l2g = basis.bases[j].global()[kk];
+			// 		const int g_index = l2g.index;
+
+			// 		const MatrixXd node = l2g.node;
+			// 			// std::cout<<node<<std::endl;
+
+
+			// 		fun(g_index) = tmp(0);
+			// 	}
+			// }
+		}
+
+		if(poly_index == -1)
+			return;
+
+		auto &poly_basis = bases[poly_index];
+		ElementAssemblyValues vals;
+		vals.compute(poly_index, true, poly_basis, poly_basis);
+
+		problem.exact(vals.val, v_exact);
+		v_approx = MatrixXd::Zero(v_exact.rows(), v_exact.cols());
+
+		const int n_loc_bases=int(vals.basis_values.size());
+
+		for(int i = 0; i < n_loc_bases; ++i)
+		{
+			auto &val=vals.basis_values[i];
+
+			for(std::size_t ii = 0; ii < val.global.size(); ++ii)
+			{
+				const auto &node = val.global[ii].node;
+				problem.exact(node, tmp);
+				v_approx += val.global[ii].val * tmp(0) * val.val;
+			}
+		}
+
+		const auto err = (v_exact-v_approx).cwiseAbs();
+
+		double l2_err_interp = 0;
+		double lp_err_interp = 0;
+		l2_err_interp += (err.array() * err.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+		lp_err_interp += (err.array().pow(8.) * vals.det.array() * vals.quadrature.weights.array()).sum();
+
+		l2_err_interp = sqrt(fabs(l2_err_interp));
+		lp_err_interp = pow(fabs(lp_err_interp), 1./8.);
+
+
+		using json = nlohmann::json;
+		json j;
+
+		j["mesh_path"] = mesh_path;
+		j["l2_err"] = l2_err_interp;
+		j["lp_err"] = lp_err_interp;
+
+		std::ofstream out(path);
+		out << j.dump(4) << std::endl;
+		out.close();
+	}
+
 }
