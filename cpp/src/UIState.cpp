@@ -425,12 +425,16 @@ namespace poly_fem
 							g_index *= state.mesh->is_volume() ? 3 : 2;
 
 						MatrixXd node = l2g.node;
-						MatrixXd col = MatrixXd::Zero(l2g.node.rows(), 3);
+						MatrixXd col = MatrixXd::Zero(1, 3);
 
-						if(std::find(state.boundary_nodes.begin(), state.boundary_nodes.end(), g_index) != state.boundary_nodes.end())
+						if(std::find(state.boundary_nodes.begin(), state.boundary_nodes.end(), g_index) != state.boundary_nodes.end()){
 							col.col(0).setOnes();
-						else
-							col.col(1).setOnes();
+						}
+						else{
+							col(0) = 142./255.;
+							col(1) = 68./255.;
+							col(2) = 173./255.;
+						}
 
 
 						viewer.data.add_points(node, col);
