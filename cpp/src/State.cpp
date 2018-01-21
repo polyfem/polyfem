@@ -1152,7 +1152,7 @@ namespace poly_fem
 		}
 
 		if(poly_index == -1)
-			return;
+			poly_index = 0;
 
 		auto &poly_basis = bases[poly_index];
 		ElementAssemblyValues vals;
@@ -1188,8 +1188,8 @@ namespace poly_fem
 		json j;
 
 		j["mesh_path"] = mesh_path;
-		j["l2_err"] = l2_err_interp;
-		j["lp_err"] = lp_err_interp;
+		j["err_l2"] = l2_err_interp;
+		j["err_lp"] = lp_err_interp;
 
 		std::ofstream out(path);
 		out << j.dump(4) << std::endl;

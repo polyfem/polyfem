@@ -37,146 +37,188 @@ using namespace Eigen;
 
 namespace poly_fem
 {
+	void UIState::get_plot_edges(const Mesh &mesh, const std::vector< ElementBases > &bases, const int n_samples, const std::vector<bool> &valid_elements, Eigen::MatrixXd &pp0, Eigen::MatrixXd &pp1)
+	{
+		Eigen::MatrixXd samples, mapped, p0, p1, tmp;
+		std::vector<Eigen::MatrixXd> p0v, p1v;
+
+		std::vector<bool> valid_polytopes(valid_elements.size(), false);
+
+		if(mesh.is_volume())
+		{
+			samples.resize(12*n_samples, 3);
+
+			{
+				const Eigen::MatrixXd t = Eigen::VectorXd::LinSpaced(n_samples, 0, 1);
+			//X
+			int ii = 0;
+			samples.block(ii*n_samples, 0, n_samples, 1) = t;
+			samples.block(ii*n_samples, 1, n_samples, 1).setZero();
+			samples.block(ii*n_samples, 2, n_samples, 1).setZero();
+
+			++ii;
+			samples.block(ii*n_samples, 0, n_samples, 1) = t;
+			samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
+			samples.block(ii*n_samples, 2, n_samples, 1).setZero();
+
+			++ii;
+			samples.block(ii*n_samples, 0, n_samples, 1) = t;
+			samples.block(ii*n_samples, 1, n_samples, 1).setZero();
+			samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
+
+			++ii;
+			samples.block(ii*n_samples, 0, n_samples, 1) = t;
+			samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
+			samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
+
+			//Y
+			++ii;
+			samples.block(ii*n_samples, 0, n_samples, 1).setZero();
+			samples.block(ii*n_samples, 1, n_samples, 1) = t;
+			samples.block(ii*n_samples, 2, n_samples, 1).setZero();
+
+			++ii;
+			samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
+			samples.block(ii*n_samples, 1, n_samples, 1) = t;
+			samples.block(ii*n_samples, 2, n_samples, 1).setZero();
+
+			++ii;
+			samples.block(ii*n_samples, 0, n_samples, 1).setZero();
+			samples.block(ii*n_samples, 1, n_samples, 1) = t;
+			samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
+
+			++ii;
+			samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
+			samples.block(ii*n_samples, 1, n_samples, 1) = t;
+			samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
+
+			//Z
+			++ii;
+			samples.block(ii*n_samples, 0, n_samples, 1).setZero();
+			samples.block(ii*n_samples, 1, n_samples, 1).setZero();
+			samples.block(ii*n_samples, 2, n_samples, 1) = t;
+
+			++ii;
+			samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
+			samples.block(ii*n_samples, 1, n_samples, 1).setZero();
+			samples.block(ii*n_samples, 2, n_samples, 1) = t;
+
+			++ii;
+			samples.block(ii*n_samples, 0, n_samples, 1).setZero();
+			samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
+			samples.block(ii*n_samples, 2, n_samples, 1) = t;
+
+			++ii;
+			samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
+			samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
+			samples.block(ii*n_samples, 2, n_samples, 1) = t;
+			}
+			const int actual_dim = 3;
+			for(std::size_t i = 0; i < bases.size(); ++i){
+				if(!valid_elements[i]) continue;
+
+				if(mesh.is_polytope(i)) {
+					valid_polytopes[i] = true;
+					continue;
+				}
+
+				Eigen::MatrixXd result(samples.rows(), samples.cols());
+				result.setZero();
+
+				if(state.problem.problem_num() == 3 && current_visualization == Visualizing::Solution){
+					const ElementBases &bs = bases[i];
+					bs.evaluate_bases(samples, tmp);
+
+					for(std::size_t j = 0; j < bs.bases.size(); ++j)
+					{
+						const Basis &b = bs.bases[j];
+
+						for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+						{
+							for(int d = 0; d < actual_dim; ++d)
+							{
+								result.col(d) += b.global()[ii].val * tmp.col(j) * state.sol(b.global()[ii].index*actual_dim + d);
+							}
+						}
+					}
+				}
+
+				bases[i].eval_geom_mapping(samples, mapped);
+
+				for(int j = 0; j < 12; ++j)
+				{
+					for(int k = 0; k < n_samples-1; ++k)
+					{
+						p0v.push_back(mapped.row(j*n_samples + k) + result.row(j*n_samples + k));
+						p1v.push_back(mapped.row(j*n_samples + k+1) + result.row(j*n_samples + k+1));
+					}
+				}
+			}
+		}
+		else
+		{
+			QuadBoundarySampler::sample(true, true, true, true, n_samples, false, samples);
+			const int actual_dim = 2;
+			for(std::size_t i = 0; i < bases.size(); ++i){
+				if(!valid_elements[i]) continue;
+
+				if(mesh.is_polytope(i)) {
+					valid_polytopes[i] = true;
+					continue;
+				}
+
+				Eigen::MatrixXd result(samples.rows(), samples.cols());
+				result.setZero();
+
+				if(state.problem.problem_num() == 3 && current_visualization == Visualizing::Solution){
+					const ElementBases &bs = bases[i];
+					bs.evaluate_bases(samples, tmp);
+
+					for(std::size_t j = 0; j < bs.bases.size(); ++j)
+					{
+						const Basis &b = bs.bases[j];
+
+						for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+						{
+							for(int d = 0; d < actual_dim; ++d)
+							{
+								result.col(d) += b.global()[ii].val * tmp.col(j) * state.sol(b.global()[ii].index*actual_dim + d);
+							}
+						}
+					}
+				}
+
+				bases[i].eval_geom_mapping(samples, mapped);
+
+				for(int j = 0; j < 4; ++j)
+				{
+					for(int k = 0; k < n_samples-1; ++k){
+						p0v.push_back(mapped.row(j*n_samples + k) + result.row(j*n_samples + k));
+						p1v.push_back(mapped.row(j*n_samples + k+1) + result.row(j*n_samples + k+1));
+					}
+				}
+			}
+		}
+
+		mesh.get_edges(p0, p1, valid_polytopes);
+
+
+		pp0.resize(p0.rows() + p0v.size(), mesh.is_volume()?3:2);
+		pp1.resize(p1.rows() + p1v.size(), mesh.is_volume()?3:2);
+
+		for(size_t i = 0; i < p1v.size(); ++i)
+		{
+			pp0.row(i) = p0v[i];
+			pp1.row(i) = p1v[i];
+		}
+
+		pp0.bottomRows(p0.rows()) = p0;
+		pp1.bottomRows(p1.rows()) = p1;
+	}
+
 
 	namespace
 	{
-		void get_plot_edges(const Mesh &mesh, const std::vector< ElementBases > &bases, const int n_samples, const std::vector<bool> &valid_elements, Eigen::MatrixXd &pp0, Eigen::MatrixXd &pp1)
-		{
-			Eigen::MatrixXd samples, mapped, p0, p1;
-			std::vector<Eigen::MatrixXd> p0v, p1v;
-
-			std::vector<bool> valid_polytopes(valid_elements.size(), false);
-
-			if(mesh.is_volume())
-			{
-				samples.resize(12*n_samples, 3);
-				const Eigen::MatrixXd t = Eigen::VectorXd::LinSpaced(n_samples, 0, 1);
-
-				//X
-				int ii = 0;
-				samples.block(ii*n_samples, 0, n_samples, 1) = t;
-				samples.block(ii*n_samples, 1, n_samples, 1).setZero();
-				samples.block(ii*n_samples, 2, n_samples, 1).setZero();
-
-				++ii;
-				samples.block(ii*n_samples, 0, n_samples, 1) = t;
-				samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
-				samples.block(ii*n_samples, 2, n_samples, 1).setZero();
-
-				++ii;
-				samples.block(ii*n_samples, 0, n_samples, 1) = t;
-				samples.block(ii*n_samples, 1, n_samples, 1).setZero();
-				samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
-
-				++ii;
-				samples.block(ii*n_samples, 0, n_samples, 1) = t;
-				samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
-				samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
-
-				//Y
-				++ii;
-				samples.block(ii*n_samples, 0, n_samples, 1).setZero();
-				samples.block(ii*n_samples, 1, n_samples, 1) = t;
-				samples.block(ii*n_samples, 2, n_samples, 1).setZero();
-
-				++ii;
-				samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
-				samples.block(ii*n_samples, 1, n_samples, 1) = t;
-				samples.block(ii*n_samples, 2, n_samples, 1).setZero();
-
-				++ii;
-				samples.block(ii*n_samples, 0, n_samples, 1).setZero();
-				samples.block(ii*n_samples, 1, n_samples, 1) = t;
-				samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
-
-				++ii;
-				samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
-				samples.block(ii*n_samples, 1, n_samples, 1) = t;
-				samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
-
-				//Z
-				++ii;
-				samples.block(ii*n_samples, 0, n_samples, 1).setZero();
-				samples.block(ii*n_samples, 1, n_samples, 1).setZero();
-				samples.block(ii*n_samples, 2, n_samples, 1) = t;
-
-				++ii;
-				samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
-				samples.block(ii*n_samples, 1, n_samples, 1).setZero();
-				samples.block(ii*n_samples, 2, n_samples, 1) = t;
-
-				++ii;
-				samples.block(ii*n_samples, 0, n_samples, 1).setZero();
-				samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
-				samples.block(ii*n_samples, 2, n_samples, 1) = t;
-
-				++ii;
-				samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
-				samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
-				samples.block(ii*n_samples, 2, n_samples, 1) = t;
-
-
-				for(std::size_t i = 0; i < bases.size(); ++i){
-					if(!valid_elements[i]) continue;
-
-					if(mesh.is_polytope(i)) {
-						valid_polytopes[i] = true;
-						continue;
-					}
-
-					bases[i].eval_geom_mapping(samples, mapped);
-
-					for(int j = 0; j < 12; ++j)
-					{
-						double current_edge = 0;
-						for(int k = 0; k < n_samples-1; ++k){
-							p0v.push_back(mapped.row(j*n_samples + k));
-							p1v.push_back(mapped.row(j*n_samples + k+1));
-						}
-					}
-				}
-			}
-			else
-			{
-				QuadBoundarySampler::sample(true, true, true, true, n_samples, false, samples);
-
-				for(std::size_t i = 0; i < bases.size(); ++i){
-					if(!valid_elements[i]) continue;
-
-					if(mesh.is_polytope(i)) {
-						valid_polytopes[i] = true;
-						continue;
-					}
-
-					bases[i].eval_geom_mapping(samples, mapped);
-
-					for(int j = 0; j < 4; ++j)
-					{
-						double current_edge = 0;
-						for(int k = 0; k < n_samples-1; ++k){
-							p0v.push_back(mapped.row(j*n_samples + k));
-							p1v.push_back(mapped.row(j*n_samples + k+1));
-						}
-					}
-				}
-			}
-
-			mesh.get_edges(p0, p1, valid_polytopes);
-
-
-			pp0.resize(p0.rows() + p0v.size(), mesh.is_volume()?3:2);
-			pp1.resize(p1.rows() + p1v.size(), mesh.is_volume()?3:2);
-
-			for(size_t i = 0; i < p1v.size(); ++i)
-			{
-				pp0.row(i) = p0v[i];
-				pp1.row(i) = p1v[i];
-			}
-
-			pp0.bottomRows(p0.rows()) = p0;
-			pp1.bottomRows(p1.rows()) = p1;
-		}
-
 
 		Navigation3D::Index current_3d_index;
 
