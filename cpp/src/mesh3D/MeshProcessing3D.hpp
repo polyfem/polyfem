@@ -34,7 +34,7 @@ namespace poly_fem{
 		double a_jacobian(Vector3d &v0, Vector3d &v1, Vector3d &v2, Vector3d &v3);
 
 		void global_orientation_hexes(Mesh3DStorage &hmi);
-		void refine_catmul_clark_polar(Mesh3DStorage &M, int iter, std::vector<int> & Parents);
+		void refine_catmul_clark_polar(Mesh3DStorage &M, int iter, bool reverse, std::vector<int> & Parents);
 
 		//Mi is a planar surface mesh
 		void straight_sweeping(const Mesh3DStorage &Mi, int sweep_coord, double height, int nlayer, Mesh3DStorage &Mo);

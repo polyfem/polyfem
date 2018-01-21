@@ -16,7 +16,8 @@ namespace poly_fem
 				mesh_.elements[i].hex = false;
 		}
 
-		MeshProcessing3D::refine_catmul_clark_polar(mesh_, n_refiniment, parent_nodes);
+		bool reverse_grow = true;
+		MeshProcessing3D::refine_catmul_clark_polar(mesh_, n_refiniment, reverse_grow, parent_nodes);
 		Navigation3D::prepare_mesh(mesh_);
 
 		compute_elements_tag();

@@ -509,7 +509,7 @@ void MeshProcessing3D::global_orientation_hexes(Mesh3DStorage &hmi) {
 
 	for (const auto &ele : mesh.elements) hmi.elements[Ele_map_reverse[ele.id]].vs = ele.vs;
 }
-void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, std::vector<int> & Parents) {
+void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, bool reverse, std::vector<int> & Parents) {
 
 	for (int i = 0; i < iter; i++) {
 
@@ -666,6 +666,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, std
 			}
 			else {
 				int level = Refinement_Levels[ele.id];
+				if (reverse)level = 1;
 				//local_V2V
 				std::vector<std::vector<int>> local_V2Vs;
 				std::map<int, int> local_vi_map;
@@ -678,6 +679,11 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, std
 						v_.v.resize(3);
 
 						for (int j = 0; j < 3; j++)v_.v[j] = M_.vertices[vid].v[j] + (ele.v_in_Kernel[j] - M_.vertices[vid].v[j])*(r + 1.0) / (double)(level + 1);
+						cout << "before: "<<v_.v[0] << " " << v_.v[1] << " " << v_.v[2] << endl;
+						if (reverse) {
+							for (int j = 0; j < 3; j++)v_.v[j] = M_.vertices[vid].v[j] + (M_.vertices[vid].v[j] - ele.v_in_Kernel[j] )*(r + 1.0) / (double)(level + 1);
+							cout << "after: " << v_.v[0] << " " << v_.v[1] << " " << v_.v[2] << endl;
+						}
 						M_.vertices.push_back(v_);
 						v2v.push_back(v_.id);
 					}
@@ -746,6 +752,13 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, std
 						vs[1] = local_V2Vs[local_vi_map[fvs[j]]][level];
 						vs[2] = local_E2Vs[local_ei_map[fes[j]]][level];
 						vs[3] = local_F2Vs[local_fi_map[fid]][level];
+
+						if (reverse) {
+							vs[0] = local_E2Vs[local_ei_map[fes[(j - 1 + fvn) % fvn]]][0];
+							vs[1] = local_V2Vs[local_vi_map[fvs[j]]][0];
+							vs[2] = local_E2Vs[local_ei_map[fes[j]]][0];
+							vs[3] = local_F2Vs[local_fi_map[fid]][0];
+						}
 
 						total_fs.push_back(vs);
 						std::sort(vs.begin(), vs.end());
