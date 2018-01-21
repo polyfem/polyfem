@@ -178,9 +178,11 @@ namespace poly_fem
 			viewer.data.V_material_specular.setZero();
 			viewer.data.dirty |= igl::viewer::ViewerData::DIRTY_DIFFUSE;
 
-			viewer.data.V_material_ambient *= 4;
-			viewer.data.F_material_ambient *= 4;
+			viewer.data.V_material_ambient *= 2;
+			viewer.data.F_material_ambient *= 2;
 		}
+
+		viewer.core.line_width = 10;
 	}
 
 	long UIState::clip_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, std::vector<bool> &valid_elements)
@@ -213,6 +215,12 @@ namespace poly_fem
 				viewer.data.set_normals(normals);
 				viewer.data.set_face_based(false);
 			}
+
+			MatrixXd p0, p1;
+			state.mesh->get_edges(p0, p1);
+			viewer.core.line_width = 10;
+			viewer.data.add_edges(p0, p1, MatrixXd::Zero(1, 3));
+			viewer.core.show_lines = false;
 
 			return tris.rows();
 		}
@@ -255,8 +263,8 @@ namespace poly_fem
 			viewer.data.F_material_specular.setZero();
 			viewer.data.V_material_specular.setZero();
 			viewer.data.dirty |= igl::viewer::ViewerData::DIRTY_DIFFUSE;
-			viewer.data.V_material_ambient *= 4;
-			viewer.data.F_material_ambient *= 4;
+			viewer.data.V_material_ambient *= 2;
+			viewer.data.F_material_ambient *= 2;
 		}
 
 		if(state.mesh->is_volume())
@@ -272,6 +280,13 @@ namespace poly_fem
 
 		if(recenter)
 			viewer.core.align_camera_center(pts, valid_tri);
+	
+		MatrixXd p0, p1;
+		state.mesh->get_edges(p0, p1, valid_elements);
+		viewer.core.line_width = 10;
+		viewer.data.add_edges(p0, p1, MatrixXd::Zero(1, 3));
+		viewer.core.show_lines = false;
+
 		return valid_tri.rows();
 	}
 
@@ -414,12 +429,12 @@ namespace poly_fem
 			viewer.data.F_material_specular.setZero();
 			viewer.data.V_material_specular.setZero();
 
-			viewer.data.V_material_ambient *= 4;
-			viewer.data.F_material_ambient *= 4;
+			viewer.data.V_material_ambient *= 2;
+			viewer.data.F_material_ambient *= 2;
 			viewer.data.dirty |= igl::viewer::ViewerData::DIRTY_DIFFUSE;
-			viewer.data.V_material_ambient *= 4;
-			viewer.data.F_material_ambient *= 4;
 		}
+
+		viewer.core.line_width = 10;
 	}
 
 
@@ -443,11 +458,6 @@ namespace poly_fem
 			const long n_tris = clip_elements(tri_pts, tri_faces, element_ranges, valid_elements);
 
 			color_mesh(n_tris, valid_elements);
-
-			MatrixXd p0, p1;
-			state.mesh->get_edges(p0, p1);
-			viewer.data.add_edges(p0, p1, MatrixXd::Zero(1, 3));
-			viewer.core.show_lines = false;
 
 			// for(int i = 0; i < state.mesh->n_faces(); ++i)
 			// {

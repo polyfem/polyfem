@@ -110,6 +110,38 @@ namespace poly_fem
 		}
 	}
 
+	void Mesh2D::get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, const std::vector<bool> &valid_elements) const
+	{
+		int count = 0;
+		for(size_t i = 0; i < valid_elements.size(); ++i)
+		{
+			if(valid_elements[i]){
+				count += n_face_vertices(i);
+			}
+		}
+
+		p0.resize(2*count, 2);
+		p1.resize(2*count, 2);
+
+		count = 0;
+
+		for(size_t i = 0; i < valid_elements.size(); ++i)
+		{
+			if(!valid_elements[i])
+				continue;
+
+			auto index = get_index_from_face(i);
+			for(int j = 0; j < n_face_vertices(i); ++j)
+			{
+				p0.row(count) = point(index.vertex);
+				p1.row(count) = point(switch_vertex(index).vertex);
+
+				index = next_around_face(index);
+				++count;
+			}
+		}
+	}
+
 	RowVectorNd Mesh2D::point(const int global_index) const {
 		const double *ptr = mesh_.vertices.point_ptr(global_index);
 		RowVectorNd p(2);

@@ -657,6 +657,37 @@ namespace poly_fem
 		}
 	}
 
+	void Mesh3D::get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, const std::vector<bool> &valid_elements) const
+	{
+		int count = 0;
+		for(size_t i = 0; i < valid_elements.size(); ++i)
+		{
+			if(valid_elements[i]){
+				count += mesh_.elements[i].es.size();
+			}
+		}
+
+		p0.resize(2*count, 3);
+		p1.resize(2*count, 3);
+
+		count = 0;
+
+		for(size_t i = 0; i < valid_elements.size(); ++i)
+		{
+			if(!valid_elements[i])
+				continue;
+
+			for(size_t ei = 0; ei < mesh_.elements[i].es.size(); ++ei)
+			{
+				const int e = mesh_.elements[i].es[ei];
+				p0.row(count) = point(mesh_.edges[e].vs[0]);
+				p1.row(count) = point(mesh_.edges[e].vs[1]);
+
+				++count;
+			}
+		}
+	}
+
 
 	void Mesh3D::compute_elements_tag()
 	{

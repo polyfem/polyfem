@@ -85,6 +85,7 @@ namespace poly_fem
 		//Visualization methods
 		virtual void compute_element_barycenters(Eigen::MatrixXd &barycenters) const = 0;
 		virtual void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const = 0;
+		virtual void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, const std::vector<bool> &valid_elements) const = 0;
 		virtual void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const = 0;
 
 	protected:
