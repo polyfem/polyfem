@@ -57,6 +57,8 @@ namespace poly_fem
 		bool ambient_occlusion = false;
 		bool light_enabled = true;
 
+		std::string screenshot = "";
+
 		Eigen::MatrixXd normalized_barycenter;
 		Eigen::VectorXd ambient_occlusion_mat;
 

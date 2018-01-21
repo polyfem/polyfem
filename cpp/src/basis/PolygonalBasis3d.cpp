@@ -186,15 +186,22 @@ void compute_offset_kernels(const Eigen::MatrixXd &QV, const Eigen::MatrixXi &QF
 	assert(kernel_centers.cols() == 3);
 	signed_squared_distances(KV, KF, kernel_centers, D);
 	std::vector<Eigen::RowVector3d> remap;
+	std::vector<Eigen::RowVector3d> rejected;
 	for (int v = 0; v < kernel_centers.rows(); ++v) {
-		if (D(v) > 0.0) {
+		if (std::sqrt(D(v)) > 0.8 * eps * volume) {
 			remap.push_back(kernel_centers.row(v));
+		} else {
+			// rejected.push_back(kernel_centers.row(v));
 		}
 	}
 	kernel_centers.resize(remap.size(), 3);
 	for (int v = 0; v < kernel_centers.rows(); ++v) {
 		kernel_centers.row(v) = remap[v];
 	}
+	// Eigen::MatrixXd rej(rejected.size(), 3);
+	// for (int v = 0; v < (int) rejected.size(); ++v) {
+	// 	rej.row(v) = rejected[v];
+	// }
 	// igl::write_triangle_mesh("foo_medium.obj", KV, KF);
 	// std::cout << "nkernels: " << KV.rows() << std::endl;
 	// igl::write_triangle_mesh("foo.obj", KV, KF);
@@ -202,6 +209,7 @@ void compute_offset_kernels(const Eigen::MatrixXd &QV, const Eigen::MatrixXi &QF
 	// igl::viewer::Viewer viewer;
 	// viewer.data.set_mesh(KV, KF);
 	// viewer.data.add_points(kernel_centers, Eigen::RowVector3d(0,1,1));
+	// viewer.data.add_points(rej, Eigen::RowVector3d(1,0,0));
 	// viewer.launch();
 }
 

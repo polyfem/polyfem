@@ -16,9 +16,10 @@
 #include <igl/png/writePNG.h>
 #include <igl/Timer.h>
 
-
+#ifdef LIBIGL_WITH_NANOGUI
 #include <nanogui/formhelper.h>
 #include <nanogui/screen.h>
+#endif
 
 #include <stdlib.h>
 
@@ -33,7 +34,7 @@
 
 using namespace Eigen;
 
-
+int offscreen_screenshot(igl::viewer::Viewer &viewer, const std::string &path);
 
 namespace poly_fem
 {
@@ -1124,6 +1125,10 @@ namespace poly_fem
 
 			if(skip_visualization) return;
 
+			if (!state.mesh->is_volume()) {
+				light_enabled = false;
+			}
+
 			clear_func();
 			show_mesh_func();
 			// viewer.core.align_camera_center(tri_pts);
@@ -1198,6 +1203,7 @@ namespace poly_fem
 
 		viewer.callback_init = [&](igl::viewer::Viewer& viewer_)
 		{
+			#ifdef LIBIGL_WITH_NANOGUI
 			viewer_.ngui->addWindow(Eigen::Vector2i(220,10),"PolyFEM");
 
 			viewer_.ngui->addGroup("Settings");
@@ -1413,19 +1419,28 @@ namespace poly_fem
 
     			// Draw the scene in the buffers
 				viewer.core.draw_buffer(viewer.data,viewer.opengl,false,R,G,B,A);
+				A.setConstant(255);
 
     			// Save it to a PNG
-				igl::png::writePNG(R,G,B,A,"out.png");
+    			std::string path = (screenshot.empty() ? "out.png" : screenshot);
+				igl::png::writePNG(R,G,B,A,path);
 			});
 
-
 			viewer_.screen->performLayout();
+			#endif
 
 			return false;
 		};
 
+		viewer.core.background_color.setOnes();
 		viewer.core.set_rotation_type(igl::viewer::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
-		viewer.launch();
+
+		if (screenshot.empty()) {
+			viewer.launch();
+		} else {
+			load_mesh_func();
+			offscreen_screenshot(viewer, screenshot);
+		}
 	}
 
 	void UIState::sertialize(const std::string &name)
@@ -1434,3 +1449,81 @@ namespace poly_fem
 	}
 
 }
+
+#include <GLFW/glfw3.h>
+
+#ifndef __APPLE__
+#  define GLEW_STATIC
+#  include <GL/glew.h>
+#endif
+
+#ifdef __APPLE__
+#   include <OpenGL/gl3.h>
+#   define __gl_h_ /* Prevent inclusion of the old gl.h */
+#else
+#   include <GL/gl.h>
+#endif
+
+namespace {
+
+static void my_glfw_error_callback(int error, const char* description)
+{
+  fputs(description, stderr);
+  fputs("\n", stderr);
+}
+
+}
+
+int offscreen_screenshot(igl::viewer::Viewer &viewer, const std::string &path) {
+    glfwSetErrorCallback(my_glfw_error_callback);
+    if (!glfwInit()) {
+      std::cout << "init failure" << std::endl;
+      return EXIT_FAILURE;
+    }
+
+	// glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_OSMESA_CONTEXT_API);
+  	glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+
+    glfwWindowHint(GLFW_SAMPLES, 8);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+
+    #ifdef __APPLE__
+      glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+      glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    #endif
+
+  	printf("create window\n");
+  	GLFWwindow* offscreen_context = glfwCreateWindow(640, 480, "", NULL, NULL);
+  	printf("create context\n");
+  	glfwMakeContextCurrent(offscreen_context);
+    #ifndef __APPLE__
+      glewExperimental = true;
+      GLenum err = glewInit();
+      if(GLEW_OK != err)
+      {
+        /* Problem: glewInit failed, something is seriously wrong. */
+       fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+      }
+      glGetError(); // pull and savely ignonre unhandled errors like GL_INVALID_ENUM
+      fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
+    #endif
+    viewer.opengl.init();
+    viewer.core.align_camera_center(viewer.data.V, viewer.data.F);
+    viewer.init();
+
+    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(6400, 4000);
+    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> G(6400, 4000);
+    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> B(6400, 4000);
+    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(6400, 4000);
+
+    // Draw the scene in the buffers
+    viewer.core.draw_buffer(viewer.data,viewer.opengl,true,R,G,B,A);
+	A.setConstant(255);
+
+    // Save it to a PNG
+    igl::png::writePNG(R,G,B,A, path);
+
+    return 0;
+}
+
