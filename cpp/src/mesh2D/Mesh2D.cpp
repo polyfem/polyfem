@@ -120,8 +120,8 @@ namespace poly_fem
 			}
 		}
 
-		p0.resize(2*count, 2);
-		p1.resize(2*count, 2);
+		p0.resize(count, 2);
+		p1.resize(count, 2);
 
 		count = 0;
 

@@ -667,8 +667,8 @@ namespace poly_fem
 			}
 		}
 
-		p0.resize(2*count, 3);
-		p1.resize(2*count, 3);
+		p0.resize(count, 3);
+		p1.resize(count, 3);
 
 		count = 0;
 
