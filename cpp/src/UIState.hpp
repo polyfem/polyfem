@@ -53,7 +53,12 @@ namespace poly_fem
 		int slice_coord = 0;
 		int is_slicing = false;
 		float slice_position = 1;
+
+		bool ambient_occlusion = false;
+		bool light_enabled = true;
+
 		Eigen::MatrixXd normalized_barycenter;
+		Eigen::VectorXd ambient_occlusion_mat;
 
 		std::string selected_elements;
 

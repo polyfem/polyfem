@@ -45,7 +45,7 @@ option(LIBIGL_WITH_MOSEK            "Use MOSEK"          OFF)
 option(LIBIGL_WITH_NANOGUI          "Use Nanogui menu"   ON)
 option(LIBIGL_WITH_OPENGL           "Use OpenGL"         ON)
 option(LIBIGL_WITH_OPENGL_GLFW      "Use GLFW"           ON)
-option(LIBIGL_WITH_PNG              "Use PNG"            OFF)
+option(LIBIGL_WITH_PNG              "Use PNG"            ON)
 option(LIBIGL_WITH_PYTHON           "Use Python"         OFF)
 option(LIBIGL_WITH_TETGEN           "Use Tetgen"         ON)
 option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       ON)
@@ -64,6 +64,8 @@ option(LIBIGL_WITH_XML              "Use XML"            OFF)
 # set(ENABLE_MMG         ON  CACHE BOOL "" FORCE)
 
 ################################################################################
+
+add_definitions("-DENABLE_SERIALIZATION")
 
 # Polyfem library
 add_library(polyfem
@@ -367,7 +369,7 @@ add_executable(${PROJECT_NAME}_bin
 	src/UIState.hpp
 	src/UIState.cpp
 )
-target_link_libraries(${PROJECT_NAME}_bin PUBLIC polyfem igl::viewer)
+target_link_libraries(${PROJECT_NAME}_bin PUBLIC polyfem igl::viewer igl::png)
 
 # Main executable without gui, uncomment when not debugging gui is necessary
 # add_executable(${PROJECT_NAME}_exec

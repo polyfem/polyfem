@@ -11,6 +11,8 @@
 #include <igl/per_corner_normals.h>
 #include <igl/triangle/triangulate.h>
 #include <igl/copyleft/tetgen/tetrahedralize.h>
+#include <igl/per_vertex_normals.h>
+#include <igl/png/writePNG.h>
 #include <igl/Timer.h>
 
 
@@ -105,39 +107,47 @@ namespace poly_fem
 			{
 					//green
 				case ElementType::RegularInteriorCube:
-				cols.block(from, 1, range, 1).setOnes(); break;
-
+				// cols.block(from, 1, range, 1).setOnes(); break;
 					//dark green
 				case ElementType::RegularBoundaryCube:
-				cols.block(from, 1, range, 1).setConstant(0.5); break;
+				// cols.block(from, 1, range, 1).setConstant(0.5); break;
+				cols.block(from, 0, range, 1).setConstant(46./255.);
+				cols.block(from, 1, range, 1).setConstant(204./255.);
+				cols.block(from, 2, range, 1).setConstant(113./255.); break;
 
 					//yellow
 				case ElementType::SimpleSingularInteriorCube:
-				cols.block(from, 0, range, 1).setOnes();
-				cols.block(from, 1, range, 1).setOnes(); break;
+				// cols.block(from, 0, range, 1).setOnes();
+				// cols.block(from, 1, range, 1).setOnes(); break;
 
 					//orange
 				case ElementType::SimpleSingularBoundaryCube:
-				cols.block(from, 0, range, 1).setOnes();
-				cols.block(from, 1, range, 1).setConstant(0.5); break;
+				// cols.block(from, 0, range, 1).setOnes();
+				// cols.block(from, 1, range, 1).setConstant(0.5); break;
 
  					//red
 				case ElementType::MultiSingularInteriorCube:
-				cols.block(from, 0, range, 1).setOnes(); break;
+				// cols.block(from, 0, range, 1).setOnes(); break;
 
 					//blue
 				case ElementType::MultiSingularBoundaryCube:
-				cols.block(from, 2, range, 1).setConstant(0.6); break;
+				// cols.block(from, 2, range, 1).setConstant(0.6); break;
 
 					//rhodamine
 				case ElementType::InterfaceCube:
-				cols.middleRows(from, range).rowwise() = Eigen::RowVector3d(0.9, 0, 0.58); break;
+				// cols.middleRows(from, range).rowwise() = Eigen::RowVector3d(0.9, 0, 0.58); break;
+				cols.block(from, 0, range, 1).setConstant(231./255.);
+				cols.block(from, 1, range, 1).setConstant(76./255.);
+				cols.block(from, 2, range, 1).setConstant(60./255.); break;
 
 				  	//light blue
 				case ElementType::BoundaryPolytope:
 				case ElementType::InteriorPolytope:
-				cols.block(from, 2, range, 1).setOnes();
-				cols.block(from, 1, range, 1).setConstant(0.5); break;
+				// cols.block(from, 2, range, 1).setOnes();
+				// cols.block(from, 1, range, 1).setConstant(0.5); break;
+				cols.block(from, 0, range, 1).setConstant(52./255.);
+				cols.block(from, 1, range, 1).setConstant(152./255.);
+				cols.block(from, 2, range, 1).setConstant(219./255.); break;
 
 					//grey
 				case ElementType::Undefined:
@@ -147,7 +157,30 @@ namespace poly_fem
 			from += range;
 		}
 
+		// if(ambient_occlusion && state.mesh->is_volume())
+		// {
+		// 	MatrixXd N;
+		// 	igl::per_vertex_normals(tri_pts, tri_faces, N);
+		// 	// igl::per_corner_normals(tri_pts, tri_faces, 20, N);
+
+		// 	// Compute ambient occlusion factor using embree
+		// 	igl::embree::ambient_occlusion(tri_pts, tri_faces, tri_pts, N, 500, ambient_occlusion_mat);
+		// 	ambient_occlusion_mat = 1.0 - ambient_occlusion_mat.array();
+
+		// 	for (long i=0; i<cols.rows();++i)
+		// 		cols.row(i) *= ambient_occlusion_mat(i);
+		// }
+
 		viewer.data.set_colors(cols);
+
+		if(!light_enabled){
+			viewer.data.F_material_specular.setZero();
+			viewer.data.V_material_specular.setZero();
+			viewer.data.dirty |= igl::viewer::ViewerData::DIRTY_DIFFUSE;
+
+			viewer.data.V_material_ambient *= 4;
+			viewer.data.F_material_ambient *= 4;
+		}
 	}
 
 	long UIState::clip_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, std::vector<bool> &valid_elements)
@@ -160,6 +193,15 @@ namespace poly_fem
 		{
 			std::fill(valid_elements.begin(), valid_elements.end(), true);
 			viewer.data.set_mesh(pts, tris);
+
+			if(!light_enabled){
+				viewer.data.F_material_specular.setZero();
+				viewer.data.V_material_specular.setZero();
+				viewer.data.V_material_ambient *= 4;
+				viewer.data.F_material_ambient *= 4;
+
+				viewer.data.dirty |= igl::viewer::ViewerData::DIRTY_DIFFUSE;
+			}
 
 			if(state.mesh->is_volume())
 			{
@@ -207,9 +249,15 @@ namespace poly_fem
 			from += range;
 		}
 
-
-
 		viewer.data.set_mesh(pts, valid_tri);
+
+		if(!light_enabled){
+			viewer.data.F_material_specular.setZero();
+			viewer.data.V_material_specular.setZero();
+			viewer.data.dirty |= igl::viewer::ViewerData::DIRTY_DIFFUSE;
+			viewer.data.V_material_ambient *= 4;
+			viewer.data.F_material_ambient *= 4;
+		}
 
 		if(state.mesh->is_volume())
 		{
@@ -339,12 +387,39 @@ namespace poly_fem
 				tmp.resize(fun.rows(),3);
 				tmp.col(0)=vis_pts.col(0);
 				tmp.col(1)=vis_pts.col(1);
-				tmp.col(2)=fun;
+				// tmp.col(2)=fun;
+				tmp.col(2).setZero();
 				clip_elements(tmp, vis_faces, vis_element_ranges, valid_elements);
 			}
 		}
 
+		// if(ambient_occlusion && state.mesh->is_volume())
+		// {
+		// 	MatrixXd N;
+		// 	igl::per_vertex_normals(vis_pts, vis_faces, N);
+		// 	// igl::per_corner_normals(vis_pts, vis_faces, 20, N);
+
+		// 	// Compute ambient occlusion factor using embree
+		// 	igl::embree::ambient_occlusion(vis_pts, vis_faces, vis_pts, N, 500, ambient_occlusion_mat);
+		// 	ambient_occlusion_mat = 1.0 - ambient_occlusion_mat.array();
+
+		// 	for (long i=0; i<col.rows();++i)
+		// 		col.row(i) *= ambient_occlusion_mat(i);
+		// 	viewer.data.set_face_based(false);
+		// }
+
 		viewer.data.set_colors(col);
+
+		if(!light_enabled){
+			viewer.data.F_material_specular.setZero();
+			viewer.data.V_material_specular.setZero();
+
+			viewer.data.V_material_ambient *= 4;
+			viewer.data.F_material_ambient *= 4;
+			viewer.data.dirty |= igl::viewer::ViewerData::DIRTY_DIFFUSE;
+			viewer.data.V_material_ambient *= 4;
+			viewer.data.F_material_ambient *= 4;
+		}
 	}
 
 
@@ -1111,6 +1186,31 @@ namespace poly_fem
 					dynamic_cast<Mesh3D *>(state.mesh.get())->save(idx_v, 2, "mesh.HYBRID");
 				}
 			});
+
+			viewer_.ngui->addWindow(Eigen::Vector2i(0,600),"Light");
+
+			viewer_.ngui->addVariable<bool>("lighting enabled",[&](bool val) {
+				light_enabled = val;
+
+
+			},[&]() {
+				return light_enabled;
+			});
+
+			viewer_.ngui->addButton("Save screenshot", [&]{
+				// Allocate temporary buffers
+				Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(6400, 4000);
+				Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> G(6400, 4000);
+				Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> B(6400, 4000);
+				Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(6400, 4000);
+
+    			// Draw the scene in the buffers
+				viewer.core.draw_buffer(viewer.data,viewer.opengl,false,R,G,B,A);
+
+    			// Save it to a PNG
+				igl::png::writePNG(R,G,B,A,"out.png");
+			});
+
 
 			viewer_.screen->performLayout();
 
