@@ -95,6 +95,8 @@ int main(int argc, const char **argv)
 
 	command_line.parse(argc, argv);
 
+	if (!screenshot.empty()) { no_ui = false; }
+
 	if(no_ui)
 	{
 		State &state = State::state();

@@ -16,7 +16,7 @@
 #include <igl/png/writePNG.h>
 #include <igl/Timer.h>
 
-#ifdef LIBIGL_WITH_NANOGUI
+#ifdef IGL_VIEWER_WITH_NANOGUI
 #include <nanogui/formhelper.h>
 #include <nanogui/screen.h>
 #endif
@@ -482,7 +482,7 @@ namespace poly_fem
 			state.mesh->get_edges(p0, p1, valid_elements);
 		}
 
-		std::cout<<p0<<std::endl;
+		// std::cout<<p0<<std::endl;
 
 		viewer.core.line_width = 5;
 		viewer.data.add_edges(p0, p1, MatrixXd::Zero(1, 3));
@@ -1133,7 +1133,7 @@ namespace poly_fem
 
 			clear_func();
 			show_mesh_func();
-			// viewer.core.align_camera_center(tri_pts);
+			viewer.core.align_camera_center(tri_pts);
 		};
 
 		auto build_basis_func = [&](){
@@ -1205,7 +1205,7 @@ namespace poly_fem
 
 		viewer.callback_init = [&](igl::viewer::Viewer& viewer_)
 		{
-			#ifdef LIBIGL_WITH_NANOGUI
+			#ifdef IGL_VIEWER_WITH_NANOGUI
 			viewer_.ngui->addWindow(Eigen::Vector2i(220,10),"PolyFEM");
 
 			viewer_.ngui->addGroup("Settings");
@@ -1429,6 +1429,7 @@ namespace poly_fem
 			});
 
 			viewer_.screen->performLayout();
+
 			#endif
 
 			return false;
