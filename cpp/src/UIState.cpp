@@ -250,24 +250,24 @@ namespace poly_fem
 
 		if(current_visualization == Visualizing::InputMesh)
 		{
-			const long n_tris = show_clipped_elements(tri_pts, tri_faces, element_ranges, valid_elements, recenter, false);
+			const long n_tris = show_clipped_elements(tri_pts, tri_faces, element_ranges, valid_elements, false, recenter);
 			color_mesh(n_tris, valid_elements);
 		}
 		else
 		{
-			show_clipped_elements(vis_pts, vis_faces, vis_element_ranges, valid_elements, recenter, true);
+			show_clipped_elements(vis_pts, vis_faces, vis_element_ranges, valid_elements, true, recenter);
 		}
 
-		if(state.mesh->is_volume())
-		{
-			const auto p = state.mesh->point(current_3d_index.vertex);
-			const auto p1 = state.mesh->point(dynamic_cast<Mesh3D *>(state.mesh.get())->switch_vertex(current_3d_index).vertex);
+		// if(state.mesh->is_volume())
+		// {
+		// 	const auto p = state.mesh->point(current_3d_index.vertex);
+		// 	const auto p1 = state.mesh->point(dynamic_cast<Mesh3D *>(state.mesh.get())->switch_vertex(current_3d_index).vertex);
 
-			viewer.data.add_points(p, MatrixXd::Zero(1, 3));
-			viewer.data.add_edges(p, p1, RowVector3d(1, 1, 0));
+		// 	viewer.data.add_points(p, MatrixXd::Zero(1, 3));
+		// 	viewer.data.add_edges(p, p1, RowVector3d(1, 1, 0));
 
-			viewer.data.add_points(dynamic_cast<Mesh3D *>(state.mesh.get())->face_barycenter(current_3d_index.face), RowVector3d(1, 0, 0));
-		}
+		// 	viewer.data.add_points(dynamic_cast<Mesh3D *>(state.mesh.get())->face_barycenter(current_3d_index.face), RowVector3d(1, 0, 0));
+		// }
 	}
 
 	void UIState::color_mesh(const int n_tris, const std::vector<bool> &valid_elements)
@@ -481,6 +481,8 @@ namespace poly_fem
 		{
 			state.mesh->get_edges(p0, p1, valid_elements);
 		}
+
+		std::cout<<p0<<std::endl;
 
 		viewer.core.line_width = 5;
 		viewer.data.add_edges(p0, p1, MatrixXd::Zero(1, 3));
