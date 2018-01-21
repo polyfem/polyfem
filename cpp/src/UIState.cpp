@@ -6,6 +6,7 @@
 #include "LinearElasticity.hpp"
 
 #include "LinearSolver.hpp"
+#include "QuadBoundarySampler.hpp"
 
 #include <igl/per_face_normals.h>
 #include <igl/per_corner_normals.h>
@@ -39,6 +40,129 @@ namespace poly_fem
 
 	namespace
 	{
+		void get_plot_edges(const Mesh &mesh, const std::vector< ElementBases > &bases, const int n_samples, const std::vector<bool> &valid_elements, Eigen::MatrixXd &pp0, Eigen::MatrixXd &pp1)
+		{
+			Eigen::MatrixXd samples, mapped, p0, p1;
+			std::vector<Eigen::MatrixXd> p0v, p1v;
+
+			if(mesh.is_volume())
+			{
+				samples.resize(12*n_samples, 3);
+				const Eigen::MatrixXd t = Eigen::VectorXd::LinSpaced(n_samples, 0, 1);
+
+				//X
+				int ii = 0;
+				samples.block(ii*n_samples, 0, n_samples, 1) = t;
+				samples.block(ii*n_samples, 1, n_samples, 1).setZero();
+				samples.block(ii*n_samples, 2, n_samples, 1).setZero();
+
+				++ii;
+				samples.block(ii*n_samples, 0, n_samples, 1) = t;
+				samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
+				samples.block(ii*n_samples, 2, n_samples, 1).setZero();
+
+				++ii;
+				samples.block(ii*n_samples, 0, n_samples, 1) = t;
+				samples.block(ii*n_samples, 1, n_samples, 1).setZero();
+				samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
+
+				++ii;
+				samples.block(ii*n_samples, 0, n_samples, 1) = t;
+				samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
+				samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
+
+				//Y
+				++ii;
+				samples.block(ii*n_samples, 0, n_samples, 1).setZero();
+				samples.block(ii*n_samples, 1, n_samples, 1) = t;
+				samples.block(ii*n_samples, 2, n_samples, 1).setZero();
+
+				++ii;
+				samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
+				samples.block(ii*n_samples, 1, n_samples, 1) = t;
+				samples.block(ii*n_samples, 2, n_samples, 1).setZero();
+
+				++ii;
+				samples.block(ii*n_samples, 0, n_samples, 1).setZero();
+				samples.block(ii*n_samples, 1, n_samples, 1) = t;
+				samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
+
+				++ii;
+				samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
+				samples.block(ii*n_samples, 1, n_samples, 1) = t;
+				samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
+
+				//Z
+				++ii;
+				samples.block(ii*n_samples, 0, n_samples, 1).setZero();
+				samples.block(ii*n_samples, 1, n_samples, 1).setZero();
+				samples.block(ii*n_samples, 2, n_samples, 1) = t;
+
+				++ii;
+				samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
+				samples.block(ii*n_samples, 1, n_samples, 1).setZero();
+				samples.block(ii*n_samples, 2, n_samples, 1) = t;
+
+				++ii;
+				samples.block(ii*n_samples, 0, n_samples, 1).setZero();
+				samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
+				samples.block(ii*n_samples, 2, n_samples, 1) = t;
+
+				++ii;
+				samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
+				samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
+				samples.block(ii*n_samples, 2, n_samples, 1) = t;
+
+
+				for(std::size_t i = 0; i < bases.size(); ++i){
+					if(mesh.is_polytope(i)) continue;
+					if(!valid_elements[i]) continue;
+
+					bases[i].eval_geom_mapping(samples, mapped);
+
+					for(int j = 0; j < 12; ++j)
+					{
+						double current_edge = 0;
+						for(int k = 0; k < n_samples-1; ++k){
+							p0v.push_back(mapped.row(j*n_samples + k));
+							p1v.push_back(mapped.row(j*n_samples + k+1));
+						}
+					}
+				}
+			}
+			else
+			{
+				QuadBoundarySampler::sample(true, true, true, true, n_samples, false, samples);
+
+				for(std::size_t i = 0; i < bases.size(); ++i){
+					if(mesh.is_polytope(i)) continue;
+					if(!valid_elements[i]) continue;
+
+					bases[i].eval_geom_mapping(samples, mapped);
+
+					for(int j = 0; j < 4; ++j)
+					{
+						double current_edge = 0;
+						for(int k = 0; k < n_samples-1; ++k){
+							p0v.push_back(mapped.row(j*n_samples + k));
+							p1v.push_back(mapped.row(j*n_samples + k+1));
+						}
+					}
+				}
+			}
+
+
+			pp0.resize(p0v.size(), mesh.is_volume()?3:2);
+			pp1.resize(p1v.size(), mesh.is_volume()?3:2);
+
+			for(size_t i = 0; i < p1v.size(); ++i)
+			{
+				pp0.row(i) = p0v[i];
+				pp1.row(i) = p1v[i];
+			}
+		}
+
+
 		Navigation3D::Index current_3d_index;
 
 		const std::vector<std::string> explode(const std::string &s, const char &c)
@@ -68,12 +192,12 @@ namespace poly_fem
 
 		if(current_visualization == Visualizing::InputMesh)
 		{
-			const long n_tris = show_clipped_elements(tri_pts, tri_faces, element_ranges, valid_elements, recenter);
+			const long n_tris = show_clipped_elements(tri_pts, tri_faces, element_ranges, valid_elements, recenter, false);
 			color_mesh(n_tris, valid_elements);
 		}
 		else
 		{
-			show_clipped_elements(vis_pts, vis_faces, vis_element_ranges, valid_elements, recenter);
+			show_clipped_elements(vis_pts, vis_faces, vis_element_ranges, valid_elements, recenter, true);
 		}
 
 		if(state.mesh->is_volume())
@@ -181,11 +305,9 @@ namespace poly_fem
 			viewer.data.V_material_ambient *= 2;
 			viewer.data.F_material_ambient *= 2;
 		}
-
-		viewer.core.line_width = 10;
 	}
 
-	long UIState::clip_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, std::vector<bool> &valid_elements)
+	long UIState::clip_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, std::vector<bool> &valid_elements, const bool map_edges)
 	{
 		viewer.data.clear();
 
@@ -217,8 +339,18 @@ namespace poly_fem
 			}
 
 			MatrixXd p0, p1;
-			state.mesh->get_edges(p0, p1);
-			viewer.core.line_width = 10;
+
+			if(map_edges)
+			{
+				const auto &current_bases = state.iso_parametric ? state.bases : state.geom_bases;
+				get_plot_edges(*state.mesh, current_bases, 20, valid_elements, p0, p1);
+			}
+			else
+			{
+				state.mesh->get_edges(p0, p1);
+			}
+
+			// viewer.core.line_width = 2;
 			viewer.data.add_edges(p0, p1, MatrixXd::Zero(1, 3));
 			viewer.core.show_lines = false;
 
@@ -228,10 +360,10 @@ namespace poly_fem
 		for (long i = 0; i<normalized_barycenter.rows();++i)
 			valid_elements[i] = normalized_barycenter(i, slice_coord) < slice_position;
 
-		return show_clipped_elements(pts, tris, ranges, valid_elements);
+		return show_clipped_elements(pts, tris, ranges, valid_elements, map_edges);
 	}
 
-	long UIState::show_clipped_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, const std::vector<bool> &valid_elements, const bool recenter)
+	long UIState::show_clipped_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, const std::vector<bool> &valid_elements, const bool map_edges, const bool recenter)
 	{
 		viewer.data.set_face_based(false);
 
@@ -280,10 +412,19 @@ namespace poly_fem
 
 		if(recenter)
 			viewer.core.align_camera_center(pts, valid_tri);
-	
+
 		MatrixXd p0, p1;
-		state.mesh->get_edges(p0, p1, valid_elements);
-		viewer.core.line_width = 10;
+		if(map_edges)
+		{
+			const auto &current_bases = state.iso_parametric ? state.bases : state.geom_bases;
+			get_plot_edges(*state.mesh, current_bases, 20, valid_elements, p0, p1);
+		}
+		else
+		{
+			state.mesh->get_edges(p0, p1, valid_elements);
+		}
+
+		// viewer.core.line_width = 2;
 		viewer.data.add_edges(p0, p1, MatrixXd::Zero(1, 3));
 		viewer.core.show_lines = false;
 
@@ -384,7 +525,7 @@ namespace poly_fem
 			for(long i = 0; i < fun.cols(); ++i) //apply displacement
 				tmp.col(i) += fun.col(i);
 
-			clip_elements(tmp, vis_faces, vis_element_ranges, valid_elements);
+			clip_elements(tmp, vis_faces, vis_element_ranges, valid_elements, true);
 		}
 		else
 		{
@@ -395,7 +536,7 @@ namespace poly_fem
 				igl::colormap(color_map, fun, true, col);
 
 			if(state.mesh->is_volume())
-				clip_elements(vis_pts, vis_faces, vis_element_ranges, valid_elements);
+				clip_elements(vis_pts, vis_faces, vis_element_ranges, valid_elements, true);
 			else
 			{
 				MatrixXd tmp;
@@ -404,7 +545,7 @@ namespace poly_fem
 				tmp.col(1)=vis_pts.col(1);
 				// tmp.col(2)=fun;
 				tmp.col(2).setZero();
-				clip_elements(tmp, vis_faces, vis_element_ranges, valid_elements);
+				clip_elements(tmp, vis_faces, vis_element_ranges, valid_elements, true);
 			}
 		}
 
@@ -433,8 +574,6 @@ namespace poly_fem
 			viewer.data.F_material_ambient *= 2;
 			viewer.data.dirty |= igl::viewer::ViewerData::DIRTY_DIFFUSE;
 		}
-
-		viewer.core.line_width = 10;
 	}
 
 
@@ -455,7 +594,7 @@ namespace poly_fem
 			current_visualization = Visualizing::InputMesh;
 
 			std::vector<bool> valid_elements;
-			const long n_tris = clip_elements(tri_pts, tri_faces, element_ranges, valid_elements);
+			const long n_tris = clip_elements(tri_pts, tri_faces, element_ranges, valid_elements, false);
 
 			color_mesh(n_tris, valid_elements);
 
@@ -490,7 +629,7 @@ namespace poly_fem
 
 			std::cout<<vis_faces.rows()<<" "<<vis_faces.cols()<<std::endl;
 			std::vector<bool> valid_elements;
-			clip_elements(vis_pts, vis_faces, vis_element_ranges, valid_elements);
+			clip_elements(vis_pts, vis_faces, vis_element_ranges, valid_elements, true);
 			viewer.core.show_lines = true;
 		};
 
