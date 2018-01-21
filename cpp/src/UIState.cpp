@@ -45,6 +45,8 @@ namespace poly_fem
 			Eigen::MatrixXd samples, mapped, p0, p1;
 			std::vector<Eigen::MatrixXd> p0v, p1v;
 
+			std::vector<bool> valid_polytopes(valid_elements.size(), false);
+
 			if(mesh.is_volume())
 			{
 				samples.resize(12*n_samples, 3);
@@ -115,8 +117,12 @@ namespace poly_fem
 
 
 				for(std::size_t i = 0; i < bases.size(); ++i){
-					if(mesh.is_polytope(i)) continue;
 					if(!valid_elements[i]) continue;
+
+					if(mesh.is_polytope(i)) {
+						valid_polytopes[i] = true;
+						continue;
+					}
 
 					bases[i].eval_geom_mapping(samples, mapped);
 
@@ -135,8 +141,12 @@ namespace poly_fem
 				QuadBoundarySampler::sample(true, true, true, true, n_samples, false, samples);
 
 				for(std::size_t i = 0; i < bases.size(); ++i){
-					if(mesh.is_polytope(i)) continue;
 					if(!valid_elements[i]) continue;
+
+					if(mesh.is_polytope(i)) {
+						valid_polytopes[i] = true;
+						continue;
+					}
 
 					bases[i].eval_geom_mapping(samples, mapped);
 
@@ -151,15 +161,20 @@ namespace poly_fem
 				}
 			}
 
+			mesh.get_edges(p0, p1, valid_polytopes);
 
-			pp0.resize(p0v.size(), mesh.is_volume()?3:2);
-			pp1.resize(p1v.size(), mesh.is_volume()?3:2);
+
+			pp0.resize(p0.rows() + p0v.size(), mesh.is_volume()?3:2);
+			pp1.resize(p1.rows() + p1v.size(), mesh.is_volume()?3:2);
 
 			for(size_t i = 0; i < p1v.size(); ++i)
 			{
 				pp0.row(i) = p0v[i];
 				pp1.row(i) = p1v[i];
 			}
+
+			pp0.bottomRows(p0.rows()) = p0;
+			pp1.bottomRows(p1.rows()) = p1;
 		}
 
 
@@ -235,9 +250,9 @@ namespace poly_fem
 					//dark green
 				case ElementType::RegularBoundaryCube:
 				// cols.block(from, 1, range, 1).setConstant(0.5); break;
-				cols.block(from, 0, range, 1).setConstant(46./255.);
-				cols.block(from, 1, range, 1).setConstant(204./255.);
-				cols.block(from, 2, range, 1).setConstant(113./255.); break;
+				cols.block(from, 0, range, 1).setConstant(30./255.);
+				cols.block(from, 1, range, 1).setConstant(174./255.);
+				cols.block(from, 2, range, 1).setConstant(96./255.); break;
 
 					//yellow
 				case ElementType::SimpleSingularInteriorCube:
@@ -350,7 +365,7 @@ namespace poly_fem
 				state.mesh->get_edges(p0, p1);
 			}
 
-			// viewer.core.line_width = 2;
+			viewer.core.line_width = 5;
 			viewer.data.add_edges(p0, p1, MatrixXd::Zero(1, 3));
 			viewer.core.show_lines = false;
 
@@ -424,7 +439,7 @@ namespace poly_fem
 			state.mesh->get_edges(p0, p1, valid_elements);
 		}
 
-		// viewer.core.line_width = 2;
+		viewer.core.line_width = 5;
 		viewer.data.add_edges(p0, p1, MatrixXd::Zero(1, 3));
 		viewer.core.show_lines = false;
 
@@ -701,6 +716,7 @@ namespace poly_fem
 
 		auto show_error_func = [&]()
 		{
+			if (!state.problem.has_exact_sol()) { return; }
 			current_visualization = Visualizing::Error;
 			MatrixXd global_sol;
 			interpolate_function(state.sol, global_sol);

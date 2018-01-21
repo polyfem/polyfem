@@ -598,11 +598,6 @@ void poly_fem::tertrahedralize_star_shaped_surface(const Eigen::MatrixXd &V, con
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <geogram/basic/command_line.h>
-#include <geogram/basic/command_line_args.h>
-#include <geogram/basic/progress.h>
-#include <geogram/mesh/mesh_io.h>
-
 void poly_fem::sample_surface(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, int num_samples,
 	Eigen::MatrixXd &P, Eigen::MatrixXd *N, int num_lloyd, int num_newton)
 {

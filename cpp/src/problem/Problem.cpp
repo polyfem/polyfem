@@ -102,10 +102,21 @@ namespace poly_fem
 
 			for(long i = 0; i < x.size(); ++i)
 			{
+				#if 0
 				if(mesh.get_boundary_id(global_ids(i))== 1)
-					val(i, 0)=-0.01;
+					val(i, 2)=0.1;
 				else if(mesh.get_boundary_id(global_ids(i))== 3)
-					val(i, 0)=0.01;
+					val(i, 2)=-0.1;
+				#else
+				if(mesh.get_boundary_id(global_ids(i))== 1)
+					val(i, 0)=-0.025;
+				else if(mesh.get_boundary_id(global_ids(i))== 3)
+					val(i, 0)=0.025;
+				if(mesh.get_boundary_id(global_ids(i))== 5)
+					val(i, 1)=-0.025;
+				else if(mesh.get_boundary_id(global_ids(i))== 6)
+					val(i, 1)=0.025;
+				#endif
 			}
 
 			return;
@@ -203,8 +214,13 @@ namespace poly_fem
 				const int primitive_g_id = lb.global_primitive_id(i);
 				const int tag = mesh.get_boundary_id(primitive_g_id);
 
+				#if 0
 				if(tag == 1 || tag == 3)
 					new_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
+				#else
+				if(tag == 1 || tag == 3 || tag == 5  || tag == 6)
+					new_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
+				#endif
 			}
 
 			if(!new_lb.empty())

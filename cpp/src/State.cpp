@@ -549,7 +549,7 @@ namespace poly_fem
 		// 	for(size_t i = 0; i < bs.size(); ++i)
 		// 	{
 		// 		auto &lbs = bs[i].bases;
-				
+
 
 		// 		if(!mesh->is_spline_compatible(i))
 		// 		{
@@ -558,7 +558,7 @@ namespace poly_fem
 		// 				if(lbs[b].global().size() > 1) continue;
 		// 				if(nodes_setted(lbs[b].global().front().index)) continue;
 		// 				auto &c_glob = lbs[b].global().front();
-						
+
 
 		// 				if(std::find(boundary_nodes.begin(), boundary_nodes.end(), c_glob.index) != boundary_nodes.end())
 		// 					continue;
@@ -866,7 +866,7 @@ namespace poly_fem
 		std::cout<<"Solving... "<<std::flush;
 
 		json params = {
-			{"mtype", 1}, // matrix type for Pardiso (2 = SPD)
+			// {"mtype", 1}, // matrix type for Pardiso (2 = SPD)
 			// {"max_iter", 0}, // for iterative solvers
 			// {"tolerance", 1e-9}, // for iterative solvers
 		};
