@@ -317,9 +317,9 @@ namespace poly_fem
 		// 		mesh->set_tag(el_id, ElementType::InteriorPolytope);
 		// }
 
-		mesh->refine(n_refs, refinenemt_location, parent_elements);
-
 		mesh->normalize();
+
+		mesh->refine(n_refs, refinenemt_location, parent_elements);
 
 		mesh->compute_boundary_ids();
 

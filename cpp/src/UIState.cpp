@@ -1126,7 +1126,7 @@ namespace poly_fem
 
 			clear_func();
 			show_mesh_func();
-			viewer.core.align_camera_center(tri_pts);
+			// viewer.core.align_camera_center(tri_pts);
 		};
 
 		auto build_basis_func = [&](){
