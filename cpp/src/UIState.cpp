@@ -10,18 +10,21 @@
 
 #include <igl/per_face_normals.h>
 #include <igl/per_corner_normals.h>
+#include <igl/read_triangle_mesh.h>
 #include <igl/triangle/triangulate.h>
 #include <igl/copyleft/tetgen/tetrahedralize.h>
 #include <igl/per_vertex_normals.h>
 #include <igl/png/writePNG.h>
 #include <igl/Timer.h>
+#include <igl/serialize.h>
 
 #ifdef IGL_VIEWER_WITH_NANOGUI
 #include <nanogui/formhelper.h>
 #include <nanogui/screen.h>
 #endif
 
-#include <stdlib.h>
+#include <cstdlib>
+#include <fstream>
 
 
 // ... or using a custom callback
@@ -35,6 +38,79 @@
 using namespace Eigen;
 
 int offscreen_screenshot(igl::viewer::Viewer &viewer, const std::string &path);
+
+void add_spheres(igl::viewer::Viewer &viewer0, const Eigen::MatrixXd &P, double radius) {
+	Eigen::MatrixXd V = viewer0.data.V, VS, VN;
+	Eigen::MatrixXi F = viewer0.data.F, FS;
+	igl::read_triangle_mesh(POLYFEM_MESH_PATH "sphere.ply", VS, FS);
+
+	Eigen::RowVector3d minV = VS.colwise().minCoeff();
+	Eigen::RowVector3d maxV = VS.colwise().maxCoeff();
+	VS.rowwise() -= minV + 0.5 * (maxV - minV);
+	VS /= (maxV - minV).maxCoeff();
+	VS *= 2.0 * radius;
+
+	Eigen::MatrixXd C = viewer0.data.F_material_ambient.leftCols(3);
+	C *= 10;
+
+	int nv = V.rows();
+	int nf = 0;
+	V.conservativeResize(V.rows() + P.rows() * VS.rows(), V.cols());
+	F.conservativeResize(nf + P.rows() * FS.rows(), F.cols());
+	C.conservativeResize(C.rows() + P.rows() * FS.rows(), C.cols());
+	for (int i = 0; i < P.rows(); ++i) {
+		V.middleRows(nv, VS.rows()) = VS.rowwise() + P.row(i);
+		F.middleRows(nf, FS.rows()) = FS.array() + nv;
+		C.middleRows(nf, FS.rows()).rowwise() = Eigen::RowVector3d(142, 68, 173)/255.;
+		nv += VS.rows();
+		nf += FS.rows();
+	}
+
+	igl::per_corner_normals(V, F, 20.0, VN);
+
+	C = Eigen::RowVector3d(142, 68, 173)/255.;
+
+	igl::viewer::Viewer viewer;
+	viewer.data.set_mesh(V, F);
+	// viewer.data.add_points(P, Eigen::Vector3d(0,1,1).transpose());
+	viewer.data.set_normals(VN);
+	viewer.data.set_face_based(false);
+	viewer.data.set_colors(C);
+	viewer.data.lines = viewer0.data.lines;
+	viewer.core.show_lines = false;
+	viewer.core.line_width = 10;
+	viewer.core.background_color.setOnes();
+	viewer.core.set_rotation_type(igl::viewer::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
+
+	#ifdef IGL_VIEWER_WITH_NANOGUI
+	viewer.callback_init = [&](igl::viewer::Viewer& viewer_) {
+		viewer_.ngui->addButton("Save screenshot", [&] {
+			// Allocate temporary buffers
+			Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(6400, 4000);
+			Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> G(6400, 4000);
+			Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> B(6400, 4000);
+			Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(6400, 4000);
+
+			// Draw the scene in the buffers
+			viewer_.core.draw_buffer(viewer.data,viewer.opengl,false,R,G,B,A);
+			A.setConstant(255);
+
+			// Save it to a PNG
+			igl::png::writePNG(R,G,B,A,"foo.png");
+		});
+		viewer_.ngui->addButton("Load", [&] {
+			igl::deserialize(viewer.core, "core", "viewer.core");
+		});
+		viewer_.ngui->addButton("Save", [&] {
+			igl::serialize(viewer.core, "core", "viewer.core");
+		});
+		viewer_.screen->performLayout();
+		return false;
+	};
+	#endif
+
+	viewer.launch();
+}
 
 namespace poly_fem
 {
@@ -408,7 +484,7 @@ namespace poly_fem
 				state.mesh->get_edges(p0, p1);
 			}
 
-			viewer.core.line_width = 5;
+			viewer.core.line_width = 10;
 			viewer.data.add_edges(p0, p1, MatrixXd::Zero(1, 3));
 			viewer.core.show_lines = false;
 
@@ -484,7 +560,7 @@ namespace poly_fem
 
 		// std::cout<<p0<<std::endl;
 
-		viewer.core.line_width = 5;
+		viewer.core.line_width = 10;
 		viewer.data.add_edges(p0, p1, MatrixXd::Zero(1, 3));
 		viewer.core.show_lines = false;
 
@@ -695,8 +771,10 @@ namespace poly_fem
 
 		auto show_nodes_func = [&](){
 			for(std::size_t i = 0; i < state.bases.size(); ++i)
+			// size_t i = 6;
 			{
 				const ElementBases &basis = state.bases[i];
+				Eigen::MatrixXd P(basis.bases.size(), 3);
 
 				for(std::size_t j = 0; j < basis.bases.size(); ++j)
 				{
@@ -721,10 +799,12 @@ namespace poly_fem
 						}
 
 
+						// P.row(j) = node;
 						viewer.data.add_points(node, col);
 						// viewer.data.add_label(node.transpose(), std::to_string(l2g.index));
 					}
 				}
+				// add_spheres(viewer, P, 0.05);
 			}
 		};
 

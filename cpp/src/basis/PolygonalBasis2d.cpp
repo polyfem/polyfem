@@ -257,7 +257,7 @@ namespace {
 void add_spheres(igl::viewer::Viewer &viewer0, const Eigen::MatrixXd &PP, double radius) {
 	Eigen::MatrixXd V = viewer0.data.V, VS, VN;
 	Eigen::MatrixXi F = viewer0.data.F, FS;
-	igl::read_triangle_mesh("/home/jdumas/sphere.ply", VS, FS);
+	igl::read_triangle_mesh(POLYFEM_MESH_PATH "sphere.ply", VS, FS);
 
 	Eigen::RowVector3d minV = VS.colwise().minCoeff();
 	Eigen::RowVector3d maxV = VS.colwise().maxCoeff();

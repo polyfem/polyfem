@@ -486,7 +486,7 @@ namespace {
 void add_spheres(igl::viewer::Viewer &viewer0, const Eigen::MatrixXd &P, double radius) {
 	Eigen::MatrixXd V = viewer0.data.V, VS, VN;
 	Eigen::MatrixXi F = viewer0.data.F, FS;
-	igl::read_triangle_mesh("/home/jdumas/sphere.ply", VS, FS);
+	igl::read_triangle_mesh(POLYFEM_MESH_PATH "sphere.ply", VS, FS);
 
 	Eigen::RowVector3d minV = VS.colwise().minCoeff();
 	Eigen::RowVector3d maxV = VS.colwise().maxCoeff();
@@ -496,8 +496,8 @@ void add_spheres(igl::viewer::Viewer &viewer0, const Eigen::MatrixXd &P, double 
 	// std::cout << V.colwise().minCoeff() << std::endl;
 	// std::cout << V.colwise().maxCoeff() << std::endl;
 
-	Eigen::MatrixXd C = viewer0.data.F_material_ambient;
-	C.leftCols(3) *= 10;
+	Eigen::MatrixXd C = viewer0.data.F_material_ambient.leftCols(3);
+	C *= 10;
 
 	int nv = V.rows();
 	int nf = F.rows();
@@ -507,7 +507,7 @@ void add_spheres(igl::viewer::Viewer &viewer0, const Eigen::MatrixXd &P, double 
 	for (int i = 0; i < P.rows(); ++i) {
 		V.middleRows(nv, VS.rows()) = VS.rowwise() + P.row(i);
 		F.middleRows(nf, FS.rows()) = FS.array() + nv;
-		C.middleRows(nf, FS.rows()).rowwise() = Eigen::RowVector4d(142, 68, 173, 255.)/255.;
+		C.middleRows(nf, FS.rows()).rowwise() = Eigen::RowVector3d(142, 68, 173)/255.;
 		nv += VS.rows();
 		nf += FS.rows();
 	}

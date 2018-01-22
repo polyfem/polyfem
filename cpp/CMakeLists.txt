@@ -228,6 +228,10 @@ target_include_directories(polyfem PUBLIC
 	src/utils
 )
 
+set(MESH_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tests/")
+target_compile_definitions(polyfem PUBLIC -DPOLYFEM_MESH_PATH=\"${MESH_PATH}\")
+
+
 ################################################################################
 # Required libraries
 ################################################################################
