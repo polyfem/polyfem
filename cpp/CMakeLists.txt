@@ -63,7 +63,7 @@ option(LIBIGL_WITH_XML              "Use XML"            OFF)
 # set(ENABLE_PARDISO      OFF CACHE BOOL "" FORCE)
 # set(ENABLE_MMG          ON  CACHE BOOL "" FORCE)
 # set(ENABLE_MMG          ON  CACHE BOOL "" FORCE)
-# set(LIBIGL_WITH_NANOGUI OFF  CACHE BOOL "" FORCE)
+# set(LIBIGL_WITH_NANOGUI ON  CACHE BOOL "" FORCE)
 
 ################################################################################
 

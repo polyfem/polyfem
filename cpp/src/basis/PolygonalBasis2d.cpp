@@ -7,6 +7,17 @@
 #include "RBFWithQuadratic.hpp"
 #include "RBFWithQuadraticLagrange.hpp"
 #include "UIState.hpp"
+#include <igl/png/writePNG.h>
+#include <igl/per_corner_normals.h>
+#include <igl/write_triangle_mesh.h>
+#include <igl/read_triangle_mesh.h>
+#include <geogram/mesh/mesh_io.h>
+#include <random>
+#include <memory>
+#ifdef IGL_VIEWER_WITH_NANOGUI
+#include <nanogui/formhelper.h>
+#include <nanogui/screen.h>
+#endif
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <memory>
@@ -241,6 +252,88 @@ double compute_epsilon(const Mesh2D &mesh, int e) {
 	return eps;
 }
 
+namespace {
+
+void add_spheres(igl::viewer::Viewer &viewer0, const Eigen::MatrixXd &PP, double radius) {
+	Eigen::MatrixXd V = viewer0.data.V, VS, VN;
+	Eigen::MatrixXi F = viewer0.data.F, FS;
+	igl::read_triangle_mesh("/home/jdumas/sphere.ply", VS, FS);
+
+	Eigen::RowVector3d minV = VS.colwise().minCoeff();
+	Eigen::RowVector3d maxV = VS.colwise().maxCoeff();
+	VS.rowwise() -= minV + 0.5 * (maxV - minV);
+	VS /= (maxV - minV).maxCoeff();
+	VS *= 2.0 * radius;
+	std::cout << V.colwise().minCoeff() << std::endl;
+	std::cout << V.colwise().maxCoeff() << std::endl;
+
+	Eigen::MatrixXd C = viewer0.data.F_material_ambient.leftCols(3);
+	C *= 10 / 2.0;
+
+	Eigen::MatrixXd P(PP.rows(), 3);
+	P.leftCols(2) = PP;
+	P.col(2).setZero();
+
+	int nv = V.rows();
+	int nf = F.rows();
+	V.conservativeResize(V.rows() + P.rows() * VS.rows(), V.cols());
+	F.conservativeResize(F.rows() + P.rows() * FS.rows(), F.cols());
+	C.conservativeResize(C.rows() + P.rows() * FS.rows(), C.cols());
+	for (int i = 0; i < P.rows(); ++i) {
+		V.middleRows(nv, VS.rows()) = VS.rowwise() + P.row(i);
+		F.middleRows(nf, FS.rows()) = FS.array() + nv;
+		C.middleRows(nf, FS.rows()).rowwise() = Eigen::RowVector3d(142, 68, 173)/255.;
+		nv += VS.rows();
+		nf += FS.rows();
+	}
+
+	igl::per_corner_normals(V, F, 20.0, VN);
+
+	igl::viewer::Viewer viewer;
+	viewer.data.set_mesh(V, F);
+	// viewer.data.add_points(P, Eigen::Vector3d(0,1,1).transpose());
+	viewer.data.set_normals(VN);
+	viewer.data.set_face_based(false);
+	viewer.data.set_colors(C);
+	viewer.data.lines = viewer0.data.lines;
+	viewer.core.show_lines = false;
+	viewer.core.line_width = 5;
+	viewer.core.background_color.setOnes();
+	viewer.core.set_rotation_type(igl::viewer::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
+
+	#ifdef IGL_VIEWER_WITH_NANOGUI
+	viewer.callback_init = [&](igl::viewer::Viewer& viewer_) {
+		viewer_.ngui->addButton("Save screenshot", [&] {
+			// Allocate temporary buffers
+			Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(6400, 4000);
+			Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> G(6400, 4000);
+			Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> B(6400, 4000);
+			Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(6400, 4000);
+
+			// Draw the scene in the buffers
+			viewer_.core.draw_buffer(viewer.data,viewer.opengl,false,R,G,B,A);
+			A.setConstant(255);
+
+			// Save it to a PNG
+			igl::png::writePNG(R,G,B,A,"foo.png");
+		});
+		viewer_.screen->performLayout();
+		return false;
+	};
+	#endif
+
+	viewer.data.F_material_specular.setZero();
+	viewer.data.V_material_specular.setZero();
+	viewer.data.dirty |= igl::viewer::ViewerData::DIRTY_DIFFUSE;
+	viewer.data.V_material_ambient *= 2;
+	viewer.data.F_material_ambient *= 2;
+
+	viewer.core.align_camera_center(V);
+	viewer.launch();
+}
+
+} // anonymous namespace
+  //
 // -----------------------------------------------------------------------------
 
 void PolygonalBasis2d::build_bases(
@@ -295,6 +388,13 @@ void PolygonalBasis2d::build_bases(
 		// for(int asd = 0; asd < collocation_points.rows(); ++asd) {
 		//     viewer.data.add_label(collocation_points.row(asd), std::to_string(asd));
 		// }
+
+		// igl::viewer::Viewer & viewer = UIState::ui_state().viewer;
+		// viewer.data.clear();
+		// viewer.data.set_mesh(triangulated_vertices, triangulated_faces);
+		// viewer.data.add_points(kernel_centers, Eigen::Vector3d(0,1,1).transpose());
+		// add_spheres(viewer, kernel_centers, 0.01);
+
 
 		ElementBases &b=bases[e];
 		b.has_parameterization = false;

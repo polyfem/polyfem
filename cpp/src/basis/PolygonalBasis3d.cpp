@@ -10,12 +10,18 @@
 #include "UIState.hpp"
 #include <igl/triangle/triangulate.h>
 #include <igl/per_vertex_normals.h>
+#include <igl/per_corner_normals.h>
 #include <igl/write_triangle_mesh.h>
+#include <igl/read_triangle_mesh.h>
 #include <igl/colormap.h>
+#include <igl/png/writePNG.h>
 #include <geogram/mesh/mesh_io.h>
 #include <random>
 #include <memory>
-
+#ifdef IGL_VIEWER_WITH_NANOGUI
+#include <nanogui/formhelper.h>
+#include <nanogui/screen.h>
+#endif
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace poly_fem {
@@ -166,7 +172,7 @@ void compute_offset_kernels(const Eigen::MatrixXd &QV, const Eigen::MatrixXi &QF
 	orient_closed_surface(KV, KF);
 	double volume = std::pow(signed_volume(KV, KF), 1.0 / 3.0);
 
-	if (KV.rows() < max_num_kernels) {
+	if (true || KV.rows() < max_num_kernels) {
 		igl::per_vertex_normals(KV, KF, KN);
 		kernel_centers = KV;
 	} else {
@@ -475,6 +481,82 @@ double compute_epsilon(const Mesh3D &mesh, int e) {
 
 // -----------------------------------------------------------------------------
 
+namespace {
+
+void add_spheres(igl::viewer::Viewer &viewer0, const Eigen::MatrixXd &P, double radius) {
+	Eigen::MatrixXd V = viewer0.data.V, VS, VN;
+	Eigen::MatrixXi F = viewer0.data.F, FS;
+	igl::read_triangle_mesh("/home/jdumas/sphere.ply", VS, FS);
+
+	Eigen::RowVector3d minV = VS.colwise().minCoeff();
+	Eigen::RowVector3d maxV = VS.colwise().maxCoeff();
+	VS.rowwise() -= minV + 0.5 * (maxV - minV);
+	VS /= (maxV - minV).maxCoeff();
+	VS *= 2.0 * radius;
+	// std::cout << V.colwise().minCoeff() << std::endl;
+	// std::cout << V.colwise().maxCoeff() << std::endl;
+
+	Eigen::MatrixXd C = viewer0.data.F_material_ambient;
+	C.leftCols(3) *= 10;
+
+	int nv = V.rows();
+	int nf = F.rows();
+	V.conservativeResize(V.rows() + P.rows() * VS.rows(), V.cols());
+	F.conservativeResize(F.rows() + P.rows() * FS.rows(), F.cols());
+	C.conservativeResize(C.rows() + P.rows() * FS.rows(), C.cols());
+	for (int i = 0; i < P.rows(); ++i) {
+		V.middleRows(nv, VS.rows()) = VS.rowwise() + P.row(i);
+		F.middleRows(nf, FS.rows()) = FS.array() + nv;
+		C.middleRows(nf, FS.rows()).rowwise() = Eigen::RowVector4d(142, 68, 173, 255.)/255.;
+		nv += VS.rows();
+		nf += FS.rows();
+	}
+
+	igl::per_corner_normals(V, F, 20.0, VN);
+
+	std::cout << C.topRows(10) << std::endl;
+	std::cout << C.bottomRows(10) << std::endl;
+
+	igl::viewer::Viewer viewer;
+	viewer.data.set_mesh(V, F);
+	// viewer.data.add_points(P, Eigen::Vector3d(0,1,1).transpose());
+	viewer.data.set_normals(VN);
+	viewer.data.set_face_based(false);
+	viewer.data.set_colors(C);
+	viewer.data.lines = viewer0.data.lines;
+	viewer.core.show_lines = false;
+	viewer.core.line_width = 5;
+	viewer.core.background_color.setOnes();
+	viewer.core.set_rotation_type(igl::viewer::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
+
+	#ifdef IGL_VIEWER_WITH_NANOGUI
+	viewer.callback_init = [&](igl::viewer::Viewer& viewer_) {
+		viewer_.ngui->addButton("Save screenshot", [&] {
+			// Allocate temporary buffers
+			Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(6400, 4000);
+			Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> G(6400, 4000);
+			Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> B(6400, 4000);
+			Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(6400, 4000);
+
+			// Draw the scene in the buffers
+			viewer_.core.draw_buffer(viewer.data,viewer.opengl,false,R,G,B,A);
+			A.setConstant(255);
+
+			// Save it to a PNG
+			igl::png::writePNG(R,G,B,A,"foo.png");
+		});
+		viewer_.screen->performLayout();
+		return false;
+	};
+	#endif
+
+	viewer.launch();
+}
+
+} // anonymous namespace
+
+// -----------------------------------------------------------------------------
+
 void PolygonalBasis3d::build_bases(
 	const int nn_samples_per_edge,
 	const Mesh3D &mesh,
@@ -490,7 +572,7 @@ void PolygonalBasis3d::build_bases(
 	if (poly_face_to_data.empty()) {
 		return;
 	}
-	int n_kernels_per_edge = 3; //(int) std::round(n_samples_per_edge / 3.0);
+	int n_kernels_per_edge = 4; //(int) std::round(n_samples_per_edge / 3.0);
 	int n_samples_per_edge = 3*n_kernels_per_edge;
 
 	// Step 1: Compute integral constraints
@@ -528,9 +610,17 @@ void PolygonalBasis3d::build_bases(
 		// b.scaling_ = scaling;
 		// b.translation_ = translation;
 
-		// igl::viewer::Viewer viewer;
+		// igl::viewer::Viewer & viewer = UIState::ui_state().viewer;
+		// viewer.data.clear();
 		// viewer.data.set_mesh(triangulated_vertices, triangulated_faces);
 		// viewer.data.add_points(kernel_centers, Eigen::Vector3d(0,1,1).transpose());
+		// add_spheres(viewer, kernel_centers, 0.005);
+
+		// Eigen::MatrixXd pts = triangulated_vertices, normals;
+		// Eigen::MatrixXi tris = triangulated_faces;
+		// igl::per_corner_normals(pts, tris, 20, normals);
+		// viewer.data.set_normals(normals);
+		// viewer.data.set_face_based(false);
 		// viewer.launch();
 
 		// for(int a = 0; rhs.cols();++a)
