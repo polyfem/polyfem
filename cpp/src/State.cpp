@@ -317,7 +317,7 @@ namespace poly_fem
 		// 		mesh->set_tag(el_id, ElementType::InteriorPolytope);
 		// }
 
-		mesh->normalize();
+		// mesh->normalize();
 
 		mesh->refine(n_refs, refinenemt_location, parent_elements);
 
@@ -1122,6 +1122,16 @@ namespace poly_fem
 
 	void State::compute_poly_basis_error(const std::string &path)
 	{
+
+		auto dx = [](const Eigen::MatrixXd &pts, Eigen::MatrixXd &val){ auto x = pts.col(0).array(); auto y = pts.col(1).array();  auto z = pts.col(2).array(); val =  (-59535 * x + 13230) * exp(-0.81e2 / 0.4e1 *  x *  x +  (9 * x) - 0.3e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y - 0.81e2 / 0.4e1 * z * z + 0.9e1 * z) / 0.1960e4 +  (-39690 * x + 30870) * exp(-0.81e2 / 0.4e1 *  x *  x + 0.63e2 / 0.2e1 *  x - 0.83e2 / 0.4e1 - 0.81e2 / 0.2e1 * y * y + 0.36e2 * y) / 0.1960e4 +  (-4860 * x - 540) * exp(-0.81e2 / 0.49e2 *  x *  x - 0.18e2 / 0.49e2 *  x - 0.54e2 / 0.245e3 - 0.9e1 / 0.10e2 * y - 0.9e1 / 0.10e2 * z) / 0.1960e4 + 0.162e3 / 0.5e1 * ( x - 0.4e1 / 0.9e1) * exp(- (81 * x * x) - 0.162e3 * y * y +  (72 * x) + 0.216e3 * y - 0.90e2);};
+		auto dy = [](const Eigen::MatrixXd &pts, Eigen::MatrixXd &val){ auto x = pts.col(0).array(); auto y = pts.col(1).array();  auto z = pts.col(2).array(); val =  -0.243e3 / 0.8e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.9e1 * x - 0.3e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y - 0.81e2 / 0.4e1 * z * z + 0.9e1 * z) * y + 0.27e2 / 0.4e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.9e1 * x - 0.3e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y - 0.81e2 / 0.4e1 * z * z + 0.9e1 * z) - 0.27e2 / 0.40e2 * exp(-0.81e2 / 0.49e2 * x * x - 0.18e2 / 0.49e2 * x - 0.54e2 / 0.245e3 - 0.9e1 / 0.10e2 * y - 0.9e1 / 0.10e2 * z) - 0.81e2 / 0.2e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.63e2 / 0.2e1 * x - 0.83e2 / 0.4e1 - 0.81e2 / 0.2e1 * y * y + 0.36e2 * y) * y + 0.18e2 * exp(-0.81e2 / 0.4e1 * x * x + 0.63e2 / 0.2e1 * x - 0.83e2 / 0.4e1 - 0.81e2 / 0.2e1 * y * y + 0.36e2 * y) + 0.324e3 / 0.5e1 * exp(-0.81e2 * x * x - 0.162e3 * y * y + 0.72e2 * x + 0.216e3 * y - 0.90e2) * y - 0.216e3 / 0.5e1 * exp(-0.81e2 * x * x - 0.162e3 * y * y + 0.72e2 * x + 0.216e3 * y - 0.90e2);};
+		auto dz = [](const Eigen::MatrixXd &pts, Eigen::MatrixXd &val){ auto x = pts.col(0).array(); auto y = pts.col(1).array();  auto z = pts.col(2).array(); val = -0.243e3 / 0.8e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.9e1 * x - 0.3e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y - 0.81e2 / 0.4e1 * z * z + 0.9e1 * z) * z + 0.27e2 / 0.4e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.9e1 * x - 0.3e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y - 0.81e2 / 0.4e1 * z * z + 0.9e1 * z) - 0.27e2 / 0.40e2 * exp(-0.81e2 / 0.49e2 * x * x - 0.18e2 / 0.49e2 * x - 0.54e2 / 0.245e3 - 0.9e1 / 0.10e2 * y - 0.9e1 / 0.10e2 * z); };
+
+
+
+
+
+
 		MatrixXd fun = MatrixXd::Zero(n_bases, 1);
 		MatrixXd tmp, mapped;
 		MatrixXd v_approx, v_exact;
@@ -1158,7 +1168,12 @@ namespace poly_fem
 		ElementAssemblyValues vals;
 		vals.compute(poly_index, true, poly_basis, poly_basis);
 
-		problem.exact(vals.val, v_exact);
+		// problem.exact(vals.val, v_exact);
+		v_exact.resize(vals.val.rows(), vals.val.cols());
+		dx(vals.val, tmp); v_exact.col(0) = tmp;
+		dy(vals.val, tmp); v_exact.col(1) = tmp;
+		dz(vals.val, tmp); v_exact.col(2) = tmp;
+
 		v_approx = MatrixXd::Zero(v_exact.rows(), v_exact.cols());
 
 		const int n_loc_bases=int(vals.basis_values.size());
@@ -1169,27 +1184,32 @@ namespace poly_fem
 
 			for(std::size_t ii = 0; ii < val.global.size(); ++ii)
 			{
-				v_approx += val.global[ii].val * fun(val.global[ii].index) * val.val;
+				// v_approx += val.global[ii].val * fun(val.global[ii].index) * val.val;
+				v_approx += val.global[ii].val * fun(val.global[ii].index) * val.grad;
 			}
 		}
 
-		const auto err = (v_exact-v_approx).cwiseAbs();
-
-		double l2_err_interp = 0;
-		double lp_err_interp = 0;
-		l2_err_interp += (err.array() * err.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-		lp_err_interp += (err.array().pow(8.) * vals.det.array() * vals.quadrature.weights.array()).sum();
-
-		l2_err_interp = sqrt(fabs(l2_err_interp));
-		lp_err_interp = pow(fabs(lp_err_interp), 1./8.);
+		const Eigen::MatrixXd err = (v_exact-v_approx).cwiseAbs();
 
 
 		using json = nlohmann::json;
 		json j;
-
 		j["mesh_path"] = mesh_path;
-		j["err_l2"] = l2_err_interp;
-		j["err_lp"] = lp_err_interp;
+
+		for(long c = 0; c < v_approx.cols();++c){
+			double l2_err_interp = 0;
+			double lp_err_interp = 0;
+
+			l2_err_interp += (err.col(c).array() * err.col(c).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+			lp_err_interp += (err.col(c).array().pow(8.) * vals.det.array() * vals.quadrature.weights.array()).sum();
+
+			l2_err_interp = sqrt(fabs(l2_err_interp));
+			lp_err_interp = pow(fabs(lp_err_interp), 1./8.);
+
+			
+			j["err_l2_"+std::to_string(c)] = l2_err_interp;
+			j["err_lp_"+std::to_string(c)] = lp_err_interp;
+		}
 
 		std::ofstream out(path);
 		out << j.dump(4) << std::endl;
