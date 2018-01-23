@@ -132,6 +132,117 @@ void RBFWithQuadratic::bases_grads(const int axis, const Eigen::MatrixXd &sample
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+//
+// For each FEM basis φ that is nonzero on the element E, we want to
+// solve the least square system A w = rhs, where:
+//     ┏                                     ┓
+//     ┃ ψ_k(pi) ... 1 xi yi xi*yi xi^2 yi^2 ┃
+// A = ┃   ┊        ┊  ┊  ┊   ┊    ┊    ┊    ┃ ∊ ℝ^{#S x (#K+1+dim+dim*(dim+1)/2)}
+//     ┃   ┊        ┊  ┊  ┊   ┊    ┊    ┊    ┃
+//     ┗                                     ┛
+//     ┏                                 ┓^⊤
+// w = ┃ w_k ... a00 a10 a01 a11 a20 a02 ┃   ∊ ℝ^{#K+1+dim+dim*(dim+1)/2}
+//     ┗                                 ┛
+// - A is the RBF kernels evaluated over the collocation points (#S)
+// - b is the expected value of the basis sampled on the boundary (#S)
+// - w is the weight of the kernels defining the basis
+// - pi = (xi, yi) is the i-th collocation point
+//
+// Moreover, we want to impose a constraint on the weight vector w so that each
+// monomial Q(x,y) = x^α*y^β with α+β <= 2 is in the span of the FEM bases {φ_j}_j.
+//
+// In the case of Laplace's equation, we recall the weak form of the PDE as:
+//
+//   Find u such that: ∫_Ω Δu v = - ∫_Ω ∇u·∇v   ∀ v
+//
+// For our bases to exactly represent a monomial Q(x,y), it means that its
+// approximation by the finite element bases {φ_j}_j must be equal to Q(x,y).
+// In particular, for any φ_j that is nonzero on the polyhedral element E, we must have:
+//
+//   ∫_{𝘅 in Ω} ΔQ(𝘅) φ_j(𝘅) d𝘅  = - ∫_{𝘅 \in Ω} ∇Q(𝘅)·∇φ_j(𝘅) d𝘅     (1)
+//
+// Now, for each of the 5 non-constant monomials (9 in 3D), we need to compute
+// Δ(x^α*y^β). For (α,β) ∊ {(1,0), (0,1), (1,1), (2,0), (0,2)}, this yields
+// the following equalities:
+//
+//     Δx  = 0      (2a)
+//     Δy  = 0      (2b)
+//     Δxy = 0      (2c)
+//     Δx² = 1      (2d)
+//     Δy² = 1      (2e)
+//
+// If we plug these back into (1), and split the integral between the polyhedral
+// element E and Ω\E, we obtain the following constraints:
+//
+// ∫_E ∇Q·∇φ_j + ∫_E ΔQ φ_j = - ∫_{Ω\E} ∇Q·∇φ_j - ∫_{Ω\E} ΔQ φ_j    (3)
+//
+// Note that the right-hand side of (3) is already known, since no two polyhedral
+// cells are adjacent to each other, and the bases overlapping a polyhedron vanish
+// on the boundary of the domain ∂Ω. This right-hand side is computed in advance
+// and passed to our functions as in argument `local_basis_integral`.
+//
+// The left-hand side of equation (3) reduces to the following (in 2D):
+//
+//     ∫_E ∇x(φ_j) = c10                       (4a)
+//     ∫_E ∇y(φ_j) = c01                       (4b)
+//     ∫_E (y·∇x(φ_j) + y·∇x(φ_jj)) = c11      (4c)
+//     ∫_E 2x·∇x(φ_j) + ∫_E 2 φ_j = c20        (4d)
+//     ∫_E 2y·∇y(φ_j) + ∫_E 2 φ_j = c02        (4e)
+//
+// The next step is to express the basis φ_j in terms of the harmonic kernels and
+// quadratic polynomials:
+//
+//     φ_j(x,y) = Σ_k w_k ψ_k(x,y) + a00 + a10*x + a01*y + a11*x*y + a20*x² + a02*y²
+//
+// The five equations in (4) become:
+//
+//    Σ_j w_k ∫∇x(ψ_k) + a10 |E| + a11 ∫y + a20 ∫2x = c10
+//    Σ_j w_k ∫∇y(ψ_k) + a01 |E| + a11 ∫x + a02 ∫2y = c01
+//    Σ_j w_k (∫y·∇x(ψ_k) + ∫x·∇y(ψ_k)) + a10 ∫y + a01 ∫x + a11 (∫x²+∫y²) + a20 2∫xy + a02 2∫xy = c11
+//    Σ_j w_k (2∫x·∇x(ψ_k) + 2ψ_k) + a10 4∫x + a01 2∫y + a11 4∫xy + a20 6∫x² + a02 2∫y² = c20
+//    Σ_j w_k (2∫y·∇y(ψ_k) + 2ψ_k) + a10 2∫x + a01 4∫y + a11 4∫xy + a20 2∫x² + a02 6∫y² = c02
+//
+// This system gives us a relationship between the fives a10, a01, a11, a20, a02
+// and the rest of the w_k + a constant translation term. We can write down the
+// corresponding system:
+//
+//       a10   a01   a11   a20   a02
+//     ┏                              ┓             ┏     ┓
+//     ┃ |E|         ∫y    2∫x        ┃             ┃ w_k ┃
+//     ┃                              ┃             ┃  ┊  ┃
+//     ┃       |E|   ∫x          2∫y  ┃             ┃  ┊  ┃
+//     ┃                              ┃             ┃  ┊  ┃
+// M = ┃  ∫y   ∫x  ∫x²+∫y² 2∫xy  2∫xy ┃ = \tilde{L} ┃  ┊  ┃ + \tilde{t}
+//     ┃                              ┃             ┃  ┊  ┃
+//     ┃ 4∫x  2∫y  4∫xy    6∫x²  2∫y² ┃             ┃  ┊  ┃
+//     ┃                              ┃             ┃w_#K ┃
+//     ┃ 2∫x  4∫y  4∫xy    2∫x²  6∫y² ┃             ┃ a00 ┃
+//     ┗                              ┛             ┗     ┛
+//
+// Now, if we want to express w as w = Lv + t, and solve our least-square
+// system as before, we need to invert M and compute L and t in terms of
+// \tilde{L} and \tilde{t}
+//
+//     ┏                  ┓
+//     ┃   1              ┃
+//     ┃       1          ┃
+//     ┃          ·       ┃
+// L = ┃             ·    ┃ ∊ ℝ^{ (#K+1+dim+dim*(dim+1)/2) x (#K+1}) }
+//     ┃                1 ┃
+//     ┃ M^{-1} \tilde{L} ┃
+//     ┗                  ┛
+//     ┏                  ┓
+//     ┃        0         ┃
+//     ┃        ┊         ┃
+// t = ┃        ┊         ┃ ∊ ℝ^{#K+1+dim+dim*(dim+1)/2}
+//     ┃        0         ┃
+//     ┃ M^{-1} \tilde{t} ┃
+//     ┗                  ┛
+// After solving the new least square system A L v = rhs - A t, we can retrieve
+// w = L v
+//
+////////////////////////////////////////////////////////////////////////////////
+
 
 void RBFWithQuadratic::compute_kernels_matrix(const Eigen::MatrixXd &samples, Eigen::MatrixXd &A) const {
 	// Compute A
@@ -169,16 +280,16 @@ void RBFWithQuadratic::compute_constraints_matrix_2d(
 	const int dim = centers_.cols();
 	assert(dim == 2);
 
-	// K_cst = ∫φj
-	// K_lin = ∫∇x(φj), ∫∇y(φj)
-	// K_mix = ∫y·∇x(φj), ∫x·∇y(φj)
-	// K_sqr = ∫x·∇x(φj), ∫y·∇y(φj)
+	// K_cst = ∫ψ_k
+	// K_lin = ∫∇x(ψ_k), ∫∇y(ψ_k)
+	// K_mix = ∫y·∇x(ψ_k), ∫x·∇y(ψ_k)
+	// K_sqr = ∫x·∇x(ψ_k), ∫y·∇y(ψ_k)
 	Eigen::VectorXd K_cst = Eigen::VectorXd::Zero(num_kernels);
 	Eigen::MatrixXd K_lin = Eigen::MatrixXd::Zero(num_kernels, dim);
 	Eigen::MatrixXd K_mix = Eigen::MatrixXd::Zero(num_kernels, dim);
 	Eigen::MatrixXd K_sqr = Eigen::MatrixXd::Zero(num_kernels, dim);
 	for (int j = 0; j < num_kernels; ++j) {
-		// ∫∇x(φj)(p) = Σ_q (xq - xk) * 1/r * h'(r) * wq
+		// ∫∇x(ψ_k)(p) = Σ_q (xq - xk) * 1/r * h'(r) * wq
 		// - xq is the x coordinate of the q-th quadrature point
 		// - wq is the q-th quadrature weight
 		// - r is the distance from pq to the kernel center
@@ -251,16 +362,16 @@ void RBFWithQuadratic::compute_constraints_matrix_3d(
 	assert(dim == 3);
 	assert(local_basis_integral.cols() == 9);
 
-	// K_cst = ∫φj
-	// K_lin = ∫∇x(φj), ∫∇y(φj), ∫∇z(φj)
-	// K_mix = ∫(y·∇x(φj)+x·∇y(φj)), ∫(z·∇y(φj)+y·∇z(φj)), ∫(x·∇z(φj)+z·∇x(φj))
-	// K_sqr = ∫x·∇x(φj), ∫y·∇y(φj), ∫z·∇z(φj)
+	// K_cst = ∫ψ_k
+	// K_lin = ∫∇x(ψ_k), ∫∇y(ψ_k), ∫∇z(ψ_k)
+	// K_mix = ∫(y·∇x(ψ_k)+x·∇y(ψ_k)), ∫(z·∇y(ψ_k)+y·∇z(ψ_k)), ∫(x·∇z(ψ_k)+z·∇x(ψ_k))
+	// K_sqr = ∫x·∇x(ψ_k), ∫y·∇y(ψ_k), ∫z·∇z(ψ_k)
 	Eigen::VectorXd K_cst = Eigen::VectorXd::Zero(num_kernels);
 	Eigen::MatrixXd K_lin = Eigen::MatrixXd::Zero(num_kernels, dim);
 	Eigen::MatrixXd K_mix = Eigen::MatrixXd::Zero(num_kernels, dim);
 	Eigen::MatrixXd K_sqr = Eigen::MatrixXd::Zero(num_kernels, dim);
 	for (int j = 0; j < num_kernels; ++j) {
-		// ∫∇x(φj)(p) = Σ_q (xq - xk) * 1/r * h'(r) * wq
+		// ∫∇x(ψ_k)(p) = Σ_q (xq - xk) * 1/r * h'(r) * wq
 		// - xq is the x coordinate of the q-th quadrature point
 		// - wq is the q-th quadrature weight
 		// - r is the distance from pq to the kernel center
@@ -356,107 +467,6 @@ void RBFWithQuadratic::compute_weights(const Eigen::MatrixXd &samples,
 
 		return;
 	}
-
-	// For each shape function N that is nonzero on the element E, we want to
-	// solve the least square system A w = rhs, where:
-	//     ┏                                    ┓
-	//     ┃ φj(pi) ... 1 xi yi xi*yi xi^2 yi^2 ┃
-	// A = ┃   ┊        ┊  ┊  ┊   ┊    ┊    ┊   ┃ ∊ ℝ^{#S x (#K+1+dim+dim*(dim+1)/2)}
-	//     ┃   ┊        ┊  ┊  ┊   ┊    ┊    ┊   ┃
-	//     ┗                                    ┛
-	//     ┏                                ┓^⊤
-	// w = ┃ wj ... a00 a10 a01 a11 a20 a02 ┃   ∊ ℝ^{#K+1+dim+dim*(dim+1)/2}
-	//     ┗                                ┛
-	// - A is the RBF kernels evaluated over the collocation points (#S)
-	// - b is the expected value of the basis sampled on the boundary (#S)
-	// - w is the weight of the kernels defining the basis
-	// - pi = (xi, yi) is the i-th collocation point
-	//
-	// Moreover, we want to impose a constraint on the weight vectors w so that
-	// each monomial x^α*y^β with α+β <= 2 satisfies our PDE. If we want to
-	// integrate each monomial exactly for the Laplacian PDE, then each each
-	// x^α*y^β must satisfy the following:
-	//
-	//     Δ(x^α*y^β) = α*(α-1)*x^(α-2)*y^β + β*(β-1)*x^α*y^(β-2) = hαβ(x,y)
-	//
-	// In the case of (α,β) ∊ {(1,0), (0,1), (1,1), (2,0), (0,2)}, this simplifies
-	// to the five equations:
-	//
-	//     Δx  = 0      (1a)
-	//     Δy  = 0      (1b)
-	//     Δxy = 0      (1c)
-	//     Δx² = 1      (1d)
-	//     Δy² = 1      (1e)
-	//
-	// If our bases {N_k}_k integrated exactly those monomials, then the weak form
-	// of the PDE must be satisfied, for each basis/shape function N_k :
-	//
-	//     ∫_Ω ∇(x^α*y^β)·∇(N_k) = hαβ(x,y)
-	//
-	// Now, if we consider our polytope element E, and split the integral above
-	// between E and Ω\E, we arrive at the constraint that
-	//
-	//     ∫_E ∇(x^α*y^β)·∇(N_k) + cαβ = hαβ(x,y)
-	//
-	// Where cαβ is a constant term corresponding to the integral over the
-	// other elements of the mesh. Now, the five equations in (1) lead to:
-	//
-	//     ∫_E ∇x(N_k) + c10 = 0                       (2a)
-	//     ∫_E ∇y(N_k) + c01 = 0                       (2b)
-	//     ∫_E (y·∇x(N_k) + y·∇x(N_k)) + c11 = 0       (2c)
-	//     ∫_E 2x·∇x(N_k) + c20 = 2                    (2d)
-	//     ∫_E 2y·∇y(N_k) + c02 = 2                    (2e)
-	//
-	// After writing the shape function N_k as:
-	//
-	//     N_k(x,y) = Σ_j wj φj(x,y) + a00 + a10*x + a01*y + a11*x*y + a20*x² + a02*y²
-	//
-	// The five equations (2) become:
-	//
-	//    Σ_j wj ∫∇x(φj) + a10 |E| + a11 ∫y + a20 ∫2x + c10 = 0
-	//    Σ_j wj ∫∇y(φj) + a01 |E| + a11 ∫x + a02 ∫2y + c01 = 0
-	//    Σ_j wj (∫y·∇x(φj) + ∫x·∇y(φj)) + a10 ∫y + a01 ∫x + a11 (∫x²+∫y²) + a20 2∫xy + a02 2∫xy + c11 = 0
-	//    Σ_j wj 2∫x·∇x(φj) + a10 2∫x + a11 2∫xy + a20 4∫x² + c20 = 2
-	//    Σ_j wj 2∫y·∇y(φj) + a01 2∫y + a11 2∫xy + a02 4∫y² + c02 = 2
-	//
-	// This system gives us a relationship between the fives a10, a01, a11, a20, a02
-	// and the rest of the wj + a constant translation term. We can write down the
-	// following relationship:
-	//
-	//       a10   a01   a11   a20   a02
-	//     ┏                              ┓             ┏    ┓
-	//     ┃ |E|         ∫y    2∫x        ┃             ┃ wj ┃
-	//     ┃                              ┃             ┃ ┊  ┃
-	//     ┃       |E|   ∫x          2∫y  ┃             ┃ ┊  ┃
-	//     ┃                              ┃             ┃ ┊  ┃
-	// M = ┃  ∫y   ∫x  ∫x²+∫y² 2∫xy  2∫xy ┃ = \tilde{L} ┃ ┊  ┃ + \tilde{t}
-	//     ┃                              ┃             ┃ ┊  ┃
-	//     ┃ 2∫x       2∫xy    4∫x²       ┃             ┃ ┊  ┃
-	//     ┃                              ┃             ┃w_#K┃
-	//     ┃      2∫y  2∫xy          4∫y² ┃             ┃ a00┃
-	//     ┗                              ┛             ┗    ┛
-	//
-	// Now, if we want to express w as w = Lv + t, and solve our least-square
-	// system as before, we need to invert M and compute L and t in terms of
-	// \tilde{L} and \tilde{t}
-	//
-	//     ┏                  ┓
-	//     ┃   1              ┃
-	//     ┃       1          ┃
-	//     ┃          ·       ┃
-	// L = ┃             ·    ┃ ∊ ℝ^{ (#K+1+dim+dim*(dim+1)/2) x (#K+1}) }
-	//     ┃                1 ┃
-	//     ┃ M^{-1} \tilde{L} ┃
-	//     ┗                  ┛
-	//     ┏                  ┓
-	//     ┃        0         ┃
-	//     ┃        ┊         ┃
-	// t = ┃        ┊         ┃ ∊ ℝ^{#K+1+dim+dim*(dim+1)/2}
-	//     ┃        0         ┃
-	//     ┃ M^{-1} \tilde{t} ┃
-	//     ┗                  ┛
-	// After solving the new least square system A L v = rhs - A t, we can retrieve
-	// w = L v
 
 	const int num_bases = rhs.cols();
 

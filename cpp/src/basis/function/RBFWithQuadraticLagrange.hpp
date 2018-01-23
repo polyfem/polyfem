@@ -5,7 +5,10 @@
 
 namespace poly_fem
 {
-	// Version using Lagrange multipliers to solve the constrained least-square system
+	// See `RBFWithQuadratic.cpp` for a detail commented version of the code.
+	// This class implements the same consistency constraints, but uses Lagrange
+	// multipliers to solve the constrained least-square system, instead of
+	// eliminating the constraints explicitly from the system.
 	class RBFWithQuadraticLagrange
 	{
 	public:
