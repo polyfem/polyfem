@@ -49,6 +49,7 @@ int main(int argc, const char **argv)
 	std::string output = "";
 	std::string vtu = "";
 	std::string hack = "";
+	std::string screenshot = "";
 	int n_refs = 0;
 	int problem_num = 0;
 
@@ -90,8 +91,11 @@ int main(int argc, const char **argv)
 	command_line.add_option("-vtu", vtu);
 
 	command_line.add_option("-hack", hack);
+	command_line.add_option("-screenshot", screenshot);
 
 	command_line.parse(argc, argv);
+
+	if (!screenshot.empty()) { no_ui = false; }
 
 	if(no_ui)
 	{
@@ -150,6 +154,7 @@ int main(int argc, const char **argv)
 		UIState::ui_state().state.refinenemt_location = refinenemt_location;
 		UIState::ui_state().state.iso_parametric = iso_parametric;
 		UIState::ui_state().state.integral_constraints = integral_constraints;
+		UIState::ui_state().screenshot = screenshot;
 
 		UIState::ui_state().init(path, n_refs, problem_num);
 	}

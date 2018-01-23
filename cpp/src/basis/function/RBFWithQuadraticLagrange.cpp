@@ -129,6 +129,7 @@ void RBFWithQuadraticLagrange::bases_grads(const int axis, const Eigen::MatrixXd
 	val = A_prime * weights_;
 }
 
+
 ////////////////////////////////////////////////////////////////////////////////
 
 void RBFWithQuadraticLagrange::compute_kernels_matrix(const Eigen::MatrixXd &samples, Eigen::MatrixXd &A) const {

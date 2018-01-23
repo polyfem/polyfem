@@ -10,17 +10,21 @@
 
 #include <igl/per_face_normals.h>
 #include <igl/per_corner_normals.h>
+#include <igl/read_triangle_mesh.h>
 #include <igl/triangle/triangulate.h>
 #include <igl/copyleft/tetgen/tetrahedralize.h>
 #include <igl/per_vertex_normals.h>
 #include <igl/png/writePNG.h>
 #include <igl/Timer.h>
+#include <igl/serialize.h>
 
-
+#ifdef IGL_VIEWER_WITH_NANOGUI
 #include <nanogui/formhelper.h>
 #include <nanogui/screen.h>
+#endif
 
-#include <stdlib.h>
+#include <cstdlib>
+#include <fstream>
 
 
 // ... or using a custom callback
@@ -33,7 +37,80 @@
 
 using namespace Eigen;
 
+int offscreen_screenshot(igl::viewer::Viewer &viewer, const std::string &path);
 
+void add_spheres(igl::viewer::Viewer &viewer0, const Eigen::MatrixXd &P, double radius) {
+	Eigen::MatrixXd V = viewer0.data.V, VS, VN;
+	Eigen::MatrixXi F = viewer0.data.F, FS;
+	igl::read_triangle_mesh(POLYFEM_MESH_PATH "sphere.ply", VS, FS);
+
+	Eigen::RowVector3d minV = VS.colwise().minCoeff();
+	Eigen::RowVector3d maxV = VS.colwise().maxCoeff();
+	VS.rowwise() -= minV + 0.5 * (maxV - minV);
+	VS /= (maxV - minV).maxCoeff();
+	VS *= 2.0 * radius;
+
+	Eigen::MatrixXd C = viewer0.data.F_material_ambient.leftCols(3);
+	C *= 10;
+
+	int nv = V.rows();
+	int nf = 0;
+	V.conservativeResize(V.rows() + P.rows() * VS.rows(), V.cols());
+	F.conservativeResize(nf + P.rows() * FS.rows(), F.cols());
+	C.conservativeResize(C.rows() + P.rows() * FS.rows(), C.cols());
+	for (int i = 0; i < P.rows(); ++i) {
+		V.middleRows(nv, VS.rows()) = VS.rowwise() + P.row(i);
+		F.middleRows(nf, FS.rows()) = FS.array() + nv;
+		C.middleRows(nf, FS.rows()).rowwise() = Eigen::RowVector3d(142, 68, 173)/255.;
+		nv += VS.rows();
+		nf += FS.rows();
+	}
+
+	igl::per_corner_normals(V, F, 20.0, VN);
+
+	C = Eigen::RowVector3d(142, 68, 173)/255.;
+
+	igl::viewer::Viewer viewer;
+	viewer.data.set_mesh(V, F);
+	// viewer.data.add_points(P, Eigen::Vector3d(0,1,1).transpose());
+	viewer.data.set_normals(VN);
+	viewer.data.set_face_based(false);
+	viewer.data.set_colors(C);
+	viewer.data.lines = viewer0.data.lines;
+	viewer.core.show_lines = false;
+	viewer.core.line_width = 10;
+	viewer.core.background_color.setOnes();
+	viewer.core.set_rotation_type(igl::viewer::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
+
+	#ifdef IGL_VIEWER_WITH_NANOGUI
+	viewer.callback_init = [&](igl::viewer::Viewer& viewer_) {
+		viewer_.ngui->addButton("Save screenshot", [&] {
+			// Allocate temporary buffers
+			Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(6400, 4000);
+			Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> G(6400, 4000);
+			Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> B(6400, 4000);
+			Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(6400, 4000);
+
+			// Draw the scene in the buffers
+			viewer_.core.draw_buffer(viewer.data,viewer.opengl,false,R,G,B,A);
+			A.setConstant(255);
+
+			// Save it to a PNG
+			igl::png::writePNG(R,G,B,A,"foo.png");
+		});
+		viewer_.ngui->addButton("Load", [&] {
+			igl::deserialize(viewer.core, "core", "viewer.core");
+		});
+		viewer_.ngui->addButton("Save", [&] {
+			igl::serialize(viewer.core, "core", "viewer.core");
+		});
+		viewer_.screen->performLayout();
+		return false;
+	};
+	#endif
+
+	viewer.launch();
+}
 
 namespace poly_fem
 {
@@ -407,7 +484,7 @@ namespace poly_fem
 				state.mesh->get_edges(p0, p1);
 			}
 
-			viewer.core.line_width = 5;
+			viewer.core.line_width = 10;
 			viewer.data.add_edges(p0, p1, MatrixXd::Zero(1, 3));
 			viewer.core.show_lines = false;
 
@@ -481,9 +558,9 @@ namespace poly_fem
 			state.mesh->get_edges(p0, p1, valid_elements);
 		}
 
-		std::cout<<p0<<std::endl;
+		// std::cout<<p0<<std::endl;
 
-		viewer.core.line_width = 5;
+		viewer.core.line_width = 10;
 		viewer.data.add_edges(p0, p1, MatrixXd::Zero(1, 3));
 		viewer.core.show_lines = false;
 
@@ -694,8 +771,10 @@ namespace poly_fem
 
 		auto show_nodes_func = [&](){
 			for(std::size_t i = 0; i < state.bases.size(); ++i)
+			// size_t i = 6;
 			{
 				const ElementBases &basis = state.bases[i];
+				Eigen::MatrixXd P(basis.bases.size(), 3);
 
 				for(std::size_t j = 0; j < basis.bases.size(); ++j)
 				{
@@ -720,10 +799,12 @@ namespace poly_fem
 						}
 
 
+						// P.row(j) = node;
 						viewer.data.add_points(node, col);
 						// viewer.data.add_label(node.transpose(), std::to_string(l2g.index));
 					}
 				}
+				// add_spheres(viewer, P, 0.05);
 			}
 		};
 
@@ -1126,9 +1207,13 @@ namespace poly_fem
 
 			if(skip_visualization) return;
 
+			if (!state.mesh->is_volume()) {
+				light_enabled = false;
+			}
+
 			clear_func();
 			show_mesh_func();
-			// viewer.core.align_camera_center(tri_pts);
+			viewer.core.align_camera_center(tri_pts);
 		};
 
 		auto build_basis_func = [&](){
@@ -1200,6 +1285,7 @@ namespace poly_fem
 
 		viewer.callback_init = [&](igl::viewer::Viewer& viewer_)
 		{
+			#ifdef IGL_VIEWER_WITH_NANOGUI
 			viewer_.ngui->addWindow(Eigen::Vector2i(220,10),"PolyFEM");
 
 			viewer_.ngui->addGroup("Settings");
@@ -1415,19 +1501,29 @@ namespace poly_fem
 
     			// Draw the scene in the buffers
 				viewer.core.draw_buffer(viewer.data,viewer.opengl,false,R,G,B,A);
+				A.setConstant(255);
 
     			// Save it to a PNG
-				igl::png::writePNG(R,G,B,A,"out.png");
+    			std::string path = (screenshot.empty() ? "out.png" : screenshot);
+				igl::png::writePNG(R,G,B,A,path);
 			});
 
-
 			viewer_.screen->performLayout();
+
+			#endif
 
 			return false;
 		};
 
+		viewer.core.background_color.setOnes();
 		viewer.core.set_rotation_type(igl::viewer::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
-		viewer.launch();
+
+		if (screenshot.empty()) {
+			viewer.launch();
+		} else {
+			load_mesh_func();
+			offscreen_screenshot(viewer, screenshot);
+		}
 	}
 
 	void UIState::sertialize(const std::string &name)
@@ -1436,3 +1532,81 @@ namespace poly_fem
 	}
 
 }
+
+#include <GLFW/glfw3.h>
+
+#ifndef __APPLE__
+#  define GLEW_STATIC
+#  include <GL/glew.h>
+#endif
+
+#ifdef __APPLE__
+#   include <OpenGL/gl3.h>
+#   define __gl_h_ /* Prevent inclusion of the old gl.h */
+#else
+#   include <GL/gl.h>
+#endif
+
+namespace {
+
+static void my_glfw_error_callback(int error, const char* description)
+{
+  fputs(description, stderr);
+  fputs("\n", stderr);
+}
+
+}
+
+int offscreen_screenshot(igl::viewer::Viewer &viewer, const std::string &path) {
+    glfwSetErrorCallback(my_glfw_error_callback);
+    if (!glfwInit()) {
+      std::cout << "init failure" << std::endl;
+      return EXIT_FAILURE;
+    }
+
+	// glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_OSMESA_CONTEXT_API);
+  	glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+
+    glfwWindowHint(GLFW_SAMPLES, 8);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+
+    #ifdef __APPLE__
+      glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+      glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    #endif
+
+  	printf("create window\n");
+  	GLFWwindow* offscreen_context = glfwCreateWindow(640, 480, "", NULL, NULL);
+  	printf("create context\n");
+  	glfwMakeContextCurrent(offscreen_context);
+    #ifndef __APPLE__
+      glewExperimental = true;
+      GLenum err = glewInit();
+      if(GLEW_OK != err)
+      {
+        /* Problem: glewInit failed, something is seriously wrong. */
+       fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+      }
+      glGetError(); // pull and savely ignonre unhandled errors like GL_INVALID_ENUM
+      fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
+    #endif
+    viewer.opengl.init();
+    viewer.core.align_camera_center(viewer.data.V, viewer.data.F);
+    viewer.init();
+
+    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(6400, 4000);
+    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> G(6400, 4000);
+    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> B(6400, 4000);
+    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(6400, 4000);
+
+    // Draw the scene in the buffers
+    viewer.core.draw_buffer(viewer.data,viewer.opengl,true,R,G,B,A);
+	A.setConstant(255);
+
+    // Save it to a PNG
+    igl::png::writePNG(R,G,B,A, path);
+
+    return 0;
+}
+

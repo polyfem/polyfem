@@ -55,13 +55,15 @@ option(LIBIGL_WITH_XML              "Use XML"            OFF)
 ################################################################################
 
 # Uncomment the following lines to force options which are already cached
-# set(PREFER_LOCAL_LIBS  ON  CACHE BOOL "" FORCE)
-# set(ENABLE_CHOLMOD     OFF CACHE BOOL "" FORCE)
-# set(ENABLE_UMFPACK     OFF CACHE BOOL "" FORCE)
-# set(ENABLE_SUPERLU     OFF CACHE BOOL "" FORCE)
-# set(ENABLE_MKL         OFF CACHE BOOL "" FORCE)
-# set(ENABLE_PARDISO     OFF CACHE BOOL "" FORCE)
-# set(ENABLE_MMG         ON  CACHE BOOL "" FORCE)
+# set(PREFER_LOCAL_LIBS   ON  CACHE BOOL "" FORCE)
+# set(ENABLE_CHOLMOD      OFF CACHE BOOL "" FORCE)
+# set(ENABLE_UMFPACK      OFF CACHE BOOL "" FORCE)
+# set(ENABLE_SUPERLU      OFF CACHE BOOL "" FORCE)
+# set(ENABLE_MKL          OFF CACHE BOOL "" FORCE)
+# set(ENABLE_PARDISO      OFF CACHE BOOL "" FORCE)
+# set(ENABLE_MMG          ON  CACHE BOOL "" FORCE)
+# set(ENABLE_MMG          ON  CACHE BOOL "" FORCE)
+# set(LIBIGL_WITH_NANOGUI ON  CACHE BOOL "" FORCE)
 
 ################################################################################
 
@@ -225,6 +227,10 @@ target_include_directories(polyfem PUBLIC
 	src/solver
 	src/utils
 )
+
+set(MESH_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tests/")
+target_compile_definitions(polyfem PUBLIC -DPOLYFEM_MESH_PATH=\"${MESH_PATH}\")
+
 
 ################################################################################
 # Required libraries
