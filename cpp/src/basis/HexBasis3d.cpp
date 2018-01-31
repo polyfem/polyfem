@@ -269,70 +269,6 @@ std::array<int, 8> linear_hex_local_to_global(const Mesh3D &mesh, int c) {
 	return l2g;
 }
 
-// -----------------------------------------------------------------------------
-
-std::array<int, 27> quadr_hex_local_to_global(const Mesh3D &mesh, int c) {
-	assert(mesh.is_cube(c));
-
-	int edge_offset = mesh.n_vertices();
-	int face_offset = edge_offset + mesh.n_edges();
-	int cell_offset = face_offset + mesh.n_faces();
-
-	// Vertex nodes
-	auto v = linear_hex_local_to_global(mesh, c);
-
-	// Edge nodes
-	Eigen::Matrix<int, 12, 1> e;
-	Eigen::Matrix<int, 12, 2> ev;
-	ev.row(0)  << v[0], v[1];
-	ev.row(1)  << v[1], v[2];
-	ev.row(2)  << v[2], v[3];
-	ev.row(3)  << v[3], v[0];
-	ev.row(4)  << v[0], v[4];
-	ev.row(5)  << v[1], v[5];
-	ev.row(6)  << v[2], v[6];
-	ev.row(7)  << v[3], v[7];
-	ev.row(8)  << v[4], v[5];
-	ev.row(9)  << v[5], v[6];
-	ev.row(10) << v[6], v[7];
-	ev.row(11) << v[7], v[4];
-	for (int le = 0; le < e.rows(); ++le) {
-		e[le] = find_edge(mesh, c, ev(le, 0), ev(le, 1));
-	}
-
-	// Face nodes
-	Eigen::Matrix<int, 6, 1> f;
-	Eigen::Matrix<int, 6, 4> fv;
-	fv.row(0) << v[0], v[3], v[4], v[7];
-	fv.row(1) << v[1], v[2], v[5], v[6];
-	fv.row(2) << v[0], v[1], v[5], v[4];
-	fv.row(3) << v[3], v[2], v[6], v[7];
-	fv.row(4) << v[0], v[1], v[2], v[3];
-	fv.row(5) << v[4], v[5], v[6], v[7];
-	for (int lf = 0; lf < f.rows(); ++lf) {
-		f[lf] = find_face(mesh, c, fv(lf, 0), fv(lf, 1), fv(lf, 2), fv(lf, 3));
-	}
-
-	// Local to global mapping of node indices
-	std::array<int, 27> l2g;
-
-	// Assign global ids to local nodes
-	{
-		int i = 0;
-		for (size_t lv = 0; lv < v.size(); ++lv) {
-			l2g[i++] = v[lv];
-		}
-		for (int le = 0; le < e.rows(); ++le) {
-			l2g[i++] = edge_offset + e[le];
-		}
-		for (int lf = 0; lf < f.rows(); ++lf) {
-			l2g[i++] = face_offset + f[lf];
-		}
-		l2g[i++] = cell_offset + c;
-	}
-
-	return l2g;
-}
 
 // -----------------------------------------------------------------------------
 
@@ -369,7 +305,7 @@ void compute_nodes(
 				element_nodes_id[c].push_back(nodes.node_id_from_primitive(id));
 			}
 		} else {
-			for (int id : quadr_hex_local_to_global(mesh, c)) {
+			for (int id : poly_fem::HexBasis3d::quadr_hex_local_to_global(mesh, c)) {
 				element_nodes_id[c].push_back(nodes.node_id_from_primitive(id));
 			}
 		}
@@ -377,7 +313,7 @@ void compute_nodes(
 		// List of faces around the quad
 		std::array<int, 6> f;
 		{
-			auto l2g = quadr_hex_local_to_global(mesh, c);
+			auto l2g = poly_fem::HexBasis3d::quadr_hex_local_to_global(mesh, c);
 			for (int lf = 0; lf < 6; ++lf) {
 				f[lf] = l2g[8+12+lf] - mesh.n_vertices() - mesh.n_edges();
 			}
@@ -466,12 +402,80 @@ Eigen::RowVector3d linear_hex_local_node_coordinates(int local_index) {
 	return Eigen::RowVector3d(p[0], p[1], p[2]);
 }
 
-Eigen::RowVector3d quadr_hex_local_node_coordinates(int local_index) {
+
+
+} // anonymous namespace
+
+
+// -----------------------------------------------------------------------------
+
+std::array<int, 27> poly_fem::HexBasis3d::quadr_hex_local_to_global(const Mesh3D &mesh, int c) {
+	assert(mesh.is_cube(c));
+
+	int edge_offset = mesh.n_vertices();
+	int face_offset = edge_offset + mesh.n_edges();
+	int cell_offset = face_offset + mesh.n_faces();
+
+	// Vertex nodes
+	auto v = linear_hex_local_to_global(mesh, c);
+
+	// Edge nodes
+	Eigen::Matrix<int, 12, 1> e;
+	Eigen::Matrix<int, 12, 2> ev;
+	ev.row(0)  << v[0], v[1];
+	ev.row(1)  << v[1], v[2];
+	ev.row(2)  << v[2], v[3];
+	ev.row(3)  << v[3], v[0];
+	ev.row(4)  << v[0], v[4];
+	ev.row(5)  << v[1], v[5];
+	ev.row(6)  << v[2], v[6];
+	ev.row(7)  << v[3], v[7];
+	ev.row(8)  << v[4], v[5];
+	ev.row(9)  << v[5], v[6];
+	ev.row(10) << v[6], v[7];
+	ev.row(11) << v[7], v[4];
+	for (int le = 0; le < e.rows(); ++le) {
+		e[le] = find_edge(mesh, c, ev(le, 0), ev(le, 1));
+	}
+
+	// Face nodes
+	Eigen::Matrix<int, 6, 1> f;
+	Eigen::Matrix<int, 6, 4> fv;
+	fv.row(0) << v[0], v[3], v[4], v[7];
+	fv.row(1) << v[1], v[2], v[5], v[6];
+	fv.row(2) << v[0], v[1], v[5], v[4];
+	fv.row(3) << v[3], v[2], v[6], v[7];
+	fv.row(4) << v[0], v[1], v[2], v[3];
+	fv.row(5) << v[4], v[5], v[6], v[7];
+	for (int lf = 0; lf < f.rows(); ++lf) {
+		f[lf] = find_face(mesh, c, fv(lf, 0), fv(lf, 1), fv(lf, 2), fv(lf, 3));
+	}
+
+	// Local to global mapping of node indices
+	std::array<int, 27> l2g;
+
+	// Assign global ids to local nodes
+	{
+		int i = 0;
+		for (size_t lv = 0; lv < v.size(); ++lv) {
+			l2g[i++] = v[lv];
+		}
+		for (int le = 0; le < e.rows(); ++le) {
+			l2g[i++] = edge_offset + e[le];
+		}
+		for (int lf = 0; lf < f.rows(); ++lf) {
+			l2g[i++] = face_offset + f[lf];
+		}
+		l2g[i++] = cell_offset + c;
+	}
+
+	return l2g;
+}
+
+Eigen::RowVector3d poly_fem::HexBasis3d::quadr_hex_local_node_coordinates(int local_index) {
 	auto p = quadr_hex_local_node[local_index];
 	return Eigen::RowVector3d(p[0], p[1], p[2]) / 2.0;
 }
-
-} // anonymous namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 

@@ -53,6 +53,9 @@ namespace poly_fem
 
 		static Eigen::MatrixXd quad_local_node_coordinates_from_edge(int le);
 
+		static Eigen::RowVector2d quadr_quad_local_node_coordinates(int local_index);
+		static Eigen::RowVector2d linear_quad_local_node_coordinates(int local_index);
+
 		///
 		/// @brief      { Evaluates one local quadratic basis function over a
 		///             set of parametric samples in the element }

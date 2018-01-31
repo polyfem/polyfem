@@ -38,6 +38,7 @@ public:
 
 	// Whether a node is on the mesh boundary or not
 	bool is_boundary(int node_id) const { return is_boundary_[node_to_primitive_[node_id]]; }
+	bool is_primitive_boundary(int primitive) const { return is_boundary_[primitive]; }
 
 	// Whether an edge node (in 2D) or face node (in 3D) is at the interface with a polytope
 	bool is_interface(int node_id) const { return is_interface_[node_to_primitive_[node_id]]; }

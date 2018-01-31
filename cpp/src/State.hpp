@@ -35,6 +35,7 @@ namespace poly_fem
 
 		bool use_splines = false;
 		bool iso_parametric = true;
+		bool fit_nodes = true;
 
 		Problem problem;
 

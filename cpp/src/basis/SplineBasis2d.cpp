@@ -4,8 +4,13 @@
 #include "QuadQuadrature.hpp"
 #include "MeshNodes.hpp"
 
+#include "LinearSolver.hpp"
 #include "QuadBasis2d.hpp"
 #include "Types.hpp"
+
+#include "json.hpp"
+
+#include <Eigen/Sparse>
 
 #include <cassert>
 #include <iostream>
@@ -793,6 +798,113 @@ namespace poly_fem
         }
 
         return n_bases;
+    }
+
+    void SplineBasis2d::fit_nodes(const Mesh2D &mesh, const int n_bases, std::vector< ElementBases > &gbases)
+    {
+        const int dim = 2;
+        const int n_constraints =  9;
+        const int n_elements = mesh.n_elements();
+
+        std::vector< Eigen::Triplet<double> > entries, entries_t;
+
+        MeshNodes nodes(mesh);
+        Eigen::MatrixXd tmp;
+
+        Eigen::MatrixXd node_rhs(n_constraints*n_elements, dim);
+        Eigen::MatrixXd samples(n_constraints, dim);
+
+        for(int i = 0; i < n_constraints; ++i)
+            samples.row(i) = QuadBasis2d::quadr_quad_local_node_coordinates(i);
+
+        for(int i = 0; i < n_elements; ++i)
+        {
+            auto &base = gbases[i];
+
+            if(!mesh.is_cube(i))
+                continue;
+
+            auto global_ids = QuadBasis2d::quadr_quad_local_to_global(mesh, i);
+            assert(global_ids.size() == n_constraints);
+
+            for(int j = 0; j < n_constraints; ++j)
+            {
+                auto n_id = nodes.node_id_from_primitive(global_ids[j]);
+                auto n = nodes.node_position(n_id);
+                for(int d = 0; d < dim; ++d)
+                    node_rhs(n_constraints*i + j, d) = n(d);
+            }
+
+            base.evaluate_bases(samples, tmp);
+            const auto &lbs = base.bases;
+
+            const int n_local_bases = int(lbs.size());
+            for(int j = 0; j < n_local_bases; ++j)
+            {
+                const Basis &b = lbs[j];
+
+                for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+                {
+                    for (long k = 0; k < tmp.rows(); ++k)
+                    {
+                        entries.emplace_back(n_constraints*i + k, b.global()[ii].index, tmp(k,j)*b.global()[ii].val);
+                        entries_t.emplace_back(b.global()[ii].index, n_constraints*i + k, tmp(k,j)*b.global()[ii].val);
+                    }
+                }
+            }
+        }
+
+        Eigen::MatrixXd new_nodes(n_bases, dim);
+
+        {
+            Eigen::SparseMatrix<double> mat(n_constraints*n_elements, n_bases);
+            Eigen::SparseMatrix<double> mat_t(n_bases, n_constraints*n_elements);
+
+            mat.setFromTriplets(entries.begin(), entries.end());
+            mat_t.setFromTriplets(entries_t.begin(), entries_t.end());
+
+            Eigen::SparseMatrix<double> A = mat_t * mat;
+            Eigen::MatrixXd b = mat_t * node_rhs;
+
+            json params = {
+            {"mtype", -2}, // matrix type for Pardiso (2 = SPD)
+            // {"max_iter", 0}, // for iterative solvers
+            // {"tolerance", 1e-9}, // for iterative solvers
+            };
+            auto solver = LinearSolver::create("", "");
+            solver->setParameters(params);
+            solver->analyzePattern(A);
+            solver->factorize(A);
+
+            for(int d = 0; d < dim; ++d)
+                solver->solve(b.col(d), new_nodes.col(d));
+        }
+
+        for(int i = 0; i < n_elements; ++i)
+        {
+            auto &base = gbases[i];
+
+            if(!mesh.is_cube(i))
+                continue;
+
+            auto &lbs = base.bases;
+            const int n_local_bases = int(lbs.size());
+            for(int j = 0; j < n_local_bases; ++j)
+            {
+                Basis &b = lbs[j];
+
+                for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+                {
+                    // if(nodes.is_primitive_boundary(b.global()[ii].index))
+                    //     continue;
+
+                    for(int d = 0; d < dim; ++d)
+                    {
+                        b.global()[ii].node(d) = new_nodes(b.global()[ii].index, d);
+                    }
+                }
+            }
+        }
     }
 
 }

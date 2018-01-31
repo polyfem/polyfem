@@ -281,20 +281,22 @@ int find_index(InputIterator first, InputIterator last, const T& val)
 	return std::distance(first, std::find(first, last, val));
 }
 
+} // anonymous namespace
+
+
 // -----------------------------------------------------------------------------
 
-Eigen::RowVector2d linear_quad_local_node_coordinates(int local_index) {
+Eigen::RowVector2d poly_fem::QuadBasis2d::linear_quad_local_node_coordinates(int local_index) {
+	assert(local_index >= 0 && local_index < 4);
 	auto p = linear_quad_local_node[local_index];
 	return Eigen::RowVector2d(p[0], p[1]);
 }
 
-Eigen::RowVector2d quadr_quad_local_node_coordinates(int local_index) {
+Eigen::RowVector2d poly_fem::QuadBasis2d::quadr_quad_local_node_coordinates(int local_index) {
+	assert(local_index >= 0 && local_index < 9);
 	auto p = quadr_quad_local_node[local_index];
 	return Eigen::RowVector2d(p[0], p[1]) / 2.0;
 }
-
-} // anonymous namespace
-
 
 std::array<int, 4> poly_fem::QuadBasis2d::linear_quad_local_to_global(const Mesh2D &mesh, int f) {
 	assert(mesh.is_cube(f));

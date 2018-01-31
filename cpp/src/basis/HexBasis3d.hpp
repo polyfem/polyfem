@@ -66,6 +66,9 @@ namespace poly_fem
 
 		static void quadr_hex_basis_value(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val);
 		static void quadr_hex_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val);
+
+		static std::array<int, 27> quadr_hex_local_to_global(const Mesh3D &mesh, int c);
+		static Eigen::RowVector3d quadr_hex_local_node_coordinates(int local_index);
 	};
 }
 

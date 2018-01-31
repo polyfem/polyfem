@@ -495,6 +495,9 @@ namespace poly_fem
 					HexBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
 
 				n_bases = SplineBasis3d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+
+				if(iso_parametric && fit_nodes)
+					SplineBasis3d::fit_nodes(tmp_mesh, n_bases, bases);
 			}
 			else
 			{
@@ -520,6 +523,9 @@ namespace poly_fem
 					QuadBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
 
 				n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+
+				if(iso_parametric && fit_nodes)
+					SplineBasis2d::fit_nodes(tmp_mesh, n_bases, bases);
 			}
 			else
 			{
@@ -537,7 +543,10 @@ namespace poly_fem
 			}
 		}
 
-		auto &bs = iso_parametric ? bases : geom_bases;
+		auto &gbases = iso_parametric ? bases : geom_bases;
+
+
+		// auto &bs = iso_parametric ? bases : geom_bases;
 
 		// for(int k =0; k < 1; ++k)
 		// {
@@ -635,16 +644,16 @@ namespace poly_fem
 
 		n_flipped = 0;
 		// flipped_elements.clear();
-		for(size_t i = 0; i < bs.size(); ++i)
+		for(size_t i = 0; i < gbases.size(); ++i)
 		{
 			if(!mesh->is_simplicial() && mesh->is_polytope(i)) continue;
 
 			ElementAssemblyValues vals;
-			if(!vals.is_geom_mapping_positive(mesh->is_volume(), bs[i]))
+			if(!vals.is_geom_mapping_positive(mesh->is_volume(), gbases[i]))
 			{
 				// if(!parent_elements.empty())
 				// 	flipped_elements.push_back(parent_elements[i]);
-				// std::cout<<"Basis "<< i << ( parent_elements.size() > 0 ? (" -> " + std::to_string(parent_elements[i])) : "") << " has negative volume"<<std::endl;
+				std::cout<<"Basis "<< i << ( parent_elements.size() > 0 ? (" -> " + std::to_string(parent_elements[i])) : "") << " has negative volume"<<std::endl;
 				++n_flipped;
 			}
 		}

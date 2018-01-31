@@ -78,7 +78,9 @@ void add_spheres(igl::viewer::Viewer &viewer0, const Eigen::MatrixXd &P, double 
 	viewer.data.set_colors(C);
 	viewer.data.lines = viewer0.data.lines;
 	viewer.core.show_lines = false;
+#ifndef __APPLE__
 	viewer.core.line_width = 10;
+#endif
 	viewer.core.background_color.setOnes();
 	viewer.core.set_rotation_type(igl::viewer::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
 
@@ -484,7 +486,9 @@ namespace poly_fem
 				state.mesh->get_edges(p0, p1);
 			}
 
+#ifndef __APPLE__
 			viewer.core.line_width = 10;
+#endif
 			viewer.data.add_edges(p0, p1, MatrixXd::Zero(1, 3));
 			viewer.core.show_lines = false;
 
@@ -560,7 +564,9 @@ namespace poly_fem
 
 		// std::cout<<p0<<std::endl;
 
+#ifndef __APPLE__
 		viewer.core.line_width = 10;
+#endif
 		viewer.data.add_edges(p0, p1, MatrixXd::Zero(1, 3));
 		viewer.core.show_lines = false;
 
@@ -1311,6 +1317,7 @@ namespace poly_fem
 			viewer_.ngui->addVariable("refinenemt t", state.refinenemt_location);
 
 			viewer_.ngui->addVariable("spline basis", state.use_splines);
+			viewer_.ngui->addVariable("fit nodes", state.fit_nodes);
 
 
 			viewer_.ngui->addVariable<igl::ColorMapType>("Colormap", color_map)->setItems({"inferno", "jet", "magma", "parula", "plasma", "viridis"});
