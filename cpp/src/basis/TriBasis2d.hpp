@@ -27,7 +27,6 @@ namespace poly_fem
 		/// @param[out] bases              List of basis functions per element
 		/// @param[out] local_boundary     List of descriptor per element, indicating which edge of
 		///                                the canonical elements lie on the boundary of the mesh
-		/// @param[out] boundary_nodes     List of nodes which are on the boundary of the mesh
 		/// @param[out] poly_edge_to_data  Data for edges at the interface with a polygon (used to
 		///                                build the harmonics inside polygons)
 		///
@@ -39,7 +38,6 @@ namespace poly_fem
 			const int discr_order,
 			std::vector<ElementBases> &bases,
 			std::vector<LocalBoundary> &local_boundary,
-			std::vector<int> &boundary_nodes,
 			std::map<int, InterfaceData> &poly_edge_to_data);
 
 		static std::array<int, 2> linear_tri_edge_local_nodes(const Mesh2D &mesh, Navigation::Index index);

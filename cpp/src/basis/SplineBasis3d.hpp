@@ -20,7 +20,6 @@ namespace poly_fem
 			const int quadrature_order,
 			std::vector< ElementBases > &bases,
 			std::vector< LocalBoundary > &local_boundary,
-			std::vector< int > &bounday_nodes,
 			std::map<int, InterfaceData> &poly_face_to_data);
 
 		static void fit_nodes(const Mesh3D &mesh, const int n_bases, std::vector< ElementBases > &gbases);

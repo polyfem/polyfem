@@ -593,7 +593,6 @@ int poly_fem::HexBasis3d::build_bases(
 	const int discr_order,
 	std::vector< ElementBases > &bases,
 	std::vector< LocalBoundary > &local_boundary,
-	std::vector< int > &boundary_nodes,
 	std::map<int, InterfaceData> &poly_face_to_data)
 {
 	assert(mesh.is_volume());
@@ -601,7 +600,7 @@ int poly_fem::HexBasis3d::build_bases(
 	MeshNodes nodes(mesh, discr_order == 1);
 	std::vector<std::vector<int>> element_nodes_id;
 	compute_nodes(mesh, discr_order, nodes, element_nodes_id, local_boundary, poly_face_to_data);
-	boundary_nodes = nodes.boundary_nodes();
+	// boundary_nodes = nodes.boundary_nodes();
 
 	// HexQuadrature hex_quadrature;
 	bases.resize(mesh.n_cells());

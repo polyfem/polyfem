@@ -376,8 +376,6 @@ namespace poly_fem
 	{
 		bases.clear();
 		geom_bases.clear();
-		// values.clear();
-		// geom_values.clear();
 		boundary_nodes.clear();
 		local_boundary.clear();
 		errors.clear();
@@ -394,7 +392,6 @@ namespace poly_fem
 		std::cout<<"Building "<< (iso_parametric? "isoparametric":"not isoparametric") <<" basis..."<<std::flush;
 
 		local_boundary.clear();
-		boundary_nodes.clear();
 		std::map<int, InterfaceData> poly_edge_to_data_geom; //temp dummy variable
 
 		if(mesh->is_volume())
@@ -403,9 +400,9 @@ namespace poly_fem
 			if(use_splines)
 			{
 				if(!iso_parametric)
-					HexBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
+					HexBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, poly_edge_to_data_geom);
 
-				n_bases = SplineBasis3d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+				n_bases = SplineBasis3d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, poly_edge_to_data);
 
 				if(iso_parametric && fit_nodes)
 					SplineBasis3d::fit_nodes(tmp_mesh, n_bases, bases);
@@ -414,14 +411,14 @@ namespace poly_fem
 			{
 				if(mesh->is_simplicial())
 				{
-					n_bases = TetBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+					n_bases = TetBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, poly_edge_to_data);
 				}
 				else
 				{
 					if (!iso_parametric)
-						HexBasis3d::build_bases(tmp_mesh, quadrature_order, 1, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
+						HexBasis3d::build_bases(tmp_mesh, quadrature_order, 1, geom_bases, local_boundary, poly_edge_to_data_geom);
 
-					n_bases = HexBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+					n_bases = HexBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, poly_edge_to_data);
 				}
 			}
 		}
@@ -431,9 +428,9 @@ namespace poly_fem
 			if(use_splines)
 			{
 				if(!iso_parametric)
-					QuadBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
+					QuadBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, poly_edge_to_data_geom);
 
-				n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+				n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, poly_edge_to_data);
 
 				if(iso_parametric && fit_nodes)
 					SplineBasis2d::fit_nodes(tmp_mesh, n_bases, bases);
@@ -442,14 +439,14 @@ namespace poly_fem
 			{
 				if(mesh->is_simplicial())
 				{
-					n_bases = TriBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+					n_bases = TriBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, poly_edge_to_data);
 				}
 				else
 				{
 					if(!iso_parametric)
-						QuadBasis2d::build_bases(tmp_mesh, quadrature_order, 1, geom_bases, local_boundary, boundary_nodes, poly_edge_to_data_geom);
+						QuadBasis2d::build_bases(tmp_mesh, quadrature_order, 1, geom_bases, local_boundary, poly_edge_to_data_geom);
 
-					n_bases = QuadBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, boundary_nodes, poly_edge_to_data);
+					n_bases = QuadBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, poly_edge_to_data);
 				}
 			}
 		}
@@ -521,7 +518,7 @@ namespace poly_fem
 		igl::Timer timer; timer.start();
 		std::cout<<"Computing polygonal basis..."<<std::flush;
 
-		std::sort(boundary_nodes.begin(), boundary_nodes.end());
+		// std::sort(boundary_nodes.begin(), boundary_nodes.end());
 
 		if(iso_parametric)
 		{
