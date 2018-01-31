@@ -2,10 +2,6 @@
 #define ASSEMBLER_HPP
 
 #include "ElementAssemblyValues.hpp"
-#include "Problem.hpp"
-#include "Basis.hpp"
-#include "LocalBoundary.hpp"
-#include "QuadBoundarySampler.hpp"
 
 #include <igl/Timer.h>
 #include <Eigen/Sparse>
@@ -13,8 +9,6 @@
 #include <iostream>
 #include <cmath>
 #include <memory>
-
-//#include "UIState.hpp"
 
 namespace poly_fem
 {

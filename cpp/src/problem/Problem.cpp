@@ -53,7 +53,7 @@ namespace poly_fem
 				return;
 			}
 
-			case 3: val = Eigen::MatrixXd::Zero(pts.rows(), mesh.is_volume()? 3:2); return;
+			case 3: val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension()); return;
 
 			case 4: {
 				assert(mesh.is_volume());
@@ -98,7 +98,7 @@ namespace poly_fem
 
 		if(problem_num_ == 3)
 		{
-			val = Eigen::MatrixXd::Zero(pts.rows(), mesh.is_volume()? 3 : 2);
+			val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
 
 			for(long i = 0; i < x.size(); ++i)
 			{

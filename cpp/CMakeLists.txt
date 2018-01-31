@@ -83,8 +83,8 @@ add_library(polyfem
 	src/utils/CommandLine.hpp
 	src/utils/CommandLine.cpp
 
-	src/utils/QuadBoundarySampler.hpp
-	src/utils/QuadBoundarySampler.cpp
+	src/utils/EdgeSampler.hpp
+	src/utils/EdgeSampler.cpp
 
 	src/utils/BoundarySampler.hpp
 

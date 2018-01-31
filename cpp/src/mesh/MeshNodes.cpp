@@ -56,7 +56,7 @@ poly_fem::MeshNodes::MeshNodes(const Mesh &mesh, bool vertices_only)
 	// Initialization
 	int n_nodes = cell_offset_ + (vertices_only ? 0 : mesh.n_cells());
 	primitive_to_node_.assign(n_nodes, -1); // #v + #e + #f + #c
-	nodes_.resize(n_nodes, mesh.is_volume() ? 3 : 2);
+	nodes_.resize(n_nodes, mesh.dimension());
 	is_boundary_.assign(n_nodes, false);
 	is_interface_.assign(n_nodes, false);
 

@@ -6,7 +6,7 @@
 #include "LinearElasticity.hpp"
 
 #include "LinearSolver.hpp"
-#include "QuadBoundarySampler.hpp"
+#include "EdgeSampler.hpp"
 
 #include <igl/per_face_normals.h>
 #include <igl/per_corner_normals.h>
@@ -122,159 +122,52 @@ namespace poly_fem
 		std::vector<Eigen::MatrixXd> p0v, p1v;
 
 		std::vector<bool> valid_polytopes(valid_elements.size(), false);
+		const int actual_dim = mesh.dimension();
+		const int n_edges = mesh.is_volume() ? 12 : 4;
 
 		if(mesh.is_volume())
-		{
-			samples.resize(12*n_samples, 3);
-
-			{
-				const Eigen::MatrixXd t = Eigen::VectorXd::LinSpaced(n_samples, 0, 1);
-			//X
-			int ii = 0;
-			samples.block(ii*n_samples, 0, n_samples, 1) = t;
-			samples.block(ii*n_samples, 1, n_samples, 1).setZero();
-			samples.block(ii*n_samples, 2, n_samples, 1).setZero();
-
-			++ii;
-			samples.block(ii*n_samples, 0, n_samples, 1) = t;
-			samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
-			samples.block(ii*n_samples, 2, n_samples, 1).setZero();
-
-			++ii;
-			samples.block(ii*n_samples, 0, n_samples, 1) = t;
-			samples.block(ii*n_samples, 1, n_samples, 1).setZero();
-			samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
-
-			++ii;
-			samples.block(ii*n_samples, 0, n_samples, 1) = t;
-			samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
-			samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
-
-			//Y
-			++ii;
-			samples.block(ii*n_samples, 0, n_samples, 1).setZero();
-			samples.block(ii*n_samples, 1, n_samples, 1) = t;
-			samples.block(ii*n_samples, 2, n_samples, 1).setZero();
-
-			++ii;
-			samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
-			samples.block(ii*n_samples, 1, n_samples, 1) = t;
-			samples.block(ii*n_samples, 2, n_samples, 1).setZero();
-
-			++ii;
-			samples.block(ii*n_samples, 0, n_samples, 1).setZero();
-			samples.block(ii*n_samples, 1, n_samples, 1) = t;
-			samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
-
-			++ii;
-			samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
-			samples.block(ii*n_samples, 1, n_samples, 1) = t;
-			samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
-
-			//Z
-			++ii;
-			samples.block(ii*n_samples, 0, n_samples, 1).setZero();
-			samples.block(ii*n_samples, 1, n_samples, 1).setZero();
-			samples.block(ii*n_samples, 2, n_samples, 1) = t;
-
-			++ii;
-			samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
-			samples.block(ii*n_samples, 1, n_samples, 1).setZero();
-			samples.block(ii*n_samples, 2, n_samples, 1) = t;
-
-			++ii;
-			samples.block(ii*n_samples, 0, n_samples, 1).setZero();
-			samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
-			samples.block(ii*n_samples, 2, n_samples, 1) = t;
-
-			++ii;
-			samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
-			samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
-			samples.block(ii*n_samples, 2, n_samples, 1) = t;
-			}
-			const int actual_dim = 3;
-			for(std::size_t i = 0; i < bases.size(); ++i){
-				if(!valid_elements[i]) continue;
-
-				if(mesh.is_polytope(i)) {
-					valid_polytopes[i] = true;
-					continue;
-				}
-
-				Eigen::MatrixXd result(samples.rows(), samples.cols());
-				result.setZero();
-
-				if(state.problem.problem_num() == 3 && current_visualization == Visualizing::Solution){
-					const ElementBases &bs = bases[i];
-					bs.evaluate_bases(samples, tmp);
-
-					for(std::size_t j = 0; j < bs.bases.size(); ++j)
-					{
-						const Basis &b = bs.bases[j];
-
-						for(std::size_t ii = 0; ii < b.global().size(); ++ii)
-						{
-							for(int d = 0; d < actual_dim; ++d)
-							{
-								result.col(d) += b.global()[ii].val * tmp.col(j) * state.sol(b.global()[ii].index*actual_dim + d);
-							}
-						}
-					}
-				}
-
-				bases[i].eval_geom_mapping(samples, mapped);
-
-				for(int j = 0; j < 12; ++j)
-				{
-					for(int k = 0; k < n_samples-1; ++k)
-					{
-						p0v.push_back(mapped.row(j*n_samples + k) + result.row(j*n_samples + k));
-						p1v.push_back(mapped.row(j*n_samples + k+1) + result.row(j*n_samples + k+1));
-					}
-				}
-			}
-		}
+			EdgeSampler::sample_3d(n_samples, samples);
 		else
+			EdgeSampler::sample_2d(n_samples, samples);
+		
+		for(std::size_t i = 0; i < bases.size(); ++i)
 		{
-			QuadBoundarySampler::sample(true, true, true, true, n_samples, false, samples);
-			const int actual_dim = 2;
-			for(std::size_t i = 0; i < bases.size(); ++i){
-				if(!valid_elements[i]) continue;
+			if(!valid_elements[i]) continue;
 
-				if(mesh.is_polytope(i)) {
-					valid_polytopes[i] = true;
-					continue;
-				}
+			if(mesh.is_polytope(i)) {
+				valid_polytopes[i] = true;
+				continue;
+			}
 
-				Eigen::MatrixXd result(samples.rows(), samples.cols());
-				result.setZero();
+			Eigen::MatrixXd result(samples.rows(), samples.cols());
+			result.setZero();
 
-				if(state.problem.problem_num() == 3 && current_visualization == Visualizing::Solution){
-					const ElementBases &bs = bases[i];
-					bs.evaluate_bases(samples, tmp);
+			if(state.problem.problem_num() == 3 && current_visualization == Visualizing::Solution){
+				const ElementBases &bs = bases[i];
+				bs.evaluate_bases(samples, tmp);
 
-					for(std::size_t j = 0; j < bs.bases.size(); ++j)
+				for(std::size_t j = 0; j < bs.bases.size(); ++j)
+				{
+					const Basis &b = bs.bases[j];
+
+					for(std::size_t ii = 0; ii < b.global().size(); ++ii)
 					{
-						const Basis &b = bs.bases[j];
-
-						for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+						for(int d = 0; d < actual_dim; ++d)
 						{
-							for(int d = 0; d < actual_dim; ++d)
-							{
-								result.col(d) += b.global()[ii].val * tmp.col(j) * state.sol(b.global()[ii].index*actual_dim + d);
-							}
+							result.col(d) += b.global()[ii].val * tmp.col(j) * state.sol(b.global()[ii].index*actual_dim + d);
 						}
 					}
 				}
+			}
 
-				bases[i].eval_geom_mapping(samples, mapped);
+			bases[i].eval_geom_mapping(samples, mapped);
 
-				for(int j = 0; j < 4; ++j)
+			for(int j = 0; j < n_edges; ++j)
+			{
+				for(int k = 0; k < n_samples-1; ++k)
 				{
-					for(int k = 0; k < n_samples-1; ++k){
-						p0v.push_back(mapped.row(j*n_samples + k) + result.row(j*n_samples + k));
-						p1v.push_back(mapped.row(j*n_samples + k+1) + result.row(j*n_samples + k+1));
-					}
+					p0v.push_back(mapped.row(j*n_samples + k) + result.row(j*n_samples + k));
+					p1v.push_back(mapped.row(j*n_samples + k+1) + result.row(j*n_samples + k+1));
 				}
 			}
 		}
@@ -282,8 +175,8 @@ namespace poly_fem
 		mesh.get_edges(p0, p1, valid_polytopes);
 
 
-		pp0.resize(p0.rows() + p0v.size(), mesh.is_volume()?3:2);
-		pp1.resize(p1.rows() + p1v.size(), mesh.is_volume()?3:2);
+		pp0.resize(p0.rows() + p0v.size(), mesh.dimension());
+		pp1.resize(p1.rows() + p1v.size(), mesh.dimension());
 
 		for(size_t i = 0; i < p1v.size(); ++i)
 		{
@@ -416,20 +309,6 @@ namespace poly_fem
 
 			from += range;
 		}
-
-		// if(ambient_occlusion && state.mesh->is_volume())
-		// {
-		// 	MatrixXd N;
-		// 	igl::per_vertex_normals(tri_pts, tri_faces, N);
-		// 	// igl::per_corner_normals(tri_pts, tri_faces, 20, N);
-
-		// 	// Compute ambient occlusion factor using embree
-		// 	igl::embree::ambient_occlusion(tri_pts, tri_faces, tri_pts, N, 500, ambient_occlusion_mat);
-		// 	ambient_occlusion_mat = 1.0 - ambient_occlusion_mat.array();
-
-		// 	for (long i=0; i<cols.rows();++i)
-		// 		cols.row(i) *= ambient_occlusion_mat(i);
-		// }
 
 		viewer.data.set_colors(cols);
 
@@ -579,7 +458,7 @@ namespace poly_fem
 
 		int actual_dim = 1;
 		if(state.problem.problem_num() == 3)
-			actual_dim = state.mesh->is_volume() ? 3:2;
+			actual_dim = state.mesh->dimension();
 
 		result.resize(vis_pts.rows(), actual_dim);
 
@@ -627,35 +506,32 @@ namespace poly_fem
 
 		if(state.problem.problem_num() == 3)
 		{
-			const MatrixXd ffun = (fun.array()*fun.array()).rowwise().sum().sqrt(); //norm of displacement, maybe replace with stress
+			// const MatrixXd ffun = (fun.array()*fun.array()).rowwise().sum().sqrt(); //norm of displacement, maybe replace with stress
 			// const MatrixXd ffun = fun.col(1); //y component
 
-			// LinearElasticity lin_elast;
-			// MatrixXd ffun(vis_pts.rows(), 1);
+			LinearElasticity lin_elast;
+			MatrixXd ffun(vis_pts.rows(), 1);
 
-			// int size = 1;
-			// if(state.problem.problem_num() == 3)
-			// 	size = state.mesh->is_volume() ? 3:2;
+			int size = state.mesh->dimension();
 
-			// MatrixXd stresses;
-			// int counter = 0;
-			// for(int i = 0; i < int(state.bases.size()); ++i)
-			// {
-			// 	const ElementBases &bs = state.bases[i];
+			MatrixXd stresses;
+			int counter = 0;
+			for(int i = 0; i < int(state.bases.size()); ++i)
+			{
+				const ElementBases &bs = state.bases[i];
+				MatrixXd local_pts;
 
-			// 	MatrixXd local_pts;
+				if(state.mesh->is_simplicial())
+					local_pts = local_vis_pts_tri;
+				else if(state.mesh->is_cube(i))
+					local_pts = local_vis_pts_quad;
+				else
+					local_pts = vis_pts_poly[i];
 
-			// 	if(is_quad(bs))
-			// 		local_pts = local_vis_pts_quad;
-			// 	else if(is_tri(bs))
-			// 		local_pts = local_vis_pts_tri;
-			// 	else{
-			// 		local_pts = vis_pts_poly[i];
-			// 	}
-			// 	lin_elast.compute_von_mises_stresses(size, bs, local_pts, fun, stresses);
-			// 	ffun.block(counter, 0, stresses.rows(), stresses.cols()) = stresses;
-			// 	counter += stresses.rows();
-			// }
+				lin_elast.compute_von_mises_stresses(size, bs, local_pts, state.sol, stresses);
+				ffun.block(counter, 0, stresses.rows(), 1) = stresses;
+				counter += stresses.rows();
+			}
 
 			if(min < max)
 				igl::colormap(color_map, ffun, min, max, col);
@@ -690,21 +566,6 @@ namespace poly_fem
 				clip_elements(tmp, vis_faces, vis_element_ranges, valid_elements, true);
 			}
 		}
-
-		// if(ambient_occlusion && state.mesh->is_volume())
-		// {
-		// 	MatrixXd N;
-		// 	igl::per_vertex_normals(vis_pts, vis_faces, N);
-		// 	// igl::per_corner_normals(vis_pts, vis_faces, 20, N);
-
-		// 	// Compute ambient occlusion factor using embree
-		// 	igl::embree::ambient_occlusion(vis_pts, vis_faces, vis_pts, N, 500, ambient_occlusion_mat);
-		// 	ambient_occlusion_mat = 1.0 - ambient_occlusion_mat.array();
-
-		// 	for (long i=0; i<col.rows();++i)
-		// 		col.row(i) *= ambient_occlusion_mat(i);
-		// 	viewer.data.set_face_based(false);
-		// }
 
 		viewer.data.set_colors(col);
 
@@ -790,7 +651,7 @@ namespace poly_fem
 						int g_index = l2g.index;
 
 						if(state.problem.problem_num() == 3)
-							g_index *= state.mesh->is_volume() ? 3 : 2;
+							g_index *= state.mesh->dimension();
 
 						MatrixXd node = l2g.node;
 						MatrixXd col = MatrixXd::Zero(1, 3);
@@ -813,20 +674,6 @@ namespace poly_fem
 				// add_spheres(viewer, P, 0.05);
 			}
 		};
-
-		// auto show_quadrature_func = [&](){
-		// 	for(std::size_t i = 0; i < state.values.size(); ++i)
-		// 	{
-		// 		const ElementAssemblyValues &vals = state.values[i];
-		// 		if(state.mesh->is_volume())
-		// 			viewer.data.add_points(vals.val, vals.quadrature.points);
-		// 		else
-		// 			viewer.data.add_points(vals.val, MatrixXd::Zero(vals.val.rows(), 3));
-
-		// 		// for(long j = 0; j < vals.val.rows(); ++j)
-		// 			// viewer.data.add_label(vals.val.row(j), std::to_string(j));
-		// 	}
-		// };
 
 		auto show_rhs_func = [&](){
 			current_visualization = Visualizing::Rhs;
@@ -1489,17 +1336,17 @@ namespace poly_fem
 				}
 			});
 
-			viewer_.ngui->addWindow(Eigen::Vector2i(0,600),"Light");
+			viewer_.ngui->addWindow(Eigen::Vector2i(0,680),"Screenshot");
 
-			viewer_.ngui->addVariable<bool>("lighting enabled",[&](bool val) {
-				light_enabled = val;
+			// viewer_.ngui->addVariable<bool>("lighting enabled",[&](bool val) {
+			// 	light_enabled = val;
 
 
-			},[&]() {
-				return light_enabled;
-			});
+			// },[&]() {
+			// 	return light_enabled;
+			// });
 
-			viewer_.ngui->addButton("Save screenshot", [&]{
+			viewer_.ngui->addButton("Save", [&]{
 				// Allocate temporary buffers
 				Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(6400, 4000);
 				Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> G(6400, 4000);
@@ -1511,7 +1358,7 @@ namespace poly_fem
 				A.setConstant(255);
 
     			// Save it to a PNG
-    			std::string path = (screenshot.empty() ? "out.png" : screenshot);
+				std::string path = (screenshot.empty() ? "out.png" : screenshot);
 				igl::png::writePNG(R,G,B,A,path);
 			});
 
@@ -1556,64 +1403,64 @@ namespace poly_fem
 
 namespace {
 
-static void my_glfw_error_callback(int error, const char* description)
-{
-  fputs(description, stderr);
-  fputs("\n", stderr);
-}
+	static void my_glfw_error_callback(int error, const char* description)
+	{
+		fputs(description, stderr);
+		fputs("\n", stderr);
+	}
 
 }
 
 int offscreen_screenshot(igl::viewer::Viewer &viewer, const std::string &path) {
-    glfwSetErrorCallback(my_glfw_error_callback);
-    if (!glfwInit()) {
-      std::cout << "init failure" << std::endl;
-      return EXIT_FAILURE;
-    }
+	glfwSetErrorCallback(my_glfw_error_callback);
+	if (!glfwInit()) {
+		std::cout << "init failure" << std::endl;
+		return EXIT_FAILURE;
+	}
 
 	// glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_OSMESA_CONTEXT_API);
-  	glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+	glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
-    glfwWindowHint(GLFW_SAMPLES, 8);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_SAMPLES, 8);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 
     #ifdef __APPLE__
-      glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-      glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     #endif
 
-  	printf("create window\n");
-  	GLFWwindow* offscreen_context = glfwCreateWindow(640, 480, "", NULL, NULL);
-  	printf("create context\n");
-  	glfwMakeContextCurrent(offscreen_context);
+	printf("create window\n");
+	GLFWwindow* offscreen_context = glfwCreateWindow(640, 480, "", NULL, NULL);
+	printf("create context\n");
+	glfwMakeContextCurrent(offscreen_context);
     #ifndef __APPLE__
-      glewExperimental = true;
-      GLenum err = glewInit();
-      if(GLEW_OK != err)
-      {
+	glewExperimental = true;
+	GLenum err = glewInit();
+	if(GLEW_OK != err)
+	{
         /* Problem: glewInit failed, something is seriously wrong. */
-       fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
-      }
+		fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+	}
       glGetError(); // pull and savely ignonre unhandled errors like GL_INVALID_ENUM
       fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
     #endif
-    viewer.opengl.init();
-    viewer.core.align_camera_center(viewer.data.V, viewer.data.F);
-    viewer.init();
+      viewer.opengl.init();
+      viewer.core.align_camera_center(viewer.data.V, viewer.data.F);
+      viewer.init();
 
-    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(6400, 4000);
-    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> G(6400, 4000);
-    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> B(6400, 4000);
-    Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(6400, 4000);
+      Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(6400, 4000);
+      Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> G(6400, 4000);
+      Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> B(6400, 4000);
+      Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(6400, 4000);
 
     // Draw the scene in the buffers
-    viewer.core.draw_buffer(viewer.data,viewer.opengl,true,R,G,B,A);
-	A.setConstant(255);
+      viewer.core.draw_buffer(viewer.data,viewer.opengl,true,R,G,B,A);
+      A.setConstant(255);
 
     // Save it to a PNG
-    igl::png::writePNG(R,G,B,A, path);
+      igl::png::writePNG(R,G,B,A, path);
 
-    return 0;
-}
+      return 0;
+  }
 

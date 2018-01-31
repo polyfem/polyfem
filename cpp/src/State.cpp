@@ -12,8 +12,7 @@
 #include "SplineBasis2d.hpp"
 #include "SplineBasis3d.hpp"
 
-#include "QuadBoundarySampler.hpp"
-#include "HexBoundarySampler.hpp"
+#include "EdgeSampler.hpp"
 
 #include "PolygonalBasis2d.hpp"
 #include "PolygonalBasis3d.hpp"
@@ -67,117 +66,30 @@ namespace poly_fem
 				return p.rowwise().norm().maxCoeff();
 			}
 
+			const int n_edges = mesh.is_volume()?12:4;
 			if(mesh.is_volume())
-			{
-				samples.resize(12*n_samples, 3);
-				const Eigen::MatrixXd t = Eigen::VectorXd::LinSpaced(n_samples, 0, 1);
-
-				//X
-				int ii = 0;
-				samples.block(ii*n_samples, 0, n_samples, 1) = t;
-				samples.block(ii*n_samples, 1, n_samples, 1).setZero();
-				samples.block(ii*n_samples, 2, n_samples, 1).setZero();
-
-				++ii;
-				samples.block(ii*n_samples, 0, n_samples, 1) = t;
-				samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
-				samples.block(ii*n_samples, 2, n_samples, 1).setZero();
-
-				++ii;
-				samples.block(ii*n_samples, 0, n_samples, 1) = t;
-				samples.block(ii*n_samples, 1, n_samples, 1).setZero();
-				samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
-
-				++ii;
-				samples.block(ii*n_samples, 0, n_samples, 1) = t;
-				samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
-				samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
-
-				//Y
-				++ii;
-				samples.block(ii*n_samples, 0, n_samples, 1).setZero();
-				samples.block(ii*n_samples, 1, n_samples, 1) = t;
-				samples.block(ii*n_samples, 2, n_samples, 1).setZero();
-
-				++ii;
-				samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
-				samples.block(ii*n_samples, 1, n_samples, 1) = t;
-				samples.block(ii*n_samples, 2, n_samples, 1).setZero();
-
-				++ii;
-				samples.block(ii*n_samples, 0, n_samples, 1).setZero();
-				samples.block(ii*n_samples, 1, n_samples, 1) = t;
-				samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
-
-				++ii;
-				samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
-				samples.block(ii*n_samples, 1, n_samples, 1) = t;
-				samples.block(ii*n_samples, 2, n_samples, 1).setOnes();
-
-				//Z
-				++ii;
-				samples.block(ii*n_samples, 0, n_samples, 1).setZero();
-				samples.block(ii*n_samples, 1, n_samples, 1).setZero();
-				samples.block(ii*n_samples, 2, n_samples, 1) = t;
-
-				++ii;
-				samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
-				samples.block(ii*n_samples, 1, n_samples, 1).setZero();
-				samples.block(ii*n_samples, 2, n_samples, 1) = t;
-
-				++ii;
-				samples.block(ii*n_samples, 0, n_samples, 1).setZero();
-				samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
-				samples.block(ii*n_samples, 2, n_samples, 1) = t;
-
-				++ii;
-				samples.block(ii*n_samples, 0, n_samples, 1).setOnes();
-				samples.block(ii*n_samples, 1, n_samples, 1).setOnes();
-				samples.block(ii*n_samples, 2, n_samples, 1) = t;
-
-
-				for(std::size_t i = 0; i < bases.size(); ++i){
-					if(mesh.is_polytope(i)) continue;
-
-					bases[i].eval_geom_mapping(samples, mapped);
-
-					for(int j = 0; j < 12; ++j)
-					{
-						double current_edge = 0;
-						for(int k = 0; k < n_samples-1; ++k){
-							p0 = mapped.row(j*n_samples + k);
-							p1 = mapped.row(j*n_samples + k+1);
-							p = p0-p1;
-
-							current_edge += p.norm();
-						}
-
-						mesh_size = std::max(current_edge, mesh_size);
-					}
-				}
-			}
+				EdgeSampler::sample_3d(n_samples, samples);
 			else
-			{
-				QuadBoundarySampler::sample(true, true, true, true, n_samples, false, samples);
+				EdgeSampler::sample_2d(n_samples, samples);
 
-				for(std::size_t i = 0; i < bases.size(); ++i){
-					if(mesh.is_polytope(i)) continue;
 
-					bases[i].eval_geom_mapping(samples, mapped);
+			for(std::size_t i = 0; i < bases.size(); ++i){
+				if(mesh.is_polytope(i)) continue;
 
-					for(int j = 0; j < 4; ++j)
-					{
-						double current_edge = 0;
-						for(int k = 0; k < n_samples-1; ++k){
-							p0 = mapped.row(j*n_samples + k);
-							p1 = mapped.row(j*n_samples + k+1);
-							p = p0-p1;
+				bases[i].eval_geom_mapping(samples, mapped);
 
-							current_edge += p.norm();
-						}
+				for(int j = 0; j < n_edges; ++j)
+				{
+					double current_edge = 0;
+					for(int k = 0; k < n_samples-1; ++k){
+						p0 = mapped.row(j*n_samples + k);
+						p1 = mapped.row(j*n_samples + k+1);
+						p = p0-p1;
 
-						mesh_size = std::max(current_edge, mesh_size);
+						current_edge += p.norm();
 					}
+
+					mesh_size = std::max(current_edge, mesh_size);
 				}
 			}
 
@@ -253,7 +165,7 @@ namespace poly_fem
 
 		int actual_dim = 1;
 		if(problem.problem_num() == 3)
-			actual_dim = mesh->is_volume() ? 3:2;
+			actual_dim = mesh->dimension();
 
 		result.resize(local_pts.rows() * mesh->n_elements(), actual_dim);
 
@@ -546,102 +458,6 @@ namespace poly_fem
 		auto &gbases = iso_parametric ? bases : geom_bases;
 
 
-		// auto &bs = iso_parametric ? bases : geom_bases;
-
-		// for(int k =0; k < 1; ++k)
-		// {
-		// 	Eigen::MatrixXd nodes(n_bases, 2);
-		// 	nodes.setZero();
-		// 	Eigen::Matrix<bool, Eigen::Dynamic, 1> nodes_setted(n_bases);
-		// 	nodes_setted.setConstant(false);
-
-		// 	for(size_t i = 0; i < bs.size(); ++i)
-		// 	{
-		// 		auto &lbs = bs[i].bases;
-
-
-		// 		if(!mesh->is_spline_compatible(i))
-		// 		{
-		// 			for(size_t b = 0; b < lbs.size(); ++b)
-		// 			{
-		// 				if(lbs[b].global().size() > 1) continue;
-		// 				if(nodes_setted(lbs[b].global().front().index)) continue;
-		// 				auto &c_glob = lbs[b].global().front();
-
-
-		// 				if(std::find(boundary_nodes.begin(), boundary_nodes.end(), c_glob.index) != boundary_nodes.end())
-		// 					continue;
-
-		// 				double count = 10;
-		// 				auto node = c_glob.node;
-		// 				node *= count;
-		// 				// node.setZero();
-
-		// 				for(size_t bi = 0; bi < lbs.size(); ++bi)
-		// 				{
-		// 					for(size_t ii = 0; ii < lbs[bi].global().size(); ++ii)
-		// 					{
-		// 						auto &glob = lbs[bi].global()[ii];
-		// 						double w = glob.val;
-		// 						node += glob.node*w;
-
-		// 						count+=w;
-		// 					}
-		// 				}
-
-		// 				node /= count;
-
-		// 				nodes.row(c_glob.index) = node;
-		// 				nodes_setted(c_glob.index) = true;
-		// 			}
-		// 		}
-		// 		else
-		// 		{
-		// 			if(lbs.size() != 9)
-		// 				continue;
-
-		// 			double count = 1;
-		// 			auto &c_glob = lbs[3*1+1].global().front();
-		// 			auto node = c_glob.node;
-		// 			// node.setZero();
-		// 			for(size_t b = 0; b < lbs.size(); ++b)
-		// 			{
-		// 				if(b == 3*1+1) continue;
-
-		// 				double w = 1;
-		// 				if(std::find(boundary_nodes.begin(), boundary_nodes.end(), lbs[b].global().front().index) != boundary_nodes.end())
-		// 					w = 2;
-		// 				node += lbs[b].global().front().node*w;
-
-		// 				count+=w;
-		// 			}
-
-		// 			node /= count;
-
-		// 			nodes.row(c_glob.index) = node;
-		// 			nodes_setted(c_glob.index) = true;
-		// 		}
-		// 	}
-
-		// 	for(size_t i = 0; i < bs.size(); ++i)
-		// 	{
-		// 		auto &lbs = bs[i].bases;
-		// 		for(size_t b = 0; b < lbs.size(); ++b)
-		// 		{
-		// 			for(size_t ii = 0; ii < lbs[b].global().size(); ++ii)
-		// 			{
-		// 				auto &glob = lbs[b].global()[ii];
-
-		// 				if(!nodes_setted(glob.index)) continue;
-
-		// 				glob.node = nodes.row(glob.index);
-		// 			}
-		// 		}
-		// 	}
-		// }
-
-
-
 		n_flipped = 0;
 		// flipped_elements.clear();
 		for(size_t i = 0; i < gbases.size(); ++i)
@@ -667,7 +483,7 @@ namespace poly_fem
 
 		if(problem.problem_num() == 3)
 		{
-			const int dim = mesh->is_volume() ? 3:2;
+			const int dim = mesh->dimension();
 			const std::size_t n_b_nodes = boundary_nodes.size();
 
 			for(std::size_t i = 0; i < n_b_nodes; ++i)
@@ -710,53 +526,20 @@ namespace poly_fem
 
 		std::sort(boundary_nodes.begin(), boundary_nodes.end());
 
-		if(iso_parametric) {
-			// ElementAssemblyValues::compute_assembly_values(mesh->is_volume(), bases, values);
-
-			if(mesh->is_volume()) {
+		if(iso_parametric)
+		{
+			if(mesh->is_volume())
 				PolygonalBasis3d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, quadrature_order, integral_constraints, bases, bases, poly_edge_to_data, polys_3d);
-				// Eigen::MatrixXd I;
-				// compute_integral_constraints(*dynamic_cast<Mesh3D *>(mesh.get()), n_bases, bases, bases, I);
-				// for (int r = 0; r < I.rows(); ++r) {
-					// std::cout << r << ": " << I.row(r) << std::endl;
-				// }
-			} else {
+			else
 				PolygonalBasis2d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, quadrature_order, integral_constraints, bases, bases, poly_edge_to_data, polys);
-			}
-
-			// for(std::size_t e = 0; e < bases.size(); ++e) {
-			// 	if(mesh->is_polytope(e)){
-			// 		values[e].compute(e, mesh->is_volume(), bases[e]);
-			// 	}
-			// }
 		}
 		else
 		{
-			// ElementAssemblyValues::compute_assembly_values(mesh->is_volume(), geom_bases, geom_values);
-			// ElementAssemblyValues::compute_assembly_values(mesh->is_volume(), bases, values);
-
 			if(mesh->is_volume())
-			{
 				PolygonalBasis3d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, quadrature_order, integral_constraints, bases, geom_bases, poly_edge_to_data, polys_3d);
-			}
 			else
 				PolygonalBasis2d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, quadrature_order, integral_constraints, bases, geom_bases, poly_edge_to_data, polys);
-
-			// for(std::size_t e = 0; e < bases.size(); ++e)
-			// {
-			// 	if(mesh->is_polytope(e)){
-			// 		geom_values[e].compute(e, mesh->is_volume(), geom_bases[e]);
-			// 		values[e].compute(e, mesh->is_volume(), bases[e]);
-			// 	}
-			// }
 		}
-
-
-		// Eigen::MatrixXd c;
-		// compute_integral_constraints(*dynamic_cast<Mesh2D *>(mesh), n_bases, bases, bases, c);
-		// for (int r = 0; r < c.rows(); ++r) {
-		// 	std::cout << r << ": " << c.row(r) << std::endl;
-		// }
 
 		timer.stop();
 		computing_assembly_values_time = timer.getElapsedTime();
@@ -779,15 +562,12 @@ namespace poly_fem
 			LinearElasticity &le = assembler.local_assembler();
 			le.mu() = mu;
 			le.lambda() = lambda;
-			le.size() = mesh->is_volume()? 3:2;
+			le.size() = mesh->dimension();
 
 			if(iso_parametric)
 				assembler.assemble(mesh->is_volume(), n_bases, bases, bases, stiffness);
 			else
 				assembler.assemble(mesh->is_volume(), n_bases, bases, geom_bases, stiffness);
-
-			// std::cout<<MatrixXd(stiffness)<<std::endl;
-			// assembler.set_identity(boundary_nodes, stiffness);
 		}
 		else
 		{
@@ -796,10 +576,6 @@ namespace poly_fem
 				assembler.assemble(mesh->is_volume(), n_bases, bases, bases, stiffness);
 			else
 				assembler.assemble(mesh->is_volume(), n_bases, bases, geom_bases, stiffness);
-
-			// std::cout<<MatrixXd(stiffness)-MatrixXd(stiffness.transpose())<<"\n\n"<<std::endl;
-			// std::cout<<MatrixXd(stiffness).rowwise().sum()<<"\n\n"<<std::endl;
-			// assembler.set_identity(boundary_nodes, stiffness);
 		}
 
 		timer.stop();
@@ -836,7 +612,7 @@ namespace poly_fem
 		igl::Timer timer; timer.start();
 		std::cout<<"Assigning rhs..."<<std::flush;
 
-		const int size = problem.problem_num() == 3 ? (mesh->is_volume() ? 3:2) : 1;
+		const int size = problem.problem_num() == 3 ? mesh->dimension() : 1;
 
 		if(iso_parametric)
 		{
@@ -856,14 +632,6 @@ namespace poly_fem
 		timer.stop();
 		assigning_rhs_time = timer.getElapsedTime();
 		std::cout<<" took "<<assigning_rhs_time<<"s"<<std::endl;
-
-		// {
-		// 	std::ofstream of;
-		// 	of.open("rhs.txt");
-		// 	of.precision(100);
-		// 	of<<rhs;
-		// 	of.close();
-		// }
 	}
 
 	void State::solve_problem()

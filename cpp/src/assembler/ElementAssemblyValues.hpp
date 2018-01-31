@@ -24,6 +24,7 @@ namespace poly_fem
 		bool has_parameterization = true;
 
 		void compute(const int el_index, const bool is_volume, const ElementBases &basis, const ElementBases &gbasis);
+		void compute(const int el_index, const bool is_volume, const Eigen::MatrixXd &pts, const ElementBases &basis, const ElementBases &gbasis);
 		bool is_geom_mapping_positive(const bool is_volume, const ElementBases &gbasis) const;
 
 	private:

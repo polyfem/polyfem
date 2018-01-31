@@ -99,30 +99,35 @@ namespace poly_fem
 		}
 	}
 
+
 	void ElementAssemblyValues::compute(const int el_index, const bool is_volume, const ElementBases &basis, const ElementBases &gbasis)
 	{
 		basis.compute_quadrature(quadrature);
+		compute(el_index, is_volume, quadrature.points, basis, gbasis);
+	}
 
+	void ElementAssemblyValues::compute(const int el_index, const bool is_volume, const Eigen::MatrixXd &pts, const ElementBases &basis, const ElementBases &gbasis)
+	{
 		// const bool poly = !gbasis.has_parameterization;
 
 		basis_values.resize(basis.bases.size());
 
-		Eigen::MatrixXd mval = Eigen::MatrixXd::Zero(quadrature.points.rows(), quadrature.points.cols());
+		Eigen::MatrixXd mval = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 
-		Eigen::MatrixXd dxmv = Eigen::MatrixXd::Zero(quadrature.points.rows(), quadrature.points.cols());
-		Eigen::MatrixXd dymv = Eigen::MatrixXd::Zero(quadrature.points.rows(), quadrature.points.cols());
-		Eigen::MatrixXd dzmv = Eigen::MatrixXd::Zero(quadrature.points.rows(), quadrature.points.cols());
+		Eigen::MatrixXd dxmv = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+		Eigen::MatrixXd dymv = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+		Eigen::MatrixXd dzmv = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 
 		igl::Timer timer0;
 		timer0.start();
 
 		auto values_and_grads = [&](const ElementBases &my_basis, auto v, auto dx, auto dy, auto dz)
 		{
-			my_basis.evaluate_bases(quadrature.points, *v);
-			my_basis.evaluate_grads(quadrature.points, 0, *dx);
-			my_basis.evaluate_grads(quadrature.points, 1, *dy);
+			my_basis.evaluate_bases(pts, *v);
+			my_basis.evaluate_grads(pts, 0, *dx);
+			my_basis.evaluate_grads(pts, 1, *dy);
 			if(is_volume)
-				my_basis.evaluate_grads(quadrature.points, 2, *dz);
+				my_basis.evaluate_grads(pts, 2, *dz);
 		};
 
 		auto vals = std::make_shared<Eigen::MatrixXd>();
@@ -160,19 +165,19 @@ namespace poly_fem
 			ass_val.val = vals->col(j);
 			assert(ass_val.val.cols()==1);
 
-			ass_val.grad.resize(quadrature.points.rows(), quadrature.points.cols());
+			ass_val.grad.resize(pts.rows(), pts.cols());
 
 			ass_val.grad.col(0) = local_gradx->col(j);
 			ass_val.grad.col(1) = local_grady->col(j);
 			if(is_volume)
 				ass_val.grad.col(2) = local_gradz->col(j);
 
-			assert(ass_val.grad.cols() == quadrature.points.cols());
+			assert(ass_val.grad.cols() == pts.cols());
 		}
 
 		if(!gbasis.has_parameterization) {
-			// v = G(quadrature.points)
-			finalize_global_element(quadrature.points);
+			// v = G(pts)
+			finalize_global_element(pts);
 			return;
 		}
 
