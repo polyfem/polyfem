@@ -142,7 +142,7 @@ namespace poly_fem
 			Eigen::MatrixXd result(samples.rows(), samples.cols());
 			result.setZero();
 
-			if(state.problem.problem_num() == 3 && current_visualization == Visualizing::Solution){
+			if(!state.problem->is_scalar() && current_visualization == Visualizing::Solution){
 				const ElementBases &bs = bases[i];
 				bs.evaluate_bases(samples, tmp);
 
@@ -457,7 +457,7 @@ namespace poly_fem
 		MatrixXd tmp;
 
 		int actual_dim = 1;
-		if(state.problem.problem_num() == 3)
+		if(!state.problem->is_scalar())
 			actual_dim = state.mesh->dimension();
 
 		result.resize(vis_pts.rows(), actual_dim);
@@ -504,7 +504,7 @@ namespace poly_fem
 		MatrixXd col;
 		std::vector<bool> valid_elements;
 
-		if(state.problem.problem_num() == 3)
+		if(!state.problem->is_scalar())
 		{
 			// const MatrixXd ffun = (fun.array()*fun.array()).rowwise().sum().sqrt(); //norm of displacement, maybe replace with stress
 			// const MatrixXd ffun = fun.col(1); //y component
@@ -650,7 +650,7 @@ namespace poly_fem
 						const Local2Global &l2g = basis.bases[j].global()[kk];
 						int g_index = l2g.index;
 
-						if(state.problem.problem_num() == 3)
+						if(!state.problem->is_scalar())
 							g_index *= state.mesh->dimension();
 
 						MatrixXd node = l2g.node;
@@ -694,13 +694,13 @@ namespace poly_fem
 
 		auto show_error_func = [&]()
 		{
-			if (!state.problem.has_exact_sol()) { return; }
+			if (!state.problem->has_exact_sol()) { return; }
 			current_visualization = Visualizing::Error;
 			MatrixXd global_sol;
 			interpolate_function(state.sol, global_sol);
 
 			MatrixXd exact_sol;
-			state.problem.exact(vis_pts, exact_sol);
+			state.problem->exact(vis_pts, exact_sol);
 
 			const MatrixXd err = (global_sol - exact_sol).array().abs();
 			plot_function(err);
@@ -1170,8 +1170,8 @@ namespace poly_fem
 			viewer_.ngui->addVariable<igl::ColorMapType>("Colormap", color_map)->setItems({"inferno", "jet", "magma", "parula", "plasma", "viridis"});
 
 			viewer_.ngui->addVariable<ProblemType>("Problem",
-				[&](ProblemType val) { state.problem.set_problem_num(val); },
-				[&]() { return ProblemType(state.problem.problem_num()); }
+				[&](ProblemType val) { state.problem = Problem::get_problem(ProblemType(val)); },
+				[&]() { return state.problem->problem_num(); }
 				)->setItems({"Linear","Quadratic","Franke", "Elastic", "Zero BC", "Franke3D"});
 
 

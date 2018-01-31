@@ -26,6 +26,8 @@
 #include "LinearSolver.hpp"
 #include "FEMSolver.hpp"
 
+#include "LinearProblem.hpp"
+
 #include "json.hpp"
 
 #include "CustomSerialization.hpp"
@@ -47,6 +49,11 @@ using namespace Eigen;
 
 namespace poly_fem
 {
+
+	State::State()
+	{
+		problem = std::make_shared<LinearProblem>();
+	}
 
 	namespace
 	{
@@ -109,7 +116,7 @@ namespace poly_fem
 		j["harmonic_samples_res"] = harmonic_samples_res;
 		j["use_splines"] = use_splines;
 		j["iso_parametric"] = iso_parametric;
-		j["problem"] = problem.problem_num();
+		j["problem"] = problem->problem_num();
 		j["mat_size"] = mat_size;
 		j["solver_type"] = solver_type;
 		j["precond_type"] = precond_type;
@@ -164,7 +171,7 @@ namespace poly_fem
 		MatrixXd tmp;
 
 		int actual_dim = 1;
-		if(problem.problem_num() == 3)
+		if(!problem->is_scalar())
 			actual_dim = mesh->dimension();
 
 		result.resize(local_pts.rows() * mesh->n_elements(), actual_dim);
@@ -180,7 +187,6 @@ namespace poly_fem
 			{
 				const Basis &b = bs.bases[j];
 
-				// b.basis(local_pts, tmp);
 				for(std::size_t ii = 0; ii < b.global().size(); ++ii)
 				{
 					for(int d = 0; d < actual_dim; ++d)
@@ -198,8 +204,6 @@ namespace poly_fem
 	{
 		bases.clear();
 		geom_bases.clear();
-		// values.clear();
-		// geom_values.clear();
 		boundary_nodes.clear();
 		local_boundary.clear();
 		errors.clear();
@@ -244,8 +248,6 @@ namespace poly_fem
 	{
 		bases.clear();
 		geom_bases.clear();
-		// values.clear();
-		// geom_values.clear();
 		boundary_nodes.clear();
 		local_boundary.clear();
 		errors.clear();
@@ -257,9 +259,6 @@ namespace poly_fem
 		sol.resize(0, 0);
 
 		n_bases = 0;
-
-		// els_tag[4]=ElementType::MultiSingularInteriorCube;
-		// els_tag[24]=ElementType::MultiSingularInteriorCube;
 
 		regular_count = 0;
 		regular_boundary_count = 0;
@@ -479,9 +478,9 @@ namespace poly_fem
 		// flipped_elements.resize(std::distance(flipped_elements.begin(), it));
 
 
-		problem.remove_neumann_nodes(*mesh, bases, local_boundary, boundary_nodes);
+		problem->remove_neumann_nodes(*mesh, bases, local_boundary, boundary_nodes);
 
-		if(problem.problem_num() == 3)
+		if(!problem->is_scalar())
 		{
 			const int dim = mesh->dimension();
 			const std::size_t n_b_nodes = boundary_nodes.size();
@@ -511,8 +510,6 @@ namespace poly_fem
 
 	void State::build_polygonal_basis()
 	{
-		// values.clear();
-		// geom_values.clear();
 		errors.clear();
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
@@ -556,7 +553,7 @@ namespace poly_fem
 		igl::Timer timer; timer.start();
 		std::cout<<"Assembling stiffness mat..."<<std::flush;
 
-		if(problem.problem_num() == 3)
+		if(!problem->is_scalar())
 		{
 			Assembler<LinearElasticity> assembler;
 			LinearElasticity &le = assembler.local_assembler();
@@ -586,21 +583,6 @@ namespace poly_fem
 		num_dofs = stiffness.rows();
 		mat_size = (long long) stiffness.rows() * (long long) stiffness.cols();
 		std::cout<<"sparsity: "<<nn_zero<<"/"<<mat_size<<std::endl;
-
-
-		// {
-		// 	std::ofstream of;
-		// 	of.open("stiffness.txt");
-		// 	of.precision(100);
-		// 	for(long i = 0; i < stiffness.rows(); ++i)
-		// 	{
-		// 		for (Eigen::SparseMatrix<double, Eigen::RowMajor>::InnerIterator it(stiffness, i); it; ++it)
-		// 		{
-		// 			of << it.row() << " " << it.col() << " "<<it.valueRef() <<"\n";
-		// 		}
-		// 	}
-		// 	of.close();
-		// }
 	}
 
 	void State::assemble_rhs()
@@ -612,18 +594,18 @@ namespace poly_fem
 		igl::Timer timer; timer.start();
 		std::cout<<"Assigning rhs..."<<std::flush;
 
-		const int size = problem.problem_num() == 3 ? mesh->dimension() : 1;
+		const int size = problem->is_scalar() ? 1 : mesh->dimension();
 
 		if(iso_parametric)
 		{
-			RhsAssembler rhs_assembler(*mesh, n_bases, size, bases, bases, problem);
+			RhsAssembler rhs_assembler(*mesh, n_bases, size, bases, bases, *problem);
 			rhs_assembler.assemble(rhs);
 			rhs *= -1;
 			rhs_assembler.set_bc(local_boundary, boundary_nodes, n_boundary_samples, rhs);
 		}
 		else
 		{
-			RhsAssembler rhs_assembler(*mesh, n_bases, size, bases, geom_bases, problem);
+			RhsAssembler rhs_assembler(*mesh, n_bases, size, bases, geom_bases, *problem);
 			rhs_assembler.assemble(rhs);
 			rhs *= -1;
 			rhs_assembler.set_bc(local_boundary, boundary_nodes, n_boundary_samples, rhs);
@@ -666,7 +648,7 @@ namespace poly_fem
 	{
 		errors.clear();
 
-		if(!problem.has_exact_sol()) return;
+		if(!problem->has_exact_sol()) return;
 
 		igl::Timer timer; timer.start();
 		std::cout<<"Computing errors..."<<std::flush;
@@ -694,7 +676,7 @@ namespace poly_fem
 			else
 				vals.compute(e, mesh->is_volume(), bases[e], geom_bases[e]);
 
-			problem.exact(vals.val, v_exact);
+			problem->exact(vals.val, v_exact);
 
 			v_approx = MatrixXd::Zero(v_exact.rows(), v_exact.cols());
 
@@ -710,8 +692,8 @@ namespace poly_fem
 
 			const auto err = (v_exact-v_approx).cwiseAbs();
 
-			for(long i = 0; i < err.size(); ++i)
-				errors.push_back(err(i));
+			// for(long i = 0; i < err.size(); ++i)
+				// errors.push_back(err(i));
 
 			linf_err = max(linf_err, err.maxCoeff());
 			l2_err += (err.array() * err.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
@@ -741,7 +723,8 @@ namespace poly_fem
 		n_refs = n_refs_;
 		mesh_path = mesh_path_;
 
-		problem.set_problem_num(problem_num);
+		problem = Problem::get_problem(ProblemType(problem_num));
+
 		auto solvers = LinearSolver::availableSolvers();
 		if (std::find(solvers.begin(), solvers.end(), solver_type) == solvers.end()) {
 			solver_type = LinearSolver::defaultSolver();
@@ -899,13 +882,9 @@ namespace poly_fem
 
 	void State::compute_poly_basis_error(const std::string &path)
 	{
-
 		auto dx = [](const Eigen::MatrixXd &pts, Eigen::MatrixXd &val){ auto x = pts.col(0).array(); auto y = pts.col(1).array();  auto z = pts.col(2).array(); val =  (-59535 * x + 13230) * exp(-0.81e2 / 0.4e1 *  x *  x +  (9 * x) - 0.3e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y - 0.81e2 / 0.4e1 * z * z + 0.9e1 * z) / 0.1960e4 +  (-39690 * x + 30870) * exp(-0.81e2 / 0.4e1 *  x *  x + 0.63e2 / 0.2e1 *  x - 0.83e2 / 0.4e1 - 0.81e2 / 0.2e1 * y * y + 0.36e2 * y) / 0.1960e4 +  (-4860 * x - 540) * exp(-0.81e2 / 0.49e2 *  x *  x - 0.18e2 / 0.49e2 *  x - 0.54e2 / 0.245e3 - 0.9e1 / 0.10e2 * y - 0.9e1 / 0.10e2 * z) / 0.1960e4 + 0.162e3 / 0.5e1 * ( x - 0.4e1 / 0.9e1) * exp(- (81 * x * x) - 0.162e3 * y * y +  (72 * x) + 0.216e3 * y - 0.90e2);};
 		auto dy = [](const Eigen::MatrixXd &pts, Eigen::MatrixXd &val){ auto x = pts.col(0).array(); auto y = pts.col(1).array();  auto z = pts.col(2).array(); val =  -0.243e3 / 0.8e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.9e1 * x - 0.3e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y - 0.81e2 / 0.4e1 * z * z + 0.9e1 * z) * y + 0.27e2 / 0.4e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.9e1 * x - 0.3e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y - 0.81e2 / 0.4e1 * z * z + 0.9e1 * z) - 0.27e2 / 0.40e2 * exp(-0.81e2 / 0.49e2 * x * x - 0.18e2 / 0.49e2 * x - 0.54e2 / 0.245e3 - 0.9e1 / 0.10e2 * y - 0.9e1 / 0.10e2 * z) - 0.81e2 / 0.2e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.63e2 / 0.2e1 * x - 0.83e2 / 0.4e1 - 0.81e2 / 0.2e1 * y * y + 0.36e2 * y) * y + 0.18e2 * exp(-0.81e2 / 0.4e1 * x * x + 0.63e2 / 0.2e1 * x - 0.83e2 / 0.4e1 - 0.81e2 / 0.2e1 * y * y + 0.36e2 * y) + 0.324e3 / 0.5e1 * exp(-0.81e2 * x * x - 0.162e3 * y * y + 0.72e2 * x + 0.216e3 * y - 0.90e2) * y - 0.216e3 / 0.5e1 * exp(-0.81e2 * x * x - 0.162e3 * y * y + 0.72e2 * x + 0.216e3 * y - 0.90e2);};
 		auto dz = [](const Eigen::MatrixXd &pts, Eigen::MatrixXd &val){ auto x = pts.col(0).array(); auto y = pts.col(1).array();  auto z = pts.col(2).array(); val = -0.243e3 / 0.8e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.9e1 * x - 0.3e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y - 0.81e2 / 0.4e1 * z * z + 0.9e1 * z) * z + 0.27e2 / 0.4e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.9e1 * x - 0.3e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y - 0.81e2 / 0.4e1 * z * z + 0.9e1 * z) - 0.27e2 / 0.40e2 * exp(-0.81e2 / 0.49e2 * x * x - 0.18e2 / 0.49e2 * x - 0.54e2 / 0.245e3 - 0.9e1 / 0.10e2 * y - 0.9e1 / 0.10e2 * z); };
-
-
-
 
 
 
@@ -931,7 +910,7 @@ namespace poly_fem
 					const int g_index = l2g.index;
 
 					const auto &node = l2g.node;
-					problem.exact(node, tmp);
+					problem->exact(node, tmp);
 
 					fun(g_index) = tmp(0);
 				}
@@ -983,7 +962,7 @@ namespace poly_fem
 			l2_err_interp = sqrt(fabs(l2_err_interp));
 			lp_err_interp = pow(fabs(lp_err_interp), 1./8.);
 
-			
+
 			j["err_l2_"+std::to_string(c)] = l2_err_interp;
 			j["err_lp_"+std::to_string(c)] = lp_err_interp;
 		}

@@ -205,6 +205,18 @@ add_library(polyfem
 
 	src/problem/Problem.hpp
 	src/problem/Problem.cpp
+	src/problem/LinearProblem.hpp
+	src/problem/LinearProblem.cpp
+	src/problem/QuadraticProblem.hpp
+	src/problem/QuadraticProblem.cpp
+	src/problem/Franke2dProblem.hpp
+	src/problem/Franke2dProblem.cpp
+	src/problem/Franke3dProblem.hpp
+	src/problem/Franke3dProblem.cpp
+	src/problem/ZeroBCProblem.hpp
+	src/problem/ZeroBCProblem.cpp
+	src/problem/ElasticProblem.hpp
+	src/problem/ElasticProblem.cpp
 
 	src/solver/FEMSolver.cpp
 	src/solver/LinearSolver.cpp

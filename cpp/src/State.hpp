@@ -22,6 +22,8 @@ namespace poly_fem
 		static State &state();
 		~State() = default;
 
+		State();
+
 		void init(const std::string &mesh_path, const int n_refs, const int problem_num_);
 
 		int quadrature_order = 4;
@@ -37,7 +39,7 @@ namespace poly_fem
 		bool iso_parametric = true;
 		bool fit_nodes = true;
 
-		Problem problem;
+		std::shared_ptr<Problem> problem;
 
 		int n_bases;
 
