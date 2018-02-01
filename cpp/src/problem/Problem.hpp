@@ -39,6 +39,8 @@ namespace poly_fem
 
 		void remove_neumann_nodes(const Mesh &mesh, const std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &boundary_nodes);
 
+		std::vector<int> &boundary_ids() { return boundary_ids_; }
+		const std::vector<int> &boundary_ids() const { return boundary_ids_; }
 
 		virtual ~Problem() { }
 	protected:

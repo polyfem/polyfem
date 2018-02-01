@@ -4,6 +4,7 @@
 #include "Mesh3D.hpp"
 
 #include "LinearElasticity.hpp"
+#include "ElasticProblem.hpp"
 
 #include "LinearSolver.hpp"
 #include "EdgeSampler.hpp"
@@ -129,7 +130,7 @@ namespace poly_fem
 			EdgeSampler::sample_3d(n_samples, samples);
 		else
 			EdgeSampler::sample_2d(n_samples, samples);
-		
+
 		for(std::size_t i = 0; i < bases.size(); ++i)
 		{
 			if(!valid_elements[i]) continue;
@@ -589,6 +590,14 @@ namespace poly_fem
 	void UIState::init(const std::string &mesh_path, const int n_refs, const int problem_num)
 	{
 		state.init(mesh_path, n_refs, problem_num);
+
+		if(state.problem->boundary_ids().empty())
+			std::fill(dirichlet_bc.begin(), dirichlet_bc.end(), true);
+		else
+			std::fill(dirichlet_bc.begin(), dirichlet_bc.end(), false);
+
+		for(int i = 0; i < state.problem->boundary_ids().size(); ++i)
+			dirichlet_bc[state.problem->boundary_ids()[i]-1] = true;
 
 		auto clear_func = [&](){ viewer.data.clear(); };
 
@@ -1170,7 +1179,16 @@ namespace poly_fem
 			viewer_.ngui->addVariable<igl::ColorMapType>("Colormap", color_map)->setItems({"inferno", "jet", "magma", "parula", "plasma", "viridis"});
 
 			viewer_.ngui->addVariable<ProblemType>("Problem",
-				[&](ProblemType val) { state.problem = Problem::get_problem(ProblemType(val)); },
+				[&](ProblemType val) {
+					state.problem = Problem::get_problem(ProblemType(val));
+					if(state.problem->boundary_ids().empty())
+						std::fill(dirichlet_bc.begin(), dirichlet_bc.end(), true);
+					else
+						std::fill(dirichlet_bc.begin(), dirichlet_bc.end(), false);
+
+					for(int i = 0; i < state.problem->boundary_ids().size(); ++i)
+						dirichlet_bc[state.problem->boundary_ids()[i]-1] = true;
+				},
 				[&]() { return state.problem->problem_num(); }
 				)->setItems({"Linear","Quadratic","Franke", "Elastic", "Zero BC", "Franke3D"});
 
@@ -1361,6 +1379,28 @@ namespace poly_fem
 				std::string path = (screenshot.empty() ? "out.png" : screenshot);
 				igl::png::writePNG(R,G,B,A,path);
 			});
+
+
+
+			viewer_.ngui->addWindow(Eigen::Vector2i(1000,0),"Elasticity BC");
+			for(int local_id = 1; local_id <= 6; ++local_id)
+			{
+				viewer_.ngui->addVariable<bool>("Dirichlet " + std::to_string(local_id),
+					[this,local_id](bool val) {
+					dirichlet_bc[local_id-1] = val;
+
+					auto &ids = state.problem->boundary_ids();
+					ids.clear();
+					for(int i=0; i < dirichlet_bc.size(); ++i)
+					{
+						if(dirichlet_bc[i])
+							ids.push_back(i+1);
+					}
+
+				},[this,local_id]() {
+					return dirichlet_bc[local_id-1];
+				});
+			}
 
 			viewer_.screen->performLayout();
 

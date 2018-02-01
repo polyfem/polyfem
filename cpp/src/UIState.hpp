@@ -67,6 +67,7 @@ namespace poly_fem
 		State &state;
 	private:
 		Visualizing current_visualization = Visualizing::InputMesh;
+		std::array<bool, 6> dirichlet_bc;
 
 		bool is_quad(const ElementBases &bs) const;
 		bool is_tri(const ElementBases &bs) const;
