@@ -18,7 +18,8 @@ namespace poly_fem
 		Franke,
 		Elastic,
 		Zero_BC,
-		Franke3d
+		Franke3d,
+		ElasticExact,
 	};
 
 	class Problem

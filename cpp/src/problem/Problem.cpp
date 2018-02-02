@@ -21,6 +21,7 @@ namespace poly_fem
 			case ProblemType::Franke3d: return std::make_shared<Franke3dProblem>();
 			case ProblemType::Zero_BC: return std::make_shared<ZeroBCProblem>();
 			case ProblemType::Elastic: return std::make_shared<ElasticProblem>();
+			case ProblemType::ElasticExact: return std::make_shared<ElasticProblemExact>();
 
 			default:
 			assert(false);

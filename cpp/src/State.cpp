@@ -647,6 +647,10 @@ namespace poly_fem
 
 		if(!problem->has_exact_sol()) return;
 
+		int actual_dim = 1;
+		if(!problem->is_scalar())
+			actual_dim = mesh->dimension();
+
 		igl::Timer timer; timer.start();
 		std::cout<<"Computing errors..."<<std::flush;
 		using std::max;
@@ -683,11 +687,14 @@ namespace poly_fem
 			{
 				auto val=vals.basis_values[i];
 
-				for(std::size_t ii = 0; ii < val.global.size(); ++ii)
-					v_approx += val.global[ii].val * sol(val.global[ii].index) * val.val;
+				for(std::size_t ii = 0; ii < val.global.size(); ++ii){
+					for(int d = 0; d < actual_dim; ++d){
+						v_approx.col(d) += val.global[ii].val * sol(val.global[ii].index*actual_dim + d) * val.val;
+					}
+				}
 			}
 
-			const auto err = (v_exact-v_approx).cwiseAbs();
+			const auto err = (v_exact-v_approx).eval().rowwise().norm().eval();
 
 			// for(long i = 0; i < err.size(); ++i)
 				// errors.push_back(err(i));

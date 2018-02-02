@@ -69,6 +69,26 @@ namespace poly_fem
 		Visualizing current_visualization = Visualizing::InputMesh;
 		std::array<bool, 6> dirichlet_bc;
 
+		void clear();
+		void show_mesh();
+		void show_vis_mesh();
+		void show_nodes();
+		void show_rhs();
+		void show_sol();
+		void show_error();
+		void show_basis();
+		void show_linear_reproduction();
+		void show_quadratic_reproduction();
+		void build_vis_mesh();
+		void load_mesh();
+		void build_basis();
+		void build_polygonal_basis();
+		void assemble_stiffness_mat();
+		void assemble_rhs();
+		void solve_problem();
+		void compute_errors();
+		void update_slices();
+
 		bool is_quad(const ElementBases &bs) const;
 		bool is_tri(const ElementBases &bs) const;
 

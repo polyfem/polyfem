@@ -1,4 +1,5 @@
 #include "ElasticProblem.hpp"
+#include "State.hpp"
 
 #include <iostream>
 
@@ -31,5 +32,43 @@ namespace poly_fem
 			else if(mesh.get_boundary_id(global_ids(i))== 6)
 				val(i, 1)=0.025;
 		}
+	}
+
+
+
+
+
+
+	ElasticProblemExact::ElasticProblemExact()
+	{
+		problem_num_ = ProblemType::ElasticExact;
+	}
+
+	void ElasticProblemExact::rhs(const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	{
+		auto &x = pts.col(0).array();
+		auto &y = pts.col(1).array();
+		
+		double lambda = State::state().lambda;
+		double mu = State::state().mu;
+
+		val.resize(pts.rows(), mesh.dimension());
+		val.col(0) = 2./5.*mu + lambda*(1./5+1./5.*y) + 4./5.*mu*y;
+		val.col(1) = 2*mu*(9./5.*x*x + 1./20.) + 2./5.*mu*x + lambda*(1./10.+1./5.*x);
+	}
+
+	void ElasticProblemExact::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	{
+		exact(pts, val);
+	}
+
+	void ElasticProblemExact::exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	{
+		auto &x = pts.col(0).array();
+		auto &y = pts.col(1).array();
+
+		val.resize(pts.rows(), pts.cols());
+		val.col(0) = (y*y*y + x*x + x*y)/10.;
+		val.col(1) = (3*x*x*x*x + x*y*y + x)/10.;
 	}
 }
