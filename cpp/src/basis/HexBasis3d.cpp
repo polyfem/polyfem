@@ -2,7 +2,6 @@
 #include "HexBasis3d.hpp"
 #include "MeshNodes.hpp"
 #include "HexQuadrature.hpp"
-#include <igl/viewer/Viewer.h>
 #include <cassert>
 #include <array>
 ////////////////////////////////////////////////////////////////////////////////

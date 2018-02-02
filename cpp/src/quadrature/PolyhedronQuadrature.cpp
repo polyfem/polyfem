@@ -9,7 +9,6 @@
 #include <igl/readMESH.h>
 #include <igl/write_triangle_mesh.h>
 #include <igl/simplify_polyhedron.h>
-#include <igl/viewer/Viewer.h>
 #ifdef POLYFEM_WITH_MMG
 #include <boost/filesystem.hpp>
 #endif

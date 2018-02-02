@@ -67,163 +67,123 @@ option(LIBIGL_WITH_XML              "Use XML"            OFF)
 
 ################################################################################
 
-add_definitions("-DENABLE_SERIALIZATION")
-
 # Polyfem library
 add_library(polyfem
+	src/assembler/Assembler.hpp
+	src/assembler/AssemblyValues.hpp
+	src/assembler/ElementAssemblyValues.cpp
+	src/assembler/ElementAssemblyValues.hpp
+	src/assembler/Laplacian.cpp
+	src/assembler/Laplacian.hpp
+	src/assembler/LinearElasticity.cpp
+	src/assembler/LinearElasticity.hpp
+	src/assembler/RhsAssembler.cpp
+	src/assembler/RhsAssembler.hpp
+	src/basis/Basis.cpp
+	src/basis/Basis.hpp
+	src/basis/ElementBases.cpp
+	src/basis/ElementBases.hpp
+	src/basis/function/QuadraticBSpline.cpp
+	src/basis/function/QuadraticBSpline.hpp
+	src/basis/function/QuadraticBSpline2d.cpp
+	src/basis/function/QuadraticBSpline2d.hpp
+	src/basis/function/QuadraticBSpline3d.cpp
+	src/basis/function/QuadraticBSpline3d.hpp
+	src/basis/function/RBFWithLinear.cpp
+	src/basis/function/RBFWithLinear.hpp
+	src/basis/function/RBFWithQuadratic.cpp
+	src/basis/function/RBFWithQuadratic.hpp
+	src/basis/function/RBFWithQuadraticLagrange.cpp
+	src/basis/function/RBFWithQuadraticLagrange.hpp
+	src/basis/HexBasis3d.cpp
+	src/basis/HexBasis3d.hpp
+	src/basis/InterfaceData.hpp
+	src/basis/PolygonalBasis2d.cpp
+	src/basis/PolygonalBasis2d.hpp
+	src/basis/PolygonalBasis3d.cpp
+	src/basis/PolygonalBasis3d.hpp
+	src/basis/QuadBasis2d.cpp
+	src/basis/QuadBasis2d.hpp
+	src/basis/SplineBasis2d.cpp
+	src/basis/SplineBasis2d.hpp
+	src/basis/SplineBasis3d.cpp
+	src/basis/SplineBasis3d.hpp
+	src/basis/TetBasis3d.cpp
+	src/basis/TetBasis3d.hpp
+	src/basis/TriBasis2d.cpp
+	src/basis/TriBasis2d.hpp
 	src/Common.hpp
-
-	src/State.hpp
-	src/State.cpp
-
-	src/utils/Types.hpp
-
-	src/utils/CustomSerialization.hpp
-
-	src/utils/CommandLine.hpp
-	src/utils/CommandLine.cpp
-
-	src/utils/EdgeSampler.hpp
-	src/utils/EdgeSampler.cpp
-
-	src/utils/BoundarySampler.hpp
-
-	src/utils/MatrixUtils.hpp
-	src/utils/MatrixUtils.cpp
-
-	src/utils/StringUtils.hpp
-	src/utils/StringUtils.cpp
-
+	src/mesh/LocalBoundary.hpp
 	src/mesh/Mesh.cpp
 	src/mesh/Mesh.hpp
 	src/mesh/MeshNodes.cpp
 	src/mesh/MeshNodes.hpp
-	src/mesh/LocalBoundary.hpp
-
-	src/mesh2D/Mesh2D.hpp
+	src/mesh/VTUWriter.cpp
+	src/mesh/VTUWriter.hpp
 	src/mesh2D/Mesh2D.cpp
+	src/mesh2D/Mesh2D.hpp
 	src/mesh2D/MeshUtils.cpp
 	src/mesh2D/MeshUtils.hpp
-	src/mesh2D/Navigation.hpp
 	src/mesh2D/Navigation.cpp
-	src/mesh2D/PolygonUtils.hpp
+	src/mesh2D/Navigation.hpp
 	src/mesh2D/PolygonUtils.cpp
-	src/mesh2D/Refinement.hpp
+	src/mesh2D/PolygonUtils.hpp
 	src/mesh2D/Refinement.cpp
-	src/mesh2D/Singularities.hpp
+	src/mesh2D/Refinement.hpp
 	src/mesh2D/Singularities.cpp
-
-	src/mesh3D/Mesh3DStorage.hpp
-	src/mesh3D/Mesh3D.hpp
+	src/mesh2D/Singularities.hpp
 	src/mesh3D/Mesh3D.cpp
-	src/mesh3D/Navigation3D.hpp
-	src/mesh3D/Navigation3D.cpp
-	src/mesh3D/MeshProcessing3D.hpp
+	src/mesh3D/Mesh3D.hpp
+	src/mesh3D/Mesh3DStorage.hpp
 	src/mesh3D/MeshProcessing3D.cpp
-
-	src/quadrature/Quadrature.hpp
-
-	src/quadrature/LineQuadrature.hpp
+	src/mesh3D/MeshProcessing3D.hpp
+	src/mesh3D/Navigation3D.cpp
+	src/mesh3D/Navigation3D.hpp
+	src/problem/ElasticProblem.cpp
+	src/problem/ElasticProblem.hpp
+	src/problem/Franke2dProblem.cpp
+	src/problem/Franke2dProblem.hpp
+	src/problem/Franke3dProblem.cpp
+	src/problem/Franke3dProblem.hpp
+	src/problem/LinearProblem.cpp
+	src/problem/LinearProblem.hpp
+	src/problem/Problem.cpp
+	src/problem/Problem.hpp
+	src/problem/QuadraticProblem.cpp
+	src/problem/QuadraticProblem.hpp
+	src/problem/ZeroBCProblem.cpp
+	src/problem/ZeroBCProblem.hpp
+	src/quadrature/HexQuadrature.cpp
+	src/quadrature/HexQuadrature.hpp
 	src/quadrature/LineQuadrature.cpp
-	src/quadrature/TriQuadrature.cpp
-	src/quadrature/TriQuadrature.hpp
-	src/quadrature/QuadQuadrature.cpp
-	src/quadrature/QuadQuadrature.hpp
+	src/quadrature/LineQuadrature.hpp
 	src/quadrature/PolygonQuadrature.cpp
 	src/quadrature/PolygonQuadrature.hpp
 	src/quadrature/PolyhedronQuadrature.cpp
 	src/quadrature/PolyhedronQuadrature.hpp
-	src/quadrature/HexQuadrature.cpp
-	src/quadrature/HexQuadrature.hpp
+	src/quadrature/QuadQuadrature.cpp
+	src/quadrature/QuadQuadrature.hpp
+	src/quadrature/Quadrature.hpp
 	src/quadrature/TetQuadrature.cpp
 	src/quadrature/TetQuadrature.hpp
-
-	src/basis/ElementBases.hpp
-	src/basis/ElementBases.cpp
-
-	src/basis/Basis.hpp
-	src/basis/Basis.cpp
-
-	src/basis/InterfaceData.hpp
-
-
-	src/basis/QuadBasis2d.cpp
-	src/basis/QuadBasis2d.hpp
-
-	src/basis/TriBasis2d.cpp
-	src/basis/TriBasis2d.hpp
-
-	src/basis/SplineBasis2d.cpp
-	src/basis/SplineBasis2d.hpp
-
-	src/basis/PolygonalBasis2d.cpp
-	src/basis/PolygonalBasis2d.hpp
-
-	src/basis/HexBasis3d.cpp
-	src/basis/HexBasis3d.hpp
-
-	src/basis/TetBasis3d.cpp
-	src/basis/TetBasis3d.hpp
-
-	src/basis/SplineBasis3d.cpp
-	src/basis/SplineBasis3d.hpp
-
-	src/basis/PolygonalBasis3d.cpp
-	src/basis/PolygonalBasis3d.hpp
-
-	src/basis/function/QuadraticBSpline.cpp
-	src/basis/function/QuadraticBSpline.hpp
-
-	src/basis/function/QuadraticBSpline2d.cpp
-	src/basis/function/QuadraticBSpline2d.hpp
-
-	src/basis/function/QuadraticBSpline3d.cpp
-	src/basis/function/QuadraticBSpline3d.hpp
-
-	src/basis/function/RBFWithLinear.cpp
-	src/basis/function/RBFWithLinear.hpp
-
-	src/basis/function/RBFWithQuadratic.cpp
-	src/basis/function/RBFWithQuadratic.hpp
-
-	src/basis/function/RBFWithQuadraticLagrange.cpp
-	src/basis/function/RBFWithQuadraticLagrange.hpp
-
-	src/assembler/AssemblyValues.hpp
-	src/assembler/ElementAssemblyValues.hpp
-	src/assembler/ElementAssemblyValues.cpp
-
-	src/assembler/Assembler.hpp
-
-	src/assembler/RhsAssembler.hpp
-	src/assembler/RhsAssembler.cpp
-
-	src/assembler/Laplacian.hpp
-	src/assembler/Laplacian.cpp
-	src/assembler/LinearElasticity.hpp
-	src/assembler/LinearElasticity.cpp
-
-	src/problem/Problem.hpp
-	src/problem/Problem.cpp
-	src/problem/LinearProblem.hpp
-	src/problem/LinearProblem.cpp
-	src/problem/QuadraticProblem.hpp
-	src/problem/QuadraticProblem.cpp
-	src/problem/Franke2dProblem.hpp
-	src/problem/Franke2dProblem.cpp
-	src/problem/Franke3dProblem.hpp
-	src/problem/Franke3dProblem.cpp
-	src/problem/ZeroBCProblem.hpp
-	src/problem/ZeroBCProblem.cpp
-	src/problem/ElasticProblem.hpp
-	src/problem/ElasticProblem.cpp
-
+	src/quadrature/TriQuadrature.cpp
+	src/quadrature/TriQuadrature.hpp
 	src/solver/FEMSolver.cpp
 	src/solver/LinearSolver.cpp
 	src/solver/LinearSolverPardiso.cpp
-
-	src/mesh/VTUWriter.hpp
-	src/mesh/VTUWriter.cpp
+	src/State.cpp
+	src/State.hpp
+	src/utils/BoundarySampler.hpp
+	src/utils/CommandLine.cpp
+	src/utils/CommandLine.hpp
+	src/utils/CustomSerialization.hpp
+	src/utils/EdgeSampler.cpp
+	src/utils/EdgeSampler.hpp
+	src/utils/MatrixUtils.cpp
+	src/utils/MatrixUtils.hpp
+	src/utils/StringUtils.cpp
+	src/utils/StringUtils.hpp
+	src/utils/Types.hpp
 )
 
 target_include_directories(polyfem PUBLIC
@@ -238,11 +198,11 @@ target_include_directories(polyfem PUBLIC
 	src/quadrature
 	src/solver
 	src/utils
+	src/viewer
 )
 
 set(MESH_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tests/")
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_MESH_PATH=\"${MESH_PATH}\")
-
 
 ################################################################################
 # Required libraries
@@ -384,16 +344,21 @@ target_compile_features(polyfem PUBLIC ${CXX14_FEATURES})
 # Main executable
 add_executable(${PROJECT_NAME}_bin
 	src/main.cpp
-	src/UIState.hpp
-	src/UIState.cpp
+	src/viewer/UIState.hpp
+	src/viewer/UIState.cpp
 )
+
+target_include_directories(${PROJECT_NAME}_bin PUBLIC
+	src/viewer
+)
+
 target_link_libraries(${PROJECT_NAME}_bin PUBLIC polyfem igl::viewer igl::png)
 
 # Main executable without gui, uncomment when not debugging gui is necessary
-# add_executable(${PROJECT_NAME}_exec
+# add_executable(${PROJECT_NAME}_cmd
 # 	src/main_no_gui.cpp
 # )
-# target_link_libraries(${PROJECT_NAME}_exec PUBLIC polyfem)
+# target_link_libraries(${PROJECT_NAME}_cmd PUBLIC polyfem)
 
 ################################################################################
 

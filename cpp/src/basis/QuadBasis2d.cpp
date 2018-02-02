@@ -2,7 +2,6 @@
 #include "QuadBasis2d.hpp"
 #include "MeshNodes.hpp"
 #include "QuadQuadrature.hpp"
-#include <igl/viewer/Viewer.h>
 #include <cassert>
 #include <array>
 ////////////////////////////////////////////////////////////////////////////////

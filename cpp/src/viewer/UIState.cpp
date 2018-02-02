@@ -594,6 +594,7 @@ namespace poly_fem
 
 	void UIState::show_mesh()
 	{
+		if (!state.mesh) { return; }
 		clear();
 		current_visualization = Visualizing::InputMesh;
 
@@ -629,6 +630,7 @@ namespace poly_fem
 
 	void UIState::show_vis_mesh()
 	{
+		if (!state.mesh) { return; }
 		clear();
 		current_visualization = Visualizing::VisMesh;
 
@@ -640,6 +642,7 @@ namespace poly_fem
 
 	void UIState::show_nodes()
 	{
+		if (!state.mesh) { return; }
 		for(std::size_t i = 0; i < state.bases.size(); ++i)
 		// size_t i = 6;
 		{
@@ -680,6 +683,7 @@ namespace poly_fem
 
 	void UIState::show_rhs()
 	{
+		if (!state.mesh) { return; }
 		current_visualization = Visualizing::Rhs;
 		MatrixXd global_rhs;
 		state.interpolate_function(state.rhs, local_vis_pts_quad, global_rhs);
@@ -689,6 +693,11 @@ namespace poly_fem
 
 	void UIState::show_error()
 	{
+		if (!state.mesh) { return; }
+		if(state.sol.size() <= 0) {
+			std::cerr<<"Solve the problem first!"<<std::endl;
+			return;
+		}
 		if (!state.problem->has_exact_sol()) { return; }
 		current_visualization = Visualizing::Error;
 		MatrixXd global_sol;
@@ -703,6 +712,7 @@ namespace poly_fem
 
 	void UIState::show_basis()
 	{
+		if (!state.mesh) { return; }
 		if(vis_basis < 0 || vis_basis >= state.n_bases) return;
 
 		current_visualization = Visualizing::VisBasis;
@@ -721,6 +731,7 @@ namespace poly_fem
 
 	void UIState::show_sol()
 	{
+		if (!state.mesh) { return; }
 		current_visualization = Visualizing::Solution;
 		MatrixXd global_sol;
 		interpolate_function(state.sol, global_sol);
@@ -803,6 +814,7 @@ namespace poly_fem
 
 	void UIState::build_vis_mesh()
 	{
+		if (!state.mesh) { return; }
 		vis_element_ranges.clear();
 
 
@@ -1041,6 +1053,7 @@ namespace poly_fem
 
 	void UIState::load_mesh()
 	{
+		if (state.mesh_path.empty()) { return; }
 		element_ranges.clear();
 		vis_element_ranges.clear();
 
@@ -1073,6 +1086,7 @@ namespace poly_fem
 
 	void UIState::build_basis()
 	{
+		if (!state.mesh) { return; }
 		state.build_basis();
 
 		if(skip_visualization) return;
@@ -1083,6 +1097,7 @@ namespace poly_fem
 
 	void UIState::build_polygonal_basis()
 	{
+		if (!state.mesh) { return; }
 		state.build_polygonal_basis();
 
 		if(skip_visualization) return;
@@ -1092,11 +1107,13 @@ namespace poly_fem
 	}
 
 	void UIState::assemble_stiffness_mat() {
+		if (!state.mesh) { return; }
 		state.assemble_stiffness_mat();
 	}
 
 	void UIState::assemble_rhs()
 	{
+		if (!state.mesh) { return; }
 		state.assemble_rhs();
 
 		// std::cout<<state.rhs<<std::endl;
@@ -1108,6 +1125,7 @@ namespace poly_fem
 
 	void UIState::solve_problem()
 	{
+		if (!state.mesh) { return; }
 		state.solve_problem();
 		// state.solve_problem_old();
 
@@ -1118,6 +1136,7 @@ namespace poly_fem
 
 	void UIState::compute_errors()
 	{
+		if (!state.mesh) { return; }
 		state.compute_errors();
 
 		if(skip_visualization) return;
