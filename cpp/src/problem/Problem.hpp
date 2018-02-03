@@ -11,15 +11,15 @@
 
 namespace poly_fem
 {
-	enum class ProblemType
+	enum class ProblemType : int
 	{
 		Linear = 0,
-		Quadratic,
-		Franke,
-		Elastic,
-		Zero_BC,
-		Franke3d,
-		ElasticExact,
+		Quadratic = 1,
+		Franke = 2,
+		Elastic = 3,
+		Zero_BC = 4,
+		Franke3d = 5,
+		ElasticExact = 6,
 	};
 
 	class Problem
@@ -34,6 +34,7 @@ namespace poly_fem
 		virtual void exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { };
 
 		inline ProblemType problem_num() const { return problem_num_; }
+		inline ProblemType& problem_num() { return problem_num_; }
 
 		virtual bool has_exact_sol() const = 0;
 		virtual bool is_scalar() const = 0;

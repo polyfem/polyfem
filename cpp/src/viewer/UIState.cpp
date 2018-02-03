@@ -214,9 +214,9 @@ namespace poly_fem
 	void UIState::plot_selection_and_index(const bool recenter)
 	{
 		std::vector<bool> valid_elements(normalized_barycenter.rows(), false);
-		auto v{explode(selected_elements, ',')};
-		for(auto idx : v)
-			valid_elements[atoi(idx.c_str())] = true;
+		for (auto idx : selected_elements) {
+			valid_elements[idx] = true;
+		}
 
 		viewer.data.clear();
 
@@ -1158,7 +1158,7 @@ namespace poly_fem
 		}
 	}
 
-	void UIState::init(const std::string &mesh_path, const int n_refs, const int problem_num)
+	void UIState::launch(const std::string &mesh_path, const int n_refs, const int problem_num)
 	{
 		state.init(mesh_path, n_refs, problem_num);
 
@@ -1167,9 +1167,10 @@ namespace poly_fem
 		else
 			std::fill(dirichlet_bc.begin(), dirichlet_bc.end(), false);
 
-		for(int i = 0; i < state.problem->boundary_ids().size(); ++i)
+		for(int i = 0; i < (int) state.problem->boundary_ids().size(); ++i)
 			dirichlet_bc[state.problem->boundary_ids()[i]-1] = true;
 
+		#if 0
 		enum Foo : int { A=0 };
 
 		viewer.callback_init = [&](igl::viewer::Viewer& viewer_)
@@ -1435,11 +1436,14 @@ namespace poly_fem
 
 			return false;
 		};
+		#endif
 
 		viewer.core.background_color.setOnes();
 		viewer.core.set_rotation_type(igl::viewer::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
 
 		if (screenshot.empty()) {
+			viewer.core.is_animating = true;
+			viewer.plugins.push_back(this);
 			viewer.launch();
 		} else {
 			load_mesh();

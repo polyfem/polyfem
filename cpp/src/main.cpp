@@ -156,7 +156,7 @@ int main(int argc, const char **argv)
 		UIState::ui_state().state.integral_constraints = integral_constraints;
 		UIState::ui_state().screenshot = screenshot;
 
-		UIState::ui_state().init(path, n_refs, problem_num);
+		UIState::ui_state().launch(path, n_refs, problem_num);
 	}
 
 

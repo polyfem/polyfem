@@ -71,13 +71,13 @@ namespace poly_fem
 		Eigen::MatrixXd sol;
 		json solver_info;
 
-		double lambda = 1, mu = 1;
+		float lambda = 1, mu = 1;
 
 		double mesh_size;
 		double l2_err, linf_err, lp_err;
 		long long nn_zero, mat_size, num_dofs;
 
-		double refinenemt_location = 0.5;
+		float refinenemt_location = 0.5;
 
 		double building_basis_time;
 		double loading_mesh_time;

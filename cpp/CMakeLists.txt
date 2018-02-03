@@ -42,7 +42,7 @@ option(LIBIGL_WITH_EMBREE           "Use Embree"         OFF)
 option(LIBIGL_WITH_LIM              "Use LIM"            OFF)
 option(LIBIGL_WITH_MATLAB           "Use Matlab"         OFF)
 option(LIBIGL_WITH_MOSEK            "Use MOSEK"          OFF)
-option(LIBIGL_WITH_NANOGUI          "Use Nanogui menu"   ON)
+option(LIBIGL_WITH_NANOGUI          "Use Nanogui menu"   OFF)
 option(LIBIGL_WITH_OPENGL           "Use OpenGL"         ON)
 option(LIBIGL_WITH_OPENGL_GLFW      "Use GLFW"           ON)
 option(LIBIGL_WITH_PNG              "Use PNG"            ON)
@@ -63,7 +63,7 @@ option(LIBIGL_WITH_XML              "Use XML"            OFF)
 # set(ENABLE_PARDISO      OFF CACHE BOOL "" FORCE)
 # set(ENABLE_MMG          ON  CACHE BOOL "" FORCE)
 # set(ENABLE_MMG          ON  CACHE BOOL "" FORCE)
-# set(LIBIGL_WITH_NANOGUI ON  CACHE BOOL "" FORCE)
+# set(LIBIGL_WITH_NANOGUI OFF  CACHE BOOL "" FORCE)
 
 ################################################################################
 
@@ -213,6 +213,15 @@ target_compile_definitions(polyfem PUBLIC -DPOLYFEM_MESH_PATH=\"${MESH_PATH}\")
 # find_package(Eigen3 REQUIRED)
 # target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
 
+# GLFW3
+if(NOT TARGET glfw)
+	set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL " " FORCE)
+	set(GLFW_BUILD_TESTS OFF CACHE BOOL " " FORCE)
+	set(GLFW_BUILD_DOCS OFF CACHE BOOL " " FORCE)
+	set(GLFW_INSTALL OFF CACHE BOOL " " FORCE)
+	add_subdirectory("${THIRD_PARTY_DIR}/glfw" glfw)
+endif()
+
 # libigl
 find_package(LIBIGL REQUIRED)
 target_link_libraries(polyfem PUBLIC igl::core igl::triangle igl::tetgen igl::viewer)
@@ -234,6 +243,12 @@ target_link_libraries(polyfem PUBLIC polyclipping)
 add_library(json INTERFACE)
 target_include_directories(json SYSTEM INTERFACE ${THIRD_PARTY_DIR}/json/src)
 target_link_libraries(polyfem PUBLIC json)
+
+# ImGui
+add_subdirectory(${THIRD_PARTY_DIR}/imgui)
+
+# Tiny file dialogs library
+add_subdirectory(${THIRD_PARTY_DIR}/tinyfiledialogs tinyfiledialogs)
 
 ################################################################################
 # Optional libraries
@@ -344,15 +359,19 @@ target_compile_features(polyfem PUBLIC ${CXX14_FEATURES})
 # Main executable
 add_executable(${PROJECT_NAME}_bin
 	src/main.cpp
-	src/viewer/UIState.hpp
 	src/viewer/UIState.cpp
+	src/viewer/UIState.hpp
+	src/viewer/UIMenu.cpp
+	src/viewer/ImGuiMenuBase.cpp
+	src/viewer/ImGuiMenuBase.hpp
 )
 
 target_include_directories(${PROJECT_NAME}_bin PUBLIC
 	src/viewer
 )
 
-target_link_libraries(${PROJECT_NAME}_bin PUBLIC polyfem igl::viewer igl::png)
+target_link_libraries(${PROJECT_NAME}_bin PUBLIC igl::viewer igl::png imgui polyfem tinyfiledialogs)
+target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
 
 # Main executable without gui, uncomment when not debugging gui is necessary
 # add_executable(${PROJECT_NAME}_cmd

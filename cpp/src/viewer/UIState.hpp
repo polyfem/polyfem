@@ -2,6 +2,7 @@
 #define UI_UISTATE_HPP
 
 #include "State.hpp"
+#include "ImGuiMenuBase.hpp"
 
 #include <igl/colormap.h>
 #include <igl/viewer/Viewer.h>
@@ -10,7 +11,7 @@
 
 namespace poly_fem
 {
-	class UIState
+	class UIState : public ImGuiMenuBase
 	{
 	private:
 		UIState();
@@ -28,7 +29,7 @@ namespace poly_fem
 	public:
 		static UIState &ui_state();
 
-		void init(const std::string &mesh_path, const int n_refs, const int problem_num_);
+		void launch(const std::string &mesh_path, const int n_refs, const int problem_num_);
 
 		void sertialize(const std::string &name);
 
@@ -51,7 +52,7 @@ namespace poly_fem
 		igl::ColorMapType color_map = igl::COLOR_MAP_TYPE_VIRIDIS;
 
 		int slice_coord = 0;
-		int is_slicing = false;
+		bool is_slicing = false;
 		float slice_position = 1;
 
 		bool ambient_occlusion = false;
@@ -62,12 +63,20 @@ namespace poly_fem
 		Eigen::MatrixXd normalized_barycenter;
 		Eigen::VectorXd ambient_occlusion_mat;
 
-		std::string selected_elements;
+		std::vector<int> selected_elements;
 
 		State &state;
-	private:
+
+	protected:
 		Visualizing current_visualization = Visualizing::InputMesh;
 		std::array<bool, 6> dirichlet_bc;
+
+		// Draw menu
+		virtual void draw_menu() override;
+		void draw_settings();
+		void draw_debug();
+		void draw_screenshot();
+		void draw_elasticity_bc();
 
 		void clear();
 		void show_mesh();
