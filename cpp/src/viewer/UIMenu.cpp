@@ -82,10 +82,12 @@ void poly_fem::UIState::draw_menu() {
 	// Polyfem menu
 	ImGui::SetNextWindowPos(ImVec2(menu_width, 0.0f), ImGuiSetCond_Always);
 	ImGui::SetNextWindowSize(ImVec2(menu_width, 0.0f), ImGuiSetCond_FirstUseEver);
+	ImGui::SetNextWindowSizeConstraints(ImVec2(menu_width, -1.0f), ImVec2(menu_width, -1.0f));
 	bool _polyfem_menu_visible = true;
 	ImGui::Begin(
 		"Settings", &_polyfem_menu_visible,
 		ImGuiWindowFlags_NoSavedSettings
+		| ImGuiWindowFlags_AlwaysAutoResize
 		| ImGuiWindowFlags_NoMove
 	);
 	draw_settings();
@@ -94,10 +96,12 @@ void poly_fem::UIState::draw_menu() {
 	// Debug menu
 	ImGui::SetNextWindowPos(ImVec2(menu_width+menu_width, 0.0f), ImGuiSetCond_Always);
 	ImGui::SetNextWindowSize(ImVec2(menu_width, 0.0f), ImGuiSetCond_FirstUseEver);
+	ImGui::SetNextWindowSizeConstraints(ImVec2(menu_width, -1.0f), ImVec2(menu_width, -1.0f));
 	bool _debug_menu_visible = true;
 	ImGui::Begin(
 		"Debug", &_debug_menu_visible,
 		ImGuiWindowFlags_NoSavedSettings
+		| ImGuiWindowFlags_AlwaysAutoResize
 		| ImGuiWindowFlags_NoMove
 	);
 	draw_debug();
@@ -107,10 +111,12 @@ void poly_fem::UIState::draw_menu() {
 	auto canvas = ImGui::GetIO().DisplaySize;
 	ImGui::SetNextWindowPos(ImVec2(canvas.x - menu_width, 0.0f), ImGuiSetCond_Always);
 	ImGui::SetNextWindowSize(ImVec2(menu_width, 0.0f), ImGuiSetCond_FirstUseEver);
+	ImGui::SetNextWindowSizeConstraints(ImVec2(menu_width, -1.0f), ImVec2(menu_width, -1.0f));
 	bool _elasticity_menu_visible = true;
 	ImGui::Begin(
 		"Elasticity BC", &_elasticity_menu_visible,
 		ImGuiWindowFlags_NoSavedSettings
+		| ImGuiWindowFlags_AlwaysAutoResize
 		| ImGuiWindowFlags_NoMove
 	);
 	draw_elasticity_bc();
