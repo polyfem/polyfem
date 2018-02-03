@@ -58,16 +58,41 @@ std::string saveFileName(const std::string &defaultPath,
 
 ////////////////////////////////////////////////////////////////////////////////
 
+namespace ImGui {
+
+static auto vector_getter = [](void* vec, int idx, const char** out_text) {
+	auto& vector = *static_cast<std::vector<std::string>*>(vec);
+	if (idx < 0 || idx >= static_cast<int>(vector.size())) { return false; }
+	*out_text = vector.at(idx).c_str();
+	return true;
+};
+
+bool Combo(const char* label, int* idx, std::vector<std::string>& values) {
+	if (values.empty()) { return false; }
+	return Combo(label, idx, vector_getter,
+		static_cast<void*>(&values), values.size());
+}
+
+bool ListBox(const char* label, int* idx, std::vector<std::string>& values) {
+	if (values.empty()) { return false; }
+	return ListBox(label, idx, vector_getter,
+		static_cast<void*>(&values), values.size());
+}
+
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 // Draw menu
 void poly_fem::UIState::draw_menu() {
 	// Text labels
 	draw_labels_menu();
 
 	// Viewer settings
-	float menu_width = 200.f * m_HidpiScaling / m_PixelRatio;
+	float viewer_menu_width = 200.f * m_HidpiScaling / m_PixelRatio;
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiSetCond_Always);
-	ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f), ImGuiSetCond_FirstUseEver);
-	ImGui::SetNextWindowSizeConstraints(ImVec2(menu_width, -1.0f), ImVec2(menu_width, -1.0f));
+	ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f), ImGuiSetCond_Always);
+	ImGui::SetNextWindowSizeConstraints(ImVec2(viewer_menu_width, -1.0f), ImVec2(viewer_menu_width, -1.0f));
 	bool _viewer_menu_visible = true;
 	ImGui::Begin(
 		"Viewer", &_viewer_menu_visible,
@@ -80,9 +105,10 @@ void poly_fem::UIState::draw_menu() {
 	ImGui::End();
 
 	// Polyfem menu
-	ImGui::SetNextWindowPos(ImVec2(menu_width, 0.0f), ImGuiSetCond_Always);
-	ImGui::SetNextWindowSize(ImVec2(menu_width, 0.0f), ImGuiSetCond_FirstUseEver);
-	ImGui::SetNextWindowSizeConstraints(ImVec2(menu_width, -1.0f), ImVec2(menu_width, -1.0f));
+	float polyfem_menu_width = 0.8 * viewer_menu_width;
+	ImGui::SetNextWindowPos(ImVec2(viewer_menu_width, 0.0f), ImGuiSetCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(polyfem_menu_width, 0.0f), ImGuiSetCond_Always);
+	ImGui::SetNextWindowSizeConstraints(ImVec2(polyfem_menu_width, -1.0f), ImVec2(polyfem_menu_width, -1.0f));
 	bool _polyfem_menu_visible = true;
 	ImGui::Begin(
 		"Settings", &_polyfem_menu_visible,
@@ -94,9 +120,10 @@ void poly_fem::UIState::draw_menu() {
 	ImGui::End();
 
 	// Debug menu
-	ImGui::SetNextWindowPos(ImVec2(menu_width+menu_width, 0.0f), ImGuiSetCond_Always);
-	ImGui::SetNextWindowSize(ImVec2(menu_width, 0.0f), ImGuiSetCond_FirstUseEver);
-	ImGui::SetNextWindowSizeConstraints(ImVec2(menu_width, -1.0f), ImVec2(menu_width, -1.0f));
+	float debug_menu_width = 0.8 * viewer_menu_width;
+	ImGui::SetNextWindowPos(ImVec2(viewer_menu_width+polyfem_menu_width, 0.0f), ImGuiSetCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(debug_menu_width, 0.0f), ImGuiSetCond_Always);
+	ImGui::SetNextWindowSizeConstraints(ImVec2(debug_menu_width, -1.0f), ImVec2(debug_menu_width, -1.0f));
 	bool _debug_menu_visible = true;
 	ImGui::Begin(
 		"Debug", &_debug_menu_visible,
@@ -108,10 +135,11 @@ void poly_fem::UIState::draw_menu() {
 	ImGui::End();
 
 	// Elasticity BC
+	float elasticity_menu_width = 0.8 * viewer_menu_width;
 	auto canvas = ImGui::GetIO().DisplaySize;
-	ImGui::SetNextWindowPos(ImVec2(canvas.x - menu_width, 0.0f), ImGuiSetCond_Always);
-	ImGui::SetNextWindowSize(ImVec2(menu_width, 0.0f), ImGuiSetCond_FirstUseEver);
-	ImGui::SetNextWindowSizeConstraints(ImVec2(menu_width, -1.0f), ImVec2(menu_width, -1.0f));
+	ImGui::SetNextWindowPos(ImVec2(canvas.x - elasticity_menu_width, 0.0f), ImGuiSetCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(elasticity_menu_width, 0.0f), ImGuiSetCond_FirstUseEver);
+	ImGui::SetNextWindowSizeConstraints(ImVec2(elasticity_menu_width, -1.0f), ImVec2(elasticity_menu_width, -1.0f));
 	bool _elasticity_menu_visible = true;
 	ImGui::Begin(
 		"Elasticity BC", &_elasticity_menu_visible,
@@ -138,7 +166,7 @@ void poly_fem::UIState::draw_settings() {
 	ImGui::InputFloat("refinenemt t", &state.refinenemt_location, 0, 0, 2);
 	ImGui::PopItemWidth();
 
-	ImGui::Separator();
+	ImGui::Spacing();
 	if (ImGui::Button("Browse...")) {
 		std::string path = FileDialog::openFileName("./.*",
 			{"*.HYBRID", "*.obj"} , "General polyhedral mesh");
@@ -151,10 +179,12 @@ void poly_fem::UIState::draw_settings() {
 	}
 	ImGui::SameLine();
 	ImGui::Text("%s", state.mesh_path.c_str());
-	ImGui::Separator();
+	ImGui::Spacing();
 
 	ImGui::Checkbox("spline basis", &state.use_splines);
 	ImGui::Checkbox("fit nodes", &state.fit_nodes);
+
+	ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.50f);
 
 	// Colormap type
 	static int color_map_num = static_cast<int>(color_map);
@@ -183,11 +213,8 @@ void poly_fem::UIState::draw_settings() {
 	if (state.solver_type.empty()) {
 		state.solver_type = LinearSolver::defaultSolver();
 	}
-	static int solver_num = std::distance(solvers.begin(),
-		std::find(solvers.begin(), solvers.end(), state.solver_type));
-	std::vector<const char *> solver_labels;
-	for (const std::string & s : solvers) { solver_labels.push_back(s.c_str()); }
-	if (ImGui::Combo("Solver", &solver_num, solver_labels.data(), solvers.size())) {
+	static int solver_num = std::distance(solvers.begin(), std::find(solvers.begin(), solvers.end(), state.solver_type));
+	if (ImGui::Combo("Solver", &solver_num, solvers)) {
 		state.solver_type = solvers[solver_num];
 	}
 
@@ -198,11 +225,11 @@ void poly_fem::UIState::draw_settings() {
 	}
 	static int precond_num =  std::distance(precond.begin(),
 		std::find(precond.begin(), precond.end(), state.precond_type));
-	std::vector<const char *> precond_labels;
-	for (const auto & p : precond) { precond_labels.push_back(p.c_str()); }
-	if (ImGui::Combo("Precond", &precond_num, precond_labels.data(), precond.size())) {
+	if (ImGui::Combo("Precond", &precond_num, precond)) {
 		state.precond_type = precond[precond_num];
 	}
+
+	ImGui::PopItemWidth();
 	ImGui::Checkbox("skip visualization", &skip_visualization);
 
 	// Actions
@@ -217,7 +244,7 @@ void poly_fem::UIState::draw_settings() {
 		if (ImGui::Button("Solve", ImVec2(-1, 0))) { solve_problem(); }
 		if (ImGui::Button("Compute errors", ImVec2(-1, 0))) { compute_errors(); }
 
-		ImGui::Separator();
+		ImGui::Spacing();
 		if (ImGui::Button("Run all", ImVec2(-1, 0))) {
 			load_mesh();
 			build_basis();

@@ -7,6 +7,7 @@
 #include <imgui_impl_glfw_gl3.h>
 #include <imgui_fonts_droid_sans.h>
 #include <GLFW/glfw3.h>
+#include <iostream>
 ////////////////////////////////////////////////////////////////////////////////
 
 void ImGuiMenuBase::init(igl::viewer::Viewer *_viewer) {
@@ -21,6 +22,10 @@ void ImGuiMenuBase::init(igl::viewer::Viewer *_viewer) {
 		io.Fonts->AddFontFromMemoryCompressedTTF(droid_sans_compressed_data,
 			droid_sans_compressed_size, 13 * m_HidpiScaling);
 		io.FontGlobalScale = 1.0 / m_PixelRatio;
+		// std::cout << m_HidpiScaling << ' ' << m_PixelRatio << std::endl;
+		// int width = 1280 * m_HidpiScaling / m_PixelRatio;
+		// int height = 800 * m_HidpiScaling / m_PixelRatio;
+		// viewer->resize(width, height);
 	}
 }
 
