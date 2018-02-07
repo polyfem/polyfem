@@ -10,6 +10,11 @@ namespace poly_fem
 
 		has_parameterization = false;
 		det.resize(v.rows(), 1);
+
+		jac_it.resize(v.rows());
+		for(long i=0; i < v.rows(); ++i)
+			jac_it[i] = Eigen::MatrixXd::Identity(v.cols(), v.cols());
+		
 		det.setConstant(1); // volume (det of the geometric mapping)
 		for(std::size_t j = 0; j < basis_values.size(); ++j)
 			basis_values[j].grad_t_m = basis_values[j].grad; // / scaling
@@ -57,6 +62,7 @@ namespace poly_fem
 			basis_values[j].finalize();
 
 		Eigen::Matrix3d tmp;
+		jac_it.resize(v.rows());
 		for(long i=0; i < v.rows(); ++i)
 		{
 			tmp.row(0) = dx.row(i);
@@ -68,9 +74,9 @@ namespace poly_fem
 			// assert(det(i)>0);
 
 
-			Eigen::MatrixXd jac_it = tmp.inverse().transpose();
+			jac_it[i] = tmp.inverse().transpose();
 			for(std::size_t j = 0; j < basis_values.size(); ++j)
-				basis_values[j].grad_t_m.row(i) = basis_values[j].grad.row(i) * jac_it;
+				basis_values[j].grad_t_m.row(i) = basis_values[j].grad.row(i) * jac_it[i];
 		}
 	}
 
@@ -84,6 +90,7 @@ namespace poly_fem
 			basis_values[j].finalize();
 
 		Eigen::Matrix2d tmp;
+		jac_it.resize(v.rows());
 		for(long i = 0; i < v.rows(); ++i)
 		{
 			tmp.row(0) = dx.row(i);
@@ -93,9 +100,9 @@ namespace poly_fem
 			// assert(det(i)>0);
 			// std::cout<<det(i)<<std::endl;
 
-			Eigen::MatrixXd jac_it = tmp.inverse().transpose();
+			jac_it[i] = tmp.inverse().transpose();
 			for(std::size_t j = 0; j < basis_values.size(); ++j)
-				basis_values[j].grad_t_m.row(i) = basis_values[j].grad.row(i) * jac_it;
+				basis_values[j].grad_t_m.row(i) = basis_values[j].grad.row(i) * jac_it[i];
 		}
 	}
 

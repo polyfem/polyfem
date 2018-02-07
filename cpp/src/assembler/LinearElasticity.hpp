@@ -1,9 +1,12 @@
 #ifndef LINEAR_ELASTICITY_HPP
 #define LINEAR_ELASTICITY_HPP
 
+
+#include "ElementAssemblyValues.hpp"
+#include "ElementBases.hpp"
+
 #include <Eigen/Dense>
 
-#include "ElementBases.hpp"
 
 namespace poly_fem
 {
@@ -12,9 +15,10 @@ namespace poly_fem
 	public:
 		// res is R^{m x dim²}
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
-		assemble(const Eigen::MatrixXd &gradi, const Eigen::MatrixXd &gradj, const Eigen::VectorXd &da) const;
 
-		void compute_von_mises_stresses(const int size, const ElementBases &bs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const;
+		assemble(const ElementAssemblyValues &vals, const AssemblyValues &values_i, const AssemblyValues &values_j, const Eigen::VectorXd &da) const;
+
+		void compute_von_mises_stresses(const ElementBases &bs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const;
 
 		inline int &size() { return size_; }
 		inline int size() const { return size_; }

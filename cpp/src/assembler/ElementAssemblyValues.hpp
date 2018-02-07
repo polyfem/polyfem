@@ -12,6 +12,7 @@ namespace poly_fem
 	{
 	public:
 		std::vector<AssemblyValues> basis_values;
+		std::vector<Eigen::MatrixXd> jac_it;
 
 		Quadrature quadrature;
 

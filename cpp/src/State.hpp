@@ -16,6 +16,13 @@
 
 namespace poly_fem
 {
+	enum class ElasticFormulation
+	{
+		Linear = 0,
+		HookeLinear
+	};
+
+
 	class State
 	{
 	public:
@@ -40,6 +47,7 @@ namespace poly_fem
 		bool fit_nodes = true;
 
 		std::shared_ptr<Problem> problem;
+		ElasticFormulation elastic_formulation = ElasticFormulation::Linear;
 
 		int n_bases;
 

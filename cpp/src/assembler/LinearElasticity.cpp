@@ -25,9 +25,12 @@ namespace poly_fem
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
-	LinearElasticity::assemble(const Eigen::MatrixXd &gradi, const Eigen::MatrixXd &gradj, const Eigen::VectorXd &da) const
+	LinearElasticity::assemble(const ElementAssemblyValues &vals, const AssemblyValues &values_i, const AssemblyValues &values_j, const Eigen::VectorXd &da) const
 	{
 		// mu ((gradi' gradj) Id + gradi gradj') + lambda gradi *gradj';
+		const Eigen::MatrixXd &gradi = values_i.grad_t_m;
+		const Eigen::MatrixXd &gradj = values_j.grad_t_m;
+
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> res(size()*size());
 		res.setZero();
 
@@ -42,7 +45,7 @@ namespace poly_fem
 			{
 				for(int j = 0; j < size(); ++j)
 				{
-					res_k(i * size() + j) = outer(i * size() + j)*(lambda_ + mu_);
+					res_k(i * size() + j) = outer(i * size() + j)* mu_ + outer(j * size() + i)* lambda_;
 					if(i == j) res_k(i * size() + j) += mu_ * dot(k);
 				}
 			}
@@ -52,16 +55,16 @@ namespace poly_fem
 		return res;
 	}
 
-	void LinearElasticity::compute_von_mises_stresses(const int size, const ElementBases &bs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
+	void LinearElasticity::compute_von_mises_stresses(const ElementBases &bs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
 	{
-		Eigen::MatrixXd displacement_grad(size, size);
+		Eigen::MatrixXd displacement_grad(size(), size());
 
 		assert(displacement.cols() == 1);
 
 		stresses.resize(local_pts.rows(), 1);
 
 		ElementAssemblyValues vals;
-		vals.compute(-1, size == 3, local_pts, bs, bs);
+		vals.compute(-1, size() == 3, local_pts, bs, bs);
 
 
 		for(long p = 0; p < local_pts.rows(); ++p)
@@ -74,21 +77,23 @@ namespace poly_fem
 				const auto &loc_val = vals.basis_values[j];
 
 				assert(bs.bases.size() == vals.basis_values.size());
-				assert(loc_val.grad_t_m.rows() == local_pts.rows());
-				assert(loc_val.grad_t_m.cols() == size);
+				assert(loc_val.grad.rows() == local_pts.rows());
+				assert(loc_val.grad.cols() == size());
 
-				for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+				for(int d = 0; d < size(); ++d)
 				{
-					for(int d = 0; d < size; ++d){
-						displacement_grad.row(d) += loc_val.grad_t_m.row(p) * displacement(b.global()[ii].index*size + d);
+					for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+					{
+						displacement_grad.row(d) += b.global()[ii].val * loc_val.grad.row(p) * displacement(b.global()[ii].index*size() + d);
 					}
 				}
 			}
 
-			// std::cout<<displacement_grad<<std::endl;
+			displacement_grad = displacement_grad * vals.jac_it[p].transpose().inverse();
+
 			Eigen::MatrixXd strain = (displacement_grad + displacement_grad.transpose())/2;
 			const Eigen::MatrixXd stress =
-			2 * mu_ * strain + lambda_ * strain.trace() * Eigen::MatrixXd::Identity(size, size);
+			2 * mu_ * strain + lambda_ * strain.trace() * Eigen::MatrixXd::Identity(size(), size());
 
 			stresses(p) = von_mises_stress_for_stress_tensor(stress);
 		}

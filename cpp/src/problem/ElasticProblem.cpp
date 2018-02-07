@@ -24,9 +24,9 @@ namespace poly_fem
 		for(long i = 0; i < pts.rows(); ++i)
 		{
 			if(mesh.get_boundary_id(global_ids(i))== 1)
-				val(i, 0)=-0.025;
+				val(i, 0)=-0.25;
 			else if(mesh.get_boundary_id(global_ids(i))== 3)
-				val(i, 0)=0.025;
+				val(i, 0)=0.25;
 			if(mesh.get_boundary_id(global_ids(i))== 5)
 				val(i, 1)=-0.025;
 			else if(mesh.get_boundary_id(global_ids(i))== 6)
@@ -55,6 +55,9 @@ namespace poly_fem
 		val.resize(pts.rows(), mesh.dimension());
 		val.col(0) = 2./5.*mu + lambda*(1./5+1./5.*y) + 4./5.*mu*y;
 		val.col(1) = 2*mu*(9./5.*x*x + 1./20.) + 2./5.*mu*x + lambda*(1./10.+1./5.*x);
+		
+		// val.col(0).setConstant((2./5.)*mu+(1./5.)*lambda);
+		// val.col(0).setZero();
 	}
 
 	void ElasticProblemExact::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
@@ -70,5 +73,7 @@ namespace poly_fem
 		val.resize(pts.rows(), pts.cols());
 		val.col(0) = (y*y*y + x*x + x*y)/10.;
 		val.col(1) = (3*x*x*x*x + x*y*y + x)/10.;
+		// val.col(0) = x*x/10.;
+		// val.col(1) = y/10.;
 	}
 }

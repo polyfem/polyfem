@@ -4,6 +4,8 @@
 #include "Mesh3D.hpp"
 
 #include "LinearElasticity.hpp"
+#include "HookeLinearElasticity.hpp"
+
 #include "ElasticProblem.hpp"
 
 #include "LinearSolver.hpp"
@@ -510,7 +512,7 @@ namespace poly_fem
 			// const MatrixXd ffun = (fun.array()*fun.array()).rowwise().sum().sqrt(); //norm of displacement, maybe replace with stress
 			// const MatrixXd ffun = fun.col(1); //y component
 
-			LinearElasticity lin_elast;
+			
 			MatrixXd ffun(vis_pts.rows(), 1);
 
 			int size = state.mesh->dimension();
@@ -529,7 +531,22 @@ namespace poly_fem
 				else
 					local_pts = vis_pts_poly[i];
 
-				lin_elast.compute_von_mises_stresses(size, bs, local_pts, state.sol, stresses);
+				if(state.elastic_formulation == ElasticFormulation::Linear){
+					LinearElasticity lin_elast;
+					lin_elast.size() = state.mesh->dimension();
+					lin_elast.mu() = state.mu;
+					lin_elast.lambda() = state.lambda;
+					lin_elast.compute_von_mises_stresses(bs, local_pts, state.sol, stresses);
+				}
+				else if(state.elastic_formulation == ElasticFormulation::HookeLinear)
+				{
+					HookeLinearElasticity lin_elast;
+					lin_elast.set_size(state.mesh->dimension());
+					lin_elast.set_lambda_mu(state.lambda, state.mu);
+					lin_elast.compute_von_mises_stresses(bs, local_pts, state.sol, stresses);
+				}
+				else
+					assert(false);
 				ffun.block(counter, 0, stresses.rows(), 1) = stresses;
 				counter += stresses.rows();
 			}
@@ -538,6 +555,8 @@ namespace poly_fem
 				igl::colormap(color_map, ffun, min, max, col);
 			else
 				igl::colormap(color_map, ffun, true, col);
+
+			std::cout<<"min/max "<< ffun.minCoeff()<<"/"<<ffun.maxCoeff()<<std::endl;
 
 			MatrixXd tmp = vis_pts;
 
@@ -615,15 +634,9 @@ namespace poly_fem
 		// 	viewer.data.add_label(p.transpose(), std::to_string(i));
 		// }
 
-		// for(int i = 0; i < static_cast<Mesh3D *>(state.mesh)->n_pts(); ++i)
+		// for(int i = 0; i < state.mesh->n_vertices(); ++i)
 		// {
-		// 	MatrixXd p; static_cast<Mesh3D *>(state.mesh)->point(i, p);
-		// 	viewer.data.add_label(p.transpose(), std::to_string(i));
-		// }
-
-		// for(int i = 0; i < state.mesh->n_elements(); ++i)
-		// {
-		// 	MatrixXd p = static_cast<Mesh2D *>(state.mesh)->node_from_face(i);
+		// 	const auto p = state.mesh->point(i);
 		// 	viewer.data.add_label(p.transpose(), std::to_string(i));
 		// }
 	}

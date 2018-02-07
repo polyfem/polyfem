@@ -64,7 +64,7 @@ void poly_fem::UIState::draw_menu() {
 	draw_labels_menu();
 
 	// Viewer settings
-	float menu_width = 200.f * m_HidpiScaling / m_PixelRatio;
+	float menu_width = 150.f * m_HidpiScaling / m_PixelRatio;
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiSetCond_Always);
 	ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f), ImGuiSetCond_FirstUseEver);
 	ImGui::SetNextWindowSizeConstraints(ImVec2(menu_width, -1.0f), ImVec2(menu_width, -1.0f));
@@ -120,15 +120,15 @@ void poly_fem::UIState::draw_menu() {
 ////////////////////////////////////////////////////////////////////////////////
 
 void poly_fem::UIState::draw_settings() {
-	ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.40f);
-	ImGui::InputInt("quad order", &state.quadrature_order);
-	ImGui::InputInt("discr order", &state.discr_order);
-	ImGui::InputInt("b samples", &state.n_boundary_samples);
+	ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.50f);
+	ImGui::InputInt("quad", &state.quadrature_order);
+	ImGui::InputInt("discr", &state.discr_order);
+	ImGui::InputInt("b", &state.n_boundary_samples);
 
 	ImGui::InputFloat("lambda", &state.lambda, 0, 0, 3);
 	ImGui::InputFloat("mu", &state.mu, 0, 0, 3);
 
-	ImGui::InputInt("n refs", &state.n_refs);
+	ImGui::InputInt("refs", &state.n_refs);
 	ImGui::InputFloat("refinenemt t", &state.refinenemt_location, 0, 0, 2);
 	ImGui::PopItemWidth();
 
@@ -150,6 +150,7 @@ void poly_fem::UIState::draw_settings() {
 	ImGui::Checkbox("spline basis", &state.use_splines);
 	ImGui::Checkbox("fit nodes", &state.fit_nodes);
 
+	ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.50f);
 	// Colormap type
 	static int color_map_num = static_cast<int>(color_map);
 	if (ImGui::Combo("Colormap", &color_map_num, "inferno\0jet\0magma\0parula\0plasma\0viridis\0\0")) {
@@ -170,6 +171,12 @@ void poly_fem::UIState::draw_settings() {
 		for (int i = 0; i < (int) state.problem->boundary_ids().size(); ++i) {
 			dirichlet_bc[state.problem->boundary_ids()[i]-1] = true;
 		}
+	}
+
+	static int formulation_num = static_cast<int>(state.elastic_formulation);
+	static const char *formulation_labels = "Linear\0HookeLinear\0\0";
+	if (ImGui::Combo("Form", &formulation_num, formulation_labels)) {
+		state.elastic_formulation = static_cast<ElasticFormulation>(formulation_num);
 	}
 
 	// Solver type
@@ -197,6 +204,7 @@ void poly_fem::UIState::draw_settings() {
 	if (ImGui::Combo("Precond", &precond_num, precond_labels.data(), precond.size())) {
 		state.precond_type = precond[precond_num];
 	}
+	ImGui::PopItemWidth();
 	ImGui::Checkbox("skip visualization", &skip_visualization);
 
 	// Actions

@@ -59,15 +59,14 @@ namespace poly_fem
 				for(int i = 0; i < n_loc_bases; ++i)
 				{
 					const AssemblyValues &values_i = vals.basis_values[i];
-					const Eigen::MatrixXd &gradi = values_i.grad_t_m;
+					// const Eigen::MatrixXd &gradi = values_i.grad_t_m;
 
 					for(int j = 0; j <= i; ++j)
 					{
 						const AssemblyValues &values_j = vals.basis_values[j];
+						// const Eigen::MatrixXd &gradj = values_j.grad_t_m;
 
-						const Eigen::MatrixXd &gradj = values_j.grad_t_m;
-
-						const auto stiffness_val = local_assembler_.assemble(gradi, gradj, da);
+						const auto stiffness_val = local_assembler_.assemble(vals, values_i, values_j, da);
 
 						// const auto stiffness_val = local_val.array().colwise().sum();
 						assert(stiffness_val.size() == local_assembler_.size() * local_assembler_.size());

@@ -77,6 +77,8 @@ add_library(polyfem
 	src/assembler/Laplacian.hpp
 	src/assembler/LinearElasticity.cpp
 	src/assembler/LinearElasticity.hpp
+	src/assembler/HookeLinearElasticity.cpp
+	src/assembler/HookeLinearElasticity.hpp
 	src/assembler/RhsAssembler.cpp
 	src/assembler/RhsAssembler.hpp
 	src/basis/Basis.cpp

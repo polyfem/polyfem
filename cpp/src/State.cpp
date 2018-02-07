@@ -22,6 +22,7 @@
 
 #include "Laplacian.hpp"
 #include "LinearElasticity.hpp"
+#include "HookeLinearElasticity.hpp"
 
 #include "LinearSolver.hpp"
 #include "FEMSolver.hpp"
@@ -552,16 +553,31 @@ namespace poly_fem
 
 		if(!problem->is_scalar())
 		{
-			Assembler<LinearElasticity> assembler;
-			LinearElasticity &le = assembler.local_assembler();
-			le.mu() = mu;
-			le.lambda() = lambda;
-			le.size() = mesh->dimension();
+			if(elastic_formulation == ElasticFormulation::Linear)
+			{
+				Assembler<LinearElasticity> assembler;
+				LinearElasticity &le = assembler.local_assembler();
+				le.size() = mesh->dimension();
+				le.mu() = mu;
+				le.lambda() = lambda;
 
-			if(iso_parametric)
-				assembler.assemble(mesh->is_volume(), n_bases, bases, bases, stiffness);
-			else
-				assembler.assemble(mesh->is_volume(), n_bases, bases, geom_bases, stiffness);
+				if(iso_parametric)
+					assembler.assemble(mesh->is_volume(), n_bases, bases, bases, stiffness);
+				else
+					assembler.assemble(mesh->is_volume(), n_bases, bases, geom_bases, stiffness);
+			}
+			else if(elastic_formulation == ElasticFormulation::HookeLinear)
+			{
+				Assembler<HookeLinearElasticity> assembler;
+				HookeLinearElasticity &le = assembler.local_assembler();
+				le.set_size(mesh->dimension());
+				le.set_lambda_mu(lambda, mu);
+
+				if(iso_parametric)
+					assembler.assemble(mesh->is_volume(), n_bases, bases, bases, stiffness);
+				else
+					assembler.assemble(mesh->is_volume(), n_bases, bases, geom_bases, stiffness);
+			}
 		}
 		else
 		{
