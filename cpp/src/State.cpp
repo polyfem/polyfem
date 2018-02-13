@@ -76,6 +76,8 @@ namespace poly_fem
 			std::cout << "hmin: " << min_edge_length << std::endl;
 			std::cout << "hmax: " << mesh_size << std::endl;
 			std::cout << "havg: " << average_edge_length << std::endl;
+
+			return;
 		}
 
 		const int n_edges = mesh.is_volume()?12:4;
@@ -170,6 +172,8 @@ namespace poly_fem
 		j["count_undefined"] = undefined_count;
 		j["count_multi_singular_boundary"] = multi_singular_boundary_count;
 
+		j["is_simplicial"] = mesh->is_simplicial();
+
 
 		out << j.dump(4) << std::endl;
 
@@ -244,7 +248,7 @@ namespace poly_fem
 		// 		mesh->set_tag(el_id, ElementType::InteriorPolytope);
 		// }
 
-		// mesh->normalize();
+		mesh->normalize();
 
 		mesh->refine(n_refs, refinenemt_location, parent_elements);
 
@@ -510,7 +514,7 @@ namespace poly_fem
 		const auto &curret_bases =  iso_parametric ? bases : geom_bases;
 		const int n_samples = 10;
 		compute_mesh_size(*mesh, curret_bases, n_samples);
-		
+
 		timer.stop();
 		building_basis_time = timer.getElapsedTime();
 		std::cout<<" took "<<building_basis_time<<"s"<<std::endl;
