@@ -9,7 +9,8 @@ namespace poly_fem
 {
 	void Mesh3D::refine(const int n_refiniment, const double t, std::vector<int> &parent_nodes)
 	{
-		is_simplicial_ = false;
+		if(is_simplicial_) return;
+		
 		for(size_t i = 0; i < elements_tag().size(); ++i)
 		{
 			if(elements_tag()[i] == ElementType::InteriorPolytope || elements_tag()[i] == ElementType::BoundaryPolytope)

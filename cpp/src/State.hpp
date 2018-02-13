@@ -82,6 +82,10 @@ namespace poly_fem
 		float lambda = 1, mu = 1;
 
 		double mesh_size;
+		
+		double min_edge_length;
+		double average_edge_length;
+
 		double l2_err, linf_err, lp_err;
 		long long nn_zero, mat_size, num_dofs;
 
@@ -106,6 +110,8 @@ namespace poly_fem
 		int non_regular_count;
 		int undefined_count;
 		int multi_singular_boundary_count;
+
+		void compute_mesh_size(const Mesh &mesh, const std::vector< ElementBases > &bases, const int n_samples);
 
 		void load_mesh();
 		void build_basis();

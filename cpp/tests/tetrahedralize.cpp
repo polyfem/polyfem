@@ -49,6 +49,7 @@ int main(int argc, char** argv) {
 	std::cout << "calling tetgen" << std::endl;
 	int res = igl::copyleft::tetgen::tetrahedralize(IV, IF, flags, OV, OT, OF);
 	igl::writeMESH(filenames[1], OV, OT, OF);
+	std::cout<<"created mesh with "<<OV.rows()<<" vertices"<<std::endl;
 
 	return 0;
 }

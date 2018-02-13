@@ -48,16 +48,24 @@ namespace poly_fem
 	{
 		auto &x = pts.col(0).array();
 		auto &y = pts.col(1).array();
-		
+
 		double lambda = State::state().lambda;
 		double mu = State::state().mu;
 
 		val.resize(pts.rows(), mesh.dimension());
-		val.col(0) = 2./5.*mu + lambda*(1./5+1./5.*y) + 4./5.*mu*y;
-		val.col(1) = 2*mu*(9./5.*x*x + 1./20.) + 2./5.*mu*x + lambda*(1./10.+1./5.*x);
-		
-		// val.col(0).setConstant((2./5.)*mu+(1./5.)*lambda);
-		// val.col(0).setZero();
+		if(pts.cols() == 2)
+		{
+			val.col(0) = 2./5.*mu + lambda*(1./5+1./5.*y) + 4./5.*mu*y;
+			val.col(1) = 2*mu*(9./5.*x*x + 1./20.) + 2./5.*mu*x + lambda*(1./10.+1./5.*x);
+		}
+		else
+		{
+			auto &z = pts.col(2).array();
+
+			val.col(0) = 2./5.*mu + lambda * (1./5. + 3./10.*y) + 9./10.*mu*y;
+			val.col(1) = 2*mu* (9./5. * x * x + 1./20.) + 2./5. * mu * x + lambda * (1./10. + 3./10. * x + 2./5. * y * z) + 2 * mu * (1./5. * y * z + 1./20. * x - 3./10.*z);
+			val.col(2) = 1./5. * mu * z * z + 2./5. * mu * y * y + 1./5. * lambda * y * y;
+		}
 	}
 
 	void ElasticProblemExact::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
@@ -71,9 +79,19 @@ namespace poly_fem
 		auto &y = pts.col(1).array();
 
 		val.resize(pts.rows(), pts.cols());
-		val.col(0) = (y*y*y + x*x + x*y)/10.;
-		val.col(1) = (3*x*x*x*x + x*y*y + x)/10.;
-		// val.col(0) = x*x/10.;
-		// val.col(1) = y/10.;
+
+		if(pts.cols() == 2)
+		{
+			val.col(0) = (y*y*y + x*x + x*y)/10.;
+			val.col(1) = (3*x*x*x*x + x*y*y + x)/10.;
+		}
+		else
+		{
+			auto &z = pts.col(2).array();
+
+			val.col(0) = (x*y + x*x + y*y*y + 6*z)/10.;
+			val.col(1) = (z*x - z*z*z + x*y*y + 3*x*x*x*x)/10.;
+			val.col(2) = (x*y*z + z*z*y*y - 2*x)/10.;
+		}
 	}
 }

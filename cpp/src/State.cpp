@@ -56,53 +56,60 @@ namespace poly_fem
 		problem = std::make_shared<LinearProblem>();
 	}
 
-	namespace
+	void State::compute_mesh_size(const Mesh &mesh, const std::vector< ElementBases > &bases, const int n_samples)
 	{
-		double compute_mesh_size(const Mesh &mesh, const std::vector< ElementBases > &bases, const int n_samples)
+		Eigen::MatrixXd samples, mapped, p0, p1, p;
+
+		mesh_size = 0;
+		average_edge_length = 0;
+		min_edge_length = std::numeric_limits<double>::max();
+
+		if(true || mesh.is_simplicial())
 		{
-			double mesh_size = 0;
-			Eigen::MatrixXd samples, mapped, p0, p1, p;
+			mesh.get_edges(p0, p1);
+			p = p0-p1;
+			min_edge_length = p.rowwise().norm().minCoeff();
+			average_edge_length = p.rowwise().norm().mean();
+			mesh_size = p.rowwise().norm().maxCoeff();
 
-			if(true || mesh.is_simplicial())
-			{
-				mesh.get_edges(p0, p1);
-				p = p0-p1;
-				std::cout << std::endl;
-				std::cout << "hmin: " << p.rowwise().norm().minCoeff() << std::endl;
-				std::cout << "hmax: " << p.rowwise().norm().maxCoeff() << std::endl;
-				std::cout << "havg: " << p.rowwise().norm().mean() << std::endl;
-				return p.rowwise().norm().maxCoeff();
-			}
-
-			const int n_edges = mesh.is_volume()?12:4;
-			if(mesh.is_volume())
-				EdgeSampler::sample_3d(n_samples, samples);
-			else
-				EdgeSampler::sample_2d(n_samples, samples);
-
-
-			for(std::size_t i = 0; i < bases.size(); ++i){
-				if(mesh.is_polytope(i)) continue;
-
-				bases[i].eval_geom_mapping(samples, mapped);
-
-				for(int j = 0; j < n_edges; ++j)
-				{
-					double current_edge = 0;
-					for(int k = 0; k < n_samples-1; ++k){
-						p0 = mapped.row(j*n_samples + k);
-						p1 = mapped.row(j*n_samples + k+1);
-						p = p0-p1;
-
-						current_edge += p.norm();
-					}
-
-					mesh_size = std::max(current_edge, mesh_size);
-				}
-			}
-
-			return mesh_size;
+			std::cout << std::endl;
+			std::cout << "hmin: " << min_edge_length << std::endl;
+			std::cout << "hmax: " << mesh_size << std::endl;
+			std::cout << "havg: " << average_edge_length << std::endl;
 		}
+
+		const int n_edges = mesh.is_volume()?12:4;
+		if(mesh.is_volume())
+			EdgeSampler::sample_3d(n_samples, samples);
+		else
+			EdgeSampler::sample_2d(n_samples, samples);
+
+
+		int n = 0;
+		for(std::size_t i = 0; i < bases.size(); ++i){
+			if(mesh.is_polytope(i)) continue;
+
+			bases[i].eval_geom_mapping(samples, mapped);
+
+			for(int j = 0; j < n_edges; ++j)
+			{
+				double current_edge = 0;
+				for(int k = 0; k < n_samples-1; ++k){
+					p0 = mapped.row(j*n_samples + k);
+					p1 = mapped.row(j*n_samples + k+1);
+					p = p0-p1;
+
+					current_edge += p.norm();
+				}
+
+				mesh_size = std::max(current_edge, mesh_size);
+				min_edge_length = std::min(current_edge, min_edge_length);
+				average_edge_length += current_edge;
+				++n;
+			}
+		}
+
+		average_edge_length /= n;
 	}
 
 	void State::save_json(std::ostream &out)
@@ -133,6 +140,9 @@ namespace poly_fem
 		j["num_dofs"] = num_dofs;
 
 		j["mesh_size"] = mesh_size;
+
+		j["min_edge_length"] = min_edge_length;
+		j["average_edge_length"] = average_edge_length;
 
 		j["err_l2"] = l2_err;
 		j["err_linf"] = linf_err;
@@ -400,6 +410,8 @@ namespace poly_fem
 			const Mesh3D &tmp_mesh = *dynamic_cast<Mesh3D *>(mesh.get());
 			if(use_splines)
 			{
+				if(mesh->is_simplicial())
+					exit(0);
 				if(!iso_parametric)
 					HexBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, poly_edge_to_data_geom);
 
@@ -428,6 +440,9 @@ namespace poly_fem
 			const Mesh2D &tmp_mesh = *dynamic_cast<Mesh2D *>(mesh.get());
 			if(use_splines)
 			{
+				if(mesh->is_simplicial())
+					exit(0);
+
 				if(!iso_parametric)
 					QuadBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, poly_edge_to_data_geom);
 
@@ -494,8 +509,8 @@ namespace poly_fem
 
 		const auto &curret_bases =  iso_parametric ? bases : geom_bases;
 		const int n_samples = 10;
-		mesh_size = compute_mesh_size(*mesh, curret_bases, n_samples);
-
+		compute_mesh_size(*mesh, curret_bases, n_samples);
+		
 		timer.stop();
 		building_basis_time = timer.getElapsedTime();
 		std::cout<<" took "<<building_basis_time<<"s"<<std::endl;
