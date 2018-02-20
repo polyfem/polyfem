@@ -23,6 +23,7 @@
 #include "Laplacian.hpp"
 #include "LinearElasticity.hpp"
 #include "HookeLinearElasticity.hpp"
+#include "SaintVenantElasticity.hpp"
 
 #include "LinearSolver.hpp"
 #include "FEMSolver.hpp"
@@ -596,6 +597,18 @@ namespace poly_fem
 					assembler.assemble(mesh->is_volume(), n_bases, bases, bases, stiffness);
 				else
 					assembler.assemble(mesh->is_volume(), n_bases, bases, geom_bases, stiffness);
+			}
+			else if(elastic_formulation == ElasticFormulation::SaintVenant)
+			{
+				Assembler<SaintVenantElasticity> assembler;
+				SaintVenantElasticity &le = assembler.local_assembler();
+				le.set_size(mesh->dimension());
+				le.set_lambda_mu(lambda, mu);
+
+				// if(iso_parametric) //TODO
+					// assembler.assemble(mesh->is_volume(), n_bases, bases, bases, stiffness);
+				// else
+					// assembler.assemble(mesh->is_volume(), n_bases, bases, geom_bases, stiffness);
 			}
 		}
 		else

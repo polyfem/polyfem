@@ -209,7 +209,7 @@ void poly_fem::UIState::draw_settings() {
 	}
 
 	static int formulation_num = static_cast<int>(state.elastic_formulation);
-	static const char *formulation_labels = "Linear\0HookeLinear\0\0";
+	static const char *formulation_labels = "Linear\0HookeLinear\0SaintVenant\0\0";
 	if (ImGui::Combo("Form", &formulation_num, formulation_labels)) {
 		state.elastic_formulation = static_cast<ElasticFormulation>(formulation_num);
 	}

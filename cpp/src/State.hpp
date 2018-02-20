@@ -19,7 +19,8 @@ namespace poly_fem
 	enum class ElasticFormulation
 	{
 		Linear = 0,
-		HookeLinear
+		HookeLinear,
+		SaintVenant
 	};
 
 

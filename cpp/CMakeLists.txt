@@ -79,6 +79,8 @@ add_library(polyfem
 	src/assembler/LinearElasticity.hpp
 	src/assembler/HookeLinearElasticity.cpp
 	src/assembler/HookeLinearElasticity.hpp
+	src/assembler/SaintVenantElasticity.cpp
+	src/assembler/SaintVenantElasticity.hpp
 	src/assembler/RhsAssembler.cpp
 	src/assembler/RhsAssembler.hpp
 	src/basis/Basis.cpp

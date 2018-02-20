@@ -5,6 +5,7 @@
 
 #include "LinearElasticity.hpp"
 #include "HookeLinearElasticity.hpp"
+#include "SaintVenantElasticity.hpp"
 
 #include "ElasticProblem.hpp"
 
@@ -541,6 +542,13 @@ namespace poly_fem
 				else if(state.elastic_formulation == ElasticFormulation::HookeLinear)
 				{
 					HookeLinearElasticity lin_elast;
+					lin_elast.set_size(state.mesh->dimension());
+					lin_elast.set_lambda_mu(state.lambda, state.mu);
+					lin_elast.compute_von_mises_stresses(bs, local_pts, state.sol, stresses);
+				}
+				else if(state.elastic_formulation == ElasticFormulation::SaintVenant)
+				{
+					SaintVenantElasticity lin_elast;
 					lin_elast.set_size(state.mesh->dimension());
 					lin_elast.set_lambda_mu(state.lambda, state.mu);
 					lin_elast.compute_von_mises_stresses(bs, local_pts, state.sol, stresses);

@@ -66,7 +66,7 @@ namespace poly_fem
 	}
 
 	void Mesh2D::normalize() {
-		return;
+
 		GEO::vec3 min_corner, max_corner;
 		GEO::get_bbox(mesh_, &min_corner[0], &max_corner[0]);
 		GEO::vec3 extent = max_corner - min_corner;
