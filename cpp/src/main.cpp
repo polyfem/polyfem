@@ -129,8 +129,8 @@ int main(int argc, const char **argv)
 			return EXIT_SUCCESS;
 		}
 
-		state.assemble_stiffness_mat();
 		state.assemble_rhs();
+		state.assemble_stiffness_mat();
 		state.solve_problem();
         // state.solve_problem_old();
 		state.compute_errors();

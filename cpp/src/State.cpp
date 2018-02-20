@@ -249,7 +249,7 @@ namespace poly_fem
 		// 		mesh->set_tag(el_id, ElementType::InteriorPolytope);
 		// }
 
-		mesh->normalize();
+		// mesh->normalize();
 
 		mesh->refine(n_refs, refinenemt_location, parent_elements);
 
@@ -565,7 +565,6 @@ namespace poly_fem
 	{
 		errors.clear();
 		stiffness.resize(0, 0);
-		rhs.resize(0, 0);
 		sol.resize(0, 0);
 
 		igl::Timer timer; timer.start();
@@ -600,15 +599,27 @@ namespace poly_fem
 			}
 			else if(elastic_formulation == ElasticFormulation::SaintVenant)
 			{
-				Assembler<SaintVenantElasticity> assembler;
+				NLAssembler<SaintVenantElasticity> assembler;
 				SaintVenantElasticity &le = assembler.local_assembler();
 				le.set_size(mesh->dimension());
 				le.set_lambda_mu(lambda, mu);
 
-				// if(iso_parametric) //TODO
-					// assembler.assemble(mesh->is_volume(), n_bases, bases, bases, stiffness);
-				// else
-					// assembler.assemble(mesh->is_volume(), n_bases, bases, geom_bases, stiffness);
+
+				sol.resize(n_bases*mesh->dimension(), 1);
+				sol.setZero();
+				sol.setRandom();
+
+				Eigen::MatrixXd tmp;
+				if(iso_parametric){
+					assembler.assemble(mesh->is_volume(), n_bases, bases, bases, sol, tmp);
+					assembler.assemble_grad(mesh->is_volume(), n_bases, bases, bases, sol, stiffness);
+				}
+				else{
+					assembler.assemble(mesh->is_volume(), n_bases, bases, geom_bases, sol, tmp);
+					assembler.assemble_grad(mesh->is_volume(), n_bases, bases, geom_bases, sol, stiffness);
+				}
+
+				rhs += tmp;
 			}
 		}
 		else
@@ -633,6 +644,7 @@ namespace poly_fem
 	void State::assemble_rhs()
 	{
 		errors.clear();
+		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
 		sol.resize(0, 0);
 
@@ -669,6 +681,7 @@ namespace poly_fem
 		igl::Timer timer; timer.start();
 		std::cout<<"Solving... "<<std::flush;
 
+
 		json params = {
 			// {"mtype", 1}, // matrix type for Pardiso (2 = SPD)
 			// {"max_iter", 0}, // for iterative solvers
@@ -676,12 +689,49 @@ namespace poly_fem
 		};
 		auto solver = LinearSolver::create(solver_type, precond_type);
 		solver->setParameters(params);
+		Eigen::SparseMatrix<double> A;
+		Eigen::VectorXd b;
 
-		Eigen::SparseMatrix<double> A = stiffness;
-		Eigen::VectorXd x, b = rhs;
-		dirichlet_solve(*solver, A, b, boundary_nodes, x);
-		sol = x;
-		solver->getInfo(solver_info);
+		if(elastic_formulation == ElasticFormulation::SaintVenant)
+		{
+			sol.resize(n_bases*mesh->dimension(), 1);
+			sol.setZero();
+
+			for(int i = 0; i < 2; ++i)
+			{
+				A = stiffness;
+				Eigen::VectorXd x;
+				b = rhs;
+				dirichlet_solve(*solver, A, b, boundary_nodes, x);
+				sol += x;
+				solver->getInfo(solver_info);
+
+				NLAssembler<SaintVenantElasticity> assembler;
+				SaintVenantElasticity &le = assembler.local_assembler();
+				le.set_size(mesh->dimension());
+				le.set_lambda_mu(lambda, mu);
+
+				Eigen::MatrixXd tmp;
+				assembler.assemble(mesh->is_volume(), n_bases, bases, bases, sol, tmp);
+				assembler.assemble_grad(mesh->is_volume(), n_bases, bases, bases, sol, stiffness);
+
+				rhs += tmp;
+
+				std::cout<<"sol\n"<<sol<<std::endl;
+				std::cout<<"x\n"<<x<<std::endl;
+				std::cout<<"tmp\n"<<tmp<<std::endl;
+				std::cout<<"rhs\n"<<rhs<<std::endl;
+			}
+		}
+		else
+		{
+			A = stiffness;
+			Eigen::VectorXd x;
+			b = rhs;
+			dirichlet_solve(*solver, A, b, boundary_nodes, x);
+			sol = x;
+			solver->getInfo(solver_info);
+		}
 
 		timer.stop();
 		solving_time = timer.getElapsedTime();

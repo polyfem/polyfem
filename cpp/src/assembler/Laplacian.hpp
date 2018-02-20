@@ -9,7 +9,7 @@ namespace poly_fem
 	class Laplacian
 	{
 	public:
-		Eigen::Matrix<double, 1, 1> assemble(const ElementAssemblyValues &vals, const AssemblyValues &values_i, const AssemblyValues &values_j, const Eigen::VectorXd &da) const;
+		Eigen::Matrix<double, 1, 1> assemble(const ElementAssemblyValues &vals, const int i, const int j, const Eigen::VectorXd &da) const;
 
 		inline int size() const { return 1; }
 	};

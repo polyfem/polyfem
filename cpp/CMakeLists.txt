@@ -69,6 +69,7 @@ option(LIBIGL_WITH_XML              "Use XML"            OFF)
 
 # Polyfem library
 add_library(polyfem
+	src/assembler/Assembler.cpp
 	src/assembler/Assembler.hpp
 	src/assembler/AssemblyValues.hpp
 	src/assembler/ElementAssemblyValues.cpp

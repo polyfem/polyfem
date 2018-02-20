@@ -170,10 +170,10 @@ namespace poly_fem
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
-	HookeLinearElasticity::assemble(const ElementAssemblyValues &vals, const AssemblyValues &values_i, const AssemblyValues &values_j, const Eigen::VectorXd &da) const
+	HookeLinearElasticity::assemble(const ElementAssemblyValues &vals, const int i, const int j, const Eigen::VectorXd &da) const
 	{
-		const Eigen::MatrixXd &gradi = values_i.grad;
-		const Eigen::MatrixXd &gradj = values_j.grad;
+		const Eigen::MatrixXd &gradi = vals.basis_values[i].grad;
+		const Eigen::MatrixXd &gradj = vals.basis_values[j].grad;
 
 
 		// (C : gradi) : gradj

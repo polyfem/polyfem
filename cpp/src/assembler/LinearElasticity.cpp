@@ -25,11 +25,11 @@ namespace poly_fem
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
-	LinearElasticity::assemble(const ElementAssemblyValues &vals, const AssemblyValues &values_i, const AssemblyValues &values_j, const Eigen::VectorXd &da) const
+	LinearElasticity::assemble(const ElementAssemblyValues &vals, const int i, const int j, const Eigen::VectorXd &da) const
 	{
 		// mu ((gradi' gradj) Id + gradi gradj') + lambda gradi *gradj';
-		const Eigen::MatrixXd &gradi = values_i.grad_t_m;
-		const Eigen::MatrixXd &gradj = values_j.grad_t_m;
+		const Eigen::MatrixXd &gradi = vals.basis_values[i].grad_t_m;
+		const Eigen::MatrixXd &gradj = vals.basis_values[j].grad_t_m;
 
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> res(size()*size());
 		res.setZero();
@@ -41,12 +41,12 @@ namespace poly_fem
 			Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> res_k(size()*size());
 			res_k.setZero();
 			const Eigen::MatrixXd outer = gradi.row(k).transpose() * gradj.row(k);
-			for(int i = 0; i < size(); ++i)
+			for(int ii = 0; ii < size(); ++ii)
 			{
-				for(int j = 0; j < size(); ++j)
+				for(int jj = 0; jj < size(); ++jj)
 				{
-					res_k(i * size() + j) = outer(i * size() + j)* mu_ + outer(j * size() + i)* lambda_;
-					if(i == j) res_k(i * size() + j) += mu_ * dot(k);
+					res_k(ii * size() + jj) = outer(ii * size() + jj)* mu_ + outer(jj * size() + ii)* lambda_;
+					if(ii == jj) res_k(ii * size() + jj) += mu_ * dot(k);
 				}
 			}
 			res += res_k * da(k);

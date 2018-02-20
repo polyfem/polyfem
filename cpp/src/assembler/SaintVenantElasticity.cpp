@@ -30,7 +30,7 @@ namespace poly_fem
 		}
 
 		template<typename T, int dim>
-		Eigen::Matrix<T, dim, dim> strain(const Eigen::MatrixXd &grad, const Eigen::MatrixXd &jac_it, Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1> disp, int k, int coo)
+		Eigen::Matrix<T, dim, dim> strain(const Eigen::MatrixXd &grad, const Eigen::MatrixXd &jac_it, T disp, int k, int coo)
 		{
 			Eigen::Matrix<double, dim, dim> tmp;
 			tmp.setZero();
@@ -39,10 +39,8 @@ namespace poly_fem
 
 			Eigen::Matrix<T, dim, dim> jac;
 			for(int i = 0; i < dim; ++i)
-			{
 				for(int j = 0; j < dim; ++j)
-					jac(i, j) = tmp(i, j) * disp(i);
-			}
+					jac(i,j) = tmp(i,j)*disp;
 
 			return (jac*jac.transpose() + jac + jac.transpose())*0.5;
 		}
@@ -163,7 +161,7 @@ namespace poly_fem
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-	SaintVenantElasticity::assemble(const ElementAssemblyValues &vals, const AssemblyValues &values_j, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const
+	SaintVenantElasticity::assemble(const ElementAssemblyValues &vals, const int j, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const
 	{
 		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, Eigen::Dynamic, 3> local_disp(vals.basis_values.size(), size());
 		local_disp.setZero();
@@ -176,11 +174,11 @@ namespace poly_fem
 			}
 		}
 
-		return assemble_aux(vals, values_j, da, local_disp);
+		return assemble_aux(vals, j, da, local_disp);
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
-	SaintVenantElasticity::assemble_grad(const ElementAssemblyValues &vals, const AssemblyValues &values_j, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const
+	SaintVenantElasticity::assemble_grad(const ElementAssemblyValues &vals, const int j, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const
 	{
 		Matrix_t local_disp(vals.basis_values.size(), size());
 		local_disp.setZero();
@@ -201,7 +199,30 @@ namespace poly_fem
 			local_disp(d).derivatives()(d)=1;
 		}
 
-		const auto val = assemble_aux(vals, values_j, da, local_disp);
+		const auto val = assemble_aux(vals, j, da, local_disp);
+
+
+
+
+		{
+			Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, Eigen::Dynamic, 3> asdasd(vals.basis_values.size(), size());
+			asdasd.setZero();
+			for(size_t i = 0; i < vals.basis_values.size(); ++i){
+				const auto &bs = vals.basis_values[i];
+				for(size_t ii = 0; ii < bs.global.size(); ++ii){
+					for(int d = 0; d < size(); ++d){
+						asdasd(i,d) += bs.global[ii].val * displacement(bs.global[ii].index*size() + d);
+					}
+				}
+			}
+
+			auto mmat = assemble_aux(vals, j, da, asdasd);
+
+			Eigen::MatrixXd xxx(size(),1);
+			for(int aa = 0; aa <size(); ++aa)
+				xxx(aa) = val(aa).value();
+			std::cout<<(mmat - xxx).norm()<<std::endl;
+		}
 
 		// std::cout << y.derivatives() << std::endl;
 		// std::cout << y.value() << std::endl;
@@ -212,9 +233,9 @@ namespace poly_fem
 		{
 			const auto jac = val(i).derivatives();
 
-			for(int j = 0; j < size(); ++j)
+			for(int jj = 0; jj < size(); ++jj)
 			{
-				res(j*size() + i) = jac(j);
+				res(jj*size() + i) = jac(jj);
 			}
 		}
 
@@ -223,10 +244,10 @@ namespace poly_fem
 
 	template <typename T>
 	Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1>
-	SaintVenantElasticity::assemble_aux(const ElementAssemblyValues &vals, const AssemblyValues &values_j,
+	SaintVenantElasticity::assemble_aux(const ElementAssemblyValues &vals, const int j,
 		const Eigen::VectorXd &da, const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, Eigen::Dynamic, 3> &local_disp) const
 	{
-		const Eigen::MatrixXd &gradj = values_j.grad;
+		const Eigen::MatrixXd &gradj = vals.basis_values[j].grad;
 
 		// sum (C : gradi) : gradj
 		Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1> res(size());
@@ -246,99 +267,57 @@ namespace poly_fem
 			for(long k = 0; k < gradi.rows(); ++k)
 			{
 				Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1> res_k(size());
+				res_k.setZero();
 
-				if(size_ == 2)
+				if(size() == 2)
 				{
-					const auto eps_x_i = strain<T, 2>(gradi, vals.jac_it[k], local_disp.row(i), k, 0);
-					const auto eps_y_i = strain<T, 2>(gradi, vals.jac_it[k], local_disp.row(i), k, 1);
+					for(int d = 0; d < size(); ++d)
+					{
+						const auto eps_i = strain<T, 2>(gradi, vals.jac_it[k], local_disp(i, d), k, 0);
 
-					const auto eps_x_j = strain<double, 2>(gradj, vals.jac_it[k], ones, k, 0);
-					const auto eps_y_j = strain<double, 2>(gradj, vals.jac_it[k], ones, k, 1);
+						const auto eps_x_j = strain<double, 2>(gradj, vals.jac_it[k], 1., k, 0);
+						const auto eps_y_j = strain<double, 2>(gradj, vals.jac_it[k], 1., k, 1);
 
-					std::array<T, 3> e_x, e_y;
-					e_x[0] = eps_x_i(0,0);
-					e_x[1] = eps_x_i(1,1);
-					e_x[2] = 2*eps_x_i(0,1);
+						std::array<T, 3> ee;
+						ee[0] = eps_i(0,0);
+						ee[1] = eps_i(1,1);
+						ee[2] = 2*eps_i(0,1);
 
-					e_y[0] = eps_y_i(0,0);
-					e_y[1] = eps_y_i(1,1);
-					e_y[2] = 2*eps_y_i(0,1);
+						Eigen::Matrix<T, 2, 2> sigma; sigma <<
+						stress(ee, 0), stress(ee, 2),
+						stress(ee, 2), stress(ee, 1);
 
-					Eigen::Matrix<T, 2, 2> sigma_x; sigma_x <<
-					stress(e_x, 0), stress(e_x, 2),
-					stress(e_x, 2), stress(e_x, 1);
-
-					Eigen::Matrix<T, 2, 2> sigma_y; sigma_y <<
-					stress(e_y, 0), stress(e_y, 2),
-					stress(e_y, 2), stress(e_y, 1);
-
-
-					res_k(0) = (sigma_x*eps_x_j).trace();
-					res_k(1) = (sigma_x*eps_y_j).trace();
-					res_k(2) = (sigma_y*eps_x_j).trace();
-					res_k(3) = (sigma_y*eps_y_j).trace();
+						res_k(0) += (sigma*eps_x_j).trace();
+						res_k(1) += (sigma*eps_y_j).trace();
+					}
 				}
 				else
 				{
-					const auto eps_x_i = strain<T, 3>(gradi, vals.jac_it[k],local_disp.row(i), k, 0);
-					const auto eps_y_i = strain<T, 3>(gradi, vals.jac_it[k],local_disp.row(i), k, 1);
-					const auto eps_z_i = strain<T, 3>(gradi, vals.jac_it[k],local_disp.row(i), k, 2);
+					for(int d = 0; d < size(); ++d)
+					{
+						const auto eps_i = strain<T, 3>(gradi, vals.jac_it[k],local_disp(i, d), k, 0);
 
-					const auto eps_x_j = strain<double, 3>(gradj, vals.jac_it[k], ones, k, 0);
-					const auto eps_y_j = strain<double, 3>(gradj, vals.jac_it[k], ones, k, 1);
-					const auto eps_z_j = strain<double, 3>(gradj, vals.jac_it[k], ones, k, 2);
+						const auto eps_x_j = strain<double, 3>(gradj, vals.jac_it[k], 1., k, 0);
+						const auto eps_y_j = strain<double, 3>(gradj, vals.jac_it[k], 1., k, 1);
+						const auto eps_z_j = strain<double, 3>(gradj, vals.jac_it[k], 1., k, 2);
 
+						std::array<T, 6> ee, e_y, e_z;
+						ee[0] = eps_i(0,0);
+						ee[1] = eps_i(1,1);
+						ee[2] = eps_i(2,2);
+						ee[3] = 2*eps_i(1,2);
+						ee[4] = 2*eps_i(0,2);
+						ee[5] = 2*eps_i(0,1);
 
-					std::array<T, 6> e_x, e_y, e_z;
-					e_x[0] = eps_x_i(0,0);
-					e_x[1] = eps_x_i(1,1);
-					e_x[2] = eps_x_i(2,2);
-					e_x[3] = 2*eps_x_i(1,2);
-					e_x[4] = 2*eps_x_i(0,2);
-					e_x[5] = 2*eps_x_i(0,1);
+						Eigen::Matrix<T, 3, 3> sigma; sigma <<
+						stress(ee, 0), stress(ee, 5), stress(ee, 4),
+						stress(ee, 5), stress(ee, 1), stress(ee, 3),
+						stress(ee, 4), stress(ee, 3), stress(ee, 2);
 
-					e_y[0] = eps_y_i(0,0);
-					e_y[1] = eps_y_i(1,1);
-					e_y[2] = eps_y_i(2,2);
-					e_y[3] = 2*eps_y_i(1,2);
-					e_y[4] = 2*eps_y_i(0,2);
-					e_y[5] = 2*eps_y_i(0,1);
-
-					e_z[0] = eps_z_i(0,0);
-					e_z[1] = eps_z_i(1,1);
-					e_z[2] = eps_z_i(2,2);
-					e_z[3] = 2*eps_z_i(1,2);
-					e_z[4] = 2*eps_z_i(0,2);
-					e_z[5] = 2*eps_z_i(0,1);
-
-
-					Eigen::Matrix<T, 3, 3> sigma_x; sigma_x <<
-					stress(e_x, 0), stress(e_x, 5), stress(e_x, 4),
-					stress(e_x, 5), stress(e_x, 1), stress(e_x, 3),
-					stress(e_x, 4), stress(e_x, 3), stress(e_x, 2);
-
-					Eigen::Matrix<T, 3, 3> sigma_y; sigma_y <<
-					stress(e_y, 0), stress(e_y, 5), stress(e_y, 4),
-					stress(e_y, 5), stress(e_y, 1), stress(e_y, 3),
-					stress(e_y, 4), stress(e_y, 3), stress(e_y, 2);
-
-					Eigen::Matrix<T, 3, 3> sigma_z; sigma_z <<
-					stress(e_z, 0), stress(e_z, 5), stress(e_z, 4),
-					stress(e_z, 5), stress(e_z, 1), stress(e_z, 3),
-					stress(e_z, 4), stress(e_z, 3), stress(e_z, 2);
-
-
-					res_k(0) = (sigma_x*eps_x_j).trace();
-					res_k(1) = (sigma_x*eps_y_j).trace();
-					res_k(2) = (sigma_x*eps_z_j).trace();
-
-					res_k(3) = (sigma_y*eps_x_j).trace();
-					res_k(4) = (sigma_y*eps_y_j).trace();
-					res_k(5) = (sigma_y*eps_z_j).trace();
-
-					res_k(6) = (sigma_z*eps_x_j).trace();
-					res_k(7) = (sigma_z*eps_y_j).trace();
-					res_k(8) = (sigma_z*eps_z_j).trace();
+						res_k(0) += (sigma*eps_x_j).trace();
+						res_k(1) += (sigma*eps_y_j).trace();
+						res_k(2) += (sigma*eps_z_j).trace();
+					}
 				}
 
 				res += res_k * da(k);
@@ -431,6 +410,6 @@ namespace poly_fem
 	template Scalar_type SaintVenantElasticity::stress(const std::array<Scalar_type, 3> &strain, const int j) const;
 	template Scalar_type SaintVenantElasticity::stress(const std::array<Scalar_type, 6> &strain, const int j) const;
 
-	template Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> SaintVenantElasticity::assemble_aux(const ElementAssemblyValues &vals, const AssemblyValues &values_j, const Eigen::VectorXd &da, const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, Eigen::Dynamic, 3> &local_disp) const;
-	template Eigen::Matrix<Scalar_type, Eigen::Dynamic, 1, 0, 3, 1> SaintVenantElasticity::assemble_aux(const ElementAssemblyValues &vals, const AssemblyValues &values_j, const Eigen::VectorXd &da, const Eigen::Matrix<Scalar_type, Eigen::Dynamic, Eigen::Dynamic, 0, Eigen::Dynamic, 3> &local_disp) const;
+	template Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> SaintVenantElasticity::assemble_aux(const ElementAssemblyValues &vals, const int j, const Eigen::VectorXd &da, const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, Eigen::Dynamic, 3> &local_disp) const;
+	template Eigen::Matrix<Scalar_type, Eigen::Dynamic, 1, 0, 3, 1> SaintVenantElasticity::assemble_aux(const ElementAssemblyValues &vals, const int j, const Eigen::VectorXd &da, const Eigen::Matrix<Scalar_type, Eigen::Dynamic, Eigen::Dynamic, 0, Eigen::Dynamic, 3> &local_disp) const;
 }

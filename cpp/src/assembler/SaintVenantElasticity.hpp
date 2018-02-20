@@ -17,11 +17,11 @@ namespace poly_fem
 
 		// res is R^{dim}
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-		assemble(const ElementAssemblyValues &vals, const AssemblyValues &values_j, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const;
+		assemble(const ElementAssemblyValues &vals, const int j, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const;
 
 		// res is R^{dim²}
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
-		assemble_grad(const ElementAssemblyValues &vals, const AssemblyValues &values_j, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const;
+		assemble_grad(const ElementAssemblyValues &vals, const int j, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const;
 
 
 		inline int size() const { return size_; }
@@ -42,7 +42,7 @@ namespace poly_fem
 
 		template <typename T>
 		Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1>
-		assemble_aux(const ElementAssemblyValues &vals, const AssemblyValues &values_j,
+		assemble_aux(const ElementAssemblyValues &vals, const int j,
 			const Eigen::VectorXd &da, const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, Eigen::Dynamic, 3> &local_disp) const;
 	};
 }

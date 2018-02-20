@@ -244,8 +244,8 @@ void poly_fem::UIState::draw_settings() {
 		if (ImGui::Button("Compute poly bases", ImVec2(-1, 0))) { build_polygonal_basis(); }
 		if (ImGui::Button("Build vis mesh", ImVec2(-1, 0))) { build_vis_mesh(); }
 
-		if (ImGui::Button("Assemble stiffness", ImVec2(-1, 0))) { assemble_stiffness_mat(); }
 		if (ImGui::Button("Assemble rhs", ImVec2(-1, 0))) { assemble_rhs(); }
+		if (ImGui::Button("Assemble stiffness", ImVec2(-1, 0))) { assemble_stiffness_mat(); }
 		if (ImGui::Button("Solve", ImVec2(-1, 0))) { solve_problem(); }
 		if (ImGui::Button("Compute errors", ImVec2(-1, 0))) { compute_errors(); }
 
@@ -258,8 +258,8 @@ void poly_fem::UIState::draw_settings() {
 			if(!skip_visualization)
 				build_vis_mesh();
 
-			assemble_stiffness_mat();
 			assemble_rhs();
+			assemble_stiffness_mat();
 			solve_problem();
 			compute_errors();
 			state.save_json(std::cout);
