@@ -694,7 +694,7 @@ namespace poly_fem
 		Eigen::SparseMatrix<double> A;
 		Eigen::VectorXd b;
 
-		if(elastic_formulation == ElasticFormulation::SaintVenant)
+		if(!problem->is_scalar() && elastic_formulation == ElasticFormulation::SaintVenant)
 		{
 			sol.resize(n_bases*mesh->dimension(), 1);
 			sol.setZero();
@@ -719,10 +719,10 @@ namespace poly_fem
 
 				rhs += tmp;
 
-				std::cout<<"sol\n"<<sol<<std::endl;
-				std::cout<<"x\n"<<x<<std::endl;
-				std::cout<<"tmp\n"<<tmp<<std::endl;
-				std::cout<<"rhs\n"<<rhs<<std::endl;
+				// std::cout<<"sol\n"<<sol<<std::endl;
+				// std::cout<<"x\n"<<x<<std::endl;
+				// std::cout<<"tmp\n"<<tmp<<std::endl;
+				// std::cout<<"rhs\n"<<rhs<<std::endl;
 			}
 		}
 		else

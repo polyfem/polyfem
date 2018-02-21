@@ -48,7 +48,7 @@ namespace poly_fem
 		bool fit_nodes = true;
 
 		std::shared_ptr<Problem> problem;
-		ElasticFormulation elastic_formulation = ElasticFormulation::SaintVenant;
+		ElasticFormulation elastic_formulation = ElasticFormulation::Linear;
 
 		int n_bases;
 
