@@ -251,7 +251,7 @@ namespace poly_fem
 		// 		mesh->set_tag(el_id, ElementType::InteriorPolytope);
 		// }
 
-		// mesh->normalize();
+		mesh->normalize();
 
 		mesh->refine(n_refs, refinenemt_location, parent_elements);
 
