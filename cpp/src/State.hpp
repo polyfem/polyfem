@@ -46,6 +46,7 @@ namespace poly_fem
 		bool use_splines = false;
 		bool iso_parametric = true;
 		bool fit_nodes = true;
+		bool normalize_mesh = true;
 
 		std::shared_ptr<Problem> problem;
 		ElasticFormulation elastic_formulation = ElasticFormulation::Linear;

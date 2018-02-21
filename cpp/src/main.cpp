@@ -65,6 +65,7 @@ int main(int argc, const char **argv)
 
 	bool use_splines = false;
 	bool iso_parametric = true;
+	bool normalize_mesh = true;
 
 	bool no_ui = false;
 
@@ -72,6 +73,7 @@ int main(int argc, const char **argv)
 	command_line.add_option("-n_refs", n_refs); //
 	command_line.add_option("-ref_t", refinenemt_location);
 	command_line.add_option("-problem", problem_num); //
+	command_line.add_option("-normalize", "-not_norm", normalize_mesh); //
 
 
 	command_line.add_option("-quad", quadrature_order);
@@ -110,6 +112,7 @@ int main(int argc, const char **argv)
 		state.refinenemt_location = refinenemt_location;
 		state.iso_parametric = iso_parametric;
 		state.integral_constraints = integral_constraints;
+		state.normalize_mesh = normalize_mesh;
 
 		state.init(path, n_refs, problem_num);
         // std::cout<<path<<std::endl;
@@ -155,6 +158,7 @@ int main(int argc, const char **argv)
 		UIState::ui_state().state.iso_parametric = iso_parametric;
 		UIState::ui_state().state.integral_constraints = integral_constraints;
 		UIState::ui_state().screenshot = screenshot;
+		UIState::ui_state().state.normalize_mesh = normalize_mesh;
 
 		UIState::ui_state().launch(path, n_refs, problem_num);
 	}
