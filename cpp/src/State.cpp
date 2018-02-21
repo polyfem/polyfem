@@ -141,6 +141,8 @@ namespace poly_fem
 		j["num_non_zero"] = nn_zero;
 		j["num_flipped"] = n_flipped;
 		j["num_dofs"] = num_dofs;
+		j["num_vertices"] = mesh->n_vertices();
+		j["num_elements"] = mesh->n_elements();
 
 		j["mesh_size"] = mesh_size;
 

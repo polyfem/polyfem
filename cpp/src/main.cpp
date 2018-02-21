@@ -68,16 +68,16 @@ int main(int argc, const char **argv)
 
 	bool no_ui = false;
 
-	command_line.add_option("-mesh", path);
-	command_line.add_option("-n_refs", n_refs);
+	command_line.add_option("-mesh", path); //
+	command_line.add_option("-n_refs", n_refs); //
 	command_line.add_option("-ref_t", refinenemt_location);
-	command_line.add_option("-problem", problem_num);
+	command_line.add_option("-problem", problem_num); //
 
 
 	command_line.add_option("-quad", quadrature_order);
-	command_line.add_option("-q", discr_order);
+	command_line.add_option("-q", discr_order); //
 	command_line.add_option("-b_samples", n_boundary_samples);
-	command_line.add_option("-spline", "-fem", use_splines);
+	command_line.add_option("-spline", "-fem", use_splines); //
 	command_line.add_option("-iso", "-no_iso", iso_parametric);
 	command_line.add_option("-constraints", integral_constraints);
 
