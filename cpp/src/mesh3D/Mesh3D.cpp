@@ -481,6 +481,13 @@ namespace poly_fem
 		std::cout << "   max   : " << maxV << std::endl;
 		std::cout << "   extent: " << maxV - minV << std::endl;
 
+		// V.row(1) /= 100.;
+
+		// for(int i = 0; i < n_cells(); ++i)
+		// {
+		// 	mesh_.elements[i].v_in_Kernel[1] /= 100.;
+		// }
+
 		Eigen::MatrixXd p0, p1, p;
 		get_edges(p0, p1);
 		p = p0 - p1;
