@@ -6,6 +6,12 @@
 #include <Eigen/Sparse>
 #include <memory>
 ////////////////////////////////////////////////////////////////////////////////
+// TODO:
+// - [ ] Support both RowMajor + ColumnMajor sparse matrices
+// - [ ] Wrapper around MUMPS
+// - [ ] Wrapper around other iterative solvers (AMGCL, ViennaCL, etc.)
+// - [ ] Document the json parameters for each
+////////////////////////////////////////////////////////////////////////////////
 
 namespace poly_fem {
 

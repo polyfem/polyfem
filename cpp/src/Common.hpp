@@ -23,3 +23,6 @@
 // Json
 #include "json.hpp"
 using json = nlohmann::json;
+
+// Tinyformat
+#include "tinyformat.h"

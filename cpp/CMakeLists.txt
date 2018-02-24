@@ -5,6 +5,7 @@ project(PolyFEM)
 
 set(THIRD_PARTY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+list(APPEND CMAKE_MODULE_PATH ${THIRD_PARTY_DIR}/Catch2/contrib)
 
 # Color output
 include(UseColors)
@@ -255,6 +256,15 @@ add_subdirectory(${THIRD_PARTY_DIR}/imgui)
 # Tiny file dialogs library
 add_subdirectory(${THIRD_PARTY_DIR}/tinyfiledialogs tinyfiledialogs)
 
+# Tiny format library
+add_library(tinyformat INTERFACE)
+target_include_directories(tinyformat SYSTEM INTERFACE ${THIRD_PARTY_DIR}/tinyformat)
+target_link_libraries(polyfem PUBLIC tinyformat)
+
+# Catch2 library
+add_library(catch INTERFACE)
+target_include_directories(catch SYSTEM INTERFACE ${THIRD_PARTY_DIR}/Catch2/single_include)
+
 ################################################################################
 # Optional libraries
 ################################################################################
@@ -386,4 +396,11 @@ target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
 
 ################################################################################
 
+add_subdirectory(misc)
+
+################################################################################
+
+# Unit tests
+include(CTest)
+enable_testing()
 add_subdirectory(tests)
