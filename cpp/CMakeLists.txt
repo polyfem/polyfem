@@ -237,6 +237,11 @@ target_link_libraries(polyfem PUBLIC igl::core igl::triangle igl::tetgen igl::vi
 include(geogram)
 target_link_libraries(polyfem PUBLIC geogram)
 
+# CppNumericalSolvers library
+add_library(cppoptlib INTERFACE)
+target_include_directories(cppoptlib SYSTEM INTERFACE ${THIRD_PARTY_DIR}/CppNumericalSolvers/include)
+target_link_libraries(polyfem PUBLIC cppoptlib)
+
 # CLI11
 add_library(cli11 INTERFACE)
 target_include_directories(cli11 SYSTEM INTERFACE ${THIRD_PARTY_DIR}/cli11)
