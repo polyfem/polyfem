@@ -16,7 +16,7 @@ namespace poly_fem
 	void ElasticProblem::rhs(const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		// val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
-		val = Eigen::MatrixXd::Constant(pts.rows(), mesh.dimension(), 1);
+		val = Eigen::MatrixXd::Constant(pts.rows(), mesh.dimension(), 0.5);
 	}
 
 	void ElasticProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const

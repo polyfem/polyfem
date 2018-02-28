@@ -113,6 +113,10 @@ namespace cppoptlib {
 		using typename Superclass::TVector;
 		typedef Eigen::SparseMatrix<double> THessian;
 
+		SparseNewtonDescentSolver(const bool verbose)
+		: verbose(verbose)
+		{ }
+
 		void minimize(ProblemType &objFunc, TVector &x0) {
 			using namespace poly_fem;
 
@@ -147,7 +151,10 @@ namespace cppoptlib {
 				reduced_to_full_aux(full_size, reduced_size, grad, full_grad);
 
 				objFunc.hessian(x0, hessian);
-				// hessian += (1e-5) * id;
+				hessian += (1e-5) * id;
+
+				// std::cout<<x0<<std::endl;
+				// std::cout<<grad<<std::endl;
 
 
         		// TVector delta_x = hessian.lu().solve(-grad);
@@ -161,14 +168,17 @@ namespace cppoptlib {
 
 				++this->m_current.iterations;
 
-				// this->m_current.gradNorm = grad.norm();
-				// this->m_current.gradNorm = grad.template lpNorm<Eigen::Infinity>();
-				this->m_current.gradNorm = (rate * delta_x).norm();
+				this->m_current.gradNorm = grad.template lpNorm<Eigen::Infinity>();
 				this->m_status = checkConvergence(this->m_stop, this->m_current);
-				std::cout << "iter: "<<this->m_current.iterations <<", rate = "<< rate<< ", f = " <<  objFunc.value(x0) << ", ||g||_inf "<< this->m_current.gradNorm <<", ||step|| "<< (rate * delta_x).norm() << std::endl;
+
+				if(verbose)
+					std::cout << "iter: "<<this->m_current.iterations <<", rate = "<< rate<< ", f = " <<  objFunc.value(x0) << ", ||g||_inf "<< this->m_current.gradNorm <<", ||step|| "<< (rate * delta_x).norm() << std::endl;
 			}
 			while (objFunc.callback(this->m_current, x0) && (this->m_status == Status::Continue));
 		}
+
+	private:
+		const bool verbose;
 	};
 }
 
@@ -204,7 +214,8 @@ namespace poly_fem
 				const double elastic_energy = assembler.compute_energy(State::state().mesh->is_volume(), State::state().bases, State::state().bases, full);
 				const double body_energy 	= -rhs_assembler.compute_energy(full);
 
-				return elastic_energy/2. - body_energy;
+				// return elastic_energy/2. - body_energy;
+				return elastic_energy/2;
 			}
 
 			void gradient(const TVector &x, TVector &gradv) {
@@ -213,7 +224,9 @@ namespace poly_fem
 
 				Eigen::MatrixXd grad;
 				assembler.assemble(State::state().mesh->is_volume(), State::state().n_bases, State::state().bases, State::state().bases, full, grad);
-				grad -= State::state().rhs;
+				// grad -= State::state().rhs;
+
+				// grad = State::state().rhs;
 
 				full_to_reduced(grad, gradv);
 			}
@@ -901,17 +914,22 @@ namespace poly_fem
 
 
 			{
+				// tmp_sol.setRandom();
 				// Eigen::Matrix<double, Eigen::Dynamic, 1> actual_grad, expected_grad;
 				// nl_problem.gradient(tmp_sol, actual_grad);
 				// nl_problem.finiteGradient(tmp_sol, expected_grad, 0);
-				// std::cout<<actual_grad<< "\n\n" <<expected_grad<<std::endl;
+				// std::cout<<"difff\n"<<actual_grad <<"\n\n"<< expected_grad<<std::endl;
 
+				// tmp_sol.setRandom();
 				// if(!nl_problem.checkGradient(tmp_sol, 0))
-					// std::cerr<<"baaaaad grad"<<std::endl;
-				assert(nl_problem.checkGradient(tmp_sol, 0));
+				// 	std::cerr<<"baaaaad grad"<<std::endl;
+				// assert(nl_problem.checkGradient(tmp_sol, 0));
+				// tmp_sol.setZero();
+
+				// exit(0);
 			}
 
-			cppoptlib::SparseNewtonDescentSolver<NLProblemT> solver;
+			cppoptlib::SparseNewtonDescentSolver<NLProblemT> solver(true);
 			solver.minimize(nl_problem, tmp_sol);
 
 			const int full_size 	= n_bases*mesh->dimension();

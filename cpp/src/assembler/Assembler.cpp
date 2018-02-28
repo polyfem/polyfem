@@ -153,7 +153,7 @@ namespace poly_fem
 
 					for(size_t jj = 0; jj < global_j.size(); ++jj)
 					{
-						const auto gj = global_j[jj].index*local_assembler_.size();
+						const auto gj = global_j[jj].index*local_assembler_.size() + m;
 						const auto wj = global_j[jj].val;
 
 						rhs(gj) += local_value * wj;

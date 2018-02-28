@@ -37,8 +37,8 @@ namespace poly_fem
 			jac.row(coo) = grad.row(k);
 			jac = jac*jac_it;
 
-			return (jac.transpose()*jac + jac + jac.transpose())*0.5;
-			// return (jac + jac.transpose())*0.5;
+			// return (jac.transpose()*jac + jac + jac.transpose())*0.5;
+			return (jac + jac.transpose())*0.5;
 		}
 	}
 
@@ -294,8 +294,8 @@ namespace poly_fem
 				}
 			}
 
-			const auto strain_tensor = (gradd.transpose()*gradd + gradd + gradd.transpose())*0.5;
-			// const auto strain_tensor = (gradd + gradd.transpose())*0.5;
+			// const auto strain_tensor = (gradd.transpose()*gradd + gradd + gradd.transpose())*0.5;
+			const auto strain_tensor = (gradd + gradd.transpose())*0.5;
 			std::array<T, 3> ee;
 			ee[0] = strain_tensor(0,0);
 			ee[1] = strain_tensor(1,1);
@@ -391,8 +391,8 @@ namespace poly_fem
 
 			displacement_grad = displacement_grad * vals.jac_it[p];
 
-			Eigen::MatrixXd strain = (displacement_grad.transpose()*displacement_grad + displacement_grad + displacement_grad.transpose())/2.;
-			// Eigen::MatrixXd strain = (displacement_grad + displacement_grad.transpose())/2.;
+			// Eigen::MatrixXd strain = (displacement_grad.transpose()*displacement_grad + displacement_grad + displacement_grad.transpose())/2.;
+			Eigen::MatrixXd strain = (displacement_grad + displacement_grad.transpose())/2.;
 			Eigen::MatrixXd stress_tensor(size(), size());
 
 			if(size() == 2)
@@ -459,8 +459,8 @@ namespace poly_fem
 
 			displacement_grad = displacement_grad * vals.jac_it[p];
 
-			Eigen::MatrixXd strain = (displacement_grad.transpose()*displacement_grad + displacement_grad + displacement_grad.transpose())/2.;
-			// Eigen::MatrixXd strain = (displacement_grad + displacement_grad.transpose())/2.;
+			// Eigen::MatrixXd strain = (displacement_grad.transpose()*displacement_grad + displacement_grad + displacement_grad.transpose())/2.;
+			Eigen::MatrixXd strain = (displacement_grad + displacement_grad.transpose())/2.;
 			Eigen::MatrixXd stress_tensor(size(), size());
 
 			if(size() == 2)
