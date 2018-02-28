@@ -16,9 +16,7 @@ namespace poly_fem
 {
 	RhsAssembler::RhsAssembler(const Mesh &mesh, const int n_basis, const int size, const std::vector< ElementBases > &bases, const std::vector< ElementBases > &gbases, const Problem &problem)
 	: mesh_(mesh), n_basis_(n_basis), size_(size), bases_(bases), gbases_(gbases), problem_(problem)
-	{
-		is_volume_ = mesh_.is_volume();
-	}
+	{ }
 
 	void RhsAssembler::assemble(Eigen::MatrixXd &rhs) const
 	{
@@ -32,7 +30,7 @@ namespace poly_fem
 			// const ElementAssemblyValues &gvals = geom_values[e];
 
 			ElementAssemblyValues vals;
-			vals.compute(e, is_volume_, bases_[e], gbases_[e]);
+			vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
 
 			problem_.rhs(mesh_, vals.val, rhs_fun);
 
@@ -214,6 +212,85 @@ namespace poly_fem
 				rhs(indices[i]*size_+d) = coeffs(i, d);
 			}
 		}
+	}
+
+
+	double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement) const
+	{
+		// double res = 0;
+		// Eigen::MatrixXd forces;
+
+		// const int n_bases = int(bases_.size());
+		// for(int e = 0; e < n_bases; ++e)
+		// {
+		// 	ElementAssemblyValues vals;
+		// 	vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
+
+		// 	const Quadrature &quadrature = vals.quadrature;
+
+		// 	problem_.rhs(mesh_, vals.val, forces);
+		// 	const double energy = ((forces.array()*vals.val.array()).rowwise().sum()*quadrature.weights.array()).sum();
+		// 	res += energy;
+		// }
+
+		// return res;
+
+		// std::cout<<displacement<<"\n"<<std::endl;
+
+
+		const int size = mesh_.is_volume() ? 3 : 2;
+		double res = 0;
+		Eigen::MatrixXd forces;
+
+		const int n_bases = int(bases_.size());
+		for(int e = 0; e < n_bases; ++e)
+		{
+			ElementAssemblyValues vals;
+			vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
+
+			const Quadrature &quadrature = vals.quadrature;
+			const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
+
+
+			problem_.rhs(mesh_, vals.val, forces);
+			assert(forces.rows() == da.size());
+			assert(forces.cols() == size);
+
+			for(long p = 0; p < da.size(); ++p)
+			{
+				Eigen::MatrixXd local_displacement(1, size);
+				local_displacement.setZero();
+				for(size_t i = 0; i < vals.basis_values.size(); ++i)
+				{
+					const auto &bs = vals.basis_values[i];
+					const double &b_val = bs.val(p);
+					// assert(b_val.cols() == 1);
+					// assert(b_val.size() == da.size());
+
+					// std::cout<<"b_val: "<<b_val<<std::endl;
+
+					for(int d = 0; d < size; ++d)
+					{
+						for(std::size_t ii = 0; ii < bs.global.size(); ++ii)
+						{
+							local_displacement(d) += bs.global[ii].val * b_val * displacement(bs.global[ii].index*size + d);
+						}
+					}
+
+					// std::cout<<"local_displacement\n"<<local_displacement<<std::endl;
+				}
+
+				// std::cout<<"forces\n"<<forces.row(p)<<std::endl;
+				// std::cout<<"dot "<<(forces.row(p).array()*local_displacement.array()).sum()<<std::endl;
+
+				const double energy = (forces.row(p).array()*local_displacement.array()).sum()*da(p);
+				// std::cout<<"energy"<<energy<<std::endl;
+				// exit(0);
+				res += energy;
+			}
+		}
+
+		return res;
 	}
 
 

@@ -3,6 +3,8 @@
 
 #include "ElementAssemblyValues.hpp"
 
+#include "Problem.hpp"
+
 #include <igl/Timer.h>
 #include <Eigen/Sparse>
 #include <vector>
@@ -50,6 +52,12 @@ namespace poly_fem
 			const std::vector< ElementBases > &gbases,
 			const Eigen::MatrixXd &displacement,
 			Eigen::SparseMatrix<double> &grad) const;
+
+		double compute_energy(
+			const bool is_volume,
+			const std::vector< ElementBases > &bases,
+			const std::vector< ElementBases > &gbases,
+			const Eigen::MatrixXd &displacement) const;
 
 		inline LocalAssembler &local_assembler() { return local_assembler_; }
 		inline const LocalAssembler &local_assembler() const { return local_assembler_; }

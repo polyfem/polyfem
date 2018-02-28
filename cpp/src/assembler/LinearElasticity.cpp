@@ -89,7 +89,7 @@ namespace poly_fem
 				}
 			}
 
-			displacement_grad = displacement_grad * vals.jac_it[p].transpose().inverse();
+			displacement_grad = displacement_grad * vals.jac_it[p];
 
 			Eigen::MatrixXd strain = (displacement_grad + displacement_grad.transpose())/2;
 			const Eigen::MatrixXd stress =

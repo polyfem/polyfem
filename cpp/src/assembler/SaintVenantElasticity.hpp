@@ -19,9 +19,11 @@ namespace poly_fem
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
 		assemble(const ElementAssemblyValues &vals, const int j, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const;
 
-		// res is R^{dim²}
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
+		// res is R^{n_bases*dim x dim}
+		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, Eigen::Dynamic, 3>
 		assemble_grad(const ElementAssemblyValues &vals, const int j, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const;
+
+		double compute_energy(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const;
 
 
 		inline int size() const { return size_; }
@@ -32,6 +34,8 @@ namespace poly_fem
 		void set_lambda_mu(const double lambda, const double mu);
 
 		void compute_von_mises_stresses(const ElementBases &bs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const;
+
+
 	private:
 		int size_ = 2;
 
@@ -43,7 +47,7 @@ namespace poly_fem
 		template <typename T>
 		Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1>
 		assemble_aux(const ElementAssemblyValues &vals, const int j,
-			const Eigen::VectorXd &da, const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, Eigen::Dynamic, 3> &local_disp) const;
+			const Eigen::VectorXd &da, const Eigen::Matrix<T, Eigen::Dynamic, 1> &local_disp) const;
 	};
 }
 

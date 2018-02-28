@@ -35,9 +35,15 @@
 #include "CustomSerialization.hpp"
 #include "VTUWriter.hpp"
 
+#include <cppoptlib/problem.h>
+#include <cppoptlib/solver/lbfgssolver.h>
+#include <cppoptlib/solver/isolver.h>
+#include <cppoptlib/linesearch/armijo.h>
+
 #include <igl/Timer.h>
 #include <igl/serialize.h>
 #include <igl/copyleft/tetgen/tetrahedralize.h>
+
 
 #include <unsupported/Eigen/SparseExtra>
 
@@ -48,9 +54,194 @@
 
 using namespace Eigen;
 
+template<class FullMat, class ReducedMat>
+void full_to_reduced_aux(const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced)
+{
+	using namespace poly_fem;
+
+	assert(full.size() == full_size);
+	assert(full.cols() == 1);
+	reduced.resize(reduced_size, 1);
+
+	long j = 0;
+	size_t k = 0;
+	for(long i = 0; i < full.size(); ++i)
+	{
+		if(State::state().boundary_nodes[k] == i)
+		{
+			++k;
+			continue;
+		}
+
+		reduced(j++) = full(i);
+	}
+}
+
+template<class ReducedMat, class FullMat>
+void reduced_to_full_aux(const int full_size, const int reduced_size, const ReducedMat &reduced, FullMat &full)
+{
+	using namespace poly_fem;
+
+	assert(reduced.size() == reduced_size);
+	assert(reduced.cols() == 1);
+	full.resize(full_size, 1);
+
+	long j = 0;
+	size_t k = 0;
+	for(long i = 0; i < full.size(); ++i)
+	{
+		if(State::state().boundary_nodes[k] == i)
+		{
+			++k;
+			full(i) = State::state().rhs(i);
+			continue;
+		}
+
+		full(i) = reduced(j++);
+	}
+}
+
+
+namespace cppoptlib {
+
+	template<typename ProblemType>
+	class SparseNewtonDescentSolver : public ISolver<ProblemType, 2> {
+	public:
+		using Superclass = ISolver<ProblemType, 2>;
+
+		using typename Superclass::Scalar;
+		using typename Superclass::TVector;
+		typedef Eigen::SparseMatrix<double> THessian;
+
+		void minimize(ProblemType &objFunc, TVector &x0) {
+			using namespace poly_fem;
+
+			json params = {
+			// {"mtype", 1}, // matrix type for Pardiso (2 = SPD)
+			// {"max_iter", 0}, // for iterative solvers
+			// {"tolerance", 1e-9}, // for iterative solvers
+			};
+			auto solver = LinearSolver::create(State::state().solver_type, State::state().precond_type);
+			solver->setParameters(params);
+
+			const int reduced_size = x0.rows();
+			const int full_size = State::state().n_bases*State::state().mesh->dimension();
+			assert(full_size == reduced_size + State::state().boundary_nodes.size());
+
+			THessian id(full_size, full_size);
+			id.setIdentity();
+
+
+			TVector grad = TVector::Zero(reduced_size);
+			TVector full_grad;
+
+			TVector full_delta_x;
+			TVector delta_x;
+
+			THessian hessian(reduced_size, reduced_size);
+			this->m_current.reset();
+			// for(int iter = 0; iter < 1; ++iter)
+			do
+			{
+				objFunc.gradient(x0, grad);
+				reduced_to_full_aux(full_size, reduced_size, grad, full_grad);
+
+				objFunc.hessian(x0, hessian);
+				// hessian += (1e-5) * id;
+
+
+        		// TVector delta_x = hessian.lu().solve(-grad);
+				poly_fem::dirichlet_solve(*solver, hessian, full_grad, State::state().boundary_nodes, full_delta_x);
+				full_to_reduced_aux(full_size, reduced_size, full_delta_x, delta_x);
+				delta_x *= -1;
+
+
+				const double rate = Armijo<ProblemType, 1>::linesearch(x0, delta_x, objFunc);
+				x0 += rate * delta_x;
+
+				++this->m_current.iterations;
+
+				// this->m_current.gradNorm = grad.norm();
+				// this->m_current.gradNorm = grad.template lpNorm<Eigen::Infinity>();
+				this->m_current.gradNorm = (rate * delta_x).norm();
+				this->m_status = checkConvergence(this->m_stop, this->m_current);
+				std::cout << "iter: "<<this->m_current.iterations <<", rate = "<< rate<< ", f = " <<  objFunc.value(x0) << ", ||g||_inf "<< this->m_current.gradNorm <<", ||step|| "<< (rate * delta_x).norm() << std::endl;
+			}
+			while (objFunc.callback(this->m_current, x0) && (this->m_status == Status::Continue));
+		}
+	};
+}
 
 namespace poly_fem
 {
+
+	namespace
+	{
+		template<class Assembler>
+		class NLProblem : public cppoptlib::Problem<double> {
+		public:
+			using typename cppoptlib::Problem<double>::Scalar;
+			using typename cppoptlib::Problem<double>::TVector;
+			typedef Eigen::SparseMatrix<double> THessian;
+
+			NLProblem(const Assembler &assembler, const RhsAssembler &rhs_assembler)
+			: assembler(assembler), rhs_assembler(rhs_assembler),
+			full_size(State::state().n_bases*State::state().mesh->dimension()), reduced_size(State::state().n_bases*State::state().mesh->dimension() - State::state().boundary_nodes.size())
+			{ }
+
+			TVector initial_guess()
+			{
+				VectorXd guess(reduced_size);
+				guess.setZero();
+
+				return guess;
+			}
+
+			double value(const TVector &x) {
+				Eigen::MatrixXd full;
+				reduced_to_full(x , full);
+
+				const double elastic_energy = assembler.compute_energy(State::state().mesh->is_volume(), State::state().bases, State::state().bases, full);
+				const double body_energy 	= -rhs_assembler.compute_energy(full);
+
+				return elastic_energy/2. - body_energy;
+			}
+
+			void gradient(const TVector &x, TVector &gradv) {
+				Eigen::MatrixXd full;
+				reduced_to_full(x , full);
+
+				Eigen::MatrixXd grad;
+				assembler.assemble(State::state().mesh->is_volume(), State::state().n_bases, State::state().bases, State::state().bases, full, grad);
+				grad -= State::state().rhs;
+
+				full_to_reduced(grad, gradv);
+			}
+
+			void hessian(const TVector &x, THessian &hessian) {
+				Eigen::MatrixXd full;
+				reduced_to_full(x , full);
+
+				assembler.assemble_grad(State::state().mesh->is_volume(), State::state().n_bases, State::state().bases, State::state().bases, full, hessian);
+			}
+
+		private:
+			const Assembler &assembler;
+			const RhsAssembler &rhs_assembler;
+
+			const int full_size, reduced_size;
+
+			void full_to_reduced(const Eigen::MatrixXd &full, TVector &reduced)
+			{
+				full_to_reduced_aux(full_size, reduced_size, full, reduced);
+			}
+
+			void reduced_to_full(const TVector &reduced, Eigen::MatrixXd &full)
+			{
+				reduced_to_full_aux(full_size, reduced_size, reduced, full);
+			}
+		};
+	}
 
 	State::State()
 	{
@@ -514,6 +705,8 @@ namespace poly_fem
 			}
 		}
 
+		std::sort(boundary_nodes.begin(), boundary_nodes.end());
+
 
 		const auto &curret_bases =  iso_parametric ? bases : geom_bases;
 		const int n_samples = 10;
@@ -602,27 +795,26 @@ namespace poly_fem
 			}
 			else if(elastic_formulation == ElasticFormulation::SaintVenant)
 			{
-				NLAssembler<SaintVenantElasticity> assembler;
-				SaintVenantElasticity &le = assembler.local_assembler();
-				le.set_size(mesh->dimension());
-				le.set_lambda_mu(lambda, mu);
+				// NLAssembler<SaintVenantElasticity> assembler;
+				// SaintVenantElasticity &le = assembler.local_assembler();
+				// le.set_size(mesh->dimension());
+				// le.set_lambda_mu(lambda, mu);
 
 
-				sol.resize(n_bases*mesh->dimension(), 1);
-				sol.setZero();
-				sol.setRandom();
+				// sol.resize(n_bases*mesh->dimension(), 1);
+				// sol.setZero();
 
-				Eigen::MatrixXd tmp;
-				if(iso_parametric){
-					assembler.assemble(mesh->is_volume(), n_bases, bases, bases, sol, tmp);
-					assembler.assemble_grad(mesh->is_volume(), n_bases, bases, bases, sol, stiffness);
-				}
-				else{
-					assembler.assemble(mesh->is_volume(), n_bases, bases, geom_bases, sol, tmp);
-					assembler.assemble_grad(mesh->is_volume(), n_bases, bases, geom_bases, sol, stiffness);
-				}
+				// Eigen::MatrixXd tmp;
+				// if(iso_parametric){
+				// 	assembler.assemble(mesh->is_volume(), n_bases, bases, bases, sol, tmp);
+				// 	assembler.assemble_grad(mesh->is_volume(), n_bases, bases, bases, sol, stiffness);
+				// }
+				// else{
+				// 	assembler.assemble(mesh->is_volume(), n_bases, bases, geom_bases, sol, tmp);
+				// 	assembler.assemble_grad(mesh->is_volume(), n_bases, bases, geom_bases, sol, stiffness);
+				// }
 
-				rhs += tmp;
+				// rhs += tmp;
 			}
 		}
 		else
@@ -690,44 +882,52 @@ namespace poly_fem
 			// {"max_iter", 0}, // for iterative solvers
 			// {"tolerance", 1e-9}, // for iterative solvers
 		};
-		auto solver = LinearSolver::create(solver_type, precond_type);
-		solver->setParameters(params);
-		Eigen::SparseMatrix<double> A;
-		Eigen::VectorXd b;
+
 
 		if(!problem->is_scalar() && elastic_formulation == ElasticFormulation::SaintVenant)
 		{
-			sol.resize(n_bases*mesh->dimension(), 1);
-			sol.setZero();
+			NLAssembler<SaintVenantElasticity> assembler;
+			SaintVenantElasticity &le = assembler.local_assembler();
+			le.set_size(mesh->dimension());
+			le.set_lambda_mu(lambda, mu);
 
-			for(int i = 0; i < 2; ++i)
+			RhsAssembler rhs_assembler(*mesh, n_bases, mesh->dimension(), bases, bases, *problem);
+
+
+			typedef NLProblem<NLAssembler<SaintVenantElasticity>> NLProblemT;
+			NLProblemT nl_problem(assembler, rhs_assembler);
+
+			VectorXd tmp_sol = nl_problem.initial_guess();
+
+
 			{
-				A = stiffness;
-				Eigen::VectorXd x;
-				b = rhs;
-				dirichlet_solve(*solver, A, b, boundary_nodes, x);
-				sol += x;
-				solver->getInfo(solver_info);
+				// Eigen::Matrix<double, Eigen::Dynamic, 1> actual_grad, expected_grad;
+				// nl_problem.gradient(tmp_sol, actual_grad);
+				// nl_problem.finiteGradient(tmp_sol, expected_grad, 0);
+				// std::cout<<actual_grad<< "\n\n" <<expected_grad<<std::endl;
 
-				NLAssembler<SaintVenantElasticity> assembler;
-				SaintVenantElasticity &le = assembler.local_assembler();
-				le.set_size(mesh->dimension());
-				le.set_lambda_mu(lambda, mu);
-
-				Eigen::MatrixXd tmp;
-				assembler.assemble(mesh->is_volume(), n_bases, bases, bases, sol, tmp);
-				assembler.assemble_grad(mesh->is_volume(), n_bases, bases, bases, sol, stiffness);
-
-				rhs += tmp;
-
-				// std::cout<<"sol\n"<<sol<<std::endl;
-				// std::cout<<"x\n"<<x<<std::endl;
-				// std::cout<<"tmp\n"<<tmp<<std::endl;
-				// std::cout<<"rhs\n"<<rhs<<std::endl;
+				// if(!nl_problem.checkGradient(tmp_sol, 0))
+					// std::cerr<<"baaaaad grad"<<std::endl;
+				assert(nl_problem.checkGradient(tmp_sol, 0));
 			}
+
+			cppoptlib::SparseNewtonDescentSolver<NLProblemT> solver;
+			solver.minimize(nl_problem, tmp_sol);
+
+			const int full_size 	= n_bases*mesh->dimension();
+			const int reduced_size 	= n_bases*mesh->dimension() - boundary_nodes.size();
+
+			reduced_to_full_aux(full_size, reduced_size, tmp_sol, sol);
 		}
 		else
 		{
+			auto solver = LinearSolver::create(solver_type, precond_type);
+			solver->setParameters(params);
+			Eigen::SparseMatrix<double> A;
+			Eigen::VectorXd b;
+
+			// std::cout<<Eigen::MatrixXd(stiffness)<<std::endl;
+
 			A = stiffness;
 			Eigen::VectorXd x;
 			b = rhs;
@@ -739,7 +939,7 @@ namespace poly_fem
 		timer.stop();
 		solving_time = timer.getElapsedTime();
 		std::cout<<" took "<<solving_time<<"s"<<std::endl;
-		std::cout<<"Solver error: "<<(A*sol-b).norm()<<std::endl;
+		// std::cout<<"Solver error: "<<(A*sol-b).norm()<<std::endl;
 	}
 
 	void State::compute_errors()

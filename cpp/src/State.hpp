@@ -49,7 +49,7 @@ namespace poly_fem
 		bool normalize_mesh = true;
 
 		std::shared_ptr<Problem> problem;
-		ElasticFormulation elastic_formulation = ElasticFormulation::Linear;
+		ElasticFormulation elastic_formulation = ElasticFormulation::SaintVenant;
 
 		int n_bases;
 

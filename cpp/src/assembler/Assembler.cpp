@@ -210,31 +210,46 @@ namespace poly_fem
 				const auto &global_j = vals.basis_values[j].global;
 
 				const auto stiffness_val = local_assembler_.assemble_grad(vals, j, displacement, da);
-				assert(stiffness_val.size() == local_assembler_.size() * local_assembler_.size());
+				assert(stiffness_val.rows() == n_loc_bases * local_assembler_.size());
+				assert(stiffness_val.cols() == local_assembler_.size());
 
 				// igl::Timer t1; t1.start();
 				for(int n = 0; n < local_assembler_.size(); ++n)
 				{
 					for(int m = 0; m < local_assembler_.size(); ++m)
 					{
-						const double local_value = stiffness_val(n*local_assembler_.size()+m);
-						if (std::abs(local_value) < 1e-30) { continue; }
-
-						for(size_t jj = 0; jj < global_j.size(); ++jj)
+						for(int i = 0; i < n_loc_bases; ++i)
 						{
-							const auto gj = global_j[jj].index*local_assembler_.size()+n;
-							const auto wj = global_j[jj].val;
+							const auto &global_i = vals.basis_values[i].global;
 
-							entries.emplace_back(m, gj, local_value * wj);
+							const double local_value = stiffness_val(i*local_assembler_.size() + m, n);
+							// if (std::abs(local_value) < 1e-30) { continue; }
 
-							if(entries.size() >= 1e8)
+
+							for(size_t ii = 0; ii < global_i.size(); ++ii)
 							{
-								tmp.setFromTriplets(entries.begin(), entries.end());
-								grad += tmp;
-								grad.makeCompressed();
+								const auto gi = global_i[ii].index*local_assembler_.size() + m;
 
-								entries.clear();
-								std::cout<<"cleaning memory..."<<std::endl;
+
+								for(size_t jj = 0; jj < global_j.size(); ++jj)
+								{
+									const auto gj = global_j[jj].index*local_assembler_.size() + n;
+									const auto wj = global_j[jj].val;
+
+									// std::cout<< gi <<"," <<gj<<" -> "<<local_value<<std::endl;
+
+									entries.emplace_back(gi, gj, local_value * wj);
+
+									if(entries.size() >= 1e8)
+									{
+										tmp.setFromTriplets(entries.begin(), entries.end());
+										grad += tmp;
+										grad.makeCompressed();
+
+										entries.clear();
+										std::cout<<"cleaning memory..."<<std::endl;
+									}
+								}
 							}
 						}
 					}
@@ -250,6 +265,34 @@ namespace poly_fem
 		tmp.setFromTriplets(entries.begin(), entries.end());
 		grad += tmp;
 		grad.makeCompressed();
+	}
+
+	template<class LocalAssembler>
+	double NLAssembler<LocalAssembler>::compute_energy(
+			const bool is_volume,
+			const std::vector< ElementBases > &bases,
+			const std::vector< ElementBases > &gbases,
+			const Eigen::MatrixXd &displacement) const
+	{
+		double res = 0;
+
+		const int n_bases = int(bases.size());
+		for(int e = 0; e < n_bases; ++e)
+		{
+			// igl::Timer timer; timer.start();
+
+			ElementAssemblyValues vals;
+			vals.compute(e, is_volume, bases[e], gbases[e]);
+
+			const Quadrature &quadrature = vals.quadrature;
+
+			const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
+
+			const double val = local_assembler_.compute_energy(vals, displacement, da);
+			res += val;
+		}
+
+		return res;
 	}
 
 	template class Assembler<Laplacian>;
