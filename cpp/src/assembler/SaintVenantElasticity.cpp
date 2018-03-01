@@ -14,6 +14,13 @@ namespace poly_fem
 		typedef Eigen::AutoDiffScalar<Derivative_type> Scalar_type;
 		typedef Eigen::Matrix<Scalar_type, Eigen::Dynamic, 1> Matrix_t;
 
+		template<class Matrix>
+		Matrix strain_from_disp_grad(const Matrix &disp_grad)
+		{
+			return (disp_grad + disp_grad.transpose())*0.5;
+			// return (disp_grad.transpose()*disp_grad + disp_grad + disp_grad.transpose())*0.5;
+		}
+
 		double von_mises_stress_for_stress_tensor(const Eigen::MatrixXd &stress)
 		{
 			double von_mises_stress =  0.5 * ( stress(0, 0) - stress(1, 1) ) * ( stress(0, 0) - stress(1, 1) ) + 3.0  *  stress(0, 1) * stress(0, 1);
@@ -37,8 +44,7 @@ namespace poly_fem
 			jac.row(coo) = grad.row(k);
 			jac = jac*jac_it;
 
-			// return (jac.transpose()*jac + jac + jac.transpose())*0.5;
-			return (jac + jac.transpose())*0.5;
+			return strain_from_disp_grad(jac);
 		}
 	}
 
@@ -294,8 +300,7 @@ namespace poly_fem
 				}
 			}
 
-			// const auto strain_tensor = (gradd.transpose()*gradd + gradd + gradd.transpose())*0.5;
-			const auto strain_tensor = (gradd + gradd.transpose())*0.5;
+			const auto strain_tensor = strain_from_disp_grad(gradd);
 			std::array<T, 3> ee;
 			ee[0] = strain_tensor(0,0);
 			ee[1] = strain_tensor(1,1);
@@ -304,6 +309,9 @@ namespace poly_fem
 			Eigen::Matrix<T, 2, 2> sigma; sigma <<
 			stress(ee, 0), stress(ee, 2),
 			stress(ee, 2), stress(ee, 1);
+
+			//TODO
+			// sigma += sigma*gradd;
 
 			const auto eps_x_j = strain<2>(gradj, vals.jac_it[k], k, 0);
 			const auto eps_y_j = strain<2>(gradj, vals.jac_it[k], k, 1);
@@ -391,8 +399,7 @@ namespace poly_fem
 
 			displacement_grad = displacement_grad * vals.jac_it[p];
 
-			// Eigen::MatrixXd strain = (displacement_grad.transpose()*displacement_grad + displacement_grad + displacement_grad.transpose())/2.;
-			Eigen::MatrixXd strain = (displacement_grad + displacement_grad.transpose())/2.;
+			Eigen::MatrixXd strain = strain_from_disp_grad(displacement_grad);
 			Eigen::MatrixXd stress_tensor(size(), size());
 
 			if(size() == 2)
@@ -459,8 +466,7 @@ namespace poly_fem
 
 			displacement_grad = displacement_grad * vals.jac_it[p];
 
-			// Eigen::MatrixXd strain = (displacement_grad.transpose()*displacement_grad + displacement_grad + displacement_grad.transpose())/2.;
-			Eigen::MatrixXd strain = (displacement_grad + displacement_grad.transpose())/2.;
+			Eigen::MatrixXd strain = strain_from_disp_grad(displacement_grad);
 			Eigen::MatrixXd stress_tensor(size(), size());
 
 			if(size() == 2)
