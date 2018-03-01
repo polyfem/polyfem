@@ -32,7 +32,8 @@ namespace poly_fem
 		const std::vector< ElementBases > &gbases_;
 		const Problem &problem_;
 
-		AutoDiffScalar compute_energy_aux(const Eigen::MatrixXd &displacement) const;
+		template<typename T>
+		T compute_energy_aux(const Eigen::MatrixXd &displacement) const;
 
 	};
 }

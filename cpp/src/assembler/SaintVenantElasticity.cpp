@@ -165,14 +165,14 @@ namespace poly_fem
 	Eigen::VectorXd
 	SaintVenantElasticity::assemble(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const
 	{
-		auto auto_diff_energy = compute_energy_aux(vals, displacement, da);
+		auto auto_diff_energy = compute_energy_aux<AutoDiffScalar>(vals, displacement, da);
 		return auto_diff_energy.getGradient();
 	}
 
 	Eigen::MatrixXd
 	SaintVenantElasticity::assemble_grad(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const
 	{
-		auto auto_diff_energy = compute_energy_aux(vals, displacement, da);
+		auto auto_diff_energy = compute_energy_aux<AutoDiffScalar>(vals, displacement, da);
 		return auto_diff_energy.getHessian();
 	}
 
@@ -249,12 +249,16 @@ namespace poly_fem
 
 	double SaintVenantElasticity::compute_energy(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const
 	{
-		auto auto_diff_energy = compute_energy_aux(vals, displacement, da);
-		return auto_diff_energy.getValue();
+		return compute_energy_aux<double>(vals, displacement, da);
+		// return auto_diff_energy.getValue();
 	}
 
-	AutoDiffScalar SaintVenantElasticity::compute_energy_aux(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const
+	template<typename T>
+	T SaintVenantElasticity::compute_energy_aux(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const
 	{
+		typedef Eigen::Matrix<T, Eigen::Dynamic, 1> 						AutoDiffVect;
+		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> 	AutoDiffGradMat;
+
 		assert(displacement.cols() == 1);
 
 		const int n_pts = da.size();
@@ -272,10 +276,12 @@ namespace poly_fem
 
 		DiffScalarBase::setVariableCount(local_dispv.rows());
 		AutoDiffVect local_disp(local_dispv.rows(), 1);
-		AutoDiffScalar energy = AutoDiffScalar(0.0);
+		T energy = T(0.0);
+
+		AutoDiffAllocator<T> allocate_auto_diff_scalar;
 
 		for(long i = 0; i < local_dispv.rows(); ++i){
-			local_disp(i) = AutoDiffScalar(i, local_dispv(i));
+			local_disp(i) = allocate_auto_diff_scalar(i, local_dispv(i));
 		}
 
 		AutoDiffGradMat displacement_grad(size(), size());
@@ -312,7 +318,7 @@ namespace poly_fem
 
 			if(size() == 2)
 			{
-				std::array<AutoDiffScalar, 3> eps;
+				std::array<T, 3> eps;
 				eps[0] = strain(0,0);
 				eps[1] = strain(1,1);
 				eps[2] = 2*strain(0,1);
@@ -324,7 +330,7 @@ namespace poly_fem
 			}
 			else
 			{
-				std::array<AutoDiffScalar, 6> eps;
+				std::array<T, 6> eps;
 				eps[0] = strain(0,0);
 				eps[1] = strain(1,1);
 				eps[2] = strain(2,2);
@@ -351,4 +357,7 @@ namespace poly_fem
 
 	template AutoDiffScalar SaintVenantElasticity::stress(const std::array<AutoDiffScalar, 3> &strain, const int j) const;
 	template AutoDiffScalar SaintVenantElasticity::stress(const std::array<AutoDiffScalar, 6> &strain, const int j) const;
+
+	template double SaintVenantElasticity::compute_energy_aux(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const;
+	template AutoDiffScalar SaintVenantElasticity::compute_energy_aux(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const;
 }

@@ -216,22 +216,28 @@ namespace poly_fem
 
 	Eigen::MatrixXd RhsAssembler::compute_energy_grad(const Eigen::MatrixXd &displacement) const
 	{
-		auto auto_diff_energy = compute_energy_aux(displacement);
+		auto auto_diff_energy = compute_energy_aux<AutoDiffScalar>(displacement);
 		return auto_diff_energy.getGradient();
 	}
 
 	double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement) const
 	{
-		auto auto_diff_energy = compute_energy_aux(displacement);
-		return auto_diff_energy.getValue();
+		// auto auto_diff_energy = compute_energy_aux(displacement);
+		// return auto_diff_energy.getValue();
+
+		return compute_energy_aux<double>(displacement);
 	}
 
-	AutoDiffScalar RhsAssembler::compute_energy_aux(const Eigen::MatrixXd &displacement) const
+	template<typename T>
+	T RhsAssembler::compute_energy_aux(const Eigen::MatrixXd &displacement) const
 	{
+		typedef Eigen::Matrix<T, Eigen::Dynamic, 1> AutoDiffVect;
+		AutoDiffAllocator<T> allocate_auto_diff_scalar;
+
 		const int size = mesh_.is_volume() ? 3 : 2;
 
 		DiffScalarBase::setVariableCount(displacement.size());
-		AutoDiffScalar res = AutoDiffScalar(0.);
+		T res = T(0.);
 		Eigen::MatrixXd forces;
 
 		const int n_bases = int(bases_.size());
@@ -252,7 +258,7 @@ namespace poly_fem
 			{
 				AutoDiffVect local_displacement(size);
 				for(int d = 0; d < size; ++d)
-					local_displacement(d) = AutoDiffScalar(0.0);
+					local_displacement(d) = T(0.0);
 
  				// local_displacement.setZero();
 				for(size_t i = 0; i < vals.basis_values.size(); ++i)
@@ -264,7 +270,7 @@ namespace poly_fem
 					{
 						for(std::size_t ii = 0; ii < bs.global.size(); ++ii)
 						{
-							local_displacement(d) += (bs.global[ii].val * b_val) * AutoDiffScalar(bs.global[ii].index*size + d, displacement(bs.global[ii].index*size + d));
+							local_displacement(d) += (bs.global[ii].val * b_val) * allocate_auto_diff_scalar(bs.global[ii].index*size + d, displacement(bs.global[ii].index*size + d));
 						}
 					}
 				}
@@ -295,6 +301,7 @@ namespace poly_fem
 				case BoundaryType::QuadLine: BoundarySampler::sample_parametric_quad_edge(local_boundary[i], n_samples, tmp); break;
 				case BoundaryType::Quad: 	 BoundarySampler::sample_parametric_quad_face(local_boundary[i], n_samples, tmp); break;
 				case BoundaryType::Tri: 	 BoundarySampler::sample_parametric_tri_face(local_boundary[i], n_samples, tmp); break;
+				case BoundaryType::Invalid:  assert(false); break;
 				default: assert(false);
 			}
 
@@ -309,5 +316,9 @@ namespace poly_fem
 
 		return true;
 	}
+
+
+	template double RhsAssembler::compute_energy_aux(const Eigen::MatrixXd &displacement) const;
+	template AutoDiffScalar RhsAssembler::compute_energy_aux(const Eigen::MatrixXd &displacement) const;
 
 }

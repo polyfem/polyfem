@@ -3,7 +3,7 @@
 
 #include "CommandLine.hpp"
 
-#include "autodiff.h"
+#include "Types.hpp"
 DECLARE_DIFFSCALAR_BASE();
 
 

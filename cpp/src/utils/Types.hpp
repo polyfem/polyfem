@@ -13,6 +13,35 @@ namespace poly_fem
 	typedef Eigen::VectorXd															Gradient;
 	typedef Eigen::MatrixXd															Hessian;
 	typedef DScalar2<double, Gradient, Hessian> 									AutoDiffScalar;
-	typedef Eigen::Matrix<AutoDiffScalar, Eigen::Dynamic, 1> 						AutoDiffVect;
-	typedef Eigen::Matrix<AutoDiffScalar, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> 	AutoDiffGradMat;
+
+	template<typename T>
+	class AutoDiffAllocator
+	{
+	public:
+		T operator()(const int i, double v)
+		{
+			assert(false);
+		}
+	};
+
+	template<>
+	class AutoDiffAllocator<double>
+	{
+	public:
+		double operator()(const int i, double v)
+		{
+			return v;
+		}
+	};
+
+	template<>
+	class AutoDiffAllocator<AutoDiffScalar>
+	{
+	public:
+		AutoDiffScalar operator()(const int i, double v)
+		{
+			return AutoDiffScalar(i, v);
+		}
+	};
 }
+
