@@ -4,8 +4,7 @@
 
 #include "ElementAssemblyValues.hpp"
 #include "ElementBases.hpp"
-
-#include "autodiff.h"
+#include "Types.hpp"
 
 #include <Eigen/Dense>
 #include <array>
@@ -14,12 +13,6 @@ namespace poly_fem
 {
 	class SaintVenantElasticity
 	{
-	public:
-		typedef Eigen::VectorXd															Gradient;
-		typedef Eigen::MatrixXd															Hessian;
-		typedef DScalar2<double, Gradient, Hessian> 									AutoDiffScalar;
-		typedef Eigen::Matrix<AutoDiffScalar, Eigen::Dynamic, 1> 						AutoDiffVect;
-		typedef Eigen::Matrix<AutoDiffScalar, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> 	AutoDiffGradMat;
 	public:
 		SaintVenantElasticity();
 

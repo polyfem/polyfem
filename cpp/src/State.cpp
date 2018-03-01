@@ -212,9 +212,9 @@ namespace poly_fem
 				reduced_to_full(x , full);
 
 				const double elastic_energy = assembler.compute_energy(State::state().mesh->is_volume(), State::state().bases, State::state().bases, full);
-				const double body_energy 	= -rhs_assembler.compute_energy(full);
+				const double body_energy 	= rhs_assembler.compute_energy(full);
 
-				return elastic_energy - body_energy;
+				return elastic_energy + body_energy;
 			}
 
 			void gradient(const TVector &x, TVector &gradv) {
@@ -223,7 +223,7 @@ namespace poly_fem
 
 				Eigen::MatrixXd grad;
 				assembler.assemble(State::state().mesh->is_volume(), State::state().n_bases, State::state().bases, State::state().bases, full, grad);
-				grad -= State::state().rhs;
+				grad += rhs_assembler.compute_energy_grad(full);
 
 				full_to_reduced(grad, gradv);
 			}

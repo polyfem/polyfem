@@ -253,7 +253,7 @@ namespace poly_fem
 		return auto_diff_energy.getValue();
 	}
 
-	SaintVenantElasticity::AutoDiffScalar SaintVenantElasticity::compute_energy_aux(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const
+	AutoDiffScalar SaintVenantElasticity::compute_energy_aux(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const
 	{
 		assert(displacement.cols() == 1);
 
@@ -349,6 +349,6 @@ namespace poly_fem
 	template double SaintVenantElasticity::stress(const std::array<double, 3> &strain, const int j) const;
 	template double SaintVenantElasticity::stress(const std::array<double, 6> &strain, const int j) const;
 
-	template SaintVenantElasticity::AutoDiffScalar SaintVenantElasticity::stress(const std::array<SaintVenantElasticity::AutoDiffScalar, 3> &strain, const int j) const;
-	template SaintVenantElasticity::AutoDiffScalar SaintVenantElasticity::stress(const std::array<SaintVenantElasticity::AutoDiffScalar, 6> &strain, const int j) const;
+	template AutoDiffScalar SaintVenantElasticity::stress(const std::array<AutoDiffScalar, 3> &strain, const int j) const;
+	template AutoDiffScalar SaintVenantElasticity::stress(const std::array<AutoDiffScalar, 6> &strain, const int j) const;
 }

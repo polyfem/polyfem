@@ -214,9 +214,15 @@ namespace poly_fem
 		}
 	}
 
+	Eigen::MatrixXd RhsAssembler::compute_energy_grad(const Eigen::MatrixXd &displacement) const
+	{
+		auto auto_diff_energy = compute_energy_aux(displacement);
+		return auto_diff_energy.getGradient();
+	}
 
 	double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement) const
 	{
+		// const int size = mesh_.is_volume() ? 3 : 2;
 		// double res = 0;
 		// Eigen::MatrixXd forces;
 
@@ -227,19 +233,59 @@ namespace poly_fem
 		// 	vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
 
 		// 	const Quadrature &quadrature = vals.quadrature;
+		// 	const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
+
 
 		// 	problem_.rhs(mesh_, vals.val, forces);
-		// 	const double energy = ((forces.array()*vals.val.array()).rowwise().sum()*quadrature.weights.array()).sum();
-		// 	res += energy;
+		// 	assert(forces.rows() == da.size());
+		// 	assert(forces.cols() == size);
+
+		// 	for(long p = 0; p < da.size(); ++p)
+		// 	{
+		// 		Eigen::MatrixXd local_displacement(1, size);
+		// 		local_displacement.setZero();
+		// 		for(size_t i = 0; i < vals.basis_values.size(); ++i)
+		// 		{
+		// 			const auto &bs = vals.basis_values[i];
+		// 			const double &b_val = bs.val(p);
+		// 			// assert(b_val.cols() == 1);
+		// 			// assert(b_val.size() == da.size());
+
+		// 			// std::cout<<"b_val: "<<b_val<<std::endl;
+
+		// 			for(int d = 0; d < size; ++d)
+		// 			{
+		// 				for(std::size_t ii = 0; ii < bs.global.size(); ++ii)
+		// 				{
+		// 					local_displacement(d) += bs.global[ii].val * b_val * displacement(bs.global[ii].index*size + d);
+		// 				}
+		// 			}
+
+		// 			// std::cout<<"local_displacement\n"<<local_displacement<<std::endl;
+		// 		}
+
+		// 		// std::cout<<"forces\n"<<forces.row(p)<<std::endl;
+		// 		// std::cout<<"dot "<<(forces.row(p).array()*local_displacement.array()).sum()<<std::endl;
+
+		// 		const double energy = (forces.row(p).array()*local_displacement.array()).sum()*da(p);
+		// 		// std::cout<<"energy"<<energy<<std::endl;
+		// 		// exit(0);
+		// 		res += energy;
+		// 	}
 		// }
 
-		// return res;
+		// std::cout<<"energy: "<<auto_diff_energy.getValue()<<" " <<res<<std::endl;
 
-		// std::cout<<displacement<<"\n"<<std::endl;
+		auto auto_diff_energy = compute_energy_aux(displacement);
+		return auto_diff_energy.getValue();
+	}
 
-
+	AutoDiffScalar RhsAssembler::compute_energy_aux(const Eigen::MatrixXd &displacement) const
+	{
 		const int size = mesh_.is_volume() ? 3 : 2;
-		double res = 0;
+
+		DiffScalarBase::setVariableCount(displacement.size());
+		AutoDiffScalar res = AutoDiffScalar(0.);
 		Eigen::MatrixXd forces;
 
 		const int n_bases = int(bases_.size());
@@ -258,35 +304,30 @@ namespace poly_fem
 
 			for(long p = 0; p < da.size(); ++p)
 			{
-				Eigen::MatrixXd local_displacement(1, size);
-				local_displacement.setZero();
+				AutoDiffVect local_displacement(size);
+				for(int d = 0; d < size; ++d)
+					local_displacement(d) = AutoDiffScalar(0.0);
+
+ 				// local_displacement.setZero();
 				for(size_t i = 0; i < vals.basis_values.size(); ++i)
 				{
 					const auto &bs = vals.basis_values[i];
-					const double &b_val = bs.val(p);
-					// assert(b_val.cols() == 1);
-					// assert(b_val.size() == da.size());
-
-					// std::cout<<"b_val: "<<b_val<<std::endl;
+					const double b_val = bs.val(p);
 
 					for(int d = 0; d < size; ++d)
 					{
 						for(std::size_t ii = 0; ii < bs.global.size(); ++ii)
 						{
-							local_displacement(d) += bs.global[ii].val * b_val * displacement(bs.global[ii].index*size + d);
+							local_displacement(d) += (bs.global[ii].val * b_val) * AutoDiffScalar(bs.global[ii].index*size + d, displacement(bs.global[ii].index*size + d));
 						}
 					}
-
-					// std::cout<<"local_displacement\n"<<local_displacement<<std::endl;
 				}
 
-				// std::cout<<"forces\n"<<forces.row(p)<<std::endl;
-				// std::cout<<"dot "<<(forces.row(p).array()*local_displacement.array()).sum()<<std::endl;
+				for(int d = 0; d < size; ++d)
+					res += forces(p, d) * local_displacement(d) * da(p);
 
-				const double energy = (forces.row(p).array()*local_displacement.array()).sum()*da(p);
-				// std::cout<<"energy"<<energy<<std::endl;
-				// exit(0);
-				res += energy;
+				// const double energy = (forces.row(p).array()*local_displacement.array()).sum()*da(p);
+				// res += energy;
 			}
 		}
 
