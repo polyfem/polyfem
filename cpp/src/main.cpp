@@ -3,6 +3,10 @@
 
 #include "CommandLine.hpp"
 
+#include "autodiff.h"
+DECLARE_DIFFSCALAR_BASE();
+
+
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
 

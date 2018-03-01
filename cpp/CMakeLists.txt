@@ -179,6 +179,7 @@ add_library(polyfem
 	src/solver/LinearSolverPardiso.cpp
 	src/State.cpp
 	src/State.hpp
+	src/utils/autodiff.h
 	src/utils/BoundarySampler.hpp
 	src/utils/CommandLine.cpp
 	src/utils/CommandLine.hpp

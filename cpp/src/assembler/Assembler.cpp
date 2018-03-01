@@ -137,26 +137,24 @@ namespace poly_fem
 
 			const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 			const int n_loc_bases = int(vals.basis_values.size());
+			const auto val = local_assembler_.assemble(vals, displacement, da);
+			assert(val.size() == n_loc_bases*local_assembler_.size());
 
 			for(int j = 0; j < n_loc_bases; ++j)
 			{
 				const auto &global_j = vals.basis_values[j].global;
-				const auto val = local_assembler_.assemble(vals, j, displacement, da);
-
-				assert(val.size() == local_assembler_.size());
 
 				// igl::Timer t1; t1.start();
 				for(int m = 0; m < local_assembler_.size(); ++m)
 				{
-					const double local_value = val(m);
+					const double local_value = val(j*local_assembler_.size() + m);
 					if (std::abs(local_value) < 1e-30) { continue; }
 
 					for(size_t jj = 0; jj < global_j.size(); ++jj)
 					{
 						const auto gj = global_j[jj].index*local_assembler_.size() + m;
-						const auto wj = global_j[jj].val;
 
-						rhs(gj) += local_value * wj;
+						rhs(gj) += local_value;
 					}
 				}
 
@@ -205,24 +203,24 @@ namespace poly_fem
 			const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 			const int n_loc_bases = int(vals.basis_values.size());
 
-			for(int j = 0; j < n_loc_bases; ++j)
-			{
-				const auto &global_j = vals.basis_values[j].global;
-
-				const auto stiffness_val = local_assembler_.assemble_grad(vals, j, displacement, da);
-				assert(stiffness_val.rows() == n_loc_bases * local_assembler_.size());
-				assert(stiffness_val.cols() == local_assembler_.size());
+			const auto stiffness_val = local_assembler_.assemble_grad(vals, displacement, da);
+			assert(stiffness_val.rows() == n_loc_bases * local_assembler_.size());
+			assert(stiffness_val.cols() == n_loc_bases * local_assembler_.size());
 
 				// igl::Timer t1; t1.start();
-				for(int n = 0; n < local_assembler_.size(); ++n)
+			for(int n = 0; n < local_assembler_.size(); ++n)
+			{
+				for(int m = 0; m < local_assembler_.size(); ++m)
 				{
-					for(int m = 0; m < local_assembler_.size(); ++m)
+					for(int i = 0; i < n_loc_bases; ++i)
 					{
-						for(int i = 0; i < n_loc_bases; ++i)
-						{
-							const auto &global_i = vals.basis_values[i].global;
+						const auto &global_i = vals.basis_values[i].global;
 
-							const double local_value = stiffness_val(i*local_assembler_.size() + m, n);
+						for(int j = 0; j < n_loc_bases; ++j)
+						{
+							const auto &global_j = vals.basis_values[j].global;
+
+							const double local_value = stiffness_val(i*local_assembler_.size() + m, j*local_assembler_.size() + n);
 							// if (std::abs(local_value) < 1e-30) { continue; }
 
 
@@ -234,11 +232,10 @@ namespace poly_fem
 								for(size_t jj = 0; jj < global_j.size(); ++jj)
 								{
 									const auto gj = global_j[jj].index*local_assembler_.size() + n;
-									const auto wj = global_j[jj].val;
 
 									// std::cout<< gi <<"," <<gj<<" -> "<<local_value<<std::endl;
 
-									entries.emplace_back(gi, gj, local_value * wj);
+									entries.emplace_back(gi, gj, local_value);
 
 									if(entries.size() >= 1e8)
 									{
@@ -269,10 +266,10 @@ namespace poly_fem
 
 	template<class LocalAssembler>
 	double NLAssembler<LocalAssembler>::compute_energy(
-			const bool is_volume,
-			const std::vector< ElementBases > &bases,
-			const std::vector< ElementBases > &gbases,
-			const Eigen::MatrixXd &displacement) const
+		const bool is_volume,
+		const std::vector< ElementBases > &bases,
+		const std::vector< ElementBases > &gbases,
+		const Eigen::MatrixXd &displacement) const
 	{
 		double res = 0;
 
