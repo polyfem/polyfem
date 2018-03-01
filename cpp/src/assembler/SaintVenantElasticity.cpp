@@ -3,17 +3,12 @@
 #include "Basis.hpp"
 #include "ElementAssemblyValues.hpp"
 
-#include <unsupported/Eigen/AutoDiff>
 
 namespace poly_fem
 {
 
 	namespace
 	{
-		typedef Eigen::Matrix<double, Eigen::Dynamic, 1, 0> Derivative_type;
-		typedef Eigen::AutoDiffScalar<Derivative_type> Scalar_type;
-		typedef Eigen::Matrix<Scalar_type, Eigen::Dynamic, 1> Matrix_t;
-
 		template<class Matrix>
 		Matrix strain_from_disp_grad(const Matrix &disp_grad)
 		{
@@ -50,7 +45,6 @@ namespace poly_fem
 			jac = jac*jac_it;
 
 			return strain_from_disp_grad(jac);
-			// return (jac + jac.transpose())*0.5;
 		}
 	}
 
@@ -171,19 +165,6 @@ namespace poly_fem
 	Eigen::VectorXd
 	SaintVenantElasticity::assemble(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const
 	{
-		// Eigen::Matrix<double, Eigen::Dynamic, 1> local_disp(vals.basis_values.size() * size(), 1);
-		// local_disp.setZero();
-		// for(size_t i = 0; i < vals.basis_values.size(); ++i){
-		// 	const auto &bs = vals.basis_values[i];
-		// 	for(size_t ii = 0; ii < bs.global.size(); ++ii){
-		// 		for(int d = 0; d < size(); ++d){
-		// 			local_disp(i*size() + d) += bs.global[ii].val * displacement(bs.global[ii].index*size() + d);
-		// 		}
-		// 	}
-		// }
-
-		// return assemble_aux(vals, j, da, local_disp);
-
 		auto auto_diff_energy = compute_energy_aux(vals, displacement, da);
 		return auto_diff_energy.getGradient();
 	}
@@ -191,188 +172,9 @@ namespace poly_fem
 	Eigen::MatrixXd
 	SaintVenantElasticity::assemble_grad(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const
 	{
-
-		// Eigen::Matrix<double, Eigen::Dynamic, 1> local_dispv(vals.basis_values.size() * size(), 1);
-		// local_dispv.setZero();
-		// for(size_t i = 0; i < vals.basis_values.size(); ++i){
-		// 	const auto &bs = vals.basis_values[i];
-		// 	for(size_t ii = 0; ii < bs.global.size(); ++ii){
-		// 		for(int d = 0; d < size(); ++d){
-		// 			local_dispv(i*size() + d) += bs.global[ii].val * displacement(bs.global[ii].index*size() + d);
-		// 		}
-		// 	}
-		// }
-
-		// Matrix_t local_disp(local_dispv.rows(), 1);
-		// for(long i = 0; i < local_dispv.rows(); ++i){
-		// 	local_disp(i) = local_dispv(i);
-		// }
-
-		// //set unit vectors for the derivative directions (partial derivatives of the input vector)
-		// for(size_t i = 0; i < vals.basis_values.size()*size(); ++i)
-		// {
-		// 	local_disp(i).derivatives().resize(vals.basis_values.size()*size());
-		// 	local_disp(i).derivatives().setZero();
-		// 	local_disp(i).derivatives()(i)=1;
-		// }
-
-		// const auto val = assemble_aux(vals, j, da, local_disp);
-
-
-
-
-		// // {
-		// // 	auto mmat = assemble_aux(vals, j, da, local_dispv);
-
-		// // 	Eigen::MatrixXd xxx(size(),1);
-		// // 	for(int aa = 0; aa < size(); ++aa)
-		// // 		xxx(aa) = val(aa).value();
-		// // 	// assert((mmat - xxx).norm()< 1e-10);
-		// // 	if((mmat - xxx).norm() > 1e-10)
-		// // 		std::cout<<(mmat - xxx).norm()<<std::endl;
-		// // }
-
-
-		// Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, Eigen::Dynamic, 3> res(vals.basis_values.size()*size(), size());
-
-		// for(int i = 0; i < size(); ++i)
-		// {
-		// 	const auto jac = val(i).derivatives();
-
-		// 	for(size_t jj = 0; jj < vals.basis_values.size()*size(); ++jj)
-		// 	{
-		// 		res(jj, i) = jac(jj);
-		// 	}
-		// }
-
-		// return res;
 		auto auto_diff_energy = compute_energy_aux(vals, displacement, da);
 		return auto_diff_energy.getHessian();
 	}
-
-	// template <typename T>
-	// Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1>
-	// SaintVenantElasticity::assemble_aux(const ElementAssemblyValues &vals, const int j,
-	// 	const Eigen::VectorXd &da, const Eigen::Matrix<T, Eigen::Dynamic, 1> &local_disp) const
-	// {
-	// 	const Eigen::MatrixXd &gradj = vals.basis_values[j].grad;
-
-	// 	// sum (C : gradi) : gradj
-	// 	Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1> res(size());
-
-	// 	// res.setZero();
-
-	// 	assert(gradj.cols() == size());
-	// 	assert(size_t(gradj.rows()) ==  vals.jac_it.size());
-	// 	assert(gradj.rows() == da.size());
-
-	// 	bool is_res_empty = true;
-
-
-	// 	//loop over quadrature
-	// 	for(long k = 0; k < da.size(); ++k)
-	// 	{
-	// 		Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1> res_k(size());
-
-	// 		bool is_gradd_empty = true;
-	// 		Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> gradd(size(), size());
-
-	// 		for(size_t i = 0; i < vals.basis_values.size(); ++i)
-	// 		{
-	// 			const Eigen::MatrixXd &gradi = vals.basis_values[i].grad;
-	// 			assert(gradi.cols() == size());
-	// 			assert(size_t(gradi.rows()) ==  vals.jac_it.size());
-
-	// 			if(size() == 2)
-	// 			{
-	// 				Eigen::Matrix<double, 2, 2> tmp;
-
-	// 				for(int d = 0; d < size(); ++d)
-	// 				{
-	// 					tmp.setZero();
-	// 					tmp.row(d) = gradi.row(k);
-	// 					tmp = tmp*vals.jac_it[k];
-
-	// 					if(is_gradd_empty){
-	// 						gradd(0,0) = tmp(0,0)*local_disp(i*size() + d);
-	// 						gradd(0,1) = tmp(0,1)*local_disp(i*size() + d);
-	// 						gradd(1,0) = tmp(1,0)*local_disp(i*size() + d);
-	// 						gradd(1,1) = tmp(1,1)*local_disp(i*size() + d);
-	// 					}
-	// 					else{
-	// 						gradd(0,0) += tmp(0,0)*local_disp(i*size() + d);
-	// 						gradd(0,1) += tmp(0,1)*local_disp(i*size() + d);
-	// 						gradd(1,0) += tmp(1,0)*local_disp(i*size() + d);
-	// 						gradd(1,1) += tmp(1,1)*local_disp(i*size() + d);
-	// 					}
-
-	// 					is_gradd_empty = false;
-	// 				}
-	// 			}
-	// 		}
-
-	// 		const auto strain_tensor = strain_from_disp_grad(gradd);
-	// 		std::array<T, 3> ee;
-	// 		ee[0] = strain_tensor(0,0);
-	// 		ee[1] = strain_tensor(1,1);
-	// 		ee[2] = 2*strain_tensor(0,1);
-
-	// 		Eigen::Matrix<T, 2, 2> sigma; sigma <<
-	// 		stress(ee, 0), stress(ee, 2),
-	// 		stress(ee, 2), stress(ee, 1);
-
-	// 		//TODO
-	// 		sigma += gradd*sigma;
-
-	// 		const auto eps_x_j = strain<2>(gradj, vals.jac_it[k], k, 0);
-	// 		const auto eps_y_j = strain<2>(gradj, vals.jac_it[k], k, 1);
-
-	// 		res_k(0) = (sigma * eps_x_j).trace();
-	// 		res_k(1) = (sigma * eps_y_j).trace();
-
-
-	// 		if(is_res_empty)
-	// 			res = res_k * da(k);
-	// 		else
-	// 			res += res_k * da(k);
-
-	// 		is_res_empty = false;
-
-	// 			// {
-	// 			// 	for(int d = 0; d < size(); ++d)
-	// 			// 	{
-	// 			// 		const auto eps_i = strain<T, 3>(gradi, vals.jac_it[k], local_disp(i*size() + d), k, 0);
-
-	// 			// 		const auto eps_x_j = strain<double, 3>(gradj, vals.jac_it[k], 1., k, 0);
-	// 			// 		const auto eps_y_j = strain<double, 3>(gradj, vals.jac_it[k], 1., k, 1);
-	// 			// 		const auto eps_z_j = strain<double, 3>(gradj, vals.jac_it[k], 1., k, 2);
-
-	// 			// 		std::array<T, 6> ee, e_y, e_z;
-	// 			// 		ee[0] = eps_i(0,0);
-	// 			// 		ee[1] = eps_i(1,1);
-	// 			// 		ee[2] = eps_i(2,2);
-	// 			// 		ee[3] = 2*eps_i(1,2);
-	// 			// 		ee[4] = 2*eps_i(0,2);
-	// 			// 		ee[5] = 2*eps_i(0,1);
-
-	// 			// 		Eigen::Matrix<T, 3, 3> sigma; sigma <<
-	// 			// 		stress(ee, 0), stress(ee, 5), stress(ee, 4),
-	// 			// 		stress(ee, 5), stress(ee, 1), stress(ee, 3),
-	// 			// 		stress(ee, 4), stress(ee, 3), stress(ee, 2);
-
-	// 			// 		res_k(0) += (sigma*eps_x_j).trace();
-	// 			// 		res_k(1) += (sigma*eps_y_j).trace();
-	// 			// 		res_k(2) += (sigma*eps_z_j).trace();
-	// 			// 	}
-	// 			// }
-	// 		// }
-
-	// 	}
-
-	// 	// std::cout<<"res\n"<<res<<"\n"<<std::endl;
-
-	// 	return res;
-	// }
 
 	void SaintVenantElasticity::compute_von_mises_stresses(const ElementBases &bs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
 	{
@@ -447,72 +249,7 @@ namespace poly_fem
 
 	double SaintVenantElasticity::compute_energy(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const
 	{
-		// Eigen::MatrixXd displacement_grad(size(), size());
-
-		// assert(displacement.cols() == 1);
-
-		// const int n_pts = da.size();
-
-		// double energy = 0;
-
-		// for(long p = 0; p < n_pts; ++p)
-		// {
-		// 	displacement_grad.setZero();
-
-		// 	for(size_t i = 0; i < vals.basis_values.size(); ++i)
-		// 	{
-		// 		const auto &bs = vals.basis_values[i];
-		// 		const Eigen::MatrixXd &grad = bs.grad;
-		// 		assert(grad.cols() == size());
-		// 		assert(size_t(grad.rows()) ==  vals.jac_it.size());
-
-		// 		for(int d = 0; d < size(); ++d)
-		// 		{
-		// 			for(std::size_t ii = 0; ii < bs.global.size(); ++ii)
-		// 			{
-		// 				displacement_grad.row(d) += bs.global[ii].val * grad.row(p) * displacement(bs.global[ii].index*size() + d);
-		// 			}
-		// 		}
-		// 	}
-
-		// 	displacement_grad = displacement_grad * vals.jac_it[p];
-
-		// 	Eigen::MatrixXd strain = strain_from_disp_grad(displacement_grad);
-		// 	Eigen::MatrixXd stress_tensor(size(), size());
-
-		// 	if(size() == 2)
-		// 	{
-		// 		std::array<double, 3> eps;
-		// 		eps[0] = strain(0,0);
-		// 		eps[1] = strain(1,1);
-		// 		eps[2] = 2*strain(0,1);
-
-
-		// 		stress_tensor <<
-		// 		stress(eps, 0), stress(eps, 2),
-		// 		stress(eps, 2), stress(eps, 1);
-		// 	}
-		// 	else
-		// 	{
-		// 		std::array<double, 6> eps;
-		// 		eps[0] = strain(0,0);
-		// 		eps[1] = strain(1,1);
-		// 		eps[2] = strain(2,2);
-		// 		eps[3] = 2*strain(1,2);
-		// 		eps[4] = 2*strain(0,2);
-		// 		eps[5] = 2*strain(0,1);
-
-		// 		stress_tensor <<
-		// 		stress(eps, 0), stress(eps, 5), stress(eps, 4),
-		// 		stress(eps, 5), stress(eps, 1), stress(eps, 3),
-		// 		stress(eps, 4), stress(eps, 3), stress(eps, 2);
-		// 	}
-
-		// 	energy += (stress_tensor * strain).trace() * da(p);
-		// }
-
 		auto auto_diff_energy = compute_energy_aux(vals, displacement, da);
-		// std::cout<<energy<<" "<<auto_diff_energy.getValue()<<std::endl;
 		return auto_diff_energy.getValue();
 	}
 
@@ -608,18 +345,10 @@ namespace poly_fem
 	}
 
 
-
-
 	//explicit instantiation
 	template double SaintVenantElasticity::stress(const std::array<double, 3> &strain, const int j) const;
 	template double SaintVenantElasticity::stress(const std::array<double, 6> &strain, const int j) const;
 
-	// template Scalar_type SaintVenantElasticity::stress(const std::array<Scalar_type, 3> &strain, const int j) const;
-	// template Scalar_type SaintVenantElasticity::stress(const std::array<Scalar_type, 6> &strain, const int j) const;
-
 	template SaintVenantElasticity::AutoDiffScalar SaintVenantElasticity::stress(const std::array<SaintVenantElasticity::AutoDiffScalar, 3> &strain, const int j) const;
 	template SaintVenantElasticity::AutoDiffScalar SaintVenantElasticity::stress(const std::array<SaintVenantElasticity::AutoDiffScalar, 6> &strain, const int j) const;
-
-	// template Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> SaintVenantElasticity::assemble_aux(const ElementAssemblyValues &vals, const int j, const Eigen::VectorXd &da, const Eigen::Matrix<double, Eigen::Dynamic, 1> &local_disp) const;
-	// template Eigen::Matrix<Scalar_type, Eigen::Dynamic, 1, 0, 3, 1> SaintVenantElasticity::assemble_aux(const ElementAssemblyValues &vals, const int j, const Eigen::VectorXd &da, const Eigen::Matrix<Scalar_type, Eigen::Dynamic, 1> &local_disp) const;
 }

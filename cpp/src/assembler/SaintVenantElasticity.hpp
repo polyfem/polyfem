@@ -46,11 +46,6 @@ namespace poly_fem
 		template <typename T, unsigned long N>
 		T stress(const std::array<T, N> &strain, const int j) const;
 
-		// template <typename T>
-		// Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1>
-		// assemble_aux(const ElementAssemblyValues &vals, const int j,
-		// 	const Eigen::VectorXd &da, const Eigen::Matrix<T, Eigen::Dynamic, 1> &local_disp) const;
-
 		AutoDiffScalar compute_energy_aux(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const;
 	};
 }
