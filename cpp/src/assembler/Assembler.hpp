@@ -5,7 +5,6 @@
 
 #include "Problem.hpp"
 
-#include <igl/Timer.h>
 #include <Eigen/Sparse>
 #include <vector>
 #include <iostream>

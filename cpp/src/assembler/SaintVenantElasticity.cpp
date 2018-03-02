@@ -3,6 +3,8 @@
 #include "Basis.hpp"
 #include "ElementAssemblyValues.hpp"
 
+#include <igl/Timer.h>
+
 
 namespace poly_fem
 {
@@ -165,13 +167,254 @@ namespace poly_fem
 	Eigen::VectorXd
 	SaintVenantElasticity::assemble(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const
 	{
-		auto auto_diff_energy = compute_energy_aux<AutoDiffScalar>(vals, displacement, da);
-		return auto_diff_energy.getGradient();
+		// igl::Timer time; time.start();
+		assert(displacement.cols() == 1);
+
+		const int n_pts = da.size();
+		const int n_bases = vals.basis_values.size();
+
+		Eigen::Matrix<double, Eigen::Dynamic, 1> local_disp(vals.basis_values.size() * size(), 1);
+		local_disp.setZero();
+		for(int i = 0; i < n_bases; ++i){
+			const auto &bs = vals.basis_values[i];
+			for(size_t ii = 0; ii < bs.global.size(); ++ii){
+				for(int d = 0; d < size(); ++d){
+					local_disp(i*size() + d) += bs.global[ii].val * displacement(bs.global[ii].index*size() + d);
+				}
+			}
+		}
+
+		Eigen::Matrix<double, Eigen::Dynamic, 1> res(n_bases * size(), 1);
+		res.setZero();
+
+
+		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> displacement_grad(size(), size());
+
+		for(long p = 0; p < n_pts; ++p)
+		{
+			displacement_grad.setZero();
+
+			for(int i = 0; i < n_bases; ++i)
+			{
+				const auto &bs = vals.basis_values[i];
+				const Eigen::MatrixXd &grad = bs.grad;
+				assert(grad.cols() == size());
+				assert(size_t(grad.rows()) ==  vals.jac_it.size());
+
+				for(int d = 0; d < size(); ++d)
+				{
+					displacement_grad.row(d) += grad.row(p) * local_disp(i*size() + d);
+				}
+			}
+
+			displacement_grad = displacement_grad * vals.jac_it[p];
+
+			const auto strain = strain_from_disp_grad(displacement_grad);
+			Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> stress_tensor(size(), size());
+
+			if(size() == 2)
+			{
+				std::array<double, 3> eps;
+				eps[0] = strain(0,0);
+				eps[1] = strain(1,1);
+				eps[2] = 2*strain(0,1);
+
+
+				stress_tensor <<
+				stress(eps, 0), stress(eps, 2),
+				stress(eps, 2), stress(eps, 1);
+			}
+			else
+			{
+				std::array<double, 6> eps;
+				eps[0] = strain(0,0);
+				eps[1] = strain(1,1);
+				eps[2] = strain(2,2);
+				eps[3] = 2*strain(1,2);
+				eps[4] = 2*strain(0,2);
+				eps[5] = 2*strain(0,1);
+
+				stress_tensor <<
+				stress(eps, 0), stress(eps, 5), stress(eps, 4),
+				stress(eps, 5), stress(eps, 1), stress(eps, 3),
+				stress(eps, 4), stress(eps, 3), stress(eps, 2);
+			}
+
+			Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> jac(size(), size());
+			for(int i = 0; i < n_bases; ++i){
+				const auto &bs = vals.basis_values[i];
+				for(int d = 0; d < size(); ++d){
+					jac.setZero();
+					jac.row(d) = bs.grad.row(p);
+					jac = jac*vals.jac_it[p];
+
+					res(i*size()+d) += (stress_tensor * (jac.transpose()*displacement_grad + displacement_grad.transpose()*jac + jac.transpose() + jac)*0.5).trace() * da(p);
+				}
+			}
+		}
+
+		// time.stop();
+		// std::cout << "-- normal: " << time.getElapsedTime() << std::endl;
+
+		// time.start();
+		// auto auto_diff_energy = compute_energy_aux<AutoDiffScalar>(vals, displacement, da);
+		// auto graddd = auto_diff_energy.getGradient();
+		// time.stop();
+		// std::cout << "-- autodiff: " << time.getElapsedTime() << std::endl;
+
+		return res;
 	}
 
 	Eigen::MatrixXd
 	SaintVenantElasticity::assemble_grad(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const
 	{
+		// igl::Timer time; time.start();
+		// assert(displacement.cols() == 1);
+
+		// const int n_pts = da.size();
+		// const int n_bases = vals.basis_values.size();
+
+		// Eigen::Matrix<double, Eigen::Dynamic, 1> local_disp(vals.basis_values.size() * size(), 1);
+		// local_disp.setZero();
+		// for(int i = 0; i < n_bases; ++i){
+		// 	const auto &bs = vals.basis_values[i];
+		// 	for(size_t ii = 0; ii < bs.global.size(); ++ii){
+		// 		for(int d = 0; d < size(); ++d){
+		// 			local_disp(i*size() + d) += bs.global[ii].val * displacement(bs.global[ii].index*size() + d);
+		// 		}
+		// 	}
+		// }
+
+		// Eigen::MatrixXd res(n_bases * size(), n_bases * size());
+		// res.setZero();
+
+
+		// Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> displacement_grad(size(), size());
+
+		// for(long p = 0; p < n_pts; ++p)
+		// {
+		// 	displacement_grad.setZero();
+
+		// 	for(int i = 0; i < n_bases; ++i)
+		// 	{
+		// 		const auto &bs = vals.basis_values[i];
+		// 		const Eigen::MatrixXd &grad = bs.grad;
+		// 		assert(grad.cols() == size());
+		// 		assert(size_t(grad.rows()) ==  vals.jac_it.size());
+
+		// 		for(int d = 0; d < size(); ++d)
+		// 		{
+		// 			displacement_grad.row(d) += grad.row(p) * local_disp(i*size() + d);
+		// 		}
+		// 	}
+
+		// 	displacement_grad = displacement_grad * vals.jac_it[p];
+
+		// 	const auto strain = strain_from_disp_grad(displacement_grad);
+		// 	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> stress_tensor(size(), size());
+
+		// 	if(size() == 2)
+		// 	{
+		// 		std::array<double, 3> eps;
+		// 		eps[0] = strain(0,0);
+		// 		eps[1] = strain(1,1);
+		// 		eps[2] = 2*strain(0,1);
+
+
+		// 		stress_tensor <<
+		// 		stress(eps, 0), stress(eps, 2),
+		// 		stress(eps, 2), stress(eps, 1);
+		// 	}
+		// 	else
+		// 	{
+		// 		std::array<double, 6> eps;
+		// 		eps[0] = strain(0,0);
+		// 		eps[1] = strain(1,1);
+		// 		eps[2] = strain(2,2);
+		// 		eps[3] = 2*strain(1,2);
+		// 		eps[4] = 2*strain(0,2);
+		// 		eps[5] = 2*strain(0,1);
+
+		// 		stress_tensor <<
+		// 		stress(eps, 0), stress(eps, 5), stress(eps, 4),
+		// 		stress(eps, 5), stress(eps, 1), stress(eps, 3),
+		// 		stress(eps, 4), stress(eps, 3), stress(eps, 2);
+		// 	}
+
+		// 	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> jac_i(size(), size());
+		// 	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> jac_j(size(), size());
+
+		// 	for(int i = 0; i < n_bases; ++i){
+		// 		const auto &bs_i = vals.basis_values[i];
+
+		// 		for(int j = 0; j < n_bases; ++j){
+		// 			const auto &bs_j = vals.basis_values[j];
+
+		// 			for(int di = 0; di < size(); ++di){
+		// 				jac_i.setZero();
+		// 				jac_i.row(di) = bs_i.grad.row(p);
+		// 				jac_i = jac_i*vals.jac_it[p];
+
+		// 				const auto de_di = (jac_i.transpose()*displacement_grad + displacement_grad.transpose()*jac_i + jac_i.transpose() + jac_i)*0.5;
+
+		// 				for(int dj = 0; dj < size(); ++dj){
+		// 					jac_j.setZero();
+		// 					jac_j.row(dj) = bs_j.grad.row(p);
+		// 					jac_j = jac_j*vals.jac_it[p];
+
+		// 					const auto de_dj = (jac_j.transpose()*displacement_grad + displacement_grad.transpose()*jac_j + jac_j.transpose() + jac_j)*0.5;
+		// 					const auto de_didj = (jac_i.transpose()*jac_j + jac_i*jac_j.transpose())*0.5;
+		// 					Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> C_de_dj(size(), size());
+
+		// 					//de_dj must be symmetric
+
+		// 					if(size() == 2)
+		// 					{
+		// 						std::array<double, 3> eps;
+		// 						eps[0] = 1;
+		// 						eps[1] = 1;
+		// 						eps[2] = 0;
+
+
+		// 						C_de_dj <<
+		// 						stress(eps, 0), stress(eps, 2),
+		// 						stress(eps, 2), stress(eps, 1);
+		// 					}
+		// 					else
+		// 					{
+		// 						std::array<double, 6> eps;
+		// 						eps[0] = 1;
+		// 						eps[1] = 1;
+		// 						eps[2] = 1;
+		// 						eps[3] = 0;
+		// 						eps[4] = 0;
+		// 						eps[5] = 0;
+
+		// 						C_de_dj <<
+		// 						stress(eps, 0), stress(eps, 5), stress(eps, 4),
+		// 						stress(eps, 5), stress(eps, 1), stress(eps, 3),
+		// 						stress(eps, 4), stress(eps, 3), stress(eps, 2);
+		// 					}
+
+
+		// 					res(i*size()+di, j*size()+dj) += ((C_de_dj*de_dj*de_di).trace() +(stress_tensor * de_didj).trace()) * da(p);
+		// 				}
+		// 			}
+		// 		}
+		// 	}
+		// }
+
+		// time.stop();
+		// std::cout << "-- normal: " << time.getElapsedTime() << std::endl;
+
+		// time.start();
+		// auto auto_diff_energy = compute_energy_aux<AutoDiffScalar>(vals, displacement, da);
+		// auto graddd = auto_diff_energy.getHessian();
+		// time.stop();
+		// std::cout << "-- autodiff: " << time.getElapsedTime() << std::endl;
+
+
+		// std::cout<<"new:\n"<<res<<"\n\n\nold:"<<auto_diff_energy.getHessian()<<std::endl;
 		auto auto_diff_energy = compute_energy_aux<AutoDiffScalar>(vals, displacement, da);
 		return auto_diff_energy.getHessian();
 	}

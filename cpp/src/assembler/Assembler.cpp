@@ -5,6 +5,9 @@
 #include "HookeLinearElasticity.hpp"
 #include "SaintVenantElasticity.hpp"
 
+#include <igl/Timer.h>
+
+
 namespace poly_fem
 {
 	template<class LocalAssembler>

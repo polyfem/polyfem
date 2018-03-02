@@ -909,10 +909,13 @@ namespace poly_fem
 
 			VectorXd tmp_sol = nl_problem.initial_guess();
 
-			// {
+			{
 			// 	tmp_sol.setRandom();
 			// 	Eigen::Matrix<double, Eigen::Dynamic, 1> actual_grad, expected_grad;
 			// 	nl_problem.gradient(tmp_sol, actual_grad);
+
+			// // Eigen::SparseMatrix<double> hessian;
+			// // nl_problem.hessian(tmp_sol, hessian);
 			// 	nl_problem.finiteGradient(tmp_sol, expected_grad, 0);
 			// 	std::cout<<"difff\n"<<actual_grad <<"\n\n"<< expected_grad<<std::endl;
 
@@ -920,11 +923,11 @@ namespace poly_fem
 			// 	if(!nl_problem.checkGradient(tmp_sol, 0))
 			// 		std::cerr<<"baaaaad grad"<<std::endl;
 			// 	assert(nl_problem.checkGradient(tmp_sol, 0));
-			// 	assert(nl_problem.checkHessian(tmp_sol, 0));
+			// 	// assert(nl_problem.checkHessian(tmp_sol, 0));
 			// 	tmp_sol.setZero();
 
-			// 	// exit(0);
-			// }
+				// exit(0);
+			}
 
 			cppoptlib::SparseNewtonDescentSolver<NLProblemT> solver(true);
 			solver.minimize(nl_problem, tmp_sol);
