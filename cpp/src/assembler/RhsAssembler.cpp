@@ -216,7 +216,7 @@ namespace poly_fem
 
 	Eigen::MatrixXd RhsAssembler::compute_energy_grad(const Eigen::MatrixXd &displacement) const
 	{
-		auto auto_diff_energy = compute_energy_aux<AutoDiffScalar>(displacement);
+		auto auto_diff_energy = compute_energy_aux<AutoDiffScalar2>(displacement);
 		return auto_diff_energy.getGradient();
 	}
 
@@ -232,7 +232,7 @@ namespace poly_fem
 	T RhsAssembler::compute_energy_aux(const Eigen::MatrixXd &displacement) const
 	{
 		typedef Eigen::Matrix<T, Eigen::Dynamic, 1> AutoDiffVect;
-		AutoDiffAllocator<T> allocate_auto_diff_scalar;
+		const AutoDiffAllocator<T> allocate_auto_diff_scalar;
 
 		const int size = mesh_.is_volume() ? 3 : 2;
 
@@ -319,6 +319,6 @@ namespace poly_fem
 
 
 	template double RhsAssembler::compute_energy_aux(const Eigen::MatrixXd &displacement) const;
-	template AutoDiffScalar RhsAssembler::compute_energy_aux(const Eigen::MatrixXd &displacement) const;
+	template AutoDiffScalar1 RhsAssembler::compute_energy_aux(const Eigen::MatrixXd &displacement) const;
 
 }
