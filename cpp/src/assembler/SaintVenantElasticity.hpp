@@ -40,10 +40,6 @@ namespace poly_fem
 		T stress(const std::array<T, N> &strain, const int j) const;
 
 		template<typename T>
-		Eigen::Matrix<T, Eigen::Dynamic, 1>
-		assemble_aux(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const;
-
-		template<typename T>
 		T compute_energy_aux(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const;
 	};
 }

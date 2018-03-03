@@ -19,8 +19,7 @@ namespace poly_fem
 		void assemble(Eigen::MatrixXd &rhs) const;
 		void set_bc(const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution,  Eigen::MatrixXd &rhs) const;
 
-		double 			compute_energy(const Eigen::MatrixXd &displacement) const;
-		Eigen::MatrixXd compute_energy_grad(const Eigen::MatrixXd &displacement) const;
+		double compute_energy(const Eigen::MatrixXd &displacement) const;
 
 	private:
 		bool sample_boundary(const LocalBoundary &local_boundary, const int n_samples, const bool skip_computation, Eigen::MatrixXd &samples, Eigen::VectorXi &global_primitive_ids) const;
@@ -31,10 +30,6 @@ namespace poly_fem
 		const std::vector< ElementBases > &bases_;
 		const std::vector< ElementBases > &gbases_;
 		const Problem &problem_;
-
-		template<typename T>
-		T compute_energy_aux(const Eigen::MatrixXd &displacement) const;
-
 	};
 }
 

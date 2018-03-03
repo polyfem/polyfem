@@ -214,30 +214,13 @@ namespace poly_fem
 		}
 	}
 
-	Eigen::MatrixXd RhsAssembler::compute_energy_grad(const Eigen::MatrixXd &displacement) const
-	{
-		auto auto_diff_energy = compute_energy_aux<AutoDiffScalar2>(displacement);
-		return auto_diff_energy.getGradient();
-	}
-
 	double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement) const
 	{
-		// auto auto_diff_energy = compute_energy_aux(displacement);
-		// return auto_diff_energy.getValue();
-
-		return compute_energy_aux<double>(displacement);
-	}
-
-	template<typename T>
-	T RhsAssembler::compute_energy_aux(const Eigen::MatrixXd &displacement) const
-	{
-		typedef Eigen::Matrix<T, Eigen::Dynamic, 1> AutoDiffVect;
-		const AutoDiffAllocator<T> allocate_auto_diff_scalar;
-
 		const int size = mesh_.is_volume() ? 3 : 2;
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size);
+		
 
-		DiffScalarBase::setVariableCount(displacement.size());
-		T res = T(0.);
+		double res = 0;
 		Eigen::MatrixXd forces;
 
 		const int n_bases = int(bases_.size());
@@ -256,11 +239,8 @@ namespace poly_fem
 
 			for(long p = 0; p < da.size(); ++p)
 			{
-				AutoDiffVect local_displacement(size);
-				for(int d = 0; d < size; ++d)
-					local_displacement(d) = T(0.0);
+				local_displacement.setZero();
 
- 				// local_displacement.setZero();
 				for(size_t i = 0; i < vals.basis_values.size(); ++i)
 				{
 					const auto &bs = vals.basis_values[i];
@@ -270,16 +250,13 @@ namespace poly_fem
 					{
 						for(std::size_t ii = 0; ii < bs.global.size(); ++ii)
 						{
-							local_displacement(d) += (bs.global[ii].val * b_val) * allocate_auto_diff_scalar(bs.global[ii].index*size + d, displacement(bs.global[ii].index*size + d));
+							local_displacement(d) += (bs.global[ii].val * b_val) * displacement(bs.global[ii].index*size + d);
 						}
 					}
 				}
 
 				for(int d = 0; d < size; ++d)
 					res += forces(p, d) * local_displacement(d) * da(p);
-
-				// const double energy = (forces.row(p).array()*local_displacement.array()).sum()*da(p);
-				// res += energy;
 			}
 		}
 
@@ -316,9 +293,5 @@ namespace poly_fem
 
 		return true;
 	}
-
-
-	template double RhsAssembler::compute_energy_aux(const Eigen::MatrixXd &displacement) const;
-	template AutoDiffScalar1 RhsAssembler::compute_energy_aux(const Eigen::MatrixXd &displacement) const;
 
 }
