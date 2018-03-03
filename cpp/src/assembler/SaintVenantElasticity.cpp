@@ -370,7 +370,7 @@ namespace poly_fem
 						break;
 					}
 
-					//Q2
+					// // Q2
 					// case 27:
 					// {
 					// 	auto auto_diff_energy = compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 81, 1>, Eigen::Matrix<double, 81, 81>>>(vals, displacement, da);
