@@ -664,6 +664,8 @@ namespace poly_fem
 	void UIState::show_nodes()
 	{
 		if (!state.mesh) { return; }
+		if(state.n_bases > 5000) return;
+		
 		for(std::size_t i = 0; i < state.bases.size(); ++i)
 		// size_t i = 6;
 		{
