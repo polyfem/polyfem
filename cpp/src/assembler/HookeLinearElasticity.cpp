@@ -23,6 +23,8 @@ namespace poly_fem
 			return von_mises_stress;
 		}
 
+
+
 		Eigen::Matrix2d strain2d(const Eigen::MatrixXd &grad, const Eigen::MatrixXd &jac_it, int k, int coo)
 		{
 			Eigen::Matrix2d jac;
@@ -51,6 +53,13 @@ namespace poly_fem
 	HookeLinearElasticity::HookeLinearElasticity()
 	{
 		set_size(size_);
+	}
+
+	void HookeLinearElasticity::set_parameters(const json &params)
+	{
+		set_size(params["size"]);
+
+		set_lambda_mu(params["lambda"], params["mu"]);
 	}
 
 	void HookeLinearElasticity::set_size(const int size)

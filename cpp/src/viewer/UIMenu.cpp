@@ -3,6 +3,7 @@
 #include "LinearSolver.hpp"
 #include "StringUtils.hpp"
 #include "Mesh3D.hpp"
+#include "AssemblerUtils.hpp"
 
 #include <igl/png/writePNG.h>
 #include <imgui/imgui.h>
@@ -222,11 +223,41 @@ void poly_fem::UIState::draw_settings() {
 	// 	// }
 	// }
 
-	static int formulation_num = static_cast<int>(state.elastic_formulation);
-	static const char *formulation_labels = "Linear\0HookeLinear\0SaintVenant\0\0";
-	if (ImGui::Combo("Form", &formulation_num, formulation_labels)) {
-		state.elastic_formulation = static_cast<ElasticFormulation>(formulation_num);
+
+
+
+	static std::string scalar_form = state.scalar_formulation;
+	static const auto scalar_forms = poly_fem::AssemblerUtils::instance().scalar_assemblers();
+	if(ImGui::BeginCombo("1D-Form", scalar_form.c_str()))
+	{
+		for(auto f : scalar_forms)
+		{
+			bool is_selected = scalar_form == f;
+
+			if (ImGui::Selectable(f.c_str(), is_selected))
+				scalar_form = f;
+			if (is_selected)
+				ImGui::SetItemDefaultFocus();
+		}
+		ImGui::EndCombo();
 	}
+
+	static std::string tensor_form = state.tensor_formulation;
+	static const auto tensor_forms = poly_fem::AssemblerUtils::instance().tensor_assemblers();
+	if(ImGui::BeginCombo("nD-Form", tensor_form.c_str()))
+	{
+		for(auto f : tensor_forms)
+		{
+			bool is_selected = tensor_form == f;
+
+			if (ImGui::Selectable(f.c_str(), is_selected))
+				tensor_form = f;
+			if (is_selected)
+				ImGui::SetItemDefaultFocus();
+		}
+		ImGui::EndCombo();
+	}
+
 
 	// Solver type
 	auto solvers = LinearSolver::availableSolvers();

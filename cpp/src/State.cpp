@@ -17,13 +17,13 @@
 #include "PolygonalBasis2d.hpp"
 #include "PolygonalBasis3d.hpp"
 
-#include "Assembler.hpp"
+#include "AssemblerUtils.hpp"
 #include "RhsAssembler.hpp"
 
-#include "Laplacian.hpp"
-#include "LinearElasticity.hpp"
-#include "HookeLinearElasticity.hpp"
-#include "SaintVenantElasticity.hpp"
+// #include "Laplacian.hpp"
+// #include "LinearElasticity.hpp"
+// #include "HookeLinearElasticity.hpp"
+// #include "SaintVenantElasticity.hpp"
 
 #include "LinearSolver.hpp"
 #include "FEMSolver.hpp"
@@ -187,15 +187,14 @@ namespace poly_fem
 
 	namespace
 	{
-		template<class Assembler>
 		class NLProblem : public cppoptlib::Problem<double> {
 		public:
 			using typename cppoptlib::Problem<double>::Scalar;
 			using typename cppoptlib::Problem<double>::TVector;
 			typedef Eigen::SparseMatrix<double> THessian;
 
-			NLProblem(const Assembler &assembler, const RhsAssembler &rhs_assembler)
-			: assembler(assembler), rhs_assembler(rhs_assembler),
+			NLProblem(const std::string &formulation, const RhsAssembler &rhs_assembler)
+			: formulation(formulation), assembler(AssemblerUtils::instance()), rhs_assembler(rhs_assembler),
 			full_size(State::state().n_bases*State::state().mesh->dimension()), reduced_size(State::state().n_bases*State::state().mesh->dimension() - State::state().boundary_nodes.size())
 			{ }
 
@@ -211,7 +210,7 @@ namespace poly_fem
 				Eigen::MatrixXd full;
 				reduced_to_full(x , full);
 
-				const double elastic_energy = assembler.compute_energy(State::state().mesh->is_volume(), State::state().bases, State::state().bases, full);
+				const double elastic_energy = assembler.assemble_tensor_energy(formulation, State::state().mesh->is_volume(), State::state().bases, State::state().bases, full);
 				const double body_energy 	= rhs_assembler.compute_energy(full);
 
 				return elastic_energy + body_energy;
@@ -222,7 +221,7 @@ namespace poly_fem
 				reduced_to_full(x , full);
 
 				Eigen::MatrixXd grad;
-				assembler.assemble(State::state().mesh->is_volume(), State::state().n_bases, State::state().bases, State::state().bases, full, grad);
+				assembler.assemble_tensor_energy_gradient(formulation, State::state().mesh->is_volume(), State::state().n_bases, State::state().bases, State::state().bases, full, grad);
 				grad -= State::state().rhs;
 
 				full_to_reduced(grad, gradv);
@@ -232,11 +231,13 @@ namespace poly_fem
 				Eigen::MatrixXd full;
 				reduced_to_full(x , full);
 
-				assembler.assemble_grad(State::state().mesh->is_volume(), State::state().n_bases, State::state().bases, State::state().bases, full, hessian);
+				assembler.assemble_tensor_energy_hessian(formulation, State::state().mesh->is_volume(), State::state().n_bases, State::state().bases, State::state().bases, full, hessian);
 			}
 
 		private:
-			const Assembler &assembler;
+			const std::string formulation;
+
+			const AssemblerUtils &assembler;
 			const RhsAssembler &rhs_assembler;
 
 			const int full_size, reduced_size;
@@ -767,6 +768,17 @@ namespace poly_fem
 		std::cout<<" took "<<computing_assembly_values_time<<"s"<<std::endl;
 	}
 
+	json State::build_json_params()
+	{
+		json params = {
+			{"size", mesh->dimension()},
+			{"lambda", lambda},
+			{"mu", mu}
+		};
+
+		return params;
+	}
+
 	void State::assemble_stiffness_mat()
 	{
 		errors.clear();
@@ -776,64 +788,24 @@ namespace poly_fem
 		igl::Timer timer; timer.start();
 		std::cout<<"Assembling stiffness mat..."<<std::flush;
 
-		if(!problem->is_scalar())
+		const auto params = build_json_params();
+
+		auto &assembler = AssemblerUtils::instance();
+		assembler.set_parameters(params);
+
+		if(problem->is_scalar())
 		{
-			if(elastic_formulation == ElasticFormulation::Linear)
-			{
-				Assembler<LinearElasticity> assembler;
-				LinearElasticity &le = assembler.local_assembler();
-				le.size() = mesh->dimension();
-				le.mu() = mu;
-				le.lambda() = lambda;
-
-				if(iso_parametric)
-					assembler.assemble(mesh->is_volume(), n_bases, bases, bases, stiffness);
-				else
-					assembler.assemble(mesh->is_volume(), n_bases, bases, geom_bases, stiffness);
-			}
-			else if(elastic_formulation == ElasticFormulation::HookeLinear)
-			{
-				Assembler<HookeLinearElasticity> assembler;
-				HookeLinearElasticity &le = assembler.local_assembler();
-				le.set_size(mesh->dimension());
-				le.set_lambda_mu(lambda, mu);
-
-				if(iso_parametric)
-					assembler.assemble(mesh->is_volume(), n_bases, bases, bases, stiffness);
-				else
-					assembler.assemble(mesh->is_volume(), n_bases, bases, geom_bases, stiffness);
-			}
-			else if(elastic_formulation == ElasticFormulation::SaintVenant)
-			{
-				// NLAssembler<SaintVenantElasticity> assembler;
-				// SaintVenantElasticity &le = assembler.local_assembler();
-				// le.set_size(mesh->dimension());
-				// le.set_lambda_mu(lambda, mu);
-
-
-				// sol.resize(n_bases*mesh->dimension(), 1);
-				// sol.setZero();
-
-				// Eigen::MatrixXd tmp;
-				// if(iso_parametric){
-				// 	assembler.assemble(mesh->is_volume(), n_bases, bases, bases, sol, tmp);
-				// 	assembler.assemble_grad(mesh->is_volume(), n_bases, bases, bases, sol, stiffness);
-				// }
-				// else{
-				// 	assembler.assemble(mesh->is_volume(), n_bases, bases, geom_bases, sol, tmp);
-				// 	assembler.assemble_grad(mesh->is_volume(), n_bases, bases, geom_bases, sol, stiffness);
-				// }
-
-				// rhs += tmp;
-			}
+			if(iso_parametric)
+				assembler.assemble_scalar_problem(scalar_formulation, mesh->is_volume(), n_bases, bases, bases, stiffness);
+			else
+				assembler.assemble_scalar_problem(scalar_formulation, mesh->is_volume(), n_bases, bases, geom_bases, stiffness);
 		}
 		else
 		{
-			Assembler<Laplacian> assembler;
 			if(iso_parametric)
-				assembler.assemble(mesh->is_volume(), n_bases, bases, bases, stiffness);
+				assembler.assemble_tensor_problem(tensor_formulation, mesh->is_volume(), n_bases, bases, bases, stiffness);
 			else
-				assembler.assemble(mesh->is_volume(), n_bases, bases, geom_bases, stiffness);
+				assembler.assemble_tensor_problem(tensor_formulation, mesh->is_volume(), n_bases, bases, geom_bases, stiffness);
 		}
 
 		timer.stop();
@@ -893,20 +865,29 @@ namespace poly_fem
 			// {"tolerance", 1e-9}, // for iterative solvers
 		};
 
-
-		if(!problem->is_scalar() && elastic_formulation == ElasticFormulation::SaintVenant)
+		const auto &assembler = AssemblerUtils::instance();
+		const auto formulation = problem->is_scalar() ? scalar_formulation : tensor_formulation;
+		if(assembler.is_linear(formulation))
 		{
-			NLAssembler<SaintVenantElasticity> assembler;
-			SaintVenantElasticity &le = assembler.local_assembler();
-			le.set_size(mesh->dimension());
-			le.set_lambda_mu(lambda, mu);
+			auto solver = LinearSolver::create(solver_type, precond_type);
+			solver->setParameters(params);
+			Eigen::SparseMatrix<double> A;
+			Eigen::VectorXd b;
 
+			// std::cout<<Eigen::MatrixXd(stiffness)<<std::endl;
+
+			A = stiffness;
+			Eigen::VectorXd x;
+			b = rhs;
+			dirichlet_solve(*solver, A, b, boundary_nodes, x);
+			sol = x;
+			solver->getInfo(solver_info);
+		}
+		else
+		{
 			RhsAssembler rhs_assembler(*mesh, n_bases, mesh->dimension(), bases, bases, *problem);
 
-
-			typedef NLProblem<NLAssembler<SaintVenantElasticity>> NLProblemT;
-			NLProblemT nl_problem(assembler, rhs_assembler);
-
+			NLProblem nl_problem(formulation, rhs_assembler);
 			VectorXd tmp_sol = nl_problem.initial_guess();
 
 			// {
@@ -933,29 +914,13 @@ namespace poly_fem
 			// 	exit(0);
 			// }
 
-			cppoptlib::SparseNewtonDescentSolver<NLProblemT> solver(true);
+			cppoptlib::SparseNewtonDescentSolver<NLProblem> solver(true);
 			solver.minimize(nl_problem, tmp_sol);
 
 			const int full_size 	= n_bases*mesh->dimension();
 			const int reduced_size 	= n_bases*mesh->dimension() - boundary_nodes.size();
 
 			reduced_to_full_aux(full_size, reduced_size, tmp_sol, sol);
-		}
-		else
-		{
-			auto solver = LinearSolver::create(solver_type, precond_type);
-			solver->setParameters(params);
-			Eigen::SparseMatrix<double> A;
-			Eigen::VectorXd b;
-
-			// std::cout<<Eigen::MatrixXd(stiffness)<<std::endl;
-
-			A = stiffness;
-			Eigen::VectorXd x;
-			b = rhs;
-			dirichlet_solve(*solver, A, b, boundary_nodes, x);
-			sol = x;
-			solver->getInfo(solver_info);
 		}
 
 		timer.stop();

@@ -16,14 +16,6 @@
 
 namespace poly_fem
 {
-	enum class ElasticFormulation
-	{
-		Linear = 0,
-		HookeLinear,
-		SaintVenant
-	};
-
-
 	class State
 	{
 	public:
@@ -49,7 +41,10 @@ namespace poly_fem
 		bool normalize_mesh = true;
 
 		std::shared_ptr<Problem> problem;
-		ElasticFormulation elastic_formulation = ElasticFormulation::SaintVenant;
+
+		std::string scalar_formulation = "Laplacian";
+		std::string tensor_formulation = "SaintVenant";
+
 
 		int n_bases;
 
@@ -84,7 +79,7 @@ namespace poly_fem
 		float lambda = 1, mu = 1;
 
 		double mesh_size;
-		
+
 		double min_edge_length;
 		double average_edge_length;
 
@@ -112,6 +107,8 @@ namespace poly_fem
 		int non_regular_count;
 		int undefined_count;
 		int multi_singular_boundary_count;
+
+		json build_json_params();
 
 		void compute_mesh_size(const Mesh &mesh, const std::vector< ElementBases > &bases, const int n_samples);
 

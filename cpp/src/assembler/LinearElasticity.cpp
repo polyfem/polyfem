@@ -24,6 +24,14 @@ namespace poly_fem
 		}
 	}
 
+	void LinearElasticity::set_parameters(const json &params)
+	{
+		size() = params["size"];
+
+		lambda() = params["lambda"];
+		mu() = params["mu"];
+	}
+
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 	LinearElasticity::assemble(const ElementAssemblyValues &vals, const int i, const int j, const Eigen::VectorXd &da) const
 	{

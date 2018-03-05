@@ -3,9 +3,7 @@
 #include "Mesh2D.hpp"
 #include "Mesh3D.hpp"
 
-#include "LinearElasticity.hpp"
-#include "HookeLinearElasticity.hpp"
-#include "SaintVenantElasticity.hpp"
+#include "AssemblerUtils.hpp"
 
 #include "ElasticProblem.hpp"
 
@@ -512,11 +510,11 @@ namespace poly_fem
 		{
 			// const MatrixXd ffun = (fun.array()*fun.array()).rowwise().sum().sqrt(); //norm of displacement, maybe replace with stress
 			// const MatrixXd ffun = fun.col(1); //y component
-
-			
 			MatrixXd ffun(vis_pts.rows(), 1);
 
 			int size = state.mesh->dimension();
+
+			const auto &assembler = AssemblerUtils::instance();
 
 			MatrixXd stresses;
 			int counter = 0;
@@ -532,29 +530,8 @@ namespace poly_fem
 				else
 					local_pts = vis_pts_poly[i];
 
-				if(state.elastic_formulation == ElasticFormulation::Linear){
-					LinearElasticity lin_elast;
-					lin_elast.size() = state.mesh->dimension();
-					lin_elast.mu() = state.mu;
-					lin_elast.lambda() = state.lambda;
-					lin_elast.compute_von_mises_stresses(bs, local_pts, state.sol, stresses);
-				}
-				else if(state.elastic_formulation == ElasticFormulation::HookeLinear)
-				{
-					HookeLinearElasticity lin_elast;
-					lin_elast.set_size(state.mesh->dimension());
-					lin_elast.set_lambda_mu(state.lambda, state.mu);
-					lin_elast.compute_von_mises_stresses(bs, local_pts, state.sol, stresses);
-				}
-				else if(state.elastic_formulation == ElasticFormulation::SaintVenant)
-				{
-					SaintVenantElasticity lin_elast;
-					lin_elast.set_size(state.mesh->dimension());
-					lin_elast.set_lambda_mu(state.lambda, state.mu);
-					lin_elast.compute_von_mises_stresses(bs, local_pts, state.sol, stresses);
-				}
-				else
-					assert(false);
+				assembler.compute_scalar_value(state.tensor_formulation, bs, local_pts, state.sol, stresses);
+
 				ffun.block(counter, 0, stresses.rows(), 1) = stresses;
 				counter += stresses.rows();
 			}

@@ -23,7 +23,7 @@ namespace poly_fem
 			}
 		};
 
-	template<>
+		template<>
 		class AutoDiffAllocator<double>
 		{
 		public:
@@ -77,6 +77,13 @@ namespace poly_fem
 	SaintVenantElasticity::SaintVenantElasticity()
 	{
 		set_size(size_);
+	}
+
+	void SaintVenantElasticity::set_parameters(const json &params)
+	{
+		set_size(params["size"]);
+
+		set_lambda_mu(params["lambda"], params["mu"]);
 	}
 
 	void SaintVenantElasticity::set_size(const int size)
@@ -477,6 +484,7 @@ namespace poly_fem
 		return compute_energy_aux<double>(vals, displacement, da);
 	}
 
+	//Compute \int \sigma : E
 	template<typename T>
 	T SaintVenantElasticity::compute_energy_aux(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const
 	{

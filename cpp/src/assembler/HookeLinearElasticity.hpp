@@ -1,6 +1,7 @@
 #ifndef HOOKE_LINEAR_ELASTICITY_HPP
 #define HOOKE_LINEAR_ELASTICITY_HPP
 
+#include "Common.hpp"
 
 #include "ElementAssemblyValues.hpp"
 #include "ElementBases.hpp"
@@ -27,6 +28,8 @@ namespace poly_fem
 		void set_lambda_mu(const double lambda, const double mu);
 
 		void set_stiffness_tensor(int i, int j, const double val);
+
+		void set_parameters(const json &params);
 	private:
 		int size_ = 2;
 

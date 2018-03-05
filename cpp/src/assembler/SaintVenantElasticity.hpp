@@ -1,6 +1,6 @@
 #pragma once
 
-
+#include "Common.hpp"
 
 #include "ElementAssemblyValues.hpp"
 #include "ElementBases.hpp"
@@ -30,7 +30,7 @@ namespace poly_fem
 
 		void compute_von_mises_stresses(const ElementBases &bs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const;
 
-
+		void set_parameters(const json &params);
 	private:
 		int size_ = 2;
 

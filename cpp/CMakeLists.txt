@@ -85,6 +85,8 @@ add_library(polyfem
 	src/assembler/SaintVenantElasticity.hpp
 	src/assembler/RhsAssembler.cpp
 	src/assembler/RhsAssembler.hpp
+	src/assembler/utils/AssemblerUtils.hpp
+	src/assembler/utils/AssemblerUtils.cpp
 	src/basis/Basis.cpp
 	src/basis/Basis.hpp
 	src/basis/ElementBases.cpp
@@ -196,6 +198,7 @@ add_library(polyfem
 target_include_directories(polyfem PUBLIC
 	src
 	src/assembler
+	src/assembler/utils
 	src/basis
 	src/basis/function
 	src/mesh

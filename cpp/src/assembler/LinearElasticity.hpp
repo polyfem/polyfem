@@ -1,6 +1,7 @@
 #ifndef LINEAR_ELASTICITY_HPP
 #define LINEAR_ELASTICITY_HPP
 
+#include "Common.hpp"
 
 #include "ElementAssemblyValues.hpp"
 #include "ElementBases.hpp"
@@ -28,6 +29,8 @@ namespace poly_fem
 
 		inline double &lambda() { return lambda_; }
 		inline double lambda() const { return lambda_; }
+
+		void set_parameters(const json &params);
 	private:
 		int size_ = 2;
 		double mu_ = 1;
