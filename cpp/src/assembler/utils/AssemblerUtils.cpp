@@ -13,6 +13,7 @@ namespace poly_fem
 	AssemblerUtils::AssemblerUtils()
 	{
 		scalar_assemblers_.push_back("Laplacian");
+		scalar_assemblers_.push_back("Helmholtz");
 
 		tensor_assemblers_.push_back("LinearElasticity");
 		tensor_assemblers_.push_back("HookeLinearElasticity");
@@ -31,8 +32,10 @@ namespace poly_fem
 		const std::vector< ElementBases > &gbases,
 		Eigen::SparseMatrix<double> &stiffness) const
 	{
-		// if(assembler == "Laplacian")
-		laplacian_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+		if(assembler == "Helmholtz")
+			helmholtz_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+		else // if(assembler == "Laplacian")
+			laplacian_.assemble(is_volume, n_basis, bases, gbases, stiffness);
 	}
 
 	void AssemblerUtils::assemble_tensor_problem(const std::string &assembler,
@@ -97,7 +100,7 @@ namespace poly_fem
 		const Eigen::MatrixXd &fun,
 		Eigen::MatrixXd &result) const
 	{
-		if(assembler == "Laplacian")
+		if(assembler == "Laplacian" || assembler == "Helmholtz")
 			return;
 		else if(assembler == "HookeLinearElasticity")
 			hooke_linear_elasticity_.local_assembler().compute_von_mises_stresses(bs, local_pts, fun, result);
@@ -112,6 +115,8 @@ namespace poly_fem
 	void AssemblerUtils::set_parameters(const json &params)
 	{
 		laplacian_.local_assembler().set_parameters(params);
+		helmholtz_.local_assembler().set_parameters(params);
+
 		linear_elasticity_.local_assembler().set_parameters(params);
 		hooke_linear_elasticity_.local_assembler().set_parameters(params);
 		saint_venant_elasticity_.local_assembler().set_parameters(params);

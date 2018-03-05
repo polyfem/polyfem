@@ -203,8 +203,10 @@ void poly_fem::UIState::draw_settings() {
 		{
 			bool is_selected = problem_name == p_name;
 
-			if (ImGui::Selectable(p_name.c_str(), is_selected))
+			if (ImGui::Selectable(p_name.c_str(), is_selected)){
 				problem_name = p_name;
+				state.problem = ProblemFactory::factory().get_problem(problem_name);
+			}
 			if (is_selected)
 				ImGui::SetItemDefaultFocus();
 		}
@@ -226,32 +228,30 @@ void poly_fem::UIState::draw_settings() {
 
 
 
-	static std::string scalar_form = state.scalar_formulation;
 	static const auto scalar_forms = poly_fem::AssemblerUtils::instance().scalar_assemblers();
-	if(ImGui::BeginCombo("1D-Form", scalar_form.c_str()))
+	if(ImGui::BeginCombo("1D-Form", state.scalar_formulation.c_str()))
 	{
 		for(auto f : scalar_forms)
 		{
-			bool is_selected = scalar_form == f;
+			bool is_selected = state.scalar_formulation == f;
 
 			if (ImGui::Selectable(f.c_str(), is_selected))
-				scalar_form = f;
+				state.scalar_formulation = f;
 			if (is_selected)
 				ImGui::SetItemDefaultFocus();
 		}
 		ImGui::EndCombo();
 	}
 
-	static std::string tensor_form = state.tensor_formulation;
 	static const auto tensor_forms = poly_fem::AssemblerUtils::instance().tensor_assemblers();
-	if(ImGui::BeginCombo("nD-Form", tensor_form.c_str()))
+	if(ImGui::BeginCombo("nD-Form", state.tensor_formulation.c_str()))
 	{
 		for(auto f : tensor_forms)
 		{
-			bool is_selected = tensor_form == f;
+			bool is_selected = state.tensor_formulation == f;
 
 			if (ImGui::Selectable(f.c_str(), is_selected))
-				tensor_form = f;
+				state.tensor_formulation = f;
 			if (is_selected)
 				ImGui::SetItemDefaultFocus();
 		}

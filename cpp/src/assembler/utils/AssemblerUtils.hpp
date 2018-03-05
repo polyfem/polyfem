@@ -5,6 +5,8 @@
 #include "Assembler.hpp"
 
 #include "Laplacian.hpp"
+#include "Helmholtz.hpp"
+
 #include "LinearElasticity.hpp"
 #include "HookeLinearElasticity.hpp"
 #include "SaintVenantElasticity.hpp"
@@ -79,6 +81,8 @@ namespace poly_fem
 
 	private:
 		Assembler<Laplacian> laplacian_;
+		Assembler<Helmholtz> helmholtz_;
+
 		Assembler<LinearElasticity> linear_elasticity_;
 		Assembler<HookeLinearElasticity> hooke_linear_elasticity_;
 		NLAssembler<SaintVenantElasticity> saint_venant_elasticity_;
