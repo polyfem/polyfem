@@ -4,10 +4,9 @@
 
 namespace poly_fem
 {
-	ZeroBCProblem::ZeroBCProblem()
-	{
-		problem_num_ = ProblemType::Zero_BC;
-	}
+	ZeroBCProblem::ZeroBCProblem(const std::string &name)
+	: Problem(name)
+	{ }
 
 	void ZeroBCProblem::rhs(const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{

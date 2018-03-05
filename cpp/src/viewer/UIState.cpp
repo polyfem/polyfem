@@ -665,7 +665,7 @@ namespace poly_fem
 	{
 		if (!state.mesh) { return; }
 		if(state.n_bases > 5000) return;
-		
+
 		for(std::size_t i = 0; i < state.bases.size(); ++i)
 		// size_t i = 6;
 		{
@@ -1181,9 +1181,9 @@ namespace poly_fem
 		}
 	}
 
-	void UIState::launch(const std::string &mesh_path, const int n_refs, const int problem_num)
+	void UIState::launch(const std::string &mesh_path, const int n_refs, const std::string &problem_name)
 	{
-		state.init(mesh_path, n_refs, problem_num);
+		state.init(mesh_path, n_refs, problem_name);
 
 		if(state.problem->boundary_ids().empty())
 			std::fill(dirichlet_bc.begin(), dirichlet_bc.end(), true);

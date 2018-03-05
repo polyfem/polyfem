@@ -12,45 +12,45 @@
 
 namespace {
 
-namespace FileDialog {
+	namespace FileDialog {
 
 // -----------------------------------------------------------------------------
 
-std::string openFileName(const std::string &defaultPath,
-	const std::vector<std::string> &filters, const std::string &desc)
-{
-	int n = static_cast<int>(filters.size());
-	std::vector<char const *> filterPatterns(n);
-	for (int i = 0; i < n; ++i) {
-		filterPatterns[i] = filters[i].c_str();
-	}
-	char const * select = tinyfd_openFileDialog("Open File",
-		defaultPath.c_str(), n, filterPatterns.data(), desc.c_str(), 0);
-	if (select == nullptr) {
-		return "";
-	} else {
-		return std::string(select);
-	}
-}
+		std::string openFileName(const std::string &defaultPath,
+			const std::vector<std::string> &filters, const std::string &desc)
+		{
+			int n = static_cast<int>(filters.size());
+			std::vector<char const *> filterPatterns(n);
+			for (int i = 0; i < n; ++i) {
+				filterPatterns[i] = filters[i].c_str();
+			}
+			char const * select = tinyfd_openFileDialog("Open File",
+				defaultPath.c_str(), n, filterPatterns.data(), desc.c_str(), 0);
+			if (select == nullptr) {
+				return "";
+			} else {
+				return std::string(select);
+			}
+		}
 
 // -----------------------------------------------------------------------------
 
-std::string saveFileName(const std::string &defaultPath,
-	const std::vector<std::string> &filters, const std::string &desc)
-{
-	int n = static_cast<int>(filters.size());
-	std::vector<char const *> filterPatterns(n);
-	for (int i = 0; i < n; ++i) {
-		filterPatterns[i] = filters[i].c_str();
-	}
-	char const * select = tinyfd_saveFileDialog("Save File",
-		defaultPath.c_str(), n, filterPatterns.data(), desc.c_str());
-	if (select == nullptr) {
-		return "";
-	} else {
-		return std::string(select);
-	}
-}
+		std::string saveFileName(const std::string &defaultPath,
+			const std::vector<std::string> &filters, const std::string &desc)
+		{
+			int n = static_cast<int>(filters.size());
+			std::vector<char const *> filterPatterns(n);
+			for (int i = 0; i < n; ++i) {
+				filterPatterns[i] = filters[i].c_str();
+			}
+			char const * select = tinyfd_saveFileDialog("Save File",
+				defaultPath.c_str(), n, filterPatterns.data(), desc.c_str());
+			if (select == nullptr) {
+				return "";
+			} else {
+				return std::string(select);
+			}
+		}
 
 } // namespace FileDialog
 
@@ -60,24 +60,24 @@ std::string saveFileName(const std::string &defaultPath,
 
 namespace ImGui {
 
-static auto vector_getter = [](void* vec, int idx, const char** out_text) {
-	auto& vector = *static_cast<std::vector<std::string>*>(vec);
-	if (idx < 0 || idx >= static_cast<int>(vector.size())) { return false; }
-	*out_text = vector.at(idx).c_str();
-	return true;
-};
+	static auto vector_getter = [](void* vec, int idx, const char** out_text) {
+		auto& vector = *static_cast<std::vector<std::string>*>(vec);
+		if (idx < 0 || idx >= static_cast<int>(vector.size())) { return false; }
+		*out_text = vector.at(idx).c_str();
+		return true;
+	};
 
-bool Combo(const char* label, int* idx, std::vector<std::string>& values) {
-	if (values.empty()) { return false; }
-	return Combo(label, idx, vector_getter,
-		static_cast<void*>(&values), values.size());
-}
+	bool Combo(const char* label, int* idx, std::vector<std::string>& values) {
+		if (values.empty()) { return false; }
+		return Combo(label, idx, vector_getter,
+			static_cast<void*>(&values), values.size());
+	}
 
-bool ListBox(const char* label, int* idx, std::vector<std::string>& values) {
-	if (values.empty()) { return false; }
-	return ListBox(label, idx, vector_getter,
-		static_cast<void*>(&values), values.size());
-}
+	bool ListBox(const char* label, int* idx, std::vector<std::string>& values) {
+		if (values.empty()) { return false; }
+		return ListBox(label, idx, vector_getter,
+			static_cast<void*>(&values), values.size());
+	}
 
 }
 
@@ -100,7 +100,7 @@ void poly_fem::UIState::draw_menu() {
 		ImGuiWindowFlags_NoSavedSettings
 		| ImGuiWindowFlags_AlwaysAutoResize
 		| ImGuiWindowFlags_NoMove
-	);
+		);
 	draw_viewer_menu();
 	draw_screenshot();
 	ImGui::End();
@@ -116,7 +116,7 @@ void poly_fem::UIState::draw_menu() {
 		ImGuiWindowFlags_NoSavedSettings
 		| ImGuiWindowFlags_AlwaysAutoResize
 		| ImGuiWindowFlags_NoMove
-	);
+		);
 	draw_settings();
 	ImGui::End();
 
@@ -131,7 +131,7 @@ void poly_fem::UIState::draw_menu() {
 		ImGuiWindowFlags_NoSavedSettings
 		| ImGuiWindowFlags_AlwaysAutoResize
 		| ImGuiWindowFlags_NoMove
-	);
+		);
 	draw_debug();
 	ImGui::End();
 
@@ -147,7 +147,7 @@ void poly_fem::UIState::draw_menu() {
 		ImGuiWindowFlags_NoSavedSettings
 		| ImGuiWindowFlags_AlwaysAutoResize
 		| ImGuiWindowFlags_NoMove
-	);
+		);
 	draw_elasticity_bc();
 	ImGui::End();
 }
@@ -193,20 +193,34 @@ void poly_fem::UIState::draw_settings() {
 	}
 
 	// Problem type
-	static int problem_num = static_cast<int>(state.problem->problem_num());
-	static const char *problem_labels = "Linear\0Quadratic\0Franke\0Elastic\0Zero BC\0Franke3D\0ElasticExact\0\0";
-	if (ImGui::Combo("Problem", &problem_num, problem_labels)) {
-		state.problem = Problem::get_problem(static_cast<ProblemType>(problem_num));
-		if(state.problem->boundary_ids().empty()) {
-			std::fill(dirichlet_bc.begin(), dirichlet_bc.end(), true);
-		} else {
-			std::fill(dirichlet_bc.begin(), dirichlet_bc.end(), false);
-		}
+	static std::string problem_name = state.problem->name();
+	// static const char *problem_labels = "Linear\0Quadratic\0Franke\0Elastic\0Zero BC\0Franke3D\0ElasticExact\0\0";
+	static const auto problem_names = poly_fem::ProblemFactory::factory().get_problem_names();
+	if(ImGui::BeginCombo("Problem", problem_name.c_str()))
+	{
+		for(auto p_name : problem_names)
+		{
+			bool is_selected = problem_name == p_name;
 
-		for (int i = 0; i < (int) state.problem->boundary_ids().size(); ++i) {
-			dirichlet_bc[state.problem->boundary_ids()[i]-1] = true;
+			if (ImGui::Selectable(p_name.c_str(), is_selected))
+				problem_name = p_name;
+			if (is_selected)
+				ImGui::SetItemDefaultFocus();
 		}
+		ImGui::EndCombo();
 	}
+	// if (ImGui::Combo("Problem", &problem_num, problem_labels)) {
+	// 	state.problem = Problem::get_problem(static_cast<ProblemType>(problem_num));
+	// 	// if(state.problem->boundary_ids().empty()) {
+	// 	// 	std::fill(dirichlet_bc.begin(), dirichlet_bc.end(), true);
+	// 	// } else {
+	// 	// 	std::fill(dirichlet_bc.begin(), dirichlet_bc.end(), false);
+	// 	// }
+
+	// 	// for (int i = 0; i < (int) state.problem->boundary_ids().size(); ++i) {
+	// 	// 	dirichlet_bc[state.problem->boundary_ids()[i]-1] = true;
+	// 	// }
+	// }
 
 	static int formulation_num = static_cast<int>(state.elastic_formulation);
 	static const char *formulation_labels = "Linear\0HookeLinear\0SaintVenant\0\0";

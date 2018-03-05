@@ -11,7 +11,7 @@ namespace poly_fem
 	class QuadraticProblem : public Problem
 	{
 	public:
-		QuadraticProblem();
+		QuadraticProblem(const std::string &name);
 
 		void rhs(const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;

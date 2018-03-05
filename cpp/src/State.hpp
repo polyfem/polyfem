@@ -32,7 +32,7 @@ namespace poly_fem
 
 		State();
 
-		void init(const std::string &mesh_path, const int n_refs, const int problem_num_);
+		void init(const std::string &mesh_path, const int n_refs, const std::string problem_name);
 
 		int quadrature_order = 4;
 		int discr_order = 1;

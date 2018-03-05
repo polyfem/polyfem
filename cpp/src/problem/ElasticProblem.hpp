@@ -11,7 +11,7 @@ namespace poly_fem
 	class ElasticProblem: public Problem
 	{
 	public:
-		ElasticProblem();
+		ElasticProblem(const std::string &name);
 
 		void rhs(const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
@@ -24,7 +24,7 @@ namespace poly_fem
 	class ElasticProblemExact: public Problem
 	{
 	public:
-		ElasticProblemExact();
+		ElasticProblemExact(const std::string &name);
 
 		void rhs(const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;

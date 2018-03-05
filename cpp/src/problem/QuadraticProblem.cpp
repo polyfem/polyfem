@@ -4,10 +4,9 @@
 
 namespace poly_fem
 {
-	QuadraticProblem::QuadraticProblem()
-	{
-		problem_num_ = ProblemType::Quadratic;
-	}
+	QuadraticProblem::QuadraticProblem(const std::string &name)
+	: Problem(name)
+	{ }
 
 	void QuadraticProblem::rhs(const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{

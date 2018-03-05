@@ -4,10 +4,9 @@
 
 namespace poly_fem
 {
-	LinearProblem::LinearProblem()
-	{
-		problem_num_ = ProblemType::Linear;
-	}
+	LinearProblem::LinearProblem(const std::string &name)
+	: Problem(name)
+	{ }
 
 	void LinearProblem::rhs(const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{

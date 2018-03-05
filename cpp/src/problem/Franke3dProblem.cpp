@@ -4,10 +4,9 @@
 
 namespace poly_fem
 {
-	Franke3dProblem::Franke3dProblem()
-	{
-		problem_num_ = ProblemType::Franke3d;
-	}
+	Franke3dProblem::Franke3dProblem(const std::string &name)
+	: Problem(name)
+	{ }
 
 	void Franke3dProblem::rhs(const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{

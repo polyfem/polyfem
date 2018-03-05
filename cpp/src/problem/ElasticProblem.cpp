@@ -5,10 +5,9 @@
 
 namespace poly_fem
 {
-	ElasticProblem::ElasticProblem()
+	ElasticProblem::ElasticProblem(const std::string &name)
+	: Problem(name)
 	{
-		problem_num_ = ProblemType::Elastic;
-
 		// boundary_ids_ = {1, 3, 5, 6};
 		boundary_ids_ = {1, 2, 3, 4, 5, 6};
 	}
@@ -48,10 +47,9 @@ namespace poly_fem
 
 
 
-	ElasticProblemExact::ElasticProblemExact()
-	{
-		problem_num_ = ProblemType::ElasticExact;
-	}
+	ElasticProblemExact::ElasticProblemExact(const std::string &name)
+	: Problem(name)
+	{ }
 
 	void ElasticProblemExact::rhs(const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{

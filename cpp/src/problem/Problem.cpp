@@ -7,27 +7,14 @@
 #include "ZeroBCProblem.hpp"
 #include "ElasticProblem.hpp"
 
+#include <memory>
 #include <iostream>
 
 namespace poly_fem
 {
-	std::shared_ptr<Problem> Problem::get_problem(const ProblemType type)
-	{
-		switch(type)
-		{
-			case ProblemType::Linear: return std::make_shared<LinearProblem>();
-			case ProblemType::Quadratic: return std::make_shared<QuadraticProblem>();
-			case ProblemType::Franke: return std::make_shared<Franke2dProblem>();
-			case ProblemType::Franke3d: return std::make_shared<Franke3dProblem>();
-			case ProblemType::Zero_BC: return std::make_shared<ZeroBCProblem>();
-			case ProblemType::Elastic: return std::make_shared<ElasticProblem>();
-			case ProblemType::ElasticExact: return std::make_shared<ElasticProblemExact>();
-
-			default:
-			assert(false);
-			return std::make_shared<LinearProblem>();
-		}
-	}
+	Problem::Problem(const std::string &name)
+	: name_(name)
+	{ }
 
 	void Problem::remove_neumann_nodes(const Mesh &mesh, const std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &boundary_nodes)
 	{
@@ -73,4 +60,40 @@ namespace poly_fem
 		auto it = std::unique(boundary_nodes.begin(), boundary_nodes.end());
 		boundary_nodes.resize(std::distance(boundary_nodes.begin(), it));
 	}
+
+
+
+
+	const ProblemFactory &ProblemFactory::factory()
+	{
+		static ProblemFactory instance;
+
+		return instance;
+	}
+
+	ProblemFactory::ProblemFactory()
+	{
+		problems_.emplace("Linear", std::make_shared<LinearProblem>("Linear"));
+		problems_.emplace("Quadratic", std::make_shared<QuadraticProblem>("Quadratic"));
+		problems_.emplace("Franke", std::make_shared<Franke2dProblem>("Franke"));
+		problems_.emplace("Franke3d", std::make_shared<Franke3dProblem>("Franke3d"));
+		problems_.emplace("Zero_BC", std::make_shared<ZeroBCProblem>("Zero_BC"));
+		problems_.emplace("Elastic", std::make_shared<ElasticProblem>("Elastic"));
+		problems_.emplace("ElasticExact", std::make_shared<ElasticProblemExact>("ElasticExact"));
+
+		for(auto it = problems_.begin(); it != problems_.end(); ++it)
+			problem_names_.push_back(it->first);
+	}
+
+	std::shared_ptr<Problem> ProblemFactory::get_problem(const std::string &problem) const
+	{
+		auto it = problems_.find(problem);
+
+		if(it == problems_.end())
+			return problems_.at("Linear");
+
+		return it->second;
+	}
+
+
 }

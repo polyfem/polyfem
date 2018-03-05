@@ -255,7 +255,7 @@ namespace poly_fem
 
 	State::State()
 	{
-		problem = std::make_shared<LinearProblem>();
+		problem = ProblemFactory::factory().get_problem("Linear");
 	}
 
 	void State::compute_mesh_size(const Mesh &mesh, const std::vector< ElementBases > &bases, const int n_samples)
@@ -328,7 +328,7 @@ namespace poly_fem
 		j["harmonic_samples_res"] = harmonic_samples_res;
 		j["use_splines"] = use_splines;
 		j["iso_parametric"] = iso_parametric;
-		j["problem"] = problem->problem_num();
+		j["problem"] = problem->name();
 		j["mat_size"] = mat_size;
 		j["solver_type"] = solver_type;
 		j["precond_type"] = precond_type;
@@ -1045,12 +1045,12 @@ namespace poly_fem
 		return instance;
 	}
 
-	void State::init(const std::string &mesh_path_, const int n_refs_, const int problem_num)
+	void State::init(const std::string &mesh_path_, const int n_refs_, const std::string problem_name)
 	{
 		n_refs = n_refs_;
 		mesh_path = mesh_path_;
 
-		problem = Problem::get_problem(ProblemType(problem_num));
+		problem = ProblemFactory::factory().get_problem(problem_name);
 
 		auto solvers = LinearSolver::availableSolvers();
 		if (std::find(solvers.begin(), solvers.end(), solver_type) == solvers.end()) {

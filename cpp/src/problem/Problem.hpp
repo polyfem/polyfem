@@ -11,30 +11,17 @@
 
 namespace poly_fem
 {
-	enum class ProblemType : int
-	{
-		Linear = 0,
-		Quadratic = 1,
-		Franke = 2,
-		Elastic = 3,
-		Zero_BC = 4,
-		Franke3d = 5,
-		ElasticExact = 6,
-	};
-
 	class Problem
 	{
 	public:
-		static std::shared_ptr<Problem> get_problem(const ProblemType type);
-
+		Problem(const std::string &name);
 
 		virtual void rhs(const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const = 0;
 		virtual void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const = 0;
 
 		virtual void exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { };
 
-		inline ProblemType problem_num() const { return problem_num_; }
-		inline ProblemType& problem_num() { return problem_num_; }
+		inline const std::string &name() const { return name_; }
 
 		virtual bool has_exact_sol() const = 0;
 		virtual bool is_scalar() const = 0;
@@ -46,9 +33,38 @@ namespace poly_fem
 
 		virtual ~Problem() { }
 	protected:
-		ProblemType problem_num_;
-
 		std::vector<int> boundary_ids_;
+
+	private:
+		std::string name_;
+	};
+
+
+
+	class ProblemFactory
+	{
+	public:
+		static const ProblemFactory &factory();
+
+		std::shared_ptr<Problem> get_problem(const std::string &problem) const;
+		inline const std::vector<std::string> &get_problem_names() const { return problem_names_; }
+
+
+	private:
+		ProblemFactory();
+		std::map<std::string, std::shared_ptr<Problem>> problems_;
+		std::vector<std::string> problem_names_;
+	};
+
+	enum class ProblemType : int
+	{
+		Linear = 0,
+		Quadratic = 1,
+		Franke = 2,
+		Elastic = 3,
+		Zero_BC = 4,
+		Franke3d = 5,
+		ElasticExact = 6,
 	};
 }
 

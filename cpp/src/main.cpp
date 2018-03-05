@@ -24,7 +24,7 @@ using namespace Eigen;
 * args:
 *   -mesh <path to the mesh>
 *   -n_refs <refinements>
-*   -problem <0: linear, 1: quadratic, 2: franke, 3: linear elasticity>
+*   -problem <problem name>
 *   -quad <quadrature order>
 *   -b_samples <number of boundary samples>
 *   -spline <use spline basis>
@@ -55,7 +55,7 @@ int main(int argc, const char **argv)
 	std::string hack = "";
 	std::string screenshot = "";
 	int n_refs = 0;
-	int problem_num = 0;
+	std::string problem_name = "";
 
 	int quadrature_order = 4;
 	int discr_order = 1;
@@ -76,7 +76,7 @@ int main(int argc, const char **argv)
 	command_line.add_option("-mesh", path); //
 	command_line.add_option("-n_refs", n_refs); //
 	command_line.add_option("-ref_t", refinenemt_location);
-	command_line.add_option("-problem", problem_num); //
+	command_line.add_option("-problem", problem_name); //
 	command_line.add_option("-normalize", "-not_norm", normalize_mesh); //
 
 
@@ -118,7 +118,7 @@ int main(int argc, const char **argv)
 		state.integral_constraints = integral_constraints;
 		state.normalize_mesh = normalize_mesh;
 
-		state.init(path, n_refs, problem_num);
+		state.init(path, n_refs, problem_name);
         // std::cout<<path<<std::endl;
         // for(int i = 0; i < 6; ++i)
 		{
@@ -164,7 +164,7 @@ int main(int argc, const char **argv)
 		UIState::ui_state().screenshot = screenshot;
 		UIState::ui_state().state.normalize_mesh = normalize_mesh;
 
-		UIState::ui_state().launch(path, n_refs, problem_num);
+		UIState::ui_state().launch(path, n_refs, problem_name);
 	}
 
 
