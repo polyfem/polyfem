@@ -13,6 +13,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <memory>
+#include <string>
 
 namespace poly_fem
 {
@@ -129,7 +130,9 @@ namespace poly_fem
 		void compute_mesh_stats();
 
 		void save_vtu(const std::string &name);
-		void compute_poly_basis_error(const std::string &path);
+		// void compute_poly_basis_error(const std::string &path);
+
+		inline std::string formulation() const { return problem->is_scalar() ? scalar_formulation : tensor_formulation; }
 	};
 
 }

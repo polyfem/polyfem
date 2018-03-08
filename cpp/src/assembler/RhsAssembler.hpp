@@ -14,12 +14,14 @@ namespace poly_fem
 	class RhsAssembler
 	{
 	public:
-		RhsAssembler(const Mesh &mesh, const int n_basis, const int size, const std::vector< ElementBases > &bases, const std::vector< ElementBases > &gbases, const Problem &problem);
+		RhsAssembler(const Mesh &mesh, const int n_basis, const int size, const std::vector< ElementBases > &bases, const std::vector< ElementBases > &gbases, const std::string &formulation, const Problem &problem);
 
 		void assemble(Eigen::MatrixXd &rhs) const;
 		void set_bc(const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution,  Eigen::MatrixXd &rhs) const;
 
 		double compute_energy(const Eigen::MatrixXd &displacement) const;
+
+		inline const std::string &formulation() const { return formulation_; }
 
 	private:
 		bool sample_boundary(const LocalBoundary &local_boundary, const int n_samples, const bool skip_computation, Eigen::MatrixXd &samples, Eigen::VectorXi &global_primitive_ids) const;
@@ -29,6 +31,7 @@ namespace poly_fem
 		const int size_;
 		const std::vector< ElementBases > &bases_;
 		const std::vector< ElementBases > &gbases_;
+		const std::string formulation_;
 		const Problem &problem_;
 	};
 }

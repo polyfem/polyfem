@@ -193,8 +193,8 @@ namespace poly_fem
 			using typename cppoptlib::Problem<double>::TVector;
 			typedef Eigen::SparseMatrix<double> THessian;
 
-			NLProblem(const std::string &formulation, const RhsAssembler &rhs_assembler)
-			: formulation(formulation), assembler(AssemblerUtils::instance()), rhs_assembler(rhs_assembler),
+			NLProblem(const RhsAssembler &rhs_assembler)
+			: assembler(AssemblerUtils::instance()), rhs_assembler(rhs_assembler),
 			full_size(State::state().n_bases*State::state().mesh->dimension()), reduced_size(State::state().n_bases*State::state().mesh->dimension() - State::state().boundary_nodes.size())
 			{ }
 
@@ -210,7 +210,7 @@ namespace poly_fem
 				Eigen::MatrixXd full;
 				reduced_to_full(x , full);
 
-				const double elastic_energy = assembler.assemble_tensor_energy(formulation, State::state().mesh->is_volume(), State::state().bases, State::state().bases, full);
+				const double elastic_energy = assembler.assemble_tensor_energy(rhs_assembler.formulation(), State::state().mesh->is_volume(), State::state().bases, State::state().bases, full);
 				const double body_energy 	= rhs_assembler.compute_energy(full);
 
 				return elastic_energy + body_energy;
@@ -221,7 +221,7 @@ namespace poly_fem
 				reduced_to_full(x , full);
 
 				Eigen::MatrixXd grad;
-				assembler.assemble_tensor_energy_gradient(formulation, State::state().mesh->is_volume(), State::state().n_bases, State::state().bases, State::state().bases, full, grad);
+				assembler.assemble_tensor_energy_gradient(rhs_assembler.formulation(), State::state().mesh->is_volume(), State::state().n_bases, State::state().bases, State::state().bases, full, grad);
 				grad -= State::state().rhs;
 
 				full_to_reduced(grad, gradv);
@@ -231,12 +231,10 @@ namespace poly_fem
 				Eigen::MatrixXd full;
 				reduced_to_full(x , full);
 
-				assembler.assemble_tensor_energy_hessian(formulation, State::state().mesh->is_volume(), State::state().n_bases, State::state().bases, State::state().bases, full, hessian);
+				assembler.assemble_tensor_energy_hessian(rhs_assembler.formulation(), State::state().mesh->is_volume(), State::state().n_bases, State::state().bases, State::state().bases, full, hessian);
 			}
 
 		private:
-			const std::string formulation;
-
 			const AssemblerUtils &assembler;
 			const RhsAssembler &rhs_assembler;
 
@@ -379,6 +377,8 @@ namespace poly_fem
 		j["count_multi_singular_boundary"] = multi_singular_boundary_count;
 
 		j["is_simplicial"] = mesh->is_simplicial();
+
+		j["formulation"] = formulation();
 
 
 		out << j.dump(4) << std::endl;
@@ -796,17 +796,11 @@ namespace poly_fem
 
 		if(problem->is_scalar())
 		{
-			if(iso_parametric)
-				assembler.assemble_scalar_problem(scalar_formulation, mesh->is_volume(), n_bases, bases, bases, stiffness);
-			else
-				assembler.assemble_scalar_problem(scalar_formulation, mesh->is_volume(), n_bases, bases, geom_bases, stiffness);
+			assembler.assemble_scalar_problem(scalar_formulation, mesh->is_volume(), n_bases, bases, iso_parametric ? bases : geom_bases, stiffness);
 		}
 		else
 		{
-			if(iso_parametric)
-				assembler.assemble_tensor_problem(tensor_formulation, mesh->is_volume(), n_bases, bases, bases, stiffness);
-			else
-				assembler.assemble_tensor_problem(tensor_formulation, mesh->is_volume(), n_bases, bases, geom_bases, stiffness);
+			assembler.assemble_tensor_problem(tensor_formulation, mesh->is_volume(), n_bases, bases, iso_parametric ? bases : geom_bases, stiffness);
 		}
 
 		timer.stop();
@@ -831,20 +825,10 @@ namespace poly_fem
 
 		const int size = problem->is_scalar() ? 1 : mesh->dimension();
 
-		if(iso_parametric)
-		{
-			RhsAssembler rhs_assembler(*mesh, n_bases, size, bases, bases, *problem);
-			rhs_assembler.assemble(rhs);
-			rhs *= -1;
-			rhs_assembler.set_bc(local_boundary, boundary_nodes, n_boundary_samples, rhs);
-		}
-		else
-		{
-			RhsAssembler rhs_assembler(*mesh, n_bases, size, bases, geom_bases, *problem);
-			rhs_assembler.assemble(rhs);
-			rhs *= -1;
-			rhs_assembler.set_bc(local_boundary, boundary_nodes, n_boundary_samples, rhs);
-		}
+		RhsAssembler rhs_assembler(*mesh, n_bases, size, bases, iso_parametric ? bases : geom_bases, formulation(), *problem);
+		rhs_assembler.assemble(rhs);
+		rhs *= -1;
+		rhs_assembler.set_bc(local_boundary, boundary_nodes, n_boundary_samples, rhs);
 
 		timer.stop();
 		assigning_rhs_time = timer.getElapsedTime();
@@ -867,8 +851,8 @@ namespace poly_fem
 		};
 
 		const auto &assembler = AssemblerUtils::instance();
-		const auto formulation = problem->is_scalar() ? scalar_formulation : tensor_formulation;
-		if(assembler.is_linear(formulation))
+
+		if(assembler.is_linear(formulation()))
 		{
 			auto solver = LinearSolver::create(solver_type, precond_type);
 			solver->setParameters(params);
@@ -886,9 +870,9 @@ namespace poly_fem
 		}
 		else
 		{
-			RhsAssembler rhs_assembler(*mesh, n_bases, mesh->dimension(), bases, bases, *problem);
+			RhsAssembler rhs_assembler(*mesh, n_bases, mesh->dimension(), bases, iso_parametric ? bases : geom_bases, formulation(), *problem);
 
-			NLProblem nl_problem(formulation, rhs_assembler);
+			NLProblem nl_problem(rhs_assembler);
 			VectorXd tmp_sol = nl_problem.initial_guess();
 
 			// {
@@ -968,10 +952,10 @@ namespace poly_fem
 			else
 				vals.compute(e, mesh->is_volume(), bases[e], geom_bases[e]);
 
-			problem->exact(vals.val, v_exact);
+			problem->exact(formulation(), vals.val, v_exact);
 
 			if(problem->has_gradient())
-				problem->exact_grad(vals.val, v_exact_grad);
+				problem->exact_grad(formulation(), vals.val, v_exact_grad);
 
 			v_approx 	  = MatrixXd::Zero(v_exact.rows(), v_exact.cols());
 			v_approx_grad = MatrixXd::Zero(v_exact_grad.rows(), v_exact_grad.cols());
@@ -1190,96 +1174,96 @@ namespace poly_fem
 	}
 
 
-	void State::compute_poly_basis_error(const std::string &path)
-	{
-		auto dx = [](const Eigen::MatrixXd &pts, Eigen::MatrixXd &val){ auto x = pts.col(0).array(); auto y = pts.col(1).array();  auto z = pts.col(2).array(); val =  (-59535 * x + 13230) * exp(-0.81e2 / 0.4e1 *  x *  x +  (9 * x) - 0.3e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y - 0.81e2 / 0.4e1 * z * z + 0.9e1 * z) / 0.1960e4 +  (-39690 * x + 30870) * exp(-0.81e2 / 0.4e1 *  x *  x + 0.63e2 / 0.2e1 *  x - 0.83e2 / 0.4e1 - 0.81e2 / 0.2e1 * y * y + 0.36e2 * y) / 0.1960e4 +  (-4860 * x - 540) * exp(-0.81e2 / 0.49e2 *  x *  x - 0.18e2 / 0.49e2 *  x - 0.54e2 / 0.245e3 - 0.9e1 / 0.10e2 * y - 0.9e1 / 0.10e2 * z) / 0.1960e4 + 0.162e3 / 0.5e1 * ( x - 0.4e1 / 0.9e1) * exp(- (81 * x * x) - 0.162e3 * y * y +  (72 * x) + 0.216e3 * y - 0.90e2);};
-		auto dy = [](const Eigen::MatrixXd &pts, Eigen::MatrixXd &val){ auto x = pts.col(0).array(); auto y = pts.col(1).array();  auto z = pts.col(2).array(); val =  -0.243e3 / 0.8e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.9e1 * x - 0.3e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y - 0.81e2 / 0.4e1 * z * z + 0.9e1 * z) * y + 0.27e2 / 0.4e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.9e1 * x - 0.3e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y - 0.81e2 / 0.4e1 * z * z + 0.9e1 * z) - 0.27e2 / 0.40e2 * exp(-0.81e2 / 0.49e2 * x * x - 0.18e2 / 0.49e2 * x - 0.54e2 / 0.245e3 - 0.9e1 / 0.10e2 * y - 0.9e1 / 0.10e2 * z) - 0.81e2 / 0.2e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.63e2 / 0.2e1 * x - 0.83e2 / 0.4e1 - 0.81e2 / 0.2e1 * y * y + 0.36e2 * y) * y + 0.18e2 * exp(-0.81e2 / 0.4e1 * x * x + 0.63e2 / 0.2e1 * x - 0.83e2 / 0.4e1 - 0.81e2 / 0.2e1 * y * y + 0.36e2 * y) + 0.324e3 / 0.5e1 * exp(-0.81e2 * x * x - 0.162e3 * y * y + 0.72e2 * x + 0.216e3 * y - 0.90e2) * y - 0.216e3 / 0.5e1 * exp(-0.81e2 * x * x - 0.162e3 * y * y + 0.72e2 * x + 0.216e3 * y - 0.90e2);};
-		auto dz = [](const Eigen::MatrixXd &pts, Eigen::MatrixXd &val){ auto x = pts.col(0).array(); auto y = pts.col(1).array();  auto z = pts.col(2).array(); val = -0.243e3 / 0.8e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.9e1 * x - 0.3e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y - 0.81e2 / 0.4e1 * z * z + 0.9e1 * z) * z + 0.27e2 / 0.4e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.9e1 * x - 0.3e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y - 0.81e2 / 0.4e1 * z * z + 0.9e1 * z) - 0.27e2 / 0.40e2 * exp(-0.81e2 / 0.49e2 * x * x - 0.18e2 / 0.49e2 * x - 0.54e2 / 0.245e3 - 0.9e1 / 0.10e2 * y - 0.9e1 / 0.10e2 * z); };
+	// void State::compute_poly_basis_error(const std::string &path)
+	// {
+	// 	auto dx = [](const Eigen::MatrixXd &pts, Eigen::MatrixXd &val){ auto x = pts.col(0).array(); auto y = pts.col(1).array();  auto z = pts.col(2).array(); val =  (-59535 * x + 13230) * exp(-0.81e2 / 0.4e1 *  x *  x +  (9 * x) - 0.3e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y - 0.81e2 / 0.4e1 * z * z + 0.9e1 * z) / 0.1960e4 +  (-39690 * x + 30870) * exp(-0.81e2 / 0.4e1 *  x *  x + 0.63e2 / 0.2e1 *  x - 0.83e2 / 0.4e1 - 0.81e2 / 0.2e1 * y * y + 0.36e2 * y) / 0.1960e4 +  (-4860 * x - 540) * exp(-0.81e2 / 0.49e2 *  x *  x - 0.18e2 / 0.49e2 *  x - 0.54e2 / 0.245e3 - 0.9e1 / 0.10e2 * y - 0.9e1 / 0.10e2 * z) / 0.1960e4 + 0.162e3 / 0.5e1 * ( x - 0.4e1 / 0.9e1) * exp(- (81 * x * x) - 0.162e3 * y * y +  (72 * x) + 0.216e3 * y - 0.90e2);};
+	// 	auto dy = [](const Eigen::MatrixXd &pts, Eigen::MatrixXd &val){ auto x = pts.col(0).array(); auto y = pts.col(1).array();  auto z = pts.col(2).array(); val =  -0.243e3 / 0.8e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.9e1 * x - 0.3e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y - 0.81e2 / 0.4e1 * z * z + 0.9e1 * z) * y + 0.27e2 / 0.4e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.9e1 * x - 0.3e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y - 0.81e2 / 0.4e1 * z * z + 0.9e1 * z) - 0.27e2 / 0.40e2 * exp(-0.81e2 / 0.49e2 * x * x - 0.18e2 / 0.49e2 * x - 0.54e2 / 0.245e3 - 0.9e1 / 0.10e2 * y - 0.9e1 / 0.10e2 * z) - 0.81e2 / 0.2e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.63e2 / 0.2e1 * x - 0.83e2 / 0.4e1 - 0.81e2 / 0.2e1 * y * y + 0.36e2 * y) * y + 0.18e2 * exp(-0.81e2 / 0.4e1 * x * x + 0.63e2 / 0.2e1 * x - 0.83e2 / 0.4e1 - 0.81e2 / 0.2e1 * y * y + 0.36e2 * y) + 0.324e3 / 0.5e1 * exp(-0.81e2 * x * x - 0.162e3 * y * y + 0.72e2 * x + 0.216e3 * y - 0.90e2) * y - 0.216e3 / 0.5e1 * exp(-0.81e2 * x * x - 0.162e3 * y * y + 0.72e2 * x + 0.216e3 * y - 0.90e2);};
+	// 	auto dz = [](const Eigen::MatrixXd &pts, Eigen::MatrixXd &val){ auto x = pts.col(0).array(); auto y = pts.col(1).array();  auto z = pts.col(2).array(); val = -0.243e3 / 0.8e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.9e1 * x - 0.3e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y - 0.81e2 / 0.4e1 * z * z + 0.9e1 * z) * z + 0.27e2 / 0.4e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.9e1 * x - 0.3e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y - 0.81e2 / 0.4e1 * z * z + 0.9e1 * z) - 0.27e2 / 0.40e2 * exp(-0.81e2 / 0.49e2 * x * x - 0.18e2 / 0.49e2 * x - 0.54e2 / 0.245e3 - 0.9e1 / 0.10e2 * y - 0.9e1 / 0.10e2 * z); };
 
 
 
-		MatrixXd fun = MatrixXd::Zero(n_bases, 1);
-		MatrixXd tmp, mapped;
-		MatrixXd v_approx, v_exact;
+	// 	MatrixXd fun = MatrixXd::Zero(n_bases, 1);
+	// 	MatrixXd tmp, mapped;
+	// 	MatrixXd v_approx, v_exact;
 
-		int poly_index = -1;
+	// 	int poly_index = -1;
 
-		for(std::size_t i = 0; i < bases.size(); ++i)
-		{
-			const ElementBases &basis = bases[i];
-			if(!basis.has_parameterization){
-				poly_index = i;
-				continue;
-			}
+	// 	for(std::size_t i = 0; i < bases.size(); ++i)
+	// 	{
+	// 		const ElementBases &basis = bases[i];
+	// 		if(!basis.has_parameterization){
+	// 			poly_index = i;
+	// 			continue;
+	// 		}
 
-			for(std::size_t j = 0; j < basis.bases.size(); ++j)
-			{
-				for(std::size_t kk = 0; kk < basis.bases[j].global().size(); ++kk)
-				{
-					const Local2Global &l2g = basis.bases[j].global()[kk];
-					const int g_index = l2g.index;
+	// 		for(std::size_t j = 0; j < basis.bases.size(); ++j)
+	// 		{
+	// 			for(std::size_t kk = 0; kk < basis.bases[j].global().size(); ++kk)
+	// 			{
+	// 				const Local2Global &l2g = basis.bases[j].global()[kk];
+	// 				const int g_index = l2g.index;
 
-					const auto &node = l2g.node;
-					problem->exact(node, tmp);
+	// 				const auto &node = l2g.node;
+	// 				problem->exact(node, tmp);
 
-					fun(g_index) = tmp(0);
-				}
-			}
-		}
+	// 				fun(g_index) = tmp(0);
+	// 			}
+	// 		}
+	// 	}
 
-		if(poly_index == -1)
-			poly_index = 0;
+	// 	if(poly_index == -1)
+	// 		poly_index = 0;
 
-		auto &poly_basis = bases[poly_index];
-		ElementAssemblyValues vals;
-		vals.compute(poly_index, true, poly_basis, poly_basis);
+	// 	auto &poly_basis = bases[poly_index];
+	// 	ElementAssemblyValues vals;
+	// 	vals.compute(poly_index, true, poly_basis, poly_basis);
 
-		// problem.exact(vals.val, v_exact);
-		v_exact.resize(vals.val.rows(), vals.val.cols());
-		dx(vals.val, tmp); v_exact.col(0) = tmp;
-		dy(vals.val, tmp); v_exact.col(1) = tmp;
-		dz(vals.val, tmp); v_exact.col(2) = tmp;
+	// 	// problem.exact(vals.val, v_exact);
+	// 	v_exact.resize(vals.val.rows(), vals.val.cols());
+	// 	dx(vals.val, tmp); v_exact.col(0) = tmp;
+	// 	dy(vals.val, tmp); v_exact.col(1) = tmp;
+	// 	dz(vals.val, tmp); v_exact.col(2) = tmp;
 
-		v_approx = MatrixXd::Zero(v_exact.rows(), v_exact.cols());
+	// 	v_approx = MatrixXd::Zero(v_exact.rows(), v_exact.cols());
 
-		const int n_loc_bases=int(vals.basis_values.size());
+	// 	const int n_loc_bases=int(vals.basis_values.size());
 
-		for(int i = 0; i < n_loc_bases; ++i)
-		{
-			auto &val=vals.basis_values[i];
+	// 	for(int i = 0; i < n_loc_bases; ++i)
+	// 	{
+	// 		auto &val=vals.basis_values[i];
 
-			for(std::size_t ii = 0; ii < val.global.size(); ++ii)
-			{
-				// v_approx += val.global[ii].val * fun(val.global[ii].index) * val.val;
-				v_approx += val.global[ii].val * fun(val.global[ii].index) * val.grad;
-			}
-		}
+	// 		for(std::size_t ii = 0; ii < val.global.size(); ++ii)
+	// 		{
+	// 			// v_approx += val.global[ii].val * fun(val.global[ii].index) * val.val;
+	// 			v_approx += val.global[ii].val * fun(val.global[ii].index) * val.grad;
+	// 		}
+	// 	}
 
-		const Eigen::MatrixXd err = (v_exact-v_approx).cwiseAbs();
-
-
-		using json = nlohmann::json;
-		json j;
-		j["mesh_path"] = mesh_path;
-
-		for(long c = 0; c < v_approx.cols();++c){
-			double l2_err_interp = 0;
-			double lp_err_interp = 0;
-
-			l2_err_interp += (err.col(c).array() * err.col(c).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-			lp_err_interp += (err.col(c).array().pow(8.) * vals.det.array() * vals.quadrature.weights.array()).sum();
-
-			l2_err_interp = sqrt(fabs(l2_err_interp));
-			lp_err_interp = pow(fabs(lp_err_interp), 1./8.);
+	// 	const Eigen::MatrixXd err = (v_exact-v_approx).cwiseAbs();
 
 
-			j["err_l2_"+std::to_string(c)] = l2_err_interp;
-			j["err_lp_"+std::to_string(c)] = lp_err_interp;
-		}
+	// 	using json = nlohmann::json;
+	// 	json j;
+	// 	j["mesh_path"] = mesh_path;
 
-		std::ofstream out(path);
-		out << j.dump(4) << std::endl;
-		out.close();
-	}
+	// 	for(long c = 0; c < v_approx.cols();++c){
+	// 		double l2_err_interp = 0;
+	// 		double lp_err_interp = 0;
+
+	// 		l2_err_interp += (err.col(c).array() * err.col(c).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+	// 		lp_err_interp += (err.col(c).array().pow(8.) * vals.det.array() * vals.quadrature.weights.array()).sum();
+
+	// 		l2_err_interp = sqrt(fabs(l2_err_interp));
+	// 		lp_err_interp = pow(fabs(lp_err_interp), 1./8.);
+
+
+	// 		j["err_l2_"+std::to_string(c)] = l2_err_interp;
+	// 		j["err_lp_"+std::to_string(c)] = lp_err_interp;
+	// 	}
+
+	// 	std::ofstream out(path);
+	// 	out << j.dump(4) << std::endl;
+	// 	out.close();
+	// }
 
 }

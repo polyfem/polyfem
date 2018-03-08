@@ -52,7 +52,7 @@ int main(int argc, const char **argv)
 	std::string path = "";
 	std::string output = "";
 	std::string vtu = "";
-	std::string hack = "";
+	// std::string hack = "";
 	std::string screenshot = "";
 	int n_refs = 0;
 	std::string problem_name = "";
@@ -96,7 +96,7 @@ int main(int argc, const char **argv)
 	command_line.add_option("-output", output);
 	command_line.add_option("-vtu", vtu);
 
-	command_line.add_option("-hack", hack);
+	// command_line.add_option("-hack", hack);
 	command_line.add_option("-screenshot", screenshot);
 
 	command_line.parse(argc, argv);
@@ -131,10 +131,10 @@ int main(int argc, const char **argv)
 		}
 		state.build_polygonal_basis();
 
-		if(!hack.empty()){
-			state.compute_poly_basis_error(hack);
-			return EXIT_SUCCESS;
-		}
+		// if(!hack.empty()){
+		// 	state.compute_poly_basis_error(hack);
+		// 	return EXIT_SUCCESS;
+		// }
 
 		state.assemble_rhs();
 		state.assemble_stiffness_mat();

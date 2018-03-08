@@ -8,17 +8,17 @@ namespace poly_fem
 	: Problem(name)
 	{ }
 
-	void LinearProblem::rhs(const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void LinearProblem::rhs(const std::string &formulation, const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), 1);
 	}
 
-	void LinearProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void LinearProblem::bc(const std::string &formulation, const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
-		exact(pts, val);
+		exact(formulation, pts, val);
 	}
 
-	void LinearProblem::exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void LinearProblem::exact(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		val = pts.col(0).array();
 	}

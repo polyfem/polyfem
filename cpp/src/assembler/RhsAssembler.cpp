@@ -14,8 +14,8 @@
 
 namespace poly_fem
 {
-	RhsAssembler::RhsAssembler(const Mesh &mesh, const int n_basis, const int size, const std::vector< ElementBases > &bases, const std::vector< ElementBases > &gbases, const Problem &problem)
-	: mesh_(mesh), n_basis_(n_basis), size_(size), bases_(bases), gbases_(gbases), problem_(problem)
+	RhsAssembler::RhsAssembler(const Mesh &mesh, const int n_basis, const int size, const std::vector< ElementBases > &bases, const std::vector< ElementBases > &gbases, const std::string &formulation, const Problem &problem)
+	: mesh_(mesh), n_basis_(n_basis), size_(size), bases_(bases), gbases_(gbases), formulation_(formulation), problem_(problem)
 	{ }
 
 	void RhsAssembler::assemble(Eigen::MatrixXd &rhs) const
@@ -32,7 +32,7 @@ namespace poly_fem
 			ElementAssemblyValues vals;
 			vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
 
-			problem_.rhs(mesh_, vals.val, rhs_fun);
+			problem_.rhs(formulation_, mesh_, vals.val, rhs_fun);
 
 				// std::cout<<e<<"\n"<<gvals.val<<"\n"<<rhs_fun<<"\n\n"<<std::endl;
 
@@ -148,7 +148,7 @@ namespace poly_fem
 				}
 			}
 
-			problem_.bc(mesh_, global_primitive_ids, mapped, rhs_fun);
+			problem_.bc(formulation_, mesh_, global_primitive_ids, mapped, rhs_fun);
 			global_rhs.block(global_counter, 0, rhs_fun.rows(), rhs_fun.cols()) = rhs_fun;
 			global_counter += rhs_fun.rows();
 
@@ -218,7 +218,6 @@ namespace poly_fem
 	{
 		const int size = mesh_.is_volume() ? 3 : 2;
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size);
-		
 
 		double res = 0;
 		Eigen::MatrixXd forces;
@@ -233,7 +232,7 @@ namespace poly_fem
 			const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
 
-			problem_.rhs(mesh_, vals.val, forces);
+			problem_.rhs(formulation_, mesh_, vals.val, forces);
 			assert(forces.rows() == da.size());
 			assert(forces.cols() == size);
 

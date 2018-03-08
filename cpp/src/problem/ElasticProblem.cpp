@@ -12,14 +12,14 @@ namespace poly_fem
 		boundary_ids_ = {1, 2, 3, 4, 5, 6};
 	}
 
-	void ElasticProblem::rhs(const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void ElasticProblem::rhs(const std::string &formulation, const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
 		val.col(1).setConstant(0.5);
 		// val = Eigen::MatrixXd::Constant(pts.rows(), mesh.dimension(), 0.5);
 	}
 
-	void ElasticProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void ElasticProblem::bc(const std::string &formulation, const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
 
@@ -51,7 +51,7 @@ namespace poly_fem
 	: Problem(name)
 	{ }
 
-	void ElasticProblemExact::rhs(const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void ElasticProblemExact::rhs(const std::string &formulation, const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		auto &x = pts.col(0).array();
 		auto &y = pts.col(1).array();
@@ -75,12 +75,12 @@ namespace poly_fem
 		}
 	}
 
-	void ElasticProblemExact::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void ElasticProblemExact::bc(const std::string &formulation, const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
-		exact(pts, val);
+		exact(formulation, pts, val);
 	}
 
-	void ElasticProblemExact::exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void ElasticProblemExact::exact(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		auto &x = pts.col(0).array();
 		auto &y = pts.col(1).array();

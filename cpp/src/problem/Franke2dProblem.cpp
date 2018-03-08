@@ -8,7 +8,7 @@ namespace poly_fem
 	: Problem(name)
 	{ }
 
-	void Franke2dProblem::rhs(const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void Franke2dProblem::rhs(const std::string &formulation, const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		auto &x = pts.col(0).array();
 		auto &y = pts.col(1).array();
@@ -42,13 +42,13 @@ namespace poly_fem
 		val*=-1;
 	}
 
-	void Franke2dProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void Franke2dProblem::bc(const std::string &formulation, const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
-		exact(pts, val);
+		exact(formulation, pts, val);
 	}
 
 
-	void Franke2dProblem::exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void Franke2dProblem::exact(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		auto &x = pts.col(0).array();
 		auto &y = pts.col(1).array();
@@ -73,7 +73,7 @@ namespace poly_fem
 
 	}
 
-	void Franke2dProblem::exact_grad(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void Franke2dProblem::exact_grad(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		auto &x = pts.col(0).array();
 		auto &y = pts.col(1).array();

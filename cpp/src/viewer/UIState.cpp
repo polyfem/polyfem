@@ -704,7 +704,7 @@ namespace poly_fem
 		interpolate_function(state.sol, global_sol);
 
 		MatrixXd exact_sol;
-		state.problem->exact(vis_pts, exact_sol);
+		state.problem->exact(state.formulation(), vis_pts, exact_sol);
 
 		const MatrixXd err = (global_sol - exact_sol).eval().rowwise().norm();
 		plot_function(err);

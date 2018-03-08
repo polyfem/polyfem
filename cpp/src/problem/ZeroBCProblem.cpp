@@ -8,7 +8,7 @@ namespace poly_fem
 	: Problem(name)
 	{ }
 
-	void ZeroBCProblem::rhs(const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void ZeroBCProblem::rhs(const std::string &formulation, const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		assert(mesh.is_volume());
 
@@ -21,13 +21,13 @@ namespace poly_fem
 		// val = -4 * x * y * (1 - y) * (1 - y) + 2 * (1 - x) * y * (1 - y) *(1 - y) - 4 * (1 - x) * x * x * (1 - y) + 2 * (1 - x) * x * x * y;
 	}
 
-	void ZeroBCProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void ZeroBCProblem::bc(const std::string &formulation, const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
-		exact(pts, val);
+		exact(formulation, pts, val);
 	}
 
 
-	void ZeroBCProblem::exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void ZeroBCProblem::exact(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		auto &x = pts.col(0).array();
 		auto &y = pts.col(1).array();
