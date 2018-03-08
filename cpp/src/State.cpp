@@ -352,6 +352,7 @@ namespace poly_fem
 		j["average_edge_length"] = average_edge_length;
 
 		j["err_l2"] = l2_err;
+		j["err_h1"] = h1_err;
 		j["err_linf"] = linf_err;
 		j["err_lp"] = lp_err;
 
@@ -946,10 +947,12 @@ namespace poly_fem
 		const int n_el=int(bases.size());
 
 		MatrixXd v_exact, v_approx;
+		MatrixXd v_exact_grad(0,0), v_approx_grad;
 
 		errors.clear();
 
 		l2_err = 0;
+		h1_err = 0;
 		linf_err = 0;
 		lp_err = 0;
 
@@ -967,7 +970,11 @@ namespace poly_fem
 
 			problem->exact(vals.val, v_exact);
 
-			v_approx = MatrixXd::Zero(v_exact.rows(), v_exact.cols());
+			if(problem->has_gradient())
+				problem->exact_grad(vals.val, v_exact_grad);
+
+			v_approx 	  = MatrixXd::Zero(v_exact.rows(), v_exact.cols());
+			v_approx_grad = MatrixXd::Zero(v_exact_grad.rows(), v_exact_grad.cols());
 
 			const int n_loc_bases=int(vals.basis_values.size());
 
@@ -976,23 +983,32 @@ namespace poly_fem
 				auto val=vals.basis_values[i];
 
 				for(std::size_t ii = 0; ii < val.global.size(); ++ii){
-					for(int d = 0; d < actual_dim; ++d){
+					for(int d = 0; d < actual_dim; ++d)
+					{
 						v_approx.col(d) += val.global[ii].val * sol(val.global[ii].index*actual_dim + d) * val.val;
 					}
+
+					if(problem->has_gradient())
+						v_approx_grad += val.global[ii].val * sol(val.global[ii].index) * val.grad;
 				}
 			}
 
 			const auto err = (v_exact-v_approx).eval().rowwise().norm().eval();
+			const auto err_grad = (v_exact_grad - v_approx_grad).eval().rowwise().norm().eval();
 
 			// for(long i = 0; i < err.size(); ++i)
 				// errors.push_back(err(i));
 
 			linf_err = max(linf_err, err.maxCoeff());
 			l2_err += (err.array() * err.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+			if(problem->has_gradient())
+				h1_err += (err_grad.array() * err_grad.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
 			lp_err += (err.array().pow(8.) * vals.det.array() * vals.quadrature.weights.array()).sum();
 		}
 
+		h1_err = sqrt(fabs(l2_err) + fabs(h1_err));
 		l2_err = sqrt(fabs(l2_err));
+
 		lp_err = pow(fabs(lp_err), 1./8.);
 
 		timer.stop();
@@ -1001,6 +1017,7 @@ namespace poly_fem
 
 		std::cout << "-- L2 error: " << l2_err << std::endl;
 		std::cout << "-- Lp error: " << lp_err << std::endl;
+		std::cout << "-- H1 error: " << h1_err << std::endl;
 		// std::cout<<l2_err<<" "<<linf_err<<" "<<lp_err<<std::endl;
 	}
 
@@ -1057,6 +1074,7 @@ namespace poly_fem
 
 		igl::serialize(mesh_size, "mesh_size", file_name);
 		igl::serialize(l2_err, "l2_err", file_name);
+		igl::serialize(h1_err, "h1_err", file_name);
 		igl::serialize(linf_err, "linf_err", file_name);
 		igl::serialize(nn_zero, "nn_zero", file_name);
 		igl::serialize(mat_size, "mat_size", file_name);

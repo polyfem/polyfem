@@ -17,7 +17,7 @@ namespace poly_fem
 		void set_parameters(const json &params);
 
 	private:
-		double k_ = 10;
+		double k_ = 1;
 	};
 }
 

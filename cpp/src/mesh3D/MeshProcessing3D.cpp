@@ -679,10 +679,10 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 						v_.v.resize(3);
 
 						for (int j = 0; j < 3; j++)v_.v[j] = M_.vertices[vid].v[j] + (ele.v_in_Kernel[j] - M_.vertices[vid].v[j])*(r + 1.0) / (double)(level + 1);
-						cout << "before: "<<v_.v[0] << " " << v_.v[1] << " " << v_.v[2] << endl;
+						// cout << "before: "<<v_.v[0] << " " << v_.v[1] << " " << v_.v[2] << endl;
 						if (reverse) {
 							for (int j = 0; j < 3; j++)v_.v[j] = M_.vertices[vid].v[j] + (M_.vertices[vid].v[j] - ele.v_in_Kernel[j] )*(r + 1.0) / (double)(level + 1);
-							cout << "after: " << v_.v[0] << " " << v_.v[1] << " " << v_.v[2] << endl;
+							// cout << "after: " << v_.v[0] << " " << v_.v[1] << " " << v_.v[2] << endl;
 						}
 						M_.vertices.push_back(v_);
 						v2v.push_back(v_.id);

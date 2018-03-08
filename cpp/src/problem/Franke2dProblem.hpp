@@ -17,9 +17,11 @@ namespace poly_fem
 		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 
 		void exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
+		void exact_grad(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 
 		bool has_exact_sol() const override { return true; }
 		bool is_scalar() const override { return true; }
+		bool has_gradient() const override { return true; }
 	};
 }
 

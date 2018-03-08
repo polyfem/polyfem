@@ -37,13 +37,13 @@ namespace poly_fem
 
 		bool use_splines = false;
 		bool iso_parametric = true;
-		bool fit_nodes = true;
+		bool fit_nodes = false;
 		bool normalize_mesh = true;
 
 		std::shared_ptr<Problem> problem;
 
 		std::string scalar_formulation = "Laplacian";
-		std::string tensor_formulation = "SaintVenant";
+		std::string tensor_formulation = "LinearElasticity"; //"SaintVenant";
 
 
 		int n_bases;
@@ -83,7 +83,7 @@ namespace poly_fem
 		double min_edge_length;
 		double average_edge_length;
 
-		double l2_err, linf_err, lp_err;
+		double l2_err, linf_err, lp_err, h1_err;
 		long long nn_zero, mat_size, num_dofs;
 
 		float refinenemt_location = 0.5;
