@@ -989,7 +989,7 @@ namespace poly_fem
 					}
 
 					if(problem->has_gradient())
-						v_approx_grad += val.global[ii].val * sol(val.global[ii].index) * val.grad;
+						v_approx_grad += val.global[ii].val * sol(val.global[ii].index) * val.grad_t_m;
 				}
 			}
 

@@ -21,7 +21,7 @@ namespace poly_fem
 
 		bool has_exact_sol() const override { return true; }
 		bool is_scalar() const override { return true; }
-		bool has_gradient() const override { return false; }
+		bool has_gradient() const override { return true; }
 	};
 }
 
