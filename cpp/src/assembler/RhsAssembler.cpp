@@ -32,7 +32,7 @@ namespace poly_fem
 			ElementAssemblyValues vals;
 			vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
 
-			problem_.rhs(formulation_, mesh_, vals.val, rhs_fun);
+			problem_.rhs(formulation_, vals.val, rhs_fun);
 
 				// std::cout<<e<<"\n"<<gvals.val<<"\n"<<rhs_fun<<"\n\n"<<std::endl;
 
@@ -148,7 +148,7 @@ namespace poly_fem
 				}
 			}
 
-			problem_.bc(formulation_, mesh_, global_primitive_ids, mapped, rhs_fun);
+			problem_.bc(mesh_, global_primitive_ids, mapped, rhs_fun);
 			global_rhs.block(global_counter, 0, rhs_fun.rows(), rhs_fun.cols()) = rhs_fun;
 			global_counter += rhs_fun.rows();
 
@@ -232,7 +232,7 @@ namespace poly_fem
 			const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
 
-			problem_.rhs(formulation_, mesh_, vals.val, forces);
+			problem_.rhs(formulation_, vals.val, forces);
 			assert(forces.rows() == da.size());
 			assert(forces.cols() == size);
 

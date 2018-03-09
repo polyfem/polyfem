@@ -111,6 +111,16 @@ namespace poly_fem
 	}
 
 
+	VectorNd AssemblerUtils::compute_rhs(const std::string &assembler, const AutodiffHessianPt &pt) const
+	{
+		if(assembler == "Laplacian")
+			return laplacian_.local_assembler().compute_rhs(pt);
+
+
+		assert(false);
+	}
+
+
 
 	void AssemblerUtils::set_parameters(const json &params)
 	{

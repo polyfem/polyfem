@@ -16,11 +16,11 @@ namespace poly_fem
 	public:
 		Problem(const std::string &name);
 
-		virtual void rhs(const std::string &formulation, const Mesh &mesh, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const = 0;
-		virtual void bc(const std::string &formulation, const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const = 0;
+		virtual void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const = 0;
+		virtual void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const = 0;
 
-		virtual void exact(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { };
-		virtual void exact_grad(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { };
+		virtual void exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { };
+		virtual void exact_grad(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { };
 
 		inline const std::string &name() const { return name_; }
 

@@ -1,10 +1,7 @@
 #include "Problem.hpp"
 
-#include "LinearProblem.hpp"
-#include "QuadraticProblem.hpp"
-#include "Franke2dProblem.hpp"
-#include "Franke3dProblem.hpp"
-#include "ZeroBCProblem.hpp"
+#include "MiscProblem.hpp"
+#include "FrankeProblem.hpp"
 #include "ElasticProblem.hpp"
 
 #include <memory>

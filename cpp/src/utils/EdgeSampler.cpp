@@ -1,6 +1,7 @@
 #include "EdgeSampler.hpp"
 
 namespace poly_fem {
+	//TODO sample hex edges correcly!!!!
 	void EdgeSampler::sample_2d(const int resolution, Eigen::MatrixXd &samples)
 	{
 		samples.resize(4*resolution, 2);

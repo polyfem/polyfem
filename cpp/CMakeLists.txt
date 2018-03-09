@@ -147,18 +147,14 @@ add_library(polyfem
 	src/mesh3D/Navigation3D.hpp
 	src/problem/ElasticProblem.cpp
 	src/problem/ElasticProblem.hpp
-	src/problem/Franke2dProblem.cpp
-	src/problem/Franke2dProblem.hpp
-	src/problem/Franke3dProblem.cpp
-	src/problem/Franke3dProblem.hpp
-	src/problem/LinearProblem.cpp
-	src/problem/LinearProblem.hpp
+	src/problem/FrankeProblem.cpp
+	src/problem/FrankeProblem.hpp
 	src/problem/Problem.cpp
 	src/problem/Problem.hpp
-	src/problem/QuadraticProblem.cpp
-	src/problem/QuadraticProblem.hpp
-	src/problem/ZeroBCProblem.cpp
-	src/problem/ZeroBCProblem.hpp
+	src/problem/ProblemWithSolution.cpp
+	src/problem/ProblemWithSolution.hpp
+	src/problem/MiscProblem.cpp
+	src/problem/MiscProblem.hpp
 	src/quadrature/HexQuadrature.cpp
 	src/quadrature/HexQuadrature.hpp
 	src/quadrature/LineQuadrature.cpp
@@ -190,6 +186,7 @@ add_library(polyfem
 	src/utils/MatrixUtils.hpp
 	src/utils/StringUtils.cpp
 	src/utils/StringUtils.hpp
+	src/utils/AutodiffTypes.hpp
 	src/utils/Types.hpp
 )
 

@@ -5,6 +5,7 @@ add_executable(unit_tests
 	main.cpp
 	test_foo.cpp
 	test_solver.cpp
+	test_problem.cpp
 )
 
 target_link_libraries(unit_tests PUBLIC polyfem catch)

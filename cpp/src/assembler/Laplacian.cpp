@@ -16,4 +16,12 @@ namespace poly_fem
 		return Eigen::Matrix<double, 1, 1>::Constant(res);
 	}
 
+	Eigen::Matrix<double, 1, 1> Laplacian::compute_rhs(const AutodiffHessianPt &pt) const
+	{
+		Eigen::Matrix<double, 1, 1> result;
+		assert(pt.size() == 1);
+		result(0) = pt(0).getHessian().trace();
+		return result;
+	}
+
 }

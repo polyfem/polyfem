@@ -4,7 +4,7 @@
 #include "ElementAssemblyValues.hpp"
 
 
-#include "autodiff.h"
+#include "AutodiffTypes.hpp"
 
 #include <igl/Timer.h>
 
@@ -13,26 +13,6 @@ namespace poly_fem
 {
 	namespace
 	{
-		template<class T>
-		class AutoDiffAllocator
-		{
-		public:
-			T operator()(const int i, double v) const
-			{
-				return T(i, v);
-			}
-		};
-
-		template<>
-		class AutoDiffAllocator<double>
-		{
-		public:
-			double operator()(const int i, double v) const
-			{
-				return v;
-			}
-		};
-
 		template<class Matrix>
 		Matrix strain_from_disp_grad(const Matrix &disp_grad)
 		{

@@ -1,0 +1,36 @@
+#pragma once
+
+#include "Types.hpp"
+
+#include "autodiff.h"
+
+namespace poly_fem
+{
+	typedef DScalar1<double, VectorNd> 																	AutodiffScalarGrad;
+	typedef DScalar2<double, VectorNd, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0 ,3, 3>>  AutodiffScalarHessian;
+
+	typedef Eigen::Matrix<AutodiffScalarGrad, 	 Eigen::Dynamic, 1, 0, 3, 1> AutodiffGradPt;
+	typedef Eigen::Matrix<AutodiffScalarHessian, Eigen::Dynamic, 1, 0, 3, 1> AutodiffHessianPt;
+
+
+	template<class T>
+	class AutoDiffAllocator
+	{
+	public:
+		T operator()(const int i, double v) const
+		{
+			return T(i, v);
+		}
+	};
+
+	template<>
+	class AutoDiffAllocator<double>
+	{
+	public:
+		double operator()(const int i, double v) const
+		{
+			return v;
+		}
+	};
+}
+

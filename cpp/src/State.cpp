@@ -17,15 +17,9 @@
 #include "AssemblerUtils.hpp"
 #include "RhsAssembler.hpp"
 
-// #include "Laplacian.hpp"
-// #include "LinearElasticity.hpp"
-// #include "HookeLinearElasticity.hpp"
-// #include "SaintVenantElasticity.hpp"
-
 #include "LinearSolver.hpp"
 #include "FEMSolver.hpp"
 
-#include "LinearProblem.hpp"
 
 #include "json.hpp"
 
@@ -937,10 +931,10 @@ namespace poly_fem
 			else
 				vals.compute(e, mesh->is_volume(), bases[e], geom_bases[e]);
 
-			problem->exact(formulation(), vals.val, v_exact);
+			problem->exact(vals.val, v_exact);
 
 			if(problem->has_gradient())
-				problem->exact_grad(formulation(), vals.val, v_exact_grad);
+				problem->exact_grad(vals.val, v_exact_grad);
 
 			v_approx 	  = MatrixXd::Zero(v_exact.rows(), v_exact.cols());
 			v_approx_grad = MatrixXd::Zero(v_exact_grad.rows(), v_exact_grad.cols());

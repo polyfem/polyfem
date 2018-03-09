@@ -11,6 +11,8 @@
 #include "HookeLinearElasticity.hpp"
 #include "SaintVenantElasticity.hpp"
 
+#include "ProblemWithSolution.hpp"
+
 #include <vector>
 
 namespace poly_fem
@@ -69,6 +71,9 @@ namespace poly_fem
 			const Eigen::MatrixXd &local_pts,
 			const Eigen::MatrixXd &fun,
 			Eigen::MatrixXd &result) const;
+
+		//for errors
+		VectorNd compute_rhs(const std::string &assembler, const AutodiffHessianPt &pt) const;
 
 		//aux
 		void set_parameters(const json &params);
