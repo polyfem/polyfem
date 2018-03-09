@@ -9,7 +9,7 @@ namespace poly_fem
 {
 	void Mesh3D::refine(const int n_refiniment, const double t, std::vector<int> &parent_nodes)
 	{
-		if(is_simplicial_) return;
+		//TODO add refinement for tets
 		
 		for(size_t i = 0; i < elements_tag().size(); ++i)
 		{
@@ -119,33 +119,33 @@ namespace poly_fem
 				mesh_.elements[c].v_in_Kernel[d] = bary(d);
 		}
 
-		//TODO not so nice to detect triangle meshes
-		is_simplicial_ = n_cell_vertices(0) == 4;
+		// //TODO not so nice to detect triangle meshes
+		// is_simplicial_ = n_cell_vertices(0) == 4;
 
-		if(is_simplicial_)
-		{
-			for(int i = 0; i < n_cells(); ++i)
-			{
-				assert(n_cell_vertices(i) == 4);
-				std::array<GEO::vec3, 4> vertices;
-				auto &face_vertices = mesh_.elements[i].vs;
+		// if(is_simplicial_)
+		// {
+		// 	for(int i = 0; i < n_cells(); ++i)
+		// 	{
+		// 		assert(n_cell_vertices(i) == 4);
+		// 		std::array<GEO::vec3, 4> vertices;
+		// 		auto &face_vertices = mesh_.elements[i].vs;
 
-				for(int lv = 0; lv < 4; ++lv)
-				{
-					auto pt = point(face_vertices[lv]);
-					for(int d = 0; d < 3; ++d)
-					{
-						vertices[lv][d] = pt(d);
-					}
-				}
+		// 		for(int lv = 0; lv < 4; ++lv)
+		// 		{
+		// 			auto pt = point(face_vertices[lv]);
+		// 			for(int d = 0; d < 3; ++d)
+		// 			{
+		// 				vertices[lv][d] = pt(d);
+		// 			}
+		// 		}
 
-				const double vol = GEO::Geom::tetra_signed_volume(vertices[0], vertices[1], vertices[2], vertices[3]);
-				if(vol < 0)
-				{
-					std::swap(face_vertices[1], face_vertices[2]);
-				}
-			}
-		}
+		// 		const double vol = GEO::Geom::tetra_signed_volume(vertices[0], vertices[1], vertices[2], vertices[3]);
+		// 		if(vol < 0)
+		// 		{
+		// 			std::swap(face_vertices[1], face_vertices[2]);
+		// 		}
+		// 	}
+		// }
 
 		Navigation3D::prepare_mesh(mesh_);
 		// if(is_simplicial())
@@ -157,6 +157,7 @@ namespace poly_fem
 	// load from a geogram surface mesh (for debugging), or volume mesh
 	// if loading a surface mesh, it assumes there is only one polyhedral cell, and the last vertex id a point in the kernel
 	bool Mesh3D::load(const GEO::Mesh &M) {
+		//TODO simplicial?
 		assert(M.vertices.dimension() == 3);
 
 		// Set vertices
@@ -238,7 +239,7 @@ namespace poly_fem
 				mesh_.elements[i].hex = false;
 			}
 
-			is_simplicial_ = M.facets.are_simplices();
+			// is_simplicial_ = M.facets.are_simplices();
 		} else {
 
 			// Set faces
@@ -322,7 +323,7 @@ namespace poly_fem
 				mesh_.elements[c].v_in_Kernel.push_back(p[1]);
 				mesh_.elements[c].v_in_Kernel.push_back(p[2]);
 			}
-			is_simplicial_ = M.cells.are_simplices();
+			// is_simplicial_ = M.cells.are_simplices();
 		}
 
 		Navigation3D::prepare_mesh(mesh_);
@@ -843,6 +844,13 @@ namespace poly_fem
 				ele_tag[ele.id] = ElementType::InteriorPolytope;
 				for (auto fid : ele.fs)if (mesh_.faces[fid].boundary) { ele_tag[ele.id] = ElementType::BoundaryPolytope; break; }
 			}
+		}
+
+
+		//TODO correct?
+		for (auto &ele : mesh_.elements) {
+			if(ele.vs.size() == 4)
+				ele_tag[ele.id] = ElementType::Simplex;
 		}
 	}
 

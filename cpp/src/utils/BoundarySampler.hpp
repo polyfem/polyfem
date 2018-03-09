@@ -1,9 +1,7 @@
 #pragma once
 
-#include "QuadBasis2d.hpp"
-#include "TriBasis2d.hpp"
-#include "HexBasis3d.hpp"
-#include "TetBasis3d.hpp"
+#include "FEBasis2d.hpp"
+#include "FEBasis3d.hpp"
 
 namespace poly_fem
 {
@@ -12,7 +10,7 @@ namespace poly_fem
 	public:
 		static void sample_parametric_quad_edge(int index, int n_samples, Eigen::MatrixXd &samples)
 		{
-			auto endpoints = QuadBasis2d::quad_local_node_coordinates_from_edge(index);
+			auto endpoints = FEBasis2d::quad_local_node_coordinates_from_edge(index);
 			const Eigen::VectorXd t = Eigen::VectorXd::LinSpaced(n_samples, 0, 1);
 			samples.resize(n_samples, endpoints.cols());
 
@@ -23,7 +21,7 @@ namespace poly_fem
 
 		static void sample_parametric_tri_edge(int index, int n_samples, Eigen::MatrixXd &samples)
 		{
-			auto endpoints = TriBasis2d::tri_local_node_coordinates_from_edge(index);
+			auto endpoints = FEBasis2d::tri_local_node_coordinates_from_edge(index);
 			const Eigen::VectorXd t = Eigen::VectorXd::LinSpaced(n_samples, 0, 1);
 			samples.resize(n_samples, endpoints.cols());
 
@@ -34,7 +32,7 @@ namespace poly_fem
 
 		static void sample_parametric_quad_face(int index, int n_samples, Eigen::MatrixXd &samples)
 		{
-			auto endpoints = HexBasis3d::hex_local_node_coordinates_from_face(index);
+			auto endpoints = FEBasis3d::hex_local_node_coordinates_from_face(index);
 			const Eigen::VectorXd t = Eigen::VectorXd::LinSpaced(n_samples, 0, 1);
 			samples.resize(n_samples*n_samples, endpoints.cols());
 			Eigen::MatrixXd left(n_samples, endpoints.cols());
@@ -54,7 +52,7 @@ namespace poly_fem
 
 		static void sample_parametric_tri_face(int index, int n_samples, Eigen::MatrixXd &samples)
 		{
-			auto endpoints = TetBasis3d::tet_local_node_coordinates_from_face(index);
+			auto endpoints = FEBasis3d::tet_local_node_coordinates_from_face(index);
 			const Eigen::VectorXd t = Eigen::VectorXd::LinSpaced(n_samples, 0, 1);
 			samples.resize(n_samples*n_samples, endpoints.cols());
 

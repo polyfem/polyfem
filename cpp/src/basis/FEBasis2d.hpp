@@ -1,5 +1,4 @@
-#ifndef QUAD_BASIS_2D_HPP
-#define QUAD_BASIS_2D_HPP
+#pragma once
 
 #include "ElementBases.hpp"
 #include "Mesh2D.hpp"
@@ -12,7 +11,7 @@
 
 namespace poly_fem
 {
-	class QuadBasis2d
+	class FEBasis2d
 	{
 	public:
 
@@ -40,16 +39,42 @@ namespace poly_fem
 			std::vector<LocalBoundary> &local_boundary,
 			std::map<int, InterfaceData> &poly_edge_to_data);
 
+
+
+
+
+
+		static std::array<int, 2> linear_tri_edge_local_nodes(const Mesh2D &mesh, Navigation::Index index);
+		static std::array<int, 3> quadr_tri_edge_local_nodes(const Mesh2D &mesh, Navigation::Index index);
+
 		static std::array<int, 2> linear_quad_edge_local_nodes(const Mesh2D &mesh, Navigation::Index index);
 		static std::array<int, 3> quadr_quad_edge_local_nodes(const Mesh2D &mesh, Navigation::Index index);
+
+
+
+		static std::array<int, 3> linear_tri_local_to_global(const Mesh2D &mesh, int f);
+		static std::array<int, 6> quadr_tri_local_to_global(const Mesh2D &mesh, int f);
 
 		static std::array<int, 4> linear_quad_local_to_global(const Mesh2D &mesh, int f);
 		static std::array<int, 9> quadr_quad_local_to_global(const Mesh2D &mesh, int f);
 
+
+
+		static Eigen::MatrixXd linear_tri_edge_local_nodes_coordinates(const Mesh2D &mesh, Navigation::Index index);
+		static Eigen::MatrixXd quadr_tri_edge_local_nodes_coordinates(const Mesh2D &mesh, Navigation::Index index);
+
 		static Eigen::MatrixXd linear_quad_edge_local_nodes_coordinates(const Mesh2D &mesh, Navigation::Index index);
 		static Eigen::MatrixXd quadr_quad_edge_local_nodes_coordinates(const Mesh2D &mesh, Navigation::Index index);
 
+
+
+		static Eigen::MatrixXd tri_local_node_coordinates_from_edge(int le);
 		static Eigen::MatrixXd quad_local_node_coordinates_from_edge(int le);
+
+
+
+		static Eigen::RowVector2d quadr_tri_local_node_coordinates(int local_index);
+		static Eigen::RowVector2d linear_tri_local_node_coordinates(int local_index);
 
 		static Eigen::RowVector2d quadr_quad_local_node_coordinates(int local_index);
 		static Eigen::RowVector2d linear_quad_local_node_coordinates(int local_index);
@@ -82,4 +107,3 @@ namespace poly_fem
 	};
 }
 
-#endif //QUAD_BASIS_2D_HPP

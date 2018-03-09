@@ -171,6 +171,14 @@ void poly_fem::compute_element_tags(const GEO::Mesh &M, std::vector<ElementType>
 			element_tags[f] = tag;
 		}
 	}
+
+	//TODO what happens at the neighs?
+	//Override for simplices
+	for (index_t f =  0; f < M.facets.nb(); ++f) {
+		if(M.facets.nb_vertices(f) == 3) {
+			element_tags[f] = ElementType::Simplex;
+		}
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////

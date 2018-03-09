@@ -2,7 +2,7 @@
 #include "PolygonalBasis2d.hpp"
 #include "PolygonQuadrature.hpp"
 #include "PolygonUtils.hpp"
-#include "QuadBasis2d.hpp"
+#include "FEBasis2d.hpp"
 #include "RBFWithLinear.hpp"
 #include "RBFWithQuadratic.hpp"
 #include "RBFWithQuadraticLagrange.hpp"
@@ -64,7 +64,7 @@ std::vector<int> compute_nonzero_bases_ids(const Mesh2D &mesh, const int element
 void sample_parametric_edge(
 	const Mesh2D &mesh, Navigation::Index index, int n_samples, Eigen::MatrixXd &samples)
 {
-	Eigen::MatrixXd endpoints = QuadBasis2d::linear_quad_edge_local_nodes_coordinates(mesh, index);
+	Eigen::MatrixXd endpoints = FEBasis2d::linear_quad_edge_local_nodes_coordinates(mesh, index);
 	const Eigen::VectorXd t = Eigen::VectorXd::LinSpaced(n_samples, 0, 1);
 	samples.resize(n_samples, endpoints.cols());
 	for (int c = 0; c < 2; ++c) {

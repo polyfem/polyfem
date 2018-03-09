@@ -6,7 +6,7 @@
 
 #include "LinearSolver.hpp"
 #include "MeshNodes.hpp"
-#include "HexBasis3d.hpp"
+#include "FEBasis3d.hpp"
 #include "Types.hpp"
 
 #include "json.hpp"
@@ -19,6 +19,9 @@
 #include <array>
 #include <map>
 #include <numeric>
+
+
+//TODO carefull with simplices
 
 // #include "UIState.hpp"
 
@@ -362,7 +365,7 @@ void explore_face(const Navigation3D::Index &index, const Mesh3D &mesh, MeshNode
 
     if(mesh_nodes.is_boundary(node_id))
     {
-        local_boundary.add_boundary_primitive(index.face, HexBasis3d::quadr_hex_face_local_nodes(mesh, index)[8]-20);
+        local_boundary.add_boundary_primitive(index.face, FEBasis3d::quadr_hex_face_local_nodes(mesh, index)[8]-20);
         // bounday_nodes.push_back(node_id);
     }
     else if(mesh_nodes.is_interface(node_id))
@@ -774,7 +777,7 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
             for (int j = 0; j < 8; ++j)
             {
                 const Navigation3D::Index index = to_vertex[j](start_index);
-                const int loc_index = HexBasis3d::quadr_hex_face_local_nodes(mesh, index)[0];
+                const int loc_index = FEBasis3d::quadr_hex_face_local_nodes(mesh, index)[0];
 
 
                 int current_vertex_node_id = -1;
@@ -814,8 +817,8 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
                 if(current_vertex_node_id >= 0)
                     b.bases[loc_index].init(current_vertex_node_id, loc_index, current_vertex_node);
 
-                b.bases[loc_index].set_basis([loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { HexBasis3d::quadr_hex_basis_value(loc_index, uv, val); });
-                b.bases[loc_index].set_grad( [loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { HexBasis3d::quadr_hex_basis_grad(loc_index, uv, val); });
+                b.bases[loc_index].set_basis([loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_value(loc_index, uv, val); });
+                b.bases[loc_index].set_grad( [loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_grad(loc_index, uv, val); });
             }
 
 
@@ -825,7 +828,7 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
 
                 int current_edge_node_id = -1;
                 Eigen::Matrix<double, 1, 3> current_edge_node;
-                const int loc_index = HexBasis3d::quadr_hex_face_local_nodes(mesh, index)[1];
+                const int loc_index = FEBasis3d::quadr_hex_face_local_nodes(mesh, index)[1];
 
 
                 bool is_edge_q2 = true;
@@ -861,8 +864,8 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
                 if(current_edge_node_id >= 0)
                     b.bases[loc_index].init(current_edge_node_id, loc_index, current_edge_node);
 
-                b.bases[loc_index].set_basis([loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { HexBasis3d::quadr_hex_basis_value(loc_index, uv, val); });
-                b.bases[loc_index].set_grad( [loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { HexBasis3d::quadr_hex_basis_grad(loc_index, uv, val); });
+                b.bases[loc_index].set_basis([loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_value(loc_index, uv, val); });
+                b.bases[loc_index].set_grad( [loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_grad(loc_index, uv, val); });
             }
 
             for (int j = 0; j < 6; ++j)
@@ -874,7 +877,7 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
                 Eigen::Matrix<double, 1, 3> current_face_node;
                 const int opposite_element = mesh.switch_element(index).element;
                 const bool is_face_q2 = opposite_element < 0 || !mesh.is_spline_compatible(opposite_element);
-                const int loc_index = HexBasis3d::quadr_hex_face_local_nodes(mesh, index)[8];
+                const int loc_index = FEBasis3d::quadr_hex_face_local_nodes(mesh, index)[8];
 
 
                 if (is_face_q2)
@@ -900,14 +903,14 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
                 if(current_face_node_id >= 0)
                     b.bases[loc_index].init(current_face_node_id, loc_index, current_face_node);
 
-                b.bases[loc_index].set_basis([loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { HexBasis3d::quadr_hex_basis_value(loc_index, uv, val); });
-                b.bases[loc_index].set_grad( [loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { HexBasis3d::quadr_hex_basis_grad(loc_index, uv, val); });
+                b.bases[loc_index].set_basis([loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_value(loc_index, uv, val); });
+                b.bases[loc_index].set_grad( [loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_grad(loc_index, uv, val); });
             }
 
             // //central node always present
             b.bases[26].init(n_bases++, 26, mesh.cell_barycenter(el_index));
-            b.bases[26].set_basis([](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { HexBasis3d::quadr_hex_basis_value(26, uv, val); });
-            b.bases[26].set_grad( [](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { HexBasis3d::quadr_hex_basis_grad(26, uv, val); });
+            b.bases[26].set_basis([](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_value(26, uv, val); });
+            b.bases[26].set_grad( [](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_grad(26, uv, val); });
 
             if(!lb.empty())
                 local_boundary.emplace_back(lb);
@@ -956,10 +959,10 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
                 if(opposite_element < 0 || !mesh.is_cube(opposite_element))
                     continue;
 
-                const auto &param_p     = HexBasis3d::quadr_hex_face_local_nodes_coordinates(mesh, mesh.switch_element(index));
+                const auto &param_p     = FEBasis3d::quadr_hex_face_local_nodes_coordinates(mesh, mesh.switch_element(index));
                 const auto &other_bases = bases[opposite_element];
 
-                const auto &indices     = HexBasis3d::quadr_hex_face_local_nodes(mesh, index);
+                const auto &indices     = FEBasis3d::quadr_hex_face_local_nodes(mesh, index);
 
                 std::array<int, 9> sizes;
 
@@ -1008,7 +1011,7 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
 
                 if(is_neigh_poly)
                 {
-                    auto e2l = HexBasis3d::quadr_hex_face_local_nodes(mesh, index);
+                    auto e2l = FEBasis3d::quadr_hex_face_local_nodes(mesh, index);
 
                     InterfaceData &data = poly_face_to_data[index.face];
 
@@ -1138,7 +1141,7 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
                 }
                 assert(index.face == primitive_id);
 
-                const auto indices = HexBasis3d::quadr_hex_face_local_nodes(mesh3d, index);
+                const auto indices = FEBasis3d::quadr_hex_face_local_nodes(mesh3d, index);
                 Eigen::VectorXi res(indices.size());
 
                 for(size_t i = 0; i< indices.size(); ++i)
@@ -1226,7 +1229,7 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
         Eigen::MatrixXd samples(n_constraints, dim);
 
         for(int i = 0; i < n_constraints; ++i)
-            samples.row(i) = HexBasis3d::quadr_hex_local_node_coordinates(i);
+            samples.row(i) = FEBasis3d::quadr_hex_local_node_coordinates(i);
 
         for(int i = 0; i < n_elements; ++i)
         {
@@ -1235,7 +1238,7 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
             if(!mesh.is_cube(i))
                 continue;
 
-            auto global_ids = HexBasis3d::quadr_hex_local_to_global(mesh, i);
+            auto global_ids = FEBasis3d::quadr_hex_local_to_global(mesh, i);
             assert(global_ids.size() == n_constraints);
 
             for(int j = 0; j < n_constraints; ++j)

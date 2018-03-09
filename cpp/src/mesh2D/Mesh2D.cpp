@@ -22,6 +22,8 @@ namespace poly_fem
 		// return;
 		if(n_refiniment <= 0) return;
 
+		//TODO refine tris
+
 		for(int i = 0; i < n_refiniment; ++i)
 		{
 			GEO::Mesh mesh;
@@ -48,8 +50,6 @@ namespace poly_fem
 
 		if(!mesh_load(path, mesh_))
 			return false;
-
-		is_simplicial_ = mesh_.facets.are_simplices();
 
 		orient_normals_2d(mesh_);
 		Navigation::prepare_mesh(mesh_);

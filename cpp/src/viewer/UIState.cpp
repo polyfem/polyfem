@@ -260,37 +260,26 @@ namespace poly_fem
 
 			switch(type)
 			{
-					//green
-				case ElementType::RegularInteriorCube:
-				// cols.block(from, 1, range, 1).setOnes(); break;
+					//violet
+				case ElementType::Simplex:
+				cols.block(from, 0, range, 1).setConstant(155./255.);
+				cols.block(from, 1, range, 1).setConstant(89./255.);
+				cols.block(from, 2, range, 1).setConstant(182./255.); break;
+
+
 					//dark green
+				case ElementType::RegularInteriorCube:
 				case ElementType::RegularBoundaryCube:
-				// cols.block(from, 1, range, 1).setConstant(0.5); break;
 				cols.block(from, 0, range, 1).setConstant(30./255.);
 				cols.block(from, 1, range, 1).setConstant(174./255.);
 				cols.block(from, 2, range, 1).setConstant(96./255.); break;
 
-					//yellow
-				case ElementType::SimpleSingularInteriorCube:
-				// cols.block(from, 0, range, 1).setOnes();
-				// cols.block(from, 1, range, 1).setOnes(); break;
-
 					//orange
+				case ElementType::SimpleSingularInteriorCube:
 				case ElementType::SimpleSingularBoundaryCube:
-				// cols.block(from, 0, range, 1).setOnes();
-				// cols.block(from, 1, range, 1).setConstant(0.5); break;
-
- 					//red
 				case ElementType::MultiSingularInteriorCube:
-				// cols.block(from, 0, range, 1).setOnes(); break;
-
-					//blue
 				case ElementType::MultiSingularBoundaryCube:
-				// cols.block(from, 2, range, 1).setConstant(0.6); break;
-
-					//rhodamine
 				case ElementType::InterfaceCube:
-				// cols.middleRows(from, range).rowwise() = Eigen::RowVector3d(0.9, 0, 0.58); break;
 				cols.block(from, 0, range, 1).setConstant(231./255.);
 				cols.block(from, 1, range, 1).setConstant(76./255.);
 				cols.block(from, 2, range, 1).setConstant(60./255.); break;
@@ -298,8 +287,6 @@ namespace poly_fem
 				  	//light blue
 				case ElementType::BoundaryPolytope:
 				case ElementType::InteriorPolytope:
-				// cols.block(from, 2, range, 1).setOnes();
-				// cols.block(from, 1, range, 1).setConstant(0.5); break;
 				cols.block(from, 0, range, 1).setConstant(52./255.);
 				cols.block(from, 1, range, 1).setConstant(152./255.);
 				cols.block(from, 2, range, 1).setConstant(219./255.); break;
@@ -471,7 +458,7 @@ namespace poly_fem
 			const ElementBases &bs = state.bases[i];
 			MatrixXd local_pts;
 
-			if(state.mesh->is_simplicial())
+			if(state.mesh->is_simplex(i))
 				local_pts = local_vis_pts_tri;
 			else if(state.mesh->is_cube(i))
 				local_pts = local_vis_pts_quad;
@@ -523,7 +510,7 @@ namespace poly_fem
 				const ElementBases &bs = state.bases[i];
 				MatrixXd local_pts;
 
-				if(state.mesh->is_simplicial())
+				if(state.mesh->is_simplex(i))
 					local_pts = local_vis_pts_tri;
 				else if(state.mesh->is_cube(i))
 					local_pts = local_vis_pts_quad;
@@ -927,7 +914,7 @@ namespace poly_fem
 		{
 			const ElementBases &bs = current_bases[i];
 
-			if(state.mesh->is_simplicial())
+			if(state.mesh->is_simplex(i))
 			{
 				faces_total_size   += local_vis_faces_tri.rows();
 				points_total_size += local_vis_pts_tri.rows();
@@ -974,7 +961,7 @@ namespace poly_fem
 		for(int i = 0; i < int(current_bases.size()); ++i)
 		{
 			const ElementBases &bs = current_bases[i];
-			if(state.mesh->is_simplicial())
+			if(state.mesh->is_simplex(i))
 			{
 				bs.eval_geom_mapping(local_vis_pts_tri, mapped);
 				vis_faces.block(face_index, 0, local_vis_faces_tri.rows(), 3) = local_vis_faces_tri.array() + point_index;

@@ -105,23 +105,19 @@ add_library(polyfem
 	src/basis/function/RBFWithQuadratic.hpp
 	src/basis/function/RBFWithQuadraticLagrange.cpp
 	src/basis/function/RBFWithQuadraticLagrange.hpp
-	src/basis/HexBasis3d.cpp
-	src/basis/HexBasis3d.hpp
 	src/basis/InterfaceData.hpp
 	src/basis/PolygonalBasis2d.cpp
 	src/basis/PolygonalBasis2d.hpp
 	src/basis/PolygonalBasis3d.cpp
 	src/basis/PolygonalBasis3d.hpp
-	src/basis/QuadBasis2d.cpp
-	src/basis/QuadBasis2d.hpp
+	src/basis/FEBasis2d.cpp
+	src/basis/FEBasis2d.hpp
+	src/basis/FEBasis3d.cpp
+	src/basis/FEBasis3d.hpp
 	src/basis/SplineBasis2d.cpp
 	src/basis/SplineBasis2d.hpp
 	src/basis/SplineBasis3d.cpp
 	src/basis/SplineBasis3d.hpp
-	src/basis/TetBasis3d.cpp
-	src/basis/TetBasis3d.hpp
-	src/basis/TriBasis2d.cpp
-	src/basis/TriBasis2d.hpp
 	src/Common.hpp
 	src/mesh/LocalBoundary.hpp
 	src/mesh/Mesh.cpp

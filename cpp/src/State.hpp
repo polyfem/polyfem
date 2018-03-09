@@ -99,6 +99,7 @@ namespace poly_fem
 
 		int n_flipped;
 
+		int simplex_count;
 		int regular_count;
 		int regular_boundary_count;
 		int simple_singular_count;

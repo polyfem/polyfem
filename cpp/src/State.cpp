@@ -3,11 +3,8 @@
 #include "Mesh2D.hpp"
 #include "Mesh3D.hpp"
 
-#include "QuadBasis2d.hpp"
-#include "TriBasis2d.hpp"
-
-#include "HexBasis3d.hpp"
-#include "TetBasis3d.hpp"
+#include "FEBasis2d.hpp"
+#include "FEBasis3d.hpp"
 
 #include "SplineBasis2d.hpp"
 #include "SplineBasis3d.hpp"
@@ -257,7 +254,7 @@ namespace poly_fem
 		problem = ProblemFactory::factory().get_problem("Linear");
 	}
 
-	void State::compute_mesh_size(const Mesh &mesh, const std::vector< ElementBases > &bases, const int n_samples)
+	void State::compute_mesh_size(const Mesh &mesh_in, const std::vector< ElementBases > &bases_in, const int n_samples)
 	{
 		Eigen::MatrixXd samples, mapped, p0, p1, p;
 
@@ -265,9 +262,9 @@ namespace poly_fem
 		average_edge_length = 0;
 		min_edge_length = std::numeric_limits<double>::max();
 
-		if(true || mesh.is_simplicial())
+		if(true)
 		{
-			mesh.get_edges(p0, p1);
+			mesh_in.get_edges(p0, p1);
 			p = p0-p1;
 			min_edge_length = p.rowwise().norm().minCoeff();
 			average_edge_length = p.rowwise().norm().mean();
@@ -281,18 +278,18 @@ namespace poly_fem
 			return;
 		}
 
-		const int n_edges = mesh.is_volume()?12:4;
-		if(mesh.is_volume())
+		const int n_edges = mesh_in.is_volume()?12:4;
+		if(mesh_in.is_volume())
 			EdgeSampler::sample_3d(n_samples, samples);
 		else
 			EdgeSampler::sample_2d(n_samples, samples);
 
 
 		int n = 0;
-		for(std::size_t i = 0; i < bases.size(); ++i){
-			if(mesh.is_polytope(i)) continue;
+		for(std::size_t i = 0; i < bases_in.size(); ++i){
+			if(mesh_in.is_polytope(i)) continue;
 
-			bases[i].eval_geom_mapping(samples, mapped);
+			bases_in[i].eval_geom_mapping(samples, mapped);
 
 			for(int j = 0; j < n_edges; ++j)
 			{
@@ -366,6 +363,7 @@ namespace poly_fem
 
 		j["solver_info"] = solver_info;
 
+		j["count_simplex"] = simplex_count;
 		j["count_regular"] = regular_count;
 		j["count_regular_boundary"] = regular_boundary_count;
 		j["count_simple_singular"] = simple_singular_count;
@@ -376,7 +374,7 @@ namespace poly_fem
 		j["count_undefined"] = undefined_count;
 		j["count_multi_singular_boundary"] = multi_singular_boundary_count;
 
-		j["is_simplicial"] = mesh->is_simplicial();
+		j["is_simplicial"] = mesh->n_elements() == simplex_count;
 
 		j["formulation"] = formulation();
 
@@ -482,6 +480,7 @@ namespace poly_fem
 
 		n_bases = 0;
 
+		simplex_count = 0;
 		regular_count = 0;
 		regular_boundary_count = 0;
 		simple_singular_count = 0;
@@ -500,6 +499,7 @@ namespace poly_fem
 
 			switch(type)
 			{
+				case ElementType::Simplex: simplex_count++; break;
 				case ElementType::RegularInteriorCube: regular_count++; break;
 				case ElementType::RegularBoundaryCube: regular_boundary_count++; break;
 				case ElementType::SimpleSingularInteriorCube: simple_singular_count++; break;
@@ -514,6 +514,7 @@ namespace poly_fem
 		}
 
 		std::cout <<
+		"simplex_count:\t " << simplex_count <<"\n"<<
 		"regular_count:\t " << regular_count <<"\n"<<
 		"regular_boundary_count:\t " << regular_boundary_count <<"\n"<<
 		"simple_singular_count:\t " << simple_singular_count <<"\n"<<
@@ -621,10 +622,8 @@ namespace poly_fem
 			const Mesh3D &tmp_mesh = *dynamic_cast<Mesh3D *>(mesh.get());
 			if(use_splines)
 			{
-				if(mesh->is_simplicial())
-					exit(0);
 				if(!iso_parametric)
-					HexBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, poly_edge_to_data_geom);
+					FEBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, poly_edge_to_data_geom);
 
 				n_bases = SplineBasis3d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, poly_edge_to_data);
 
@@ -633,17 +632,10 @@ namespace poly_fem
 			}
 			else
 			{
-				if(mesh->is_simplicial())
-				{
-					n_bases = TetBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, poly_edge_to_data);
-				}
-				else
-				{
-					if (!iso_parametric)
-						HexBasis3d::build_bases(tmp_mesh, quadrature_order, 1, geom_bases, local_boundary, poly_edge_to_data_geom);
+				if (!iso_parametric)
+					FEBasis3d::build_bases(tmp_mesh, quadrature_order, 1, geom_bases, local_boundary, poly_edge_to_data_geom);
 
-					n_bases = HexBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, poly_edge_to_data);
-				}
+				n_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, poly_edge_to_data);
 			}
 		}
 		else
@@ -651,11 +643,9 @@ namespace poly_fem
 			const Mesh2D &tmp_mesh = *dynamic_cast<Mesh2D *>(mesh.get());
 			if(use_splines)
 			{
-				if(mesh->is_simplicial())
-					exit(0);
 
 				if(!iso_parametric)
-					QuadBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, poly_edge_to_data_geom);
+					FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, poly_edge_to_data_geom);
 
 				n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, poly_edge_to_data);
 
@@ -664,17 +654,10 @@ namespace poly_fem
 			}
 			else
 			{
-				if(mesh->is_simplicial())
-				{
-					n_bases = TriBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, poly_edge_to_data);
-				}
-				else
-				{
-					if(!iso_parametric)
-						QuadBasis2d::build_bases(tmp_mesh, quadrature_order, 1, geom_bases, local_boundary, poly_edge_to_data_geom);
+				if(!iso_parametric)
+					FEBasis2d::build_bases(tmp_mesh, quadrature_order, 1, geom_bases, local_boundary, poly_edge_to_data_geom);
 
-					n_bases = QuadBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, poly_edge_to_data);
-				}
+				n_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, poly_edge_to_data);
 			}
 		}
 
@@ -685,7 +668,7 @@ namespace poly_fem
 		// flipped_elements.clear();
 		for(size_t i = 0; i < gbases.size(); ++i)
 		{
-			if(!mesh->is_simplicial() && mesh->is_polytope(i)) continue;
+			if(mesh->is_polytope(i)) continue;
 
 			ElementAssemblyValues vals;
 			if(!vals.is_geom_mapping_positive(mesh->is_volume(), gbases[i]))
@@ -741,8 +724,10 @@ namespace poly_fem
 		rhs.resize(0, 0);
 		sol.resize(0, 0);
 
-		if(mesh->is_simplicial())
-			return;
+
+		// TODO, implement the poly bases for simplices
+		// if(mesh->is_simplicial())
+		// 	return;
 
 		igl::Timer timer; timer.start();
 		std::cout<<"Computing polygonal basis..."<<std::flush;
@@ -1079,10 +1064,12 @@ namespace poly_fem
 			std::cerr<<"Saving vtu supported only for volume"<<std::endl;
 			return;
 		}
-		if(mesh->is_simplicial()){
-			std::cerr<<"Saving vtu supported only for pure hex meshes"<<std::endl;
-			return;
-		}
+
+		//TODO
+		// if(mesh->is_simplicial()){
+		// 	std::cerr<<"Saving vtu supported only for pure hex meshes"<<std::endl;
+		// 	return;
+		// }
 
 		const double area_param = 0.00001*mesh->n_elements();
 		// const double area_param = 1;

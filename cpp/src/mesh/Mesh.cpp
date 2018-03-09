@@ -120,3 +120,9 @@ bool poly_fem::Mesh::is_polytope(const int el_id) const
 	elements_tag_[el_id] == ElementType::InteriorPolytope ||
 	elements_tag_[el_id] == ElementType::BoundaryPolytope;
 }
+
+bool poly_fem::Mesh::is_simplex(const int el_id) const
+{
+	return
+	elements_tag_[el_id] == ElementType::Simplex;
+}

@@ -14,6 +14,7 @@ namespace poly_fem
 	// For the purpose of the tagging, elements (facets in 2D, cells in 3D) adjacent to a polytope
 	// are tagged as boundary, and vertices incident to a polytope are also considered as boundary.
 	enum class ElementType {
+		Simplex, 					// Triangle/tet element
 		RegularInteriorCube,        // Regular quad/hex inside a 3^n patch
 		SimpleSingularInteriorCube, // Quad/hex incident to exactly 1 singular vertex (in 2D) or edge (in 3D)
 		MultiSingularInteriorCube,  // Quad/Hex incident to more than 1 singular vertices (should not happen in 2D)
@@ -37,7 +38,6 @@ namespace poly_fem
 
 		//Queries
 		virtual bool is_volume() const = 0;
-		bool is_simplicial() const { return is_simplicial_; }
 		int dimension() const { return (is_volume() ? 3 : 2); }
 
 		int n_elements() const { return (is_volume() ? n_cells() : n_faces()); }
@@ -73,6 +73,7 @@ namespace poly_fem
 		bool is_spline_compatible(const int el_id) const;
 		bool is_cube(const int el_id) const;
 		bool is_polytope(const int el_id) const;
+		bool is_simplex(const int el_id) const;
 
 		const std::vector<ElementType> &elements_tag() const { return elements_tag_; }
 
@@ -90,7 +91,6 @@ namespace poly_fem
 
 	protected:
 		std::vector<ElementType> elements_tag_;
-		bool is_simplicial_;
 		std::vector<int> boundary_ids_;
 	};
 }

@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "PolygonalBasis3d.hpp"
 #include "PolyhedronQuadrature.hpp"
-#include "HexBasis3d.hpp"
+#include "FEBasis3d.hpp"
 #include "MeshUtils.hpp"
 #include "Refinement.hpp"
 #include "RBFWithLinear.hpp"
@@ -256,7 +256,7 @@ void sample_polyhedra(
 		const auto & v = uv.col(1).array();
 		auto index = mesh.get_index_from_element(element_index, lf, lv0);
 		index = mesh.switch_element(index);
-		Eigen::MatrixXd abcd = HexBasis3d::linear_hex_face_local_nodes_coordinates(mesh, index);
+		Eigen::MatrixXd abcd = FEBasis3d::linear_hex_face_local_nodes_coordinates(mesh, index);
 		Eigen::RowVector3d a = abcd.row(0);
 		Eigen::RowVector3d b = abcd.row(1);
 		Eigen::RowVector3d c = abcd.row(2);
