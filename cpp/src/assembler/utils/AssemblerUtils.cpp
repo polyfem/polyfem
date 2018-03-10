@@ -34,8 +34,13 @@ namespace poly_fem
 	{
 		if(assembler == "Helmholtz")
 			helmholtz_.assemble(is_volume, n_basis, bases, gbases, stiffness);
-		else // if(assembler == "Laplacian")
+		else if(assembler == "Laplacian")
 			laplacian_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+		else
+		{
+			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;
+			laplacian_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+		}
 	}
 
 	void AssemblerUtils::assemble_tensor_problem(const std::string &assembler,
@@ -49,8 +54,13 @@ namespace poly_fem
 			hooke_linear_elasticity_.assemble(is_volume, n_basis, bases, gbases, stiffness);
 		else if(assembler == "SaintVenant")
 			return;
-		else //if(assembler == "LinearElasticity")
+		else if(assembler == "LinearElasticity")
 			linear_elasticity_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+		else
+		{
+			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;
+			linear_elasticity_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+		}
 	}
 
 
@@ -106,8 +116,13 @@ namespace poly_fem
 			hooke_linear_elasticity_.local_assembler().compute_von_mises_stresses(bs, local_pts, fun, result);
 		else if(assembler == "SaintVenant")
 			saint_venant_elasticity_.local_assembler().compute_von_mises_stresses(bs, local_pts, fun, result);
-		else //if(assembler == "LinearElasticity")
+		else if(assembler == "LinearElasticity")
 			linear_elasticity_.local_assembler().compute_von_mises_stresses(bs, local_pts, fun, result);
+		else
+		{
+			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;
+			linear_elasticity_.local_assembler().compute_von_mises_stresses(bs, local_pts, fun, result);
+		}
 	}
 
 
@@ -115,9 +130,16 @@ namespace poly_fem
 	{
 		if(assembler == "Laplacian")
 			return laplacian_.local_assembler().compute_rhs(pt);
+		else if(assembler == "Helmholtz")
+			return helmholtz_.local_assembler().compute_rhs(pt);
+		else
+		{
+			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;
 
+			assert(false);
+			return laplacian_.local_assembler().compute_rhs(pt);
+		}
 
-		assert(false);
 	}
 
 
