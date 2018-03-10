@@ -1,55 +1,47 @@
-#ifndef LINEAR_PROBLEM_HPP
-#define LINEAR_PROBLEM_HPP
+#pragma once
 
-#include "Problem.hpp"
+#include "ProblemWithSolution.hpp"
 
 #include <vector>
 #include <Eigen/Dense>
 
 namespace poly_fem
 {
-	class LinearProblem : public Problem
+	class LinearProblem: public ProblemWithSolution
 	{
 	public:
 		LinearProblem(const std::string &name);
 
-		void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
-		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
+		VectorNd eval_fun(const VectorNd &pt) const override;
+		AutodiffGradPt eval_fun(const AutodiffGradPt &pt) const override;
+		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt) const override;
 
-		void exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
-
-		bool has_exact_sol() const override { return true; }
 		bool is_scalar() const override { return true; }
 	};
 
-	class QuadraticProblem : public Problem
+	class QuadraticProblem : public ProblemWithSolution
 	{
 	public:
 		QuadraticProblem(const std::string &name);
 
-		void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
-		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
+		VectorNd eval_fun(const VectorNd &pt) const override;
+		AutodiffGradPt eval_fun(const AutodiffGradPt &pt) const override;
+		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt) const override;
 
-		void exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
-
-		bool has_exact_sol() const override { return true; }
 		bool is_scalar() const override { return true; }
 	};
 
-	class ZeroBCProblem: public Problem
+	class ZeroBCProblem: public ProblemWithSolution
 	{
 	public:
 		ZeroBCProblem(const std::string &name);
 
-		void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
-		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
+		VectorNd eval_fun(const VectorNd &pt) const override;
+		AutodiffGradPt eval_fun(const AutodiffGradPt &pt) const override;
+		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt) const override;
 
-		void exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
-
-		bool has_exact_sol() const override { return true; }
 		bool is_scalar() const override { return true; }
 	};
 }
 
-#endif //LINEAR_PROBLEM_HPP
 

@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.1)
 
 add_executable(unit_tests
 	main.cpp
-	test_foo.cpp
 	test_solver.cpp
 	test_problem.cpp
 )

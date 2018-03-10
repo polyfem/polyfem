@@ -4,79 +4,140 @@
 
 namespace poly_fem
 {
+	namespace
+	{
+		template<typename T>
+		T linear_fun(T x)
+		{
+			return x;
+		}
+
+		template<typename T>
+		T quadratic_fun(T x)
+		{
+			return 5 * x * x;
+		}
+
+		template<typename T>
+		T zero_bc(T x, T y)
+		{
+			return (1 - x)  * x * x * y * (1-y) *(1-y);
+		}
+
+		template<typename T>
+		T zero_bc(T x, T y, T z)
+		{
+			return (1 - x)  * x * x * y * (1-y) *(1-y) * z * (1 - z);
+		}
+	}
+
 	LinearProblem::LinearProblem(const std::string &name)
-	: Problem(name)
+	: ProblemWithSolution(name)
 	{ }
 
-	void LinearProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+
+	VectorNd LinearProblem::eval_fun(const VectorNd &pt) const
 	{
-		val = Eigen::MatrixXd::Zero(pts.rows(), 1);
+		VectorNd res(1);
+		res(0) = linear_fun(pt(0));
+
+		return res;
 	}
 
-	void LinearProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	AutodiffGradPt LinearProblem::eval_fun(const AutodiffGradPt &pt) const
 	{
-		exact(pts, val);
+		AutodiffGradPt res(1);
+		res(0) = linear_fun(pt(0));
+
+		return res;
 	}
 
-	void LinearProblem::exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	AutodiffHessianPt LinearProblem::eval_fun(const AutodiffHessianPt &pt) const
 	{
-		val = pts.col(0).array();
+		AutodiffHessianPt res(1);
+		res(0) = linear_fun(pt(0));
+
+		return res;
 	}
+
+
+
+
 
 
 
 	QuadraticProblem::QuadraticProblem(const std::string &name)
-	: Problem(name)
+	: ProblemWithSolution(name)
 	{ }
 
-	void QuadraticProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	VectorNd QuadraticProblem::eval_fun(const VectorNd &pt) const
 	{
-		val = 10*Eigen::MatrixXd::Ones(pts.rows(), 1);
+		VectorNd res(1);
+		res(0) = quadratic_fun(pt(0));
+
+		return res;
 	}
 
-	void QuadraticProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	AutodiffGradPt QuadraticProblem::eval_fun(const AutodiffGradPt &pt) const
 	{
-		exact(pts, val);
+		AutodiffGradPt res(1);
+		res(0) = quadratic_fun(pt(0));
+
+		return res;
 	}
 
-
-	void QuadraticProblem::exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	AutodiffHessianPt QuadraticProblem::eval_fun(const AutodiffHessianPt &pt) const
 	{
-		auto &x = pts.col(0).array();
-		val = 5 * x * x;
+		AutodiffHessianPt res(1);
+		res(0) = quadratic_fun(pt(0));
+
+		return res;
 	}
+
 
 
 
 	ZeroBCProblem::ZeroBCProblem(const std::string &name)
-	: Problem(name)
+	: ProblemWithSolution(name)
 	{ }
 
-	void ZeroBCProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	VectorNd ZeroBCProblem::eval_fun(const VectorNd &pt) const
 	{
-		assert(pts.cols() == 3);
+		VectorNd res(1);
+		if(pt.size() == 2)
+			res(0) = zero_bc(pt(0), pt(1));
+		else if(pt.size() == 3)
+			res(0) = zero_bc(pt(0), pt(1), pt(2));
+		else
+			assert(false);
 
-		auto &x = pts.col(0).array();
-		auto &y = pts.col(1).array();
-		auto &z = pts.col(2).array();
-
-		val =  -4 * x * y * (1 - y) *(1 - y) * z * (1 - z) + 2 * (1 - x) * y * (1 - y) * (1 - y) * z * (1 - z) - 4 * (1 - x) * x * x * (1 - y) * z * (1 - z) + 2 * (1 - x) * x * x * y * z * (1 - z) - 2 * (1 - x) * x * y * (1 - y) * (1 - y);
-
-		// val = -4 * x * y * (1 - y) * (1 - y) + 2 * (1 - x) * y * (1 - y) *(1 - y) - 4 * (1 - x) * x * x * (1 - y) + 2 * (1 - x) * x * x * y;
+		return res;
 	}
 
-	void ZeroBCProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	AutodiffGradPt ZeroBCProblem::eval_fun(const AutodiffGradPt &pt) const
 	{
-		exact(pts, val);
+		AutodiffGradPt res(1);
+		if(pt.size() == 2)
+			res(0) = zero_bc(pt(0), pt(1));
+		else if(pt.size() == 3)
+			res(0) = zero_bc(pt(0), pt(1), pt(2));
+		else
+			assert(false);
+
+		return res;
 	}
 
-
-	void ZeroBCProblem::exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	AutodiffHessianPt ZeroBCProblem::eval_fun(const AutodiffHessianPt &pt) const
 	{
-		auto &x = pts.col(0).array();
-		auto &y = pts.col(1).array();
-		auto &z = pts.col(2).array();
+		AutodiffHessianPt res(1);
+		if(pt.size() == 2)
+			res(0) = zero_bc(pt(0), pt(1));
+		else if(pt.size() == 3)
+			res(0) = zero_bc(pt(0), pt(1), pt(2));
+		else
+			assert(false);
 
-		val = (1 - x)  * x * x * y * (1-y) *(1-y) * z * (1 - z);
+		return res;
 	}
+
 }
