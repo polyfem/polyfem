@@ -50,72 +50,50 @@ namespace poly_fem
 
 
 
-	Franke2dProblem::Franke2dProblem(const std::string &name)
+	FrankeProblem::FrankeProblem(const std::string &name)
 	: ProblemWithSolution(name)
 	{ }
 
 
-	VectorNd Franke2dProblem::eval_fun(const VectorNd &pt) const
+	VectorNd FrankeProblem::eval_fun(const VectorNd &pt) const
 	{
-		assert(pt.size() == 2);
-
 		VectorNd res(1);
-		res(0) = franke_fun(pt(0), pt(1));
+
+		if(pt.size() == 2)
+			res(0) = franke_fun(pt(0), pt(1));
+		else if(pt.size() == 3)
+			res(0) = franke_fun(pt(0), pt(1), pt(2));
+		else
+			assert(false);
+
 		return res;
 	}
 
-	AutodiffGradPt Franke2dProblem::eval_fun(const AutodiffGradPt &pt) const
+	AutodiffGradPt FrankeProblem::eval_fun(const AutodiffGradPt &pt) const
 	{
-		assert(pt.size() == 2);
-
 		AutodiffGradPt res(1);
-		res(0) = franke_fun(pt(0), pt(1));
+
+		if(pt.size() == 2)
+			res(0) = franke_fun(pt(0), pt(1));
+		else if(pt.size() == 3)
+			res(0) = franke_fun(pt(0), pt(1), pt(2));
+		else
+			assert(false);
+
 		return res;
 	}
 
-	AutodiffHessianPt Franke2dProblem::eval_fun(const AutodiffHessianPt &pt) const
+	AutodiffHessianPt FrankeProblem::eval_fun(const AutodiffHessianPt &pt) const
 	{
-		assert(pt.size() == 2);
-
 		AutodiffHessianPt res(1);
-		res(0) = franke_fun(pt(0), pt(1));
-		return res;
-	}
 
+		if(pt.size() == 2)
+			res(0) = franke_fun(pt(0), pt(1));
+		else if(pt.size() == 3)
+			res(0) = franke_fun(pt(0), pt(1), pt(2));
+		else
+			assert(false);
 
-
-
-
-
-
-	Franke3dProblem::Franke3dProblem(const std::string &name)
-	: ProblemWithSolution(name)
-	{ }
-
-	VectorNd Franke3dProblem::eval_fun(const VectorNd &pt) const
-	{
-		assert(pt.size() == 3);
-
-		VectorNd res(1);
-		res(0) = franke_fun(pt(0), pt(1), pt(2));
-		return res;
-	}
-
-	AutodiffGradPt Franke3dProblem::eval_fun(const AutodiffGradPt &pt) const
-	{
-		assert(pt.size() == 3);
-
-		AutodiffGradPt res(1);
-		res(0) = franke_fun(pt(0), pt(1), pt(2));
-		return res;
-	}
-
-	AutodiffHessianPt Franke3dProblem::eval_fun(const AutodiffHessianPt &pt) const
-	{
-		assert(pt.size() == 3);
-
-		AutodiffHessianPt res(1);
-		res(0) = franke_fun(pt(0), pt(1), pt(2));
 		return res;
 	}
 

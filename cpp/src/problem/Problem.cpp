@@ -73,8 +73,7 @@ namespace poly_fem
 	{
 		problems_.emplace("Linear", std::make_shared<LinearProblem>("Linear"));
 		problems_.emplace("Quadratic", std::make_shared<QuadraticProblem>("Quadratic"));
-		problems_.emplace("Franke", std::make_shared<Franke2dProblem>("Franke"));
-		problems_.emplace("Franke3d", std::make_shared<Franke3dProblem>("Franke3d"));
+		problems_.emplace("Franke", std::make_shared<FrankeProblem>("Franke"));
 		problems_.emplace("Zero_BC", std::make_shared<ZeroBCProblem>("Zero_BC"));
 		problems_.emplace("Elastic", std::make_shared<ElasticProblem>("Elastic"));
 		problems_.emplace("ElasticExact", std::make_shared<ElasticProblemExact>("ElasticExact"));
