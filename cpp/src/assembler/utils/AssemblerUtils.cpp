@@ -39,6 +39,7 @@ namespace poly_fem
 		else
 		{
 			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;
+			assert(false);
 			laplacian_.assemble(is_volume, n_basis, bases, gbases, stiffness);
 		}
 	}
@@ -59,6 +60,7 @@ namespace poly_fem
 		else
 		{
 			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;
+			assert(false);
 			linear_elasticity_.assemble(is_volume, n_basis, bases, gbases, stiffness);
 		}
 	}
@@ -121,6 +123,7 @@ namespace poly_fem
 		else
 		{
 			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;
+			assert(false);
 			linear_elasticity_.local_assembler().compute_von_mises_stresses(bs, local_pts, fun, result);
 		}
 	}
@@ -134,6 +137,10 @@ namespace poly_fem
 			return helmholtz_.local_assembler().compute_rhs(pt);
 		else if(assembler == "LinearElasticity")
 			return linear_elasticity_.local_assembler().compute_rhs(pt);
+		else if(assembler == "HookeLinearElasticity")
+			return hooke_linear_elasticity_.local_assembler().compute_rhs(pt);
+		// else if(assembler == "SaintVenant")
+			//return saint_venant_elasticity_.local_assembler().compute_rhs(pt);
 		else
 		{
 			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;

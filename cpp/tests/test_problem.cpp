@@ -475,10 +475,10 @@ TEST_CASE("elasticity 2d", "[problem]") {
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
 
-        // probl->rhs("HookeLinearElasticity", pts, other);
-        // diff = (other - rhs);
+        probl->rhs("HookeLinearElasticity", pts, other);
+        diff = (other - rhs);
 
-        // REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
+        REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
     }
 }
 
@@ -530,9 +530,9 @@ TEST_CASE("elasticity 3d", "[problem]") {
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
 
-        // probl->rhs("HookeLinearElasticity", pts, other);
-        // diff = (other - rhs);
+        probl->rhs("HookeLinearElasticity", pts, other);
+        diff = (other - rhs);
 
-        // REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
+        REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
     }
 }

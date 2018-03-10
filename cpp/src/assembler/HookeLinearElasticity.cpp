@@ -369,4 +369,27 @@ namespace poly_fem
 		}
 	}
 
+	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
+	HookeLinearElasticity::compute_rhs(const AutodiffHessianPt &pt) const
+	{
+		assert(pt.size() == size());
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res(size());
+
+		if(size() == 2)
+		{
+			res(0) = (stifness_tensor(0,1)+stifness_tensor(2,2))*pt(1).getHessian()(1,0)+stifness_tensor(0,0)*pt(0).getHessian()(0,0)+2*stifness_tensor(0,2)*pt(0).getHessian()(1,0)+stifness_tensor(2,2)*pt(0).getHessian()(1,1)+stifness_tensor(0,2)*pt(1).getHessian()(0,0)+stifness_tensor(1,2)*pt(1).getHessian()(1,1);
+			res(1) = (stifness_tensor(0,1)+stifness_tensor(2,2))*pt(0).getHessian()(1,0)+stifness_tensor(0,2)*pt(0).getHessian()(0,0)+stifness_tensor(1,2)*pt(0).getHessian()(1,1)+stifness_tensor(2,2)*pt(1).getHessian()(0,0)+2*stifness_tensor(1,2)*pt(1).getHessian()(1,0)+stifness_tensor(1,1)*pt(1).getHessian()(1,1);
+		}
+		else if(size() == 3)
+		{
+			res(0) = (stifness_tensor(5,5)+stifness_tensor(0,1))*pt(1).getHessian()(1,0)+(stifness_tensor(4,5)+stifness_tensor(0,3))*pt(1).getHessian()(2,0)+(stifness_tensor(1,4)+stifness_tensor(3,5))*pt(1).getHessian()(2,1)+(stifness_tensor(4,5)+stifness_tensor(0,3))*pt(2).getHessian()(1,0)+(stifness_tensor(4,4)+stifness_tensor(0,2))*pt(2).getHessian()(2,0)+(stifness_tensor(3,4)+stifness_tensor(2,5))*pt(2).getHessian()(2,1)+stifness_tensor(1,5)*pt(1).getHessian()(1,1)+stifness_tensor(2,4)*pt(2).getHessian()(2,2)+stifness_tensor(3,4)*pt(1).getHessian()(2,2)+stifness_tensor(3,5)*pt(2).getHessian()(1,1)+stifness_tensor(4,4)*pt(0).getHessian()(2,2)+2*stifness_tensor(4,5)*pt(0).getHessian()(2,1)+stifness_tensor(5,5)*pt(0).getHessian()(1,1)+stifness_tensor(0,0)*pt(0).getHessian()(0,0)+2*stifness_tensor(0,5)*pt(0).getHessian()(1,0)+2*stifness_tensor(0,4)*pt(0).getHessian()(2,0)+stifness_tensor(0,5)*pt(1).getHessian()(0,0)+stifness_tensor(0,4)*pt(2).getHessian()(0,0);
+			res(1) = (stifness_tensor(5,5)+stifness_tensor(0,1))*pt(0).getHessian()(1,0)+(stifness_tensor(4,5)+stifness_tensor(0,3))*pt(0).getHessian()(2,0)+(stifness_tensor(1,4)+stifness_tensor(3,5))*pt(0).getHessian()(2,1)+(stifness_tensor(1,4)+stifness_tensor(3,5))*pt(2).getHessian()(1,0)+(stifness_tensor(3,4)+stifness_tensor(2,5))*pt(2).getHessian()(2,0)+(stifness_tensor(3,3)+stifness_tensor(1,2))*pt(2).getHessian()(2,1)+stifness_tensor(1,5)*pt(0).getHessian()(1,1)+2*stifness_tensor(1,5)*pt(1).getHessian()(1,0)+stifness_tensor(2,3)*pt(2).getHessian()(2,2)+stifness_tensor(3,3)*pt(1).getHessian()(2,2)+stifness_tensor(3,4)*pt(0).getHessian()(2,2)+2*stifness_tensor(3,5)*pt(1).getHessian()(2,0)+stifness_tensor(4,5)*pt(2).getHessian()(0,0)+stifness_tensor(5,5)*pt(1).getHessian()(0,0)+stifness_tensor(0,5)*pt(0).getHessian()(0,0)+stifness_tensor(1,1)*pt(1).getHessian()(1,1)+2*stifness_tensor(1,3)*pt(1).getHessian()(2,1)+stifness_tensor(1,3)*pt(2).getHessian()(1,1);
+			res(2) = (stifness_tensor(4,5)+stifness_tensor(0,3))*pt(0).getHessian()(1,0)+(stifness_tensor(4,4)+stifness_tensor(0,2))*pt(0).getHessian()(2,0)+(stifness_tensor(3,4)+stifness_tensor(2,5))*pt(0).getHessian()(2,1)+(stifness_tensor(1,4)+stifness_tensor(3,5))*pt(1).getHessian()(1,0)+(stifness_tensor(3,4)+stifness_tensor(2,5))*pt(1).getHessian()(2,0)+(stifness_tensor(3,3)+stifness_tensor(1,2))*pt(1).getHessian()(2,1)+stifness_tensor(2,2)*pt(2).getHessian()(2,2)+stifness_tensor(2,3)*pt(1).getHessian()(2,2)+2*stifness_tensor(2,3)*pt(2).getHessian()(2,1)+stifness_tensor(2,4)*pt(0).getHessian()(2,2)+2*stifness_tensor(2,4)*pt(2).getHessian()(2,0)+stifness_tensor(3,3)*pt(2).getHessian()(1,1)+2*stifness_tensor(3,4)*pt(2).getHessian()(1,0)+stifness_tensor(3,5)*pt(0).getHessian()(1,1)+stifness_tensor(4,4)*pt(2).getHessian()(0,0)+stifness_tensor(4,5)*pt(1).getHessian()(0,0)+stifness_tensor(0,4)*pt(0).getHessian()(0,0)+stifness_tensor(1,3)*pt(1).getHessian()(1,1);
+		}
+		else
+			assert(false);
+
+		return res;
+	}
+
 }
