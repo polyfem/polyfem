@@ -44,61 +44,69 @@ namespace poly_fem
 
 
 
+	namespace
+	{
+		template<typename T>
+		Eigen::Matrix<T, 2, 1> function(T x, T y)
+		{
+			Eigen::Matrix<T, 2, 1> res;
+
+			res(0) = (y*y*y + x*x + x*y)/10.;
+			res(1) = (3*x*x*x*x + x*y*y + x)/10.;
+
+			return res;
+		}
+
+		template<typename T>
+		Eigen::Matrix<T, 3, 1> function(T x, T y, T z)
+		{
+			Eigen::Matrix<T, 3, 1> res;
+
+			res(0) = (x*y + x*x + y*y*y + 6*z)/10.;
+			res(1) = (z*x - z*z*z + x*y*y + 3*x*x*x*x)/10.;
+			res(2) = (x*y*z + z*z*y*y - 2*x)/10.;
+
+			return res;
+		}
+	}
 
 
 
 	ElasticProblemExact::ElasticProblemExact(const std::string &name)
-	: Problem(name)
+	: ProblemWithSolution(name)
 	{ }
 
-	void ElasticProblemExact::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	VectorNd ElasticProblemExact::eval_fun(const VectorNd &pt) const
 	{
-		auto &x = pts.col(0).array();
-		auto &y = pts.col(1).array();
+		if(pt.size() == 2)
+			return function(pt(0), pt(1));
+		else if(pt.size() == 3)
+			return function(pt(0), pt(1), pt(2));
 
-		double lambda = State::state().lambda;
-		double mu = State::state().mu;
-
-		val.resize(pts.rows(), pts.cols());
-		if(pts.cols() == 2)
-		{
-			val.col(0) = 2./5.*mu + lambda*(1./5+1./5.*y) + 4./5.*mu*y;
-			val.col(1) = 2*mu*(9./5.*x*x + 1./20.) + 2./5.*mu*x + lambda*(1./10.+1./5.*x);
-		}
-		else
-		{
-			auto &z = pts.col(2).array();
-
-			val.col(0) = 2./5.*mu + lambda * (1./5. + 3./10.*y) + 9./10.*mu*y;
-			val.col(1) = 2*mu* (9./5. * x * x + 1./20.) + 2./5. * mu * x + lambda * (1./10. + 3./10. * x + 2./5. * y * z) + 2 * mu * (1./5. * y * z + 1./20. * x - 3./10.*z);
-			val.col(2) = 1./5. * mu * z * z + 2./5. * mu * y * y + 1./5. * lambda * y * y;
-		}
+		assert(false);
+		return VectorNd(pt.size());
 	}
 
-	void ElasticProblemExact::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	AutodiffGradPt ElasticProblemExact::eval_fun(const AutodiffGradPt &pt) const
 	{
-		exact(pts, val);
+		if(pt.size() == 2)
+			return function(pt(0), pt(1));
+		else if(pt.size() == 3)
+			return function(pt(0), pt(1), pt(2));
+
+		assert(false);
+		return AutodiffGradPt(pt.size());
 	}
 
-	void ElasticProblemExact::exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	AutodiffHessianPt ElasticProblemExact::eval_fun(const AutodiffHessianPt &pt) const
 	{
-		auto &x = pts.col(0).array();
-		auto &y = pts.col(1).array();
+		if(pt.size() == 2)
+			return function(pt(0), pt(1));
+		else if(pt.size() == 3)
+			return function(pt(0), pt(1), pt(2));
 
-		val.resize(pts.rows(), pts.cols());
-
-		if(pts.cols() == 2)
-		{
-			val.col(0) = (y*y*y + x*x + x*y)/10.;
-			val.col(1) = (3*x*x*x*x + x*y*y + x)/10.;
-		}
-		else
-		{
-			auto &z = pts.col(2).array();
-
-			val.col(0) = (x*y + x*x + y*y*y + 6*z)/10.;
-			val.col(1) = (z*x - z*z*z + x*y*y + 3*x*x*x*x)/10.;
-			val.col(2) = (x*y*z + z*z*y*y - 2*x)/10.;
-		}
+		assert(false);
+		return AutodiffHessianPt(pt.size());
 	}
+
 }

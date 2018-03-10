@@ -63,6 +63,30 @@ namespace poly_fem
 		return res;
 	}
 
+	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
+	LinearElasticity::compute_rhs(const AutodiffHessianPt &pt) const
+	{
+	assert(pt.size() == size());
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res(size());
+
+
+		if(size() == 2)
+		{
+			res(0) = (lambda_+2*mu_)*pt(0).getHessian()(0,0)  +(lambda_+mu_)  *(pt(1).getHessian()(1,0))+mu_*(pt(0).getHessian()(1,1));
+			res(1) = (lambda_+mu_)  *(pt(0).getHessian()(1,0))+(lambda_+2*mu_)*(pt(1).getHessian()(1,1))+mu_*(pt(1).getHessian()(0,0));
+		}
+		else if(size() == 3)
+		{
+			res(0) = (lambda_+2*mu_)*pt(0).getHessian()(0,0)+(lambda_+mu_)*pt(1).getHessian()(1,0)+(lambda_+mu_)*pt(2).getHessian()(2,0)+mu_*(pt(0).getHessian()(1,1)+pt(0).getHessian()(2,2));
+			res(1) = (lambda_+mu_)*pt(0).getHessian()(1,0)+(lambda_+2*mu_)*pt(1).getHessian()(1,1)+(lambda_+mu_)*pt(2).getHessian()(2,1)+mu_*(pt(1).getHessian()(0,0)+pt(1).getHessian()(2,2));
+			res(2) = (lambda_+mu_)*pt(0).getHessian()(2,0)+(lambda_+mu_)*pt(1).getHessian()(2,1)+(lambda_+2*mu_)*pt(2).getHessian()(2,2)+mu_*(pt(2).getHessian()(0,0)+pt(2).getHessian()(1,1));
+		}
+		else
+			assert(false);
+
+		return res;
+	}
+
 	void LinearElasticity::compute_von_mises_stresses(const ElementBases &bs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
 	{
 		Eigen::MatrixXd displacement_grad(size(), size());

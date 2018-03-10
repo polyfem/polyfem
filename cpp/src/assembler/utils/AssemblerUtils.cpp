@@ -132,6 +132,8 @@ namespace poly_fem
 			return laplacian_.local_assembler().compute_rhs(pt);
 		else if(assembler == "Helmholtz")
 			return helmholtz_.local_assembler().compute_rhs(pt);
+		else if(assembler == "LinearElasticity")
+			return linear_elasticity_.local_assembler().compute_rhs(pt);
 		else
 		{
 			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;

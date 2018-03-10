@@ -19,11 +19,11 @@ TEST_CASE("franke 2d", "[problem]") {
     const double lambda = 0.375, mu = 0.375;
     const auto &probl = ProblemFactory::factory().get_problem("Franke");
     json params = {
-            {"k", k},
-            {"size", pts.cols()},
-            {"lambda", lambda},
-            {"mu", mu}
-        };
+        {"k", k},
+        {"size", pts.cols()},
+        {"lambda", lambda},
+        {"mu", mu}
+    };
     auto &assembler = AssemblerUtils::instance();
     assembler.set_parameters(params);
 
@@ -124,11 +124,11 @@ TEST_CASE("franke 3d", "[problem]") {
     const double lambda = 0.375, mu = 0.375;
     const auto &probl = ProblemFactory::factory().get_problem("Franke");
     json params = {
-            {"k", k},
-            {"size", pts.cols()},
-            {"lambda", lambda},
-            {"mu", mu}
-        };
+        {"k", k},
+        {"size", pts.cols()},
+        {"lambda", lambda},
+        {"mu", mu}
+    };
     auto &assembler = AssemblerUtils::instance();
     assembler.set_parameters(params);
 
@@ -226,11 +226,11 @@ TEST_CASE("linear", "[problem]") {
     const double lambda = 0.375, mu = 0.375;
     const auto &probl = ProblemFactory::factory().get_problem("Linear");
     json params = {
-            {"k", k},
-            {"size", pts.cols()},
-            {"lambda", lambda},
-            {"mu", mu}
-        };
+        {"k", k},
+        {"size", pts.cols()},
+        {"lambda", lambda},
+        {"mu", mu}
+    };
     auto &assembler = AssemblerUtils::instance();
     assembler.set_parameters(params);
 
@@ -294,11 +294,11 @@ TEST_CASE("quadratic", "[problem]") {
     const double lambda = 0.375, mu = 0.375;
     const auto &probl = ProblemFactory::factory().get_problem("Quadratic");
     json params = {
-            {"k", k},
-            {"size", pts.cols()},
-            {"lambda", lambda},
-            {"mu", mu}
-        };
+        {"k", k},
+        {"size", pts.cols()},
+        {"lambda", lambda},
+        {"mu", mu}
+    };
     auto &assembler = AssemblerUtils::instance();
     assembler.set_parameters(params);
 
@@ -361,11 +361,11 @@ TEST_CASE("zero bc 2d", "[problem]") {
     const double lambda = 0.375, mu = 0.375;
     const auto &probl = ProblemFactory::factory().get_problem("Zero_BC");
     json params = {
-            {"k", k},
-            {"size", pts.cols()},
-            {"lambda", lambda},
-            {"mu", mu}
-        };
+        {"k", k},
+        {"size", pts.cols()},
+        {"lambda", lambda},
+        {"mu", mu}
+    };
     auto &assembler = AssemblerUtils::instance();
     assembler.set_parameters(params);
 
@@ -401,11 +401,11 @@ TEST_CASE("zero bc 3d", "[problem]") {
     const double lambda = 0.375, mu = 0.375;
     const auto &probl = ProblemFactory::factory().get_problem("Zero_BC");
     json params = {
-            {"k", k},
-            {"size", pts.cols()},
-            {"lambda", lambda},
-            {"mu", mu}
-        };
+        {"k", k},
+        {"size", pts.cols()},
+        {"lambda", lambda},
+        {"mu", mu}
+    };
     auto &assembler = AssemblerUtils::instance();
     assembler.set_parameters(params);
 
@@ -421,14 +421,118 @@ TEST_CASE("zero bc 3d", "[problem]") {
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
     }
 
-    // {
-    //     Eigen::MatrixXd rhs =  -4 * x * y * (1 - y) *(1 - y) * z * (1 - z) + 2 * (1 - x) * y * (1 - y) * (1 - y) * z * (1 - z) - 4 * (1 - x) * x * x * (1 - y) * z * (1 - z) + 2 * (1 - x) * x * x * y * z * (1 - z) - 2 * (1 - x) * x * y * (1 - y) * (1 - y);
+    {
+        Eigen::MatrixXd rhs =  (0.2e1 * pow(x, 0.3e1) - 0.2e1 * x * x +  (6 * z * z - 6 * z) * x -  (2 * z * z) +  (2 * z)) * pow(y, 0.3e1) + (-0.4e1 * pow(x, 0.3e1) + 0.4e1 * x * x +  (-12 * z * z + 12 * z) * x +  (4 * z * z) -  (4 * z)) * y * y + ( (6 * z * z - 6 * z + 2) * pow(x, 0.3e1) +  (-6 * z * z + 6 * z - 2) * x * x +  (6 * z * z - 6 * z) * x -  (2 * z * z) +  (2 * z)) * y - 0.4e1 * x * x *  z *  (z - 1) * (x - 0.1e1);
+        probl->rhs("Laplacian", pts, other);
+        Eigen::MatrixXd diff = (other - rhs);
 
-    //     std::cout<<rhs<<"\n\n\n"<<std::endl;
-    //     probl->rhs("Laplacian", pts, other);
-    //     std::cout<<other<<std::endl;
-    //     Eigen::MatrixXd diff = (other - rhs);
+        REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
+    }
+}
 
-    //     REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
-    // }
+
+TEST_CASE("elasticity 2d", "[problem]") {
+    Eigen::MatrixXd pts(400, 2);
+    Eigen::MatrixXd other;
+    pts.setRandom();
+
+    const double k = 0.2;
+    const double lambda = 0.375, mu = 0.375;
+    const auto &probl = ProblemFactory::factory().get_problem("ElasticExact");
+    json params = {
+        {"k", k},
+        {"size", pts.cols()},
+        {"lambda", lambda},
+        {"mu", mu}
+    };
+    auto &assembler = AssemblerUtils::instance();
+    assembler.set_parameters(params);
+
+    auto x = pts.col(0).array();
+    auto y = pts.col(1).array();
+
+    //fun
+    {
+        Eigen::MatrixXd val(pts.rows(), pts.cols());
+        val.col(0) = (y*y*y + x*x + x*y)/10.;
+        val.col(1) = (3*x*x*x*x + x*y*y + x)/10.;
+
+        probl->exact(pts, other);
+        Eigen::MatrixXd diff = (other - val);
+
+        REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
+    }
+
+
+    //rhs
+    {
+        Eigen::MatrixXd rhs(pts.rows(), pts.cols());
+        rhs.col(0) = 2./5.*mu + lambda*(1./5+1./5.*y) + 4./5.*mu*y;
+        rhs.col(1) = 2*mu*(9./5.*x*x + 1./20.) + 2./5.*mu*x + lambda*(1./10.+1./5.*x);
+
+        probl->rhs("LinearElasticity", pts, other);
+        Eigen::MatrixXd diff = (other - rhs);
+
+        REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
+
+        // probl->rhs("HookeLinearElasticity", pts, other);
+        // diff = (other - rhs);
+
+        // REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
+    }
+}
+
+
+TEST_CASE("elasticity 3d", "[problem]") {
+    Eigen::MatrixXd pts(400, 3);
+    Eigen::MatrixXd other;
+    pts.setRandom();
+
+    const double k = 0.2;
+    const double lambda = 0.375, mu = 0.375;
+    const auto &probl = ProblemFactory::factory().get_problem("ElasticExact");
+    json params = {
+        {"k", k},
+        {"size", pts.cols()},
+        {"lambda", lambda},
+        {"mu", mu}
+    };
+    auto &assembler = AssemblerUtils::instance();
+    assembler.set_parameters(params);
+
+    auto x = pts.col(0).array();
+    auto y = pts.col(1).array();
+    auto z = pts.col(2).array();
+
+    ///fun
+    {
+        Eigen::MatrixXd val(pts.rows(), pts.cols());
+        val.col(0) = (x*y + x*x + y*y*y + 6*z)/10.;
+        val.col(1) = (z*x - z*z*z + x*y*y + 3*x*x*x*x)/10.;
+        val.col(2) = (x*y*z + z*z*y*y - 2*x)/10.;
+
+        probl->exact(pts, other);
+        Eigen::MatrixXd diff = (other - val);
+
+        REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
+    }
+
+
+    //rhs
+    {
+        Eigen::MatrixXd rhs(pts.rows(), pts.cols());
+        rhs.col(0) = 2./5.*mu + lambda * (1./5. + 3./10.*y) + 9./10.*mu*y;
+        rhs.col(1) = 2*mu* (9./5. * x * x + 1./20.) + 2./5. * mu * x + lambda * (1./10. + 3./10. * x + 2./5. * y * z) + 2 * mu * (1./5. * y * z + 1./20. * x - 3./10.*z);
+        rhs.col(2) = 1./5. * mu * z * z + 2./5. * mu * y * y + 1./5. * lambda * y * y;
+
+        probl->rhs("LinearElasticity", pts, other);
+        Eigen::MatrixXd diff = (other - rhs);
+
+        REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
+
+        // probl->rhs("HookeLinearElasticity", pts, other);
+        // diff = (other - rhs);
+
+        // REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
+    }
 }
