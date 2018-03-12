@@ -42,8 +42,8 @@ namespace poly_fem
 
 		double stifness_tensor(int i, int j) const;
 
-		double stress2d(const std::array<double, 3> &strain, const int j) const;
-		double stress3d(const std::array<double, 6> &strain, const int j) const;
+		template<int D>
+		double stress(const std::array<double, D> &strain, const int j) const;
 	};
 }
 

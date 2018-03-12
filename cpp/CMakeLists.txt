@@ -186,6 +186,8 @@ add_library(polyfem
 	src/utils/MatrixUtils.hpp
 	src/utils/StringUtils.cpp
 	src/utils/StringUtils.hpp
+	src/utils/ElasticityUtils.cpp
+	src/utils/ElasticityUtils.hpp
 	src/utils/AutodiffTypes.hpp
 	src/utils/Types.hpp
 )

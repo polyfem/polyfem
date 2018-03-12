@@ -2,29 +2,13 @@
 
 #include "Basis.hpp"
 #include "ElementAssemblyValues.hpp"
+#include "ElasticityUtils.hpp"
 
 namespace poly_fem
 {
 
 	namespace
 	{
-		double von_mises_stress_for_stress_tensor(const Eigen::MatrixXd &stress)
-		{
-			double von_mises_stress =  0.5 * ( stress(0, 0) - stress(1, 1) ) * ( stress(0, 0) - stress(1, 1) ) + 3.0  *  stress(0, 1) * stress(0, 1);
-
-			if(stress.rows() == 3)
-			{
-				von_mises_stress += 0.5 * (stress(2, 2) - stress(1, 1)) * (stress(2, 2) - stress(1, 1)) + 3.0  * stress(2, 1) * stress(2, 1);
-				von_mises_stress += 0.5 * (stress(2, 2) - stress(0, 0)) * (stress(2, 2) - stress(0, 0)) + 3.0  * stress(2, 0) * stress(2, 0);
-			}
-
-			von_mises_stress = sqrt( fabs(von_mises_stress) );
-
-			return von_mises_stress;
-		}
-
-
-
 		Eigen::Matrix2d strain2d(const Eigen::MatrixXd &grad, const Eigen::MatrixXd &jac_it, int k, int coo)
 		{
 			Eigen::Matrix2d jac;
@@ -72,21 +56,12 @@ namespace poly_fem
 		size_ = size;
 	}
 
-	double HookeLinearElasticity::stress2d(const std::array<double, 3> &strain, const int j) const
+	template<int D>
+	double HookeLinearElasticity::stress(const std::array<double, D> &strain, const int j) const
 	{
 		double res = 0;
 
-		for(int k = 0; k < 3; ++k)
-			res += stifness_tensor(j, k)*strain[k];
-
-		return res;
-	}
-
-	double HookeLinearElasticity::stress3d(const std::array<double, 6> &strain, const int j) const
-	{
-		double res = 0;
-
-		for(int k = 0; k < 6; ++k)
+		for(int k = 0; k < D; ++k)
 			res += stifness_tensor(j, k)*strain[k];
 
 		return res;
@@ -214,12 +189,12 @@ namespace poly_fem
 				e_y[2] = 2*eps_y_i(0,1);
 
 				Eigen::Matrix2d sigma_x; sigma_x <<
-				stress2d(e_x, 0), stress2d(e_x, 2),
-				stress2d(e_x, 2), stress2d(e_x, 1);
+				stress<3>(e_x, 0), stress<3>(e_x, 2),
+				stress<3>(e_x, 2), stress<3>(e_x, 1);
 
 				Eigen::Matrix2d sigma_y; sigma_y <<
-				stress2d(e_y, 0), stress2d(e_y, 2),
-				stress2d(e_y, 2), stress2d(e_y, 1);
+				stress<3>(e_y, 0), stress<3>(e_y, 2),
+				stress<3>(e_y, 2), stress<3>(e_y, 1);
 
 
 				res_k(0) = (sigma_x*eps_x_j).trace();
@@ -262,19 +237,19 @@ namespace poly_fem
 
 
 				Eigen::Matrix3d sigma_x; sigma_x <<
-				stress3d(e_x, 0), stress3d(e_x, 5), stress3d(e_x, 4),
-				stress3d(e_x, 5), stress3d(e_x, 1), stress3d(e_x, 3),
-				stress3d(e_x, 4), stress3d(e_x, 3), stress3d(e_x, 2);
+				stress<6>(e_x, 0), stress<6>(e_x, 5), stress<6>(e_x, 4),
+				stress<6>(e_x, 5), stress<6>(e_x, 1), stress<6>(e_x, 3),
+				stress<6>(e_x, 4), stress<6>(e_x, 3), stress<6>(e_x, 2);
 
 				Eigen::Matrix3d sigma_y; sigma_y <<
-				stress3d(e_y, 0), stress3d(e_y, 5), stress3d(e_y, 4),
-				stress3d(e_y, 5), stress3d(e_y, 1), stress3d(e_y, 3),
-				stress3d(e_y, 4), stress3d(e_y, 3), stress3d(e_y, 2);
+				stress<6>(e_y, 0), stress<6>(e_y, 5), stress<6>(e_y, 4),
+				stress<6>(e_y, 5), stress<6>(e_y, 1), stress<6>(e_y, 3),
+				stress<6>(e_y, 4), stress<6>(e_y, 3), stress<6>(e_y, 2);
 
 				Eigen::Matrix3d sigma_z; sigma_z <<
-				stress3d(e_z, 0), stress3d(e_z, 5), stress3d(e_z, 4),
-				stress3d(e_z, 5), stress3d(e_z, 1), stress3d(e_z, 3),
-				stress3d(e_z, 4), stress3d(e_z, 3), stress3d(e_z, 2);
+				stress<6>(e_z, 0), stress<6>(e_z, 5), stress<6>(e_z, 4),
+				stress<6>(e_z, 5), stress<6>(e_z, 1), stress<6>(e_z, 3),
+				stress<6>(e_z, 4), stress<6>(e_z, 3), stress<6>(e_z, 2);
 
 
 				res_k(0) = (sigma_x*eps_x_j).trace();
@@ -335,7 +310,7 @@ namespace poly_fem
 			displacement_grad = displacement_grad * vals.jac_it[p];
 
 			Eigen::MatrixXd strain = (displacement_grad + displacement_grad.transpose())/2;
-			Eigen::MatrixXd stress(size(), size());
+			Eigen::MatrixXd sigma(size(), size());
 
 			if(size() == 2)
 			{
@@ -345,9 +320,9 @@ namespace poly_fem
 				eps[2] = 2*strain(0,1);
 
 
-				stress <<
-				stress2d(eps, 0), stress2d(eps, 2),
-				stress2d(eps, 2), stress2d(eps, 1);
+				sigma <<
+				stress<3>(eps, 0), stress<3>(eps, 2),
+				stress<3>(eps, 2), stress<3>(eps, 1);
 			}
 			else
 			{
@@ -359,13 +334,13 @@ namespace poly_fem
 				eps[4] = 2*strain(0,2);
 				eps[5] = 2*strain(0,1);
 
-				stress <<
-				stress3d(eps, 0), stress3d(eps, 5), stress3d(eps, 4),
-				stress3d(eps, 5), stress3d(eps, 1), stress3d(eps, 3),
-				stress3d(eps, 4), stress3d(eps, 3), stress3d(eps, 2);
+				sigma <<
+				stress<6>(eps, 0), stress<6>(eps, 5), stress<6>(eps, 4),
+				stress<6>(eps, 5), stress<6>(eps, 1), stress<6>(eps, 3),
+				stress<6>(eps, 4), stress<6>(eps, 3), stress<6>(eps, 2);
 			}
 
-			stresses(p) = von_mises_stress_for_stress_tensor(stress);
+			stresses(p) = von_mises_stress_for_stress_tensor(sigma);
 		}
 	}
 
