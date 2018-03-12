@@ -754,8 +754,11 @@ namespace poly_fem
 						v_approx.col(d) += val.global[ii].val * sol(val.global[ii].index*actual_dim + d) * val.val;
 					}
 
-					if(problem->has_gradient())
-						v_approx_grad += val.global[ii].val * sol(val.global[ii].index) * val.grad_t_m;
+					if(problem->has_gradient()){
+						for(int d = 0; d < actual_dim; ++d){
+							v_approx_grad.block(0, d*actual_dim, v_approx_grad.rows(), actual_dim) += val.global[ii].val * sol(val.global[ii].index*actual_dim + d) * val.grad_t_m;
+						}
+					}
 				}
 			}
 
