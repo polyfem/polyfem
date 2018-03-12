@@ -173,6 +173,9 @@ add_library(polyfem
 	src/solver/FEMSolver.cpp
 	src/solver/LinearSolver.cpp
 	src/solver/LinearSolverPardiso.cpp
+	src/solver/SparseNewtonDescentSolver.hpp
+	src/solver/NLProblem.hpp
+	src/solver/NLProblem.cpp
 	src/State.cpp
 	src/State.hpp
 	src/utils/autodiff.h

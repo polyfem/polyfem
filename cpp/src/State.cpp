@@ -26,10 +26,8 @@
 #include "CustomSerialization.hpp"
 #include "VTUWriter.hpp"
 
-#include <cppoptlib/problem.h>
-#include <cppoptlib/solver/lbfgssolver.h>
-#include <cppoptlib/solver/isolver.h>
-#include <cppoptlib/linesearch/armijo.h>
+#include "NLProblem.hpp"
+#include "SparseNewtonDescentSolver.hpp"
 
 #include <igl/Timer.h>
 #include <igl/serialize.h>
@@ -45,204 +43,9 @@
 
 using namespace Eigen;
 
-template<class FullMat, class ReducedMat>
-void full_to_reduced_aux(const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced)
-{
-	using namespace poly_fem;
-
-	assert(full.size() == full_size);
-	assert(full.cols() == 1);
-	reduced.resize(reduced_size, 1);
-
-	long j = 0;
-	size_t k = 0;
-	for(long i = 0; i < full.size(); ++i)
-	{
-		if(State::state().boundary_nodes[k] == i)
-		{
-			++k;
-			continue;
-		}
-
-		reduced(j++) = full(i);
-	}
-}
-
-template<class ReducedMat, class FullMat>
-void reduced_to_full_aux(const int full_size, const int reduced_size, const ReducedMat &reduced, FullMat &full)
-{
-	using namespace poly_fem;
-
-	assert(reduced.size() == reduced_size);
-	assert(reduced.cols() == 1);
-	full.resize(full_size, 1);
-
-	long j = 0;
-	size_t k = 0;
-	for(long i = 0; i < full.size(); ++i)
-	{
-		if(State::state().boundary_nodes[k] == i)
-		{
-			++k;
-			full(i) = State::state().rhs(i);
-			continue;
-		}
-
-		full(i) = reduced(j++);
-	}
-}
-
-
-namespace cppoptlib {
-
-	template<typename ProblemType>
-	class SparseNewtonDescentSolver : public ISolver<ProblemType, 2> {
-	public:
-		using Superclass = ISolver<ProblemType, 2>;
-
-		using typename Superclass::Scalar;
-		using typename Superclass::TVector;
-		typedef Eigen::SparseMatrix<double> THessian;
-
-		SparseNewtonDescentSolver(const bool verbose)
-		: verbose(verbose)
-		{ }
-
-		void minimize(ProblemType &objFunc, TVector &x0) {
-			using namespace poly_fem;
-
-			json params = {
-			// {"mtype", 1}, // matrix type for Pardiso (2 = SPD)
-			// {"max_iter", 0}, // for iterative solvers
-			// {"tolerance", 1e-9}, // for iterative solvers
-			};
-			auto solver = LinearSolver::create(State::state().solver_type, State::state().precond_type);
-			solver->setParameters(params);
-
-			const int reduced_size = x0.rows();
-			const int full_size = State::state().n_bases*State::state().mesh->dimension();
-			assert(full_size == reduced_size + State::state().boundary_nodes.size());
-
-			THessian id(full_size, full_size);
-			id.setIdentity();
-
-
-			TVector grad = TVector::Zero(reduced_size);
-			TVector full_grad;
-
-			TVector full_delta_x;
-			TVector delta_x;
-
-			THessian hessian(reduced_size, reduced_size);
-			this->m_current.reset();
-			// for(int iter = 0; iter < 1; ++iter)
-			do
-			{
-				objFunc.gradient(x0, grad);
-				reduced_to_full_aux(full_size, reduced_size, grad, full_grad);
-
-				objFunc.hessian(x0, hessian);
-				hessian += (1e-5) * id;
-
-				// std::cout<<x0<<std::endl;
-				// std::cout<<grad<<std::endl;
-
-
-        		// TVector delta_x = hessian.lu().solve(-grad);
-				poly_fem::dirichlet_solve(*solver, hessian, full_grad, State::state().boundary_nodes, full_delta_x);
-				full_to_reduced_aux(full_size, reduced_size, full_delta_x, delta_x);
-				delta_x *= -1;
-
-
-				const double rate = Armijo<ProblemType, 1>::linesearch(x0, delta_x, objFunc);
-				x0 += rate * delta_x;
-
-				++this->m_current.iterations;
-
-				this->m_current.gradNorm = grad.template lpNorm<Eigen::Infinity>();
-				this->m_status = checkConvergence(this->m_stop, this->m_current);
-
-				if(verbose)
-					std::cout << "iter: "<<this->m_current.iterations <<", rate = "<< rate<< ", f = " <<  objFunc.value(x0) << ", ||g||_inf "<< this->m_current.gradNorm <<", ||step|| "<< (rate * delta_x).norm() << std::endl;
-			}
-			while (objFunc.callback(this->m_current, x0) && (this->m_status == Status::Continue));
-		}
-
-	private:
-		const bool verbose;
-	};
-}
 
 namespace poly_fem
 {
-
-	namespace
-	{
-		class NLProblem : public cppoptlib::Problem<double> {
-		public:
-			using typename cppoptlib::Problem<double>::Scalar;
-			using typename cppoptlib::Problem<double>::TVector;
-			typedef Eigen::SparseMatrix<double> THessian;
-
-			NLProblem(const RhsAssembler &rhs_assembler)
-			: assembler(AssemblerUtils::instance()), rhs_assembler(rhs_assembler),
-			full_size(State::state().n_bases*State::state().mesh->dimension()), reduced_size(State::state().n_bases*State::state().mesh->dimension() - State::state().boundary_nodes.size())
-			{ }
-
-			TVector initial_guess()
-			{
-				VectorXd guess(reduced_size);
-				guess.setZero();
-
-				return guess;
-			}
-
-			double value(const TVector &x) {
-				Eigen::MatrixXd full;
-				reduced_to_full(x , full);
-
-				const double elastic_energy = assembler.assemble_tensor_energy(rhs_assembler.formulation(), State::state().mesh->is_volume(), State::state().bases, State::state().bases, full);
-				const double body_energy 	= rhs_assembler.compute_energy(full);
-
-				return elastic_energy + body_energy;
-			}
-
-			void gradient(const TVector &x, TVector &gradv) {
-				Eigen::MatrixXd full;
-				reduced_to_full(x , full);
-
-				Eigen::MatrixXd grad;
-				assembler.assemble_tensor_energy_gradient(rhs_assembler.formulation(), State::state().mesh->is_volume(), State::state().n_bases, State::state().bases, State::state().bases, full, grad);
-				grad -= State::state().rhs;
-
-				full_to_reduced(grad, gradv);
-			}
-
-			void hessian(const TVector &x, THessian &hessian) {
-				Eigen::MatrixXd full;
-				reduced_to_full(x , full);
-
-				assembler.assemble_tensor_energy_hessian(rhs_assembler.formulation(), State::state().mesh->is_volume(), State::state().n_bases, State::state().bases, State::state().bases, full, hessian);
-			}
-
-		private:
-			const AssemblerUtils &assembler;
-			const RhsAssembler &rhs_assembler;
-
-			const int full_size, reduced_size;
-
-			void full_to_reduced(const Eigen::MatrixXd &full, TVector &reduced)
-			{
-				full_to_reduced_aux(full_size, reduced_size, full, reduced);
-			}
-
-			void reduced_to_full(const TVector &reduced, Eigen::MatrixXd &full)
-			{
-				reduced_to_full_aux(full_size, reduced_size, reduced, full);
-			}
-		};
-	}
-
 	State::State()
 	{
 		problem = ProblemFactory::factory().get_problem("Linear");
@@ -884,7 +687,7 @@ namespace poly_fem
 			const int full_size 	= n_bases*mesh->dimension();
 			const int reduced_size 	= n_bases*mesh->dimension() - boundary_nodes.size();
 
-			reduced_to_full_aux(full_size, reduced_size, tmp_sol, sol);
+			NLProblem::reduced_to_full_aux(full_size, reduced_size, tmp_sol, sol);
 		}
 
 		timer.stop();
