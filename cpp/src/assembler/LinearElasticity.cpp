@@ -48,7 +48,7 @@ namespace poly_fem
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
 	LinearElasticity::compute_rhs(const AutodiffHessianPt &pt) const
 	{
-	assert(pt.size() == size());
+		assert(pt.size() == size());
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res(size());
 
 

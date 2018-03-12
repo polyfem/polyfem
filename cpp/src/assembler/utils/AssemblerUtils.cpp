@@ -139,8 +139,8 @@ namespace poly_fem
 			return linear_elasticity_.local_assembler().compute_rhs(pt);
 		else if(assembler == "HookeLinearElasticity")
 			return hooke_linear_elasticity_.local_assembler().compute_rhs(pt);
-		// else if(assembler == "SaintVenant")
-			//return saint_venant_elasticity_.local_assembler().compute_rhs(pt);
+		else if(assembler == "SaintVenant")
+			return saint_venant_elasticity_.local_assembler().compute_rhs(pt);
 		else
 		{
 			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;

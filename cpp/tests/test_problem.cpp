@@ -480,6 +480,18 @@ TEST_CASE("elasticity 2d", "[problem]") {
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
     }
+
+    //rhs
+    {
+        Eigen::MatrixXd rhs(pts.rows(), pts.cols());
+        rhs.col(0) = (864 * mu + 432 * lambda) * pow(x, 0.5e1) / 0.100e3 + 0.6e1 / 0.25e2 *  mu * pow(x, 0.4e1) + 0.18e2 / 0.25e2 *  (y * y + 1) * ( mu +  lambda / 0.2e1) * x * x +  ((6 * y * y + 12 * y + 11) * mu + 4 * y * y * lambda + 5 * lambda) * x / 0.100e3 +  ((9 * y * y + 84 * y + 40) * mu) / 0.100e3 + 0.3e1 / 0.100e3 * ( (y * y) + 0.22e2 / 0.3e1 *  y + 0.20e2 / 0.3e1) *  lambda;
+        rhs.col(1) = (20 * lambda + 38 * mu) * pow(y, 0.3e1) / 0.100e3 + 0.3e1 / 0.50e2 * mu * y * y + ((0.96e2 * pow(x, 0.3e1) + 0.8e1 * x * x + 0.12e2 * x + 0.3e1) * mu + 0.24e2 * (pow(x, 0.3e1) + x * x / 0.6e1 + x / 0.4e1 + 0.1e1 / 0.8e1) * lambda) * y / 0.100e3 + (0.360e3 * x * x + 0.44e2 * x + 0.10e2) * mu / 0.100e3 + 0.11e2 / 0.50e2 * lambda * x + lambda / 0.10e2;
+
+        probl->rhs("SaintVenant", pts, other);
+        Eigen::MatrixXd diff = (other - rhs);
+
+        REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
+    }
 }
 
 
@@ -532,6 +544,19 @@ TEST_CASE("elasticity 3d", "[problem]") {
 
         probl->rhs("HookeLinearElasticity", pts, other);
         diff = (other - rhs);
+
+        REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
+    }
+
+    //rhs
+    {
+        Eigen::MatrixXd rhs(pts.rows(), pts.cols());
+        rhs.col(0) = (0.864e3 * pow(x, 0.5e1) + 0.24e2 * pow(x, 0.4e1) - 0.72e2 * z * pow(x, 0.3e1) + ( (72 * y * y) + 0.72e2 * z) * x * x + ( (7 * y * y) + z * z +  (12 * y) + 0.2e1 * z + 0.10e2) * x + 0.4e1 * z *   pow( y,  3) + (-0.6e1 * z + 0.5e1) *  (y * y) + (0.4e1 * pow(z, 0.3e1) + 0.94e2) *  y - 0.13e2 * z * z + 0.40e2) * mu / 0.100e3 + 0.108e3 / 0.25e2 * lambda * (pow(x, 0.5e1) + ( (y * y) / 0.12e2 + z / 0.12e2) * x * x + (0.5e1 / 0.432e3 *  y *  y + z * z / 0.432e3 + 0.1e1 / 0.72e2) * x + z *   pow( y,  3) / 0.216e3 +  (y * y) / 0.144e3 + (pow(z, 0.3e1) / 0.216e3 + 0.2e1 / 0.27e2) *  y - z * z / 0.144e3 + 0.5e1 / 0.108e3);
+        rhs.col(1) = (8 * lambda * z * z + 12 * mu * z * z + 20 * lambda + 38 * mu) * pow(y, 0.3e1) / 0.100e3 +  (6 * lambda * z * x + 8 * mu * z * x + 6 * mu) * y * y / 0.100e3 + ( ((8 *  pow( z,  4) + z * z + (-12 * x + 42) * z + 96 *  pow( x,  3) + 9 * x * x + 12 * x + 1) * mu) + 0.24e2 *  lambda * (  pow( z,  4) / 0.6e1 +   pow( x,  3) + 0.5e1 / 0.24e2 *  x *  x +  (z * z) / 0.24e2 +  x / 0.4e1 + 0.7e1 / 0.4e1 *  z + 0.1e1 / 0.24e2)) * y / 0.100e3 +  ((4 *  pow( z,  3) * x + 360 * x * x + 54 * x - 62 * z + 10) * mu) / 0.100e3 +  (lambda * ( pow( z,  3) * x + 16 * x - z + 5)) / 0.50e2;
+        rhs.col(2) = (8 * lambda * y * y + 12 * mu * y * y + 18 * lambda + 36 * mu) * pow(z, 0.3e1) / 0.100e3 + ((-108 * x * x + 8 * x * y - 6 * x + 20) * mu + 6 * lambda * x * y) * z * z / 0.100e3 + ((8 *  pow(y, 4) + x * x + y * y - 12 * x + 1) * mu + lambda * (4 *  pow(y, 4) + x * x + y * y - 6 * x + 1)) * z / 0.100e3 + ((4 *  pow(y, 3) * x + 48 *  pow(x, 3) + 2 * x * x + 41 * y * y + 34 * y + 12) * mu) / 0.100e3 + 0.3e1 / 0.25e2 * (( pow(y, 3) * x) / 0.6e1 +  pow(x, 3) + 0.7e1 / 0.4e1 * y * y - y / 0.6e1) * lambda;
+
+        probl->rhs("SaintVenant", pts, other);
+        Eigen::MatrixXd diff = (other - rhs);
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
     }

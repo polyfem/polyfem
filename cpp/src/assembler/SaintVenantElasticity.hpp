@@ -4,6 +4,7 @@
 
 #include "ElementAssemblyValues.hpp"
 #include "ElementBases.hpp"
+#include "AutodiffTypes.hpp"
 #include "Types.hpp"
 
 #include <Eigen/Dense>
@@ -19,6 +20,9 @@ namespace poly_fem
 		Eigen::VectorXd	assemble(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const;
 		Eigen::MatrixXd	assemble_grad(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const;
 		double 			compute_energy(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const;
+
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
+		compute_rhs(const AutodiffHessianPt &pt) const;
 
 
 		inline int size() const { return size_; }
