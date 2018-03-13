@@ -13,22 +13,13 @@ using namespace Eigen;
 
 
 /**
-* no ui:
-* <exec> -mesh <path> -problem <0,1,2,3> -cmd
-*
-* ui:
-* <exec> -mesh <path> -problem <0,1,2,3>
 *
 * args:
 *   -mesh <path to the mesh>
 *   -n_refs <refinements>
 *   -problem <problem name>
-*   -quad <quadrature order>
-*   -b_samples <number of boundary samples>
 *   -spline <use spline basis>
 *   -fem <use standard fem with quad/hex meshes>
-*   -lambda <first lame parameter>
-*   -mu <second lame parameter>
 *   -cmd <runs without ui>
 *   -ui <runs with ui>
 **/
@@ -90,7 +81,6 @@ int main(int argc, const char **argv)
 	command_line.parse(argc, argv);
 	if (!screenshot.empty()) { no_ui = false; }
 
-
 	json j_args = {
 		{"mesh", ""},
 		{"n_refs", 0},
@@ -130,7 +120,7 @@ int main(int argc, const char **argv)
 	in_args["mesh"] = path;
 	in_args["n_refs"] = n_refs;
 	in_args["problem"] = problem_name;
-	in_args["normalize"] = normalize_mesh;
+	in_args["normalize_mesh"] = normalize_mesh;
 
 	in_args["scalar_formulation"] = scalar_formulation;
 	in_args["tensor_formulation"] = tensor_formulation;

@@ -49,7 +49,60 @@ namespace poly_fem
 	{
 		set_size(params["size"]);
 
-		set_lambda_mu(params["lambda"], params["mu"]);
+		if(params["elasticity_tensor"].empty())
+		{
+			set_lambda_mu(params["lambda"], params["mu"]);
+		}
+		else
+		{
+			std::vector<double> entries = params["elasticity_tensor"];
+
+			if(size() == 2)
+			{
+				assert(entries.size() >= 6);
+
+				set_stiffness_tensor(0, 0, entries[0]);
+				set_stiffness_tensor(0, 1, entries[1]);
+				set_stiffness_tensor(0, 2, entries[2]);
+
+				set_stiffness_tensor(1, 1, entries[3]);
+				set_stiffness_tensor(1, 2, entries[4]);
+
+				set_stiffness_tensor(2, 2, entries[5]);
+			}
+			else
+			{
+				assert(entries.size() >= 21);
+
+				set_stiffness_tensor(0, 0, entries[0]);
+				set_stiffness_tensor(0, 1, entries[1]);
+				set_stiffness_tensor(0, 2, entries[2]);
+				set_stiffness_tensor(0, 3, entries[3]);
+				set_stiffness_tensor(0, 4, entries[4]);
+				set_stiffness_tensor(0, 5, entries[5]);
+
+				set_stiffness_tensor(1, 1, entries[6]);
+				set_stiffness_tensor(1, 2, entries[7]);
+				set_stiffness_tensor(1, 3, entries[8]);
+				set_stiffness_tensor(1, 4, entries[9]);
+				set_stiffness_tensor(1, 5, entries[10]);
+
+				set_stiffness_tensor(2, 2, entries[11]);
+				set_stiffness_tensor(2, 3, entries[12]);
+				set_stiffness_tensor(2, 4, entries[13]);
+				set_stiffness_tensor(2, 5, entries[14]);
+
+				set_stiffness_tensor(3, 3, entries[15]);
+				set_stiffness_tensor(3, 4, entries[16]);
+				set_stiffness_tensor(3, 5, entries[17]);
+
+				set_stiffness_tensor(4, 4, entries[18]);
+				set_stiffness_tensor(4, 5, entries[19]);
+
+				set_stiffness_tensor(5, 5, entries[20]);
+
+			}
+		}
 	}
 
 	void SaintVenantElasticity::set_size(const int size)
