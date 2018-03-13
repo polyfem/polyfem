@@ -57,6 +57,9 @@ int main(int argc, const char **argv)
 	int n_refs = 0;
 	std::string problem_name = "";
 
+	std::string scalar_formulation = "Laplacian";
+	std::string tensor_formulation = "LinearElasticity"; //"SaintVenant";
+
 	int quadrature_order = 4;
 	int discr_order = 1;
 	int n_boundary_samples = 10;
@@ -78,6 +81,9 @@ int main(int argc, const char **argv)
 	command_line.add_option("-ref_t", refinenemt_location);
 	command_line.add_option("-problem", problem_name); //
 	command_line.add_option("-normalize", "-not_norm", normalize_mesh); //
+
+	command_line.add_option("-sform", scalar_formulation); //
+	command_line.add_option("-tform", tensor_formulation); //
 
 
 	command_line.add_option("-quad", quadrature_order);
@@ -117,6 +123,8 @@ int main(int argc, const char **argv)
 		state.iso_parametric = iso_parametric;
 		state.integral_constraints = integral_constraints;
 		state.normalize_mesh = normalize_mesh;
+		state.scalar_formulation = scalar_formulation;
+		state.tensor_formulation = tensor_formulation;
 
 		state.init(path, n_refs, problem_name);
         // std::cout<<path<<std::endl;
@@ -163,6 +171,8 @@ int main(int argc, const char **argv)
 		UIState::ui_state().state.integral_constraints = integral_constraints;
 		UIState::ui_state().screenshot = screenshot;
 		UIState::ui_state().state.normalize_mesh = normalize_mesh;
+		UIState::ui_state().state.scalar_formulation = scalar_formulation;
+		UIState::ui_state().state.tensor_formulation = tensor_formulation;
 
 		UIState::ui_state().launch(path, n_refs, problem_name);
 	}
