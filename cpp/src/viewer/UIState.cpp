@@ -20,11 +20,6 @@
 #include <igl/Timer.h>
 #include <igl/serialize.h>
 
-#ifdef IGL_VIEWER_WITH_NANOGUI
-#include <nanogui/formhelper.h>
-#include <nanogui/screen.h>
-#endif
-
 #include <cstdlib>
 #include <fstream>
 
@@ -86,32 +81,32 @@ void add_spheres(igl::viewer::Viewer &viewer0, const Eigen::MatrixXd &P, double 
 	viewer.core.background_color.setOnes();
 	viewer.core.set_rotation_type(igl::viewer::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
 
-	#ifdef IGL_VIEWER_WITH_NANOGUI
-	viewer.callback_init = [&](igl::viewer::Viewer& viewer_) {
-		viewer_.ngui->addButton("Save screenshot", [&] {
-			// Allocate temporary buffers
-			Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(6400, 4000);
-			Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> G(6400, 4000);
-			Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> B(6400, 4000);
-			Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(6400, 4000);
+	// #ifdef IGL_VIEWER_WITH_NANOGUI
+	// viewer.callback_init = [&](igl::viewer::Viewer& viewer_) {
+	// 	viewer_.ngui->addButton("Save screenshot", [&] {
+	// 		// Allocate temporary buffers
+	// 		Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(6400, 4000);
+	// 		Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> G(6400, 4000);
+	// 		Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> B(6400, 4000);
+	// 		Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(6400, 4000);
 
-			// Draw the scene in the buffers
-			viewer_.core.draw_buffer(viewer.data,viewer.opengl,false,R,G,B,A);
-			A.setConstant(255);
+	// 		// Draw the scene in the buffers
+	// 		viewer_.core.draw_buffer(viewer.data,viewer.opengl,false,R,G,B,A);
+	// 		A.setConstant(255);
 
-			// Save it to a PNG
-			igl::png::writePNG(R,G,B,A,"foo.png");
-		});
-		viewer_.ngui->addButton("Load", [&] {
-			igl::deserialize(viewer.core, "core", "viewer.core");
-		});
-		viewer_.ngui->addButton("Save", [&] {
-			igl::serialize(viewer.core, "core", "viewer.core");
-		});
-		viewer_.screen->performLayout();
-		return false;
-	};
-	#endif
+	// 		// Save it to a PNG
+	// 		igl::png::writePNG(R,G,B,A,"foo.png");
+	// 	});
+	// 	viewer_.ngui->addButton("Load", [&] {
+	// 		igl::deserialize(viewer.core, "core", "viewer.core");
+	// 	});
+	// 	viewer_.ngui->addButton("Save", [&] {
+	// 		igl::serialize(viewer.core, "core", "viewer.core");
+	// 	});
+	// 	viewer_.screen->performLayout();
+	// 	return false;
+	// };
+	// #endif
 
 	viewer.launch();
 }
