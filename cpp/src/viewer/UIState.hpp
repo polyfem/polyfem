@@ -2,16 +2,16 @@
 #define UI_UISTATE_HPP
 
 #include "State.hpp"
-#include "ImGuiMenuBase.hpp"
 
 #include <igl/colormap.h>
-#include <igl/viewer/Viewer.h>
+#include <igl/opengl/glfw/Viewer.h>
+#include <igl/opengl/glfw/imgui/ImGuiMenu.h>
 #include <map>
 
 
 namespace poly_fem
 {
-	class UIState : public ImGuiMenuBase
+	class UIState : public igl::opengl::glfw::imgui::ImGuiMenu
 	{
 	private:
 		UIState();
@@ -36,7 +36,7 @@ namespace poly_fem
 		bool skip_visualization = false;
 		int vis_basis = 0;
 
-		igl::viewer::Viewer viewer;
+		igl::opengl::glfw::Viewer viewer;
 
 		std::vector<int> element_ranges, vis_element_ranges;
 

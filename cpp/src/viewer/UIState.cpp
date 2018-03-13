@@ -34,11 +34,11 @@
 
 using namespace Eigen;
 
-int offscreen_screenshot(igl::viewer::Viewer &viewer, const std::string &path);
+int offscreen_screenshot(igl::opengl::glfw::Viewer &viewer, const std::string &path);
 
-void add_spheres(igl::viewer::Viewer &viewer0, const Eigen::MatrixXd &P, double radius) {
-	Eigen::MatrixXd V = viewer0.data.V, VS, VN;
-	Eigen::MatrixXi F = viewer0.data.F, FS;
+void add_spheres(igl::opengl::glfw::Viewer &viewer0, const Eigen::MatrixXd &P, double radius) {
+	Eigen::MatrixXd V = viewer0.data().V, VS, VN;
+	Eigen::MatrixXi F = viewer0.data().F, FS;
 	igl::read_triangle_mesh(POLYFEM_MESH_PATH "sphere.ply", VS, FS);
 
 	Eigen::RowVector3d minV = VS.colwise().minCoeff();
@@ -47,7 +47,7 @@ void add_spheres(igl::viewer::Viewer &viewer0, const Eigen::MatrixXd &P, double 
 	VS /= (maxV - minV).maxCoeff();
 	VS *= 2.0 * radius;
 
-	Eigen::MatrixXd C = viewer0.data.F_material_ambient.leftCols(3);
+	Eigen::MatrixXd C = viewer0.data().F_material_ambient.leftCols(3);
 	C *= 10;
 
 	int nv = V.rows();
@@ -67,22 +67,22 @@ void add_spheres(igl::viewer::Viewer &viewer0, const Eigen::MatrixXd &P, double 
 
 	C = Eigen::RowVector3d(142, 68, 173)/255.;
 
-	igl::viewer::Viewer viewer;
-	viewer.data.set_mesh(V, F);
-	// viewer.data.add_points(P, Eigen::Vector3d(0,1,1).transpose());
-	viewer.data.set_normals(VN);
-	viewer.data.set_face_based(false);
-	viewer.data.set_colors(C);
-	viewer.data.lines = viewer0.data.lines;
-	viewer.core.show_lines = false;
+	igl::opengl::glfw::Viewer viewer;
+	viewer.data().set_mesh(V, F);
+	// viewer.data().add_points(P, Eigen::Vector3d(0,1,1).transpose());
+	viewer.data().set_normals(VN);
+	viewer.data().set_face_based(false);
+	viewer.data().set_colors(C);
+	viewer.data().lines = viewer0.data().lines;
+	viewer.data().show_lines = false;
 #ifndef __APPLE__
-	viewer.core.line_width = 10;
+	viewer.data().line_width = 10;
 #endif
 	viewer.core.background_color.setOnes();
-	viewer.core.set_rotation_type(igl::viewer::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
+	viewer.core.set_rotation_type(igl::opengl::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
 
 	// #ifdef IGL_VIEWER_WITH_NANOGUI
-	// viewer.callback_init = [&](igl::viewer::Viewer& viewer_) {
+	// viewer.callback_init = [&](igl::opengl::glfw::Viewer& viewer_) {
 	// 	viewer_.ngui->addButton("Save screenshot", [&] {
 	// 		// Allocate temporary buffers
 	// 		Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(6400, 4000);
@@ -91,7 +91,7 @@ void add_spheres(igl::viewer::Viewer &viewer0, const Eigen::MatrixXd &P, double 
 	// 		Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(6400, 4000);
 
 	// 		// Draw the scene in the buffers
-	// 		viewer_.core.draw_buffer(viewer.data,viewer.opengl,false,R,G,B,A);
+	// 		viewer_.core.draw_buffer(viewer.data(),viewer.opengl,false,R,G,B,A);
 	// 		A.setConstant(255);
 
 	// 		// Save it to a PNG
@@ -199,7 +199,7 @@ namespace poly_fem
 			valid_elements[idx] = true;
 		}
 
-		viewer.data.clear();
+		viewer.data().clear();
 
 		if(current_visualization == Visualizing::InputMesh)
 		{
@@ -216,10 +216,10 @@ namespace poly_fem
 		// 	const auto p = state.mesh->point(current_3d_index.vertex);
 		// 	const auto p1 = state.mesh->point(dynamic_cast<Mesh3D *>(state.mesh.get())->switch_vertex(current_3d_index).vertex);
 
-		// 	viewer.data.add_points(p, MatrixXd::Zero(1, 3));
-		// 	viewer.data.add_edges(p, p1, RowVector3d(1, 1, 0));
+		// 	viewer.data().add_points(p, MatrixXd::Zero(1, 3));
+		// 	viewer.data().add_edges(p, p1, RowVector3d(1, 1, 0));
 
-		// 	viewer.data.add_points(dynamic_cast<Mesh3D *>(state.mesh.get())->face_barycenter(current_3d_index.face), RowVector3d(1, 0, 0));
+		// 	viewer.data().add_points(dynamic_cast<Mesh3D *>(state.mesh.get())->face_barycenter(current_3d_index.face), RowVector3d(1, 0, 0));
 		// }
 	}
 
@@ -279,47 +279,47 @@ namespace poly_fem
 			from += range;
 		}
 
-		viewer.data.set_colors(cols);
+		viewer.data().set_colors(cols);
 
 		if(!light_enabled){
-			viewer.data.F_material_specular.setZero();
-			viewer.data.V_material_specular.setZero();
-			viewer.data.dirty |= igl::viewer::ViewerData::DIRTY_DIFFUSE;
+			viewer.data().F_material_specular.setZero();
+			viewer.data().V_material_specular.setZero();
+			viewer.data().dirty |= igl::opengl::MeshGL::DIRTY_DIFFUSE;
 
-			viewer.data.V_material_ambient *= 2;
-			viewer.data.F_material_ambient *= 2;
+			viewer.data().V_material_ambient *= 2;
+			viewer.data().F_material_ambient *= 2;
 		}
 	}
 
 	long UIState::clip_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, std::vector<bool> &valid_elements, const bool map_edges)
 	{
-		viewer.data.clear();
+		viewer.data().clear();
 
 		valid_elements.resize(normalized_barycenter.rows());
 
 		if(!is_slicing)
 		{
 			std::fill(valid_elements.begin(), valid_elements.end(), true);
-			viewer.data.set_mesh(pts, tris);
+			viewer.data().set_mesh(pts, tris);
 
 			if(!light_enabled){
-				viewer.data.F_material_specular.setZero();
-				viewer.data.V_material_specular.setZero();
-				viewer.data.V_material_ambient *= 4;
-				viewer.data.F_material_ambient *= 4;
+				viewer.data().F_material_specular.setZero();
+				viewer.data().V_material_specular.setZero();
+				viewer.data().V_material_ambient *= 4;
+				viewer.data().F_material_ambient *= 4;
 
-				viewer.data.dirty |= igl::viewer::ViewerData::DIRTY_DIFFUSE;
+				viewer.data().dirty |= igl::opengl::MeshGL::DIRTY_DIFFUSE;
 			}
 
 			if(state.mesh->is_volume())
 			{
 				MatrixXd normals;
 				igl::per_face_normals(pts, tris, normals);
-				viewer.data.set_normals(normals);
+				viewer.data().set_normals(normals);
 
 				igl::per_corner_normals(pts, tris, 20, normals);
-				viewer.data.set_normals(normals);
-				viewer.data.set_face_based(false);
+				viewer.data().set_normals(normals);
+				viewer.data().set_face_based(false);
 			}
 
 			MatrixXd p0, p1;
@@ -335,10 +335,10 @@ namespace poly_fem
 			}
 
 #ifndef __APPLE__
-			viewer.core.line_width = 10;
+			viewer.data().line_width = 10;
 #endif
-			viewer.data.add_edges(p0, p1, MatrixXd::Zero(1, 3));
-			viewer.core.show_lines = false;
+			viewer.data().add_edges(p0, p1, MatrixXd::Zero(1, 3));
+			viewer.data().show_lines = false;
 
 			return tris.rows();
 		}
@@ -351,7 +351,7 @@ namespace poly_fem
 
 	long UIState::show_clipped_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, const std::vector<bool> &valid_elements, const bool map_edges, const bool recenter)
 	{
-		viewer.data.set_face_based(false);
+		viewer.data().set_face_based(false);
 
 		int n_vis_valid_tri = 0;
 
@@ -375,25 +375,25 @@ namespace poly_fem
 			from += range;
 		}
 
-		viewer.data.set_mesh(pts, valid_tri);
+		viewer.data().set_mesh(pts, valid_tri);
 
 		if(!light_enabled){
-			viewer.data.F_material_specular.setZero();
-			viewer.data.V_material_specular.setZero();
-			viewer.data.dirty |= igl::viewer::ViewerData::DIRTY_DIFFUSE;
-			viewer.data.V_material_ambient *= 2;
-			viewer.data.F_material_ambient *= 2;
+			viewer.data().F_material_specular.setZero();
+			viewer.data().V_material_specular.setZero();
+			viewer.data().dirty |= igl::opengl::MeshGL::DIRTY_DIFFUSE;
+			viewer.data().V_material_ambient *= 2;
+			viewer.data().F_material_ambient *= 2;
 		}
 
 		if(state.mesh->is_volume())
 		{
 			MatrixXd normals;
 			igl::per_face_normals(pts, valid_tri, normals);
-			viewer.data.set_normals(normals);
+			viewer.data().set_normals(normals);
 
 			igl::per_corner_normals(pts, valid_tri, 20, normals);
-			viewer.data.set_normals(normals);
-			viewer.data.set_face_based(false);
+			viewer.data().set_normals(normals);
+			viewer.data().set_face_based(false);
 		}
 
 		if(recenter)
@@ -413,10 +413,10 @@ namespace poly_fem
 		// std::cout<<p0<<std::endl;
 
 #ifndef __APPLE__
-		viewer.core.line_width = 10;
+		viewer.data().line_width = 10;
 #endif
-		viewer.data.add_edges(p0, p1, MatrixXd::Zero(1, 3));
-		viewer.core.show_lines = false;
+		viewer.data().add_edges(p0, p1, MatrixXd::Zero(1, 3));
+		viewer.data().show_lines = false;
 
 		return valid_tri.rows();
 	}
@@ -539,15 +539,15 @@ namespace poly_fem
 			}
 		}
 
-		viewer.data.set_colors(col);
+		viewer.data().set_colors(col);
 
 		if(!light_enabled){
-			viewer.data.F_material_specular.setZero();
-			viewer.data.V_material_specular.setZero();
+			viewer.data().F_material_specular.setZero();
+			viewer.data().V_material_specular.setZero();
 
-			viewer.data.V_material_ambient *= 2;
-			viewer.data.F_material_ambient *= 2;
-			viewer.data.dirty |= igl::viewer::ViewerData::DIRTY_DIFFUSE;
+			viewer.data().V_material_ambient *= 2;
+			viewer.data().F_material_ambient *= 2;
+			viewer.data().dirty |= igl::opengl::MeshGL::DIRTY_DIFFUSE;
 		}
 	}
 
@@ -560,7 +560,7 @@ namespace poly_fem
 
 	void UIState::clear()
 	{
-		viewer.data.clear();
+		viewer.data().clear();
 	}
 
 	void UIState::show_mesh()
@@ -577,19 +577,19 @@ namespace poly_fem
 		// for(int i = 0; i < state.mesh->n_faces(); ++i)
 		// {
 		// 	MatrixXd p = state.mesh->face_barycenter(i);
-		// 	viewer.data.add_label(p.transpose(), std::to_string(i));
+		// 	viewer.data().add_label(p.transpose(), std::to_string(i));
 		// }
 
 		// for(int i = 0; i < state.mesh->n_cells(); ++i)
 		// {
 		// 	MatrixXd p = state.mesh->cell_barycenter(i);
-		// 	viewer.data.add_label(p.transpose(), std::to_string(i));
+		// 	viewer.data().add_label(p.transpose(), std::to_string(i));
 		// }
 
 		// for(int i = 0; i < state.mesh->n_vertices(); ++i)
 		// {
 		// 	const auto p = state.mesh->point(i);
-		// 	viewer.data.add_label(p.transpose(), std::to_string(i));
+		// 	viewer.data().add_label(p.transpose(), std::to_string(i));
 		// }
 	}
 
@@ -602,7 +602,7 @@ namespace poly_fem
 		std::cout<<vis_faces.rows()<<" "<<vis_faces.cols()<<std::endl;
 		std::vector<bool> valid_elements;
 		clip_elements(vis_pts, vis_faces, vis_element_ranges, valid_elements, true);
-		viewer.core.show_lines = true;
+		viewer.data().show_lines = true;
 	}
 
 	void UIState::show_nodes()
@@ -640,8 +640,8 @@ namespace poly_fem
 
 
 					// P.row(j) = node;
-					viewer.data.add_points(node, col);
-					// viewer.data.add_label(node.transpose(), std::to_string(l2g.index));
+					viewer.data().add_points(node, col);
+					// viewer.data().add_label(node.transpose(), std::to_string(l2g.index));
 				}
 			}
 			// add_spheres(viewer, P, 0.05);
@@ -1137,276 +1137,8 @@ namespace poly_fem
 		for(int i = 0; i < (int) state.problem->boundary_ids().size(); ++i)
 			dirichlet_bc[state.problem->boundary_ids()[i]-1] = true;
 
-		#if 0
-		enum Foo : int { A=0 };
-
-		viewer.callback_init = [&](igl::viewer::Viewer& viewer_)
-		{
-			#ifdef IGL_VIEWER_WITH_NANOGUI
-			viewer_.ngui->addWindow(Eigen::Vector2i(220,10),"PolyFEM");
-
-			viewer_.ngui->addGroup("Settings");
-
-			viewer_.ngui->addVariable("quad order", state.quadrature_order);
-			viewer_.ngui->addVariable("discr order", state.discr_order);
-			viewer_.ngui->addVariable("b samples", state.n_boundary_samples);
-
-			viewer_.ngui->addVariable("lambda", state.lambda);
-			viewer_.ngui->addVariable("mu", state.mu);
-
-			viewer_.ngui->addVariable("mesh path", state.mesh_path);
-			viewer_.ngui->addButton("browse...", [&]() {
-				std::string path = nanogui::file_dialog({
-					{ "HYBRID", "General polyhedral mesh" }, { "OBJ", "Obj 2D mesh" }
-				}, false);
-
-				if (!path.empty())
-					state.mesh_path = path;
-
-			});
-			viewer_.ngui->addVariable("n refs", state.n_refs);
-			viewer_.ngui->addVariable("refinenemt t", state.refinenemt_location);
-
-			viewer_.ngui->addVariable("spline basis", state.use_splines);
-			viewer_.ngui->addVariable("fit nodes", state.fit_nodes);
-
-
-			viewer_.ngui->addVariable<igl::ColorMapType>("Colormap", color_map)->setItems({"inferno", "jet", "magma", "parula", "plasma", "viridis"});
-
-			// viewer_.ngui->addVariable<ProblemType>("Problem",
-			// 	[&](ProblemType val) {
-			// 		state.problem = Problem::get_problem(ProblemType(val));
-			// 		if(state.problem->boundary_ids().empty())
-			// 			std::fill(dirichlet_bc.begin(), dirichlet_bc.end(), true);
-			// 		else
-			// 			std::fill(dirichlet_bc.begin(), dirichlet_bc.end(), false);
-
-			// 		for(int i = 0; i < state.problem->boundary_ids().size(); ++i)
-			// 			dirichlet_bc[state.problem->boundary_ids()[i]-1] = true;
-			// 	},
-			// 	[&]() { return state.problem->problem_num(); }
-			// )->setItems({"Linear","Quadratic","Franke", "Elastic", "Zero BC", "Franke3D", "ElasticExact"});
-
-
-			auto solvers = LinearSolver::availableSolvers();
-			if (state.solver_type.empty()) {
-				state.solver_type = LinearSolver::defaultSolver();
-			}
-			viewer_.ngui->addVariable<Foo>("Solver",
-				[&,solvers](Foo i) { state.solver_type = solvers[i]; },
-				[&,solvers]() { return (Foo) std::distance(solvers.begin(),
-					std::find(solvers.begin(), solvers.end(), state.solver_type)); }
-				)->setItems(solvers);
-
-			auto precond = LinearSolver::availablePrecond();
-			if (state.precond_type.empty()) {
-				state.precond_type = LinearSolver::defaultPrecond();
-			}
-			viewer_.ngui->addVariable<Foo>("Precond",
-				[&,precond](Foo i) { state.precond_type = precond[i]; },
-				[&,precond]() { return (Foo) std::distance(precond.begin(),
-					std::find(precond.begin(), precond.end(), state.precond_type)); }
-				)->setItems(precond);
-
-			viewer_.ngui->addVariable("skip visualization", skip_visualization);
-
-			viewer_.ngui->addGroup("Runners");
-			viewer_.ngui->addButton("Load mesh", std::bind(&UIState::load_mesh, this));
-			viewer_.ngui->addButton("Build  basis", std::bind(&UIState::build_basis, this));
-			viewer_.ngui->addButton("Compute poly bases", std::bind(&UIState::build_polygonal_basis, this));
-			viewer_.ngui->addButton("Build vis mesh", std::bind(&UIState::build_vis_mesh, this));
-
-			viewer_.ngui->addButton("Assemble stiffness", std::bind(&UIState::assemble_stiffness_mat, this));
-			viewer_.ngui->addButton("Assemble rhs", std::bind(&UIState::assemble_rhs, this));
-			viewer_.ngui->addButton("Solve", std::bind(&UIState::solve_problem, this));
-			viewer_.ngui->addButton("Compute errors", std::bind(&UIState::compute_errors, this));
-
-			viewer_.ngui->addButton("Run all", [&](){
-				load_mesh();
-				build_basis();
-				build_polygonal_basis();
-
-				if(!skip_visualization)
-					build_vis_mesh();
-
-				assemble_stiffness_mat();
-				assemble_rhs();
-				solve_problem();
-				compute_errors();
-				state.save_json(std::cout);
-			});
-
-			viewer_.ngui->addWindow(Eigen::Vector2i(400,10),"Debug");
-			viewer_.ngui->addButton("Clear", std::bind(&UIState::clear, this));
-			viewer_.ngui->addButton("Show mesh", std::bind(&UIState::show_mesh, this));
-			viewer_.ngui->addButton("Show vis mesh", std::bind(&UIState::show_vis_mesh, this));
-			viewer_.ngui->addButton("Show nodes", std::bind(&UIState::show_nodes, this));
-			// viewer_.ngui->addButton("Show quadrature", std::bind(&UIState::show_quadrature, this));
-			viewer_.ngui->addButton("Show rhs", std::bind(&UIState::show_rhs, this));
-			viewer_.ngui->addButton("Show sol", std::bind(&UIState::show_sol, this));
-			viewer_.ngui->addButton("Show error", std::bind(&UIState::show_error, this));
-
-			viewer_.ngui->addButton("Show linear r", std::bind(&UIState::show_linear_reproduction, this));
-			viewer_.ngui->addButton("Show quadra r", std::bind(&UIState::show_quadratic_reproduction, this));
-
-			viewer_.ngui->addVariable("basis num",vis_basis);
-			viewer_.ngui->addButton("Show basis", std::bind(&UIState::show_basis, this));
-
-			viewer_.ngui->addGroup("Slicing");
-			viewer_.ngui->addVariable<int>("coord",[&](int val) {
-				slice_coord = val;
-				if(is_slicing)
-					update_slices();
-			},[&]() {
-				return slice_coord;
-			});
-			viewer_.ngui->addVariable<float>("pos",[&](float val) {
-				slice_position = val;
-				if(is_slicing)
-					update_slices();
-			},[&]() {
-				return slice_position;
-			});
-
-			viewer_.ngui->addButton("+0.1", [&](){ slice_position += 0.1; if(is_slicing) update_slices();});
-			viewer_.ngui->addButton("-0.1", [&](){ slice_position -= 0.1; if(is_slicing) update_slices();});
-
-			viewer_.ngui->addVariable<bool>("enable",[&](bool val) {
-				is_slicing = val;
-				update_slices();
-			},[&]() {
-				return is_slicing;
-			});
-
-			// viewer_.ngui->addGroup("Stats");
-			// viewer_.ngui->addVariable("NNZ", Type &value)
-
-			viewer_.ngui->addGroup("Selection");
-			viewer_.ngui->addVariable("element ids", selected_elements);
-			viewer_.ngui->addButton("Show", [&]{
-				if(state.mesh->is_volume())
-				{
-					auto v{explode(selected_elements, ',')};
-					current_3d_index = dynamic_cast<Mesh3D *>(state.mesh.get())->get_index_from_element(atoi(v.front().c_str()), 9, 0);
-					std::cout<<"e:"<<current_3d_index.element<<" f:"<<current_3d_index.face<<" e:"<<current_3d_index.edge<<" v:"<<current_3d_index.vertex<<std::endl;
-				}
-
-				plot_selection_and_index(true);
-			});
-
-			viewer_.ngui->addButton("Switch vertex", [&]{
-				if(state.mesh->is_volume())
-				{
-					current_3d_index = dynamic_cast<Mesh3D *>(state.mesh.get())->switch_vertex(current_3d_index);
-					std::cout<<"e:"<<current_3d_index.element<<" f:"<<current_3d_index.face<<" e:"<<current_3d_index.edge<<" v:"<<current_3d_index.vertex<<std::endl;
-				}
-
-				plot_selection_and_index();
-			});
-
-			viewer_.ngui->addButton("Switch edge", [&]{
-				if(state.mesh->is_volume())
-				{
-					current_3d_index = dynamic_cast<Mesh3D *>(state.mesh.get())->switch_edge(current_3d_index);
-					std::cout<<"e:"<<current_3d_index.element<<" f:"<<current_3d_index.face<<" e:"<<current_3d_index.edge<<" v:"<<current_3d_index.vertex<<std::endl;
-				}
-
-				plot_selection_and_index();
-			});
-
-			viewer_.ngui->addButton("Switch face", [&]{
-				if(state.mesh->is_volume())
-				{
-					current_3d_index = dynamic_cast<Mesh3D *>(state.mesh.get())->switch_face(current_3d_index);
-					std::cout<<"e:"<<current_3d_index.element<<" f:"<<current_3d_index.face<<" e:"<<current_3d_index.edge<<" v:"<<current_3d_index.vertex<<std::endl;
-				}
-
-				plot_selection_and_index();
-			});
-
-			viewer_.ngui->addButton("Switch element", [&]{
-				if(state.mesh->is_volume())
-				{
-					current_3d_index = dynamic_cast<Mesh3D *>(state.mesh.get())->switch_element(current_3d_index);
-					selected_elements += ","+std::to_string(current_3d_index.element);
-					std::cout<<"e:"<<current_3d_index.element<<" f:"<<current_3d_index.face<<" e:"<<current_3d_index.edge<<" v:"<<current_3d_index.vertex<<std::endl;
-				}
-
-				plot_selection_and_index();
-			});
-
-			viewer_.ngui->addButton("Save selection", [&]{
-				if(state.mesh->is_volume())
-				{
-					auto v{explode(selected_elements, ',')};
-					std::set<int> idx;
-					for(auto s : v)
-						idx.insert(atoi(s.c_str()));
-
-					std::vector<int> idx_v(idx.begin(), idx.end());
-
-					dynamic_cast<Mesh3D *>(state.mesh.get())->save(idx_v, 2, "mesh.HYBRID");
-				}
-			});
-
-			viewer_.ngui->addWindow(Eigen::Vector2i(0,680),"Screenshot");
-
-			// viewer_.ngui->addVariable<bool>("lighting enabled",[&](bool val) {
-			// 	light_enabled = val;
-
-
-			// },[&]() {
-			// 	return light_enabled;
-			// });
-
-			viewer_.ngui->addButton("Save", [&]{
-				// Allocate temporary buffers
-				Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(6400, 4000);
-				Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> G(6400, 4000);
-				Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> B(6400, 4000);
-				Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(6400, 4000);
-
-    			// Draw the scene in the buffers
-				viewer.core.draw_buffer(viewer.data,viewer.opengl,false,R,G,B,A);
-				A.setConstant(255);
-
-    			// Save it to a PNG
-				std::string path = (screenshot.empty() ? "out.png" : screenshot);
-				igl::png::writePNG(R,G,B,A,path);
-			});
-
-
-
-			viewer_.ngui->addWindow(Eigen::Vector2i(1000,0),"Elasticity BC");
-			for(int local_id = 1; local_id <= 6; ++local_id)
-			{
-				viewer_.ngui->addVariable<bool>("Dirichlet " + std::to_string(local_id),
-					[this,local_id](bool val) {
-					dirichlet_bc[local_id-1] = val;
-
-					auto &ids = state.problem->boundary_ids();
-					ids.clear();
-					for(int i=0; i < dirichlet_bc.size(); ++i)
-					{
-						if(dirichlet_bc[i])
-							ids.push_back(i+1);
-					}
-
-				},[this,local_id]() {
-					return dirichlet_bc[local_id-1];
-				});
-			}
-
-			viewer_.screen->performLayout();
-
-			#endif
-
-			return false;
-		};
-		#endif
-
 		viewer.core.background_color.setOnes();
-		viewer.core.set_rotation_type(igl::viewer::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
+		viewer.core.set_rotation_type(igl::opengl::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
 
 		if (screenshot.empty()) {
 			viewer.core.is_animating = true;
@@ -1449,7 +1181,7 @@ namespace {
 
 }
 
-int offscreen_screenshot(igl::viewer::Viewer &viewer, const std::string &path) {
+int offscreen_screenshot(igl::opengl::glfw::Viewer &viewer, const std::string &path) {
 	glfwSetErrorCallback(my_glfw_error_callback);
 	if (!glfwInit()) {
 		std::cout << "init failure" << std::endl;
@@ -1483,8 +1215,8 @@ int offscreen_screenshot(igl::viewer::Viewer &viewer, const std::string &path) {
       glGetError(); // pull and savely ignonre unhandled errors like GL_INVALID_ENUM
       fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
     #endif
-      viewer.opengl.init();
-      viewer.core.align_camera_center(viewer.data.V, viewer.data.F);
+      viewer.data().meshgl.init();
+      viewer.core.align_camera_center(viewer.data().V, viewer.data().F);
       viewer.init();
 
       Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(6400, 4000);
@@ -1493,7 +1225,7 @@ int offscreen_screenshot(igl::viewer::Viewer &viewer, const std::string &path) {
       Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(6400, 4000);
 
     // Draw the scene in the buffers
-      viewer.core.draw_buffer(viewer.data,viewer.opengl,true,R,G,B,A);
+      viewer.core.draw_buffer(viewer.data(),true,R,G,B,A);
       A.setConstant(255);
 
     // Save it to a PNG

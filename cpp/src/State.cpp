@@ -21,7 +21,7 @@
 #include "FEMSolver.hpp"
 
 
-#include "json.hpp"
+#include "Common.hpp"
 
 #include "CustomSerialization.hpp"
 #include "VTUWriter.hpp"
@@ -39,6 +39,9 @@
 #include <iostream>
 #include <algorithm>
 #include <memory>
+
+#include "autodiff.h"
+DECLARE_DIFFSCALAR_BASE();
 
 
 using namespace Eigen;

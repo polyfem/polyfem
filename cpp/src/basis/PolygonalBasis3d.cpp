@@ -85,8 +85,8 @@ void compute_canonical_pattern(int n_samples_per_edge, Eigen::MatrixXd &V, Eigen
 	std::string flags = "QpYq30a" + std::to_string(area);
 	igl::triangle::triangulate(P, E, Eigen::MatrixXd(0, 2), flags, V, F);
 
-	// igl::viewer::Viewer viewer;
-	// viewer.data.set_mesh(V, F);
+	// igl::opengl::glfw::Viewer viewer;
+	// viewer.data().set_mesh(V, F);
 	// viewer.launch();
 }
 
@@ -208,10 +208,10 @@ void compute_offset_kernels(const Eigen::MatrixXd &QV, const Eigen::MatrixXi &QF
 	// std::cout << "nkernels: " << KV.rows() << std::endl;
 	// igl::write_triangle_mesh("foo.obj", KV, KF);
 
-	// igl::viewer::Viewer viewer;
-	// viewer.data.set_mesh(KV, KF);
-	// viewer.data.add_points(kernel_centers, Eigen::RowVector3d(0,1,1));
-	// viewer.data.add_points(rej, Eigen::RowVector3d(1,0,0));
+	// igl::opengl::glfw::Viewer viewer;
+	// viewer.data().set_mesh(KV, KF);
+	// viewer.data().add_points(kernel_centers, Eigen::RowVector3d(0,1,1));
+	// viewer.data().add_points(rej, Eigen::RowVector3d(1,0,0));
 	// viewer.launch();
 }
 
@@ -311,20 +311,20 @@ void sample_polyhedra(
 	// 	evalFuncGeom(PV, V, 0);
 	// igl::write_triangle_mesh("foo_dense.obj", collocation_points, CF);
 	// igl::write_triangle_mesh("foo_small.obj", triangulated_vertices, triangulated_faces);
-		// igl::viewer::Viewer viewer;
-		// viewer.data.set_points(kernel_centers, Eigen::RowVector3d(1,0,1));
-		// viewer.data.set_mesh(KV, KF);
+		// igl::opengl::glfw::Viewer viewer;
+		// viewer.data().set_points(kernel_centers, Eigen::RowVector3d(1,0,1));
+		// viewer.data().set_mesh(KV, KF);
 		// viewer.launch();
 	// }
 
-	// igl::viewer::Viewer viewer;
-	// viewer.data.set_mesh(collocation_points, CF);
-	// viewer.data.add_points(kernel_centers, Eigen::RowVector3d(0,1,1));
+	// igl::opengl::glfw::Viewer viewer;
+	// viewer.data().set_mesh(collocation_points, CF);
+	// viewer.data().add_points(kernel_centers, Eigen::RowVector3d(0,1,1));
 	// for (int lf = 0; lf < mesh.n_cell_faces(element_index); ++lf) {
 	// 	Eigen::MatrixXd samples;
 	// 	samples = UV.middleRows(uv_ranges(lf), uv_ranges(lf+1) - uv_ranges(lf));
 	// 	Eigen::RowVector3d c = Eigen::RowVector3d::Random();
-	// 	viewer.data.add_points(samples, c);
+	// 	viewer.data().add_points(samples, c);
 	// }
 	// viewer.launch();
 
@@ -479,9 +479,9 @@ double compute_epsilon(const Mesh3D &mesh, int e) {
 
 namespace {
 
-void add_spheres(igl::viewer::Viewer &viewer0, const Eigen::MatrixXd &P, double radius) {
-	Eigen::MatrixXd V = viewer0.data.V, VS, VN;
-	Eigen::MatrixXi F = viewer0.data.F, FS;
+void add_spheres(igl::opengl::glfw::Viewer &viewer0, const Eigen::MatrixXd &P, double radius) {
+	Eigen::MatrixXd V = viewer0.data().V, VS, VN;
+	Eigen::MatrixXi F = viewer0.data().F, FS;
 	igl::read_triangle_mesh(POLYFEM_MESH_PATH "sphere.ply", VS, FS);
 
 	Eigen::RowVector3d minV = VS.colwise().minCoeff();
@@ -492,7 +492,7 @@ void add_spheres(igl::viewer::Viewer &viewer0, const Eigen::MatrixXd &P, double 
 	// std::cout << V.colwise().minCoeff() << std::endl;
 	// std::cout << V.colwise().maxCoeff() << std::endl;
 
-	Eigen::MatrixXd C = viewer0.data.F_material_ambient.leftCols(3);
+	Eigen::MatrixXd C = viewer0.data().F_material_ambient.leftCols(3);
 	C *= 10;
 
 	int nv = V.rows();
@@ -513,20 +513,20 @@ void add_spheres(igl::viewer::Viewer &viewer0, const Eigen::MatrixXd &P, double 
 	std::cout << C.topRows(10) << std::endl;
 	std::cout << C.bottomRows(10) << std::endl;
 
-	igl::viewer::Viewer viewer;
-	viewer.data.set_mesh(V, F);
-	// viewer.data.add_points(P, Eigen::Vector3d(0,1,1).transpose());
-	viewer.data.set_normals(VN);
-	viewer.data.set_face_based(false);
-	viewer.data.set_colors(C);
-	viewer.data.lines = viewer0.data.lines;
-	viewer.core.show_lines = false;
-	viewer.core.line_width = 5;
+	igl::opengl::glfw::Viewer viewer;
+	viewer.data().set_mesh(V, F);
+	// viewer.data().add_points(P, Eigen::Vector3d(0,1,1).transpose());
+	viewer.data().set_normals(VN);
+	viewer.data().set_face_based(false);
+	viewer.data().set_colors(C);
+	viewer.data().lines = viewer0.data().lines;
+	viewer.data().show_lines = false;
+	viewer.data().line_width = 5;
 	viewer.core.background_color.setOnes();
-	viewer.core.set_rotation_type(igl::viewer::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
+	viewer.core.set_rotation_type(igl::opengl::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
 
 	// #ifdef IGL_VIEWER_WITH_NANOGUI
-	// viewer.callback_init = [&](igl::viewer::Viewer& viewer_) {
+	// viewer.callback_init = [&](igl::opengl::glfw::Viewer& viewer_) {
 	// 	viewer_.ngui->addButton("Save screenshot", [&] {
 	// 		// Allocate temporary buffers
 	// 		Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(6400, 4000);
@@ -606,22 +606,22 @@ void PolygonalBasis3d::build_bases(
 		// b.scaling_ = scaling;
 		// b.translation_ = translation;
 
-		// igl::viewer::Viewer & viewer = UIState::ui_state().viewer;
-		// viewer.data.clear();
-		// viewer.data.set_mesh(triangulated_vertices, triangulated_faces);
-		// viewer.data.add_points(kernel_centers, Eigen::Vector3d(0,1,1).transpose());
+		// igl::opengl::glfw::Viewer & viewer = UIState::ui_state().viewer;
+		// viewer.data().clear();
+		// viewer.data().set_mesh(triangulated_vertices, triangulated_faces);
+		// viewer.data().add_points(kernel_centers, Eigen::Vector3d(0,1,1).transpose());
 		// add_spheres(viewer, kernel_centers, 0.005);
 
 		// Eigen::MatrixXd pts = triangulated_vertices, normals;
 		// Eigen::MatrixXi tris = triangulated_faces;
 		// igl::per_corner_normals(pts, tris, 20, normals);
-		// viewer.data.set_normals(normals);
-		// viewer.data.set_face_based(false);
+		// viewer.data().set_normals(normals);
+		// viewer.data().set_face_based(false);
 		// viewer.launch();
 
 		// for(int a = 0; rhs.cols();++a)
 		// 	{
-		// 	igl::viewer::Viewer viewer;
+		// 	igl::opengl::glfw::Viewer viewer;
 		// 	Eigen::MatrixXd asd(collocation_points.rows(), 3);
 		// 	asd.col(0)=collocation_points.col(0);
 		// 	asd.col(1)=collocation_points.col(1);
@@ -629,12 +629,12 @@ void PolygonalBasis3d::build_bases(
 		// 	Eigen::VectorXd S = rhs.col(a);
 		// 	Eigen::MatrixXd C;
 		// 	igl::colormap(igl::COLOR_MAP_TYPE_VIRIDIS, S, true, C);
-		// 	viewer.data.add_points(asd, C);
+		// 	viewer.data().add_points(asd, C);
 		// 	viewer.launch();
 		// }
 
 		// for(int asd = 0; asd < collocation_points.rows(); ++asd) {
-		//     viewer.data.add_label(collocation_points.row(asd), std::to_string(asd));
+		//     viewer.data().add_label(collocation_points.row(asd), std::to_string(asd));
 		// }
 
 		// Compute the weights of the RBF kernels

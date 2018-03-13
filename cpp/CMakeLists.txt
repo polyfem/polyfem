@@ -34,23 +34,24 @@ option(ENABLE_PARDISO     "Enable Pardiso library"  ON)
 option(ENABLE_MMG         "Enable MMG library"     OFF)
 
 # Options for libigl modules
-option(LIBIGL_USE_STATIC_LIBRARY 	"Use libigl as static library" ON)
-option(LIBIGL_WITH_ANTTWEAKBAR      "Use AntTweakBar"    OFF)
-option(LIBIGL_WITH_CGAL             "Use CGAL"           OFF)
-option(LIBIGL_WITH_COMISO           "Use CoMiso"         OFF)
-option(LIBIGL_WITH_CORK             "Use Cork"           OFF)
-option(LIBIGL_WITH_EMBREE           "Use Embree"         OFF)
-option(LIBIGL_WITH_LIM              "Use LIM"            OFF)
-option(LIBIGL_WITH_MATLAB           "Use Matlab"         OFF)
-option(LIBIGL_WITH_MOSEK            "Use MOSEK"          OFF)
-option(LIBIGL_WITH_OPENGL           "Use OpenGL"         ON)
-option(LIBIGL_WITH_OPENGL_GLFW      "Use GLFW"           ON)
-option(LIBIGL_WITH_PNG              "Use PNG"            ON)
-option(LIBIGL_WITH_PYTHON           "Use Python"         OFF)
-option(LIBIGL_WITH_TETGEN           "Use Tetgen"         ON)
-option(LIBIGL_WITH_TRIANGLE         "Use Triangle"       ON)
-option(LIBIGL_WITH_VIEWER           "Use OpenGL viewer"  ON)
-option(LIBIGL_WITH_XML              "Use XML"            OFF)
+option(LIBIGL_USE_STATIC_LIBRARY          "Use libigl as static library" ON)
+option(LIBIGL_WITH_ANTTWEAKBAR            "Use AntTweakBar"              OFF)
+option(LIBIGL_WITH_CGAL                   "Use CGAL"                     OFF)
+option(LIBIGL_WITH_COMISO                 "Use CoMiso"                   OFF)
+option(LIBIGL_WITH_CORK                   "Use Cork"                     OFF)
+option(LIBIGL_WITH_EMBREE                 "Use Embree"                   OFF)
+option(LIBIGL_WITH_LIM                    "Use LIM"                      OFF)
+option(LIBIGL_WITH_MATLAB                 "Use Matlab"                   OFF)
+option(LIBIGL_WITH_MOSEK                  "Use MOSEK"                    OFF)
+option(LIBIGL_WITH_OPENGL                 "Use OpenGL"                   ON)
+option(LIBIGL_WITH_OPENGL_GLFW            "Use GLFW"                     ON)
+option(LIBIGL_WITH_OPENGL_GLFW_IMGUI      "Use ImGui"                    ON)
+option(LIBIGL_WITH_PNG                    "Use PNG"                      ON)
+option(LIBIGL_WITH_PYTHON                 "Use Python"                   OFF)
+option(LIBIGL_WITH_TETGEN                 "Use Tetgen"                   ON)
+option(LIBIGL_WITH_TRIANGLE               "Use Triangle"                 ON)
+option(LIBIGL_WITH_VIEWER                 "Use OpenGL viewer"            ON)
+option(LIBIGL_WITH_XML                    "Use XML"                      OFF)
 
 ################################################################################
 
@@ -221,18 +222,9 @@ target_compile_definitions(polyfem PUBLIC -DPOLYFEM_MESH_PATH=\"${MESH_PATH}\")
 # find_package(Eigen3 REQUIRED)
 # target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
 
-# GLFW3
-if(NOT TARGET glfw)
-	set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL " " FORCE)
-	set(GLFW_BUILD_TESTS OFF CACHE BOOL " " FORCE)
-	set(GLFW_BUILD_DOCS OFF CACHE BOOL " " FORCE)
-	set(GLFW_INSTALL OFF CACHE BOOL " " FORCE)
-	add_subdirectory("${THIRD_PARTY_DIR}/glfw" glfw)
-endif()
-
 # libigl
 find_package(LIBIGL REQUIRED)
-target_link_libraries(polyfem PUBLIC igl::core igl::triangle igl::tetgen igl::viewer)
+target_link_libraries(polyfem PUBLIC igl::core igl::triangle igl::tetgen igl::opengl_glfw_imgui)
 #remove the igl::viewer for cluster deployment
 
 # Geogram
@@ -254,11 +246,8 @@ target_link_libraries(polyfem PUBLIC polyclipping)
 
 # Json
 add_library(json INTERFACE)
-target_include_directories(json SYSTEM INTERFACE ${THIRD_PARTY_DIR}/json/src)
+target_include_directories(json SYSTEM INTERFACE ${THIRD_PARTY_DIR}/json/single_include)
 target_link_libraries(polyfem PUBLIC json)
-
-# ImGui
-add_subdirectory(${THIRD_PARTY_DIR}/imgui)
 
 # Tiny file dialogs library
 add_subdirectory(${THIRD_PARTY_DIR}/tinyfiledialogs tinyfiledialogs)
@@ -384,15 +373,13 @@ add_executable(${PROJECT_NAME}_bin
 	src/viewer/UIState.cpp
 	src/viewer/UIState.hpp
 	src/viewer/UIMenu.cpp
-	src/viewer/ImGuiMenuBase.cpp
-	src/viewer/ImGuiMenuBase.hpp
 )
 
 target_include_directories(${PROJECT_NAME}_bin PUBLIC
 	src/viewer
 )
 
-target_link_libraries(${PROJECT_NAME}_bin PUBLIC igl::viewer igl::png imgui polyfem tinyfiledialogs)
+target_link_libraries(${PROJECT_NAME}_bin PUBLIC igl::opengl_glfw_imgui igl::png polyfem tinyfiledialogs)
 target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
 
 # Main executable without gui, uncomment when not debugging gui is necessary

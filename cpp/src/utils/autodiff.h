@@ -61,22 +61,26 @@ struct DiffScalarBase {
 	/// @}
 	// ======================================================================
 
-#ifdef WIN32
-	static __declspec(thread) size_t m_variableCount;
-#else
-	static __thread size_t m_variableCount;
-#endif
+// #ifdef WIN32
+	// static __declspec(thread) size_t m_variableCount;
+// #else
+	// static __thread size_t m_variableCount;
+// #endif
+	static thread_local size_t m_variableCount;
 	
 };
 
 
-#ifdef WIN32
+// #ifdef WIN32
+// #define DECLARE_DIFFSCALAR_BASE() \
+// 	__declspec(thread) size_t DiffScalarBase::m_variableCount = 0
+// #else
+// #define DECLARE_DIFFSCALAR_BASE() \
+// 	__thread size_t DiffScalarBase::m_variableCount = 0
+// #endif
+
 #define DECLARE_DIFFSCALAR_BASE() \
-	__declspec(thread) size_t DiffScalarBase::m_variableCount = 0
-#else
-#define DECLARE_DIFFSCALAR_BASE() \
-	__thread size_t DiffScalarBase::m_variableCount = 0
-#endif
+	thread_local size_t DiffScalarBase::m_variableCount = 0
 
 /**
  * \brief Automatic differentiation scalar with first-order derivatives

@@ -7,6 +7,7 @@
 
 #include <igl/png/writePNG.h>
 #include <imgui/imgui.h>
+#include <igl/opengl/glfw/imgui/ImGuiHelpers.h>
 #include <tinyfiledialogs.h>
 #include <algorithm>
 ////////////////////////////////////////////////////////////////////////////////
@@ -59,38 +60,13 @@ namespace {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace ImGui {
-
-	static auto vector_getter = [](void* vec, int idx, const char** out_text) {
-		auto& vector = *static_cast<std::vector<std::string>*>(vec);
-		if (idx < 0 || idx >= static_cast<int>(vector.size())) { return false; }
-		*out_text = vector.at(idx).c_str();
-		return true;
-	};
-
-	bool Combo(const char* label, int* idx, std::vector<std::string>& values) {
-		if (values.empty()) { return false; }
-		return Combo(label, idx, vector_getter,
-			static_cast<void*>(&values), values.size());
-	}
-
-	bool ListBox(const char* label, int* idx, std::vector<std::string>& values) {
-		if (values.empty()) { return false; }
-		return ListBox(label, idx, vector_getter,
-			static_cast<void*>(&values), values.size());
-	}
-
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
 // Draw menu
 void poly_fem::UIState::draw_menu() {
 	// Text labels
-	draw_labels_menu();
+	draw_labels_window();
 
 	// Viewer settings
-	float viewer_menu_width = 200.f * m_HidpiScaling / m_PixelRatio;
+	float viewer_menu_width = 200.f * hidpi_scaling() / pixel_ratio();
 
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiSetCond_Always);
 	ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f), ImGuiSetCond_Always);
@@ -392,7 +368,7 @@ void poly_fem::UIState::draw_screenshot() {
 		Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(6400, 4000);
 
 		// Draw the scene in the buffers
-		viewer.core.draw_buffer(viewer.data,viewer.opengl,false,R,G,B,A);
+		viewer.core.draw_buffer(viewer.data(),false,R,G,B,A);
 		A.setConstant(255);
 
 		// Save it to a PNG
