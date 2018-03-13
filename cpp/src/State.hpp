@@ -25,34 +25,16 @@ namespace poly_fem
 
 		State();
 
-		void init(const std::string &mesh_path, const int n_refs, const std::string problem_name);
+		void init(const json &args);
 
-		int quadrature_order = 4;
-		int discr_order = 1;
-		int n_boundary_samples = 10;
-		int harmonic_samples_res = 10;
-		int integral_constraints = 2;
+		json args;
 
-		std::string mesh_path;
-		int n_refs = 0;
-
-		bool use_splines = false;
-		bool iso_parametric = true;
-		bool fit_nodes = false;
-		bool normalize_mesh = true;
 
 		std::shared_ptr<Problem> problem;
 
-		std::string scalar_formulation = "Laplacian";
-		std::string tensor_formulation = "LinearElasticity"; //"SaintVenant";
-
-
-		int n_bases;
 
 		std::vector< ElementBases >    bases;
 		std::vector< ElementBases >    geom_bases;
-		// std::vector< ElementAssemblyValues > values;
-		// std::vector< ElementAssemblyValues > geom_values;
 
 		std::vector< int >                   boundary_nodes;
 		std::vector< LocalBoundary >         local_boundary;
@@ -60,7 +42,6 @@ namespace poly_fem
 
 		std::vector<int> flipped_elements;
 
-		std::vector<double> errors;
 
 
 		std::unique_ptr<Mesh> mesh;
@@ -69,25 +50,22 @@ namespace poly_fem
 		std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi> > polys_3d;
 		std::vector<int> parent_elements;
 
-		std::string solver_type;
-		std::string precond_type;
-
 		Eigen::SparseMatrix<double> stiffness;
 		Eigen::MatrixXd rhs;
 		Eigen::MatrixXd sol;
+
+
 		json solver_info;
 
-		float lambda = 1, mu = 1;
+		int n_bases;
 
 		double mesh_size;
-
 		double min_edge_length;
 		double average_edge_length;
 
 		double l2_err, linf_err, lp_err, h1_err;
-		long long nn_zero, mat_size, num_dofs;
 
-		float refinenemt_location = 0.5;
+		long long nn_zero, mat_size, num_dofs;
 
 		double building_basis_time;
 		double loading_mesh_time;
@@ -120,20 +98,28 @@ namespace poly_fem
 		void assemble_stiffness_mat();
 		void assemble_rhs();
 		void solve_problem();
-		// void solve_problem_old();
 		void compute_errors();
 
 		void interpolate_function(const Eigen::MatrixXd &fun, const Eigen::MatrixXd &local_pts, Eigen::MatrixXd &result);
 
 		void save_json(std::ostream &out);
-		void sertialize(const std::string &file_name);
 
 		void compute_mesh_stats();
 
 		void save_vtu(const std::string &name);
-		// void compute_poly_basis_error(const std::string &path);
 
-		inline std::string formulation() const { return problem->is_scalar() ? scalar_formulation : tensor_formulation; }
+		inline std::string mesh_path() const { return args["mesh"]; }
+
+		inline std::string formulation() const { return problem->is_scalar() ? scalar_formulation() : tensor_formulation(); }
+		inline bool iso_parametric() const { return args["iso_parametric"]; }
+
+		inline std::string solver_type() const { return args["solver_type"]; }
+		inline std::string precond_type() const { return args["precond_type"]; }
+		inline const json &solver_params() const { return args["solver_params"]; }
+
+		inline std::string scalar_formulation() const { return args["scalar_formulation"]; }
+		inline std::string tensor_formulation() const { return args["tensor_formulation"]; }
+
 	};
 
 }

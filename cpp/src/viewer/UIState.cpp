@@ -326,7 +326,7 @@ namespace poly_fem
 
 			if(map_edges)
 			{
-				const auto &current_bases = state.iso_parametric ? state.bases : state.geom_bases;
+				const auto &current_bases = state.iso_parametric() ? state.bases : state.geom_bases;
 				get_plot_edges(*state.mesh, current_bases, 20, valid_elements, p0, p1);
 			}
 			else
@@ -402,7 +402,7 @@ namespace poly_fem
 		MatrixXd p0, p1;
 		if(map_edges)
 		{
-			const auto &current_bases = state.iso_parametric ? state.bases : state.geom_bases;
+			const auto &current_bases = state.iso_parametric() ? state.bases : state.geom_bases;
 			get_plot_edges(*state.mesh, current_bases, 20, valid_elements, p0, p1);
 		}
 		else
@@ -497,7 +497,7 @@ namespace poly_fem
 				else
 					local_pts = vis_pts_poly[i];
 
-				assembler.compute_scalar_value(state.tensor_formulation, bs, local_pts, state.sol, stresses);
+				assembler.compute_scalar_value(state.tensor_formulation(), bs, local_pts, state.sol, stresses);
 
 				ffun.block(counter, 0, stresses.rows(), 1) = stresses;
 				counter += stresses.rows();
@@ -886,7 +886,7 @@ namespace poly_fem
 			}
 		}
 
-		const auto &current_bases = state.iso_parametric ? state.bases : state.geom_bases;
+		const auto &current_bases = state.iso_parametric() ? state.bases : state.geom_bases;
 		int faces_total_size = 0, points_total_size = 0;
 		vis_element_ranges.push_back(0);
 
@@ -1020,7 +1020,7 @@ namespace poly_fem
 
 	void UIState::load_mesh()
 	{
-		if (state.mesh_path.empty()) { return; }
+		if (state.mesh_path().empty()) { return; }
 		element_ranges.clear();
 		vis_element_ranges.clear();
 
@@ -1125,9 +1125,9 @@ namespace poly_fem
 		}
 	}
 
-	void UIState::launch(const std::string &mesh_path, const int n_refs, const std::string &problem_name)
+	void UIState::launch(const json &args)
 	{
-		state.init(mesh_path, n_refs, problem_name);
+		state.init(args);
 
 		if(state.problem->boundary_ids().empty())
 			std::fill(dirichlet_bc.begin(), dirichlet_bc.end(), true);

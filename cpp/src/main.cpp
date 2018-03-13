@@ -1,6 +1,7 @@
 #include "State.hpp"
 #include "UIState.hpp"
 
+#include "LinearSolver.hpp"
 #include "CommandLine.hpp"
 
 
@@ -63,6 +64,8 @@ int main(int argc, const char **argv)
 	bool no_ui = false;
 
 	command_line.add_option("-mesh", path);
+
+	//for debugging
 	command_line.add_option("-n_refs", n_refs);
 	command_line.add_option("-problem", problem_name);
 	command_line.add_option("-normalize", "-not_norm", normalize_mesh);
@@ -73,11 +76,16 @@ int main(int argc, const char **argv)
 	command_line.add_option("-q", discr_order);
 	command_line.add_option("-spline", "-fem", use_splines);
 
+	//disable out
 	command_line.add_option("-cmd", "-ui", no_ui);
 
+	//IO
 	command_line.add_option("-output", output);
 	command_line.add_option("-vtu", vtu);
 	command_line.add_option("-screenshot", screenshot);
+
+
+
 
 	command_line.parse(argc, argv);
 	if (!screenshot.empty()) { no_ui = false; }
@@ -86,24 +94,35 @@ int main(int argc, const char **argv)
 	json j_args = {
 		{"mesh", ""},
 		{"n_refs", 0},
-		{"ref_t", 0.5},
+		{"refinenemt_location", 0.5},
+		{"n_boundary_samples", 10},
 		{"problem", "Franke"},
 		{"normalize_mesh", true},
 
-		{"scalar_form", "Laplacian"},
-		{"tensor_form", "LinearElasticity"},
+		{"scalar_formulation", "Laplacian"},
+		{"tensor_formulation", "LinearElasticity"},
 
-		{"n_quadrature_points", 4},
-		{"disc_order", 1},
+		{"quadrature_order", 4},
+		{"discr_order", 1},
 		{"boundary_samples", 10},
 		{"use_spline", false},
 		{"iso_parametric", true},
 		{"integral_constraints", 2},
 
+		{"fit_nodes", false},
+
+		{"n_harmonic_samples", 10},
+
+		{"solver_type", LinearSolver::defaultSolver()},
+		{"precond_type", LinearSolver::defaultPrecond()},
+
+		{"solver_params", {}},
+
 		{"params", {
-			{"lambda", 1},
-			{"mu", 1},
-			{"k", 1},
+			{"lambda", 1.0},
+			{"mu", 1.0},
+			{"k", 1.0},
+			{"elasticity_tensor", {}}
 		}}
 	};
 
@@ -113,86 +132,37 @@ int main(int argc, const char **argv)
 	in_args["problem"] = problem_name;
 	in_args["normalize"] = normalize_mesh;
 
-	in_args["scalar_form"] = scalar_formulation;
-	in_args["tensor_form"] = tensor_formulation;
+	in_args["scalar_formulation"] = scalar_formulation;
+	in_args["tensor_formulation"] = tensor_formulation;
 
-	in_args["disc_order"] = discr_order;
+	in_args["discr_order"] = discr_order;
 	in_args["use_spline"] = use_splines;
 
 	j_args.merge_patch(in_args);
 
 
-	std::cout << j_args.dump(4) << std::endl;
+	if(no_ui)
+	{
+		State &state = State::state();
+		state.init(j_args);
 
-	exit(0);
+		state.assemble_rhs();
+		state.assemble_stiffness_mat();
+		state.solve_problem();
+		state.compute_errors();
 
-	// if(no_ui)
-	// {
-	// 	State &state = State::state();
+		if(!output.empty()){
+			std::ofstream out(output);
+			state.save_json(out);
+		}
 
-	// 	state.quadrature_order = quadrature_order;
-	// 	state.use_splines = use_splines;
-	// 	state.lambda = lambda;
-	// 	state.mu = mu;
-	// 	state.discr_order = discr_order;
-	// 	state.n_boundary_samples = n_boundary_samples;
-	// 	state.refinenemt_location = refinenemt_location;
-	// 	state.iso_parametric = iso_parametric;
-	// 	state.integral_constraints = integral_constraints;
-	// 	state.normalize_mesh = normalize_mesh;
-	// 	state.scalar_formulation = scalar_formulation;
-	// 	state.tensor_formulation = tensor_formulation;
-
-	// 	state.init(path, n_refs, problem_name);
- //        // std::cout<<path<<std::endl;
- //        // for(int i = 0; i < 6; ++i)
-	// 	{
-	// 		state.load_mesh();
-	// 		state.compute_mesh_stats();
-	// 		state.build_basis();
-
- //            // if(state.n_flipped == 0)
- //                // break;
-	// 	}
-	// 	state.build_polygonal_basis();
-
-	// 	// if(!hack.empty()){
-	// 	// 	state.compute_poly_basis_error(hack);
-	// 	// 	return EXIT_SUCCESS;
-	// 	// }
-
-	// 	state.assemble_rhs();
-	// 	state.assemble_stiffness_mat();
-	// 	state.solve_problem();
- //        // state.solve_problem_old();
-	// 	state.compute_errors();
-
-	// 	if(!output.empty()){
-	// 		std::ofstream out(output);
-	// 		state.save_json(out);
-	// 	}
-
-	// 	if(!vtu.empty())
-	// 		state.save_vtu(vtu);
-	// }
-	// else
-	// {
-	// 	UIState::ui_state().state.quadrature_order = quadrature_order;
-	// 	UIState::ui_state().state.discr_order = discr_order;
-	// 	UIState::ui_state().state.use_splines = use_splines;
-	// 	UIState::ui_state().state.lambda = lambda;
-	// 	UIState::ui_state().state.mu = mu;
-	// 	UIState::ui_state().state.n_boundary_samples = n_boundary_samples;
-	// 	UIState::ui_state().state.refinenemt_location = refinenemt_location;
-	// 	UIState::ui_state().state.iso_parametric = iso_parametric;
-	// 	UIState::ui_state().state.integral_constraints = integral_constraints;
-	// 	UIState::ui_state().screenshot = screenshot;
-	// 	UIState::ui_state().state.normalize_mesh = normalize_mesh;
-	// 	UIState::ui_state().state.scalar_formulation = scalar_formulation;
-	// 	UIState::ui_state().state.tensor_formulation = tensor_formulation;
-
-	// 	UIState::ui_state().launch(path, n_refs, problem_name);
-	// }
+		if(!vtu.empty())
+			state.save_vtu(vtu);
+	}
+	else
+	{
+		UIState::ui_state().launch(j_args);
+	}
 
 
 	return EXIT_SUCCESS;

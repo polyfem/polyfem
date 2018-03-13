@@ -133,15 +133,20 @@ void poly_fem::UIState::draw_menu() {
 
 void poly_fem::UIState::draw_settings() {
 	ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.50f);
-	ImGui::InputInt("quad", &state.quadrature_order);
-	ImGui::InputInt("discr", &state.discr_order);
-	ImGui::InputInt("b", &state.n_boundary_samples);
+	// ImGui::InputInt("quad", &state.quadrature_order);
+	int discr_order = state.args["discr_order"];
+	ImGui::InputInt("discr", &discr_order);
+	state.args["discr_order"] = discr_order;
+	
+	// ImGui::InputInt("b", &state.n_boundary_samples);
 
-	ImGui::InputFloat("lambda", &state.lambda, 0, 0, 3);
-	ImGui::InputFloat("mu", &state.mu, 0, 0, 3);
+	//ImGui::InputFloat("lambda", &state.lambda, 0, 0, 3);
+	//ImGui::InputFloat("mu", &state.mu, 0, 0, 3);
+	int n_refs = state.args["n_refs"];
+	ImGui::InputInt("refs", &n_refs);
+	state.args["n_refs"] = n_refs;
 
-	ImGui::InputInt("refs", &state.n_refs);
-	ImGui::InputFloat("refinenemt t", &state.refinenemt_location, 0, 0, 2);
+	// ImGui::InputFloat("refinenemt t", &state.refinenemt_location, 0, 0, 2);
 	ImGui::PopItemWidth();
 
 	ImGui::Spacing();
@@ -150,17 +155,22 @@ void poly_fem::UIState::draw_settings() {
 			{"*.HYBRID", "*.obj"} , "General polyhedral mesh");
 
 		if (!path.empty()) {
-			state.mesh_path = path;
+			state.args["mesh"] = path;
 			load_mesh();
 		}
 
 	}
 	ImGui::SameLine();
-	ImGui::Text("%s", state.mesh_path.c_str());
+	ImGui::Text("%s", state.mesh_path().c_str());
 	ImGui::Spacing();
 
-	ImGui::Checkbox("spline basis", &state.use_splines);
-	ImGui::Checkbox("fit nodes", &state.fit_nodes);
+	bool use_splines = state.args["use_spline"];
+	ImGui::Checkbox("spline basis", &use_splines);
+	state.args["use_spline"] = use_splines;
+
+	bool fit_nodes = state.args["fit_nodes"];
+	ImGui::Checkbox("fit nodes", &fit_nodes);
+	state.args["fit_nodes"] = fit_nodes;
 
 	ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.50f);
 	// Colormap type
@@ -205,14 +215,14 @@ void poly_fem::UIState::draw_settings() {
 
 
 	static const auto scalar_forms = poly_fem::AssemblerUtils::instance().scalar_assemblers();
-	if(ImGui::BeginCombo("1D-Form", state.scalar_formulation.c_str()))
+	if(ImGui::BeginCombo("1D-Form", state.scalar_formulation().c_str()))
 	{
 		for(auto f : scalar_forms)
 		{
-			bool is_selected = state.scalar_formulation == f;
+			bool is_selected = state.scalar_formulation() == f;
 
 			if (ImGui::Selectable(f.c_str(), is_selected))
-				state.scalar_formulation = f;
+				state.args["scalar_formulation"] = f;
 			if (is_selected)
 				ImGui::SetItemDefaultFocus();
 		}
@@ -220,14 +230,14 @@ void poly_fem::UIState::draw_settings() {
 	}
 
 	static const auto tensor_forms = poly_fem::AssemblerUtils::instance().tensor_assemblers();
-	if(ImGui::BeginCombo("nD-Form", state.tensor_formulation.c_str()))
+	if(ImGui::BeginCombo("nD-Form", state.tensor_formulation().c_str()))
 	{
 		for(auto f : tensor_forms)
 		{
-			bool is_selected = state.tensor_formulation == f;
+			bool is_selected = state.tensor_formulation() == f;
 
 			if (ImGui::Selectable(f.c_str(), is_selected))
-				state.tensor_formulation = f;
+				state.args["tensor_formulation"] = f;
 			if (is_selected)
 				ImGui::SetItemDefaultFocus();
 		}
@@ -237,23 +247,16 @@ void poly_fem::UIState::draw_settings() {
 
 	// Solver type
 	auto solvers = LinearSolver::availableSolvers();
-	if (state.solver_type.empty()) {
-		state.solver_type = LinearSolver::defaultSolver();
-	}
-	static int solver_num = std::distance(solvers.begin(), std::find(solvers.begin(), solvers.end(), state.solver_type));
+	static int solver_num = std::distance(solvers.begin(), std::find(solvers.begin(), solvers.end(), state.solver_type()));
 	if (ImGui::Combo("Solver", &solver_num, solvers)) {
-		state.solver_type = solvers[solver_num];
+		state.args["solver_type"] = solvers[solver_num];
 	}
 
 	// Preconditioner
 	auto precond = LinearSolver::availablePrecond();
-	if (state.precond_type.empty()) {
-		state.precond_type = LinearSolver::defaultPrecond();
-	}
-	static int precond_num =  std::distance(precond.begin(),
-		std::find(precond.begin(), precond.end(), state.precond_type));
+	static int precond_num =  std::distance(precond.begin(), std::find(precond.begin(), precond.end(), state.precond_type()));
 	if (ImGui::Combo("Precond", &precond_num, precond)) {
-		state.precond_type = precond[precond_num];
+		state.args["precond_type"] = precond[precond_num];
 	}
 	ImGui::PopItemWidth();
 	ImGui::Checkbox("skip visualization", &skip_visualization);

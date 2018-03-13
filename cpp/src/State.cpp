@@ -118,22 +118,23 @@ namespace poly_fem
 		using json = nlohmann::json;
 		json j;
 
-		j["quadrature_order"] = quadrature_order;
-		j["mesh_path"] = mesh_path;
-		j["discr_order"] = discr_order;
-		j["harmonic_samples_res"] = harmonic_samples_res;
-		j["use_splines"] = use_splines;
-		j["iso_parametric"] = iso_parametric;
+		j["args"] = args;
+		j["quadrature_order"] = args["quadrature_order"];
+		j["mesh_path"] = mesh_path();
+		j["discr_order"] = args["discr_order"];
+		j["harmonic_samples_res"] = args["n_harmonic_samples"];
+		j["use_splines"] = args["use_spline"];
+		j["iso_parametric"] = iso_parametric();
 		j["problem"] = problem->name();
 		j["mat_size"] = mat_size;
-		j["solver_type"] = solver_type;
-		j["precond_type"] = precond_type;
-		j["lambda"] = lambda;
-		j["mu"] = mu;
-		j["refinenemt_location"] = refinenemt_location;
+		j["solver_type"] = args["solver_type"];
+		j["precond_type"] = args["precond_type"];
+		j["params"] = args["params"];
 
-		j["num_boundary_samples"] = n_boundary_samples;
-		j["num_refs"] = n_refs;
+		j["refinenemt_location"] = args["refinenemt_location"];
+
+		j["num_boundary_samples"] = args["n_boundary_samples"];
+		j["num_refs"] = args["n_refs"];
 		j["num_bases"] = n_bases;
 		j["num_non_zero"] = nn_zero;
 		j["num_flipped"] = n_flipped;
@@ -225,7 +226,6 @@ namespace poly_fem
 		geom_bases.clear();
 		boundary_nodes.clear();
 		local_boundary.clear();
-		errors.clear();
 		polys.clear();
 		poly_edge_to_data.clear();
 		parent_elements.clear();
@@ -240,7 +240,7 @@ namespace poly_fem
 
 		igl::Timer timer; timer.start();
 		std::cout<<"Loading mesh..."<<std::flush;
-		mesh = Mesh::create(mesh_path);
+		mesh = Mesh::create(mesh_path());
 		if (!mesh) {
 			return;
 		}
@@ -252,10 +252,10 @@ namespace poly_fem
 		// 		mesh->set_tag(el_id, ElementType::InteriorPolytope);
 		// }
 
-		if(normalize_mesh)
+		if(args["normalize_mesh"])
 			mesh->normalize();
 
-		mesh->refine(n_refs, refinenemt_location, parent_elements);
+		mesh->refine(args["n_refs"], args["refinenemt_location"], parent_elements);
 
 		mesh->compute_boundary_ids();
 
@@ -270,7 +270,6 @@ namespace poly_fem
 		geom_bases.clear();
 		boundary_nodes.clear();
 		local_boundary.clear();
-		errors.clear();
 		polys.clear();
 		poly_edge_to_data.clear();
 
@@ -401,7 +400,6 @@ namespace poly_fem
 		geom_bases.clear();
 		boundary_nodes.clear();
 		local_boundary.clear();
-		errors.clear();
 		polys.clear();
 		poly_edge_to_data.clear();
 		stiffness.resize(0, 0);
@@ -412,7 +410,7 @@ namespace poly_fem
 
 
 		igl::Timer timer; timer.start();
-		std::cout<<"Building "<< (iso_parametric? "isoparametric":"not isoparametric") <<" basis..."<<std::flush;
+		std::cout<<"Building "<< (iso_parametric()? "isoparametric":"not isoparametric") <<" basis..."<<std::flush;
 
 		local_boundary.clear();
 		std::map<int, InterfaceData> poly_edge_to_data_geom; //temp dummy variable
@@ -420,48 +418,48 @@ namespace poly_fem
 		if(mesh->is_volume())
 		{
 			const Mesh3D &tmp_mesh = *dynamic_cast<Mesh3D *>(mesh.get());
-			if(use_splines)
+			if(args["use_spline"])
 			{
-				if(!iso_parametric)
-					FEBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, poly_edge_to_data_geom);
+				if(!iso_parametric())
+					FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], args["discr_order"], geom_bases, local_boundary, poly_edge_to_data_geom);
 
-				n_bases = SplineBasis3d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, poly_edge_to_data);
+				n_bases = SplineBasis3d::build_bases(tmp_mesh, args["quadrature_order"], bases, local_boundary, poly_edge_to_data);
 
-				if(iso_parametric && fit_nodes)
+				if(iso_parametric() &&  args["fit_nodes"])
 					SplineBasis3d::fit_nodes(tmp_mesh, n_bases, bases);
 			}
 			else
 			{
-				if (!iso_parametric)
-					FEBasis3d::build_bases(tmp_mesh, quadrature_order, 1, geom_bases, local_boundary, poly_edge_to_data_geom);
+				if (!iso_parametric())
+					FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], 1, geom_bases, local_boundary, poly_edge_to_data_geom);
 
-				n_bases = FEBasis3d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, poly_edge_to_data);
+				n_bases = FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], args["discr_order"], bases, local_boundary, poly_edge_to_data);
 			}
 		}
 		else
 		{
 			const Mesh2D &tmp_mesh = *dynamic_cast<Mesh2D *>(mesh.get());
-			if(use_splines)
+			if(args["use_spline"])
 			{
 
-				if(!iso_parametric)
-					FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, geom_bases, local_boundary, poly_edge_to_data_geom);
+				if(!iso_parametric())
+					FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], args["discr_order"], geom_bases, local_boundary, poly_edge_to_data_geom);
 
-				n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, bases, local_boundary, poly_edge_to_data);
+				n_bases = SplineBasis2d::build_bases(tmp_mesh, args["quadrature_order"], bases, local_boundary, poly_edge_to_data);
 
-				if(iso_parametric && fit_nodes)
+				if(iso_parametric() && args["fit_nodes"])
 					SplineBasis2d::fit_nodes(tmp_mesh, n_bases, bases);
 			}
 			else
 			{
-				if(!iso_parametric)
-					FEBasis2d::build_bases(tmp_mesh, quadrature_order, 1, geom_bases, local_boundary, poly_edge_to_data_geom);
+				if(!iso_parametric())
+					FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], 1, geom_bases, local_boundary, poly_edge_to_data_geom);
 
-				n_bases = FEBasis2d::build_bases(tmp_mesh, quadrature_order, discr_order, bases, local_boundary, poly_edge_to_data);
+				n_bases = FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], args["discr_order"], bases, local_boundary, poly_edge_to_data);
 			}
 		}
 
-		auto &gbases = iso_parametric ? bases : geom_bases;
+		auto &gbases = iso_parametric() ? bases : geom_bases;
 
 
 		n_flipped = 0;
@@ -503,7 +501,7 @@ namespace poly_fem
 		std::sort(boundary_nodes.begin(), boundary_nodes.end());
 
 
-		const auto &curret_bases =  iso_parametric ? bases : geom_bases;
+		const auto &curret_bases =  iso_parametric() ? bases : geom_bases;
 		const int n_samples = 10;
 		compute_mesh_size(*mesh, curret_bases, n_samples);
 
@@ -519,7 +517,6 @@ namespace poly_fem
 
 	void State::build_polygonal_basis()
 	{
-		errors.clear();
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
 		sol.resize(0, 0);
@@ -534,19 +531,19 @@ namespace poly_fem
 
 		// std::sort(boundary_nodes.begin(), boundary_nodes.end());
 
-		if(iso_parametric)
+		if(iso_parametric())
 		{
 			if(mesh->is_volume())
-				PolygonalBasis3d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, quadrature_order, integral_constraints, bases, bases, poly_edge_to_data, polys_3d);
+				PolygonalBasis3d::build_bases(args["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["quadrature_order"], args["integral_constraints"], bases, bases, poly_edge_to_data, polys_3d);
 			else
-				PolygonalBasis2d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, quadrature_order, integral_constraints, bases, bases, poly_edge_to_data, polys);
+				PolygonalBasis2d::build_bases(args["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["quadrature_order"], args["integral_constraints"], bases, bases, poly_edge_to_data, polys);
 		}
 		else
 		{
 			if(mesh->is_volume())
-				PolygonalBasis3d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, quadrature_order, integral_constraints, bases, geom_bases, poly_edge_to_data, polys_3d);
+				PolygonalBasis3d::build_bases(args["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["quadrature_order"], args["integral_constraints"], bases, geom_bases, poly_edge_to_data, polys_3d);
 			else
-				PolygonalBasis2d::build_bases(harmonic_samples_res, *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, quadrature_order, integral_constraints, bases, geom_bases, poly_edge_to_data, polys);
+				PolygonalBasis2d::build_bases(args["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["quadrature_order"], args["integral_constraints"], bases, geom_bases, poly_edge_to_data, polys);
 		}
 
 		timer.stop();
@@ -556,18 +553,14 @@ namespace poly_fem
 
 	json State::build_json_params()
 	{
-		json params = {
-			{"size", mesh->dimension()},
-			{"lambda", lambda},
-			{"mu", mu}
-		};
+		json params = args["params"];
+		params["size"] = mesh->dimension();
 
 		return params;
 	}
 
 	void State::assemble_stiffness_mat()
 	{
-		errors.clear();
 		stiffness.resize(0, 0);
 		sol.resize(0, 0);
 
@@ -581,11 +574,11 @@ namespace poly_fem
 
 		if(problem->is_scalar())
 		{
-			assembler.assemble_scalar_problem(scalar_formulation, mesh->is_volume(), n_bases, bases, iso_parametric ? bases : geom_bases, stiffness);
+			assembler.assemble_scalar_problem(scalar_formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, stiffness);
 		}
 		else
 		{
-			assembler.assemble_tensor_problem(tensor_formulation, mesh->is_volume(), n_bases, bases, iso_parametric ? bases : geom_bases, stiffness);
+			assembler.assemble_tensor_problem(tensor_formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, stiffness);
 		}
 
 		timer.stop();
@@ -600,7 +593,6 @@ namespace poly_fem
 
 	void State::assemble_rhs()
 	{
-		errors.clear();
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
 		sol.resize(0, 0);
@@ -610,10 +602,10 @@ namespace poly_fem
 
 		const int size = problem->is_scalar() ? 1 : mesh->dimension();
 
-		RhsAssembler rhs_assembler(*mesh, n_bases, size, bases, iso_parametric ? bases : geom_bases, formulation(), *problem);
+		RhsAssembler rhs_assembler(*mesh, n_bases, size, bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
 		rhs_assembler.assemble(rhs);
 		rhs *= -1;
-		rhs_assembler.set_bc(local_boundary, boundary_nodes, n_boundary_samples, rhs);
+		rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], rhs);
 
 		timer.stop();
 		assigning_rhs_time = timer.getElapsedTime();
@@ -622,24 +614,19 @@ namespace poly_fem
 
 	void State::solve_problem()
 	{
-		errors.clear();
 		sol.resize(0, 0);
 
 		igl::Timer timer; timer.start();
 		std::cout<<"Solving... "<<std::flush;
 
 
-		json params = {
-			// {"mtype", 1}, // matrix type for Pardiso (2 = SPD)
-			// {"max_iter", 0}, // for iterative solvers
-			// {"tolerance", 1e-9}, // for iterative solvers
-		};
+		const json &params = solver_params();
 
 		const auto &assembler = AssemblerUtils::instance();
 
 		if(assembler.is_linear(formulation()))
 		{
-			auto solver = LinearSolver::create(solver_type, precond_type);
+			auto solver = LinearSolver::create(args["solver_type"], args["precond_type"]);
 			solver->setParameters(params);
 			Eigen::SparseMatrix<double> A;
 			Eigen::VectorXd b;
@@ -655,7 +642,7 @@ namespace poly_fem
 		}
 		else
 		{
-			RhsAssembler rhs_assembler(*mesh, n_bases, mesh->dimension(), bases, iso_parametric ? bases : geom_bases, formulation(), *problem);
+			RhsAssembler rhs_assembler(*mesh, n_bases, mesh->dimension(), bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
 
 			NLProblem nl_problem(rhs_assembler);
 			VectorXd tmp_sol = nl_problem.initial_guess();
@@ -701,7 +688,6 @@ namespace poly_fem
 
 	void State::compute_errors()
 	{
-		errors.clear();
 
 		if(!problem->has_exact_sol()) return;
 
@@ -718,7 +704,6 @@ namespace poly_fem
 		MatrixXd v_exact, v_approx;
 		MatrixXd v_exact_grad(0,0), v_approx_grad;
 
-		errors.clear();
 
 		l2_err = 0;
 		h1_err = 0;
@@ -728,11 +713,11 @@ namespace poly_fem
 		for(int e = 0; e < n_el; ++e)
 		{
 			// const auto &vals    = values[e];
-			// const auto &gvalues = iso_parametric ? values[e] : geom_values[e];
+			// const auto &gvalues = iso_parametric() ? values[e] : geom_values[e];
 
 			ElementAssemblyValues vals;
 
-			if(iso_parametric)
+			if(iso_parametric())
 				vals.compute(e, mesh->is_volume(), bases[e], bases[e]);
 			else
 				vals.compute(e, mesh->is_volume(), bases[e], geom_bases[e]);
@@ -759,7 +744,7 @@ namespace poly_fem
 
 					if(problem->has_gradient()){
 						for(int d = 0; d < actual_dim; ++d){
-							v_approx_grad.block(0, d*actual_dim, v_approx_grad.rows(), actual_dim) += val.global[ii].val * sol(val.global[ii].index*actual_dim + d) * val.grad_t_m;
+							v_approx_grad.block(0, d*val.grad_t_m.cols(), v_approx_grad.rows(), val.grad_t_m.cols()) += val.global[ii].val * sol(val.global[ii].index*actual_dim + d) * val.grad_t_m;
 						}
 					}
 				}
@@ -799,65 +784,10 @@ namespace poly_fem
 		return instance;
 	}
 
-	void State::init(const std::string &mesh_path_, const int n_refs_, const std::string problem_name)
+	void State::init(const json &args)
 	{
-		n_refs = n_refs_;
-		mesh_path = mesh_path_;
-
-		problem = ProblemFactory::factory().get_problem(problem_name);
-
-		auto solvers = LinearSolver::availableSolvers();
-		if (std::find(solvers.begin(), solvers.end(), solver_type) == solvers.end()) {
-			solver_type = LinearSolver::defaultSolver();
-		}
-		auto precond = LinearSolver::availablePrecond();
-		if (std::find(precond.begin(), precond.end(), precond_type) == precond.end()) {
-			precond_type = LinearSolver::defaultPrecond();
-		}
-	}
-
-	void State::sertialize(const std::string &file_name)
-	{
-		igl::serialize(quadrature_order, "quadrature_order", file_name, true);
-		igl::serialize(n_boundary_samples, "n_boundary_samples", file_name);
-
-		igl::serialize(mesh_path, "mesh_path", file_name);
-		igl::serialize(n_refs, "n_refs", file_name);
-
-		igl::serialize(use_splines, "use_splines", file_name);
-
-		igl::serialize(problem, "problem", file_name);
-
-		igl::serialize(n_bases, "n_bases", file_name);
-
-		igl::serialize(bases, "bases", file_name);
-		igl::serialize(boundary_nodes, "boundary_nodes", file_name);
-		igl::serialize(local_boundary, "local_boundary", file_name);
-
-
-		igl::serialize(*mesh, "mesh", file_name);
-
-		igl::serialize(polys, "polys", file_name);
-
-
-		igl::serialize(stiffness, "stiffness", file_name);
-		igl::serialize(rhs, "rhs", file_name);
-		igl::serialize(sol, "sol", file_name);
-
-		igl::serialize(mesh_size, "mesh_size", file_name);
-		igl::serialize(l2_err, "l2_err", file_name);
-		igl::serialize(h1_err, "h1_err", file_name);
-		igl::serialize(linf_err, "linf_err", file_name);
-		igl::serialize(nn_zero, "nn_zero", file_name);
-		igl::serialize(mat_size, "mat_size", file_name);
-
-		igl::serialize(building_basis_time, "building_basis_time", file_name);
-		igl::serialize(loading_mesh_time, "loading_mesh_time", file_name);
-		igl::serialize(computing_assembly_values_time, "computing_assembly_values_time", file_name);
-		igl::serialize(assembling_stiffness_mat_time, "assembling_stiffness_mat_time", file_name);
-		igl::serialize(assigning_rhs_time, "assigning_rhs_time", file_name);
-		igl::serialize(solving_time, "solving_time", file_name);
-		igl::serialize(computing_errors_time, "computing_errors_time", file_name);
+		this->args = args;
+		problem = ProblemFactory::factory().get_problem(args["problem"]);
 	}
 
 
@@ -919,7 +849,7 @@ namespace poly_fem
 			igl::copyleft::tetgen::tetrahedralize(pts, faces, buf.str(), hex_pts, hex_tets, dummy);
 		}
 
-		const auto &current_bases = iso_parametric ? bases : geom_bases;
+		const auto &current_bases = iso_parametric() ? bases : geom_bases;
 		int tet_total_size = 0;
 		int pts_total_size = 0;
 

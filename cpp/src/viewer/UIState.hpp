@@ -29,7 +29,7 @@ namespace poly_fem
 	public:
 		static UIState &ui_state();
 
-		void launch(const std::string &mesh_path, const int n_refs, const std::string &problem_name);
+		void launch(const json &args);
 
 		void sertialize(const std::string &name);
 
