@@ -77,6 +77,7 @@ namespace poly_fem
 		problems_.emplace("Zero_BC", std::make_shared<ZeroBCProblem>("Zero_BC"));
 		problems_.emplace("Elastic", std::make_shared<ElasticProblem>("Elastic"));
 		problems_.emplace("ElasticExact", std::make_shared<ElasticProblemExact>("ElasticExact"));
+		problems_.emplace("CompressionElasticExact", std::make_shared<CompressionElasticProblemExact>("CompressionElasticExact"));
 
 		for(auto it = problems_.begin(); it != problems_.end(); ++it)
 			problem_names_.push_back(it->first);
