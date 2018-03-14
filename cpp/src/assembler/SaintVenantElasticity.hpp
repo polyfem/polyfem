@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Common.hpp"
+#include "ElasticityUtils.hpp"
 
 #include "ElementAssemblyValues.hpp"
 #include "ElementBases.hpp"
@@ -38,7 +39,7 @@ namespace poly_fem
 	private:
 		int size_ = 2;
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 21, 1> stifness_tensor_;
+		ElasticityTensor elasticity_tensor_;
 
 		template <typename T, unsigned long N>
 		T stress(const std::array<T, N> &strain, const int j) const;

@@ -1,11 +1,6 @@
 #include "SaintVenantElasticity.hpp"
 
 #include "Basis.hpp"
-#include "ElementAssemblyValues.hpp"
-
-
-#include "AutodiffTypes.hpp"
-#include "ElasticityUtils.hpp"
 
 #include <igl/Timer.h>
 
@@ -56,160 +51,31 @@ namespace poly_fem
 		else
 		{
 			std::vector<double> entries = params["elasticity_tensor"];
-
-			if(size() == 2)
-			{
-				assert(entries.size() >= 6);
-
-				set_stiffness_tensor(0, 0, entries[0]);
-				set_stiffness_tensor(0, 1, entries[1]);
-				set_stiffness_tensor(0, 2, entries[2]);
-
-				set_stiffness_tensor(1, 1, entries[3]);
-				set_stiffness_tensor(1, 2, entries[4]);
-
-				set_stiffness_tensor(2, 2, entries[5]);
-			}
-			else
-			{
-				assert(entries.size() >= 21);
-
-				set_stiffness_tensor(0, 0, entries[0]);
-				set_stiffness_tensor(0, 1, entries[1]);
-				set_stiffness_tensor(0, 2, entries[2]);
-				set_stiffness_tensor(0, 3, entries[3]);
-				set_stiffness_tensor(0, 4, entries[4]);
-				set_stiffness_tensor(0, 5, entries[5]);
-
-				set_stiffness_tensor(1, 1, entries[6]);
-				set_stiffness_tensor(1, 2, entries[7]);
-				set_stiffness_tensor(1, 3, entries[8]);
-				set_stiffness_tensor(1, 4, entries[9]);
-				set_stiffness_tensor(1, 5, entries[10]);
-
-				set_stiffness_tensor(2, 2, entries[11]);
-				set_stiffness_tensor(2, 3, entries[12]);
-				set_stiffness_tensor(2, 4, entries[13]);
-				set_stiffness_tensor(2, 5, entries[14]);
-
-				set_stiffness_tensor(3, 3, entries[15]);
-				set_stiffness_tensor(3, 4, entries[16]);
-				set_stiffness_tensor(3, 5, entries[17]);
-
-				set_stiffness_tensor(4, 4, entries[18]);
-				set_stiffness_tensor(4, 5, entries[19]);
-
-				set_stiffness_tensor(5, 5, entries[20]);
-
-			}
+			elasticity_tensor_.set_from_entries(entries);
 		}
 	}
 
 	void SaintVenantElasticity::set_size(const int size)
 	{
-		if(size == 2)
-			stifness_tensor_.resize(6, 1);
-		else
-			stifness_tensor_.resize(21, 1);
-
+		elasticity_tensor_.resize(size);
 		size_ = size;
 	}
 
 	template <typename T, unsigned long N>
 	T SaintVenantElasticity::stress(const std::array<T, N> &strain, const int j) const
 	{
-		T res = stifness_tensor(j, 0)*strain[0];
+		T res = elasticity_tensor_(j, 0)*strain[0];
 
 		for(unsigned long k = 1; k < N; ++k)
-			res += stifness_tensor(j, k)*strain[k];
+			res += elasticity_tensor_(j, k)*strain[k];
 
 		return res;
 	}
 
-	void SaintVenantElasticity::set_stiffness_tensor(int i, int j, const double val)
-	{
-		if(j < i)
-		{
-			int tmp=i;
-			i = j;
-			j = tmp;
-		}
-		assert(j>=i);
-		const int n = size_ == 2 ? 3 : 6;
-		assert(i < n);
-		assert(j < n);
-		assert(i >= 0);
-		assert(j >= 0);
-		const int index = n * i + j - i * (i + 1) / 2;
-		assert(index < stifness_tensor_.size());
-
-		stifness_tensor_(index) = val;
-	}
-
-	double SaintVenantElasticity::stifness_tensor(int i, int j) const
-	{
-		if(j < i)
-		{
-			int tmp=i;
-			i = j;
-			j = tmp;
-		}
-
-		assert(j>=i);
-		const int n = size_ == 2 ? 3 : 6;
-		assert(i < n);
-		assert(j < n);
-		assert(i >= 0);
-		assert(j >= 0);
-		const int index = n * i + j - i * (i + 1) / 2;
-		assert(index < stifness_tensor_.size());
-
-		return stifness_tensor_(index);
-	}
 
 	void SaintVenantElasticity::set_lambda_mu(const double lambda, const double mu)
 	{
-		if(size_ == 2)
-		{
-			set_stiffness_tensor(0, 0, 2*mu+lambda);
-			set_stiffness_tensor(0, 1, lambda);
-			set_stiffness_tensor(0, 2, 0);
-
-			set_stiffness_tensor(1, 1, 2*mu+lambda);
-			set_stiffness_tensor(1, 2, 0);
-
-			set_stiffness_tensor(2, 2, mu);
-		}
-		else
-		{
-			set_stiffness_tensor(0, 0, 2*mu+lambda);
-			set_stiffness_tensor(0, 1, lambda);
-			set_stiffness_tensor(0, 2, lambda);
-			set_stiffness_tensor(0, 3, 0);
-			set_stiffness_tensor(0, 4, 0);
-			set_stiffness_tensor(0, 5, 0);
-
-			set_stiffness_tensor(1, 1, 2*mu+lambda);
-			set_stiffness_tensor(1, 2, lambda);
-			set_stiffness_tensor(1, 3, 0);
-			set_stiffness_tensor(1, 4, 0);
-			set_stiffness_tensor(1, 5, 0);
-
-			set_stiffness_tensor(2, 2, 2*mu+lambda);
-			set_stiffness_tensor(2, 3, 0);
-			set_stiffness_tensor(2, 4, 0);
-			set_stiffness_tensor(2, 5, 0);
-
-			set_stiffness_tensor(3, 3, mu);
-			set_stiffness_tensor(3, 4, 0);
-			set_stiffness_tensor(3, 5, 0);
-
-			set_stiffness_tensor(4, 4, mu);
-			set_stiffness_tensor(4, 5, 0);
-
-			set_stiffness_tensor(5, 5, mu);
-
-		}
+		elasticity_tensor_.set_from_lambda_mu(lambda, mu);
 	}
 
 
@@ -222,14 +88,14 @@ namespace poly_fem
 
 		if(size() == 2)
 		{
-			res(0) = ((stifness_tensor(0, 1)+stifness_tensor(2, 2))*((pt(1).getGradient()(1)))+2*((pt(1).getGradient()(0)))*stifness_tensor(0, 2)+stifness_tensor(0, 1)+stifness_tensor(2, 2))*((pt(1).getHessian()(0,1)))+((stifness_tensor(0, 1)+stifness_tensor(2, 2))*((pt(0).getGradient()(1)))+2*stifness_tensor(0, 2)*((pt(0).getGradient()(0))+1))*((pt(0).getHessian()(0,1)))+(((pt(0).getGradient()(1)))*stifness_tensor(0, 2)+stifness_tensor(0, 0)*((pt(0).getGradient()(0))+1))*((pt(0).getHessian()(0,0)))+(((pt(0).getGradient()(1)))*stifness_tensor(1, 2)+stifness_tensor(2, 2)*((pt(0).getGradient()(0))+1))*((pt(0).getHessian()(1,1)))+(((pt(1).getGradient()(0)))*stifness_tensor(0, 0)+((pt(1).getGradient()(1)))*stifness_tensor(0, 2)+stifness_tensor(0, 2))*((pt(1).getHessian()(0,0)))+((pt(1).getHessian()(1,1)))*(((pt(1).getGradient()(0)))*stifness_tensor(2, 2)+((pt(1).getGradient()(1)))*stifness_tensor(1, 2)+stifness_tensor(1, 2));
-			res(1) = ((stifness_tensor(0, 1)+stifness_tensor(2, 2))*((pt(0).getGradient()(0)))+2*((pt(0).getGradient()(1)))*stifness_tensor(1, 2)+stifness_tensor(0, 1)+stifness_tensor(2, 2))*((pt(0).getHessian()(0,1)))+((stifness_tensor(0, 1)+stifness_tensor(2, 2))*((pt(1).getGradient()(0)))+2*stifness_tensor(1, 2)*((pt(1).getGradient()(1))+1))*((pt(1).getHessian()(0,1)))+(((pt(0).getGradient()(0)))*stifness_tensor(0, 2)+((pt(0).getGradient()(1)))*stifness_tensor(2, 2)+stifness_tensor(0, 2))*((pt(0).getHessian()(0,0)))+(((pt(0).getGradient()(0)))*stifness_tensor(1, 2)+((pt(0).getGradient()(1)))*stifness_tensor(1, 1)+stifness_tensor(1, 2))*((pt(0).getHessian()(1,1)))+(((pt(1).getGradient()(0)))*stifness_tensor(0, 2)+stifness_tensor(2, 2)*((pt(1).getGradient()(1))+1))*((pt(1).getHessian()(0,0)))+(((pt(1).getGradient()(0)))*stifness_tensor(1, 2)+stifness_tensor(1, 1)*((pt(1).getGradient()(1))+1))*((pt(1).getHessian()(1,1)));
+			res(0) = ((elasticity_tensor_(0, 1)+elasticity_tensor_(2, 2))*((pt(1).getGradient()(1)))+2*((pt(1).getGradient()(0)))*elasticity_tensor_(0, 2)+elasticity_tensor_(0, 1)+elasticity_tensor_(2, 2))*((pt(1).getHessian()(0,1)))+((elasticity_tensor_(0, 1)+elasticity_tensor_(2, 2))*((pt(0).getGradient()(1)))+2*elasticity_tensor_(0, 2)*((pt(0).getGradient()(0))+1))*((pt(0).getHessian()(0,1)))+(((pt(0).getGradient()(1)))*elasticity_tensor_(0, 2)+elasticity_tensor_(0, 0)*((pt(0).getGradient()(0))+1))*((pt(0).getHessian()(0,0)))+(((pt(0).getGradient()(1)))*elasticity_tensor_(1, 2)+elasticity_tensor_(2, 2)*((pt(0).getGradient()(0))+1))*((pt(0).getHessian()(1,1)))+(((pt(1).getGradient()(0)))*elasticity_tensor_(0, 0)+((pt(1).getGradient()(1)))*elasticity_tensor_(0, 2)+elasticity_tensor_(0, 2))*((pt(1).getHessian()(0,0)))+((pt(1).getHessian()(1,1)))*(((pt(1).getGradient()(0)))*elasticity_tensor_(2, 2)+((pt(1).getGradient()(1)))*elasticity_tensor_(1, 2)+elasticity_tensor_(1, 2));
+			res(1) = ((elasticity_tensor_(0, 1)+elasticity_tensor_(2, 2))*((pt(0).getGradient()(0)))+2*((pt(0).getGradient()(1)))*elasticity_tensor_(1, 2)+elasticity_tensor_(0, 1)+elasticity_tensor_(2, 2))*((pt(0).getHessian()(0,1)))+((elasticity_tensor_(0, 1)+elasticity_tensor_(2, 2))*((pt(1).getGradient()(0)))+2*elasticity_tensor_(1, 2)*((pt(1).getGradient()(1))+1))*((pt(1).getHessian()(0,1)))+(((pt(0).getGradient()(0)))*elasticity_tensor_(0, 2)+((pt(0).getGradient()(1)))*elasticity_tensor_(2, 2)+elasticity_tensor_(0, 2))*((pt(0).getHessian()(0,0)))+(((pt(0).getGradient()(0)))*elasticity_tensor_(1, 2)+((pt(0).getGradient()(1)))*elasticity_tensor_(1, 1)+elasticity_tensor_(1, 2))*((pt(0).getHessian()(1,1)))+(((pt(1).getGradient()(0)))*elasticity_tensor_(0, 2)+elasticity_tensor_(2, 2)*((pt(1).getGradient()(1))+1))*((pt(1).getHessian()(0,0)))+(((pt(1).getGradient()(0)))*elasticity_tensor_(1, 2)+elasticity_tensor_(1, 1)*((pt(1).getGradient()(1))+1))*((pt(1).getHessian()(1,1)));
 		}
 		else if(size() == 3)
 		{
-			res(0) = ((stifness_tensor(5, 5)+stifness_tensor(0, 1))*((pt(1).getGradient()(1)))+(stifness_tensor(4, 5)+stifness_tensor(0, 3))*((pt(1).getGradient()(2)))+2*((pt(1).getGradient()(0)))*stifness_tensor(0, 5)+stifness_tensor(5, 5)+stifness_tensor(0, 1))*((pt(1).getHessian()(1,0)))+((stifness_tensor(4, 5)+stifness_tensor(0, 3))*((pt(1).getGradient()(1)))+(stifness_tensor(4, 4)+stifness_tensor(0, 2))*((pt(1).getGradient()(2)))+2*((pt(1).getGradient()(0)))*stifness_tensor(0, 4)+stifness_tensor(4, 5)+stifness_tensor(0, 3))*((pt(1).getHessian()(2,0)))+((stifness_tensor(1, 4)+stifness_tensor(3, 5))*((pt(1).getGradient()(1)))+(stifness_tensor(2, 5)+stifness_tensor(3, 4))*((pt(1).getGradient()(2)))+2*((pt(1).getGradient()(0)))*stifness_tensor(4, 5)+stifness_tensor(1, 4)+stifness_tensor(3, 5))*((pt(1).getHessian()(2,1)))+((stifness_tensor(5, 5)+stifness_tensor(0, 1))*((pt(2).getGradient()(1)))+(stifness_tensor(4, 5)+stifness_tensor(0, 3))*((pt(2).getGradient()(2)))+2*((pt(2).getGradient()(0)))*stifness_tensor(0, 5)+stifness_tensor(4, 5)+stifness_tensor(0, 3))*((pt(2).getHessian()(1,0)))+((stifness_tensor(4, 5)+stifness_tensor(0, 3))*((pt(2).getGradient()(1)))+(stifness_tensor(4, 4)+stifness_tensor(0, 2))*((pt(2).getGradient()(2)))+2*((pt(2).getGradient()(0)))*stifness_tensor(0, 4)+stifness_tensor(4, 4)+stifness_tensor(0, 2))*((pt(2).getHessian()(2,0)))+((stifness_tensor(1, 4)+stifness_tensor(3, 5))*((pt(2).getGradient()(1)))+(stifness_tensor(2, 5)+stifness_tensor(3, 4))*((pt(2).getGradient()(2)))+2*stifness_tensor(4, 5)*((pt(2).getGradient()(0)))+stifness_tensor(2, 5)+stifness_tensor(3, 4))*((pt(2).getHessian()(2,1)))+((stifness_tensor(5, 5)+stifness_tensor(0, 1))*((pt(0).getGradient()(1)))+(stifness_tensor(4, 5)+stifness_tensor(0, 3))*((pt(0).getGradient()(2)))+2*stifness_tensor(0, 5)*((pt(0).getGradient()(0))+1))*((pt(0).getHessian()(1,0)))+((stifness_tensor(4, 5)+stifness_tensor(0, 3))*((pt(0).getGradient()(1)))+(stifness_tensor(4, 4)+stifness_tensor(0, 2))*((pt(0).getGradient()(2)))+2*stifness_tensor(0, 4)*((pt(0).getGradient()(0))+1))*((pt(0).getHessian()(2,0)))+((stifness_tensor(1, 4)+stifness_tensor(3, 5))*((pt(0).getGradient()(1)))+(stifness_tensor(2, 5)+stifness_tensor(3, 4))*((pt(0).getGradient()(2)))+2*stifness_tensor(4, 5)*((pt(0).getGradient()(0))+1))*((pt(0).getHessian()(2,1)))+(((pt(0).getGradient()(1)))*stifness_tensor(0, 5)+((pt(0).getGradient()(2)))*stifness_tensor(0, 4)+stifness_tensor(0, 0)*((pt(0).getGradient()(0))+1))*((pt(0).getHessian()(0,0)))+(stifness_tensor(1, 5)*((pt(0).getGradient()(1)))+stifness_tensor(3, 5)*((pt(0).getGradient()(2)))+stifness_tensor(5, 5)*((pt(0).getGradient()(0))+1))*((pt(0).getHessian()(1,1)))+(stifness_tensor(3, 4)*((pt(0).getGradient()(1)))+stifness_tensor(2, 4)*((pt(0).getGradient()(2)))+stifness_tensor(4, 4)*((pt(0).getGradient()(0))+1))*((pt(0).getHessian()(2,2)))+(((pt(1).getGradient()(0)))*stifness_tensor(0, 0)+((pt(1).getGradient()(1)))*stifness_tensor(0, 5)+((pt(1).getGradient()(2)))*stifness_tensor(0, 4)+stifness_tensor(0, 5))*((pt(1).getHessian()(0,0)))+(stifness_tensor(1, 5)*((pt(1).getGradient()(1)))+stifness_tensor(3, 5)*((pt(1).getGradient()(2)))+stifness_tensor(5, 5)*((pt(1).getGradient()(0)))+stifness_tensor(1, 5))*((pt(1).getHessian()(1,1)))+(stifness_tensor(2, 4)*((pt(1).getGradient()(2)))+stifness_tensor(3, 4)*((pt(1).getGradient()(1)))+stifness_tensor(4, 4)*((pt(1).getGradient()(0)))+stifness_tensor(3, 4))*((pt(1).getHessian()(2,2)))+(((pt(2).getGradient()(0)))*stifness_tensor(0, 0)+((pt(2).getGradient()(1)))*stifness_tensor(0, 5)+((pt(2).getGradient()(2)))*stifness_tensor(0, 4)+stifness_tensor(0, 4))*((pt(2).getHessian()(0,0)))+(stifness_tensor(1, 5)*((pt(2).getGradient()(1)))+stifness_tensor(3, 5)*((pt(2).getGradient()(2)))+stifness_tensor(5, 5)*((pt(2).getGradient()(0)))+stifness_tensor(3, 5))*((pt(2).getHessian()(1,1)))+((pt(2).getHessian()(2,2)))*(stifness_tensor(2, 4)*((pt(2).getGradient()(2)))+stifness_tensor(3, 4)*((pt(2).getGradient()(1)))+stifness_tensor(4, 4)*((pt(2).getGradient()(0)))+stifness_tensor(2, 4));
-			res(1) = ((stifness_tensor(5, 5)+stifness_tensor(0, 1))*((pt(0).getGradient()(0)))+(stifness_tensor(1, 4)+stifness_tensor(3, 5))*((pt(0).getGradient()(2)))+2*stifness_tensor(1, 5)*((pt(0).getGradient()(1)))+stifness_tensor(5, 5)+stifness_tensor(0, 1))*((pt(0).getHessian()(1,0)))+((stifness_tensor(4, 5)+stifness_tensor(0, 3))*((pt(0).getGradient()(0)))+(stifness_tensor(2, 5)+stifness_tensor(3, 4))*((pt(0).getGradient()(2)))+2*((pt(0).getGradient()(1)))*stifness_tensor(3, 5)+stifness_tensor(4, 5)+stifness_tensor(0, 3))*((pt(0).getHessian()(2,0)))+((stifness_tensor(1, 4)+stifness_tensor(3, 5))*((pt(0).getGradient()(0)))+(stifness_tensor(3, 3)+stifness_tensor(1, 2))*((pt(0).getGradient()(2)))+2*stifness_tensor(1, 3)*((pt(0).getGradient()(1)))+stifness_tensor(1, 4)+stifness_tensor(3, 5))*((pt(0).getHessian()(2,1)))+((stifness_tensor(5, 5)+stifness_tensor(0, 1))*((pt(2).getGradient()(0)))+(stifness_tensor(1, 4)+stifness_tensor(3, 5))*((pt(2).getGradient()(2)))+2*stifness_tensor(1, 5)*((pt(2).getGradient()(1)))+stifness_tensor(1, 4)+stifness_tensor(3, 5))*((pt(2).getHessian()(1,0)))+((stifness_tensor(4, 5)+stifness_tensor(0, 3))*((pt(2).getGradient()(0)))+(stifness_tensor(2, 5)+stifness_tensor(3, 4))*((pt(2).getGradient()(2)))+2*((pt(2).getGradient()(1)))*stifness_tensor(3, 5)+stifness_tensor(2, 5)+stifness_tensor(3, 4))*((pt(2).getHessian()(2,0)))+((stifness_tensor(1, 4)+stifness_tensor(3, 5))*((pt(2).getGradient()(0)))+(stifness_tensor(3, 3)+stifness_tensor(1, 2))*((pt(2).getGradient()(2)))+2*stifness_tensor(1, 3)*((pt(2).getGradient()(1)))+stifness_tensor(3, 3)+stifness_tensor(1, 2))*((pt(2).getHessian()(2,1)))+((stifness_tensor(5, 5)+stifness_tensor(0, 1))*((pt(1).getGradient()(0)))+(stifness_tensor(1, 4)+stifness_tensor(3, 5))*((pt(1).getGradient()(2)))+2*stifness_tensor(1, 5)*((pt(1).getGradient()(1))+1))*((pt(1).getHessian()(1,0)))+((stifness_tensor(4, 5)+stifness_tensor(0, 3))*((pt(1).getGradient()(0)))+(stifness_tensor(2, 5)+stifness_tensor(3, 4))*((pt(1).getGradient()(2)))+2*stifness_tensor(3, 5)*((pt(1).getGradient()(1))+1))*((pt(1).getHessian()(2,0)))+((stifness_tensor(1, 4)+stifness_tensor(3, 5))*((pt(1).getGradient()(0)))+(stifness_tensor(3, 3)+stifness_tensor(1, 2))*((pt(1).getGradient()(2)))+2*stifness_tensor(1, 3)*((pt(1).getGradient()(1))+1))*((pt(1).getHessian()(2,1)))+(stifness_tensor(4, 5)*((pt(0).getGradient()(2)))+stifness_tensor(5, 5)*((pt(0).getGradient()(1)))+((pt(0).getGradient()(0)))*stifness_tensor(0, 5)+stifness_tensor(0, 5))*((pt(0).getHessian()(0,0)))+(stifness_tensor(1, 5)*((pt(0).getGradient()(0)))+((pt(0).getGradient()(1)))*stifness_tensor(1, 1)+((pt(0).getGradient()(2)))*stifness_tensor(1, 3)+stifness_tensor(1, 5))*((pt(0).getHessian()(1,1)))+(stifness_tensor(2, 3)*((pt(0).getGradient()(2)))+stifness_tensor(3, 3)*((pt(0).getGradient()(1)))+stifness_tensor(3, 4)*((pt(0).getGradient()(0)))+stifness_tensor(3, 4))*((pt(0).getHessian()(2,2)))+(((pt(1).getGradient()(0)))*stifness_tensor(0, 5)+stifness_tensor(4, 5)*((pt(1).getGradient()(2)))+stifness_tensor(5, 5)*((pt(1).getGradient()(1))+1))*((pt(1).getHessian()(0,0)))+(stifness_tensor(1, 5)*((pt(1).getGradient()(0)))+((pt(1).getGradient()(2)))*stifness_tensor(1, 3)+stifness_tensor(1, 1)*((pt(1).getGradient()(1))+1))*((pt(1).getHessian()(1,1)))+(stifness_tensor(3, 4)*((pt(1).getGradient()(0)))+stifness_tensor(2, 3)*((pt(1).getGradient()(2)))+stifness_tensor(3, 3)*((pt(1).getGradient()(1))+1))*((pt(1).getHessian()(2,2)))+(stifness_tensor(4, 5)*((pt(2).getGradient()(2)))+stifness_tensor(5, 5)*((pt(2).getGradient()(1)))+((pt(2).getGradient()(0)))*stifness_tensor(0, 5)+stifness_tensor(4, 5))*((pt(2).getHessian()(0,0)))+(stifness_tensor(1, 5)*((pt(2).getGradient()(0)))+((pt(2).getGradient()(1)))*stifness_tensor(1, 1)+((pt(2).getGradient()(2)))*stifness_tensor(1, 3)+stifness_tensor(1, 3))*((pt(2).getHessian()(1,1)))+((pt(2).getHessian()(2,2)))*(stifness_tensor(2, 3)*((pt(2).getGradient()(2)))+stifness_tensor(3, 3)*((pt(2).getGradient()(1)))+stifness_tensor(3, 4)*((pt(2).getGradient()(0)))+stifness_tensor(2, 3));
-			res(2) = ((stifness_tensor(4, 5)+stifness_tensor(0, 3))*((pt(0).getGradient()(0)))+(stifness_tensor(1, 4)+stifness_tensor(3, 5))*((pt(0).getGradient()(1)))+2*((pt(0).getGradient()(2)))*stifness_tensor(3, 4)+stifness_tensor(4, 5)+stifness_tensor(0, 3))*((pt(0).getHessian()(1,0)))+((stifness_tensor(4, 4)+stifness_tensor(0, 2))*((pt(0).getGradient()(0)))+(stifness_tensor(2, 5)+stifness_tensor(3, 4))*((pt(0).getGradient()(1)))+2*stifness_tensor(2, 4)*((pt(0).getGradient()(2)))+stifness_tensor(4, 4)+stifness_tensor(0, 2))*((pt(0).getHessian()(2,0)))+((stifness_tensor(2, 5)+stifness_tensor(3, 4))*((pt(0).getGradient()(0)))+(stifness_tensor(3, 3)+stifness_tensor(1, 2))*((pt(0).getGradient()(1)))+2*stifness_tensor(2, 3)*((pt(0).getGradient()(2)))+stifness_tensor(2, 5)+stifness_tensor(3, 4))*((pt(0).getHessian()(2,1)))+((stifness_tensor(4, 5)+stifness_tensor(0, 3))*((pt(1).getGradient()(0)))+(stifness_tensor(1, 4)+stifness_tensor(3, 5))*((pt(1).getGradient()(1)))+2*((pt(1).getGradient()(2)))*stifness_tensor(3, 4)+stifness_tensor(3, 5)+stifness_tensor(1, 4))*((pt(1).getHessian()(1,0)))+((stifness_tensor(4, 4)+stifness_tensor(0, 2))*((pt(1).getGradient()(0)))+(stifness_tensor(2, 5)+stifness_tensor(3, 4))*((pt(1).getGradient()(1)))+2*stifness_tensor(2, 4)*((pt(1).getGradient()(2)))+stifness_tensor(2, 5)+stifness_tensor(3, 4))*((pt(1).getHessian()(2,0)))+((stifness_tensor(2, 5)+stifness_tensor(3, 4))*((pt(1).getGradient()(0)))+(stifness_tensor(3, 3)+stifness_tensor(1, 2))*((pt(1).getGradient()(1)))+2*stifness_tensor(2, 3)*((pt(1).getGradient()(2)))+stifness_tensor(3, 3)+stifness_tensor(1, 2))*((pt(1).getHessian()(2,1)))+((stifness_tensor(4, 5)+stifness_tensor(0, 3))*((pt(2).getGradient()(0)))+(stifness_tensor(1, 4)+stifness_tensor(3, 5))*((pt(2).getGradient()(1)))+2*stifness_tensor(3, 4)*((pt(2).getGradient()(2))+1))*((pt(2).getHessian()(1,0)))+((stifness_tensor(4, 4)+stifness_tensor(0, 2))*((pt(2).getGradient()(0)))+(stifness_tensor(2, 5)+stifness_tensor(3, 4))*((pt(2).getGradient()(1)))+2*stifness_tensor(2, 4)*((pt(2).getGradient()(2))+1))*((pt(2).getHessian()(2,0)))+((stifness_tensor(2, 5)+stifness_tensor(3, 4))*((pt(2).getGradient()(0)))+(stifness_tensor(3, 3)+stifness_tensor(1, 2))*((pt(2).getGradient()(1)))+2*stifness_tensor(2, 3)*((pt(2).getGradient()(2))+1))*((pt(2).getHessian()(2,1)))+(stifness_tensor(4, 4)*((pt(0).getGradient()(2)))+stifness_tensor(4, 5)*((pt(0).getGradient()(1)))+((pt(0).getGradient()(0)))*stifness_tensor(0, 4)+stifness_tensor(0, 4))*((pt(0).getHessian()(0,0)))+(stifness_tensor(3, 3)*((pt(0).getGradient()(2)))+((pt(0).getGradient()(0)))*stifness_tensor(3, 5)+stifness_tensor(1, 3)*((pt(0).getGradient()(1)))+stifness_tensor(3, 5))*((pt(0).getHessian()(1,1)))+(((pt(0).getGradient()(2)))*stifness_tensor(2, 2)+((pt(0).getGradient()(1)))*stifness_tensor(2, 3)+stifness_tensor(2, 4)*((pt(0).getGradient()(0)))+stifness_tensor(2, 4))*((pt(0).getHessian()(2,2)))+(stifness_tensor(4, 4)*((pt(1).getGradient()(2)))+stifness_tensor(4, 5)*((pt(1).getGradient()(1)))+((pt(1).getGradient()(0)))*stifness_tensor(0, 4)+stifness_tensor(4, 5))*((pt(1).getHessian()(0,0)))+(stifness_tensor(3, 3)*((pt(1).getGradient()(2)))+stifness_tensor(3, 5)*((pt(1).getGradient()(0)))+((pt(1).getGradient()(1)))*stifness_tensor(1, 3)+stifness_tensor(1, 3))*((pt(1).getHessian()(1,1)))+(((pt(1).getGradient()(2)))*stifness_tensor(2, 2)+stifness_tensor(2, 3)*((pt(1).getGradient()(1)))+stifness_tensor(2, 4)*((pt(1).getGradient()(0)))+stifness_tensor(2, 3))*((pt(1).getHessian()(2,2)))+(((pt(2).getGradient()(0)))*stifness_tensor(0, 4)+stifness_tensor(4, 5)*((pt(2).getGradient()(1)))+stifness_tensor(4, 4)*((pt(2).getGradient()(2))+1))*((pt(2).getHessian()(0,0)))+(stifness_tensor(3, 5)*((pt(2).getGradient()(0)))+stifness_tensor(1, 3)*((pt(2).getGradient()(1)))+stifness_tensor(3, 3)*((pt(2).getGradient()(2))+1))*((pt(2).getHessian()(1,1)))+((pt(2).getHessian()(2,2)))*(stifness_tensor(2, 4)*((pt(2).getGradient()(0)))+stifness_tensor(2, 3)*((pt(2).getGradient()(1)))+stifness_tensor(2, 2)*((pt(2).getGradient()(2))+1));
+			res(0) = ((elasticity_tensor_(5, 5)+elasticity_tensor_(0, 1))*((pt(1).getGradient()(1)))+(elasticity_tensor_(4, 5)+elasticity_tensor_(0, 3))*((pt(1).getGradient()(2)))+2*((pt(1).getGradient()(0)))*elasticity_tensor_(0, 5)+elasticity_tensor_(5, 5)+elasticity_tensor_(0, 1))*((pt(1).getHessian()(1,0)))+((elasticity_tensor_(4, 5)+elasticity_tensor_(0, 3))*((pt(1).getGradient()(1)))+(elasticity_tensor_(4, 4)+elasticity_tensor_(0, 2))*((pt(1).getGradient()(2)))+2*((pt(1).getGradient()(0)))*elasticity_tensor_(0, 4)+elasticity_tensor_(4, 5)+elasticity_tensor_(0, 3))*((pt(1).getHessian()(2,0)))+((elasticity_tensor_(1, 4)+elasticity_tensor_(3, 5))*((pt(1).getGradient()(1)))+(elasticity_tensor_(2, 5)+elasticity_tensor_(3, 4))*((pt(1).getGradient()(2)))+2*((pt(1).getGradient()(0)))*elasticity_tensor_(4, 5)+elasticity_tensor_(1, 4)+elasticity_tensor_(3, 5))*((pt(1).getHessian()(2,1)))+((elasticity_tensor_(5, 5)+elasticity_tensor_(0, 1))*((pt(2).getGradient()(1)))+(elasticity_tensor_(4, 5)+elasticity_tensor_(0, 3))*((pt(2).getGradient()(2)))+2*((pt(2).getGradient()(0)))*elasticity_tensor_(0, 5)+elasticity_tensor_(4, 5)+elasticity_tensor_(0, 3))*((pt(2).getHessian()(1,0)))+((elasticity_tensor_(4, 5)+elasticity_tensor_(0, 3))*((pt(2).getGradient()(1)))+(elasticity_tensor_(4, 4)+elasticity_tensor_(0, 2))*((pt(2).getGradient()(2)))+2*((pt(2).getGradient()(0)))*elasticity_tensor_(0, 4)+elasticity_tensor_(4, 4)+elasticity_tensor_(0, 2))*((pt(2).getHessian()(2,0)))+((elasticity_tensor_(1, 4)+elasticity_tensor_(3, 5))*((pt(2).getGradient()(1)))+(elasticity_tensor_(2, 5)+elasticity_tensor_(3, 4))*((pt(2).getGradient()(2)))+2*elasticity_tensor_(4, 5)*((pt(2).getGradient()(0)))+elasticity_tensor_(2, 5)+elasticity_tensor_(3, 4))*((pt(2).getHessian()(2,1)))+((elasticity_tensor_(5, 5)+elasticity_tensor_(0, 1))*((pt(0).getGradient()(1)))+(elasticity_tensor_(4, 5)+elasticity_tensor_(0, 3))*((pt(0).getGradient()(2)))+2*elasticity_tensor_(0, 5)*((pt(0).getGradient()(0))+1))*((pt(0).getHessian()(1,0)))+((elasticity_tensor_(4, 5)+elasticity_tensor_(0, 3))*((pt(0).getGradient()(1)))+(elasticity_tensor_(4, 4)+elasticity_tensor_(0, 2))*((pt(0).getGradient()(2)))+2*elasticity_tensor_(0, 4)*((pt(0).getGradient()(0))+1))*((pt(0).getHessian()(2,0)))+((elasticity_tensor_(1, 4)+elasticity_tensor_(3, 5))*((pt(0).getGradient()(1)))+(elasticity_tensor_(2, 5)+elasticity_tensor_(3, 4))*((pt(0).getGradient()(2)))+2*elasticity_tensor_(4, 5)*((pt(0).getGradient()(0))+1))*((pt(0).getHessian()(2,1)))+(((pt(0).getGradient()(1)))*elasticity_tensor_(0, 5)+((pt(0).getGradient()(2)))*elasticity_tensor_(0, 4)+elasticity_tensor_(0, 0)*((pt(0).getGradient()(0))+1))*((pt(0).getHessian()(0,0)))+(elasticity_tensor_(1, 5)*((pt(0).getGradient()(1)))+elasticity_tensor_(3, 5)*((pt(0).getGradient()(2)))+elasticity_tensor_(5, 5)*((pt(0).getGradient()(0))+1))*((pt(0).getHessian()(1,1)))+(elasticity_tensor_(3, 4)*((pt(0).getGradient()(1)))+elasticity_tensor_(2, 4)*((pt(0).getGradient()(2)))+elasticity_tensor_(4, 4)*((pt(0).getGradient()(0))+1))*((pt(0).getHessian()(2,2)))+(((pt(1).getGradient()(0)))*elasticity_tensor_(0, 0)+((pt(1).getGradient()(1)))*elasticity_tensor_(0, 5)+((pt(1).getGradient()(2)))*elasticity_tensor_(0, 4)+elasticity_tensor_(0, 5))*((pt(1).getHessian()(0,0)))+(elasticity_tensor_(1, 5)*((pt(1).getGradient()(1)))+elasticity_tensor_(3, 5)*((pt(1).getGradient()(2)))+elasticity_tensor_(5, 5)*((pt(1).getGradient()(0)))+elasticity_tensor_(1, 5))*((pt(1).getHessian()(1,1)))+(elasticity_tensor_(2, 4)*((pt(1).getGradient()(2)))+elasticity_tensor_(3, 4)*((pt(1).getGradient()(1)))+elasticity_tensor_(4, 4)*((pt(1).getGradient()(0)))+elasticity_tensor_(3, 4))*((pt(1).getHessian()(2,2)))+(((pt(2).getGradient()(0)))*elasticity_tensor_(0, 0)+((pt(2).getGradient()(1)))*elasticity_tensor_(0, 5)+((pt(2).getGradient()(2)))*elasticity_tensor_(0, 4)+elasticity_tensor_(0, 4))*((pt(2).getHessian()(0,0)))+(elasticity_tensor_(1, 5)*((pt(2).getGradient()(1)))+elasticity_tensor_(3, 5)*((pt(2).getGradient()(2)))+elasticity_tensor_(5, 5)*((pt(2).getGradient()(0)))+elasticity_tensor_(3, 5))*((pt(2).getHessian()(1,1)))+((pt(2).getHessian()(2,2)))*(elasticity_tensor_(2, 4)*((pt(2).getGradient()(2)))+elasticity_tensor_(3, 4)*((pt(2).getGradient()(1)))+elasticity_tensor_(4, 4)*((pt(2).getGradient()(0)))+elasticity_tensor_(2, 4));
+			res(1) = ((elasticity_tensor_(5, 5)+elasticity_tensor_(0, 1))*((pt(0).getGradient()(0)))+(elasticity_tensor_(1, 4)+elasticity_tensor_(3, 5))*((pt(0).getGradient()(2)))+2*elasticity_tensor_(1, 5)*((pt(0).getGradient()(1)))+elasticity_tensor_(5, 5)+elasticity_tensor_(0, 1))*((pt(0).getHessian()(1,0)))+((elasticity_tensor_(4, 5)+elasticity_tensor_(0, 3))*((pt(0).getGradient()(0)))+(elasticity_tensor_(2, 5)+elasticity_tensor_(3, 4))*((pt(0).getGradient()(2)))+2*((pt(0).getGradient()(1)))*elasticity_tensor_(3, 5)+elasticity_tensor_(4, 5)+elasticity_tensor_(0, 3))*((pt(0).getHessian()(2,0)))+((elasticity_tensor_(1, 4)+elasticity_tensor_(3, 5))*((pt(0).getGradient()(0)))+(elasticity_tensor_(3, 3)+elasticity_tensor_(1, 2))*((pt(0).getGradient()(2)))+2*elasticity_tensor_(1, 3)*((pt(0).getGradient()(1)))+elasticity_tensor_(1, 4)+elasticity_tensor_(3, 5))*((pt(0).getHessian()(2,1)))+((elasticity_tensor_(5, 5)+elasticity_tensor_(0, 1))*((pt(2).getGradient()(0)))+(elasticity_tensor_(1, 4)+elasticity_tensor_(3, 5))*((pt(2).getGradient()(2)))+2*elasticity_tensor_(1, 5)*((pt(2).getGradient()(1)))+elasticity_tensor_(1, 4)+elasticity_tensor_(3, 5))*((pt(2).getHessian()(1,0)))+((elasticity_tensor_(4, 5)+elasticity_tensor_(0, 3))*((pt(2).getGradient()(0)))+(elasticity_tensor_(2, 5)+elasticity_tensor_(3, 4))*((pt(2).getGradient()(2)))+2*((pt(2).getGradient()(1)))*elasticity_tensor_(3, 5)+elasticity_tensor_(2, 5)+elasticity_tensor_(3, 4))*((pt(2).getHessian()(2,0)))+((elasticity_tensor_(1, 4)+elasticity_tensor_(3, 5))*((pt(2).getGradient()(0)))+(elasticity_tensor_(3, 3)+elasticity_tensor_(1, 2))*((pt(2).getGradient()(2)))+2*elasticity_tensor_(1, 3)*((pt(2).getGradient()(1)))+elasticity_tensor_(3, 3)+elasticity_tensor_(1, 2))*((pt(2).getHessian()(2,1)))+((elasticity_tensor_(5, 5)+elasticity_tensor_(0, 1))*((pt(1).getGradient()(0)))+(elasticity_tensor_(1, 4)+elasticity_tensor_(3, 5))*((pt(1).getGradient()(2)))+2*elasticity_tensor_(1, 5)*((pt(1).getGradient()(1))+1))*((pt(1).getHessian()(1,0)))+((elasticity_tensor_(4, 5)+elasticity_tensor_(0, 3))*((pt(1).getGradient()(0)))+(elasticity_tensor_(2, 5)+elasticity_tensor_(3, 4))*((pt(1).getGradient()(2)))+2*elasticity_tensor_(3, 5)*((pt(1).getGradient()(1))+1))*((pt(1).getHessian()(2,0)))+((elasticity_tensor_(1, 4)+elasticity_tensor_(3, 5))*((pt(1).getGradient()(0)))+(elasticity_tensor_(3, 3)+elasticity_tensor_(1, 2))*((pt(1).getGradient()(2)))+2*elasticity_tensor_(1, 3)*((pt(1).getGradient()(1))+1))*((pt(1).getHessian()(2,1)))+(elasticity_tensor_(4, 5)*((pt(0).getGradient()(2)))+elasticity_tensor_(5, 5)*((pt(0).getGradient()(1)))+((pt(0).getGradient()(0)))*elasticity_tensor_(0, 5)+elasticity_tensor_(0, 5))*((pt(0).getHessian()(0,0)))+(elasticity_tensor_(1, 5)*((pt(0).getGradient()(0)))+((pt(0).getGradient()(1)))*elasticity_tensor_(1, 1)+((pt(0).getGradient()(2)))*elasticity_tensor_(1, 3)+elasticity_tensor_(1, 5))*((pt(0).getHessian()(1,1)))+(elasticity_tensor_(2, 3)*((pt(0).getGradient()(2)))+elasticity_tensor_(3, 3)*((pt(0).getGradient()(1)))+elasticity_tensor_(3, 4)*((pt(0).getGradient()(0)))+elasticity_tensor_(3, 4))*((pt(0).getHessian()(2,2)))+(((pt(1).getGradient()(0)))*elasticity_tensor_(0, 5)+elasticity_tensor_(4, 5)*((pt(1).getGradient()(2)))+elasticity_tensor_(5, 5)*((pt(1).getGradient()(1))+1))*((pt(1).getHessian()(0,0)))+(elasticity_tensor_(1, 5)*((pt(1).getGradient()(0)))+((pt(1).getGradient()(2)))*elasticity_tensor_(1, 3)+elasticity_tensor_(1, 1)*((pt(1).getGradient()(1))+1))*((pt(1).getHessian()(1,1)))+(elasticity_tensor_(3, 4)*((pt(1).getGradient()(0)))+elasticity_tensor_(2, 3)*((pt(1).getGradient()(2)))+elasticity_tensor_(3, 3)*((pt(1).getGradient()(1))+1))*((pt(1).getHessian()(2,2)))+(elasticity_tensor_(4, 5)*((pt(2).getGradient()(2)))+elasticity_tensor_(5, 5)*((pt(2).getGradient()(1)))+((pt(2).getGradient()(0)))*elasticity_tensor_(0, 5)+elasticity_tensor_(4, 5))*((pt(2).getHessian()(0,0)))+(elasticity_tensor_(1, 5)*((pt(2).getGradient()(0)))+((pt(2).getGradient()(1)))*elasticity_tensor_(1, 1)+((pt(2).getGradient()(2)))*elasticity_tensor_(1, 3)+elasticity_tensor_(1, 3))*((pt(2).getHessian()(1,1)))+((pt(2).getHessian()(2,2)))*(elasticity_tensor_(2, 3)*((pt(2).getGradient()(2)))+elasticity_tensor_(3, 3)*((pt(2).getGradient()(1)))+elasticity_tensor_(3, 4)*((pt(2).getGradient()(0)))+elasticity_tensor_(2, 3));
+			res(2) = ((elasticity_tensor_(4, 5)+elasticity_tensor_(0, 3))*((pt(0).getGradient()(0)))+(elasticity_tensor_(1, 4)+elasticity_tensor_(3, 5))*((pt(0).getGradient()(1)))+2*((pt(0).getGradient()(2)))*elasticity_tensor_(3, 4)+elasticity_tensor_(4, 5)+elasticity_tensor_(0, 3))*((pt(0).getHessian()(1,0)))+((elasticity_tensor_(4, 4)+elasticity_tensor_(0, 2))*((pt(0).getGradient()(0)))+(elasticity_tensor_(2, 5)+elasticity_tensor_(3, 4))*((pt(0).getGradient()(1)))+2*elasticity_tensor_(2, 4)*((pt(0).getGradient()(2)))+elasticity_tensor_(4, 4)+elasticity_tensor_(0, 2))*((pt(0).getHessian()(2,0)))+((elasticity_tensor_(2, 5)+elasticity_tensor_(3, 4))*((pt(0).getGradient()(0)))+(elasticity_tensor_(3, 3)+elasticity_tensor_(1, 2))*((pt(0).getGradient()(1)))+2*elasticity_tensor_(2, 3)*((pt(0).getGradient()(2)))+elasticity_tensor_(2, 5)+elasticity_tensor_(3, 4))*((pt(0).getHessian()(2,1)))+((elasticity_tensor_(4, 5)+elasticity_tensor_(0, 3))*((pt(1).getGradient()(0)))+(elasticity_tensor_(1, 4)+elasticity_tensor_(3, 5))*((pt(1).getGradient()(1)))+2*((pt(1).getGradient()(2)))*elasticity_tensor_(3, 4)+elasticity_tensor_(3, 5)+elasticity_tensor_(1, 4))*((pt(1).getHessian()(1,0)))+((elasticity_tensor_(4, 4)+elasticity_tensor_(0, 2))*((pt(1).getGradient()(0)))+(elasticity_tensor_(2, 5)+elasticity_tensor_(3, 4))*((pt(1).getGradient()(1)))+2*elasticity_tensor_(2, 4)*((pt(1).getGradient()(2)))+elasticity_tensor_(2, 5)+elasticity_tensor_(3, 4))*((pt(1).getHessian()(2,0)))+((elasticity_tensor_(2, 5)+elasticity_tensor_(3, 4))*((pt(1).getGradient()(0)))+(elasticity_tensor_(3, 3)+elasticity_tensor_(1, 2))*((pt(1).getGradient()(1)))+2*elasticity_tensor_(2, 3)*((pt(1).getGradient()(2)))+elasticity_tensor_(3, 3)+elasticity_tensor_(1, 2))*((pt(1).getHessian()(2,1)))+((elasticity_tensor_(4, 5)+elasticity_tensor_(0, 3))*((pt(2).getGradient()(0)))+(elasticity_tensor_(1, 4)+elasticity_tensor_(3, 5))*((pt(2).getGradient()(1)))+2*elasticity_tensor_(3, 4)*((pt(2).getGradient()(2))+1))*((pt(2).getHessian()(1,0)))+((elasticity_tensor_(4, 4)+elasticity_tensor_(0, 2))*((pt(2).getGradient()(0)))+(elasticity_tensor_(2, 5)+elasticity_tensor_(3, 4))*((pt(2).getGradient()(1)))+2*elasticity_tensor_(2, 4)*((pt(2).getGradient()(2))+1))*((pt(2).getHessian()(2,0)))+((elasticity_tensor_(2, 5)+elasticity_tensor_(3, 4))*((pt(2).getGradient()(0)))+(elasticity_tensor_(3, 3)+elasticity_tensor_(1, 2))*((pt(2).getGradient()(1)))+2*elasticity_tensor_(2, 3)*((pt(2).getGradient()(2))+1))*((pt(2).getHessian()(2,1)))+(elasticity_tensor_(4, 4)*((pt(0).getGradient()(2)))+elasticity_tensor_(4, 5)*((pt(0).getGradient()(1)))+((pt(0).getGradient()(0)))*elasticity_tensor_(0, 4)+elasticity_tensor_(0, 4))*((pt(0).getHessian()(0,0)))+(elasticity_tensor_(3, 3)*((pt(0).getGradient()(2)))+((pt(0).getGradient()(0)))*elasticity_tensor_(3, 5)+elasticity_tensor_(1, 3)*((pt(0).getGradient()(1)))+elasticity_tensor_(3, 5))*((pt(0).getHessian()(1,1)))+(((pt(0).getGradient()(2)))*elasticity_tensor_(2, 2)+((pt(0).getGradient()(1)))*elasticity_tensor_(2, 3)+elasticity_tensor_(2, 4)*((pt(0).getGradient()(0)))+elasticity_tensor_(2, 4))*((pt(0).getHessian()(2,2)))+(elasticity_tensor_(4, 4)*((pt(1).getGradient()(2)))+elasticity_tensor_(4, 5)*((pt(1).getGradient()(1)))+((pt(1).getGradient()(0)))*elasticity_tensor_(0, 4)+elasticity_tensor_(4, 5))*((pt(1).getHessian()(0,0)))+(elasticity_tensor_(3, 3)*((pt(1).getGradient()(2)))+elasticity_tensor_(3, 5)*((pt(1).getGradient()(0)))+((pt(1).getGradient()(1)))*elasticity_tensor_(1, 3)+elasticity_tensor_(1, 3))*((pt(1).getHessian()(1,1)))+(((pt(1).getGradient()(2)))*elasticity_tensor_(2, 2)+elasticity_tensor_(2, 3)*((pt(1).getGradient()(1)))+elasticity_tensor_(2, 4)*((pt(1).getGradient()(0)))+elasticity_tensor_(2, 3))*((pt(1).getHessian()(2,2)))+(((pt(2).getGradient()(0)))*elasticity_tensor_(0, 4)+elasticity_tensor_(4, 5)*((pt(2).getGradient()(1)))+elasticity_tensor_(4, 4)*((pt(2).getGradient()(2))+1))*((pt(2).getHessian()(0,0)))+(elasticity_tensor_(3, 5)*((pt(2).getGradient()(0)))+elasticity_tensor_(1, 3)*((pt(2).getGradient()(1)))+elasticity_tensor_(3, 3)*((pt(2).getGradient()(2))+1))*((pt(2).getHessian()(1,1)))+((pt(2).getHessian()(2,2)))*(elasticity_tensor_(2, 4)*((pt(2).getGradient()(0)))+elasticity_tensor_(2, 3)*((pt(2).getGradient()(1)))+elasticity_tensor_(2, 2)*((pt(2).getGradient()(2))+1));
 		}
 		else
 			assert(false);

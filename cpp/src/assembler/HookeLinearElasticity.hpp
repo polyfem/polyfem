@@ -2,6 +2,7 @@
 #define HOOKE_LINEAR_ELASTICITY_HPP
 
 #include "Common.hpp"
+#include "ElasticityUtils.hpp"
 
 #include "ElementAssemblyValues.hpp"
 #include "ElementBases.hpp"
@@ -32,18 +33,11 @@ namespace poly_fem
 		void set_size(const int size);
 		void set_lambda_mu(const double lambda, const double mu);
 
-		void set_stiffness_tensor(int i, int j, const double val);
-
 		void set_parameters(const json &params);
 	private:
 		int size_ = 2;
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 21, 1> stifness_tensor_;
-
-		double stifness_tensor(int i, int j) const;
-
-		template<int D>
-		double stress(const std::array<double, D> &strain, const int j) const;
+		ElasticityTensor elasticity_tensor_;
 	};
 }
 
