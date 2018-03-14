@@ -43,6 +43,7 @@ int main(int argc, const char **argv)
 	std::string vtu = "";
 	std::string screenshot = "";
 	std::string problem_name = "Franke";
+	std::string json_file = "";
 	int n_refs = 0;
 
 	std::string scalar_formulation = "Laplacian";
@@ -53,6 +54,8 @@ int main(int argc, const char **argv)
 	bool use_splines = false;
 	bool normalize_mesh = true;
 	bool no_ui = false;
+
+	command_line.add_option("-json", json_file);
 
 	command_line.add_option("-mesh", path);
 
@@ -117,16 +120,30 @@ int main(int argc, const char **argv)
 	};
 
 	json in_args;
-	in_args["mesh"] = path;
-	in_args["n_refs"] = n_refs;
-	in_args["problem"] = problem_name;
-	in_args["normalize_mesh"] = normalize_mesh;
 
-	in_args["scalar_formulation"] = scalar_formulation;
-	in_args["tensor_formulation"] = tensor_formulation;
+	if(!json_file.empty())
+	{
+		std::ifstream file(json_file);
 
-	in_args["discr_order"] = discr_order;
-	in_args["use_spline"] = use_splines;
+		if (file.is_open())
+			file >> in_args;
+		else
+			std::cerr<<"unable to open "<<json_file<<" file"<<std::endl;
+		file.close();
+	}
+	else
+	{
+		in_args["mesh"] = path;
+		in_args["n_refs"] = n_refs;
+		in_args["problem"] = problem_name;
+		in_args["normalize_mesh"] = normalize_mesh;
+
+		in_args["scalar_formulation"] = scalar_formulation;
+		in_args["tensor_formulation"] = tensor_formulation;
+
+		in_args["discr_order"] = discr_order;
+		in_args["use_spline"] = use_splines;
+	}
 
 	j_args.merge_patch(in_args);
 

@@ -1,0 +1,17 @@
+{
+	"mesh": "<path>",
+	"n_refs": 3,
+	"discr_order": 1,
+	"use_spline": false,
+
+	"problem": "Franke",
+
+	"scalar_formulation": "Laplacian",
+	"tensor_formulation": "LinearElasticity",
+
+	"params": {
+		"lambda": 1.0,
+		"mu": 1.0,
+		"k": 1.0
+	}
+}
