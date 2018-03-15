@@ -153,9 +153,19 @@ int main(int argc, const char **argv)
 		State &state = State::state();
 		state.init(j_args);
 
+
+		state.load_mesh();
+		state.compute_mesh_stats();
+
+		state.build_basis();
+		state.build_polygonal_basis();
+
+
 		state.assemble_rhs();
 		state.assemble_stiffness_mat();
+
 		state.solve_problem();
+
 		state.compute_errors();
 
 		if(!output.empty()){
