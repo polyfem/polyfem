@@ -14,7 +14,7 @@ namespace poly_fem
 			res += gradi.row(k).dot(gradj.row(k)) * da(k);
 		}
 
-		res += (vals.basis_values[i].val.array() * vals.basis_values[j].val.array() * da.array()).sum() * k_;
+		res -= (vals.basis_values[i].val.array() * vals.basis_values[j].val.array() * da.array()).sum() * k_;
 
 		return Eigen::Matrix<double, 1, 1>::Constant(res);
 	}
