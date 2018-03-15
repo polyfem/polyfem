@@ -34,7 +34,7 @@
 
 using namespace Eigen;
 
-int offscreen_screenshot(igl::opengl::glfw::Viewer &viewer, const std::string &path);
+// int offscreen_screenshot(igl::opengl::glfw::Viewer &viewer, const std::string &path);
 
 void add_spheres(igl::opengl::glfw::Viewer &viewer0, const Eigen::MatrixXd &P, double radius) {
 	Eigen::MatrixXd V = viewer0.data().V, VS, VN;
@@ -1146,7 +1146,7 @@ namespace poly_fem
 			viewer.launch();
 		} else {
 			load_mesh();
-			offscreen_screenshot(viewer, screenshot);
+			// offscreen_screenshot(viewer, screenshot);
 		}
 	}
 
@@ -1171,66 +1171,66 @@ namespace poly_fem
 // #   include <GL/gl.h>
 // #endif
 
-namespace {
+// namespace {
 
-	static void my_glfw_error_callback(int error, const char* description)
-	{
-		fputs(description, stderr);
-		fputs("\n", stderr);
-	}
+// 	static void my_glfw_error_callback(int error, const char* description)
+// 	{
+// 		fputs(description, stderr);
+// 		fputs("\n", stderr);
+// 	}
 
-}
+// }
 
-int offscreen_screenshot(igl::opengl::glfw::Viewer &viewer, const std::string &path) {
-	glfwSetErrorCallback(my_glfw_error_callback);
-	if (!glfwInit()) {
-		std::cout << "init failure" << std::endl;
-		return EXIT_FAILURE;
-	}
+// int offscreen_screenshot(igl::opengl::glfw::Viewer &viewer, const std::string &path) {
+// 	glfwSetErrorCallback(my_glfw_error_callback);
+// 	if (!glfwInit()) {
+// 		std::cout << "init failure" << std::endl;
+// 		return EXIT_FAILURE;
+// 	}
 
-	// glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_OSMESA_CONTEXT_API);
-	glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+// 	// glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_OSMESA_CONTEXT_API);
+// 	glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
-	glfwWindowHint(GLFW_SAMPLES, 8);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+// 	glfwWindowHint(GLFW_SAMPLES, 8);
+// 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+// 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 
-    #ifdef __APPLE__
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    #endif
+//     #ifdef __APPLE__
+// 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+// 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+//     #endif
 
-	printf("create window\n");
-	GLFWwindow* offscreen_context = glfwCreateWindow(640, 480, "", NULL, NULL);
-	printf("create context\n");
-	glfwMakeContextCurrent(offscreen_context);
-    #ifndef __APPLE__
-	glewExperimental = true;
-	GLenum err = glewInit();
-	if(GLEW_OK != err)
-	{
-        /* Problem: glewInit failed, something is seriously wrong. */
-		fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
-	}
-      glGetError(); // pull and savely ignonre unhandled errors like GL_INVALID_ENUM
-      fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
-    #endif
-      viewer.data().meshgl.init();
-      viewer.core.align_camera_center(viewer.data().V, viewer.data().F);
-      viewer.init();
+// 	printf("create window\n");
+// 	GLFWwindow* offscreen_context = glfwCreateWindow(640, 480, "", NULL, NULL);
+// 	printf("create context\n");
+// 	glfwMakeContextCurrent(offscreen_context);
+//     #ifndef __APPLE__
+// 	glewExperimental = true;
+// 	GLenum err = glewInit();
+// 	if(GLEW_OK != err)
+// 	{
+//         /* Problem: glewInit failed, something is seriously wrong. */
+// 		fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+// 	}
+//       glGetError(); // pull and savely ignonre unhandled errors like GL_INVALID_ENUM
+//       fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
+//     #endif
+//       viewer.data().meshgl.init();
+//       viewer.core.align_camera_center(viewer.data().V, viewer.data().F);
+//       viewer.init();
 
-      Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(6400, 4000);
-      Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> G(6400, 4000);
-      Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> B(6400, 4000);
-      Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(6400, 4000);
+//       Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(6400, 4000);
+//       Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> G(6400, 4000);
+//       Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> B(6400, 4000);
+//       Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(6400, 4000);
 
-    // Draw the scene in the buffers
-      viewer.core.draw_buffer(viewer.data(),true,R,G,B,A);
-      A.setConstant(255);
+//     // Draw the scene in the buffers
+//       viewer.core.draw_buffer(viewer.data(),true,R,G,B,A);
+//       A.setConstant(255);
 
-    // Save it to a PNG
-      igl::png::writePNG(R,G,B,A, path);
+//     // Save it to a PNG
+//       igl::png::writePNG(R,G,B,A, path);
 
-      return 0;
-  }
+//       return 0;
+//   }
 
