@@ -567,10 +567,7 @@ namespace poly_fem
 		igl::Timer timer; timer.start();
 		std::cout<<"Assembling stiffness mat..."<<std::flush;
 
-		const auto params = build_json_params();
-
 		auto &assembler = AssemblerUtils::instance();
-		assembler.set_parameters(params);
 
 		if(problem->is_scalar())
 		{
@@ -593,6 +590,10 @@ namespace poly_fem
 
 	void State::assemble_rhs()
 	{
+		const auto params = build_json_params();
+		auto &assembler = AssemblerUtils::instance();
+		assembler.set_parameters(params);
+
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
 		sol.resize(0, 0);
@@ -677,7 +678,7 @@ namespace poly_fem
 			const int full_size 	= n_bases*mesh->dimension();
 			const int reduced_size 	= n_bases*mesh->dimension() - boundary_nodes.size();
 
-			NLProblem::reduced_to_full_aux(full_size, reduced_size, tmp_sol, sol);
+			NLProblem::reduced_to_full_aux(full_size, reduced_size, tmp_sol, false, sol);
 		}
 
 		timer.stop();

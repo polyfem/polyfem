@@ -58,7 +58,7 @@ namespace cppoptlib {
 			do
 			{
 				objFunc.gradient(x0, grad);
-				NLProblem::reduced_to_full_aux(full_size, reduced_size, grad, full_grad);
+				NLProblem::reduced_to_full_aux(full_size, reduced_size, grad, true, full_grad);
 
 				objFunc.hessian(x0, hessian);
 				hessian += (1e-5) * id;

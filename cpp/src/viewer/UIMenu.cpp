@@ -8,11 +8,24 @@
 #include <igl/png/writePNG.h>
 #include <imgui/imgui.h>
 #include <igl/opengl/glfw/imgui/ImGuiHelpers.h>
+#include <imgui/imgui_internal.h>
 #include <tinyfiledialogs.h>
 #include <algorithm>
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace {
+	void push_disabled()
+	{
+		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+	}
+
+	void pop_disabled()
+	{
+		ImGui::PopItemFlag();
+		ImGui::PopStyleVar();
+	}
+
 
 	namespace FileDialog {
 
@@ -66,7 +79,7 @@ void poly_fem::UIState::draw_menu() {
 	draw_labels_window();
 
 	// Viewer settings
-	float viewer_menu_width = 200.f * hidpi_scaling() / pixel_ratio();
+	float viewer_menu_width = 180.f * hidpi_scaling() / pixel_ratio();
 
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiSetCond_Always);
 	ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f), ImGuiSetCond_Always);
@@ -173,11 +186,7 @@ void poly_fem::UIState::draw_settings() {
 	state.args["fit_nodes"] = fit_nodes;
 
 	ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.50f);
-	// Colormap type
-	static int color_map_num = static_cast<int>(color_map);
-	if (ImGui::Combo("Colormap", &color_map_num, "inferno\0jet\0magma\0parula\0plasma\0viridis\0\0")) {
-		color_map = static_cast<igl::ColorMapType>(color_map_num);
-	}
+	ImGui::Separator();
 
 	// Problem type
 	static std::string problem_name = state.problem->name();
@@ -211,10 +220,18 @@ void poly_fem::UIState::draw_settings() {
 	// 	// }
 	// }
 
-
+	// ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
+	// ImGui::BeginChild("Forms", ImVec2(ImGui::GetWindowContentRegionWidth(), 100), true);
+	// ImGui::BeginChild("Forms", ImVec2(ImGui::GetWindowContentRegionWidth(), 100), true);
+	ImGui::Separator();
 
 
 	static const auto scalar_forms = poly_fem::AssemblerUtils::instance().scalar_assemblers();
+
+	const bool is_scalar = state.problem->is_scalar();
+
+	if(!is_scalar) push_disabled();
+
 	if(ImGui::BeginCombo("1D-Form", state.scalar_formulation().c_str()))
 	{
 		for(auto f : scalar_forms)
@@ -228,6 +245,12 @@ void poly_fem::UIState::draw_settings() {
 		}
 		ImGui::EndCombo();
 	}
+
+	if(!is_scalar) pop_disabled();
+
+
+
+	if(is_scalar) push_disabled();
 
 	static const auto tensor_forms = poly_fem::AssemblerUtils::instance().tensor_assemblers();
 	if(ImGui::BeginCombo("nD-Form", state.tensor_formulation().c_str()))
@@ -243,6 +266,10 @@ void poly_fem::UIState::draw_settings() {
 		}
 		ImGui::EndCombo();
 	}
+	if(is_scalar) pop_disabled();
+    ImGui::Separator();
+
+
 
 
 	// Solver type
@@ -258,6 +285,16 @@ void poly_fem::UIState::draw_settings() {
 	if (ImGui::Combo("Precond", &precond_num, precond)) {
 		state.args["precond_type"] = precond[precond_num];
 	}
+
+
+	ImGui::Separator();
+
+	// Colormap type
+	static int color_map_num = static_cast<int>(color_map);
+	if (ImGui::Combo("Colormap", &color_map_num, "inferno\0jet\0magma\0parula\0plasma\0viridis\0\0")) {
+		color_map = static_cast<igl::ColorMapType>(color_map_num);
+	}
+
 	ImGui::PopItemWidth();
 	ImGui::Checkbox("skip visualization", &skip_visualization);
 

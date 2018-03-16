@@ -92,6 +92,54 @@ namespace poly_fem
 
 			return res;
 		}
+
+
+		template<typename T>
+		Eigen::Matrix<T, 2, 1> function_quadratic(T x, T y)
+		{
+			Eigen::Matrix<T, 2, 1> res;
+
+			res(0) = -(y*y + x*x + x*y)/14.;
+			res(1) = -(3*x*x + y)/14.;
+
+			return res;
+		}
+
+		template<typename T>
+		Eigen::Matrix<T, 3, 1> function_quadratic(T x, T y, T z)
+		{
+			Eigen::Matrix<T, 3, 1> res;
+
+			res(0) = -(y*y + x*x + x*y + z*y)/14.;
+			res(1) = -(3*x*x + y + z*z)/14.;
+			res(2) = -(x*z + y*y - 2*z)/14.;
+
+			return res;
+		}
+
+
+		template<typename T>
+		Eigen::Matrix<T, 2, 1> function_linear(T x, T y)
+		{
+			Eigen::Matrix<T, 2, 1> res;
+
+			res(0) = -(y + x)/14.;
+			res(1) = -(3*x + y)/14.;
+
+			return res;
+		}
+
+		template<typename T>
+		Eigen::Matrix<T, 3, 1> function_linear(T x, T y, T z)
+		{
+			Eigen::Matrix<T, 3, 1> res;
+
+			res(0) = -(y + x + z)/14.;
+			res(1) = -(3*x + y - z)/14.;
+			res(2) = -(x + y - 2*z)/14.;
+
+			return res;
+		}
 	}
 
 
@@ -168,6 +216,90 @@ namespace poly_fem
 			return function_compression(pt(0), pt(1));
 		else if(pt.size() == 3)
 			return function_compression(pt(0), pt(1), pt(2));
+
+		assert(false);
+		return AutodiffHessianPt(pt.size());
+	}
+
+
+
+
+
+
+	QuadraticElasticProblemExact::QuadraticElasticProblemExact(const std::string &name)
+	: ProblemWithSolution(name)
+	{ }
+
+	VectorNd QuadraticElasticProblemExact::eval_fun(const VectorNd &pt) const
+	{
+		if(pt.size() == 2)
+			return function_quadratic(pt(0), pt(1));
+		else if(pt.size() == 3)
+			return function_quadratic(pt(0), pt(1), pt(2));
+
+		assert(false);
+		return VectorNd(pt.size());
+	}
+
+	AutodiffGradPt QuadraticElasticProblemExact::eval_fun(const AutodiffGradPt &pt) const
+	{
+		if(pt.size() == 2)
+			return function_quadratic(pt(0), pt(1));
+		else if(pt.size() == 3)
+			return function_quadratic(pt(0), pt(1), pt(2));
+
+		assert(false);
+		return AutodiffGradPt(pt.size());
+	}
+
+	AutodiffHessianPt QuadraticElasticProblemExact::eval_fun(const AutodiffHessianPt &pt) const
+	{
+		if(pt.size() == 2)
+			return function_quadratic(pt(0), pt(1));
+		else if(pt.size() == 3)
+			return function_quadratic(pt(0), pt(1), pt(2));
+
+		assert(false);
+		return AutodiffHessianPt(pt.size());
+	}
+
+
+
+
+
+
+	LinearElasticProblemExact::LinearElasticProblemExact(const std::string &name)
+	: ProblemWithSolution(name)
+	{ }
+
+	VectorNd LinearElasticProblemExact::eval_fun(const VectorNd &pt) const
+	{
+		if(pt.size() == 2)
+			return function_linear(pt(0), pt(1));
+		else if(pt.size() == 3)
+			return function_linear(pt(0), pt(1), pt(2));
+
+		assert(false);
+		return VectorNd(pt.size());
+	}
+
+	AutodiffGradPt LinearElasticProblemExact::eval_fun(const AutodiffGradPt &pt) const
+	{
+		if(pt.size() == 2)
+			return function_linear(pt(0), pt(1));
+		else if(pt.size() == 3)
+			return function_linear(pt(0), pt(1), pt(2));
+
+		assert(false);
+		return AutodiffGradPt(pt.size());
+	}
+
+	AutodiffHessianPt LinearElasticProblemExact::eval_fun(const AutodiffHessianPt &pt) const
+	{
+		if(pt.size() == 2)
+			return function_linear(pt(0), pt(1));
+		else if(pt.size() == 3)
+			return function_linear(pt(0), pt(1), pt(2));
 
 		assert(false);
 		return AutodiffHessianPt(pt.size());

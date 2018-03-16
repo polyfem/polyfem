@@ -25,7 +25,7 @@ namespace poly_fem
 
 	double NLProblem::value(const TVector &x) {
 		Eigen::MatrixXd full;
-		reduced_to_full(x , full);
+		reduced_to_full(x, false, full);
 
 		const double elastic_energy = assembler.assemble_tensor_energy(rhs_assembler.formulation(), State::state().mesh->is_volume(), State::state().bases, State::state().bases, full);
 		const double body_energy 	= rhs_assembler.compute_energy(full);
@@ -35,7 +35,7 @@ namespace poly_fem
 
 	void NLProblem::gradient(const TVector &x, TVector &gradv) {
 		Eigen::MatrixXd full;
-		reduced_to_full(x , full);
+		reduced_to_full(x, false, full);
 
 		Eigen::MatrixXd grad;
 		assembler.assemble_tensor_energy_gradient(rhs_assembler.formulation(), State::state().mesh->is_volume(), State::state().n_bases, State::state().bases, State::state().bases, full, grad);
@@ -46,7 +46,7 @@ namespace poly_fem
 
 	void NLProblem::hessian(const TVector &x, THessian &hessian) {
 		Eigen::MatrixXd full;
-		reduced_to_full(x , full);
+		reduced_to_full(x, false, full);
 
 		assembler.assemble_tensor_energy_hessian(rhs_assembler.formulation(), State::state().mesh->is_volume(), State::state().n_bases, State::state().bases, State::state().bases, full, hessian);
 	}
@@ -56,8 +56,8 @@ namespace poly_fem
 		full_to_reduced_aux(full_size, reduced_size, full, reduced);
 	}
 
-	void NLProblem::reduced_to_full(const TVector &reduced, Eigen::MatrixXd &full)
+	void NLProblem::reduced_to_full(const TVector &reduced, const bool set_zero, Eigen::MatrixXd &full)
 	{
-		reduced_to_full_aux(full_size, reduced_size, reduced, full);
+		reduced_to_full_aux(full_size, reduced_size, reduced, set_zero, full);
 	}
 }
