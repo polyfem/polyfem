@@ -9,21 +9,30 @@
 
 using namespace poly_fem;
 
+const double k = 0.2;
+const double lambda = 0.375, mu = 0.375;
+
+template<typename T>
+json get_params(const T &pts)
+{
+    return {
+        {"k", k},
+        {"size", pts.cols()},
+        {"lambda", lambda},
+        {"mu", mu},
+        {"elasticity_tensor", {}}
+    };
+}
+
 
 TEST_CASE("franke 2d", "[problem]") {
     Eigen::MatrixXd pts(400, 2);
     Eigen::MatrixXd other;
     pts.setRandom();
 
-    const double k = 0.2;
-    const double lambda = 0.375, mu = 0.375;
     const auto &probl = ProblemFactory::factory().get_problem("Franke");
-    json params = {
-        {"k", k},
-        {"size", pts.cols()},
-        {"lambda", lambda},
-        {"mu", mu}
-    };
+    const json params = get_params(pts);
+
     auto &assembler = AssemblerUtils::instance();
     assembler.set_parameters(params);
 
@@ -120,15 +129,9 @@ TEST_CASE("franke 3d", "[problem]") {
     Eigen::MatrixXd other;
     pts.setRandom();
 
-    const double k = 0.2;
-    const double lambda = 0.375, mu = 0.375;
     const auto &probl = ProblemFactory::factory().get_problem("Franke");
-    json params = {
-        {"k", k},
-        {"size", pts.cols()},
-        {"lambda", lambda},
-        {"mu", mu}
-    };
+    const json params = get_params(pts);
+
     auto &assembler = AssemblerUtils::instance();
     assembler.set_parameters(params);
 
@@ -222,15 +225,9 @@ TEST_CASE("linear", "[problem]") {
     Eigen::MatrixXd other;
     pts.setRandom();
 
-    const double k = 0.2;
-    const double lambda = 0.375, mu = 0.375;
     const auto &probl = ProblemFactory::factory().get_problem("Linear");
-    json params = {
-        {"k", k},
-        {"size", pts.cols()},
-        {"lambda", lambda},
-        {"mu", mu}
-    };
+    const json params = get_params(pts);
+
     auto &assembler = AssemblerUtils::instance();
     assembler.set_parameters(params);
 
@@ -290,15 +287,9 @@ TEST_CASE("quadratic", "[problem]") {
     Eigen::MatrixXd other;
     pts.setRandom();
 
-    const double k = 0.2;
-    const double lambda = 0.375, mu = 0.375;
     const auto &probl = ProblemFactory::factory().get_problem("Quadratic");
-    json params = {
-        {"k", k},
-        {"size", pts.cols()},
-        {"lambda", lambda},
-        {"mu", mu}
-    };
+    const json params = get_params(pts);
+
     auto &assembler = AssemblerUtils::instance();
     assembler.set_parameters(params);
 
@@ -357,15 +348,9 @@ TEST_CASE("zero bc 2d", "[problem]") {
     Eigen::MatrixXd other;
     pts.setRandom();
 
-    const double k = 0.2;
-    const double lambda = 0.375, mu = 0.375;
     const auto &probl = ProblemFactory::factory().get_problem("Zero_BC");
-    json params = {
-        {"k", k},
-        {"size", pts.cols()},
-        {"lambda", lambda},
-        {"mu", mu}
-    };
+    const json params = get_params(pts);
+
     auto &assembler = AssemblerUtils::instance();
     assembler.set_parameters(params);
 
@@ -397,15 +382,9 @@ TEST_CASE("zero bc 3d", "[problem]") {
     Eigen::MatrixXd other;
     pts.setRandom();
 
-    const double k = 0.2;
-    const double lambda = 0.375, mu = 0.375;
     const auto &probl = ProblemFactory::factory().get_problem("Zero_BC");
-    json params = {
-        {"k", k},
-        {"size", pts.cols()},
-        {"lambda", lambda},
-        {"mu", mu}
-    };
+    const json params = get_params(pts);
+
     auto &assembler = AssemblerUtils::instance();
     assembler.set_parameters(params);
 
@@ -436,15 +415,9 @@ TEST_CASE("elasticity 2d", "[problem]") {
     Eigen::MatrixXd other;
     pts.setRandom();
 
-    const double k = 0.2;
-    const double lambda = 0.375, mu = 0.375;
     const auto &probl = ProblemFactory::factory().get_problem("ElasticExact");
-    json params = {
-        {"k", k},
-        {"size", pts.cols()},
-        {"lambda", lambda},
-        {"mu", mu}
-    };
+    const json params = get_params(pts);
+
     auto &assembler = AssemblerUtils::instance();
     assembler.set_parameters(params);
 
@@ -500,15 +473,9 @@ TEST_CASE("elasticity 3d", "[problem]") {
     Eigen::MatrixXd other;
     pts.setRandom();
 
-    const double k = 0.2;
-    const double lambda = 0.375, mu = 0.375;
     const auto &probl = ProblemFactory::factory().get_problem("ElasticExact");
-    json params = {
-        {"k", k},
-        {"size", pts.cols()},
-        {"lambda", lambda},
-        {"mu", mu}
-    };
+    const json params = get_params(pts);
+
     auto &assembler = AssemblerUtils::instance();
     assembler.set_parameters(params);
 

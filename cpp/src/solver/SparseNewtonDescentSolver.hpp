@@ -54,8 +54,8 @@ namespace cppoptlib {
 
 			THessian hessian(reduced_size, reduced_size);
 			this->m_current.reset();
-			// for(int iter = 0; iter < 1; ++iter)
-			do
+			for(int iter = 0; iter < 15; ++iter)
+			// do
 			{
 				objFunc.gradient(x0, grad);
 				NLProblem::reduced_to_full_aux(full_size, reduced_size, grad, true, full_grad);
@@ -84,7 +84,7 @@ namespace cppoptlib {
 				if(verbose)
 					std::cout << "iter: "<<this->m_current.iterations <<", rate = "<< rate<< ", f = " <<  objFunc.value(x0) << ", ||g||_inf "<< this->m_current.gradNorm <<", ||step|| "<< (rate * delta_x).norm() << std::endl;
 			}
-			while (objFunc.callback(this->m_current, x0) && (this->m_status == Status::Continue));
+			// while (objFunc.callback(this->m_current, x0) && (this->m_status == Status::Continue));
 		}
 
 	private:
