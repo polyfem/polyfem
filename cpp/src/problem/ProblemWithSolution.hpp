@@ -19,7 +19,6 @@ namespace poly_fem
 
 
 		virtual bool has_exact_sol() const { return true; }
-		virtual bool has_gradient() const { return true; }
 
 
 		virtual ~ProblemWithSolution() { }

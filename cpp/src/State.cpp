@@ -679,6 +679,7 @@ namespace poly_fem
 			const int reduced_size 	= n_bases*mesh->dimension() - boundary_nodes.size();
 
 			NLProblem::reduced_to_full_aux(full_size, reduced_size, tmp_sol, false, sol);
+			solver.getInfo(solver_info);
 		}
 
 		timer.stop();
@@ -724,9 +725,7 @@ namespace poly_fem
 				vals.compute(e, mesh->is_volume(), bases[e], geom_bases[e]);
 
 			problem->exact(vals.val, v_exact);
-
-			if(problem->has_gradient())
-				problem->exact_grad(vals.val, v_exact_grad);
+			problem->exact_grad(vals.val, v_exact_grad);
 
 			v_approx 	  = MatrixXd::Zero(v_exact.rows(), v_exact.cols());
 			v_approx_grad = MatrixXd::Zero(v_exact_grad.rows(), v_exact_grad.cols());
@@ -741,12 +740,7 @@ namespace poly_fem
 					for(int d = 0; d < actual_dim; ++d)
 					{
 						v_approx.col(d) += val.global[ii].val * sol(val.global[ii].index*actual_dim + d) * val.val;
-					}
-
-					if(problem->has_gradient()){
-						for(int d = 0; d < actual_dim; ++d){
-							v_approx_grad.block(0, d*val.grad_t_m.cols(), v_approx_grad.rows(), val.grad_t_m.cols()) += val.global[ii].val * sol(val.global[ii].index*actual_dim + d) * val.grad_t_m;
-						}
+						v_approx_grad.block(0, d*val.grad_t_m.cols(), v_approx_grad.rows(), val.grad_t_m.cols()) += val.global[ii].val * sol(val.global[ii].index*actual_dim + d) * val.grad_t_m;
 					}
 				}
 			}
@@ -759,8 +753,7 @@ namespace poly_fem
 
 			linf_err = max(linf_err, err.maxCoeff());
 			l2_err += (err.array() * err.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-			if(problem->has_gradient())
-				h1_err += (err_grad.array() * err_grad.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+			h1_err += (err_grad.array() * err_grad.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
 			lp_err += (err.array().pow(8.) * vals.det.array() * vals.quadrature.weights.array()).sum();
 		}
 

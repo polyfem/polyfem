@@ -76,6 +76,10 @@ namespace cppoptlib {
 				NLProblem::full_to_reduced_aux(full_size, reduced_size, full_delta_x, delta_x);
 				delta_x *= -1;
 
+				json tmp;
+				solver->getInfo(tmp);
+				internal_solver.push_back(tmp);
+
 
 				const double rate = Armijo<ProblemType, 1>::linesearch(x0, delta_x, objFunc);
 				x0 += rate * delta_x;
@@ -89,9 +93,27 @@ namespace cppoptlib {
 					std::cout << "iter: "<<this->m_current.iterations <<", rate = "<< rate<< ", f = " <<  objFunc.value(x0) << ", ||g||_inf "<< this->m_current.gradNorm <<", ||step|| "<< (rate * delta_x).norm() << std::endl;
 			}
 			while (objFunc.callback(this->m_current, x0) && (this->m_status == Status::Continue));
+
+			solver_info["internal_solver"] = internal_solver;
+			solver_info["status"] = this->status();
+
+			const auto &crit = this->criteria();
+			solver_info["iterations"] = crit.iterations;
+			solver_info["xDelta"] = crit.xDelta;
+			solver_info["fDelta"] = crit.fDelta;
+			solver_info["gradNorm"] = crit.gradNorm;
+			solver_info["condition"] = crit.condition;
+		}
+
+		void getInfo(json &params)
+		{
+			params = solver_info;
 		}
 
 	private:
 		const bool verbose;
+		json solver_info;
+		json internal_solver = json::array();
+
 	};
 }

@@ -25,7 +25,6 @@ namespace poly_fem
 		inline const std::string &name() const { return name_; }
 
 		virtual bool has_exact_sol() const = 0;
-		virtual bool has_gradient() const { return false; }
 		virtual bool is_scalar() const = 0;
 
 		void remove_neumann_nodes(const Mesh &mesh, const std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &boundary_nodes);
