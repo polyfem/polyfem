@@ -95,6 +95,7 @@ namespace cppoptlib {
 			while (objFunc.callback(this->m_current, x0) && (this->m_status == Status::Continue));
 
 			solver_info["internal_solver"] = internal_solver;
+			solver_info["internal_solver_first"] = internal_solver.front();
 			solver_info["status"] = this->status();
 
 			const auto &crit = this->criteria();
