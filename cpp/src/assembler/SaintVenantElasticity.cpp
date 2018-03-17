@@ -385,6 +385,8 @@ namespace poly_fem
 				stress(eps, 4), stress(eps, 3), stress(eps, 2);
 			}
 
+			stress_tensor = (Eigen::MatrixXd::Identity(size(), size()) + displacement_grad) * stress_tensor;
+
 			stresses(p) = von_mises_stress_for_stress_tensor(stress_tensor);
 		}
 	}
