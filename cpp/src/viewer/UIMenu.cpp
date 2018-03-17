@@ -326,6 +326,13 @@ void poly_fem::UIState::draw_settings() {
 			state.save_json(std::cout);
 		}
 	}
+
+	ImGui::Separator();
+
+	ImGui::LabelText("L2 error", "L2\t%g", state.l2_err);
+	ImGui::LabelText("Lp error", "Lp\t%g", state.lp_err);
+	ImGui::LabelText("H1 error", "H1\t%g", state.h1_err);
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -656,7 +656,7 @@ namespace poly_fem
 			// 	Eigen::SparseMatrix<double> hessian;
 			// 	nl_problem.hessian(tmp_sol, hessian);
 			// 	nl_problem.finiteGradient(tmp_sol, expected_grad, 0);
-			// 	std::cout<<"difff\n"<<actual_grad <<"\n\n"<< expected_grad<<std::endl;
+			// 	std::cout<<"difff\n"<<actual_grad - expected_grad<<std::endl;
 
 			// 	tmp_sol.setRandom();
 			// 	if(!nl_problem.checkGradient(tmp_sol, 0))

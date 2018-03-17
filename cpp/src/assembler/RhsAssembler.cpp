@@ -26,20 +26,16 @@ namespace poly_fem
 		const int n_elements = int(bases_.size());
 		for(int e = 0; e < n_elements; ++e)
 		{
-			// const ElementAssemblyValues &vals  = values[e];
-			// const ElementAssemblyValues &gvals = geom_values[e];
-
 			ElementAssemblyValues vals;
 			vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
 
+			const Quadrature &quadrature = vals.quadrature;
+
+
 			problem_.rhs(formulation_, vals.val, rhs_fun);
 
-				// std::cout<<e<<"\n"<<gvals.val<<"\n"<<rhs_fun<<"\n\n"<<std::endl;
-
 			for(int d = 0; d < size_; ++d)
-				rhs_fun.col(d) = rhs_fun.col(d).array() * vals.det.array() * vals.quadrature.weights.array();
-
-				// std::cout<<"after:\n"<<rhs_fun<<std::endl;
+				rhs_fun.col(d) = rhs_fun.col(d).array() * vals.det.array() * quadrature.weights.array();
 
 			const int n_loc_bases_ = int(vals.basis_values.size());
 			for(int i = 0; i < n_loc_bases_; ++i)
@@ -216,8 +212,7 @@ namespace poly_fem
 
 	double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement) const
 	{
-		const int size = mesh_.is_volume() ? 3 : 2;
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size);
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
 
 		double res = 0;
 		Eigen::MatrixXd forces;
@@ -234,7 +229,7 @@ namespace poly_fem
 
 			problem_.rhs(formulation_, vals.val, forces);
 			assert(forces.rows() == da.size());
-			assert(forces.cols() == size);
+			assert(forces.cols() == size_);
 
 			for(long p = 0; p < da.size(); ++p)
 			{
@@ -243,18 +238,19 @@ namespace poly_fem
 				for(size_t i = 0; i < vals.basis_values.size(); ++i)
 				{
 					const auto &bs = vals.basis_values[i];
+					assert(bs.val.size() == da.size());
 					const double b_val = bs.val(p);
 
-					for(int d = 0; d < size; ++d)
+					for(int d = 0; d < size_; ++d)
 					{
 						for(std::size_t ii = 0; ii < bs.global.size(); ++ii)
 						{
-							local_displacement(d) += (bs.global[ii].val * b_val) * displacement(bs.global[ii].index*size + d);
+							local_displacement(d) += (bs.global[ii].val * b_val) * displacement(bs.global[ii].index*size_ + d);
 						}
 					}
 				}
 
-				for(int d = 0; d < size; ++d)
+				for(int d = 0; d < size_; ++d)
 					res += forces(p, d) * local_displacement(d) * da(p);
 			}
 		}
