@@ -113,6 +113,8 @@ add_library(polyfem
 	src/basis/FEBasis2d.hpp
 	src/basis/FEBasis3d.cpp
 	src/basis/FEBasis3d.hpp
+	src/basis/SpectralBasis2d.cpp
+	src/basis/SpectralBasis2d.hpp
 	src/basis/SplineBasis2d.cpp
 	src/basis/SplineBasis2d.hpp
 	src/basis/SplineBasis3d.cpp

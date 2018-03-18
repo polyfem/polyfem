@@ -6,6 +6,8 @@
 #include "FEBasis2d.hpp"
 #include "FEBasis3d.hpp"
 
+#include "SpectralBasis2d.hpp"
+
 #include "SplineBasis2d.hpp"
 #include "SplineBasis3d.hpp"
 
@@ -456,6 +458,7 @@ namespace poly_fem
 					FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], 1, geom_bases, local_boundary, poly_edge_to_data_geom);
 
 				n_bases = FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], args["discr_order"], bases, local_boundary, poly_edge_to_data);
+				// n_bases = SpectralBasis2d::build_bases(tmp_mesh, args["quadrature_order"], args["discr_order"], bases, geom_bases, local_boundary);
 			}
 		}
 
