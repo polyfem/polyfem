@@ -5,7 +5,7 @@
 
 void poly_fem::dirichlet_solve(
 	LinearSolver &solver, Eigen::SparseMatrix<double> &A, Eigen::VectorXd &f,
-	const std::vector<int> &dirichlet_nodes, Eigen::VectorXd &u)
+	const std::vector<int> &dirichlet_nodes, Eigen::VectorXd &u, const bool analyze_pattern)
 {
 	// Let Γ be the set of Dirichlet dofs.
 	// To implement nonzero Dirichlet boundary conditions, we seek to replace
@@ -67,10 +67,13 @@ void poly_fem::dirichlet_solve(
 		u.setZero();
 	}
 
-	solver.analyzePattern(A);
+
+	if(analyze_pattern)
+		solver.analyzePattern(A);
 	solver.factorize(A);
 	solver.solve(g, u);
 	f = g;
 	//std::cout<<"Solver error: "<<(A*u-g).norm()<<std::endl;
 	// std::cout << u << std::endl;
 }
+

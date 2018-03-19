@@ -42,7 +42,7 @@ namespace poly_fem
 
 			const Quadrature &quadrature = vals.quadrature;
 
-			const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
+			const QuadratureVector da = vals.det.array() * quadrature.weights.array();
 			const int n_loc_bases = int(vals.basis_values.size());
 
 			for(int i = 0; i < n_loc_bases; ++i)
@@ -141,7 +141,7 @@ namespace poly_fem
 
 			const Quadrature &quadrature = vals.quadrature;
 
-			const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
+			const QuadratureVector da = vals.det.array() * quadrature.weights.array();
 			const int n_loc_bases = int(vals.basis_values.size());
 			const auto val = local_assembler_.assemble(vals, displacement, da);
 			assert(val.size() == n_loc_bases*local_assembler_.size());
@@ -191,22 +191,24 @@ namespace poly_fem
 		std::cout<<"buffer_size "<<buffer_size<<std::endl;
 
 		Eigen::MatrixXd local_val;
-		grad.resize(n_basis*local_assembler_.size(), n_basis*local_assembler_.size());
-		grad.setZero();
+		const bool needs_to_allocate_memory = true; //grad.rows() != n_basis*local_assembler_.size();
+
+		if(needs_to_allocate_memory)
+			grad.resize(n_basis*local_assembler_.size(), n_basis*local_assembler_.size());
+
+		std::fill_n(grad.valuePtr(), grad.nonZeros(), 0); //grad.setZero();
 
 		Eigen::SparseMatrix<double> tmp(grad.rows(), grad.cols());
-
+		ElementAssemblyValues vals;
 		const int n_bases = int(bases.size());
 		for(int e = 0; e < n_bases; ++e)
 		{
 			// igl::Timer timer; timer.start();
-
-			ElementAssemblyValues vals;
 			vals.compute(e, is_volume, bases[e], gbases[e]);
 
 			const Quadrature &quadrature = vals.quadrature;
 
-			const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
+			const QuadratureVector da = vals.det.array() * quadrature.weights.array();
 			const int n_loc_bases = int(vals.basis_values.size());
 
 			const auto stiffness_val = local_assembler_.assemble_grad(vals, displacement, da);
@@ -227,7 +229,7 @@ namespace poly_fem
 							const auto &global_j = vals.basis_values[j].global;
 
 							const double local_value = stiffness_val(i*local_assembler_.size() + m, j*local_assembler_.size() + n);
-							// if (std::abs(local_value) < 1e-30) { continue; }
+							if (std::abs(local_value) < 1e-30) { continue; }
 
 
 							for(size_t ii = 0; ii < global_i.size(); ++ii)
@@ -241,16 +243,23 @@ namespace poly_fem
 
 									// std::cout<< gi <<"," <<gj<<" -> "<<local_value<<std::endl;
 
-									entries.emplace_back(gi, gj, local_value);
-
-									if(entries.size() >= 1e8)
+									if(needs_to_allocate_memory)
 									{
-										tmp.setFromTriplets(entries.begin(), entries.end());
-										grad += tmp;
-										grad.makeCompressed();
+										entries.emplace_back(gi, gj, local_value);
 
-										entries.clear();
-										std::cout<<"cleaning memory..."<<std::endl;
+										if(entries.size() >= 1e8)
+										{
+											tmp.setFromTriplets(entries.begin(), entries.end());
+											grad += tmp;
+											grad.makeCompressed();
+
+											entries.clear();
+											std::cout<<"cleaning memory..."<<std::endl;
+										}
+									}
+									else
+									{
+										grad.coeffRef(gi, gj) += local_value;
 									}
 								}
 							}
@@ -265,9 +274,12 @@ namespace poly_fem
 			// if (!vals.has_parameterization) { std::cout << "-- Timer: " << timer.getElapsedTime() << std::endl; }
 		}
 
-		tmp.setFromTriplets(entries.begin(), entries.end());
-		grad += tmp;
-		grad.makeCompressed();
+		if(needs_to_allocate_memory)
+		{
+			tmp.setFromTriplets(entries.begin(), entries.end());
+			grad += tmp;
+			grad.makeCompressed();
+		}
 	}
 
 	template<class LocalAssembler>
@@ -289,7 +301,7 @@ namespace poly_fem
 
 			const Quadrature &quadrature = vals.quadrature;
 
-			const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
+			const QuadratureVector da = vals.det.array() * quadrature.weights.array();
 
 			const double val = local_assembler_.compute_energy(vals, displacement, da);
 			res += val;

@@ -32,6 +32,6 @@ namespace poly_fem {
 /// @param[in,out] x                { Unknown vector }
 ///
 void dirichlet_solve(LinearSolver &solver, Eigen::SparseMatrix<double> &A,
-	Eigen::VectorXd &b, const std::vector<int> &dirichlet_nodes, Eigen::VectorXd &x);
+	Eigen::VectorXd &b, const std::vector<int> &dirichlet_nodes, Eigen::VectorXd &x, const bool analyze_pattern = true);
 
 } // namespace poly_fem

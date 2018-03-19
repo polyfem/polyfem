@@ -4,7 +4,7 @@
 
 namespace poly_fem
 {
-	Eigen::Matrix<double, 1, 1> Helmholtz::assemble(const ElementAssemblyValues &vals, const int i, const int j, const Eigen::VectorXd &da) const
+	Eigen::Matrix<double, 1, 1> Helmholtz::assemble(const ElementAssemblyValues &vals, const int i, const int j, const QuadratureVector &da) const
 	{
 		const Eigen::MatrixXd &gradi = vals.basis_values[i].grad_t_m;
 		const Eigen::MatrixXd &gradj = vals.basis_values[j].grad_t_m;
