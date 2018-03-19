@@ -3,6 +3,229 @@
 
 namespace poly_fem
 {
+	Eigen::VectorXd gradient_from_energy(const int size, const int n_bases, const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da,
+		const std::function<DScalar1<double, Eigen::Matrix<double, 6, 1>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const Eigen::VectorXd &)> &fun6,
+		const std::function<DScalar1<double, Eigen::Matrix<double, 8, 1>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const Eigen::VectorXd &)> &fun8,
+		const std::function<DScalar1<double, Eigen::Matrix<double, 12, 1>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const Eigen::VectorXd &)> &fun12,
+		const std::function<DScalar1<double, Eigen::Matrix<double, 18, 1>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const Eigen::VectorXd &)> &fun18,
+		const std::function<DScalar1<double, Eigen::Matrix<double, 24, 1>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const Eigen::VectorXd &)> &fun24,
+		const std::function<DScalar1<double, Eigen::Matrix<double, 30, 1>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const Eigen::VectorXd &)> &fun30,
+		const std::function<DScalar1<double, Eigen::Matrix<double, 81, 1>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const Eigen::VectorXd &)> &fun81,
+		const std::function<DScalar1<double, Eigen::VectorXd>				(const ElementAssemblyValues &, const Eigen::MatrixXd &, const Eigen::VectorXd &)> &funn
+		)
+	{
+		Eigen::VectorXd grad;
+
+		switch(size)
+		{
+			//2d
+			case 2:
+			{
+				switch(n_bases)
+				{
+					//P1
+					case 3:
+					{
+						auto auto_diff_energy = fun6(vals, displacement, da);
+						grad = auto_diff_energy.getGradient();
+						break;
+					}
+					//P2
+					case 6:
+					{
+						auto auto_diff_energy = fun12(vals, displacement, da);
+						grad = auto_diff_energy.getGradient();
+						break;
+					}
+			 		//Q1
+					case 4:
+					{
+						auto auto_diff_energy = fun8(vals, displacement, da);
+						grad = auto_diff_energy.getGradient();
+						break;
+					}
+					//Q2
+					case 9:
+					{
+						auto auto_diff_energy = fun18(vals, displacement, da);
+						grad = auto_diff_energy.getGradient();
+						break;
+					}
+				}
+
+				break;
+			}
+
+
+			//3d
+			case 3:
+			{
+				switch(n_bases)
+				{
+					//P1
+					case 4:
+					{
+						auto auto_diff_energy = fun12(vals, displacement, da);
+						grad = auto_diff_energy.getGradient();
+						break;
+					}
+					//P2
+					case 10:
+					{
+						auto auto_diff_energy = fun30(vals, displacement, da);
+						grad = auto_diff_energy.getGradient();
+						break;
+					}
+					//Q1
+					case 8:
+					{
+						auto auto_diff_energy = fun24(vals, displacement, da);
+						grad = auto_diff_energy.getGradient();
+						break;
+					}
+					//Q2
+					case 27:
+					{
+						auto auto_diff_energy = fun81(vals, displacement, da);
+						grad = auto_diff_energy.getGradient();
+						break;
+					}
+				}
+			}
+		}
+
+
+		if(grad.size()<=0)
+		{
+			static bool show_message = true;
+
+			if(show_message)
+			{
+				std::cout<<"[Warning] "<<n_bases<<" not using static sizes"<<std::endl;
+				show_message = false;
+			}
+
+			auto auto_diff_energy = funn(vals, displacement, da);
+			grad = auto_diff_energy.getGradient();
+		}
+
+		return grad;
+	}
+
+
+	Eigen::MatrixXd hessian_from_energy(const int size, const int n_bases, const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da,
+		const std::function<DScalar2<double, Eigen::Matrix<double, 6, 1>, Eigen::Matrix<double, 6, 6>>		(const ElementAssemblyValues &, const Eigen::MatrixXd &, const Eigen::VectorXd &)> &fun6,
+		const std::function<DScalar2<double, Eigen::Matrix<double, 8, 1>, Eigen::Matrix<double, 8, 8>>		(const ElementAssemblyValues &, const Eigen::MatrixXd &, const Eigen::VectorXd &)> &fun8,
+		const std::function<DScalar2<double, Eigen::Matrix<double, 12, 1>, Eigen::Matrix<double, 12, 12>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const Eigen::VectorXd &)> &fun12,
+		const std::function<DScalar2<double, Eigen::Matrix<double, 18, 1>, Eigen::Matrix<double, 18, 18>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const Eigen::VectorXd &)> &fun18,
+		const std::function<DScalar2<double, Eigen::Matrix<double, 24, 1>, Eigen::Matrix<double, 24, 24>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const Eigen::VectorXd &)> &fun24,
+		const std::function<DScalar2<double, Eigen::Matrix<double, 30, 1>, Eigen::Matrix<double, 30, 30>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const Eigen::VectorXd &)> &fun30,
+		// const std::function<DScalar2<double, Eigen::Matrix<double, 81, 1>, Eigen::Matrix<double, 81, 81>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const Eigen::VectorXd &)> &fun81,
+		const std::function<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>								(const ElementAssemblyValues &, const Eigen::MatrixXd &, const Eigen::VectorXd &)> &funn
+		)
+	{
+		Eigen::MatrixXd hessian;
+
+		switch(size)
+		{
+			//2d
+			case 2:
+			{
+				switch(n_bases)
+				{
+					//P1
+					case 3:
+					{
+						auto auto_diff_energy = fun6(vals, displacement, da);
+						hessian = auto_diff_energy.getHessian();
+						break;
+					}
+					//P2
+					case 6:
+					{
+						auto auto_diff_energy = fun12(vals, displacement, da);
+						hessian = auto_diff_energy.getHessian();
+						break;
+					}
+					//Q1
+					case 4:
+					{
+						auto auto_diff_energy = fun8(vals, displacement, da);
+						hessian = auto_diff_energy.getHessian();
+						break;
+					}
+					//Q2
+					case 9:
+					{
+						auto auto_diff_energy = fun18(vals, displacement, da);
+						hessian = auto_diff_energy.getHessian();
+						break;
+					}
+				}
+
+				break;
+			}
+
+
+			//3d
+			case 3:
+			{
+				switch(n_bases)
+				{
+					//P2
+					case 4:
+					{
+						auto auto_diff_energy = fun12(vals, displacement, da);
+						hessian = auto_diff_energy.getHessian();
+						break;
+					}
+					//P2
+					case 10:
+					{
+						auto auto_diff_energy = fun30(vals, displacement, da);
+						hessian = auto_diff_energy.getHessian();
+						break;
+					}
+			 		//Q1
+					case 8:
+					{
+						auto auto_diff_energy = fun24(vals, displacement, da);
+						hessian = auto_diff_energy.getHessian();
+						break;
+					}
+
+					// // Q2
+					// case 27:
+					// {
+					// 	auto auto_diff_energy = fun81(vals, displacement, da);
+					// 	hessian = auto_diff_energy.getHessian();
+					// 	break;
+					// }
+				}
+			}
+		}
+
+		if(hessian.size() <= 0)
+		{
+			static bool show_message = true;
+
+			if(show_message)
+			{
+				std::cout<<"[Warning] "<<n_bases<<" not using static sizes"<<std::endl;
+				show_message = false;
+			}
+
+			auto auto_diff_energy = funn(vals, displacement, da);
+			hessian = auto_diff_energy.getHessian();
+		}
+
+		// time.stop();
+		// std::cout << "-- hessian: " << time.getElapsedTime() << std::endl;
+
+		return hessian;
+	}
+
+
 	double von_mises_stress_for_stress_tensor(const Eigen::MatrixXd &stress)
 	{
 		double von_mises_stress =  0.5 * ( stress(0, 0) - stress(1, 1) ) * ( stress(0, 0) - stress(1, 1) ) + 3.0  *  stress(0, 1) * stress(0, 1);
