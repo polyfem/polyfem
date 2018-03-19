@@ -9,14 +9,11 @@ namespace poly_fem
 	: Problem(name)
 	{
 		boundary_ids_ = {1, 3, 5, 6};
-		// boundary_ids_ = {1, 2, 3, 4, 5, 6};
 	}
 
 	void ElasticProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-		// val.col(1).setConstant(0.5);
-		// val = Eigen::MatrixXd::Constant(pts.rows(), pts.cols(), 0.5);
 	}
 
 	void ElasticProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
@@ -26,20 +23,38 @@ namespace poly_fem
 		for(long i = 0; i < pts.rows(); ++i)
 		{
 			if(mesh.get_boundary_id(global_ids(i))== 1)
-				val(i, 0)=-0.25;
+				val(i, 0)=-0.025;
 			else if(mesh.get_boundary_id(global_ids(i))== 3)
-				val(i, 0)=0.25;
+				val(i, 0)=0.025;
 			if(mesh.get_boundary_id(global_ids(i))== 5)
 				val(i, 1)=-0.025;
 			else if(mesh.get_boundary_id(global_ids(i))== 6)
 				val(i, 1)=0.025;
 		}
+	}
 
-		// for(long i = 0; i < pts.rows(); ++i)
-		// {
-		// 	if(mesh.get_boundary_id(global_ids(i)) > 0)
-		// 		val.row(i).setZero();
-		// }
+
+	ElasticProblemZeroBC::ElasticProblemZeroBC(const std::string &name)
+	: Problem(name)
+	{
+		boundary_ids_ = {1, 2, 3, 4, 5, 6};
+	}
+
+	void ElasticProblemZeroBC::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+		val.col(1).setConstant(0.5);
+	}
+
+	void ElasticProblemZeroBC::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
+
+		for(long i = 0; i < pts.rows(); ++i)
+		{
+			if(mesh.get_boundary_id(global_ids(i)) > 0)
+				val.row(i).setZero();
+		}
 	}
 
 

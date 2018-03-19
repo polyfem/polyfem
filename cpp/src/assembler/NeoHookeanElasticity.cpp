@@ -1,0 +1,211 @@
+#include "NeoHookeanElasticity.hpp"
+
+#include "Basis.hpp"
+
+#include <igl/Timer.h>
+
+
+namespace poly_fem
+{
+	namespace
+	{
+		template<typename T>
+		T determinant(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> &mat)
+		{
+			assert(mat.rows() == mat.cols());
+
+			if(mat.rows() == 1)
+				return mat(0);
+			else if(mat.rows() == 2)
+				return mat(0, 0) * mat(1, 1) - mat(0, 1) * mat(1, 0);
+			else if(mat.rows() == 3)
+				return mat(0, 0) * (mat(1, 1)*mat(2, 2) - mat(2, 1)*mat(1, 2)) - mat(1, 1) * (mat(1, 0)*mat(2, 2) - mat(1, 2)*mat(2, 0)) + mat(0, 2) * (mat(1, 0)*mat(2, 1) - mat(1, 1)*mat(2, 0));
+
+			assert(false);
+			return T(0);
+		}
+	}
+
+	NeoHookeanElasticity::NeoHookeanElasticity()
+	{
+		set_size(size_);
+	}
+
+	void NeoHookeanElasticity::set_parameters(const json &params)
+	{
+		set_size(params["size"]);
+		set_lambda_mu(params["lambda"], params["mu"]);
+	}
+
+	void NeoHookeanElasticity::set_size(const int size)
+	{
+		size_ = size;
+	}
+
+	void NeoHookeanElasticity::set_lambda_mu(const double lambda, const double mu)
+	{
+		lambda_ = lambda;
+		mu_ = mu;
+	}
+
+
+	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
+	NeoHookeanElasticity::compute_rhs(const AutodiffHessianPt &pt) const
+	{
+		//TODO
+		return Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>::Zero(size(), 1);
+	}
+
+	Eigen::VectorXd
+	NeoHookeanElasticity::assemble(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const
+	{
+		const int n_bases = vals.basis_values.size();
+
+		return poly_fem::gradient_from_energy(size(), n_bases, vals, displacement, da,
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 6, 1>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 8, 1>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 12, 1>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 18, 1>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 24, 1>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 30, 1>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 81, 1>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) { return compute_energy_aux<DScalar1<double, Eigen::VectorXd>>(vals, displacement, da); }
+		);
+	}
+
+	Eigen::MatrixXd
+	NeoHookeanElasticity::assemble_grad(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const
+	{
+		const int n_bases = vals.basis_values.size();
+		return poly_fem::hessian_from_energy(size(), n_bases, vals, displacement, da,
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 6, 1>, Eigen::Matrix<double, 6, 6>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 8, 1>, Eigen::Matrix<double, 8, 8>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 12, 1>, Eigen::Matrix<double, 12, 12>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 18, 1>, Eigen::Matrix<double, 18, 18>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 24, 1>, Eigen::Matrix<double, 24, 24>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 30, 1>, Eigen::Matrix<double, 30, 30>>>(vals, displacement, da); },
+			// [&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 81, 1>, Eigen::Matrix<double, 81, 81>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) { return compute_energy_aux<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>>(vals, displacement, da); }
+		);
+	}
+
+	//stress = mu (F - F^{-T}) + lambda ln J F^{-T}
+	void NeoHookeanElasticity::compute_von_mises_stresses(const ElementBases &bs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
+	{
+		Eigen::MatrixXd displacement_grad(size(), size());
+
+		assert(displacement.cols() == 1);
+
+		stresses.resize(local_pts.rows(), 1);
+
+		ElementAssemblyValues vals;
+		vals.compute(-1, size() == 3, local_pts, bs, bs);
+
+
+		for(long p = 0; p < local_pts.rows(); ++p)
+		{
+			displacement_grad.setZero();
+
+			for(std::size_t j = 0; j < bs.bases.size(); ++j)
+			{
+				const Basis &b = bs.bases[j];
+				const auto &loc_val = vals.basis_values[j];
+
+				assert(bs.bases.size() == vals.basis_values.size());
+				assert(loc_val.grad.rows() == local_pts.rows());
+				assert(loc_val.grad.cols() == size());
+
+				for(int d = 0; d < size(); ++d)
+				{
+					for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+					{
+						displacement_grad.row(d) += b.global()[ii].val * loc_val.grad.row(p) * displacement(b.global()[ii].index*size() + d);
+					}
+				}
+			}
+
+			displacement_grad = displacement_grad * vals.jac_it[p];
+			const Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(size(), size()) + displacement_grad;
+			const Eigen::MatrixXd FmT = def_grad.inverse().transpose();
+			Eigen::MatrixXd stress_tensor = mu_*(def_grad - FmT) + lambda_ * std::log(def_grad.determinant()) * FmT;
+
+			stresses(p) = von_mises_stress_for_stress_tensor(stress_tensor);
+		}
+	}
+
+	double NeoHookeanElasticity::compute_energy(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const
+	{
+		return compute_energy_aux<double>(vals, displacement, da);
+	}
+
+	//Compute \int (mu/2 (trace(F^T F) - 3 - ln(J)) + lambda/2 ln^2(J))
+	template<typename T>
+	T NeoHookeanElasticity::compute_energy_aux(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const Eigen::VectorXd &da) const
+	{
+		typedef Eigen::Matrix<T, Eigen::Dynamic, 1> 						AutoDiffVect;
+		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> 	AutoDiffGradMat;
+
+		assert(displacement.cols() == 1);
+
+		const int n_pts = da.size();
+
+		Eigen::Matrix<double, Eigen::Dynamic, 1> local_dispv(vals.basis_values.size() * size(), 1);
+		local_dispv.setZero();
+		for(size_t i = 0; i < vals.basis_values.size(); ++i){
+			const auto &bs = vals.basis_values[i];
+			for(size_t ii = 0; ii < bs.global.size(); ++ii){
+				for(int d = 0; d < size(); ++d){
+					local_dispv(i*size() + d) += bs.global[ii].val * displacement(bs.global[ii].index*size() + d);
+				}
+			}
+		}
+
+		DiffScalarBase::setVariableCount(local_dispv.rows());
+		AutoDiffVect local_disp(local_dispv.rows(), 1);
+		T energy = T(0.0);
+
+		const AutoDiffAllocator<T> allocate_auto_diff_scalar;
+
+		for(long i = 0; i < local_dispv.rows(); ++i){
+			local_disp(i) = allocate_auto_diff_scalar(i, local_dispv(i));
+		}
+
+		AutoDiffGradMat def_grad(size(), size());
+
+		for(long p = 0; p < n_pts; ++p)
+		{
+			bool is_disp_grad_set = false;
+
+			for(size_t i = 0; i < vals.basis_values.size(); ++i)
+			{
+				const auto &bs = vals.basis_values[i];
+				const Eigen::MatrixXd grad = bs.grad*vals.jac_it[p];
+				assert(grad.cols() == size());
+				assert(size_t(grad.rows()) ==  vals.jac_it.size());
+
+				for(int d = 0; d < size(); ++d)
+				{
+					for(int c = 0; c < size(); ++c)
+					{
+						if(is_disp_grad_set)
+							def_grad(d, c) += grad(p, c) * local_disp(i*size() + d);
+						else
+							def_grad(d, c) = grad(p, c) * local_disp(i*size() + d);
+					}
+				}
+
+				is_disp_grad_set = true;
+			}
+
+			//Id + grad d
+			for(int d = 0; d < size(); ++d)
+				def_grad(d,d) += 1;
+
+			const auto det_j = log(determinant(def_grad));
+			const T val = mu_ / 2 * ( (def_grad.transpose() * def_grad).trace() - 3 - 2*det_j) + lambda_ /2 * det_j * det_j;
+
+			energy += val * da(p);
+		}
+		return energy * 0.5;
+	}
+}

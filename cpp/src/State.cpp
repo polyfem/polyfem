@@ -781,9 +781,9 @@ namespace poly_fem
 		return instance;
 	}
 
-	void State::init(const json &args)
+	void State::init(const json &args_in)
 	{
-		this->args = args;
+		this->args = args_in;
 		problem = ProblemFactory::factory().get_problem(args["problem"]);
 	}
 

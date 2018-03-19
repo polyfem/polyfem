@@ -17,12 +17,14 @@ namespace poly_fem
 
 		tensor_assemblers_.push_back("LinearElasticity");
 		tensor_assemblers_.push_back("HookeLinearElasticity");
+
 		tensor_assemblers_.push_back("SaintVenant");
+		tensor_assemblers_.push_back("NeoHookean");
 	}
 
 	bool AssemblerUtils::is_linear(const std::string &assembler) const
 	{
-		return assembler != "SaintVenant";
+		return assembler != "SaintVenant" && assembler != "NeoHookean";
 	}
 
 	void AssemblerUtils::assemble_scalar_problem(const std::string &assembler,
@@ -51,12 +53,16 @@ namespace poly_fem
 		const std::vector< ElementBases > &gbases,
 		Eigen::SparseMatrix<double> &stiffness) const
 	{
-		if(assembler == "HookeLinearElasticity")
+		if(assembler == "LinearElasticity")
+			linear_elasticity_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+		else if(assembler == "HookeLinearElasticity")
 			hooke_linear_elasticity_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+
 		else if(assembler == "SaintVenant")
 			return;
-		else if(assembler == "LinearElasticity")
-			linear_elasticity_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+		else if(assembler == "NeoHookean")
+			return;
+
 		else
 		{
 			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;
@@ -74,9 +80,12 @@ namespace poly_fem
 		const std::vector< ElementBases > &gbases,
 		const Eigen::MatrixXd &displacement) const
 	{
-		if(assembler != "SaintVenant") return 0;
-
-		return saint_venant_elasticity_.compute_energy(is_volume, bases, gbases, displacement);
+		if(assembler == "SaintVenant")
+			return saint_venant_elasticity_.compute_energy(is_volume, bases, gbases, displacement);
+		else if(assembler == "NeoHookean")
+			return neo_hookean_elasticity_.compute_energy(is_volume, bases, gbases, displacement);
+		else
+			return 0;
 	}
 
 	void AssemblerUtils::assemble_tensor_energy_gradient(const std::string &assembler,
@@ -87,9 +96,12 @@ namespace poly_fem
 		const Eigen::MatrixXd &displacement,
 		Eigen::MatrixXd &grad) const
 	{
-		if(assembler != "SaintVenant") return;
-
-		saint_venant_elasticity_.assemble(is_volume, n_basis, bases, gbases, displacement, grad);
+		if(assembler == "SaintVenant")
+			saint_venant_elasticity_.assemble(is_volume, n_basis, bases, gbases, displacement, grad);
+		else if(assembler == "NeoHookean")
+			neo_hookean_elasticity_.assemble(is_volume, n_basis, bases, gbases, displacement, grad);
+		else
+			return;
 	}
 
 	void AssemblerUtils::assemble_tensor_energy_hessian(const std::string &assembler,
@@ -100,9 +112,12 @@ namespace poly_fem
 		const Eigen::MatrixXd &displacement,
 		Eigen::SparseMatrix<double> &hessian) const
 	{
-		if(assembler != "SaintVenant") return;
-
-		saint_venant_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, hessian);
+		if(assembler == "SaintVenant")
+			saint_venant_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, hessian);
+		else if(assembler == "NeoHookean")
+			neo_hookean_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, hessian);
+		else
+			return;
 	}
 
 
@@ -114,12 +129,18 @@ namespace poly_fem
 	{
 		if(assembler == "Laplacian" || assembler == "Helmholtz")
 			return;
-		else if(assembler == "HookeLinearElasticity")
-			hooke_linear_elasticity_.local_assembler().compute_von_mises_stresses(bs, local_pts, fun, result);
-		else if(assembler == "SaintVenant")
-			saint_venant_elasticity_.local_assembler().compute_von_mises_stresses(bs, local_pts, fun, result);
+
 		else if(assembler == "LinearElasticity")
 			linear_elasticity_.local_assembler().compute_von_mises_stresses(bs, local_pts, fun, result);
+		else if(assembler == "HookeLinearElasticity")
+			hooke_linear_elasticity_.local_assembler().compute_von_mises_stresses(bs, local_pts, fun, result);
+
+		else if(assembler == "SaintVenant")
+			saint_venant_elasticity_.local_assembler().compute_von_mises_stresses(bs, local_pts, fun, result);
+
+		else if(assembler == "NeoHookean")
+			neo_hookean_elasticity_.local_assembler().compute_von_mises_stresses(bs, local_pts, fun, result);
+
 		else
 		{
 			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;
@@ -135,12 +156,17 @@ namespace poly_fem
 			return laplacian_.local_assembler().compute_rhs(pt);
 		else if(assembler == "Helmholtz")
 			return helmholtz_.local_assembler().compute_rhs(pt);
+
 		else if(assembler == "LinearElasticity")
 			return linear_elasticity_.local_assembler().compute_rhs(pt);
 		else if(assembler == "HookeLinearElasticity")
 			return hooke_linear_elasticity_.local_assembler().compute_rhs(pt);
+
 		else if(assembler == "SaintVenant")
 			return saint_venant_elasticity_.local_assembler().compute_rhs(pt);
+		else if(assembler == "NeoHookean")
+			return neo_hookean_elasticity_.local_assembler().compute_rhs(pt);
+
 		else
 		{
 			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;
@@ -160,7 +186,9 @@ namespace poly_fem
 
 		linear_elasticity_.local_assembler().set_parameters(params);
 		hooke_linear_elasticity_.local_assembler().set_parameters(params);
+
 		saint_venant_elasticity_.local_assembler().set_parameters(params);
+		neo_hookean_elasticity_.local_assembler().set_parameters(params);
 	}
 
 }
