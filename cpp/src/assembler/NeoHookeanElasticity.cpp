@@ -3,29 +3,12 @@
 #include "Basis.hpp"
 #include "auto_rhs.hpp"
 
+#include "MatrixUtils.hpp"
 #include <igl/Timer.h>
 
 
 namespace poly_fem
 {
-	namespace
-	{
-		template<typename T>
-		T determinant(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> &mat)
-		{
-			assert(mat.rows() == mat.cols());
-
-			if(mat.rows() == 1)
-				return mat(0);
-			else if(mat.rows() == 2)
-				return mat(0, 0) * mat(1, 1) - mat(0, 1) * mat(1, 0);
-			else if(mat.rows() == 3)
-				return mat(0, 0) * (mat(1, 1)*mat(2, 2) - mat(2, 1)*mat(1, 2)) - mat(1, 1) * (mat(1, 0)*mat(2, 2) - mat(1, 2)*mat(2, 0)) + mat(0, 2) * (mat(1, 0)*mat(2, 1) - mat(1, 1)*mat(2, 0));
-
-			assert(false);
-			return T(0);
-		}
-	}
 
 	NeoHookeanElasticity::NeoHookeanElasticity()
 	{
@@ -205,13 +188,13 @@ namespace poly_fem
 
 			//Id + grad d
 			for(int d = 0; d < size(); ++d)
-				def_grad(d,d) += 1;
+				def_grad(d,d) += T(1);
 
-			const T log_det_j = log(determinant(def_grad));
+			const T log_det_j = log(poly_fem::determinant(def_grad));
 			const T val = mu_ / 2 * ( (def_grad.transpose() * def_grad).trace() - 3 - 2*log_det_j) + lambda_ /2 * log_det_j * log_det_j;
 
 			energy += val * da(p);
 		}
-		return energy * 0.5;
+		return energy;
 	}
 }

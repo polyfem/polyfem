@@ -32,7 +32,7 @@ def sigma_fun(j, ee, C, dim):
 
 
 # sigma = def_grad*(C:disp_grad)
-def saint_venenant(disp_grad, def_grad):
+def saint_venant(disp_grad, def_grad):
     l_dim = def_grad.rows
 
     C = Function('C')
@@ -97,20 +97,19 @@ def parse_args():
 if __name__ == "__main__":
     args = parse_args()
     dims = [2, 3]
-    names = ["saint_venenant", "neo_hookean"]
+    names = ["saint_venant", "neo_hookean"]
     cpp = "#include \"auto_rhs.hpp\"\n\n\n"
     hpp = "#pragma once\n\n#include \"ElasticityUtils.hpp\"\n#include \"AutodiffTypes.hpp\"\n#include <Eigen/Dense>\n\n"
     cpp = cpp + "namespace poly_fem {\nnamespace autogen " + "{\n"
     hpp = hpp + "namespace poly_fem {\nnamespace autogen " + "{\n"
 
+    x = Symbol('x')
+    y = Symbol('y')
+    z = Symbol('z')
 
     for name in names:
         for dim in dims:
             print("processing " + name + " in " + str(dim) + "D")
-
-            x = Symbol('x')
-            y = Symbol('y')
-            z = Symbol('z')
 
             if dim == 2:
                 X = Matrix([x, y])
@@ -122,8 +121,8 @@ if __name__ == "__main__":
             disp_grad = f.jacobian(X)
             def_grad = (eye(dim) + disp_grad)
 
-            if name == "saint_venenant":
-                sigma = saint_venenant(disp_grad, def_grad)
+            if name == "saint_venant":
+                sigma = saint_venant(disp_grad, def_grad)
             elif name == "neo_hookean":
                 sigma = neo_hookean(disp_grad, def_grad)
 
@@ -157,7 +156,7 @@ if __name__ == "__main__":
             # c99 = re.sub("// ", "", c99)
 
             signature = "void " + name + "_" + str(dim) + "d_function(const AutodiffHessianPt &pt"
-            if name == "saint_venenant":
+            if name == "saint_venant":
                 signature = signature + ", const ElasticityTensor &C"
             elif name == "neo_hookean":
                 signature = signature + ", const double lambda, const double mu"

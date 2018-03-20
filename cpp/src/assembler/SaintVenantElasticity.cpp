@@ -88,9 +88,9 @@ namespace poly_fem
 
 
 		if(size() == 2)
-			autogen::saint_venenant_2d_function(pt, elasticity_tensor_, res);
+			autogen::saint_venant_2d_function(pt, elasticity_tensor_, res);
 		else if(size() == 3)
-			autogen::saint_venenant_3d_function(pt, elasticity_tensor_, res);
+			autogen::saint_venant_3d_function(pt, elasticity_tensor_, res);
 		else
 			assert(false);
 

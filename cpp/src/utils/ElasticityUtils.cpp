@@ -101,7 +101,7 @@ namespace poly_fem
 
 			if(show_message)
 			{
-				std::cout<<"[Warning] "<<n_bases<<" not using static sizes"<<std::endl;
+				std::cout<<"[Warning] "<<n_bases<<"^"<<size<<" not using static sizes"<<std::endl;
 				show_message = false;
 			}
 
@@ -211,7 +211,7 @@ namespace poly_fem
 
 			if(show_message)
 			{
-				std::cout<<"[Warning] "<<n_bases<<" not using static sizes"<<std::endl;
+				std::cout<<"[Warning] "<<n_bases<<"^"<<size<<" not using static sizes"<<std::endl;
 				show_message = false;
 			}
 

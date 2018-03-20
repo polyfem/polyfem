@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 class Rosenbrock : public cppoptlib::Problem<double> {
-  public:
+public:
     double value(const Eigen::VectorXd &x) {
         const double t1 = (1 - x[0]);
         const double t2 = (x[1] - x[0] * x[0]);
