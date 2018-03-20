@@ -201,6 +201,8 @@ add_library(polyfem
 	src/utils/StringUtils.hpp
 	src/utils/ElasticityUtils.cpp
 	src/utils/ElasticityUtils.hpp
+	src/utils/InterpolatedFunction.cpp
+	src/utils/InterpolatedFunction.hpp
 	src/utils/AutodiffTypes.hpp
 	src/utils/Types.hpp
 	${CMAKE_SOURCE_DIR}/src/autogen/auto_rhs.cpp
