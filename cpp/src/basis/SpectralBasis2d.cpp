@@ -25,35 +25,7 @@ namespace poly_fem
 
     namespace
     {
-        double basis_1d(const double x, const int n)
-        {
-            if(n == 0)
-                return 0.5;
-            if(n % 2 == 0)
-            {
-                return cos(2*M_PI*(n/2)*x);
-            }
-            else
-            {
-                return sin(2*M_PI*((n+1)/2)*x);
-            }
-        }
-
-        double grad_basis_1d(const double x, const int n)
-        {
-            if(n == 0)
-                return 0;
-            if(n % 2 == 0)
-            {
-                return -(2*M_PI*(n/2))*sin(2*M_PI*(n/2)*x);
-            }
-            else
-            {
-                return (2*M_PI*((n+1)/2))*cos(2*M_PI*((n+1)/2)*x);
-            }
-        }
-
-        void basis(const Eigen::MatrixXd &uv, const int n, Eigen::MatrixXd &result)
+        void basis(const Eigen::MatrixXd &uv, const int n, const int m, Eigen::MatrixXd &result)
         {
             const int n_pts = int(uv.rows());
             assert(uv.cols() == 2);
@@ -61,11 +33,11 @@ namespace poly_fem
             result.resize(n_pts, 1);
 
             for(int i = 0; i < n_pts; ++i)
-                result(i) = basis_1d(uv(i,0), n) * basis_1d(uv(i,1), n);
+                result(i) = sin(n*M_PI*uv(i,0)) * sin(m*M_PI*uv(i,1));
         }
 
 
-        void derivative(const Eigen::MatrixXd &uv, const int n, Eigen::MatrixXd &result)
+        void derivative(const Eigen::MatrixXd &uv, const int n, const int m, Eigen::MatrixXd &result)
         {
             const int n_pts = int(uv.rows());
             assert(uv.cols() == 2);
@@ -77,8 +49,8 @@ namespace poly_fem
                 const double u = uv(i,0);
                 const double v = uv(i,1);
 
-                result(i,0) = grad_basis_1d(u, n) * basis_1d(v, n);
-                result(i,1) = basis_1d(u, n) * grad_basis_1d(v, n);
+                result(i,0) = cos(n*M_PI*uv(i,0)) * sin(m*M_PI*uv(i,1));
+                result(i,1) = sin(n*M_PI*uv(i,0)) * cos(m*M_PI*uv(i,1));
             }
         }
     }
@@ -95,7 +67,7 @@ namespace poly_fem
         ElementBases &b = bases.front();
         b.has_parameterization = false;
 
-        const int n_bases = 2*order + 1;
+        const int n_bases = order * order;
 
         b.bases.resize(n_bases);
         b.set_quadrature([quadrature_order](Quadrature &quad){
@@ -104,12 +76,15 @@ namespace poly_fem
         });
 
 
-        for (int j = 0; j < n_bases; ++j) {
-            const int global_index = j;
+        for (int i = 0; i < order; ++i) {
+            for (int j = 0; j < order; ++j) {
+                const int global_index = order*i + j;
+                assert(global_index < n_bases);
 
-            b.bases[j].init(global_index, j, Eigen::MatrixXd::Zero(1, 2));
-            b.bases[j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { basis(uv, j, val); });
-            b.bases[j].set_grad([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { derivative(uv, j, val); });
+                b.bases[global_index].init(global_index, j, Eigen::MatrixXd::Zero(1, 2));
+                b.bases[global_index].set_basis([i, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { basis(uv, i, j, val); });
+                b.bases[global_index].set_grad([i, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { derivative(uv, i, j, val); });
+            }
         }
 
 
