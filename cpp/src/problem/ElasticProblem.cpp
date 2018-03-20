@@ -114,8 +114,8 @@ namespace poly_fem
 		{
 			Eigen::Matrix<T, 2, 1> res;
 
-			res(0) = -(y*y + x*x + x*y)/14.;
-			res(1) = -(3*x*x + y)/14.;
+			res(0) = -(y*y + x*x + x*y)/50.;
+			res(1) = -(3*x*x + y)/50.;
 
 			return res;
 		}
@@ -125,9 +125,9 @@ namespace poly_fem
 		{
 			Eigen::Matrix<T, 3, 1> res;
 
-			res(0) = -(y*y + x*x + x*y + z*y)/14.;
-			res(1) = -(3*x*x + y + z*z)/14.;
-			res(2) = -(x*z + y*y - 2*z)/14.;
+			res(0) = -(y*y + x*x + x*y + z*y)/50.;
+			res(1) = -(3*x*x + y + z*z)/50.;
+			res(2) = -(x*z + y*y - 2*z)/50.;
 
 			return res;
 		}
@@ -138,8 +138,8 @@ namespace poly_fem
 		{
 			Eigen::Matrix<T, 2, 1> res;
 
-			res(0) = -(y + x)/14.;
-			res(1) = -(3*x + y)/14.;
+			res(0) = -(y + x)/50.;
+			res(1) = -(3*x + y)/50.;
 
 			return res;
 		}
@@ -149,9 +149,9 @@ namespace poly_fem
 		{
 			Eigen::Matrix<T, 3, 1> res;
 
-			res(0) = -(y + x + z)/14.;
-			res(1) = -(3*x + y - z)/14.;
-			res(2) = -(x + y - 2*z)/14.;
+			res(0) = -(y + x + z)/50.;
+			res(1) = -(3*x + y - z)/50.;
+			res(2) = -(x + y - 2*z)/50.;
 
 			return res;
 		}

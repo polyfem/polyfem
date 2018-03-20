@@ -67,17 +67,15 @@ option(LIBIGL_WITH_XML                    "Use XML"                      OFF)
 
 ################################################################################
 
-add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/src/autogen/rhs.cpp ${CMAKE_SOURCE_DIR}/src/autogen/rhs.hpp
+add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/src/autogen/auto_rhs.cpp ${CMAKE_SOURCE_DIR}/src/autogen/auto_rhs.hpp
 	COMMAND python ${CMAKE_SOURCE_DIR}/src/autogen/elasticity_rhs.py ${CMAKE_SOURCE_DIR}/src/autogen/
 	DEPENDS ${CMAKE_SOURCE_DIR}/src/autogen/elasticity_rhs.py)
 
-add_custom_target(autogen ALL DEPENDS ${CMAKE_SOURCE_DIR}/src/autogen/rhs.cpp ${CMAKE_SOURCE_DIR}/src/autogen/rhs.hpp)
+# add_custom_target(autogen ALL DEPENDS ${CMAKE_SOURCE_DIR}/src/autogen/auto_rhs.cpp ${CMAKE_SOURCE_DIR}/src/autogen/auto_rhs.hpp)
 
 
 # Polyfem library
 add_library(polyfem
-	src/autogen/auto_rhs.cpp
-	src/autogen/auto_rhs.hpp
 	src/assembler/Assembler.cpp
 	src/assembler/Assembler.hpp
 	src/assembler/AssemblyValues.hpp
@@ -205,6 +203,8 @@ add_library(polyfem
 	src/utils/ElasticityUtils.hpp
 	src/utils/AutodiffTypes.hpp
 	src/utils/Types.hpp
+	${CMAKE_SOURCE_DIR}/src/autogen/auto_rhs.cpp
+	${CMAKE_SOURCE_DIR}/src/autogen/auto_rhs.hpp
 )
 
 target_include_directories(polyfem PUBLIC

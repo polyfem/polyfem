@@ -149,7 +149,7 @@ namespace poly_fem
 		return compute_energy_aux<double>(vals, displacement, da);
 	}
 
-	//Compute \int (mu/2 (trace(F^T F) - 3 - ln(J)) + lambda/2 ln^2(J))
+	//Compute \int (mu/2 (trace(F^T F) - 3 - 2*ln(J)) + lambda/2 ln^2(J))
 	template<typename T>
 	T NeoHookeanElasticity::compute_energy_aux(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
 	{

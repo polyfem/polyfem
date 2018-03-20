@@ -103,6 +103,7 @@ if __name__ == "__main__":
     cpp = cpp + "namespace poly_fem {\nnamespace autogen " + "{\n"
     hpp = hpp + "namespace poly_fem {\nnamespace autogen " + "{\n"
 
+
     for name in names:
         for dim in dims:
             print("processing " + name + " in " + str(dim) + "D")
