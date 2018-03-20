@@ -1,6 +1,7 @@
 #include "NeoHookeanElasticity.hpp"
 
 #include "Basis.hpp"
+#include "auto_rhs.hpp"
 
 #include <igl/Timer.h>
 
@@ -52,8 +53,18 @@ namespace poly_fem
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
 	NeoHookeanElasticity::compute_rhs(const AutodiffHessianPt &pt) const
 	{
-		//TODO
-		return Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>::Zero(size(), 1);
+		assert(pt.size() == size());
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res;
+
+
+		if(size() == 2)
+			autogen::neo_hookean_2d_function(pt, lambda_, mu_, res);
+		else if(size() == 3)
+			autogen::neo_hookean_3d_function(pt, lambda_, mu_, res);
+		else
+			assert(false);
+
+		return res;
 	}
 
 	Eigen::VectorXd

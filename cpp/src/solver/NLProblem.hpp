@@ -76,7 +76,7 @@ namespace poly_fem
 		}
 
 	private:
-		const AssemblerUtils &assembler;
+		AssemblerUtils &assembler;
 		const RhsAssembler &rhs_assembler;
 
 		const int full_size, reduced_size;

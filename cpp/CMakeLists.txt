@@ -67,8 +67,17 @@ option(LIBIGL_WITH_XML                    "Use XML"                      OFF)
 
 ################################################################################
 
+add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/src/autogen/rhs.cpp ${CMAKE_SOURCE_DIR}/src/autogen/rhs.hpp
+	COMMAND python ${CMAKE_SOURCE_DIR}/src/autogen/elasticity_rhs.py ${CMAKE_SOURCE_DIR}/src/autogen/
+	DEPENDS ${CMAKE_SOURCE_DIR}/src/autogen/elasticity_rhs.py)
+
+add_custom_target(autogen ALL DEPENDS ${CMAKE_SOURCE_DIR}/src/autogen/rhs.cpp ${CMAKE_SOURCE_DIR}/src/autogen/rhs.hpp)
+
+
 # Polyfem library
 add_library(polyfem
+	src/autogen/auto_rhs.cpp
+	src/autogen/auto_rhs.hpp
 	src/assembler/Assembler.cpp
 	src/assembler/Assembler.hpp
 	src/assembler/AssemblyValues.hpp
@@ -200,6 +209,7 @@ add_library(polyfem
 
 target_include_directories(polyfem PUBLIC
 	src
+	src/autogen
 	src/assembler
 	src/assembler/utils
 	src/basis

@@ -110,7 +110,7 @@ namespace poly_fem
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
 		const Eigen::MatrixXd &displacement,
-		Eigen::SparseMatrix<double> &hessian) const
+		Eigen::SparseMatrix<double> &hessian)
 	{
 		if(assembler == "SaintVenant")
 			saint_venant_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, hessian);
@@ -175,6 +175,13 @@ namespace poly_fem
 			return laplacian_.local_assembler().compute_rhs(pt);
 		}
 
+	}
+
+
+	void AssemblerUtils::clear_cache()
+	{
+		saint_venant_elasticity_.clear_cache();
+		neo_hookean_elasticity_.clear_cache();
 	}
 
 

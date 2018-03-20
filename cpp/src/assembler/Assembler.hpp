@@ -50,7 +50,7 @@ namespace poly_fem
 			const std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
 			const Eigen::MatrixXd &displacement,
-			Eigen::SparseMatrix<double> &grad) const;
+			Eigen::SparseMatrix<double> &grad);
 
 		double compute_energy(
 			const bool is_volume,
@@ -61,8 +61,11 @@ namespace poly_fem
 		inline LocalAssembler &local_assembler() { return local_assembler_; }
 		inline const LocalAssembler &local_assembler() const { return local_assembler_; }
 
+		void clear_cache() { cached_grad_.resize(0); }
+
 	private:
 		LocalAssembler local_assembler_;
+		Eigen::VectorXi cached_grad_;
 	};
 }
 

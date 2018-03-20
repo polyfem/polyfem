@@ -9,7 +9,10 @@
 #include "NeoHookeanElasticity.hpp"
 
 #include <igl/Timer.h>
+#include <igl/sparse_cached.h>
 
+
+static const bool use_sparse_cached = false;
 
 namespace poly_fem
 {
@@ -182,7 +185,7 @@ namespace poly_fem
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
 		const Eigen::MatrixXd &displacement,
-		Eigen::SparseMatrix<double> &grad) const
+		Eigen::SparseMatrix<double> &grad)
 	{
 		const int buffer_size = std::min(long(1e8), long(n_basis) * local_assembler_.size());
 
@@ -229,7 +232,7 @@ namespace poly_fem
 							const auto &global_j = vals.basis_values[j].global;
 
 							const double local_value = stiffness_val(i*local_assembler_.size() + m, j*local_assembler_.size() + n);
-							if (std::abs(local_value) < 1e-30) { continue; }
+							// if (!use_sparse_cached && std::abs(local_value) < 1e-30) { continue; }
 
 
 							for(size_t ii = 0; ii < global_i.size(); ++ii)
@@ -247,7 +250,7 @@ namespace poly_fem
 									{
 										entries.emplace_back(gi, gj, local_value);
 
-										if(entries.size() >= 1e8)
+										if(!use_sparse_cached && entries.size() >= 1e8)
 										{
 											tmp.setFromTriplets(entries.begin(), entries.end());
 											grad += tmp;
@@ -276,9 +279,19 @@ namespace poly_fem
 
 		if(needs_to_allocate_memory)
 		{
-			tmp.setFromTriplets(entries.begin(), entries.end());
-			grad += tmp;
-			grad.makeCompressed();
+			if(use_sparse_cached)
+			{
+				if(cached_grad_.size() > 0)
+					igl::sparse_cached(entries, cached_grad_, grad);
+				else
+					igl::sparse_cached_precompute(entries, cached_grad_, grad);
+			}
+			else
+			{
+				tmp.setFromTriplets(entries.begin(), entries.end());
+				grad += tmp;
+				grad.makeCompressed();
+			}
 		}
 	}
 

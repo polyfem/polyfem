@@ -63,7 +63,7 @@ namespace poly_fem
 			const std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
 			const Eigen::MatrixXd &displacement,
-			Eigen::SparseMatrix<double> &hessian) const;
+			Eigen::SparseMatrix<double> &hessian);
 
 
 		//plotting
@@ -84,6 +84,8 @@ namespace poly_fem
 		//getters
 		const std::vector<std::string> &scalar_assemblers() const { return scalar_assemblers_; }
 		const std::vector<std::string> &tensor_assemblers() const { return tensor_assemblers_; }
+
+		void clear_cache();
 
 	private:
 		Assembler<Laplacian> laplacian_;

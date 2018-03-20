@@ -67,6 +67,8 @@ namespace cppoptlib {
 
 			THessian hessian;
 			this->m_current.reset();
+			AssemblerUtils::instance().clear_cache();
+			
 			bool analyze_pattern = true;
 			do
 			{
