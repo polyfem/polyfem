@@ -1,5 +1,10 @@
 #include "MatrixUtils.hpp"
+
+#include <igl/list_to_matrix.h>
+
 #include <iostream>
+#include <fstream>
+#include <vector>
 
 void poly_fem::show_matrix_stats(const Eigen::MatrixXd &M) {
 	Eigen::FullPivLU<Eigen::MatrixXd> lu(M);
@@ -16,3 +21,44 @@ void poly_fem::show_matrix_stats(const Eigen::MatrixXd &M) {
 	std::cout << "----------------------------------------" << std::endl;
 	std::cout << lu.solve(M) << std::endl;
 }
+
+
+template<typename T>
+void poly_fem::read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat)
+{
+	std::fstream file;
+	file.open(path.c_str());
+
+	if (!file.good())
+	{
+		std::cerr << "Failed to open file: " << path << std::endl;
+		file.close();
+	}
+
+
+	std::string s;
+	std::vector<std::vector<T>> matrix;
+
+	while (getline(file, s))
+	{
+		std::stringstream input(s);
+		T temp;
+		matrix.emplace_back();
+
+		std::vector<T> &currentLine = matrix.back();
+
+		while (input >> temp)
+			currentLine.push_back(temp);
+	}
+
+	if (!igl::list_to_matrix(matrix, mat))
+	{
+		std::cerr << "list to matrix error" << std::endl;
+		file.close();
+	}
+}
+
+//template instantiation
+template void poly_fem::read_matrix<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
+template void poly_fem::read_matrix<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
+

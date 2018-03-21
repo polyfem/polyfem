@@ -151,6 +151,7 @@ namespace poly_fem
 
 		j["err_l2"] = l2_err;
 		j["err_h1"] = h1_err;
+		j["err_h1_semi"] = h1_semi_err;
 		j["err_linf"] = linf_err;
 		j["err_lp"] = lp_err;
 
@@ -712,6 +713,7 @@ namespace poly_fem
 
 		l2_err = 0;
 		h1_err = 0;
+		h1_semi_err = 0;
 		linf_err = 0;
 		lp_err = 0;
 
@@ -760,6 +762,7 @@ namespace poly_fem
 			lp_err += (err.array().pow(8.) * vals.det.array() * vals.quadrature.weights.array()).sum();
 		}
 
+		h1_semi_err = sqrt(fabs(h1_err));
 		h1_err = sqrt(fabs(l2_err) + fabs(h1_err));
 		l2_err = sqrt(fabs(l2_err));
 
@@ -772,6 +775,7 @@ namespace poly_fem
 		std::cout << "-- L2 error: " << l2_err << std::endl;
 		std::cout << "-- Lp error: " << lp_err << std::endl;
 		std::cout << "-- H1 error: " << h1_err << std::endl;
+		std::cout << "-- H1 semi error: " << h1_semi_err << std::endl;
 		// std::cout<<l2_err<<" "<<linf_err<<" "<<lp_err<<std::endl;
 	}
 
@@ -785,6 +789,7 @@ namespace poly_fem
 	{
 		this->args = args_in;
 		problem = ProblemFactory::factory().get_problem(args["problem"]);
+		problem->set_parameters(args["problem_params"]);
 	}
 
 

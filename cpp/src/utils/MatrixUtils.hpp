@@ -24,4 +24,7 @@ namespace poly_fem {
 		return T(0);
 	}
 
+    template<typename T>
+	void read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat);
+
 } // namespace poly_fem

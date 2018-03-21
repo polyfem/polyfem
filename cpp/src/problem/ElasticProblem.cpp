@@ -66,8 +66,8 @@ namespace poly_fem
 		{
 			Eigen::Matrix<T, 2, 1> res;
 
-			res(0) = (y*y*y + x*x + x*y)/10.;
-			res(1) = (3*x*x*x*x + x*y*y + x)/10.;
+			res(0) = (y*y*y + x*x + x*y)/50.;
+			res(1) = (3*x*x*x*x + x*y*y + x)/50.;
 
 			return res;
 		}
@@ -77,9 +77,9 @@ namespace poly_fem
 		{
 			Eigen::Matrix<T, 3, 1> res;
 
-			res(0) = (x*y + x*x + y*y*y + 6*z)/10.;
-			res(1) = (z*x - z*z*z + x*y*y + 3*x*x*x*x)/10.;
-			res(2) = (x*y*z + z*z*y*y - 2*x)/10.;
+			res(0) = (x*y + x*x + y*y*y + 6*z)/50.;
+			res(1) = (z*x - z*z*z + x*y*y + 3*x*x*x*x)/50.;
+			res(2) = (x*y*z + z*z*y*y - 2*x)/50.;
 
 			return res;
 		}

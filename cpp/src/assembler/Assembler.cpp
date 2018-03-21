@@ -323,6 +323,7 @@ namespace poly_fem
 		return res;
 	}
 
+	//template instantiation
 	template class Assembler<Laplacian>;
 	template class Assembler<Helmholtz>;
 	template class Assembler<LinearElasticity>;

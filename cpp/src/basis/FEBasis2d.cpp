@@ -554,7 +554,7 @@ std::array<int, 2> poly_fem::FEBasis2d::linear_tri_edge_local_nodes(
 	const Mesh2D &mesh, Navigation::Index index)
 {
 	int f = index.face;
-	assert(mesh.is_cube(f));
+	assert(mesh.is_simplex(f));
 
 	// Local to global mapping of node indices
 	auto l2g = linear_tri_local_to_global(mesh, f);

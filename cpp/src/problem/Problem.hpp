@@ -5,6 +5,8 @@
 #include "LocalBoundary.hpp"
 #include "Mesh.hpp"
 
+#include "Common.hpp"
+
 #include <vector>
 #include <Eigen/Dense>
 #include <memory>
@@ -26,6 +28,8 @@ namespace poly_fem
 
 		virtual bool has_exact_sol() const = 0;
 		virtual bool is_scalar() const = 0;
+
+		virtual void set_parameters(const json &params) { }
 
 		void remove_neumann_nodes(const Mesh &mesh, const std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &boundary_nodes);
 

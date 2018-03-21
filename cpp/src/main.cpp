@@ -116,7 +116,9 @@ int main(int argc, const char **argv)
 			{"mu", 1.0},
 			{"k", 1.0},
 			{"elasticity_tensor", {}}
-		}}
+		}},
+
+		{"problem_params", {}}
 	};
 
 	json in_args;
@@ -146,6 +148,8 @@ int main(int argc, const char **argv)
 	}
 
 	j_args.merge_patch(in_args);
+
+	// std::cout<<j_args.dump(4)<<std::endl;
 
 
 	if(no_ui)

@@ -63,7 +63,7 @@ namespace poly_fem
 		double min_edge_length;
 		double average_edge_length;
 
-		double l2_err, linf_err, lp_err, h1_err;
+		double l2_err, linf_err, lp_err, h1_err, h1_semi_err;
 
 		long long nn_zero, mat_size, num_dofs;
 

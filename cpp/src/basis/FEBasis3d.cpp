@@ -468,6 +468,7 @@ int find_quad_face(const poly_fem::Mesh3D &mesh, int c, int v1, int v2, int v3, 
 
 std::array<int, 4> linear_tet_local_to_global(const Mesh3D &mesh, int c) {
 	// Vertex nodes
+	assert(mesh.is_simplex(c));
 	std::array<int, 4> l2g;
 	int lv = 0;
 	for (int vi : mesh.get_ordered_vertices_from_tet(c)) {

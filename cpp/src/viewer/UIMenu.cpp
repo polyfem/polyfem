@@ -201,6 +201,7 @@ void poly_fem::UIState::draw_settings() {
 			if (ImGui::Selectable(p_name.c_str(), is_selected)){
 				problem_name = p_name;
 				state.problem = ProblemFactory::factory().get_problem(problem_name);
+				state.problem->set_parameters(state.args["problem_params"]);
 			}
 			if (is_selected)
 				ImGui::SetItemDefaultFocus();
@@ -421,6 +422,10 @@ void poly_fem::UIState::draw_screenshot() {
 		// Save it to a PNG
 		std::string path = (screenshot.empty() ? "out.png" : screenshot);
 		igl::png::writePNG(R,G,B,A,path);
+	}
+
+	if (ImGui::Button("Save VTU", ImVec2(-1, 0))) {
+		state.save_vtu("result.vtu");
 	}
 }
 

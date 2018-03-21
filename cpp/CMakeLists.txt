@@ -157,6 +157,8 @@ add_library(polyfem
 	src/mesh3D/Navigation3D.hpp
 	src/problem/ElasticProblem.cpp
 	src/problem/ElasticProblem.hpp
+	src/problem/CustomProblem.cpp
+	src/problem/CustomProblem.hpp
 	src/problem/FrankeProblem.cpp
 	src/problem/FrankeProblem.hpp
 	src/problem/Problem.cpp
