@@ -7,15 +7,21 @@ namespace poly_fem
 	namespace
 	{
 		template<typename T>
-		T linear_fun(T x)
+		T linear_fun(T x, T y)
 		{
 			return x;
 		}
 
 		template<typename T>
-		T quadratic_fun(T x)
+		T quadratic_fun(T x, T y)
 		{
-			return 5 * x * x;
+			return y*y;
+		}
+
+		template<typename T>
+		T cubic_fun(T x, T y)
+		{
+			return y*y*y;
 		}
 
 		template<typename T>
@@ -39,7 +45,7 @@ namespace poly_fem
 	VectorNd LinearProblem::eval_fun(const VectorNd &pt) const
 	{
 		VectorNd res(1);
-		res(0) = linear_fun(pt(0));
+		res(0) = linear_fun(pt(0), pt(1));
 
 		return res;
 	}
@@ -47,7 +53,7 @@ namespace poly_fem
 	AutodiffGradPt LinearProblem::eval_fun(const AutodiffGradPt &pt) const
 	{
 		AutodiffGradPt res(1);
-		res(0) = linear_fun(pt(0));
+		res(0) = linear_fun(pt(0), pt(1));
 
 		return res;
 	}
@@ -55,7 +61,7 @@ namespace poly_fem
 	AutodiffHessianPt LinearProblem::eval_fun(const AutodiffHessianPt &pt) const
 	{
 		AutodiffHessianPt res(1);
-		res(0) = linear_fun(pt(0));
+		res(0) = linear_fun(pt(0), pt(1));
 
 		return res;
 	}
@@ -73,7 +79,7 @@ namespace poly_fem
 	VectorNd QuadraticProblem::eval_fun(const VectorNd &pt) const
 	{
 		VectorNd res(1);
-		res(0) = quadratic_fun(pt(0));
+		res(0) = quadratic_fun(pt(0), pt(1));
 
 		return res;
 	}
@@ -81,7 +87,7 @@ namespace poly_fem
 	AutodiffGradPt QuadraticProblem::eval_fun(const AutodiffGradPt &pt) const
 	{
 		AutodiffGradPt res(1);
-		res(0) = quadratic_fun(pt(0));
+		res(0) = quadratic_fun(pt(0), pt(1));
 
 		return res;
 	}
@@ -89,11 +95,40 @@ namespace poly_fem
 	AutodiffHessianPt QuadraticProblem::eval_fun(const AutodiffHessianPt &pt) const
 	{
 		AutodiffHessianPt res(1);
-		res(0) = quadratic_fun(pt(0));
+		res(0) = quadratic_fun(pt(0), pt(1));
 
 		return res;
 	}
 
+
+
+	CubicProblem::CubicProblem(const std::string &name)
+	: ProblemWithSolution(name)
+	{ }
+
+	VectorNd CubicProblem::eval_fun(const VectorNd &pt) const
+	{
+		VectorNd res(1);
+		res(0) = cubic_fun(pt(0), pt(1));
+
+		return res;
+	}
+
+	AutodiffGradPt CubicProblem::eval_fun(const AutodiffGradPt &pt) const
+	{
+		AutodiffGradPt res(1);
+		res(0) = cubic_fun(pt(0), pt(1));
+
+		return res;
+	}
+
+	AutodiffHessianPt CubicProblem::eval_fun(const AutodiffHessianPt &pt) const
+	{
+		AutodiffHessianPt res(1);
+		res(0) = cubic_fun(pt(0), pt(1));
+
+		return res;
+	}
 
 
 

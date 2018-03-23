@@ -153,6 +153,7 @@ namespace poly_fem
 		j["err_h1"] = h1_err;
 		j["err_h1_semi"] = h1_semi_err;
 		j["err_linf"] = linf_err;
+		j["err_linf_grad"] = grad_max_err;
 		j["err_lp"] = lp_err;
 
 		// j["errors"] = errors;
@@ -713,6 +714,7 @@ namespace poly_fem
 
 		l2_err = 0;
 		h1_err = 0;
+		grad_max_err = 0;
 		h1_semi_err = 0;
 		linf_err = 0;
 		lp_err = 0;
@@ -757,9 +759,11 @@ namespace poly_fem
 				// errors.push_back(err(i));
 
 			linf_err = max(linf_err, err.maxCoeff());
-			l2_err += (err.array() * err.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-			h1_err += (err_grad.array() * err_grad.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-			lp_err += (err.array().pow(8.) * vals.det.array() * vals.quadrature.weights.array()).sum();
+			grad_max_err = max(linf_err, err_grad.maxCoeff());
+
+			l2_err += (err.array() * err.array() 			* vals.det.array() * vals.quadrature.weights.array()).sum();
+			h1_err += (err_grad.array() * err_grad.array() 	* vals.det.array() * vals.quadrature.weights.array()).sum();
+			lp_err += (err.array().pow(8.) 					* vals.det.array() * vals.quadrature.weights.array()).sum();
 		}
 
 		h1_semi_err = sqrt(fabs(h1_err));
@@ -776,6 +780,9 @@ namespace poly_fem
 		std::cout << "-- Lp error: " << lp_err << std::endl;
 		std::cout << "-- H1 error: " << h1_err << std::endl;
 		std::cout << "-- H1 semi error: " << h1_semi_err << std::endl;
+
+		std::cout << "\n --Linf error: " << linf_err << std::endl;
+		std::cout << "-- grad max error: " << grad_max_err << std::endl;
 		// std::cout<<l2_err<<" "<<linf_err<<" "<<lp_err<<std::endl;
 	}
 

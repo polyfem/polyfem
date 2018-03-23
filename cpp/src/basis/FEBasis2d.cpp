@@ -584,7 +584,7 @@ std::array<int, 3> poly_fem::FEBasis2d::quadr_tri_edge_local_nodes(
 	const Mesh2D &mesh, Navigation::Index index)
 {
 	int f = index.face;
-	assert(mesh.is_cube(f));
+	assert(mesh.is_simplex(f));
 	int e_offset = mesh.n_vertices();
 
 	// Local to global mapping of node indices

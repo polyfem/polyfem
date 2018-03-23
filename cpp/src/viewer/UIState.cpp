@@ -463,6 +463,51 @@ namespace poly_fem
 		}
 	}
 
+	void UIState::interpolate_grad_function(const MatrixXd &fun, MatrixXd &result)
+	{
+		MatrixXd tmp;
+
+		int actual_dim = 1;
+		if(!state.problem->is_scalar())
+			actual_dim *= state.mesh->dimension();
+
+		result.resize(vis_pts.rows(), actual_dim*state.mesh->dimension());
+
+		int index = 0;
+
+		for(int i = 0; i < int(state.bases.size()); ++i)
+		{
+			const ElementBases &bs = state.bases[i];
+			MatrixXd local_pts;
+
+			if(state.mesh->is_simplex(i))
+				local_pts = local_vis_pts_tri;
+			else if(state.mesh->is_cube(i))
+				local_pts = local_vis_pts_quad;
+			else
+				local_pts = vis_pts_poly[i];
+
+			MatrixXd local_res = MatrixXd::Zero(local_pts.rows(), actual_dim*state.mesh->dimension());
+			for(int c = 0; c < state.mesh->dimension(); ++c)
+			{
+				bs.evaluate_grads(local_pts, c, tmp);
+				for(std::size_t j = 0; j < bs.bases.size(); ++j)
+				{
+					const Basis &b = bs.bases[j];
+
+					for(int d = 0; d < actual_dim; ++d)
+					{
+						for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+							local_res.col(c*actual_dim + d) += b.global()[ii].val * tmp.col(j) * fun(b.global()[ii].index*actual_dim + d);
+					}
+				}
+			}
+
+			result.block(index, 0, local_res.rows(), local_res.cols()) = local_res;
+			index += local_res.rows();
+		}
+	}
+
 
 	UIState::UIState()
 	: state(State::state())
@@ -668,10 +713,18 @@ namespace poly_fem
 		if (!state.problem->has_exact_sol()) { return; }
 		current_visualization = Visualizing::Error;
 		MatrixXd global_sol;
-		interpolate_function(state.sol, global_sol);
-
 		MatrixXd exact_sol;
-		state.problem->exact(vis_pts, exact_sol);
+
+		if(!show_grad_error)
+		{
+			interpolate_function(state.sol, global_sol);
+			state.problem->exact(vis_pts, exact_sol);
+		}
+		else
+		{
+			interpolate_grad_function(state.sol, global_sol);
+			state.problem->exact_grad(vis_pts, exact_sol);
+		}
 
 		const MatrixXd err = (global_sol - exact_sol).eval().rowwise().norm();
 		plot_function(err);

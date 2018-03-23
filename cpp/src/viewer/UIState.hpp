@@ -53,6 +53,7 @@ namespace poly_fem
 
 		int slice_coord = 0;
 		bool is_slicing = false;
+		bool show_grad_error = false;
 		float slice_position = 1;
 
 		bool ambient_occlusion = false;
@@ -103,6 +104,7 @@ namespace poly_fem
 
 		void plot_function(const Eigen::MatrixXd &fun, double min=0, double max=-1);
 		void interpolate_function(const Eigen::MatrixXd &fun, Eigen::MatrixXd &result);
+		void interpolate_grad_function(const Eigen::MatrixXd &fun, Eigen::MatrixXd &result);
 
 		long clip_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, std::vector<bool> &valid_elements, const bool map_edges);
 		long show_clipped_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, const std::vector<bool> &valid_elements, const bool map_edges, const bool recenter = false);

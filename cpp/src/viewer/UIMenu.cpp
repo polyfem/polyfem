@@ -348,6 +348,14 @@ void poly_fem::UIState::draw_debug() {
 	if (ImGui::Button("Show sol", ImVec2(-1, 0))) { show_sol(); }
 	if (ImGui::Button("Show error", ImVec2(-1, 0))) { show_error(); }
 
+	int selection_err = show_grad_error ? 1 : 0;
+	static const char *error_type = "function\0gradient\0\0";
+	if (ImGui::Combo("Error", &selection_err, error_type)) {
+		show_grad_error = selection_err == 1;
+	}
+
+	ImGui::Separator();
+
 	if (ImGui::Button("Show linear r", ImVec2(-1, 0))) { show_linear_reproduction(); }
 	if (ImGui::Button("Show quadra r", ImVec2(-1, 0))) { show_quadratic_reproduction(); }
 
