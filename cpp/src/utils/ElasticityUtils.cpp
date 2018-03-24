@@ -228,7 +228,7 @@ namespace poly_fem
 
 	double von_mises_stress_for_stress_tensor(const Eigen::MatrixXd &stress)
 	{
-		double von_mises_stress =  0.5 * ( stress(0, 0) - stress(1, 1) ) * ( stress(0, 0) - stress(1, 1) ) + 3.0  *  stress(0, 1) * stress(0, 1);
+		double von_mises_stress = 0.5 * ( stress(0, 0) - stress(1, 1) ) * ( stress(0, 0) - stress(1, 1) ) + 3.0  *  stress(0, 1) * stress(1, 0);
 
 		if(stress.rows() == 3)
 		{
@@ -241,14 +241,12 @@ namespace poly_fem
 		return von_mises_stress;
 	}
 
-
-
 	void ElasticityTensor::resize(const int size)
 	{
 		if(size == 2)
-			stifness_tensor_.resize(6, 1);
+			stifness_tensor_.resize(3, 3);
 		else
-			stifness_tensor_.resize(21, 1);
+			stifness_tensor_.resize(6, 6);
 
 		stifness_tensor_.setZero();
 
@@ -259,42 +257,22 @@ namespace poly_fem
 	{
 		if(j < i)
 		{
-			int tmp=i;
-			i = j;
-			j = tmp;
+			std::swap(i, j);
 		}
 
 		assert(j>=i);
-		const int n = size_ == 2 ? 3 : 6;
-		assert(i < n);
-		assert(j < n);
-		assert(i >= 0);
-		assert(j >= 0);
-		const int index = n * i + j - i * (i + 1) / 2;
-		assert(index < stifness_tensor_.size());
-
-		return stifness_tensor_(index);
+		return stifness_tensor_(i, j);
 	}
 
 	double &ElasticityTensor::operator()(int i, int j)
 	{
 		if(j < i)
 		{
-			int tmp=i;
-			i = j;
-			j = tmp;
+			std::swap(i, j);
 		}
 
 		assert(j>=i);
-		const int n = size_ == 2 ? 3 : 6;
-		assert(i < n);
-		assert(j < n);
-		assert(i >= 0);
-		assert(j >= 0);
-		const int index = n * i + j - i * (i + 1) / 2;
-		assert(index < stifness_tensor_.size());
-
-		return stifness_tensor_(index);
+		return stifness_tensor_(i, j);
 	}
 
 
@@ -390,6 +368,18 @@ namespace poly_fem
 
 			(*this)(5, 5) = mu;
 
+		}
+	}
+
+	void ElasticityTensor::set_from_young_poisson(const double young, const double nu)
+	{
+		if(size_ == 2)
+		{
+			stifness_tensor_ <<
+				1.0, nu, 0.0,
+				nu, 1.0, 0.0,
+				0.0, 0.0, (1.0 - nu) / 2.0;
+			stifness_tensor_ *= young / (1.0 - nu * nu);
 		}
 	}
 

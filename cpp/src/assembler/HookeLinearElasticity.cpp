@@ -44,7 +44,11 @@ namespace poly_fem
 
 		if(params["elasticity_tensor"].empty())
 		{
-			set_lambda_mu(params["lambda"], params["mu"]);
+			if (params.count("young")) {
+				elasticity_tensor_.set_from_young_poisson(params["young"], params["nu"]);
+			} else {
+				elasticity_tensor_.set_from_lambda_mu(params["lambda"], params["mu"]);
+			}
 		}
 		else
 		{
@@ -58,11 +62,6 @@ namespace poly_fem
 	{
 		elasticity_tensor_.resize(size);
 		size_ = size;
-	}
-
-	void HookeLinearElasticity::set_lambda_mu(const double lambda, const double mu)
-	{
-		elasticity_tensor_.set_from_lambda_mu(lambda, mu);
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
@@ -230,7 +229,6 @@ namespace poly_fem
 				eps[0] = strain(0,0);
 				eps[1] = strain(1,1);
 				eps[2] = 2*strain(0,1);
-
 
 				sigma <<
 				elasticity_tensor_.compute_stress<3>(eps, 0), elasticity_tensor_.compute_stress<3>(eps, 2),

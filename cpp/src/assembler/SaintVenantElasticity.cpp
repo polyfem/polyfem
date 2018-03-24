@@ -47,7 +47,11 @@ namespace poly_fem
 
 		if(params["elasticity_tensor"].empty())
 		{
-			set_lambda_mu(params["lambda"], params["mu"]);
+			if (params.count("young")) {
+				elasticity_tensor_.set_from_young_poisson(params["young"], params["nu"]);
+			} else {
+				elasticity_tensor_.set_from_lambda_mu(params["lambda"], params["mu"]);
+			}
 		}
 		else
 		{
@@ -72,13 +76,6 @@ namespace poly_fem
 
 		return res;
 	}
-
-
-	void SaintVenantElasticity::set_lambda_mu(const double lambda, const double mu)
-	{
-		elasticity_tensor_.set_from_lambda_mu(lambda, mu);
-	}
-
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
 	SaintVenantElasticity::compute_rhs(const AutodiffHessianPt &pt) const

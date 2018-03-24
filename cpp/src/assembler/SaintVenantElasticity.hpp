@@ -31,7 +31,6 @@ namespace poly_fem
 
 		void set_stiffness_tensor(int i, int j, const double val);
 		double stifness_tensor(int i, int j) const;
-		void set_lambda_mu(const double lambda, const double mu);
 
 		void compute_von_mises_stresses(const ElementBases &bs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const;
 

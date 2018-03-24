@@ -67,15 +67,14 @@ struct DiffScalarBase {
 	// static __thread size_t m_variableCount;
 // #endif
 	static thread_local size_t m_variableCount;
-	
+
 };
 
-
 // #ifdef WIN32
-// #define DECLARE_DIFFSCALAR_BASE() \
+// #define DECLARE_DIFFSCALAR_BASE()
 // 	__declspec(thread) size_t DiffScalarBase::m_variableCount = 0
 // #else
-// #define DECLARE_DIFFSCALAR_BASE() \
+// #define DECLARE_DIFFSCALAR_BASE()
 // 	__thread size_t DiffScalarBase::m_variableCount = 0
 // #endif
 
@@ -118,15 +117,15 @@ public:
 	// ======================================================================
 
 	/// Create a new constant automatic differentiation scalar
-	explicit DScalar1(Scalar value = (Scalar) 0) : value(value) {
+	explicit DScalar1(Scalar value_ = (Scalar) 0) : value(value_) {
 		size_t variableCount = getVariableCount();
 		grad.resize(variableCount);
 		grad.setZero();
 	}
 
 	/// Construct a new scalar with the specified value and one first derivative set to 1
-	DScalar1(size_t index, const Scalar &value)
-	 : value(value) {
+	DScalar1(size_t index, const Scalar &value_)
+	 : value(value_) {
 		size_t variableCount = getVariableCount();
 		grad.resize(variableCount);
 		grad.setZero();
@@ -134,8 +133,8 @@ public:
 	}
 
 	/// Construct a scalar associated with the given gradient
-	DScalar1(Scalar value, const Gradient &grad)
-	 : value(value), grad(grad) { }
+	DScalar1(Scalar value_, const Gradient &grad_)
+	 : value(value_), grad(grad_) { }
 
 	/// Copy constructor
 	DScalar1(const DScalar1 &s)
@@ -453,7 +452,7 @@ public:
 	// ======================================================================
 
 	/// Create a new constant automatic differentiation scalar
-	explicit DScalar2(Scalar value = (Scalar) 0) : value(value) {
+	explicit DScalar2(Scalar value_ = (Scalar) 0) : value(value_) {
 		size_t variableCount = getVariableCount();
 
 		grad.resize(variableCount);
@@ -463,8 +462,8 @@ public:
 	}
 
 	/// Construct a new scalar with the specified value and one first derivative set to 1
-	DScalar2(size_t index, const Scalar &value)
-	 : value(value) {
+	DScalar2(size_t index, const Scalar &value_)
+	 : value(value_) {
 		size_t variableCount = getVariableCount();
 
 		grad.resize(variableCount);
@@ -475,8 +474,8 @@ public:
 	}
 
 	/// Construct a scalar associated with the given gradient and Hessian
-	DScalar2(Scalar value, const Gradient &grad, const Hessian &hess)
-	 : value(value), grad(grad), hess(hess) { }
+	DScalar2(Scalar value_, const Gradient &grad_, const Hessian &hess_)
+	 : value(value_), grad(grad_), hess(hess_) { }
 
 	/// Copy constructor
 	DScalar2(const DScalar2 &s)

@@ -76,7 +76,7 @@ void add_spheres(igl::opengl::glfw::Viewer &viewer0, const Eigen::MatrixXd &P, d
 	viewer.data().lines = viewer0.data().lines;
 	viewer.data().show_lines = false;
 #ifndef __APPLE__
-	viewer.data().line_width = 10;
+	viewer.data().line_width = 1;
 #endif
 	viewer.core.background_color.setOnes();
 	viewer.core.set_rotation_type(igl::opengl::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
@@ -335,7 +335,7 @@ namespace poly_fem
 			}
 
 #ifndef __APPLE__
-			viewer.data().line_width = 10;
+			viewer.data().line_width = 1;
 #endif
 			viewer.data().add_edges(p0, p1, MatrixXd::Zero(1, 3));
 			viewer.data().show_lines = false;

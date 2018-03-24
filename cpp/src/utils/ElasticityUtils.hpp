@@ -52,12 +52,13 @@ namespace poly_fem
 
 		void set_from_entries(const std::vector<double> &entries);
 		void set_from_lambda_mu(const double lambda, const double mu);
+		void set_from_young_poisson(const double young, const double poisson);
 
 		template<int DIM>
 		double compute_stress(const std::array<double, DIM> &strain, const int j) const;
 
 	private:
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 21, 1> stifness_tensor_;
+		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 6, 6> stifness_tensor_;
 		int size_;
 	};
 }

@@ -112,10 +112,12 @@ int main(int argc, const char **argv)
 		{"solver_params", {}},
 
 		{"params", {
-			{"lambda", 1.0},
-			{"mu", 1.0},
+			{"lambda", 0.75},
+			{"mu", 0.375},
 			{"k", 1.0},
-			{"elasticity_tensor", {}}
+			{"elasticity_tensor", {}},
+			{"young", 1.0},
+			{"nu", 0.0}
 		}},
 
 		{"problem_params", {}}

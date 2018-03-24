@@ -93,7 +93,7 @@ namespace poly_fem
 
 		Assembler<LinearElasticity> linear_elasticity_;
 		Assembler<HookeLinearElasticity> hooke_linear_elasticity_;
-		
+
 		NLAssembler<SaintVenantElasticity> saint_venant_elasticity_;
 		NLAssembler<NeoHookeanElasticity> neo_hookean_elasticity_;
 

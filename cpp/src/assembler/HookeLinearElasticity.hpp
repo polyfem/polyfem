@@ -31,7 +31,6 @@ namespace poly_fem
 		inline int size() const { return size_; }
 
 		void set_size(const int size);
-		void set_lambda_mu(const double lambda, const double mu);
 
 		void set_parameters(const json &params);
 	private:
