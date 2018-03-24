@@ -15,7 +15,7 @@ namespace poly_fem
 		template<typename T>
 		T quadratic_fun(T x, T y)
 		{
-			return y*y;
+			return x*x;
 		}
 
 		template<typename T>

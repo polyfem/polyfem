@@ -31,7 +31,34 @@ def sigma_fun(j, ee, C, dim):
     return res
 
 
-# sigma = def_grad*(C:disp_grad)
+# sigma = (C:strain)
+def hooke(disp_grad, def_grad):
+    l_dim = def_grad.rows
+
+    C = Function('C')
+
+    eps = 1 / 2 * (disp_grad + Transpose(disp_grad))
+
+    if l_dim == 2:
+        ee = [eps[0, 0], eps[1, 1], 2 * eps[0, 1]]
+
+        sigma = Matrix([
+            [sigma_fun(0, ee, C, 3), sigma_fun(2, ee, C, 3)],
+            [sigma_fun(2, ee, C, 3), sigma_fun(1, ee, C, 3)]
+        ])
+    else:
+        ee  = [eps[0, 0], eps[1, 1], eps[2, 2], 2 * eps[1, 2], 2 * eps[0, 2], 2 * eps[0, 1]]
+
+        sigma = Matrix([
+            [sigma_fun(0, ee, C, 6), sigma_fun(5, ee, C, 6), sigma_fun(4, ee, C, 6)],
+            [sigma_fun(5, ee, C, 6), sigma_fun(1, ee, C, 6), sigma_fun(3, ee, C, 6)],
+            [sigma_fun(4, ee, C, 6), sigma_fun(3, ee, C, 6), sigma_fun(2, ee, C, 6)]
+        ])
+
+    return sigma
+
+
+# sigma = def_grad*(C:strain)
 def saint_venant(disp_grad, def_grad):
     l_dim = def_grad.rows
 
@@ -97,7 +124,7 @@ def parse_args():
 if __name__ == "__main__":
     args = parse_args()
     dims = [2, 3]
-    names = ["saint_venant", "neo_hookean"]
+    names = ["hooke", "saint_venant", "neo_hookean"]
     cpp = "#include \"auto_rhs.hpp\"\n\n\n"
     hpp = "#pragma once\n\n#include \"ElasticityUtils.hpp\"\n#include \"AutodiffTypes.hpp\"\n#include <Eigen/Dense>\n\n"
     cpp = cpp + "namespace poly_fem {\nnamespace autogen " + "{\n"
@@ -121,7 +148,9 @@ if __name__ == "__main__":
             disp_grad = f.jacobian(X)
             def_grad = (eye(dim) + disp_grad)
 
-            if name == "saint_venant":
+            if name == "hooke":
+                sigma = hooke(disp_grad, def_grad)
+            elif name == "saint_venant":
                 sigma = saint_venant(disp_grad, def_grad)
             elif name == "neo_hookean":
                 sigma = neo_hookean(disp_grad, def_grad)
@@ -156,7 +185,7 @@ if __name__ == "__main__":
             # c99 = re.sub("// ", "", c99)
 
             signature = "void " + name + "_" + str(dim) + "d_function(const AutodiffHessianPt &pt"
-            if name == "saint_venant":
+            if name == "hooke" or name == "saint_venant":
                 signature = signature + ", const ElasticityTensor &C"
             elif name == "neo_hookean":
                 signature = signature + ", const double lambda, const double mu"

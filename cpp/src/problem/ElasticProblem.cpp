@@ -77,9 +77,9 @@ namespace poly_fem
 		{
 			Eigen::Matrix<T, 3, 1> res;
 
-			res(0) = (x*y + x*x + y*y*y + 6*z)/50.;
-			res(1) = (z*x - z*z*z + x*y*y + 3*x*x*x*x)/50.;
-			res(2) = (x*y*z + z*z*y*y - 2*x)/50.;
+			res(0) = (x*y + x*x + y*y*y + 6*z)/80.;
+			res(1) = (z*x - z*z*z + x*y*y + 3*x*x*x*x)/80.;
+			res(2) = (x*y*z + z*z*y*y - 2*x)/80.;
 
 			return res;
 		}

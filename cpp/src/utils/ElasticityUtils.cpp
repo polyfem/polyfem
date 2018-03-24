@@ -101,7 +101,7 @@ namespace poly_fem
 
 			if(show_message)
 			{
-				std::cout<<"[Warning] "<<n_bases<<"^"<<size<<" not using static sizes"<<std::endl;
+				std::cout<<"[Warning] grad "<<n_bases<<"^"<<size<<" not using static sizes"<<std::endl;
 				show_message = false;
 			}
 
@@ -120,7 +120,7 @@ namespace poly_fem
 		const std::function<DScalar2<double, Eigen::Matrix<double, 18, 1>, Eigen::Matrix<double, 18, 18>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun18,
 		const std::function<DScalar2<double, Eigen::Matrix<double, 24, 1>, Eigen::Matrix<double, 24, 24>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun24,
 		const std::function<DScalar2<double, Eigen::Matrix<double, 30, 1>, Eigen::Matrix<double, 30, 30>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun30,
-		// const std::function<DScalar2<double, Eigen::Matrix<double, 81, 1>, Eigen::Matrix<double, 81, 81>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun81,
+		const std::function<DScalar2<double, Eigen::Matrix<double, 81, 1>, Eigen::Matrix<double, 81, 81>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun81,
 		const std::function<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>								(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &funn
 		)
 	{
@@ -194,13 +194,13 @@ namespace poly_fem
 						break;
 					}
 
-					// // Q2
-					// case 27:
-					// {
-					// 	auto auto_diff_energy = fun81(vals, displacement, da);
-					// 	hessian = auto_diff_energy.getHessian();
-					// 	break;
-					// }
+					// Q2
+					case 27:
+					{
+						auto auto_diff_energy = fun81(vals, displacement, da);
+						hessian = auto_diff_energy.getHessian();
+						break;
+					}
 				}
 			}
 		}
@@ -211,7 +211,7 @@ namespace poly_fem
 
 			if(show_message)
 			{
-				std::cout<<"[Warning] "<<n_bases<<"^"<<size<<" not using static sizes"<<std::endl;
+				std::cout<<"[Warning] hessian "<<n_bases<<"^"<<size<<" not using static sizes"<<std::endl;
 				show_message = false;
 			}
 

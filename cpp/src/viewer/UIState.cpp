@@ -474,6 +474,8 @@ namespace poly_fem
 		result.resize(vis_pts.rows(), actual_dim*state.mesh->dimension());
 
 		int index = 0;
+		std::vector<Eigen::MatrixXd> j_g_mapping;
+		std::vector<Eigen::MatrixXd> grads;
 
 		for(int i = 0; i < int(state.bases.size()); ++i)
 		{
@@ -487,10 +489,35 @@ namespace poly_fem
 			else
 				local_pts = vis_pts_poly[i];
 
+			bs.eval_geom_mapping_grads(local_pts, j_g_mapping);
 			MatrixXd local_res = MatrixXd::Zero(local_pts.rows(), actual_dim*state.mesh->dimension());
+			grads.resize(state.mesh->dimension());
+
+			for(int c = 0; c < state.mesh->dimension(); ++c)
+				grads[c].resize(j_g_mapping.size(), bs.bases.size());
+
+			for(std::size_t j = 0; j < bs.bases.size(); ++j)
+			{
+				for(size_t n = 0; n < j_g_mapping.size(); ++n)
+				{
+					Eigen::RowVectorXd grad(state.mesh->dimension());
+					for(int c = 0; c < state.mesh->dimension(); ++c)
+					{
+						bs.evaluate_grads(local_pts, c, tmp);
+						grad(c) = tmp(n, j);
+					}
+
+					grad = grad * j_g_mapping[n].inverse().transpose();
+
+					for(int c = 0; c < state.mesh->dimension(); ++c)
+						grads[c](n, j) = grad(c);
+				}
+			}
+
+
 			for(int c = 0; c < state.mesh->dimension(); ++c)
 			{
-				bs.evaluate_grads(local_pts, c, tmp);
+				// bs.evaluate_grads(local_pts, c, tmp);
 				for(std::size_t j = 0; j < bs.bases.size(); ++j)
 				{
 					const Basis &b = bs.bases[j];
@@ -498,12 +525,17 @@ namespace poly_fem
 					for(int d = 0; d < actual_dim; ++d)
 					{
 						for(std::size_t ii = 0; ii < b.global().size(); ++ii)
-							local_res.col(c*actual_dim + d) += b.global()[ii].val * tmp.col(j) * fun(b.global()[ii].index*actual_dim + d);
+							local_res.col(c*actual_dim + d) += b.global()[ii].val * grads[c].col(j) * fun(b.global()[ii].index*actual_dim + d);
 					}
 				}
 			}
 
 			result.block(index, 0, local_res.rows(), local_res.cols()) = local_res;
+
+			// if(i == 117)
+				// std::cout<<local_res<<std::endl;
+
+
 			index += local_res.rows();
 		}
 	}
@@ -624,6 +656,10 @@ namespace poly_fem
 		// 	MatrixXd p = state.mesh->face_barycenter(i);
 		// 	viewer.data().add_label(p.transpose(), std::to_string(i));
 		// }
+
+		// std::cout<<state.mesh->point(dynamic_cast<Mesh2D *>(state.mesh.get())->face_vertex(117, 0))<<std::endl;
+		// std::cout<<state.mesh->point(dynamic_cast<Mesh2D *>(state.mesh.get())->face_vertex(117, 1))<<std::endl;
+		// std::cout<<state.mesh->point(dynamic_cast<Mesh2D *>(state.mesh.get())->face_vertex(117, 2))<<std::endl;
 
 		// for(int i = 0; i < state.mesh->n_cells(); ++i)
 		// {
