@@ -3,6 +3,8 @@
 #include "Basis.hpp"
 #include "ElementAssemblyValues.hpp"
 
+#include "auto_rhs.hpp"
+
 namespace poly_fem
 {
 
@@ -259,20 +261,14 @@ namespace poly_fem
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
 	HookeLinearElasticity::compute_rhs(const AutodiffHessianPt &pt) const
 	{
-		assert(pt.size() == size());
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res(size());
+				assert(pt.size() == size());
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res;
+
 
 		if(size() == 2)
-		{
-			res(0) = (elasticity_tensor_(0,1)+elasticity_tensor_(2,2))*pt(1).getHessian()(1,0)+elasticity_tensor_(0,0)*pt(0).getHessian()(0,0)+2*elasticity_tensor_(0,2)*pt(0).getHessian()(1,0)+elasticity_tensor_(2,2)*pt(0).getHessian()(1,1)+elasticity_tensor_(0,2)*pt(1).getHessian()(0,0)+elasticity_tensor_(1,2)*pt(1).getHessian()(1,1);
-			res(1) = (elasticity_tensor_(0,1)+elasticity_tensor_(2,2))*pt(0).getHessian()(1,0)+elasticity_tensor_(0,2)*pt(0).getHessian()(0,0)+elasticity_tensor_(1,2)*pt(0).getHessian()(1,1)+elasticity_tensor_(2,2)*pt(1).getHessian()(0,0)+2*elasticity_tensor_(1,2)*pt(1).getHessian()(1,0)+elasticity_tensor_(1,1)*pt(1).getHessian()(1,1);
-		}
+			autogen::hooke_2d_function(pt, elasticity_tensor_, res);
 		else if(size() == 3)
-		{
-			res(0) = (elasticity_tensor_(5,5)+elasticity_tensor_(0,1))*pt(1).getHessian()(1,0)+(elasticity_tensor_(4,5)+elasticity_tensor_(0,3))*pt(1).getHessian()(2,0)+(elasticity_tensor_(1,4)+elasticity_tensor_(3,5))*pt(1).getHessian()(2,1)+(elasticity_tensor_(4,5)+elasticity_tensor_(0,3))*pt(2).getHessian()(1,0)+(elasticity_tensor_(4,4)+elasticity_tensor_(0,2))*pt(2).getHessian()(2,0)+(elasticity_tensor_(3,4)+elasticity_tensor_(2,5))*pt(2).getHessian()(2,1)+elasticity_tensor_(1,5)*pt(1).getHessian()(1,1)+elasticity_tensor_(2,4)*pt(2).getHessian()(2,2)+elasticity_tensor_(3,4)*pt(1).getHessian()(2,2)+elasticity_tensor_(3,5)*pt(2).getHessian()(1,1)+elasticity_tensor_(4,4)*pt(0).getHessian()(2,2)+2*elasticity_tensor_(4,5)*pt(0).getHessian()(2,1)+elasticity_tensor_(5,5)*pt(0).getHessian()(1,1)+elasticity_tensor_(0,0)*pt(0).getHessian()(0,0)+2*elasticity_tensor_(0,5)*pt(0).getHessian()(1,0)+2*elasticity_tensor_(0,4)*pt(0).getHessian()(2,0)+elasticity_tensor_(0,5)*pt(1).getHessian()(0,0)+elasticity_tensor_(0,4)*pt(2).getHessian()(0,0);
-			res(1) = (elasticity_tensor_(5,5)+elasticity_tensor_(0,1))*pt(0).getHessian()(1,0)+(elasticity_tensor_(4,5)+elasticity_tensor_(0,3))*pt(0).getHessian()(2,0)+(elasticity_tensor_(1,4)+elasticity_tensor_(3,5))*pt(0).getHessian()(2,1)+(elasticity_tensor_(1,4)+elasticity_tensor_(3,5))*pt(2).getHessian()(1,0)+(elasticity_tensor_(3,4)+elasticity_tensor_(2,5))*pt(2).getHessian()(2,0)+(elasticity_tensor_(3,3)+elasticity_tensor_(1,2))*pt(2).getHessian()(2,1)+elasticity_tensor_(1,5)*pt(0).getHessian()(1,1)+2*elasticity_tensor_(1,5)*pt(1).getHessian()(1,0)+elasticity_tensor_(2,3)*pt(2).getHessian()(2,2)+elasticity_tensor_(3,3)*pt(1).getHessian()(2,2)+elasticity_tensor_(3,4)*pt(0).getHessian()(2,2)+2*elasticity_tensor_(3,5)*pt(1).getHessian()(2,0)+elasticity_tensor_(4,5)*pt(2).getHessian()(0,0)+elasticity_tensor_(5,5)*pt(1).getHessian()(0,0)+elasticity_tensor_(0,5)*pt(0).getHessian()(0,0)+elasticity_tensor_(1,1)*pt(1).getHessian()(1,1)+2*elasticity_tensor_(1,3)*pt(1).getHessian()(2,1)+elasticity_tensor_(1,3)*pt(2).getHessian()(1,1);
-			res(2) = (elasticity_tensor_(4,5)+elasticity_tensor_(0,3))*pt(0).getHessian()(1,0)+(elasticity_tensor_(4,4)+elasticity_tensor_(0,2))*pt(0).getHessian()(2,0)+(elasticity_tensor_(3,4)+elasticity_tensor_(2,5))*pt(0).getHessian()(2,1)+(elasticity_tensor_(1,4)+elasticity_tensor_(3,5))*pt(1).getHessian()(1,0)+(elasticity_tensor_(3,4)+elasticity_tensor_(2,5))*pt(1).getHessian()(2,0)+(elasticity_tensor_(3,3)+elasticity_tensor_(1,2))*pt(1).getHessian()(2,1)+elasticity_tensor_(2,2)*pt(2).getHessian()(2,2)+elasticity_tensor_(2,3)*pt(1).getHessian()(2,2)+2*elasticity_tensor_(2,3)*pt(2).getHessian()(2,1)+elasticity_tensor_(2,4)*pt(0).getHessian()(2,2)+2*elasticity_tensor_(2,4)*pt(2).getHessian()(2,0)+elasticity_tensor_(3,3)*pt(2).getHessian()(1,1)+2*elasticity_tensor_(3,4)*pt(2).getHessian()(1,0)+elasticity_tensor_(3,5)*pt(0).getHessian()(1,1)+elasticity_tensor_(4,4)*pt(2).getHessian()(0,0)+elasticity_tensor_(4,5)*pt(1).getHessian()(0,0)+elasticity_tensor_(0,4)*pt(0).getHessian()(0,0)+elasticity_tensor_(1,3)*pt(1).getHessian()(1,1);
-		}
+			autogen::hooke_3d_function(pt, elasticity_tensor_, res);
 		else
 			assert(false);
 
