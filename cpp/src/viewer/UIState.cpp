@@ -19,6 +19,7 @@
 #include <igl/png/writePNG.h>
 #include <igl/Timer.h>
 #include <igl/serialize.h>
+#include <igl/isolines.h>
 
 #include <cstdlib>
 #include <fstream>
@@ -78,8 +79,8 @@ void add_spheres(igl::opengl::glfw::Viewer &viewer0, const Eigen::MatrixXd &P, d
 #ifndef __APPLE__
 	viewer.data().line_width = 1;
 #endif
-	viewer.core.background_color.setOnes();
-	viewer.core.set_rotation_type(igl::opengl::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
+	// viewer.core.background_color.setOnes();
+	// viewer.core.set_rotation_type(igl::opengl::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
 
 	// #ifdef IGL_VIEWER_WITH_NANOGUI
 	// viewer.callback_init = [&](igl::opengl::glfw::Viewer& viewer_) {
@@ -613,7 +614,17 @@ namespace poly_fem
 				// tmp.col(2)=fun;
 				tmp.col(2).setZero();
 				clip_elements(tmp, vis_faces, vis_element_ranges, valid_elements, true);
+
+				if(show_isolines)
+				{
+		        	Eigen::MatrixXd isoV;
+		        	Eigen::MatrixXi isoE;
+					igl::isolines(tmp, vis_faces, Eigen::VectorXd(fun), 20, isoV, isoE);
+        			viewer.data().set_edges(isoV,isoE,Eigen::RowVector3d(0,0,0));
+        		}
 			}
+
+			std::cout<<"min/max "<< fun.minCoeff()<<"/"<<fun.maxCoeff()<<std::endl;
 		}
 
 		viewer.data().set_colors(col);
@@ -1133,6 +1144,12 @@ namespace poly_fem
 
 		if (!state.mesh->is_volume()) {
 			light_enabled = false;
+
+			viewer.core.set_rotation_type(igl::opengl::ViewerCore::RotationType::ROTATION_TYPE_NO_ROTATION);
+		}
+		else
+		{
+			viewer.core.set_rotation_type(igl::opengl::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
 		}
 
 		clear();
@@ -1227,7 +1244,6 @@ namespace poly_fem
 			dirichlet_bc[state.problem->boundary_ids()[i]-1] = true;
 
 		viewer.core.background_color.setOnes();
-		viewer.core.set_rotation_type(igl::opengl::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
 
 		if (screenshot.empty()) {
 			viewer.core.is_animating = true;

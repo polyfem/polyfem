@@ -595,6 +595,10 @@ namespace poly_fem
 
 	void State::assemble_rhs()
 	{
+		auto p_params = args["problem_params"];
+		p_params["formulation"] = formulation();
+		problem->set_parameters(p_params);
+
 		const auto params = build_json_params();
 		auto &assembler = AssemblerUtils::instance();
 		assembler.set_parameters(params);

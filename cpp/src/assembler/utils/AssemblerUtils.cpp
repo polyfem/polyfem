@@ -178,6 +178,33 @@ namespace poly_fem
 	}
 
 
+	Eigen::Matrix<AutodiffPt, Eigen::Dynamic, 1, 0, 3, 1> AssemblerUtils::kernel(const std::string &assembler, const int dim, const AutodiffPt &r) const
+	{
+		if(assembler == "Laplacian")
+			return laplacian_.local_assembler().kernel(dim, r);
+		else if(assembler == "Helmholtz")
+			return helmholtz_.local_assembler().kernel(dim, r);
+
+		// else if(assembler == "LinearElasticity")
+		// 	return linear_elasticity_.local_assembler().kernel(dim, r);
+		// else if(assembler == "HookeLinearElasticity")
+		// 	return hooke_linear_elasticity_.local_assembler().kernel(dim, r);
+
+		// else if(assembler == "SaintVenant")
+		// 	return saint_venant_elasticity_.local_assembler().kernel(dim, r);
+		// else if(assembler == "NeoHookean")
+		// 	return neo_hookean_elasticity_.local_assembler().kernel(dim, r);
+
+		else
+		{
+			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;
+
+			assert(false);
+			return laplacian_.local_assembler().kernel(dim, r);
+		}
+	}
+
+
 	void AssemblerUtils::clear_cache()
 	{
 		saint_venant_elasticity_.clear_cache();

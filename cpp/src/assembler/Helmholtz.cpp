@@ -1,4 +1,5 @@
 #include "Helmholtz.hpp"
+#include "Bessel.hpp"
 
 #include <iostream>
 
@@ -32,6 +33,20 @@ namespace poly_fem
 		if (params.find("k") != params.end()) {
 			k_ = params["k"];
 		}
+	}
+
+	Eigen::Matrix<AutodiffPt, Eigen::Dynamic, 1, 0, 3, 1> Helmholtz::kernel(const int dim, const AutodiffPt &r) const
+	{
+		Eigen::Matrix<AutodiffPt, Eigen::Dynamic, 1, 0, 3, 1> res(1);
+
+		if(dim == 2)
+			res(0) = -bessy0(k_*r)/4.0;
+		else if(dim == 3)
+			res(0) = 0.25*cos(k_*r)/(M_PI*r);
+		else
+			assert(false);
+
+		return res;
 	}
 
 }

@@ -4,6 +4,7 @@
 #include "FrankeProblem.hpp"
 #include "ElasticProblem.hpp"
 #include "CustomProblem.hpp"
+#include "KernelProblem.hpp"
 
 #include <memory>
 #include <iostream>
@@ -83,7 +84,8 @@ namespace poly_fem
 		problems_.emplace("CompressionElasticExact", std::make_shared<CompressionElasticProblemExact>("CompressionElasticExact"));
 		problems_.emplace("QuadraticElasticExact", std::make_shared<QuadraticElasticProblemExact>("QuadraticElasticExact"));
 		problems_.emplace("LinearElasticExact", std::make_shared<LinearElasticProblemExact>("LinearElasticExact"));
-		problems_.emplace("CustomProblem", std::make_shared<CustomProblem>("CustomProblem"));
+		problems_.emplace("Custom", std::make_shared<CustomProblem>("Custom"));
+		problems_.emplace("Kernel", std::make_shared<KernelProblem>("Kernel"));
 
 		for(auto it = problems_.begin(); it != problems_.end(); ++it)
 			problem_names_.push_back(it->first);

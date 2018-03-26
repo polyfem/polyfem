@@ -112,12 +112,14 @@ void poly_fem::UIState::draw_menu() {
 
 	// Debug menu
 	float debug_menu_width = 0.8 * viewer_menu_width;
-	ImGui::SetNextWindowPos(ImVec2(viewer_menu_width+polyfem_menu_width, 0.0f), ImGuiSetCond_Always);
+	// ImGui::SetNextWindowPos(ImVec2(viewer_menu_width+polyfem_menu_width, 0.0f), ImGuiSetCond_Always);
+	auto canvas = ImGui::GetIO().DisplaySize;
+	ImGui::SetNextWindowPos(ImVec2(canvas.x - viewer_menu_width, 0.0f), ImGuiSetCond_Always);
 	ImGui::SetNextWindowSize(ImVec2(debug_menu_width, 0.0f), ImGuiSetCond_Always);
 	ImGui::SetNextWindowSizeConstraints(ImVec2(debug_menu_width, -1.0f), ImVec2(debug_menu_width, -1.0f));
 	bool _debug_menu_visible = true;
 	ImGui::Begin(
-		"Debug", &_debug_menu_visible,
+		"View", &_debug_menu_visible,
 		ImGuiWindowFlags_NoSavedSettings
 		| ImGuiWindowFlags_AlwaysAutoResize
 		| ImGuiWindowFlags_NoMove
@@ -125,21 +127,21 @@ void poly_fem::UIState::draw_menu() {
 	draw_debug();
 	ImGui::End();
 
-	// Elasticity BC
-	float elasticity_menu_width = 0.8 * viewer_menu_width;
-	auto canvas = ImGui::GetIO().DisplaySize;
-	ImGui::SetNextWindowPos(ImVec2(canvas.x - elasticity_menu_width, 0.0f), ImGuiSetCond_Always);
-	ImGui::SetNextWindowSize(ImVec2(elasticity_menu_width, 0.0f), ImGuiSetCond_FirstUseEver);
-	ImGui::SetNextWindowSizeConstraints(ImVec2(elasticity_menu_width, -1.0f), ImVec2(elasticity_menu_width, -1.0f));
-	bool _elasticity_menu_visible = true;
-	ImGui::Begin(
-		"Elasticity BC", &_elasticity_menu_visible,
-		ImGuiWindowFlags_NoSavedSettings
-		| ImGuiWindowFlags_AlwaysAutoResize
-		| ImGuiWindowFlags_NoMove
-		);
-	draw_elasticity_bc();
-	ImGui::End();
+	// // Elasticity BC
+	// float elasticity_menu_width = 0.8 * viewer_menu_width;
+	// auto canvas = ImGui::GetIO().DisplaySize;
+	// ImGui::SetNextWindowPos(ImVec2(canvas.x - elasticity_menu_width, 0.0f), ImGuiSetCond_Always);
+	// ImGui::SetNextWindowSize(ImVec2(elasticity_menu_width, 0.0f), ImGuiSetCond_FirstUseEver);
+	// ImGui::SetNextWindowSizeConstraints(ImVec2(elasticity_menu_width, -1.0f), ImVec2(elasticity_menu_width, -1.0f));
+	// bool _elasticity_menu_visible = true;
+	// ImGui::Begin(
+	// 	"Elasticity BC", &_elasticity_menu_visible,
+	// 	ImGuiWindowFlags_NoSavedSettings
+	// 	| ImGuiWindowFlags_AlwaysAutoResize
+	// 	| ImGuiWindowFlags_NoMove
+	// 	);
+	// draw_elasticity_bc();
+	// ImGui::End();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -347,6 +349,8 @@ void poly_fem::UIState::draw_debug() {
 	if (ImGui::Button("Show rhs", ImVec2(-1, 0))) { show_rhs(); }
 	if (ImGui::Button("Show sol", ImVec2(-1, 0))) { show_sol(); }
 	if (ImGui::Button("Show error", ImVec2(-1, 0))) { show_error(); }
+
+	ImGui::Checkbox("Show isolines", &show_isolines);
 
 	int selection_err = show_grad_error ? 1 : 0;
 	static const char *error_type = "function\0gradient\0\0";

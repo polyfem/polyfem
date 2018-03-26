@@ -163,6 +163,8 @@ add_library(polyfem
 	src/problem/FrankeProblem.hpp
 	src/problem/Problem.cpp
 	src/problem/Problem.hpp
+	src/problem/KernelProblem.cpp
+	src/problem/KernelProblem.hpp
 	src/problem/ProblemWithSolution.cpp
 	src/problem/ProblemWithSolution.hpp
 	src/problem/MiscProblem.cpp
@@ -191,6 +193,7 @@ add_library(polyfem
 	src/State.cpp
 	src/State.hpp
 	src/utils/autodiff.h
+	src/utils/Bessel.hpp
 	src/utils/BoundarySampler.hpp
 	src/utils/CommandLine.cpp
 	src/utils/CommandLine.hpp

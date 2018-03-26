@@ -58,6 +58,7 @@ namespace poly_fem
 
 		bool ambient_occlusion = false;
 		bool light_enabled = true;
+		bool show_isolines = true;
 
 		std::string screenshot = "";
 

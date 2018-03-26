@@ -76,6 +76,8 @@ namespace poly_fem
 		//for errors
 		VectorNd compute_rhs(const std::string &assembler, const AutodiffHessianPt &pt) const;
 
+		Eigen::Matrix<AutodiffPt, Eigen::Dynamic, 1, 0, 3, 1> kernel(const std::string &assembler, const int dim, const AutodiffPt &r) const;
+
 		//aux
 		void set_parameters(const json &params);
 

@@ -12,6 +12,8 @@ namespace poly_fem
 	typedef Eigen::Matrix<AutodiffScalarGrad, 	 Eigen::Dynamic, 1, 0, 3, 1> AutodiffGradPt;
 	typedef Eigen::Matrix<AutodiffScalarHessian, Eigen::Dynamic, 1, 0, 3, 1> AutodiffHessianPt;
 
+	typedef DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>> 					AutodiffPt;
+
 
 	template<class T>
 	class AutoDiffAllocator
