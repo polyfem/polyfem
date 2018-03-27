@@ -71,7 +71,11 @@ add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/src/autogen/auto_rhs.cpp ${CMAKE_S
 	COMMAND python ${CMAKE_SOURCE_DIR}/src/autogen/elasticity_rhs.py ${CMAKE_SOURCE_DIR}/src/autogen/
 	DEPENDS ${CMAKE_SOURCE_DIR}/src/autogen/elasticity_rhs.py)
 
-# add_custom_target(autogen ALL DEPENDS ${CMAKE_SOURCE_DIR}/src/autogen/auto_rhs.cpp ${CMAKE_SOURCE_DIR}/src/autogen/auto_rhs.hpp)
+
+add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/src/autogen/auto_eigs.cpp ${CMAKE_SOURCE_DIR}/src/autogen/auto_eigs.hpp
+	COMMAND python ${CMAKE_SOURCE_DIR}/src/autogen/eigs.py ${CMAKE_SOURCE_DIR}/src/autogen/
+	DEPENDS ${CMAKE_SOURCE_DIR}/src/autogen/eigs.py)
+
 
 
 # Polyfem library
@@ -212,6 +216,8 @@ add_library(polyfem
 	src/utils/Types.hpp
 	${CMAKE_SOURCE_DIR}/src/autogen/auto_rhs.cpp
 	${CMAKE_SOURCE_DIR}/src/autogen/auto_rhs.hpp
+	${CMAKE_SOURCE_DIR}/src/autogen/auto_eigs.cpp
+	${CMAKE_SOURCE_DIR}/src/autogen/auto_eigs.hpp
 )
 
 target_include_directories(polyfem PUBLIC

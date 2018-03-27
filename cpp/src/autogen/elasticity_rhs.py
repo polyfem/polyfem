@@ -1,26 +1,11 @@
 from sympy import *
 from sympy.matrices import *
-from sympy import MatrixSymbol, Matrix
-from sympy.printing import ccode
 import re
 import os
 import argparse
 
-
-# pretty print
-def C99_print(expr):
-    CSE_results = cse(expr, numbered_symbols("helper_"), optimizations='basic')
-    lines = []
-    for helper in CSE_results[0]:
-        if isinstance(helper[1], MatrixSymbol):
-            lines.append('const auto ' + str(helper[0]) + '[' + str(helper[1].rows * helper[1].cols) + '];')
-            lines.append(ccode(helper[1], helper[0]))
-        else:
-            lines.append('const auto ' + ccode(helper[1], helper[0]))
-
-    for i, result in enumerate(CSE_results[1]):
-        lines.append(ccode(result, "result_%d" % i))
-    return '\n'.join(lines)
+# local
+import pretty_print
 
 
 def sigma_fun(j, ee, C, dim):
@@ -158,7 +143,7 @@ if __name__ == "__main__":
             div = divergence(sigma)
             # div = simplify(div)
 
-            c99 = C99_print(div)
+            c99 = pretty_print.C99_print(div)
             c99 = re.sub("f0\(x, y(, z)?\)", "pt(0)", c99)
             c99 = re.sub("f1\(x, y(, z)?\)", "pt(1)", c99)
             c99 = re.sub("f2\(x, y(, z)?\)", "pt(2)", c99)
