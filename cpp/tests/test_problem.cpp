@@ -115,7 +115,7 @@ TEST_CASE("franke 2d", "[problem]") {
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
 
-        rhs += k * fx;
+        rhs += k*k * fx;
         probl->rhs("Helmholtz", pts, other);
         diff = (other - rhs);
 
@@ -211,7 +211,7 @@ TEST_CASE("franke 3d", "[problem]") {
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
 
-        rhs += k*fx;
+        rhs += k*k*fx;
         probl->rhs("Helmholtz", pts, other);
         diff = (other - rhs);
 
@@ -272,7 +272,7 @@ TEST_CASE("linear", "[problem]") {
     }
 
     {
-        Eigen::MatrixXd rhs = k*x;
+        Eigen::MatrixXd rhs = k*k*x;
 
         probl->rhs("Helmholtz", pts, other);
         Eigen::MatrixXd diff = (other - rhs);
@@ -333,7 +333,7 @@ TEST_CASE("quadratic", "[problem]") {
     }
 
     {
-        Eigen::MatrixXd rhs = k*x*x + 2;
+        Eigen::MatrixXd rhs = k*k*x*x + 2;
 
         probl->rhs("Helmholtz", pts, other);
         Eigen::MatrixXd diff = (other - rhs);

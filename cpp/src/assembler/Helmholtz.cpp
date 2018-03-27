@@ -15,7 +15,7 @@ namespace poly_fem
 			res += gradi.row(k).dot(gradj.row(k)) * da(k);
 		}
 
-		res -= (vals.basis_values[i].val.array() * vals.basis_values[j].val.array() * da.array()).sum() * k_;
+		res -= (vals.basis_values[i].val.array() * vals.basis_values[j].val.array() * da.array()).sum() * k_* k_;
 
 		return Eigen::Matrix<double, 1, 1>::Constant(res);
 	}
@@ -24,7 +24,7 @@ namespace poly_fem
 	{
 		Eigen::Matrix<double, 1, 1> result;
 		assert(pt.size() == 1);
-		result(0) = pt(0).getHessian().trace() + k_ * pt(0).getValue();
+		result(0) = pt(0).getHessian().trace() + k_ * k_ * pt(0).getValue();
 		return result;
 	}
 
@@ -40,7 +40,7 @@ namespace poly_fem
 		Eigen::Matrix<AutodiffPt, Eigen::Dynamic, 1, 0, 3, 1> res(1);
 
 		if(dim == 2)
-			res(0) = -bessy0(k_*r)/4.0;
+			res(0) = -0.25*bessy0(k_*r);
 		else if(dim == 3)
 			res(0) = 0.25*cos(k_*r)/(M_PI*r);
 		else
