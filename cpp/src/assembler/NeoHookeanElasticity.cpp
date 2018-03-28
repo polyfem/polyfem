@@ -176,7 +176,7 @@ namespace poly_fem
 			for(size_t i = 0; i < vals.basis_values.size(); ++i)
 			{
 				const auto &bs = vals.basis_values[i];
-				const Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> grad = bs.grad.row(p)*vals.jac_it[p];
+				const Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> grad = bs.grad.row(p);
 				assert(grad.size() == size());
 
 				for(int d = 0; d < size(); ++d)
@@ -187,6 +187,11 @@ namespace poly_fem
 					}
 				}
 			}
+
+			AutoDiffGradMat jac_it(size(), size());
+			for(long k = 0; k < jac_it.size(); ++k)
+				jac_it(k) = T(vals.jac_it[p](k));
+			def_grad = def_grad * jac_it;
 
 			//Id + grad d
 			for(int d = 0; d < size(); ++d)

@@ -90,8 +90,8 @@ namespace poly_fem
 		{
 			Eigen::Matrix<T, 2, 1> res;
 
-			res(0) = -(y*y*y + x*x + x*y)/4.;
-			res(1) = -(3*x*x*x*x + x*y*y + x)/4.;
+			res(0) = -(y*y*y + x*x + x*y)/20.;
+			res(1) = -(3*x*x*x*x + x*y*y + x)/20.;
 
 			return res;
 		}

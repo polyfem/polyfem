@@ -588,12 +588,24 @@ namespace poly_fem
 
 			std::cout<<"min/max "<< ffun.minCoeff()<<"/"<<ffun.maxCoeff()<<std::endl;
 
-			MatrixXd tmp = vis_pts;
+			MatrixXd ttmp = vis_pts;
 
 			for(long i = 0; i < fun.cols(); ++i) //apply displacement
-				tmp.col(i) += fun.col(i);
+				ttmp.col(i) += fun.col(i);
+
+			MatrixXd tmp(ttmp.rows(),3); tmp.setZero();
+			for(long i = 0; i < ttmp.cols(); ++i)
+				tmp.col(i) = ttmp.col(i);
 
 			clip_elements(tmp, vis_faces, vis_element_ranges, valid_elements, true);
+
+			if(show_isolines && fun.cols() != 3)
+			{
+				Eigen::MatrixXd isoV;
+				Eigen::MatrixXi isoE;
+				igl::isolines(tmp, vis_faces, Eigen::VectorXd(ffun), 20, isoV, isoE);
+				viewer.data().set_edges(isoV,isoE,Eigen::RowVector3d(0,0,0));
+			}
 		}
 		else
 		{
@@ -617,11 +629,11 @@ namespace poly_fem
 
 				if(show_isolines)
 				{
-		        	Eigen::MatrixXd isoV;
-		        	Eigen::MatrixXi isoE;
+					Eigen::MatrixXd isoV;
+					Eigen::MatrixXi isoE;
 					igl::isolines(tmp, vis_faces, Eigen::VectorXd(fun), 20, isoV, isoE);
-        			viewer.data().set_edges(isoV,isoE,Eigen::RowVector3d(0,0,0));
-        		}
+					viewer.data().set_edges(isoV,isoE,Eigen::RowVector3d(0,0,0));
+				}
 			}
 
 			std::cout<<"min/max "<< fun.minCoeff()<<"/"<<fun.maxCoeff()<<std::endl;

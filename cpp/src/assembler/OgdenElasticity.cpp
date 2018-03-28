@@ -121,12 +121,38 @@ namespace poly_fem
 	{
 		// Eigen::MatrixXd displacement_grad(size(), size());
 
-		// assert(displacement.cols() == 1);
+		assert(displacement.cols() == 1);
+		ElementAssemblyValues vals;
+		vals.compute(-1, size() == 3, local_pts, bs, bs);
 
-		// stresses.resize(local_pts.rows(), 1);
 
-		// ElementAssemblyValues vals;
-		// vals.compute(-1, size() == 3, local_pts, bs, bs);
+		stresses.resize(local_pts.rows(), 1);
+
+
+		Eigen::MatrixXd loc_displacement(1, size());
+		for(long p = 0; p < local_pts.rows(); ++p)
+		{
+			loc_displacement.setZero();
+
+			for(std::size_t j = 0; j < bs.bases.size(); ++j)
+			{
+				const Basis &b = bs.bases[j];
+				const auto &loc_val = vals.basis_values[j];
+
+				assert(bs.bases.size() == vals.basis_values.size());
+				assert(loc_val.val.size() == local_pts.rows());
+
+				for(int d = 0; d < size(); ++d)
+				{
+					for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+					{
+						loc_displacement(d) += b.global()[ii].val * loc_val.val(p) * displacement(b.global()[ii].index*size() + d);
+					}
+				}
+			}
+
+			stresses(p) = loc_displacement.norm();
+		}
 
 
 		// for(long p = 0; p < local_pts.rows(); ++p)
@@ -237,7 +263,7 @@ namespace poly_fem
 			for(size_t i = 0; i < vals.basis_values.size(); ++i)
 			{
 				const auto &bs = vals.basis_values[i];
-				const Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> grad = bs.grad.row(p)*vals.jac_it[p];
+				const Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> grad = bs.grad.row(p);
 				assert(grad.size() == size());
 
 				for(int d = 0; d < size(); ++d)
@@ -248,6 +274,12 @@ namespace poly_fem
 					}
 				}
 			}
+
+			AutoDiffGradMat jac_it(size(), size());
+			for(long k = 0; k < jac_it.size(); ++k)
+				jac_it(k) = T(vals.jac_it[p](k));
+
+			def_grad = def_grad * jac_it;
 
 			//Id + grad d
 			for(int d = 0; d < size(); ++d)

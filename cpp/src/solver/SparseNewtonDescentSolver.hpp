@@ -121,6 +121,18 @@ namespace cppoptlib {
 				this->m_current.gradNorm = grad.template lpNorm<Eigen::Infinity>();
 				this->m_status = checkConvergence(this->m_stop, this->m_current);
 
+				if(isnan(objFunc.value(x0)))
+				{
+					this->m_status = Status::UserDefined;
+					std::cerr<<"stopping because obj func is nan"<<std::endl;
+				}
+
+				if((rate * delta_x).norm() < 1e-10)
+				{
+					this->m_status = Status::UserDefined;
+					std::cerr<<"stopping because ||step|| is too small"<<std::endl;
+				}
+
 				if(verbose)
 					std::cout << "iter: "<<this->m_current.iterations <<", rate = "<< rate<< ", f = " <<  objFunc.value(x0) << ", ||g||_inf "<< this->m_current.gradNorm <<", ||step|| "<< (rate * delta_x).norm() << std::endl;
 			}
