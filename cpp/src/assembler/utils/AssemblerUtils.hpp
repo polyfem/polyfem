@@ -11,6 +11,7 @@
 #include "HookeLinearElasticity.hpp"
 #include "SaintVenantElasticity.hpp"
 #include "NeoHookeanElasticity.hpp"
+#include "OgdenElasticity.hpp"
 
 #include "ProblemWithSolution.hpp"
 
@@ -98,6 +99,7 @@ namespace poly_fem
 
 		NLAssembler<SaintVenantElasticity> saint_venant_elasticity_;
 		NLAssembler<NeoHookeanElasticity> neo_hookean_elasticity_;
+		NLAssembler<OgdenElasticity> ogden_elasticity_;
 
 		std::vector<std::string> scalar_assemblers_;
 		std::vector<std::string> tensor_assemblers_;

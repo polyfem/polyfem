@@ -97,6 +97,8 @@ add_library(polyfem
 	src/assembler/SaintVenantElasticity.hpp
 	src/assembler/NeoHookeanElasticity.cpp
 	src/assembler/NeoHookeanElasticity.hpp
+	src/assembler/OgdenElasticity.cpp
+	src/assembler/OgdenElasticity.hpp
 	src/assembler/RhsAssembler.cpp
 	src/assembler/RhsAssembler.hpp
 	src/assembler/utils/AssemblerUtils.hpp

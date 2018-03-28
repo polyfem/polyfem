@@ -46,14 +46,14 @@ namespace poly_fem
 
 			for(long i = 0; i < t.size(); ++i)
 			{
-				const auto dx = pt(0)-(-0.5 - kernel_distance_);
+				const auto dx = pt(0)-(0 - kernel_distance_);
 				const auto dy = pt(1)-t(i);
 				res += assembler.kernel(formulation_, 2, sqrt(dx*dx + dy*dy));
 			}
 
 			for(long i = 0; i < t.size(); ++i)
 			{
-				const auto dx = pt(0)-(0.5 + kernel_distance_);
+				const auto dx = pt(0)-(1 + kernel_distance_);
 				const auto dy = pt(1)-t(i);
 				res += assembler.kernel(formulation_, 2, sqrt(dx*dx + dy*dy));
 			}
@@ -61,14 +61,14 @@ namespace poly_fem
 			for(long i = 0; i < t.size(); ++i)
 			{
 				const auto dx = pt(0)-t(i);
-				const auto dy = pt(1)-(-0.5 - kernel_distance_);
+				const auto dy = pt(1)-(0 - kernel_distance_);
 				res += assembler.kernel(formulation_, 2, sqrt(dx*dx + dy*dy));
 			}
 
 			for(long i = 0; i < t.size(); ++i)
 			{
 				const auto dx = pt(0)-t(i);
-				const auto dy = pt(1)-(0.5 + kernel_distance_);
+				const auto dy = pt(1)-(1 + kernel_distance_);
 				res += assembler.kernel(formulation_, 2, sqrt(dx*dx + dy*dy));
 			}
 		}

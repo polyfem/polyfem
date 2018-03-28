@@ -7,6 +7,7 @@
 #include "HookeLinearElasticity.hpp"
 #include "SaintVenantElasticity.hpp"
 #include "NeoHookeanElasticity.hpp"
+#include "OgdenElasticity.hpp"
 
 #include <igl/Timer.h>
 #include <igl/sparse_cached.h>
@@ -330,4 +331,5 @@ namespace poly_fem
 	template class Assembler<HookeLinearElasticity>;
 	template class NLAssembler<SaintVenantElasticity>;
 	template class NLAssembler<NeoHookeanElasticity>;
+	template class NLAssembler<OgdenElasticity>;
 }

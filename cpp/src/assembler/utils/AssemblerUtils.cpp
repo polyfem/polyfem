@@ -20,11 +20,12 @@ namespace poly_fem
 
 		tensor_assemblers_.push_back("SaintVenant");
 		tensor_assemblers_.push_back("NeoHookean");
+		tensor_assemblers_.push_back("Ogden");
 	}
 
 	bool AssemblerUtils::is_linear(const std::string &assembler) const
 	{
-		return assembler != "SaintVenant" && assembler != "NeoHookean";
+		return assembler != "SaintVenant" && assembler != "NeoHookean" && assembler != "Ogden";
 	}
 
 	void AssemblerUtils::assemble_scalar_problem(const std::string &assembler,
@@ -62,6 +63,8 @@ namespace poly_fem
 			return;
 		else if(assembler == "NeoHookean")
 			return;
+		else if(assembler == "Ogden")
+			return;
 
 		else
 		{
@@ -84,6 +87,8 @@ namespace poly_fem
 			return saint_venant_elasticity_.compute_energy(is_volume, bases, gbases, displacement);
 		else if(assembler == "NeoHookean")
 			return neo_hookean_elasticity_.compute_energy(is_volume, bases, gbases, displacement);
+		else if(assembler == "Ogden")
+			return ogden_elasticity_.compute_energy(is_volume, bases, gbases, displacement);
 		else
 			return 0;
 	}
@@ -100,6 +105,8 @@ namespace poly_fem
 			saint_venant_elasticity_.assemble(is_volume, n_basis, bases, gbases, displacement, grad);
 		else if(assembler == "NeoHookean")
 			neo_hookean_elasticity_.assemble(is_volume, n_basis, bases, gbases, displacement, grad);
+		else if(assembler == "Ogden")
+			ogden_elasticity_.assemble(is_volume, n_basis, bases, gbases, displacement, grad);
 		else
 			return;
 	}
@@ -116,6 +123,8 @@ namespace poly_fem
 			saint_venant_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, hessian);
 		else if(assembler == "NeoHookean")
 			neo_hookean_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, hessian);
+		else if(assembler == "Ogden")
+			ogden_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, hessian);
 		else
 			return;
 	}
@@ -137,9 +146,10 @@ namespace poly_fem
 
 		else if(assembler == "SaintVenant")
 			saint_venant_elasticity_.local_assembler().compute_von_mises_stresses(bs, local_pts, fun, result);
-
 		else if(assembler == "NeoHookean")
 			neo_hookean_elasticity_.local_assembler().compute_von_mises_stresses(bs, local_pts, fun, result);
+		else if(assembler == "Ogden")
+			ogden_elasticity_.local_assembler().compute_von_mises_stresses(bs, local_pts, fun, result);
 
 		else
 		{
@@ -166,6 +176,8 @@ namespace poly_fem
 			return saint_venant_elasticity_.local_assembler().compute_rhs(pt);
 		else if(assembler == "NeoHookean")
 			return neo_hookean_elasticity_.local_assembler().compute_rhs(pt);
+		else if(assembler == "Ogden")
+			return ogden_elasticity_.local_assembler().compute_rhs(pt);
 
 		else
 		{
@@ -194,6 +206,8 @@ namespace poly_fem
 		// 	return saint_venant_elasticity_.local_assembler().kernel(dim, r);
 		// else if(assembler == "NeoHookean")
 		// 	return neo_hookean_elasticity_.local_assembler().kernel(dim, r);
+		// else if(assembler == "Ogden")
+		// 	return ogden_elasticity_.local_assembler().kernel(dim, r);
 
 		else
 		{
@@ -209,6 +223,7 @@ namespace poly_fem
 	{
 		saint_venant_elasticity_.clear_cache();
 		neo_hookean_elasticity_.clear_cache();
+		ogden_elasticity_.clear_cache();
 	}
 
 
@@ -223,6 +238,7 @@ namespace poly_fem
 
 		saint_venant_elasticity_.local_assembler().set_parameters(params);
 		neo_hookean_elasticity_.local_assembler().set_parameters(params);
+		ogden_elasticity_.local_assembler().set_parameters(params);
 	}
 
 }

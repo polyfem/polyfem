@@ -17,6 +17,23 @@ def trunc_acos(x):
     return tmp.subs(x, x)
 
 
+def eigs_2d(mat):
+    a = mat[0, 0] + mat[1, 1]
+    delta = (mat[0, 0] - mat[1, 1])**2 + 4 * mat[0, 1]**2
+
+    tmp1 = Piecewise(
+        (a / 2, delta < 1e-10),
+        ((a - sqrt(delta)) / 2.0, True)
+    )
+
+    tmp2 = Piecewise(
+        (a / 2, delta < 1e-10),
+        ((a + sqrt(delta)) / 2.0, True)
+    )
+
+    return tmp1.subs(delta, delta), tmp2.subs(delta, delta)
+
+
 def eigs_3d(mat):
     b = mat[0] + mat[4] + mat[8]
     t = sqr(mat[1]) + sqr(mat[2]) + sqr(mat[5])
@@ -84,7 +101,7 @@ if __name__ == "__main__":
                     M[i, j] = Symbol('m[' + str(j) + ',' + str(i) + ']', real=True)
 
         if dim == 2:
-            lambdas = M.eigenvals()
+            lambdas = eigs_2d(M)
         else:
             lambdas = eigs_3d(M)
 
