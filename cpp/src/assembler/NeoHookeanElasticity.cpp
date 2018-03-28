@@ -198,7 +198,7 @@ namespace poly_fem
 				def_grad(d,d) += T(1);
 
 			const T log_det_j = log(poly_fem::determinant(def_grad));
-			const T val = mu_ / 2 * ( (def_grad.transpose() * def_grad).trace() - 3 - 2*log_det_j) + lambda_ /2 * log_det_j * log_det_j;
+			const T val = mu_ / 2 * ( (def_grad.transpose() * def_grad).trace() - size() - 2*log_det_j) + lambda_ /2 * log_det_j * log_det_j;
 
 			energy += val * da(p);
 		}
