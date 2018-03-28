@@ -39,11 +39,9 @@ namespace poly_fem
 
 		const auto &assembler = AssemblerUtils::instance();
 
-
+		const Eigen::VectorXd t = Eigen::VectorXd::LinSpaced(n_kernels_, 0, 1);
 		if(pt.size() == 2)
 		{
-			const Eigen::VectorXd t = Eigen::VectorXd::LinSpaced(n_kernels_, -0.5, 0.5);
-
 			for(long i = 0; i < t.size(); ++i)
 			{
 				const auto dx = pt(0)-(0 - kernel_distance_);
@@ -74,8 +72,6 @@ namespace poly_fem
 		}
 		else if(pt.size() == 3)
 		{
-			const Eigen::VectorXd t = Eigen::VectorXd::LinSpaced(n_kernels_, 0, 1);
-
 			///////////////////X
 			for(long i = 0; i < t.size(); ++i)
 			{
