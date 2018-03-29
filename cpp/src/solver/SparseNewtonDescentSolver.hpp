@@ -16,6 +16,7 @@
 #include <cppoptlib/solver/isolver.h>
 #include <cppoptlib/linesearch/armijo.h>
 
+#include <cmath>
 
 
 
@@ -68,7 +69,7 @@ namespace cppoptlib {
 			THessian hessian;
 			this->m_current.reset();
 			AssemblerUtils::instance().clear_cache();
-			
+
 			bool analyze_pattern = true;
 			do
 			{
@@ -121,7 +122,7 @@ namespace cppoptlib {
 				this->m_current.gradNorm = grad.template lpNorm<Eigen::Infinity>();
 				this->m_status = checkConvergence(this->m_stop, this->m_current);
 
-				if(isnan(objFunc.value(x0)))
+				if(std::isnan(objFunc.value(x0)))
 				{
 					this->m_status = Status::UserDefined;
 					std::cerr<<"stopping because obj func is nan"<<std::endl;

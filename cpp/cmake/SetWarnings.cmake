@@ -62,7 +62,7 @@ set(MY_FLAGS
 		-Wdisabled-optimization
 		#-Winline # produces warning on default implicit destructor
 		-Winvalid-pch
-		-Wmissing-include-dirs
+		# -Wmissing-include-dirs
 		-Wpacked
 		-Wno-padded
 		-Wstrict-overflow

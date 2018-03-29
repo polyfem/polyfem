@@ -278,6 +278,10 @@ add_library(json INTERFACE)
 target_include_directories(json SYSTEM INTERFACE ${THIRD_PARTY_DIR}/json/single_include)
 target_link_libraries(polyfem PUBLIC json)
 
+# NanoSVG
+add_library(nanosvg INTERFACE)
+target_include_directories(nanosvg INTERFACE ${THIRD_PARTY_DIR}/nanosvg)
+
 # Tiny file dialogs library
 add_subdirectory(${THIRD_PARTY_DIR}/tinyfiledialogs tinyfiledialogs)
 

@@ -4,6 +4,7 @@
 #include "AutodiffTypes.hpp"
 
 #include <iostream>
+#include <cmath>
 
 #include <Eigen/Dense>
 
@@ -149,11 +150,11 @@ TEST_CASE("eigs3autodiff", "[matrix]") {
     {
     	for(int i = 0; i < 9; ++i)
     	{
-    		REQUIRE(!isnan(actual_eigs(k).getGradient()(i)));
+    		REQUIRE(!std::isnan(actual_eigs(k).getGradient()(i)));
 
     		for(int j = 0; j < 9; ++j)
     		{
-    			REQUIRE(!isnan(actual_eigs(k).getHessian()(i, j)));
+    			REQUIRE(!std::isnan(actual_eigs(k).getHessian()(i, j)));
     		}
     	}
     }
@@ -186,11 +187,11 @@ TEST_CASE("eigs3idautodiff", "[matrix]") {
     {
     	for(int i = 0; i < 9; ++i)
     	{
-    		REQUIRE(!isnan(actual_eigs(k).getGradient()(i)));
+    		REQUIRE(!std::isnan(actual_eigs(k).getGradient()(i)));
 
     		for(int j = 0; j < 9; ++j)
     		{
-    			REQUIRE(!isnan(actual_eigs(k).getHessian()(i, j)));
+    			REQUIRE(!std::isnan(actual_eigs(k).getHessian()(i, j)));
     		}
     	}
     }
