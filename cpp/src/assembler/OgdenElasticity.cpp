@@ -294,8 +294,8 @@ namespace poly_fem
 			else
 				assert(false);
 
-			const auto J = poly_fem::determinant(def_grad);
-			const auto Jdenom = T(1)/pow(J, 1./size());
+			const T J = poly_fem::determinant(def_grad);
+			const T Jdenom = pow(J, -1./size());
 
 			for(long i = 0; i < eigs.size(); ++i)
 				eigs(i) = eigs(i) * Jdenom;
@@ -315,11 +315,11 @@ namespace poly_fem
 
 			// std::cout<<val<<std::endl;
 
-			for(long N = 0; N < alphas_.size(); ++N)
+			for(long N = 0; N < Ds_.size(); ++N)
 			{
 				const double D = Ds_(N);
 
-				val += 1./D * pow(J-1, 2*(N+1));
+				val += 1./D * pow(J - T(1), 2*(N+1));
 			}
 
 			energy += val * da(p);

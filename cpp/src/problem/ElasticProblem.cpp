@@ -23,13 +23,13 @@ namespace poly_fem
 		for(long i = 0; i < pts.rows(); ++i)
 		{
 			if(mesh.get_boundary_id(global_ids(i))== 1)
-				val(i, 0)=-0.025;
+				val(i, 0)=-0.25;
 			else if(mesh.get_boundary_id(global_ids(i))== 3)
-				val(i, 0)=0.025;
+				val(i, 0)=0.25;
 			if(mesh.get_boundary_id(global_ids(i))== 5)
-				val(i, 1)=-0.025;
+				val(i, 1)=-0.25;
 			else if(mesh.get_boundary_id(global_ids(i))== 6)
-				val(i, 1)=0.025;
+				val(i, 1)=0.25;
 		}
 	}
 
