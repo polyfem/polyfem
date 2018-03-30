@@ -156,6 +156,8 @@ namespace poly_fem
 		j["err_linf_grad"] = grad_max_err;
 		j["err_lp"] = lp_err;
 
+		j["spectrum"] = {spectrum(0), spectrum(1)};
+
 		// j["errors"] = errors;
 
 		j["time_building_basis"] = building_basis_time;
@@ -646,7 +648,7 @@ namespace poly_fem
 			A = stiffness;
 			Eigen::VectorXd x;
 			b = rhs;
-			dirichlet_solve(*solver, A, b, boundary_nodes, x);
+			spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, true, true);
 			sol = x;
 			solver->getInfo(solver_info);
 		}

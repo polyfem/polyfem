@@ -21,7 +21,7 @@ namespace poly_fem
 
 	NLProblem::TVector NLProblem::initial_guess()
 	{
-		const auto &state = State::state();
+		auto &state = State::state();
 
 		auto solver = LinearSolver::create(state.args["solver_type"], state.args["precond_type"]);
 		solver->setParameters(state.solver_params());
@@ -31,7 +31,7 @@ namespace poly_fem
 		assembler.assemble_tensor_problem("HookeLinearElasticity", state.mesh->is_volume(), state.n_bases, state.bases, state.iso_parametric() ? state.bases : state.geom_bases, A);
 
 		b = state.rhs;
-		dirichlet_solve(*solver, A, b, state.boundary_nodes, x);
+		state.spectrum = dirichlet_solve(*solver, A, b, state.boundary_nodes, x, true, true);
 
 		full_to_reduced(x, guess);
 

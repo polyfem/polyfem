@@ -1,6 +1,8 @@
 #include "MatrixUtils.hpp"
 
 #include <igl/list_to_matrix.h>
+#include <SymEigsSolver.h>
+#include <MatOp/SparseSymMatProd.h>
 
 #include <iostream>
 #include <fstream>
@@ -20,6 +22,34 @@ void poly_fem::show_matrix_stats(const Eigen::MatrixXd &M) {
 	std::cout << "-- Invertible: " << lu.isInvertible() << std::endl;
 	std::cout << "----------------------------------------" << std::endl;
 	std::cout << lu.solve(M) << std::endl;
+}
+
+Eigen::Vector2d poly_fem::compute_specturm(const Eigen::SparseMatrix<double> &mat)
+{
+	Eigen::Vector2d res;
+	Spectra::SparseSymMatProd<double> op(mat);
+	Spectra::SymEigsSolver< double, Spectra::SMALLEST_MAGN, Spectra::SparseSymMatProd<double>> small_eig(&op, 1, 6);
+
+	small_eig.init();
+    small_eig.compute();
+    if(small_eig.info() == Spectra::SUCCESSFUL)
+        res(0) = small_eig.eigenvalues()(0);
+    else
+    	res(1) = NAN;
+
+
+    Spectra::SymEigsSolver< double, Spectra::LARGEST_MAGN, Spectra::SparseSymMatProd<double>> large_eig(&op, 1, 6);
+
+	large_eig.init();
+    large_eig.compute();
+    if(large_eig.info() == Spectra::SUCCESSFUL)
+        res(1) = large_eig.eigenvalues()(0);
+    else
+    	res(1) = NAN;
+
+
+
+	return res;
 }
 
 

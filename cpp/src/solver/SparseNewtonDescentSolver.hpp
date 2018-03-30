@@ -94,7 +94,7 @@ namespace cppoptlib {
 
 
         		time.start();
-				poly_fem::dirichlet_solve(*solver, hessian, full_grad, State::state().boundary_nodes, full_delta_x, analyze_pattern);
+				poly_fem::dirichlet_solve(*solver, hessian, full_grad, State::state().boundary_nodes, full_delta_x, analyze_pattern, false);
 				NLProblem::full_to_reduced_aux(full_size, reduced_size, full_delta_x, delta_x);
 				delta_x *= -1;
 				analyze_pattern = true;

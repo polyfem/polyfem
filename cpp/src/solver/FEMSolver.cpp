@@ -1,11 +1,13 @@
+#include "MatrixUtils.hpp"
+
 ////////////////////////////////////////////////////////////////////////////////
 #include <FEMSolver.hpp>
 #include <unsupported/Eigen/SparseExtra>
 ////////////////////////////////////////////////////////////////////////////////
 
-void poly_fem::dirichlet_solve(
+Eigen::Vector2d poly_fem::dirichlet_solve(
 	LinearSolver &solver, Eigen::SparseMatrix<double> &A, Eigen::VectorXd &f,
-	const std::vector<int> &dirichlet_nodes, Eigen::VectorXd &u, const bool analyze_pattern)
+	const std::vector<int> &dirichlet_nodes, Eigen::VectorXd &u, const bool analyze_pattern, const bool compute_specturm)
 {
 	// Let Γ be the set of Dirichlet dofs.
 	// To implement nonzero Dirichlet boundary conditions, we seek to replace
@@ -75,5 +77,10 @@ void poly_fem::dirichlet_solve(
 	f = g;
 	//std::cout<<"Solver error: "<<(A*u-g).norm()<<std::endl;
 	// std::cout << u << std::endl;
+
+	if(compute_specturm)
+		return poly_fem::compute_specturm(A);
+	else
+		return Eigen::Vector2d();
 }
 

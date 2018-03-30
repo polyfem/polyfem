@@ -269,6 +269,11 @@ target_link_libraries(polyfem PUBLIC cppoptlib)
 add_library(cli11 INTERFACE)
 target_include_directories(cli11 SYSTEM INTERFACE ${THIRD_PARTY_DIR}/cli11)
 
+# Spectra
+add_library(spectra INTERFACE)
+target_include_directories(spectra SYSTEM INTERFACE ${THIRD_PARTY_DIR}/spectra/include)
+target_link_libraries(polyfem PUBLIC spectra)
+
 # Clipper
 add_subdirectory(${THIRD_PARTY_DIR}/clipper)
 target_link_libraries(polyfem PUBLIC polyclipping)
