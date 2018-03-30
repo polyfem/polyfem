@@ -46,6 +46,7 @@ namespace poly_fem
 
 			const Quadrature &quadrature = vals.quadrature;
 
+			assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
 			const QuadratureVector da = vals.det.array() * quadrature.weights.array();
 			const int n_loc_bases = int(vals.basis_values.size());
 
@@ -145,6 +146,7 @@ namespace poly_fem
 
 			const Quadrature &quadrature = vals.quadrature;
 
+			assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
 			const QuadratureVector da = vals.det.array() * quadrature.weights.array();
 			const int n_loc_bases = int(vals.basis_values.size());
 			const auto val = local_assembler_.assemble(vals, displacement, da);
@@ -212,6 +214,7 @@ namespace poly_fem
 
 			const Quadrature &quadrature = vals.quadrature;
 
+			assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
 			const QuadratureVector da = vals.det.array() * quadrature.weights.array();
 			const int n_loc_bases = int(vals.basis_values.size());
 
@@ -315,6 +318,7 @@ namespace poly_fem
 
 			const Quadrature &quadrature = vals.quadrature;
 
+			assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
 			const QuadratureVector da = vals.det.array() * quadrature.weights.array();
 
 			const double val = local_assembler_.compute_energy(vals, displacement, da);

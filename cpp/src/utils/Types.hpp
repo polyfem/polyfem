@@ -1,6 +1,6 @@
 #pragma once
 
-#define MAX_QUAD_POINTS 216
+#define MAX_QUAD_POINTS -1
 
 #include <Eigen/Dense>
 
