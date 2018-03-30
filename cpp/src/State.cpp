@@ -156,7 +156,7 @@ namespace poly_fem
 		j["err_linf_grad"] = grad_max_err;
 		j["err_lp"] = lp_err;
 
-		j["spectrum"] = {spectrum(0), spectrum(1)};
+		j["spectrum"] = {spectrum(0), spectrum(1), spectrum(2), spectrum(3)};
 
 		// j["errors"] = errors;
 

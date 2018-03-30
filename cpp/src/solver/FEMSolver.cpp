@@ -5,7 +5,7 @@
 #include <unsupported/Eigen/SparseExtra>
 ////////////////////////////////////////////////////////////////////////////////
 
-Eigen::Vector2d poly_fem::dirichlet_solve(
+Eigen::Vector4d poly_fem::dirichlet_solve(
 	LinearSolver &solver, Eigen::SparseMatrix<double> &A, Eigen::VectorXd &f,
 	const std::vector<int> &dirichlet_nodes, Eigen::VectorXd &u, const bool analyze_pattern, const bool compute_specturm)
 {
@@ -81,6 +81,6 @@ Eigen::Vector2d poly_fem::dirichlet_solve(
 	if(compute_specturm)
 		return poly_fem::compute_specturm(A);
 	else
-		return Eigen::Vector2d();
+		return Eigen::Vector4d();
 }
 

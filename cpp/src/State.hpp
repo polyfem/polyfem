@@ -53,7 +53,8 @@ namespace poly_fem
 		Eigen::SparseMatrix<double> stiffness;
 		Eigen::MatrixXd rhs;
 		Eigen::MatrixXd sol;
-		Eigen::Vector2d spectrum;
+		
+		Eigen::Vector4d spectrum;
 
 
 		json solver_info;

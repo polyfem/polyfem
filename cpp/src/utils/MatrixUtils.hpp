@@ -28,6 +28,6 @@ namespace poly_fem {
     template<typename T>
 	void read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat);
 
-	Eigen::Vector2d compute_specturm(const Eigen::SparseMatrix<double> &mat);
+	Eigen::Vector4d compute_specturm(const Eigen::SparseMatrix<double> &mat);
 
 } // namespace poly_fem
