@@ -68,6 +68,8 @@ namespace poly_fem {
 
         void clear();
     private:
+        bool is_volume_;
+
         std::vector<VTKDataNode<double>> point_data_;
         std::vector<VTKDataNode<double>> cell_data_;
         std::string current_scalar_point_data_;

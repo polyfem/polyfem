@@ -6,6 +6,7 @@
 #include "AssemblerUtils.hpp"
 
 #include "ElasticProblem.hpp"
+#include "RefElementSampler.hpp"
 
 #include "LinearSolver.hpp"
 #include "EdgeSampler.hpp"
@@ -13,9 +14,8 @@
 #include <igl/per_face_normals.h>
 #include <igl/per_corner_normals.h>
 #include <igl/read_triangle_mesh.h>
-#include <igl/triangle/triangulate.h>
-#include <igl/copyleft/tetgen/tetrahedralize.h>
 #include <igl/per_vertex_normals.h>
+#include <igl/triangle/triangulate.h>
 #include <igl/png/writePNG.h>
 #include <igl/Timer.h>
 #include <igl/serialize.h>
@@ -433,6 +433,8 @@ namespace poly_fem
 		result.resize(vis_pts.rows(), actual_dim);
 
 		int index = 0;
+		const auto &sampler = RefElementSampler::sampler();
+
 
 		for(int i = 0; i < int(state.bases.size()); ++i)
 		{
@@ -440,9 +442,9 @@ namespace poly_fem
 			MatrixXd local_pts;
 
 			if(state.mesh->is_simplex(i))
-				local_pts = local_vis_pts_tri;
+				local_pts = sampler.simplex_points();
 			else if(state.mesh->is_cube(i))
-				local_pts = local_vis_pts_quad;
+				local_pts = sampler.cube_points();
 			else
 				local_pts = vis_pts_poly[i];
 
@@ -478,15 +480,17 @@ namespace poly_fem
 		std::vector<Eigen::MatrixXd> j_g_mapping;
 		std::vector<Eigen::MatrixXd> grads;
 
+		const auto &sampler = RefElementSampler::sampler();
+
 		for(int i = 0; i < int(state.bases.size()); ++i)
 		{
 			const ElementBases &bs = state.bases[i];
 			MatrixXd local_pts;
 
 			if(state.mesh->is_simplex(i))
-				local_pts = local_vis_pts_tri;
+				local_pts = sampler.simplex_points();
 			else if(state.mesh->is_cube(i))
-				local_pts = local_vis_pts_quad;
+				local_pts = sampler.cube_points();
 			else
 				local_pts = vis_pts_poly[i];
 
@@ -550,6 +554,8 @@ namespace poly_fem
 	{
 		MatrixXd col;
 		std::vector<bool> valid_elements;
+		const auto &sampler = RefElementSampler::sampler();
+
 
 		if(fun.cols() != 1)
 		{
@@ -569,9 +575,9 @@ namespace poly_fem
 				MatrixXd local_pts;
 
 				if(state.mesh->is_simplex(i))
-					local_pts = local_vis_pts_tri;
+					local_pts = sampler.simplex_points();
 				else if(state.mesh->is_cube(i))
-					local_pts = local_vis_pts_quad;
+					local_pts = sampler.cube_points();
 				else
 					local_pts = vis_pts_poly[i];
 
@@ -754,12 +760,12 @@ namespace poly_fem
 
 	void UIState::show_rhs()
 	{
-		if (!state.mesh) { return; }
-		current_visualization = Visualizing::Rhs;
-		MatrixXd global_rhs;
-		state.interpolate_function(state.rhs, local_vis_pts_quad, global_rhs);
+		// if (!state.mesh) { return; }
+		// current_visualization = Visualizing::Rhs;
+		// MatrixXd global_rhs;
+		// state.interpolate_function(state.rhs, sampler.cube_points(), global_rhs);
 
-		plot_function(global_rhs, 0, 1);
+		// plot_function(global_rhs, 0, 1);
 	}
 
 	void UIState::show_error()
@@ -903,104 +909,11 @@ namespace poly_fem
 		igl::Timer timer; timer.start();
 		std::cout<<"Building vis mesh..."<<std::flush;
 
-		const double area_param = 0.00001*state.mesh->n_elements();
-
-		std::stringstream buf;
-		buf.precision(100);
-		buf.setf(std::ios::fixed, std::ios::floatfield);
-
-		if(state.mesh->is_volume())
-		{
-			buf<<"Qpq1.414a"<<area_param;
-			{
-				MatrixXd pts(8,3); pts <<
-				0, 0, 0,
-				0, 1, 0,
-				1, 1, 0,
-				1, 0, 0,
-
-				0, 0, 1, //4
-				0, 1, 1,
-				1, 1, 1,
-				1, 0, 1;
-
-				Eigen::MatrixXi faces(12,3); faces <<
-				1, 2, 0,
-				0, 2, 3,
-
-				5, 4, 6,
-				4, 7, 6,
-
-				1, 0, 4,
-				1, 4, 5,
-
-				2, 1, 5,
-				2, 5, 6,
-
-				3, 2, 6,
-				3, 6, 7,
-
-				0, 3, 7,
-				0, 7, 4;
-
-				MatrixXi tets;
-				igl::copyleft::tetgen::tetrahedralize(pts, faces, buf.str(), local_vis_pts_quad, tets, local_vis_faces_quad);
-			}
-			{
-				MatrixXd pts(4,3); pts <<
-				0, 0, 0,
-				1, 0, 0,
-				0, 1, 0,
-				0, 0, 1;
-
-				Eigen::MatrixXi faces(4,3); faces <<
-				0, 1, 2,
-
-				3, 1, 0,
-				2, 1, 3,
-				0, 2, 3;
-
-				MatrixXi tets;
-				igl::copyleft::tetgen::tetrahedralize(pts, faces, buf.str(), local_vis_pts_tri, tets, local_vis_faces_tri);
-			}
-		}
-		else
-		{
-			buf<<"Qqa"<<area_param;
-			{
-				MatrixXd pts(4,2); pts <<
-				0,0,
-				0,1,
-				1,1,
-				1,0;
-
-				MatrixXi E(4,2); E <<
-				0,1,
-				1,2,
-				2,3,
-				3,0;
-
-				MatrixXd H(0,2);
-				igl::triangle::triangulate(pts, E, H, buf.str(), local_vis_pts_quad, local_vis_faces_quad);
-			}
-			{
-				MatrixXd pts(3,2); pts <<
-				0,0,
-				1,0,
-				0,1;
-
-				MatrixXi E(3,2); E <<
-				0,1,
-				1,2,
-				2,0;
-
-				igl::triangle::triangulate(pts, E, MatrixXd(0,2), buf.str(), local_vis_pts_tri, local_vis_faces_tri);
-			}
-		}
-
 		const auto &current_bases = state.iso_parametric() ? state.bases : state.geom_bases;
 		int faces_total_size = 0, points_total_size = 0;
 		vis_element_ranges.push_back(0);
+
+		const auto &sampler = RefElementSampler::sampler();
 
 		for(int i = 0; i < int(current_bases.size()); ++i)
 		{
@@ -1008,12 +921,12 @@ namespace poly_fem
 
 			if(state.mesh->is_simplex(i))
 			{
-				faces_total_size   += local_vis_faces_tri.rows();
-				points_total_size += local_vis_pts_tri.rows();
+				faces_total_size   += sampler.simplex_faces().rows();
+				points_total_size += sampler.simplex_points().rows();
 			}
 			else if(state.mesh->is_cube(i)){
-				faces_total_size   += local_vis_faces_quad.rows();
-				points_total_size += local_vis_pts_quad.rows();
+				faces_total_size   += sampler.cube_faces().rows();
+				points_total_size += sampler.cube_points().rows();
 			}
 			else
 			{
@@ -1045,7 +958,7 @@ namespace poly_fem
 			vis_element_ranges.push_back(faces_total_size);
 		}
 
-		vis_pts.resize(points_total_size, local_vis_pts_quad.cols());
+		vis_pts.resize(points_total_size, sampler.cube_points().cols());
 		vis_faces.resize(faces_total_size, 3);
 
 		MatrixXd mapped, tmp;
@@ -1055,19 +968,19 @@ namespace poly_fem
 			const ElementBases &bs = current_bases[i];
 			if(state.mesh->is_simplex(i))
 			{
-				bs.eval_geom_mapping(local_vis_pts_tri, mapped);
-				vis_faces.block(face_index, 0, local_vis_faces_tri.rows(), 3) = local_vis_faces_tri.array() + point_index;
+				bs.eval_geom_mapping(sampler.simplex_points(), mapped);
+				vis_faces.block(face_index, 0, sampler.simplex_faces().rows(), 3) = sampler.simplex_faces().array() + point_index;
 
-				face_index += local_vis_faces_tri.rows();
+				face_index += sampler.simplex_faces().rows();
 
 				vis_pts.block(point_index, 0, mapped.rows(), mapped.cols()) = mapped;
 				point_index += mapped.rows();
 			}
 			else if(state.mesh->is_cube(i))
 			{
-				bs.eval_geom_mapping(local_vis_pts_quad, mapped);
-				vis_faces.block(face_index, 0, local_vis_faces_quad.rows(), 3) = local_vis_faces_quad.array() + point_index;
-				face_index += local_vis_faces_quad.rows();
+				bs.eval_geom_mapping(sampler.cube_points(), mapped);
+				vis_faces.block(face_index, 0, sampler.cube_faces().rows(), 3) = sampler.cube_faces().array() + point_index;
+				face_index += sampler.cube_faces().rows();
 
 				vis_pts.block(point_index, 0, mapped.rows(), mapped.cols()) = mapped;
 				point_index += mapped.rows();

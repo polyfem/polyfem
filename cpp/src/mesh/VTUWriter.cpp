@@ -120,21 +120,22 @@ namespace poly_fem
         os << "</DataArray>\n";
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         int min_tag, max_tag;
-        // if (!is_volume) {
-        //     min_tag = VTKTagPlanar(n_vertices);
-        //     max_tag = VTKTagPlanar(n_vertices);
-        // } else
-        // {
-        min_tag = VTKTagVolume(n_vertices);
-        max_tag = VTKTagVolume(n_vertices);
+        if (!is_volume_) {
+            min_tag = VTKTagPlanar(n_vertices);
+            max_tag = VTKTagPlanar(n_vertices);
+        } else
+        {
+            min_tag = VTKTagVolume(n_vertices);
+            max_tag = VTKTagVolume(n_vertices);
+        }
 
         os << "<DataArray type=\"UInt8\" Name=\"types\" format=\"ascii\" RangeMin=\"" << min_tag << "\" RangeMax=\"" << max_tag << "\">\n";
         for (int i = 0; i < n_cells; ++i)
         {
-        // if (is_volue) 
+        if (is_volume_)
             os << VTKTagVolume(n_vertices) << "\n";
-        // else
-            // os << VTKTagPlanar(n_vertices) << "\n";
+        else
+            os << VTKTagPlanar(n_vertices) << "\n";
         }
         os << "</DataArray>\n";
 
@@ -200,6 +201,8 @@ namespace poly_fem
             os.close();
             return false;
         }
+
+        is_volume_ = true;
 
         write_header(points.rows(), tets.rows(), os);
         write_points(points, os);

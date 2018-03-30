@@ -43,8 +43,6 @@ namespace poly_fem
 		Eigen::MatrixXi tri_faces, vis_faces;
 		Eigen::MatrixXd tri_pts, vis_pts;
 
-		Eigen::MatrixXi local_vis_faces_tri, local_vis_faces_quad;
-		Eigen::MatrixXd local_vis_pts_tri, local_vis_pts_quad;
 
 		std::map<int, Eigen::MatrixXi> vis_faces_poly;
 		std::map<int, Eigen::MatrixXd> vis_pts_poly;

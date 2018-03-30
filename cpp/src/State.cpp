@@ -22,6 +22,7 @@
 #include "LinearSolver.hpp"
 #include "FEMSolver.hpp"
 
+#include "RefElementSampler.hpp"
 
 #include "Common.hpp"
 
@@ -33,7 +34,6 @@
 
 #include <igl/Timer.h>
 #include <igl/serialize.h>
-#include <igl/copyleft/tetgen/tetrahedralize.h>
 
 
 #include <unsupported/Eigen/SparseExtra>
@@ -192,7 +192,7 @@ namespace poly_fem
 	}
 
 
-	void State::interpolate_function(const MatrixXd &fun, const MatrixXd &local_pts, MatrixXd &result)
+	void State::interpolate_function(const int n_points, const MatrixXd &fun, MatrixXd &result)
 	{
 		MatrixXd tmp;
 
@@ -200,29 +200,68 @@ namespace poly_fem
 		if(!problem->is_scalar())
 			actual_dim = mesh->dimension();
 
-		result.resize(local_pts.rows() * mesh->n_elements(), actual_dim);
+		result.resize(n_points, actual_dim);
 
-		for(std::size_t i = 0; i < bases.size(); ++i)
+		int index = 0;
+		const auto &sampler = RefElementSampler::sampler();
+
+
+		for(int i = 0; i < int(bases.size()); ++i)
 		{
 			const ElementBases &bs = bases[i];
-			bs.evaluate_bases(local_pts, tmp);
+			MatrixXd local_pts;
+
+			if(mesh->is_simplex(i))
+				local_pts = sampler.simplex_points();
+			else if(mesh->is_cube(i))
+				local_pts = sampler.cube_points();
+			// else
+				// local_pts = vis_pts_poly[i];
 
 			MatrixXd local_res = MatrixXd::Zero(local_pts.rows(), actual_dim);
-
+			bs.evaluate_bases(local_pts, tmp);
 			for(std::size_t j = 0; j < bs.bases.size(); ++j)
 			{
 				const Basis &b = bs.bases[j];
 
-				for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+				for(int d = 0; d < actual_dim; ++d)
 				{
-					for(int d = 0; d < actual_dim; ++d)
-					{
+					for(std::size_t ii = 0; ii < b.global().size(); ++ii)
 						local_res.col(d) += b.global()[ii].val * tmp.col(j) * fun(b.global()[ii].index*actual_dim + d);
-					}
 				}
 			}
 
-			result.block(i*local_pts.rows(), 0, local_pts.rows(), actual_dim) = local_res;
+			result.block(index, 0, local_res.rows(), actual_dim) = local_res;
+			index += local_res.rows();
+		}
+	}
+
+	void State::compute_scalar_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result)
+	{
+		result.resize(n_points, 1);
+
+		int index = 0;
+		const auto &sampler = RefElementSampler::sampler();
+		const auto &assembler = AssemblerUtils::instance();
+
+		Eigen::MatrixXd local_val;
+
+		for(int i = 0; i < int(bases.size()); ++i)
+		{
+			const ElementBases &bs = bases[i];
+			Eigen::MatrixXd local_pts;
+
+			if(mesh->is_simplex(i))
+				local_pts = sampler.simplex_points();
+			else if(mesh->is_cube(i))
+				local_pts = sampler.cube_points();
+			// else
+				// local_pts = vis_pts_poly[i];
+
+			assembler.compute_scalar_value(tensor_formulation(), bs, local_pts, sol, local_val);
+
+			result.block(index, 0, local_val.rows(), 1) = local_val;
+			index += local_val.rows();
 		}
 	}
 
@@ -268,6 +307,8 @@ namespace poly_fem
 
 		timer.stop();
 		std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
+
+		RefElementSampler::sampler().init(mesh->is_volume(), mesh->n_elements());
 	}
 
 	void State::compute_mesh_stats()
@@ -813,56 +854,8 @@ namespace poly_fem
 			return;
 		}
 
-		//TODO
-		// if(mesh->is_simplicial()){
-		// 	std::cerr<<"Saving vtu supported only for pure hex meshes"<<std::endl;
-		// 	return;
-		// }
+		const auto &sampler = RefElementSampler::sampler();
 
-		const double area_param = 0.00001*mesh->n_elements();
-		// const double area_param = 1;
-
-		std::stringstream buf;
-		buf.precision(100);
-		buf.setf(std::ios::fixed, std::ios::floatfield);
-
-		Eigen::MatrixXd hex_pts;
-		Eigen::MatrixXi hex_tets;
-		Eigen::MatrixXi dummy;
-
-		buf<<"Qpq1.414a"<<area_param;
-		{
-			MatrixXd pts(8,3); pts <<
-			0, 0, 0,
-			0, 1, 0,
-			1, 1, 0,
-			1, 0, 0,
-
-			0, 0, 1, //4
-			0, 1, 1,
-			1, 1, 1,
-			1, 0, 1;
-
-			Eigen::MatrixXi faces(12,3); faces <<
-			1, 2, 0,
-			0, 2, 3,
-
-			5, 4, 6,
-			4, 7, 6,
-
-			1, 0, 4,
-			1, 4, 5,
-
-			2, 1, 5,
-			2, 5, 6,
-
-			3, 2, 6,
-			3, 6, 7,
-
-			0, 3, 7,
-			0, 7, 4;
-			igl::copyleft::tetgen::tetrahedralize(pts, faces, buf.str(), hex_pts, hex_tets, dummy);
-		}
 
 		const auto &current_bases = iso_parametric() ? bases : geom_bases;
 		int tet_total_size = 0;
@@ -872,9 +865,14 @@ namespace poly_fem
 		{
 			const auto &bs = current_bases[i];
 
-			if(mesh->is_cube(i)){
-				pts_total_size += hex_pts.rows();
-				tet_total_size += hex_tets.rows();
+			if(mesh->is_simplex(i))
+			{
+				tet_total_size += sampler.simplex_volume().rows();
+				pts_total_size += sampler.simplex_points().rows();
+			}
+			else if(mesh->is_cube(i)){
+				tet_total_size += sampler.cube_volume().rows();
+				pts_total_size += sampler.cube_points().rows();
 			}
 		}
 
@@ -886,11 +884,22 @@ namespace poly_fem
 		for(size_t i = 0; i < current_bases.size(); ++i)
 		{
 			const auto &bs = current_bases[i];
-			if(mesh->is_cube(i))
+
+			if(mesh->is_simplex(i))
 			{
-				bs.eval_geom_mapping(hex_pts, mapped);
-				tets.block(tet_index, 0, hex_tets.rows(), 4) = hex_tets.array() + pts_index;
-				tet_index += hex_tets.rows();
+				bs.eval_geom_mapping(sampler.simplex_points(), mapped);
+				tets.block(tet_index, 0, sampler.simplex_volume().rows(), sampler.simplex_volume().cols()) = sampler.simplex_volume().array() + pts_index;
+
+				tet_index += sampler.simplex_volume().rows();
+
+				points.block(pts_index, 0, mapped.rows(), mapped.cols()) = mapped;
+				pts_index += mapped.rows();
+			}
+			else if(mesh->is_cube(i))
+			{
+				bs.eval_geom_mapping(sampler.cube_points(), mapped);
+				tets.block(tet_index, 0, sampler.cube_volume().rows(), sampler.cube_volume().cols()) = sampler.cube_volume().array() + pts_index;
+				tet_index += sampler.cube_volume().rows();
 
 				points.block(pts_index, 0, mapped.rows(), mapped.cols()) = mapped;
 				pts_index += mapped.rows();
@@ -901,10 +910,18 @@ namespace poly_fem
 		assert(tet_index == tets.rows());
 
 		Eigen::MatrixXd fun;
-		interpolate_function(sol, hex_pts, fun);
+		interpolate_function(pts_index, sol, fun);
 
 		VTUWriter writer;
-		writer.add_filed("sol", fun);
+		writer.add_filed("solution", fun);
+
+		if(fun.cols() != 1)
+		{
+			Eigen::MatrixXd scalar_val;
+			compute_scalar_value(pts_index, sol, scalar_val);
+			writer.add_filed("scalar_value", scalar_val);
+		}
+
 		writer.write_tet_mesh(path, points, tets);
 	}
 
