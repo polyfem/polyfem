@@ -116,17 +116,20 @@ namespace poly_fem
 {
 	void UIState::get_plot_edges(const Mesh &mesh, const std::vector< ElementBases > &bases, const int n_samples, const std::vector<bool> &valid_elements, Eigen::MatrixXd &pp0, Eigen::MatrixXd &pp1)
 	{
-		Eigen::MatrixXd samples, mapped, p0, p1, tmp;
+		Eigen::MatrixXd samples_simplex, samples_cube, mapped, p0, p1, tmp;
 		std::vector<Eigen::MatrixXd> p0v, p1v;
 
 		std::vector<bool> valid_polytopes(valid_elements.size(), false);
 		const int actual_dim = mesh.dimension();
-		const int n_edges = mesh.is_volume() ? 12 : 4;
 
-		if(mesh.is_volume())
-			EdgeSampler::sample_3d(n_samples, samples);
-		else
-			EdgeSampler::sample_2d(n_samples, samples);
+		if(mesh.is_volume()){
+			EdgeSampler::sample_3d_simplex(n_samples, samples_simplex);
+			EdgeSampler::sample_3d_cube(n_samples, samples_cube);
+		}
+		else{
+			EdgeSampler::sample_2d_simplex(n_samples, samples_simplex);
+			EdgeSampler::sample_2d_cube(n_samples, samples_cube);
+		}
 
 		for(std::size_t i = 0; i < bases.size(); ++i)
 		{
@@ -136,6 +139,10 @@ namespace poly_fem
 				valid_polytopes[i] = true;
 				continue;
 			}
+
+			auto samples = mesh.is_simplex(i) ? samples_simplex : samples_cube;
+
+			const int n_edges = mesh.is_simplex(i) ? (mesh.is_volume() ? 6 : 3) : (mesh.is_volume() ? 12 : 4);
 
 			Eigen::MatrixXd result(samples.rows(), samples.cols());
 			result.setZero();
@@ -709,7 +716,7 @@ namespace poly_fem
 		clear();
 		current_visualization = Visualizing::VisMesh;
 
-		std::cout<<vis_faces.rows()<<" "<<vis_faces.cols()<<std::endl;
+		// std::cout<<vis_faces.rows()<<" "<<vis_faces.cols()<<std::endl;
 		std::vector<bool> valid_elements;
 		clip_elements(vis_pts, vis_faces, vis_element_ranges, valid_elements, true);
 		viewer.data().show_lines = true;

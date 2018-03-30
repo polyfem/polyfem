@@ -58,7 +58,7 @@ namespace poly_fem
 
 	void State::compute_mesh_size(const Mesh &mesh_in, const std::vector< ElementBases > &bases_in, const int n_samples)
 	{
-		Eigen::MatrixXd samples, mapped, p0, p1, p;
+		Eigen::MatrixXd samples_simplex, samples_cube, mapped, p0, p1, p;
 
 		mesh_size = 0;
 		average_edge_length = 0;
@@ -80,18 +80,29 @@ namespace poly_fem
 			return;
 		}
 
-		const int n_edges = mesh_in.is_volume()?12:4;
-		if(mesh_in.is_volume())
-			EdgeSampler::sample_3d(n_samples, samples);
-		else
-			EdgeSampler::sample_2d(n_samples, samples);
+		if(mesh_in.is_volume()){
+			EdgeSampler::sample_3d_simplex(n_samples, samples_simplex);
+			EdgeSampler::sample_3d_cube(n_samples, samples_cube);
+		}
+		else{
+			EdgeSampler::sample_2d_simplex(n_samples, samples_simplex);
+			EdgeSampler::sample_2d_cube(n_samples, samples_cube);
+		}
 
 
 		int n = 0;
 		for(std::size_t i = 0; i < bases_in.size(); ++i){
 			if(mesh_in.is_polytope(i)) continue;
+			int n_edges;
 
-			bases_in[i].eval_geom_mapping(samples, mapped);
+			if(mesh_in.is_simplex(i)){
+				n_edges = mesh_in.is_volume() ? 6 : 3;
+				bases_in[i].eval_geom_mapping(samples_simplex, mapped);
+			}
+			else {
+				n_edges = mesh_in.is_volume() ? 12 : 4;
+				bases_in[i].eval_geom_mapping(samples_cube, mapped);
+			}
 
 			for(int j = 0; j < n_edges; ++j)
 			{
@@ -909,12 +920,14 @@ namespace poly_fem
 		assert(pts_index == points.rows());
 		assert(tet_index == tets.rows());
 
-		Eigen::MatrixXd fun, exact_fun;
+		Eigen::MatrixXd fun, exact_fun, err;
 
-		problem->exact(points, exact_fun);
 		interpolate_function(pts_index, sol, fun);
 
-		MatrixXd err = (fun - exact_fun).eval().rowwise().norm();
+		if(problem->has_exact_sol()){
+			problem->exact(points, exact_fun);
+			err = (fun - exact_fun).eval().rowwise().norm();
+		}
 
 		VTUWriter writer;
 
@@ -928,10 +941,10 @@ namespace poly_fem
 		}
 
 		writer.add_filed("solution", fun);
-		writer.add_filed("exact", exact_fun);
-		writer.add_filed("error", err);
-
-
+		if(problem->has_exact_sol()){
+			writer.add_filed("exact", exact_fun);
+			writer.add_filed("error", err);
+		}
 
 
 		if(fun.cols() != 1)
