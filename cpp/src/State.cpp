@@ -849,10 +849,10 @@ namespace poly_fem
 
 	void State::save_vtu(const std::string &path)
 	{
-		if(!mesh->is_volume()){
-			std::cerr<<"Saving vtu supported only for volume"<<std::endl;
-			return;
-		}
+		// if(!mesh->is_volume()){
+		// 	std::cerr<<"Saving vtu supported only for volume"<<std::endl;
+		// 	return;
+		// }
 
 		const auto &sampler = RefElementSampler::sampler();
 
@@ -876,8 +876,8 @@ namespace poly_fem
 			}
 		}
 
-		Eigen::MatrixXd points(pts_total_size, 3);
-		Eigen::MatrixXi tets(tet_total_size, 4);
+		Eigen::MatrixXd points(pts_total_size, mesh->dimension());
+		Eigen::MatrixXi tets(tet_total_size, mesh->is_volume()?4:3);
 
 		MatrixXd mapped, tmp;
 		int tet_index = 0, pts_index = 0;
@@ -888,20 +888,20 @@ namespace poly_fem
 			if(mesh->is_simplex(i))
 			{
 				bs.eval_geom_mapping(sampler.simplex_points(), mapped);
-				tets.block(tet_index, 0, sampler.simplex_volume().rows(), sampler.simplex_volume().cols()) = sampler.simplex_volume().array() + pts_index;
+				tets.block(tet_index, 0, sampler.simplex_volume().rows(), tets.cols()) = sampler.simplex_volume().array() + pts_index;
 
 				tet_index += sampler.simplex_volume().rows();
 
-				points.block(pts_index, 0, mapped.rows(), mapped.cols()) = mapped;
+				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
 				pts_index += mapped.rows();
 			}
 			else if(mesh->is_cube(i))
 			{
 				bs.eval_geom_mapping(sampler.cube_points(), mapped);
-				tets.block(tet_index, 0, sampler.cube_volume().rows(), sampler.cube_volume().cols()) = sampler.cube_volume().array() + pts_index;
+				tets.block(tet_index, 0, sampler.cube_volume().rows(), tets.cols()) = sampler.cube_volume().array() + pts_index;
 				tet_index += sampler.cube_volume().rows();
 
-				points.block(pts_index, 0, mapped.rows(), mapped.cols()) = mapped;
+				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
 				pts_index += mapped.rows();
 			}
 		}
@@ -909,11 +909,30 @@ namespace poly_fem
 		assert(pts_index == points.rows());
 		assert(tet_index == tets.rows());
 
-		Eigen::MatrixXd fun;
+		Eigen::MatrixXd fun, exact_fun;
+
+		problem->exact(points, exact_fun);
 		interpolate_function(pts_index, sol, fun);
 
+		MatrixXd err = (fun - exact_fun).eval().rowwise().norm();
+
 		VTUWriter writer;
+
+		if(fun.cols() != 1 && !mesh->is_volume())
+		{
+			fun.conservativeResize(fun.rows(), 3);
+			fun.col(2).setZero();
+
+			exact_fun.conservativeResize(exact_fun.rows(), 3);
+			exact_fun.col(2).setZero();
+		}
+
 		writer.add_filed("solution", fun);
+		writer.add_filed("exact", exact_fun);
+		writer.add_filed("error", err);
+
+
+
 
 		if(fun.cols() != 1)
 		{

@@ -77,7 +77,7 @@ namespace poly_fem
     void VTUWriter::write_points(const Eigen::MatrixXd &points, std::ostream &os)
     {
         os << "<Points>\n";
-        os << "<DataArray type=\"Float32\" NumberOfComponents=\"" << points.cols() << "\" format=\"ascii\">\n";
+        os << "<DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\"ascii\">\n";
         for (int d = 0; d < points.rows(); ++d)
         {
             for (int i = 0; i < points.cols(); ++i)
@@ -88,6 +88,10 @@ namespace poly_fem
                     os << " ";
                 }
             }
+
+            if(!is_volume_)
+                os << " 0";
+
             os << "\n";
         }
 
@@ -132,10 +136,10 @@ namespace poly_fem
         os << "<DataArray type=\"UInt8\" Name=\"types\" format=\"ascii\" RangeMin=\"" << min_tag << "\" RangeMax=\"" << max_tag << "\">\n";
         for (int i = 0; i < n_cells; ++i)
         {
-        if (is_volume_)
-            os << VTKTagVolume(n_vertices) << "\n";
-        else
-            os << VTKTagPlanar(n_vertices) << "\n";
+            if (is_volume_)
+                os << VTKTagVolume(n_vertices) << "\n";
+            else
+                os << VTKTagPlanar(n_vertices) << "\n";
         }
         os << "</DataArray>\n";
 
@@ -202,7 +206,7 @@ namespace poly_fem
             return false;
         }
 
-        is_volume_ = true;
+        is_volume_ = points.cols() == 3;
 
         write_header(points.rows(), tets.rows(), os);
         write_points(points, os);

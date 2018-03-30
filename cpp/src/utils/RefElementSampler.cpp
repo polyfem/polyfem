@@ -17,7 +17,12 @@ namespace poly_fem
 	void RefElementSampler::init(const bool is_volume, const int n_elements)
 	{
 		is_volume_ = is_volume;
+
+#ifdef NDEBUG
 		area_param_ = 0.00001*n_elements;
+#else
+		area_param_ = 0.001*n_elements;
+#endif
 
 		build();
 	}
