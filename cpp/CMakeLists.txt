@@ -32,6 +32,8 @@ option(ENABLE_SUPERLU     "Enable SuperLU library" OFF)
 option(ENABLE_MKL         "Enable MKL library"     OFF)
 option(ENABLE_PARDISO     "Enable Pardiso library"  ON)
 option(ENABLE_MMG         "Enable MMG library"     OFF)
+option(ENABLE_TBB         "Enable TBB"		       ON)
+
 
 # Options for libigl modules
 option(LIBIGL_USE_STATIC_LIBRARY          "Use libigl as static library" ON)
@@ -389,6 +391,22 @@ if(ENABLE_SUPERLU AND NOT (ENABLE_MKL AND MKL_FOUND))
 		target_compile_definitions(polyfem PUBLIC ${SUPERLU_DEFINES})
 		target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_SUPERLU)
 	endif()
+endif()
+
+
+# TBB library
+if(ENABLE_TBB)
+	set(TBB_BUILD_STATIC ON CACHE BOOL " " FORCE)
+	set(TBB_BUILD_SHARED OFF CACHE BOOL " " FORCE)
+	set(TBB_BUILD_TBBMALLOC OFF CACHE BOOL " " FORCE)
+	set(TBB_BUILD_TBBMALLOC_PROXY OFF CACHE BOOL " " FORCE)
+	set(TBB_BUILD_TESTS OFF CACHE BOOL " " FORCE)
+
+	add_subdirectory(${THIRD_PARTY_DIR}/tbb tbb)
+	set_property(TARGET tbb_static tbb_def_files PROPERTY FOLDER "dependencies")
+	target_compile_definitions(tbb_static PUBLIC -DUSE_TBB)
+	target_include_directories(polyfem PUBLIC ${THIRD_PARTY_DIR}/tbb/include)
+	target_link_libraries(polyfem PUBLIC tbb_static)
 endif()
 
 ################################################################################
