@@ -313,6 +313,8 @@ namespace poly_fem
 
 		mesh->refine(args["n_refs"], args["refinenemt_location"], parent_elements);
 
+		// mesh->set_tag(1712, ElementType::InteriorPolytope);
+
 		mesh->compute_boundary_ids();
 
 
