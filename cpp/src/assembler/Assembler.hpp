@@ -61,11 +61,10 @@ namespace poly_fem
 		inline LocalAssembler &local_assembler() { return local_assembler_; }
 		inline const LocalAssembler &local_assembler() const { return local_assembler_; }
 
-		void clear_cache() { cached_grad_.resize(0); }
+		void clear_cache() { }
 
 	private:
 		LocalAssembler local_assembler_;
-		Eigen::VectorXi cached_grad_;
 	};
 }
 
