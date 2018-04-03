@@ -62,7 +62,7 @@ namespace poly_fem
 		const int n_basis,
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
-		Eigen::SparseMatrix<double> &stiffness) const
+		Eigen::SparseMatrix<double> &stiffness)
 	{
 		const int buffer_size = std::min(long(1e8), long(n_basis) * local_assembler_.size());
 		std::cout<<"buffer_size "<<buffer_size<<std::endl;
@@ -173,7 +173,7 @@ namespace poly_fem
 	}
 #else
 		stiffness = loc_storage.stiffness;
-		loc_storage.tmp_mat.setFromTriplets(entries.begin(), entries.end());
+		loc_storage.tmp_mat.setFromTriplets(loc_storage.entries.begin(), loc_storage.entries.end());
 		stiffness += loc_storage.tmp_mat;
 #endif
 		stiffness.makeCompressed();
@@ -262,7 +262,7 @@ namespace poly_fem
 		rhs += i->vec;
 	}
 #else
-		rhs = loc_storage.rhs;
+		rhs = loc_storage.vec;
 #endif
 	}
 
@@ -378,7 +378,7 @@ namespace poly_fem
 	}
 #else
 		grad = loc_storage.stiffness;
-		loc_storage.tmp_mat.setFromTriplets(entries.begin(), entries.end());
+		loc_storage.tmp_mat.setFromTriplets(loc_storage.entries.begin(), loc_storage.entries.end());
 		grad += loc_storage.tmp_mat;
 #endif
 		grad.makeCompressed();

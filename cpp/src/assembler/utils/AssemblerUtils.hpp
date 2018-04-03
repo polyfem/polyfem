@@ -33,14 +33,14 @@ namespace poly_fem
 			const int n_basis,
 			const std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
-			Eigen::SparseMatrix<double> &stiffness) const;
+			Eigen::SparseMatrix<double> &stiffness);
 
 		void assemble_tensor_problem(const std::string &assembler,
 			const bool is_volume,
 			const int n_basis,
 			const std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
-			Eigen::SparseMatrix<double> &stiffness) const;
+			Eigen::SparseMatrix<double> &stiffness);
 
 
 		//Non linear
@@ -48,7 +48,7 @@ namespace poly_fem
 			const bool is_volume,
 			const std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
-			const Eigen::MatrixXd &displacement) const;
+			const Eigen::MatrixXd &displacement);
 
 		void assemble_tensor_energy_gradient(const std::string &assembler,
 			const bool is_volume,
@@ -56,7 +56,7 @@ namespace poly_fem
 			const std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
 			const Eigen::MatrixXd &displacement,
-			Eigen::MatrixXd &grad) const;
+			Eigen::MatrixXd &grad);
 
 		void assemble_tensor_energy_hessian(const std::string &assembler,
 			const bool is_volume,

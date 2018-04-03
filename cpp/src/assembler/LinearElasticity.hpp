@@ -17,7 +17,7 @@ namespace poly_fem
 	public:
 		// res is R^{m x dim²}
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
-		assemble(const ElementAssemblyValues &vals, const int i, const int j, const QuadratureVector &da) const;
+		assemble(const ElementAssemblyValues &vals, const int i, const int j, const QuadratureVector &da);
 
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
 		compute_rhs(const AutodiffHessianPt &pt) const;

@@ -22,7 +22,7 @@ namespace poly_fem
 			const int n_basis,
 			const std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
-			Eigen::SparseMatrix<double> &stiffness) const;
+			Eigen::SparseMatrix<double> &stiffness);
 
 		inline LocalAssembler &local_assembler() { return local_assembler_; }
 		inline const LocalAssembler &local_assembler() const { return local_assembler_; }

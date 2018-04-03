@@ -33,7 +33,7 @@ namespace poly_fem
 		const int n_basis,
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
-		Eigen::SparseMatrix<double> &stiffness) const
+		Eigen::SparseMatrix<double> &stiffness)
 	{
 		if(assembler == "Helmholtz")
 			helmholtz_.assemble(is_volume, n_basis, bases, gbases, stiffness);
@@ -52,7 +52,7 @@ namespace poly_fem
 		const int n_basis,
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
-		Eigen::SparseMatrix<double> &stiffness) const
+		Eigen::SparseMatrix<double> &stiffness)
 	{
 		if(assembler == "LinearElasticity")
 			linear_elasticity_.assemble(is_volume, n_basis, bases, gbases, stiffness);
@@ -81,7 +81,7 @@ namespace poly_fem
 		const bool is_volume,
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
-		const Eigen::MatrixXd &displacement) const
+		const Eigen::MatrixXd &displacement)
 	{
 		if(assembler == "SaintVenant")
 			return saint_venant_elasticity_.compute_energy(is_volume, bases, gbases, displacement);
@@ -99,7 +99,7 @@ namespace poly_fem
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
 		const Eigen::MatrixXd &displacement,
-		Eigen::MatrixXd &grad) const
+		Eigen::MatrixXd &grad)
 	{
 		if(assembler == "SaintVenant")
 			saint_venant_elasticity_.assemble(is_volume, n_basis, bases, gbases, displacement, grad);

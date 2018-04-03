@@ -172,7 +172,8 @@ int main(int argc, const char **argv)
 
 		state.assemble_rhs();
 		state.assemble_stiffness_mat();
-
+        exit(0);
+        
 		state.solve_problem();
 
 		state.compute_errors();
