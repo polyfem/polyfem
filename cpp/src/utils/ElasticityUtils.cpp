@@ -381,6 +381,19 @@ namespace poly_fem
 				0.0, 0.0, (1.0 - nu) / 2.0;
 			stifness_tensor_ *= young / (1.0 - nu * nu);
 		}
+		else
+		{
+			assert(size_ == 3);
+			const double v = nu;
+			stifness_tensor_ <<
+				1. - v, v, v, 0, 0, 0,
+				v, 1. - v, v, 0, 0, 0,
+				v, v, 1. - v, 0, 0, 0,
+				0, 0, 0, (1. - 2.*v)/2., 0, 0,
+				0, 0, 0, 0, (1. - 2.*v)/2., 0,
+				0, 0, 0, 0, 0, (1. - 2.*v)/2.;
+			stifness_tensor_ *= young / ((1. + v) * (1. - 2. * v));
+		}
 	}
 
 	template<int DIM>
