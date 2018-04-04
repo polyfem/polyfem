@@ -32,6 +32,10 @@
 #include "NLProblem.hpp"
 #include "SparseNewtonDescentSolver.hpp"
 
+#ifdef USE_TBB
+#include <tbb/task_scheduler_init.h>
+#endif
+
 #include <igl/Timer.h>
 #include <igl/serialize.h>
 
@@ -193,6 +197,13 @@ namespace poly_fem
 		j["count_multi_singular_boundary"] = multi_singular_boundary_count;
 
 		j["is_simplicial"] = mesh->n_elements() == simplex_count;
+
+#ifdef USE_TBB
+	    j["num_threads"] = tbb::task_scheduler_init::default_num_threads();
+
+#else
+	    j["num_threads"] = 1;
+#endif
 
 		j["formulation"] = formulation();
 

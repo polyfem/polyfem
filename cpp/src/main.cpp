@@ -123,7 +123,9 @@ int main(int argc, const char **argv)
 			{"Ds", {9.4979, 1000000}}
 		}},
 
-		{"problem_params", {}}
+		{"problem_params", {}},
+
+		{"output", {}}
 	};
 
 	json in_args;
@@ -150,6 +152,7 @@ int main(int argc, const char **argv)
 
 		in_args["discr_order"] = discr_order;
 		in_args["use_spline"] = use_splines;
+		in_args["output"] = output;
 	}
 
 	j_args.merge_patch(in_args);
@@ -172,14 +175,14 @@ int main(int argc, const char **argv)
 
 		state.assemble_rhs();
 		state.assemble_stiffness_mat();
-        exit(0);
-        
+
 		state.solve_problem();
 
 		state.compute_errors();
 
-		if(!output.empty()){
-			std::ofstream out(output);
+		if(j_args.count("output")){
+			const std::string out_path = j_args["output"];
+			std::ofstream out(out_path);
 			state.save_json(out);
 		}
 
