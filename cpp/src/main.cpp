@@ -180,8 +180,8 @@ int main(int argc, const char **argv)
 
 		state.compute_errors();
 
-		if(j_args.count("output")){
-			const std::string out_path = j_args["output"];
+		const std::string out_path = j_args["output"];
+		if(!out_path.empty()){
 			std::ofstream out(out_path);
 			state.save_json(out);
 		}
