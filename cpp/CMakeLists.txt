@@ -81,7 +81,7 @@ add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/src/autogen/auto_eigs.cpp ${CMAKE_
 
 
 # Polyfem library
-add_library(polyfem
+set(source_list
 	src/assembler/Assembler.cpp
 	src/assembler/Assembler.hpp
 	src/assembler/AssemblyValues.hpp
@@ -220,6 +220,10 @@ add_library(polyfem
 	src/utils/RefElementSampler.hpp
 	src/utils/AutodiffTypes.hpp
 	src/utils/Types.hpp
+)
+
+add_library(polyfem
+	${source_list}
 	${CMAKE_SOURCE_DIR}/src/autogen/auto_rhs.cpp
 	${CMAKE_SOURCE_DIR}/src/autogen/auto_rhs.hpp
 	${CMAKE_SOURCE_DIR}/src/autogen/auto_eigs.cpp
@@ -242,6 +246,12 @@ target_include_directories(polyfem PUBLIC
 	src/utils
 	src/viewer
 )
+
+foreach(source IN ITEMS ${source_list})
+    get_filename_component(source_path "${source}" PATH)
+    string(REPLACE "/" "\\" group_path "${source_path}")
+    source_group("${group_path}" FILES "${source}")
+endforeach()
 
 set(MESH_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tests/")
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_MESH_PATH=\"${MESH_PATH}\")
