@@ -25,3 +25,14 @@ add_application(extrude_mesh.cpp polyfem cli11)
 add_application(extract_polyhedra.cpp polyfem)
 add_application(tetrahedralize.cpp igl::core igl::tetgen geogram)
 add_application(tetrahedralize_hybrid.cpp polyfem igl::core igl::tetgen geogram cli11)
+
+
+
+set_target_properties(navigation_test PROPERTIES FOLDER misc)
+set_target_properties(refinement_test PROPERTIES FOLDER misc)
+set_target_properties(solver_test PROPERTIES FOLDER misc)
+set_target_properties(extrude_mesh PROPERTIES FOLDER misc)
+# set_target_properties(svg_to_mesh PROPERTIES FOLDER misc)
+set_target_properties(extract_polyhedra PROPERTIES FOLDER misc)
+set_target_properties(tetrahedralize PROPERTIES FOLDER misc)
+set_target_properties(tetrahedralize_hybrid PROPERTIES FOLDER misc)

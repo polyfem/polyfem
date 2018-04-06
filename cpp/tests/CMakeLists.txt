@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 ################################################################################
 
-add_executable(unit_tests
+set(test_sources
 	main.cpp
 	test_solver.cpp
 	test_problem.cpp
@@ -9,6 +9,12 @@ add_executable(unit_tests
 	test_utils.cpp
 	test_tbb.cpp
 )
+
+add_executable(unit_tests ${test_sources})
+
+foreach(source IN ITEMS ${test_sources})
+    source_group("tests" FILES "${source}")
+endforeach()
 
 target_link_libraries(unit_tests PUBLIC polyfem catch)
 

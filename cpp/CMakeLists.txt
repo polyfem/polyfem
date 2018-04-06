@@ -10,6 +10,10 @@ list(APPEND CMAKE_MODULE_PATH ${THIRD_PARTY_DIR}/Catch2/contrib)
 # Color output
 include(UseColors)
 
+# Sort projects inside the solution
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+
 # Generate position independent code by default
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -247,11 +251,19 @@ target_include_directories(polyfem PUBLIC
 	src/viewer
 )
 
+
 foreach(source IN ITEMS ${source_list})
     get_filename_component(source_path "${source}" PATH)
     string(REPLACE "/" "\\" group_path "${source_path}")
     source_group("${group_path}" FILES "${source}")
 endforeach()
+
+source_group("autogen" FILES ${CMAKE_SOURCE_DIR}/src/autogen/auto_rhs.cpp)
+source_group("autogen" FILES ${CMAKE_SOURCE_DIR}/src/autogen/auto_rhs.hpp)
+source_group("autogen" FILES ${CMAKE_SOURCE_DIR}/src/autogen/auto_eigs.cpp)
+source_group("autogen" FILES ${CMAKE_SOURCE_DIR}/src/autogen/auto_eigs.hpp)
+
+
 
 set(MESH_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tests/")
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_MESH_PATH=\"${MESH_PATH}\")
@@ -443,12 +455,37 @@ add_executable(${PROJECT_NAME}_bin
 	src/viewer/UIMenu.cpp
 )
 
+source_group("gui" FILES src/main.cpp)
+source_group("gui" FILES src/viewer/UIState.cpp)
+source_group("gui" FILES src/viewer/UIState.hpp)
+source_group("gui" FILES src/viewer/UIMenu.cpp)
+
 target_include_directories(${PROJECT_NAME}_bin PUBLIC
 	src/viewer
 )
 
 target_link_libraries(${PROJECT_NAME}_bin PUBLIC igl::opengl_glfw_imgui igl::png polyfem tinyfiledialogs)
 target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
+
+
+
+set_target_properties (igl_triangle PROPERTIES FOLDER 3rdparty/igl)
+set_target_properties (igl_opengl PROPERTIES FOLDER 3rdparty/igl)
+set_target_properties (igl_png PROPERTIES FOLDER 3rdparty/igl)
+set_target_properties (igl_opengl_glfw_imgui PROPERTIES FOLDER 3rdparty/igl)
+set_target_properties (igl_core PROPERTIES FOLDER 3rdparty/igl)
+set_target_properties (igl_tetgen PROPERTIES FOLDER 3rdparty/igl)
+set_target_properties (igl_opengl_glfw PROPERTIES FOLDER 3rdparty/igl)
+set_target_properties (igl_stb_image PROPERTIES FOLDER 3rdparty/igl)
+
+set_target_properties (glad PROPERTIES FOLDER 3rdparty/other)
+set_target_properties (tinyfiledialogs PROPERTIES FOLDER 3rdparty/other)
+set_target_properties (imgui PROPERTIES FOLDER 3rdparty/other)
+set_target_properties (tetgen PROPERTIES FOLDER 3rdparty/other)
+set_target_properties (triangle PROPERTIES FOLDER 3rdparty/other)
+set_target_properties (uninstall_geo PROPERTIES FOLDER 3rdparty/other)
+set_target_properties (geogram PROPERTIES FOLDER 3rdparty/other)
+set_target_properties (polyclipping PROPERTIES FOLDER 3rdparty/other)
 
 # Main executable without gui, uncomment when not debugging gui is necessary
 # add_executable(${PROJECT_NAME}_cmd
