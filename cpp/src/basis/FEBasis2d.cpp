@@ -325,7 +325,7 @@ namespace {
 ///
 	void compute_nodes(
 		const poly_fem::Mesh2D &mesh,
-		const int discr_order,
+		const Eigen::VectorXi &discr_orders,
 		MeshNodes &nodes,
 		std::vector<std::vector<int> > &element_nodes_id,
 		std::vector<poly_fem::LocalBoundary> &local_boundary,
@@ -337,6 +337,7 @@ namespace {
 		element_nodes_id.resize(mesh.n_faces());
 		
 		for (int f = 0; f < mesh.n_faces(); ++f) {
+			const int discr_order = discr_orders(f);
 			if(mesh.is_cube(f))
 			{
 				if (discr_order == 1) {
@@ -405,6 +406,7 @@ namespace {
 
 		// Step 2: Iterate over edges of polygons and compute interface weights
 		for (int f = 0; f < mesh.n_faces(); ++f) {
+			const int discr_order = discr_orders(f);
 			// Skip non-polytopes
 			if (!mesh.is_polytope(f)) { continue; }
 
@@ -781,11 +783,27 @@ int poly_fem::FEBasis2d::build_bases(
 	std::vector<LocalBoundary> &local_boundary,
 	std::map<int, InterfaceData> &poly_edge_to_data)
 {
-	assert(!mesh.is_volume());
 
-	MeshNodes nodes(mesh, discr_order == 1);
+	Eigen::VectorXi discr_orders(mesh.n_faces());
+	discr_orders.setConstant(discr_order);
+
+	return build_bases(mesh, quadrature_order, discr_orders, bases, local_boundary, poly_edge_to_data);
+}
+
+int poly_fem::FEBasis2d::build_bases(
+	const Mesh2D &mesh,
+	const int quadrature_order,
+	const Eigen::VectorXi &discr_orders,
+	std::vector<ElementBases> &bases,
+	std::vector<LocalBoundary> &local_boundary,
+	std::map<int, InterfaceData> &poly_edge_to_data)
+{
+	assert(!mesh.is_volume());
+	assert(discr_orders.size() == mesh.n_faces());
+
+	MeshNodes nodes(mesh, discr_orders.minCoeff() == 1 && discr_orders.maxCoeff() == 1);
 	std::vector<std::vector<int>> element_nodes_id;
-	compute_nodes(mesh, discr_order, nodes, element_nodes_id, local_boundary, poly_edge_to_data);
+	compute_nodes(mesh, discr_orders, nodes, element_nodes_id, local_boundary, poly_edge_to_data);
 	// boundary_nodes = nodes.boundary_nodes();
 
 
@@ -794,6 +812,7 @@ int poly_fem::FEBasis2d::build_bases(
 		ElementBases &b = bases[e];
 		const int n_el_bases = (int) element_nodes_id[e].size();
 		b.bases.resize(n_el_bases);
+		const int discr_order = discr_orders(e);
 
 		if (mesh.is_cube(e)) {
 			b.set_quadrature([quadrature_order](Quadrature &quad){

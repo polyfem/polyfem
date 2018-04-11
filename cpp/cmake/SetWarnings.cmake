@@ -43,7 +43,7 @@ set(MY_FLAGS
 
 		#-Weffc++
 		-Wno-old-style-cast
-		-Wno-sign-conversion
+		# -Wno-sign-conversion
 		#-Wsign-conversion
 
 		-Wshadow
@@ -72,7 +72,7 @@ set(MY_FLAGS
 		-Wlogical-op
 		-Wnoexcept
 		-Woverloaded-virtual
-		-Wundef
+		# -Wundef
 
 		-Wnon-virtual-dtor
 		-Wdelete-non-virtual-dtor

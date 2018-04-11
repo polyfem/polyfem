@@ -486,6 +486,9 @@ namespace poly_fem
 		local_boundary.clear();
 		std::map<int, InterfaceData> poly_edge_to_data_geom; //temp dummy variable
 
+		Eigen::VectorXi disc_orders(mesh->n_elements());
+		disc_orders.setConstant(args["discr_order"]);
+
 		if(mesh->is_volume())
 		{
 			const Mesh3D &tmp_mesh = *dynamic_cast<Mesh3D *>(mesh.get());
@@ -514,7 +517,7 @@ namespace poly_fem
 			{
 
 				if(!iso_parametric())
-					FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], args["discr_order"], geom_bases, local_boundary, poly_edge_to_data_geom);
+					FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, geom_bases, local_boundary, poly_edge_to_data_geom);
 
 				n_bases = SplineBasis2d::build_bases(tmp_mesh, args["quadrature_order"], bases, local_boundary, poly_edge_to_data);
 
@@ -526,8 +529,8 @@ namespace poly_fem
 				if(!iso_parametric())
 					FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], 1, geom_bases, local_boundary, poly_edge_to_data_geom);
 
-				n_bases = FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], args["discr_order"], bases, local_boundary, poly_edge_to_data);
-				// n_bases = SpectralBasis2d::build_bases(tmp_mesh, args["quadrature_order"], args["discr_order"], bases, geom_bases, local_boundary);
+				n_bases = FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, bases, local_boundary, poly_edge_to_data);
+				// n_bases = SpectralBasis2d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, bases, geom_bases, local_boundary);
 			}
 		}
 
