@@ -287,7 +287,7 @@ if(ENABLE_TBB)
 
 	add_subdirectory(${THIRD_PARTY_DIR}/tbb tbb)
 	set_property(TARGET tbb_static tbb_def_files PROPERTY FOLDER "dependencies")
-	
+
 	target_compile_definitions(tbb_static PUBLIC -DUSE_TBB)
 	target_include_directories(polyfem PUBLIC ${THIRD_PARTY_DIR}/tbb/include)
 	target_link_libraries(polyfem PUBLIC tbb_static)
@@ -483,7 +483,7 @@ set_target_properties (tinyfiledialogs PROPERTIES FOLDER 3rdparty/other)
 set_target_properties (imgui PROPERTIES FOLDER 3rdparty/other)
 set_target_properties (tetgen PROPERTIES FOLDER 3rdparty/other)
 set_target_properties (triangle PROPERTIES FOLDER 3rdparty/other)
-set_target_properties (uninstall_geo PROPERTIES FOLDER 3rdparty/other)
+# set_target_properties (uninstall_geo PROPERTIES FOLDER 3rdparty/other)
 set_target_properties (geogram PROPERTIES FOLDER 3rdparty/other)
 set_target_properties (polyclipping PROPERTIES FOLDER 3rdparty/other)
 
