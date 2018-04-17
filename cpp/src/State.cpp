@@ -177,7 +177,7 @@ namespace poly_fem
 
 		j["time_building_basis"] = building_basis_time;
 		j["time_loading_mesh"] = loading_mesh_time;
-		j["time_computing_assembly_values"] = computing_assembly_values_time;
+		j["time_computing_poly_basis"] = computing_poly_basis_time;
 		j["time_assembling_stiffness_mat"] = assembling_stiffness_mat_time;
 		j["time_assigning_rhs"] = assigning_rhs_time;
 		j["time_solving"] = solving_time;
@@ -622,8 +622,8 @@ namespace poly_fem
 		}
 
 		timer.stop();
-		computing_assembly_values_time = timer.getElapsedTime();
-		std::cout<<" took "<<computing_assembly_values_time<<"s"<<std::endl;
+		computing_poly_basis_time = timer.getElapsedTime();
+		std::cout<<" took "<<computing_poly_basis_time<<"s"<<std::endl;
 	}
 
 	json State::build_json_params()
