@@ -184,6 +184,7 @@ int main(int argc, const char **argv)
 		if(!out_path.empty()){
 			std::ofstream out(out_path);
 			state.save_json(out);
+			out.close();
 		}
 
 		if(!vtu.empty())

@@ -239,52 +239,72 @@ namespace poly_fem
 		cols.setZero();
 
 		int from = 0;
-		for(std::size_t i = 1; i < element_ranges.size(); ++i)
+		if(color_using_discr_order)
 		{
-			if(!valid_elements[i-1]) continue;
+			Eigen::MatrixXd tmp;
+			igl::colormap(color_map, state.disc_orders, true, tmp);
 
-			const ElementType type = ele_tag[i-1];
-			const int range = element_ranges[i]-element_ranges[i-1];
-
-			switch(type)
+			for(std::size_t i = 1; i < element_ranges.size(); ++i)
 			{
-					//violet
-				case ElementType::Simplex:
-				cols.block(from, 0, range, 1).setConstant(155./255.);
-				cols.block(from, 1, range, 1).setConstant(89./255.);
-				cols.block(from, 2, range, 1).setConstant(182./255.); break;
+				if(!valid_elements[i-1]) continue;
 
+				const ElementType type = ele_tag[i-1];
+				const int range = element_ranges[i]-element_ranges[i-1];
 
-					//dark green
-				case ElementType::RegularInteriorCube:
-				case ElementType::RegularBoundaryCube:
-				cols.block(from, 0, range, 1).setConstant(30./255.);
-				cols.block(from, 1, range, 1).setConstant(174./255.);
-				cols.block(from, 2, range, 1).setConstant(96./255.); break;
-
-					//orange
-				case ElementType::SimpleSingularInteriorCube:
-				case ElementType::SimpleSingularBoundaryCube:
-				case ElementType::MultiSingularInteriorCube:
-				case ElementType::MultiSingularBoundaryCube:
-				case ElementType::InterfaceCube:
-				cols.block(from, 0, range, 1).setConstant(231./255.);
-				cols.block(from, 1, range, 1).setConstant(76./255.);
-				cols.block(from, 2, range, 1).setConstant(60./255.); break;
-
-				  	//light blue
-				case ElementType::BoundaryPolytope:
-				case ElementType::InteriorPolytope:
-				cols.block(from, 0, range, 1).setConstant(52./255.);
-				cols.block(from, 1, range, 1).setConstant(152./255.);
-				cols.block(from, 2, range, 1).setConstant(219./255.); break;
-
-					//grey
-				case ElementType::Undefined:
-				cols.block(from, 0, range, 3).setConstant(0.5); break;
+				for(int c = 0; c < 3; ++c)
+					cols.block(from, c, range, 1).setConstant(tmp(i-1, c));
+				from += range;
 			}
+		}
+		else
+		{
+			for(std::size_t i = 1; i < element_ranges.size(); ++i)
+			{
+				if(!valid_elements[i-1]) continue;
 
-			from += range;
+				const ElementType type = ele_tag[i-1];
+				const int range = element_ranges[i]-element_ranges[i-1];
+
+				switch(type)
+				{
+						//violet
+					case ElementType::Simplex:
+					cols.block(from, 0, range, 1).setConstant(155./255.);
+					cols.block(from, 1, range, 1).setConstant(89./255.);
+					cols.block(from, 2, range, 1).setConstant(182./255.); break;
+
+
+						//dark green
+					case ElementType::RegularInteriorCube:
+					case ElementType::RegularBoundaryCube:
+					cols.block(from, 0, range, 1).setConstant(30./255.);
+					cols.block(from, 1, range, 1).setConstant(174./255.);
+					cols.block(from, 2, range, 1).setConstant(96./255.); break;
+
+						//orange
+					case ElementType::SimpleSingularInteriorCube:
+					case ElementType::SimpleSingularBoundaryCube:
+					case ElementType::MultiSingularInteriorCube:
+					case ElementType::MultiSingularBoundaryCube:
+					case ElementType::InterfaceCube:
+					cols.block(from, 0, range, 1).setConstant(231./255.);
+					cols.block(from, 1, range, 1).setConstant(76./255.);
+					cols.block(from, 2, range, 1).setConstant(60./255.); break;
+
+					  	//light blue
+					case ElementType::BoundaryPolytope:
+					case ElementType::InteriorPolytope:
+					cols.block(from, 0, range, 1).setConstant(52./255.);
+					cols.block(from, 1, range, 1).setConstant(152./255.);
+					cols.block(from, 2, range, 1).setConstant(219./255.); break;
+
+						//grey
+					case ElementType::Undefined:
+					cols.block(from, 0, range, 3).setConstant(0.5); break;
+				}
+
+				from += range;
+			}
 		}
 
 		viewer.data().set_colors(cols);
@@ -703,11 +723,23 @@ namespace poly_fem
 		// 	viewer.data().add_label(p.transpose(), std::to_string(i));
 		// }
 
-		// for(int i = 0; i < state.mesh->n_vertices(); ++i)
-		// {
-		// 	const auto p = state.mesh->point(i);
-		// 	viewer.data().add_label(p.transpose(), std::to_string(i));
-		// }
+		if(show_element_id)
+		{
+			for(int i = 0; i < state.mesh->n_elements(); ++i)
+			{
+				MatrixXd p = state.mesh->is_volume() ? state.mesh->cell_barycenter(i): state.mesh->face_barycenter(i);
+				viewer.data().add_label(p.transpose(), std::to_string(i));
+			}
+		}
+
+		if(show_vertex_id)
+		{
+			for(int i = 0; i < state.mesh->n_vertices(); ++i)
+			{
+				const auto p = state.mesh->point(i);
+				viewer.data().add_label(p.transpose(), std::to_string(i));
+			}
+		}
 	}
 
 	void UIState::show_vis_mesh()
@@ -758,7 +790,8 @@ namespace poly_fem
 
 					// P.row(j) = node;
 					viewer.data().add_points(node, col);
-					// viewer.data().add_label(node.transpose(), std::to_string(l2g.index));
+					if(show_node_id)
+						viewer.data().add_label(node.transpose(), std::to_string(l2g.index));
 				}
 			}
 			// add_spheres(viewer, P, 0.05);

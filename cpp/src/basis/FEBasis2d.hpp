@@ -61,7 +61,7 @@ namespace poly_fem
 
 
 		static std::array<int, 3> linear_tri_local_to_global(const Mesh2D &mesh, int f);
-		static std::array<int, 6> quadr_tri_local_to_global(const Mesh2D &mesh, int f);
+		static std::array<int, 6> quadr_tri_local_to_global(const Mesh2D &mesh, int f, const Eigen::VectorXi &discr_order = Eigen::VectorXi());
 
 		static std::array<int, 4> linear_quad_local_to_global(const Mesh2D &mesh, int f);
 		static std::array<int, 9> quadr_quad_local_to_global(const Mesh2D &mesh, int f);

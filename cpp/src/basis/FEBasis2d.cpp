@@ -344,10 +344,17 @@ namespace {
 					for (int id : poly_fem::FEBasis2d::linear_quad_local_to_global(mesh, f)) {
 						element_nodes_id[f].push_back(nodes.node_id_from_primitive(id));
 					}
-				} else {
+				} else if (discr_order == 2) {//TODO
 					for (int id : poly_fem::FEBasis2d::quadr_quad_local_to_global(mesh, f)) {
-						element_nodes_id[f].push_back(nodes.node_id_from_primitive(id));
+						if(id < 0)
+							element_nodes_id[f].push_back(id);
+						else
+							element_nodes_id[f].push_back(nodes.node_id_from_primitive(id));
 					}
+				}
+				else
+				{
+					assert(false);
 				}
 
 				// List of edges around the quad
@@ -375,10 +382,18 @@ namespace {
 					for (int id : poly_fem::FEBasis2d::linear_tri_local_to_global(mesh, f)) {
 						element_nodes_id[f].push_back(nodes.node_id_from_primitive(id));
 					}
-				} else {
-					for (int id : poly_fem::FEBasis2d::quadr_tri_local_to_global(mesh, f)) {
-						element_nodes_id[f].push_back(nodes.node_id_from_primitive(id));
+				} else if (discr_order == 2) {
+					for (int id : poly_fem::FEBasis2d::quadr_tri_local_to_global(mesh, f, discr_orders)) {
+						if(id < 0){
+							element_nodes_id[f].push_back(id);
+						}
+						else
+							element_nodes_id[f].push_back(nodes.node_id_from_primitive(id));
 					}
+				}
+				else
+				{
+					assert(false);
 				}
 
 				// List of edges around the tri
@@ -405,6 +420,7 @@ namespace {
 		}
 
 		// Step 2: Iterate over edges of polygons and compute interface weights
+		// TODO p-ref
 		for (int f = 0; f < mesh.n_faces(); ++f) {
 			const int discr_order = discr_orders(f);
 			// Skip non-polytopes
@@ -505,7 +521,7 @@ std::array<int, 3> poly_fem::FEBasis2d::linear_tri_local_to_global(const Mesh2D 
 	return l2g;
 }
 
-std::array<int, 6> poly_fem::FEBasis2d::quadr_tri_local_to_global(const Mesh2D &mesh, int f) {
+std::array<int, 6> poly_fem::FEBasis2d::quadr_tri_local_to_global(const Mesh2D &mesh, int f, const Eigen::VectorXi &discr_order) {
 	// assert(mesh.is_cube(f));
 
 	int edge_offset = mesh.n_vertices();
@@ -521,7 +537,12 @@ std::array<int, 6> poly_fem::FEBasis2d::quadr_tri_local_to_global(const Mesh2D &
 	ev.row(1) << v[1], v[2];
 	ev.row(2) << v[2], v[0];
 	for (int le = 0; le < e.rows(); ++le) {
-		e[le] = find_edge(mesh, f, ev(le, 0), ev(le, 1)).edge;
+		const auto index = find_edge(mesh, f, ev(le, 0), ev(le, 1));
+		const auto other_face = mesh.switch_face(index).face;
+		if(discr_order.size() > 0 && other_face >= 0 && discr_order(f) >  discr_order(other_face))
+			e[le] = -le - 1;
+		else
+			e[le] = index.edge;
 	}
 
 	// Local to global mapping of node indices
@@ -531,10 +552,10 @@ std::array<int, 6> poly_fem::FEBasis2d::quadr_tri_local_to_global(const Mesh2D &
 	{
 		int i = 0;
 		for (size_t lv = 0; lv < v.size(); ++lv) {
-			l2g[i++] = v[lv];
+			l2g[i++] = e[lv] >= 0 ? v[lv] : e[lv];
 		}
 		for (int le = 0; le < e.rows(); ++le) {
-			l2g[i++] = edge_offset + e[le];
+			l2g[i++] = e[le] >= 0 ? (edge_offset + e[le]) : e[le];
 		}
 	}
 
@@ -808,11 +829,28 @@ int poly_fem::FEBasis2d::build_bases(
 
 
 	bases.resize(mesh.n_faces());
+	std::vector<int> interface_elements; interface_elements.reserve(mesh.n_faces());
+
 	for (int e = 0; e < mesh.n_faces(); ++e) {
 		ElementBases &b = bases[e];
-		const int n_el_bases = (int) element_nodes_id[e].size();
-		b.bases.resize(n_el_bases);
 		const int discr_order = discr_orders(e);
+		const int n_el_bases = element_nodes_id[e].size();
+		b.bases.resize(n_el_bases);
+
+		bool skip_interface_element = false;
+
+		for (int j = 0; j < n_el_bases; ++j){
+			const int global_index = element_nodes_id[e][j];
+			if(global_index < 0)
+			{
+				skip_interface_element = true;
+				break;
+			}
+		}
+
+		if(skip_interface_element){
+			interface_elements.push_back(e);
+		}
 
 		if (mesh.is_cube(e)) {
 			b.set_quadrature([quadrature_order](Quadrature &quad){
@@ -820,7 +858,6 @@ int poly_fem::FEBasis2d::build_bases(
 				quad_quadrature.get_quadrature(quadrature_order, quad);
 			});
 			// quad_quadrature.get_quadrature(quadrature_order, b.quadrature);
-			b.bases.resize(n_el_bases);
 
 			b.set_local_node_from_primitive_func([discr_order, e](const int primitive_id, const Mesh &mesh)
 			{
@@ -861,7 +898,8 @@ int poly_fem::FEBasis2d::build_bases(
 			for (int j = 0; j < n_el_bases; ++j) {
 				const int global_index = element_nodes_id[e][j];
 
-				b.bases[j].init(global_index, j, nodes.node_position(global_index));
+				if(skip_interface_element)
+					b.bases[j].init(global_index, j, nodes.node_position(global_index));
 
 				if (discr_order == 1) {
 					b.bases[j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
@@ -883,8 +921,6 @@ int poly_fem::FEBasis2d::build_bases(
 				TriQuadrature tri_quadrature;
 				tri_quadrature.get_quadrature(quadrature_order, quad);
 			});
-
-			b.bases.resize(n_el_bases);
 
 			b.set_local_node_from_primitive_func([discr_order, e](const int primitive_id, const Mesh &mesh)
 			{
@@ -922,10 +958,12 @@ int poly_fem::FEBasis2d::build_bases(
 				return res;
 			});
 
+
 			for (int j = 0; j < n_el_bases; ++j) {
 				const int global_index = element_nodes_id[e][j];
 
-				b.bases[j].init(global_index, j, nodes.node_position(global_index));
+				if(!skip_interface_element)
+					b.bases[j].init(global_index, j, nodes.node_position(global_index));
 
 				if (discr_order == 1) {
 					b.bases[j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
@@ -939,6 +977,87 @@ int poly_fem::FEBasis2d::build_bases(
 						{ quadr_tri_basis_grad(j, uv, val); });
 				} else {
 					assert(false);
+				}
+			}
+		}
+		else {
+			// Polygon bases are built later on
+		}
+	}
+
+
+	for (int e : interface_elements) {
+		ElementBases &b = bases[e];
+		const int discr_order = discr_orders(e);
+		const int n_el_bases = element_nodes_id[e].size();
+		assert(discr_order > 1);
+
+		if (mesh.is_cube(e)) {
+			assert(false); //TODO
+			for (int j = 0; j < n_el_bases; ++j) {
+				const int global_index = element_nodes_id[e][j];
+
+				b.bases[j].init(global_index, j, nodes.node_position(global_index));
+
+				if (discr_order == 2) {
+					b.bases[j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+						{ quadr_quad_basis_value(j, uv, val); });
+					b.bases[j].set_grad([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+						{ quadr_quad_basis_grad(j, uv, val); });
+				} else {
+					assert(false);
+				}
+			}
+		} else if(mesh.is_simplex(e))
+		{
+			for (int j = 0; j < n_el_bases; ++j) {
+				const int global_index = element_nodes_id[e][j];
+
+				if(global_index >= 0)
+					b.bases[j].init(global_index, j, nodes.node_position(global_index));
+				else
+				{
+					const auto le = -(global_index+1);
+
+					auto v = linear_tri_local_to_global(mesh, e);
+
+					// Edge nodes
+					Eigen::Matrix<int, 3, 2> ev;
+					ev.row(0) << v[0], v[1];
+					ev.row(1) << v[1], v[2];
+					ev.row(2) << v[2], v[0];
+
+					const auto index = mesh.switch_face(find_edge(mesh, e, ev(le, 0), ev(le, 1)));
+					const auto other_face = index.face;
+
+
+
+					Eigen::RowVector2d node_position;
+					if(discr_order == 2){
+		                const auto param_p = quadr_tri_edge_local_nodes_coordinates(mesh, index);
+						node_position = param_p.row( j >= 3 ? 1: 0);
+					}
+					else
+						assert(false);
+
+					const auto &other_bases = bases[other_face];
+					Eigen::MatrixXd w;
+	                // const auto param_p = quadr_tri_edge_local_nodes_coordinates(mesh, mesh.switch_face(index));
+	                // const auto indices = quadr_tri_edge_local_nodes(mesh, index);
+					other_bases.evaluate_bases(node_position, w);
+
+					// std::cout<<"w "<<w<<std::endl;
+
+					for(long i = 0; i < w.size(); ++i)
+					{
+						if(std::abs(w(i))<1e-8)
+							continue;
+
+						assert(other_bases.bases[i].global().size() == 1);
+						const auto &other_global = other_bases.bases[i].global().front();
+						// std::cout<<"e "<<e<<" " <<j << " gid "<<other_global.index<<std::endl;
+						b.bases[j].global().emplace_back(other_global.index, other_global.node, w(i));
+					}
 				}
 			}
 		}

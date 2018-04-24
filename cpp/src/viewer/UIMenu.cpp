@@ -439,6 +439,20 @@ void poly_fem::UIState::draw_screenshot() {
 	if (ImGui::Button("Save VTU", ImVec2(-1, 0))) {
 		state.save_vtu("result.vtu");
 	}
+
+	ImGui::Separator();
+
+	if(ImGui::Checkbox("Show element ids", &show_element_id))
+		show_mesh();
+
+	if(ImGui::Checkbox("Show vertex ids", &show_vertex_id))
+		show_mesh();
+
+	if(ImGui::Checkbox("Show node ids", &show_node_id))
+		show_nodes();
+
+	if(ImGui::Checkbox("Color discr order", &color_using_discr_order))
+		show_mesh();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

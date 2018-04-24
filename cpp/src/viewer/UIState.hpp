@@ -58,6 +58,11 @@ namespace poly_fem
 		bool light_enabled = true;
 		bool show_isolines = true;
 
+		bool show_element_id = false;
+		bool show_vertex_id = false;
+		bool show_node_id = false;
+		bool color_using_discr_order = false;
+
 		std::string screenshot = "";
 
 		Eigen::MatrixXd normalized_barycenter;

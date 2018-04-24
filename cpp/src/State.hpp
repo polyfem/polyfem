@@ -60,6 +60,7 @@ namespace poly_fem
 		json solver_info;
 
 		int n_bases;
+		Eigen::VectorXi disc_orders;
 
 		double mesh_size;
 		double min_edge_length;

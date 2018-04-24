@@ -333,6 +333,24 @@ namespace poly_fem
 		std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
 
 		RefElementSampler::sampler().init(mesh->is_volume(), mesh->n_elements());
+
+		disc_orders.resize(mesh->n_elements());
+		disc_orders.setConstant(args["discr_order"]);
+
+		//TODO
+		disc_orders(18) = 2;
+		disc_orders(2) = 2;
+		disc_orders(4) = 2;
+		disc_orders(20) = 2;
+		disc_orders(14) = 2;
+		disc_orders(28) = 2;
+		disc_orders(12) = 2;
+		disc_orders(27) = 2;
+		disc_orders(11) = 2;
+		disc_orders(23) = 2;
+		disc_orders(25) = 2;
+		disc_orders(5) = 2;
+		disc_orders(21) = 2;
 	}
 
 	void State::compute_mesh_stats()
@@ -486,8 +504,6 @@ namespace poly_fem
 		local_boundary.clear();
 		std::map<int, InterfaceData> poly_edge_to_data_geom; //temp dummy variable
 
-		Eigen::VectorXi disc_orders(mesh->n_elements());
-		disc_orders.setConstant(args["discr_order"]);
 
 		if(mesh->is_volume())
 		{
