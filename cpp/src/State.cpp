@@ -338,19 +338,19 @@ namespace poly_fem
 		disc_orders.setConstant(args["discr_order"]);
 
 		//TODO
-		disc_orders(18) = 2;
-		disc_orders(2) = 2;
-		disc_orders(4) = 2;
-		disc_orders(20) = 2;
-		disc_orders(14) = 2;
-		disc_orders(28) = 2;
-		disc_orders(12) = 2;
-		disc_orders(27) = 2;
-		disc_orders(11) = 2;
-		disc_orders(23) = 2;
-		disc_orders(25) = 2;
-		disc_orders(5) = 2;
-		disc_orders(21) = 2;
+		// disc_orders(18) = 2;
+		// disc_orders(2) = 2;
+		// disc_orders(4) = 2;
+		// disc_orders(20) = 2;
+		// disc_orders(14) = 2;
+		// disc_orders(28) = 2;
+		// disc_orders(12) = 2;
+		// disc_orders(27) = 2;
+		// disc_orders(11) = 2;
+		// disc_orders(23) = 2;
+		// disc_orders(25) = 2;
+		// disc_orders(5) = 2;
+		// disc_orders(21) = 2;
 	}
 
 	void State::compute_mesh_stats()
