@@ -52,6 +52,9 @@ GEO::index_t poly_fem::mesh_create_vertex(GEO::Mesh &M, const GEO::vec3 &p) {
 
 void poly_fem::compute_element_tags(const GEO::Mesh &M, std::vector<ElementType> &element_tags) {
 	using GEO::index_t;
+
+	std::vector<ElementType> old_tags = element_tags;
+
 	element_tags.resize(M.facets.nb());
 
 	// Step 0: Compute boundary vertices as true boundary + vertices incident to a polygon
@@ -59,7 +62,7 @@ void poly_fem::compute_element_tags(const GEO::Mesh &M, std::vector<ElementType>
 	std::vector<bool> is_interface_vertex(M.vertices.nb(), false);
 	{
 		for (index_t f = 0; f < M.facets.nb(); ++f) {
-			if (M.facets.nb_vertices(f) != 4) {
+			if (M.facets.nb_vertices(f) != 4 || (!old_tags.empty() && old_tags[f] == ElementType::InteriorPolytope)) {
 				// Vertices incident to polygonal facets (triangles or > 4 vertices) are marked as interface
 				for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv) {
 					is_interface_vertex[M.facets.vertex(f, lv)] = true;
@@ -95,6 +98,9 @@ void poly_fem::compute_element_tags(const GEO::Mesh &M, std::vector<ElementType>
 	// Step 2: Iterate over the facets and determine the type
 	for (index_t f =  0; f < M.facets.nb(); ++f) {
 		assert(M.facets.nb_vertices(f) > 2);
+		if(!old_tags.empty() && old_tags[f] == ElementType::InteriorPolytope)
+			continue;
+		
 		if (M.facets.nb_vertices(f) == 4) {
 			// Quad facet
 

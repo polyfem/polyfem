@@ -237,6 +237,11 @@ namespace poly_fem
 		poly_fem::compute_element_tags(mesh_, elements_tag_);
 	}
 
+	void Mesh2D::update_elements_tag()
+	{
+		poly_fem::compute_element_tags(mesh_, elements_tag_);
+	}
+
 	RowVectorNd Mesh2D::edge_barycenter(const int index) const
 	{
 		const int v0 = mesh_.edges.vertex(index, 0);

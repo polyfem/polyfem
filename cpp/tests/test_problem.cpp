@@ -154,7 +154,7 @@ TEST_CASE("franke 3d", "[problem]") {
         auto cx4 = (9*x-4) * (9*x-4);
         auto cy7 = (9*y-7) * (9*y-7);
 
-        auto cz5 = (9*y-5) * (9*y-5);
+        auto cz5 = (9*z-5) * (9*z-5);
 
         Eigen::MatrixXd val =
         3./4. * exp( -1./4.*cx2 - 1./4.*cy2 - 1./4.*cz2) +

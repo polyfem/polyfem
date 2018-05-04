@@ -148,29 +148,6 @@ namespace {
 		{{0, 1}}, // v2  = (0, 1)
 	}};
 
-	void linear_tri_basis_value(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {
-		auto u=uv.col(0).array();
-		auto v=uv.col(1).array();
-		switch(local_index)
-		{
-			case 0: val = 1 - u - v; break;
-			case 1: val = u; break;
-			case 2: val = v; break;
-			default: assert(false);
-		}
-	}
-
-	void linear_tri_basis_grad(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {
-		val.resize(uv.rows(), uv.cols());
-		switch(local_index)
-		{
-			case 0: val.col(0).setConstant(-1); val.col(1).setConstant(-1); break;
-			case 1: val.col(0).setConstant( 1); val.col(1).setConstant( 0); break;
-			case 2: val.col(0).setConstant( 0); val.col(1).setConstant( 1); break;
-			default: assert(false);
-		}
-	}
-
 // -----------------------------------------------------------------------------
 
 	constexpr std::array<std::array<int, 2>, 6> quadr_tri_local_node = {{
@@ -181,66 +158,6 @@ namespace {
 		{{1, 1}}, // e1  = (0.5, 0.5)
 		{{0, 1}}, // e3  = (  0, 0.5)
 	}};
-
-	void quadr_tri_basis_value(
-		const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-	{
-		auto u=uv.col(0).array();
-		auto v=uv.col(1).array();
-		switch(local_index)
-		{
-			case 0: val = (1 - u - v)*(1-2*u-2*v); break;
-			case 1: val = u*(2*u-1); break;
-			case 2: val = v*(2*v-1); break;
-
-			case 3: val = 4*u*(1-u-v); break;
-			case 4: val = 4*u*v; break;
-			case 5: val = 4*v*(1-u-v); break;
-			default: assert(false);
-		}
-	}
-
-	void quadr_tri_basis_grad(
-		const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-	{
-		auto u=uv.col(0).array();
-		auto v=uv.col(1).array();
-		val.resize(uv.rows(), uv.cols());
-		switch(local_index)
-		{
-			case 0:
-			val.col(0) = 4*u+4*v-3;
-			val.col(1) = 4*u+4*v-3;
-			break;
-
-			case 1:
-			val.col(0) = 4*u -1;
-			val.col(1).setZero();
-			break;
-
-			case 2:
-			val.col(0).setZero();
-			val.col(1) = 4*v - 1;
-			break;
-
-
-			case 3:
-			val.col(0) = 4 - 8*u - 4*v;
-			val.col(1) = -4*u;
-			break;
-
-			case 4:
-			val.col(0) = 4*v;
-			val.col(1) = 4*u;
-			break;
-
-			case 5:
-			val.col(0) = -4*v;
-			val.col(1) = 4 - 4*u - 8*v;
-			break;
-			default: assert(false);
-		}
-	}
 
 
 
@@ -434,27 +351,30 @@ namespace {
 					int f2 = index2.face;
 					if(mesh.is_cube(f2))
 					{
-						auto abc = poly_fem::FEBasis2d::quadr_quad_edge_local_nodes(mesh, index2);
 						poly_fem::InterfaceData data;
 						if (discr_order == 2) {
+							auto abc = poly_fem::FEBasis2d::quadr_quad_edge_local_nodes(mesh, index2);
 							data.local_indices.assign(abc.begin(), abc.end());
-						} else {
-							assert(discr_order == 1);
+						} else if(discr_order == 1) {
 							auto ab = poly_fem::FEBasis2d::linear_quad_edge_local_nodes(mesh, index2);
 							data.local_indices.assign(ab.begin(), ab.end());
 						}
+						else
+							assert(false);
+
 						poly_edge_to_data[index2.edge] = data;
 					} else if(mesh.is_simplex(f2)) {
 						//TODO, might not work!!!!!
-						auto abc = poly_fem::FEBasis2d::quadr_tri_edge_local_nodes(mesh, index2);
 						poly_fem::InterfaceData data;
 						if (discr_order == 2) {
+							auto abc = poly_fem::FEBasis2d::quadr_tri_edge_local_nodes(mesh, index2);
 							data.local_indices.assign(abc.begin(), abc.end());
-						} else {
-							assert(discr_order == 1);
+						} else  if(discr_order == 1) {
 							auto ab = poly_fem::FEBasis2d::linear_tri_edge_local_nodes(mesh, index2);
 							data.local_indices.assign(ab.begin(), ab.end());
 						}
+						else
+							assert(false);
 						poly_edge_to_data[index2.edge] = data;
 					}
 				}
@@ -494,6 +414,86 @@ template<class InputIterator, class T>
 	}
 
 } // anonymous namespace
+
+void poly_fem::FEBasis2d::linear_tri_basis_value(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {
+	auto u=uv.col(0).array();
+	auto v=uv.col(1).array();
+	switch(local_index)
+	{
+		case 0: val = 1 - u - v; break;
+		case 1: val = u; break;
+		case 2: val = v; break;
+		default: assert(false);
+	}
+}
+
+void poly_fem::FEBasis2d::linear_tri_basis_grad(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {
+	val.resize(uv.rows(), uv.cols());
+	switch(local_index)
+	{
+		case 0: val.col(0).setConstant(-1); val.col(1).setConstant(-1); break;
+		case 1: val.col(0).setConstant( 1); val.col(1).setConstant( 0); break;
+		case 2: val.col(0).setConstant( 0); val.col(1).setConstant( 1); break;
+		default: assert(false);
+	}
+}
+void poly_fem::FEBasis2d::quadr_tri_basis_value(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+{
+	auto u=uv.col(0).array();
+	auto v=uv.col(1).array();
+	switch(local_index)
+	{
+		case 0: val = (1 - u - v)*(1-2*u-2*v); break;
+		case 1: val = u*(2*u-1); break;
+		case 2: val = v*(2*v-1); break;
+
+		case 3: val = 4*u*(1-u-v); break;
+		case 4: val = 4*u*v; break;
+		case 5: val = 4*v*(1-u-v); break;
+		default: assert(false);
+	}
+}
+
+void poly_fem::FEBasis2d::quadr_tri_basis_grad(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+{
+	auto u=uv.col(0).array();
+	auto v=uv.col(1).array();
+	val.resize(uv.rows(), uv.cols());
+	switch(local_index)
+	{
+		case 0:
+		val.col(0) = 4*u+4*v-3;
+		val.col(1) = 4*u+4*v-3;
+		break;
+
+		case 1:
+		val.col(0) = 4*u -1;
+		val.col(1).setZero();
+		break;
+
+		case 2:
+		val.col(0).setZero();
+		val.col(1) = 4*v - 1;
+		break;
+
+
+		case 3:
+		val.col(0) = 4 - 8*u - 4*v;
+		val.col(1) = -4*u;
+		break;
+
+		case 4:
+		val.col(0) = 4*v;
+		val.col(1) = 4*u;
+		break;
+
+		case 5:
+		val.col(0) = -4*v;
+		val.col(1) = 4 - 4*u - 8*v;
+		break;
+		default: assert(false);
+	}
+}
 
 
 // -----------------------------------------------------------------------------
@@ -898,8 +898,9 @@ int poly_fem::FEBasis2d::build_bases(
 			for (int j = 0; j < n_el_bases; ++j) {
 				const int global_index = element_nodes_id[e][j];
 
-				if(skip_interface_element)
-					b.bases[j].init(global_index, j, nodes.node_position(global_index));
+				// if(!skip_interface_element)
+				b.bases[j].init(global_index, j, nodes.node_position(global_index));
+
 
 				if (discr_order == 1) {
 					b.bases[j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
@@ -962,8 +963,9 @@ int poly_fem::FEBasis2d::build_bases(
 			for (int j = 0; j < n_el_bases; ++j) {
 				const int global_index = element_nodes_id[e][j];
 
-				if(!skip_interface_element)
+				if(!skip_interface_element){
 					b.bases[j].init(global_index, j, nodes.node_position(global_index));
+				}
 
 				if (discr_order == 1) {
 					b.bases[j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
@@ -994,20 +996,20 @@ int poly_fem::FEBasis2d::build_bases(
 
 		if (mesh.is_cube(e)) {
 			assert(false); //TODO
-			for (int j = 0; j < n_el_bases; ++j) {
-				const int global_index = element_nodes_id[e][j];
+			// for (int j = 0; j < n_el_bases; ++j) {
+			// 	const int global_index = element_nodes_id[e][j];
 
-				b.bases[j].init(global_index, j, nodes.node_position(global_index));
+			// 	b.bases[j].init(global_index, j, nodes.node_position(global_index));
 
-				if (discr_order == 2) {
-					b.bases[j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-						{ quadr_quad_basis_value(j, uv, val); });
-					b.bases[j].set_grad([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-						{ quadr_quad_basis_grad(j, uv, val); });
-				} else {
-					assert(false);
-				}
-			}
+			// 	if (discr_order == 2) {
+			// 		b.bases[j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+			// 			{ quadr_quad_basis_value(j, uv, val); });
+			// 		b.bases[j].set_grad([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+			// 			{ quadr_quad_basis_grad(j, uv, val); });
+			// 	} else {
+			// 		assert(false);
+			// 	}
+			// }
 		} else if(mesh.is_simplex(e))
 		{
 			for (int j = 0; j < n_el_bases; ++j) {
@@ -1033,10 +1035,13 @@ int poly_fem::FEBasis2d::build_bases(
 
 
 					Eigen::RowVector2d node_position;
-					if(discr_order == 2){
-		                const auto param_p = quadr_tri_edge_local_nodes_coordinates(mesh, index);
-						node_position = param_p.row( j >= 3 ? 1: 0);
-					}
+					assert(discr_order > 1);
+
+	                const auto param_p = quadr_tri_edge_local_nodes_coordinates(mesh, index);
+	                if( j < 3)
+						node_position = param_p.row(0);
+					else if( j < 3 + 3*(discr_order-1))
+						node_position = param_p.row( (j-3) % (discr_order-1));
 					else
 						assert(false);
 

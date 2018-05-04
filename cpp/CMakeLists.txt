@@ -82,6 +82,10 @@ add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/src/autogen/auto_eigs.cpp ${CMAKE_
 	COMMAND python ${CMAKE_SOURCE_DIR}/src/autogen/eigs.py ${CMAKE_SOURCE_DIR}/src/autogen/
 	DEPENDS ${CMAKE_SOURCE_DIR}/src/autogen/eigs.py)
 
+add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/src/autogen/auto_bases.cpp ${CMAKE_SOURCE_DIR}/src/autogen/auto_bases.hpp
+	COMMAND python ${CMAKE_SOURCE_DIR}/src/autogen/FEBases.py ${CMAKE_SOURCE_DIR}/src/autogen/
+	DEPENDS ${CMAKE_SOURCE_DIR}/src/autogen/FEBases.py)
+
 
 
 # Polyfem library
@@ -232,6 +236,8 @@ add_library(polyfem
 	${CMAKE_SOURCE_DIR}/src/autogen/auto_rhs.hpp
 	${CMAKE_SOURCE_DIR}/src/autogen/auto_eigs.cpp
 	${CMAKE_SOURCE_DIR}/src/autogen/auto_eigs.hpp
+	${CMAKE_SOURCE_DIR}/src/autogen/auto_bases.cpp
+	${CMAKE_SOURCE_DIR}/src/autogen/auto_bases.hpp
 )
 
 target_include_directories(polyfem PUBLIC
@@ -262,6 +268,8 @@ source_group("autogen" FILES ${CMAKE_SOURCE_DIR}/src/autogen/auto_rhs.cpp)
 source_group("autogen" FILES ${CMAKE_SOURCE_DIR}/src/autogen/auto_rhs.hpp)
 source_group("autogen" FILES ${CMAKE_SOURCE_DIR}/src/autogen/auto_eigs.cpp)
 source_group("autogen" FILES ${CMAKE_SOURCE_DIR}/src/autogen/auto_eigs.hpp)
+source_group("autogen" FILES ${CMAKE_SOURCE_DIR}/src/autogen/auto_bases.cpp)
+source_group("autogen" FILES ${CMAKE_SOURCE_DIR}/src/autogen/auto_bases.hpp)
 
 
 

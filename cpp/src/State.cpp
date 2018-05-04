@@ -337,6 +337,72 @@ namespace poly_fem
 		disc_orders.resize(mesh->n_elements());
 		disc_orders.setConstant(args["discr_order"]);
 
+
+
+		const double poly_percentage = 0;
+
+		if(poly_percentage > 0)
+		{
+			const int n_poly = mesh->n_elements()*poly_percentage;
+			int counter = 0;
+			srand(11);
+
+			for(int trial = 0; trial < n_poly*10; ++trial)
+			{
+				int el_id = rand() % mesh->n_elements();
+
+				auto tags = mesh->elements_tag();
+
+				if(mesh->is_volume())
+				{
+					assert(false);
+				}
+				else
+				{
+					const Mesh2D &tmp_mesh = *dynamic_cast<Mesh2D *>(mesh.get());
+					auto index = tmp_mesh.get_index_from_face(el_id);
+
+					bool stop = false;
+
+					for(int i = 0; i < tmp_mesh.n_face_vertices(el_id); ++i)
+					{
+						if(tmp_mesh.is_boundary_edge(index.edge))
+						{
+							stop = true;
+							break;
+						}
+
+						const auto neigh_index = tmp_mesh.switch_face(index);
+						if(tags[neigh_index.face] != ElementType::RegularInteriorCube)
+						{
+							stop = true;
+							break;
+						}
+
+						const auto f1 = tmp_mesh.switch_face(tmp_mesh.switch_edge(neigh_index						 )).face;
+						const auto f2 = tmp_mesh.switch_face(tmp_mesh.switch_edge(tmp_mesh.switch_vertex(neigh_index))).face;
+						if((f1 >= 0 && tags[f1] != ElementType::RegularInteriorCube) || (f2 >= 0 && tags[f2] != ElementType::RegularInteriorCube ))
+						{
+							stop = true;
+							break;
+						}
+
+						index = tmp_mesh.next_around_face(index);
+					}
+
+					if(stop) continue;
+				}
+
+				mesh->set_tag(el_id, ElementType::InteriorPolytope);
+				++counter;
+
+				if(counter >= n_poly)
+					break;
+
+				mesh->update_elements_tag();
+			}
+		}
+
 		//TODO
 		// disc_orders(18) = 2;
 		// disc_orders(2) = 2;

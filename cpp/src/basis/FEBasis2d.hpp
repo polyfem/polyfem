@@ -112,6 +112,12 @@ namespace poly_fem
 		static void quadr_quad_basis_grad(const int local_index,
 			const Eigen::MatrixXd &xne, Eigen::MatrixXd &val);
 
+
+		static void linear_tri_basis_value(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
+		static void linear_tri_basis_grad(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
+		static void quadr_tri_basis_value(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
+		static void quadr_tri_basis_grad(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
+
 	};
 }
 

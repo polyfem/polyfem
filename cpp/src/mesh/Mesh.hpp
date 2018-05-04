@@ -59,6 +59,7 @@ namespace poly_fem
 
 		//Tagging of the elements
 		virtual void compute_elements_tag() = 0;
+		virtual void update_elements_tag() { assert(false); }
 
 		//Nodal access
 		virtual RowVectorNd point(const int global_index) const = 0;
