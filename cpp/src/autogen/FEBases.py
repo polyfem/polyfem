@@ -117,6 +117,7 @@ class Lagrange:
     def __init__(self, nsd, order):
         self.nsd = nsd
         self.order = order
+        self.points = []
         self.compute_basis()
 
     def nbf(self):
@@ -127,10 +128,10 @@ class Lagrange:
         nsd = self.nsd
         N = []
         pol, coeffs, basis = bernstein_space(order, nsd)
-        points = create_point_set(order, nsd)
+        self.points = create_point_set(order, nsd)
 
         equations = []
-        for p in points:
+        for p in self.points:
             ex = pol.subs(x, p[0])
             if nsd > 1:
                 ex = ex.subs(y, p[1])
@@ -168,10 +169,10 @@ if __name__ == "__main__":
     dims = [2]
 
     orders = [1, 2, 3, 4, 5]
-    # orders = [1, 2, 3]
+    # orders = [3]  # , 2, 3]
 
     cpp = "#include \"auto_bases.hpp\"\n\n\n"
-    cpp = cpp + "namespace poly_fem {\nnamespace autogen " + "{\n"
+    cpp = cpp + "namespace poly_fem {\nnamespace autogen " + "{\nnamespace " + "{\n"
 
     hpp = "#pragma once\n\n#include <Eigen/Dense>\n\n"
     hpp = hpp + "namespace poly_fem {\nnamespace autogen " + "{\n"
@@ -185,11 +186,65 @@ if __name__ == "__main__":
     unique_fun = unique_fun + "{\nswitch(p)" + "{\n"
     dunique_fun = dunique_fun + "{\nswitch(p)" + "{\n"
 
+    vertices = [[0, 0], [1, 0], [0, 1]]
+
     for dim in dims:
         for order in orders:
             print("processing " + str(order))
 
             fe = Lagrange(dim, order)
+
+            current_indices = list(range(0, len(fe.points)))
+            indices = []
+
+            # vertex coordinate
+            for i in range(0, 3):
+                vv = vertices[i]
+                for ii in current_indices:
+                    norm = 0
+                    for dd in range(0, dim):
+                        norm = norm + (vv[dd] - fe.points[ii][dd]) ** 2
+
+                    if norm < 1e-10:
+                        indices.append(ii)
+                        current_indices.remove(ii)
+                        break
+
+            # edge 1 coordinate
+            for i in range(0, order - 1):
+                for ii in current_indices:
+                    if fe.points[ii][1] != 0:
+                        continue
+
+                    if abs(fe.points[ii][0] - (i + 1) / order) < 1e-10:
+                        indices.append(ii)
+                        current_indices.remove(ii)
+                        break
+
+            # edge 2 coordinate
+            for i in range(0, order - 1):
+                for ii in current_indices:
+                    if fe.points[ii][0] + fe.points[ii][1] != 1:
+                        continue
+
+                    if abs(fe.points[ii][1] - (i + 1) / order) < 1e-10:
+                        indices.append(ii)
+                        current_indices.remove(ii)
+                        break
+
+            # edge 3 coordinate
+            for i in range(0, order - 1):
+                for ii in current_indices:
+                    if fe.points[ii][0] != 0:
+                        continue
+
+                    if abs(fe.points[ii][1] - (1 - (i + 1) / order)) < 1e-10:
+                        indices.append(ii)
+                        current_indices.remove(ii)
+                        break
+
+            for ii in current_indices:
+                indices.append(ii)
 
             func = "void p_" + str(order) + "_basis_value(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &result_0)"
             dfunc = "void p_" + str(order) + "_basis_grad_value(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
@@ -197,8 +252,8 @@ if __name__ == "__main__":
             unique_fun = unique_fun + "\tcase " + str(order) + ": " + "p_" + str(order) + "_basis_value(local_index, uv, val); break;\n"
             dunique_fun = dunique_fun + "\tcase " + str(order) + ": " + "p_" + str(order) + "_basis_grad_value(local_index, uv, val); break;\n"
 
-            hpp = hpp + func + ";\n"
-            hpp = hpp + dfunc + ";\n"
+            # hpp = hpp + func + ";\n"
+            # hpp = hpp + dfunc + ";\n"
 
             base = "auto x=uv.col(0).array();\nauto y=uv.col(1).array();\n\n"
             dbase = base
@@ -207,8 +262,8 @@ if __name__ == "__main__":
             dbase = dbase + "val.resize(uv.rows(), uv.cols());\n Eigen::ArrayXd result_0(uv.rows());\n" + "switch(local_index){\n"
 
             for i in range(0, fe.nbf()):
-                base = base + "\tcase " + str(i) + ": {" + pretty_print.C99_print(simplify(fe.N[i])) + "} break;\n"
-                dbase = dbase + "\tcase " + str(i) + ": {" + \
+                base = base + "\tcase " + str(indices[i]) + ": {" + pretty_print.C99_print(simplify(fe.N[i])) + "} break;\n"
+                dbase = dbase + "\tcase " + str(indices[i]) + ": {" + \
                     "{" + pretty_print.C99_print(simplify(diff(fe.N[i], x))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(0) = result_0; }" \
                     "{" + pretty_print.C99_print(simplify(diff(fe.N[i], y))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(1) = result_0; }" \
                     "} break;\n"
@@ -225,7 +280,7 @@ if __name__ == "__main__":
     unique_fun = unique_fun + "\tdefault: assert(false);\n}}"
     dunique_fun = dunique_fun + "\tdefault: assert(false);\n}}"
 
-    cpp = cpp + "\n\n" + unique_fun + "\n\n" + dunique_fun + "\n"
+    cpp = cpp + "}\n\n" + unique_fun + "\n\n" + dunique_fun + "\n"
     hpp = hpp + "\n"
 
     cpp = cpp + "\n}}\n"
