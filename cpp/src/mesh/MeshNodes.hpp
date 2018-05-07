@@ -9,7 +9,7 @@ namespace poly_fem {
 // Wrapper for lazy assignment of node ids
 class MeshNodes {
 public:
-	MeshNodes(const Mesh &mesh, bool vertices_only = false);
+	MeshNodes(const Mesh &mesh, const int max_nodes_per_edge, const int max_nodes_per_face, const int max_nodes_per_cell = 0);
 
 	// Number of currently assigned nodes
 	int n_nodes() const { return node_to_primitive_.size(); }
@@ -20,6 +20,9 @@ public:
 	int node_id_from_face(int f);
 	int node_id_from_cell(int c);
 	int node_id_from_primitive(int primitive_id);
+
+	std::vector<int> node_ids_from_edge(const Navigation::Index &index, const int n_new_nodes);
+	std::vector<int> node_ids_from_face(const Navigation::Index &index, const int n_new_nodes);
 
 	// Packed id from primitive
 	int primitive_from_vertex(int v) const { return v; }
@@ -53,10 +56,15 @@ public:
 	std::vector<int> boundary_nodes() const;
 
 private:
+	const Mesh &mesh_;
 	// Offset to pack primitives ids into a single vector
 	const int edge_offset_;
 	const int face_offset_;
 	const int cell_offset_;
+
+	const int max_nodes_per_edge_;
+	const int max_nodes_per_face_;
+	const int max_nodes_per_cell_;
 
 	// Map primitives to nodes back and forth
 	std::vector<int> primitive_to_node_; // #v + #e + #f + #c

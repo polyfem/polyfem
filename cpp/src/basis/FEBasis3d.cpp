@@ -1003,7 +1003,7 @@ int poly_fem::FEBasis3d::build_bases(
 {
 	assert(mesh.is_volume());
 
-	MeshNodes nodes(mesh, discr_order == 1);
+	MeshNodes nodes(mesh, discr_order - 1, discr_order == 2 ? 1 : 0, discr_order == 2 ? 1 : 0);
 	std::vector<std::vector<int>> element_nodes_id;
 	compute_nodes(mesh, discr_order, nodes, element_nodes_id, local_boundary, poly_face_to_data);
 	// boundary_nodes = nodes.boundary_nodes();

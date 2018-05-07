@@ -1,6 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "FEBasis2d.hpp"
-#include "MeshNodes.hpp"
 #include "TriQuadrature.hpp"
 #include "QuadQuadrature.hpp"
 #include <cassert>
@@ -215,6 +214,9 @@ namespace {
 			u[1] = mesh.switch_vertex(idx).vertex;
 			std::sort(u.begin(), u.end());
 			if (u == v) {
+				if(idx.vertex != v1)
+					idx = mesh.switch_vertex(idx);
+				assert(idx.vertex == v1);
 				return idx;
 			}
 			idx = mesh.next_around_face(idx);
@@ -521,6 +523,69 @@ std::array<int, 3> poly_fem::FEBasis2d::linear_tri_local_to_global(const Mesh2D 
 	return l2g;
 }
 
+std::vector<int> poly_fem::FEBasis2d::tri_local_to_global(const int p, const Mesh2D &mesh, int f, const Eigen::VectorXi &discr_order, poly_fem::MeshNodes &nodes) {
+	int edge_offset = mesh.n_vertices();
+	int face_offset = edge_offset + mesh.n_edges();
+
+	const int n_edge_nodes = (p-1)*3;
+	const int nn = p > 2 ? (p - 2) : 0;
+	const int n_face_nodes = nn * (nn + 1) / 2;
+
+	std::vector<int> res; res.reserve(3 + n_edge_nodes + n_face_nodes);
+
+	// Vertex nodes
+	auto v = linear_tri_local_to_global(mesh, f);
+
+	// Edge nodes
+	Eigen::Matrix<Navigation::Index, 3, 1> e;
+	Eigen::Matrix<int, 3, 2> ev;
+	ev.row(0) << v[0], v[1];
+	ev.row(1) << v[1], v[2];
+	ev.row(2) << v[2], v[0];
+	for (int le = 0; le < e.rows(); ++le) {
+		const auto index = find_edge(mesh, f, ev(le, 0), ev(le, 1));
+		e[le] = index;
+	}
+
+	for (size_t lv = 0; lv < v.size(); ++lv) {
+		const auto index = e[lv];
+		const auto other_face = mesh.switch_face(index).face;
+
+		if(discr_order.size() > 0 && other_face >= 0 && discr_order(f) >  discr_order(other_face))
+			res.push_back(-lv - 1);
+		else
+			res.push_back(nodes.node_id_from_primitive(v[lv]));
+	}
+
+	for (int le = 0; le < e.rows(); ++le) {
+		const auto index = e[le];
+		const auto other_face = mesh.switch_face(index).face;
+
+		bool skip_other = discr_order.size() > 0 && other_face >= 0 && discr_order(f) >  discr_order(other_face);
+
+		if(discr_order.size() > 0 && other_face >= 0 && discr_order(f) >  discr_order(other_face))
+		{
+			for(int tmp = 0; tmp < p - 1; ++tmp)
+				res.push_back(-le - 1);
+		}
+		else
+		{
+			auto node_ids = nodes.node_ids_from_edge(index, p - 1);
+			res.insert(res.end(), node_ids.begin(), node_ids.end());
+		}
+	}
+
+	if (n_face_nodes > 0) {
+		const auto index = e[0];
+
+		auto node_ids = nodes.node_ids_from_face(index, p - 2);
+		res.insert(res.end(), node_ids.begin(), node_ids.end());
+	}
+
+	assert(res.size() == 3 + n_edge_nodes + n_face_nodes);
+	return res;
+}
+
 std::array<int, 6> poly_fem::FEBasis2d::quadr_tri_local_to_global(const Mesh2D &mesh, int f, const Eigen::VectorXi &discr_order) {
 	// assert(mesh.is_cube(f));
 
@@ -822,7 +887,12 @@ int poly_fem::FEBasis2d::build_bases(
 	assert(!mesh.is_volume());
 	assert(discr_orders.size() == mesh.n_faces());
 
-	MeshNodes nodes(mesh, discr_orders.minCoeff() == 1 && discr_orders.maxCoeff() == 1);
+	const int max_p = discr_orders.maxCoeff();
+	const int nn = max_p > 2 ? (max_p - 2) : 0;
+	const int n_face_nodes = nn * (nn + 1) / 2;
+
+	//TODO works only for P
+	MeshNodes nodes(mesh, max_p - 1, n_face_nodes);
 	std::vector<std::vector<int>> element_nodes_id;
 	compute_nodes(mesh, discr_orders, nodes, element_nodes_id, local_boundary, poly_edge_to_data);
 	// boundary_nodes = nodes.boundary_nodes();

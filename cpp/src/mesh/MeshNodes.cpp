@@ -48,13 +48,18 @@ namespace {
 
 // -----------------------------------------------------------------------------
 
-poly_fem::MeshNodes::MeshNodes(const Mesh &mesh, bool vertices_only)
-	: edge_offset_(mesh.n_vertices())
-	, face_offset_(edge_offset_ + (vertices_only ? 0 : mesh.n_edges()))
-	, cell_offset_(face_offset_ + (vertices_only ? 0 : mesh.n_faces()))
+poly_fem::MeshNodes::MeshNodes(const Mesh &mesh, const int max_nodes_per_edge, const int max_nodes_per_face, const int max_nodes_per_cell)
+	: mesh_(mesh)
+	, edge_offset_(mesh.n_vertices())
+	, face_offset_(edge_offset_ + mesh.n_edges() * max_nodes_per_edge)
+	, cell_offset_(face_offset_ + mesh.n_faces() * max_nodes_per_face)
+
+	, max_nodes_per_edge_(max_nodes_per_edge)
+ 	, max_nodes_per_face_(max_nodes_per_face)
+ 	, max_nodes_per_cell_(max_nodes_per_cell)
 {
 	// Initialization
-	int n_nodes = cell_offset_ + (vertices_only ? 0 : mesh.n_cells());
+	int n_nodes = cell_offset_ + mesh.n_cells() * max_nodes_per_cell;
 	primitive_to_node_.assign(n_nodes, -1); // #v + #e + #f + #c
 	nodes_.resize(n_nodes, mesh.dimension());
 	is_boundary_.assign(n_nodes, false);
@@ -62,37 +67,43 @@ poly_fem::MeshNodes::MeshNodes(const Mesh &mesh, bool vertices_only)
 
 	// Vertex nodes
 	for (int v = 0; v < mesh.n_vertices(); ++v) {
-		nodes_.row(v) = mesh.point(v);
+		// nodes_.row(v) = mesh.point(v);
 		is_boundary_[v] = mesh.is_boundary_vertex(v);
 	}
-	if (!vertices_only) {
-		Eigen::MatrixXd bary;
+	// if (!vertices_only) {
+		// Eigen::MatrixXd bary;
 		// Edge nodes
-		mesh.edge_barycenters(bary);
-		for (int e = 0; e < mesh.n_edges(); ++e) {
-			nodes_.row(edge_offset_ + e) = bary.row(e);
-			is_boundary_[edge_offset_ + e] = mesh.is_boundary_edge(e);
-		}
+		// mesh.edge_barycenters(bary);
+
+	for (int e = 0; e < mesh.n_edges(); ++e) {
+		// nodes_.row(edge_offset_ + e) = bary.row(e);
+		const bool is_boundary = mesh.is_boundary_edge(e);
+		for(int tmp = 0; tmp < max_nodes_per_edge; ++tmp)
+			is_boundary_[edge_offset_ + max_nodes_per_edge * e + tmp] = is_boundary;
+	}
 		// Face nodes
-		mesh.face_barycenters(bary);
-		for (int f = 0; f < mesh.n_faces(); ++f) {
-			nodes_.row(face_offset_ + f) = bary.row(f);
+		// mesh.face_barycenters(bary);
+	for (int f = 0; f < mesh.n_faces(); ++f) {
+		// nodes_.row(face_offset_ + f) = bary.row(f);
+		for(int tmp = 0; tmp < max_nodes_per_face; ++tmp)
+		{
 			if (mesh.is_volume()) {
-				is_boundary_[face_offset_ + f] = mesh.is_boundary_face(f);
+				is_boundary_[face_offset_ + max_nodes_per_face * f + tmp] = mesh.is_boundary_face(f);
 			} else {
-				is_boundary_[face_offset_ + f] = false;
+				is_boundary_[face_offset_ + max_nodes_per_face * f + tmp] = false;
 			}
 		}
-		// Cell nodes
-		mesh.cell_barycenters(bary);
-		for (int c = 0; c < mesh.n_cells(); ++c) {
-			nodes_.row(cell_offset_ + c) = bary.row(c);
-			is_boundary_[cell_offset_ + c] = false;
-		}
 	}
+		// Cell nodes
+		// mesh.cell_barycenters(bary);
+	for (int c = 0; c < mesh.n_cells(); ++c) {
+		for(int tmp = 0; tmp < max_nodes_per_cell; ++tmp)
+			is_boundary_[cell_offset_ + max_nodes_per_cell * c + tmp] = false;
+	}
+	// }
 
 	// Vertices only, no need to compute interface marker
-	if (vertices_only) { return; }
+	// if (vertices_only) { return; }
 
 	// Compute edges/faces that are at interface with a polytope
 	if (mesh.is_volume()) {
@@ -100,14 +111,16 @@ poly_fem::MeshNodes::MeshNodes(const Mesh &mesh, bool vertices_only)
 		assert(mesh3d);
 		auto is_interface_face = interface_faces(*mesh3d);
 		for (int f = 0; f < mesh.n_faces(); ++f) {
-			is_interface_[face_offset_ + f] = is_interface_face[f];
+				for(int tmp = 0; tmp < max_nodes_per_face; ++tmp)
+					is_interface_[face_offset_ + max_nodes_per_face * f + tmp] = is_interface_face[f];
 		}
 	} else {
 		const Mesh2D * mesh2d = dynamic_cast<const Mesh2D *>(&mesh);
 		assert(mesh2d);
 		auto is_interface_edge = interface_edges(*mesh2d);
 		for (int e = 0; e < mesh.n_edges(); ++e) {
-			is_interface_[edge_offset_ + e] = is_interface_edge[e];
+				for(int tmp = 0; tmp < max_nodes_per_edge; ++tmp)
+					is_interface_[edge_offset_ + max_nodes_per_edge * e + tmp] = is_interface_edge[e];
 		}
 	}
 
@@ -119,8 +132,80 @@ int poly_fem::MeshNodes::node_id_from_primitive(int primitive_id) {
 	if (primitive_to_node_[primitive_id] < 0) {
 		primitive_to_node_[primitive_id] = n_nodes();
 		node_to_primitive_.push_back(primitive_id);
+
+		if(primitive_id < edge_offset_)
+			nodes_.row(primitive_id) = mesh_.point(primitive_id);
+		else if(primitive_id < face_offset_)
+			nodes_.row(primitive_id) = mesh_.edge_barycenter(primitive_id - edge_offset_);
+		else if(primitive_id < cell_offset_)
+			nodes_.row(primitive_id) = mesh_.face_barycenter(primitive_id - face_offset_);
+		else
+			nodes_.row(primitive_id) = mesh_.cell_barycenter(primitive_id - cell_offset_);
 	}
 	return primitive_to_node_[primitive_id];
+}
+
+std::vector<int> poly_fem::MeshNodes::node_ids_from_edge(const Navigation::Index &index, const int n_new_nodes)
+{
+	std::vector<int> res;
+	if(n_new_nodes <= 0)
+		return res;
+
+	const int start = edge_offset_ + index.edge * max_nodes_per_edge_;
+
+	const Mesh2D * mesh2d = dynamic_cast<const Mesh2D *>(&mesh_);
+
+	const auto v1 = mesh2d->point(index.vertex);
+	const auto v2 = mesh2d->point(mesh2d->switch_vertex(index).vertex);
+
+	if (primitive_to_node_[start] < 0) {
+		for(int i = 1; i <= n_new_nodes; ++i)
+		{
+			const double t = i/(n_new_nodes + 1.0);
+
+			const int primitive_id = start + i - 1;
+			primitive_to_node_[primitive_id] = n_nodes();
+			node_to_primitive_.push_back(primitive_id);
+
+			nodes_.row(primitive_id) = (1 - t) * v1 + t * v2;
+
+			res.push_back(n_nodes());
+		}
+	}
+	else
+	{
+		const double t = 1/(n_new_nodes + 1.0);
+		const auto v = (1 - t) * v1 + t * v2;
+		if((node_position(start) - v).squaredNorm() < 1e-8)
+		{
+			for(int i = 0; i < n_new_nodes; ++i)
+			{
+				const int primitive_id = start + i;
+				res.push_back(primitive_to_node_[primitive_id]);
+			}
+		}
+		else
+		{
+			for(int i = n_new_nodes - 1; i >= 0; --i)
+			{
+				const int primitive_id = start + i;
+				res.push_back(primitive_to_node_[primitive_id]);
+			}
+		}
+	}
+
+	assert(res.size() == n_new_nodes);
+	return res;
+}
+
+std::vector<int> poly_fem::MeshNodes::node_ids_from_face(const Navigation::Index &index, const int n_new_nodes)
+{
+	std::vector<int> res;
+	if(n_new_nodes <= 0)
+		return res;
+
+	assert(false);
+	return res;
 }
 
 int poly_fem::MeshNodes::node_id_from_vertex(int v) {
@@ -128,15 +213,15 @@ int poly_fem::MeshNodes::node_id_from_vertex(int v) {
 }
 
 int poly_fem::MeshNodes::node_id_from_edge(int e) {
-	return node_id_from_primitive(edge_offset_ + e);
+	return node_id_from_primitive(edge_offset_ + e * max_nodes_per_edge_);
 }
 
 int poly_fem::MeshNodes::node_id_from_face(int f) {
-	return node_id_from_primitive(face_offset_ + f);
+	return node_id_from_primitive(face_offset_ + f * max_nodes_per_face_);
 }
 
 int poly_fem::MeshNodes::node_id_from_cell(int c) {
-	return node_id_from_primitive(cell_offset_ + c);
+	return node_id_from_primitive(cell_offset_ + c * max_nodes_per_cell_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

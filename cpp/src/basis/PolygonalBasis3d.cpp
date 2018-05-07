@@ -655,7 +655,8 @@ void PolygonalBasis3d::build_bases(
 			set_rbf(std::make_shared<RBFWithLinear>(
 				kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs));
 		} else if (integral_constraints == 2) {
-			set_rbf(std::make_shared<RBFWithQuadratic>(
+			// set_rbf(std::make_shared<RBFWithQuadratic>(
+			set_rbf(std::make_shared<RBFWithQuadraticLagrange>(
 				kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs));
 		} else {
 			throw std::runtime_error("Unsupported constraint order: " + std::to_string(integral_constraints));

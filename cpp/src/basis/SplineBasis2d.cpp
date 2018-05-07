@@ -659,7 +659,7 @@ namespace poly_fem
         using std::max;
         assert(!mesh.is_volume());
 
-        MeshNodes mesh_nodes(mesh);
+        MeshNodes mesh_nodes(mesh, 1, 1, 0);
 
         const int n_els = mesh.n_elements();
         bases.resize(n_els);
@@ -809,7 +809,7 @@ namespace poly_fem
 
         std::vector< Eigen::Triplet<double> > entries, entries_t;
 
-        MeshNodes nodes(mesh);
+        MeshNodes nodes(mesh, 1, 1, 0);
         Eigen::MatrixXd tmp;
 
         Eigen::MatrixXd node_rhs(n_constraints*n_elements, dim);

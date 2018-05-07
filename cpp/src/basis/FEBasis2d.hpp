@@ -6,6 +6,8 @@
 #include "InterfaceData.hpp"
 #include "Navigation.hpp"
 
+#include "MeshNodes.hpp"
+
 #include <Eigen/Dense>
 #include <vector>
 
@@ -112,6 +114,8 @@ namespace poly_fem
 		static void quadr_quad_basis_grad(const int local_index,
 			const Eigen::MatrixXd &xne, Eigen::MatrixXd &val);
 
+
+		static std::vector<int> tri_local_to_global(const int p, const Mesh2D &mesh, int f, const Eigen::VectorXi &discr_order, poly_fem::MeshNodes &nodes);
 
 		static void linear_tri_basis_value(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
 		static void linear_tri_basis_grad(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
