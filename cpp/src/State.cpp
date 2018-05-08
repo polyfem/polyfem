@@ -404,19 +404,19 @@ namespace poly_fem
 		}
 
 		//TODO
-		// disc_orders(18) = 2;
-		// disc_orders(2) = 2;
-		// disc_orders(4) = 2;
-		// disc_orders(20) = 2;
-		// disc_orders(14) = 2;
-		// disc_orders(28) = 2;
-		// disc_orders(12) = 2;
-		// disc_orders(27) = 2;
-		// disc_orders(11) = 2;
-		// disc_orders(23) = 2;
-		// disc_orders(25) = 2;
-		// disc_orders(5) = 2;
-		// disc_orders(21) = 2;
+		// disc_orders(18) = 3;
+		// disc_orders(2) = 3;
+		// disc_orders(4) = 3;
+		// disc_orders(20) = 3;
+		// disc_orders(14) = 3;
+		// disc_orders(28) = 3;
+		// disc_orders(12) = 3;
+		// disc_orders(27) = 3;
+		// disc_orders(11) = 3;
+		// disc_orders(23) = 3;
+		// disc_orders(25) = 3;
+		// disc_orders(5) = 3;
+		// disc_orders(21) = 3;
 	}
 
 	void State::compute_mesh_stats()
@@ -801,6 +801,8 @@ namespace poly_fem
 			spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, true, true);
 			sol = x;
 			solver->getInfo(solver_info);
+
+			std::cout<<"Solver error: "<<(A*sol-b).norm()<<std::endl;
 		}
 		else
 		{
@@ -846,7 +848,6 @@ namespace poly_fem
 		timer.stop();
 		solving_time = timer.getElapsedTime();
 		std::cout<<" took "<<solving_time<<"s"<<std::endl;
-		// std::cout<<"Solver error: "<<(A*sol-b).norm()<<std::endl;
 	}
 
 	void State::compute_errors()

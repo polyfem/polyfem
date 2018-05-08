@@ -2,6 +2,8 @@
 from sympy import *
 import os
 import argparse
+from sympy.printing import ccode
+
 
 import pretty_print
 
@@ -177,11 +179,17 @@ if __name__ == "__main__":
     hpp = "#pragma once\n\n#include <Eigen/Dense>\n\n"
     hpp = hpp + "namespace poly_fem {\nnamespace autogen " + "{\n"
 
+    unique_nodes = "void p_nodes(const int p, Eigen::MatrixXd &val)"
+
     unique_fun = "void p_basis_value(const int p, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
     dunique_fun = "void p_grad_basis_value(const int p, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
 
+    hpp = hpp + unique_nodes + ";\n\n"
+
     hpp = hpp + unique_fun + ";\n\n"
     hpp = hpp + dunique_fun + ";\n\n"
+
+    unique_nodes = unique_nodes + "{\nswitch(p)" + "{\n"
 
     unique_fun = unique_fun + "{\nswitch(p)" + "{\n"
     dunique_fun = dunique_fun + "{\nswitch(p)" + "{\n"
@@ -246,6 +254,16 @@ if __name__ == "__main__":
             for ii in current_indices:
                 indices.append(ii)
 
+            # nodes code gen
+            nodes = "void p_" + str(order) + "_nodes(Eigen::MatrixXd &res) {\n res.resize(" + str(len(indices)) + ", 2); res << \n"
+            unique_nodes = unique_nodes + "\tcase " + str(order) + ": " + "p_" + str(order) + "_nodes(val); break;\n"
+
+            for ii in indices:
+                nodes = nodes + ccode(fe.points[ii][0]) + ", " + ccode(fe.points[ii][1]) + ",\n"
+            nodes = nodes[:-2]
+            nodes = nodes + ";\n}"
+
+            # bases code gen
             func = "void p_" + str(order) + "_basis_value(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &result_0)"
             dfunc = "void p_" + str(order) + "_basis_grad_value(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
 
@@ -262,10 +280,13 @@ if __name__ == "__main__":
             dbase = dbase + "val.resize(uv.rows(), uv.cols());\n Eigen::ArrayXd result_0(uv.rows());\n" + "switch(local_index){\n"
 
             for i in range(0, fe.nbf()):
-                base = base + "\tcase " + str(indices[i]) + ": {" + pretty_print.C99_print(simplify(fe.N[i])) + "} break;\n"
-                dbase = dbase + "\tcase " + str(indices[i]) + ": {" + \
-                    "{" + pretty_print.C99_print(simplify(diff(fe.N[i], x))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(0) = result_0; }" \
-                    "{" + pretty_print.C99_print(simplify(diff(fe.N[i], y))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(1) = result_0; }" \
+                real_index = indices[i]
+                # real_index = i
+
+                base = base + "\tcase " + str(i) + ": {" + pretty_print.C99_print(simplify(fe.N[real_index])) + "} break;\n"
+                dbase = dbase + "\tcase " + str(i) + ": {" + \
+                    "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], x))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(0) = result_0; }" \
+                    "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], y))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(1) = result_0; }" \
                     "} break;\n"
 
             base = base + "\tdefault: assert(false);\n}"
@@ -275,12 +296,14 @@ if __name__ == "__main__":
             cpp = cpp + base + "}\n"
 
             cpp = cpp + dfunc + "{\n\n"
-            cpp = cpp + dbase + "}\n"
+            cpp = cpp + dbase + "}\n\n\n" + nodes + "\n\n\n"
+
+    unique_nodes = unique_nodes + "\tdefault: assert(false);\n}}"
 
     unique_fun = unique_fun + "\tdefault: assert(false);\n}}"
     dunique_fun = dunique_fun + "\tdefault: assert(false);\n}}"
 
-    cpp = cpp + "}\n\n" + unique_fun + "\n\n" + dunique_fun + "\n"
+    cpp = cpp + "}\n\n" + unique_nodes + unique_fun + "\n\n" + dunique_fun + "\n"
     hpp = hpp + "\n"
 
     cpp = cpp + "\n}}\n"

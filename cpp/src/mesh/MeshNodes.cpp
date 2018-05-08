@@ -49,14 +49,14 @@ namespace {
 // -----------------------------------------------------------------------------
 
 poly_fem::MeshNodes::MeshNodes(const Mesh &mesh, const int max_nodes_per_edge, const int max_nodes_per_face, const int max_nodes_per_cell)
-	: mesh_(mesh)
-	, edge_offset_(mesh.n_vertices())
-	, face_offset_(edge_offset_ + mesh.n_edges() * max_nodes_per_edge)
-	, cell_offset_(face_offset_ + mesh.n_faces() * max_nodes_per_face)
+: mesh_(mesh)
+, edge_offset_(mesh.n_vertices())
+, face_offset_(edge_offset_ + mesh.n_edges() * max_nodes_per_edge)
+, cell_offset_(face_offset_ + mesh.n_faces() * max_nodes_per_face)
 
-	, max_nodes_per_edge_(max_nodes_per_edge)
- 	, max_nodes_per_face_(max_nodes_per_face)
- 	, max_nodes_per_cell_(max_nodes_per_cell)
+, max_nodes_per_edge_(max_nodes_per_edge)
+, max_nodes_per_face_(max_nodes_per_face)
+, max_nodes_per_cell_(max_nodes_per_cell)
 {
 	// Initialization
 	int n_nodes = cell_offset_ + mesh.n_cells() * max_nodes_per_cell;
@@ -111,16 +111,16 @@ poly_fem::MeshNodes::MeshNodes(const Mesh &mesh, const int max_nodes_per_edge, c
 		assert(mesh3d);
 		auto is_interface_face = interface_faces(*mesh3d);
 		for (int f = 0; f < mesh.n_faces(); ++f) {
-				for(int tmp = 0; tmp < max_nodes_per_face; ++tmp)
-					is_interface_[face_offset_ + max_nodes_per_face * f + tmp] = is_interface_face[f];
+			for(int tmp = 0; tmp < max_nodes_per_face; ++tmp)
+				is_interface_[face_offset_ + max_nodes_per_face * f + tmp] = is_interface_face[f];
 		}
 	} else {
 		const Mesh2D * mesh2d = dynamic_cast<const Mesh2D *>(&mesh);
 		assert(mesh2d);
 		auto is_interface_edge = interface_edges(*mesh2d);
 		for (int e = 0; e < mesh.n_edges(); ++e) {
-				for(int tmp = 0; tmp < max_nodes_per_edge; ++tmp)
-					is_interface_[edge_offset_ + max_nodes_per_edge * e + tmp] = is_interface_edge[e];
+			for(int tmp = 0; tmp < max_nodes_per_edge; ++tmp)
+				is_interface_[edge_offset_ + max_nodes_per_edge * e + tmp] = is_interface_edge[e];
 		}
 	}
 
@@ -158,7 +158,8 @@ std::vector<int> poly_fem::MeshNodes::node_ids_from_edge(const Navigation::Index
 	const auto v1 = mesh2d->point(index.vertex);
 	const auto v2 = mesh2d->point(mesh2d->switch_vertex(index).vertex);
 
-	if (primitive_to_node_[start] < 0) {
+	const int start_node_id = primitive_to_node_[start];
+	if (start_node_id < 0) {
 		for(int i = 1; i <= n_new_nodes; ++i)
 		{
 			const double t = i/(n_new_nodes + 1.0);
@@ -169,14 +170,14 @@ std::vector<int> poly_fem::MeshNodes::node_ids_from_edge(const Navigation::Index
 
 			nodes_.row(primitive_id) = (1 - t) * v1 + t * v2;
 
-			res.push_back(n_nodes());
+			res.push_back(primitive_to_node_[primitive_id]);
 		}
 	}
 	else
 	{
 		const double t = 1/(n_new_nodes + 1.0);
-		const auto v = (1 - t) * v1 + t * v2;
-		if((node_position(start) - v).squaredNorm() < 1e-8)
+		const RowVectorNd v = (1 - t) * v1 + t * v2;
+		if((node_position(start_node_id) - v).squaredNorm() < 1e-8)
 		{
 			for(int i = 0; i < n_new_nodes; ++i)
 			{
@@ -204,7 +205,46 @@ std::vector<int> poly_fem::MeshNodes::node_ids_from_face(const Navigation::Index
 	if(n_new_nodes <= 0)
 		return res;
 
-	assert(false);
+	assert(mesh_.is_simplex(index.face));
+	const int start = face_offset_ + index.face * max_nodes_per_face_;
+	const int start_node_id = primitive_to_node_[start];
+
+	const Mesh2D * mesh2d = dynamic_cast<const Mesh2D *>(&mesh_);
+
+	const auto v1 = mesh2d->point(index.vertex);
+	const auto v2 = mesh2d->point(mesh2d->switch_vertex(index).vertex);
+	const auto v3 = mesh2d->point(mesh2d->switch_vertex(mesh2d->switch_edge(index)).vertex);
+
+	if(start_node_id < 0)
+	{
+		int loc_index = 0;
+		for(int i = 1; i <= n_new_nodes; ++i)
+		{
+			const double b2 = i/(n_new_nodes + 2.0);
+			for(int j = 1; j <= n_new_nodes - i + 1; ++j)
+			{
+				const double b3 = j/(n_new_nodes + 2.0);
+				const double b1 = 1 - b3 - b2;
+				assert(b3 < 1);
+				assert(b3 > 0);
+
+				const int primitive_id = start + loc_index;
+				primitive_to_node_[primitive_id] = n_nodes();
+				node_to_primitive_.push_back(primitive_id);
+
+				nodes_.row(primitive_id) = b1 * v1 + b2 * v2 + b3 * v3;
+
+				res.push_back(primitive_to_node_[primitive_id]);
+
+				++loc_index;
+			}
+		}
+	}
+	else
+	{
+		assert(false);
+	}
+	assert(res.size() == n_new_nodes *(n_new_nodes+1) / 2);
 	return res;
 }
 

@@ -2,6 +2,7 @@
 #include "FEBasis2d.hpp"
 #include "TriQuadrature.hpp"
 #include "QuadQuadrature.hpp"
+#include "auto_bases.hpp"
 #include <cassert>
 #include <array>
 ////////////////////////////////////////////////////////////////////////////////
@@ -297,23 +298,7 @@ namespace {
 				if(!lb.empty())
 					local_boundary.emplace_back(lb);
 			} else if(mesh.is_simplex(f)) {
-				if (discr_order == 1) {
-					for (int id : poly_fem::FEBasis2d::linear_tri_local_to_global(mesh, f)) {
-						element_nodes_id[f].push_back(nodes.node_id_from_primitive(id));
-					}
-				} else if (discr_order == 2) {
-					for (int id : poly_fem::FEBasis2d::quadr_tri_local_to_global(mesh, f, discr_orders)) {
-						if(id < 0){
-							element_nodes_id[f].push_back(id);
-						}
-						else
-							element_nodes_id[f].push_back(nodes.node_id_from_primitive(id));
-					}
-				}
-				else
-				{
-					assert(false);
-				}
+				element_nodes_id[f] = poly_fem::FEBasis2d::tri_local_to_global(discr_order, mesh, f, discr_orders, nodes);
 
 				// List of edges around the tri
 				std::array<int, 3> e;
@@ -368,15 +353,17 @@ namespace {
 					} else if(mesh.is_simplex(f2)) {
 						//TODO, might not work!!!!!
 						poly_fem::InterfaceData data;
-						if (discr_order == 2) {
-							auto abc = poly_fem::FEBasis2d::quadr_tri_edge_local_nodes(mesh, index2);
-							data.local_indices.assign(abc.begin(), abc.end());
-						} else  if(discr_order == 1) {
-							auto ab = poly_fem::FEBasis2d::linear_tri_edge_local_nodes(mesh, index2);
-							data.local_indices.assign(ab.begin(), ab.end());
-						}
-						else
-							assert(false);
+						auto abc = poly_fem::FEBasis2d::tri_edge_local_nodes(discr_order, mesh, index);
+						data.local_indices.assign(abc.size(), abc.data()[0]);
+						// if (discr_order == 2) {
+						// 	auto abc = poly_fem::FEBasis2d::quadr_tri_edge_local_nodes(mesh, index2);
+						// 	data.local_indices.assign(abc.begin(), abc.end());
+						// } else  if(discr_order == 1) {
+						// 	auto ab = poly_fem::FEBasis2d::linear_tri_edge_local_nodes(mesh, index2);
+						// 	data.local_indices.assign(ab.begin(), ab.end());
+						// }
+						// else
+						// 	assert(false);
 						poly_edge_to_data[index2.edge] = data;
 					}
 				}
@@ -667,6 +654,37 @@ Eigen::MatrixXd poly_fem::FEBasis2d::linear_tri_edge_local_nodes_coordinates(
 }
 
 // -----------------------------------------------------------------------------
+
+Eigen::VectorXi poly_fem::FEBasis2d::tri_edge_local_nodes(const int p, const Mesh2D &mesh, Navigation::Index index)
+{
+	int f = index.face;
+	assert(mesh.is_simplex(f));
+
+	// Local to global mapping of node indices
+	auto l2g = linear_tri_local_to_global(mesh, f);
+
+	// Extract requested interface
+	Eigen::VectorXi result(2 + (p - 1));
+	result[0] = find_index(l2g.begin(), l2g.end(), index.vertex);
+	result[result.size()-1] = find_index(l2g.begin(), l2g.end(), mesh.switch_vertex(index).vertex);
+
+	if((result[0] == 0 && result[result.size()-1] == 1) || (result[0] == 1 && result[result.size()-1] == 2) || (result[0] == 2 && result[result.size()-1] == 0))
+	{
+		for(int i = 0; i < p - 1; ++i)
+		{
+			result[i+1] = 3 + result[0]*(p-1) + i;
+		}
+	}
+	else
+	{
+		for(int i = 0; i < p - 1; ++i)
+		{
+			result[i+1] = 3 + (result[0] + (result[0] == 0 ? 3 : 0))*(p-1) - i - 1;
+		}
+	}
+
+	return result;
+}
 
 std::array<int, 3> poly_fem::FEBasis2d::quadr_tri_edge_local_nodes(
 	const Mesh2D &mesh, Navigation::Index index)
@@ -993,7 +1011,7 @@ int poly_fem::FEBasis2d::build_bases(
 				tri_quadrature.get_quadrature(quadrature_order, quad);
 			});
 
-			b.set_local_node_from_primitive_func([discr_order, e](const int primitive_id, const Mesh &mesh)
+			b.set_local_node_from_primitive_func([discr_order, nodes, e](const int primitive_id, const Mesh &mesh)
 			{
 				const auto &mesh2d = dynamic_cast<const Mesh2D &>(mesh);
 				auto index = mesh2d.get_index_from_face(e);
@@ -1005,29 +1023,31 @@ int poly_fem::FEBasis2d::build_bases(
 					index = mesh2d.next_around_face(index);
 				}
 				assert(index.edge == primitive_id);
+				return tri_edge_local_nodes(discr_order, mesh2d, index);
 
-				Eigen::VectorXi res;
-				if(discr_order == 1)
-				{
-					const auto indices = linear_tri_edge_local_nodes(mesh2d, index);
-					res.resize(indices.size());
+				// Eigen::VectorXi res;
+				// if(discr_order == 1)
+				// {
+				// 	const auto indices = linear_tri_edge_local_nodes(mesh2d, index);
+				// 	res.resize(indices.size());
 
-					for(size_t i = 0; i< indices.size(); ++i)
-						res(i)=indices[i];
-				}
-				else if(discr_order == 2)
-				{
-					const auto indices = quadr_tri_edge_local_nodes(mesh2d, index);
-					res.resize(indices.size());
+				// 	for(size_t i = 0; i< indices.size(); ++i)
+				// 		res(i)=indices[i];
+				// }
+				// else if(discr_order == 2)
+				// {
+				// 	const auto indices = quadr_tri_edge_local_nodes(mesh2d, index);
+				// 	res.resize(indices.size());
 
-					for(size_t i = 0; i< indices.size(); ++i)
-						res(i)=indices[i];
-				}
-				else
-					assert(false);
+				// 	for(size_t i = 0; i< indices.size(); ++i)
+				// 		res(i)=indices[i];
+				// }
+				// else
+				// 	assert(false);
 
-				return res;
+				// return res;
 			});
+
 
 
 			for (int j = 0; j < n_el_bases; ++j) {
@@ -1037,19 +1057,8 @@ int poly_fem::FEBasis2d::build_bases(
 					b.bases[j].init(global_index, j, nodes.node_position(global_index));
 				}
 
-				if (discr_order == 1) {
-					b.bases[j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-						{ linear_tri_basis_value(j, uv, val); });
-					b.bases[j].set_grad([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-						{ linear_tri_basis_grad(j, uv, val); });
-				} else if (discr_order == 2) {
-					b.bases[j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-						{ quadr_tri_basis_value(j, uv, val); });
-					b.bases[j].set_grad([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-						{ quadr_tri_basis_grad(j, uv, val); });
-				} else {
-					assert(false);
-				}
+				b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { poly_fem::autogen::p_basis_value     (discr_order, j, uv, val); });
+				b.bases[j].set_grad ([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { poly_fem::autogen::p_grad_basis_value(discr_order, j, uv, val); });
 			}
 		}
 		else {
@@ -1092,8 +1101,6 @@ int poly_fem::FEBasis2d::build_bases(
 					const auto le = -(global_index+1);
 
 					auto v = linear_tri_local_to_global(mesh, e);
-
-					// Edge nodes
 					Eigen::Matrix<int, 3, 2> ev;
 					ev.row(0) << v[0], v[1];
 					ev.row(1) << v[1], v[2];
@@ -1103,25 +1110,42 @@ int poly_fem::FEBasis2d::build_bases(
 					const auto other_face = index.face;
 
 
-
 					Eigen::RowVector2d node_position;
 					assert(discr_order > 1);
 
-	                const auto param_p = quadr_tri_edge_local_nodes_coordinates(mesh, index);
-	                if( j < 3)
-						node_position = param_p.row(0);
+					auto indices = tri_edge_local_nodes(discr_order, mesh, index);
+					Eigen::MatrixXd lnodes; autogen::p_nodes(discr_order, lnodes);
+
+					if( j < 3)
+						node_position = lnodes.row(indices(0));
 					else if( j < 3 + 3*(discr_order-1))
-						node_position = param_p.row( (j-3) % (discr_order-1));
+						node_position = lnodes.row(indices(((j-3) % (discr_order-1)) + 1));
 					else
 						assert(false);
 
+
+
+					// std::cout<<indices.transpose()<<std::endl;
+					// auto asd = quadr_tri_edge_local_nodes(mesh, index);
+					// std::cout<<asd[0]<<" "<<asd[1]<<" "<<asd[2]<<std::endl;
+
+
+					// std::cout<<"\n"<<lnodes<<"\nnewp\n"<<node_position<<"\n"<<std::endl;
+					// const auto param_p = quadr_tri_edge_local_nodes_coordinates(mesh, index);
+
+					// if( j < 3)
+					// 	node_position = param_p.row(0);
+					// else if( j < 3 + 3*(discr_order-1)){
+					// 	node_position = param_p.row( (j-3) % (discr_order-1) + 1);
+					// }
+					// else
+					// 	assert(false);
+					// std::cout<<node_position<<"\n\n----\n"<<std::endl;
+					
+
 					const auto &other_bases = bases[other_face];
 					Eigen::MatrixXd w;
-	                // const auto param_p = quadr_tri_edge_local_nodes_coordinates(mesh, mesh.switch_face(index));
-	                // const auto indices = quadr_tri_edge_local_nodes(mesh, index);
 					other_bases.evaluate_bases(node_position, w);
-
-					// std::cout<<"w "<<w<<std::endl;
 
 					for(long i = 0; i < w.size(); ++i)
 					{
