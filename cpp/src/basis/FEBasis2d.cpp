@@ -1006,9 +1006,10 @@ int poly_fem::FEBasis2d::build_bases(
 			}
 		} else if(mesh.is_simplex(e))
 		{
-			b.set_quadrature([quadrature_order](Quadrature &quad){
+			const int real_order = std::max(quadrature_order, (discr_order - 1) * (discr_order - 1));
+			b.set_quadrature([real_order](Quadrature &quad){
 				TriQuadrature tri_quadrature;
-				tri_quadrature.get_quadrature(quadrature_order, quad);
+				tri_quadrature.get_quadrature(real_order, quad);
 			});
 
 			b.set_local_node_from_primitive_func([discr_order, nodes, e](const int primitive_id, const Mesh &mesh)

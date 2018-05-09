@@ -40,6 +40,7 @@ namespace poly_fem
                     break;
                 }
 
+                case 2:
                 case 3: {
                     points.resize(6, 2);
                     weights.resize(6, 1);
@@ -86,6 +87,7 @@ namespace poly_fem
                     break;
                 }
 
+                case 5:
                 case 6: {
                     points.resize(12, 2);
                     weights.resize(12, 1);
@@ -248,6 +250,8 @@ namespace poly_fem
                     break;
                 }
 
+                case 10:
+                case 11:
                 case 12: {
                     points.resize(33, 2);
                     weights.resize(33, 1);
