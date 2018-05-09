@@ -342,21 +342,37 @@ void poly_fem::UIState::draw_settings() {
 
 void poly_fem::UIState::draw_debug() {
 	if (ImGui::Button("Clear", ImVec2(-1, 0))) { clear(); }
-	if (ImGui::Button("Show mesh", ImVec2(-1, 0))) { show_mesh(); }
-	if (ImGui::Button("Show vis mesh", ImVec2(-1, 0))) { show_vis_mesh(); }
-	if (ImGui::Button("Show nodes", ImVec2(-1, 0))) { show_nodes(); }
-	// if (ImGui::Button("Show quadrature", ImVec2(-1, 0))) { show_quadrature(); }
-	if (ImGui::Button("Show rhs", ImVec2(-1, 0))) { show_rhs(); }
-	if (ImGui::Button("Show sol", ImVec2(-1, 0))) { show_sol(); }
-	if (ImGui::Button("Show error", ImVec2(-1, 0))) { show_error(); }
 
-	ImGui::Checkbox("Show isolines", &show_isolines);
-
-	int selection_err = show_grad_error ? 1 : 0;
-	static const char *error_type = "function\0gradient\0\0";
-	if (ImGui::Combo("Error", &selection_err, error_type)) {
-		show_grad_error = selection_err == 1;
+    // ImGui::Columns(1, "visualizations");
+	for(int i = 0; i <= poly_fem::UIState::Visualizations::VisBasis; ++i)
+	{
+		// if(ImGui::Selectable(visualizations_texts[i].c_str(), viewer.selected_data_index == i))
+		// {
+		// 	viewer.selected_data_index = i;
+		// }
+		// ImGui::NextColumn();
+		if(ImGui::Checkbox(visualizations_texts[i].c_str(), &visible_visualizations(i))){
+			redraw();
+		}
+		// ImGui::NextColumn();
 	}
+	// ImGui::Columns(1);
+
+	// if (ImGui::Button("Show mesh", ImVec2(-1, 0))) { show_mesh(); }
+	// if (ImGui::Button("Show vis mesh", ImVec2(-1, 0))) { show_vis_mesh(); }
+	// if (ImGui::Button("Show nodes", ImVec2(-1, 0))) { show_nodes(); }
+	// if (ImGui::Button("Show quadrature", ImVec2(-1, 0))) { show_quadrature(); }
+	// if (ImGui::Button("Show rhs", ImVec2(-1, 0))) { show_rhs(); }
+	// if (ImGui::Button("Show sol", ImVec2(-1, 0))) { show_sol(); }
+	// if (ImGui::Button("Show error", ImVec2(-1, 0))) { show_error(); }
+
+	// ImGui::Checkbox("Show isolines", &show_isolines);
+
+	// int selection_err = show_grad_error ? 1 : 0;
+	// static const char *error_type = "function\0gradient\0\0";
+	// if (ImGui::Combo("Error", &selection_err, error_type)) {
+	// 	show_grad_error = selection_err == 1;
+	// }
 
 	ImGui::Separator();
 
@@ -383,37 +399,37 @@ void poly_fem::UIState::draw_debug() {
 		ImGui::PopItemWidth();
 	}
 
-	if (ImGui::CollapsingHeader("Selection", ImGuiTreeNodeFlags_DefaultOpen)) {
-		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.50f);
-		static char buf[1024];
-		if (ImGui::InputText("Element Ids", buf, 1024)) {
-			auto v = StringUtils::split(buf, ",");
-			selected_elements.resize(v.size());
-			std::transform(v.begin(), v.end(), selected_elements.begin(),
-				[](const std::string &s) { return std::stoi(s); });
-		}
-		ImGui::PopItemWidth();
-		if (ImGui::Button("Show##Selected", ImVec2(-1, 0))) {
-			plot_selection_and_index(true);
-		}
-		if (ImGui::Button("Switch vertex", ImVec2(-1, 0))) {
-			plot_selection_and_index();
-		}
-		if (ImGui::Button("Switch edge", ImVec2(-1, 0))) {
-			plot_selection_and_index();
-		}
-		if (ImGui::Button("Switch face", ImVec2(-1, 0))) {
-			plot_selection_and_index();
-		}
-		if (ImGui::Button("Switch element", ImVec2(-1, 0))) {
-			plot_selection_and_index();
-		}
-		if (ImGui::Button("Save selection", ImVec2(-1, 0))) {
-			if(state.mesh->is_volume()) {
-				dynamic_cast<Mesh3D *>(state.mesh.get())->save(selected_elements, 2, "mesh.HYBRID");
-			}
-		}
-	}
+	// if (ImGui::CollapsingHeader("Selection", ImGuiTreeNodeFlags_DefaultOpen)) {
+	// 	ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.50f);
+	// 	static char buf[1024];
+	// 	if (ImGui::InputText("Element Ids", buf, 1024)) {
+	// 		auto v = StringUtils::split(buf, ",");
+	// 		selected_elements.resize(v.size());
+	// 		std::transform(v.begin(), v.end(), selected_elements.begin(),
+	// 			[](const std::string &s) { return std::stoi(s); });
+	// 	}
+	// 	ImGui::PopItemWidth();
+	// 	if (ImGui::Button("Show##Selected", ImVec2(-1, 0))) {
+	// 		plot_selection_and_index(true);
+	// 	}
+	// 	if (ImGui::Button("Switch vertex", ImVec2(-1, 0))) {
+	// 		plot_selection_and_index();
+	// 	}
+	// 	if (ImGui::Button("Switch edge", ImVec2(-1, 0))) {
+	// 		plot_selection_and_index();
+	// 	}
+	// 	if (ImGui::Button("Switch face", ImVec2(-1, 0))) {
+	// 		plot_selection_and_index();
+	// 	}
+	// 	if (ImGui::Button("Switch element", ImVec2(-1, 0))) {
+	// 		plot_selection_and_index();
+	// 	}
+	// 	if (ImGui::Button("Save selection", ImVec2(-1, 0))) {
+	// 		if(state.mesh->is_volume()) {
+	// 			dynamic_cast<Mesh3D *>(state.mesh.get())->save(selected_elements, 2, "mesh.HYBRID");
+	// 		}
+	// 	}
+	// }
 
 }
 

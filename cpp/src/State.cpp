@@ -404,19 +404,19 @@ namespace poly_fem
 		}
 
 		//TODO
-		disc_orders(18) = 4;
-		disc_orders(2) = 4;
-		disc_orders(4) = 4;
-		disc_orders(20) = 4;
-		disc_orders(14) = 4;
-		disc_orders(28) = 4;
-		disc_orders(12) = 4;
-		disc_orders(27) = 4;
-		disc_orders(11) = 4;
-		disc_orders(23) = 4;
-		disc_orders(25) = 4;
-		disc_orders(5) = 4;
-		disc_orders(21) = 4;
+		// disc_orders(18) = 4;
+		// disc_orders(2) = 4;
+		// disc_orders(4) = 4;
+		// disc_orders(20) = 4;
+		// disc_orders(14) = 4;
+		// disc_orders(28) = 4;
+		// disc_orders(12) = 4;
+		// disc_orders(27) = 4;
+		// disc_orders(11) = 4;
+		// disc_orders(23) = 4;
+		// disc_orders(25) = 4;
+		// disc_orders(5) = 4;
+		// disc_orders(21) = 4;
 	}
 
 	void State::compute_mesh_stats()
@@ -570,6 +570,8 @@ namespace poly_fem
 		local_boundary.clear();
 		std::map<int, InterfaceData> poly_edge_to_data_geom; //temp dummy variable
 
+		//TODO
+		disc_orders.setConstant(args["discr_order"]);
 
 		if(mesh->is_volume())
 		{

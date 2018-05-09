@@ -306,6 +306,8 @@ if __name__ == "__main__":
     cpp = cpp + "}\n\n" + unique_nodes + unique_fun + "\n\n" + dunique_fun + "\n"
     hpp = hpp + "\n"
 
+    hpp = hpp + "\nstatic const int MAX_P_BASES = " + str(max(orders)) + ";\n"
+
     cpp = cpp + "\n}}\n"
     hpp = hpp + "\n}}\n"
 

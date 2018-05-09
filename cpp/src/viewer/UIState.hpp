@@ -16,15 +16,25 @@ namespace poly_fem
 	private:
 		UIState();
 
-		enum Visualizing
+		enum Visualizations
 		{
-			InputMesh,
+			InputMesh = 0,
+			Nodes,
 			VisMesh,
 			Solution,
-			Rhs,
 			Error,
-			VisBasis
+			ErrorGrad,
+			VisBasis,
+
+			ElementId,
+			VertexId,
+			NodesId,
+
+			TotalVisualizations
 		};
+
+		const std::string visualizations_texts[Visualizations::TotalVisualizations] = { "InputMesh", "Nodes", "VisMesh", "Solution", "Error", "ErrorGrad", "VisBasis", "ElementId", "VertexId", "NodesId" };
+
 
 	public:
 		static UIState &ui_state();
@@ -32,6 +42,7 @@ namespace poly_fem
 		void launch(const json &args);
 
 		void sertialize(const std::string &name);
+
 
 		bool skip_visualization = false;
 		int vis_basis = 0;
@@ -73,8 +84,19 @@ namespace poly_fem
 		State &state;
 
 	protected:
-		Visualizing current_visualization = Visualizing::InputMesh;
 		std::array<bool, 6> dirichlet_bc;
+
+		igl::opengl::ViewerData &data(const Visualizations &layer);
+		Eigen::Matrix<bool, Eigen::Dynamic, 1> available_visualizations;
+		Eigen::Matrix<bool, Eigen::Dynamic, 1> visible_visualizations;
+
+		std::vector<std::vector<bool>> vis_flags;
+		void reset_flags(const Visualizations &layer);
+		void hide_data(const Visualizations &layer);
+		void show_data(const Visualizations &layer);
+
+		void clear();
+		void redraw();
 
 		// Draw menu
 		virtual void draw_menu() override;
@@ -83,11 +105,9 @@ namespace poly_fem
 		void draw_screenshot();
 		void draw_elasticity_bc();
 
-		void clear();
 		void show_mesh();
 		void show_vis_mesh();
 		void show_nodes();
-		void show_rhs();
 		void show_sol();
 		void show_error();
 		void show_basis();
@@ -106,15 +126,15 @@ namespace poly_fem
 		bool is_quad(const ElementBases &bs) const;
 		bool is_tri(const ElementBases &bs) const;
 
-		void plot_function(const Eigen::MatrixXd &fun, double min=0, double max=-1);
+		void plot_function(const Eigen::MatrixXd &fun, const Visualizations &layer, double min=0, double max=-1);
 		void interpolate_function(const Eigen::MatrixXd &fun, Eigen::MatrixXd &result);
 		void interpolate_grad_function(const Eigen::MatrixXd &fun, Eigen::MatrixXd &result);
 
-		long clip_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, std::vector<bool> &valid_elements, const bool map_edges);
-		long show_clipped_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, const std::vector<bool> &valid_elements, const bool map_edges, const bool recenter = false);
-		void color_mesh(const int n_tris, const std::vector<bool> &valid_elements);
-		void plot_selection_and_index(const bool recenter = false);
-		void get_plot_edges(const Mesh &mesh, const std::vector< ElementBases > &bases, const int n_samples, const std::vector<bool> &valid_elements, Eigen::MatrixXd &pp0, Eigen::MatrixXd &pp1);
+		long clip_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, std::vector<bool> &valid_elements, const bool map_edges, const Visualizations &layer);
+		long show_clipped_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, const std::vector<bool> &valid_elements, const bool map_edges, const Visualizations &layer, const bool recenter = false);
+		void color_mesh(const int n_tris, const std::vector<bool> &valid_elements, const Visualizations &layer);
+		void plot_selection_and_index(const Visualizations &layer, const bool recenter = false);
+		void get_plot_edges(const Mesh &mesh, const std::vector< ElementBases > &bases, const int n_samples, const std::vector<bool> &valid_elements, const Visualizations &layer, Eigen::MatrixXd &pp0, Eigen::MatrixXd &pp1);
 	};
 
 }
