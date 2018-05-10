@@ -343,7 +343,7 @@ namespace poly_fem
 
 		if(poly_percentage > 0)
 		{
-			const int n_poly = mesh->n_elements()*poly_percentage;
+			const int n_poly = std::max(1., mesh->n_elements()*poly_percentage);
 			int counter = 0;
 			srand(11);
 

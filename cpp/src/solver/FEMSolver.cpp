@@ -78,9 +78,10 @@ Eigen::Vector4d poly_fem::dirichlet_solve(
 	//std::cout<<"Solver error: "<<(A*u-g).norm()<<std::endl;
 	// std::cout << u << std::endl;
 
-	if(compute_specturm)
-		return poly_fem::compute_specturm(A);
-	else
+	// Eigen::saveMarket(A, "A.mat");
+	// if(compute_specturm)
+		// return poly_fem::compute_specturm(A);
+	// else
 		return Eigen::Vector4d();
 }
 

@@ -265,7 +265,8 @@ namespace {
 						element_nodes_id[f].push_back(nodes.node_id_from_primitive(id));
 					}
 				} else if (discr_order == 2) {//TODO
-					for (int id : poly_fem::FEBasis2d::quadr_quad_local_to_global(mesh, f)) {
+					const auto tmp = poly_fem::FEBasis2d::quadr_quad_local_to_global(mesh, f);
+					for (int id : tmp) {
 						if(id < 0)
 							element_nodes_id[f].push_back(id);
 						else
@@ -907,7 +908,7 @@ int poly_fem::FEBasis2d::build_bases(
 
 	const int max_p = discr_orders.maxCoeff();
 	const int nn = max_p > 2 ? (max_p - 2) : 0;
-	const int n_face_nodes = nn * (nn + 1) / 2;
+	const int n_face_nodes = std::max(nn * (nn + 1) / 2, (max_p-1)*(max_p-1));
 
 	//TODO works only for P
 	MeshNodes nodes(mesh, max_p - 1, n_face_nodes);
