@@ -27,6 +27,7 @@ namespace poly_fem
 		void set_constant(const int index, const Eigen::Vector3d &value);
 		void set_function(const int index, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tri);
 	private:
+		bool initialized_ = false;
 		double rhs_;
 		double scaling_;
 		Eigen::Vector3d translation_;

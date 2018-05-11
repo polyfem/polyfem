@@ -62,6 +62,7 @@ namespace poly_fem
 		val_bc_.resize(boundary_ids_.size());
 		funcs_.resize(boundary_ids_.size());
 
+		initialized_ = true;
 	}
 
 	void CustomProblem::set_constant(const int index, const Eigen::Vector3d &value)
@@ -77,6 +78,9 @@ namespace poly_fem
 
 	void CustomProblem::set_parameters(const json &params)
 	{
+		if(initialized_)
+			return;
+		
 		if(params.find("scaling") != params.end())
 		{
 			scaling_ = params["scaling"];

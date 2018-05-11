@@ -317,6 +317,7 @@ namespace poly_fem
 
 		mesh->refine(args["n_refs"], args["refinenemt_location"], parent_elements);
 
+		mesh->compute_boundary_ids();
 
 		timer.stop();
 		std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
