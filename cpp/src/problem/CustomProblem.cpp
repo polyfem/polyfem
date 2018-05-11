@@ -57,12 +57,11 @@ namespace poly_fem
 		scaling_  = 1;
 		translation_.setZero();
 
-		boundary_ids_.clear();
-		bc_.resize(b_id.size());
+		boundary_ids_ = b_id;
+		bc_.resize(boundary_ids_.size());
 		val_bc_.resize(boundary_ids_.size());
 		funcs_.resize(boundary_ids_.size());
 
-		boundary_ids_ = b_id;
 	}
 
 	void CustomProblem::set_constant(const int index, const Eigen::Vector3d &value)
