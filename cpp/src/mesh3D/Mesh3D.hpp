@@ -34,7 +34,7 @@ namespace poly_fem
 		bool is_boundary_face(const int face_global_id) const override { return mesh_.faces[face_global_id].boundary; }
 
 		bool load(const std::string &path) override;
-		bool load(const GEO::Mesh &M);
+		bool load(const GEO::Mesh &M) override;
 
 		bool save(const std::string &path) const override;
 		bool save(const std::vector<int> &fs, const int ringN, const std::string &path) const;

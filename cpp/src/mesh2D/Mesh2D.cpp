@@ -57,6 +57,17 @@ namespace poly_fem
 		return true;
 	}
 
+	bool Mesh2D::load(const GEO::Mesh &mesh)
+	{
+		mesh_.clear(false,false);
+		mesh_.copy(mesh);
+
+		orient_normals_2d(mesh_);
+		Navigation::prepare_mesh(mesh_);
+		compute_elements_tag();
+		return true;
+	}
+
 	bool Mesh2D::save(const std::string &path) const
 	{
 		if(!mesh_save(mesh_, path))

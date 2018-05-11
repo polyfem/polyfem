@@ -31,6 +31,7 @@ namespace poly_fem
 	{
 	public:
 		static std::unique_ptr<Mesh> create(const std::string &path);
+		static std::unique_ptr<Mesh> create(GEO::Mesh &M);
 
 		virtual ~Mesh() = default;
 
@@ -53,6 +54,7 @@ namespace poly_fem
 
 		//IO
 		virtual bool load(const std::string &path) = 0;
+		virtual bool load(const GEO::Mesh &M) = 0;
 		virtual bool save(const std::string &path) const = 0;
 
 		virtual void normalize() = 0;

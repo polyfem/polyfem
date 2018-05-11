@@ -41,6 +41,7 @@ namespace poly_fem
 
 
 		bool load(const std::string &path) override;
+		bool load(const GEO::Mesh &mesh) override;
 		bool save(const std::string &path) const override;
 
 		void normalize() override;

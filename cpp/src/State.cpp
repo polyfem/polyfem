@@ -287,6 +287,46 @@ namespace poly_fem
 		}
 	}
 
+	void State::load_mesh(GEO::Mesh &meshin)
+	{
+		bases.clear();
+		geom_bases.clear();
+		boundary_nodes.clear();
+		local_boundary.clear();
+		polys.clear();
+		poly_edge_to_data.clear();
+		parent_elements.clear();
+
+		stiffness.resize(0, 0);
+		rhs.resize(0, 0);
+		sol.resize(0, 0);
+
+		n_bases = 0;
+
+
+
+		igl::Timer timer; timer.start();
+		std::cout<<"Loading mesh..."<<std::flush;
+		mesh = Mesh::create(meshin);
+		if (!mesh) {
+			return;
+		}
+
+		if(args["normalize_mesh"])
+			mesh->normalize();
+
+		mesh->refine(args["n_refs"], args["refinenemt_location"], parent_elements);
+
+
+		timer.stop();
+		std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
+
+		RefElementSampler::sampler().init(mesh->is_volume(), mesh->n_elements());
+
+		disc_orders.resize(mesh->n_elements());
+		disc_orders.setConstant(args["discr_order"]);
+	}
+
 	void State::load_mesh()
 	{
 		bases.clear();

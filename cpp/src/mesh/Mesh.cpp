@@ -9,17 +9,35 @@
 
 namespace {
 
-bool is_planar(const GEO::Mesh &M) {
-	if (M.vertices.dimension() == 2) {
-		return true;
+	bool is_planar(const GEO::Mesh &M) {
+		if (M.vertices.dimension() == 2) {
+			return true;
+		}
+		assert(M.vertices.dimension() == 3);
+		GEO::vec3 min_corner, max_corner;
+		GEO::get_bbox(M, &min_corner[0], &max_corner[0]);
+		return (max_corner[2] - min_corner[2]) < 1e-5;
 	}
-	assert(M.vertices.dimension() == 3);
-	GEO::vec3 min_corner, max_corner;
-	GEO::get_bbox(M, &min_corner[0], &max_corner[0]);
-	return (max_corner[2] - min_corner[2]) < 1e-5;
-}
 
 } // anonymous namespace
+
+std::unique_ptr<poly_fem::Mesh> poly_fem::Mesh::create(GEO::Mesh &meshin) {
+	if (is_planar(meshin)) {
+		auto mesh = std::make_unique<Mesh2D>();
+		if (mesh->load(meshin)) {
+			return mesh;
+		}
+	} else {
+		auto mesh = std::make_unique<Mesh3D>();
+		meshin.cells.connect();
+		if (mesh->load(meshin)) {
+			return mesh;
+		}
+	}
+
+	std::cerr << "Failed to load mesh" << std::endl;
+	return nullptr;
+}
 
 std::unique_ptr<poly_fem::Mesh> poly_fem::Mesh::create(const std::string &path) {
 	std::string lowername = path;
@@ -32,18 +50,7 @@ std::unique_ptr<poly_fem::Mesh> poly_fem::Mesh::create(const std::string &path) 
 	} else {
 		GEO::Mesh tmp;
 		if (GEO::mesh_load(path, tmp)) {
-			if (is_planar(tmp)) {
-				auto mesh = std::make_unique<Mesh2D>();
-				if (mesh->load(path)) {
-					return mesh;
-				}
-			} else {
-				auto mesh = std::make_unique<Mesh3D>();
-				tmp.cells.connect();
-				if (mesh->load(tmp)) {
-					return mesh;
-				}
-			}
+			return create(tmp);
 		}
 	}
 	std::cerr << "Failed to load mesh: " << path << std::endl;
