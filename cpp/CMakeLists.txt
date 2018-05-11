@@ -73,18 +73,18 @@ option(LIBIGL_WITH_XML                    "Use XML"                      OFF)
 
 ################################################################################
 
-add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/src/autogen/auto_rhs.cpp ${CMAKE_SOURCE_DIR}/src/autogen/auto_rhs.hpp
-	COMMAND python ${CMAKE_SOURCE_DIR}/src/autogen/elasticity_rhs.py ${CMAKE_SOURCE_DIR}/src/autogen/
-	DEPENDS ${CMAKE_SOURCE_DIR}/src/autogen/elasticity_rhs.py)
+add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_rhs.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_rhs.hpp
+	COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/elasticity_rhs.py ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/
+	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/elasticity_rhs.py)
 
 
-add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/src/autogen/auto_eigs.cpp ${CMAKE_SOURCE_DIR}/src/autogen/auto_eigs.hpp
-	COMMAND python ${CMAKE_SOURCE_DIR}/src/autogen/eigs.py ${CMAKE_SOURCE_DIR}/src/autogen/
-	DEPENDS ${CMAKE_SOURCE_DIR}/src/autogen/eigs.py)
+add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_eigs.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_eigs.hpp
+	COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/eigs.py ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/
+	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/eigs.py)
 
-add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/src/autogen/auto_bases.cpp ${CMAKE_SOURCE_DIR}/src/autogen/auto_bases.hpp
-	COMMAND python ${CMAKE_SOURCE_DIR}/src/autogen/FEBases.py ${CMAKE_SOURCE_DIR}/src/autogen/
-	DEPENDS ${CMAKE_SOURCE_DIR}/src/autogen/FEBases.py)
+add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_bases.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_bases.hpp
+	COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/FEBases.py ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/
+	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/FEBases.py)
 
 
 
@@ -232,12 +232,12 @@ set(source_list
 
 add_library(polyfem
 	${source_list}
-	${CMAKE_SOURCE_DIR}/src/autogen/auto_rhs.cpp
-	${CMAKE_SOURCE_DIR}/src/autogen/auto_rhs.hpp
-	${CMAKE_SOURCE_DIR}/src/autogen/auto_eigs.cpp
-	${CMAKE_SOURCE_DIR}/src/autogen/auto_eigs.hpp
-	${CMAKE_SOURCE_DIR}/src/autogen/auto_bases.cpp
-	${CMAKE_SOURCE_DIR}/src/autogen/auto_bases.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_rhs.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_rhs.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_eigs.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_eigs.hpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_bases.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_bases.hpp
 )
 
 target_include_directories(polyfem PUBLIC
@@ -264,12 +264,12 @@ foreach(source IN ITEMS ${source_list})
     source_group("${group_path}" FILES "${source}")
 endforeach()
 
-source_group("autogen" FILES ${CMAKE_SOURCE_DIR}/src/autogen/auto_rhs.cpp)
-source_group("autogen" FILES ${CMAKE_SOURCE_DIR}/src/autogen/auto_rhs.hpp)
-source_group("autogen" FILES ${CMAKE_SOURCE_DIR}/src/autogen/auto_eigs.cpp)
-source_group("autogen" FILES ${CMAKE_SOURCE_DIR}/src/autogen/auto_eigs.hpp)
-source_group("autogen" FILES ${CMAKE_SOURCE_DIR}/src/autogen/auto_bases.cpp)
-source_group("autogen" FILES ${CMAKE_SOURCE_DIR}/src/autogen/auto_bases.hpp)
+source_group("autogen" FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_rhs.cpp)
+source_group("autogen" FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_rhs.hpp)
+source_group("autogen" FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_eigs.cpp)
+source_group("autogen" FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_eigs.hpp)
+source_group("autogen" FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_bases.cpp)
+source_group("autogen" FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_bases.hpp)
 
 
 
