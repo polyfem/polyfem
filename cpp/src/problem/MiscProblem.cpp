@@ -21,7 +21,7 @@ namespace poly_fem
 		template<typename T>
 		T cubic_fun(T x, T y)
 		{
-			return x*x*x;
+			return y*y*y;
 		}
 
 		template<typename T>

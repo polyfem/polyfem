@@ -52,6 +52,30 @@ namespace poly_fem
 		}
 	}
 
+	void CustomProblem::init(const std::vector<int> &b_id)
+	{
+		scaling_  = 1;
+		translation_.setZero();
+
+		boundary_ids_.clear();
+		bc_.resize(b_id.size());
+		val_bc_.resize(boundary_ids_.size());
+		funcs_.resize(boundary_ids_.size());
+
+		boundary_ids_ = b_id;
+	}
+
+	void CustomProblem::set_constant(const int index, const Eigen::Vector3d &value)
+	{
+		bc_[index] = value;
+		val_bc_[index] = true;
+	}
+
+	void CustomProblem::set_function(const int index, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tri)
+	{
+		funcs_[index] = InterpolatedFunction2d(func, pts.block(0, 0, pts.rows(), 2), tri);
+	}
+
 	void CustomProblem::set_parameters(const json &params)
 	{
 		if(params.find("scaling") != params.end())

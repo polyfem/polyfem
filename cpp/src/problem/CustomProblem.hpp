@@ -21,6 +21,11 @@ namespace poly_fem
 		bool is_scalar() const override { return false; }
 
 		void set_parameters(const json &params) override;
+
+		void init(const std::vector<int> &b_id);
+
+		void set_constant(const int index, const Eigen::Vector3d &value);
+		void set_function(const int index, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tri);
 	private:
 		double rhs_;
 		double scaling_;
