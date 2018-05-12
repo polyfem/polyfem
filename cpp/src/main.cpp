@@ -84,49 +84,6 @@ int main(int argc, const char **argv)
 	command_line.parse(argc, argv);
 	if (!screenshot.empty()) { no_ui = false; }
 
-	json j_args = {
-		{"mesh", ""},
-		{"n_refs", 0},
-		{"refinenemt_location", 0.5},
-		{"n_boundary_samples", 10},
-		{"problem", "Franke"},
-		{"normalize_mesh", true},
-
-		{"scalar_formulation", "Laplacian"},
-		{"tensor_formulation", "LinearElasticity"},
-
-		{"quadrature_order", 4},
-		{"discr_order", 1},
-		{"boundary_samples", 10},
-		{"use_spline", false},
-		{"iso_parametric", true},
-		{"integral_constraints", 2},
-
-		{"fit_nodes", false},
-
-		{"n_harmonic_samples", 10},
-
-		{"solver_type", LinearSolver::defaultSolver()},
-		{"precond_type", LinearSolver::defaultPrecond()},
-
-		{"solver_params", {}},
-
-		{"params", {
-			{"lambda", 0.75},
-			{"mu", 0.375},
-			{"k", 1.0},
-			{"elasticity_tensor", {}},
-			{"young", 1.0},
-			{"nu", 0.0},
-			{"alphas", {2.13185026692482, -0.600299816209491}},
-			{"mus", {0.00407251192475097, 0.000167202574129608}},
-			{"Ds", {9.4979, 1000000}}
-		}},
-
-		{"problem_params", {}},
-
-		{"output", {}}
-	};
 
 	json in_args;
 
@@ -155,15 +112,13 @@ int main(int argc, const char **argv)
 		in_args["output"] = output;
 	}
 
-	j_args.merge_patch(in_args);
-
 	// std::cout<<j_args.dump(4)<<std::endl;
 
 
 	if(no_ui)
 	{
 		State &state = State::state();
-		state.init(j_args);
+		state.init(in_args);
 
 
 		state.load_mesh();
@@ -180,19 +135,14 @@ int main(int argc, const char **argv)
 
 		state.compute_errors();
 
-		const std::string out_path = j_args["output"];
-		if(!out_path.empty()){
-			std::ofstream out(out_path);
-			state.save_json(out);
-			out.close();
-		}
+		state.save_json();
 
 		if(!vtu.empty())
 			state.save_vtu(vtu);
 	}
 	else
 	{
-		UIState::ui_state().launch(j_args);
+		UIState::ui_state().launch(in_args);
 	}
 
 

@@ -108,6 +108,7 @@ namespace poly_fem
 		void compute_scalar_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result);
 
 		void save_json(std::ostream &out);
+		void save_json();
 
 		void compute_mesh_stats();
 
