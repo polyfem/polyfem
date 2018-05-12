@@ -13,7 +13,6 @@ include(UseColors)
 # Sort projects inside the solution
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-
 # Generate position independent code by default
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -63,13 +62,16 @@ option(LIBIGL_WITH_XML                    "Use XML"                      OFF)
 
 # Uncomment the following lines to force options which are already cached
 # set(PREFER_LOCAL_LIBS   ON  CACHE BOOL "" FORCE)
-# set(ENABLE_CHOLMOD      OFF CACHE BOOL "" FORCE)
-# set(ENABLE_UMFPACK      OFF CACHE BOOL "" FORCE)
-# set(ENABLE_SUPERLU      OFF CACHE BOOL "" FORCE)
 # set(ENABLE_MKL          OFF CACHE BOOL "" FORCE)
 # set(ENABLE_PARDISO      OFF CACHE BOOL "" FORCE)
 # set(ENABLE_MMG          ON  CACHE BOOL "" FORCE)
-# set(ENABLE_MMG          ON  CACHE BOOL "" FORCE)
+
+# Somehow Pardiso 6 conflicts with libmetis that these guys depends on... Grr
+if(ENABLE_PARDISO)
+	set(ENABLE_CHOLMOD      OFF CACHE BOOL "" FORCE)
+	set(ENABLE_UMFPACK      OFF CACHE BOOL "" FORCE)
+	set(ENABLE_SUPERLU      OFF CACHE BOOL "" FORCE)
+endif()
 
 ################################################################################
 
