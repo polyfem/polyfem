@@ -162,6 +162,23 @@ namespace poly_fem
 		return p;
 	}
 
+	void Mesh2D::compute_boundary_ids(const std::function<int(const RowVectorNd&)> &marker)
+	{
+		boundary_ids_.resize(n_edges());
+		std::fill(boundary_ids_.begin(), boundary_ids_.end(), -1);
+
+		//implement me properly
+		for(int e = 0; e < n_edges(); ++e)
+		{
+			if(!is_boundary_edge(e))
+				continue;
+
+			const auto p = edge_barycenter(e);
+
+			boundary_ids_[e] = marker(p);
+		}
+	}
+
 	void Mesh2D::compute_boundary_ids()
 	{
 		boundary_ids_.resize(n_edges());

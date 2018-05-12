@@ -96,7 +96,7 @@ namespace poly_fem
 		void compute_mesh_size(const Mesh &mesh, const std::vector< ElementBases > &bases, const int n_samples);
 
 		void load_mesh();
-		void load_mesh(GEO::Mesh &meshin);
+		void load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd&)> &boundary_marker);
 		void build_basis();
 		void build_polygonal_basis();
 		void assemble_stiffness_mat();

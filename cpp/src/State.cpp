@@ -297,7 +297,7 @@ namespace poly_fem
 		}
 	}
 
-	void State::load_mesh(GEO::Mesh &meshin)
+	void State::load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd&)> &boundary_marker)
 	{
 		bases.clear();
 		geom_bases.clear();
@@ -327,7 +327,7 @@ namespace poly_fem
 
 		mesh->refine(args["n_refs"], args["refinenemt_location"], parent_elements);
 
-		mesh->compute_boundary_ids();
+		mesh->compute_boundary_ids(boundary_marker);
 
 		timer.stop();
 		std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;

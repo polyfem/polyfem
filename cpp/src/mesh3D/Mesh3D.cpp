@@ -607,6 +607,21 @@ namespace poly_fem
 		}
 	}
 
+	void Mesh3D::compute_boundary_ids(const std::function<int(const RowVectorNd&)> &marker)
+	{
+		boundary_ids_.resize(n_faces());
+		std::fill(boundary_ids_.begin(), boundary_ids_.end(), -1);
+
+		for(int f = 0; f < n_faces(); ++f)
+		{
+			if(!is_boundary_face(f))
+				continue;
+
+			const auto p = face_barycenter(f);
+			boundary_ids_[f]=marker(p);
+		}
+	}
+
 	void Mesh3D::compute_boundary_ids()
 	{
 		boundary_ids_.resize(n_faces());

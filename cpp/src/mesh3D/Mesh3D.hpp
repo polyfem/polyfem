@@ -84,6 +84,7 @@ namespace poly_fem
 
 
 		void compute_boundary_ids() override;
+		void compute_boundary_ids(const std::function<int(const RowVectorNd&)> &marker) override;
 
 		void compute_element_barycenters(Eigen::MatrixXd &barycenters) const override { cell_barycenters(barycenters); }
 		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
