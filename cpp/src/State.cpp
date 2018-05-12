@@ -380,6 +380,7 @@ namespace poly_fem
 
 
 
+		// const double poly_percentage = 0.05;
 		const double poly_percentage = 0;
 
 		if(poly_percentage > 0)
