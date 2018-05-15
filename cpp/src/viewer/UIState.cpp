@@ -724,8 +724,10 @@ namespace poly_fem
 				tmp.resize(fun.rows(),3);
 				tmp.col(0)=vis_pts.col(0);
 				tmp.col(1)=vis_pts.col(1);
-				// tmp.col(2)=fun;
-				tmp.col(2).setZero();
+				if(show_funs_in_3d)
+					tmp.col(2)=fun;
+				else
+					tmp.col(2).setZero();
 				clip_elements(tmp, vis_faces, vis_element_ranges, valid_elements, true, layer);
 
 				if(show_isolines)
@@ -894,7 +896,7 @@ namespace poly_fem
 						// P.row(j) = node;
 						data(Visualizations::Nodes).add_points(node, col);
 						//TODO text is impossible to hide :(
-						//data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(l2g.index));
+						data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(l2g.index));
 					}
 				}
 			// add_spheres(viewer, P, 0.05);

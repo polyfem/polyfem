@@ -45,6 +45,7 @@ namespace poly_fem
 
 
 		bool skip_visualization = false;
+		bool show_funs_in_3d = false;
 		int vis_basis = 0;
 
 		igl::opengl::glfw::Viewer viewer;

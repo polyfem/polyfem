@@ -469,6 +469,8 @@ void poly_fem::UIState::draw_screenshot() {
 
 	if(ImGui::Checkbox("Color discr order", &color_using_discr_order))
 		show_mesh();
+
+	ImGui::Checkbox("Use 3D funs", &show_funs_in_3d);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
