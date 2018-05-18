@@ -19,12 +19,15 @@ namespace poly_fem
 		enum Visualizations
 		{
 			InputMesh = 0,
+			DiscrMesh,
 			Nodes,
 			VisMesh,
 			Solution,
 			Error,
 			ErrorGrad,
 			VisBasis,
+
+			Debug,
 
 			ElementId,
 			VertexId,
@@ -33,7 +36,7 @@ namespace poly_fem
 			TotalVisualizations
 		};
 
-		const std::string visualizations_texts[Visualizations::TotalVisualizations] = { "InputMesh", "Nodes", "VisMesh", "Solution", "Error", "ErrorGrad", "VisBasis", "ElementId", "VertexId", "NodesId" };
+		const std::string visualizations_texts[Visualizations::TotalVisualizations] = { "InputMesh", "Diretization", "Nodes", "VisMesh", "Solution", "Error", "ErrorGrad", "VisBasis", "Debug", "ElementId", "VertexId", "NodesId" };
 
 
 	public:
@@ -73,7 +76,7 @@ namespace poly_fem
 		bool show_element_id = false;
 		bool show_vertex_id = false;
 		bool show_node_id = false;
-		bool color_using_discr_order = false;
+		// bool color_using_discr_order = false;
 
 		std::string screenshot = "";
 

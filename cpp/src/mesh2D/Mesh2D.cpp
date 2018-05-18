@@ -154,6 +154,12 @@ namespace poly_fem
 		}
 	}
 
+	void Mesh2D::set_point(const int global_index, const RowVectorNd &p)
+	{
+		mesh_.vertices.point(global_index).x = p(0);
+		mesh_.vertices.point(global_index).y = p(1);
+	}
+
 	RowVectorNd Mesh2D::point(const int global_index) const {
 		const double *ptr = mesh_.vertices.point_ptr(global_index);
 		RowVectorNd p(2);

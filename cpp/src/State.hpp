@@ -10,6 +10,9 @@
 #include "InterfaceData.hpp"
 #include "Common.hpp"
 
+#include "Mesh2D.hpp"
+#include "Mesh3D.hpp"
+
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <memory>
@@ -53,7 +56,7 @@ namespace poly_fem
 		Eigen::SparseMatrix<double> stiffness;
 		Eigen::MatrixXd rhs;
 		Eigen::MatrixXd sol;
-		
+
 		Eigen::Vector4d spectrum;
 
 
@@ -77,6 +80,7 @@ namespace poly_fem
 		double assigning_rhs_time;
 		double solving_time;
 		double computing_errors_time;
+		double max_angle;
 
 		int n_flipped;
 
@@ -125,6 +129,9 @@ namespace poly_fem
 
 		inline std::string scalar_formulation() const { return args["scalar_formulation"]; }
 		inline std::string tensor_formulation() const { return args["tensor_formulation"]; }
+
+		void p_refinement(const Mesh2D &mesh2d);
+		void p_refinement(const Mesh3D &mesh3d);
 
 	};
 

@@ -49,6 +49,8 @@ namespace poly_fem
 		void compute_elements_tag() override;
 		virtual void update_elements_tag() override;
 
+		void set_point(const int global_index, const RowVectorNd &p);
+
 		virtual RowVectorNd point(const int global_index) const override;
 		virtual RowVectorNd edge_barycenter(const int index) const override;
 		virtual RowVectorNd face_barycenter(const int index) const override;

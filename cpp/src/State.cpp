@@ -55,6 +55,17 @@ using namespace Eigen;
 
 namespace poly_fem
 {
+	namespace
+	{
+		template<typename V1, typename  V2>
+		double angle(const V1 &v1, const V2 &v2)
+		{
+			assert(v1.size() == 2);
+			assert(v2.size() == 2);
+			return std::abs(atan2(v1(0)*v2(1) - v1(1)*v2(0), v1.dot(v2)));
+		}
+	}
+
 	State::State()
 	{
 		problem = ProblemFactory::factory().get_problem("Linear");
@@ -170,6 +181,7 @@ namespace poly_fem
 		j["num_elements"] = mesh->n_elements();
 
 		j["mesh_size"] = mesh_size;
+		j["max_angle"] = max_angle;
 
 		j["min_edge_length"] = min_edge_length;
 		j["average_edge_length"] = average_edge_length;
@@ -221,6 +233,86 @@ namespace poly_fem
 		out << j.dump(4) << std::endl;
 
 		std::cout<<"done"<<std::endl;
+	}
+
+
+	void State::p_refinement(const Mesh2D &mesh2d)
+	{
+		max_angle = 0;
+		static const int max_angles = 5;
+		static const double angles[max_angles] = {0, 3./4.*M_PI, 9./10.*M_PI, 39./40.*M_PI,  M_PI};
+		for(int f = 0; f < mesh2d.n_faces(); ++f)
+		{
+			if(!mesh2d.is_simplex(f))
+				continue;
+
+			auto v0 = mesh2d.point(mesh2d.face_vertex(f, 0));
+			auto v1 = mesh2d.point(mesh2d.face_vertex(f, 1));
+			auto v2 = mesh2d.point(mesh2d.face_vertex(f, 2));
+
+			const RowVectorNd e0 = v1-v0;
+			const RowVectorNd e1 = v2-v1;
+			const RowVectorNd e2 = v0-v2;
+
+			const double alpha0 = angle(e0, -e2);
+			const double alpha1 = angle(e1, -e0);
+			const double alpha2 = angle(e2, -e1);
+
+			if(f == 49)
+				std::cout<<alpha0<<" "<<alpha1<<" "<<alpha2<<std::endl;
+
+			for(int i = 1; i < max_angles; ++i)
+			{
+				const bool a0 = alpha0 >= angles[i-1] && alpha0 < angles[i];
+				const bool a1 = alpha1 >= angles[i-1] && alpha1 < angles[i];
+				const bool a2 = alpha2 >= angles[i-1] && alpha2 < angles[i];
+
+
+				if(a0 || a1 || a2)
+				{
+					if(i > disc_orders[f])
+						disc_orders[f] = i;
+					auto index = mesh2d.get_index_from_face(f);
+
+					for(int lv = 0; lv < 3; ++lv)
+					{
+						auto nav = mesh2d.switch_face(index);
+
+						while(nav.face >=0 && nav.face != f)
+						{
+							if(i > disc_orders[nav.face])
+								disc_orders[nav.face] = i;
+
+							nav = mesh2d.switch_face(mesh2d.switch_edge(nav));
+						}
+
+
+						nav = mesh2d.switch_face(mesh2d.switch_edge(index));
+
+						while(nav.face >=0 && nav.face != f)
+						{
+							if(i > disc_orders[nav.face])
+								disc_orders[nav.face] = i;
+
+							nav = mesh2d.switch_face(mesh2d.switch_edge(nav));
+						}
+
+						index = mesh2d.next_around_face(index);
+					}
+				}
+			}
+
+			max_angle = std::max(max_angle, alpha0);
+			max_angle = std::max(max_angle, alpha1);
+			max_angle = std::max(max_angle, alpha2);
+		}
+
+		std::cout<<"max_angle "<<(max_angle/M_PI*180)<<std::endl;
+	}
+
+	void State::p_refinement(const Mesh3D &mesh3d)
+	{
+		assert(false);
 	}
 
 
@@ -392,6 +484,7 @@ namespace poly_fem
 
 		// const double poly_percentage = 0.05;
 		const double poly_percentage = 0;
+		const double perturb_t = 0.3;
 
 		if(poly_percentage > 0)
 		{
@@ -448,12 +541,47 @@ namespace poly_fem
 				mesh->set_tag(el_id, ElementType::InteriorPolytope);
 				++counter;
 
+				mesh->update_elements_tag();
+
 				if(counter >= n_poly)
 					break;
 
-				mesh->update_elements_tag();
+			}
+
+
+			if(perturb_t > 0)
+			{
+				if(mesh->is_volume())
+				{
+					assert(false);
+				}
+				else
+				{
+					Mesh2D &tmp_mesh = *dynamic_cast<Mesh2D *>(mesh.get());
+					for(int el_id = 0; el_id < tmp_mesh.n_elements(); ++el_id)
+					{
+						if(!tmp_mesh.is_polytope(el_id))
+							continue;
+
+						const int rand_index = rand() % tmp_mesh.n_face_vertices(el_id);
+						auto index = tmp_mesh.get_index_from_face(el_id);
+						for(int r = 0; r < rand_index; ++r)
+							index = tmp_mesh.next_around_face(index);
+
+						const auto v1 = tmp_mesh.point(index.vertex);
+						const auto v2 = tmp_mesh.point(tmp_mesh.next_around_face(tmp_mesh.next_around_face(index)).vertex);
+
+
+						const double t = perturb_t + ((double) rand() / (RAND_MAX)) * 0.2 - 0.1;
+						const RowVectorNd v = t * v1 + (1-t) * v2;
+						tmp_mesh.set_point(index.vertex, v);
+					}
+				}
 			}
 		}
+
+		// for(int i = 8; i < 16; ++i)
+			// mesh->set_tag(i, ElementType::SimpleSingularInteriorCube);
 
 		//TODO
 		// disc_orders(18) = 4;
@@ -622,8 +750,15 @@ namespace poly_fem
 		local_boundary.clear();
 		std::map<int, InterfaceData> poly_edge_to_data_geom; //temp dummy variable
 
-		//TODO
 		disc_orders.setConstant(args["discr_order"]);
+
+		if(args["use_p_ref"])
+		{
+			if(mesh->is_volume())
+				p_refinement(*dynamic_cast<Mesh3D *>(mesh.get()));
+			else
+				p_refinement(*dynamic_cast<Mesh2D *>(mesh.get()));
+		}
 
 		if(mesh->is_volume())
 		{
@@ -1021,6 +1156,7 @@ namespace poly_fem
 			{"quadrature_order", 4},
 			{"discr_order", 1},
 			{"boundary_samples", 10},
+			{"use_p_ref", false},
 			{"use_spline", false},
 			{"iso_parametric", true},
 			{"integral_constraints", 2},

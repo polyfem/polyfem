@@ -15,13 +15,15 @@ namespace poly_fem
 		template<typename T>
 		T quadratic_fun(T x, T y)
 		{
-			return x*x;
+			T v = (2*y-0.9);
+			return v*v;
 		}
 
 		template<typename T>
 		T cubic_fun(T x, T y)
 		{
-			return y*y*y;
+			T v = (2*y-0.9);
+			return v*v*v*v + 0.1;
 		}
 
 		template<typename T>

@@ -245,10 +245,16 @@ namespace poly_fem
 		cols.setZero();
 
 		int from = 0;
-		if(color_using_discr_order)
+		if(layer == Visualizations::DiscrMesh)
 		{
-			Eigen::MatrixXd tmp;
-			igl::colormap(color_map, state.disc_orders, true, tmp);
+			Eigen::MatrixXd tmp(5, 3);
+			tmp << 	255, 234, 167,
+					250, 177, 160,
+					255, 118, 117,
+					253, 121, 168,
+					232, 67, 147;
+
+			tmp /= 255;
 
 			for(std::size_t i = 1; i < element_ranges.size(); ++i)
 			{
@@ -258,7 +264,7 @@ namespace poly_fem
 				const int range = element_ranges[i]-element_ranges[i-1];
 
 				for(int c = 0; c < 3; ++c)
-					cols.block(from, c, range, 1).setConstant(tmp(i-1, c));
+					cols.block(from, c, range, 1).setConstant(tmp(state.disc_orders(i-1)-1, c));
 				from += range;
 			}
 		}
@@ -790,14 +796,31 @@ namespace poly_fem
 		if(visible_visualizations(Visualizations::InputMesh))
 			show_data(Visualizations::InputMesh);
 
+
+		if(visible_visualizations(Visualizations::DiscrMesh) && !available_visualizations[Visualizations::DiscrMesh])
+		{
+			reset_flags(Visualizations::DiscrMesh);
+			std::vector<bool> valid_elements;
+			const long n_tris = clip_elements(tri_pts, tri_faces, element_ranges, valid_elements, false, Visualizations::DiscrMesh);
+			color_mesh(n_tris, valid_elements, Visualizations::DiscrMesh);
+
+			available_visualizations[Visualizations::DiscrMesh] = true;
+			vis_flags[Visualizations::DiscrMesh].clear();
+			hide_data(Visualizations::DiscrMesh);
+		}
+
+		if(visible_visualizations(Visualizations::DiscrMesh))
+			show_data(Visualizations::DiscrMesh);
+
 		// for(int i = 0; i < state.mesh->n_faces(); ++i)
 		// {
 		// 	MatrixXd p = state.mesh->face_barycenter(i);
-		// 	viewer.data().add_label(p.transpose(), std::to_string(i));
+		// 	data(Visualizations::InputMesh).add_label(p.transpose(), std::to_string(i));
 		// }
 
 
 		// TODO Text is impossible to hide :(
+		// visible_visualizations(Visualizations::ElementId) = true;
 		if(visible_visualizations(Visualizations::ElementId) && !available_visualizations[Visualizations::ElementId])
 		{
 			reset_flags(Visualizations::ElementId);
@@ -896,7 +919,7 @@ namespace poly_fem
 						// P.row(j) = node;
 						data(Visualizations::Nodes).add_points(node, col);
 						//TODO text is impossible to hide :(
-						data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(l2g.index));
+						// data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(l2g.index));
 					}
 				}
 			// add_spheres(viewer, P, 0.05);
@@ -1019,76 +1042,123 @@ namespace poly_fem
 
 	void UIState::show_linear_reproduction()
 	{
-		// auto ff = [](double x, double y) {return -0.1 + .3*x - .5*y;};
+		auto ff = [](double x, double y) {return -0.1 + .3*x - .5*y;};
 
-		// MatrixXd fun = MatrixXd::Zero(state.n_bases, 1);
+		MatrixXd fun = MatrixXd::Zero(state.n_bases, 1);
 
-		// for(std::size_t i = 0; i < state.bases.size(); ++i)
-		// {
-		// 	const ElementBases &basis = state.bases[i];
-		// 	if(!basis.has_parameterization) continue;
-		// 	for(std::size_t j = 0; j < basis.bases.size(); ++j)
-		// 	{
-		// 		for(std::size_t kk = 0; kk < basis.bases[j].global().size(); ++kk)
-		// 		{
-		// 			const Local2Global &l2g = basis.bases[j].global()[kk];
-		// 			const int g_index = l2g.index;
+		for(std::size_t i = 0; i < state.bases.size(); ++i)
+		{
+			const ElementBases &basis = state.bases[i];
+			if(!basis.has_parameterization) continue;
+			for(std::size_t j = 0; j < basis.bases.size(); ++j)
+			{
+				for(std::size_t kk = 0; kk < basis.bases[j].global().size(); ++kk)
+				{
+					const Local2Global &l2g = basis.bases[j].global()[kk];
+					const int g_index = l2g.index;
 
-		// 			const MatrixXd node = l2g.node;
-		// 			// std::cout<<node<<std::endl;
-		// 			fun(g_index) = ff(node(0),node(1));
-		// 		}
-		// 	}
-		// }
+					const MatrixXd node = l2g.node;
+					// std::cout<<node<<std::endl;
+					fun(g_index) = ff(node(0),node(1));
+				}
+			}
+		}
 
-		// MatrixXd tmp;
-		// interpolate_function(fun, tmp);
+		MatrixXd tmp;
+		interpolate_function(fun, tmp);
 
-		// MatrixXd exact_sol(vis_pts.rows(), 1);
-		// for(long i = 0; i < vis_pts.rows(); ++i)
-		// 	exact_sol(i) =  ff(vis_pts(i, 0),vis_pts(i, 1));
+		MatrixXd exact_sol(vis_pts.rows(), 1);
+		for(long i = 0; i < vis_pts.rows(); ++i)
+			exact_sol(i) =  ff(vis_pts(i, 0),vis_pts(i, 1));
 
-		// const MatrixXd global_fun = (exact_sol - tmp).array().abs();
+		const MatrixXd global_fun = (exact_sol - tmp).array().abs();
 
-		// std::cout<<global_fun.minCoeff()<<" "<<global_fun.maxCoeff()<<std::endl;
-		// plot_function(global_fun);
+		std::cout<<global_fun.minCoeff()<<" "<<global_fun.maxCoeff()<<std::endl;
+
+
+		available_visualizations[Visualizations::Debug] = true;
+		vis_flags[Visualizations::Debug].clear();
+		hide_data(Visualizations::Debug);
+
+		plot_function(global_fun, Visualizations::Debug);
+
+		show_data(Visualizations::Debug);
 	}
 
 	void UIState::show_quadratic_reproduction()
 	{
-		// auto ff = [](double x, double y) {return -0.1 + .3*x - .5*y + .4*x*y - 0.9*y*y + 0.1*x*x;};
+		auto ff = [](double x, double y) {
+			const double v = (2*y-0.9);
+			return v*v;
+		};
 
-		// MatrixXd fun = MatrixXd::Zero(state.n_bases, 1);
+		auto ff1 = [](double x, double y) {
+			Eigen::RowVector2d res;
+			res(0) = 0;
+			res(1) = 8*y - 3.6;
+			return res;
+		};
 
-		// for(std::size_t i = 0; i < state.bases.size(); ++i)
-		// {
-		// 	const ElementBases &basis = state.bases[i];
-		// 	if(!basis.has_parameterization) continue;
-		// 	for(std::size_t j = 0; j < basis.bases.size(); ++j)
-		// 	{
-		// 		for(std::size_t kk = 0; kk < basis.bases[j].global().size(); ++kk)
-		// 		{
-		// 			const Local2Global &l2g = basis.bases[j].global()[kk];
-		// 			const int g_index = l2g.index;
+		bool show_grad = true;
 
-		// 			const MatrixXd node = l2g.node;
-		// 			// std::cout<<node<<std::endl;
-		// 			fun(g_index) = ff(node(0),node(1));
-		// 		}
-		// 	}
-		// }
 
-		// MatrixXd tmp;
-		// interpolate_function(fun, tmp);
 
-		// MatrixXd exact_sol(vis_pts.rows(), 1);
-		// for(long i = 0; i < vis_pts.rows(); ++i)
-		// 	exact_sol(i) =  ff(vis_pts(i, 0),vis_pts(i, 1));
+		MatrixXd fun = MatrixXd::Zero(state.n_bases, 1);
 
-		// const MatrixXd global_fun = (exact_sol - tmp).array().abs();
+		for(std::size_t i = 0; i < state.bases.size(); ++i)
+		{
+			const ElementBases &basis = state.bases[i];
+			if(!basis.has_parameterization) continue;
+			for(std::size_t j = 0; j < basis.bases.size(); ++j)
+			{
+				for(std::size_t kk = 0; kk < basis.bases[j].global().size(); ++kk)
+				{
+					const Local2Global &l2g = basis.bases[j].global()[kk];
+					const int g_index = l2g.index;
 
-		// std::cout<<global_fun.minCoeff()<<" "<<global_fun.maxCoeff()<<std::endl;
-		// plot_function(global_fun);
+					const MatrixXd node = l2g.node;
+					// std::cout<<node<<std::endl;
+					fun(g_index) = ff(node(0),node(1));
+				}
+			}
+		}
+
+
+
+		clear();
+		visible_visualizations.setConstant(false); visible_visualizations(Visualizations::Debug) = true;
+		viewer.selected_data_index = Visualizations::Debug;
+
+
+		reset_flags(Visualizations::Debug);
+		MatrixXd global_sol;
+		MatrixXd exact_sol;
+
+
+		if(show_grad)
+			interpolate_grad_function(fun, global_sol);
+		else
+			interpolate_function(fun, global_sol);
+
+		exact_sol.resize(vis_pts.rows(), show_grad? 2: 1);
+		for(long i = 0; i < vis_pts.rows(); ++i){
+			if(show_grad)
+				exact_sol.row(i) =  ff1(vis_pts(i, 0),vis_pts(i, 1));
+			else
+				exact_sol(i) = ff(vis_pts(i, 0),vis_pts(i, 1));
+		}
+
+		const MatrixXd err = (global_sol - exact_sol).eval().rowwise().norm();
+		std::cout<<err.minCoeff()<<" "<<err.maxCoeff()<<std::endl;
+
+
+		plot_function(err, Visualizations::Debug);
+		data(Visualizations::Debug).show_lines = false;
+
+		available_visualizations[Visualizations::Debug] = true;
+		vis_flags[Visualizations::Debug].clear();
+		hide_data(Visualizations::Debug);
+		show_data(Visualizations::Debug);
 	}
 
 	void UIState::build_vis_mesh()
@@ -1292,12 +1362,12 @@ namespace poly_fem
 	{
 		if (!state.mesh) { return; }
 		state.build_basis();
-		available_visualizations.block(Visualizations::Nodes, 0, Visualizations::TotalVisualizations-Visualizations::Nodes, 1).setConstant(false);
+		available_visualizations.block(Visualizations::DiscrMesh, 0, Visualizations::TotalVisualizations-Visualizations::DiscrMesh, 1).setConstant(false);
 
 		if(skip_visualization) return;
 		clear();
-		visible_visualizations.setConstant(false); visible_visualizations(Visualizations::InputMesh) = true;  visible_visualizations(Visualizations::Nodes) = true;
-		viewer.selected_data_index = Visualizations::InputMesh;
+		visible_visualizations.setConstant(false); visible_visualizations(Visualizations::DiscrMesh) = true;  visible_visualizations(Visualizations::Nodes) = true;
+		viewer.selected_data_index = Visualizations::DiscrMesh;
 		show_mesh();
 		show_nodes();
 	}

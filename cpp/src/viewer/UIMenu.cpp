@@ -183,6 +183,10 @@ void poly_fem::UIState::draw_settings() {
 	ImGui::Checkbox("spline basis", &use_splines);
 	state.args["use_spline"] = use_splines;
 
+	bool use_p_ref = state.args["use_p_ref"];
+	ImGui::Checkbox("p ref", &use_p_ref);
+	state.args["use_p_ref"] = use_p_ref;
+
 	bool fit_nodes = state.args["fit_nodes"];
 	ImGui::Checkbox("fit nodes", &fit_nodes);
 	state.args["fit_nodes"] = fit_nodes;
@@ -344,7 +348,7 @@ void poly_fem::UIState::draw_debug() {
 	if (ImGui::Button("Clear", ImVec2(-1, 0))) { clear(); }
 
     // ImGui::Columns(1, "visualizations");
-	for(int i = 0; i <= poly_fem::UIState::Visualizations::VisBasis; ++i)
+	for(int i = 0; i <= poly_fem::UIState::Visualizations::Debug; ++i)
 	{
 		// if(ImGui::Selectable(visualizations_texts[i].c_str(), viewer.selected_data_index == i))
 		// {
@@ -467,8 +471,8 @@ void poly_fem::UIState::draw_screenshot() {
 	if(ImGui::Checkbox("Show node ids", &show_node_id))
 		show_nodes();
 
-	if(ImGui::Checkbox("Color discr order", &color_using_discr_order))
-		show_mesh();
+	// if(ImGui::Checkbox("Color discr order", &color_using_discr_order))
+		// show_mesh();
 
 	ImGui::Checkbox("Use 3D funs", &show_funs_in_3d);
 }
