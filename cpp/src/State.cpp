@@ -240,7 +240,7 @@ namespace poly_fem
 	{
 		max_angle = 0;
 		static const int max_angles = 5;
-		static const double angles[max_angles] = {0, 3./4.*M_PI, 9./10.*M_PI, 39./40.*M_PI,  M_PI};
+		static const double angles[max_angles] = {0, 170./180.*M_PI, 179./180.*M_PI, 179.9/180.* M_PI, M_PI};
 		for(int f = 0; f < mesh2d.n_faces(); ++f)
 		{
 			if(!mesh2d.is_simplex(f))
@@ -258,8 +258,8 @@ namespace poly_fem
 			const double alpha1 = angle(e1, -e0);
 			const double alpha2 = angle(e2, -e1);
 
-			if(f == 49)
-				std::cout<<alpha0<<" "<<alpha1<<" "<<alpha2<<std::endl;
+			// if(f == 49)
+				// std::cout<<alpha0<<" "<<alpha1<<" "<<alpha2<<std::endl;
 
 			for(int i = 1; i < max_angles; ++i)
 			{
@@ -307,7 +307,7 @@ namespace poly_fem
 			max_angle = std::max(max_angle, alpha2);
 		}
 
-		std::cout<<"max_angle "<<(max_angle/M_PI*180)<<std::endl;
+		std::cout<<"max_angle "<<(max_angle/M_PI*180)<<" max p "<<disc_orders.maxCoeff()<<std::endl;
 	}
 
 	void State::p_refinement(const Mesh3D &mesh3d)
