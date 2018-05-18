@@ -36,6 +36,7 @@ option(ENABLE_MKL         "Enable MKL library"     OFF)
 option(ENABLE_PARDISO     "Enable Pardiso library"  ON)
 option(ENABLE_MMG         "Enable MMG library"     OFF)
 option(ENABLE_TBB         "Enable TBB"		       ON)
+option(ENABLE_HYPRE       "Enable hypre"	       ON)
 
 
 # Options for libigl modules
@@ -205,6 +206,7 @@ set(source_list
 	src/solver/FEMSolver.cpp
 	src/solver/LinearSolver.cpp
 	src/solver/LinearSolverPardiso.cpp
+	src/solver/LinearSolverHypre.cpp
 	src/solver/SparseNewtonDescentSolver.hpp
 	src/solver/NLProblem.hpp
 	src/solver/NLProblem.cpp
@@ -350,6 +352,40 @@ target_link_libraries(polyfem PUBLIC tinyformat)
 # Catch2 library
 add_library(catch INTERFACE)
 target_include_directories(catch SYSTEM INTERFACE ${THIRD_PARTY_DIR}/Catch2/single_include)
+
+
+if(ENABLE_HYPRE)
+	set(HYPRE_SEQUENTIAL ON)
+	set(HYPRE_PRINT_ERRORS ON)
+	add_subdirectory(${THIRD_PARTY_DIR}/hypre/src hypre)
+	set_property(TARGET HYPRE PROPERTY FOLDER "dependencies")
+
+	target_compile_definitions(HYPRE PUBLIC -DUSE_HYPRE)
+	target_include_directories(polyfem PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/hypre)
+	target_include_directories(polyfem PUBLIC ${THIRD_PARTY_DIR}/hypre/src)
+	target_include_directories(polyfem PUBLIC ${THIRD_PARTY_DIR}/hypre/src/blas)
+	target_include_directories(polyfem PUBLIC ${THIRD_PARTY_DIR}/hypre/src/lapack)
+	target_include_directories(polyfem PUBLIC ${THIRD_PARTY_DIR}/hypre/src/utilities)
+	target_include_directories(polyfem PUBLIC ${THIRD_PARTY_DIR}/hypre/src/multivector)
+	target_include_directories(polyfem PUBLIC ${THIRD_PARTY_DIR}/hypre/src/krylov)
+	target_include_directories(polyfem PUBLIC ${THIRD_PARTY_DIR}/hypre/src/seq_mv)
+	target_include_directories(polyfem PUBLIC ${THIRD_PARTY_DIR}/hypre/src/parcsr_mv)
+	target_include_directories(polyfem PUBLIC ${THIRD_PARTY_DIR}/hypre/src/parcsr_block_mv)
+	target_include_directories(polyfem PUBLIC ${THIRD_PARTY_DIR}/hypre/src/distributed_matrix)
+	target_include_directories(polyfem PUBLIC ${THIRD_PARTY_DIR}/hypre/src/IJ_mv)
+	target_include_directories(polyfem PUBLIC ${THIRD_PARTY_DIR}/hypre/src/matrix_matrix)
+	target_include_directories(polyfem PUBLIC ${THIRD_PARTY_DIR}/hypre/src/distributed_ls)
+	target_include_directories(polyfem PUBLIC ${THIRD_PARTY_DIR}/hypre/src/distributed_ls/Euclid)
+	target_include_directories(polyfem PUBLIC ${THIRD_PARTY_DIR}/hypre/src/distributed_ls/ParaSails)
+	target_include_directories(polyfem PUBLIC ${THIRD_PARTY_DIR}/hypre/src/parcsr_ls)
+	target_include_directories(polyfem PUBLIC ${THIRD_PARTY_DIR}/hypre/src/struct_mv)
+	target_include_directories(polyfem PUBLIC ${THIRD_PARTY_DIR}/hypre/src/struct_ls)
+	target_include_directories(polyfem PUBLIC ${THIRD_PARTY_DIR}/hypre/src/sstruct_mv)
+	target_include_directories(polyfem PUBLIC ${THIRD_PARTY_DIR}/hypre/src/sstruct_ls)
+
+
+	target_link_libraries(polyfem PUBLIC HYPRE)
+endif()
 
 ################################################################################
 # Optional libraries

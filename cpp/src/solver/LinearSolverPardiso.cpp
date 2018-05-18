@@ -235,6 +235,8 @@ void LinearSolverPardiso::factorize(const SparseMatrixXd &A) {
 void LinearSolverPardiso::solve(const Eigen::Ref<const VectorXd> rhs, Eigen::Ref<VectorXd> result) {
 	if (mtype ==-1) { throw std::runtime_error("[Pardiso] mtype not set."); }
 	assert(numRows == rhs.size());
+	assert(result.size() == rhs.size());
+
 
 	double *rhs_ptr = const_cast<double *>(rhs.data());
 	result = VectorXd(rhs.size());

@@ -18,6 +18,9 @@
 #ifdef POLYFEM_WITH_PARDISO
 #include "LinearSolverPardiso.h"
 #endif
+#ifdef USE_HYPRE
+#include "LinearSolverHypre.hpp"
+#endif
 #include <unsupported/Eigen/IterativeSolvers>
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -154,6 +157,10 @@ std::unique_ptr<LinearSolver> LinearSolver::create(const std::string &solver, co
 #ifdef POLYFEM_WITH_PARDISO
 	} else if (solver == "Pardiso") {
 		return std::make_unique<LinearSolverPardiso>();
+#endif
+#ifdef USE_HYPRE
+	} else if (solver == "Hypre") {
+		return std::make_unique<LinearSolverHypre>();
 #endif
 #if EIGEN_VERSION_AT_LEAST(3,3,0)
 	// Available only with Eigen 3.3.0 and newer
