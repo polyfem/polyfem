@@ -95,7 +95,7 @@ def create_point_set(order, nsd):
             for j in range(0, order + 1):
                 y = j * h
                 for k in range(0, order + 1):
-                    z = j * h
+                    z = k * h
                     if x + y + z <= 1:
                         set.append((x, y, z))
 
@@ -168,10 +168,10 @@ def parse_args():
 if __name__ == "__main__":
     args = parse_args()
 
-    dims = [2]
+    dims = [2, 3]
 
-    orders = [1, 2, 3, 4, 5]
-    # orders = [3]  # , 2, 3]
+    orders = [1, 2, 3, 4]
+    # orders = [1, 2, 3]
 
     cpp = "#include \"auto_bases.hpp\"\n\n\n"
     cpp = cpp + "namespace poly_fem {\nnamespace autogen " + "{\nnamespace " + "{\n"
@@ -179,26 +179,32 @@ if __name__ == "__main__":
     hpp = "#pragma once\n\n#include <Eigen/Dense>\n\n"
     hpp = hpp + "namespace poly_fem {\nnamespace autogen " + "{\n"
 
-    unique_nodes = "void p_nodes(const int p, Eigen::MatrixXd &val)"
-
-    unique_fun = "void p_basis_value(const int p, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
-    dunique_fun = "void p_grad_basis_value(const int p, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
-
-    hpp = hpp + unique_nodes + ";\n\n"
-
-    hpp = hpp + unique_fun + ";\n\n"
-    hpp = hpp + dunique_fun + ";\n\n"
-
-    unique_nodes = unique_nodes + "{\nswitch(p)" + "{\n"
-
-    unique_fun = unique_fun + "{\nswitch(p)" + "{\n"
-    dunique_fun = dunique_fun + "{\nswitch(p)" + "{\n"
-
-    vertices = [[0, 0], [1, 0], [0, 1]]
-
     for dim in dims:
+        print(str(dim) + "D")
+        suffix = "_2d" if dim == 2 else "_3d"
+
+        unique_nodes = "void p_nodes" + suffix + "(const int p, Eigen::MatrixXd &val)"
+
+        unique_fun = "void p_basis_value" + suffix + "(const int p, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
+        dunique_fun = "void p_grad_basis_value" + suffix + "(const int p, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
+
+        hpp = hpp + unique_nodes + ";\n\n"
+
+        hpp = hpp + unique_fun + ";\n\n"
+        hpp = hpp + dunique_fun + ";\n\n"
+
+        unique_nodes = unique_nodes + "{\nswitch(p)" + "{\n"
+
+        unique_fun = unique_fun + "{\nswitch(p)" + "{\n"
+        dunique_fun = dunique_fun + "{\nswitch(p)" + "{\n"
+
+        if dim == 2:
+            vertices = [[0, 0], [1, 0], [0, 1]]
+        elif dim == 3:
+            vertices = [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]]
+
         for order in orders:
-            print("processing " + str(order))
+            print("\t-processing " + str(order))
 
             fe = Lagrange(dim, order)
 
@@ -206,7 +212,7 @@ if __name__ == "__main__":
             indices = []
 
             # vertex coordinate
-            for i in range(0, 3):
+            for i in range(0, dim + 1):
                 vv = vertices[i]
                 for ii in current_indices:
                     norm = 0
@@ -221,7 +227,7 @@ if __name__ == "__main__":
             # edge 1 coordinate
             for i in range(0, order - 1):
                 for ii in current_indices:
-                    if fe.points[ii][1] != 0:
+                    if fe.points[ii][1] != 0 or (dim == 3 and fe.points[ii][2] != 0):
                         continue
 
                     if abs(fe.points[ii][0] - (i + 1) / order) < 1e-10:
@@ -232,7 +238,7 @@ if __name__ == "__main__":
             # edge 2 coordinate
             for i in range(0, order - 1):
                 for ii in current_indices:
-                    if fe.points[ii][0] + fe.points[ii][1] != 1:
+                    if fe.points[ii][0] + fe.points[ii][1] != 1 or (dim == 3 and fe.points[ii][2] != 0):
                         continue
 
                     if abs(fe.points[ii][1] - (i + 1) / order) < 1e-10:
@@ -243,7 +249,7 @@ if __name__ == "__main__":
             # edge 3 coordinate
             for i in range(0, order - 1):
                 for ii in current_indices:
-                    if fe.points[ii][0] != 0:
+                    if fe.points[ii][0] != 0 or (dim == 3 and fe.points[ii][2] != 0):
                         continue
 
                     if abs(fe.points[ii][1] - (1 - (i + 1) / order)) < 1e-10:
@@ -251,29 +257,88 @@ if __name__ == "__main__":
                         current_indices.remove(ii)
                         break
 
+            if dim == 3:
+                # edge 4 coordinate
+                for i in range(0, order - 1):
+                    for ii in current_indices:
+                        if fe.points[ii][0] != 0 or fe.points[ii][1] != 0:
+                            continue
+
+                        if abs(fe.points[ii][2] - (i + 1) / order) < 1e-10:
+                            indices.append(ii)
+                            current_indices.remove(ii)
+                            break
+
+                # edge 5 coordinate
+                for i in range(0, order - 1):
+                    for ii in current_indices:
+                        if fe.points[ii][0] + fe.points[ii][2] != 1 or fe.points[ii][1] != 0:
+                            continue
+
+                        if abs(fe.points[ii][0] - (1 - (i + 1) / order)) < 1e-10:
+                            indices.append(ii)
+                            current_indices.remove(ii)
+                            break
+
+                # edge 6 coordinate
+                for i in range(0, order - 1):
+                    for ii in current_indices:
+                        if fe.points[ii][1] + fe.points[ii][2] != 1 or fe.points[ii][0] != 0:
+                            continue
+
+                        if abs(fe.points[ii][1] - (1 - (i + 1) / order)) < 1e-10:
+                            indices.append(ii)
+                            current_indices.remove(ii)
+                            break
+
+            if dim == 3:
+                for ii in current_indices:
+                    if fe.points[ii][2] != 0:
+                        continue
+
+                    indices.append(ii)
+                    current_indices.remove(ii)
+
+                for ii in current_indices:
+                    if fe.points[ii][1] != 0:
+                        continue
+
+                    indices.append(ii)
+                    current_indices.remove(ii)
+
+                for ii in current_indices:
+                    if fe.points[ii][0] != 0:
+                        continue
+
+                    indices.append(ii)
+                    current_indices.remove(ii)
+
             for ii in current_indices:
                 indices.append(ii)
 
             # nodes code gen
-            nodes = "void p_" + str(order) + "_nodes(Eigen::MatrixXd &res) {\n res.resize(" + str(len(indices)) + ", 2); res << \n"
-            unique_nodes = unique_nodes + "\tcase " + str(order) + ": " + "p_" + str(order) + "_nodes(val); break;\n"
+            nodes = "void p_" + str(order) + "_nodes" + suffix + "(Eigen::MatrixXd &res) {\n res.resize(" + str(len(indices)) + ", " + str(dim) + "); res << \n"
+            unique_nodes = unique_nodes + "\tcase " + str(order) + ": " + "p_" + str(order) + "_nodes" + suffix + "(val); break;\n"
 
             for ii in indices:
-                nodes = nodes + ccode(fe.points[ii][0]) + ", " + ccode(fe.points[ii][1]) + ",\n"
+                nodes = nodes + ccode(fe.points[ii][0]) + ", " + ccode(fe.points[ii][1]) + ((", " + ccode(fe.points[ii][2])) if dim == 3 else "") + ",\n"
             nodes = nodes[:-2]
             nodes = nodes + ";\n}"
 
             # bases code gen
-            func = "void p_" + str(order) + "_basis_value(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &result_0)"
-            dfunc = "void p_" + str(order) + "_basis_grad_value(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
+            func = "void p_" + str(order) + "_basis_value" + suffix + "(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &result_0)"
+            dfunc = "void p_" + str(order) + "_basis_grad_value" + suffix + "(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
 
-            unique_fun = unique_fun + "\tcase " + str(order) + ": " + "p_" + str(order) + "_basis_value(local_index, uv, val); break;\n"
-            dunique_fun = dunique_fun + "\tcase " + str(order) + ": " + "p_" + str(order) + "_basis_grad_value(local_index, uv, val); break;\n"
+            unique_fun = unique_fun + "\tcase " + str(order) + ": " + "p_" + str(order) + "_basis_value" + suffix + "(local_index, uv, val); break;\n"
+            dunique_fun = dunique_fun + "\tcase " + str(order) + ": " + "p_" + str(order) + "_basis_grad_value" + suffix + "(local_index, uv, val); break;\n"
 
             # hpp = hpp + func + ";\n"
             # hpp = hpp + dfunc + ";\n"
 
-            base = "auto x=uv.col(0).array();\nauto y=uv.col(1).array();\n\n"
+            base = "auto x=uv.col(0).array();\nauto y=uv.col(1).array();"
+            if dim == 3:
+                base = base + "\nauto z=uv.col(2).array();"
+            base = base + "\n\n"
             dbase = base
 
             base = base + "switch(local_index){\n"
@@ -286,8 +351,12 @@ if __name__ == "__main__":
                 base = base + "\tcase " + str(i) + ": {" + pretty_print.C99_print(simplify(fe.N[real_index])) + "} break;\n"
                 dbase = dbase + "\tcase " + str(i) + ": {" + \
                     "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], x))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(0) = result_0; }" \
-                    "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], y))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(1) = result_0; }" \
-                    "} break;\n"
+                    "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], y))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(1) = result_0; }"
+
+                if dim == 3:
+                    dbase = dbase + "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], z))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(2) = result_0; }"
+
+                dbase = dbase + "} break;\n"
 
             base = base + "\tdefault: assert(false);\n}"
             dbase = dbase + "\tdefault: assert(false);\n}"
@@ -298,17 +367,17 @@ if __name__ == "__main__":
             cpp = cpp + dfunc + "{\n\n"
             cpp = cpp + dbase + "}\n\n\n" + nodes + "\n\n\n"
 
-    unique_nodes = unique_nodes + "\tdefault: assert(false);\n}}"
+        unique_nodes = unique_nodes + "\tdefault: assert(false);\n}}"
 
-    unique_fun = unique_fun + "\tdefault: assert(false);\n}}"
-    dunique_fun = dunique_fun + "\tdefault: assert(false);\n}}"
+        unique_fun = unique_fun + "\tdefault: assert(false);\n}}"
+        dunique_fun = dunique_fun + "\tdefault: assert(false);\n}}"
 
-    cpp = cpp + "}\n\n" + unique_nodes + unique_fun + "\n\n" + dunique_fun + "\n"
-    hpp = hpp + "\n"
+        cpp = cpp + "}\n\n" + unique_nodes + "\n" + unique_fun + "\n\n" + dunique_fun + "\n" + "\nnamespace " + "{\n"
+        hpp = hpp + "\n"
 
     hpp = hpp + "\nstatic const int MAX_P_BASES = " + str(max(orders)) + ";\n"
 
-    cpp = cpp + "\n}}\n"
+    cpp = cpp + "\n}}}\n"
     hpp = hpp + "\n}}\n"
 
     path = os.path.abspath(args.output)

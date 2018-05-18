@@ -1059,8 +1059,8 @@ int poly_fem::FEBasis2d::build_bases(
 					b.bases[j].init(global_index, j, nodes.node_position(global_index));
 				}
 
-				b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { poly_fem::autogen::p_basis_value     (discr_order, j, uv, val); });
-				b.bases[j].set_grad ([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { poly_fem::autogen::p_grad_basis_value(discr_order, j, uv, val); });
+				b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { poly_fem::autogen::p_basis_value_2d     (discr_order, j, uv, val); });
+				b.bases[j].set_grad ([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { poly_fem::autogen::p_grad_basis_value_2d(discr_order, j, uv, val); });
 			}
 		}
 		else {
@@ -1116,7 +1116,7 @@ int poly_fem::FEBasis2d::build_bases(
 					assert(discr_order > 1);
 
 					auto indices = tri_edge_local_nodes(discr_order, mesh, index);
-					Eigen::MatrixXd lnodes; autogen::p_nodes(discr_order, lnodes);
+					Eigen::MatrixXd lnodes; autogen::p_nodes_2d(discr_order, lnodes);
 
 					if( j < 3)
 						node_position = lnodes.row(indices(0));
@@ -1143,7 +1143,6 @@ int poly_fem::FEBasis2d::build_bases(
 					// else
 					// 	assert(false);
 					// std::cout<<node_position<<"\n\n----\n"<<std::endl;
-					
 
 					const auto &other_bases = bases[other_face];
 					Eigen::MatrixXd w;

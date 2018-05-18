@@ -98,6 +98,11 @@ namespace poly_fem
 		static Eigen::MatrixXd tet_local_node_coordinates_from_face(int lf);
 		static Eigen::MatrixXd hex_local_node_coordinates_from_face(int lf);
 
+		static void linear_tet_basis_value(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val);
+		static void linear_tet_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val);
+		static void quadr_tet_basis_value(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val);
+		static void quadr_tet_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val);
+
 
 
 		static void quadr_hex_basis_value(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val);

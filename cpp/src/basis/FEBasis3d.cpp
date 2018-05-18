@@ -187,53 +187,7 @@ template<typename T>
 	{{0, 0, 1}}, // v3  = (0, 0, 1)
 }};
 
-void linear_tet_basis_value(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
-	auto x=xne.col(0).array();
-	auto n=xne.col(1).array();
-	auto e=xne.col(2).array();
 
-	switch(local_index)
-	{
-		case 0: val = 1 - x - n - e; break;
-		case 1: val = x; break;
-		case 2: val = n; break;
-		case 3: val = e; break;
-		default: assert(false);
-	}
-}
-
-void linear_tet_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
-	val.resize(xne.rows(), xne.cols());
-
-	switch(local_index)
-	{
-		case 0:
-		val.col(0).setConstant(-1);
-		val.col(1).setConstant(-1);
-		val.col(2).setConstant(-1);
-		break;
-
-		case 1:
-		val.col(0).setConstant( 1);
-		val.col(1).setConstant( 0);
-		val.col(2).setConstant( 0);
-		break;
-
-		case 2:
-		val.col(0).setConstant( 0);
-		val.col(1).setConstant( 1);
-		val.col(2).setConstant( 0);
-		break;
-
-		case 3:
-		val.col(0).setConstant( 0);
-		val.col(1).setConstant( 0);
-		val.col(2).setConstant( 1);
-		break;
-
-		default: assert(false);
-	}
-}
 
 // -----------------------------------------------------------------------------
 
@@ -250,93 +204,8 @@ constexpr std::array<std::array<int, 3>, 10> quadr_tet_local_node = {{
 	{{0, 1, 1}}, // e5  = (  0, 0.5, 0.5)
 }};
 
-void quadr_tet_basis_value(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
-	auto x=xne.col(0).array();
-	auto n=xne.col(1).array();
-	auto e=xne.col(2).array();
 
-	switch(local_index)
-	{
-		case 0: val = (1 - 2*x - 2*n - 2*e)*(1 - x - n - e); break;
-		case 1: val = (2*x-1)*x; break;
-		case 2: val = (2*n-1)*n; break;
-		case 3: val = (2*e-1)*e; break;
 
-		case 4: val = 4*x * (1 - x - n - e); break;
-		case 5: val = 4 * x * n; break;
-		case 6: val = 4 * (1 - x - n - e) * n; break;
-
-		case 7: val = 4*(1 - x - n - e)*e; break;
-		case 8: val = 4*x*e; break;
-		case 9: val = 4*n*e; break;
-		default: assert(false);
-	}
-}
-
-void quadr_tet_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
-	auto x=xne.col(0).array();
-	auto n=xne.col(1).array();
-	auto e=xne.col(2).array();
-
-	val.resize(xne.rows(), xne.cols());
-
-	switch(local_index)
-	{
-		case 0:
-		val.col(0) = -3+4*x+4*n+4*e;
-		val.col(1) = -3+4*x+4*n+4*e;
-		val.col(2) = -3+4*x+4*n+4*e;
-		break;
-		case 1:
-		val.col(0) = 4*x-1;
-		val.col(1).setZero();
-		val.col(2).setZero();
-		break;
-		case 2:
-		val.col(0).setZero();
-		val.col(1) = 4*n-1;
-		val.col(2).setZero();
-		break;
-		case 3:
-		val.col(0).setZero();
-		val.col(1).setZero();
-		val.col(2) = 4*e-1;
-		break;
-
-		case 4:
-		val.col(0) = 4-8*x-4*n-4*e;
-		val.col(1) = -4*x;
-		val.col(2) = -4*x;
-		break;
-		case 5:
-		val.col(0) = 4*n;
-		val.col(1) = 4*x;
-		val.col(2).setZero();
-		break;
-		case 6:
-		val.col(0) = -4*n;
-		val.col(1) = -8*n+4-4*x-4*e;
-		val.col(2) = -4*n;
-		break;
-
-		case 7:
-		val.col(0) = -4*e;
-		val.col(1) = -4*e;
-		val.col(2) = -8*e+4-4*x-4*n;
-		break;
-		case 8:
-		val.col(0) = 4*e;
-		val.col(1).setZero();
-		val.col(2) = 4*x;
-		break;
-		case 9:
-		val.col(0).setZero();
-		val.col(1) = 4*e;
-		val.col(2) = 4*n;
-		break;
-		default: assert(false);
-	}
-}
 
 // -----------------------------------------------------------------------------
 
@@ -679,6 +548,143 @@ Eigen::RowVector3d linear_hex_local_node_coordinates(int local_index) {
 
 } // anonymous namespace
 
+
+
+void poly_fem::FEBasis3d::linear_tet_basis_value(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
+	auto x=xne.col(0).array();
+	auto n=xne.col(1).array();
+	auto e=xne.col(2).array();
+
+	switch(local_index)
+	{
+		case 0: val = 1 - x - n - e; break;
+		case 1: val = x; break;
+		case 2: val = n; break;
+		case 3: val = e; break;
+		default: assert(false);
+	}
+}
+
+void poly_fem::FEBasis3d::linear_tet_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
+	val.resize(xne.rows(), xne.cols());
+
+	switch(local_index)
+	{
+		case 0:
+		val.col(0).setConstant(-1);
+		val.col(1).setConstant(-1);
+		val.col(2).setConstant(-1);
+		break;
+
+		case 1:
+		val.col(0).setConstant( 1);
+		val.col(1).setConstant( 0);
+		val.col(2).setConstant( 0);
+		break;
+
+		case 2:
+		val.col(0).setConstant( 0);
+		val.col(1).setConstant( 1);
+		val.col(2).setConstant( 0);
+		break;
+
+		case 3:
+		val.col(0).setConstant( 0);
+		val.col(1).setConstant( 0);
+		val.col(2).setConstant( 1);
+		break;
+
+		default: assert(false);
+	}
+}
+
+void poly_fem::FEBasis3d::quadr_tet_basis_value(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
+	auto x=xne.col(0).array();
+	auto n=xne.col(1).array();
+	auto e=xne.col(2).array();
+
+	switch(local_index)
+	{
+		case 0: val = (1 - 2*x - 2*n - 2*e)*(1 - x - n - e); break;
+		case 1: val = (2*x-1)*x; break;
+		case 2: val = (2*n-1)*n; break;
+		case 3: val = (2*e-1)*e; break;
+
+		case 4: val = 4*x * (1 - x - n - e); break;
+		case 5: val = 4 * x * n; break;
+		case 6: val = 4 * (1 - x - n - e) * n; break;
+
+		case 7: val = 4*(1 - x - n - e)*e; break;
+		case 8: val = 4*x*e; break;
+		case 9: val = 4*n*e; break;
+		default: assert(false);
+	}
+}
+
+void poly_fem::FEBasis3d::quadr_tet_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
+	auto x=xne.col(0).array();
+	auto n=xne.col(1).array();
+	auto e=xne.col(2).array();
+
+	val.resize(xne.rows(), xne.cols());
+
+	switch(local_index)
+	{
+		case 0:
+		val.col(0) = -3+4*x+4*n+4*e;
+		val.col(1) = -3+4*x+4*n+4*e;
+		val.col(2) = -3+4*x+4*n+4*e;
+		break;
+		case 1:
+		val.col(0) = 4*x-1;
+		val.col(1).setZero();
+		val.col(2).setZero();
+		break;
+		case 2:
+		val.col(0).setZero();
+		val.col(1) = 4*n-1;
+		val.col(2).setZero();
+		break;
+		case 3:
+		val.col(0).setZero();
+		val.col(1).setZero();
+		val.col(2) = 4*e-1;
+		break;
+
+		case 4:
+		val.col(0) = 4-8*x-4*n-4*e;
+		val.col(1) = -4*x;
+		val.col(2) = -4*x;
+		break;
+		case 5:
+		val.col(0) = 4*n;
+		val.col(1) = 4*x;
+		val.col(2).setZero();
+		break;
+		case 6:
+		val.col(0) = -4*n;
+		val.col(1) = -8*n+4-4*x-4*e;
+		val.col(2) = -4*n;
+		break;
+
+		case 7:
+		val.col(0) = -4*e;
+		val.col(1) = -4*e;
+		val.col(2) = -8*e+4-4*x-4*n;
+		break;
+		case 8:
+		val.col(0) = 4*e;
+		val.col(1).setZero();
+		val.col(2) = 4*x;
+		break;
+		case 9:
+		val.col(0).setZero();
+		val.col(1) = 4*e;
+		val.col(2) = 4*n;
+		break;
+		default: assert(false);
+	}
+}
 
 // -----------------------------------------------------------------------------
 
