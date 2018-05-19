@@ -358,6 +358,10 @@ if(ENABLE_HYPRE)
 	set(HYPRE_SEQUENTIAL ON)
 	set(HYPRE_PRINT_ERRORS ON)
 	set(HYPRE_BIGINT ON)
+	set(HYPRE_USING_FEI OFF)
+	# set(HYPRE_LONG_DOUBLE ON)
+
+
 	add_subdirectory(${THIRD_PARTY_DIR}/hypre/src hypre)
 	set_property(TARGET HYPRE PROPERTY FOLDER "dependencies")
 

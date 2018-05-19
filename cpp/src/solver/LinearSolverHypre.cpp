@@ -52,9 +52,9 @@ void LinearSolverHypre::analyzePattern(const SparseMatrixXd &Ain) {
 
 	for (HYPRE_Int k = 0; k < Ain.outerSize(); ++k) {
 		for (Eigen::SparseMatrix<double>::InnerIterator it(Ain, k); it; ++it) {
-			const HYPRE_Int i[1] = {it.row()};
-			const HYPRE_Int j[1] = {it.col()};
-			const double v[1] = {it.value()};
+			const HYPRE_Int 	i[1] = {it.row()};
+			const HYPRE_Int 	j[1] = {it.col()};
+			const HYPRE_Complex v[1] = {it.value()};
 			HYPRE_Int n_cols[1] = {1};
 
 			HYPRE_IJMatrixSetValues(A, 1, n_cols, i, j, v);
@@ -82,15 +82,16 @@ void LinearSolverHypre::solve(const Eigen::Ref<const VectorXd> rhs, Eigen::Ref<V
 	HYPRE_IJVectorSetObjectType(x, HYPRE_PARCSR);
 	HYPRE_IJVectorInitialize(x);
 
-	Eigen::Matrix<HYPRE_Int, Eigen::Dynamic, 1> indices(rhs.size());
 
-	for(HYPRE_Int i = 0; i < indices.size(); ++i)
-		indices(i) = i;
-	Eigen::VectorXd initial_guess(rhs.size()); initial_guess.setZero();
+	for(HYPRE_Int i = 0; i < rhs.size(); ++i)
+	{
+		const HYPRE_Int 	index[1] = {i};
+		const HYPRE_Complex v[1] = {HYPRE_Complex(rhs(i))};
+		const HYPRE_Complex z[1] = {HYPRE_Complex(0)};
 
-	HYPRE_IJVectorSetValues(b, rhs.size(), indices.data(), rhs.data());
-	HYPRE_IJVectorSetValues(x, rhs.size(), indices.data(), initial_guess.data());
-
+		HYPRE_IJVectorSetValues(b, 1, index, v);
+		HYPRE_IJVectorSetValues(x, 1, index, z);
+	}
 
 	HYPRE_IJVectorAssemble(b);
 	HYPRE_IJVectorGetObject(b, (void **) &par_b);
@@ -134,8 +135,8 @@ void LinearSolverHypre::solve(const Eigen::Ref<const VectorXd> rhs, Eigen::Ref<V
 	HYPRE_PCGGetFinalRelativeResidualNorm(solver, &final_res_norm);
 
 	// printf("\n");
-	// printf("Iterations = %d\n", num_iterations);
-	// printf("Final Relative Residual Norm = %e\n", final_res_norm);
+	// printf("Iterations = %lld\n", num_iterations);
+	// printf("Final Relative Residual Norm = %g\n", final_res_norm);
 	// printf("\n");
 
 	/* Destroy solver and preconditioner */
@@ -144,8 +145,13 @@ void LinearSolverHypre::solve(const Eigen::Ref<const VectorXd> rhs, Eigen::Ref<V
 
 
 	assert(result.size() == rhs.size());
-	HYPRE_IJVectorGetValues(x, indices.size(), indices.data(), result.data());
+	for(HYPRE_Int i = 0; i < rhs.size(); ++i){
+		const HYPRE_Int 	index[1] = {i};
+		HYPRE_Complex 		v[1];
+		HYPRE_IJVectorGetValues(x, 1, index, v);
 
+		result(i) = v[0];
+	}
 
 	HYPRE_IJVectorDestroy(b);
 	HYPRE_IJVectorDestroy(x);

@@ -58,7 +58,7 @@ namespace poly_fem {
 		double conv_tol_ = 1e-8;
 
 		HYPRE_Int num_iterations;
-		double final_res_norm;
+		HYPRE_Complex final_res_norm;
 	private:
 		bool has_matrix_ = false;
 

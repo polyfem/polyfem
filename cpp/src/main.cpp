@@ -48,6 +48,7 @@ int main(int argc, const char **argv)
 
 	std::string scalar_formulation = "Laplacian";
 	std::string tensor_formulation = "LinearElasticity"; //"SaintVenant";
+	std::string solver = "";
 
 	int discr_order = 1;
 
@@ -59,6 +60,7 @@ int main(int argc, const char **argv)
 
 	command_line.add_option("-mesh", path);
 
+
 	//for debugging
 	command_line.add_option("-n_refs", n_refs);
 	command_line.add_option("-problem", problem_name);
@@ -66,6 +68,8 @@ int main(int argc, const char **argv)
 
 	command_line.add_option("-sform", scalar_formulation);
 	command_line.add_option("-tform", tensor_formulation);
+
+	command_line.add_option("-solver", solver);
 
 	command_line.add_option("-q", discr_order);
 	command_line.add_option("-spline", "-fem", use_splines);
@@ -110,6 +114,9 @@ int main(int argc, const char **argv)
 		in_args["discr_order"] = discr_order;
 		in_args["use_spline"] = use_splines;
 		in_args["output"] = output;
+
+		if(!solver.empty())
+			in_args["solver_type"] = solver;
 	}
 
 	// std::cout<<j_args.dump(4)<<std::endl;
