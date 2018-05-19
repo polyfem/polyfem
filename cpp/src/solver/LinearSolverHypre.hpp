@@ -60,8 +60,11 @@ namespace poly_fem {
 		int num_iterations;
 		double final_res_norm;
 	private:
+		bool has_matrix_ = false;
+
 		HYPRE_IJMatrix A;
 		HYPRE_ParCSRMatrix parcsr_A;
+
 	};
 
 } // namespace poly_fem
