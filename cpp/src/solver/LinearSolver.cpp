@@ -204,6 +204,9 @@ std::vector<std::string> LinearSolver::availableSolvers() {
 #ifdef POLYFEM_WITH_PARDISO
 		"Pardiso",
 #endif
+#ifdef USE_HYPRE
+		"Hypre",
+#endif
 #if EIGEN_VERSION_AT_LEAST(3,3,0)
 		"Eigen::LeastSquaresConjugateGradient",
 		"Eigen::DGMRES",
@@ -220,7 +223,11 @@ std::string LinearSolver::defaultSolver() {
 #ifdef POLYFEM_WITH_PARDISO
 	return "Pardiso";
 #else
+#ifdef USE_HYPRE
+	return "Hypre";
+#else
 	return "Eigen::BiCGSTAB";
+#endif
 #endif
 }
 
