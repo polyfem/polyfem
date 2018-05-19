@@ -57,7 +57,7 @@ namespace poly_fem {
 		int pre_max_iter_ = 5;
 		double conv_tol_ = 1e-8;
 
-		int num_iterations;
+		HYPRE_Int num_iterations;
 		double final_res_norm;
 	private:
 		bool has_matrix_ = false;

@@ -39,20 +39,23 @@ void LinearSolverHypre::analyzePattern(const SparseMatrixXd &Ain) {
 	}
 
 	has_matrix_ = true;
-	HYPRE_IJMatrixCreate(MPI_COMM_WORLD, 0, Ain.rows(), 0, Ain.cols(), &A);
-	HYPRE_IJMatrixSetPrintLevel(A, 2);
+	const HYPRE_Int rows = Ain.rows();
+	const HYPRE_Int cols = Ain.cols();
+
+	HYPRE_IJMatrixCreate(MPI_COMM_WORLD, 0, rows, 0, cols, &A);
+	// HYPRE_IJMatrixSetPrintLevel(A, 2);
 	HYPRE_IJMatrixSetObjectType(A, HYPRE_PARCSR);
 	HYPRE_IJMatrixInitialize(A);
 
 
 	// HYPRE_IJMatrixSetValues(A, 1, &nnz, &i, cols, values);
 
-	for (int k = 0; k < Ain.outerSize(); ++k) {
+	for (HYPRE_Int k = 0; k < Ain.outerSize(); ++k) {
 		for (Eigen::SparseMatrix<double>::InnerIterator it(Ain, k); it; ++it) {
-			const int i[1] = {it.row()};
-			const int j[1] = {it.col()};
+			const HYPRE_Int i[1] = {it.row()};
+			const HYPRE_Int j[1] = {it.col()};
 			const double v[1] = {it.value()};
-			int n_cols[1] = {1};
+			HYPRE_Int n_cols[1] = {1};
 
 			HYPRE_IJMatrixSetValues(A, 1, n_cols, i, j, v);
 		}
@@ -79,9 +82,9 @@ void LinearSolverHypre::solve(const Eigen::Ref<const VectorXd> rhs, Eigen::Ref<V
 	HYPRE_IJVectorSetObjectType(x, HYPRE_PARCSR);
 	HYPRE_IJVectorInitialize(x);
 
-	Eigen::VectorXi indices(rhs.size());
+	Eigen::Matrix<HYPRE_Int, Eigen::Dynamic, 1> indices(rhs.size());
 
-	for(int i = 0; i < indices.size(); ++i)
+	for(HYPRE_Int i = 0; i < indices.size(); ++i)
 		indices(i) = i;
 	Eigen::VectorXd initial_guess(rhs.size()); initial_guess.setZero();
 
@@ -106,12 +109,12 @@ void LinearSolverHypre::solve(const Eigen::Ref<const VectorXd> rhs, Eigen::Ref<V
 	HYPRE_PCGSetMaxIter(solver, max_iter_); /* max iterations */
 	HYPRE_PCGSetTol(solver, conv_tol_); /* conv. tolerance */
 	HYPRE_PCGSetTwoNorm(solver, 1); /* use the two norm as the stopping criteria */
-	HYPRE_PCGSetPrintLevel(solver, 2); /* print solve info */
+	//HYPRE_PCGSetPrintLevel(solver, 2); /* print solve info */
 	HYPRE_PCGSetLogging(solver, 1); /* needed to get run info later */
 
 	/* Now set up the AMG preconditioner and specify any parameters */
 	HYPRE_BoomerAMGCreate(&precond);
-	HYPRE_BoomerAMGSetPrintLevel(precond, 2); /* print amg solution info */
+	//HYPRE_BoomerAMGSetPrintLevel(precond, 2); /* print amg solution info */
 	HYPRE_BoomerAMGSetCoarsenType(precond, 6);
 	HYPRE_BoomerAMGSetOldDefault(precond);
 	HYPRE_BoomerAMGSetRelaxType(precond, 6); /* Sym G.S./Jacobi hybrid */

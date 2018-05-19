@@ -357,6 +357,7 @@ target_include_directories(catch SYSTEM INTERFACE ${THIRD_PARTY_DIR}/Catch2/sing
 if(ENABLE_HYPRE)
 	set(HYPRE_SEQUENTIAL ON)
 	set(HYPRE_PRINT_ERRORS ON)
+	set(HYPRE_BIGINT ON)
 	add_subdirectory(${THIRD_PARTY_DIR}/hypre/src hypre)
 	set_property(TARGET HYPRE PROPERTY FOLDER "dependencies")
 
