@@ -2,6 +2,10 @@
 
 #include "Mesh.hpp"
 #include "Types.hpp"
+
+#include "Navigation.hpp"
+#include "Navigation3D.hpp"
+
 #include <Eigen/Dense>
 
 namespace poly_fem {
@@ -23,6 +27,10 @@ public:
 
 	std::vector<int> node_ids_from_edge(const Navigation::Index &index, const int n_new_nodes);
 	std::vector<int> node_ids_from_face(const Navigation::Index &index, const int n_new_nodes);
+
+	std::vector<int> node_ids_from_edge(const Navigation3D::Index &index, const int n_new_nodes);
+	std::vector<int> node_ids_from_face(const Navigation3D::Index &index, const int n_new_nodes);
+	std::vector<int> node_ids_from_cell(const Navigation3D::Index &index, const int n_new_nodes);
 
 	// Packed id from primitive
 	int primitive_from_vertex(int v) const { return v; }

@@ -5,6 +5,7 @@
 #include "LocalBoundary.hpp"
 #include "InterfaceData.hpp"
 #include "Navigation3D.hpp"
+#include "MeshNodes.hpp"
 
 #include <Eigen/Dense>
 #include <vector>
@@ -32,6 +33,14 @@ namespace poly_fem
 			const Mesh3D &mesh,
 			const int quadrature_order,
 			const int discr_order,
+			std::vector< ElementBases > &bases,
+			std::vector< LocalBoundary > &local_boundary,
+			std::map<int, InterfaceData> &poly_face_to_data);
+
+		static int build_bases(
+			const Mesh3D &mesh,
+			const int quadrature_order,
+			const Eigen::VectorXi &discr_order,
 			std::vector< ElementBases > &bases,
 			std::vector< LocalBoundary > &local_boundary,
 			std::map<int, InterfaceData> &poly_face_to_data);
@@ -108,6 +117,8 @@ namespace poly_fem
 		static void quadr_hex_basis_value(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val);
 		static void quadr_hex_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val);
 
+		static std::vector<int> tet_local_to_global(const int p, const Mesh3D &mesh, int c, const Eigen::VectorXi &discr_order, poly_fem::MeshNodes &nodes);
+		static Eigen::VectorXi tet_face_local_nodes(const int p, const Mesh3D &mesh, Navigation3D::Index index);
 
 		static std::array<int, 10> quadr_tet_local_to_global(const Mesh3D &mesh, int c);
 		static std::array<int, 27> quadr_hex_local_to_global(const Mesh3D &mesh, int c);

@@ -766,7 +766,7 @@ namespace poly_fem
 			if(args["use_spline"])
 			{
 				if(!iso_parametric())
-					FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], args["discr_order"], geom_bases, local_boundary, poly_edge_to_data_geom);
+					FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, geom_bases, local_boundary, poly_edge_to_data_geom);
 
 				n_bases = SplineBasis3d::build_bases(tmp_mesh, args["quadrature_order"], bases, local_boundary, poly_edge_to_data);
 
@@ -778,7 +778,7 @@ namespace poly_fem
 				if (!iso_parametric())
 					FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], 1, geom_bases, local_boundary, poly_edge_to_data_geom);
 
-				n_bases = FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], args["discr_order"], bases, local_boundary, poly_edge_to_data);
+				n_bases = FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, bases, local_boundary, poly_edge_to_data);
 			}
 		}
 		else

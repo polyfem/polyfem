@@ -991,16 +991,16 @@ namespace poly_fem
 		v[3] = idx.vertex;
 
 
-		std::array<GEO::vec3, 4> vertices;
+		// std::array<GEO::vec3, 4> vertices;
 
-		for(int lv = 0; lv < 4; ++lv)
-		{
-			auto pt = point(v[lv]);
-			for(int d = 0; d < 3; ++d)
-			{
-				vertices[lv][d] = pt(d);
-			}
-		}
+		// for(int lv = 0; lv < 4; ++lv)
+		// {
+		// 	auto pt = point(v[lv]);
+		// 	for(int d = 0; d < 3; ++d)
+		// 	{
+		// 		vertices[lv][d] = pt(d);
+		// 	}
+		// }
 
 		// const double vol = GEO::Geom::tetra_signed_volume(vertices[0], vertices[1], vertices[2], vertices[3]);
 		// if(vol < 0)

@@ -908,7 +908,7 @@ int poly_fem::FEBasis2d::build_bases(
 
 	const int max_p = discr_orders.maxCoeff();
 	const int nn = max_p > 2 ? (max_p - 2) : 0;
-	const int n_face_nodes = std::max(nn * (nn + 1) / 2, (max_p-1)*(max_p-1));
+	const int n_face_nodes = std::max(nn * (nn + 1) / 2, max_p == 2 ? 1 : 0);
 
 	//TODO works only for P
 	MeshNodes nodes(mesh, max_p - 1, n_face_nodes);

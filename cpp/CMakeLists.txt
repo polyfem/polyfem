@@ -361,10 +361,14 @@ if(ENABLE_HYPRE)
 	set(HYPRE_USING_FEI OFF)
 	# set(HYPRE_LONG_DOUBLE ON)
 
+	# set(HYPRE_USING_OPENMP ON)
+
 	set (HYPRE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE INTERNAL "" FORCE)
 
 	add_subdirectory(${THIRD_PARTY_DIR}/hypre/src hypre)
 	set_property(TARGET HYPRE PROPERTY FOLDER "dependencies")
+
+	# target_include_directories(HYPRE PUBLIC "/opt/local/include/libomp/")
 
 	target_compile_definitions(HYPRE PUBLIC -DUSE_HYPRE)
 	target_include_directories(HYPRE PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/hypre)
@@ -391,6 +395,8 @@ if(ENABLE_HYPRE)
 
 
 	target_link_libraries(polyfem PUBLIC HYPRE)
+	# target_link_libraries(polyfem PUBLIC "/opt/local/lib/libomp/libomp.dylib")
+
 endif()
 
 ################################################################################
