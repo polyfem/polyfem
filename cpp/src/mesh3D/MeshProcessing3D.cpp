@@ -899,9 +899,24 @@ void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter) {
 
 			M_.elements.push_back(ele_);
 		}
-		for (const auto &ele : M.elements) {//1 --> 8
 
-			for (short i = 0; i < 4; i++) {
+		auto shared_edge = [&](int v0, int v1, int &e)->bool {
+			auto &es0 = M.vertices[v0].neighbor_es, &es1 = M.vertices[v1].neighbor_es;
+			std::sort(es0.begin(), es0.end());
+			std::sort(es1.begin(), es1.end());
+			std::vector<uint32_t> es;
+			std::set_intersection(es0.begin(), es0.end(), es1.begin(), es1.end(), back_inserter(es));
+			if (es.size()) {
+				e = es[0]; return true;
+			}
+			return false;
+		};
+
+		std::vector<bool> e_flag(M.edges.size(), false);
+
+		for (const auto &ele : M.elements) {//1 --> 8
+			
+			for (short i = 0; i < 4; i++) {//four corners
 				Element ele_;
 				ele_.id = M_.elements.size();
 				ele_.fs.resize(4, -1);
@@ -913,10 +928,47 @@ void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter) {
 				ele_.vs.push_back(ele.vs[i]);
 				for (short j = 0; j < 4; j++) {
 					if (j == i)continue;
-
+					int v0 = ele.vs[i], v1 = ele.vs[j];
+					int e = -1;
+					if (shared_edge(v0, v1, e))
+						ele_.vs.push_back(E2V[e]);
 				}
+				Vector3d center;
+				center.setZero();
+				for (const auto &evid : ele_.vs) for (int j = 0; j < 3; j++)center[j] += M_.vertices[evid].v[j];
+				center /= ele_.vs.size();
+				for (int j = 0; j < 3; j++)ele_.v_in_Kernel[j] = center[j];
 
+				M_.elements.push_back(ele_);
+			}
 
+			//6 edges
+			std::vector<int> edges(6);
+			for (int i = 0; i < 6; i++) {
+				int v0 = ele.vs[tet_edges[i][0]], v1 = ele.vs[tet_edges[i][1]];
+				int e = -1;
+				if (shared_edge(v0, v1, e))edges[i] = e;
+				e_flag[e] = true;
+			}
+			//the longest edge
+			int lv0 = E2V[edges[0]], lv1 = E2V[edges[5]];
+			e_flag[edges[0]] = true; e_flag[edges[5]] = true;
+			for (short i = 0; i < 4; i++) {//four faces
+				Element ele_;
+				ele_.id = M_.elements.size();
+				ele_.fs.resize(4, -1);
+				ele_.fs_flag.resize(4, 1);
+
+				ele_.hex = false;
+				ele_.v_in_Kernel.resize(3);
+
+				ele_.vs.push_back(lv0);
+				ele_.vs.push_back(lv1);
+				for (short j = 0; j < 3; j++) {
+					int c_e = M.faces[ele.fs[i]].es[j];
+					if (e_flag[c_e]) continue;
+					ele_.vs.push_back(E2V[c_e]);
+				}
 				Vector3d center;
 				center.setZero();
 				for (const auto &evid : ele_.vs) for (int j = 0; j < 3; j++)center[j] += M_.vertices[evid].v[j];
