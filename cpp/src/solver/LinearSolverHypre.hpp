@@ -1,21 +1,24 @@
 #pragma once
 
-#ifdef USE_HYPRE
+#ifdef POLYFEM_WITH_HYPRE
 
 ////////////////////////////////////////////////////////////////////////////////
 #include "Common.hpp"
 #include "LinearSolver.hpp"
-#include <vector>
 #include <Eigen/Core>
 #include <Eigen/Sparse>
+#include <vector>
 
-#include <_hypre_utilities.h>
+#include <HYPRE_utilities.h>
 #include <HYPRE.h>
-#include <IJ_matrix.h>
 #include <HYPRE_parcsr_ls.h>
+#include <HYPRE_parcsr_mv.h>
+#include <IJ_matrix.h>
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 // https://computation.llnl.gov/sites/default/files/public/hypre-2.11.2_usr_manual.pdf
+// https://github.com/LLNL/hypre/blob/v2.14.0/docs/HYPRE_usr_manual.pdf
 //
 
 namespace poly_fem {
@@ -30,29 +33,30 @@ namespace poly_fem {
 		POLYFEM_DELETE_MOVE_COPY(LinearSolverHypre)
 
 	public:
-	//////////////////////
-	// Public interface //
-	//////////////////////
+		//////////////////////
+		// Public interface //
+		//////////////////////
 
-	// Set solver parameters
+		// Set solver parameters
 		virtual void setParameters(const json &params) override;
 
-	// Retrieve memory information from Pardiso
+		// Retrieve memory information from Pardiso
 		virtual void getInfo(json &params) const override;
 
-	// Analyze sparsity pattern
+		// Analyze sparsity pattern
 		virtual void analyzePattern(const SparseMatrixXd &A) override;
 
-	// Factorize system matrix
+		// Factorize system matrix
 		virtual void factorize(const SparseMatrixXd &) override { }
 
-	// Solve the linear system Ax = b
+		// Solve the linear system Ax = b
 		virtual void solve(const Ref<const VectorXd> b, Ref<VectorXd> x) override;
 
-	// Name of the solver type (for debugging purposes)
+		// Name of the solver type (for debugging purposes)
 		virtual std::string name() const override { return "Hypre"; }
 
 	protected:
+		int dimension_ = 1; // 1 = scalar (Laplace), 2 or 3 = vector (Elasticity)
 		int max_iter_ = 1000;
 		int pre_max_iter_ = 1;
 		double conv_tol_ = 1e-8;
