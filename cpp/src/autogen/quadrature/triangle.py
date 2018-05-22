@@ -24,7 +24,7 @@ def integrate_approx(f, scheme):
     Integrate numerically over the reference triangle.
     """
     x, y = sympy.symbols('x y')
-    vol = 0.5  # area of the canonical triangle
+    vol = 0.5  # area of the reference triangle
     res = 0
     for i, w in enumerate(scheme.weights):
         res += w * f.subs([(x, scheme.points[i, 0]), (y, scheme.points[i, 1])])
@@ -167,7 +167,7 @@ def main():
         scheme = pick_scheme(all_schemes, order)
         selected.append((order, scheme))
     code = generate_cpp(selected)
-    print(code)
+    # print(code)
     with open('../auto_triangle.cpp', 'w') as f:
         f.write(code)
 
