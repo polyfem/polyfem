@@ -3,12 +3,13 @@ cmake_minimum_required(VERSION 3.1)
 
 set(test_sources
 	main.cpp
-	test_solver.cpp
 	test_bases.cpp
-	test_problem.cpp
 	test_matrix.cpp
-	test_utils.cpp
+	test_problem.cpp
+	test_quadrature.cpp
+	test_solver.cpp
 	test_tbb.cpp
+	test_utils.cpp
 )
 
 add_executable(unit_tests ${test_sources})
