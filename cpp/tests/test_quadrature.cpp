@@ -59,22 +59,22 @@ TEST_CASE("weights", "[quadrature]") {
 	}
 
 	// Tetrahedron
-	for (int order = 1; order < 10; ++order) {
-		// TetQuadrature tri;
-		// Quadrature quadr;
-		// tri.get_quadrature(order, quadr);
-		// REQUIRE(quadr.weights.sum() == Approx(1.0).margin(1e-12));
-		// REQUIRE(quadr.points.minCoeff() >= 0.0);
-		// REQUIRE(quadr.points.maxCoeff() <= 1.0);
-	}
-}
-
-TEST_CASE("triangle", "[quadrature]") {
-	for (int order = 1; order < 10; ++order) {
+	for (int order = 1; order < 16; ++order) {
+		TetQuadrature tri;
 		Quadrature quadr;
-		TriQuadrature tri;
 		tri.get_quadrature(order, quadr);
+		REQUIRE(quadr.weights.sum() == Approx(1.0/6.0).margin(1e-12));
+		REQUIRE(quadr.points.minCoeff() >= 0.0);
+		REQUIRE(quadr.points.maxCoeff() <= 1.0);
 	}
-
-	// REQUIRE(poly_fem::determinant(mat) == Approx(mat.determinant()).margin(1e-12));
 }
+
+//TEST_CASE("triangle", "[quadrature]") {
+//	for (int order = 1; order < 10; ++order) {
+//		Quadrature quadr;
+//		TriQuadrature tri;
+//		tri.get_quadrature(order, quadr);
+//	}
+//
+//	// REQUIRE(poly_fem::determinant(mat) == Approx(mat.determinant()).margin(1e-12));
+//}

@@ -609,11 +609,18 @@ std::vector<int> poly_fem::FEBasis3d::tet_local_to_global(const int p, const Mes
 
 	//vertices
 	for (size_t lv = 0; lv < v.size(); ++lv) {
-		const auto index = f[lv];
-		const auto other_cell = mesh.switch_element(index).element;
+		const auto index = find_edge(mesh, c, v[lv], v[(lv+1)%4]);
 
-		if(discr_order.size() > 0 && other_cell >= 0 && discr_order(c) >  discr_order(other_cell))
-			res.push_back(-lv - 1);
+		const auto other_cell1 = mesh.switch_element(index).element;
+		const auto other_cell2 = mesh.switch_element(mesh.switch_face(index)).element;
+		const auto other_cell3 = mesh.switch_element(mesh.switch_face(mesh.switch_edge(index))).element;
+
+		const bool skip_other1 = discr_order.size() > 0 && other_cell1 >= 0 && discr_order(c) >  discr_order(other_cell1);
+		const bool skip_other2 = discr_order.size() > 0 && other_cell2 >= 0 && discr_order(c) >  discr_order(other_cell2);
+		const bool skip_other3 = discr_order.size() > 0 && other_cell3 >= 0 && discr_order(c) >  discr_order(other_cell3);
+
+		if(skip_other1 || skip_other2 || skip_other3)
+			res.push_back(-lv - 30);
 		else
 			res.push_back(nodes.node_id_from_primitive(v[lv]));
 	}
@@ -630,35 +637,8 @@ std::vector<int> poly_fem::FEBasis3d::tet_local_to_global(const int p, const Mes
 
 		if(skip_other1 || skip_other2)
 		{
-			int findex = -1;
-			if(skip_other1)
-			{
-				for(long lf = 0; lf < fv.rows(); ++lf)
-				{
-					if(f[lf].face == index.face)
-					{
-						findex = lf;
-						break;
-					}
-				}
-
-			}
-			else
-			{
-				const int tmp = mesh.switch_face(index).face;
-				for(long lf = 0; lf < fv.rows(); ++lf)
-				{
-					if(f[lf].face == tmp)
-					{
-						findex = lf;
-						break;
-					}
-				}
-			}
-			assert(findex >= 0);
-
 			for(int tmp = 0; tmp < p - 1; ++tmp)
-				res.push_back(-findex - 1);
+				res.push_back(-le - 10);
 		}
 		else
 		{
@@ -1464,30 +1444,67 @@ int poly_fem::FEBasis3d::build_bases(
 					b.bases[j].init(global_index, j, nodes.node_position(global_index));
 				else
 				{
-					const auto lf = -(global_index+1);
+					const int lnn = max_p > 2 ? (discr_order - 2) : 0;
+					const int ln_edge_nodes = discr_order - 1;
+					const int ln_face_nodes = lnn * (lnn + 1) / 2;
 
-					auto v = linear_tet_local_to_global(mesh, e);
-					Eigen::Matrix<int, 4, 3> fv;
-					fv.row(0) << v[0], v[1], v[2];
-					fv.row(1) << v[0], v[1], v[3];
-					fv.row(2) << v[1], v[2], v[3];
-					fv.row(3) << v[2], v[0], v[3];
+					const auto v = linear_tet_local_to_global(mesh, e);
+					Navigation3D::Index index;
+					if(global_index <= -30)
+					{
+						const auto lv = -(global_index + 30);
+						assert(lv>=0 && lv < 4);
+						assert(j < 4);
 
-					const auto index = mesh.switch_element(find_tri_face(mesh, e, fv(lf, 0), fv(lf, 1), fv(lf, 2)));
+						index = mesh.switch_element(find_edge(mesh, e, v[lv], v[(lv+1)%4]));
+					}
+					else if (global_index <= -10)
+					{
+						const auto le = -(global_index+10);
+						assert(le>=0 && le < 6);
+						assert(j >= 4 && j < 4 + 6*ln_edge_nodes);
+
+						Eigen::Matrix<int, 6, 2> ev;
+						ev.row(0)  << v[0], v[1];
+						ev.row(1)  << v[1], v[2];
+						ev.row(2)  << v[2], v[0];
+
+						ev.row(3)  << v[0], v[3];
+						ev.row(4)  << v[1], v[3];
+						ev.row(5)  << v[2], v[3];
+
+						index = mesh.switch_element(find_edge(mesh, e, ev(le, 0), ev(le, 1)));
+					}
+					else
+					{
+						const auto lf = -(global_index+1);
+						assert(lf>=0 && lf < 6);
+						assert(j >= 4 + 6*ln_edge_nodes && j <  4 + 6*ln_edge_nodes + 4*ln_face_nodes);
+
+						Eigen::Matrix<int, 4, 3> fv;
+						fv.row(0) << v[0], v[1], v[2];
+						fv.row(1) << v[0], v[1], v[3];
+						fv.row(2) << v[1], v[2], v[3];
+						fv.row(3) << v[2], v[0], v[3];
+
+						index = mesh.switch_element(find_tri_face(mesh, e, fv(lf, 0), fv(lf, 1), fv(lf, 2)));
+					}
+
 					const auto other_cell = index.element;
-
-					assert(discr_order > 1);
 
 					auto indices = tet_face_local_nodes(discr_order, mesh, index);
 					Eigen::MatrixXd lnodes; autogen::p_nodes_3d(discr_order, lnodes);
-					Eigen::RowVector3d node_position = lnodes.row(indices(j));
+					Eigen::RowVector3d node_position;
 
-					// if( j < 4)
-					// 	node_position = lnodes.row(indices(0));
-					// else if( j < 4 + 6*(discr_order-1))
-					// 	node_position = lnodes.row(indices(((j-4) % (discr_order-1)) + 1));
-					// else //TODO
-					// 	assert(false);
+
+					if( j < 4)
+						node_position = lnodes.row(indices(0));
+					else if( j < 4 + 6*ln_edge_nodes)
+						node_position = lnodes.row(indices(((j - 4) % ln_edge_nodes) + 3));
+					else if(j <  4 + 6*ln_edge_nodes + 4*ln_face_nodes)
+						node_position = lnodes.row(indices(((j - 4 - 6*ln_edge_nodes) % ln_face_nodes) + 3 + 3*ln_edge_nodes));
+					else
+						assert(false);
 
 
 
