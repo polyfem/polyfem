@@ -167,7 +167,7 @@ void poly_fem::UIState::draw_settings() {
 	ImGui::Spacing();
 	if (ImGui::Button("Browse...")) {
 		std::string path = FileDialog::openFileName("./.*",
-			{"*.HYBRID", "*.obj"} , "General polyhedral mesh");
+			{"*.HYBRID","*.mesh","*.MESH", "*.obj"} , "General polyhedral mesh");
 
 		if (!path.empty()) {
 			state.args["mesh"] = path;
