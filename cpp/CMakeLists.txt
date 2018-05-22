@@ -6,6 +6,7 @@ project(PolyFEM)
 set(THIRD_PARTY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 list(APPEND CMAKE_MODULE_PATH ${THIRD_PARTY_DIR}/Catch2/contrib)
+# list(APPEND CMAKE_MODULE_PATH ${THIRD_PARTY_DIR}/sanitizers-cmake/cmake)
 
 # Color output
 include(UseColors)
@@ -35,9 +36,12 @@ option(ENABLE_SUPERLU     "Enable SuperLU library" OFF)
 option(ENABLE_MKL         "Enable MKL library"     OFF)
 option(ENABLE_PARDISO     "Enable Pardiso library"  ON)
 option(ENABLE_MMG         "Enable MMG library"     OFF)
-option(ENABLE_TBB         "Enable TBB"		       ON)
-option(ENABLE_HYPRE       "Enable hypre"	       ON)
-
+option(ENABLE_TBB         "Enable TBB"		        ON)
+option(ENABLE_HYPRE       "Enable hypre"	        ON)
+option(SANITIZE_ADDRESS   "Sanitize Address"       OFF)
+option(SANITIZE_MEMORY    "Sanitize Memory"        OFF)
+option(SANITIZE_THREAD    "Sanitize Thread"        OFF)
+option(SANITIZE_UNDEFINED "Sanitize Undefined"     OFF)
 
 # Options for libigl modules
 option(LIBIGL_USE_STATIC_LIBRARY          "Use libigl as static library" ON)
@@ -67,6 +71,11 @@ option(LIBIGL_WITH_XML                    "Use XML"                      OFF)
 # set(ENABLE_PARDISO      OFF CACHE BOOL "" FORCE)
 # set(ENABLE_MMG          ON  CACHE BOOL "" FORCE)
 
+# set(SANITIZE_ADDRESS   ON  CACHE BOOL "" FORCE)
+# set(SANITIZE_MEMORY    ON CACHE BOOL "" FORCE)
+# set(SANITIZE_THREAD    OFF CACHE BOOL "" FORCE)
+# set(SANITIZE_UNDEFINED ON  CACHE BOOL "" FORCE)
+
 # Somehow Pardiso 6 conflicts with libmetis that these guys depends on... Grr
 if(ENABLE_PARDISO)
 	set(ENABLE_CHOLMOD      OFF CACHE BOOL "" FORCE)
@@ -92,34 +101,38 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_bases.cpp
 
 
 # Polyfem library
-set(source_list
+set(POLYFEM_SOURCES
 	src/assembler/Assembler.cpp
 	src/assembler/Assembler.hpp
 	src/assembler/AssemblyValues.hpp
 	src/assembler/ElementAssemblyValues.cpp
 	src/assembler/ElementAssemblyValues.hpp
-	src/assembler/Laplacian.cpp
-	src/assembler/Laplacian.hpp
 	src/assembler/Helmholtz.cpp
 	src/assembler/Helmholtz.hpp
-	src/assembler/LinearElasticity.cpp
-	src/assembler/LinearElasticity.hpp
 	src/assembler/HookeLinearElasticity.cpp
 	src/assembler/HookeLinearElasticity.hpp
-	src/assembler/SaintVenantElasticity.cpp
-	src/assembler/SaintVenantElasticity.hpp
+	src/assembler/Laplacian.cpp
+	src/assembler/Laplacian.hpp
+	src/assembler/LinearElasticity.cpp
+	src/assembler/LinearElasticity.hpp
 	src/assembler/NeoHookeanElasticity.cpp
 	src/assembler/NeoHookeanElasticity.hpp
 	src/assembler/OgdenElasticity.cpp
 	src/assembler/OgdenElasticity.hpp
 	src/assembler/RhsAssembler.cpp
 	src/assembler/RhsAssembler.hpp
-	src/assembler/utils/AssemblerUtils.hpp
+	src/assembler/SaintVenantElasticity.cpp
+	src/assembler/SaintVenantElasticity.hpp
 	src/assembler/utils/AssemblerUtils.cpp
+	src/assembler/utils/AssemblerUtils.hpp
 	src/basis/Basis.cpp
 	src/basis/Basis.hpp
 	src/basis/ElementBases.cpp
 	src/basis/ElementBases.hpp
+	src/basis/FEBasis2d.cpp
+	src/basis/FEBasis2d.hpp
+	src/basis/FEBasis3d.cpp
+	src/basis/FEBasis3d.hpp
 	src/basis/function/QuadraticBSpline.cpp
 	src/basis/function/QuadraticBSpline.hpp
 	src/basis/function/QuadraticBSpline2d.cpp
@@ -137,10 +150,6 @@ set(source_list
 	src/basis/PolygonalBasis2d.hpp
 	src/basis/PolygonalBasis3d.cpp
 	src/basis/PolygonalBasis3d.hpp
-	src/basis/FEBasis2d.cpp
-	src/basis/FEBasis2d.hpp
-	src/basis/FEBasis3d.cpp
-	src/basis/FEBasis3d.hpp
 	src/basis/SpectralBasis2d.cpp
 	src/basis/SpectralBasis2d.hpp
 	src/basis/SplineBasis2d.cpp
@@ -174,20 +183,20 @@ set(source_list
 	src/mesh3D/MeshProcessing3D.hpp
 	src/mesh3D/Navigation3D.cpp
 	src/mesh3D/Navigation3D.hpp
-	src/problem/ElasticProblem.cpp
-	src/problem/ElasticProblem.hpp
 	src/problem/CustomProblem.cpp
 	src/problem/CustomProblem.hpp
+	src/problem/ElasticProblem.cpp
+	src/problem/ElasticProblem.hpp
 	src/problem/FrankeProblem.cpp
 	src/problem/FrankeProblem.hpp
-	src/problem/Problem.cpp
-	src/problem/Problem.hpp
 	src/problem/KernelProblem.cpp
 	src/problem/KernelProblem.hpp
-	src/problem/ProblemWithSolution.cpp
-	src/problem/ProblemWithSolution.hpp
 	src/problem/MiscProblem.cpp
 	src/problem/MiscProblem.hpp
+	src/problem/Problem.cpp
+	src/problem/Problem.hpp
+	src/problem/ProblemWithSolution.cpp
+	src/problem/ProblemWithSolution.hpp
 	src/quadrature/HexQuadrature.cpp
 	src/quadrature/HexQuadrature.hpp
 	src/quadrature/LineQuadrature.cpp
@@ -205,14 +214,15 @@ set(source_list
 	src/quadrature/TriQuadrature.hpp
 	src/solver/FEMSolver.cpp
 	src/solver/LinearSolver.cpp
-	src/solver/LinearSolverPardiso.cpp
 	src/solver/LinearSolverHypre.cpp
-	src/solver/SparseNewtonDescentSolver.hpp
-	src/solver/NLProblem.hpp
+	src/solver/LinearSolverPardiso.cpp
 	src/solver/NLProblem.cpp
+	src/solver/NLProblem.hpp
+	src/solver/SparseNewtonDescentSolver.hpp
 	src/State.cpp
 	src/State.hpp
 	src/utils/autodiff.h
+	src/utils/AutodiffTypes.hpp
 	src/utils/Bessel.hpp
 	src/utils/BoundarySampler.hpp
 	src/utils/CommandLine.cpp
@@ -220,22 +230,21 @@ set(source_list
 	src/utils/CustomSerialization.hpp
 	src/utils/EdgeSampler.cpp
 	src/utils/EdgeSampler.hpp
-	src/utils/MatrixUtils.cpp
-	src/utils/MatrixUtils.hpp
-	src/utils/StringUtils.cpp
-	src/utils/StringUtils.hpp
 	src/utils/ElasticityUtils.cpp
 	src/utils/ElasticityUtils.hpp
 	src/utils/InterpolatedFunction.cpp
 	src/utils/InterpolatedFunction.hpp
+	src/utils/MatrixUtils.cpp
+	src/utils/MatrixUtils.hpp
 	src/utils/RefElementSampler.cpp
 	src/utils/RefElementSampler.hpp
-	src/utils/AutodiffTypes.hpp
+	src/utils/StringUtils.cpp
+	src/utils/StringUtils.hpp
 	src/utils/Types.hpp
 )
 
 add_library(polyfem
-	${source_list}
+	${POLYFEM_SOURCES}
 	${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_rhs.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_rhs.hpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_eigs.cpp
@@ -261,8 +270,7 @@ target_include_directories(polyfem PUBLIC
 	src/viewer
 )
 
-
-foreach(source IN ITEMS ${source_list})
+foreach(source IN ITEMS ${POLYFEM_SOURCES})
     get_filename_component(source_path "${source}" PATH)
     string(REPLACE "/" "\\" group_path "${source_path}")
     source_group("${group_path}" FILES "${source}")
@@ -275,8 +283,6 @@ source_group("autogen" FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_eigs.h
 source_group("autogen" FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_bases.cpp)
 source_group("autogen" FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_bases.hpp)
 
-
-
 set(MESH_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tests/")
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_MESH_PATH=\"${MESH_PATH}\")
 
@@ -284,12 +290,16 @@ target_compile_definitions(polyfem PUBLIC -DPOLYFEM_MESH_PATH=\"${MESH_PATH}\")
 # Required libraries
 ################################################################################
 
+# Sanitizer flags
+# find_package(Sanitizers)
+# add_sanitizers(polyfem)
+
 # Eigen
 # Uncomment to use the system's version of Eigen (e.g. to use Eigen 3.3)
 # find_package(Eigen3 REQUIRED)
 # target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
 
-# TBB library
+# TBB
 if(ENABLE_TBB)
 	set(TBB_BUILD_STATIC ON CACHE BOOL " " FORCE)
 	set(TBB_BUILD_SHARED OFF CACHE BOOL " " FORCE)
@@ -301,7 +311,7 @@ if(ENABLE_TBB)
 	set_property(TARGET tbb_static tbb_def_files PROPERTY FOLDER "dependencies")
 
 	target_compile_definitions(tbb_static PUBLIC -DUSE_TBB)
-	target_include_directories(polyfem PUBLIC ${THIRD_PARTY_DIR}/tbb/include)
+	target_include_directories(polyfem SYSTEM PUBLIC ${THIRD_PARTY_DIR}/tbb/include)
 	target_link_libraries(polyfem PUBLIC tbb_static)
 endif()
 
@@ -314,7 +324,7 @@ target_link_libraries(polyfem PUBLIC igl::core igl::triangle igl::tetgen igl::op
 include(geogram)
 target_link_libraries(polyfem PUBLIC geogram)
 
-# CppNumericalSolvers library
+# CppNumericalSolvers
 add_library(cppoptlib INTERFACE)
 target_include_directories(cppoptlib SYSTEM INTERFACE ${THIRD_PARTY_DIR}/CppNumericalSolvers/include)
 target_link_libraries(polyfem PUBLIC cppoptlib)
@@ -341,61 +351,24 @@ target_link_libraries(polyfem PUBLIC json)
 add_library(nanosvg INTERFACE)
 target_include_directories(nanosvg INTERFACE ${THIRD_PARTY_DIR}/nanosvg)
 
-# Tiny file dialogs library
+# Tiny file dialogs
 add_subdirectory(${THIRD_PARTY_DIR}/tinyfiledialogs tinyfiledialogs)
 
-# Tiny format library
+# Tiny format
 add_library(tinyformat INTERFACE)
 target_include_directories(tinyformat SYSTEM INTERFACE ${THIRD_PARTY_DIR}/tinyformat)
 target_link_libraries(polyfem PUBLIC tinyformat)
 
-# Catch2 library
+# Catch2
 add_library(catch INTERFACE)
 target_include_directories(catch SYSTEM INTERFACE ${THIRD_PARTY_DIR}/Catch2/single_include)
 
-
+# Hypre
 if(ENABLE_HYPRE)
-	set(HYPRE_SEQUENTIAL ON CACHE INTERNAL "" FORCE)
-	set(HYPRE_PRINT_ERRORS ON CACHE INTERNAL "" FORCE)
-	set(HYPRE_BIGINT ON CACHE INTERNAL "" FORCE)
-	set(HYPRE_USING_FEI ON CACHE INTERNAL "" FORCE)
-	# set(HYPRE_LONG_DOUBLE ON)
-	# set(HYPRE_USING_OPENMP ON)
-
-	set(HYPRE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE INTERNAL "" FORCE)
-
-	add_subdirectory(${THIRD_PARTY_DIR}/hypre/src hypre)
-	set_property(TARGET HYPRE PROPERTY FOLDER "dependencies")
-
-	# target_include_directories(HYPRE PUBLIC "/opt/local/include/libomp/")
-
-	target_compile_definitions(HYPRE PUBLIC -DUSE_HYPRE)
-	target_include_directories(HYPRE PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/hypre)
-	target_include_directories(HYPRE PUBLIC ${THIRD_PARTY_DIR}/hypre/src)
-	target_include_directories(HYPRE PUBLIC ${THIRD_PARTY_DIR}/hypre/src/blas)
-	target_include_directories(HYPRE PUBLIC ${THIRD_PARTY_DIR}/hypre/src/lapack)
-	target_include_directories(HYPRE PUBLIC ${THIRD_PARTY_DIR}/hypre/src/utilities)
-	target_include_directories(HYPRE PUBLIC ${THIRD_PARTY_DIR}/hypre/src/multivector)
-	target_include_directories(HYPRE PUBLIC ${THIRD_PARTY_DIR}/hypre/src/krylov)
-	target_include_directories(HYPRE PUBLIC ${THIRD_PARTY_DIR}/hypre/src/seq_mv)
-	target_include_directories(HYPRE PUBLIC ${THIRD_PARTY_DIR}/hypre/src/parcsr_mv)
-	target_include_directories(HYPRE PUBLIC ${THIRD_PARTY_DIR}/hypre/src/parcsr_block_mv)
-	target_include_directories(HYPRE PUBLIC ${THIRD_PARTY_DIR}/hypre/src/distributed_matrix)
-	target_include_directories(HYPRE PUBLIC ${THIRD_PARTY_DIR}/hypre/src/IJ_mv)
-	target_include_directories(HYPRE PUBLIC ${THIRD_PARTY_DIR}/hypre/src/matrix_matrix)
-	target_include_directories(HYPRE PUBLIC ${THIRD_PARTY_DIR}/hypre/src/distributed_ls)
-	target_include_directories(HYPRE PUBLIC ${THIRD_PARTY_DIR}/hypre/src/distributed_ls/Euclid)
-	target_include_directories(HYPRE PUBLIC ${THIRD_PARTY_DIR}/hypre/src/distributed_ls/ParaSails)
-	target_include_directories(HYPRE PUBLIC ${THIRD_PARTY_DIR}/hypre/src/parcsr_ls)
-	target_include_directories(HYPRE PUBLIC ${THIRD_PARTY_DIR}/hypre/src/struct_mv)
-	target_include_directories(HYPRE PUBLIC ${THIRD_PARTY_DIR}/hypre/src/struct_ls)
-	target_include_directories(HYPRE PUBLIC ${THIRD_PARTY_DIR}/hypre/src/sstruct_mv)
-	target_include_directories(HYPRE PUBLIC ${THIRD_PARTY_DIR}/hypre/src/sstruct_ls)
-
-
+	include(hypre)
 	target_link_libraries(polyfem PUBLIC HYPRE)
-	# target_link_libraries(polyfem PUBLIC "/opt/local/lib/libomp/libomp.dylib")
-
+	target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_HYPRE)
+	# add_sanitizers(HYPRE)
 endif()
 
 ################################################################################
@@ -524,25 +497,25 @@ target_include_directories(${PROJECT_NAME}_bin PUBLIC
 target_link_libraries(${PROJECT_NAME}_bin PUBLIC igl::opengl_glfw_imgui igl::png polyfem tinyfiledialogs)
 target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
 
+# add_sanitizers(${PROJECT_NAME}_bin)
 
+set_target_properties(igl_triangle PROPERTIES FOLDER 3rdparty/igl)
+set_target_properties(igl_opengl PROPERTIES FOLDER 3rdparty/igl)
+set_target_properties(igl_png PROPERTIES FOLDER 3rdparty/igl)
+set_target_properties(igl_opengl_glfw_imgui PROPERTIES FOLDER 3rdparty/igl)
+set_target_properties(igl_core PROPERTIES FOLDER 3rdparty/igl)
+set_target_properties(igl_tetgen PROPERTIES FOLDER 3rdparty/igl)
+set_target_properties(igl_opengl_glfw PROPERTIES FOLDER 3rdparty/igl)
+set_target_properties(igl_stb_image PROPERTIES FOLDER 3rdparty/igl)
 
-set_target_properties (igl_triangle PROPERTIES FOLDER 3rdparty/igl)
-set_target_properties (igl_opengl PROPERTIES FOLDER 3rdparty/igl)
-set_target_properties (igl_png PROPERTIES FOLDER 3rdparty/igl)
-set_target_properties (igl_opengl_glfw_imgui PROPERTIES FOLDER 3rdparty/igl)
-set_target_properties (igl_core PROPERTIES FOLDER 3rdparty/igl)
-set_target_properties (igl_tetgen PROPERTIES FOLDER 3rdparty/igl)
-set_target_properties (igl_opengl_glfw PROPERTIES FOLDER 3rdparty/igl)
-set_target_properties (igl_stb_image PROPERTIES FOLDER 3rdparty/igl)
-
-set_target_properties (glad PROPERTIES FOLDER 3rdparty/other)
-set_target_properties (tinyfiledialogs PROPERTIES FOLDER 3rdparty/other)
-set_target_properties (imgui PROPERTIES FOLDER 3rdparty/other)
-set_target_properties (tetgen PROPERTIES FOLDER 3rdparty/other)
-set_target_properties (triangle PROPERTIES FOLDER 3rdparty/other)
-# set_target_properties (uninstall_geo PROPERTIES FOLDER 3rdparty/other)
-set_target_properties (geogram PROPERTIES FOLDER 3rdparty/other)
-set_target_properties (polyclipping PROPERTIES FOLDER 3rdparty/other)
+set_target_properties(glad PROPERTIES FOLDER 3rdparty/other)
+set_target_properties(tinyfiledialogs PROPERTIES FOLDER 3rdparty/other)
+set_target_properties(imgui PROPERTIES FOLDER 3rdparty/other)
+set_target_properties(tetgen PROPERTIES FOLDER 3rdparty/other)
+set_target_properties(triangle PROPERTIES FOLDER 3rdparty/other)
+# set_target_properties(uninstall_geo PROPERTIES FOLDER 3rdparty/other)
+set_target_properties(geogram PROPERTIES FOLDER 3rdparty/other)
+set_target_properties(polyclipping PROPERTIES FOLDER 3rdparty/other)
 
 # Main executable without gui, uncomment when not debugging gui is necessary
 # add_executable(${PROJECT_NAME}_cmd

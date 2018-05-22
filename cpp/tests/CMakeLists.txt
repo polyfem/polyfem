@@ -21,6 +21,8 @@ target_link_libraries(unit_tests PUBLIC polyfem catch)
 set(DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data/")
 target_compile_definitions(unit_tests PUBLIC -DDATA_DIR=\"${DATA_DIR}\")
 
+# add_sanitizers(unit_tests)
+
 # Register tests
 set(PARSE_CATCH_TESTS_ADD_TO_CONFIGURE_DEPENDS ON)
 include(ParseAndAddCatchTests)

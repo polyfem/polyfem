@@ -11,22 +11,25 @@ endif()
 if(THIRD_PARTY_DIR)
 	set(GEOGRAM_SEARCH_PATHS ${THIRD_PARTY_DIR})
 else()
-	set(GEOGRAM_SEARCH_PATHS
-		${GEOGRAM_INSTALL_PREFIX}
-		"$ENV{GEOGRAM_INSTALL_PREFIX}"
-		"/usr/local/"
-		"$ENV{PROGRAMFILES}/Geogram"
-		"$ENV{PROGRAMW6432}/Geogram"
-		"$ENV{HOME}/.local/")
+	# set(GEOGRAM_SEARCH_PATHS
+	# 	${GEOGRAM_INSTALL_PREFIX}
+	# 	"$ENV{GEOGRAM_INSTALL_PREFIX}"
+	# 	"/usr/local/"
+	# 	"$ENV{PROGRAMFILES}/Geogram"
+	# 	"$ENV{PROGRAMW6432}/Geogram"
+	# 	"$ENV{HOME}/.local/")
 endif()
 
 find_path(GEOGRAM_SOURCE_INCLUDE_DIR
 		geogram/basic/common.h
 		PATHS ${GEOGRAM_SEARCH_PATHS}
 		PATH_SUFFIXES geogram/src/lib
+		NO_DEFAULT_PATH
 )
 
 set(GEOGRAM_ROOT ${GEOGRAM_SOURCE_INCLUDE_DIR}/../..)
+
+message("Found Geogram here: ${GEOGRAM_ROOT}")
 
 ################################################################################
 

@@ -18,7 +18,7 @@
 #ifdef POLYFEM_WITH_PARDISO
 #include "LinearSolverPardiso.h"
 #endif
-#ifdef USE_HYPRE
+#ifdef POLYFEM_WITH_HYPRE
 #include "LinearSolverHypre.hpp"
 #endif
 #include <unsupported/Eigen/IterativeSolvers>
@@ -158,7 +158,7 @@ std::unique_ptr<LinearSolver> LinearSolver::create(const std::string &solver, co
 	} else if (solver == "Pardiso") {
 		return std::make_unique<LinearSolverPardiso>();
 #endif
-#ifdef USE_HYPRE
+#ifdef POLYFEM_WITH_HYPRE
 	} else if (solver == "Hypre") {
 		return std::make_unique<LinearSolverHypre>();
 #endif
@@ -204,7 +204,7 @@ std::vector<std::string> LinearSolver::availableSolvers() {
 #ifdef POLYFEM_WITH_PARDISO
 		"Pardiso",
 #endif
-#ifdef USE_HYPRE
+#ifdef POLYFEM_WITH_HYPRE
 		"Hypre",
 #endif
 #if EIGEN_VERSION_AT_LEAST(3,3,0)
@@ -223,7 +223,7 @@ std::string LinearSolver::defaultSolver() {
 #ifdef POLYFEM_WITH_PARDISO
 	return "Pardiso";
 #else
-#ifdef USE_HYPRE
+#ifdef POLYFEM_WITH_HYPRE
 	return "Hypre";
 #else
 	return "Eigen::BiCGSTAB";

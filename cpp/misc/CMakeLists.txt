@@ -13,6 +13,8 @@ function(add_application APP_SOURCE)
 
 	# Output directory for binaries
 	set_target_properties(${APP_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+
+	# add_sanitizers(${APP_NAME})
 endfunction()
 
 ################################################################################
@@ -25,8 +27,6 @@ add_application(extrude_mesh.cpp polyfem cli11)
 add_application(extract_polyhedra.cpp polyfem)
 add_application(tetrahedralize.cpp igl::core igl::tetgen geogram)
 add_application(tetrahedralize_hybrid.cpp polyfem igl::core igl::tetgen geogram cli11)
-
-
 
 set_target_properties(navigation_test PROPERTIES FOLDER misc)
 set_target_properties(refinement_test PROPERTIES FOLDER misc)

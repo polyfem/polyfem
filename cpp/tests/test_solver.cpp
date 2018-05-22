@@ -38,7 +38,7 @@ TEST_CASE("solver", "[solver]") {
 }
 
 
-#ifdef USE_HYPRE
+#ifdef POLYFEM_WITH_HYPRE
 TEST_CASE("hypre", "[solver]") {
     const std::string path = DATA_DIR;
     std::cout<<path<<std::endl;
@@ -50,7 +50,7 @@ TEST_CASE("hypre", "[solver]") {
         // solver->setParameters(params);
     Eigen::VectorXd b(A.rows()); b.setRandom();
     Eigen::VectorXd x(b.size());
-    
+
     solver->analyzePattern(A);
     solver->factorize(A);
     solver->solve(b, x);

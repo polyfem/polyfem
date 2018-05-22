@@ -127,7 +127,6 @@ set(MY_FLAGS
 		#-flto
 
 		# Gives meaningful stack traces
-		-fsanitize=address
 		-fno-omit-frame-pointer
 		-fno-optimize-sibling-calls
 )
