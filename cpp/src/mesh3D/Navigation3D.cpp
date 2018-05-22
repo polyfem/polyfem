@@ -11,7 +11,7 @@ using namespace std;
 
 
 void poly_fem::Navigation3D::prepare_mesh(Mesh3DStorage &M) {
-	M.type = MeshType::Hyb;
+	if (M.type != MeshType::Tet)M.type = MeshType::Hyb;
 	MeshProcessing3D::build_connectivity(M);
 	MeshProcessing3D::global_orientation_hexes(M);
 }

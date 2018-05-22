@@ -117,7 +117,7 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi) {
 				hmi.vertices[hmi.edges[eid].vs[0]].boundary = hmi.vertices[hmi.edges[eid].vs[1]].boundary = true;
 			}
 	}
-	else if (hmi.type == MeshType::Hyb) {
+	else if (hmi.type == MeshType::Hyb || hmi.type == MeshType::Tet) {
 		vector<bool> bf_flag(hmi.faces.size(), false);
 		for (auto h : hmi.elements) for (auto f : h.fs)bf_flag[f] = !bf_flag[f];
 		for (auto &f : hmi.faces) f.boundary = bf_flag[f.id];
@@ -948,7 +948,6 @@ void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter) {
 				int v0 = ele.vs[tet_edges[i][0]], v1 = ele.vs[tet_edges[i][1]];
 				int e = -1;
 				if (shared_edge(v0, v1, e))edges[i] = e;
-				e_flag[e] = true;
 			}
 			//the longest edge
 			int lv0 = E2V[edges[0]], lv1 = E2V[edges[5]];
@@ -977,7 +976,43 @@ void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter) {
 
 				M_.elements.push_back(ele_);
 			}
+			e_flag[edges[0]] = e_flag[edges[5]] = false;
 		}
+
+		//Fs
+		std::vector<std::vector<uint32_t>> total_fs; total_fs.reserve(M.elements.size() * 4);
+		std::vector<std::tuple<uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t>> tempF;
+		tempF.reserve(M.elements.size() * 4);
+		std::vector<uint32_t> vs(3);
+		for (const auto & ele : M_.elements) {
+			for (int i = 0; i < 4; i++) {
+				vs[0] = ele.vs[tet_faces[i][0]];
+				vs[1] = ele.vs[tet_faces[i][1]];
+				vs[2] = ele.vs[tet_faces[i][2]];
+				total_fs.push_back(vs);
+				std::sort(vs.begin(), vs.end());
+				tempF.push_back(std::make_tuple(vs[0], vs[1], vs[2], ele.id * 4 +i, ele.id, i));
+			}
+		}
+		std::sort(tempF.begin(), tempF.end());
+		M_.faces.reserve(tempF.size() / 3);
+		Face f; f.boundary = true;
+		uint32_t F_num = 0;
+		for (uint32_t i = 0; i < tempF.size(); ++i) {
+			if (i == 0 || (i != 0 &&
+				(std::get<0>(tempF[i]) != std::get<0>(tempF[i - 1]) || std::get<1>(tempF[i]) != std::get<1>(tempF[i - 1]) ||
+					std::get<2>(tempF[i]) != std::get<2>(tempF[i - 1])))) {
+				f.id = F_num; F_num++;
+				f.vs = total_fs[std::get<3>(tempF[i])];
+				M_.faces.push_back(f);
+			}
+			else if (i != 0 && (std::get<0>(tempF[i]) == std::get<0>(tempF[i - 1]) && std::get<1>(tempF[i]) == std::get<1>(tempF[i - 1]) &&
+				std::get<2>(tempF[i]) == std::get<2>(tempF[i - 1])))
+				M_.faces[F_num - 1].boundary = false;
+
+			M_.elements[std::get<4>(tempF[i])].fs[std::get<5>(tempF[i])] = F_num - 1;
+		}
+
 		M_.points.resize(3, M_.vertices.size());
 		for (auto v : M_.vertices)for (int j = 0; j < 3; j++)M_.points(j, v.id) = v.v[j];
 

@@ -10,17 +10,22 @@ namespace poly_fem
 	void Mesh3D::refine(const int n_refiniment, const double t, std::vector<int> &parent_nodes)
 	{
 		//TODO add refinement for tets
-		
-		for(size_t i = 0; i < elements_tag().size(); ++i)
-		{
-			if(elements_tag()[i] == ElementType::InteriorPolytope || elements_tag()[i] == ElementType::BoundaryPolytope)
-				mesh_.elements[i].hex = false;
+		if (mesh_.type == MeshType::Tet) {
+
+			MeshProcessing3D::refine_red_refinement_tet(mesh_, n_refiniment);
+		}
+		else {
+			for (size_t i = 0; i < elements_tag().size(); ++i)
+			{
+				if (elements_tag()[i] == ElementType::InteriorPolytope || elements_tag()[i] == ElementType::BoundaryPolytope)
+					mesh_.elements[i].hex = false;
+			}
+
+			bool reverse_grow = false;
+			MeshProcessing3D::refine_catmul_clark_polar(mesh_, n_refiniment, reverse_grow, parent_nodes);
 		}
 
-		bool reverse_grow = false;
-		MeshProcessing3D::refine_catmul_clark_polar(mesh_, n_refiniment, reverse_grow, parent_nodes);
 		Navigation3D::prepare_mesh(mesh_);
-
 		compute_elements_tag();
 	}
 
@@ -239,8 +244,9 @@ namespace poly_fem
 				mesh_.elements[i].hex = false;
 			}
 
-			// is_simplicial_ = M.facets.are_simplices();
-		} else {
+			mesh_.type = M.cells.are_simplices() ? MeshType::Tet : MeshType::Hyb;
+		} 
+		else {
 
 			// Set faces
 			mesh_.faces.clear();
@@ -323,7 +329,7 @@ namespace poly_fem
 				mesh_.elements[c].v_in_Kernel.push_back(p[1]);
 				mesh_.elements[c].v_in_Kernel.push_back(p[2]);
 			}
-			// is_simplicial_ = M.cells.are_simplices();
+			mesh_.type = M.cells.are_simplices() ? MeshType::Tet : MeshType::Hyb;
 		}
 
 		Navigation3D::prepare_mesh(mesh_);
