@@ -292,6 +292,7 @@ if __name__ == "__main__":
                             break
 
             if dim == 3:
+                # bottom: z = 0
                 for ii in current_indices:
                     if fe.points[ii][2] != 0:
                         continue
@@ -299,6 +300,7 @@ if __name__ == "__main__":
                     indices.append(ii)
                     current_indices.remove(ii)
 
+                # front: y = 0
                 for ii in current_indices:
                     if fe.points[ii][1] != 0:
                         continue
@@ -306,6 +308,18 @@ if __name__ == "__main__":
                     indices.append(ii)
                     current_indices.remove(ii)
 
+                # diagonal: none equal to zero and sum 1
+                for ii in current_indices:
+                    if (fe.points[ii][0] == 0) | (fe.points[ii][1] == 0) | (fe.points[ii][2] == 0):
+                        continue
+
+                    if (fe.points[ii][0] + fe.points[ii][1] + fe.points[ii][2]) != 1:
+                        continue
+
+                    indices.append(ii)
+                    current_indices.remove(ii)
+
+                # side: x = 0
                 for ii in current_indices:
                     if fe.points[ii][0] != 0:
                         continue
@@ -313,6 +327,7 @@ if __name__ == "__main__":
                     indices.append(ii)
                     current_indices.remove(ii)
 
+            # either face or volume indices, order do not matter
             for ii in current_indices:
                 indices.append(ii)
 

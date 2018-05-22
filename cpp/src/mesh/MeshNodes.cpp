@@ -346,8 +346,15 @@ std::vector<int> poly_fem::MeshNodes::node_ids_from_face(const Navigation3D::Ind
 	}
 	else
 	{
-		//TODO
-		assert(false);
+		if(n_new_nodes == 1)
+		{
+			res.push_back(start_node_id);
+		}
+		else
+		{
+			//TODO
+			assert(false);
+		}
 	}
 	assert(res.size() == n_new_nodes *(n_new_nodes+1) / 2);
 	return res;
@@ -356,7 +363,7 @@ std::vector<int> poly_fem::MeshNodes::node_ids_from_face(const Navigation3D::Ind
 
 std::vector<int> poly_fem::MeshNodes::node_ids_from_cell(const Navigation3D::Index &index, const int n_new_nodes)
 {
-	assert(n_new_nodes == 0); //P4 only
+	assert(n_new_nodes == 1); //P4 only
 	const int idx = node_id_from_cell(index.element);
 
 	return {idx};

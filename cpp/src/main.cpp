@@ -55,6 +55,7 @@ int main(int argc, const char **argv)
 	bool use_splines = false;
 	bool normalize_mesh = true;
 	bool no_ui = false;
+	bool p_ref = false;
 
 	command_line.add_option("-json", json_file);
 
@@ -72,6 +73,7 @@ int main(int argc, const char **argv)
 	command_line.add_option("-solver", solver);
 
 	command_line.add_option("-q", discr_order);
+	command_line.add_option("-p_ref", "-no_p_ref", p_ref);
 	command_line.add_option("-spline", "-fem", use_splines);
 
 	//disable out
@@ -114,6 +116,7 @@ int main(int argc, const char **argv)
 		in_args["discr_order"] = discr_order;
 		in_args["use_spline"] = use_splines;
 		in_args["output"] = output;
+		in_args["use_p_ref"] = p_ref;
 
 		if(!solver.empty())
 			in_args["solver_type"] = solver;
