@@ -59,6 +59,6 @@ TEST_CASE("hypre", "[solver]") {
 
     // std::cout<<"Solver error: "<<x<<std::endl;
     const double err = (A*x-b).norm();
-    REQUIRE(err < 1e-7);
+    REQUIRE(err < 1e-8);
 }
 #endif

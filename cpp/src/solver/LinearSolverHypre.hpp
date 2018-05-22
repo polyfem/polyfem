@@ -59,7 +59,7 @@ namespace poly_fem {
 		int dimension_ = 1; // 1 = scalar (Laplace), 2 or 3 = vector (Elasticity)
 		int max_iter_ = 1000;
 		int pre_max_iter_ = 1;
-		double conv_tol_ = 1e-8;
+		double conv_tol_ = 1e-10;
 
 		HYPRE_Int num_iterations;
 		HYPRE_Complex final_res_norm;
