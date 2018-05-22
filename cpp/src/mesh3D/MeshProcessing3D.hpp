@@ -27,6 +27,20 @@ namespace poly_fem{
 			{ 6,5,7,2 },
 			{ 7,6,4,3 },
 		};
+		const int tet_faces[4][3] = {
+			{ 1, 0, 2 },
+			{ 3, 2, 0 },
+			{ 1, 2, 3 },
+			{ 0, 1, 3 }
+		};
+		const int tet_edges[6][2] = {
+			{ 0, 1 },
+			{ 0, 2 },
+			{ 0, 3 },
+			{ 1, 2 },
+			{ 1, 3 },
+			{ 2, 3 }
+		};
 
 		void build_connectivity(Mesh3DStorage &hmi);
 		void reorder_hex_mesh_propogation(Mesh3DStorage &hmi);
@@ -35,7 +49,7 @@ namespace poly_fem{
 
 		void global_orientation_hexes(Mesh3DStorage &hmi);
 		void refine_catmul_clark_polar(Mesh3DStorage &M, int iter, bool reverse, std::vector<int> & Parents);
-
+		void refine_red_refinement_tet(Mesh3DStorage &M, int iter);
 		//Mi is a planar surface mesh
 		void straight_sweeping(const Mesh3DStorage &Mi, int sweep_coord, double height, int nlayer, Mesh3DStorage &Mo);
 

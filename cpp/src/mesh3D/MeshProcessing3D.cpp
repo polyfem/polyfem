@@ -850,6 +850,92 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 		M = M_;
 	}
 }
+void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter) {
+	for (int i = 0; i < iter; i++) {
+
+		Mesh3DStorage M_;
+		M_.type = MeshType::Tet;
+
+		vector<int> E2V(M.edges.size());
+
+		int vn = 0;
+		for (const auto &v : M.vertices) {
+			Vertex v_;
+			v_.id = vn++;
+			v_.v.resize(3);
+			for (int j = 0; j < 3; j++)v_.v[j] = M.points(j, v.id);
+			M_.vertices.push_back(v_);
+		}
+
+		for (const auto &e : M.edges) {
+			Vertex v;
+			v.id = vn++;
+			v.v.resize(3);
+
+			Vector3d center;
+			center.setZero();
+			for (auto vid : e.vs) center += M.points.col(vid);
+			center /= e.vs.size();
+			for (int j = 0; j < 3; j++)v.v[j] = center[j];
+
+			M_.vertices.push_back(v);
+			E2V[e.id] = v.id;
+		}
+		for (const auto &ele : M.elements) {
+			Element ele_;
+			ele_.id = M_.elements.size();
+			ele_.fs.resize(4, -1);
+			ele_.fs_flag.resize(4, 1);
+			ele_.vs = ele.vs;
+
+			ele_.hex = false;
+			ele_.v_in_Kernel.resize(3);
+
+			Vector3d center;
+			center.setZero();
+			for (const auto &evid : ele_.vs) for (int j = 0; j < 3; j++)center[j] += M_.vertices[evid].v[j];
+			center /= ele_.vs.size();
+			for (int j = 0; j < 3; j++)ele_.v_in_Kernel[j] = center[j];
+
+			M_.elements.push_back(ele_);
+		}
+		for (const auto &ele : M.elements) {//1 --> 8
+
+			for (short i = 0; i < 4; i++) {
+				Element ele_;
+				ele_.id = M_.elements.size();
+				ele_.fs.resize(4, -1);
+				ele_.fs_flag.resize(4, 1);
+
+				ele_.hex = false;
+				ele_.v_in_Kernel.resize(3);
+
+				ele_.vs.push_back(ele.vs[i]);
+				for (short j = 0; j < 4; j++) {
+					if (j == i)continue;
+
+				}
+
+
+				Vector3d center;
+				center.setZero();
+				for (const auto &evid : ele_.vs) for (int j = 0; j < 3; j++)center[j] += M_.vertices[evid].v[j];
+				center /= ele_.vs.size();
+				for (int j = 0; j < 3; j++)ele_.v_in_Kernel[j] = center[j];
+
+				M_.elements.push_back(ele_);
+			}
+		}
+		M_.points.resize(3, M_.vertices.size());
+		for (auto v : M_.vertices)for (int j = 0; j < 3; j++)M_.points(j, v.id) = v.v[j];
+
+		build_connectivity(M_);
+		orient_volume_mesh(M_);
+		build_connectivity(M_);
+
+		M = M_;
+	}
+}
 void MeshProcessing3D::straight_sweeping(const Mesh3DStorage &Mi, int sweep_coord, double height, int nlayer, Mesh3DStorage &Mo) {
 	if (sweep_coord > 2 || sweep_coord < 0) { std::cout << "invalid sweeping direction!"; return; }
 	if (Mi.type != MeshType::HSur && Mi.type != MeshType::Tri && Mi.type != MeshType::Qua) { std::cout << "invalid planar surface!"; return; }
