@@ -352,8 +352,34 @@ std::vector<int> poly_fem::MeshNodes::node_ids_from_face(const Navigation3D::Ind
 		}
 		else
 		{
-			//TODO
-			assert(false);
+			const int total_nodes = n_new_nodes *(n_new_nodes+1) / 2;
+			for(int i = 1; i <= n_new_nodes; ++i)
+			{
+				const double b2 = i/(n_new_nodes + 2.0);
+				for(int j = 1; j <= n_new_nodes - i + 1; ++j)
+				{
+					const double b3 = j/(n_new_nodes + 2.0);
+					const double b1 = 1 - b3 - b2;
+					assert(b3 < 1);
+					assert(b3 > 0);
+
+					const RowVectorNd p = b1 * v1 + b2 * v2 + b3 * v3;
+
+					bool found = false;
+					for(int k = start; k < start + total_nodes; ++k)
+					{
+						const double dist = (nodes_.row(k)-p).squaredNorm();
+						if(dist < 1e-16)
+						{
+							res.push_back(primitive_to_node_[k]);
+							found = true;
+							break;
+						}
+					}
+
+					assert(found);
+				}
+			}
 		}
 	}
 	assert(res.size() == n_new_nodes *(n_new_nodes+1) / 2);

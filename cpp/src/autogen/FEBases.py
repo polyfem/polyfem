@@ -171,7 +171,7 @@ if __name__ == "__main__":
     dims = [2, 3]
 
     orders = [1, 2, 3, 4]
-    # orders = [1, 2, 3]
+    # orders = [4]
 
     cpp = "#include \"auto_bases.hpp\"\n\n\n"
     cpp = cpp + "namespace poly_fem {\nnamespace autogen " + "{\nnamespace " + "{\n"
@@ -292,40 +292,57 @@ if __name__ == "__main__":
                             break
 
             if dim == 3:
-                # bottom: z = 0
-                for ii in current_indices:
-                    if fe.points[ii][2] != 0:
-                        continue
+                nn = max(0, order - 2)
+                npts = int(nn * (nn + 1) / 2)
 
-                    indices.append(ii)
-                    current_indices.remove(ii)
+                # bottom: z = 0
+                for i in range(0, npts):
+                    for ii in current_indices:
+                        if abs(fe.points[ii][2]) > 1e-10:
+                            continue
+
+                        indices.append(ii)
+                        current_indices.remove(ii)
+                        break
 
                 # front: y = 0
-                for ii in current_indices:
-                    if fe.points[ii][1] != 0:
-                        continue
+                for i in range(0, npts):
+                    for ii in current_indices:
+                        if abs(fe.points[ii][1]) > 1e-10:
+                            continue
 
-                    indices.append(ii)
-                    current_indices.remove(ii)
+                        indices.append(ii)
+                        current_indices.remove(ii)
+                        break
 
                 # diagonal: none equal to zero and sum 1
-                for ii in current_indices:
-                    if (fe.points[ii][0] == 0) | (fe.points[ii][1] == 0) | (fe.points[ii][2] == 0):
-                        continue
+                tmp = []
+                for i in range(0, npts):
+                    for ii in current_indices:
+                        if (abs(fe.points[ii][0]) < 1e-10) | (abs(fe.points[ii][1]) < 1e-10) | (abs(fe.points[ii][2]) < 1e-10):
+                            continue
 
-                    if (fe.points[ii][0] + fe.points[ii][1] + fe.points[ii][2]) != 1:
-                        continue
+                        if abs((fe.points[ii][0] + fe.points[ii][1] + fe.points[ii][2]) - 1) > 1e-10:
+                            continue
 
-                    indices.append(ii)
-                    current_indices.remove(ii)
+                        tmp.append(ii)
+                        current_indices.remove(ii)
+                        break
+                for i in range(0, len(tmp)):
+                    indices.append(tmp[(i + 2) % len(tmp)])
 
                 # side: x = 0
-                for ii in current_indices:
-                    if fe.points[ii][0] != 0:
-                        continue
+                tmp = []
+                for i in range(0, npts):
+                    for ii in current_indices:
+                        if abs(fe.points[ii][0]) > 1e-10:
+                            continue
 
-                    indices.append(ii)
-                    current_indices.remove(ii)
+                        tmp.append(ii)
+                        current_indices.remove(ii)
+                        break
+                tmp.sort(reverse=True)
+                indices.extend(tmp)
 
             # either face or volume indices, order do not matter
             for ii in current_indices:

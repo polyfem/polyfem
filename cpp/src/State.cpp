@@ -312,7 +312,7 @@ namespace poly_fem
 
 	void State::p_refinement(const Mesh3D &mesh3d)
 	{
-		disc_orders[0] = 3;
+		disc_orders[0] = 4;
 	}
 
 

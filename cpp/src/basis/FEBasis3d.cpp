@@ -314,6 +314,21 @@ poly_fem::Navigation3D::Index find_tri_face(const poly_fem::Mesh3D &mesh, int c,
 		}
 		std::sort(u.begin(), u.end());
 		if (u == v) {
+			const auto tmp = find_edge(mesh, c, v1, v2);
+
+			while(tmp.edge != idx.edge)
+			{
+				idx = mesh.next_around_face(idx);
+			}
+
+			if(idx.vertex != v1)
+				idx = mesh.switch_vertex(idx);
+
+			assert(idx.vertex == v1);
+			assert(idx.edge == tmp.edge);
+			assert(mesh.switch_vertex(idx).vertex == v2);
+			assert(mesh.switch_vertex(mesh.switch_edge(idx)).vertex == v3);
+
 			return idx;
 		}
 	}
@@ -685,7 +700,6 @@ Eigen::VectorXi poly_fem::FEBasis3d::tet_face_local_nodes(const int p, const Mes
 	const int nn = p > 2 ? (p - 2) : 0;
 	const int n_edge_nodes = (p-1)*6;
 	const int n_face_nodes = nn * (nn + 1) / 2;
-	const int n_cell_nodes = p == 4 ? 1 : 0; //P5 not supported
 
 	int c = index.element;
 	assert(mesh.is_simplex(c));
@@ -695,7 +709,7 @@ Eigen::VectorXi poly_fem::FEBasis3d::tet_face_local_nodes(const int p, const Mes
 
 
 	// Extract requested interface
-	Eigen::VectorXi result(3 + (p - 1) * 3 + n_face_nodes + n_cell_nodes);
+	Eigen::VectorXi result(3 + (p - 1) * 3 + n_face_nodes);
 	result[0] = find_index(l2g.begin(), l2g.end(), index.vertex);
 	result[1] = find_index(l2g.begin(), l2g.end(), mesh.next_around_face(index).vertex);
 	result[2] = find_index(l2g.begin(), l2g.end(), mesh.next_around_face(mesh.next_around_face(index)).vertex);
@@ -775,11 +789,7 @@ Eigen::VectorXi poly_fem::FEBasis3d::tet_face_local_nodes(const int p, const Mes
 	assert(lf < fv.rows());
 
 	for(int i = 0; i < n_face_nodes; ++i)
-		result[ii++] = 4 + n_edge_nodes + i + lf;
-
-
-	for(int i = 0; i < n_cell_nodes; ++i)
-		result[ii++] = 4 + n_edge_nodes + n_face_nodes*4 + i;
+		result[ii++] = 4 + n_edge_nodes + i + lf*n_face_nodes;
 
 	assert(ii == result.size());
 	return result;
