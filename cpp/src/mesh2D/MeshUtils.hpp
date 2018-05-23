@@ -142,7 +142,6 @@ void extract_polyhedra(const Mesh3D &mesh, std::vector<std::unique_ptr<GEO::Mesh
 void tertrahedralize_star_shaped_surface(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
 	const Eigen::RowVector3d &kernel, Eigen::MatrixXd &OV, Eigen::MatrixXi &OF, Eigen::MatrixXi &OT);
 
-
 ///
 /// @brief      { Samples points on a surface }
 ///

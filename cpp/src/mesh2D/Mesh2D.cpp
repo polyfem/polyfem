@@ -17,24 +17,30 @@
 
 namespace poly_fem
 {
-	void Mesh2D::refine(const int n_refiniment, const double t, std::vector<int> &parent_nodes)
+	void Mesh2D::refine(const int n_refinement, const double t, std::vector<int> &parent_nodes)
 	{
 		// return;
-		if(n_refiniment <= 0) return;
+		if (n_refinement <= 0) { return; }
 
-		//TODO refine tris
+		bool all_simplicial = true;
+		for (int e = 0; e < n_elements(); ++e) {
+			all_simplicial &= is_simplex(e);
+		}
 
-		for(int i = 0; i < n_refiniment; ++i)
+		for (int i = 0; i < n_refinement; ++i)
 		{
 			GEO::Mesh mesh;
 			mesh.copy(mesh_);
 			mesh_.clear(false,false);
 
-			//TODO add tags to the refiniment
-			if(t<=0)
+			//TODO add tags to the refinement
+			if (all_simplicial) {
+				refine_triangle_mesh(mesh, mesh_);
+			} else if (t<=0) {
 				refine_polygonal_mesh(mesh, mesh_, Polygons::catmul_clark_split_func());
-			else
+			} else {
 				refine_polygonal_mesh(mesh, mesh_, Polygons::polar_split_func(t));
+			}
 
 			Navigation::prepare_mesh(mesh_);
 		}

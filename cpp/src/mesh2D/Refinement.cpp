@@ -596,7 +596,52 @@ void poly_fem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, Po
 			// std::cout << std::endl;
 			M_out.facets.create_polygon(vertices);
 		}
-
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
+void poly_fem::refine_triangle_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out) {
+	using GEO::index_t;
+	using Navigation::Index;
+
+	// Step 1: Clear output mesh, and fill it with M_in's vertices
+	assert(&M_in != &M_out);
+	M_out.copy(M_in);
+	M_out.edges.clear();
+	M_out.facets.clear();
+
+	// Step 2: Iterate over facets and refine triangles
+	std::vector<int> edge_to_midpoint(M_in.edges.nb(), -1);
+	for (index_t f = 0; f < M_in.facets.nb(); ++f) {
+		index_t nv = M_in.facets.nb_vertices(f);
+		assert(nv == 3);
+		Index idx = Navigation::get_index_from_face(M_in, f, 0);
+		assert(Navigation::switch_vertex(M_in, idx).vertex == (int) M_in.facets.vertex(f, 1));
+
+		// Create mid-edge vertices
+		for (index_t lv = 0; lv < M_in.facets.nb_vertices(f); ++lv, idx = Navigation::next_around_face(M_in, idx)) {
+			assert(idx.vertex == (int) M_in.facets.vertex(f, lv));
+			if (edge_to_midpoint[idx.edge] == -1) {
+				GEO::vec3 coords = 0.5 * (mesh_vertex(M_in, idx.vertex)
+					+ mesh_vertex(M_in, Navigation::switch_vertex(M_in, idx).vertex));
+				edge_to_midpoint[idx.edge] = mesh_create_vertex(M_out, coords);
+				assert(edge_to_midpoint[idx.edge] + 1 == (int) M_out.vertices.nb());
+			}
+		}
+
+		// Create triangles
+		std::array<index_t, 3> e2v;
+		for (index_t lv = 0; lv < M_in.facets.nb_vertices(f); ++lv) {
+			idx = Navigation::get_index_from_face(M_in, f, lv);
+			assert(Navigation::switch_vertex(M_in, idx).vertex == (int) M_in.facets.vertex(f, (lv+1)%M_in.facets.nb_vertices(f)));
+			int v1 = idx.vertex;
+			int v12 = edge_to_midpoint[idx.edge];
+			int v01 = edge_to_midpoint[Navigation::switch_edge(M_in, idx).edge];
+			e2v[lv] = v12;
+			assert(v12 != -1 && v01 != -1);
+			M_out.facets.create_triangle(v1, v12, v01);
+		}
+		M_out.facets.create_triangle(e2v[0], e2v[1], e2v[2]);
+	}
+}

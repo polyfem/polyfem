@@ -126,6 +126,14 @@ namespace Polygons {
 ///
 void refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, Polygons::SplitFunction split_func);
 
+///
+/// Refine a triangle mesh. Each input triangle is split into 4 new triangles
+///
+/// @param[in]  M_in   { Input surface mesh }
+/// @param[out] M_out  { Output surface mesh }
+///
+void refine_triangle_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out);
+
 // Kept for compatibility
 [[deprecated]] inline void refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, bool refine_polygons = false, double t = 0.5) {
 	if (refine_polygons == false) {
