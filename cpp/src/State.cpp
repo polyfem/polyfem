@@ -32,6 +32,8 @@
 #include "NLProblem.hpp"
 #include "SparseNewtonDescentSolver.hpp"
 
+#include "auto_bases.hpp"
+
 #ifdef USE_TBB
 #include <tbb/task_scheduler_init.h>
 #endif
@@ -160,6 +162,8 @@ namespace poly_fem
 		j["quadrature_order"] = args["quadrature_order"];
 		j["mesh_path"] = mesh_path();
 		j["discr_order"] = args["discr_order"];
+		j["discr_order_min"] = disc_orders.minCoeff();
+		j["discr_order_max"] = disc_orders.maxCoeff();
 		j["harmonic_samples_res"] = args["n_harmonic_samples"];
 		j["use_splines"] = args["use_spline"];
 		j["iso_parametric"] = iso_parametric();
@@ -239,8 +243,18 @@ namespace poly_fem
 	void State::p_refinement(const Mesh2D &mesh2d)
 	{
 		max_angle = 0;
-		static const int max_angles = 5;
-		static const double angles[max_angles] = {0, 170./180.*M_PI, 179./180.*M_PI, 179.9/180.* M_PI, M_PI};
+		// static const int max_angles = 5;
+		// static const double angles[max_angles] = {0, 170./180.*M_PI, 179./180.*M_PI, 179.9/180.* M_PI, M_PI};
+
+		Eigen::MatrixXd p0, p1;
+		mesh2d.get_edges(p0, p1);
+		const auto tmp = p0-p1;
+		const double h = tmp.rowwise().norm().mean();
+		const double B = 2;
+		const int p_ref = args["discr_order"];
+
+
+
 		for(int f = 0; f < mesh2d.n_faces(); ++f)
 		{
 			if(!mesh2d.is_simplex(f))
@@ -254,53 +268,97 @@ namespace poly_fem
 			const RowVectorNd e1 = v2-v1;
 			const RowVectorNd e2 = v0-v2;
 
+			const double e0n = e0.norm();
+			const double e1n = e1.norm();
+			const double e2n = e2.norm();
+
 			const double alpha0 = angle(e0, -e2);
 			const double alpha1 = angle(e1, -e0);
 			const double alpha2 = angle(e2, -e1);
 
+			const double P = e1n + e1n + e2n;
+			const double A = std::abs(e1(0)*e2(1) - e1(1)*e2(0));
+			const double rho = 2*A/P;
+			const double hp = P / 3.0;
+
+			const double ptmp = 0.5 * (-4 * std::log(hp) + (2*p_ref+2) * std::log(h) + 2*std::log(rho) + 2*std::log(2) + std::log(3) + 2*std::log(B))/std::log(hp);
+			const int p = std::min(std::max(p_ref, (int)std::round(ptmp)), autogen::MAX_P_BASES);
+
+			if(p > disc_orders[f])
+				disc_orders[f] = p;
+			auto index = mesh2d.get_index_from_face(f);
+
+			for(int lv = 0; lv < 3; ++lv)
+			{
+				auto nav = mesh2d.switch_face(index);
+
+				while(nav.face >=0 && nav.face != f)
+				{
+					if(p > disc_orders[nav.face])
+						disc_orders[nav.face] = p;
+
+					nav = mesh2d.switch_face(mesh2d.switch_edge(nav));
+				}
+
+
+				nav = mesh2d.switch_face(mesh2d.switch_edge(index));
+
+				while(nav.face >=0 && nav.face != f)
+				{
+					if(p > disc_orders[nav.face])
+						disc_orders[nav.face] = p;
+
+					nav = mesh2d.switch_face(mesh2d.switch_edge(nav));
+				}
+
+				index = mesh2d.next_around_face(index);
+			}
+
 			// if(f == 49)
 				// std::cout<<alpha0<<" "<<alpha1<<" "<<alpha2<<std::endl;
 
-			for(int i = 1; i < max_angles; ++i)
-			{
-				const bool a0 = alpha0 >= angles[i-1] && alpha0 < angles[i];
-				const bool a1 = alpha1 >= angles[i-1] && alpha1 < angles[i];
-				const bool a2 = alpha2 >= angles[i-1] && alpha2 < angles[i];
 
 
-				if(a0 || a1 || a2)
-				{
-					if(i > disc_orders[f])
-						disc_orders[f] = i;
-					auto index = mesh2d.get_index_from_face(f);
-
-					for(int lv = 0; lv < 3; ++lv)
-					{
-						auto nav = mesh2d.switch_face(index);
-
-						while(nav.face >=0 && nav.face != f)
-						{
-							if(i > disc_orders[nav.face])
-								disc_orders[nav.face] = i;
-
-							nav = mesh2d.switch_face(mesh2d.switch_edge(nav));
-						}
+			// for(int i = 1; i < max_angles; ++i)
+			// {
+			// 	const bool a0 = alpha0 >= angles[i-1] && alpha0 < angles[i];
+			// 	const bool a1 = alpha1 >= angles[i-1] && alpha1 < angles[i];
+			// 	const bool a2 = alpha2 >= angles[i-1] && alpha2 < angles[i];
 
 
-						nav = mesh2d.switch_face(mesh2d.switch_edge(index));
+			// 	if(a0 || a1 || a2)
+			// 	{
+			// 		if(i > disc_orders[f])
+			// 			disc_orders[f] = i;
+			// 		auto index = mesh2d.get_index_from_face(f);
 
-						while(nav.face >=0 && nav.face != f)
-						{
-							if(i > disc_orders[nav.face])
-								disc_orders[nav.face] = i;
+			// 		for(int lv = 0; lv < 3; ++lv)
+			// 		{
+			// 			auto nav = mesh2d.switch_face(index);
 
-							nav = mesh2d.switch_face(mesh2d.switch_edge(nav));
-						}
+			// 			while(nav.face >=0 && nav.face != f)
+			// 			{
+			// 				if(i > disc_orders[nav.face])
+			// 					disc_orders[nav.face] = i;
 
-						index = mesh2d.next_around_face(index);
-					}
-				}
-			}
+			// 				nav = mesh2d.switch_face(mesh2d.switch_edge(nav));
+			// 			}
+
+
+			// 			nav = mesh2d.switch_face(mesh2d.switch_edge(index));
+
+			// 			while(nav.face >=0 && nav.face != f)
+			// 			{
+			// 				if(i > disc_orders[nav.face])
+			// 					disc_orders[nav.face] = i;
+
+			// 				nav = mesh2d.switch_face(mesh2d.switch_edge(nav));
+			// 			}
+
+			// 			index = mesh2d.next_around_face(index);
+			// 		}
+			// 	}
+			// }
 
 			max_angle = std::max(max_angle, alpha0);
 			max_angle = std::max(max_angle, alpha1);
@@ -312,7 +370,25 @@ namespace poly_fem
 
 	void State::p_refinement(const Mesh3D &mesh3d)
 	{
-		disc_orders[0] = 4;
+		max_angle = 0;
+		for(int c = 0; c < mesh3d.n_cells(); ++c)
+		{
+			if(!mesh3d.is_simplex(c))
+				continue;
+
+
+			// auto v0 = mesh3d.point(mesh3d.face_vertex(c, 0));
+			// auto v1 = mesh3d.point(mesh3d.face_vertex(c, 1));
+			// auto v2 = mesh3d.point(mesh3d.face_vertex(c, 2));
+
+			// const RowVectorNd e0 = v1-v0;
+			// const RowVectorNd e1 = v2-v1;
+			// const RowVectorNd e2 = v0-v2;
+
+			// const double alpha0 = angle(e0, -e2);
+			// const double alpha1 = angle(e1, -e0);
+			// const double alpha2 = angle(e2, -e1);
+		}
 	}
 
 
@@ -758,6 +834,8 @@ namespace poly_fem
 				p_refinement(*dynamic_cast<Mesh3D *>(mesh.get()));
 			else
 				p_refinement(*dynamic_cast<Mesh2D *>(mesh.get()));
+
+			std::cout<<"min p: " << disc_orders.minCoeff() << " max p: " << disc_orders.maxCoeff()<<std::endl;
 		}
 
 		if(mesh->is_volume())

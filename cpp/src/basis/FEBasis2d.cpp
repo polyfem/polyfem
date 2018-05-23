@@ -1069,61 +1069,52 @@ int poly_fem::FEBasis2d::build_bases(
 	}
 
 
-	for (int e : interface_elements) {
-		ElementBases &b = bases[e];
-		const int discr_order = discr_orders(e);
-		const int n_el_bases = element_nodes_id[e].size();
-		assert(discr_order > 1);
+	for(int pp = 2; pp <= autogen::MAX_P_BASES; ++pp)
+	{
+		for (int e : interface_elements) {
+			ElementBases &b = bases[e];
+			const int discr_order = discr_orders(e);
+			const int n_el_bases = element_nodes_id[e].size();
+			assert(discr_order > 1);
+			if(discr_order != pp)
+				continue;
 
-		if (mesh.is_cube(e)) {
-			assert(false); //TODO
-			// for (int j = 0; j < n_el_bases; ++j) {
-			// 	const int global_index = element_nodes_id[e][j];
+			if (mesh.is_cube(e)) {
+				 //TODO
+				assert(false);
+			} else if(mesh.is_simplex(e))
+			{
+				for (int j = 0; j < n_el_bases; ++j) {
+					const int global_index = element_nodes_id[e][j];
 
-			// 	b.bases[j].init(global_index, j, nodes.node_position(global_index));
-
-			// 	if (discr_order == 2) {
-			// 		b.bases[j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-			// 			{ quadr_quad_basis_value(j, uv, val); });
-			// 		b.bases[j].set_grad([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-			// 			{ quadr_quad_basis_grad(j, uv, val); });
-			// 	} else {
-			// 		assert(false);
-			// 	}
-			// }
-		} else if(mesh.is_simplex(e))
-		{
-			for (int j = 0; j < n_el_bases; ++j) {
-				const int global_index = element_nodes_id[e][j];
-
-				if(global_index >= 0)
-					b.bases[j].init(global_index, j, nodes.node_position(global_index));
-				else
-				{
-					const auto le = -(global_index+1);
-
-					auto v = linear_tri_local_to_global(mesh, e);
-					Eigen::Matrix<int, 3, 2> ev;
-					ev.row(0) << v[0], v[1];
-					ev.row(1) << v[1], v[2];
-					ev.row(2) << v[2], v[0];
-
-					const auto index = mesh.switch_face(find_edge(mesh, e, ev(le, 0), ev(le, 1)));
-					const auto other_face = index.face;
-
-
-					Eigen::RowVector2d node_position;
-					assert(discr_order > 1);
-
-					auto indices = tri_edge_local_nodes(discr_order, mesh, index);
-					Eigen::MatrixXd lnodes; autogen::p_nodes_2d(discr_order, lnodes);
-
-					if( j < 3)
-						node_position = lnodes.row(indices(0));
-					else if( j < 3 + 3*(discr_order-1))
-						node_position = lnodes.row(indices(((j-3) % (discr_order-1)) + 1));
+					if(global_index >= 0)
+						b.bases[j].init(global_index, j, nodes.node_position(global_index));
 					else
-						assert(false);
+					{
+						const auto le = -(global_index+1);
+
+						auto v = linear_tri_local_to_global(mesh, e);
+						Eigen::Matrix<int, 3, 2> ev;
+						ev.row(0) << v[0], v[1];
+						ev.row(1) << v[1], v[2];
+						ev.row(2) << v[2], v[0];
+
+						const auto index = mesh.switch_face(find_edge(mesh, e, ev(le, 0), ev(le, 1)));
+						const auto other_face = index.face;
+
+
+						Eigen::RowVector2d node_position;
+						assert(discr_order > 1);
+
+						auto indices = tri_edge_local_nodes(discr_order, mesh, index);
+						Eigen::MatrixXd lnodes; autogen::p_nodes_2d(discr_order, lnodes);
+
+						if( j < 3)
+							node_position = lnodes.row(indices(0));
+						else if( j < 3 + 3*(discr_order-1))
+							node_position = lnodes.row(indices(((j-3) % (discr_order-1)) + 1));
+						else
+							assert(false);
 
 
 
@@ -1144,27 +1135,28 @@ int poly_fem::FEBasis2d::build_bases(
 					// 	assert(false);
 					// std::cout<<node_position<<"\n\n----\n"<<std::endl;
 
-					const auto &other_bases = bases[other_face];
-					Eigen::MatrixXd w;
-					other_bases.evaluate_bases(node_position, w);
+						const auto &other_bases = bases[other_face];
+						Eigen::MatrixXd w;
+						other_bases.evaluate_bases(node_position, w);
 
-					for(long i = 0; i < w.size(); ++i)
-					{
-						if(std::abs(w(i))<1e-8)
-							continue;
+						for(long i = 0; i < w.size(); ++i)
+						{
+							if(std::abs(w(i))<1e-8)
+								continue;
 
-						assert(other_bases.bases[i].global().size() == 1);
-						const auto &other_global = other_bases.bases[i].global().front();
+							assert(other_bases.bases[i].global().size() == 1);
+							const auto &other_global = other_bases.bases[i].global().front();
 						// std::cout<<"e "<<e<<" " <<j << " gid "<<other_global.index<<std::endl;
-						b.bases[j].global().emplace_back(other_global.index, other_global.node, w(i));
+							b.bases[j].global().emplace_back(other_global.index, other_global.node, w(i));
+						}
 					}
 				}
 			}
-		}
-		else {
+			else {
 			// Polygon bases are built later on
+			}
 		}
-	}
+}
 
 	return nodes.n_nodes();
 }

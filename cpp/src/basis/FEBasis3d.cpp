@@ -1437,84 +1437,91 @@ int poly_fem::FEBasis3d::build_bases(
 
 
 
-	for (int e : interface_elements) {
-		ElementBases &b = bases[e];
-		const int discr_order = discr_orders(e);
-		const int n_el_bases = element_nodes_id[e].size();
-		assert(discr_order > 1);
+	for(int pp = 2; pp <= autogen::MAX_P_BASES; ++pp)
+	{
+		for (int e : interface_elements) {
+			ElementBases &b = bases[e];
+			const int discr_order = discr_orders(e);
+			const int n_el_bases = element_nodes_id[e].size();
+			assert(discr_order > 1);
+			if(discr_order != pp)
+				continue;
 
-		if (mesh.is_cube(e)) {
-			assert(false); //TODO
-		} else if(mesh.is_simplex(e))
-		{
-			for (int j = 0; j < n_el_bases; ++j) {
-				const int global_index = element_nodes_id[e][j];
 
-				if(global_index >= 0)
-					b.bases[j].init(global_index, j, nodes.node_position(global_index));
-				else
-				{
-					const int lnn = max_p > 2 ? (discr_order - 2) : 0;
-					const int ln_edge_nodes = discr_order - 1;
-					const int ln_face_nodes = lnn * (lnn + 1) / 2;
+			if (mesh.is_cube(e)) {
+				//TODO
+				assert(false);
+			}
+			else if(mesh.is_simplex(e))
+			{
+				for (int j = 0; j < n_el_bases; ++j) {
+					const int global_index = element_nodes_id[e][j];
 
-					const auto v = linear_tet_local_to_global(mesh, e);
-					Navigation3D::Index index;
-					if(global_index <= -30)
-					{
-						const auto lv = -(global_index + 30);
-						assert(lv>=0 && lv < 4);
-						assert(j < 4);
-
-						index = mesh.switch_element(find_edge(mesh, e, v[lv], v[(lv+1)%4]));
-					}
-					else if (global_index <= -10)
-					{
-						const auto le = -(global_index+10);
-						assert(le>=0 && le < 6);
-						assert(j >= 4 && j < 4 + 6*ln_edge_nodes);
-
-						Eigen::Matrix<int, 6, 2> ev;
-						ev.row(0)  << v[0], v[1];
-						ev.row(1)  << v[1], v[2];
-						ev.row(2)  << v[2], v[0];
-
-						ev.row(3)  << v[0], v[3];
-						ev.row(4)  << v[1], v[3];
-						ev.row(5)  << v[2], v[3];
-
-						index = mesh.switch_element(find_edge(mesh, e, ev(le, 0), ev(le, 1)));
-					}
+					if(global_index >= 0)
+						b.bases[j].init(global_index, j, nodes.node_position(global_index));
 					else
 					{
-						const auto lf = -(global_index+1);
-						assert(lf>=0 && lf < 6);
-						assert(j >= 4 + 6*ln_edge_nodes && j <  4 + 6*ln_edge_nodes + 4*ln_face_nodes);
+						const int lnn = max_p > 2 ? (discr_order - 2) : 0;
+						const int ln_edge_nodes = discr_order - 1;
+						const int ln_face_nodes = lnn * (lnn + 1) / 2;
 
-						Eigen::Matrix<int, 4, 3> fv;
-						fv.row(0) << v[0], v[1], v[2];
-						fv.row(1) << v[0], v[1], v[3];
-						fv.row(2) << v[1], v[2], v[3];
-						fv.row(3) << v[2], v[0], v[3];
+						const auto v = linear_tet_local_to_global(mesh, e);
+						Navigation3D::Index index;
+						if(global_index <= -30)
+						{
+							const auto lv = -(global_index + 30);
+							assert(lv>=0 && lv < 4);
+							assert(j < 4);
 
-						index = mesh.switch_element(find_tri_face(mesh, e, fv(lf, 0), fv(lf, 1), fv(lf, 2)));
-					}
+							index = mesh.switch_element(find_edge(mesh, e, v[lv], v[(lv+1)%4]));
+						}
+						else if (global_index <= -10)
+						{
+							const auto le = -(global_index+10);
+							assert(le>=0 && le < 6);
+							assert(j >= 4 && j < 4 + 6*ln_edge_nodes);
 
-					const auto other_cell = index.element;
+							Eigen::Matrix<int, 6, 2> ev;
+							ev.row(0)  << v[0], v[1];
+							ev.row(1)  << v[1], v[2];
+							ev.row(2)  << v[2], v[0];
 
-					auto indices = tet_face_local_nodes(discr_order, mesh, index);
-					Eigen::MatrixXd lnodes; autogen::p_nodes_3d(discr_order, lnodes);
-					Eigen::RowVector3d node_position;
+							ev.row(3)  << v[0], v[3];
+							ev.row(4)  << v[1], v[3];
+							ev.row(5)  << v[2], v[3];
+
+							index = mesh.switch_element(find_edge(mesh, e, ev(le, 0), ev(le, 1)));
+						}
+						else
+						{
+							const auto lf = -(global_index+1);
+							assert(lf>=0 && lf < 6);
+							assert(j >= 4 + 6*ln_edge_nodes && j <  4 + 6*ln_edge_nodes + 4*ln_face_nodes);
+
+							Eigen::Matrix<int, 4, 3> fv;
+							fv.row(0) << v[0], v[1], v[2];
+							fv.row(1) << v[0], v[1], v[3];
+							fv.row(2) << v[1], v[2], v[3];
+							fv.row(3) << v[2], v[0], v[3];
+
+							index = mesh.switch_element(find_tri_face(mesh, e, fv(lf, 0), fv(lf, 1), fv(lf, 2)));
+						}
+
+						const auto other_cell = index.element;
+
+						auto indices = tet_face_local_nodes(discr_order, mesh, index);
+						Eigen::MatrixXd lnodes; autogen::p_nodes_3d(discr_order, lnodes);
+						Eigen::RowVector3d node_position;
 
 
-					if( j < 4)
-						node_position = lnodes.row(indices(0));
-					else if( j < 4 + 6*ln_edge_nodes)
-						node_position = lnodes.row(indices(((j - 4) % ln_edge_nodes) + 3));
-					else if(j <  4 + 6*ln_edge_nodes + 4*ln_face_nodes)
-						node_position = lnodes.row(indices(((j - 4 - 6*ln_edge_nodes) % ln_face_nodes) + 3 + 3*ln_edge_nodes));
-					else
-						assert(false);
+						if( j < 4)
+							node_position = lnodes.row(indices(0));
+						else if( j < 4 + 6*ln_edge_nodes)
+							node_position = lnodes.row(indices(((j - 4) % ln_edge_nodes) + 3));
+						else if(j <  4 + 6*ln_edge_nodes + 4*ln_face_nodes)
+							node_position = lnodes.row(indices(((j - 4 - 6*ln_edge_nodes) % ln_face_nodes) + 3 + 3*ln_edge_nodes));
+						else
+							assert(false);
 
 
 
@@ -1536,25 +1543,26 @@ int poly_fem::FEBasis3d::build_bases(
 					// std::cout<<node_position<<"\n\n----\n"<<std::endl;
 
 
-					const auto &other_bases = bases[other_cell];
-					Eigen::MatrixXd w;
-					other_bases.evaluate_bases(node_position, w);
+						const auto &other_bases = bases[other_cell];
+						Eigen::MatrixXd w;
+						other_bases.evaluate_bases(node_position, w);
 
-					for(long i = 0; i < w.size(); ++i)
-					{
-						if(std::abs(w(i))<1e-8)
-							continue;
+						for(long i = 0; i < w.size(); ++i)
+						{
+							if(std::abs(w(i))<1e-8)
+								continue;
 
-						assert(other_bases.bases[i].global().size() == 1);
-						const auto &other_global = other_bases.bases[i].global().front();
+							assert(other_bases.bases[i].global().size() == 1);
+							const auto &other_global = other_bases.bases[i].global().front();
 						// std::cout<<"e "<<e<<" " <<j << " gid "<<other_global.index<<std::endl;
-						b.bases[j].global().emplace_back(other_global.index, other_global.node, w(i));
+							b.bases[j].global().emplace_back(other_global.index, other_global.node, w(i));
+						}
 					}
 				}
 			}
-		}
-		else {
+			else {
 			// Polygon bases are built later on
+			}
 		}
 	}
 
