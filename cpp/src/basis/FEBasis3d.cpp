@@ -626,17 +626,17 @@ std::vector<int> poly_fem::FEBasis3d::tet_local_to_global(const int p, const Mes
 	for (size_t lv = 0; lv < v.size(); ++lv) {
 		const auto index = find_edge(mesh, c, v[lv], v[(lv+1)%4]);
 
-		const auto other_cell1 = mesh.switch_element(index).element;
-		const auto other_cell2 = mesh.switch_element(mesh.switch_face(index)).element;
-		const auto other_cell3 = mesh.switch_element(mesh.switch_face(mesh.switch_edge(index))).element;
+		// const auto other_cell1 = mesh.switch_element(index).element;
+		// const auto other_cell2 = mesh.switch_element(mesh.switch_face(index)).element;
+		// const auto other_cell3 = mesh.switch_element(mesh.switch_face(mesh.switch_edge(index))).element;
 
-		const bool skip_other1 = discr_order.size() > 0 && other_cell1 >= 0 && discr_order(c) >  discr_order(other_cell1);
-		const bool skip_other2 = discr_order.size() > 0 && other_cell2 >= 0 && discr_order(c) >  discr_order(other_cell2);
-		const bool skip_other3 = discr_order.size() > 0 && other_cell3 >= 0 && discr_order(c) >  discr_order(other_cell3);
+		// const bool skip_other1 = discr_order.size() > 0 && other_cell1 >= 0 && discr_order(c) >  discr_order(other_cell1);
+		// const bool skip_other2 = discr_order.size() > 0 && other_cell2 >= 0 && discr_order(c) >  discr_order(other_cell2);
+		// const bool skip_other3 = discr_order.size() > 0 && other_cell3 >= 0 && discr_order(c) >  discr_order(other_cell3);
 
-		if(skip_other1 || skip_other2 || skip_other3)
-			res.push_back(-lv - 30);
-		else
+		// if(skip_other1 || skip_other2 || skip_other3)
+		// 	res.push_back(-lv - 30);
+		// else
 			res.push_back(nodes.node_id_from_primitive(v[lv]));
 	}
 
@@ -714,7 +714,6 @@ Eigen::VectorXi poly_fem::FEBasis3d::tet_face_local_nodes(const int p, const Mes
 	result[1] = find_index(l2g.begin(), l2g.end(), mesh.next_around_face(index).vertex);
 	result[2] = find_index(l2g.begin(), l2g.end(), mesh.next_around_face(mesh.next_around_face(index)).vertex);
 
-	auto v = linear_tet_local_to_global(mesh, c);
 	Eigen::Matrix<Navigation3D::Index, 6, 1> e;
 	Eigen::Matrix<int, 6, 2> ev;
 	ev.row(0)  << l2g[0], l2g[1];
@@ -1469,11 +1468,27 @@ int poly_fem::FEBasis3d::build_bases(
 						Navigation3D::Index index;
 						if(global_index <= -30)
 						{
-							const auto lv = -(global_index + 30);
-							assert(lv>=0 && lv < 4);
-							assert(j < 4);
+							assert(false);
+							// const auto lv = -(global_index + 30);
+							// assert(lv>=0 && lv < 4);
+							// assert(j < 4);
 
-							index = mesh.switch_element(find_edge(mesh, e, v[lv], v[(lv+1)%4]));
+							// if(lv == 3)
+							// {
+							// 	index = mesh.switch_element(find_edge(mesh, e, v[lv], v[0]));
+							// 	if(index.element < 0)
+							// 		index = mesh.switch_element(find_edge(mesh, e, v[lv], v[1]));
+							// 	if(index.element < 0)
+							// 		index = mesh.switch_element(find_edge(mesh, e, v[lv], v[2]));
+							// }
+							// else
+							// {
+							// 	index = mesh.switch_element(find_edge(mesh, e, v[lv], v[(lv+1)%3]));
+							// 	if(index.element < 0)
+							// 		index = mesh.switch_element(find_edge(mesh, e, v[lv], v[(lv+2)%3]));
+							// 	if(index.element < 0)
+							// 		index = mesh.switch_element(find_edge(mesh, e, v[lv], v[3]));
+							// }
 						}
 						else if (global_index <= -10)
 						{
@@ -1490,7 +1505,10 @@ int poly_fem::FEBasis3d::build_bases(
 							ev.row(4)  << v[1], v[3];
 							ev.row(5)  << v[2], v[3];
 
-							index = mesh.switch_element(find_edge(mesh, e, ev(le, 0), ev(le, 1)));
+							const auto edge_index = find_edge(mesh, e, ev(le, 0), ev(le, 1));
+							index = mesh.switch_element(edge_index);
+							if(index.element < 0 || discr_orders[index.element] >= discr_order)
+								index = mesh.switch_element(mesh.switch_face(edge_index));
 						}
 						else
 						{
@@ -1508,6 +1526,7 @@ int poly_fem::FEBasis3d::build_bases(
 						}
 
 						const auto other_cell = index.element;
+						assert(other_cell >= 0);
 
 						auto indices = tet_face_local_nodes(discr_order, mesh, index);
 						Eigen::MatrixXd lnodes; autogen::p_nodes_3d(discr_order, lnodes);

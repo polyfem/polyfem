@@ -60,11 +60,19 @@ namespace poly_fem
 	namespace
 	{
 		template<typename V1, typename  V2>
-		double angle(const V1 &v1, const V2 &v2)
+		double angle2(const V1 &v1, const V2 &v2)
 		{
 			assert(v1.size() == 2);
 			assert(v2.size() == 2);
 			return std::abs(atan2(v1(0)*v2(1) - v1(1)*v2(0), v1.dot(v2)));
+		}
+
+		template<typename V1, typename  V2>
+		double angle3(const V1 &v1, const V2 &v2)
+		{
+			assert(v1.size() == 3);
+			assert(v2.size() == 3);
+			return std::abs(atan2(v1.cross(v2).norm(), v1.dot(v2)));
 		}
 	}
 
@@ -272,14 +280,14 @@ namespace poly_fem
 			const double e1n = e1.norm();
 			const double e2n = e2.norm();
 
-			const double alpha0 = angle(e0, -e2);
-			const double alpha1 = angle(e1, -e0);
-			const double alpha2 = angle(e2, -e1);
+			const double alpha0 = angle2(e0, -e2);
+			const double alpha1 = angle2(e1, -e0);
+			const double alpha2 = angle2(e2, -e1);
 
 			const double P = e1n + e1n + e2n;
-			const double A = std::abs(e1(0)*e2(1) - e1(1)*e2(0));
+			const double A = std::abs(e1(0)*e2(1) - e1(1)*e2(0))/2;
 			const double rho = 2*A/P;
-			const double hp = P / 3.0;
+			const double hp = std::max(e0n, std::max(e1n, e2n));
 
 			const double ptmp = 0.5 * (-4 * std::log(hp) + (2*p_ref+2) * std::log(h) + 2*std::log(rho) + 2*std::log(2) + std::log(3) + 2*std::log(B))/std::log(hp);
 			const int p = std::min(std::max(p_ref, (int)std::round(ptmp)), autogen::MAX_P_BASES);
@@ -314,81 +322,83 @@ namespace poly_fem
 				index = mesh2d.next_around_face(index);
 			}
 
-			// if(f == 49)
-				// std::cout<<alpha0<<" "<<alpha1<<" "<<alpha2<<std::endl;
-
-
-
-			// for(int i = 1; i < max_angles; ++i)
-			// {
-			// 	const bool a0 = alpha0 >= angles[i-1] && alpha0 < angles[i];
-			// 	const bool a1 = alpha1 >= angles[i-1] && alpha1 < angles[i];
-			// 	const bool a2 = alpha2 >= angles[i-1] && alpha2 < angles[i];
-
-
-			// 	if(a0 || a1 || a2)
-			// 	{
-			// 		if(i > disc_orders[f])
-			// 			disc_orders[f] = i;
-			// 		auto index = mesh2d.get_index_from_face(f);
-
-			// 		for(int lv = 0; lv < 3; ++lv)
-			// 		{
-			// 			auto nav = mesh2d.switch_face(index);
-
-			// 			while(nav.face >=0 && nav.face != f)
-			// 			{
-			// 				if(i > disc_orders[nav.face])
-			// 					disc_orders[nav.face] = i;
-
-			// 				nav = mesh2d.switch_face(mesh2d.switch_edge(nav));
-			// 			}
-
-
-			// 			nav = mesh2d.switch_face(mesh2d.switch_edge(index));
-
-			// 			while(nav.face >=0 && nav.face != f)
-			// 			{
-			// 				if(i > disc_orders[nav.face])
-			// 					disc_orders[nav.face] = i;
-
-			// 				nav = mesh2d.switch_face(mesh2d.switch_edge(nav));
-			// 			}
-
-			// 			index = mesh2d.next_around_face(index);
-			// 		}
-			// 	}
-			// }
-
 			max_angle = std::max(max_angle, alpha0);
 			max_angle = std::max(max_angle, alpha1);
 			max_angle = std::max(max_angle, alpha2);
 		}
 
-		std::cout<<"max_angle "<<(max_angle/M_PI*180)<<" max p "<<disc_orders.maxCoeff()<<std::endl;
+		std::cout<<"max_angle "<<(max_angle/M_PI*180)<<std::endl;
 	}
 
 	void State::p_refinement(const Mesh3D &mesh3d)
 	{
 		max_angle = 0;
+
+		Eigen::MatrixXd p0, p1;
+		mesh3d.get_edges(p0, p1);
+		const auto tmp = p0-p1;
+		const double h = tmp.rowwise().norm().mean();
+		const double B = 2;
+		const int p_ref = args["discr_order"];
+
 		for(int c = 0; c < mesh3d.n_cells(); ++c)
 		{
 			if(!mesh3d.is_simplex(c))
 				continue;
 
 
-			// auto v0 = mesh3d.point(mesh3d.face_vertex(c, 0));
-			// auto v1 = mesh3d.point(mesh3d.face_vertex(c, 1));
-			// auto v2 = mesh3d.point(mesh3d.face_vertex(c, 2));
+			const auto v0 = mesh3d.point(mesh3d.cell_vertex(c, 0));
+			const auto v1 = mesh3d.point(mesh3d.cell_vertex(c, 1));
+			const auto v2 = mesh3d.point(mesh3d.cell_vertex(c, 2));
+			const auto v3 = mesh3d.point(mesh3d.cell_vertex(c, 3));
 
-			// const RowVectorNd e0 = v1-v0;
-			// const RowVectorNd e1 = v2-v1;
-			// const RowVectorNd e2 = v0-v2;
+			Eigen::Matrix<double, 6, 3> e;
+			e.row(0) = v0 - v1;
+			e.row(1) = v1 - v2;
+			e.row(2) = v2 - v0;
 
-			// const double alpha0 = angle(e0, -e2);
-			// const double alpha1 = angle(e1, -e0);
-			// const double alpha2 = angle(e2, -e1);
+			e.row(3) = v0 - v3;
+			e.row(4) = v1 - v3;
+			e.row(5) = v2 - v3;
+
+			Eigen::Matrix<double, 6, 1> en = e.rowwise().norm();
+
+			Eigen::Matrix<double, 3*4, 1> alpha;
+			alpha(0) = angle3(e.row(0), -e.row(1));	 	alpha(1) = angle3(e.row(1), -e.row(2));	 	alpha(2) = angle3(e.row(2), -e.row(0));
+			alpha(3) = angle3(e.row(0), -e.row(4));	 	alpha(4) = angle3(e.row(4), e.row(3));	 	alpha(5) = angle3(-e.row(3), -e.row(0));
+			alpha(6) = angle3(-e.row(4), -e.row(1));	alpha(7) = angle3(e.row(1), -e.row(5));	 	alpha(8) = angle3(e.row(5), e.row(4));
+			alpha(9) = angle3(-e.row(2), -e.row(5));	alpha(10) = angle3(e.row(5), e.row(3));		alpha(11) = angle3(-e.row(3), e.row(2));
+
+			const double S = (e.row(0).cross(e.row(1)).norm() + e.row(0).cross(e.row(4)).norm() + e.row(4).cross(e.row(1)).norm() + e.row(2).cross(e.row(5)).norm()) / 2;
+			const double V = std::abs(e.row(3).dot(e.row(2).cross(-e.row(0))))/6;
+			const double rho = 3 * V / S;
+			const double hp = en.maxCoeff();
+
+			const double ptmp = 0.5 * (-4*std::log(hp) + (2*p_ref+2) * std::log(h) + 2*std::log(rho) + 3*std::log(2) + std::log(3) + 2*std::log(B)) / std::log(hp);
+			const int p = std::min(std::max(p_ref, (int)std::round(ptmp)), autogen::MAX_P_BASES);
+
+
+			if(p > disc_orders[c])
+				disc_orders[c] = p;
+
+			for(int lv = 0; lv < 4; ++lv)
+			{
+				const int v_id = mesh3d.cell_vertex(c, lv);
+				const auto cells = mesh3d.vertex_neighs(v_id);
+
+				for(auto c_id : cells)
+				{
+					if(p > disc_orders[c_id])
+						disc_orders[c_id] = p;
+				}
+			}
+
+
+			max_angle = std::max(max_angle, alpha.maxCoeff());
 		}
+
+		std::cout<<"max_angle "<<(max_angle/M_PI*180)<<std::endl;
+
 	}
 
 

@@ -195,7 +195,7 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi) {
 		for (auto nhid : nhs)hmi.elements[nhid].es.push_back(i);
 	}
 	//v_nhs; ordering fs for hex
-	if (hmi.type != MeshType::Hyb) return;
+	if (hmi.type != MeshType::Hyb && hmi.type != MeshType::Tet) return;
 
 	for (auto &v : hmi.vertices) v.neighbor_hs.clear();
 	for (uint32_t i = 0; i < hmi.elements.size(); i++) {

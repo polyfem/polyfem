@@ -60,17 +60,6 @@ namespace poly_fem
 		std::map<std::string, std::shared_ptr<Problem>> problems_;
 		std::vector<std::string> problem_names_;
 	};
-
-	enum class ProblemType : int
-	{
-		Linear = 0,
-		Quadratic = 1,
-		Franke = 2,
-		Elastic = 3,
-		Zero_BC = 4,
-		Franke3d = 5,
-		ElasticExact = 6,
-	};
 }
 
 #endif //PROBLEM_HPP

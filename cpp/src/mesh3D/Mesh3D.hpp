@@ -55,6 +55,9 @@ namespace poly_fem
 		Navigation3D::Index get_index_from_element(int hi) const { return Navigation3D::get_index_from_element_face(mesh_, hi); }
 
 
+		inline std::vector<uint32_t> vertex_neighs(const int v_gid) const {return mesh_.vertices[v_gid].neighbor_hs; }
+
+
 		// Navigation in a surface mesh
 		Navigation3D::Index switch_vertex(Navigation3D::Index idx) const { return Navigation3D::switch_vertex(mesh_, idx); }
 		Navigation3D::Index switch_edge(Navigation3D::Index idx) const { return Navigation3D::switch_edge(mesh_, idx); }
