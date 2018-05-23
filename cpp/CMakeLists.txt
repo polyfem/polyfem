@@ -86,16 +86,16 @@ endif()
 ################################################################################
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_rhs.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_rhs.hpp
-	COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/elasticity_rhs.py ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/
+	COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/elasticity_rhs.py ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/
 	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/elasticity_rhs.py)
 
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_eigs.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_eigs.hpp
-	COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/eigs.py ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/
+	COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/eigs.py ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/
 	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/eigs.py)
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_bases.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_bases.hpp
-	COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/FEBases.py ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/
+	COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/FEBases.py ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/
 	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/FEBases.py)
 
 
