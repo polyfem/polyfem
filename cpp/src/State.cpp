@@ -327,7 +327,8 @@ namespace poly_fem
 			max_angle = std::max(max_angle, alpha2);
 		}
 
-		std::cout<<"max_angle "<<(max_angle/M_PI*180)<<std::endl;
+		max_angle = max_angle/M_PI*180.;
+		std::cout<<"max_angle "<<max_angle<<std::endl;
 	}
 
 	void State::p_refinement(const Mesh3D &mesh3d)
@@ -397,7 +398,8 @@ namespace poly_fem
 			max_angle = std::max(max_angle, alpha.maxCoeff());
 		}
 
-		std::cout<<"max_angle "<<(max_angle/M_PI*180)<<std::endl;
+		max_angle = max_angle/M_PI*180.;
+		std::cout<<"max_angle "<<max_angle<<std::endl;
 
 	}
 

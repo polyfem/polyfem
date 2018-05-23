@@ -179,7 +179,8 @@ namespace poly_fem
 			// {"max_iter", 0}, // for iterative solvers
 			// {"tolerance", 1e-9}, // for iterative solvers
 			};
-			auto solver = LinearSolver::create("", "");
+			// auto solver = LinearSolver::create("", "");
+			auto solver = LinearSolver::create(LinearSolver::defaultSolver(), LinearSolver::defaultPrecond());
 			solver->setParameters(params);
 			solver->analyzePattern(A);
 			solver->factorize(A);
