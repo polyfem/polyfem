@@ -35,7 +35,8 @@ namespace cppoptlib {
 		: verbose(verbose)
 		{
 			auto criteria = this->criteria();
-			criteria.gradNorm = 1e-8;
+			criteria.gradNorm = 1e-7;
+			criteria.iterations = 100;
 			this->setStopCriteria(criteria);
 		}
 
@@ -69,6 +70,7 @@ namespace cppoptlib {
 			THessian hessian;
 			this->m_current.reset();
 			AssemblerUtils::instance().clear_cache();
+
 
 			bool analyze_pattern = true;
 			do

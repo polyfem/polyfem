@@ -1063,7 +1063,7 @@ namespace poly_fem
 		sol.resize(0, 0);
 
 		igl::Timer timer; timer.start();
-		std::cout<<"Solving... "<<std::flush;
+		std::cout<<"Solving " << formulation() <<"... "<<std::flush;
 
 
 		const json &params = solver_params();
@@ -1266,12 +1266,12 @@ namespace poly_fem
 			{"solver_params", {}},
 
 			{"params", {
-				{"lambda", 0.75},
-				{"mu", 0.375},
+				{"lambda", 0.32967032967032966},
+				{"mu", 0.3846153846153846},
 				{"k", 1.0},
 				{"elasticity_tensor", {}},
 				{"young", 1.0},
-				{"nu", 0.0},
+				{"nu", 0.3},
 				{"alphas", {2.13185026692482, -0.600299816209491}},
 				{"mus", {0.00407251192475097, 0.000167202574129608}},
 				{"Ds", {9.4979, 1000000}}

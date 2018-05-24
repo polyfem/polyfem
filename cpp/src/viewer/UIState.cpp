@@ -707,13 +707,13 @@ namespace poly_fem
 
 			clip_elements(tmp, vis_faces, vis_element_ranges, valid_elements, true, layer);
 
-			if(show_isolines && fun.cols() != 3)
-			{
-				Eigen::MatrixXd isoV;
-				Eigen::MatrixXi isoE;
-				igl::isolines(tmp, vis_faces, Eigen::VectorXd(ffun), 20, isoV, isoE);
-				data(layer).set_edges(isoV,isoE,Eigen::RowVector3d(0,0,0));
-			}
+			// if(show_isolines && fun.cols() != 3)
+			// {
+			// 	Eigen::MatrixXd isoV;
+			// 	Eigen::MatrixXi isoE;
+			// 	igl::isolines(tmp, vis_faces, Eigen::VectorXd(ffun), 20, isoV, isoE);
+			// 	data(layer).set_edges(isoV,isoE,Eigen::RowVector3d(0,0,0));
+			// }
 		}
 		else
 		{

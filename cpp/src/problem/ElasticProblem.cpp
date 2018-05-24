@@ -39,6 +39,10 @@ namespace poly_fem
 	{
 		boundary_ids_ = {2};
 		neumann_boundary_ids_ = {4};
+
+		force_.resize(3);
+		force_.setZero();
+		force_(0) = 0.1;
 	}
 
 	void ElasticForceProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
@@ -64,8 +68,49 @@ namespace poly_fem
 		for(long i = 0; i < pts.rows(); ++i)
 		{
 			if(mesh.get_boundary_id(global_ids(i)) == 4){
-				val.row(i).setZero();
-				val(i, 1) = 0.2;
+				for(int d = 0; d < val.cols(); ++d)
+					val(i, d) = force_(d);
+			}
+		}
+	}
+
+	void ElasticForceProblem::set_parameters(const json &params)
+	{
+		if(params.find("boundary_ids") != params.end())
+		{
+			boundary_ids_.clear();
+			auto j_boundary_ids = params["boundary_ids"];
+
+			boundary_ids_.resize(j_boundary_ids.size());
+
+
+			for(size_t i = 0; i < boundary_ids_.size(); ++i)
+			{
+				boundary_ids_[i] = j_boundary_ids[i];
+			}
+		}
+
+		if(params.find("neumann_boundary_ids") != params.end())
+		{
+			neumann_boundary_ids_.clear();
+			auto neumann_j_boundary_ids = params["neumann_boundary_ids"];
+
+			neumann_boundary_ids_.resize(neumann_j_boundary_ids.size());
+
+
+			for(size_t i = 0; i < neumann_boundary_ids_.size(); ++i)
+			{
+				neumann_boundary_ids_[i] = neumann_j_boundary_ids[i];
+			}
+		}
+
+		if(params.find("force") != params.end())
+		{
+			auto ff = params["force"];
+			if(ff.is_array())
+			{
+				for(int k = 0; k < ff.size(); ++k)
+					force_(k) = ff[k];
 			}
 		}
 	}
