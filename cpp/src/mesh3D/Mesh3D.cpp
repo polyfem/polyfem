@@ -633,6 +633,10 @@ namespace poly_fem
 		boundary_ids_.resize(n_faces());
 		std::fill(boundary_ids_.begin(), boundary_ids_.end(), -1);
 
+		const auto &V = mesh_.points;
+		Eigen::RowVector3d minV = V.rowwise().minCoeff().transpose();
+		Eigen::RowVector3d maxV = V.rowwise().maxCoeff().transpose();
+
 		for(int f = 0; f < n_faces(); ++f)
 		{
 			if(!is_boundary_face(f))
@@ -640,37 +644,19 @@ namespace poly_fem
 
 			const auto p = face_barycenter(f);
 
-			#if 0
-			// if(fabs(p(0)-6.25)<1e-8)
-			// 	boundary_ids_[f]=2;
-			// if(fabs(p(0)+-6.25)<1e-8)
-			// 	boundary_ids_[f]=4;
-
-			// if(fabs(p(1))<1e-8)
-			// 	boundary_ids_[f]=5;
-			// if(fabs(p(1)-1)<1e-8)
-			// 	boundary_ids_[f]=6;
-
-			// if(fabs(p(2))<1e-8)
-			// 	boundary_ids_[f]=1;
-			// if(fabs(p(2)-1)<1e-8)
-			// 	boundary_ids_[f]=3;
-			#else
-			if(p(0) < 0.001)
+			if(fabs(p(0)-minV(0))<1e-7)
 				boundary_ids_[f]=1;
-			if(p(0) > 0.999)
-				boundary_ids_[f]=3;
-
-			if(p(1) < 0.001)
-				boundary_ids_[f]=5;
-			if(p(1) > 0.999)
-				boundary_ids_[f]=6;
-
-			if(fabs(p(2))<1e-8)
+			if(fabs(p(1)-minV(1))<1e-7)
 				boundary_ids_[f]=2;
-			if(fabs(p(2)-1)<1e-8)
+			if(fabs(p(2)-minV(2))<1e-7)
+				boundary_ids_[f]=5;
+
+			if(fabs(p(0)-maxV(0))<1e-7)
+				boundary_ids_[f]=3;
+			if(fabs(p(1)-maxV(1))<1e-7)
 				boundary_ids_[f]=4;
-			#endif
+			if(fabs(p(2)-maxV(2))<1e-7)
+				boundary_ids_[f]=6;
 		}
 	}
 

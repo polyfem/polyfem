@@ -37,8 +37,8 @@ namespace poly_fem
 	ElasticForceProblem::ElasticForceProblem(const std::string &name)
 	: Problem(name)
 	{
-		boundary_ids_ = {1};
-		neumann_boundary_ids_ = {3};
+		boundary_ids_ = {2};
+		neumann_boundary_ids_ = {4};
 	}
 
 	void ElasticForceProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
@@ -52,7 +52,7 @@ namespace poly_fem
 
 		for(long i = 0; i < pts.rows(); ++i)
 		{
-			if(mesh.get_boundary_id(global_ids(i))== 1)
+			if(mesh.get_boundary_id(global_ids(i))== 2)
 				val.row(i).setZero();
 		}
 	}
@@ -63,9 +63,9 @@ namespace poly_fem
 
 		for(long i = 0; i < pts.rows(); ++i)
 		{
-			if(mesh.get_boundary_id(global_ids(i)) == 3){
+			if(mesh.get_boundary_id(global_ids(i)) == 4){
 				val.row(i).setZero();
-				val(i, 0) = 0.1;
+				val(i, 1) = 0.2;
 			}
 		}
 	}

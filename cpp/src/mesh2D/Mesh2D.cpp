@@ -205,6 +205,9 @@ namespace poly_fem
 		boundary_ids_.resize(n_edges());
 		std::fill(boundary_ids_.begin(), boundary_ids_.end(), -1);
 
+		GEO::vec3 min_corner, max_corner;
+		GEO::get_bbox(mesh_, &min_corner[0], &max_corner[0]);
+
 		//implement me properly
 		for(int e = 0; e < n_edges(); ++e)
 		{
@@ -213,13 +216,13 @@ namespace poly_fem
 
 			const auto p = edge_barycenter(e);
 
-			if(fabs(p(0))<1e-8)
+			if(fabs(p(0)-min_corner[0])<1e-7)
 				boundary_ids_[e]=1;
-			if(fabs(p(1))<1e-8)
+			if(fabs(p(1)-min_corner[1])<1e-7)
 				boundary_ids_[e]=2;
-			if(fabs(p(0)-1)<1e-8)
+			if(fabs(p(0)-max_corner[0])<1e-7)
 				boundary_ids_[e]=3;
-			if(fabs(p(1)-1)<1e-8)
+			if(fabs(p(1)-max_corner[1])<1e-7)
 				boundary_ids_[e]=4;
 		}
 	}
