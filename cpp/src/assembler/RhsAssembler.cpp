@@ -240,11 +240,27 @@ namespace poly_fem
 			gbs.eval_geom_mapping(points, mapped);
 			problem_.neumann_bc(mesh_, global_primitive_ids, mapped, rhs_fun);
 
-			RowVectorNd val(size_);
-			for(int d = 0; d < size_; ++d)
-				val(d) = (rhs_fun.col(d).array() * weights.array()).sum();
 
-			std::cout<<"\nval\n"<<val<<" - "<<rhs_fun<<" - "<<weights.sum()<<"\n\n"<<std::endl;
+			ElementAssemblyValues vals;
+			vals.compute(e, mesh_.is_volume(), points, bases_[e], gbases_[e]);
+			problem_.neumann_bc(mesh_, global_primitive_ids, vals.val, rhs_fun);
+			// problem_.neumann_bc(mesh_, global_primitive_ids, mapped, rhs_fun);
+
+			for(int d = 0; d < size_; ++d)
+				rhs_fun.col(d) = rhs_fun.col(d).array() * weights.array();
+
+			// const int n_loc_bases_ = int(vals.basis_values.size());
+			// for(int i = 0; i < n_loc_bases_; ++i)
+			// {
+			// 	const AssemblyValues &v = vals.basis_values[i];
+
+			// 	for(int d = 0; d < size_; ++d)
+			// 	{
+			// 		const double rhs_value = (rhs_fun.col(d).array() * v.val.array()).sum();
+			// 		for(std::size_t ii = 0; ii < v.global.size(); ++ii)
+			// 			rhs(v.global[ii].index*size_+d) +=  rhs_value * v.global[ii].val;
+			// 	}
+			// }
 
 			for(int i = 0; i < lb.size(); ++i)
 			{
@@ -253,19 +269,20 @@ namespace poly_fem
 
 				for(long n = 0; n < nodes.size(); ++n)
 				{
-					const auto &b = bs.bases[nodes(n)];
-					for(size_t g = 0; g < b.global().size(); ++g)
+					// const auto &b = bs.bases[nodes(n)];
+					const AssemblyValues &v = vals.basis_values[nodes(n)];
+					for(int d = 0; d < size_; ++d)
 					{
-						for(int d = 0; d < size_; ++d)
+						const double rhs_value = (rhs_fun.col(d).array() * v.val.array()).sum();
+
+						for(size_t g = 0; g < v.global.size(); ++g)
 						{
-							rhs(b.global()[g].index*size_+d) = val(d);
+							rhs(v.global[g].index*size_+d) +=  rhs_value * v.global[g].val;
 						}
 					}
 				}
 			}
 		}
-
-		std::cout<<rhs<<std::endl;
 	}
 
 	double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement) const
