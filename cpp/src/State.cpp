@@ -914,7 +914,7 @@ namespace poly_fem
 			{
 				// if(!parent_elements.empty())
 				// 	flipped_elements.push_back(parent_elements[i]);
-				std::cout<<"Basis "<< i << ( parent_elements.size() > 0 ? (" -> " + std::to_string(parent_elements[i])) : "") << " has negative volume"<<std::endl;
+				// std::cout<<"Basis "<< i << ( parent_elements.size() > 0 ? (" -> " + std::to_string(parent_elements[i])) : "") << " has negative volume"<<std::endl;
 				++n_flipped;
 			}
 		}

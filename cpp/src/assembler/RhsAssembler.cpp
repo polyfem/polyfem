@@ -148,14 +148,13 @@ namespace poly_fem
 			global_rhs.block(global_counter, 0, rhs_fun.rows(), rhs_fun.cols()) = rhs_fun;
 			global_counter += rhs_fun.rows();
 
-			// igl::viewer::Viewer &viewer = UIState::ui_state().viewer;
-			// viewer.data.add_points(mapped, Eigen::MatrixXd::Constant(1, 3, 0));
+			//UIState::ui_state().debug_data().add_points(mapped, Eigen::MatrixXd::Constant(1, 3, 0));
 
 			//Eigen::MatrixXd asd(mapped.rows(), 3);
 			//asd.col(0)=mapped.col(0);
 			//asd.col(1)=mapped.col(1);
 			//asd.col(2)=rhs_fun;
-			//viewer.data.add_points(asd, Eigen::MatrixXd::Constant(1, 3, 0));
+			//UIState::ui_state().debug_data().add_points(asd, Eigen::MatrixXd::Constant(1, 3, 0));
 		}
 
 		assert(global_counter == total_size);
@@ -236,31 +235,15 @@ namespace poly_fem
 
 			const ElementBases &gbs = gbases_[e];
 			const ElementBases &bs = bases_[e];
-			Eigen::MatrixXd mapped;
-			gbs.eval_geom_mapping(points, mapped);
-			problem_.neumann_bc(mesh_, global_primitive_ids, mapped, rhs_fun);
-
 
 			ElementAssemblyValues vals;
-			vals.compute(e, mesh_.is_volume(), points, bases_[e], gbases_[e]);
+			vals.compute(e, mesh_.is_volume(), points, bs, gbs);
 			problem_.neumann_bc(mesh_, global_primitive_ids, vals.val, rhs_fun);
-			// problem_.neumann_bc(mesh_, global_primitive_ids, mapped, rhs_fun);
+
+			// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
 
 			for(int d = 0; d < size_; ++d)
 				rhs_fun.col(d) = rhs_fun.col(d).array() * weights.array();
-
-			// const int n_loc_bases_ = int(vals.basis_values.size());
-			// for(int i = 0; i < n_loc_bases_; ++i)
-			// {
-			// 	const AssemblyValues &v = vals.basis_values[i];
-
-			// 	for(int d = 0; d < size_; ++d)
-			// 	{
-			// 		const double rhs_value = (rhs_fun.col(d).array() * v.val.array()).sum();
-			// 		for(std::size_t ii = 0; ii < v.global.size(); ++ii)
-			// 			rhs(v.global[ii].index*size_+d) +=  rhs_value * v.global[ii].val;
-			// 	}
-			// }
 
 			for(int i = 0; i < lb.size(); ++i)
 			{

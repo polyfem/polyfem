@@ -87,6 +87,15 @@ namespace poly_fem
 
 		State &state;
 
+		igl::opengl::ViewerData &debug_data()
+		{
+			reset_flags(Visualizations::Debug, false);
+			hide_data(Visualizations::Debug);
+			show_data(Visualizations::Debug);
+
+			return data(Visualizations::Debug);
+		}
+
 	protected:
 		std::array<bool, 6> dirichlet_bc;
 
@@ -95,7 +104,7 @@ namespace poly_fem
 		Eigen::Matrix<bool, Eigen::Dynamic, 1> visible_visualizations;
 
 		std::vector<std::vector<bool>> vis_flags;
-		void reset_flags(const Visualizations &layer);
+		void reset_flags(const Visualizations &layer, bool clear = true);
 		void hide_data(const Visualizations &layer);
 		void show_data(const Visualizations &layer);
 

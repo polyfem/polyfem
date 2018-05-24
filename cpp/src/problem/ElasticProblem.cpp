@@ -63,7 +63,7 @@ namespace poly_fem
 
 		for(long i = 0; i < pts.rows(); ++i)
 		{
-			if(mesh.get_boundary_id(global_ids(i))== 3){
+			if(mesh.get_boundary_id(global_ids(i)) == 3){
 				val.row(i).setZero();
 				val(i, 0) = 0.1;
 			}

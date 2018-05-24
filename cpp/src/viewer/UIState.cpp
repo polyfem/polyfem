@@ -588,9 +588,10 @@ namespace poly_fem
 		return viewer.data_list[index];
 	}
 
-	void UIState::reset_flags(const Visualizations &layer)
+	void UIState::reset_flags(const Visualizations &layer, bool clear)
 	{
-		data(layer).clear();
+		if(clear)
+			data(layer).clear();
 
 		data(layer).show_overlay = true;
 		data(layer).show_faces = true;
