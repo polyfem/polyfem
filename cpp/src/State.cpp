@@ -483,6 +483,7 @@ namespace poly_fem
 		geom_bases.clear();
 		boundary_nodes.clear();
 		local_boundary.clear();
+		local_neumann_boundary.clear();
 		polys.clear();
 		poly_edge_to_data.clear();
 		parent_elements.clear();
@@ -524,6 +525,7 @@ namespace poly_fem
 		geom_bases.clear();
 		boundary_nodes.clear();
 		local_boundary.clear();
+		local_neumann_boundary.clear();
 		polys.clear();
 		poly_edge_to_data.clear();
 		parent_elements.clear();
@@ -693,6 +695,7 @@ namespace poly_fem
 		geom_bases.clear();
 		boundary_nodes.clear();
 		local_boundary.clear();
+		local_neumann_boundary.clear();
 		polys.clear();
 		poly_edge_to_data.clear();
 
@@ -823,6 +826,7 @@ namespace poly_fem
 		geom_bases.clear();
 		boundary_nodes.clear();
 		local_boundary.clear();
+		local_neumann_boundary.clear();
 		polys.clear();
 		poly_edge_to_data.clear();
 		stiffness.resize(0, 0);
@@ -836,6 +840,7 @@ namespace poly_fem
 		std::cout<<"Building "<< (iso_parametric()? "isoparametric":"not isoparametric") <<" basis..."<<std::flush;
 
 		local_boundary.clear();
+		local_neumann_boundary.clear();
 		std::map<int, InterfaceData> poly_edge_to_data_geom; //temp dummy variable
 
 		disc_orders.setConstant(args["discr_order"]);
@@ -919,7 +924,7 @@ namespace poly_fem
 		// flipped_elements.resize(std::distance(flipped_elements.begin(), it));
 
 
-		problem->remove_neumann_nodes(*mesh, bases, local_boundary, boundary_nodes);
+		problem->setup_bc(*mesh, bases, local_boundary, boundary_nodes, local_neumann_boundary);
 
 		if(!problem->is_scalar())
 		{
@@ -1046,7 +1051,7 @@ namespace poly_fem
 		RhsAssembler rhs_assembler(*mesh, n_bases, size, bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
 		rhs_assembler.assemble(rhs);
 		rhs *= -1;
-		rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], rhs);
+		rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs);
 
 		timer.stop();
 		assigning_rhs_time = timer.getElapsedTime();

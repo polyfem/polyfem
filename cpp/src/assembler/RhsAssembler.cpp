@@ -52,7 +52,7 @@ namespace poly_fem
 		}
 	}
 
-	void RhsAssembler::set_bc(const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, Eigen::MatrixXd &rhs) const
+	void RhsAssembler::set_bc(const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector< LocalBoundary > &local_neumann_boundary, Eigen::MatrixXd &rhs) const
 	{
 		const int n_el=int(bases_.size());
 
@@ -160,25 +160,25 @@ namespace poly_fem
 
 		assert(global_counter == total_size);
 
-		Eigen::SparseMatrix<double> mat(int(total_size), int(indices.size()));
-		mat.setFromTriplets(entries.begin(), entries.end());
-
-		Eigen::SparseMatrix<double> mat_t(int(indices.size()), int(total_size));
-		mat_t.setFromTriplets(entries_t.begin(), entries_t.end());
-
-		Eigen::SparseMatrix<double> A = mat_t * mat;
-		Eigen::MatrixXd b = mat_t * global_rhs;
-
-
-
-		Eigen::MatrixXd coeffs(b.rows(), b.cols());
-			// if(A.rows() > 2000)
 		{
+			Eigen::SparseMatrix<double> mat(int(total_size), int(indices.size()));
+			mat.setFromTriplets(entries.begin(), entries.end());
+
+			Eigen::SparseMatrix<double> mat_t(int(indices.size()), int(total_size));
+			mat_t.setFromTriplets(entries_t.begin(), entries_t.end());
+
+			Eigen::SparseMatrix<double> A = mat_t * mat;
+			Eigen::MatrixXd b = mat_t * global_rhs;
+
+
+			Eigen::MatrixXd coeffs(b.rows(), b.cols());
+
 			json params = {
 			{"mtype", -2}, // matrix type for Pardiso (2 = SPD)
 			// {"max_iter", 0}, // for iterative solvers
 			// {"tolerance", 1e-9}, // for iterative solvers
 			};
+
 			// auto solver = LinearSolver::create("", "");
 			auto solver = LinearSolver::create(LinearSolver::defaultSolver(), LinearSolver::defaultPrecond());
 			solver->setParameters(params);
@@ -187,28 +187,85 @@ namespace poly_fem
 			for(long i = 0; i < b.cols(); ++i){
 				solver->solve(b.col(i), coeffs.col(i));
 			}
-
-			// Eigen::BiCGSTAB< Eigen::SparseMatrix<double> > solver;
-			// coeffs = solver.compute(A).solve(b);
-
-			// Eigen::SimplicialLDLT<Eigen::SparseMatrix<double> > solver;
-			// coeffs = solver.compute(-A).solve(-b);
 			std::cout<<"RHS solve error "<< (A*coeffs-b).norm()<<std::endl;
-		}
-			// else
-				// coeffs = A.ldlt().solve(b);
 
-			// std::cout<<global_mat<<"\n"<<std::endl;
-			// std::cout<<coeffs<<"\n"<<std::endl;
-			// std::cout<<global_rhs<<"\n\n\n"<<std::endl;
-		for(long i = 0; i < coeffs.rows(); ++i){
-			// problem_.bc(mesh.pts.row(indices[i]), rhs_fun);
-
-			// std::cout<<indices[i]<<" "<<coeffs(i)<<" vs " <<rhs_fun<<std::endl;
-			for(int d = 0; d < size_; ++d){
-				rhs(indices[i]*size_+d) = coeffs(i, d);
+			for(long i = 0; i < coeffs.rows(); ++i){
+				for(int d = 0; d < size_; ++d){
+					rhs(indices[i]*size_+d) = coeffs(i, d);
+				}
 			}
 		}
+
+
+
+		//Neumann
+		Eigen::MatrixXd points;
+		Eigen::VectorXd weights;
+		for(const auto &lb : local_neumann_boundary)
+		{
+			const int e = lb.element_id();
+			bool has_samples = boundary_quadrature(lb, resolution/3, true, points, weights, global_primitive_ids);
+
+			if(!has_samples)
+				continue;
+
+			const ElementBases &bs = bases_[e];
+			for(int i = 0; i < lb.size(); ++i)
+			{
+				const int primitive_global_id = lb.global_primitive_id(i);
+				const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, mesh_);
+
+				for(long n = 0; n < nodes.size(); ++n){
+					const auto &b = bs.bases[nodes(n)];
+					for(size_t g = 0; g < b.global().size(); ++g){
+						for(int d = 0; d < size_; ++d){
+							rhs(b.global()[g].index*size_+d) = 0;
+						}
+					}
+				}
+			}
+		}
+
+		for(const auto &lb : local_neumann_boundary)
+		{
+			const int e = lb.element_id();
+			bool has_samples = boundary_quadrature(lb, resolution/3, false, points, weights, global_primitive_ids);
+
+			if(!has_samples)
+				continue;
+
+			const ElementBases &gbs = gbases_[e];
+			const ElementBases &bs = bases_[e];
+			Eigen::MatrixXd mapped;
+			gbs.eval_geom_mapping(points, mapped);
+			problem_.neumann_bc(mesh_, global_primitive_ids, mapped, rhs_fun);
+
+			RowVectorNd val(size_);
+			for(int d = 0; d < size_; ++d)
+				val(d) = (rhs_fun.col(d).array() * weights.array()).sum();
+
+			std::cout<<"\nval\n"<<val<<" - "<<rhs_fun<<" - "<<weights.sum()<<"\n\n"<<std::endl;
+
+			for(int i = 0; i < lb.size(); ++i)
+			{
+				const int primitive_global_id = lb.global_primitive_id(i);
+				const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, mesh_);
+
+				for(long n = 0; n < nodes.size(); ++n)
+				{
+					const auto &b = bs.bases[nodes(n)];
+					for(size_t g = 0; g < b.global().size(); ++g)
+					{
+						for(int d = 0; d < size_; ++d)
+						{
+							rhs(b.global()[g].index*size_+d) = val(d);
+						}
+					}
+				}
+			}
+		}
+
+		std::cout<<rhs<<std::endl;
 	}
 
 	double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement) const
@@ -257,6 +314,43 @@ namespace poly_fem
 		}
 
 		return res;
+	}
+
+	bool RhsAssembler::boundary_quadrature(const LocalBoundary &local_boundary, const int order, const bool skip_computation, Eigen::MatrixXd &points, Eigen::VectorXd &weights, Eigen::VectorXi &global_primitive_ids) const
+	{
+		points.resize(0, 0);
+		weights.resize(0);
+		global_primitive_ids.resize(0);
+
+		for(int i = 0; i < local_boundary.size(); ++i)
+		{
+			const int gid = local_boundary.global_primitive_id(i);
+			Eigen::MatrixXd tmp_p;
+			Eigen::VectorXd tmp_w;
+			switch(local_boundary.type())
+			{
+				case BoundaryType::TriLine:	 BoundarySampler::quadrature_for_tri_edge(local_boundary[i], order, tmp_p, tmp_w);  tmp_w *= mesh_.edge_length(gid); break;
+				case BoundaryType::QuadLine: BoundarySampler::quadrature_for_quad_edge(local_boundary[i], order, tmp_p, tmp_w); tmp_w *= mesh_.edge_length(gid); break;
+				case BoundaryType::Quad: 	 BoundarySampler::quadrature_for_quad_face(local_boundary[i], order, tmp_p, tmp_w); tmp_w *= mesh_.quad_area(gid); break;
+				case BoundaryType::Tri: 	 BoundarySampler::quadrature_for_tri_face(local_boundary[i], order, tmp_p, tmp_w);  tmp_w *= mesh_.tri_area(gid); break;
+				case BoundaryType::Invalid:  assert(false); break;
+				default: assert(false);
+			}
+
+			points.conservativeResize(points.rows() + tmp_p.rows(), tmp_p.cols());
+			points.bottomRows(tmp_p.rows()) = tmp_p;
+
+			weights.conservativeResize(weights.rows() + tmp_w.rows(), tmp_w.cols());
+			weights.bottomRows(tmp_w.rows()) = tmp_w;
+
+			global_primitive_ids.conservativeResize(global_primitive_ids.rows() + tmp_p.rows());
+			global_primitive_ids.bottomRows(tmp_p.rows()).setConstant(gid);
+		}
+
+		assert(points.rows() == global_primitive_ids.size());
+		assert(weights.size() == global_primitive_ids.size());
+
+		return true;
 	}
 
 

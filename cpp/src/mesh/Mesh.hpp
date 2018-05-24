@@ -63,6 +63,12 @@ namespace poly_fem
 		virtual void compute_elements_tag() = 0;
 		virtual void update_elements_tag() { assert(false); }
 
+
+		//d-1 primitive sizes
+		virtual double edge_length(const int gid) const { assert(false);  return 0; }
+		virtual double quad_area(const int gid) const { assert(false);  return 0; }
+		virtual double tri_area(const int gid) const { assert(false);  return 0; }
+
 		//Nodal access
 		virtual RowVectorNd point(const int global_index) const = 0;
 		virtual RowVectorNd edge_barycenter(const int e) const = 0;

@@ -46,6 +46,8 @@ namespace poly_fem
 
 		void normalize() override;
 
+		double edge_length(const int gid) const override;
+
 		void compute_elements_tag() override;
 		virtual void update_elements_tag() override;
 

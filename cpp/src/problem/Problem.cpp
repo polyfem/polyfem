@@ -15,13 +15,15 @@ namespace poly_fem
 	: name_(name)
 	{ }
 
-	void Problem::remove_neumann_nodes(const Mesh &mesh, const std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &boundary_nodes)
+	void Problem::setup_bc(const Mesh &mesh, const std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &boundary_nodes, std::vector< LocalBoundary > &local_neumann_boundary)
 	{
 		std::vector< LocalBoundary > new_local_boundary;
+		local_neumann_boundary.clear();
 		for(auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
 		{
 			const auto &lb = *it;
 			LocalBoundary new_lb(lb.element_id(), lb.type());
+			LocalBoundary new_neumann_lb(lb.element_id(), lb.type());
 			for(int i = 0; i < lb.size(); ++i)
 			{
 				const int primitive_g_id = lb.global_primitive_id(i);
@@ -29,10 +31,16 @@ namespace poly_fem
 
 				if(boundary_ids_.empty() || std::find(boundary_ids_.begin(), boundary_ids_.end(), tag) != boundary_ids_.end())
 					new_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
+
+				if(std::find(neumann_boundary_ids_.begin(), neumann_boundary_ids_.end(), tag) != neumann_boundary_ids_.end())
+					new_neumann_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
 			}
 
 			if(!new_lb.empty())
 				new_local_boundary.emplace_back(new_lb);
+
+			if(!new_neumann_lb.empty())
+				local_neumann_boundary.emplace_back(new_neumann_lb);
 		}
 		std::swap(local_boundary, new_local_boundary);
 
@@ -61,9 +69,6 @@ namespace poly_fem
 	}
 
 
-
-
-
 	const ProblemFactory &ProblemFactory::factory()
 	{
 		static ProblemFactory instance;
@@ -79,6 +84,7 @@ namespace poly_fem
 		problems_.emplace("Franke", std::make_shared<FrankeProblem>("Franke"));
 		problems_.emplace("Zero_BC", std::make_shared<ZeroBCProblem>("Zero_BC"));
 		problems_.emplace("Elastic", std::make_shared<ElasticProblem>("Elastic"));
+		problems_.emplace("ElasticForce", std::make_shared<ElasticForceProblem>("ElasticForce"));
 		problems_.emplace("ElasticZeroBC", std::make_shared<ElasticProblemZeroBC>("ElasticZeroBC"));
 		problems_.emplace("ElasticExact", std::make_shared<ElasticProblemExact>("ElasticExact"));
 		problems_.emplace("CompressionElasticExact", std::make_shared<CompressionElasticProblemExact>("CompressionElasticExact"));

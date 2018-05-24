@@ -20,6 +20,7 @@ namespace poly_fem
 
 		virtual void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const = 0;
 		virtual void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const = 0;
+		virtual void neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { }
 
 		virtual void exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { };
 		virtual void exact_grad(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { };
@@ -31,7 +32,7 @@ namespace poly_fem
 
 		virtual void set_parameters(const json &params) { }
 
-		void remove_neumann_nodes(const Mesh &mesh, const std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &boundary_nodes);
+		void setup_bc(const Mesh &mesh, const std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &boundary_nodes, std::vector< LocalBoundary > &local_neumann_boundary);
 
 		std::vector<int> &boundary_ids() { return boundary_ids_; }
 		const std::vector<int> &boundary_ids() const { return boundary_ids_; }
@@ -39,6 +40,7 @@ namespace poly_fem
 		virtual ~Problem() { }
 	protected:
 		std::vector<int> boundary_ids_;
+		std::vector<int> neumann_boundary_ids_;
 
 	private:
 		std::string name_;

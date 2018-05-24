@@ -42,6 +42,9 @@ namespace poly_fem
 
 		void normalize() override;
 
+		virtual double quad_area(const int gid) const override;
+		virtual double tri_area(const int gid) const override;
+
 		void compute_elements_tag() override;
 
 		RowVectorNd kernel(const int cell_id) const;

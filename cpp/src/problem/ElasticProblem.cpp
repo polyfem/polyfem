@@ -34,6 +34,43 @@ namespace poly_fem
 	}
 
 
+	ElasticForceProblem::ElasticForceProblem(const std::string &name)
+	: Problem(name)
+	{
+		boundary_ids_ = {1};
+		neumann_boundary_ids_ = {3};
+	}
+
+	void ElasticForceProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+	}
+
+	void ElasticForceProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
+
+		for(long i = 0; i < pts.rows(); ++i)
+		{
+			if(mesh.get_boundary_id(global_ids(i))== 1)
+				val.row(i).setZero();
+		}
+	}
+
+	void ElasticForceProblem::neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
+
+		for(long i = 0; i < pts.rows(); ++i)
+		{
+			if(mesh.get_boundary_id(global_ids(i))== 3){
+				val.row(i).setZero();
+				val(i, 0) = 0.1;
+			}
+		}
+	}
+
+
 	ElasticProblemZeroBC::ElasticProblemZeroBC(const std::string &name)
 	: Problem(name)
 	{

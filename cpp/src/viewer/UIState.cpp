@@ -249,10 +249,10 @@ namespace poly_fem
 		{
 			Eigen::MatrixXd tmp(5, 3);
 			tmp << 	255, 234, 167,
-					250, 177, 160,
-					255, 118, 117,
-					253, 121, 168,
-					232, 67, 147;
+			250, 177, 160,
+			255, 118, 117,
+			253, 121, 168,
+			232, 67, 147;
 
 			tmp /= 255;
 
@@ -887,6 +887,33 @@ namespace poly_fem
 		if((visible_visualizations(Visualizations::Nodes) || visible_visualizations(Visualizations::NodesId)) && !available_visualizations[Visualizations::Nodes])
 		{
 			reset_flags(Visualizations::Nodes);
+
+			MatrixXd col(1,3); col << 0,1,0;
+
+			for(const auto &lb : state.local_neumann_boundary)
+			{
+				const int e = lb.element_id();
+				const ElementBases &bs = state.bases[e];
+
+				for(int i = 0; i < lb.size(); ++i)
+				{
+					const int primitive_global_id = lb.global_primitive_id(i);
+					const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, *state.mesh);
+
+					for(long n = 0; n < nodes.size(); ++n)
+					{
+						const auto &b = bs.bases[nodes(n)];
+						for(size_t g = 0; g < b.global().size(); ++g)
+						{
+							const Local2Global &l2g = b.global()[g];
+							MatrixXd node = l2g.node;
+							data(Visualizations::Nodes).add_points(node, col);
+						}
+					}
+				}
+			}
+
+
 			// size_t i = 6;
 			for(std::size_t i = 0; i < state.bases.size(); ++i)
 			{
@@ -904,7 +931,7 @@ namespace poly_fem
 							g_index *= state.mesh->dimension();
 
 						MatrixXd node = l2g.node;
-						MatrixXd col = MatrixXd::Zero(1, 3);
+						col.setZero();
 
 						if(std::find(state.boundary_nodes.begin(), state.boundary_nodes.end(), g_index) != state.boundary_nodes.end()){
 							col.col(0).setOnes();

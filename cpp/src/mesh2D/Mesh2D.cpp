@@ -113,6 +113,15 @@ namespace poly_fem
 		std::cout << "   avg: " << p.rowwise().norm().mean() << std::endl;
 	}
 
+
+	double Mesh2D::edge_length(const int gid) const
+	{
+		const int v0 = mesh_.edges.vertex(gid, 0);
+		const int v1 = mesh_.edges.vertex(gid, 1);
+
+		return (point(v0) - point(v1)).norm();
+	}
+
 	void Mesh2D::get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const
 	{
 		p0.resize(mesh_.edges.nb(), 2);

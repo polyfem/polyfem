@@ -875,6 +875,44 @@ namespace poly_fem
 		}
 	}
 
+	double Mesh3D::quad_area(const int gid) const
+	{
+		const int n_vertices = n_face_vertices(gid);
+		assert(n_vertices == 4);
+
+		const auto &vertices = mesh_.faces[gid].vs;
+
+		const auto v1 = point(vertices[0]);
+		const auto v2 = point(vertices[1]);
+		const auto v3 = point(vertices[2]);
+		const auto v4 = point(vertices[4]);
+
+		const Vector3d e0 = (v2 - v1).transpose();
+		const Vector3d e1 = (v3 - v1).transpose();
+
+		const Vector3d e2 = (v2 - v4).transpose();
+		const Vector3d e3 = (v3 - v4).transpose();
+
+		return e0.cross(e1).norm()/2 + e2.cross(e3).norm()/2;
+	}
+
+	double Mesh3D::tri_area(const int gid) const
+	{
+		const int n_vertices = n_face_vertices(gid);
+		assert(n_vertices == 3);
+
+		const auto &vertices = mesh_.faces[gid].vs;
+
+		const auto v1 = point(vertices[0]);
+		const auto v2 = point(vertices[1]);
+		const auto v3 = point(vertices[2]);
+
+		const Vector3d e0 = (v2 - v1).transpose();
+		const Vector3d e1 = (v3 - v1).transpose();
+
+		return e0.cross(e1).norm()/2;
+	}
+
 	RowVectorNd Mesh3D::edge_barycenter(const int e) const {
 		const int v0 = mesh_.edges[e].vs[0];
 		const int v1 = mesh_.edges[e].vs[1];

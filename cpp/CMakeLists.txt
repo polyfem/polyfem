@@ -224,6 +224,7 @@ set(POLYFEM_SOURCES
 	src/utils/autodiff.h
 	src/utils/AutodiffTypes.hpp
 	src/utils/Bessel.hpp
+	src/utils/BoundarySampler.cpp
 	src/utils/BoundarySampler.hpp
 	src/utils/CommandLine.cpp
 	src/utils/CommandLine.hpp
