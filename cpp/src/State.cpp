@@ -192,6 +192,12 @@ namespace poly_fem
 		j["num_vertices"] = mesh->n_vertices();
 		j["num_elements"] = mesh->n_elements();
 
+		j["num_p1"] = (disc_orders.array() == 1).count();
+		j["num_p2"] = (disc_orders.array() == 2).count();
+		j["num_p3"] = (disc_orders.array() == 3).count();
+		j["num_p4"] = (disc_orders.array() == 4).count();
+		j["num_p5"] = (disc_orders.array() == 5).count();
+
 		j["mesh_size"] = mesh_size;
 		j["max_angle"] = max_angle;
 
@@ -1110,55 +1116,56 @@ namespace poly_fem
 			// 	nl_problem.hessian(tmp_sol, hessian);
 			// 	nl_problem.finiteGradient(tmp_sol, expected_grad, 0);
 			// 	nl_problem.finiteHessian(tmp_sol, expected_hessian, 1);
-			// 	Eigen::MatrixXd actual_hessian(expected_hessian.rows(), expected_hessian.cols());
-			// 	Eigen::MatrixXd tmp = Eigen::MatrixXd(hessian);
+			// 	// Eigen::MatrixXd actual_hessian(expected_hessian.rows(), expected_hessian.cols());
+			// 	Eigen::MatrixXd actual_hessian = Eigen::MatrixXd(hessian);
 
-			// 	long ii = 0;
-			// 	size_t k = 0;
-			// 	for(long i = 0; i < tmp.rows(); ++i)
-			// 	{
-			// 		if(boundary_nodes[k] == i)
-			// 		{
-			// 			++k;
-			// 			continue;
-			// 		}
+			// 	// long ii = 0;
+			// 	// size_t k = 0;
+			// 	// for(long i = 0; i < tmp.rows(); ++i)
+			// 	// {
+			// 	// 	if(boundary_nodes[k] == i)
+			// 	// 	{
+			// 	// 		++k;
+			// 	// 		continue;
+			// 	// 	}
 
-			// 		long jj = 0;
-			// 		size_t kk = 0;
-			// 		for(long j = 0; j < tmp.cols(); ++j)
-			// 		{
-			// 			if(boundary_nodes[kk] == j)
-			// 			{
-			// 				++kk;
-			// 				continue;
-			// 			}
+			// 	// 	long jj = 0;
+			// 	// 	size_t kk = 0;
+			// 	// 	for(long j = 0; j < tmp.cols(); ++j)
+			// 	// 	{
+			// 	// 		if(boundary_nodes[kk] == j)
+			// 	// 		{
+			// 	// 			++kk;
+			// 	// 			continue;
+			// 	// 		}
 
-			// 			actual_hessian(ii, jj++) = tmp(i, j);
-			// 		}
+			// 	// 		actual_hessian(ii, jj++) = tmp(i, j);
+			// 	// 	}
 
-			// 		assert(jj == actual_hessian.cols());
-			// 		ii++;
-			// 	}
-			// 	assert(ii == actual_hessian.rows());
+			// 	// 	assert(jj == actual_hessian.cols());
+			// 	// 	ii++;
+			// 	// }
+			// 	// assert(ii == actual_hessian.rows());
 
 			// 	std::cout<<"difff\n"<<actual_grad - expected_grad<<std::endl;
 			// 	std::cout<<"difff H "<<(actual_hessian - expected_hessian).array().abs().maxCoeff()<<std::endl;
+			// 	std::cout<<"difff H mean "<<(actual_hessian - expected_hessian).array().abs().mean()<<std::endl;
 			// 	// std::cout<<"\n\n\n----------------------\n"<<actual_hessian<<"\n\n----------------\n\n" <<expected_hessian<<"\n---------------\n"<<std::endl;
 
-			// 	for (int d = 0; d < actual_hessian.rows(); ++d) {
-			// 		for (int e = 0; e < actual_hessian.cols(); ++e) {
-			// 			double scale = std::max(std::max(std::abs(actual_hessian(d, e)), std::abs(expected_hessian(d, e))), 1.);
-			// 			if(fabs(actual_hessian(d, e)- expected_hessian(d, e))>1e-1 * scale)
-			// 				std::cerr<<"baaaaad hessian"<<std::endl;
-			// 		}
-			// 	}
+			// 	// for (int d = 0; d < actual_hessian.rows(); ++d) {
+			// 	// 	for (int e = 0; e < actual_hessian.cols(); ++e) {
+			// 	// 		double scale = std::max(std::max(std::abs(actual_hessian(d, e)), std::abs(expected_hessian(d, e))), 1.);
+			// 	// 		if(fabs(actual_hessian(d, e)- expected_hessian(d, e))>1e-1 * scale)
+			// 	// 			std::cerr<<"baaaaad hessian"<<std::endl;
+			// 	// 	}
+			// 	// }
 
 			// 	// tmp_sol.setRandom();
 			// 	if(!nl_problem.checkGradient(tmp_sol, 0))
 			// 		std::cerr<<"baaaaad grad"<<std::endl;
 
-			// 	// if(!nl_problem.checkHessian(tmp_sol, 1))
-			// 	// 	std::cerr<<"baaaaad hessian"<<std::endl;
+			// 	if(!nl_problem.checkHessian(tmp_sol, 1))
+			// 		std::cerr<<"baaaaad hessian"<<std::endl;
 
 			// 	assert(nl_problem.checkGradient(tmp_sol, 0));
 			// 	assert(nl_problem.checkHessian(tmp_sol, 0));
@@ -1318,8 +1325,8 @@ namespace poly_fem
 				{"mu", 0.3846153846153846},
 				{"k", 1.0},
 				{"elasticity_tensor", {}},
-				{"young", 1.0},
-				{"nu", 0.3},
+				// {"young", 1.0},
+				// {"nu", 0.3},
 				{"alphas", {2.13185026692482, -0.600299816209491}},
 				{"mus", {0.00407251192475097, 0.000167202574129608}},
 				{"Ds", {9.4979, 1000000}}

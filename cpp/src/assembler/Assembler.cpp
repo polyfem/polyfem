@@ -238,9 +238,9 @@ namespace poly_fem
 					for(size_t jj = 0; jj < global_j.size(); ++jj)
 					{
 						const auto gj = global_j[jj].index*local_assembler_.size() + m;
-						const auto wj = global_j[jj].val;
+						// const auto wj = global_j[jj].val;
 
-						loc_storage.vec(gj) += local_value * wj;
+						loc_storage.vec(gj) += local_value;
 					}
 				}
 
@@ -334,16 +334,16 @@ namespace poly_fem
 							for(size_t ii = 0; ii < global_i.size(); ++ii)
 							{
 								const auto gi = global_i[ii].index*local_assembler_.size() + m;
-								const auto wi = global_i[ii].val;
+								// const auto wi = global_i[ii].val;
 
 								for(size_t jj = 0; jj < global_j.size(); ++jj)
 								{
 									const auto gj = global_j[jj].index*local_assembler_.size() + n;
-									const auto wj = global_j[jj].val;
+									// const auto wj = global_j[jj].val;
 
 									// std::cout<< gi <<"," <<gj<<" -> "<<local_value<<std::endl;
 
-									loc_storage.entries.emplace_back(gi, gj, local_value * wi * wj);
+									loc_storage.entries.emplace_back(gi, gj, local_value);
 
 									if(loc_storage.entries.size() >= 1e8)
 									{

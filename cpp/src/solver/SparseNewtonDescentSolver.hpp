@@ -36,7 +36,7 @@ namespace cppoptlib {
 		{
 			auto criteria = this->criteria();
 			criteria.gradNorm = 1e-7;
-			criteria.iterations = 100;
+			criteria.iterations = 10000;
 			this->setStopCriteria(criteria);
 		}
 
@@ -48,18 +48,19 @@ namespace cppoptlib {
 			solver->setParameters(params);
 
 			const int reduced_size = x0.rows();
-			const int full_size = State::state().n_bases*State::state().mesh->dimension();
-			assert(full_size == reduced_size + State::state().boundary_nodes.size());
+			// const int full_size = State::state().n_bases*State::state().mesh->dimension();
+			// assert(full_size == reduced_size + State::state().boundary_nodes.size());
 
-			THessian id(full_size, full_size);
+			// THessian id(full_size, full_size);
+			THessian id(reduced_size, reduced_size);
 			id.setIdentity();
 
 
 			TVector grad = TVector::Zero(reduced_size);
-			TVector full_grad;
+			// TVector full_grad;
 
-			TVector full_delta_x;
-			TVector delta_x;
+			// TVector full_delta_x;
+			TVector delta_x(reduced_size);
 
 			grad_time = 0;
 			assembly_time = 0;
@@ -77,7 +78,7 @@ namespace cppoptlib {
 			{
 				time.start();
 				objFunc.gradient(x0, grad);
-				NLProblem::reduced_to_full_aux(full_size, reduced_size, grad, true, full_grad);
+				// NLProblem::reduced_to_full_aux(full_size, reduced_size, grad, true, full_grad);
 				time.stop();
 				if(verbose)
 					std::cout<<"grad time "<<time.getElapsedTimeInSec()<<std::endl;
@@ -94,10 +95,18 @@ namespace cppoptlib {
 				assembly_time += time.getElapsedTimeInSec();
 
 
+				// std::cout<<hessian<<std::endl;
+				time.start();
 
-        		time.start();
-				poly_fem::dirichlet_solve(*solver, hessian, full_grad, State::state().boundary_nodes, full_delta_x, analyze_pattern, false);
-				NLProblem::full_to_reduced_aux(full_size, reduced_size, full_delta_x, delta_x);
+				solver->analyzePattern(hessian);
+				solver->factorize(hessian);
+				solver->solve(grad, delta_x);
+				// delta_x = grad;
+
+				// poly_fem::dirichlet_solve(*solver, hessian, full_grad, State::state().boundary_nodes, full_delta_x, analyze_pattern, false);
+				// full_delta_x = full_grad;
+				// NLProblem::full_to_reduced_aux(full_size, reduced_size, full_delta_x, delta_x);
+
 				delta_x *= -1;
 				analyze_pattern = true;
 
@@ -137,7 +146,7 @@ namespace cppoptlib {
 				}
 
 				if(verbose)
-					std::cout << "iter: "<<this->m_current.iterations <<", rate = "<< rate<< ", f = " <<  objFunc.value(x0) << ", ||g||_inf "<< this->m_current.gradNorm <<", ||step|| "<< (rate * delta_x).norm() << std::endl;
+					std::cout << "iter: "<<this->m_current.iterations <<", rate = "<< rate<< ", f = " <<  objFunc.value(x0) << ", ||g||_inf "<< this->m_current.gradNorm <<", ||step|| "<< (rate * delta_x).norm() <<" dot " << delta_x.dot(grad)/grad.norm() << std::endl;
 			}
 			while (objFunc.callback(this->m_current, x0) && (this->m_status == Status::Continue));
 

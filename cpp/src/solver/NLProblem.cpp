@@ -63,7 +63,53 @@ namespace poly_fem
 		Eigen::MatrixXd full;
 		reduced_to_full(x, false, full);
 
-		assembler.assemble_tensor_energy_hessian(rhs_assembler.formulation(), State::state().mesh->is_volume(), State::state().n_bases, State::state().bases, State::state().bases, full, hessian);
+		Eigen::SparseMatrix<double> tmp;
+		assembler.assemble_tensor_energy_hessian(rhs_assembler.formulation(), State::state().mesh->is_volume(), State::state().n_bases, State::state().bases, State::state().bases, full, tmp);
+
+		std::vector< Eigen::Triplet<double> > entries;
+
+		Eigen::VectorXi indices(full.size());
+
+		int index = 0;
+		int kk = 0;
+		for(int i = 0; i < full.size(); ++i)
+		{
+			if(State::state().boundary_nodes[kk] == i)
+			{
+				++kk;
+				indices(i) = -1;
+				continue;
+			}
+
+			indices(i) = index++;
+		}
+		assert(index == x.size());
+
+		for (int k = 0; k < tmp.outerSize(); ++k) {
+			if(indices(k) < 0)
+			{
+				continue;
+			}
+
+			for (Eigen::SparseMatrix<double>::InnerIterator it(tmp, k); it; ++it)
+			{
+				// std::cout<<it.row()<<" "<<it.col()<<" "<<k<<std::endl;
+				assert(it.col() == k);
+				if(indices(it.row()) < 0 || indices(it.col()) < 0)
+				{
+					continue;
+				}
+
+				assert(indices(it.row()) >= 0);
+				assert(indices(it.col()) >= 0);
+
+				entries.emplace_back(indices(it.row()),indices(it.col()), it.value());
+			}
+		}
+
+		hessian.resize(x.size(),x.size());
+		hessian.setFromTriplets(entries.begin(), entries.end());
+		hessian.makeCompressed();
 	}
 
 	void NLProblem::full_to_reduced(const Eigen::MatrixXd &full, TVector &reduced)
