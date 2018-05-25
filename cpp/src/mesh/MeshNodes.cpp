@@ -177,7 +177,7 @@ std::vector<int> poly_fem::MeshNodes::node_ids_from_edge(const Navigation::Index
 	{
 		const double t = 1/(n_new_nodes + 1.0);
 		const RowVectorNd v = (1 - t) * v1 + t * v2;
-		if((node_position(start_node_id) - v).squaredNorm() < 1e-8)
+		if((node_position(start_node_id) - v).squaredNorm() < 1e-16)
 		{
 			for(int i = 0; i < n_new_nodes; ++i)
 			{
@@ -231,7 +231,7 @@ std::vector<int> poly_fem::MeshNodes::node_ids_from_edge(const Navigation3D::Ind
 	{
 		const double t = 1/(n_new_nodes + 1.0);
 		const RowVectorNd v = (1 - t) * v1 + t * v2;
-		if((node_position(start_node_id) - v).squaredNorm() < 1e-8)
+		if((node_position(start_node_id) - v).squaredNorm() < 1e-16)
 		{
 			for(int i = 0; i < n_new_nodes; ++i)
 			{

@@ -872,6 +872,9 @@ namespace poly_fem
 			clip_elements(vis_pts, vis_faces, vis_element_ranges, valid_elements, true, Visualizations::VisMesh);
 			data(Visualizations::VisMesh).show_lines = true;
 			available_visualizations[Visualizations::VisMesh] = true;
+
+			// data(Visualizations::VisMesh).add_points(state.mesh->face_barycenter(3314), Eigen::RowVector3d(1,0,0));
+			// data(Visualizations::VisMesh).add_points(state.mesh->face_barycenter(3443), Eigen::RowVector3d(1,0,0));
 			vis_flags[Visualizations::VisMesh].clear();
 			hide_data(Visualizations::VisMesh);
 		}

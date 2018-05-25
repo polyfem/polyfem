@@ -59,6 +59,7 @@ namespace poly_fem
 
 
 		inline std::vector<uint32_t> vertex_neighs(const int v_gid) const {return mesh_.vertices[v_gid].neighbor_hs; }
+		inline std::vector<uint32_t> edge_neighs(const int e_gid) const {return mesh_.edges[e_gid].neighbor_hs; }
 
 
 		// Navigation in a surface mesh

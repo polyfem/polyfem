@@ -30,8 +30,10 @@ namespace poly_fem
 			tmp.row(1) = dy.row(i);
 			tmp.row(2) = dz.row(i);
 
-			if(tmp.determinant() <= 0)
+			if(tmp.determinant() <= 0){
+				// std::cout<<tmp.determinant()<<std::endl;
 				return false;
+			}
 		}
 
 		return true;
@@ -45,8 +47,10 @@ namespace poly_fem
 			tmp.row(0) = dx.row(i);
 			tmp.row(1) = dy.row(i);
 
-			if(tmp.determinant() <= 0)
+			if(tmp.determinant() <= 0){
+				// std::cout<<tmp.determinant()<<std::endl;
 				return false;
+			}
 		}
 
 		return true;

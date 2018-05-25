@@ -637,20 +637,21 @@ std::vector<int> poly_fem::FEBasis3d::tet_local_to_global(const int p, const Mes
 		// if(skip_other1 || skip_other2 || skip_other3)
 		// 	res.push_back(-lv - 30);
 		// else
-			res.push_back(nodes.node_id_from_primitive(v[lv]));
+		res.push_back(nodes.node_id_from_primitive(v[lv]));
 	}
 
 	//Edges
 	for (int le = 0; le < e.rows(); ++le) {
 		const auto index = e[le];
-		const auto other_cell1 = mesh.switch_element(index).element;
-		const auto other_cell2 = mesh.switch_element(mesh.switch_face(index)).element;
+		auto neighs = mesh.edge_neighs(index.edge);
+		int min_p = discr_order.size() > 0 ? discr_order(c) : 0;
 
-		//iterate over all cell around that edge?
-		const bool skip_other1 = discr_order.size() > 0 && other_cell1 >= 0 && discr_order(c) >  discr_order(other_cell1);
-		const bool skip_other2 = discr_order.size() > 0 && other_cell2 >= 0 && discr_order(c) >  discr_order(other_cell2);
+		for(auto cid : neighs)
+		{
+			min_p = std::min(min_p, discr_order.size() > 0 ? discr_order(cid) : 0);
+		}
 
-		if(skip_other1 || skip_other2)
+		if(discr_order.size() > 0 && discr_order(c) >  min_p)
 		{
 			for(int tmp = 0; tmp < p - 1; ++tmp)
 				res.push_back(-le - 10);
@@ -1506,9 +1507,50 @@ int poly_fem::FEBasis3d::build_bases(
 							ev.row(5)  << v[2], v[3];
 
 							const auto edge_index = find_edge(mesh, e, ev(le, 0), ev(le, 1));
-							index = mesh.switch_element(edge_index);
-							if(index.element < 0 || discr_orders[index.element] >= discr_order)
-								index = mesh.switch_element(mesh.switch_face(edge_index));
+							auto neighs = mesh.edge_neighs(edge_index.edge);
+							int min_p = discr_order;
+							int min_cell = index.element;
+
+							for(auto cid : neighs)
+							{
+								if(discr_orders[cid] < min_p)
+								{
+									min_p = discr_orders[cid];
+									min_cell = cid;
+								}
+							}
+
+							bool found = false;
+							for(int lf = 0; lf < 4; ++lf)
+							{
+								for(int lv = 0; lv < 4; ++lv)
+								{
+									index = mesh.get_index_from_element(min_cell, lf, lv);
+
+									if(index.vertex == edge_index.vertex)
+									{
+										if(index.edge != edge_index.edge)
+										{
+											auto tmp = index;
+											index = mesh.switch_edge(tmp);
+
+											if(index.edge != edge_index.edge)
+											{
+												index = mesh.switch_edge(mesh.switch_face(tmp));
+											}
+										}
+										found = true;
+										break;
+									}
+								}
+
+								if(found)
+									break;
+							}
+
+							assert(found);
+							assert(index.vertex == edge_index.vertex && index.edge == edge_index.edge);
+							assert(index.element != edge_index.element);
 						}
 						else
 						{

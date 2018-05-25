@@ -843,7 +843,8 @@ namespace poly_fem
 		local_neumann_boundary.clear();
 		std::map<int, InterfaceData> poly_edge_to_data_geom; //temp dummy variable
 
-		disc_orders.setConstant(args["discr_order"]);
+		const int base_p = args["discr_order"];
+		disc_orders.setConstant(base_p);
 
 		if(args["use_p_ref"])
 		{
@@ -914,7 +915,11 @@ namespace poly_fem
 			{
 				// if(!parent_elements.empty())
 				// 	flipped_elements.push_back(parent_elements[i]);
-				// std::cout<<"Basis "<< i << ( parent_elements.size() > 0 ? (" -> " + std::to_string(parent_elements[i])) : "") << " has negative volume"<<std::endl;
+				// std::cout<<"Basis "<< i << ( parent_elements.size() > 0 ? (" -> " + std::to_string(parent_elements[i])) : "") << " has negative volume P" <<disc_orders(i)<<std::endl;
+
+				// std::cout<<mesh->point(dynamic_cast<Mesh2D *>(mesh.get())->face_vertex(i, 0))<<std::endl;
+				// std::cout<<mesh->point(dynamic_cast<Mesh2D *>(mesh.get())->face_vertex(i, 1))<<std::endl;
+				// std::cout<<mesh->point(dynamic_cast<Mesh2D *>(mesh.get())->face_vertex(i, 2))<<std::endl;
 				++n_flipped;
 			}
 		}
