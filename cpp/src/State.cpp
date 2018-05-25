@@ -1101,69 +1101,78 @@ namespace poly_fem
 		}
 		else
 		{
+			int steps = 20;
 			RhsAssembler rhs_assembler(*mesh, n_bases, mesh->dimension(), bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
+			VectorXd tmp_sol;
+			auto rhs_old  = rhs;
+			for(int n = 1; n <=steps; ++n)
+			{
+				const double t = double(n)/double(steps);
 
-			NLProblem nl_problem(rhs_assembler);
-			VectorXd tmp_sol = nl_problem.initial_guess();
+				rhs = rhs_old * t;
+				NLProblem nl_problem(rhs_assembler, t);
+				if(n == 1)
+					tmp_sol = nl_problem.initial_guess();
 
-			// {
-			// 	// tmp_sol.setZero();
-			// 	Eigen::Matrix<double, Eigen::Dynamic, 1> actual_grad, expected_grad;
-			// 	nl_problem.gradient(tmp_sol, actual_grad);
+				// {
+				// 	// tmp_sol.setZero();
+				// 	Eigen::Matrix<double, Eigen::Dynamic, 1> actual_grad, expected_grad;
+				// 	nl_problem.gradient(tmp_sol, actual_grad);
 
-			// 	Eigen::SparseMatrix<double> hessian;
-			// 	Eigen::MatrixXd expected_hessian;
-			// 	nl_problem.hessian(tmp_sol, hessian);
-			// 	nl_problem.finiteGradient(tmp_sol, expected_grad, 0);
+				// 	Eigen::SparseMatrix<double> hessian;
+				// 	Eigen::MatrixXd expected_hessian;
+				// 	nl_problem.hessian(tmp_sol, hessian);
+				// 	nl_problem.finiteGradient(tmp_sol, expected_grad, 0);
 
-			// 	Eigen::MatrixXd actual_hessian = Eigen::MatrixXd(hessian);
+				// 	Eigen::MatrixXd actual_hessian = Eigen::MatrixXd(hessian);
 
-			// 	for(int i = 0; i < actual_hessian.rows(); ++i)
-			// 	{
-			// 		double hhh = 1e-7;
-			// 		VectorXd xp = tmp_sol; xp(i) += hhh;
-			// 		VectorXd xm = tmp_sol; xm(i) -= hhh;
+				// 	for(int i = 0; i < actual_hessian.rows(); ++i)
+				// 	{
+				// 		double hhh = 1e-7;
+				// 		VectorXd xp = tmp_sol; xp(i) += hhh;
+				// 		VectorXd xm = tmp_sol; xm(i) -= hhh;
 
-			// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_p;
-			// 		nl_problem.gradient(xp, tmp_grad_p);
+				// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_p;
+				// 		nl_problem.gradient(xp, tmp_grad_p);
 
-			// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_m;
-			// 		nl_problem.gradient(xm, tmp_grad_m);
+				// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_m;
+				// 		nl_problem.gradient(xm, tmp_grad_m);
 
-			// 		Eigen::Matrix<double, Eigen::Dynamic, 1> fd_h = (tmp_grad_p - tmp_grad_m)/hhh/2.;
+				// 		Eigen::Matrix<double, Eigen::Dynamic, 1> fd_h = (tmp_grad_p - tmp_grad_m)/hhh/2.;
 
-			// 		const double vp = nl_problem.value(xp);
-			// 		const double vm = nl_problem.value(xm);
+				// 		const double vp = nl_problem.value(xp);
+				// 		const double vm = nl_problem.value(xm);
 
-			// 		const double fd = (vp-vm)/hhh/2.;
-			// 		const double  diff = std::abs(actual_grad(i) - fd);
-			// 		if(diff > 1e-6)
-			// 			std::cout<<"diff grad "<<i<<": "<<actual_grad(i)<<" vs "<<fd <<" error: " <<diff<<std::endl;
+				// 		const double fd = (vp-vm)/hhh/2.;
+				// 		const double  diff = std::abs(actual_grad(i) - fd);
+				// 		if(diff > 1e-6)
+				// 			std::cout<<"diff grad "<<i<<": "<<actual_grad(i)<<" vs "<<fd <<" error: " <<diff<<std::endl;
 
-			// 		for(int j = 0; j < actual_hessian.rows(); ++j)
-			// 		{
-			// 			const double diff = std::abs(actual_hessian(i,j) - fd_h(j));
+				// 		for(int j = 0; j < actual_hessian.rows(); ++j)
+				// 		{
+				// 			const double diff = std::abs(actual_hessian(i,j) - fd_h(j));
 
-			// 			if(diff > 1e-6)
-			// 				std::cout<<"diff H "<<i<<", "<<j<<": "<<actual_hessian(i,j)<<" vs "<<fd_h(j)<<" error: " <<diff<<std::endl;
+				// 			if(diff > 1e-6)
+				// 				std::cout<<"diff H "<<i<<", "<<j<<": "<<actual_hessian(i,j)<<" vs "<<fd_h(j)<<" error: " <<diff<<std::endl;
 
-			// 		}
-			// 	}
+				// 		}
+				// 	}
 
-			// 	std::cout<<"diff grad "<<(actual_grad - expected_grad).array().abs().maxCoeff()<<std::endl;
-			// 	// std::cout<<"diff \n"<<(actual_grad - expected_grad)<<std::endl;
+				// 	// std::cout<<"diff grad "<<(actual_grad - expected_grad).array().abs().maxCoeff()<<std::endl;
+				// 	// std::cout<<"diff \n"<<(actual_grad - expected_grad)<<std::endl;
+				// }
 
-			// 	exit(0);
-			// }
+				cppoptlib::SparseNewtonDescentSolver<NLProblem> solver(true);
+				solver.minimize(nl_problem, tmp_sol);
+				solver.getInfo(solver_info);
+			}
 
-			cppoptlib::SparseNewtonDescentSolver<NLProblem> solver(true);
-			solver.minimize(nl_problem, tmp_sol);
+			rhs = rhs_old;
 
 			const int full_size 	= n_bases*mesh->dimension();
 			const int reduced_size 	= n_bases*mesh->dimension() - boundary_nodes.size();
 
 			NLProblem::reduced_to_full_aux(full_size, reduced_size, tmp_sol, false, sol);
-			solver.getInfo(solver_info);
 		}
 
 		timer.stop();

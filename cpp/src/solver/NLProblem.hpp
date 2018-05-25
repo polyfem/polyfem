@@ -18,8 +18,8 @@ namespace poly_fem
 		using typename cppoptlib::Problem<double>::TVector;
 		typedef Eigen::SparseMatrix<double> THessian;
 
-		NLProblem(const RhsAssembler &rhs_assembler);
-		NLProblem(const RhsAssembler &rhs_assembler, const int full_size, const int reduced_size);
+		NLProblem(const RhsAssembler &rhs_assembler, const double t);
+		NLProblem(const RhsAssembler &rhs_assembler, const double t, const int full_size, const int reduced_size);
 
 		TVector initial_guess();
 
@@ -86,6 +86,7 @@ namespace poly_fem
 		const RhsAssembler &rhs_assembler;
 
 		const int full_size, reduced_size;
+		const double t;
 
 		void full_to_reduced(const Eigen::MatrixXd &full, TVector &reduced) const;
 		void reduced_to_full(const TVector &reduced, const bool set_zero, Eigen::MatrixXd &full)  const;

@@ -58,7 +58,7 @@ namespace cppoptlib {
 				double cur_e = objFunc.value(new_x);
 				if ( cur_e >= old_energy)
 				{
-					step_size /= 2;
+					step_size /= 2.;
 				}
 				else
 				{

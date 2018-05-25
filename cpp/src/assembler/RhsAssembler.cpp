@@ -268,7 +268,7 @@ namespace poly_fem
 		}
 	}
 
-	double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement, const std::vector< LocalBoundary > &local_neumann_boundary) const
+	double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement, const std::vector< LocalBoundary > &local_neumann_boundary, const double t) const
 	{
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
 
@@ -309,7 +309,7 @@ namespace poly_fem
 				}
 
 				for(int d = 0; d < size_; ++d)
-					res += forces(p, d) * local_displacement(d) * da(p);
+					res += t * forces(p, d) * local_displacement(d) * da(p);
 			}
 		}
 
@@ -354,7 +354,7 @@ namespace poly_fem
 				}
 
 				for(int d = 0; d < size_; ++d)
-					res -= forces(p, d) * local_displacement(d) * weights(p);
+					res -= t * forces(p, d) * local_displacement(d) * weights(p);
 			}
 		}
 

@@ -7,16 +7,17 @@
 
 namespace poly_fem
 {
-	NLProblem::NLProblem(const RhsAssembler &rhs_assembler, const int full_size, const int reduced_size)
+	NLProblem::NLProblem(const RhsAssembler &rhs_assembler, const double t, const int full_size, const int reduced_size)
 	: assembler(AssemblerUtils::instance()), rhs_assembler(rhs_assembler),
-	full_size(full_size), reduced_size(reduced_size)
+	full_size(full_size), reduced_size(reduced_size), t(t)
 	{ }
 
 
-	NLProblem::NLProblem(const RhsAssembler &rhs_assembler)
+	NLProblem::NLProblem(const RhsAssembler &rhs_assembler, const double t)
 	: assembler(AssemblerUtils::instance()), rhs_assembler(rhs_assembler),
 	full_size(State::state().n_bases*State::state().mesh->dimension()),
-	reduced_size(State::state().n_bases*State::state().mesh->dimension() - State::state().boundary_nodes.size())
+	reduced_size(State::state().n_bases*State::state().mesh->dimension() - State::state().boundary_nodes.size()),
+	t(t)
 	{ }
 
 	NLProblem::TVector NLProblem::initial_guess()
@@ -43,7 +44,7 @@ namespace poly_fem
 		reduced_to_full(x, false, full);
 
 		const double elastic_energy = assembler.assemble_tensor_energy(rhs_assembler.formulation(), State::state().mesh->is_volume(), State::state().bases, State::state().bases, full);
-		const double body_energy 	= rhs_assembler.compute_energy(full, State::state().local_neumann_boundary);
+		const double body_energy 	= rhs_assembler.compute_energy(full, State::state().local_neumann_boundary, t);
 
 		return elastic_energy + body_energy;
 	}

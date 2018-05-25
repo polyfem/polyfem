@@ -19,7 +19,7 @@ namespace poly_fem
 		void assemble(Eigen::MatrixXd &rhs) const;
 		void set_bc(const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution,  const std::vector< LocalBoundary > &local_neumann_boundary, Eigen::MatrixXd &rhs) const;
 
-		double compute_energy(const Eigen::MatrixXd &displacement, const std::vector< LocalBoundary > &local_neumann_boundary) const;
+		double compute_energy(const Eigen::MatrixXd &displacement, const std::vector< LocalBoundary > &local_neumann_boundary, const double t) const;
 
 		inline const std::string &formulation() const { return formulation_; }
 
