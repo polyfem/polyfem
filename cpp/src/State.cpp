@@ -1101,24 +1101,67 @@ namespace poly_fem
 			VectorXd tmp_sol = nl_problem.initial_guess();
 
 			// {
-			// 	tmp_sol.setRandom();
+			// 	// tmp_sol.setZero();
 			// 	Eigen::Matrix<double, Eigen::Dynamic, 1> actual_grad, expected_grad;
 			// 	nl_problem.gradient(tmp_sol, actual_grad);
 
 			// 	Eigen::SparseMatrix<double> hessian;
+			// 	Eigen::MatrixXd expected_hessian;
 			// 	nl_problem.hessian(tmp_sol, hessian);
 			// 	nl_problem.finiteGradient(tmp_sol, expected_grad, 0);
-			// 	std::cout<<"difff\n"<<actual_grad - expected_grad<<std::endl;
+			// 	nl_problem.finiteHessian(tmp_sol, expected_hessian, 1);
+			// 	Eigen::MatrixXd actual_hessian(expected_hessian.rows(), expected_hessian.cols());
+			// 	Eigen::MatrixXd tmp = Eigen::MatrixXd(hessian);
 
-			// 	tmp_sol.setRandom();
+			// 	long ii = 0;
+			// 	size_t k = 0;
+			// 	for(long i = 0; i < tmp.rows(); ++i)
+			// 	{
+			// 		if(boundary_nodes[k] == i)
+			// 		{
+			// 			++k;
+			// 			continue;
+			// 		}
+
+			// 		long jj = 0;
+			// 		size_t kk = 0;
+			// 		for(long j = 0; j < tmp.cols(); ++j)
+			// 		{
+			// 			if(boundary_nodes[kk] == j)
+			// 			{
+			// 				++kk;
+			// 				continue;
+			// 			}
+
+			// 			actual_hessian(ii, jj++) = tmp(i, j);
+			// 		}
+
+			// 		assert(jj == actual_hessian.cols());
+			// 		ii++;
+			// 	}
+			// 	assert(ii == actual_hessian.rows());
+
+			// 	std::cout<<"difff\n"<<actual_grad - expected_grad<<std::endl;
+			// 	std::cout<<"difff H "<<(actual_hessian - expected_hessian).array().abs().maxCoeff()<<std::endl;
+			// 	// std::cout<<"\n\n\n----------------------\n"<<actual_hessian<<"\n\n----------------\n\n" <<expected_hessian<<"\n---------------\n"<<std::endl;
+
+			// 	for (int d = 0; d < actual_hessian.rows(); ++d) {
+			// 		for (int e = 0; e < actual_hessian.cols(); ++e) {
+			// 			double scale = std::max(std::max(std::abs(actual_hessian(d, e)), std::abs(expected_hessian(d, e))), 1.);
+			// 			if(fabs(actual_hessian(d, e)- expected_hessian(d, e))>1e-1 * scale)
+			// 				std::cerr<<"baaaaad hessian"<<std::endl;
+			// 		}
+			// 	}
+
+			// 	// tmp_sol.setRandom();
 			// 	if(!nl_problem.checkGradient(tmp_sol, 0))
 			// 		std::cerr<<"baaaaad grad"<<std::endl;
 
-			// 	// if(!nl_problem.checkHessian(tmp_sol, 0))
-			// 		// std::cerr<<"baaaaad hessian"<<std::endl;
+			// 	// if(!nl_problem.checkHessian(tmp_sol, 1))
+			// 	// 	std::cerr<<"baaaaad hessian"<<std::endl;
 
 			// 	assert(nl_problem.checkGradient(tmp_sol, 0));
-			// 	// assert(nl_problem.checkHessian(tmp_sol, 0));
+			// 	assert(nl_problem.checkHessian(tmp_sol, 0));
 			// 	tmp_sol.setZero();
 
 			// 	exit(0);

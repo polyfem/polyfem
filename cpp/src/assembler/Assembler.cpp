@@ -238,8 +238,9 @@ namespace poly_fem
 					for(size_t jj = 0; jj < global_j.size(); ++jj)
 					{
 						const auto gj = global_j[jj].index*local_assembler_.size() + m;
+						const auto wj = global_j[jj].val;
 
-						loc_storage.vec(gj) += local_value;
+						loc_storage.vec(gj) += local_value * wj;
 					}
 				}
 
@@ -280,7 +281,7 @@ namespace poly_fem
 		std::cout<<"buffer_size "<<buffer_size<<std::endl;
 
 		grad.resize(n_basis*local_assembler_.size(), n_basis*local_assembler_.size());
-		std::fill_n(grad.valuePtr(), grad.nonZeros(), 0); //grad.setZero();
+		grad.setZero();
 
 #ifdef USE_TBB
 		typedef tbb::enumerable_thread_specific< LocalThreadMatStorage > LocalStorage;
@@ -312,19 +313,20 @@ namespace poly_fem
 			assert(stiffness_val.rows() == n_loc_bases * local_assembler_.size());
 			assert(stiffness_val.cols() == n_loc_bases * local_assembler_.size());
 
+
 				// igl::Timer t1; t1.start();
-			for(int n = 0; n < local_assembler_.size(); ++n)
+			for(int i = 0; i < n_loc_bases; ++i)
 			{
-				for(int m = 0; m < local_assembler_.size(); ++m)
+				const auto &global_i = vals.basis_values[i].global;
+
+				for(int j = 0; j < n_loc_bases; ++j)
 				{
-					for(int i = 0; i < n_loc_bases; ++i)
+					const auto &global_j = vals.basis_values[j].global;
+
+					for(int n = 0; n < local_assembler_.size(); ++n)
 					{
-						const auto &global_i = vals.basis_values[i].global;
-
-						for(int j = 0; j < n_loc_bases; ++j)
+						for(int m = 0; m < local_assembler_.size(); ++m)
 						{
-							const auto &global_j = vals.basis_values[j].global;
-
 							const double local_value = stiffness_val(i*local_assembler_.size() + m, j*local_assembler_.size() + n);
 							// if (!use_sparse_cached && std::abs(local_value) < 1e-30) { continue; }
 
@@ -332,15 +334,16 @@ namespace poly_fem
 							for(size_t ii = 0; ii < global_i.size(); ++ii)
 							{
 								const auto gi = global_i[ii].index*local_assembler_.size() + m;
-
+								const auto wi = global_i[ii].val;
 
 								for(size_t jj = 0; jj < global_j.size(); ++jj)
 								{
 									const auto gj = global_j[jj].index*local_assembler_.size() + n;
+									const auto wj = global_j[jj].val;
 
 									// std::cout<< gi <<"," <<gj<<" -> "<<local_value<<std::endl;
 
-									loc_storage.entries.emplace_back(gi, gj, local_value);
+									loc_storage.entries.emplace_back(gi, gj, local_value * wi * wj);
 
 									if(loc_storage.entries.size() >= 1e8)
 									{
