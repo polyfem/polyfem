@@ -23,9 +23,12 @@ namespace poly_fem
 
 		TVector initial_guess();
 
-		double value(const TVector &x);
-		void gradient(const TVector &x, TVector &gradv);
+		double value(const TVector &x) override;
+		void gradient(const TVector &x, TVector &gradv) override;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
 		void hessian(const TVector &x, THessian &hessian);
+#pragma clang diagnostic pop
 
 
 		template<class FullMat, class ReducedMat>
@@ -39,9 +42,9 @@ namespace poly_fem
 
 			long j = 0;
 			size_t k = 0;
-			for(long i = 0; i < full.size(); ++i)
+			for(int i = 0; i < full.size(); ++i)
 			{
-				if(State::state().boundary_nodes[k] == i)
+				if(k < State::state().boundary_nodes.size() && State::state().boundary_nodes[k] == i)
 				{
 					++k;
 					continue;
@@ -49,6 +52,7 @@ namespace poly_fem
 
 				reduced(j++) = full(i);
 			}
+			assert(j == reduced.size());
 		}
 
 		template<class ReducedMat, class FullMat>
@@ -62,9 +66,9 @@ namespace poly_fem
 
 			long j = 0;
 			size_t k = 0;
-			for(long i = 0; i < full.size(); ++i)
+			for(int i = 0; i < full.size(); ++i)
 			{
-				if(State::state().boundary_nodes[k] == i)
+				if(k < State::state().boundary_nodes.size() && State::state().boundary_nodes[k] == i)
 				{
 					++k;
 					full(i) = set_zero ? 0 : State::state().rhs(i);
@@ -73,6 +77,8 @@ namespace poly_fem
 
 				full(i) = reduced(j++);
 			}
+
+			assert(j == reduced.size());
 		}
 
 	private:
@@ -81,7 +87,7 @@ namespace poly_fem
 
 		const int full_size, reduced_size;
 
-		void full_to_reduced(const Eigen::MatrixXd &full, TVector &reduced);
-		void reduced_to_full(const TVector &reduced, const bool set_zero, Eigen::MatrixXd &full);
+		void full_to_reduced(const Eigen::MatrixXd &full, TVector &reduced) const;
+		void reduced_to_full(const TVector &reduced, const bool set_zero, Eigen::MatrixXd &full)  const;
 	};
 }

@@ -746,6 +746,8 @@ namespace poly_fem
 					data(layer).set_edges(isoV,isoE,Eigen::RowVector3d(0,0,0));
 					data(layer).show_overlay = true;
 				}
+				else
+					data(layer).show_overlay = false;
 			}
 
 			std::cout<<"min/max "<< fun.minCoeff()<<"/"<<fun.maxCoeff()<<std::endl;
@@ -952,7 +954,7 @@ namespace poly_fem
 						// P.row(j) = node;
 						data(Visualizations::Nodes).add_points(node, col);
 						//TODO text is impossible to hide :(
-						// data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(l2g.index));
+						data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(l2g.index));
 					}
 				}
 			// add_spheres(viewer, P, 0.05);

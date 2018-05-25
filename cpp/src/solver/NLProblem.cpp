@@ -43,7 +43,7 @@ namespace poly_fem
 		reduced_to_full(x, false, full);
 
 		const double elastic_energy = assembler.assemble_tensor_energy(rhs_assembler.formulation(), State::state().mesh->is_volume(), State::state().bases, State::state().bases, full);
-		const double body_energy 	= rhs_assembler.compute_energy(full);
+		const double body_energy 	= rhs_assembler.compute_energy(full, State::state().local_neumann_boundary);
 
 		return elastic_energy + body_energy;
 	}
@@ -71,10 +71,10 @@ namespace poly_fem
 		Eigen::VectorXi indices(full.size());
 
 		int index = 0;
-		int kk = 0;
+		size_t kk = 0;
 		for(int i = 0; i < full.size(); ++i)
 		{
-			if(State::state().boundary_nodes[kk] == i)
+			if(kk < State::state().boundary_nodes.size() && State::state().boundary_nodes[kk] == i)
 			{
 				++kk;
 				indices(i) = -1;
@@ -112,12 +112,12 @@ namespace poly_fem
 		hessian.makeCompressed();
 	}
 
-	void NLProblem::full_to_reduced(const Eigen::MatrixXd &full, TVector &reduced)
+	void NLProblem::full_to_reduced(const Eigen::MatrixXd &full, TVector &reduced) const
 	{
 		full_to_reduced_aux(full_size, reduced_size, full, reduced);
 	}
 
-	void NLProblem::reduced_to_full(const TVector &reduced, const bool set_zero, Eigen::MatrixXd &full)
+	void NLProblem::reduced_to_full(const TVector &reduced, const bool set_zero, Eigen::MatrixXd &full) const
 	{
 		reduced_to_full_aux(full_size, reduced_size, reduced, set_zero, full);
 	}

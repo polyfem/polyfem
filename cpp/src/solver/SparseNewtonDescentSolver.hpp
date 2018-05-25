@@ -9,6 +9,7 @@
 #include "State.hpp"
 
 #include <igl/Timer.h>
+#include <igl/line_search.h>
 #include <Eigen/Sparse>
 
 #include <cppoptlib/problem.h>
@@ -36,8 +37,37 @@ namespace cppoptlib {
 		{
 			auto criteria = this->criteria();
 			criteria.gradNorm = 1e-7;
-			criteria.iterations = 10000;
+			criteria.iterations = 100;
 			this->setStopCriteria(criteria);
+		}
+
+		double linesearch(const TVector &x, const TVector &grad, ProblemType &objFunc)
+		{
+			static const int MAX_STEP_SIZE_ITER = 12;
+
+			const double old_energy = objFunc.value(x);
+			double new_energy = old_energy;
+			int cur_iter = 0;
+
+			double step_size = 1;
+
+			while (new_energy >= old_energy && cur_iter < MAX_STEP_SIZE_ITER)
+			{
+				const TVector new_x = x + step_size * grad;
+
+				double cur_e = objFunc.value(new_x);
+				if ( cur_e >= old_energy)
+				{
+					step_size /= 2;
+				}
+				else
+				{
+					return step_size;
+				}
+				cur_iter++;
+			}
+
+			return step_size;
 		}
 
 		void minimize(ProblemType &objFunc, TVector &x0) {
@@ -120,8 +150,13 @@ namespace cppoptlib {
 
 
 				time.start();
-				const double rate = Armijo<ProblemType, 1>::linesearch(x0, delta_x, objFunc);
+
+				// const double rate = Armijo<ProblemType, 1>::linesearch(x0, delta_x, objFunc);
+				const double rate = linesearch(x0, delta_x, objFunc);
+
 				x0 += rate * delta_x;
+
+
 				if(verbose)
 					std::cout<<"linesearch time "<<time.getElapsedTimeInSec()<<std::endl;
 				linesearch_time += time.getElapsedTimeInSec();
@@ -146,7 +181,7 @@ namespace cppoptlib {
 				}
 
 				if(verbose)
-					std::cout << "iter: "<<this->m_current.iterations <<", rate = "<< rate<< ", f = " <<  objFunc.value(x0) << ", ||g||_inf "<< this->m_current.gradNorm <<", ||step|| "<< (rate * delta_x).norm() <<" dot " << delta_x.dot(grad)/grad.norm() << std::endl;
+					std::cout << "iter: "<<this->m_current.iterations <<", rate = "<< rate<< ", f = " <<  objFunc.value(x0) << ", ||g||_inf "<< this->m_current.gradNorm <<", ||step|| "<< (rate * delta_x).norm() << ", rate "<< rate <<" dot " << delta_x.dot(grad)/grad.norm() << std::endl;
 			}
 			while (objFunc.callback(this->m_current, x0) && (this->m_status == Status::Continue));
 

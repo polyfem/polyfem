@@ -268,7 +268,7 @@ namespace poly_fem
 		}
 	}
 
-	double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement) const
+	double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement, const std::vector< LocalBoundary > &local_neumann_boundary) const
 	{
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
 
@@ -310,6 +310,51 @@ namespace poly_fem
 
 				for(int d = 0; d < size_; ++d)
 					res += forces(p, d) * local_displacement(d) * da(p);
+			}
+		}
+
+		//Neumann
+		Eigen::MatrixXd points;
+		Eigen::VectorXd weights;
+		Eigen::VectorXi global_primitive_ids;
+		for(const auto &lb : local_neumann_boundary)
+		{
+			const int e = lb.element_id();
+			bool has_samples = boundary_quadrature(lb, 4, false, points, weights, global_primitive_ids);
+
+			if(!has_samples)
+				continue;
+
+			const ElementBases &gbs = gbases_[e];
+			const ElementBases &bs = bases_[e];
+
+			ElementAssemblyValues vals;
+			vals.compute(e, mesh_.is_volume(), points, bs, gbs);
+			problem_.neumann_bc(mesh_, global_primitive_ids, vals.val, forces);
+
+			// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
+
+			for(long p = 0; p < weights.size(); ++p)
+			{
+				local_displacement.setZero();
+
+				for(size_t i = 0; i < vals.basis_values.size(); ++i)
+				{
+					const auto &vv = vals.basis_values[i];
+					assert(vv.val.size() == da.size());
+					const double b_val = vv.val(p);
+
+					for(int d = 0; d < size_; ++d)
+					{
+						for(std::size_t ii = 0; ii < vv.global.size(); ++ii)
+						{
+							local_displacement(d) += (vv.global[ii].val * b_val) * displacement(vv.global[ii].index*size_ + d);
+						}
+					}
+				}
+
+				for(int d = 0; d < size_; ++d)
+					res -= forces(p, d) * local_displacement(d) * weights(p);
 			}
 		}
 

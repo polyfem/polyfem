@@ -1115,61 +1115,43 @@ namespace poly_fem
 			// 	Eigen::MatrixXd expected_hessian;
 			// 	nl_problem.hessian(tmp_sol, hessian);
 			// 	nl_problem.finiteGradient(tmp_sol, expected_grad, 0);
-			// 	nl_problem.finiteHessian(tmp_sol, expected_hessian, 1);
-			// 	// Eigen::MatrixXd actual_hessian(expected_hessian.rows(), expected_hessian.cols());
+
 			// 	Eigen::MatrixXd actual_hessian = Eigen::MatrixXd(hessian);
 
-			// 	// long ii = 0;
-			// 	// size_t k = 0;
-			// 	// for(long i = 0; i < tmp.rows(); ++i)
-			// 	// {
-			// 	// 	if(boundary_nodes[k] == i)
-			// 	// 	{
-			// 	// 		++k;
-			// 	// 		continue;
-			// 	// 	}
+			// 	for(int i = 0; i < actual_hessian.rows(); ++i)
+			// 	{
+			// 		double hhh = 1e-7;
+			// 		VectorXd xp = tmp_sol; xp(i) += hhh;
+			// 		VectorXd xm = tmp_sol; xm(i) -= hhh;
 
-			// 	// 	long jj = 0;
-			// 	// 	size_t kk = 0;
-			// 	// 	for(long j = 0; j < tmp.cols(); ++j)
-			// 	// 	{
-			// 	// 		if(boundary_nodes[kk] == j)
-			// 	// 		{
-			// 	// 			++kk;
-			// 	// 			continue;
-			// 	// 		}
+			// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_p;
+			// 		nl_problem.gradient(xp, tmp_grad_p);
 
-			// 	// 		actual_hessian(ii, jj++) = tmp(i, j);
-			// 	// 	}
+			// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_m;
+			// 		nl_problem.gradient(xm, tmp_grad_m);
 
-			// 	// 	assert(jj == actual_hessian.cols());
-			// 	// 	ii++;
-			// 	// }
-			// 	// assert(ii == actual_hessian.rows());
+			// 		Eigen::Matrix<double, Eigen::Dynamic, 1> fd_h = (tmp_grad_p - tmp_grad_m)/hhh/2.;
 
-			// 	std::cout<<"difff\n"<<actual_grad - expected_grad<<std::endl;
-			// 	std::cout<<"difff H "<<(actual_hessian - expected_hessian).array().abs().maxCoeff()<<std::endl;
-			// 	std::cout<<"difff H mean "<<(actual_hessian - expected_hessian).array().abs().mean()<<std::endl;
-			// 	// std::cout<<"\n\n\n----------------------\n"<<actual_hessian<<"\n\n----------------\n\n" <<expected_hessian<<"\n---------------\n"<<std::endl;
+			// 		const double vp = nl_problem.value(xp);
+			// 		const double vm = nl_problem.value(xm);
 
-			// 	// for (int d = 0; d < actual_hessian.rows(); ++d) {
-			// 	// 	for (int e = 0; e < actual_hessian.cols(); ++e) {
-			// 	// 		double scale = std::max(std::max(std::abs(actual_hessian(d, e)), std::abs(expected_hessian(d, e))), 1.);
-			// 	// 		if(fabs(actual_hessian(d, e)- expected_hessian(d, e))>1e-1 * scale)
-			// 	// 			std::cerr<<"baaaaad hessian"<<std::endl;
-			// 	// 	}
-			// 	// }
+			// 		const double fd = (vp-vm)/hhh/2.;
+			// 		const double  diff = std::abs(actual_grad(i) - fd);
+			// 		if(diff > 1e-6)
+			// 			std::cout<<"diff grad "<<i<<": "<<actual_grad(i)<<" vs "<<fd <<" error: " <<diff<<std::endl;
 
-			// 	// tmp_sol.setRandom();
-			// 	if(!nl_problem.checkGradient(tmp_sol, 0))
-			// 		std::cerr<<"baaaaad grad"<<std::endl;
+			// 		for(int j = 0; j < actual_hessian.rows(); ++j)
+			// 		{
+			// 			const double diff = std::abs(actual_hessian(i,j) - fd_h(j));
 
-			// 	if(!nl_problem.checkHessian(tmp_sol, 1))
-			// 		std::cerr<<"baaaaad hessian"<<std::endl;
+			// 			if(diff > 1e-6)
+			// 				std::cout<<"diff H "<<i<<", "<<j<<": "<<actual_hessian(i,j)<<" vs "<<fd_h(j)<<" error: " <<diff<<std::endl;
 
-			// 	assert(nl_problem.checkGradient(tmp_sol, 0));
-			// 	assert(nl_problem.checkHessian(tmp_sol, 0));
-			// 	tmp_sol.setZero();
+			// 		}
+			// 	}
+
+			// 	std::cout<<"diff grad "<<(actual_grad - expected_grad).array().abs().maxCoeff()<<std::endl;
+			// 	// std::cout<<"diff \n"<<(actual_grad - expected_grad)<<std::endl;
 
 			// 	exit(0);
 			// }
