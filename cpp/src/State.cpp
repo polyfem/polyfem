@@ -1157,6 +1157,7 @@ namespace poly_fem
 
 				// 		}
 				// 	}
+				// 	exit(0);
 
 				// 	// std::cout<<"diff grad "<<(actual_grad - expected_grad).array().abs().maxCoeff()<<std::endl;
 				// 	// std::cout<<"diff \n"<<(actual_grad - expected_grad)<<std::endl;
