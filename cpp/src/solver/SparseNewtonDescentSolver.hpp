@@ -151,8 +151,8 @@ namespace cppoptlib {
 
 				time.start();
 
-				// const double rate = Armijo<ProblemType, 1>::linesearch(x0, delta_x, objFunc);
-				const double rate = linesearch(x0, delta_x, objFunc);
+				const double rate = Armijo<ProblemType, 1>::linesearch(x0, delta_x, objFunc);
+				// const double rate = linesearch(x0, delta_x, objFunc);
 
 				x0 += rate * delta_x;
 
