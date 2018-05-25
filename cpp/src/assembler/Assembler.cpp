@@ -278,7 +278,7 @@ namespace poly_fem
 		Eigen::SparseMatrix<double> &grad)
 	{
 		const int buffer_size = std::min(long(1e8), long(n_basis) * local_assembler_.size());
-		std::cout<<"buffer_size "<<buffer_size<<std::endl;
+		// std::cout<<"buffer_size "<<buffer_size<<std::endl;
 
 		grad.resize(n_basis*local_assembler_.size(), n_basis*local_assembler_.size());
 		grad.setZero();

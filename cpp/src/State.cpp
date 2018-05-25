@@ -1162,9 +1162,10 @@ namespace poly_fem
 				// 	// std::cout<<"diff \n"<<(actual_grad - expected_grad)<<std::endl;
 				// }
 
-				cppoptlib::SparseNewtonDescentSolver<NLProblem> solver(true);
+				cppoptlib::SparseNewtonDescentSolver<NLProblem> solver(n == 1);
 				solver.minimize(nl_problem, tmp_sol);
 				solver.getInfo(solver_info);
+				std::cout<<n<<"/"<<steps<<std::endl;
 			}
 
 			rhs = rhs_old;
