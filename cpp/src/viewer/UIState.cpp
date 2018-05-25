@@ -707,6 +707,7 @@ namespace poly_fem
 
 			clip_elements(tmp, vis_faces, vis_element_ranges, valid_elements, true, layer);
 
+			data(layer).show_overlay = false;
 			// if(show_isolines && fun.cols() != 3)
 			// {
 			// 	Eigen::MatrixXd isoV;
@@ -743,6 +744,7 @@ namespace poly_fem
 					Eigen::MatrixXi isoE;
 					igl::isolines(tmp, vis_faces, Eigen::VectorXd(fun), 20, isoV, isoE);
 					data(layer).set_edges(isoV,isoE,Eigen::RowVector3d(0,0,0));
+					data(layer).show_overlay = true;
 				}
 			}
 
