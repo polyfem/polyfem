@@ -1332,7 +1332,7 @@ namespace poly_fem
 
 			{"problem_params", {}},
 
-			{"output", {}}
+			{"output", ""}
 		};
 
 		this->args.merge_patch(args_in);
