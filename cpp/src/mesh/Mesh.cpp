@@ -128,6 +128,29 @@ bool poly_fem::Mesh::is_polytope(const int el_id) const
 	elements_tag_[el_id] == ElementType::BoundaryPolytope;
 }
 
+void poly_fem::Mesh::load_boundary_ids(const std::string &path)
+{
+	boundary_ids_.resize(is_volume()? n_faces() : n_edges());
+
+	std::ifstream file(path);
+
+	std::string line;
+	int bindex = 0;
+	while (std::getline(file, line))
+	{
+		std::istringstream iss(line);
+		int v;
+		iss >> v;
+		boundary_ids_[bindex] = v;
+
+		++bindex;
+	}
+
+	assert(boundary_ids_.size() == bindex);
+
+	file.close();
+}
+
 bool poly_fem::Mesh::is_simplex(const int el_id) const
 {
 	return

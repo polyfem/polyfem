@@ -565,7 +565,11 @@ namespace poly_fem
 
 		// mesh->set_tag(1712, ElementType::InteriorPolytope);
 
-		mesh->compute_boundary_ids();
+		const std::string bc_tag_path = args["bc_tag"];
+		if(bc_tag_path.empty())
+			mesh->compute_boundary_ids();
+		else
+			mesh->load_boundary_ids(bc_tag_path);
 
 
 		timer.stop();
@@ -1287,6 +1291,7 @@ namespace poly_fem
 	{
 		this->args = {
 			{"mesh", ""},
+			{"bc_tag", ""},
 			{"n_refs", 0},
 			{"refinenemt_location", 0.5},
 			{"n_boundary_samples", 10},
@@ -1301,7 +1306,7 @@ namespace poly_fem
 			{"boundary_samples", 10},
 			{"use_p_ref", false},
 			{"use_spline", false},
-			{"iso_parametric", true},
+			{"iso_parametric", false},
 			{"integral_constraints", 2},
 
 			{"fit_nodes", false},

@@ -89,6 +89,7 @@ namespace poly_fem
 
 		//Boundary condition handling
 		virtual void compute_boundary_ids() = 0;
+		virtual void load_boundary_ids(const std::string &path);
 		virtual void compute_boundary_ids(const std::function<int(const RowVectorNd&)> &marker) = 0;
 		void set_tag(const int el, const ElementType type) { elements_tag_[el] = type; }
 		inline int get_boundary_id(const int primitive) const { return boundary_ids_[primitive]; }

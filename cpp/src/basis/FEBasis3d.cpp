@@ -1,3 +1,4 @@
+
 ////////////////////////////////////////////////////////////////////////////////
 #include "FEBasis3d.hpp"
 #include "MeshNodes.hpp"
@@ -1253,7 +1254,7 @@ int poly_fem::FEBasis3d::build_bases(
 	std::vector< LocalBoundary > &local_boundary,
 	std::map<int, InterfaceData> &poly_face_to_data)
 {
-	Eigen::VectorXi discr_orders(mesh.n_faces());
+	Eigen::VectorXi discr_orders(mesh.n_cells());
 	discr_orders.setConstant(discr_order);
 
 	return build_bases(mesh, quadrature_order, discr_orders, bases, local_boundary, poly_face_to_data);

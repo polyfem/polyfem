@@ -341,7 +341,7 @@ namespace poly_fem
 				for(size_t i = 0; i < vals.basis_values.size(); ++i)
 				{
 					const auto &vv = vals.basis_values[i];
-					assert(vv.val.size() == da.size());
+					assert(vv.val.size() == weights.size());
 					const double b_val = vv.val(p);
 
 					for(int d = 0; d < size_; ++d)

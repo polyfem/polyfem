@@ -28,6 +28,7 @@ namespace poly_fem
 		inline int n_cell_vertices(const int c_id) const {return mesh_.elements[c_id].vs.size(); }
 		inline int n_cell_faces(const int c_id) const {return mesh_.elements[c_id].fs.size(); }
 		inline int cell_vertex(const int c_id, const int lv_id) const {return mesh_.elements[c_id].vs[lv_id]; }
+		inline int face_vertex(const int f_id, const int lv_id) const {return mesh_.faces[f_id].vs[lv_id]; }
 
 
 		bool is_boundary_vertex(const int vertex_global_id) const override { return mesh_.vertices[vertex_global_id].boundary; }
