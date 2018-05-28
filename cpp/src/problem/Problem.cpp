@@ -5,6 +5,7 @@
 #include "ElasticProblem.hpp"
 #include "CustomProblem.hpp"
 #include "KernelProblem.hpp"
+#include "TestProblem.hpp"
 
 #include <memory>
 #include <iostream>
@@ -92,6 +93,8 @@ namespace poly_fem
 		problems_.emplace("LinearElasticExact", std::make_shared<LinearElasticProblemExact>("LinearElasticExact"));
 		problems_.emplace("Custom", std::make_shared<CustomProblem>("Custom"));
 		problems_.emplace("Kernel", std::make_shared<KernelProblem>("Kernel"));
+
+		problems_.emplace("ReentrantCorner", std::make_shared<ReentrantCornerProblem>("ReentrantCorner"));
 
 		for(auto it = problems_.begin(); it != problems_.end(); ++it)
 			problem_names_.push_back(it->first);
