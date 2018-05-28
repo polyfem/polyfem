@@ -1454,17 +1454,21 @@ namespace poly_fem
 
 	void UIState::update_slices()
 	{
-		// clear();
-		//TODO
-		// switch(current_visualization)
-		// {
-		// 	case Visualizing::InputMesh: show_mesh(); break;
-		// 	case Visualizing::VisMesh: show_vis_mesh(); break;
-		// 	case Visualizing::Solution: show_sol(); break;
-		// 	case Visualizing::Rhs: break;
-		// 	case Visualizing::Error: show_error(); break;
-		// 	case Visualizing::VisBasis: show_basis(); break;
-		// }
+		for(int i = 0; i < visible_visualizations.size(); ++i)
+		{
+			if(!visible_visualizations(i))
+				continue;
+
+			available_visualizations(i) = false;
+			switch(i)
+			{
+				case Visualizations::InputMesh: show_mesh(); break;
+				case Visualizations::VisMesh: show_vis_mesh(); break;
+				case Visualizations::Solution: show_sol(); break;
+				case Visualizations::Error: show_error(); break;
+				case Visualizations::VisBasis: show_basis(); break;
+			}
+		}
 	}
 
 	void UIState::redraw()

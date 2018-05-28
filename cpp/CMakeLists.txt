@@ -193,6 +193,8 @@ set(POLYFEM_SOURCES
 	src/problem/KernelProblem.hpp
 	src/problem/MiscProblem.cpp
 	src/problem/MiscProblem.hpp
+	src/problem/TestProblem.cpp
+	src/problem/TestProblem.hpp
 	src/problem/Problem.cpp
 	src/problem/Problem.hpp
 	src/problem/ProblemWithSolution.cpp
