@@ -56,7 +56,7 @@ namespace poly_fem
 
 		for(long i = 0; i < pts.rows(); ++i)
 		{
-			if(mesh.get_boundary_id(global_ids(i))== 2)
+			if(mesh.get_boundary_id(global_ids(i))== boundary_ids_[0])
 				val.row(i).setZero();
 		}
 	}
@@ -67,7 +67,7 @@ namespace poly_fem
 
 		for(long i = 0; i < pts.rows(); ++i)
 		{
-			if(mesh.get_boundary_id(global_ids(i)) == 4){
+			if(mesh.get_boundary_id(global_ids(i)) == neumann_boundary_ids_[0]){
 				for(int d = 0; d < val.cols(); ++d)
 					val(i, d) = force_(d);
 			}

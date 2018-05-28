@@ -7,11 +7,14 @@
 
 #include <igl/opengl/glfw/imgui/ImGuiMenu.h>
 #include <igl/opengl/glfw/imgui/ImGuiHelpers.h>
+#include <igl/adjacency_list.h>
+#include <igl/per_face_normals.h>
 #include <imgui/imgui.h>
 
 #include <igl/unproject_onto_mesh.h>
 #include <igl/opengl/glfw/Viewer.h>
 #include <iostream>
+#include <queue>
 
 
 using namespace poly_fem;
@@ -89,6 +92,13 @@ int main(int argc, const char **argv)
 	F.conservativeResize(index, 3);
 	boundary_2_all.conservativeResize(index);
 
+	std::vector<std::vector<int>> adj;
+	igl::adjacency_list(F, adj);
+	Matrix<bool, Eigen::Dynamic, 1> visited(F.rows());
+
+	MatrixXd N;
+	igl::per_face_normals(V, F, N);
+
 
 	// Initialize white
 	MatrixXd C = MatrixXd::Constant(F.rows(),3,1);
@@ -165,15 +175,45 @@ int main(int argc, const char **argv)
 		if(igl::unproject_onto_mesh(Vector2f(x,y), viewer.core.view * viewer.core.model,
 			viewer.core.proj, viewer.core.viewport, V, F, fid, bc))
 		{
-			const int real_face = boundary_2_all(fid);
-			selected(real_face) = current_id;
-			const auto &loc_faces = all_2_local(real_face);
 
-			const auto col = color(selected[real_face]);
+			visited.setConstant(false);
+			std::queue<int> to_visit; to_visit.push(fid);
 
-			for(int i : loc_faces){
-				C.row(i) = col;
+			while(!to_visit.empty())
+			{
+				const int id = to_visit.front();
+				to_visit.pop();
+				std::cout<<"id "<<id<<std::endl;
+
+				if(visited(id))
+					continue;
+
+				visited(id) = true;
+
+				const int real_face = boundary_2_all(id);
+				selected(real_face) = current_id;
+				const auto &loc_faces = all_2_local(real_face);
+
+				const auto col = color(selected[real_face]);
+
+				for(int i : loc_faces){
+					C.row(i) = col;
+				}
+
+				assert(id<adj.size());
+				auto &neighs = adj[id];
+				for(int nid : neighs)
+				{
+					if(visited(nid))
+						continue;
+
+					if(std::abs(N.row(fid).dot(N.row(nid)))<0.99)
+						continue;
+
+					to_visit.push(nid);
+				}
 			}
+
 			viewer.data().set_colors(C);
 
 			track = true;
