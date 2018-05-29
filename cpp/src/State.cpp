@@ -1463,7 +1463,7 @@ namespace poly_fem
 			}
 		}
 
-		Eigen::MatrixXd points(pts_total_size, 3);
+		Eigen::MatrixXd points(pts_total_size, mesh->dimension());
 		Eigen::MatrixXi edges(seg_total_size, 2);
 		points.setZero();
 
@@ -1510,6 +1510,12 @@ namespace poly_fem
 
 			exact_fun.conservativeResize(exact_fun.rows(), 3);
 			exact_fun.col(2).setZero();
+		}
+
+		if(!mesh->is_volume())
+		{
+			points.conservativeResize(points.rows(), 3);
+			points.col(2).setZero();
 		}
 
 		// writer.add_field("solution", fun);

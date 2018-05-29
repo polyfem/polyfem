@@ -21,7 +21,10 @@ namespace poly_fem
 		const std::function<DScalar1<double, Eigen::Matrix<double, 18, 1>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun18,
 		const std::function<DScalar1<double, Eigen::Matrix<double, 24, 1>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun24,
 		const std::function<DScalar1<double, Eigen::Matrix<double, 30, 1>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun30,
+		const std::function<DScalar1<double, Eigen::Matrix<double, 60, 1>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun60,
 		const std::function<DScalar1<double, Eigen::Matrix<double, 81, 1>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun81,
+		const std::function<DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 90, 1>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &funN,
+		const std::function<DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 1000, 1>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &funBigN,
 		const std::function<DScalar1<double, Eigen::VectorXd>				(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &funn
 		);
 
@@ -33,7 +36,9 @@ namespace poly_fem
 		const std::function<DScalar2<double, Eigen::Matrix<double, 18, 1>, Eigen::Matrix<double, 18, 18>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun18,
 		const std::function<DScalar2<double, Eigen::Matrix<double, 24, 1>, Eigen::Matrix<double, 24, 24>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun24,
 		const std::function<DScalar2<double, Eigen::Matrix<double, 30, 1>, Eigen::Matrix<double, 30, 30>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun30,
+		const std::function<DScalar2<double, Eigen::Matrix<double, 60, 1>, Eigen::Matrix<double, 60, 60>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun60,
 		const std::function<DScalar2<double, Eigen::Matrix<double, 81, 1>, Eigen::Matrix<double, 81, 81>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun81,
+		const std::function<DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 90, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 90, 90>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &funN,
 		const std::function<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>								(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &funn
 		);
 

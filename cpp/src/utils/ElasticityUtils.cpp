@@ -10,103 +10,92 @@ namespace poly_fem
 		const std::function<DScalar1<double, Eigen::Matrix<double, 18, 1>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun18,
 		const std::function<DScalar1<double, Eigen::Matrix<double, 24, 1>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun24,
 		const std::function<DScalar1<double, Eigen::Matrix<double, 30, 1>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun30,
+		const std::function<DScalar1<double, Eigen::Matrix<double, 60, 1>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun60,
 		const std::function<DScalar1<double, Eigen::Matrix<double, 81, 1>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun81,
+		const std::function<DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 90, 1>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &funN,
+		const std::function<DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 1000, 1>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &funBigN,
 		const std::function<DScalar1<double, Eigen::VectorXd>				(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &funn
 		)
 	{
 		Eigen::VectorXd grad;
 
-		switch(size)
+		switch(size * n_bases)
 		{
-			//2d
-			case 2:
+			case 6:
 			{
-				switch(n_bases)
-				{
-					//P1
-					case 3:
-					{
-						auto auto_diff_energy = fun6(vals, displacement, da);
-						grad = auto_diff_energy.getGradient();
-						break;
-					}
-					//P2
-					case 6:
-					{
-						auto auto_diff_energy = fun12(vals, displacement, da);
-						grad = auto_diff_energy.getGradient();
-						break;
-					}
-			 		//Q1
-					case 4:
-					{
-						auto auto_diff_energy = fun8(vals, displacement, da);
-						grad = auto_diff_energy.getGradient();
-						break;
-					}
-					//Q2
-					case 9:
-					{
-						auto auto_diff_energy = fun18(vals, displacement, da);
-						grad = auto_diff_energy.getGradient();
-						break;
-					}
-				}
-
+				auto auto_diff_energy = fun6(vals, displacement, da);
+				grad = auto_diff_energy.getGradient();
 				break;
 			}
-
-
-			//3d
-			case 3:
+			case 8:
 			{
-				switch(n_bases)
-				{
-					//P1
-					case 4:
-					{
-						auto auto_diff_energy = fun12(vals, displacement, da);
-						grad = auto_diff_energy.getGradient();
-						break;
-					}
-					//P2
-					case 10:
-					{
-						auto auto_diff_energy = fun30(vals, displacement, da);
-						grad = auto_diff_energy.getGradient();
-						break;
-					}
-					//Q1
-					case 8:
-					{
-						auto auto_diff_energy = fun24(vals, displacement, da);
-						grad = auto_diff_energy.getGradient();
-						break;
-					}
-					//Q2
-					case 27:
-					{
-						auto auto_diff_energy = fun81(vals, displacement, da);
-						grad = auto_diff_energy.getGradient();
-						break;
-					}
-				}
+				auto auto_diff_energy = fun8(vals, displacement, da);
+				grad = auto_diff_energy.getGradient();
+				break;
+			}
+			case 12:
+			{
+				auto auto_diff_energy = fun12(vals, displacement, da);
+				grad = auto_diff_energy.getGradient();
+				break;
+			}
+			case 18:
+			{
+				auto auto_diff_energy = fun18(vals, displacement, da);
+				grad = auto_diff_energy.getGradient();
+				break;
+			}
+			case 24:
+			{
+				auto auto_diff_energy = fun24(vals, displacement, da);
+				grad = auto_diff_energy.getGradient();
+				break;
+			}
+			case 30:
+			{
+				auto auto_diff_energy = fun30(vals, displacement, da);
+				grad = auto_diff_energy.getGradient();
+				break;
+			}
+			case 60:
+			{
+				auto auto_diff_energy = fun60(vals, displacement, da);
+				grad = auto_diff_energy.getGradient();
+				break;
+			}
+			case 81:
+			{
+				auto auto_diff_energy = fun81(vals, displacement, da);
+				grad = auto_diff_energy.getGradient();
+				break;
 			}
 		}
 
-
 		if(grad.size()<=0)
 		{
-			static bool show_message = true;
-
-			if(show_message)
+			if(n_bases*size < 90)
 			{
-				std::cout<<"[Warning] grad "<<n_bases<<"^"<<size<<" not using static sizes"<<std::endl;
-				show_message = false;
+				auto auto_diff_energy = funN(vals, displacement, da);
+				grad = auto_diff_energy.getGradient();
 			}
+			else if(n_bases * size < 1000)
+			{
+				auto auto_diff_energy = funBigN(vals, displacement, da);
+				grad = auto_diff_energy.getGradient();
+			}
+			else
+			{
+				static bool show_message = true;
 
-			auto auto_diff_energy = funn(vals, displacement, da);
-			grad = auto_diff_energy.getGradient();
+				if(show_message)
+				{
+					std::cout<<"[Warning] grad "<<n_bases<<"^"<<size<<" not using static sizes"<<std::endl;
+					show_message = false;
+				}
+
+				auto auto_diff_energy = funn(vals, displacement, da);
+				grad = auto_diff_energy.getGradient();
+			}
 		}
 
 		return grad;
@@ -120,103 +109,86 @@ namespace poly_fem
 		const std::function<DScalar2<double, Eigen::Matrix<double, 18, 1>, Eigen::Matrix<double, 18, 18>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun18,
 		const std::function<DScalar2<double, Eigen::Matrix<double, 24, 1>, Eigen::Matrix<double, 24, 24>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun24,
 		const std::function<DScalar2<double, Eigen::Matrix<double, 30, 1>, Eigen::Matrix<double, 30, 30>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun30,
+		const std::function<DScalar2<double, Eigen::Matrix<double, 60, 1>, Eigen::Matrix<double, 60, 60>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun60,
 		const std::function<DScalar2<double, Eigen::Matrix<double, 81, 1>, Eigen::Matrix<double, 81, 81>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &fun81,
+		const std::function<DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 90, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 90, 90>>	(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &funN,
 		const std::function<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>								(const ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &funn
 		)
 	{
 		Eigen::MatrixXd hessian;
 
-		switch(size)
+		switch(size * n_bases)
 		{
-			//2d
-			case 2:
+			case 6:
 			{
-				switch(n_bases)
-				{
-					//P1
-					case 3:
-					{
-						auto auto_diff_energy = fun6(vals, displacement, da);
-						hessian = auto_diff_energy.getHessian();
-						break;
-					}
-					//P2
-					case 6:
-					{
-						auto auto_diff_energy = fun12(vals, displacement, da);
-						hessian = auto_diff_energy.getHessian();
-						break;
-					}
-					//Q1
-					case 4:
-					{
-						auto auto_diff_energy = fun8(vals, displacement, da);
-						hessian = auto_diff_energy.getHessian();
-						break;
-					}
-					//Q2
-					case 9:
-					{
-						auto auto_diff_energy = fun18(vals, displacement, da);
-						hessian = auto_diff_energy.getHessian();
-						break;
-					}
-				}
-
+				auto auto_diff_energy = fun6(vals, displacement, da);
+				hessian = auto_diff_energy.getHessian();
 				break;
 			}
-
-
-			//3d
-			case 3:
+			case 8:
 			{
-				switch(n_bases)
-				{
-					//P2
-					case 4:
-					{
-						auto auto_diff_energy = fun12(vals, displacement, da);
-						hessian = auto_diff_energy.getHessian();
-						break;
-					}
-					//P2
-					case 10:
-					{
-						auto auto_diff_energy = fun30(vals, displacement, da);
-						hessian = auto_diff_energy.getHessian();
-						break;
-					}
-			 		//Q1
-					case 8:
-					{
-						auto auto_diff_energy = fun24(vals, displacement, da);
-						hessian = auto_diff_energy.getHessian();
-						break;
-					}
-
-					// Q2
-					case 27:
-					{
-						auto auto_diff_energy = fun81(vals, displacement, da);
-						hessian = auto_diff_energy.getHessian();
-						break;
-					}
-				}
+				auto auto_diff_energy = fun8(vals, displacement, da);
+				hessian = auto_diff_energy.getHessian();
+				break;
+			}
+			case 12:
+			{
+				auto auto_diff_energy = fun12(vals, displacement, da);
+				hessian = auto_diff_energy.getHessian();
+				break;
+			}
+			case 18:
+			{
+				auto auto_diff_energy = fun18(vals, displacement, da);
+				hessian = auto_diff_energy.getHessian();
+				break;
+			}
+			case 24:
+			{
+				auto auto_diff_energy = fun24(vals, displacement, da);
+				hessian = auto_diff_energy.getHessian();
+				break;
+			}
+			case 30:
+			{
+				auto auto_diff_energy = fun30(vals, displacement, da);
+				hessian = auto_diff_energy.getHessian();
+				break;
+			}
+			case 60:
+			{
+				auto auto_diff_energy = fun60(vals, displacement, da);
+				hessian = auto_diff_energy.getHessian();
+				break;
+			}
+			case 81:
+			{
+				auto auto_diff_energy = fun81(vals, displacement, da);
+				hessian = auto_diff_energy.getHessian();
+				break;
 			}
 		}
 
 		if(hessian.size() <= 0)
 		{
-			static bool show_message = true;
-
-			if(show_message)
+			if(n_bases*size < 90)
 			{
-				std::cout<<"[Warning] hessian "<<n_bases<<"^"<<size<<" not using static sizes"<<std::endl;
-				show_message = false;
+				auto auto_diff_energy = funN(vals, displacement, da);
+				hessian = auto_diff_energy.getHessian();
 			}
+			else
+			{
+				static bool show_message = true;
 
-			auto auto_diff_energy = funn(vals, displacement, da);
-			hessian = auto_diff_energy.getHessian();
+				if(show_message)
+				{
+					std::cout<<"[Warning] hessian "<<n_bases<<"*"<<size<<" not using static sizes"<<std::endl;
+					show_message = false;
+				}
+
+				auto auto_diff_energy = funn(vals, displacement, da);
+				hessian = auto_diff_energy.getHessian();
+			}
 		}
 
 		// time.stop();
@@ -376,9 +348,9 @@ namespace poly_fem
 		if(size_ == 2)
 		{
 			stifness_tensor_ <<
-				1.0, nu, 0.0,
-				nu, 1.0, 0.0,
-				0.0, 0.0, (1.0 - nu) / 2.0;
+			1.0, nu, 0.0,
+			nu, 1.0, 0.0,
+			0.0, 0.0, (1.0 - nu) / 2.0;
 			stifness_tensor_ *= young / (1.0 - nu * nu);
 		}
 		else
@@ -386,12 +358,12 @@ namespace poly_fem
 			assert(size_ == 3);
 			const double v = nu;
 			stifness_tensor_ <<
-				1. - v, v, v, 0, 0, 0,
-				v, 1. - v, v, 0, 0, 0,
-				v, v, 1. - v, 0, 0, 0,
-				0, 0, 0, (1. - 2.*v)/2., 0, 0,
-				0, 0, 0, 0, (1. - 2.*v)/2., 0,
-				0, 0, 0, 0, 0, (1. - 2.*v)/2.;
+			1. - v, v, v, 0, 0, 0,
+			v, 1. - v, v, 0, 0, 0,
+			v, v, 1. - v, 0, 0, 0,
+			0, 0, 0, (1. - 2.*v)/2., 0, 0,
+			0, 0, 0, 0, (1. - 2.*v)/2., 0,
+			0, 0, 0, 0, 0, (1. - 2.*v)/2.;
 			stifness_tensor_ *= young / ((1. + v) * (1. - 2. * v));
 		}
 	}

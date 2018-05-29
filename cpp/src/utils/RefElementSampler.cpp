@@ -132,7 +132,14 @@ namespace poly_fem
 
 				// Extract sampled edges matching the base element edges
 				igl::edges(simplex_faces_, simplex_edges_);
-				extract_parent_edges(simplex_points_, simplex_edges_, pts, E, simplex_edges_);
+				Eigen::MatrixXd tmp = simplex_points_;
+				tmp.conservativeResize(tmp.rows(), 3);
+				tmp.col(2).setZero();
+
+				Eigen::MatrixXd tmp1 = pts;
+				tmp1.conservativeResize(tmp1.rows(), 3);
+				tmp1.col(2).setZero();
+				extract_parent_edges(tmp, simplex_edges_, tmp1, E, simplex_edges_);
 			}
 		}
 
