@@ -100,7 +100,7 @@ void poly_fem::compute_element_tags(const GEO::Mesh &M, std::vector<ElementType>
 		assert(M.facets.nb_vertices(f) > 2);
 		if(!old_tags.empty() && old_tags[f] == ElementType::InteriorPolytope)
 			continue;
-		
+
 		if (M.facets.nb_vertices(f) == 4) {
 			// Quad facet
 
@@ -649,4 +649,60 @@ void poly_fem::sample_surface(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F
 			N->row(i) << n[0], n[1], n[2];
 		}
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+namespace {
+
+bool approx_aligned(const double *a_, const double *b_, const double *p_, const double *q_, double tol = 1e-6) {
+	using namespace GEO;
+	vec3 a(a_), b(b_), p(p_), q(q_);
+	double da = std::sqrt(Geom::point_segment_squared_distance(a, p, q));
+	double db = std::sqrt(Geom::point_segment_squared_distance(b, p, q));
+	double cos_theta = Geom::cos_angle(b - a, p - q);
+	return (da < tol && db < tol && std::abs(std::abs(cos_theta) - 1.0) < tol);
+}
+
+} // anonymous namespace
+
+// -----------------------------------------------------------------------------
+
+void poly_fem::extract_parent_edges(const Eigen::MatrixXd &IV, const Eigen::MatrixXi &IE,
+	const Eigen::MatrixXd &BV, const Eigen::MatrixXi &BE, Eigen::MatrixXi &OE)
+{
+	assert(IV.cols() == 3);
+	assert(BV.cols() == 3);
+	typedef std::pair<int, int> Edge;
+	std::vector<Edge> selected;
+	for (int e1 = 0; e1 < IE.rows(); ++e1) {
+		Eigen::RowVector3d a = IV.row(IE(e1, 0));
+		Eigen::RowVector3d b = IV.row(IE(e1, 1));
+		for (int e2 = 0; e2 < BE.rows(); ++e2) {
+			Eigen::RowVector3d p = BV.row(BE(e2, 0));
+			Eigen::RowVector3d q = BV.row(BE(e2, 1));
+			if (approx_aligned(a.data(), b.data(), p.data(), q.data())) {
+				selected.emplace_back(IE(e1, 0), IE(e1, 1));
+				break;
+			}
+		}
+	}
+
+	OE.resize(selected.size(), 2);
+	for (int e = 0; e < OE.rows(); ++e) {
+		OE.row(e) << selected[e].first, selected[e].second;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void poly_fem::save_edges(const std::string &filename, const Eigen::MatrixXd &V, const Eigen::MatrixXi &E) {
+	using namespace Eigen;
+	std::ofstream out(filename);
+	if (!out.is_open()) {
+		throw std::runtime_error("failed to open file " + filename);
+	}
+	out << "# Vertices: " << V.rows() << "\n# Edges: " << E.rows() << "\n"
+		<< V.cast<float>().format(IOFormat(FullPrecision,DontAlignCols," ","\n","v ","","","\n"))
+		<< (E.array()+1).format(IOFormat(FullPrecision,DontAlignCols," ","\n","l ","","","\n"));
 }

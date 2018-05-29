@@ -28,6 +28,7 @@
 
 #include "CustomSerialization.hpp"
 #include "VTUWriter.hpp"
+#include "MeshUtils.hpp"
 
 #include "NLProblem.hpp"
 #include "SparseNewtonDescentSolver.hpp"
@@ -40,6 +41,8 @@
 
 #include <igl/Timer.h>
 #include <igl/serialize.h>
+#include <igl/remove_unreferenced.h>
+#include <igl/remove_duplicate_vertices.h>
 
 
 #include <unsupported/Eigen/SparseExtra>
@@ -1385,7 +1388,6 @@ namespace poly_fem
 			{
 				bs.eval_geom_mapping(sampler.simplex_points(), mapped);
 				tets.block(tet_index, 0, sampler.simplex_volume().rows(), tets.cols()) = sampler.simplex_volume().array() + pts_index;
-
 				tet_index += sampler.simplex_volume().rows();
 
 				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
@@ -1425,10 +1427,10 @@ namespace poly_fem
 			exact_fun.col(2).setZero();
 		}
 
-		writer.add_filed("solution", fun);
+		writer.add_field("solution", fun);
 		if(problem->has_exact_sol()){
-			writer.add_filed("exact", exact_fun);
-			writer.add_filed("error", err);
+			writer.add_field("exact", exact_fun);
+			writer.add_field("error", err);
 		}
 
 
@@ -1436,12 +1438,106 @@ namespace poly_fem
 		{
 			Eigen::MatrixXd scalar_val;
 			compute_scalar_value(pts_index, sol, scalar_val);
-			writer.add_filed("scalar_value", scalar_val);
+			writer.add_field("scalar_value", scalar_val);
 		}
 
 		writer.write_tet_mesh(path, points, tets);
 	}
 
+	void State::save_wire(const std::string &name) {
+		const auto &sampler = RefElementSampler::sampler();
+
+		const auto &current_bases = iso_parametric() ? bases : geom_bases;
+		int seg_total_size = 0;
+		int pts_total_size = 0;
+
+		for(size_t i = 0; i < current_bases.size(); ++i)
+		{
+			const auto &bs = current_bases[i];
+
+			if(mesh->is_simplex(i)) {
+				pts_total_size += sampler.simplex_points().rows();
+				seg_total_size += sampler.simplex_edges().rows();
+			} else if(mesh->is_cube(i)) {
+				pts_total_size += sampler.cube_points().rows();
+			}
+		}
+
+		Eigen::MatrixXd points(pts_total_size, 3);
+		Eigen::MatrixXi edges(seg_total_size, 2);
+		points.setZero();
+
+		MatrixXd mapped, tmp;
+		int seg_index = 0, pts_index = 0;
+		for(size_t i = 0; i < current_bases.size(); ++i)
+		{
+			const auto &bs = current_bases[i];
+
+			if(mesh->is_simplex(i))
+			{
+				bs.eval_geom_mapping(sampler.simplex_points(), mapped);
+				edges.block(seg_index, 0, sampler.simplex_edges().rows(), edges.cols()) = sampler.simplex_edges().array() + pts_index;
+				seg_index += sampler.simplex_edges().rows();
+
+				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
+				pts_index += mapped.rows();
+			}
+			else if(mesh->is_cube(i))
+			{
+				bs.eval_geom_mapping(sampler.cube_points(), mapped);
+				edges.block(seg_index, 0, sampler.simplex_edges().rows(), edges.cols()) = sampler.simplex_edges().array() + pts_index;
+				seg_index += sampler.simplex_edges().rows();
+
+				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
+				pts_index += mapped.rows();
+			}
+		}
+
+		assert(pts_index == points.rows());
+
+		Eigen::MatrixXd fun, exact_fun, err;
+
+		interpolate_function(pts_index, sol, fun);
+
+		if (problem->has_exact_sol()) {
+			problem->exact(points, exact_fun);
+			err = (fun - exact_fun).eval().rowwise().norm();
+		}
+
+		if (fun.cols() != 1 && !mesh->is_volume()) {
+			fun.conservativeResize(fun.rows(), 3);
+			fun.col(2).setZero();
+
+			exact_fun.conservativeResize(exact_fun.rows(), 3);
+			exact_fun.col(2).setZero();
+		}
+
+		// writer.add_field("solution", fun);
+		// if (problem->has_exact_sol()) {
+		// 	writer.add_field("exact", exact_fun);
+		// 	writer.add_field("error", err);
+		// }
+
+		// if (fun.cols() != 1) {
+		// 	Eigen::MatrixXd scalar_val;
+		// 	compute_scalar_value(pts_index, sol, scalar_val);
+		// 	writer.add_field("scalar_value", scalar_val);
+		// }
+
+		if (fun.cols() != 1) {
+			assert(points.rows() == fun.rows());
+			assert(points.cols() == fun.cols());
+			points += fun;
+		}
+
+		Eigen::MatrixXd V;
+		Eigen::MatrixXi E;
+		Eigen::VectorXi I, J;
+		igl::remove_unreferenced(points, edges, V, E, I);
+		igl::remove_duplicate_vertices(V, E, 1e-5, points, I, J, edges);
+
+		save_edges(name, points, edges);
+	}
 
 	// void State::compute_poly_basis_error(const std::string &path)
 	// {

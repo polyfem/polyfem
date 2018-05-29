@@ -152,7 +152,7 @@ void poly_fem::UIState::draw_settings() {
 	int discr_order = state.args["discr_order"];
 	ImGui::InputInt("discr", &discr_order);
 	state.args["discr_order"] = discr_order;
-	
+
 	// ImGui::InputInt("b", &state.n_boundary_samples);
 
 	//ImGui::InputFloat("lambda", &state.lambda, 0, 0, 3);
@@ -456,8 +456,14 @@ void poly_fem::UIState::draw_screenshot() {
 		igl::png::writePNG(R,G,B,A,path);
 	}
 
-	if (ImGui::Button("Save VTU", ImVec2(-1, 0))) {
+	float w = ImGui::GetContentRegionAvailWidth();
+	float p = ImGui::GetStyle().FramePadding.x;
+	if (ImGui::Button("Save VTU", ImVec2((w-p)/2.f, 0))) {
 		state.save_vtu("result.vtu");
+	}
+	ImGui::SameLine(0, p);
+	if (ImGui::Button("Save Wire", ImVec2((w-p)/2.f, 0))) {
+		state.save_wire("result.obj");
 	}
 
 	ImGui::Separator();

@@ -62,8 +62,8 @@ namespace poly_fem {
     public:
         bool write_tet_mesh(const std::string &path, const Eigen::MatrixXd &points, const Eigen::MatrixXi &tets);
 
-        void add_filed(const std::string &name, const Eigen::MatrixXd &data);
-        void add_scalar_filed(const std::string &name, const Eigen::MatrixXd &data);
+        void add_field(const std::string &name, const Eigen::MatrixXd &data);
+        void add_scalar_field(const std::string &name, const Eigen::MatrixXd &data);
         void add_vector_field(const std::string &name, const Eigen::MatrixXd &data);
 
         void clear();

@@ -3,6 +3,7 @@
 
 #include "LinearSolver.hpp"
 #include "CommandLine.hpp"
+#include "StringUtils.hpp"
 
 
 #include <geogram/basic/command_line.h>
@@ -147,8 +148,10 @@ int main(int argc, const char **argv)
 
 		state.save_json();
 
-		if(!vtu.empty())
+		if(!vtu.empty()) {
 			state.save_vtu(vtu);
+			state.save_wire(StringUtils::replace_ext(vtu, "obj"));
+		}
 	}
 	else
 	{

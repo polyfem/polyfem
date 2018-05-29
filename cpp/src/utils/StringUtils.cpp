@@ -46,3 +46,16 @@ bool poly_fem::StringUtils::endswidth(const std::string &str, const std::string 
 		return false;
 	}
 }
+
+// Replace extension after the last "dot"
+std::string poly_fem::StringUtils::replace_ext(const std::string &filename, const std::string &newext) {
+	std::string ext = "";
+	if (!newext.empty()) {
+		ext = (newext[0] == '.' ? newext : "." + newext);
+	}
+	size_t lastdot = filename.find_last_of(".");
+	if (lastdot == std::string::npos) {
+		return filename + ext;
+	}
+	return filename.substr(0, lastdot) + ext;
+}

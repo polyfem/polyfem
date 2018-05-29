@@ -19,6 +19,7 @@ namespace poly_fem
 		const Eigen::MatrixXd &simplex_points() const { return simplex_points_; }
 		const Eigen::MatrixXi &simplex_faces() const { return simplex_faces_; }
 		const Eigen::MatrixXi &simplex_volume() const { return is_volume_ ? simplex_tets_ : simplex_faces_; }
+		const Eigen::MatrixXi &simplex_edges() const { return simplex_edges_; }
 
 	private:
 		RefElementSampler() { }
@@ -32,6 +33,7 @@ namespace poly_fem
 
 		Eigen::MatrixXd simplex_points_;
 		Eigen::MatrixXi simplex_faces_;
+		Eigen::MatrixXi simplex_edges_;
 
 		double area_param_;
 		double is_volume_;

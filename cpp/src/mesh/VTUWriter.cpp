@@ -62,7 +62,7 @@ namespace poly_fem
 
     void VTUWriter::write_header(const int n_vertices, const int n_elements, std::ostream &os)
     {
-        os << "<VTKFile type=\"UnstructuredGrid\">\n";
+        os << "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\">\n";
         os << "<UnstructuredGrid>\n";
         os << "<Piece NumberOfPoints=\"" << n_vertices << "\" NumberOfCells=\"" << n_elements << "\">\n";
     }
@@ -163,15 +163,15 @@ namespace poly_fem
         cell_data_.clear();;
     }
 
-    void VTUWriter::add_filed(const std::string &name, const Eigen::MatrixXd &data)
+    void VTUWriter::add_field(const std::string &name, const Eigen::MatrixXd &data)
     {
         if(data.cols() == 1)
-            add_scalar_filed(name, data);
+            add_scalar_field(name, data);
         else
             add_vector_field(name, data);
     }
 
-    void VTUWriter::add_scalar_filed(const std::string &name, const Eigen::MatrixXd &data)
+    void VTUWriter::add_scalar_field(const std::string &name, const Eigen::MatrixXd &data)
     {
         point_data_.push_back(VTKDataNode<double>());
         point_data_.back().initialize(name, "Float32", data);

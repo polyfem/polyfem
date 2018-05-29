@@ -1,7 +1,9 @@
 #include "RefElementSampler.hpp"
+#include "MeshUtils.hpp"
 
 #include <igl/triangle/triangulate.h>
 #include <igl/copyleft/tetgen/tetrahedralize.h>
+#include <igl/edges.h>
 
 
 namespace poly_fem
@@ -88,6 +90,12 @@ namespace poly_fem
 
 				MatrixXi tets;
 				igl::copyleft::tetgen::tetrahedralize(pts, faces, buf.str(), simplex_points_, simplex_tets_, simplex_faces_);
+
+				// Extract sampled edges matching the base element edges
+				Eigen::MatrixXi edges;
+				igl::edges(faces, edges);
+				igl::edges(simplex_faces_, simplex_edges_);
+				extract_parent_edges(simplex_points_, simplex_edges_, pts, edges, simplex_edges_);
 			}
 		}
 		else
@@ -121,8 +129,13 @@ namespace poly_fem
 				2,0;
 
 				igl::triangle::triangulate(pts, E, MatrixXd(0,2), buf.str(), simplex_points_, simplex_faces_);
+
+				// Extract sampled edges matching the base element edges
+				igl::edges(simplex_faces_, simplex_edges_);
+				extract_parent_edges(simplex_points_, simplex_edges_, pts, E, simplex_edges_);
 			}
 		}
+
 	}
 
 }

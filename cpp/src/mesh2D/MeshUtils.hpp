@@ -157,4 +157,26 @@ void tertrahedralize_star_shaped_surface(const Eigen::MatrixXd &V, const Eigen::
 void sample_surface(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, int num_samples,
 	Eigen::MatrixXd &P, Eigen::MatrixXd *N = nullptr, int num_lloyd = 10, int num_newton = 10);
 
+///
+/// @brief      { Extract a set of edges that are overlap with a set given set
+///             of parent edges, using vertices positions to discriminate }
+///
+/// @param[in]  IV    { #IV x 3 input vertices positions }
+/// @param[in]  IE    { #IE x 2 input edge indices }
+/// @param[in]  BV    { #BV x 3 base vertices positions to test against }
+/// @param[in]  BE    { #BE x 2 base edge indices to test against }
+/// @param[out] OE    { #OE x 2 output extracted edges }
+///
+void extract_parent_edges(const Eigen::MatrixXd &IV, const Eigen::MatrixXi &IE,
+	const Eigen::MatrixXd &BV, const Eigen::MatrixXi &BE, Eigen::MatrixXi &OE);
+
+///
+/// @brief      Save edge-graph into a .obj
+///
+/// @param[in]  filename  { Filename to write to }
+/// @param[in]  V         { #V x 3 input vertices positions }
+/// @param[in]  E         { #E x 2 input edge indices }
+///
+void save_edges(const std::string &filename, const Eigen::MatrixXd &V, const Eigen::MatrixXi &E);
+
 } // namespace poly_fem

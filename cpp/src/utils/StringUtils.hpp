@@ -19,6 +19,9 @@ namespace poly_fem {
 		// Tests whether a string ends with a given suffix
 		bool endswidth(const std::string &str, const std::string &suffix);
 
+		// Replace extension after the last "dot"
+		std::string replace_ext(const std::string &filename, const std::string &newext);
+
 	}
 
 } // namespace poly_fem

@@ -118,6 +118,7 @@ namespace poly_fem
 		void compute_mesh_stats();
 
 		void save_vtu(const std::string &name);
+		void save_wire(const std::string &name);
 
 		inline std::string mesh_path() const { return args["mesh"]; }
 
