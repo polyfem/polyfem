@@ -3,11 +3,77 @@
 
 #include <igl/triangle/triangulate.h>
 #include <igl/copyleft/tetgen/tetrahedralize.h>
+#include <igl/avg_edge_length.h>
 #include <igl/edges.h>
+#include <igl/write_triangle_mesh.h>
 
 
-namespace poly_fem
-{
+namespace poly_fem {
+
+namespace {
+
+///
+/// Generate a canonical triangle subdivided into smaller triangles with the
+/// target area. This also ensures that boundary is periodic (boundary edges are
+/// evenly subdivided).
+///
+/// @param[in]  target_area  { Target triangle area }
+/// @param[out] OV           { #V x 2 output vertices positions }
+/// @param[out] OF           { #F x 3 output triangle indices }
+///
+void triangulate_periodic(double target_area, Eigen::MatrixXd &OV, Eigen::MatrixXi &OF, Eigen::MatrixXi &OE) {
+	std::stringstream buf;
+	buf.precision(100);
+	buf.setf(std::ios::fixed, std::ios::floatfield);
+	buf << "Qqa" << target_area;
+
+	// Equilateral triangle
+	Eigen::MatrixXd V(3, 2);
+	V << 0, 0,
+		1, 0,
+		0.5, 0.5 * std::sqrt(3.0);
+
+	Eigen::MatrixXi E(3, 2);
+	E << 0, 1,
+		1, 2,
+		2, 0;
+
+	// 1st pass gets an rough idea
+	igl::triangle::triangulate(V, E, Eigen::MatrixXd(0,2), buf.str(), OV, OF);
+
+	// Extract average edge-length, use it to sample the boundary evenly
+	double avg_len = igl::avg_edge_length(OV, OF);
+	int n = 1.0 / avg_len;
+
+	// Build subdivided triangle boundary
+	Eigen::MatrixXd V2(3 * n, 2);
+	Eigen::MatrixXi E2(3 * n, 2);
+	int rows = 3 * n;
+	int cols = 2;
+	E2 = Eigen::VectorXi::LinSpaced(rows, 0.0, rows - 1).replicate(1, cols);
+	E2.col(1) = E2.col(1).unaryExpr([&](const int x) { return (x+1)%rows; });
+	for (int d = 0; d < V2.cols(); ++d) {
+		V2.topRows(n).col(d) = Eigen::VectorXd::LinSpaced(n + 1, V(0, d), V(1, d)).head(n);
+		V2.middleRows(n, n).col(d) = Eigen::VectorXd::LinSpaced(n + 1, V(1, d), V(2, d)).head(n);
+		V2.bottomRows(n).col(d) = Eigen::VectorXd::LinSpaced(n + 1, V(2, d), V(0, d)).head(n);
+	}
+
+	// 2nd pass disable Steiner points on the boundary
+	buf << "Y";
+	igl::triangle::triangulate(V2, E2, Eigen::MatrixXd(0,2), buf.str(), OV, OF);
+	OE = E2;
+
+	// Warp vertex positions to map them back to the canonical element
+	Eigen::Matrix2d M, Minv;
+	M << 1, 0,
+		0.5, 0.5 * std::sqrt(3.0);
+	Minv = M.inverse();
+	OV = OV * Minv;
+
+	igl::write_triangle_mesh("vismesh2.obj", OV, OF);
+}
+
+} // anonymous namespace
 
 	RefElementSampler &RefElementSampler::sampler()
 	{
@@ -16,14 +82,13 @@ namespace poly_fem
 		return instance;
 	}
 
-	void RefElementSampler::init(const bool is_volume, const int n_elements)
+	void RefElementSampler::init(const bool is_volume, const int n_elements, double target_rel_area)
 	{
 		is_volume_ = is_volume;
 
-#ifdef NDEBUG
-		area_param_ = 0.00001*n_elements;
-#else
-		area_param_ = 0.0001*n_elements;
+		area_param_ = target_rel_area * n_elements;
+#ifndef NDEBUG
+		area_param_ *= 10.0;
 #endif
 
 		build();
@@ -118,28 +183,7 @@ namespace poly_fem
 				igl::triangle::triangulate(pts, E, H, buf.str(), cube_points_, cube_faces_);
 			}
 			{
-				MatrixXd pts(3,2); pts <<
-				0,0,
-				1,0,
-				0,1;
-
-				MatrixXi E(3,2); E <<
-				0,1,
-				1,2,
-				2,0;
-
-				igl::triangle::triangulate(pts, E, MatrixXd(0,2), buf.str(), simplex_points_, simplex_faces_);
-
-				// Extract sampled edges matching the base element edges
-				igl::edges(simplex_faces_, simplex_edges_);
-				Eigen::MatrixXd tmp = simplex_points_;
-				tmp.conservativeResize(tmp.rows(), 3);
-				tmp.col(2).setZero();
-
-				Eigen::MatrixXd tmp1 = pts;
-				tmp1.conservativeResize(tmp1.rows(), 3);
-				tmp1.col(2).setZero();
-				extract_parent_edges(tmp, simplex_edges_, tmp1, E, simplex_edges_);
+				triangulate_periodic(area_param_, simplex_points_, simplex_faces_, simplex_edges_);
 			}
 		}
 

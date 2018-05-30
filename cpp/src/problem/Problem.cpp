@@ -94,7 +94,7 @@ namespace poly_fem
 		problems_.emplace("Custom", std::make_shared<CustomProblem>("Custom"));
 		problems_.emplace("Kernel", std::make_shared<KernelProblem>("Kernel"));
 
-		problems_.emplace("ReentrantCorner", std::make_shared<ReentrantCornerProblem>("ReentrantCorner"));
+		problems_.emplace("TestProblem", std::make_shared<TestProblem>("TestProblem"));
 
 		for(auto it = problems_.begin(); it != problems_.end(); ++it)
 			problem_names_.push_back(it->first);
