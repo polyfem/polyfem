@@ -1,13 +1,17 @@
 #!/bin/bash
 #
-# Submit with
-# sbatch compile.sh --export=BUILD='Release'
+# Submit job as (build defaults to Release):
 #
-# SBATCH --nodes=1
-# SBATCH --ntasks-per-node=1
-# SBATCH --cpus-per-task=8
-# SBATCH --time=2:00:00
-# SBATCH --mem=16GB
+#   sbatch compile.sh
+#   sbatch --export=BUILD='Debug',ALL compile.sh 
+#
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=8
+#SBATCH --time=2:00:00
+#SBATCH --mem=16GB
+#SBATCH --reservation=panozzo
+#SBATCH --partition=c18_25
 
 # Load modules
 module purge
@@ -41,6 +45,8 @@ cd "${SLURM_SUBMIT_DIR}"
 mkdir build
 cd build
 
+echo ${BUILD}
+
 if [ -z "${BUILD}" ]; then
 	BUILD=Release
 fi
@@ -50,4 +56,3 @@ pushd ${BUILD}
 cmake -DCMAKE_BUILD_TYPE=${BUILD} ../..
 make -j8
 popd
-
