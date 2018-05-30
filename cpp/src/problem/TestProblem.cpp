@@ -77,7 +77,7 @@ T multiple_difficulties(T x, T y, double omega, double x_w, double y_w, double r
 	const T r = sqrt(x*x+y*y);
 	const T theta = atan2(y, x);
 	return pow(r, M_PI/omega) * sin(theta * M_PI/omega)
-		+ atan( alpha_w * (sqrt(pow2(x - x_w) + pow2(y - y_w)) - r_0) )
+		+ atan2( alpha_w * (sqrt(pow2(x - x_w) + pow2(y - y_w)) - r_0), T(1.0) )
 		+ exp( -alpha_p * (pow2(x-x_p) + pow2(y-y_p)) )
 		+ exp( -(1+y)/eps );
 }
