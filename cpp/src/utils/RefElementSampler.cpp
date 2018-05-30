@@ -69,6 +69,8 @@ void triangulate_periodic(double target_area, Eigen::MatrixXd &OV, Eigen::Matrix
 		0.5, 0.5 * std::sqrt(3.0);
 	Minv = M.inverse();
 	OV = OV * Minv;
+
+	igl::write_triangle_mesh("vismesh2.obj", OV, OF);
 }
 
 } // anonymous namespace
