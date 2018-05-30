@@ -1,4 +1,4 @@
-#define EIGEN_STACK_ALLOCATION_LIMIT 0
+// #define EIGEN_STACK_ALLOCATION_LIMIT 0
 
 #include "NeoHookeanElasticity.hpp"
 
