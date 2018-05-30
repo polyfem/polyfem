@@ -119,7 +119,11 @@ int main(int argc, const char **argv)
 		in_args["output"] = output;
 		in_args["use_p_ref"] = p_ref;
 
-		if(!solver.empty())
+		if (!vtu.empty()) {
+			in_args["export"]["vis_mesh"] = vtu;
+			in_args["export"]["wire_mesh"] = StringUtils::replace_ext(vtu, "obj");
+		}
+		if (!solver.empty())
 			in_args["solver_type"] = solver;
 	}
 
@@ -147,11 +151,7 @@ int main(int argc, const char **argv)
 		state.compute_errors();
 
 		state.save_json();
-
-		if(!vtu.empty()) {
-			state.save_vtu(vtu);
-			state.save_wire(StringUtils::replace_ext(vtu, "obj"));
-		}
+		state.export_data();
 	}
 	else
 	{

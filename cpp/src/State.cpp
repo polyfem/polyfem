@@ -1336,7 +1336,13 @@ namespace poly_fem
 
 			{"problem_params", json({})},
 
-			{"output", ""}
+			{"output", ""},
+
+			{"export", {
+				{"vis_mesh", ""},
+				{"wire_mesh", ""},
+				{"discr_mesh", ""},
+			}}
 		};
 
 		this->args.merge_patch(args_in);
@@ -1346,6 +1352,17 @@ namespace poly_fem
 		problem->set_parameters(args["problem_params"]);
 	}
 
+	void State::export_data()
+	{
+		// Export vtu mesh of solution + wire mesh of deformed input
+		// + mesh colored with the bases
+		if (!args["export"]["vis_mesh"].empty()) {
+			save_vtu(args["export"]["vis_mesh"]);
+		}
+		if (!args["export"]["wire_mesh"].empty()) {
+			save_wire(args["export"]["wire_mesh"]);
+		}
+	}
 
 	void State::save_vtu(const std::string &path)
 	{
@@ -1541,7 +1558,7 @@ namespace poly_fem
 		Eigen::MatrixXi E;
 		Eigen::VectorXi I, J;
 		igl::remove_unreferenced(points, edges, V, E, I);
-		igl::remove_duplicate_vertices(V, E, 1e-5, points, I, J, edges);
+		igl::remove_duplicate_vertices(V, E, 1e-14, points, I, J, edges);
 
 		save_edges(name, points, edges);
 	}

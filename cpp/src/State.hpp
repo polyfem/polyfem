@@ -108,6 +108,7 @@ namespace poly_fem
 		void assemble_rhs();
 		void solve_problem();
 		void compute_errors();
+		void export_data();
 
 		void interpolate_function(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result);
 		void compute_scalar_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result);
