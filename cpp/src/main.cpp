@@ -92,7 +92,7 @@ int main(int argc, const char **argv)
 	if (!screenshot.empty()) { no_ui = false; }
 
 
-	json in_args;
+	json in_args = json({});
 
 	if(!json_file.empty())
 	{

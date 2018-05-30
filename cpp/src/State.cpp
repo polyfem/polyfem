@@ -1319,13 +1319,13 @@ namespace poly_fem
 			{"solver_type", LinearSolver::defaultSolver()},
 			{"precond_type", LinearSolver::defaultPrecond()},
 
-			{"solver_params", {}},
+			{"solver_params", json({})},
 
 			{"params", {
 				{"lambda", 0.32967032967032966},
 				{"mu", 0.3846153846153846},
 				{"k", 1.0},
-				{"elasticity_tensor", {}},
+				{"elasticity_tensor", json({})},
 				// {"young", 1.0},
 				// {"nu", 0.3},
 				{"alphas", {2.13185026692482, -0.600299816209491}},
@@ -1333,7 +1333,7 @@ namespace poly_fem
 				{"Ds", {9.4979, 1000000}}
 			}},
 
-			{"problem_params", {}},
+			{"problem_params", json({})},
 
 			{"output", ""}
 		};
