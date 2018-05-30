@@ -57,8 +57,7 @@ T boundary_line_singularity(T x, T y, double alpha) {
 template<typename T>
 T wave_front(T x, T y, double x_c, double y_c, double r_0, double alpha) {
     const T r = sqrt( pow2(x - x_c) + pow2(y - y_c) );
-    const T one(1);
-    return atan2(alpha * (r - r_0), one);
+    return atan2(alpha * (r - r_0), T(1.0));
 }
 
 template<typename T>
