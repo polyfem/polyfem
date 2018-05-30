@@ -522,7 +522,7 @@ namespace poly_fem
 		timer.stop();
 		std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
 
-		RefElementSampler::sampler().init(mesh->is_volume(), mesh->n_elements());
+		RefElementSampler::sampler().init(mesh->is_volume(), mesh->n_elements(), args["vismesh_rel_area"]);
 
 		disc_orders.resize(mesh->n_elements());
 		disc_orders.setConstant(args["discr_order"]);
@@ -578,7 +578,7 @@ namespace poly_fem
 		timer.stop();
 		std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
 
-		RefElementSampler::sampler().init(mesh->is_volume(), mesh->n_elements());
+		RefElementSampler::sampler().init(mesh->is_volume(), mesh->n_elements(), args["vismesh_rel_area"]);
 
 		disc_orders.resize(mesh->n_elements());
 		disc_orders.setConstant(args["discr_order"]);
@@ -1296,6 +1296,7 @@ namespace poly_fem
 			{"mesh", ""},
 			{"bc_tag", ""},
 			{"n_refs", 0},
+			{"vismesh_rel_area", 0.00001},
 			{"refinenemt_location", 0.5},
 			{"n_boundary_samples", 10},
 			{"problem", "Franke"},

@@ -10,7 +10,7 @@ namespace poly_fem
 	public:
 		static RefElementSampler &sampler();
 
-		void init(const bool is_volume, const int n_elements);
+		void init(const bool is_volume, const int n_elements, const double target_rel_area);
 
 		const Eigen::MatrixXd &cube_points() const { return cube_points_; }
 		const Eigen::MatrixXi &cube_faces() const { return cube_faces_; }
