@@ -295,6 +295,10 @@ target_compile_definitions(polyfem PUBLIC -DEIGEN_STACK_ALLOCATION_LIMIT=0)
 # 8MB
 # target_compile_definitions(polyfem PUBLIC -DEIGEN_STACK_ALLOCATION_LIMIT=8388608)
 
+if("$ENV{CLUSTER}" STREQUAL "PRINCE")
+	target_compile_definitions(polyfem PUBLIC -DPOLYFEM_ON_HPC)
+endif()
+
 ################################################################################
 # Required libraries
 ################################################################################

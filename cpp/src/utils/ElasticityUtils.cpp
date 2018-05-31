@@ -171,12 +171,15 @@ namespace poly_fem
 
 		if(hessian.size() <= 0)
 		{
+#ifndef POLYFEM_ON_HPC
+			// Somehow causes a segfault on the HPC (objects too big for the stack?)
 			if(n_bases*size < 90)
 			{
 				auto auto_diff_energy = funN(vals, displacement, da);
 				hessian = auto_diff_energy.getHessian();
 			}
 			else
+#endif
 			{
 				static bool show_message = true;
 
