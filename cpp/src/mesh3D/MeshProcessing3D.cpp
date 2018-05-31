@@ -979,6 +979,26 @@ void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter) {
 			e_flag[edges[0]] = e_flag[edges[5]] = false;
 		}
 
+		M_.points.resize(3, M_.vertices.size());
+		for (auto v : M_.vertices)for (int j = 0; j < 3; j++)M_.points(j, v.id) = v.v[j];
+
+		//orient tets
+		const auto &t = M.elements[0].vs;
+		Vector3d c0 = M.points.col(t[0]);
+		Vector3d c1 = M.points.col(t[1]);
+		Vector3d c2 = M.points.col(t[2]);
+		Vector3d c3 = M.points.col(t[3]);
+		bool signed_volume = a_jacobian(c0, c1, c2, c3) > 0 ? true : false;
+		
+		for (auto &ele : M_.elements) {
+			c0 = M_.points.col(ele.vs[0]);
+			c1 = M_.points.col(ele.vs[1]);
+			c2 = M_.points.col(ele.vs[2]);
+			c3 = M_.points.col(ele.vs[3]);
+			bool sign = a_jacobian(c0, c1, c2, c3) > 0 ? true : false;
+			if (sign != signed_volume) std::swap(ele.vs[1], ele.vs[3]);
+		}
+
 		//Fs
 		std::vector<std::vector<uint32_t>> total_fs; total_fs.reserve(M.elements.size() * 4);
 		std::vector<std::tuple<uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t>> tempF;
@@ -1013,8 +1033,6 @@ void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter) {
 			M_.elements[std::get<4>(tempF[i])].fs[std::get<5>(tempF[i])] = F_num - 1;
 		}
 
-		M_.points.resize(3, M_.vertices.size());
-		for (auto v : M_.vertices)for (int j = 0; j < 3; j++)M_.points(j, v.id) = v.v[j];
 
 		build_connectivity(M_);
 		orient_volume_mesh(M_);
