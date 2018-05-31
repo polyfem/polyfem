@@ -16,7 +16,7 @@ template<typename T>
 T reentrant_corner(T x, T y, double omega) {
 	const double alpha = M_PI/omega;
 	const T r = sqrt(x*x+y*y);
-	const T theta = atan2(y, x);
+	const T theta = atan2(y, x) + (y < 0 ? 2.0 * M_PI : 0.0);
 	return pow(r, alpha)*sin(alpha*theta);
 }
 
@@ -25,7 +25,7 @@ std::array<T, 2> linear_elasticity_mode_1(T x, T y, double nu, double E, double 
 	const double kappa = 3.0 - 4.0 * nu;
 	const double G = E  / (2.0 * (1.0 + nu));
 	const T r = sqrt(x*x+y*y);
-	const T theta = atan2(y, x);
+	const T theta = atan2(y, x) + (y < 0 ? 2.0 * M_PI : 0.0);
 	return {{
 		1.0 / (2.0*G) * pow(r, lambda) * ((kappa - Q*(lambda + 1)) * cos(lambda * theta) - lambda * cos((lambda - 2)*theta)),
         1.0 / (2.0*G) * pow(r, lambda) * ((kappa + Q*(lambda + 1)) * sin(lambda * theta) + lambda * sin((lambda - 2)*theta)),
@@ -37,7 +37,7 @@ std::array<T, 2> linear_elasticity_mode_2(T x, T y, double nu, double E, double 
 	const double kappa = 3.0 - 4.0 * nu;
 	const double G = E  / (2.0 * (1.0 + nu));
 	const T r = sqrt(x*x+y*y);
-	const T theta = atan2(y, x);
+	const T theta = atan2(y, x) + (y < 0 ? 2.0 * M_PI : 0.0);
 	return {{
 		1.0 / (2.0*G) * pow(r, lambda) * ((kappa - Q*(lambda + 1)) * sin(lambda * theta) - lambda * sin((lambda - 2)*theta)),
         1.0 / (2.0*G) * pow(r, lambda) * ((kappa + Q*(lambda + 1)) * cos(lambda * theta) + lambda * cos((lambda - 2)*theta)),
@@ -74,7 +74,7 @@ T multiple_difficulties(T x, T y, double omega, double x_w, double y_w, double r
 	double x_p, double y_p, double alpha_p, double eps)
 {
 	const T r = sqrt(x*x+y*y);
-	const T theta = atan2(y, x);
+	const T theta = atan2(y, x) + (y < 0 ? 2.0 * M_PI : 0.0);
 	return pow(r, M_PI/omega) * sin(theta * M_PI/omega)
 		+ atan2( alpha_w * (sqrt(pow2(x - x_w) + pow2(y - y_w)) - r_0), T(1.0) )
 		+ exp( -alpha_p * (pow2(x-x_p) + pow2(y-y_p)) )
