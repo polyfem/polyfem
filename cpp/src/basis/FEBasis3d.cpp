@@ -1681,6 +1681,8 @@ int poly_fem::FEBasis3d::build_bases(
 						Eigen::MatrixXd w;
 						other_bases.evaluate_bases(node_position, w);
 
+						assert(b.bases[j].global().size() == 0);
+
 						for(long i = 0; i < w.size(); ++i)
 						{
 							if(std::abs(w(i))<1e-8)
