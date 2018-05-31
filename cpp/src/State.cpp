@@ -309,23 +309,10 @@ namespace poly_fem
 			{
 				auto nav = mesh2d.switch_face(index);
 
-				while(nav.face >=0 && nav.face != f)
+				if(nav.face >=0)
 				{
 					if(p > disc_orders[nav.face])
 						disc_orders[nav.face] = p;
-
-					nav = mesh2d.switch_face(mesh2d.switch_edge(nav));
-				}
-
-
-				nav = mesh2d.switch_face(mesh2d.switch_edge(index));
-
-				while(nav.face >=0 && nav.face != f)
-				{
-					if(p > disc_orders[nav.face])
-						disc_orders[nav.face] = p;
-
-					nav = mesh2d.switch_face(mesh2d.switch_edge(nav));
 				}
 
 				index = mesh2d.next_around_face(index);
@@ -391,10 +378,10 @@ namespace poly_fem
 			if(p > disc_orders[c])
 				disc_orders[c] = p;
 
-			for(int lv = 0; lv < 4; ++lv)
+			for(int le = 0; le < 6; ++le)
 			{
-				const int v_id = mesh3d.cell_vertex(c, lv);
-				const auto cells = mesh3d.vertex_neighs(v_id);
+				const int e_id = mesh3d.cell_edge(c, le);
+				const auto cells = mesh3d.edge_neighs(e_id);
 
 				for(auto c_id : cells)
 				{
