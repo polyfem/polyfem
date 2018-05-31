@@ -1382,7 +1382,6 @@ namespace poly_fem
 			{"export", {
 				{"vis_mesh", ""},
 				{"wire_mesh", ""},
-				{"discr_mesh", ""},
 			}}
 		};
 
@@ -1440,7 +1439,9 @@ namespace poly_fem
 		Eigen::MatrixXd points(pts_total_size, mesh->dimension());
 		Eigen::MatrixXi tets(tet_total_size, mesh->is_volume()?4:3);
 
-		MatrixXd mapped, tmp;
+		Eigen::MatrixXd discr(pts_total_size, 1);
+
+		Eigen::MatrixXd mapped, tmp;
 		int tet_index = 0, pts_index = 0;
 		for(size_t i = 0; i < current_bases.size(); ++i)
 		{
@@ -1453,6 +1454,7 @@ namespace poly_fem
 				tet_index += sampler.simplex_volume().rows();
 
 				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
+				discr.block(pts_index, 0, mapped.rows(), 1).setConstant(disc_orders(i));
 				pts_index += mapped.rows();
 			}
 			else if(mesh->is_cube(i))
@@ -1462,6 +1464,7 @@ namespace poly_fem
 				tet_index += sampler.cube_volume().rows();
 
 				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
+				discr.block(pts_index, 0, mapped.rows(), 1).setConstant(disc_orders(i));
 				pts_index += mapped.rows();
 			}
 		}
@@ -1490,6 +1493,7 @@ namespace poly_fem
 		}
 
 		writer.add_field("solution", fun);
+		writer.add_field("discr", discr);
 		if(problem->has_exact_sol()){
 			writer.add_field("exact", exact_fun);
 			writer.add_field("error", err);
