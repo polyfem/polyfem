@@ -8,6 +8,7 @@
 #include <igl/opengl/glfw/imgui/ImGuiMenu.h>
 #include <igl/opengl/glfw/imgui/ImGuiHelpers.h>
 #include <igl/adjacency_list.h>
+#include <igl/triangle_triangle_adjacency.h>
 #include <igl/per_face_normals.h>
 #include <imgui/imgui.h>
 
@@ -92,9 +93,32 @@ int main(int argc, const char **argv)
 	F.conservativeResize(index, 3);
 	boundary_2_all.conservativeResize(index);
 
-	std::vector<std::vector<int>> adj;
-	igl::adjacency_list(F, adj);
 	Matrix<bool, Eigen::Dynamic, 1> visited(F.rows());
+
+	MatrixXi adj;
+	igl::triangle_triangle_adjacency(F, adj);
+
+	// std::vector<std::vector<int>> adj_tmp, adj;
+	// igl::adjacency_list(F, adj_tmp);
+	// adj.resize(F.rows());
+
+	// for(int i = 0; i < adj.size(); ++i)
+	// {
+	// 	auto &tmp = adj[i];
+
+	// 	tmp.insert(tmp.end(), adj_tmp[F(i, 0)].begin(), adj_tmp[F(i, 0)].end());
+	// 	tmp.insert(tmp.end(), adj_tmp[F(i, 1)].begin(), adj_tmp[F(i, 1)].end());
+	// 	tmp.insert(tmp.end(), adj_tmp[F(i, 2)].begin(), adj_tmp[F(i, 2)].end());
+	// }
+
+	// for(int i = 0; i < adj.size(); ++i)
+	// {
+	// 	auto &tmp = adj[i];
+
+	// 	std::sort(tmp.begin(), tmp.end());
+ //   		auto it = std::unique(tmp.begin(), tmp.end());
+ //   		tmp.resize(std::distance(tmp.begin(), it));
+	// }
 
 	MatrixXd N;
 	igl::per_face_normals(V, F, N);
@@ -183,7 +207,6 @@ int main(int argc, const char **argv)
 			{
 				const int id = to_visit.front();
 				to_visit.pop();
-				std::cout<<"id "<<id<<std::endl;
 
 				if(visited(id))
 					continue;
@@ -201,9 +224,10 @@ int main(int argc, const char **argv)
 				}
 
 				assert(id<adj.size());
-				auto &neighs = adj[id];
-				for(int nid : neighs)
+				// auto &neighs = adj[id];
+				for(int i = 0; i < 3; ++i)
 				{
+					const int nid = adj(id, i);
 					if(visited(nid))
 						continue;
 
