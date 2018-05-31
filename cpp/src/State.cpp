@@ -1410,11 +1410,14 @@ namespace poly_fem
 	{
 		// Export vtu mesh of solution + wire mesh of deformed input
 		// + mesh colored with the bases
-		if (!args["export"]["vis_mesh"].empty()) {
-			save_vtu(args["export"]["vis_mesh"]);
+		const std::string vis_mesh_path  = args["export"]["vis_mesh"];
+		const std::string wire_mesh_path = args["export"]["wire_mesh"];
+
+		if (!vis_mesh_path.empty()) {
+			save_vtu(vis_mesh_path);
 		}
-		if (!args["export"]["wire_mesh"].empty()) {
-			save_wire(args["export"]["wire_mesh"]);
+		if (!wire_mesh_path.empty()) {
+			save_wire(wire_mesh_path);
 		}
 	}
 

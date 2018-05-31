@@ -29,13 +29,13 @@ namespace poly_fem
 		template<typename T>
 		T sine_fun(T x, T y)
 		{
-			return sin(x/10)*sin(y/10);
+			return sin(x*10)*sin(y*10);
 		}
 
 		template<typename T>
 		T sine_fun(T x, T y, T z)
 		{
-			return sin(x/10)*sin(y/10)*sin(z/10);
+			return sin(x*10)*sin(y*10)*sin(z*10);
 		}
 
 		template<typename T>
