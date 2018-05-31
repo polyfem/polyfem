@@ -309,23 +309,10 @@ namespace poly_fem
 			{
 				auto nav = mesh2d.switch_face(index);
 
-				while(nav.face >=0 && nav.face != f)
+				if(nav.face >=0)
 				{
 					if(p > disc_orders[nav.face])
 						disc_orders[nav.face] = p;
-
-					nav = mesh2d.switch_face(mesh2d.switch_edge(nav));
-				}
-
-
-				nav = mesh2d.switch_face(mesh2d.switch_edge(index));
-
-				while(nav.face >=0 && nav.face != f)
-				{
-					if(p > disc_orders[nav.face])
-						disc_orders[nav.face] = p;
-
-					nav = mesh2d.switch_face(mesh2d.switch_edge(nav));
 				}
 
 				index = mesh2d.next_around_face(index);
@@ -391,10 +378,10 @@ namespace poly_fem
 			if(p > disc_orders[c])
 				disc_orders[c] = p;
 
-			for(int lv = 0; lv < 4; ++lv)
+			for(int le = 0; le < 6; ++le)
 			{
-				const int v_id = mesh3d.cell_vertex(c, lv);
-				const auto cells = mesh3d.vertex_neighs(v_id);
+				const int e_id = mesh3d.cell_edge(c, le);
+				const auto cells = mesh3d.edge_neighs(e_id);
 
 				for(auto c_id : cells)
 				{
@@ -1410,11 +1397,14 @@ namespace poly_fem
 	{
 		// Export vtu mesh of solution + wire mesh of deformed input
 		// + mesh colored with the bases
-		if (!args["export"]["vis_mesh"].empty()) {
-			save_vtu(args["export"]["vis_mesh"]);
+		const std::string vis_mesh_path  = args["export"]["vis_mesh"];
+		const std::string wire_mesh_path = args["export"]["wire_mesh"];
+
+		if (!vis_mesh_path.empty()) {
+			save_vtu(vis_mesh_path);
 		}
-		if (!args["export"]["wire_mesh"].empty()) {
-			save_wire(args["export"]["wire_mesh"]);
+		if (!wire_mesh_path.empty()) {
+			save_wire(wire_mesh_path);
 		}
 	}
 
