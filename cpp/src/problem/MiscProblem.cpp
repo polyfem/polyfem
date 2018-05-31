@@ -27,6 +27,18 @@ namespace poly_fem
 		}
 
 		template<typename T>
+		T sine_fun(T x, T y)
+		{
+			return sin(x/10)*sin(y/10);
+		}
+
+		template<typename T>
+		T sine_fun(T x, T y, T z)
+		{
+			return sin(x/10)*sin(y/10)*sin(z/10);
+		}
+
+		template<typename T>
 		T zero_bc(T x, T y)
 		{
 			return (1 - x)  * x * x * y * (1-y) *(1-y);
@@ -128,6 +140,52 @@ namespace poly_fem
 	{
 		AutodiffHessianPt res(1);
 		res(0) = cubic_fun(pt(0), pt(1));
+
+		return res;
+	}
+
+
+	SineProblem::SineProblem(const std::string &name)
+	: ProblemWithSolution(name)
+	{ }
+
+	VectorNd SineProblem::eval_fun(const VectorNd &pt) const
+	{
+		VectorNd res(1);
+		if(pt.size() == 2)
+			res(0) = sine_fun(pt(0), pt(1));
+		else if(pt.size() == 3)
+			res(0) = sine_fun(pt(0), pt(1), pt(2));
+		else
+			assert(false);
+
+		return res;
+	}
+
+	AutodiffGradPt SineProblem::eval_fun(const AutodiffGradPt &pt) const
+	{
+		AutodiffGradPt res(1);
+
+		if(pt.size() == 2)
+			res(0) = sine_fun(pt(0), pt(1));
+		else if(pt.size() == 3)
+			res(0) = sine_fun(pt(0), pt(1), pt(2));
+		else
+			assert(false);
+
+		return res;
+	}
+
+	AutodiffHessianPt SineProblem::eval_fun(const AutodiffHessianPt &pt) const
+	{
+		AutodiffHessianPt res(1);
+
+		if(pt.size() == 2)
+			res(0) = sine_fun(pt(0), pt(1));
+		else if(pt.size() == 3)
+			res(0) = sine_fun(pt(0), pt(1), pt(2));
+		else
+			assert(false);
 
 		return res;
 	}
