@@ -937,6 +937,8 @@ namespace poly_fem
 			}
 		}
 
+		// dynamic_cast<Mesh3D *>(mesh.get())->save({56}, 1, "mesh.HYBRID");
+
 		// std::sort(flipped_elements.begin(), flipped_elements.end());
 		// auto it = std::unique(flipped_elements.begin(), flipped_elements.end());
 		// flipped_elements.resize(std::distance(flipped_elements.begin(), it));
@@ -1214,10 +1216,11 @@ namespace poly_fem
 		h1_semi_err = 0;
 		linf_err = 0;
 		lp_err = 0;
+		// double pred_norm = 0;
 
 		static const int p = 8;
 
-		Eigen::MatrixXd err_per_el(n_el, 3);
+		// Eigen::MatrixXd err_per_el(n_el, 5);
 
 		for(int e = 0; e < n_el; ++e)
 		{
@@ -1261,41 +1264,45 @@ namespace poly_fem
 			linf_err = max(linf_err, err.maxCoeff());
 			grad_max_err = max(linf_err, err_grad.maxCoeff());
 
-			{
-				const auto &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
-				const auto v0 = mesh3d.point(mesh3d.cell_vertex(e, 0));
-				const auto v1 = mesh3d.point(mesh3d.cell_vertex(e, 1));
-				const auto v2 = mesh3d.point(mesh3d.cell_vertex(e, 2));
-				const auto v3 = mesh3d.point(mesh3d.cell_vertex(e, 3));
+			// {
+			// 	const auto &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
+			// 	const auto v0 = mesh3d.point(mesh3d.cell_vertex(e, 0));
+			// 	const auto v1 = mesh3d.point(mesh3d.cell_vertex(e, 1));
+			// 	const auto v2 = mesh3d.point(mesh3d.cell_vertex(e, 2));
+			// 	const auto v3 = mesh3d.point(mesh3d.cell_vertex(e, 3));
 
-				Eigen::Matrix<double, 6, 3> ee;
-				ee.row(0) = v0 - v1;
-				ee.row(1) = v1 - v2;
-				ee.row(2) = v2 - v0;
+			// 	Eigen::Matrix<double, 6, 3> ee;
+			// 	ee.row(0) = v0 - v1;
+			// 	ee.row(1) = v1 - v2;
+			// 	ee.row(2) = v2 - v0;
 
-				ee.row(3) = v0 - v3;
-				ee.row(4) = v1 - v3;
-				ee.row(5) = v2 - v3;
+			// 	ee.row(3) = v0 - v3;
+			// 	ee.row(4) = v1 - v3;
+			// 	ee.row(5) = v2 - v3;
 
-				Eigen::Matrix<double, 6, 1> en = ee.rowwise().norm();
+			// 	Eigen::Matrix<double, 6, 1> en = ee.rowwise().norm();
 
-				// Eigen::Matrix<double, 3*4, 1> alpha;
-				// alpha(0) = angle3(e.row(0), -e.row(1));	 	alpha(1) = angle3(e.row(1), -e.row(2));	 	alpha(2) = angle3(e.row(2), -e.row(0));
-				// alpha(3) = angle3(e.row(0), -e.row(4));	 	alpha(4) = angle3(e.row(4), e.row(3));	 	alpha(5) = angle3(-e.row(3), -e.row(0));
-				// alpha(6) = angle3(-e.row(4), -e.row(1));	alpha(7) = angle3(e.row(1), -e.row(5));	 	alpha(8) = angle3(e.row(5), e.row(4));
-				// alpha(9) = angle3(-e.row(2), -e.row(5));	alpha(10) = angle3(e.row(5), e.row(3));		alpha(11) = angle3(-e.row(3), e.row(2));
+			// 	// Eigen::Matrix<double, 3*4, 1> alpha;
+			// 	// alpha(0) = angle3(e.row(0), -e.row(1));	 	alpha(1) = angle3(e.row(1), -e.row(2));	 	alpha(2) = angle3(e.row(2), -e.row(0));
+			// 	// alpha(3) = angle3(e.row(0), -e.row(4));	 	alpha(4) = angle3(e.row(4), e.row(3));	 	alpha(5) = angle3(-e.row(3), -e.row(0));
+			// 	// alpha(6) = angle3(-e.row(4), -e.row(1));	alpha(7) = angle3(e.row(1), -e.row(5));	 	alpha(8) = angle3(e.row(5), e.row(4));
+			// 	// alpha(9) = angle3(-e.row(2), -e.row(5));	alpha(10) = angle3(e.row(5), e.row(3));		alpha(11) = angle3(-e.row(3), e.row(2));
 
-				const double S = (ee.row(0).cross(ee.row(1)).norm() + ee.row(0).cross(ee.row(4)).norm() + ee.row(4).cross(ee.row(1)).norm() + ee.row(2).cross(ee.row(5)).norm()) / 2;
-				const double V = std::abs(ee.row(3).dot(ee.row(2).cross(-ee.row(0))))/6;
-				const double rho = 3 * V / S;
-				const double hp = en.maxCoeff();
-				const int pp = disc_orders(e);
-				const int p_ref = args["discr_order"];
+			// 	const double S = (ee.row(0).cross(ee.row(1)).norm() + ee.row(0).cross(ee.row(4)).norm() + ee.row(4).cross(ee.row(1)).norm() + ee.row(2).cross(ee.row(5)).norm()) / 2;
+			// 	const double V = std::abs(ee.row(3).dot(ee.row(2).cross(-ee.row(0))))/6;
+			// 	const double rho = 3 * V / S;
+			// 	const double hp = en.maxCoeff();
+			// 	const int pp = disc_orders(e);
+			// 	const int p_ref = args["discr_order"];
 
-				err_per_el(e, 0) = (err.array() * err.array() 			* vals.det.array() * vals.quadrature.weights.array()).sum();
-				err_per_el(e, 1) = (err.array().pow(p) 					* vals.det.array() * vals.quadrature.weights.array()).sum();
-				err_per_el(e, 2) = std::pow(hp, pp+1)/(rho/hp)/std::pow(average_edge_length, p_ref+1) * (sqrt(6)/12);
-			}
+			// 	err_per_el(e, 0) = err.mean();
+			// 	err_per_el(e, 1) = err.maxCoeff();
+			// 	err_per_el(e, 2) = std::pow(hp, pp+1)/(rho/hp); // /std::pow(average_edge_length, p_ref+1) * (sqrt(6)/12);
+			// 	err_per_el(e, 3) = rho/hp;
+			// 	err_per_el(e, 4) = (vals.det.array() * vals.quadrature.weights.array()).sum();
+
+			// 	// pred_norm += (pow(std::pow(hp, pp+1)/(rho/hp),p) * vals.det.array() * vals.quadrature.weights.array()).sum();
+			// }
 
 			l2_err += (err.array() * err.array() 			* vals.det.array() * vals.quadrature.weights.array()).sum();
 			h1_err += (err_grad.array() * err_grad.array() 	* vals.det.array() * vals.quadrature.weights.array()).sum();
@@ -1308,6 +1315,8 @@ namespace poly_fem
 
 		lp_err = pow(fabs(lp_err), 1./p);
 
+		// pred_norm = pow(fabs(pred_norm), 1./p);
+
 		timer.stop();
 		computing_errors_time = timer.getElapsedTime();
 		std::cout<<" took "<<computing_errors_time<<"s"<<std::endl;
@@ -1316,10 +1325,17 @@ namespace poly_fem
 		std::cout << "-- Lp error: " << lp_err << std::endl;
 		std::cout << "-- H1 error: " << h1_err << std::endl;
 		std::cout << "-- H1 semi error: " << h1_semi_err << std::endl;
+		// std::cout << "-- Perd norm: " << pred_norm << std::endl;
 
 		std::cout << "\n --Linf error: " << linf_err << std::endl;
 		std::cout << "-- grad max error: " << grad_max_err << std::endl;
 		// std::cout<<l2_err<<" "<<linf_err<<" "<<lp_err<<std::endl;
+
+		// {
+		// 	std::ofstream out("errs.txt");
+		// 	out<<err_per_el;
+		// 	out.close();
+		// }
 	}
 
 	State &State::state(){

@@ -789,8 +789,64 @@ Eigen::VectorXi poly_fem::FEBasis3d::tet_face_local_nodes(const int p, const Mes
 
 	assert(lf < fv.rows());
 
-	for(int i = 0; i < n_face_nodes; ++i)
-		result[ii++] = 4 + n_edge_nodes + i + lf*n_face_nodes;
+	if(n_face_nodes == 1)
+		result[ii++] = 4 + n_edge_nodes + lf;
+	else if(n_face_nodes == 3)
+	{
+		auto pos = poly_fem::FEBasis3d::linear_tet_face_local_nodes_coordinates(mesh, index);
+		Eigen::RowVector3d bary = pos.colwise().mean();
+		Eigen::MatrixXd nodes; autogen::p_nodes_3d(4, nodes);
+
+		const int offset = 4 + n_edge_nodes;
+		bool found= false;
+		for(int lff = 0; lff < 4; ++lff)
+		{
+			Eigen::Matrix3d loc_nodes = nodes.block<3,3>(offset+lff*n_face_nodes, 0);
+			Eigen::RowVector3d node_bary = loc_nodes.colwise().mean();
+
+			if((node_bary-bary).norm() < 1e-10)
+			{
+				int sum = 0;
+				for(int m = 0; m < 3; ++m)
+				{
+					auto t = pos.row(m);
+					int min_n = -1; double min_dis = 10000;
+
+					for(int n = 0; n < 3; ++n)
+					{
+						double dis = (loc_nodes.row(n)-t).squaredNorm();
+						if(dis<min_dis)
+						{
+							min_dis = dis;
+							min_n = n;
+						}
+					}
+
+					assert(min_n >= 0);
+					assert(min_n < 3);
+
+					sum += min_n;
+
+					result[ii++] = 4 + n_edge_nodes + min_n + lf*n_face_nodes;
+				}
+
+				assert(sum == 3);
+
+
+				found = true;
+				assert(lff==lf);
+			}
+
+			if(found)
+				break;
+		}
+
+		assert(found);
+	}
+	else
+	{
+		assert(n_face_nodes == 0);
+	}
 
 	assert(ii == result.size());
 	return result;
@@ -1556,7 +1612,7 @@ int poly_fem::FEBasis3d::build_bases(
 						else
 						{
 							const auto lf = -(global_index+1);
-							assert(lf>=0 && lf < 6);
+							assert(lf>=0 && lf < 4);
 							assert(j >= 4 + 6*ln_edge_nodes && j <  4 + 6*ln_edge_nodes + 4*ln_face_nodes);
 
 							Eigen::Matrix<int, 4, 3> fv;
@@ -1570,10 +1626,12 @@ int poly_fem::FEBasis3d::build_bases(
 
 						const auto other_cell = index.element;
 						assert(other_cell >= 0);
+						assert(discr_order > discr_orders(other_cell));
+
 
 						auto indices = tet_face_local_nodes(discr_order, mesh, index);
 						Eigen::MatrixXd lnodes; autogen::p_nodes_3d(discr_order, lnodes);
-						Eigen::RowVector3d node_position;
+						Eigen::RowVector3d node_position; // = lnodes.row(indices(ii));
 
 
 						if( j < 4)
@@ -1581,7 +1639,21 @@ int poly_fem::FEBasis3d::build_bases(
 						else if( j < 4 + 6*ln_edge_nodes)
 							node_position = lnodes.row(indices(((j - 4) % ln_edge_nodes) + 3));
 						else if(j <  4 + 6*ln_edge_nodes + 4*ln_face_nodes)
-							node_position = lnodes.row(indices(((j - 4 - 6*ln_edge_nodes) % ln_face_nodes) + 3 + 3*ln_edge_nodes));
+						{
+							// node_position = lnodes.row(indices(((j - 4 - 6*ln_edge_nodes) % ln_face_nodes) + 3 + 3*ln_edge_nodes));
+							auto me_indices = tet_face_local_nodes(discr_order, mesh, mesh.switch_element(index));
+							int ii;
+							for(ii=0; ii< me_indices.size(); ++ii)
+							{
+								if(me_indices(ii) == j)
+									break;
+							}
+
+							assert(ii >= 3 + 3*ln_edge_nodes);
+							assert(ii < me_indices.size());
+
+							node_position = lnodes.row(indices(ii));
+						}
 						else
 							assert(false);
 
@@ -1614,10 +1686,13 @@ int poly_fem::FEBasis3d::build_bases(
 							if(std::abs(w(i))<1e-8)
 								continue;
 
-							assert(other_bases.bases[i].global().size() == 1);
-							const auto &other_global = other_bases.bases[i].global().front();
+							// assert(other_bases.bases[i].global().size() == 1);
+							for(size_t ii = 0; ii < other_bases.bases[i].global().size(); ++ii)
+							{
+								const auto &other_global = other_bases.bases[i].global()[ii];
 						// std::cout<<"e "<<e<<" " <<j << " gid "<<other_global.index<<std::endl;
-							b.bases[j].global().emplace_back(other_global.index, other_global.node, w(i));
+								b.bases[j].global().emplace_back(other_global.index, other_global.node, w(i)*other_global.val);
+							}
 						}
 					}
 				}

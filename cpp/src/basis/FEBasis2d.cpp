@@ -1144,10 +1144,16 @@ int poly_fem::FEBasis2d::build_bases(
 							if(std::abs(w(i))<1e-8)
 								continue;
 
-							assert(other_bases.bases[i].global().size() == 1);
-							const auto &other_global = other_bases.bases[i].global().front();
+							// assert(other_bases.bases[i].global().size() == 1);
+							// const auto &other_global = other_bases.bases[i].global().front();
 						// std::cout<<"e "<<e<<" " <<j << " gid "<<other_global.index<<std::endl;
-							b.bases[j].global().emplace_back(other_global.index, other_global.node, w(i));
+							// b.bases[j].global().emplace_back(other_global.index, other_global.node, w(i));
+							for(size_t ii = 0; ii < other_bases.bases[i].global().size(); ++ii)
+							{
+								const auto &other_global = other_bases.bases[i].global()[ii];
+						// std::cout<<"e "<<e<<" " <<j << " gid "<<other_global.index<<std::endl;
+								b.bases[j].global().emplace_back(other_global.index, other_global.node, w(i)*other_global.val);
+							}
 						}
 					}
 				}
