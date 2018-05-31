@@ -39,7 +39,7 @@ namespace poly_fem {
                 n_components_ << "\" format=\"ascii\">\n";
                 if (data_.cols() != 1)
                 {
-                    std::cerr << "Warning: writing matrix in vtu file (check ordering of values)" << std::endl;
+                    std::cout << "Warning: writing matrix in vtu file (check ordering of values)" << std::endl;
                 }
                 os << data_;
                 os << "</DataArray>\n";

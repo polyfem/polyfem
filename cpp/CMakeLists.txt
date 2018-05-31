@@ -289,6 +289,16 @@ source_group("autogen" FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_bases.
 set(MESH_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tests/")
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_MESH_PATH=\"${MESH_PATH}\")
 
+# No limit yay
+target_compile_definitions(polyfem PUBLIC -DEIGEN_STACK_ALLOCATION_LIMIT=0)
+
+# 8MB
+# target_compile_definitions(polyfem PUBLIC -DEIGEN_STACK_ALLOCATION_LIMIT=8388608)
+
+if("$ENV{CLUSTER}" STREQUAL "PRINCE")
+	target_compile_definitions(polyfem PUBLIC -DPOLYFEM_ON_HPC)
+endif()
+
 ################################################################################
 # Required libraries
 ################################################################################
