@@ -1378,8 +1378,8 @@ namespace poly_fem
 			{"scalar_formulation", "Laplacian"},
 			{"tensor_formulation", "LinearElasticity"},
 
-			{"B", 2},
-			{"h1_formula", true},
+			{"B", 3},
+			{"h1_formula", false},
 
 			{"quadrature_order", 12},
 			{"discr_order", 1},
