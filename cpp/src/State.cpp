@@ -421,7 +421,7 @@ namespace poly_fem
 		}
 
 		max_angle = max_angle/M_PI*180.;
-		std::cout<<"max_angle "<<max_angle<<std::endl;
+		std::cout<<"using B=" << B << " with " << (h1_formula ? "H1" : "L2") <<" estimate max_angle "<<max_angle<<std::endl;
 
 		std::cout<<"num_p1 " << (disc_orders.array() == 1).count()<<std::endl;
 		std::cout<<"num_p2 " << (disc_orders.array() == 2).count()<<std::endl;
