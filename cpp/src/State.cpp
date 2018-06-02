@@ -256,6 +256,17 @@ namespace poly_fem
 		std::cout<<"done"<<std::endl;
 	}
 
+	double get_opt_p(bool h1_formula, double B,
+		double h_ref, int p_ref, double rho_ref,
+		double h, double rho)
+	{
+		const double ptmp = h1_formula ?
+				(std::log(B*std::pow(h_ref, p_ref + 1)*rho     / (h *rho_ref))            /std::log(h)):
+				(std::log(B*std::pow(h_ref, p_ref + 2)*rho*rho / (h * h *rho_ref*rho_ref))/std::log(h));
+
+		// std::cout<<ptmp<<std::endl;
+		return std::min(std::max(p_ref, (int)std::round(ptmp)), autogen::MAX_P_BASES);
+	}
 
 	void State::p_refinement(const Mesh2D &mesh2d)
 	{
@@ -266,11 +277,14 @@ namespace poly_fem
 		Eigen::MatrixXd p0, p1;
 		mesh2d.get_edges(p0, p1);
 		const auto tmp = p0-p1;
-		const double h = tmp.rowwise().norm().mean();
-		const double B = 2;
+		const double h_ref = tmp.rowwise().norm().mean();
+		const double B = args["B"];
+		const bool h1_formula = args["h1_formula"];
 		const int p_ref = args["discr_order"];
+		const double rho_ref =  sqrt(3.0)/6.0*h_ref;
 
-
+		// std::cout<<"h_ref "<<h_ref<<std::endl;
+		// std::cout<<"edges "<<tmp.rowwise().norm()<<std::endl;
 
 		for(int f = 0; f < mesh2d.n_faces(); ++f)
 		{
@@ -293,13 +307,20 @@ namespace poly_fem
 			const double alpha1 = angle2(e1, -e0);
 			const double alpha2 = angle2(e2, -e1);
 
-			const double P = e1n + e1n + e2n;
+			const double P = e0n + e1n + e2n;
 			const double A = std::abs(e1(0)*e2(1) - e1(1)*e2(0))/2;
 			const double rho = 2*A/P;
 			const double hp = std::max(e0n, std::max(e1n, e2n));
 
-			const double ptmp = 0.5 * (-4 * std::log(hp) + (2*p_ref+2) * std::log(h) + 2*std::log(rho) + 2*std::log(2) + std::log(3) + 2*std::log(B))/std::log(hp);
-			const int p = std::min(std::max(p_ref, (int)std::round(ptmp)), autogen::MAX_P_BASES);
+			// std::cout<<"A "<<A<< " rho "<<rho<<" hp "<<hp<<std::endl;
+
+			// const double ptmp = 0.5 * (-4 * std::log(hp) + (2*p_ref+2) * std::log(h) + 2*std::log(rho) + 2*std::log(2) + std::log(3) + 2*std::log(B))/std::log(hp);
+
+			// const double ptmp = std::log(B*std::pow(h_ref, p_ref + 1)*rho / (hp *rho_ref))/std::log(hp);
+			// const double ptmp = std::log(B*std::pow(h_ref, p_ref + 2)*rho*rho / (hp *hp *rho_ref*rho_ref))/std::log(hp);
+
+			// const int p = std::min(std::max(p_ref, (int)std::round(ptmp)), autogen::MAX_P_BASES);
+			const int p = get_opt_p(h1_formula, B, h_ref, p_ref, rho_ref, hp, rho);
 
 			if(p > disc_orders[f])
 				disc_orders[f] = p;
@@ -334,9 +355,11 @@ namespace poly_fem
 		Eigen::MatrixXd p0, p1;
 		mesh3d.get_edges(p0, p1);
 		const auto tmp = p0-p1;
-		const double h = tmp.rowwise().norm().mean();
-		const double B = 2;
+		const double h_ref = tmp.rowwise().norm().mean();
+		const double B = args["B"];
+		const bool h1_formula = args["h1_formula"];
 		const int p_ref = args["discr_order"];
+		const double rho_ref = sqrt(6.)/12.*h_ref;
 
 		for(int c = 0; c < mesh3d.n_cells(); ++c)
 		{
@@ -371,8 +394,11 @@ namespace poly_fem
 			const double rho = 3 * V / S;
 			const double hp = en.maxCoeff();
 
-			const double ptmp = 0.5 * (-4*std::log(hp) + (2*p_ref+2) * std::log(h) + 2*std::log(rho) + 3*std::log(2) + std::log(3) + 2*std::log(B)) / std::log(hp);
-			const int p = std::min(std::max(p_ref, (int)std::round(ptmp)), autogen::MAX_P_BASES);
+			// const double ptmp = std::log(B*std::pow(h_ref, p_ref + 1)*rho / (hp *rho_ref))/std::log(hp);
+			// const double ptmp = std::log(B*std::pow(h_ref, p_ref + 2)*rho*rho / (hp *hp *rho_ref*rho_ref))/std::log(hp);
+			// 0.5 * (-4*power*std::log(hp) + (2*p_ref+2) * std::log(h) + 2*power*std::log(rho) + 3*std::log(2) + std::log(3) + 2*std::log(B)) / std::log(hp);
+			// const int p = std::min(std::max(p_ref, (int)std::round(ptmp)), autogen::MAX_P_BASES);
+			const int p = get_opt_p(h1_formula, B, h_ref, p_ref, rho_ref, hp, rho);
 
 
 			if(p > disc_orders[c])
@@ -1242,7 +1268,7 @@ namespace poly_fem
 				}
 			}
 
-			const auto err = (v_exact-v_approx).eval().rowwise().norm().eval();
+			auto err = (v_exact-v_approx).eval().rowwise().norm().eval();
 			const auto err_grad = (v_exact_grad - v_approx_grad).eval().rowwise().norm().eval();
 
 			// for(long i = 0; i < err.size(); ++i)
@@ -1346,7 +1372,10 @@ namespace poly_fem
 			{"scalar_formulation", "Laplacian"},
 			{"tensor_formulation", "LinearElasticity"},
 
-			{"quadrature_order", 4},
+			{"B", 2},
+			{"h1_formula", true},
+
+			{"quadrature_order", 12},
 			{"discr_order", 1},
 			{"boundary_samples", 10},
 			{"use_p_ref", false},
