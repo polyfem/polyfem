@@ -423,6 +423,12 @@ namespace poly_fem
 		max_angle = max_angle/M_PI*180.;
 		std::cout<<"max_angle "<<max_angle<<std::endl;
 
+		std::cout<<"num_p1 " << (disc_orders.array() == 1).count()<<std::endl;
+		std::cout<<"num_p2 " << (disc_orders.array() == 2).count()<<std::endl;
+		std::cout<<"num_p3 " << (disc_orders.array() == 3).count()<<std::endl;
+		std::cout<<"num_p4 " << (disc_orders.array() == 4).count()<<std::endl;
+		std::cout<<"num_p5 " << (disc_orders.array() == 5).count()<<std::endl;
+
 	}
 
 
