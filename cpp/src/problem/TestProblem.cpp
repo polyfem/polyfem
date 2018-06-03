@@ -96,7 +96,7 @@ TestProblem::TestProblem(const std::string &name)
 {
 	params_ = {
 		{"type", "reentrant_corner"},
-		{"omega", 3.0 * M_PI / 2.0},
+		{"omega", 7.0 * M_PI / 4.0},
 		{"is_scalar", true}
 	};
 }
