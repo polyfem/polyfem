@@ -29,6 +29,7 @@ add_application(tetrahedralize.cpp igl::core igl::tetgen geogram)
 add_application(tetrahedralize_hybrid.cpp polyfem igl::core igl::tetgen geogram cli11)
 add_application(bc_setter.cpp polyfem igl::core igl::tetgen geogram cli11)
 add_application(param.cpp igl::core igl::tetgen igl::opengl_glfw_imgui igl::png)
+add_application(dmat_to_geogram.cpp igl::core geogram cli11)
 
 set_target_properties(navigation_test PROPERTIES FOLDER misc)
 set_target_properties(refinement_test PROPERTIES FOLDER misc)
