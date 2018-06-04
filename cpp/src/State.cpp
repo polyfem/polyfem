@@ -43,6 +43,8 @@
 #include <igl/serialize.h>
 #include <igl/remove_unreferenced.h>
 #include <igl/remove_duplicate_vertices.h>
+#include <igl/isolines.h>
+#include <igl/write_triangle_mesh.h>
 
 
 #include <unsupported/Eigen/SparseExtra>
@@ -1417,6 +1419,7 @@ namespace poly_fem
 			{"export", {
 				{"vis_mesh", ""},
 				{"wire_mesh", ""},
+				{"iso_mesh", ""},
 			}}
 		};
 
@@ -1433,12 +1436,16 @@ namespace poly_fem
 		// + mesh colored with the bases
 		const std::string vis_mesh_path  = args["export"]["vis_mesh"];
 		const std::string wire_mesh_path = args["export"]["wire_mesh"];
+		const std::string iso_mesh_path = args["export"]["iso_mesh"];
 
 		if (!vis_mesh_path.empty()) {
 			save_vtu(vis_mesh_path);
 		}
 		if (!wire_mesh_path.empty()) {
 			save_wire(wire_mesh_path);
+		}
+		if (!iso_mesh_path.empty()) {
+			save_wire(iso_mesh_path, true);
 		}
 	}
 
@@ -1545,12 +1552,13 @@ namespace poly_fem
 		writer.write_tet_mesh(path, points, tets);
 	}
 
-	void State::save_wire(const std::string &name) {
+	void State::save_wire(const std::string &name, bool isolines) {
 		const auto &sampler = RefElementSampler::sampler();
 
 		const auto &current_bases = iso_parametric() ? bases : geom_bases;
 		int seg_total_size = 0;
 		int pts_total_size = 0;
+		int faces_total_size = 0;
 
 		for(size_t i = 0; i < current_bases.size(); ++i)
 		{
@@ -1559,6 +1567,7 @@ namespace poly_fem
 			if(mesh->is_simplex(i)) {
 				pts_total_size += sampler.simplex_points().rows();
 				seg_total_size += sampler.simplex_edges().rows();
+				faces_total_size += sampler.simplex_faces().rows();
 			} else if(mesh->is_cube(i)) {
 				pts_total_size += sampler.cube_points().rows();
 			}
@@ -1566,10 +1575,11 @@ namespace poly_fem
 
 		Eigen::MatrixXd points(pts_total_size, mesh->dimension());
 		Eigen::MatrixXi edges(seg_total_size, 2);
+		Eigen::MatrixXi faces(faces_total_size, 3);
 		points.setZero();
 
 		MatrixXd mapped, tmp;
-		int seg_index = 0, pts_index = 0;
+		int seg_index = 0, pts_index = 0, face_index = 0;
 		for(size_t i = 0; i < current_bases.size(); ++i)
 		{
 			const auto &bs = current_bases[i];
@@ -1579,6 +1589,9 @@ namespace poly_fem
 				bs.eval_geom_mapping(sampler.simplex_points(), mapped);
 				edges.block(seg_index, 0, sampler.simplex_edges().rows(), edges.cols()) = sampler.simplex_edges().array() + pts_index;
 				seg_index += sampler.simplex_edges().rows();
+
+				faces.block(face_index, 0, sampler.simplex_faces().rows(), 3) = sampler.simplex_faces().array() + pts_index;
+				face_index += sampler.simplex_faces().rows();
 
 				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
 				pts_index += mapped.rows();
@@ -1595,6 +1608,42 @@ namespace poly_fem
 		}
 
 		assert(pts_index == points.rows());
+		assert(face_index == faces.rows());
+
+		if(mesh->is_volume())
+		{
+			//reverse all faces
+			for(long i = 0; i < faces.rows(); ++i)
+			{
+				const int v0 = faces(i, 0);
+				const int v1 = faces(i, 1);
+				const int v2 = faces(i, 2);
+
+				int tmpc = faces(i, 2);
+				faces(i, 2) = faces(i, 1);
+				faces(i, 1) = tmpc;
+			}
+		}
+		else
+		{
+			Matrix2d mmat;
+			for(long i = 0; i < faces.rows(); ++i)
+			{
+				const int v0 = faces(i, 0);
+				const int v1 = faces(i, 1);
+				const int v2 = faces(i, 2);
+
+				mmat.row(0) = points.row(v2) - points.row(v0);
+				mmat.row(1) = points.row(v1) - points.row(v0);
+
+				if(mmat.determinant() > 0)
+				{
+					int tmpc = faces(i, 2);
+					faces(i, 2) = faces(i, 1);
+					faces(i, 1) = tmpc;
+				}
+			}
+		}
 
 		Eigen::MatrixXd fun, exact_fun, err;
 
@@ -1635,6 +1684,18 @@ namespace poly_fem
 			assert(points.rows() == fun.rows());
 			assert(points.cols() == fun.cols());
 			points += fun;
+		} else {
+			if (isolines)
+				points.col(2) += fun;
+		}
+
+		if (isolines) {
+			Eigen::MatrixXd isoV;
+			Eigen::MatrixXi isoE;
+			igl::isolines(points, faces, Eigen::VectorXd(fun), 20, isoV, isoE);
+			igl::write_triangle_mesh("foo.obj", points, faces);
+			points = isoV;
+			edges = isoE;
 		}
 
 		Eigen::MatrixXd V;
@@ -1642,6 +1703,19 @@ namespace poly_fem
 		Eigen::VectorXi I, J;
 		igl::remove_unreferenced(points, edges, V, E, I);
 		igl::remove_duplicate_vertices(V, E, 1e-14, points, I, J, edges);
+
+		// Remove loops
+		int last = edges.rows() - 1;
+		int new_size = edges.rows();
+		for (int i = 0; i <= last; ++i) {
+			if (edges(i, 0) == edges(i, 1)) {
+				edges.row(i) = edges.row(last);
+				--last;
+				--i;
+				--new_size;
+			}
+		}
+		edges.conservativeResize(new_size, edges.cols());
 
 		save_edges(name, points, edges);
 	}
