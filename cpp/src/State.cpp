@@ -12,6 +12,7 @@
 #include "SplineBasis3d.hpp"
 
 #include "EdgeSampler.hpp"
+#include "BoundarySampler.hpp"
 
 #include "PolygonalBasis2d.hpp"
 #include "PolygonalBasis3d.hpp"
@@ -43,6 +44,12 @@
 #include <igl/serialize.h>
 #include <igl/remove_unreferenced.h>
 #include <igl/remove_duplicate_vertices.h>
+#include <igl/isolines.h>
+#include <igl/write_triangle_mesh.h>
+
+#include <igl/AABB.h>
+#include <igl/in_element.h>
+#include <igl/barycentric_coordinates.h>
 
 
 #include <unsupported/Eigen/SparseExtra>
@@ -441,6 +448,80 @@ namespace poly_fem
 		std::cout<<"num_p5 " << (disc_orders.array() == 5).count()<<std::endl;
 
 	}
+
+	void State::interpolate_boundary_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, MatrixXd &result)
+	{
+		assert(mesh->is_volume());
+
+		const Mesh3D &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
+
+		Eigen::MatrixXd points;
+		Eigen::VectorXd weights;
+
+		int actual_dim = 1;
+		if(!problem->is_scalar())
+			actual_dim = 3;
+
+		igl::AABB<Eigen::MatrixXd, 3> tree;
+		tree.init(pts, faces);
+
+		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		result.resize(faces.rows(), actual_dim);
+		result.setConstant(std::numeric_limits<double>::quiet_NaN());
+
+		int counter = 0;
+
+		for(int e = 0; e < mesh3d.n_elements(); ++e)
+		{
+			const ElementBases &gbs = gbases[e];
+			const ElementBases &bs = bases[e];
+
+			for(int lf = 0; lf < mesh3d.n_cell_faces(e); ++lf)
+			{
+				const int face_id = mesh3d.cell_face(e, lf);
+				if(!mesh3d.is_boundary_face(face_id))
+					continue;
+
+				BoundarySampler::quadrature_for_tri_face(lf, 4, points, weights);
+				weights *= mesh3d.tri_area(face_id);
+
+				ElementAssemblyValues vals;
+				vals.compute(e, true, points, bs, gbs);
+				Eigen::Vector3d loc_val; loc_val.setZero();
+
+				// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
+
+				const auto nodes = bs.local_nodes_for_primitive(face_id, mesh3d);
+
+				for(long n = 0; n < nodes.size(); ++n)
+				{
+					// const auto &b = bs.bases[nodes(n)];
+					const AssemblyValues &v = vals.basis_values[nodes(n)];
+					for(int d = 0; d < actual_dim; ++d)
+					{
+						for(size_t g = 0; g < v.global.size(); ++g)
+						{
+							loc_val(d) +=  (v.global[g].val * v.val.array() * fun(v.global[g].index*actual_dim + d) * weights.array()).sum();
+						}
+					}
+				}
+
+				int I;
+				Eigen::RowVector3d C;
+				const Eigen::RowVector3d bary = mesh3d.face_barycenter(face_id);
+
+				const double dist = tree.squared_distance(pts, faces, bary, I, C);
+				assert(dist < 1e-16);
+				// std::cout<<face_id<<" - "<<I<<": "<<dist<<" -> "<<bary<<std::endl;
+				assert(std::isnan(result(I, 0)));
+				result.row(I) = loc_val;
+				++counter;
+			}
+		}
+
+		assert(counter == result.rows());
+	}
+
 
 
 	void State::interpolate_function(const int n_points, const MatrixXd &fun, MatrixXd &result)
@@ -1428,6 +1509,7 @@ namespace poly_fem
 			{"export", {
 				{"vis_mesh", ""},
 				{"wire_mesh", ""},
+				{"iso_mesh", ""},
 			}}
 		};
 
@@ -1444,12 +1526,16 @@ namespace poly_fem
 		// + mesh colored with the bases
 		const std::string vis_mesh_path  = args["export"]["vis_mesh"];
 		const std::string wire_mesh_path = args["export"]["wire_mesh"];
+		const std::string iso_mesh_path = args["export"]["iso_mesh"];
 
 		if (!vis_mesh_path.empty()) {
 			save_vtu(vis_mesh_path);
 		}
 		if (!wire_mesh_path.empty()) {
 			save_wire(wire_mesh_path);
+		}
+		if (!iso_mesh_path.empty()) {
+			save_wire(iso_mesh_path, true);
 		}
 	}
 
@@ -1556,12 +1642,13 @@ namespace poly_fem
 		writer.write_tet_mesh(path, points, tets);
 	}
 
-	void State::save_wire(const std::string &name) {
+	void State::save_wire(const std::string &name, bool isolines) {
 		const auto &sampler = RefElementSampler::sampler();
 
 		const auto &current_bases = iso_parametric() ? bases : geom_bases;
 		int seg_total_size = 0;
 		int pts_total_size = 0;
+		int faces_total_size = 0;
 
 		for(size_t i = 0; i < current_bases.size(); ++i)
 		{
@@ -1570,6 +1657,7 @@ namespace poly_fem
 			if(mesh->is_simplex(i)) {
 				pts_total_size += sampler.simplex_points().rows();
 				seg_total_size += sampler.simplex_edges().rows();
+				faces_total_size += sampler.simplex_faces().rows();
 			} else if(mesh->is_cube(i)) {
 				pts_total_size += sampler.cube_points().rows();
 			}
@@ -1577,10 +1665,11 @@ namespace poly_fem
 
 		Eigen::MatrixXd points(pts_total_size, mesh->dimension());
 		Eigen::MatrixXi edges(seg_total_size, 2);
+		Eigen::MatrixXi faces(faces_total_size, 3);
 		points.setZero();
 
 		MatrixXd mapped, tmp;
-		int seg_index = 0, pts_index = 0;
+		int seg_index = 0, pts_index = 0, face_index = 0;
 		for(size_t i = 0; i < current_bases.size(); ++i)
 		{
 			const auto &bs = current_bases[i];
@@ -1590,6 +1679,9 @@ namespace poly_fem
 				bs.eval_geom_mapping(sampler.simplex_points(), mapped);
 				edges.block(seg_index, 0, sampler.simplex_edges().rows(), edges.cols()) = sampler.simplex_edges().array() + pts_index;
 				seg_index += sampler.simplex_edges().rows();
+
+				faces.block(face_index, 0, sampler.simplex_faces().rows(), 3) = sampler.simplex_faces().array() + pts_index;
+				face_index += sampler.simplex_faces().rows();
 
 				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
 				pts_index += mapped.rows();
@@ -1606,6 +1698,42 @@ namespace poly_fem
 		}
 
 		assert(pts_index == points.rows());
+		assert(face_index == faces.rows());
+
+		if(mesh->is_volume())
+		{
+			//reverse all faces
+			for(long i = 0; i < faces.rows(); ++i)
+			{
+				const int v0 = faces(i, 0);
+				const int v1 = faces(i, 1);
+				const int v2 = faces(i, 2);
+
+				int tmpc = faces(i, 2);
+				faces(i, 2) = faces(i, 1);
+				faces(i, 1) = tmpc;
+			}
+		}
+		else
+		{
+			Matrix2d mmat;
+			for(long i = 0; i < faces.rows(); ++i)
+			{
+				const int v0 = faces(i, 0);
+				const int v1 = faces(i, 1);
+				const int v2 = faces(i, 2);
+
+				mmat.row(0) = points.row(v2) - points.row(v0);
+				mmat.row(1) = points.row(v1) - points.row(v0);
+
+				if(mmat.determinant() > 0)
+				{
+					int tmpc = faces(i, 2);
+					faces(i, 2) = faces(i, 1);
+					faces(i, 1) = tmpc;
+				}
+			}
+		}
 
 		Eigen::MatrixXd fun, exact_fun, err;
 
@@ -1646,6 +1774,18 @@ namespace poly_fem
 			assert(points.rows() == fun.rows());
 			assert(points.cols() == fun.cols());
 			points += fun;
+		} else {
+			if (isolines)
+				points.col(2) += fun;
+		}
+
+		if (isolines) {
+			Eigen::MatrixXd isoV;
+			Eigen::MatrixXi isoE;
+			igl::isolines(points, faces, Eigen::VectorXd(fun), 20, isoV, isoE);
+			igl::write_triangle_mesh("foo.obj", points, faces);
+			points = isoV;
+			edges = isoE;
 		}
 
 		Eigen::MatrixXd V;
@@ -1653,6 +1793,19 @@ namespace poly_fem
 		Eigen::VectorXi I, J;
 		igl::remove_unreferenced(points, edges, V, E, I);
 		igl::remove_duplicate_vertices(V, E, 1e-14, points, I, J, edges);
+
+		// Remove loops
+		int last = edges.rows() - 1;
+		int new_size = edges.rows();
+		for (int i = 0; i <= last; ++i) {
+			if (edges(i, 0) == edges(i, 1)) {
+				edges.row(i) = edges.row(last);
+				--last;
+				--i;
+				--new_size;
+			}
+		}
+		edges.conservativeResize(new_size, edges.cols());
 
 		save_edges(name, points, edges);
 	}

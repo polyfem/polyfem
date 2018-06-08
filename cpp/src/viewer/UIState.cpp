@@ -28,7 +28,7 @@
 #ifdef __APPLE__
 const int line_width = 1;
 #else
-const int line_width = 2;
+const int line_width = 4;
 #endif
 
 
