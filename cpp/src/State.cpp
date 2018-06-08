@@ -12,6 +12,7 @@
 #include "SplineBasis3d.hpp"
 
 #include "EdgeSampler.hpp"
+#include "BoundarySampler.hpp"
 
 #include "PolygonalBasis2d.hpp"
 #include "PolygonalBasis3d.hpp"
@@ -45,6 +46,10 @@
 #include <igl/remove_duplicate_vertices.h>
 #include <igl/isolines.h>
 #include <igl/write_triangle_mesh.h>
+
+#include <igl/AABB.h>
+#include <igl/in_element.h>
+#include <igl/barycentric_coordinates.h>
 
 
 #include <unsupported/Eigen/SparseExtra>
@@ -432,6 +437,80 @@ namespace poly_fem
 		std::cout<<"num_p5 " << (disc_orders.array() == 5).count()<<std::endl;
 
 	}
+
+	void State::interpolate_boundary_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, MatrixXd &result)
+	{
+		assert(mesh->is_volume());
+
+		const Mesh3D &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
+
+		Eigen::MatrixXd points;
+		Eigen::VectorXd weights;
+
+		int actual_dim = 1;
+		if(!problem->is_scalar())
+			actual_dim = 3;
+
+		igl::AABB<Eigen::MatrixXd, 3> tree;
+		tree.init(pts, faces);
+
+		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		result.resize(faces.rows(), actual_dim);
+		result.setConstant(std::numeric_limits<double>::quiet_NaN());
+
+		int counter = 0;
+
+		for(int e = 0; e < mesh3d.n_elements(); ++e)
+		{
+			const ElementBases &gbs = gbases[e];
+			const ElementBases &bs = bases[e];
+
+			for(int lf = 0; lf < mesh3d.n_cell_faces(e); ++lf)
+			{
+				const int face_id = mesh3d.cell_face(e, lf);
+				if(!mesh3d.is_boundary_face(face_id))
+					continue;
+
+				BoundarySampler::quadrature_for_tri_face(lf, 4, points, weights);
+				weights *= mesh3d.tri_area(face_id);
+
+				ElementAssemblyValues vals;
+				vals.compute(e, true, points, bs, gbs);
+				Eigen::Vector3d loc_val; loc_val.setZero();
+
+				// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
+
+				const auto nodes = bs.local_nodes_for_primitive(face_id, mesh3d);
+
+				for(long n = 0; n < nodes.size(); ++n)
+				{
+					// const auto &b = bs.bases[nodes(n)];
+					const AssemblyValues &v = vals.basis_values[nodes(n)];
+					for(int d = 0; d < actual_dim; ++d)
+					{
+						for(size_t g = 0; g < v.global.size(); ++g)
+						{
+							loc_val(d) +=  (v.global[g].val * v.val.array() * fun(v.global[g].index*actual_dim + d) * weights.array()).sum();
+						}
+					}
+				}
+
+				int I;
+				Eigen::RowVector3d C;
+				const Eigen::RowVector3d bary = mesh3d.face_barycenter(face_id);
+
+				const double dist = tree.squared_distance(pts, faces, bary, I, C);
+				assert(dist < 1e-16);
+				// std::cout<<face_id<<" - "<<I<<": "<<dist<<" -> "<<bary<<std::endl;
+				assert(std::isnan(result(I, 0)));
+				result.row(I) = loc_val;
+				++counter;
+			}
+		}
+
+		assert(counter == result.rows());
+	}
+
 
 
 	void State::interpolate_function(const int n_points, const MatrixXd &fun, MatrixXd &result)
