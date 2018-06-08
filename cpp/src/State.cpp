@@ -47,8 +47,8 @@
 #include <igl/isolines.h>
 #include <igl/write_triangle_mesh.h>
 
+#include <igl/per_face_normals.h>
 #include <igl/AABB.h>
-#include <igl/in_element.h>
 #include <igl/barycentric_coordinates.h>
 
 
@@ -523,6 +523,77 @@ namespace poly_fem
 	}
 
 
+	void State::interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, MatrixXd &result)
+	{
+		assert(mesh->is_volume());
+
+		const Mesh3D &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
+
+		MatrixXd normals;
+		igl::per_face_normals(pts, faces, normals);
+
+		Eigen::MatrixXd points;
+		Eigen::VectorXd weights;
+
+		int actual_dim = 1;
+		if(!problem->is_scalar())
+			actual_dim = 3;
+
+		igl::AABB<Eigen::MatrixXd, 3> tree;
+		tree.init(pts, faces);
+
+		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		result.resize(faces.rows(), actual_dim);
+		result.setConstant(std::numeric_limits<double>::quiet_NaN());
+
+		int counter = 0;
+
+		const auto &assembler = AssemblerUtils::instance();
+
+		for(int e = 0; e < mesh3d.n_elements(); ++e)
+		{
+			const ElementBases &gbs = gbases[e];
+			const ElementBases &bs = bases[e];
+
+			for(int lf = 0; lf < mesh3d.n_cell_faces(e); ++lf)
+			{
+				const int face_id = mesh3d.cell_face(e, lf);
+				if(!mesh3d.is_boundary_face(face_id))
+					continue;
+
+				BoundarySampler::quadrature_for_tri_face(lf, 4, points, weights);
+				weights *= mesh3d.tri_area(face_id);
+
+				ElementAssemblyValues vals;
+				vals.compute(e, true, points, bs, gbs);
+				Eigen::MatrixXd loc_val;
+
+				// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
+
+				const auto nodes = bs.local_nodes_for_primitive(face_id, mesh3d);
+				assembler.compute_tensor_value(tensor_formulation(), bs, gbs, points, fun, loc_val);
+				Eigen::VectorXd tmp(loc_val.cols());
+				for(int d = 0; d < loc_val.cols(); ++d)
+					tmp(d) = (loc_val.col(d).array() * weights.array()).sum();
+				const Eigen::MatrixXd tensor = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 3, 3);
+
+				int I;
+				Eigen::RowVector3d C;
+				const Eigen::RowVector3d bary = mesh3d.face_barycenter(face_id);
+
+				const double dist = tree.squared_distance(pts, faces, bary, I, C);
+				assert(dist < 1e-16);
+				// std::cout<<face_id<<" - "<<I<<": "<<dist<<" -> "<<bary<<std::endl;
+				assert(std::isnan(result(I, 0)));
+				result.row(I) = tensor * normals.row(I);
+				++counter;
+			}
+		}
+
+		assert(counter == result.rows());
+	}
+
+
 
 	void State::interpolate_function(const int n_points, const MatrixXd &fun, MatrixXd &result)
 	{
@@ -577,10 +648,12 @@ namespace poly_fem
 		const auto &assembler = AssemblerUtils::instance();
 
 		Eigen::MatrixXd local_val;
+		const auto &gbases =  iso_parametric() ? bases : geom_bases;
 
 		for(int i = 0; i < int(bases.size()); ++i)
 		{
 			const ElementBases &bs = bases[i];
+			const ElementBases &gbs = gbases[i];
 			Eigen::MatrixXd local_pts;
 
 			if(mesh->is_simplex(i))
@@ -590,7 +663,7 @@ namespace poly_fem
 			// else
 				// local_pts = vis_pts_poly[i];
 
-			assembler.compute_scalar_value(tensor_formulation(), bs, local_pts, sol, local_val);
+			assembler.compute_scalar_value(tensor_formulation(), bs, gbs, local_pts, sol, local_val);
 
 			result.block(index, 0, local_val.rows(), 1) = local_val;
 			index += local_val.rows();

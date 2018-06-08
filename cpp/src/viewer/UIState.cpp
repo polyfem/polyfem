@@ -658,6 +658,8 @@ namespace poly_fem
 		std::vector<bool> valid_elements;
 		const auto &sampler = RefElementSampler::sampler();
 
+		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
+
 
 		if(fun.cols() != 1)
 		{
@@ -674,6 +676,7 @@ namespace poly_fem
 			for(int i = 0; i < int(state.bases.size()); ++i)
 			{
 				const ElementBases &bs = state.bases[i];
+				const ElementBases &gbs = gbases[i];
 				MatrixXd local_pts;
 
 				if(state.mesh->is_simplex(i))
@@ -683,7 +686,7 @@ namespace poly_fem
 				else
 					local_pts = vis_pts_poly[i];
 
-				assembler.compute_scalar_value(state.tensor_formulation(), bs, local_pts, state.sol, stresses);
+				assembler.compute_scalar_value(state.tensor_formulation(), bs, gbs, local_pts, state.sol, stresses);
 
 				ffun.block(counter, 0, stresses.rows(), 1) = stresses;
 				counter += stresses.rows();
