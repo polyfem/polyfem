@@ -125,7 +125,7 @@ namespace poly_fem
 		inline std::string mesh_path() const { return args["mesh"]; }
 
 		inline std::string formulation() const { return problem->is_scalar() ? scalar_formulation() : tensor_formulation(); }
-		inline bool iso_parametric() const { return (!args["use_p_ref"] && args["disc_order"] == 1) || args["iso_parametric"]; }
+		inline bool iso_parametric() const { return (!args["use_p_ref"] && args["discr_order"] == 1) || args["iso_parametric"]; }
 
 		inline std::string solver_type() const { return args["solver_type"]; }
 		inline std::string precond_type() const { return args["precond_type"]; }
