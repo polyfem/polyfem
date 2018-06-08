@@ -286,6 +286,8 @@ namespace poly_fem
 		// std::cout<<"h_ref "<<h_ref<<std::endl;
 		// std::cout<<"edges "<<tmp.rowwise().norm()<<std::endl;
 
+		double sigma_sum = 0;
+
 		for(int f = 0; f < mesh2d.n_faces(); ++f)
 		{
 			if(!mesh2d.is_simplex(f))
@@ -311,6 +313,8 @@ namespace poly_fem
 			const double A = std::abs(e1(0)*e2(1) - e1(1)*e2(0))/2;
 			const double rho = 2*A/P;
 			const double hp = std::max(e0n, std::max(e1n, e2n));
+
+			sigma_sum += rho/hp;
 
 			// std::cout<<"A "<<A<< " rho "<<rho<<" hp "<<hp<<std::endl;
 
@@ -346,6 +350,7 @@ namespace poly_fem
 
 		max_angle = max_angle/M_PI*180.;
 		std::cout<<"using B=" << B << " with " << (h1_formula ? "H1" : "L2") <<" estimate max_angle "<<max_angle<<std::endl;
+		std::cout<<"average sigma: "<<sigma_sum/mesh2d.n_faces()<<std::endl;
 
 		std::cout<<"num_p1 " << (disc_orders.array() == 1).count()<<std::endl;
 		std::cout<<"num_p2 " << (disc_orders.array() == 2).count()<<std::endl;
