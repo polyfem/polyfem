@@ -90,8 +90,51 @@ namespace poly_fem
 		);
 	}
 
+	void NeoHookeanElasticity::compute_stress_tensor(const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
+	{
+		Eigen::MatrixXd displacement_grad(size(), size());
+
+		assert(displacement.cols() == 1);
+
+		stresses.resize(local_pts.rows(), size()*size());
+
+		ElementAssemblyValues vals;
+		vals.compute(-1, size() == 3, local_pts, bs, gbs);
+
+
+		for(long p = 0; p < local_pts.rows(); ++p)
+		{
+			displacement_grad.setZero();
+
+			for(std::size_t j = 0; j < bs.bases.size(); ++j)
+			{
+				const Basis &b = bs.bases[j];
+				const auto &loc_val = vals.basis_values[j];
+
+				assert(bs.bases.size() == vals.basis_values.size());
+				assert(loc_val.grad.rows() == local_pts.rows());
+				assert(loc_val.grad.cols() == size());
+
+				for(int d = 0; d < size(); ++d)
+				{
+					for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+					{
+						displacement_grad.row(d) += b.global()[ii].val * loc_val.grad.row(p) * displacement(b.global()[ii].index*size() + d);
+					}
+				}
+			}
+
+			displacement_grad = displacement_grad * vals.jac_it[p];
+			const Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(size(), size()) + displacement_grad;
+			const Eigen::MatrixXd FmT = def_grad.inverse().transpose();
+			Eigen::MatrixXd stress_tensor = mu_*(def_grad - FmT) + lambda_ * std::log(def_grad.determinant()) * FmT;
+
+			stresses.row(p) = Eigen::Map<Eigen::MatrixXd>(stress_tensor.data(), 1, size()*size());
+		}
+	}
+
 	//stress = mu (F - F^{-T}) + lambda ln J F^{-T}
-	void NeoHookeanElasticity::compute_von_mises_stresses(const ElementBases &bs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
+	void NeoHookeanElasticity::compute_von_mises_stresses(const ElementBases &bs,  const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
 	{
 		Eigen::MatrixXd displacement_grad(size(), size());
 
@@ -100,7 +143,7 @@ namespace poly_fem
 		stresses.resize(local_pts.rows(), 1);
 
 		ElementAssemblyValues vals;
-		vals.compute(-1, size() == 3, local_pts, bs, bs);
+		vals.compute(-1, size() == 3, local_pts, bs, gbs);
 
 
 		for(long p = 0; p < local_pts.rows(); ++p)

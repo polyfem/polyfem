@@ -70,6 +70,14 @@ namespace poly_fem
 		//plotting
 		void compute_scalar_value(const std::string &assembler,
 			const ElementBases &bs,
+			const ElementBases &gbs,
+			const Eigen::MatrixXd &local_pts,
+			const Eigen::MatrixXd &fun,
+			Eigen::MatrixXd &result) const;
+
+		void compute_tensor_value(const std::string &assembler,
+			const ElementBases &bs,
+			const ElementBases &gbs,
 			const Eigen::MatrixXd &local_pts,
 			const Eigen::MatrixXd &fun,
 			Eigen::MatrixXd &result) const;

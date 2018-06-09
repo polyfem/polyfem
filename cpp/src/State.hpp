@@ -111,6 +111,8 @@ namespace poly_fem
 		void export_data();
 
 		void interpolate_function(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result);
+		void interpolate_boundary_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, MatrixXd &result);
+		void interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, MatrixXd &result);
 		void compute_scalar_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result);
 
 		void save_json(std::ostream &out);
@@ -124,7 +126,7 @@ namespace poly_fem
 		inline std::string mesh_path() const { return args["mesh"]; }
 
 		inline std::string formulation() const { return problem->is_scalar() ? scalar_formulation() : tensor_formulation(); }
-		inline bool iso_parametric() const { return args["iso_parametric"]; }
+		inline bool iso_parametric() const { return (!args["use_p_ref"] && args["discr_order"] == 1) || args["iso_parametric"]; }
 
 		inline std::string solver_type() const { return args["solver_type"]; }
 		inline std::string precond_type() const { return args["precond_type"]; }
