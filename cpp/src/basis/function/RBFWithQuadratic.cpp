@@ -416,7 +416,10 @@ void RBFWithQuadratic::compute_constraints_matrix_3d(
 	             0, 2*I_lin(1),          0,        2*I_mix(0),        2*I_mix(1),                 0,          0, 4*I_sqr(1),          0,
 	             0,          0, 2*I_lin(2),                 0,        2*I_mix(1),        2*I_mix(2),          0,          0, 4*I_sqr(2);
 	Eigen::Matrix<double, 1, 9> M_rhs;
-	M_rhs << I_lin, I_mix, I_sqr;
+	M_rhs.segment<3>(0) = I_lin;
+	M_rhs.segment<3>(3) = I_mix;
+	M_rhs.segment<3>(6) = I_sqr;
+	// M_rhs << I_lin, I_mix, I_sqr;
 	M.bottomRows(dim).rowwise() += 2.0 * M_rhs;
 	Eigen::FullPivLU<Eigen::Matrix<double, 9, 9>> lu(M);
 	assert(lu.isInvertible());
