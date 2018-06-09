@@ -357,7 +357,7 @@ target_link_libraries(polyfem PUBLIC polyclipping)
 
 # Json
 add_library(json INTERFACE)
-target_include_directories(json SYSTEM INTERFACE ${THIRD_PARTY_DIR}/json/single_include)
+target_include_directories(json SYSTEM INTERFACE ${THIRD_PARTY_DIR}/json/include)
 target_link_libraries(polyfem PUBLIC json)
 
 # NanoSVG
