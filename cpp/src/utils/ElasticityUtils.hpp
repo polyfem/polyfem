@@ -59,6 +59,12 @@ namespace poly_fem
 		void set_from_lambda_mu(const double lambda, const double mu);
 		void set_from_young_poisson(const double young, const double poisson);
 
+		void set_orthotropic(
+		double   Ex, double   Ey, double   Ez,
+		double nuYX, double nuZX, double nuZY,
+		double muYZ, double muZX, double muXY);
+		void set_orthotropic(double Ex, double Ey, double nuYX, double muXY);
+
 		template<int DIM>
 		double compute_stress(const std::array<double, DIM> &strain, const int j) const;
 

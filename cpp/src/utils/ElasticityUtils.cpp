@@ -371,6 +371,37 @@ namespace poly_fem
 		}
 	}
 
+	void ElasticityTensor::set_orthotropic(
+		double   Ex, double   Ey, double   Ez,
+		double nuYX, double nuZX, double nuZY,
+		double muYZ, double muZX, double muXY)
+	{
+		//copied from Julian
+		assert(size_ == 3);
+        // Note: this isn't the flattened compliance tensor! Rather, it is the
+        // matrix inverse of the flattened elasticity tensor. See the tensor
+        // flattening writeup.
+		stifness_tensor_ <<
+		1.0 / Ex, -nuYX / Ey, -nuZX / Ez,   0.0,        0.0,        0.0,
+		0.0,  	 1.0 / Ey, -nuZY / Ez,      0.0,        0.0,        0.0,
+		0.0,        0.0,   1.0 / Ez,        0.0,        0.0,        0.0,
+		0.0,        0.0,        0.0, 1.0 / muYZ,        0.0,        0.0,
+		0.0,        0.0,        0.0,        0.0, 1.0 / muZX,        0.0,
+		0.0,        0.0,        0.0,        0.0,        0.0, 1.0 / muXY;
+	}
+
+	void ElasticityTensor::set_orthotropic(double Ex, double Ey, double nuYX, double muXY)
+	{
+		//copied from Julian
+		assert(size_ == 2);
+        // Note: this isn't the flattened compliance tensor! Rather, it is the
+        // matrix inverse of the flattened elasticity tensor.
+		stifness_tensor_ <<
+		1.0 / Ex, -nuYX / Ey,   0.0,
+		0.0,   1.0 / Ey,        0.0,
+		0.0,        0.0, 		1.0 / muXY;
+	}
+
 	template<int DIM>
 	double ElasticityTensor::compute_stress(const std::array<double, DIM> &strain, const int j) const
 	{
