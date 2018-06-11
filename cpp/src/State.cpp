@@ -585,7 +585,7 @@ namespace poly_fem
 				assert(dist < 1e-16);
 				// std::cout<<face_id<<" - "<<I<<": "<<dist<<" -> "<<bary<<std::endl;
 				assert(std::isnan(result(I, 0)));
-				result.row(I) = tensor * normals.row(I);
+				result.row(I) = normals.row(I) * tensor;
 				++counter;
 			}
 		}
