@@ -384,6 +384,15 @@ if(ENABLE_HYPRE)
 	# add_sanitizers(HYPRE)
 endif()
 
+#Rbf interpolation
+include(rbf)
+if(TARGET RBF)
+	target_link_libraries(polyfem PUBLIC RBF)
+	target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_RBF)
+endif()
+
+
+
 ################################################################################
 # Optional libraries
 ################################################################################
