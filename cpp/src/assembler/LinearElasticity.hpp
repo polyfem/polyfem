@@ -8,6 +8,7 @@
 #include "AutodiffTypes.hpp"
 
 #include <Eigen/Dense>
+#include <functional>
 
 
 namespace poly_fem
@@ -39,5 +40,7 @@ namespace poly_fem
 		int size_ = 2;
 		double mu_ = 1;
 		double lambda_ = 1;
+
+		void assign_stress_tensor(const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const;
 	};
 }

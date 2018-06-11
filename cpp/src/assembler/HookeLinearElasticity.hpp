@@ -38,6 +38,8 @@ namespace poly_fem
 		int size_ = 2;
 
 		ElasticityTensor elasticity_tensor_;
+
+		void assign_stress_tensor(const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const;
 	};
 }
 

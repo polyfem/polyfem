@@ -188,81 +188,29 @@ namespace poly_fem
 
 	void HookeLinearElasticity::compute_stress_tensor(const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
 	{
-		Eigen::MatrixXd displacement_grad(size(), size());
-
-		assert(displacement.cols() == 1);
-
-		stresses.resize(local_pts.rows(), size() * size());
-
-		ElementAssemblyValues vals;
-		vals.compute(-1, size() == 3, local_pts, bs, gbs);
-
-
-		for(long p = 0; p < local_pts.rows(); ++p)
+		assign_stress_tensor(bs, gbs, local_pts, displacement, size()*size(), stresses, [&](const Eigen::MatrixXd &stress)
 		{
-			displacement_grad.setZero();
-
-			for(std::size_t j = 0; j < bs.bases.size(); ++j)
-			{
-				const Basis &b = bs.bases[j];
-				const auto &loc_val = vals.basis_values[j];
-
-				assert(bs.bases.size() == vals.basis_values.size());
-				assert(loc_val.grad.rows() == local_pts.rows());
-				assert(loc_val.grad.cols() == size());
-
-				for(int d = 0; d < size(); ++d)
-				{
-					for(std::size_t ii = 0; ii < b.global().size(); ++ii)
-					{
-						displacement_grad.row(d) += b.global()[ii].val * loc_val.grad.row(p) * displacement(b.global()[ii].index*size() + d);
-					}
-				}
-			}
-
-			displacement_grad = displacement_grad * vals.jac_it[p];
-
-			Eigen::MatrixXd strain = (displacement_grad + displacement_grad.transpose())/2;
-			Eigen::MatrixXd sigma(size(), size());
-
-			if(size() == 2)
-			{
-				std::array<double, 3> eps;
-				eps[0] = strain(0,0);
-				eps[1] = strain(1,1);
-				eps[2] = 2*strain(0,1);
-
-				sigma <<
-				elasticity_tensor_.compute_stress<3>(eps, 0), elasticity_tensor_.compute_stress<3>(eps, 2),
-				elasticity_tensor_.compute_stress<3>(eps, 2), elasticity_tensor_.compute_stress<3>(eps, 1);
-			}
-			else
-			{
-				std::array<double, 6> eps;
-				eps[0] = strain(0,0);
-				eps[1] = strain(1,1);
-				eps[2] = strain(2,2);
-				eps[3] = 2*strain(1,2);
-				eps[4] = 2*strain(0,2);
-				eps[5] = 2*strain(0,1);
-
-				sigma <<
-				elasticity_tensor_.compute_stress<6>(eps, 0), elasticity_tensor_.compute_stress<6>(eps, 5), elasticity_tensor_.compute_stress<6>(eps, 4),
-				elasticity_tensor_.compute_stress<6>(eps, 5), elasticity_tensor_.compute_stress<6>(eps, 1), elasticity_tensor_.compute_stress<6>(eps, 3),
-				elasticity_tensor_.compute_stress<6>(eps, 4), elasticity_tensor_.compute_stress<6>(eps, 3), elasticity_tensor_.compute_stress<6>(eps, 2);
-			}
-
-			stresses.row(p) = Eigen::Map<Eigen::MatrixXd>(sigma.data(), 1, size()*size());
-		}
+			Eigen::MatrixXd tmp = stress;
+			return Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size()*size());
+		});
 	}
 
 	void HookeLinearElasticity::compute_von_mises_stresses(const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
+	{
+		assign_stress_tensor(bs, gbs, local_pts, displacement, 1, stresses, [&](const Eigen::MatrixXd &stress)
+		{
+			Eigen::Matrix<double, 1,1> res; res.setConstant(von_mises_stress_for_stress_tensor(stress));
+			return res;
+		});
+	}
+
+	void HookeLinearElasticity::assign_stress_tensor(const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
 	{
 		Eigen::MatrixXd displacement_grad(size(), size());
 
 		assert(displacement.cols() == 1);
 
-		stresses.resize(local_pts.rows(), 1);
+		all.resize(local_pts.rows(), all_size);
 
 		ElementAssemblyValues vals;
 		vals.compute(-1, size() == 3, local_pts, bs, gbs);
@@ -322,7 +270,7 @@ namespace poly_fem
 				elasticity_tensor_.compute_stress<6>(eps, 4), elasticity_tensor_.compute_stress<6>(eps, 3), elasticity_tensor_.compute_stress<6>(eps, 2);
 			}
 
-			stresses(p) = von_mises_stress_for_stress_tensor(sigma);
+			all.row(p) = fun(sigma);
 		}
 	}
 

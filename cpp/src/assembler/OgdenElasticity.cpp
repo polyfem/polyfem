@@ -122,48 +122,37 @@ namespace poly_fem
 		);
 	}
 
-	void OgdenElasticity::compute_stress_tensor(const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &tensor) const
+	void OgdenElasticity::compute_stress_tensor(const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
 	{
-		assert(false);
+		assign_stress_tensor(bs, gbs, local_pts, displacement, size()*size(), stresses, [&](const Eigen::MatrixXd &stress)
+		{
+			Eigen::MatrixXd tmp = stress;
+			return Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size()*size());
+		});
 	}
 
 	void OgdenElasticity::compute_von_mises_stresses(const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
 	{
-		// Eigen::MatrixXd displacement_grad(size(), size());
+		assign_stress_tensor(bs, gbs, local_pts, displacement, 1, stresses, [&](const Eigen::MatrixXd &stress)
+		{
+			Eigen::Matrix<double, 1,1> res; res.setConstant(von_mises_stress_for_stress_tensor(stress));
+			return res;
+		});
+	}
+
+	void OgdenElasticity::assign_stress_tensor(const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+	{
+		Eigen::MatrixXd displacement_grad(size(), size());
 
 		assert(displacement.cols() == 1);
 		ElementAssemblyValues vals;
 		vals.compute(-1, size() == 3, local_pts, bs, bs);
 
 
-		stresses.resize(local_pts.rows(), 1);
+		all.resize(local_pts.rows(), all_size);
 
-
-		Eigen::MatrixXd loc_displacement(1, size());
-		for(long p = 0; p < local_pts.rows(); ++p)
-		{
-			loc_displacement.setZero();
-
-			for(std::size_t j = 0; j < bs.bases.size(); ++j)
-			{
-				const Basis &b = bs.bases[j];
-				const auto &loc_val = vals.basis_values[j];
-
-				assert(bs.bases.size() == vals.basis_values.size());
-				assert(loc_val.val.size() == local_pts.rows());
-
-				for(int d = 0; d < size(); ++d)
-				{
-					for(std::size_t ii = 0; ii < b.global().size(); ++ii)
-					{
-						loc_displacement(d) += b.global()[ii].val * loc_val.val(p) * displacement(b.global()[ii].index*size() + d);
-					}
-				}
-			}
-
-			stresses(p) = loc_displacement.norm();
-		}
-
+		//TODO
+		assert(false);
 
 		// for(long p = 0; p < local_pts.rows(); ++p)
 		// {
@@ -222,7 +211,7 @@ namespace poly_fem
 
 		// 	stress_tensor = (Eigen::MatrixXd::Identity(size(), size()) + displacement_grad) * stress_tensor;
 
-		// 	stresses(p) = von_mises_stress_for_stress_tensor(stress_tensor);
+		// 	all.row(p) = fun(stress_tensor);
 		// }
 	}
 
