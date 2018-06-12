@@ -135,7 +135,7 @@ int main(int argc, char** argv) {
 				IV.row(n_vertices_copied) = mesh.face_barycenter(index.face);
 				const int center = n_vertices_copied;
 
-				for(int v = 0; v < vids.size(); ++v)
+				for(size_t v = 0; v < vids.size(); ++v)
 				{
 					IF(n_faces, 0) = vids[v];
 					IF(n_faces, 2) = vids[(v+1)%vids.size()];

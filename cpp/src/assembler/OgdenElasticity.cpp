@@ -151,7 +151,7 @@ namespace poly_fem
 
 		all.resize(local_pts.rows(), all_size);
 
-		//TODO
+		//TODO implement stresses
 		assert(false);
 
 		// for(long p = 0; p < local_pts.rows(); ++p)

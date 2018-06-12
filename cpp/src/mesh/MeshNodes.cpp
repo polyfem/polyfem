@@ -195,7 +195,7 @@ std::vector<int> poly_fem::MeshNodes::node_ids_from_edge(const Navigation::Index
 		}
 	}
 
-	assert(res.size() == n_new_nodes);
+	assert(res.size() == size_t(n_new_nodes));
 	return res;
 }
 
@@ -249,7 +249,7 @@ std::vector<int> poly_fem::MeshNodes::node_ids_from_edge(const Navigation3D::Ind
 		}
 	}
 
-	assert(res.size() == n_new_nodes);
+	assert(res.size() == size_t(n_new_nodes));
 	return res;
 }
 
@@ -298,7 +298,7 @@ std::vector<int> poly_fem::MeshNodes::node_ids_from_face(const Navigation::Index
 	{
 		assert(false);
 	}
-	assert(res.size() == n_new_nodes *(n_new_nodes+1) / 2);
+	assert(res.size() == size_t(n_new_nodes *(n_new_nodes+1) / 2));
 	return res;
 }
 
@@ -382,7 +382,7 @@ std::vector<int> poly_fem::MeshNodes::node_ids_from_face(const Navigation3D::Ind
 			}
 		}
 	}
-	assert(res.size() == n_new_nodes *(n_new_nodes+1) / 2);
+	assert(res.size() == size_t(n_new_nodes *(n_new_nodes+1) / 2));
 	return res;
 }
 

@@ -9,9 +9,7 @@ namespace poly_fem
 {
 	void Mesh3D::refine(const int n_refiniment, const double t, std::vector<int> &parent_nodes)
 	{
-		//TODO add refinement for tets
 		if (mesh_.type == MeshType::Tet) {
-
 			MeshProcessing3D::refine_red_refinement_tet(mesh_, n_refiniment);
 		}
 		else {
@@ -124,34 +122,6 @@ namespace poly_fem
 				mesh_.elements[c].v_in_Kernel[d] = bary(d);
 		}
 
-		// //TODO not so nice to detect triangle meshes
-		// is_simplicial_ = n_cell_vertices(0) == 4;
-
-		// if(is_simplicial_)
-		// {
-		// 	for(int i = 0; i < n_cells(); ++i)
-		// 	{
-		// 		assert(n_cell_vertices(i) == 4);
-		// 		std::array<GEO::vec3, 4> vertices;
-		// 		auto &face_vertices = mesh_.elements[i].vs;
-
-		// 		for(int lv = 0; lv < 4; ++lv)
-		// 		{
-		// 			auto pt = point(face_vertices[lv]);
-		// 			for(int d = 0; d < 3; ++d)
-		// 			{
-		// 				vertices[lv][d] = pt(d);
-		// 			}
-		// 		}
-
-		// 		const double vol = GEO::Geom::tetra_signed_volume(vertices[0], vertices[1], vertices[2], vertices[3]);
-		// 		if(vol < 0)
-		// 		{
-		// 			std::swap(face_vertices[1], face_vertices[2]);
-		// 		}
-		// 	}
-		// }
-
 		Navigation3D::prepare_mesh(mesh_);
 		// if(is_simplicial())
 			// MeshProcessing3D::orient_volume_mesh(mesh_);
@@ -162,7 +132,6 @@ namespace poly_fem
 	// load from a geogram surface mesh (for debugging), or volume mesh
 	// if loading a surface mesh, it assumes there is only one polyhedral cell, and the last vertex id a point in the kernel
 	bool Mesh3D::load(const GEO::Mesh &M) {
-		//TODO simplicial?
 		assert(M.vertices.dimension() == 3);
 
 		// Set vertices
@@ -644,20 +613,26 @@ namespace poly_fem
 
 			const auto p = face_barycenter(f);
 
-			if(fabs(p(0)-minV(0))<1e-7)
+			const double eps = is_simplex(f) ? 1e-7 : 1e-2;
+
+			if(fabs(p(0)-minV(0))<eps)
 				boundary_ids_[f]=1;
-			if(fabs(p(1)-minV(1))<1e-7)
+			if(fabs(p(1)-minV(1))<eps)
 				boundary_ids_[f]=2;
-			if(fabs(p(2)-minV(2))<1e-7)
+			if(fabs(p(2)-minV(2))<eps)
 				boundary_ids_[f]=5;
 
-			if(fabs(p(0)-maxV(0))<1e-7)
+			if(fabs(p(0)-maxV(0))<eps)
 				boundary_ids_[f]=3;
-			if(fabs(p(1)-maxV(1))<1e-7)
+			if(fabs(p(1)-maxV(1))<eps)
 				boundary_ids_[f]=4;
-			if(fabs(p(2)-maxV(2))<1e-7)
+			if(fabs(p(2)-maxV(2))<eps)
 				boundary_ids_[f]=6;
+
+			// std::cout<<p<<": "<<minV<<" - "<<maxV<<boundary_ids_[f]<<std::endl;
 		}
+
+
 	}
 
 	RowVectorNd Mesh3D::point(const int global_index) const {
@@ -866,7 +841,7 @@ namespace poly_fem
 		const auto v1 = point(vertices[0]);
 		const auto v2 = point(vertices[1]);
 		const auto v3 = point(vertices[2]);
-		const auto v4 = point(vertices[4]);
+		const auto v4 = point(vertices[3]);
 
 		const Vector3d e0 = (v2 - v1).transpose();
 		const Vector3d e1 = (v3 - v1).transpose();

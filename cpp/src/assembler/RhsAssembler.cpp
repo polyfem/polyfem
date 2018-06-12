@@ -91,7 +91,7 @@ namespace poly_fem
 						{
 							global_index_to_col[b.global()[ii].index] = index++;
 							indices.push_back(b.global()[ii].index);
-							assert(indices.size() == index);
+							assert(indices.size() == size_t(index));
 						}
 					}
 				}
@@ -240,7 +240,7 @@ namespace poly_fem
 			vals.compute(e, mesh_.is_volume(), points, bs, gbs);
 			problem_.neumann_bc(mesh_, global_primitive_ids, vals.val, rhs_fun);
 
-			// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
+			UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
 
 			for(int d = 0; d < size_; ++d)
 				rhs_fun.col(d) = rhs_fun.col(d).array() * weights.array();
@@ -260,7 +260,7 @@ namespace poly_fem
 
 						for(size_t g = 0; g < v.global.size(); ++g)
 						{
-							rhs(v.global[g].index*size_+d) +=  rhs_value * v.global[g].val;
+							rhs(v.global[g].index*size_+d) += rhs_value * v.global[g].val;
 						}
 					}
 				}

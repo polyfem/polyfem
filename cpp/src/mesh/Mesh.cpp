@@ -146,7 +146,7 @@ void poly_fem::Mesh::load_boundary_ids(const std::string &path)
 		++bindex;
 	}
 
-	assert(boundary_ids_.size() == bindex);
+	assert(boundary_ids_.size() == size_t(bindex));
 
 	file.close();
 }

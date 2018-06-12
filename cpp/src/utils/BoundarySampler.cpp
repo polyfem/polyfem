@@ -5,6 +5,7 @@
 
 #include "LineQuadrature.hpp"
 #include "TriQuadrature.hpp"
+#include "QuadQuadrature.hpp"
 
 namespace poly_fem
 {
@@ -42,7 +43,27 @@ namespace poly_fem
 
 	void BoundarySampler::quadrature_for_quad_face(int index, int order, Eigen::MatrixXd &points, Eigen::VectorXd &weights)
 	{
-		assert(false);
+		auto endpoints = FEBasis3d::hex_local_node_coordinates_from_face(index);
+
+		Quadrature quad;
+		QuadQuadrature quad_rule; quad_rule.get_quadrature(order, quad);
+
+		const int n_pts = quad.points.rows();
+		points.resize(n_pts, endpoints.cols());
+
+		for (int i = 0; i < n_pts; ++i) {
+			const double b1 = quad.points(i, 0);
+			const double b2 = 1 - b1;
+
+			const double b3 = quad.points(i, 1);
+			const double b4 = 1 - b3;
+
+			for (int c = 0; c < 3; ++c) {
+				points(i, c) = b3 * (b1 * endpoints(0, c) + b2 * endpoints(1, c)) + b4 * (b1 * endpoints(3, c) + b2 * endpoints(2, c));
+			}
+		}
+
+		weights = quad.weights;
 	}
 
 	void BoundarySampler::quadrature_for_tri_face(int index, int order, Eigen::MatrixXd &points, Eigen::VectorXd &weights)

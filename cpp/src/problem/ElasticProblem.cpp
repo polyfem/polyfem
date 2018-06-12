@@ -109,7 +109,7 @@ namespace poly_fem
 			auto ff = params["force"];
 			if(ff.is_array())
 			{
-				for(int k = 0; k < ff.size(); ++k)
+				for(size_t k = 0; k < ff.size(); ++k)
 					force_(k) = ff[k];
 			}
 		}

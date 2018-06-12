@@ -27,6 +27,8 @@ namespace poly_fem
 			ErrorGrad,
 			VisBasis,
 
+			NavigationIndex,
+
 			Debug,
 
 			ElementId,
@@ -36,7 +38,7 @@ namespace poly_fem
 			TotalVisualizations
 		};
 
-		const std::string visualizations_texts[Visualizations::TotalVisualizations] = { "InputMesh", "Diretization", "Nodes", "VisMesh", "Solution", "Error", "ErrorGrad", "VisBasis", "Debug", "ElementId", "VertexId", "NodesId" };
+		const std::string visualizations_texts[Visualizations::TotalVisualizations] = { "InputMesh", "Diretization", "Nodes", "VisMesh", "Solution", "Error", "ErrorGrad", "VisBasis",  "NavigationIndex", "Debug", "ElementId", "VertexId", "NodesId" };
 
 
 	public:
@@ -96,7 +98,18 @@ namespace poly_fem
 			return data(Visualizations::Debug);
 		}
 
+		bool load(std::string mesh_file_name_string) override
+		{
+			state.args["mesh"] = mesh_file_name_string;
+			load_mesh();
+
+			return true;
+		}
+
 	protected:
+		Navigation3D::Index current_3d_index;
+		Navigation::Index 	current_2d_index;
+
 		std::array<bool, 6> dirichlet_bc;
 
 		igl::opengl::ViewerData &data(const Visualizations &layer);
@@ -146,7 +159,7 @@ namespace poly_fem
 		long clip_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, std::vector<bool> &valid_elements, const bool map_edges, const Visualizations &layer);
 		long show_clipped_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, const std::vector<bool> &valid_elements, const bool map_edges, const Visualizations &layer, const bool recenter = false);
 		void color_mesh(const int n_tris, const std::vector<bool> &valid_elements, const Visualizations &layer);
-		void plot_selection_and_index(const Visualizations &layer, const bool recenter = false);
+		void plot_selection_and_index(const bool recenter = false);
 		void get_plot_edges(const Mesh &mesh, const std::vector< ElementBases > &bases, const int n_samples, const std::vector<bool> &valid_elements, const Visualizations &layer, Eigen::MatrixXd &pp0, Eigen::MatrixXd &pp1);
 	};
 

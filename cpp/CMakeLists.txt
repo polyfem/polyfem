@@ -230,7 +230,6 @@ set(POLYFEM_SOURCES
 	src/utils/BoundarySampler.hpp
 	src/utils/CommandLine.cpp
 	src/utils/CommandLine.hpp
-	src/utils/CustomSerialization.hpp
 	src/utils/EdgeSampler.cpp
 	src/utils/EdgeSampler.hpp
 	src/utils/ElasticityUtils.cpp

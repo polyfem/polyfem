@@ -27,7 +27,6 @@
 
 #include "Common.hpp"
 
-#include "CustomSerialization.hpp"
 #include "VTUWriter.hpp"
 #include "MeshUtils.hpp"
 
@@ -869,21 +868,6 @@ namespace poly_fem
 
 		// for(int i = 8; i < 16; ++i)
 			// mesh->set_tag(i, ElementType::SimpleSingularInteriorCube);
-
-		//TODO
-		// disc_orders(18) = 4;
-		// disc_orders(2) = 4;
-		// disc_orders(4) = 4;
-		// disc_orders(20) = 4;
-		// disc_orders(14) = 4;
-		// disc_orders(28) = 4;
-		// disc_orders(12) = 4;
-		// disc_orders(27) = 4;
-		// disc_orders(11) = 4;
-		// disc_orders(23) = 4;
-		// disc_orders(25) = 4;
-		// disc_orders(5) = 4;
-		// disc_orders(21) = 4;
 	}
 
 	void State::compute_mesh_stats()
@@ -1294,7 +1278,7 @@ namespace poly_fem
 		}
 		else
 		{
-			int steps = 20;
+			int steps = args["nl_solver_rhs_steps"];
 			RhsAssembler rhs_assembler(*mesh, n_bases, mesh->dimension(), bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
 			VectorXd tmp_sol;
 			auto rhs_old  = rhs;
@@ -1562,6 +1546,7 @@ namespace poly_fem
 			{"precond_type", LinearSolver::defaultPrecond()},
 
 			{"solver_params", json({})},
+			{"nl_solver_rhs_steps", 10},
 
 			{"params", {
 				{"lambda", 0.32967032967032966},

@@ -292,6 +292,7 @@ void RBFWithQuadraticLagrange::compute_constraints_matrix_3d(
 	M_rhs.segment<3>(6) = I_sqr;
 	// M_rhs << I_lin, I_mix, I_sqr;
 	M.bottomRows(dim).rowwise() += 2.0 * M_rhs;
+	//TODO
 	assert(false);
 
 	show_matrix_stats(M);

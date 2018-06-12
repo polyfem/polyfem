@@ -437,7 +437,7 @@ void compute_nodes(
 
 			LocalBoundary lb(c, BoundaryType::Quad);
 
-			for(int i = 0; i < f.size(); ++i)
+			for(int i = 0; i < int(f.size()); ++i)
 			{
 				if (mesh.is_boundary_face(f[i])){
 					lb.add_boundary_primitive(f[i], i);
@@ -692,7 +692,7 @@ std::vector<int> poly_fem::FEBasis3d::tet_local_to_global(const int p, const Mes
 		res.insert(res.end(), node_ids.begin(), node_ids.end());
 	}
 
-	assert(res.size() == 4 + n_edge_nodes + n_face_nodes + n_cell_nodes);
+	assert(res.size() == size_t(4 + n_edge_nodes + n_face_nodes + n_cell_nodes));
 	return res;
 }
 

@@ -50,22 +50,22 @@ namespace {
 
 // -----------------------------------------------------------------------------
 
-		std::string saveFileName(const std::string &defaultPath,
-			const std::vector<std::string> &filters, const std::string &desc)
-		{
-			int n = static_cast<int>(filters.size());
-			std::vector<char const *> filterPatterns(n);
-			for (int i = 0; i < n; ++i) {
-				filterPatterns[i] = filters[i].c_str();
-			}
-			char const * select = tinyfd_saveFileDialog("Save File",
-				defaultPath.c_str(), n, filterPatterns.data(), desc.c_str());
-			if (select == nullptr) {
-				return "";
-			} else {
-				return std::string(select);
-			}
-		}
+		// std::string saveFileName(const std::string &defaultPath,
+		// 	const std::vector<std::string> &filters, const std::string &desc)
+		// {
+		// 	int n = static_cast<int>(filters.size());
+		// 	std::vector<char const *> filterPatterns(n);
+		// 	for (int i = 0; i < n; ++i) {
+		// 		filterPatterns[i] = filters[i].c_str();
+		// 	}
+		// 	char const * select = tinyfd_saveFileDialog("Save File",
+		// 		defaultPath.c_str(), n, filterPatterns.data(), desc.c_str());
+		// 	if (select == nullptr) {
+		// 		return "";
+		// 	} else {
+		// 		return std::string(select);
+		// 	}
+		// }
 
 } // namespace FileDialog
 
@@ -76,7 +76,6 @@ namespace {
 // Draw menu
 void poly_fem::UIState::draw_menu() {
 	// Text labels
-	draw_labels_window();
 
 	// Viewer settings
 	float viewer_menu_width = 180.f * hidpi_scaling() / pixel_ratio();
@@ -92,6 +91,7 @@ void poly_fem::UIState::draw_menu() {
 		| ImGuiWindowFlags_NoMove
 		);
 	draw_viewer_menu();
+	draw_labels_window();
 	draw_screenshot();
 	ImGui::End();
 
@@ -165,17 +165,16 @@ void poly_fem::UIState::draw_settings() {
 	ImGui::PopItemWidth();
 
 	ImGui::Spacing();
-	if (ImGui::Button("Browse...")) {
-		std::string path = FileDialog::openFileName("./.*",
-			{"*.HYBRID","*.mesh","*.MESH", "*.obj"} , "General polyhedral mesh");
+	// if (ImGui::Button("Browse...")) {
+	// 	std::string path = FileDialog::openFileName("./.*",
+	// 		{"*.HYBRID","*.mesh","*.MESH", "*.obj"} , "General polyhedral mesh");
 
-		if (!path.empty()) {
-			state.args["mesh"] = path;
-			load_mesh();
-		}
+	// 	if (!path.empty()) {
+	// 		load(path)
+	// 	}
 
-	}
-	ImGui::SameLine();
+	// }
+	// ImGui::SameLine();
 	ImGui::Text("%s", state.mesh_path().c_str());
 	ImGui::Spacing();
 
@@ -274,7 +273,7 @@ void poly_fem::UIState::draw_settings() {
 		ImGui::EndCombo();
 	}
 	if(is_scalar) pop_disabled();
-    ImGui::Separator();
+	ImGui::Separator();
 
 
 
@@ -403,37 +402,65 @@ void poly_fem::UIState::draw_debug() {
 		ImGui::PopItemWidth();
 	}
 
-	// if (ImGui::CollapsingHeader("Selection", ImGuiTreeNodeFlags_DefaultOpen)) {
-	// 	ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.50f);
-	// 	static char buf[1024];
-	// 	if (ImGui::InputText("Element Ids", buf, 1024)) {
-	// 		auto v = StringUtils::split(buf, ",");
-	// 		selected_elements.resize(v.size());
-	// 		std::transform(v.begin(), v.end(), selected_elements.begin(),
-	// 			[](const std::string &s) { return std::stoi(s); });
-	// 	}
-	// 	ImGui::PopItemWidth();
-	// 	if (ImGui::Button("Show##Selected", ImVec2(-1, 0))) {
-	// 		plot_selection_and_index(true);
-	// 	}
-	// 	if (ImGui::Button("Switch vertex", ImVec2(-1, 0))) {
-	// 		plot_selection_and_index();
-	// 	}
-	// 	if (ImGui::Button("Switch edge", ImVec2(-1, 0))) {
-	// 		plot_selection_and_index();
-	// 	}
-	// 	if (ImGui::Button("Switch face", ImVec2(-1, 0))) {
-	// 		plot_selection_and_index();
-	// 	}
-	// 	if (ImGui::Button("Switch element", ImVec2(-1, 0))) {
-	// 		plot_selection_and_index();
-	// 	}
-	// 	if (ImGui::Button("Save selection", ImVec2(-1, 0))) {
-	// 		if(state.mesh->is_volume()) {
-	// 			dynamic_cast<Mesh3D *>(state.mesh.get())->save(selected_elements, 2, "mesh.HYBRID");
-	// 		}
-	// 	}
-	// }
+	if (ImGui::CollapsingHeader("Selection", ImGuiTreeNodeFlags_DefaultOpen)) {
+		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.50f);
+		static char buf[1024];
+		if (ImGui::InputText("Element Ids", buf, 1024)) {
+			auto v = StringUtils::split(buf, ",");
+			selected_elements.resize(v.size());
+			std::transform(v.begin(), v.end(), selected_elements.begin(), [](const std::string &s) { return std::stoi(s); });
+		}
+		ImGui::PopItemWidth();
+		if (ImGui::Button("Show##Selected", ImVec2(-1, 0))) {
+
+			if(state.mesh->is_volume())
+				current_3d_index = dynamic_cast<Mesh3D *>(state.mesh.get())->get_index_from_element(selected_elements.front());
+			else
+				current_2d_index = dynamic_cast<Mesh2D *>(state.mesh.get())->get_index_from_face(selected_elements.front());
+
+			plot_selection_and_index(true);
+		}
+		if (ImGui::Button("Switch vertex", ImVec2(-1, 0))) {
+			if(state.mesh->is_volume())
+				current_3d_index = dynamic_cast<Mesh3D *>(state.mesh.get())->switch_vertex(current_3d_index);
+			else
+				current_2d_index = dynamic_cast<Mesh2D *>(state.mesh.get())->switch_vertex(current_2d_index);
+
+			plot_selection_and_index();
+		}
+		if (ImGui::Button("Switch edge", ImVec2(-1, 0))) {
+			if(state.mesh->is_volume())
+				current_3d_index = dynamic_cast<Mesh3D *>(state.mesh.get())->switch_edge(current_3d_index);
+			else
+				current_2d_index = dynamic_cast<Mesh2D *>(state.mesh.get())->switch_edge(current_2d_index);
+
+			plot_selection_and_index();
+		}
+		if (ImGui::Button("Switch face", ImVec2(-1, 0))) {
+			if(state.mesh->is_volume())
+				current_3d_index = dynamic_cast<Mesh3D *>(state.mesh.get())->switch_face(current_3d_index);
+			else{
+				current_2d_index = dynamic_cast<Mesh2D *>(state.mesh.get())->switch_face(current_2d_index);
+				selected_elements.push_back(current_2d_index.face);
+			}
+
+			plot_selection_and_index();
+		}
+		if(state.mesh && state.mesh->is_volume())
+		{
+			if (ImGui::Button("Switch element", ImVec2(-1, 0))) {
+				current_3d_index = dynamic_cast<Mesh3D *>(state.mesh.get())->switch_element(current_3d_index);
+				selected_elements.push_back(current_3d_index.element);
+
+				plot_selection_and_index();
+			}
+		}
+		if (ImGui::Button("Save selection", ImVec2(-1, 0))) {
+			if(state.mesh->is_volume()) {
+				dynamic_cast<Mesh3D *>(state.mesh.get())->save(selected_elements, 2, "mesh.HYBRID");
+			}
+		}
+	}
 
 }
 

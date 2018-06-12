@@ -264,7 +264,7 @@ namespace {
 					for (int id : poly_fem::FEBasis2d::linear_quad_local_to_global(mesh, f)) {
 						element_nodes_id[f].push_back(nodes.node_id_from_primitive(id));
 					}
-				} else if (discr_order == 2) {//TODO
+				} else if (discr_order == 2) {
 					const auto tmp = poly_fem::FEBasis2d::quadr_quad_local_to_global(mesh, f);
 					for (int id : tmp) {
 						if(id < 0)
@@ -289,7 +289,7 @@ namespace {
 
 				LocalBoundary lb(f, BoundaryType::QuadLine);
 
-				for(int i = 0; i < e.size(); ++i)
+				for(int i = 0; i < int(e.size()); ++i)
 				{
 					if (mesh.is_boundary_edge(e[i])){
 						lb.add_boundary_primitive(e[i], i);
@@ -312,7 +312,7 @@ namespace {
 
 				LocalBoundary lb(f, BoundaryType::TriLine);
 
-				for(int i = 0; i < e.size(); ++i)
+				for(int i = 0; i < int(e.size()); ++i)
 				{
 					if (mesh.is_boundary_edge(e[i])){
 						lb.add_boundary_primitive(e[i], i);
@@ -325,7 +325,6 @@ namespace {
 		}
 
 		// Step 2: Iterate over edges of polygons and compute interface weights
-		// TODO p-ref
 		for (int f = 0; f < mesh.n_faces(); ++f) {
 			const int discr_order = discr_orders(f);
 			// Skip non-polytopes
@@ -570,7 +569,7 @@ std::vector<int> poly_fem::FEBasis2d::tri_local_to_global(const int p, const Mes
 		res.insert(res.end(), node_ids.begin(), node_ids.end());
 	}
 
-	assert(res.size() == 3 + n_edge_nodes + n_face_nodes);
+	assert(res.size() == size_t(3 + n_edge_nodes + n_face_nodes));
 	return res;
 }
 
@@ -910,7 +909,6 @@ int poly_fem::FEBasis2d::build_bases(
 	const int nn = max_p > 2 ? (max_p - 2) : 0;
 	const int n_face_nodes = std::max(nn * (nn + 1) / 2, max_p == 2 ? 1 : 0);
 
-	//TODO works only for P
 	MeshNodes nodes(mesh, max_p - 1, n_face_nodes);
 	std::vector<std::vector<int>> element_nodes_id;
 	compute_nodes(mesh, discr_orders, nodes, element_nodes_id, local_boundary, poly_edge_to_data);

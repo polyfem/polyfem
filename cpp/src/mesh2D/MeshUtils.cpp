@@ -582,7 +582,7 @@ void poly_fem::extract_polyhedra(const Mesh3D &mesh, std::vector<std::unique_ptr
 			Eigen::RowVector3d p = mesh.kernel(c);
 			poly->vertices.point(nv) = GEO::vec3(p.data());
 		}
-		assert(vertex_l2g.size() == (triangulated ? nv + nf : nv));
+		assert(vertex_l2g.size() == size_t(triangulated ? nv + nf : nv));
 
 		for (int v : vertex_l2g) {
 			vertex_g2l[v] = -1;

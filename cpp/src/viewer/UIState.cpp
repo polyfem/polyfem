@@ -198,43 +198,45 @@ namespace poly_fem
 		pp1.bottomRows(p1.rows()) = p1;
 	}
 
-
-	namespace
-	{
-
-		Navigation3D::Index current_3d_index;
-	}
-
-	void UIState::plot_selection_and_index(const Visualizations &layer, const bool recenter)
+	void UIState::plot_selection_and_index(const bool recenter)
 	{
 		std::vector<bool> valid_elements(normalized_barycenter.rows(), false);
 		for (auto idx : selected_elements) {
 			valid_elements[idx] = true;
 		}
 
-		data(layer).clear();
+		data(Visualizations::NavigationIndex).clear();
 
-		if(layer == Visualizations::InputMesh)
+		//if(layer == Visualizations::InputMesh)
 		{
-			const long n_tris = show_clipped_elements(tri_pts, tri_faces, element_ranges, valid_elements, false, layer, recenter);
-			color_mesh(n_tris, valid_elements, layer);
+			const long n_tris = show_clipped_elements(tri_pts, tri_faces, element_ranges, valid_elements, false, Visualizations::NavigationIndex, recenter);
+			color_mesh(n_tris, valid_elements, Visualizations::NavigationIndex);
+		}
+		// else
+		// {
+			// show_clipped_elements(vis_pts, vis_faces, vis_element_ranges, valid_elements, true, Visualizations::NavigationIndex, recenter);
+		// }
+
+		if(state.mesh->is_volume())
+		{
+			const auto p = state.mesh->point(current_3d_index.vertex);
+			const auto p1 = state.mesh->point(dynamic_cast<Mesh3D *>(state.mesh.get())->switch_vertex(current_3d_index).vertex);
+
+			data(Visualizations::NavigationIndex).add_points(p, MatrixXd::Zero(1, 3));
+			data(Visualizations::NavigationIndex).add_edges(p, p1, RowVector3d(1, 1, 0));
+
+			data(Visualizations::NavigationIndex).add_points(state.mesh->face_barycenter(current_3d_index.face), RowVector3d(1, 0, 0));
 		}
 		else
 		{
-			show_clipped_elements(vis_pts, vis_faces, vis_element_ranges, valid_elements, true, layer, recenter);
+			const auto p = state.mesh->point(current_2d_index.vertex);
+			const auto p1 = state.mesh->point(dynamic_cast<Mesh2D *>(state.mesh.get())->switch_vertex(current_2d_index).vertex);
+
+			data(Visualizations::NavigationIndex).add_points(p, MatrixXd::Zero(1, 3));
+			data(Visualizations::NavigationIndex).add_edges(p, p1, RowVector3d(1, 1, 0));
+
+			data(Visualizations::NavigationIndex).add_points(state.mesh->face_barycenter(current_2d_index.face), RowVector3d(1, 0, 0));
 		}
-
-		//TODO navigation index
-		// if(state.mesh->is_volume())
-		// {
-		// 	const auto p = state.mesh->point(current_3d_index.vertex);
-		// 	const auto p1 = state.mesh->point(dynamic_cast<Mesh3D *>(state.mesh.get())->switch_vertex(current_3d_index).vertex);
-
-		// 	viewer.data().add_points(p, MatrixXd::Zero(1, 3));
-		// 	viewer.data().add_edges(p, p1, RowVector3d(1, 1, 0));
-
-		// 	viewer.data().add_points(dynamic_cast<Mesh3D *>(state.mesh.get())->face_barycenter(current_3d_index.face), RowVector3d(1, 0, 0));
-		// }
 	}
 
 	void UIState::color_mesh(const int n_tris, const std::vector<bool> &valid_elements, const Visualizations &layer)
@@ -1035,7 +1037,6 @@ namespace poly_fem
 		if(vis_basis < 0 || vis_basis >= state.n_bases) return;
 		if(tri_faces.size() <= 0) return;
 
-		//TODO
 		available_visualizations(Visualizations::VisBasis) = false;
 		if(visible_visualizations(Visualizations::VisBasis) && !available_visualizations[Visualizations::VisBasis])
 		{

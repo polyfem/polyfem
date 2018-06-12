@@ -78,7 +78,7 @@ namespace poly_fem
 		res.setZero();
 		assert(gradi.cols() == size());
 		assert(gradj.cols() == size());
-		assert(gradi.rows() ==  vals.jac_it.size());
+		assert(size_t(gradi.rows()) ==  vals.jac_it.size());
 
 		for(long k = 0; k < gradi.rows(); ++k)
 		{
