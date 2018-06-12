@@ -240,7 +240,7 @@ namespace poly_fem
 			vals.compute(e, mesh_.is_volume(), points, bs, gbs);
 			problem_.neumann_bc(mesh_, global_primitive_ids, vals.val, rhs_fun);
 
-			UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
+			// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
 
 			for(int d = 0; d < size_; ++d)
 				rhs_fun.col(d) = rhs_fun.col(d).array() * weights.array();

@@ -613,7 +613,7 @@ namespace poly_fem
 
 			const auto p = face_barycenter(f);
 
-			const double eps = is_simplex(f) ? 1e-7 : 1e-2;
+			const double eps = n_face_vertices(f) == 3 ? 1e-7 : 1e-2;
 
 			if(fabs(p(0)-minV(0))<eps)
 				boundary_ids_[f]=1;

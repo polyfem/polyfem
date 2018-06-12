@@ -52,6 +52,9 @@ int main(int argc, const char **argv)
 	GEO::CmdLine::import_arg_group("pre");
 	GEO::CmdLine::import_arg_group("algo");
 
+
+	igl::opengl::glfw::Viewer viewer;
+
 	CommandLine command_line;
 	std::string path = "";
 	command_line.add_option("-mesh", path);
@@ -68,12 +71,14 @@ int main(int argc, const char **argv)
 
 	std::vector<int> ranges;
 	mesh.get_edges(p0, p1);
-	V.resize(mesh.n_vertices(), 3);
+	V.resize(mesh.n_vertices() + mesh.n_faces(), 3);
 	for(int i = 0; i < mesh.n_vertices(); ++i)
 		V.row(i) = mesh.point(i);
 
-	F.resize(mesh.n_faces(), 3);
-	VectorXi boundary_2_all(mesh.n_faces());
+	int v_index = mesh.n_vertices();
+
+	F.resize(mesh.n_faces()*4, 3);
+	VectorXi boundary_2_all(mesh.n_faces()*4);
 	Matrix<std::vector<int>, Dynamic, 1> all_2_local(mesh.n_faces());
 
 	int index = 0;
@@ -84,41 +89,38 @@ int main(int argc, const char **argv)
 
 		std::vector<int> &other_faces = all_2_local(f);
 
-		F.row(index) << mesh.face_vertex(f, 2), mesh.face_vertex(f, 1), mesh.face_vertex(f, 0);
-		boundary_2_all(index) = f;
-		other_faces.push_back(index);
-		++index;
+		const int n_f_v = mesh.n_face_vertices(f);
+		if(n_f_v == 3)
+		{
+			F.row(index) << mesh.face_vertex(f, 2), mesh.face_vertex(f, 1), mesh.face_vertex(f, 0);
+			boundary_2_all(index) = f;
+			other_faces.push_back(index);
+			++index;
+		}
+		else
+		{
+			auto bary = mesh.face_barycenter(f);
+			for(int j = 0; j < n_f_v; ++j)
+			{
+				F.row(index) << mesh.face_vertex(f, j), mesh.face_vertex(f, (j+1)%n_f_v), v_index;
+				boundary_2_all(index) = f;
+				other_faces.push_back(index);
+				++index;
+			}
+
+			V.row(v_index) = bary;
+			++v_index;
+		}
 	}
 
 	F.conservativeResize(index, 3);
+	V.conservativeResize(v_index, 3);
 	boundary_2_all.conservativeResize(index);
 
 	Matrix<bool, Eigen::Dynamic, 1> visited(F.rows());
 
 	MatrixXi adj;
 	igl::triangle_triangle_adjacency(F, adj);
-
-	// std::vector<std::vector<int>> adj_tmp, adj;
-	// igl::adjacency_list(F, adj_tmp);
-	// adj.resize(F.rows());
-
-	// for(int i = 0; i < adj.size(); ++i)
-	// {
-	// 	auto &tmp = adj[i];
-
-	// 	tmp.insert(tmp.end(), adj_tmp[F(i, 0)].begin(), adj_tmp[F(i, 0)].end());
-	// 	tmp.insert(tmp.end(), adj_tmp[F(i, 1)].begin(), adj_tmp[F(i, 1)].end());
-	// 	tmp.insert(tmp.end(), adj_tmp[F(i, 2)].begin(), adj_tmp[F(i, 2)].end());
-	// }
-
-	// for(int i = 0; i < adj.size(); ++i)
-	// {
-	// 	auto &tmp = adj[i];
-
-	// 	std::sort(tmp.begin(), tmp.end());
- //   		auto it = std::unique(tmp.begin(), tmp.end());
- //   		tmp.resize(std::distance(tmp.begin(), it));
-	// }
 
 	MatrixXd N;
 	igl::per_face_normals(V, F, N);
@@ -154,7 +156,6 @@ int main(int argc, const char **argv)
 	}
 
 
-	igl::opengl::glfw::Viewer viewer;
 
 	igl::opengl::glfw::imgui::ImGuiMenu menu;
 	viewer.plugins.push_back(&menu);
