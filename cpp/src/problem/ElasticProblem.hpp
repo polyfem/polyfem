@@ -35,7 +35,8 @@ namespace poly_fem
 
 		void set_parameters(const json &params) override;
 	private:
-		RowVectorNd force_;
+		std::vector<RowVectorNd> forces_;
+		std::vector<RowVectorNd> displacements_;
 	};
 
 	class ElasticProblemZeroBC: public Problem

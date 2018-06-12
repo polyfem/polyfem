@@ -1,6 +1,8 @@
 #include <Mesh3D.hpp>
 #include <CommandLine.hpp>
 
+#include <Common.hpp>
+
 
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
@@ -162,18 +164,51 @@ int main(int argc, const char **argv)
 
 	int current_id = 1;
 	bool track = false;
+	float vals1[3] = { 0.0f, 0.0f, 0.0f };
+	float vals2[3] = { 0.0f, 0.0f, 0.0f };
+	float vals3[3] = { 0.0f, 0.0f, 0.0f };
+	float vals4[3] = { 0.0f, 0.0f, 0.0f };
+	float vals5[3] = { 0.0f, 0.0f, 0.0f };
+	float vals6[3] = { 0.0f, 0.0f, 0.0f };
+
+	int bc_type_1 = 0;
+	int bc_type_2 = 0;
+	int bc_type_3 = 0;
+	int bc_type_4 = 0;
+	int bc_type_5 = 0;
+	int bc_type_6 = 0;
+
+
 
 	menu.callback_draw_viewer_menu = [&]()
 	{
 		ImGui::RadioButton("clear", &current_id, 0);
 		ImGui::Separator();
-		ImGui::RadioButton("ID 1", &current_id, 1);
-		ImGui::RadioButton("ID 2", &current_id, 2);
-		ImGui::RadioButton("ID 3", &current_id, 3);
-		ImGui::RadioButton("ID 4", &current_id, 4);
-		ImGui::RadioButton("ID 5", &current_id, 5);
-		ImGui::RadioButton("ID 6", &current_id, 6);
+		ImGui::RadioButton("1", &current_id, 1);
+		ImGui::RadioButton("2", &current_id, 2);
+		ImGui::RadioButton("3", &current_id, 3);
+		ImGui::RadioButton("4", &current_id, 4);
+		ImGui::RadioButton("5", &current_id, 5);
+		ImGui::RadioButton("6", &current_id, 6);
 
+		ImGui::Separator();
+
+		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.80f);
+		ImGui::InputFloat3("1", vals1);
+		ImGui::InputFloat3("2", vals2);
+		ImGui::InputFloat3("3", vals3);
+		ImGui::InputFloat3("4", vals4);
+		ImGui::InputFloat3("5", vals5);
+		ImGui::InputFloat3("6", vals6);
+		ImGui::PopItemWidth();
+		ImGui::Separator();
+
+		ImGui::TextColored(ImVec4(color(1)(0),color(1)(1),color(1)(2),1.0f), "1"); ImGui::SameLine(); ImGui::RadioButton("Dirichlet##id1", &bc_type_1, 0); ImGui::SameLine(); ImGui::RadioButton("Neuman##id1", &bc_type_1, 1);
+		ImGui::TextColored(ImVec4(color(2)(0),color(2)(1),color(2)(2),1.0f), "2"); ImGui::SameLine(); ImGui::RadioButton("Dirichlet##id2", &bc_type_2, 0); ImGui::SameLine(); ImGui::RadioButton("Neuman##id2", &bc_type_2, 1);
+		ImGui::TextColored(ImVec4(color(3)(0),color(3)(1),color(3)(2),1.0f), "3"); ImGui::SameLine(); ImGui::RadioButton("Dirichlet##id3", &bc_type_3, 0); ImGui::SameLine(); ImGui::RadioButton("Neuman##id3", &bc_type_3, 1);
+		ImGui::TextColored(ImVec4(color(4)(0),color(4)(1),color(4)(2),1.0f), "4"); ImGui::SameLine(); ImGui::RadioButton("Dirichlet##id4", &bc_type_4, 0); ImGui::SameLine(); ImGui::RadioButton("Neuman##id4", &bc_type_4, 1);
+		ImGui::TextColored(ImVec4(color(5)(0),color(5)(1),color(5)(2),1.0f), "5"); ImGui::SameLine(); ImGui::RadioButton("Dirichlet##id5", &bc_type_5, 0); ImGui::SameLine(); ImGui::RadioButton("Neuman##id5", &bc_type_5, 1);
+		ImGui::TextColored(ImVec4(color(6)(0),color(6)(1),color(6)(2),1.0f), "6"); ImGui::SameLine(); ImGui::RadioButton("Dirichlet##id6", &bc_type_6, 0); ImGui::SameLine(); ImGui::RadioButton("Neuman##id6", &bc_type_6, 1);
 		ImGui::Separator();
 
 		if(ImGui::Button("save"))
@@ -186,6 +221,55 @@ int main(int argc, const char **argv)
 				file << selected;
 			}
 
+			file.close();
+
+			auto dirichel = json::array();
+			auto neuman = json::array();
+
+			const json json1 = {{"id", 1}, {"value", {vals1[0], vals1[1], vals1[2]}}};
+			const json json2 = {{"id", 2}, {"value", {vals2[0], vals2[1], vals2[2]}}};
+			const json json3 = {{"id", 3}, {"value", {vals3[0], vals3[1], vals3[2]}}};
+			const json json4 = {{"id", 4}, {"value", {vals4[0], vals4[1], vals4[2]}}};
+			const json json5 = {{"id", 5}, {"value", {vals5[0], vals5[1], vals5[2]}}};
+			const json json6 = {{"id", 6}, {"value", {vals6[0], vals6[1], vals6[2]}}};
+
+			if(bc_type_1 == 0)
+				dirichel.push_back(json1);
+			else
+				neuman.push_back(json1);
+
+			if(bc_type_2 == 0)
+				dirichel.push_back(json2);
+			else
+				neuman.push_back(json2);
+
+			if(bc_type_3 == 0)
+				dirichel.push_back(json3);
+			else
+				neuman.push_back(json3);
+
+			if(bc_type_4 == 0)
+				dirichel.push_back(json4);
+			else
+				neuman.push_back(json4);
+
+			if(bc_type_5 == 0)
+				dirichel.push_back(json5);
+			else
+				neuman.push_back(json5);
+
+			if(bc_type_6 == 0)
+				dirichel.push_back(json6);
+			else
+				neuman.push_back(json6);
+
+			const json args = {
+				{"dirichlet_boundary", dirichel},
+				{"neumann_boundary", neuman},
+			};
+
+			file.open("setting.json");
+			file << args.dump(4) << std::endl;
 			file.close();
 		}
 	};
