@@ -1,6 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "InterpolatedFunction.hpp"
 #include "Bessel.hpp"
+#include "ExpressionValue.hpp"
+
 
 #include <Eigen/Dense>
 
@@ -37,4 +39,19 @@ TEST_CASE("bessel", "[utils]") {
     REQUIRE(bessy1(1.)     == Approx(-0.781212821300289).margin(1e-8));
     REQUIRE(bessy1(10.)    == Approx(0.249015424206954).margin(1e-8));
     REQUIRE(bessy1(100.)   == Approx(-0.020372312002760).margin(1e-8));
+}
+
+
+TEST_CASE("expression", "[utils]") {
+    json jexpr = {{"value", "x^2+sqrt(x*y)+sin(z)*x"}};
+    json jexpr2d = {{"value", "x^2+sqrt(x*y)"}};
+    json jval  = {{"value", 1}};
+
+    ExpressionValue expr;   expr.init(jexpr["value"]);
+    ExpressionValue expr2d; expr2d.init(jexpr2d["value"]);
+    ExpressionValue val;    val.init(jval["value"]);
+
+    REQUIRE(expr(2, 3, 4)   == Approx(2.*2.+sqrt(2.*3.)+sin(4.)*2.).margin(1e-10));
+    REQUIRE(expr2d(2, 3)    == Approx(2.*2.+sqrt(2.*3.)).margin(1e-10));
+    REQUIRE(val(2, 3, 4)    == Approx(1).margin(1e-16));
 }

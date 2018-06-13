@@ -244,6 +244,8 @@ set(POLYFEM_SOURCES
 	src/utils/RefElementSampler.hpp
 	src/utils/StringUtils.cpp
 	src/utils/StringUtils.hpp
+	src/utils/ExpressionValue.cpp
+	src/utils/ExpressionValue.hpp
 	src/utils/Types.hpp
 )
 
@@ -255,6 +257,8 @@ add_library(polyfem
 	${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_eigs.hpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_bases.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_bases.hpp
+
+	${THIRD_PARTY_DIR}/tinyexpr/tinyexpr.c
 )
 
 target_include_directories(polyfem PUBLIC
@@ -272,6 +276,8 @@ target_include_directories(polyfem PUBLIC
 	src/solver
 	src/utils
 	src/viewer
+
+	${THIRD_PARTY_DIR}/tinyexpr/
 )
 
 foreach(source IN ITEMS ${POLYFEM_SOURCES})

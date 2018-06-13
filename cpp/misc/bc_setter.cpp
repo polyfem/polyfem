@@ -329,6 +329,7 @@ int main(int argc, const char **argv)
 					C.row(i) = color(v, vals.size());
 			}
 
+			current_id = vals.size();
 			viewer.data().set_colors(C);
 		}
 	};
