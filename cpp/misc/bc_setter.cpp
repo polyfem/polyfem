@@ -16,60 +16,42 @@
 
 #include <igl/unproject_onto_mesh.h>
 #include <igl/opengl/glfw/Viewer.h>
+#include <igl/colormap.h>
 #include <iostream>
 #include <queue>
+#include <vector>
 
 
 using namespace poly_fem;
 using namespace Eigen;
 
-RowVector3d color(int bc)
+igl::ColorMapType color_map = igl::COLOR_MAP_TYPE_VIRIDIS;
+
+RowVector3d color(int bc, int n_cols)
 {
 	RowVector3d col;
-
-	switch(bc)
+	if(bc == 0)
 	{
-		case 0: col << 1,1,1; break;
-		case 1: col << 1,0,0; break;
-		case 2: col << 0,1,0; break;
-		case 3: col << 0,0,1; break;
-		case 4: col << 1,1,0; break;
-		case 5: col << 1,0,1; break;
-		case 6: col << 0,1,1; break;
+		col << 1,1,1;
+	}
+	else
+	{
+		MatrixXd tmp;
+		MatrixXd v(1,1); v(0) = bc;
+		igl::colormap(color_map, v, 1, n_cols, tmp);
+		col = tmp;
 	}
 
 	return col;
 }
 
-int main(int argc, const char **argv)
+void load(const std::string &path,
+	MatrixXd &V, MatrixXi &F, MatrixXd &p0, MatrixXd &p1, MatrixXd &N, MatrixXi &adj,
+	VectorXi &selected, Matrix<std::vector<int>, Dynamic, 1> &all_2_local, VectorXi &boundary_2_all, MatrixXd &C)
 {
-	#ifndef WIN32
-	setenv("GEO_NO_SIGNAL_HANDLER", "1", 1);
-#endif
-
-	GEO::initialize();
-
-    // Import standard command line arguments, and custom ones
-	GEO::CmdLine::import_arg_group("standard");
-	GEO::CmdLine::import_arg_group("pre");
-	GEO::CmdLine::import_arg_group("algo");
-
-
-	igl::opengl::glfw::Viewer viewer;
-
-	CommandLine command_line;
-	std::string path = "";
-	command_line.add_option("-mesh", path);
-
-	std::string bc = "";
-	command_line.add_option("-bc", bc);
-
-	command_line.parse(argc, argv);
-
 	Mesh3D mesh;
 	mesh.load(path);
-	MatrixXd V, p0, p1;
-	MatrixXi F;
+
 
 	std::vector<int> ranges;
 	mesh.get_edges(p0, p1);
@@ -80,8 +62,8 @@ int main(int argc, const char **argv)
 	int v_index = mesh.n_vertices();
 
 	F.resize(mesh.n_faces()*4, 3);
-	VectorXi boundary_2_all(mesh.n_faces()*4);
-	Matrix<std::vector<int>, Dynamic, 1> all_2_local(mesh.n_faces());
+	boundary_2_all.resize(mesh.n_faces()*4);
+	all_2_local.resize(mesh.n_faces());
 
 	int index = 0;
 	for(int f = 0; f < mesh.n_faces(); ++f)
@@ -119,158 +101,149 @@ int main(int argc, const char **argv)
 	V.conservativeResize(v_index, 3);
 	boundary_2_all.conservativeResize(index);
 
-	Matrix<bool, Eigen::Dynamic, 1> visited(F.rows());
-
-	MatrixXi adj;
 	igl::triangle_triangle_adjacency(F, adj);
-
-	MatrixXd N;
 	igl::per_face_normals(V, F, N);
 
 
 	// Initialize white
-	MatrixXd C = MatrixXd::Constant(F.rows(),3,1);
-	VectorXi selected(mesh.n_faces());
+	C = MatrixXd::Constant(F.rows(),3,1);
+	selected.resize(mesh.n_faces());
 	selected.setZero();
+}
 
-	if(!bc.empty())
+void save(const std::string &path, const VectorXi &selected, const std::vector<float*> &vals, const std::vector<int> &bc_type)
+{
+	std::ofstream file;
+	file.open("bc.txt");
+
+	if(file.good())
 	{
-		std::ifstream file(bc);
-
-		std::string line;
-		int bindex = 0;
-		while (std::getline(file, line))
-		{
-			std::istringstream iss(line);
-			int v;
-			iss >> v;
-			selected(bindex) = v;
-
-			for(int i : all_2_local(bindex))
-				C.row(i) = color(v);
-
-			++bindex;
-		}
-
-		assert(selected.size() == bindex);
-
-		file.close();
+		file << selected;
 	}
 
+	file.close();
 
+	auto dirichel = json::array();
+	auto neuman = json::array();
+
+	for(int i = 1; i <= int(vals.size()); ++i){
+		const json vv = {{"id", i}, {"value", {vals[i-1][0], vals[i-1][1], vals[i-1][2]}}};
+
+		if(bc_type[i-1] == 0)
+			dirichel.push_back(vv);
+		else
+			neuman.push_back(vv);
+	}
+	const json args = {
+		{"dirichlet_boundary", dirichel},
+		{"neumann_boundary", neuman},
+	};
+
+	file.open("setting.json");
+	file << args.dump(4) << std::endl;
+	file.close();
+}
+
+int main(int argc, const char **argv)
+{
+#ifndef WIN32
+	setenv("GEO_NO_SIGNAL_HANDLER", "1", 1);
+#endif
+
+	GEO::initialize();
+
+    // Import standard command line arguments, and custom ones
+	GEO::CmdLine::import_arg_group("standard");
+	GEO::CmdLine::import_arg_group("pre");
+	GEO::CmdLine::import_arg_group("algo");
+
+
+	igl::opengl::glfw::Viewer viewer;
+
+	CommandLine command_line;
+	std::string path = "";
+	command_line.add_option("-mesh", path);
+
+	command_line.parse(argc, argv);
+
+	int current_id = 1;
+	bool tracking_mouse = false;
+
+	MatrixXd V;
+	MatrixXi F;
+	MatrixXd p0, p1;
+	MatrixXd N;
+	MatrixXi adj;
+	VectorXi selected;
+	MatrixXd C;
+	Matrix<bool, Eigen::Dynamic, 1> visited;
+	Matrix<std::vector<int>, Dynamic, 1> all_2_local;
+	VectorXi boundary_2_all;
+
+
+	std::vector<float*> vals; vals.push_back(new float[3]{0, 0, 0});
+	std::vector<int> bc_type(1); bc_type.front() = 0;
+
+
+	load(path, V, F, p0, p1, N, adj, selected, all_2_local, boundary_2_all, C);
+	visited.resize(F.rows());
 
 	igl::opengl::glfw::imgui::ImGuiMenu menu;
 	viewer.plugins.push_back(&menu);
 
-	int current_id = 1;
-	bool track = false;
-	float vals1[3] = { 0.0f, 0.0f, 0.0f };
-	float vals2[3] = { 0.0f, 0.0f, 0.0f };
-	float vals3[3] = { 0.0f, 0.0f, 0.0f };
-	float vals4[3] = { 0.0f, 0.0f, 0.0f };
-	float vals5[3] = { 0.0f, 0.0f, 0.0f };
-	float vals6[3] = { 0.0f, 0.0f, 0.0f };
-
-	int bc_type_1 = 0;
-	int bc_type_2 = 0;
-	int bc_type_3 = 0;
-	int bc_type_4 = 0;
-	int bc_type_5 = 0;
-	int bc_type_6 = 0;
-
-
 
 	menu.callback_draw_viewer_menu = [&]()
 	{
-		ImGui::RadioButton("clear", &current_id, 0);
+		menu.draw_viewer_menu();
+		
+		ImGui::RadioButton("clear##bc_selector", &current_id, 0);
 		ImGui::Separator();
-		ImGui::RadioButton("1", &current_id, 1);
-		ImGui::RadioButton("2", &current_id, 2);
-		ImGui::RadioButton("3", &current_id, 3);
-		ImGui::RadioButton("4", &current_id, 4);
-		ImGui::RadioButton("5", &current_id, 5);
-		ImGui::RadioButton("6", &current_id, 6);
-
+		for(int i = 1; i <= int(vals.size()); ++i){
+			std::string label = std::to_string(i) + "##bc_selector";
+			ImGui::RadioButton(label.c_str(), &current_id, i);
+		}
 		ImGui::Separator();
 
 		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.80f);
-		ImGui::InputFloat3("1", vals1);
-		ImGui::InputFloat3("2", vals2);
-		ImGui::InputFloat3("3", vals3);
-		ImGui::InputFloat3("4", vals4);
-		ImGui::InputFloat3("5", vals5);
-		ImGui::InputFloat3("6", vals6);
+		for(int i = 1; i <= int(vals.size()); ++i){
+			std::string label = std::to_string(i);
+			ImGui::InputFloat3(label.c_str(), vals[i-1]);
+		}
 		ImGui::PopItemWidth();
 		ImGui::Separator();
 
-		ImGui::TextColored(ImVec4(color(1)(0),color(1)(1),color(1)(2),1.0f), "1"); ImGui::SameLine(); ImGui::RadioButton("Dirichlet##id1", &bc_type_1, 0); ImGui::SameLine(); ImGui::RadioButton("Neuman##id1", &bc_type_1, 1);
-		ImGui::TextColored(ImVec4(color(2)(0),color(2)(1),color(2)(2),1.0f), "2"); ImGui::SameLine(); ImGui::RadioButton("Dirichlet##id2", &bc_type_2, 0); ImGui::SameLine(); ImGui::RadioButton("Neuman##id2", &bc_type_2, 1);
-		ImGui::TextColored(ImVec4(color(3)(0),color(3)(1),color(3)(2),1.0f), "3"); ImGui::SameLine(); ImGui::RadioButton("Dirichlet##id3", &bc_type_3, 0); ImGui::SameLine(); ImGui::RadioButton("Neuman##id3", &bc_type_3, 1);
-		ImGui::TextColored(ImVec4(color(4)(0),color(4)(1),color(4)(2),1.0f), "4"); ImGui::SameLine(); ImGui::RadioButton("Dirichlet##id4", &bc_type_4, 0); ImGui::SameLine(); ImGui::RadioButton("Neuman##id4", &bc_type_4, 1);
-		ImGui::TextColored(ImVec4(color(5)(0),color(5)(1),color(5)(2),1.0f), "5"); ImGui::SameLine(); ImGui::RadioButton("Dirichlet##id5", &bc_type_5, 0); ImGui::SameLine(); ImGui::RadioButton("Neuman##id5", &bc_type_5, 1);
-		ImGui::TextColored(ImVec4(color(6)(0),color(6)(1),color(6)(2),1.0f), "6"); ImGui::SameLine(); ImGui::RadioButton("Dirichlet##id6", &bc_type_6, 0); ImGui::SameLine(); ImGui::RadioButton("Neuman##id6", &bc_type_6, 1);
+
+		for(int i = 1; i <= int(vals.size()); ++i){
+			std::string label = std::to_string(i);
+			std::string dlabel = "Dirichlet##id" + label;
+			std::string nlabel = "Neuman##id" + label;
+
+			ImGui::TextColored(ImVec4(color(i, vals.size())(0),color(i, vals.size())(1),color(i, vals.size())(2),1.0f), "%s", label.c_str()); ImGui::SameLine();
+			ImGui::RadioButton(dlabel.c_str(), &bc_type[i-1], 0); ImGui::SameLine();
+			ImGui::RadioButton(nlabel.c_str(), &bc_type[i-1], 1);
+		}
 		ImGui::Separator();
 
-		if(ImGui::Button("save"))
+		if(ImGui::Button("Save"))
 		{
-			std::ofstream file;
-			file.open("bc.txt");
+			save("", selected, vals, bc_type);
+		}
 
-			if(file.good())
+		ImGui::SameLine();
+		if(ImGui::Button("Add"))
+		{
+			vals.push_back(new float[3]{0, 0, 0});
+			bc_type.push_back(0);
+
+			for(int bindex = 0; bindex < selected.size(); ++bindex)
 			{
-				file << selected;
+				const int v = selected(bindex);
+
+				for(int i : all_2_local(bindex))
+					C.row(i) = color(v, vals.size());
 			}
 
-			file.close();
-
-			auto dirichel = json::array();
-			auto neuman = json::array();
-
-			const json json1 = {{"id", 1}, {"value", {vals1[0], vals1[1], vals1[2]}}};
-			const json json2 = {{"id", 2}, {"value", {vals2[0], vals2[1], vals2[2]}}};
-			const json json3 = {{"id", 3}, {"value", {vals3[0], vals3[1], vals3[2]}}};
-			const json json4 = {{"id", 4}, {"value", {vals4[0], vals4[1], vals4[2]}}};
-			const json json5 = {{"id", 5}, {"value", {vals5[0], vals5[1], vals5[2]}}};
-			const json json6 = {{"id", 6}, {"value", {vals6[0], vals6[1], vals6[2]}}};
-
-			if(bc_type_1 == 0)
-				dirichel.push_back(json1);
-			else
-				neuman.push_back(json1);
-
-			if(bc_type_2 == 0)
-				dirichel.push_back(json2);
-			else
-				neuman.push_back(json2);
-
-			if(bc_type_3 == 0)
-				dirichel.push_back(json3);
-			else
-				neuman.push_back(json3);
-
-			if(bc_type_4 == 0)
-				dirichel.push_back(json4);
-			else
-				neuman.push_back(json4);
-
-			if(bc_type_5 == 0)
-				dirichel.push_back(json5);
-			else
-				neuman.push_back(json5);
-
-			if(bc_type_6 == 0)
-				dirichel.push_back(json6);
-			else
-				neuman.push_back(json6);
-
-			const json args = {
-				{"dirichlet_boundary", dirichel},
-				{"neumann_boundary", neuman},
-			};
-
-			file.open("setting.json");
-			file << args.dump(4) << std::endl;
-			file.close();
+			viewer.data().set_colors(C);
 		}
 	};
 
@@ -302,7 +275,7 @@ int main(int argc, const char **argv)
 				selected(real_face) = current_id;
 				const auto &loc_faces = all_2_local(real_face);
 
-				const auto col = color(selected[real_face]);
+				const auto col = color(selected[real_face], vals.size());
 
 				for(int i : loc_faces){
 					C.row(i) = col;
@@ -325,7 +298,7 @@ int main(int argc, const char **argv)
 
 			viewer.data().set_colors(C);
 
-			track = true;
+			tracking_mouse = true;
 			return true;
 		}
 		return false;
@@ -342,7 +315,7 @@ int main(int argc, const char **argv)
 
 	viewer.callback_mouse_move = [&](igl::opengl::glfw::Viewer& viewer, int, int)->bool
 	{
-		if(!track)
+		if(!tracking_mouse)
 			return false;
 
 		return paint();
@@ -350,7 +323,7 @@ int main(int argc, const char **argv)
 
 	viewer.callback_mouse_up = [&](igl::opengl::glfw::Viewer& viewer, int, int)->bool
 	{
-		track = false;
+		tracking_mouse = false;
 		return false;
 	};
 
