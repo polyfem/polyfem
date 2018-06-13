@@ -9,7 +9,7 @@ namespace poly_fem
 	: Problem(name)
 	{ }
 
-	void ProblemWithSolution::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void ProblemWithSolution::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		const auto &assembler = AssemblerUtils::instance();
 
@@ -29,11 +29,14 @@ namespace poly_fem
 
 			val.row(i) = assembler.compute_rhs(formulation, res).transpose();
 		}
+
+		val *= t;
 	}
 
-	void ProblemWithSolution::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void ProblemWithSolution::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		exact(pts, val);
+		val *= t;
 	}
 
 	void ProblemWithSolution::exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const

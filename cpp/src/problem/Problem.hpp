@@ -18,9 +18,9 @@ namespace poly_fem
 	public:
 		Problem(const std::string &name);
 
-		virtual void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const = 0;
-		virtual void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const = 0;
-		virtual void neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { }
+		virtual void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const = 0;
+		virtual void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const = 0;
+		virtual void neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const { }
 
 		virtual void exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { };
 		virtual void exact_grad(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { };
@@ -29,6 +29,7 @@ namespace poly_fem
 
 		virtual bool has_exact_sol() const = 0;
 		virtual bool is_scalar() const = 0;
+		virtual bool is_linear_in_time() const { return true; }
 
 		virtual void set_parameters(const json &params) { }
 

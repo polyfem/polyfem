@@ -56,7 +56,7 @@ namespace poly_fem
 		}
 
 		template<class ReducedMat, class FullMat>
-		static void reduced_to_full_aux(const int full_size, const int reduced_size, const ReducedMat &reduced, const bool set_zero, FullMat &full)
+		static void reduced_to_full_aux(const int full_size, const int reduced_size, const ReducedMat &reduced, Eigen::MatrixXd &rhs, FullMat &full)
 		{
 			using namespace poly_fem;
 
@@ -71,7 +71,7 @@ namespace poly_fem
 				if(k < State::state().boundary_nodes.size() && State::state().boundary_nodes[k] == i)
 				{
 					++k;
-					full(i) = set_zero ? 0 : State::state().rhs(i);
+					full(i) = rhs(i);
 					continue;
 				}
 
@@ -84,11 +84,13 @@ namespace poly_fem
 	private:
 		AssemblerUtils &assembler;
 		const RhsAssembler &rhs_assembler;
+		Eigen::MatrixXd current_rhs;
 
 		const int full_size, reduced_size;
 		const double t;
+		bool rhs_computed;
 
 		void full_to_reduced(const Eigen::MatrixXd &full, TVector &reduced) const;
-		void reduced_to_full(const TVector &reduced, const bool set_zero, Eigen::MatrixXd &full)  const;
+		void reduced_to_full(const TVector &reduced, Eigen::MatrixXd &full);
 	};
 }

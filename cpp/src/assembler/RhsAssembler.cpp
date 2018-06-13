@@ -18,7 +18,7 @@ namespace poly_fem
 	: mesh_(mesh), n_basis_(n_basis), size_(size), bases_(bases), gbases_(gbases), formulation_(formulation), problem_(problem)
 	{ }
 
-	void RhsAssembler::assemble(Eigen::MatrixXd &rhs) const
+	void RhsAssembler::assemble(Eigen::MatrixXd &rhs, const double t) const
 	{
 		rhs = Eigen::MatrixXd::Zero(n_basis_ * size_, 1);
 		Eigen::MatrixXd rhs_fun;
@@ -32,7 +32,7 @@ namespace poly_fem
 			const Quadrature &quadrature = vals.quadrature;
 
 
-			problem_.rhs(formulation_, vals.val, rhs_fun);
+			problem_.rhs(formulation_, vals.val, t, rhs_fun);
 
 			for(int d = 0; d < size_; ++d)
 				rhs_fun.col(d) = rhs_fun.col(d).array() * vals.det.array() * quadrature.weights.array();
@@ -52,7 +52,7 @@ namespace poly_fem
 		}
 	}
 
-	void RhsAssembler::set_bc(const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector< LocalBoundary > &local_neumann_boundary, Eigen::MatrixXd &rhs) const
+	void RhsAssembler::set_bc(const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector< LocalBoundary > &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t) const
 	{
 		const int n_el=int(bases_.size());
 
@@ -144,7 +144,7 @@ namespace poly_fem
 				}
 			}
 
-			problem_.bc(mesh_, global_primitive_ids, mapped, rhs_fun);
+			problem_.bc(mesh_, global_primitive_ids, mapped, t, rhs_fun);
 			global_rhs.block(global_counter, 0, rhs_fun.rows(), rhs_fun.cols()) = rhs_fun;
 			global_counter += rhs_fun.rows();
 
@@ -238,7 +238,7 @@ namespace poly_fem
 
 			ElementAssemblyValues vals;
 			vals.compute(e, mesh_.is_volume(), points, bs, gbs);
-			problem_.neumann_bc(mesh_, global_primitive_ids, vals.val, rhs_fun);
+			problem_.neumann_bc(mesh_, global_primitive_ids, vals.val, t, rhs_fun);
 
 			// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
 
@@ -268,6 +268,18 @@ namespace poly_fem
 		}
 	}
 
+	void RhsAssembler::compute_energy_grad(const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector< LocalBoundary > &local_neumann_boundary, const Eigen::MatrixXd &final_rhs, const double t, Eigen::MatrixXd &rhs) const
+	{
+		if(problem_.is_linear_in_time())
+			rhs = final_rhs * t;
+		else
+		{
+			assemble(rhs, t);
+			rhs *= -1;
+			set_bc(local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs, t);
+		}
+	}
+
 	double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement, const std::vector< LocalBoundary > &local_neumann_boundary, const double t) const
 	{
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
@@ -285,7 +297,7 @@ namespace poly_fem
 			const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
 
-			problem_.rhs(formulation_, vals.val, forces);
+			problem_.rhs(formulation_, vals.val, t, forces);
 			assert(forces.rows() == da.size());
 			assert(forces.cols() == size_);
 
@@ -309,7 +321,7 @@ namespace poly_fem
 				}
 
 				for(int d = 0; d < size_; ++d)
-					res += t * forces(p, d) * local_displacement(d) * da(p);
+					res += forces(p, d) * local_displacement(d) * da(p);
 			}
 		}
 
@@ -330,7 +342,7 @@ namespace poly_fem
 
 			ElementAssemblyValues vals;
 			vals.compute(e, mesh_.is_volume(), points, bs, gbs);
-			problem_.neumann_bc(mesh_, global_primitive_ids, vals.val, forces);
+			problem_.neumann_bc(mesh_, global_primitive_ids, vals.val, t, forces);
 
 			// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
 
@@ -354,7 +366,7 @@ namespace poly_fem
 				}
 
 				for(int d = 0; d < size_; ++d)
-					res -= t * forces(p, d) * local_displacement(d) * weights(p);
+					res -= forces(p, d) * local_displacement(d) * weights(p);
 			}
 		}
 

@@ -110,13 +110,13 @@ TEST_CASE("franke 2d", "[problem]") {
         0.2 * s7 * (-cx4-cy7).exp();
         rhs*=-1;
 
-        probl->rhs("Laplacian", pts, other);
+        probl->rhs("Laplacian", pts, 1, other);
         Eigen::MatrixXd diff = (other - rhs);
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
 
         rhs += k*k * fx;
-        probl->rhs("Helmholtz", pts, other);
+        probl->rhs("Helmholtz", pts, 1, other);
         diff = (other - rhs);
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
@@ -194,13 +194,13 @@ TEST_CASE("franke 3d", "[problem]") {
         Eigen::MatrixXd rhs = (787648050 * x * x + 787648050 * y * y + 787648050 * z * z - 1225230300 * x - 525098700 * y - 875164500 * z + 748751850) * exp(-0.81e2 / 0.4e1 *  x *  x + 0.63e2 / 0.2e1 *  x - 0.83e2 / 0.4e1 - 0.81e2 / 0.4e1 *  y *  y + 0.27e2 / 0.2e1 *  y - 0.81e2 / 0.4e1 *  z *  z + 0.45e2 / 0.2e1 *  z) / 0.960400e6 +  (1181472075 * x * x + 1181472075 * y * y + 1181472075 * z * z - 525098700 * x - 525098700 * y - 525098700 * z + 87516450) * exp(-0.81e2 / 0.4e1 *  x *  x +  (9 * x) - 0.3e1 - 0.81e2 / 0.4e1 *  y *  y +  (9 * y) - 0.81e2 / 0.4e1 *  z *  z +  (9 * z)) / 0.960400e6 +  (-5040947520 * x * x - 5040947520 * y * y - 5040947520 * z * z + 4480842240 * x + 7841473920 * y + 5601052800 * z - 5507701920) * exp( (-81 * x * x - 81 * y * y - 81 * z * z + 72 * x + 126 * y + 90 * z - 90)) / 0.960400e6 + 0.19683e5 / 0.2401e4 * exp(-0.81e2 / 0.49e2 *  x *  x - 0.18e2 / 0.49e2 *  x - 0.54e2 / 0.245e3 - 0.9e1 / 0.10e2 *  y - 0.9e1 / 0.10e2 *  z) * ( (x * x) + 0.2e1 / 0.9e1 *  x - 0.2299e4 / 0.16200e5);
         // rhs*=-1;
 
-        probl->rhs("Laplacian", pts, other);
+        probl->rhs("Laplacian", pts, 1, other);
         Eigen::MatrixXd diff = (other - rhs);
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
 
         rhs += k*k*fx;
-        probl->rhs("Helmholtz", pts, other);
+        probl->rhs("Helmholtz", pts, 1, other);
         diff = (other - rhs);
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
@@ -253,7 +253,7 @@ TEST_CASE("linear", "[problem]") {
         Eigen::MatrixXd rhs = x;
         rhs.setZero();
 
-        probl->rhs("Laplacian", pts, other);
+        probl->rhs("Laplacian", pts, 1, other);
         Eigen::MatrixXd diff = (other - rhs);
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
@@ -262,7 +262,7 @@ TEST_CASE("linear", "[problem]") {
     {
         Eigen::MatrixXd rhs = k*k*x;
 
-        probl->rhs("Helmholtz", pts, other);
+        probl->rhs("Helmholtz", pts, 1, other);
         Eigen::MatrixXd diff = (other - rhs);
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
@@ -314,7 +314,7 @@ TEST_CASE("quadratic", "[problem]") {
         Eigen::MatrixXd rhs = x;
         rhs.setConstant(2);
 
-        probl->rhs("Laplacian", pts, other);
+        probl->rhs("Laplacian", pts, 1, other);
         Eigen::MatrixXd diff = (other - rhs);
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
@@ -323,7 +323,7 @@ TEST_CASE("quadratic", "[problem]") {
     {
         Eigen::MatrixXd rhs = k*k*x*x + 2;
 
-        probl->rhs("Helmholtz", pts, other);
+        probl->rhs("Helmholtz", pts, 1, other);
         Eigen::MatrixXd diff = (other - rhs);
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
@@ -357,7 +357,7 @@ TEST_CASE("zero bc 2d", "[problem]") {
     {
         Eigen::MatrixXd rhs = -4 * x * y * (1 - y) * (1 - y) + 2 * (1 - x) * y * (1 - y) *(1 - y) - 4 * (1 - x) * x * x * (1 - y) + 2 * (1 - x) * x * x * y;
 
-        probl->rhs("Laplacian", pts, other);
+        probl->rhs("Laplacian", pts, 1, other);
         Eigen::MatrixXd diff = (other - rhs);
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
@@ -390,7 +390,7 @@ TEST_CASE("zero bc 3d", "[problem]") {
 
     {
         Eigen::MatrixXd rhs =  (0.2e1 * pow(x, 0.3e1) - 0.2e1 * x * x +  (6 * z * z - 6 * z) * x -  (2 * z * z) +  (2 * z)) * pow(y, 0.3e1) + (-0.4e1 * pow(x, 0.3e1) + 0.4e1 * x * x +  (-12 * z * z + 12 * z) * x +  (4 * z * z) -  (4 * z)) * y * y + ( (6 * z * z - 6 * z + 2) * pow(x, 0.3e1) +  (-6 * z * z + 6 * z - 2) * x * x +  (6 * z * z - 6 * z) * x -  (2 * z * z) +  (2 * z)) * y - 0.4e1 * x * x *  z *  (z - 1) * (x - 0.1e1);
-        probl->rhs("Laplacian", pts, other);
+        probl->rhs("Laplacian", pts, 1, other);
         Eigen::MatrixXd diff = (other - rhs);
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
@@ -431,12 +431,12 @@ TEST_CASE("elasticity 2d", "[problem]") {
         rhs.col(0) = (1./25.*(y+1))*lambda+(1./25.*(4.*y+2))*mu;
         rhs.col(1) = (1./50.*(36*x*x+4*x+1))*mu+(1./25.)*x*lambda+(1./50.)*lambda;
 
-        probl->rhs("LinearElasticity", pts, other);
+        probl->rhs("LinearElasticity", pts, 1, other);
         Eigen::MatrixXd diff = (other - rhs);
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
 
-        probl->rhs("HookeLinearElasticity", pts, other);
+        probl->rhs("HookeLinearElasticity", pts, 1, other);
         diff = (other - rhs);
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
@@ -450,7 +450,7 @@ TEST_CASE("elasticity 2d", "[problem]") {
 
 
 
-        probl->rhs("SaintVenant", pts, other);
+        probl->rhs("SaintVenant", pts, 1, other);
         Eigen::MatrixXd diff = (other - rhs);
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
@@ -463,7 +463,7 @@ TEST_CASE("elasticity 2d", "[problem]") {
         rhs.col(1) =  (0.7200e4 * (pow(x, 0.4e1) * y - pow(x, 0.4e1) / 0.3e1 - 0.5e1 / 0.4e1 * pow(x, 0.3e1) * y * y + 0.25e2 * pow(x, 0.3e1) * y - pow(x, 0.3e1) / 0.18e2 - 0.9e1 / 0.4e1 * x * x * pow(y, 0.4e1) - 0.25e2 / 0.9e1 * x * x + x * pow(y, 0.3e1) / 0.3e1 - x * y * y / 0.144e3 - 0.11e2 / 0.18e2 * x * y - 0.1667e4 / 0.48e2 * x + 0.5e1 / 0.48e2 * pow(y, 0.4e1) + 0.25e2 / 0.4e1 * pow(y, 0.3e1) + 0.101e3 / 0.48e2 * y * y + 0.125e3 / 0.72e2 * y - 0.625e3 / 0.36e2) * lambda * log(-0.3e1 * pow(y, 0.4e1) + (-0.36e2 * pow(x, 0.3e1) + x - 0.3e1) * y * y + (0.4e1 * x * x + 0.100e3 * x + 0.50e2) * y - 0.12e2 * pow(x, 0.4e1) + 0.99e2 * x + 0.2500e4) - 0.14400e5 * (pow(x, 0.4e1) * y - pow(x, 0.4e1) / 0.3e1 - 0.5e1 / 0.4e1 * pow(x, 0.3e1) * y * y + 0.25e2 * pow(x, 0.3e1) * y - pow(x, 0.3e1) / 0.18e2 - 0.9e1 / 0.4e1 * x * x * pow(y, 0.4e1) - 0.25e2 / 0.9e1 * x * x + x * pow(y, 0.3e1) / 0.3e1 - x * y * y / 0.144e3 - 0.11e2 / 0.18e2 * x * y - 0.1667e4 / 0.48e2 * x + 0.5e1 / 0.48e2 * pow(y, 0.4e1) + 0.25e2 / 0.4e1 * pow(y, 0.3e1) + 0.101e3 / 0.48e2 * y * y + 0.125e3 / 0.72e2 * y - 0.625e3 / 0.36e2) * lambda * (log(0.2e1) + 0.2e1 * log(0.5e1)) + 0.2592e4 / 0.25e2 * mu * pow(x, 0.10e2) + 0.144e3 / 0.25e2 * mu * (0.108e3 * y * y + 0.1e1) * pow(x, 0.9e1) + 0.864e3 / 0.25e2 * (0.27e2 * pow(y, 0.3e1) + y - 0.2e1) * y * mu * pow(x, 0.8e1) + 0.48e2 / 0.25e2 * (0.27e2 * pow(y, 0.4e1) - 0.108e3 * pow(y, 0.3e1) - 0.9e1 * y * y - 0.902e3 * y - 0.891e3) * mu * pow(x, 0.7e1) - 0.24e2 / 0.25e2 * (0.5412e4 * pow(y, 0.3e1) + 0.5281e4 * y * y + 0.1000e4 * y + 0.45099e5) * mu * pow(x, 0.6e1) + 0.16e2 / 0.25e2 * (0.243e3 * pow(y, 0.6e1) + 0.243e3 * pow(y, 0.4e1) - 0.4491e4 * pow(y, 0.3e1) - 0.202040e6 * y * y + 0.816e3 * y - 0.3750e4) * mu * pow(x, 0.5e1) - 0.2e1 / 0.25e2 * (-0.108e3 * mu * pow(y, 0.6e1) + 0.216e3 * mu * pow(y, 0.5e1) - 0.117e3 * mu * pow(y, 0.4e1) + 0.212e3 * mu * pow(y, 0.3e1) - 0.5782e4 * mu * y * y + 0.90000e5 * lambda * y - 0.268596e6 * mu * y - 0.30000e5 * lambda - 0.118209e6 * mu) * pow(x, 0.4e1) + (-0.108e3 * mu * pow(y, 0.6e1) - 0.10824e5 * mu * pow(y, 0.5e1) - 0.10799e5 * mu * pow(y, 0.4e1) - 0.8824e4 * mu * pow(y, 0.3e1) + 0.225000e6 * lambda * y * y + 0.494906e6 * mu * y * y - 0.4500000e7 * lambda * y + 0.4718000e7 * mu * y + 0.10000e5 * lambda + 0.8929801e7 * mu) * pow(x, 0.3e1) / 0.25e2 + 0.2e1 / 0.25e2 * (0.81e2 * mu * pow(y, 0.8e1) + 0.159e3 * mu * pow(y, 0.6e1) - 0.3000e4 * mu * pow(y, 0.5e1) + 0.202500e6 * lambda * pow(y, 0.4e1) + 0.67281e5 * mu * pow(y, 0.4e1) - 0.2950e4 * mu * pow(y, 0.3e1) - 0.105297e6 * mu * y * y + 0.2504950e7 * mu * y + 0.250000e6 * lambda + 0.56747500e8 * mu) * x * x - (-0.9e1 * mu * pow(y, 0.8e1) - 0.18e2 * mu * pow(y, 0.6e1) + 0.300e3 * mu * pow(y, 0.5e1) + 0.14991e5 * mu * pow(y, 0.4e1) + 0.60000e5 * lambda * pow(y, 0.3e1) + 0.60300e5 * mu * pow(y, 0.3e1) - 0.1250e4 * lambda * y * y + 0.11250e5 * mu * y * y - 0.110000e6 * lambda * y - 0.360000e6 * mu * y - 0.6251250e7 * lambda - 0.12501250e8 * mu) * x / 0.25e2 - 0.50e2 * (0.15e2 * pow(y, 0.4e1) + 0.900e3 * pow(y, 0.3e1) + 0.303e3 * y * y + 0.250e3 * y - 0.2500e4) * (mu + lambda)) * pow(0.36e2 * pow(x, 0.3e1) * y * y + 0.12e2 * pow(x, 0.4e1) + 0.3e1 * pow(y, 0.4e1) - 0.4e1 * x * x * y - x * y * y - 0.100e3 * x * y + 0.3e1 * y * y - 0.99e2 * x - 0.50e2 * y - 0.2500e4, -0.2e1);
 
 
-        probl->rhs("NeoHookean", pts, other);
+        probl->rhs("NeoHookean", pts, 1, other);
         Eigen::MatrixXd diff = (other - rhs);
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
@@ -507,12 +507,12 @@ TEST_CASE("elasticity 3d", "[problem]") {
         rhs.col(1) = (1./80*(36*x*x+5*x+1+(4*y-6)*z))*mu+(3./80.*((4./3.)*y*z+x+1./3.))*lambda;
         rhs.col(2) = (1./40.*(2*y*y+z*z))*mu+(1./40.)*y*y*lambda;
 
-        probl->rhs("LinearElasticity", pts, other);
+        probl->rhs("LinearElasticity", pts, 1, other);
         Eigen::MatrixXd diff = (other - rhs);
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
 
-        probl->rhs("HookeLinearElasticity", pts, other);
+        probl->rhs("HookeLinearElasticity", pts, 1, other);
         diff = (other - rhs);
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
@@ -525,7 +525,7 @@ TEST_CASE("elasticity 3d", "[problem]") {
         rhs.col(1) =  (15552 * mu + 7776 * lambda) * pow(x, 0.8e1) / 0.512000e6 +  (144 * lambda + 288 * mu) * pow(x, 0.7e1) / 0.512000e6 - 0.27e2 / 0.16000e5 * ( mu +  lambda / 0.2e1) * z * pow(x, 0.6e1) + 0.81e2 / 0.16000e5 * ( mu +  lambda / 0.2e1) * (y * y + z) * pow(x, 0.5e1) + ( (12 * mu + 30 * lambda) * z * z +  (48 * mu + 24 * lambda) * z +  (396 * mu + 222 * lambda) * y * y + 0.144e3 *  mu * y +  (336 * mu) +  (192 * lambda)) * pow(x, 0.4e1) / 0.512000e6 + (0.48e2 * y *  (mu + 2 * lambda) * pow(z, 0.3e1) +  (-550 * mu - 251 * lambda) * z * z + ( (48 * mu + 96 * lambda) * pow(y, 0.3e1) +  (-144 * mu - 72 * lambda) * y * y +  mu +  lambda) * z +  (86 * mu + 159 * lambda) * y * y +  (26112 * mu + 13536 * lambda) * y +  (15364 * mu) +  (7686 * lambda)) * pow(x, 0.3e1) / 0.512000e6 + ((0.72e2 *  lambda * y * y +  (162 * lambda) +  (324 * mu)) * pow(z, 0.4e1) + ( (16 * mu + 8 * lambda) * y -  (3 * mu) -  (6 * lambda)) * pow(z, 0.3e1) + (0.72e2 *  lambda * pow(y, 0.4e1) +  (36 * mu + 18 * lambda) * y * y +  (6 * lambda + 8 * mu) * y +  (96 * mu) +  (48 * lambda)) * z * z + ( (16 * lambda + 16 * mu) * pow(y, 0.3e1) +  (5853 * lambda + 186 * mu) * y * y +  (-144 * mu - 72 * lambda) * y -  (18 * mu) -  (24 * lambda)) * z +  (108 * mu + 216 * lambda) * pow(y, 0.4e1) +  (4 * mu + 2 * lambda) * pow(y, 0.3e1) +  (72 * mu + 36 * lambda) * y * y +  (7936 * mu + 4248 * lambda) * y +  (230544 * mu) +  (1040 * lambda)) * x * x / 0.512000e6 + (( (24 * mu + 12 * lambda) * y * y +  (-24 * mu - 30 * lambda) * y +  (18 * mu) +  (9 * lambda)) * pow(z, 0.4e1) + ( (8 * lambda + 12 * mu) * y * y +  (429 * mu) +  (215 * lambda)) * pow(z, 0.3e1) + ( (20 * lambda + 24 * mu) * pow(y, 0.4e1) +  (-36 * mu - 18 * lambda) * pow(y, 0.3e1) +  (4 * lambda + 7 * mu) * y * y +  (162 * mu) +  lambda) * z * z + ( (8 * mu + 4 * lambda) * pow(y, 0.4e1) +  (1434 * lambda + 1304 * mu) * y * y +  (-1460 * lambda - 2880 * mu) * y +  (13 * mu) -  (953 * lambda)) * z +  (109 * mu + 55 * lambda) * pow(y, 0.4e1) + 0.48e2 *  mu * pow(y, 0.3e1) +  (339 * mu + 170 * lambda) * y * y +  (1470 * mu + 798 * lambda) * y +  (32356 * mu) +  (19400 * lambda)) * x / 0.512000e6 + ( (-36 * mu - 36 * lambda) * y * y -  (162 * mu) -  (81 * lambda)) * pow(z, 0.5e1) / 0.512000e6 + ( (644 * mu + 322 * lambda) * y -  (480 * mu)) * pow(z, 0.4e1) / 0.512000e6 + ( (-48 * mu - 24 * lambda) * pow(y, 0.4e1) +  (12 * mu + 2 * lambda) * pow(y, 0.3e1) +  (-3 * mu - 6 * lambda) * y * y -  (22 * mu) -  (9 * lambda)) * pow(z, 0.3e1) / 0.512000e6 + ( (642 * lambda + 968 * mu) * pow(y, 0.3e1) +  (-2924 * mu - 1452 * lambda) * y * y +  (98 * lambda - 22 * mu) * y -  (36 * mu)) * z * z / 0.512000e6 + ( (4 * mu + 2 * lambda) * pow(y, 0.5e1) +  (-30 * lambda - 6 * mu) * pow(y, 0.4e1) - 0.3e1 *  mu * y * y +  (25522 * lambda + 26964 * mu) * y -  (38456 * mu) -  (120 * lambda)) * z / 0.512000e6 +  (17 * mu + 3 * lambda) * pow(y, 0.4e1) / 0.512000e6 +  (5044 * mu + 1842 * lambda) * pow(y, 0.3e1) / 0.512000e6 +  (800 * mu + 160 * lambda) * y * y / 0.512000e6 +  (92 * mu + 80 * lambda) * y / 0.512000e6 + 0.11e2 / 0.800e3 *  mu +  lambda / 0.80e2;
         rhs.col(2) =  ((24 * mu + 12 * lambda) * z * z + 10 * lambda) * pow(y, 0.6e1) / 0.512000e6 + 0.3e1 / 0.64000e5 * ( mu +  lambda / 0.2e1) *  z * x * pow(y, 0.5e1) + ( ((80 * mu + 40 * lambda) *  pow( z,  4)) +  ((55 * lambda + 104 * mu) * z * z) +  ((1922 * mu + 964 * lambda) * z) + 0.24e2 *  lambda * pow(x, 0.3e1) +  (7 * lambda + 6 * mu) * x * x + 0.6e1 *  lambda * x +  lambda) * pow(y, 0.4e1) / 0.512000e6 + (0.96e2 * ( mu +  lambda / 0.2e1) * x *   pow( z,  3) + ( (72 * mu + 36 * lambda) * x * x +  (52 * mu + 26 * lambda) * x +  (207 * mu) -  (9 * lambda)) *  z +  (805 * lambda + 963 * mu) * x +  (160 * lambda)) * pow(y, 0.3e1) / 0.512000e6 + ( ((24 * mu + 12 * lambda) *  pow( z,  6)) +  ((50 * lambda + 100 * mu) *  pow( z,  4)) + (-0.216e3 *  mu * x * x - 0.84e2 *  mu * x +  (1606 * lambda) +  (3204 * mu)) *   pow( z,  3) + ( (192 * mu + 72 * lambda) * pow(x, 0.3e1) +  (60 * mu + 30 * lambda) * x * x +  (4 * mu) +  (6 * lambda)) *  (z * z) + ( (48 * lambda + 96 * mu) * pow(x, 0.3e1) + 0.20e2 *  mu * x * x + 0.30e2 *  mu * x +  (1640 * mu) +  (322 * lambda)) *  z + 0.144e3 *  lambda * pow(x, 0.6e1) +  (-66 * lambda - 142 * mu) * x * x +  (52 * mu + 308 * lambda) * x +  (25754 * mu) +  (12914 * lambda)) * y * y / 0.512000e6 + (0.24e2 * ( mu +  lambda / 0.2e1) * x *   pow( z,  5) + ( (40 * mu + 20 * lambda) * x -  (2919 * mu) -  (15 * lambda)) *   pow( z,  3) + (-0.252e3 *  mu * pow(x, 0.3e1) +  (5802 * mu + 36 * lambda) * x * x +  (3536 * mu + 1770 * lambda) * x +  (160 * mu) +  (320 * lambda)) *  (z * z) + ( (864 * mu + 432 * lambda) * pow(x, 0.5e1) +  (24 * lambda + 168 * mu) * pow(x, 0.4e1) +  (12 * mu + 6 * lambda) * pow(x, 0.3e1) +  (704 * mu + 8 * lambda) * x +  (320 * mu) +  (160 * lambda)) *  z +  (72 * mu + 12 * lambda) * pow(x, 0.4e1) + 0.6e1 *  mu * pow(x, 0.3e1) + 0.12e2 *  mu * x +  (1912 * mu) -  (644 * lambda)) * y / 0.512000e6 + 0.9e1 / 0.512000e6 *   pow( z,  6) *  lambda + ( (6 * mu + 3 * lambda) * x * x - 0.6e1 *  lambda * x +  lambda) *   pow( z,  4) / 0.512000e6 + (0.24e2 *  lambda * pow(x, 0.3e1) +  (1440 * lambda) +  (2880 * mu)) *   pow( z,  3) / 0.512000e6 + (0.144e3 *  lambda * pow(x, 0.6e1) +  (-8638 * mu + 6 * lambda) * x * x +  (-1448 * mu + 316 * lambda) * x +  (46 * lambda) +  (12986 * mu)) *  (z * z) / 0.512000e6 + (0.4944e4 *  mu * pow(x, 0.3e1) +  (504 * mu + 250 * lambda) * x * x +  (-724 * mu - 400 * lambda) * x +  (80 * lambda) +  (80 * mu)) *  z / 0.512000e6 +  (-1728 * mu - 864 * lambda) * pow(x, 0.5e1) / 0.512000e6 - 0.3e1 / 0.32000e5 *  mu * pow(x, 0.4e1) +  (3840 * mu + 960 * lambda) * pow(x, 0.3e1) / 0.512000e6 + 0.83e2 / 0.128000e6 *  mu * x * x +  (-20 * mu - 12 * lambda) * x / 0.512000e6 +  mu / 0.1600e4 -  lambda / 0.1600e4;
 
-        probl->rhs("SaintVenant", pts, other);
+        probl->rhs("SaintVenant", pts, 1, other);
         Eigen::MatrixXd diff = (other - rhs);
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);

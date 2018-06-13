@@ -11,8 +11,8 @@ namespace poly_fem
 	public:
 		ProblemWithSolution(const std::string &name);
 
-		virtual void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const;
-		virtual void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const;
+		virtual void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const;
+		virtual void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const;
 
 		virtual void exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const;
 		virtual void exact_grad(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const;

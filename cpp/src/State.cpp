@@ -1281,12 +1281,10 @@ namespace poly_fem
 			int steps = args["nl_solver_rhs_steps"];
 			RhsAssembler rhs_assembler(*mesh, n_bases, mesh->dimension(), bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
 			VectorXd tmp_sol;
-			auto rhs_old  = rhs;
 			for(int n = 1; n <=steps; ++n)
 			{
 				const double t = double(n)/double(steps);
 
-				rhs = rhs_old * t;
 				NLProblem nl_problem(rhs_assembler, t);
 				if(n == 1)
 					tmp_sol = nl_problem.initial_guess();
@@ -1345,13 +1343,10 @@ namespace poly_fem
 				solver.getInfo(solver_info);
 				std::cout<<n<<"/"<<steps<<std::endl;
 			}
-
-			rhs = rhs_old;
-
 			const int full_size 	= n_bases*mesh->dimension();
 			const int reduced_size 	= n_bases*mesh->dimension() - boundary_nodes.size();
 
-			NLProblem::reduced_to_full_aux(full_size, reduced_size, tmp_sol, false, sol);
+			NLProblem::reduced_to_full_aux(full_size, reduced_size, tmp_sol, rhs, sol);
 		}
 
 		timer.stop();
@@ -1532,7 +1527,6 @@ namespace poly_fem
 
 			{"quadrature_order", 12},
 			{"discr_order", 1},
-			{"boundary_samples", 10},
 			{"use_p_ref", false},
 			{"use_spline", false},
 			{"iso_parametric", false},

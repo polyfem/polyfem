@@ -22,12 +22,13 @@ namespace poly_fem
 		displacements_.front()(2).init(0);
 	}
 
-	void GenericTensorProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void GenericTensorProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+		// val *= t;
 	}
 
-	void GenericTensorProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void GenericTensorProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
 
@@ -44,9 +45,11 @@ namespace poly_fem
 				}
 			}
 		}
+
+		val *= t;
 	}
 
-	void GenericTensorProblem::neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void GenericTensorProblem::neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
 
@@ -64,6 +67,8 @@ namespace poly_fem
 				}
 			}
 		}
+
+		val *= t;
 	}
 
 	void GenericTensorProblem::set_parameters(const json &params)

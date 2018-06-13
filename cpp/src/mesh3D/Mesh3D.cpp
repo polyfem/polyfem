@@ -629,7 +629,7 @@ namespace poly_fem
 			if(fabs(p(2)-maxV(2))<eps)
 				boundary_ids_[f]=6;
 
-			// std::cout<<p<<": "<<minV<<" - "<<maxV<<boundary_ids_[f]<<std::endl;
+			// std::cout<<p<<": "<<minV<<" - "<<maxV<<" "<<boundary_ids_[f]<<std::endl;
 		}
 
 

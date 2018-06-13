@@ -12,12 +12,13 @@ namespace poly_fem
 		translation_.setZero();
 	}
 
-	void PointBasedTensorProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void PointBasedTensorProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Constant(pts.rows(), pts.cols(), rhs_);
+		val *= t;
 	}
 
-	void PointBasedTensorProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void PointBasedTensorProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
 
@@ -50,6 +51,8 @@ namespace poly_fem
 				// std::cout<<pt<<"->"<<value<<std::endl;
 			}
 		}
+
+		val *= t;
 	}
 
 	void PointBasedTensorProblem::init(const std::vector<int> &b_id)

@@ -152,7 +152,7 @@ namespace poly_fem
 		return res;
 	}
 
-	void KernelProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void KernelProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		const int size = size_for(pts);
 		val.resize(pts.rows(), size);

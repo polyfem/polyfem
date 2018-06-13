@@ -16,10 +16,11 @@ namespace poly_fem
 	public:
 		RhsAssembler(const Mesh &mesh, const int n_basis, const int size, const std::vector< ElementBases > &bases, const std::vector< ElementBases > &gbases, const std::string &formulation, const Problem &problem);
 
-		void assemble(Eigen::MatrixXd &rhs) const;
-		void set_bc(const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution,  const std::vector< LocalBoundary > &local_neumann_boundary, Eigen::MatrixXd &rhs) const;
+		void assemble(Eigen::MatrixXd &rhs, const double t = 1) const;
+		void set_bc(const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector< LocalBoundary > &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t = 1) const;
 
 		double compute_energy(const Eigen::MatrixXd &displacement, const std::vector< LocalBoundary > &local_neumann_boundary, const double t) const;
+		void compute_energy_grad(const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector< LocalBoundary > &local_neumann_boundary, const Eigen::MatrixXd &final_rhs, const double t, Eigen::MatrixXd &rhs) const;
 
 		inline const std::string &formulation() const { return formulation_; }
 

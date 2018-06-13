@@ -15,7 +15,7 @@ namespace poly_fem
 		VectorNd eval_fun(const VectorNd &pt) const override;
 		AutodiffGradPt eval_fun(const AutodiffGradPt &pt) const override;
 		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt) const override { assert(false); return AutodiffHessianPt(1); }
-		void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
+		void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 
 		void set_parameters(const json &params) override;
 		bool is_scalar() const override;
