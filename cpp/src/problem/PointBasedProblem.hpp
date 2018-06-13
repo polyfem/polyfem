@@ -9,10 +9,10 @@
 
 namespace poly_fem
 {
-	class CustomProblem: public Problem
+	class PointBasedTensorProblem: public Problem
 	{
 	public:
-		CustomProblem(const std::string &name);
+		PointBasedTensorProblem(const std::string &name);
 
 		void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;

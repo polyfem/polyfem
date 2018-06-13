@@ -1,4 +1,4 @@
-#include "CustomProblem.hpp"
+#include "PointBasedProblem.hpp"
 #include "State.hpp"
 #include "MatrixUtils.hpp"
 
@@ -6,18 +6,18 @@
 
 namespace poly_fem
 {
-	CustomProblem::CustomProblem(const std::string &name)
+	PointBasedTensorProblem::PointBasedTensorProblem(const std::string &name)
 	: Problem(name), rhs_(0), scaling_(1)
 	{
 		translation_.setZero();
 	}
 
-	void CustomProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void PointBasedTensorProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Constant(pts.rows(), pts.cols(), rhs_);
 	}
 
-	void CustomProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void PointBasedTensorProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
 
@@ -52,7 +52,7 @@ namespace poly_fem
 		}
 	}
 
-	void CustomProblem::init(const std::vector<int> &b_id)
+	void PointBasedTensorProblem::init(const std::vector<int> &b_id)
 	{
 		scaling_  = 1;
 		translation_.setZero();
@@ -65,18 +65,18 @@ namespace poly_fem
 		initialized_ = true;
 	}
 
-	void CustomProblem::set_constant(const int index, const Eigen::Vector3d &value)
+	void PointBasedTensorProblem::set_constant(const int index, const Eigen::Vector3d &value)
 	{
 		bc_[index] = value;
 		val_bc_[index] = true;
 	}
 
-	void CustomProblem::set_function(const int index, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tri)
+	void PointBasedTensorProblem::set_function(const int index, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tri)
 	{
 		funcs_[index] = InterpolatedFunction2d(func, pts.block(0, 0, pts.rows(), 2), tri);
 	}
 
-	void CustomProblem::set_parameters(const json &params)
+	void PointBasedTensorProblem::set_parameters(const json &params)
 	{
 		if(initialized_)
 			return;

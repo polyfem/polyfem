@@ -183,8 +183,10 @@ set(POLYFEM_SOURCES
 	src/mesh3D/MeshProcessing3D.hpp
 	src/mesh3D/Navigation3D.cpp
 	src/mesh3D/Navigation3D.hpp
-	src/problem/CustomProblem.cpp
-	src/problem/CustomProblem.hpp
+	src/problem/PointBasedProblem.cpp
+	src/problem/PointBasedProblem.hpp
+	src/problem/GenericProblem.cpp
+	src/problem/GenericProblem.hpp
 	src/problem/ElasticProblem.cpp
 	src/problem/ElasticProblem.hpp
 	src/problem/FrankeProblem.cpp

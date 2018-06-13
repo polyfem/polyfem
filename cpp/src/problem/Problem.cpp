@@ -3,7 +3,8 @@
 #include "MiscProblem.hpp"
 #include "FrankeProblem.hpp"
 #include "ElasticProblem.hpp"
-#include "CustomProblem.hpp"
+#include "PointBasedProblem.hpp"
+#include "GenericProblem.hpp"
 #include "KernelProblem.hpp"
 #include "TestProblem.hpp"
 
@@ -86,13 +87,13 @@ namespace poly_fem
 		problems_.emplace("Franke", std::make_shared<FrankeProblem>("Franke"));
 		problems_.emplace("Zero_BC", std::make_shared<ZeroBCProblem>("Zero_BC"));
 		problems_.emplace("Elastic", std::make_shared<ElasticProblem>("Elastic"));
-		problems_.emplace("ElasticForce", std::make_shared<ElasticForceProblem>("ElasticForce"));
+		problems_.emplace("GenericTensor", std::make_shared<GenericTensorProblem>("GenericTensor"));
 		problems_.emplace("ElasticZeroBC", std::make_shared<ElasticProblemZeroBC>("ElasticZeroBC"));
 		problems_.emplace("ElasticExact", std::make_shared<ElasticProblemExact>("ElasticExact"));
 		problems_.emplace("CompressionElasticExact", std::make_shared<CompressionElasticProblemExact>("CompressionElasticExact"));
 		problems_.emplace("QuadraticElasticExact", std::make_shared<QuadraticElasticProblemExact>("QuadraticElasticExact"));
 		problems_.emplace("LinearElasticExact", std::make_shared<LinearElasticProblemExact>("LinearElasticExact"));
-		problems_.emplace("Custom", std::make_shared<CustomProblem>("Custom"));
+		problems_.emplace("PointBasedTensor", std::make_shared<PointBasedTensorProblem>("PointBasedTensor"));
 		problems_.emplace("Kernel", std::make_shared<KernelProblem>("Kernel"));
 
 		problems_.emplace("TestProblem", std::make_shared<TestProblem>("TestProblem"));
