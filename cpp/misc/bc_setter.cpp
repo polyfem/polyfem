@@ -26,8 +26,43 @@
 
 using namespace poly_fem;
 using namespace Eigen;
+static const int BUF_SIZE = 128;
 
 igl::ColorMapType color_map = igl::COLOR_MAP_TYPE_VIRIDIS;
+
+struct BCVals
+{
+	std::vector<std::array<float,3>> vals;
+	std::vector<Matrix<std::array<char,BUF_SIZE>, 3, 1>> funs;
+	std::vector<int> bc_type;
+	std::vector<int> bc_value;
+
+	void reset()
+	{
+		vals.clear();
+		funs.clear();
+		bc_type.clear();
+		bc_value.clear();
+
+		append();
+	}
+
+	void append()
+	{
+		vals.push_back(std::array<float,3>());
+		vals.back()[0]=vals.back()[1]=vals.back()[2] = 0;
+		Matrix<std::array<char,BUF_SIZE>, 3, 1> tmp;
+		funs.push_back(tmp);
+
+		bc_type.push_back(0);
+		bc_value.push_back(0);
+	}
+
+	int size() const
+	{
+		return vals.size();
+	}
+};
 
 RowVector3d color(int bc, int n_cols)
 {
@@ -113,7 +148,7 @@ void load(const std::string &path,
 	selected.setZero();
 }
 
-void save(const std::string &path, const VectorXi &selected, const std::vector<float*> &vals, const std::vector<int> &bc_type)
+void save(const std::string &path, const VectorXi &selected, const BCVals &vals)
 {
 	std::ofstream file;
 	file.open(path + ".txt");
@@ -128,10 +163,19 @@ void save(const std::string &path, const VectorXi &selected, const std::vector<f
 	auto dirichel = json::array();
 	auto neuman = json::array();
 
-	for(int i = 1; i <= int(vals.size()); ++i){
-		const json vv = {{"id", i}, {"value", {vals[i-1][0], vals[i-1][1], vals[i-1][2]}}};
+	for(int i = 1; i <= vals.size(); ++i){
+		json vv;
+		if(vals.bc_value[i-1] == 0)
+			vv = {{"id", i}, {"value", {vals.vals[i-1][0], vals.vals[i-1][1], vals.vals[i-1][2]}}};
+		else
+		{
+			const std::string str0 = vals.funs[i-1][0].data();
+			const std::string str1 = vals.funs[i-1][1].data();
+			const std::string str2 = vals.funs[i-1][2].data();
+			vv = {{"id", i}, {"value", {str0, str1, str2}}};
+		}
 
-		if(bc_type[i-1] == 0)
+		if(vals.bc_type[i-1] == 0)
 			dirichel.push_back(vv);
 		else
 			neuman.push_back(vv);
@@ -182,9 +226,9 @@ int main(int argc, const char **argv)
 	Matrix<std::vector<int>, Dynamic, 1> all_2_local;
 	VectorXi boundary_2_all;
 
+	BCVals vals;
+	vals.reset();
 
-	std::vector<float*> vals; vals.push_back(new float[3]{0, 0, 0});
-	std::vector<int> bc_type(1); bc_type.front() = 0;
 
 	if(!path.empty())
 	{
@@ -208,10 +252,7 @@ int main(int argc, const char **argv)
 			load(fname, V, F, p0, p1, N, adj, selected, all_2_local, boundary_2_all, C);
 			visited.resize(F.rows());
 
-			vals.clear();
-			vals.push_back(new float[3]{0, 0, 0});
-			bc_type.clear();
-			bc_type.push_back(0);
+			vals.reset();
 
 
 			viewer.data().clear();
@@ -221,14 +262,14 @@ int main(int argc, const char **argv)
 			viewer.core.align_camera_center(V);
 		}
 		ImGui::SameLine();
-		if(ImGui::Button("Save boundary"))
+		if(ImGui::Button("Save boundary conditions"))
 		{
 			std::string fname = igl::file_dialog_save();
 
 			if(fname.length() == 0)
 				return;
 
-			save(fname, selected, vals, bc_type);
+			save(fname, selected, vals);
 		}
 		ImGui::PopItemWidth();
 		ImGui::Separator();
@@ -241,12 +282,27 @@ int main(int argc, const char **argv)
 		}
 		ImGui::Separator();
 
-		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.80f);
 		for(int i = 1; i <= int(vals.size()); ++i){
 			std::string label = std::to_string(i);
-			ImGui::InputFloat3(label.c_str(), vals[i-1]);
+			std::string vlabel = "Value##idvalue" + label;
+			std::string flabel = "Function##idvalue" + label;
+			ImGui::RadioButton(vlabel.c_str(), &vals.bc_value[i-1], 0); ImGui::SameLine();
+			ImGui::RadioButton(flabel.c_str(), &vals.bc_value[i-1], 1);
+
+			if(vals.bc_value[i-1] == 0)
+			{
+				ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.80f);
+				ImGui::InputFloat3(label.c_str(), vals.vals[i-1].data());
+			}
+			else
+			{
+				ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.20f);
+				ImGui::InputText("x", vals.funs[i-1](0).data(), BUF_SIZE);  ImGui::SameLine();
+				ImGui::InputText("y", vals.funs[i-1](1).data(), BUF_SIZE);  ImGui::SameLine();
+				ImGui::InputText("z", vals.funs[i-1](2).data(), BUF_SIZE);
+				ImGui::PopItemWidth();
+			}
 		}
-		ImGui::PopItemWidth();
 		ImGui::Separator();
 
 
@@ -256,15 +312,14 @@ int main(int argc, const char **argv)
 			std::string nlabel = "Neuman##id" + label;
 
 			ImGui::TextColored(ImVec4(color(i, vals.size())(0),color(i, vals.size())(1),color(i, vals.size())(2),1.0f), "%s", label.c_str()); ImGui::SameLine();
-			ImGui::RadioButton(dlabel.c_str(), &bc_type[i-1], 0); ImGui::SameLine();
-			ImGui::RadioButton(nlabel.c_str(), &bc_type[i-1], 1);
+			ImGui::RadioButton(dlabel.c_str(), &vals.bc_type[i-1], 0); ImGui::SameLine();
+			ImGui::RadioButton(nlabel.c_str(), &vals.bc_type[i-1], 1);
 		}
 		ImGui::Separator();
 
 		if(ImGui::Button("Add ID"))
 		{
-			vals.push_back(new float[3]{0, 0, 0});
-			bc_type.push_back(0);
+			vals.append();
 
 			for(int bindex = 0; bindex < selected.size(); ++bindex)
 			{
