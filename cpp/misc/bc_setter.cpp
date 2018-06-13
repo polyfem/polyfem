@@ -17,6 +17,8 @@
 #include <igl/unproject_onto_mesh.h>
 #include <igl/opengl/glfw/Viewer.h>
 #include <igl/colormap.h>
+#include <igl/file_dialog_open.h>
+#include <igl/file_dialog_save.h>
 #include <iostream>
 #include <queue>
 #include <vector>
@@ -114,7 +116,7 @@ void load(const std::string &path,
 void save(const std::string &path, const VectorXi &selected, const std::vector<float*> &vals, const std::vector<int> &bc_type)
 {
 	std::ofstream file;
-	file.open("bc.txt");
+	file.open(path + ".txt");
 
 	if(file.good())
 	{
@@ -139,7 +141,7 @@ void save(const std::string &path, const VectorXi &selected, const std::vector<f
 		{"neumann_boundary", neuman},
 	};
 
-	file.open("setting.json");
+	file.open(path + ".json");
 	file << args.dump(4) << std::endl;
 	file.close();
 }
@@ -184,9 +186,11 @@ int main(int argc, const char **argv)
 	std::vector<float*> vals; vals.push_back(new float[3]{0, 0, 0});
 	std::vector<int> bc_type(1); bc_type.front() = 0;
 
-
-	load(path, V, F, p0, p1, N, adj, selected, all_2_local, boundary_2_all, C);
-	visited.resize(F.rows());
+	if(!path.empty())
+	{
+		load(path, V, F, p0, p1, N, adj, selected, all_2_local, boundary_2_all, C);
+		visited.resize(F.rows());
+	}
 
 	igl::opengl::glfw::imgui::ImGuiMenu menu;
 	viewer.plugins.push_back(&menu);
@@ -194,8 +198,41 @@ int main(int argc, const char **argv)
 
 	menu.callback_draw_viewer_menu = [&]()
 	{
-		menu.draw_viewer_menu();
-		
+		ImGui::PushItemWidth(ImGui::GetWindowWidth());
+		if(ImGui::Button("Load mesh")){
+			std::string fname = igl::file_dialog_open();
+
+			if (fname.length() == 0)
+				return;
+
+			load(fname, V, F, p0, p1, N, adj, selected, all_2_local, boundary_2_all, C);
+			visited.resize(F.rows());
+
+			vals.clear();
+			vals.push_back(new float[3]{0, 0, 0});
+			bc_type.clear();
+			bc_type.push_back(0);
+
+
+			viewer.data().clear();
+			viewer.data().add_edges(p0, p1, RowVector3d(0,0,0));
+			viewer.data().set_mesh(V, F);
+			viewer.data().set_colors(C);
+			viewer.core.align_camera_center(V);
+		}
+		ImGui::SameLine();
+		if(ImGui::Button("Save boundary"))
+		{
+			std::string fname = igl::file_dialog_save();
+
+			if(fname.length() == 0)
+				return;
+
+			save(fname, selected, vals, bc_type);
+		}
+		ImGui::PopItemWidth();
+		ImGui::Separator();
+
 		ImGui::RadioButton("clear##bc_selector", &current_id, 0);
 		ImGui::Separator();
 		for(int i = 1; i <= int(vals.size()); ++i){
@@ -224,13 +261,7 @@ int main(int argc, const char **argv)
 		}
 		ImGui::Separator();
 
-		if(ImGui::Button("Save"))
-		{
-			save("", selected, vals, bc_type);
-		}
-
-		ImGui::SameLine();
-		if(ImGui::Button("Add"))
+		if(ImGui::Button("Add ID"))
 		{
 			vals.push_back(new float[3]{0, 0, 0});
 			bc_type.push_back(0);
@@ -327,10 +358,13 @@ int main(int argc, const char **argv)
 		return false;
 	};
 
-	// Show mesh
-	viewer.data().add_edges(p0, p1, RowVector3d(0,0,0));
-	viewer.data().set_mesh(V, F);
-	viewer.data().set_colors(C);
+	if(V.size() > 0)
+	{
+		viewer.data().add_edges(p0, p1, RowVector3d(0,0,0));
+		viewer.data().set_mesh(V, F);
+		viewer.data().set_colors(C);
+		viewer.core.align_camera_center(V);
+	}
 	viewer.data().show_lines = false;
 	viewer.launch();
 }
