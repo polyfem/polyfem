@@ -1588,7 +1588,8 @@ namespace poly_fem
 
 
 		problem = ProblemFactory::factory().get_problem(args["problem"]);
-		// problem->set_parameters(args["problem_params"]);
+		//important for the BC
+		problem->set_parameters(args["problem_params"]);
 	}
 
 	void State::export_data()
