@@ -307,8 +307,8 @@ void poly_fem::UIState::draw_settings() {
 	// Actions
 	if (ImGui::CollapsingHeader("Actions", ImGuiTreeNodeFlags_DefaultOpen)) {
 		if (ImGui::Button("Load mesh", ImVec2(-1, 0))) { load_mesh(); }
-		if (ImGui::Button("Build  basis", ImVec2(-1, 0))) { build_basis(); }
-		if (ImGui::Button("Compute poly bases", ImVec2(-1, 0))) { build_polygonal_basis(); }
+		if (ImGui::Button("Build  basis", ImVec2(-1, 0))) { build_basis(); build_polygonal_basis(); }
+		// if (ImGui::Button("Compute poly bases", ImVec2(-1, 0))) {  }
 		if (ImGui::Button("Build vis mesh", ImVec2(-1, 0))) { build_vis_mesh(); }
 
 		if (ImGui::Button("Assemble rhs", ImVec2(-1, 0))) { assemble_rhs(); }
