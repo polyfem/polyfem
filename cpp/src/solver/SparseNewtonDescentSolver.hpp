@@ -76,6 +76,7 @@ namespace cppoptlib {
 			const json &params = State::state().solver_params();
 			auto solver = LinearSolver::create(State::state().solver_type(), State::state().precond_type());
 			solver->setParameters(params);
+			// std::cout<<"internal solver "<<solver->name()<<std::endl;
 
 			const int reduced_size = x0.rows();
 			// const int full_size = State::state().n_bases*State::state().mesh->dimension();
@@ -114,22 +115,28 @@ namespace cppoptlib {
 					std::cout<<"grad time "<<time.getElapsedTimeInSec()<<std::endl;
 				grad_time += time.getElapsedTimeInSec();
 
+				bool new_hessian = this->m_current.iterations % 5 == 0;
 
-
-				time.start();
-				objFunc.hessian(x0, hessian);
-				hessian += (1e-5) * id;
-				time.stop();
-				if(verbose)
-					std::cout<<"assembly time "<<time.getElapsedTimeInSec()<<std::endl;
-				assembly_time += time.getElapsedTimeInSec();
+				if(new_hessian)
+				{
+					time.start();
+					objFunc.hessian(x0, hessian);
+					hessian += (1e-5) * id;
+					time.stop();
+					if(verbose)
+						std::cout<<"assembly time "<<time.getElapsedTimeInSec()<<std::endl;
+					assembly_time += time.getElapsedTimeInSec();
+				}
 
 
 				// std::cout<<hessian<<std::endl;
 				time.start();
 
-				solver->analyzePattern(hessian);
-				solver->factorize(hessian);
+				if(new_hessian)
+				{
+					solver->analyzePattern(hessian);
+					solver->factorize(hessian);
+				}
 				solver->solve(grad, delta_x);
 				// delta_x = grad;
 
