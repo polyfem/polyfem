@@ -159,6 +159,19 @@ namespace poly_fem
 
 		assert(global_counter == total_size);
 
+		const double mmin = global_rhs.minCoeff();
+		const double mmax = global_rhs.maxCoeff();
+
+		if(fabs(mmin) < 1e-8 && fabs(mmax) < 1e-8)
+		{
+			// std::cout<<"is all zero, skipping"<<std::endl;
+			for(size_t i = 0; i < indices.size(); ++i){
+				for(int d = 0; d < size_; ++d){
+					rhs(indices[i]*size_+d) = 0;
+				}
+			}
+		}
+		else
 		{
 			Eigen::SparseMatrix<double> mat(int(total_size), int(indices.size()));
 			mat.setFromTriplets(entries.begin(), entries.end());
@@ -173,9 +186,9 @@ namespace poly_fem
 			Eigen::MatrixXd coeffs(b.rows(), b.cols());
 
 			json params = {
-			{"mtype", -2}, // matrix type for Pardiso (2 = SPD)
-			// {"max_iter", 0}, // for iterative solvers
-			// {"tolerance", 1e-9}, // for iterative solvers
+				{"mtype", -2}, // matrix type for Pardiso (2 = SPD)
+				// {"max_iter", 0}, // for iterative solvers
+				// {"tolerance", 1e-9}, // for iterative solvers
 			};
 
 			// auto solver = LinearSolver::create("", "");

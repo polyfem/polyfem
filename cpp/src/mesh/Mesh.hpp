@@ -78,6 +78,8 @@ namespace poly_fem
 		void face_barycenters(Eigen::MatrixXd &barycenters) const;
 		void cell_barycenters(Eigen::MatrixXd &barycenters) const;
 
+		virtual void bounding_box(RowVectorNd &min, RowVectorNd &max) const  = 0;
+
 		//Queries on the tags
 		bool is_spline_compatible(const int el_id) const;
 		bool is_cube(const int el_id) const;

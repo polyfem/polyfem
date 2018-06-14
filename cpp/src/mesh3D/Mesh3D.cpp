@@ -430,6 +430,13 @@ namespace poly_fem
 		return true;
 	}
 
+	void Mesh3D::bounding_box(RowVectorNd &min, RowVectorNd &max) const
+	{
+		const auto &V = mesh_.points;
+		min = V.rowwise().minCoeff().transpose();
+		max = V.rowwise().maxCoeff().transpose();
+	}
+
 	void Mesh3D::normalize() {
 		auto &V = mesh_.points;
 		Eigen::RowVector3d minV = V.rowwise().minCoeff().transpose();

@@ -41,6 +41,9 @@ namespace poly_fem
 	: Problem(name)
 	{
 		boundary_ids_ = {5, 6};
+
+		trans_.resize(2);
+		trans_.setConstant(0.5);
 	}
 
 	void TorsionElasticProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
@@ -53,7 +56,7 @@ namespace poly_fem
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
 
-		double alpha = t* M_PI;
+		double alpha = n_turns_ * t * 2 * M_PI;
 		Eigen::Matrix2d rot; rot<<
 		cos(alpha), -sin(alpha),
 		sin(alpha),  cos(alpha);
@@ -61,14 +64,47 @@ namespace poly_fem
 		for(long i = 0; i < pts.rows(); ++i)
 		{
 			if(mesh.get_boundary_id(global_ids(i))== 6){
-				Eigen::RowVector3d pt = pts.row(i);
-				Eigen::RowVector2d pt2; pt2 << pt(0), pt(1);
-				pt2.array() -= 0.15;
-				pt2 = pt2 * rot;
-				pt2.array() += 0.15;
+				const Eigen::RowVector3d pt = pts.row(i);
+				Eigen::RowVector2d pt2; pt2 << pt(coordiante_0_), pt(coordiante_1_);
 
-				pt<< pt2(0)-pt(0), pt2(1)-pt(1), 0;
-				val.row(i) = pt;
+				pt2 -= trans_;
+				pt2 = pt2 * rot;
+				pt2 += trans_;
+
+				val(i, coordiante_0_) = pt2(0)-pt(coordiante_0_);
+				val(i, coordiante_1_) = pt2(1)-pt(coordiante_1_);
+			}
+		}
+	}
+
+	void TorsionElasticProblem::set_parameters(const json &params)
+	{
+		if(params.find("axis_coordiante") != params.end())
+		{
+			const int coord = params["axis_coordiante"];
+			coordiante_0_ = (coord + 1) % 3;
+			coordiante_1_ = (coord + 2) % 3;
+		}
+
+		if(params.find("n_turns") != params.end())
+		{
+			n_turns_ = params["n_turns"];
+		}
+
+		if(params.find("bbox_extend") != params.end())
+		{
+			auto bbox_extend = params["bbox_extend"];
+			if(bbox_extend.is_array() && bbox_extend.size() >= 3)
+			{
+				RowVectorNd tmp(3);
+				tmp(0) = bbox_extend[0];
+				tmp(1) = bbox_extend[1];
+				tmp(2) = bbox_extend[2];
+
+				tmp /= 2;
+
+				trans_(0) = tmp(coordiante_0_);
+				trans_(1) = tmp(coordiante_1_);
 			}
 		}
 	}

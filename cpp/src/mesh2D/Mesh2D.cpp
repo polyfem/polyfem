@@ -82,6 +82,19 @@ namespace poly_fem
 		return true;
 	}
 
+	void Mesh2D::bounding_box(RowVectorNd &min, RowVectorNd &max) const
+	{
+		GEO::vec3 min_corner, max_corner;
+		GEO::get_bbox(mesh_, &min_corner[0], &max_corner[0]);
+		min.resize(2); max.resize(2);
+
+		min(0) = min_corner.x;
+		min(1) = min_corner.y;
+
+		max(0) = max_corner.x;
+		max(1) = max_corner.y;
+	}
+
 	void Mesh2D::normalize() {
 
 		GEO::vec3 min_corner, max_corner;

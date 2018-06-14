@@ -31,6 +31,13 @@ namespace poly_fem
 		bool has_exact_sol() const override { return false; }
 		bool is_scalar() const override { return false; }
 		bool is_linear_in_time() const override { return false; }
+
+		void set_parameters(const json &params) override;
+	private:
+		double n_turns_ = 0.5;
+		int coordiante_0_ = 0;
+		int coordiante_1_ = 1;
+		RowVectorNd trans_;
 	};
 
 	class ElasticProblemZeroBC: public Problem

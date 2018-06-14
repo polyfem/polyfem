@@ -81,6 +81,9 @@ namespace poly_fem
 			assert(j == reduced.size());
 		}
 
+		void full_to_reduced(const Eigen::MatrixXd &full, TVector &reduced) const;
+		void reduced_to_full(const TVector &reduced, Eigen::MatrixXd &full);
+
 	private:
 		AssemblerUtils &assembler;
 		const RhsAssembler &rhs_assembler;
@@ -89,8 +92,5 @@ namespace poly_fem
 		const int full_size, reduced_size;
 		const double t;
 		bool rhs_computed;
-
-		void full_to_reduced(const Eigen::MatrixXd &full, TVector &reduced) const;
-		void reduced_to_full(const TVector &reduced, Eigen::MatrixXd &full);
 	};
 }

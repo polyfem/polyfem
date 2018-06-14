@@ -267,8 +267,8 @@ namespace poly_fem
 		double h, double rho)
 	{
 		const double ptmp = h1_formula ?
-				(std::log(B*std::pow(h_ref, p_ref + 1)*rho     / (h *rho_ref))            /std::log(h)):
-				(std::log(B*std::pow(h_ref, p_ref + 2)*rho*rho / (h * h *rho_ref*rho_ref))/std::log(h));
+		(std::log(B*std::pow(h_ref, p_ref + 1)*rho     / (h *rho_ref))            /std::log(h)):
+		(std::log(B*std::pow(h_ref, p_ref + 2)*rho*rho / (h * h *rho_ref*rho_ref))/std::log(h));
 
 		// std::cout<<ptmp<<std::endl;
 		return std::min(std::max(p_ref, (int)std::round(ptmp)), autogen::MAX_P_BASES);
@@ -1221,6 +1221,15 @@ namespace poly_fem
 	{
 		auto p_params = args["problem_params"];
 		p_params["formulation"] = formulation();
+		{
+			RowVectorNd min, max, delta;
+			mesh->bounding_box(min, max);
+			delta = max - min;
+			if(mesh->is_volume())
+				p_params["bbox_extend"] = {delta(0), delta(1), delta(2)};
+			else
+				p_params["bbox_extend"] = {delta(0), delta(1)};
+		}
 		problem->set_parameters(p_params);
 
 		const auto params = build_json_params();
@@ -1278,6 +1287,9 @@ namespace poly_fem
 		}
 		else
 		{
+			const int full_size 	= n_bases*mesh->dimension();
+			const int reduced_size 	= n_bases*mesh->dimension() - boundary_nodes.size();
+
 			int steps = args["nl_solver_rhs_steps"];
 			RhsAssembler rhs_assembler(*mesh, n_bases, mesh->dimension(), bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
 			VectorXd tmp_sol;
@@ -1342,9 +1354,15 @@ namespace poly_fem
 				solver.minimize(nl_problem, tmp_sol);
 				solver.getInfo(solver_info);
 				std::cout<<n<<"/"<<steps<<std::endl;
+
+				if(args["save_solve_sequence"])
+				{
+					nl_problem.reduced_to_full(tmp_sol, sol);
+
+					save_vtu( "step_" + std::to_string(n) + ".vtu");
+					save_wire("step_" + std::to_string(n) + ".obj");
+				}
 			}
-			const int full_size 	= n_bases*mesh->dimension();
-			const int reduced_size 	= n_bases*mesh->dimension() - boundary_nodes.size();
 
 			NLProblem::reduced_to_full_aux(full_size, reduced_size, tmp_sol, rhs, sol);
 		}
@@ -1525,7 +1543,7 @@ namespace poly_fem
 			{"B", 3},
 			{"h1_formula", false},
 
-			{"quadrature_order", 12},
+			{"quadrature_order", 5},
 			{"discr_order", 1},
 			{"use_p_ref", false},
 			{"use_spline", false},
@@ -1541,6 +1559,7 @@ namespace poly_fem
 
 			{"solver_params", json({})},
 			{"nl_solver_rhs_steps", 10},
+			{"save_solve_sequence", false},
 
 			{"params", {
 				{"lambda", 0.32967032967032966},
@@ -1569,7 +1588,7 @@ namespace poly_fem
 
 
 		problem = ProblemFactory::factory().get_problem(args["problem"]);
-		problem->set_parameters(args["problem_params"]);
+		// problem->set_parameters(args["problem_params"]);
 	}
 
 	void State::export_data()

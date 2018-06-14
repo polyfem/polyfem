@@ -59,6 +59,9 @@ namespace poly_fem
 		virtual RowVectorNd cell_barycenter(const int index) const override { assert(false); return RowVectorNd(2); }
 
 
+		virtual void bounding_box(RowVectorNd &min, RowVectorNd &max) const override;
+
+
 		// Navigation wrapper
 		inline Navigation::Index get_index_from_face(int f, int lv = 0) const { return Navigation::get_index_from_face(mesh_, f, lv); }
 
