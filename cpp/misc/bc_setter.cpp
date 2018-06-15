@@ -311,35 +311,36 @@ int main(int argc, const char **argv)
 			std::string dlabel = "Dirichlet##idtype" + label;
 			std::string nlabel = "Neuman##idtype" + label;
 
+			std::string xlabel = "x##identry" + label;
+			std::string ylabel = "y##identry" + label;
+			std::string zlabel = "z##identry" + label;
+
 			ImGui::TextColored(ImVec4(color(i, vals.size())(0),color(i, vals.size())(1),color(i, vals.size())(2),1.0f), "%s", title.c_str()); ImGui::SameLine();
 
 
 			ImGui::RadioButton(rlabel.c_str(), &current_id, i);
 
-			//if (ImGui::CollapsingHeader("BC", ImGuiWindowFlags_NoCollapse))
+			ImGui::RadioButton(vlabel.c_str(), &vals.bc_value[i-1], 0); ImGui::SameLine();
+			ImGui::RadioButton(flabel.c_str(), &vals.bc_value[i-1], 1);
+
+			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.20f);
+
+			if(vals.bc_value[i-1] == 0)
 			{
-				ImGui::RadioButton(vlabel.c_str(), &vals.bc_value[i-1], 0); ImGui::SameLine();
-				ImGui::RadioButton(flabel.c_str(), &vals.bc_value[i-1], 1);
-
-				ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.20f);
-
-				if(vals.bc_value[i-1] == 0)
-				{
-					ImGui::InputFloat("x", &vals.vals[i-1][0], 0,0, 3);  ImGui::SameLine();
-					ImGui::InputFloat("y", &vals.vals[i-1][1], 0,0, 3);  ImGui::SameLine();
-					ImGui::InputFloat("z", &vals.vals[i-1][2], 0,0, 3);
-				}
-				else
-				{
-					ImGui::InputText("x", vals.funs[i-1](0).data(), BUF_SIZE);  ImGui::SameLine();
-					ImGui::InputText("y", vals.funs[i-1](1).data(), BUF_SIZE);  ImGui::SameLine();
-					ImGui::InputText("z", vals.funs[i-1](2).data(), BUF_SIZE);
-				}
-				ImGui::PopItemWidth();
-
-				ImGui::RadioButton(dlabel.c_str(), &vals.bc_type[i-1], 0); ImGui::SameLine();
-				ImGui::RadioButton(nlabel.c_str(), &vals.bc_type[i-1], 1);
+				ImGui::InputFloat(xlabel.c_str(), &vals.vals[i-1][0], 0, 0, 3);  ImGui::SameLine();
+				ImGui::InputFloat(ylabel.c_str(), &vals.vals[i-1][1], 0, 0, 3);  ImGui::SameLine();
+				ImGui::InputFloat(zlabel.c_str(), &vals.vals[i-1][2], 0, 0, 3);
 			}
+			else
+			{
+				ImGui::InputText(xlabel.c_str(), vals.funs[i-1](0).data(), BUF_SIZE);  ImGui::SameLine();
+				ImGui::InputText(ylabel.c_str(), vals.funs[i-1](1).data(), BUF_SIZE);  ImGui::SameLine();
+				ImGui::InputText(zlabel.c_str(), vals.funs[i-1](2).data(), BUF_SIZE);
+			}
+			ImGui::PopItemWidth();
+
+			ImGui::RadioButton(dlabel.c_str(), &vals.bc_type[i-1], 0); ImGui::SameLine();
+			ImGui::RadioButton(nlabel.c_str(), &vals.bc_type[i-1], 1);
 
 			ImGui::Separator();
 		}
