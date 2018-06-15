@@ -63,7 +63,7 @@ namespace poly_fem
 
 		for(long i = 0; i < pts.rows(); ++i)
 		{
-			if(mesh.get_boundary_id(global_ids(i))== 6){
+			if(mesh.get_boundary_id(global_ids(i)) == boundary_ids_[1]){
 				const Eigen::RowVector3d pt = pts.row(i);
 				Eigen::RowVector2d pt2; pt2 << pt(coordiante_0_), pt(coordiante_1_);
 
@@ -89,6 +89,16 @@ namespace poly_fem
 		if(params.find("n_turns") != params.end())
 		{
 			n_turns_ = params["n_turns"];
+		}
+
+		if(params.find("fixed_boundary") != params.end())
+		{
+			boundary_ids_[0] = params["fixed_boundary"];
+		}
+
+		if(params.find("turning_boundary") != params.end())
+		{
+			boundary_ids_[1] = params["turning_boundary"];
 		}
 
 		if(params.find("bbox_extend") != params.end())
