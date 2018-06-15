@@ -181,7 +181,7 @@ namespace cppoptlib {
 					std::cerr<<"stopping because obj func is nan"<<std::endl;
 				}
 
-				if(this->m_current.gradNorm > this->criteria().gradNorm && (rate * delta_x).norm() < 1e-10)
+				if(this->m_status == Status::Continue && (rate * delta_x).norm() < 1e-10)
 				{
 					this->m_status = Status::UserDefined;
 					std::cerr<<"stopping because ||step|| is too small"<<std::endl;
