@@ -696,7 +696,15 @@ namespace poly_fem
 		}
 
 		if(args["normalize_mesh"])
+		{
 			mesh->normalize();
+		}
+		else
+		{
+			RowVectorNd min, max;
+			mesh->bounding_box(min, max);
+			std::cout<<"min "<<min<<", \tmax "<<max<<std::endl;
+		}
 
 		mesh->refine(args["n_refs"], args["refinenemt_location"], parent_elements);
 
@@ -746,6 +754,12 @@ namespace poly_fem
 
 		if(args["normalize_mesh"])
 			mesh->normalize();
+		else
+		{
+			RowVectorNd min, max;
+			mesh->bounding_box(min, max);
+			std::cout<<"min "<<min<<", \tmax "<<max<<std::endl;
+		}
 
 		mesh->refine(args["n_refs"], args["refinenemt_location"], parent_elements);
 
@@ -1302,7 +1316,7 @@ namespace poly_fem
 					tmp_sol = nl_problem.initial_guess();
 
 				// {
-				// 	// tmp_sol.setZero();
+				// 	// tmp_sol.setRandom();
 				// 	Eigen::Matrix<double, Eigen::Dynamic, 1> actual_grad, expected_grad;
 				// 	nl_problem.gradient(tmp_sol, actual_grad);
 
@@ -1344,7 +1358,7 @@ namespace poly_fem
 
 				// 		}
 				// 	}
-				// 	exit(0);
+				// 	// exit(0);
 
 				// 	// std::cout<<"diff grad "<<(actual_grad - expected_grad).array().abs().maxCoeff()<<std::endl;
 				// 	// std::cout<<"diff \n"<<(actual_grad - expected_grad)<<std::endl;
@@ -1543,7 +1557,7 @@ namespace poly_fem
 			{"B", 3},
 			{"h1_formula", false},
 
-			{"quadrature_order", 5},
+			{"quadrature_order", 4},
 			{"discr_order", 1},
 			{"use_p_ref", false},
 			{"use_spline", false},

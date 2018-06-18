@@ -213,30 +213,30 @@ namespace poly_fem
 		//Neumann
 		Eigen::MatrixXd points;
 		Eigen::VectorXd weights;
-		for(const auto &lb : local_neumann_boundary)
-		{
-			const int e = lb.element_id();
-			bool has_samples = boundary_quadrature(lb, resolution/3, true, points, weights, global_primitive_ids);
+		// for(const auto &lb : local_neumann_boundary)
+		// {
+		// 	const int e = lb.element_id();
+		// 	bool has_samples = boundary_quadrature(lb, resolution/3, true, points, weights, global_primitive_ids);
 
-			if(!has_samples)
-				continue;
+		// 	if(!has_samples)
+		// 		continue;
 
-			const ElementBases &bs = bases_[e];
-			for(int i = 0; i < lb.size(); ++i)
-			{
-				const int primitive_global_id = lb.global_primitive_id(i);
-				const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, mesh_);
+		// 	const ElementBases &bs = bases_[e];
+		// 	for(int i = 0; i < lb.size(); ++i)
+		// 	{
+		// 		const int primitive_global_id = lb.global_primitive_id(i);
+		// 		const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, mesh_);
 
-				for(long n = 0; n < nodes.size(); ++n){
-					const auto &b = bs.bases[nodes(n)];
-					for(size_t g = 0; g < b.global().size(); ++g){
-						for(int d = 0; d < size_; ++d){
-							rhs(b.global()[g].index*size_+d) = 0;
-						}
-					}
-				}
-			}
-		}
+		// 		for(long n = 0; n < nodes.size(); ++n){
+		// 			const auto &b = bs.bases[nodes(n)];
+		// 			for(size_t g = 0; g < b.global().size(); ++g){
+		// 				for(int d = 0; d < size_; ++d){
+		// 					rhs(b.global()[g].index*size_+d) = 0;
+		// 				}
+		// 			}
+		// 		}
+		// 	}
+		// }
 
 		for(const auto &lb : local_neumann_boundary)
 		{
@@ -402,7 +402,7 @@ namespace poly_fem
 				case BoundaryType::TriLine:	 BoundarySampler::quadrature_for_tri_edge(local_boundary[i], order, tmp_p, tmp_w);  tmp_w *= mesh_.edge_length(gid); break;
 				case BoundaryType::QuadLine: BoundarySampler::quadrature_for_quad_edge(local_boundary[i], order, tmp_p, tmp_w); tmp_w *= mesh_.edge_length(gid); break;
 				case BoundaryType::Quad: 	 BoundarySampler::quadrature_for_quad_face(local_boundary[i], order, tmp_p, tmp_w); tmp_w *= mesh_.quad_area(gid); break;
-				case BoundaryType::Tri: 	 BoundarySampler::quadrature_for_tri_face(local_boundary[i], order, tmp_p, tmp_w);  tmp_w *= mesh_.tri_area(gid); break;
+				case BoundaryType::Tri: 	 BoundarySampler::quadrature_for_tri_face(local_boundary[i], order, tmp_p, tmp_w);  tmp_w *= 2*mesh_.tri_area(gid); break;
 				case BoundaryType::Invalid:  assert(false); break;
 				default: assert(false);
 			}
