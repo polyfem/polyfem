@@ -43,7 +43,7 @@ std::unique_ptr<poly_fem::Mesh> poly_fem::Mesh::create(const std::string &path) 
 	std::string lowername = path;
 	std::transform(lowername.begin(), lowername.end(), lowername.begin(), ::tolower);
 	if (StringUtils::endswidth(lowername, ".hybrid")) {
-		auto mesh = std::make_unique<Mesh3D>();
+		std::unique_ptr<poly_fem::Mesh> mesh = std::make_unique<Mesh3D>();
 		if (mesh->load(path)){
 			return mesh;
 		}
