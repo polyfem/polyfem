@@ -85,20 +85,21 @@ endif()
 
 ################################################################################
 
+find_package(PythonInterp 3 REQUIRED)
+
 add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_rhs.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_rhs.hpp
-	COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/elasticity_rhs.py ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/
+	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/elasticity_rhs.py ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/
 	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/elasticity_rhs.py)
 
-
 add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_eigs.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_eigs.hpp
-	COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/eigs.py ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/
+	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/eigs.py ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/
 	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/eigs.py)
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_bases.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_bases.hpp
-	COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/FEBases.py ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/
+	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/FEBases.py ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/
 	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/FEBases.py)
 
-
+################################################################################
 
 # Polyfem library
 set(POLYFEM_SOURCES
@@ -397,8 +398,6 @@ if(TARGET RBF)
 	target_link_libraries(polyfem PUBLIC RBF)
 	target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_RBF)
 endif()
-
-
 
 ################################################################################
 # Optional libraries

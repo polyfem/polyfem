@@ -1,6 +1,7 @@
 #ifndef MESH_2D_HPP
 #define MESH_2D_HPP
 
+#include "Common.hpp"
 #include "Mesh.hpp"
 #include "Navigation.hpp"
 #include "Types.hpp"
@@ -13,6 +14,10 @@ namespace poly_fem
 	class Mesh2D : public Mesh
 	{
 	public:
+		Mesh2D() = default;
+		virtual ~Mesh2D() = default;
+		POLYFEM_DEFAULT_MOVE_COPY(Mesh2D)
+
 		void refine(const int n_refiniment, const double t, std::vector<int> &parent_nodes) override;
 
 		bool is_volume() const override { return false; }

@@ -13,6 +13,8 @@ matrix:
         - gcc-7
         - g++-7
         - xorg-dev
+        - python3
+        - python3-pip
         - libglu1-mesa-dev
         - libsuitesparse-dev
     env:
@@ -24,6 +26,8 @@ matrix:
 
 install:
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install suite-sparse; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade python; fi
+- pip3 install --user sympy
 - eval "${MATRIX_EVAL}"
 
 script:
@@ -32,3 +36,4 @@ script:
 - cd build
 - cmake -DCMAKE_BUILD_TYPE=$CONFIG ..
 - make -j2
+- make test

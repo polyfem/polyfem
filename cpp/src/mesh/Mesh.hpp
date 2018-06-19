@@ -1,6 +1,7 @@
 #ifndef MESH_HPP
 #define MESH_HPP
 
+#include "Common.hpp"
 #include "Navigation.hpp"
 #include "Types.hpp"
 
@@ -33,7 +34,9 @@ namespace poly_fem
 		static std::unique_ptr<Mesh> create(const std::string &path);
 		static std::unique_ptr<Mesh> create(GEO::Mesh &M);
 
+		Mesh() = default;
 		virtual ~Mesh() = default;
+		POLYFEM_DEFAULT_MOVE_COPY(Mesh)
 
 		virtual void refine(const int n_refinement, const double t, std::vector<int> &parent_nodes) = 0;
 

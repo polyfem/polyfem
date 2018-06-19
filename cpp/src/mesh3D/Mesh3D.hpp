@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Common.hpp"
 #include "Mesh.hpp"
 
 #include "Navigation3D.hpp"
@@ -15,6 +16,10 @@ namespace poly_fem
 	class Mesh3D : public Mesh
 	{
 	public:
+		Mesh3D() = default;
+		virtual ~Mesh3D() = default;
+		POLYFEM_DEFAULT_MOVE_COPY(Mesh3D)
+
 		void refine(const int n_refiniment, const double t, std::vector<int> &parent_nodes) override;
 
 		inline bool is_volume() const override { return true; }
