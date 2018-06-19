@@ -30,14 +30,14 @@ endif()
 ################################################################################
 
 # Options for enabling/disabling optional libraries
-option(ENABLE_CHOLMOD     "Enable Cholmod library"  ON)
-option(ENABLE_UMFPACK     "Enable UmfPack library"  ON)
+option(ENABLE_CHOLMOD     "Enable Cholmod library" ON)
+option(ENABLE_UMFPACK     "Enable UmfPack library" ON)
 option(ENABLE_SUPERLU     "Enable SuperLU library" OFF)
 option(ENABLE_MKL         "Enable MKL library"     OFF)
-option(ENABLE_PARDISO     "Enable Pardiso library"  ON)
+option(ENABLE_PARDISO     "Enable Pardiso library" ON)
 option(ENABLE_MMG         "Enable MMG library"     OFF)
-option(ENABLE_TBB         "Enable TBB"		        ON)
-option(ENABLE_HYPRE       "Enable hypre"	        ON)
+option(ENABLE_TBB         "Enable TBB"             ON)
+option(ENABLE_HYPRE       "Enable hypre"           ON)
 option(SANITIZE_ADDRESS   "Sanitize Address"       OFF)
 option(SANITIZE_MEMORY    "Sanitize Memory"        OFF)
 option(SANITIZE_THREAD    "Sanitize Thread"        OFF)
@@ -466,6 +466,8 @@ if(ENABLE_PARDISO AND NOT (ENABLE_MKL AND MKL_FOUND))
 
 		target_link_libraries(polyfem PUBLIC ${PARDISO_LIBRARIES})
 		target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_PARDISO)
+	else()
+		message(WARNING "Pardiso not found, solver will not be available.")
 	endif()
 endif()
 
