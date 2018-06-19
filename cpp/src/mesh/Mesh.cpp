@@ -23,12 +23,12 @@ namespace {
 
 std::unique_ptr<poly_fem::Mesh> poly_fem::Mesh::create(GEO::Mesh &meshin) {
 	if (is_planar(meshin)) {
-		auto mesh = std::make_unique<Mesh2D>();
+		std::unique_ptr<poly_fem::Mesh> mesh = std::make_unique<Mesh2D>();
 		if (mesh->load(meshin)) {
 			return mesh;
 		}
 	} else {
-		auto mesh = std::make_unique<Mesh3D>();
+		std::unique_ptr<poly_fem::Mesh> mesh = std::make_unique<Mesh3D>();
 		meshin.cells.connect();
 		if (mesh->load(meshin)) {
 			return mesh;

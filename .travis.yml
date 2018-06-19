@@ -1,6 +1,7 @@
 dist: trusty
 sudo: false
 language: cpp
+cache: ccache
 matrix:
   include:
   - os: linux
@@ -15,6 +16,7 @@ matrix:
         - xorg-dev
         - python3
         - python3-pip
+        - nvidia-opencl-dev
         - libglu1-mesa-dev
         - libsuitesparse-dev
     env:
@@ -25,8 +27,9 @@ matrix:
     - MATRIX_EVAL="export CONFIG=Debug"
 
 install:
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install suite-sparse; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install suite-sparse ccache; fi
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade python; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
 - pip3 install --user sympy
 - eval "${MATRIX_EVAL}"
 
