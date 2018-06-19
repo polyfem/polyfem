@@ -12,6 +12,8 @@ matrix:
         packages:
         - gcc-7
         - g++-7
+        - xorg-dev
+        - libglu1-mesa-dev
         - libsuitesparse-dev
     env:
     - MATRIX_EVAL="export CC=gcc-7 && CXX=g++-7 && CONFIG=Debug"
