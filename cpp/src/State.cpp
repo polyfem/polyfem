@@ -1590,6 +1590,7 @@ namespace poly_fem
 			{"problem_params", json({})},
 
 			{"output", ""},
+			{"solution", ""},
 
 			{"export", {
 				{"vis_mesh", ""},
@@ -1613,6 +1614,14 @@ namespace poly_fem
 		const std::string vis_mesh_path  = args["export"]["vis_mesh"];
 		const std::string wire_mesh_path = args["export"]["wire_mesh"];
 		const std::string iso_mesh_path = args["export"]["iso_mesh"];
+		const std::string solution_path = args["solution"];
+
+		if(!solution_path.empty())
+		{
+			std::ofstream out(solution_path);
+			out << sol << std::endl;
+			out.close();
+		}
 
 		if (!vis_mesh_path.empty()) {
 			save_vtu(vis_mesh_path);

@@ -96,6 +96,8 @@ void load(const std::string &path,
 	Mesh3D mesh;
 	mesh.load(path);
 
+	std::cout<<"N vertices "<<mesh.n_vertices()<<std::endl;
+
 
 	std::vector<int> ranges;
 	mesh.get_edges(p0, p1);
