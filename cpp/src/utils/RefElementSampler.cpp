@@ -136,6 +136,25 @@ void triangulate_periodic(double target_area, Eigen::MatrixXd &OV, Eigen::Matrix
 				0, 7, 4;
 
 				igl::copyleft::tetgen::tetrahedralize(pts, faces, buf.str(), cube_points_, cube_tets_, cube_faces_);
+
+				// Extract sampled edges matching the base element edges
+				Eigen::MatrixXi edges(12, 2); edges <<
+				0, 1,
+				1, 2,
+				2, 3,
+				3, 0,
+
+				4, 5,
+				5, 6,
+				6, 7,
+				7, 4,
+
+				0, 4,
+				1, 5,
+				2, 6,
+				3, 7;
+				igl::edges(cube_faces_, cube_edges_);
+				extract_parent_edges(cube_points_, cube_edges_, pts, edges, cube_edges_);
 			}
 			{
 				MatrixXd pts(4,3); pts <<
@@ -179,6 +198,10 @@ void triangulate_periodic(double target_area, Eigen::MatrixXd &OV, Eigen::Matrix
 
 				MatrixXd H(0,2);
 				igl::triangle::triangulate(pts, E, H, buf.str(), cube_points_, cube_faces_);
+
+				// Extract sampled edges matching the base element edges
+				igl::edges(cube_faces_, cube_edges_);
+				extract_parent_edges(cube_points_, cube_edges_, pts, E, cube_edges_);
 			}
 			{
 				triangulate_periodic(area_param_, simplex_points_, simplex_faces_, simplex_edges_);

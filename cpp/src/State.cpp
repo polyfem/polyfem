@@ -1755,6 +1755,7 @@ namespace poly_fem
 				faces_total_size += sampler.simplex_faces().rows();
 			} else if(mesh->is_cube(i)) {
 				pts_total_size += sampler.cube_points().rows();
+				seg_total_size += sampler.cube_edges().rows();
 			}
 		}
 
@@ -1784,8 +1785,8 @@ namespace poly_fem
 			else if(mesh->is_cube(i))
 			{
 				bs.eval_geom_mapping(sampler.cube_points(), mapped);
-				edges.block(seg_index, 0, sampler.simplex_edges().rows(), edges.cols()) = sampler.simplex_edges().array() + pts_index;
-				seg_index += sampler.simplex_edges().rows();
+				edges.block(seg_index, 0, sampler.cube_edges().rows(), edges.cols()) = sampler.cube_edges().array() + pts_index;
+				seg_index += sampler.cube_edges().rows();
 
 				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
 				pts_index += mapped.rows();

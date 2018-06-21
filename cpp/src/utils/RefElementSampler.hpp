@@ -15,6 +15,7 @@ namespace poly_fem
 		const Eigen::MatrixXd &cube_points() const { return cube_points_; }
 		const Eigen::MatrixXi &cube_faces() const { return cube_faces_; }
 		const Eigen::MatrixXi &cube_volume() const { return is_volume_ ? cube_tets_ : cube_faces_; }
+		const Eigen::MatrixXi &cube_edges() const { return cube_edges_; }
 
 		const Eigen::MatrixXd &simplex_points() const { return simplex_points_; }
 		const Eigen::MatrixXi &simplex_faces() const { return simplex_faces_; }
@@ -30,6 +31,7 @@ namespace poly_fem
 
 		Eigen::MatrixXd cube_points_;
 		Eigen::MatrixXi cube_faces_;
+		Eigen::MatrixXi cube_edges_;
 
 		Eigen::MatrixXd simplex_points_;
 		Eigen::MatrixXi simplex_faces_;
