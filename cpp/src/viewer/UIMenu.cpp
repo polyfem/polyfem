@@ -5,9 +5,11 @@
 #include "Mesh3D.hpp"
 #include "AssemblerUtils.hpp"
 
+#include <igl/colormap.h>
 #include <igl/png/writePNG.h>
 #include <imgui/imgui.h>
 #include <igl/opengl/glfw/imgui/ImGuiHelpers.h>
+#include <igl/opengl/gl.h>
 #include <imgui/imgui_internal.h>
 #include <tinyfiledialogs.h>
 #include <algorithm>
@@ -338,6 +340,62 @@ void poly_fem::UIState::draw_settings() {
 	ImGui::LabelText("L2 error", "L2\t%g", state.l2_err);
 	ImGui::LabelText("Lp error", "Lp\t%g", state.lp_err);
 	ImGui::LabelText("H1 error", "H1\t%g", state.h1_err);
+
+	ImGui::Separator();
+
+	static GLuint color_bar_texture = -1;
+	static const int width  = ImGui::GetWindowWidth();
+	static const int height = 20;
+	if(color_bar_texture)
+	{
+		Eigen::Matrix<unsigned char, Eigen::Dynamic, 4, Eigen::RowMajor> cmap(width*height, 4);
+
+
+		Eigen::MatrixXd t = Eigen::VectorXd::LinSpaced(width, 0, width);
+		Eigen::MatrixXd col;
+		igl::colormap(color_map, t, true, col);
+		assert(col.rows() == width);
+		for(int i = 0; i < width; ++i)
+		{
+			for(int j = 0; j < height; ++j)
+			{
+				for(int c = 0; c < 3; ++c)
+					cmap(j*width+i, c) = col(i, c)*255;
+			}
+		}
+		cmap.col(3).setConstant(255);
+
+		glGenTextures(1, &color_bar_texture);
+		glBindTexture(GL_TEXTURE_2D, color_bar_texture);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, cmap.data());
+		glGenerateMipmap(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+	ImGui::Image(reinterpret_cast<ImTextureID>(color_bar_texture), ImVec2(width, height));
+	
+	if(min_val <= 1e-20)
+		ImGui::Text("0");
+	else
+	{
+		const int min_power = floor(log10(min_val));
+		ImGui::Text("%ge%d", round(min_val * pow(10, -min_power)*100)/100., min_power);
+	}
+
+	if(max_val <= 1e-20)
+	{
+		ImGui::SameLine(width-10);
+		ImGui::Text("0");
+	}
+	else
+	{
+		ImGui::SameLine(width-45);
+		const int max_power = floor(log10(max_val));
+		ImGui::Text("%ge%d", round(max_val * pow(10, -max_power)*100)/100., max_power);
+	}
 
 }
 

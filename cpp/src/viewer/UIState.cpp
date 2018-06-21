@@ -699,7 +699,17 @@ namespace poly_fem
 			else
 				igl::colormap(color_map, ffun, true, col);
 
-			std::cout<<"min/max "<< ffun.minCoeff()<<"/"<<ffun.maxCoeff()<<std::endl;
+			if(min < max)
+			{
+				min_val = min;
+				max_val = max;
+			}
+			else
+			{
+				min_val = ffun.minCoeff();
+				max_val = ffun.maxCoeff();
+			}
+			// std::cout<<"min/max "<< min_val <<"/"<<max_val<<std::endl;
 
 			MatrixXd ttmp = vis_pts;
 
@@ -755,7 +765,17 @@ namespace poly_fem
 					data(layer).show_overlay = false;
 			}
 
-			std::cout<<"min/max "<< fun.minCoeff()<<"/"<<fun.maxCoeff()<<std::endl;
+			if(min < max)
+			{
+				min_val = min;
+				max_val = max;
+			}
+			else
+			{
+				min_val = fun.minCoeff();
+				max_val = fun.maxCoeff();
+			}
+			// std::cout<<"min/max "<< fun.minCoeff()<<"/"<<fun.maxCoeff()<<std::endl;
 		}
 
 		data(layer).set_colors(col);

@@ -65,6 +65,7 @@ namespace poly_fem
 		std::map<int, Eigen::MatrixXd> vis_pts_poly;
 
 		igl::ColorMapType color_map = igl::COLOR_MAP_TYPE_VIRIDIS;
+		double min_val = 0, max_val = 0;
 
 		int slice_coord = 0;
 		bool is_slicing = false;
