@@ -24,16 +24,16 @@ namespace poly_fem
 			return mat;
 		}
 
-		template<int dim>
-		Eigen::Matrix<double, dim, dim> strain(const Eigen::MatrixXd &grad, const Eigen::MatrixXd &jac_it, int k, int coo)
-		{
-			Eigen::Matrix<double, dim, dim> jac;
-			jac.setZero();
-			jac.row(coo) = grad.row(k);
-			jac = jac*jac_it;
+		// template<int dim>
+		// Eigen::Matrix<double, dim, dim> strain(const Eigen::MatrixXd &grad, const Eigen::MatrixXd &jac_it, int k, int coo)
+		// {
+		// 	Eigen::Matrix<double, dim, dim> jac;
+		// 	jac.setZero();
+		// 	jac.row(coo) = grad.row(k);
+		// 	jac = jac*jac_it;
 
-			return strain_from_disp_grad(jac);
-		}
+		// 	return strain_from_disp_grad(jac);
+		// }
 	}
 
 

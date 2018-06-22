@@ -10,26 +10,26 @@ namespace poly_fem
 
 	namespace
 	{
-		Eigen::Matrix2d strain2d(const Eigen::MatrixXd &grad, const Eigen::MatrixXd &jac_it, int k, int coo)
+		template<class Matrix>
+		Matrix strain_from_disp_grad(const Matrix &disp_grad)
 		{
-			Eigen::Matrix2d jac;
-			jac.setZero();
-			jac.row(coo) = grad.row(k);
+			Matrix mat =  (disp_grad + disp_grad.transpose());
 
-			jac = jac*jac_it;
+			for(int i = 0; i < mat.size(); ++i)
+				mat(i) *= 0.5;
 
-			return 0.5*(jac + jac.transpose());
+			return mat;
 		}
 
-		Eigen::Matrix3d strain3d(const Eigen::MatrixXd &grad, const Eigen::MatrixXd &jac_it, int k, int coo)
+		template<int dim>
+		Eigen::Matrix<double, dim, dim> strain(const Eigen::MatrixXd &grad, const Eigen::MatrixXd &jac_it, int k, int coo)
 		{
-			Eigen::Matrix3d jac;
+			Eigen::Matrix<double, dim, dim> jac;
 			jac.setZero();
 			jac.row(coo) = grad.row(k);
-
 			jac = jac*jac_it;
 
-			return 0.5*(jac + jac.transpose());
+			return strain_from_disp_grad(jac);
 		}
 	}
 
@@ -86,11 +86,11 @@ namespace poly_fem
 
 			if(size_ == 2)
 			{
-				const Eigen::Matrix2d eps_x_i = strain2d(gradi, vals.jac_it[k], k, 0);
-				const Eigen::Matrix2d eps_y_i = strain2d(gradi, vals.jac_it[k], k, 1);
+				const Eigen::Matrix2d eps_x_i = strain<2>(gradi, vals.jac_it[k], k, 0);
+				const Eigen::Matrix2d eps_y_i = strain<2>(gradi, vals.jac_it[k], k, 1);
 
-				const Eigen::Matrix2d eps_x_j = strain2d(gradj, vals.jac_it[k], k, 0);
-				const Eigen::Matrix2d eps_y_j = strain2d(gradj, vals.jac_it[k], k, 1);
+				const Eigen::Matrix2d eps_x_j = strain<2>(gradj, vals.jac_it[k], k, 0);
+				const Eigen::Matrix2d eps_y_j = strain<2>(gradj, vals.jac_it[k], k, 1);
 
 				std::array<double, 3> e_x, e_y;
 				e_x[0] = eps_x_i(0,0);
@@ -111,19 +111,20 @@ namespace poly_fem
 
 
 				res_k(0) = (sigma_x*eps_x_j).trace();
-				res_k(1) = (sigma_x*eps_y_j).trace();
-				res_k(2) = (sigma_y*eps_x_j).trace();
+				res_k(2) = (sigma_x*eps_y_j).trace();
+
+				res_k(1) = (sigma_y*eps_x_j).trace();
 				res_k(3) = (sigma_y*eps_y_j).trace();
 			}
 			else
 			{
-				const Eigen::Matrix3d eps_x_i = strain3d(gradi, vals.jac_it[k], k, 0);
-				const Eigen::Matrix3d eps_y_i = strain3d(gradi, vals.jac_it[k], k, 1);
-				const Eigen::Matrix3d eps_z_i = strain3d(gradi, vals.jac_it[k], k, 2);
+				const Eigen::Matrix3d eps_x_i = strain<3>(gradi, vals.jac_it[k], k, 0);
+				const Eigen::Matrix3d eps_y_i = strain<3>(gradi, vals.jac_it[k], k, 1);
+				const Eigen::Matrix3d eps_z_i = strain<3>(gradi, vals.jac_it[k], k, 2);
 
-				const Eigen::Matrix3d eps_x_j = strain3d(gradj, vals.jac_it[k], k, 0);
-				const Eigen::Matrix3d eps_y_j = strain3d(gradj, vals.jac_it[k], k, 1);
-				const Eigen::Matrix3d eps_z_j = strain3d(gradj, vals.jac_it[k], k, 2);
+				const Eigen::Matrix3d eps_x_j = strain<3>(gradj, vals.jac_it[k], k, 0);
+				const Eigen::Matrix3d eps_y_j = strain<3>(gradj, vals.jac_it[k], k, 1);
+				const Eigen::Matrix3d eps_z_j = strain<3>(gradj, vals.jac_it[k], k, 2);
 
 
 				std::array<double, 6> e_x, e_y, e_z;
@@ -166,15 +167,15 @@ namespace poly_fem
 
 
 				res_k(0) = (sigma_x*eps_x_j).trace();
-				res_k(1) = (sigma_x*eps_y_j).trace();
-				res_k(2) = (sigma_x*eps_z_j).trace();
+				res_k(3) = (sigma_x*eps_y_j).trace();
+				res_k(6) = (sigma_x*eps_z_j).trace();
 
-				res_k(3) = (sigma_y*eps_x_j).trace();
+				res_k(1) = (sigma_y*eps_x_j).trace();
 				res_k(4) = (sigma_y*eps_y_j).trace();
-				res_k(5) = (sigma_y*eps_z_j).trace();
+				res_k(7) = (sigma_y*eps_z_j).trace();
 
-				res_k(6) = (sigma_z*eps_x_j).trace();
-				res_k(7) = (sigma_z*eps_y_j).trace();
+				res_k(2) = (sigma_z*eps_x_j).trace();
+				res_k(5) = (sigma_z*eps_y_j).trace();
 				res_k(8) = (sigma_z*eps_z_j).trace();
 			}
 

@@ -5,6 +5,8 @@
 
 #include "Types.hpp"
 
+#include <unsupported/Eigen/SparseExtra>
+
 namespace poly_fem
 {
 	NLProblem::NLProblem(const RhsAssembler &rhs_assembler, const double t, const int full_size, const int reduced_size)
@@ -76,6 +78,8 @@ namespace poly_fem
 
 		Eigen::SparseMatrix<double> tmp;
 		assembler.assemble_tensor_energy_hessian(rhs_assembler.formulation(), State::state().mesh->is_volume(), State::state().n_bases, State::state().bases, State::state().bases, full, tmp);
+		// Eigen::saveMarket(tmp, "tmp.mat");
+		// exit(0);
 
 		std::vector< Eigen::Triplet<double> > entries;
 

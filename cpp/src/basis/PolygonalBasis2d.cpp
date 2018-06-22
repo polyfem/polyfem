@@ -6,7 +6,7 @@
 #include "RBFWithLinear.hpp"
 #include "RBFWithQuadratic.hpp"
 #include "RBFWithQuadraticLagrange.hpp"
-#include "UIState.hpp"
+// #include "UIState.hpp"
 #include <igl/png/writePNG.h>
 #include <igl/per_corner_normals.h>
 #include <igl/write_triangle_mesh.h>

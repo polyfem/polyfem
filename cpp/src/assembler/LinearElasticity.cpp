@@ -23,7 +23,6 @@ namespace poly_fem
 
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> res(size()*size());
 		res.setZero();
-        
 
 		for(long k = 0; k < gradi.rows(); ++k)
 		{
@@ -35,8 +34,8 @@ namespace poly_fem
 			{
 				for(int jj = 0; jj < size(); ++jj)
 				{
-					res_k(ii * size() + jj) = outer(ii * size() + jj)* mu_ + outer(jj * size() + ii)* lambda_;
-					if(ii == jj) res_k(ii * size() + jj) += mu_ * dot;
+					res_k(jj * size() + ii) = outer(ii * size() + jj)* mu_ + outer(jj * size() + ii)* lambda_;
+					if(ii == jj) res_k(jj * size() + ii) += mu_ * dot;
 				}
 			}
 			res += res_k * da(k);

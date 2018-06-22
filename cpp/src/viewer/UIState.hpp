@@ -107,6 +107,13 @@ namespace poly_fem
 			return true;
 		}
 
+		bool save(std::string mesh_file_name_string) override
+		{
+			state.mesh->save(mesh_file_name_string);
+
+			return true;
+		}
+
 	protected:
 		Navigation3D::Index current_3d_index;
 		Navigation::Index 	current_2d_index;

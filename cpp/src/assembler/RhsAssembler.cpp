@@ -10,7 +10,7 @@
 #include <map>
 #include <memory>
 
-#include "UIState.hpp"
+// #include "UIState.hpp"
 
 namespace poly_fem
 {
@@ -61,9 +61,15 @@ namespace poly_fem
 
 		int index = 0;
 		std::vector<int> indices; indices.reserve(n_el*10);
-		std::map<int, int> global_index_to_col;
+		// std::map<int, int> global_index_to_col;
 
 		long total_size = 0;
+
+		Eigen::Matrix<bool, Eigen::Dynamic, 1> is_boundary(n_basis_); is_boundary.setConstant(false);
+		Eigen::VectorXi global_index_to_col(n_basis_); global_index_to_col.setConstant(-1);
+
+		for(int b : bounday_nodes)
+			is_boundary[b/3] = true;
 
 		for(const auto &lb : local_boundary)
 		{
@@ -85,11 +91,14 @@ namespace poly_fem
 				for(std::size_t ii = 0; ii < b.global().size(); ++ii)
 				{
 					//pt found
-					if(std::find(bounday_nodes.begin(), bounday_nodes.end(), size_ * b.global()[ii].index) != bounday_nodes.end())
+					// if(std::find(bounday_nodes.begin(), bounday_nodes.end(), size_ * b.global()[ii].index) != bounday_nodes.end())
+					if(is_boundary[b.global()[ii].index])
 					{
-						if(global_index_to_col.find( b.global()[ii].index ) == global_index_to_col.end())
+						//if(global_index_to_col.find( b.global()[ii].index ) == global_index_to_col.end())
+						if(global_index_to_col(b.global()[ii].index) == -1)
 						{
-							global_index_to_col[b.global()[ii].index] = index++;
+							// global_index_to_col[b.global()[ii].index] = index++;
+							global_index_to_col(b.global()[ii].index) = index++;
 							indices.push_back(b.global()[ii].index);
 							assert(indices.size() == size_t(index));
 						}
@@ -132,12 +141,16 @@ namespace poly_fem
 
 				for(std::size_t ii = 0; ii < b.global().size(); ++ii)
 				{
-					auto item = global_index_to_col.find(b.global()[ii].index);
-					if(item != global_index_to_col.end()){
+					// auto item = global_index_to_col.find(b.global()[ii].index);
+					// if(item != global_index_to_col.end()){
+					auto item = global_index_to_col(b.global()[ii].index);
+					if(item != -1){
 						for(int k = 0; k < int(tmp.rows()); ++k)
 						{
-							entries.push_back(Eigen::Triplet<double>(global_counter+k, item->second, tmp(k, j) * b.global()[ii].val));
-							entries_t.push_back(Eigen::Triplet<double>(item->second, global_counter+k, tmp(k, j) * b.global()[ii].val));
+							// entries.push_back(Eigen::Triplet<double>(global_counter+k, item->second, tmp(k, j) * b.global()[ii].val));
+							// entries_t.push_back(Eigen::Triplet<double>(item->second, global_counter+k, tmp(k, j) * b.global()[ii].val));
+							entries.push_back(Eigen::Triplet<double>(global_counter+k, item, tmp(k, j) * b.global()[ii].val));
+							entries_t.push_back(Eigen::Triplet<double>(item, global_counter+k, tmp(k, j) * b.global()[ii].val));
 						}
 						// global_mat.block(global_counter, item->second, tmp.size(), 1) = tmp;
 					}

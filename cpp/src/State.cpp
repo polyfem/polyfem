@@ -1297,6 +1297,14 @@ namespace poly_fem
 			sol = x;
 			solver->getInfo(solver_info);
 
+			// Eigen::MatrixXd err = stiffness*sol-rhs;
+			// for(int i : boundary_nodes)
+			// 	err(i) = 0;
+			// std::cout<<"eeeee: "<<err.norm()<<std::endl;
+
+			// Eigen::saveMarket(stiffness, "stiffness.mat");
+			// exit(0);
+
 			std::cout<<"Solver error: "<<(A*sol-b).norm()<<std::endl;
 		}
 		else
