@@ -1272,6 +1272,7 @@ namespace poly_fem
 	void State::solve_problem()
 	{
 		sol.resize(0, 0);
+		spectrum.setZero();
 
 		igl::Timer timer; timer.start();
 		std::cout<<"Solving " << formulation() <<"... "<<std::flush;
@@ -1293,7 +1294,7 @@ namespace poly_fem
 			A = stiffness;
 			Eigen::VectorXd x;
 			b = rhs;
-			spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, true, true);
+			dirichlet_solve(*solver, A, b, boundary_nodes, x, args["stiffness_mat_save_path"]);
 			sol = x;
 			solver->getInfo(solver_info);
 
@@ -1599,6 +1600,7 @@ namespace poly_fem
 
 			{"output", ""},
 			{"solution", ""},
+			{"stiffness_mat_save_path", ""},
 
 			{"export", {
 				{"vis_mesh", ""},

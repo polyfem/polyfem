@@ -5,9 +5,9 @@
 #include <unsupported/Eigen/SparseExtra>
 ////////////////////////////////////////////////////////////////////////////////
 
-Eigen::Vector4d poly_fem::dirichlet_solve(
+void poly_fem::dirichlet_solve(
 	LinearSolver &solver, Eigen::SparseMatrix<double> &A, Eigen::VectorXd &f,
-	const std::vector<int> &dirichlet_nodes, Eigen::VectorXd &u, const bool analyze_pattern, const bool compute_specturm)
+	const std::vector<int> &dirichlet_nodes, Eigen::VectorXd &u, const std::string &save_path)
 {
 	// Let Γ be the set of Dirichlet dofs.
 	// To implement nonzero Dirichlet boundary conditions, we seek to replace
@@ -70,18 +70,12 @@ Eigen::Vector4d poly_fem::dirichlet_solve(
 	}
 
 
-	if(analyze_pattern)
-		solver.analyzePattern(A);
+	solver.analyzePattern(A);
 	solver.factorize(A);
 	solver.solve(g, u);
 	f = g;
-	//std::cout<<"Solver error: "<<(A*u-g).norm()<<std::endl;
-	// std::cout << u << std::endl;
 
-	// Eigen::saveMarket(A, "A.mat");
-	// if(compute_specturm)
-		// return poly_fem::compute_specturm(A);
-	// else
-		return Eigen::Vector4d();
+	if(!save_path.empty())
+		Eigen::saveMarket(A, save_path);
 }
 

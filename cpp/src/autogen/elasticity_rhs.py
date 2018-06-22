@@ -67,7 +67,7 @@ def saint_venant(disp_grad, def_grad):
             [sigma_fun(4, ee, C, 6), sigma_fun(3, ee, C, 6), sigma_fun(2, ee, C, 6)]
         ])
 
-    # sigma = def_grad * sigma
+    sigma = def_grad * sigma
 
     return sigma
 
