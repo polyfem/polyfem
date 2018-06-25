@@ -481,8 +481,12 @@ namespace poly_fem
 				if(!mesh3d.is_boundary_face(face_id))
 					continue;
 
-				BoundarySampler::quadrature_for_tri_face(lf, 4, points, weights);
-				weights *= mesh3d.tri_area(face_id);
+				if(mesh3d.is_simplex(e))
+					BoundarySampler::quadrature_for_tri_face(lf, 4, face_id, mesh3d, points, weights);
+				else if(mesh3d.is_cube(e))
+					BoundarySampler::quadrature_for_quad_face(lf, 4, face_id, mesh3d, points, weights);
+				else
+					assert(false);
 
 				ElementAssemblyValues vals;
 				vals.compute(e, true, points, bs, gbs);
@@ -560,8 +564,12 @@ namespace poly_fem
 				if(!mesh3d.is_boundary_face(face_id))
 					continue;
 
-				BoundarySampler::quadrature_for_tri_face(lf, 4, points, weights);
-				weights *= mesh3d.tri_area(face_id);
+				if(mesh->is_simplex(e))
+					BoundarySampler::quadrature_for_tri_face(lf, 4, face_id, mesh3d, points, weights);
+				else if(mesh->is_cube(e))
+					BoundarySampler::quadrature_for_quad_face(lf, 4, face_id, mesh3d, points, weights);
+				else
+					assert(false);
 
 				ElementAssemblyValues vals;
 				vals.compute(e, true, points, bs, gbs);
@@ -1604,6 +1612,7 @@ namespace poly_fem
 
 			{"export", {
 				{"vis_mesh", ""},
+				{"nodes", ""},
 				{"wire_mesh", ""},
 				{"iso_mesh", ""},
 			}}
@@ -1624,6 +1633,7 @@ namespace poly_fem
 		const std::string vis_mesh_path  = args["export"]["vis_mesh"];
 		const std::string wire_mesh_path = args["export"]["wire_mesh"];
 		const std::string iso_mesh_path = args["export"]["iso_mesh"];
+		const std::string nodes_path = args["export"]["nodes"];
 		const std::string solution_path = args["solution"];
 
 		if(!solution_path.empty())
@@ -1641,6 +1651,22 @@ namespace poly_fem
 		}
 		if (!iso_mesh_path.empty()) {
 			save_wire(iso_mesh_path, true);
+		}
+		if (!nodes_path.empty()) {
+			MatrixXd nodes(n_bases, mesh->dimension());
+			for(const ElementBases &eb : bases)
+			{
+				for(const Basis &b : eb.bases)
+				{
+					for(const auto &lg : b.global())
+					{
+						nodes.row(lg.index) = lg.node;
+					}
+				}
+			}
+			std::ofstream out(nodes_path);
+			out << nodes;
+			out.close();
 		}
 	}
 

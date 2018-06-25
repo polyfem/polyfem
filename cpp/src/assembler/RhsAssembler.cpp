@@ -412,10 +412,10 @@ namespace poly_fem
 			Eigen::VectorXd tmp_w;
 			switch(local_boundary.type())
 			{
-				case BoundaryType::TriLine:	 BoundarySampler::quadrature_for_tri_edge(local_boundary[i], order, tmp_p, tmp_w);  tmp_w *= mesh_.edge_length(gid); break;
-				case BoundaryType::QuadLine: BoundarySampler::quadrature_for_quad_edge(local_boundary[i], order, tmp_p, tmp_w); tmp_w *= mesh_.edge_length(gid); break;
-				case BoundaryType::Quad: 	 BoundarySampler::quadrature_for_quad_face(local_boundary[i], order, tmp_p, tmp_w); tmp_w *= mesh_.quad_area(gid); break;
-				case BoundaryType::Tri: 	 BoundarySampler::quadrature_for_tri_face(local_boundary[i], order, tmp_p, tmp_w);  tmp_w *= 2*mesh_.tri_area(gid); break;
+				case BoundaryType::TriLine:	 BoundarySampler::quadrature_for_tri_edge(local_boundary[i], order, gid, mesh_, tmp_p, tmp_w); break;
+				case BoundaryType::QuadLine: BoundarySampler::quadrature_for_quad_edge(local_boundary[i], order, gid, mesh_, tmp_p, tmp_w); break;
+				case BoundaryType::Quad: 	 BoundarySampler::quadrature_for_quad_face(local_boundary[i], order, gid, mesh_, tmp_p, tmp_w); break;
+				case BoundaryType::Tri: 	 BoundarySampler::quadrature_for_tri_face(local_boundary[i], order, gid, mesh_, tmp_p, tmp_w); break;
 				case BoundaryType::Invalid:  assert(false); break;
 				default: assert(false);
 			}

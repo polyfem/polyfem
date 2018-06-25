@@ -9,7 +9,7 @@
 
 namespace poly_fem
 {
-	void BoundarySampler::quadrature_for_quad_edge(int index, int order, Eigen::MatrixXd &points, Eigen::VectorXd &weights)
+	void BoundarySampler::quadrature_for_quad_edge(int index, int order, int gid, const Mesh &mesh, Eigen::MatrixXd &points, Eigen::VectorXd &weights)
 	{
 		auto endpoints = FEBasis2d::tri_local_node_coordinates_from_edge(index);
 
@@ -23,9 +23,10 @@ namespace poly_fem
 		}
 
 		weights = quad.weights;
+		weights *= mesh.edge_length(gid);
 	}
 
-	void BoundarySampler::quadrature_for_tri_edge(int index, int order, Eigen::MatrixXd &points, Eigen::VectorXd &weights)
+	void BoundarySampler::quadrature_for_tri_edge(int index, int order, int gid, const Mesh &mesh, Eigen::MatrixXd &points, Eigen::VectorXd &weights)
 	{
 		auto endpoints = FEBasis2d::tri_local_node_coordinates_from_edge(index);
 
@@ -39,9 +40,10 @@ namespace poly_fem
 		}
 
 		weights = quad.weights;
+		weights *= mesh.edge_length(gid);
 	}
 
-	void BoundarySampler::quadrature_for_quad_face(int index, int order, Eigen::MatrixXd &points, Eigen::VectorXd &weights)
+	void BoundarySampler::quadrature_for_quad_face(int index, int order, int gid, const Mesh &mesh, Eigen::MatrixXd &points, Eigen::VectorXd &weights)
 	{
 		auto endpoints = FEBasis3d::hex_local_node_coordinates_from_face(index);
 
@@ -64,9 +66,10 @@ namespace poly_fem
 		}
 
 		weights = quad.weights;
+		weights *= mesh.quad_area(gid);
 	}
 
-	void BoundarySampler::quadrature_for_tri_face(int index, int order, Eigen::MatrixXd &points, Eigen::VectorXd &weights)
+	void BoundarySampler::quadrature_for_tri_face(int index, int order, int gid, const Mesh &mesh, Eigen::MatrixXd &points, Eigen::VectorXd &weights)
 	{
 		auto endpoints = FEBasis3d::tet_local_node_coordinates_from_face(index);
 		Quadrature quad;
@@ -86,6 +89,8 @@ namespace poly_fem
 		}
 
 		weights = quad.weights;
+		//2* because weights sum to 1/2 already
+		weights *= 2*mesh.tri_area(gid);
 	}
 
 
