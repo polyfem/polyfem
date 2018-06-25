@@ -76,7 +76,8 @@ namespace cppoptlib {
 			const json &params = State::state().solver_params();
 			auto solver = LinearSolver::create(State::state().solver_type(), State::state().precond_type());
 			solver->setParameters(params);
-			// std::cout<<"internal solver "<<solver->name()<<std::endl;
+			if(verbose)
+				std::cout<<"\tinternal solver "<<solver->name()<<std::endl;
 
 			const int reduced_size = x0.rows();
 			// const int full_size = State::state().n_bases*State::state().mesh->dimension();
@@ -112,7 +113,7 @@ namespace cppoptlib {
 				// NLProblem::reduced_to_full_aux(full_size, reduced_size, grad, true, full_grad);
 				time.stop();
 				if(verbose)
-					std::cout<<"grad time "<<time.getElapsedTimeInSec()<<std::endl;
+					std::cout<<"\tgrad time "<<time.getElapsedTimeInSec()<<std::endl;
 				grad_time += time.getElapsedTimeInSec();
 
 				bool new_hessian = this->m_current.iterations % 5 == 0;
@@ -124,7 +125,7 @@ namespace cppoptlib {
 					hessian += (1e-5) * id;
 					time.stop();
 					if(verbose)
-						std::cout<<"assembly time "<<time.getElapsedTimeInSec()<<std::endl;
+						std::cout<<"\tassembly time "<<time.getElapsedTimeInSec()<<std::endl;
 					assembly_time += time.getElapsedTimeInSec();
 				}
 
@@ -152,7 +153,7 @@ namespace cppoptlib {
 				internal_solver.push_back(tmp);
 
 				if(verbose)
-					std::cout<<"inverting time "<<time.getElapsedTimeInSec()<<std::endl;
+					std::cout<<"\tinverting time "<<time.getElapsedTimeInSec()<<std::endl;
 				inverting_time += time.getElapsedTimeInSec();
 
 
@@ -165,7 +166,7 @@ namespace cppoptlib {
 
 
 				if(verbose)
-					std::cout<<"linesearch time "<<time.getElapsedTimeInSec()<<std::endl;
+					std::cout<<"\tlinesearch time "<<time.getElapsedTimeInSec()<<std::endl;
 				linesearch_time += time.getElapsedTimeInSec();
 
 
@@ -188,7 +189,7 @@ namespace cppoptlib {
 				}
 
 				if(verbose)
-					std::cout << "iter: "<<this->m_current.iterations <<", rate = "<< rate<< ", f = " <<  objFunc.value(x0) << ", ||g||_inf "<< this->m_current.gradNorm <<", ||step|| "<< (rate * delta_x).norm() << ", rate "<< rate <<" dot " << delta_x.dot(grad)/grad.norm() << std::endl;
+					std::cout << "\titer: "<<this->m_current.iterations <<", rate = "<< rate<< ", f = " <<  objFunc.value(x0) << ", ||g||_inf "<< this->m_current.gradNorm <<", ||step|| "<< (rate * delta_x).norm() << ", rate "<< rate <<" dot " << delta_x.dot(grad)/grad.norm() << std::endl;
 			}
 			while (objFunc.callback(this->m_current, x0) && (this->m_status == Status::Continue));
 

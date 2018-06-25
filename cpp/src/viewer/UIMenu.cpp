@@ -377,15 +377,15 @@ void poly_fem::UIState::draw_settings() {
 	}
 	ImGui::Image(reinterpret_cast<ImTextureID>(color_bar_texture), ImVec2(width, height));
 	
-	if(min_val <= 1e-20)
+	if(fabs(min_val) <= 1e-20)
 		ImGui::Text("0");
 	else
 	{
-		const int min_power = floor(log10(min_val));
+		const int min_power = floor(log10(fabs(min_val)));
 		ImGui::Text("%ge%d", round(min_val * pow(10, -min_power)*100)/100., min_power);
 	}
 
-	if(max_val <= 1e-20)
+	if(fabs(max_val) <= 1e-20)
 	{
 		ImGui::SameLine(width-10);
 		ImGui::Text("0");
@@ -393,7 +393,7 @@ void poly_fem::UIState::draw_settings() {
 	else
 	{
 		ImGui::SameLine(width-45);
-		const int max_power = floor(log10(max_val));
+		const int max_power = floor(log10(fabs(max_val)));
 		ImGui::Text("%ge%d", round(max_val * pow(10, -max_power)*100)/100., max_power);
 	}
 

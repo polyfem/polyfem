@@ -14,6 +14,7 @@ namespace poly_fem
 	public:
 		InterpolatedFunction2d() { }
 		InterpolatedFunction2d(const Eigen::MatrixXd &fun, const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris);
+		void init(const Eigen::MatrixXd &fun, const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris);
 
 		Eigen::MatrixXd interpolate(const Eigen::MatrixXd &pts) const;
 

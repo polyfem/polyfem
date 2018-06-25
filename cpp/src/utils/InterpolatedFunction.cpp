@@ -4,10 +4,18 @@
 namespace poly_fem
 {
 	InterpolatedFunction2d::InterpolatedFunction2d(const Eigen::MatrixXd &fun, const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris)
-	: fun_(fun), pts_(pts), tris_(tris)
+	{
+		init(fun, pts, tris);
+	}
+
+	void InterpolatedFunction2d::init(const Eigen::MatrixXd &fun, const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris)
 	{
 		assert(pts_.cols() == 2);
 		assert(tris_.cols() == 3);
+
+		fun_ = fun;
+		pts_ = pts;
+		tris_ = tris;
 
 		tree_.init(pts_,tris_);
 	}

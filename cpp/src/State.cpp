@@ -1283,7 +1283,7 @@ namespace poly_fem
 		spectrum.setZero();
 
 		igl::Timer timer; timer.start();
-		std::cout<<"Solving " << formulation() <<"... "<<std::flush;
+		std::cout<<"Solving " << formulation() <<" with ";
 
 
 		const json &params = solver_params();
@@ -1296,6 +1296,7 @@ namespace poly_fem
 			solver->setParameters(params);
 			Eigen::SparseMatrix<double> A;
 			Eigen::VectorXd b;
+			std::cout<<solver->name()<<"... "<<std::flush;
 
 			// std::cout<<Eigen::MatrixXd(stiffness)<<std::endl;
 
@@ -1318,6 +1319,7 @@ namespace poly_fem
 		}
 		else
 		{
+			std::cout<<"... "<<std::flush;
 			const int full_size 	= n_bases*mesh->dimension();
 			const int reduced_size 	= n_bases*mesh->dimension() - boundary_nodes.size();
 
