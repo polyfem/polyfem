@@ -41,7 +41,7 @@ namespace poly_fem
 		Eigen::RowVector2d pt2; pt2 << pt(coordiante_0), pt(coordiante_1);
 		Eigen::RowVector3d res;
 
-		res = func.interpolate(pt);
+		res = func.interpolate(pt2);
 
 		return res;
 	}

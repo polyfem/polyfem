@@ -10,8 +10,9 @@ namespace poly_fem
 
 	void InterpolatedFunction2d::init(const Eigen::MatrixXd &fun, const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris)
 	{
-		assert(pts_.cols() == 2);
-		assert(tris_.cols() == 3);
+		assert(pts.cols() == 2);
+		assert(pts.rows() == fun.rows());
+		assert(tris.cols() == 3);
 
 		fun_ = fun;
 		pts_ = pts;
