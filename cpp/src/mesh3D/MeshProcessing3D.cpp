@@ -852,16 +852,16 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 }
 void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter) {
 
-		double hmin=10000, hmax=0, havg=0;
-		for(const auto & e:M.edges){
-			Eigen::Vector3d v0 = M.points.col(e.vs[0]), v1 = M.points.col(e.vs[1]);
-			double len = (v0-v1).norm();
-			if(len<hmin) hmin=len;
-			if(len>hmax) hmax = len;
-			havg+=len;
-		}
-		havg/=M.edges.size();
-		std::cout<<"hmin, hmax, havg: "<<hmin<<" "<<hmax<<" "<<havg<<std::endl;
+		// double hmin=10000, hmax=0, havg=0;
+		// for(const auto & e:M.edges){
+		// 	Eigen::Vector3d v0 = M.points.col(e.vs[0]), v1 = M.points.col(e.vs[1]);
+		// 	double len = (v0-v1).norm();
+		// 	if(len<hmin) hmin=len;
+		// 	if(len>hmax) hmax = len;
+		// 	havg+=len;
+		// }
+		// havg/=M.edges.size();
+		// std::cout<<"hmin, hmax, havg: "<<hmin<<" "<<hmax<<" "<<havg<<std::endl;
 
 	for (int i = 0; i < iter; i++) {
 
