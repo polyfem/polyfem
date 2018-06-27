@@ -851,6 +851,18 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 	}
 }
 void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter) {
+
+		double hmin=10000, hmax=0, havg=0;
+		for(const auto & e:M.edges){
+			Eigen::Vector3d v0 = M.points.col(e.vs[0]), v1 = M.points.col(e.vs[1]);
+			double len = (v0-v1).norm();
+			if(len<hmin) hmin=len;
+			if(len>hmax) hmax = len;
+			havg+=len;
+		}
+		havg/=M.edges.size();
+		std::cout<<"hmin, hmax, havg: "<<hmin<<" "<<hmax<<" "<<havg<<std::endl;
+
 	for (int i = 0; i < iter; i++) {
 
 		Mesh3DStorage M_;
@@ -881,24 +893,24 @@ void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter) {
 			M_.vertices.push_back(v);
 			E2V[e.id] = v.id;
 		}
-		for (const auto &ele : M.elements) {
-			Element ele_;
-			ele_.id = M_.elements.size();
-			ele_.fs.resize(4, -1);
-			ele_.fs_flag.resize(4, 1);
-			ele_.vs = ele.vs;
+		// for (const auto &ele : M.elements) {
+		// 	Element ele_;
+		// 	ele_.id = M_.elements.size();
+		// 	ele_.fs.resize(4, -1);
+		// 	ele_.fs_flag.resize(4, 1);
+		// 	ele_.vs = ele.vs;
 
-			ele_.hex = false;
-			ele_.v_in_Kernel.resize(3);
+		// 	ele_.hex = false;
+		// 	ele_.v_in_Kernel.resize(3);
 
-			Vector3d center;
-			center.setZero();
-			for (const auto &evid : ele_.vs) for (int j = 0; j < 3; j++)center[j] += M_.vertices[evid].v[j];
-			center /= ele_.vs.size();
-			for (int j = 0; j < 3; j++)ele_.v_in_Kernel[j] = center[j];
+		// 	Vector3d center;
+		// 	center.setZero();
+		// 	for (const auto &evid : ele_.vs) for (int j = 0; j < 3; j++)center[j] += M_.vertices[evid].v[j];
+		// 	center /= ele_.vs.size();
+		// 	for (int j = 0; j < 3; j++)ele_.v_in_Kernel[j] = center[j];
 
-			M_.elements.push_back(ele_);
-		}
+		// 	M_.elements.push_back(ele_);
+		// }
 
 		auto shared_edge = [&](int v0, int v1, int &e)->bool {
 			auto &es0 = M.vertices[v0].neighbor_es, &es1 = M.vertices[v1].neighbor_es;
@@ -1039,6 +1051,17 @@ void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter) {
 		build_connectivity(M_);
 
 		M = M_;
+
+		double hmin=10000, hmax=0, havg=0;
+		for(const auto & e:M.edges){
+			Eigen::Vector3d v0 = M.points.col(e.vs[0]), v1 = M.points.col(e.vs[1]);
+			double len = (v0-v1).norm();
+			if(len<hmin) hmin=len;
+			if(len>hmax) hmax = len;
+			havg+=len;
+		}
+		havg/=M.edges.size();
+std::cout<<"hmin, hmax, havg: "<<hmin<<" "<<hmax<<" "<<havg<<std::endl;
 	}
 }
 void MeshProcessing3D::straight_sweeping(const Mesh3DStorage &Mi, int sweep_coord, double height, int nlayer, Mesh3DStorage &Mo) {
