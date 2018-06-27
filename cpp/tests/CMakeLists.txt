@@ -26,5 +26,5 @@ target_compile_definitions(unit_tests PUBLIC -DDATA_DIR=\"${DATA_DIR}\")
 
 # Register tests
 set(PARSE_CATCH_TESTS_ADD_TO_CONFIGURE_DEPENDS ON)
-include(ParseAndAddCatchTests)
-ParseAndAddCatchTests(unit_tests)
+include(Catch)
+catch_discover_tests(unit_tests)

@@ -559,11 +559,13 @@ set_target_properties(polyclipping PROPERTIES FOLDER 3rdparty/other)
 
 ################################################################################
 
-add_subdirectory(misc)
+# Compile extras only if this is a top-level project
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+	# Auxiliary binaries
+	add_subdirectory(misc)
 
-################################################################################
-
-# Unit tests
-include(CTest)
-enable_testing()
-add_subdirectory(tests)
+	# Unit tests
+	include(CTest)
+	enable_testing()
+	add_subdirectory(tests)
+endif()
