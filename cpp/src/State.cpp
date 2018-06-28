@@ -247,9 +247,34 @@ namespace poly_fem
 
 		j["is_simplicial"] = mesh->n_elements() == simplex_count;
 
+
+		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
+
+		std::vector<double> mmin(actual_dim);
+		std::vector<double> mmax(actual_dim);
+
+		// std::cout<<sol<<std::endl;
+
+		for(int d = 0; d < actual_dim; ++d)
+		{
+			mmin[d] = std::numeric_limits<double>::max();
+			mmax[d] = -std::numeric_limits<double>::max();
+		}
+
+		for(int i = 0; i < sol.size(); i += actual_dim)
+		{
+			for(int d = 0; d < actual_dim; ++d)
+			{
+				mmin[d] = std::min(mmin[d], sol(i + d));
+				mmax[d] = std::max(mmax[d], sol(i + d));
+			}
+		}
+
+		j["sol_min"] = mmin;
+		j["sol_max"] = mmax;
+
 #ifdef USE_TBB
 		j["num_threads"] = tbb::task_scheduler_init::default_num_threads();
-
 #else
 		j["num_threads"] = 1;
 #endif
