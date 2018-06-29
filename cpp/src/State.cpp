@@ -1341,6 +1341,7 @@ namespace poly_fem
 			// exit(0);
 
 			std::cout<<"Solver error: "<<(A*sol-b).norm()<<std::endl;
+			// sol = rhs;
 		}
 		else
 		{

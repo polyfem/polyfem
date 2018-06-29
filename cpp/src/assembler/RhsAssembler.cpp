@@ -68,8 +68,11 @@ namespace poly_fem
 		Eigen::Matrix<bool, Eigen::Dynamic, 1> is_boundary(n_basis_); is_boundary.setConstant(false);
 		Eigen::VectorXi global_index_to_col(n_basis_); global_index_to_col.setConstant(-1);
 
+
+		const int actual_dim = problem_.is_scalar() ? 1 : mesh_.dimension();
+
 		for(int b : bounday_nodes)
-			is_boundary[b/3] = true;
+			is_boundary[b/actual_dim] = true;
 
 		for(const auto &lb : local_boundary)
 		{
