@@ -3,7 +3,7 @@
 #include <iostream>
 #include <sstream>
 
-namespace poly_fem {
+namespace polyfem {
 
 	template<typename Key>
 	static bool aux_parse(const int argc, const char* argv[], std::map<std::string, Key *> &args)

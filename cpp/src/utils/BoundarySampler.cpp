@@ -7,7 +7,7 @@
 #include <polyfem/TriQuadrature.hpp>
 #include <polyfem/QuadQuadrature.hpp>
 
-namespace poly_fem
+namespace polyfem
 {
 	void BoundarySampler::quadrature_for_quad_edge(int index, int order, int gid, const Mesh &mesh, Eigen::MatrixXd &points, Eigen::VectorXd &weights)
 	{

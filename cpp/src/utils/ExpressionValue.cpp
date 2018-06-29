@@ -1,6 +1,6 @@
 #include <polyfem/ExpressionValue.hpp>
 
-namespace poly_fem
+namespace polyfem
 {
 	ExpressionValue::~ExpressionValue()
 	{

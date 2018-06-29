@@ -174,10 +174,10 @@ if __name__ == "__main__":
     # orders = [4]
 
     cpp = "#include <polyfem/auto_bases.hpp>\n\n\n"
-    cpp = cpp + "namespace poly_fem {\nnamespace autogen " + "{\nnamespace " + "{\n"
+    cpp = cpp + "namespace polyfem {\nnamespace autogen " + "{\nnamespace " + "{\n"
 
     hpp = "#pragma once\n\n#include <Eigen/Dense>\n\n"
-    hpp = hpp + "namespace poly_fem {\nnamespace autogen " + "{\n"
+    hpp = hpp + "namespace polyfem {\nnamespace autogen " + "{\n"
 
     for dim in dims:
         print(str(dim) + "D")

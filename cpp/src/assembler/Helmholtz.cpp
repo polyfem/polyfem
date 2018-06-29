@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-namespace poly_fem
+namespace polyfem
 {
 	Eigen::Matrix<double, 1, 1> Helmholtz::assemble(const ElementAssemblyValues &vals, const int i, const int j, const QuadratureVector &da) const
 	{

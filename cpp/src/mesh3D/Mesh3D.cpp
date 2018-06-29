@@ -5,7 +5,7 @@
 #include <geogram/mesh/mesh_io.h>
 #include <fstream>
 
-namespace poly_fem
+namespace polyfem
 {
 	void Mesh3D::refine(const int n_refiniment, const double t, std::vector<int> &parent_nodes)
 	{

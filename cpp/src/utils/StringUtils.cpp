@@ -3,7 +3,7 @@
 
 
 // Split a string into tokens
-std::vector<std::string> poly_fem::StringUtils::split(const std::string &str, const std::string &delimiters) {
+std::vector<std::string> polyfem::StringUtils::split(const std::string &str, const std::string &delimiters) {
 	// Skip delimiters at beginning.
 	std::string::size_type lastPos = str.find_first_not_of(delimiters, 0);
 	// Find first "non-delimiter".
@@ -23,7 +23,7 @@ std::vector<std::string> poly_fem::StringUtils::split(const std::string &str, co
 }
 
 // Skip comments in a stream
-std::istream &poly_fem::StringUtils::skip(std::istream &in, char x) {
+std::istream &polyfem::StringUtils::skip(std::istream &in, char x) {
 	std::string dummy;
 	while ((in >> std::ws).peek() ==
 		std::char_traits<char>::to_int_type(x))
@@ -34,12 +34,12 @@ std::istream &poly_fem::StringUtils::skip(std::istream &in, char x) {
 }
 
 // Tests whether a string starts with a given prefix
-bool poly_fem::StringUtils::startswith(const std::string &str, const std::string &prefix) {
+bool polyfem::StringUtils::startswith(const std::string &str, const std::string &prefix) {
 	return (str.compare(0, prefix.size(), prefix) == 0);
 }
 
 // Tests whether a string ends with a given suffix
-bool poly_fem::StringUtils::endswidth(const std::string &str, const std::string &suffix) {
+bool polyfem::StringUtils::endswidth(const std::string &str, const std::string &suffix) {
 	if (str.length() >= suffix.length()) {
 		return (0 == str.compare(str.length() - suffix.length(), suffix.length(), suffix));
 	} else {
@@ -48,7 +48,7 @@ bool poly_fem::StringUtils::endswidth(const std::string &str, const std::string 
 }
 
 // Replace extension after the last "dot"
-std::string poly_fem::StringUtils::replace_ext(const std::string &filename, const std::string &newext) {
+std::string polyfem::StringUtils::replace_ext(const std::string &filename, const std::string &newext) {
 	std::string ext = "";
 	if (!newext.empty()) {
 		ext = (newext[0] == '.' ? newext : "." + newext);

@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-namespace poly_fem
+namespace polyfem
 {
 	GenericTensorProblem::GenericTensorProblem(const std::string &name)
 	: Problem(name)

@@ -1,6 +1,6 @@
 #include <polyfem/EdgeSampler.hpp>
 
-namespace poly_fem {
+namespace polyfem {
 	void EdgeSampler::sample_2d_cube(const int resolution, Eigen::MatrixXd &samples)
 	{
 		samples.resize(4*resolution, 2);

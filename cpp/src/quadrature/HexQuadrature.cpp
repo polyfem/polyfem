@@ -6,7 +6,7 @@
 #include <cmath>
 #include <iostream>
 
-namespace poly_fem
+namespace polyfem
 {
 
     HexQuadrature::HexQuadrature()

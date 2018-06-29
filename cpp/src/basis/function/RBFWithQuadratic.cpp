@@ -11,7 +11,7 @@
 
 // #define VERBOSE
 
-using namespace poly_fem;
+using namespace polyfem;
 
 namespace {
 

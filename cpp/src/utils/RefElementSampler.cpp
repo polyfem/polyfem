@@ -8,7 +8,7 @@
 #include <igl/write_triangle_mesh.h>
 
 
-namespace poly_fem {
+namespace polyfem {
 
 namespace {
 

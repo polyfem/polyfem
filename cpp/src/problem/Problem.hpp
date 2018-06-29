@@ -11,7 +11,7 @@
 #include <Eigen/Dense>
 #include <memory>
 
-namespace poly_fem
+namespace polyfem
 {
 	class Problem
 	{

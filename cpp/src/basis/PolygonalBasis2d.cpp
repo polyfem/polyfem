@@ -19,7 +19,7 @@
 #include <memory>
 
 
-namespace poly_fem {
+namespace polyfem {
 namespace {
 
 // -----------------------------------------------------------------------------
@@ -437,4 +437,4 @@ void PolygonalBasis2d::build_bases(
 	}
 }
 
-} // namespace poly_fem
+} // namespace polyfem

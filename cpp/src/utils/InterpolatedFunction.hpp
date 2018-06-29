@@ -7,7 +7,7 @@
 #include <Eigen/Dense>
 
 
-namespace poly_fem
+namespace polyfem
 {
 	class InterpolatedFunction2d
 	{

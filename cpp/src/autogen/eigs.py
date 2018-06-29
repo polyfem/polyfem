@@ -81,8 +81,8 @@ if __name__ == "__main__":
 
     cpp = "#include <polyfem/auto_eigs.hpp>\n\n\n"
     hpp = "#pragma once\n\n#include <Eigen/Dense>\n\n"
-    cpp = cpp + "namespace poly_fem {\nnamespace autogen " + "{\n"
-    hpp = hpp + "namespace poly_fem {\nnamespace autogen " + "{\n"
+    cpp = cpp + "namespace polyfem {\nnamespace autogen " + "{\n"
+    hpp = hpp + "namespace polyfem {\nnamespace autogen " + "{\n"
 
     hpp = hpp + "template<typename T>\nT int_pow(T val, int exp) { T res = exp <=0 ? T(0.): val; for(int i = 1; i < exp; ++i) res = res*val; return res; }\n\n"
 

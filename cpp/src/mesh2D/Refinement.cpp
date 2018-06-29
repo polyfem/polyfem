@@ -12,7 +12,7 @@
 #include <numeric>
 ////////////////////////////////////////////////////////////////////////////////
 
-void poly_fem::edge_adjacency_graph(
+void polyfem::edge_adjacency_graph(
 	const Eigen::MatrixXi &Q, Eigen::MatrixXi &edge_index,
 	std::vector<std::vector<int>> &adj,
 	std::vector<std::pair<int, int>> *pairs_of_edges,
@@ -223,7 +223,7 @@ Eigen::VectorXi vertex_degree(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool poly_fem::instantiate_pattern(
+bool polyfem::instantiate_pattern(
 	const Eigen::MatrixXd &IV, const Eigen::MatrixXi &IQ,
 	const Eigen::MatrixXd &PV, const Eigen::MatrixXi &PF,
 	Eigen::MatrixXd &OV, Eigen::MatrixXi &OF, Eigen::VectorXi *SF,
@@ -411,7 +411,7 @@ bool poly_fem::instantiate_pattern(
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void poly_fem::refine_quad_mesh(
+void polyfem::refine_quad_mesh(
 	const Eigen::MatrixXd &IV, const Eigen::MatrixXi &IF,
 	Eigen::MatrixXd &OV, Eigen::MatrixXi &OF)
 {
@@ -440,7 +440,7 @@ void poly_fem::refine_quad_mesh(
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void poly_fem::Polygons::polar_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, std::vector<std::vector<int>> &OF, double t) {
+void polyfem::Polygons::polar_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, std::vector<std::vector<int>> &OF, double t) {
 	assert(IV.cols() == 2 || IV.cols() == 3);
 	Eigen::RowVector3d bary;
 	if (is_star_shaped(IV, bary)) {
@@ -476,7 +476,7 @@ void poly_fem::Polygons::polar_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd 
 
 // -----------------------------------------------------------------------------
 
-void poly_fem::Polygons::catmul_clark_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, std::vector<std::vector<int>> &OF) {
+void polyfem::Polygons::catmul_clark_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, std::vector<std::vector<int>> &OF) {
 	assert(IV.cols() == 2 || IV.cols() == 3);
 	// std::cout << IV.rows() << std::endl;
 	assert(IV.rows() % 2 == 0);
@@ -497,7 +497,7 @@ void poly_fem::Polygons::catmul_clark_split(const Eigen::MatrixXd &IV, Eigen::Ma
 
 // -----------------------------------------------------------------------------
 
-void poly_fem::Polygons::no_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, std::vector<std::vector<int>> &OF) {
+void polyfem::Polygons::no_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, std::vector<std::vector<int>> &OF) {
 	OV = IV;
 	OF.clear();
 	OF.push_back({});
@@ -507,7 +507,7 @@ void poly_fem::Polygons::no_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void poly_fem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, Polygons::SplitFunction split_func) {
+void polyfem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, Polygons::SplitFunction split_func) {
 	using GEO::index_t;
 	using Navigation::Index;
 
@@ -576,7 +576,7 @@ void poly_fem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, Po
 		Eigen::MatrixXd P(n, 2), V;
 		std::vector<std::vector<int>> F;
 		for (index_t k = 0; k < n; ++k) {
-			GEO::vec3 pk = poly_fem::mesh_vertex(M_out, hole[k]);
+			GEO::vec3 pk = polyfem::mesh_vertex(M_out, hole[k]);
 			P.row(k) << pk[0], pk[1];
 		}
 		split_func(P, V, F);
@@ -601,7 +601,7 @@ void poly_fem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, Po
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void poly_fem::refine_triangle_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out) {
+void polyfem::refine_triangle_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out) {
 	using GEO::index_t;
 	using Navigation::Index;
 

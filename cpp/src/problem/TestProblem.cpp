@@ -3,7 +3,7 @@
 #include <iostream>
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace poly_fem {
+namespace polyfem {
 namespace {
 
 // -----------------------------------------------------------------------------
@@ -136,4 +136,4 @@ void TestProblem::set_parameters(const json &params) {
 	params_.merge_patch(params);
 }
 
-} // namespace poly_fem
+} // namespace polyfem

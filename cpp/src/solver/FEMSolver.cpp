@@ -4,7 +4,7 @@
 #include <unsupported/Eigen/SparseExtra>
 ////////////////////////////////////////////////////////////////////////////////
 
-void poly_fem::dirichlet_solve(
+void polyfem::dirichlet_solve(
 	LinearSolver &solver, Eigen::SparseMatrix<double> &A, Eigen::VectorXd &f,
 	const std::vector<int> &dirichlet_nodes, Eigen::VectorXd &u, const std::string &save_path)
 {

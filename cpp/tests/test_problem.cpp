@@ -7,7 +7,7 @@
 #include <iostream>
 ////////////////////////////////////////////////////////////////////////////////
 
-using namespace poly_fem;
+using namespace polyfem;
 
 const double k = 0.2;
 const double lambda = 0.375, mu = 0.375;

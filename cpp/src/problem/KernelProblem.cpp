@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-namespace poly_fem
+namespace polyfem
 {
 
 	KernelProblem::KernelProblem(const std::string &name)

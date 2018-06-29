@@ -1,6 +1,6 @@
 #include <polyfem/VTUWriter.hpp>
 
-namespace poly_fem
+namespace polyfem
 {
     namespace
     {

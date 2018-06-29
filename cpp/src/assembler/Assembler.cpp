@@ -54,7 +54,7 @@ public:
 	}
 };
 
-namespace poly_fem
+namespace polyfem
 {
 	template<class LocalAssembler>
 	void Assembler<LocalAssembler>::assemble(

@@ -3,7 +3,7 @@
 
 #include <vector>
 
-namespace poly_fem
+namespace polyfem
 {
 	struct InterfaceData
 	{

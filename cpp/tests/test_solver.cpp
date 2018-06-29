@@ -12,7 +12,7 @@
 #include <unsupported/Eigen/SparseExtra>
 ////////////////////////////////////////////////////////////////////////////////
 
-using namespace poly_fem;
+using namespace polyfem;
 
 class Rosenbrock : public cppoptlib::Problem<double> {
 public:

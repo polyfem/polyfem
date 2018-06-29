@@ -11,7 +11,7 @@
 #include <memory>
 #include <iostream>
 
-namespace poly_fem
+namespace polyfem
 {
 	Problem::Problem(const std::string &name)
 	: name_(name)

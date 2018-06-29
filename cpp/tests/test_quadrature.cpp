@@ -9,7 +9,7 @@
 #include <catch.hpp>
 ////////////////////////////////////////////////////////////////////////////////
 
-using namespace poly_fem;
+using namespace polyfem;
 
 const double pi = 3.14159265358979323846264338327950288419717;
 

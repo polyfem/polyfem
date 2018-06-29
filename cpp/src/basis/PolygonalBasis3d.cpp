@@ -20,7 +20,7 @@
 #include <memory>
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace poly_fem {
+namespace polyfem {
 namespace {
 
 const int max_num_kernels = 300;
@@ -173,7 +173,7 @@ void compute_offset_kernels(const Eigen::MatrixXd &QV, const Eigen::MatrixXi &QF
 		kernel_centers = KV;
 	} else {
 		// std::cout << "fancy sampling" << std::endl;
-		poly_fem::sample_surface(KV, KF, max_num_kernels, kernel_centers, &KN, 10, 10);
+		polyfem::sample_surface(KV, KF, max_num_kernels, kernel_centers, &KN, 10, 10);
 		// std::cout << "size: "<< kernel_centers.size() << std::endl;
 	}
 	// std::cout << "eps: " << eps << std::endl;
@@ -676,4 +676,4 @@ void PolygonalBasis3d::build_bases(
 	}
 }
 
-} // namespace poly_fem
+} // namespace polyfem

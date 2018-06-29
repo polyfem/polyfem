@@ -11,20 +11,20 @@
 #include <catch.hpp>
 ////////////////////////////////////////////////////////////////////////////////
 
-using namespace poly_fem;
+using namespace polyfem;
 
 TEST_CASE("determinant2", "[matrix]") {
     Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat(2,2);
     mat.setRandom();
 
-    REQUIRE(poly_fem::determinant(mat) == Approx(mat.determinant()).margin(1e-12));
+    REQUIRE(polyfem::determinant(mat) == Approx(mat.determinant()).margin(1e-12));
 }
 
 TEST_CASE("determinant3", "[matrix]") {
     Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat(3,3);
     mat.setRandom();
 
-    REQUIRE(poly_fem::determinant(mat) == Approx(mat.determinant()).margin(1e-12));
+    REQUIRE(polyfem::determinant(mat) == Approx(mat.determinant()).margin(1e-12));
 }
 
 

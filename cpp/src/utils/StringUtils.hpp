@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 
-namespace poly_fem {
+namespace polyfem {
 
 	namespace StringUtils {
 
@@ -24,4 +24,4 @@ namespace poly_fem {
 
 	}
 
-} // namespace poly_fem
+} // namespace polyfem

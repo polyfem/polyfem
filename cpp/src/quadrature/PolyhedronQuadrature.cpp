@@ -17,7 +17,7 @@
 #include <iostream>
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace poly_fem {
+namespace polyfem {
 
 namespace {
 
@@ -102,7 +102,7 @@ void PolyhedronQuadrature::get_quadrature(const Eigen::MatrixXd &V, const Eigen:
 	double scaling = (V.colwise().maxCoeff() - V.colwise().minCoeff()).maxCoeff();
 	Eigen::RowVector3d translation = V.colwise().minCoeff();
 
-	poly_fem::tertrahedralize_star_shaped_surface(V, F, kernel, TV, TF, tets);
+	polyfem::tertrahedralize_star_shaped_surface(V, F, kernel, TV, TF, tets);
 
 	#ifdef POLYFEM_WITH_MMG
 	if (tet_quadr_pts.weights.size() * tets.rows() > max_num_quadrature_points) {
@@ -179,4 +179,4 @@ void PolyhedronQuadrature::get_quadrature(const Eigen::MatrixXd &V, const Eigen:
 	// std::cout<<"#quadrature points: " << quadr.weights.size()<<" "<<quadr.weights.sum()<<std::endl;
 }
 
-} // namespace poly_fem
+} // namespace polyfem

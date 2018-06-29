@@ -9,7 +9,7 @@
 #include <cassert>
 #include <iostream>
 
-namespace poly_fem
+namespace polyfem
 {
     namespace
     {

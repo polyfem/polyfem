@@ -13,7 +13,7 @@
 #include <igl/writeOBJ.h>
 #include <igl/copyleft/tetgen/tetrahedralize.h>
 
-using namespace poly_fem;
+using namespace polyfem;
 
 
 ////////////////////////////////////////////////////////////////////////////////

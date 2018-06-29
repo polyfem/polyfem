@@ -4,7 +4,7 @@
 #include <polyfem/ElementAssemblyValues.hpp>
 #include <polyfem/ElasticityUtils.hpp>
 
-namespace poly_fem
+namespace polyfem
 {
 	void LinearElasticity::set_parameters(const json &params)
 	{

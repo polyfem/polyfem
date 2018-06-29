@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-namespace poly_fem
+namespace polyfem
 {
 	void PointBasedTensorProblem::BCValue::init(const json &data)
 	{

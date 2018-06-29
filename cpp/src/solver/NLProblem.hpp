@@ -10,7 +10,7 @@
 
 
 
-namespace poly_fem
+namespace polyfem
 {
 	class NLProblem : public cppoptlib::Problem<double> {
 	public:
@@ -34,7 +34,7 @@ namespace poly_fem
 		template<class FullMat, class ReducedMat>
 		static void full_to_reduced_aux(const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced)
 		{
-			using namespace poly_fem;
+			using namespace polyfem;
 
 			assert(full.size() == full_size);
 			assert(full.cols() == 1);
@@ -58,7 +58,7 @@ namespace poly_fem
 		template<class ReducedMat, class FullMat>
 		static void reduced_to_full_aux(const int full_size, const int reduced_size, const ReducedMat &reduced, Eigen::MatrixXd &rhs, FullMat &full)
 		{
-			using namespace poly_fem;
+			using namespace polyfem;
 
 			assert(reduced.size() == reduced_size);
 			assert(reduced.cols() == 1);

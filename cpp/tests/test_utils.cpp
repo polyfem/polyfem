@@ -9,7 +9,7 @@
 #include <catch.hpp>
 ////////////////////////////////////////////////////////////////////////////////
 
-using namespace poly_fem;
+using namespace polyfem;
 
 TEST_CASE("interpolated_fun_2d", "[utils]") {
     Eigen::MatrixXd pts(3, 2); pts <<

@@ -2,7 +2,7 @@
 
 #include <polyfem/Mesh.hpp>
 
-namespace poly_fem
+namespace polyfem
 {
 	class BoundarySampler
 	{

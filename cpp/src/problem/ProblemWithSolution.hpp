@@ -4,7 +4,7 @@
 
 #include <polyfem/AutodiffTypes.hpp>
 
-namespace poly_fem
+namespace polyfem
 {
 	class ProblemWithSolution : public Problem
 	{

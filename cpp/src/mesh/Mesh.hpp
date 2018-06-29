@@ -9,7 +9,7 @@
 #include <geogram/mesh/mesh.h>
 #include <memory>
 
-namespace poly_fem
+namespace polyfem
 {
 	// NOTE:
 	// For the purpose of the tagging, elements (facets in 2D, cells in 3D) adjacent to a polytope

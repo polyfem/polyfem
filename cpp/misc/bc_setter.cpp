@@ -22,7 +22,7 @@
 #include <vector>
 
 
-using namespace poly_fem;
+using namespace polyfem;
 using namespace Eigen;
 static const int BUF_SIZE = 128;
 

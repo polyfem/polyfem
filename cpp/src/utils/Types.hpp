@@ -4,7 +4,7 @@
 
 #include <Eigen/Dense>
 
-namespace poly_fem
+namespace polyfem
 {
 	// Stack-allocated vectors of size either 2 or 3
 	typedef Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> VectorNd;

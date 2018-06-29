@@ -2,7 +2,7 @@
 
 
 
-namespace poly_fem {
+namespace polyfem {
 	void QuadraticBSpline2d::init(const std::array<double, 4> &knots_u, const std::array<double, 4> &knots_v)
 	{
 		spline_u_.init(knots_u);

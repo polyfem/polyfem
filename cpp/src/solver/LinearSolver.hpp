@@ -13,7 +13,7 @@
 // - [ ] Document the json parameters for each
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace poly_fem {
+namespace polyfem {
 
 /**
  * @brief      Base class for linear solver.
@@ -90,4 +90,4 @@ public:
 	virtual std::string name() const { return ""; }
 };
 
-} // namespace poly_fem
+} // namespace polyfem

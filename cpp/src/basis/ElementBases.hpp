@@ -8,7 +8,7 @@
 
 #include <vector>
 
-namespace poly_fem
+namespace polyfem
 {
 	///
 	/// @brief      Stores the basis functions for a given element in a mesh

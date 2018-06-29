@@ -12,7 +12,7 @@
 #include <Eigen/Dense>
 #include <array>
 
-namespace poly_fem
+namespace polyfem
 {
 	class HookeLinearElasticity
 	{

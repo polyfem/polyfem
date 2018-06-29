@@ -7,7 +7,7 @@
 #include <geogram/basic/command_line_args.h>
 #include <geogram/mesh/mesh_io.h>
 
-using namespace poly_fem;
+using namespace polyfem;
 using namespace Eigen;
 
 int main(int argc, char * argv[]) {

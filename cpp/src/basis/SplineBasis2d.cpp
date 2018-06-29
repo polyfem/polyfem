@@ -21,7 +21,7 @@
 
 //TODO carefull with simplices
 
-namespace poly_fem
+namespace polyfem
 {
     using namespace Eigen;
 

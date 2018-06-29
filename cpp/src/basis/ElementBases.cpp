@@ -1,6 +1,6 @@
 #include <polyfem/ElementBases.hpp>
 
-namespace poly_fem
+namespace polyfem
 {
 	bool ElementBases::is_complete() const
 	{

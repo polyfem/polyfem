@@ -3,7 +3,7 @@
 
 #include <polyfem/AssemblerUtils.hpp>
 
-namespace poly_fem
+namespace polyfem
 {
 	ProblemWithSolution::ProblemWithSolution(const std::string &name)
 	: Problem(name)

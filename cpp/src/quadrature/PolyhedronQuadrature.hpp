@@ -3,7 +3,7 @@
 #include <polyfem/Quadrature.hpp>
 #include <geogram/mesh/mesh.h>
 
-namespace poly_fem
+namespace polyfem
 {
 	class PolyhedronQuadrature
 	{

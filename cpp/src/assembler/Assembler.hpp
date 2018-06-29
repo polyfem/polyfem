@@ -11,7 +11,7 @@
 #include <cmath>
 #include <memory>
 
-namespace poly_fem
+namespace polyfem
 {
 	template<class LocalAssembler>
 	class Assembler

@@ -5,7 +5,7 @@
 #include <vector>
 ////////////////////////////////////////////////////////////////////////////////
 
-using namespace poly_fem;
+using namespace polyfem;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -122,7 +122,7 @@ int main(int argc, char * argv[]) {
 	Eigen::MatrixXd V_in, V_out;
 	Eigen::MatrixXi F_in, F_out;
 	QuadMesh::loadObj(args.input, V_in, F_in);
-	poly_fem::refine_quad_mesh(V_in, F_in, V_out, F_out);
+	polyfem::refine_quad_mesh(V_in, F_in, V_out, F_out);
 	QuadMesh::saveObj(args.output, V_out, F_out);
 
 	return 0;

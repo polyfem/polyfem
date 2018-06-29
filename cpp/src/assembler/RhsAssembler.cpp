@@ -12,7 +12,7 @@
 
 // #include <polyfem/UIState.hpp>
 
-namespace poly_fem
+namespace polyfem
 {
 	RhsAssembler::RhsAssembler(const Mesh &mesh, const int n_basis, const int size, const std::vector< ElementBases > &bases, const std::vector< ElementBases > &gbases, const std::string &formulation, const Problem &problem)
 	: mesh_(mesh), n_basis_(n_basis), size_(size), bases_(bases), gbases_(gbases), formulation_(formulation), problem_(problem)
@@ -70,6 +70,8 @@ namespace poly_fem
 
 
 		const int actual_dim = problem_.is_scalar() ? 1 : mesh_.dimension();
+
+		assert((bounday_nodes.size()/actual_dim)*actual_dim == bounday_nodes.size());
 
 		for(int b : bounday_nodes)
 			is_boundary[b/actual_dim] = true;

@@ -112,8 +112,8 @@ if __name__ == "__main__":
     names = ["hooke", "saint_venant", "neo_hookean"]
     cpp = "#include <polyfem/auto_rhs.hpp>\n\n\n"
     hpp = "#pragma once\n\n#include <polyfem/ElasticityUtils.hpp>\n#include <polyfem/AutodiffTypes.hpp>\n#include <Eigen/Dense>\n\n"
-    cpp = cpp + "namespace poly_fem {\nnamespace autogen " + "{\n"
-    hpp = hpp + "namespace poly_fem {\nnamespace autogen " + "{\n"
+    cpp = cpp + "namespace polyfem {\nnamespace autogen " + "{\n"
+    hpp = hpp + "namespace polyfem {\nnamespace autogen " + "{\n"
 
     x = Symbol('x')
     y = Symbol('y')

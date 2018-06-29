@@ -11,7 +11,7 @@
 #include <map>
 
 
-namespace poly_fem
+namespace polyfem
 {
 
 	class PolygonalBasis2d

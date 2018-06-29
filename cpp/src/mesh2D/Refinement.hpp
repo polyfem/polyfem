@@ -5,7 +5,7 @@
 #include <vector>
 
 
-namespace poly_fem
+namespace polyfem
 {
 
 // Compute a graph (V,E) where V are the edges of the input quad mesh, and E
@@ -143,4 +143,4 @@ void refine_triangle_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out);
 	}
 }
 
-} // namespace poly_fem
+} // namespace polyfem

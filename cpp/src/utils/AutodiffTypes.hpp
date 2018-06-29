@@ -4,7 +4,7 @@
 
 #include "autodiff.h"
 
-namespace poly_fem
+namespace polyfem
 {
 	typedef DScalar1<double, VectorNd> 																	AutodiffScalarGrad;
 	typedef DScalar2<double, VectorNd, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0 ,3, 3>>  AutodiffScalarHessian;

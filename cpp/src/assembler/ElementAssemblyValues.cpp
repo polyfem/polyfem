@@ -2,7 +2,7 @@
 #include <igl/Timer.h>
 #include <memory>
 
-namespace poly_fem
+namespace polyfem
 {
 	void ElementAssemblyValues::finalize_global_element(const Eigen::MatrixXd &v)
 	{

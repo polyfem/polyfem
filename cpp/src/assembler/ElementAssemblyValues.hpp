@@ -6,7 +6,7 @@
 
 #include <vector>
 
-namespace poly_fem
+namespace polyfem
 {
 	class ElementAssemblyValues
 	{

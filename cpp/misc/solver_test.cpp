@@ -87,14 +87,14 @@ int main(int argc, char * argv[]) {
 
 	// List available options and quit
 	if (args.list_solvers) {
-		for (std::string s : poly_fem::LinearSolver::availableSolvers()) {
+		for (std::string s : polyfem::LinearSolver::availableSolvers()) {
 			std::cout << s << std::endl;
 		}
 		return 0;
 	}
 
 	if (args.list_precond) {
-		for (std::string s : poly_fem::LinearSolver::availablePrecond()) {
+		for (std::string s : polyfem::LinearSolver::availablePrecond()) {
 			std::cout << s << std::endl;
 		}
 		return 0;
@@ -153,7 +153,7 @@ int main(int argc, char * argv[]) {
 
 	// Solve
 	igl::Timer timer;
-	auto solver = poly_fem::LinearSolver::create(args.solver, args.precond);
+	auto solver = polyfem::LinearSolver::create(args.solver, args.precond);
 	std::cout << "-- Using solver: " << solver->name() << std::endl;
 
 	std::cout << "-- Analyzing sparsity pattern..." << std::endl;

@@ -3,7 +3,7 @@
 
 #include <polyfem/Quadrature.hpp>
 
-namespace poly_fem
+namespace polyfem
 {
     class LineQuadrature
     {

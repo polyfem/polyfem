@@ -3,7 +3,7 @@
 #include <polyfem/Quadrature.hpp>
 #include <Eigen/Dense>
 
-namespace poly_fem
+namespace polyfem
 {
 	// See `RBFWithQuadratic.cpp` for a detail commented version of the code.
 	// This class implements the same consistency constraints, but uses Lagrange

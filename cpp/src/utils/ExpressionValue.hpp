@@ -5,7 +5,7 @@
 #include <tinyexpr.h>
 
 
-namespace poly_fem {
+namespace polyfem {
 
 	class ExpressionValue
 	{
@@ -30,4 +30,4 @@ namespace poly_fem {
 		Internal *vals_;
 	};
 
-} // namespace poly_fem
+} // namespace polyfem

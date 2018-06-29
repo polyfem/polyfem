@@ -5,7 +5,7 @@
 #include <string>
 #include <functional>
 
-namespace poly_fem {
+namespace polyfem {
 
 	class CommandLine {
 	public:

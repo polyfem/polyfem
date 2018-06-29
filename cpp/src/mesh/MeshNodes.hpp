@@ -8,7 +8,7 @@
 
 #include <Eigen/Dense>
 
-namespace poly_fem {
+namespace polyfem {
 
 // Wrapper for lazy assignment of node ids
 class MeshNodes {
@@ -84,4 +84,4 @@ private:
 	std::vector<bool> is_interface_;
 };
 
-} // namespace poly_fem
+} // namespace polyfem

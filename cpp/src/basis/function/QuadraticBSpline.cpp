@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-namespace poly_fem {
+namespace polyfem {
 	void QuadraticBSpline::init(const std::array<double, 4> &knots)
 	{
 		knots_ = knots;

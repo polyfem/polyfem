@@ -6,7 +6,7 @@
 #include <vector>
 #include <Eigen/Dense>
 
-namespace poly_fem
+namespace polyfem
 {
 	class ElasticProblem: public Problem
 	{

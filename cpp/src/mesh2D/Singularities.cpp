@@ -5,7 +5,7 @@
 #include <algorithm>
 ////////////////////////////////////////////////////////////////////////////////
 
-void poly_fem::singular_vertices(
+void polyfem::singular_vertices(
 	const GEO::Mesh &M, Eigen::VectorXi &V, int regular_degree, bool ignore_border)
 {
 	using GEO::index_t;
@@ -38,7 +38,7 @@ void poly_fem::singular_vertices(
 	}
 }
 
-void poly_fem::singular_edges(const GEO::Mesh &M, const Eigen::VectorXi &V, Eigen::MatrixX2i &E) {
+void polyfem::singular_edges(const GEO::Mesh &M, const Eigen::VectorXi &V, Eigen::MatrixX2i &E) {
 	using GEO::index_t;
 	std::vector<bool> is_singular(M.vertices.nb(), false);
 	for (int i = 0; i < V.size(); ++i) {
@@ -60,7 +60,7 @@ void poly_fem::singular_edges(const GEO::Mesh &M, const Eigen::VectorXi &V, Eige
 	}
 }
 
-void poly_fem::singularity_graph(
+void polyfem::singularity_graph(
 	const GEO::Mesh &M, Eigen::VectorXi &V, Eigen::MatrixX2i &E,int regular_degree, bool ignore_border)
 {
 	singular_vertices(M, V, regular_degree, ignore_border);
@@ -69,7 +69,7 @@ void poly_fem::singularity_graph(
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void poly_fem::create_patch_around_singularities(
+void polyfem::create_patch_around_singularities(
 	GEO::Mesh &M, const Eigen::VectorXi &V, const Eigen::MatrixX2i &E, double t)
 {
 	using GEO::index_t;

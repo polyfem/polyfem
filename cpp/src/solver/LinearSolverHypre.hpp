@@ -21,7 +21,7 @@
 // https://github.com/LLNL/hypre/blob/v2.14.0/docs/HYPRE_usr_manual.pdf
 //
 
-namespace poly_fem {
+namespace polyfem {
 
 	class LinearSolverHypre : public LinearSolver {
 
@@ -71,6 +71,6 @@ namespace poly_fem {
 
 	};
 
-} // namespace poly_fem
+} // namespace polyfem
 
 #endif

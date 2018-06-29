@@ -9,7 +9,7 @@
 #include <Eigen/Dense>
 #include <geogram/mesh/mesh.h>
 
-namespace poly_fem
+namespace polyfem
 {
 	class Mesh2D : public Mesh
 	{

@@ -7,7 +7,7 @@
 #include <vector>
 #include <memory>
 
-namespace poly_fem
+namespace polyfem
 {
 
 ///
@@ -179,4 +179,4 @@ void extract_parent_edges(const Eigen::MatrixXd &IV, const Eigen::MatrixXi &IE,
 ///
 void save_edges(const std::string &filename, const Eigen::MatrixXd &V, const Eigen::MatrixXi &E);
 
-} // namespace poly_fem
+} // namespace polyfem

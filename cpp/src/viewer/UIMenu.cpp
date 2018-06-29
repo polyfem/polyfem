@@ -76,7 +76,7 @@ namespace {
 ////////////////////////////////////////////////////////////////////////////////
 
 // Draw menu
-void poly_fem::UIState::draw_menu() {
+void polyfem::UIState::draw_menu() {
 	// Text labels
 
 	// Viewer settings
@@ -148,7 +148,7 @@ void poly_fem::UIState::draw_menu() {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void poly_fem::UIState::draw_settings() {
+void polyfem::UIState::draw_settings() {
 	ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.50f);
 	// ImGui::InputInt("quad", &state.quadrature_order);
 	int discr_order = state.args["discr_order"];
@@ -198,7 +198,7 @@ void poly_fem::UIState::draw_settings() {
 	// Problem type
 	static std::string problem_name = state.problem->name();
 	// static const char *problem_labels = "Linear\0Quadratic\0Franke\0Elastic\0Zero BC\0Franke3D\0ElasticExact\0\0";
-	static const auto problem_names = poly_fem::ProblemFactory::factory().get_problem_names();
+	static const auto problem_names = polyfem::ProblemFactory::factory().get_problem_names();
 	if(ImGui::BeginCombo("Problem", problem_name.c_str()))
 	{
 		for(auto p_name : problem_names)
@@ -234,7 +234,7 @@ void poly_fem::UIState::draw_settings() {
 	ImGui::Separator();
 
 
-	static const auto scalar_forms = poly_fem::AssemblerUtils::instance().scalar_assemblers();
+	static const auto scalar_forms = polyfem::AssemblerUtils::instance().scalar_assemblers();
 
 	const bool is_scalar = state.problem->is_scalar();
 
@@ -260,7 +260,7 @@ void poly_fem::UIState::draw_settings() {
 
 	if(is_scalar) push_disabled();
 
-	static const auto tensor_forms = poly_fem::AssemblerUtils::instance().tensor_assemblers();
+	static const auto tensor_forms = polyfem::AssemblerUtils::instance().tensor_assemblers();
 	if(ImGui::BeginCombo("nD-Form", state.tensor_formulation().c_str()))
 	{
 		for(auto f : tensor_forms)
@@ -401,11 +401,11 @@ void poly_fem::UIState::draw_settings() {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void poly_fem::UIState::draw_debug() {
+void polyfem::UIState::draw_debug() {
 	if (ImGui::Button("Clear", ImVec2(-1, 0))) { clear(); }
 
     // ImGui::Columns(1, "visualizations");
-	for(int i = 0; i <= poly_fem::UIState::Visualizations::Debug; ++i)
+	for(int i = 0; i <= polyfem::UIState::Visualizations::Debug; ++i)
 	{
 		// if(ImGui::Selectable(visualizations_texts[i].c_str(), viewer.selected_data_index == i))
 		// {
@@ -524,7 +524,7 @@ void poly_fem::UIState::draw_debug() {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void poly_fem::UIState::draw_screenshot() {
+void polyfem::UIState::draw_screenshot() {
 	if (ImGui::Button("Save Screenshot", ImVec2(-1, 0))) {
 		// Allocate temporary buffers
 		Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(6400, 4000);
@@ -570,7 +570,7 @@ void poly_fem::UIState::draw_screenshot() {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void poly_fem::UIState::draw_elasticity_bc() {
+void polyfem::UIState::draw_elasticity_bc() {
 	// for(int local_id = 1; local_id <= 6; ++local_id) {
 	// 	viewer_.ngui->addVariable<bool>("Dirichlet " + std::to_string(local_id),
 	// 		[this,local_id](bool val) {

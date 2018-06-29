@@ -19,7 +19,7 @@
 #include <map>
 
 
-namespace poly_fem
+namespace polyfem
 {
     using namespace Eigen;
 

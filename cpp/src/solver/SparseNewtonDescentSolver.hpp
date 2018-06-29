@@ -71,7 +71,7 @@ namespace cppoptlib {
 		}
 
 		void minimize(ProblemType &objFunc, TVector &x0) {
-			using namespace poly_fem;
+			using namespace polyfem;
 
 			const json &params = State::state().solver_params();
 			auto solver = LinearSolver::create(State::state().solver_type(), State::state().precond_type());

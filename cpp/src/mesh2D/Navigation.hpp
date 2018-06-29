@@ -3,7 +3,7 @@
 #include <geogram/mesh/mesh.h>
 
 
-namespace poly_fem
+namespace polyfem
 {
 
 	namespace Navigation
@@ -36,4 +36,4 @@ namespace poly_fem
 
 	} // namespace Navigation
 
-} // namespace poly_fem
+} // namespace polyfem

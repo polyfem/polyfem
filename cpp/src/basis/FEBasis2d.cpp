@@ -7,7 +7,7 @@
 #include <array>
 ////////////////////////////////////////////////////////////////////////////////
 
-using namespace poly_fem;
+using namespace polyfem;
 
 /*
 
@@ -205,7 +205,7 @@ namespace {
 
 // -----------------------------------------------------------------------------
 
-	poly_fem::Navigation::Index find_edge(const poly_fem::Mesh2D &mesh, int f, int v1, int v2) {
+	polyfem::Navigation::Index find_edge(const polyfem::Mesh2D &mesh, int f, int v1, int v2) {
 		std::array<int, 2> v = {{v1, v2}};
 		std::sort(v.begin(), v.end());
 		auto idx = mesh.get_index_from_face(f, 0);
@@ -244,12 +244,12 @@ namespace {
 /// @param[out] poly_edge_to_data  Data for edges at the interface with a polygon
 ///
 	void compute_nodes(
-		const poly_fem::Mesh2D &mesh,
+		const polyfem::Mesh2D &mesh,
 		const Eigen::VectorXi &discr_orders,
 		MeshNodes &nodes,
 		std::vector<std::vector<int> > &element_nodes_id,
-		std::vector<poly_fem::LocalBoundary> &local_boundary,
-		std::map<int, poly_fem::InterfaceData> &poly_edge_to_data)
+		std::vector<polyfem::LocalBoundary> &local_boundary,
+		std::map<int, polyfem::InterfaceData> &poly_edge_to_data)
 	{
 		// Step 1: Assign global node ids for each quads
 		local_boundary.clear();
@@ -261,11 +261,11 @@ namespace {
 			if(mesh.is_cube(f))
 			{
 				if (discr_order == 1) {
-					for (int id : poly_fem::FEBasis2d::linear_quad_local_to_global(mesh, f)) {
+					for (int id : polyfem::FEBasis2d::linear_quad_local_to_global(mesh, f)) {
 						element_nodes_id[f].push_back(nodes.node_id_from_primitive(id));
 					}
 				} else if (discr_order == 2) {
-					const auto tmp = poly_fem::FEBasis2d::quadr_quad_local_to_global(mesh, f);
+					const auto tmp = polyfem::FEBasis2d::quadr_quad_local_to_global(mesh, f);
 					for (int id : tmp) {
 						if(id < 0)
 							element_nodes_id[f].push_back(id);
@@ -281,7 +281,7 @@ namespace {
 				// List of edges around the quad
 				std::array<int, 4> e;
 				{
-					auto l2g = poly_fem::FEBasis2d::quadr_quad_local_to_global(mesh, f);
+					auto l2g = polyfem::FEBasis2d::quadr_quad_local_to_global(mesh, f);
 					for (int le = 0; le < 4; ++le) {
 						e[le] = l2g[4+le] - mesh.n_vertices();
 					}
@@ -299,12 +299,12 @@ namespace {
 				if(!lb.empty())
 					local_boundary.emplace_back(lb);
 			} else if(mesh.is_simplex(f)) {
-				element_nodes_id[f] = poly_fem::FEBasis2d::tri_local_to_global(discr_order, mesh, f, discr_orders, nodes);
+				element_nodes_id[f] = polyfem::FEBasis2d::tri_local_to_global(discr_order, mesh, f, discr_orders, nodes);
 
 				// List of edges around the tri
 				std::array<int, 3> e;
 				{
-					auto l2g = poly_fem::FEBasis2d::quadr_tri_local_to_global(mesh, f);
+					auto l2g = polyfem::FEBasis2d::quadr_tri_local_to_global(mesh, f);
 					for (int le = 0; le < 3; ++le) {
 						e[le] = l2g[3+le] - mesh.n_vertices();
 					}
@@ -338,12 +338,12 @@ namespace {
 					int f2 = index2.face;
 					if(mesh.is_cube(f2))
 					{
-						poly_fem::InterfaceData data;
+						polyfem::InterfaceData data;
 						if (discr_order == 2) {
-							auto abc = poly_fem::FEBasis2d::quadr_quad_edge_local_nodes(mesh, index2);
+							auto abc = polyfem::FEBasis2d::quadr_quad_edge_local_nodes(mesh, index2);
 							data.local_indices.assign(abc.begin(), abc.end());
 						} else if(discr_order == 1) {
-							auto ab = poly_fem::FEBasis2d::linear_quad_edge_local_nodes(mesh, index2);
+							auto ab = polyfem::FEBasis2d::linear_quad_edge_local_nodes(mesh, index2);
 							data.local_indices.assign(ab.begin(), ab.end());
 						}
 						else
@@ -352,14 +352,14 @@ namespace {
 						poly_edge_to_data[index2.edge] = data;
 					} else if(mesh.is_simplex(f2)) {
 						//TODO, might not work!!!!!
-						poly_fem::InterfaceData data;
-						auto abc = poly_fem::FEBasis2d::tri_edge_local_nodes(discr_order, mesh, index);
+						polyfem::InterfaceData data;
+						auto abc = polyfem::FEBasis2d::tri_edge_local_nodes(discr_order, mesh, index);
 						data.local_indices.assign(abc.size(), abc.data()[0]);
 						// if (discr_order == 2) {
-						// 	auto abc = poly_fem::FEBasis2d::quadr_tri_edge_local_nodes(mesh, index2);
+						// 	auto abc = polyfem::FEBasis2d::quadr_tri_edge_local_nodes(mesh, index2);
 						// 	data.local_indices.assign(abc.begin(), abc.end());
 						// } else  if(discr_order == 1) {
-						// 	auto ab = poly_fem::FEBasis2d::linear_tri_edge_local_nodes(mesh, index2);
+						// 	auto ab = polyfem::FEBasis2d::linear_tri_edge_local_nodes(mesh, index2);
 						// 	data.local_indices.assign(ab.begin(), ab.end());
 						// }
 						// else
@@ -404,7 +404,7 @@ template<class InputIterator, class T>
 
 } // anonymous namespace
 
-void poly_fem::FEBasis2d::linear_tri_basis_value(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {
+void polyfem::FEBasis2d::linear_tri_basis_value(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {
 	auto u=uv.col(0).array();
 	auto v=uv.col(1).array();
 	switch(local_index)
@@ -416,7 +416,7 @@ void poly_fem::FEBasis2d::linear_tri_basis_value(const int local_index, const Ei
 	}
 }
 
-void poly_fem::FEBasis2d::linear_tri_basis_grad(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {
+void polyfem::FEBasis2d::linear_tri_basis_grad(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {
 	val.resize(uv.rows(), uv.cols());
 	switch(local_index)
 	{
@@ -426,7 +426,7 @@ void poly_fem::FEBasis2d::linear_tri_basis_grad(const int local_index, const Eig
 		default: assert(false);
 	}
 }
-void poly_fem::FEBasis2d::quadr_tri_basis_value(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+void polyfem::FEBasis2d::quadr_tri_basis_value(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
 {
 	auto u=uv.col(0).array();
 	auto v=uv.col(1).array();
@@ -443,7 +443,7 @@ void poly_fem::FEBasis2d::quadr_tri_basis_value(const int local_index, const Eig
 	}
 }
 
-void poly_fem::FEBasis2d::quadr_tri_basis_grad(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+void polyfem::FEBasis2d::quadr_tri_basis_grad(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
 {
 	auto u=uv.col(0).array();
 	auto v=uv.col(1).array();
@@ -487,18 +487,18 @@ void poly_fem::FEBasis2d::quadr_tri_basis_grad(const int local_index, const Eige
 
 // -----------------------------------------------------------------------------
 
-Eigen::RowVector2d poly_fem::FEBasis2d::linear_tri_local_node_coordinates(int local_index) {
+Eigen::RowVector2d polyfem::FEBasis2d::linear_tri_local_node_coordinates(int local_index) {
 	auto p = linear_tri_local_node[local_index];
 	return Eigen::RowVector2d(p[0], p[1]);
 }
 
-Eigen::RowVector2d poly_fem::FEBasis2d::quadr_tri_local_node_coordinates(int local_index) {
+Eigen::RowVector2d polyfem::FEBasis2d::quadr_tri_local_node_coordinates(int local_index) {
 	auto p = quadr_tri_local_node[local_index];
 	return Eigen::RowVector2d(p[0], p[1]) / 2.0;
 }
 
 
-std::array<int, 3> poly_fem::FEBasis2d::linear_tri_local_to_global(const Mesh2D &mesh, int f) {
+std::array<int, 3> polyfem::FEBasis2d::linear_tri_local_to_global(const Mesh2D &mesh, int f) {
 	// assert(mesh.is_cube(f));
 
 	// Vertex nodes
@@ -510,7 +510,7 @@ std::array<int, 3> poly_fem::FEBasis2d::linear_tri_local_to_global(const Mesh2D 
 	return l2g;
 }
 
-std::vector<int> poly_fem::FEBasis2d::tri_local_to_global(const int p, const Mesh2D &mesh, int f, const Eigen::VectorXi &discr_order, poly_fem::MeshNodes &nodes) {
+std::vector<int> polyfem::FEBasis2d::tri_local_to_global(const int p, const Mesh2D &mesh, int f, const Eigen::VectorXi &discr_order, polyfem::MeshNodes &nodes) {
 	int edge_offset = mesh.n_vertices();
 	int face_offset = edge_offset + mesh.n_edges();
 
@@ -573,7 +573,7 @@ std::vector<int> poly_fem::FEBasis2d::tri_local_to_global(const int p, const Mes
 	return res;
 }
 
-std::array<int, 6> poly_fem::FEBasis2d::quadr_tri_local_to_global(const Mesh2D &mesh, int f, const Eigen::VectorXi &discr_order) {
+std::array<int, 6> polyfem::FEBasis2d::quadr_tri_local_to_global(const Mesh2D &mesh, int f, const Eigen::VectorXi &discr_order) {
 	// assert(mesh.is_cube(f));
 
 	int edge_offset = mesh.n_vertices();
@@ -616,7 +616,7 @@ std::array<int, 6> poly_fem::FEBasis2d::quadr_tri_local_to_global(const Mesh2D &
 
 
 
-Eigen::MatrixXd poly_fem::FEBasis2d::tri_local_node_coordinates_from_edge(int le)
+Eigen::MatrixXd polyfem::FEBasis2d::tri_local_node_coordinates_from_edge(int le)
 {
 	Eigen::MatrixXd res(2,2);
 	res.row(0) = linear_tri_local_node_coordinates(le);
@@ -625,7 +625,7 @@ Eigen::MatrixXd poly_fem::FEBasis2d::tri_local_node_coordinates_from_edge(int le
 	return res;
 }
 
-std::array<int, 2> poly_fem::FEBasis2d::linear_tri_edge_local_nodes(
+std::array<int, 2> polyfem::FEBasis2d::linear_tri_edge_local_nodes(
 	const Mesh2D &mesh, Navigation::Index index)
 {
 	int f = index.face;
@@ -641,7 +641,7 @@ std::array<int, 2> poly_fem::FEBasis2d::linear_tri_edge_local_nodes(
 	return result;
 }
 
-Eigen::MatrixXd poly_fem::FEBasis2d::linear_tri_edge_local_nodes_coordinates(
+Eigen::MatrixXd polyfem::FEBasis2d::linear_tri_edge_local_nodes_coordinates(
 	const Mesh2D &mesh, Navigation::Index index)
 {
 	auto idx = linear_tri_edge_local_nodes(mesh, index);
@@ -655,7 +655,7 @@ Eigen::MatrixXd poly_fem::FEBasis2d::linear_tri_edge_local_nodes_coordinates(
 
 // -----------------------------------------------------------------------------
 
-Eigen::VectorXi poly_fem::FEBasis2d::tri_edge_local_nodes(const int p, const Mesh2D &mesh, Navigation::Index index)
+Eigen::VectorXi polyfem::FEBasis2d::tri_edge_local_nodes(const int p, const Mesh2D &mesh, Navigation::Index index)
 {
 	int f = index.face;
 	assert(mesh.is_simplex(f));
@@ -686,7 +686,7 @@ Eigen::VectorXi poly_fem::FEBasis2d::tri_edge_local_nodes(const int p, const Mes
 	return result;
 }
 
-std::array<int, 3> poly_fem::FEBasis2d::quadr_tri_edge_local_nodes(
+std::array<int, 3> polyfem::FEBasis2d::quadr_tri_edge_local_nodes(
 	const Mesh2D &mesh, Navigation::Index index)
 {
 	int f = index.face;
@@ -704,7 +704,7 @@ std::array<int, 3> poly_fem::FEBasis2d::quadr_tri_edge_local_nodes(
 	return result;
 }
 
-Eigen::MatrixXd poly_fem::FEBasis2d::quadr_tri_edge_local_nodes_coordinates(
+Eigen::MatrixXd polyfem::FEBasis2d::quadr_tri_edge_local_nodes_coordinates(
 	const Mesh2D &mesh, Navigation::Index index)
 {
 	auto idx = quadr_tri_edge_local_nodes(mesh, index);
@@ -717,19 +717,19 @@ Eigen::MatrixXd poly_fem::FEBasis2d::quadr_tri_edge_local_nodes_coordinates(
 }
 // -----------------------------------------------------------------------------
 
-Eigen::RowVector2d poly_fem::FEBasis2d::linear_quad_local_node_coordinates(int local_index) {
+Eigen::RowVector2d polyfem::FEBasis2d::linear_quad_local_node_coordinates(int local_index) {
 	assert(local_index >= 0 && local_index < 4);
 	auto p = linear_quad_local_node[local_index];
 	return Eigen::RowVector2d(p[0], p[1]);
 }
 
-Eigen::RowVector2d poly_fem::FEBasis2d::quadr_quad_local_node_coordinates(int local_index) {
+Eigen::RowVector2d polyfem::FEBasis2d::quadr_quad_local_node_coordinates(int local_index) {
 	assert(local_index >= 0 && local_index < 9);
 	auto p = quadr_quad_local_node[local_index];
 	return Eigen::RowVector2d(p[0], p[1]) / 2.0;
 }
 
-std::array<int, 4> poly_fem::FEBasis2d::linear_quad_local_to_global(const Mesh2D &mesh, int f) {
+std::array<int, 4> polyfem::FEBasis2d::linear_quad_local_to_global(const Mesh2D &mesh, int f) {
 	assert(mesh.is_cube(f));
 
 	// Vertex nodes
@@ -743,7 +743,7 @@ std::array<int, 4> poly_fem::FEBasis2d::linear_quad_local_to_global(const Mesh2D
 
 // -----------------------------------------------------------------------------
 
-std::array<int, 9> poly_fem::FEBasis2d::quadr_quad_local_to_global(const Mesh2D &mesh, int f) {
+std::array<int, 9> polyfem::FEBasis2d::quadr_quad_local_to_global(const Mesh2D &mesh, int f) {
 	assert(mesh.is_cube(f));
 
 	int edge_offset = mesh.n_vertices();
@@ -781,7 +781,7 @@ std::array<int, 9> poly_fem::FEBasis2d::quadr_quad_local_to_global(const Mesh2D 
 	return l2g;
 }
 
-Eigen::MatrixXd poly_fem::FEBasis2d::quad_local_node_coordinates_from_edge(int le)
+Eigen::MatrixXd polyfem::FEBasis2d::quad_local_node_coordinates_from_edge(int le)
 {
 	Eigen::MatrixXd res(2,2);
 	res.row(0) = linear_quad_local_node_coordinates(le);
@@ -792,7 +792,7 @@ Eigen::MatrixXd poly_fem::FEBasis2d::quad_local_node_coordinates_from_edge(int l
 
 ////////////////////////////////////////////////////////////////////////////////
 
-std::array<int, 2> poly_fem::FEBasis2d::linear_quad_edge_local_nodes(
+std::array<int, 2> polyfem::FEBasis2d::linear_quad_edge_local_nodes(
 	const Mesh2D &mesh, Navigation::Index index)
 {
 	int f = index.face;
@@ -808,7 +808,7 @@ std::array<int, 2> poly_fem::FEBasis2d::linear_quad_edge_local_nodes(
 	return result;
 }
 
-Eigen::MatrixXd poly_fem::FEBasis2d::linear_quad_edge_local_nodes_coordinates(
+Eigen::MatrixXd polyfem::FEBasis2d::linear_quad_edge_local_nodes_coordinates(
 	const Mesh2D &mesh, Navigation::Index index)
 {
 	auto idx = linear_quad_edge_local_nodes(mesh, index);
@@ -822,7 +822,7 @@ Eigen::MatrixXd poly_fem::FEBasis2d::linear_quad_edge_local_nodes_coordinates(
 
 // -----------------------------------------------------------------------------
 
-std::array<int, 3> poly_fem::FEBasis2d::quadr_quad_edge_local_nodes(
+std::array<int, 3> polyfem::FEBasis2d::quadr_quad_edge_local_nodes(
 	const Mesh2D &mesh, Navigation::Index index)
 {
 	int f = index.face;
@@ -840,7 +840,7 @@ std::array<int, 3> poly_fem::FEBasis2d::quadr_quad_edge_local_nodes(
 	return result;
 }
 
-Eigen::MatrixXd poly_fem::FEBasis2d::quadr_quad_edge_local_nodes_coordinates(
+Eigen::MatrixXd polyfem::FEBasis2d::quadr_quad_edge_local_nodes_coordinates(
 	const Mesh2D &mesh, Navigation::Index index)
 {
 	auto idx = quadr_quad_edge_local_nodes(mesh, index);
@@ -854,7 +854,7 @@ Eigen::MatrixXd poly_fem::FEBasis2d::quadr_quad_edge_local_nodes_coordinates(
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void poly_fem::FEBasis2d::quadr_quad_basis_value(
+void polyfem::FEBasis2d::quadr_quad_basis_value(
 	const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
 {
 	auto u=uv.col(0).array();
@@ -864,7 +864,7 @@ void poly_fem::FEBasis2d::quadr_quad_basis_value(
 	val = theta(idx[0], u).array() * theta(idx[1], v).array();
 }
 
-void poly_fem::FEBasis2d::quadr_quad_basis_grad(
+void polyfem::FEBasis2d::quadr_quad_basis_grad(
 	const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
 {
 	auto u=uv.col(0).array();
@@ -879,7 +879,7 @@ void poly_fem::FEBasis2d::quadr_quad_basis_grad(
 
 // -----------------------------------------------------------------------------
 
-int poly_fem::FEBasis2d::build_bases(
+int polyfem::FEBasis2d::build_bases(
 	const Mesh2D &mesh,
 	const int quadrature_order,
 	const int discr_order,
@@ -894,7 +894,7 @@ int poly_fem::FEBasis2d::build_bases(
 	return build_bases(mesh, quadrature_order, discr_orders, bases, local_boundary, poly_edge_to_data);
 }
 
-int poly_fem::FEBasis2d::build_bases(
+int polyfem::FEBasis2d::build_bases(
 	const Mesh2D &mesh,
 	const int quadrature_order,
 	const Eigen::VectorXi &discr_orders,
@@ -1057,8 +1057,8 @@ int poly_fem::FEBasis2d::build_bases(
 					b.bases[j].init(global_index, j, nodes.node_position(global_index));
 				}
 
-				b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { poly_fem::autogen::p_basis_value_2d     (discr_order, j, uv, val); });
-				b.bases[j].set_grad ([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { poly_fem::autogen::p_grad_basis_value_2d(discr_order, j, uv, val); });
+				b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::p_basis_value_2d     (discr_order, j, uv, val); });
+				b.bases[j].set_grad ([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::p_grad_basis_value_2d(discr_order, j, uv, val); });
 			}
 		}
 		else {

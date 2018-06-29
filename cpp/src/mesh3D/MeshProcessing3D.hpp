@@ -4,7 +4,7 @@
 #include <iostream>
 #include <fstream>
 
-namespace poly_fem{
+namespace polyfem{
 	namespace MeshProcessing3D{
 #define Jacobian_Precision 1.e-7
 		const int hex_face_table[6][4] =
@@ -57,5 +57,5 @@ namespace poly_fem{
 		void  orient_volume_mesh(Mesh3DStorage &hmi);
 		void ele_subdivison_levels(const Mesh3DStorage &hmi, std::vector<int> & Ls);
 	} // namespace Navigation3D
-} // namespace poly_fem
+} // namespace polyfem
 

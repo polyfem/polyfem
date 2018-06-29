@@ -15,7 +15,7 @@
 #include <cassert>
 #include <array>
 
-namespace poly_fem
+namespace polyfem
 {
 	void Mesh2D::refine(const int n_refinement, const double t, std::vector<int> &parent_nodes)
 	{
@@ -300,12 +300,12 @@ namespace poly_fem
 	void Mesh2D::compute_elements_tag()
 	{
 		elements_tag_.clear();
-		poly_fem::compute_element_tags(mesh_, elements_tag_);
+		polyfem::compute_element_tags(mesh_, elements_tag_);
 	}
 
 	void Mesh2D::update_elements_tag()
 	{
-		poly_fem::compute_element_tags(mesh_, elements_tag_);
+		polyfem::compute_element_tags(mesh_, elements_tag_);
 	}
 
 	RowVectorNd Mesh2D::edge_barycenter(const int index) const

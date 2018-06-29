@@ -11,7 +11,7 @@
 #include <vector>
 #include <map>
 
-namespace poly_fem
+namespace polyfem
 {
 	class SplineBasis2d
 	{

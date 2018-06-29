@@ -1,7 +1,7 @@
 #include <polyfem/InterpolatedFunction.hpp>
 
 
-namespace poly_fem
+namespace polyfem
 {
 	InterpolatedFunction2d::InterpolatedFunction2d(const Eigen::MatrixXd &fun, const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris)
 	{

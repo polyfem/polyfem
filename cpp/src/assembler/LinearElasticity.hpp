@@ -11,7 +11,7 @@
 #include <functional>
 
 
-namespace poly_fem
+namespace polyfem
 {
 	class LinearElasticity
 	{

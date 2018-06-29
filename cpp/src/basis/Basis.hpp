@@ -9,7 +9,7 @@
 
 #include <vector>
 
-namespace poly_fem
+namespace polyfem
 {
 	///
 	/// @brief      Represents a virtual node of the FEM mesh as a weighted sum

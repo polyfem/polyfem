@@ -4,7 +4,7 @@
 #include <vector>
 
 
-namespace poly_fem
+namespace polyfem
 {
 
 ///
@@ -66,4 +66,4 @@ int is_inside(const Eigen::MatrixXd &IV, const Eigen::MatrixXd &Q, std::vector<b
 ///
 void sample_polygon(const Eigen::MatrixXd &IV, int num_samples, Eigen::MatrixXd &S);
 
-} // namespace poly_fem
+} // namespace polyfem

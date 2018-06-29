@@ -7,8 +7,8 @@
 #include <cassert>
 #include "Eigen/Dense"
 
-using namespace poly_fem::MeshProcessing3D;
-using namespace poly_fem;
+using namespace polyfem::MeshProcessing3D;
+using namespace polyfem;
 using namespace std;
 using namespace Eigen;
 

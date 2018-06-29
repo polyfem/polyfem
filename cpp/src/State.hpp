@@ -18,7 +18,7 @@
 #include <memory>
 #include <string>
 
-namespace poly_fem
+namespace polyfem
 {
 	class State
 	{

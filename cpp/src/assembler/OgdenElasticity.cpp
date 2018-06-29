@@ -10,7 +10,7 @@
 #include <igl/Timer.h>
 
 
-namespace poly_fem
+namespace polyfem
 {
 	namespace
 	{
@@ -87,7 +87,7 @@ namespace poly_fem
 
 		const int n_bases = vals.basis_values.size();
 
-		return poly_fem::gradient_from_energy(size(), n_bases, vals, displacement, da,
+		return polyfem::gradient_from_energy(size(), n_bases, vals, displacement, da,
 			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 6, 1>>>(vals, displacement, da); },
 			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 8, 1>>>(vals, displacement, da); },
 			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 12, 1>>>(vals, displacement, da); },
@@ -108,7 +108,7 @@ namespace poly_fem
 		// igl::Timer time; time.start();
 
 		const int n_bases = vals.basis_values.size();
-		return poly_fem::hessian_from_energy(size(), n_bases, vals, displacement, da,
+		return polyfem::hessian_from_energy(size(), n_bases, vals, displacement, da,
 			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 6, 1>, Eigen::Matrix<double, 6, 6>>>(vals, displacement, da); },
 			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 8, 1>, Eigen::Matrix<double, 8, 8>>>(vals, displacement, da); },
 			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 12, 1>, Eigen::Matrix<double, 12, 12>>>(vals, displacement, da); },
@@ -293,7 +293,7 @@ namespace poly_fem
 			else
 				assert(false);
 
-			const T J = poly_fem::determinant(def_grad);
+			const T J = polyfem::determinant(def_grad);
 			const T Jdenom = pow(J, -1./size());
 
 			for(long i = 0; i < eigs.size(); ++i)

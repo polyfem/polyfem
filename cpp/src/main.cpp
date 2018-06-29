@@ -9,7 +9,7 @@
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
 
-using namespace poly_fem;
+using namespace polyfem;
 using namespace Eigen;
 
 

@@ -7,7 +7,7 @@
 
 #include <unsupported/Eigen/SparseExtra>
 
-namespace poly_fem
+namespace polyfem
 {
 	NLProblem::NLProblem(const RhsAssembler &rhs_assembler, const double t, const int full_size, const int reduced_size)
 	: assembler(AssemblerUtils::instance()), rhs_assembler(rhs_assembler),

@@ -5,7 +5,7 @@
 
 #include <polyfem/auto_rhs.hpp>
 
-namespace poly_fem
+namespace polyfem
 {
 
 	namespace

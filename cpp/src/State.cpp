@@ -64,7 +64,7 @@ DECLARE_DIFFSCALAR_BASE();
 using namespace Eigen;
 
 
-namespace poly_fem
+namespace polyfem
 {
 	namespace
 	{

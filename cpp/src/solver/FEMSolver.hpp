@@ -8,7 +8,7 @@
 #include <memory>
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace poly_fem {
+namespace polyfem {
 
 ///
 /// @brief         { Solve a linear system Ax = b with Dirichlet boundary
@@ -34,4 +34,4 @@ namespace poly_fem {
 void dirichlet_solve(LinearSolver &solver, Eigen::SparseMatrix<double> &A,
 	Eigen::VectorXd &b, const std::vector<int> &dirichlet_nodes, Eigen::VectorXd &x, const std::string &save_path = "");
 
-} // namespace poly_fem
+} // namespace polyfem

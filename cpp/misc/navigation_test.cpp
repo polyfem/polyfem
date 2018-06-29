@@ -19,7 +19,7 @@
 namespace {
 	using namespace std;
 	using namespace GEO;
-	using namespace poly_fem;
+	using namespace polyfem;
 
 	Navigation::Index idx_;
 
@@ -58,7 +58,7 @@ namespace {
 			}
 			SimpleMeshApplication::load(filename);
 			mesh_.vertices.set_double_precision();
-			poly_fem::orient_normals_2d(mesh_);
+			polyfem::orient_normals_2d(mesh_);
 			mesh_.vertices.set_single_precision();
 
 			// Compute mesh connectivity
@@ -68,7 +68,7 @@ namespace {
 			idx_ = Navigation::get_index_from_face(mesh_, 0, 0);
 
 			// Compute singularities
-			poly_fem::singularity_graph(mesh_, singular_vertices_, singular_edges_);
+			polyfem::singularity_graph(mesh_, singular_vertices_, singular_edges_);
 
 			// Compute element types
 			compute_types();
@@ -78,7 +78,7 @@ namespace {
 
 		void compute_types() {
 			std::vector<ElementType> tags;
-			poly_fem::compute_element_tags(mesh_, tags);
+			polyfem::compute_element_tags(mesh_, tags);
 			GEO::Attribute<int> attrs(mesh_.facets.attributes(), "tags");
 			for (index_t f = 0; f < mesh_.facets.nb(); ++f) {
 				switch (tags[f]) {
@@ -108,7 +108,7 @@ namespace {
 					IV.row(lv) << p[0], p[1];
 				}
 				Eigen::MatrixXd OV;
-				poly_fem::compute_visibility_kernel(IV, OV);
+				polyfem::compute_visibility_kernel(IV, OV);
 				mesh_.clear();
 				GEO::vector<index_t> poly;
 				// std::cout << OV << std::endl;
@@ -149,9 +149,9 @@ namespace {
 			ImGui::Separator();
 
 			if (ImGui::Button("Kill Singularities", ImVec2(-1, 0))) {
-				poly_fem::create_patch_around_singularities(mesh_, singular_vertices_, singular_edges_);
+				polyfem::create_patch_around_singularities(mesh_, singular_vertices_, singular_edges_);
 				Navigation::prepare_mesh(mesh_);
-				poly_fem::singularity_graph(mesh_, singular_vertices_, singular_edges_);
+				polyfem::singularity_graph(mesh_, singular_vertices_, singular_edges_);
 				compute_types();
 				GEO::mesh_save(mesh_, "foo.obj");
 			}
@@ -164,16 +164,16 @@ namespace {
 			if (ImGui::Button("Refine", ImVec2(-1, 0))) {
 				GEO::Mesh tmp;
 				if (split_polygons == false) {
-					poly_fem::refine_polygonal_mesh(mesh_, tmp, poly_fem::Polygons::no_split_func());
+					polyfem::refine_polygonal_mesh(mesh_, tmp, polyfem::Polygons::no_split_func());
 				} else if (force_quad_ring) {
-					poly_fem::refine_polygonal_mesh(mesh_, tmp, poly_fem::Polygons::catmul_clark_split_func());
+					polyfem::refine_polygonal_mesh(mesh_, tmp, polyfem::Polygons::catmul_clark_split_func());
 				} else {
-					poly_fem::refine_polygonal_mesh(mesh_, tmp, poly_fem::Polygons::polar_split_func(t_));
+					polyfem::refine_polygonal_mesh(mesh_, tmp, polyfem::Polygons::polar_split_func(t_));
 				}
 				mesh_.copy(tmp);
 				// std::cout << mesh_.vertices.nb() << std::endl;
 				Navigation::prepare_mesh(mesh_);
-				poly_fem::singularity_graph(mesh_, singular_vertices_, singular_edges_);
+				polyfem::singularity_graph(mesh_, singular_vertices_, singular_edges_);
 				compute_types();
 				idx_ = Navigation::get_index_from_face(mesh_, 0, 0);
 				// GEO::mesh_save(mesh_, "foo.obj");
@@ -183,7 +183,7 @@ namespace {
 			if (ImGui::Button("Visibility Kernel", ImVec2(-1, 0))) {
 				compute_visibility_kernel();
 				Navigation::prepare_mesh(mesh_);
-				poly_fem::singularity_graph(mesh_, singular_vertices_, singular_edges_);
+				polyfem::singularity_graph(mesh_, singular_vertices_, singular_edges_);
 				compute_types();
 				idx_ = Navigation::get_index_from_face(mesh_, 0, 0);
 			}

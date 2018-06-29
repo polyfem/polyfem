@@ -4,7 +4,7 @@
 #include <array>
 #include <cassert>
 
-namespace poly_fem
+namespace polyfem
 {
 	enum class BoundaryType
 	{

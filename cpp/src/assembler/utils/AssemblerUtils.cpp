@@ -1,6 +1,6 @@
 #include <polyfem/AssemblerUtils.hpp>
 
-namespace poly_fem
+namespace polyfem
 {
 	AssemblerUtils &AssemblerUtils::instance()
 	{

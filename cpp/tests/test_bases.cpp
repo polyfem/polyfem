@@ -10,7 +10,7 @@
 #include <iostream>
 ////////////////////////////////////////////////////////////////////////////////
 
-using namespace poly_fem;
+using namespace polyfem;
 
 
 TEST_CASE("P1_2d", "[bases]") {
@@ -20,14 +20,14 @@ TEST_CASE("P1_2d", "[bases]") {
 
 	Eigen::MatrixXd expected, val;
 	for(int i = 0; i < 3; ++i){
-		poly_fem::FEBasis2d::linear_tri_basis_value(i, quad.points, expected);
-		poly_fem::autogen::p_basis_value_2d(1, i, quad.points, val);
+		polyfem::FEBasis2d::linear_tri_basis_value(i, quad.points, expected);
+		polyfem::autogen::p_basis_value_2d(1, i, quad.points, val);
 
 		for(int j = 0; j < val.size(); ++j)
 			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
 
-		poly_fem::FEBasis2d::linear_tri_basis_grad(i, quad.points, expected);
-		poly_fem::autogen::p_grad_basis_value_2d(1, i, quad.points, val);
+		polyfem::FEBasis2d::linear_tri_basis_grad(i, quad.points, expected);
+		polyfem::autogen::p_grad_basis_value_2d(1, i, quad.points, val);
 
 		for(int j = 0; j < val.size(); ++j)
 			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
@@ -42,14 +42,14 @@ TEST_CASE("P2_2d", "[bases]") {
 
 	Eigen::MatrixXd expected, val;
 	for(int i = 0; i < 6; ++i){
-		poly_fem::FEBasis2d::quadr_tri_basis_value(i, quad.points, expected);
-		poly_fem::autogen::p_basis_value_2d(2, i, quad.points, val);
+		polyfem::FEBasis2d::quadr_tri_basis_value(i, quad.points, expected);
+		polyfem::autogen::p_basis_value_2d(2, i, quad.points, val);
 
 		for(int j = 0; j < val.size(); ++j)
 			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
 
-		poly_fem::FEBasis2d::quadr_tri_basis_grad(i, quad.points, expected);
-		poly_fem::autogen::p_grad_basis_value_2d(2, i, quad.points, val);
+		polyfem::FEBasis2d::quadr_tri_basis_grad(i, quad.points, expected);
+		polyfem::autogen::p_grad_basis_value_2d(2, i, quad.points, val);
 
 		for(int j = 0; j < val.size(); ++j)
 			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
@@ -64,14 +64,14 @@ TEST_CASE("P1_3d", "[bases]") {
 
 	Eigen::MatrixXd expected, val;
 	for(int i = 0; i < 4; ++i){
-		poly_fem::FEBasis3d::linear_tet_basis_value(i, quad.points, expected);
-		poly_fem::autogen::p_basis_value_3d(1, i, quad.points, val);
+		polyfem::FEBasis3d::linear_tet_basis_value(i, quad.points, expected);
+		polyfem::autogen::p_basis_value_3d(1, i, quad.points, val);
 
 		for(int j = 0; j < val.size(); ++j)
 			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
 
-		poly_fem::FEBasis3d::linear_tet_basis_grad(i, quad.points, expected);
-		poly_fem::autogen::p_grad_basis_value_3d(1, i, quad.points, val);
+		polyfem::FEBasis3d::linear_tet_basis_grad(i, quad.points, expected);
+		polyfem::autogen::p_grad_basis_value_3d(1, i, quad.points, val);
 
 		for(int j = 0; j < val.size(); ++j)
 			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
@@ -86,14 +86,14 @@ TEST_CASE("P2_3d", "[bases]") {
 
 	Eigen::MatrixXd expected, val;
 	for(int i = 0; i < 10; ++i){
-		poly_fem::FEBasis3d::quadr_tet_basis_value(i, quad.points, expected);
-		poly_fem::autogen::p_basis_value_3d(2, i, quad.points, val);
+		polyfem::FEBasis3d::quadr_tet_basis_value(i, quad.points, expected);
+		polyfem::autogen::p_basis_value_3d(2, i, quad.points, val);
 
 		for(int j = 0; j < val.size(); ++j)
 			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
 
-		poly_fem::FEBasis3d::quadr_tet_basis_grad(i, quad.points, expected);
-		poly_fem::autogen::p_grad_basis_value_3d(2, i, quad.points, val);
+		polyfem::FEBasis3d::quadr_tet_basis_grad(i, quad.points, expected);
+		polyfem::autogen::p_grad_basis_value_3d(2, i, quad.points, val);
 
 		for(int j = 0; j < val.size(); ++j)
 			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
@@ -118,7 +118,7 @@ TEST_CASE("P3_2d", "[bases]") {
 	Eigen::MatrixXd val;
 
 	for(int i = 0; i < pts.rows(); ++i){
-		poly_fem::autogen::p_basis_value_2d(3, i, pts, val);
+		polyfem::autogen::p_basis_value_2d(3, i, pts, val);
 
 		// std::cout<<i<<"\n"<<val<<"\n\n\n"<<std::endl;
 
@@ -134,13 +134,13 @@ TEST_CASE("P3_2d", "[bases]") {
 TEST_CASE("Pk_2d", "[bases]") {
 
 	Eigen::MatrixXd pts;
-	for(int k = 1; k < poly_fem::autogen::MAX_P_BASES; ++k)
+	for(int k = 1; k < polyfem::autogen::MAX_P_BASES; ++k)
 	{
-		poly_fem::autogen::p_nodes_2d(k, pts);
+		polyfem::autogen::p_nodes_2d(k, pts);
 
 		Eigen::MatrixXd val;
 		for(int i = 0; i < pts.rows(); ++i){
-			poly_fem::autogen::p_basis_value_2d(k, i, pts, val);
+			polyfem::autogen::p_basis_value_2d(k, i, pts, val);
 
 		// std::cout<<i<<"\n"<<val<<"\n\n\n"<<std::endl;
 
@@ -156,13 +156,13 @@ TEST_CASE("Pk_2d", "[bases]") {
 
 TEST_CASE("Pk_3d", "[bases]") {
 	Eigen::MatrixXd pts;
-	for(int k = 1; k < poly_fem::autogen::MAX_P_BASES; ++k)
+	for(int k = 1; k < polyfem::autogen::MAX_P_BASES; ++k)
 	{
-		poly_fem::autogen::p_nodes_3d(k, pts);
+		polyfem::autogen::p_nodes_3d(k, pts);
 
 		Eigen::MatrixXd val;
 		for(int i = 0; i < pts.rows(); ++i){
-			poly_fem::autogen::p_basis_value_3d(k, i, pts, val);
+			polyfem::autogen::p_basis_value_3d(k, i, pts, val);
 
 		// std::cout<<i<<"\n"<<val<<"\n\n\n"<<std::endl;
 

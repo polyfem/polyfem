@@ -9,7 +9,7 @@
 #include <map>
 
 
-namespace poly_fem
+namespace polyfem
 {
 	class UIState : public igl::opengl::glfw::imgui::ImGuiMenu
 	{

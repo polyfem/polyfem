@@ -4,7 +4,7 @@
 #include <cassert>
 #include <cmath>
 
-namespace poly_fem
+namespace polyfem
 {
 	namespace 
 	{

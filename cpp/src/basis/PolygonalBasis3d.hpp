@@ -10,7 +10,7 @@
 #include <map>
 
 
-namespace poly_fem
+namespace polyfem
 {
 
 	class PolygonalBasis3d

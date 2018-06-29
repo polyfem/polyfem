@@ -3,7 +3,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
-namespace poly_fem {
+namespace polyfem {
 
 	// Show some stats about the matrix M: det, singular values, condition number, etc
 	void show_matrix_stats(const Eigen::MatrixXd &M);
@@ -30,4 +30,4 @@ namespace poly_fem {
 
 	Eigen::Vector4d compute_specturm(const Eigen::SparseMatrix<double> &mat);
 
-} // namespace poly_fem
+} // namespace polyfem

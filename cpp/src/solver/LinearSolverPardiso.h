@@ -17,7 +17,7 @@
 // - OMP_NUM_THREADS: number of threads
 // - PARDISO_LIC_PATH: path to the folder containing the license file
 
-namespace poly_fem {
+namespace polyfem {
 
 class LinearSolverPardiso : public LinearSolver {
 
@@ -114,6 +114,6 @@ protected:
 	int numUniqueElements;
 };
 
-} // namespace poly_fem
+} // namespace polyfem
 
 #endif

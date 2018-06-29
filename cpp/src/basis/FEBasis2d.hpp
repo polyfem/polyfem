@@ -11,7 +11,7 @@
 #include <Eigen/Dense>
 #include <vector>
 
-namespace poly_fem
+namespace polyfem
 {
 	class FEBasis2d
 	{
@@ -115,7 +115,7 @@ namespace poly_fem
 			const Eigen::MatrixXd &xne, Eigen::MatrixXd &val);
 
 
-		static std::vector<int> tri_local_to_global(const int p, const Mesh2D &mesh, int f, const Eigen::VectorXi &discr_order, poly_fem::MeshNodes &nodes);
+		static std::vector<int> tri_local_to_global(const int p, const Mesh2D &mesh, int f, const Eigen::VectorXi &discr_order, polyfem::MeshNodes &nodes);
 		static Eigen::VectorXi tri_edge_local_nodes(const int p, const Mesh2D &mesh, Navigation::Index index);
 
 		static void linear_tri_basis_value(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);

@@ -11,7 +11,7 @@
 #include <fstream>
 #include <vector>
 
-void poly_fem::show_matrix_stats(const Eigen::MatrixXd &M) {
+void polyfem::show_matrix_stats(const Eigen::MatrixXd &M) {
 	Eigen::FullPivLU<Eigen::MatrixXd> lu(M);
 	Eigen::JacobiSVD<Eigen::MatrixXd> svd(M);
 	double s1 = svd.singularValues()(0);
@@ -27,7 +27,7 @@ void poly_fem::show_matrix_stats(const Eigen::MatrixXd &M) {
 	std::cout << lu.solve(M) << std::endl;
 }
 
-Eigen::Vector4d poly_fem::compute_specturm(const Eigen::SparseMatrix<double> &mat)
+Eigen::Vector4d polyfem::compute_specturm(const Eigen::SparseMatrix<double> &mat)
 {
 	typedef Spectra::SparseSymMatProd<double> MatOp;
 	typedef Spectra::SparseSymShiftSolve<double> InvMatOp;
@@ -62,7 +62,7 @@ Eigen::Vector4d poly_fem::compute_specturm(const Eigen::SparseMatrix<double> &ma
 
 
 template<typename T>
-void poly_fem::read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat)
+void polyfem::read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat)
 {
 	std::fstream file;
 	file.open(path.c_str());
@@ -97,6 +97,6 @@ void poly_fem::read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dyna
 }
 
 //template instantiation
-template void poly_fem::read_matrix<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
-template void poly_fem::read_matrix<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
+template void polyfem::read_matrix<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
+template void polyfem::read_matrix<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
 

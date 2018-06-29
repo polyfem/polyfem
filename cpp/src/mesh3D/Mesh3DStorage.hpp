@@ -5,7 +5,7 @@
 #include <Eigen/Dense>
 using namespace Eigen;
 
-namespace poly_fem
+namespace polyfem
 {
 	struct Vertex
 	{
