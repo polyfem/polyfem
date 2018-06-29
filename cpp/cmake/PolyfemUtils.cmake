@@ -20,22 +20,23 @@ endfunction()
 # Autogen helper function
 function(polyfem_autogen MAIN_TARGET PYTHON_SCRIPT OUTPUT_BASE)
 	find_package(PythonInterp 3 REQUIRED)
+
 	add_custom_command(
 		OUTPUT
-			${CMAKE_CURRENT_SOURCE_DIR}/${OUTPUT_BASE}.cpp
-			${CMAKE_CURRENT_SOURCE_DIR}/${OUTPUT_BASE}.hpp
+			${PROJECT_SOURCE_DIR}/src/autogen/${OUTPUT_BASE}.cpp
+			${PROJECT_SOURCE_DIR}/src/autogen/${OUTPUT_BASE}.hpp
 		COMMAND
-			${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${PYTHON_SCRIPT} ${CMAKE_CURRENT_SOURCE_DIR}
+			${PYTHON_EXECUTABLE} ${PROJECT_SOURCE_DIR}/src/autogen/${PYTHON_SCRIPT} ${PROJECT_SOURCE_DIR}/src/autogen/
 		DEPENDS
-			${CMAKE_CURRENT_SOURCE_DIR}/${PYTHON_SCRIPT}
+			${PROJECT_SOURCE_DIR}/src/autogen/${PYTHON_SCRIPT}
 	)
 
 	add_custom_target(
 		autogen_${OUTPUT_BASE}
 		COMMAND
-			${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/${OUTPUT_BASE}.hpp ${PROJECT_BINARY_DIR}/include/polyfem/
+			${CMAKE_COMMAND} -E copy_if_different ${PROJECT_SOURCE_DIR}/src/autogen/${OUTPUT_BASE}.hpp ${PROJECT_BINARY_DIR}/include/polyfem/
 		DEPENDS
-			${CMAKE_CURRENT_SOURCE_DIR}/${OUTPUT_BASE}.hpp
+			${PROJECT_SOURCE_DIR}/src/autogen/${OUTPUT_BASE}.hpp
 	)
 
 	add_dependencies(${MAIN_TARGET} autogen_${OUTPUT_BASE})

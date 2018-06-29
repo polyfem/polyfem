@@ -102,6 +102,11 @@ endif()
 # add_library() can only be called without any source since CMake 3.11 ...
 add_library(polyfem src/State.cpp)
 
+# Must be call in the same "CMakeLists.txt" where add_library(polyfem ...) is called
+polyfem_autogen(polyfem eigs.py auto_eigs)
+polyfem_autogen(polyfem FEBases.py auto_bases)
+polyfem_autogen(polyfem elasticity_rhs.py auto_rhs)
+
 # Public include directory for polyfem
 target_include_directories(polyfem PUBLIC ${PROJECT_BINARY_DIR}/include)
 
