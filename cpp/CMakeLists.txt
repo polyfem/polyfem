@@ -17,6 +17,12 @@ include(PrependCurrentPath)
 # Polyfem utils
 include(PolyfemUtils)
 
+# Extra warnings
+include(SetWarnings)
+
+# Use C++11/14
+include(CXXFeatures)
+
 # Sort projects inside the solution
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -90,22 +96,6 @@ if(ENABLE_PARDISO)
 endif()
 
 ################################################################################
-
-find_package(PythonInterp 3 REQUIRED)
-
-add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_rhs.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_rhs.hpp
-	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/elasticity_rhs.py ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/
-	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/elasticity_rhs.py)
-
-add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_eigs.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_eigs.hpp
-	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/eigs.py ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/
-	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/eigs.py)
-
-add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_bases.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/auto_bases.hpp
-	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/FEBases.py ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/
-	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/autogen/FEBases.py)
-
-################################################################################
 # Polyfem library
 ################################################################################
 
@@ -115,29 +105,14 @@ add_library(polyfem src/State.cpp)
 # Public include directory for polyfem
 target_include_directories(polyfem PUBLIC ${PROJECT_BINARY_DIR}/include)
 
-# This one should be removed
-target_include_directories(polyfem PUBLIC
-	src
-	src/autogen
-	src/assembler
-	src/assembler/utils
-	src/basis
-	src/basis/function
-	src/mesh
-	src/mesh2D
-	src/mesh3D
-	src/problem
-	src/quadrature
-	src/solver
-	src/utils
-	src/viewer
-)
-
-# Other sources
-add_subdirectory(src)
-
 set(MESH_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tests/")
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_MESH_PATH=\"${MESH_PATH}\")
+
+# Extra warnings
+target_compile_options(polyfem PUBLIC ${ALL_WARNINGS})
+
+# Use C++14
+target_compile_features(polyfem PUBLIC ${CXX14_FEATURES})
 
 # No limit yay
 target_compile_definitions(polyfem PUBLIC -DEIGEN_STACK_ALLOCATION_LIMIT=0)
@@ -148,6 +123,22 @@ target_compile_definitions(polyfem PUBLIC -DEIGEN_STACK_ALLOCATION_LIMIT=0)
 if("$ENV{CLUSTER}" STREQUAL "PRINCE")
 	target_compile_definitions(polyfem PUBLIC -DPOLYFEM_ON_HPC)
 endif()
+
+################################################################################
+# Polyfem binary
+################################################################################
+
+# Main executable
+add_executable(${PROJECT_NAME}_bin src/main.cpp)
+
+source_group("gui" FILES src/main.cpp)
+source_group("gui" FILES src/viewer/UIState.cpp)
+source_group("gui" FILES src/viewer/UIState.hpp)
+source_group("gui" FILES src/viewer/UIMenu.cpp)
+
+target_include_directories(${PROJECT_NAME}_bin PUBLIC src/viewer)
+target_link_libraries(${PROJECT_NAME}_bin PUBLIC igl::opengl_glfw_imgui igl::png polyfem tinyfiledialogs)
+target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
 
 ################################################################################
 # Required libraries
@@ -242,7 +233,7 @@ if(ENABLE_HYPRE)
 	# add_sanitizers(HYPRE)
 endif()
 
-#Rbf interpolation
+# Rbf interpolation
 include(rbf)
 if(TARGET RBF)
 	target_link_libraries(polyfem PUBLIC RBF)
@@ -342,40 +333,7 @@ if(ENABLE_SUPERLU AND NOT (ENABLE_MKL AND MKL_FOUND))
 endif()
 
 ################################################################################
-# Extra compilation options
-################################################################################
-
-# Extra warnings
-include(SetWarnings)
-target_compile_options(polyfem PUBLIC ${ALL_WARNINGS})
-
-# Use C++14
-include(CXXFeatures)
-target_compile_features(polyfem PUBLIC ${CXX14_FEATURES})
-
-################################################################################
-# Applications
-################################################################################
-
-# Main executable
-add_executable(${PROJECT_NAME}_bin
-	src/main.cpp
-	src/viewer/UIState.cpp
-	src/viewer/UIState.hpp
-	src/viewer/UIMenu.cpp
-)
-
-source_group("gui" FILES src/main.cpp)
-source_group("gui" FILES src/viewer/UIState.cpp)
-source_group("gui" FILES src/viewer/UIState.hpp)
-source_group("gui" FILES src/viewer/UIMenu.cpp)
-
-target_include_directories(${PROJECT_NAME}_bin PUBLIC src/viewer)
-target_link_libraries(${PROJECT_NAME}_bin PUBLIC igl::opengl_glfw_imgui igl::png polyfem tinyfiledialogs)
-target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
-
-################################################################################
-# Miscellaneous
+# Clutter management
 ################################################################################
 
 set_target_properties(igl_triangle PROPERTIES FOLDER 3rdparty/igl)
@@ -401,8 +359,11 @@ set_target_properties(geogram PROPERTIES FOLDER 3rdparty/other)
 set_target_properties(polyclipping PROPERTIES FOLDER 3rdparty/other)
 
 ################################################################################
-# Extras
+# Subdirectories
 ################################################################################
+
+# Other sources
+add_subdirectory(src)
 
 # Compile extras only if this is a top-level project
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ProblemWithSolution.hpp"
+#include <polyfem/ProblemWithSolution.hpp>
 
 #include <vector>
 #include <Eigen/Dense>

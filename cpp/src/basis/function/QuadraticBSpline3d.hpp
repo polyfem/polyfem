@@ -1,7 +1,7 @@
 #ifndef QUADRATIC_B_SPLINE_3D_HPP
 #define QUADRATIC_B_SPLINE_3D_HPP
 
-#include "QuadraticBSpline.hpp"
+#include <polyfem/QuadraticBSpline.hpp>
 
 #include <array>
 #include <cassert>

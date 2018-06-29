@@ -1,9 +1,9 @@
 #ifndef MESH_HPP
 #define MESH_HPP
 
-#include "Common.hpp"
-#include "Navigation.hpp"
-#include "Types.hpp"
+#include <polyfem/Common.hpp>
+#include <polyfem/Navigation.hpp>
+#include <polyfem/Types.hpp>
 
 #include <Eigen/Dense>
 #include <geogram/mesh/mesh.h>

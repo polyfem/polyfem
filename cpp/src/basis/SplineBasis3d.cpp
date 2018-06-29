@@ -1,15 +1,15 @@
-#include "SplineBasis3d.hpp"
+#include <polyfem/SplineBasis3d.hpp>
 
-#include "QuadraticBSpline3d.hpp"
-#include "HexQuadrature.hpp"
+#include <polyfem/QuadraticBSpline3d.hpp>
+#include <polyfem/HexQuadrature.hpp>
 
 
-#include "LinearSolver.hpp"
-#include "MeshNodes.hpp"
-#include "FEBasis3d.hpp"
-#include "Types.hpp"
+#include <polyfem/LinearSolver.hpp>
+#include <polyfem/MeshNodes.hpp>
+#include <polyfem/FEBasis3d.hpp>
+#include <polyfem/Types.hpp>
 
-#include "Common.hpp"
+#include <polyfem/Common.hpp>
 
 #include <Eigen/Sparse>
 
@@ -23,7 +23,7 @@
 
 //TODO carefull with simplices
 
-// #include "UIState.hpp"
+// #include <polyfem/UIState.hpp>
 
 namespace poly_fem
 {

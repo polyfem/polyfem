@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Common.hpp"
+#include <polyfem/Common.hpp>
 
 #include <tinyexpr.h>
 

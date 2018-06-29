@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "UIState.hpp"
-#include "LinearSolver.hpp"
-#include "StringUtils.hpp"
-#include "Mesh3D.hpp"
-#include "AssemblerUtils.hpp"
+#include <polyfem/LinearSolver.hpp>
+#include <polyfem/StringUtils.hpp>
+#include <polyfem/Mesh3D.hpp>
+#include <polyfem/AssemblerUtils.hpp>
 
 #include <igl/colormap.h>
 #include <igl/png/writePNG.h>

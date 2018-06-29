@@ -1,7 +1,7 @@
-#include "ProblemWithSolution.hpp"
+#include <polyfem/ProblemWithSolution.hpp>
 
 
-#include "AssemblerUtils.hpp"
+#include <polyfem/AssemblerUtils.hpp>
 
 namespace poly_fem
 {

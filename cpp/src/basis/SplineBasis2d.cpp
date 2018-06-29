@@ -1,14 +1,14 @@
-#include "SplineBasis2d.hpp"
+#include <polyfem/SplineBasis2d.hpp>
 
-#include "QuadraticBSpline2d.hpp"
-#include "QuadQuadrature.hpp"
-#include "MeshNodes.hpp"
+#include <polyfem/QuadraticBSpline2d.hpp>
+#include <polyfem/QuadQuadrature.hpp>
+#include <polyfem/MeshNodes.hpp>
 
-#include "LinearSolver.hpp"
-#include "FEBasis2d.hpp"
-#include "Types.hpp"
+#include <polyfem/LinearSolver.hpp>
+#include <polyfem/FEBasis2d.hpp>
+#include <polyfem/Types.hpp>
 
-#include "Common.hpp"
+#include <polyfem/Common.hpp>
 
 #include <Eigen/Sparse>
 

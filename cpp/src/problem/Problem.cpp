@@ -1,12 +1,12 @@
-#include "Problem.hpp"
+#include <polyfem/Problem.hpp>
 
-#include "MiscProblem.hpp"
-#include "FrankeProblem.hpp"
-#include "ElasticProblem.hpp"
-#include "PointBasedProblem.hpp"
-#include "GenericProblem.hpp"
-#include "KernelProblem.hpp"
-#include "TestProblem.hpp"
+#include <polyfem/MiscProblem.hpp>
+#include <polyfem/FrankeProblem.hpp>
+#include <polyfem/ElasticProblem.hpp>
+#include <polyfem/PointBasedProblem.hpp>
+#include <polyfem/GenericProblem.hpp>
+#include <polyfem/KernelProblem.hpp>
+#include <polyfem/TestProblem.hpp>
 
 #include <memory>
 #include <iostream>

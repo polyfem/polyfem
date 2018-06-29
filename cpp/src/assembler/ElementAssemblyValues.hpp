@@ -1,8 +1,8 @@
 #ifndef ELEMENT_ASSEMBLY_VALUES
 #define ELEMENT_ASSEMBLY_VALUES
 
-#include "AssemblyValues.hpp"
-#include "ElementBases.hpp"
+#include <polyfem/AssemblyValues.hpp>
+#include <polyfem/ElementBases.hpp>
 
 #include <vector>
 

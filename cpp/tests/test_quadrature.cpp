@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include "LineQuadrature.hpp"
-#include "TriQuadrature.hpp"
-#include "TetQuadrature.hpp"
+#include <polyfem/LineQuadrature.hpp>
+#include <polyfem/TriQuadrature.hpp>
+#include <polyfem/TetQuadrature.hpp>
 #include <iostream>
 #include <cmath>
 #include <Eigen/Dense>

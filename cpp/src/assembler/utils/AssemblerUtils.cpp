@@ -1,4 +1,4 @@
-#include "AssemblerUtils.hpp"
+#include <polyfem/AssemblerUtils.hpp>
 
 namespace poly_fem
 {

@@ -3,8 +3,8 @@
 #ifdef POLYFEM_WITH_PARDISO
 
 ////////////////////////////////////////////////////////////////////////////////
-#include "Common.hpp"
-#include "LinearSolver.hpp"
+#include <polyfem/Common.hpp>
+#include <polyfem/LinearSolver.hpp>
 #include <vector>
 #include <Eigen/Core>
 #include <Eigen/Sparse>

@@ -1,10 +1,10 @@
 #ifndef POLYGONAL_BASIS_HPP
 #define POLYGONAL_BASIS_HPP
 
-#include "Mesh2D.hpp"
-#include "ElementBases.hpp"
-#include "ElementAssemblyValues.hpp"
-#include "InterfaceData.hpp"
+#include <polyfem/Mesh2D.hpp>
+#include <polyfem/ElementBases.hpp>
+#include <polyfem/ElementAssemblyValues.hpp>
+#include <polyfem/InterfaceData.hpp>
 
 #include <Eigen/Dense>
 #include <vector>

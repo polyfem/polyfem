@@ -1,10 +1,10 @@
 #pragma once
 
 
-#include "ElementAssemblyValues.hpp"
-#include "ElementBases.hpp"
-#include "AutodiffTypes.hpp"
-#include "Types.hpp"
+#include <polyfem/ElementAssemblyValues.hpp>
+#include <polyfem/ElementBases.hpp>
+#include <polyfem/AutodiffTypes.hpp>
+#include <polyfem/Types.hpp>
 
 #include <Eigen/Dense>
 #include <vector>

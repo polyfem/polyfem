@@ -1,10 +1,10 @@
 #ifndef SPLINE_BASIS_3D_HPP
 #define SPLINE_BASIS_3D_HPP
 
-#include "Mesh3D.hpp"
-#include "ElementBases.hpp"
-#include "LocalBoundary.hpp"
-#include "InterfaceData.hpp"
+#include <polyfem/Mesh3D.hpp>
+#include <polyfem/ElementBases.hpp>
+#include <polyfem/LocalBoundary.hpp>
+#include <polyfem/InterfaceData.hpp>
 
 #include <Eigen/Dense>
 #include <vector>

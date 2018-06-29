@@ -1,9 +1,9 @@
-#include "NLProblem.hpp"
+#include <polyfem/NLProblem.hpp>
 
-#include "LinearSolver.hpp"
-#include "FEMSolver.hpp"
+#include <polyfem/LinearSolver.hpp>
+#include <polyfem/FEMSolver.hpp>
 
-#include "Types.hpp"
+#include <polyfem/Types.hpp>
 
 #include <unsupported/Eigen/SparseExtra>
 

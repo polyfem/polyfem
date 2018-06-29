@@ -1,9 +1,9 @@
 #ifndef ASSEMBLER_HPP
 #define ASSEMBLER_HPP
 
-#include "ElementAssemblyValues.hpp"
+#include <polyfem/ElementAssemblyValues.hpp>
 
-#include "Problem.hpp"
+#include <polyfem/Problem.hpp>
 
 #include <Eigen/Sparse>
 #include <vector>

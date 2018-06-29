@@ -1,4 +1,4 @@
-#include "ElementAssemblyValues.hpp"
+#include <polyfem/ElementAssemblyValues.hpp>
 #include <igl/Timer.h>
 #include <memory>
 

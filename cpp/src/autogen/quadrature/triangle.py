@@ -168,7 +168,7 @@ def main():
         selected.append((order, scheme))
     code = generate_cpp(selected)
     # print(code)
-    with open('../auto_triangle.cpp', 'w') as f:
+    with open('../auto_triangle.ipp', 'w') as f:
         f.write(code)
 
 

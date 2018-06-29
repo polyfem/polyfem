@@ -1,7 +1,12 @@
 set(SOURCES
 	FEMSolver.cpp
+	FEMSolver.hpp
 	LinearSolver.cpp
+	LinearSolver.hpp
+	LinearSolverEigen.h
+	LinearSolverEigen.hpp
 	LinearSolverHypre.cpp
+	LinearSolverHypre.hpp
 	LinearSolverPardiso.cpp
 	NLProblem.cpp
 	NLProblem.hpp

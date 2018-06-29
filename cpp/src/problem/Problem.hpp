@@ -1,11 +1,11 @@
 #ifndef PROBLEM_HPP
 #define PROBLEM_HPP
 
-#include "ElementBases.hpp"
-#include "LocalBoundary.hpp"
-#include "Mesh.hpp"
+#include <polyfem/ElementBases.hpp>
+#include <polyfem/LocalBoundary.hpp>
+#include <polyfem/Mesh.hpp>
 
-#include "Common.hpp"
+#include <polyfem/Common.hpp>
 
 #include <vector>
 #include <Eigen/Dense>

@@ -1,7 +1,7 @@
-#include "KernelProblem.hpp"
-#include "AssemblerUtils.hpp"
+#include <polyfem/KernelProblem.hpp>
+#include <polyfem/AssemblerUtils.hpp>
 
-#include "UIState.hpp"
+#include <polyfem/UIState.hpp>
 
 #include <iostream>
 

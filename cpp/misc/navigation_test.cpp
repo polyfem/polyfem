@@ -1,10 +1,10 @@
 // A dummy GLUP application
 
-#include "Navigation.hpp"
-#include "MeshUtils.hpp"
-#include "PolygonUtils.hpp"
-#include "Singularities.hpp"
-#include "Refinement.hpp"
+#include <polyfem/Navigation.hpp>
+#include <polyfem/MeshUtils.hpp>
+#include <polyfem/PolygonUtils.hpp>
+#include <polyfem/Singularities.hpp>
+#include <polyfem/Refinement.hpp>
 #include <geogram/basic/file_system.h>
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>

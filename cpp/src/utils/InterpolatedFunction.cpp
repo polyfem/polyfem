@@ -1,4 +1,4 @@
-#include "InterpolatedFunction.hpp"
+#include <polyfem/InterpolatedFunction.hpp>
 
 
 namespace poly_fem

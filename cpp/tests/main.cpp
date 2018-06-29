@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #define CATCH_CONFIG_MAIN
-#include "catch.hpp"
+#include <catch.hpp>
 
-#include "autodiff.h"
+#include <polyfem/autodiff.h>
 DECLARE_DIFFSCALAR_BASE();

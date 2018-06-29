@@ -1,7 +1,7 @@
 #pragma once
 
 ////////////////////////////////////////////////////////////////////////////////
-#include "Common.hpp"
+#include <polyfem/Common.hpp>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <memory>

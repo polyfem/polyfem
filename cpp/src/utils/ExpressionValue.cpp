@@ -1,4 +1,4 @@
-#include "ExpressionValue.hpp"
+#include <polyfem/ExpressionValue.hpp>
 
 namespace poly_fem
 {

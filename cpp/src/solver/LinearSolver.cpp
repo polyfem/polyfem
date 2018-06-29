@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include "LinearSolver.hpp"
-#include "LinearSolverEigen.hpp"
+#include <polyfem/LinearSolver.hpp>
+#include <polyfem/LinearSolverEigen.hpp>
 // -----------------------------------------------------------------------------
 #include <Eigen/Sparse>
 #ifdef POLYFEM_WITH_CHOLMOD
@@ -19,7 +19,7 @@
 #include "LinearSolverPardiso.h"
 #endif
 #ifdef POLYFEM_WITH_HYPRE
-#include "LinearSolverHypre.hpp"
+#include <polyfem/LinearSolverHypre.hpp>
 #endif
 #include <unsupported/Eigen/IterativeSolvers>
 ////////////////////////////////////////////////////////////////////////////////

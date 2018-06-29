@@ -1,6 +1,6 @@
-#include "State.hpp"
+#include <polyfem/State.hpp>
 
-#include "CommandLine.hpp"
+#include <polyfem/CommandLine.hpp>
 
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>

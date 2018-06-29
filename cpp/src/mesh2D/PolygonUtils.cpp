@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include "PolygonUtils.hpp"
+#include <polyfem/PolygonUtils.hpp>
 #include <clipper/clipper.hpp>
 #include <geogram/numerics/predicates.h>
 #include <igl/barycenter.h>

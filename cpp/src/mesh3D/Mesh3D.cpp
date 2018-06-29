@@ -1,5 +1,5 @@
-#include "Mesh3D.hpp"
-#include "StringUtils.hpp"
+#include <polyfem/Mesh3D.hpp>
+#include <polyfem/StringUtils.hpp>
 
 #include <igl/copyleft/tetgen/tetrahedralize.h>
 #include <geogram/mesh/mesh_io.h>

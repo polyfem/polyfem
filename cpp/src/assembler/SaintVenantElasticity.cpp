@@ -1,9 +1,9 @@
 // #define EIGEN_STACK_ALLOCATION_LIMIT 0
 
-#include "SaintVenantElasticity.hpp"
+#include <polyfem/SaintVenantElasticity.hpp>
 
-#include "Basis.hpp"
-#include "auto_rhs.hpp"
+#include <polyfem/Basis.hpp>
+#include <polyfem/auto_rhs.hpp>
 
 #include <igl/Timer.h>
 

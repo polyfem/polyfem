@@ -1,4 +1,4 @@
-#include "MeshProcessing3D.hpp"
+#include <polyfem/MeshProcessing3D.hpp>
 #include <algorithm>
 #include <map>
 #include<set>

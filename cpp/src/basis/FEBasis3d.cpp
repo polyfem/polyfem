@@ -1,11 +1,11 @@
 
 ////////////////////////////////////////////////////////////////////////////////
-#include "FEBasis3d.hpp"
-#include "MeshNodes.hpp"
-#include "TetQuadrature.hpp"
-#include "HexQuadrature.hpp"
+#include <polyfem/FEBasis3d.hpp>
+#include <polyfem/MeshNodes.hpp>
+#include <polyfem/TetQuadrature.hpp>
+#include <polyfem/HexQuadrature.hpp>
 
-#include "auto_bases.hpp"
+#include <polyfem/auto_bases.hpp>
 
 #include <cassert>
 #include <array>

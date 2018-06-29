@@ -1,15 +1,15 @@
 #include "UIState.hpp"
 
-#include "Mesh2D.hpp"
-#include "Mesh3D.hpp"
+#include <polyfem/Mesh2D.hpp>
+#include <polyfem/Mesh3D.hpp>
 
-#include "AssemblerUtils.hpp"
+#include <polyfem/AssemblerUtils.hpp>
 
-#include "ElasticProblem.hpp"
-#include "RefElementSampler.hpp"
+#include <polyfem/ElasticProblem.hpp>
+#include <polyfem/RefElementSampler.hpp>
 
-#include "LinearSolver.hpp"
-#include "EdgeSampler.hpp"
+#include <polyfem/LinearSolver.hpp>
+#include <polyfem/EdgeSampler.hpp>
 
 #include <igl/per_face_normals.h>
 #include <igl/per_corner_normals.h>

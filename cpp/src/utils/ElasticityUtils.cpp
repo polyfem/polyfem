@@ -1,4 +1,4 @@
-#include "ElasticityUtils.hpp"
+#include <polyfem/ElasticityUtils.hpp>
 
 
 namespace poly_fem

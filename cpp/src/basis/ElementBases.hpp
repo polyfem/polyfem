@@ -1,9 +1,9 @@
 #ifndef ELEMENT_BASES_HPP
 #define ELEMENT_BASES_HPP
 
-#include "Basis.hpp"
-#include "Quadrature.hpp"
-#include "Mesh.hpp"
+#include <polyfem/Basis.hpp>
+#include <polyfem/Quadrature.hpp>
+#include <polyfem/Mesh.hpp>
 
 
 #include <vector>

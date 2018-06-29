@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Problem.hpp"
-#include "InterpolatedFunction.hpp"
+#include <polyfem/Problem.hpp>
+#include <polyfem/InterpolatedFunction.hpp>
 
 
 #include <vector>

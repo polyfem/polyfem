@@ -1,4 +1,4 @@
-#include "QuadraticBSpline3d.hpp"
+#include <polyfem/QuadraticBSpline3d.hpp>
 
 
 

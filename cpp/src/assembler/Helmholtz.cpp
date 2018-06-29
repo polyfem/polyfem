@@ -1,5 +1,5 @@
-#include "Helmholtz.hpp"
-#include "Bessel.hpp"
+#include <polyfem/Helmholtz.hpp>
+#include <polyfem/Bessel.hpp>
 
 #include <iostream>
 

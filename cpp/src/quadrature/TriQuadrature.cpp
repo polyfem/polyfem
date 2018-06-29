@@ -1,5 +1,5 @@
-#include "TriQuadrature.hpp"
-#include "LineQuadrature.hpp"
+#include <polyfem/TriQuadrature.hpp>
+#include <polyfem/LineQuadrature.hpp>
 
 #include <vector>
 #include <cassert>
@@ -13,7 +13,7 @@ namespace poly_fem
         {
             switch(order)
             {
-                #include <auto_triangle.cpp>
+                #include <polyfem/auto_triangle.ipp>
 
                 default:
                 assert(false);

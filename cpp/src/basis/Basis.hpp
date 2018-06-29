@@ -1,8 +1,8 @@
 #ifndef BASIS_HPP
 #define BASIS_HPP
 
-#include "Quadrature.hpp"
-#include "Types.hpp"
+#include <polyfem/Quadrature.hpp>
+#include <polyfem/Types.hpp>
 
 #include <Eigen/Dense>
 #include <functional>

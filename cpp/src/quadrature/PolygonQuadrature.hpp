@@ -1,7 +1,7 @@
 #ifndef POLYGON_QUADRATURE_HPP
 #define POLYGON_QUADRATURE_HPP
 
-#include "Quadrature.hpp"
+#include <polyfem/Quadrature.hpp>
 
 namespace poly_fem
 {

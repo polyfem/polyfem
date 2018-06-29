@@ -1,6 +1,6 @@
-#include "PointBasedProblem.hpp"
-#include "State.hpp"
-#include "MatrixUtils.hpp"
+#include <polyfem/PointBasedProblem.hpp>
+#include <polyfem/State.hpp>
+#include <polyfem/MatrixUtils.hpp>
 
 #include <iostream>
 

@@ -1,4 +1,4 @@
-#include "Navigation3D.hpp"
+#include <polyfem/Navigation3D.hpp>
 #include <algorithm>
 #include <iterator>
 #include <set>

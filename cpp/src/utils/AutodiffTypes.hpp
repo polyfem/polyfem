@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Types.hpp"
+#include <polyfem/Types.hpp>
 
 #include "autodiff.h"
 

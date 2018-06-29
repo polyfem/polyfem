@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include "InterpolatedFunction.hpp"
-#include "Bessel.hpp"
-#include "ExpressionValue.hpp"
+#include <polyfem/InterpolatedFunction.hpp>
+#include <polyfem/Bessel.hpp>
+#include <polyfem/ExpressionValue.hpp>
 
 
 #include <Eigen/Dense>

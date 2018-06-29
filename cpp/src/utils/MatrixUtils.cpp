@@ -1,4 +1,4 @@
-#include "MatrixUtils.hpp"
+#include <polyfem/MatrixUtils.hpp>
 
 #include <igl/list_to_matrix.h>
 #include <MatOp/SparseSymMatProd.h>

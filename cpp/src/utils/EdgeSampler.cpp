@@ -1,4 +1,4 @@
-#include "EdgeSampler.hpp"
+#include <polyfem/EdgeSampler.hpp>
 
 namespace poly_fem {
 	void EdgeSampler::sample_2d_cube(const int resolution, Eigen::MatrixXd &samples)

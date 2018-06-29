@@ -1,8 +1,8 @@
-#include "Mesh2D.hpp"
-#include "Navigation.hpp"
+#include <polyfem/Mesh2D.hpp>
+#include <polyfem/Navigation.hpp>
 
-#include "MeshUtils.hpp"
-#include "Refinement.hpp"
+#include <polyfem/MeshUtils.hpp>
+#include <polyfem/Refinement.hpp>
 
 #include <igl/triangle/triangulate.h>
 #include <igl/copyleft/tetgen/tetrahedralize.h>

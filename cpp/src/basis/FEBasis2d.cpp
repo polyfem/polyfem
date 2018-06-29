@@ -1,8 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include "FEBasis2d.hpp"
-#include "TriQuadrature.hpp"
-#include "QuadQuadrature.hpp"
-#include "auto_bases.hpp"
+#include <polyfem/FEBasis2d.hpp>
+#include <polyfem/TriQuadrature.hpp>
+#include <polyfem/QuadQuadrature.hpp>
+#include <polyfem/auto_bases.hpp>
 #include <cassert>
 #include <array>
 ////////////////////////////////////////////////////////////////////////////////

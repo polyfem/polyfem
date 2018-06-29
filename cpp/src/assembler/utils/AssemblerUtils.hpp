@@ -1,19 +1,19 @@
 #pragma once
 
-#include "Common.hpp"
+#include <polyfem/Common.hpp>
 
-#include "Assembler.hpp"
+#include <polyfem/Assembler.hpp>
 
-#include "Laplacian.hpp"
-#include "Helmholtz.hpp"
+#include <polyfem/Laplacian.hpp>
+#include <polyfem/Helmholtz.hpp>
 
-#include "LinearElasticity.hpp"
-#include "HookeLinearElasticity.hpp"
-#include "SaintVenantElasticity.hpp"
-#include "NeoHookeanElasticity.hpp"
-#include "OgdenElasticity.hpp"
+#include <polyfem/LinearElasticity.hpp>
+#include <polyfem/HookeLinearElasticity.hpp>
+#include <polyfem/SaintVenantElasticity.hpp>
+#include <polyfem/NeoHookeanElasticity.hpp>
+#include <polyfem/OgdenElasticity.hpp>
 
-#include "ProblemWithSolution.hpp"
+#include <polyfem/ProblemWithSolution.hpp>
 
 #include <vector>
 

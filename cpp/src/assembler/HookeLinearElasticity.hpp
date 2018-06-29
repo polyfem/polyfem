@@ -1,13 +1,13 @@
 #ifndef HOOKE_LINEAR_ELASTICITY_HPP
 #define HOOKE_LINEAR_ELASTICITY_HPP
 
-#include "Common.hpp"
-#include "ElasticityUtils.hpp"
+#include <polyfem/Common.hpp>
+#include <polyfem/ElasticityUtils.hpp>
 
-#include "ElementAssemblyValues.hpp"
-#include "ElementBases.hpp"
+#include <polyfem/ElementAssemblyValues.hpp>
+#include <polyfem/ElementBases.hpp>
 
-#include "AutodiffTypes.hpp"
+#include <polyfem/AutodiffTypes.hpp>
 
 #include <Eigen/Dense>
 #include <array>

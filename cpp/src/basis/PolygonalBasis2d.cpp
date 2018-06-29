@@ -1,12 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include "PolygonalBasis2d.hpp"
-#include "PolygonQuadrature.hpp"
-#include "PolygonUtils.hpp"
-#include "FEBasis2d.hpp"
-#include "RBFWithLinear.hpp"
-#include "RBFWithQuadratic.hpp"
-#include "RBFWithQuadraticLagrange.hpp"
-// #include "UIState.hpp"
+#include <polyfem/PolygonalBasis2d.hpp>
+#include <polyfem/PolygonQuadrature.hpp>
+#include <polyfem/PolygonUtils.hpp>
+#include <polyfem/FEBasis2d.hpp>
+#include <polyfem/RBFWithLinear.hpp>
+#include <polyfem/RBFWithQuadratic.hpp>
+#include <polyfem/RBFWithQuadraticLagrange.hpp>
+// #include <polyfem/UIState.hpp>
 #include <igl/png/writePNG.h>
 #include <igl/per_corner_normals.h>
 #include <igl/write_triangle_mesh.h>

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include "RBFWithLinear.hpp"
-#include "Types.hpp"
+#include <polyfem/RBFWithLinear.hpp>
+#include <polyfem/Types.hpp>
 #include <igl/Timer.h>
 #include <Eigen/Dense>
 #include <iostream>

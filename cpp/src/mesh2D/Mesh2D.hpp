@@ -1,10 +1,10 @@
 #ifndef MESH_2D_HPP
 #define MESH_2D_HPP
 
-#include "Common.hpp"
-#include "Mesh.hpp"
-#include "Navigation.hpp"
-#include "Types.hpp"
+#include <polyfem/Common.hpp>
+#include <polyfem/Mesh.hpp>
+#include <polyfem/Navigation.hpp>
+#include <polyfem/Types.hpp>
 
 #include <Eigen/Dense>
 #include <geogram/mesh/mesh.h>

@@ -1,9 +1,9 @@
 #pragma once
 
 
-#include "AssemblerUtils.hpp"
-#include "RhsAssembler.hpp"
-#include "State.hpp"
+#include <polyfem/AssemblerUtils.hpp>
+#include <polyfem/RhsAssembler.hpp>
+#include <polyfem/State.hpp>
 
 #include <cppoptlib/problem.h>
 #include <Eigen/Sparse>

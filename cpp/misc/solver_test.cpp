@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include "LinearSolver.hpp"
-#include "CLI11.hpp"
+#include <polyfem/LinearSolver.hpp>
+#include <CLI11.hpp>
 #include <igl/Timer.h>
 #include <unsupported/Eigen/SparseExtra>
 #include <vector>

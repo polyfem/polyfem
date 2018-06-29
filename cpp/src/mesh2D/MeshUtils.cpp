@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include "MeshUtils.hpp"
+#include <polyfem/MeshUtils.hpp>
 #include <geogram/basic/geometry.h>
 #include <geogram/mesh/mesh_preprocessing.h>
 #include <geogram/mesh/mesh_topology.h>

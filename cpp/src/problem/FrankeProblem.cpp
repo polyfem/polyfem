@@ -1,4 +1,4 @@
-#include "FrankeProblem.hpp"
+#include <polyfem/FrankeProblem.hpp>
 
 #include <iostream>
 

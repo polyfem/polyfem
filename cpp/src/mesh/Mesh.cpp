@@ -1,8 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include "Mesh.hpp"
-#include "Mesh2D.hpp"
-#include "Mesh3D.hpp"
-#include "StringUtils.hpp"
+#include <polyfem/Mesh.hpp>
+#include <polyfem/Mesh2D.hpp>
+#include <polyfem/Mesh3D.hpp>
+#include <polyfem/StringUtils.hpp>
 #include <geogram/mesh/mesh_io.h>
 #include <geogram/mesh/mesh_geometry.h>
 ////////////////////////////////////////////////////////////////////////////////

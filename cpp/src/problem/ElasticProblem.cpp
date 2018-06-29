@@ -1,5 +1,5 @@
-#include "ElasticProblem.hpp"
-#include "State.hpp"
+#include <polyfem/ElasticProblem.hpp>
+#include <polyfem/State.hpp>
 
 #include <iostream>
 

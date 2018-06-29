@@ -1,7 +1,7 @@
 #ifndef UI_UISTATE_HPP
 #define UI_UISTATE_HPP
 
-#include "State.hpp"
+#include <polyfem/State.hpp>
 
 #include <igl/colormap.h>
 #include <igl/opengl/glfw/Viewer.h>

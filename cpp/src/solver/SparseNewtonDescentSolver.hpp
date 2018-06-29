@@ -1,12 +1,12 @@
 #pragma once
 
 
-#include "Common.hpp"
-#include "LinearSolver.hpp"
+#include <polyfem/Common.hpp>
+#include <polyfem/LinearSolver.hpp>
 
-#include "NLProblem.hpp"
+#include <polyfem/NLProblem.hpp>
 
-#include "State.hpp"
+#include <polyfem/State.hpp>
 
 #include <igl/Timer.h>
 #include <igl/line_search.h>

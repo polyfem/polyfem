@@ -1,4 +1,4 @@
-#include "CommandLine.hpp"
+#include <polyfem/CommandLine.hpp>
 
 #include <iostream>
 #include <sstream>

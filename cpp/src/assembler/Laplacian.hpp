@@ -1,10 +1,10 @@
 #ifndef LAPLACIAN_HPP
 #define LAPLACIAN_HPP
 
-#include "Common.hpp"
-#include "AutodiffTypes.hpp"
+#include <polyfem/Common.hpp>
+#include <polyfem/AutodiffTypes.hpp>
 
-#include "ElementAssemblyValues.hpp"
+#include <polyfem/ElementAssemblyValues.hpp>
 #include <Eigen/Dense>
 
 namespace poly_fem

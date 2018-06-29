@@ -1,8 +1,8 @@
-#include "RhsAssembler.hpp"
+#include <polyfem/RhsAssembler.hpp>
 
-#include "BoundarySampler.hpp"
+#include <polyfem/BoundarySampler.hpp>
 
-#include "LinearSolver.hpp"
+#include <polyfem/LinearSolver.hpp>
 
 #include <Eigen/Sparse>
 
@@ -10,7 +10,7 @@
 #include <map>
 #include <memory>
 
-// #include "UIState.hpp"
+// #include <polyfem/UIState.hpp>
 
 namespace poly_fem
 {

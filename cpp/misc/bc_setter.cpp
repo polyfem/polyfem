@@ -1,8 +1,6 @@
-#include <Mesh3D.hpp>
-#include <CommandLine.hpp>
-
-#include <Common.hpp>
-
+#include <polyfem/Mesh3D.hpp>
+#include <polyfem/CommandLine.hpp>
+#include <polyfem/Common.hpp>
 
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>

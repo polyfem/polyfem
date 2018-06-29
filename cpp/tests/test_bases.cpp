@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "TriQuadrature.hpp"
-#include "TetQuadrature.hpp"
-#include "FEBasis2d.hpp"
-#include "FEBasis3d.hpp"
-#include "auto_bases.hpp"
+#include <polyfem/TriQuadrature.hpp>
+#include <polyfem/TetQuadrature.hpp>
+#include <polyfem/FEBasis2d.hpp>
+#include <polyfem/FEBasis3d.hpp>
+#include <polyfem/auto_bases.hpp>
 
 #include <catch.hpp>
 #include <iostream>

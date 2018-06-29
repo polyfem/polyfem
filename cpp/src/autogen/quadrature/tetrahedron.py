@@ -167,7 +167,7 @@ def main():
         print(error)
         selected.append((order, scheme))
     code = generate_cpp(selected)
-    with open('../auto_tetrahedron.cpp', 'w') as f:
+    with open('../auto_tetrahedron.ipp', 'w') as f:
         f.write(code)
 
 

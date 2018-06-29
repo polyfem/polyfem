@@ -1,11 +1,11 @@
 // #define EIGEN_STACK_ALLOCATION_LIMIT 0
 
-#include "NeoHookeanElasticity.hpp"
+#include <polyfem/NeoHookeanElasticity.hpp>
 
-#include "Basis.hpp"
-#include "auto_rhs.hpp"
+#include <polyfem/Basis.hpp>
+#include <polyfem/auto_rhs.hpp>
 
-#include "MatrixUtils.hpp"
+#include <polyfem/MatrixUtils.hpp>
 #include <igl/Timer.h>
 
 

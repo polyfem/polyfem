@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include "RBFWithQuadraticLagrange.hpp"
-#include "Types.hpp"
-#include "MatrixUtils.hpp"
+#include <polyfem/RBFWithQuadraticLagrange.hpp>
+#include <polyfem/Types.hpp>
+#include <polyfem/MatrixUtils.hpp>
 #include <igl/Timer.h>
 #include <Eigen/Dense>
 #include <iostream>

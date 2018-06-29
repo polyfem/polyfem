@@ -1,10 +1,10 @@
 #ifndef RHS_ASSEMBLER_HPP
 #define RHS_ASSEMBLER_HPP
 
-#include "ElementAssemblyValues.hpp"
-#include "Problem.hpp"
-#include "LocalBoundary.hpp"
-#include "Types.hpp"
+#include <polyfem/ElementAssemblyValues.hpp>
+#include <polyfem/Problem.hpp>
+#include <polyfem/LocalBoundary.hpp>
+#include <polyfem/Types.hpp>
 
 #include <vector>
 

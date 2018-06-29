@@ -1,11 +1,11 @@
-#include "BoundarySampler.hpp"
+#include <polyfem/BoundarySampler.hpp>
 
-#include "FEBasis2d.hpp"
-#include "FEBasis3d.hpp"
+#include <polyfem/FEBasis2d.hpp>
+#include <polyfem/FEBasis3d.hpp>
 
-#include "LineQuadrature.hpp"
-#include "TriQuadrature.hpp"
-#include "QuadQuadrature.hpp"
+#include <polyfem/LineQuadrature.hpp>
+#include <polyfem/TriQuadrature.hpp>
+#include <polyfem/QuadQuadrature.hpp>
 
 namespace poly_fem
 {

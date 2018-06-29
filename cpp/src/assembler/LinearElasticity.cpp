@@ -1,8 +1,8 @@
-#include "LinearElasticity.hpp"
+#include <polyfem/LinearElasticity.hpp>
 
-#include "Basis.hpp"
-#include "ElementAssemblyValues.hpp"
-#include "ElasticityUtils.hpp"
+#include <polyfem/Basis.hpp>
+#include <polyfem/ElementAssemblyValues.hpp>
+#include <polyfem/ElasticityUtils.hpp>
 
 namespace poly_fem
 {

@@ -1,4 +1,4 @@
-#include "VTUWriter.hpp"
+#include <polyfem/VTUWriter.hpp>
 
 namespace poly_fem
 {

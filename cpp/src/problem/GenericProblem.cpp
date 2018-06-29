@@ -1,5 +1,5 @@
-#include "GenericProblem.hpp"
-#include "State.hpp"
+#include <polyfem/GenericProblem.hpp>
+#include <polyfem/State.hpp>
 
 #include <iostream>
 

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Problem.hpp"
+#include <polyfem/Problem.hpp>
 
-#include "AutodiffTypes.hpp"
+#include <polyfem/AutodiffTypes.hpp>
 
 namespace poly_fem
 {

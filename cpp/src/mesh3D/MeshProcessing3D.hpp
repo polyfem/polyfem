@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Mesh3DStorage.hpp"
+#include <polyfem/Mesh3DStorage.hpp>
 #include <iostream>
 #include <fstream>
 

@@ -1,7 +1,7 @@
-#include "PolygonQuadrature.hpp"
-#include "TriQuadrature.hpp"
+#include <polyfem/PolygonQuadrature.hpp>
+#include <polyfem/TriQuadrature.hpp>
 
-#include "UIState.hpp"
+#include <polyfem/UIState.hpp>
 
 #include <igl/triangle/triangulate.h>
 

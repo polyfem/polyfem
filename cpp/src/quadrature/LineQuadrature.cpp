@@ -1,4 +1,4 @@
-#include "LineQuadrature.hpp"
+#include <polyfem/LineQuadrature.hpp>
 
 #include <vector>
 #include <cassert>

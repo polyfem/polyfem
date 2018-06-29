@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include "Problem.hpp"
-#include "AssemblerUtils.hpp"
-#include "Common.hpp"
+#include <polyfem/Problem.hpp>
+#include <polyfem/AssemblerUtils.hpp>
+#include <polyfem/Common.hpp>
 
 #include <catch.hpp>
 #include <iostream>

@@ -1,5 +1,5 @@
-#include "RefElementSampler.hpp"
-#include "MeshUtils.hpp"
+#include <polyfem/RefElementSampler.hpp>
+#include <polyfem/MeshUtils.hpp>
 
 #include <igl/triangle/triangulate.h>
 #include <igl/copyleft/tetgen/tetrahedralize.h>

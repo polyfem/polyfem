@@ -3,8 +3,8 @@
 #ifdef POLYFEM_WITH_HYPRE
 
 ////////////////////////////////////////////////////////////////////////////////
-#include "Common.hpp"
-#include "LinearSolver.hpp"
+#include <polyfem/Common.hpp>
+#include <polyfem/LinearSolver.hpp>
 #include <Eigen/Core>
 #include <Eigen/Sparse>
 #include <vector>

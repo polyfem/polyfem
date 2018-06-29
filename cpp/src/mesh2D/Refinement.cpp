@@ -1,8 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include "Refinement.hpp"
-#include "Navigation.hpp"
-#include "MeshUtils.hpp"
-#include "PolygonUtils.hpp"
+#include <polyfem/Refinement.hpp>
+#include <polyfem/Navigation.hpp>
+#include <polyfem/MeshUtils.hpp>
+#include <polyfem/PolygonUtils.hpp>
 #include <igl/is_border_vertex.h>
 #include <igl/remove_duplicate_vertices.h>
 #include <igl/remove_unreferenced.h>

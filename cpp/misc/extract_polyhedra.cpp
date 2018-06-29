@@ -1,5 +1,5 @@
-#include "Mesh3D.hpp"
-#include "MeshUtils.hpp"
+#include <polyfem/Mesh3D.hpp>
+#include <polyfem/MeshUtils.hpp>
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
 #include <geogram/basic/logger.h>

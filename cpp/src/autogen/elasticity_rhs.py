@@ -110,8 +110,8 @@ if __name__ == "__main__":
     args = parse_args()
     dims = [2, 3]
     names = ["hooke", "saint_venant", "neo_hookean"]
-    cpp = "#include \"auto_rhs.hpp\"\n\n\n"
-    hpp = "#pragma once\n\n#include \"ElasticityUtils.hpp\"\n#include \"AutodiffTypes.hpp\"\n#include <Eigen/Dense>\n\n"
+    cpp = "#include <polyfem/auto_rhs.hpp>\n\n\n"
+    hpp = "#pragma once\n\n#include <polyfem/ElasticityUtils.hpp>\n#include <polyfem/AutodiffTypes.hpp>\n#include <Eigen/Dense>\n\n"
     cpp = cpp + "namespace poly_fem {\nnamespace autogen " + "{\n"
     hpp = hpp + "namespace poly_fem {\nnamespace autogen " + "{\n"
 

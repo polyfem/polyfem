@@ -1,13 +1,13 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include "PolygonalBasis3d.hpp"
-#include "PolyhedronQuadrature.hpp"
-#include "FEBasis3d.hpp"
-#include "MeshUtils.hpp"
-#include "Refinement.hpp"
-#include "RBFWithLinear.hpp"
-#include "RBFWithQuadratic.hpp"
-#include "RBFWithQuadraticLagrange.hpp"
-// #include "UIState.hpp"
+#include <polyfem/PolygonalBasis3d.hpp>
+#include <polyfem/PolyhedronQuadrature.hpp>
+#include <polyfem/FEBasis3d.hpp>
+#include <polyfem/MeshUtils.hpp>
+#include <polyfem/Refinement.hpp>
+#include <polyfem/RBFWithLinear.hpp>
+#include <polyfem/RBFWithQuadratic.hpp>
+#include <polyfem/RBFWithQuadraticLagrange.hpp>
+// #include <polyfem/UIState.hpp>
 #include <igl/triangle/triangulate.h>
 #include <igl/per_vertex_normals.h>
 #include <igl/per_corner_normals.h>

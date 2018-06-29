@@ -2,8 +2,8 @@
 #define ASSEMBLY_VALUES_HPP
 
 
-#include "Quadrature.hpp"
-#include "Basis.hpp"
+#include <polyfem/Quadrature.hpp>
+#include <polyfem/Basis.hpp>
 
 #include <Eigen/Dense>
 #include <iostream>

@@ -1,8 +1,8 @@
 #pragma once
 
 ////////////////////////////////////////////////////////////////////////////////
-#include "Common.hpp"
-#include "LinearSolver.hpp"
+#include <polyfem/Common.hpp>
+#include <polyfem/LinearSolver.hpp>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <memory>

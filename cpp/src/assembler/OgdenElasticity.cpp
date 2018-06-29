@@ -1,11 +1,11 @@
 // #define EIGEN_STACK_ALLOCATION_LIMIT 0
 
-#include "OgdenElasticity.hpp"
-#include "Basis.hpp"
-#include "MatrixUtils.hpp"
+#include <polyfem/OgdenElasticity.hpp>
+#include <polyfem/Basis.hpp>
+#include <polyfem/MatrixUtils.hpp>
 
-#include "auto_eigs.hpp"
-#include "auto_rhs.hpp"
+#include <polyfem/auto_eigs.hpp>
+#include <polyfem/auto_rhs.hpp>
 
 #include <igl/Timer.h>
 

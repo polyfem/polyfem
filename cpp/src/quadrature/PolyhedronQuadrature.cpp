@@ -1,8 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include "PolyhedronQuadrature.hpp"
-#include "TetQuadrature.hpp"
-#include "MeshUtils.hpp"
-#include "UIState.hpp"
+#include <polyfem/PolyhedronQuadrature.hpp>
+#include <polyfem/TetQuadrature.hpp>
+#include <polyfem/MeshUtils.hpp>
+#include <polyfem/UIState.hpp>
 #include <geogram/mesh/mesh_io.h>
 #include <igl/copyleft/tetgen/tetrahedralize.h>
 #include <igl/writeMESH.h>

@@ -1,9 +1,9 @@
-#include "State.hpp"
 #include "UIState.hpp"
+#include <polyfem/State.hpp>
 
-#include "LinearSolver.hpp"
-#include "CommandLine.hpp"
-#include "StringUtils.hpp"
+#include <polyfem/LinearSolver.hpp>
+#include <polyfem/CommandLine.hpp>
+#include <polyfem/StringUtils.hpp>
 
 
 #include <geogram/basic/command_line.h>

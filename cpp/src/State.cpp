@@ -1,39 +1,39 @@
-#include "State.hpp"
+#include <polyfem/State.hpp>
 
-#include "Mesh2D.hpp"
-#include "Mesh3D.hpp"
+#include <polyfem/Mesh2D.hpp>
+#include <polyfem/Mesh3D.hpp>
 
-#include "FEBasis2d.hpp"
-#include "FEBasis3d.hpp"
+#include <polyfem/FEBasis2d.hpp>
+#include <polyfem/FEBasis3d.hpp>
 
-#include "SpectralBasis2d.hpp"
+#include <polyfem/SpectralBasis2d.hpp>
 
-#include "SplineBasis2d.hpp"
-#include "SplineBasis3d.hpp"
+#include <polyfem/SplineBasis2d.hpp>
+#include <polyfem/SplineBasis3d.hpp>
 
-#include "EdgeSampler.hpp"
-#include "BoundarySampler.hpp"
+#include <polyfem/EdgeSampler.hpp>
+#include <polyfem/BoundarySampler.hpp>
 
-#include "PolygonalBasis2d.hpp"
-#include "PolygonalBasis3d.hpp"
+#include <polyfem/PolygonalBasis2d.hpp>
+#include <polyfem/PolygonalBasis3d.hpp>
 
-#include "AssemblerUtils.hpp"
-#include "RhsAssembler.hpp"
+#include <polyfem/AssemblerUtils.hpp>
+#include <polyfem/RhsAssembler.hpp>
 
-#include "LinearSolver.hpp"
-#include "FEMSolver.hpp"
+#include <polyfem/LinearSolver.hpp>
+#include <polyfem/FEMSolver.hpp>
 
-#include "RefElementSampler.hpp"
+#include <polyfem/RefElementSampler.hpp>
 
-#include "Common.hpp"
+#include <polyfem/Common.hpp>
 
-#include "VTUWriter.hpp"
-#include "MeshUtils.hpp"
+#include <polyfem/VTUWriter.hpp>
+#include <polyfem/MeshUtils.hpp>
 
-#include "NLProblem.hpp"
-#include "SparseNewtonDescentSolver.hpp"
+#include <polyfem/NLProblem.hpp>
+#include <polyfem/SparseNewtonDescentSolver.hpp>
 
-#include "auto_bases.hpp"
+#include <polyfem/auto_bases.hpp>
 
 #ifdef USE_TBB
 #include <tbb/task_scheduler_init.h>
@@ -57,7 +57,7 @@
 #include <algorithm>
 #include <memory>
 
-#include "autodiff.h"
+#include <polyfem/autodiff.h>
 DECLARE_DIFFSCALAR_BASE();
 
 

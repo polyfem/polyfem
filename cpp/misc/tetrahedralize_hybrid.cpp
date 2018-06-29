@@ -1,7 +1,7 @@
-#include "Mesh3D.hpp"
-#include "MeshUtils.hpp"
+#include <polyfem/Mesh3D.hpp>
+#include <polyfem/MeshUtils.hpp>
 
-#include "CLI11.hpp"
+#include <CLI11.hpp>
 
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
 	// Import standard command line arguments, and custom ones
 	GEO::CmdLine::import_arg_group("standard");
 	GEO::CmdLine::import_arg_group("pre");
-	
+
 	struct {
 		std::string mesh_path = "";
 	} args;

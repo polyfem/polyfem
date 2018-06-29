@@ -1,8 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "TriQuadrature.hpp"
-#include "FEBasis2d.hpp"
-#include "FEMSolver.hpp"
+#include <polyfem/TriQuadrature.hpp>
+#include <polyfem/FEBasis2d.hpp>
+#include <polyfem/FEMSolver.hpp>
 
 #include <catch.hpp>
 #include <iostream>
