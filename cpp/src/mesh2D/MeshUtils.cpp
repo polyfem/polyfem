@@ -671,16 +671,16 @@ bool approx_aligned(const double *a_, const double *b_, const double *p_, const 
 void poly_fem::extract_parent_edges(const Eigen::MatrixXd &IV, const Eigen::MatrixXi &IE,
 	const Eigen::MatrixXd &BV, const Eigen::MatrixXi &BE, Eigen::MatrixXi &OE)
 {
-	assert(IV.cols() == 3);
-	assert(BV.cols() == 3);
+	assert(IV.cols() == 2 || IV.cols() == 3);
+	assert(BV.cols() == 2 || BV.cols() == 3);
 	typedef std::pair<int, int> Edge;
 	std::vector<Edge> selected;
 	for (int e1 = 0; e1 < IE.rows(); ++e1) {
-		Eigen::RowVector3d a = IV.row(IE(e1, 0));
-		Eigen::RowVector3d b = IV.row(IE(e1, 1));
+		Eigen::RowVector3d a; a.setZero(); a.head(IV.cols()) = IV.row(IE(e1, 0));
+		Eigen::RowVector3d b; b.setZero(); b.head(IV.cols()) = IV.row(IE(e1, 1));
 		for (int e2 = 0; e2 < BE.rows(); ++e2) {
-			Eigen::RowVector3d p = BV.row(BE(e2, 0));
-			Eigen::RowVector3d q = BV.row(BE(e2, 1));
+			Eigen::RowVector3d p; p.setZero(); p.head(BV.cols()) = BV.row(BE(e2, 0));
+			Eigen::RowVector3d q; q.setZero(); q.head(BV.cols()) = BV.row(BE(e2, 1));
 			if (approx_aligned(a.data(), b.data(), p.data(), q.data())) {
 				selected.emplace_back(IE(e1, 0), IE(e1, 1));
 				break;
