@@ -1,0 +1,29 @@
+set(SOURCES
+	autodiff.h
+	AutodiffTypes.hpp
+	Bessel.hpp
+	BoundarySampler.cpp
+	BoundarySampler.hpp
+	CommandLine.cpp
+	CommandLine.hpp
+	EdgeSampler.cpp
+	EdgeSampler.hpp
+	ElasticityUtils.cpp
+	ElasticityUtils.hpp
+	InterpolatedFunction.cpp
+	InterpolatedFunction.hpp
+	MatrixUtils.cpp
+	MatrixUtils.hpp
+	RefElementSampler.cpp
+	RefElementSampler.hpp
+	StringUtils.cpp
+	StringUtils.hpp
+	ExpressionValue.cpp
+	ExpressionValue.hpp
+	Types.hpp
+)
+
+prepend_current_path(SOURCES)
+polyfem_copy_headers(${SOURCES})
+polyfem_set_source_group(${SOURCES})
+target_sources(polyfem PRIVATE ${SOURCES})

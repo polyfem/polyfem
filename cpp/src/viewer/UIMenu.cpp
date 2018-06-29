@@ -116,7 +116,7 @@ void poly_fem::UIState::draw_menu() {
 	float debug_menu_width = 0.8 * viewer_menu_width;
 	// ImGui::SetNextWindowPos(ImVec2(viewer_menu_width+polyfem_menu_width, 0.0f), ImGuiSetCond_Always);
 	auto canvas = ImGui::GetIO().DisplaySize;
-	ImGui::SetNextWindowPos(ImVec2(canvas.x - viewer_menu_width, 0.0f), ImGuiSetCond_Always);
+	ImGui::SetNextWindowPos(ImVec2(canvas.x - debug_menu_width, 0.0f), ImGuiSetCond_Always);
 	ImGui::SetNextWindowSize(ImVec2(debug_menu_width, 0.0f), ImGuiSetCond_Always);
 	ImGui::SetNextWindowSizeConstraints(ImVec2(debug_menu_width, -1.0f), ImVec2(debug_menu_width, -1.0f));
 	bool _debug_menu_visible = true;
@@ -376,7 +376,7 @@ void poly_fem::UIState::draw_settings() {
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 	ImGui::Image(reinterpret_cast<ImTextureID>(color_bar_texture), ImVec2(width, height));
-	
+
 	if(fabs(min_val) <= 1e-20)
 		ImGui::Text("0");
 	else
