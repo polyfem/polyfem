@@ -41,6 +41,36 @@ namespace cppoptlib {
 			this->setStopCriteria(criteria);
 		}
 
+
+
+		double armijo_linesearch(const TVector &x, const TVector &searchDir, ProblemType &objFunc, const double alpha_init = 1.0)
+		{
+			static const int MAX_STEP_SIZE_ITER = 12;
+
+			const double c = 0.5;
+			const double tau = 0.5;
+
+			double alpha = alpha_init;
+			double f = objFunc.value(x + alpha * searchDir);
+			const double f_in = objFunc.value(x);
+
+			TVector grad(x.rows());
+			objFunc.gradient(x, grad);
+
+			const double Cache = c * grad.dot(searchDir);
+
+			int cur_iter = 0;
+			while(f > f_in + alpha * Cache && cur_iter < MAX_STEP_SIZE_ITER) {
+				alpha *= tau;
+				f = objFunc.value(x + alpha * searchDir);
+
+				cur_iter++;
+			}
+
+			return alpha;
+		}
+
+
 		double linesearch(const TVector &x, const TVector &grad, ProblemType &objFunc)
 		{
 			static const int MAX_STEP_SIZE_ITER = 12;
@@ -159,7 +189,8 @@ namespace cppoptlib {
 
 				time.start();
 
-				const double rate = Armijo<ProblemType, 1>::linesearch(x0, delta_x, objFunc);
+				// const double rate = Armijo<ProblemType, 1>::linesearch(x0, delta_x, objFunc);
+				const double rate = armijo_linesearch(x0, delta_x, objFunc);
 				// const double rate = linesearch(x0, delta_x, objFunc);
 
 				x0 += rate * delta_x;
@@ -173,23 +204,26 @@ namespace cppoptlib {
 
 				++this->m_current.iterations;
 
-				this->m_current.gradNorm = grad.template lpNorm<Eigen::Infinity>();
+				// this->m_current.gradNorm = grad.template lpNorm<Eigen::Infinity>();
+				this->m_current.gradNorm = grad.norm();
 				this->m_status = checkConvergence(this->m_stop, this->m_current);
+				const double step = (rate * delta_x).norm();
+				const double energy = objFunc.value(x0);
 
-				if(std::isnan(objFunc.value(x0)))
+				if(std::isnan(energy))
 				{
 					this->m_status = Status::UserDefined;
 					std::cerr<<"stopping because obj func is nan"<<std::endl;
 				}
 
-				if(this->m_status == Status::Continue && (rate * delta_x).norm() < 1e-10)
+				if(this->m_status == Status::Continue && step < 1e-10)
 				{
 					this->m_status = Status::UserDefined;
-					std::cerr<<"stopping because ||step|| is too small"<<std::endl;
+					std::cerr<<"stopping because ||step||=" << step << " is too small"<<std::endl;
 				}
 
 				if(verbose)
-					std::cout << "\titer: "<<this->m_current.iterations <<", rate = "<< rate<< ", f = " <<  objFunc.value(x0) << ", ||g||_inf "<< this->m_current.gradNorm <<", ||step|| "<< (rate * delta_x).norm() << ", rate "<< rate <<" dot " << delta_x.dot(grad)/grad.norm() << std::endl;
+					std::cout << "\titer: "<<this->m_current.iterations <<", rate = "<< rate << ", f = " <<  energy << ", ||g||_inf "<< this->m_current.gradNorm <<", ||step|| "<< step << ", rate "<< rate <<" dot " << delta_x.dot(grad)/grad.norm() << std::endl;
 			}
 			while (objFunc.callback(this->m_current, x0) && (this->m_status == Status::Continue));
 
