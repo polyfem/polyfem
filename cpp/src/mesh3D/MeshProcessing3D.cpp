@@ -1061,7 +1061,7 @@ void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter) {
 			havg+=len;
 		}
 		havg/=M.edges.size();
-std::cout<<"hmin, hmax, havg: "<<hmin<<" "<<hmax<<" "<<havg<<std::endl;
+		// std::cout<<"hmin, hmax, havg: "<<hmin<<" "<<hmax<<" "<<havg<<std::endl;
 	}
 }
 void MeshProcessing3D::straight_sweeping(const Mesh3DStorage &Mi, int sweep_coord, double height, int nlayer, Mesh3DStorage &Mo) {

@@ -915,13 +915,13 @@ namespace polyfem
 	void UIState::show_nodes()
 	{
 		if (!state.mesh) { return; }
-		if(state.n_bases > 4500) return;
 
-		if((visible_visualizations(Visualizations::Nodes) || visible_visualizations(Visualizations::NodesId)) && !available_visualizations[Visualizations::Nodes])
+		MatrixXd col(1,3);
+		if(!available_visualizations[Visualizations::BNodes])
 		{
-			reset_flags(Visualizations::Nodes);
+			reset_flags(Visualizations::BNodes);
 
-			MatrixXd col(1,3); col << 0,1,0;
+			col << 0,1,0;
 
 			for(const auto &lb : state.local_neumann_boundary)
 			{
@@ -940,14 +940,55 @@ namespace polyfem
 						{
 							const Local2Global &l2g = b.global()[g];
 							MatrixXd node = l2g.node;
-							data(Visualizations::Nodes).add_points(node, col);
+							data(Visualizations::BNodes).add_points(node, col);
 						}
 					}
 				}
 			}
 
+			col << 1,0,0;
+			for(std::size_t i = 0; i < state.bases.size(); ++i)
+			{
+				const ElementBases &basis = state.bases[i];
+				Eigen::MatrixXd P(basis.bases.size(), 3);
 
-			// size_t i = 6;
+				for(std::size_t j = 0; j < basis.bases.size(); ++j)
+				{
+					for(std::size_t kk = 0; kk < basis.bases[j].global().size(); ++kk)
+					{
+						const Local2Global &l2g = basis.bases[j].global()[kk];
+						int g_index = l2g.index;
+
+						if(!state.problem->is_scalar())
+							g_index *= state.mesh->dimension();
+
+						if(std::find(state.boundary_nodes.begin(), state.boundary_nodes.end(), g_index) != state.boundary_nodes.end())
+						{
+							MatrixXd node = l2g.node;
+							data(Visualizations::BNodes).add_points(node, col);
+						}
+					}
+				}
+			}
+
+			available_visualizations[Visualizations::BNodes] = true;
+			vis_flags[Visualizations::BNodes].clear();
+			hide_data(Visualizations::BNodes);
+
+		}
+
+		if(visible_visualizations(Visualizations::BNodes))
+			show_data(Visualizations::BNodes);
+
+
+		if(state.n_bases > 4500) return;
+
+		if((visible_visualizations(Visualizations::Nodes) || visible_visualizations(Visualizations::NodesId)) && !available_visualizations[Visualizations::Nodes])
+		{
+			reset_flags(Visualizations::Nodes);
+
+			col << 142./255., 68./255., 173./255.;
+
 			for(std::size_t i = 0; i < state.bases.size(); ++i)
 			{
 				const ElementBases &basis = state.bases[i];
@@ -964,25 +1005,12 @@ namespace polyfem
 							g_index *= state.mesh->dimension();
 
 						MatrixXd node = l2g.node;
-						col.setZero();
-
-						if(std::find(state.boundary_nodes.begin(), state.boundary_nodes.end(), g_index) != state.boundary_nodes.end()){
-							col.col(0).setOnes();
-						}
-						else{
-							col(0) = 142./255.;
-							col(1) = 68./255.;
-							col(2) = 173./255.;
-						}
-
-
-						// P.row(j) = node;
 						data(Visualizations::Nodes).add_points(node, col);
+
 						//TODO text is impossible to hide :(
 						// data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(l2g.index));
 					}
 				}
-			// add_spheres(viewer, P, 0.05);
 			}
 
 			available_visualizations[Visualizations::Nodes] = true;
@@ -1425,7 +1453,7 @@ namespace polyfem
 
 		if(skip_visualization) return;
 		clear();
-		visible_visualizations.setConstant(false); visible_visualizations(Visualizations::DiscrMesh) = true;  visible_visualizations(Visualizations::Nodes) = true;
+		visible_visualizations.setConstant(false); visible_visualizations(Visualizations::DiscrMesh) = true;  visible_visualizations(Visualizations::Nodes) = true; visible_visualizations(Visualizations::BNodes) = true;
 		viewer.selected_data_index = Visualizations::DiscrMesh;
 		show_mesh();
 		show_nodes();
