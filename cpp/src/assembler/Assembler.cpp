@@ -194,7 +194,6 @@ namespace polyfem
 		const int buffer_size = std::min(long(1e8), long(n_basis) * local_assembler_.size());
 		std::cout<<"buffer_size "<<buffer_size<<std::endl;
 
-		assert(local_assembler_.size() == 1);
 		mass.resize(n_basis*local_assembler_.size(), n_basis*local_assembler_.size());
 		mass.setZero();
 
@@ -236,16 +235,20 @@ namespace polyfem
 					// const Eigen::MatrixXd &gradj = values_j.grad_t_m;
 					const auto &global_j = vals.basis_values[j].global;
 
-					// const auto stiffness_val = local_assembler_.assemble(vals, i, j, da);
-					// assert(stiffness_val.size() == local_assembler_.size() * local_assembler_.size());
-					const double val = (vals.basis_values[i].val.array() * vals.basis_values[j].val.array() * da.array()).sum();
+					const double tmp = (vals.basis_values[i].val.array() * vals.basis_values[j].val.array() * da.array()).sum();
+					Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> val(local_assembler_.size() * local_assembler_.size()); val.setZero();
+					for(int n = 0; n < local_assembler_.size(); ++n)
+						val(n*local_assembler_.size()+n) = tmp;
+
+
+					assert(val.size() == local_assembler_.size() * local_assembler_.size());
 
 					igl::Timer t1; t1.start();
 					for(int n = 0; n < local_assembler_.size(); ++n)
 					{
 						for(int m = 0; m < local_assembler_.size(); ++m)
 						{
-							const double local_value = val; //(n*local_assembler_.size()+m);
+							const double local_value = val(n*local_assembler_.size()+m);
 							if (std::abs(local_value) < 1e-30) { continue; }
 
 							for(size_t ii = 0; ii < global_i.size(); ++ii)

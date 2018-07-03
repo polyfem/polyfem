@@ -408,4 +408,28 @@ namespace polyfem
 		return AutodiffHessianPt(pt.size());
 	}
 
+
+	GravityProblem::GravityProblem(const std::string &name)
+	: Problem(name)
+	{
+		boundary_ids_ = {4};
+	}
+
+	void GravityProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+		val.col(1).setConstant(0.1);
+		// val *= t;
+	}
+
+	void GravityProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+	}
+
+	void GravityProblem::initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+	}
+
 }

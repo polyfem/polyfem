@@ -1256,16 +1256,7 @@ namespace polyfem
 
 		if(problem->is_time_dependent())
 		{
-			if(problem->is_scalar())
-			{
-				assembler.assemble_mass_matrix(scalar_formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, mass);
-			}
-			else
-			{
-				//TODO
-				//assembler.assemble_tensor_problem(tensor_formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, stiffness);
-				assert(false);
-			}
+			assembler.assemble_mass_matrix(problem->is_scalar()?scalar_formulation():tensor_formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, mass);
 		}
 
 		timer.stop();
@@ -1338,15 +1329,15 @@ namespace polyfem
 			int time_steps = args["time_steps"];
 			double dt = tend/time_steps;
 
+			auto solver = LinearSolver::create(args["solver_type"], args["precond_type"]);
+			solver->setParameters(params);
+			std::cout<<solver->name()<<"... "<<std::flush;
+
 			save_vtu( "step_" + std::to_string(0) + ".vtu");
 			save_wire("step_" + std::to_string(0) + ".obj");
 
 			if(problem->is_scalar())
 			{
-				auto solver = LinearSolver::create(args["solver_type"], args["precond_type"]);
-				solver->setParameters(params);
-				std::cout<<solver->name()<<"... "<<std::flush;
-
 				Eigen::SparseMatrix<double> A;
 				Eigen::VectorXd b, x;
 				Eigen::MatrixXd current_rhs;
@@ -1369,7 +1360,63 @@ namespace polyfem
 			}
 			else
 			{
-				assert(false);
+				assert(assembler.is_linear(formulation()));
+
+				const double beta1 = 0.5;
+				const double beta2 = 0.5;
+
+				Eigen::MatrixXd temp, b;
+				Eigen::SparseMatrix<double> A;
+				Eigen::VectorXd x, btmp;
+				Eigen::MatrixXd current_rhs = rhs;
+
+
+				Eigen::MatrixXd acceleration, velocity;
+				acceleration.resizeLike(sol);
+				velocity.resizeLike(sol);
+
+				//TODO maybe initilize them with some problem settings
+				acceleration.setZero();
+				velocity.setZero();
+
+				for(int t = 1; t <= time_steps; ++t)
+				{
+					const double dt2 = dt*dt;
+
+					const Eigen::MatrixXd aOld = acceleration;
+					const Eigen::MatrixXd vOld = velocity;
+					const Eigen::MatrixXd uOld = sol;
+
+					if(!problem->is_linear_in_time())
+					{
+						rhs_assembler.assemble(current_rhs, t);
+						current_rhs *= -1;
+					}
+					temp = -(uOld + dt * vOld + ((1-beta1)*dt2/2.0)*aOld);
+					b = stiffness * temp + current_rhs;
+
+					//TODO use acceleration of BC, works only becasuse is all zero
+					rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, b, dt*t);
+
+					A = stiffness * 0.5 * beta2 * dt2 + mass;
+					btmp = b;
+					dirichlet_solve(*solver, A, btmp, boundary_nodes, x, args["stiffness_mat_save_path"]);
+					acceleration = x;
+
+					sol += dt*vOld + 0.5 * dt2 * ((1 - beta2) * aOld + beta2 * acceleration);
+					velocity += dt*((1-beta1)* aOld + beta1*acceleration);
+
+					//TODO use derivative of BC, works only becasuse is all zero
+					rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, dt*t);
+					rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, dt*t);
+					rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, dt*t);
+
+
+					save_vtu( "step_" + std::to_string(t) + ".vtu");
+					save_wire("step_" + std::to_string(t) + ".obj");
+
+					std::cout<<t<<"/"<<time_steps<<std::endl;
+				}
 			}
 		}
 		else
@@ -1656,8 +1703,8 @@ namespace polyfem
 			{"problem", "Franke"},
 			{"normalize_mesh", true},
 
-			{"tend", 0.5},
-			{"time_steps", 20},
+			{"tend", 10},
+			{"time_steps", 100},
 
 			{"scalar_formulation", "Laplacian"},
 			{"tensor_formulation", "LinearElasticity"},
