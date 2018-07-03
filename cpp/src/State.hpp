@@ -54,7 +54,7 @@ namespace polyfem
 		std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi> > polys_3d;
 		std::vector<int> parent_elements;
 
-		Eigen::SparseMatrix<double> stiffness;
+		Eigen::SparseMatrix<double> stiffness, mass;
 		Eigen::MatrixXd rhs;
 		Eigen::MatrixXd sol;
 

@@ -1254,6 +1254,20 @@ namespace polyfem
 			assembler.assemble_tensor_problem(tensor_formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, stiffness);
 		}
 
+		if(problem->is_time_dependent())
+		{
+			if(problem->is_scalar())
+			{
+				assembler.assemble_mass_matrix(scalar_formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, mass);
+			}
+			else
+			{
+				//TODO
+				//assembler.assemble_tensor_problem(tensor_formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, stiffness);
+				assert(false);
+			}
+		}
+
 		timer.stop();
 		assembling_stiffness_mat_time = timer.getElapsedTime();
 		std::cout<<" took "<<assembling_stiffness_mat_time<<"s"<<std::endl;
@@ -1315,115 +1329,159 @@ namespace polyfem
 
 		const auto &assembler = AssemblerUtils::instance();
 
-		if(assembler.is_linear(formulation()))
+		if(problem->is_time_dependent())
 		{
-			auto solver = LinearSolver::create(args["solver_type"], args["precond_type"]);
-			solver->setParameters(params);
-			Eigen::SparseMatrix<double> A;
-			Eigen::VectorXd b;
-			std::cout<<solver->name()<<"... "<<std::flush;
+			if(problem->is_scalar())
+			{
+				auto solver = LinearSolver::create(args["solver_type"], args["precond_type"]);
+				solver->setParameters(params);
+				std::cout<<solver->name()<<"... "<<std::flush;
 
-			// std::cout<<Eigen::MatrixXd(stiffness)<<std::endl;
+				Eigen::SparseMatrix<double> A;
+				Eigen::VectorXd b, x;
 
-			A = stiffness;
-			Eigen::VectorXd x;
-			b = rhs;
-			dirichlet_solve(*solver, A, b, boundary_nodes, x, args["stiffness_mat_save_path"]);
-			sol = x;
-			solver->getInfo(solver_info);
+				problem->initial_solution(n_bases, iso_parametric() ? bases : geom_bases, sol);
 
-			// Eigen::MatrixXd err = stiffness*sol-rhs;
-			// for(int i : boundary_nodes)
-			// 	err(i) = 0;
-			// std::cout<<"eeeee: "<<err.norm()<<std::endl;
 
-			// Eigen::saveMarket(stiffness, "stiffness.mat");
-			// exit(0);
+				double tend = args["tend"];
+				int time_steps = args["time_steps"];
+				double dt = tend/time_steps;
 
-			std::cout<<"Solver error: "<<(A*sol-b).norm()<<std::endl;
-			// sol = rhs;
+
+				save_vtu( "step_" + std::to_string(0) + ".vtu");
+				save_wire("step_" + std::to_string(0) + ".obj");
+
+				for(int t = 1; t <= time_steps; ++t)
+				{
+					A = mass + dt * stiffness;
+					b = dt * rhs + mass * sol;
+
+					dirichlet_solve(*solver, A, b, boundary_nodes, x, args["stiffness_mat_save_path"]);
+					sol = x;
+
+					save_vtu( "step_" + std::to_string(t) + ".vtu");
+					save_wire("step_" + std::to_string(t) + ".obj");
+
+					std::cout<<t<<"/"<<time_steps<<std::endl;
+				}
+			}
+			else
+			{
+				assert(false);
+			}
 		}
 		else
 		{
-			std::cout<<"... "<<std::flush;
-			const int full_size 	= n_bases*mesh->dimension();
-			const int reduced_size 	= n_bases*mesh->dimension() - boundary_nodes.size();
-
-			int steps = args["nl_solver_rhs_steps"];
-			RhsAssembler rhs_assembler(*mesh, n_bases, mesh->dimension(), bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
-			VectorXd tmp_sol;
-			for(int n = 1; n <=steps; ++n)
+			if(assembler.is_linear(formulation()))
 			{
-				const double t = double(n)/double(steps);
+				auto solver = LinearSolver::create(args["solver_type"], args["precond_type"]);
+				solver->setParameters(params);
+				Eigen::SparseMatrix<double> A;
+				Eigen::VectorXd b;
+				std::cout<<solver->name()<<"... "<<std::flush;
 
-				NLProblem nl_problem(rhs_assembler, t);
-				if(n == 1)
-					tmp_sol = nl_problem.initial_guess();
+				// std::cout<<Eigen::MatrixXd(stiffness)<<std::endl;
 
-				// {
-				// 	// tmp_sol.setRandom();
-				// 	Eigen::Matrix<double, Eigen::Dynamic, 1> actual_grad, expected_grad;
-				// 	nl_problem.gradient(tmp_sol, actual_grad);
+				A = stiffness;
+				Eigen::VectorXd x;
+				b = rhs;
+				dirichlet_solve(*solver, A, b, boundary_nodes, x, args["stiffness_mat_save_path"]);
+				sol = x;
+				solver->getInfo(solver_info);
 
-				// 	Eigen::SparseMatrix<double> hessian;
-				// 	Eigen::MatrixXd expected_hessian;
-				// 	nl_problem.hessian(tmp_sol, hessian);
-				// 	nl_problem.finiteGradient(tmp_sol, expected_grad, 0);
+				// Eigen::MatrixXd err = stiffness*sol-rhs;
+				// for(int i : boundary_nodes)
+				// 	err(i) = 0;
+				// std::cout<<"eeeee: "<<err.norm()<<std::endl;
 
-				// 	Eigen::MatrixXd actual_hessian = Eigen::MatrixXd(hessian);
+				// Eigen::saveMarket(stiffness, "stiffness.mat");
+				// exit(0);
 
-				// 	for(int i = 0; i < actual_hessian.rows(); ++i)
-				// 	{
-				// 		double hhh = 1e-7;
-				// 		VectorXd xp = tmp_sol; xp(i) += hhh;
-				// 		VectorXd xm = tmp_sol; xm(i) -= hhh;
-
-				// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_p;
-				// 		nl_problem.gradient(xp, tmp_grad_p);
-
-				// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_m;
-				// 		nl_problem.gradient(xm, tmp_grad_m);
-
-				// 		Eigen::Matrix<double, Eigen::Dynamic, 1> fd_h = (tmp_grad_p - tmp_grad_m)/hhh/2.;
-
-				// 		const double vp = nl_problem.value(xp);
-				// 		const double vm = nl_problem.value(xm);
-
-				// 		const double fd = (vp-vm)/hhh/2.;
-				// 		const double  diff = std::abs(actual_grad(i) - fd);
-				// 		if(diff > 1e-6)
-				// 			std::cout<<"diff grad "<<i<<": "<<actual_grad(i)<<" vs "<<fd <<" error: " <<diff<<std::endl;
-
-				// 		for(int j = 0; j < actual_hessian.rows(); ++j)
-				// 		{
-				// 			const double diff = std::abs(actual_hessian(i,j) - fd_h(j));
-
-				// 			if(diff > 1e-6)
-				// 				std::cout<<"diff H "<<i<<", "<<j<<": "<<actual_hessian(i,j)<<" vs "<<fd_h(j)<<" error: " <<diff<<std::endl;
-
-				// 		}
-				// 	}
-				// 	// exit(0);
-
-				// 	// std::cout<<"diff grad "<<(actual_grad - expected_grad).array().abs().maxCoeff()<<std::endl;
-				// 	// std::cout<<"diff \n"<<(actual_grad - expected_grad)<<std::endl;
-				// }
-
-				cppoptlib::SparseNewtonDescentSolver<NLProblem> solver(n == 1);
-				solver.minimize(nl_problem, tmp_sol);
-				solver.getInfo(solver_info);
-				std::cout<<n<<"/"<<steps<<std::endl;
-
-				if(args["save_solve_sequence"])
-				{
-					nl_problem.reduced_to_full(tmp_sol, sol);
-
-					save_vtu( "step_" + std::to_string(n) + ".vtu");
-					save_wire("step_" + std::to_string(n) + ".obj");
-				}
+				std::cout<<"Solver error: "<<(A*sol-b).norm()<<std::endl;
+				// sol = rhs;
 			}
+			else
+			{
+				std::cout<<"... "<<std::flush;
+				const int full_size 	= n_bases*mesh->dimension();
+				const int reduced_size 	= n_bases*mesh->dimension() - boundary_nodes.size();
 
-			NLProblem::reduced_to_full_aux(full_size, reduced_size, tmp_sol, rhs, sol);
+				int steps = args["nl_solver_rhs_steps"];
+				RhsAssembler rhs_assembler(*mesh, n_bases, mesh->dimension(), bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
+				VectorXd tmp_sol;
+				for(int n = 1; n <=steps; ++n)
+				{
+					const double t = double(n)/double(steps);
+
+					NLProblem nl_problem(rhs_assembler, t);
+					if(n == 1)
+						tmp_sol = nl_problem.initial_guess();
+
+					// {
+					// 	// tmp_sol.setRandom();
+					// 	Eigen::Matrix<double, Eigen::Dynamic, 1> actual_grad, expected_grad;
+					// 	nl_problem.gradient(tmp_sol, actual_grad);
+
+					// 	Eigen::SparseMatrix<double> hessian;
+					// 	Eigen::MatrixXd expected_hessian;
+					// 	nl_problem.hessian(tmp_sol, hessian);
+					// 	nl_problem.finiteGradient(tmp_sol, expected_grad, 0);
+
+					// 	Eigen::MatrixXd actual_hessian = Eigen::MatrixXd(hessian);
+
+					// 	for(int i = 0; i < actual_hessian.rows(); ++i)
+					// 	{
+					// 		double hhh = 1e-7;
+					// 		VectorXd xp = tmp_sol; xp(i) += hhh;
+					// 		VectorXd xm = tmp_sol; xm(i) -= hhh;
+
+					// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_p;
+					// 		nl_problem.gradient(xp, tmp_grad_p);
+
+					// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_m;
+					// 		nl_problem.gradient(xm, tmp_grad_m);
+
+					// 		Eigen::Matrix<double, Eigen::Dynamic, 1> fd_h = (tmp_grad_p - tmp_grad_m)/hhh/2.;
+
+					// 		const double vp = nl_problem.value(xp);
+					// 		const double vm = nl_problem.value(xm);
+
+					// 		const double fd = (vp-vm)/hhh/2.;
+					// 		const double  diff = std::abs(actual_grad(i) - fd);
+					// 		if(diff > 1e-6)
+					// 			std::cout<<"diff grad "<<i<<": "<<actual_grad(i)<<" vs "<<fd <<" error: " <<diff<<std::endl;
+
+					// 		for(int j = 0; j < actual_hessian.rows(); ++j)
+					// 		{
+					// 			const double diff = std::abs(actual_hessian(i,j) - fd_h(j));
+
+					// 			if(diff > 1e-6)
+					// 				std::cout<<"diff H "<<i<<", "<<j<<": "<<actual_hessian(i,j)<<" vs "<<fd_h(j)<<" error: " <<diff<<std::endl;
+
+					// 		}
+					// 	}
+					// 	// exit(0);
+
+					// 	// std::cout<<"diff grad "<<(actual_grad - expected_grad).array().abs().maxCoeff()<<std::endl;
+					// 	// std::cout<<"diff \n"<<(actual_grad - expected_grad)<<std::endl;
+					// }
+
+					cppoptlib::SparseNewtonDescentSolver<NLProblem> solver(n == 1);
+					solver.minimize(nl_problem, tmp_sol);
+					solver.getInfo(solver_info);
+					std::cout<<n<<"/"<<steps<<std::endl;
+
+					if(args["save_solve_sequence"])
+					{
+						nl_problem.reduced_to_full(tmp_sol, sol);
+
+						save_vtu( "step_" + std::to_string(n) + ".vtu");
+						save_wire("step_" + std::to_string(n) + ".obj");
+					}
+				}
+
+				NLProblem::reduced_to_full_aux(full_size, reduced_size, tmp_sol, rhs, sol);
+			}
 		}
 
 		timer.stop();
@@ -1595,6 +1653,9 @@ namespace polyfem
 			{"n_boundary_samples", 10},
 			{"problem", "Franke"},
 			{"normalize_mesh", true},
+
+			{"tend", 0.5},
+			{"time_steps", 20},
 
 			{"scalar_formulation", "Laplacian"},
 			{"tensor_formulation", "LinearElasticity"},

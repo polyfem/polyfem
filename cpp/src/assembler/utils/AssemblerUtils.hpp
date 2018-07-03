@@ -35,6 +35,13 @@ namespace polyfem
 			const std::vector< ElementBases > &gbases,
 			Eigen::SparseMatrix<double> &stiffness);
 
+		void assemble_mass_matrix(const std::string &assembler,
+			const bool is_volume,
+			const int n_basis,
+			const std::vector< ElementBases > &bases,
+			const std::vector< ElementBases > &gbases,
+			Eigen::SparseMatrix<double> &mass);
+
 		void assemble_tensor_problem(const std::string &assembler,
 			const bool is_volume,
 			const int n_basis,

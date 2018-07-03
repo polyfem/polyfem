@@ -235,4 +235,23 @@ namespace polyfem
 		return res;
 	}
 
+	TimeDependentProblem::TimeDependentProblem(const std::string &name)
+	: Problem(name)
+	{ }
+
+	void TimeDependentProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Ones(pts.rows(), 1);
+	}
+
+	void TimeDependentProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), 1);
+	}
+
+	void TimeDependentProblem::initial_solution(const int n_bases, const std::vector< ElementBases > &gbases, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(n_bases, 1);
+	}
+
 }

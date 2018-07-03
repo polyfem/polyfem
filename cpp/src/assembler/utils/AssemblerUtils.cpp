@@ -47,6 +47,25 @@ namespace polyfem
 		}
 	}
 
+	void AssemblerUtils::assemble_mass_matrix(const std::string &assembler,
+		const bool is_volume,
+		const int n_basis,
+		const std::vector< ElementBases > &bases,
+		const std::vector< ElementBases > &gbases,
+		Eigen::SparseMatrix<double> &mass)
+	{
+		if(assembler == "Helmholtz")
+			helmholtz_.assemble_mass_matrix(is_volume, n_basis, bases, gbases, mass);
+		else if(assembler == "Laplacian")
+			laplacian_.assemble_mass_matrix(is_volume, n_basis, bases, gbases, mass);
+		else
+		{
+			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;
+			assert(false);
+			laplacian_.assemble_mass_matrix(is_volume, n_basis, bases, gbases, mass);
+		}
+	}
+
 	void AssemblerUtils::assemble_tensor_problem(const std::string &assembler,
 		const bool is_volume,
 		const int n_basis,
