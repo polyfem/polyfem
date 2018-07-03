@@ -36,7 +36,7 @@ namespace cppoptlib {
 		: verbose(verbose)
 		{
 			auto criteria = this->criteria();
-			criteria.gradNorm = 1e-7;
+			criteria.gradNorm = 1e-9;
 			criteria.iterations = 100;
 			this->setStopCriteria(criteria);
 		}
@@ -110,10 +110,7 @@ namespace cppoptlib {
 				std::cout<<"\tinternal solver "<<solver->name()<<std::endl;
 
 			const int reduced_size = x0.rows();
-			// const int full_size = State::state().n_bases*State::state().mesh->dimension();
-			// assert(full_size == reduced_size + State::state().boundary_nodes.size());
 
-			// THessian id(full_size, full_size);
 			THessian id(reduced_size, reduced_size);
 			id.setIdentity();
 
@@ -134,19 +131,18 @@ namespace cppoptlib {
 			this->m_current.reset();
 			AssemblerUtils::instance().clear_cache();
 
-
-			bool analyze_pattern = true;
+			int next_hessian = 0;
 			do
 			{
 				time.start();
 				objFunc.gradient(x0, grad);
-				// NLProblem::reduced_to_full_aux(full_size, reduced_size, grad, true, full_grad);
 				time.stop();
+
 				if(verbose)
 					std::cout<<"\tgrad time "<<time.getElapsedTimeInSec()<<std::endl;
 				grad_time += time.getElapsedTimeInSec();
 
-				bool new_hessian = this->m_current.iterations % 5 == 0;
+				bool new_hessian = this->m_current.iterations == next_hessian;
 
 				if(new_hessian)
 				{
@@ -157,6 +153,8 @@ namespace cppoptlib {
 					if(verbose)
 						std::cout<<"\tassembly time "<<time.getElapsedTimeInSec()<<std::endl;
 					assembly_time += time.getElapsedTimeInSec();
+
+					next_hessian += 5;
 				}
 
 
@@ -169,14 +167,8 @@ namespace cppoptlib {
 					solver->factorize(hessian);
 				}
 				solver->solve(grad, delta_x);
-				// delta_x = grad;
-
-				// poly_fem::dirichlet_solve(*solver, hessian, full_grad, State::state().boundary_nodes, full_delta_x, analyze_pattern, false);
-				// full_delta_x = full_grad;
-				// NLProblem::full_to_reduced_aux(full_size, reduced_size, full_delta_x, delta_x);
 
 				delta_x *= -1;
-				analyze_pattern = true;
 
 				json tmp;
 				solver->getInfo(tmp);
@@ -212,8 +204,17 @@ namespace cppoptlib {
 
 				if(std::isnan(energy))
 				{
-					this->m_status = Status::UserDefined;
-					std::cerr<<"stopping because obj func is nan"<<std::endl;
+					if(new_hessian)
+					{
+						this->m_status = Status::UserDefined;
+						std::cerr<<"stopping because obj func is nan"<<std::endl;
+					}
+					else
+					{
+						next_hessian = this->m_current.iterations + 1;
+						if(verbose)
+							std::cout<<"Step small force recompute hessian"<<std::endl;
+					}
 				}
 
 				if(this->m_status == Status::Continue && step < 1e-10)
