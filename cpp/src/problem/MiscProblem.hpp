@@ -74,7 +74,7 @@ namespace polyfem
 
 		void rhs(const std::string &formulation, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const override;
 		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const override;
-		void initial_solution(const int n_bases, const std::vector< ElementBases > &gbases, Eigen::MatrixXd &val) const override;
+		void initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 
 		bool has_exact_sol() const override { return false; }
 		bool is_scalar() const override { return true; }

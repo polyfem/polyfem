@@ -21,7 +21,7 @@ namespace polyfem
 		virtual void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const = 0;
 		virtual void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const = 0;
 		virtual void neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const { }
-		virtual void initial_solution(const int n_bases, const std::vector< ElementBases > &gbases, Eigen::MatrixXd &val) const { }
+		virtual void initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { }
 
 		virtual void exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { };
 		virtual void exact_grad(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { };

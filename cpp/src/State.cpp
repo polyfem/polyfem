@@ -1331,6 +1331,16 @@ namespace polyfem
 
 		if(problem->is_time_dependent())
 		{
+			RhsAssembler rhs_assembler(*mesh, n_bases, problem->is_scalar()? 1 : mesh->dimension(), bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
+			rhs_assembler.initial_solution(sol);
+
+			double tend = args["tend"];
+			int time_steps = args["time_steps"];
+			double dt = tend/time_steps;
+
+			save_vtu( "step_" + std::to_string(0) + ".vtu");
+			save_wire("step_" + std::to_string(0) + ".obj");
+
 			if(problem->is_scalar())
 			{
 				auto solver = LinearSolver::create(args["solver_type"], args["precond_type"]);
@@ -1339,22 +1349,14 @@ namespace polyfem
 
 				Eigen::SparseMatrix<double> A;
 				Eigen::VectorXd b, x;
-
-				problem->initial_solution(n_bases, iso_parametric() ? bases : geom_bases, sol);
-
-
-				double tend = args["tend"];
-				int time_steps = args["time_steps"];
-				double dt = tend/time_steps;
-
-
-				save_vtu( "step_" + std::to_string(0) + ".vtu");
-				save_wire("step_" + std::to_string(0) + ".obj");
+				Eigen::MatrixXd current_rhs;
 
 				for(int t = 1; t <= time_steps; ++t)
 				{
+					rhs_assembler.compute_energy_grad(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs, dt*t, current_rhs);
+
 					A = mass + dt * stiffness;
-					b = dt * rhs + mass * sol;
+					b = dt * current_rhs + mass * sol;
 
 					dirichlet_solve(*solver, A, b, boundary_nodes, x, args["stiffness_mat_save_path"]);
 					sol = x;

@@ -52,6 +52,38 @@ namespace polyfem
 		}
 	}
 
+	void RhsAssembler::initial_solution(Eigen::MatrixXd &sol) const
+	{
+		sol = Eigen::MatrixXd::Zero(n_basis_ * size_, 1);
+		Eigen::MatrixXd loc_sol;
+
+		const int n_elements = int(bases_.size());
+		for(int e = 0; e < n_elements; ++e)
+		{
+			ElementAssemblyValues vals;
+			vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
+
+			const Quadrature &quadrature = vals.quadrature;
+			problem_.initial_solution(vals.val, loc_sol);
+
+			for(int d = 0; d < size_; ++d)
+				loc_sol.col(d) = loc_sol.col(d).array() * vals.det.array() * quadrature.weights.array();
+
+			const int n_loc_bases_ = int(vals.basis_values.size());
+			for(int i = 0; i < n_loc_bases_; ++i)
+			{
+				const AssemblyValues &v = vals.basis_values[i];
+
+				for(int d = 0; d < size_; ++d)
+				{
+					const double sol_value = (loc_sol.col(d).array() * v.val.array()).sum();
+					for(std::size_t ii = 0; ii < v.global.size(); ++ii)
+						sol(v.global[ii].index*size_+d) +=  sol_value * v.global[ii].val;
+				}
+			}
+		}
+	}
+
 	void RhsAssembler::set_bc(const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector< LocalBoundary > &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t) const
 	{
 		const int n_el=int(bases_.size());
@@ -231,30 +263,6 @@ namespace polyfem
 		//Neumann
 		Eigen::MatrixXd points;
 		Eigen::VectorXd weights;
-		// for(const auto &lb : local_neumann_boundary)
-		// {
-		// 	const int e = lb.element_id();
-		// 	bool has_samples = boundary_quadrature(lb, resolution/3, true, points, weights, global_primitive_ids);
-
-		// 	if(!has_samples)
-		// 		continue;
-
-		// 	const ElementBases &bs = bases_[e];
-		// 	for(int i = 0; i < lb.size(); ++i)
-		// 	{
-		// 		const int primitive_global_id = lb.global_primitive_id(i);
-		// 		const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, mesh_);
-
-		// 		for(long n = 0; n < nodes.size(); ++n){
-		// 			const auto &b = bs.bases[nodes(n)];
-		// 			for(size_t g = 0; g < b.global().size(); ++g){
-		// 				for(int d = 0; d < size_; ++d){
-		// 					rhs(b.global()[g].index*size_+d) = 0;
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-		// }
 
 		for(const auto &lb : local_neumann_boundary)
 		{
@@ -301,8 +309,12 @@ namespace polyfem
 
 	void RhsAssembler::compute_energy_grad(const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector< LocalBoundary > &local_neumann_boundary, const Eigen::MatrixXd &final_rhs, const double t, Eigen::MatrixXd &rhs) const
 	{
-		if(problem_.is_linear_in_time())
-			rhs = final_rhs * t;
+		if(problem_.is_linear_in_time()){
+			if(problem_.is_time_dependent())
+				rhs = final_rhs;
+			else
+				rhs = final_rhs * t;
+		}
 		else
 		{
 			assemble(rhs, t);

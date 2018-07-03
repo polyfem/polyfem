@@ -249,9 +249,9 @@ namespace polyfem
 		val = Eigen::MatrixXd::Zero(pts.rows(), 1);
 	}
 
-	void TimeDependentProblem::initial_solution(const int n_bases, const std::vector< ElementBases > &gbases, Eigen::MatrixXd &val) const
+	void TimeDependentProblem::initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
-		val = Eigen::MatrixXd::Zero(n_bases, 1);
+		val = Eigen::MatrixXd::Zero(pts.rows(), 1);
 	}
 
 }
