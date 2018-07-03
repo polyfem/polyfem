@@ -131,7 +131,7 @@ namespace cppoptlib {
 			this->m_current.reset();
 			AssemblerUtils::instance().clear_cache();
 
-			int next_hessian = 0;
+			size_t next_hessian = 0;
 			do
 			{
 				time.start();
@@ -204,23 +204,23 @@ namespace cppoptlib {
 
 				if(std::isnan(energy))
 				{
-					if(new_hessian)
-					{
-						this->m_status = Status::UserDefined;
-						std::cerr<<"stopping because obj func is nan"<<std::endl;
-					}
-					else
-					{
-						next_hessian = this->m_current.iterations + 1;
-						if(verbose)
-							std::cout<<"Step small force recompute hessian"<<std::endl;
-					}
+					this->m_status = Status::UserDefined;
+					std::cerr<<"stopping because obj func is nan"<<std::endl;
 				}
 
 				if(this->m_status == Status::Continue && step < 1e-10)
 				{
-					this->m_status = Status::UserDefined;
-					std::cerr<<"stopping because ||step||=" << step << " is too small"<<std::endl;
+					if(new_hessian)
+					{
+						this->m_status = Status::UserDefined;
+						std::cerr<<"stopping because ||step||=" << step << " is too small"<<std::endl;
+					}
+					else
+					{
+						next_hessian = this->m_current.iterations;
+						if(verbose)
+							std::cout<<"\tstep small force recompute hessian"<<std::endl;
+					}
 				}
 
 				if(verbose)
