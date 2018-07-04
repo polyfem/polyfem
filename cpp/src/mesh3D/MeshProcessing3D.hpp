@@ -56,6 +56,9 @@ namespace polyfem{
 		void  orient_surface_mesh(Mesh3DStorage &hmi);
 		void  orient_volume_mesh(Mesh3DStorage &hmi);
 		void ele_subdivison_levels(const Mesh3DStorage &hmi, std::vector<int> & Ls);
+
+		//template<typename T>
+		void set_intersection_own(const std::vector<uint32_t> &A, const std::vector<uint32_t> &B, std::vector<uint32_t> &C, int &num);
 	} // namespace Navigation3D
 } // namespace polyfem
 

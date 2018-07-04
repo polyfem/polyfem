@@ -42,9 +42,10 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_face(
 		idx.face_corner = find(M.faces[idx.face].vs.begin(), M.faces[idx.face].vs.end(), idx.vertex) - M.faces[idx.face].vs.begin();
 
 		int v0 = idx.vertex, v1 = M.elements[hi].vs[1];
-		vector<uint32_t> ves0 = M.vertices[v0].neighbor_es, ves1 = M.vertices[v1].neighbor_es, sharedes;
-		sort(ves0.begin(), ves0.end()); sort(ves1.begin(), ves1.end());
-		set_intersection(ves0.begin(), ves0.end(), ves1.begin(), ves1.end(), back_inserter(sharedes));
+		const vector<uint32_t> &ves0 = M.vertices[v0].neighbor_es, &ves1 = M.vertices[v1].neighbor_es;
+		vector<uint32_t> sharedes;
+		int num=1;
+		MeshProcessing3D::set_intersection_own(ves0, ves1,sharedes, num);
 		assert(sharedes.size() == 1);
 		idx.edge = sharedes[0];
 	}
@@ -89,9 +90,13 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::switch_vertex(const Mesh3DSt
 
 polyfem::Navigation3D::Index polyfem::Navigation3D::switch_edge(const Mesh3DStorage &M, Index idx) {
 
-	vector<uint32_t> ves = M.vertices[idx.vertex].neighbor_es, fes = M.faces[idx.face].es, sharedes;
-	sort(fes.begin(), fes.end()); sort(ves.begin(), ves.end());
-	set_intersection(fes.begin(), fes.end(), ves.begin(), ves.end(), back_inserter(sharedes));
+	//vector<uint32_t> ves = M.vertices[idx.vertex].neighbor_es, fes = M.faces[idx.face].es, sharedes;
+	//sort(fes.begin(), fes.end()); sort(ves.begin(), ves.end());
+	//set_intersection(fes.begin(), fes.end(), ves.begin(), ves.end(), back_inserter(sharedes));
+	const vector<uint32_t> &ves = M.vertices[idx.vertex].neighbor_es, &fes = M.faces[idx.face].es;
+	vector<uint32_t> sharedes;
+	int num=2;
+	MeshProcessing3D::set_intersection_own(ves, fes,sharedes, num);
 	assert(sharedes.size() == 2);//true for sure
 	if (sharedes[0] == idx.edge) idx.edge = sharedes[1];else idx.edge = sharedes[0];
 
@@ -100,9 +105,13 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::switch_edge(const Mesh3DStor
 
 polyfem::Navigation3D::Index polyfem::Navigation3D::switch_face(const Mesh3DStorage &M, Index idx) {
 
-	vector<uint32_t> efs = M.edges[idx.edge].neighbor_fs, hfs = M.elements[idx.element].fs, sharedfs;
-	sort(hfs.begin(), hfs.end()); sort(efs.begin(), efs.end());
-	set_intersection(hfs.begin(), hfs.end(), efs.begin(), efs.end(), back_inserter(sharedfs));
+	//vector<uint32_t> efs = M.edges[idx.edge].neighbor_fs, hfs = M.elements[idx.element].fs, sharedfs;
+	//sort(hfs.begin(), hfs.end()); sort(efs.begin(), efs.end());
+	//set_intersection(hfs.begin(), hfs.end(), efs.begin(), efs.end(), back_inserter(sharedfs));
+	const vector<uint32_t> &efs = M.edges[idx.edge].neighbor_fs, &hfs = M.elements[idx.element].fs;
+	vector<uint32_t> sharedfs;
+	int num=2;
+	MeshProcessing3D::set_intersection_own(efs, hfs,sharedfs, num);
 	assert(sharedfs.size() == 2);//true for sure
 	if (sharedfs[0] == idx.face) idx.face = sharedfs[1]; else idx.face = sharedfs[0];
 	idx.face_corner = std::find(M.faces[idx.face].vs.begin(), M.faces[idx.face].vs.end(), idx.vertex) - M.faces[idx.face].vs.begin();
