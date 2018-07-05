@@ -54,28 +54,10 @@ namespace polyfem
 		const std::vector< ElementBases > &gbases,
 		Eigen::SparseMatrix<double> &mass)
 	{
-		if(assembler == "Helmholtz")
-			helmholtz_.assemble_mass_matrix(is_volume, n_basis, bases, gbases, mass);
-		else if(assembler == "Laplacian")
-			laplacian_.assemble_mass_matrix(is_volume, n_basis, bases, gbases, mass);
-
-		else if(assembler == "LinearElasticity")
-			linear_elasticity_.assemble_mass_matrix(is_volume, n_basis, bases, gbases, mass);
-		else if(assembler == "HookeLinearElasticity")
-			hooke_linear_elasticity_.assemble_mass_matrix(is_volume, n_basis, bases, gbases, mass);
-
-		// else if(assembler == "SaintVenant")
-		// 	saint_venant_elasticity_.assemble_mass_matrix(is_volume, n_basis, bases, gbases, mass);
-		// else if(assembler == "NeoHookean")
-		// 	neo_hookean_elasticity_.assemble_mass_matrix(is_volume, n_basis, bases, gbases, mass);
-		// else if(assembler == "Ogden")
-		// 	ogden_elasticity_.assemble_mass_matrix(is_volume, n_basis, bases, gbases, mass);
+		if(assembler == "Helmholtz" || assembler == "Laplacian")
+			mass_mat_assembler_.assemble(is_volume, 1, n_basis, bases, gbases, mass);
 		else
-		{
-			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;
-			assert(false);
-			laplacian_.assemble_mass_matrix(is_volume, n_basis, bases, gbases, mass);
-		}
+			mass_mat_assembler_.assemble(is_volume, is_volume? 3 : 2, n_basis, bases, gbases, mass);
 	}
 
 	void AssemblerUtils::assemble_tensor_problem(const std::string &assembler,

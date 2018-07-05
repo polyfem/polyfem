@@ -1,8 +1,11 @@
 #pragma once
 
+
+
 #include <polyfem/Common.hpp>
 
 #include <polyfem/Assembler.hpp>
+#include <polyfem/MassMatrixAssembler.hpp>
 
 #include <polyfem/Laplacian.hpp>
 #include <polyfem/Helmholtz.hpp>
@@ -106,6 +109,7 @@ namespace polyfem
 		void clear_cache();
 
 	private:
+		MassMatrixAssembler mass_mat_assembler_;
 		Assembler<Laplacian> laplacian_;
 		Assembler<Helmholtz> helmholtz_;
 

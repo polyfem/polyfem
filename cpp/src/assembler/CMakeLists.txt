@@ -12,6 +12,8 @@ set(SOURCES
 	Laplacian.hpp
 	LinearElasticity.cpp
 	LinearElasticity.hpp
+	MassMatrixAssembler.cpp
+	MassMatrixAssembler.hpp
 	NeoHookeanElasticity.cpp
 	NeoHookeanElasticity.hpp
 	OgdenElasticity.cpp

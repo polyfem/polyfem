@@ -11,10 +11,11 @@
 
 #include <igl/Timer.h>
 
+#ifdef USE_TBB
 #include <tbb/parallel_for.h>
 #include <tbb/task_scheduler_init.h>
 #include <tbb/enumerable_thread_specific.h>
-
+#endif
 
 class LocalThreadMatStorage
 {
@@ -177,138 +178,6 @@ namespace polyfem
 		stiffness += loc_storage.tmp_mat;
 #endif
 		stiffness.makeCompressed();
-
-		// stiffness.resize(n_basis*local_assembler_.size(), n_basis*local_assembler_.size());
-		// stiffness.setFromTriplets(entries.begin(), entries.end());
-	}
-
-
-	template<class LocalAssembler>
-	void Assembler<LocalAssembler>::assemble_mass_matrix(
-		const bool is_volume,
-		const int n_basis,
-		const std::vector< ElementBases > &bases,
-		const std::vector< ElementBases > &gbases,
-		Eigen::SparseMatrix<double> &mass)
-	{
-		const int buffer_size = std::min(long(1e8), long(n_basis) * local_assembler_.size());
-		std::cout<<"buffer_size "<<buffer_size<<std::endl;
-
-		mass.resize(n_basis*local_assembler_.size(), n_basis*local_assembler_.size());
-		mass.setZero();
-
-#ifdef USE_TBB
-		typedef tbb::enumerable_thread_specific< LocalThreadMatStorage > LocalStorage;
-		LocalStorage storages(LocalThreadMatStorage(buffer_size, mass.rows()));
-#else
-		LocalThreadMatStorage loc_storage(buffer_size, mass.rows());
-#endif
-
-		const int n_bases = int(bases.size());
-
-#ifdef USE_TBB
-		tbb::parallel_for( tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
-		LocalStorage::reference loc_storage = storages.local();
-		for (int e = r.begin(); e != r.end(); ++e) {
-#else
-		for(int e=0; e < n_bases; ++e) {
-#endif
-			ElementAssemblyValues vals;
-			igl::Timer timer; timer.start();
-			vals.compute(e, is_volume, bases[e], gbases[e]);
-
-			const Quadrature &quadrature = vals.quadrature;
-
-			assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
-			const QuadratureVector da = vals.det.array() * quadrature.weights.array();
-			const int n_loc_bases = int(vals.basis_values.size());
-
-			for(int i = 0; i < n_loc_bases; ++i)
-			{
-				// const AssemblyValues &values_i = vals.basis_values[i];
-				// const Eigen::MatrixXd &gradi = values_i.grad_t_m;
-				const auto &global_i = vals.basis_values[i].global;
-
-				for(int j = 0; j <= i; ++j)
-				{
-					// const AssemblyValues &values_j = vals.basis_values[j];
-					// const Eigen::MatrixXd &gradj = values_j.grad_t_m;
-					const auto &global_j = vals.basis_values[j].global;
-
-					const double tmp = (vals.basis_values[i].val.array() * vals.basis_values[j].val.array() * da.array()).sum();
-					Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> val(local_assembler_.size() * local_assembler_.size()); val.setZero();
-					for(int n = 0; n < local_assembler_.size(); ++n)
-						val(n*local_assembler_.size()+n) = tmp;
-
-
-					assert(val.size() == local_assembler_.size() * local_assembler_.size());
-
-					igl::Timer t1; t1.start();
-					for(int n = 0; n < local_assembler_.size(); ++n)
-					{
-						for(int m = 0; m < local_assembler_.size(); ++m)
-						{
-							const double local_value = val(n*local_assembler_.size()+m);
-							if (std::abs(local_value) < 1e-30) { continue; }
-
-							for(size_t ii = 0; ii < global_i.size(); ++ii)
-							{
-								const auto gi = global_i[ii].index*local_assembler_.size()+m;
-								const auto wi = global_i[ii].val;
-
-								for(size_t jj = 0; jj < global_j.size(); ++jj)
-								{
-									const auto gj = global_j[jj].index*local_assembler_.size()+n;
-									const auto wj = global_j[jj].val;
-
-									loc_storage.entries.emplace_back(gi, gj, local_value * wi * wj);
-									if (j < i) {
-										loc_storage.entries.emplace_back(gj, gi, local_value * wj * wi);
-									}
-
-									if(loc_storage.entries.size() >= 1e8)
-									{
-										loc_storage.tmp_mat.setFromTriplets(loc_storage.entries.begin(), loc_storage.entries.end());
-										loc_storage.stiffness += loc_storage.tmp_mat;
-										loc_storage.stiffness.makeCompressed();
-
-										loc_storage.entries.clear();
-										std::cout<<"cleaning memory..."<<std::endl;
-									}
-								}
-							}
-						}
-					}
-
-					// t1.stop();
-					// if (!vals.has_parameterization) { std::cout << "-- t1: " << t1.getElapsedTime() << std::endl; }
-
-				}
-
-			}
-
-			// timer.stop();
-			// if (!vals.has_parameterization) { std::cout << "-- Timer: " << timer.getElapsedTime() << std::endl; }
-#ifdef USE_TBB
-		}});
-#else
-		}
-#endif
-
-
-#ifdef USE_TBB
-		for (LocalStorage::iterator i = storages.begin(); i != storages.end();  ++i)
-		{
-			mass += i->stiffness;
-			i->tmp_mat.setFromTriplets(i->entries.begin(), i->entries.end());
-			mass += i->tmp_mat;
-		}
-#else
-		mass = loc_storage.stiffness;
-		loc_storage.tmp_mat.setFromTriplets(loc_storage.entries.begin(), loc_storage.entries.end());
-		mass += loc_storage.tmp_mat;
-#endif
-		mass.makeCompressed();
 
 		// stiffness.resize(n_basis*local_assembler_.size(), n_basis*local_assembler_.size());
 		// stiffness.setFromTriplets(entries.begin(), entries.end());

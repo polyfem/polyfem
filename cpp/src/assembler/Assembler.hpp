@@ -24,13 +24,6 @@ namespace polyfem
 			const std::vector< ElementBases > &gbases,
 			Eigen::SparseMatrix<double> &stiffness);
 
-		void assemble_mass_matrix(
-			const bool is_volume,
-			const int n_basis,
-			const std::vector< ElementBases > &bases,
-			const std::vector< ElementBases > &gbases,
-			Eigen::SparseMatrix<double> &mass);
-
 		inline LocalAssembler &local_assembler() { return local_assembler_; }
 		inline const LocalAssembler &local_assembler() const { return local_assembler_; }
 

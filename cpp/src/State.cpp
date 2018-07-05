@@ -1703,8 +1703,8 @@ namespace polyfem
 			{"problem", "Franke"},
 			{"normalize_mesh", true},
 
-			{"tend", 10},
-			{"time_steps", 100},
+			{"tend", 1},
+			{"time_steps", 10},
 
 			{"scalar_formulation", "Laplacian"},
 			{"tensor_formulation", "LinearElasticity"},
