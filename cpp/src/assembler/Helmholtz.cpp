@@ -35,9 +35,9 @@ namespace polyfem
 		}
 	}
 
-	Eigen::Matrix<AutodiffPt, Eigen::Dynamic, 1, 0, 3, 1> Helmholtz::kernel(const int dim, const AutodiffPt &r) const
+	Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> Helmholtz::kernel(const int dim, const AutodiffScalarGrad &r) const
 	{
-		Eigen::Matrix<AutodiffPt, Eigen::Dynamic, 1, 0, 3, 1> res(1);
+		Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> res(1);
 
 		if(dim == 2)
 			res(0) = -0.25*bessy0(k_*r);

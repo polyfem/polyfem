@@ -24,9 +24,9 @@ namespace polyfem
 		return result;
 	}
 
-	Eigen::Matrix<AutodiffPt, Eigen::Dynamic, 1, 0, 3, 1> Laplacian::kernel(const int dim, const AutodiffPt &r) const
+	Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> Laplacian::kernel(const int dim, const AutodiffScalarGrad &r) const
 	{
-		Eigen::Matrix<AutodiffPt, Eigen::Dynamic, 1, 0, 3, 1> res(1);
+		Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> res(1);
 
 		if(dim == 2)
 			res(0) = -1./(2*M_PI) * log(r);

@@ -252,7 +252,7 @@ namespace polyfem
 	}
 
 
-	Eigen::Matrix<AutodiffPt, Eigen::Dynamic, 1, 0, 3, 1> AssemblerUtils::kernel(const std::string &assembler, const int dim, const AutodiffPt &r) const
+	Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> AssemblerUtils::kernel(const std::string &assembler, const int dim, const AutodiffScalarGrad &r) const
 	{
 		if(assembler == "Laplacian")
 			return laplacian_.local_assembler().kernel(dim, r);
