@@ -32,7 +32,7 @@ namespace polyfem
 		const int n_basis,
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
-		Eigen::SparseMatrix<double> &mass)
+		Eigen::SparseMatrix<double> &mass) const
 	{
 		const int buffer_size = std::min(long(1e8), long(n_basis) * size);
 		std::cout<<"buffer_size "<<buffer_size<<std::endl;

@@ -22,7 +22,7 @@ namespace polyfem
 			const int n_basis,
 			const std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
-			Eigen::SparseMatrix<double> &stiffness);
+			Eigen::SparseMatrix<double> &stiffness) const;
 
 		inline LocalAssembler &local_assembler() { return local_assembler_; }
 		inline const LocalAssembler &local_assembler() const { return local_assembler_; }
@@ -50,7 +50,7 @@ namespace polyfem
 			const std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
 			const Eigen::MatrixXd &displacement,
-			Eigen::SparseMatrix<double> &grad);
+			Eigen::SparseMatrix<double> &grad) const;
 
 		double compute_energy(
 			const bool is_volume,

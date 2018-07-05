@@ -36,21 +36,21 @@ namespace polyfem
 			const int n_basis,
 			const std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
-			Eigen::SparseMatrix<double> &stiffness);
+			Eigen::SparseMatrix<double> &stiffness) const;
 
 		void assemble_mass_matrix(const std::string &assembler,
 			const bool is_volume,
 			const int n_basis,
 			const std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
-			Eigen::SparseMatrix<double> &mass);
+			Eigen::SparseMatrix<double> &mass) const;
 
 		void assemble_tensor_problem(const std::string &assembler,
 			const bool is_volume,
 			const int n_basis,
 			const std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
-			Eigen::SparseMatrix<double> &stiffness);
+			Eigen::SparseMatrix<double> &stiffness) const;
 
 
 		//Non linear
@@ -58,7 +58,7 @@ namespace polyfem
 			const bool is_volume,
 			const std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
-			const Eigen::MatrixXd &displacement);
+			const Eigen::MatrixXd &displacement) const;
 
 		void assemble_tensor_energy_gradient(const std::string &assembler,
 			const bool is_volume,
@@ -66,7 +66,7 @@ namespace polyfem
 			const std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
 			const Eigen::MatrixXd &displacement,
-			Eigen::MatrixXd &grad);
+			Eigen::MatrixXd &grad) const;
 
 		void assemble_tensor_energy_hessian(const std::string &assembler,
 			const bool is_volume,
@@ -74,7 +74,7 @@ namespace polyfem
 			const std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
 			const Eigen::MatrixXd &displacement,
-			Eigen::SparseMatrix<double> &hessian);
+			Eigen::SparseMatrix<double> &hessian) const;
 
 
 		//plotting

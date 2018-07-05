@@ -427,7 +427,27 @@ namespace polyfem
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 	}
 
+	void GravityProblem::velocity_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+	}
+
+	void GravityProblem::acceleration_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+	}
+
 	void GravityProblem::initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+	}
+
+	void GravityProblem::initial_velocity(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+	}
+	
+	void GravityProblem::initial_acceleration(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 	}

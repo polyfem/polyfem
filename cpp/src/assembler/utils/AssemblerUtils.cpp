@@ -33,7 +33,7 @@ namespace polyfem
 		const int n_basis,
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
-		Eigen::SparseMatrix<double> &stiffness)
+		Eigen::SparseMatrix<double> &stiffness) const
 	{
 		if(assembler == "Helmholtz")
 			helmholtz_.assemble(is_volume, n_basis, bases, gbases, stiffness);
@@ -52,7 +52,7 @@ namespace polyfem
 		const int n_basis,
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
-		Eigen::SparseMatrix<double> &mass)
+		Eigen::SparseMatrix<double> &mass) const
 	{
 		if(assembler == "Helmholtz" || assembler == "Laplacian")
 			mass_mat_assembler_.assemble(is_volume, 1, n_basis, bases, gbases, mass);
@@ -65,7 +65,7 @@ namespace polyfem
 		const int n_basis,
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
-		Eigen::SparseMatrix<double> &stiffness)
+		Eigen::SparseMatrix<double> &stiffness) const
 	{
 		if(assembler == "LinearElasticity")
 			linear_elasticity_.assemble(is_volume, n_basis, bases, gbases, stiffness);
@@ -94,7 +94,7 @@ namespace polyfem
 		const bool is_volume,
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
-		const Eigen::MatrixXd &displacement)
+		const Eigen::MatrixXd &displacement) const
 	{
 		if(assembler == "SaintVenant")
 			return saint_venant_elasticity_.compute_energy(is_volume, bases, gbases, displacement);
@@ -112,7 +112,7 @@ namespace polyfem
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
 		const Eigen::MatrixXd &displacement,
-		Eigen::MatrixXd &grad)
+		Eigen::MatrixXd &grad) const
 	{
 		if(assembler == "SaintVenant")
 			saint_venant_elasticity_.assemble(is_volume, n_basis, bases, gbases, displacement, grad);
@@ -130,7 +130,7 @@ namespace polyfem
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
 		const Eigen::MatrixXd &displacement,
-		Eigen::SparseMatrix<double> &hessian)
+		Eigen::SparseMatrix<double> &hessian) const
 	{
 		if(assembler == "SaintVenant")
 			saint_venant_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, hessian);

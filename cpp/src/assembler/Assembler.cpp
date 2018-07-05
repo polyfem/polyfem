@@ -17,53 +17,57 @@
 #include <tbb/enumerable_thread_specific.h>
 #endif
 
-class LocalThreadMatStorage
-{
-public:
-	std::vector< Eigen::Triplet<double> > entries;
-	Eigen::SparseMatrix<double> tmp_mat;
-	Eigen::SparseMatrix<double> stiffness;
-
-	LocalThreadMatStorage(const int buffer_size, const int mat_size)
-	{
-		entries.reserve(buffer_size);
-		tmp_mat.resize(mat_size, mat_size);
-		stiffness.resize(mat_size, mat_size);
-	}
-};
-
-class LocalThreadVecStorage
-{
-public:
-	Eigen::MatrixXd vec;
-
-	LocalThreadVecStorage(const int size)
-	{
-		vec.resize(size, 1);
-		vec.setZero();
-	}
-};
-
-class LocalThreadScalarStorage
-{
-public:
-	double val;
-
-	LocalThreadScalarStorage()
-	{
-		val = 0;
-	}
-};
 
 namespace polyfem
 {
+	namespace
+	{
+		class LocalThreadMatStorage
+		{
+		public:
+			std::vector< Eigen::Triplet<double> > entries;
+			Eigen::SparseMatrix<double> tmp_mat;
+			Eigen::SparseMatrix<double> stiffness;
+
+			LocalThreadMatStorage(const int buffer_size, const int mat_size)
+			{
+				entries.reserve(buffer_size);
+				tmp_mat.resize(mat_size, mat_size);
+				stiffness.resize(mat_size, mat_size);
+			}
+		};
+
+		class LocalThreadVecStorage
+		{
+		public:
+			Eigen::MatrixXd vec;
+
+			LocalThreadVecStorage(const int size)
+			{
+				vec.resize(size, 1);
+				vec.setZero();
+			}
+		};
+
+		class LocalThreadScalarStorage
+		{
+		public:
+			double val;
+
+			LocalThreadScalarStorage()
+			{
+				val = 0;
+			}
+		};
+	}
+
 	template<class LocalAssembler>
 	void Assembler<LocalAssembler>::assemble(
 		const bool is_volume,
 		const int n_basis,
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
-		Eigen::SparseMatrix<double> &stiffness)
+		Eigen::SparseMatrix<double> &stiffness) const
 	{
 		const int buffer_size = std::min(long(1e8), long(n_basis) * local_assembler_.size());
 		std::cout<<"buffer_size "<<buffer_size<<std::endl;
@@ -276,7 +280,7 @@ namespace polyfem
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
 		const Eigen::MatrixXd &displacement,
-		Eigen::SparseMatrix<double> &grad)
+		Eigen::SparseMatrix<double> &grad) const
 	{
 		const int buffer_size = std::min(long(1e8), long(n_basis) * local_assembler_.size());
 		// std::cout<<"buffer_size "<<buffer_size<<std::endl;

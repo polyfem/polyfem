@@ -1360,8 +1360,6 @@ namespace polyfem
 			}
 			else
 			{
-				assert(assembler.is_linear(formulation()));
-
 				const double beta1 = 0.5;
 				const double beta2 = 0.5;
 
@@ -1371,13 +1369,9 @@ namespace polyfem
 				Eigen::MatrixXd current_rhs = rhs;
 
 
-				Eigen::MatrixXd acceleration, velocity;
-				acceleration.resizeLike(sol);
-				velocity.resizeLike(sol);
-
-				//TODO maybe initilize them with some problem settings
-				acceleration.setZero();
-				velocity.setZero();
+				Eigen::MatrixXd velocity, acceleration;
+				rhs_assembler.initial_velocity(velocity);
+				rhs_assembler.initial_acceleration(acceleration);
 
 				for(int t = 1; t <= time_steps; ++t)
 				{
@@ -1392,11 +1386,16 @@ namespace polyfem
 						rhs_assembler.assemble(current_rhs, t);
 						current_rhs *= -1;
 					}
+
+					if(!assembler.is_linear(formulation()))
+					{
+						assembler.assemble_tensor_energy_hessian(rhs_assembler.formulation(), mesh->is_volume(), n_bases, bases, bases, uOld, stiffness);
+					}
+
 					temp = -(uOld + dt * vOld + ((1-beta1)*dt2/2.0)*aOld);
 					b = stiffness * temp + current_rhs;
 
-					//TODO use acceleration of BC, works only becasuse is all zero
-					rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, b, dt*t);
+					rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, b, dt*t);
 
 					A = stiffness * 0.5 * beta2 * dt2 + mass;
 					btmp = b;
@@ -1406,10 +1405,9 @@ namespace polyfem
 					sol += dt*vOld + 0.5 * dt2 * ((1 - beta2) * aOld + beta2 * acceleration);
 					velocity += dt*((1-beta1)* aOld + beta1*acceleration);
 
-					//TODO use derivative of BC, works only becasuse is all zero
 					rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, dt*t);
-					rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, dt*t);
-					rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, dt*t);
+					rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, dt*t);
+					rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, dt*t);
 
 
 					save_vtu( "step_" + std::to_string(t) + ".vtu");
@@ -1699,7 +1697,7 @@ namespace polyfem
 			{"n_refs", 0},
 			{"vismesh_rel_area", 0.00001},
 			{"refinenemt_location", 0.5},
-			{"n_boundary_samples", 10},
+			{"n_boundary_samples", 4},
 			{"problem", "Franke"},
 			{"normalize_mesh", true},
 

@@ -19,9 +19,14 @@ namespace polyfem
 		Problem(const std::string &name);
 
 		virtual void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const = 0;
+
 		virtual void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const = 0;
+		virtual void velocity_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const { }
+		virtual void acceleration_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const { }
+
 		virtual void neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const { }
-		virtual void initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { }
+		virtual void neumann_velocity_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const { }
+		virtual void neumann_acceleration_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const { }
 
 		virtual void exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { };
 		virtual void exact_grad(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { };
@@ -31,7 +36,12 @@ namespace polyfem
 		virtual bool has_exact_sol() const = 0;
 		virtual bool is_scalar() const = 0;
 		virtual bool is_linear_in_time() const { return true; }
+
+
 		virtual bool is_time_dependent() const { return false; }
+		virtual void initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { }
+		virtual void initial_velocity(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { }
+		virtual void initial_acceleration(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { }
 
 		virtual void set_parameters(const json &params) { }
 
