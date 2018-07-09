@@ -1360,6 +1360,9 @@ namespace polyfem
 			}
 			else
 			{
+				assert(assembler.is_linear(formulation()));
+
+				//Newmark
 				const double beta1 = 0.5;
 				const double beta2 = 0.5;
 
@@ -1387,10 +1390,10 @@ namespace polyfem
 						current_rhs *= -1;
 					}
 
-					if(!assembler.is_linear(formulation()))
-					{
-						assembler.assemble_tensor_energy_hessian(rhs_assembler.formulation(), mesh->is_volume(), n_bases, bases, bases, uOld, stiffness);
-					}
+					// if(!assembler.is_linear(formulation()))
+					// {
+					// 	assembler.assemble_tensor_energy_hessian(rhs_assembler.formulation(), mesh->is_volume(), n_bases, bases, bases, uOld, stiffness);
+					// }
 
 					temp = -(uOld + dt * vOld + ((1-beta1)*dt2/2.0)*aOld);
 					b = stiffness * temp + current_rhs;
