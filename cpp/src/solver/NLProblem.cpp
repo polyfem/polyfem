@@ -24,20 +24,6 @@ namespace polyfem
 
 	NLProblem::TVector NLProblem::initial_guess()
 	{
-		// const auto &state = State::state();
-
-		// auto solver = LinearSolver::create(state.args["solver_type"], state.args["precond_type"]);
-		// solver->setParameters(state.solver_params());
-		// Eigen::VectorXd b, x, guess;
-
-		// Eigen::SparseMatrix<double> A;
-		// assembler.assemble_tensor_problem("HookeLinearElasticity", state.mesh->is_volume(), state.n_bases, state.bases, state.iso_parametric() ? state.bases : state.geom_bases, A);
-
-		// b = state.rhs;
-		// state.spectrum = dirichlet_solve(*solver, A, b, state.boundary_nodes, x, true, true);
-
-		// full_to_reduced(x, guess);
-
 		Eigen::VectorXd guess(reduced_size);
 		guess.setZero();
 
@@ -48,7 +34,7 @@ namespace polyfem
 		Eigen::MatrixXd full;
 		reduced_to_full(x, full);
 
-		const double elastic_energy = assembler.assemble_tensor_energy(rhs_assembler.formulation(), State::state().mesh->is_volume(), State::state().bases, State::state().bases, full);
+		const double elastic_energy = assembler.assemble_energy(rhs_assembler.formulation(), State::state().mesh->is_volume(), State::state().bases, State::state().bases, full);
 		const double body_energy 	= rhs_assembler.compute_energy(full, State::state().local_neumann_boundary, t);
 
 		return elastic_energy + body_energy;
@@ -61,7 +47,7 @@ namespace polyfem
 		reduced_to_full(x, full);
 
 		Eigen::MatrixXd grad;
-		assembler.assemble_tensor_energy_gradient(rhs_assembler.formulation(), State::state().mesh->is_volume(), State::state().n_bases, State::state().bases, State::state().bases, full, grad);
+		assembler.assemble_energy_gradient(rhs_assembler.formulation(), State::state().mesh->is_volume(), State::state().n_bases, State::state().bases, State::state().bases, full, grad);
 		if(!rhs_computed)
 		{
 			rhs_assembler.compute_energy_grad(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, state.rhs, t, current_rhs);
@@ -77,7 +63,7 @@ namespace polyfem
 		reduced_to_full(x, full);
 
 		Eigen::SparseMatrix<double> tmp;
-		assembler.assemble_tensor_energy_hessian(rhs_assembler.formulation(), State::state().mesh->is_volume(), State::state().n_bases, State::state().bases, State::state().bases, full, tmp);
+		assembler.assemble_energy_hessian(rhs_assembler.formulation(), State::state().mesh->is_volume(), State::state().n_bases, State::state().bases, State::state().bases, full, tmp);
 		// Eigen::saveMarket(tmp, "tmp.mat");
 		// exit(0);
 

@@ -37,6 +37,7 @@ namespace polyfem
 
 
 		std::vector< ElementBases >    bases;
+		std::vector< ElementBases >    pressure_bases;
 		std::vector< ElementBases >    geom_bases;
 
 		std::vector< int >                   boundary_nodes;
@@ -56,14 +57,14 @@ namespace polyfem
 
 		Eigen::SparseMatrix<double> stiffness, mass;
 		Eigen::MatrixXd rhs;
-		Eigen::MatrixXd sol;
+		Eigen::MatrixXd sol, pressure;
 
 		Eigen::Vector4d spectrum;
 
 
 		json solver_info;
 
-		int n_bases;
+		int n_bases, n_pressure_bases;
 		Eigen::VectorXi disc_orders;
 
 		double mesh_size;
@@ -111,6 +112,7 @@ namespace polyfem
 		void export_data();
 
 		void interpolate_function(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result);
+		void interpolate_function(const int n_points, const int actual_dim, const std::vector< ElementBases > &basis, const MatrixXd &fun, MatrixXd &result);
 		void interpolate_boundary_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, MatrixXd &result);
 		void interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, MatrixXd &result);
 		void compute_scalar_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result);
@@ -125,7 +127,7 @@ namespace polyfem
 
 		inline std::string mesh_path() const { return args["mesh"]; }
 
-		inline std::string formulation() const { return problem->is_scalar() ? scalar_formulation() : tensor_formulation(); }
+		inline std::string formulation() const { return problem->is_stokes() ? stokes_formulation() : (problem->is_scalar() ? scalar_formulation() : tensor_formulation()); }
 		inline bool iso_parametric() const { return (!args["use_p_ref"] && args["discr_order"] == 1) || args["iso_parametric"]; }
 
 		inline std::string solver_type() const { return args["solver_type"]; }
@@ -134,6 +136,7 @@ namespace polyfem
 
 		inline std::string scalar_formulation() const { return args["scalar_formulation"]; }
 		inline std::string tensor_formulation() const { return args["tensor_formulation"]; }
+		inline std::string stokes_formulation() const { return args["stokes_formulation"]; }
 
 		void p_refinement(const Mesh2D &mesh2d);
 		void p_refinement(const Mesh3D &mesh3d);

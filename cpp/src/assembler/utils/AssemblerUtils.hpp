@@ -16,6 +16,8 @@
 #include <polyfem/NeoHookeanElasticity.hpp>
 #include <polyfem/OgdenElasticity.hpp>
 
+#include <polyfem/Stokes.hpp>
+
 #include <polyfem/ProblemWithSolution.hpp>
 
 #include <vector>
@@ -31,7 +33,7 @@ namespace polyfem
 		static AssemblerUtils &instance();
 
 		//Linear
-		void assemble_scalar_problem(const std::string &assembler,
+		void assemble_problem(const std::string &assembler,
 			const bool is_volume,
 			const int n_basis,
 			const std::vector< ElementBases > &bases,
@@ -45,22 +47,24 @@ namespace polyfem
 			const std::vector< ElementBases > &gbases,
 			Eigen::SparseMatrix<double> &mass) const;
 
-		void assemble_tensor_problem(const std::string &assembler,
+		void assemble_mixed_problem(const std::string &assembler,
 			const bool is_volume,
-			const int n_basis,
-			const std::vector< ElementBases > &bases,
+			const int n_psi_basis,
+			const int n_phi_basis,
+			const std::vector< ElementBases > &psi_bases,
+			const std::vector< ElementBases > &phi_bases,
 			const std::vector< ElementBases > &gbases,
 			Eigen::SparseMatrix<double> &stiffness) const;
 
 
 		//Non linear
-		double assemble_tensor_energy(const std::string &assembler,
+		double assemble_energy(const std::string &assembler,
 			const bool is_volume,
 			const std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
 			const Eigen::MatrixXd &displacement) const;
 
-		void assemble_tensor_energy_gradient(const std::string &assembler,
+		void assemble_energy_gradient(const std::string &assembler,
 			const bool is_volume,
 			const int n_basis,
 			const std::vector< ElementBases > &bases,
@@ -68,7 +72,7 @@ namespace polyfem
 			const Eigen::MatrixXd &displacement,
 			Eigen::MatrixXd &grad) const;
 
-		void assemble_tensor_energy_hessian(const std::string &assembler,
+		void assemble_energy_hessian(const std::string &assembler,
 			const bool is_volume,
 			const int n_basis,
 			const std::vector< ElementBases > &bases,
@@ -105,6 +109,7 @@ namespace polyfem
 		//getters
 		const std::vector<std::string> &scalar_assemblers() const { return scalar_assemblers_; }
 		const std::vector<std::string> &tensor_assemblers() const { return tensor_assemblers_; }
+		const std::vector<std::string> &stokes_assemblers() const { return stokes_assemblers_; }
 
 		void clear_cache();
 
@@ -120,7 +125,11 @@ namespace polyfem
 		NLAssembler<NeoHookeanElasticity> neo_hookean_elasticity_;
 		NLAssembler<OgdenElasticity> ogden_elasticity_;
 
+		Assembler<StokesVelocity> stokes_velocity_;
+		MixedAssembler<StokesPressure> stokes_pressure_;
+
 		std::vector<std::string> scalar_assemblers_;
 		std::vector<std::string> tensor_assemblers_;
+		std::vector<std::string> stokes_assemblers_;
 	};
 }

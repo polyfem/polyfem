@@ -22,6 +22,8 @@ set(SOURCES
 	RhsAssembler.hpp
 	SaintVenantElasticity.cpp
 	SaintVenantElasticity.hpp
+	Stokes.cpp
+	Stokes.hpp
 	utils/AssemblerUtils.cpp
 	utils/AssemblerUtils.hpp
 )

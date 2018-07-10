@@ -665,33 +665,37 @@ namespace polyfem
 
 		if(fun.cols() != 1)
 		{
-			// const MatrixXd ffun = (fun.array()*fun.array()).rowwise().sum().sqrt(); //norm of displacement, maybe replace with stress
-			// const MatrixXd ffun = fun.col(1); //y component
 			MatrixXd ffun(vis_pts.rows(), 1);
-
-			int size = state.mesh->dimension();
-
-			const auto &assembler = AssemblerUtils::instance();
-
-			MatrixXd stresses;
-			int counter = 0;
-			for(int i = 0; i < int(state.bases.size()); ++i)
+			if(state.problem->is_stokes()){
+				 //norm of displacement
+				ffun = (fun.array()*fun.array()).rowwise().sum().sqrt();
+			}
+			else
 			{
-				const ElementBases &bs = state.bases[i];
-				const ElementBases &gbs = gbases[i];
-				MatrixXd local_pts;
+				// int size = state.mesh->dimension();
 
-				if(state.mesh->is_simplex(i))
-					local_pts = sampler.simplex_points();
-				else if(state.mesh->is_cube(i))
-					local_pts = sampler.cube_points();
-				else
-					local_pts = vis_pts_poly[i];
+				const auto &assembler = AssemblerUtils::instance();
 
-				assembler.compute_scalar_value(state.tensor_formulation(), bs, gbs, local_pts, state.sol, stresses);
+				MatrixXd stresses;
+				int counter = 0;
+				for(int i = 0; i < int(state.bases.size()); ++i)
+				{
+					const ElementBases &bs = state.bases[i];
+					const ElementBases &gbs = gbases[i];
+					MatrixXd local_pts;
 
-				ffun.block(counter, 0, stresses.rows(), 1) = stresses;
-				counter += stresses.rows();
+					if(state.mesh->is_simplex(i))
+						local_pts = sampler.simplex_points();
+					else if(state.mesh->is_cube(i))
+						local_pts = sampler.cube_points();
+					else
+						local_pts = vis_pts_poly[i];
+
+					assembler.compute_scalar_value(state.tensor_formulation(), bs, gbs, local_pts, state.sol, stresses);
+
+					ffun.block(counter, 0, stresses.rows(), 1) = stresses;
+					counter += stresses.rows();
+				}
 			}
 
 			if(min < max)
@@ -713,8 +717,12 @@ namespace polyfem
 
 			MatrixXd ttmp = vis_pts;
 
-			for(long i = 0; i < fun.cols(); ++i) //apply displacement
-				ttmp.col(i) += fun.col(i);
+			if(!state.problem->is_stokes())
+			{
+				//apply displacement
+				for(long i = 0; i < fun.cols(); ++i)
+					ttmp.col(i) += fun.col(i);
+			}
 
 			MatrixXd tmp(ttmp.rows(),3); tmp.setZero();
 			for(long i = 0; i < ttmp.cols(); ++i)
@@ -979,6 +987,48 @@ namespace polyfem
 
 		if(visible_visualizations(Visualizations::BNodes))
 			show_data(Visualizations::BNodes);
+
+
+		if(state.n_pressure_bases <= 4500)
+		{
+			if((visible_visualizations(Visualizations::PNodes) || visible_visualizations(Visualizations::NodesId)) && !available_visualizations[Visualizations::PNodes])
+			{
+				reset_flags(Visualizations::PNodes);
+
+				col << 142./255., 68./255., 173./255.;
+
+				for(std::size_t i = 0; i < state.pressure_bases.size(); ++i)
+				{
+					const ElementBases &basis = state.pressure_bases[i];
+					Eigen::MatrixXd P(basis.bases.size(), 3);
+
+					for(std::size_t j = 0; j < basis.bases.size(); ++j)
+					{
+						for(std::size_t kk = 0; kk < basis.bases[j].global().size(); ++kk)
+						{
+							const Local2Global &l2g = basis.bases[j].global()[kk];
+							int g_index = l2g.index;
+
+							if(!state.problem->is_scalar())
+								g_index *= state.mesh->dimension();
+
+							MatrixXd node = l2g.node;
+							data(Visualizations::PNodes).add_points(node, col);
+
+							//TODO text is impossible to hide :(
+							// data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(l2g.index));
+						}
+					}
+				}
+
+				available_visualizations[Visualizations::PNodes] = true;
+				vis_flags[Visualizations::PNodes].clear();
+				hide_data(Visualizations::PNodes);
+			}
+
+			if(visible_visualizations(Visualizations::PNodes))
+				show_data(Visualizations::PNodes);
+		}
 
 
 		if(state.n_bases > 4500) return;

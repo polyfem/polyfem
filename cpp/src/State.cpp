@@ -195,6 +195,7 @@ namespace polyfem
 		j["num_boundary_samples"] = args["n_boundary_samples"];
 		j["num_refs"] = args["n_refs"];
 		j["num_bases"] = n_bases;
+		j["num_pressure_bases"] = n_pressure_bases;
 		j["num_non_zero"] = nn_zero;
 		j["num_flipped"] = n_flipped;
 		j["num_dofs"] = num_dofs;
@@ -626,14 +627,17 @@ namespace polyfem
 	}
 
 
-
 	void State::interpolate_function(const int n_points, const MatrixXd &fun, MatrixXd &result)
 	{
-		MatrixXd tmp;
-
 		int actual_dim = 1;
 		if(!problem->is_scalar())
 			actual_dim = mesh->dimension();
+		interpolate_function(n_points, actual_dim, bases, fun, result);
+	}
+
+	void State::interpolate_function(const int n_points, const int actual_dim, const std::vector< ElementBases > &basis, const MatrixXd &fun, MatrixXd &result)
+	{
+		MatrixXd tmp;
 
 		result.resize(n_points, actual_dim);
 
@@ -641,9 +645,9 @@ namespace polyfem
 		const auto &sampler = RefElementSampler::sampler();
 
 
-		for(int i = 0; i < int(bases.size()); ++i)
+		for(int i = 0; i < int(basis.size()); ++i)
 		{
-			const ElementBases &bs = bases[i];
+			const ElementBases &bs = basis[i];
 			MatrixXd local_pts;
 
 			if(mesh->is_simplex(i))
@@ -705,6 +709,7 @@ namespace polyfem
 	void State::load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd&)> &boundary_marker)
 	{
 		bases.clear();
+		pressure_bases.clear();
 		geom_bases.clear();
 		boundary_nodes.clear();
 		local_boundary.clear();
@@ -716,8 +721,10 @@ namespace polyfem
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
 		sol.resize(0, 0);
+		pressure.resize(0, 0);
 
 		n_bases = 0;
+		n_pressure_bases = 0;
 
 
 
@@ -755,6 +762,7 @@ namespace polyfem
 	void State::load_mesh()
 	{
 		bases.clear();
+		pressure_bases.clear();
 		geom_bases.clear();
 		boundary_nodes.clear();
 		local_boundary.clear();
@@ -766,8 +774,10 @@ namespace polyfem
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
 		sol.resize(0, 0);
+		pressure.resize(0, 0);
 
 		n_bases = 0;
+		n_pressure_bases = 0;
 
 
 
@@ -920,6 +930,7 @@ namespace polyfem
 	void State::compute_mesh_stats()
 	{
 		bases.clear();
+		pressure_bases.clear();
 		geom_bases.clear();
 		boundary_nodes.clear();
 		local_boundary.clear();
@@ -930,8 +941,11 @@ namespace polyfem
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
 		sol.resize(0, 0);
+		pressure.resize(0, 0);
+
 
 		n_bases = 0;
+		n_pressure_bases = 0;
 
 		simplex_count = 0;
 		regular_count = 0;
@@ -1051,6 +1065,7 @@ namespace polyfem
 	void State::build_basis()
 	{
 		bases.clear();
+		pressure_bases.clear();
 		geom_bases.clear();
 		boundary_nodes.clear();
 		local_boundary.clear();
@@ -1060,8 +1075,10 @@ namespace polyfem
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
 		sol.resize(0, 0);
+		pressure.resize(0, 0);
 
 		n_bases = 0;
+		n_pressure_bases = 0;
 
 
 		igl::Timer timer; timer.start();
@@ -1104,6 +1121,11 @@ namespace polyfem
 
 				n_bases = FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, bases, local_boundary, poly_edge_to_data);
 			}
+
+			if(problem->is_stokes())
+			{
+				n_pressure_bases = FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], int(args["pressure_discr_order"]), pressure_bases, local_boundary, poly_edge_to_data_geom);
+			}
 		}
 		else
 		{
@@ -1126,6 +1148,11 @@ namespace polyfem
 
 				n_bases = FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, bases, local_boundary, poly_edge_to_data);
 				// n_bases = SpectralBasis2d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, bases, geom_bases, local_boundary);
+			}
+
+			if(problem->is_stokes())
+			{
+				n_pressure_bases = FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], int(args["pressure_discr_order"]), pressure_bases, local_boundary, poly_edge_to_data_geom);
 			}
 		}
 
@@ -1188,6 +1215,7 @@ namespace polyfem
 		std::cout<<"flipped elements "<<n_flipped<<std::endl;
 		std::cout<<"h: "<<mesh_size<<std::endl;
 		std::cout<<"n bases: "<<n_bases<<std::endl;
+		std::cout<<"n pressure bases: "<<n_pressure_bases<<std::endl;
 	}
 
 
@@ -1196,6 +1224,8 @@ namespace polyfem
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
 		sol.resize(0, 0);
+		pressure.resize(0, 0);
+
 
 
 		// TODO, implement the poly bases for simplices
@@ -1206,6 +1236,9 @@ namespace polyfem
 		std::cout<<"Computing polygonal basis..."<<std::flush;
 
 		// std::sort(boundary_nodes.begin(), boundary_nodes.end());
+
+		//Stokes not supports polygonal bases
+		assert(n_pressure_bases == 0 || poly_edge_to_data.size() == 0);
 
 		if(iso_parametric())
 		{
@@ -1239,24 +1272,60 @@ namespace polyfem
 	{
 		stiffness.resize(0, 0);
 		sol.resize(0, 0);
+		pressure.resize(0, 0);
 
 		igl::Timer timer; timer.start();
 		std::cout<<"Assembling stiffness mat..."<<std::flush;
 
 		auto &assembler = AssemblerUtils::instance();
 
-		if(problem->is_scalar())
+		if(problem->is_stokes())
 		{
-			assembler.assemble_scalar_problem(scalar_formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, stiffness);
+			Eigen::SparseMatrix<double> velocity_stiffness, pressure_stiffness;
+			assembler.assemble_problem(stokes_formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, velocity_stiffness);
+			assembler.assemble_mixed_problem(stokes_formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, iso_parametric() ? bases : geom_bases, pressure_stiffness);
+
+			assert(velocity_stiffness.rows() == velocity_stiffness.cols());
+			assert(velocity_stiffness.rows() == n_bases * mesh->dimension());
+			assert(pressure_stiffness.rows() == n_bases * mesh->dimension());
+			assert(pressure_stiffness.cols() == n_pressure_bases);
+
+
+			std::vector< Eigen::Triplet<double> > blocks;
+			blocks.reserve(velocity_stiffness.nonZeros() + 2*pressure_stiffness.nonZeros());
+
+			for (int k = 0; k < velocity_stiffness.outerSize(); ++k)
+			{
+				for (Eigen::SparseMatrix<double>::InnerIterator it(velocity_stiffness, k); it; ++it)
+				{
+					blocks.emplace_back(it.row(), it.col(), it.value());
+				}
+			}
+
+			for (int k = 0; k < pressure_stiffness.outerSize(); ++k)
+			{
+				for (Eigen::SparseMatrix<double>::InnerIterator it(pressure_stiffness, k); it; ++it)
+				{
+					blocks.emplace_back(it.row(), n_bases * mesh->dimension() + it.col(), it.value());
+					blocks.emplace_back(it.col() + n_bases * mesh->dimension(), it.row(), it.value());
+				}
+			}
+
+			stiffness.resize(n_bases * mesh->dimension() + n_pressure_bases, n_bases * mesh->dimension() + n_pressure_bases);
+			stiffness.setFromTriplets(blocks.begin(), blocks.end());
+			stiffness.makeCompressed();
+
+			// Eigen::saveMarket(stiffness, "test.txt");
+			// Eigen::saveMarket(velocity_stiffness, "velocity_stiffness.txt");
+			// Eigen::saveMarket(pressure_stiffness, "pressure_stiffness.txt");
 		}
 		else
 		{
-			assembler.assemble_tensor_problem(tensor_formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, stiffness);
-		}
-
-		if(problem->is_time_dependent())
-		{
-			assembler.assemble_mass_matrix(problem->is_scalar()?scalar_formulation():tensor_formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, mass);
+			assembler.assemble_problem(problem->is_scalar() ? scalar_formulation() : tensor_formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, stiffness);
+			if(problem->is_time_dependent())
+			{
+				assembler.assemble_mass_matrix(problem->is_scalar() ? scalar_formulation():tensor_formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, mass);
+			}
 		}
 
 		timer.stop();
@@ -1291,6 +1360,7 @@ namespace polyfem
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
 		sol.resize(0, 0);
+		pressure.resize(0, 0);
 
 		igl::Timer timer; timer.start();
 		std::cout<<"Assigning rhs..."<<std::flush;
@@ -1302,6 +1372,14 @@ namespace polyfem
 		rhs *= -1;
 		rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs);
 
+		if(problem->is_stokes())
+		{
+			const int prev_size = rhs.size();
+			rhs.conservativeResize(prev_size + n_pressure_bases, rhs.cols());
+			//Divergence free rhs
+			rhs.block(prev_size, 0, n_pressure_bases, rhs.cols()).setZero();
+		}
+
 		timer.stop();
 		assigning_rhs_time = timer.getElapsedTime();
 		std::cout<<" took "<<assigning_rhs_time<<"s"<<std::endl;
@@ -1310,6 +1388,7 @@ namespace polyfem
 	void State::solve_problem()
 	{
 		sol.resize(0, 0);
+		pressure.resize(0, 0);
 		spectrum.setZero();
 
 		igl::Timer timer; timer.start();
@@ -1449,6 +1528,14 @@ namespace polyfem
 
 				std::cout<<"Solver error: "<<(A*sol-b).norm()<<std::endl;
 				// sol = rhs;
+
+				if(problem->is_stokes())
+				{
+					Eigen::MatrixXd tmp = sol;
+					sol = tmp.block(0, 0, tmp.rows() - n_pressure_bases, tmp.cols());
+					assert(sol.size() == n_bases * mesh->dimension());
+					pressure = tmp.block(tmp.size()-n_pressure_bases, 0, n_pressure_bases, tmp.cols());
+				}
 			}
 			else
 			{
@@ -1709,12 +1796,14 @@ namespace polyfem
 
 			{"scalar_formulation", "Laplacian"},
 			{"tensor_formulation", "LinearElasticity"},
+			{"stokes_formulation", "Stokes"},
 
 			{"B", 3},
 			{"h1_formula", false},
 
 			{"quadrature_order", 4},
 			{"discr_order", 1},
+			{"pressure_discr_order", 1},
 			{"use_p_ref", false},
 			{"use_spline", false},
 			{"iso_parametric", false},
@@ -1895,6 +1984,14 @@ namespace polyfem
 		}
 
 		writer.add_field("solution", fun);
+
+		if(problem->is_stokes())
+		{
+			Eigen::MatrixXd interp_p;
+			interpolate_function(pts_index, 1, pressure_bases, pressure, interp_p);
+			writer.add_field("pressure", interp_p);
+		}
+
 		writer.add_field("discr", discr);
 		if(problem->has_exact_sol()){
 			writer.add_field("exact", exact_fun);
@@ -1902,7 +1999,7 @@ namespace polyfem
 		}
 
 
-		if(fun.cols() != 1)
+		if(fun.cols() != 1 && !problem->is_stokes())
 		{
 			Eigen::MatrixXd scalar_val;
 			compute_scalar_value(pts_index, sol, scalar_val);

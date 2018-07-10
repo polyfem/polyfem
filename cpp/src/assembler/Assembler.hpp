@@ -33,6 +33,27 @@ namespace polyfem
 
 
 	template<class LocalAssembler>
+	class MixedAssembler
+	{
+	public:
+		void assemble(
+			const bool is_volume,
+			const int n_psi_basis,
+			const int n_phi_basis,
+			const std::vector< ElementBases > &psi_bases,
+			const std::vector< ElementBases > &phi_bases,
+			const std::vector< ElementBases > &gbases,
+			Eigen::SparseMatrix<double> &stiffness) const;
+
+		inline LocalAssembler &local_assembler() { return local_assembler_; }
+		inline const LocalAssembler &local_assembler() const { return local_assembler_; }
+
+	private:
+		LocalAssembler local_assembler_;
+	};
+
+
+	template<class LocalAssembler>
 	class NLAssembler
 	{
 	public:

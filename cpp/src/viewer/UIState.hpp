@@ -21,6 +21,7 @@ namespace polyfem
 			InputMesh = 0,
 			DiscrMesh,
 			Nodes,
+			PNodes,
 			BNodes,
 			VisMesh,
 			Solution,
@@ -39,7 +40,7 @@ namespace polyfem
 			TotalVisualizations
 		};
 
-		const std::string visualizations_texts[Visualizations::TotalVisualizations] = { "InputMesh", "Diretization", "Nodes", "BNodes", "VisMesh", "Solution", "Error", "ErrorGrad", "VisBasis",  "NavigationIndex", "Debug", "ElementId", "VertexId", "NodesId" };
+		const std::string visualizations_texts[Visualizations::TotalVisualizations] = { "InputMesh", "Diretization", "Nodes", "PNodes", "BNodes", "VisMesh", "Solution", "Error", "ErrorGrad", "VisBasis",  "NavigationIndex", "Debug", "ElementId", "VertexId", "NodesId" };
 
 
 	public:

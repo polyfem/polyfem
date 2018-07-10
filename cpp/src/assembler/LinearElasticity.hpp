@@ -16,7 +16,7 @@ namespace polyfem
 	class LinearElasticity
 	{
 	public:
-		// res is R^{m x dim²}
+		// res is R^{dim²}
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 		assemble(const ElementAssemblyValues &vals, const int i, const int j, const QuadratureVector &da) const;
 

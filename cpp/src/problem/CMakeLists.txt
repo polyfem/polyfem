@@ -17,6 +17,8 @@ set(SOURCES
 	Problem.hpp
 	ProblemWithSolution.cpp
 	ProblemWithSolution.hpp
+	StokesProblem.cpp
+	StokesProblem.hpp
 )
 
 prepend_current_path(SOURCES)

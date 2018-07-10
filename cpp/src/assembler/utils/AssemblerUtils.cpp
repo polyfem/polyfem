@@ -21,6 +21,8 @@ namespace polyfem
 		tensor_assemblers_.push_back("SaintVenant");
 		tensor_assemblers_.push_back("NeoHookean");
 		tensor_assemblers_.push_back("Ogden");
+
+		stokes_assemblers_.push_back("Stokes");
 	}
 
 	bool AssemblerUtils::is_linear(const std::string &assembler) const
@@ -28,7 +30,7 @@ namespace polyfem
 		return assembler != "SaintVenant" && assembler != "NeoHookean" && assembler != "Ogden";
 	}
 
-	void AssemblerUtils::assemble_scalar_problem(const std::string &assembler,
+	void AssemblerUtils::assemble_problem(const std::string &assembler,
 		const bool is_volume,
 		const int n_basis,
 		const std::vector< ElementBases > &bases,
@@ -39,6 +41,20 @@ namespace polyfem
 			helmholtz_.assemble(is_volume, n_basis, bases, gbases, stiffness);
 		else if(assembler == "Laplacian")
 			laplacian_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+
+		else if(assembler == "LinearElasticity")
+			linear_elasticity_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+		else if(assembler == "HookeLinearElasticity")
+			hooke_linear_elasticity_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+		else if(assembler == "Stokes")
+			stokes_velocity_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+
+		else if(assembler == "SaintVenant")
+			return;
+		else if(assembler == "NeoHookean")
+			return;
+		else if(assembler == "Ogden")
+			return;
 		else
 		{
 			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;
@@ -60,37 +76,28 @@ namespace polyfem
 			mass_mat_assembler_.assemble(is_volume, is_volume? 3 : 2, n_basis, bases, gbases, mass);
 	}
 
-	void AssemblerUtils::assemble_tensor_problem(const std::string &assembler,
+	void AssemblerUtils::assemble_mixed_problem(const std::string &assembler,
 		const bool is_volume,
-		const int n_basis,
-		const std::vector< ElementBases > &bases,
+		const int n_psi_basis,
+		const int n_phi_basis,
+		const std::vector< ElementBases > &psi_bases,
+		const std::vector< ElementBases > &phi_bases,
 		const std::vector< ElementBases > &gbases,
 		Eigen::SparseMatrix<double> &stiffness) const
 	{
-		if(assembler == "LinearElasticity")
-			linear_elasticity_.assemble(is_volume, n_basis, bases, gbases, stiffness);
-		else if(assembler == "HookeLinearElasticity")
-			hooke_linear_elasticity_.assemble(is_volume, n_basis, bases, gbases, stiffness);
-
-		else if(assembler == "SaintVenant")
-			return;
-		else if(assembler == "NeoHookean")
-			return;
-		else if(assembler == "Ogden")
-			return;
+		if(assembler == "Stokes")
+			stokes_pressure_.assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, stiffness);
 
 		else
 		{
 			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;
 			assert(false);
-			linear_elasticity_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+			stokes_pressure_.assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, stiffness);
 		}
 	}
 
 
-
-
-	double AssemblerUtils::assemble_tensor_energy(const std::string &assembler,
+	double AssemblerUtils::assemble_energy(const std::string &assembler,
 		const bool is_volume,
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
@@ -106,7 +113,7 @@ namespace polyfem
 			return 0;
 	}
 
-	void AssemblerUtils::assemble_tensor_energy_gradient(const std::string &assembler,
+	void AssemblerUtils::assemble_energy_gradient(const std::string &assembler,
 		const bool is_volume,
 		const int n_basis,
 		const std::vector< ElementBases > &bases,
@@ -124,7 +131,7 @@ namespace polyfem
 			return;
 	}
 
-	void AssemblerUtils::assemble_tensor_energy_hessian(const std::string &assembler,
+	void AssemblerUtils::assemble_energy_hessian(const std::string &assembler,
 		const bool is_volume,
 		const int n_basis,
 		const std::vector< ElementBases > &bases,
@@ -150,7 +157,7 @@ namespace polyfem
 		const Eigen::MatrixXd &fun,
 		Eigen::MatrixXd &result) const
 	{
-		if(assembler == "Laplacian" || assembler == "Helmholtz")
+		if(assembler == "Laplacian" || assembler == "Helmholtz" || assembler == "Stokes")
 			return;
 
 		else if(assembler == "LinearElasticity")
@@ -180,7 +187,7 @@ namespace polyfem
 		const Eigen::MatrixXd &fun,
 		Eigen::MatrixXd &result) const
 	{
-		if(assembler == "Laplacian" || assembler == "Helmholtz")
+		if(assembler == "Laplacian" || assembler == "Helmholtz" || assembler == "Stokes")
 			return;
 
 		else if(assembler == "LinearElasticity")
@@ -222,6 +229,9 @@ namespace polyfem
 			return neo_hookean_elasticity_.local_assembler().compute_rhs(pt);
 		else if(assembler == "Ogden")
 			return ogden_elasticity_.local_assembler().compute_rhs(pt);
+
+		else if(assembler == "Stokes")
+			return stokes_velocity_.local_assembler().compute_rhs(pt);
 
 		else
 		{
@@ -283,6 +293,8 @@ namespace polyfem
 		saint_venant_elasticity_.local_assembler().set_parameters(params);
 		neo_hookean_elasticity_.local_assembler().set_parameters(params);
 		ogden_elasticity_.local_assembler().set_parameters(params);
+
+		stokes_velocity_.local_assembler().set_parameters(params);
 	}
 
 }
