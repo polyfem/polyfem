@@ -1,8 +1,9 @@
+import os
+import argparse
+
 from sympy import *
 from sympy.matrices import *
 import re
-import os
-import argparse
 
 # local
 import pretty_print
@@ -144,28 +145,29 @@ if __name__ == "__main__":
             # div = simplify(div)
 
             c99 = pretty_print.C99_print(div)
-            c99 = re.sub("f0\(x, y(, z)?\)", "pt(0)", c99)
-            c99 = re.sub("f1\(x, y(, z)?\)", "pt(1)", c99)
-            c99 = re.sub("f2\(x, y(, z)?\)", "pt(2)", c99)
 
-            c99 = re.sub(", x, x\)", ".getHessian()(0,0)", c99)
-            c99 = re.sub(", x, y\)", ".getHessian()(0,1)", c99)
-            c99 = re.sub(", x, z\)", ".getHessian()(0,2)", c99)
+            c99 = re.sub(r"f0\(x, y(, z)?\)", "pt(0)", c99)
+            c99 = re.sub(r"f1\(x, y(, z)?\)", "pt(1)", c99)
+            c99 = re.sub(r"f2\(x, y(, z)?\)", "pt(2)", c99)
 
-            c99 = re.sub(", y, y\)", ".getHessian()(1,1)", c99)
-            c99 = re.sub(", y, z\)", ".getHessian()(1,2)", c99)
+            c99 = re.sub(r", x, x\)", ".getHessian()(0,0)", c99)
+            c99 = re.sub(r", x, y\)", ".getHessian()(0,1)", c99)
+            c99 = re.sub(r", x, z\)", ".getHessian()(0,2)", c99)
 
-            c99 = re.sub(", z, z\)", ".getHessian()(2,2)", c99)
+            c99 = re.sub(r", y, y\)", ".getHessian()(1,1)", c99)
+            c99 = re.sub(r", y, z\)", ".getHessian()(1,2)", c99)
 
-            c99 = re.sub(", x\)", ".getGradient()(0)", c99)
-            c99 = re.sub(", y\)", ".getGradient()(1)", c99)
-            c99 = re.sub(", z\)", ".getGradient()(2)", c99)
+            c99 = re.sub(r", z, z\)", ".getHessian()(2,2)", c99)
 
-            c99 = re.sub("Derivative\(*", "", c99)
+            c99 = re.sub(r", x\)", ".getGradient()(0)", c99)
+            c99 = re.sub(r", y\)", ".getGradient()(1)", c99)
+            c99 = re.sub(r", z\)", ".getGradient()(2)", c99)
 
-            c99 = re.sub(", \(x, 2\)", ".getHessian()(0,0)", c99)
-            c99 = re.sub(", \(y, 2\)", ".getHessian()(1,1)", c99)
-            c99 = re.sub(", \(z, 2\)", ".getHessian()(2,2)", c99)
+            c99 = re.sub(r"Derivative\(*", "", c99)
+
+            c99 = re.sub(r", \(x, 2\)\)", ".getHessian()(0,0)", c99)
+            c99 = re.sub(r", \(y, 2\)\)", ".getHessian()(1,1)", c99)
+            c99 = re.sub(r", \(z, 2\)\)", ".getHessian()(2,2)", c99)
 
             c99 = c99.replace("result_0[0]", "res(0)")
             c99 = c99.replace("result_0[1]", "res(1)")
