@@ -2,18 +2,18 @@
 
 namespace polyfem
 {
-	NoSlip::NoSlip(const std::string &name)
+	DrivenCavity::DrivenCavity(const std::string &name)
 	: Problem(name)
 	{
-		// boundary_ids_ = {1, 3};
+		// boundary_ids_ = {1};
 	}
 
-	void NoSlip::rhs(const std::string &formulation, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const
+	void DrivenCavity::rhs(const std::string &formulation, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 	}
 
-	void NoSlip::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const
+	void DrivenCavity::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 

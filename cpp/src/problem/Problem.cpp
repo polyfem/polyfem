@@ -101,7 +101,7 @@ namespace polyfem
 		problems_.emplace("TimeDependentScalar", std::make_shared<TimeDependentProblem>("TimeDependentScalar"));
 		problems_.emplace("Gravity", std::make_shared<GravityProblem>("Gravity"));
 
-		problems_.emplace("NoSlip", std::make_shared<NoSlip>("NoSlip"));
+		problems_.emplace("DrivenCavity", std::make_shared<DrivenCavity>("DrivenCavity"));
 
 		problems_.emplace("TestProblem", std::make_shared<TestProblem>("TestProblem"));
 

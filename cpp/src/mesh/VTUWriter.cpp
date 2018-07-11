@@ -165,10 +165,18 @@ namespace polyfem
 
     void VTUWriter::add_field(const std::string &name, const Eigen::MatrixXd &data)
     {
-        if(data.cols() == 1)
-            add_scalar_field(name, data);
+        using std::abs;
+
+        Eigen::MatrixXd tmp;
+        tmp.resizeLike(data);
+
+        for(long i = 0; i < data.size(); ++i)
+            tmp(i) = abs(data(i)) < 1e-16 ? 0 : data(i);
+
+        if(tmp.cols() == 1)
+            add_scalar_field(name, tmp);
         else
-            add_vector_field(name, data);
+            add_vector_field(name, tmp);
     }
 
     void VTUWriter::add_scalar_field(const std::string &name, const Eigen::MatrixXd &data)

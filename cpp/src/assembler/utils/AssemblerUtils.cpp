@@ -295,6 +295,7 @@ namespace polyfem
 		ogden_elasticity_.local_assembler().set_parameters(params);
 
 		stokes_velocity_.local_assembler().set_parameters(params);
+		stokes_pressure_.local_assembler().set_parameters(params);
 	}
 
 }

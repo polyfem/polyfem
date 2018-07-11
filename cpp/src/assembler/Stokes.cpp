@@ -30,8 +30,9 @@ namespace polyfem
 		for (int k = 0; k < gradi.rows(); ++k) {
 			dot += gradi.row(k).dot(gradj.row(k)) * da(k);
 		}
-		res(0) = dot;
-		res(size()*size()-1) = dot;
+
+		for(int d = 0; d < size(); ++d)
+			res(d*size() + d) = dot;
 
 		return res;
 	}
