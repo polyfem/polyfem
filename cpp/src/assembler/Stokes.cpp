@@ -9,6 +9,10 @@ namespace polyfem
 	void StokesVelocity::set_parameters(const json &params)
 	{
 		set_size(params["size"]);
+
+		if (params.count("viscosity")) {
+			viscosity_ = params["viscosity"];
+		}
 	}
 
 	void StokesVelocity::set_size(const int size)
@@ -30,6 +34,8 @@ namespace polyfem
 		for (int k = 0; k < gradi.rows(); ++k) {
 			dot += gradi.row(k).dot(gradj.row(k)) * da(k);
 		}
+
+		dot *= viscosity_;
 
 		for(int d = 0; d < size(); ++d)
 			res(d*size() + d) = dot;

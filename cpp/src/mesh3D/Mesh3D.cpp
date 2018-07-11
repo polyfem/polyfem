@@ -624,17 +624,19 @@ namespace polyfem
 
 			if(fabs(p(0)-minV(0))<eps)
 				boundary_ids_[f]=1;
-			if(fabs(p(1)-minV(1))<eps)
+			else if(fabs(p(1)-minV(1))<eps)
 				boundary_ids_[f]=2;
-			if(fabs(p(2)-minV(2))<eps)
+			else if(fabs(p(2)-minV(2))<eps)
 				boundary_ids_[f]=5;
 
-			if(fabs(p(0)-maxV(0))<eps)
+			else if(fabs(p(0)-maxV(0))<eps)
 				boundary_ids_[f]=3;
-			if(fabs(p(1)-maxV(1))<eps)
+			else if(fabs(p(1)-maxV(1))<eps)
 				boundary_ids_[f]=4;
-			if(fabs(p(2)-maxV(2))<eps)
+			else if(fabs(p(2)-maxV(2))<eps)
 				boundary_ids_[f]=6;
+			else
+				boundary_ids_[f]=7;
 
 			// std::cout<<p<<": "<<minV<<" - "<<maxV<<" "<<boundary_ids_[f]<<std::endl;
 		}

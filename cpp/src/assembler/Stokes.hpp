@@ -29,6 +29,7 @@ namespace polyfem
 		void set_parameters(const json &params);
 	private:
 		int size_ = 2;
+		double viscosity_ = 1;
 	};
 
 	class StokesPressure

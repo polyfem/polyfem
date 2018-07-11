@@ -231,12 +231,15 @@ namespace polyfem
 
 			if(fabs(p(0)-min_corner[0])<1e-7)
 				boundary_ids_[e]=1;
-			if(fabs(p(1)-min_corner[1])<1e-7)
+			else if(fabs(p(1)-min_corner[1])<1e-7)
 				boundary_ids_[e]=2;
-			if(fabs(p(0)-max_corner[0])<1e-7)
+			else if(fabs(p(0)-max_corner[0])<1e-7)
 				boundary_ids_[e]=3;
-			if(fabs(p(1)-max_corner[1])<1e-7)
+			else if(fabs(p(1)-max_corner[1])<1e-7)
 				boundary_ids_[e]=4;
+
+			else
+				boundary_ids_[e]=7;
 		}
 	}
 
