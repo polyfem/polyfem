@@ -103,6 +103,7 @@ namespace polyfem
 
 		problems_.emplace("DrivenCavity", std::make_shared<DrivenCavity>("DrivenCavity"));
 		problems_.emplace("Flow", std::make_shared<Flow>("Flow"));
+		problems_.emplace("TimeDependentFlow", std::make_shared<TimeDependentFlow>("TimeDependentFlow"));
 
 		problems_.emplace("TestProblem", std::make_shared<TestProblem>("TestProblem"));
 

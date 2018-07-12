@@ -90,6 +90,15 @@ namespace polyfem
 		problem = ProblemFactory::factory().get_problem("Linear");
 	}
 
+	void State::sol_to_pressure()
+	{
+		assert(problem->is_stokes());
+		Eigen::MatrixXd tmp = sol;
+		sol = tmp.block(0, 0, tmp.rows() - n_pressure_bases, tmp.cols());
+		assert(sol.size() == n_bases * mesh->dimension());
+		pressure = tmp.block(tmp.size()-n_pressure_bases, 0, n_pressure_bases, tmp.cols());
+	}
+
 	void State::compute_mesh_size(const Mesh &mesh_in, const std::vector< ElementBases > &bases_in, const int n_samples)
 	{
 		Eigen::MatrixXd samples_simplex, samples_cube, mapped, p0, p1, p;
@@ -1318,6 +1327,38 @@ namespace polyfem
 			// Eigen::saveMarket(stiffness, "test.txt");
 			// Eigen::saveMarket(velocity_stiffness, "velocity_stiffness.txt");
 			// Eigen::saveMarket(pressure_stiffness, "pressure_stiffness.txt");
+
+
+			if(problem->is_time_dependent())
+			{
+				Eigen::SparseMatrix<double> velocity_mass; //, pressure_mass;
+				assembler.assemble_mass_matrix(stokes_formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, velocity_mass);
+				//FIXME!!!!!!!!!!
+				// assembler.assemble_mass_matrix("Laplacian", mesh->is_volume(), n_pressure_bases, pressure_bases, iso_parametric() ? bases : geom_bases, pressure_mass);
+
+				std::vector< Eigen::Triplet<double> > mass_blocks;
+				mass_blocks.reserve(velocity_mass.nonZeros()); // + pressure_mass.nonZeros());
+
+				for (int k = 0; k < velocity_mass.outerSize(); ++k)
+				{
+					for (Eigen::SparseMatrix<double>::InnerIterator it(velocity_mass, k); it; ++it)
+					{
+						mass_blocks.emplace_back(it.row(), it.col(), it.value());
+					}
+				}
+
+				// for (int k = 0; k < pressure_mass.outerSize(); ++k)
+				// {
+				// 	for (Eigen::SparseMatrix<double>::InnerIterator it(pressure_mass, k); it; ++it)
+				// 	{
+				// 		mass_blocks.emplace_back(n_bases * mesh->dimension() + it.row(), n_bases * mesh->dimension() + it.col(), it.value());
+				// 	}
+				// }
+
+				mass.resize(n_bases * mesh->dimension() + n_pressure_bases, n_bases * mesh->dimension() + n_pressure_bases);
+				mass.setFromTriplets(mass_blocks.begin(), mass_blocks.end());
+				mass.makeCompressed();
+			}
 		}
 		else
 		{
@@ -1404,6 +1445,12 @@ namespace polyfem
 			RhsAssembler rhs_assembler(*mesh, n_bases, problem->is_scalar()? 1 : mesh->dimension(), bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
 			rhs_assembler.initial_solution(sol);
 
+			if(problem->is_stokes())
+			{
+				pressure.resize(n_pressure_bases, 1);
+				pressure.setZero();
+			}
+
 			double tend = args["tend"];
 			int time_steps = args["time_steps"];
 			double dt = tend/time_steps;
@@ -1415,7 +1462,16 @@ namespace polyfem
 			save_vtu( "step_" + std::to_string(0) + ".vtu");
 			save_wire("step_" + std::to_string(0) + ".obj");
 
-			if(problem->is_scalar())
+			if(problem->is_stokes())
+			{
+				pressure.resize(0, 0);
+				const int prev_size = sol.size();
+				sol.conservativeResize(prev_size + n_pressure_bases, sol.cols());
+				//Zero initial pressure
+				sol.block(prev_size, 0, n_pressure_bases, sol.cols()).setZero();
+			}
+
+			if(problem->is_scalar() || problem->is_stokes())
 			{
 				Eigen::SparseMatrix<double> A;
 				Eigen::VectorXd b, x;
@@ -1431,8 +1487,21 @@ namespace polyfem
 					dirichlet_solve(*solver, A, b, boundary_nodes, x, args["stiffness_mat_save_path"]);
 					sol = x;
 
+					if(problem->is_stokes())
+					{
+						//necessary for the export
+						sol_to_pressure();
+					}
+
 					save_vtu( "step_" + std::to_string(t) + ".vtu");
 					save_wire("step_" + std::to_string(t) + ".obj");
+
+					if(problem->is_stokes() && t < time_steps)
+					{
+						const int prev_size = sol.size();
+						sol.conservativeResize(prev_size + n_pressure_bases, sol.cols());
+						sol.block(prev_size, 0, n_pressure_bases, sol.cols()).setZero();
+					}
 
 					std::cout<<t<<"/"<<time_steps<<std::endl;
 				}
@@ -1531,10 +1600,7 @@ namespace polyfem
 
 				if(problem->is_stokes())
 				{
-					Eigen::MatrixXd tmp = sol;
-					sol = tmp.block(0, 0, tmp.rows() - n_pressure_bases, tmp.cols());
-					assert(sol.size() == n_bases * mesh->dimension());
-					pressure = tmp.block(tmp.size()-n_pressure_bases, 0, n_pressure_bases, tmp.cols());
+					sol_to_pressure();
 				}
 			}
 			else

@@ -141,6 +141,9 @@ namespace polyfem
 		void p_refinement(const Mesh2D &mesh2d);
 		void p_refinement(const Mesh3D &mesh3d);
 
+	private:
+		void sol_to_pressure();
+
 	};
 
 }
