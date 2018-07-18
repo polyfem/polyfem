@@ -32,6 +32,8 @@ install:
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
 - pip3 install --user sympy
 - eval "${MATRIX_EVAL}"
+- ccache --max-size=5.0G
+- ccache -V && ccache --show-stats && ccache --zero-stats
 
 script:
 - cd cpp
@@ -40,3 +42,4 @@ script:
 - cmake -DCMAKE_BUILD_TYPE=$CONFIG ..
 - make -j2
 - make test
+- ccache --show-stats
