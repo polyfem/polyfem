@@ -17,7 +17,7 @@ void pardiso_printstats (int *, int *, double *, int *, int *, int *,
 }
 ////////////////////////////////////////////////////////////////////////////////
 
-using namespace polyfem;
+namespace polyfem {
 // #define PLOTS_PARDISO
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -340,5 +340,7 @@ LinearSolverPardiso::~LinearSolverPardiso() {
 	pardiso(pt, &maxfct, &mnum, &mtype, &phase, &numRows, &ddum, ia.data(),
 		ja.data(), &idum, &nrhs, iparm, &msglvl, &ddum, &ddum, &error, dparm);
 }
+
+} // namespace polyfem
 
 #endif
