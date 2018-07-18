@@ -22,7 +22,7 @@ namespace polyfem
 			pts = pts.block(0, 0, pts.rows(), 2).eval();
 			read_matrix(data["triangles"], tri);
 
-			const int coord = data["coordiante"];
+			const int coord = data["coordinate"];
 
 			init(pts, tri, fun, coord);
 		}

@@ -96,7 +96,7 @@ namespace polyfem
 		Eigen::MatrixXd tmp = sol;
 		sol = tmp.block(0, 0, tmp.rows() - n_pressure_bases, tmp.cols());
 		assert(sol.size() == n_bases * mesh->dimension());
-		pressure = tmp.block(tmp.size()-n_pressure_bases, 0, n_pressure_bases, tmp.cols());
+		pressure = tmp.block(tmp.rows()-n_pressure_bases, 0, n_pressure_bases, tmp.cols());
 	}
 
 	void State::compute_mesh_size(const Mesh &mesh_in, const std::vector< ElementBases > &bases_in, const int n_samples)
@@ -483,7 +483,7 @@ namespace polyfem
 
 	}
 
-	void State::interpolate_boundary_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, MatrixXd &result)
+	void State::interpolate_boundary_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result)
 	{
 		assert(mesh->is_volume());
 
@@ -525,7 +525,7 @@ namespace polyfem
 
 				ElementAssemblyValues vals;
 				vals.compute(e, true, points, bs, gbs);
-				Eigen::Vector3d loc_val; loc_val.setZero();
+				Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 1> loc_val(actual_dim); loc_val.setZero();
 
 				// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
 
@@ -552,7 +552,7 @@ namespace polyfem
 				assert(dist < 1e-16);
 				// std::cout<<face_id<<" - "<<I<<": "<<dist<<" -> "<<bary<<std::endl;
 				assert(std::isnan(result(I, 0)));
-				result.row(I) = loc_val;
+				result.row(I) = compute_avg ? (loc_val.array()/weights.sum()) : loc_val;
 				++counter;
 			}
 		}
@@ -561,7 +561,7 @@ namespace polyfem
 	}
 
 
-	void State::interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, MatrixXd &result)
+	void State::interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result)
 	{
 		assert(mesh->is_volume());
 
@@ -628,6 +628,8 @@ namespace polyfem
 				// std::cout<<face_id<<" - "<<I<<": "<<dist<<" -> "<<bary<<std::endl;
 				assert(std::isnan(result(I, 0)));
 				result.row(I) = normals.row(I) * tensor;
+				if(compute_avg)
+					result.row(I).array() /= weights.sum();
 				++counter;
 			}
 		}
@@ -1331,13 +1333,11 @@ namespace polyfem
 
 			if(problem->is_time_dependent())
 			{
-				Eigen::SparseMatrix<double> velocity_mass; //, pressure_mass;
+				Eigen::SparseMatrix<double> velocity_mass;
 				assembler.assemble_mass_matrix(stokes_formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, velocity_mass);
-				//FIXME!!!!!!!!!!
-				// assembler.assemble_mass_matrix("Laplacian", mesh->is_volume(), n_pressure_bases, pressure_bases, iso_parametric() ? bases : geom_bases, pressure_mass);
 
 				std::vector< Eigen::Triplet<double> > mass_blocks;
-				mass_blocks.reserve(velocity_mass.nonZeros()); // + pressure_mass.nonZeros());
+				mass_blocks.reserve(velocity_mass.nonZeros());
 
 				for (int k = 0; k < velocity_mass.outerSize(); ++k)
 				{
@@ -1346,14 +1346,6 @@ namespace polyfem
 						mass_blocks.emplace_back(it.row(), it.col(), it.value());
 					}
 				}
-
-				// for (int k = 0; k < pressure_mass.outerSize(); ++k)
-				// {
-				// 	for (Eigen::SparseMatrix<double>::InnerIterator it(pressure_mass, k); it; ++it)
-				// 	{
-				// 		mass_blocks.emplace_back(n_bases * mesh->dimension() + it.row(), n_bases * mesh->dimension() + it.col(), it.value());
-				// 	}
-				// }
 
 				mass.resize(n_bases * mesh->dimension() + n_pressure_bases, n_bases * mesh->dimension() + n_pressure_bases);
 				mass.setFromTriplets(mass_blocks.begin(), mass_blocks.end());
@@ -1481,6 +1473,12 @@ namespace polyfem
 				{
 					rhs_assembler.compute_energy_grad(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs, dt*t, current_rhs);
 
+					if(problem->is_stokes())
+					{
+						//divergence free
+						current_rhs.block(current_rhs.rows()-n_pressure_bases, 0, n_pressure_bases, current_rhs.cols()).setZero();
+					}
+
 					A = mass + dt * stiffness;
 					b = dt * current_rhs + mass * sol;
 
@@ -1500,6 +1498,7 @@ namespace polyfem
 					{
 						const int prev_size = sol.size();
 						sol.conservativeResize(prev_size + n_pressure_bases, sol.cols());
+						//any value would do, pressure is not time dependent.
 						sol.block(prev_size, 0, n_pressure_bases, sol.cols()).setZero();
 					}
 
@@ -1933,6 +1932,7 @@ namespace polyfem
 		if(!solution_path.empty())
 		{
 			std::ofstream out(solution_path);
+			out.precision(100);
 			out << sol << std::endl;
 			out.close();
 		}
@@ -1959,6 +1959,7 @@ namespace polyfem
 				}
 			}
 			std::ofstream out(nodes_path);
+			out.precision(100);
 			out << nodes;
 			out.close();
 		}

@@ -656,6 +656,11 @@ namespace polyfem
 
 	void UIState::plot_function(const MatrixXd &fun, const Visualizations &layer, double min, double max)
 	{
+		if(show_funs_in_3d)
+			light_enabled = true;
+		else
+			light_enabled = state.mesh->is_volume();
+
 		MatrixXd col;
 		std::vector<bool> valid_elements;
 		const auto &sampler = RefElementSampler::sampler();

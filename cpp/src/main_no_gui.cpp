@@ -100,6 +100,7 @@ int main(int argc, const char **argv)
 
     if(!output.empty()){
         std::ofstream out(output);
+        out.precision(100);
         state.save_json(out);
     }
 
