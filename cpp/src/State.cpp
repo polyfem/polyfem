@@ -525,7 +525,7 @@ namespace polyfem
 
 				ElementAssemblyValues vals;
 				vals.compute(e, true, points, bs, gbs);
-				Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 1> loc_val(actual_dim); loc_val.setZero();
+				RowVectorNd loc_val(actual_dim); loc_val.setZero();
 
 				// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
 
@@ -552,7 +552,10 @@ namespace polyfem
 				assert(dist < 1e-16);
 				// std::cout<<face_id<<" - "<<I<<": "<<dist<<" -> "<<bary<<std::endl;
 				assert(std::isnan(result(I, 0)));
-				result.row(I) = compute_avg ? (loc_val.array()/weights.sum()) : loc_val;
+				if(compute_avg)
+					result.row(I) = loc_val/weights.sum();
+				else
+					result.row(I) = loc_val;
 				++counter;
 			}
 		}
@@ -564,6 +567,7 @@ namespace polyfem
 	void State::interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result)
 	{
 		assert(mesh->is_volume());
+		assert(!problem->is_scalar());
 
 		const Mesh3D &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
 
@@ -573,9 +577,7 @@ namespace polyfem
 		Eigen::MatrixXd points;
 		Eigen::VectorXd weights;
 
-		int actual_dim = 1;
-		if(!problem->is_scalar())
-			actual_dim = 3;
+		const int actual_dim = 3;
 
 		igl::AABB<Eigen::MatrixXd, 3> tree;
 		tree.init(pts, faces);
@@ -629,7 +631,7 @@ namespace polyfem
 				assert(std::isnan(result(I, 0)));
 				result.row(I) = normals.row(I) * tensor;
 				if(compute_avg)
-					result.row(I).array() /= weights.sum();
+					result.row(I) /= weights.sum();
 				++counter;
 			}
 		}
