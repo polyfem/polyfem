@@ -8,10 +8,14 @@ namespace polyfem
 {
 	void PointBasedTensorProblem::BCValue::init(const json &data)
 	{
+		//TODO
+		Eigen::Matrix<bool, 3, 1> dd; dd.setConstant(true);
+
 		if(data.is_array())
 		{
+
 			assert(data.size() == 3);
-			init((double)data[0], (double)data[1], (double)data[2]);
+			init((double)data[0], (double)data[1], (double)data[2], dd);
 		}
 		else if(data.is_object())
 		{
@@ -24,11 +28,11 @@ namespace polyfem
 
 			const int coord = data["coordinate"];
 
-			init(pts, tri, fun, coord);
+			init(pts, tri, fun, coord, dd);
 		}
 		else
 		{
-			init(0, 0, 0);
+			init(0, 0, 0, dd);
 		}
 	}
 
@@ -78,18 +82,38 @@ namespace polyfem
 		val *= t;
 	}
 
-	void PointBasedTensorProblem::add_constant(const int bc_tag, const Eigen::Vector3d &value)
+	void PointBasedTensorProblem::add_constant(const int bc_tag, const Eigen::Vector3d &value, const Eigen::Matrix<bool, 3, 1> &dd)
 	{
+		all_dimentions_dirichelt_ = all_dimentions_dirichelt_ && dd(0) && dd(1) && dd(2);
 		boundary_ids_.push_back(bc_tag);
 		bc_.emplace_back();
-		bc_.back().init(value);
+		bc_.back().init(value, dd);
 	}
 
-	void PointBasedTensorProblem::add_function(const int bc_tag, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tri, const int coord)
+	void PointBasedTensorProblem::add_function(const int bc_tag, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tri, const int coord, const Eigen::Matrix<bool, 3, 1> &dd)
 	{
+		all_dimentions_dirichelt_ = all_dimentions_dirichelt_ && dd(0) && dd(1) && dd(2);
+
 		boundary_ids_.push_back(bc_tag);
 		bc_.emplace_back();
-		bc_.back().init(pts.block(0, 0, pts.rows(), 2), tri, func, coord);
+		bc_.back().init(pts.block(0, 0, pts.rows(), 2), tri, func, coord, dd);
+	}
+
+	bool PointBasedTensorProblem::is_dimention_dirichet(const int tag, const int dim) const
+	{
+		if(all_dimentions_dirichelt())
+			return true;
+
+		for(size_t b = 0; b < boundary_ids_.size(); ++b)
+		{
+			if(tag == boundary_ids_[b])
+			{
+				return bc_[b].is_dirichet_dim(dim);
+			}
+		}
+
+		assert(false);
+		return true;
 	}
 
 	void PointBasedTensorProblem::set_parameters(const json &params)

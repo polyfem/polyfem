@@ -608,8 +608,8 @@ namespace polyfem
 				else
 					assert(false);
 
-				ElementAssemblyValues vals;
-				vals.compute(e, true, points, bs, gbs);
+				// ElementAssemblyValues vals;
+				// vals.compute(e, true, points, bs, gbs);
 				Eigen::MatrixXd loc_val;
 
 				// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
@@ -1200,22 +1200,6 @@ namespace polyfem
 
 
 		problem->setup_bc(*mesh, bases, local_boundary, boundary_nodes, local_neumann_boundary);
-
-		if(!problem->is_scalar())
-		{
-			const int dim = mesh->dimension();
-			const std::size_t n_b_nodes = boundary_nodes.size();
-
-			for(std::size_t i = 0; i < n_b_nodes; ++i)
-			{
-				boundary_nodes[i] *= dim;
-				for(int d = 1; d < dim; ++d)
-					boundary_nodes.push_back(boundary_nodes[i]+d);
-			}
-		}
-
-		std::sort(boundary_nodes.begin(), boundary_nodes.end());
-
 
 		const auto &curret_bases =  iso_parametric() ? bases : geom_bases;
 		const int n_samples = 10;

@@ -122,7 +122,7 @@ namespace polyfem
 
 		const int actual_dim = problem_.is_scalar() ? 1 : mesh_.dimension();
 
-		assert((bounday_nodes.size()/actual_dim)*actual_dim == bounday_nodes.size());
+		// assert((bounday_nodes.size()/actual_dim)*actual_dim == bounday_nodes.size());
 
 		for(int b : bounday_nodes)
 			is_boundary[b/actual_dim] = true;
@@ -237,7 +237,8 @@ namespace polyfem
 			// std::cout<<"is all zero, skipping"<<std::endl;
 			for(size_t i = 0; i < indices.size(); ++i){
 				for(int d = 0; d < size_; ++d){
-					rhs(indices[i]*size_+d) = 0;
+					if(problem_.all_dimentions_dirichelt() || std::find(bounday_nodes.begin(), bounday_nodes.end(), indices[i]*size_+d) != bounday_nodes.end())
+						rhs(indices[i]*size_+d) = 0;
 				}
 			}
 		}
@@ -273,7 +274,8 @@ namespace polyfem
 
 			for(long i = 0; i < coeffs.rows(); ++i){
 				for(int d = 0; d < size_; ++d){
-					rhs(indices[i]*size_+d) = coeffs(i, d);
+					if(problem_.all_dimentions_dirichelt() || std::find(bounday_nodes.begin(), bounday_nodes.end(), indices[i]*size_+d) != bounday_nodes.end())
+						rhs(indices[i]*size_+d) = coeffs(i, d);
 				}
 			}
 		}

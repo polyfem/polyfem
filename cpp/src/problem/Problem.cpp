@@ -49,6 +49,8 @@ namespace polyfem
 
 		boundary_nodes.clear();
 
+		const int dim = is_scalar() ? 1 : mesh.dimension();
+
 		for(auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
 		{
 			const auto &lb = *it;
@@ -60,8 +62,14 @@ namespace polyfem
 
 				for(long n = 0; n < nodes.size(); ++n){
 					auto &bs = b.bases[nodes(n)];
-					for(size_t g = 0; g < bs.global().size(); ++g)
-						boundary_nodes.push_back(bs.global()[g].index);
+					for(size_t g = 0; g < bs.global().size(); ++g){
+						const int base_index = bs.global()[g].index * dim;
+						for(int d = 0; d < dim; ++d)
+						{
+							if(is_dimention_dirichet(mesh.get_boundary_id(primitive_global_id), d))
+								boundary_nodes.push_back(base_index + d);
+						}
+					}
 				}
 			}
 		}
