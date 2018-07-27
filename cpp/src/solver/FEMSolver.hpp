@@ -31,7 +31,8 @@ namespace polyfem {
 /// @param[in]     dirichlet_nodes  { List of ids of Dirichlet nodes }
 /// @param[in,out] x                { Unknown vector }
 ///
-void dirichlet_solve(LinearSolver &solver, Eigen::SparseMatrix<double> &A,
-	Eigen::VectorXd &b, const std::vector<int> &dirichlet_nodes, Eigen::VectorXd &x, const std::string &save_path = "");
+Eigen::Vector4d dirichlet_solve(LinearSolver &solver, Eigen::SparseMatrix<double> &A,
+	Eigen::VectorXd &b, const std::vector<int> &dirichlet_nodes, Eigen::VectorXd &x, const std::string &save_path = "",
+	bool compute_spectrum = false);
 
 } // namespace polyfem

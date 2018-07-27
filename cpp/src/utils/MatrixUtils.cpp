@@ -38,10 +38,10 @@ Eigen::Vector4d polyfem::compute_specturm(const Eigen::SparseMatrix<double> &mat
 	Spectra::SymEigsShiftSolver< double, Spectra::LARGEST_MAGN, InvMatOp> small_eig(&invOpt, 2, 4, 0);
 
 	small_eig.init();
-    const int n_small = small_eig.compute(100000, 1e-8, Spectra::SMALLEST_MAGN);
+    const int n_small = small_eig.compute(100000); //, 1e-8, Spectra::SMALLEST_MAGN);
     if(small_eig.info() == Spectra::SUCCESSFUL){
-        res(0) = small_eig.eigenvalues()(0);
-        res(1) = small_eig.eigenvalues()(1);
+        res(0) = small_eig.eigenvalues()(1);
+        res(1) = small_eig.eigenvalues()(0);
     }
 
 
@@ -49,7 +49,7 @@ Eigen::Vector4d polyfem::compute_specturm(const Eigen::SparseMatrix<double> &mat
     Spectra::SymEigsSolver< double, Spectra::LARGEST_MAGN, MatOp> large_eig(&op, 2, 4);
 
 	large_eig.init();
-    const int n_large = large_eig.compute(100000, 1e-8, Spectra::LARGEST_MAGN);
+    const int n_large = large_eig.compute(100000); //, 1e-8, Spectra::LARGEST_MAGN);
     // std::cout<<n_large<<" asdasd "<<large_eig.info()<<std::endl;
     if(large_eig.info() == Spectra::SUCCESSFUL){
         res(2) = large_eig.eigenvalues()(1);

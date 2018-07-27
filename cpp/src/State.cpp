@@ -231,6 +231,7 @@ namespace polyfem
 		j["err_lp"] = lp_err;
 
 		j["spectrum"] = {spectrum(0), spectrum(1), spectrum(2), spectrum(3)};
+		j["spectrum_condest"] = std::abs(spectrum(3)) / std::abs(spectrum(0));
 
 		// j["errors"] = errors;
 
@@ -1468,7 +1469,7 @@ namespace polyfem
 					A = mass + dt * stiffness;
 					b = dt * current_rhs + mass * sol;
 
-					dirichlet_solve(*solver, A, b, boundary_nodes, x, args["stiffness_mat_save_path"]);
+					spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, args["stiffness_mat_save_path"], true);
 					sol = x;
 
 					if(problem->is_stokes())
@@ -1535,7 +1536,7 @@ namespace polyfem
 
 					A = stiffness * 0.5 * beta2 * dt2 + mass;
 					btmp = b;
-					dirichlet_solve(*solver, A, btmp, boundary_nodes, x, args["stiffness_mat_save_path"]);
+					spectrum = dirichlet_solve(*solver, A, btmp, boundary_nodes, x, args["stiffness_mat_save_path"], true);
 					acceleration = x;
 
 					sol += dt*vOld + 0.5 * dt2 * ((1 - beta2) * aOld + beta2 * acceleration);
@@ -1568,7 +1569,7 @@ namespace polyfem
 				A = stiffness;
 				Eigen::VectorXd x;
 				b = rhs;
-				dirichlet_solve(*solver, A, b, boundary_nodes, x, args["stiffness_mat_save_path"]);
+				spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, args["stiffness_mat_save_path"], true);
 				sol = x;
 				solver->getInfo(solver_info);
 
