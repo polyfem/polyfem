@@ -1469,7 +1469,7 @@ namespace polyfem
 					A = mass + dt * stiffness;
 					b = dt * current_rhs + mass * sol;
 
-					spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, args["stiffness_mat_save_path"], true);
+					spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, args["stiffness_mat_save_path"], t == 1 && args["export"]["spectrum"]);
 					sol = x;
 
 					if(problem->is_stokes())
@@ -1536,7 +1536,7 @@ namespace polyfem
 
 					A = stiffness * 0.5 * beta2 * dt2 + mass;
 					btmp = b;
-					spectrum = dirichlet_solve(*solver, A, btmp, boundary_nodes, x, args["stiffness_mat_save_path"], true);
+					spectrum = dirichlet_solve(*solver, A, btmp, boundary_nodes, x, args["stiffness_mat_save_path"], t == 1 && args["export"]["spectrum"]);
 					acceleration = x;
 
 					sol += dt*vOld + 0.5 * dt2 * ((1 - beta2) * aOld + beta2 * acceleration);
@@ -1569,7 +1569,7 @@ namespace polyfem
 				A = stiffness;
 				Eigen::VectorXd x;
 				b = rhs;
-				spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, args["stiffness_mat_save_path"], true);
+				spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, args["stiffness_mat_save_path"], args["export"]["spectrum"]);
 				sol = x;
 				solver->getInfo(solver_info);
 
@@ -1680,9 +1680,6 @@ namespace polyfem
 
 	void State::compute_errors()
 	{
-
-		if(!problem->has_exact_sol()) return;
-
 		int actual_dim = 1;
 		if(!problem->is_scalar())
 			actual_dim = mesh->dimension();
@@ -1721,11 +1718,18 @@ namespace polyfem
 			else
 				vals.compute(e, mesh->is_volume(), bases[e], geom_bases[e]);
 
-			problem->exact(vals.val, v_exact);
-			problem->exact_grad(vals.val, v_exact_grad);
+			if(problem->has_exact_sol())
+			{
+				problem->exact(vals.val, v_exact);
+				problem->exact_grad(vals.val, v_exact_grad);
+			}
 
-			v_approx 	  = MatrixXd::Zero(v_exact.rows(), v_exact.cols());
-			v_approx_grad = MatrixXd::Zero(v_exact_grad.rows(), v_exact_grad.cols());
+			v_approx.resize(vals.val.rows(), actual_dim);
+			v_approx.setZero();
+
+			v_approx_grad.resize(vals.val.rows(), actual_dim*actual_dim);
+			v_approx_grad.setZero();
+
 
 			const int n_loc_bases=int(vals.basis_values.size());
 
@@ -1742,8 +1746,8 @@ namespace polyfem
 				}
 			}
 
-			auto err = (v_exact-v_approx).eval().rowwise().norm().eval();
-			const auto err_grad = (v_exact_grad - v_approx_grad).eval().rowwise().norm().eval();
+			const auto err = problem->has_exact_sol() ? (v_exact-v_approx).eval().rowwise().norm().eval() : (v_approx).eval().rowwise().norm().eval();
+			const auto err_grad = problem->has_exact_sol() ? (v_exact_grad - v_approx_grad).eval().rowwise().norm().eval() : (v_approx_grad).eval().rowwise().norm().eval();
 
 			// for(long i = 0; i < err.size(); ++i)
 				// errors.push_back(err(i));
@@ -1895,6 +1899,7 @@ namespace polyfem
 				{"nodes", ""},
 				{"wire_mesh", ""},
 				{"iso_mesh", ""},
+				{"spectrum", false},
 			}}
 		};
 
