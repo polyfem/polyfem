@@ -929,8 +929,8 @@ namespace polyfem
 	{
 		if (!state.mesh) { return; }
 
-		// const auto &current_bases = state.iso_parametric() ? state.bases : state.geom_bases;
-		const auto &current_bases = state.bases;
+		const auto &current_bases = state.iso_parametric() ? state.bases : state.geom_bases;
+		// const auto &current_bases = state.bases;
 
 		MatrixXd col(1,3);
 		if(!available_visualizations[Visualizations::BNodes])

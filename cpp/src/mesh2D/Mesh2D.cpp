@@ -176,14 +176,69 @@ namespace polyfem
 				}
 			}
 			//P3
-			else if(nodes_ids.size() == 9)
+			else if(nodes_ids.size() == 10)
 			{
 				order_ = std::max(order_, 3);
+
+				for(int le = 0; le < 3; ++le)
+				{
+					auto &n = edge_nodes_[index.edge];
+
+					//nodes not aleardy created
+					if(n.nodes.size() <= 0)
+					{
+						n.v1 = index.vertex;
+						n.v2 = switch_vertex(index).vertex;
+
+						int node_index1 = 0;
+						int node_index2 = 0;
+						if(n.v1 == nodes_ids[0] && n.v2 == nodes_ids[1]){
+							node_index1 = 3;
+							node_index2 = 4;
+						}
+						else if(n.v2 == nodes_ids[0] && n.v1 == nodes_ids[1]) {
+							node_index1 = 4;
+							node_index2 = 3;
+						}
+						else if(n.v1 == nodes_ids[1] && n.v2 == nodes_ids[2]) {
+							node_index1 = 5;
+							node_index2 = 6;
+						}
+						else if (n.v2 == nodes_ids[1] && n.v1 == nodes_ids[2]) {
+							node_index1 = 6;
+							node_index2 = 5;
+						}
+						else if (n.v1 == nodes_ids[2] && n.v2 == nodes_ids[0]) {
+							node_index1 = 7;
+							node_index2 = 8;
+						}
+						else{
+							node_index1 = 8;
+							node_index2 = 7;
+						}
+
+						n.nodes.resize(2, 2);
+						n.nodes.row(0) << V(nodes_ids[node_index1], 0), V(nodes_ids[node_index1], 1);
+						n.nodes.row(1) << V(nodes_ids[node_index2], 0), V(nodes_ids[node_index2], 1);
+					}
+					index = next_around_face(index);
+				}
+
+				{
+					auto &n = face_nodes_[f];
+					n.v1 = mesh_.facets.vertex(f, 0);
+					n.v2 = mesh_.facets.vertex(f, 1);
+					n.v3 = mesh_.facets.vertex(f, 2);
+					n.nodes.resize(1, 2);
+					n.nodes << V(nodes_ids[9], 0), V(nodes_ids[9], 1);
+				}
 			}
 			//P4
 			else if(nodes_ids.size() == 15)
 			{
 				order_ = std::max(order_, 4);
+				assert(false);
+				// unsupported P4 for geometry, need meshes for testing
 			}
 			//unsupported
 			else
@@ -193,19 +248,47 @@ namespace polyfem
 		}
 	}
 
-	RowVectorNd Mesh2D::edge_node(const Navigation::Index &index, const int n_new_nodes, const int t) const
+	RowVectorNd Mesh2D::edge_node(const Navigation::Index &index, const int n_new_nodes, const int i) const
 	{
 		if(order_ == 1 || edge_nodes_.empty() || edge_nodes_[index.edge].nodes.rows() != n_new_nodes)
 		{
 			const auto v1 = point(index.vertex);
 			const auto v2 = point(switch_vertex(index).vertex);
 
-			const double tt = t/(n_new_nodes + 1.0);
+			const double t = i/(n_new_nodes + 1.0);
 
-			return (1 - tt) * v1 + tt * v2;
+			return (1 - t) * v1 + t * v2;
 		}
 
-		return edge_nodes_[index.edge].nodes.row(t-1);
+		const auto &n = edge_nodes_[index.edge];
+		if(n.v1 == index.vertex)
+			return n.nodes.row(i-1);
+		else
+			return n.nodes.row(n.nodes.rows() - i);
+	}
+
+	RowVectorNd Mesh2D::face_node(const Navigation::Index &index, const int n_new_nodes, const int i, const int j) const
+	{
+		if(order_ == 1 || order_ == 2 || face_nodes_.empty() || face_nodes_[index.face].nodes.rows() != n_new_nodes)
+		{
+			const auto v1 = point(index.vertex);
+			const auto v2 = point(switch_vertex(index).vertex);
+			const auto v3 = point(switch_vertex(switch_edge(index)).vertex);
+
+			const double b2 = i/(n_new_nodes + 2.0);
+			const double b3 = j/(n_new_nodes + 2.0);
+			const double b1 = 1 - b3 - b2;
+			assert(b3 < 1);
+			assert(b3 > 0);
+
+
+			return b1 * v1 + b2 * v2 + b3 * v3;
+		}
+
+		assert(order_ == 3);
+		//unsupported P4 for geometry
+		const auto &n = face_nodes_[index.face];
+		return n.nodes.row(0);
 	}
 
 	void Mesh2D::bounding_box(RowVectorNd &min, RowVectorNd &max) const

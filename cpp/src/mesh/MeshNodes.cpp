@@ -267,28 +267,29 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_face(const Navigation::Index 
 
 	const Mesh2D * mesh2d = dynamic_cast<const Mesh2D *>(&mesh_);
 
-	const auto v1 = mesh2d->point(index.vertex);
-	const auto v2 = mesh2d->point(mesh2d->switch_vertex(index).vertex);
-	const auto v3 = mesh2d->point(mesh2d->switch_vertex(mesh2d->switch_edge(index)).vertex);
+	// const auto v1 = mesh2d->point(index.vertex);
+	// const auto v2 = mesh2d->point(mesh2d->switch_vertex(index).vertex);
+	// const auto v3 = mesh2d->point(mesh2d->switch_vertex(mesh2d->switch_edge(index)).vertex);
 
 	if(start_node_id < 0)
 	{
 		int loc_index = 0;
 		for(int i = 1; i <= n_new_nodes; ++i)
 		{
-			const double b2 = i/(n_new_nodes + 2.0);
+			// const double b2 = i/(n_new_nodes + 2.0);
 			for(int j = 1; j <= n_new_nodes - i + 1; ++j)
 			{
-				const double b3 = j/(n_new_nodes + 2.0);
-				const double b1 = 1 - b3 - b2;
-				assert(b3 < 1);
-				assert(b3 > 0);
+				// const double b3 = j/(n_new_nodes + 2.0);
+				// const double b1 = 1 - b3 - b2;
+				// assert(b3 < 1);
+				// assert(b3 > 0);
 
 				const int primitive_id = start + loc_index;
 				primitive_to_node_[primitive_id] = n_nodes();
 				node_to_primitive_.push_back(primitive_id);
 
-				nodes_.row(primitive_id) = b1 * v1 + b2 * v2 + b3 * v3;
+				// nodes_.row(primitive_id) = b1 * v1 + b2 * v2 + b3 * v3;
+				nodes_.row(primitive_id) = mesh2d->face_node(index, n_new_nodes, i, j);
 
 				res.push_back(primitive_to_node_[primitive_id]);
 
