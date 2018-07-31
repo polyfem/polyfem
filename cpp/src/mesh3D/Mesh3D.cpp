@@ -29,6 +29,11 @@ namespace polyfem
 
 	bool Mesh3D::load(const std::string &path)
 	{
+		edge_nodes_.clear();
+		face_nodes_.clear();
+		cell_nodes_.clear();
+		order_ = 1;
+		
 		if (!StringUtils::endswidth(path, ".HYBRID")) {
 			GEO::Mesh M;
 			GEO::mesh_load(path, M);
@@ -132,6 +137,11 @@ namespace polyfem
 	// load from a geogram surface mesh (for debugging), or volume mesh
 	// if loading a surface mesh, it assumes there is only one polyhedral cell, and the last vertex id a point in the kernel
 	bool Mesh3D::load(const GEO::Mesh &M) {
+		edge_nodes_.clear();
+		face_nodes_.clear();
+		cell_nodes_.clear();
+		order_ = 1;
+
 		assert(M.vertices.dimension() == 3);
 
 		// Set vertices
@@ -428,6 +438,26 @@ namespace polyfem
 		f.close();
 
 		return true;
+	}
+
+	bool Mesh3D::build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
+	{
+		edge_nodes_.clear();
+		face_nodes_.clear();
+		cell_nodes_.clear();
+		order_ = 1;
+
+		assert(false);
+		//TODO
+		return false;
+	}
+
+	void Mesh3D::attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes)
+	{
+		edge_nodes_.clear();
+		face_nodes_.clear();
+		cell_nodes_.clear();
+		order_ = 1;
 	}
 
 	void Mesh3D::bounding_box(RowVectorNd &min, RowVectorNd &max) const

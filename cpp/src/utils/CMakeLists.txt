@@ -14,6 +14,8 @@ set(SOURCES
 	InterpolatedFunction.hpp
 	MatrixUtils.cpp
 	MatrixUtils.hpp
+	MshReader.cpp
+	MshReader.hpp
 	RefElementSampler.cpp
 	RefElementSampler.hpp
 	StringUtils.cpp

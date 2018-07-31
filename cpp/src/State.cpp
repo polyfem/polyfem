@@ -797,7 +797,8 @@ namespace polyfem
 
 		igl::Timer timer; timer.start();
 		std::cout<<"Loading mesh..."<<std::flush;
-		mesh = Mesh::create(mesh_path());
+		const bool force_lin = args["force_linear_geometry"];
+		mesh = Mesh::create(mesh_path(), force_lin);
 		if (!mesh) {
 			return;
 		}
@@ -1131,7 +1132,7 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], 1, geom_bases, local_boundary, poly_edge_to_data_geom);
+					FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], mesh->order(), geom_bases, local_boundary, poly_edge_to_data_geom);
 
 				n_bases = FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, bases, local_boundary, poly_edge_to_data);
 			}
@@ -1158,7 +1159,7 @@ namespace polyfem
 			else
 			{
 				if(!iso_parametric())
-					FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], 1, geom_bases, local_boundary, poly_edge_to_data_geom);
+					FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], mesh->order(), geom_bases, local_boundary, poly_edge_to_data_geom);
 
 				n_bases = FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, bases, local_boundary, poly_edge_to_data);
 				// n_bases = SpectralBasis2d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, bases, geom_bases, local_boundary);
@@ -1727,7 +1728,7 @@ namespace polyfem
 			v_approx.resize(vals.val.rows(), actual_dim);
 			v_approx.setZero();
 
-			v_approx_grad.resize(vals.val.rows(), actual_dim*actual_dim);
+			v_approx_grad.resize(vals.val.rows(), mesh->dimension()*actual_dim);
 			v_approx_grad.setZero();
 
 
@@ -1839,6 +1840,7 @@ namespace polyfem
 	{
 		this->args = {
 			{"mesh", ""},
+			{"force_linear_geometry", false},
 			{"bc_tag", ""},
 			{"n_refs", 0},
 			{"vismesh_rel_area", 0.00001},

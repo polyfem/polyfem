@@ -2,6 +2,8 @@
 #include <polyfem/InterpolatedFunction.hpp>
 #include <polyfem/Bessel.hpp>
 #include <polyfem/ExpressionValue.hpp>
+#include <polyfem/MshReader.hpp>
+#include <polyfem/Mesh.hpp>
 
 
 #include <Eigen/Dense>
@@ -54,4 +56,12 @@ TEST_CASE("expression", "[utils]") {
     REQUIRE(expr(2, 3, 4)   == Approx(2.*2.+sqrt(2.*3.)+sin(4.)*2.).margin(1e-10));
     REQUIRE(expr2d(2, 3)    == Approx(2.*2.+sqrt(2.*3.)).margin(1e-10));
     REQUIRE(val(2, 3, 4)    == Approx(1).margin(1e-16));
+}
+
+TEST_CASE("mshreader", "[utils]") {
+    const std::string path = DATA_DIR;
+    Eigen::MatrixXd vertices;
+    Eigen::MatrixXi cells;
+    const auto mesh = Mesh::create(path + "/circle2.msh", false);
+    REQUIRE(mesh);
 }

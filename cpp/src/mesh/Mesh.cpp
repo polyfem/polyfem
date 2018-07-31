@@ -2,7 +2,10 @@
 #include <polyfem/Mesh.hpp>
 #include <polyfem/Mesh2D.hpp>
 #include <polyfem/Mesh3D.hpp>
+
 #include <polyfem/StringUtils.hpp>
+#include <polyfem/MshReader.hpp>
+
 #include <geogram/mesh/mesh_io.h>
 #include <geogram/mesh/mesh_geometry.h>
 ////////////////////////////////////////////////////////////////////////////////
@@ -39,15 +42,37 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(GEO::Mesh &meshin) {
 	return nullptr;
 }
 
-std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path) {
+std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path, const bool force_linear_geometry) {
 	std::string lowername = path;
+
 	std::transform(lowername.begin(), lowername.end(), lowername.begin(), ::tolower);
 	if (StringUtils::endswidth(lowername, ".hybrid")) {
 		std::unique_ptr<polyfem::Mesh> mesh = std::make_unique<Mesh3D>();
 		if (mesh->load(path)){
 			return mesh;
 		}
-	} else {
+	}
+	else if (StringUtils::endswidth(lowername, ".msh"))
+	{
+		Eigen::MatrixXd vertices;
+		Eigen::MatrixXi cells;
+		std::vector<std::vector<int>> elements;
+
+		if(!MshReader::load(path, vertices, cells, elements))
+			return nullptr;
+
+		std::unique_ptr<polyfem::Mesh> mesh;
+		if(cells.cols() == 3)
+			mesh = std::make_unique<Mesh2D>();
+		else
+			mesh = std::make_unique<Mesh3D>();
+
+		mesh->build_from_matrices(vertices, cells);
+		if(!force_linear_geometry)
+			mesh->attach_higher_order_nodes(vertices, elements);
+		return mesh;
+	}
+	else {
 		GEO::Mesh tmp;
 		if (GEO::mesh_load(path, tmp)) {
 			return create(tmp);

@@ -48,6 +48,9 @@ namespace polyfem
 
 		bool save(const std::string &path) const override;
 		bool save(const std::vector<int> &fs, const int ringN, const std::string &path) const;
+		bool build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F) override;
+
+		void attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes) override;
 
 		void normalize() override;
 

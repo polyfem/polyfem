@@ -30,8 +30,29 @@ namespace polyfem
 
 	class Mesh
 	{
+	protected:
+		class EdgeNodes
+		{
+		public:
+			int v1, v2;
+			Eigen::MatrixXd nodes;
+		};
+
+		class FaceNodes
+		{
+		public:
+			int v1, v2, v3;
+			Eigen::MatrixXd nodes;
+		};
+
+		class CellNodes
+		{
+		public:
+			int v1, v2, v3, v4;
+			Eigen::MatrixXd nodes;
+		};
 	public:
-		static std::unique_ptr<Mesh> create(const std::string &path);
+		static std::unique_ptr<Mesh> create(const std::string &path, const bool force_linear_geometry);
 		static std::unique_ptr<Mesh> create(GEO::Mesh &M);
 
 		Mesh() = default;
@@ -59,6 +80,10 @@ namespace polyfem
 		virtual bool load(const std::string &path) = 0;
 		virtual bool load(const GEO::Mesh &M) = 0;
 		virtual bool save(const std::string &path) const = 0;
+		virtual bool build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F) = 0;
+
+		virtual void attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes) = 0;
+		inline int order() const { return order_; }
 
 		virtual void normalize() = 0;
 
@@ -108,6 +133,11 @@ namespace polyfem
 	protected:
 		std::vector<ElementType> elements_tag_;
 		std::vector<int> boundary_ids_;
+		int order_ = 1;
+
+		std::vector<EdgeNodes> edge_nodes_;
+		std::vector<FaceNodes> face_nodes_;
+		std::vector<CellNodes> cell_nodes_;
 	};
 }
 

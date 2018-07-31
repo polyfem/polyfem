@@ -929,6 +929,9 @@ namespace polyfem
 	{
 		if (!state.mesh) { return; }
 
+		// const auto &current_bases = state.iso_parametric() ? state.bases : state.geom_bases;
+		const auto &current_bases = state.bases;
+
 		MatrixXd col(1,3);
 		if(!available_visualizations[Visualizations::BNodes])
 		{
@@ -939,7 +942,7 @@ namespace polyfem
 			for(const auto &lb : state.local_neumann_boundary)
 			{
 				const int e = lb.element_id();
-				const ElementBases &bs = state.bases[e];
+				const ElementBases &bs = current_bases[e];
 
 				for(int i = 0; i < lb.size(); ++i)
 				{
@@ -960,9 +963,9 @@ namespace polyfem
 			}
 
 			col << 1,0,0;
-			for(std::size_t i = 0; i < state.bases.size(); ++i)
+			for(std::size_t i = 0; i < current_bases.size(); ++i)
 			{
-				const ElementBases &basis = state.bases[i];
+				const ElementBases &basis = current_bases[i];
 				Eigen::MatrixXd P(basis.bases.size(), 3);
 
 				for(std::size_t j = 0; j < basis.bases.size(); ++j)
@@ -1044,9 +1047,9 @@ namespace polyfem
 
 			col << 142./255., 68./255., 173./255.;
 
-			for(std::size_t i = 0; i < state.bases.size(); ++i)
+			for(std::size_t i = 0; i < current_bases.size(); ++i)
 			{
-				const ElementBases &basis = state.bases[i];
+				const ElementBases &basis = current_bases[i];
 				Eigen::MatrixXd P(basis.bases.size(), 3);
 
 				for(std::size_t j = 0; j < basis.bases.size(); ++j)
@@ -1549,6 +1552,9 @@ namespace polyfem
 	{
 		if (!state.mesh) { return; }
 		state.compute_errors();
+
+		if(!state.problem->has_exact_sol())
+			return;
 
 		available_visualizations.block(Visualizations::Error, 0, Visualizations::TotalVisualizations-Visualizations::Error, 1).setConstant(false);
 

@@ -67,6 +67,18 @@ namespace polyfem
 		bool is_scalar() const override { return true; }
 	};
 
+	class MinSurfProblem: public Problem
+	{
+	public:
+		MinSurfProblem(const std::string &name);
+
+		void rhs(const std::string &formulation, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const override;
+		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const override;
+
+		bool is_scalar() const override { return true; }
+		bool has_exact_sol() const override { return false; }
+	};
+
 	class TimeDependentProblem: public Problem
 	{
 	public:

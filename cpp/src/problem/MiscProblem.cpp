@@ -235,6 +235,20 @@ namespace polyfem
 		return res;
 	}
 
+	MinSurfProblem::MinSurfProblem(const std::string &name)
+	: Problem(name)
+	{ }
+
+	void MinSurfProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const
+	{
+		val = -10*Eigen::MatrixXd::Ones(pts.rows(), 1);
+	}
+
+	void MinSurfProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), 1);
+	}
+
 	TimeDependentProblem::TimeDependentProblem(const std::string &name)
 	: Problem(name)
 	{ }

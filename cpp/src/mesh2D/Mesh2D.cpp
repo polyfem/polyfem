@@ -4,6 +4,9 @@
 #include <polyfem/MeshUtils.hpp>
 #include <polyfem/Refinement.hpp>
 
+#include <polyfem/StringUtils.hpp>
+#include <polyfem/MshReader.hpp>
+
 #include <igl/triangle/triangulate.h>
 #include <igl/copyleft/tetgen/tetrahedralize.h>
 
@@ -52,10 +55,30 @@ namespace polyfem
 
 	bool Mesh2D::load(const std::string &path)
 	{
+		edge_nodes_.clear();
+		face_nodes_.clear();
+		cell_nodes_.clear();
+		order_ = 1;
+
 		mesh_.clear(false,false);
 
-		if(!mesh_load(path, mesh_))
-			return false;
+		if (!StringUtils::endswidth(path, "msh"))
+		{
+			Eigen::MatrixXd vertices;
+			Eigen::MatrixXi cells;
+			std::vector<std::vector<int>> elements;
+
+			if(!MshReader::load(path, vertices, cells, elements))
+				return false;
+
+			to_geogram_mesh(vertices, cells, mesh_);
+			attach_higher_order_nodes(vertices, elements);
+		}
+		else
+		{
+			if(!mesh_load(path, mesh_))
+				return false;
+		}
 
 		orient_normals_2d(mesh_);
 		Navigation::prepare_mesh(mesh_);
@@ -65,6 +88,11 @@ namespace polyfem
 
 	bool Mesh2D::load(const GEO::Mesh &mesh)
 	{
+		edge_nodes_.clear();
+		face_nodes_.clear();
+		cell_nodes_.clear();
+		order_ = 1;
+
 		mesh_.clear(false,false);
 		mesh_.copy(mesh);
 
@@ -80,6 +108,104 @@ namespace polyfem
 			return false;
 
 		return true;
+	}
+
+	bool Mesh2D::build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
+	{
+		edge_nodes_.clear();
+		face_nodes_.clear();
+		cell_nodes_.clear();
+		order_ = 1;
+
+		mesh_.clear(false,false);
+		to_geogram_mesh(V, F, mesh_);
+
+		orient_normals_2d(mesh_);
+		Navigation::prepare_mesh(mesh_);
+		compute_elements_tag();
+		return true;
+	}
+
+	void Mesh2D::attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes)
+	{
+		edge_nodes_.clear();
+		face_nodes_.clear();
+		cell_nodes_.clear();
+		order_ = 1;
+
+		edge_nodes_.resize(n_edges());
+		face_nodes_.resize(n_faces());
+
+		assert(nodes.size() == n_faces());
+
+		for(int f = 0; f < n_faces(); ++f)
+		{
+			auto index = get_index_from_face(f);
+
+			const auto &nodes_ids = nodes[f];
+
+			if(nodes_ids.size() == 3)
+				continue;
+			//P2
+			else if(nodes_ids.size() == 6)
+			{
+				order_ = std::max(order_, 2);
+
+				for(int le = 0; le < 3; ++le)
+				{
+					auto &n = edge_nodes_[index.edge];
+
+					//nodes not aleardy created
+					if(n.nodes.size() <= 0)
+					{
+						n.v1 = index.vertex;
+						n.v2 = switch_vertex(index).vertex;
+
+						int node_index = 0;
+						if((n.v1 == nodes_ids[0] && n.v2 == nodes_ids[1]) || (n.v2 == nodes_ids[0] && n.v1 == nodes_ids[1]))
+							node_index = 3;
+						else if((n.v1 == nodes_ids[1] && n.v2 == nodes_ids[2]) || (n.v2 == nodes_ids[1] && n.v1 == nodes_ids[2]))
+							node_index = 4;
+						else
+							node_index = 5;
+
+						n.nodes.resize(1, 2);
+						n.nodes << V(nodes_ids[node_index], 0), V(nodes_ids[node_index], 1);
+					}
+					index = next_around_face(index);
+				}
+			}
+			//P3
+			else if(nodes_ids.size() == 9)
+			{
+				order_ = std::max(order_, 3);
+			}
+			//P4
+			else if(nodes_ids.size() == 15)
+			{
+				order_ = std::max(order_, 4);
+			}
+			//unsupported
+			else
+			{
+				assert(false);
+			}
+		}
+	}
+
+	RowVectorNd Mesh2D::edge_node(const Navigation::Index &index, const int n_new_nodes, const int t) const
+	{
+		if(order_ == 1 || edge_nodes_.empty() || edge_nodes_[index.edge].nodes.rows() != n_new_nodes)
+		{
+			const auto v1 = point(index.vertex);
+			const auto v2 = point(switch_vertex(index).vertex);
+
+			const double tt = t/(n_new_nodes + 1.0);
+
+			return (1 - tt) * v1 + tt * v2;
+		}
+
+		return edge_nodes_[index.edge].nodes.row(t-1);
 	}
 
 	void Mesh2D::bounding_box(RowVectorNd &min, RowVectorNd &max) const
@@ -105,6 +231,15 @@ namespace polyfem
 		const GEO::vec3 origin = min_corner;
 		for (GEO::index_t v = 0; v < mesh_.vertices.nb(); ++v) {
 			mesh_.vertices.point(v) = (mesh_.vertices.point(v) - origin) / scaling;
+		}
+		Eigen::RowVector2d shift; shift<<origin[0], origin[1];
+		for(auto &n : edge_nodes_){
+			if(n.nodes.size() > 0)
+				n.nodes = (n.nodes.rowwise() - shift) / scaling;
+		}
+		for(auto &n : face_nodes_){
+			if(n.nodes.size() > 0)
+				n.nodes = (n.nodes.rowwise() - shift) / scaling;
 		}
 
 		std::cout << "-- bbox before normalization:" << std::endl;

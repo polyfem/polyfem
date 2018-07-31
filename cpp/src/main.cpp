@@ -57,6 +57,7 @@ int main(int argc, const char **argv)
 	bool normalize_mesh = true;
 	bool no_ui = false;
 	bool p_ref = false;
+	bool force_linear = false;
 
 	command_line.add_option("-json", json_file);
 
@@ -76,6 +77,7 @@ int main(int argc, const char **argv)
 	command_line.add_option("-q", discr_order);
 	command_line.add_option("-p_ref", "-no_p_ref", p_ref);
 	command_line.add_option("-spline", "-fem", use_splines);
+	command_line.add_option("-lin_geom", "-nl_geom", force_linear);
 
 	//disable out
 	command_line.add_option("-cmd", "-ui", no_ui);
@@ -107,9 +109,11 @@ int main(int argc, const char **argv)
 	else
 	{
 		in_args["mesh"] = path;
+		in_args["force_linear_geometry"] = force_linear;
 		in_args["n_refs"] = n_refs;
 		in_args["problem"] = problem_name;
 		in_args["normalize_mesh"] = normalize_mesh;
+
 
 		in_args["scalar_formulation"] = scalar_formulation;
 		in_args["tensor_formulation"] = tensor_formulation;
