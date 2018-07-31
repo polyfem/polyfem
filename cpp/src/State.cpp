@@ -188,6 +188,7 @@ namespace polyfem
 		j["quadrature_order"] = args["quadrature_order"];
 		j["mesh_path"] = mesh_path();
 		j["discr_order"] = args["discr_order"];
+		j["geom_order"] = mesh->order();
 		j["discr_order_min"] = disc_orders.minCoeff();
 		j["discr_order_max"] = disc_orders.maxCoeff();
 		j["harmonic_samples_res"] = args["n_harmonic_samples"];

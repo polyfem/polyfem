@@ -2,6 +2,7 @@
 
 #include <Eigen/Dense>
 #include <string>
+#include <vector>
 
 namespace polyfem
 {
