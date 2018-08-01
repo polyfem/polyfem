@@ -131,9 +131,9 @@ T TestProblem::eval_impl(const T &pt) const {
 }
 
 void TestProblem::set_parameters(const json &params) {
-	// j_original.merge_patch(j_patch);
+	// j_original.update(j_patch);
 	assert(!params.is_null());
-	params_.merge_patch(params);
+	params_.update(params);
 }
 
 } // namespace polyfem

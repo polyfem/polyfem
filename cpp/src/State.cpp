@@ -1906,7 +1906,7 @@ namespace polyfem
 			}}
 		};
 
-		this->args.merge_patch(args_in);
+		this->args.update(args_in);
 
 
 		problem = ProblemFactory::factory().get_problem(args["problem"]);
