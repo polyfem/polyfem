@@ -914,7 +914,6 @@ int polyfem::FEBasis2d::build_bases(
 	compute_nodes(mesh, discr_orders, nodes, element_nodes_id, local_boundary, poly_edge_to_data);
 	// boundary_nodes = nodes.boundary_nodes();
 
-
 	bases.resize(mesh.n_faces());
 	std::vector<int> interface_elements; interface_elements.reserve(mesh.n_faces());
 
@@ -1011,7 +1010,7 @@ int polyfem::FEBasis2d::build_bases(
 				tri_quadrature.get_quadrature(real_order, quad);
 			});
 
-			b.set_local_node_from_primitive_func([discr_order, nodes, e](const int primitive_id, const Mesh &mesh)
+			b.set_local_node_from_primitive_func([discr_order, e](const int primitive_id, const Mesh &mesh)
 			{
 				const auto &mesh2d = dynamic_cast<const Mesh2D &>(mesh);
 				auto index = mesh2d.get_index_from_face(e);
