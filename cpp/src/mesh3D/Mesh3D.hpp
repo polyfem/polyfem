@@ -51,6 +51,8 @@ namespace polyfem
 		bool build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F) override;
 
 		void attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes) override;
+		RowVectorNd edge_node(const Navigation3D::Index &index, const int n_new_nodes, const int i) const;
+		RowVectorNd face_node(const Navigation3D::Index &index, const int n_new_nodes, const int i, const int j) const;
 
 		void normalize() override;
 

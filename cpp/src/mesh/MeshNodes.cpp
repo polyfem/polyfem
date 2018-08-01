@@ -211,28 +211,30 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_edge(const Navigation3D::Inde
 
 	const Mesh3D * mesh3d = dynamic_cast<const Mesh3D *>(&mesh_);
 
-	const auto v1 = mesh3d->point(index.vertex);
-	const auto v2 = mesh3d->point(mesh3d->switch_vertex(index).vertex);
+	// const auto v1 = mesh3d->point(index.vertex);
+	// const auto v2 = mesh3d->point(mesh3d->switch_vertex(index).vertex);
 
 	const int start_node_id = primitive_to_node_[start];
 	if (start_node_id < 0) {
 		for(int i = 1; i <= n_new_nodes; ++i)
 		{
-			const double t = i/(n_new_nodes + 1.0);
+			// const double t = i/(n_new_nodes + 1.0);
 
 			const int primitive_id = start + i - 1;
 			primitive_to_node_[primitive_id] = n_nodes();
 			node_to_primitive_.push_back(primitive_id);
 
-			nodes_.row(primitive_id) = (1 - t) * v1 + t * v2;
+			// nodes_.row(primitive_id) = (1 - t) * v1 + t * v2;
+			nodes_.row(primitive_id) = mesh3d->edge_node(index, n_new_nodes, i);
 
 			res.push_back(primitive_to_node_[primitive_id]);
 		}
 	}
 	else
 	{
-		const double t = 1/(n_new_nodes + 1.0);
-		const RowVectorNd v = (1 - t) * v1 + t * v2;
+		// const double t = 1/(n_new_nodes + 1.0);
+		// const RowVectorNd v = (1 - t) * v1 + t * v2;
+		const RowVectorNd v = mesh3d->edge_node(index, n_new_nodes, 1);
 		if((node_position(start_node_id) - v).norm() < 1e-10)
 		{
 			for(int i = 0; i < n_new_nodes; ++i)
@@ -318,28 +320,29 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_face(const Navigation3D::Inde
 
 	const Mesh3D * mesh3d = dynamic_cast<const Mesh3D *>(&mesh_);
 
-	const auto v1 = mesh3d->point(index.vertex);
-	const auto v2 = mesh3d->point(mesh3d->switch_vertex(index).vertex);
-	const auto v3 = mesh3d->point(mesh3d->switch_vertex(mesh3d->switch_edge(index)).vertex);
+	// const auto v1 = mesh3d->point(index.vertex);
+	// const auto v2 = mesh3d->point(mesh3d->switch_vertex(index).vertex);
+	// const auto v3 = mesh3d->point(mesh3d->switch_vertex(mesh3d->switch_edge(index)).vertex);
 
 	if(start_node_id < 0)
 	{
 		int loc_index = 0;
 		for(int i = 1; i <= n_new_nodes; ++i)
 		{
-			const double b2 = i/(n_new_nodes + 2.0);
+			// const double b2 = i/(n_new_nodes + 2.0);
 			for(int j = 1; j <= n_new_nodes - i + 1; ++j)
 			{
-				const double b3 = j/(n_new_nodes + 2.0);
-				const double b1 = 1 - b3 - b2;
-				assert(b3 < 1);
-				assert(b3 > 0);
+				// const double b3 = j/(n_new_nodes + 2.0);
+				// const double b1 = 1 - b3 - b2;
+				// assert(b3 < 1);
+				// assert(b3 > 0);
 
 				const int primitive_id = start + loc_index;
 				primitive_to_node_[primitive_id] = n_nodes();
 				node_to_primitive_.push_back(primitive_id);
 
-				nodes_.row(primitive_id) = b1 * v1 + b2 * v2 + b3 * v3;
+				// nodes_.row(primitive_id) = b1 * v1 + b2 * v2 + b3 * v3;
+				nodes_.row(primitive_id) = mesh3d->face_node(index, n_new_nodes, i, j);
 
 				res.push_back(primitive_to_node_[primitive_id]);
 
@@ -358,15 +361,16 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_face(const Navigation3D::Inde
 			const int total_nodes = n_new_nodes *(n_new_nodes+1) / 2;
 			for(int i = 1; i <= n_new_nodes; ++i)
 			{
-				const double b2 = i/(n_new_nodes + 2.0);
+				// const double b2 = i/(n_new_nodes + 2.0);
 				for(int j = 1; j <= n_new_nodes - i + 1; ++j)
 				{
-					const double b3 = j/(n_new_nodes + 2.0);
-					const double b1 = 1 - b3 - b2;
-					assert(b3 < 1);
-					assert(b3 > 0);
+					// const double b3 = j/(n_new_nodes + 2.0);
+					// const double b1 = 1 - b3 - b2;
+					// assert(b3 < 1);
+					// assert(b3 > 0);
 
-					const RowVectorNd p = b1 * v1 + b2 * v2 + b3 * v3;
+					// const RowVectorNd p = b1 * v1 + b2 * v2 + b3 * v3;
+					const RowVectorNd p = mesh3d->face_node(index, n_new_nodes, i, j);
 
 					bool found = false;
 					for(int k = start; k < start + total_nodes; ++k)
@@ -388,7 +392,6 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_face(const Navigation3D::Inde
 	assert(res.size() == size_t(n_new_nodes *(n_new_nodes+1) / 2));
 	return res;
 }
-
 
 std::vector<int> polyfem::MeshNodes::node_ids_from_cell(const Navigation3D::Index &index, const int n_new_nodes)
 {

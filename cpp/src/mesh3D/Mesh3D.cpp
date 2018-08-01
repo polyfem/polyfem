@@ -33,7 +33,7 @@ namespace polyfem
 		face_nodes_.clear();
 		cell_nodes_.clear();
 		order_ = 1;
-		
+
 		if (!StringUtils::endswidth(path, ".HYBRID")) {
 			GEO::Mesh M;
 			GEO::mesh_load(path, M);
@@ -442,14 +442,31 @@ namespace polyfem
 
 	bool Mesh3D::build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
 	{
+		assert(F.cols() == 4);
 		edge_nodes_.clear();
 		face_nodes_.clear();
 		cell_nodes_.clear();
 		order_ = 1;
 
-		assert(false);
-		//TODO
-		return false;
+		GEO::Mesh M;
+		M.vertices.create_vertices((int) V.rows());
+		for (int i = 0; i < (int) M.vertices.nb(); ++i) {
+			GEO::vec3 &p = M.vertices.point(i);
+			p[0] = V(i, 0);
+			p[1] = V(i, 1);
+			p[2] = V(i, 2);
+		}
+
+		M.cells.create_tets((int) F.rows());
+
+		for (int c = 0; c < (int) M.cells.nb(); ++c) {
+			for (int lv = 0; lv < F.cols(); ++lv) {
+				M.cells.set_vertex(c, lv, F(c, lv));
+			}
+		}
+		M.cells.connect();
+
+		return load(M);
 	}
 
 	void Mesh3D::attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes)
@@ -458,6 +475,244 @@ namespace polyfem
 		face_nodes_.clear();
 		cell_nodes_.clear();
 		order_ = 1;
+
+
+		edge_nodes_.resize(n_edges());
+		face_nodes_.resize(n_faces());
+		cell_nodes_.resize(n_cells());
+
+		const auto attach_p2 = [&] (const Navigation3D::Index &index, const std::vector<int> &nodes_ids) {
+			auto &n = edge_nodes_[index.edge];
+
+			if(n.nodes.size() > 0)
+				return;
+
+			n.v1 = index.vertex;
+			n.v2 = switch_vertex(index).vertex;
+
+
+			const int n_v1 = index.vertex;
+			const int n_v2 = switch_vertex(index).vertex;
+
+			int node_index = 0;
+
+			     if((n_v1 == nodes_ids[0] && n_v2 == nodes_ids[1]) || (n_v2 == nodes_ids[0] && n_v1 == nodes_ids[1]))
+				node_index = 4;
+			else if((n_v1 == nodes_ids[1] && n_v2 == nodes_ids[2]) || (n_v2 == nodes_ids[1] && n_v1 == nodes_ids[2]))
+				node_index = 5;
+			else if((n_v1 == nodes_ids[2] && n_v2 == nodes_ids[3]) || (n_v2 == nodes_ids[2] && n_v1 == nodes_ids[3]))
+				node_index = 8;
+
+			else if((n_v1 == nodes_ids[0] && n_v2 == nodes_ids[3]) || (n_v2 == nodes_ids[0] && n_v1 == nodes_ids[3]))
+				node_index = 7;
+			else if((n_v1 == nodes_ids[0] && n_v2 == nodes_ids[2]) || (n_v2 == nodes_ids[0] && n_v1 == nodes_ids[2]))
+				node_index = 6;
+			else
+				node_index = 9;
+
+			n.nodes.resize(1, 3);
+			n.nodes << V(nodes_ids[node_index], 0), V(nodes_ids[node_index], 1), V(nodes_ids[node_index], 2);
+		};
+
+		const auto attach_p3 = [&] (const Navigation3D::Index &index, const std::vector<int> &nodes_ids) {
+			auto &n = edge_nodes_[index.edge];
+
+			if(n.nodes.size() > 0)
+				return;
+
+			n.v1 = index.vertex;
+			n.v2 = switch_vertex(index).vertex;
+
+
+			const int n_v1 = index.vertex;
+			const int n_v2 = switch_vertex(index).vertex;
+
+			int node_index1 = 0;
+			int node_index2 = 0;
+			if(n_v1 == nodes_ids[0] && n_v2 == nodes_ids[1]) {
+				node_index1 = 4;
+				node_index2 = 5;
+			}
+			else if (n_v2 == nodes_ids[0] && n_v1 == nodes_ids[1]) {
+				node_index1 = 5;
+				node_index2 = 4;
+			}
+			else if(n_v1 == nodes_ids[1] && n_v2 == nodes_ids[2]) {
+				node_index1 = 6;
+				node_index2 = 7;
+			}
+			else if (n_v2 == nodes_ids[1] && n_v1 == nodes_ids[2]) {
+				node_index1 = 7;
+				node_index2 = 6;
+			}
+			else if(n_v1 == nodes_ids[2] && n_v2 == nodes_ids[3]) {
+				node_index1 = 13;
+				node_index2 = 12;
+			}
+			else if (n_v2 == nodes_ids[2] && n_v1 == nodes_ids[3]) {
+				node_index1 = 12;
+				node_index2 = 13;
+			}
+
+			else if(n_v1 == nodes_ids[0] && n_v2 == nodes_ids[3]) {
+				node_index1 = 11;
+				node_index2 = 10;
+			}
+			else if (n_v2 == nodes_ids[0] && n_v1 == nodes_ids[3]) {
+				node_index1 = 10;
+				node_index2 = 11;
+			}
+			else if(n_v1 == nodes_ids[0] && n_v2 == nodes_ids[2]) {
+				node_index1 = 9;
+				node_index2 = 8;
+			}
+			else if (n_v2 == nodes_ids[0] && n_v1 == nodes_ids[2]) {
+				node_index1 = 8;
+				node_index2 = 9;
+			}
+
+			else if (n_v2 == nodes_ids[1] && n_v1 == nodes_ids[3]) {
+				node_index1 = 14;
+				node_index2 = 15;
+			}
+			else{
+				node_index1 = 15;
+				node_index2 = 14;
+			}
+
+			n.nodes.resize(2, 3);
+			n.nodes.row(0) << V(nodes_ids[node_index1], 0), V(nodes_ids[node_index1], 1), V(nodes_ids[node_index1], 2);
+			n.nodes.row(1) << V(nodes_ids[node_index2], 0), V(nodes_ids[node_index2], 1), V(nodes_ids[node_index2], 2);
+		};
+
+		const auto attach_p3_face = [&] (const Navigation3D::Index &index, const std::vector<int> &nodes_ids, int id) {
+			auto &n = face_nodes_[index.face];
+			if(n.nodes.size() <= 0)
+			{
+				n.v1 = face_vertex(index.face, 0);
+				n.v2 = face_vertex(index.face, 1);
+				n.v3 = face_vertex(index.face, 2);
+				n.nodes.resize(1, 3);
+				n.nodes << V(nodes_ids[id], 0), V(nodes_ids[id], 1), V(nodes_ids[id], 2);
+			}
+		};
+
+		assert(nodes.size() == n_cells());
+
+		for(int c = 0; c < n_cells(); ++c)
+		{
+			auto index = get_index_from_element(c);
+
+			const auto &nodes_ids = nodes[c];
+
+			if(nodes_ids.size() == 4)
+				continue;
+			//P2
+			else if(nodes_ids.size() == 10)
+			{
+				order_ = std::max(order_, 2);
+
+				for(int le = 0; le < 3; ++le)
+				{
+					attach_p2(index, nodes_ids);
+					index = next_around_face(index);
+				}
+
+				index = switch_vertex(switch_edge(switch_face(index)));
+				attach_p2(index, nodes_ids);
+
+				index = switch_edge(index);
+				attach_p2(index, nodes_ids);
+
+				index = switch_edge(switch_face(index));
+				attach_p2(index, nodes_ids);
+			}
+			//P3
+			else if(nodes_ids.size() == 20)
+			{
+				order_ = std::max(order_, 3);
+
+				for(int le = 0; le < 3; ++le)
+				{
+					attach_p3(index, nodes_ids);
+					index = next_around_face(index);
+				}
+
+				{
+					index = switch_vertex(switch_edge(switch_face(index)));
+					attach_p3(index, nodes_ids);
+
+					index = switch_edge(index);
+					attach_p3(index, nodes_ids);
+
+					index = switch_edge(switch_face(index));
+					attach_p3(index, nodes_ids);
+				}
+
+				{
+					index = get_index_from_element(c);
+
+					attach_p3_face(index, nodes_ids, 19);
+					attach_p3_face(switch_face(index), nodes_ids, 17);
+					attach_p3_face(switch_face(next_around_face(index)), nodes_ids, 18);
+					attach_p3_face(switch_face(next_around_face(next_around_face(index))), nodes_ids, 16);
+				}
+			}
+			//P4
+			else if(nodes_ids.size() == 15)
+			{
+				order_ = std::max(order_, 4);
+				assert(false);
+				// unsupported P4 for geometry, need meshes for testing
+			}
+			//unsupported
+			else
+			{
+				assert(false);
+			}
+		}
+	}
+
+	RowVectorNd Mesh3D::edge_node(const Navigation3D::Index &index, const int n_new_nodes, const int i) const
+	{
+		if(order_ == 1 || edge_nodes_.empty() || edge_nodes_[index.edge].nodes.rows() != n_new_nodes)
+		{
+			const auto v1 = point(index.vertex);
+			const auto v2 = point(switch_vertex(index).vertex);
+
+			const double t = i/(n_new_nodes + 1.0);
+
+			return (1 - t) * v1 + t * v2;
+		}
+
+		const auto &n = edge_nodes_[index.edge];
+		if(n.v1 == index.vertex)
+			return n.nodes.row(i-1);
+		else
+			return n.nodes.row(n.nodes.rows() - i);
+	}
+
+	RowVectorNd Mesh3D::face_node(const Navigation3D::Index &index, const int n_new_nodes, const int i, const int j) const
+	{
+		if(order_ == 1 || order_ == 2 || face_nodes_.empty() || face_nodes_[index.face].nodes.rows() != n_new_nodes)
+		{
+			const auto v1 = point(index.vertex);
+			const auto v2 = point(switch_vertex(index).vertex);
+			const auto v3 = point(switch_vertex(switch_edge(index)).vertex);
+
+			const double b2 = i/(n_new_nodes + 2.0);
+			const double b3 = j/(n_new_nodes + 2.0);
+			const double b1 = 1 - b3 - b2;
+			assert(b3 < 1);
+			assert(b3 > 0);
+
+			return b1 * v1 + b2 * v2 + b3 * v3;
+		}
+
+		assert(order_ == 3);
+		//unsupported P4 for geometry
+		const auto &n = face_nodes_[index.face];
+		return n.nodes.row(0);
 	}
 
 	void Mesh3D::bounding_box(RowVectorNd &min, RowVectorNd &max) const
@@ -481,6 +736,19 @@ namespace polyfem
 				auto val = mesh_.elements[i].v_in_Kernel[d];
 				mesh_.elements[i].v_in_Kernel[d] = (val - shift(d)) * scaling;
 			}
+		}
+
+		for(auto &n : edge_nodes_){
+			if(n.nodes.size() > 0)
+				n.nodes = (n.nodes.rowwise() - shift.transpose()) * scaling;
+		}
+		for(auto &n : face_nodes_){
+			if(n.nodes.size() > 0)
+				n.nodes = (n.nodes.rowwise() - shift.transpose()) * scaling;
+		}
+		for(auto &n : cell_nodes_){
+			if(n.nodes.size() > 0)
+				n.nodes = (n.nodes.rowwise() - shift.transpose()) * scaling;
 		}
 
 		std::cout << "-- bbox before normalization:" << std::endl;

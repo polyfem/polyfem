@@ -190,7 +190,7 @@ namespace polyfem
 				for(size_t i = 1; i < els.size(); ++i)
 					el.push_back(els[i] - 1);
 
-				cells.row(index) << el[0], el[1], el[2], el[4];
+				cells.row(index) << el[0], el[1], el[2], el[3];
 				++index;
 			}
 		}
