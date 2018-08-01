@@ -13,6 +13,8 @@
 #include <imgui/imgui_internal.h>
 #include <tinyfiledialogs.h>
 #include <algorithm>
+
+#include <GLFW/glfw3.h>
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace {
@@ -78,6 +80,7 @@ namespace {
 // Draw menu
 void polyfem::UIState::draw_menu() {
 	// Text labels
+	glfwSetWindowTitle(viewer.window, "polyfem");
 
 	// Viewer settings
 	float viewer_menu_width = 180.f * hidpi_scaling() / pixel_ratio();
