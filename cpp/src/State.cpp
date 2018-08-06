@@ -1905,9 +1905,7 @@ namespace polyfem
 				{"spectrum", false},
 			}}
 		};
-
-		this->args.update(args_in);
-
+		this->args.merge_patch(args_in);
 
 		problem = ProblemFactory::factory().get_problem(args["problem"]);
 		//important for the BC
