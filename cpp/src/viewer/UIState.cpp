@@ -325,14 +325,15 @@ namespace polyfem
 		data(layer).show_overlay = true;
 		data(layer).show_faces = true;
 
-		if(!light_enabled){
-			data(layer).F_material_specular.setZero();
-			data(layer).V_material_specular.setZero();
-			data(layer).dirty |= igl::opengl::MeshGL::DIRTY_DIFFUSE;
+		viewer.core.lighting_factor = (light_enabled ? 1.f : 0.f);
+		// if(!light_enabled){
+		// 	data(layer).F_material_specular.setZero();
+		// 	data(layer).V_material_specular.setZero();
+		// 	data(layer).dirty |= igl::opengl::MeshGL::DIRTY_DIFFUSE;
 
-			data(layer).V_material_ambient *= 2;
-			data(layer).F_material_ambient *= 2;
-		}
+		// 	data(layer).V_material_ambient *= 2;
+		// 	data(layer).F_material_ambient *= 2;
+		// }
 	}
 
 	long UIState::clip_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, std::vector<bool> &valid_elements, const bool map_edges, const Visualizations &layer)
@@ -346,14 +347,15 @@ namespace polyfem
 			std::fill(valid_elements.begin(), valid_elements.end(), true);
 			data(layer).set_mesh(pts, tris);
 
-			if(!light_enabled){
-				data(layer).F_material_specular.setZero();
-				data(layer).V_material_specular.setZero();
-				data(layer).V_material_ambient *= 4;
-				data(layer).F_material_ambient *= 4;
+			viewer.core.lighting_factor = (light_enabled ? 1.f : 0.f);
+			// if(!light_enabled){
+			// 	data(layer).F_material_specular.setZero();
+			// 	data(layer).V_material_specular.setZero();
+			// 	data(layer).V_material_ambient *= 4;
+			// 	data(layer).F_material_ambient *= 4;
 
-				data(layer).dirty |= igl::opengl::MeshGL::DIRTY_DIFFUSE;
-			}
+			// 	data(layer).dirty |= igl::opengl::MeshGL::DIRTY_DIFFUSE;
+			// }
 
 			if(state.mesh->is_volume())
 			{
@@ -419,13 +421,14 @@ namespace polyfem
 
 		data(layer).set_mesh(pts, valid_tri);
 
-		if(!light_enabled){
-			data(layer).F_material_specular.setZero();
-			data(layer).V_material_specular.setZero();
-			data(layer).dirty |= igl::opengl::MeshGL::DIRTY_DIFFUSE;
-			data(layer).V_material_ambient *= 2;
-			data(layer).F_material_ambient *= 2;
-		}
+		viewer.core.lighting_factor = (light_enabled ? 1.f : 0.f);
+		// if(!light_enabled){
+		// 	data(layer).F_material_specular.setZero();
+		// 	data(layer).V_material_specular.setZero();
+		// 	data(layer).dirty |= igl::opengl::MeshGL::DIRTY_DIFFUSE;
+		// 	data(layer).V_material_ambient *= 2;
+		// 	data(layer).F_material_ambient *= 2;
+		// }
 
 		if(state.mesh->is_volume())
 		{
@@ -793,14 +796,15 @@ namespace polyfem
 
 		data(layer).set_colors(col);
 
-		if(!light_enabled){
-			data(layer).F_material_specular.setZero();
-			data(layer).V_material_specular.setZero();
+		viewer.core.lighting_factor = (light_enabled ? 1.f : 0.f);
+		// if(!light_enabled){
+		// 	data(layer).F_material_specular.setZero();
+		// 	data(layer).V_material_specular.setZero();
 
-			data(layer).V_material_ambient *= 2;
-			data(layer).F_material_ambient *= 2;
-			data(layer).dirty |= igl::opengl::MeshGL::DIRTY_DIFFUSE;
-		}
+		// 	data(layer).V_material_ambient *= 2;
+		// 	data(layer).F_material_ambient *= 2;
+		// 	data(layer).dirty |= igl::opengl::MeshGL::DIRTY_DIFFUSE;
+		// }
 	}
 
 
