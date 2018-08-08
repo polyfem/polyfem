@@ -19,7 +19,36 @@ endfunction()
 
 # Autogen helper function
 function(polyfem_autogen MAIN_TARGET PYTHON_SCRIPT OUTPUT_BASE)
-	find_package(PythonInterp 3 REQUIRED)
+	find_package(PythonInterp 3 QUIET)
+
+	if(NOT ${PYTHONINTERP_FOUND})
+		execute_process(
+			COMMAND
+			python -c "import sys; sys.stdout.write(sys.version)"
+			OUTPUT_VARIABLE PYTHON_VERSION)
+
+		if(NOT PYTHON_VERSION)
+			MESSAGE(FATAL_ERROR "Unable to run python")
+		endif()
+
+		STRING(REGEX MATCH "^3\.*" IS_PYTHON3 ${PYTHON_VERSION})
+
+		if(NOT IS_PYTHON3)
+			MESSAGE(FATAL_ERROR "Unable to find python 3")
+		else()
+			SET(PYTHON_EXECUTABLE "python")
+		endif()
+	endif()
+
+	execute_process(
+			COMMAND
+			${PYTHON_EXECUTABLE} -c "import sympy; import sys; import numpy; sys.stdout.write('ok')"
+			OUTPUT_VARIABLE PYTHON_HAS_LIBS)
+
+	if(NOT PYTHON_HAS_LIBS)
+		MESSAGE(FATAL_ERROR "Please install sympy and/or numpy")
+	endif()
+
 
 	add_custom_command(
 		OUTPUT

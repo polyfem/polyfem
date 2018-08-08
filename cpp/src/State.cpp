@@ -1421,6 +1421,12 @@ namespace polyfem
 
 		const auto &assembler = AssemblerUtils::instance();
 
+		const std::string full_mat_path = args["export"]["full_mat"];
+		if(!full_mat_path.empty())
+		{
+			Eigen::saveMarket(stiffness, full_mat_path);
+		}
+
 		if(problem->is_time_dependent())
 		{
 			RhsAssembler rhs_assembler(*mesh, n_bases, problem->is_scalar()? 1 : mesh->dimension(), bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
@@ -1471,7 +1477,7 @@ namespace polyfem
 					A = mass + dt * stiffness;
 					b = dt * current_rhs + mass * sol;
 
-					spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, args["stiffness_mat_save_path"], t == 1 && args["export"]["spectrum"]);
+					spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, args["export"]["stiffness_mat"], t == 1 && args["export"]["spectrum"]);
 					sol = x;
 
 					if(problem->is_stokes())
@@ -1894,8 +1900,8 @@ namespace polyfem
 			{"problem_params", json({})},
 
 			{"output", ""},
-			{"solution", ""},
-			{"stiffness_mat_save_path", ""},
+			// {"solution", ""},
+			// {"stiffness_mat_save_path", ""},
 
 			{"export", {
 				{"vis_mesh", ""},
@@ -1903,9 +1909,24 @@ namespace polyfem
 				{"wire_mesh", ""},
 				{"iso_mesh", ""},
 				{"spectrum", false},
+				{"solution", ""},
+				{"full_mat", ""},
+				{"stiffness_mat", ""}
 			}}
 		};
 		this->args.merge_patch(args_in);
+
+		if(!args_in["stiffness_mat_save_path"].empty())
+		{
+			std::cerr<<"[Warning] use export: { stiffness_mat: 'path' } instead of stiffness_mat_save_path"<<std::endl;
+			this->args["export"]["stiffness_mat"] = args_in["stiffness_mat_save_path"];
+		}
+
+		if(!args_in["solution"].empty())
+		{
+			std::cerr<<"[Warning] use export: { solution: 'path' } instead of solution"<<std::endl;
+			this->args["export"]["solution"] = args_in["solution"];
+		}
 
 		problem = ProblemFactory::factory().get_problem(args["problem"]);
 		//important for the BC
@@ -1920,7 +1941,7 @@ namespace polyfem
 		const std::string wire_mesh_path = args["export"]["wire_mesh"];
 		const std::string iso_mesh_path = args["export"]["iso_mesh"];
 		const std::string nodes_path = args["export"]["nodes"];
-		const std::string solution_path = args["solution"];
+		const std::string solution_path = args["export"]["solution"];
 
 		if(!solution_path.empty())
 		{
