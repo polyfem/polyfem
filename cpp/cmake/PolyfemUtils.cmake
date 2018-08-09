@@ -42,7 +42,7 @@ function(polyfem_autogen MAIN_TARGET PYTHON_SCRIPT OUTPUT_BASE)
 
 	execute_process(
 			COMMAND
-			${PYTHON_EXECUTABLE} -c "import sympy; import sys; import numpy; sys.stdout.write('ok')"
+			${PYTHON_EXECUTABLE} -c "import sympy; import sys; sys.stdout.write('ok')"
 			OUTPUT_VARIABLE PYTHON_HAS_LIBS)
 
 	if(NOT PYTHON_HAS_LIBS)
