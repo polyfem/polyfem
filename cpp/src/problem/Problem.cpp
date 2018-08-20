@@ -34,17 +34,20 @@ namespace polyfem
 
 				if(boundary_ids_.empty() || std::find(boundary_ids_.begin(), boundary_ids_.end(), tag) != boundary_ids_.end())
 					new_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
-
-				if(std::find(neumann_boundary_ids_.begin(), neumann_boundary_ids_.end(), tag) != neumann_boundary_ids_.end())
+				else if(std::find(neumann_boundary_ids_.begin(), neumann_boundary_ids_.end(), tag) != neumann_boundary_ids_.end())
 					new_neumann_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
+
 			}
+
+			// std::cout<<"["<<std::distance(local_boundary.begin(), it) <<"]\n\t"<<lb<<"\n\t"<<new_lb<<"\n\t"<<new_neumann_lb<<"\n\n"<<std::endl;
+			// new_neumann_lb.remove_from(new_lb);
 
 			if(!new_lb.empty())
 				new_local_boundary.emplace_back(new_lb);
-
 			if(!new_neumann_lb.empty())
 				local_neumann_boundary.emplace_back(new_neumann_lb);
 		}
+		local_boundary.clear();
 		std::swap(local_boundary, new_local_boundary);
 
 		boundary_nodes.clear();

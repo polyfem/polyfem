@@ -1204,6 +1204,11 @@ namespace polyfem
 
 		problem->setup_bc(*mesh, bases, local_boundary, boundary_nodes, local_neumann_boundary);
 
+		// std::cout<<"nnnn ";
+		// for(auto &n : boundary_nodes)
+		// 	std::cout<<n<<", ";
+		// std::cout<<std::endl;
+
 		const auto &curret_bases =  iso_parametric() ? bases : geom_bases;
 		const int n_samples = 10;
 		compute_mesh_size(*mesh, curret_bases, n_samples);
@@ -1544,7 +1549,7 @@ namespace polyfem
 
 					A = stiffness * 0.5 * beta2 * dt2 + mass;
 					btmp = b;
-					spectrum = dirichlet_solve(*solver, A, btmp, boundary_nodes, x, args["stiffness_mat_save_path"], t == 1 && args["export"]["spectrum"]);
+					spectrum = dirichlet_solve(*solver, A, btmp, boundary_nodes, x, args["export"]["stiffness_mat"], t == 1 && args["export"]["spectrum"]);
 					acceleration = x;
 
 					sol += dt*vOld + 0.5 * dt2 * ((1 - beta2) * aOld + beta2 * acceleration);
@@ -1577,7 +1582,7 @@ namespace polyfem
 				A = stiffness;
 				Eigen::VectorXd x;
 				b = rhs;
-				spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, args["stiffness_mat_save_path"], args["export"]["spectrum"]);
+				spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
 				sol = x;
 				solver->getInfo(solver_info);
 
@@ -1916,13 +1921,13 @@ namespace polyfem
 		};
 		this->args.merge_patch(args_in);
 
-		if(!args_in["stiffness_mat_save_path"].empty())
+		if(args_in.find("stiffness_mat_save_path") != args_in.end() && !args_in["stiffness_mat_save_path"].empty())
 		{
 			std::cerr<<"[Warning] use export: { stiffness_mat: 'path' } instead of stiffness_mat_save_path"<<std::endl;
 			this->args["export"]["stiffness_mat"] = args_in["stiffness_mat_save_path"];
 		}
 
-		if(!args_in["solution"].empty())
+		if(args_in.find("solution") != args_in.end() && !args_in["solution"].empty())
 		{
 			std::cerr<<"[Warning] use export: { solution: 'path' } instead of solution"<<std::endl;
 			this->args["export"]["solution"] = args_in["solution"];

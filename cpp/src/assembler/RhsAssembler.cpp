@@ -322,7 +322,13 @@ namespace polyfem
 
 						for(size_t g = 0; g < v.global.size(); ++g)
 						{
-							rhs(v.global[g].index*size_+d) += rhs_value * v.global[g].val;
+							const int g_index = v.global[g].index*size_+d;
+							const bool is_neumann = std::find(bounday_nodes.begin(), bounday_nodes.end(), g_index ) == bounday_nodes.end();
+
+							if(is_neumann)
+								rhs(g_index) += rhs_value * v.global[g].val;
+							// else
+								// std::cout<<"skipping "<<g_index<<" "<<rhs_value * v.global[g].val<<std::endl;
 						}
 					}
 				}

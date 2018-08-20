@@ -933,40 +933,65 @@ namespace polyfem
 	{
 		if (!state.mesh) { return; }
 
-		const auto &current_bases = state.iso_parametric() ? state.bases : state.geom_bases;
-		// const auto &current_bases = state.bases;
+		// const auto &current_bases = state.iso_parametric() ? state.bases : state.geom_bases;
+		const auto &current_bases = state.bases;
 
 		MatrixXd col(1,3);
 		if(!available_visualizations[Visualizations::BNodes])
 		{
 			reset_flags(Visualizations::BNodes);
 
-			col << 0,1,0;
-
-			for(const auto &lb : state.local_neumann_boundary)
+			if(state.local_neumann_boundary.size() < 4500)
 			{
-				const int e = lb.element_id();
-				const ElementBases &bs = current_bases[e];
-
-				for(int i = 0; i < lb.size(); ++i)
+				col << 0.5,0.5,0.5;
+				for(const auto &lb : state.local_neumann_boundary)
 				{
-					const int primitive_global_id = lb.global_primitive_id(i);
-					const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, *state.mesh);
+					const int e = lb.element_id();
+					const ElementBases &bs = current_bases[e];
 
-					for(long n = 0; n < nodes.size(); ++n)
+					for(int i = 0; i < lb.size(); ++i)
 					{
-						const auto &b = bs.bases[nodes(n)];
-						for(size_t g = 0; g < b.global().size(); ++g)
+						const int primitive_global_id = lb.global_primitive_id(i);
+						const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, *state.mesh);
+
+						for(long n = 0; n < nodes.size(); ++n)
 						{
-							const Local2Global &l2g = b.global()[g];
-							MatrixXd node = l2g.node;
-							data(Visualizations::BNodes).add_points(node, col);
+							const auto &b = bs.bases[nodes(n)];
+							for(size_t g = 0; g < b.global().size(); ++g)
+							{
+								const Local2Global &l2g = b.global()[g];
+								int g_index = l2g.index;
+
+								int ddim = 1;
+								if(!state.problem->is_scalar()){
+									g_index *= state.mesh->dimension();
+									ddim = state.mesh->dimension();
+								}
+
+								bool show_node = true;
+
+								for(int d = 0; d < ddim; ++d)
+								{
+									bool found = std::find(state.boundary_nodes.begin(), state.boundary_nodes.end(), g_index + d) != state.boundary_nodes.end();
+
+									if(found){
+										show_node = false;
+										break;
+									}
+								}
+
+								if(show_node){
+									MatrixXd node = l2g.node;
+									data(Visualizations::BNodes).add_points(node, col);
+								}
+							}
 						}
 					}
 				}
 			}
 
-			col << 1,0,0;
+			int shown_boundaries = 0;
+			col << 0.5,0.5,0.5;
 			for(std::size_t i = 0; i < current_bases.size(); ++i)
 			{
 				const ElementBases &basis = current_bases[i];
@@ -978,17 +1003,37 @@ namespace polyfem
 					{
 						const Local2Global &l2g = basis.bases[j].global()[kk];
 						int g_index = l2g.index;
+						col << 0, 0, 0;
+						bool is_boundary = false;
 
 						if(!state.problem->is_scalar())
+						{
 							g_index *= state.mesh->dimension();
 
-						if(std::find(state.boundary_nodes.begin(), state.boundary_nodes.end(), g_index) != state.boundary_nodes.end())
+							for(int d = 0; d < state.mesh->dimension(); ++d)
+							{
+								const auto loc_d_b = std::find(state.boundary_nodes.begin(), state.boundary_nodes.end(), g_index + d) != state.boundary_nodes.end();
+								is_boundary = is_boundary || loc_d_b;
+								if(loc_d_b)
+									col(d) = 1;
+							}
+						}
+						else
+						{
+							is_boundary = std::find(state.boundary_nodes.begin(), state.boundary_nodes.end(), g_index) != state.boundary_nodes.end();
+						}
+
+						if(is_boundary)
 						{
 							MatrixXd node = l2g.node;
 							data(Visualizations::BNodes).add_points(node, col);
+							++shown_boundaries;
 						}
 					}
 				}
+
+				if(shown_boundaries > 4500)
+					break;
 			}
 
 			available_visualizations[Visualizations::BNodes] = true;
@@ -1028,7 +1073,7 @@ namespace polyfem
 							data(Visualizations::PNodes).add_points(node, col);
 
 							//TODO text is impossible to hide :(
-							// data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(l2g.index));
+							// data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(g_index));
 						}
 					}
 				}
@@ -1070,7 +1115,7 @@ namespace polyfem
 						data(Visualizations::Nodes).add_points(node, col);
 
 						//TODO text is impossible to hide :(
-						// data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(l2g.index));
+						// data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(g_index));
 					}
 				}
 			}

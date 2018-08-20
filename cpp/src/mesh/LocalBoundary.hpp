@@ -2,6 +2,8 @@
 #define LOCAL_HPP
 
 #include <array>
+#include <vector>
+#include <iostream>
 #include <cassert>
 
 namespace polyfem
@@ -41,6 +43,27 @@ namespace polyfem
 
 		inline int global_primitive_id(const int index) const { return global_primitive_id_[index]; }
 
+		void remove_from(const LocalBoundary &other)
+		{
+			std::vector<int> to_remove;
+
+			for(int j = 0; j < size(); ++j)
+			{
+				const int loc_id = (*this)[j];
+				for(int i = 0; i < other.size(); ++i)
+				{
+					if(other[i] == loc_id)
+					{
+						to_remove.push_back(j);
+						break;
+					}
+				}
+			}
+
+			for(int j : to_remove)
+				remove_tag_for_index(j);
+		}
+
 		void remove_tag_for_index(const int index)
 		{
 			for(int i = index+1; i < size(); ++i)
@@ -50,6 +73,13 @@ namespace polyfem
 			}
 
 			--counter_;
+		}
+
+		friend std::ostream& operator<<(std::ostream& os, const LocalBoundary& lb)
+		{
+		    for(int i = 0; i < lb.size(); ++i)
+		    	os << lb[i] << " -> " << lb.global_primitive_id(i) << ", ";
+		    return os;
 		}
 
 	private:

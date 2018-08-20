@@ -21,9 +21,18 @@ namespace polyfem
 		bool is_scalar() const override { return false; }
 
 		void set_parameters(const json &params) override;
+
+		bool is_dimention_dirichet(const int tag, const int dim) const override;
+		bool all_dimentions_dirichelt() const override { return all_dimentions_dirichelt_; }
 	private:
+		bool all_dimentions_dirichelt_ = true;
+
 		std::vector<Eigen::Matrix<ExpressionValue, 1, 3, Eigen::RowMajor>> forces_;
 		std::vector<Eigen::Matrix<ExpressionValue, 1, 3, Eigen::RowMajor>> displacements_;
+
+		std::vector<Eigen::Matrix<bool, 1, 3, Eigen::RowMajor>> dirichelt_dimentions_;
+
+
 	};
 }
 

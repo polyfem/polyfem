@@ -20,12 +20,33 @@ namespace polyfem
 		displacements_.front()(0).init(0);
 		displacements_.front()(1).init(0);
 		displacements_.front()(2).init(0);
+
+		dirichelt_dimentions_.resize(1);
+		dirichelt_dimentions_.front().setConstant(true);
 	}
 
 	void GenericTensorProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		// val *= t;
+	}
+
+	bool GenericTensorProblem::is_dimention_dirichet(const int tag, const int dim) const
+	{
+		if(all_dimentions_dirichelt())
+			return true;
+
+		for(size_t b = 0; b < boundary_ids_.size(); ++b)
+		{
+			if(tag == boundary_ids_[b])
+			{
+				auto &tmp = dirichelt_dimentions_[b];
+				return tmp[dim];
+			}
+		}
+
+		assert(false);
+		return true;
 	}
 
 	void GenericTensorProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
@@ -80,6 +101,7 @@ namespace polyfem
 
 			boundary_ids_.resize(j_boundary.size());
 			displacements_.resize(j_boundary.size());
+			dirichelt_dimentions_.resize(j_boundary.size());
 
 
 			for(size_t i = 0; i < boundary_ids_.size(); ++i)
@@ -98,6 +120,16 @@ namespace polyfem
 					displacements_[i][0].init(0);
 					displacements_[i][1].init(0);
 					displacements_[i][2].init(0);
+				}
+
+				dirichelt_dimentions_[i].setConstant(true);
+				if(j_boundary[i].find("dimension") != j_boundary[i].end())
+				{
+					all_dimentions_dirichelt_ = false;
+					auto &tmp = j_boundary[i]["dimension"];
+					assert(tmp.is_array());
+					for(size_t k = 0; k < tmp.size(); ++k)
+						dirichelt_dimentions_[i](k) = tmp[k];
 				}
 			}
 		}
