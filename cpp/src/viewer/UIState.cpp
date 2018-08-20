@@ -1032,8 +1032,8 @@ namespace polyfem
 					}
 				}
 
-				if(shown_boundaries > 4500)
-					break;
+				// if(shown_boundaries > 4500)
+				// 	break;
 			}
 
 			available_visualizations[Visualizations::BNodes] = true;

@@ -6,16 +6,16 @@
 
 namespace polyfem
 {
-	void PointBasedTensorProblem::BCValue::init(const json &data)
+	bool PointBasedTensorProblem::BCValue::init(const json &data)
 	{
-		//TODO
 		Eigen::Matrix<bool, 3, 1> dd; dd.setConstant(true);
+		bool all_dimentions_dirichelt = true;
 
 		if(data.is_array())
 		{
-
 			assert(data.size() == 3);
 			init((double)data[0], (double)data[1], (double)data[2], dd);
+			//TODO add dimension
 		}
 		else if(data.is_object())
 		{
@@ -27,6 +27,14 @@ namespace polyfem
 			read_matrix(data["triangles"], tri);
 
 			const int coord = data["coordinate"];
+			if(data.find("dimension") != data.end())
+			{
+				all_dimentions_dirichelt = false;
+				auto &tmp = data["dimension"];
+				assert(tmp.is_array());
+				for(size_t k = 0; k < tmp.size(); ++k)
+					dd(k) = tmp[k];
+			}
 
 			init(pts, tri, fun, coord, dd);
 		}
@@ -34,6 +42,8 @@ namespace polyfem
 		{
 			init(0, 0, 0, dd);
 		}
+
+		return all_dimentions_dirichelt;
 	}
 
 	Eigen::RowVector3d PointBasedTensorProblem::BCValue::operator()(const Eigen::RowVector3d &pt) const
@@ -44,6 +54,7 @@ namespace polyfem
 		}
 		Eigen::RowVector2d pt2; pt2 << pt(coordiante_0), pt(coordiante_1);
 		Eigen::RowVector3d res;
+
 
 		res = func.interpolate(pt2);
 
@@ -154,7 +165,8 @@ namespace polyfem
 			{
 				boundary_ids_[i] = j_boundary[i]["id"];
 				const auto ff = j_boundary[i]["value"];
-				bc_[i].init(ff);
+				const bool all_d = bc_[i].init(ff);
+				all_dimentions_dirichelt_ = all_dimentions_dirichelt_ && all_d;
 
 			}
 		}

@@ -23,7 +23,7 @@ namespace polyfem
 
 			Eigen::RowVector3d operator()(const Eigen::RowVector3d &pt) const;
 
-			void init(const json &data);
+			bool init(const json &data);
 
 			void init(const double x, const double y, const double z, const Eigen::Matrix<bool, 3, 1> &dd)
 			{

@@ -1,5 +1,6 @@
 #include <polyfem/InterpolatedFunction.hpp>
 
+#include <iostream>
 
 namespace polyfem
 {
@@ -35,7 +36,7 @@ namespace polyfem
 
 		for(long i = 0; i < pts.rows(); ++i)
 		{
-			const auto index = I(i);
+			const int index = I(i);
 
 			if(index < 0)
 			{
@@ -47,6 +48,7 @@ namespace polyfem
 			const Eigen::MatrixXd B = pts_.row(tris_(index, 1));
 			const Eigen::MatrixXd C = pts_.row(tris_(index, 2));
 			igl::barycentric_coordinates(pt, A, B, C, bc);
+			// std::cout<<pt<<"\tii:"<<index<<"\tr:"<<bc<<std::endl;
 
 			for(int j = 0; j < 3; ++j)
 				res.row(i) += fun_.row(tris_(index, j)) * bc(j);

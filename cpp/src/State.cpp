@@ -2092,6 +2092,9 @@ namespace polyfem
 			writer.add_field("scalar_value", scalar_val);
 		}
 
+		// interpolate_function(pts_index, rhs, fun);
+		// writer.add_field("rhs", fun);
+
 		writer.write_tet_mesh(path, points, tets);
 	}
 
