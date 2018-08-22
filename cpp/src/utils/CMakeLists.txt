@@ -16,6 +16,8 @@ set(SOURCES
 	MatrixUtils.hpp
 	MshReader.cpp
 	MshReader.hpp
+	RBFInterpolation.cpp
+	RBFInterpolation.hpp
 	RefElementSampler.cpp
 	RefElementSampler.hpp
 	StringUtils.cpp

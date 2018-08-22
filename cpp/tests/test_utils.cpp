@@ -1,5 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/InterpolatedFunction.hpp>
+#include <polyfem/RBFInterpolation.hpp>
 #include <polyfem/Bessel.hpp>
 #include <polyfem/ExpressionValue.hpp>
 #include <polyfem/MshReader.hpp>
@@ -27,7 +28,37 @@ TEST_CASE("interpolated_fun_2d", "[utils]") {
     InterpolatedFunction2d i_fun(fun, pts, tri);
     const auto res = i_fun.interpolate(pt);
 
-    REQUIRE((fun.colwise().mean() - res).norm() < 1e-10);
+    REQUIRE((fun.colwise().mean() - res).norm() == Approx(0).margin(1e-10));
+}
+
+
+TEST_CASE("rbf_interpolate", "[utils]") {
+    Eigen::MatrixXd in_pts(10, 3);
+    in_pts.col(0) << 0.73142708, 0.15639157, 0.06799852, 0.61980247, 0.70461343, 0.96155237, 0.18068249, 0.09782913, 0.36740639, 0.26763186;
+    in_pts.col(1) << 0.94896831, 0.37164925, 0.86693048, 0.87339727, 0.18393119, 0.19822407, 0.54455402, 0.98657281, 0.541773  , 0.19644425;
+    in_pts.col(2) << 0.41745562, 0.98444505, 0.15567433, 0.09762302, 0.69628704, 0.05620348, 0.34966505, 0.60069814, 0.79617982, 0.4012071;
+
+    Eigen::MatrixXd fun(10, 1); fun <<
+    0.14689884, 0.83814805, 0.67897605, 0.61621774, 0.12150901, 0.20614193, 0.27911847, 0.62222035, 0.98755679, 0.40910887;
+
+    const double eps = 0.4052917899199118;
+
+
+    RBFInterpolation rbf_fun(fun, in_pts, "multiquadric", eps);
+
+    Eigen::MatrixXd out_pts(20, 3);
+    const Eigen::MatrixXd t = VectorNd::LinSpaced(20, 0, 1);
+    out_pts.col(0) = t;
+    out_pts.col(1) = t;
+    out_pts.col(2) = t;
+
+    const auto actual = rbf_fun.interpolate(out_pts);
+
+    Eigen::MatrixXd expected(20, 1); expected <<
+    0.516894154053909, 0.476058965730433, 0.435748570197800, 0.397220357669309, 0.362961970820606, 0.337549413480876, 0.327784652734946, 0.339982127556460, 0.374173324760153, 0.420108170328222, 0.460205192638323, 0.478147060651189, 0.467001601598498, 0.431400523024562, 0.383076112995277, 0.334107457785502, 0.292629952299549, 0.262190022964549, 0.243125356328612, 0.234186308102585;
+
+    for(int i = 0; i < 20; ++i)
+        REQUIRE(actual(i) == Approx(expected(i)).margin(1e-10));
 }
 
 
