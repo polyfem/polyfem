@@ -21,10 +21,23 @@ namespace polyfem
 		{
 			Eigen::MatrixXd fun, pts;
 			Eigen::MatrixXi tri;
+
+			std::string rbf = "multiquadric";
+			double eps = 0.1;
+
 			read_matrix(data["function"], fun);
 			read_matrix(data["points"], pts);
 			pts = pts.block(0, 0, pts.rows(), 2).eval();
-			read_matrix(data["triangles"], tri);
+			is_tri = data.find("triangles") != data.end();
+			if(is_tri)
+				read_matrix(data["triangles"], tri);
+			else
+			{
+				if(data.find("rbf") != data.end())
+					rbf = data["rbf"];
+				if(data.find("epsilon") != data.end())
+					eps = data["epsilon"];
+			}
 
 			const int coord = data["coordinate"];
 			if(data.find("dimension") != data.end())
@@ -36,7 +49,10 @@ namespace polyfem
 					dd(k) = tmp[k];
 			}
 
-			init(pts, tri, fun, coord, dd);
+			if(is_tri)
+				init(pts, tri, fun, coord, dd);
+			else
+				init(pts, fun, rbf, eps, coord, dd);
 		}
 		else
 		{
@@ -55,8 +71,10 @@ namespace polyfem
 		Eigen::RowVector2d pt2; pt2 << pt(coordiante_0), pt(coordiante_1);
 		Eigen::RowVector3d res;
 
-
-		res = func.interpolate(pt2);
+		if(is_tri)
+			res = tri_func.interpolate(pt2);
+		else
+			res = rbf_func.interpolate(pt2);
 
 		return res;
 	}
@@ -108,6 +126,15 @@ namespace polyfem
 		boundary_ids_.push_back(bc_tag);
 		bc_.emplace_back();
 		bc_.back().init(pts.block(0, 0, pts.rows(), 2), tri, func, coord, dd);
+	}
+
+	void PointBasedTensorProblem::add_function(const int bc_tag, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const std::string &rbf, const double eps, const int coord, const Eigen::Matrix<bool, 3, 1> &dd)
+	{
+		all_dimentions_dirichelt_ = all_dimentions_dirichelt_ && dd(0) && dd(1) && dd(2);
+
+		boundary_ids_.push_back(bc_tag);
+		bc_.emplace_back();
+		bc_.back().init(pts.block(0, 0, pts.rows(), 2), func, rbf, eps, coord, dd);
 	}
 
 	bool PointBasedTensorProblem::is_dimention_dirichet(const int tag, const int dim) const

@@ -1,38 +1,47 @@
 #include "RBFInterpolation.hpp"
 
+#include <cmath>
+#include <iostream>
 
 namespace polyfem
 {
 
-	RBFInterpolation::RBFInterpolation(const Eigen::MatrixXd &fun, const Eigen::MatrixXd &pts, const std::string &function, const double eps)
+	RBFInterpolation::RBFInterpolation(const Eigen::MatrixXd &fun, const Eigen::MatrixXd &pts, const std::string &rbf, const double eps)
 	{
-		init(fun, pts, function, eps);
+		init(fun, pts, rbf, eps);
 	}
 
-	void RBFInterpolation::init(const Eigen::MatrixXd &fun, const Eigen::MatrixXd &pts, const std::string &function, const double eps)
+	void RBFInterpolation::init(const Eigen::MatrixXd &fun, const Eigen::MatrixXd &pts, const std::string &rbf, const double eps)
 	{
 		std::function<double(double)> tmp;
 
-		if(function == "multiquadric"){
+		if(rbf == "multiquadric"){
 			tmp = [eps](const double r){ return sqrt((r/eps)*(r/eps) + 1); };
 		}
-		else if(function == "inverse" || function == "inverse_multiquadric" || function == "inverse multiquadric"){
+		else if(rbf == "inverse" || rbf == "inverse_multiquadric" || rbf == "inverse multiquadric"){
 			tmp = [eps](const double r){ return 1.0/sqrt((r/eps)*(r/eps) + 1); };
 		}
-		else if(function == "gaussian"){
+		else if(rbf == "gaussian"){
 			tmp = [eps](const double r){ return exp(-(r/eps)*(r/eps)); };
 		}
-		else if(function == "linear"){
+		else if(rbf == "linear"){
 			tmp = [](const double r){ return r; };
 		}
-		else if(function == "cubic"){
+		else if(rbf == "cubic"){
 			tmp = [](const double r){ return r*r*r; };
 		}
-		else if(function == "quintic"){
+		else if(rbf == "quintic"){
 			tmp = [](const double r){ return r*r*r*r*r; };
 		}
-		else if(function == "thin_plate" || function == "thin-plate"){
-			tmp = [](const double r){ return r*r * log(r); };
+		else if(rbf == "thin_plate" || rbf == "thin-plate"){
+			tmp = [](const double r){ return abs(r) < 1e-10 ? 0 : (r*r * log(r)); };
+		}
+		else
+		{
+			std::cerr<<"Unable to match "<<rbf<<" rbf, falling back to multiquadric"<<std::endl;
+			assert(false);
+
+			tmp = [eps](const double r){ return sqrt((r/eps)*(r/eps) + 1); };
 		}
 
 
@@ -41,26 +50,26 @@ namespace polyfem
 	}
 
 
-	RBFInterpolation::RBFInterpolation(const Eigen::MatrixXd &fun, const Eigen::MatrixXd &pts, const std::function<double(double)> &function)
+	RBFInterpolation::RBFInterpolation(const Eigen::MatrixXd &fun, const Eigen::MatrixXd &pts, const std::function<double(double)> &rbf)
 	{
-		init(fun, pts, function);
+		init(fun, pts, rbf);
 	}
 
-	void RBFInterpolation::init(const Eigen::MatrixXd &fun, const Eigen::MatrixXd &pts, const std::function<double(double)> &function)
+	void RBFInterpolation::init(const Eigen::MatrixXd &fun, const Eigen::MatrixXd &pts, const std::function<double(double)> &rbf)
 	{
 		assert(pts.rows() == fun.rows());
 
-		function_ = function;
+		rbf_ = rbf;
 		centers_ = pts;
 
 
 		const int n = centers_.rows();
 
-		Eigen::MatrixXd A = Eigen::MatrixXd::Zero(n, n);
+		Eigen::MatrixXd A(n, n);
 
 		for(int i = 0; i < n; ++i){
 			for(int j = 0; j < n; ++j){
-				A(i,j) = function((centers_.row(i)-centers_.row(j)).norm());
+				A(i,j) = rbf((centers_.row(i)-centers_.row(j)).norm());
 			}
 		}
 
@@ -78,10 +87,10 @@ namespace polyfem
 		const int n = centers_.rows();
 		const int m = pts.rows();
 
-		Eigen::MatrixXd mat = Eigen::MatrixXd::Zero(m, n);
+		Eigen::MatrixXd mat(m, n);
 		for(int i = 0; i < m; ++i){
 			for(int j = 0; j < n; ++j){
-        		mat(i,j) = function_((centers_.row(j)-pts.row(i)).norm());
+        		mat(i,j) = rbf_((centers_.row(j)-pts.row(i)).norm());
         	}
         }
 

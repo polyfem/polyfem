@@ -2,6 +2,7 @@
 
 #include <polyfem/Problem.hpp>
 #include <polyfem/InterpolatedFunction.hpp>
+#include <polyfem/RBFInterpolation.hpp>
 
 
 #include <vector>
@@ -41,7 +42,21 @@ namespace polyfem
 
 			void init(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tri, const Eigen::MatrixXd &fun, const int coord, const Eigen::Matrix<bool, 3, 1> &dd)
 			{
-				func.init(fun, pts, tri);
+				tri_func.init(fun, pts, tri);
+				is_tri = true;
+
+				coordiante_0 = (coord + 1) % 3;
+				coordiante_1 = (coord + 2) % 3;
+
+				dirichelt_dims = dd;
+
+				is_val = false;
+			}
+
+			void init(const Eigen::MatrixXd &pts, const Eigen::MatrixXd &fun, const std::string &rbf, const double eps, const int coord, const Eigen::Matrix<bool, 3, 1> &dd)
+			{
+				rbf_func.init(fun, pts, rbf, eps);
+				is_tri = false;
 
 				coordiante_0 = (coord + 1) % 3;
 				coordiante_1 = (coord + 2) % 3;
@@ -54,8 +69,10 @@ namespace polyfem
 			bool is_dirichet_dim(const int d) const { return dirichelt_dims(d); }
 		private:
 			Eigen::Vector3d val;
-			InterpolatedFunction2d func;
+			InterpolatedFunction2d tri_func;
+			RBFInterpolation rbf_func;
 			bool is_val;
+			bool is_tri;
 			int coordiante_0 = 0;
 			int coordiante_1 = 1;
 			Eigen::Matrix<bool, 3, 1> dirichelt_dims;
@@ -76,14 +93,22 @@ namespace polyfem
 			Eigen::Matrix<bool, 3, 1> dd; dd.setConstant(true);
 			add_constant(bc_tag, value, dd);
 		}
+
 		void add_function(const int bc_tag, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tri, const int coord)
 		{
 			Eigen::Matrix<bool, 3, 1> dd; dd.setConstant(true);
 			add_function(bc_tag, func, pts, tri, coord, dd);
 		}
 
+		void add_function(const int bc_tag, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const std::string &rbf, const double eps, const int coord)
+		{
+			Eigen::Matrix<bool, 3, 1> dd; dd.setConstant(true);
+			add_function(bc_tag, func, pts, rbf, eps, coord, dd);
+		}
+
 		void add_constant(const int bc_tag, const Eigen::Vector3d &value, const Eigen::Matrix<bool, 3, 1> &dd);
 		void add_function(const int bc_tag, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tri, const int coord, const Eigen::Matrix<bool, 3, 1> &dd);
+		void add_function(const int bc_tag, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const std::string &rbf, const double eps, const int coord, const Eigen::Matrix<bool, 3, 1> &dd);
 
 		bool is_dimention_dirichet(const int tag, const int dim) const override;
 		bool all_dimentions_dirichelt() const override { return all_dimentions_dirichelt_; }
