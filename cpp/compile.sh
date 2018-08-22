@@ -10,7 +10,7 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --time=2:00:00
 #SBATCH --mem=16GB
-#SBATCH --reservation=panozzo
+##SBATCH --reservation=panozzo
 #SBATCH --partition=c18_25
 
 # Load modules
