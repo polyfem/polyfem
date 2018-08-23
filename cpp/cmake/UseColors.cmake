@@ -24,22 +24,23 @@
 ################################################################################
 
 if(CMAKE_COMPILER_IS_GNUCXX)
-	# If GCC >= 4.9, just activate the right option
-	if(NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
-		message(STATUS "GCC >= 4.9 detected, enabling colored diagnostics")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdiagnostics-color=auto")
-		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fdiagnostics-color=auto")
-		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fdiagnostics-color=auto")
-		return()
-	endif()
-	# If GCC < 4.9, maybe we can use gccfilter
-	find_program(GCC_FILTER gccfilter)
-	if(GCC_FILTER)
-		option(COLOR_GCC "Use GCCFilter to color compiler output messages" OFF)
-		set(COLOR_GCC_OPTIONS "-c -r -w" CACHE STRING "Arguments that are passed to gccfilter when output coloring is switchend on. Defaults to -c -r -w.")
-		if(COLOR_GCC)
-			set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${GCC_FILTER} ${COLOR_GCC_OPTIONS}")
-			message(STATUS "Using gccfilter for colored diagnostics")
-		endif()
-	endif()
+    # If GCC >= 4.9, just activate the right option
+    # We enable colorized diagnostics always instead of using "auto" so that
+    # they're still colored when using Ninja.
+    if(NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
+        message(STATUS "GCC >= 4.9 detected, enabling colored diagnostics")
+        add_definitions(-fdiagnostics-color=always)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdiagnostics-color=always")
+        return()
+    endif()
+    # If GCC < 4.9, maybe we can use gccfilter
+    find_program(GCC_FILTER gccfilter)
+    if(GCC_FILTER)
+        option(COLOR_GCC "Use GCCFilter to color compiler output messages" OFF)
+        set(COLOR_GCC_OPTIONS "-c -r -w" CACHE STRING "Arguments that are passed to gccfilter when output coloring is switchend on. Defaults to -c -r -w.")
+        if(COLOR_GCC)
+            set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${GCC_FILTER} ${COLOR_GCC_OPTIONS}")
+            message(STATUS "Using gccfilter for colored diagnostics")
+        endif()
+    endif()
 endif()
