@@ -73,12 +73,12 @@ namespace polyfem
 
 		if(grad.size()<=0)
 		{
-			if(n_bases*size < SMALL_N)
+			if(n_bases*size <= SMALL_N)
 			{
 				auto auto_diff_energy = funN(vals, displacement, da);
 				grad = auto_diff_energy.getGradient();
 			}
-			else if(n_bases * size < BIG_N)
+			else if(n_bases * size <= BIG_N)
 			{
 				auto auto_diff_energy = funBigN(vals, displacement, da);
 				grad = auto_diff_energy.getGradient();
@@ -173,7 +173,7 @@ namespace polyfem
 		{
 // #ifndef POLYFEM_ON_HPC
 			// Somehow causes a segfault on the HPC (objects too big for the stack?)
-			if(n_bases*size < SMALL_N)
+			if(n_bases*size <= SMALL_N)
 			{
 				auto auto_diff_energy = funN(vals, displacement, da);
 				hessian = auto_diff_energy.getHessian();
