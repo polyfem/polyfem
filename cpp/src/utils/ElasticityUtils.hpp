@@ -14,7 +14,7 @@
 
 namespace polyfem
 {
-	constexpr int SMALL_N = 105;
+	constexpr int SMALL_N = 90;
 	constexpr int BIG_N = 1000;
 
 	Eigen::VectorXd gradient_from_energy(const int size, const int n_bases, const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da,
