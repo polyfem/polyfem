@@ -34,6 +34,11 @@ namespace polyfem
 		{
 			GEO::Mesh mesh;
 			mesh.copy(mesh_);
+
+			c2e_.reset();
+			boundary_vertices_.reset();
+			boundary_edges_.reset();
+
 			mesh_.clear(false,false);
 
 			//TODO add tags to the refinement
@@ -46,6 +51,9 @@ namespace polyfem
 			}
 
 			Navigation::prepare_mesh(mesh_);
+			c2e_ = std::make_unique<GEO::Attribute<GEO::index_t>>(mesh_.facet_corners.attributes(), "edge_id");
+			boundary_vertices_ = std::make_unique<GEO::Attribute<bool>>(mesh_.vertices.attributes(), "boundary_vertex");
+			boundary_edges_ = std::make_unique<GEO::Attribute<bool>>(mesh_.edges.attributes(), "boundary_edge");
 		}
 
 		compute_elements_tag();
@@ -59,6 +67,10 @@ namespace polyfem
 		face_nodes_.clear();
 		cell_nodes_.clear();
 		order_ = 1;
+
+		c2e_.reset();
+		boundary_vertices_.reset();
+		boundary_edges_.reset();
 
 		mesh_.clear(false,false);
 
@@ -82,6 +94,10 @@ namespace polyfem
 
 		orient_normals_2d(mesh_);
 		Navigation::prepare_mesh(mesh_);
+		c2e_ = std::make_unique<GEO::Attribute<GEO::index_t>>(mesh_.facet_corners.attributes(), "edge_id");
+		boundary_vertices_ = std::make_unique<GEO::Attribute<bool>>(mesh_.vertices.attributes(), "boundary_vertex");
+		boundary_edges_ = std::make_unique<GEO::Attribute<bool>>(mesh_.edges.attributes(), "boundary_edge");
+
 		compute_elements_tag();
 		return true;
 	}
@@ -93,11 +109,19 @@ namespace polyfem
 		cell_nodes_.clear();
 		order_ = 1;
 
+		c2e_.reset();
+		boundary_vertices_.reset();
+		boundary_edges_.reset();
+
 		mesh_.clear(false,false);
 		mesh_.copy(mesh);
 
 		orient_normals_2d(mesh_);
 		Navigation::prepare_mesh(mesh_);
+		c2e_ = std::make_unique<GEO::Attribute<GEO::index_t>>(mesh_.facet_corners.attributes(), "edge_id");
+		boundary_vertices_ = std::make_unique<GEO::Attribute<bool>>(mesh_.vertices.attributes(), "boundary_vertex");
+		boundary_edges_ = std::make_unique<GEO::Attribute<bool>>(mesh_.edges.attributes(), "boundary_edge");
+
 		compute_elements_tag();
 		return true;
 	}
@@ -117,11 +141,20 @@ namespace polyfem
 		cell_nodes_.clear();
 		order_ = 1;
 
+		c2e_.reset();
+		boundary_vertices_.reset();
+		boundary_edges_.reset();
+		
 		mesh_.clear(false,false);
 		to_geogram_mesh(V, F, mesh_);
 
 		orient_normals_2d(mesh_);
 		Navigation::prepare_mesh(mesh_);
+
+		c2e_ = std::make_unique<GEO::Attribute<GEO::index_t>>(mesh_.facet_corners.attributes(), "edge_id");
+		boundary_vertices_ = std::make_unique<GEO::Attribute<bool>>(mesh_.vertices.attributes(), "boundary_vertex");
+		boundary_edges_ = std::make_unique<GEO::Attribute<bool>>(mesh_.edges.attributes(), "boundary_edge");
+
 		compute_elements_tag();
 		return true;
 	}

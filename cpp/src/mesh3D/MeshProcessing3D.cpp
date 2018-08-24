@@ -1323,9 +1323,9 @@ void  MeshProcessing3D::ele_subdivison_levels(const Mesh3DStorage &hmi, std::vec
 
 //template<typename T>
 //void MeshProcessing3D::set_intersection_own(const std::vector<T> &A, const std::vector<T> &B, std::vector<T> &C, const int &num){
-void MeshProcessing3D::set_intersection_own(const std::vector<uint32_t> &A, const std::vector<uint32_t> &B, std::vector<uint32_t> &C, int &num){
+void MeshProcessing3D::set_intersection_own(const std::vector<uint32_t> &A, const std::vector<uint32_t> &B, std::array<uint32_t, 2> &C, int &num){
 //void MeshProcessing3D::set_intersection_own( std::vector<uint32_t> &A,  std::vector<uint32_t> &B, std::vector<uint32_t> &C, int &num)
-	C.resize(num);
+	// C.resize(num);
 	int n=0;
 	for(auto &a:A){
 		for(auto &b:B){

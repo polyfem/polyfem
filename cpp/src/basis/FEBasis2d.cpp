@@ -3,6 +3,7 @@
 #include <polyfem/TriQuadrature.hpp>
 #include <polyfem/QuadQuadrature.hpp>
 #include <polyfem/auto_bases.hpp>
+
 #include <cassert>
 #include <array>
 ////////////////////////////////////////////////////////////////////////////////
@@ -205,15 +206,27 @@ namespace {
 
 // -----------------------------------------------------------------------------
 
+	void sort(std::array<int, 2> &array)
+	{
+		if(array[0] > array[1])
+		{
+			std::swap(array[0], array[1]);
+		}
+
+		assert(array[0] <= array[1]);
+	}
+
 	polyfem::Navigation::Index find_edge(const polyfem::Mesh2D &mesh, int f, int v1, int v2) {
 		std::array<int, 2> v = {{v1, v2}};
-		std::sort(v.begin(), v.end());
+		std::array<int, 2> u;
+		// std::sort(v.begin(), v.end());
+		sort(v);
 		auto idx = mesh.get_index_from_face(f, 0);
 		for (int lv = 0; lv < mesh.n_face_vertices(idx.face); ++lv) {
-			std::array<int, 2> u;
 			u[0] = idx.vertex;
 			u[1] = mesh.switch_vertex(idx).vertex;
-			std::sort(u.begin(), u.end());
+			// std::sort(u.begin(), u.end());
+			sort(u);
 			if (u == v) {
 				if(idx.vertex != v1)
 					idx = mesh.switch_vertex(idx);
@@ -246,8 +259,9 @@ namespace {
 	void compute_nodes(
 		const polyfem::Mesh2D &mesh,
 		const Eigen::VectorXi &discr_orders,
+		const bool has_polys,
 		MeshNodes &nodes,
-		std::vector<std::vector<int> > &element_nodes_id,
+		std::vector<std::vector<int>> &element_nodes_id,
 		std::vector<polyfem::LocalBoundary> &local_boundary,
 		std::map<int, polyfem::InterfaceData> &poly_edge_to_data)
 	{
@@ -299,7 +313,8 @@ namespace {
 				if(!lb.empty())
 					local_boundary.emplace_back(lb);
 			} else if(mesh.is_simplex(f)) {
-				element_nodes_id[f] = polyfem::FEBasis2d::tri_local_to_global(discr_order, mesh, f, discr_orders, nodes);
+				// element_nodes_id[f] = polyfem::FEBasis2d::tri_local_to_global(discr_order, mesh, f, discr_orders, nodes);
+				polyfem::FEBasis2d::tri_local_to_global(discr_order, mesh, f, discr_orders, element_nodes_id[f], nodes);
 
 				// List of edges around the tri
 				std::array<int, 3> e;
@@ -310,6 +325,7 @@ namespace {
 					}
 				}
 
+
 				LocalBoundary lb(f, BoundaryType::TriLine);
 
 				for(int i = 0; i < int(e.size()); ++i)
@@ -318,11 +334,14 @@ namespace {
 						lb.add_boundary_primitive(e[i], i);
 					}
 				}
-
+				
 				if(!lb.empty())
 					local_boundary.emplace_back(lb);
 			}
 		}
+
+		if(!has_polys)
+			return;
 
 		// Step 2: Iterate over edges of polygons and compute interface weights
 		for (int f = 0; f < mesh.n_faces(); ++f) {
@@ -510,7 +529,7 @@ std::array<int, 3> polyfem::FEBasis2d::linear_tri_local_to_global(const Mesh2D &
 	return l2g;
 }
 
-std::vector<int> polyfem::FEBasis2d::tri_local_to_global(const int p, const Mesh2D &mesh, int f, const Eigen::VectorXi &discr_order, polyfem::MeshNodes &nodes) {
+void polyfem::FEBasis2d::tri_local_to_global(const int p, const Mesh2D &mesh, int f, const Eigen::VectorXi &discr_order, std::vector<int> &res, polyfem::MeshNodes &nodes) {
 	int edge_offset = mesh.n_vertices();
 	int face_offset = edge_offset + mesh.n_edges();
 
@@ -518,7 +537,8 @@ std::vector<int> polyfem::FEBasis2d::tri_local_to_global(const int p, const Mesh
 	const int nn = p > 2 ? (p - 2) : 0;
 	const int n_face_nodes = nn * (nn + 1) / 2;
 
-	std::vector<int> res; res.reserve(3 + n_edge_nodes + n_face_nodes);
+	// std::vector<int> res;
+	res.reserve(3 + n_edge_nodes + n_face_nodes);
 
 	// Vertex nodes
 	auto v = linear_tri_local_to_global(mesh, f);
@@ -570,7 +590,7 @@ std::vector<int> polyfem::FEBasis2d::tri_local_to_global(const int p, const Mesh
 	}
 
 	assert(res.size() == size_t(3 + n_edge_nodes + n_face_nodes));
-	return res;
+	// return res;
 }
 
 std::array<int, 6> polyfem::FEBasis2d::quadr_tri_local_to_global(const Mesh2D &mesh, int f, const Eigen::VectorXi &discr_order) {
@@ -883,6 +903,7 @@ int polyfem::FEBasis2d::build_bases(
 	const Mesh2D &mesh,
 	const int quadrature_order,
 	const int discr_order,
+	const bool has_polys,
 	std::vector<ElementBases> &bases,
 	std::vector<LocalBoundary> &local_boundary,
 	std::map<int, InterfaceData> &poly_edge_to_data)
@@ -891,13 +912,14 @@ int polyfem::FEBasis2d::build_bases(
 	Eigen::VectorXi discr_orders(mesh.n_faces());
 	discr_orders.setConstant(discr_order);
 
-	return build_bases(mesh, quadrature_order, discr_orders, bases, local_boundary, poly_edge_to_data);
+	return build_bases(mesh, quadrature_order, discr_orders, has_polys, bases, local_boundary, poly_edge_to_data);
 }
 
 int polyfem::FEBasis2d::build_bases(
 	const Mesh2D &mesh,
 	const int quadrature_order,
 	const Eigen::VectorXi &discr_orders,
+	const bool has_polys,
 	std::vector<ElementBases> &bases,
 	std::vector<LocalBoundary> &local_boundary,
 	std::map<int, InterfaceData> &poly_edge_to_data)
@@ -909,9 +931,9 @@ int polyfem::FEBasis2d::build_bases(
 	const int nn = max_p > 2 ? (max_p - 2) : 0;
 	const int n_face_nodes = std::max(nn * (nn + 1) / 2, max_p == 2 ? 1 : 0);
 
-	MeshNodes nodes(mesh, max_p - 1, n_face_nodes);
+	MeshNodes nodes(mesh, has_polys, max_p - 1, n_face_nodes);
 	std::vector<std::vector<int>> element_nodes_id;
-	compute_nodes(mesh, discr_orders, nodes, element_nodes_id, local_boundary, poly_edge_to_data);
+	compute_nodes(mesh, discr_orders, has_polys, nodes, element_nodes_id, local_boundary, poly_edge_to_data);
 	// boundary_nodes = nodes.boundary_nodes();
 
 	bases.resize(mesh.n_faces());
@@ -1065,13 +1087,13 @@ int polyfem::FEBasis2d::build_bases(
 		}
 	}
 
-
 	for(int pp = 2; pp <= autogen::MAX_P_BASES; ++pp)
 	{
 		for (int e : interface_elements) {
 			ElementBases &b = bases[e];
 			const int discr_order = discr_orders(e);
 			const int n_el_bases = element_nodes_id[e].size();
+
 			assert(discr_order > 1);
 			if(discr_order != pp)
 				continue;
@@ -1148,7 +1170,7 @@ int polyfem::FEBasis2d::build_bases(
 							for(size_t ii = 0; ii < other_bases.bases[i].global().size(); ++ii)
 							{
 								const auto &other_global = other_bases.bases[i].global()[ii];
-						// std::cout<<"e "<<e<<" " <<j << " gid "<<other_global.index<<std::endl;
+								// std::cout<<"e "<<e<<" " <<j << " gid "<<other_global.index<<std::endl;
 								b.bases[j].global().emplace_back(other_global.index, other_global.node, w(i)*other_global.val);
 							}
 						}

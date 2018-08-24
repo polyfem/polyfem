@@ -13,7 +13,7 @@ namespace polyfem {
 // Wrapper for lazy assignment of node ids
 class MeshNodes {
 public:
-	MeshNodes(const Mesh &mesh, const int max_nodes_per_edge, const int max_nodes_per_face, const int max_nodes_per_cell = 0);
+	MeshNodes(const Mesh &mesh, const bool has_poly, const int max_nodes_per_edge, const int max_nodes_per_face, const int max_nodes_per_cell = 0);
 
 	// Number of currently assigned nodes
 	int n_nodes() const { return node_to_primitive_.size(); }

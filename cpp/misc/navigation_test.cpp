@@ -25,7 +25,7 @@ namespace {
 
 	Eigen::VectorXi singular_vertices_;
 	Eigen::MatrixX2i singular_edges_;
-
+    
 	float t_;
 
 	bool show_index_;
@@ -63,9 +63,11 @@ namespace {
 
 			// Compute mesh connectivity
 			Navigation::prepare_mesh(mesh_);
+			GEO::Attribute<GEO::index_t> c2e(mesh_.facet_corners.attributes(), "edge_id");
+
 
 			// Initialize the key
-			idx_ = Navigation::get_index_from_face(mesh_, 0, 0);
+			idx_ = Navigation::get_index_from_face(mesh_, c2e, 0, 0);
 
 			// Compute singularities
 			polyfem::singularity_graph(mesh_, singular_vertices_, singular_edges_);
@@ -132,15 +134,17 @@ namespace {
 			idx_.vertex = std::max(0, std::min((int) mesh_.vertices.nb(), idx_.vertex));
 			idx_.edge = std::max(0, std::min((int) mesh_.edges.nb(), idx_.edge));
 			idx_.face = std::max(0, std::min((int) mesh_.facets.nb(), idx_.face));
+			GEO::Attribute<GEO::index_t> c2e(mesh_.facet_corners.attributes(), "edge_id");
+
 			ImGui::Checkbox("Show Index", &show_index_);
 			if (ImGui::Button("Switch Vertex", ImVec2(-1, 0))) {
 				idx_ = Navigation::switch_vertex(mesh_, idx_);
 			}
 			if (ImGui::Button("Switch Edge", ImVec2(-1, 0))) {
-				idx_ = Navigation::switch_edge(mesh_, idx_);
+				idx_ = Navigation::switch_edge(mesh_, c2e, idx_);
 			}
 			if (ImGui::Button("Switch Face", ImVec2(-1, 0))) {
-				auto tmp = Navigation::switch_face(mesh_, idx_);
+				auto tmp = Navigation::switch_face(mesh_, c2e, idx_);
 				if (tmp.face != -1) {
 					idx_ = tmp;
 				}
@@ -175,7 +179,7 @@ namespace {
 				Navigation::prepare_mesh(mesh_);
 				polyfem::singularity_graph(mesh_, singular_vertices_, singular_edges_);
 				compute_types();
-				idx_ = Navigation::get_index_from_face(mesh_, 0, 0);
+				idx_ = Navigation::get_index_from_face(mesh_, c2e, 0, 0);
 				// GEO::mesh_save(mesh_, "foo.obj");
 				mesh_gfx_.set_mesh(&mesh_);
 			}
@@ -185,7 +189,7 @@ namespace {
 				Navigation::prepare_mesh(mesh_);
 				polyfem::singularity_graph(mesh_, singular_vertices_, singular_edges_);
 				compute_types();
-				idx_ = Navigation::get_index_from_face(mesh_, 0, 0);
+				idx_ = Navigation::get_index_from_face(mesh_, c2e, 0, 0);
 			}
 		}
 

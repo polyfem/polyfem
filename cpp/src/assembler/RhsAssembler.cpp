@@ -24,9 +24,9 @@ namespace polyfem
 		Eigen::MatrixXd rhs_fun;
 
 		const int n_elements = int(bases_.size());
+        ElementAssemblyValues vals;
 		for(int e = 0; e < n_elements; ++e)
 		{
-			ElementAssemblyValues vals;
 			vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
 
 			const Quadrature &quadrature = vals.quadrature;
@@ -73,9 +73,9 @@ namespace polyfem
 		Eigen::MatrixXd loc_sol;
 
 		const int n_elements = int(bases_.size());
+        ElementAssemblyValues vals;
 		for(int e = 0; e < n_elements; ++e)
 		{
-			ElementAssemblyValues vals;
 			vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
 
 			const Quadrature &quadrature = vals.quadrature;
@@ -286,6 +286,8 @@ namespace polyfem
 		Eigen::MatrixXd points;
 		Eigen::VectorXd weights;
 
+        
+        ElementAssemblyValues vals;
 		for(const auto &lb : local_neumann_boundary)
 		{
 			const int e = lb.element_id();
@@ -297,7 +299,6 @@ namespace polyfem
 			const ElementBases &gbs = gbases_[e];
 			const ElementBases &bs = bases_[e];
 
-			ElementAssemblyValues vals;
 			vals.compute(e, mesh_.is_volume(), points, bs, gbs);
 			// problem_.neumann_bc(mesh_, global_primitive_ids, vals.val, t, rhs_fun);
 			nf(global_primitive_ids, vals.val, rhs_fun);
@@ -384,9 +385,10 @@ namespace polyfem
 		Eigen::MatrixXd forces;
 
 		const int n_bases = int(bases_.size());
+        ElementAssemblyValues vals;
 		for(int e = 0; e < n_bases; ++e)
 		{
-			ElementAssemblyValues vals;
+			
 			vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
 
 			const Quadrature &quadrature = vals.quadrature;
@@ -436,7 +438,6 @@ namespace polyfem
 			const ElementBases &gbs = gbases_[e];
 			const ElementBases &bs = bases_[e];
 
-			ElementAssemblyValues vals;
 			vals.compute(e, mesh_.is_volume(), points, bs, gbs);
 			problem_.neumann_bc(mesh_, global_primitive_ids, vals.val, t, forces);
 

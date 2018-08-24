@@ -134,7 +134,7 @@ namespace polyfem
 
 
 		int n = 0;
-		for(std::size_t i = 0; i < bases_in.size(); ++i){
+		for(size_t i = 0; i < bases_in.size(); ++i){
 			if(mesh_in.is_polytope(i)) continue;
 			int n_edges;
 
@@ -674,13 +674,13 @@ namespace polyfem
 
 			MatrixXd local_res = MatrixXd::Zero(local_pts.rows(), actual_dim);
 			bs.evaluate_bases(local_pts, tmp);
-			for(std::size_t j = 0; j < bs.bases.size(); ++j)
+			for(size_t j = 0; j < bs.bases.size(); ++j)
 			{
 				const Basis &b = bs.bases[j];
 
 				for(int d = 0; d < actual_dim; ++d)
 				{
-					for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+					for(size_t ii = 0; ii < b.global().size(); ++ii)
 						local_res.col(d) += b.global()[ii].val * tmp.col(j) * fun(b.global()[ii].index*actual_dim + d);
 				}
 			}
@@ -976,7 +976,7 @@ namespace polyfem
 
 		const auto &els_tag = mesh->elements_tag();
 
-		for(std::size_t i = 0; i < els_tag.size(); ++i)
+		for(size_t i = 0; i < els_tag.size(); ++i)
 		{
 			const ElementType type = els_tag[i];
 
@@ -1097,8 +1097,8 @@ namespace polyfem
 		n_pressure_bases = 0;
 
 
-		igl::Timer timer; timer.start();
 		std::cout<<"Building "<< (iso_parametric()? "isoparametric":"not isoparametric") <<" basis..."<<std::flush;
+		const bool has_polys = non_regular_count > 0 || non_regular_boundary_count > 0 || undefined_count > 0;
 
 		local_boundary.clear();
 		local_neumann_boundary.clear();
@@ -1107,6 +1107,7 @@ namespace polyfem
 		const int base_p = args["discr_order"];
 		disc_orders.setConstant(base_p);
 
+		igl::Timer timer; timer.start();
 		if(args["use_p_ref"])
 		{
 			if(mesh->is_volume())
@@ -1123,7 +1124,7 @@ namespace polyfem
 			if(args["use_spline"])
 			{
 				if(!iso_parametric())
-					FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, geom_bases, local_boundary, poly_edge_to_data_geom);
+					FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, has_polys, geom_bases, local_boundary, poly_edge_to_data_geom);
 
 				n_bases = SplineBasis3d::build_bases(tmp_mesh, args["quadrature_order"], bases, local_boundary, poly_edge_to_data);
 
@@ -1133,14 +1134,14 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], mesh->order(), geom_bases, local_boundary, poly_edge_to_data_geom);
+					FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], mesh->order(), has_polys, geom_bases, local_boundary, poly_edge_to_data_geom);
 
-				n_bases = FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, bases, local_boundary, poly_edge_to_data);
+				n_bases = FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, has_polys, bases, local_boundary, poly_edge_to_data);
 			}
 
 			if(problem->is_stokes())
 			{
-				n_pressure_bases = FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], int(args["pressure_discr_order"]), pressure_bases, local_boundary, poly_edge_to_data_geom);
+				n_pressure_bases = FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], int(args["pressure_discr_order"]), has_polys, pressure_bases, local_boundary, poly_edge_to_data_geom);
 			}
 		}
 		else
@@ -1150,7 +1151,7 @@ namespace polyfem
 			{
 
 				if(!iso_parametric())
-					FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, geom_bases, local_boundary, poly_edge_to_data_geom);
+					FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, has_polys, geom_bases, local_boundary, poly_edge_to_data_geom);
 
 				n_bases = SplineBasis2d::build_bases(tmp_mesh, args["quadrature_order"], bases, local_boundary, poly_edge_to_data);
 
@@ -1160,38 +1161,44 @@ namespace polyfem
 			else
 			{
 				if(!iso_parametric())
-					FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], mesh->order(), geom_bases, local_boundary, poly_edge_to_data_geom);
+					FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], mesh->order(), has_polys, geom_bases, local_boundary, poly_edge_to_data_geom);
 
-				n_bases = FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, bases, local_boundary, poly_edge_to_data);
+				n_bases = FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, has_polys, bases, local_boundary, poly_edge_to_data);
 				// n_bases = SpectralBasis2d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, bases, geom_bases, local_boundary);
 			}
 
 			if(problem->is_stokes())
 			{
-				n_pressure_bases = FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], int(args["pressure_discr_order"]), pressure_bases, local_boundary, poly_edge_to_data_geom);
+				n_pressure_bases = FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], int(args["pressure_discr_order"]), has_polys, pressure_bases, local_boundary, poly_edge_to_data_geom);
 			}
 		}
+		timer.stop();
 
 		auto &gbases = iso_parametric() ? bases : geom_bases;
 
 
 		n_flipped = 0;
-		// flipped_elements.clear();
-		for(size_t i = 0; i < gbases.size(); ++i)
+
+		if(args["count_flipped_els"])
 		{
-			if(mesh->is_polytope(i)) continue;
-
-			ElementAssemblyValues vals;
-			if(!vals.is_geom_mapping_positive(mesh->is_volume(), gbases[i]))
+			// flipped_elements.clear();
+			for(size_t i = 0; i < gbases.size(); ++i)
 			{
-				// if(!parent_elements.empty())
-				// 	flipped_elements.push_back(parent_elements[i]);
-				// std::cout<<"Basis "<< i << ( parent_elements.size() > 0 ? (" -> " + std::to_string(parent_elements[i])) : "") << " has negative volume P" <<disc_orders(i)<<std::endl;
+				if(mesh->is_polytope(i)) continue;
 
-				// std::cout<<mesh->point(dynamic_cast<Mesh2D *>(mesh.get())->face_vertex(i, 0))<<std::endl;
-				// std::cout<<mesh->point(dynamic_cast<Mesh2D *>(mesh.get())->face_vertex(i, 1))<<std::endl;
-				// std::cout<<mesh->point(dynamic_cast<Mesh2D *>(mesh.get())->face_vertex(i, 2))<<std::endl;
-				++n_flipped;
+				ElementAssemblyValues vals;
+				if(!vals.is_geom_mapping_positive(mesh->is_volume(), gbases[i]))
+				{
+					++n_flipped;
+
+					// if(!parent_elements.empty())
+					// 	flipped_elements.push_back(parent_elements[i]);
+					// std::cout<<"Basis "<< i << ( parent_elements.size() > 0 ? (" -> " + std::to_string(parent_elements[i])) : "") << " has negative volume P" <<disc_orders(i)<<std::endl;
+
+					// std::cout<<mesh->point(dynamic_cast<Mesh2D *>(mesh.get())->face_vertex(i, 0))<<std::endl;
+					// std::cout<<mesh->point(dynamic_cast<Mesh2D *>(mesh.get())->face_vertex(i, 1))<<std::endl;
+					// std::cout<<mesh->point(dynamic_cast<Mesh2D *>(mesh.get())->face_vertex(i, 2))<<std::endl;
+				}
 			}
 		}
 
@@ -1213,7 +1220,6 @@ namespace polyfem
 		const int n_samples = 10;
 		compute_mesh_size(*mesh, curret_bases, n_samples);
 
-		timer.stop();
 		building_basis_time = timer.getElapsedTime();
 		std::cout<<" took "<<building_basis_time<<"s"<<std::endl;
 
@@ -1718,13 +1724,14 @@ namespace polyfem
 		static const int p = 8;
 
 		// Eigen::MatrixXd err_per_el(n_el, 5);
+        ElementAssemblyValues vals;
 
 		for(int e = 0; e < n_el; ++e)
 		{
 			// const auto &vals    = values[e];
 			// const auto &gvalues = iso_parametric() ? values[e] : geom_values[e];
 
-			ElementAssemblyValues vals;
+
 
 			if(iso_parametric())
 				vals.compute(e, mesh->is_volume(), bases[e], bases[e]);
@@ -1750,7 +1757,7 @@ namespace polyfem
 			{
 				auto val=vals.basis_values[i];
 
-				for(std::size_t ii = 0; ii < val.global.size(); ++ii){
+				for(size_t ii = 0; ii < val.global.size(); ++ii){
 					for(int d = 0; d < actual_dim; ++d)
 					{
 						v_approx.col(d) += val.global[ii].val * sol(val.global[ii].index*actual_dim + d) * val.val;
@@ -1860,6 +1867,8 @@ namespace polyfem
 			{"n_boundary_samples", 4},
 			{"problem", "Franke"},
 			{"normalize_mesh", true},
+
+			{"count_flipped_els", false},
 
 			{"tend", 1},
 			{"time_steps", 10},
@@ -1971,8 +1980,10 @@ namespace polyfem
 			{
 				for(const Basis &b : eb.bases)
 				{
-					for(const auto &lg : b.global())
+					// for(const auto &lg : b.global())
+					for(size_t ii = 0; ii < b.global().size(); ++ii)
 					{
+						const auto &lg = b.global()[ii];
 						nodes.row(lg.index) = lg.node;
 					}
 				}
@@ -2278,7 +2289,7 @@ namespace polyfem
 
 	// 	int poly_index = -1;
 
-	// 	for(std::size_t i = 0; i < bases.size(); ++i)
+	// 	for(size_t i = 0; i < bases.size(); ++i)
 	// 	{
 	// 		const ElementBases &basis = bases[i];
 	// 		if(!basis.has_parameterization){

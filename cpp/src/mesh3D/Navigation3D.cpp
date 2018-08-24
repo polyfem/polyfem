@@ -1,4 +1,5 @@
 #include <polyfem/Navigation3D.hpp>
+#include <igl/Timer.h>
 #include <algorithm>
 #include <iterator>
 #include <set>
@@ -9,6 +10,11 @@ using namespace polyfem;
 using namespace std;
 
 
+double polyfem::Navigation3D::get_index_from_element_face_time;
+double polyfem::Navigation3D::switch_vertex_time;
+double polyfem::Navigation3D::switch_edge_time;
+double polyfem::Navigation3D::switch_face_time;
+double polyfem::Navigation3D::switch_element_time;
 
 void polyfem::Navigation3D::prepare_mesh(Mesh3DStorage &M) {
 	if (M.type != MeshType::Tet)M.type = MeshType::Hyb;
@@ -19,6 +25,8 @@ void polyfem::Navigation3D::prepare_mesh(Mesh3DStorage &M) {
 
 polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_face(const Mesh3DStorage &M, int hi)
 {
+	igl::Timer timer; timer.start();
+
 	Index idx;
 
 	if (hi >= M.elements.size()) hi = hi % M.elements.size();
@@ -43,11 +51,15 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_face(
 
 		int v0 = idx.vertex, v1 = M.elements[hi].vs[1];
 		const vector<uint32_t> &ves0 = M.vertices[v0].neighbor_es, &ves1 = M.vertices[v1].neighbor_es;
-		vector<uint32_t> sharedes;
+		std::array<uint32_t, 2> sharedes;
 		int num=1;
 		MeshProcessing3D::set_intersection_own(ves0, ves1,sharedes, num);
-		assert(sharedes.size() == 1);
+		// assert(sharedes.size() == 1);
 		idx.edge = sharedes[0];
+
+
+		timer.stop();
+		get_index_from_element_face_time += timer.getElapsedTime();
 	}
 	else {
 		idx = get_index_from_element_face(M, hi, 0, 0);
@@ -58,6 +70,7 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_face(
 
 polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_face(const Mesh3DStorage &M, int hi, int lf, int lv)
 {
+	igl::Timer timer; timer.start();
 	Index idx;
 
 	if (hi >= M.elements.size()) hi = hi % M.elements.size();
@@ -74,42 +87,49 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_face(
 	if (M.elements[hi].fs_flag[idx.element_patch]) idx.face_corner = (idx.face_corner + M.faces[idx.face].vs.size() - 1)% M.faces[idx.face].vs.size();
 	idx.edge = M.faces[idx.face].es[idx.face_corner];
 
+	timer.stop();
+	get_index_from_element_face_time += timer.getElapsedTime();
+
 	return idx;
 }
 
 // Navigation in a surface mesh
 polyfem::Navigation3D::Index polyfem::Navigation3D::switch_vertex(const Mesh3DStorage &M, Index idx) {
-
+	igl::Timer timer; timer.start();
 	if(idx.vertex == M.edges[idx.edge].vs[0])idx.vertex = M.edges[idx.edge].vs[1];
 	else idx.vertex = M.edges[idx.edge].vs[0];
 	idx.face_corner = std::find(M.faces[idx.face].vs.begin(), M.faces[idx.face].vs.end(), idx.vertex) - M.faces[idx.face].vs.begin();
 	//if (!M.elements[idx.element].fs_flag[idx.element_patch]) idx.face_corner = M.faces[idx.face].vs.size() - 1 - idx.face_corner;
-
+	switch_vertex_time += timer.getElapsedTime();
 	return idx;
 }
 
 polyfem::Navigation3D::Index polyfem::Navigation3D::switch_edge(const Mesh3DStorage &M, Index idx) {
-
+	igl::Timer timer; timer.start();
 	//vector<uint32_t> ves = M.vertices[idx.vertex].neighbor_es, fes = M.faces[idx.face].es, sharedes;
 	//sort(fes.begin(), fes.end()); sort(ves.begin(), ves.end());
 	//set_intersection(fes.begin(), fes.end(), ves.begin(), ves.end(), back_inserter(sharedes));
 	const vector<uint32_t> &ves = M.vertices[idx.vertex].neighbor_es, &fes = M.faces[idx.face].es;
-	vector<uint32_t> sharedes;
+	std::array<uint32_t, 2> sharedes;
 	int num=2;
 	MeshProcessing3D::set_intersection_own(ves, fes,sharedes, num);
 	assert(sharedes.size() == 2);//true for sure
-	if (sharedes[0] == idx.edge) idx.edge = sharedes[1];else idx.edge = sharedes[0];
+	if (sharedes[0] == idx.edge)
+		idx.edge = sharedes[1];
+	else
+		idx.edge = sharedes[0];
 
+	switch_edge_time += timer.getElapsedTime();
 	return idx;
 }
 
 polyfem::Navigation3D::Index polyfem::Navigation3D::switch_face(const Mesh3DStorage &M, Index idx) {
-
+	igl::Timer timer; timer.start();
 	//vector<uint32_t> efs = M.edges[idx.edge].neighbor_fs, hfs = M.elements[idx.element].fs, sharedfs;
 	//sort(hfs.begin(), hfs.end()); sort(efs.begin(), efs.end());
 	//set_intersection(hfs.begin(), hfs.end(), efs.begin(), efs.end(), back_inserter(sharedfs));
 	const vector<uint32_t> &efs = M.edges[idx.edge].neighbor_fs, &hfs = M.elements[idx.element].fs;
-	vector<uint32_t> sharedfs;
+	std::array<uint32_t, 2> sharedfs;
 	int num=2;
 	MeshProcessing3D::set_intersection_own(efs, hfs,sharedfs, num);
 	assert(sharedfs.size() == 2);//true for sure
@@ -117,11 +137,13 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::switch_face(const Mesh3DStor
 	idx.face_corner = std::find(M.faces[idx.face].vs.begin(), M.faces[idx.face].vs.end(), idx.vertex) - M.faces[idx.face].vs.begin();
 	if (!M.elements[idx.element].fs_flag[idx.element_patch]) idx.face_corner = M.faces[idx.face].vs.size() - 1 - idx.face_corner;
 
+	switch_face_time += timer.getElapsedTime();
+
 	return idx;
 }
 
 polyfem::Navigation3D::Index polyfem::Navigation3D::switch_element(const Mesh3DStorage &M, Index idx) {
-
+	igl::Timer timer; timer.start();
 	if (M.faces[idx.face].neighbor_hs.size() == 1) {
 		idx.element = -1;
 		return idx;
@@ -136,5 +158,6 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::switch_element(const Mesh3DS
 	idx.face_corner = std::find(M.faces[idx.face].vs.begin(), M.faces[idx.face].vs.end(), idx.vertex) - M.faces[idx.face].vs.begin();
 	if (!M.elements[idx.element].fs_flag[idx.element_patch]) idx.face_corner = M.faces[idx.face].vs.size() - 1 - idx.face_corner;
 
+	switch_element_time += timer.getElapsedTime();
 	return idx;
 }

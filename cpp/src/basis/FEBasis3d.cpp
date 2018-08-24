@@ -401,6 +401,7 @@ std::array<int, 8> linear_hex_local_to_global(const Mesh3D &mesh, int c) {
 void compute_nodes(
 	const polyfem::Mesh3D &mesh,
 	const Eigen::VectorXi &discr_orders,
+	const bool has_polys,
 	MeshNodes &nodes,
 	std::vector<std::vector<int> > &element_nodes_id,
 	std::vector<polyfem::LocalBoundary> &local_boundary,
@@ -447,8 +448,8 @@ void compute_nodes(
 			if(!lb.empty())
 				local_boundary.emplace_back(lb);
 		} else if(mesh.is_simplex(c)) {
-
-			element_nodes_id[c] = polyfem::FEBasis3d::tet_local_to_global(discr_order, mesh, c, discr_orders, nodes);
+			// element_nodes_id[c] = polyfem::FEBasis3d::tet_local_to_global(discr_order, mesh, c, discr_orders, nodes);
+			polyfem::FEBasis3d::tet_local_to_global(discr_order, mesh, c, discr_orders, element_nodes_id[c], nodes);
 
 			// if (discr_order == 1) {
 			// 	for (int id : linear_tet_local_to_global(mesh, c)) {
@@ -481,6 +482,9 @@ void compute_nodes(
 				local_boundary.emplace_back(lb);
 		}
 	}
+
+	if(!has_polys)
+		return;
 
 	// Step 2: Iterate over edges of polygons and compute interface weights
 	for (int c = 0; c < mesh.n_cells(); ++c) {
@@ -524,6 +528,7 @@ void compute_nodes(
 			}
 		}
 	}
+
 }
 
 /*
@@ -581,7 +586,7 @@ Eigen::RowVector3d linear_hex_local_node_coordinates(int local_index) {
 } // anonymous namespace
 
 
-std::vector<int> polyfem::FEBasis3d::tet_local_to_global(const int p, const Mesh3D &mesh, int c, const Eigen::VectorXi &discr_order, polyfem::MeshNodes &nodes)
+void polyfem::FEBasis3d::tet_local_to_global(const int p, const Mesh3D &mesh, int c, const Eigen::VectorXi &discr_order, std::vector<int> &res, polyfem::MeshNodes &nodes)
 {
 	const int n_edge_nodes = (p-1)*6;
 	const int nn = p > 2 ? (p - 2) : 0;
@@ -589,7 +594,8 @@ std::vector<int> polyfem::FEBasis3d::tet_local_to_global(const int p, const Mesh
 	const int n_face_nodes = n_loc_f * 4;
 	const int n_cell_nodes = p == 4 ? 1 : 0; //P5 not supported
 
-	std::vector<int> res; res.reserve(4 + n_edge_nodes + n_face_nodes + n_cell_nodes);
+	// std::vector<int> res;
+	res.reserve(4 + n_edge_nodes + n_face_nodes + n_cell_nodes);
 
 	// Edge nodes
 	Eigen::Matrix<Navigation3D::Index, 4, 1> f;
@@ -693,7 +699,7 @@ std::vector<int> polyfem::FEBasis3d::tet_local_to_global(const int p, const Mesh
 	}
 
 	assert(res.size() == size_t(4 + n_edge_nodes + n_face_nodes + n_cell_nodes));
-	return res;
+//    return res;
 }
 
 
@@ -1306,6 +1312,7 @@ int polyfem::FEBasis3d::build_bases(
 	const Mesh3D &mesh,
 	const int quadrature_order,
 	const int discr_order,
+	const bool has_polys,
 	std::vector< ElementBases > &bases,
 	std::vector< LocalBoundary > &local_boundary,
 	std::map<int, InterfaceData> &poly_face_to_data)
@@ -1313,19 +1320,26 @@ int polyfem::FEBasis3d::build_bases(
 	Eigen::VectorXi discr_orders(mesh.n_cells());
 	discr_orders.setConstant(discr_order);
 
-	return build_bases(mesh, quadrature_order, discr_orders, bases, local_boundary, poly_face_to_data);
+	return build_bases(mesh, quadrature_order, discr_orders, has_polys, bases, local_boundary, poly_face_to_data);
 }
 
 int polyfem::FEBasis3d::build_bases(
 	const Mesh3D &mesh,
 	const int quadrature_order,
 	const Eigen::VectorXi &discr_orders,
+	const bool has_polys,
 	std::vector< ElementBases > &bases,
 	std::vector< LocalBoundary > &local_boundary,
 	std::map<int, InterfaceData> &poly_face_to_data)
 {
 	assert(mesh.is_volume());
 	assert(discr_orders.size() == mesh.n_cells());
+
+	// Navigation3D::get_index_from_element_face_time = 0;
+	// Navigation3D::switch_vertex_time = 0;
+	// Navigation3D::switch_edge_time = 0;
+	// Navigation3D::switch_face_time = 0;
+	// Navigation3D::switch_element_time = 0;
 
 	const int max_p = discr_orders.maxCoeff();
 	assert(max_p < 5); //P5 not supported
@@ -1334,15 +1348,20 @@ int polyfem::FEBasis3d::build_bases(
 	const int n_face_nodes = std::max(nn * (nn + 1) / 2, max_p == 2 ? 1 : 0);
 	const int n_cells_nodes = (max_p == 2 || max_p == 4) ? 1 : 0;
 
-
-	MeshNodes nodes(mesh, max_p - 1, n_face_nodes, n_cells_nodes);
+	MeshNodes nodes(mesh, has_polys, max_p - 1, n_face_nodes, n_cells_nodes);
 	std::vector<std::vector<int>> element_nodes_id;
-	compute_nodes(mesh, discr_orders, nodes, element_nodes_id, local_boundary, poly_face_to_data);
+	compute_nodes(mesh, discr_orders, has_polys, nodes, element_nodes_id, local_boundary, poly_face_to_data);
 	// boundary_nodes = nodes.boundary_nodes();
+
+
+	// std::cout<<"get_index_from_element_face_time " << Navigation3D::get_index_from_element_face_time <<std::endl;
+	// std::cout<<"switch_vertex_time " << Navigation3D::switch_vertex_time <<std::endl;
+	// std::cout<<"switch_edge_time " << Navigation3D::switch_edge_time <<std::endl;
+	// std::cout<<"switch_face_time " << Navigation3D::switch_face_time <<std::endl;
+	// std::cout<<"switch_element_time " << Navigation3D::switch_element_time <<std::endl;
 
 	bases.resize(mesh.n_cells());
 	std::vector<int> interface_elements; interface_elements.reserve(mesh.n_faces());
-
 
 	for (int e = 0; e < mesh.n_cells(); ++e) {
 		ElementBases &b = bases[e];
@@ -1475,9 +1494,9 @@ int polyfem::FEBasis3d::build_bases(
 				// return res;
 			});
 
+			
 			for (int j = 0; j < n_el_bases; ++j) {
 				const int global_index = element_nodes_id[e][j];
-
 				if(!skip_interface_element){
 					b.bases[j].init(global_index, j, nodes.node_position(global_index));
 				}
@@ -1485,13 +1504,13 @@ int polyfem::FEBasis3d::build_bases(
 				b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::p_basis_value_3d     (discr_order, j, uv, val); });
 				b.bases[j].set_grad ([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::p_grad_basis_value_3d(discr_order, j, uv, val); });
 			}
+
 		}
 		else {
 			// Polyhedra bases are built later on
 			// assert(false);
 		}
 	}
-
 
 
 	for(int pp = 2; pp <= autogen::MAX_P_BASES; ++pp)
@@ -1692,7 +1711,7 @@ int polyfem::FEBasis3d::build_bases(
 							for(size_t ii = 0; ii < other_bases.bases[i].global().size(); ++ii)
 							{
 								const auto &other_global = other_bases.bases[i].global()[ii];
-						// std::cout<<"e "<<e<<" " <<j << " gid "<<other_global.index<<std::endl;
+								// std::cout<<"e "<<e<<" " <<j << " gid "<<other_global.index<<std::endl;
 								b.bases[j].global().emplace_back(other_global.index, other_global.node, w(i)*other_global.val);
 							}
 						}
