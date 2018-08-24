@@ -6,7 +6,6 @@ project(PolyFEM)
 set(THIRD_PARTY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 list(APPEND CMAKE_MODULE_PATH ${THIRD_PARTY_DIR}/Catch2/contrib)
-# list(APPEND CMAKE_MODULE_PATH ${THIRD_PARTY_DIR}/sanitizers-cmake/cmake)
 
 # Color output
 include(UseColors)
@@ -18,7 +17,7 @@ include(PrependCurrentPath)
 include(PolyfemUtils)
 
 # Extra warnings
-include(SetWarnings)
+include(Warnings)
 
 # Use C++11/14
 include(CXXFeatures)
@@ -41,7 +40,13 @@ endif()
 
 ################################################################################
 
-# Options for enabling/disabling optional libraries
+# Polyfem options
+# TODO: Other options should be renamed "POLYFEM_WITH_..." for consistency (and avoiding conflicts)
+option(POLYFEM_WITH_SANITIZERS "Enable sanitizers in compilation targets"   OFF)
+set(POLYFEM_SMALL_N  105 CACHE STRING "Maximum length for stack-allocated vectors (gradient + Hessian).")
+set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vectors (gradient only).")
+
+# Polyfem options for enabling/disabling optional libraries
 option(ENABLE_CHOLMOD     "Enable Cholmod library" ON)
 option(ENABLE_UMFPACK     "Enable UmfPack library" ON)
 option(ENABLE_SUPERLU     "Enable SuperLU library" OFF)
@@ -50,6 +55,8 @@ option(ENABLE_PARDISO     "Enable Pardiso library" ON)
 option(ENABLE_MMG         "Enable MMG library"     OFF)
 option(ENABLE_TBB         "Enable TBB"             ON)
 option(ENABLE_HYPRE       "Enable hypre"           ON)
+
+# Sanitizer options
 option(SANITIZE_ADDRESS   "Sanitize Address"       OFF)
 option(SANITIZE_MEMORY    "Sanitize Memory"        OFF)
 option(SANITIZE_THREAD    "Sanitize Thread"        OFF)
@@ -82,11 +89,15 @@ option(LIBIGL_WITH_XML                    "Use XML"                      OFF)
 # set(ENABLE_MKL          OFF CACHE BOOL "" FORCE)
 # set(ENABLE_PARDISO      OFF CACHE BOOL "" FORCE)
 # set(ENABLE_MMG          ON  CACHE BOOL "" FORCE)
+# set(ENABLE_TBB          ON  CACHE BOOL "" FORCE)
 
-# set(SANITIZE_ADDRESS   ON  CACHE BOOL "" FORCE)
-# set(SANITIZE_MEMORY    ON CACHE BOOL "" FORCE)
-# set(SANITIZE_THREAD    OFF CACHE BOOL "" FORCE)
-# set(SANITIZE_UNDEFINED ON  CACHE BOOL "" FORCE)
+# set(POLYFEM_WITH_SANITIZERS   OFF  CACHE BOOL "" FORCE)
+# set(SANITIZE_ADDRESS          ON  CACHE BOOL "" FORCE)
+# set(SANITIZE_MEMORY           ON  CACHE BOOL "" FORCE)
+# set(SANITIZE_THREAD           OFF CACHE BOOL "" FORCE)
+# set(SANITIZE_UNDEFINED        ON  CACHE BOOL "" FORCE)
+
+# set(POLYFEM_SMALL_N 105 CACHE STRING "" FORCE)
 
 # Somehow Pardiso 6 conflicts with libmetis that these guys depends on... Grr
 if(ENABLE_PARDISO)
@@ -94,6 +105,18 @@ if(ENABLE_PARDISO)
 	set(ENABLE_UMFPACK      OFF CACHE BOOL "" FORCE)
 	set(ENABLE_SUPERLU      OFF CACHE BOOL "" FORCE)
 endif()
+
+################################################################################
+# Dependencies
+################################################################################
+
+# Sanitizers
+if(POLYFEM_WITH_SANITIZERS)
+	list(APPEND CMAKE_MODULE_PATH ${THIRD_PARTY_DIR}/sanitizers-cmake/cmake)
+endif()
+
+# Setup dependencies
+include(PolyfemDependencies)
 
 ################################################################################
 # Polyfem library
@@ -114,7 +137,7 @@ set(MESH_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tests/")
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_MESH_PATH=\"${MESH_PATH}\")
 
 # Extra warnings
-target_compile_options(polyfem PUBLIC ${ALL_WARNINGS})
+target_link_libraries(polyfem PRIVATE warnings::all)
 
 # Use C++14
 target_compile_features(polyfem PUBLIC ${CXX14_FEATURES})
@@ -125,8 +148,16 @@ target_compile_definitions(polyfem PUBLIC -DEIGEN_STACK_ALLOCATION_LIMIT=0)
 # 8MB
 # target_compile_definitions(polyfem PUBLIC -DEIGEN_STACK_ALLOCATION_LIMIT=8388608)
 
+# Max stack-size small vectors (for gradient and Hessian)
+target_compile_definitions(polyfem PUBLIC -DPOLYFEM_SMALL_N=${POLYFEM_SMALL_N})
+target_compile_definitions(polyfem PUBLIC -DPOLYFEM_BIG_N=${POLYFEM_BIG_N})
+
 if("$ENV{CLUSTER}" STREQUAL "PRINCE")
 	target_compile_definitions(polyfem PUBLIC -DPOLYFEM_ON_HPC)
+endif()
+
+if(POLYFEM_WITH_SANITIZERS)
+	add_sanitizers(polyfem)
 endif()
 
 ################################################################################
@@ -142,16 +173,24 @@ source_group("gui" FILES src/viewer/UIState.hpp)
 source_group("gui" FILES src/viewer/UIMenu.cpp)
 
 target_include_directories(${PROJECT_NAME}_bin PUBLIC src/viewer)
-target_link_libraries(${PROJECT_NAME}_bin PUBLIC igl::opengl_glfw_imgui igl::png polyfem tinyfiledialogs)
 target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
+
+target_link_libraries(${PROJECT_NAME}_bin
+	PUBLIC
+		polyfem
+		warnings::all
+		igl::opengl_glfw_imgui
+		igl::png
+		tinyfiledialogs
+)
+
+if(POLYFEM_WITH_SANITIZERS)
+	add_sanitizers(${PROJECT_NAME}_bin)
+endif()
 
 ################################################################################
 # Required libraries
 ################################################################################
-
-# Sanitizer flags
-# find_package(Sanitizers)
-# add_sanitizers(polyfem)
 
 # Eigen
 # Uncomment to use the system's version of Eigen (e.g. to use Eigen 3.3)
@@ -235,7 +274,6 @@ if(ENABLE_HYPRE)
 	include(hypre)
 	target_link_libraries(polyfem PUBLIC HYPRE)
 	target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_HYPRE)
-	# add_sanitizers(HYPRE)
 endif()
 
 # Rbf interpolation

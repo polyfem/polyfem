@@ -5,6 +5,10 @@ cmake_minimum_required(VERSION 2.6.3)
 # http://stackoverflow.com/questions/5088460/flags-to-enable-thorough-and-verbose-g-warnings
 ################################################################################
 
+if(TARGET warnings::all)
+	return()
+endif()
+
 set(MY_FLAGS
 		-Wall
 		-Wextra
@@ -76,6 +80,8 @@ set(MY_FLAGS
 
 		-Wnon-virtual-dtor
 		-Wdelete-non-virtual-dtor
+		-Werror=non-virtual-dtor
+		-Werror=delete-non-virtual-dtor
 
 		-wno-sign-compare
 
@@ -124,6 +130,8 @@ set(MY_FLAGS
 		#-Wunreachable-code
 
 		# Not a warning, but enable link-time-optimization
+		# TODO: Check out modern CMake version of setting this flag
+		# https://cmake.org/cmake/help/latest/module/CheckIPOSupported.html
 		#-flto
 
 		# Gives meaningful stack traces
@@ -138,13 +146,15 @@ endif()
 
 include(CheckCXXCompilerFlag)
 
-unset(ALL_WARNINGS)
-foreach(FLAG ${MY_FLAGS})
+add_library(warnings_all INTERFACE)
+add_library(warnings::all ALIAS warnings_all)
+
+foreach(FLAG IN ITEMS ${MY_FLAGS})
 	string(REPLACE "=" "-" FLAG_VAR "${FLAG}")
 	if(NOT DEFINED IS_SUPPORTED_${FLAG_VAR})
 		check_cxx_compiler_flag("${FLAG}" IS_SUPPORTED_${FLAG_VAR})
 	endif()
 	if(IS_SUPPORTED_${FLAG_VAR})
-		list(APPEND ALL_WARNINGS ${FLAG})
+		target_compile_options(warnings_all INTERFACE ${FLAG})
 	endif()
 endforeach()
