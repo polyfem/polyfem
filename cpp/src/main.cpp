@@ -5,9 +5,14 @@
 #include <polyfem/CommandLine.hpp>
 #include <polyfem/StringUtils.hpp>
 
-
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
+
+#ifdef USE_TBB
+#include <tbb/task_scheduler_init.h>
+#include <thread>
+#endif
+
 
 using namespace polyfem;
 using namespace Eigen;
@@ -31,6 +36,13 @@ int main(int argc, const char **argv)
 #endif
 
 	GEO::initialize();
+
+#ifdef USE_TBB
+	const size_t MB = 1024*1024;
+	const size_t stack_size = 64 * MB;
+	unsigned int num_threads = std::max(1u, std::thread::hardware_concurrency());
+	tbb::task_scheduler_init scheduler(num_threads, stack_size);
+#endif
 
     // Import standard command line arguments, and custom ones
 	GEO::CmdLine::import_arg_group("standard");

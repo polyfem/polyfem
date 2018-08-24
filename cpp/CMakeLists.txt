@@ -43,7 +43,7 @@ endif()
 # Polyfem options
 # TODO: Other options should be renamed "POLYFEM_WITH_..." for consistency (and avoiding conflicts)
 option(POLYFEM_WITH_SANITIZERS "Enable sanitizers in compilation targets"   OFF)
-set(POLYFEM_SMALL_N   90 CACHE STRING "Maximum length for stack-allocated vectors (gradient + Hessian).")
+set(POLYFEM_SMALL_N  105 CACHE STRING "Maximum length for stack-allocated vectors (gradient + Hessian).")
 set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vectors (gradient only).")
 
 # Polyfem options for enabling/disabling optional libraries
@@ -89,15 +89,15 @@ option(LIBIGL_WITH_XML                    "Use XML"                      OFF)
 # set(ENABLE_MKL          OFF CACHE BOOL "" FORCE)
 # set(ENABLE_PARDISO      OFF CACHE BOOL "" FORCE)
 # set(ENABLE_MMG          ON  CACHE BOOL "" FORCE)
-# set(ENABLE_TBB          OFF  CACHE BOOL "" FORCE)
+# set(ENABLE_TBB          ON  CACHE BOOL "" FORCE)
 
-# set(POLYFEM_WITH_SANITIZERS   ON  CACHE BOOL "" FORCE)
+# set(POLYFEM_WITH_SANITIZERS   OFF  CACHE BOOL "" FORCE)
 # set(SANITIZE_ADDRESS          ON  CACHE BOOL "" FORCE)
 # set(SANITIZE_MEMORY           ON  CACHE BOOL "" FORCE)
 # set(SANITIZE_THREAD           OFF CACHE BOOL "" FORCE)
 # set(SANITIZE_UNDEFINED        ON  CACHE BOOL "" FORCE)
 
-# set(POLYFEM_SMALL_N  105 CACHE STRING "" FORCE)
+# set(POLYFEM_SMALL_N 105 CACHE STRING "" FORCE)
 
 # Somehow Pardiso 6 conflicts with libmetis that these guys depends on... Grr
 if(ENABLE_PARDISO)

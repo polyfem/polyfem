@@ -31,6 +31,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
         message(STATUS "GCC >= 4.9 detected, enabling colored diagnostics")
         add_definitions(-fdiagnostics-color=always)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdiagnostics-color=always")
+        set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -fdiagnostics-color=always")
         return()
     endif()
     # If GCC < 4.9, maybe we can use gccfilter
