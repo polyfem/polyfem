@@ -52,7 +52,7 @@ namespace polyfem
 		/// @param[in]  local_index   { Local index of the node within the element }
 		/// @param[in]  node          { 1 x dim position of the node associated to the basis }
 		///
-		void init(const int global_index, const int local_index, const Eigen::MatrixXd &node);
+		void init(const int global_index, const int local_index, const RowVectorNd &node);
 
 		///
 		/// @brief      Checks if global is empty or not

@@ -31,6 +31,7 @@ namespace polyfem
 			std::vector< Eigen::Triplet<double> > entries;
 			Eigen::SparseMatrix<double> tmp_mat;
 			Eigen::SparseMatrix<double> stiffness;
+            ElementAssemblyValues vals;
 
 			LocalThreadMatStorage(const int buffer_size, const int rows, const int cols)
 			{
@@ -44,6 +45,7 @@ namespace polyfem
 		{
 		public:
 			Eigen::MatrixXd vec;
+            ElementAssemblyValues vals;
 
 			LocalThreadVecStorage(const int size)
 			{
@@ -56,6 +58,7 @@ namespace polyfem
 		{
 		public:
 			double val;
+            ElementAssemblyValues vals;
 
 			LocalThreadScalarStorage()
 			{
@@ -94,7 +97,7 @@ namespace polyfem
 #else
 		for(int e=0; e < n_bases; ++e) {
 #endif
-			ElementAssemblyValues vals;
+            ElementAssemblyValues &vals = loc_storage.vals;
 			igl::Timer timer; timer.start();
 			vals.compute(e, is_volume, bases[e], gbases[e]);
 
@@ -214,6 +217,7 @@ namespace polyfem
 		LocalStorage storages(LocalThreadMatStorage(buffer_size, stiffness.rows(), stiffness.cols()));
 #else
 		LocalThreadMatStorage loc_storage(buffer_size, stiffness.rows(), stiffness.cols());
+        ElementAssemblyValues psi_vals, phi_vals;
 #endif
 
 		const int n_bases = int(phi_bases.size());
@@ -221,11 +225,11 @@ namespace polyfem
 #ifdef USE_TBB
 		tbb::parallel_for( tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
 		LocalStorage::reference loc_storage = storages.local();
+        ElementAssemblyValues psi_vals, phi_vals;
 		for (int e = r.begin(); e != r.end(); ++e) {
 #else
 		for(int e=0; e < n_bases; ++e) {
 #endif
-			ElementAssemblyValues psi_vals, phi_vals;
 			igl::Timer timer; timer.start();
 			psi_vals.compute(e, is_volume, psi_bases[e], gbases[e]);
 			phi_vals.compute(e, is_volume, phi_bases[e], gbases[e]);
@@ -348,7 +352,7 @@ namespace polyfem
 #endif
 			// igl::Timer timer; timer.start();
 
-			ElementAssemblyValues vals;
+			ElementAssemblyValues &vals = loc_storage.vals;
 			vals.compute(e, is_volume, bases[e], gbases[e]);
 
 			const Quadrature &quadrature = vals.quadrature;
@@ -433,7 +437,7 @@ namespace polyfem
 #else
 		for(int e=0; e < n_bases; ++e) {
 #endif
-			ElementAssemblyValues vals;
+			ElementAssemblyValues &vals = loc_storage.vals;
 			// igl::Timer timer; timer.start();
 			vals.compute(e, is_volume, bases[e], gbases[e]);
 
@@ -545,7 +549,7 @@ namespace polyfem
 #endif
 			// igl::Timer timer; timer.start();
 
-			ElementAssemblyValues vals;
+			ElementAssemblyValues &vals = loc_storage.vals;
 			vals.compute(e, is_volume, bases[e], gbases[e]);
 
 			const Quadrature &quadrature = vals.quadrature;

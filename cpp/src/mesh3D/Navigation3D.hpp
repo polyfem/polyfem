@@ -5,6 +5,11 @@
 
 namespace polyfem{
 	namespace Navigation3D{
+		extern double get_index_from_element_face_time;
+		extern double switch_vertex_time;
+		extern double switch_edge_time;
+		extern double switch_face_time;
+		extern double switch_element_time;
 
 		struct Index{
 			int vertex;

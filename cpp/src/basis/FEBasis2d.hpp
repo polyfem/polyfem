@@ -37,6 +37,7 @@ namespace polyfem
 			const Mesh2D &mesh,
 			const int quadrature_order,
 			const int discr_order,
+			const bool has_polys,
 			std::vector<ElementBases> &bases,
 			std::vector<LocalBoundary> &local_boundary,
 			std::map<int, InterfaceData> &poly_edge_to_data);
@@ -45,6 +46,7 @@ namespace polyfem
 			const Mesh2D &mesh,
 			const int quadrature_order,
 			const Eigen::VectorXi &discr_order,
+			const bool has_polys,
 			std::vector<ElementBases> &bases,
 			std::vector<LocalBoundary> &local_boundary,
 			std::map<int, InterfaceData> &poly_edge_to_data);
@@ -115,7 +117,7 @@ namespace polyfem
 			const Eigen::MatrixXd &xne, Eigen::MatrixXd &val);
 
 
-		static std::vector<int> tri_local_to_global(const int p, const Mesh2D &mesh, int f, const Eigen::VectorXi &discr_order, polyfem::MeshNodes &nodes);
+		static void tri_local_to_global(const int p, const Mesh2D &mesh, int f, const Eigen::VectorXi &discr_order, std::vector<int> &res, polyfem::MeshNodes &nodes);
 		static Eigen::VectorXi tri_edge_local_nodes(const int p, const Mesh2D &mesh, Navigation::Index index);
 
 		static void linear_tri_basis_value(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);

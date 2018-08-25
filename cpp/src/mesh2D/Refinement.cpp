@@ -516,17 +516,18 @@ void polyfem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, Pol
 	M_out.copy(M_in);
 	M_out.edges.clear();
 	M_out.facets.clear();
+	GEO::Attribute<GEO::index_t> c2e(M_in.facet_corners.attributes(), "edge_id");
 
 	// Step 1: Iterate over facets and refine triangles and quads
 	std::vector<int> edge_to_midpoint(M_in.edges.nb(), -1);
 	for (index_t f = 0; f < M_in.facets.nb(); ++f) {
 		index_t nv = M_in.facets.nb_vertices(f);
 		assert(nv > 2);
-		Index idx = Navigation::get_index_from_face(M_in, f, 0);
+		Index idx = Navigation::get_index_from_face(M_in, c2e, f, 0);
 		assert(Navigation::switch_vertex(M_in, idx).vertex == (int) M_in.facets.vertex(f, 1));
 
 		// Create mid-edge vertices
-		for (index_t lv = 0; lv < M_in.facets.nb_vertices(f); ++lv, idx = Navigation::next_around_face(M_in, idx)) {
+		for (index_t lv = 0; lv < M_in.facets.nb_vertices(f); ++lv, idx = Navigation::next_around_face(M_in, c2e, idx)) {
 			assert(idx.vertex == (int) M_in.facets.vertex(f, lv));
 			if (edge_to_midpoint[idx.edge] == -1) {
 				GEO::vec3 coords = 0.5 * (mesh_vertex(M_in, idx.vertex)
@@ -543,11 +544,11 @@ void polyfem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, Pol
 
 			// Create quads
 			for (index_t lv = 0; lv < M_in.facets.nb_vertices(f); ++lv) {
-				idx = Navigation::get_index_from_face(M_in, f, lv);
+				idx = Navigation::get_index_from_face(M_in, c2e, f, lv);
 				assert(Navigation::switch_vertex(M_in, idx).vertex == (int) M_in.facets.vertex(f, (lv+1)%M_in.facets.nb_vertices(f)));
 				int v1 = idx.vertex;
 				int v12 = edge_to_midpoint[idx.edge];
-				int v01 = edge_to_midpoint[Navigation::switch_edge(M_in, idx).edge];
+				int v01 = edge_to_midpoint[Navigation::switch_edge(M_in, c2e, idx).edge];
 				assert(v12 != -1 && v01 != -1);
 				M_out.facets.create_quad(v1, v12, vf, v01);
 			}
@@ -559,11 +560,11 @@ void polyfem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, Pol
 		if (M_in.facets.nb_vertices(f) <= 4) { continue; }
 		GEO::vector<index_t> hole;
 		{
-			auto idx = Navigation::get_index_from_face(M_in, f, 0);
+			auto idx = Navigation::get_index_from_face(M_in, c2e, f, 0);
 			for (index_t lv = 0; lv < M_in.facets.nb_vertices(f); ++lv) {
 				hole.push_back(idx.vertex);
 				hole.push_back(edge_to_midpoint[idx.edge]);
-				idx = Navigation::next_around_face(M_in, idx);
+				idx = Navigation::next_around_face(M_in, c2e, idx);
 			}
 		}
 
@@ -610,17 +611,19 @@ void polyfem::refine_triangle_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out) {
 	M_out.copy(M_in);
 	M_out.edges.clear();
 	M_out.facets.clear();
+	GEO::Attribute<GEO::index_t> c2e(M_in.facet_corners.attributes(), "edge_id");
+
 
 	// Step 2: Iterate over facets and refine triangles
 	std::vector<int> edge_to_midpoint(M_in.edges.nb(), -1);
 	for (index_t f = 0; f < M_in.facets.nb(); ++f) {
 		index_t nv = M_in.facets.nb_vertices(f);
 		assert(nv == 3);
-		Index idx = Navigation::get_index_from_face(M_in, f, 0);
+		Index idx = Navigation::get_index_from_face(M_in, c2e, f, 0);
 		assert(Navigation::switch_vertex(M_in, idx).vertex == (int) M_in.facets.vertex(f, 1));
 
 		// Create mid-edge vertices
-		for (index_t lv = 0; lv < M_in.facets.nb_vertices(f); ++lv, idx = Navigation::next_around_face(M_in, idx)) {
+		for (index_t lv = 0; lv < M_in.facets.nb_vertices(f); ++lv, idx = Navigation::next_around_face(M_in, c2e, idx)) {
 			assert(idx.vertex == (int) M_in.facets.vertex(f, lv));
 			if (edge_to_midpoint[idx.edge] == -1) {
 				GEO::vec3 coords = 0.5 * (mesh_vertex(M_in, idx.vertex)
@@ -633,11 +636,11 @@ void polyfem::refine_triangle_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out) {
 		// Create triangles
 		std::array<index_t, 3> e2v;
 		for (index_t lv = 0; lv < M_in.facets.nb_vertices(f); ++lv) {
-			idx = Navigation::get_index_from_face(M_in, f, lv);
+			idx = Navigation::get_index_from_face(M_in, c2e, f, lv);
 			assert(Navigation::switch_vertex(M_in, idx).vertex == (int) M_in.facets.vertex(f, (lv+1)%M_in.facets.nb_vertices(f)));
 			int v1 = idx.vertex;
 			int v12 = edge_to_midpoint[idx.edge];
-			int v01 = edge_to_midpoint[Navigation::switch_edge(M_in, idx).edge];
+			int v01 = edge_to_midpoint[Navigation::switch_edge(M_in, c2e, idx).edge];
 			e2v[lv] = v12;
 			assert(v12 != -1 && v01 != -1);
 			M_out.facets.create_triangle(v1, v12, v01);

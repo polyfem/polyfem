@@ -48,7 +48,7 @@ namespace {
 
 // -----------------------------------------------------------------------------
 
-polyfem::MeshNodes::MeshNodes(const Mesh &mesh, const int max_nodes_per_edge, const int max_nodes_per_face, const int max_nodes_per_cell)
+polyfem::MeshNodes::MeshNodes(const Mesh &mesh, const bool has_poly, const int max_nodes_per_edge, const int max_nodes_per_face, const int max_nodes_per_cell)
 : mesh_(mesh)
 , edge_offset_(mesh.n_vertices())
 , face_offset_(edge_offset_ + mesh.n_edges() * max_nodes_per_edge)
@@ -63,7 +63,9 @@ polyfem::MeshNodes::MeshNodes(const Mesh &mesh, const int max_nodes_per_edge, co
 	primitive_to_node_.assign(n_nodes, -1); // #v + #e + #f + #c
 	nodes_.resize(n_nodes, mesh.dimension());
 	is_boundary_.assign(n_nodes, false);
-	is_interface_.assign(n_nodes, false);
+
+	if(has_poly)
+		is_interface_.assign(n_nodes, false);
 
 	// Vertex nodes
 	for (int v = 0; v < mesh.n_vertices(); ++v) {
@@ -106,21 +108,24 @@ polyfem::MeshNodes::MeshNodes(const Mesh &mesh, const int max_nodes_per_edge, co
 	// if (vertices_only) { return; }
 
 	// Compute edges/faces that are at interface with a polytope
-	if (mesh.is_volume()) {
-		const Mesh3D * mesh3d = dynamic_cast<const Mesh3D *>(&mesh);
-		assert(mesh3d);
-		auto is_interface_face = interface_faces(*mesh3d);
-		for (int f = 0; f < mesh.n_faces(); ++f) {
-			for(int tmp = 0; tmp < max_nodes_per_face; ++tmp)
-				is_interface_[face_offset_ + max_nodes_per_face * f + tmp] = is_interface_face[f];
-		}
-	} else {
-		const Mesh2D * mesh2d = dynamic_cast<const Mesh2D *>(&mesh);
-		assert(mesh2d);
-		auto is_interface_edge = interface_edges(*mesh2d);
-		for (int e = 0; e < mesh.n_edges(); ++e) {
-			for(int tmp = 0; tmp < max_nodes_per_edge; ++tmp)
-				is_interface_[edge_offset_ + max_nodes_per_edge * e + tmp] = is_interface_edge[e];
+	if(has_poly)
+	{
+		if (mesh.is_volume()) {
+			const Mesh3D * mesh3d = dynamic_cast<const Mesh3D *>(&mesh);
+			assert(mesh3d);
+			auto is_interface_face = interface_faces(*mesh3d);
+			for (int f = 0; f < mesh.n_faces(); ++f) {
+				for(int tmp = 0; tmp < max_nodes_per_face; ++tmp)
+					is_interface_[face_offset_ + max_nodes_per_face * f + tmp] = is_interface_face[f];
+			}
+		} else {
+			const Mesh2D * mesh2d = dynamic_cast<const Mesh2D *>(&mesh);
+			assert(mesh2d);
+			auto is_interface_edge = interface_edges(*mesh2d);
+			for (int e = 0; e < mesh.n_edges(); ++e) {
+				for(int tmp = 0; tmp < max_nodes_per_edge; ++tmp)
+					is_interface_[edge_offset_ + max_nodes_per_edge * e + tmp] = is_interface_edge[e];
+			}
 		}
 	}
 

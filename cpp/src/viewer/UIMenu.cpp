@@ -366,10 +366,10 @@ void polyfem::UIState::draw_settings() {
 
 	ImGui::Separator();
 
-	static GLuint color_bar_texture = -1;
+	static GLuint color_bar_texture = 0;
 	static const int width  = ImGui::GetWindowWidth();
 	static const int height = 20;
-	if(color_bar_texture)
+	if(color_bar_texture == 0)
 	{
 		Eigen::Matrix<unsigned char, Eigen::Dynamic, 4, Eigen::RowMajor> cmap(width*height, 4);
 

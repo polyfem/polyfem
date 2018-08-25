@@ -102,6 +102,8 @@ void polyfem::create_patch_around_singularities(
 		}
 	}
 
+	GEO::Attribute<GEO::index_t> c2e(M.facet_corners.attributes(), "edge_id");
+
 	// Step 2: Iterate over all facets, and subdivide accordingly
 	std::vector<index_t> facets_to_delete;
 	std::vector<int> next_vertex_around_hole(M.vertices.nb(), -1);
@@ -117,12 +119,13 @@ void polyfem::create_patch_around_singularities(
 		assert(M.facets.nb_vertices(f) > 2);
 
 		// a. Iterate over edges around the facet, until one marked edge is found
-		Index idx1 = Navigation::get_index_from_face(M, f, 0);
+		Index idx1 = Navigation::get_index_from_face(M, c2e, f, 0);
+
 		for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv) {
 			if (edge_to_midpoint[idx1.edge] != -1) {
 				break;
 			}
-			idx1 = Navigation::next_around_face(M, idx1);
+			idx1 = Navigation::next_around_face(M, c2e, idx1);
 		}
 		if (edge_to_midpoint[idx1.edge] == -1) {
 			continue;
@@ -136,7 +139,7 @@ void polyfem::create_patch_around_singularities(
 		}
 
 		// c. Navigate around until another marked edge is found (assert it is different from the previous one)
-		Index idx2 = Navigation::switch_edge(M, idx1);
+		Index idx2 = Navigation::switch_edge(M, c2e, idx1);
 		GEO::vector<index_t> unmarked_vertices;
 		// std::cout << f << ' ' << std::endl;
 		for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv) {
@@ -146,7 +149,7 @@ void polyfem::create_patch_around_singularities(
 			if (edge_to_midpoint[idx2.edge] != -1) {
 				break;
 			}
-			idx2 = Navigation::next_around_face(M, idx2);
+			idx2 = Navigation::next_around_face(M, c2e, idx2);
 		}
 		// std::cout << std::endl;
 		assert(edge_to_midpoint[idx2.edge] != -1);

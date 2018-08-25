@@ -32,12 +32,12 @@ namespace polyfem
 		inline int face_vertex(const int f_id, const int lv_id) const { return mesh_.facets.vertex(f_id, lv_id); }
 
 		bool is_boundary_vertex(const int vertex_global_id) const override {
-			GEO::Attribute<bool> boundary_vertices(mesh_.vertices.attributes(), "boundary_vertex");
-			return boundary_vertices[vertex_global_id];
+			// GEO::Attribute<bool> boundary_vertices(mesh_.vertices.attributes(), "boundary_vertex");
+			return (*boundary_vertices_)[vertex_global_id];
 		}
 		bool is_boundary_edge(const int edge_global_id) const override {
-			GEO::Attribute<bool> boundary_edges(mesh_.edges.attributes(), "boundary_edge");
-			return boundary_edges[edge_global_id];
+			// GEO::Attribute<bool> boundary_edges(mesh_.edges.attributes(), "boundary_edge");
+			return (*boundary_edges_)[edge_global_id];
 		}
 		bool is_boundary_face(const int face_global_id) const override {
 			assert(false);
@@ -73,12 +73,12 @@ namespace polyfem
 
 
 		// Navigation wrapper
-		inline Navigation::Index get_index_from_face(int f, int lv = 0) const { return Navigation::get_index_from_face(mesh_, f, lv); }
+		inline Navigation::Index get_index_from_face(int f, int lv = 0) const { return Navigation::get_index_from_face(mesh_, *c2e_, f, lv); }
 
 		// Navigation in a surface mesh
 		inline Navigation::Index switch_vertex(Navigation::Index idx) const { return Navigation::switch_vertex(mesh_, idx); }
-		inline Navigation::Index switch_edge(Navigation::Index idx) const { return Navigation::switch_edge(mesh_, idx); }
-		inline Navigation::Index switch_face(Navigation::Index idx) const { return Navigation::switch_face(mesh_, idx); }
+		inline Navigation::Index switch_edge(Navigation::Index idx) const { return Navigation::switch_edge(mesh_, *c2e_, idx); }
+		inline Navigation::Index switch_face(Navigation::Index idx) const { return Navigation::switch_face(mesh_, *c2e_, idx); }
 
 		// Iterate in a mesh
 		inline Navigation::Index next_around_face(Navigation::Index idx) const { return switch_edge(switch_vertex(idx)); }
@@ -94,6 +94,9 @@ namespace polyfem
 		void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, const std::vector<bool> &valid_elements) const override;
 	private:
 		GEO::Mesh mesh_;
+		std::unique_ptr<GEO::Attribute<GEO::index_t>> c2e_;
+		std::unique_ptr<GEO::Attribute<bool>> boundary_vertices_;
+		std::unique_ptr<GEO::Attribute<bool>> boundary_edges_;
 	};
 }
 

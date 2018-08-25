@@ -9,7 +9,7 @@ namespace polyfem
 	{ }
 
 
-	void Basis::init(const int global_index, const int local_index, const Eigen::MatrixXd &node)
+	void Basis::init(const int global_index, const int local_index, const RowVectorNd &node)
 	{
 		global_.resize(1);
 		global_.front().index = global_index;
