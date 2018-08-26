@@ -103,8 +103,8 @@ void LinearSolverPardiso::init() {
 ////////////////////////////////////////////////////////////////////////////////
 
 // - For symmetric matrices the solver needs only the upper triangular part of the system
-// - Make sure diagonal terms are included, even as zeros (pardiso claims this is
-//   necessary for best performance)
+// - Make sure diagonal terms are included, even as zeros (Pardiso claims this is
+//   necessary for best performance).
 
 namespace {
 
@@ -139,7 +139,7 @@ void computeIndices(const SparseMatrixXd &K, Eigen::VectorXi &ia, Eigen::VectorX
 	ia.tail<1>()[0] = count;
 }
 
-// Compue non-zero coefficients and put them in 'a'
+// Compute non-zero coefficients and put them in 'a'
 void computeCoeffs(const SparseMatrixXd &K, Eigen::VectorXd &a, bool upperOnly) {
 	int count = 0;
 	for (int r = 0; r < K.rows(); ++r) {

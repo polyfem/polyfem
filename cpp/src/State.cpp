@@ -1674,7 +1674,7 @@ namespace polyfem
 					// 	// std::cout<<"diff \n"<<(actual_grad - expected_grad)<<std::endl;
 					// }
 
-					cppoptlib::SparseNewtonDescentSolver<NLProblem> solver(n == 1);
+					cppoptlib::SparseNewtonDescentSolver<NLProblem> solver(true);
 					solver.minimize(nl_problem, tmp_sol);
 					solver.getInfo(solver_info);
 					std::cout<<n<<"/"<<steps<<std::endl;
