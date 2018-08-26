@@ -132,6 +132,7 @@ namespace cppoptlib {
 			AssemblerUtils::instance().clear_cache();
 
 			size_t next_hessian = 0;
+			double factor = 1e-5;
 			do
 			{
 				time.start();
@@ -142,13 +143,15 @@ namespace cppoptlib {
 					std::cout<<"\tgrad time "<<time.getElapsedTimeInSec()<<std::endl;
 				grad_time += time.getElapsedTimeInSec();
 
+				int iter = this->m_current.iterations;
 				bool new_hessian = this->m_current.iterations == next_hessian;
 
 				if(new_hessian)
 				{
 					time.start();
 					objFunc.hessian(x0, hessian);
-					hessian += (1e-5) * id;
+					hessian += 0.0 * id;
+					//factor *= 1e-1;
 					time.stop();
 					if(verbose)
 						std::cout<<"\tassembly time "<<time.getElapsedTimeInSec()<<std::endl;
@@ -156,7 +159,6 @@ namespace cppoptlib {
 
 					next_hessian += 5;
 				}
-
 
 				// std::cout<<hessian<<std::endl;
 				time.start();
@@ -224,7 +226,7 @@ namespace cppoptlib {
 				}
 
 				if(verbose)
-					std::cout << "\titer: "<<this->m_current.iterations <<", rate = "<< rate << ", f = " <<  energy << ", ||g||_inf "<< this->m_current.gradNorm <<", ||step|| "<< step << ", rate "<< rate <<" dot " << delta_x.dot(grad)/grad.norm() << std::endl;
+					std::cout << "\titer: "<<this->m_current.iterations <<", rate = "<< rate << ", f = " <<  energy << ", ‖g‖_2 "<< this->m_current.gradNorm <<", ‖step‖ "<< step << ", rate "<< rate <<" dot " << delta_x.dot(grad)/grad.norm() << std::endl;
 			}
 			while (objFunc.callback(this->m_current, x0) && (this->m_status == Status::Continue));
 
