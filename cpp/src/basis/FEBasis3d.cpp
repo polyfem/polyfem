@@ -1335,11 +1335,11 @@ int polyfem::FEBasis3d::build_bases(
 	assert(mesh.is_volume());
 	assert(discr_orders.size() == mesh.n_cells());
 
-	// Navigation3D::get_index_from_element_face_time = 0;
-	// Navigation3D::switch_vertex_time = 0;
-	// Navigation3D::switch_edge_time = 0;
-	// Navigation3D::switch_face_time = 0;
-	// Navigation3D::switch_element_time = 0;
+	Navigation3D::get_index_from_element_face_time = 0;
+	Navigation3D::switch_vertex_time = 0;
+	Navigation3D::switch_edge_time = 0;
+	Navigation3D::switch_face_time = 0;
+	Navigation3D::switch_element_time = 0;
 
 	const int max_p = discr_orders.maxCoeff();
 	assert(max_p < 5); //P5 not supported
@@ -1354,11 +1354,11 @@ int polyfem::FEBasis3d::build_bases(
 	// boundary_nodes = nodes.boundary_nodes();
 
 
-	// std::cout<<"get_index_from_element_face_time " << Navigation3D::get_index_from_element_face_time <<std::endl;
-	// std::cout<<"switch_vertex_time " << Navigation3D::switch_vertex_time <<std::endl;
-	// std::cout<<"switch_edge_time " << Navigation3D::switch_edge_time <<std::endl;
-	// std::cout<<"switch_face_time " << Navigation3D::switch_face_time <<std::endl;
-	// std::cout<<"switch_element_time " << Navigation3D::switch_element_time <<std::endl;
+	std::cout<<"get_index_from_element_face_time " << Navigation3D::get_index_from_element_face_time <<std::endl;
+	std::cout<<"switch_vertex_time " << Navigation3D::switch_vertex_time <<std::endl;
+	std::cout<<"switch_edge_time " << Navigation3D::switch_edge_time <<std::endl;
+	std::cout<<"switch_face_time " << Navigation3D::switch_face_time <<std::endl;
+	std::cout<<"switch_element_time " << Navigation3D::switch_element_time <<std::endl;
 
 	bases.resize(mesh.n_cells());
 	std::vector<int> interface_elements; interface_elements.reserve(mesh.n_faces());
