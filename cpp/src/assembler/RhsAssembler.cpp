@@ -10,7 +10,7 @@
 #include <map>
 #include <memory>
 
-// #include <polyfem/UIState.hpp>
+#include <polyfem/UIState.hpp>
 
 namespace polyfem
 {
@@ -286,12 +286,11 @@ namespace polyfem
 		Eigen::MatrixXd points;
 		Eigen::VectorXd weights;
 
-        
         ElementAssemblyValues vals;
 		for(const auto &lb : local_neumann_boundary)
 		{
 			const int e = lb.element_id();
-			bool has_samples = boundary_quadrature(lb, resolution/3, false, points, weights, global_primitive_ids);
+			bool has_samples = boundary_quadrature(lb, resolution, false, points, weights, global_primitive_ids);
 
 			if(!has_samples)
 				continue;
@@ -303,7 +302,7 @@ namespace polyfem
 			// problem_.neumann_bc(mesh_, global_primitive_ids, vals.val, t, rhs_fun);
 			nf(global_primitive_ids, vals.val, rhs_fun);
 
-			// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
+			// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(0,1,0));
 
 			for(int d = 0; d < size_; ++d)
 				rhs_fun.col(d) = rhs_fun.col(d).array() * weights.array();
@@ -326,8 +325,10 @@ namespace polyfem
 							const int g_index = v.global[g].index*size_+d;
 							const bool is_neumann = std::find(bounday_nodes.begin(), bounday_nodes.end(), g_index ) == bounday_nodes.end();
 
-							if(is_neumann)
+							if(is_neumann){
 								rhs(g_index) += rhs_value * v.global[g].val;
+								// UIState::ui_state().debug_data().add_points(v.global[g].node, Eigen::RowVector3d(1,0,0));
+							}
 							// else
 								// std::cout<<"skipping "<<g_index<<" "<<rhs_value * v.global[g].val<<std::endl;
 						}

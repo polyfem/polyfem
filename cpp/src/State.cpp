@@ -714,12 +714,46 @@ namespace polyfem
 			// else
 				// local_pts = vis_pts_poly[i];
 
-			assembler.compute_scalar_value(tensor_formulation(), bs, gbs, local_pts, sol, local_val);
+			assembler.compute_scalar_value(tensor_formulation(), bs, gbs, local_pts, fun, local_val);
 
 			result.block(index, 0, local_val.rows(), 1) = local_val;
 			index += local_val.rows();
 		}
 	}
+
+
+	void State::compute_tensor_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result)
+	{
+		const int actual_dim = mesh->dimension();
+		result.resize(n_points, actual_dim*actual_dim);
+
+		int index = 0;
+		const auto &sampler = RefElementSampler::sampler();
+		const auto &assembler = AssemblerUtils::instance();
+
+		Eigen::MatrixXd local_val;
+		const auto &gbases =  iso_parametric() ? bases : geom_bases;
+
+		for(int i = 0; i < int(bases.size()); ++i)
+		{
+			const ElementBases &bs = bases[i];
+			const ElementBases &gbs = gbases[i];
+			Eigen::MatrixXd local_pts;
+
+			if(mesh->is_simplex(i))
+				local_pts = sampler.simplex_points();
+			else if(mesh->is_cube(i))
+				local_pts = sampler.cube_points();
+			// else
+				// local_pts = vis_pts_poly[i];
+
+			assembler.compute_tensor_value(tensor_formulation(), bs, gbs, local_pts, fun, local_val);
+
+			result.block(index, 0, local_val.rows(), local_val.cols()) = local_val;
+			index += local_val.rows();
+		}
+	}
+
 
 	void State::load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd&)> &boundary_marker)
 	{
@@ -2098,9 +2132,13 @@ namespace polyfem
 
 		if(fun.cols() != 1 && !problem->is_stokes())
 		{
-			Eigen::MatrixXd scalar_val;
-			compute_scalar_value(pts_index, sol, scalar_val);
-			writer.add_field("scalar_value", scalar_val);
+			Eigen::MatrixXd vals;
+			compute_scalar_value(pts_index, sol, vals);
+			writer.add_field("scalar_value", vals);
+
+			compute_tensor_value(pts_index, sol, vals);
+			for(int i = 0; i < vals.cols(); ++i)
+				writer.add_field("tensor_value_" + std::to_string(i+1), vals.col(i));
 		}
 
 		// interpolate_function(pts_index, rhs, fun);
