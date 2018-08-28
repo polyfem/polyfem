@@ -3,9 +3,8 @@
 
 #include <polyfem/Common.hpp>
 #include <polyfem/LinearSolver.hpp>
-
 #include <polyfem/NLProblem.hpp>
-
+#include <polyfem/MatrixUtils.hpp>
 #include <polyfem/State.hpp>
 
 #include <igl/Timer.h>
@@ -41,7 +40,6 @@ namespace cppoptlib {
 			criteria.iterations = 100;
 			this->setStopCriteria(criteria);
 		}
-
 
 
 		double armijo_linesearch(const TVector &x, const TVector &searchDir, ProblemType &objFunc, const double alpha_init = 1.0)
@@ -115,6 +113,8 @@ namespace cppoptlib {
 			THessian id(reduced_size, reduced_size);
 			id.setIdentity();
 
+			Eigen::Vector4d spectrum;
+			spectrum.setZero();
 
 			TVector grad = TVector::Zero(reduced_size);
 			// TVector full_grad;
@@ -134,6 +134,7 @@ namespace cppoptlib {
 
 			size_t next_hessian = 0;
 			double factor = 1e-5;
+			double old_energy = std::nan("");
 			do
 			{
 				time.start();
@@ -157,6 +158,10 @@ namespace cppoptlib {
 					if(verbose)
 						std::cout<<"\tassembly time "<<time.getElapsedTimeInSec()<<std::endl;
 					assembly_time += time.getElapsedTimeInSec();
+
+					if (verbose) {
+						spectrum = compute_specturm(hessian);
+					}
 
 					next_hessian += 5;
 				}
@@ -199,11 +204,13 @@ namespace cppoptlib {
 
 				++this->m_current.iterations;
 
-				// this->m_current.gradNorm = grad.template lpNorm<Eigen::Infinity>();
+				const double energy = objFunc.value(x0);
+				const double step = (rate * delta_x).norm();
+
+				this->m_current.fDelta = std::abs(old_energy - energy);
 				this->m_current.gradNorm = grad.norm();
 				this->m_status = checkConvergence(this->m_stop, this->m_current);
-				const double step = (rate * delta_x).norm();
-				const double energy = objFunc.value(x0);
+				old_energy = energy;
 
 				if(std::isnan(energy))
 				{
@@ -227,7 +234,9 @@ namespace cppoptlib {
 				}
 
 				if(verbose) {
-					std::cout << "\titer: "<<this->m_current.iterations <<", rate = "<< rate << ", f = " <<  energy << ", ‖g‖_2 "<< this->m_current.gradNorm <<", ‖step‖ "<< step << ", rate "<< rate <<" dot " << delta_x.dot(grad)/grad.norm() << std::endl;
+					tfm::printf("\titer: %s, f = %s, ‖g‖_2 = %s, rate = %s, ‖step‖ = %s, dot = %s\n",
+						this->m_current.iterations, energy, this->m_current.gradNorm, rate, step, delta_x.dot(grad)/grad.norm());
+					tfm::printf("\tspectrum: %s (%s)\n", spectrum(3) / spectrum(0), spectrum.transpose());
 					std::cout << this->criteria() << std::endl;
 				}
 			}
