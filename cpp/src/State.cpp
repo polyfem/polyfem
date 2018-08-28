@@ -31,6 +31,7 @@
 #include <polyfem/MeshUtils.hpp>
 
 #include <polyfem/NLProblem.hpp>
+#include <polyfem/LbfgsSolver.hpp>
 #include <polyfem/SparseNewtonDescentSolver.hpp>
 
 #include <polyfem/auto_bases.hpp>
@@ -199,6 +200,7 @@ namespace polyfem
 		j["solver_type"] = args["solver_type"];
 		j["precond_type"] = args["precond_type"];
 		j["line_search"] = args["line_search"];
+		j["nl_solver"] = args["nl_solver"];
 		j["params"] = args["params"];
 
 		j["refinenemt_location"] = args["refinenemt_location"];
@@ -1462,7 +1464,7 @@ namespace polyfem
 		spectrum.setZero();
 
 		igl::Timer timer; timer.start();
-		std::cout<<"Solving " << formulation() <<" with ";
+		std::cout<<"Solving " << formulation() <<" with " << std::endl;
 
 
 		const json &params = solver_params();
@@ -1711,10 +1713,19 @@ namespace polyfem
 					// 	// std::cout<<"diff \n"<<(actual_grad - expected_grad)<<std::endl;
 					// }
 
-					cppoptlib::SparseNewtonDescentSolver<NLProblem> solver(true);
-					solver.setLineSearch(args["line_search"]);
-					solver.minimize(nl_problem, tmp_sol);
-					solver.getInfo(solver_info);
+					if (args["nl_solver"] == "newton") {
+						cppoptlib::SparseNewtonDescentSolver<NLProblem> solver(true);
+						solver.setLineSearch(args["line_search"]);
+						solver.minimize(nl_problem, tmp_sol);
+						solver.getInfo(solver_info);
+					} else if (args["nl_solver"] == "lbfgs") {
+						cppoptlib::LbfgsSolverL2<NLProblem> solver;
+						solver.setLineSearch(args["line_search"]);
+						solver.setDebug(cppoptlib::DebugLevel::High);
+						solver.minimize(nl_problem, tmp_sol);
+					} else {
+						throw std::invalid_argument("[State] invalid solver type for non-linear problem");
+					}
 					std::cout<<n<<"/"<<steps<<std::endl;
 
 					if(args["save_solve_sequence"])
@@ -1936,6 +1947,7 @@ namespace polyfem
 
 			{"solver_params", json({})},
 			{"line_search", "armijo"},
+			{"nl_solver", "newton"},
 			{"nl_solver_rhs_steps", 10},
 			{"save_solve_sequence", false},
 

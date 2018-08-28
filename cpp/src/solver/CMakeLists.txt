@@ -1,6 +1,7 @@
 set(SOURCES
 	FEMSolver.cpp
 	FEMSolver.hpp
+	LbfgsSolver.hpp
 	LinearSolver.cpp
 	LinearSolver.hpp
 	LinearSolverEigen.h
