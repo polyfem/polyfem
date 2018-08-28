@@ -174,6 +174,7 @@ namespace polyfem
 		index = 0;
 
 		int global_counter = 0;
+		Eigen::MatrixXd mapped;
 
 		for(const auto &lb : local_boundary)
 		{
@@ -187,7 +188,6 @@ namespace polyfem
 			const ElementBases &gbs = gbases_[e];
 			const int n_local_bases = int(bs.bases.size());
 
-			Eigen::MatrixXd mapped;
 			gbs.eval_geom_mapping(samples, mapped);
 
 			bs.evaluate_bases(samples, tmp);
@@ -378,7 +378,7 @@ namespace polyfem
 		}
 	}
 
-	double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement, const std::vector< LocalBoundary > &local_neumann_boundary, const double t) const
+	double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement, const std::vector< LocalBoundary > &local_neumann_boundary, const int resolution, const double t) const
 	{
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
 
@@ -389,7 +389,6 @@ namespace polyfem
         ElementAssemblyValues vals;
 		for(int e = 0; e < n_bases; ++e)
 		{
-			
 			vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
 
 			const Quadrature &quadrature = vals.quadrature;
@@ -431,7 +430,7 @@ namespace polyfem
 		for(const auto &lb : local_neumann_boundary)
 		{
 			const int e = lb.element_id();
-			bool has_samples = boundary_quadrature(lb, 4, false, points, weights, global_primitive_ids);
+			bool has_samples = boundary_quadrature(lb, resolution, false, points, weights, global_primitive_ids);
 
 			if(!has_samples)
 				continue;
