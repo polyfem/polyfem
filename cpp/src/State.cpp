@@ -198,6 +198,7 @@ namespace polyfem
 		j["mat_size"] = mat_size;
 		j["solver_type"] = args["solver_type"];
 		j["precond_type"] = args["precond_type"];
+		j["line_search"] = args["line_search"];
 		j["params"] = args["params"];
 
 		j["refinenemt_location"] = args["refinenemt_location"];
@@ -301,14 +302,14 @@ namespace polyfem
 
 	double get_opt_p(bool h1_formula, double B,
 		double h_ref, int p_ref, double rho_ref,
-		double h, double rho)
+		double h, double rho, int p_max)
 	{
 		const double ptmp = h1_formula ?
 		(std::log(B*std::pow(h_ref, p_ref + 1)*rho     / (h *rho_ref))            /std::log(h)):
 		(std::log(B*std::pow(h_ref, p_ref + 2)*rho*rho / (h * h *rho_ref*rho_ref))/std::log(h));
 
 		// std::cout<<ptmp<<std::endl;
-		return std::min(std::max(p_ref, (int)std::round(ptmp)), autogen::MAX_P_BASES);
+		return std::min(std::max(p_ref, (int)std::round(ptmp)), p_max);
 	}
 
 	void State::p_refinement(const Mesh2D &mesh2d)
@@ -325,6 +326,7 @@ namespace polyfem
 		const bool h1_formula = args["h1_formula"];
 		const int p_ref = args["discr_order"];
 		const double rho_ref =  sqrt(3.0)/6.0*h_ref;
+		const int p_max = args["discr_order_max"];
 
 		// std::cout<<"h_ref "<<h_ref<<std::endl;
 		// std::cout<<"edges "<<tmp.rowwise().norm()<<std::endl;
@@ -367,7 +369,7 @@ namespace polyfem
 			// const double ptmp = std::log(B*std::pow(h_ref, p_ref + 2)*rho*rho / (hp *hp *rho_ref*rho_ref))/std::log(hp);
 
 			// const int p = std::min(std::max(p_ref, (int)std::round(ptmp)), autogen::MAX_P_BASES);
-			const int p = get_opt_p(h1_formula, B, h_ref, p_ref, rho_ref, hp, rho);
+			const int p = get_opt_p(h1_formula, B, h_ref, p_ref, rho_ref, hp, rho, p_max);
 
 			if(p > disc_orders[f])
 				disc_orders[f] = p;
@@ -414,6 +416,7 @@ namespace polyfem
 		const bool h1_formula = args["h1_formula"];
 		const int p_ref = args["discr_order"];
 		const double rho_ref = sqrt(6.)/12.*h_ref;
+		const int p_max = args["discr_order_max"];
 
 		for(int c = 0; c < mesh3d.n_cells(); ++c)
 		{
@@ -452,7 +455,7 @@ namespace polyfem
 			// const double ptmp = std::log(B*std::pow(h_ref, p_ref + 2)*rho*rho / (hp *hp *rho_ref*rho_ref))/std::log(hp);
 			// 0.5 * (-4*power*std::log(hp) + (2*p_ref+2) * std::log(h) + 2*power*std::log(rho) + 3*std::log(2) + std::log(3) + 2*std::log(B)) / std::log(hp);
 			// const int p = std::min(std::max(p_ref, (int)std::round(ptmp)), autogen::MAX_P_BASES);
-			const int p = get_opt_p(h1_formula, B, h_ref, p_ref, rho_ref, hp, rho);
+			const int p = get_opt_p(h1_formula, B, h_ref, p_ref, rho_ref, hp, rho, p_max);
 
 
 			if(p > disc_orders[c])
@@ -1709,6 +1712,7 @@ namespace polyfem
 					// }
 
 					cppoptlib::SparseNewtonDescentSolver<NLProblem> solver(true);
+					solver.setLineSearch(args["line_search"]);
 					solver.minimize(nl_problem, tmp_sol);
 					solver.getInfo(solver_info);
 					std::cout<<n<<"/"<<steps<<std::endl;
@@ -1916,6 +1920,7 @@ namespace polyfem
 
 			{"quadrature_order", 4},
 			{"discr_order", 1},
+			{"discr_order_max", autogen::MAX_P_BASES},
 			{"pressure_discr_order", 1},
 			{"use_p_ref", false},
 			{"use_spline", false},
@@ -1930,6 +1935,7 @@ namespace polyfem
 			{"precond_type", LinearSolver::defaultPrecond()},
 
 			{"solver_params", json({})},
+			{"line_search", "armijo"},
 			{"nl_solver_rhs_steps", 10},
 			{"save_solve_sequence", false},
 

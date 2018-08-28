@@ -33,6 +33,13 @@ namespace cppoptlib {
 		using typename Superclass::TVector;
 		typedef Eigen::SparseMatrix<double> THessian;
 
+		enum class LineSearch {
+			Armijo,
+			ArmijoAlt,
+			Bisection,
+			MoreThuente,
+		};
+
 		SparseNewtonDescentSolver(const bool verbose)
 		: verbose(verbose)
 		{
@@ -43,6 +50,22 @@ namespace cppoptlib {
 			this->setStopCriteria(criteria);
 		}
 
+		void setLineSearch(const std::string &name) {
+			if (name ==  "armijo") {
+				line_search = LineSearch::Armijo;
+			} else if (name == "armijo_alt") {
+				line_search = LineSearch::ArmijoAlt;
+			} else if (name == "bisection") {
+				line_search = LineSearch::Bisection;
+			} else if (name == "more_thuente") {
+				line_search = LineSearch::MoreThuente;
+			} else {
+				throw std::invalid_argument("[SparseNewtonDescentSolver] Unknown line search.");
+			}
+			if(verbose)
+				std::cout<<"\tline search "<<name<<std::endl;
+			solver_info["line_search"] = name;
+		}
 
 		double armijo_linesearch(const TVector &x, const TVector &searchDir, ProblemType &objFunc, const double alpha_init = 1.0)
 		{
@@ -115,9 +138,6 @@ namespace cppoptlib {
 			THessian id(reduced_size, reduced_size);
 			id.setIdentity();
 
-			Eigen::Vector4d spectrum;
-			spectrum.setZero();
-
 			TVector grad = TVector::Zero(reduced_size);
 			// TVector full_grad;
 
@@ -137,6 +157,7 @@ namespace cppoptlib {
 			size_t next_hessian = 0;
 			double factor = 1e-5;
 			double old_energy = std::nan("");
+			double first_energy = std::nan("");
 			do
 			{
 				time.start();
@@ -160,10 +181,6 @@ namespace cppoptlib {
 					if(verbose)
 						std::cout<<"\tassembly time "<<time.getElapsedTimeInSec()<<std::endl;
 					assembly_time += time.getElapsedTimeInSec();
-
-					if (verbose) {
-						// spectrum = compute_specturm(hessian);
-					}
 
 					next_hessian += 5;
 				}
@@ -191,10 +208,21 @@ namespace cppoptlib {
 
 				time.start();
 
-				// const double rate = Armijo<ProblemType, 1>::linesearch(x0, delta_x, objFunc);
-				const double rate = MoreThuente<ProblemType, 1>::linesearch(x0, delta_x, objFunc);
-				// const double rate = armijo_linesearch(x0, delta_x, objFunc);
-				// const double rate = linesearch(x0, delta_x, objFunc);
+				double rate;
+				switch (line_search) {
+					case LineSearch::Armijo:
+						rate = armijo_linesearch(x0, delta_x, objFunc);
+						break;
+					case LineSearch::ArmijoAlt:
+						rate = Armijo<ProblemType, 1>::linesearch(x0, delta_x, objFunc);
+						break;
+					case LineSearch::Bisection:
+						rate = linesearch(x0, delta_x, objFunc);
+						break;
+					case LineSearch::MoreThuente:
+						rate = MoreThuente<ProblemType, 1>::linesearch(x0, delta_x, objFunc);
+						break;
+				}
 
 				x0 += rate * delta_x;
 
@@ -204,16 +232,16 @@ namespace cppoptlib {
 				linesearch_time += time.getElapsedTimeInSec();
 
 
-
 				++this->m_current.iterations;
 
 				const double energy = objFunc.value(x0);
 				const double step = (rate * delta_x).norm();
 
-				this->m_current.fDelta = std::abs(old_energy - energy);
+				this->m_current.fDelta = std::abs(old_energy - energy) / std::abs(first_energy);
 				this->m_current.gradNorm = grad.norm();
 				this->m_status = checkConvergence(this->m_stop, this->m_current);
 				old_energy = energy;
+				if (std::isnan(first_energy)) { first_energy = energy; }
 
 				if(std::isnan(energy))
 				{
@@ -277,6 +305,8 @@ namespace cppoptlib {
 		const bool verbose;
 		json solver_info;
 		json internal_solver = json::array();
+
+		LineSearch line_search = LineSearch::Armijo;
 
 		double grad_time;
 		double assembly_time;
