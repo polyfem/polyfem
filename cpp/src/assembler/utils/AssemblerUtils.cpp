@@ -104,11 +104,11 @@ namespace polyfem
 		const Eigen::MatrixXd &displacement) const
 	{
 		if(assembler == "SaintVenant")
-			return saint_venant_elasticity_.compute_energy(is_volume, bases, gbases, displacement);
+			return saint_venant_elasticity_.assemble(is_volume, bases, gbases, displacement);
 		else if(assembler == "NeoHookean")
-			return neo_hookean_elasticity_.compute_energy(is_volume, bases, gbases, displacement);
+			return neo_hookean_elasticity_.assemble(is_volume, bases, gbases, displacement);
 		else if(assembler == "Ogden")
-			return ogden_elasticity_.compute_energy(is_volume, bases, gbases, displacement);
+			return ogden_elasticity_.assemble(is_volume, bases, gbases, displacement);
 		else
 			return 0;
 	}
@@ -122,11 +122,11 @@ namespace polyfem
 		Eigen::MatrixXd &grad) const
 	{
 		if(assembler == "SaintVenant")
-			saint_venant_elasticity_.assemble(is_volume, n_basis, bases, gbases, displacement, grad);
+			saint_venant_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, grad);
 		else if(assembler == "NeoHookean")
-			neo_hookean_elasticity_.assemble(is_volume, n_basis, bases, gbases, displacement, grad);
+			neo_hookean_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, grad);
 		else if(assembler == "Ogden")
-			ogden_elasticity_.assemble(is_volume, n_basis, bases, gbases, displacement, grad);
+			ogden_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, grad);
 		else
 			return;
 	}
@@ -140,11 +140,11 @@ namespace polyfem
 		Eigen::SparseMatrix<double> &hessian) const
 	{
 		if(assembler == "SaintVenant")
-			saint_venant_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, hessian);
+			saint_venant_elasticity_.assemble_hessian(is_volume, n_basis, bases, gbases, displacement, hessian);
 		else if(assembler == "NeoHookean")
-			neo_hookean_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, hessian);
+			neo_hookean_elasticity_.assemble_hessian(is_volume, n_basis, bases, gbases, displacement, hessian);
 		else if(assembler == "Ogden")
-			ogden_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, hessian);
+			ogden_elasticity_.assemble_hessian(is_volume, n_basis, bases, gbases, displacement, hessian);
 		else
 			return;
 	}

@@ -1,19 +1,42 @@
 #include <polyfem/RhsAssembler.hpp>
 
 #include <polyfem/BoundarySampler.hpp>
-
 #include <polyfem/LinearSolver.hpp>
+// #include <polyfem/UIState.hpp>
 
 #include <Eigen/Sparse>
+
+
+
+
+#ifdef USE_TBB
+#include <tbb/parallel_for.h>
+#include <tbb/task_scheduler_init.h>
+#include <tbb/enumerable_thread_specific.h>
+#endif
+
 
 #include <iostream>
 #include <map>
 #include <memory>
 
-#include <polyfem/UIState.hpp>
-
 namespace polyfem
 {
+	namespace
+	{
+		class LocalThreadScalarStorage
+		{
+		public:
+			double val;
+            ElementAssemblyValues vals;
+
+			LocalThreadScalarStorage()
+			{
+				val = 0;
+			}
+		};
+	}
+
 	RhsAssembler::RhsAssembler(const Mesh &mesh, const int n_basis, const int size, const std::vector< ElementBases > &bases, const std::vector< ElementBases > &gbases, const std::string &formulation, const Problem &problem)
 	: mesh_(mesh), n_basis_(n_basis), size_(size), bases_(bases), gbases_(gbases), formulation_(formulation), problem_(problem)
 	{ }
@@ -385,10 +408,23 @@ namespace polyfem
 		double res = 0;
 		Eigen::MatrixXd forces;
 
+#ifdef USE_TBB
+		typedef tbb::enumerable_thread_specific< LocalThreadScalarStorage > LocalStorage;
+		LocalStorage storages((LocalThreadScalarStorage()));
+#else
+		LocalThreadScalarStorage loc_storage;
+#endif
+
 		const int n_bases = int(bases_.size());
-        ElementAssemblyValues vals;
-		for(int e = 0; e < n_bases; ++e)
-		{
+
+#ifdef USE_TBB
+		tbb::parallel_for( tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
+		LocalStorage::reference loc_storage = storages.local();
+		for (int e = r.begin(); e != r.end(); ++e) {
+#else
+		for(int e=0; e < n_bases; ++e) {
+#endif
+			ElementAssemblyValues &vals = loc_storage.vals;
 			vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
 
 			const Quadrature &quadrature = vals.quadrature;
@@ -419,10 +455,26 @@ namespace polyfem
 				}
 
 				for(int d = 0; d < size_; ++d)
-					res += forces(p, d) * local_displacement(d) * da(p);
+					loc_storage.val += forces(p, d) * local_displacement(d) * da(p);
+					// res += forces(p, d) * local_displacement(d) * da(p);
 			}
+#ifdef USE_TBB
+		}});
+#else
 		}
+#endif
 
+#ifdef USE_TBB
+	for (LocalStorage::iterator i = storages.begin(); i != storages.end();  ++i)
+	{
+		res += i->val;
+	}
+#else
+		res = loc_storage.val;
+#endif
+
+
+		ElementAssemblyValues vals;
 		//Neumann
 		Eigen::MatrixXd points;
 		Eigen::VectorXd weights;

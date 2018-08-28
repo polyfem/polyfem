@@ -322,7 +322,7 @@ namespace polyfem
 
 
 	template<class LocalAssembler>
-	void NLAssembler<LocalAssembler>::assemble(
+	void NLAssembler<LocalAssembler>::assemble_grad(
 		const bool is_volume,
 		const int n_basis,
 		const std::vector< ElementBases > &bases,
@@ -407,7 +407,7 @@ namespace polyfem
 
 
 	template<class LocalAssembler>
-	void NLAssembler<LocalAssembler>::assemble_grad(
+	void NLAssembler<LocalAssembler>::assemble_hessian(
 		const bool is_volume,
 		const int n_basis,
 		const std::vector< ElementBases > &bases,
@@ -457,7 +457,8 @@ namespace polyfem
 			{
 				const auto &global_i = vals.basis_values[i].global;
 
-				for(int j = 0; j < n_loc_bases; ++j)
+				// for(int j = 0; j < n_loc_bases; ++j)
+				for(int j = 0; j <= i; ++j)
 				{
 					const auto &global_j = vals.basis_values[j].global;
 
@@ -466,8 +467,7 @@ namespace polyfem
 						for(int m = 0; m < local_assembler_.size(); ++m)
 						{
 							const double local_value = stiffness_val(i*local_assembler_.size() + m, j*local_assembler_.size() + n);
-							// if (!use_sparse_cached && std::abs(local_value) < 1e-30) { continue; }
-
+							if (std::abs(local_value) < 1e-30) { continue; }
 
 							for(size_t ii = 0; ii < global_i.size(); ++ii)
 							{
@@ -482,6 +482,9 @@ namespace polyfem
 									// std::cout<< gi <<"," <<gj<<" -> "<<local_value<<std::endl;
 
 									loc_storage.entries.emplace_back(gi, gj, local_value * wi * wj);
+									if (j < i) {
+										loc_storage.entries.emplace_back(gj, gi, local_value * wj * wi);
+									}
 
 									if(loc_storage.entries.size() >= 1e8)
 									{
@@ -526,7 +529,7 @@ namespace polyfem
 	}
 
 	template<class LocalAssembler>
-	double NLAssembler<LocalAssembler>::compute_energy(
+	double NLAssembler<LocalAssembler>::assemble(
 		const bool is_volume,
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,

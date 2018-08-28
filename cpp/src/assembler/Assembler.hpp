@@ -57,7 +57,7 @@ namespace polyfem
 	class NLAssembler
 	{
 	public:
-		void assemble(
+		void assemble_grad(
 			const bool is_volume,
 			const int n_basis,
 			const std::vector< ElementBases > &bases,
@@ -65,7 +65,7 @@ namespace polyfem
 			const Eigen::MatrixXd &displacement,
 			Eigen::MatrixXd &rhs) const;
 
-		void assemble_grad(
+		void assemble_hessian(
 			const bool is_volume,
 			const int n_basis,
 			const std::vector< ElementBases > &bases,
@@ -73,7 +73,7 @@ namespace polyfem
 			const Eigen::MatrixXd &displacement,
 			Eigen::SparseMatrix<double> &grad) const;
 
-		double compute_energy(
+		double assemble(
 			const bool is_volume,
 			const std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
