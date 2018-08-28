@@ -12,7 +12,6 @@
 #include <Eigen/Sparse>
 
 #include <cppoptlib/problem.h>
-#include <cppoptlib/solver/lbfgssolver.h>
 #include <cppoptlib/solver/isolver.h>
 #include <cppoptlib/linesearch/armijo.h>
 #include <cppoptlib/linesearch/morethuente.h>
@@ -254,7 +253,7 @@ namespace cppoptlib {
 					if(new_hessian)
 					{
 						this->m_status = Status::UserDefined;
-						std::cerr<<"stopping because ||step||=" << step << " is too small"<<std::endl;
+						std::cerr<<"stopping because ‖step‖=" << step << " is too small"<<std::endl;
 					}
 					else
 					{
