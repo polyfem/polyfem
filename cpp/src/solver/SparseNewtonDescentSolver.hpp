@@ -36,6 +36,7 @@ namespace cppoptlib {
 		: verbose(verbose)
 		{
 			auto criteria = this->criteria();
+			criteria.fDelta = 1e-9;
 			criteria.gradNorm = 1e-9;
 			criteria.iterations = 100;
 			this->setStopCriteria(criteria);
@@ -225,8 +226,10 @@ namespace cppoptlib {
 					}
 				}
 
-				if(verbose)
+				if(verbose) {
 					std::cout << "\titer: "<<this->m_current.iterations <<", rate = "<< rate << ", f = " <<  energy << ", ‖g‖_2 "<< this->m_current.gradNorm <<", ‖step‖ "<< step << ", rate "<< rate <<" dot " << delta_x.dot(grad)/grad.norm() << std::endl;
+					std::cout << this->criteria() << std::endl;
+				}
 			}
 			while (objFunc.callback(this->m_current, x0) && (this->m_status == Status::Continue));
 
