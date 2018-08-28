@@ -34,8 +34,11 @@ namespace polyfem
 		Eigen::MatrixXd full;
 		reduced_to_full(x, full);
 
-		const double elastic_energy = assembler.assemble_energy(rhs_assembler.formulation(), State::state().mesh->is_volume(), State::state().bases, State::state().bases, full);
-		const double body_energy 	= rhs_assembler.compute_energy(full, State::state().local_neumann_boundary, t);
+		const auto &state = State::state();
+		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
+
+		const double elastic_energy = assembler.assemble_energy(rhs_assembler.formulation(), state.mesh->is_volume(), state.bases, gbases, full);
+		const double body_energy 	= rhs_assembler.compute_energy(full, state.local_neumann_boundary, state.args["n_boundary_samples"], t);
 
 		return elastic_energy + body_energy;
 	}
@@ -45,9 +48,10 @@ namespace polyfem
 
 		Eigen::MatrixXd full;
 		reduced_to_full(x, full);
+		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 
 		Eigen::MatrixXd grad;
-		assembler.assemble_energy_gradient(rhs_assembler.formulation(), State::state().mesh->is_volume(), State::state().n_bases, State::state().bases, State::state().bases, full, grad);
+		assembler.assemble_energy_gradient(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, full, grad);
 		if(!rhs_computed)
 		{
 			rhs_assembler.compute_energy_grad(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, state.rhs, t, current_rhs);
@@ -59,11 +63,14 @@ namespace polyfem
 	}
 
 	void NLProblem::hessian(const TVector &x, THessian &hessian) {
+		const auto &state = State::state();
 		Eigen::MatrixXd full;
 		reduced_to_full(x, full);
 
+		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
+
 		Eigen::SparseMatrix<double> tmp;
-		assembler.assemble_energy_hessian(rhs_assembler.formulation(), State::state().mesh->is_volume(), State::state().n_bases, State::state().bases, State::state().bases, full, tmp);
+		assembler.assemble_energy_hessian(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, full, tmp);
 		// Eigen::saveMarket(tmp, "tmp.mat");
 		// exit(0);
 
