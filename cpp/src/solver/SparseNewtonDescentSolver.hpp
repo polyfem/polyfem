@@ -15,6 +15,8 @@
 #include <cppoptlib/solver/lbfgssolver.h>
 #include <cppoptlib/solver/isolver.h>
 #include <cppoptlib/linesearch/armijo.h>
+#include <cppoptlib/linesearch/morethuente.h>
+
 
 #include <cmath>
 
@@ -160,7 +162,7 @@ namespace cppoptlib {
 					assembly_time += time.getElapsedTimeInSec();
 
 					if (verbose) {
-						spectrum = compute_specturm(hessian);
+						// spectrum = compute_specturm(hessian);
 					}
 
 					next_hessian += 5;
@@ -190,7 +192,8 @@ namespace cppoptlib {
 				time.start();
 
 				// const double rate = Armijo<ProblemType, 1>::linesearch(x0, delta_x, objFunc);
-				const double rate = armijo_linesearch(x0, delta_x, objFunc);
+				const double rate = MoreThuente<ProblemType, 1>::linesearch(x0, delta_x, objFunc);
+				// const double rate = armijo_linesearch(x0, delta_x, objFunc);
 				// const double rate = linesearch(x0, delta_x, objFunc);
 
 				x0 += rate * delta_x;
@@ -236,7 +239,7 @@ namespace cppoptlib {
 				if(verbose) {
 					tfm::printf("\titer: %s, f = %s, ‖g‖_2 = %s, rate = %s, ‖step‖ = %s, dot = %s\n",
 						this->m_current.iterations, energy, this->m_current.gradNorm, rate, step, delta_x.dot(grad)/grad.norm());
-					tfm::printf("\tspectrum: %s (%s)\n", spectrum(3) / spectrum(0), spectrum.transpose());
+					// tfm::printf("\tspectrum: %s (%s)\n", spectrum(3) / spectrum(0), spectrum.transpose());
 					std::cout << this->criteria() << std::endl;
 				}
 			}
