@@ -68,6 +68,10 @@ namespace polyfem
 		std::vector<Edge> edges;
 		std::vector<Face> faces;
 		std::vector<Element> elements;
+		
+		Eigen::MatrixXi EV;//EV(2, ne)
+		Eigen::MatrixXi FV, FE, FH, FHi;//FV (3, nf), FE(3, nf), FH (2, nf), FHi(2, nf)
+		Eigen::MatrixXi HV, HF;//HV(4, nh), HE(6, nh), HF(4, nh)
 	};
 
 	struct Mesh_Quality

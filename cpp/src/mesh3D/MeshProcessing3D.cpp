@@ -302,6 +302,54 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi) {
 		else hmi.elements[i].vs = vs;
 		for (uint32_t j = 0; j < hmi.elements[i].vs.size(); j++) hmi.vertices[hmi.elements[i].vs[j]].neighbor_hs.push_back(i);
 	}
+	//matrix representation of tet mesh
+	if(hmi.type == MeshType::Tet){
+		hmi.EV.resize(2, hmi.edges.size());
+		for(const auto &e:hmi.edges){
+			hmi.EV(0, e.id) = e.vs[0];
+			hmi.EV(1, e.id) = e.vs[1];
+		}
+		hmi.FV.resize(3, hmi.faces.size());
+		hmi.FE.resize(3, hmi.faces.size());
+		hmi.FH.resize(2, hmi.faces.size());
+		hmi.FHi.resize(2, hmi.faces.size());
+		for(const auto&f:hmi.faces){
+			hmi.FV(0, f.id) = f.vs[0];
+			hmi.FV(1, f.id) = f.vs[1];
+			hmi.FV(2, f.id) = f.vs[2];
+		
+			hmi.FE(0, f.id) = f.es[0];
+			hmi.FE(1, f.id) = f.es[1];
+			hmi.FE(2, f.id) = f.es[2];
+			
+			hmi.FH(0, f.id) = f.neighbor_hs[0];
+			for(int i=0;i<hmi.elements[f.neighbor_hs[0]].fs.size();i++)
+				if(f.id == hmi.elements[f.neighbor_hs[0]].fs[i])
+					hmi.FHi(0, f.id) = i;
+
+			hmi.FH(1, f.id) = -1;
+			hmi.FHi(1, f.id) = -1;
+			if(f.neighbor_hs.size()==2){
+				hmi.FH(1, f.id) = f.neighbor_hs[1];
+				for(int i=0;i<hmi.elements[f.neighbor_hs[1]].fs.size();i++)
+					if(f.id == hmi.elements[f.neighbor_hs[1]].fs[i])
+						hmi.FHi(1, f.id) = i;
+			}
+		}
+		hmi.HV.resize(4, hmi.elements.size());
+		hmi.HF.resize(4, hmi.elements.size());
+		for(const auto&h:hmi.elements){
+			hmi.HV(0, h.id) = h.vs[0];
+			hmi.HV(1, h.id) = h.vs[1];
+			hmi.HV(2, h.id) = h.vs[2];
+			hmi.HV(3, h.id) = h.vs[3];
+		
+			hmi.HF(0, h.id) = h.fs[0];
+			hmi.HF(1, h.id) = h.fs[1];
+			hmi.HF(2, h.id) = h.fs[2];
+			hmi.HF(3, h.id) = h.fs[3];
+		}
+	}
 
 	//boundary flags for hybrid mesh
 	std::vector<bool> bv_flag(hmi.vertices.size(), false), be_flag(hmi.edges.size(), false), bf_flag(hmi.faces.size(), false);
