@@ -1,5 +1,6 @@
 #include <polyfem/Navigation3D.hpp>
-#include <igl/Timer.h>
+
+// #include <igl/Timer.h>
 #include <algorithm>
 #include <iterator>
 #include <set>
@@ -10,11 +11,11 @@ using namespace polyfem;
 using namespace std;
 
 
-double polyfem::Navigation3D::get_index_from_element_face_time;
-double polyfem::Navigation3D::switch_vertex_time;
-double polyfem::Navigation3D::switch_edge_time;
-double polyfem::Navigation3D::switch_face_time;
-double polyfem::Navigation3D::switch_element_time;
+// double polyfem::Navigation3D::get_index_from_element_face_time;
+// double polyfem::Navigation3D::switch_vertex_time;
+// double polyfem::Navigation3D::switch_edge_time;
+// double polyfem::Navigation3D::switch_face_time;
+// double polyfem::Navigation3D::switch_element_time;
 
 void polyfem::Navigation3D::prepare_mesh(Mesh3DStorage &M) {
 	if (M.type != MeshType::Tet)M.type = MeshType::Hyb;
@@ -25,7 +26,7 @@ void polyfem::Navigation3D::prepare_mesh(Mesh3DStorage &M) {
 
 polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_face(const Mesh3DStorage &M, int hi)
 {
-	igl::Timer timer; timer.start();
+	// igl::Timer timer; timer.start();
 
 	Index idx;
 	if(M.type == MeshType::Tet){
@@ -36,7 +37,7 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_face(
 		idx.vertex = M.FV(0, idx.face);
 		idx.edge = M.FE(0, idx.face);
 
-		get_index_from_element_face_time += timer.getElapsedTime();
+		// get_index_from_element_face_time += timer.getElapsedTime();
 	}
 	else if (M.elements[hi].hex) {
 		 idx.element = hi;
@@ -69,7 +70,7 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_face(
 		int num=1;
 		MeshProcessing3D::set_intersection_own(ves0, ves1,sharedes, num);
 		idx.edge = sharedes[0];
-		get_index_from_element_face_time += timer.getElapsedTime();
+		// get_index_from_element_face_time += timer.getElapsedTime();
 	}
 	else {
 		idx = get_index_from_element_face(M, hi, 0, 0);
@@ -80,7 +81,7 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_face(
 
 polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_face(const Mesh3DStorage &M, int hi, int lf, int lv)
 {
-	igl::Timer timer; timer.start();
+	// igl::Timer timer; timer.start();
 	Index idx;
 
 	if (hi >= M.elements.size()) hi = hi % M.elements.size();
@@ -98,7 +99,7 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_face(
 	idx.edge = M.faces[idx.face].es[idx.face_corner];
 
 	//timer.stop();
-	get_index_from_element_face_time += timer.getElapsedTime();
+	// get_index_from_element_face_time += timer.getElapsedTime();
 
 	return idx;
 }
@@ -202,7 +203,7 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_tri(c
 }
 // Navigation in a surface mesh
 polyfem::Navigation3D::Index polyfem::Navigation3D::switch_vertex(const Mesh3DStorage &M, Index idx) {
-	igl::Timer timer; timer.start();
+	// igl::Timer timer; timer.start();
 
 	if(M.type == MeshType::Tet){
 		if(idx.vertex == M.EV(0, idx.edge)) idx.vertex = M.EV(1, idx.edge);
@@ -220,12 +221,12 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::switch_vertex(const Mesh3DSt
 		if(M.faces[idx.face].vs[corner1] == idx.vertex) idx.face_corner = corner1;
 		else if(M.faces[idx.face].vs[corner_1] == idx.vertex) idx.face_corner = corner_1;
 	}
-	switch_vertex_time += timer.getElapsedTime();
+	// switch_vertex_time += timer.getElapsedTime();
 	return idx;
 }
 
 polyfem::Navigation3D::Index polyfem::Navigation3D::switch_edge(const Mesh3DStorage &M, Index idx) {
-	igl::Timer timer; timer.start();
+	// igl::Timer timer; timer.start();
 
 	if(M.type == MeshType::Tet){
 		if(idx.edge == M.FE(idx.face_corner, idx.face)) idx.edge = M.FE((idx.face_corner +2)%3,idx.face);
@@ -235,12 +236,12 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::switch_edge(const Mesh3DStor
 		if(idx.edge == M.faces[idx.face].es[idx.face_corner]) idx.edge = M.faces[idx.face].es[(idx.face_corner-1+n)%n];
 		else idx.edge = M.faces[idx.face].es[idx.face_corner];
 	}
-	switch_edge_time += timer.getElapsedTime();
+	// switch_edge_time += timer.getElapsedTime();
 	return idx;
 }
 
 polyfem::Navigation3D::Index polyfem::Navigation3D::switch_face(const Mesh3DStorage &M, Index idx) {
-	igl::Timer timer; timer.start();
+	// igl::Timer timer; timer.start();
 	if(M.type == MeshType::Tet){
 		for(int i=0;i<4;i++){
 			const auto & fid = M.HF(i,idx.element);
@@ -267,13 +268,13 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::switch_face(const Mesh3DStor
 		for(int i=0;i<fvs.size();i++) if(idx.vertex == fvs[i]){idx.face_corner=i; break;}
 	}
 
-	switch_face_time += timer.getElapsedTime();
+	// switch_face_time += timer.getElapsedTime();
 
 	return idx;
 }
 
 polyfem::Navigation3D::Index polyfem::Navigation3D::switch_element(const Mesh3DStorage &M, Index idx) {
-	igl::Timer timer; timer.start();
+	// igl::Timer timer; timer.start();
 
 	if(M.type == MeshType::Tet){
 		if(M.FH(1, idx.face) == -1){
@@ -306,6 +307,6 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::switch_element(const Mesh3DS
 		// for(int i=0;i<fvs.size();i++) if(idx.vertex == fvs[i]){idx.face_corner=i; break;}
 	}
 
-	switch_element_time += timer.getElapsedTime();
+	// switch_element_time += timer.getElapsedTime();
 	return idx;
 }

@@ -32,6 +32,7 @@ namespace polyfem
 			Eigen::SparseMatrix<double> tmp_mat;
 			Eigen::SparseMatrix<double> stiffness;
             ElementAssemblyValues vals;
+            QuadratureVector da;
 
 			LocalThreadMatStorage(const int buffer_size, const int rows, const int cols)
 			{
@@ -46,6 +47,7 @@ namespace polyfem
 		public:
 			Eigen::MatrixXd vec;
             ElementAssemblyValues vals;
+            QuadratureVector da;
 
 			LocalThreadVecStorage(const int size)
 			{
@@ -59,6 +61,7 @@ namespace polyfem
 		public:
 			double val;
             ElementAssemblyValues vals;
+            QuadratureVector da;
 
 			LocalThreadScalarStorage()
 			{
@@ -104,7 +107,7 @@ namespace polyfem
 			const Quadrature &quadrature = vals.quadrature;
 
 			assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
-			const QuadratureVector da = vals.det.array() * quadrature.weights.array();
+			loc_storage.da = vals.det.array() * quadrature.weights.array();
 			const int n_loc_bases = int(vals.basis_values.size());
 
 			for(int i = 0; i < n_loc_bases; ++i)
@@ -119,7 +122,7 @@ namespace polyfem
 					// const Eigen::MatrixXd &gradj = values_j.grad_t_m;
 					const auto &global_j = vals.basis_values[j].global;
 
-					const auto stiffness_val = local_assembler_.assemble(vals, i, j, da);
+					const auto stiffness_val = local_assembler_.assemble(vals, i, j, loc_storage.da);
 					assert(stiffness_val.size() == local_assembler_.size() * local_assembler_.size());
 
 					igl::Timer t1; t1.start();
@@ -237,7 +240,7 @@ namespace polyfem
 			const Quadrature &quadrature = phi_vals.quadrature;
 
 			assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
-			const QuadratureVector da = phi_vals.det.array() * quadrature.weights.array();
+			loc_storage.da = phi_vals.det.array() * quadrature.weights.array();
 			const int n_phi_loc_bases = int(phi_vals.basis_values.size());
 			const int n_psi_loc_bases = int(psi_vals.basis_values.size());
 
@@ -249,7 +252,7 @@ namespace polyfem
 				{
 					const auto &global_j = phi_vals.basis_values[j].global;
 
-					const auto stiffness_val = local_assembler_.assemble(psi_vals, phi_vals, i, j, da);
+					const auto stiffness_val = local_assembler_.assemble(psi_vals, phi_vals, i, j, loc_storage.da);
 					assert(stiffness_val.size() == local_assembler_.rows() * local_assembler_.cols());
 
 					igl::Timer t1; t1.start();
@@ -358,9 +361,9 @@ namespace polyfem
 			const Quadrature &quadrature = vals.quadrature;
 
 			assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
-			const QuadratureVector da = vals.det.array() * quadrature.weights.array();
+			loc_storage.da = vals.det.array() * quadrature.weights.array();
 			const int n_loc_bases = int(vals.basis_values.size());
-			const auto val = local_assembler_.assemble(vals, displacement, da);
+			const auto val = local_assembler_.assemble(vals, displacement, loc_storage.da);
 			assert(val.size() == n_loc_bases*local_assembler_.size());
 
 			for(int j = 0; j < n_loc_bases; ++j)
@@ -444,10 +447,10 @@ namespace polyfem
 			const Quadrature &quadrature = vals.quadrature;
 
 			assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
-			const QuadratureVector da = vals.det.array() * quadrature.weights.array();
+			loc_storage.da = vals.det.array() * quadrature.weights.array();
 			const int n_loc_bases = int(vals.basis_values.size());
 
-			const auto stiffness_val = local_assembler_.assemble_grad(vals, displacement, da);
+			const auto stiffness_val = local_assembler_.assemble_grad(vals, displacement, loc_storage.da);
 			assert(stiffness_val.rows() == n_loc_bases * local_assembler_.size());
 			assert(stiffness_val.cols() == n_loc_bases * local_assembler_.size());
 
@@ -558,9 +561,9 @@ namespace polyfem
 			const Quadrature &quadrature = vals.quadrature;
 
 			assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
-			const QuadratureVector da = vals.det.array() * quadrature.weights.array();
+			loc_storage.da = vals.det.array() * quadrature.weights.array();
 
-			const double val = local_assembler_.compute_energy(vals, displacement, da);
+			const double val = local_assembler_.compute_energy(vals, displacement, loc_storage.da);
 			loc_storage.val += val;
 #ifdef USE_TBB
 		}});
