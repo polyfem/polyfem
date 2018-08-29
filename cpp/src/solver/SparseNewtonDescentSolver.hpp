@@ -236,7 +236,7 @@ namespace cppoptlib {
 				const double energy = objFunc.value(x0);
 				const double step = (rate * delta_x).norm();
 
-				this->m_current.fDelta = std::abs(old_energy - energy) / std::abs(first_energy);
+				this->m_current.fDelta = 1; //std::abs(old_energy - energy) / std::abs(old_energy);
 				this->m_current.gradNorm = grad.norm();
 				this->m_status = checkConvergence(this->m_stop, this->m_current);
 				old_energy = energy;

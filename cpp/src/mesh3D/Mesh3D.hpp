@@ -72,8 +72,9 @@ namespace polyfem
 		//navigation wrapper
 		Navigation3D::Index get_index_from_element(int hi, int lf, int lv) const { return Navigation3D::get_index_from_element_face(mesh_, hi, lf, lv); }
 		Navigation3D::Index get_index_from_element(int hi) const { return Navigation3D::get_index_from_element_face(mesh_, hi); }
-		//Navigation3D::Index get_index_from_element(int hi, int v0, int v1, bool is_edge) const { return Navigation3D::get_index_from_element_edge(mesh_, hi, v0, v1); }
-		Navigation3D::Index get_index_from_element(int hi, int v0, int v1, int v2) const { return Navigation3D::get_index_from_element_tri(mesh_, hi, v0, v1, v2); }
+
+		Navigation3D::Index get_index_from_element_edge(int hi, int v0, int v1) const { return Navigation3D::get_index_from_element_edge(mesh_, hi, v0, v1); }
+		Navigation3D::Index get_index_from_element_face(int hi, int v0, int v1, int v2) const { return Navigation3D::get_index_from_element_tri(mesh_, hi, v0, v1, v2); }
 		
 
 		inline std::vector<uint32_t> vertex_neighs(const int v_gid) const {return mesh_.vertices[v_gid].neighbor_hs; }

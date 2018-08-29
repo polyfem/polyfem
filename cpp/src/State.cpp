@@ -1887,7 +1887,7 @@ namespace polyfem
 		std::cout << "-- H1 semi error: " << h1_semi_err << std::endl;
 		// std::cout << "-- Perd norm: " << pred_norm << std::endl;
 
-		std::cout << "\n --Linf error: " << linf_err << std::endl;
+		std::cout << "\n-- Linf error: " << linf_err << std::endl;
 		std::cout << "-- grad max error: " << grad_max_err << std::endl;
 		// std::cout<<l2_err<<" "<<linf_err<<" "<<lp_err<<std::endl;
 

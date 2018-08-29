@@ -280,67 +280,64 @@ constexpr std::array<std::array<int, 3>, 27> quadr_hex_local_node = {{
 
 // -----------------------------------------------------------------------------
 
-polyfem::Navigation3D::Index find_edge(const polyfem::Mesh3D &mesh, int c, int v1, int v2) {
+// polyfem::Navigation3D::Index find_edge(const polyfem::Mesh3D &mesh, int c, int v1, int v2) {
+// 	std::array<int, 2> v = {{v1, v2}};
+// 	std::sort(v.begin(), v.end());
+// 	for (int lf = 0; lf < mesh.n_cell_faces(c); ++lf) {
+// 		auto idx = mesh.get_index_from_element(c, lf, 0);
+// 		for (int lv = 0; lv < mesh.n_face_vertices(idx.face); ++lv) {
+// 			std::array<int, 2> u;
+// 			u[0] = idx.vertex;
+// 			u[1] = mesh.switch_vertex(idx).vertex;
+// 			std::sort(u.begin(), u.end());
+// 			if (u == v) {
+// 				if(idx.vertex != v1)
+// 					idx = mesh.switch_vertex(idx);
+// 				assert(idx.vertex == v1);
+// 				return idx;
+// 			}
+// 			idx = mesh.next_around_face(idx);
+// 		}
+// 	}
+// 	throw std::runtime_error("Edge not found");
+// }
 
-	return mesh.get_index_from_element(c, v1, v2, false);
+// polyfem::Navigation3D::Index find_tri_face(const polyfem::Mesh3D &mesh, int c, int v1, int v2, int v3) {
 
-	std::array<int, 2> v = {{v1, v2}};
-	std::sort(v.begin(), v.end());
-	for (int lf = 0; lf < mesh.n_cell_faces(c); ++lf) {
-		auto idx = mesh.get_index_from_element(c, lf, 0);
-		for (int lv = 0; lv < mesh.n_face_vertices(idx.face); ++lv) {
-			std::array<int, 2> u;
-			u[0] = idx.vertex;
-			u[1] = mesh.switch_vertex(idx).vertex;
-			std::sort(u.begin(), u.end());
-			if (u == v) {
-				if(idx.vertex != v1)
-					idx = mesh.switch_vertex(idx);
-				assert(idx.vertex == v1);
-				return idx;
-			}
-			idx = mesh.next_around_face(idx);
-		}
-	}
-	throw std::runtime_error("Edge not found");
-}
+// 	return mesh.get_index_from_element(c, v1, v2, v3);
 
-polyfem::Navigation3D::Index find_tri_face(const polyfem::Mesh3D &mesh, int c, int v1, int v2, int v3) {
+// 	std::array<int, 3> v = {{v1, v2, v3}};
+// 	std::sort(v.begin(), v.end());
+// 	for (int lf = 0; lf < mesh.n_cell_faces(c); ++lf) {
+// 		auto idx = mesh.get_index_from_element(c, lf, 0);
+// 		assert(mesh.n_face_vertices(idx.face) == 3);
+// 		std::array<int, 3> u;
+// 		for (int lv = 0; lv < mesh.n_face_vertices(idx.face); ++lv) {
+// 			u[lv] = idx.vertex;
+// 			idx = mesh.next_around_face(idx);
+// 		}
+// 		std::sort(u.begin(), u.end());
+// 		if (u == v) {
+// 			const auto tmp = find_edge(mesh, c, v1, v2);
 
-	return mesh.get_index_from_element(c, v1, v2, v3);
+// 			while(tmp.edge != idx.edge)
+// 			{
+// 				idx = mesh.next_around_face(idx);
+// 			}
 
-	std::array<int, 3> v = {{v1, v2, v3}};
-	std::sort(v.begin(), v.end());
-	for (int lf = 0; lf < mesh.n_cell_faces(c); ++lf) {
-		auto idx = mesh.get_index_from_element(c, lf, 0);
-		assert(mesh.n_face_vertices(idx.face) == 3);
-		std::array<int, 3> u;
-		for (int lv = 0; lv < mesh.n_face_vertices(idx.face); ++lv) {
-			u[lv] = idx.vertex;
-			idx = mesh.next_around_face(idx);
-		}
-		std::sort(u.begin(), u.end());
-		if (u == v) {
-			const auto tmp = find_edge(mesh, c, v1, v2);
+// 			if(idx.vertex != v1)
+// 				idx = mesh.switch_vertex(idx);
 
-			while(tmp.edge != idx.edge)
-			{
-				idx = mesh.next_around_face(idx);
-			}
+// 			assert(idx.vertex == v1);
+// 			assert(idx.edge == tmp.edge);
+// 			assert(mesh.switch_vertex(idx).vertex == v2);
+// 			assert(mesh.switch_vertex(mesh.switch_edge(idx)).vertex == v3);
 
-			if(idx.vertex != v1)
-				idx = mesh.switch_vertex(idx);
-
-			assert(idx.vertex == v1);
-			assert(idx.edge == tmp.edge);
-			assert(mesh.switch_vertex(idx).vertex == v2);
-			assert(mesh.switch_vertex(mesh.switch_edge(idx)).vertex == v3);
-
-			return idx;
-		}
-	}
-	throw std::runtime_error("Edge not found");
-}
+// 			return idx;
+// 		}
+// 	}
+// 	throw std::runtime_error("Edge not found");
+// }
 
 int find_quad_face(const polyfem::Mesh3D &mesh, int c, int v1, int v2, int v3, int v4) {
 	std::array<int, 4> v = {{v1, v2, v3, v4}};
@@ -477,7 +474,7 @@ void compute_nodes(
 			LocalBoundary lb(c, BoundaryType::Tri);
 			for(long i = 0; i < fv.rows(); ++i)
 			{
-				int f = find_tri_face(mesh, c, fv(i,0), fv(i,1), fv(i,2)).face;
+				int f = mesh.get_index_from_element_face(c, fv(i,0), fv(i,1), fv(i,2)).face;
 
 				if(mesh.is_boundary_face(f)){
 					lb.add_boundary_primitive(f, i);
@@ -615,7 +612,7 @@ void polyfem::FEBasis3d::tet_local_to_global(const int p, const Mesh3D &mesh, in
 
 	for(long lf = 0; lf < fv.rows(); ++lf)
 	{
-		const auto index =  find_tri_face(mesh, c, fv(lf,0), fv(lf,1), fv(lf,2));
+		const auto index =  mesh.get_index_from_element_face(c, fv(lf,0), fv(lf,1), fv(lf,2));
 		f[lf] = index;
 	}
 
@@ -630,14 +627,16 @@ void polyfem::FEBasis3d::tet_local_to_global(const int p, const Mesh3D &mesh, in
 	ev.row(5)  << v[2], v[3];
 
 	for (int le = 0; le < e.rows(); ++le) {
-		const auto index =  find_edge(mesh, c, ev(le, 0), ev(le, 1));
+		// const auto index =  find_edge(mesh, c, ev(le, 0), ev(le, 1));
+		const auto index = mesh.get_index_from_element_edge(c, ev(le, 0), ev(le, 1));
 		e[le] = index;
 	}
 
 
 	//vertices
 	for (size_t lv = 0; lv < v.size(); ++lv) {
-		const auto index = find_edge(mesh, c, v[lv], v[(lv+1)%4]);
+		// const auto index = find_edge(mesh, c, v[lv], v[(lv+1)%4]);
+		const auto index = mesh.get_index_from_element_edge(c,  v[lv], v[(lv+1)%4]);
 
 		// const auto other_cell1 = mesh.switch_element(index).element;
 		// const auto other_cell2 = mesh.switch_element(mesh.switch_face(index)).element;
@@ -740,14 +739,22 @@ Eigen::VectorXi polyfem::FEBasis3d::tet_face_local_nodes(const int p, const Mesh
 
 	Navigation3D::Index tmp = index;
 
+	for (int le = 0; le < e.rows(); ++le) {
+		// const auto index =  find_edge(mesh, c, ev(le, 0), ev(le, 1));
+		const auto index = mesh.get_index_from_element_edge(c, ev(le, 0), ev(le, 1));
+		e[le] = index;
+	}
+
 	int ii = 3;
 	for(int k = 0; k < 3; ++k)
 	{
 		bool reverse = false;
 		int le = 0;
-		for (; le < e.rows(); ++le)
+		for (; le < ev.rows(); ++le)
 		{
-			const auto l_index =  find_edge(mesh, c, ev(le, 0), ev(le, 1));
+			// const auto l_index =  find_edge(mesh, c, ev(le, 0), ev(le, 1));
+			// const auto l_index = mesh.get_index_from_element_edge(c, ev(le, 0), ev(le, 1));
+			const auto l_index = e[le];
 			if(l_index.edge == tmp.edge)
 			{
 				if(l_index.vertex == tmp.vertex)
@@ -794,7 +801,7 @@ Eigen::VectorXi polyfem::FEBasis3d::tet_face_local_nodes(const int p, const Mesh
 	long lf = 0;
 	for(; lf < fv.rows(); ++lf)
 	{
-		const auto l_index =  find_tri_face(mesh, c, fv(lf,0), fv(lf,1), fv(lf,2));
+		const auto l_index =  mesh.get_index_from_element_face(c, fv(lf,0), fv(lf,1), fv(lf,2));
 		if(l_index.face == index.face)
 			break;
 	}
@@ -1024,7 +1031,8 @@ std::array<int, 10> polyfem::FEBasis3d::quadr_tet_local_to_global(const Mesh3D &
 	ev.row(5)  << v[2], v[3];
 
 	for (int le = 0; le < e.rows(); ++le) {
-		e[le] = find_edge(mesh, c, ev(le, 0), ev(le, 1)).edge;
+		// e[le] = find_edge(mesh, c, ev(le, 0), ev(le, 1)).edge;
+		e[le] = mesh.get_index_from_element_edge(c, ev(le, 0), ev(le, 1)).edge;
 	}
 
 	// Local to global mapping of node indices
@@ -1070,7 +1078,8 @@ std::array<int, 27> polyfem::FEBasis3d::quadr_hex_local_to_global(const Mesh3D &
 	ev.row(10) << v[6], v[7];
 	ev.row(11) << v[7], v[4];
 	for (int le = 0; le < e.rows(); ++le) {
-		e[le] = find_edge(mesh, c, ev(le, 0), ev(le, 1)).edge;
+		// e[le] = find_edge(mesh, c, ev(le, 0), ev(le, 1)).edge;
+		e[le] = mesh.get_index_from_element_edge(c, ev(le, 0), ev(le, 1)).edge;
 	}
 
 	// Face nodes
@@ -1588,7 +1597,8 @@ int polyfem::FEBasis3d::build_bases(
 							ev.row(4)  << v[1], v[3];
 							ev.row(5)  << v[2], v[3];
 
-							const auto edge_index = find_edge(mesh, e, ev(le, 0), ev(le, 1));
+							// const auto edge_index = find_edge(mesh, e, ev(le, 0), ev(le, 1));
+							const auto edge_index = mesh.get_index_from_element_edge(e, ev(le, 0), ev(le, 1));
 							auto neighs = mesh.edge_neighs(edge_index.edge);
 							int min_p = discr_order;
 							int min_cell = index.element;
@@ -1646,7 +1656,7 @@ int polyfem::FEBasis3d::build_bases(
 							fv.row(2) << v[1], v[2], v[3];
 							fv.row(3) << v[2], v[0], v[3];
 
-							index = mesh.switch_element(find_tri_face(mesh, e, fv(lf, 0), fv(lf, 1), fv(lf, 2)));
+							index = mesh.switch_element(mesh.get_index_from_element_face(e, fv(lf, 0), fv(lf, 1), fv(lf, 2)));
 						}
 
 						const auto other_cell = index.element;
