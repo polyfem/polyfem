@@ -1218,7 +1218,7 @@ namespace polyfem
 
 		n_flipped = 0;
 
-		if(args["count_flipped_els"])
+		//if(args["count_flipped_els"])
 		{
 			// flipped_elements.clear();
 			for(size_t i = 0; i < gbases.size(); ++i)

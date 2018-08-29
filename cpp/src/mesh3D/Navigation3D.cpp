@@ -37,9 +37,12 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_face(
 		idx.vertex = M.FV(0, idx.face);
 		idx.edge = M.FE(0, idx.face);
 
+		if (M.elements[hi].fs_flag[idx.element_patch])
+			idx.edge = M.FE(2, idx.face);
 		// get_index_from_element_face_time += timer.getElapsedTime();
 	}
-	else if (M.elements[hi].hex) {
+	else 
+	if (M.elements[hi].hex) {
 		 idx.element = hi;
 		// idx.element_patch = 0;
 		// idx.face = M.elements[hi].fs[idx.element_patch];
@@ -95,9 +98,10 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_face(
 	idx.face_corner = lv;
 	idx.vertex = M.faces[idx.face].vs[idx.face_corner];
 
-	//if (M.elements[hi].fs_flag[idx.element_patch]) idx.face_corner = (idx.face_corner + M.faces[idx.face].vs.size() - 1)% M.faces[idx.face].vs.size();
-	idx.edge = M.faces[idx.face].es[idx.face_corner];
-
+	int ei = idx.face_corner;
+	if (M.elements[hi].fs_flag[idx.element_patch])
+		ei = (idx.face_corner + M.faces[idx.face].vs.size() - 1)% M.faces[idx.face].vs.size();
+	idx.edge = M.faces[idx.face].es[ei];
 	//timer.stop();
 	// get_index_from_element_face_time += timer.getElapsedTime();
 
@@ -213,7 +217,8 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::switch_vertex(const Mesh3DSt
 		else if(M.FV(1, idx.face) == idx.vertex) idx.face_corner = 1;
 		else idx.face_corner = 2;
 	}
-	else{
+	else
+	{
 		if(idx.vertex == M.edges[idx.edge].vs[0])idx.vertex = M.edges[idx.edge].vs[1];
 		else idx.vertex = M.edges[idx.edge].vs[0];
 
@@ -231,7 +236,8 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::switch_edge(const Mesh3DStor
 	if(M.type == MeshType::Tet){
 		if(idx.edge == M.FE(idx.face_corner, idx.face)) idx.edge = M.FE((idx.face_corner +2)%3,idx.face);
 		else idx.edge = M.FE(idx.face_corner,idx.face);
-	}else{
+	}else
+	{
 		int n = M.faces[idx.face].vs.size();
 		if(idx.edge == M.faces[idx.face].es[idx.face_corner]) idx.edge = M.faces[idx.face].es[(idx.face_corner-1+n)%n];
 		else idx.edge = M.faces[idx.face].es[idx.face_corner];
@@ -256,7 +262,8 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::switch_face(const Mesh3DStor
 			}
 		}
 	}
-	else{
+	else
+	{
 		const vector<uint32_t> &efs = M.edges[idx.edge].neighbor_fs, &hfs = M.elements[idx.element].fs;
 		std::array<uint32_t, 2> sharedfs;
 		int num=2;
@@ -290,7 +297,8 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::switch_element(const Mesh3DS
 			idx.element_patch = M.FHi(0, idx.face);
 		}
 	}
-	else {
+	else 
+	{
 		if (M.faces[idx.face].neighbor_hs.size() == 1) {
 			idx.element = -1;
 			return idx;
