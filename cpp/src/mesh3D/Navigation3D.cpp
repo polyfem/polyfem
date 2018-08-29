@@ -102,7 +102,87 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_face(
 
 	return idx;
 }
+polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_edge(const Mesh3DStorage &M, int hi, int v0, int v1){
+	Index idx;
+	idx.element = hi;
+	idx.vertex = v0;
+	if(v0>v1)switch(v0, v1);
+		
+	if(M.type == MeshType::Tet){	
+		for(int i=0;i<4;i++){
+			const auto & fid = M.HF(i,idx.element);
+			for(int j=0;j<3;j++){
+				const auto & eid =M.FE(0,fid);
+				if(M.EV(0, eid) == v0 && M.EV(1, eid) == v1){
+					idx.element_patch = i;
+					idx.face = fid;
+					idx.edge = eid;
+					if(M.FV(0, fid) == idx.vertex) idx.face_corner =0;
+					else if(M.FV(1, fid) == idx.vertex) idx.face_corner =1;
+					else idx.face_corner =2;
+					return idx;
+				}
+			}
+		}
+	}
+	else{		
+		for(int i=0;i<M.elements[hi].fs.size();i++){
+			const auto & fid = M.elements[hi].fs[i];
+			for(int j=0;j<M.faces[fid].es.size();j++){
+				const auto & eid =M.faces[fid].es[j];
+				if(M.edges[eid].vs[0] == v0 && M.edges[eid].vs[1] == v1){
+					idx.element_patch = i;
+					idx.face = fid;
+					idx.edge = eid;
+					for(int k=0;k<M.faces[fid].vs.size();k++)
+						if(M.faces[fid].vs[k] == idx.vertex) idx.face_corner =k;
+					return idx;
+				}
+			}
+		}
+	}
+	return idx;
+}polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_tri(const Mesh3DStorage &M, int hi, int v0, int v1, int v2){
+	Index idx;
+	idx.element = hi;
+	idx.vertex = v0;
+	int v0_ = v0, v1_ =v1;
+	if (v0_ > v1_) swap(v0_, v1_);
 
+	if (v0 > v2) swap(v0, v2);
+	if (v0 > v1) swap(v0, v1);
+	if (v1 > v2) swap(v1, v2);
+
+	if(M.type == MeshType::Tet){	
+		for(int i=0;i<4;i++){
+			const auto & fid = M.HF(i,idx.element);
+			int fv0 = M.FV(0, fid), fv1 = M.FV(1, fid), fv2 = M.FV(2, fid);
+			if (fv0 > fv2) swap(fv0, fv2);
+			if (fv0 > fv1) swap(fv0, fv1);
+			if (fv1 > fv2) swap(fv1, fv2);
+			
+			if(v0 != fv0 || v1 != fv1 || v2 != fv2) continue;
+
+			idx.face = fid;
+			idx.element_patch = i;
+
+			for(int j=0;j<3;j++){
+				const auto & eid =M.FE(0,fid);
+				if(M.EV(0, eid) == v0_ && M.EV(1, eid) == v1_){
+					idx.edge = eid;
+					if(M.FV(0, fid) == idx.vertex) idx.face_corner =0;
+					else if(M.FV(1, fid) == idx.vertex) idx.face_corner =1;
+					else idx.face_corner =2;
+					return idx;
+				}
+			}
+		}
+	}
+	else{
+		;
+	}
+	return idx;
+}
 // Navigation in a surface mesh
 polyfem::Navigation3D::Index polyfem::Navigation3D::switch_vertex(const Mesh3DStorage &M, Index idx) {
 	igl::Timer timer; timer.start();

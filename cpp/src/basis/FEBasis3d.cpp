@@ -281,6 +281,9 @@ constexpr std::array<std::array<int, 3>, 27> quadr_hex_local_node = {{
 // -----------------------------------------------------------------------------
 
 polyfem::Navigation3D::Index find_edge(const polyfem::Mesh3D &mesh, int c, int v1, int v2) {
+
+	return mesh.get_index_from_element(c, v1, v2, false);
+
 	std::array<int, 2> v = {{v1, v2}};
 	std::sort(v.begin(), v.end());
 	for (int lf = 0; lf < mesh.n_cell_faces(c); ++lf) {
@@ -303,6 +306,9 @@ polyfem::Navigation3D::Index find_edge(const polyfem::Mesh3D &mesh, int c, int v
 }
 
 polyfem::Navigation3D::Index find_tri_face(const polyfem::Mesh3D &mesh, int c, int v1, int v2, int v3) {
+
+	return mesh.get_index_from_element(c, v1, v2, v3);
+
 	std::array<int, 3> v = {{v1, v2, v3}};
 	std::sort(v.begin(), v.end());
 	for (int lf = 0; lf < mesh.n_cell_faces(c); ++lf) {
