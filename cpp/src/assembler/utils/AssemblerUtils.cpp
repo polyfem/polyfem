@@ -22,7 +22,7 @@ namespace polyfem
 		tensor_assemblers_.push_back("NeoHookean");
 		tensor_assemblers_.push_back("Ogden");
 
-		stokes_assemblers_.push_back("Stokes");
+		mixed_assemblers_.push_back("Stokes");
 	}
 
 	bool AssemblerUtils::is_linear(const std::string &assembler) const

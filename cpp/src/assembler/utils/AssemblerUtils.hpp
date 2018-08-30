@@ -109,7 +109,7 @@ namespace polyfem
 		//getters
 		const std::vector<std::string> &scalar_assemblers() const { return scalar_assemblers_; }
 		const std::vector<std::string> &tensor_assemblers() const { return tensor_assemblers_; }
-		const std::vector<std::string> &stokes_assemblers() const { return stokes_assemblers_; }
+		const std::vector<std::string> &mixed_assemblers() const { return mixed_assemblers_; }
 
 		void clear_cache();
 
@@ -130,6 +130,6 @@ namespace polyfem
 
 		std::vector<std::string> scalar_assemblers_;
 		std::vector<std::string> tensor_assemblers_;
-		std::vector<std::string> stokes_assemblers_;
+		std::vector<std::string> mixed_assemblers_;
 	};
 }

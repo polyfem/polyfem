@@ -240,9 +240,9 @@ void polyfem::UIState::draw_settings() {
 	static const auto scalar_forms = polyfem::AssemblerUtils::instance().scalar_assemblers();
 
 	const bool is_scalar = state.problem->is_scalar();
-	const bool is_stokes = state.problem->is_stokes();
+	const bool is_mixed = state.problem->is_mixed();
 
-	if(is_stokes || !is_scalar) push_disabled();
+	if(is_mixed || !is_scalar) push_disabled();
 
 	if(ImGui::BeginCombo("1D-Form", state.scalar_formulation().c_str()))
 	{
@@ -258,11 +258,11 @@ void polyfem::UIState::draw_settings() {
 		ImGui::EndCombo();
 	}
 
-	if(is_stokes || !is_scalar) pop_disabled();
+	if(is_mixed || !is_scalar) pop_disabled();
 
 
 
-	if(is_stokes || is_scalar) push_disabled();
+	if(is_mixed || is_scalar) push_disabled();
 
 	static const auto tensor_forms = polyfem::AssemblerUtils::instance().tensor_assemblers();
 	if(ImGui::BeginCombo("nD-Form", state.tensor_formulation().c_str()))
@@ -278,26 +278,26 @@ void polyfem::UIState::draw_settings() {
 		}
 		ImGui::EndCombo();
 	}
-	if(is_stokes || is_scalar) pop_disabled();
+	if(is_mixed || is_scalar) pop_disabled();
 
 
-	if(!is_stokes) push_disabled();
+	if(!is_mixed) push_disabled();
 
-	static const auto stokes_forms = polyfem::AssemblerUtils::instance().stokes_assemblers();
-	if(ImGui::BeginCombo("stokes", state.stokes_formulation().c_str()))
+	static const auto mixed_forms = polyfem::AssemblerUtils::instance().mixed_assemblers();
+	if(ImGui::BeginCombo("mixed", state.mixed_formulation().c_str()))
 	{
-		for(auto f : stokes_forms)
+		for(auto f : mixed_forms)
 		{
-			bool is_selected = state.stokes_formulation() == f;
+			bool is_selected = state.mixed_formulation() == f;
 
 			if (ImGui::Selectable(f.c_str(), is_selected))
-				state.args["stokes_formulation"] = f;
+				state.args["mixed_formulation"] = f;
 			if (is_selected)
 				ImGui::SetItemDefaultFocus();
 		}
 		ImGui::EndCombo();
 	}
-	if(!is_stokes) pop_disabled();
+	if(!is_mixed) pop_disabled();
 	ImGui::Separator();
 
 

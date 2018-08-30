@@ -674,7 +674,7 @@ namespace polyfem
 		if(fun.cols() != 1)
 		{
 			MatrixXd ffun(vis_pts.rows(), 1);
-			if(state.problem->is_stokes()){
+			if(state.problem->is_mixed()){
 				 //norm of displacement
 				ffun = (fun.array()*fun.array()).rowwise().sum().sqrt();
 			}
@@ -725,7 +725,7 @@ namespace polyfem
 
 			MatrixXd ttmp = vis_pts;
 
-			if(!state.problem->is_stokes())
+			if(!state.problem->is_mixed())
 			{
 				//apply displacement
 				for(long i = 0; i < fun.cols(); ++i)

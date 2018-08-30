@@ -236,7 +236,7 @@ namespace cppoptlib {
 				const double energy = objFunc.value(x0);
 				const double step = (rate * delta_x).norm();
 
-				this->m_current.fDelta = std::abs(old_energy - energy) / std::abs(old_energy);
+				this->m_current.fDelta = 1; //std::abs(old_energy - energy) / std::abs(old_energy);
 				this->m_current.gradNorm = grad.norm();
 				this->m_status = checkConvergence(this->m_stop, this->m_current);
 				old_energy = energy;
@@ -267,7 +267,7 @@ namespace cppoptlib {
 					tfm::printf("\titer: %s, f = %s, ‖g‖_2 = %s, rate = %s, ‖step‖ = %s, dot = %s\n",
 						this->m_current.iterations, energy, this->m_current.gradNorm, rate, step, delta_x.dot(grad)/grad.norm());
 					// tfm::printf("\tspectrum: %s (%s)\n", spectrum(3) / spectrum(0), spectrum.transpose());
-					std::cout << this->criteria() << std::endl;
+					// std::cout << this->criteria() << std::endl;
 				}
 			}
 			while (objFunc.callback(this->m_current, x0) && (this->m_status == Status::Continue));
