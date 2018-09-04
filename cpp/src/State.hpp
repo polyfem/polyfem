@@ -83,6 +83,7 @@ namespace polyfem
 		double solving_time;
 		double computing_errors_time;
 		double max_angle;
+		double sigma_max, sigma_min, sigma_avg;
 
 		int n_flipped;
 

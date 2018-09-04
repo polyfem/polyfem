@@ -224,6 +224,10 @@ namespace polyfem
 		j["mesh_size"] = mesh_size;
 		j["max_angle"] = max_angle;
 
+		j["sigma_max"] = sigma_max;
+		j["sigma_min"] = sigma_min;
+		j["sigma_avg"] = sigma_avg;
+
 		j["min_edge_length"] = min_edge_length;
 		j["average_edge_length"] = average_edge_length;
 
@@ -337,7 +341,9 @@ namespace polyfem
 		// std::cout<<"h_ref "<<h_ref<<std::endl;
 		// std::cout<<"edges "<<tmp.rowwise().norm()<<std::endl;
 
-		double sigma_sum = 0;
+		sigma_avg = 0;
+		sigma_max = 0;
+		sigma_min = std::numeric_limits<double>::max();
 
 		for(int f = 0; f < mesh2d.n_faces(); ++f)
 		{
@@ -365,7 +371,9 @@ namespace polyfem
 			const double rho = 2*A/P;
 			const double hp = std::max(e0n, std::max(e1n, e2n));
 
-			sigma_sum += rho/hp;
+			sigma_avg += rho/hp;
+			sigma_max = std::max(sigma_max, rho/hp);
+			sigma_min = std::min(sigma_min, rho/hp);
 
 			// std::cout<<"A "<<A<< " rho "<<rho<<" hp "<<hp<<std::endl;
 
@@ -399,9 +407,10 @@ namespace polyfem
 			max_angle = std::max(max_angle, alpha2);
 		}
 
+		sigma_avg /= mesh2d.n_faces();
 		max_angle = max_angle/M_PI*180.;
 		std::cout<<"using B=" << B << " with " << (h1_formula ? "H1" : "L2") <<" estimate max_angle "<<max_angle<<std::endl;
-		std::cout<<"average sigma: "<<sigma_sum/mesh2d.n_faces()<<std::endl;
+		std::cout<<"average sigma: "<<sigma_avg<<std::endl;
 
 		std::cout<<"num_p1 " << (disc_orders.array() == 1).count()<<std::endl;
 		std::cout<<"num_p2 " << (disc_orders.array() == 2).count()<<std::endl;
@@ -423,6 +432,11 @@ namespace polyfem
 		const int p_ref = args["discr_order"];
 		const double rho_ref = sqrt(6.)/12.*h_ref;
 		const int p_max = std::min(autogen::MAX_P_BASES, args["discr_order_max"].get<int>());
+
+		sigma_avg = 0;
+		sigma_max = 0;
+		sigma_min = std::numeric_limits<double>::max();
+
 
 		for(int c = 0; c < mesh3d.n_cells(); ++c)
 		{
@@ -457,6 +471,10 @@ namespace polyfem
 			const double rho = 3 * V / S;
 			const double hp = en.maxCoeff();
 
+			sigma_avg += rho/hp;
+			sigma_max = std::max(sigma_max, rho/hp);
+			sigma_min = std::min(sigma_min, rho/hp);
+
 			// const double ptmp = std::log(B*std::pow(h_ref, p_ref + 1)*rho / (hp *rho_ref))/std::log(hp);
 			// const double ptmp = std::log(B*std::pow(h_ref, p_ref + 2)*rho*rho / (hp *hp *rho_ref*rho_ref))/std::log(hp);
 			// 0.5 * (-4*power*std::log(hp) + (2*p_ref+2) * std::log(h) + 2*power*std::log(rho) + 3*std::log(2) + std::log(3) + 2*std::log(B)) / std::log(hp);
@@ -484,6 +502,7 @@ namespace polyfem
 		}
 
 		max_angle = max_angle/M_PI*180.;
+		sigma_avg /= mesh3d.n_elements();
 		std::cout<<"using B=" << B << " with " << (h1_formula ? "H1" : "L2") <<" estimate max_angle "<<max_angle<<std::endl;
 
 		std::cout<<"num_p1 " << (disc_orders.array() == 1).count()<<std::endl;
