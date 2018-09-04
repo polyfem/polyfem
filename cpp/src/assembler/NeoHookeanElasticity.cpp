@@ -142,7 +142,7 @@ namespace polyfem
 				}
 			}
 			//stress = mu (F - F^{-T}) + lambda ln J F^{-T}
-			displacement_grad = displacement_grad * vals.jac_it[p];
+			displacement_grad = (displacement_grad * vals.jac_it[p]).eval();
 			const Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(size(), size()) + displacement_grad;
 			const Eigen::MatrixXd FmT = def_grad.inverse().transpose();
 			Eigen::MatrixXd stress_tensor = mu_*(def_grad - FmT) + lambda_ * std::log(def_grad.determinant()) * FmT;

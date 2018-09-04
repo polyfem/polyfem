@@ -239,7 +239,7 @@ namespace polyfem
 				}
 			}
 
-			displacement_grad = displacement_grad * vals.jac_it[p];
+			displacement_grad = (displacement_grad * vals.jac_it[p]).eval();
 
 			Eigen::MatrixXd strain = (displacement_grad + displacement_grad.transpose())/2;
 			Eigen::MatrixXd sigma(size(), size());

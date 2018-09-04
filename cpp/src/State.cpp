@@ -306,9 +306,13 @@ namespace polyfem
 		double h_ref, int p_ref, double rho_ref,
 		double h, double rho, int p_max)
 	{
+		const double sigma_ref = rho_ref / h_ref;
+		const double sigma = rho / h;
+
 		const double ptmp = h1_formula ?
 		(std::log(B*std::pow(h_ref, p_ref + 1)*rho     / (h *rho_ref))            /std::log(h)):
-		(std::log(B*std::pow(h_ref, p_ref + 2)*rho*rho / (h * h *rho_ref*rho_ref))/std::log(h));
+		(std::log(B*std::pow(h_ref, p_ref + 1)*sigma*sigma/sigma_ref/sigma_ref) - std::log(h))/std::log(h);
+		// (std::log(B*std::pow(h_ref, p_ref + 2)*rho*rho / (h * h *rho_ref*rho_ref))/std::log(h));
 
 		// std::cout<<ptmp<<std::endl;
 		return std::min(std::max(p_ref, (int)std::round(ptmp)), p_max);
@@ -328,7 +332,7 @@ namespace polyfem
 		const bool h1_formula = args["h1_formula"];
 		const int p_ref = args["discr_order"];
 		const double rho_ref =  sqrt(3.0)/6.0*h_ref;
-		const int p_max = args["discr_order_max"];
+		const int p_max = std::min(autogen::MAX_P_BASES, args["discr_order_max"].get<int>());
 
 		// std::cout<<"h_ref "<<h_ref<<std::endl;
 		// std::cout<<"edges "<<tmp.rowwise().norm()<<std::endl;
@@ -418,7 +422,7 @@ namespace polyfem
 		const bool h1_formula = args["h1_formula"];
 		const int p_ref = args["discr_order"];
 		const double rho_ref = sqrt(6.)/12.*h_ref;
-		const int p_max = args["discr_order_max"];
+		const int p_max = std::min(autogen::MAX_P_BASES, args["discr_order_max"].get<int>());
 
 		for(int c = 0; c < mesh3d.n_cells(); ++c)
 		{
@@ -1220,6 +1224,8 @@ namespace polyfem
 
 		if(args["count_flipped_els"])
 		{
+			std::cout<<"Counting flipped elements..."<<std::flush;
+
 			// flipped_elements.clear();
 			for(size_t i = 0; i < gbases.size(); ++i)
 			{
@@ -1239,6 +1245,8 @@ namespace polyfem
 					// std::cout<<mesh->point(dynamic_cast<Mesh2D *>(mesh.get())->face_vertex(i, 2))<<std::endl;
 				}
 			}
+
+			std::cout<<" done"<<std::endl;
 		}
 
 		// dynamic_cast<Mesh3D *>(mesh.get())->save({56}, 1, "mesh.HYBRID");

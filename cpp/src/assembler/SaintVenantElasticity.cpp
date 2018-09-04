@@ -190,7 +190,7 @@ namespace polyfem
 				}
 			}
 
-			displacement_grad = displacement_grad * vals.jac_it[p];
+			displacement_grad = (displacement_grad * vals.jac_it[p]).eval();
 
 			Eigen::MatrixXd strain = strain_from_disp_grad(displacement_grad);
 			Eigen::MatrixXd stress_tensor(size(), size());
