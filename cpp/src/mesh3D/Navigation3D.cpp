@@ -164,7 +164,11 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_edge(
 	return idx;
 }
 
-polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_tri(const Mesh3DStorage &M, int hi, int v0, int v1, int v2){
+polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_tri(const Mesh3DStorage &M, int hi, int v0i, int v1i, int v2i){
+	int v0=v0i;
+	int v1=v1i;
+	int v2=v2i;
+
 	Index idx;
 	idx.element = hi;
 	idx.vertex = v0;
@@ -175,6 +179,10 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_tri(c
 	if (v0 > v1) swap(v0, v1);
 	if (v1 > v2) swap(v1, v2);
 
+	assert(v0 < v1);
+	assert(v0 < v2);
+	assert(v1 < v2);
+
 	if(M.type == MeshType::Tet){
 		for(int i=0;i<4;i++){
 			const auto & fid = M.HF(i,idx.element);
@@ -183,26 +191,36 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_tri(c
 			if (fv0 > fv1) swap(fv0, fv1);
 			if (fv1 > fv2) swap(fv1, fv2);
 
+			assert(fv0 < fv1);
+			assert(fv0 < fv2);
+			assert(fv1 < fv2);
+
 			if(v0 != fv0 || v1 != fv1 || v2 != fv2) continue;
 
 			idx.face = fid;
 			idx.element_patch = i;
 
 			for(int j=0;j<3;j++){
-				const auto & eid =M.FE(0,fid);
+				const auto & eid =M.FE(j,fid);
+				assert(M.EV(0, eid) < M.EV(1, eid));
 				if(M.EV(0, eid) == v0_ && M.EV(1, eid) == v1_){
 					idx.edge = eid;
 					if(M.FV(0, fid) == idx.vertex) idx.face_corner =0;
 					else if(M.FV(1, fid) == idx.vertex) idx.face_corner =1;
 					else idx.face_corner =2;
+
+					assert(idx.vertex == v0i);
+					assert(switch_vertex(M, idx).vertex == v1i);
+					assert(switch_vertex(M, switch_edge(M, idx)).vertex == v2i);
 					return idx;
 				}
 			}
 		}
 	}
 	else{
-		;
+		assert(false);
 	}
+	assert(false);
 	return idx;
 }
 // Navigation in a surface mesh
