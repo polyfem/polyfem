@@ -1940,7 +1940,7 @@ namespace polyfem
 			{"n_refs", 0},
 			{"vismesh_rel_area", 0.00001},
 			{"refinenemt_location", 0.5},
-			{"n_boundary_samples", 4},
+			{"n_boundary_samples", 6},
 			{"problem", "Franke"},
 			{"normalize_mesh", true},
 

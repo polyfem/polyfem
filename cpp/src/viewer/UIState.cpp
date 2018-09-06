@@ -931,6 +931,7 @@ namespace polyfem
 
 	void UIState::show_nodes()
 	{
+		// return;
 		if (!state.mesh) { return; }
 
 		// const auto &current_bases = state.iso_parametric() ? state.bases : state.geom_bases;
