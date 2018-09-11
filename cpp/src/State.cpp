@@ -370,10 +370,11 @@ namespace polyfem
 			const double A = std::abs(e1(0)*e2(1) - e1(1)*e2(0))/2;
 			const double rho = 2*A/P;
 			const double hp = std::max(e0n, std::max(e1n, e2n));
+			const double sigma = rho/hp;
 
-			sigma_avg += rho/hp;
-			sigma_max = std::max(sigma_max, rho/hp);
-			sigma_min = std::min(sigma_min, rho/hp);
+			sigma_avg += sigma;
+			sigma_max = std::max(sigma_max, sigma);
+			sigma_min = std::min(sigma_min, sigma);
 
 			// std::cout<<"A "<<A<< " rho "<<rho<<" hp "<<hp<<std::endl;
 
@@ -411,6 +412,8 @@ namespace polyfem
 		max_angle = max_angle/M_PI*180.;
 		std::cout<<"using B=" << B << " with " << (h1_formula ? "H1" : "L2") <<" estimate max_angle "<<max_angle<<std::endl;
 		std::cout<<"average sigma: "<<sigma_avg<<std::endl;
+		std::cout<<"min sigma: "<<sigma_min<<std::endl;
+		std::cout<<"max sigma: "<<sigma_max<<std::endl;
 
 		std::cout<<"num_p1 " << (disc_orders.array() == 1).count()<<std::endl;
 		std::cout<<"num_p2 " << (disc_orders.array() == 2).count()<<std::endl;
@@ -471,6 +474,10 @@ namespace polyfem
 			const double rho = 3 * V / S;
 			const double hp = en.maxCoeff();
 
+			// std::cout<<v0<<" "<<v1<<" "<<v2<<" "<<v3<<std::endl;
+			// std::cout<<S<<" V:"<<V<<"  rho:"<<rho<<" hp: "<<hp<<std::endl;
+			// exit(0);
+
 			sigma_avg += rho/hp;
 			sigma_max = std::max(sigma_max, rho/hp);
 			sigma_min = std::min(sigma_min, rho/hp);
@@ -504,6 +511,10 @@ namespace polyfem
 		max_angle = max_angle/M_PI*180.;
 		sigma_avg /= mesh3d.n_elements();
 		std::cout<<"using B=" << B << " with " << (h1_formula ? "H1" : "L2") <<" estimate max_angle "<<max_angle<<std::endl;
+
+		std::cout<<"average sigma: "<<sigma_avg<<std::endl;
+		std::cout<<"min sigma: "<<sigma_min<<std::endl;
+		std::cout<<"max sigma: "<<sigma_max<<std::endl;
 
 		std::cout<<"num_p1 " << (disc_orders.array() == 1).count()<<std::endl;
 		std::cout<<"num_p2 " << (disc_orders.array() == 2).count()<<std::endl;
@@ -1157,6 +1168,10 @@ namespace polyfem
 
 		n_bases = 0;
 		n_pressure_bases = 0;
+
+		sigma_avg = 0;
+		sigma_max = 0;
+		sigma_min = 0;
 
 
 		std::cout<<"Building "<< (iso_parametric()? "isoparametric":"not isoparametric") <<" basis..."<<std::flush;
