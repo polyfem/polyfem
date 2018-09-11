@@ -1373,18 +1373,23 @@ namespace polyfem
 
 		if(problem->is_mixed())
 		{
-			Eigen::SparseMatrix<double> velocity_stiffness, pressure_stiffness;
+			Eigen::SparseMatrix<double> velocity_stiffness, mixed_stiffness, pressure_stiffness;
 			assembler.assemble_problem(mixed_formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, velocity_stiffness);
-			assembler.assemble_mixed_problem(mixed_formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, iso_parametric() ? bases : geom_bases, pressure_stiffness);
+			assembler.assemble_mixed_problem(mixed_formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, iso_parametric() ? bases : geom_bases, mixed_stiffness);
+			assembler.assemble_pressure_problem(mixed_formulation(), n_pressure_bases, pressure_bases, iso_parametric() ? bases : geom_bases, pressure_stiffness);
 
 			assert(velocity_stiffness.rows() == velocity_stiffness.cols());
 			assert(velocity_stiffness.rows() == n_bases * mesh->dimension());
-			assert(pressure_stiffness.rows() == n_bases * mesh->dimension());
+
+			assert(mixed_stiffness.rows() == n_bases * mesh->dimension());
+			assert(mixed_stiffness.cols() == n_pressure_bases);
+
+			assert(pressure_stiffness.rows() == n_pressure_bases);
 			assert(pressure_stiffness.cols() == n_pressure_bases);
 
 
 			std::vector< Eigen::Triplet<double> > blocks;
-			blocks.reserve(velocity_stiffness.nonZeros() + 2*pressure_stiffness.nonZeros());
+			blocks.reserve(velocity_stiffness.nonZeros() + 2*mixed_stiffness.nonZeros());
 
 			for (int k = 0; k < velocity_stiffness.outerSize(); ++k)
 			{
@@ -1394,12 +1399,21 @@ namespace polyfem
 				}
 			}
 
+			for (int k = 0; k < mixed_stiffness.outerSize(); ++k)
+			{
+				for (Eigen::SparseMatrix<double>::InnerIterator it(mixed_stiffness, k); it; ++it)
+				{
+					blocks.emplace_back(it.row(), n_bases * mesh->dimension() + it.col(), it.value());
+					blocks.emplace_back(it.col() + n_bases * mesh->dimension(), it.row(), it.value());
+				}
+			}
+
+
 			for (int k = 0; k < pressure_stiffness.outerSize(); ++k)
 			{
 				for (Eigen::SparseMatrix<double>::InnerIterator it(pressure_stiffness, k); it; ++it)
 				{
-					blocks.emplace_back(it.row(), n_bases * mesh->dimension() + it.col(), it.value());
-					blocks.emplace_back(it.col() + n_bases * mesh->dimension(), it.row(), it.value());
+					blocks.emplace_back( n_bases * mesh->dimension() + it.row(), n_bases * mesh->dimension() + it.col(), it.value());
 				}
 			}
 
@@ -1409,6 +1423,7 @@ namespace polyfem
 
 			// Eigen::saveMarket(stiffness, "test.txt");
 			// Eigen::saveMarket(velocity_stiffness, "velocity_stiffness.txt");
+			// Eigen::saveMarket(mixed_stiffness, "mixed_stiffness.txt");
 			// Eigen::saveMarket(pressure_stiffness, "pressure_stiffness.txt");
 
 

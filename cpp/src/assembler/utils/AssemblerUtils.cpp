@@ -23,6 +23,7 @@ namespace polyfem
 		tensor_assemblers_.push_back("Ogden");
 
 		mixed_assemblers_.push_back("Stokes");
+		mixed_assemblers_.push_back("IncompressibleLinearElasticity");
 	}
 
 	bool AssemblerUtils::is_linear(const std::string &assembler) const
@@ -48,6 +49,8 @@ namespace polyfem
 			hooke_linear_elasticity_.assemble(is_volume, n_basis, bases, gbases, stiffness);
 		else if(assembler == "Stokes")
 			stokes_velocity_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+		else if(assembler == "IncompressibleLinearElasticity")
+			incompressible_lin_elast_velocity_.assemble(is_volume, n_basis, bases, gbases, stiffness);
 
 		else if(assembler == "SaintVenant")
 			return;
@@ -86,13 +89,34 @@ namespace polyfem
 		Eigen::SparseMatrix<double> &stiffness) const
 	{
 		if(assembler == "Stokes")
-			stokes_pressure_.assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, stiffness);
+			stokes_mixed_.assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, stiffness);
+		else if(assembler == "IncompressibleLinearElasticity")
+			incompressible_lin_elast_mixed_.assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, stiffness);
 
 		else
 		{
 			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;
 			assert(false);
-			stokes_pressure_.assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, stiffness);
+			stokes_mixed_.assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, stiffness);
+		}
+	}
+
+	void AssemblerUtils::assemble_pressure_problem(const std::string &assembler,
+		const int n_basis,
+		const std::vector< ElementBases > &bases,
+		const std::vector< ElementBases > &gbases,
+		Eigen::SparseMatrix<double> &stiffness) const
+	{
+		if(assembler == "Stokes")
+			stokes_pressure_.assemble(false, n_basis, bases, gbases, stiffness);
+		else if(assembler == "IncompressibleLinearElasticity")
+			incompressible_lin_elast_pressure_.assemble(false, n_basis, bases, gbases, stiffness);
+
+		else
+		{
+			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;
+			assert(false);
+			stokes_pressure_.assemble(false, n_basis, bases, gbases, stiffness);
 		}
 	}
 
@@ -232,6 +256,8 @@ namespace polyfem
 
 		else if(assembler == "Stokes")
 			return stokes_velocity_.local_assembler().compute_rhs(pt);
+		else if(assembler == "IncompressibleLinearElasticity")
+			return incompressible_lin_elast_velocity_.local_assembler().compute_rhs(pt);
 
 		else
 		{
@@ -295,7 +321,12 @@ namespace polyfem
 		ogden_elasticity_.local_assembler().set_parameters(params);
 
 		stokes_velocity_.local_assembler().set_parameters(params);
+		stokes_mixed_.local_assembler().set_parameters(params);
 		stokes_pressure_.local_assembler().set_parameters(params);
+
+		incompressible_lin_elast_velocity_.local_assembler().set_parameters(params);
+		incompressible_lin_elast_mixed_.local_assembler().set_parameters(params);
+		incompressible_lin_elast_pressure_.local_assembler().set_parameters(params);
 	}
 
 }

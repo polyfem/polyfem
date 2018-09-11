@@ -13,7 +13,7 @@
 
 namespace polyfem
 {
-	class StokesVelocity
+	class IncompressibleLinearElasticityVelocity
 	{
 	public:
 		// res is R^{dim²}
@@ -26,13 +26,20 @@ namespace polyfem
 		void set_size(const int size);
 		inline int size() const { return size_; }
 
+		inline double &mu() { return mu_; }
+		inline double mu() const { return mu_; }
+
+		inline double &lambda() { return lambda_; }
+		inline double lambda() const { return lambda_; }
+
 		void set_parameters(const json &params);
 	private:
 		int size_ = 2;
-		double viscosity_ = 1;
+		double mu_ = 1;
+		double lambda_ = 1;
 	};
 
-	class StokesMixed
+	class IncompressibleLinearElasticityMixed
 	{
 	public:
 		// res is R^{dim}
@@ -44,24 +51,29 @@ namespace polyfem
 
 		void set_size(const int size);
 
+		inline double &mu() { return mu_; }
+		inline double mu() const { return mu_; }
+
+		inline double &lambda() { return lambda_; }
+		inline double lambda() const { return lambda_; }
+
 		inline int rows() const { return size_; }
 		inline int cols() const { return 1; }
 
 		void set_parameters(const json &params);
 	private:
 		int size_ = 2;
+		double mu_ = 1;
+		double lambda_ = 1;
 	};
 
 
-	class StokesPressure
+	class IncompressibleLinearElasticityPressure
 	{
 	public:
-		// res is R^{dim²}
+		// res is R^{1}
 		Eigen::Matrix<double, 1, 1>
-		assemble(const ElementAssemblyValues &vals, const int i, const int j, const QuadratureVector &da) const
-		{
-			return Eigen::Matrix<double, 1, 1>::Zero(1,1);
-		}
+		assemble(const ElementAssemblyValues &vals, const int i, const int j, const QuadratureVector &da) const;
 
 		Eigen::Matrix<double, 1, 1>
 		compute_rhs(const AutodiffHessianPt &pt) const
@@ -72,6 +84,16 @@ namespace polyfem
 
 		inline int size() const { return 1; }
 
-		void set_parameters(const json &params) { }
+		void set_parameters(const json &params);
+
+				inline double &mu() { return mu_; }
+		inline double mu() const { return mu_; }
+
+		inline double &lambda() { return lambda_; }
+		inline double lambda() const { return lambda_; }
+
+	private:
+		double mu_ = 1;
+		double lambda_ = 1;
 	};
 }

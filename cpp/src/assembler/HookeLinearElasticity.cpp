@@ -48,6 +48,8 @@ namespace polyfem
 		{
 			if (params.count("young")) {
 				elasticity_tensor_.set_from_young_poisson(params["young"], params["nu"]);
+			} else if (params.count("E")) {
+				elasticity_tensor_.set_from_young_poisson(params["E"], params["nu"]);
 			} else {
 				elasticity_tensor_.set_from_lambda_mu(params["lambda"], params["mu"]);
 			}

@@ -17,6 +17,7 @@
 #include <polyfem/OgdenElasticity.hpp>
 
 #include <polyfem/Stokes.hpp>
+#include <polyfem/IncompressibleLinElast.hpp>
 
 #include <polyfem/ProblemWithSolution.hpp>
 
@@ -53,6 +54,12 @@ namespace polyfem
 			const int n_phi_basis,
 			const std::vector< ElementBases > &psi_bases,
 			const std::vector< ElementBases > &phi_bases,
+			const std::vector< ElementBases > &gbases,
+			Eigen::SparseMatrix<double> &stiffness) const;
+
+		void assemble_pressure_problem(const std::string &assembler,
+			const int n_basis,
+			const std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
 			Eigen::SparseMatrix<double> &stiffness) const;
 
@@ -126,7 +133,12 @@ namespace polyfem
 		NLAssembler<OgdenElasticity> ogden_elasticity_;
 
 		Assembler<StokesVelocity> stokes_velocity_;
-		MixedAssembler<StokesPressure> stokes_pressure_;
+		MixedAssembler<StokesMixed> stokes_mixed_;
+		Assembler<StokesPressure> stokes_pressure_;
+
+		Assembler<IncompressibleLinearElasticityVelocity> incompressible_lin_elast_velocity_;
+		MixedAssembler<IncompressibleLinearElasticityMixed> incompressible_lin_elast_mixed_;
+		Assembler<IncompressibleLinearElasticityPressure> incompressible_lin_elast_pressure_;
 
 		std::vector<std::string> scalar_assemblers_;
 		std::vector<std::string> tensor_assemblers_;

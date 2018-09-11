@@ -20,7 +20,21 @@ namespace polyfem
 	void NeoHookeanElasticity::set_parameters(const json &params)
 	{
 		set_size(params["size"]);
-		set_lambda_mu(params["lambda"], params["mu"]);
+		
+
+		if(params.count("young")) {
+			set_lambda_mu(
+				convert_to_lambda(size_ == 3, params["young"], params["nu"]),
+				convert_to_mu(params["young"], params["nu"]));
+		} else if(params.count("E")) {
+			set_lambda_mu(
+				convert_to_lambda(size_ == 3, params["E"], params["nu"]),
+				convert_to_mu(params["E"], params["nu"]));
+		}
+		else
+		{
+			set_lambda_mu(params["lambda"], params["mu"]);
+		}
 	}
 
 	void NeoHookeanElasticity::set_size(const int size)

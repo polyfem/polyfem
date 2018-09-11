@@ -8,6 +8,8 @@ set(SOURCES
 	Helmholtz.hpp
 	HookeLinearElasticity.cpp
 	HookeLinearElasticity.hpp
+	IncompressibleLinElast.cpp
+	IncompressibleLinElast.hpp
 	Laplacian.cpp
 	Laplacian.hpp
 	LinearElasticity.cpp

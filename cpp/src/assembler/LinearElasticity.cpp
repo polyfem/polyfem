@@ -10,8 +10,18 @@ namespace polyfem
 	{
 		size() = params["size"];
 
-		lambda() = params["lambda"];
-		mu() = params["mu"];
+		if(params.count("young")) {
+			lambda() = convert_to_lambda(size_ == 3, params["young"], params["nu"]);
+			mu() = convert_to_mu(params["young"], params["nu"]);
+		} else if(params.count("E")) {
+			lambda() = convert_to_lambda(size_ == 3, params["E"], params["nu"]);
+			mu() = convert_to_mu(params["E"], params["nu"]);
+		}
+		else
+		{
+			lambda() = params["lambda"];
+			mu() = params["mu"];
+		}
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>

@@ -55,18 +55,18 @@ namespace polyfem
 
 
 
-	void StokesPressure::set_parameters(const json &params)
+	void StokesMixed::set_parameters(const json &params)
 	{
 		set_size(params["size"]);
 	}
 
-	void StokesPressure::set_size(const int size)
+	void StokesMixed::set_size(const int size)
 	{
 		size_ = size;
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-	StokesPressure::assemble(const ElementAssemblyValues &psi_vals, const ElementAssemblyValues &phi_vals, const int i, const int j, const QuadratureVector &da) const
+	StokesMixed::assemble(const ElementAssemblyValues &psi_vals, const ElementAssemblyValues &phi_vals, const int i, const int j, const QuadratureVector &da) const
 	{
 		// -(psii : div phij)  = psii * gradphij
 
@@ -86,7 +86,7 @@ namespace polyfem
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-	StokesPressure::compute_rhs(const AutodiffHessianPt &pt) const
+	StokesMixed::compute_rhs(const AutodiffHessianPt &pt) const
 	{
 		assert(pt.size() == rows());
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res(rows());

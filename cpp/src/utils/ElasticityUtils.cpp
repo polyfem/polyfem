@@ -201,6 +201,23 @@ namespace polyfem
 	}
 
 
+	double convert_to_lambda(const bool is_volume, const double E, const double nu)
+	{
+		const double lam = (E * nu) / ((1.0 + nu) * (1.0 - 2.0 * nu));
+
+		if(is_volume)
+			return lam;
+
+		const double mmu = convert_to_mu(E, nu);
+		return (2.0 * mmu * lam) / (lam + 2 * mmu);
+	}
+
+	double convert_to_mu(const double E, const double nu)
+	{
+		return E / (2.0 * (1.0 + nu));
+	}
+
+
 	double von_mises_stress_for_stress_tensor(const Eigen::MatrixXd &stress)
 	{
 		double von_mises_stress = 0.5 * ( stress(0, 0) - stress(1, 1) ) * ( stress(0, 0) - stress(1, 1) ) + 3.0  *  stress(0, 1) * stress(1, 0);

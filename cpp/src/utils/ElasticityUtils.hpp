@@ -48,6 +48,9 @@ namespace polyfem
 
 	double von_mises_stress_for_stress_tensor(const Eigen::MatrixXd &stress);
 
+	double convert_to_lambda(const bool is_volume, const double E, const double nu);
+	double convert_to_mu(const double E, const double nu);
+
 
 	class ElasticityTensor
 	{

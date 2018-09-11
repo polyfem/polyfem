@@ -10,6 +10,7 @@
 #include <polyfem/OgdenElasticity.hpp>
 
 #include <polyfem/Stokes.hpp>
+#include <polyfem/IncompressibleLinElast.hpp>
 
 
 #include <igl/Timer.h>
@@ -596,5 +597,10 @@ namespace polyfem
 	template class NLAssembler<OgdenElasticity>;
 
 	template class Assembler<StokesVelocity>;
-	template class MixedAssembler<StokesPressure>;
+	template class MixedAssembler<StokesMixed>;
+	template class Assembler<StokesPressure>;
+	
+	template class Assembler<IncompressibleLinearElasticityVelocity>;
+	template class MixedAssembler<IncompressibleLinearElasticityMixed>;
+	template class Assembler<IncompressibleLinearElasticityPressure>;
 }

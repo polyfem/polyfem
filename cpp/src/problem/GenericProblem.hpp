@@ -24,8 +24,11 @@ namespace polyfem
 
 		bool is_dimention_dirichet(const int tag, const int dim) const override;
 		bool all_dimentions_dirichelt() const override { return all_dimentions_dirichelt_; }
+
+		bool is_mixed() const override { return is_mixed_; }
 	private:
 		bool all_dimentions_dirichelt_ = true;
+		bool is_mixed_ = false;
 
 		std::vector<Eigen::Matrix<ExpressionValue, 1, 3, Eigen::RowMajor>> forces_;
 		std::vector<Eigen::Matrix<ExpressionValue, 1, 3, Eigen::RowMajor>> displacements_;
