@@ -2054,6 +2054,11 @@ namespace polyfem
 		problem = ProblemFactory::factory().get_problem(args["problem"]);
 		//important for the BC
 		problem->set_parameters(args["problem_params"]);
+
+		if(args["use_spline"] && args["n_refs"] == 0)
+		{
+			std::cerr<<"[Warning] n_refs > 0 with spline"<<std::endl;
+		}
 	}
 
 	void State::export_data()

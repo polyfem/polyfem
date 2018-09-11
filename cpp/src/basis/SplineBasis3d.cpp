@@ -1031,7 +1031,7 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
         using std::max;
         assert(mesh.is_volume());
 
-        MeshNodes mesh_nodes(mesh, 1, 1, 1);
+        MeshNodes mesh_nodes(mesh, true, 1, 1, 1);
 
         const int n_els = mesh.n_elements();
         bases.resize(n_els);

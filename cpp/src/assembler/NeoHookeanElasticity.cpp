@@ -20,7 +20,6 @@ namespace polyfem
 	void NeoHookeanElasticity::set_parameters(const json &params)
 	{
 		set_size(params["size"]);
-		
 
 		if(params.count("young")) {
 			set_lambda_mu(

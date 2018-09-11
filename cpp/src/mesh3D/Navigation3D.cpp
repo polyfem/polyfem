@@ -145,6 +145,7 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_edge(
 			const auto & fid = M.elements[hi].fs[i];
 			for(int j=0;j<M.faces[fid].es.size();j++){
 				const auto & eid =M.faces[fid].es[j];
+				assert(M.edges[eid].vs[0] < M.edges[eid].vs[1]);
 				if(M.edges[eid].vs[0] == v0 && M.edges[eid].vs[1] == v1){
 					idx.element_patch = i;
 					idx.face = fid;
@@ -152,15 +153,17 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_edge(
 					for(int k=0;k<M.faces[fid].vs.size();k++)
 						if(M.faces[fid].vs[k] == idx.vertex) idx.face_corner =k;
 
-					assert(idx.vertex == v0);
-					assert(switch_vertex(M, idx).vertex == v1);
+					assert(idx.vertex == v0i);
+					assert(switch_vertex(M, idx).vertex == v1i);
 					assert(idx.element == hi);
-					
+
 					return idx;
 				}
 			}
 		}
 	}
+
+	assert(false);
 	return idx;
 }
 

@@ -659,7 +659,7 @@ namespace polyfem
         using std::max;
         assert(!mesh.is_volume());
 
-        MeshNodes mesh_nodes(mesh, 1, 1, 0);
+        MeshNodes mesh_nodes(mesh, true, 1, 1);
 
         const int n_els = mesh.n_elements();
         bases.resize(n_els);

@@ -98,6 +98,7 @@ void PolyhedronQuadrature::get_quadrature(const Eigen::MatrixXd &V, const Eigen:
 	Quadrature tet_quadr_pts;
 	TetQuadrature tet_quadr;
 	tet_quadr.get_quadrature(4, tet_quadr_pts);
+	// assert(tet_quadr_pts.weights.minCoeff() >= 0);
 
 	double scaling = (V.colwise().maxCoeff() - V.colwise().minCoeff()).maxCoeff();
 	Eigen::RowVector3d translation = V.colwise().minCoeff();
@@ -170,12 +171,14 @@ void PolyhedronQuadrature::get_quadrature(const Eigen::MatrixXd &V, const Eigen:
 		// viewer.data.add_edges(triangle.row(2), triangle.row(1), Eigen::Vector3d(1,0,0).transpose());
 
 		const double det = transform_pts(tetra, tet_quadr_pts.points, transformed_points);
+		assert(det > 0);
 
 		quadr.points.block(i*offset, 0, transformed_points.rows(), transformed_points.cols()) = transformed_points;
 		quadr.weights.block(i*offset, 0, tet_quadr_pts.weights.rows(), tet_quadr_pts.weights.cols()) = tet_quadr_pts.weights * det;
 	}
 
-	assert(quadr.weights.minCoeff() >= 0);
+
+	// assert(quadr.weights.minCoeff() >= 0);
 	// std::cout<<"#quadrature points: " << quadr.weights.size()<<" "<<quadr.weights.sum()<<std::endl;
 }
 
