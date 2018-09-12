@@ -26,6 +26,13 @@ namespace polyfem
 		mixed_assemblers_.push_back("IncompressibleLinearElasticity");
 	}
 
+	bool AssemblerUtils::is_solution_displacement(const std::string &assembler) const
+	{
+		return 	assembler == "LinearElasticity" || assembler == "HookeLinearElasticity" ||
+				assembler == "SaintVenant" || assembler == "NeoHookean" || assembler == "Ogden" ||
+				assembler == "IncompressibleLinearElasticity";
+	}
+
 	bool AssemblerUtils::is_linear(const std::string &assembler) const
 	{
 		return assembler != "SaintVenant" && assembler != "NeoHookean" && assembler != "Ogden";
@@ -50,7 +57,7 @@ namespace polyfem
 		else if(assembler == "Stokes")
 			stokes_velocity_.assemble(is_volume, n_basis, bases, gbases, stiffness);
 		else if(assembler == "IncompressibleLinearElasticity")
-			incompressible_lin_elast_velocity_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+			incompressible_lin_elast_displacement_.assemble(is_volume, n_basis, bases, gbases, stiffness);
 
 		else if(assembler == "SaintVenant")
 			return;
@@ -196,6 +203,12 @@ namespace polyfem
 		else if(assembler == "Ogden")
 			ogden_elasticity_.local_assembler().compute_von_mises_stresses(bs, gbs, local_pts, fun, result);
 
+
+		else if(assembler == "Stokes")
+			stokes_velocity_.local_assembler().compute_norm_velocity(bs, gbs, local_pts, fun, result);
+		else if(assembler == "IncompressibleLinearElasticity")
+			incompressible_lin_elast_displacement_.local_assembler().compute_von_mises_stresses(bs, gbs, local_pts, fun, result);
+
 		else
 		{
 			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;
@@ -225,6 +238,11 @@ namespace polyfem
 			neo_hookean_elasticity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
 		else if(assembler == "Ogden")
 			ogden_elasticity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
+
+		else if(assembler == "Stokes")
+			stokes_velocity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
+		else if(assembler == "IncompressibleLinearElasticity")
+			incompressible_lin_elast_displacement_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
 
 		else
 		{
@@ -257,7 +275,7 @@ namespace polyfem
 		else if(assembler == "Stokes")
 			return stokes_velocity_.local_assembler().compute_rhs(pt);
 		else if(assembler == "IncompressibleLinearElasticity")
-			return incompressible_lin_elast_velocity_.local_assembler().compute_rhs(pt);
+			return incompressible_lin_elast_displacement_.local_assembler().compute_rhs(pt);
 
 		else
 		{
@@ -324,7 +342,7 @@ namespace polyfem
 		stokes_mixed_.local_assembler().set_parameters(params);
 		stokes_pressure_.local_assembler().set_parameters(params);
 
-		incompressible_lin_elast_velocity_.local_assembler().set_parameters(params);
+		incompressible_lin_elast_displacement_.local_assembler().set_parameters(params);
 		incompressible_lin_elast_mixed_.local_assembler().set_parameters(params);
 		incompressible_lin_elast_pressure_.local_assembler().set_parameters(params);
 	}

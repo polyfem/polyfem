@@ -600,7 +600,7 @@ namespace polyfem
 	template class MixedAssembler<StokesMixed>;
 	template class Assembler<StokesPressure>;
 	
-	template class Assembler<IncompressibleLinearElasticityVelocity>;
+	template class Assembler<IncompressibleLinearElasticityDispacement>;
 	template class MixedAssembler<IncompressibleLinearElasticityMixed>;
 	template class Assembler<IncompressibleLinearElasticityPressure>;
 }

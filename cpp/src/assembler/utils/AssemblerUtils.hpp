@@ -113,6 +113,8 @@ namespace polyfem
 
 		bool is_linear(const std::string &assembler) const;
 
+		bool is_solution_displacement(const std::string &assembler) const;
+
 		//getters
 		const std::vector<std::string> &scalar_assemblers() const { return scalar_assemblers_; }
 		const std::vector<std::string> &tensor_assemblers() const { return tensor_assemblers_; }
@@ -136,7 +138,7 @@ namespace polyfem
 		MixedAssembler<StokesMixed> stokes_mixed_;
 		Assembler<StokesPressure> stokes_pressure_;
 
-		Assembler<IncompressibleLinearElasticityVelocity> incompressible_lin_elast_velocity_;
+		Assembler<IncompressibleLinearElasticityDispacement> incompressible_lin_elast_displacement_;
 		MixedAssembler<IncompressibleLinearElasticityMixed> incompressible_lin_elast_mixed_;
 		Assembler<IncompressibleLinearElasticityPressure> incompressible_lin_elast_pressure_;
 

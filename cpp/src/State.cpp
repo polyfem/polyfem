@@ -2210,7 +2210,7 @@ namespace polyfem
 		}
 
 
-		if(fun.cols() != 1 && !problem->is_mixed())
+		if(fun.cols() != 1)
 		{
 			Eigen::MatrixXd vals;
 			compute_scalar_value(pts_index, sol, vals);

@@ -674,36 +674,29 @@ namespace polyfem
 		if(fun.cols() != 1)
 		{
 			MatrixXd ffun(vis_pts.rows(), 1);
-			if(state.problem->is_mixed()){
-				 //norm of displacement
-				ffun = (fun.array()*fun.array()).rowwise().sum().sqrt();
-			}
-			else
-			{
 				// int size = state.mesh->dimension();
 
-				const auto &assembler = AssemblerUtils::instance();
+			const auto &assembler = AssemblerUtils::instance();
 
-				MatrixXd stresses;
-				int counter = 0;
-				for(int i = 0; i < int(state.bases.size()); ++i)
-				{
-					const ElementBases &bs = state.bases[i];
-					const ElementBases &gbs = gbases[i];
-					MatrixXd local_pts;
+			MatrixXd stresses;
+			int counter = 0;
+			for(int i = 0; i < int(state.bases.size()); ++i)
+			{
+				const ElementBases &bs = state.bases[i];
+				const ElementBases &gbs = gbases[i];
+				MatrixXd local_pts;
 
-					if(state.mesh->is_simplex(i))
-						local_pts = sampler.simplex_points();
-					else if(state.mesh->is_cube(i))
-						local_pts = sampler.cube_points();
-					else
-						local_pts = vis_pts_poly[i];
+				if(state.mesh->is_simplex(i))
+					local_pts = sampler.simplex_points();
+				else if(state.mesh->is_cube(i))
+					local_pts = sampler.cube_points();
+				else
+					local_pts = vis_pts_poly[i];
 
-					assembler.compute_scalar_value(state.tensor_formulation(), bs, gbs, local_pts, state.sol, stresses);
+				assembler.compute_scalar_value(state.tensor_formulation(), bs, gbs, local_pts, state.sol, stresses);
 
-					ffun.block(counter, 0, stresses.rows(), 1) = stresses;
-					counter += stresses.rows();
-				}
+				ffun.block(counter, 0, stresses.rows(), 1) = stresses;
+				counter += stresses.rows();
 			}
 
 			if(min < max)
@@ -725,7 +718,7 @@ namespace polyfem
 
 			MatrixXd ttmp = vis_pts;
 
-			if(!state.problem->is_mixed())
+			if(assembler.is_solution_displacement(state.tensor_formulation()))
 			{
 				//apply displacement
 				for(long i = 0; i < fun.cols(); ++i)

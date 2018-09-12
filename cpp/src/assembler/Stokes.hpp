@@ -27,6 +27,10 @@ namespace polyfem
 		inline int size() const { return size_; }
 
 		void set_parameters(const json &params);
+
+		void compute_norm_velocity(const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &velocity, Eigen::MatrixXd &norms) const;
+		void compute_stress_tensor(const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &velocity, Eigen::MatrixXd &tensor) const;
+
 	private:
 		int size_ = 2;
 		double viscosity_ = 1;
