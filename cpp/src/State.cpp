@@ -656,7 +656,7 @@ namespace polyfem
 				// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
 
 				const auto nodes = bs.local_nodes_for_primitive(face_id, mesh3d);
-				assembler.compute_tensor_value(tensor_formulation(), bs, gbs, points, fun, loc_val);
+				assembler.compute_tensor_value(formulation(), bs, gbs, points, fun, loc_val);
 				Eigen::VectorXd tmp(loc_val.cols());
 				for(int d = 0; d < loc_val.cols(); ++d)
 					tmp(d) = (loc_val.col(d).array() * weights.array()).sum();
@@ -732,6 +732,7 @@ namespace polyfem
 	void State::compute_scalar_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result)
 	{
 		result.resize(n_points, 1);
+		assert(!problem->is_scalar());
 
 		int index = 0;
 		const auto &sampler = RefElementSampler::sampler();
@@ -753,7 +754,7 @@ namespace polyfem
 			// else
 				// local_pts = vis_pts_poly[i];
 
-			assembler.compute_scalar_value(tensor_formulation(), bs, gbs, local_pts, fun, local_val);
+			assembler.compute_scalar_value(formulation(), bs, gbs, local_pts, fun, local_val);
 
 			result.block(index, 0, local_val.rows(), 1) = local_val;
 			index += local_val.rows();
@@ -765,6 +766,7 @@ namespace polyfem
 	{
 		const int actual_dim = mesh->dimension();
 		result.resize(n_points, actual_dim*actual_dim);
+		assert(!problem->is_scalar());
 
 		int index = 0;
 		const auto &sampler = RefElementSampler::sampler();
@@ -786,7 +788,7 @@ namespace polyfem
 			// else
 				// local_pts = vis_pts_poly[i];
 
-			assembler.compute_tensor_value(tensor_formulation(), bs, gbs, local_pts, fun, local_val);
+			assembler.compute_tensor_value(formulation(), bs, gbs, local_pts, fun, local_val);
 
 			result.block(index, 0, local_val.rows(), local_val.cols()) = local_val;
 			index += local_val.rows();

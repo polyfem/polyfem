@@ -419,7 +419,9 @@ void compute_nodes(
 		const int discr_order = discr_orders(c);
 
 		if (mesh.is_cube(c)) {
-			if (discr_order == 1) {
+			if (discr_order == 0) {
+				element_nodes_id[c].push_back(nodes.node_id_from_cell(c));
+			} else if (discr_order == 1) {
 				for (int id : linear_hex_local_to_global(mesh, c)) {
 					element_nodes_id[c].push_back(nodes.node_id_from_primitive(id));
 				}
@@ -591,11 +593,19 @@ Eigen::RowVector3d linear_hex_local_node_coordinates(int local_index) {
 
 void polyfem::FEBasis3d::tet_local_to_global(const int p, const Mesh3D &mesh, int c, const Eigen::VectorXi &discr_order, std::vector<int> &res, polyfem::MeshNodes &nodes)
 {
-	const int n_edge_nodes = (p-1)*6;
+	const int n_edge_nodes = p > 1 ? ((p-1)*6) : 0;
 	const int nn = p > 2 ? (p - 2) : 0;
 	const int n_loc_f = (nn * (nn + 1) / 2);
 	const int n_face_nodes = n_loc_f * 4;
 	const int n_cell_nodes = p == 4 ? 1 : 0; //P5 not supported
+
+
+	if(p == 0)
+	{
+		res.push_back(nodes.node_id_from_cell(c));
+		return;
+	}
+
 
 	// std::vector<int> res;
 	res.reserve(4 + n_edge_nodes + n_face_nodes + n_cell_nodes);
@@ -1363,7 +1373,7 @@ int polyfem::FEBasis3d::build_bases(
 	const int n_face_nodes = std::max(nn * (nn + 1) / 2, max_p == 2 ? 1 : 0);
 	const int n_cells_nodes = (max_p == 2 || max_p == 4) ? 1 : 0;
 
-	MeshNodes nodes(mesh, has_polys, max_p - 1, n_face_nodes, n_cells_nodes);
+	MeshNodes nodes(mesh, has_polys, max_p > 1 ? (max_p - 1) : 0, n_face_nodes, max_p == 0 ? 1 : n_cells_nodes);
 	std::vector<std::vector<int>> element_nodes_id;
 	compute_nodes(mesh, discr_orders, has_polys, nodes, element_nodes_id, local_boundary, poly_face_to_data);
 	// boundary_nodes = nodes.boundary_nodes();
@@ -1448,7 +1458,12 @@ int polyfem::FEBasis3d::build_bases(
 
 				b.bases[j].init(global_index, j, nodes.node_position(global_index));
 
-				if (discr_order == 1) {
+				if (discr_order == 0) {
+					b.bases[j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+						{ assert(j==0); val.resize(uv.rows(), 1); val.setOnes(); });
+					b.bases[j].set_grad([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+						{ assert(j==0); val.resize(uv.rows(), uv.cols()); val.setZero(); });
+				} else if (discr_order == 1) {
 					b.bases[j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
 						{ linear_hex_basis_value(j, uv, val); });
 					b.bases[j].set_grad([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)

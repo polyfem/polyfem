@@ -170,7 +170,7 @@ if __name__ == "__main__":
 
     dims = [2, 3]
 
-    orders = [1, 2, 3, 4]
+    orders = [0, 1, 2, 3, 4]
     # orders = [4]
 
     cpp = "#include <polyfem/auto_bases.hpp>\n\n\n"
@@ -206,7 +206,20 @@ if __name__ == "__main__":
         for order in orders:
             print("\t-processing " + str(order))
 
-            fe = Lagrange(dim, order)
+            if order == 0:
+                fe = lambda: None
+                fe.nbf = lambda: 1
+
+                fe.N = [1]
+
+                if dim == 2:
+                    fe.points = [[1./3., 1./3.]]
+                else:
+                    fe.points = [[1./3., 1./3., 1./3.]]
+            else:
+                fe = Lagrange(dim, order)
+
+
 
             current_indices = list(range(0, len(fe.points)))
             indices = []
@@ -373,6 +386,9 @@ if __name__ == "__main__":
             base = base + "\n\n"
             dbase = base
 
+            if order == 0:
+                base = base + "result_0.resize(x.size(),1);\n"
+
             base = base + "switch(local_index){\n"
             dbase = dbase + "val.resize(uv.rows(), uv.cols());\n Eigen::ArrayXd result_0(uv.rows());\n" + "switch(local_index){\n"
 
@@ -380,7 +396,7 @@ if __name__ == "__main__":
                 real_index = indices[i]
                 # real_index = i
 
-                base = base + "\tcase " + str(i) + ": {" + pretty_print.C99_print(simplify(fe.N[real_index])) + "} break;\n"
+                base = base + "\tcase " + str(i) + ": {" + pretty_print.C99_print(simplify(fe.N[real_index])).replace(" = 1;", ".setOnes();") + "} break;\n"
                 dbase = dbase + "\tcase " + str(i) + ": {" + \
                     "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], x))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(0) = result_0; }" \
                     "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], y))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(1) = result_0; }"

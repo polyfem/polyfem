@@ -274,7 +274,9 @@ namespace {
 			const int discr_order = discr_orders(f);
 			if(mesh.is_cube(f))
 			{
-				if (discr_order == 1) {
+				if (discr_order == 0) {
+					element_nodes_id[f].push_back(nodes.node_id_from_face(f));
+				} else if (discr_order == 1) {
 					for (int id : polyfem::FEBasis2d::linear_quad_local_to_global(mesh, f)) {
 						element_nodes_id[f].push_back(nodes.node_id_from_primitive(id));
 					}
@@ -533,9 +535,15 @@ void polyfem::FEBasis2d::tri_local_to_global(const int p, const Mesh2D &mesh, in
 	int edge_offset = mesh.n_vertices();
 	int face_offset = edge_offset + mesh.n_edges();
 
-	const int n_edge_nodes = (p-1)*3;
+	const int n_edge_nodes = p > 1 ? ((p-1)*3) : 0;
 	const int nn = p > 2 ? (p - 2) : 0;
 	const int n_face_nodes = nn * (nn + 1) / 2;
+
+	if(p == 0)
+	{
+		res.push_back(nodes.node_id_from_face(f));
+		return;
+	}
 
 	// std::vector<int> res;
 	res.reserve(3 + n_edge_nodes + n_face_nodes);
@@ -931,7 +939,7 @@ int polyfem::FEBasis2d::build_bases(
 	const int nn = max_p > 2 ? (max_p - 2) : 0;
 	const int n_face_nodes = std::max(nn * (nn + 1) / 2, max_p == 2 ? 1 : 0);
 
-	MeshNodes nodes(mesh, has_polys, max_p - 1, n_face_nodes);
+	MeshNodes nodes(mesh, has_polys, max_p > 1 ? (max_p - 1) : 0, max_p == 0 ? 1 : n_face_nodes);
 	std::vector<std::vector<int>> element_nodes_id;
 	compute_nodes(mesh, discr_orders, has_polys, nodes, element_nodes_id, local_boundary, poly_edge_to_data);
 	// boundary_nodes = nodes.boundary_nodes();
@@ -1010,7 +1018,12 @@ int polyfem::FEBasis2d::build_bases(
 				b.bases[j].init(global_index, j, nodes.node_position(global_index));
 
 
-				if (discr_order == 1) {
+				if (discr_order == 0) {
+					b.bases[j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+						{ assert(j==0); val.resize(uv.rows(), 1); val.setOnes(); });
+					b.bases[j].set_grad([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+						{ assert(j==0); val.resize(uv.rows(), uv.cols()); val.setZero(); });
+				} else if (discr_order == 1) {
 					b.bases[j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
 						{ linear_quad_basis_value(j, uv, val); });
 					b.bases[j].set_grad([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)

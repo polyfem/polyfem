@@ -188,7 +188,7 @@ namespace polyfem
 		const Eigen::MatrixXd &fun,
 		Eigen::MatrixXd &result) const
 	{
-		if(assembler == "Laplacian" || assembler == "Helmholtz" || assembler == "Stokes")
+		if(assembler == "Laplacian" || assembler == "Helmholtz")
 			return;
 
 		else if(assembler == "LinearElasticity")
@@ -224,7 +224,7 @@ namespace polyfem
 		const Eigen::MatrixXd &fun,
 		Eigen::MatrixXd &result) const
 	{
-		if(assembler == "Laplacian" || assembler == "Helmholtz" || assembler == "Stokes")
+		if(assembler == "Laplacian" || assembler == "Helmholtz")
 			return;
 
 		else if(assembler == "LinearElasticity")

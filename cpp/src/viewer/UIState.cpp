@@ -693,7 +693,7 @@ namespace polyfem
 				else
 					local_pts = vis_pts_poly[i];
 
-				assembler.compute_scalar_value(state.tensor_formulation(), bs, gbs, local_pts, state.sol, stresses);
+				assembler.compute_scalar_value(state.formulation(), bs, gbs, local_pts, state.sol, stresses);
 
 				ffun.block(counter, 0, stresses.rows(), 1) = stresses;
 				counter += stresses.rows();
@@ -718,7 +718,7 @@ namespace polyfem
 
 			MatrixXd ttmp = vis_pts;
 
-			if(assembler.is_solution_displacement(state.tensor_formulation()))
+			if(assembler.is_solution_displacement(state.formulation()))
 			{
 				//apply displacement
 				for(long i = 0; i < fun.cols(); ++i)

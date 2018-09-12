@@ -72,8 +72,8 @@ namespace polyfem
 				const auto &loc_val = vals.basis_values[j];
 
 				assert(bs.bases.size() == vals.basis_values.size());
-				assert(loc_val.grad.rows() == local_pts.rows());
-				assert(loc_val.grad.cols() == size());
+				assert(loc_val.val.rows() == local_pts.rows());
+				assert(loc_val.val.cols() == 1);
 
 				for(int d = 0; d < size(); ++d)
 				{
