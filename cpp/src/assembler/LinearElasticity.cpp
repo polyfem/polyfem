@@ -102,28 +102,18 @@ namespace polyfem
 		assert(displacement.cols() == 1);
 
 		Eigen::MatrixXd displacement_grad(size(), size());
-		// Eigen::MatrixXd xxx(1, size());
-		// Eigen::MatrixXd xxx1(1, size());
 
-		ElementAssemblyValues vals; //, valsdx;
-		// Eigen::MatrixXd dx = local_pts;
-		// int asdasd=2;
-		// dx.col(asdasd).array() += 1e-5;
-		// valsdx.compute(-1, size() == 3, dx, bs, gbs);
+		ElementAssemblyValues vals;
 		vals.compute(-1, size() == 3, local_pts, bs, gbs);
-
 
 		for(long p = 0; p < local_pts.rows(); ++p)
 		{
 			displacement_grad.setZero();
-			// xxx.setZero();
-			// xxx1.setZero();
 
 			for(std::size_t j = 0; j < bs.bases.size(); ++j)
 			{
 				const Basis &b = bs.bases[j];
 				const auto &loc_val = vals.basis_values[j];
-				// const auto &loc_valdx = valsdx.basis_values[j];
 
 				assert(bs.bases.size() == vals.basis_values.size());
 				assert(loc_val.grad.rows() == local_pts.rows());
@@ -134,53 +124,16 @@ namespace polyfem
 					for(std::size_t ii = 0; ii < b.global().size(); ++ii)
 					{
 						displacement_grad.row(d) += b.global()[ii].val * loc_val.grad.row(p) * displacement(b.global()[ii].index*size() + d);
-						// xxx(d) 					 += b.global()[ii].val * loc_val.val(p)      * displacement(b.global()[ii].index*size() + d);
-						// xxx1(d) += b.global()[ii].val * loc_valdx.val(p) * displacement(b.global()[ii].index*size() + d);
-						// assert(!std::isnan(xxx(d)));
 					}
 				}
 			}
-			// const Eigen::MatrixXd fd = (xxx1 - xxx)/1e-5;
-			// std::cout<<"err "<<(displacement_grad.col(asdasd).transpose()-fd)<<std::endl<<std::endl;
-			// u(x) = \sum_i\sum_d phi_i(x) * u_{i,d}
 
-			// grad phi_i(x) = grad (\hat phi_i(G-1(x)))) = grad \hat phi_i(G-1(x)) * (grad G-1)^T = grad \hat phi_i(\hat x) * (grad G-1)^T
-			// grad u(x) = \sum_i\sum_d grad phi_i(x) * u_{i,d} = (\sum_i\sum_d grad \hat phi_i(\hat x) * u_{i,d}) * (grad G-1)^T
 			displacement_grad = (displacement_grad * vals.jac_it[p]).eval();
-
-			// std::cout<<fd<<std::endl<<std::endl;
-			// std::cout<<(valsdx.val.row(p)- vals.val.row(p))<<std::endl<<std::endl;
-			// std::cout<<displacement_grad<<std::endl<<std::endl<<std::endl;
-
-			// const double errp = (displacement_grad.col(0).transpose()-fd*20).array().abs().maxCoeff();
-			// const double errm = (displacement_grad.col(0).transpose()+fd*20).array().abs().maxCoeff();
-
 
 			const Eigen::MatrixXd strain = (displacement_grad + displacement_grad.transpose())/2;
 			const Eigen::MatrixXd stress = 2 * mu_ * strain + lambda_ * strain.trace() * Eigen::MatrixXd::Identity(size(), size());
 
 			all.row(p) = fun(stress);
-
-			// if(all_size > size())
-			// {
-			// 	for(int a = 0; a < all_size; ++a)
-			// 		all(p, a) = displacement_grad(a);
-
-			// 	all(p,  0) = 0;
-			// 	for(int a = 0; a < all_size; ++a)
-			// 		all(p, 0) += displacement_grad(a);
-			// 	// all(p, 0) = errp;
-			// 	// all(p, 1) = errm;
-			// // 	std::cout<<vals.jac_it[p]<<std::endl<<std::endl;
-			// // 	for(int a = 0; a < size(); ++a)
-			// // 		all(p, a) = xxx(a);
-
-			// // 	// std::cout<<all<<std::endl<<std::endl;
-			// // 	// std::cout<<xxx<<std::endl<<std::endl;
-			// // 	// exit(0);
-			// }
 		}
-
-					// exit(0);
 	}
 }
