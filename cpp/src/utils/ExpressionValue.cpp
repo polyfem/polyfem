@@ -1,4 +1,5 @@
 #include <polyfem/ExpressionValue.hpp>
+#include <polyfem/Logger.hpp>
 
 namespace polyfem
 {
@@ -45,7 +46,7 @@ namespace polyfem
 
 		if(!expr_)
 		{
-			std::cerr<<"Unable to parse " << expr <<" error, "<<err<<std::endl;
+			logger().error("Unable to parse {}, error, {}", expr, err);
 
 			assert(false);
 		}

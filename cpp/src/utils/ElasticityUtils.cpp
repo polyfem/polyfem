@@ -1,5 +1,5 @@
 #include <polyfem/ElasticityUtils.hpp>
-
+#include <polyfem/Logger.hpp>
 
 namespace polyfem
 {
@@ -89,7 +89,7 @@ namespace polyfem
 
 				if(show_message)
 				{
-					std::cout<<"[Warning] grad "<<n_bases<<"^"<<size<<" not using static sizes"<<std::endl;
+					logger().debug("[Warning] grad {}^{} not using static sizes", n_bases, size);
 					show_message = false;
 				}
 
@@ -185,7 +185,7 @@ namespace polyfem
 
 				if(show_message)
 				{
-					std::cout<<"[Warning] hessian "<<n_bases<<"*"<<size<<" not using static sizes"<<std::endl;
+					logger().debug("[Warning] hessian {}*{} not using static sizes", n_bases, size);
 					show_message = false;
 				}
 

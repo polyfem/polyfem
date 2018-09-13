@@ -1,4 +1,5 @@
 #include <polyfem/AssemblerUtils.hpp>
+#include <polyfem/Logger.hpp>
 
 namespace polyfem
 {
@@ -67,7 +68,7 @@ namespace polyfem
 			return;
 		else
 		{
-			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;
+			logger().warn("{} not found, fallback to default", assembler);
 			assert(false);
 			laplacian_.assemble(is_volume, n_basis, bases, gbases, stiffness);
 		}
@@ -102,7 +103,7 @@ namespace polyfem
 
 		else
 		{
-			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;
+			logger().warn("{} not found, fallback to default", assembler);
 			assert(false);
 			stokes_mixed_.assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, stiffness);
 		}
@@ -121,7 +122,7 @@ namespace polyfem
 
 		else
 		{
-			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;
+			logger().warn("{} not found, fallback to default", assembler);
 			assert(false);
 			stokes_pressure_.assemble(false, n_basis, bases, gbases, stiffness);
 		}
@@ -211,7 +212,7 @@ namespace polyfem
 
 		else
 		{
-			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;
+			logger().warn("{} not found, fallback to default", assembler);
 			assert(false);
 			linear_elasticity_.local_assembler().compute_von_mises_stresses(bs, gbs, local_pts, fun, result);
 		}
@@ -246,7 +247,7 @@ namespace polyfem
 
 		else
 		{
-			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;
+			logger().warn("{} not found, fallback to default", assembler);
 			assert(false);
 			linear_elasticity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
 		}
@@ -279,7 +280,7 @@ namespace polyfem
 
 		else
 		{
-			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;
+			logger().warn("{} not found, fallback to default", assembler);
 
 			assert(false);
 			return laplacian_.local_assembler().compute_rhs(pt);
@@ -309,7 +310,7 @@ namespace polyfem
 
 		else
 		{
-			std::cerr<<"[Warning] "<<assembler<<" not found, fallback to default"<<std::endl;
+			logger().warn("{} not found, fallback to default", assembler);
 
 			assert(false);
 			return laplacian_.local_assembler().kernel(dim, r);

@@ -2,6 +2,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/LinearSolverEigen.h>
+#include <polyfem/Logger.hpp>
 #include <iostream>
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -32,7 +33,7 @@ template<typename SparseSolver>
 void polyfem::LinearSolverEigenDirect<SparseSolver>::factorize(const SparseMatrixXd &A) {
 	m_Solver.factorize(A);
 	if (m_Solver.info() == Eigen::NumericalIssue) {
-		std::cerr << "[LinearSolver] NumericalIssue encountered." << std::endl;
+		logger().error("[LinearSolver] NumericalIssue encountered.");
 	}
 }
 

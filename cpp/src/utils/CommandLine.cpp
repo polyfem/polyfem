@@ -1,4 +1,5 @@
 #include <polyfem/CommandLine.hpp>
+#include <polyfem/Logger.hpp>
 
 #include <iostream>
 #include <sstream>
@@ -12,7 +13,7 @@ namespace polyfem {
 			for(int i = 1; i < argc; ++i) {
 				if(argv[i] == arg.first) {
 					if(argc <= i + 1) {
-						std::cerr << "malformed input for arg " << argv[i] << std::endl;
+						logger().error("malformed input for arg {}", argv[i]);
 						return false;
 					}
 

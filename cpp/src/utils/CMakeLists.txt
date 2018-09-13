@@ -10,6 +10,8 @@ set(SOURCES
 	EdgeSampler.hpp
 	ElasticityUtils.cpp
 	ElasticityUtils.hpp
+	Logger.cpp
+	Logger.hpp
 	InterpolatedFunction.cpp
 	InterpolatedFunction.hpp
 	MatrixUtils.cpp

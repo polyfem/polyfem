@@ -20,3 +20,12 @@ function(polyfem_download_sanitizers)
         GIT_TAG        6947cff3a9c9305eb9c16135dd81da3feb4bf87f
     )
 endfunction()
+
+
+## spdlog
+function(polyfem_download_spdlog)
+    polyfem_download_project(spdlog
+        GIT_REPOSITORY https://github.com/gabime/spdlog.git
+        GIT_TAG        v1.1.0
+    )
+endfunction()

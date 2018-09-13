@@ -1,4 +1,5 @@
 #include <polyfem/VTUWriter.hpp>
+#include <polyfem/Logger.hpp>
 
 namespace polyfem
 {
@@ -19,7 +20,7 @@ namespace polyfem
                 return VTK_HEXAHEDRON;
                 default:
                 //element type not supported. To add it (http://www.vtk.org/VTK/img/file-formats.pdf)
-                std::cerr << "[Error] " << n_vertices << " not supported" << std::endl;
+                logger().error("{} not supported", n_vertices);
                 assert(false);
                 return -1;
             }
@@ -34,7 +35,7 @@ namespace polyfem
                 return VTK_QUAD;
                 default:
                 //element type not supported. To add it (http://www.vtk.org/VTK/img/file-formats.pdf)
-                std::cerr << "[Error] " << n_vertices << " not supported" << std::endl;
+                logger().error("{} not supported", n_vertices);
                 assert(false);
                 return -1;
             }

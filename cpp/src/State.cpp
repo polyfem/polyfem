@@ -36,6 +36,8 @@
 
 #include <polyfem/auto_bases.hpp>
 
+#include <polyfem/Logger.hpp>
+
 #ifdef USE_TBB
 #include <tbb/task_scheduler_init.h>
 #endif
@@ -116,10 +118,10 @@ namespace polyfem
 			average_edge_length = p.rowwise().norm().mean();
 			mesh_size = p.rowwise().norm().maxCoeff();
 
-			std::cout << std::endl;
-			std::cout << "hmin: " << min_edge_length << std::endl;
-			std::cout << "hmax: " << mesh_size << std::endl;
-			std::cout << "havg: " << average_edge_length << std::endl;
+			logger().info("");
+			logger().info("hmin: {}", min_edge_length);
+			logger().info("hmax: {}", mesh_size);
+			logger().info("havg: {}", average_edge_length);
 
 			return;
 		}
@@ -181,7 +183,7 @@ namespace polyfem
 
 	void State::save_json(std::ostream &out)
 	{
-		std::cout<<"Saving json..."<<std::flush;
+		logger().info("Saving json...");
 		using json = nlohmann::json;
 		json j;
 
@@ -272,8 +274,6 @@ namespace polyfem
 		std::vector<double> mmin(actual_dim);
 		std::vector<double> mmax(actual_dim);
 
-		// std::cout<<sol<<std::endl;
-
 		for(int d = 0; d < actual_dim; ++d)
 		{
 			mmin[d] = std::numeric_limits<double>::max();
@@ -303,7 +303,7 @@ namespace polyfem
 
 		out << j.dump(4) << std::endl;
 
-		std::cout<<"done"<<std::endl;
+		logger().info("done");
 	}
 
 	double get_opt_p(bool h1_formula, double B,
@@ -318,7 +318,6 @@ namespace polyfem
 		(std::log(B*std::pow(h_ref, p_ref + 1)*sigma*sigma/sigma_ref/sigma_ref) - std::log(h))/std::log(h);
 		// (std::log(B*std::pow(h_ref, p_ref + 2)*rho*rho / (h * h *rho_ref*rho_ref))/std::log(h));
 
-		// std::cout<<ptmp<<std::endl;
 		return std::min(std::max(p_ref, (int)std::round(ptmp)), p_max);
 	}
 
@@ -337,9 +336,6 @@ namespace polyfem
 		const int p_ref = args["discr_order"];
 		const double rho_ref =  sqrt(3.0)/6.0*h_ref;
 		const int p_max = std::min(autogen::MAX_P_BASES, args["discr_order_max"].get<int>());
-
-		// std::cout<<"h_ref "<<h_ref<<std::endl;
-		// std::cout<<"edges "<<tmp.rowwise().norm()<<std::endl;
 
 		sigma_avg = 0;
 		sigma_max = 0;
@@ -376,14 +372,6 @@ namespace polyfem
 			sigma_max = std::max(sigma_max, sigma);
 			sigma_min = std::min(sigma_min, sigma);
 
-			// std::cout<<"A "<<A<< " rho "<<rho<<" hp "<<hp<<std::endl;
-
-			// const double ptmp = 0.5 * (-4 * std::log(hp) + (2*p_ref+2) * std::log(h) + 2*std::log(rho) + 2*std::log(2) + std::log(3) + 2*std::log(B))/std::log(hp);
-
-			// const double ptmp = std::log(B*std::pow(h_ref, p_ref + 1)*rho / (hp *rho_ref))/std::log(hp);
-			// const double ptmp = std::log(B*std::pow(h_ref, p_ref + 2)*rho*rho / (hp *hp *rho_ref*rho_ref))/std::log(hp);
-
-			// const int p = std::min(std::max(p_ref, (int)std::round(ptmp)), autogen::MAX_P_BASES);
 			const int p = get_opt_p(h1_formula, B, h_ref, p_ref, rho_ref, hp, rho, p_max);
 
 			if(p > disc_orders[f])
@@ -410,16 +398,16 @@ namespace polyfem
 
 		sigma_avg /= mesh2d.n_faces();
 		max_angle = max_angle/M_PI*180.;
-		std::cout<<"using B=" << B << " with " << (h1_formula ? "H1" : "L2") <<" estimate max_angle "<<max_angle<<std::endl;
-		std::cout<<"average sigma: "<<sigma_avg<<std::endl;
-		std::cout<<"min sigma: "<<sigma_min<<std::endl;
-		std::cout<<"max sigma: "<<sigma_max<<std::endl;
+		logger().info("using B={} with {} estimate max_angle {}", B , (h1_formula ? "H1" : "L2"), max_angle);
+		logger().info("average sigma: {}", sigma_avg);
+		logger().info("min sigma: {}", sigma_min);
+		logger().info("max sigma: {}", sigma_max);
 
-		std::cout<<"num_p1 " << (disc_orders.array() == 1).count()<<std::endl;
-		std::cout<<"num_p2 " << (disc_orders.array() == 2).count()<<std::endl;
-		std::cout<<"num_p3 " << (disc_orders.array() == 3).count()<<std::endl;
-		std::cout<<"num_p4 " << (disc_orders.array() == 4).count()<<std::endl;
-		std::cout<<"num_p5 " << (disc_orders.array() == 5).count()<<std::endl;
+		logger().info("num_p1 {}" , (disc_orders.array() == 1).count());
+		logger().info("num_p2 {}" , (disc_orders.array() == 2).count());
+		logger().info("num_p3 {}" , (disc_orders.array() == 3).count());
+		logger().info("num_p4 {}" , (disc_orders.array() == 4).count());
+		logger().info("num_p5 {}" , (disc_orders.array() == 5).count());
 	}
 
 	void State::p_refinement(const Mesh3D &mesh3d)
@@ -474,18 +462,10 @@ namespace polyfem
 			const double rho = 3 * V / S;
 			const double hp = en.maxCoeff();
 
-			// std::cout<<v0<<" "<<v1<<" "<<v2<<" "<<v3<<std::endl;
-			// std::cout<<S<<" V:"<<V<<"  rho:"<<rho<<" hp: "<<hp<<std::endl;
-			// exit(0);
-
 			sigma_avg += rho/hp;
 			sigma_max = std::max(sigma_max, rho/hp);
 			sigma_min = std::min(sigma_min, rho/hp);
 
-			// const double ptmp = std::log(B*std::pow(h_ref, p_ref + 1)*rho / (hp *rho_ref))/std::log(hp);
-			// const double ptmp = std::log(B*std::pow(h_ref, p_ref + 2)*rho*rho / (hp *hp *rho_ref*rho_ref))/std::log(hp);
-			// 0.5 * (-4*power*std::log(hp) + (2*p_ref+2) * std::log(h) + 2*power*std::log(rho) + 3*std::log(2) + std::log(3) + 2*std::log(B)) / std::log(hp);
-			// const int p = std::min(std::max(p_ref, (int)std::round(ptmp)), autogen::MAX_P_BASES);
 			const int p = get_opt_p(h1_formula, B, h_ref, p_ref, rho_ref, hp, rho, p_max);
 
 
@@ -510,17 +490,17 @@ namespace polyfem
 
 		max_angle = max_angle/M_PI*180.;
 		sigma_avg /= mesh3d.n_elements();
-		std::cout<<"using B=" << B << " with " << (h1_formula ? "H1" : "L2") <<" estimate max_angle "<<max_angle<<std::endl;
 
-		std::cout<<"average sigma: "<<sigma_avg<<std::endl;
-		std::cout<<"min sigma: "<<sigma_min<<std::endl;
-		std::cout<<"max sigma: "<<sigma_max<<std::endl;
+		logger().info("using B={} with {} estimate max_angle {}", B , (h1_formula ? "H1" : "L2"), max_angle);
+		logger().info("average sigma: {}", sigma_avg);
+		logger().info("min sigma: {}", sigma_min);
+		logger().info("max sigma: {}", sigma_max);
 
-		std::cout<<"num_p1 " << (disc_orders.array() == 1).count()<<std::endl;
-		std::cout<<"num_p2 " << (disc_orders.array() == 2).count()<<std::endl;
-		std::cout<<"num_p3 " << (disc_orders.array() == 3).count()<<std::endl;
-		std::cout<<"num_p4 " << (disc_orders.array() == 4).count()<<std::endl;
-		std::cout<<"num_p5 " << (disc_orders.array() == 5).count()<<std::endl;
+		logger().info("num_p1 {}" , (disc_orders.array() == 1).count());
+		logger().info("num_p2 {}" , (disc_orders.array() == 2).count());
+		logger().info("num_p3 {}" , (disc_orders.array() == 3).count());
+		logger().info("num_p4 {}" , (disc_orders.array() == 4).count());
+		logger().info("num_p5 {}" , (disc_orders.array() == 5).count());
 
 	}
 
@@ -591,7 +571,7 @@ namespace polyfem
 
 				const double dist = tree.squared_distance(pts, faces, bary, I, C);
 				assert(dist < 1e-16);
-				// std::cout<<face_id<<" - "<<I<<": "<<dist<<" -> "<<bary<<std::endl;
+
 				assert(std::isnan(result(I, 0)));
 				if(compute_avg)
 					result.row(I) = loc_val/weights.sum();
@@ -668,7 +648,7 @@ namespace polyfem
 
 				const double dist = tree.squared_distance(pts, faces, bary, I, C);
 				assert(dist < 1e-16);
-				// std::cout<<face_id<<" - "<<I<<": "<<dist<<" -> "<<bary<<std::endl;
+
 				assert(std::isnan(result(I, 0)));
 				result.row(I) = normals.row(I) * tensor;
 				if(compute_avg)
@@ -819,7 +799,7 @@ namespace polyfem
 
 
 		igl::Timer timer; timer.start();
-		std::cout<<"Loading mesh..."<<std::flush;
+		logger().info("Loading mesh...");
 		mesh = Mesh::create(meshin);
 		if (!mesh) {
 			return;
@@ -833,7 +813,8 @@ namespace polyfem
 		{
 			RowVectorNd min, max;
 			mesh->bounding_box(min, max);
-			std::cout<<"min "<<min<<", \tmax "<<max<<std::endl;
+			//TODO
+			// logger().info("mesh bb min {}, \tmax {}", min, max);
 		}
 
 		mesh->refine(args["n_refs"], args["refinenemt_location"], parent_elements);
@@ -841,7 +822,7 @@ namespace polyfem
 		mesh->compute_boundary_ids(boundary_marker);
 
 		timer.stop();
-		std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
+		logger().info(" took {}s", timer.getElapsedTime());
 
 		RefElementSampler::sampler().init(mesh->is_volume(), mesh->n_elements(), args["vismesh_rel_area"]);
 
@@ -872,7 +853,7 @@ namespace polyfem
 
 
 		igl::Timer timer; timer.start();
-		std::cout<<"Loading mesh..."<<std::flush;
+		logger().info("Loading mesh...");
 		const bool force_lin = args["force_linear_geometry"];
 		mesh = Mesh::create(mesh_path(), force_lin);
 		if (!mesh) {
@@ -892,7 +873,7 @@ namespace polyfem
 		{
 			RowVectorNd min, max;
 			mesh->bounding_box(min, max);
-			std::cout<<"min "<<min<<", \tmax "<<max<<std::endl;
+			// logger().info("mesh bb min {}, \tmax {}", min, max);
 		}
 
 		mesh->refine(args["n_refs"], args["refinenemt_location"], parent_elements);
@@ -907,7 +888,7 @@ namespace polyfem
 
 
 		timer.stop();
-		std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
+		logger().info(" took {}s", timer.getElapsedTime());
 
 		RefElementSampler::sampler().init(mesh->is_volume(), mesh->n_elements(), args["vismesh_rel_area"]);
 
@@ -1071,19 +1052,19 @@ namespace polyfem
 			}
 		}
 
-		std::cout <<
-		"simplex_count:\t " << simplex_count <<"\n"<<
-		"regular_count:\t " << regular_count <<"\n"<<
-		"regular_boundary_count:\t " << regular_boundary_count <<"\n"<<
-		"simple_singular_count:\t " << simple_singular_count <<"\n"<<
-		"multi_singular_count:\t " << multi_singular_count <<"\n"<<
-		"singular_boundary_count:\t " << boundary_count <<"\n"<<
-		"multi_singular_boundary_count:\t " << multi_singular_boundary_count <<"\n"<<
-		"polytope_count:\t " <<  non_regular_count <<"\n"<<
-		"polytope_boundary_count:\t " << non_regular_boundary_count <<"\n"<<
-		"undefined_count:\t " << undefined_count <<"\n"<<
-		"total count:\t " << mesh->n_elements() <<"\n"<<
-		std::endl;
+		logger().info(
+			"simplex_count:\t {}\nregular_count:\t {}\nregular_boundary_count:\t {}\nsimple_singular_count:\t {}\nmulti_singular_count:\t {}\nsingular_boundary_count:\t {}\nmulti_singular_boundary_count:\t {}\npolytope_count:\t {}\npolytope_boundary_count:\t {}\nundefined_count:\t {}\ntotal count:\t {}\n",
+			simplex_count,
+			regular_count,
+			regular_boundary_count,
+			simple_singular_count,
+			multi_singular_count,
+			boundary_count,
+			multi_singular_boundary_count,
+			non_regular_count,
+			non_regular_boundary_count,
+			undefined_count,
+			mesh->n_elements());
 	}
 
 
@@ -1176,7 +1157,7 @@ namespace polyfem
 		sigma_min = 0;
 
 
-		std::cout<<"Building "<< (iso_parametric()? "isoparametric":"not isoparametric") <<" basis..."<<std::flush;
+		logger().info("Building {} basis...", (iso_parametric()? "isoparametric":"not isoparametric"));
 		const bool has_polys = non_regular_count > 0 || non_regular_boundary_count > 0 || undefined_count > 0;
 
 		local_boundary.clear();
@@ -1194,7 +1175,7 @@ namespace polyfem
 			else
 				p_refinement(*dynamic_cast<Mesh2D *>(mesh.get()));
 
-			std::cout<<"min p: " << disc_orders.minCoeff() << " max p: " << disc_orders.maxCoeff()<<std::endl;
+			logger().info("min p: {} max p: {}", disc_orders.minCoeff(), disc_orders.maxCoeff());
 		}
 
 		if(mesh->is_volume())
@@ -1260,7 +1241,7 @@ namespace polyfem
 
 		if(args["count_flipped_els"])
 		{
-			std::cout<<"Counting flipped elements..."<<std::flush;
+			logger().info("Counting flipped elements...");
 
 			// flipped_elements.clear();
 			for(size_t i = 0; i < gbases.size(); ++i)
@@ -1274,15 +1255,10 @@ namespace polyfem
 
 					// if(!parent_elements.empty())
 					// 	flipped_elements.push_back(parent_elements[i]);
-					// std::cout<<"Basis "<< i << ( parent_elements.size() > 0 ? (" -> " + std::to_string(parent_elements[i])) : "") << " has negative volume P" <<disc_orders(i)<<std::endl;
-
-					// std::cout<<mesh->point(dynamic_cast<Mesh2D *>(mesh.get())->face_vertex(i, 0))<<std::endl;
-					// std::cout<<mesh->point(dynamic_cast<Mesh2D *>(mesh.get())->face_vertex(i, 1))<<std::endl;
-					// std::cout<<mesh->point(dynamic_cast<Mesh2D *>(mesh.get())->face_vertex(i, 2))<<std::endl;
 				}
 			}
 
-			std::cout<<" done"<<std::endl;
+			logger().info(" done");
 		}
 
 		// dynamic_cast<Mesh3D *>(mesh.get())->save({56}, 1, "mesh.HYBRID");
@@ -1294,22 +1270,17 @@ namespace polyfem
 
 		problem->setup_bc(*mesh, bases, local_boundary, boundary_nodes, local_neumann_boundary);
 
-		// std::cout<<"nnnn ";
-		// for(auto &n : boundary_nodes)
-		// 	std::cout<<n<<", ";
-		// std::cout<<std::endl;
-
 		const auto &curret_bases =  iso_parametric() ? bases : geom_bases;
 		const int n_samples = 10;
 		compute_mesh_size(*mesh, curret_bases, n_samples);
 
 		building_basis_time = timer.getElapsedTime();
-		std::cout<<" took "<<building_basis_time<<"s"<<std::endl;
+		logger().info(" took {}s", building_basis_time);
 
-		std::cout<<"flipped elements "<<n_flipped<<std::endl;
-		std::cout<<"h: "<<mesh_size<<std::endl;
-		std::cout<<"n bases: "<<n_bases<<std::endl;
-		std::cout<<"n pressure bases: "<<n_pressure_bases<<std::endl;
+		logger().info("flipped elements {}", n_flipped);
+		logger().info("h: {}", mesh_size);
+		logger().info("n bases: {}", n_bases);
+		logger().info("n pressure bases: {}", n_pressure_bases);
 	}
 
 
@@ -1327,7 +1298,7 @@ namespace polyfem
 		// 	return;
 
 		igl::Timer timer; timer.start();
-		std::cout<<"Computing polygonal basis..."<<std::flush;
+		logger().info("Computing polygonal basis...");
 
 		// std::sort(boundary_nodes.begin(), boundary_nodes.end());
 
@@ -1351,7 +1322,7 @@ namespace polyfem
 
 		timer.stop();
 		computing_poly_basis_time = timer.getElapsedTime();
-		std::cout<<" took "<<computing_poly_basis_time<<"s"<<std::endl;
+		logger().info(" took {}s", computing_poly_basis_time);
 	}
 
 	json State::build_json_params()
@@ -1369,7 +1340,7 @@ namespace polyfem
 		pressure.resize(0, 0);
 
 		igl::Timer timer; timer.start();
-		std::cout<<"Assembling stiffness mat..."<<std::flush;
+		logger().info("Assembling stiffness mat...");
 
 		auto &assembler = AssemblerUtils::instance();
 
@@ -1461,12 +1432,12 @@ namespace polyfem
 
 		timer.stop();
 		assembling_stiffness_mat_time = timer.getElapsedTime();
-		std::cout<<" took "<<assembling_stiffness_mat_time<<"s"<<std::endl;
+		logger().info(" took {}s", assembling_stiffness_mat_time);
 
 		nn_zero = stiffness.nonZeros();
 		num_dofs = stiffness.rows();
 		mat_size = (long long) stiffness.rows() * (long long) stiffness.cols();
-		std::cout<<"sparsity: "<<nn_zero<<"/"<<mat_size<<std::endl;
+		logger().info("sparsity: {}/{}", nn_zero, mat_size);
 	}
 
 	void State::assemble_rhs()
@@ -1494,7 +1465,7 @@ namespace polyfem
 		pressure.resize(0, 0);
 
 		igl::Timer timer; timer.start();
-		std::cout<<"Assigning rhs..."<<std::flush;
+		logger().info("Assigning rhs...");
 
 		const int size = problem->is_scalar() ? 1 : mesh->dimension();
 
@@ -1513,7 +1484,7 @@ namespace polyfem
 
 		timer.stop();
 		assigning_rhs_time = timer.getElapsedTime();
-		std::cout<<" took "<<assigning_rhs_time<<"s"<<std::endl;
+		logger().info(" took {}s", assigning_rhs_time);
 	}
 
 	void State::solve_problem()
@@ -1523,7 +1494,7 @@ namespace polyfem
 		spectrum.setZero();
 
 		igl::Timer timer; timer.start();
-		std::cout<<"Solving " << formulation() <<" with " << std::endl;
+		logger().info("Solving {} with", formulation());
 
 
 		const json &params = solver_params();
@@ -1553,7 +1524,7 @@ namespace polyfem
 
 			auto solver = LinearSolver::create(args["solver_type"], args["precond_type"]);
 			solver->setParameters(params);
-			std::cout<<solver->name()<<"... "<<std::flush;
+			logger().info("{}...", solver->name());
 
 			save_vtu( "step_" + std::to_string(0) + ".vtu");
 			save_wire("step_" + std::to_string(0) + ".obj");
@@ -1606,7 +1577,7 @@ namespace polyfem
 						sol.block(prev_size, 0, n_pressure_bases, sol.cols()).setZero();
 					}
 
-					std::cout<<t<<"/"<<time_steps<<std::endl;
+					logger().info("{}/{}", t, time_steps);
 				}
 			}
 			else
@@ -1667,7 +1638,7 @@ namespace polyfem
 					save_vtu( "step_" + std::to_string(t) + ".vtu");
 					save_wire("step_" + std::to_string(t) + ".obj");
 
-					std::cout<<t<<"/"<<time_steps<<std::endl;
+					logger().info("{}/{}", t, time_steps);
 				}
 			}
 		}
@@ -1679,9 +1650,7 @@ namespace polyfem
 				solver->setParameters(params);
 				Eigen::SparseMatrix<double> A;
 				Eigen::VectorXd b;
-				std::cout<<solver->name()<<"... "<<std::flush;
-
-				// std::cout<<Eigen::MatrixXd(stiffness)<<std::endl;
+				logger().info("{}...", solver->name());
 
 				A = stiffness;
 				Eigen::VectorXd x;
@@ -1690,15 +1659,7 @@ namespace polyfem
 				sol = x;
 				solver->getInfo(solver_info);
 
-				// Eigen::MatrixXd err = stiffness*sol-rhs;
-				// for(int i : boundary_nodes)
-				// 	err(i) = 0;
-				// std::cout<<"eeeee: "<<err.norm()<<std::endl;
-
-				// Eigen::saveMarket(stiffness, "stiffness.mat");
-				// exit(0);
-
-				std::cout<<"Solver error: "<<(A*sol-b).norm()<<std::endl;
+				logger().debug("Solver error: {}", (A*sol-b).norm());
 				// sol = rhs;
 
 				if(problem->is_mixed())
@@ -1708,7 +1669,6 @@ namespace polyfem
 			}
 			else
 			{
-				std::cout<<"... "<<std::flush;
 				const int full_size 	= n_bases*mesh->dimension();
 				const int reduced_size 	= n_bases*mesh->dimension() - boundary_nodes.size();
 
@@ -1723,7 +1683,7 @@ namespace polyfem
 
 				while(t <= 1)
 				{
-					std::cout<<"t="<<t<<" prev: "<<prev_t<<" step: "<<step_t<<std::endl;
+					logger().info("t: {} prev: {} step: {}", t, prev_t, step_t);
 
 					NLProblem nl_problem(rhs_assembler, t);
 					if(start){
@@ -1837,7 +1797,7 @@ namespace polyfem
 
 		timer.stop();
 		solving_time = timer.getElapsedTime();
-		std::cout<<" took "<<solving_time<<"s"<<std::endl;
+		logger().info(" took {}s", solving_time);
 	}
 
 	void State::compute_errors()
@@ -1847,7 +1807,7 @@ namespace polyfem
 			actual_dim = mesh->dimension();
 
 		igl::Timer timer; timer.start();
-		std::cout<<"Computing errors..."<<std::flush;
+		logger().info("Computing errors...");
 		using std::max;
 
 		const int n_el=int(bases.size());
@@ -1973,17 +1933,16 @@ namespace polyfem
 
 		timer.stop();
 		computing_errors_time = timer.getElapsedTime();
-		std::cout<<" took "<<computing_errors_time<<"s"<<std::endl;
+		logger().info(" took {}s", computing_errors_time);
 
-		std::cout << "-- L2 error: " << l2_err << std::endl;
-		std::cout << "-- Lp error: " << lp_err << std::endl;
-		std::cout << "-- H1 error: " << h1_err << std::endl;
-		std::cout << "-- H1 semi error: " << h1_semi_err << std::endl;
-		// std::cout << "-- Perd norm: " << pred_norm << std::endl;
+		logger().info("-- L2 error: {}", l2_err);
+		logger().info("-- Lp error: {}", lp_err);
+		logger().info("-- H1 error: {}", h1_err);
+		logger().info("-- H1 semi error: {}", h1_semi_err);
+		// logger().info("-- Perd norm: {}", pred_norm);
 
-		std::cout << "\n-- Linf error: " << linf_err << std::endl;
-		std::cout << "-- grad max error: " << grad_max_err << std::endl;
-		// std::cout<<l2_err<<" "<<linf_err<<" "<<lp_err<<std::endl;
+		logger().info("\n-- Linf error: {}", linf_err);
+		logger().info("-- grad max error: {}", grad_max_err);
 
 		// {
 		// 	std::ofstream out("errs.txt");
@@ -2078,13 +2037,13 @@ namespace polyfem
 
 		if(args_in.find("stiffness_mat_save_path") != args_in.end() && !args_in["stiffness_mat_save_path"].empty())
 		{
-			std::cerr<<"[Warning] use export: { stiffness_mat: 'path' } instead of stiffness_mat_save_path"<<std::endl;
+			logger().warn("[Warning] use export: { stiffness_mat: 'path' } instead of stiffness_mat_save_path");
 			this->args["export"]["stiffness_mat"] = args_in["stiffness_mat_save_path"];
 		}
 
 		if(args_in.find("solution") != args_in.end() && !args_in["solution"].empty())
 		{
-			std::cerr<<"[Warning] use export: { solution: 'path' } instead of solution"<<std::endl;
+			logger().warn("[Warning] use export: { solution: 'path' } instead of solution");
 			this->args["export"]["solution"] = args_in["solution"];
 		}
 
@@ -2094,7 +2053,7 @@ namespace polyfem
 
 		if(args["use_spline"] && args["n_refs"] == 0)
 		{
-			std::cerr<<"[Warning] n_refs > 0 with spline"<<std::endl;
+			logger().warn("[Warning] n_refs > 0 with spline");
 		}
 	}
 
@@ -2148,11 +2107,6 @@ namespace polyfem
 
 	void State::save_vtu(const std::string &path)
 	{
-		// if(!mesh->is_volume()){
-		// 	std::cerr<<"Saving vtu supported only for volume"<<std::endl;
-		// 	return;
-		// }
-
 		const auto &sampler = RefElementSampler::sampler();
 
 

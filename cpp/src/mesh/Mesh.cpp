@@ -6,6 +6,8 @@
 #include <polyfem/StringUtils.hpp>
 #include <polyfem/MshReader.hpp>
 
+#include <polyfem/Logger.hpp>
+
 #include <geogram/mesh/mesh_io.h>
 #include <geogram/mesh/mesh_geometry.h>
 ////////////////////////////////////////////////////////////////////////////////
@@ -38,7 +40,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(GEO::Mesh &meshin) {
 		}
 	}
 
-	std::cerr << "Failed to load mesh" << std::endl;
+	logger().error("Failed to load mesh");
 	return nullptr;
 }
 
@@ -78,7 +80,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path, co
 			return create(tmp);
 		}
 	}
-	std::cerr << "Failed to load mesh: " << path << std::endl;
+	logger().error("Failed to load mesh: {}", path);
 	return nullptr;
 }
 

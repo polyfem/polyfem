@@ -1,5 +1,7 @@
 #include "MassMatrixAssembler.hpp"
 
+#include <polyfem/Logger.hpp>
+
 #ifdef USE_TBB
 #include <tbb/parallel_for.h>
 #include <tbb/task_scheduler_init.h>
@@ -35,7 +37,7 @@ namespace polyfem
 		Eigen::SparseMatrix<double> &mass) const
 	{
 		const int buffer_size = std::min(long(1e8), long(n_basis) * size);
-		std::cout<<"buffer_size "<<buffer_size<<std::endl;
+		logger().debug("buffer_size {}", buffer_size);
 
 		mass.resize(n_basis*size, n_basis*size);
 		mass.setZero();
@@ -106,7 +108,7 @@ namespace polyfem
 										loc_storage.mass_mat.makeCompressed();
 
 										loc_storage.entries.clear();
-										std::cout<<"cleaning memory..."<<std::endl;
+										logger().debug("cleaning memory...");
 									}
 								}
 							}

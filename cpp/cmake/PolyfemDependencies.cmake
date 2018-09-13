@@ -28,3 +28,9 @@ if(POLYFEM_WITH_SANITIZERS)
     polyfem_download_sanitizers()
     find_package(Sanitizers)
 endif()
+
+# spdlog
+if(NOT TARGET spdlog::spdlog)
+	polyfem_download_spdlog()
+	add_subdirectory(${POLYFEM_EXTERNAL}/spdlog)
+endif()

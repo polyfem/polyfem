@@ -1,5 +1,6 @@
 #include "RBFInterpolation.hpp"
 
+#include <polyfem/Logger.hpp>
 #include <cmath>
 #include <iostream>
 
@@ -38,7 +39,7 @@ namespace polyfem
 		}
 		else
 		{
-			std::cerr<<"Unable to match "<<rbf<<" rbf, falling back to multiquadric"<<std::endl;
+			logger().warn("Unable to match {} rbf, falling back to multiquadric", rbf);
 			assert(false);
 
 			tmp = [eps](const double r){ return sqrt((r/eps)*(r/eps) + 1); };

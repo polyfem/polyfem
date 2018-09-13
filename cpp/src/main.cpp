@@ -1,9 +1,11 @@
 #include "UIState.hpp"
+
 #include <polyfem/State.hpp>
 
 #include <polyfem/LinearSolver.hpp>
 #include <polyfem/CommandLine.hpp>
 #include <polyfem/StringUtils.hpp>
+#include <polyfem/Logger.hpp>
 
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
@@ -71,6 +73,8 @@ int main(int argc, const char **argv)
 	bool p_ref = false;
 	bool force_linear = false;
 
+	Logger::init(true, "");
+
 	command_line.add_option("-json", json_file);
 
 	command_line.add_option("-mesh", path);
@@ -115,7 +119,7 @@ int main(int argc, const char **argv)
 		if (file.is_open())
 			file >> in_args;
 		else
-			std::cerr<<"unable to open "<<json_file<<" file"<<std::endl;
+			logger().error("unable to open {} file", json_file);
 		file.close();
 	}
 	else
@@ -142,8 +146,6 @@ int main(int argc, const char **argv)
 		if (!solver.empty())
 			in_args["solver_type"] = solver;
 	}
-
-	// std::cout<<j_args.dump(4)<<std::endl;
 
 
 	if(no_ui)

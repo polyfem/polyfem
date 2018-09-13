@@ -293,7 +293,7 @@ void RBFWithQuadraticLagrange::compute_constraints_matrix_3d(
 	// M_rhs << I_lin, I_mix, I_sqr;
 	M.bottomRows(dim).rowwise() += 2.0 * M_rhs;
 	//TODO
-	assert(false);
+	// assert(false);
 
 	show_matrix_stats(M);
 
@@ -338,6 +338,7 @@ void RBFWithQuadraticLagrange::compute_weights(const Eigen::MatrixXd &samples,
 	// Compute A
 	Eigen::MatrixXd A;
 	compute_kernels_matrix(samples, A);
+    const Eigen::MatrixXd At = A.transpose();
 
 	// Compute C
 	Eigen::MatrixXd C;
@@ -352,14 +353,14 @@ void RBFWithQuadraticLagrange::compute_weights(const Eigen::MatrixXd &samples,
 	assert(local_basis_integral.rows() == b.cols());
 	assert(A.rows() == b.rows());
 	Eigen::MatrixXd rhs(A.cols() + local_basis_integral.cols(), b.cols());
-	rhs.topRows(A.cols()) = A.transpose() * b;
+	rhs.topRows(A.cols()) = At * b;
 	rhs.bottomRows(local_basis_integral.cols()) = local_basis_integral.transpose();
 
 	// Compute M = [ A^T A C^T; C 0]
 	assert(C.cols() == A.cols());
 	assert(A.rows() == b.rows());
 	Eigen::MatrixXd M(A.cols() + C.rows(), A.cols() + C.rows());
-	M.topLeftCorner(A.cols(), A.cols()) = A.transpose() * A;
+	M.topLeftCorner(A.cols(), A.cols()) = At * A;
 	M.topRightCorner(A.cols(), C.rows()) = C.transpose();
 	M.bottomLeftCorner(C.rows(), A.cols()) = C;
 	M.bottomRightCorner(C.rows(), C.rows()).setZero();
@@ -375,7 +376,7 @@ void RBFWithQuadraticLagrange::compute_weights(const Eigen::MatrixXd &samples,
 	weights_ = ldlt.solve(rhs).topRows(A.cols());
 	std::cout << "-- Solved!" << std::endl;
 
-	std::cout << "-- Mean residual: " << (A * weights_ - b).array().abs().colwise().maxCoeff().mean() << std::endl;
+    std::cout << "-- Mean residual: " << (A * weights_ - b).array().abs().colwise().maxCoeff().mean() << std::endl;
 
 #if 0
 	Eigen::MatrixXd MM, x, dx, val;

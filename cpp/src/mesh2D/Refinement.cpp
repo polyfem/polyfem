@@ -3,9 +3,12 @@
 #include <polyfem/Navigation.hpp>
 #include <polyfem/MeshUtils.hpp>
 #include <polyfem/PolygonUtils.hpp>
+#include <polyfem/Logger.hpp>
+
 #include <igl/is_border_vertex.h>
 #include <igl/remove_duplicate_vertices.h>
 #include <igl/remove_unreferenced.h>
+
 #include <iostream>
 #include <vector>
 #include <array>
@@ -187,11 +190,12 @@ PatternType compute_pattern_type(
 	// Check if horizontal and vertical borders are matching
 	if (border[0].size() == border[1].size()) {
 		if (!border[0].col(0).isApprox(border[1].col(0))) {
-			std::cerr << "Warning: pattern boundaries have the same number of vertices, but their position differ slighly." << std::endl;
+			polyfem::logger().warn("Pattern boundaries have the same number of vertices, but their position differ slighly.");
 			Eigen::MatrixXd X(border[0].size(), 2);
 			X.col(0) = border[0].col(0);
 			X.col(1) = border[1].col(0);
-			std::cout << X << std::endl << std::endl;;
+			//TODO
+			// std::cout << X << std::endl << std::endl;;
 		}
 		return PatternType::DOUBLE_PERIODIC;
 	} else {
@@ -239,20 +243,20 @@ bool polyfem::instantiate_pattern(
 	// Check input validity
 	switch (pattern) {
 	case PatternType::NOT_PERIODIC:
-		std::cerr << "Pattern not periodic" << std::endl;
+		logger().error("Pattern not periodic");
 		return false;
 	case PatternType::NOT_SYMMETRIC:
-		std::cerr << "Pattern not symmetric" << std::endl;
+		logger().error("Pattern not symmetric");
 		return false;
 	case PatternType::SIMPLE_PERIODIC:
-		std::cerr << "Pattern simple periodic" << std::endl;
+		logger().error("Pattern simple periodic");
 		return false;
 	case PatternType::DOUBLE_PERIODIC:
 		// std::cout << "Pattern double periodic" << std::endl;
 		// Not implemented
 		break;
 	default:
-		std::cerr << "Unknown patter type" << std::endl;
+		logger().error("Unknown patter type");
 		return false;
 	}
 

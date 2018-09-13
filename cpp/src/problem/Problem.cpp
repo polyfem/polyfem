@@ -39,9 +39,6 @@ namespace polyfem
 
 			}
 
-			// std::cout<<"["<<std::distance(local_boundary.begin(), it) <<"]\n\t"<<lb<<"\n\t"<<new_lb<<"\n\t"<<new_neumann_lb<<"\n\n"<<std::endl;
-			// new_neumann_lb.remove_from(new_lb);
-
 			if(!new_lb.empty())
 				new_local_boundary.emplace_back(new_lb);
 			if(!new_neumann_lb.empty())

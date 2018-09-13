@@ -12,6 +12,7 @@
 #include <polyfem/Stokes.hpp>
 #include <polyfem/IncompressibleLinElast.hpp>
 
+#include <polyfem/Logger.hpp>
 
 #include <igl/Timer.h>
 
@@ -80,7 +81,7 @@ namespace polyfem
 		Eigen::SparseMatrix<double> &stiffness) const
 	{
 		const int buffer_size = std::min(long(1e8), long(n_basis) * local_assembler_.size());
-		std::cout<<"buffer_size "<<buffer_size<<std::endl;
+		logger().debug("buffer_size {}", buffer_size);
 
 		stiffness.resize(n_basis*local_assembler_.size(), n_basis*local_assembler_.size());
 		stiffness.setZero();
@@ -156,7 +157,7 @@ namespace polyfem
 										loc_storage.stiffness.makeCompressed();
 
 										loc_storage.entries.clear();
-										std::cout<<"cleaning memory..."<<std::endl;
+										logger().debug("cleaning memory...");
 									}
 								}
 							}
@@ -211,7 +212,7 @@ namespace polyfem
 		assert(phi_bases.size() == psi_bases.size());
 
 		const int buffer_size = std::min(long(1e8), long(std::max(n_psi_basis, n_phi_basis)) * std::max(local_assembler_.rows(), local_assembler_.cols()));
-		std::cout<<"buffer_size "<<buffer_size<<std::endl;
+		logger().debug("buffer_size {}", buffer_size);
 
 		stiffness.resize(n_phi_basis*local_assembler_.rows(), n_psi_basis*local_assembler_.cols());
 		stiffness.setZero();
@@ -283,7 +284,7 @@ namespace polyfem
 										loc_storage.stiffness.makeCompressed();
 
 										loc_storage.entries.clear();
-										std::cout<<"cleaning memory..."<<std::endl;
+										logger().debug("cleaning memory...");
 									}
 								}
 							}
@@ -499,8 +500,6 @@ namespace polyfem
 									const auto gj = global_j[jj].index*local_assembler_.size() + n;
 									const auto wj = global_j[jj].val;
 
-									// std::cout<< gi <<"," <<gj<<" -> "<<local_value<<std::endl;
-
 									loc_storage.entries.emplace_back(gi, gj, local_value * wi * wj);
 									if (j < i) {
 										loc_storage.entries.emplace_back(gj, gi, local_value * wj * wi);
@@ -513,7 +512,7 @@ namespace polyfem
 										loc_storage.stiffness.makeCompressed();
 
 										loc_storage.entries.clear();
-										std::cout<<"cleaning memory..."<<std::endl;
+										logger().debug("cleaning memory...");
 									}
 								}
 							}
