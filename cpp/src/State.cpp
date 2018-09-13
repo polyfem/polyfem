@@ -1714,14 +1714,72 @@ namespace polyfem
 
 				int steps = args["nl_solver_rhs_steps"];
 				RhsAssembler rhs_assembler(*mesh, n_bases, mesh->dimension(), bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
-				VectorXd tmp_sol;
-				for(int n = 1; n <=steps; ++n)
+				VectorXd tmp_sol, prev_sol;
+
+				double step_t = 1.0/steps;
+				double t = step_t;
+				double prev_t = 0;
+				bool start = true;
+
+				while(t <= 1)
 				{
-					const double t = double(n)/double(steps);
+					std::cout<<"t="<<t<<" prev: "<<prev_t<<" step: "<<step_t<<std::endl;
 
 					NLProblem nl_problem(rhs_assembler, t);
-					if(n == 1)
+					if(start){
 						tmp_sol = nl_problem.initial_guess();
+						prev_sol = tmp_sol;
+						start = false;
+					}
+
+					if (args["nl_solver"] == "newton") {
+						cppoptlib::SparseNewtonDescentSolver<NLProblem> solver(true);
+						solver.setLineSearch(args["line_search"]);
+						solver.minimize(nl_problem, tmp_sol);
+
+						if(solver.error_code() == -10) //Nan
+						{
+							tmp_sol = prev_sol;
+							step_t /= 2;
+							t = prev_t + step_t;
+							continue;
+						}
+						else
+						{
+							prev_t = t;
+							step_t *= 2;
+						}
+
+						solver.getInfo(solver_info);
+					} else if (args["nl_solver"] == "lbfgs") {
+						cppoptlib::LbfgsSolverL2<NLProblem> solver;
+						solver.setLineSearch(args["line_search"]);
+						solver.setDebug(cppoptlib::DebugLevel::High);
+						solver.minimize(nl_problem, tmp_sol);
+
+						prev_t = t;
+					} else {
+						throw std::invalid_argument("[State] invalid solver type for non-linear problem");
+					}
+
+					t = prev_t + step_t;
+					prev_sol = tmp_sol;
+					if((prev_t < 1 && t > 1) || abs(t-1) < 1e-10)
+						t = 1;
+
+
+
+					if(args["save_solve_sequence"])
+					{
+						nl_problem.reduced_to_full(tmp_sol, sol);
+
+						save_vtu( "step_" + std::to_string(t) + ".vtu");
+						save_wire("step_" + std::to_string(t) + ".obj");
+					}
+
+
+
+
 
 					// {
 					// 	// tmp_sol.setRandom();
@@ -1771,29 +1829,6 @@ namespace polyfem
 					// 	// std::cout<<"diff grad "<<(actual_grad - expected_grad).array().abs().maxCoeff()<<std::endl;
 					// 	// std::cout<<"diff \n"<<(actual_grad - expected_grad)<<std::endl;
 					// }
-
-					if (args["nl_solver"] == "newton") {
-						cppoptlib::SparseNewtonDescentSolver<NLProblem> solver(true);
-						solver.setLineSearch(args["line_search"]);
-						solver.minimize(nl_problem, tmp_sol);
-						solver.getInfo(solver_info);
-					} else if (args["nl_solver"] == "lbfgs") {
-						cppoptlib::LbfgsSolverL2<NLProblem> solver;
-						solver.setLineSearch(args["line_search"]);
-						solver.setDebug(cppoptlib::DebugLevel::High);
-						solver.minimize(nl_problem, tmp_sol);
-					} else {
-						throw std::invalid_argument("[State] invalid solver type for non-linear problem");
-					}
-					std::cout<<n<<"/"<<steps<<std::endl;
-
-					if(args["save_solve_sequence"])
-					{
-						nl_problem.reduced_to_full(tmp_sol, sol);
-
-						save_vtu( "step_" + std::to_string(n) + ".vtu");
-						save_wire("step_" + std::to_string(n) + ".obj");
-					}
 				}
 
 				NLProblem::reduced_to_full_aux(full_size, reduced_size, tmp_sol, rhs, sol);
@@ -2007,7 +2042,7 @@ namespace polyfem
 			{"solver_params", json({})},
 			{"line_search", "armijo"},
 			{"nl_solver", "newton"},
-			{"nl_solver_rhs_steps", 10},
+			{"nl_solver_rhs_steps", 1},
 			{"save_solve_sequence", false},
 
 			{"params", {

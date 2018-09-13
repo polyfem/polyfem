@@ -455,6 +455,22 @@ namespace polyfem
 			assert(stiffness_val.rows() == n_loc_bases * local_assembler_.size());
 			assert(stiffness_val.cols() == n_loc_bases * local_assembler_.size());
 
+			// bool has_nan = false;
+			// for(int k = 0; k < stiffness_val.size(); ++k)
+			// {
+			// 	if(std::isnan(stiffness_val(k)))
+			// 	{
+			// 		has_nan = true;
+			// 		break;
+			// 	}
+			// }
+
+			// if(has_nan)
+			// {
+			// 	loc_storage.entries.emplace_back(0, 0, std::nan(""));
+			// 	break;
+			// }
+
 
 				// igl::Timer t1; t1.start();
 			for(int i = 0; i < n_loc_bases; ++i)

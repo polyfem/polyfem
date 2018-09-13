@@ -44,7 +44,7 @@ namespace cppoptlib {
 		{
 			auto criteria = this->criteria();
 			criteria.fDelta = 1e-9;
-			criteria.gradNorm = 1e-9;
+			criteria.gradNorm = 1e-8;
 			criteria.iterations = 100;
 			this->setStopCriteria(criteria);
 		}
@@ -157,6 +157,7 @@ namespace cppoptlib {
 			double factor = 1e-5;
 			double old_energy = std::nan("");
 			double first_energy = std::nan("");
+			error_code_ = 0;
 			do
 			{
 				time.start();
@@ -167,14 +168,14 @@ namespace cppoptlib {
 					std::cout<<"\tgrad time "<<time.getElapsedTimeInSec()<<std::endl;
 				grad_time += time.getElapsedTimeInSec();
 
-				int iter = this->m_current.iterations;
-				bool new_hessian = this->m_current.iterations == next_hessian;
+				const size_t iter = this->m_current.iterations;
+				bool new_hessian = iter == next_hessian;
 
 				if(new_hessian)
 				{
 					time.start();
 					objFunc.hessian(x0, hessian);
-					hessian += 0.0 * id;
+					// hessian += 0.0 * id;
 					//factor *= 1e-1;
 					time.stop();
 					if(verbose)
@@ -182,6 +183,17 @@ namespace cppoptlib {
 					assembly_time += time.getElapsedTimeInSec();
 
 					next_hessian += 5;
+
+					if(iter == 0)
+					{
+						if(has_hessian_nans(hessian))
+						{
+							this->m_status = Status::UserDefined;
+							std::cerr<<"stopping because hessian is nan"<<std::endl;
+							error_code_ = -10;
+							break;
+						}
+					}
 				}
 
 				// std::cout<<hessian<<std::endl;
@@ -246,6 +258,7 @@ namespace cppoptlib {
 				{
 					this->m_status = Status::UserDefined;
 					std::cerr<<"stopping because obj func is nan"<<std::endl;
+					error_code_ = -10;
 				}
 
 				if(this->m_status == Status::Continue && step < 1e-10)
@@ -254,6 +267,7 @@ namespace cppoptlib {
 					{
 						this->m_status = Status::UserDefined;
 						std::cerr<<"stopping because ‖step‖=" << step << " is too small"<<std::endl;
+						error_code_ = -1;
 					}
 					else
 					{
@@ -272,22 +286,24 @@ namespace cppoptlib {
 			}
 			while (objFunc.callback(this->m_current, x0) && (this->m_status == Status::Continue));
 
+			if(error_code_ != -10)
+			{
+				solver_info["internal_solver"] = internal_solver;
+				solver_info["internal_solver_first"] = internal_solver.front();
+				solver_info["status"] = this->status();
 
-			solver_info["internal_solver"] = internal_solver;
-			solver_info["internal_solver_first"] = internal_solver.front();
-			solver_info["status"] = this->status();
+				const auto &crit = this->criteria();
+				solver_info["iterations"] = crit.iterations;
+				solver_info["xDelta"] = crit.xDelta;
+				solver_info["fDelta"] = crit.fDelta;
+				solver_info["gradNorm"] = crit.gradNorm;
+				solver_info["condition"] = crit.condition;
 
-			const auto &crit = this->criteria();
-			solver_info["iterations"] = crit.iterations;
-			solver_info["xDelta"] = crit.xDelta;
-			solver_info["fDelta"] = crit.fDelta;
-			solver_info["gradNorm"] = crit.gradNorm;
-			solver_info["condition"] = crit.condition;
-
-			grad_time /= crit.iterations;
-			assembly_time /= crit.iterations;
-			inverting_time /= crit.iterations;
-			linesearch_time /= crit.iterations;
+				grad_time /= crit.iterations;
+				assembly_time /= crit.iterations;
+				inverting_time /= crit.iterations;
+				linesearch_time /= crit.iterations;
+			}
 
 			solver_info["time_grad"] = grad_time;
 			solver_info["time_assembly"] = assembly_time;
@@ -300,9 +316,13 @@ namespace cppoptlib {
 			params = solver_info;
 		}
 
+		int error_code() const { return  error_code_; }
+
 	private:
 		const bool verbose;
+		int error_code_;
 		json solver_info;
+
 		json internal_solver = json::array();
 
 		LineSearch line_search = LineSearch::Armijo;
@@ -311,6 +331,20 @@ namespace cppoptlib {
 		double assembly_time;
 		double inverting_time;
 		double linesearch_time;
+
+		bool has_hessian_nans(const THessian &hessian)
+		{
+			for (int k = 0; k < hessian.outerSize(); ++k)
+			{
+				for (Eigen::SparseMatrix<double>::InnerIterator it(hessian, k); it; ++it)
+				{
+					if(std::isnan(it.value()))
+						return true;
+				}
+			}
+
+			return false;
+		}
 
 	};
 }
