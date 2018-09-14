@@ -1,8 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/RBFWithLinear.hpp>
 #include <polyfem/Types.hpp>
+#include <polyfem/Logger.hpp>
+
 #include <igl/Timer.h>
+
 #include <Eigen/Dense>
+
 #include <iostream>
 #include <fstream>
 #include <array>
@@ -164,10 +168,10 @@ void RBFWithLinear::compute_weights(const Eigen::MatrixXd &samples,
 	const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
 	Eigen::MatrixXd &rhs, bool with_constraints)
 {
-	std::cout << "#kernel centers: " << centers_.rows() << std::endl;
-	std::cout << "#collocation points: " << samples.rows() << std::endl;
-	std::cout << "#quadrature points: " << quadr.weights.size() << std::endl;
-	std::cout << "#non-vanishing bases: " << rhs.cols() << std::endl;
+	logger().trace("#kernel centers: {}", centers_.rows());
+	logger().trace("#collocation points: {}", samples.rows());
+	logger().trace("#quadrature points: {}", quadr.weights.size());
+	logger().trace("#non-vanishing bases: {}", rhs.cols());
 
 	if (!with_constraints) {
 		// Compute A
@@ -176,9 +180,9 @@ void RBFWithLinear::compute_weights(const Eigen::MatrixXd &samples,
 
 		// Solve the system
 		const int num_kernels = centers_.rows();
-		std::cout << "-- Solving system of size " << num_kernels << " x " << num_kernels << std::endl;
+		logger().trace("-- Solving system of size {}x{}", num_kernels, num_kernels);
 		weights_ = (A.transpose() * A).ldlt().solve(A.transpose() * rhs);
-		std::cout << "-- Solved!" << std::endl;
+		logger().trace("-- Solved!");
 
 		return;
 	}
@@ -248,9 +252,9 @@ void RBFWithLinear::compute_weights(const Eigen::MatrixXd &samples,
 	rhs -= A * weights_;
 
 	// Solve the system
-	std::cout << "-- Solving system of size " << L.cols() << " x " << L.cols() << std::endl;
+	logger().trace("-- Solving system of size {}x{}", L.cols(), L.cols());
 	weights_ += L * (L.transpose() * A.transpose() * A * L).ldlt().solve(L.transpose() * A.transpose() * rhs);
-	std::cout << "-- Solved!" << std::endl;
+	logger().trace("-- Solved!");
 
 	// std::cout << weights_.bottomRows(10) << std::endl;
 

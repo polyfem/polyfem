@@ -1,5 +1,7 @@
 #include <polyfem/MatrixUtils.hpp>
 
+#include <polyfem/Logger.hpp>
+
 #include <igl/list_to_matrix.h>
 #include <MatOp/SparseSymMatProd.h>
 #include <MatOp/SparseSymShiftSolve.h>
@@ -18,13 +20,13 @@ void polyfem::show_matrix_stats(const Eigen::MatrixXd &M) {
 	double s2 = svd.singularValues()(svd.singularValues().size()-1);
 	double cond = s1 / s2;
 
-	std::cout << "----------------------------------------" << std::endl;
-	std::cout << "-- Determinant: " << M.determinant() << std::endl;
-	std::cout << "-- Singular values: " << s1 << " " << s2 << std::endl;
-	std::cout << "-- Cond: " << cond << std::endl;
-	std::cout << "-- Invertible: " << lu.isInvertible() << std::endl;
-	std::cout << "----------------------------------------" << std::endl;
-	std::cout << lu.solve(M) << std::endl;
+	logger().trace("----------------------------------------" );
+	logger().trace("-- Determinant: {}", M.determinant() );
+	logger().trace("-- Singular values: {} {}", s1, s2 );
+	logger().trace("-- Cond: {}", cond );
+	logger().trace("-- Invertible: {}", lu.isInvertible() );
+	logger().trace("----------------------------------------" );
+	// logger().trace("{}", lu.solve(M) );
 }
 
 Eigen::Vector4d polyfem::compute_specturm(const Eigen::SparseMatrix<double> &mat)
@@ -69,7 +71,7 @@ void polyfem::read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynam
 
 	if (!file.good())
 	{
-		std::cerr << "Failed to open file: " << path << std::endl;
+		logger().error("Failed to open file: {}", path);
 		file.close();
 	}
 
@@ -91,7 +93,7 @@ void polyfem::read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynam
 
 	if (!igl::list_to_matrix(matrix, mat))
 	{
-		std::cerr << "list to matrix error" << std::endl;
+		logger().error("list to matrix error");
 		file.close();
 	}
 }

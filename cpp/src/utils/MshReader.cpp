@@ -1,5 +1,7 @@
 #include "MshReader.hpp"
 
+#include <polyfem/Logger.hpp>
+
 #include <fstream>
 #include <string>
 #include <iostream>
@@ -46,7 +48,7 @@ namespace polyfem
 						phase = 2;
 					else
 					{
-						std::cout<<line_number<<": [Warning] ignoring "<<header<<std::endl;
+						logger().debug("{}: [Warning] ignoring {}", line_number, header);
 						phase = -1;
 					}
 				}

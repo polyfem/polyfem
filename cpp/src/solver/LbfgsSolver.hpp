@@ -6,6 +6,8 @@
 #include <polyfem/MatrixUtils.hpp>
 #include <polyfem/State.hpp>
 
+#include <polyfem/Logger.hpp>
+
 #include <cppoptlib/problem.h>
 #include <cppoptlib/solver/isolver.h>
 #include <cppoptlib/linesearch/armijo.h>
@@ -39,9 +41,7 @@ public:
 		} else {
 			throw std::invalid_argument("[SparseNewtonDescentSolver] Unknown line search.");
 		}
-		if (this->m_debug > DebugLevel::None) {
-			std::cout<<"\tline search "<<name<<std::endl;
-		}
+		polyfem::logger().debug("\tline search {}", name);
 	}
 
 	void minimize(ProblemType &objFunc, TVector &x0) {
@@ -136,9 +136,7 @@ public:
 			H0k = y.dot(s) / static_cast<double>(y.dot(y));
 
 			x_old = x0;
-			if (this->m_debug > DebugLevel::None) {
-				std::cout << "\titer: "<<globIter<< ", f = " <<  objFunc.value(x0) << ", ‖g‖_2 " << grad.norm()  << std::endl;
-			}
+			polyfem::logger().debug("\titer: {}, f = {}, ‖g‖_2 = {}", globIter, objFunc.value(x0), grad.norm());
 
 			iter++;
 			globIter++;

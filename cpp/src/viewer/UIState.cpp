@@ -11,6 +11,8 @@
 #include <polyfem/LinearSolver.hpp>
 #include <polyfem/EdgeSampler.hpp>
 
+#include <polyfem/Logger.hpp>
+
 #include <igl/per_face_normals.h>
 #include <igl/per_corner_normals.h>
 #include <igl/read_triangle_mesh.h>
@@ -455,8 +457,6 @@ namespace polyfem
 			state.mesh->get_edges(p0, p1, valid_elements);
 		}
 
-		// std::cout<<p0<<std::endl;
-
 		data(layer).line_width = line_width;
 		data(layer).add_edges(p0, p1, MatrixXd::Zero(1, 3));
 		data(layer).show_lines = false;
@@ -578,10 +578,6 @@ namespace polyfem
 			}
 
 			result.block(index, 0, local_res.rows(), local_res.cols()) = local_res;
-
-			// if(i == 117)
-				// std::cout<<local_res<<std::endl;
-
 
 			index += local_res.rows();
 		}
@@ -714,7 +710,6 @@ namespace polyfem
 				min_val = ffun.minCoeff();
 				max_val = ffun.maxCoeff();
 			}
-			// std::cout<<"min/max "<< min_val <<"/"<<max_val<<std::endl;
 
 			MatrixXd ttmp = vis_pts;
 
@@ -784,7 +779,6 @@ namespace polyfem
 				min_val = fun.minCoeff();
 				max_val = fun.maxCoeff();
 			}
-			// std::cout<<"min/max "<< fun.minCoeff()<<"/"<<fun.maxCoeff()<<std::endl;
 		}
 
 		data(layer).set_colors(col);
@@ -1131,7 +1125,7 @@ namespace polyfem
 	{
 		if (!state.mesh) { return; }
 		if(state.sol.size() <= 0) {
-			std::cerr<<"Solve the problem first!"<<std::endl;
+			logger().error("Solve the problem first!");
 			return;
 		}
 		if (!state.problem->has_exact_sol()) { return; }
@@ -1196,7 +1190,7 @@ namespace polyfem
 			MatrixXd global_fun;
 			interpolate_function(fun, global_fun);
 
-			std::cout<<global_fun.minCoeff()<<" "<<global_fun.maxCoeff()<<std::endl;
+			// std::cout<<global_fun.minCoeff()<<" "<<global_fun.maxCoeff()<<std::endl;
 			plot_function(global_fun, Visualizations::VisBasis);
 			available_visualizations[Visualizations::VisBasis] = true;
 			vis_flags[Visualizations::VisBasis].clear();
@@ -1246,7 +1240,6 @@ namespace polyfem
 					const int g_index = l2g.index;
 
 					const MatrixXd node = l2g.node;
-					// std::cout<<node<<std::endl;
 					fun(g_index) = ff(node(0),node(1));
 				}
 			}
@@ -1261,7 +1254,7 @@ namespace polyfem
 
 		const MatrixXd global_fun = (exact_sol - tmp).array().abs();
 
-		std::cout<<global_fun.minCoeff()<<" "<<global_fun.maxCoeff()<<std::endl;
+		// std::cout<<global_fun.minCoeff()<<" "<<global_fun.maxCoeff()<<std::endl;
 
 
 		available_visualizations[Visualizations::Debug] = true;
@@ -1305,7 +1298,6 @@ namespace polyfem
 					const int g_index = l2g.index;
 
 					const MatrixXd node = l2g.node;
-					// std::cout<<node<<std::endl;
 					fun(g_index) = ff(node(0),node(1));
 				}
 			}
@@ -1337,7 +1329,7 @@ namespace polyfem
 		}
 
 		const MatrixXd err = (global_sol - exact_sol).eval().rowwise().norm();
-		std::cout<<err.minCoeff()<<" "<<err.maxCoeff()<<std::endl;
+		// std::cout<<err.minCoeff()<<" "<<err.maxCoeff()<<std::endl;
 
 
 		plot_function(err, Visualizations::Debug);
@@ -1361,7 +1353,7 @@ namespace polyfem
 		vis_pts_poly.clear();
 
 		igl::Timer timer; timer.start();
-		std::cout<<"Building vis mesh..."<<std::flush;
+		logger().info("Building vis mesh...");
 
 		const auto &current_bases = state.iso_parametric() ? state.bases : state.geom_bases;
 		int faces_total_size = 0, points_total_size = 0;
@@ -1489,7 +1481,7 @@ namespace polyfem
 		}
 
 		timer.stop();
-		std::cout<<" took "<<timer.getElapsedTime()<<"s"<<std::endl;
+		logger().info(" took {}s", timer.getElapsedTime());
 
 		if(skip_visualization) return;
 
@@ -1519,13 +1511,10 @@ namespace polyfem
 		state.mesh->triangulate_faces(tri_faces, tri_pts, element_ranges);
 		state.mesh->compute_element_barycenters(normalized_barycenter);
 
-		// std::cout<<"normalized_barycenter\n"<<normalized_barycenter<<"\n\n"<<std::endl;
 		for(long i = 0; i < normalized_barycenter.cols(); ++i){
 			normalized_barycenter.col(i) = MatrixXd(normalized_barycenter.col(i).array() - normalized_barycenter.col(i).minCoeff());
 			normalized_barycenter.col(i) /= normalized_barycenter.col(i).maxCoeff();
 		}
-
-		// std::cout<<"normalized_barycenter\n"<<normalized_barycenter<<"\n\n"<<std::endl;
 
 		if(skip_visualization) return;
 

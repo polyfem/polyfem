@@ -2,8 +2,12 @@
 #include <polyfem/RBFWithQuadratic.hpp>
 #include <polyfem/Types.hpp>
 #include <polyfem/MatrixUtils.hpp>
+#include <polyfem/Logger.hpp>
+
 #include <igl/Timer.h>
+
 #include <Eigen/Dense>
+
 #include <iostream>
 #include <fstream>
 #include <array>
@@ -65,7 +69,6 @@ RBFWithQuadratic::RBFWithQuadratic(
 	: centers_(centers)
 {
 	// centers_.resize(0, centers.cols());
-	// std::cout << centers.rows() << ' ' << centers.cols() << std::endl;
 	compute_weights(collocation_points, local_basis_integral, quadr, rhs, with_constraints);
 }
 
@@ -451,10 +454,10 @@ void RBFWithQuadratic::compute_weights(const Eigen::MatrixXd &samples,
 	Eigen::MatrixXd &rhs, bool with_constraints)
 {
 	#ifdef VERBOSE
-	std::cout << "#kernel centers: " << centers_.rows() << std::endl;
-	std::cout << "#collocation points: " << samples.rows() << std::endl;
-	std::cout << "#quadrature points: " << quadr.weights.size() << std::endl;
-	std::cout << "#non-vanishing bases: " << rhs.cols() << std::endl;
+	logger().trace("#kernel centers: {}", centers_.rows());
+	logger().trace("#collocation points: {}", samples.rows());
+	logger().trace("#quadrature points: {}", quadr.weights.size());
+	logger().trace("#non-vanishing bases: {}", rhs.cols());
 	#endif
 
 	if (!with_constraints) {
@@ -464,9 +467,9 @@ void RBFWithQuadratic::compute_weights(const Eigen::MatrixXd &samples,
 
 		// Solve the system
 		const int num_kernels = centers_.rows();
-		std::cout << "-- Solving system of size " << num_kernels << " x " << num_kernels << std::endl;
+		logger().trace("-- Solving system of size {}x{}", num_kernels, num_kernels);
 		weights_ = (A.transpose() * A).ldlt().solve(A.transpose() * rhs);
-		std::cout << "-- Solved!" << std::endl;
+		logger().trace("-- Solved!");
 
 		return;
 	}
@@ -491,19 +494,19 @@ void RBFWithQuadratic::compute_weights(const Eigen::MatrixXd &samples,
 
 	// Solve the system
 	#ifdef VERBOSE
-	std::cout << "-- Solving system of size " << L.cols() << " x " << L.cols() << std::endl;
+	logger().trace("-- Solving system of size {}x{}", L.cols(), L.cols());
 	#endif
 	auto ldlt = (L.transpose() * A.transpose() * A * L).ldlt();
 	if (ldlt.info() == Eigen::NumericalIssue) {
-		std::cerr << "-- WARNING: Numerical issues when solving the harmonic least square." << std::endl;
+		logger().error("-- WARNING: Numerical issues when solving the harmonic least square.");
 	}
 	weights_ += L * ldlt.solve(L.transpose() * A.transpose() * b);
 	#ifdef VERBOSE
-	std::cout << "-- Solved!" << std::endl;
+	logger().trace("-- Solved!");
 	#endif
 
 	#ifdef VERBOSE
-	std::cout << "-- Mean residual: " << (A * weights_ - rhs).array().abs().colwise().maxCoeff().mean() << std::endl;
+	logger().trace("-- Mean residual: {}", (A * weights_ - rhs).array().abs().colwise().maxCoeff().mean());
 	#endif
 
 #if 0

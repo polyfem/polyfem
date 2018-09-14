@@ -7,6 +7,8 @@
 #include <polyfem/StringUtils.hpp>
 #include <polyfem/MshReader.hpp>
 
+#include <polyfem/Logger.hpp>
+
 #include <igl/triangle/triangulate.h>
 #include <igl/copyleft/tetgen/tetrahedralize.h>
 
@@ -358,23 +360,23 @@ namespace polyfem
 				n.nodes = (n.nodes.rowwise() - shift) / scaling;
 		}
 
-		std::cout << "-- bbox before normalization:" << std::endl;
-		std::cout << "   min   : " << min_corner << std::endl;
-		std::cout << "   max   : " << max_corner << std::endl;
-		std::cout << "   extent: " << max_corner - min_corner << std::endl;
-		std::cout << "-- bbox after normalization:" << std::endl;
+		logger().debug("-- bbox before normalization:");
+		logger().debug("   min   : {} {}", min_corner[0], min_corner[1]);
+		logger().debug("   max   : {} {}", max_corner[0], max_corner[1]);
+		logger().debug("   extent: {} {}", max_corner[0] - min_corner[0], max_corner[1] - min_corner[1]);
 		GEO::get_bbox(mesh_, &min_corner[0], &max_corner[0]);
-		std::cout << "   min   : " << min_corner << std::endl;
-		std::cout << "   max   : " << max_corner << std::endl;
-		std::cout << "   extent: " << max_corner - min_corner << std::endl;
+		logger().debug("-- bbox after normalization:");
+		logger().debug("   min   : {} {}", min_corner[0], min_corner[1]);
+		logger().debug("   max   : {} {}", max_corner[0], max_corner[1]);
+		logger().debug("   extent: {} {}", max_corner[0] - min_corner[0], max_corner[1] - min_corner[1]);
 
 		Eigen::MatrixXd p0, p1, p;
 		get_edges(p0, p1);
 		p = p0 - p1;
-		std::cout << "-- edge length after normalization:" << std::endl;
-		std::cout << "   min: " << p.rowwise().norm().minCoeff() << std::endl;
-		std::cout << "   max: " << p.rowwise().norm().maxCoeff() << std::endl;
-		std::cout << "   avg: " << p.rowwise().norm().mean() << std::endl;
+		logger().debug("-- edge length after normalization:");
+		logger().debug("   min: {}", p.rowwise().norm().minCoeff());
+		logger().debug("   max: {}", p.rowwise().norm().maxCoeff());
+		logger().debug("   avg: {}", p.rowwise().norm().mean());
 	}
 
 

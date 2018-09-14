@@ -1,4 +1,4 @@
-#include "UIState.hpp"
+#include <polyfem/UIState.hpp>
 
 #include <polyfem/State.hpp>
 
@@ -20,17 +20,6 @@ using namespace polyfem;
 using namespace Eigen;
 
 
-/**
-*
-* args:
-*   -mesh <path to the mesh>
-*   -n_refs <refinements>
-*   -problem <problem name>
-*   -spline <use spline basis>
-*   -fem <use standard fem with quad/hex meshes>
-*   -cmd <runs without ui>
-*   -ui <runs with ui>
-**/
 int main(int argc, const char **argv)
 {
 #ifndef WIN32

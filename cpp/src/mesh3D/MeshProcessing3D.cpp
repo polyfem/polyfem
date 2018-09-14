@@ -1,11 +1,15 @@
 #include <polyfem/MeshProcessing3D.hpp>
+#include <polyfem/Logger.hpp>
+
+#include <Eigen/Dense>
+
 #include <algorithm>
 #include <map>
 #include<set>
 #include<queue>
 #include <iterator>
 #include <cassert>
-#include "Eigen/Dense"
+
 
 using namespace polyfem::MeshProcessing3D;
 using namespace polyfem;
@@ -1113,9 +1117,9 @@ void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter) {
 	}
 }
 void MeshProcessing3D::straight_sweeping(const Mesh3DStorage &Mi, int sweep_coord, double height, int nlayer, Mesh3DStorage &Mo) {
-	if (sweep_coord > 2 || sweep_coord < 0) { std::cout << "invalid sweeping direction!"; return; }
-	if (Mi.type != MeshType::HSur && Mi.type != MeshType::Tri && Mi.type != MeshType::Qua) { std::cout << "invalid planar surface!"; return; }
-	if (height <= 0 || nlayer < 1) { std::cout << "invalid height or number of layers!"; return; }
+	if (sweep_coord > 2 || sweep_coord < 0) { logger().error("invalid sweeping direction!"); return; }
+	if (Mi.type != MeshType::HSur && Mi.type != MeshType::Tri && Mi.type != MeshType::Qua) { logger().error("invalid planar surface!"); return; }
+	if (height <= 0 || nlayer < 1) { logger().error("invalid height or number of layers!"); return; }
 
 	Mo.points.resize(3, 0);
 	Mo.vertices.clear();
@@ -1297,7 +1301,7 @@ void  MeshProcessing3D::orient_volume_mesh(Mesh3DStorage &hmi) {
 			uint32_t pid = hmi.faces[ca].neighbor_hs[0];
 			if (P_visit[pid]) if (hmi.faces[ca].neighbor_hs.size() == 2) pid = hmi.faces[ca].neighbor_hs[1];
 			if (P_visit[pid]) {
-				cout << "bug" << endl;
+				logger().error("bug");
 			}
 			auto &fs = hmi.elements[pid].fs;
 			for (auto fid : fs) F_tag[fid] = false;

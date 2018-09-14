@@ -7,6 +7,8 @@
 #include <polyfem/MatrixUtils.hpp>
 #include <polyfem/State.hpp>
 
+#include <polyfem/Logger.hpp>
+
 #include <igl/Timer.h>
 #include <igl/line_search.h>
 #include <Eigen/Sparse>
@@ -39,8 +41,7 @@ namespace cppoptlib {
 			MoreThuente,
 		};
 
-		SparseNewtonDescentSolver(const bool verbose)
-		: verbose(verbose)
+		SparseNewtonDescentSolver()
 		{
 			auto criteria = this->criteria();
 			criteria.fDelta = 1e-9;
@@ -59,10 +60,11 @@ namespace cppoptlib {
 			} else if (name == "more_thuente") {
 				line_search = LineSearch::MoreThuente;
 			} else {
+				polyfem::logger().error("[SparseNewtonDescentSolver] Unknown line search.");
 				throw std::invalid_argument("[SparseNewtonDescentSolver] Unknown line search.");
 			}
-			if(verbose)
-				std::cout<<"\tline search "<<name<<std::endl;
+
+			polyfem::logger().debug("\tline search {}", name);
 			solver_info["line_search"] = name;
 		}
 
@@ -129,8 +131,7 @@ namespace cppoptlib {
 			const json &params = State::state().solver_params();
 			auto solver = LinearSolver::create(State::state().solver_type(), State::state().precond_type());
 			solver->setParameters(params);
-			if(verbose)
-				std::cout<<"\tinternal solver "<<solver->name()<<std::endl;
+			polyfem::logger().debug("\tinternal solver {}", solver->name());
 
 			const int reduced_size = x0.rows();
 
@@ -164,8 +165,7 @@ namespace cppoptlib {
 				objFunc.gradient(x0, grad);
 				time.stop();
 
-				if(verbose)
-					std::cout<<"\tgrad time "<<time.getElapsedTimeInSec()<<std::endl;
+				polyfem::logger().debug("\tgrad time {}s", time.getElapsedTimeInSec());
 				grad_time += time.getElapsedTimeInSec();
 
 				const size_t iter = this->m_current.iterations;
@@ -178,8 +178,7 @@ namespace cppoptlib {
 					// hessian += 0.0 * id;
 					//factor *= 1e-1;
 					time.stop();
-					if(verbose)
-						std::cout<<"\tassembly time "<<time.getElapsedTimeInSec()<<std::endl;
+					polyfem::logger().debug("\tassembly time {}s", time.getElapsedTimeInSec());
 					assembly_time += time.getElapsedTimeInSec();
 
 					next_hessian += 5;
@@ -189,7 +188,7 @@ namespace cppoptlib {
 						if(has_hessian_nans(hessian))
 						{
 							this->m_status = Status::UserDefined;
-							std::cerr<<"stopping because hessian is nan"<<std::endl;
+							polyfem::logger().debug("stopping because hessian is nan");
 							error_code_ = -10;
 							break;
 						}
@@ -212,8 +211,7 @@ namespace cppoptlib {
 				solver->getInfo(tmp);
 				internal_solver.push_back(tmp);
 
-				if(verbose)
-					std::cout<<"\tinverting time "<<time.getElapsedTimeInSec()<<std::endl;
+				polyfem::logger().debug("\tinverting time {}s", time.getElapsedTimeInSec());
 				inverting_time += time.getElapsedTimeInSec();
 
 
@@ -238,8 +236,7 @@ namespace cppoptlib {
 				x0 += rate * delta_x;
 
 
-				if(verbose)
-					std::cout<<"\tlinesearch time "<<time.getElapsedTimeInSec()<<std::endl;
+				polyfem::logger().debug("\tlinesearch time {}s", time.getElapsedTimeInSec());
 				linesearch_time += time.getElapsedTimeInSec();
 
 
@@ -257,7 +254,7 @@ namespace cppoptlib {
 				if(std::isnan(energy))
 				{
 					this->m_status = Status::UserDefined;
-					std::cerr<<"stopping because obj func is nan"<<std::endl;
+					polyfem::logger().debug("stopping because obj func is nan");
 					error_code_ = -10;
 				}
 
@@ -266,23 +263,18 @@ namespace cppoptlib {
 					if(new_hessian)
 					{
 						this->m_status = Status::UserDefined;
-						std::cerr<<"stopping because ‖step‖=" << step << " is too small"<<std::endl;
+						polyfem::logger().debug("stopping because ‖step‖={} is too small", step);
 						error_code_ = -1;
 					}
 					else
 					{
 						next_hessian = this->m_current.iterations;
-						if(verbose)
-							std::cout<<"\tstep small force recompute hessian"<<std::endl;
+						polyfem::logger().debug("\tstep small force recompute hessian");
 					}
 				}
 
-				if(verbose) {
-					tfm::printf("\titer: %s, f = %s, ‖g‖_2 = %s, rate = %s, ‖step‖ = %s, dot = %s\n",
-						this->m_current.iterations, energy, this->m_current.gradNorm, rate, step, delta_x.dot(grad)/grad.norm());
-					// tfm::printf("\tspectrum: %s (%s)\n", spectrum(3) / spectrum(0), spectrum.transpose());
-					// std::cout << this->criteria() << std::endl;
-				}
+				polyfem::logger().debug("\titer: {}, f = {}, ‖g‖_2 = {}, rate = {}, ‖step‖ = {}, dot = {}\n",
+					this->m_current.iterations, energy, this->m_current.gradNorm, rate, step, delta_x.dot(grad)/grad.norm());
 			}
 			while (objFunc.callback(this->m_current, x0) && (this->m_status == Status::Continue));
 
@@ -319,7 +311,6 @@ namespace cppoptlib {
 		int error_code() const { return  error_code_; }
 
 	private:
-		const bool verbose;
 		int error_code_;
 		json solver_info;
 

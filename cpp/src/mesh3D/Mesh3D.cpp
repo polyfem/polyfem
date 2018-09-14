@@ -1,6 +1,8 @@
 #include <polyfem/Mesh3D.hpp>
 #include <polyfem/StringUtils.hpp>
 
+#include <polyfem/Logger.hpp>
+
 #include <igl/copyleft/tetgen/tetrahedralize.h>
 #include <geogram/mesh/mesh_io.h>
 #include <fstream>
@@ -751,16 +753,16 @@ namespace polyfem
 				n.nodes = (n.nodes.rowwise() - shift.transpose()) * scaling;
 		}
 
-		std::cout << "-- bbox before normalization:" << std::endl;
-		std::cout << "   min   : " << minV << std::endl;
-		std::cout << "   max   : " << maxV << std::endl;
-		std::cout << "   extent: " << maxV - minV << std::endl;
+		logger().debug("-- bbox before normalization:");
+		logger().debug("   min   : {} {} {}", minV(0), minV(1), minV(2));
+		logger().debug("   max   : {} {} {}", maxV(0), maxV(1), maxV(2));
+		logger().debug("   extent: {} {} {}", maxV(0) - minV(0), maxV(1) - minV(1), maxV(2) - minV(2));
 		minV = V.rowwise().minCoeff().transpose();
 		maxV = V.rowwise().maxCoeff().transpose();
-		std::cout << "-- bbox after normalization:" << std::endl;
-		std::cout << "   min   : " << minV << std::endl;
-		std::cout << "   max   : " << maxV << std::endl;
-		std::cout << "   extent: " << maxV - minV << std::endl;
+		logger().debug("-- bbox after normalization:");
+		logger().debug("   min   : {} {} {}", minV(0), minV(1), minV(2));
+		logger().debug("   max   : {} {} {}", maxV(0), maxV(1), maxV(2));
+		logger().debug("   extent: {} {} {}", maxV(0) - minV(0), maxV(1) - minV(1), maxV(2) - minV(2));
 
 		// V.row(1) /= 100.;
 
@@ -772,10 +774,10 @@ namespace polyfem
 		Eigen::MatrixXd p0, p1, p;
 		get_edges(p0, p1);
 		p = p0 - p1;
-		std::cout << "-- edge length after normalization:" << std::endl;
-		std::cout << "   min: " << p.rowwise().norm().minCoeff() << std::endl;
-		std::cout << "   max: " << p.rowwise().norm().maxCoeff() << std::endl;
-		std::cout << "   avg: " << p.rowwise().norm().mean() << std::endl;
+		logger().debug("-- edge length after normalization:");
+		logger().debug("   min: ", p.rowwise().norm().minCoeff());
+		logger().debug("   max: ", p.rowwise().norm().maxCoeff());
+		logger().debug("   avg: ", p.rowwise().norm().mean());
 	}
 
 	void Mesh3D::triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const
@@ -935,8 +937,6 @@ namespace polyfem
 				boundary_ids_[f]=6;
 			else
 				boundary_ids_[f]=7;
-
-			// std::cout<<p<<": "<<minV<<" - "<<maxV<<" "<<boundary_ids_[f]<<std::endl;
 		}
 
 

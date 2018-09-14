@@ -809,13 +809,13 @@ namespace polyfem
 		{
 			mesh->normalize();
 		}
+		RowVectorNd min, max;
+		mesh->bounding_box(min, max);
+
+		if(min.size() == 2)
+			logger().info("mesh bb min [{} {}], \tmax [{} {}]", min(0), min(1), max(0), max(1));
 		else
-		{
-			RowVectorNd min, max;
-			mesh->bounding_box(min, max);
-			//TODO
-			// logger().info("mesh bb min {}, \tmax {}", min, max);
-		}
+			logger().info("mesh bb min [{} {} {}], \tmax [{} {} {}]", min(0), min(1), min(2), max(0), max(1), max(2));
 
 		mesh->refine(args["n_refs"], args["refinenemt_location"], parent_elements);
 
@@ -1052,19 +1052,17 @@ namespace polyfem
 			}
 		}
 
-		logger().info(
-			"simplex_count:\t {}\nregular_count:\t {}\nregular_boundary_count:\t {}\nsimple_singular_count:\t {}\nmulti_singular_count:\t {}\nsingular_boundary_count:\t {}\nmulti_singular_boundary_count:\t {}\npolytope_count:\t {}\npolytope_boundary_count:\t {}\nundefined_count:\t {}\ntotal count:\t {}\n",
-			simplex_count,
-			regular_count,
-			regular_boundary_count,
-			simple_singular_count,
-			multi_singular_count,
-			boundary_count,
-			multi_singular_boundary_count,
-			non_regular_count,
-			non_regular_boundary_count,
-			undefined_count,
-			mesh->n_elements());
+		logger().info("simplex_count: \t{}", simplex_count);
+		logger().info("regular_count: \t{}", regular_count);
+		logger().info("regular_boundary_count: \t{}", regular_boundary_count);
+		logger().info("simple_singular_count: \t{}", simple_singular_count);
+		logger().info("multi_singular_count: \t{}", multi_singular_count);
+		logger().info("boundary_count: \t{}", boundary_count);
+		logger().info("multi_singular_boundary_count: \t{}", multi_singular_boundary_count);
+		logger().info("non_regular_count: \t{}", non_regular_count);
+		logger().info("non_regular_boundary_count: \t{}", non_regular_boundary_count);
+		logger().info("undefined_count: \t{}", undefined_count);
+		logger().info("total count:\t {}", mesh->n_elements());
 	}
 
 
@@ -1693,7 +1691,7 @@ namespace polyfem
 					}
 
 					if (args["nl_solver"] == "newton") {
-						cppoptlib::SparseNewtonDescentSolver<NLProblem> solver(true);
+						cppoptlib::SparseNewtonDescentSolver<NLProblem> solver;
 						solver.setLineSearch(args["line_search"]);
 						solver.minimize(nl_problem, tmp_sol);
 
@@ -1941,7 +1939,7 @@ namespace polyfem
 		logger().info("-- H1 semi error: {}", h1_semi_err);
 		// logger().info("-- Perd norm: {}", pred_norm);
 
-		logger().info("\n-- Linf error: {}", linf_err);
+		logger().info("-- Linf error: {}", linf_err);
 		logger().info("-- grad max error: {}", grad_max_err);
 
 		// {
