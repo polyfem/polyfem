@@ -31,27 +31,27 @@ class GeoLoggerForward: public GEO::LoggerClient
 {
 	void div(const std::string& title) override
 	{
-		logger().info(title);
+		logger().info("[GEO] " + title.substr(0, title.size()-1));
 	}
 
 	void out(const std::string& str) override
 	{
-		logger().info(str);
+		logger().info("[GEO] " + str.substr(0, str.size()-1));
 	}
 
 	void warn(const std::string& str) override
 	{
-		logger().warn(str);
+		logger().warn("[GEO] " + str.substr(0, str.size()-1));
 	}
 
 	void err(const std::string& str) override
 	{
-		logger().error(str);
+		logger().error("[GEO] " + str.substr(0, str.size()-1));
 	}
 
 	void status(const std::string& str) override
 	{
-		logger().critical(str);
+		logger().critical("[GEO] " + str.substr(0, str.size()-1));
 	}
 };
 
@@ -75,12 +75,6 @@ int main(int argc, char **argv)
 	GEO::CmdLine::import_arg_group("standard");
 	GEO::CmdLine::import_arg_group("pre");
 	GEO::CmdLine::import_arg_group("algo");
-
-
-	GEO::Logger *geo_logger = GEO::Logger::instance();
-	// geo_logger->unregister_all_clients();
-	geo_logger->register_client(new GeoLoggerForward());
-	geo_logger->set_quiet(true);
 
 
 	CLI::App command_line{"polyfem"};
@@ -164,6 +158,11 @@ int main(int argc, char **argv)
 	log_level = std::max(0, std::min(6, log_level));
     spdlog::set_level(static_cast<spdlog::level::level_enum>(log_level));
     spdlog::flush_every(std::chrono::seconds(3));
+
+	GEO::Logger *geo_logger = GEO::Logger::instance();
+	geo_logger->unregister_all_clients();
+	geo_logger->register_client(new GeoLoggerForward());
+
 
 
 	json in_args = json({});
