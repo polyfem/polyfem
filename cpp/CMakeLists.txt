@@ -182,6 +182,7 @@ target_link_libraries(${PROJECT_NAME}_bin
 		igl::opengl_glfw_imgui
 		igl::png
 		tinyfiledialogs
+		cli11
 )
 
 if(POLYFEM_WITH_SANITIZERS)

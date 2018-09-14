@@ -3,12 +3,13 @@
 #include <polyfem/State.hpp>
 
 #include <polyfem/LinearSolver.hpp>
-#include <polyfem/CommandLine.hpp>
 #include <polyfem/StringUtils.hpp>
 #include <polyfem/Logger.hpp>
 
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
+
+#include <CLI11.hpp>
 
 #ifdef USE_TBB
 #include <tbb/task_scheduler_init.h>
@@ -51,7 +52,7 @@ class GeoLoggerForward: public GEO::LoggerClient
 };
 
 
-int main(int argc, const char **argv)
+int main(int argc, char **argv)
 {
 #ifndef WIN32
 	setenv("GEO_NO_SIGNAL_HANDLER", "1", 1);
@@ -71,14 +72,15 @@ int main(int argc, const char **argv)
 	GEO::CmdLine::import_arg_group("pre");
 	GEO::CmdLine::import_arg_group("algo");
 
-	
+
 	GEO::Logger *geo_logger = GEO::Logger::instance();
 	geo_logger->unregister_all_clients();
 	geo_logger->register_client(new GeoLoggerForward());
 	geo_logger->set_quiet(true);
 
 
-	CommandLine command_line;
+	CLI::App command_line{"polyfem"};
+
 
 	std::string path = "";
 	std::string output = "";
@@ -91,6 +93,7 @@ int main(int argc, const char **argv)
 
 	std::string scalar_formulation = "Laplacian";
 	std::string tensor_formulation = "LinearElasticity"; //"SaintVenant";
+	std::string mixed_formulation = "Stokes"; //"SaintVenant";
 	std::string solver = "";
 
 	int discr_order = 1;
@@ -106,42 +109,46 @@ int main(int argc, const char **argv)
 	bool use_cout = true;
 	int log_level = 1;
 
-	command_line.add_option("-json", json_file);
-
-	command_line.add_option("-mesh", path);
+	command_line.add_option("-j,--json", json_file, "Simulation json file");
+	command_line.add_option("-m,--mesh", path, "Mesh path");
 
 
 	//for debugging
-	command_line.add_option("-n_refs", n_refs);
-	command_line.add_option("-problem", problem_name);
-	command_line.add_option("-normalize", "-not_norm", normalize_mesh);
+	command_line.add_option("--n_refs", n_refs, "Number of refinements");
+	command_line.add_option("--problem", problem_name, "Problem name");
+	command_line.add_flag("--not_norm", normalize_mesh, "Skips mesh normalization");
 
-	command_line.add_option("-sform", scalar_formulation);
-	command_line.add_option("-tform", tensor_formulation);
+	command_line.add_option("--sform", scalar_formulation, "Scalar formulation");
+	command_line.add_option("--tform", tensor_formulation, "Tensor formulation");
+	command_line.add_option("--mform", mixed_formulation, "Mixed formulation");
 
-	command_line.add_option("-solver", solver);
+	command_line.add_option("--solver", solver, "Solver to use");
 
-	command_line.add_option("-q", discr_order);
-	command_line.add_option("-p_ref", "-no_p_ref", p_ref);
-	command_line.add_option("-spline", "-fem", use_splines);
-	command_line.add_option("-lin_geom", "-nl_geom", force_linear);
+	command_line.add_option("-q,-p", discr_order, "Discretization order");
+	command_line.add_flag("--p_ref", p_ref, "Use p refimenet");
+	command_line.add_flag("--spline", use_splines, "Use spline for quad/hex meshes");
+	command_line.add_flag("--lin_geom", force_linear, "Force use linear geometric mapping");
 
 	//disable out
-	command_line.add_option("-cmd", "-ui", no_ui);
+	command_line.add_flag("--cmd", no_ui, "Runs in command line mode, no ui");
 
 	//IO
-	command_line.add_option("-output", output);
-	command_line.add_option("-vtu", vtu);
-	command_line.add_option("-screenshot", screenshot);
+	command_line.add_option("--output", output, "Output json file");
+	command_line.add_option("--vtu", vtu, "Vtu output file");
+	command_line.add_option("--screenshot", screenshot, "screenshot (disabled)");
 
 
-	command_line.add_option("-cout_log", "-no_cout_log", use_cout);
-	command_line.add_option("-log_file", log_file);
-	command_line.add_option("-log_level", log_level);
+	command_line.add_option("--no_cout_log", use_cout, "Disable cout for logging");
+	command_line.add_option("--log_file", log_file, "Log to a file");
+	command_line.add_option("--log_level", log_level, "Log level 1 debug 2 info");
 
 
+    try {
+        command_line.parse(argc, argv);
+    } catch (const CLI::ParseError &e) {
+        return command_line.exit(e);
+    }
 
-	command_line.parse(argc, argv);
 	if (!screenshot.empty()) { no_ui = false; }
 
 	Logger::init(use_cout, log_file);
@@ -173,6 +180,7 @@ int main(int argc, const char **argv)
 
 		in_args["scalar_formulation"] = scalar_formulation;
 		in_args["tensor_formulation"] = tensor_formulation;
+		in_args["mixed_formulation"] = mixed_formulation;
 
 		in_args["discr_order"] = discr_order;
 		in_args["use_spline"] = use_splines;
@@ -219,51 +227,4 @@ int main(int argc, const char **argv)
 
 	return EXIT_SUCCESS;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // const int n_samples = 1000;
-    // const int n_poly_samples = n_samples/3;
-    // Eigen::MatrixXd boundary_samples(n_samples, 2);
-    // Eigen::MatrixXd poly_samples(n_poly_samples, 2);
-
-    // for(int i = 0; i < n_samples; ++i)
-    // {
-    //     boundary_samples(i,0) = cos((2.*i)*M_PI/n_samples);
-    //     boundary_samples(i,1) = sin((2.*i)*M_PI/n_samples);
-    // }
-
-    // for(int i = 0; i < n_poly_samples; ++i)
-    // {
-    //     poly_samples(i,0) = 1.01*cos((2.*i)*M_PI/n_samples);
-    //     poly_samples(i,1) = 1.01*sin((2.*i)*M_PI/n_samples);
-    // }
-
-    // Eigen::MatrixXd rhs(3*n_samples, 1);
-    // rhs.setZero();
-
-    // for(int i = 0; i < n_samples; ++i)
-    // {
-    //     rhs(n_samples + 2*i)   = -10*sin((2.*i)*M_PI/n_samples);
-    //     rhs(n_samples + 2*i+1) = -10*sin((2.*i)*M_PI/n_samples);
-    // }
-
-
-    // Biharmonic biharmonic(poly_samples, boundary_samples, rhs);
-
-    // exit(0);
 
