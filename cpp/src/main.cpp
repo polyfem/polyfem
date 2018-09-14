@@ -161,6 +161,7 @@ int main(int argc, char **argv)
 
 	GEO::Logger *geo_logger = GEO::Logger::instance();
 	geo_logger->unregister_all_clients();
+	geo_logger->set_pretty(false);
 	geo_logger->register_client(new GeoLoggerForward());
 
 
