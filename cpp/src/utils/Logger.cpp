@@ -10,10 +10,12 @@
 //
 
 #include <polyfem/Logger.hpp>
+#include <polyfem/DisableWarnings.hpp>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/details/registry.h>
 #include <spdlog/details/thread_pool.h>
+#include <polyfem/EnableWarnings.hpp>
 #include <memory>
 #include <mutex>
 #include <iostream>

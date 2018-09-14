@@ -118,7 +118,6 @@ namespace polyfem
 			average_edge_length = p.rowwise().norm().mean();
 			mesh_size = p.rowwise().norm().maxCoeff();
 
-			logger().info("");
 			logger().info("hmin: {}", min_edge_length);
 			logger().info("hmax: {}", mesh_size);
 			logger().info("havg: {}", average_edge_length);

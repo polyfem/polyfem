@@ -48,6 +48,7 @@ int main(int argc, const char **argv)
 	std::string screenshot = "";
 	std::string problem_name = "Franke";
 	std::string json_file = "";
+	
 	int n_refs = 0;
 
 	std::string scalar_formulation = "Laplacian";
@@ -62,7 +63,10 @@ int main(int argc, const char **argv)
 	bool p_ref = false;
 	bool force_linear = false;
 
-	Logger::init(true, "");
+
+	std::string log_file = "";
+	bool use_cout = true;
+	int log_level = 1;
 
 	command_line.add_option("-json", json_file);
 
@@ -93,10 +97,19 @@ int main(int argc, const char **argv)
 	command_line.add_option("-screenshot", screenshot);
 
 
+	command_line.add_option("-cout_log", "-no_cout_log", use_cout);
+	command_line.add_option("-log_file", log_file);
+	command_line.add_option("-log_level", log_level);
+
 
 
 	command_line.parse(argc, argv);
 	if (!screenshot.empty()) { no_ui = false; }
+
+	Logger::init(use_cout, log_file);
+	log_level = std::max(0, std::min(6, log_level));
+    spdlog::set_level(static_cast<spdlog::level::level_enum>(log_level));
+    spdlog::flush_every(std::chrono::seconds(3));
 
 
 	json in_args = json({});

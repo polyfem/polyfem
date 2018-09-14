@@ -6,10 +6,12 @@ set(SOURCES
 	BoundarySampler.hpp
 	CommandLine.cpp
 	CommandLine.hpp
+	DisableWarnings.hpp
 	EdgeSampler.cpp
 	EdgeSampler.hpp
 	ElasticityUtils.cpp
 	ElasticityUtils.hpp
+	EnableWarnings.hpp
 	Logger.cpp
 	Logger.hpp
 	InterpolatedFunction.cpp
