@@ -20,6 +20,37 @@ using namespace polyfem;
 using namespace Eigen;
 
 
+#include <geogram/basic/logger.h>
+
+class GeoLoggerForward: public GEO::LoggerClient
+{
+	void div(const std::string& title) override
+	{
+		logger().info(title);
+	}
+
+	void out(const std::string& str) override
+	{
+		logger().info(str);
+	}
+
+	void warn(const std::string& str) override
+	{
+		logger().warn(str);
+	}
+
+	void err(const std::string& str) override
+	{
+		logger().error(str);
+	}
+
+	void status(const std::string& str) override
+	{
+		logger().critical(str);
+	}
+};
+
+
 int main(int argc, const char **argv)
 {
 #ifndef WIN32
@@ -39,6 +70,13 @@ int main(int argc, const char **argv)
 	GEO::CmdLine::import_arg_group("standard");
 	GEO::CmdLine::import_arg_group("pre");
 	GEO::CmdLine::import_arg_group("algo");
+
+	
+	GEO::Logger *geo_logger = GEO::Logger::instance();
+	geo_logger->unregister_all_clients();
+	geo_logger->register_client(new GeoLoggerForward());
+	geo_logger->set_quiet(true);
+
 
 	CommandLine command_line;
 
