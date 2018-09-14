@@ -6,6 +6,10 @@
 #include <polyfem/StringUtils.hpp>
 #include <polyfem/Logger.hpp>
 
+#include <polyfem/Problem.hpp>
+#include <polyfem/AssemblerUtils.hpp>
+#include <polyfem/LinearSolver.hpp>
+
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
 
@@ -74,7 +78,7 @@ int main(int argc, char **argv)
 
 
 	GEO::Logger *geo_logger = GEO::Logger::instance();
-	geo_logger->unregister_all_clients();
+	// geo_logger->unregister_all_clients();
 	geo_logger->register_client(new GeoLoggerForward());
 	geo_logger->set_quiet(true);
 
@@ -109,20 +113,25 @@ int main(int argc, char **argv)
 	bool use_cout = true;
 	int log_level = 1;
 
-	command_line.add_option("-j,--json", json_file, "Simulation json file");
-	command_line.add_option("-m,--mesh", path, "Mesh path");
+	command_line.add_option("-j,--json", json_file, "Simulation json file")->check(CLI::ExistingFile);
+	command_line.add_option("-m,--mesh", path, "Mesh path")->check(CLI::ExistingFile);
 
 
 	//for debugging
 	command_line.add_option("--n_refs", n_refs, "Number of refinements");
-	command_line.add_option("--problem", problem_name, "Problem name");
 	command_line.add_flag("--not_norm", normalize_mesh, "Skips mesh normalization");
 
-	command_line.add_option("--sform", scalar_formulation, "Scalar formulation");
-	command_line.add_option("--tform", tensor_formulation, "Tensor formulation");
-	command_line.add_option("--mform", mixed_formulation, "Mixed formulation");
 
-	command_line.add_option("--solver", solver, "Solver to use");
+	const ProblemFactory &p_factory = ProblemFactory::factory();
+	command_line.add_set("--problem", problem_name, std::set<std::string>(p_factory.get_problem_names().begin(), p_factory.get_problem_names().end()), "Problem name");
+
+	const AssemblerUtils &assembler = AssemblerUtils::instance();
+	command_line.add_set("--sform", scalar_formulation, std::set<std::string>(assembler.scalar_assemblers().begin(), assembler.scalar_assemblers().end()), "Scalar formulation");
+	command_line.add_set("--tform", tensor_formulation, std::set<std::string>(assembler.tensor_assemblers().begin(), assembler.tensor_assemblers().end()), "Tensor formulation");
+	command_line.add_set("--mform", mixed_formulation, std::set<std::string>(assembler.mixed_assemblers().begin(), assembler.mixed_assemblers().end()),  "Mixed formulation");
+
+	const std::vector<std::string> solvers = LinearSolver::availableSolvers();
+	command_line.add_set("--solver", solver, std::set<std::string>(solvers.begin(), solvers.end()), "Solver to use");
 
 	command_line.add_option("-q,-p", discr_order, "Discretization order");
 	command_line.add_flag("--p_ref", p_ref, "Use p refimenet");
