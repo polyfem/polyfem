@@ -26,6 +26,6 @@ endfunction()
 function(polyfem_download_spdlog)
     polyfem_download_project(spdlog
         GIT_REPOSITORY https://github.com/gabime/spdlog.git
-        GIT_TAG        v1.1.0
+        GIT_TAG        188cff7d6567b80c6b99bc15899fef9637a8fe52
     )
 endfunction()

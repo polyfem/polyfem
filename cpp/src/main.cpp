@@ -29,29 +29,46 @@ using namespace Eigen;
 
 class GeoLoggerForward: public GEO::LoggerClient
 {
+	std::shared_ptr<spdlog::logger> logger_;
+
+public:
+	template<typename T>
+	GeoLoggerForward(T logger) : logger_(logger) { }
+
+private:
+	std::string truncate(const std::string &msg)
+	{
+		static size_t prefix_len = GEO::CmdLine::ui_feature(" ", false).size();
+		return msg.substr(prefix_len, msg.size() - 1 - prefix_len);
+	}
+
+protected:
 	void div(const std::string& title) override
 	{
-		logger().info("[GEO] " + title.substr(0, title.size()-1));
+		logger_->trace(truncate(title));
 	}
 
 	void out(const std::string& str) override
 	{
-		logger().info("[GEO] " + str.substr(0, str.size()-1));
+		logger_->info(truncate(str));
 	}
 
 	void warn(const std::string& str) override
 	{
-		logger().warn("[GEO] " + str.substr(0, str.size()-1));
+		logger_->warn(truncate(str));
 	}
 
 	void err(const std::string& str) override
 	{
-		logger().error("[GEO] " + str.substr(0, str.size()-1));
+		logger_->error(truncate(str));
 	}
 
 	void status(const std::string& str) override
 	{
-		logger().critical("[GEO] " + str.substr(0, str.size()-1));
+		// Errors and warnings are also dispatched as status by geogram, but without
+		// the "feature" header. We thus forward them as trace, to avoid duplicated
+		// logger info...
+		logger_->trace(str.substr(0, str.size() - 1));
 	}
 };
 
@@ -86,7 +103,7 @@ int main(int argc, char **argv)
 	std::string screenshot = "";
 	std::string problem_name = "Franke";
 	std::string json_file = "";
-	
+
 	int n_refs = 0;
 
 	std::string scalar_formulation = "Laplacian";
@@ -104,7 +121,7 @@ int main(int argc, char **argv)
 
 
 	std::string log_file = "";
-	bool use_cout = true;
+	bool is_quiet = false;
 	int log_level = 1;
 
 	command_line.add_option("-j,--json", json_file, "Simulation json file")->check(CLI::ExistingFile);
@@ -141,7 +158,7 @@ int main(int argc, char **argv)
 	command_line.add_option("--screenshot", screenshot, "screenshot (disabled)");
 
 
-	command_line.add_option("--no_cout_log", use_cout, "Disable cout for logging");
+	command_line.add_flag("--quiet", is_quiet, "Disable cout for logging");
 	command_line.add_option("--log_file", log_file, "Log to a file");
 	command_line.add_option("--log_level", log_level, "Log level 1 debug 2 info");
 
@@ -154,16 +171,15 @@ int main(int argc, char **argv)
 
 	if (!screenshot.empty()) { no_ui = false; }
 
-	Logger::init(use_cout, log_file);
+	Logger::init(!is_quiet, log_file);
 	log_level = std::max(0, std::min(6, log_level));
     spdlog::set_level(static_cast<spdlog::level::level_enum>(log_level));
     spdlog::flush_every(std::chrono::seconds(3));
 
 	GEO::Logger *geo_logger = GEO::Logger::instance();
 	geo_logger->unregister_all_clients();
+	geo_logger->register_client(new GeoLoggerForward(logger().clone("geogram")));
 	geo_logger->set_pretty(false);
-	geo_logger->register_client(new GeoLoggerForward());
-
 
 
 	json in_args = json({});

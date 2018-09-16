@@ -29,13 +29,13 @@ Z axis: bottom/top
 Corner nodes:
 
 v3
- │ \
+ │ \ 
  │ x\ v2
- │   \╱  \
- x   / x  \
+ │   \╱  \ 
+ x   / x  \ 
  │  x   \  x
- │ ╱      \ \
- │╱         \\
+ │ ╱      \ \ 
+ │╱         \\ 
 v0──────x─────v1
 
 v0 = (0, 0, 0)
@@ -1524,7 +1524,7 @@ int polyfem::FEBasis3d::build_bases(
 				// return res;
 			});
 
-			
+
 			for (int j = 0; j < n_el_bases; ++j) {
 				const int global_index = element_nodes_id[e][j];
 				if(!skip_interface_element){
