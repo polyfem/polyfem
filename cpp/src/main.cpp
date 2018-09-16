@@ -45,7 +45,7 @@ private:
 protected:
 	void div(const std::string& title) override
 	{
-		logger_->trace(truncate(title));
+		logger_->trace(title.substr(0, title.size() - 1));
 	}
 
 	void out(const std::string& str) override
