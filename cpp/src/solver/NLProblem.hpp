@@ -25,10 +25,10 @@ namespace polyfem
 
 		double value(const TVector &x) override;
 		void gradient(const TVector &x, TVector &gradv) override;
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Woverloaded-virtual"
+
+		#include <polyfem/DisableWarnings.hpp>
 		void hessian(const TVector &x, THessian &hessian);
-#pragma clang diagnostic pop
+		#include <polyfem/EnableWarnings.hpp>
 
 
 		template<class FullMat, class ReducedMat>
