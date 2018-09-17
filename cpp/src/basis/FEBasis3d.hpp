@@ -70,14 +70,14 @@ namespace polyfem
 		//	as follows:
 		//
 		// v2
-		//  │ \
-		//  │   \
-		//  │     \
-		// e2┄┄┄┄┄e1
-		//  │      ┆\
-		//  │      ┆  \
-		//  │      ┆    \
-		// v0─────e0─────v1
+		//  │╲
+		//  │ ╲
+		//  │  ╲
+		// e2┄┄e1
+		//  │   ┆╲
+		//  │   ┆ ╲
+		// v0──e0──v1
+		//
 		//
 		// Then this functions returns the local node indices in the following order:
 		// (v0, e0, v1, e1, v2, e2)
