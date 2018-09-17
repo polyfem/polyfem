@@ -224,9 +224,6 @@ include(geogram)
 target_link_libraries(polyfem PUBLIC geogram)
 
 #spdlog
-set(SPDLOG_BUILD_TESTING OFF CACHE BOOL " " FORCE)
-set(SPDLOG_BUILD_EXAMPLES OFF CACHE BOOL " " FORCE)
-set(SPDLOG_BUILD_BENCH OFF CACHE BOOL " " FORCE)
 target_link_libraries(polyfem PUBLIC spdlog::spdlog)
 
 # CppNumericalSolvers
