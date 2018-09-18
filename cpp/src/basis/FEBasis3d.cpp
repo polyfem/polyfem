@@ -1726,14 +1726,16 @@ int polyfem::FEBasis3d::build_bases(
 
 
 						const auto &other_bases = bases[other_cell];
-						Eigen::MatrixXd w;
+						// Eigen::MatrixXd w;
+						std::vector<AssemblyValues> w;
 						other_bases.evaluate_bases(node_position, w);
 
 						assert(b.bases[j].global().size() == 0);
 
 						for(long i = 0; i < w.size(); ++i)
 						{
-							if(std::abs(w(i))<1e-8)
+							assert(w[i].val.size() == 1);
+							if(std::abs(w[i].val(0))<1e-8)
 								continue;
 
 							// assert(other_bases.bases[i].global().size() == 1);
@@ -1741,7 +1743,7 @@ int polyfem::FEBasis3d::build_bases(
 							{
 								const auto &other_global = other_bases.bases[i].global()[ii];
 								// std::cout<<"e "<<e<<" " <<j << " gid "<<other_global.index<<std::endl;
-								b.bases[j].global().emplace_back(other_global.index, other_global.node, w(i)*other_global.val);
+								b.bases[j].global().emplace_back(other_global.index, other_global.node, w[i].val(0)*other_global.val);
 							}
 						}
 					}

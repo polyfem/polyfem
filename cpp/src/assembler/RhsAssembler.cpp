@@ -46,32 +46,35 @@ namespace polyfem
 	void RhsAssembler::assemble(Eigen::MatrixXd &rhs, const double t) const
 	{
 		rhs = Eigen::MatrixXd::Zero(n_basis_ * size_, 1);
-		Eigen::MatrixXd rhs_fun;
-
-		const int n_elements = int(bases_.size());
-        ElementAssemblyValues vals;
-		for(int e = 0; e < n_elements; ++e)
+		if(!problem_.is_rhs_zero())
 		{
-			vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
+			Eigen::MatrixXd rhs_fun;
 
-			const Quadrature &quadrature = vals.quadrature;
-
-
-			problem_.rhs(formulation_, vals.val, t, rhs_fun);
-
-			for(int d = 0; d < size_; ++d)
-				rhs_fun.col(d) = rhs_fun.col(d).array() * vals.det.array() * quadrature.weights.array();
-
-			const int n_loc_bases_ = int(vals.basis_values.size());
-			for(int i = 0; i < n_loc_bases_; ++i)
+			const int n_elements = int(bases_.size());
+			ElementAssemblyValues vals;
+			for(int e = 0; e < n_elements; ++e)
 			{
-				const AssemblyValues &v = vals.basis_values[i];
+				vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
+
+				const Quadrature &quadrature = vals.quadrature;
+
+
+				problem_.rhs(formulation_, vals.val, t, rhs_fun);
 
 				for(int d = 0; d < size_; ++d)
+					rhs_fun.col(d) = rhs_fun.col(d).array() * vals.det.array() * quadrature.weights.array();
+
+				const int n_loc_bases_ = int(vals.basis_values.size());
+				for(int i = 0; i < n_loc_bases_; ++i)
 				{
-					const double rhs_value = (rhs_fun.col(d).array() * v.val.array()).sum();
-					for(std::size_t ii = 0; ii < v.global.size(); ++ii)
-						rhs(v.global[ii].index*size_+d) +=  rhs_value * v.global[ii].val;
+					const AssemblyValues &v = vals.basis_values[i];
+
+					for(int d = 0; d < size_; ++d)
+					{
+						const double rhs_value = (rhs_fun.col(d).array() * v.val.array()).sum();
+						for(std::size_t ii = 0; ii < v.global.size(); ++ii)
+							rhs(v.global[ii].index*size_+d) +=  rhs_value * v.global[ii].val;
+					}
 				}
 			}
 		}
@@ -132,7 +135,7 @@ namespace polyfem
 	{
 		const int n_el=int(bases_.size());
 
-		Eigen::MatrixXd samples, tmp, gtmp, rhs_fun;
+		Eigen::MatrixXd samples, gtmp, rhs_fun;
 		Eigen::VectorXi global_primitive_ids;
 
 		int index = 0;
@@ -201,6 +204,8 @@ namespace polyfem
 		int global_counter = 0;
 		Eigen::MatrixXd mapped;
 
+		std::vector<AssemblyValues> tmp_val;
+
 		for(const auto &lb : local_boundary)
 		{
 			const int e = lb.element_id();
@@ -215,10 +220,11 @@ namespace polyfem
 
 			gbs.eval_geom_mapping(samples, mapped);
 
-			bs.evaluate_bases(samples, tmp);
+			bs.evaluate_bases(samples, tmp_val);
 			for(int j = 0; j < n_local_bases; ++j)
 			{
 				const Basis &b=bs.bases[j];
+				const auto &tmp = tmp_val[j].val;
 
 				for(std::size_t ii = 0; ii < b.global().size(); ++ii)
 				{
@@ -226,12 +232,12 @@ namespace polyfem
 					// if(item != global_index_to_col.end()){
 					auto item = global_index_to_col(b.global()[ii].index);
 					if(item != -1){
-						for(int k = 0; k < int(tmp.rows()); ++k)
+						for(int k = 0; k < int(tmp.size()); ++k)
 						{
 							// entries.push_back(Eigen::Triplet<double>(global_counter+k, item->second, tmp(k, j) * b.global()[ii].val));
 							// entries_t.push_back(Eigen::Triplet<double>(item->second, global_counter+k, tmp(k, j) * b.global()[ii].val));
-							entries.push_back(Eigen::Triplet<double>(global_counter+k, item, tmp(k, j) * b.global()[ii].val));
-							entries_t.push_back(Eigen::Triplet<double>(item, global_counter+k, tmp(k, j) * b.global()[ii].val));
+							entries.push_back(Eigen::Triplet<double>(global_counter+k, item, tmp(k) * b.global()[ii].val));
+							entries_t.push_back(Eigen::Triplet<double>(item, global_counter+k, tmp(k) * b.global()[ii].val));
 						}
 						// global_mat.block(global_counter, item->second, tmp.size(), 1) = tmp;
 					}
@@ -410,6 +416,8 @@ namespace polyfem
 		double res = 0;
 		Eigen::MatrixXd forces;
 
+		if(!problem_.is_rhs_zero())
+		{
 #ifdef USE_TBB
 		typedef tbb::enumerable_thread_specific< LocalThreadScalarStorage > LocalStorage;
 		LocalStorage storages((LocalThreadScalarStorage()));
@@ -467,14 +475,14 @@ namespace polyfem
 #endif
 
 #ifdef USE_TBB
-	for (LocalStorage::iterator i = storages.begin(); i != storages.end();  ++i)
-	{
-		res += i->val;
-	}
+		for (LocalStorage::iterator i = storages.begin(); i != storages.end();  ++i)
+		{
+			res += i->val;
+		}
 #else
 		res = loc_storage.val;
 #endif
-
+		}
 
 		ElementAssemblyValues vals;
 		//Neumann

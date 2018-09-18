@@ -125,7 +125,8 @@ void sample_polygon(
 	rhs.resize(n_collocation_points, local_to_global.size());
 	rhs.setZero();
 
-	Eigen::MatrixXd samples, mapped, basis_val;
+	Eigen::MatrixXd samples, mapped;
+	std::vector<AssemblyValues> basis_val;
 	auto index = mesh.get_index_from_face(element_index);
 	for(int i = 0; i < n_edges; ++i) {
 		const int f2 = mesh.switch_face(index).face;
@@ -142,6 +143,7 @@ void sample_polygon(
 		assert(mapped.rows() == (n_samples_per_edge-1));
 		collocation_points.block(i*(n_samples_per_edge-1), 0, mapped.rows(), mapped.cols()) = mapped;
 
+
 		b.evaluate_bases(samples, basis_val);
 		// Evaluate field basis and set up the rhs
 		for (int other_local_basis_id : bdata.local_indices) {
@@ -153,7 +155,7 @@ void sample_polygon(
 
 				const int poly_local_basis_id = std::distance(local_to_global.begin(),
 					std::find(local_to_global.begin(), local_to_global.end(), global_node_id));
-				rhs.block(i*(n_samples_per_edge-1), poly_local_basis_id, basis_val.rows(), 1) += basis_val.col(other_local_basis_id) * weight;
+				rhs.block(i*(n_samples_per_edge-1), poly_local_basis_id, basis_val[other_local_basis_id].val.size(), 1) += basis_val[other_local_basis_id].val * weight;
 			}
 		}
 
@@ -407,10 +409,32 @@ void PolygonalBasis2d::build_bases(
 			local_basis_integrals.row(k) = -basis_integrals.row(local_to_global[k]);
 		}
 		auto set_rbf = [&b] (auto rbf) {
-			b.set_bases_func([rbf] (const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-				{ rbf->bases_values(uv, val); } );
-			b.set_grads_func([rbf] (const Eigen::MatrixXd &uv, int axis, Eigen::MatrixXd &grad)
-				{ rbf->bases_grads(axis, uv, grad); } );
+			b.set_bases_func([rbf] (const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &val)
+			{
+				Eigen::MatrixXd tmp;
+				rbf->bases_values(uv, tmp);
+				val.resize(tmp.cols());
+				assert(tmp.rows() == uv.rows());
+
+				for(size_t i = 0; i < tmp.cols(); ++i){
+					val[i].val = tmp.col(i);
+				}
+			} );
+			b.set_grads_func([rbf] (const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &val)
+			{
+				Eigen::MatrixXd tmpx, tmpy;
+
+				rbf->bases_grads(0, uv, tmpx);
+				rbf->bases_grads(1, uv, tmpy);
+
+				val.resize(tmpx.cols());
+				assert(tmpx.cols() == tmpy.cols());
+				assert(tmpx.rows() == uv.rows());
+				for(size_t i = 0; i < tmpx.cols(); ++i){
+					val[i].grad.col(0) = tmpx.col(i);
+					val[i].grad.col(1) = tmpy.col(i);
+				}
+			});
 		};
 		if (integral_constraints == 0) {
 			set_rbf(std::make_shared<RBFWithLinear>(

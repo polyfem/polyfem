@@ -670,7 +670,7 @@ namespace polyfem
 
 	void State::interpolate_function(const int n_points, const int actual_dim, const std::vector< ElementBases > &basis, const MatrixXd &fun, MatrixXd &result)
 	{
-		MatrixXd tmp;
+		std::vector<AssemblyValues> tmp;
 
 		result.resize(n_points, actual_dim);
 
@@ -699,7 +699,7 @@ namespace polyfem
 				for(int d = 0; d < actual_dim; ++d)
 				{
 					for(size_t ii = 0; ii < b.global().size(); ++ii)
-						local_res.col(d) += b.global()[ii].val * tmp.col(j) * fun(b.global()[ii].index*actual_dim + d);
+						local_res.col(d) += b.global()[ii].val * tmp[j].val * fun(b.global()[ii].index*actual_dim + d);
 				}
 			}
 

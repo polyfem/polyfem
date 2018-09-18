@@ -19,7 +19,14 @@
 				"3rdparty",
 				"xcode"
 			],
-			"path": "."
+			"path": ".",
+			"name": "code",
+		},
+		{
+			"name": "readme",
+			"path": "../",
+			"file_include_patterns": ["README.md"],
+			"folder_exclude_patterns": ["*"]
 		}
 	]
 }

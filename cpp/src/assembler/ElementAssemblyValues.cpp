@@ -1,4 +1,6 @@
 #include <polyfem/ElementAssemblyValues.hpp>
+#include <polyfem/Logger.hpp>
+
 #include <igl/Timer.h>
 #include <memory>
 
@@ -56,59 +58,139 @@ namespace polyfem
 		return true;
 	}
 
-	void ElementAssemblyValues::finalize(const Eigen::MatrixXd &v, const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy, const Eigen::MatrixXd &dz)
-	{
-		val = v;
+	// void ElementAssemblyValues::finalize(const Eigen::MatrixXd &v, const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy, const Eigen::MatrixXd &dz)
+	// {
+	// 	val = v;
 
-		det.resize(v.rows(), 1);
+	// 	det.resize(v.rows(), 1);
+
+	// 	for(std::size_t j = 0; j < basis_values.size(); ++j)
+	// 		basis_values[j].finalize();
+
+	// 	Eigen::Matrix3d tmp;
+	// 	jac_it.resize(v.rows());
+	// 	for(long i=0; i < v.rows(); ++i)
+	// 	{
+	// 		tmp.row(0) = dx.row(i);
+	// 		tmp.row(1) = dy.row(i);
+	// 		tmp.row(2) = dz.row(i);
+
+	// 		det(i) = tmp.determinant();
+	// 		// std::cout<<det(i)<<std::endl;
+	// 		// assert(det(i)>0);
+
+
+	// 		jac_it[i] = tmp.inverse().transpose();
+	// 		for(std::size_t j = 0; j < basis_values.size(); ++j)
+	// 			basis_values[j].grad_t_m.row(i) = basis_values[j].grad.row(i) * jac_it[i];
+	// 	}
+	// }
+
+	void ElementAssemblyValues::finalize3d(const ElementBases &gbasis, const std::vector<AssemblyValues> &gbasis_values)
+	{
+		// if(det.size() != val.rows())
+		// 	logger().trace("Reallocating memory");
+		det.resize(val.rows(), 1);
 
 		for(std::size_t j = 0; j < basis_values.size(); ++j)
 			basis_values[j].finalize();
 
 		Eigen::Matrix3d tmp;
-		jac_it.resize(v.rows());
-		for(long i=0; i < v.rows(); ++i)
+		jac_it.resize(val.rows());
+
+		//loop over points
+		for (long k = 0; k < val.rows(); ++k)
 		{
-			tmp.row(0) = dx.row(i);
-			tmp.row(1) = dy.row(i);
-			tmp.row(2) = dz.row(i);
+			tmp.setZero();
+			for(int j = 0; j < gbasis_values.size(); ++j)
+			{
+				const Basis &b=gbasis.bases[j];
+				assert(gbasis.has_parameterization);
+				assert(gbasis_values[j].grad.rows() == val.rows());
+				assert(gbasis_values[j].grad.cols() == 2);
 
-			det(i) = tmp.determinant();
-			// std::cout<<det(i)<<std::endl;
-			// assert(det(i)>0);
+				for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+				{
+					tmp.row(0) += gbasis_values[j].grad(k, 0) * b.global()[ii].node  * b.global()[ii].val;
+					tmp.row(1) += gbasis_values[j].grad(k, 1) * b.global()[ii].node  * b.global()[ii].val;
+					tmp.row(2) += gbasis_values[j].grad(k, 2) * b.global()[ii].node  * b.global()[ii].val;
+				}
+			}
 
+			det(k) = tmp.determinant();
+			// assert(det(k)>0);
+			// std::cout<<det(k)<<std::endl;
 
-			jac_it[i] = tmp.inverse().transpose();
+			jac_it[k] = tmp.inverse().transpose();
 			for(std::size_t j = 0; j < basis_values.size(); ++j)
-				basis_values[j].grad_t_m.row(i) = basis_values[j].grad.row(i) * jac_it[i];
+				basis_values[j].grad_t_m.row(k) = basis_values[j].grad.row(k) * jac_it[k];
 		}
 	}
 
-	void ElementAssemblyValues::finalize(const Eigen::MatrixXd &v, const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy)
-	{
-		val = v;
+	// void ElementAssemblyValues::finalize(const Eigen::MatrixXd &v, const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy)
+	// {
+	// 	val = v;
 
-		det.resize(v.rows(), 1);
+	// 	det.resize(v.rows(), 1);
+
+	// 	for(std::size_t j = 0; j < basis_values.size(); ++j)
+	// 		basis_values[j].finalize();
+
+	// 	Eigen::Matrix2d tmp;
+	// 	jac_it.resize(v.rows());
+	// 	for(long i = 0; i < v.rows(); ++i)
+	// 	{
+	// 		tmp.row(0) = dx.row(i);
+	// 		tmp.row(1) = dy.row(i);
+
+	// 		det(i) = tmp.determinant();
+	// 		// assert(det(i)>0);
+	// 		// std::cout<<det(i)<<std::endl;
+
+	// 		jac_it[i] = tmp.inverse().transpose();
+	// 		for(std::size_t j = 0; j < basis_values.size(); ++j)
+	// 			basis_values[j].grad_t_m.row(i) = basis_values[j].grad.row(i) * jac_it[i];
+	// 	}
+	// }
+
+	void ElementAssemblyValues::finalize2d(const ElementBases &gbasis, const std::vector<AssemblyValues> &gbasis_values)
+	{
+		det.resize(val.rows(), 1);
 
 		for(std::size_t j = 0; j < basis_values.size(); ++j)
 			basis_values[j].finalize();
 
 		Eigen::Matrix2d tmp;
-		jac_it.resize(v.rows());
-		for(long i = 0; i < v.rows(); ++i)
+		jac_it.resize(val.rows());
+
+		//loop over points
+		for (long k = 0; k < val.rows(); ++k)
 		{
-			tmp.row(0) = dx.row(i);
-			tmp.row(1) = dy.row(i);
+			tmp.setZero();
+			for(int j = 0; j < gbasis_values.size(); ++j)
+			{
+				const Basis &b=gbasis.bases[j];
+				assert(gbasis.has_parameterization);
+				assert(gbasis_values[j].grad.rows() == val.rows());
+				assert(gbasis_values[j].grad.cols() == 2);
 
-			det(i) = tmp.determinant();
-			// assert(det(i)>0);
-			// std::cout<<det(i)<<std::endl;
+				for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+				{
+					tmp.row(0) += gbasis_values[j].grad(k, 0) * b.global()[ii].node  * b.global()[ii].val;
+					tmp.row(1) += gbasis_values[j].grad(k, 1) * b.global()[ii].node  * b.global()[ii].val;
+				}
+			}
 
-			jac_it[i] = tmp.inverse().transpose();
+			det(k) = tmp.determinant();
+			// assert(det(k)>0);
+			// std::cout<<det(k)<<std::endl;
+
+			jac_it[k] = tmp.inverse().transpose();
 			for(std::size_t j = 0; j < basis_values.size(); ++j)
-				basis_values[j].grad_t_m.row(i) = basis_values[j].grad.row(i) * jac_it[i];
+				basis_values[j].grad_t_m.row(k) = basis_values[j].grad.row(k) * jac_it[k];
 		}
 	}
+
 
 
 	void ElementAssemblyValues::compute(const int el_index, const bool is_volume, const ElementBases &basis, const ElementBases &gbasis)
@@ -123,44 +205,47 @@ namespace polyfem
 
 		basis_values.resize(basis.bases.size());
 
-		Eigen::MatrixXd mval = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+		if (&basis != &gbasis)
+			g_basis_values_cache_.resize(gbasis.bases.size());
 
-		Eigen::MatrixXd dxmv = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-		Eigen::MatrixXd dymv = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-		Eigen::MatrixXd dzmv = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+		// Eigen::MatrixXd mval = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 
-		igl::Timer timer0;
-		timer0.start();
+		// Eigen::MatrixXd dxmv = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+		// Eigen::MatrixXd dymv = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+		// Eigen::MatrixXd dzmv = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 
-		auto values_and_grads = [&](const ElementBases &my_basis, auto v, auto dx, auto dy, auto dz)
-		{
-			my_basis.evaluate_bases(pts, *v);
-			my_basis.evaluate_grads(pts, 0, *dx);
-			my_basis.evaluate_grads(pts, 1, *dy);
-			if(is_volume)
-				my_basis.evaluate_grads(pts, 2, *dz);
-		};
+		// igl::Timer timer0;
+		// timer0.start();
 
-		auto vals = std::make_shared<Eigen::MatrixXd>();
-		auto local_gradx = std::make_shared<Eigen::MatrixXd>();
-		auto local_grady = std::make_shared<Eigen::MatrixXd>();
-		auto local_gradz = std::make_shared<Eigen::MatrixXd>();
-		values_and_grads(basis, vals, local_gradx, local_grady, local_gradz);
+		// auto values_and_grads = [&](const ElementBases &my_basis, auto v, auto dx, auto dy, auto dz)
+		// {
+		// 	my_basis.evaluate_bases(pts, *v);
+		// 	my_basis.evaluate_grads(pts, 0, *dx);
+		// 	my_basis.evaluate_grads(pts, 1, *dy);
+		// 	if(is_volume)
+		// 		my_basis.evaluate_grads(pts, 2, *dz);
+		// };
 
-		auto gvals = std::make_shared<Eigen::MatrixXd>();
-		auto local_g_gradx = std::make_shared<Eigen::MatrixXd>();
-		auto local_g_grady = std::make_shared<Eigen::MatrixXd>();
-		auto local_g_gradz = std::make_shared<Eigen::MatrixXd>();
-		if (&basis == &gbasis) {
-			gvals = vals;
-			local_g_gradx = local_gradx;
-			local_g_grady = local_grady;
-			local_g_gradz = local_gradz;
-		} else {
-			values_and_grads(gbasis, gvals, local_g_gradx, local_g_grady, local_g_gradz);
-		}
+		// auto vals = std::make_shared<Eigen::MatrixXd>();
+		// auto local_gradx = std::make_shared<Eigen::MatrixXd>();
+		// auto local_grady = std::make_shared<Eigen::MatrixXd>();
+		// auto local_gradz = std::make_shared<Eigen::MatrixXd>();
+		// values_and_grads(basis, vals, local_gradx, local_grady, local_gradz);
 
-		timer0.stop();
+		// auto gvals = std::make_shared<Eigen::MatrixXd>();
+		// auto local_g_gradx = std::make_shared<Eigen::MatrixXd>();
+		// auto local_g_grady = std::make_shared<Eigen::MatrixXd>();
+		// auto local_g_gradz = std::make_shared<Eigen::MatrixXd>();
+		// if (&basis == &gbasis) {
+		// 	gvals = vals;
+		// 	local_g_gradx = local_gradx;
+		// 	local_g_grady = local_grady;
+		// 	local_g_gradz = local_gradz;
+		// } else {
+		// 	values_and_grads(gbasis, gvals, local_g_gradx, local_g_grady, local_g_gradz);
+		// }
+
+		// timer0.stop();
 		// const double t = timer0.getElapsedTime();
 		// if (poly) { std::cout << "-- eval quadr points: " << t << std::endl; }
 
@@ -168,23 +253,41 @@ namespace polyfem
 		const int n_local_bases = int(basis.bases.size());
 		const int n_local_g_bases = int(gbasis.bases.size());
 
+		basis.evaluate_bases(pts, basis_values);
+		basis.evaluate_grads(pts, basis_values);
+
+		if (&basis != &gbasis)
+		{
+			gbasis.evaluate_bases(pts, g_basis_values_cache_);
+			gbasis.evaluate_grads(pts, g_basis_values_cache_);
+		}
+
 		for(int j = 0; j < n_local_bases; ++j)
 		{
 			AssemblyValues &ass_val = basis_values[j];
-
 			ass_val.global = basis.bases[j].global();
-			ass_val.val = vals->col(j);
 			assert(ass_val.val.cols()==1);
-
-			ass_val.grad.resize(pts.rows(), pts.cols());
-
-			ass_val.grad.col(0) = local_gradx->col(j);
-			ass_val.grad.col(1) = local_grady->col(j);
-			if(is_volume)
-				ass_val.grad.col(2) = local_gradz->col(j);
-
 			assert(ass_val.grad.cols() == pts.cols());
 		}
+
+
+		// for(int j = 0; j < n_local_bases; ++j)
+		// {
+		// 	AssemblyValues &ass_val = basis_values[j];
+
+		// 	ass_val.global = basis.bases[j].global();
+		// 	ass_val.val = vals->col(j);
+		// 	assert(ass_val.val.cols()==1);
+
+		// 	ass_val.grad.resize(pts.rows(), pts.cols());
+
+		// 	ass_val.grad.col(0) = local_gradx->col(j);
+		// 	ass_val.grad.col(1) = local_grady->col(j);
+		// 	if(is_volume)
+		// 		ass_val.grad.col(2) = local_gradz->col(j);
+
+		// 	assert(ass_val.grad.cols() == pts.cols());
+		// }
 
 		if(!gbasis.has_parameterization) {
 			// v = G(pts)
@@ -192,30 +295,56 @@ namespace polyfem
 			return;
 		}
 
+		// for(int j = 0; j < n_local_g_bases; ++j)
+		// {
+		// 	const Basis &b=gbasis.bases[j];
+
+		// 	assert(gbasis.has_parameterization);
+
+		// 	for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+		// 	{
+		// 		for (long k = 0; k < gvals->rows(); ++k)
+		// 		{
+		// 			mval.row(k) += (*gvals)(k,j)    * b.global()[ii].node * b.global()[ii].val;
+
+		// 			dxmv.row(k) += (*local_g_gradx)(k,j) * b.global()[ii].node  * b.global()[ii].val;
+		// 			dymv.row(k) += (*local_g_grady)(k,j) * b.global()[ii].node  * b.global()[ii].val;
+		// 			if(is_volume)
+		// 				dzmv.row(k) += (*local_g_gradz)(k,j) * b.global()[ii].node  * b.global()[ii].val;
+		// 		}
+		// 	}
+		// }
+
+		// if(is_volume)
+		// 	finalize(mval, dxmv, dymv, dzmv);
+		// else
+		// 	finalize(mval, dxmv, dymv);
+
+		const auto &gbasis_values = (&basis == &gbasis) ? basis_values : g_basis_values_cache_;
+		assert(gbasis_values.size() == n_local_g_bases);
+		val.resize(pts.rows(), pts.cols());
+		val.setZero();
 		for(int j = 0; j < n_local_g_bases; ++j)
 		{
 			const Basis &b=gbasis.bases[j];
+			const auto &tmp = gbasis_values[j].val;
 
 			assert(gbasis.has_parameterization);
+			assert(tmp.size() == val.rows());
 
 			for(std::size_t ii = 0; ii < b.global().size(); ++ii)
 			{
-				for (long k = 0; k < gvals->rows(); ++k)
+				for (long k = 0; k < val.rows(); ++k)
 				{
-					mval.row(k) += (*gvals)(k,j)    * b.global()[ii].node * b.global()[ii].val;
-
-					dxmv.row(k) += (*local_g_gradx)(k,j) * b.global()[ii].node  * b.global()[ii].val;
-					dymv.row(k) += (*local_g_grady)(k,j) * b.global()[ii].node  * b.global()[ii].val;
-					if(is_volume)
-						dzmv.row(k) += (*local_g_gradz)(k,j) * b.global()[ii].node  * b.global()[ii].val;
+					val.row(k) += tmp(k) * b.global()[ii].node * b.global()[ii].val;
 				}
 			}
 		}
 
 		if(is_volume)
-			finalize(mval, dxmv, dymv, dzmv);
+			finalize3d(gbasis, gbasis_values);
 		else
-			finalize(mval, dxmv, dymv);
+			finalize2d(gbasis, gbasis_values);
 
 	}
 
@@ -233,18 +362,15 @@ namespace polyfem
 		Quadrature quad;
 		gbasis.compute_quadrature(quad);
 
+		std::vector<AssemblyValues> tmp;
+
 		Eigen::MatrixXd dxmv = Eigen::MatrixXd::Zero(quad.points.rows(), quad.points.cols());
 		Eigen::MatrixXd dymv = Eigen::MatrixXd::Zero(quad.points.rows(), quad.points.cols());
 		Eigen::MatrixXd dzmv;
-
 		if(is_volume)
 			dzmv = Eigen::MatrixXd::Zero(quad.points.rows(), quad.points.cols());
 
-		Eigen::MatrixXd local_gradx, local_grady, local_gradz;
-		gbasis.evaluate_grads(quad.points, 0, local_gradx);
-		gbasis.evaluate_grads(quad.points, 1, local_grady);
-		if(is_volume)
-			gbasis.evaluate_grads(quad.points, 2, local_gradz);
+		gbasis.evaluate_grads(quad.points, tmp);
 
 		for(int j = 0; j < n_local_bases; ++j)
 		{
@@ -255,12 +381,12 @@ namespace polyfem
 
 			for(std::size_t ii = 0; ii < b.global().size(); ++ii)
 			{
-				for (long k = 0; k < local_gradx.rows(); ++k)
+				for (long k = 0; k < quad.points.rows(); ++k)
 				{
-					dxmv.row(k) += local_gradx(k,j) * b.global()[ii].node  * b.global()[ii].val;
-					dymv.row(k) += local_grady(k,j) * b.global()[ii].node  * b.global()[ii].val;
+					dxmv.row(k) += tmp[j].grad(k, 0) * b.global()[ii].node  * b.global()[ii].val;
+					dymv.row(k) += tmp[j].grad(k, 1) * b.global()[ii].node  * b.global()[ii].val;
 					if(is_volume)
-						dzmv.row(k) += local_gradz(k,j) * b.global()[ii].node  * b.global()[ii].val;
+						dzmv.row(k) += tmp[j].grad(k, 2) * b.global()[ii].node  * b.global()[ii].val;
 				}
 			}
 		}

@@ -945,7 +945,8 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
 
         void assign_q2_weights(const Mesh3D &mesh, const int el_index, std::vector< ElementBases > &bases)
         {
-            Eigen::MatrixXd eval_p;
+            // Eigen::MatrixXd eval_p;
+            std::vector<AssemblyValues> eval_p;
             const Navigation3D::Index start_index = mesh.get_index_from_element(el_index);
             ElementBases &b = bases[el_index];
 
@@ -977,10 +978,10 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
                     if(other_b.global().empty()) continue;
 
                     // other_b.basis(param_p, eval_p);
-                    assert(eval_p.col(i).size() == 9);
+                    assert(eval_p[i].val.size() == 9);
 
                     //basis i of element opposite element is zero on this elements
-                    if(eval_p.col(i).cwiseAbs().maxCoeff() <= 1e-10)
+                    if(eval_p[i].val.cwiseAbs().maxCoeff() <= 1e-10)
                         continue;
 
                     for(std::size_t k = 0; k < other_b.global().size(); ++k)
@@ -988,7 +989,7 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
                         for(int l = 0; l < 9; ++l)
                         {
                             Local2Global glob = other_b.global()[k];
-                            glob.val *= eval_p(l, i);
+                            glob.val *= eval_p[i].val(l);
 
                             insert_into_global(el_index, glob, b.bases[indices[l]].global(), sizes[l]);
                         }
@@ -1223,7 +1224,8 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
         std::vector< Eigen::Triplet<double> > entries, entries_t;
 
         MeshNodes nodes(mesh, 1, 1, 1);
-        Eigen::MatrixXd tmp;
+        // Eigen::MatrixXd tmp;
+        std::vector<AssemblyValues> tmp_val;
 
         Eigen::MatrixXd node_rhs(n_constraints*n_elements, dim);
         Eigen::MatrixXd samples(n_constraints, dim);
@@ -1249,20 +1251,21 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
                     node_rhs(n_constraints*i + j, d) = n(d);
             }
 
-            base.evaluate_bases(samples, tmp);
+            base.evaluate_bases(samples, tmp_val);
             const auto &lbs = base.bases;
 
             const int n_local_bases = int(lbs.size());
             for(int j = 0; j < n_local_bases; ++j)
             {
                 const Basis &b = lbs[j];
+                const auto &tmp = tmp_val[j].val;
 
                 for(std::size_t ii = 0; ii < b.global().size(); ++ii)
                 {
-                    for (long k = 0; k < tmp.rows(); ++k)
+                    for (long k = 0; k < tmp.size(); ++k)
                     {
-                        entries.emplace_back(n_constraints*i + k, b.global()[ii].index, tmp(k,j)*b.global()[ii].val);
-                        entries_t.emplace_back(b.global()[ii].index, n_constraints*i + k, tmp(k,j)*b.global()[ii].val);
+                        entries.emplace_back(n_constraints*i + k, b.global()[ii].index, tmp(k)*b.global()[ii].val);
+                        entries_t.emplace_back(b.global()[ii].index, n_constraints*i + k, tmp(k)*b.global()[ii].val);
                     }
                 }
             }

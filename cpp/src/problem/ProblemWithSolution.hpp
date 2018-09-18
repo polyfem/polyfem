@@ -11,14 +11,15 @@ namespace polyfem
 	public:
 		ProblemWithSolution(const std::string &name);
 
-		virtual void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const;
-		virtual void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const;
+		virtual void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		virtual void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 
-		virtual void exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const;
-		virtual void exact_grad(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const;
+		virtual void exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
+		virtual void exact_grad(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 
 
-		virtual bool has_exact_sol() const { return true; }
+		virtual bool has_exact_sol() const override { return true; }
+		virtual bool is_rhs_zero() const override { return false; }
 
 
 		virtual ~ProblemWithSolution() { }

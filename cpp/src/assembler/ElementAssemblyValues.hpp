@@ -29,10 +29,14 @@ namespace polyfem
 		bool is_geom_mapping_positive(const bool is_volume, const ElementBases &gbasis) const;
 
 	private:
+		std::vector<AssemblyValues> g_basis_values_cache_;
+
 		void finalize_global_element(const Eigen::MatrixXd &v);
 
-		void finalize(const Eigen::MatrixXd &v, const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy);
-		void finalize(const Eigen::MatrixXd &v, const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy, const Eigen::MatrixXd &dz);
+		// void finalize(const Eigen::MatrixXd &v, const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy);
+		// void finalize(const Eigen::MatrixXd &v, const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy, const Eigen::MatrixXd &dz);
+		void finalize2d(const ElementBases &gbasis, const std::vector<AssemblyValues> &gbasis_values);
+		void finalize3d(const ElementBases &gbasis, const std::vector<AssemblyValues> &gbasis_values);
 
 		bool is_geom_mapping_positive(const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy, const Eigen::MatrixXd &dz) const;
 		bool is_geom_mapping_positive(const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy) const;

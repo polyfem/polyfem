@@ -22,41 +22,54 @@ namespace polyfem
 		}
 
 		mapped = Eigen::MatrixXd::Zero(samples.rows(), samples.cols());
-		Eigen::MatrixXd tmp;
-		evaluate_bases(samples, tmp);
+		std::vector<AssemblyValues> tmp_val;
+		evaluate_bases(samples, tmp_val);
 
 		const int n_local_bases = int(bases.size());
 		for(int j = 0; j < n_local_bases; ++j)
 		{
 			const Basis &b = bases[j];
+			const auto &tmp = tmp_val[j].val;
 
 			for(std::size_t ii = 0; ii < b.global().size(); ++ii)
 			{
-				for (long k = 0; k < tmp.rows(); ++k){
-					mapped.row(k) += tmp(k,j) * b.global()[ii].node * b.global()[ii].val;
+				for (long k = 0; k < tmp.size(); ++k){
+					mapped.row(k) += tmp(k) * b.global()[ii].node * b.global()[ii].val;
 				}
 			}
 		}
 	}
 
-	void ElementBases::evaluate_bases_default(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const
+	void ElementBases::evaluate_bases_default(const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &basis_values) const
 	{
-		val.resize(uv.rows(), bases.size());
-		Eigen::MatrixXd tmp;
+		basis_values.resize(bases.size());
+
+		// val.resize(uv.rows(), bases.size());
+		// Eigen::MatrixXd tmp;
+
 		for(size_t i = 0; i < bases.size(); ++i){
-			bases[i].eval_basis(uv, tmp);
-			val.col(i) = tmp;
+			// bases[i].eval_basis(uv, tmp); // = basis_values[i].val
+			// val.col(i) = tmp;
+
+			bases[i].eval_basis(uv, basis_values[i].val);
+			assert(basis_values[i].val.size() == uv.rows());
 		}
 	}
 
-	void ElementBases::evaluate_grads_default(const Eigen::MatrixXd &uv, const int dim, Eigen::MatrixXd &grad) const
+	void ElementBases::evaluate_grads_default(const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &basis_values) const
 	{
-		grad.resize(uv.rows(), bases.size());
-		Eigen::MatrixXd grad_tmp;
+		basis_values.resize(bases.size());
+
+		// grad.resize(uv.rows(), bases.size());
+		// Eigen::MatrixXd grad_tmp;
+
 		for(size_t i = 0; i < bases.size(); ++i)
 		{
-			bases[i].eval_grad(uv, grad_tmp);
-			grad.col(i) = grad_tmp.col(dim);
+			// bases[i].eval_grad(uv, grad_tmp);
+			// grad.col(i) = grad_tmp.col(dim);
+
+			bases[i].eval_grad(uv, basis_values[i].grad);
+			assert(basis_values[i].grad.rows() == uv.rows());
 		}
 	}
 
@@ -79,25 +92,22 @@ namespace polyfem
 		Eigen::MatrixXd dymv = Eigen::MatrixXd::Zero(samples.rows(), samples.cols());
 		Eigen::MatrixXd dzmv = Eigen::MatrixXd::Zero(samples.rows(), samples.cols());
 
-		Eigen::MatrixXd local_gradx, local_grady, local_gradz;
-		evaluate_grads(samples, 0, local_gradx);
-		evaluate_grads(samples, 1, local_grady);
-
-		if(is_volume)
-			evaluate_grads(samples, 2, local_gradz);
+		std::vector<AssemblyValues> tmp_val;
+		evaluate_grads(samples, tmp_val);
 
 		for(int j = 0; j < n_local_bases; ++j)
 		{
 			const Basis &b = bases[j];
+			const auto &grad = tmp_val[j].grad;
 
 			for(std::size_t ii = 0; ii < b.global().size(); ++ii)
 			{
 				for(long k = 0; k < samples.rows(); ++k)
 				{
-					dxmv.row(k) += local_gradx(k,j) * b.global()[ii].node  * b.global()[ii].val;
-					dymv.row(k) += local_grady(k,j) * b.global()[ii].node  * b.global()[ii].val;
+					dxmv.row(k) += grad(k,0) * b.global()[ii].node  * b.global()[ii].val;
+					dymv.row(k) += grad(k,1) * b.global()[ii].node  * b.global()[ii].val;
 					if(is_volume)
-						dzmv.row(k) += local_gradz(k,j) * b.global()[ii].node  * b.global()[ii].val;
+						dzmv.row(k) += grad(k,2) * b.global()[ii].node  * b.global()[ii].val;
 				}
 			}
 		}

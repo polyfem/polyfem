@@ -14,6 +14,8 @@ namespace polyfem
 		ElasticProblem(const std::string &name);
 
 		void rhs(const std::string &formulation, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const override;
+		bool is_rhs_zero() const override { return true; }
+
 		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const override;
 
 		bool has_exact_sol() const override { return false; }
@@ -26,6 +28,8 @@ namespace polyfem
 		TorsionElasticProblem(const std::string &name);
 
 		void rhs(const std::string &formulation, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const override;
+		bool is_rhs_zero() const override { return true; }
+
 		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const override;
 
 		bool has_exact_sol() const override { return false; }
@@ -44,6 +48,8 @@ namespace polyfem
 	{
 	public:
 		ElasticProblemZeroBC(const std::string &name);
+		bool is_rhs_zero() const override { return false; }
+
 
 		void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
@@ -111,6 +117,8 @@ namespace polyfem
 		GravityProblem(const std::string &name);
 
 		void rhs(const std::string &formulation, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const override;
+		bool is_rhs_zero() const override { return false; }
+
 		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const override;
 		void velocity_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 		void acceleration_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;

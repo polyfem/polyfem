@@ -5,6 +5,8 @@
 #include <polyfem/Quadrature.hpp>
 #include <polyfem/Mesh.hpp>
 
+#include <polyfem/AssemblyValues.hpp>
+
 
 #include <vector>
 
@@ -18,8 +20,7 @@ namespace polyfem
 	{
 	public:
 		typedef std::function<Eigen::VectorXi(const int local_index, const Mesh &mesh)> LocalNodeFromPrimitiveFunc;
-		typedef std::function<void(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)> EvalBasesFunc;
-		typedef std::function<void(const Eigen::MatrixXd &uv, const int dim, Eigen::MatrixXd &grad)> EvalGradsFunc;
+		typedef std::function<void(const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &basis_values)> EvalBasesFunc;
 		typedef std::function<void(Quadrature &quadrature)> QuadratureFunction;
 
 		// one basis function per node in the element
@@ -68,24 +69,21 @@ namespace polyfem
 
 		void set_quadrature(const QuadratureFunction &fun) { quadrature_builder_ = fun; }
 
-		void evaluate_bases(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const { if (eval_bases_func_) { eval_bases_func_(uv, val); } else { evaluate_bases_default(uv, val); } }
-
-		void evaluate_grads(const Eigen::MatrixXd &uv, const int dim, Eigen::MatrixXd &grad) const { if (eval_grads_func_) { eval_grads_func_(uv, dim, grad); } else { evaluate_grads_default(uv, dim, grad); } }
+		void evaluate_bases(const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &basis_values) const { if (eval_bases_func_) { eval_bases_func_(uv, basis_values); } else { evaluate_bases_default(uv, basis_values); } }
+		void evaluate_grads(const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &basis_values) const { if (eval_grads_func_) { eval_grads_func_(uv, basis_values); } else { evaluate_grads_default(uv, basis_values); } }
 
 		void set_bases_func(EvalBasesFunc fun) { eval_bases_func_ = fun; }
-
-		void set_grads_func(EvalGradsFunc fun) { eval_grads_func_ = fun; }
+		void set_grads_func(EvalBasesFunc fun) { eval_grads_func_ = fun; }
 
 		void set_local_node_from_primitive_func(LocalNodeFromPrimitiveFunc fun) { local_node_from_primitive_ = fun; }
 
 	private:
-		void evaluate_bases_default(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const;
-
-		void evaluate_grads_default(const Eigen::MatrixXd &uv, const int dim, Eigen::MatrixXd &grad) const;
+		void evaluate_bases_default(const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &basis_values) const;
+		void evaluate_grads_default(const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &basis_values) const;
 
 	private:
 		EvalBasesFunc eval_bases_func_;
-		EvalGradsFunc eval_grads_func_;
+		EvalBasesFunc eval_grads_func_;
 		QuadratureFunction quadrature_builder_;
 
 		LocalNodeFromPrimitiveFunc local_node_from_primitive_;

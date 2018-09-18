@@ -329,7 +329,8 @@ void sample_polyhedra(
 	// viewer.launch();
 
 	// Compute right-hand side constraints for setting the harmonic kernels
-	Eigen::MatrixXd samples, basis_val;
+	Eigen::MatrixXd samples;
+	std::vector<AssemblyValues> basis_val;
 	rhs.resize(UV.rows(), local_to_global.size());
 	rhs.setZero();
 	for (int lf = 0; lf < mesh.n_cell_faces(element_index); ++lf) {
@@ -353,7 +354,7 @@ void sample_polyhedra(
 
 				const int poly_local_basis_id = std::distance(local_to_global.begin(),
 					std::find(local_to_global.begin(), local_to_global.end(), global_node_id));
-				rhs.block(uv_ranges(lf), poly_local_basis_id, basis_val.rows(), 1) += basis_val.col(other_local_basis_id) * weight;
+				rhs.block(uv_ranges(lf), poly_local_basis_id, basis_val[other_local_basis_id].val.size(), 1) += basis_val[other_local_basis_id].val * weight;
 			}
 		}
 	}
@@ -643,10 +644,35 @@ void PolygonalBasis3d::build_bases(
 			local_basis_integrals.row(k) = -basis_integrals.row(local_to_global[k]);
 		}
 		auto set_rbf = [&b] (auto rbf) {
-			b.set_bases_func([rbf] (const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-				{ rbf->bases_values(uv, val); } );
-			b.set_grads_func([rbf] (const Eigen::MatrixXd &uv, int axis, Eigen::MatrixXd &grad)
-				{ rbf->bases_grads(axis, uv, grad); } );
+			b.set_bases_func([rbf] (const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &val)
+			{
+				Eigen::MatrixXd tmp;
+				rbf->bases_values(uv, tmp);
+				val.resize(tmp.cols());
+				assert(tmp.rows() == uv.rows());
+
+				for(size_t i = 0; i < tmp.cols(); ++i){
+					val[i].val = tmp.col(i);
+				}
+			});
+			b.set_grads_func([rbf] (const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &val)
+			{
+				Eigen::MatrixXd tmpx, tmpy, tmpz;
+
+				rbf->bases_grads(0, uv, tmpx);
+				rbf->bases_grads(1, uv, tmpy);
+				rbf->bases_grads(2, uv, tmpz);
+
+				val.resize(tmpx.cols());
+				assert(tmpx.cols() == tmpy.cols());
+				assert(tmpx.cols() == tmpz.cols());
+				assert(tmpx.rows() == uv.rows());
+				for(size_t i = 0; i < tmpx.cols(); ++i){
+					val[i].grad.col(0) = tmpx.col(i);
+					val[i].grad.col(1) = tmpy.col(i);
+					val[i].grad.col(2) = tmpz.col(i);
+				}
+			});
 		};
 		if (integral_constraints == 0) {
 			set_rbf(std::make_shared<RBFWithLinear>(

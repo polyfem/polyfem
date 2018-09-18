@@ -573,7 +573,8 @@ namespace polyfem
 
         void assign_q2_weights(const Mesh2D &mesh, const int el_index, std::vector< ElementBases > &bases)
         {
-            Eigen::MatrixXd eval_p;
+            // Eigen::MatrixXd eval_p;
+            std::vector<AssemblyValues> eval_p;
             Navigation::Index index = mesh.get_index_from_face(el_index);
             ElementBases &b = bases[el_index];
 
@@ -604,17 +605,21 @@ namespace polyfem
 
                     if(other_b.global().empty()) continue;
 
-                    assert(eval_p.col(i).size() == 3);
+                    assert(eval_p[i].val.size() == 3);
 
                     //basis i of element opposite face is zero on this elements
-                    if(eval_p.col(i).cwiseAbs().maxCoeff() <= 1e-10)
+                    if(eval_p[i].val.cwiseAbs().maxCoeff() <= 1e-10)
                         continue;
 
                     for(std::size_t k = 0; k < other_b.global().size(); ++k)
                     {
-                        auto glob0 = other_b.global()[k]; glob0.val *= eval_p(0,i);
-                        auto glob1 = other_b.global()[k]; glob1.val *= eval_p(1,i);
-                        auto glob2 = other_b.global()[k]; glob2.val *= eval_p(2,i);
+                        // auto glob0 = other_b.global()[k]; glob0.val *= eval_p(0,i);
+                        // auto glob1 = other_b.global()[k]; glob1.val *= eval_p(1,i);
+                        // auto glob2 = other_b.global()[k]; glob2.val *= eval_p(2,i);
+
+                        auto glob0 = other_b.global()[k]; glob0.val *= eval_p[i].val(0);
+                        auto glob1 = other_b.global()[k]; glob1.val *= eval_p[i].val(1);
+                        auto glob2 = other_b.global()[k]; glob2.val *= eval_p[i].val(2);
 
                         insert_into_global(glob0, b.bases[i0].global());
                         insert_into_global(glob1, b.bases[i1].global());
@@ -810,7 +815,8 @@ namespace polyfem
         std::vector< Eigen::Triplet<double> > entries, entries_t;
 
         MeshNodes nodes(mesh, 1, 1, 0);
-        Eigen::MatrixXd tmp;
+        // Eigen::MatrixXd tmp;
+        std::vector<AssemblyValues> tmp_val;
 
         Eigen::MatrixXd node_rhs(n_constraints*n_elements, dim);
         Eigen::MatrixXd samples(n_constraints, dim);
@@ -836,20 +842,21 @@ namespace polyfem
                     node_rhs(n_constraints*i + j, d) = n(d);
             }
 
-            base.evaluate_bases(samples, tmp);
+            base.evaluate_bases(samples, tmp_val);
             const auto &lbs = base.bases;
 
             const int n_local_bases = int(lbs.size());
             for(int j = 0; j < n_local_bases; ++j)
             {
                 const Basis &b = lbs[j];
+                const auto &tmp = tmp_val[j].val;
 
                 for(std::size_t ii = 0; ii < b.global().size(); ++ii)
                 {
-                    for (long k = 0; k < tmp.rows(); ++k)
+                    for (long k = 0; k < tmp.size(); ++k)
                     {
-                        entries.emplace_back(n_constraints*i + k, b.global()[ii].index, tmp(k,j)*b.global()[ii].val);
-                        entries_t.emplace_back(b.global()[ii].index, n_constraints*i + k, tmp(k,j)*b.global()[ii].val);
+                        entries.emplace_back(n_constraints*i + k, b.global()[ii].index, tmp(k)*b.global()[ii].val);
+                        entries_t.emplace_back(b.global()[ii].index, n_constraints*i + k, tmp(k)*b.global()[ii].val);
                     }
                 }
             }

@@ -123,8 +123,9 @@ namespace polyfem
 {
 	void UIState::get_plot_edges(const Mesh &mesh, const std::vector< ElementBases > &bases, const int n_samples, const std::vector<bool> &valid_elements, const Visualizations &layer, Eigen::MatrixXd &pp0, Eigen::MatrixXd &pp1)
 	{
-		Eigen::MatrixXd samples_simplex, samples_cube, mapped, p0, p1, tmp;
+		Eigen::MatrixXd samples_simplex, samples_cube, mapped, p0, p1;
 		std::vector<Eigen::MatrixXd> p0v, p1v;
+		std::vector<AssemblyValues> tmp_val;
 
 		std::vector<bool> valid_polytopes(valid_elements.size(), false);
 		const int actual_dim = mesh.dimension();
@@ -156,17 +157,18 @@ namespace polyfem
 
 			if(!state.problem->is_scalar() && layer == Visualizations::Solution){
 				const ElementBases &bs = bases[i];
-				bs.evaluate_bases(samples, tmp);
+				bs.evaluate_bases(samples, tmp_val);
 
 				for(std::size_t j = 0; j < bs.bases.size(); ++j)
 				{
 					const Basis &b = bs.bases[j];
+					const auto &tmp = tmp_val[j].val;
 
 					for(std::size_t ii = 0; ii < b.global().size(); ++ii)
 					{
 						for(int d = 0; d < actual_dim; ++d)
 						{
-							result.col(d) += b.global()[ii].val * tmp.col(j) * state.sol(b.global()[ii].index*actual_dim + d);
+							result.col(d) += b.global()[ii].val * tmp * state.sol(b.global()[ii].index*actual_dim + d);
 						}
 					}
 				}
@@ -466,7 +468,8 @@ namespace polyfem
 
 	void UIState::interpolate_function(const MatrixXd &fun, MatrixXd &result)
 	{
-		MatrixXd tmp;
+		// MatrixXd tmp;
+		std::vector<AssemblyValues> tmp_val;
 
 		int actual_dim = 1;
 		if(!state.problem->is_scalar())
@@ -491,15 +494,16 @@ namespace polyfem
 				local_pts = vis_pts_poly[i];
 
 			MatrixXd local_res = MatrixXd::Zero(local_pts.rows(), actual_dim);
-			bs.evaluate_bases(local_pts, tmp);
+			bs.evaluate_bases(local_pts, tmp_val);
 			for(std::size_t j = 0; j < bs.bases.size(); ++j)
 			{
 				const Basis &b = bs.bases[j];
+				const auto &tmp = tmp_val[j].val;
 
 				for(int d = 0; d < actual_dim; ++d)
 				{
 					for(std::size_t ii = 0; ii < b.global().size(); ++ii)
-						local_res.col(d) += b.global()[ii].val * tmp.col(j) * fun(b.global()[ii].index*actual_dim + d);
+						local_res.col(d) += b.global()[ii].val * tmp * fun(b.global()[ii].index*actual_dim + d);
 				}
 			}
 
@@ -510,7 +514,8 @@ namespace polyfem
 
 	void UIState::interpolate_grad_function(const MatrixXd &fun, MatrixXd &result)
 	{
-		MatrixXd tmp;
+		// MatrixXd tmp;
+		std::vector<AssemblyValues> tmp_val;
 
 		int actual_dim = 1;
 		if(!state.problem->is_scalar())
@@ -548,10 +553,12 @@ namespace polyfem
 				for(size_t n = 0; n < j_g_mapping.size(); ++n)
 				{
 					Eigen::RowVectorXd grad(state.mesh->dimension());
+					bs.evaluate_grads(local_pts, tmp_val);
 					for(int c = 0; c < state.mesh->dimension(); ++c)
 					{
-						bs.evaluate_grads(local_pts, c, tmp);
-						grad(c) = tmp(n, j);
+						// bs.evaluate_grads(local_pts, c, tmp);
+						// grad(c) = tmp(n, j);
+						grad(c) = tmp_val[j].grad(n, c);
 					}
 
 					grad = grad * j_g_mapping[n].inverse().transpose();

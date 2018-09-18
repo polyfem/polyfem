@@ -73,6 +73,8 @@ namespace polyfem
 		MinSurfProblem(const std::string &name);
 
 		void rhs(const std::string &formulation, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const override;
+		bool is_rhs_zero() const override { return false; }
+
 		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const override;
 
 		bool is_scalar() const override { return true; }
@@ -85,6 +87,8 @@ namespace polyfem
 		TimeDependentProblem(const std::string &name);
 
 		void rhs(const std::string &formulation, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const override;
+		bool is_rhs_zero() const override { return false; }
+
 		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const override;
 		void initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 
