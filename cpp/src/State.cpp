@@ -1683,7 +1683,7 @@ namespace polyfem
 					logger().info("t: {} prev: {} step: {}", t, prev_t, step_t);
 
 					NLProblem nl_problem(rhs_assembler, t);
-					if(start){
+					if(prev_t <= 0){
 						tmp_sol = nl_problem.initial_guess();
 						prev_sol = tmp_sol;
 						start = false;

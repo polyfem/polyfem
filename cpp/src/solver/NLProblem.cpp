@@ -24,10 +24,22 @@ namespace polyfem
 
 	NLProblem::TVector NLProblem::initial_guess()
 	{
-		Eigen::VectorXd guess(reduced_size);
-		guess.setZero();
+		// Eigen::VectorXd guess(reduced_size);
+		// guess.setZero();
 
-		return guess;
+		// return guess;
+
+		const auto &state = State::state();
+ 		auto solver = LinearSolver::create(state.args["solver_type"], state.args["precond_type"]);
+		solver->setParameters(state.solver_params());
+		Eigen::VectorXd b, x, guess;
+ 		Eigen::SparseMatrix<double> A;
+		assembler.assemble_problem("LinearElasticity", state.mesh->is_volume(), state.n_bases, state.bases, state.iso_parametric() ? state.bases : state.geom_bases, A);
+ 		b = state.rhs * t;
+		dirichlet_solve(*solver, A, b, state.boundary_nodes, x, "", false);
+ 		full_to_reduced(x, guess);
+
+ 		return guess;
 	}
 
 	double NLProblem::value(const TVector &x) {

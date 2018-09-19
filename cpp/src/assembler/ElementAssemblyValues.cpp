@@ -107,7 +107,7 @@ namespace polyfem
 				const Basis &b=gbasis.bases[j];
 				assert(gbasis.has_parameterization);
 				assert(gbasis_values[j].grad.rows() == val.rows());
-				assert(gbasis_values[j].grad.cols() == 2);
+				assert(gbasis_values[j].grad.cols() == 3);
 
 				for(std::size_t ii = 0; ii < b.global().size(); ++ii)
 				{
