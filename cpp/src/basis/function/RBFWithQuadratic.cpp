@@ -4,6 +4,8 @@
 #include <polyfem/MatrixUtils.hpp>
 #include <polyfem/Logger.hpp>
 
+#include <polyfem/Laplacian.hpp>
+
 #include <igl/Timer.h>
 
 #include <Eigen/Dense>
@@ -321,6 +323,9 @@ void RBFWithQuadratic::compute_constraints_matrix_2d(
 	// std::cout << I_mix << std::endl;
 	// std::cout << I_sqr << std::endl;
 
+
+	
+
 	// Compute M
 	Eigen::Matrix<double, 5, 5> M;
 	M <<    volume,          0,          I_lin(1), 2*I_lin(0),          0,
@@ -330,6 +335,89 @@ void RBFWithQuadratic::compute_constraints_matrix_2d(
 	    2*I_lin(0), 4*I_lin(1),        4*I_mix(0), 2*I_sqr(0), 6*I_sqr(1);
 	Eigen::FullPivLU<Eigen::Matrix<double, 5, 5>> lu(M);
 	assert(lu.isInvertible());
+
+
+	ElementAssemblyValues ass_val;
+	ass_val.has_parameterization=false;
+	//linear linear
+	{
+		ass_val.basis_values.resize(5);
+		//x
+		ass_val.basis_values[0].val = quadr.points.col(0);
+		ass_val.basis_values[0].grad = Eigen::MatrixXd(quadr.points.rows(), quadr.points.cols());
+		ass_val.basis_values[0].grad.col(0).setOnes();
+		ass_val.basis_values[0].grad.col(1).setZero();
+
+		//y
+		ass_val.basis_values[1].val = quadr.points.col(1);
+		ass_val.basis_values[1].grad = Eigen::MatrixXd(quadr.points.rows(), quadr.points.cols());
+		ass_val.basis_values[1].grad.col(0).setZero();
+		ass_val.basis_values[1].grad.col(1).setOnes();
+
+		//xy
+		ass_val.basis_values[2].val = quadr.points.col(0).array() * quadr.points.col(1).array();
+		ass_val.basis_values[2].grad = Eigen::MatrixXd(quadr.points.rows(), quadr.points.cols());
+		ass_val.basis_values[2].grad.col(0) = quadr.points.col(1);
+		ass_val.basis_values[2].grad.col(1) = quadr.points.col(0);
+
+		//x^2
+		ass_val.basis_values[3].val = quadr.points.col(0).array() * quadr.points.col(0).array();
+		ass_val.basis_values[3].grad = Eigen::MatrixXd(quadr.points.rows(), quadr.points.cols());
+		ass_val.basis_values[3].grad.col(0) = 2*quadr.points.col(0);
+		ass_val.basis_values[3].grad.col(1).setZero();
+
+		//y^2
+		ass_val.basis_values[4].val = quadr.points.col(1).array() * quadr.points.col(1).array();
+		ass_val.basis_values[4].grad = Eigen::MatrixXd(quadr.points.rows(), quadr.points.cols());
+		ass_val.basis_values[4].grad.col(0).setZero();
+		ass_val.basis_values[4].grad.col(1) = 2*quadr.points.col(1);
+
+		for(size_t i = 0; i < ass_val.basis_values.size(); ++i)
+		{
+			ass_val.basis_values[i].grad_t_m = ass_val.basis_values[i].grad;
+		}
+
+		Laplacian assembler;
+
+
+		DiffScalarBase::setVariableCount(quadr.points.cols());
+		AutodiffHessianPt pt(1);
+		Eigen::MatrixXd strong(quadr.points.rows(), 5);
+		for(int i = 0; i < quadr.points.rows(); ++i)
+		{
+			//x
+			pt(0) = AutodiffScalarHessian(0, quadr.points(i, 0));
+			strong(i, 0) = assembler.compute_rhs(pt)(0);
+
+			//y
+			pt(0) = AutodiffScalarHessian(0, quadr.points(i, 1));
+			strong(i, 1) = assembler.compute_rhs(pt)(0);
+
+			//y
+			pt(0) = AutodiffScalarHessian(0, quadr.points(i, 0)) * AutodiffScalarHessian(1, quadr.points(i, 1));
+			strong(i, 2) = assembler.compute_rhs(pt)(0);
+
+			//x^2
+			pt(0) = AutodiffScalarHessian(0, quadr.points(i, 0)) * AutodiffScalarHessian(0, quadr.points(i, 0));
+			strong(i, 3) = assembler.compute_rhs(pt)(0);
+
+			//y^2
+			pt(0) = AutodiffScalarHessian(0, quadr.points(i, 1)) * AutodiffScalarHessian(0, quadr.points(i, 1));
+			strong(i, 4) = assembler.compute_rhs(pt)(0);
+		}
+
+
+		for(int i = 0; i < 5; ++i)
+		{
+			for(int j = 0; j < 5; ++j)
+			{
+				double automatic_val = assembler.assemble(ass_val, i, j, quadr.weights)(0);
+				automatic_val += (strong.col(i).array() * ass_val.basis_values[j].val.array() * quadr.weights.array()).sum();
+				std::cout<<"diff generic "<<i <<","<<j<<": "<<fabs( automatic_val - M(i,j))<<std::endl;
+			}
+		}
+
+	}
 
 	// show_matrix_stats(M);
 

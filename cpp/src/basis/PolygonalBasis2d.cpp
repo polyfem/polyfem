@@ -431,6 +431,7 @@ void PolygonalBasis2d::build_bases(
 				assert(tmpx.cols() == tmpy.cols());
 				assert(tmpx.rows() == uv.rows());
 				for(size_t i = 0; i < tmpx.cols(); ++i){
+					val[i].grad.resize(uv.rows(), uv.cols());
 					val[i].grad.col(0) = tmpx.col(i);
 					val[i].grad.col(1) = tmpy.col(i);
 				}
