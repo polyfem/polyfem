@@ -79,6 +79,10 @@ namespace polyfem
 		void compute_kernels_matrix(const Eigen::MatrixXd &samples, Eigen::MatrixXd &A) const;
 
 		// Computes the relationship w = L v + t between the unknowns (v) and the weights w
+		void compute_constraints_matrix_2d_old(const int num_bases, const Quadrature &quadr,
+			const Eigen::MatrixXd &local_basis_integral, Eigen::MatrixXd &L, Eigen::MatrixXd &t) const;
+
+		// Computes the relationship w = L v + t between the unknowns (v) and the weights w
 		void compute_constraints_matrix_2d(const int num_bases, const Quadrature &quadr,
 			const Eigen::MatrixXd &local_basis_integral, Eigen::MatrixXd &L, Eigen::MatrixXd &t) const;
 

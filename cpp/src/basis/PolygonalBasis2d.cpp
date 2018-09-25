@@ -181,8 +181,8 @@ void PolygonalBasis2d::compute_integral_constraints(
 
 	basis_integrals.resize(n_bases, 5);
 	basis_integrals.setZero();
-	Eigen::MatrixXd rhs(n_bases, 5);
-	rhs.setZero();
+	// Eigen::MatrixXd rhs(n_bases, 5);
+	// rhs.setZero();
 
 	const int n_elements = mesh.n_elements();
 	for(int e = 0; e < n_elements; ++e) {
@@ -199,10 +199,15 @@ void PolygonalBasis2d::compute_integral_constraints(
 		const int n_local_bases = int(vals.basis_values.size());
 		for(int j = 0; j < n_local_bases; ++j) {
 			const AssemblyValues &v=vals.basis_values[j];
+			// int nabla q_10 \cdot nabla phi_j + \int delta q_10 * phi_j = int nalba_x phi_j
+			//integral_10 = assembler.assemble(v, j, n_local_bases + 0) +/- (strong.col(0).array * v.val.array()* vals.det.array() * vals.quadrature.weights.array()).sum();
+			//integral_01 = assembler.assemble(v, j, n_local_bases + 1)
 			const double integral_10 = (v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
 			const double integral_01 = (v.grad_t_m.col(1).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
 
 			const double integral_11 = 	((vals.val.col(1).array() * v.grad_t_m.col(0).array() + vals.val.col(0).array() * v.grad_t_m.col(1).array()) * vals.det.array() * vals.quadrature.weights.array()).sum();
+
+			// int nabla q_20 \cdot nabla phi_j + \int delta q_20 * phi_j = 2 (int x nalba_x phi_j + int phi_j)
 			const double integral_20 = 2*(vals.val.col(0).array() * v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
 			const double integral_02 = 2*(vals.val.col(1).array() * v.grad_t_m.col(1).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
 
@@ -217,6 +222,8 @@ void PolygonalBasis2d::compute_integral_constraints(
 				basis_integrals(v.global[ii].index, 3) += integral_20 * v.global[ii].val;
 				basis_integrals(v.global[ii].index, 4) += integral_02 * v.global[ii].val;
 
+				// basis_integrals(v.global[ii].index, 3) += 2.0 * area * v.global[ii].val;
+				// basis_integrals(v.global[ii].index, 4) += 2.0 * area * v.global[ii].val;
 				rhs(v.global[ii].index, 3) += -2.0 * area * v.global[ii].val;
 				rhs(v.global[ii].index, 4) += -2.0 * area * v.global[ii].val;
 			}
