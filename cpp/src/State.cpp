@@ -868,12 +868,14 @@ namespace polyfem
 
 		if(args["normalize_mesh"])
 			mesh->normalize();
+
+		RowVectorNd min, max;
+		mesh->bounding_box(min, max);
+
+		if(min.size() == 2)
+			logger().info("mesh bb min [{} {}], \tmax [{} {}]", min(0), min(1), max(0), max(1));
 		else
-		{
-			RowVectorNd min, max;
-			mesh->bounding_box(min, max);
-			// logger().info("mesh bb min {}, \tmax {}", min, max);
-		}
+			logger().info("mesh bb min [{} {} {}], \tmax [{} {} {}]", min(0), min(1), min(2), max(0), max(1), max(2));
 
 		mesh->refine(args["n_refs"], args["refinenemt_location"], parent_elements);
 
@@ -1444,11 +1446,11 @@ namespace polyfem
 		{
 			RowVectorNd min, max, delta;
 			mesh->bounding_box(min, max);
-			delta = max - min;
+			delta = (max - min) / 2. + min;
 			if(mesh->is_volume())
-				p_params["bbox_extend"] = {delta(0), delta(1), delta(2)};
+				p_params["bbox_center"] = {delta(0), delta(1), delta(2)};
 			else
-				p_params["bbox_extend"] = {delta(0), delta(1)};
+				p_params["bbox_center"] = {delta(0), delta(1)};
 		}
 		problem->set_parameters(p_params);
 

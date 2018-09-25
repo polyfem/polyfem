@@ -101,20 +101,13 @@ namespace polyfem
 			boundary_ids_[1] = params["turning_boundary"];
 		}
 
-		if(params.find("bbox_extend") != params.end())
+		if(params.find("bbox_center") != params.end())
 		{
-			auto bbox_extend = params["bbox_extend"];
-			if(bbox_extend.is_array() && bbox_extend.size() >= 3)
+			auto bbox_center = params["bbox_center"];
+			if(bbox_center.is_array() && bbox_center.size() >= 3)
 			{
-				RowVectorNd tmp(3);
-				tmp(0) = bbox_extend[0];
-				tmp(1) = bbox_extend[1];
-				tmp(2) = bbox_extend[2];
-
-				tmp /= 2;
-
-				trans_(0) = tmp(coordiante_0_);
-				trans_(1) = tmp(coordiante_1_);
+				trans_(0) = bbox_center[coordiante_0_];
+				trans_(1) = bbox_center[coordiante_1_];
 			}
 		}
 	}
