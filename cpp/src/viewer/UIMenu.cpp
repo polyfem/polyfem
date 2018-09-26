@@ -80,7 +80,17 @@ namespace {
 // Draw menu
 void polyfem::UIState::draw_menu() {
 	// Text labels
-	glfwSetWindowTitle(viewer.window, "polyfem");
+	static bool hack_set = false;
+
+	if(!hack_set)
+	{
+		glfwSetWindowTitle(viewer.window, "polyfem");
+	// int width_window, height_window;
+    // glfwGetWindowSize(viewer.window, &width_window, &height_window);
+		glfwSetWindowSize(viewer.window, 1279,800);
+		glfwSetWindowSize(viewer.window, 1280,800);
+		hack_set = true;
+	}
 
 	// Viewer settings
 	float viewer_menu_width = 180.f * hidpi_scaling() / pixel_ratio();
