@@ -30,6 +30,7 @@ namespace polyfem
 		//                              mesh must verify
 		//
 		static void compute_integral_constraints(
+			const std::string &assembler_name,
 			const Mesh2D &mesh,
 			const int n_bases,
 			const std::vector< ElementBases > &bases,
@@ -65,6 +66,7 @@ namespace polyfem
 		///                            the element (get boundary of the polygon) }
 		///
 		static void build_bases(
+			const std::string &assembler_name,
 			const int n_samples_per_edge,
 			const Mesh2D &mesh,
 			const int n_bases,

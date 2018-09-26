@@ -386,6 +386,7 @@ void sample_polyhedra(
 
 // Compute the integral constraints for each basis of the mesh
 void PolygonalBasis3d::compute_integral_constraints(
+	const std::string &assembler_name,
 	const Mesh3D &mesh,
 	const int n_bases,
 	const std::vector< ElementBases > &bases,
@@ -555,6 +556,7 @@ double compute_epsilon(const Mesh3D &mesh, int e) {
 // -----------------------------------------------------------------------------
 
 void PolygonalBasis3d::build_bases(
+	const std::string &assembler_name,
 	const int nn_samples_per_edge,
 	const Mesh3D &mesh,
 	const int n_bases,
@@ -574,7 +576,7 @@ void PolygonalBasis3d::build_bases(
 
 	// Step 1: Compute integral constraints
 	Eigen::MatrixXd basis_integrals;
-	compute_integral_constraints(mesh, n_bases, bases, gbases, basis_integrals);
+	compute_integral_constraints(assembler_name, mesh, n_bases, bases, gbases, basis_integrals);
 
 	// Step 2: Compute the rest =)
 	for (int e = 0; e < mesh.n_elements(); ++e) {
@@ -682,9 +684,9 @@ void PolygonalBasis3d::build_bases(
 			set_rbf(std::make_shared<RBFWithLinear>(
 				kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs));
 		} else if (integral_constraints == 2) {
-			// set_rbf(std::make_shared<RBFWithQuadratic>(
-			set_rbf(std::make_shared<RBFWithQuadraticLagrange>(
-				kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs));
+			set_rbf(std::make_shared<RBFWithQuadratic>(
+			// set_rbf(std::make_shared<RBFWithQuadraticLagrange>(
+				assembler_name, kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs));
 		} else {
 			throw std::runtime_error("Unsupported constraint order: " + std::to_string(integral_constraints));
 		}

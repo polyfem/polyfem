@@ -85,8 +85,8 @@ void polyfem::UIState::draw_menu() {
 	if(!hack_set)
 	{
 		glfwSetWindowTitle(viewer.window, "polyfem");
-	// int width_window, height_window;
-    // glfwGetWindowSize(viewer.window, &width_window, &height_window);
+		// int width_window, height_window;
+    	// glfwGetWindowSize(viewer.window, &width_window, &height_window);
 		glfwSetWindowSize(viewer.window, 1279,800);
 		glfwSetWindowSize(viewer.window, 1280,800);
 		hack_set = true;

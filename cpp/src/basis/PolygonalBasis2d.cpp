@@ -7,7 +7,7 @@
 #include <polyfem/RBFWithQuadratic.hpp>
 #include <polyfem/RBFWithQuadraticLagrange.hpp>
 
-#include <polyfem/Laplacian.hpp>
+#include <polyfem/AssemblerUtils.hpp>
 
 // #include <polyfem/UIState.hpp>
 #include <igl/png/writePNG.h>
@@ -174,6 +174,7 @@ void sample_polygon(
 
 // Compute the integral constraints for each basis of the mesh
 void PolygonalBasis2d::compute_integral_constraints(
+	const std::string &assembler_name,
 	const Mesh2D &mesh,
 	const int n_bases,
 	const std::vector< ElementBases > &bases,
@@ -182,7 +183,7 @@ void PolygonalBasis2d::compute_integral_constraints(
 {
 	assert(!mesh.is_volume());
 
-	Laplacian assembler;
+	const auto &assembler = AssemblerUtils::instance();
 
 	basis_integrals.resize(n_bases, 5);
 	basis_integrals.setZero();
@@ -256,23 +257,23 @@ void PolygonalBasis2d::compute_integral_constraints(
 			{
 				//x
 				pt(0) = AutodiffScalarHessian(0, vals.val(i, 0));
-				strong(i, 0) = assembler.compute_rhs(pt)(0);
+				strong(i, 0) = assembler.compute_rhs(assembler_name, pt)(0);
 
 				//y
 				pt(0) = AutodiffScalarHessian(0, vals.val(i, 1));
-				strong(i, 1) = assembler.compute_rhs(pt)(0);
+				strong(i, 1) = assembler.compute_rhs(assembler_name, pt)(0);
 
 				//y
 				pt(0) = AutodiffScalarHessian(0, vals.val(i, 0)) * AutodiffScalarHessian(1, vals.val(i, 1));
-				strong(i, 2) = assembler.compute_rhs(pt)(0);
+				strong(i, 2) = assembler.compute_rhs(assembler_name, pt)(0);
 
 				//x^2
 				pt(0) = AutodiffScalarHessian(0, vals.val(i, 0)) * AutodiffScalarHessian(0, vals.val(i, 0));
-				strong(i, 3) = assembler.compute_rhs(pt)(0);
+				strong(i, 3) = assembler.compute_rhs(assembler_name, pt)(0);
 
 				//y^2
 				pt(0) = AutodiffScalarHessian(0, vals.val(i, 1)) * AutodiffScalarHessian(0, vals.val(i, 1));
-				strong(i, 4) = assembler.compute_rhs(pt)(0);
+				strong(i, 4) = assembler.compute_rhs(assembler_name, pt)(0);
 			}
 		}
 
@@ -284,12 +285,12 @@ void PolygonalBasis2d::compute_integral_constraints(
 
 
 			//TODO remove (0) for tensors
-			const double integral_10 = assembler.assemble(vals, j, n_local_bases + 0, da)(0) + (strong.col(0).array() * v.val.array() * da.array()).sum();
-			const double integral_01 = assembler.assemble(vals, j, n_local_bases + 1, da)(0) + (strong.col(1).array() * v.val.array() * da.array()).sum();
+			const double integral_10 = assembler.local_assemble(assembler_name, vals, j, n_local_bases + 0, da)(0) + (strong.col(0).array() * v.val.array() * da.array()).sum();
+			const double integral_01 = assembler.local_assemble(assembler_name, vals, j, n_local_bases + 1, da)(0) + (strong.col(1).array() * v.val.array() * da.array()).sum();
 
-			const double integral_11 = assembler.assemble(vals, j, n_local_bases + 2, da)(0) + (strong.col(2).array() * v.val.array() * da.array()).sum();
-			const double integral_20 = assembler.assemble(vals, j, n_local_bases + 3, da)(0) + (strong.col(3).array() * v.val.array() * da.array()).sum();
-			const double integral_02 = assembler.assemble(vals, j, n_local_bases + 4, da)(0) + (strong.col(4).array() * v.val.array() * da.array()).sum();
+			const double integral_11 = assembler.local_assemble(assembler_name, vals, j, n_local_bases + 2, da)(0) + (strong.col(2).array() * v.val.array() * da.array()).sum();
+			const double integral_20 = assembler.local_assemble(assembler_name, vals, j, n_local_bases + 3, da)(0) + (strong.col(3).array() * v.val.array() * da.array()).sum();
+			const double integral_02 = assembler.local_assemble(assembler_name, vals, j, n_local_bases + 4, da)(0) + (strong.col(4).array() * v.val.array() * da.array()).sum();
 
 
 			// const double integral_10_old = (v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
@@ -448,6 +449,7 @@ double compute_epsilon(const Mesh2D &mesh, int e) {
 // -----------------------------------------------------------------------------
 
 void PolygonalBasis2d::build_bases(
+	const std::string &assembler_name,
 	const int n_samples_per_edge,
 	const Mesh2D &mesh,
 	const int n_bases,
@@ -465,7 +467,7 @@ void PolygonalBasis2d::build_bases(
 
 	// Step 1: Compute integral constraints
 	Eigen::MatrixXd basis_integrals;
-	compute_integral_constraints(mesh, n_bases, bases, gbases, basis_integrals);
+	compute_integral_constraints(assembler_name, mesh, n_bases, bases, gbases, basis_integrals);
 
 	// Step 2: Compute the rest =)
 	PolygonQuadrature poly_quadr;
@@ -558,7 +560,7 @@ void PolygonalBasis2d::build_bases(
 				kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs));
 		} else if (integral_constraints == 2) {
 			set_rbf(std::make_shared<RBFWithQuadratic>(
-				kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs));
+				assembler_name, kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs));
 		} else {
 			throw std::runtime_error("Unsupported constraint order: " + std::to_string(integral_constraints));
 		}

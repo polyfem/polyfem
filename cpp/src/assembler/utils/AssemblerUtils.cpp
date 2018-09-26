@@ -289,6 +289,42 @@ namespace polyfem
 	}
 
 
+	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
+	AssemblerUtils::local_assemble(const std::string &assembler, const ElementAssemblyValues &vals, const int i, const int j, const QuadratureVector &da) const
+	{
+		if(assembler == "Laplacian")
+			return laplacian_.local_assembler().assemble(vals, i, j, da);
+		else if(assembler == "Helmholtz")
+			return helmholtz_.local_assembler().assemble(vals, i, j, da);
+
+		else if(assembler == "LinearElasticity")
+			return linear_elasticity_.local_assembler().assemble(vals, i, j, da);
+		else if(assembler == "HookeLinearElasticity")
+			return hooke_linear_elasticity_.local_assembler().assemble(vals, i, j, da);
+
+		// else if(assembler == "SaintVenant")
+		// 	return saint_venant_elasticity_.local_assembler().assemble(vals, i, j, da);
+		// else if(assembler == "NeoHookean")
+		// 	return neo_hookean_elasticity_.local_assembler().assemble(vals, i, j, da);
+		// else if(assembler == "Ogden")
+		// 	return ogden_elasticity_.local_assembler().assemble(vals, i, j, da);
+
+		else if(assembler == "Stokes")
+			return stokes_velocity_.local_assembler().assemble(vals, i, j, da);
+		else if(assembler == "IncompressibleLinearElasticity")
+			return incompressible_lin_elast_displacement_.local_assembler().assemble(vals, i, j, da);
+
+		else
+		{
+			logger().warn("{} not found, fallback to default", assembler);
+
+			assert(false);
+			return laplacian_.local_assembler().assemble(vals, i, j, da);
+		}
+
+	}
+
+
 	Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> AssemblerUtils::kernel(const std::string &assembler, const int dim, const AutodiffScalarGrad &r) const
 	{
 		if(assembler == "Laplacian")

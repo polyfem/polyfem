@@ -8,21 +8,21 @@ namespace polyfem
 	GenericTensorProblem::GenericTensorProblem(const std::string &name)
 	: Problem(name)
 	{
-		boundary_ids_ = {2};
-		neumann_boundary_ids_ = {4};
+		// boundary_ids_ = {2};
+		// neumann_boundary_ids_ = {4};
 
-		forces_.resize(1);
-		forces_.front()(0).init(0.1);
-		forces_.front()(1).init(0);
-		forces_.front()(2).init(0);
+		// forces_.resize(1);
+		// forces_.front()(0).init(0.1);
+		// forces_.front()(1).init(0);
+		// forces_.front()(2).init(0);
 
-		displacements_.resize(1);
-		displacements_.front()(0).init(0);
-		displacements_.front()(1).init(0);
-		displacements_.front()(2).init(0);
+		// displacements_.resize(1);
+		// displacements_.front()(0).init(0);
+		// displacements_.front()(1).init(0);
+		// displacements_.front()(2).init(0);
 
-		dirichelt_dimentions_.resize(1);
-		dirichelt_dimentions_.front().setConstant(true);
+		// dirichelt_dimentions_.resize(1);
+		// dirichelt_dimentions_.front().setConstant(true);
 	}
 
 	void GenericTensorProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const

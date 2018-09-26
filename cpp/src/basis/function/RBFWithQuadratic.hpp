@@ -30,7 +30,7 @@ namespace polyfem
 		/// @param[in]  with_constraints      { Impose integral constraints to guarantee linear
 		///                                   reproduction for the Poisson equation }
 		///
-		RBFWithQuadratic(const Eigen::MatrixXd &centers, const Eigen::MatrixXd &collocation_points,
+		RBFWithQuadratic(const std::string &assembler_name, const Eigen::MatrixXd &centers, const Eigen::MatrixXd &collocation_points,
 			const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
 			Eigen::MatrixXd &rhs, bool with_constraints = true);
 
@@ -83,15 +83,15 @@ namespace polyfem
 			const Eigen::MatrixXd &local_basis_integral, Eigen::MatrixXd &L, Eigen::MatrixXd &t) const;
 
 		// Computes the relationship w = L v + t between the unknowns (v) and the weights w
-		void compute_constraints_matrix_2d(const int num_bases, const Quadrature &quadr,
+		void compute_constraints_matrix_2d(const std::string &assembler_name, const int num_bases, const Quadrature &quadr,
 			const Eigen::MatrixXd &local_basis_integral, Eigen::MatrixXd &L, Eigen::MatrixXd &t) const;
 
 		// Computes the relationship w = L v + t between the unknowns (v) and the weights w
-		void compute_constraints_matrix_3d(const int num_bases, const Quadrature &quadr,
+		void compute_constraints_matrix_3d(const std::string &assembler_name, const int num_bases, const Quadrature &quadr,
 			const Eigen::MatrixXd &local_basis_integral, Eigen::MatrixXd &L, Eigen::MatrixXd &t) const;
 
 		// Computes the weights by solving a (possibly constrained) linear least square
-		void compute_weights(const Eigen::MatrixXd &collocation_points,
+		void compute_weights(const std::string &assembler_name, const Eigen::MatrixXd &collocation_points,
 			const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
 			Eigen::MatrixXd &rhs, bool with_constraints);
 

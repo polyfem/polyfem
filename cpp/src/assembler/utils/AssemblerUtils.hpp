@@ -106,6 +106,14 @@ namespace polyfem
 		//for errors
 		VectorNd compute_rhs(const std::string &assembler, const AutodiffHessianPt &pt) const;
 
+		//for constraints
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
+		local_assemble(const std::string &assembler,
+			const ElementAssemblyValues &vals,
+			const int i,
+			const int j,
+			const QuadratureVector &da) const;
+
 		Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> kernel(const std::string &assembler, const int dim, const AutodiffScalarGrad &r) const;
 
 		//aux
