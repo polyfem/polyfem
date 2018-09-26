@@ -123,6 +123,10 @@ namespace polyfem
 
 		bool is_solution_displacement(const std::string &assembler) const;
 
+		bool is_scalar(const std::string &assembler) const;
+		bool is_tensor(const std::string &assembler) const;
+		bool is_mixed(const std::string &assembler) const;
+
 		//getters
 		const std::vector<std::string> &scalar_assemblers() const { return scalar_assemblers_; }
 		const std::vector<std::string> &tensor_assemblers() const { return tensor_assemblers_; }

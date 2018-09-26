@@ -27,6 +27,20 @@ namespace polyfem
 		mixed_assemblers_.push_back("IncompressibleLinearElasticity");
 	}
 
+	bool AssemblerUtils::is_scalar(const std::string &assembler) const
+	{
+		return assembler == "Laplacian" || assembler == "Helmholtz";
+	}
+
+	bool AssemblerUtils::is_tensor(const std::string &assembler) const
+	{
+		return assembler == "LinearElasticity" || assembler == "HookeLinearElasticity" || assembler == "SaintVenant" || assembler == "NeoHookean" || assembler == "Ogden";
+	}
+	bool AssemblerUtils::is_mixed(const std::string &assembler) const
+	{
+		return assembler == "Stokes" || assembler == "IncompressibleLinearElasticity";
+	}
+
 	bool AssemblerUtils::is_solution_displacement(const std::string &assembler) const
 	{
 		return 	assembler == "LinearElasticity" || assembler == "HookeLinearElasticity" ||
