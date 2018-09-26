@@ -6,6 +6,9 @@
 #include <polyfem/RBFWithLinear.hpp>
 #include <polyfem/RBFWithQuadratic.hpp>
 #include <polyfem/RBFWithQuadraticLagrange.hpp>
+
+#include <polyfem/Laplacian.hpp>
+
 // #include <polyfem/UIState.hpp>
 #include <igl/png/writePNG.h>
 #include <igl/per_corner_normals.h>
@@ -179,8 +182,16 @@ void PolygonalBasis2d::compute_integral_constraints(
 {
 	assert(!mesh.is_volume());
 
+	Laplacian assembler;
+
 	basis_integrals.resize(n_bases, 5);
 	basis_integrals.setZero();
+
+	Eigen::MatrixXd strong;
+
+	// Eigen::MatrixXd basis_integrals_old;
+	// basis_integrals_old.resize(n_bases, 5);
+	// basis_integrals_old.setZero();
 	// Eigen::MatrixXd rhs(n_bases, 5);
 	// rhs.setZero();
 
@@ -197,21 +208,100 @@ void PolygonalBasis2d::compute_integral_constraints(
 
 		// Computes the discretized integral of the PDE over the element
 		const int n_local_bases = int(vals.basis_values.size());
+
+		//add monomials
+		vals.basis_values.resize(n_local_bases + 5);
+		{
+			//x
+			vals.basis_values[n_local_bases + 0].val = vals.val.col(0);
+			vals.basis_values[n_local_bases + 0].grad = Eigen::MatrixXd(vals.val.rows(), vals.val.cols());
+			vals.basis_values[n_local_bases + 0].grad.col(0).setOnes();
+			vals.basis_values[n_local_bases + 0].grad.col(1).setZero();
+
+			//y
+			vals.basis_values[n_local_bases + 1].val = vals.val.col(1);
+			vals.basis_values[n_local_bases + 1].grad = Eigen::MatrixXd(vals.val.rows(), vals.val.cols());
+			vals.basis_values[n_local_bases + 1].grad.col(0).setZero();
+			vals.basis_values[n_local_bases + 1].grad.col(1).setOnes();
+
+			//xy
+			vals.basis_values[n_local_bases + 2].val = vals.val.col(0).array() * vals.val.col(1).array();
+			vals.basis_values[n_local_bases + 2].grad = Eigen::MatrixXd(vals.val.rows(), vals.val.cols());
+			vals.basis_values[n_local_bases + 2].grad.col(0) = vals.val.col(1);
+			vals.basis_values[n_local_bases + 2].grad.col(1) = vals.val.col(0);
+
+			//x^2
+			vals.basis_values[n_local_bases + 3].val = vals.val.col(0).array() * vals.val.col(0).array();
+			vals.basis_values[n_local_bases + 3].grad = Eigen::MatrixXd(vals.val.rows(), vals.val.cols());
+			vals.basis_values[n_local_bases + 3].grad.col(0) = 2*vals.val.col(0);
+			vals.basis_values[n_local_bases + 3].grad.col(1).setZero();
+
+			//y^2
+			vals.basis_values[n_local_bases + 4].val = vals.val.col(1).array() * vals.val.col(1).array();
+			vals.basis_values[n_local_bases + 4].grad = Eigen::MatrixXd(vals.val.rows(), vals.val.cols());
+			vals.basis_values[n_local_bases + 4].grad.col(0).setZero();
+			vals.basis_values[n_local_bases + 4].grad.col(1) = 2*vals.val.col(1);
+
+			for(size_t i = n_local_bases; i < vals.basis_values.size(); ++i)
+			{
+				vals.basis_values[i].grad_t_m = vals.basis_values[i].grad;
+			}
+
+
+			DiffScalarBase::setVariableCount(vals.val.cols());
+			AutodiffHessianPt pt(1);
+			strong.resize(vals.val.rows(), 5);
+
+			for(int i = 0; i < vals.val.rows(); ++i)
+			{
+				//x
+				pt(0) = AutodiffScalarHessian(0, vals.val(i, 0));
+				strong(i, 0) = assembler.compute_rhs(pt)(0);
+
+				//y
+				pt(0) = AutodiffScalarHessian(0, vals.val(i, 1));
+				strong(i, 1) = assembler.compute_rhs(pt)(0);
+
+				//y
+				pt(0) = AutodiffScalarHessian(0, vals.val(i, 0)) * AutodiffScalarHessian(1, vals.val(i, 1));
+				strong(i, 2) = assembler.compute_rhs(pt)(0);
+
+				//x^2
+				pt(0) = AutodiffScalarHessian(0, vals.val(i, 0)) * AutodiffScalarHessian(0, vals.val(i, 0));
+				strong(i, 3) = assembler.compute_rhs(pt)(0);
+
+				//y^2
+				pt(0) = AutodiffScalarHessian(0, vals.val(i, 1)) * AutodiffScalarHessian(0, vals.val(i, 1));
+				strong(i, 4) = assembler.compute_rhs(pt)(0);
+			}
+		}
+
+
 		for(int j = 0; j < n_local_bases; ++j) {
+			const auto &quadr = vals.quadrature;
 			const AssemblyValues &v=vals.basis_values[j];
-			// int nabla q_10 \cdot nabla phi_j + \int delta q_10 * phi_j = int nalba_x phi_j
-			//integral_10 = assembler.assemble(v, j, n_local_bases + 0) +/- (strong.col(0).array * v.val.array()* vals.det.array() * vals.quadrature.weights.array()).sum();
-			//integral_01 = assembler.assemble(v, j, n_local_bases + 1)
-			const double integral_10 = (v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-			const double integral_01 = (v.grad_t_m.col(1).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+			const QuadratureVector da = vals.det.array() * quadr.weights.array();
 
-			const double integral_11 = 	((vals.val.col(1).array() * v.grad_t_m.col(0).array() + vals.val.col(0).array() * v.grad_t_m.col(1).array()) * vals.det.array() * vals.quadrature.weights.array()).sum();
 
-			// int nabla q_20 \cdot nabla phi_j + \int delta q_20 * phi_j = 2 (int x nalba_x phi_j + int phi_j)
-			const double integral_20 = 2*(vals.val.col(0).array() * v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-			const double integral_02 = 2*(vals.val.col(1).array() * v.grad_t_m.col(1).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+			//TODO remove (0) for tensors
+			const double integral_10 = assembler.assemble(vals, j, n_local_bases + 0, da)(0) + (strong.col(0).array() * v.val.array() * da.array()).sum();
+			const double integral_01 = assembler.assemble(vals, j, n_local_bases + 1, da)(0) + (strong.col(1).array() * v.val.array() * da.array()).sum();
 
-			const double area = (v.val.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+			const double integral_11 = assembler.assemble(vals, j, n_local_bases + 2, da)(0) + (strong.col(2).array() * v.val.array() * da.array()).sum();
+			const double integral_20 = assembler.assemble(vals, j, n_local_bases + 3, da)(0) + (strong.col(3).array() * v.val.array() * da.array()).sum();
+			const double integral_02 = assembler.assemble(vals, j, n_local_bases + 4, da)(0) + (strong.col(4).array() * v.val.array() * da.array()).sum();
+
+
+			// const double integral_10_old = (v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+			// const double integral_01_old = (v.grad_t_m.col(1).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+
+			// const double integral_11_old = 	((vals.val.col(1).array() * v.grad_t_m.col(0).array() + vals.val.col(0).array() * v.grad_t_m.col(1).array()) * vals.det.array() * vals.quadrature.weights.array()).sum();
+
+			// // int nabla q_20 \cdot nabla phi_j + \int delta q_20 * phi_j = 2 (int x nalba_x phi_j + int phi_j)
+			// const double integral_20_old = 2*(vals.val.col(0).array() * v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+			// const double integral_02_old = 2*(vals.val.col(1).array() * v.grad_t_m.col(1).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+
+			// const double area_old = (v.val.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
 
 			for(size_t ii = 0; ii < v.global.size(); ++ii) {
 				basis_integrals(v.global[ii].index, 0) += integral_10 * v.global[ii].val;
@@ -222,15 +312,31 @@ void PolygonalBasis2d::compute_integral_constraints(
 				basis_integrals(v.global[ii].index, 3) += integral_20 * v.global[ii].val;
 				basis_integrals(v.global[ii].index, 4) += integral_02 * v.global[ii].val;
 
-				// basis_integrals(v.global[ii].index, 3) += 2.0 * area * v.global[ii].val;
-				// basis_integrals(v.global[ii].index, 4) += 2.0 * area * v.global[ii].val;
-				rhs(v.global[ii].index, 3) += -2.0 * area * v.global[ii].val;
-				rhs(v.global[ii].index, 4) += -2.0 * area * v.global[ii].val;
+
+
+				// basis_integrals_old(v.global[ii].index, 0) += integral_10_old * v.global[ii].val;
+				// basis_integrals_old(v.global[ii].index, 1) += integral_01_old * v.global[ii].val;
+
+				// basis_integrals_old(v.global[ii].index, 2) += integral_11_old * v.global[ii].val;
+
+				// basis_integrals_old(v.global[ii].index, 3) += integral_20_old * v.global[ii].val;
+				// basis_integrals_old(v.global[ii].index, 4) += integral_02_old * v.global[ii].val;
+
+				// rhs(v.global[ii].index, 3) += -2.0 * area_old * v.global[ii].val;
+				// rhs(v.global[ii].index, 4) += -2.0 * area_old * v.global[ii].val;
 			}
 		}
 	}
 
-	basis_integrals -= rhs;
+	// basis_integrals_old -= rhs;
+
+	// for(int i = 0; i < basis_integrals.rows(); ++i)
+	// {
+	// 	for(int j = 0; j < basis_integrals.cols(); ++j)
+	// 	{
+	// 		assert(fabs(basis_integrals(i, j) - basis_integrals_old(i, j)) < 1e-12);
+	// 	}
+	// }
 }
 
 // -----------------------------------------------------------------------------
