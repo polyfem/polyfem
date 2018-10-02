@@ -22,6 +22,9 @@ namespace polyfem
 			lambda() = params["lambda"];
 			mu() = params["mu"];
 		}
+
+		// std::cout<<mu_<<std::endl;
+		// std::cout<<lambda_<<std::endl;
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>

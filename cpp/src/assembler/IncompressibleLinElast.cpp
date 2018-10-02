@@ -23,6 +23,8 @@ namespace polyfem
 			mu() = params["mu"];
 		}
 
+		// std::cout<<mu_<<std::endl;
+		// std::cout<<lambda_<<std::endl;
 	}
 
 	void IncompressibleLinearElasticityDispacement::set_size(const int size)
@@ -154,6 +156,9 @@ namespace polyfem
 			lambda() = params["lambda"];
 			mu() = params["mu"];
 		}
+
+		// std::cout<<mu_<<std::endl;
+		// std::cout<<lambda_<<std::endl;
 	}
 
 	void IncompressibleLinearElasticityMixed::set_size(const int size)
@@ -208,20 +213,20 @@ namespace polyfem
 			lambda() = params["lambda"];
 			mu() = params["mu"];
 		}
+
+		// std::cout<<mu_<<std::endl;
+		// std::cout<<lambda_<<std::endl;
 	}
 
 	Eigen::Matrix<double, 1, 1>
 	IncompressibleLinearElasticityPressure::assemble(const ElementAssemblyValues &vals, const int i, const int j, const QuadratureVector &da) const
 	{
-		// -1/lambad phi_ * phi_j
+		// -1/lambda phi_ * phi_j
 
 		const Eigen::MatrixXd &phii = vals.basis_values[i].val;
 		const Eigen::MatrixXd &phij = vals.basis_values[j].val;
-		double res = 0;
-		for (int k = 0; k < phii.size(); ++k) {
-			res += phii(k)* phij(k) * da(k);
-		}
 
+		double res = (phii.array() * phij.array() * da.array()).sum();
 		res *= -1./lambda_;
 
 		return Eigen::Matrix<double, 1, 1>::Constant(res);

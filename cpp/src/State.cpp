@@ -812,9 +812,9 @@ namespace polyfem
 		mesh->bounding_box(min, max);
 
 		if(min.size() == 2)
-			logger().info("mesh bb min [{} {}], \tmax [{} {}]", min(0), min(1), max(0), max(1));
+			logger().info("mesh bb min [{} {}], max [{} {}]", min(0), min(1), max(0), max(1));
 		else
-			logger().info("mesh bb min [{} {} {}], \tmax [{} {} {}]", min(0), min(1), min(2), max(0), max(1), max(2));
+			logger().info("mesh bb min [{} {} {}], max [{} {} {}]", min(0), min(1), min(2), max(0), max(1), max(2));
 
 		mesh->refine(args["n_refs"], args["refinenemt_location"], parent_elements);
 
@@ -873,9 +873,9 @@ namespace polyfem
 		mesh->bounding_box(min, max);
 
 		if(min.size() == 2)
-			logger().info("mesh bb min [{} {}], \tmax [{} {}]", min(0), min(1), max(0), max(1));
+			logger().info("mesh bb min [{}, {}], max [{}, {}]", min(0), min(1), max(0), max(1));
 		else
-			logger().info("mesh bb min [{} {} {}], \tmax [{} {} {}]", min(0), min(1), min(2), max(0), max(1), max(2));
+			logger().info("mesh bb min [{}, {}, {}], max [{}, {}, {}]", min(0), min(1), min(2), max(0), max(1), max(2));
 
 		mesh->refine(args["n_refs"], args["refinenemt_location"], parent_elements);
 

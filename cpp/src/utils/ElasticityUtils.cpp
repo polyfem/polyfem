@@ -203,13 +203,10 @@ namespace polyfem
 
 	double convert_to_lambda(const bool is_volume, const double E, const double nu)
 	{
-		const double lam = (E * nu) / ((1.0 + nu) * (1.0 - 2.0 * nu));
-
 		if(is_volume)
-			return lam;
+			return (E * nu) / ((1.0 + nu) * (1.0 - 2.0 * nu));
 
-		const double mmu = convert_to_mu(E, nu);
-		return (2.0 * mmu * lam) / (lam + 2 * mmu);
+		return  (nu * E) / (1.0 - nu * nu);
 	}
 
 	double convert_to_mu(const double E, const double nu)

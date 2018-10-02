@@ -936,7 +936,7 @@ namespace polyfem
 		{
 			reset_flags(Visualizations::BNodes);
 
-			if(state.local_neumann_boundary.size() < 4500)
+			if(state.local_neumann_boundary.size() < 3500)
 			{
 				col << 0.5,0.5,0.5;
 				for(const auto &lb : state.local_neumann_boundary)
@@ -1041,7 +1041,7 @@ namespace polyfem
 			show_data(Visualizations::BNodes);
 
 
-		if(state.n_pressure_bases <= 4500)
+		if(state.n_pressure_bases <= 3500)
 		{
 			if((visible_visualizations(Visualizations::PNodes) || visible_visualizations(Visualizations::NodesId)) && !available_visualizations[Visualizations::PNodes])
 			{
@@ -1083,7 +1083,7 @@ namespace polyfem
 		}
 
 
-		if(state.n_bases > 4500) return;
+		if(state.n_bases > 3500) return;
 
 		if((visible_visualizations(Visualizations::Nodes) || visible_visualizations(Visualizations::NodesId)) && !available_visualizations[Visualizations::Nodes])
 		{
