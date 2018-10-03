@@ -595,7 +595,7 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
                             const auto node = mesh_nodes.node_position(global_index);
                             // loc_nodes(x, y, z);
 
-                            b.bases[local_index].init(global_index, local_index, node);
+                            b.bases[local_index].init(2, global_index, local_index, node);
 
                             const QuadraticBSpline3d spline(h_knots[x], v_knots[y], w_knots[z]);
 
@@ -815,7 +815,7 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
 
                 //init new Q2 nodes
                 if(current_vertex_node_id >= 0)
-                    b.bases[loc_index].init(current_vertex_node_id, loc_index, current_vertex_node);
+                    b.bases[loc_index].init(2, current_vertex_node_id, loc_index, current_vertex_node);
 
                 b.bases[loc_index].set_basis([loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_value(loc_index, uv, val); });
                 b.bases[loc_index].set_grad( [loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_grad(loc_index, uv, val); });
@@ -862,7 +862,7 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
 
                 //init new Q2 nodes
                 if(current_edge_node_id >= 0)
-                    b.bases[loc_index].init(current_edge_node_id, loc_index, current_edge_node);
+                    b.bases[loc_index].init(2, current_edge_node_id, loc_index, current_edge_node);
 
                 b.bases[loc_index].set_basis([loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_value(loc_index, uv, val); });
                 b.bases[loc_index].set_grad( [loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_grad(loc_index, uv, val); });
@@ -901,14 +901,14 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
 
                 //init new Q2 nodes
                 if(current_face_node_id >= 0)
-                    b.bases[loc_index].init(current_face_node_id, loc_index, current_face_node);
+                    b.bases[loc_index].init(2, current_face_node_id, loc_index, current_face_node);
 
                 b.bases[loc_index].set_basis([loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_value(loc_index, uv, val); });
                 b.bases[loc_index].set_grad( [loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_grad(loc_index, uv, val); });
             }
 
             // //central node always present
-            b.bases[26].init(n_bases++, 26, mesh.cell_barycenter(el_index));
+            b.bases[26].init(2, n_bases++, 26, mesh.cell_barycenter(el_index));
             b.bases[26].set_basis([](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_value(26, uv, val); });
             b.bases[26].set_grad( [](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_grad(26, uv, val); });
 

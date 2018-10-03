@@ -121,7 +121,7 @@ using namespace Eigen;
 
 namespace polyfem
 {
-	void UIState::get_plot_edges(const Mesh &mesh, const std::vector< ElementBases > &bases, const int n_samples, const std::vector<bool> &valid_elements, const Visualizations &layer, Eigen::MatrixXd &pp0, Eigen::MatrixXd &pp1)
+	void UIState::get_plot_edges(const Mesh &mesh, const std::vector< ElementBases > &bases, const std::vector< ElementBases > &gbases, const int n_samples, const std::vector<bool> &valid_elements, const Visualizations &layer, Eigen::MatrixXd &pp0, Eigen::MatrixXd &pp1)
 	{
 		Eigen::MatrixXd samples_simplex, samples_cube, mapped, p0, p1;
 		std::vector<Eigen::MatrixXd> p0v, p1v;
@@ -174,7 +174,7 @@ namespace polyfem
 				}
 			}
 
-			bases[i].eval_geom_mapping(samples, mapped);
+			gbases[i].eval_geom_mapping(samples, mapped);
 
 			for(int j = 0; j < n_edges; ++j)
 			{
@@ -377,7 +377,7 @@ namespace polyfem
 			if(map_edges)
 			{
 				const auto &current_bases = state.iso_parametric() ? state.bases : state.geom_bases;
-				get_plot_edges(*state.mesh, current_bases, 20, valid_elements, layer, p0, p1);
+				get_plot_edges(*state.mesh, state.bases, current_bases, 20, valid_elements, layer, p0, p1);
 			}
 			else
 			{
@@ -452,7 +452,7 @@ namespace polyfem
 		if(map_edges)
 		{
 			const auto &current_bases = state.iso_parametric() ? state.bases : state.geom_bases;
-			get_plot_edges(*state.mesh, current_bases, 20, valid_elements, layer, p0, p1);
+			get_plot_edges(*state.mesh, state.bases, current_bases, 20, valid_elements, layer, p0, p1);
 		}
 		else
 		{

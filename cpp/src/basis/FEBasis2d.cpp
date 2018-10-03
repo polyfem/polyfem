@@ -1015,7 +1015,7 @@ int polyfem::FEBasis2d::build_bases(
 				const int global_index = element_nodes_id[e][j];
 
 				// if(!skip_interface_element)
-				b.bases[j].init(global_index, j, nodes.node_position(global_index));
+				b.bases[j].init(discr_order, global_index, j, nodes.node_position(global_index));
 
 
 				if (discr_order == 0) {
@@ -1088,7 +1088,7 @@ int polyfem::FEBasis2d::build_bases(
 				const int global_index = element_nodes_id[e][j];
 
 				if(!skip_interface_element){
-					b.bases[j].init(global_index, j, nodes.node_position(global_index));
+					b.bases[j].init(discr_order, global_index, j, nodes.node_position(global_index));
 				}
 
 				b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::p_basis_value_2d     (discr_order, j, uv, val); });
@@ -1120,7 +1120,7 @@ int polyfem::FEBasis2d::build_bases(
 					const int global_index = element_nodes_id[e][j];
 
 					if(global_index >= 0)
-						b.bases[j].init(global_index, j, nodes.node_position(global_index));
+						b.bases[j].init(discr_order, global_index, j, nodes.node_position(global_index));
 					else
 					{
 						const auto le = -(global_index+1);

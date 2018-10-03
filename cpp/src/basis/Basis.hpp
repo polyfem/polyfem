@@ -52,7 +52,7 @@ namespace polyfem
 		/// @param[in]  local_index   { Local index of the node within the element }
 		/// @param[in]  node          { 1 x dim position of the node associated to the basis }
 		///
-		void init(const int global_index, const int local_index, const RowVectorNd &node);
+		void init(const int order, const int global_index, const int local_index, const RowVectorNd &node);
 
 		///
 		/// @brief      Checks if global is empty or not
@@ -83,6 +83,7 @@ namespace polyfem
 		inline void set_grad(const Fun &fun) { grad_ = fun; }
 
 		inline bool is_defined() const { return (basis_ ? true : false); }
+		inline int order() const { return order_; }
 
 		friend std::ostream& operator<< (std::ostream& os, const Basis &obj)
 		{
@@ -96,6 +97,7 @@ namespace polyfem
 	private:
 		std::vector< Local2Global > global_; // list of real nodes influencing the basis
 		int local_index_; // local index inside the element (for debugging purposes)
+		int order_;
 
 		Fun basis_;
 		Fun grad_;

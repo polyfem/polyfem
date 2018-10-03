@@ -327,7 +327,7 @@ namespace polyfem
                         assert(node.size() == 2);
 
                         const int local_index = y*3 + x;
-                        b.bases[local_index].init(global_index, local_index, node);
+                        b.bases[local_index].init(2, global_index, local_index, node);
 
                         const QuadraticBSpline2d spline(h_knots[x], v_knots[y]);
                         b.bases[local_index].set_basis([spline](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { spline.interpolate(uv, val); });
@@ -521,10 +521,10 @@ namespace polyfem
 
                 //init new Q2 nodes
                 if(current_vertex_node_id >= 0)
-                    b.bases[vertex_basis_id].init(current_vertex_node_id, vertex_basis_id, current_vertex_node);
+                    b.bases[vertex_basis_id].init(2, current_vertex_node_id, vertex_basis_id, current_vertex_node);
 
                 if(current_edge_node_id >= 0)
-                    b.bases[edge_basis_id].init(current_edge_node_id, edge_basis_id, current_edge_node);
+                    b.bases[edge_basis_id].init(2, current_edge_node_id, edge_basis_id, current_edge_node);
 
                 //set the basis functions
                 b.bases[vertex_basis_id].set_basis([vertex_basis_id](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quadr_quad_basis_value(vertex_basis_id, uv, val); });
@@ -538,7 +538,7 @@ namespace polyfem
 
             //central node always present
             const int face_basis_id = 8;
-            b.bases[face_basis_id].init(n_bases++, face_basis_id, mesh.face_barycenter(el_index));
+            b.bases[face_basis_id].init(2, n_bases++, face_basis_id, mesh.face_barycenter(el_index));
             b.bases[face_basis_id].set_basis([face_basis_id](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis2d::quadr_quad_basis_value(face_basis_id, uv, val); });
             b.bases[face_basis_id].set_grad( [face_basis_id](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {  FEBasis2d::quadr_quad_basis_grad(face_basis_id, uv, val); });
 

@@ -120,6 +120,8 @@ namespace polyfem
 		void compute_scalar_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result);
 		void compute_tensor_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result);
 
+		void average_grad_based_function(const int n_points, const MatrixXd &fun, MatrixXd &result_scalar, MatrixXd &result_tensor);
+
 		void save_json(std::ostream &out);
 		void save_json();
 

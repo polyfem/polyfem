@@ -81,7 +81,7 @@ namespace polyfem
                 const int global_index = order*i + j;
                 assert(global_index < n_bases);
 
-                b.bases[global_index].init(global_index, j, Eigen::MatrixXd::Zero(1, 2));
+                b.bases[global_index].init(-3, global_index, j, Eigen::MatrixXd::Zero(1, 2));
                 b.bases[global_index].set_basis([i, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { basis(uv, i, j, val); });
                 b.bases[global_index].set_grad([i, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { derivative(uv, i, j, val); });
             }

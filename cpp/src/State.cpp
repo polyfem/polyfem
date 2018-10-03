@@ -668,6 +668,72 @@ namespace polyfem
 		interpolate_function(n_points, actual_dim, bases, fun, result);
 	}
 
+
+	void State::average_grad_based_function(const int n_points, const MatrixXd &fun, MatrixXd &result_scalar, MatrixXd &result_tensor)
+	{
+		assert(!problem->is_scalar());
+		const int actual_dim = mesh->dimension();
+
+		MatrixXd avg_scalar(n_bases, 1);
+		// MatrixXd avg_tensor(n_points * actual_dim*actual_dim, 1);
+		MatrixXd areas(n_bases, 1);
+		avg_scalar.setZero();
+		// avg_tensor.setZero();
+		areas.setZero();
+
+		const auto &assembler = AssemblerUtils::instance();
+
+		Eigen::MatrixXd local_val;
+		const auto &gbases =  iso_parametric() ? bases : geom_bases;
+
+		ElementAssemblyValues vals;
+		for(int i = 0; i < int(bases.size()); ++i)
+		{
+			const ElementBases &bs = bases[i];
+			const ElementBases &gbs = gbases[i];
+			Eigen::MatrixXd local_pts;
+
+			if(mesh->is_simplex(i))
+			{
+				if(mesh->dimension() == 3)
+					autogen::p_nodes_3d(bs.bases.front().order(), local_pts);
+				else
+					autogen::p_nodes_2d(bs.bases.front().order(), local_pts);
+			}
+			else
+				assert(false);
+			// else if(mesh->is_cube(i))
+			// 	local_pts = sampler.cube_points();
+			// // else
+			// 	// local_pts = vis_pts_poly[i];
+
+			vals.compute(i, actual_dim == 3, bases[i], gbases[i]);
+			const Quadrature &quadrature = vals.quadrature;
+			const double area = (vals.det.array() * quadrature.weights.array()).sum();
+
+			assembler.compute_scalar_value(formulation(), bs, gbs, local_pts, fun, local_val);
+			// assembler.compute_tensor_value(formulation(), bs, gbs, local_pts, fun, local_val);
+
+			for(size_t j = 0; j < bs.bases.size(); ++j)
+			{
+				const Basis &b = bs.bases[j];
+				if(b.global().size() > 1)
+					continue;
+
+				auto &global = b.global().front();
+				areas(global.index) += area;
+				avg_scalar(global.index) += local_val(j)*area;
+			}
+
+
+		}
+
+		avg_scalar.array() /= areas.array();
+
+		interpolate_function(n_points, 1, bases, avg_scalar, result_scalar);
+		// interpolate_function(n_points, actual_dim*actual_dim, bases, avg_tensor, result_tensor);
+	}
+
 	void State::interpolate_function(const int n_points, const int actual_dim, const std::vector< ElementBases > &basis, const MatrixXd &fun, MatrixXd &result)
 	{
 		std::vector<AssemblyValues> tmp;
@@ -2202,13 +2268,25 @@ namespace polyfem
 
 		if(fun.cols() != 1)
 		{
-			Eigen::MatrixXd vals;
+			Eigen::MatrixXd vals, tvals;
 			compute_scalar_value(pts_index, sol, vals);
 			writer.add_field("scalar_value", vals);
 
-			compute_tensor_value(pts_index, sol, vals);
-			for(int i = 0; i < vals.cols(); ++i)
-				writer.add_field("tensor_value_" + std::to_string(i+1), vals.col(i));
+			compute_tensor_value(pts_index, sol, tvals);
+			for(int i = 0; i < tvals.cols(); ++i){
+				const int ii = (i / mesh->dimension()) + 1;
+				const int jj = (i % mesh->dimension()) + 1;
+				writer.add_field("tensor_value_" + std::to_string(ii) + std::to_string(jj), tvals.col(i));
+			}
+
+
+			average_grad_based_function(pts_index, sol, vals, tvals);
+			writer.add_field("scalar_value_avg", vals);
+			// for(int i = 0; i < tvals.cols(); ++i){
+			// 	const int ii = (i / mesh->dimension()) + 1;
+			// 	const int jj = (i % mesh->dimension()) + 1;
+			// 	writer.add_field("tensor_value_avg_" + std::to_string(ii) + std::to_string(jj), tvals.col(i));
+			// }
 		}
 
 		// interpolate_function(pts_index, rhs, fun);

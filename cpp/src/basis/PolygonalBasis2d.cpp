@@ -569,7 +569,7 @@ void PolygonalBasis2d::build_bases(
 		const int n_poly_bases = int(local_to_global.size());
 		b.bases.resize(n_poly_bases);
 		for (int i = 0; i < n_poly_bases; ++i) {
-			b.bases[i].init(local_to_global[i], i, Eigen::MatrixXd::Zero(1, 2));
+			b.bases[i].init(-2, local_to_global[i], i, Eigen::MatrixXd::Zero(1, 2));
 		}
 
 		// Polygon boundary after geometric mapping from neighboring elements

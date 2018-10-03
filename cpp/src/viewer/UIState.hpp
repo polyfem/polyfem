@@ -170,7 +170,7 @@ namespace polyfem
 		long show_clipped_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, const std::vector<bool> &valid_elements, const bool map_edges, const Visualizations &layer, const bool recenter = false);
 		void color_mesh(const int n_tris, const std::vector<bool> &valid_elements, const Visualizations &layer);
 		void plot_selection_and_index(const bool recenter = false);
-		void get_plot_edges(const Mesh &mesh, const std::vector< ElementBases > &bases, const int n_samples, const std::vector<bool> &valid_elements, const Visualizations &layer, Eigen::MatrixXd &pp0, Eigen::MatrixXd &pp1);
+		void get_plot_edges(const Mesh &mesh, const std::vector< ElementBases > &bases, const std::vector< ElementBases > &gbases, const int n_samples, const std::vector<bool> &valid_elements, const Visualizations &layer, Eigen::MatrixXd &pp0, Eigen::MatrixXd &pp1);
 	};
 
 }

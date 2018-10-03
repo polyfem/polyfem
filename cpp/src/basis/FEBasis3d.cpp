@@ -1454,7 +1454,7 @@ int polyfem::FEBasis3d::build_bases(
 			for (int j = 0; j < n_el_bases; ++j) {
 				const int global_index = element_nodes_id[e][j];
 
-				b.bases[j].init(global_index, j, nodes.node_position(global_index));
+				b.bases[j].init(discr_order, global_index, j, nodes.node_position(global_index));
 
 				if (discr_order == 0) {
 					b.bases[j].set_basis([j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
@@ -1526,7 +1526,7 @@ int polyfem::FEBasis3d::build_bases(
 			for (int j = 0; j < n_el_bases; ++j) {
 				const int global_index = element_nodes_id[e][j];
 				if(!skip_interface_element){
-					b.bases[j].init(global_index, j, nodes.node_position(global_index));
+					b.bases[j].init(discr_order, global_index, j, nodes.node_position(global_index));
 				}
 
 				b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::p_basis_value_3d     (discr_order, j, uv, val); });
@@ -1562,7 +1562,7 @@ int polyfem::FEBasis3d::build_bases(
 					const int global_index = element_nodes_id[e][j];
 
 					if(global_index >= 0)
-						b.bases[j].init(global_index, j, nodes.node_position(global_index));
+						b.bases[j].init(discr_order, global_index, j, nodes.node_position(global_index));
 					else
 					{
 						const int lnn = max_p > 2 ? (discr_order - 2) : 0;
