@@ -30,7 +30,7 @@ namespace polyfem
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 	LinearElasticity::assemble(const ElementAssemblyValues &vals, const int i, const int j, const QuadratureVector &da) const
 	{
-		// mu ((gradi' gradj) Id + gradi gradj') + lambda gradi *gradj';
+		// mu ((gradi' gradj) Id + ((gradi gradj')') + lambda gradi *gradj';
 		const Eigen::MatrixXd &gradi = vals.basis_values[i].grad_t_m;
 		const Eigen::MatrixXd &gradj = vals.basis_values[j].grad_t_m;
 

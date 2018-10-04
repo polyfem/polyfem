@@ -61,6 +61,86 @@ double kernel_prime(const bool is_volume, const double r) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+void RBFWithQuadratic::setup_monomials_strong_2d(const int dim, const std::string &assembler_name, const Eigen::MatrixXd &pts, const QuadratureVector &da, std::array<Eigen::MatrixXd, 5> &strong)
+{
+	const auto &assembler = AssemblerUtils::instance();
+
+	DiffScalarBase::setVariableCount(2);
+	AutodiffHessianPt pt(dim);
+	for(int i = 0; i < 5; ++i){
+		strong[i].resize(dim*dim, pts.rows());
+		strong[i].setZero();
+	}
+
+	for(int i = 0; i < pts.rows(); ++i)
+	{
+		for(int d = 0; d < dim; ++d)
+		{
+			pt((d+1)%dim) = AutodiffScalarHessian(0);
+
+			//x
+			pt(d) = AutodiffScalarHessian(0, pts(i, 0));
+			strong[0](d*dim + d, i) = assembler.compute_rhs(assembler_name, pt)(d) * da(i);
+
+			//y
+			pt(d) = AutodiffScalarHessian(0, pts(i, 1));
+			strong[1](d*dim + d, i) = assembler.compute_rhs(assembler_name, pt)(d) * da(i);
+
+			//y
+			pt(d) = AutodiffScalarHessian(0, pts(i, 0)) * AutodiffScalarHessian(1, pts(i, 1));
+			strong[2](d*dim + d, i) = assembler.compute_rhs(assembler_name, pt)(d) * da(i);
+
+			//x^2
+			pt(d) = AutodiffScalarHessian(0, pts(i, 0)) * AutodiffScalarHessian(0, pts(i, 0));
+			strong[3](d*dim + d, i) = assembler.compute_rhs(assembler_name, pt)(d) * da(i);
+
+			//y^2
+			pt(d) = AutodiffScalarHessian(0, pts(i, 1)) * AutodiffScalarHessian(0, pts(i, 1));
+			strong[4](d*dim + d, i) = assembler.compute_rhs(assembler_name, pt)(d) * da(i);
+		}
+	}
+
+}
+
+void RBFWithQuadratic::setup_monomials_vals_2d(const int star_index, const Eigen::MatrixXd &pts, ElementAssemblyValues &vals)
+{
+	assert(star_index + 5 <= vals.basis_values.size());
+	//x
+	vals.basis_values[star_index + 0].val = pts.col(0);
+	vals.basis_values[star_index + 0].grad = Eigen::MatrixXd(pts.rows(), pts.cols());
+	vals.basis_values[star_index + 0].grad.col(0).setOnes();
+	vals.basis_values[star_index + 0].grad.col(1).setZero();
+
+	//y
+	vals.basis_values[star_index + 1].val = pts.col(1);
+	vals.basis_values[star_index + 1].grad = Eigen::MatrixXd(pts.rows(), pts.cols());
+	vals.basis_values[star_index + 1].grad.col(0).setZero();
+	vals.basis_values[star_index + 1].grad.col(1).setOnes();
+
+	//xy
+	vals.basis_values[star_index + 2].val = pts.col(0).array() * pts.col(1).array();
+	vals.basis_values[star_index + 2].grad = Eigen::MatrixXd(pts.rows(), pts.cols());
+	vals.basis_values[star_index + 2].grad.col(0) = pts.col(1);
+	vals.basis_values[star_index + 2].grad.col(1) = pts.col(0);
+
+	//x^2
+	vals.basis_values[star_index + 3].val = pts.col(0).array() * pts.col(0).array();
+	vals.basis_values[star_index + 3].grad = Eigen::MatrixXd(pts.rows(), pts.cols());
+	vals.basis_values[star_index + 3].grad.col(0) = 2*pts.col(0);
+	vals.basis_values[star_index + 3].grad.col(1).setZero();
+
+	//y^2
+	vals.basis_values[star_index + 4].val = pts.col(1).array() * pts.col(1).array();
+	vals.basis_values[star_index + 4].grad = Eigen::MatrixXd(pts.rows(), pts.cols());
+	vals.basis_values[star_index + 4].grad.col(0).setZero();
+	vals.basis_values[star_index + 4].grad.col(1) = 2*pts.col(1);
+
+	for(size_t i = star_index; i < star_index + 5; ++i)
+	{
+		vals.basis_values[i].grad_t_m = vals.basis_values[i].grad;
+	}
+}
+
 RBFWithQuadratic::RBFWithQuadratic(
 		const std::string &assembler_name,
 		const Eigen::MatrixXd &centers,
@@ -380,97 +460,26 @@ void RBFWithQuadratic::compute_constraints_matrix_2d(
 	Eigen::MatrixXd &t) const
 {
 	const int num_kernels = centers_.rows();
-	const int dim = centers_.cols();
-	assert(dim == 2);
-
+	const int space_dim = centers_.cols();
 	const auto &assembler = AssemblerUtils::instance();
-	Eigen::MatrixXd strong(quadr.points.rows(), 5);
+	const int assembler_dim = assembler.is_tensor(assembler_name) ? 2 : 1;
+	assert(space_dim == 2);
+
+
+	std::array<Eigen::MatrixXd, 5> strong;
+
 	// ass_val = [q_10, q_01, q_11, q_20, q_02, psi_0, ..., psi_k]
 	ElementAssemblyValues ass_val;
 	ass_val.has_parameterization = false;
 	ass_val.basis_values.resize(5 + num_kernels);
 
+
 	//evaluating monomial and grad of monomials at quad points
-	{
-		//x
-		ass_val.basis_values[0].val = quadr.points.col(0);
-		ass_val.basis_values[0].grad = Eigen::MatrixXd(quadr.points.rows(), quadr.points.cols());
-		ass_val.basis_values[0].grad.col(0).setOnes();
-		ass_val.basis_values[0].grad.col(1).setZero();
-
-		//y
-		ass_val.basis_values[1].val = quadr.points.col(1);
-		ass_val.basis_values[1].grad = Eigen::MatrixXd(quadr.points.rows(), quadr.points.cols());
-		ass_val.basis_values[1].grad.col(0).setZero();
-		ass_val.basis_values[1].grad.col(1).setOnes();
-
-		//xy
-		ass_val.basis_values[2].val = quadr.points.col(0).array() * quadr.points.col(1).array();
-		ass_val.basis_values[2].grad = Eigen::MatrixXd(quadr.points.rows(), quadr.points.cols());
-		ass_val.basis_values[2].grad.col(0) = quadr.points.col(1);
-		ass_val.basis_values[2].grad.col(1) = quadr.points.col(0);
-
-		//x^2
-		ass_val.basis_values[3].val = quadr.points.col(0).array() * quadr.points.col(0).array();
-		ass_val.basis_values[3].grad = Eigen::MatrixXd(quadr.points.rows(), quadr.points.cols());
-		ass_val.basis_values[3].grad.col(0) = 2*quadr.points.col(0);
-		ass_val.basis_values[3].grad.col(1).setZero();
-
-		//y^2
-		ass_val.basis_values[4].val = quadr.points.col(1).array() * quadr.points.col(1).array();
-		ass_val.basis_values[4].grad = Eigen::MatrixXd(quadr.points.rows(), quadr.points.cols());
-		ass_val.basis_values[4].grad.col(0).setZero();
-		ass_val.basis_values[4].grad.col(1) = 2*quadr.points.col(1);
-	}
-
-	//evaluating strong form of monomial at quad points
-	// strong.col(0) = pde(q_10) (probably 0)
-	// strong.col(4) = pde(q_02) (it is 2 for laplacian)
-	{
-		DiffScalarBase::setVariableCount(quadr.points.cols());
-		AutodiffHessianPt pt(1);
-
-		for(int i = 0; i < quadr.points.rows(); ++i)
-		{
-		//x
-			pt(0) = AutodiffScalarHessian(0, quadr.points(i, 0));
-			strong(i, 0) = assembler.compute_rhs(assembler_name, pt)(0);
-
-		//y
-			pt(0) = AutodiffScalarHessian(0, quadr.points(i, 1));
-			strong(i, 1) = assembler.compute_rhs(assembler_name, pt)(0);
-
-		//y
-			pt(0) = AutodiffScalarHessian(0, quadr.points(i, 0)) * AutodiffScalarHessian(1, quadr.points(i, 1));
-			strong(i, 2) = assembler.compute_rhs(assembler_name, pt)(0);
-
-		//x^2
-			pt(0) = AutodiffScalarHessian(0, quadr.points(i, 0)) * AutodiffScalarHessian(0, quadr.points(i, 0));
-			strong(i, 3) = assembler.compute_rhs(assembler_name, pt)(0);
-
-		//y^2
-			pt(0) = AutodiffScalarHessian(0, quadr.points(i, 1)) * AutodiffScalarHessian(0, quadr.points(i, 1));
-			strong(i, 4) = assembler.compute_rhs(assembler_name, pt)(0);
-		}
-	}
-
-	// K_cst = ∫ψ_k
-	// K_lin = ∫∇x(ψ_k), ∫∇y(ψ_k)
-	// K_mix = ∫y·∇x(ψ_k), ∫x·∇y(ψ_k)
-	// K_sqr = ∫x·∇x(ψ_k), ∫y·∇y(ψ_k)
-	// Eigen::VectorXd K_cst = Eigen::VectorXd::Zero(num_kernels);
-	// Eigen::MatrixXd K_lin = Eigen::MatrixXd::Zero(num_kernels, dim);
-	// Eigen::MatrixXd K_mix = Eigen::MatrixXd::Zero(num_kernels, dim);
-	// Eigen::MatrixXd K_sqr = Eigen::MatrixXd::Zero(num_kernels, dim);
+	setup_monomials_vals_2d(0, quadr.points, ass_val);
+	setup_monomials_strong_2d(assembler_dim, assembler_name, quadr.points, quadr.weights.array(), strong);
 
 	//evaluating psi and grad psi at quadr points
 	for (int j = 0; j < num_kernels; ++j) {
-		// ∫∇x(ψ_k)(p) = Σ_q (xq - xk) * 1/r * h'(r) * wq
-		// - xq is the x coordinate of the q-th quadrature point
-		// - wq is the q-th quadrature weight
-		// - r is the distance from pq to the kernel center
-		// - h is the RBF kernel (scalar function)
-
 		ass_val.basis_values[5 + j].val  = Eigen::MatrixXd(quadr.points.rows(), 1);
 		ass_val.basis_values[5 + j].grad = Eigen::MatrixXd(quadr.points.rows(), quadr.points.cols());
 
@@ -478,85 +487,41 @@ void RBFWithQuadratic::compute_constraints_matrix_2d(
 			const RowVectorNd p = quadr.points.row(q) - centers_.row(j);
 			const double r = p.norm();
 
-			// const RowVectorNd gradPhi = p * kernel_prime(is_volume(), r) / r * quadr.weights(q);
-			// K_cst(j) += kernel(is_volume(), r) * quadr.weights(q);
-			// K_lin.row(j) += gradPhi;
-			// K_mix(j,0) += quadr.points(q,1)*gradPhi(0);
-			// K_mix(j,1) += quadr.points(q,0)*gradPhi(1);
-			// K_sqr.row(j) += (quadr.points.row(q).array() * gradPhi.array()).matrix();
-
 			ass_val.basis_values[5 + j].val(q) = kernel(is_volume(), r);
 			ass_val.basis_values[5 + j].grad.row(q) = p * kernel_prime(is_volume(), r) / r;
 		}
 	}
 
-	for(size_t i = 0; i < ass_val.basis_values.size(); ++i)
+	for(size_t i = 5; i < ass_val.basis_values.size(); ++i)
 	{
 		ass_val.basis_values[i].grad_t_m = ass_val.basis_values[i].grad;
 	}
 
-	// I_lin = ∫x, ∫y
-	// I_mix = ∫xy
-	// I_sqr = ∫x², ∫y²
-	// Eigen::RowVectorXd I_lin = (quadr.points.array().colwise() * quadr.weights.array()).colwise().sum();
-	// Eigen::RowVectorXd I_mix = (quadr.points.rowwise().prod().array() * quadr.weights.array()).colwise().sum();
-	// Eigen::RowVectorXd I_sqr = (quadr.points.array().square().colwise() * quadr.weights.array()).colwise().sum();
-	// double volume = quadr.weights.sum();
 
-	// std::cout << I_lin << std::endl;
-	// std::cout << I_mix << std::endl;
-	// std::cout << I_sqr << std::endl;
-
-	// Compute M
-	// Eigen::Matrix<double, 5, 5> M_old;
-	// M_old <<    volume,          0,          I_lin(1), 2*I_lin(0),          0,
-	//              0,     volume,          I_lin(0),          0, 2*I_lin(1),
-	//       I_lin(1),   I_lin(0), I_sqr(0)+I_sqr(1), 2*I_mix(0), 2*I_mix(0),
-	//     4*I_lin(0), 2*I_lin(1),        4*I_mix(0), 6*I_sqr(0), 2*I_sqr(1),
-	//     2*I_lin(0), 4*I_lin(1),        4*I_mix(0), 2*I_sqr(0), 6*I_sqr(1);
-
-
-	Eigen::Matrix<double, 5, 5> M;
-	for(int i = 0; i < M.rows(); ++i)
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 10, 10> M(5*assembler_dim, 5*assembler_dim);
+	for(int i = 0; i < 5; ++i)
 	{
-		for(int j = 0; j < M.cols(); ++j)
+		for(int j = 0; j < 5; ++j)
 		{
-			//TODO remove (0) for tensors
-			double tmp = assembler.local_assemble(assembler_name, ass_val, i, j, quadr.weights)(0);
-			tmp += (strong.col(i).array() * ass_val.basis_values[j].val.array() * quadr.weights.array()).sum();
-			M(i,j) = tmp;
+			const auto tmp = assembler.local_assemble(assembler_name, ass_val, i, j, quadr.weights);
+
+			for(int d1 = 0; d1 < assembler_dim; ++d1)
+			{
+				for(int d2 = 0; d2 < assembler_dim; ++d2)
+				{
+					const int loc_index = d1*assembler_dim + d2;
+					M(i*assembler_dim + d1, j*assembler_dim + d2) = tmp(loc_index) + (strong[i].row(loc_index).transpose().array() * ass_val.basis_values[j].val.array()).sum();
+				}
+			}
 		}
 	}
 
-	Eigen::FullPivLU<Eigen::Matrix<double, 5, 5>> lu(M);
+	Eigen::FullPivLU<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 10, 10>> lu(M);
+	std::cout<<M<<std::endl;
 	assert(lu.isInvertible());
 
-	// for(int i = 0; i < M.rows(); ++i)
-	// {
-	// 	for(int j = 0; j < M.cols(); ++j)
-	// 	{
-	// 		assert(fabs(M(i,j) - M_old(i,j)) < 1e-12);
-	// 	}
-	// }
-
-
-	// show_matrix_stats(M);
-
-
-	// Eigen::MatrixXd L_old;
-	// L_old.resize(num_kernels + 1 + dim + dim*(dim+1)/2, num_kernels + 1);
-	// L_old.setZero();
-	// L_old.diagonal().setOnes();
-
-	// L_old.block(num_kernels + 1, 			0, 	dim, 	num_kernels) = -K_lin.transpose();
-	// L_old.block(num_kernels + 1 + dim, 		0, 	1, 		num_kernels) = -K_mix.transpose().colwise().sum();
-	// L_old.block(num_kernels + 1 + dim + 1, 	0, 	dim, 	num_kernels) = -2.0 * (K_sqr.colwise() + K_cst).transpose();
-	// L_old.bottomRightCorner(dim, 1).setConstant(-2.0 * volume);
-
-
-
 	// Compute L
-	L.resize(num_kernels + 1 + dim + dim*(dim+1)/2, num_kernels + 1);
+	L.resize(num_kernels + 1 + space_dim + space_dim*(space_dim+1)/2, num_kernels + 1);
 	L.setZero();
 	L.diagonal().setOnes();
 
@@ -565,22 +530,13 @@ void RBFWithQuadratic::compute_constraints_matrix_2d(
 		for(int j = 0; j < num_kernels; ++j)
 		{
 			//TODO remove (0) for tensors
-			L(num_kernels + 1 + i, j) =  -assembler.local_assemble(assembler_name, ass_val, i, 5 + j, quadr.weights)(0) - (strong.col(i).array() * ass_val.basis_values[5+j].val.array() * quadr.weights.array()).sum();
+			L(num_kernels + 1 + i, j) =  -assembler.local_assemble(assembler_name, ass_val, i, 5 + j, quadr.weights)(0) - (strong[i].transpose().array() * ass_val.basis_values[5+j].val.array()).sum();
 		}
-		L(num_kernels + 1 + i, num_kernels) =  - (strong.col(i).array() * quadr.weights.array()).sum();
+		L(num_kernels + 1 + i, num_kernels) =  - strong[i].sum();
 	}
-
-	// for(int i = 0; i < L.rows(); ++i)
-	// {
-	// 	for(int j = 0; j < L.cols(); ++j)
-	// 	{
-	// 		assert(fabs(L(i,j) - L_old(i,j)) < 1e-12);
-	// 	}
-	// }
 
 
 	L.block(num_kernels + 1, 0, 5, num_kernels + 1) = lu.solve(L.block(num_kernels + 1, 0, 5, num_kernels + 1));
-	// std::cout << L.bottomRightCorner(10, 10) << std::endl;
 
 	// Compute t
 	t.resize(L.rows(), num_bases);

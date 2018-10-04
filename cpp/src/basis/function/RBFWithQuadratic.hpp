@@ -1,6 +1,8 @@
 #pragma once
 
 #include <polyfem/Quadrature.hpp>
+#include <polyfem/ElementAssemblyValues.hpp>
+
 #include <Eigen/Dense>
 
 namespace polyfem
@@ -8,6 +10,8 @@ namespace polyfem
 	class RBFWithQuadratic
 	{
 	public:
+		static void setup_monomials_vals_2d(const int star_index, const Eigen::MatrixXd &pts, ElementAssemblyValues &vals);
+		static void setup_monomials_strong_2d(const int dim, const std::string &assembler_name, const Eigen::MatrixXd &pts, const QuadratureVector &da, std::array<Eigen::MatrixXd, 5> &strong);
 
 		///
 		/// @brief      { Initialize RBF functions over a polytope element. }

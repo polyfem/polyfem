@@ -60,7 +60,7 @@ namespace polyfem
 					epsj.row(dj) = gradj.row(p);
 					epsj = ((epsj + epsj.transpose()) / 2.0).eval();
 
-					res(di*size() + dj) += 2 * mu_ * (epsi.array() * epsj.array()).sum() * da(p);
+					res(dj*size() + di) += 2 * mu_ * (epsi.array() * epsj.array()).sum() * da(p);
 				}
 			}
 		}

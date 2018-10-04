@@ -1221,6 +1221,10 @@ namespace polyfem
 		sigma_max = 0;
 		sigma_min = 0;
 
+		auto &assembler = AssemblerUtils::instance();
+		const auto params = build_json_params();
+		assembler.set_parameters(params);
+
 
 		logger().info("Building {} basis...", (iso_parametric()? "isoparametric":"not isoparametric"));
 		const bool has_polys = non_regular_count > 0 || non_regular_boundary_count > 0 || undefined_count > 0;
@@ -1520,9 +1524,9 @@ namespace polyfem
 		}
 		problem->set_parameters(p_params);
 
-		const auto params = build_json_params();
+		// const auto params = build_json_params();
 		auto &assembler = AssemblerUtils::instance();
-		assembler.set_parameters(params);
+		// assembler.set_parameters(params);
 
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
