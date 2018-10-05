@@ -1068,7 +1068,7 @@ namespace polyfem
 							data(Visualizations::PNodes).add_points(node, col);
 
 							//TODO text is impossible to hide :(
-							// data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(g_index));
+							data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(g_index));
 						}
 					}
 				}
@@ -1110,7 +1110,7 @@ namespace polyfem
 						data(Visualizations::Nodes).add_points(node, col);
 
 						//TODO text is impossible to hide :(
-						// data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(g_index));
+						data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(g_index));
 					}
 				}
 			}
@@ -1124,8 +1124,8 @@ namespace polyfem
 			show_data(Visualizations::Nodes);
 
 		//TODO text is impossible to hide :(
-		// if(visible_visualizations(Visualizations::NodesId))
-			// show_data(Visualizations::NodesId);
+		if(visible_visualizations(Visualizations::NodesId))
+			show_data(Visualizations::NodesId);
 	}
 
 	void UIState::show_error()

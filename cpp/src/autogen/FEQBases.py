@@ -35,48 +35,6 @@ class ReferenceSimplex:
         return intf
 
 
-def bernstein_space(order, nsd):
-    if nsd > 3:
-        raise RuntimeError("Bernstein only implemented in 1D, 2D, and 3D")
-    sum = 0
-    basis = []
-    coeff = []
-
-    if nsd == 2:
-        b1, b2, b3 = x, y, 1 - x - y
-        for o1 in range(0, order + 1):
-            for o2 in range(0, order + 1):
-                for o3 in range(0, order + 1):
-                    if o1 + o2 + o3 == order:
-                        aij = Symbol("a_%d_%d_%d" % (o1, o2, o3))
-                        fac = factorial(order) / (factorial(o1) *
-                                                  factorial(o2) * factorial(o3))
-                        sum += aij * fac * pow(b1, o1) * \
-                            pow(b2, o2) * pow(b3, o3)
-                        basis.append(fac * pow(b1, o1) *
-                                     pow(b2, o2) * pow(b3, o3))
-                        coeff.append(aij)
-
-    if nsd == 3:
-        b1, b2, b3, b4 = x, y, z, 1 - x - y - z
-        for o1 in range(0, order + 1):
-            for o2 in range(0, order + 1):
-                for o3 in range(0, order + 1):
-                    for o4 in range(0, order + 1):
-                        if o1 + o2 + o3 + o4 == order:
-                            aij = Symbol("a_%d_%d_%d_%d" % (o1, o2, o3, o4))
-                            fac = factorial(
-                                order) / (factorial(o1) * factorial(o2) * factorial(o3) * factorial(o4))
-                            sum += aij * fac * \
-                                pow(b1, o1) * pow(b2, o2) * \
-                                pow(b3, o3) * pow(b4, o4)
-                            basis.append(fac * pow(b1, o1) * pow(b2, o2) *
-                                         pow(b3, o3) * pow(b4, o4))
-                            coeff.append(aij)
-
-    return sum, coeff, basis
-
-
 def create_point_set(order, nsd):
     h = Rational(1, order)
     set = []
@@ -86,8 +44,7 @@ def create_point_set(order, nsd):
             x = i * h
             for j in range(0, order + 1):
                 y = j * h
-                if x + y <= 1:
-                    set.append((x, y))
+                set.append((x, y))
 
     if nsd == 3:
         for i in range(0, order + 1):
@@ -96,23 +53,9 @@ def create_point_set(order, nsd):
                 y = j * h
                 for k in range(0, order + 1):
                     z = k * h
-                    if x + y + z <= 1:
-                        set.append((x, y, z))
+                    set.append((x, y, z))
 
     return set
-
-
-def create_matrix(equations, coeffs):
-    A = zeros(len(equations))
-    i = 0
-    j = 0
-    for j in range(0, len(coeffs)):
-        c = coeffs[j]
-        for i in range(0, len(equations)):
-            e = equations[i]
-            d, _ = reduced(e, [c])
-            A[i, j] = d[0]
-    return A
 
 
 class Lagrange:
@@ -129,30 +72,56 @@ class Lagrange:
         order = self.order
         nsd = self.nsd
         N = []
-        pol, coeffs, basis = bernstein_space(order, nsd)
         self.points = create_point_set(order, nsd)
 
-        equations = []
-        for p in self.points:
-            ex = pol.subs(x, p[0])
-            if nsd > 1:
-                ex = ex.subs(y, p[1])
-            if nsd > 2:
-                ex = ex.subs(z, p[2])
-            equations.append(ex)
+        if nsd == 2:
+            Ntmpx = []
+            Ntmpy = []
 
-        A = create_matrix(equations, coeffs)
-        Ainv = A.inv()
+            for j in range(order + 1):
+                vx = 1
+                vy = 1
+                xj = 1./(order)*j
+                for m in range(order+1):
+                    if m == j:
+                        continue
+                    xm = 1./(order)*m
+                    vx *= (x - xm)/(xj - xm)
+                    vy *= (y - xm)/(xj - xm)
 
-        b = eye(len(equations))
+                Ntmpx.append(vx)
+                Ntmpy.append(vy)
 
-        xx = Ainv * b
+            for i in range(order + 1):
+                for j in range(order + 1):
+                    N.append(Ntmpx[i]*Ntmpy[j])
+        elif nsd == 3:
+            Ntmpx = []
+            Ntmpy = []
+            Ntmpz = []
 
-        for i in range(0, len(equations)):
-            Ni = pol
-            for j in range(0, len(coeffs)):
-                Ni = Ni.subs(coeffs[j], xx[j, i])
-            N.append(Ni)
+            for j in range(order + 1):
+                vx = 1
+                vy = 1
+                vz = 1
+                xj = 1./(order)*j
+                print(xj)
+                for m in range(order+1):
+                    if m == j:
+                        continue
+                    xm = 1./(order)*m
+                    vx *= (x - xm)/(xj - xm)
+                    vy *= (y - xm)/(xj - xm)
+                    vz *= (z - xm)/(xj - xm)
+
+                Ntmpx.append(vx)
+                Ntmpy.append(vy)
+                Ntmpz.append(vz)
+
+            for i in range(order + 1):
+                for j in range(order + 1):
+                    for l in range(order + 1):
+                        N.append(Ntmpx[i]*Ntmpy[j]*Ntmpy[z])
 
         self.N = N
 
@@ -168,12 +137,12 @@ def parse_args():
 if __name__ == "__main__":
     args = parse_args()
 
-    dims = [2, 3]
+    dims = [2]
 
-    orders = [0, 1, 2, 3, 4]
+    orders = [1, 2, 3, 4]
     # orders = [4]
 
-    cpp = "#include <polyfem/auto_bases.hpp>\n\n\n"
+    cpp = "#include <polyfem/auto_q_bases.hpp>\n\n\n"
     cpp = cpp + "namespace polyfem {\nnamespace autogen " + "{\nnamespace " + "{\n"
 
     hpp = "#pragma once\n\n#include <Eigen/Dense>\n\n"
@@ -183,23 +152,23 @@ if __name__ == "__main__":
         print(str(dim) + "D")
         suffix = "_2d" if dim == 2 else "_3d"
 
-        unique_nodes = "void p_nodes" + suffix + "(const int p, Eigen::MatrixXd &val)"
+        unique_nodes = "void q_nodes" + suffix + "(const int q, Eigen::MatrixXd &val)"
 
-        unique_fun = "void p_basis_value" + suffix + "(const int p, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
-        dunique_fun = "void p_grad_basis_value" + suffix + "(const int p, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
+        unique_fun = "void q_basis_value" + suffix + "(const int q, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
+        dunique_fun = "void q_grad_basis_value" + suffix + "(const int q, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
 
         hpp = hpp + unique_nodes + ";\n\n"
 
         hpp = hpp + unique_fun + ";\n\n"
         hpp = hpp + dunique_fun + ";\n\n"
 
-        unique_nodes = unique_nodes + "{\nswitch(p)" + "{\n"
+        unique_nodes = unique_nodes + "{\nswitch(q)" + "{\n"
 
-        unique_fun = unique_fun + "{\nswitch(p)" + "{\n"
-        dunique_fun = dunique_fun + "{\nswitch(p)" + "{\n"
+        unique_fun = unique_fun + "{\nswitch(q)" + "{\n"
+        dunique_fun = dunique_fun + "{\nswitch(q)" + "{\n"
 
         if dim == 2:
-            vertices = [[0, 0], [1, 0], [0, 1]]
+            vertices = [[0, 0], [1, 0], [1, 1], [0, 1]]
         elif dim == 3:
             vertices = [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]]
 
@@ -225,7 +194,7 @@ if __name__ == "__main__":
             indices = []
 
             # vertex coordinate
-            for i in range(0, dim + 1):
+            for i in range(0, 4):
                 vv = vertices[i]
                 for ii in current_indices:
                     norm = 0
@@ -251,7 +220,7 @@ if __name__ == "__main__":
             # edge 2 coordinate
             for i in range(0, order - 1):
                 for ii in current_indices:
-                    if fe.points[ii][0] + fe.points[ii][1] != 1 or (dim == 3 and fe.points[ii][2] != 0):
+                    if fe.points[ii][0] != 1 or (dim == 3 and fe.points[ii][2] != 0):
                         continue
 
                     if abs(fe.points[ii][1] - (i + 1) / order) < 1e-10:
@@ -260,6 +229,17 @@ if __name__ == "__main__":
                         break
 
             # edge 3 coordinate
+            for i in range(0, order - 1):
+                for ii in current_indices:
+                    if fe.points[ii][1] != 1 or (dim == 3 and fe.points[ii][2] != 0):
+                        continue
+
+                    if abs(fe.points[ii][0] - (1 - (i + 1) / order)) < 1e-10:
+                        indices.append(ii)
+                        current_indices.remove(ii)
+                        break
+
+            # edge 4 coordinate
             for i in range(0, order - 1):
                 for ii in current_indices:
                     if fe.points[ii][0] != 0 or (dim == 3 and fe.points[ii][2] != 0):
@@ -362,8 +342,8 @@ if __name__ == "__main__":
                 indices.append(ii)
 
             # nodes code gen
-            nodes = "void p_" + str(order) + "_nodes" + suffix + "(Eigen::MatrixXd &res) {\n res.resize(" + str(len(indices)) + ", " + str(dim) + "); res << \n"
-            unique_nodes = unique_nodes + "\tcase " + str(order) + ": " + "p_" + str(order) + "_nodes" + suffix + "(val); break;\n"
+            nodes = "void q_" + str(order) + "_nodes" + suffix + "(Eigen::MatrixXd &res) {\n res.resize(" + str(len(indices)) + ", " + str(dim) + "); res << \n"
+            unique_nodes = unique_nodes + "\tcase " + str(order) + ": " + "q_" + str(order) + "_nodes" + suffix + "(val); break;\n"
 
             for ii in indices:
                 nodes = nodes + ccode(fe.points[ii][0]) + ", " + ccode(fe.points[ii][1]) + ((", " + ccode(fe.points[ii][2])) if dim == 3 else "") + ",\n"
@@ -371,11 +351,11 @@ if __name__ == "__main__":
             nodes = nodes + ";\n}"
 
             # bases code gen
-            func = "void p_" + str(order) + "_basis_value" + suffix + "(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &result_0)"
-            dfunc = "void p_" + str(order) + "_basis_grad_value" + suffix + "(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
+            func = "void q_" + str(order) + "_basis_value" + suffix + "(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &result_0)"
+            dfunc = "void q_" + str(order) + "_basis_grad_value" + suffix + "(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
 
-            unique_fun = unique_fun + "\tcase " + str(order) + ": " + "p_" + str(order) + "_basis_value" + suffix + "(local_index, uv, val); break;\n"
-            dunique_fun = dunique_fun + "\tcase " + str(order) + ": " + "p_" + str(order) + "_basis_grad_value" + suffix + "(local_index, uv, val); break;\n"
+            unique_fun = unique_fun + "\tcase " + str(order) + ": " + "q_" + str(order) + "_basis_value" + suffix + "(local_index, uv, val); break;\n"
+            dunique_fun = dunique_fun + "\tcase " + str(order) + ": " + "q_" + str(order) + "_basis_grad_value" + suffix + "(local_index, uv, val); break;\n"
 
             # hpp = hpp + func + ";\n"
             # hpp = hpp + dfunc + ";\n"
@@ -423,18 +403,20 @@ if __name__ == "__main__":
         cpp = cpp + "}\n\n" + unique_nodes + "\n" + unique_fun + "\n\n" + dunique_fun + "\n" + "\nnamespace " + "{\n"
         hpp = hpp + "\n"
 
-    hpp = hpp + "\nstatic const int MAX_P_BASES = " + str(max(orders)) + ";\n"
+    hpp = hpp + "\nstatic const int MAX_Q_BASES = " + str(max(orders)) + ";\n"
 
     cpp = cpp + "\n}}}\n"
     hpp = hpp + "\n}}\n"
 
+    print(cpp)
+
     path = os.path.abspath(args.output)
 
     print("saving...")
-    with open(os.path.join(path, "auto_bases.cpp"), "w") as file:
+    with open(os.path.join(path, "auto_q_bases.cpp"), "w") as file:
         file.write(cpp)
 
-    with open(os.path.join(path, "auto_bases.hpp"), "w") as file:
+    with open(os.path.join(path, "auto_q_bases.hpp"), "w") as file:
         file.write(hpp)
 
     print("done!")

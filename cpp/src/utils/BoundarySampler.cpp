@@ -1,17 +1,55 @@
 #include <polyfem/BoundarySampler.hpp>
 
-#include <polyfem/FEBasis2d.hpp>
 #include <polyfem/FEBasis3d.hpp>
 
 #include <polyfem/LineQuadrature.hpp>
 #include <polyfem/TriQuadrature.hpp>
 #include <polyfem/QuadQuadrature.hpp>
 
+#include <polyfem/auto_p_bases.hpp>
+#include <polyfem/auto_q_bases.hpp>
+
+#include <cassert>
+
 namespace polyfem
 {
+	namespace
+	{
+		Eigen::RowVector2d quad_local_node_coordinates(int local_index) {
+			assert(local_index >= 0 && local_index < 4);
+			Eigen::MatrixXd p;
+			polyfem::autogen::q_nodes_2d(1, p);
+			return Eigen::RowVector2d(p(local_index, 0), p(local_index, 1));
+		}
+
+		Eigen::RowVector2d tri_local_node_coordinates(int local_index) {
+			Eigen::MatrixXd p;
+			polyfem::autogen::p_nodes_2d(1, p);
+			return Eigen::RowVector2d(p(local_index, 0), p(local_index, 1));
+		}
+
+		Eigen::Matrix2d quad_local_node_coordinates_from_edge(int le)
+		{
+			Eigen::Matrix2d res(2,2);
+			res.row(0) = quad_local_node_coordinates(le);
+			res.row(1) = quad_local_node_coordinates((le+1)%4);
+
+			return res;
+		}
+
+		Eigen::Matrix2d tri_local_node_coordinates_from_edge(int le)
+		{
+			Eigen::Matrix2d  res(2,2);
+			res.row(0) = tri_local_node_coordinates(le);
+			res.row(1) = tri_local_node_coordinates((le+1)%3);
+
+			return res;
+		}
+	}
+
 	void BoundarySampler::quadrature_for_quad_edge(int index, int order, int gid, const Mesh &mesh, Eigen::MatrixXd &points, Eigen::VectorXd &weights)
 	{
-		auto endpoints = FEBasis2d::tri_local_node_coordinates_from_edge(index);
+		auto endpoints = quad_local_node_coordinates_from_edge(index);
 
 		Quadrature quad;
 		LineQuadrature quad_rule; quad_rule.get_quadrature(order, quad);
@@ -28,7 +66,7 @@ namespace polyfem
 
 	void BoundarySampler::quadrature_for_tri_edge(int index, int order, int gid, const Mesh &mesh, Eigen::MatrixXd &points, Eigen::VectorXd &weights)
 	{
-		auto endpoints = FEBasis2d::tri_local_node_coordinates_from_edge(index);
+		auto endpoints = tri_local_node_coordinates_from_edge(index);
 
 		Quadrature quad;
 		LineQuadrature quad_rule; quad_rule.get_quadrature(order, quad);
@@ -97,7 +135,7 @@ namespace polyfem
 
 	void BoundarySampler::sample_parametric_quad_edge(int index, int n_samples, Eigen::MatrixXd &samples)
 	{
-		auto endpoints = FEBasis2d::quad_local_node_coordinates_from_edge(index);
+		auto endpoints = quad_local_node_coordinates_from_edge(index);
 		const Eigen::VectorXd t = Eigen::VectorXd::LinSpaced(n_samples, 0, 1);
 		samples.resize(n_samples, endpoints.cols());
 
@@ -108,7 +146,7 @@ namespace polyfem
 
 	void BoundarySampler::sample_parametric_tri_edge(int index, int n_samples, Eigen::MatrixXd &samples)
 	{
-		auto endpoints = FEBasis2d::tri_local_node_coordinates_from_edge(index);
+		auto endpoints = tri_local_node_coordinates_from_edge(index);
 		const Eigen::VectorXd t = Eigen::VectorXd::LinSpaced(n_samples, 0, 1);
 		samples.resize(n_samples, endpoints.cols());
 

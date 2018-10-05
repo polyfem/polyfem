@@ -2,6 +2,8 @@
 
 #include <polyfem/Mesh.hpp>
 
+#include <Eigen/Dense>
+
 namespace polyfem
 {
 	class BoundarySampler

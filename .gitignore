@@ -58,11 +58,15 @@ meshes
 cpp/bin
 cpp/bin_rel
 cpp/build
+cpp/xcode
 cpp/3rdparty/.cache
 cpp/3rdparty/mmg
 cpp/3rdparty/spdlog
 cpp/3rdparty/sanitizers-cmake
 python/attic
+
+matlab
+maple
 
 # Plotting temporary files
 python/plot.html
@@ -73,5 +77,7 @@ cpp/src/autogen/auto_rhs.cpp
 cpp/src/autogen/auto_rhs.hpp
 cpp/src/autogen/auto_eigs.cpp
 cpp/src/autogen/auto_eigs.hpp
-cpp/src/autogen/auto_bases.cpp
-cpp/src/autogen/auto_bases.hpp
+cpp/src/autogen/auto_q_bases.cpp
+cpp/src/autogen/auto_q_bases.hpp
+cpp/src/autogen/auto_p_bases.cpp
+cpp/src/autogen/auto_p_bases.hpp

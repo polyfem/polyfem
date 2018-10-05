@@ -53,78 +53,8 @@ namespace polyfem
 
 
 
-
-
-
-		static std::array<int, 2> linear_tri_edge_local_nodes(const Mesh2D &mesh, Navigation::Index index);
-		static std::array<int, 3> quadr_tri_edge_local_nodes(const Mesh2D &mesh, Navigation::Index index);
-
-		static std::array<int, 2> linear_quad_edge_local_nodes(const Mesh2D &mesh, Navigation::Index index);
-		static std::array<int, 3> quadr_quad_edge_local_nodes(const Mesh2D &mesh, Navigation::Index index);
-
-
-
-		static std::array<int, 3> linear_tri_local_to_global(const Mesh2D &mesh, int f);
-		static std::array<int, 6> quadr_tri_local_to_global(const Mesh2D &mesh, int f, const Eigen::VectorXi &discr_order = Eigen::VectorXi());
-
-		static std::array<int, 4> linear_quad_local_to_global(const Mesh2D &mesh, int f);
-		static std::array<int, 9> quadr_quad_local_to_global(const Mesh2D &mesh, int f);
-
-
-
-		static Eigen::MatrixXd linear_tri_edge_local_nodes_coordinates(const Mesh2D &mesh, Navigation::Index index);
-		static Eigen::MatrixXd quadr_tri_edge_local_nodes_coordinates(const Mesh2D &mesh, Navigation::Index index);
-
-		static Eigen::MatrixXd linear_quad_edge_local_nodes_coordinates(const Mesh2D &mesh, Navigation::Index index);
-		static Eigen::MatrixXd quadr_quad_edge_local_nodes_coordinates(const Mesh2D &mesh, Navigation::Index index);
-
-
-
-		static Eigen::MatrixXd tri_local_node_coordinates_from_edge(int le);
-		static Eigen::MatrixXd quad_local_node_coordinates_from_edge(int le);
-
-
-
-		static Eigen::RowVector2d quadr_tri_local_node_coordinates(int local_index);
-		static Eigen::RowVector2d linear_tri_local_node_coordinates(int local_index);
-
-		static Eigen::RowVector2d quadr_quad_local_node_coordinates(int local_index);
-		static Eigen::RowVector2d linear_quad_local_node_coordinates(int local_index);
-
-		///
-		/// @brief      { Evaluates one local quadratic basis function over a
-		///             set of parametric samples in the element }
-		///
-		/// @param[in]  local_index  { Local index of the basis to evaluate }
-		/// @param[in]  uv           { #n x dim matrix with coordinates of the
-		///                          parametric samples to evaluate }
-		/// @param[out] val          { #n x 1 matrix of computed values}
-		///
-		static void quadr_quad_basis_value(const int local_index,
-			const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
-
-		///
-		/// @brief      { Evaluates the gradient of one local quadratic basis
-		///             function over a parametric samples in the element }
-		///
-		/// @param[in]  discr_order  { Discretization order }
-		/// @param[in]  local_index  { Local index of the basis to evaluate }
-		/// @param[in]  uv           { #n x dim matrix with coordinates of the
-		///                          parametric samples to evaluate }
-		/// @param[out] val          { #n x 1 matrix of computed gradients }
-		///
-		static void quadr_quad_basis_grad(const int local_index,
-			const Eigen::MatrixXd &xne, Eigen::MatrixXd &val);
-
-
-		static void tri_local_to_global(const int p, const Mesh2D &mesh, int f, const Eigen::VectorXi &discr_order, std::vector<int> &res, polyfem::MeshNodes &nodes);
 		static Eigen::VectorXi tri_edge_local_nodes(const int p, const Mesh2D &mesh, Navigation::Index index);
-
-		static void linear_tri_basis_value(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
-		static void linear_tri_basis_grad(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
-		static void quadr_tri_basis_value(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
-		static void quadr_tri_basis_grad(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);
-
+		static Eigen::VectorXi quad_edge_local_nodes(const int q, const Mesh2D &mesh, Navigation::Index index);
 	};
 }
 

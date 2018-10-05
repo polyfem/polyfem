@@ -268,7 +268,7 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_face(const Navigation::Index 
 	if(n_new_nodes <= 0)
 		return res;
 
-	assert(mesh_.is_simplex(index.face));
+	// assert(mesh_.is_simplex(index.face));
 	const int start = face_offset_ + index.face * max_nodes_per_face_;
 	const int start_node_id = primitive_to_node_[start];
 
@@ -284,7 +284,8 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_face(const Navigation::Index 
 		for(int i = 1; i <= n_new_nodes; ++i)
 		{
 			// const double b2 = i/(n_new_nodes + 2.0);
-			for(int j = 1; j <= n_new_nodes - i + 1; ++j)
+			const int end = mesh2d->is_simplex(index.face) ? (n_new_nodes - i + 1) : n_new_nodes;
+			for(int j = 1; j <= end; ++j)
 			{
 				// const double b3 = j/(n_new_nodes + 2.0);
 				// const double b1 = 1 - b3 - b2;
@@ -308,7 +309,8 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_face(const Navigation::Index 
 	{
 		assert(false);
 	}
-	assert(res.size() == size_t(n_new_nodes *(n_new_nodes+1) / 2));
+	assert(!mesh2d->is_simplex(index.face) || res.size() == size_t(n_new_nodes *(n_new_nodes+1) / 2));
+	assert(mesh2d->is_simplex(index.face) || res.size() == size_t(n_new_nodes *n_new_nodes));
 	return res;
 }
 

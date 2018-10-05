@@ -9,7 +9,10 @@
 
 #include <polyfem/AssemblerUtils.hpp>
 
+#include <polyfem/auto_q_bases.hpp>
+
 // #include <polyfem/UIState.hpp>
+
 #include <igl/png/writePNG.h>
 #include <igl/per_corner_normals.h>
 #include <igl/write_triangle_mesh.h>
@@ -63,7 +66,15 @@ std::vector<int> compute_nonzero_bases_ids(const Mesh2D &mesh, const int element
 void sample_parametric_edge(
 	const Mesh2D &mesh, Navigation::Index index, int n_samples, Eigen::MatrixXd &samples)
 {
-	Eigen::MatrixXd endpoints = FEBasis2d::linear_quad_edge_local_nodes_coordinates(mesh, index);
+	// Eigen::MatrixXd endpoints = FEBasis2d::linear_quad_edge_local_nodes_coordinates(mesh, index);
+	const auto indices = polyfem::FEBasis2d::quad_edge_local_nodes(1, mesh, index);
+	assert(mesh.is_cube(index.face));
+	assert(indices.size() == 2);
+	Eigen::MatrixXd tmp;
+	polyfem::autogen::q_nodes_2d(1, tmp);
+	Eigen::Matrix2d endpoints;
+	endpoints.row(0) = tmp.row(indices(0));
+	endpoints.row(1) = tmp.row(indices(1));
 	const Eigen::VectorXd t = Eigen::VectorXd::LinSpaced(n_samples, 0, 1);
 	samples.resize(n_samples, endpoints.cols());
 	for (int c = 0; c < 2; ++c) {
@@ -402,7 +413,6 @@ double compute_epsilon(const Mesh2D &mesh, int e) {
 // }
 
 // } // anonymous namespace
-  //
 // -----------------------------------------------------------------------------
 
 void PolygonalBasis2d::build_bases(
@@ -456,11 +466,13 @@ void PolygonalBasis2d::build_bases(
 		// asd.col(1)=collocation_points.col(1);
 		// asd.col(2)=rhs.col(0);
 		// viewer.data().add_points(asd, Eigen::Vector3d(1,0,1).transpose());
-		// viewer.launch();
+		
 
 		// for(int asd = 0; asd < collocation_points.rows(); ++asd) {
 		//     viewer.data().add_label(collocation_points.row(asd), std::to_string(asd));
 		// }
+
+		// viewer.launch();
 
 		// igl::opengl::glfw::Viewer & viewer = UIState::ui_state().viewer;
 		// viewer.data().clear();

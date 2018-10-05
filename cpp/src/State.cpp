@@ -34,7 +34,8 @@
 #include <polyfem/LbfgsSolver.hpp>
 #include <polyfem/SparseNewtonDescentSolver.hpp>
 
-#include <polyfem/auto_bases.hpp>
+#include <polyfem/auto_p_bases.hpp>
+#include <polyfem/auto_q_bases.hpp>
 
 #include <polyfem/Logger.hpp>
 

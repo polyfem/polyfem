@@ -304,26 +304,47 @@ namespace polyfem
 
 	RowVectorNd Mesh2D::face_node(const Navigation::Index &index, const int n_new_nodes, const int i, const int j) const
 	{
-		if(order_ == 1 || order_ == 2 || face_nodes_.empty() || face_nodes_[index.face].nodes.rows() != n_new_nodes)
+		if(is_simplex(index.face))
 		{
+			if(order_ == 1 || order_ == 2 || face_nodes_.empty() || face_nodes_[index.face].nodes.rows() != n_new_nodes)
+			{
+				const auto v1 = point(index.vertex);
+				const auto v2 = point(switch_vertex(index).vertex);
+				const auto v3 = point(switch_vertex(switch_edge(index)).vertex);
+
+				const double b2 = i/(n_new_nodes + 2.0);
+				const double b3 = j/(n_new_nodes + 2.0);
+				const double b1 = 1 - b3 - b2;
+				assert(b3 < 1);
+				assert(b3 > 0);
+
+
+				return b1 * v1 + b2 * v2 + b3 * v3;
+			}
+
+			assert(order_ == 3);
+			//unsupported P4 for geometry
+			const auto &n = face_nodes_[index.face];
+			return n.nodes.row(0);
+		}
+		else if(is_cube(index.face))
+		{
+			//supports only blilinear quads
+			assert(order_ == 1);
+
 			const auto v1 = point(index.vertex);
 			const auto v2 = point(switch_vertex(index).vertex);
-			const auto v3 = point(switch_vertex(switch_edge(index)).vertex);
+			const auto v3 = point(switch_vertex(switch_edge(switch_vertex(index))).vertex);
+			const auto v4 = point(switch_vertex(switch_edge(index)).vertex);
 
-			const double b2 = i/(n_new_nodes + 2.0);
-			const double b3 = j/(n_new_nodes + 2.0);
-			const double b1 = 1 - b3 - b2;
-			assert(b3 < 1);
-			assert(b3 > 0);
+			const double b1 = i/(n_new_nodes + 1.0);
+			const double b2 = j/(n_new_nodes + 1.0);
 
-
-			return b1 * v1 + b2 * v2 + b3 * v3;
+			return v1*(1-b1)*(1-b2) + v2*b1*(1-b2) + v3*b1*b2 + v4*(1-b1)*b2;
 		}
 
-		assert(order_ == 3);
-		//unsupported P4 for geometry
-		const auto &n = face_nodes_[index.face];
-		return n.nodes.row(0);
+		assert(false);
+		return RowVectorNd(2,1);
 	}
 
 	void Mesh2D::bounding_box(RowVectorNd &min, RowVectorNd &max) const
