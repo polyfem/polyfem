@@ -660,16 +660,16 @@ namespace polyfem
 	}
 
 
-	void State::interpolate_function(const int n_points, const MatrixXd &fun, MatrixXd &result)
+	void State::interpolate_function(const int n_points, const MatrixXd &fun, MatrixXd &result, const bool boundary_only)
 	{
 		int actual_dim = 1;
 		if(!problem->is_scalar())
 			actual_dim = mesh->dimension();
-		interpolate_function(n_points, actual_dim, bases, fun, result);
+		interpolate_function(n_points, actual_dim, bases, fun, result, boundary_only);
 	}
 
 
-	void State::average_grad_based_function(const int n_points, const MatrixXd &fun, MatrixXd &result_scalar, MatrixXd &result_tensor)
+	void State::average_grad_based_function(const int n_points, const MatrixXd &fun, MatrixXd &result_scalar, MatrixXd &result_tensor, const bool boundary_only)
 	{
 		assert(!problem->is_scalar());
 		const int actual_dim = mesh->dimension();
@@ -730,11 +730,11 @@ namespace polyfem
 
 		avg_scalar.array() /= areas.array();
 
-		interpolate_function(n_points, 1, bases, avg_scalar, result_scalar);
-		// interpolate_function(n_points, actual_dim*actual_dim, bases, avg_tensor, result_tensor);
+		interpolate_function(n_points, 1, bases, avg_scalar, result_scalar, boundary_only);
+		// interpolate_function(n_points, actual_dim*actual_dim, bases, avg_tensor, result_tensor, boundary_only);
 	}
 
-	void State::interpolate_function(const int n_points, const int actual_dim, const std::vector< ElementBases > &basis, const MatrixXd &fun, MatrixXd &result)
+	void State::interpolate_function(const int n_points, const int actual_dim, const std::vector< ElementBases > &basis, const MatrixXd &fun, MatrixXd &result, const bool boundary_only)
 	{
 		std::vector<AssemblyValues> tmp;
 
@@ -748,6 +748,9 @@ namespace polyfem
 		{
 			const ElementBases &bs = basis[i];
 			MatrixXd local_pts;
+
+			if(boundary_only && mesh->is_volume() && !mesh->is_boundary_element(i))
+				continue;
 
 			if(mesh->is_simplex(i))
 				local_pts = sampler.simplex_points();
@@ -774,7 +777,7 @@ namespace polyfem
 		}
 	}
 
-	void State::compute_scalar_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result)
+	void State::compute_scalar_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool boundary_only)
 	{
 		result.resize(n_points, 1);
 		assert(!problem->is_scalar());
@@ -788,6 +791,9 @@ namespace polyfem
 
 		for(int i = 0; i < int(bases.size()); ++i)
 		{
+			if(boundary_only && mesh->is_volume() && !mesh->is_boundary_element(i))
+				continue;
+
 			const ElementBases &bs = bases[i];
 			const ElementBases &gbs = gbases[i];
 			Eigen::MatrixXd local_pts;
@@ -807,7 +813,7 @@ namespace polyfem
 	}
 
 
-	void State::compute_tensor_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result)
+	void State::compute_tensor_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool boundary_only)
 	{
 		const int actual_dim = mesh->dimension();
 		result.resize(n_points, actual_dim*actual_dim);
@@ -822,6 +828,9 @@ namespace polyfem
 
 		for(int i = 0; i < int(bases.size()); ++i)
 		{
+			if(boundary_only && mesh->is_volume() && !mesh->is_boundary_element(i))
+				continue;
+
 			const ElementBases &bs = bases[i];
 			const ElementBases &gbs = gbases[i];
 			Eigen::MatrixXd local_pts;
@@ -2093,6 +2102,7 @@ namespace polyfem
 
 			{"export", {
 				{"vis_mesh", ""},
+				{"vis_boundary_only", false},
 				{"nodes", ""},
 				{"wire_mesh", ""},
 				{"iso_mesh", ""},
@@ -2183,9 +2193,14 @@ namespace polyfem
 		int tet_total_size = 0;
 		int pts_total_size = 0;
 
+		const bool boundary_only = args["export"]["vis_boundary_only"];
+
 		for(size_t i = 0; i < current_bases.size(); ++i)
 		{
 			const auto &bs = current_bases[i];
+
+			if(boundary_only && mesh->is_volume() && !mesh->is_boundary_element(i))
+				continue;
 
 			if(mesh->is_simplex(i))
 			{
@@ -2205,9 +2220,13 @@ namespace polyfem
 
 		Eigen::MatrixXd mapped, tmp;
 		int tet_index = 0, pts_index = 0;
+
 		for(size_t i = 0; i < current_bases.size(); ++i)
 		{
 			const auto &bs = current_bases[i];
+
+			if(boundary_only && mesh->is_volume() && !mesh->is_boundary_element(i))
+				continue;
 
 			if(mesh->is_simplex(i))
 			{
@@ -2236,7 +2255,7 @@ namespace polyfem
 
 		Eigen::MatrixXd fun, exact_fun, err;
 
-		interpolate_function(pts_index, sol, fun);
+		interpolate_function(pts_index, sol, fun, boundary_only);
 
 		if(problem->has_exact_sol()){
 			problem->exact(points, exact_fun);
@@ -2259,7 +2278,7 @@ namespace polyfem
 		if(problem->is_mixed())
 		{
 			Eigen::MatrixXd interp_p;
-			interpolate_function(pts_index, 1, pressure_bases, pressure, interp_p);
+			interpolate_function(pts_index, 1, pressure_bases, pressure, interp_p, boundary_only);
 			writer.add_field("pressure", interp_p);
 		}
 
@@ -2273,10 +2292,10 @@ namespace polyfem
 		if(fun.cols() != 1)
 		{
 			Eigen::MatrixXd vals, tvals;
-			compute_scalar_value(pts_index, sol, vals);
+			compute_scalar_value(pts_index, sol, vals, boundary_only);
 			writer.add_field("scalar_value", vals);
 
-			compute_tensor_value(pts_index, sol, tvals);
+			compute_tensor_value(pts_index, sol, tvals, boundary_only);
 			for(int i = 0; i < tvals.cols(); ++i){
 				const int ii = (i / mesh->dimension()) + 1;
 				const int jj = (i % mesh->dimension()) + 1;
@@ -2284,8 +2303,8 @@ namespace polyfem
 			}
 
 
-			average_grad_based_function(pts_index, sol, vals, tvals);
-			writer.add_field("scalar_value_avg", vals);
+			// average_grad_based_function(pts_index, sol, vals, tvals, boundary_only);
+			// writer.add_field("scalar_value_avg", vals);
 			// for(int i = 0; i < tvals.cols(); ++i){
 			// 	const int ii = (i / mesh->dimension()) + 1;
 			// 	const int jj = (i % mesh->dimension()) + 1;
@@ -2293,7 +2312,7 @@ namespace polyfem
 			// }
 		}
 
-		// interpolate_function(pts_index, rhs, fun);
+		// interpolate_function(pts_index, rhs, fun, boundary_only);
 		// writer.add_field("rhs", fun);
 
 		writer.write_tet_mesh(path, points, tets);

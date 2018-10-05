@@ -42,6 +42,7 @@ namespace polyfem
 		bool is_boundary_vertex(const int vertex_global_id) const override { return mesh_.vertices[vertex_global_id].boundary; }
 		bool is_boundary_edge(const int edge_global_id) const override { return mesh_.edges[edge_global_id].boundary; }
 		bool is_boundary_face(const int face_global_id) const override { return mesh_.faces[face_global_id].boundary; }
+		bool is_boundary_element(const int element_global_id) const override;
 
 		bool load(const std::string &path) override;
 		bool load(const GEO::Mesh &M) override;

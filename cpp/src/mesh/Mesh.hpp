@@ -75,6 +75,7 @@ namespace polyfem
 		virtual bool is_boundary_vertex(const int vertex_global_id) const = 0;
 		virtual bool is_boundary_edge(const int edge_global_id) const = 0;
 		virtual bool is_boundary_face(const int face_global_id) const = 0;
+		virtual bool is_boundary_element(const int element_global_id) const = 0;
 
 		//IO
 		virtual bool load(const std::string &path) = 0;

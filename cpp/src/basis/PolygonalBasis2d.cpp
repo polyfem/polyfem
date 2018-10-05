@@ -186,7 +186,7 @@ void PolygonalBasis2d::compute_integral_constraints(
 	const auto &assembler = AssemblerUtils::instance();
 	const int dim = assembler.is_tensor(assembler_name) ? 2 : 1;
 
-	basis_integrals.resize(n_bases*dim*dim, 5);
+	basis_integrals.resize(n_bases*dim, 5*dim);
 	basis_integrals.setZero();
 
 	std::array<Eigen::MatrixXd, 5> strong;
@@ -255,16 +255,20 @@ void PolygonalBasis2d::compute_integral_constraints(
 			// const double area_old = (v.val.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
 
 			for(size_t ii = 0; ii < v.global.size(); ++ii) {
-				for(int d = 0; d < dim *dim; ++d)
+				for(int d1 = 0; d1 < dim; ++d1)
+				{
+					for(int d2 = 0; d2 < dim; ++d2)
 					{
-						basis_integrals(v.global[ii].index*dim*dim + d, 0) += integral_10(d) * v.global[ii].val;
-						basis_integrals(v.global[ii].index*dim*dim + d, 1) += integral_01(d) * v.global[ii].val;
+						const int loc_index = d1*dim + d2;
+						basis_integrals(v.global[ii].index*dim + d1, 0*dim + d2) += integral_10(loc_index) * v.global[ii].val;
+						basis_integrals(v.global[ii].index*dim + d1, 1*dim + d2) += integral_01(loc_index) * v.global[ii].val;
 
-						basis_integrals(v.global[ii].index*dim*dim + d, 2) += integral_11(d) * v.global[ii].val;
+						basis_integrals(v.global[ii].index*dim + d1, 2*dim + d2) += integral_11(loc_index) * v.global[ii].val;
 
-						basis_integrals(v.global[ii].index*dim*dim + d, 3) += integral_20(d) * v.global[ii].val;
-						basis_integrals(v.global[ii].index*dim*dim + d, 4) += integral_02(d) * v.global[ii].val;
+						basis_integrals(v.global[ii].index*dim + d1, 3*dim + d2) += integral_20(loc_index) * v.global[ii].val;
+						basis_integrals(v.global[ii].index*dim + d1, 4*dim + d2) += integral_02(loc_index) * v.global[ii].val;
 					}
+				}
 
 
 
@@ -418,6 +422,9 @@ void PolygonalBasis2d::build_bases(
 		return;
 	}
 
+	const auto &assembler = AssemblerUtils::instance();
+	const int dim = assembler.is_tensor(assembler_name) ? 2 : 1;
+
 	// Step 1: Compute integral constraints
 	Eigen::MatrixXd basis_integrals;
 	compute_integral_constraints(assembler_name, mesh, n_bases, bases, gbases, basis_integrals);
@@ -472,9 +479,10 @@ void PolygonalBasis2d::build_bases(
 		b.set_quadrature([tmp_quadrature](Quadrature &quad){ quad = tmp_quadrature; });
 
 		// Compute the weights of the harmonic kernels
-		Eigen::MatrixXd local_basis_integrals(rhs.cols(), basis_integrals.cols());
+		Eigen::MatrixXd local_basis_integrals(rhs.cols()*dim, basis_integrals.cols());
 		for (long k = 0; k < rhs.cols(); ++k) {
-			local_basis_integrals.row(k) = -basis_integrals.row(local_to_global[k]);
+			for(int d = 0; d < dim; ++d)
+				local_basis_integrals.row(k*dim+d) = -basis_integrals.row(local_to_global[k]*dim+d);
 		}
 		auto set_rbf = [&b] (auto rbf) {
 			b.set_bases_func([rbf] (const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &val)

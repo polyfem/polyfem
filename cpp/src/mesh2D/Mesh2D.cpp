@@ -466,6 +466,21 @@ namespace polyfem
 		}
 	}
 
+	bool Mesh2D::is_boundary_element(const int element_global_id) const
+	{
+		auto index = get_index_from_face(element_global_id);
+
+		for(int i = 0; i < n_face_vertices(element_global_id); ++i)
+		{
+			if(is_boundary_edge(index.edge))
+				return true;
+
+			index = next_around_face(index);
+		}
+
+		return false;
+	}
+
 	void Mesh2D::compute_boundary_ids()
 	{
 		boundary_ids_.resize(n_edges());

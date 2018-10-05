@@ -44,6 +44,8 @@ namespace polyfem
 			return false;
 		}
 
+		bool is_boundary_element(const int element_global_id) const override;
+
 
 		bool load(const std::string &path) override;
 		bool load(const GEO::Mesh &mesh) override;

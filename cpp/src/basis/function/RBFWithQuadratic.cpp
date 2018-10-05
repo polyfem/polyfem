@@ -517,11 +517,10 @@ void RBFWithQuadratic::compute_constraints_matrix_2d(
 	}
 
 	Eigen::FullPivLU<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 10, 10>> lu(M);
-	std::cout<<M<<std::endl;
 	assert(lu.isInvertible());
 
 	// Compute L
-	L.resize(num_kernels + 1 + space_dim + space_dim*(space_dim+1)/2, num_kernels + 1);
+	L.resize((num_kernels + 1 + space_dim + space_dim*(space_dim+1)/2)*assembler_dim, (num_kernels + 1)*assembler_dim);
 	L.setZero();
 	L.diagonal().setOnes();
 
@@ -529,20 +528,36 @@ void RBFWithQuadratic::compute_constraints_matrix_2d(
 	{
 		for(int j = 0; j < num_kernels; ++j)
 		{
-			//TODO remove (0) for tensors
-			L(num_kernels + 1 + i, j) =  -assembler.local_assemble(assembler_name, ass_val, i, 5 + j, quadr.weights)(0) - (strong[i].transpose().array() * ass_val.basis_values[5+j].val.array()).sum();
+			const auto tmp = assembler.local_assemble(assembler_name, ass_val, i, 5 + j, quadr.weights);
+			for(int d1 = 0; d1 < assembler_dim; ++d1)
+			{
+				for(int d2 = 0; d2 < assembler_dim; ++d2)
+				{
+					const int loc_index = d1*assembler_dim + d2;
+					L((num_kernels + 1 + i)*assembler_dim + d1, j*assembler_dim + d2) =  -tmp(loc_index) - (strong[i].row(loc_index).transpose().array() * ass_val.basis_values[5+j].val.array()).sum();
+				// L(num_kernels + 1 + i*assembler_dim + d1, j*assembler_dim + d2) =  -assembler.local_assemble(assembler_name, ass_val, i, 5 + j, quadr.weights)(0) - (strong[i].transpose().array() * ass_val.basis_values[5+j].val.array()).sum();
+				}
+			}
 		}
-		L(num_kernels + 1 + i, num_kernels) =  - strong[i].sum();
+		for(int d1 = 0; d1 < assembler_dim; ++d1){
+			for(int d2 = 0; d2 < assembler_dim; ++d2)
+			{
+				const int loc_index = d1*assembler_dim + d2;
+				L(num_kernels + 1 + i*assembler_dim + d1, assembler_dim*num_kernels + d2) =  -strong[i].row(loc_index).sum();
+			}
+		}
+
+		// L(num_kernels + 1 + i*assembler_dim + d1, assembler_dim*num_kernels) =  - strong[i].sum();
 	}
 
 
-	L.block(num_kernels + 1, 0, 5, num_kernels + 1) = lu.solve(L.block(num_kernels + 1, 0, 5, num_kernels + 1));
+	L.block((num_kernels + 1)*assembler_dim, 0, 5*assembler_dim, (num_kernels + 1)*assembler_dim) = lu.solve(L.block((num_kernels + 1)*assembler_dim, 0, 5*assembler_dim, (num_kernels + 1)*assembler_dim));
 
 	// Compute t
-	t.resize(L.rows(), num_bases);
+	//t == weights_
+	t.resize(L.rows(), num_bases*assembler_dim);
 	t.setZero();
-	t.bottomRows(5) = local_basis_integral.transpose();
-	t.bottomRows(5) = lu.solve(weights_.bottomRows(5));
+	t.bottomRows(5*assembler_dim) = lu.solve(local_basis_integral.transpose());
 }
 
 // -----------------------------------------------------------------------------

@@ -889,6 +889,19 @@ namespace polyfem
 		}
 	}
 
+	bool Mesh3D::is_boundary_element(const int element_global_id) const
+	{
+		const auto &fs = mesh_.elements[element_global_id].fs;
+
+		for(auto f_id : fs)
+		{
+			if(is_boundary_face(f_id))
+				return true;
+		}
+
+		return false;
+	}
+
 	void Mesh3D::compute_boundary_ids(const std::function<int(const RowVectorNd&)> &marker)
 	{
 		boundary_ids_.resize(n_faces());

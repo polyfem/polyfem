@@ -72,6 +72,7 @@ Complete example
         "solution": "",             "Solution vector"
         "spectrum": false,          "Spectrum of the stiffness matrix"
         "stiffness_mat": "",        "Stiffmess matrix after setting boundary conditions"
+        "vis_boundary_only": false, "Exports only the boundary of volumetric meshes"
         "vis_mesh": "",             "Path for the vtu mesh"
         "wire_mesh": ""             "Wireframe of the mesh"
     },
