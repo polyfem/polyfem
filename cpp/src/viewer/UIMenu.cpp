@@ -201,9 +201,9 @@ void polyfem::UIState::draw_settings() {
 	ImGui::Checkbox("p ref", &use_p_ref);
 	state.args["use_p_ref"] = use_p_ref;
 
-	bool fit_nodes = state.args["fit_nodes"];
-	ImGui::Checkbox("fit nodes", &fit_nodes);
-	state.args["fit_nodes"] = fit_nodes;
+	// bool fit_nodes = state.args["fit_nodes"];
+	// ImGui::Checkbox("fit nodes", &fit_nodes);
+	// state.args["fit_nodes"] = fit_nodes;
 
 	ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.50f);
 	ImGui::Separator();

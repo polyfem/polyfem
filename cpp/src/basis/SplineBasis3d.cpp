@@ -10,6 +10,7 @@
 #include <polyfem/Types.hpp>
 
 #include <polyfem/Common.hpp>
+#include <polyfem/auto_q_bases.hpp>
 
 #include <Eigen/Sparse>
 
@@ -365,7 +366,8 @@ void explore_face(const Navigation3D::Index &index, const Mesh3D &mesh, MeshNode
 
     if(mesh_nodes.is_boundary(node_id))
     {
-        local_boundary.add_boundary_primitive(index.face, FEBasis3d::quadr_hex_face_local_nodes(mesh, index)[8]-20);
+        // local_boundary.add_boundary_primitive(index.face, FEBasis3d::quadr_hex_face_local_nodes(mesh, index)[8]-20);
+        local_boundary.add_boundary_primitive(index.face, FEBasis3d::hex_face_local_nodes(2, mesh, index)[8]-20);
         // bounday_nodes.push_back(node_id);
     }
     else if(mesh_nodes.is_interface(node_id))
@@ -777,7 +779,8 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
             for (int j = 0; j < 8; ++j)
             {
                 const Navigation3D::Index index = to_vertex[j](start_index);
-                const int loc_index = FEBasis3d::quadr_hex_face_local_nodes(mesh, index)[0];
+                // const int loc_index = FEBasis3d::quadr_hex_face_local_nodes(mesh, index)[0];
+                const int loc_index = FEBasis3d::hex_face_local_nodes(2, mesh, index)[0];
 
 
                 int current_vertex_node_id = -1;
@@ -817,8 +820,8 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
                 if(current_vertex_node_id >= 0)
                     b.bases[loc_index].init(2, current_vertex_node_id, loc_index, current_vertex_node);
 
-                b.bases[loc_index].set_basis([loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_value(loc_index, uv, val); });
-                b.bases[loc_index].set_grad( [loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_grad(loc_index, uv, val); });
+                b.bases[loc_index].set_basis([loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::q_basis_value_3d     (2, loc_index, uv, val); });
+                b.bases[loc_index].set_grad( [loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::q_grad_basis_value_3d(2, loc_index, uv, val); });
             }
 
 
@@ -828,7 +831,8 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
 
                 int current_edge_node_id = -1;
                 Eigen::Matrix<double, 1, 3> current_edge_node;
-                const int loc_index = FEBasis3d::quadr_hex_face_local_nodes(mesh, index)[1];
+                // const int loc_index = FEBasis3d::quadr_hex_face_local_nodes(mesh, index)[1];
+                const int loc_index = FEBasis3d::hex_face_local_nodes(2, mesh, index)[1];
 
 
                 bool is_edge_q2 = true;
@@ -864,8 +868,8 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
                 if(current_edge_node_id >= 0)
                     b.bases[loc_index].init(2, current_edge_node_id, loc_index, current_edge_node);
 
-                b.bases[loc_index].set_basis([loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_value(loc_index, uv, val); });
-                b.bases[loc_index].set_grad( [loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_grad(loc_index, uv, val); });
+                b.bases[loc_index].set_basis([loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::q_basis_value_3d     (2, loc_index, uv, val); });
+                b.bases[loc_index].set_grad( [loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::q_grad_basis_value_3d(2, loc_index, uv, val); });
             }
 
             for (int j = 0; j < 6; ++j)
@@ -877,7 +881,8 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
                 Eigen::Matrix<double, 1, 3> current_face_node;
                 const int opposite_element = mesh.switch_element(index).element;
                 const bool is_face_q2 = opposite_element < 0 || !mesh.is_spline_compatible(opposite_element);
-                const int loc_index = FEBasis3d::quadr_hex_face_local_nodes(mesh, index)[8];
+                // const int loc_index = FEBasis3d::quadr_hex_face_local_nodes(mesh, index)[8];
+                const int loc_index = FEBasis3d::hex_face_local_nodes(2, mesh, index)[8];
 
 
                 if (is_face_q2)
@@ -903,14 +908,14 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
                 if(current_face_node_id >= 0)
                     b.bases[loc_index].init(2, current_face_node_id, loc_index, current_face_node);
 
-                b.bases[loc_index].set_basis([loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_value(loc_index, uv, val); });
-                b.bases[loc_index].set_grad( [loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_grad(loc_index, uv, val); });
+                b.bases[loc_index].set_basis([loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::q_basis_value_3d     (2, loc_index, uv, val); });
+                b.bases[loc_index].set_grad( [loc_index](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::q_grad_basis_value_3d(2, loc_index, uv, val); });
             }
 
             // //central node always present
             b.bases[26].init(2, n_bases++, 26, mesh.cell_barycenter(el_index));
-            b.bases[26].set_basis([](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_value(26, uv, val); });
-            b.bases[26].set_grad( [](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { FEBasis3d::quadr_hex_basis_grad(26, uv, val); });
+            b.bases[26].set_basis([](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::q_basis_value_3d     (2, 26, uv, val); });
+            b.bases[26].set_grad( [](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::q_grad_basis_value_3d(2, 26, uv, val); });
 
             if(!lb.empty())
                 local_boundary.emplace_back(lb);
@@ -960,10 +965,18 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
                 if(opposite_element < 0 || !mesh.is_cube(opposite_element))
                     continue;
 
-                const auto &param_p     = FEBasis3d::quadr_hex_face_local_nodes_coordinates(mesh, mesh.switch_element(index));
+                // const auto &param_p     = FEBasis3d::quadr_hex_face_local_nodes_coordinates(mesh, mesh.switch_element(index));
+                Eigen::Matrix<double, 9, 3> param_p;
+                {
+                    Eigen::MatrixXd hex_loc_nodes; polyfem::autogen::q_nodes_3d(2, hex_loc_nodes);
+                    const auto opposite_indices = FEBasis3d::hex_face_local_nodes(2, mesh, mesh.switch_element(index));
+                    for(int k = 0; k < 9; ++k)
+                        param_p.row(k) = hex_loc_nodes.row(opposite_indices[k]);
+                }
                 const auto &other_bases = bases[opposite_element];
 
-                const auto &indices     = FEBasis3d::quadr_hex_face_local_nodes(mesh, index);
+                // const auto &indices     = FEBasis3d::quadr_hex_face_local_nodes(mesh, index);
+                const auto &indices     = FEBasis3d::hex_face_local_nodes(2, mesh, index);
 
                 std::array<int, 9> sizes;
 
@@ -1012,12 +1025,14 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
 
                 if(is_neigh_poly)
                 {
-                    auto e2l = FEBasis3d::quadr_hex_face_local_nodes(mesh, index);
+                    // auto e2l = FEBasis3d::quadr_hex_face_local_nodes(mesh, index);
+                    auto e2l = FEBasis3d::hex_face_local_nodes(2, mesh, index);
 
                     InterfaceData &data = poly_face_to_data[index.face];
 
-                    for(auto idx : e2l)
+                    for(int kk = 0; kk < e2l.size(); ++kk)
                     {
+                        const auto idx = e2l(kk);
                         data.local_indices.push_back(idx);
                     }
                 }
@@ -1142,7 +1157,8 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
                 }
                 assert(index.face == primitive_id);
 
-                const auto indices = FEBasis3d::quadr_hex_face_local_nodes(mesh3d, index);
+                // const auto indices = FEBasis3d::quadr_hex_face_local_nodes(mesh3d, index);
+                const auto indices = FEBasis3d::hex_face_local_nodes(2, mesh3d, index);
                 Eigen::VectorXi res(indices.size());
 
                 for(size_t i = 0; i< indices.size(); ++i)
@@ -1217,110 +1233,111 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
 
     void SplineBasis3d::fit_nodes(const Mesh3D &mesh, const int n_bases, std::vector< ElementBases > &gbases)
     {
-        const int dim = 3;
-        const int n_constraints =  27;
-        const int n_elements = mesh.n_elements();
+        assert(false);
+        // const int dim = 3;
+        // const int n_constraints =  27;
+        // const int n_elements = mesh.n_elements();
 
-        std::vector< Eigen::Triplet<double> > entries, entries_t;
+        // std::vector< Eigen::Triplet<double> > entries, entries_t;
 
-        MeshNodes nodes(mesh, 1, 1, 1);
-        // Eigen::MatrixXd tmp;
-        std::vector<AssemblyValues> tmp_val;
+        // MeshNodes nodes(mesh, 1, 1, 1);
+        // // Eigen::MatrixXd tmp;
+        // std::vector<AssemblyValues> tmp_val;
 
-        Eigen::MatrixXd node_rhs(n_constraints*n_elements, dim);
-        Eigen::MatrixXd samples(n_constraints, dim);
+        // Eigen::MatrixXd node_rhs(n_constraints*n_elements, dim);
+        // Eigen::MatrixXd samples(n_constraints, dim);
 
-        for(int i = 0; i < n_constraints; ++i)
-            samples.row(i) = FEBasis3d::quadr_hex_local_node_coordinates(i);
+        // for(int i = 0; i < n_constraints; ++i)
+        //     samples.row(i) = FEBasis3d::quadr_hex_local_node_coordinates(i);
 
-        for(int i = 0; i < n_elements; ++i)
-        {
-            auto &base = gbases[i];
+        // for(int i = 0; i < n_elements; ++i)
+        // {
+        //     auto &base = gbases[i];
 
-            if(!mesh.is_cube(i))
-                continue;
+        //     if(!mesh.is_cube(i))
+        //         continue;
 
-            auto global_ids = FEBasis3d::quadr_hex_local_to_global(mesh, i);
-            assert(global_ids.size() == n_constraints);
+        //     auto global_ids = FEBasis3d::quadr_hex_local_to_global(mesh, i);
+        //     assert(global_ids.size() == n_constraints);
 
-            for(int j = 0; j < n_constraints; ++j)
-            {
-                auto n_id = nodes.node_id_from_primitive(global_ids[j]);
-                auto n = nodes.node_position(n_id);
-                for(int d = 0; d < dim; ++d)
-                    node_rhs(n_constraints*i + j, d) = n(d);
-            }
+        //     for(int j = 0; j < n_constraints; ++j)
+        //     {
+        //         auto n_id = nodes.node_id_from_primitive(global_ids[j]);
+        //         auto n = nodes.node_position(n_id);
+        //         for(int d = 0; d < dim; ++d)
+        //             node_rhs(n_constraints*i + j, d) = n(d);
+        //     }
 
-            base.evaluate_bases(samples, tmp_val);
-            const auto &lbs = base.bases;
+        //     base.evaluate_bases(samples, tmp_val);
+        //     const auto &lbs = base.bases;
 
-            const int n_local_bases = int(lbs.size());
-            for(int j = 0; j < n_local_bases; ++j)
-            {
-                const Basis &b = lbs[j];
-                const auto &tmp = tmp_val[j].val;
+        //     const int n_local_bases = int(lbs.size());
+        //     for(int j = 0; j < n_local_bases; ++j)
+        //     {
+        //         const Basis &b = lbs[j];
+        //         const auto &tmp = tmp_val[j].val;
 
-                for(std::size_t ii = 0; ii < b.global().size(); ++ii)
-                {
-                    for (long k = 0; k < tmp.size(); ++k)
-                    {
-                        entries.emplace_back(n_constraints*i + k, b.global()[ii].index, tmp(k)*b.global()[ii].val);
-                        entries_t.emplace_back(b.global()[ii].index, n_constraints*i + k, tmp(k)*b.global()[ii].val);
-                    }
-                }
-            }
-        }
+        //         for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+        //         {
+        //             for (long k = 0; k < tmp.size(); ++k)
+        //             {
+        //                 entries.emplace_back(n_constraints*i + k, b.global()[ii].index, tmp(k)*b.global()[ii].val);
+        //                 entries_t.emplace_back(b.global()[ii].index, n_constraints*i + k, tmp(k)*b.global()[ii].val);
+        //             }
+        //         }
+        //     }
+        // }
 
-        Eigen::MatrixXd new_nodes(n_bases, dim);
-        {
-            Eigen::SparseMatrix<double> mat(n_constraints*n_elements, n_bases);
-            Eigen::SparseMatrix<double> mat_t(n_bases, n_constraints*n_elements);
+        // Eigen::MatrixXd new_nodes(n_bases, dim);
+        // {
+        //     Eigen::SparseMatrix<double> mat(n_constraints*n_elements, n_bases);
+        //     Eigen::SparseMatrix<double> mat_t(n_bases, n_constraints*n_elements);
 
-            mat.setFromTriplets(entries.begin(), entries.end());
-            mat_t.setFromTriplets(entries_t.begin(), entries_t.end());
+        //     mat.setFromTriplets(entries.begin(), entries.end());
+        //     mat_t.setFromTriplets(entries_t.begin(), entries_t.end());
 
-            Eigen::SparseMatrix<double> A = mat_t * mat;
-            Eigen::MatrixXd b = mat_t * node_rhs;
+        //     Eigen::SparseMatrix<double> A = mat_t * mat;
+        //     Eigen::MatrixXd b = mat_t * node_rhs;
 
-            json params = {
-                {"mtype", -2}, // matrix type for Pardiso (2 = SPD)
-                // {"max_iter", 0}, // for iterative solvers
-                // {"tolerance", 1e-9}, // for iterative solvers
-            };
-            auto solver = LinearSolver::create("", "");
-            solver->setParameters(params);
-            solver->analyzePattern(A);
-            solver->factorize(A);
+        //     json params = {
+        //         {"mtype", -2}, // matrix type for Pardiso (2 = SPD)
+        //         // {"max_iter", 0}, // for iterative solvers
+        //         // {"tolerance", 1e-9}, // for iterative solvers
+        //     };
+        //     auto solver = LinearSolver::create("", "");
+        //     solver->setParameters(params);
+        //     solver->analyzePattern(A);
+        //     solver->factorize(A);
 
-            for(int d = 0; d < dim; ++d)
-                solver->solve(b.col(d), new_nodes.col(d));
-        }
+        //     for(int d = 0; d < dim; ++d)
+        //         solver->solve(b.col(d), new_nodes.col(d));
+        // }
 
-        for(int i = 0; i < n_elements; ++i)
-        {
-            auto &base = gbases[i];
+        // for(int i = 0; i < n_elements; ++i)
+        // {
+        //     auto &base = gbases[i];
 
-            if(!mesh.is_cube(i))
-                continue;
+        //     if(!mesh.is_cube(i))
+        //         continue;
 
-            auto &lbs = base.bases;
-            const int n_local_bases = int(lbs.size());
-            for(int j = 0; j < n_local_bases; ++j)
-            {
-                Basis &b = lbs[j];
+        //     auto &lbs = base.bases;
+        //     const int n_local_bases = int(lbs.size());
+        //     for(int j = 0; j < n_local_bases; ++j)
+        //     {
+        //         Basis &b = lbs[j];
 
-                for(std::size_t ii = 0; ii < b.global().size(); ++ii)
-                {
-                    // if(nodes.is_primitive_boundary(b.global()[ii].index))
-                        // continue;
+        //         for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+        //         {
+        //             // if(nodes.is_primitive_boundary(b.global()[ii].index))
+        //                 // continue;
 
-                    for(int d = 0; d < dim; ++d)
-                    {
-                        b.global()[ii].node(d) = new_nodes(b.global()[ii].index, d);
-                    }
-                }
-            }
-        }
+        //             for(int d = 0; d < dim; ++d)
+        //             {
+        //                 b.global()[ii].node(d) = new_nodes(b.global()[ii].index, d);
+        //             }
+        //         }
+        //     }
+        // }
     }
 
 }

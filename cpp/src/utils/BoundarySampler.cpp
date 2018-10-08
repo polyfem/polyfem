@@ -1,7 +1,5 @@
 #include <polyfem/BoundarySampler.hpp>
 
-#include <polyfem/FEBasis3d.hpp>
-
 #include <polyfem/LineQuadrature.hpp>
 #include <polyfem/TriQuadrature.hpp>
 #include <polyfem/QuadQuadrature.hpp>
@@ -28,6 +26,19 @@ namespace polyfem
 			return Eigen::RowVector2d(p(local_index, 0), p(local_index, 1));
 		}
 
+		Eigen::RowVector3d linear_tet_local_node_coordinates(int local_index) {
+			Eigen::MatrixXd p;
+			polyfem::autogen::p_nodes_3d(1, p);
+			return Eigen::RowVector3d(p(local_index, 0), p(local_index, 1), p(local_index, 2));
+		}
+
+		Eigen::RowVector3d linear_hex_local_node_coordinates(int local_index) {
+			Eigen::MatrixXd p;
+			polyfem::autogen::q_nodes_3d(1, p);
+			return Eigen::RowVector3d(p(local_index, 0), p(local_index, 1), p(local_index, 2));
+		}
+
+
 		Eigen::Matrix2d quad_local_node_coordinates_from_edge(int le)
 		{
 			Eigen::Matrix2d res(2,2);
@@ -42,6 +53,38 @@ namespace polyfem
 			Eigen::Matrix2d  res(2,2);
 			res.row(0) = tri_local_node_coordinates(le);
 			res.row(1) = tri_local_node_coordinates((le+1)%3);
+
+			return res;
+		}
+
+		Eigen::MatrixXd tet_local_node_coordinates_from_face(int lf)
+		{
+			Eigen::Matrix<int, 4, 3> fv;
+			fv.row(0) << 0, 1, 2;
+			fv.row(1) << 0, 1, 3;
+			fv.row(2) << 1, 2, 3;
+			fv.row(3) << 2, 0, 3;
+
+			Eigen::MatrixXd res(3,3);
+			for(int i = 0; i < 3; ++i)
+				res.row(i) = linear_tet_local_node_coordinates(fv(lf, i));
+
+			return res;
+		}
+
+		Eigen::MatrixXd hex_local_node_coordinates_from_face(int lf)
+		{
+			Eigen::Matrix<int, 6, 4> fv;
+			fv.row(0) << 0, 3, 7, 4;
+			fv.row(1) << 1, 2, 6, 5;
+			fv.row(2) << 0, 1, 5, 4;
+			fv.row(3) << 3, 2, 6, 7;
+			fv.row(4) << 0, 1, 2, 3;
+			fv.row(5) << 4, 5, 6, 7;
+
+			Eigen::MatrixXd res(4,3);
+			for(int i = 0; i < 4; ++i)
+				res.row(i) = linear_hex_local_node_coordinates(fv(lf, i));
 
 			return res;
 		}
@@ -83,7 +126,7 @@ namespace polyfem
 
 	void BoundarySampler::quadrature_for_quad_face(int index, int order, int gid, const Mesh &mesh, Eigen::MatrixXd &points, Eigen::VectorXd &weights)
 	{
-		auto endpoints = FEBasis3d::hex_local_node_coordinates_from_face(index);
+		auto endpoints = hex_local_node_coordinates_from_face(index);
 
 		Quadrature quad;
 		QuadQuadrature quad_rule; quad_rule.get_quadrature(order, quad);
@@ -109,7 +152,7 @@ namespace polyfem
 
 	void BoundarySampler::quadrature_for_tri_face(int index, int order, int gid, const Mesh &mesh, Eigen::MatrixXd &points, Eigen::VectorXd &weights)
 	{
-		auto endpoints = FEBasis3d::tet_local_node_coordinates_from_face(index);
+		auto endpoints = tet_local_node_coordinates_from_face(index);
 		Quadrature quad;
 		TriQuadrature quad_rule; quad_rule.get_quadrature(order, quad);
 
@@ -157,7 +200,7 @@ namespace polyfem
 
 	void BoundarySampler::sample_parametric_quad_face(int index, int n_samples, Eigen::MatrixXd &samples)
 	{
-		auto endpoints = FEBasis3d::hex_local_node_coordinates_from_face(index);
+		auto endpoints = hex_local_node_coordinates_from_face(index);
 		const Eigen::VectorXd t = Eigen::VectorXd::LinSpaced(n_samples, 0, 1);
 		samples.resize(n_samples*n_samples, endpoints.cols());
 		Eigen::MatrixXd left(n_samples, endpoints.cols());
@@ -177,7 +220,7 @@ namespace polyfem
 
 	void BoundarySampler::sample_parametric_tri_face(int index, int n_samples, Eigen::MatrixXd &samples)
 	{
-		auto endpoints = FEBasis3d::tet_local_node_coordinates_from_face(index);
+		auto endpoints = tet_local_node_coordinates_from_face(index);
 		const Eigen::VectorXd t = Eigen::VectorXd::LinSpaced(n_samples, 0, 1);
 		samples.resize(n_samples*n_samples, endpoints.cols());
 

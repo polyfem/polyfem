@@ -7,6 +7,9 @@
 #include <polyfem/RBFWithLinear.hpp>
 #include <polyfem/RBFWithQuadratic.hpp>
 #include <polyfem/RBFWithQuadraticLagrange.hpp>
+
+#include <polyfem/auto_q_bases.hpp>
+
 // #include <polyfem/UIState.hpp>
 #include <igl/triangle/triangulate.h>
 #include <igl/per_vertex_normals.h>
@@ -252,11 +255,14 @@ void sample_polyhedra(
 		const auto & v = uv.col(1).array();
 		auto index = mesh.get_index_from_element(element_index, lf, lv0);
 		index = mesh.switch_element(index);
-		Eigen::MatrixXd abcd = FEBasis3d::linear_hex_face_local_nodes_coordinates(mesh, index);
-		Eigen::RowVector3d a = abcd.row(0);
-		Eigen::RowVector3d b = abcd.row(1);
-		Eigen::RowVector3d c = abcd.row(2);
-		Eigen::RowVector3d d = abcd.row(3);
+		// Eigen::MatrixXd abcd = FEBasis3d::linear_hex_face_local_nodes_coordinates(mesh, index);
+		const auto indices = FEBasis3d::hex_face_local_nodes(1, mesh, index);
+		assert(indices.size() == 4);
+		Eigen::MatrixXd abcd; polyfem::autogen::q_nodes_3d(1, abcd);
+		Eigen::RowVector3d a = abcd.row(indices(0));
+		Eigen::RowVector3d b = abcd.row(indices(1));
+		Eigen::RowVector3d c = abcd.row(indices(2));
+		Eigen::RowVector3d d = abcd.row(indices(3));
 		mapped = ((1-u)*(1-v)).matrix()*a
 			+ (u*(1-v)).matrix()*b
 			+ (u*v).matrix()*c
