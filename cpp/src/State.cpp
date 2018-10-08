@@ -701,8 +701,12 @@ namespace polyfem
 				else
 					autogen::p_nodes_2d(bs.bases.front().order(), local_pts);
 			}
-			else
-				assert(false);
+			else{
+				if(mesh->dimension() == 3)
+					autogen::q_nodes_3d(bs.bases.front().order(), local_pts);
+				else
+					autogen::q_nodes_2d(bs.bases.front().order(), local_pts);
+			}
 			// else if(mesh->is_cube(i))
 			// 	local_pts = sampler.cube_points();
 			// // else
@@ -1072,8 +1076,6 @@ namespace polyfem
 			}
 		}
 
-		// for(int i = 8; i < 16; ++i)
-			// mesh->set_tag(i, ElementType::SimpleSingularInteriorCube);
 	}
 
 	void State::compute_mesh_stats()
@@ -2303,14 +2305,16 @@ namespace polyfem
 				writer.add_field("tensor_value_" + std::to_string(ii) + std::to_string(jj), tvals.col(i));
 			}
 
-
-			// average_grad_based_function(pts_index, sol, vals, tvals, boundary_only);
-			// writer.add_field("scalar_value_avg", vals);
-			// for(int i = 0; i < tvals.cols(); ++i){
-			// 	const int ii = (i / mesh->dimension()) + 1;
-			// 	const int jj = (i % mesh->dimension()) + 1;
-			// 	writer.add_field("tensor_value_avg_" + std::to_string(ii) + std::to_string(jj), tvals.col(i));
-			// }
+			if(!args["use_spline"])
+			{
+				average_grad_based_function(pts_index, sol, vals, tvals, boundary_only);
+				writer.add_field("scalar_value_avg", vals);
+				// for(int i = 0; i < tvals.cols(); ++i){
+				// 	const int ii = (i / mesh->dimension()) + 1;
+				// 	const int jj = (i % mesh->dimension()) + 1;
+				// 	writer.add_field("tensor_value_avg_" + std::to_string(ii) + std::to_string(jj), tvals.col(i));
+				// }
+			}
 		}
 
 		// interpolate_function(pts_index, rhs, fun, boundary_only);
