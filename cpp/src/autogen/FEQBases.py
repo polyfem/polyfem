@@ -105,7 +105,6 @@ class Lagrange:
                 vy = 1
                 vz = 1
                 xj = 1./(order)*j
-                print(xj)
                 for m in range(order+1):
                     if m == j:
                         continue
@@ -121,7 +120,7 @@ class Lagrange:
             for i in range(order + 1):
                 for j in range(order + 1):
                     for l in range(order + 1):
-                        N.append(Ntmpx[i]*Ntmpy[j]*Ntmpy[z])
+                        N.append(Ntmpx[i]*Ntmpy[j]*Ntmpz[l])
 
         self.N = N
 
@@ -137,10 +136,7 @@ def parse_args():
 if __name__ == "__main__":
     args = parse_args()
 
-    dims = [2]
-
-    orders = [1, 2, 3, 4]
-    # orders = [4]
+    dims = [2, 3]
 
     cpp = "#include <polyfem/auto_q_bases.hpp>\n\n\n"
     cpp = cpp + "namespace polyfem {\nnamespace autogen " + "{\nnamespace " + "{\n"
@@ -150,6 +146,7 @@ if __name__ == "__main__":
 
     for dim in dims:
         print(str(dim) + "D")
+        orders = range(1, 7 - dim)
         suffix = "_2d" if dim == 2 else "_3d"
 
         unique_nodes = "void q_nodes" + suffix + "(const int q, Eigen::MatrixXd &val)"
@@ -170,7 +167,7 @@ if __name__ == "__main__":
         if dim == 2:
             vertices = [[0, 0], [1, 0], [1, 1], [0, 1]]
         elif dim == 3:
-            vertices = [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]]
+            vertices = [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0], [0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1]]
 
         for order in orders:
             print("\t-processing " + str(order))
@@ -182,19 +179,18 @@ if __name__ == "__main__":
                 fe.N = [1]
 
                 if dim == 2:
-                    fe.points = [[1./3., 1./3.]]
+                    fe.points = [[1./2., 1./2.]]
                 else:
-                    fe.points = [[1./3., 1./3., 1./3.]]
+                    fe.points = [[1./2., 1./2., 1./2.]]
             else:
                 fe = Lagrange(dim, order)
-
 
 
             current_indices = list(range(0, len(fe.points)))
             indices = []
 
             # vertex coordinate
-            for i in range(0, 4):
+            for i in range(0, 4*(dim-1)):
                 vv = vertices[i]
                 for ii in current_indices:
                     norm = 0
@@ -206,7 +202,9 @@ if __name__ == "__main__":
                         current_indices.remove(ii)
                         break
 
-            # edge 1 coordinate
+
+
+            # edge 0 coordinate
             for i in range(0, order - 1):
                 for ii in current_indices:
                     if fe.points[ii][1] != 0 or (dim == 3 and fe.points[ii][2] != 0):
@@ -217,7 +215,7 @@ if __name__ == "__main__":
                         current_indices.remove(ii)
                         break
 
-            # edge 2 coordinate
+            # edge 1 coordinate
             for i in range(0, order - 1):
                 for ii in current_indices:
                     if fe.points[ii][0] != 1 or (dim == 3 and fe.points[ii][2] != 0):
@@ -228,7 +226,7 @@ if __name__ == "__main__":
                         current_indices.remove(ii)
                         break
 
-            # edge 3 coordinate
+            # edge 2 coordinate
             for i in range(0, order - 1):
                 for ii in current_indices:
                     if fe.points[ii][1] != 1 or (dim == 3 and fe.points[ii][2] != 0):
@@ -239,7 +237,7 @@ if __name__ == "__main__":
                         current_indices.remove(ii)
                         break
 
-            # edge 4 coordinate
+            # edge 3 coordinate
             for i in range(0, order - 1):
                 for ii in current_indices:
                     if fe.points[ii][0] != 0 or (dim == 3 and fe.points[ii][2] != 0):
@@ -265,10 +263,10 @@ if __name__ == "__main__":
                 # edge 5 coordinate
                 for i in range(0, order - 1):
                     for ii in current_indices:
-                        if fe.points[ii][0] + fe.points[ii][2] != 1 or fe.points[ii][1] != 0:
+                        if fe.points[ii][0] != 1 or fe.points[ii][1] != 0:
                             continue
 
-                        if abs(fe.points[ii][0] - (1 - (i + 1) / order)) < 1e-10:
+                        if abs(fe.points[ii][2] - (1 - (i + 1) / order)) < 1e-10:
                             indices.append(ii)
                             current_indices.remove(ii)
                             break
@@ -276,7 +274,62 @@ if __name__ == "__main__":
                 # edge 6 coordinate
                 for i in range(0, order - 1):
                     for ii in current_indices:
-                        if fe.points[ii][1] + fe.points[ii][2] != 1 or fe.points[ii][0] != 0:
+                        if fe.points[ii][0] != 1 or fe.points[ii][1] != 1:
+                            continue
+
+                        if abs(fe.points[ii][2] - (1 - (i + 1) / order)) < 1e-10:
+                            indices.append(ii)
+                            current_indices.remove(ii)
+                            break
+
+                # edge 7 coordinate
+                for i in range(0, order - 1):
+                    for ii in current_indices:
+                        if fe.points[ii][0] != 0 or fe.points[ii][1] != 1:
+                            continue
+
+                        if abs(fe.points[ii][2] - (1 - (i + 1) / order)) < 1e-10:
+                            indices.append(ii)
+                            current_indices.remove(ii)
+                            break
+
+                # edge 8 coordinate
+                for i in range(0, order - 1):
+                    for ii in current_indices:
+                        if fe.points[ii][1] != 0 or fe.points[ii][2] != 1:
+                            continue
+
+                        if abs(fe.points[ii][0] - (i + 1) / order) < 1e-10:
+                            indices.append(ii)
+                            current_indices.remove(ii)
+                            break
+
+                # edge 9 coordinate
+                for i in range(0, order - 1):
+                    for ii in current_indices:
+                        if fe.points[ii][0] != 1 or fe.points[ii][2] != 1:
+                            continue
+
+                        if abs(fe.points[ii][1] - (i + 1) / order) < 1e-10:
+                            indices.append(ii)
+                            current_indices.remove(ii)
+                            break
+
+                # edge 10 coordinate
+                for i in range(0, order - 1):
+                    for ii in current_indices:
+                        if fe.points[ii][1] != 1 or fe.points[ii][2] != 1:
+                            continue
+
+                        if abs(fe.points[ii][0] - (1 - (i + 1) / order)) < 1e-10:
+                            indices.append(ii)
+                            current_indices.remove(ii)
+                            break
+
+                # edge 11 coordinate
+                for i in range(0, order - 1):
+                    for ii in current_indices:
+                        if fe.points[ii][0] != 0 or fe.points[ii][2] != 1:
                             continue
 
                         if abs(fe.points[ii][1] - (1 - (i + 1) / order)) < 1e-10:
@@ -285,44 +338,8 @@ if __name__ == "__main__":
                             break
 
             if dim == 3:
-                nn = max(0, order - 2)
-                npts = int(nn * (nn + 1) / 2)
-
-                # bottom: z = 0
-                for i in range(0, npts):
-                    for ii in current_indices:
-                        if abs(fe.points[ii][2]) > 1e-10:
-                            continue
-
-                        indices.append(ii)
-                        current_indices.remove(ii)
-                        break
-
-                # front: y = 0
-                for i in range(0, npts):
-                    for ii in current_indices:
-                        if abs(fe.points[ii][1]) > 1e-10:
-                            continue
-
-                        indices.append(ii)
-                        current_indices.remove(ii)
-                        break
-
-                # diagonal: none equal to zero and sum 1
-                tmp = []
-                for i in range(0, npts):
-                    for ii in current_indices:
-                        if (abs(fe.points[ii][0]) < 1e-10) | (abs(fe.points[ii][1]) < 1e-10) | (abs(fe.points[ii][2]) < 1e-10):
-                            continue
-
-                        if abs((fe.points[ii][0] + fe.points[ii][1] + fe.points[ii][2]) - 1) > 1e-10:
-                            continue
-
-                        tmp.append(ii)
-                        current_indices.remove(ii)
-                        break
-                for i in range(0, len(tmp)):
-                    indices.append(tmp[(i + 2) % len(tmp)])
+                nn = max(0, order - 1)
+                npts = int(nn * nn)
 
                 # side: x = 0
                 tmp = []
@@ -336,6 +353,59 @@ if __name__ == "__main__":
                         break
                 tmp.sort(reverse=True)
                 indices.extend(tmp)
+
+                # side: x = 1
+                tmp = []
+                for i in range(0, npts):
+                    for ii in current_indices:
+                        if abs(fe.points[ii][0] - 1) > 1e-10:
+                            continue
+
+                        tmp.append(ii)
+                        current_indices.remove(ii)
+                        break
+                indices.extend(tmp)
+
+                # front: y = 0
+                for i in range(0, npts):
+                    for ii in current_indices:
+                        if abs(fe.points[ii][1]) > 1e-10:
+                            continue
+
+                        indices.append(ii)
+                        current_indices.remove(ii)
+                        break
+
+                # back: y = 1
+                for i in range(0, npts):
+                    for ii in current_indices:
+                        if abs(fe.points[ii][1]-1) > 1e-10:
+                            continue
+
+                        indices.append(ii)
+                        current_indices.remove(ii)
+                        break
+
+                # bottom: z = 0
+                for i in range(0, npts):
+                    for ii in current_indices:
+                        if abs(fe.points[ii][2]) > 1e-10:
+                            continue
+
+                        indices.append(ii)
+                        current_indices.remove(ii)
+                        break
+
+                # top: z = 1
+                for i in range(0, npts):
+                    for ii in current_indices:
+                        if abs(fe.points[ii][2]-1) > 1e-10:
+                            continue
+
+                        indices.append(ii)
+                        current_indices.remove(ii)
+                        break
+
 
             # either face or volume indices, order do not matter
             for ii in current_indices:
@@ -407,8 +477,6 @@ if __name__ == "__main__":
 
     cpp = cpp + "\n}}}\n"
     hpp = hpp + "\n}}\n"
-
-    print(cpp)
 
     path = os.path.abspath(args.output)
 

@@ -32,6 +32,27 @@ constexpr std::array<std::array<int, 2>, 6> quadr_tri_local_node = {{
 	{{0, 1}}, // e3  = (  0, 0.5)
 }};
 
+
+constexpr std::array<std::array<int, 3>, 4> linear_tet_local_node = {{
+	{{0, 0, 0}}, // v0  = (0, 0, 0)
+	{{1, 0, 0}}, // v1  = (1, 0, 0)
+	{{0, 1, 0}}, // v2  = (0, 1, 0)
+	{{0, 0, 1}}, // v3  = (0, 0, 1)
+}};
+
+constexpr std::array<std::array<int, 3>, 10> quadr_tet_local_node = {{
+	{{0, 0, 0}}, // v0  = (  0,   0,   0)
+	{{2, 0, 0}}, // v1  = (  1,   0,   0)
+	{{0, 2, 0}}, // v2  = (  0,   1,   0)
+	{{0, 0, 2}}, // v3  = (  0,   0,   1)
+	{{1, 0, 0}}, // e0  = (0.5,   0,   0)
+	{{1, 1, 0}}, // e1  = (0.5, 0.5,   0)
+	{{0, 1, 0}}, // e2  = (  0, 0.5,   0)
+	{{0, 0, 1}}, // e3  = (  0,   0, 0.5)
+	{{1, 0, 1}}, // e4  = (0.5,   0, 0.5)
+	{{0, 1, 1}}, // e5  = (  0, 0.5, 0.5)
+}};
+
 void linear_tri_basis_value(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {
 	auto u=uv.col(0).array();
 	auto v=uv.col(1).array();
@@ -249,11 +270,10 @@ void quadr_tet_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Eig
 		default: assert(false);
 	}
 }
-/////////////////////////////////////////
-
-
 
 /////////////////////////////////////////
+/////////////////////////////////////////
+
 constexpr std::array<std::array<int, 2>, 4> linear_quad_local_node = {{
 	{{0, 0}}, // v0  = (0, 0)
 	{{1, 0}}, // v1  = (1, 0)
@@ -275,8 +295,50 @@ constexpr std::array<std::array<int, 2>, 9> quadr_quad_local_node = {{
 
 
 
+constexpr std::array<std::array<int, 3>, 8> linear_hex_local_node = {{
+	{{0, 0, 0}}, // v0  = (0, 0, 0)
+	{{1, 0, 0}}, // v1  = (1, 0, 0)
+	{{1, 1, 0}}, // v2  = (1, 1, 0)
+	{{0, 1, 0}}, // v3  = (0, 1, 0)
+	{{0, 0, 1}}, // v4  = (0, 0, 1)
+	{{1, 0, 1}}, // v5  = (1, 0, 1)
+	{{1, 1, 1}}, // v6  = (1, 1, 1)
+	{{0, 1, 1}}, // v7  = (0, 1, 1)
+}};
+
+constexpr std::array<std::array<int, 3>, 27> quadr_hex_local_node = {{
+	{{0, 0, 0}}, // v0  = (  0,   0,   0)
+	{{2, 0, 0}}, // v1  = (  1,   0,   0)
+	{{2, 2, 0}}, // v2  = (  1,   1,   0)
+	{{0, 2, 0}}, // v3  = (  0,   1,   0)
+	{{0, 0, 2}}, // v4  = (  0,   0,   1)
+	{{2, 0, 2}}, // v5  = (  1,   0,   1)
+	{{2, 2, 2}}, // v6  = (  1,   1,   1)
+	{{0, 2, 2}}, // v7  = (  0,   1,   1)
+	{{1, 0, 0}}, // e0  = (0.5,   0,   0)
+	{{2, 1, 0}}, // e1  = (  1, 0.5,   0)
+	{{1, 2, 0}}, // e2  = (0.5,   1,   0)
+	{{0, 1, 0}}, // e3  = (  0, 0.5,   0)
+	{{0, 0, 1}}, // e4  = (  0,   0, 0.5)
+	{{2, 0, 1}}, // e5  = (  1,   0, 0.5)
+	{{2, 2, 1}}, // e6  = (  1,   1, 0.5)
+	{{0, 2, 1}}, // e7  = (  0,   1, 0.5)
+	{{1, 0, 2}}, // e8  = (0.5,   0,   1)
+	{{2, 1, 2}}, // e9  = (  1, 0.5,   1)
+	{{1, 2, 2}}, // e10 = (0.5,   1,   1)
+	{{0, 1, 2}}, // e11 = (  0, 0.5,   1)
+	{{0, 1, 1}}, // f0  = (  0, 0.5, 0.5)
+	{{2, 1, 1}}, // f1  = (  1, 0.5, 0.5)
+	{{1, 0, 1}}, // f2  = (0.5,   0, 0.5)
+	{{1, 2, 1}}, // f3  = (0.5,   1, 0.5)
+	{{1, 1, 0}}, // f4  = (0.5, 0.5,   0)
+	{{1, 1, 2}}, // f5  = (0.5, 0.5,   1)
+	{{1, 1, 1}}, // c0  = (0.5, 0.5, 0.5)
+}};
+
+
 template<typename T>
-Eigen::MatrixXd alpha(int i, T &t) {
+Eigen::MatrixXd alpha2d(int i, T &t) {
 	switch (i) {
 		case 0: return (1-t);
 		case 1: return t;
@@ -286,7 +348,7 @@ Eigen::MatrixXd alpha(int i, T &t) {
 }
 
 template<typename T>
-Eigen::MatrixXd dalpha(int i, T &t) {
+Eigen::MatrixXd dalpha2d(int i, T &t) {
 	switch (i) {
 		case 0: return -1+0*t;
 		case 1: return 1+0*t;;
@@ -296,7 +358,7 @@ Eigen::MatrixXd dalpha(int i, T &t) {
 }
 
 template<typename T>
-Eigen::MatrixXd theta(int i, T &t) {
+Eigen::MatrixXd theta2d(int i, T &t) {
 	switch (i) {
 		case 0: return (1 - t) * (1 - 2 * t);
 		case 1: return 4 * t * (1 - t);
@@ -307,7 +369,7 @@ Eigen::MatrixXd theta(int i, T &t) {
 }
 
 template<typename T>
-Eigen::MatrixXd dtheta(int i, T &t) {
+Eigen::MatrixXd dtheta2d(int i, T &t) {
 	switch (i) {
 		case 0: return -3+4*t;
 		case 1: return 4-8*t;
@@ -317,12 +379,55 @@ Eigen::MatrixXd dtheta(int i, T &t) {
 	throw std::runtime_error("Invalid index");
 }
 
+template<typename T>
+Eigen::MatrixXd alpha3d(int i, T &t) {
+	switch (i) {
+		case 0: return (1-t);
+		case 1: return t;
+		default: assert(false);
+	}
+	throw std::runtime_error("Invalid index");
+}
+
+template<typename T>
+Eigen::MatrixXd dalpha3d(int i, T &t) {
+	switch (i) {
+		case 0: return -1+0*t;
+		case 1: return 1+0*t;;
+		default: assert(false);
+	}
+	throw std::runtime_error("Invalid index");
+}
+
+template<typename T>
+Eigen::MatrixXd theta3d(int i, T &t) {
+	switch (i) {
+		case 0: return (1 - t) * (1 - 2 * t);
+		case 1: return 4 * t * (1 - t);
+		case 2: return t * (2 * t - 1);
+		default: assert(false);
+	}
+	throw std::runtime_error("Invalid index");
+}
+
+template<typename T>
+Eigen::MatrixXd dtheta3d(int i, T &t) {
+	switch (i) {
+		case 0: return -3+4*t;
+		case 1: return 4-8*t;
+		case 2: return -1+4*t;
+		default: assert(false);
+	}
+	throw std::runtime_error("Invalid index");
+}
+
+
 void linear_quad_basis_value(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {
 	auto u=uv.col(0).array();
 	auto v=uv.col(1).array();
 
 	std::array<int, 2> idx = linear_quad_local_node[local_index];
-	val = alpha(idx[0], u).array() * alpha(idx[1], v).array();
+	val = alpha2d(idx[0], u).array() * alpha2d(idx[1], v).array();
 }
 
 void linear_quad_basis_grad(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {
@@ -332,10 +437,9 @@ void linear_quad_basis_grad(const int local_index, const Eigen::MatrixXd &uv, Ei
 	std::array<int, 2> idx = linear_quad_local_node[local_index];
 
 	val.resize(uv.rows(), 2);
-	val.col(0) = dalpha(idx[0], u).array() * alpha(idx[1], v).array();
-	val.col(1) = alpha(idx[0], u).array() * dalpha(idx[1], v).array();
+	val.col(0) = dalpha2d(idx[0], u).array() * alpha2d(idx[1], v).array();
+	val.col(1) = alpha2d(idx[0], u).array() * dalpha2d(idx[1], v).array();
 }
-
 
 void quadr_quad_basis_value(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
 {
@@ -343,9 +447,8 @@ void quadr_quad_basis_value(const int local_index, const Eigen::MatrixXd &uv, Ei
 	auto v=uv.col(1).array();
 
 	std::array<int, 2> idx = quadr_quad_local_node[local_index];
-	val = theta(idx[0], u).array() * theta(idx[1], v).array();
+	val = theta2d(idx[0], u).array() * theta2d(idx[1], v).array();
 }
-
 
 void quadr_quad_basis_grad(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
 {
@@ -355,10 +458,55 @@ void quadr_quad_basis_grad(const int local_index, const Eigen::MatrixXd &uv, Eig
 	std::array<int, 2> idx = quadr_quad_local_node[local_index];
 
 	val.resize(uv.rows(), 2);
-	val.col(0) = dtheta(idx[0], u).array() * theta(idx[1], v).array();
-	val.col(1) = theta(idx[0], u).array() * dtheta(idx[1], v).array();
+	val.col(0) = dtheta2d(idx[0], u).array() * theta2d(idx[1], v).array();
+	val.col(1) = theta2d(idx[0], u).array() * dtheta2d(idx[1], v).array();
 }
-/////////////////////////////////////////
+
+
+
+void linear_hex_basis_value(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
+	auto x=xne.col(0).array();
+	auto n=xne.col(1).array();
+	auto e=xne.col(2).array();
+
+	std::array<int, 3> idx = linear_hex_local_node[local_index];
+	val = alpha3d(idx[0], x).array() * alpha3d(idx[1], n).array() * alpha3d(idx[2], e).array();
+}
+
+void linear_hex_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
+	auto x=xne.col(0).array();
+	auto n=xne.col(1).array();
+	auto e=xne.col(2).array();
+
+	std::array<int, 3> idx = linear_hex_local_node[local_index];
+
+	val.resize(xne.rows(), 3);
+	val.col(0) = dalpha3d(idx[0], x).array() * alpha3d(idx[1], n).array() * alpha3d(idx[2], e).array();
+	val.col(1) = alpha3d(idx[0], x).array() * dalpha3d(idx[1], n).array() * alpha3d(idx[2], e).array();
+	val.col(2) = alpha3d(idx[0], x).array() * alpha3d(idx[1], n).array() * dalpha3d(idx[2], e).array();
+}
+
+void quadr_hex_basis_value(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
+	auto x=xne.col(0).array();
+	auto n=xne.col(1).array();
+	auto e=xne.col(2).array();
+
+	std::array<int, 3> idx = quadr_hex_local_node[local_index];
+	val = theta3d(idx[0], x).array() * theta3d(idx[1], n).array() * theta3d(idx[2], e).array();
+}
+
+void quadr_hex_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Eigen::MatrixXd &val) {
+	auto x=xne.col(0).array();
+	auto n=xne.col(1).array();
+	auto e=xne.col(2).array();
+
+	std::array<int, 3> idx = quadr_hex_local_node[local_index];
+
+	val.resize(xne.rows(), 3);
+	val.col(0) = dtheta3d(idx[0], x).array() * theta3d(idx[1], n).array() * theta3d(idx[2], e).array();
+	val.col(1) = theta3d(idx[0], x).array() * dtheta3d(idx[1], n).array() * theta3d(idx[2], e).array();
+	val.col(2) = theta3d(idx[0], x).array() * theta3d(idx[1], n).array() * dtheta3d(idx[2], e).array();
+}
 
 
 
@@ -392,7 +540,6 @@ TEST_CASE("P1_2d", "[bases]") {
 		for(int d = 0; d < 2; ++d)
 			REQUIRE(linear_tri_local_node[i][d] == Approx(val(i, d)).margin(1e-10));
 	}
-
 }
 
 TEST_CASE("P2_2d", "[bases]") {
@@ -423,6 +570,30 @@ TEST_CASE("P2_2d", "[bases]") {
 	}
 }
 
+TEST_CASE("Pk_2d", "[bases]") {
+
+	Eigen::MatrixXd pts;
+	for(int k = 1; k < polyfem::autogen::MAX_P_BASES; ++k)
+	{
+		polyfem::autogen::p_nodes_2d(k, pts);
+
+		Eigen::MatrixXd val;
+		for(int i = 0; i < pts.rows(); ++i){
+			polyfem::autogen::p_basis_value_2d(k, i, pts, val);
+
+		// std::cout<<i<<"\n"<<val<<"\n\n\n"<<std::endl;
+
+			for(int j = 0; j < val.size(); ++j){
+				if(i == j)
+					REQUIRE(val(j) == Approx(1).margin(1e-10));
+				else
+					REQUIRE(val(j) == Approx(0).margin(1e-10));
+			}
+		}
+	}
+}
+
+
 
 TEST_CASE("P1_3d", "[bases]") {
 	TetQuadrature rule;
@@ -444,6 +615,12 @@ TEST_CASE("P1_3d", "[bases]") {
 			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
 	}
 
+	//Check nodes
+	polyfem::autogen::p_nodes_3d(1, val);
+	for(int i = 0; i < 4; ++i){
+		for(int d = 0; d < 3; ++d)
+			REQUIRE(linear_tet_local_node[i][d] == Approx(val(i, d)).margin(1e-10));
+	}
 }
 
 TEST_CASE("P2_3d", "[bases]") {
@@ -465,8 +642,14 @@ TEST_CASE("P2_3d", "[bases]") {
 		for(int j = 0; j < val.size(); ++j)
 			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
 	}
-}
 
+		//Check nodes
+	polyfem::autogen::p_nodes_3d(2, val);
+	for(int i = 0; i < 10; ++i){
+		for(int d = 0; d < 3; ++d)
+			REQUIRE(quadr_tet_local_node[i][d]/2. == Approx(val(i, d)).margin(1e-10));
+	}
+}
 
 TEST_CASE("P3_2d", "[bases]") {
 	Eigen::MatrixXd pts(10, 2);
@@ -494,29 +677,6 @@ TEST_CASE("P3_2d", "[bases]") {
 				REQUIRE(val(j) == Approx(1).margin(1e-10));
 			else
 				REQUIRE(val(j) == Approx(0).margin(1e-10));
-		}
-	}
-}
-
-TEST_CASE("Pk_2d", "[bases]") {
-
-	Eigen::MatrixXd pts;
-	for(int k = 1; k < polyfem::autogen::MAX_P_BASES; ++k)
-	{
-		polyfem::autogen::p_nodes_2d(k, pts);
-
-		Eigen::MatrixXd val;
-		for(int i = 0; i < pts.rows(); ++i){
-			polyfem::autogen::p_basis_value_2d(k, i, pts, val);
-
-		// std::cout<<i<<"\n"<<val<<"\n\n\n"<<std::endl;
-
-			for(int j = 0; j < val.size(); ++j){
-				if(i == j)
-					REQUIRE(val(j) == Approx(1).margin(1e-10));
-				else
-					REQUIRE(val(j) == Approx(0).margin(1e-10));
-			}
 		}
 	}
 }
@@ -613,6 +773,87 @@ TEST_CASE("Qk_2d", "[bases]") {
 		Eigen::MatrixXd val;
 		for(int i = 0; i < pts.rows(); ++i){
 			polyfem::autogen::q_basis_value_2d(k, i, pts, val);
+
+		// std::cout<<i<<"\n"<<val<<"\n\n\n"<<std::endl;
+
+			for(int j = 0; j < val.size(); ++j){
+				if(i == j)
+					REQUIRE(val(j) == Approx(1).margin(1e-10));
+				else
+					REQUIRE(val(j) == Approx(0).margin(1e-10));
+			}
+		}
+	}
+}
+
+
+TEST_CASE("Q1_3d", "[bases]") {
+	HexQuadrature rule;
+	Quadrature quad;
+	rule.get_quadrature(12, quad);
+
+	Eigen::MatrixXd expected, val;
+	for(int i = 0; i < 8; ++i){
+		linear_hex_basis_value(i, quad.points, expected);
+		polyfem::autogen::q_basis_value_3d(1, i, quad.points, val);
+
+		for(int j = 0; j < val.size(); ++j)
+			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
+
+		linear_hex_basis_grad(i, quad.points, expected);
+		polyfem::autogen::q_grad_basis_value_3d(1, i, quad.points, val);
+
+		for(int j = 0; j < val.size(); ++j)
+			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
+	}
+
+	//Check nodes
+	polyfem::autogen::q_nodes_3d(1, val);
+	for(int i = 0; i < 8; ++i){
+		for(int d = 0; d < 3; ++d)
+			REQUIRE(linear_hex_local_node[i][d] == Approx(val(i, d)).margin(1e-10));
+	}
+
+}
+
+TEST_CASE("Q2_3d", "[bases]") {
+	HexQuadrature rule;
+	Quadrature quad;
+	rule.get_quadrature(12, quad);
+
+	Eigen::MatrixXd expected, val;
+	for(int i = 0; i < 27; ++i){
+		quadr_hex_basis_value(i, quad.points, expected);
+		polyfem::autogen::q_basis_value_3d(2, i, quad.points, val);
+
+		for(int j = 0; j < val.size(); ++j)
+			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
+
+		quadr_hex_basis_grad(i, quad.points, expected);
+		polyfem::autogen::q_grad_basis_value_3d(2, i, quad.points, val);
+
+		for(int j = 0; j < val.size(); ++j)
+			REQUIRE(expected(j) == Approx(val(j)).margin(1e-10));
+	}
+
+	//Check nodes
+	polyfem::autogen::q_nodes_3d(2, val);
+	for(int i = 0; i < 27; ++i){
+		for(int d = 0; d < 3; ++d)
+			REQUIRE(quadr_hex_local_node[i][d]/2. == Approx(val(i, d)).margin(1e-10));
+	}
+}
+
+TEST_CASE("Qk_3d", "[bases]") {
+
+	Eigen::MatrixXd pts;
+	for(int k = 1; k < polyfem::autogen::MAX_Q_BASES; ++k)
+	{
+		polyfem::autogen::q_nodes_3d(k, pts);
+
+		Eigen::MatrixXd val;
+		for(int i = 0; i < pts.rows(); ++i){
+			polyfem::autogen::q_basis_value_3d(k, i, pts, val);
 
 		// std::cout<<i<<"\n"<<val<<"\n\n\n"<<std::endl;
 
