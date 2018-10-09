@@ -696,25 +696,87 @@ namespace polyfem
 
 	RowVectorNd Mesh3D::face_node(const Navigation3D::Index &index, const int n_new_nodes, const int i, const int j) const
 	{
-		if(order_ == 1 || order_ == 2 || face_nodes_.empty() || face_nodes_[index.face].nodes.rows() != n_new_nodes)
+		if(is_simplex(index.element))
 		{
+			if(order_ == 1 || order_ == 2 || face_nodes_.empty() || face_nodes_[index.face].nodes.rows() != n_new_nodes)
+			{
+				const auto v1 = point(index.vertex);
+				const auto v2 = point(switch_vertex(index).vertex);
+				const auto v3 = point(switch_vertex(switch_edge(index)).vertex);
+
+				const double b2 = i/(n_new_nodes + 2.0);
+				const double b3 = j/(n_new_nodes + 2.0);
+				const double b1 = 1 - b3 - b2;
+				assert(b3 < 1);
+				assert(b3 > 0);
+
+				return b1 * v1 + b2 * v2 + b3 * v3;
+			}
+
+			assert(order_ == 3);
+			//unsupported P4 for geometry
+			const auto &n = face_nodes_[index.face];
+			return n.nodes.row(0);
+		}
+		else if(is_cube(index.element))
+		{
+			//supports only blilinear quads
+			assert(order_ == 1);
+
 			const auto v1 = point(index.vertex);
 			const auto v2 = point(switch_vertex(index).vertex);
-			const auto v3 = point(switch_vertex(switch_edge(index)).vertex);
+			const auto v3 = point(switch_vertex(switch_edge(switch_vertex(index))).vertex);
+			const auto v4 = point(switch_vertex(switch_edge(index)).vertex);
 
-			const double b2 = i/(n_new_nodes + 2.0);
-			const double b3 = j/(n_new_nodes + 2.0);
-			const double b1 = 1 - b3 - b2;
-			assert(b3 < 1);
-			assert(b3 > 0);
+			const double b1 = i/(n_new_nodes + 1.0);
+			const double b2 = j/(n_new_nodes + 1.0);
 
-			return b1 * v1 + b2 * v2 + b3 * v3;
+			return v1*(1-b1)*(1-b2) + v2*b1*(1-b2) + v3*b1*b2 + v4*(1-b1)*b2;
 		}
 
-		assert(order_ == 3);
-		//unsupported P4 for geometry
-		const auto &n = face_nodes_[index.face];
-		return n.nodes.row(0);
+		assert(false);
+		return RowVectorNd(3,1);
+	}
+
+	RowVectorNd Mesh3D::cell_node(const Navigation3D::Index &index, const int n_new_nodes, const int i, const int j, const int k) const
+	{
+		if(n_new_nodes == 1)
+			return cell_barycenter(index.element);
+
+		if(is_simplex(index.element))
+		{
+			assert(n_new_nodes == 1);
+			return cell_barycenter(index.element);
+		}
+		else if(is_cube(index.element))
+		{
+			//supports only blilinear quads
+			assert(order_ == 1);
+
+			const auto v1 = point(index.vertex);
+			const auto v2 = point(switch_vertex(index).vertex);
+			const auto v3 = point(switch_vertex(switch_edge(switch_vertex(index))).vertex);
+			const auto v4 = point(switch_vertex(switch_edge(index)).vertex);
+
+			const Navigation3D::Index index1 = switch_face(switch_edge(switch_vertex(switch_edge(switch_face(index)))));
+			const auto v5 = point(index1.vertex);
+			const auto v6 = point(switch_vertex(index1).vertex);
+			const auto v7 = point(switch_vertex(switch_edge(switch_vertex(index1))).vertex);
+			const auto v8 = point(switch_vertex(switch_edge(index1)).vertex);
+
+			const double b1 = i/(n_new_nodes + 1.0);
+			const double b2 = j/(n_new_nodes + 1.0);
+
+			const double b3 = k/(n_new_nodes + 1.0);
+
+			RowVectorNd blin1 = v1*(1-b1)*(1-b2) + v2*b1*(1-b2) + v3*b1*b2 + v4*(1-b1)*b2;
+			RowVectorNd blin2 = v5*(1-b1)*(1-b2) + v6*b1*(1-b2) + v7*b1*b2 + v8*(1-b1)*b2;
+
+			return (1-b3)*blin1 + b3*blin2;
+		}
+
+		assert(false);
+		return RowVectorNd(3,1);
 	}
 
 	void Mesh3D::bounding_box(RowVectorNd &min, RowVectorNd &max) const

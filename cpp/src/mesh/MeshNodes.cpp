@@ -309,8 +309,13 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_face(const Navigation::Index 
 	{
 		assert(false);
 	}
-	assert(!mesh2d->is_simplex(index.face) || res.size() == size_t(n_new_nodes *(n_new_nodes+1) / 2));
-	assert(mesh2d->is_simplex(index.face) || res.size() == size_t(n_new_nodes *n_new_nodes));
+
+#ifndef NDEBUG
+	if(mesh2d->is_simplex(index.face))
+		assert(res.size() == size_t(n_new_nodes *(n_new_nodes+1) / 2));
+	else
+		assert(res.size() == size_t(n_new_nodes *n_new_nodes));
+#endif
 	return res;
 }
 
@@ -321,15 +326,11 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_face(const Navigation3D::Inde
 	if(n_new_nodes <= 0)
 		return res;
 
-	assert(mesh_.is_simplex(index.element));
+	// assert(mesh_.is_simplex(index.element));
 	const int start = face_offset_ + index.face * max_nodes_per_face_;
 	const int start_node_id = primitive_to_node_[start];
 
 	const Mesh3D * mesh3d = dynamic_cast<const Mesh3D *>(&mesh_);
-
-	// const auto v1 = mesh3d->point(index.vertex);
-	// const auto v2 = mesh3d->point(mesh3d->switch_vertex(index).vertex);
-	// const auto v3 = mesh3d->point(mesh3d->switch_vertex(mesh3d->switch_edge(index)).vertex);
 
 	if(start_node_id < 0)
 	{
@@ -337,18 +338,13 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_face(const Navigation3D::Inde
 		for(int i = 1; i <= n_new_nodes; ++i)
 		{
 			// const double b2 = i/(n_new_nodes + 2.0);
-			for(int j = 1; j <= n_new_nodes - i + 1; ++j)
+			const int end = mesh3d->is_simplex(index.face) ? (n_new_nodes - i + 1) : n_new_nodes;
+			for(int j = 1; j <= end; ++j)
 			{
-				// const double b3 = j/(n_new_nodes + 2.0);
-				// const double b1 = 1 - b3 - b2;
-				// assert(b3 < 1);
-				// assert(b3 > 0);
-
 				const int primitive_id = start + loc_index;
 				primitive_to_node_[primitive_id] = n_nodes();
 				node_to_primitive_.push_back(primitive_id);
 
-				// nodes_.row(primitive_id) = b1 * v1 + b2 * v2 + b3 * v3;
 				nodes_.row(primitive_id) = mesh3d->face_node(index, n_new_nodes, i, j);
 
 				res.push_back(primitive_to_node_[primitive_id]);
@@ -365,18 +361,12 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_face(const Navigation3D::Inde
 		}
 		else
 		{
-			const int total_nodes = n_new_nodes *(n_new_nodes+1) / 2;
+			const int total_nodes = mesh3d->is_simplex(index.face) ? (n_new_nodes *(n_new_nodes+1) / 2) : (n_new_nodes*n_new_nodes);
 			for(int i = 1; i <= n_new_nodes; ++i)
 			{
-				// const double b2 = i/(n_new_nodes + 2.0);
-				for(int j = 1; j <= n_new_nodes - i + 1; ++j)
+				const int end = mesh3d->is_simplex(index.face) ? (n_new_nodes - i + 1) : n_new_nodes;
+				for(int j = 1; j <= end; ++j)
 				{
-					// const double b3 = j/(n_new_nodes + 2.0);
-					// const double b1 = 1 - b3 - b2;
-					// assert(b3 < 1);
-					// assert(b3 > 0);
-
-					// const RowVectorNd p = b1 * v1 + b2 * v2 + b3 * v3;
 					const RowVectorNd p = mesh3d->face_node(index, n_new_nodes, i, j);
 
 					bool found = false;
@@ -396,16 +386,53 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_face(const Navigation3D::Inde
 			}
 		}
 	}
-	assert(res.size() == size_t(n_new_nodes *(n_new_nodes+1) / 2));
+
+#ifndef NDEBUG
+	if(mesh3d->is_simplex(index.face))
+		assert(res.size() == size_t(n_new_nodes * (n_new_nodes+1) / 2));
+	else
+		assert(res.size() == size_t(n_new_nodes * n_new_nodes));
+#endif
 	return res;
 }
 
 std::vector<int> polyfem::MeshNodes::node_ids_from_cell(const Navigation3D::Index &index, const int n_new_nodes)
 {
-	assert(n_new_nodes == 1); //P4 only
-	const int idx = node_id_from_cell(index.element);
+	std::vector<int> res;
+	const int start = cell_offset_ + index.element * max_nodes_per_cell_;
+	const Mesh3D * mesh3d = dynamic_cast<const Mesh3D *>(&mesh_);
 
-	return {idx};
+	int loc_index = 0;
+	for(int i = 1; i <= n_new_nodes; ++i)
+	{
+		for(int j = 1; j <= n_new_nodes; ++j)
+		{
+			for(int k = 1; k <= n_new_nodes; ++k)
+			{
+				const int primitive_id = start + loc_index;
+
+				primitive_to_node_[primitive_id] = n_nodes();
+				node_to_primitive_.push_back(primitive_id);
+
+				nodes_.row(primitive_id) = mesh3d->cell_node(index, n_new_nodes, i, j, k);
+				res.push_back(primitive_to_node_[primitive_id]);
+
+				++loc_index;
+			}
+		}
+	}
+
+#ifndef NDEBUG
+	if(res.size() == 1)
+	{
+		const int idx = node_id_from_cell(index.element);
+		assert(idx == res.front());
+	}
+#endif
+
+	assert(res.size() == size_t(n_new_nodes * n_new_nodes * n_new_nodes));
+
+	return res;
 }
 
 int polyfem::MeshNodes::node_id_from_vertex(int v) {

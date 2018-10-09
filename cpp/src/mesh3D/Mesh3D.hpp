@@ -54,6 +54,7 @@ namespace polyfem
 		void attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes) override;
 		RowVectorNd edge_node(const Navigation3D::Index &index, const int n_new_nodes, const int i) const;
 		RowVectorNd face_node(const Navigation3D::Index &index, const int n_new_nodes, const int i, const int j) const;
+		RowVectorNd cell_node(const Navigation3D::Index &index, const int n_new_nodes, const int i, const int j, const int k) const;
 
 		void normalize() override;
 

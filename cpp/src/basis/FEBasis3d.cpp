@@ -138,22 +138,13 @@ f5  = (0.5, 0.5,   1)
 
 namespace {
 
-
-
-
-
-
-
-
-// -----------------------------------------------------------------------------
-
 template<class InputIterator, class T>
 int find_index(InputIterator first, InputIterator last, const T& val)
 {
 	return std::distance(first, std::find(first, last, val));
 }
 
-int find_quad_face(const polyfem::Mesh3D &mesh, int c, int v1, int v2, int v3, int v4) {
+Navigation3D::Index find_quad_face(const polyfem::Mesh3D &mesh, int c, int v1, int v2, int v3, int v4) {
 	std::array<int, 4> v = {{v1, v2, v3, v4}};
 	std::sort(v.begin(), v.end());
 	for (int lf = 0; lf < mesh.n_cell_faces(c); ++lf) {
@@ -166,14 +157,14 @@ int find_quad_face(const polyfem::Mesh3D &mesh, int c, int v1, int v2, int v3, i
 		}
 		std::sort(u.begin(), u.end());
 		if (u == v) {
-			return idx.face;
+			return idx;
 		}
 	}
-	return 0;
+	assert(false);
+	return Navigation3D::Index();
 }
 
-//REname me
-std::array<int, 4> linear_tet_local_to_global(const Mesh3D &mesh, int c) {
+std::array<int, 4> tet_vertices_local_to_global(const Mesh3D &mesh, int c) {
 	// Vertex nodes
 	assert(mesh.is_simplex(c));
 	std::array<int, 4> l2g;
@@ -185,7 +176,7 @@ std::array<int, 4> linear_tet_local_to_global(const Mesh3D &mesh, int c) {
 	return l2g;
 }
 
-std::array<int, 8> linear_hex_local_to_global(const Mesh3D &mesh, int c) {
+std::array<int, 8> hex_vertices_local_to_global(const Mesh3D &mesh, int c) {
 	assert(mesh.is_cube(c));
 
 	// Vertex nodes
@@ -199,7 +190,6 @@ std::array<int, 8> linear_hex_local_to_global(const Mesh3D &mesh, int c) {
 }
 
 
-
 //////////////////////////////////////////////////// remove me
 std::array<int, 27> quadr_hex_local_to_global(const Mesh3D &mesh, int c) {
 	assert(mesh.is_cube(c));
@@ -209,7 +199,7 @@ std::array<int, 27> quadr_hex_local_to_global(const Mesh3D &mesh, int c) {
 	int cell_offset = face_offset + mesh.n_faces();
 
 	// Vertex nodes
-	auto v = linear_hex_local_to_global(mesh, c);
+	auto v = hex_vertices_local_to_global(mesh, c);
 
 	// Edge nodes
 	Eigen::Matrix<int, 12, 1> e;
@@ -241,7 +231,7 @@ std::array<int, 27> quadr_hex_local_to_global(const Mesh3D &mesh, int c) {
 	fv.row(4) << v[0], v[1], v[2], v[3];
 	fv.row(5) << v[4], v[5], v[6], v[7];
 	for (int lf = 0; lf < f.rows(); ++lf) {
-		f[lf] = find_quad_face(mesh, c, fv(lf, 0), fv(lf, 1), fv(lf, 2), fv(lf, 3));
+		f[lf] = find_quad_face(mesh, c, fv(lf, 0), fv(lf, 1), fv(lf, 2), fv(lf, 3)).face;
 	}
 
 	// Local to global mapping of node indices
@@ -289,7 +279,7 @@ void tet_local_to_global(const int p, const Mesh3D &mesh, int c, const Eigen::Ve
 	// Edge nodes
 	Eigen::Matrix<Navigation3D::Index, 4, 1> f;
 
-	auto v = linear_tet_local_to_global(mesh, c);
+	auto v = tet_vertices_local_to_global(mesh, c);
 	Eigen::Matrix<int, 4, 3> fv;
 	fv.row(0) << v[0], v[1], v[2];
 	fv.row(1) << v[0], v[1], v[3];
@@ -321,7 +311,6 @@ void tet_local_to_global(const int p, const Mesh3D &mesh, int c, const Eigen::Ve
 
 	//vertices
 	for (size_t lv = 0; lv < v.size(); ++lv) {
-		const auto index = mesh.get_index_from_element_edge(c,  v[lv], v[(lv+1)%4]);
 		res.push_back(nodes.node_id_from_primitive(v[lv]));
 	}
 
@@ -383,19 +372,121 @@ void hex_local_to_global(const int q, const Mesh3D &mesh, int c, const Eigen::Ve
 {
 	assert(mesh.is_cube(c));
 
-	if (q == 0) {
+	const int n_edge_nodes = ((q-1)*12);
+	const int nn = (q - 1);
+	const int n_loc_f = nn*nn;
+	const int n_face_nodes = n_loc_f * 6;
+	const int n_cell_nodes = nn * nn * nn;
+
+
+	if(q == 0)
+	{
 		res.push_back(nodes.node_id_from_cell(c));
-	} else if (q == 1) {
-		for (int id : linear_hex_local_to_global(mesh, c)) {
-			res.push_back(nodes.node_id_from_primitive(id));
+		return;
+	}
+
+
+	// std::vector<int> res;
+	res.reserve(8 + n_edge_nodes + n_face_nodes + n_cell_nodes);
+
+	// Vertex nodes
+	auto v = hex_vertices_local_to_global(mesh, c);
+
+	// Edge nodes
+	Eigen::Matrix<Navigation3D::Index, 12, 1> e;
+	Eigen::Matrix<int, 12, 2> ev;
+	ev.row(0)  << v[0], v[1];
+	ev.row(1)  << v[1], v[2];
+	ev.row(2)  << v[2], v[3];
+	ev.row(3)  << v[3], v[0];
+	ev.row(4)  << v[0], v[4];
+	ev.row(5)  << v[1], v[5];
+	ev.row(6)  << v[2], v[6];
+	ev.row(7)  << v[3], v[7];
+	ev.row(8)  << v[4], v[5];
+	ev.row(9)  << v[5], v[6];
+	ev.row(10) << v[6], v[7];
+	ev.row(11) << v[7], v[4];
+	for (int le = 0; le < e.rows(); ++le) {
+		// e[le] = find_edge(mesh, c, ev(le, 0), ev(le, 1)).edge;
+		e[le] = mesh.get_index_from_element_edge(c, ev(le, 0), ev(le, 1));
+	}
+
+	// Face nodes
+	Eigen::Matrix<Navigation3D::Index, 6, 1> f;
+	Eigen::Matrix<int, 6, 4> fv;
+	fv.row(0) << v[0], v[3], v[4], v[7];
+	fv.row(1) << v[1], v[2], v[5], v[6];
+	fv.row(2) << v[0], v[1], v[5], v[4];
+	fv.row(3) << v[3], v[2], v[6], v[7];
+	fv.row(4) << v[0], v[1], v[2], v[3];
+	fv.row(5) << v[4], v[5], v[6], v[7];
+	for (int lf = 0; lf < f.rows(); ++lf) {
+		const auto index = find_quad_face(mesh, c, fv(lf, 0), fv(lf, 1), fv(lf, 2), fv(lf, 3));
+		f[lf] = index;
+	}
+
+
+	//vertices
+	for (size_t lv = 0; lv < v.size(); ++lv) {
+		res.push_back(nodes.node_id_from_primitive(v[lv]));
+	}
+	assert(res.size() == size_t(8));
+
+	//Edges
+	for (int le = 0; le < e.rows(); ++le) {
+		const auto index = e[le];
+		auto neighs = mesh.edge_neighs(index.edge);
+		int min_q = discr_order.size() > 0 ? discr_order(c) : 0;
+
+		for(auto cid : neighs)
+		{
+			min_q = std::min(min_q, discr_order.size() > 0 ? discr_order(cid) : 0);
 		}
-	} else if(q == 2) {
-		for (int id : quadr_hex_local_to_global(mesh, c)) {
-			res.push_back(nodes.node_id_from_primitive(id));
+
+		if(discr_order.size() > 0 && discr_order(c) >  min_q)
+		{
+			for(int tmp = 0; tmp < q - 1; ++tmp)
+				res.push_back(-le - 10);
+		}
+		else
+		{
+			auto node_ids = nodes.node_ids_from_edge(index, q - 1);
+			res.insert(res.end(), node_ids.begin(), node_ids.end());
 		}
 	}
-	else
-		assert(false);
+	assert(res.size() == size_t(8 + n_edge_nodes));
+
+
+	//faces
+	for (int lf = 0; lf < f.rows(); ++lf) {
+		const auto index = f[lf];
+		const auto other_cell = mesh.switch_element(index).element;
+
+		const bool skip_other = discr_order.size() > 0 && other_cell >= 0 && discr_order(c) >  discr_order(other_cell);
+
+		if(skip_other)
+		{
+			for(int tmp = 0; tmp < n_loc_f; ++tmp)
+				res.push_back(-lf - 1);
+		}
+		else
+		{
+			auto node_ids = nodes.node_ids_from_face(index, q - 1);
+			res.insert(res.end(), node_ids.begin(), node_ids.end());
+		}
+	}
+	assert(res.size() == size_t(8 + n_edge_nodes + n_face_nodes));
+
+	//cells
+	if (n_cell_nodes > 0) {
+		const auto index = f[0];
+
+		auto node_ids = nodes.node_ids_from_cell(index, q - 1);
+		res.insert(res.end(), node_ids.begin(), node_ids.end());
+	}
+
+	assert(res.size() == size_t(8 + n_edge_nodes + n_face_nodes + n_cell_nodes));
 }
 
 // -----------------------------------------------------------------------------
@@ -433,23 +524,23 @@ void compute_nodes(
 		if (mesh.is_cube(c)) {
 			hex_local_to_global(discr_order, mesh, c, discr_orders, element_nodes_id[c], nodes);
 
-			//TOODO
-			// List of faces around the quad
-			std::array<int, 6> f;
-			{
-				auto l2g = quadr_hex_local_to_global(mesh, c);
-				for (int lf = 0; lf < 6; ++lf) {
-					f[lf] = l2g[8+12+lf] - mesh.n_vertices() - mesh.n_edges();
-				}
-			}
 
+			auto v = hex_vertices_local_to_global(mesh, c);
+			Eigen::Matrix<int, 6, 4> fv;
+			fv.row(0) << v[0], v[3], v[4], v[7];
+			fv.row(1) << v[1], v[2], v[5], v[6];
+			fv.row(2) << v[0], v[1], v[5], v[4];
+			fv.row(3) << v[3], v[2], v[6], v[7];
+			fv.row(4) << v[0], v[1], v[2], v[3];
+			fv.row(5) << v[4], v[5], v[6], v[7];
 
 			LocalBoundary lb(c, BoundaryType::Quad);
-
-			for(int i = 0; i < int(f.size()); ++i)
+			for(int i = 0; i < fv.rows(); ++i)
 			{
-				if (mesh.is_boundary_face(f[i])){
-					lb.add_boundary_primitive(f[i], i);
+				const int f = find_quad_face(mesh, c, fv(i, 0), fv(i, 1), fv(i, 2), fv(i, 3)).face;
+
+				if (mesh.is_boundary_face(f)){
+					lb.add_boundary_primitive(f, i);
 				}
 			}
 
@@ -460,7 +551,7 @@ void compute_nodes(
 			tet_local_to_global(discr_order, mesh, c, discr_orders, element_nodes_id[c], nodes);
 
 
-			auto v = linear_tet_local_to_global(mesh, c);
+			auto v = tet_vertices_local_to_global(mesh, c);
 			Eigen::Matrix<int, 4, 3> fv;
 			fv.row(0) << v[0], v[1], v[2];
 			fv.row(1) << v[0], v[1], v[3];
@@ -470,7 +561,7 @@ void compute_nodes(
 			LocalBoundary lb(c, BoundaryType::Tri);
 			for(long i = 0; i < fv.rows(); ++i)
 			{
-				int f = mesh.get_index_from_element_face(c, fv(i,0), fv(i,1), fv(i,2)).face;
+				const int f = mesh.get_index_from_element_face(c, fv(i,0), fv(i,1), fv(i,2)).face;
 
 				if(mesh.is_boundary_face(f)){
 					lb.add_boundary_primitive(f, i);
@@ -528,7 +619,7 @@ Eigen::VectorXi polyfem::FEBasis3d::tet_face_local_nodes(const int p, const Mesh
 	assert(mesh.is_simplex(c));
 
 	// Local to global mapping of node indices
-	const auto l2g = linear_tet_local_to_global(mesh, c);
+	const auto l2g = tet_vertices_local_to_global(mesh, c);
 
 
 	// Extract requested interface
@@ -706,7 +797,7 @@ Eigen::VectorXi polyfem::FEBasis3d::hex_face_local_nodes(const int q, const Mesh
 		assert(mesh.is_cube(c));
 
 		// Local to global mapping of node indices
-		auto l2g = linear_hex_local_to_global(mesh, c);
+		auto l2g = hex_vertices_local_to_global(mesh, c);
 
 		// Extract requested interface
 		res.resize(4);
@@ -779,11 +870,11 @@ int polyfem::FEBasis3d::build_bases(
 	const int max_p = discr_orders.maxCoeff();
 	assert(max_p < 5); //P5 not supported
 
-	const int nn = max_p > 2 ? (max_p - 2) : 0;
-	const int n_face_nodes = std::max(nn * (nn + 1) / 2, max_p == 2 ? 1 : 0);
-	const int n_cells_nodes = (max_p == 2 || max_p == 4) ? 1 : 0;
+	const int nn = max_p > 1 ? (max_p - 1) : 0;
+	const int n_face_nodes = nn*nn;
+	const int n_cells_nodes = nn*nn*nn;
 
-	MeshNodes nodes(mesh, has_polys, max_p > 1 ? (max_p - 1) : 0, n_face_nodes, max_p == 0 ? 1 : n_cells_nodes);
+	MeshNodes nodes(mesh, has_polys, nn, n_face_nodes, max_p == 0 ? 1 : n_cells_nodes);
 	std::vector<std::vector<int>> element_nodes_id;
 	compute_nodes(mesh, discr_orders, has_polys, nodes, element_nodes_id, local_boundary, poly_face_to_data);
 	// boundary_nodes = nodes.boundary_nodes();
@@ -922,7 +1013,7 @@ int polyfem::FEBasis3d::build_bases(
 						const int ln_edge_nodes = discr_order - 1;
 						const int ln_face_nodes = lnn * (lnn + 1) / 2;
 
-						const auto v = linear_tet_local_to_global(mesh, e);
+						const auto v = tet_vertices_local_to_global(mesh, e);
 						Navigation3D::Index index;
 						if(global_index <= -30)
 						{

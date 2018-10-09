@@ -318,7 +318,6 @@ namespace polyfem
 				assert(b3 < 1);
 				assert(b3 > 0);
 
-
 				return b1 * v1 + b2 * v2 + b3 * v3;
 			}
 

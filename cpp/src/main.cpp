@@ -118,6 +118,7 @@ int main(int argc, char **argv)
 	bool no_ui = false;
 	bool p_ref = false;
 	bool force_linear = false;
+	bool isoparametric = false;
 
 
 	std::string log_file = "";
@@ -148,6 +149,7 @@ int main(int argc, char **argv)
 	command_line.add_flag("--p_ref", p_ref, "Use p refimenet");
 	command_line.add_flag("--spline", use_splines, "Use spline for quad/hex meshes");
 	command_line.add_flag("--lin_geom", force_linear, "Force use linear geometric mapping");
+	command_line.add_flag("--isoparametric", isoparametric, "Force use isoparametric basis");
 
 	//disable out
 	command_line.add_flag("--cmd", no_ui, "Runs in command line mode, no ui");
@@ -207,10 +209,12 @@ int main(int argc, char **argv)
 		in_args["tensor_formulation"] = tensor_formulation;
 		in_args["mixed_formulation"] = mixed_formulation;
 
+
 		in_args["discr_order"] = discr_order;
 		in_args["use_spline"] = use_splines;
 		in_args["output"] = output;
 		in_args["use_p_ref"] = p_ref;
+		in_args["iso_parametric"] = isoparametric;
 
 		if (!vtu.empty()) {
 			in_args["export"]["vis_mesh"] = vtu;
