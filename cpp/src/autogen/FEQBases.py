@@ -137,6 +137,7 @@ if __name__ == "__main__":
     args = parse_args()
 
     dims = [2, 3]
+    orders = [1, 2, 3, 4]
 
     cpp = "#include <polyfem/auto_q_bases.hpp>\n\n\n"
     cpp = cpp + "namespace polyfem {\nnamespace autogen " + "{\nnamespace " + "{\n"
@@ -146,7 +147,6 @@ if __name__ == "__main__":
 
     for dim in dims:
         print(str(dim) + "D")
-        orders = range(1, 7 - dim)
         suffix = "_2d" if dim == 2 else "_3d"
 
         unique_nodes = "void q_nodes" + suffix + "(const int q, Eigen::MatrixXd &val)"
@@ -446,13 +446,17 @@ if __name__ == "__main__":
                 real_index = indices[i]
                 # real_index = i
 
-                base = base + "\tcase " + str(i) + ": {" + pretty_print.C99_print(simplify(fe.N[real_index])).replace(" = 1;", ".setOnes();") + "} break;\n"
-                dbase = dbase + "\tcase " + str(i) + ": {" + \
-                    "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], x))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(0) = result_0; }" \
-                    "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], y))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(1) = result_0; }"
-
                 if dim == 3:
-                    dbase = dbase + "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], z))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(2) = result_0; }"
+                    base = base + "\tcase " + str(i) + ": {" + pretty_print.C99_print(simplify(fe.N[real_index])).replace(" = 1;", ".setOnes();") + "} break;\n"
+                    dbase = dbase + "\tcase " + str(i) + ": {" + \
+                        "{" + pretty_print.C99_print((diff(fe.N[real_index], x))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(0) = result_0; }" \
+                        "{" + pretty_print.C99_print((diff(fe.N[real_index], y))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(1) = result_0; }"
+                    dbase = dbase + "{" + pretty_print.C99_print((diff(fe.N[real_index], z))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(2) = result_0; }"
+                else:
+                    base = base + "\tcase " + str(i) + ": {" + pretty_print.C99_print(simplify(fe.N[real_index])).replace(" = 1;", ".setOnes();") + "} break;\n"
+                    dbase = dbase + "\tcase " + str(i) + ": {" + \
+                        "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], x))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(0) = result_0; }" \
+                        "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], y))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(1) = result_0; }"
 
                 dbase = dbase + "} break;\n"
 

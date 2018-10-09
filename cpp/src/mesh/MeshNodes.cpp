@@ -338,7 +338,7 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_face(const Navigation3D::Inde
 		for(int i = 1; i <= n_new_nodes; ++i)
 		{
 			// const double b2 = i/(n_new_nodes + 2.0);
-			const int end = mesh3d->is_simplex(index.face) ? (n_new_nodes - i + 1) : n_new_nodes;
+			const int end = mesh3d->is_simplex(index.element) ? (n_new_nodes - i + 1) : n_new_nodes;
 			for(int j = 1; j <= end; ++j)
 			{
 				const int primitive_id = start + loc_index;
@@ -361,10 +361,10 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_face(const Navigation3D::Inde
 		}
 		else
 		{
-			const int total_nodes = mesh3d->is_simplex(index.face) ? (n_new_nodes *(n_new_nodes+1) / 2) : (n_new_nodes*n_new_nodes);
+			const int total_nodes = mesh3d->is_simplex(index.element) ? (n_new_nodes *(n_new_nodes+1) / 2) : (n_new_nodes*n_new_nodes);
 			for(int i = 1; i <= n_new_nodes; ++i)
 			{
-				const int end = mesh3d->is_simplex(index.face) ? (n_new_nodes - i + 1) : n_new_nodes;
+				const int end = mesh3d->is_simplex(index.element) ? (n_new_nodes - i + 1) : n_new_nodes;
 				for(int j = 1; j <= end; ++j)
 				{
 					const RowVectorNd p = mesh3d->face_node(index, n_new_nodes, i, j);
@@ -388,7 +388,7 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_face(const Navigation3D::Inde
 	}
 
 #ifndef NDEBUG
-	if(mesh3d->is_simplex(index.face))
+	if(mesh3d->is_simplex(index.element))
 		assert(res.size() == size_t(n_new_nodes * (n_new_nodes+1) / 2));
 	else
 		assert(res.size() == size_t(n_new_nodes * n_new_nodes));

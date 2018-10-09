@@ -190,73 +190,6 @@ std::array<int, 8> hex_vertices_local_to_global(const Mesh3D &mesh, int c) {
 }
 
 
-//////////////////////////////////////////////////// remove me
-std::array<int, 27> quadr_hex_local_to_global(const Mesh3D &mesh, int c) {
-	assert(mesh.is_cube(c));
-
-	int edge_offset = mesh.n_vertices();
-	int face_offset = edge_offset + mesh.n_edges();
-	int cell_offset = face_offset + mesh.n_faces();
-
-	// Vertex nodes
-	auto v = hex_vertices_local_to_global(mesh, c);
-
-	// Edge nodes
-	Eigen::Matrix<int, 12, 1> e;
-	Eigen::Matrix<int, 12, 2> ev;
-	ev.row(0)  << v[0], v[1];
-	ev.row(1)  << v[1], v[2];
-	ev.row(2)  << v[2], v[3];
-	ev.row(3)  << v[3], v[0];
-	ev.row(4)  << v[0], v[4];
-	ev.row(5)  << v[1], v[5];
-	ev.row(6)  << v[2], v[6];
-	ev.row(7)  << v[3], v[7];
-	ev.row(8)  << v[4], v[5];
-	ev.row(9)  << v[5], v[6];
-	ev.row(10) << v[6], v[7];
-	ev.row(11) << v[7], v[4];
-	for (int le = 0; le < e.rows(); ++le) {
-		// e[le] = find_edge(mesh, c, ev(le, 0), ev(le, 1)).edge;
-		e[le] = mesh.get_index_from_element_edge(c, ev(le, 0), ev(le, 1)).edge;
-	}
-
-	// Face nodes
-	Eigen::Matrix<int, 6, 1> f;
-	Eigen::Matrix<int, 6, 4> fv;
-	fv.row(0) << v[0], v[3], v[4], v[7];
-	fv.row(1) << v[1], v[2], v[5], v[6];
-	fv.row(2) << v[0], v[1], v[5], v[4];
-	fv.row(3) << v[3], v[2], v[6], v[7];
-	fv.row(4) << v[0], v[1], v[2], v[3];
-	fv.row(5) << v[4], v[5], v[6], v[7];
-	for (int lf = 0; lf < f.rows(); ++lf) {
-		f[lf] = find_quad_face(mesh, c, fv(lf, 0), fv(lf, 1), fv(lf, 2), fv(lf, 3)).face;
-	}
-
-	// Local to global mapping of node indices
-	std::array<int, 27> l2g;
-
-	// Assign global ids to local nodes
-	{
-		int i = 0;
-		for (size_t lv = 0; lv < v.size(); ++lv) {
-			l2g[i++] = v[lv];
-		}
-		for (int le = 0; le < e.rows(); ++le) {
-			l2g[i++] = edge_offset + e[le];
-		}
-		for (int lf = 0; lf < f.rows(); ++lf) {
-			l2g[i++] = face_offset + f[lf];
-		}
-		l2g[i++] = cell_offset + c;
-	}
-
-	return l2g;
-}
-////////////////////////////////
-
-
 void tet_local_to_global(const int p, const Mesh3D &mesh, int c, const Eigen::VectorXi &discr_order, std::vector<int> &res, polyfem::MeshNodes &nodes)
 {
 	const int n_edge_nodes = p > 1 ? ((p-1)*6) : 0;
@@ -473,6 +406,7 @@ void hex_local_to_global(const int q, const Mesh3D &mesh, int c, const Eigen::Ve
 		else
 		{
 			auto node_ids = nodes.node_ids_from_face(index, q - 1);
+			assert(node_ids.size() == n_loc_f);
 			res.insert(res.end(), node_ids.begin(), node_ids.end());
 		}
 	}
@@ -719,8 +653,8 @@ Eigen::VectorXi polyfem::FEBasis3d::tet_face_local_nodes(const int p, const Mesh
 
 		// Extract requested interface
 		std::array<int, 3> idx;
-		for (int lv = 0, i = 0; lv < 3; ++lv) {
-			result[i++] = find_index(l2g.begin(), l2g.end(), index.vertex);
+		for (int lv = 0; lv < 3; ++lv) {
+			idx[lv] = find_index(l2g.begin(), l2g.end(), index.vertex);
 			index = mesh.next_around_face(index);
 		}
 		Eigen::Matrix3d pos(3, 3);
@@ -789,47 +723,181 @@ Eigen::VectorXi polyfem::FEBasis3d::tet_face_local_nodes(const int p, const Mesh
 
 Eigen::VectorXi polyfem::FEBasis3d::hex_face_local_nodes(const int q, const Mesh3D &mesh, Navigation3D::Index index)
 {
-	//TODO implement Q3 and Q4
-	Eigen::VectorXi res;
-	if(q == 1)
-	{
-		int c = index.element;
-		assert(mesh.is_cube(c));
+	const int nn = q - 1;
+	const int n_edge_nodes = nn * 12;
+	const int n_face_nodes = nn * nn;
 
+	const int c = index.element;
+	assert(mesh.is_cube(c));
+
+	// Local to global mapping of node indices
+	const auto l2g = hex_vertices_local_to_global(mesh, c);
+
+
+	// Extract requested interface
+	Eigen::VectorXi result(4 + nn * 4 + n_face_nodes);
+	result[0] = find_index(l2g.begin(), l2g.end(), index.vertex);
+	result[1] = find_index(l2g.begin(), l2g.end(), mesh.next_around_face(index).vertex);
+	result[2] = find_index(l2g.begin(), l2g.end(), mesh.next_around_face(mesh.next_around_face(index)).vertex);
+	result[3] = find_index(l2g.begin(), l2g.end(), mesh.next_around_face(mesh.next_around_face(mesh.next_around_face(index))).vertex);
+
+	Eigen::Matrix<Navigation3D::Index, 12, 1> e;
+	Eigen::Matrix<int, 12, 2> ev;
+	ev.row(0)  << l2g[0], l2g[1];
+	ev.row(1)  << l2g[1], l2g[2];
+	ev.row(2)  << l2g[2], l2g[3];
+	ev.row(3)  << l2g[3], l2g[0];
+	ev.row(4)  << l2g[0], l2g[4];
+	ev.row(5)  << l2g[1], l2g[5];
+	ev.row(6)  << l2g[2], l2g[6];
+	ev.row(7)  << l2g[3], l2g[7];
+	ev.row(8)  << l2g[4], l2g[5];
+	ev.row(9)  << l2g[5], l2g[6];
+	ev.row(10) << l2g[6], l2g[7];
+	ev.row(11) << l2g[7], l2g[4];
+
+	Navigation3D::Index tmp = index;
+
+	for (int le = 0; le < e.rows(); ++le) {
+		const auto l_index = mesh.get_index_from_element_edge(c, ev(le, 0), ev(le, 1));
+		e[le] = l_index;
+	}
+
+	int ii = 4;
+	for(int k = 0; k < 4; ++k)
+	{
+		bool reverse = false;
+		int le = 0;
+		for (; le < ev.rows(); ++le)
+		{
+			// const auto l_index =  find_edge(mesh, c, ev(le, 0), ev(le, 1));
+			// const auto l_index = mesh.get_index_from_element_edge(c, ev(le, 0), ev(le, 1));
+			const auto l_index = e[le];
+			if(l_index.edge == tmp.edge)
+			{
+				if(l_index.vertex == tmp.vertex)
+					reverse = false;
+				else
+				{
+					reverse = true;
+					assert(mesh.switch_vertex(tmp).vertex == l_index.vertex);
+				}
+
+				break;
+			}
+		}
+		assert(le < 12);
+
+
+		if(!reverse)
+		{
+
+			for(int i = 0; i < q - 1; ++i)
+			{
+				result[ii++] = 8 + le*(q-1) + i;
+			}
+		}
+		else
+		{
+			for(int i = 0; i < q - 1; ++i)
+			{
+				result[ii++] = 8 + (le+1)*(q-1) - i - 1;
+			}
+		}
+
+		tmp = mesh.next_around_face(tmp);
+	}
+
+	//faces
+
+	Eigen::Matrix<int, 6, 4> fv;
+	fv.row(0) << l2g[0], l2g[3], l2g[4], l2g[7];
+	fv.row(1) << l2g[1], l2g[2], l2g[5], l2g[6];
+	fv.row(2) << l2g[0], l2g[1], l2g[5], l2g[4];
+	fv.row(3) << l2g[3], l2g[2], l2g[6], l2g[7];
+	fv.row(4) << l2g[0], l2g[1], l2g[2], l2g[3];
+	fv.row(5) << l2g[4], l2g[5], l2g[6], l2g[7];
+
+	long lf = 0;
+	for (; lf < fv.rows(); ++lf) {
+		const auto l_index = find_quad_face(mesh, c, fv(lf, 0), fv(lf, 1), fv(lf, 2), fv(lf, 3));
+		if(l_index.face == index.face)
+			break;
+	}
+
+	assert(lf < fv.rows());
+
+	if(n_face_nodes == 1)
+		result[ii++] = 8 + n_edge_nodes + lf;
+	else if(n_face_nodes != 0)
+	{
+		Eigen::MatrixXd nodes; autogen::q_nodes_3d(q, nodes);
+		// auto pos = polyfem::FEBasis3d::linear_tet_face_local_nodes_coordinates(mesh, index);
 		// Local to global mapping of node indices
-		auto l2g = hex_vertices_local_to_global(mesh, c);
 
 		// Extract requested interface
-		res.resize(4);
-		for (int lv = 0, i = 0; lv < 4; ++lv) {
-			res(i++) = find_index(l2g.begin(), l2g.end(), index.vertex);
+		std::array<int, 4> idx;
+		for (int lv = 0; lv < 4; ++lv) {
+			idx[lv] = find_index(l2g.begin(), l2g.end(), index.vertex);
 			index = mesh.next_around_face(index);
 		}
-	}
-	else if(q == 2)
-	{
-		int c = index.element;
-		assert(mesh.is_cube(c));
-
-		int edge_offset = mesh.n_vertices();
-		int face_offset = edge_offset + mesh.n_edges();
-
-		// Local to global mapping of node indices
-		auto l2g = quadr_hex_local_to_global(mesh, c);
-
-		// Extract requested interface
-		res.resize(9);
-		for (int lv = 0, i = 0; lv < 4; ++lv) {
-			res(i++) = find_index(l2g.begin(), l2g.end(), index.vertex);
-			res(i++) = find_index(l2g.begin(), l2g.end(), edge_offset + index.edge);
-			index = mesh.next_around_face(index);
+		Eigen::Matrix<double, 4, 3> pos(4, 3);
+		int cnt = 0;
+		for (int i : idx) {
+			pos.row(cnt++) = nodes.row(i);
 		}
-		res(8) = find_index(l2g.begin(), l2g.end(), face_offset + index.face);
-	}
-	else
-		assert(false);
 
-	return res;
+		const Eigen::RowVector3d bary = pos.colwise().mean();
+
+		const int offset = 8 + n_edge_nodes;
+		bool found= false;
+		for(int lff = 0; lff < 6; ++lff)
+		{
+			Eigen::Matrix<double, 4, 3> loc_nodes = nodes.block<4,3>(offset+lff*n_face_nodes, 0);
+			Eigen::RowVector3d node_bary = loc_nodes.colwise().mean();
+
+			if((node_bary-bary).norm() < 1e-10)
+			{
+				int sum = 0;
+				for(int m = 0; m < 4; ++m)
+				{
+					auto t = pos.row(m);
+					int min_n = -1; double min_dis = 10000;
+
+					for(int n = 0; n < 4; ++n)
+					{
+						double dis = (loc_nodes.row(n)-t).squaredNorm();
+						if(dis<min_dis)
+						{
+							min_dis = dis;
+							min_n = n;
+						}
+					}
+
+					assert(min_n >= 0);
+					assert(min_n < 4);
+
+					sum += min_n;
+
+					result[ii++] = 8 + n_edge_nodes + min_n + lf*n_face_nodes;
+				}
+
+				assert(sum == 6);
+
+
+				found = true;
+				assert(lff==lf);
+			}
+
+			if(found)
+				break;
+		}
+
+		assert(found);
+	}
+
+	assert(ii == result.size());
+	return result;
 }
 
 
