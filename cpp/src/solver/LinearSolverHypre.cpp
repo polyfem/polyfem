@@ -26,9 +26,15 @@ LinearSolverHypre::LinearSolverHypre() {
 
 // Set solver parameters
 void LinearSolverHypre::setParameters(const json &params) {
-	// if (params.count("mtype")) {
-	// 	setType(params["mtype"].get<int>());
-	// }
+	if(params.count("max_iter")) {
+		max_iter_ = params["max_iter"];
+	}
+	else if(params.count("pre_max_iter")) {
+		pre_max_iter_ = params["pre_max_iter"];
+	}
+	else if(params.count("conv_tol")) {
+		conv_tol_ = params["conv_tol"];
+	}
 }
 
 void LinearSolverHypre::getInfo(json &params) const {

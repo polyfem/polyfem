@@ -882,7 +882,7 @@ Eigen::VectorXi polyfem::FEBasis3d::hex_face_local_nodes(const int q, const Mesh
 					result[ii++] = 8 + n_edge_nodes + min_n + lf*n_face_nodes;
 				}
 
-				assert(sum == 6);
+				assert(sum == 6); // 0 + 1 + 2 + 3
 
 
 				found = true;
