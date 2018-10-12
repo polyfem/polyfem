@@ -896,7 +896,9 @@ namespace polyfem
 		else
 			logger().info("mesh bb min [{} {} {}], max [{} {} {}]", min(0), min(1), min(2), max(0), max(1), max(2));
 
-		mesh->refine(args["n_refs"], args["refinenemt_location"], parent_elements);
+		const int n_refs = args["n_refs"];
+		if(n_refs > 0)
+			mesh->refine(n_refs, args["refinenemt_location"], parent_elements);
 
 		mesh->compute_boundary_ids(boundary_marker);
 
@@ -957,7 +959,9 @@ namespace polyfem
 		else
 			logger().info("mesh bb min [{}, {}, {}], max [{}, {}, {}]", min(0), min(1), min(2), max(0), max(1), max(2));
 
-		mesh->refine(args["n_refs"], args["refinenemt_location"], parent_elements);
+		const int n_refs = args["n_refs"];
+		if(n_refs > 0)
+			mesh->refine(n_refs, args["refinenemt_location"], parent_elements);
 
 		// mesh->set_tag(1712, ElementType::InteriorPolytope);
 
