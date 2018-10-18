@@ -55,6 +55,7 @@ option(ENABLE_PARDISO     "Enable Pardiso library" ON)
 option(ENABLE_MMG         "Enable MMG library"     OFF)
 option(ENABLE_TBB         "Enable TBB"             ON)
 option(ENABLE_HYPRE       "Enable hypre"           ON)
+option(ENABLE_OPENCL      "Enable OpenCL"          ON)
 
 # Sanitizer options
 option(SANITIZE_ADDRESS   "Sanitize Address"       OFF)
@@ -370,6 +371,26 @@ if(ENABLE_SUPERLU AND NOT (ENABLE_MKL AND MKL_FOUND))
 		target_link_libraries(polyfem PUBLIC ${SUPERLU_LIBRARIES})
 		target_compile_definitions(polyfem PUBLIC ${SUPERLU_DEFINES})
 		target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_SUPERLU)
+	endif()
+endif()
+
+
+if(ENABLE_OPENCL)
+	find_package(OpenCL)
+	if(OpenCL_FOUND)
+		target_include_directories(polyfem PUBLIC ${OpenCL_INCLUDE_DIRS})
+		target_link_libraries(polyfem PUBLIC OpenCL::OpenCL)
+		target_compile_definitions(polyfem PUBLIC "-DPOLYFEM_OPENCL -DRBF_PUM_LIB -DRBF_SCRIPT_ROOT=\"${THIRD_PARTY_DIR}rbf/\"")
+
+		target_sources(polyfem PRIVATE ${THIRD_PARTY_DIR}/rbf/cl.hpp ${THIRD_PARTY_DIR}/rbf/rbf_interpolate.hpp ${THIRD_PARTY_DIR}/rbf/rbf_interpolate.cpp)
+		target_include_directories(polyfem PUBLIC ${THIRD_PARTY_DIR}/rbf)
+
+		add_executable(rbf_test ${THIRD_PARTY_DIR}/rbf/cl.hpp ${THIRD_PARTY_DIR}/rbf/rbf_interpolate.hpp ${THIRD_PARTY_DIR}/rbf/rbf_interpolate.cpp)
+		target_compile_definitions(rbf_test PUBLIC "-DRBF_SCRIPT_ROOT=\"${THIRD_PARTY_DIR}rbf/\"")
+		target_include_directories(rbf_test PUBLIC ${OpenCL_INCLUDE_DIRS})
+		target_link_libraries(rbf_test PUBLIC OpenCL::OpenCL)
+	else()
+		MESSAGE(WANING "OpenCL not found!")
 	endif()
 endif()
 

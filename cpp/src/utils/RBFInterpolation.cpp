@@ -14,6 +14,29 @@ namespace polyfem
 
 	void RBFInterpolation::init(const Eigen::MatrixXd &fun, const Eigen::MatrixXd &pts, const std::string &rbf, const double eps)
 	{
+#ifdef POLYFEM_OPENCL
+		std::vector<double> pointscl(pts.size());
+		std::vector<double> functioncl(fun.rows());
+
+		int index = 0;
+		for(int i = 0; i < pts.rows(); ++i)
+		{
+			for(int j = 0; j < pts.cols(); ++j)
+			{
+				pointscl[index++] = pts(i,j);
+			}
+		}
+
+		for(int i = 0; i < fun.cols(); ++i)
+		{
+			index = 0;
+
+			for(int j = 0; j < fun.rows(); ++j)
+				functioncl[index] = fun(j, i);
+
+			rbf_pum::init(pointscl, functioncl, data_[i], verbose_, rbfcl_, opt_, unit_cube_, num_threads_);
+		}
+#else
 		std::function<double(double)> tmp;
 
 		if(rbf == "multiquadric"){
@@ -45,19 +68,25 @@ namespace polyfem
 			tmp = [eps](const double r){ return sqrt((r/eps)*(r/eps) + 1); };
 		}
 
-
-
 		init(fun, pts, tmp);
+#endif
 	}
 
 
 	RBFInterpolation::RBFInterpolation(const Eigen::MatrixXd &fun, const Eigen::MatrixXd &pts, const std::function<double(double)> &rbf)
 	{
+#ifdef POLYFEM_OPENCL
+		assert(false);
+#else
 		init(fun, pts, rbf);
+#endif
 	}
 
 	void RBFInterpolation::init(const Eigen::MatrixXd &fun, const Eigen::MatrixXd &pts, const std::function<double(double)> &rbf)
 	{
+#ifdef POLYFEM_OPENCL
+		assert(false);
+#else
 		assert(pts.rows() == fun.rows());
 
 		rbf_ = rbf;
@@ -80,10 +109,34 @@ namespace polyfem
 		for(long i = 0; i < fun.cols(); ++i){
 			weights_.col(i) = lu.solve(fun.col(i));
 		}
+#endif
 	}
 
 	Eigen::MatrixXd RBFInterpolation::interpolate(const Eigen::MatrixXd &pts) const
 	{
+#ifdef POLYFEM_OPENCL
+		Eigen::MatrixXd res(pts.rows(), data_.size());
+
+
+		std::vector<double> pointscl(pts.size());
+		int index = 0;
+		for(int i = 0; i < pts.rows(); ++i)
+		{
+			for(int j = 0; j < pts.cols(); ++j)
+			{
+				pointscl[index++] = pts(i,j);
+			}
+		}
+
+		std::vector<double> tmp;
+		for(size_t i = 0; i < data_.size(); ++i)
+		{
+			rbf_pum::interpolate(data_[i], pointscl, tmp, verbose_, rbfcl_, opt_, unit_cube_, num_threads_);
+
+			for(size_t j = 0; j < tmp.size(); ++j)
+				res(j, i) = tmp[j];
+		}
+#else
 		assert(pts.cols() == centers_.cols());
 		const int n = centers_.rows();
 		const int m = pts.rows();
@@ -96,6 +149,7 @@ namespace polyfem
         }
 
 		const Eigen::MatrixXd res = mat * weights_;
+#endif
 		return res;
 	}
 }
