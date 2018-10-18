@@ -4,6 +4,8 @@
 #include <polyfem/ElementAssemblyValues.hpp>
 #include <polyfem/ElasticityUtils.hpp>
 
+#include <polyfem/auto_rhs.hpp>
+
 namespace polyfem
 {
 	void LinearElasticity::set_parameters(const json &params)
@@ -65,16 +67,9 @@ namespace polyfem
 
 
 		if(size() == 2)
-		{
-			res(0) = (lambda_+2*mu_)*pt(0).getHessian()(0,0)  +(lambda_+mu_)  *(pt(1).getHessian()(1,0))+mu_*(pt(0).getHessian()(1,1));
-			res(1) = (lambda_+mu_)  *(pt(0).getHessian()(1,0))+(lambda_+2*mu_)*(pt(1).getHessian()(1,1))+mu_*(pt(1).getHessian()(0,0));
-		}
+			autogen::linear_elasticity_2d_function(pt, lambda_, mu_, res);
 		else if(size() == 3)
-		{
-			res(0) = (lambda_+2*mu_)*pt(0).getHessian()(0,0)+(lambda_+mu_)*pt(1).getHessian()(1,0)+(lambda_+mu_)*pt(2).getHessian()(2,0)+mu_*(pt(0).getHessian()(1,1)+pt(0).getHessian()(2,2));
-			res(1) = (lambda_+mu_)*pt(0).getHessian()(1,0)+(lambda_+2*mu_)*pt(1).getHessian()(1,1)+(lambda_+mu_)*pt(2).getHessian()(2,1)+mu_*(pt(1).getHessian()(0,0)+pt(1).getHessian()(2,2));
-			res(2) = (lambda_+mu_)*pt(0).getHessian()(2,0)+(lambda_+mu_)*pt(1).getHessian()(2,1)+(lambda_+2*mu_)*pt(2).getHessian()(2,2)+mu_*(pt(2).getHessian()(0,0)+pt(2).getHessian()(1,1));
-		}
+			autogen::linear_elasticity_3d_function(pt, lambda_, mu_, res);
 		else
 			assert(false);
 

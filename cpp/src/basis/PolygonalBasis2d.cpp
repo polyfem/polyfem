@@ -202,12 +202,6 @@ void PolygonalBasis2d::compute_integral_constraints(
 
 	std::array<Eigen::MatrixXd, 5> strong;
 
-	// Eigen::MatrixXd basis_integrals_old;
-	// basis_integrals_old.resize(n_bases, 5);
-	// basis_integrals_old.setZero();
-	// Eigen::MatrixXd rhs(n_bases, 5);
-	// rhs.setZero();
-
 	std::array<Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>, 5> tmp;
 	for(auto &m : tmp)
 		m.resize(dim*dim, 1);
@@ -234,17 +228,34 @@ void PolygonalBasis2d::compute_integral_constraints(
 		RBFWithQuadratic::setup_monomials_vals_2d(n_local_bases, vals.val, vals);
 		RBFWithQuadratic::setup_monomials_strong_2d(dim, assembler_name, vals.val, da, strong);
 
-
 		for(int j = 0; j < n_local_bases; ++j) {
 			const AssemblyValues &v=vals.basis_values[j];
 
+			//<rhs(q_k(x_i) er) , phi_j(x_i) es > = <strong[k], phi_j(x_i) es >
+			// es =(1, 0), or es = (0, 1)
 			for(int i = 0; i < 5; ++i)
 			{
-				for(int d = 0; d < dim *dim; ++d)
+				for(int d = 0; d < dim*dim; ++d){
 					tmp[i](d) = (strong[i].row(d).array() * v.val.transpose().array()).sum();
+					//<rhs(q_k(x_i) e0) , phi_j(x_i) e0 >
+					//strong[i].row(0).array() * v.val.transpose().array() 	+ strong[i].row(1).array() * 0
+					//<rhs(q_k(x_i) e0) , phi_j(x_i) e1 >
+					//strong[i].row(0).array() * 0 							+ strong[i].row(1).array() * v.val.transpose().array()
+
+					//<rhs(q_k(x_i) e1) , phi_j(x_i) e0 >
+					//strong[i].row(2).array() * v.val.transpose().array() 	+ strong[i].row(3).array() * 0
+					//<rhs(q_k(x_i) e1) , phi_j(x_i) e1 >
+					//strong[i].row(2).array() * 0 							+ strong[i].row(3).array() * v.val.transpose().array()
+					// std::cout<<tmp[i](d)<<std::endl;
+				}
+				// std::cout<<std::endl;
 			}
 
+			// std::cout<<vals.val.size()<<std::endl;
+			//a_h(q es, phi_j er) = \int grad^sym (q es) : C : grad^sym (phi_j er) \in R
+			//a_h(y^2, phi_j)\in R^{dim^2}
 
+			//check if it is j, n_local_bases + q or n_local_bases + q, j
 			const auto integral_10 = assembler.local_assemble(assembler_name, vals, j, n_local_bases + 0, da) + tmp[0];
 			const auto integral_01 = assembler.local_assemble(assembler_name, vals, j, n_local_bases + 1, da) + tmp[1];
 
@@ -252,18 +263,6 @@ void PolygonalBasis2d::compute_integral_constraints(
 			const auto integral_20 = assembler.local_assemble(assembler_name, vals, j, n_local_bases + 3, da) + tmp[3];
 			const auto integral_02 = assembler.local_assemble(assembler_name, vals, j, n_local_bases + 4, da) + tmp[4];
 
-
-
-			// const double integral_10_old = (v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-			// const double integral_01_old = (v.grad_t_m.col(1).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-
-			// const double integral_11_old = 	((vals.val.col(1).array() * v.grad_t_m.col(0).array() + vals.val.col(0).array() * v.grad_t_m.col(1).array()) * vals.det.array() * vals.quadrature.weights.array()).sum();
-
-			// // int nabla q_20 \cdot nabla phi_j + \int delta q_20 * phi_j = 2 (int x nalba_x phi_j + int phi_j)
-			// const double integral_20_old = 2*(vals.val.col(0).array() * v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-			// const double integral_02_old = 2*(vals.val.col(1).array() * v.grad_t_m.col(1).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-
-			// const double area_old = (v.val.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
 
 			for(size_t ii = 0; ii < v.global.size(); ++ii) {
 				for(int d1 = 0; d1 < dim; ++d1)
@@ -280,32 +279,9 @@ void PolygonalBasis2d::compute_integral_constraints(
 						basis_integrals(v.global[ii].index*dim + d1, 4*dim + d2) += integral_02(loc_index) * v.global[ii].val;
 					}
 				}
-
-
-
-				// basis_integrals_old(v.global[ii].index, 0) += integral_10_old * v.global[ii].val;
-				// basis_integrals_old(v.global[ii].index, 1) += integral_01_old * v.global[ii].val;
-
-				// basis_integrals_old(v.global[ii].index, 2) += integral_11_old * v.global[ii].val;
-
-				// basis_integrals_old(v.global[ii].index, 3) += integral_20_old * v.global[ii].val;
-				// basis_integrals_old(v.global[ii].index, 4) += integral_02_old * v.global[ii].val;
-
-				// rhs(v.global[ii].index, 3) += -2.0 * area_old * v.global[ii].val;
-				// rhs(v.global[ii].index, 4) += -2.0 * area_old * v.global[ii].val;
 			}
 		}
 	}
-
-	// basis_integrals_old -= rhs;
-
-	// for(int i = 0; i < basis_integrals.rows(); ++i)
-	// {
-	// 	for(int j = 0; j < basis_integrals.cols(); ++j)
-	// 	{
-	// 		assert(fabs(basis_integrals(i, j) - basis_integrals_old(i, j)) < 1e-12);
-	// 	}
-	// }
 }
 
 // -----------------------------------------------------------------------------

@@ -358,7 +358,7 @@ void RBFWithQuadraticLagrange::compute_weights(const Eigen::MatrixXd &samples,
 	rhs.topRows(A.cols()) = At * b;
 	rhs.bottomRows(local_basis_integral.cols()) = local_basis_integral.transpose();
 
-	// Compute M = [ A^T A C^T; C 0]
+	// Compute M = [ A^T A, C^T; C, 0]
 	assert(C.cols() == A.cols());
 	assert(A.rows() == b.rows());
 	Eigen::MatrixXd M(A.cols() + C.rows(), A.cols() + C.rows());

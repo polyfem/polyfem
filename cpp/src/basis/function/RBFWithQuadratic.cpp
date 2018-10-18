@@ -61,42 +61,59 @@ double kernel_prime(const bool is_volume, const double r) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+//output is std::array<Eigen::MatrixXd, 5> &strong rhs(q(x_i) er)
 void RBFWithQuadratic::setup_monomials_strong_2d(const int dim, const std::string &assembler_name, const Eigen::MatrixXd &pts, const QuadratureVector &da, std::array<Eigen::MatrixXd, 5> &strong)
 {
+	//a(u,v) = a(q er, phi_j es) = <rhs(q(x_i) er) , phi_j(x_i) es >
+	// (not a(phi_j es, q er))
 	const auto &assembler = AssemblerUtils::instance();
 
-	DiffScalarBase::setVariableCount(2);
+	DiffScalarBase::setVariableCount(dim);
 	AutodiffHessianPt pt(dim);
 	for(int i = 0; i < 5; ++i){
 		strong[i].resize(dim*dim, pts.rows());
 		strong[i].setZero();
 	}
 
+	Eigen::MatrixXd tmp;
+
 	for(int i = 0; i < pts.rows(); ++i)
 	{
+		//loop for er
 		for(int d = 0; d < dim; ++d)
 		{
 			pt((d+1)%dim) = AutodiffScalarHessian(0);
+			//for d = 0 pt(q, 0), for d = 1 pt=(0, q)
 
 			//x
-			pt(d) = AutodiffScalarHessian(0, pts(i, 0));
-			strong[0](d*dim + d, i) = assembler.compute_rhs(assembler_name, pt)(d) * da(i);
+			pt(d) = AutodiffScalarHessian(0, pts(i, 0)); //pt=(x, 0) or pt=(0, x)
+			tmp = assembler.compute_rhs(assembler_name, pt); //in R^dim
+			for(int d1 = 0; d1 < dim; ++d1)
+				strong[0](d*dim + d1, i) = tmp(d1) * da(i);
 
 			//y
-			pt(d) = AutodiffScalarHessian(0, pts(i, 1));
-			strong[1](d*dim + d, i) = assembler.compute_rhs(assembler_name, pt)(d) * da(i);
+			pt(d) = AutodiffScalarHessian(1, pts(i, 1));
+			tmp = assembler.compute_rhs(assembler_name, pt);
+			for(int d1 = 0; d1 < dim; ++d1)
+				strong[1](d*dim + d1, i) = tmp(d1) * da(i);
 
-			//y
+			//xy
 			pt(d) = AutodiffScalarHessian(0, pts(i, 0)) * AutodiffScalarHessian(1, pts(i, 1));
-			strong[2](d*dim + d, i) = assembler.compute_rhs(assembler_name, pt)(d) * da(i);
+			tmp = assembler.compute_rhs(assembler_name, pt);
+			for(int d1 = 0; d1 < dim; ++d1)
+				strong[2](d*dim + d1, i) = tmp(d1) * da(i);
 
 			//x^2
 			pt(d) = AutodiffScalarHessian(0, pts(i, 0)) * AutodiffScalarHessian(0, pts(i, 0));
-			strong[3](d*dim + d, i) = assembler.compute_rhs(assembler_name, pt)(d) * da(i);
+			tmp = assembler.compute_rhs(assembler_name, pt);
+			for(int d1 = 0; d1 < dim; ++d1)
+				strong[3](d*dim + d1, i) = tmp(d1) * da(i);
 
 			//y^2
-			pt(d) = AutodiffScalarHessian(0, pts(i, 1)) * AutodiffScalarHessian(0, pts(i, 1));
-			strong[4](d*dim + d, i) = assembler.compute_rhs(assembler_name, pt)(d) * da(i);
+			pt(d) = AutodiffScalarHessian(1, pts(i, 1)) * AutodiffScalarHessian(1, pts(i, 1));
+			tmp = assembler.compute_rhs(assembler_name, pt);
+			for(int d1 = 0; d1 < dim; ++d1)
+				strong[4](d*dim + d1, i) = tmp(d1) * da(i);
 		}
 	}
 
@@ -139,6 +156,13 @@ void RBFWithQuadratic::setup_monomials_vals_2d(const int star_index, const Eigen
 	{
 		vals.basis_values[i].grad_t_m = vals.basis_values[i].grad;
 	}
+
+	// for(size_t i = star_index; i < star_index + 5; ++i)
+	// {
+	// 	vals.basis_values[i].grad_t_m = Eigen::MatrixXd(pts.rows(), pts.cols());
+	// 	for(int k = 0; k < vals.jac_it.size(); ++k)
+	// 		vals.basis_values[i].grad_t_m.row(k) = vals.basis_values[i].grad.row(k) * vals.jac_it[k];
+	// }
 }
 
 RBFWithQuadratic::RBFWithQuadratic(
