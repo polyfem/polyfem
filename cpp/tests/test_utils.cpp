@@ -33,6 +33,7 @@ TEST_CASE("interpolated_fun_2d", "[utils]") {
 
 
 TEST_CASE("rbf_interpolate", "[utils]") {
+#ifndef POLYFEM_OPENCL
     Eigen::MatrixXd in_pts(10, 3);
     in_pts.col(0) << 0.73142708, 0.15639157, 0.06799852, 0.61980247, 0.70461343, 0.96155237, 0.18068249, 0.09782913, 0.36740639, 0.26763186;
     in_pts.col(1) << 0.94896831, 0.37164925, 0.86693048, 0.87339727, 0.18393119, 0.19822407, 0.54455402, 0.98657281, 0.541773  , 0.19644425;
@@ -59,6 +60,7 @@ TEST_CASE("rbf_interpolate", "[utils]") {
 
     for(int i = 0; i < 20; ++i)
         REQUIRE(actual(i) == Approx(expected(i)).margin(1e-10));
+#endif
 }
 
 
