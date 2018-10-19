@@ -124,21 +124,22 @@ namespace polyfem
 	}
 
 	void AssemblerUtils::assemble_pressure_problem(const std::string &assembler,
+		const bool is_volume,
 		const int n_basis,
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
 		Eigen::SparseMatrix<double> &stiffness) const
 	{
 		if(assembler == "Stokes")
-			stokes_pressure_.assemble(false, n_basis, bases, gbases, stiffness);
+			stokes_pressure_.assemble(is_volume, n_basis, bases, gbases, stiffness);
 		else if(assembler == "IncompressibleLinearElasticity")
-			incompressible_lin_elast_pressure_.assemble(false, n_basis, bases, gbases, stiffness);
+			incompressible_lin_elast_pressure_.assemble(is_volume, n_basis, bases, gbases, stiffness);
 
 		else
 		{
 			logger().warn("{} not found, fallback to default", assembler);
 			assert(false);
-			stokes_pressure_.assemble(false, n_basis, bases, gbases, stiffness);
+			stokes_pressure_.assemble(is_volume, n_basis, bases, gbases, stiffness);
 		}
 	}
 

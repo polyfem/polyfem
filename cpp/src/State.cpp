@@ -1434,7 +1434,7 @@ namespace polyfem
 			Eigen::SparseMatrix<double> velocity_stiffness, mixed_stiffness, pressure_stiffness;
 			assembler.assemble_problem(mixed_formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, velocity_stiffness);
 			assembler.assemble_mixed_problem(mixed_formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, iso_parametric() ? bases : geom_bases, mixed_stiffness);
-			assembler.assemble_pressure_problem(mixed_formulation(), n_pressure_bases, pressure_bases, iso_parametric() ? bases : geom_bases, pressure_stiffness);
+			assembler.assemble_pressure_problem(mixed_formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, iso_parametric() ? bases : geom_bases, pressure_stiffness);
 
 			assert(velocity_stiffness.rows() == velocity_stiffness.cols());
 			assert(velocity_stiffness.rows() == n_bases * mesh->dimension());
@@ -1447,7 +1447,7 @@ namespace polyfem
 
 
 			std::vector< Eigen::Triplet<double> > blocks;
-			blocks.reserve(velocity_stiffness.nonZeros() + 2*mixed_stiffness.nonZeros());
+			blocks.reserve(velocity_stiffness.nonZeros() + 2*mixed_stiffness.nonZeros() + pressure_stiffness.nonZeros());
 
 			for (int k = 0; k < velocity_stiffness.outerSize(); ++k)
 			{

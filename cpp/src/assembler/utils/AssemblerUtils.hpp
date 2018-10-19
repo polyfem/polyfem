@@ -58,6 +58,7 @@ namespace polyfem
 			Eigen::SparseMatrix<double> &stiffness) const;
 
 		void assemble_pressure_problem(const std::string &assembler,
+			const bool is_volume,
 			const int n_basis,
 			const std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
