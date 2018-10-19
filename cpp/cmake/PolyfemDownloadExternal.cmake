@@ -14,6 +14,14 @@ endfunction()
 ################################################################################
 
 ## Sanitizers
+function(polyfem_download_libigl)
+    polyfem_download_project(libigl
+        GIT_REPOSITORY https://github.com/libigl/libigl.git
+        GIT_TAG        e6116bf9ddca2a98cc1ee8cf0a8f99d70c501119
+    )
+endfunction()
+
+## Sanitizers
 function(polyfem_download_sanitizers)
     polyfem_download_project(sanitizers-cmake
         GIT_REPOSITORY https://github.com/arsenm/sanitizers-cmake.git

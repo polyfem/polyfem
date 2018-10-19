@@ -217,6 +217,7 @@ if(ENABLE_TBB)
 endif()
 
 # libigl
+polyfem_download_libigl()
 find_package(LIBIGL REQUIRED)
 target_link_libraries(polyfem PUBLIC igl::core igl::triangle igl::tetgen igl::opengl_glfw_imgui)
 #remove the igl::viewer for cluster deployment
