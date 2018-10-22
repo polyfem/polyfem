@@ -257,7 +257,7 @@ namespace polyfem
 					const auto stiffness_val = local_assembler_.assemble(psi_vals, phi_vals, i, j, loc_storage.da);
 					assert(stiffness_val.size() == local_assembler_.rows() * local_assembler_.cols());
 
-					igl::Timer t1; t1.start();
+					// igl::Timer t1; t1.start();
 					for(int n = 0; n < local_assembler_.rows(); ++n)
 					{
 						for(int m = 0; m < local_assembler_.cols(); ++m)

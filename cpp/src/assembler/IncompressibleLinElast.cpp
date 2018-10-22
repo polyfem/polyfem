@@ -9,6 +9,7 @@ namespace polyfem
 	void IncompressibleLinearElasticityDispacement::set_parameters(const json &params)
 	{
 		set_size(params["size"]);
+		assert(size_ == 2 || size_ == 3);
 
 		if(params.count("young")) {
 			lambda() = convert_to_lambda(size_ == 3, params["young"], params["nu"]);
@@ -30,12 +31,14 @@ namespace polyfem
 	void IncompressibleLinearElasticityDispacement::set_size(const int size)
 	{
 		size_ = size;
+		assert(size_ == 2 || size_ == 3);
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 	IncompressibleLinearElasticityDispacement::assemble(const ElementAssemblyValues &vals, const int i, const int j, const QuadratureVector &da) const
 	{
 		// 2mu (epsi : epsj)
+		assert(size_ == 2 || size_ == 3);
 
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> res(size()*size());
 		res.setZero();
@@ -98,6 +101,7 @@ namespace polyfem
 
 	void IncompressibleLinearElasticityDispacement::assign_stress_tensor(const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
 	{
+		assert(size_ == 2 || size_ == 3);
 		all.resize(local_pts.rows(), all_size);
 		assert(displacement.cols() == 1);
 
@@ -143,6 +147,7 @@ namespace polyfem
 	void IncompressibleLinearElasticityMixed::set_parameters(const json &params)
 	{
 		set_size(params["size"]);
+		assert(size_ == 2 || size_ == 3);
 
 		if(params.count("young")) {
 			lambda() = convert_to_lambda(size_ == 3, params["young"], params["nu"]);
@@ -164,13 +169,14 @@ namespace polyfem
 	void IncompressibleLinearElasticityMixed::set_size(const int size)
 	{
 		size_ = size;
+		assert(size_ == 2 || size_ == 3);
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
 	IncompressibleLinearElasticityMixed::assemble(const ElementAssemblyValues &psi_vals, const ElementAssemblyValues &phi_vals, const int i, const int j, const QuadratureVector &da) const
 	{
 		// (psii : div phij)  = -psii * gradphij
-
+		assert(size_ == 2 || size_ == 3);
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res(rows()*cols());
 		res.setZero();
 
@@ -200,6 +206,7 @@ namespace polyfem
 	void IncompressibleLinearElasticityPressure::set_parameters(const json &params)
 	{
 		const int size = params["size"];
+		assert(size == 2 || size == 3);
 
 		if(params.count("young")) {
 			lambda() = convert_to_lambda(size == 3, params["young"], params["nu"]);

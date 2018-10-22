@@ -101,6 +101,7 @@ namespace polyfem
 		sol = tmp.block(0, 0, tmp.rows() - n_pressure_bases, tmp.cols());
 		assert(sol.size() == n_bases * mesh->dimension());
 		pressure = tmp.block(tmp.rows()-n_pressure_bases, 0, n_pressure_bases, tmp.cols());
+		assert(pressure.size() == n_pressure_bases);
 	}
 
 	void State::compute_mesh_size(const Mesh &mesh_in, const std::vector< ElementBases > &bases_in, const int n_samples)
@@ -1445,7 +1446,6 @@ namespace polyfem
 			assert(pressure_stiffness.rows() == n_pressure_bases);
 			assert(pressure_stiffness.cols() == n_pressure_bases);
 
-
 			std::vector< Eigen::Triplet<double> > blocks;
 			blocks.reserve(velocity_stiffness.nonZeros() + 2*mixed_stiffness.nonZeros() + pressure_stiffness.nonZeros());
 
@@ -1479,7 +1479,7 @@ namespace polyfem
 			stiffness.setFromTriplets(blocks.begin(), blocks.end());
 			stiffness.makeCompressed();
 
-			// Eigen::saveMarket(stiffness, "test.txt");
+			// Eigen::saveMarket(stiffness, "stiffness.txt");
 			// Eigen::saveMarket(velocity_stiffness, "velocity_stiffness.txt");
 			// Eigen::saveMarket(mixed_stiffness, "mixed_stiffness.txt");
 			// Eigen::saveMarket(pressure_stiffness, "pressure_stiffness.txt");

@@ -1061,9 +1061,6 @@ namespace polyfem
 							const Local2Global &l2g = basis.bases[j].global()[kk];
 							int g_index = l2g.index;
 
-							if(!state.problem->is_scalar())
-								g_index *= state.mesh->dimension();
-
 							MatrixXd node = l2g.node;
 							data(Visualizations::PNodes).add_points(node, col);
 

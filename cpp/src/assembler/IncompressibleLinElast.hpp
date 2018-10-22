@@ -37,7 +37,7 @@ namespace polyfem
 		void compute_von_mises_stresses(const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const;
 		void compute_stress_tensor(const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &tensor) const;
 	private:
-		int size_ = 2;
+		int size_ = -1;
 		double mu_ = 1;
 		double lambda_ = 1;
 
@@ -67,7 +67,7 @@ namespace polyfem
 
 		void set_parameters(const json &params);
 	private:
-		int size_ = 2;
+		int size_ = -1;
 		double mu_ = 1;
 		double lambda_ = 1;
 	};
