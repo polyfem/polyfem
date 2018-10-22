@@ -202,6 +202,7 @@ endif()
 
 # TBB
 if(ENABLE_TBB)
+	polyfem_download_tbb()
 	set(TBB_BUILD_STATIC ON CACHE BOOL " " FORCE)
 	set(TBB_BUILD_SHARED OFF CACHE BOOL " " FORCE)
 	set(TBB_BUILD_TBBMALLOC OFF CACHE BOOL " " FORCE)
@@ -223,6 +224,7 @@ target_link_libraries(polyfem PUBLIC igl::core igl::triangle igl::tetgen igl::op
 #remove the igl::viewer for cluster deployment
 
 # Geogram
+polyfem_download_geogram()
 include(geogram)
 target_link_libraries(polyfem PUBLIC geogram)
 
@@ -230,6 +232,7 @@ target_link_libraries(polyfem PUBLIC geogram)
 target_link_libraries(polyfem PUBLIC spdlog::spdlog)
 
 # CppNumericalSolvers
+polyfem_download_CppNumericalSolvers()
 add_library(cppoptlib INTERFACE)
 target_include_directories(cppoptlib SYSTEM INTERFACE ${THIRD_PARTY_DIR}/CppNumericalSolvers/include)
 target_link_libraries(polyfem PUBLIC cppoptlib)
@@ -239,6 +242,7 @@ add_library(cli11 INTERFACE)
 target_include_directories(cli11 SYSTEM INTERFACE ${THIRD_PARTY_DIR}/cli11)
 
 # Spectra
+polyfem_download_spectra()
 add_library(spectra INTERFACE)
 target_include_directories(spectra SYSTEM INTERFACE ${THIRD_PARTY_DIR}/spectra/include)
 target_link_libraries(polyfem PUBLIC spectra)
@@ -248,6 +252,7 @@ add_subdirectory(${THIRD_PARTY_DIR}/clipper)
 target_link_libraries(polyfem PUBLIC polyclipping)
 
 # Json
+polyfem_download_json()
 add_library(json INTERFACE)
 target_include_directories(json SYSTEM INTERFACE ${THIRD_PARTY_DIR}/json/include)
 target_link_libraries(polyfem PUBLIC json)
@@ -260,12 +265,13 @@ target_include_directories(nanosvg INTERFACE ${THIRD_PARTY_DIR}/nanosvg)
 add_subdirectory(${THIRD_PARTY_DIR}/tinyfiledialogs tinyfiledialogs)
 
 # Tiny format
-add_library(tinyformat INTERFACE)
-target_include_directories(tinyformat SYSTEM INTERFACE ${THIRD_PARTY_DIR}/tinyformat)
-target_link_libraries(polyfem PUBLIC tinyformat)
+# add_library(tinyformat INTERFACE)
+# target_include_directories(tinyformat SYSTEM INTERFACE ${THIRD_PARTY_DIR}/tinyformat)
+# target_link_libraries(polyfem PUBLIC tinyformat)
 
 # TinyExpr library
 if(NOT TARGET tinyexpr::tinyexpr)
+	polyfem_download_tinyexpr()
     add_library(tinyexpr_tinyexpr ${THIRD_PARTY_DIR}/tinyexpr/tinyexpr.c)
     target_include_directories(tinyexpr_tinyexpr SYSTEM PUBLIC ${THIRD_PARTY_DIR}/tinyexpr)
     add_library(tinyexpr::tinyexpr ALIAS tinyexpr_tinyexpr)
@@ -273,11 +279,13 @@ endif()
 target_link_libraries(polyfem PUBLIC tinyexpr::tinyexpr)
 
 # Catch2
+polyfem_download_catch2()
 add_library(catch INTERFACE)
-target_include_directories(catch SYSTEM INTERFACE ${THIRD_PARTY_DIR}/Catch2/single_include)
+target_include_directories(catch SYSTEM INTERFACE ${THIRD_PARTY_DIR}/Catch2/single_include/catch2)
 
 # Hypre
 if(ENABLE_HYPRE)
+	polyfem_download_hypre()
 	include(hypre)
 	target_link_libraries(polyfem PUBLIC HYPRE)
 	target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_HYPRE)
@@ -379,6 +387,7 @@ endif()
 if(ENABLE_OPENCL)
 	find_package(OpenCL)
 	if(OpenCL_FOUND)
+		polyfem_download_rbf()
 		target_include_directories(polyfem PUBLIC ${OpenCL_INCLUDE_DIRS})
 		target_link_libraries(polyfem PUBLIC OpenCL::OpenCL)
 		target_compile_definitions(polyfem PUBLIC "-DPOLYFEM_OPENCL -DRBF_PUM_LIB -DRBF_SCRIPT_ROOT=\"${THIRD_PARTY_DIR}rbf/\"")
