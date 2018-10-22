@@ -27,6 +27,7 @@ namespace polyfem
 			}
 		}
 
+		data_.resize(fun.cols());
 		for(int i = 0; i < fun.cols(); ++i)
 		{
 			index = 0;
