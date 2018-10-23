@@ -22,6 +22,7 @@ matrix:
     env:
     - MATRIX_EVAL="export CC=gcc-7 && CXX=g++-7 && CONFIG=Debug"
   - os: osx
+    osx_image: xcode8.3
     compiler: clang
     env:
     - MATRIX_EVAL="export CONFIG=Debug"
