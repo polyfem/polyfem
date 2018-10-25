@@ -35,7 +35,13 @@ namespace polyfem
 		Eigen::VectorXd b, x, guess;
  		Eigen::SparseMatrix<double> A;
 		assembler.assemble_problem("LinearElasticity", state.mesh->is_volume(), state.n_bases, state.bases, state.iso_parametric() ? state.bases : state.geom_bases, A);
- 		b = state.rhs * t;
+ 		if(!rhs_computed)
+		{
+			rhs_assembler.compute_energy_grad(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, state.rhs, t, current_rhs);
+			rhs_computed = true;
+		}
+
+		b = current_rhs;
 		dirichlet_solve(*solver, A, b, state.boundary_nodes, x, "", false);
  		full_to_reduced(x, guess);
 

@@ -1775,6 +1775,14 @@ namespace polyfem
 						tmp_sol = nl_problem.initial_guess();
 						prev_sol = tmp_sol;
 						start = false;
+
+						if(args["save_solve_sequence"])
+						{
+							nl_problem.reduced_to_full(tmp_sol, sol);
+
+							save_vtu( "step_" + std::to_string(0) + ".vtu");
+							save_wire("step_" + std::to_string(0) + ".obj");
+						}
 					}
 
 					if (args["nl_solver"] == "newton") {
@@ -1794,6 +1802,9 @@ namespace polyfem
 							prev_t = t;
 							step_t *= 2;
 						}
+
+						if(step_t > 1.0/steps)
+							step_t = 1.0/steps;
 
 						solver.getInfo(solver_info);
 					} else if (args["nl_solver"] == "lbfgs") {
