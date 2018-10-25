@@ -1,6 +1,7 @@
 #include <polyfem/Mesh3D.hpp>
-#include <polyfem/CommandLine.hpp>
 #include <polyfem/Common.hpp>
+
+#include <CLI11.hpp>
 
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
@@ -197,7 +198,7 @@ void save(const std::string &path, const VectorXi &selected, const BCVals &vals)
 	file.close();
 }
 
-int main(int argc, const char **argv)
+int main(int argc, char **argv)
 {
 #ifndef WIN32
 	setenv("GEO_NO_SIGNAL_HANDLER", "1", 1);
@@ -213,11 +214,15 @@ int main(int argc, const char **argv)
 
 	igl::opengl::glfw::Viewer viewer;
 
-	CommandLine command_line;
+	CLI::App command_line{"bc_settter"};
 	std::string path = "";
-	command_line.add_option("-mesh", path);
+	command_line.add_option("--mesh,-m", path, "Path to the input mesh");
 
-	command_line.parse(argc, argv);
+    try {
+        command_line.parse(argc, argv);
+    } catch (const CLI::ParseError &e) {
+        return command_line.exit(e);
+    }
 
 	int current_id = 1;
 	bool tracking_mouse = false;
@@ -364,7 +369,7 @@ int main(int argc, const char **argv)
 		ImGui::End();
 	};
 
-	auto paint = [&]() {
+	auto paint = [&](bool flod_fill) {
 		int fid;
 		Vector3f bc;
 
@@ -374,21 +379,9 @@ int main(int argc, const char **argv)
 		if(igl::unproject_onto_mesh(Vector2f(x,y), viewer.core.view,
 			viewer.core.proj, viewer.core.viewport, V, F, fid, bc))
 		{
-
-			visited.setConstant(false);
-			std::queue<int> to_visit; to_visit.push(fid);
-
-			while(!to_visit.empty())
+			if(!flod_fill)
 			{
-				const int id = to_visit.front();
-				to_visit.pop();
-
-				if(visited(id))
-					continue;
-
-				visited(id) = true;
-
-				const int real_face = boundary_2_all(id);
+				const int real_face = boundary_2_all(fid);
 				selected(real_face) = current_id;
 				const auto &loc_faces = all_2_local(real_face);
 
@@ -397,19 +390,45 @@ int main(int argc, const char **argv)
 				for(int i : loc_faces){
 					C.row(i) = col;
 				}
+			}
+			else
+			{
+				visited.setConstant(false);
+				std::queue<int> to_visit; to_visit.push(fid);
 
-				assert(id<adj.size());
-				// auto &neighs = adj[id];
-				for(int i = 0; i < 3; ++i)
+				while(!to_visit.empty())
 				{
-					const int nid = adj(id, i);
-					if(visited(nid))
+					const int id = to_visit.front();
+					to_visit.pop();
+
+					if(visited(id))
 						continue;
 
-					if(std::abs(N.row(fid).dot(N.row(nid)))<0.99)
-						continue;
+					visited(id) = true;
 
-					to_visit.push(nid);
+					const int real_face = boundary_2_all(id);
+					selected(real_face) = current_id;
+					const auto &loc_faces = all_2_local(real_face);
+
+					const auto col = color(selected[real_face], vals.size());
+
+					for(int i : loc_faces){
+						C.row(i) = col;
+					}
+
+					assert(id<adj.size());
+				// auto &neighs = adj[id];
+					for(int i = 0; i < 3; ++i)
+					{
+						const int nid = adj(id, i);
+						if(visited(nid))
+							continue;
+
+						if(std::abs(N.row(fid).dot(N.row(nid)))<0.99)
+							continue;
+
+						to_visit.push(nid);
+					}
 				}
 			}
 
@@ -421,13 +440,16 @@ int main(int argc, const char **argv)
 		return false;
 	};
 
+	int current_modifier = -1;
+
 	viewer.callback_mouse_down = [&](igl::opengl::glfw::Viewer& viewer, int, int modifier)->bool
 	{
-		//shift
-		if(modifier != 1)
+		//shift or command
+		if(modifier != 1 && modifier !=8 )
 			return false;
 
-		return paint();
+		current_modifier = modifier;
+		return paint(current_modifier == 1);
 	};
 
 	viewer.callback_mouse_move = [&](igl::opengl::glfw::Viewer& viewer, int, int)->bool
@@ -435,7 +457,7 @@ int main(int argc, const char **argv)
 		if(!tracking_mouse)
 			return false;
 
-		return paint();
+		return paint(current_modifier == 1);
 	};
 
 	viewer.callback_mouse_up = [&](igl::opengl::glfw::Viewer& viewer, int, int)->bool
