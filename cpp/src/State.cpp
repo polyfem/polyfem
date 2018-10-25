@@ -1780,8 +1780,8 @@ namespace polyfem
 						{
 							nl_problem.reduced_to_full(tmp_sol, sol);
 
-							save_vtu( "step_" + std::to_string(0) + ".vtu");
-							save_wire("step_" + std::to_string(0) + ".obj");
+							save_vtu( "step_" + std::to_string(prev_t) + ".vtu");
+							save_wire("step_" + std::to_string(prev_t) + ".obj");
 						}
 					}
 
@@ -1829,8 +1829,8 @@ namespace polyfem
 					{
 						nl_problem.reduced_to_full(tmp_sol, sol);
 
-						save_vtu( "step_" + std::to_string(t) + ".vtu");
-						save_wire("step_" + std::to_string(t) + ".obj");
+						save_vtu( "step_" + std::to_string(prev_t) + ".vtu");
+						save_wire("step_" + std::to_string(prev_t) + ".obj");
 					}
 
 
