@@ -1764,25 +1764,46 @@ namespace polyfem
 				double step_t = 1.0/steps;
 				double t = step_t;
 				double prev_t = 0;
-				bool start = true;
+				// bool start = true;
 
+				sol.resizeLike(rhs);
+				sol.setZero();
+
+				Eigen::SparseMatrix<double> nlstiffness;
+				auto solver = LinearSolver::create(args["solver_type"], args["precond_type"]);
+				Eigen::VectorXd x, b;
+
+				const auto &gbases = iso_parametric() ? bases : geom_bases;
 				while(t <= 1)
 				{
 					logger().info("t: {} prev: {} step: {}", t, prev_t, step_t);
 
+					logger().debug("Updating starting point...");
+					assembler.assemble_energy_hessian(formulation(), mesh->is_volume(), n_bases, bases, gbases, sol, nlstiffness);
 					NLProblem nl_problem(rhs_assembler, t);
+					b = nl_problem.current_rhs();
+					dirichlet_solve(*solver, nlstiffness, b, boundary_nodes, x, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
+					sol = x;
+					nl_problem.full_to_reduced(sol, tmp_sol);
+					logger().debug("done!");
 					if(prev_t <= 0){
-						tmp_sol = nl_problem.initial_guess();
+					// 	tmp_sol = nl_problem.initial_guess();
 						prev_sol = tmp_sol;
-						start = false;
+					// 	start = false;
 
-						if(args["save_solve_sequence"])
-						{
-							nl_problem.reduced_to_full(tmp_sol, sol);
+					// 	if(args["save_solve_sequence"])
+					// 	{
+					// 		nl_problem.reduced_to_full(tmp_sol, sol);
 
-							save_vtu( "step_" + std::to_string(prev_t) + ".vtu");
-							save_wire("step_" + std::to_string(prev_t) + ".obj");
-						}
+					// 		save_vtu( "step_" + std::to_string(prev_t) + ".vtu");
+					// 		save_wire("step_" + std::to_string(prev_t) + ".obj");
+					// 	}
+					}
+
+					if(args["save_solve_sequence"])
+					{
+						save_vtu( "step_s_" + std::to_string(prev_t) + ".vtu");
+						save_wire("step_s_" + std::to_string(prev_t) + ".obj");
 					}
 
 					if (args["nl_solver"] == "newton") {
@@ -1795,6 +1816,16 @@ namespace polyfem
 							tmp_sol = prev_sol;
 							step_t /= 2;
 							t = prev_t + step_t;
+
+
+
+							// if(args["save_solve_sequence"])
+							// {
+							// 	nl_problem.reduced_to_full(tmp_sol, sol);
+
+							// 	save_vtu( "step_bad_" + std::to_string(prev_t) + ".vtu");
+							// 	save_wire("step_bad_" + std::to_string(prev_t) + ".obj");
+							// }
 							continue;
 						}
 						else
@@ -1825,10 +1856,9 @@ namespace polyfem
 
 
 
+					nl_problem.reduced_to_full(tmp_sol, sol);
 					if(args["save_solve_sequence"])
 					{
-						nl_problem.reduced_to_full(tmp_sol, sol);
-
 						save_vtu( "step_" + std::to_string(prev_t) + ".vtu");
 						save_wire("step_" + std::to_string(prev_t) + ".obj");
 					}
@@ -1887,7 +1917,7 @@ namespace polyfem
 					// }
 				}
 
-				NLProblem::reduced_to_full_aux(full_size, reduced_size, tmp_sol, rhs, sol);
+				// NLProblem::reduced_to_full_aux(full_size, reduced_size, tmp_sol, rhs, sol);
 			}
 		}
 

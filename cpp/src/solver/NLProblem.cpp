@@ -22,30 +22,42 @@ namespace polyfem
 	t(t), rhs_computed(false)
 	{ }
 
-	NLProblem::TVector NLProblem::initial_guess()
+	// NLProblem::TVector NLProblem::initial_guess()
+	// {
+	// 	Eigen::VectorXd guess(reduced_size);
+	// 	guess.setZero();
+
+	// 	return guess;
+
+	// 	// const auto &state = State::state();
+ // 	// 	auto solver = LinearSolver::create(state.args["solver_type"], state.args["precond_type"]);
+	// 	// solver->setParameters(state.solver_params());
+	// 	// Eigen::VectorXd b, x, guess;
+ // 	// 	Eigen::SparseMatrix<double> A;
+	// 	// assembler.assemble_problem("LinearElasticity", state.mesh->is_volume(), state.n_bases, state.bases, state.iso_parametric() ? state.bases : state.geom_bases, A);
+ // 	// 	if(!rhs_computed)
+	// 	// {
+	// 	// 	rhs_assembler.compute_energy_grad(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, state.rhs, t, current_rhs);
+	// 	// 	rhs_computed = true;
+	// 	// }
+
+	// 	// b = current_rhs;
+	// 	// dirichlet_solve(*solver, A, b, state.boundary_nodes, x, "", false);
+ // 	// 	full_to_reduced(x, guess);
+
+ // 	// 	return guess;
+	// }
+
+	const Eigen::MatrixXd &NLProblem::current_rhs()
 	{
-		// Eigen::VectorXd guess(reduced_size);
-		// guess.setZero();
-
-		// return guess;
-
-		const auto &state = State::state();
- 		auto solver = LinearSolver::create(state.args["solver_type"], state.args["precond_type"]);
-		solver->setParameters(state.solver_params());
-		Eigen::VectorXd b, x, guess;
- 		Eigen::SparseMatrix<double> A;
-		assembler.assemble_problem("LinearElasticity", state.mesh->is_volume(), state.n_bases, state.bases, state.iso_parametric() ? state.bases : state.geom_bases, A);
- 		if(!rhs_computed)
+		if(!rhs_computed)
 		{
-			rhs_assembler.compute_energy_grad(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, state.rhs, t, current_rhs);
+			const auto &state = State::state();
+			rhs_assembler.compute_energy_grad(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, state.rhs, t, _current_rhs);
 			rhs_computed = true;
 		}
 
-		b = current_rhs;
-		dirichlet_solve(*solver, A, b, state.boundary_nodes, x, "", false);
- 		full_to_reduced(x, guess);
-
- 		return guess;
+		return _current_rhs;
 	}
 
 	double NLProblem::value(const TVector &x) {
@@ -70,12 +82,7 @@ namespace polyfem
 
 		Eigen::MatrixXd grad;
 		assembler.assemble_energy_gradient(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, full, grad);
-		if(!rhs_computed)
-		{
-			rhs_assembler.compute_energy_grad(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, state.rhs, t, current_rhs);
-			rhs_computed = true;
-		}
-		grad -= current_rhs;
+		grad -= current_rhs();
 
 		full_to_reduced(grad, gradv);
 	}
@@ -145,13 +152,6 @@ namespace polyfem
 
 	void NLProblem::reduced_to_full(const TVector &reduced, Eigen::MatrixXd &full)
 	{
-		if(!rhs_computed)
-		{
-			const auto &state = State::state();
-			rhs_assembler.compute_energy_grad(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, state.rhs, t, current_rhs);
-			rhs_computed = true;
-		}
-
-		reduced_to_full_aux(full_size, reduced_size, reduced, current_rhs, full);
+		reduced_to_full_aux(full_size, reduced_size, reduced, current_rhs(), full);
 	}
 }

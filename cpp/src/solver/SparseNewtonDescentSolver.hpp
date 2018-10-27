@@ -161,13 +161,6 @@ namespace cppoptlib {
 			error_code_ = 0;
 			do
 			{
-				time.start();
-				objFunc.gradient(x0, grad);
-				time.stop();
-
-				polyfem::logger().debug("\tgrad time {}s", time.getElapsedTimeInSec());
-				grad_time += time.getElapsedTimeInSec();
-
 				const size_t iter = this->m_current.iterations;
 				bool new_hessian = iter == next_hessian;
 
@@ -194,6 +187,13 @@ namespace cppoptlib {
 						}
 					}
 				}
+
+				time.start();
+				objFunc.gradient(x0, grad);
+				time.stop();
+
+				polyfem::logger().debug("\tgrad time {}s", time.getElapsedTimeInSec());
+				grad_time += time.getElapsedTimeInSec();
 
 				// std::cout<<hessian<<std::endl;
 				time.start();
@@ -272,6 +272,9 @@ namespace cppoptlib {
 						polyfem::logger().debug("\tstep small force recompute hessian");
 					}
 				}
+
+				//if(rate >= 1 && next_hessian == this->m_current.iterations)
+				//	next_hessian += 2;
 
 				polyfem::logger().debug("\titer: {}, f = {}, ‖g‖_2 = {}, rate = {}, ‖step‖ = {}, dot = {}\n",
 					this->m_current.iterations, energy, this->m_current.gradNorm, rate, step, delta_x.dot(grad)/grad.norm());

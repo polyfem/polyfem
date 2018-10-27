@@ -56,7 +56,7 @@ namespace polyfem
 		}
 
 		template<class ReducedMat, class FullMat>
-		static void reduced_to_full_aux(const int full_size, const int reduced_size, const ReducedMat &reduced, Eigen::MatrixXd &rhs, FullMat &full)
+		static void reduced_to_full_aux(const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full)
 		{
 			using namespace polyfem;
 
@@ -84,10 +84,12 @@ namespace polyfem
 		void full_to_reduced(const Eigen::MatrixXd &full, TVector &reduced) const;
 		void reduced_to_full(const TVector &reduced, Eigen::MatrixXd &full);
 
+		const Eigen::MatrixXd &current_rhs();
+
 	private:
 		AssemblerUtils &assembler;
 		const RhsAssembler &rhs_assembler;
-		Eigen::MatrixXd current_rhs;
+		Eigen::MatrixXd _current_rhs;
 
 		const int full_size, reduced_size;
 		const double t;
