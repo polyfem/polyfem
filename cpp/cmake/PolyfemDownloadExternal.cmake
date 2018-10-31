@@ -17,7 +17,7 @@ endfunction()
 function(polyfem_download_libigl)
     polyfem_download_project(libigl
         GIT_REPOSITORY https://github.com/libigl/libigl.git
-        GIT_TAG        8d5533a3088b2d471dbfd56f0a5bdaafe30d013a
+        GIT_TAG        7f7551af1613f60c7e89bef3934baf0da6298b06
     )
 endfunction()
 
@@ -41,7 +41,7 @@ endfunction()
 function(polyfem_download_catch2)
     polyfem_download_project(Catch2
         GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-        GIT_TAG        v2.4.1
+        GIT_TAG        v2.4.2
     )
 endfunction()
 

@@ -1759,73 +1759,111 @@ namespace polyfem
 
 				int steps = args["nl_solver_rhs_steps"];
 				RhsAssembler rhs_assembler(*mesh, n_bases, mesh->dimension(), bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
-				VectorXd tmp_sol, prev_sol;
-
-				double step_t = 1.0/steps;
-				double t = step_t;
-				double prev_t = 0;
-				// bool start = true;
-
-				sol.resizeLike(rhs);
-				sol.setZero();
 
 				Eigen::SparseMatrix<double> nlstiffness;
 				auto solver = LinearSolver::create(args["solver_type"], args["precond_type"]);
 				Eigen::VectorXd x, b;
+				Eigen::MatrixXd grad;
+				Eigen::MatrixXd prev_rhs;
+
+
+				VectorXd tmp_sol;
+
+				double step_t = 1.0/steps;
+				double t = step_t;
+				double prev_t = 0;
+
+				sol.resizeLike(rhs);
+				sol.setZero();
+
+				prev_rhs.resizeLike(rhs);
+				prev_rhs.setZero();
+
+				x.resizeLike(sol);
+				x.setZero();
+
+				b.resizeLike(sol);
+				b.setZero();
+
+				if(args["save_solve_sequence"])
+				{
+					save_vtu( "step_" + std::to_string(prev_t) + ".vtu");
+					save_wire("step_" + std::to_string(prev_t) + ".obj");
+				}
 
 				const auto &gbases = iso_parametric() ? bases : geom_bases;
 				while(t <= 1)
 				{
 					logger().info("t: {} prev: {} step: {}", t, prev_t, step_t);
 
-					logger().debug("Updating starting point...");
-					assembler.assemble_energy_hessian(formulation(), mesh->is_volume(), n_bases, bases, gbases, sol, nlstiffness);
+
 					NLProblem nl_problem(rhs_assembler, t);
-					b = nl_problem.current_rhs();
-					dirichlet_solve(*solver, nlstiffness, b, boundary_nodes, x, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
-					sol = x;
-					nl_problem.full_to_reduced(sol, tmp_sol);
+					logger().debug("Updating starting point...");
+					{
+						// nl_problem.hessian(sol, nlstiffness);
+						// nl_problem.full_to_reduced(sol, tmp_sol);
+						// nl_problem.gradient(tmp_sol, grad);
+						// solver->analyzePattern(nlstiffness);
+						// solver->factorize(nlstiffness);
+						// x.resizeLike(grad);
+						// solver->solve(grad, x);
+
+						// tmp_sol -= x;
+						// nl_problem.reduced_to_full(tmp_sol, temp);
+						// x = temp;
+
+
+						assembler.assemble_energy_hessian( formulation(), mesh->is_volume(), n_bases, bases, gbases, sol, nlstiffness);
+						assembler.assemble_energy_gradient(formulation(), mesh->is_volume(), n_bases, bases, gbases, sol, grad);
+
+						b = grad;
+						for(int bId : boundary_nodes)
+							b(bId) = - (nl_problem.current_rhs()(bId) - prev_rhs(bId));
+						dirichlet_solve(*solver, nlstiffness, b, boundary_nodes, x, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
+
+						x = sol - x;
+						nl_problem.full_to_reduced(x, tmp_sol);
+						// nl_problem.reduced_to_full(tmp_sol, grad);
+						// x = grad;
+					}
 					logger().debug("done!");
-					if(prev_t <= 0){
-					// 	tmp_sol = nl_problem.initial_guess();
-						prev_sol = tmp_sol;
-					// 	start = false;
 
-					// 	if(args["save_solve_sequence"])
-					// 	{
-					// 		nl_problem.reduced_to_full(tmp_sol, sol);
 
-					// 		save_vtu( "step_" + std::to_string(prev_t) + ".vtu");
-					// 		save_wire("step_" + std::to_string(prev_t) + ".obj");
-					// 	}
+					if(args["save_solve_sequence_debug"])
+					{
+						Eigen::MatrixXd xxx = sol;
+						sol = x;
+						save_vtu( "step_s_" + std::to_string(t) + ".vtu");
+						save_wire("step_s_" + std::to_string(t) + ".obj");
+
+						sol = xxx;
 					}
 
-					if(args["save_solve_sequence"])
+					bool has_nan = false;
+					for(int k = 0; k < tmp_sol.size(); ++k)
 					{
-						save_vtu( "step_s_" + std::to_string(prev_t) + ".vtu");
-						save_wire("step_s_" + std::to_string(prev_t) + ".obj");
+						if(std::isnan(tmp_sol[k]))
+						{
+							has_nan = true;
+							break;
+						}
+					}
+
+					if(has_nan){
+						step_t /= 2;
+						t = prev_t + step_t;
+						continue;
 					}
 
 					if (args["nl_solver"] == "newton") {
-						cppoptlib::SparseNewtonDescentSolver<NLProblem> solver;
-						solver.setLineSearch(args["line_search"]);
-						solver.minimize(nl_problem, tmp_sol);
+						cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver;
+						nlsolver.setLineSearch(args["line_search"]);
+						nlsolver.minimize(nl_problem, tmp_sol);
 
-						if(solver.error_code() == -10) //Nan
+						if(nlsolver.error_code() == -10) //Nan
 						{
-							tmp_sol = prev_sol;
 							step_t /= 2;
 							t = prev_t + step_t;
-
-
-
-							// if(args["save_solve_sequence"])
-							// {
-							// 	nl_problem.reduced_to_full(tmp_sol, sol);
-
-							// 	save_vtu( "step_bad_" + std::to_string(prev_t) + ".vtu");
-							// 	save_wire("step_bad_" + std::to_string(prev_t) + ".obj");
-							// }
 							continue;
 						}
 						else
@@ -1837,12 +1875,12 @@ namespace polyfem
 						if(step_t > 1.0/steps)
 							step_t = 1.0/steps;
 
-						solver.getInfo(solver_info);
+						nlsolver.getInfo(solver_info);
 					} else if (args["nl_solver"] == "lbfgs") {
-						cppoptlib::LbfgsSolverL2<NLProblem> solver;
-						solver.setLineSearch(args["line_search"]);
-						solver.setDebug(cppoptlib::DebugLevel::High);
-						solver.minimize(nl_problem, tmp_sol);
+						cppoptlib::LbfgsSolverL2<NLProblem> nlsolver;
+						nlsolver.setLineSearch(args["line_search"]);
+						nlsolver.setDebug(cppoptlib::DebugLevel::High);
+						nlsolver.minimize(nl_problem, tmp_sol);
 
 						prev_t = t;
 					} else {
@@ -1850,13 +1888,11 @@ namespace polyfem
 					}
 
 					t = prev_t + step_t;
-					prev_sol = tmp_sol;
 					if((prev_t < 1 && t > 1) || abs(t-1) < 1e-10)
 						t = 1;
 
-
-
 					nl_problem.reduced_to_full(tmp_sol, sol);
+					prev_rhs = nl_problem.current_rhs();
 					if(args["save_solve_sequence"])
 					{
 						save_vtu( "step_" + std::to_string(prev_t) + ".vtu");
@@ -2129,6 +2165,7 @@ namespace polyfem
 			{"nl_solver", "newton"},
 			{"nl_solver_rhs_steps", 1},
 			{"save_solve_sequence", false},
+			{"save_solve_sequence_debug", false},
 
 			{"params", {
 				{"lambda", 0.32967032967032966},

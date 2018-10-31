@@ -62,7 +62,11 @@ namespace polyfem
 
 	double NLProblem::value(const TVector &x) {
 		Eigen::MatrixXd full;
-		reduced_to_full(x, full);
+		if(x.size() == reduced_size)
+			reduced_to_full(x, full);
+		else
+			full = x;
+		assert(full.size() == full_size);
 
 		const auto &state = State::state();
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
@@ -77,7 +81,12 @@ namespace polyfem
 		const auto &state = State::state();
 
 		Eigen::MatrixXd full;
-		reduced_to_full(x, full);
+		if(x.size() == reduced_size)
+			reduced_to_full(x, full);
+		else
+			full = x;
+		assert(full.size() == full_size);
+
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 
 		Eigen::MatrixXd grad;
@@ -90,7 +99,12 @@ namespace polyfem
 	void NLProblem::hessian(const TVector &x, THessian &hessian) {
 		const auto &state = State::state();
 		Eigen::MatrixXd full;
-		reduced_to_full(x, full);
+		if(x.size() == reduced_size)
+			reduced_to_full(x, full);
+		else
+			full = x;
+
+		assert(full.size() == full_size);
 
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 
@@ -116,7 +130,7 @@ namespace polyfem
 
 			indices(i) = index++;
 		}
-		assert(index == x.size());
+		assert(index == reduced_size);
 
 		for (int k = 0; k < tmp.outerSize(); ++k) {
 			if(indices(k) < 0)
@@ -140,7 +154,7 @@ namespace polyfem
 			}
 		}
 
-		hessian.resize(x.size(),x.size());
+		hessian.resize(reduced_size, reduced_size);
 		hessian.setFromTriplets(entries.begin(), entries.end());
 		hessian.makeCompressed();
 	}
