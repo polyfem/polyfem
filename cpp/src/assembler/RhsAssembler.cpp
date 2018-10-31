@@ -301,7 +301,7 @@ namespace polyfem
 			for(long i = 0; i < b.cols(); ++i){
 				solver->solve(b.col(i), coeffs.col(i));
 			}
-			logger().debug("RHS solve error {}", (A*coeffs-b).norm());
+			logger().trace("RHS solve error {}", (A*coeffs-b).norm());
 
 			for(long i = 0; i < coeffs.rows(); ++i){
 				for(int d = 0; d < size_; ++d){
