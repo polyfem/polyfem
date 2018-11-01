@@ -449,9 +449,9 @@ if __name__ == "__main__":
                 if dim == 3:
                     base = base + "\tcase " + str(i) + ": {" + pretty_print.C99_print(simplify(fe.N[real_index])).replace(" = 1;", ".setOnes();") + "} break;\n"
                     dbase = dbase + "\tcase " + str(i) + ": {" + \
-                        "{" + pretty_print.C99_print((diff(fe.N[real_index], x))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(0) = result_0; }" \
-                        "{" + pretty_print.C99_print((diff(fe.N[real_index], y))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(1) = result_0; }"
-                    dbase = dbase + "{" + pretty_print.C99_print((diff(fe.N[real_index], z))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(2) = result_0; }"
+                        "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], x))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(0) = result_0; }" \
+                        "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], y))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(1) = result_0; }"
+                    dbase = dbase + "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], z))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(2) = result_0; }"
                 else:
                     base = base + "\tcase " + str(i) + ": {" + pretty_print.C99_print(simplify(fe.N[real_index])).replace(" = 1;", ".setOnes();") + "} break;\n"
                     dbase = dbase + "\tcase " + str(i) + ": {" + \

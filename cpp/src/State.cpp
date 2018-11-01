@@ -1792,13 +1792,16 @@ namespace polyfem
 				}
 
 				const auto &gbases = iso_parametric() ? bases : geom_bases;
+				igl::Timer update_timer;
 				while(t <= 1)
 				{
 					logger().info("t: {} prev: {} step: {}", t, prev_t, step_t);
 
 
 					NLProblem nl_problem(rhs_assembler, t);
+
 					logger().debug("Updating starting point...");
+					update_timer.start();
 					{
 						// nl_problem.hessian(sol, nlstiffness);
 						// nl_problem.full_to_reduced(sol, tmp_sol);
@@ -1826,7 +1829,8 @@ namespace polyfem
 						// nl_problem.reduced_to_full(tmp_sol, grad);
 						// x = grad;
 					}
-					logger().debug("done!");
+					update_timer.stop();
+					logger().debug("done!, took {}s", update_timer.getElapsedTime());
 
 
 					if(args["save_solve_sequence_debug"])
