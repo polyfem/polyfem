@@ -197,14 +197,10 @@ void PolygonalBasis2d::compute_integral_constraints(
 	const auto &assembler = AssemblerUtils::instance();
 	const int dim = assembler.is_tensor(assembler_name) ? 2 : 1;
 
-	basis_integrals.resize(n_bases*dim, 5*dim);
+	basis_integrals.resize(n_bases, RBFWithQuadratic::index_mapping(dim-1, dim-1, 4, dim)+1);
 	basis_integrals.setZero();
 
 	std::array<Eigen::MatrixXd, 5> strong;
-
-	std::array<Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>, 5> tmp;
-	for(auto &m : tmp)
-		m.resize(dim*dim, 1);
 
 	const int n_elements = mesh.n_elements();
 	for(int e = 0; e < n_elements; ++e) {
@@ -231,52 +227,20 @@ void PolygonalBasis2d::compute_integral_constraints(
 		for(int j = 0; j < n_local_bases; ++j) {
 			const AssemblyValues &v=vals.basis_values[j];
 
-			//<rhs(q_k(x_i) er) , phi_j(x_i) es > = <strong[k], phi_j(x_i) es >
-			// es =(1, 0), or es = (0, 1)
-			for(int i = 0; i < 5; ++i)
+			for(int d = 0; d < 5; ++d)
 			{
-				for(int d = 0; d < dim*dim; ++d){
-					tmp[i](d) = (strong[i].row(d).array() * v.val.transpose().array()).sum();
-					//<rhs(q_k(x_i) e0) , phi_j(x_i) e0 >
-					//strong[i].row(0).array() * v.val.transpose().array() 	+ strong[i].row(1).array() * 0
-					//<rhs(q_k(x_i) e0) , phi_j(x_i) e1 >
-					//strong[i].row(0).array() * 0 							+ strong[i].row(1).array() * v.val.transpose().array()
+				const auto tmp = assembler.local_assemble(assembler_name, vals, n_local_bases + d, j, da);
 
-					//<rhs(q_k(x_i) e1) , phi_j(x_i) e0 >
-					//strong[i].row(2).array() * v.val.transpose().array() 	+ strong[i].row(3).array() * 0
-					//<rhs(q_k(x_i) e1) , phi_j(x_i) e1 >
-					//strong[i].row(2).array() * 0 							+ strong[i].row(3).array() * v.val.transpose().array()
-					// std::cout<<tmp[i](d)<<std::endl;
-				}
-				// std::cout<<std::endl;
-			}
-
-			// std::cout<<vals.val.size()<<std::endl;
-			//a_h(q es, phi_j er) = \int grad^sym (q es) : C : grad^sym (phi_j er) \in R
-			//a_h(y^2, phi_j)\in R^{dim^2}
-
-			//check if it is j, n_local_bases + q or n_local_bases + q, j
-			const auto integral_10 = assembler.local_assemble(assembler_name, vals, j, n_local_bases + 0, da) + tmp[0];
-			const auto integral_01 = assembler.local_assemble(assembler_name, vals, j, n_local_bases + 1, da) + tmp[1];
-
-			const auto integral_11 = assembler.local_assemble(assembler_name, vals, j, n_local_bases + 2, da) + tmp[2];
-			const auto integral_20 = assembler.local_assemble(assembler_name, vals, j, n_local_bases + 3, da) + tmp[3];
-			const auto integral_02 = assembler.local_assemble(assembler_name, vals, j, n_local_bases + 4, da) + tmp[4];
-
-
-			for(size_t ii = 0; ii < v.global.size(); ++ii) {
-				for(int d1 = 0; d1 < dim; ++d1)
-				{
-					for(int d2 = 0; d2 < dim; ++d2)
+				for(size_t ii = 0; ii < v.global.size(); ++ii) {
+					for(int alpha = 0; alpha < dim; ++alpha)
 					{
-						const int loc_index = d1*dim + d2;
-						basis_integrals(v.global[ii].index*dim + d1, 0*dim + d2) += integral_10(loc_index) * v.global[ii].val;
-						basis_integrals(v.global[ii].index*dim + d1, 1*dim + d2) += integral_01(loc_index) * v.global[ii].val;
+						for(int beta = 0; beta < dim; ++beta)
+						{
+							const int loc_index = alpha*dim + beta;
+							const int r = RBFWithQuadratic::index_mapping(alpha, beta, d, dim);
 
-						basis_integrals(v.global[ii].index*dim + d1, 2*dim + d2) += integral_11(loc_index) * v.global[ii].val;
-
-						basis_integrals(v.global[ii].index*dim + d1, 3*dim + d2) += integral_20(loc_index) * v.global[ii].val;
-						basis_integrals(v.global[ii].index*dim + d1, 4*dim + d2) += integral_02(loc_index) * v.global[ii].val;
+							basis_integrals(v.global[ii].index, r) += tmp(loc_index) + (strong[d].row(loc_index).transpose().array() * v.val.array()).sum();
+						}
 					}
 				}
 			}
@@ -467,10 +431,9 @@ void PolygonalBasis2d::build_bases(
 		b.set_quadrature([tmp_quadrature](Quadrature &quad){ quad = tmp_quadrature; });
 
 		// Compute the weights of the harmonic kernels
-		Eigen::MatrixXd local_basis_integrals(rhs.cols()*dim, basis_integrals.cols());
+		Eigen::MatrixXd local_basis_integrals(rhs.cols(), basis_integrals.cols());
 		for (long k = 0; k < rhs.cols(); ++k) {
-			for(int d = 0; d < dim; ++d)
-				local_basis_integrals.row(k*dim+d) = -basis_integrals.row(local_to_global[k]*dim+d);
+				local_basis_integrals.row(k) = -basis_integrals.row(local_to_global[k]);
 		}
 		auto set_rbf = [&b] (auto rbf) {
 			b.set_bases_func([rbf] (const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &val)
@@ -508,7 +471,7 @@ void PolygonalBasis2d::build_bases(
 			set_rbf(std::make_shared<RBFWithLinear>(
 				kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs));
 		} else if (integral_constraints == 2) {
-			set_rbf(std::make_shared<RBFWithQuadratic>(
+			set_rbf(std::make_shared<RBFWithQuadraticLagrange>(
 				assembler_name, kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs));
 		} else {
 			throw std::runtime_error("Unsupported constraint order: " + std::to_string(integral_constraints));

@@ -68,7 +68,7 @@ void RBFWithQuadratic::setup_monomials_strong_2d(const int dim, const std::strin
 	// (not a(phi_j es, q er))
 	const auto &assembler = AssemblerUtils::instance();
 
-	DiffScalarBase::setVariableCount(dim);
+	DiffScalarBase::setVariableCount(2);
 	AutodiffHessianPt pt(dim);
 	for(int i = 0; i < 5; ++i){
 		strong[i].resize(dim*dim, pts.rows());

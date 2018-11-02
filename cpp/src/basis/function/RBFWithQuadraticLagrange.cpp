@@ -1,5 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/RBFWithQuadraticLagrange.hpp>
+#include <polyfem/RBFWithQuadratic.hpp>
+#include <polyfem/AssemblerUtils.hpp>
 #include <polyfem/Types.hpp>
 #include <polyfem/MatrixUtils.hpp>
 #include <polyfem/Logger.hpp>
@@ -56,6 +58,7 @@ double kernel_prime(const bool is_volume, const double r) {
 ////////////////////////////////////////////////////////////////////////////////
 
 RBFWithQuadraticLagrange::RBFWithQuadraticLagrange(
+		const std::string &assembler_name,
 		const Eigen::MatrixXd &centers,
 		const Eigen::MatrixXd &collocation_points,
 		const Eigen::MatrixXd &local_basis_integral,
@@ -65,7 +68,7 @@ RBFWithQuadraticLagrange::RBFWithQuadraticLagrange(
 	: centers_(centers)
 {
 	// centers_.resize(0, centers.cols());
-	compute_weights(collocation_points, local_basis_integral, quadr, rhs, with_constraints);
+	compute_weights(assembler_name, collocation_points, local_basis_integral, quadr, rhs, with_constraints);
 }
 
 // -----------------------------------------------------------------------------
@@ -158,7 +161,7 @@ void RBFWithQuadraticLagrange::compute_kernels_matrix(const Eigen::MatrixXd &sam
 
 // -----------------------------------------------------------------------------
 
-void RBFWithQuadraticLagrange::compute_constraints_matrix_2d(
+void RBFWithQuadraticLagrange::compute_constraints_matrix_2d_old(
 	const int num_bases, const Quadrature &quadr, Eigen::MatrixXd &C) const
 {
 	const int num_kernels = centers_.rows();
@@ -224,6 +227,112 @@ void RBFWithQuadraticLagrange::compute_constraints_matrix_2d(
 	C.block(dim + 1, num_kernels, dim, 1).setConstant(2.0 * volume);
 	C.bottomRightCorner(5, 5) = M;
 	// std::cout << L.bottomRightCorner(10, 10) << std::endl;
+}
+
+void RBFWithQuadraticLagrange::compute_constraints_matrix_2d(const std::string &assembler_name,
+	const int num_bases, const Quadrature &quadr, Eigen::MatrixXd &C) const
+{
+	const int num_kernels = centers_.rows();
+	const int space_dim = centers_.cols();
+	const auto &assembler = AssemblerUtils::instance();
+	const int assembler_dim = assembler.is_tensor(assembler_name) ? 2 : 1;
+	assert(space_dim == 2);
+
+	std::array<Eigen::MatrixXd, 5> strong;
+
+	// ass_val = [q_10, q_01, q_11, q_20, q_02, psi_0, ..., psi_k]
+	ElementAssemblyValues ass_val;
+	ass_val.has_parameterization = false;
+	ass_val.basis_values.resize(5 + num_kernels);
+
+
+	//evaluating monomial and grad of monomials at quad points
+	RBFWithQuadratic::setup_monomials_vals_2d(0, quadr.points, ass_val);
+	RBFWithQuadratic::setup_monomials_strong_2d(assembler_dim, assembler_name, quadr.points, quadr.weights.array(), strong);
+
+	//evaluating psi and grad psi at quadr points
+	for (int j = 0; j < num_kernels; ++j) {
+		ass_val.basis_values[5 + j].val  = Eigen::MatrixXd(quadr.points.rows(), 1);
+		ass_val.basis_values[5 + j].grad = Eigen::MatrixXd(quadr.points.rows(), quadr.points.cols());
+
+		for (int q = 0; q < quadr.points.rows(); ++q) {
+			const RowVectorNd p = quadr.points.row(q) - centers_.row(j);
+			const double r = p.norm();
+
+			ass_val.basis_values[5 + j].val(q) = kernel(is_volume(), r);
+			ass_val.basis_values[5 + j].grad.row(q) = p * kernel_prime(is_volume(), r) / r;
+		}
+	}
+
+	for(size_t i = 5; i < ass_val.basis_values.size(); ++i)
+	{
+		ass_val.basis_values[i].grad_t_m = ass_val.basis_values[i].grad;
+	}
+
+
+	// Compute C
+	C.resize(RBFWithQuadratic::index_mapping(assembler_dim-1, assembler_dim-1, 4, assembler_dim)+1, num_kernels + 1 + 5);
+	C.setZero();
+
+	for(int d = 0; d < 5; ++d)
+	{
+		//first num_kernels bases
+		for(int i = 0; i < num_kernels; ++i)
+		{
+			const auto tmp = assembler.local_assemble(assembler_name, ass_val, d, 5 + i, quadr.weights);
+			for(int alpha = 0; alpha < assembler_dim; ++alpha)
+			{
+				for(int beta = 0; beta < assembler_dim; ++beta)
+				{
+					const int loc_index = alpha*assembler_dim + beta;
+					C(RBFWithQuadratic::index_mapping(alpha, beta, d, assembler_dim), i) =  tmp(loc_index) + (strong[d].row(loc_index).transpose().array() * ass_val.basis_values[5+i].val.array()).sum();
+				}
+			}
+		}
+
+		//second the q_i
+		for(int i = 0; i < 5; ++i)
+		{
+			const auto tmp = assembler.local_assemble(assembler_name, ass_val, d, i, quadr.weights);
+			for(int alpha = 0; alpha < assembler_dim; ++alpha)
+			{
+				for(int beta = 0; beta < assembler_dim; ++beta)
+				{
+					const int loc_index = alpha*assembler_dim + beta;
+					C(RBFWithQuadratic::index_mapping(alpha, beta, d, assembler_dim), num_kernels + i + 1) =  tmp(loc_index) + (strong[d].row(loc_index).transpose().array() * ass_val.basis_values[i].val.array()).sum();
+				}
+			}
+		}
+
+		//finally the constant
+		for(int alpha = 0; alpha < assembler_dim; ++alpha)
+		{
+			for(int beta = 0; beta < assembler_dim; ++beta)
+			{
+				// std::cout<<alpha <<" "<< beta <<" "<< d <<" "<< assembler_dim<< " -> r = "<< RBFWithQuadratic::index_mapping(alpha, beta, d, assembler_dim)<<std::endl;
+				const int loc_index = alpha*assembler_dim + beta;
+				C(RBFWithQuadratic::index_mapping(alpha, beta, d, assembler_dim), num_kernels) = strong[d].row(loc_index).sum();
+			}
+		}
+	}
+
+	// {
+	// 	std::ofstream file;
+	// 	file.open("C.txt");
+	// 	file << C;
+	// 	file.close();
+	// }
+
+
+
+	// Eigen::MatrixXd Cold;
+	// compute_constraints_matrix_2d_old(num_bases, quadr,Cold);
+	// {
+	// 	std::ofstream file;
+	// 	file.open("Cold.txt");
+	// 	file << Cold;
+	// 	file.close();
+	// }
 }
 
 // -----------------------------------------------------------------------------
@@ -312,7 +421,7 @@ void RBFWithQuadraticLagrange::compute_constraints_matrix_3d(
 
 // -----------------------------------------------------------------------------
 
-void RBFWithQuadraticLagrange::compute_weights(const Eigen::MatrixXd &samples,
+void RBFWithQuadraticLagrange::compute_weights(const std::string &assembler_name, const Eigen::MatrixXd &samples,
 	const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
 	Eigen::MatrixXd &b, bool with_constraints)
 {
@@ -320,12 +429,13 @@ void RBFWithQuadraticLagrange::compute_weights(const Eigen::MatrixXd &samples,
 	logger().trace("#collocation points: {}", samples.rows());
 	logger().trace("#quadrature points: {}", quadr.weights.size());
 	logger().trace("#non-vanishing bases: {}", b.cols());
+	logger().trace("#constraints: {}", b.cols());
+
+	// Compute A
+	Eigen::MatrixXd A;
+	compute_kernels_matrix(samples, A);
 
 	if (!with_constraints) {
-		// Compute A
-		Eigen::MatrixXd A;
-		compute_kernels_matrix(samples, A);
-
 		// Solve the system
 		const int num_kernels = centers_.rows();
 		logger().trace("-- Solving system of size {}x{}", num_kernels, num_kernels);
@@ -337,9 +447,6 @@ void RBFWithQuadraticLagrange::compute_weights(const Eigen::MatrixXd &samples,
 
 	const int num_bases = b.cols();
 
-	// Compute A
-	Eigen::MatrixXd A;
-	compute_kernels_matrix(samples, A);
     const Eigen::MatrixXd At = A.transpose();
 
 	// Compute C
@@ -347,9 +454,79 @@ void RBFWithQuadraticLagrange::compute_weights(const Eigen::MatrixXd &samples,
 	if (is_volume()) {
 		compute_constraints_matrix_3d(num_bases, quadr, C);
 	} else {
-		compute_constraints_matrix_2d(num_bases, quadr, C);
+		compute_constraints_matrix_2d(assembler_name, num_bases, quadr, C);
 	}
 
+	const int dim = centers_.cols();
+	assert(centers_.rows() + 1 + dim + dim*(dim+1)/2 > C.rows());
+	logger().trace("#constraints: {}", C.rows());
+
+
+	// Compute rhs = [ A^T b; d ]
+	assert(local_basis_integral.cols() == C.rows());
+	assert(local_basis_integral.rows() == b.cols());
+	assert(A.rows() == b.rows());
+	Eigen::MatrixXd rhs(A.cols() + local_basis_integral.cols(), b.cols());
+	rhs.topRows(A.cols()) = At * b;
+	rhs.bottomRows(local_basis_integral.cols()) = local_basis_integral.transpose();
+
+	// Compute M = [ A^T A, C^T; C, 0]
+	assert(C.cols() == A.cols());
+	assert(A.rows() == b.rows());
+	Eigen::MatrixXd M(A.cols() + C.rows(), A.cols() + C.rows());
+	M.topLeftCorner(A.cols(), A.cols()) = At * A;
+	M.topRightCorner(A.cols(), C.rows()) = C.transpose();
+	M.bottomLeftCorner(C.rows(), A.cols()) = C;
+	M.bottomRightCorner(C.rows(), C.rows()).setZero();
+
+	// std::cout << M.bottomRightCorner(10, 10) << std::endl;
+
+
+
+	// Solve the system
+	logger().trace("-- Solving system of size {}x{}", M.rows(), M.cols());
+	auto ldlt = M.ldlt();
+	if (ldlt.info() == Eigen::NumericalIssue) {
+		logger().error("-- WARNING: Numerical issues when solving the harmonic least square.");
+	}
+	const auto tmp = ldlt.solve(rhs);
+	weights_ = tmp.topRows(A.cols());
+	logger().trace("-- Solved!");
+    logger().trace("-- Mean residual: {}", (A * weights_ - b).array().abs().colwise().maxCoeff().mean());
+    logger().trace("-- Max constraints error: {}", (C * weights_ - local_basis_integral.transpose()).array().abs().maxCoeff());
+
+    {
+		std::ofstream file;
+		file.open("M.txt");
+		file << M;
+		file.close();
+	}
+
+	{
+		std::ofstream file;
+		file.open("C.txt");
+		file << C;
+		file.close();
+	}
+
+
+	{
+		std::ofstream file;
+		file.open("b.txt");
+		file << local_basis_integral.transpose();
+		file.close();
+	}
+
+    {
+		std::ofstream file;
+		file.open("rhs.txt");
+		file << rhs;
+		file.close();
+	}
+
+	// std::cout << M.bottomRightCorner(10, 10) << std::endl;
+
+#if 0
 	// Compute rhs = [ A^T b; d ]
 	assert(local_basis_integral.cols() == C.rows());
 	assert(local_basis_integral.rows() == b.cols());
@@ -377,10 +554,9 @@ void RBFWithQuadraticLagrange::compute_weights(const Eigen::MatrixXd &samples,
 	}
 	weights_ = ldlt.solve(rhs).topRows(A.cols());
 	logger().trace("-- Solved!");
-
     logger().trace("-- Mean residual: {}", (A * weights_ - b).array().abs().colwise().maxCoeff().mean());
 
-#if 0
+
 	Eigen::MatrixXd MM, x, dx, val;
 	basis(0, quadr.points, val);
 	grad(0, quadr.points, MM);

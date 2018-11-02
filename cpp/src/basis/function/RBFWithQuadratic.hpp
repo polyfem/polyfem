@@ -10,6 +10,11 @@ namespace polyfem
 	class RBFWithQuadratic
 	{
 	public:
+		inline static int index_mapping(const int alpha, const int beta, const int d, const int ass_dim)
+		{
+			return ass_dim*ass_dim*d + ass_dim * beta + alpha;
+		}
+
 		static void setup_monomials_vals_2d(const int star_index, const Eigen::MatrixXd &pts, ElementAssemblyValues &vals);
 		static void setup_monomials_strong_2d(const int dim, const std::string &assembler_name, const Eigen::MatrixXd &pts, const QuadratureVector &da, std::array<Eigen::MatrixXd, 5> &strong);
 
