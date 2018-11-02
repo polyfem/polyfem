@@ -495,34 +495,34 @@ void RBFWithQuadraticLagrange::compute_weights(const std::string &assembler_name
     logger().trace("-- Mean residual: {}", (A * weights_ - b).array().abs().colwise().maxCoeff().mean());
     logger().trace("-- Max constraints error: {}", (C * weights_ - local_basis_integral.transpose()).array().abs().maxCoeff());
 
-    {
-		std::ofstream file;
-		file.open("M.txt");
-		file << M;
-		file.close();
-	}
+ //    {
+	// 	std::ofstream file;
+	// 	file.open("M.txt");
+	// 	file << M;
+	// 	file.close();
+	// }
 
-	{
-		std::ofstream file;
-		file.open("C.txt");
-		file << C;
-		file.close();
-	}
+	// {
+	// 	std::ofstream file;
+	// 	file.open("C.txt");
+	// 	file << C;
+	// 	file.close();
+	// }
 
 
-	{
-		std::ofstream file;
-		file.open("b.txt");
-		file << local_basis_integral.transpose();
-		file.close();
-	}
+	// {
+	// 	std::ofstream file;
+	// 	file.open("b.txt");
+	// 	file << local_basis_integral.transpose();
+	// 	file.close();
+	// }
 
-    {
-		std::ofstream file;
-		file.open("rhs.txt");
-		file << rhs;
-		file.close();
-	}
+ //    {
+	// 	std::ofstream file;
+	// 	file.open("rhs.txt");
+	// 	file << rhs;
+	// 	file.close();
+	// }
 
 	// std::cout << M.bottomRightCorner(10, 10) << std::endl;
 

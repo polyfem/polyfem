@@ -112,7 +112,7 @@ namespace polyfem
 		average_edge_length = 0;
 		min_edge_length = std::numeric_limits<double>::max();
 
-		if(true)
+		if(!args["curved_mesh_size"])
 		{
 			mesh_in.get_edges(p0, p1);
 			p = p0-p1;
@@ -170,6 +170,10 @@ namespace polyfem
 		}
 
 		average_edge_length /= n;
+
+		logger().info("hmin: {}", min_edge_length);
+		logger().info("hmax: {}", mesh_size);
+		logger().info("havg: {}", average_edge_length);
 	}
 
 	void State::save_json()
@@ -2135,6 +2139,8 @@ namespace polyfem
 			{"n_boundary_samples", 6},
 			{"problem", "Franke"},
 			{"normalize_mesh", true},
+
+			{"curved_mesh_size", false},
 
 			{"count_flipped_els", false},
 

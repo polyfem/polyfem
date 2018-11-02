@@ -1180,22 +1180,27 @@ namespace polyfem
 
 	void UIState::show_basis()
 	{
+		int actual_dim = 1;
+		if(!state.problem->is_scalar())
+			actual_dim = state.mesh->dimension();
+
 		if (!state.mesh) { return; }
-		if(vis_basis < 0 || vis_basis >= state.n_bases) return;
+		if(vis_basis < 0 || vis_basis >= state.n_bases*actual_dim) return;
 		if(tri_faces.size() <= 0) return;
+
 
 		available_visualizations(Visualizations::VisBasis) = false;
 		if(visible_visualizations(Visualizations::VisBasis) && !available_visualizations[Visualizations::VisBasis])
 		{
 			reset_flags(Visualizations::VisBasis);
-			MatrixXd fun = MatrixXd::Zero(state.n_bases, 1);
+			MatrixXd fun = MatrixXd::Zero(state.n_bases*actual_dim, 1);
 			fun(vis_basis) = 1;
 
 			MatrixXd global_fun;
 			interpolate_function(fun, global_fun);
 
 			// std::cout<<global_fun.minCoeff()<<" "<<global_fun.maxCoeff()<<std::endl;
-			plot_function(global_fun, Visualizations::VisBasis);
+			plot_function(global_fun.col(0), Visualizations::VisBasis);
 			available_visualizations[Visualizations::VisBasis] = true;
 			vis_flags[Visualizations::VisBasis].clear();
 			hide_data(Visualizations::VisBasis);
