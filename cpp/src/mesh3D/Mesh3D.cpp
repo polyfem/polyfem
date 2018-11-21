@@ -961,6 +961,14 @@ namespace polyfem
 				return true;
 		}
 
+		const auto &vs = mesh_.elements[element_global_id].vs;
+
+		for(auto v_id : vs)
+		{
+			if(is_boundary_vertex(v_id))
+				return true;
+		}
+
 		return false;
 	}
 
