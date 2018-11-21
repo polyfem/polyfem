@@ -124,6 +124,7 @@ namespace polyfem
 
 
 		void save_json(std::ostream &out);
+		void save_json(nlohmann::json &j);
 		void save_json();
 
 		void compute_mesh_stats();

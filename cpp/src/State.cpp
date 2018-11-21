@@ -188,9 +188,15 @@ namespace polyfem
 
 	void State::save_json(std::ostream &out)
 	{
-		logger().info("Saving json...");
 		using json = nlohmann::json;
 		json j;
+		save_json(j);
+		out << j.dump(4) << std::endl;
+	}
+
+	void State::save_json(nlohmann::json &j)
+	{
+		logger().info("Saving json...");
 
 		j["args"] = args;
 		j["quadrature_order"] = args["quadrature_order"];
@@ -304,9 +310,6 @@ namespace polyfem
 #endif
 
 		j["formulation"] = formulation();
-
-
-		out << j.dump(4) << std::endl;
 
 		logger().info("done");
 	}
@@ -2113,6 +2116,8 @@ namespace polyfem
 
 		logger().info("-- Linf error: {}", linf_err);
 		logger().info("-- grad max error: {}", grad_max_err);
+
+		logger().info("total time: {}s", (building_basis_time + assembling_stiffness_mat_time + solving_time));
 
 		// {
 		// 	std::ofstream out("errs.txt");
