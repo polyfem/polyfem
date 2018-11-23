@@ -9,7 +9,7 @@ branches:
 environment:
   matrix:
   - config: Debug
-  - PYTHON: "C:\\Python35"
+    PYTHON: "C:\\Python35"
 install:
   - "%PYTHON%\\python.exe -m pip install numpy"
   - "%PYTHON%\\python.exe -m pip install sympy"
