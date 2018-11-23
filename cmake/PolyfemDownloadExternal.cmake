@@ -103,14 +103,6 @@ function(polyfem_download_hypre)
     )
 endfunction()
 
-## nanosvg
-function(polyfem_download_nanosvg)
-    polyfem_download_project(nanosvg
-        GIT_REPOSITORY https://github.com/memononen/nanosvg.git
-        GIT_TAG        2b08deeb553c723d151f908d786c64136d26d576
-    )
-endfunction()
-
 ## rbf
 function(polyfem_download_rbf)
     polyfem_download_project(rbf
