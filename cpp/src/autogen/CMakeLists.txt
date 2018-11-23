@@ -1,6 +1,6 @@
 set(AUTOGEN
-	auto_rhs.cpp
-	auto_rhs.hpp
+	auto_elasticity_rhs.cpp
+	auto_elasticity_rhs.hpp
 	auto_eigs.cpp
 	auto_eigs.hpp
 	auto_p_bases.cpp

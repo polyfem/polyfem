@@ -128,7 +128,7 @@ if __name__ == "__main__":
     args = parse_args()
     dims = [2, 3]
     names = ["linear_elasticity", "hooke", "saint_venant", "neo_hookean"]
-    cpp = "#include <polyfem/auto_rhs.hpp>\n\n\n"
+    cpp = "#include <polyfem/auto_elasticity_rhs.hpp>\n\n\n"
     hpp = "#pragma once\n\n#include <polyfem/ElasticityUtils.hpp>\n#include <polyfem/AutodiffTypes.hpp>\n#include <Eigen/Dense>\n\n"
     cpp = cpp + "namespace polyfem {\nnamespace autogen " + "{\n"
     hpp = hpp + "namespace polyfem {\nnamespace autogen " + "{\n"
@@ -212,10 +212,10 @@ if __name__ == "__main__":
     path = os.path.abspath(args.output)
 
     print("saving...")
-    with open(os.path.join(path, "auto_rhs.cpp"), "w") as file:
+    with open(os.path.join(path, "auto_elasticity_rhs.cpp"), "w") as file:
         file.write(cpp)
 
-    with open(os.path.join(path, "auto_rhs.hpp"), "w") as file:
+    with open(os.path.join(path, "auto_elasticity_rhs.hpp"), "w") as file:
         file.write(hpp)
 
     print("done!")

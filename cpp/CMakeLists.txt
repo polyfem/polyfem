@@ -131,9 +131,9 @@ add_library(polyfem src/State.cpp)
 
 # Must be call in the same "CMakeLists.txt" where add_library(polyfem ...) is called
 polyfem_autogen(polyfem eigs.py auto_eigs)
-polyfem_autogen(polyfem FEPBases.py auto_p_bases)
-polyfem_autogen(polyfem FEQBases.py auto_q_bases)
-polyfem_autogen(polyfem elasticity_rhs.py auto_rhs)
+polyfem_autogen(polyfem p_bases.py auto_p_bases)
+polyfem_autogen(polyfem q_bases.py auto_q_bases)
+polyfem_autogen(polyfem elasticity_rhs.py auto_elasticity_rhs)
 
 # Public include directory for polyfem
 target_include_directories(polyfem PUBLIC ${PROJECT_BINARY_DIR}/include)

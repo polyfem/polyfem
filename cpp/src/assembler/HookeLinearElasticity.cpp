@@ -3,7 +3,7 @@
 #include <polyfem/Basis.hpp>
 #include <polyfem/ElementAssemblyValues.hpp>
 
-#include <polyfem/auto_rhs.hpp>
+#include <polyfem/auto_elasticity_rhs.hpp>
 
 namespace polyfem
 {

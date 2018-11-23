@@ -5,7 +5,7 @@
 #include <polyfem/MatrixUtils.hpp>
 
 #include <polyfem/auto_eigs.hpp>
-#include <polyfem/auto_rhs.hpp>
+#include <polyfem/auto_elasticity_rhs.hpp>
 
 #include <igl/Timer.h>
 

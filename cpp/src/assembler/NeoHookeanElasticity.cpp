@@ -3,7 +3,7 @@
 #include <polyfem/NeoHookeanElasticity.hpp>
 
 #include <polyfem/Basis.hpp>
-#include <polyfem/auto_rhs.hpp>
+#include <polyfem/auto_elasticity_rhs.hpp>
 
 #include <polyfem/MatrixUtils.hpp>
 #include <igl/Timer.h>

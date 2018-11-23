@@ -3,7 +3,7 @@
 #include <polyfem/SaintVenantElasticity.hpp>
 
 #include <polyfem/Basis.hpp>
-#include <polyfem/auto_rhs.hpp>
+#include <polyfem/auto_elasticity_rhs.hpp>
 
 #include <igl/Timer.h>
 
