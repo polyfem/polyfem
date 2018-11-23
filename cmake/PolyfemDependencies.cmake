@@ -43,14 +43,6 @@ if(NOT TARGET clipper::clipper)
 	target_include_directories(clipper_clipper PUBLIC ${POLYFEM_EXTERNAL}/clipper/cpp)
 endif()
 
-# Nanosvg
-if(NOT TARGET nanosvg::nanosvg)
-	polyfem_download_nanosvg()
-	add_library(nanosvg_nanosvg INTERFACE)
-	add_library(nanosvg::nanosvg ALIAS nanosvg_nanosvg)
-	target_include_directories(nanosvg_nanosvg INTERFACE ${POLYFEM_EXTERNAL}/nanosvg)
-endif()
-
 # Tiny file dialogs
 if(NOT TARGET tinyfiledialogs::tinyfiledialogs)
 	polyfem_download_tinyfiledialogs()
