@@ -141,6 +141,12 @@ target_include_directories(polyfem PUBLIC ${PROJECT_BINARY_DIR}/include)
 set(MESH_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tests/")
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_MESH_PATH=\"${MESH_PATH}\")
 
+# Dependencies
+target_link_libraries(polyfem
+	PUBLIC
+		clipper::clipper
+)
+
 # Extra warnings
 target_link_libraries(polyfem PRIVATE warnings::all)
 
@@ -186,8 +192,8 @@ target_link_libraries(${PROJECT_NAME}_bin
 		warnings::all
 		igl::opengl_glfw_imgui
 		igl::png
-		tinyfiledialogs
-		cli11
+		tinyfiledialogs::tinyfiledialogs
+		CLI11::CLI11
 )
 
 if(POLYFEM_WITH_SANITIZERS)
@@ -240,37 +246,17 @@ add_library(cppoptlib INTERFACE)
 target_include_directories(cppoptlib SYSTEM INTERFACE ${THIRD_PARTY_DIR}/CppNumericalSolvers/include)
 target_link_libraries(polyfem PUBLIC cppoptlib)
 
-# CLI11
-add_library(cli11 INTERFACE)
-target_include_directories(cli11 SYSTEM INTERFACE ${THIRD_PARTY_DIR}/cli11)
-
 # Spectra
 polyfem_download_spectra()
 add_library(spectra INTERFACE)
 target_include_directories(spectra SYSTEM INTERFACE ${THIRD_PARTY_DIR}/spectra/include)
 target_link_libraries(polyfem PUBLIC spectra)
 
-# Clipper
-add_subdirectory(${THIRD_PARTY_DIR}/clipper)
-target_link_libraries(polyfem PUBLIC polyclipping)
-
 # Json
 polyfem_download_json()
 add_library(json INTERFACE)
 target_include_directories(json SYSTEM INTERFACE ${THIRD_PARTY_DIR}/json/include)
 target_link_libraries(polyfem PUBLIC json)
-
-# NanoSVG
-add_library(nanosvg INTERFACE)
-target_include_directories(nanosvg INTERFACE ${THIRD_PARTY_DIR}/nanosvg)
-
-# Tiny file dialogs
-add_subdirectory(${THIRD_PARTY_DIR}/tinyfiledialogs tinyfiledialogs)
-
-# Tiny format
-# add_library(tinyformat INTERFACE)
-# target_include_directories(tinyformat SYSTEM INTERFACE ${THIRD_PARTY_DIR}/tinyformat)
-# target_link_libraries(polyfem PUBLIC tinyformat)
 
 # TinyExpr library
 if(NOT TARGET tinyexpr::tinyexpr)
@@ -425,13 +411,13 @@ if(TARGET igl_stb_image)
 endif()
 
 set_target_properties(glad PROPERTIES FOLDER 3rdparty/other)
-set_target_properties(tinyfiledialogs PROPERTIES FOLDER 3rdparty/other)
+set_target_properties(tinyfiledialogs_tinyfiledialogs PROPERTIES FOLDER 3rdparty/other)
 set_target_properties(imgui PROPERTIES FOLDER 3rdparty/other)
 set_target_properties(tetgen PROPERTIES FOLDER 3rdparty/other)
 set_target_properties(triangle PROPERTIES FOLDER 3rdparty/other)
 # set_target_properties(uninstall_geo PROPERTIES FOLDER 3rdparty/other)
 set_target_properties(geogram PROPERTIES FOLDER 3rdparty/other)
-set_target_properties(polyclipping PROPERTIES FOLDER 3rdparty/other)
+set_target_properties(clipper_clipper PROPERTIES FOLDER 3rdparty/other)
 
 ################################################################################
 # Subdirectories
