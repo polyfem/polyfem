@@ -24,16 +24,9 @@ The formula for higher order bases are computed at CMake time using an external 
 Usage
 -----
 
-The main executable, `./PolyFEM_bin`, can be called with a GUI or through a command-line interface. The GUI is pretty simple and should be self-explanatory. To call the command-line interface, set the setup an `example.json` file, and run as follows:
+The main executable, `./PolyFEM_bin`, can be called with a GUI or through a command-line interface. Simply run: 
 
-    ./PolyFEM_bin --cmd --json ../example.json
-    
- For the complete list of options use
-
-    ./PolyFEM_bin -h
-
-Documentation
--------------
+    ./PolyFEM_bin
 
 A more detailed documentation can be found on the [website](https://polyfem.github.io/).
 
