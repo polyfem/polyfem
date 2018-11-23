@@ -67,7 +67,7 @@ int main(int argc, char **argv)
 	int discr_order = 1;
 
 	bool use_splines = false;
-	bool normalize_mesh = true;
+	bool skip_normalization = false;
 	bool no_ui = false;
 	bool p_ref = false;
 	bool force_linear = false;
@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 
 	//for debugging
 	command_line.add_option("--n_refs", n_refs, "Number of refinements");
-	command_line.add_flag("--not_norm", normalize_mesh, "Skips mesh normalization");
+	command_line.add_flag("--not_norm", skip_normalization, "Skips mesh normalization");
 
 
 	const ProblemFactory &p_factory = ProblemFactory::factory();
@@ -148,7 +148,7 @@ int main(int argc, char **argv)
 		in_args["force_linear_geometry"] = force_linear;
 		in_args["n_refs"] = n_refs;
 		in_args["problem"] = problem_name;
-		in_args["normalize_mesh"] = normalize_mesh;
+		in_args["normalize_mesh"] = !skip_normalization;
 
 
 		in_args["scalar_formulation"] = scalar_formulation;
