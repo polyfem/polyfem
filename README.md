@@ -88,8 +88,6 @@ Complete example
     "discr_order_max": 4,           "Maximum allowed dicrezation oder, used in p pref"
     "h1_formula": false,            "Use pref formula for h1 bound"
 
-    "force_linear_geometry": false, "Force Linear geometric maps"
-
     "solver_type": "Pardiso",       "Library for linear solver"
     "precond_type": "Eigen::DiagonalPreconditioner",
     "solver_params": {},            "solver specific parameters"
