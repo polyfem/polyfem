@@ -37,10 +37,9 @@ install:
 - ccache -V && ccache --show-stats && ccache --zero-stats
 
 script:
-- cd cpp
 - mkdir build
 - cd build
-- cmake -DCMAKE_BUILD_TYPE=$CONFIG ..
+- cmake -DCMAKE_BUILD_TYPE=$CONFIG -DPOLYFEM_WITH_MISC=ON ..
 - make -j2
 - make test
 - ccache --show-stats
