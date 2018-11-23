@@ -1,5 +1,0 @@
-#V #F 3*#P /*First line: number of vertices, faces, and polyhedra*/
-X Y Z /*list of vertices: coordinates*/
-#fi a b c .../*list of faces. Every line has the number of vertices followed by the index of each vertex*/
-#pi l m n .../*list of polyhedra. Every polyhedral takes two lines: first line has the number of faces followed by the index of each face,*/
-#pi 0 1 1 .../*second line has the number of faces followed by the orientation of each face it contains. 1 means has the same orientation to the face list, 0 means has the opposite orientation.*/
