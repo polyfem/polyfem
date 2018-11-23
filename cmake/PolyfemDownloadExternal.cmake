@@ -150,3 +150,12 @@ function(polyfem_download_tinyfiledialogs)
         GIT_TAG        511e6500fa9184923d4859e06ee9a6a4e70820c4
     )
 endfunction()
+
+
+## data
+function(polyfem_download_polyfem_data)
+    polyfem_download_project(data
+        GIT_REPOSITORY https://github.com/polyfem/polyfem-data
+        GIT_TAG        6b39f58be033d5cca57d5d3fd8ed206ae041e25d
+    )
+endfunction()

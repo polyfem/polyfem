@@ -12,6 +12,8 @@ set(test_sources
 	test_utils.cpp
 )
 
+polyfem_download_polyfem_data()
+
 add_executable(unit_tests ${test_sources})
 
 foreach(source IN ITEMS ${test_sources})
@@ -20,7 +22,7 @@ endforeach()
 
 target_link_libraries(unit_tests PUBLIC polyfem catch warnings::all)
 
-set(DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data/")
+set(DATA_DIR "${THIRD_PARTY_DIR}/data/")
 target_compile_definitions(unit_tests PUBLIC -DDATA_DIR=\"${DATA_DIR}\")
 
 

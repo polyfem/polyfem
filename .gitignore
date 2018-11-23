@@ -53,30 +53,24 @@ __pycache__
 .idea/
 build/
 cmake-build-*/
-bin/
-data
-meshes
-cpp/bin
-cpp/bin_rel
-cpp/build
-cpp/xcode
-cpp/3rdparty/.cache
-cpp/3rdparty/*
-python/attic
+bin
+bin_rel
+build
+xcode
+3rdparty
 
-matlab
-maple
+
 
 # Plotting temporary files
 python/plot.html
 python/temp-plot.html
 
 # Rhs temporary files
-cpp/src/autogen/auto_elasticity_rhs.cpp
-cpp/src/autogen/auto_elasticity_rhs.hpp
-cpp/src/autogen/auto_eigs.cpp
-cpp/src/autogen/auto_eigs.hpp
-cpp/src/autogen/auto_q_bases.cpp
-cpp/src/autogen/auto_q_bases.hpp
-cpp/src/autogen/auto_p_bases.cpp
-cpp/src/autogen/auto_p_bases.hpp
+src/autogen/auto_elasticity_rhs.cpp
+src/autogen/auto_elasticity_rhs.hpp
+src/autogen/auto_eigs.cpp
+src/autogen/auto_eigs.hpp
+src/autogen/auto_q_bases.cpp
+src/autogen/auto_q_bases.hpp
+src/autogen/auto_p_bases.cpp
+src/autogen/auto_p_bases.hpp
