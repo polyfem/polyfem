@@ -8,15 +8,18 @@ PolyFEM
 Compilation
 -----------
 
-All the dependencies required to build the code are included. It should work on Windows, macOS and Linux, and it should build out of the box with CMake:
+All the C++ dependencies required to build the code are included. It should work on Windows, macOS and Linux, and it should build out of the box with CMake:
 
     mkdir build
     cd build
     cmake ..
     make -j4
 
-On Linux you need `zenity` for the file dialog window to work. On macOS and Windows it should use the native windows directly.
-Note that the formula for higher order bases and quadrature points are pre-computed using Python. CMake can call those python as part of the compilation process, but by default this automatic generation is disabled, since it requires a working python installation and additional packages (`sympy` and `quadpy`).
+On Linux `zenity` is required for the file dialog window to work. On macOS and Windows the native windows are used directly.
+The formula for higher order bases are computed at CMake time using an external python script. Consequently, PolyFEM requires a working installation of Python and some additional packages in order to build correctly:
+
+- `numpy` and `sympy`
+- `quadpy` (optional)
 
 
 Usage
@@ -30,9 +33,6 @@ The main executable, `./PolyFEM_bin`, can be called with a GUI or through a comm
  For the complete list of options use
 
     ./PolyFEM_bin -h
-
-
-
 
 
 Json files
