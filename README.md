@@ -1,7 +1,7 @@
 PolyFEM
 =======
 
-[![Build Status](https://travis-ci.com/geometryprocessing/polyfem.svg?token=euzAY1sxC114E8ufzcZx&branch=master)](https://travis-ci.com/geometryprocessing/polyfem)
+[![Build Status](https://travis-ci.com/polyfem/polyfem.svg?branch=master)](https://travis-ci.com/polyfem/polyfem)
 
 
 Compilation
@@ -21,7 +21,7 @@ Note that the formula for higher order bases and quadrature points are pre-compu
 Usage
 -----
 
-The main executable, `./Polyfem_bin`, can be called with a GUI or through a command-line interface. The GUI is pretty simple and should be self-explanatory. To call the command-line interface, set the mesh path in the file `example.json`, and run as follows:
+The main executable, `./Polyfem_bin`, can be called with a GUI or through a command-line interface. The GUI is pretty simple and should be self-explanatory. To call the command-line interface, set the setup an `example.json` file, and run as follows:
 
     ./Polyfem_bin --cmd --json ../example.json
   
