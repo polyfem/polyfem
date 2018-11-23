@@ -1,12 +1,22 @@
 ################################################################################
 include(DownloadProject)
 
+# With CMake 3.8 and above, we can hide warnings about git being in a
+# detached head by passing an extra GIT_CONFIG option
+if(NOT (${CMAKE_VERSION} VERSION_LESS "3.8.0"))
+    set(POLYFEM_EXTRA_OPTIONS "GIT_CONFIG advice.detachedHead=false")
+else()
+    set(POLYFEM_EXTRA_OPTIONS "")
+endif()
+
 # Shortcut function
 function(polyfem_download_project name)
     download_project(
         PROJ         ${name}
         SOURCE_DIR   ${POLYFEM_EXTERNAL}/${name}
         DOWNLOAD_DIR ${POLYFEM_EXTERNAL}/.cache/${name}
+        QUIET
+        ${POLYFEM_EXTRA_OPTIONS}
         ${ARGN}
     )
 endfunction()
@@ -45,10 +55,21 @@ function(polyfem_download_catch2)
     )
 endfunction()
 
+## CLI11
+function(polyfem_download_cli11)
+    polyfem_download_project(cli11
+        URL     https://github.com/CLIUtils/CLI11/archive/v1.6.1.tar.gz
+        URL_MD5 48ef97262adb0b47a2f0a7edbda6e2aa
+    )
+endfunction()
 
-# [submodule "cpp/3rdparty/tinyformat"]
-#     path = cpp/3rdparty/tinyformat
-#     url = https://github.com/c42f/tinyformat.git
+## Clipper
+function(polyfem_download_clipper)
+    polyfem_download_project(clipper
+        URL     https://sourceforge.net/projects/polyclipping/files/clipper_ver6.4.2.zip
+        URL_MD5 100b4ec56c5308bac2d10f3966e35e11
+    )
+endfunction()
 
 ## CppNumericalSolvers
 function(polyfem_download_CppNumericalSolvers)
@@ -82,12 +103,35 @@ function(polyfem_download_hypre)
     )
 endfunction()
 
+## nanosvg
+function(polyfem_download_nanosvg)
+    polyfem_download_project(nanosvg
+        GIT_REPOSITORY https://github.com/memononen/nanosvg.git
+        GIT_TAG        2b08deeb553c723d151f908d786c64136d26d576
+    )
+endfunction()
 
 ## rbf
 function(polyfem_download_rbf)
     polyfem_download_project(rbf
         GIT_REPOSITORY https://bitbucket.org/zulianp/opencl-rbf-pum.git
         GIT_TAG        master
+    )
+endfunction()
+
+## Sanitizers
+function(polyfem_download_sanitizers)
+    polyfem_download_project(sanitizers-cmake
+        GIT_REPOSITORY https://github.com/arsenm/sanitizers-cmake.git
+        GIT_TAG        6947cff3a9c9305eb9c16135dd81da3feb4bf87f
+    )
+endfunction()
+
+## spdlog
+function(polyfem_download_spdlog)
+    polyfem_download_project(spdlog
+        GIT_REPOSITORY https://github.com/gabime/spdlog.git
+        GIT_TAG        188cff7d6567b80c6b99bc15899fef9637a8fe52
     )
 endfunction()
 
@@ -99,21 +143,10 @@ function(polyfem_download_tinyexpr)
     )
 endfunction()
 
-
-
-## Sanitizers
-function(polyfem_download_sanitizers)
-    polyfem_download_project(sanitizers-cmake
-        GIT_REPOSITORY https://github.com/arsenm/sanitizers-cmake.git
-        GIT_TAG        6947cff3a9c9305eb9c16135dd81da3feb4bf87f
-    )
-endfunction()
-
-
-## spdlog
-function(polyfem_download_spdlog)
-    polyfem_download_project(spdlog
-        GIT_REPOSITORY https://github.com/gabime/spdlog.git
-        GIT_TAG        188cff7d6567b80c6b99bc15899fef9637a8fe52
+## tinyfiledialogs
+function(polyfem_download_tinyfiledialogs)
+    polyfem_download_project(tinyfiledialogs
+        GIT_REPOSITORY https://git.code.sf.net/p/tinyfiledialogs/code
+        GIT_TAG        511e6500fa9184923d4859e06ee9a6a4e70820c4
     )
 endfunction()
