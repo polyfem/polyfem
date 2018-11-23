@@ -16,6 +16,7 @@ install:
 build:
   parallel: true
 build_script:
+  - set PATH=%PYTHON%;%PATH%
   - cd c:\projects\polyfem
   - mkdir build
   - cd build
