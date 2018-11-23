@@ -3,6 +3,13 @@ cmake_minimum_required(VERSION 3.1)
 project(PolyFEM)
 ################################################################################
 
+# Detects whether this is a top-level project
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+	set(POLYFEM_TOPLEVEL_PROJECT ON)
+else()
+	set(POLYFEM_TOPLEVEL_PROJECT OFF)
+endif()
+
 set(THIRD_PARTY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 list(APPEND CMAKE_MODULE_PATH ${THIRD_PARTY_DIR}/Catch2/contrib)
@@ -176,32 +183,34 @@ endif()
 ################################################################################
 
 # Main executable
-add_executable(${PROJECT_NAME}_bin src/main.cpp)
+if(POLYFEM_TOPLEVEL_PROJECT)
+	add_executable(${PROJECT_NAME}_bin src/main.cpp)
 
-source_group("gui" FILES src/main.cpp)
-source_group("gui" FILES src/viewer/UIState.cpp)
-source_group("gui" FILES src/viewer/UIState.hpp)
-source_group("gui" FILES src/viewer/UIMenu.cpp)
+	source_group("gui" FILES src/main.cpp)
+	source_group("gui" FILES src/viewer/UIState.cpp)
+	source_group("gui" FILES src/viewer/UIState.hpp)
+	source_group("gui" FILES src/viewer/UIMenu.cpp)
 
-target_include_directories(${PROJECT_NAME}_bin PUBLIC src/viewer)
-target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
+	target_include_directories(${PROJECT_NAME}_bin PUBLIC src/viewer)
+	target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
 
-target_link_libraries(${PROJECT_NAME}_bin
-	PUBLIC
-		polyfem
-		warnings::all
-		igl::opengl_glfw_imgui
-		igl::png
-		tinyfiledialogs::tinyfiledialogs
-		CLI11::CLI11
-)
+	target_link_libraries(${PROJECT_NAME}_bin
+		PUBLIC
+			polyfem
+			warnings::all
+			igl::opengl_glfw_imgui
+			igl::png
+			tinyfiledialogs::tinyfiledialogs
+			CLI11::CLI11
+	)
 
-if(POLYFEM_WITH_SANITIZERS)
-	add_sanitizers(${PROJECT_NAME}_bin)
-endif()
+	if(POLYFEM_WITH_SANITIZERS)
+		add_sanitizers(${PROJECT_NAME}_bin)
+	endif()
 
-if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
-	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_bin)
+	if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
+		set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_bin)
+	endif()
 endif()
 
 ################################################################################
@@ -431,7 +440,7 @@ set_target_properties(clipper_clipper PROPERTIES FOLDER 3rdparty/other)
 add_subdirectory(src)
 
 # Compile extras only if this is a top-level project
-if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+if(POLYFEM_TOPLEVEL_PROJECT)
 	# Auxiliary binaries
 	if(POLYFEM_WITH_APPS)
 		add_subdirectory(apps)
