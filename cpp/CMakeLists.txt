@@ -141,6 +141,12 @@ target_include_directories(polyfem PUBLIC ${PROJECT_BINARY_DIR}/include)
 set(MESH_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tests/")
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_MESH_PATH=\"${MESH_PATH}\")
 
+# Dependencies
+target_link_libraries(polyfem
+	PUBLIC
+		clipper::clipper
+)
+
 # Extra warnings
 target_link_libraries(polyfem PRIVATE warnings::all)
 

@@ -13,7 +13,7 @@
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
 
-#include <CLI11.hpp>
+#include <CLI/CLI.hpp>
 
 #ifdef USE_TBB
 #include <tbb/task_scheduler_init.h>
