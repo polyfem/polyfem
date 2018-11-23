@@ -25,53 +25,6 @@ using namespace polyfem;
 using namespace Eigen;
 
 
-#include <geogram/basic/logger.h>
-
-class GeoLoggerForward: public GEO::LoggerClient
-{
-	std::shared_ptr<spdlog::logger> logger_;
-
-public:
-	template<typename T>
-	GeoLoggerForward(T logger) : logger_(logger) { }
-
-private:
-	std::string truncate(const std::string &msg)
-	{
-		static size_t prefix_len = GEO::CmdLine::ui_feature(" ", false).size();
-		return msg.substr(prefix_len, msg.size() - 1 - prefix_len);
-	}
-
-protected:
-	void div(const std::string& title) override
-	{
-		logger_->trace(title.substr(0, title.size() - 1));
-	}
-
-	void out(const std::string& str) override
-	{
-		logger_->info(truncate(str));
-	}
-
-	void warn(const std::string& str) override
-	{
-		logger_->warn(truncate(str));
-	}
-
-	void err(const std::string& str) override
-	{
-		logger_->error(truncate(str));
-	}
-
-	void status(const std::string& str) override
-	{
-		// Errors and warnings are also dispatched as status by geogram, but without
-		// the "feature" header. We thus forward them as trace, to avoid duplicated
-		// logger info...
-		logger_->trace(str.substr(0, str.size() - 1));
-	}
-};
-
 
 int main(int argc, char **argv)
 {
@@ -164,6 +117,8 @@ int main(int argc, char **argv)
 	command_line.add_option("--log_file", log_file, "Log to a file");
 	command_line.add_option("--log_level", log_level, "Log level 1 debug 2 info");
 
+	State &state = State::state();
+
 
     try {
         command_line.parse(argc, argv);
@@ -171,18 +126,9 @@ int main(int argc, char **argv)
         return command_line.exit(e);
     }
 
+	state.init_logger(log_file, log_level, is_quiet);
+
 	if (!screenshot.empty()) { no_ui = false; }
-
-	Logger::init(!is_quiet, log_file);
-	log_level = std::max(0, std::min(6, log_level));
-    spdlog::set_level(static_cast<spdlog::level::level_enum>(log_level));
-    spdlog::flush_every(std::chrono::seconds(3));
-
-	GEO::Logger *geo_logger = GEO::Logger::instance();
-	geo_logger->unregister_all_clients();
-	geo_logger->register_client(new GeoLoggerForward(logger().clone("geogram")));
-	geo_logger->set_pretty(false);
-
 
 	json in_args = json({});
 
@@ -227,7 +173,6 @@ int main(int argc, char **argv)
 
 	if(no_ui)
 	{
-		State &state = State::state();
 		state.init(in_args);
 
 

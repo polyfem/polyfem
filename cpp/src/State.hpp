@@ -27,6 +27,7 @@ namespace polyfem
 		~State() = default;
 
 		State();
+		void init_logger(const std::string &log_file, int log_level, const bool is_quiet);
 
 		void init(const json &args);
 

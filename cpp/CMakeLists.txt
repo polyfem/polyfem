@@ -55,7 +55,10 @@ option(ENABLE_PARDISO     "Enable Pardiso library" ON)
 option(ENABLE_MMG         "Enable MMG library"     OFF)
 option(ENABLE_TBB         "Enable TBB"             ON)
 option(ENABLE_HYPRE       "Enable hypre"           ON)
-option(ENABLE_OPENCL      "Enable OpenCL"          ON)
+option(ENABLE_OPENCL      "Enable OpenCL"          OFF)
+
+option(POLYFEM_WITH_APPS      "Build the apps"          ON)
+option(POLYFEM_WITH_MISC      "Build misc targes"       OFF)
 
 # Sanitizer options
 option(SANITIZE_ADDRESS   "Sanitize Address"       OFF)
@@ -440,7 +443,13 @@ add_subdirectory(src)
 # Compile extras only if this is a top-level project
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
 	# Auxiliary binaries
-	add_subdirectory(misc)
+	if(POLYFEM_WITH_APPS)
+		add_subdirectory(apps)
+	endif()
+
+	if(POLYFEM_WITH_MISC)
+		add_subdirectory(misc)
+	endif()
 
 	# Unit tests
 	include(CTest)

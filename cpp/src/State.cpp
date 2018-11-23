@@ -62,6 +62,9 @@
 #include <memory>
 
 #include <polyfem/autodiff.h>
+#include <geogram/basic/logger.h>
+#include <geogram/basic/command_line.h>
+#include <geogram/basic/command_line_args.h>
 DECLARE_DIFFSCALAR_BASE();
 
 
@@ -87,11 +90,72 @@ namespace polyfem
 			assert(v2.size() == 3);
 			return std::abs(atan2(v1.cross(v2).norm(), v1.dot(v2)));
 		}
+
+		class GeoLoggerForward: public GEO::LoggerClient
+		{
+			std::shared_ptr<spdlog::logger> logger_;
+
+		public:
+			template<typename T>
+			GeoLoggerForward(T logger) : logger_(logger) { }
+
+		private:
+			std::string truncate(const std::string &msg)
+			{
+				static size_t prefix_len = GEO::CmdLine::ui_feature(" ", false).size();
+				return msg.substr(prefix_len, msg.size() - 1 - prefix_len);
+			}
+
+		protected:
+			void div(const std::string& title) override
+			{
+				logger_->trace(title.substr(0, title.size() - 1));
+			}
+
+			void out(const std::string& str) override
+			{
+				logger_->info(truncate(str));
+			}
+
+			void warn(const std::string& str) override
+			{
+				logger_->warn(truncate(str));
+			}
+
+			void err(const std::string& str) override
+			{
+				logger_->error(truncate(str));
+			}
+
+			void status(const std::string& str) override
+			{
+		// Errors and warnings are also dispatched as status by geogram, but without
+		// the "feature" header. We thus forward them as trace, to avoid duplicated
+		// logger info...
+				logger_->trace(str.substr(0, str.size() - 1));
+			}
+		};
+
+
 	}
 
 	State::State()
 	{
 		problem = ProblemFactory::factory().get_problem("Linear");
+	}
+
+	void State::init_logger(const std::string &log_file, int log_level, const bool is_quiet)
+	{
+		Logger::init(!is_quiet, log_file);
+		log_level = std::max(0, std::min(6, log_level));
+		spdlog::set_level(static_cast<spdlog::level::level_enum>(log_level));
+		spdlog::flush_every(std::chrono::seconds(3));
+
+		GEO::Logger *geo_logger = GEO::Logger::instance();
+		geo_logger->unregister_all_clients();
+		geo_logger->register_client(new GeoLoggerForward(logger().clone("geogram")));
+		geo_logger->set_pretty(false);
+
 	}
 
 	void State::sol_to_pressure()
