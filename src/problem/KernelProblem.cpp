@@ -1,8 +1,6 @@
 #include <polyfem/KernelProblem.hpp>
 #include <polyfem/AssemblerUtils.hpp>
 
-#include <polyfem/UIState.hpp>
-
 #include <iostream>
 
 namespace polyfem
