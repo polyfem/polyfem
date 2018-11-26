@@ -23,7 +23,6 @@ namespace polyfem
 	class State
 	{
 	public:
-		static State &state();
 		~State() = default;
 
 		State();

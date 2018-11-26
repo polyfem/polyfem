@@ -18,8 +18,8 @@ namespace polyfem
 		using typename cppoptlib::Problem<double>::TVector;
 		typedef Eigen::SparseMatrix<double> THessian;
 
-		NLProblem(const RhsAssembler &rhs_assembler, const double t);
-		NLProblem(const RhsAssembler &rhs_assembler, const double t, const int full_size, const int reduced_size);
+		NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t);
+		NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t, const int full_size, const int reduced_size);
 
 		TVector initial_guess();
 
@@ -32,7 +32,7 @@ namespace polyfem
 
 
 		template<class FullMat, class ReducedMat>
-		static void full_to_reduced_aux(const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced)
+		static void full_to_reduced_aux(State &state, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced)
 		{
 			using namespace polyfem;
 
@@ -44,7 +44,7 @@ namespace polyfem
 			size_t k = 0;
 			for(int i = 0; i < full.size(); ++i)
 			{
-				if(k < State::state().boundary_nodes.size() && State::state().boundary_nodes[k] == i)
+				if(k < state.boundary_nodes.size() && state.boundary_nodes[k] == i)
 				{
 					++k;
 					continue;
@@ -56,7 +56,7 @@ namespace polyfem
 		}
 
 		template<class ReducedMat, class FullMat>
-		static void reduced_to_full_aux(const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full)
+		static void reduced_to_full_aux(State &state, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full)
 		{
 			using namespace polyfem;
 
@@ -68,7 +68,7 @@ namespace polyfem
 			size_t k = 0;
 			for(int i = 0; i < full.size(); ++i)
 			{
-				if(k < State::state().boundary_nodes.size() && State::state().boundary_nodes[k] == i)
+				if(k < state.boundary_nodes.size() && state.boundary_nodes[k] == i)
 				{
 					++k;
 					full(i) = rhs(i);
@@ -87,6 +87,7 @@ namespace polyfem
 		const Eigen::MatrixXd &current_rhs();
 
 	private:
+		State &state;
 		AssemblerUtils &assembler;
 		const RhsAssembler &rhs_assembler;
 		Eigen::MatrixXd _current_rhs;

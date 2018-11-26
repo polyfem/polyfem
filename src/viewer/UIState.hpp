@@ -46,7 +46,7 @@ namespace polyfem
 	public:
 		static UIState &ui_state();
 
-		void launch(const json &args);
+		void launch(const std::string &log_file, int log_level, const bool is_quiet, const json &args);
 
 		void sertialize(const std::string &name);
 
@@ -90,7 +90,7 @@ namespace polyfem
 
 		std::vector<int> selected_elements;
 
-		State &state;
+		State state;
 
 		igl::opengl::ViewerData &debug_data()
 		{

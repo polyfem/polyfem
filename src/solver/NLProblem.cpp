@@ -9,16 +9,16 @@
 
 namespace polyfem
 {
-	NLProblem::NLProblem(const RhsAssembler &rhs_assembler, const double t, const int full_size, const int reduced_size)
-	: assembler(AssemblerUtils::instance()), rhs_assembler(rhs_assembler),
+	NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t, const int full_size, const int reduced_size)
+	: state(state), assembler(AssemblerUtils::instance()), rhs_assembler(rhs_assembler),
 	full_size(full_size), reduced_size(reduced_size), t(t), rhs_computed(false)
 	{ }
 
 
-	NLProblem::NLProblem(const RhsAssembler &rhs_assembler, const double t)
-	: assembler(AssemblerUtils::instance()), rhs_assembler(rhs_assembler),
-	full_size(State::state().n_bases*State::state().mesh->dimension()),
-	reduced_size(State::state().n_bases*State::state().mesh->dimension() - State::state().boundary_nodes.size()),
+	NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t)
+	: state(state), assembler(AssemblerUtils::instance()), rhs_assembler(rhs_assembler),
+	full_size(state.n_bases*state.mesh->dimension()),
+	reduced_size(state.n_bases*state.mesh->dimension() - state.boundary_nodes.size()),
 	t(t), rhs_computed(false)
 	{ }
 
@@ -29,7 +29,6 @@ namespace polyfem
 
 	// 	return guess;
 
-	// 	// const auto &state = State::state();
  // 	// 	auto solver = LinearSolver::create(state.args["solver_type"], state.args["precond_type"]);
 	// 	// solver->setParameters(state.solver_params());
 	// 	// Eigen::VectorXd b, x, guess;
@@ -52,7 +51,6 @@ namespace polyfem
 	{
 		if(!rhs_computed)
 		{
-			const auto &state = State::state();
 			rhs_assembler.compute_energy_grad(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, state.rhs, t, _current_rhs);
 			rhs_computed = true;
 		}
@@ -68,7 +66,6 @@ namespace polyfem
 			full = x;
 		assert(full.size() == full_size);
 
-		const auto &state = State::state();
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 
 		const double elastic_energy = assembler.assemble_energy(rhs_assembler.formulation(), state.mesh->is_volume(), state.bases, gbases, full);
@@ -78,8 +75,6 @@ namespace polyfem
 	}
 
 	void NLProblem::gradient(const TVector &x, TVector &gradv) {
-		const auto &state = State::state();
-
 		Eigen::MatrixXd full;
 		if(x.size() == reduced_size)
 			reduced_to_full(x, full);
@@ -97,7 +92,6 @@ namespace polyfem
 	}
 
 	void NLProblem::hessian(const TVector &x, THessian &hessian) {
-		const auto &state = State::state();
 		Eigen::MatrixXd full;
 		if(x.size() == reduced_size)
 			reduced_to_full(x, full);
@@ -121,7 +115,7 @@ namespace polyfem
 		size_t kk = 0;
 		for(int i = 0; i < full.size(); ++i)
 		{
-			if(kk < State::state().boundary_nodes.size() && State::state().boundary_nodes[kk] == i)
+			if(kk < state.boundary_nodes.size() && state.boundary_nodes[kk] == i)
 			{
 				++kk;
 				indices(i) = -1;
@@ -161,11 +155,11 @@ namespace polyfem
 
 	void NLProblem::full_to_reduced(const Eigen::MatrixXd &full, TVector &reduced) const
 	{
-		full_to_reduced_aux(full_size, reduced_size, full, reduced);
+		full_to_reduced_aux(state, full_size, reduced_size, full, reduced);
 	}
 
 	void NLProblem::reduced_to_full(const TVector &reduced, Eigen::MatrixXd &full)
 	{
-		reduced_to_full_aux(full_size, reduced_size, reduced, current_rhs(), full);
+		reduced_to_full_aux(state, full_size, reduced_size, reduced, current_rhs(), full);
 	}
 }

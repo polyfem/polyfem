@@ -41,7 +41,8 @@ namespace cppoptlib {
 			MoreThuente,
 		};
 
-		SparseNewtonDescentSolver()
+		SparseNewtonDescentSolver(const json &solver_param, const std::string &solver_type, const std::string &precond_type)
+		: solver_param(solver_param), solver_type(solver_type), precond_type(precond_type)
 		{
 			auto criteria = this->criteria();
 			criteria.fDelta = 1e-9;
@@ -128,9 +129,11 @@ namespace cppoptlib {
 		void minimize(ProblemType &objFunc, TVector &x0) {
 			using namespace polyfem;
 
-			const json &params = State::state().solver_params();
-			auto solver = LinearSolver::create(State::state().solver_type(), State::state().precond_type());
-			solver->setParameters(params);
+			// const json &params = State::state().solver_params();
+			// auto solver = LinearSolver::create(State::state().solver_type(), State::state().precond_type());
+
+			auto solver = LinearSolver::create(solver_type, precond_type);
+			solver->setParameters(solver_param);
 			polyfem::logger().debug("\tinternal solver {}", solver->name());
 
 			const int reduced_size = x0.rows();
@@ -220,17 +223,17 @@ namespace cppoptlib {
 				double rate;
 				switch (line_search) {
 					case LineSearch::Armijo:
-						rate = armijo_linesearch(x0, delta_x, objFunc);
-						break;
+					rate = armijo_linesearch(x0, delta_x, objFunc);
+					break;
 					case LineSearch::ArmijoAlt:
-						rate = Armijo<ProblemType, 1>::linesearch(x0, delta_x, objFunc);
-						break;
+					rate = Armijo<ProblemType, 1>::linesearch(x0, delta_x, objFunc);
+					break;
 					case LineSearch::Bisection:
-						rate = linesearch(x0, delta_x, objFunc);
-						break;
+					rate = linesearch(x0, delta_x, objFunc);
+					break;
 					case LineSearch::MoreThuente:
-						rate = MoreThuente<ProblemType, 1>::linesearch(x0, delta_x, objFunc);
-						break;
+					rate = MoreThuente<ProblemType, 1>::linesearch(x0, delta_x, objFunc);
+					break;
 				}
 
 				x0 += rate * delta_x;
@@ -314,6 +317,10 @@ namespace cppoptlib {
 		int error_code() const { return  error_code_; }
 
 	private:
+		const json solver_param;
+		const std::string solver_type;
+		const std::string precond_type;
+
 		int error_code_;
 		json solver_info;
 

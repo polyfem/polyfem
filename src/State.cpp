@@ -1869,7 +1869,7 @@ namespace polyfem
 					logger().info("t: {} prev: {} step: {}", t, prev_t, step_t);
 
 
-					NLProblem nl_problem(rhs_assembler, t);
+					NLProblem nl_problem(*this, rhs_assembler, t);
 
 					logger().debug("Updating starting point...");
 					update_timer.start();
@@ -1931,7 +1931,7 @@ namespace polyfem
 					}
 
 					if (args["nl_solver"] == "newton") {
-						cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver;
+						cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
 						nlsolver.setLineSearch(args["line_search"]);
 						nlsolver.minimize(nl_problem, tmp_sol);
 
@@ -2188,12 +2188,6 @@ namespace polyfem
 		// 	out<<err_per_el;
 		// 	out.close();
 		// }
-	}
-
-	State &State::state(){
-		static State instance;
-
-		return instance;
 	}
 
 	void State::init(const json &args_in)

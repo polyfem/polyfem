@@ -117,8 +117,7 @@ int main(int argc, char **argv)
 	command_line.add_option("--log_file", log_file, "Log to a file");
 	command_line.add_option("--log_level", log_level, "Log level 1 debug 2 info");
 
-	State &state = State::state();
-
+	
 
     try {
         command_line.parse(argc, argv);
@@ -126,7 +125,7 @@ int main(int argc, char **argv)
         return command_line.exit(e);
     }
 
-	state.init_logger(log_file, log_level, is_quiet);
+	
 
 	if (!screenshot.empty()) { no_ui = false; }
 
@@ -173,6 +172,8 @@ int main(int argc, char **argv)
 
 	if(no_ui)
 	{
+		State state;
+		state.init_logger(log_file, log_level, is_quiet);
 		state.init(in_args);
 
 
@@ -195,7 +196,7 @@ int main(int argc, char **argv)
 	}
 	else
 	{
-		UIState::ui_state().launch(in_args);
+		UIState::ui_state().launch(log_file, log_level, is_quiet, in_args);
 	}
 
 

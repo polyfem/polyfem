@@ -640,7 +640,6 @@ namespace polyfem
 
 
 	UIState::UIState()
-	: state(State::state())
 	{
 		for(int i = 0; i < Visualizations::TotalVisualizations; ++i)
 		{
@@ -1640,8 +1639,9 @@ namespace polyfem
 		show_basis();
 	}
 
-	void UIState::launch(const json &args)
+	void UIState::launch(const std::string &log_file, int log_level, const bool is_quiet, const json &args)
 	{
+		state.init_logger(log_file, log_level, is_quiet);
 		state.init(args);
 
 		if(state.problem->boundary_ids().empty())
