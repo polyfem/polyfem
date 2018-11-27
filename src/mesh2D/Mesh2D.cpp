@@ -501,7 +501,7 @@ namespace polyfem
 		return false;
 	}
 
-	void Mesh2D::compute_boundary_ids()
+	void Mesh2D::compute_boundary_ids(const double eps)
 	{
 		boundary_ids_.resize(n_edges());
 		std::fill(boundary_ids_.begin(), boundary_ids_.end(), -1);
@@ -517,13 +517,13 @@ namespace polyfem
 
 			const auto p = edge_barycenter(e);
 
-			if(fabs(p(0)-min_corner[0])<1e-7)
+			if(fabs(p(0)-min_corner[0])<eps)
 				boundary_ids_[e]=1;
-			else if(fabs(p(1)-min_corner[1])<1e-7)
+			else if(fabs(p(1)-min_corner[1])<eps)
 				boundary_ids_[e]=2;
-			else if(fabs(p(0)-max_corner[0])<1e-7)
+			else if(fabs(p(0)-max_corner[0])<eps)
 				boundary_ids_[e]=3;
-			else if(fabs(p(1)-max_corner[1])<1e-7)
+			else if(fabs(p(1)-max_corner[1])<eps)
 				boundary_ids_[e]=4;
 
 			else

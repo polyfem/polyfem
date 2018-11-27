@@ -112,7 +112,7 @@ namespace polyfem
 		void get_edge_elements_neighs(const int e_id, std::vector<int> &ids) const { ids.clear(); ids.insert(ids.begin(), mesh_.edges[e_id].neighbor_hs.begin(), mesh_.edges[e_id].neighbor_hs.end()); }
 
 
-		void compute_boundary_ids() override;
+		void compute_boundary_ids(const double eps) override;
 		void compute_boundary_ids(const std::function<int(const RowVectorNd&)> &marker) override;
 
 		void compute_element_barycenters(Eigen::MatrixXd &barycenters) const override { cell_barycenters(barycenters); }

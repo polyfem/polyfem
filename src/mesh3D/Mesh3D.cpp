@@ -987,7 +987,7 @@ namespace polyfem
 		}
 	}
 
-	void Mesh3D::compute_boundary_ids()
+	void Mesh3D::compute_boundary_ids(const double eps)
 	{
 		boundary_ids_.resize(n_faces());
 		std::fill(boundary_ids_.begin(), boundary_ids_.end(), -1);
@@ -1002,8 +1002,6 @@ namespace polyfem
 				continue;
 
 			const auto p = face_barycenter(f);
-
-			const double eps = 1e-2;
 
 			if(fabs(p(0)-minV(0))<eps)
 				boundary_ids_[f]=1;

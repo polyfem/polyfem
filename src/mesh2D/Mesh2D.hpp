@@ -87,7 +87,7 @@ namespace polyfem
 		inline Navigation::Index next_around_vertex(Navigation::Index idx) const { return switch_face(switch_edge(idx)); }
 
 
-		void compute_boundary_ids() override;
+		void compute_boundary_ids(const double eps) override;
 		void compute_boundary_ids(const std::function<int(const RowVectorNd&)> &marker) override;
 
 		void compute_element_barycenters(Eigen::MatrixXd &barycenters) const override { face_barycenters(barycenters); }
