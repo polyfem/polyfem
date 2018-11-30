@@ -302,13 +302,21 @@ int main(int argc, char **argv)
 		static bool show_file_menu = true;
 		ImGui::Begin("Boundary conditions", &show_file_menu, WINDOW_FLAGS );
 
-		ImGui::RadioButton("clear##bc_selector", &current_id, 0);
+		std::vector<std::string> items;
+		items.push_back("Clear");
+		for(int i = 1; i <= int(vals.size()); ++i){
+			std::string title = "ID " + std::to_string(i);
+			items.push_back(title);
+		}
+        static int item_current = 0;
+		ImGui::Combo("Boundary", &current_id, items);
+		
 		ImGui::Separator();
 		for(int i = 1; i <= int(vals.size()); ++i){
 			std::string label = std::to_string(i);
 
 			std::string title = "Boundary " + label;
-			std::string rlabel = "##bc_selector";
+			// std::string rlabel = "##bc_selector";
 
 			std::string vlabel = "Value##idvalue" + label;
 			std::string flabel = "Function##idvalue" + label;
@@ -320,35 +328,40 @@ int main(int argc, char **argv)
 			std::string ylabel = "y##identry" + label;
 			std::string zlabel = "z##identry" + label;
 
-			ImGui::TextColored(ImVec4(color(i, vals.size())(0),color(i, vals.size())(1),color(i, vals.size())(2),1.0f), "%s", title.c_str()); ImGui::SameLine();
-
-
-			ImGui::RadioButton(rlabel.c_str(), &current_id, i);
-
-			ImGui::RadioButton(vlabel.c_str(), &vals.bc_value[i-1], 0); ImGui::SameLine();
-			ImGui::RadioButton(flabel.c_str(), &vals.bc_value[i-1], 1);
-
-			ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.20f);
-
-			if(vals.bc_value[i-1] == 0)
+			if (ImGui::TreeNode(title.c_str()))
 			{
-				ImGui::InputFloat(xlabel.c_str(), &vals.vals[i-1][0], 0, 0, 3);  ImGui::SameLine();
-				ImGui::InputFloat(ylabel.c_str(), &vals.vals[i-1][1], 0, 0, 3);  ImGui::SameLine();
-				ImGui::InputFloat(zlabel.c_str(), &vals.vals[i-1][2], 0, 0, 3);
-			}
-			else
-			{
-				ImGui::InputText(xlabel.c_str(), vals.funs[i-1](0).data(), BUF_SIZE);  ImGui::SameLine();
-				ImGui::InputText(ylabel.c_str(), vals.funs[i-1](1).data(), BUF_SIZE);  ImGui::SameLine();
-				ImGui::InputText(zlabel.c_str(), vals.funs[i-1](2).data(), BUF_SIZE);
-			}
-			ImGui::PopItemWidth();
 
-			ImGui::RadioButton(dlabel.c_str(), &vals.bc_type[i-1], 0); ImGui::SameLine();
-			ImGui::RadioButton(nlabel.c_str(), &vals.bc_type[i-1], 1);
+				ImGui::TextColored(ImVec4(color(i, vals.size())(0),color(i, vals.size())(1),color(i, vals.size())(2),1.0f), "%s", "Color");
 
-			ImGui::Separator();
+
+			// ImGui::RadioButton(rlabel.c_str(), &current_id, i);
+
+				ImGui::RadioButton(vlabel.c_str(), &vals.bc_value[i-1], 0); ImGui::SameLine();
+				ImGui::RadioButton(flabel.c_str(), &vals.bc_value[i-1], 1);
+
+				ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.20f);
+
+				if(vals.bc_value[i-1] == 0)
+				{
+					ImGui::InputFloat(xlabel.c_str(), &vals.vals[i-1][0], 0, 0, 3); ImGui::SameLine();
+					ImGui::InputFloat(ylabel.c_str(), &vals.vals[i-1][1], 0, 0, 3); ImGui::SameLine();
+					ImGui::InputFloat(zlabel.c_str(), &vals.vals[i-1][2], 0, 0, 3);
+				}
+				else
+				{
+					ImGui::InputText(xlabel.c_str(), vals.funs[i-1](0).data(), BUF_SIZE); ImGui::SameLine();
+					ImGui::InputText(ylabel.c_str(), vals.funs[i-1](1).data(), BUF_SIZE); ImGui::SameLine();
+					ImGui::InputText(zlabel.c_str(), vals.funs[i-1](2).data(), BUF_SIZE);
+				}
+				ImGui::PopItemWidth();
+
+				ImGui::RadioButton(dlabel.c_str(), &vals.bc_type[i-1], 0); ImGui::SameLine();
+				ImGui::RadioButton(nlabel.c_str(), &vals.bc_type[i-1], 1);
+
+				ImGui::TreePop();
+			}
 		}
+		ImGui::Separator();
 
 		if(ImGui::Button("Add ID"))
 		{
