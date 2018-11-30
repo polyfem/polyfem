@@ -39,5 +39,27 @@ namespace polyfem
 
 
 	};
+
+
+	class GenericScalarProblem: public Problem
+	{
+	public:
+		GenericScalarProblem(const std::string &name);
+
+		void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		bool is_rhs_zero() const override { return true; } //TODO
+
+		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		void neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+
+		bool has_exact_sol() const override { return false; }
+		bool is_scalar() const override { return true; }
+
+		void set_parameters(const json &params) override;
+
+	private:
+		std::vector<Eigen::Matrix<ExpressionValue, 1, 1, Eigen::RowMajor>> neumann_;
+		std::vector<Eigen::Matrix<ExpressionValue, 1, 1, Eigen::RowMajor>> dirichlet_;
+	};
 }
 
