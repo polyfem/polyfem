@@ -89,7 +89,7 @@ RowVector3d color(int bc, int n_cols)
 	return col;
 }
 
-void load(const std::string &path,
+void load(const std::string &path, igl::opengl::glfw::Viewer &viewer,
 	MatrixXd &V, MatrixXi &F, MatrixXd &p0, MatrixXd &p1, MatrixXd &N, MatrixXi &adj,
 	VectorXi &selected, Matrix<std::vector<int>, Dynamic, 1> &all_2_local, VectorXi &boundary_2_all, MatrixXd &C)
 {
@@ -111,9 +111,13 @@ void load(const std::string &path,
 		return;
 	}
 
+	viewer.core.lighting_factor = (tmp->is_volume() ? 1.f : 0.f);
+
 	std::cout<<"N vertices "<<tmp->n_vertices()<<std::endl;
 	if(tmp->is_volume())
 	{
+		viewer.core.set_rotation_type(igl::opengl::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
+
 		Mesh3D &mesh = *dynamic_cast<Mesh3D *>(tmp.get());
 
 		std::vector<int> ranges;
@@ -175,11 +179,29 @@ void load(const std::string &path,
 	}
 	else
 	{
+		viewer.core.set_rotation_type(igl::opengl::ViewerCore::RotationType::ROTATION_TYPE_NO_ROTATION);
+
 		Mesh2D &mesh = *dynamic_cast<Mesh2D *>(tmp.get());
 
-		V.resize(mesh.n_vertices(), 2);
-		for(int i = 0; i < mesh.n_vertices(); ++i)
-			V.row(i) = mesh.point(i);
+		std::vector<int> ranges;
+		mesh.triangulate_faces(F,V, ranges);
+
+		boundary_2_all.resize(mesh.n_edges()*2);
+		all_2_local.resize(mesh.n_edges());
+
+
+		int index = 0;
+		for(int e = 0; e < mesh.n_edges(); ++e)
+		{
+			if(!mesh.is_boundary_edge(e))
+				continue;
+
+			std::vector<int> &other_edges = all_2_local(e);
+
+			boundary_2_all(index) = e;
+			other_edges.push_back(index);
+			++index;
+		}
 	}
 }
 
@@ -271,7 +293,7 @@ int main(int argc, char **argv)
 
 	if(!path.empty())
 	{
-		load(path, V, F, p0, p1, N, adj, selected, all_2_local, boundary_2_all, C);
+		load(path, viewer, V, F, p0, p1, N, adj, selected, all_2_local, boundary_2_all, C);
 		visited.resize(F.rows());
 	}
 
@@ -293,7 +315,7 @@ int main(int argc, char **argv)
 					if (fname.length() == 0)
 						return;
 
-					load(fname, V, F, p0, p1, N, adj, selected, all_2_local, boundary_2_all, C);
+					load(fname, viewer, V, F, p0, p1, N, adj, selected, all_2_local, boundary_2_all, C);
 					visited.resize(F.rows());
 
 					vals.reset();
