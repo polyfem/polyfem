@@ -30,7 +30,7 @@
 #ifdef __APPLE__
 const int line_width = 1;
 #else
-const int line_width = 4;
+const int line_width = 2;
 #endif
 
 
@@ -1502,7 +1502,9 @@ namespace polyfem
 
 	void UIState::load_mesh()
 	{
-		if (state.mesh_path().empty()) { return; }
+		if (state.mesh_path().empty()) {
+			viewer.open_dialog_load_mesh();
+		}
 		available_visualizations.setConstant(false);
 
 		element_ranges.clear();

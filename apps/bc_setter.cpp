@@ -1,3 +1,4 @@
+#include <polyfem/Mesh2D.hpp>
 #include <polyfem/Mesh3D.hpp>
 #include <polyfem/Common.hpp>
 
@@ -92,68 +93,94 @@ void load(const std::string &path,
 	MatrixXd &V, MatrixXi &F, MatrixXd &p0, MatrixXd &p1, MatrixXd &N, MatrixXi &adj,
 	VectorXi &selected, Matrix<std::vector<int>, Dynamic, 1> &all_2_local, VectorXi &boundary_2_all, MatrixXd &C)
 {
-	Mesh3D mesh;
-	mesh.load(path);
+	V.resize(0,0);
+	F.resize(0,0);
+	p0.resize(0,0);
+	p1.resize(0,0);
+	N.resize(0,0);
+	adj.resize(0,0);
+	selected.resize(0);
 
-	std::cout<<"N vertices "<<mesh.n_vertices()<<std::endl;
+	all_2_local.resize(0);
+	boundary_2_all.resize(0);
 
+	C.resize(0, 0);
 
-	std::vector<int> ranges;
-	mesh.get_edges(p0, p1);
-	V.resize(mesh.n_vertices() + mesh.n_faces(), 3);
-	for(int i = 0; i < mesh.n_vertices(); ++i)
-		V.row(i) = mesh.point(i);
+	auto tmp = Mesh::create(path, false);
+	if (!tmp) {
+		return;
+	}
 
-	int v_index = mesh.n_vertices();
-
-	F.resize(mesh.n_faces()*4, 3);
-	boundary_2_all.resize(mesh.n_faces()*4);
-	all_2_local.resize(mesh.n_faces());
-
-	int index = 0;
-	for(int f = 0; f < mesh.n_faces(); ++f)
+	std::cout<<"N vertices "<<tmp->n_vertices()<<std::endl;
+	if(tmp->is_volume())
 	{
-		if(!mesh.is_boundary_face(f))
-			continue;
+		Mesh3D &mesh = *dynamic_cast<Mesh3D *>(tmp.get());
 
-		std::vector<int> &other_faces = all_2_local(f);
+		std::vector<int> ranges;
+		mesh.get_edges(p0, p1);
+		V.resize(mesh.n_vertices() + mesh.n_faces(), 3);
+		for(int i = 0; i < mesh.n_vertices(); ++i)
+			V.row(i) = mesh.point(i);
 
-		const int n_f_v = mesh.n_face_vertices(f);
-		if(n_f_v == 3)
+		int v_index = mesh.n_vertices();
+
+		F.resize(mesh.n_faces()*4, 3);
+		boundary_2_all.resize(mesh.n_faces()*4);
+		all_2_local.resize(mesh.n_faces());
+
+		int index = 0;
+		for(int f = 0; f < mesh.n_faces(); ++f)
 		{
-			F.row(index) << mesh.face_vertex(f, 2), mesh.face_vertex(f, 1), mesh.face_vertex(f, 0);
-			boundary_2_all(index) = f;
-			other_faces.push_back(index);
-			++index;
-		}
-		else
-		{
-			auto bary = mesh.face_barycenter(f);
-			for(int j = 0; j < n_f_v; ++j)
+			if(!mesh.is_boundary_face(f))
+				continue;
+
+			std::vector<int> &other_faces = all_2_local(f);
+
+			const int n_f_v = mesh.n_face_vertices(f);
+			if(n_f_v == 3)
 			{
-				F.row(index) << mesh.face_vertex(f, j), mesh.face_vertex(f, (j+1)%n_f_v), v_index;
+				F.row(index) << mesh.face_vertex(f, 2), mesh.face_vertex(f, 1), mesh.face_vertex(f, 0);
 				boundary_2_all(index) = f;
 				other_faces.push_back(index);
 				++index;
 			}
+			else
+			{
+				auto bary = mesh.face_barycenter(f);
+				for(int j = 0; j < n_f_v; ++j)
+				{
+					F.row(index) << mesh.face_vertex(f, j), mesh.face_vertex(f, (j+1)%n_f_v), v_index;
+					boundary_2_all(index) = f;
+					other_faces.push_back(index);
+					++index;
+				}
 
-			V.row(v_index) = bary;
-			++v_index;
+				V.row(v_index) = bary;
+				++v_index;
+			}
 		}
+
+		F.conservativeResize(index, 3);
+		V.conservativeResize(v_index, 3);
+		boundary_2_all.conservativeResize(index);
+
+		igl::triangle_triangle_adjacency(F, adj);
+		igl::per_face_normals(V, F, N);
+
+
+		// Initialize white
+		C = MatrixXd::Constant(F.rows(),3,1);
+		selected.resize(mesh.n_faces());
+		selected.setZero();
 	}
+	else
+	{
+		Mesh2D &mesh = *dynamic_cast<Mesh2D *>(tmp.get());
 
-	F.conservativeResize(index, 3);
-	V.conservativeResize(v_index, 3);
-	boundary_2_all.conservativeResize(index);
-
-	igl::triangle_triangle_adjacency(F, adj);
-	igl::per_face_normals(V, F, N);
-
-
-	// Initialize white
-	C = MatrixXd::Constant(F.rows(),3,1);
-	selected.resize(mesh.n_faces());
-	selected.setZero();
+		V.resize(mesh.n_vertices(), 2);
+		for(int i = 0; i < mesh.n_vertices(); ++i)
+			V.row(i) = mesh.point(i);
+	}
 }
 
 void save(const std::string &path, const VectorXi &selected, const BCVals &vals)
