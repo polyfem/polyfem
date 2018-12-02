@@ -89,7 +89,7 @@ RowVector3d color(int bc, int n_cols)
 	return col;
 }
 
-void load(const std::string &path, igl::opengl::glfw::Viewer &viewer,
+bool load(const std::string &path, igl::opengl::glfw::Viewer &viewer,
 	MatrixXd &V, MatrixXi &F, MatrixXd &p0, MatrixXd &p1, MatrixXd &N, MatrixXi &adj,
 	VectorXi &selected, Matrix<std::vector<int>, Dynamic, 1> &all_2_local, VectorXi &boundary_2_all, MatrixXd &C)
 {
@@ -108,7 +108,7 @@ void load(const std::string &path, igl::opengl::glfw::Viewer &viewer,
 
 	auto tmp = Mesh::create(path, false);
 	if (!tmp) {
-		return;
+		return false;
 	}
 
 	viewer.core.lighting_factor = (tmp->is_volume() ? 1.f : 0.f);
@@ -185,12 +185,16 @@ void load(const std::string &path, igl::opengl::glfw::Viewer &viewer,
 
 		std::vector<int> ranges;
 		mesh.triangulate_faces(F,V, ranges);
+		V.conservativeResize(V.rows(), 3); V.col(2).setZero();
 
 		boundary_2_all.resize(mesh.n_edges()*2);
 		all_2_local.resize(mesh.n_edges());
 
 
 		int index = 0;
+
+		p0.resize(mesh.n_edges(), 3);
+		p1.resize(mesh.n_edges(), 3);
 		for(int e = 0; e < mesh.n_edges(); ++e)
 		{
 			if(!mesh.is_boundary_edge(e))
@@ -198,11 +202,29 @@ void load(const std::string &path, igl::opengl::glfw::Viewer &viewer,
 
 			std::vector<int> &other_edges = all_2_local(e);
 
+			auto tmp0 = mesh.point(mesh.edge_vertex(e, 0));
+			auto tmp1 = mesh.point(mesh.edge_vertex(e, 1));
+
+			p0.row(index) << tmp0(0), tmp0(1), 0;
+			p1.row(index) << tmp1(0), tmp1(1), 0;
+
 			boundary_2_all(index) = e;
+			other_edges.push_back(mesh.edge_vertex(e, 0));
+			other_edges.push_back(mesh.edge_vertex(e, 1));
 			other_edges.push_back(index);
 			++index;
 		}
+
+		p0.conservativeResize(index, 3);
+		p1.conservativeResize(index, 3);
+
+
+		C = MatrixXd::Constant(p0.rows(),3,0);
+		selected.resize(mesh.n_edges());
+		selected.setZero();
 	}
+
+	return tmp->is_volume();
 }
 
 void save(const std::string &path, const VectorXi &selected, const BCVals &vals)
@@ -276,6 +298,8 @@ int main(int argc, char **argv)
 	int current_id = 1;
 	bool tracking_mouse = false;
 
+	bool is_volume = true;
+
 	MatrixXd V;
 	MatrixXi F;
 	MatrixXd p0, p1;
@@ -293,7 +317,7 @@ int main(int argc, char **argv)
 
 	if(!path.empty())
 	{
-		load(path, viewer, V, F, p0, p1, N, adj, selected, all_2_local, boundary_2_all, C);
+		is_volume = load(path, viewer, V, F, p0, p1, N, adj, selected, all_2_local, boundary_2_all, C);
 		visited.resize(F.rows());
 	}
 
@@ -315,7 +339,7 @@ int main(int argc, char **argv)
 					if (fname.length() == 0)
 						return;
 
-					load(fname, viewer, V, F, p0, p1, N, adj, selected, all_2_local, boundary_2_all, C);
+					is_volume = load(fname, viewer, V, F, p0, p1, N, adj, selected, all_2_local, boundary_2_all, C);
 					visited.resize(F.rows());
 
 					vals.reset();
@@ -359,7 +383,7 @@ int main(int argc, char **argv)
 		}
         static int item_current = 0;
 		ImGui::Combo("Boundary", &current_id, items);
-		
+
 		ImGui::Separator();
 		for(int i = 1; i <= int(vals.size()); ++i){
 			std::string label = std::to_string(i);
@@ -393,14 +417,21 @@ int main(int argc, char **argv)
 				if(vals.bc_value[i-1] == 0)
 				{
 					ImGui::InputFloat(xlabel.c_str(), &vals.vals[i-1][0], 0, 0, 3); ImGui::SameLine();
-					ImGui::InputFloat(ylabel.c_str(), &vals.vals[i-1][1], 0, 0, 3); ImGui::SameLine();
-					ImGui::InputFloat(zlabel.c_str(), &vals.vals[i-1][2], 0, 0, 3);
+					ImGui::InputFloat(ylabel.c_str(), &vals.vals[i-1][1], 0, 0, 3);
+					if(is_volume){
+						ImGui::SameLine();
+						ImGui::InputFloat(zlabel.c_str(), &vals.vals[i-1][2], 0, 0, 3);
+					}
 				}
 				else
 				{
 					ImGui::InputText(xlabel.c_str(), vals.funs[i-1](0).data(), BUF_SIZE); ImGui::SameLine();
-					ImGui::InputText(ylabel.c_str(), vals.funs[i-1](1).data(), BUF_SIZE); ImGui::SameLine();
-					ImGui::InputText(zlabel.c_str(), vals.funs[i-1](2).data(), BUF_SIZE);
+					ImGui::InputText(ylabel.c_str(), vals.funs[i-1](1).data(), BUF_SIZE);
+					if(is_volume)
+					{
+						ImGui::SameLine();
+						ImGui::InputText(zlabel.c_str(), vals.funs[i-1](2).data(), BUF_SIZE);
+					}
 				}
 				ImGui::PopItemWidth();
 
@@ -441,34 +472,11 @@ int main(int argc, char **argv)
 		if(igl::unproject_onto_mesh(Vector2f(x,y), viewer.core.view,
 			viewer.core.proj, viewer.core.viewport, V, F, fid, bc))
 		{
-			if(!flod_fill)
+			if(is_volume)
 			{
-				const int real_face = boundary_2_all(fid);
-				selected(real_face) = current_id;
-				const auto &loc_faces = all_2_local(real_face);
-
-				const auto col = color(selected[real_face], vals.size());
-
-				for(int i : loc_faces){
-					C.row(i) = col;
-				}
-			}
-			else
-			{
-				visited.setConstant(false);
-				std::queue<int> to_visit; to_visit.push(fid);
-
-				while(!to_visit.empty())
+				if(!flod_fill)
 				{
-					const int id = to_visit.front();
-					to_visit.pop();
-
-					if(visited(id))
-						continue;
-
-					visited(id) = true;
-
-					const int real_face = boundary_2_all(id);
+					const int real_face = boundary_2_all(fid);
 					selected(real_face) = current_id;
 					const auto &loc_faces = all_2_local(real_face);
 
@@ -477,24 +485,101 @@ int main(int argc, char **argv)
 					for(int i : loc_faces){
 						C.row(i) = col;
 					}
+				}
+				else
+				{
+					visited.setConstant(false);
+					std::queue<int> to_visit; to_visit.push(fid);
 
-					assert(id<adj.size());
-				// auto &neighs = adj[id];
-					for(int i = 0; i < 3; ++i)
+					while(!to_visit.empty())
 					{
-						const int nid = adj(id, i);
-						if(visited(nid))
+						const int id = to_visit.front();
+						to_visit.pop();
+
+						if(visited(id))
 							continue;
 
-						if(std::abs(N.row(fid).dot(N.row(nid)))<0.99)
-							continue;
+						visited(id) = true;
 
-						to_visit.push(nid);
+						const int real_face = boundary_2_all(id);
+						selected(real_face) = current_id;
+						const auto &loc_faces = all_2_local(real_face);
+
+						const auto col = color(selected[real_face], vals.size());
+
+						for(int i : loc_faces){
+							C.row(i) = col;
+						}
+
+						assert(id<adj.size());
+					// auto &neighs = adj[id];
+						for(int i = 0; i < 3; ++i)
+						{
+							const int nid = adj(id, i);
+							if(visited(nid))
+								continue;
+
+							if(std::abs(N.row(fid).dot(N.row(nid)))<0.99)
+								continue;
+
+							to_visit.push(nid);
+						}
 					}
 				}
-			}
 
-			viewer.data().set_colors(C);
+				viewer.data().set_colors(C);
+			}
+			else
+			{
+				//TODO
+
+				const auto min_bc = bc.minCoeff();
+
+				if(min_bc < 0.1)
+				{
+					// const int index = min_bc == bc[0] ? 0 : (min_bc == bc[1] ? 1 : 2);
+					// const int id0 = F(fid, (index + 1)%3);
+					// const int id1 = F(fid, (index + 2)%3);
+
+					const Eigen::MatrixXd p = V.row(F(fid, 0))*bc(0) + V.row(F(fid, 1))*bc(1) + V.row(F(fid, 2))*bc(2);
+					double min_dist = std::numeric_limits<double>::max();
+
+					int eid = -1;
+
+					for(size_t i = 0; i < p1.rows(); ++i)
+					{
+						double d = (p - p1.row(i)).norm();
+
+						if(d < min_dist)
+						{
+							eid = i;
+							min_dist = d;
+						}
+
+						d = (p - p0.row(i)).norm();
+
+						if(d < min_dist)
+						{
+							eid = i;
+							min_dist = d;
+						}
+					}
+
+					assert(eid >= 0);
+
+					const int real_edge = boundary_2_all(eid);
+
+					// if(!all_2_local[real_edge].empty())
+					{
+						selected(real_edge) = current_id;
+						const auto col = color(selected[real_edge], vals.size());
+						C.row(eid) = col;
+					}
+
+					viewer.data().set_edges(p0, Eigen::MatrixXi(0, 2), RowVector3d(0,0,0));
+					viewer.data().add_edges(p0, p1, C);
+				}
+			}
 
 			tracking_mouse = true;
 			return true;
@@ -532,7 +617,8 @@ int main(int argc, char **argv)
 	{
 		viewer.data().add_edges(p0, p1, RowVector3d(0,0,0));
 		viewer.data().set_mesh(V, F);
-		viewer.data().set_colors(C);
+		if(is_volume)
+			viewer.data().set_colors(C);
 		viewer.core.align_camera_center(V);
 	}
 	viewer.data().show_lines = false;
