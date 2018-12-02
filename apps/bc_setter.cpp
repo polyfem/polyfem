@@ -256,7 +256,7 @@ bool load(const std::string &path, igl::opengl::glfw::Viewer &viewer,
 	return tmp->is_volume();
 }
 
-void save(const std::string &path, const VectorXi &selected, const BCVals &vals)
+void save(const std::string &path, const VectorXi &selected, const BCVals &vals, const bool vector_problem)
 {
 	std::ofstream file;
 	file.open(path + ".txt");
@@ -274,13 +274,26 @@ void save(const std::string &path, const VectorXi &selected, const BCVals &vals)
 	for(int i = 1; i <= vals.size(); ++i){
 		json vv;
 		if(vals.bc_value[i-1] == 0)
-			vv = {{"id", i}, {"value", {vals.vals[i-1][0], vals.vals[i-1][1], vals.vals[i-1][2]}}};
+		{
+			if(vector_problem)
+				vv = {{"id", i}, {"value", {vals.vals[i-1][0], vals.vals[i-1][1], vals.vals[i-1][2]}}};
+			else
+				vv = {{"id", i}, {"value", vals.vals[i-1][0]}};
+		}
 		else
 		{
-			const std::string str0 = vals.funs[i-1][0].data();
-			const std::string str1 = vals.funs[i-1][1].data();
-			const std::string str2 = vals.funs[i-1][2].data();
-			vv = {{"id", i}, {"value", {str0, str1, str2}}};
+			if(vector_problem)
+			{
+				const std::string str0 = vals.funs[i-1][0].data();
+				const std::string str1 = vals.funs[i-1][1].data();
+				const std::string str2 = vals.funs[i-1][2].data();
+				vv = {{"id", i}, {"value", {str0, str1, str2}}};
+			}
+			else
+			{
+				const std::string str = vals.funs[i-1][0].data();
+				vv = {{"id", i}, {"value", str}};
+			}
 		}
 
 		if(vals.bc_type[i-1] == 0)
@@ -328,6 +341,7 @@ int main(int argc, char **argv)
 	bool tracking_mouse = false;
 
 	bool is_volume = true;
+	bool vector_problem = true;
 
 	MatrixXd V;
 	MatrixXi F;
@@ -387,7 +401,7 @@ int main(int argc, char **argv)
 					if(fname.length() == 0)
 						return;
 
-					save(fname, selected, vals);
+					save(fname, selected, vals, vector_problem);
 				}
 				ImGui::EndMenu();
 			}
@@ -404,14 +418,18 @@ int main(int argc, char **argv)
 		static bool show_file_menu = true;
 		ImGui::Begin("Boundary conditions", &show_file_menu, WINDOW_FLAGS );
 
+		ImGui::Checkbox("Vector Problem", &vector_problem);
+
 		std::vector<std::string> items;
 		items.push_back("Clear");
 		for(int i = 1; i <= int(vals.size()); ++i){
 			std::string title = "ID " + std::to_string(i);
 			items.push_back(title);
 		}
+		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.60f);
         static int item_current = 0;
 		ImGui::Combo("Boundary", &current_id, items);
+		ImGui::PopItemWidth();
 
 		ImGui::Separator();
 		for(int i = 1; i <= int(vals.size()); ++i){
@@ -426,7 +444,7 @@ int main(int argc, char **argv)
 			std::string dlabel = "Dirichlet##idtype" + label;
 			std::string nlabel = "Neuman##idtype" + label;
 
-			std::string xlabel = "x##identry" + label;
+			std::string xlabel = vector_problem ? ("x##identry" + label) : ("val##identry" + label);
 			std::string ylabel = "y##identry" + label;
 			std::string zlabel = "z##identry" + label;
 
@@ -441,26 +459,37 @@ int main(int argc, char **argv)
 				ImGui::RadioButton(vlabel.c_str(), &vals.bc_value[i-1], 0); ImGui::SameLine();
 				ImGui::RadioButton(flabel.c_str(), &vals.bc_value[i-1], 1);
 
-				ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.20f);
+				if(vector_problem)
+					ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.20f);
+				else
+					ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.60f);
 
 				if(vals.bc_value[i-1] == 0)
 				{
-					ImGui::InputFloat(xlabel.c_str(), &vals.vals[i-1][0], 0, 0, 3); ImGui::SameLine();
-					ImGui::InputFloat(ylabel.c_str(), &vals.vals[i-1][1], 0, 0, 3);
-					if(is_volume){
+					ImGui::InputFloat(xlabel.c_str(), &vals.vals[i-1][0], 0, 0, 3);
+
+					if(vector_problem){
 						ImGui::SameLine();
-						ImGui::InputFloat(zlabel.c_str(), &vals.vals[i-1][2], 0, 0, 3);
+						ImGui::InputFloat(ylabel.c_str(), &vals.vals[i-1][1], 0, 0, 3);
+						if(is_volume){
+							ImGui::SameLine();
+							ImGui::InputFloat(zlabel.c_str(), &vals.vals[i-1][2], 0, 0, 3);
+						}
 					}
 				}
 				else
 				{
-					ImGui::InputText(xlabel.c_str(), vals.funs[i-1](0).data(), BUF_SIZE); ImGui::SameLine();
-					ImGui::InputText(ylabel.c_str(), vals.funs[i-1](1).data(), BUF_SIZE);
-					if(is_volume)
-					{
-						ImGui::SameLine();
-						ImGui::InputText(zlabel.c_str(), vals.funs[i-1](2).data(), BUF_SIZE);
-					}
+					ImGui::InputText(xlabel.c_str(), vals.funs[i-1](0).data(), BUF_SIZE);
+
+					if(vector_problem)
+						{ ImGui::SameLine();
+							ImGui::InputText(ylabel.c_str(), vals.funs[i-1](1).data(), BUF_SIZE);
+							if(is_volume)
+							{
+								ImGui::SameLine();
+								ImGui::InputText(zlabel.c_str(), vals.funs[i-1](2).data(), BUF_SIZE);
+							}
+						}
 				}
 				ImGui::PopItemWidth();
 
