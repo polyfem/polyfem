@@ -71,12 +71,15 @@ struct BCVals
 	}
 };
 
-RowVector3d color(int bc, int n_cols)
+RowVector3d color(int bc, int n_cols, bool is_volume)
 {
 	RowVector3d col;
 	if(bc == 0)
 	{
-		col << 1,1,1;
+		if(is_volume)
+			col << 1,1,1;
+		else
+			col << 0,0,0;
 	}
 	else
 	{
@@ -87,6 +90,34 @@ RowVector3d color(int bc, int n_cols)
 	}
 
 	return col;
+}
+
+template<typename VecT1, typename VecT2, typename VecT3>
+double point_segment_distance(const VecT1 &aa, const VecT2 &bb, const VecT3 &pp)
+{
+	Eigen::Vector2d a; a << aa(0), aa(1);
+	Eigen::Vector2d b; b << bb(0), bb(1);
+	Eigen::Vector2d p; p << pp(0), pp(1);
+
+    const Eigen::Vector2d n = b - a;
+    const Eigen::Vector2d pa = a - p;
+
+    double c = n.dot(pa);
+
+    // Closest point is a
+    if ( c > 0.0f )
+        return pa.dot(pa);
+
+
+    const Eigen::Vector2d bp = p - b;
+    // Closest point is b
+    if (n.dot(bp) > 0.0f )
+        return bp.dot(bp);
+
+    // Closest point is between a and b
+    const Eigen::Vector2d e = pa - n * (c / n.dot(n));
+
+    return e.dot(e);
 }
 
 bool load(const std::string &path, igl::opengl::glfw::Viewer &viewer,
@@ -209,8 +240,6 @@ bool load(const std::string &path, igl::opengl::glfw::Viewer &viewer,
 			p1.row(index) << tmp1(0), tmp1(1), 0;
 
 			boundary_2_all(index) = e;
-			other_edges.push_back(mesh.edge_vertex(e, 0));
-			other_edges.push_back(mesh.edge_vertex(e, 1));
 			other_edges.push_back(index);
 			++index;
 		}
@@ -404,7 +433,7 @@ int main(int argc, char **argv)
 			if (ImGui::TreeNode(title.c_str()))
 			{
 
-				ImGui::TextColored(ImVec4(color(i, vals.size())(0),color(i, vals.size())(1),color(i, vals.size())(2),1.0f), "%s", "Color");
+				ImGui::TextColored(ImVec4(color(i, vals.size(), is_volume)(0),color(i, vals.size(), is_volume)(1),color(i, vals.size(), is_volume)(2),1.0f), "%s", "Color");
 
 
 			// ImGui::RadioButton(rlabel.c_str(), &current_id, i);
@@ -446,17 +475,25 @@ int main(int argc, char **argv)
 		if(ImGui::Button("Add ID"))
 		{
 			vals.append();
+			current_id = vals.size();
 
 			for(int bindex = 0; bindex < selected.size(); ++bindex)
 			{
 				const int v = selected(bindex);
 
 				for(int i : all_2_local(bindex))
-					C.row(i) = color(v, vals.size());
+					C.row(i) = color(v, vals.size(), is_volume);
 			}
 
-			current_id = vals.size();
-			viewer.data().set_colors(C);
+			if(is_volume)
+			{
+				viewer.data().set_colors(C);
+			}
+			else
+			{
+				viewer.data().set_edges(p0, Eigen::MatrixXi(0, 2), RowVector3d(0,0,0));
+				viewer.data().add_edges(p0, p1, C);
+			}
 		}
 
 		ImGui::End();
@@ -480,7 +517,7 @@ int main(int argc, char **argv)
 					selected(real_face) = current_id;
 					const auto &loc_faces = all_2_local(real_face);
 
-					const auto col = color(selected[real_face], vals.size());
+					const auto col = color(selected[real_face], vals.size(), is_volume);
 
 					for(int i : loc_faces){
 						C.row(i) = col;
@@ -505,7 +542,7 @@ int main(int argc, char **argv)
 						selected(real_face) = current_id;
 						const auto &loc_faces = all_2_local(real_face);
 
-						const auto col = color(selected[real_face], vals.size());
+						const auto col = color(selected[real_face], vals.size(), is_volume);
 
 						for(int i : loc_faces){
 							C.row(i) = col;
@@ -548,15 +585,7 @@ int main(int argc, char **argv)
 
 					for(size_t i = 0; i < p1.rows(); ++i)
 					{
-						double d = (p - p1.row(i)).norm();
-
-						if(d < min_dist)
-						{
-							eid = i;
-							min_dist = d;
-						}
-
-						d = (p - p0.row(i)).norm();
+						double d = point_segment_distance(p0.row(i), p1.row(i), p);
 
 						if(d < min_dist)
 						{
@@ -566,13 +595,14 @@ int main(int argc, char **argv)
 					}
 
 					assert(eid >= 0);
+					std::cout<<eid<<" "<<min_dist<<std::endl;
 
 					const int real_edge = boundary_2_all(eid);
 
-					// if(!all_2_local[real_edge].empty())
+					// if(min_dist < 0.1)
 					{
 						selected(real_edge) = current_id;
-						const auto col = color(selected[real_edge], vals.size());
+						const auto col = color(selected[real_edge], vals.size(), is_volume);
 						C.row(eid) = col;
 					}
 
@@ -619,6 +649,10 @@ int main(int argc, char **argv)
 		viewer.data().set_mesh(V, F);
 		if(is_volume)
 			viewer.data().set_colors(C);
+		else{
+			viewer.data().set_colors(RowVector3d(1,1,1));
+			viewer.data().line_width = 4;
+		}
 		viewer.core.align_camera_center(V);
 	}
 	viewer.data().show_lines = false;
