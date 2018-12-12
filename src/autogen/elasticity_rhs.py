@@ -9,6 +9,21 @@ import re
 import pretty_print
 
 
+
+def Det(mat):
+    assert(mat.rows == mat.cols)
+
+    if(mat.rows == 1):
+        return mat[0]
+    elif(mat.rows == 2):
+        return mat[0, 0] * mat[1, 1] - mat[0, 1] * mat[1, 0]
+    elif(mat.rows == 3):
+        return mat[0,0]*(mat[1,1]*mat[2,2]-mat[1,2]*mat[2,1])-mat[0,1]*(mat[1,0]*mat[2,2]-mat[1,2]*mat[2,0])+mat[0,2]*(mat[1,0]*mat[2,1]-mat[1,1]*mat[2,0])
+
+    assert(False)
+    return 0
+
+
 def sigma_fun(j, ee, C, dim):
     res = 0
 
@@ -98,6 +113,18 @@ def neo_hookean(disp_grad, def_grad):
     FmT = Inverse(Transpose(def_grad))
 
     return mu * (def_grad - FmT) + llambda * log(Determinant(def_grad)) * FmT
+
+
+# sigma = (mu disp_grad + lambda ln(det def_grad) I)/det def_grad
+# def neo_hookean(disp_grad, def_grad):
+#     l_dim = def_grad.rows
+
+#     mu = Symbol('mu')
+#     llambda = Symbol('lambda')
+
+#     J = Det(def_grad)
+
+#     return (mu * disp_grad + llambda * log(J) * eye(l_dim)) / J
 
 
 def divergence(sigma):

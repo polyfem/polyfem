@@ -657,6 +657,93 @@ namespace polyfem
 	}
 
 
+	void State::interpolate_boundary_function_at_vertices(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, MatrixXd &result)
+	{
+		assert(mesh->is_volume());
+
+		const Mesh3D &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
+
+		Eigen::MatrixXd points;
+
+		int actual_dim = 1;
+		if(!problem->is_scalar())
+			actual_dim = 3;
+
+		igl::AABB<Eigen::MatrixXd, 3> tree;
+		tree.init(pts, faces);
+
+		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		result.resize(pts.rows(), actual_dim);
+		result.setZero();
+
+		for(int e = 0; e < mesh3d.n_elements(); ++e)
+		{
+			const ElementBases &gbs = gbases[e];
+			const ElementBases &bs = bases[e];
+
+			for(int lf = 0; lf < mesh3d.n_cell_faces(e); ++lf)
+			{
+				const int face_id = mesh3d.cell_face(e, lf);
+				if(!mesh3d.is_boundary_face(face_id))
+					continue;
+
+				if(mesh3d.is_simplex(e))
+					autogen::p_nodes_3d(1, points);
+				else if(mesh3d.is_cube(e))
+					autogen::q_nodes_3d(1, points);
+				else
+					assert(false);
+
+				ElementAssemblyValues vals;
+				vals.compute(e, true, points, bs, gbs);
+				MatrixXd loc_val(points.rows(), actual_dim); loc_val.setZero();
+
+				// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
+
+				for(size_t j = 0; j < bs.bases.size(); ++j)
+				{
+					const Basis &b = bs.bases[j];
+					const AssemblyValues &v = vals.basis_values[j];
+
+					for(int d = 0; d < actual_dim; ++d)
+					{
+						for(size_t ii = 0; ii < b.global().size(); ++ii)
+							loc_val.col(d) += b.global()[ii].val * v.val * fun(b.global()[ii].index*actual_dim + d);
+					}
+				}
+
+				int I;
+				Eigen::RowVector3d C;
+				const Eigen::RowVector3d bary = mesh3d.face_barycenter(face_id);
+
+				const double dist = tree.squared_distance(pts, faces, bary, I, C);
+				assert(dist < 1e-16);
+
+				for(int lv_id = 0; lv_id < faces.cols(); ++lv_id)
+				{
+					const int v_id = faces(I, lv_id);
+					const auto p = pts.row(v_id);
+					const auto &mapped = vals.val;
+
+					bool found = false;
+
+					for(int n = 0; n < mapped.rows(); ++n)
+					{
+						if((p-mapped.row(n)).norm() < 1e-10)
+						{
+							result.row(v_id) = loc_val.row(n);
+							found=true;
+							break;
+						}
+					}
+
+					assert(found);
+				}
+			}
+		}
+	}
+
+
 	void State::interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result)
 	{
 		assert(mesh->is_volume());

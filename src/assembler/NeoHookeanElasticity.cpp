@@ -159,12 +159,14 @@ namespace polyfem
 
 			const Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(size(), size()) + displacement_grad;
 			const Eigen::MatrixXd FmT = def_grad.inverse().transpose();
-			const double J = def_grad.determinant();
+			// const double J = def_grad.determinant();
 
 			//stress = mu (F - F^{-T}) + lambda ln J F^{-T}
-			// Eigen::MatrixXd stress_tensor = mu_*(def_grad - FmT) + lambda_ * std::log(def_grad.determinant()) * FmT;
+			//stress = mu * (def_grad - def_grad^{-T}) + lambda ln (det def_grad) def_grad^{-T}
+			Eigen::MatrixXd stress_tensor = mu_*(def_grad - FmT) + lambda_ * std::log(def_grad.determinant()) * FmT;
+
 			//stess = (mu displacement_grad + lambda ln(J) I)/J
-			Eigen::MatrixXd stress_tensor = (mu_/J) * displacement_grad + (lambda_/J) * std::log(J)  * Eigen::MatrixXd::Identity(size(), size());
+			// Eigen::MatrixXd stress_tensor = (mu_/J) * displacement_grad + (lambda_/J) * std::log(J)  * Eigen::MatrixXd::Identity(size(), size());
 
 			all.row(p) = fun(stress_tensor);
 		}
