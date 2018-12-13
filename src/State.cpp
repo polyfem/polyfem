@@ -622,12 +622,14 @@ namespace polyfem
 
 				// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
 
-				const auto nodes = bs.local_nodes_for_primitive(face_id, mesh3d);
+				// const auto nodes = bs.local_nodes_for_primitive(face_id, mesh3d);
 
-				for(long n = 0; n < nodes.size(); ++n)
+				// for(long n = 0; n < nodes.size(); ++n)
+				for(size_t j = 0; j < bs.bases.size(); ++j)
 				{
 					// const auto &b = bs.bases[nodes(n)];
-					const AssemblyValues &v = vals.basis_values[nodes(n)];
+					// const AssemblyValues &v = vals.basis_values[nodes(n)];
+					const AssemblyValues &v = vals.basis_values[j];
 					for(int d = 0; d < actual_dim; ++d)
 					{
 						for(size_t g = 0; g < v.global.size(); ++g)
@@ -743,8 +745,12 @@ namespace polyfem
 		}
 	}
 
-
 	void State::interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result)
+	{
+		interpolate_boundary_tensor_function(pts, faces, fun, Eigen::MatrixXd::Zero(pts.rows(), pts.cols()), compute_avg, result);
+	}
+
+	void State::interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const MatrixXd &disp, const bool compute_avg, MatrixXd &result)
 	{
 		assert(mesh->is_volume());
 		assert(!problem->is_scalar());
@@ -752,7 +758,8 @@ namespace polyfem
 		const Mesh3D &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
 
 		MatrixXd normals;
-		igl::per_face_normals(pts, faces, normals);
+		igl::per_face_normals((pts+disp).eval(), faces, normals);
+		// std::cout<<normals<<std::endl;
 
 		Eigen::MatrixXd points;
 		Eigen::VectorXd weights;
@@ -794,7 +801,7 @@ namespace polyfem
 
 				// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
 
-				const auto nodes = bs.local_nodes_for_primitive(face_id, mesh3d);
+				// const auto nodes = bs.local_nodes_for_primitive(face_id, mesh3d);
 				assembler.compute_tensor_value(formulation(), bs, gbs, points, fun, loc_val);
 				Eigen::VectorXd tmp(loc_val.cols());
 				for(int d = 0; d < loc_val.cols(); ++d)
