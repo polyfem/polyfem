@@ -266,7 +266,7 @@ namespace cppoptlib {
 					if(new_hessian)
 					{
 						this->m_status = Status::UserDefined;
-						polyfem::logger().debug("stopping because ‖step‖={} is too small", step);
+						polyfem::logger().debug("stopping because ||step||={} is too small", step);
 						error_code_ = -1;
 					}
 					else
@@ -279,7 +279,7 @@ namespace cppoptlib {
 				//if(rate >= 1 && next_hessian == this->m_current.iterations)
 				//	next_hessian += 2;
 
-				polyfem::logger().debug("\titer: {}, f = {}, ‖g‖_2 = {}, rate = {}, ‖step‖ = {}, dot = {}\n",
+				polyfem::logger().debug("\titer: {}, f = {}, ||g||_2 = {}, rate = {}, ||step|| = {}, dot = {}\n",
 					this->m_current.iterations, energy, this->m_current.gradNorm, rate, step, delta_x.dot(grad)/grad.norm());
 			}
 			while (objFunc.callback(this->m_current, x0) && (this->m_status == Status::Continue));
