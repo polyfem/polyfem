@@ -40,15 +40,13 @@ install:
 script:
 - mkdir build
 - cd build
-- cmake -DCMAKE_BUILD_TYPE=$CONFIG -DPOLYFEM_WITH_MISC=ON -DENABLE_COVERAGE=ON ..
+- cmake -DCMAKE_BUILD_TYPE=$CONFIG -DPOLYFEM_WITH_MISC=ON ..
 - make -j2
 - make test
 - ccache --show-stats
-after_success:
-  - |
-        coveralls --build-root build --gcov-options '\-lp' \
-          -e build/external \
-          -e build/include \
-          -e build/CMakeFiles/3.8.0 \
-          -e build/CMakeFiles/feature_tests.c \
-          -e build/CMakeFiles/feature_tests.cxx
+- cd ..
+- |
+    coveralls --build-root build --gcov-options '\-lp' \
+    -e build/3rdparty \
+    -e build/include \
+    -e build/CMakeFiles
