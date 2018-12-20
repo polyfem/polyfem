@@ -45,4 +45,4 @@ script:
 - make test
 - ccache --show-stats
 - cd ..
-- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; coveralls --build-root src --gcov-options '\-lp'; fi
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then coveralls --build-root src --gcov-options '\-lp'; fi
