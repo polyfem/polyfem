@@ -32,6 +32,7 @@ install:
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade python; fi
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
 - pip3 install --user sympy
+- pip3 install --user cpp-coveralls
 - eval "${MATRIX_EVAL}"
 - ccache --max-size=5.0G
 - ccache -V && ccache --show-stats && ccache --zero-stats
@@ -39,7 +40,15 @@ install:
 script:
 - mkdir build
 - cd build
-- cmake -DCMAKE_BUILD_TYPE=$CONFIG -DPOLYFEM_WITH_MISC=ON ..
+- cmake -DCMAKE_BUILD_TYPE=$CONFIG -DPOLYFEM_WITH_MISC=ON -DENABLE_COVERAGE=ON ..
 - make -j2
 - make test
 - ccache --show-stats
+after_success:
+  - |
+        coveralls --build-root build --gcov-options '\-lp' \
+          -e build/external \
+          -e build/include \
+          -e build/CMakeFiles/3.8.0 \
+          -e build/CMakeFiles/feature_tests.c \
+          -e build/CMakeFiles/feature_tests.cxx
