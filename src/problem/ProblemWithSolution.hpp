@@ -12,7 +12,7 @@ namespace polyfem
 		ProblemWithSolution(const std::string &name);
 
 		virtual void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-		virtual void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		virtual void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 
 		virtual void exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 		virtual void exact_grad(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;

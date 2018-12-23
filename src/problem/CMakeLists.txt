@@ -11,6 +11,8 @@ set(SOURCES
 	KernelProblem.hpp
 	MiscProblem.cpp
 	MiscProblem.hpp
+	NodeProblem.cpp
+	NodeProblem.hpp
 	TestProblem.cpp
 	TestProblem.hpp
 	Problem.cpp

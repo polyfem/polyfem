@@ -244,7 +244,7 @@ namespace polyfem
 		val = -10*Eigen::MatrixXd::Ones(pts.rows(), 1);
 	}
 
-	void MinSurfProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const
+	void MinSurfProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), 1);
 	}
@@ -258,7 +258,7 @@ namespace polyfem
 		val = Eigen::MatrixXd::Ones(pts.rows(), 1);
 	}
 
-	void TimeDependentProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const
+	void TimeDependentProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), 1);
 	}

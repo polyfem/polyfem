@@ -582,7 +582,7 @@ namespace polyfem
 
 		const Mesh3D &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
 
-		Eigen::MatrixXd points;
+		Eigen::MatrixXd points, uv;
 		Eigen::VectorXd weights;
 
 		int actual_dim = 1;
@@ -610,9 +610,9 @@ namespace polyfem
 					continue;
 
 				if(mesh3d.is_simplex(e))
-					BoundarySampler::quadrature_for_tri_face(lf, 4, face_id, mesh3d, points, weights);
+					BoundarySampler::quadrature_for_tri_face(lf, 4, face_id, mesh3d, uv, points, weights);
 				else if(mesh3d.is_cube(e))
-					BoundarySampler::quadrature_for_quad_face(lf, 4, face_id, mesh3d, points, weights);
+					BoundarySampler::quadrature_for_quad_face(lf, 4, face_id, mesh3d, uv, points, weights);
 				else
 					assert(false);
 
@@ -761,7 +761,7 @@ namespace polyfem
 		igl::per_face_normals((pts+disp).eval(), faces, normals);
 		// std::cout<<normals<<std::endl;
 
-		Eigen::MatrixXd points;
+		Eigen::MatrixXd points, uv;
 		Eigen::VectorXd weights;
 
 		const int actual_dim = 3;
@@ -789,9 +789,9 @@ namespace polyfem
 					continue;
 
 				if(mesh->is_simplex(e))
-					BoundarySampler::quadrature_for_tri_face(lf, 4, face_id, mesh3d, points, weights);
+					BoundarySampler::quadrature_for_tri_face(lf, 4, face_id, mesh3d, uv, points, weights);
 				else if(mesh->is_cube(e))
-					BoundarySampler::quadrature_for_quad_face(lf, 4, face_id, mesh3d, points, weights);
+					BoundarySampler::quadrature_for_quad_face(lf, 4, face_id, mesh3d, uv, points, weights);
 				else
 					assert(false);
 

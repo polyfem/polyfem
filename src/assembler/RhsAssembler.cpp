@@ -129,13 +129,13 @@ namespace polyfem
 	}
 
 	void RhsAssembler::set_bc(
-			const std::function<void(const Eigen::MatrixXi&, const Eigen::MatrixXd&, Eigen::MatrixXd &)> &df,
-			const std::function<void(const Eigen::MatrixXi&, const Eigen::MatrixXd&, Eigen::MatrixXd &)> &nf,
+			const std::function<void(const Eigen::MatrixXi&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd &)> &df,
+			const std::function<void(const Eigen::MatrixXi&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd &)> &nf,
 			const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector< LocalBoundary > &local_neumann_boundary, Eigen::MatrixXd &rhs) const
 	{
 		const int n_el=int(bases_.size());
 
-		Eigen::MatrixXd samples, gtmp, rhs_fun;
+		Eigen::MatrixXd uv, samples, gtmp, rhs_fun;
 		Eigen::VectorXi global_primitive_ids;
 
 		int index = 0;
@@ -158,7 +158,7 @@ namespace polyfem
 		for(const auto &lb : local_boundary)
 		{
 			const int e = lb.element_id();
-			bool has_samples = sample_boundary(lb, resolution, true, samples, global_primitive_ids);
+			bool has_samples = sample_boundary(lb, resolution, true, uv, samples, global_primitive_ids);
 
 			if(!has_samples)
 				continue;
@@ -209,7 +209,7 @@ namespace polyfem
 		for(const auto &lb : local_boundary)
 		{
 			const int e = lb.element_id();
-			bool has_samples = sample_boundary(lb, resolution, false, samples, global_primitive_ids);
+			bool has_samples = sample_boundary(lb, resolution, false, uv, samples, global_primitive_ids);
 
 			if(!has_samples)
 				continue;
@@ -245,7 +245,7 @@ namespace polyfem
 			}
 
 			// problem_.bc(mesh_, global_primitive_ids, mapped, t, rhs_fun);
-			df(global_primitive_ids, mapped, rhs_fun);
+			df(global_primitive_ids, uv, mapped, rhs_fun);
 			global_rhs.block(global_counter, 0, rhs_fun.rows(), rhs_fun.cols()) = rhs_fun;
 			global_counter += rhs_fun.rows();
 
@@ -321,7 +321,7 @@ namespace polyfem
 		for(const auto &lb : local_neumann_boundary)
 		{
 			const int e = lb.element_id();
-			bool has_samples = boundary_quadrature(lb, resolution, false, points, weights, global_primitive_ids);
+			bool has_samples = boundary_quadrature(lb, resolution, false, uv, points, weights, global_primitive_ids);
 
 			if(!has_samples)
 				continue;
@@ -331,7 +331,7 @@ namespace polyfem
 
 			vals.compute(e, mesh_.is_volume(), points, bs, gbs);
 			// problem_.neumann_bc(mesh_, global_primitive_ids, vals.val, t, rhs_fun);
-			nf(global_primitive_ids, vals.val, rhs_fun);
+			nf(global_primitive_ids, uv, vals.val, rhs_fun);
 
 			// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(0,1,0));
 
@@ -372,24 +372,24 @@ namespace polyfem
 	void RhsAssembler::set_bc(const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector< LocalBoundary > &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t) const
 	{
 		set_bc(
-			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val){ problem_.bc(mesh_, global_ids, pts, t, val);},
-			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val){ problem_.neumann_bc(mesh_, global_ids, pts, t, val);},
+			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val){ problem_.bc(mesh_, global_ids, uv, pts, t, val);},
+			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val){ problem_.neumann_bc(mesh_, global_ids, uv, pts, t, val);},
 			local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs);
 	}
 
 	void RhsAssembler::set_velocity_bc(const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector< LocalBoundary > &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t) const
 	{
 		set_bc(
-			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val){ problem_.velocity_bc(mesh_, global_ids, pts, t, val);},
-			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val){ problem_.neumann_velocity_bc(mesh_, global_ids, pts, t, val);},
+			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val){ problem_.velocity_bc(mesh_, global_ids, uv, pts, t, val);},
+			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val){ problem_.neumann_velocity_bc(mesh_, global_ids, uv, pts, t, val);},
 			local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs);
 	}
 
 	void RhsAssembler::set_acceleration_bc(const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector< LocalBoundary > &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t) const
 	{
 		set_bc(
-			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val){ problem_.acceleration_bc(mesh_, global_ids, pts, t, val);},
-			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val){ problem_.neumann_acceleration_bc(mesh_, global_ids, pts, t, val);},
+			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val){ problem_.acceleration_bc(mesh_, global_ids, uv, pts, t, val);},
+			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val){ problem_.neumann_acceleration_bc(mesh_, global_ids, uv, pts, t, val);},
 			local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs);
 	}
 
@@ -486,13 +486,13 @@ namespace polyfem
 
 		ElementAssemblyValues vals;
 		//Neumann
-		Eigen::MatrixXd points;
+		Eigen::MatrixXd points, uv;
 		Eigen::VectorXd weights;
 		Eigen::VectorXi global_primitive_ids;
 		for(const auto &lb : local_neumann_boundary)
 		{
 			const int e = lb.element_id();
-			bool has_samples = boundary_quadrature(lb, resolution, false, points, weights, global_primitive_ids);
+			bool has_samples = boundary_quadrature(lb, resolution, false, uv, points, weights, global_primitive_ids);
 
 			if(!has_samples)
 				continue;
@@ -501,7 +501,7 @@ namespace polyfem
 			const ElementBases &bs = bases_[e];
 
 			vals.compute(e, mesh_.is_volume(), points, bs, gbs);
-			problem_.neumann_bc(mesh_, global_primitive_ids, vals.val, t, forces);
+			problem_.neumann_bc(mesh_, global_primitive_ids, uv, vals.val, t, forces);
 
 			// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
 
@@ -532,8 +532,9 @@ namespace polyfem
 		return res;
 	}
 
-	bool RhsAssembler::boundary_quadrature(const LocalBoundary &local_boundary, const int order, const bool skip_computation, Eigen::MatrixXd &points, Eigen::VectorXd &weights, Eigen::VectorXi &global_primitive_ids) const
+	bool RhsAssembler::boundary_quadrature(const LocalBoundary &local_boundary, const int order, const bool skip_computation, Eigen::MatrixXd &uv, Eigen::MatrixXd &points, Eigen::VectorXd &weights, Eigen::VectorXi &global_primitive_ids) const
 	{
+		uv.resize(0, 0);
 		points.resize(0, 0);
 		weights.resize(0);
 		global_primitive_ids.resize(0);
@@ -541,17 +542,20 @@ namespace polyfem
 		for(int i = 0; i < local_boundary.size(); ++i)
 		{
 			const int gid = local_boundary.global_primitive_id(i);
-			Eigen::MatrixXd tmp_p;
+			Eigen::MatrixXd tmp_p, tmp_uv;
 			Eigen::VectorXd tmp_w;
 			switch(local_boundary.type())
 			{
-				case BoundaryType::TriLine:	 BoundarySampler::quadrature_for_tri_edge(local_boundary[i], order, gid, mesh_, tmp_p, tmp_w); break;
-				case BoundaryType::QuadLine: BoundarySampler::quadrature_for_quad_edge(local_boundary[i], order, gid, mesh_, tmp_p, tmp_w); break;
-				case BoundaryType::Quad: 	 BoundarySampler::quadrature_for_quad_face(local_boundary[i], order, gid, mesh_, tmp_p, tmp_w); break;
-				case BoundaryType::Tri: 	 BoundarySampler::quadrature_for_tri_face(local_boundary[i], order, gid, mesh_, tmp_p, tmp_w); break;
+				case BoundaryType::TriLine:	 BoundarySampler::quadrature_for_tri_edge(local_boundary[i], order, gid, mesh_, tmp_uv, tmp_p, tmp_w); break;
+				case BoundaryType::QuadLine: BoundarySampler::quadrature_for_quad_edge(local_boundary[i], order, gid, mesh_, tmp_uv, tmp_p, tmp_w); break;
+				case BoundaryType::Quad: 	 BoundarySampler::quadrature_for_quad_face(local_boundary[i], order, gid, mesh_, tmp_uv, tmp_p, tmp_w); break;
+				case BoundaryType::Tri: 	 BoundarySampler::quadrature_for_tri_face(local_boundary[i], order, gid, mesh_, tmp_uv, tmp_p, tmp_w); break;
 				case BoundaryType::Invalid:  assert(false); break;
 				default: assert(false);
 			}
+
+			uv.conservativeResize(uv.rows() + tmp_uv.rows(), tmp_uv.cols());
+			uv.bottomRows(tmp_uv.rows()) = tmp_uv;
 
 			points.conservativeResize(points.rows() + tmp_p.rows(), tmp_p.cols());
 			points.bottomRows(tmp_p.rows()) = tmp_p;
@@ -563,6 +567,7 @@ namespace polyfem
 			global_primitive_ids.bottomRows(tmp_p.rows()).setConstant(gid);
 		}
 
+		assert(uv.rows() == global_primitive_ids.size());
 		assert(points.rows() == global_primitive_ids.size());
 		assert(weights.size() == global_primitive_ids.size());
 
@@ -570,30 +575,36 @@ namespace polyfem
 	}
 
 
-	bool RhsAssembler::sample_boundary(const LocalBoundary &local_boundary, const int n_samples, const bool skip_computation, Eigen::MatrixXd &samples, Eigen::VectorXi &global_primitive_ids) const
+	bool RhsAssembler::sample_boundary(const LocalBoundary &local_boundary, const int n_samples, const bool skip_computation, Eigen::MatrixXd &uv, Eigen::MatrixXd &samples, Eigen::VectorXi &global_primitive_ids) const
 	{
+		uv.resize(0, 0);
 		samples.resize(0, 0);
 		global_primitive_ids.resize(0);
 
 		for(int i = 0; i < local_boundary.size(); ++i)
 		{
-			Eigen::MatrixXd tmp;
+			Eigen::MatrixXd tmp, tmp_uv;
 			switch(local_boundary.type())
 			{
-				case BoundaryType::TriLine:	 BoundarySampler::sample_parametric_tri_edge(local_boundary[i], n_samples, tmp); break;
-				case BoundaryType::QuadLine: BoundarySampler::sample_parametric_quad_edge(local_boundary[i], n_samples, tmp); break;
-				case BoundaryType::Quad: 	 BoundarySampler::sample_parametric_quad_face(local_boundary[i], n_samples, tmp); break;
-				case BoundaryType::Tri: 	 BoundarySampler::sample_parametric_tri_face(local_boundary[i], n_samples, tmp); break;
+				case BoundaryType::TriLine:	 BoundarySampler::sample_parametric_tri_edge(local_boundary[i], n_samples, tmp_uv, tmp); break;
+				case BoundaryType::QuadLine: BoundarySampler::sample_parametric_quad_edge(local_boundary[i], n_samples, tmp_uv, tmp); break;
+				case BoundaryType::Quad: 	 BoundarySampler::sample_parametric_quad_face(local_boundary[i], n_samples, tmp_uv, tmp); break;
+				case BoundaryType::Tri: 	 BoundarySampler::sample_parametric_tri_face(local_boundary[i], n_samples, tmp_uv, tmp); break;
 				case BoundaryType::Invalid:  assert(false); break;
 				default: assert(false);
 			}
 
+			uv.conservativeResize(uv.rows() + tmp_uv.rows(), tmp_uv.cols());
+			uv.bottomRows(tmp_uv.rows()) = tmp_uv;
+
 			samples.conservativeResize(samples.rows() + tmp.rows(), tmp.cols());
-			global_primitive_ids.conservativeResize(global_primitive_ids.rows() + tmp.rows());
 			samples.bottomRows(tmp.rows()) = tmp;
+
+			global_primitive_ids.conservativeResize(global_primitive_ids.rows() + tmp.rows());
 			global_primitive_ids.bottomRows(tmp.rows()).setConstant(local_boundary.global_primitive_id(i));
 		}
 
+		assert(uv.rows() == global_primitive_ids.size());
 		assert(samples.rows() == global_primitive_ids.size());
 
 

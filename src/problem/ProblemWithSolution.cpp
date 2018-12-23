@@ -33,7 +33,7 @@ namespace polyfem
 		val *= t;
 	}
 
-	void ProblemWithSolution::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	void ProblemWithSolution::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		exact(pts, val);
 		val *= t;
