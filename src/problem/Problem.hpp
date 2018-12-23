@@ -17,6 +17,7 @@ namespace polyfem
 	{
 	public:
 		Problem(const std::string &name);
+		virtual void init(const Mesh &mesh) { }
 
 		virtual void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const = 0;
 		virtual bool is_rhs_zero() const = 0;

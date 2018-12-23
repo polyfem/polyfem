@@ -1411,7 +1411,7 @@ namespace polyfem
 		auto &assembler = AssemblerUtils::instance();
 		const auto params = build_json_params();
 		assembler.set_parameters(params);
-
+		problem->init(*mesh);
 
 		logger().info("Building {} basis...", (iso_parametric()? "isoparametric":"not isoparametric"));
 		const bool has_polys = non_regular_count > 0 || non_regular_boundary_count > 0 || undefined_count > 0;
