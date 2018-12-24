@@ -858,6 +858,12 @@ namespace polyfem
 		// 	data(Visualizations::InputMesh).add_label(p.transpose(), std::to_string(i));
 		// }
 
+		// for(int i = 0; i < state.mesh->n_edges(); ++i)
+		// {
+		// 	MatrixXd p = state.mesh->edge_barycenter(i);
+		// 	data(Visualizations::InputMesh).add_label(p.transpose(), std::to_string(i));
+		// }
+
 
 		// TODO Text is impossible to hide :(
 		// visible_visualizations(Visualizations::ElementId) = true;

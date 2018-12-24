@@ -80,7 +80,7 @@ namespace polyfem
 		const auto &vals = data_[p_id];
 		assert(uv.size() == vals.size());
 
-		return (uv.array()*vals.array()).sum();
+		return (uv.array()*vals.transpose().array()).sum();
 	}
 
 	NodeProblem::NodeProblem(const std::string &name)
@@ -172,10 +172,12 @@ namespace polyfem
 			values_.load(path);
 		}
 
-		if(params.find("dirichelt_boundary_ids") != params.end())
+
+
+		if(params.find("dirichlet_boundary") != params.end())
 		{
 			boundary_ids_.clear();
-			auto j_boundary = params["dirichelt_boundary_ids"];
+			auto j_boundary = params["dirichlet_boundary"];
 
 			boundary_ids_.resize(j_boundary.size());
 			dirichelt_dimentions_.resize(j_boundary.size());
@@ -197,10 +199,10 @@ namespace polyfem
 			}
 		}
 
-		if(params.find("neumann_boundary_ids") != params.end())
+		if(params.find("neumann_boundary") != params.end())
 		{
 			neumann_boundary_ids_.clear();
-			auto j_boundary = params["neumann_boundary_ids"];
+			auto j_boundary = params["neumann_boundary"];
 
 			neumann_boundary_ids_.resize(j_boundary.size());
 
