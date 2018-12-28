@@ -35,7 +35,7 @@ namespace polyfem
 
 				if(boundary_ids_.empty() || std::find(boundary_ids_.begin(), boundary_ids_.end(), tag) != boundary_ids_.end())
 					new_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
-				else if(std::find(neumann_boundary_ids_.begin(), neumann_boundary_ids_.end(), tag) != neumann_boundary_ids_.end())
+				if(std::find(neumann_boundary_ids_.begin(), neumann_boundary_ids_.end(), tag) != neumann_boundary_ids_.end())
 					new_neumann_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
 
 			}

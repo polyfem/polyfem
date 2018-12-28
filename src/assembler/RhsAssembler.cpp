@@ -260,53 +260,56 @@ namespace polyfem
 
 		assert(global_counter == total_size);
 
-		const double mmin = global_rhs.minCoeff();
-		const double mmax = global_rhs.maxCoeff();
-
-		if(fabs(mmin) < 1e-8 && fabs(mmax) < 1e-8)
+		if(total_size > 0)
 		{
-			// std::cout<<"is all zero, skipping"<<std::endl;
-			for(size_t i = 0; i < indices.size(); ++i){
-				for(int d = 0; d < size_; ++d){
-					if(problem_.all_dimentions_dirichelt() || std::find(bounday_nodes.begin(), bounday_nodes.end(), indices[i]*size_+d) != bounday_nodes.end())
-						rhs(indices[i]*size_+d) = 0;
+			const double mmin = global_rhs.minCoeff();
+			const double mmax = global_rhs.maxCoeff();
+
+			if(fabs(mmin) < 1e-8 && fabs(mmax) < 1e-8)
+			{
+				// std::cout<<"is all zero, skipping"<<std::endl;
+				for(size_t i = 0; i < indices.size(); ++i){
+					for(int d = 0; d < size_; ++d){
+						if(problem_.all_dimentions_dirichelt() || std::find(bounday_nodes.begin(), bounday_nodes.end(), indices[i]*size_+d) != bounday_nodes.end())
+							rhs(indices[i]*size_+d) = 0;
+					}
 				}
 			}
-		}
-		else
-		{
-			Eigen::SparseMatrix<double> mat(int(total_size), int(indices.size()));
-			mat.setFromTriplets(entries.begin(), entries.end());
+			else
+			{
+				Eigen::SparseMatrix<double> mat(int(total_size), int(indices.size()));
+				mat.setFromTriplets(entries.begin(), entries.end());
 
-			Eigen::SparseMatrix<double> mat_t(int(indices.size()), int(total_size));
-			mat_t.setFromTriplets(entries_t.begin(), entries_t.end());
+				Eigen::SparseMatrix<double> mat_t(int(indices.size()), int(total_size));
+				mat_t.setFromTriplets(entries_t.begin(), entries_t.end());
 
-			Eigen::SparseMatrix<double> A = mat_t * mat;
-			Eigen::MatrixXd b = mat_t * global_rhs;
+				Eigen::SparseMatrix<double> A = mat_t * mat;
+				Eigen::MatrixXd b = mat_t * global_rhs;
 
 
-			Eigen::MatrixXd coeffs(b.rows(), b.cols());
+				Eigen::MatrixXd coeffs(b.rows(), b.cols());
 
-			json params = {
+				json params = {
 				{"mtype", -2}, // matrix type for Pardiso (2 = SPD)
 				// {"max_iter", 0}, // for iterative solvers
 				// {"tolerance", 1e-9}, // for iterative solvers
-			};
+				};
 
-			// auto solver = LinearSolver::create("", "");
-			auto solver = LinearSolver::create(LinearSolver::defaultSolver(), LinearSolver::defaultPrecond());
-			solver->setParameters(params);
-			solver->analyzePattern(A);
-			solver->factorize(A);
-			for(long i = 0; i < b.cols(); ++i){
-				solver->solve(b.col(i), coeffs.col(i));
-			}
-			logger().trace("RHS solve error {}", (A*coeffs-b).norm());
+				// auto solver = LinearSolver::create("", "");
+				auto solver = LinearSolver::create(LinearSolver::defaultSolver(), LinearSolver::defaultPrecond());
+				solver->setParameters(params);
+				solver->analyzePattern(A);
+				solver->factorize(A);
+				for(long i = 0; i < b.cols(); ++i){
+					solver->solve(b.col(i), coeffs.col(i));
+				}
+				logger().trace("RHS solve error {}", (A*coeffs-b).norm());
 
-			for(long i = 0; i < coeffs.rows(); ++i){
-				for(int d = 0; d < size_; ++d){
-					if(problem_.all_dimentions_dirichelt() || std::find(bounday_nodes.begin(), bounday_nodes.end(), indices[i]*size_+d) != bounday_nodes.end())
-						rhs(indices[i]*size_+d) = coeffs(i, d);
+				for(long i = 0; i < coeffs.rows(); ++i){
+					for(int d = 0; d < size_; ++d){
+						if(problem_.all_dimentions_dirichelt() || std::find(bounday_nodes.begin(), bounday_nodes.end(), indices[i]*size_+d) != bounday_nodes.end())
+							rhs(indices[i]*size_+d) = coeffs(i, d);
+					}
 				}
 			}
 		}

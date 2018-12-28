@@ -14,7 +14,7 @@ namespace polyfem
 		GenericTensorProblem(const std::string &name);
 
 		void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-		bool is_rhs_zero() const override { return true; } //TODO
+		bool is_rhs_zero() const override { return fabs(rhs_.maxCoeff())<1e-10 && fabs(rhs_.minCoeff())<1e-10; }
 
 		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 		void neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
@@ -37,7 +37,7 @@ namespace polyfem
 
 		std::vector<Eigen::Matrix<bool, 1, 3, Eigen::RowMajor>> dirichelt_dimentions_;
 
-
+		Eigen::Matrix<double, 1, 3, Eigen::RowMajor> rhs_;
 	};
 
 
@@ -47,7 +47,7 @@ namespace polyfem
 		GenericScalarProblem(const std::string &name);
 
 		void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-		bool is_rhs_zero() const override { return true; } //TODO
+		bool is_rhs_zero() const override { return fabs(rhs_) < 1e-10; }
 
 		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 		void neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
@@ -60,6 +60,8 @@ namespace polyfem
 	private:
 		std::vector<Eigen::Matrix<ExpressionValue, 1, 1, Eigen::RowMajor>> neumann_;
 		std::vector<Eigen::Matrix<ExpressionValue, 1, 1, Eigen::RowMajor>> dirichlet_;
+
+		double rhs_;
 	};
 }
 

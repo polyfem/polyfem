@@ -8,26 +8,14 @@ namespace polyfem
 	GenericTensorProblem::GenericTensorProblem(const std::string &name)
 	: Problem(name)
 	{
-		// boundary_ids_ = {2};
-		// neumann_boundary_ids_ = {4};
-
-		// forces_.resize(1);
-		// forces_.front()(0).init(0.1);
-		// forces_.front()(1).init(0);
-		// forces_.front()(2).init(0);
-
-		// displacements_.resize(1);
-		// displacements_.front()(0).init(0);
-		// displacements_.front()(1).init(0);
-		// displacements_.front()(2).init(0);
-
-		// dirichelt_dimentions_.resize(1);
-		// dirichelt_dimentions_.front().setConstant(true);
+		rhs_.setZero();
 	}
 
 	void GenericTensorProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
-		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+		val.resize(pts.rows(), pts.cols());
+		for(int i = 0; i < val.cols(); ++i)
+			val.col(i).setConstant(rhs_(i));
 		// val *= t;
 	}
 
@@ -94,10 +82,18 @@ namespace polyfem
 
 	void GenericTensorProblem::set_parameters(const json &params)
 	{
-		// if(params.find("use_mixed_formulation") != params.end())
-		// {
-		// 	is_mixed_ = params["use_mixed_formulation"];
-		// }
+		if(params.find("rhs") != params.end())
+		{
+			auto rr = params["rhs"];
+			if(rr.is_array())
+			{
+				for(size_t k = 0; k < rr.size(); ++k)
+					rhs_(k) = rr[k];
+			}
+			else{
+				assert(false);
+			}
+		}
 
 		if(params.find("dirichlet_boundary") != params.end())
 		{
@@ -181,12 +177,12 @@ namespace polyfem
 
 
 	GenericScalarProblem::GenericScalarProblem(const std::string &name)
-	: Problem(name)
+	: Problem(name), rhs_(0)
 	{	}
 
 	void GenericScalarProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
-		val = Eigen::MatrixXd::Zero(pts.rows(), 1);
+		val = Eigen::MatrixXd::Constant(pts.rows(), 1, rhs_);
 		// val *= t;
 	}
 
@@ -233,6 +229,11 @@ namespace polyfem
 
 	void GenericScalarProblem::set_parameters(const json &params)
 	{
+		if(params.find("rhs") != params.end())
+		{
+			rhs_ = params["rhs"];
+		}
+
 		if(params.find("dirichlet_boundary") != params.end())
 		{
 			boundary_ids_.clear();

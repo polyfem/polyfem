@@ -1733,7 +1733,10 @@ namespace polyfem
 		RhsAssembler rhs_assembler(*mesh, n_bases, size, bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
 		rhs_assembler.assemble(rhs);
 		rhs *= -1;
-		rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs);
+		if(formulation() != "Bilaplacian")
+			rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs);
+		else
+			rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], std::vector< LocalBoundary >(), rhs);
 
 		// if(problem->is_mixed())
 		if(assembler.is_mixed(formulation()))
@@ -1741,7 +1744,14 @@ namespace polyfem
 			const int prev_size = rhs.size();
 			rhs.conservativeResize(prev_size + n_pressure_bases, rhs.cols());
 			//Divergence free rhs
-			rhs.block(prev_size, 0, n_pressure_bases, rhs.cols()).setZero();
+			if(formulation() != "Bilaplacian" || local_neumann_boundary.empty())
+				rhs.block(prev_size, 0, n_pressure_bases, rhs.cols()).setZero();
+			else
+			{
+				Eigen::MatrixXd tmp(n_pressure_bases, 1); tmp.setZero();
+				rhs_assembler.set_bc(std::vector< LocalBoundary >(), std::vector<int>(), args["n_boundary_samples"], local_neumann_boundary, tmp);
+				rhs.block(prev_size, 0, n_pressure_bases, rhs.cols()) = tmp;
+			}
 		}
 
 		timer.stop();
