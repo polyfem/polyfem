@@ -38,6 +38,7 @@ namespace polyfem
 		std::vector<Eigen::Matrix<bool, 1, 3, Eigen::RowMajor>> dirichelt_dimentions_;
 
 		Eigen::Matrix<double, 1, 3, Eigen::RowMajor> rhs_;
+		bool is_all_;
 	};
 
 
@@ -62,6 +63,7 @@ namespace polyfem
 		std::vector<Eigen::Matrix<ExpressionValue, 1, 1, Eigen::RowMajor>> dirichlet_;
 
 		double rhs_;
+		bool is_all_;
 	};
 }
 

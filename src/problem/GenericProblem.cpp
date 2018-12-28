@@ -6,7 +6,7 @@
 namespace polyfem
 {
 	GenericTensorProblem::GenericTensorProblem(const std::string &name)
-	: Problem(name)
+	: Problem(name), is_all_(false)
 	{
 		rhs_.setZero();
 	}
@@ -23,6 +23,12 @@ namespace polyfem
 	{
 		if(all_dimentions_dirichelt())
 			return true;
+
+		if(is_all_)
+		{
+			assert(dirichelt_dimentions_.size() == 1);
+			return dirichelt_dimentions_[0][dim];
+		}
 
 		for(size_t b = 0; b < boundary_ids_.size(); ++b)
 		{
@@ -43,14 +49,23 @@ namespace polyfem
 
 		for(long i = 0; i < pts.rows(); ++i)
 		{
-			const int id = mesh.get_boundary_id(global_ids(i));
-			for(size_t b = 0; b < boundary_ids_.size(); ++b)
+			if(is_all_)
 			{
-				if(id == boundary_ids_[b])
+				assert(displacements_.size() == 1);
+				for(int d = 0; d < val.cols(); ++d)
+					val(i, d) = pts.cols() == 2 ? displacements_[0](d)(pts(i, 0), pts(i, 1)) : displacements_[0](d)(pts(i, 0), pts(i, 1), pts(i, 2));
+			}
+			else
+			{
+				const int id = mesh.get_boundary_id(global_ids(i));
+				for(size_t b = 0; b < boundary_ids_.size(); ++b)
 				{
-					for(int d = 0; d < val.cols(); ++d)
-						val(i, d) = pts.cols() == 2 ? displacements_[b](d)(pts(i, 0), pts(i, 1)) : displacements_[b](d)(pts(i, 0), pts(i, 1), pts(i, 2));
-					break;
+					if(id == boundary_ids_[b])
+					{
+						for(int d = 0; d < val.cols(); ++d)
+							val(i, d) = pts.cols() == 2 ? displacements_[b](d)(pts(i, 0), pts(i, 1)) : displacements_[b](d)(pts(i, 0), pts(i, 1), pts(i, 2));
+						break;
+					}
 				}
 			}
 		}
@@ -107,7 +122,14 @@ namespace polyfem
 
 			for(size_t i = 0; i < boundary_ids_.size(); ++i)
 			{
-				boundary_ids_[i] = j_boundary[i]["id"];
+				if(j_boundary[i]["id"] == "all")
+				{
+					assert(boundary_ids_.size() == 1);
+					boundary_ids_.clear();
+					is_all_ = true;
+				}
+				else
+					boundary_ids_[i] = j_boundary[i]["id"];
 
 				auto ff = j_boundary[i]["value"];
 				if(ff.is_array())
@@ -177,7 +199,7 @@ namespace polyfem
 
 
 	GenericScalarProblem::GenericScalarProblem(const std::string &name)
-	: Problem(name), rhs_(0)
+	: Problem(name), rhs_(0), is_all_(false)
 	{	}
 
 	void GenericScalarProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
@@ -193,12 +215,20 @@ namespace polyfem
 		for(long i = 0; i < pts.rows(); ++i)
 		{
 			const int id = mesh.get_boundary_id(global_ids(i));
-			for(size_t b = 0; b < boundary_ids_.size(); ++b)
+			if(is_all_)
 			{
-				if(id == boundary_ids_[b])
+				assert(dirichlet_.size() == 1);
+				val(i) = pts.cols() == 2 ? dirichlet_[0](0)(pts(i, 0), pts(i, 1)) : dirichlet_[0](0)(pts(i, 0), pts(i, 1), pts(i, 2));
+			}
+			else
+			{
+				for(size_t b = 0; b < boundary_ids_.size(); ++b)
 				{
-					val(i) = pts.cols() == 2 ? dirichlet_[b](0)(pts(i, 0), pts(i, 1)) : dirichlet_[b](0)(pts(i, 0), pts(i, 1), pts(i, 2));
-					break;
+					if(id == boundary_ids_[b])
+					{
+						val(i) = pts.cols() == 2 ? dirichlet_[b](0)(pts(i, 0), pts(i, 1)) : dirichlet_[b](0)(pts(i, 0), pts(i, 1), pts(i, 2));
+						break;
+					}
 				}
 			}
 		}
@@ -242,10 +272,17 @@ namespace polyfem
 			boundary_ids_.resize(j_boundary.size());
 			dirichlet_.resize(j_boundary.size());
 
-
 			for(size_t i = 0; i < boundary_ids_.size(); ++i)
 			{
-				boundary_ids_[i] = j_boundary[i]["id"];
+				if(j_boundary[i]["id"] == "all")
+				{
+					assert(boundary_ids_.size() == 1);
+
+					is_all_ = true;
+					boundary_ids_.clear();
+				}
+				else
+					boundary_ids_[i] = j_boundary[i]["id"];
 
 				auto ff = j_boundary[i]["value"];
 				dirichlet_[i](0).init(ff);
