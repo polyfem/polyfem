@@ -1,5 +1,6 @@
 #include <polyfem/Problem.hpp>
 
+#include <polyfem/ProblemWithSolution.hpp>
 #include <polyfem/MiscProblem.hpp>
 #include <polyfem/FrankeProblem.hpp>
 #include <polyfem/ElasticProblem.hpp>
@@ -118,6 +119,8 @@ namespace polyfem
 		problems_.emplace("TimeDependentFlow", std::make_shared<TimeDependentFlow>("TimeDependentFlow"));
 
 		problems_.emplace("TestProblem", std::make_shared<TestProblem>("TestProblem"));
+
+		problems_.emplace("BilaplacianProblemWithSolution", std::make_shared<BilaplacianProblemWithSolution>("BilaplacianProblemWithSolution"));
 
 		for(auto it = problems_.begin(); it != problems_.end(); ++it)
 			problem_names_.push_back(it->first);

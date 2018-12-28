@@ -1749,7 +1749,8 @@ namespace polyfem
 			else
 			{
 				Eigen::MatrixXd tmp(n_pressure_bases, 1); tmp.setZero();
-				rhs_assembler.set_bc(std::vector< LocalBoundary >(), std::vector<int>(), args["n_boundary_samples"], local_neumann_boundary, tmp);
+				RhsAssembler rhs_assembler1(*mesh, n_pressure_bases, size, pressure_bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
+				rhs_assembler1.set_bc(std::vector< LocalBoundary >(), std::vector<int>(), args["n_boundary_samples"], local_neumann_boundary, tmp);
 				rhs.block(prev_size, 0, n_pressure_bases, rhs.cols()) = tmp;
 			}
 		}
