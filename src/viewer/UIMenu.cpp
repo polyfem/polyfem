@@ -238,9 +238,8 @@ void polyfem::UIState::draw_settings() {
 	static const auto scalar_forms = polyfem::AssemblerUtils::instance().scalar_assemblers();
 
 	const bool is_scalar = state.problem->is_scalar();
-	const bool is_mixed = state.problem->is_mixed();
 
-	if(!is_mixed && is_scalar)
+	if(is_scalar)
 	{
 		if(ImGui::BeginCombo("1D-Form", state.scalar_formulation().c_str()))
 		{
@@ -257,9 +256,7 @@ void polyfem::UIState::draw_settings() {
 		}
 	}
 
-
-
-	if(!is_mixed && !is_scalar)
+	else
 	{
 		static const auto tensor_forms = polyfem::AssemblerUtils::instance().tensor_assemblers();
 		if(ImGui::BeginCombo("nD-Form", state.tensor_formulation().c_str()))
@@ -278,23 +275,23 @@ void polyfem::UIState::draw_settings() {
 	}
 
 
-	if(is_mixed)
-	{
-		static const auto mixed_forms = polyfem::AssemblerUtils::instance().mixed_assemblers();
-		if(ImGui::BeginCombo("mixed", state.mixed_formulation().c_str()))
-		{
-			for(auto f : mixed_forms)
-			{
-				bool is_selected = state.mixed_formulation() == f;
+	// if(is_mixed)
+	// {
+	// 	static const auto mixed_forms = polyfem::AssemblerUtils::instance().mixed_assemblers();
+	// 	if(ImGui::BeginCombo("mixed", state.mixed_formulation().c_str()))
+	// 	{
+	// 		for(auto f : mixed_forms)
+	// 		{
+	// 			bool is_selected = state.mixed_formulation() == f;
 
-				if (ImGui::Selectable(f.c_str(), is_selected))
-					state.args["mixed_formulation"] = f;
-				if (is_selected)
-					ImGui::SetItemDefaultFocus();
-			}
-			ImGui::EndCombo();
-		}
-	}
+	// 			if (ImGui::Selectable(f.c_str(), is_selected))
+	// 				state.args["mixed_formulation"] = f;
+	// 			if (is_selected)
+	// 				ImGui::SetItemDefaultFocus();
+	// 		}
+	// 		ImGui::EndCombo();
+	// 	}
+	// }
 	ImGui::Separator();
 
 

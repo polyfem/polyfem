@@ -94,10 +94,10 @@ namespace polyfem
 
 	void GenericTensorProblem::set_parameters(const json &params)
 	{
-		if(params.find("use_mixed_formulation") != params.end())
-		{
-			is_mixed_ = params["use_mixed_formulation"];
-		}
+		// if(params.find("use_mixed_formulation") != params.end())
+		// {
+		// 	is_mixed_ = params["use_mixed_formulation"];
+		// }
 
 		if(params.find("dirichlet_boundary") != params.end())
 		{

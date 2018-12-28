@@ -136,7 +136,7 @@ namespace polyfem
 
 		inline std::string mesh_path() const { return args["mesh"]; }
 
-		inline std::string formulation() const { return problem->is_mixed() ? mixed_formulation() : (problem->is_scalar() ? scalar_formulation() : tensor_formulation()); }
+		inline std::string formulation() const { return problem->is_scalar() ? scalar_formulation() : tensor_formulation(); }
 		inline bool iso_parametric() const { return (non_regular_count > 0 || non_regular_boundary_count > 0 || undefined_count > 0) || (!args["use_p_ref"] && args["discr_order"] == mesh->order()) || args["iso_parametric"]; }
 
 		inline std::string solver_type() const { return args["solver_type"]; }
@@ -145,7 +145,7 @@ namespace polyfem
 
 		inline std::string scalar_formulation() const { return args["scalar_formulation"]; }
 		inline std::string tensor_formulation() const { return args["tensor_formulation"]; }
-		inline std::string mixed_formulation() const { return args["mixed_formulation"]; }
+		// inline std::string mixed_formulation() const { return args["mixed_formulation"]; }
 
 		void p_refinement(const Mesh2D &mesh2d);
 		void p_refinement(const Mesh3D &mesh3d);

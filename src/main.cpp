@@ -61,7 +61,7 @@ int main(int argc, char **argv)
 
 	std::string scalar_formulation = "Laplacian";
 	std::string tensor_formulation = "LinearElasticity"; //"SaintVenant";
-	std::string mixed_formulation = "Stokes"; //"SaintVenant";
+	// std::string mixed_formulation = "Stokes"; //"SaintVenant";
 	std::string solver = "";
 
 	int discr_order = 1;
@@ -93,7 +93,7 @@ int main(int argc, char **argv)
 	const AssemblerUtils &assembler = AssemblerUtils::instance();
 	command_line.add_set("--sform", scalar_formulation, std::set<std::string>(assembler.scalar_assemblers().begin(), assembler.scalar_assemblers().end()), "Scalar formulation");
 	command_line.add_set("--tform", tensor_formulation, std::set<std::string>(assembler.tensor_assemblers().begin(), assembler.tensor_assemblers().end()), "Tensor formulation");
-	command_line.add_set("--mform", mixed_formulation, std::set<std::string>(assembler.mixed_assemblers().begin(), assembler.mixed_assemblers().end()),  "Mixed formulation");
+	// command_line.add_set("--mform", mixed_formulation, std::set<std::string>(assembler.mixed_assemblers().begin(), assembler.mixed_assemblers().end()),  "Mixed formulation");
 
 	const std::vector<std::string> solvers = LinearSolver::availableSolvers();
 	command_line.add_set("--solver", solver, std::set<std::string>(solvers.begin(), solvers.end()), "Solver to use");
@@ -152,7 +152,7 @@ int main(int argc, char **argv)
 
 		in_args["scalar_formulation"] = scalar_formulation;
 		in_args["tensor_formulation"] = tensor_formulation;
-		in_args["mixed_formulation"] = mixed_formulation;
+		// in_args["mixed_formulation"] = mixed_formulation;
 
 
 		in_args["discr_order"] = discr_order;

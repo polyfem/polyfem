@@ -1,6 +1,8 @@
 set(SOURCES
 	Assembler.cpp
 	Assembler.hpp
+	Bilaplacian.cpp
+	Bilaplacian.hpp
 	AssemblyValues.hpp
 	ElementAssemblyValues.cpp
 	ElementAssemblyValues.hpp

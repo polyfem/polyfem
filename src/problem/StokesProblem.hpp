@@ -20,7 +20,7 @@ namespace polyfem
 
 		bool has_exact_sol() const override { return false; }
 		bool is_scalar() const override { return false; }
-		bool is_mixed() const override { return true; }
+		// bool is_mixed() const override { return true; }
 	};
 
 
@@ -36,7 +36,7 @@ namespace polyfem
 
 		bool has_exact_sol() const override { return false; }
 		bool is_scalar() const override { return false; }
-		bool is_mixed() const override { return true; }
+		// bool is_mixed() const override { return true; }
 	};
 
 
@@ -55,6 +55,6 @@ namespace polyfem
 		bool is_time_dependent() const override { return true; }
 		bool has_exact_sol() const override { return false; }
 		bool is_scalar() const override { return false; }
-		bool is_mixed() const override { return true; }
+		// bool is_mixed() const override { return true; }
 	};
 }

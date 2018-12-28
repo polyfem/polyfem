@@ -8,6 +8,7 @@
 #include <polyfem/MassMatrixAssembler.hpp>
 
 #include <polyfem/Laplacian.hpp>
+#include <polyfem/Bilaplacian.hpp>
 #include <polyfem/Helmholtz.hpp>
 
 #include <polyfem/LinearElasticity.hpp>
@@ -131,7 +132,7 @@ namespace polyfem
 		//getters
 		const std::vector<std::string> &scalar_assemblers() const { return scalar_assemblers_; }
 		const std::vector<std::string> &tensor_assemblers() const { return tensor_assemblers_; }
-		const std::vector<std::string> &mixed_assemblers() const { return mixed_assemblers_; }
+		// const std::vector<std::string> &mixed_assemblers() const { return mixed_assemblers_; }
 
 		void clear_cache();
 
@@ -139,6 +140,10 @@ namespace polyfem
 		MassMatrixAssembler mass_mat_assembler_;
 		Assembler<Laplacian> laplacian_;
 		Assembler<Helmholtz> helmholtz_;
+
+		Assembler<BilaplacianMain> bilaplacian_main_;
+		MixedAssembler<BilaplacianMixed> bilaplacian_mixed_;
+		Assembler<BilaplacianAux> bilaplacian_aux_;
 
 		Assembler<LinearElasticity> linear_elasticity_;
 		Assembler<HookeLinearElasticity> hooke_linear_elasticity_;

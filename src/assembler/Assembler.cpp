@@ -2,6 +2,7 @@
 
 #include <polyfem/Laplacian.hpp>
 #include <polyfem/Helmholtz.hpp>
+#include <polyfem/Bilaplacian.hpp>
 
 #include <polyfem/LinearElasticity.hpp>
 #include <polyfem/HookeLinearElasticity.hpp>
@@ -605,6 +606,11 @@ namespace polyfem
 	//template instantiation
 	template class Assembler<Laplacian>;
 	template class Assembler<Helmholtz>;
+
+	template class Assembler<BilaplacianMain>;
+	template class MixedAssembler<BilaplacianMixed>;
+	template class Assembler<BilaplacianAux>;
+
 	template class Assembler<LinearElasticity>;
 	template class Assembler<HookeLinearElasticity>;
 	template class NLAssembler<SaintVenantElasticity>;
@@ -614,7 +620,7 @@ namespace polyfem
 	template class Assembler<StokesVelocity>;
 	template class MixedAssembler<StokesMixed>;
 	template class Assembler<StokesPressure>;
-	
+
 	template class Assembler<IncompressibleLinearElasticityDispacement>;
 	template class MixedAssembler<IncompressibleLinearElasticityMixed>;
 	template class Assembler<IncompressibleLinearElasticityPressure>;

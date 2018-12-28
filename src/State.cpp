@@ -160,10 +160,11 @@ namespace polyfem
 
 	void State::sol_to_pressure()
 	{
-		assert(problem->is_mixed());
+		// assert(problem->is_mixed());
+		assert(AssemblerUtils::instance().is_mixed(formulation()));
 		Eigen::MatrixXd tmp = sol;
 		sol = tmp.block(0, 0, tmp.rows() - n_pressure_bases, tmp.cols());
-		assert(sol.size() == n_bases * mesh->dimension());
+		assert(sol.size() == n_bases * (problem->is_scalar() ? 1 : mesh->dimension()));
 		pressure = tmp.block(tmp.rows()-n_pressure_bases, 0, n_pressure_bases, tmp.cols());
 		assert(pressure.size() == n_pressure_bases);
 	}
@@ -1455,7 +1456,8 @@ namespace polyfem
 				n_bases = FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, has_polys, bases, local_boundary, poly_edge_to_data);
 			}
 
-			if(problem->is_mixed())
+			// if(problem->is_mixed())
+			if(assembler.is_mixed(formulation()))
 			{
 				n_pressure_bases = FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], int(args["pressure_discr_order"]), has_polys, pressure_bases, local_boundary, poly_edge_to_data_geom);
 			}
@@ -1483,7 +1485,8 @@ namespace polyfem
 				// n_bases = SpectralBasis2d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, bases, geom_bases, local_boundary);
 			}
 
-			if(problem->is_mixed())
+			// if(problem->is_mixed())
+			if(assembler.is_mixed(formulation()))
 			{
 				n_pressure_bases = FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], int(args["pressure_discr_order"]), has_polys, pressure_bases, local_boundary, poly_edge_to_data_geom);
 			}
@@ -1600,17 +1603,20 @@ namespace polyfem
 
 		auto &assembler = AssemblerUtils::instance();
 
-		if(problem->is_mixed())
+		// if(problem->is_mixed())
+		if(assembler.is_mixed(formulation()))
 		{
 			Eigen::SparseMatrix<double> velocity_stiffness, mixed_stiffness, pressure_stiffness;
-			assembler.assemble_problem(mixed_formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, velocity_stiffness);
-			assembler.assemble_mixed_problem(mixed_formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, iso_parametric() ? bases : geom_bases, mixed_stiffness);
-			assembler.assemble_pressure_problem(mixed_formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, iso_parametric() ? bases : geom_bases, pressure_stiffness);
+			assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, velocity_stiffness);
+			assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, iso_parametric() ? bases : geom_bases, mixed_stiffness);
+			assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, iso_parametric() ? bases : geom_bases, pressure_stiffness);
+
+			const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 
 			assert(velocity_stiffness.rows() == velocity_stiffness.cols());
-			assert(velocity_stiffness.rows() == n_bases * mesh->dimension());
+			assert(velocity_stiffness.rows() == n_bases * problem_dim);
 
-			assert(mixed_stiffness.rows() == n_bases * mesh->dimension());
+			assert(mixed_stiffness.rows() == n_bases * problem_dim);
 			assert(mixed_stiffness.cols() == n_pressure_bases);
 
 			assert(pressure_stiffness.rows() == n_pressure_bases);
@@ -1631,8 +1637,8 @@ namespace polyfem
 			{
 				for (Eigen::SparseMatrix<double>::InnerIterator it(mixed_stiffness, k); it; ++it)
 				{
-					blocks.emplace_back(it.row(), n_bases * mesh->dimension() + it.col(), it.value());
-					blocks.emplace_back(it.col() + n_bases * mesh->dimension(), it.row(), it.value());
+					blocks.emplace_back(it.row(), n_bases * problem_dim + it.col(), it.value());
+					blocks.emplace_back(it.col() + n_bases * problem_dim, it.row(), it.value());
 				}
 			}
 
@@ -1641,11 +1647,11 @@ namespace polyfem
 			{
 				for (Eigen::SparseMatrix<double>::InnerIterator it(pressure_stiffness, k); it; ++it)
 				{
-					blocks.emplace_back( n_bases * mesh->dimension() + it.row(), n_bases * mesh->dimension() + it.col(), it.value());
+					blocks.emplace_back( n_bases * problem_dim + it.row(), n_bases * problem_dim + it.col(), it.value());
 				}
 			}
 
-			stiffness.resize(n_bases * mesh->dimension() + n_pressure_bases, n_bases * mesh->dimension() + n_pressure_bases);
+			stiffness.resize(n_bases * problem_dim + n_pressure_bases, n_bases * problem_dim + n_pressure_bases);
 			stiffness.setFromTriplets(blocks.begin(), blocks.end());
 			stiffness.makeCompressed();
 
@@ -1658,7 +1664,7 @@ namespace polyfem
 			if(problem->is_time_dependent())
 			{
 				Eigen::SparseMatrix<double> velocity_mass;
-				assembler.assemble_mass_matrix(mixed_formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, velocity_mass);
+				assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, velocity_mass);
 
 				std::vector< Eigen::Triplet<double> > mass_blocks;
 				mass_blocks.reserve(velocity_mass.nonZeros());
@@ -1671,17 +1677,17 @@ namespace polyfem
 					}
 				}
 
-				mass.resize(n_bases * mesh->dimension() + n_pressure_bases, n_bases * mesh->dimension() + n_pressure_bases);
+				mass.resize(n_bases * problem_dim + n_pressure_bases, problem_dim + n_pressure_bases);
 				mass.setFromTriplets(mass_blocks.begin(), mass_blocks.end());
 				mass.makeCompressed();
 			}
 		}
 		else
 		{
-			assembler.assemble_problem(problem->is_scalar() ? scalar_formulation() : tensor_formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, stiffness);
+			assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, stiffness);
 			if(problem->is_time_dependent())
 			{
-				assembler.assemble_mass_matrix(problem->is_scalar() ? scalar_formulation():tensor_formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, mass);
+				assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, mass);
 			}
 		}
 
@@ -1729,7 +1735,8 @@ namespace polyfem
 		rhs *= -1;
 		rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs);
 
-		if(problem->is_mixed())
+		// if(problem->is_mixed())
+		if(assembler.is_mixed(formulation()))
 		{
 			const int prev_size = rhs.size();
 			rhs.conservativeResize(prev_size + n_pressure_bases, rhs.cols());
@@ -1767,7 +1774,8 @@ namespace polyfem
 			RhsAssembler rhs_assembler(*mesh, n_bases, problem->is_scalar()? 1 : mesh->dimension(), bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
 			rhs_assembler.initial_solution(sol);
 
-			if(problem->is_mixed())
+			// if(problem->is_mixed())
+			if(assembler.is_mixed(formulation()))
 			{
 				pressure.resize(n_pressure_bases, 1);
 				pressure.setZero();
@@ -1784,7 +1792,8 @@ namespace polyfem
 			save_vtu( "step_" + std::to_string(0) + ".vtu");
 			save_wire("step_" + std::to_string(0) + ".obj");
 
-			if(problem->is_mixed())
+			// if(problem->is_mixed())
+			if(assembler.is_mixed(formulation()))
 			{
 				pressure.resize(0, 0);
 				const int prev_size = sol.size();
@@ -1793,7 +1802,7 @@ namespace polyfem
 				sol.block(prev_size, 0, n_pressure_bases, sol.cols()).setZero();
 			}
 
-			if(problem->is_scalar() || problem->is_mixed())
+			if(problem->is_scalar() || assembler.is_mixed(formulation()))
 			{
 				Eigen::SparseMatrix<double> A;
 				Eigen::VectorXd b, x;
@@ -1803,7 +1812,8 @@ namespace polyfem
 				{
 					rhs_assembler.compute_energy_grad(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs, dt*t, current_rhs);
 
-					if(problem->is_mixed())
+					// if(problem->is_mixed())
+					if(assembler.is_mixed(formulation()))
 					{
 						//divergence free
 						current_rhs.block(current_rhs.rows()-n_pressure_bases, 0, n_pressure_bases, current_rhs.cols()).setZero();
@@ -1815,7 +1825,8 @@ namespace polyfem
 					spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, args["export"]["stiffness_mat"], t == 1 && args["export"]["spectrum"]);
 					sol = x;
 
-					if(problem->is_mixed())
+					// if(problem->is_mixed())
+					if(assembler.is_mixed(formulation()))
 					{
 						//necessary for the export
 						sol_to_pressure();
@@ -1824,7 +1835,7 @@ namespace polyfem
 					save_vtu( "step_" + std::to_string(t) + ".vtu");
 					save_wire("step_" + std::to_string(t) + ".obj");
 
-					if(problem->is_mixed() && t < time_steps)
+					if(assembler.is_mixed(formulation()) && t < time_steps)
 					{
 						const int prev_size = sol.size();
 						sol.conservativeResize(prev_size + n_pressure_bases, sol.cols());
@@ -1917,7 +1928,8 @@ namespace polyfem
 				logger().debug("Solver error: {}", (A*sol-b).norm());
 				// sol = rhs;
 
-				if(problem->is_mixed())
+				// if(problem->is_mixed())
+				if(assembler.is_mixed(formulation()))
 				{
 					sol_to_pressure();
 				}
@@ -2312,7 +2324,7 @@ namespace polyfem
 
 			{"scalar_formulation", "Laplacian"},
 			{"tensor_formulation", "LinearElasticity"},
-			{"mixed_formulation", "Stokes"},
+			// {"mixed_formulation", "Stokes"},
 
 			{"B", 3},
 			{"h1_formula", false},
@@ -2445,6 +2457,7 @@ namespace polyfem
 	void State::save_vtu(const std::string &path)
 	{
 		const auto &sampler = RefElementSampler::sampler();
+		const auto &assembler = AssemblerUtils::instance();
 
 
 		const auto &current_bases = iso_parametric() ? bases : geom_bases;
@@ -2533,7 +2546,8 @@ namespace polyfem
 
 		writer.add_field("solution", fun);
 
-		if(problem->is_mixed())
+		// if(problem->is_mixed())
+		if(assembler.is_mixed(formulation()))
 		{
 			Eigen::MatrixXd interp_p;
 			interpolate_function(pts_index, 1, pressure_bases, pressure, interp_p, boundary_only);
