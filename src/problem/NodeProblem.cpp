@@ -84,7 +84,7 @@ namespace polyfem
 	}
 
 	NodeProblem::NodeProblem(const std::string &name)
-	: Problem(name), rhs_(0)
+	: Problem(name), rhs_(0), is_all_(false)
 	{
 	}
 
@@ -106,13 +106,20 @@ namespace polyfem
 		for(long i = 0; i < uv.rows(); ++i)
 		{
 			const int p_id = global_ids(i);
-			const int id = mesh.get_boundary_id(p_id);
-			for(size_t b = 0; b < boundary_ids_.size(); ++b)
+			if(is_all_)
 			{
-				if(id == boundary_ids_[b])
+				val(i) = values_.dirichlet_interpolate(p_id, uv.row(i));
+			}
+			else
+			{
+				const int id = mesh.get_boundary_id(p_id);
+				for(size_t b = 0; b < boundary_ids_.size(); ++b)
 				{
-					val(i) = values_.dirichlet_interpolate(p_id, uv.row(i));
-					break;
+					if(id == boundary_ids_[b])
+					{
+						val(i) = values_.dirichlet_interpolate(p_id, uv.row(i));
+						break;
+					}
 				}
 			}
 		}
@@ -145,6 +152,11 @@ namespace polyfem
 	{
 		if(all_dimentions_dirichelt())
 			return true;
+
+		if(is_all_)
+		{
+			return dirichelt_dimentions_[0][dim];
+		}
 
 		for(size_t b = 0; b < boundary_ids_.size(); ++b)
 		{
@@ -184,7 +196,15 @@ namespace polyfem
 
 			for(size_t i = 0; i < boundary_ids_.size(); ++i)
 			{
-				boundary_ids_[i] = j_boundary[i]["id"];
+				if(j_boundary[i]["id"] == "all")
+				{
+					assert(boundary_ids_.size() == 1);
+					is_all_ = true;
+					boundary_ids_.clear();
+				}
+				else
+					boundary_ids_[i] = j_boundary[i]["id"];
+
 				dirichelt_dimentions_[i].setConstant(false);
 
 				if(j_boundary[i].find("dimension") != j_boundary[i].end())
