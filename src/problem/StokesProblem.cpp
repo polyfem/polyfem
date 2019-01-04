@@ -90,19 +90,22 @@ namespace polyfem
 		{
 			const auto obstracle = params["obstracle"];
 			if(obstracle.is_array()){
-				for(size_t k = 0; k < obstracle.size(); ++k)
-					boundary_ids_.push_back(obstracle[k]);
-			}
-			else if(obstracle.is_string())
-			{
-				const std::string tmp = obstracle;
-				const auto endings = StringUtils::split(tmp, ":");
-				assert(endings.size() == 2);
-				const int start = atoi(endings[0].c_str());
-				const int end = atoi(endings[1].c_str());
+				for(size_t k = 0; k < obstracle.size(); ++k){
+					const auto tmp = obstracle[k];
+					if(tmp.is_string())
+					{
+						const std::string tmps = tmp;
+						const auto endings = StringUtils::split(tmps, ":");
+						assert(endings.size() == 2);
+						const int start = atoi(endings[0].c_str());
+						const int end = atoi(endings[1].c_str());
 
-				for(int i = start; i <= end; ++i)
-					boundary_ids_.push_back(i);
+						for(int i = start; i <= end; ++i)
+							boundary_ids_.push_back(i);
+					}
+					else
+						boundary_ids_.push_back(tmp);
+				}
 			}
 		}
 
