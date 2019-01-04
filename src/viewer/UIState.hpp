@@ -120,8 +120,6 @@ namespace polyfem
 		Navigation3D::Index current_3d_index;
 		Navigation::Index 	current_2d_index;
 
-		std::array<bool, 6> dirichlet_bc;
-
 		igl::opengl::ViewerData &data(const Visualizations &layer);
 		Eigen::Matrix<bool, Eigen::Dynamic, 1> available_visualizations;
 		Eigen::Matrix<bool, Eigen::Dynamic, 1> visible_visualizations;

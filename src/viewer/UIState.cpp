@@ -1652,14 +1652,6 @@ namespace polyfem
 		state.init_logger(log_file, log_level, is_quiet);
 		state.init(args);
 
-		if(state.problem->boundary_ids().empty())
-			std::fill(dirichlet_bc.begin(), dirichlet_bc.end(), true);
-		else
-			std::fill(dirichlet_bc.begin(), dirichlet_bc.end(), false);
-
-		for(int i = 0; i < (int) state.problem->boundary_ids().size(); ++i)
-			dirichlet_bc[state.problem->boundary_ids()[i]-1] = true;
-
 		viewer.core.background_color.setOnes();
 
 		if (screenshot.empty()) {

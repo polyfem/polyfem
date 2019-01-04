@@ -473,7 +473,7 @@ void compute_nodes(
 			{
 				const int f = find_quad_face(mesh, c, fv(i, 0), fv(i, 1), fv(i, 2), fv(i, 3)).face;
 
-				if (mesh.is_boundary_face(f) || mesh.get_boundary_id(f) != 0){
+				if (mesh.is_boundary_face(f) || mesh.get_boundary_id(f) > 0){
 					lb.add_boundary_primitive(f, i);
 				}
 			}

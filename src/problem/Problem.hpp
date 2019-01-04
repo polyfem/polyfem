@@ -50,8 +50,8 @@ namespace polyfem
 
 		void setup_bc(const Mesh &mesh, const std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &boundary_nodes, std::vector< LocalBoundary > &local_neumann_boundary);
 
-		std::vector<int> &boundary_ids() { return boundary_ids_; }
-		const std::vector<int> &boundary_ids() const { return boundary_ids_; }
+		// std::vector<int> &boundary_ids() { return boundary_ids_; }
+		// const std::vector<int> &boundary_ids() const { return boundary_ids_; }
 
 		virtual bool is_dimention_dirichet(const int tag, const int dim) const { return true; }
 

@@ -360,7 +360,7 @@ namespace {
 					const auto index = find_edge(mesh, f, ev(i, 0), ev(i, 1));
 					const int edge = index.edge;
 
-					if (mesh.is_boundary_edge(edge) || mesh.get_boundary_id(edge) != 0){
+					if (mesh.is_boundary_edge(edge) || mesh.get_boundary_id(edge) > 0){
 						lb.add_boundary_primitive(edge, i);
 					}
 				}
