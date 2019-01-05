@@ -34,6 +34,9 @@ namespace polyfem
 				const int primitive_g_id = lb.global_primitive_id(i);
 				const int tag = mesh.get_boundary_id(primitive_g_id);
 
+				if(tag <= 0)
+					continue;
+
 				if(boundary_ids_.empty() || std::find(boundary_ids_.begin(), boundary_ids_.end(), tag) != boundary_ids_.end())
 					new_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
 				if(std::find(neumann_boundary_ids_.begin(), neumann_boundary_ids_.end(), tag) != neumann_boundary_ids_.end())
