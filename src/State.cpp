@@ -1703,6 +1703,9 @@ namespace polyfem
 
 	void State::assemble_rhs()
 	{
+		igl::Timer timer;
+		const std::string rhs_path = args["rhs_path"];
+
 		auto p_params = args["problem_params"];
 		p_params["formulation"] = formulation();
 		{
@@ -1725,14 +1728,28 @@ namespace polyfem
 		sol.resize(0, 0);
 		pressure.resize(0, 0);
 
-		igl::Timer timer; timer.start();
+		timer.start();
 		logger().info("Assigning rhs...");
 
 		const int size = problem->is_scalar() ? 1 : mesh->dimension();
 
 		RhsAssembler rhs_assembler(*mesh, n_bases, size, bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
-		rhs_assembler.assemble(rhs);
-		rhs *= -1;
+		if(!rhs_path.empty())
+		{
+			logger().debug("Loading rhs...");
+
+			read_matrix(args["rhs_path"], rhs);
+
+			Eigen::SparseMatrix<double> tmp_mass;
+			assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, tmp_mass);
+			rhs = tmp_mass * rhs;
+			logger().debug("done!");
+		}
+		else{
+			rhs_assembler.assemble(rhs);
+			rhs *= -1;
+		}
+
 		if(formulation() != "Bilaplacian")
 			rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs);
 		else
@@ -2362,6 +2379,8 @@ namespace polyfem
 			{"nl_solver_rhs_steps", 1},
 			{"save_solve_sequence", false},
 			{"save_solve_sequence_debug", false},
+
+			{"rhs_path", ""},
 
 			{"params", {
 				{"lambda", 0.32967032967032966},
