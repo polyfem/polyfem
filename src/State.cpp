@@ -2064,8 +2064,12 @@ namespace polyfem
 					}
 
 					if(has_nan){
-						step_t /= 2;
-						t = prev_t + step_t;
+						do
+						{
+							step_t /= 2;
+							t = prev_t + step_t;
+						}
+						while(t >= 1);
 						continue;
 					}
 
@@ -2076,8 +2080,12 @@ namespace polyfem
 
 						if(nlsolver.error_code() == -10) //Nan
 						{
-							step_t /= 2;
-							t = prev_t + step_t;
+							do
+							{
+								step_t /= 2;
+								t = prev_t + step_t;
+							}
+							while(t >= 1);
 							continue;
 						}
 						else
