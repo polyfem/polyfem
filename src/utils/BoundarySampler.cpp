@@ -260,7 +260,7 @@ namespace polyfem
 		const Eigen::VectorXd t = Eigen::VectorXd::LinSpaced(n_samples, 0, 1);
 		samples.resize(n_samples*n_samples, endpoints.cols());
 
-		uv.resize(n_samples, 3);
+		uv.resize(n_samples*n_samples, 3);
 
 		int counter = 0;
 		for (int u = 0; u < n_samples; ++u) {
