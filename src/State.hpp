@@ -29,6 +29,7 @@ namespace polyfem
 		void init_logger(const std::string &log_file, int log_level, const bool is_quiet);
 
 		void init(const json &args);
+		void init(const std::string &json);
 
 		json args;
 
@@ -56,7 +57,7 @@ namespace polyfem
 		std::vector<int> parent_elements;
 
 		Eigen::SparseMatrix<double> stiffness, mass;
-		Eigen::MatrixXd rhs;
+		Eigen::MatrixXd rhs, rhs_in;
 		Eigen::MatrixXd sol, pressure;
 
 		Eigen::Vector4d spectrum;
@@ -131,6 +132,7 @@ namespace polyfem
 
 		void compute_mesh_stats();
 
+		void build_vis_mesh(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXd &discr);
 		void save_vtu(const std::string &name);
 		void save_wire(const std::string &name, bool isolines = false);
 

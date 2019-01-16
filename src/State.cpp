@@ -1734,11 +1734,14 @@ namespace polyfem
 		const int size = problem->is_scalar() ? 1 : mesh->dimension();
 
 		RhsAssembler rhs_assembler(*mesh, n_bases, size, bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
-		if(!rhs_path.empty())
+		if(!rhs_path.empty() || rhs_in.size() > 0)
 		{
 			logger().debug("Loading rhs...");
 
-			read_matrix(args["rhs_path"], rhs);
+			if(rhs_in.size())
+				rhs = rhs_in;
+			else
+				read_matrix(args["rhs_path"], rhs);
 
 			Eigen::SparseMatrix<double> tmp_mass;
 			assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, tmp_mass);
@@ -2492,11 +2495,9 @@ namespace polyfem
 		}
 	}
 
-	void State::save_vtu(const std::string &path)
+	void State::build_vis_mesh(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXd &discr)
 	{
 		const auto &sampler = RefElementSampler::sampler();
-		const auto &assembler = AssemblerUtils::instance();
-
 
 		const auto &current_bases = iso_parametric() ? bases : geom_bases;
 		int tet_total_size = 0;
@@ -2522,10 +2523,10 @@ namespace polyfem
 			}
 		}
 
-		Eigen::MatrixXd points(pts_total_size, mesh->dimension());
-		Eigen::MatrixXi tets(tet_total_size, mesh->is_volume()?4:3);
+		points.resize(pts_total_size, mesh->dimension());
+		tets.resize(tet_total_size, mesh->is_volume()?4:3);
 
-		Eigen::MatrixXd discr(pts_total_size, 1);
+		discr.resize(pts_total_size, 1);
 
 		Eigen::MatrixXd mapped, tmp;
 		int tet_index = 0, pts_index = 0;
@@ -2561,10 +2562,22 @@ namespace polyfem
 
 		assert(pts_index == points.rows());
 		assert(tet_index == tets.rows());
+	}
+
+	void State::save_vtu(const std::string &path)
+	{
+		const auto &assembler = AssemblerUtils::instance();
+
+		Eigen::MatrixXd points;
+		Eigen::MatrixXi tets;
+		Eigen::MatrixXd discr;
+
+		build_vis_mesh(points, tets, discr);
 
 		Eigen::MatrixXd fun, exact_fun, err;
+		const bool boundary_only = args["export"]["vis_boundary_only"];
 
-		interpolate_function(pts_index, sol, fun, boundary_only);
+		interpolate_function(points.rows(), sol, fun, boundary_only);
 
 		if(problem->has_exact_sol()){
 			problem->exact(points, exact_fun);
@@ -2588,7 +2601,7 @@ namespace polyfem
 		if(assembler.is_mixed(formulation()))
 		{
 			Eigen::MatrixXd interp_p;
-			interpolate_function(pts_index, 1, pressure_bases, pressure, interp_p, boundary_only);
+			interpolate_function(points.rows(), 1, pressure_bases, pressure, interp_p, boundary_only);
 			writer.add_field("pressure", interp_p);
 		}
 
@@ -2602,10 +2615,10 @@ namespace polyfem
 		if(fun.cols() != 1)
 		{
 			Eigen::MatrixXd vals, tvals;
-			compute_scalar_value(pts_index, sol, vals, boundary_only);
+			compute_scalar_value(points.rows(), sol, vals, boundary_only);
 			writer.add_field("scalar_value", vals);
 
-			compute_tensor_value(pts_index, sol, tvals, boundary_only);
+			compute_tensor_value(points.rows(), sol, tvals, boundary_only);
 			for(int i = 0; i < tvals.cols(); ++i){
 				const int ii = (i / mesh->dimension()) + 1;
 				const int jj = (i % mesh->dimension()) + 1;
@@ -2614,7 +2627,7 @@ namespace polyfem
 
 			if(!args["use_spline"])
 			{
-				average_grad_based_function(pts_index, sol, vals, tvals, boundary_only);
+				average_grad_based_function(points.rows(), sol, vals, tvals, boundary_only);
 				writer.add_field("scalar_value_avg", vals);
 				// for(int i = 0; i < tvals.cols(); ++i){
 				// 	const int ii = (i / mesh->dimension()) + 1;
