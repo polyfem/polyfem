@@ -137,7 +137,7 @@ if __name__ == "__main__":
     args = parse_args()
 
     dims = [2, 3]
-    orders = [1, 2]
+    orders = [0, 1, 2]
 
     cpp = "#include <polyfem/auto_q_bases.hpp>\n\n\n"
     cpp = cpp + "namespace polyfem {\nnamespace autogen " + "{\nnamespace " + "{\n"
