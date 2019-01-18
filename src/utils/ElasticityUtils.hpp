@@ -47,6 +47,7 @@ namespace polyfem
 
 
 	double von_mises_stress_for_stress_tensor(const Eigen::MatrixXd &stress);
+	void compute_diplacement_grad(const int size, const ElementBases &bs, const ElementAssemblyValues &vals, const Eigen::MatrixXd &local_pts, const int p, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &displacement_grad);
 
 	double convert_to_lambda(const bool is_volume, const double E, const double nu);
 	double convert_to_mu(const double E, const double nu);
