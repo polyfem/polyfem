@@ -108,7 +108,8 @@ namespace polyfem
 		assign_stress_tensor(bs, gbs, local_pts, displacement, size()*size(), stresses, [&](const Eigen::MatrixXd &stress)
 		{
 			Eigen::MatrixXd tmp = stress;
-			return Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size()*size());
+			auto a = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size()*size());
+			return Eigen::MatrixXd(a);
 		});
 	}
 
@@ -134,28 +135,7 @@ namespace polyfem
 
 		for(long p = 0; p < local_pts.rows(); ++p)
 		{
-			displacement_grad.setZero();
-
-			for(std::size_t j = 0; j < bs.bases.size(); ++j)
-			{
-				const Basis &b = bs.bases[j];
-				const auto &loc_val = vals.basis_values[j];
-
-				assert(bs.bases.size() == vals.basis_values.size());
-				assert(loc_val.grad.rows() == local_pts.rows());
-				assert(loc_val.grad.cols() == size());
-
-				for(int d = 0; d < size(); ++d)
-				{
-					for(std::size_t ii = 0; ii < b.global().size(); ++ii)
-					{
-						displacement_grad.row(d) += b.global()[ii].val * loc_val.grad.row(p) * displacement(b.global()[ii].index*size() + d);
-					}
-				}
-			}
-
-			displacement_grad = (displacement_grad * vals.jac_it[p]).eval();
-
+			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
 
 			const Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(size(), size()) + displacement_grad;
 			const Eigen::MatrixXd FmT = def_grad.inverse().transpose();

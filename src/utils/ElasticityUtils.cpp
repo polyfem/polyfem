@@ -214,6 +214,33 @@ namespace polyfem
 		return E / (2.0 * (1.0 + nu));
 	}
 
+	void compute_diplacement_grad(const int size, const ElementBases &bs, const ElementAssemblyValues &vals, const Eigen::MatrixXd &local_pts, const int p, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &displacement_grad)
+	{
+		assert(displacement.cols() == 1);
+
+		displacement_grad.setZero();
+
+		for(std::size_t j = 0; j < bs.bases.size(); ++j)
+		{
+			const Basis &b = bs.bases[j];
+			const auto &loc_val = vals.basis_values[j];
+
+			assert(bs.bases.size() == vals.basis_values.size());
+			assert(loc_val.grad.rows() == local_pts.rows());
+			assert(loc_val.grad.cols() == size);
+
+			for(int d = 0; d < size; ++d)
+			{
+				for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+				{
+					displacement_grad.row(d) += b.global()[ii].val * loc_val.grad.row(p) * displacement(b.global()[ii].index*size + d);
+				}
+			}
+		}
+
+		displacement_grad = (displacement_grad * vals.jac_it[p]).eval();
+	}
+
 
 	double von_mises_stress_for_stress_tensor(const Eigen::MatrixXd &stress)
 	{

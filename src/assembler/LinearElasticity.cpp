@@ -107,27 +107,28 @@ namespace polyfem
 
 		for(long p = 0; p < local_pts.rows(); ++p)
 		{
-			displacement_grad.setZero();
+			// displacement_grad.setZero();
 
-			for(std::size_t j = 0; j < bs.bases.size(); ++j)
-			{
-				const Basis &b = bs.bases[j];
-				const auto &loc_val = vals.basis_values[j];
+			// for(std::size_t j = 0; j < bs.bases.size(); ++j)
+			// {
+			// 	const Basis &b = bs.bases[j];
+			// 	const auto &loc_val = vals.basis_values[j];
 
-				assert(bs.bases.size() == vals.basis_values.size());
-				assert(loc_val.grad.rows() == local_pts.rows());
-				assert(loc_val.grad.cols() == size());
+			// 	assert(bs.bases.size() == vals.basis_values.size());
+			// 	assert(loc_val.grad.rows() == local_pts.rows());
+			// 	assert(loc_val.grad.cols() == size());
 
-				for(int d = 0; d < size(); ++d)
-				{
-					for(std::size_t ii = 0; ii < b.global().size(); ++ii)
-					{
-						displacement_grad.row(d) += b.global()[ii].val * loc_val.grad.row(p) * displacement(b.global()[ii].index*size() + d);
-					}
-				}
-			}
+			// 	for(int d = 0; d < size(); ++d)
+			// 	{
+			// 		for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+			// 		{
+			// 			displacement_grad.row(d) += b.global()[ii].val * loc_val.grad.row(p) * displacement(b.global()[ii].index*size() + d);
+			// 		}
+			// 	}
+			// }
 
-			displacement_grad = (displacement_grad * vals.jac_it[p]).eval();
+			// displacement_grad = (displacement_grad * vals.jac_it[p]).eval();
+			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
 
 			const Eigen::MatrixXd strain = (displacement_grad + displacement_grad.transpose())/2;
 			const Eigen::MatrixXd stress = 2 * mu_ * strain + lambda_ * strain.trace() * Eigen::MatrixXd::Identity(size(), size());
