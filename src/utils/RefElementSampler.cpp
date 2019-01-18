@@ -155,6 +155,18 @@ void triangulate_periodic(double target_area, Eigen::MatrixXd &OV, Eigen::Matrix
 				3, 7;
 				igl::edges(cube_faces_, cube_edges_);
 				extract_parent_edges(cube_points_, cube_edges_, pts, edges, cube_edges_);
+
+				// Same local order as in FEMBasis3d
+				cube_corners_.resize(8, 3);
+				cube_corners_ <<
+					0, 0, 0,
+					1, 0, 0,
+					1, 1, 0,
+					0, 1, 0,
+					0, 0, 1,
+					1, 0, 1,
+					1, 1, 1,
+					0, 1, 1;
 			}
 			{
 				MatrixXd pts(4,3); pts <<
@@ -178,6 +190,14 @@ void triangulate_periodic(double target_area, Eigen::MatrixXd &OV, Eigen::Matrix
 				igl::edges(faces, edges);
 				igl::edges(simplex_faces_, simplex_edges_);
 				extract_parent_edges(simplex_points_, simplex_edges_, pts, edges, simplex_edges_);
+
+				// Same local order as in FEMBasis3d
+				simplex_corners_.resize(4, 3);
+				simplex_corners_ <<
+					0, 0, 0,
+					1, 0, 0,
+					0, 1, 0,
+					0, 0, 1;
 			}
 		}
 		else
@@ -202,9 +222,24 @@ void triangulate_periodic(double target_area, Eigen::MatrixXd &OV, Eigen::Matrix
 				// Extract sampled edges matching the base element edges
 				igl::edges(cube_faces_, cube_edges_);
 				extract_parent_edges(cube_points_, cube_edges_, pts, E, cube_edges_);
+
+				// Same local order as in FEMBasis2d
+				cube_corners_.resize(4, 2);
+				cube_corners_ <<
+					0, 0,
+					1, 0,
+					1, 1,
+					0, 1;
 			}
 			{
 				triangulate_periodic(area_param_, simplex_points_, simplex_faces_, simplex_edges_);
+
+				// Same local order as in FEMBasis2d
+				simplex_corners_.resize(3, 2);
+				simplex_corners_ <<
+					0, 0,
+					1, 0,
+					0, 1;
 			}
 		}
 

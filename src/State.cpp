@@ -827,16 +827,6 @@ namespace polyfem
 		assert(counter == result.rows());
 	}
 
-
-	void State::interpolate_function(const int n_points, const MatrixXd &fun, MatrixXd &result, const bool boundary_only)
-	{
-		int actual_dim = 1;
-		if(!problem->is_scalar())
-			actual_dim = mesh->dimension();
-		interpolate_function(n_points, actual_dim, bases, fun, result, boundary_only);
-	}
-
-
 	void State::average_grad_based_function(const int n_points, const MatrixXd &fun, MatrixXd &result_scalar, MatrixXd &result_tensor, const bool boundary_only)
 	{
 		assert(!problem->is_scalar());
@@ -904,6 +894,71 @@ namespace polyfem
 
 		interpolate_function(n_points, 1, bases, avg_scalar, result_scalar, boundary_only);
 		// interpolate_function(n_points, actual_dim*actual_dim, bases, avg_tensor, result_tensor, boundary_only);
+	}
+
+	void State::compute_vertex_values(int actual_dim,
+		const std::vector< ElementBases > &basis,
+		const MatrixXd &fun,
+		Eigen::MatrixXd &result)
+	{
+		if (!mesh) { return; }
+		if (!mesh->is_volume()) { return; }
+		const Mesh3D &mesh3d = *dynamic_cast<const Mesh3D *>(mesh.get());
+
+		result.resize(mesh3d.n_vertices(), actual_dim);
+		result.setZero();
+
+		// std::array<int, 8> get_ordered_vertices_from_hex(const int element_index) const;
+		// std::array<int, 4> get_ordered_vertices_from_tet(const int element_index) const;
+
+		const auto &sampler = RefElementSampler::sampler();
+		std::vector<AssemblyValues> tmp;
+		std::vector<bool> marked(mesh3d.n_vertices(), false);
+		for(int i = 0; i < int(basis.size()); ++i) {
+			const ElementBases &bs = basis[i];
+			MatrixXd local_pts;
+			std::vector<int> vertices;
+
+			if (mesh->is_simplex(i)) {
+				local_pts = sampler.simplex_corners();
+				auto vtx = mesh3d.get_ordered_vertices_from_tet(i);
+				vertices.assign(vtx.begin(), vtx.end());
+			} else if (mesh->is_cube(i)) {
+				local_pts = sampler.cube_corners();
+				auto vtx = mesh3d.get_ordered_vertices_from_hex(i);
+				vertices.assign(vtx.begin(), vtx.end());
+			}
+			assert((int) vertices.size() == (int) local_pts.rows());
+
+			MatrixXd local_res = MatrixXd::Zero(local_pts.rows(), actual_dim);
+			bs.evaluate_bases(local_pts, tmp);
+			for(size_t j = 0; j < bs.bases.size(); ++j) {
+				const Basis &b = bs.bases[j];
+
+				for(int d = 0; d < actual_dim; ++d) {
+					for(size_t ii = 0; ii < b.global().size(); ++ii)
+						local_res.col(d) += b.global()[ii].val * tmp[j].val * fun(b.global()[ii].index*actual_dim + d);
+				}
+			}
+
+			for (size_t lv = 0; lv < vertices.size(); ++lv) {
+				int v = vertices[lv];
+				if (marked[v]) {
+					assert((result.row(v) - local_res.row(lv)).norm() < 1e-6);
+				} else {
+					result.row(v) = local_res.row(lv);
+					marked[v] = true;
+				}
+			}
+		}
+	}
+
+	void State::interpolate_function(const int n_points, const MatrixXd &fun, MatrixXd &result, const bool boundary_only)
+	{
+		int actual_dim = 1;
+		if(!problem->is_scalar())
+			actual_dim = mesh->dimension();
+		interpolate_function(n_points, actual_dim, bases, fun, result, boundary_only);
 	}
 
 	void State::interpolate_function(const int n_points, const int actual_dim, const std::vector< ElementBases > &basis, const MatrixXd &fun, MatrixXd &result, const bool boundary_only)
@@ -2420,7 +2475,8 @@ namespace polyfem
 				{"spectrum", false},
 				{"solution", ""},
 				{"full_mat", ""},
-				{"stiffness_mat", ""}
+				{"stiffness_mat", ""},
+				{"solution_mat", ""}
 			}}
 		};
 		this->args.merge_patch(args_in);
@@ -2456,11 +2512,13 @@ namespace polyfem
 		const std::string iso_mesh_path = args["export"]["iso_mesh"];
 		const std::string nodes_path = args["export"]["nodes"];
 		const std::string solution_path = args["export"]["solution"];
+		const std::string solmat_path = args["export"]["solution_mat"];
 
 		if(!solution_path.empty())
 		{
 			std::ofstream out(solution_path);
 			out.precision(100);
+			out << std::scientific;
 			out << sol << std::endl;
 			out.close();
 		}
@@ -2492,6 +2550,13 @@ namespace polyfem
 			out.precision(100);
 			out << nodes;
 			out.close();
+		}
+		if (!solmat_path.empty()) {
+			Eigen::MatrixXd result;
+			int problem_dim = (problem->is_scalar() ? 1 : mesh->dimension());
+			compute_vertex_values(problem_dim, bases, sol, result);
+			std::ofstream out(solmat_path);
+			out << result;
 		}
 	}
 
