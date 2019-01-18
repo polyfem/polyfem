@@ -108,7 +108,8 @@ namespace polyfem
 		assign_stress_tensor(bs, gbs, local_pts, displacement, size()*size(), stresses, [&](const Eigen::MatrixXd &stress)
 		{
 			Eigen::MatrixXd tmp = stress;
-			return Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size()*size());
+			auto a = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size()*size());
+			return Eigen::MatrixXd(a);
 		});
 	}
 
