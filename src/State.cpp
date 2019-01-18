@@ -994,7 +994,9 @@ namespace polyfem
 				quadr.points, fun, local_val);
 
 			if (num_quadr_pts + local_val.rows() >= result.rows()) {
-				result.conservativeResize(2 * result.rows(), result.cols());
+				result.conservativeResize(
+					std::max(num_quadr_pts + local_val.rows() + 1, 2 * result.rows()),
+					result.cols());
 			}
 			result.block(num_quadr_pts, 0, local_val.rows(), local_val.cols()) = local_val;
 			num_quadr_pts += local_val.rows();
