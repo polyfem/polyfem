@@ -37,6 +37,11 @@
 #include <polyfem/auto_p_bases.hpp>
 #include <polyfem/auto_q_bases.hpp>
 
+#include <polyfem/HexQuadrature.hpp>
+#include <polyfem/QuadQuadrature.hpp>
+#include <polyfem/TetQuadrature.hpp>
+#include <polyfem/TriQuadrature.hpp>
+
 #include <polyfem/Logger.hpp>
 
 #ifdef USE_TBB
@@ -951,6 +956,50 @@ namespace polyfem
 				}
 			}
 		}
+	}
+
+	void State::compute_stress_at_quadrature_points(const MatrixXd &fun, Eigen::MatrixXd &result)
+	{
+		const int actual_dim = mesh->dimension();
+		assert(!problem->is_scalar());
+
+		const auto &assembler = AssemblerUtils::instance();
+
+		Eigen::MatrixXd local_val;
+		const auto &gbases =  iso_parametric() ? bases : geom_bases;
+
+		int num_quadr_pts = 0;
+		result.resize(disc_orders.sum(), actual_dim*actual_dim);
+		result.setZero();
+		for(int e = 0; e < mesh->n_elements(); ++e) {
+			// Compute quadrature points for element
+			Quadrature quadr;
+			if (mesh->is_simplex(e)) {
+				if (mesh->is_volume()) {
+					TetQuadrature f; f.get_quadrature(disc_orders(e), quadr);
+				} else {
+					TriQuadrature f; f.get_quadrature(disc_orders(e), quadr);
+				}
+			} else if (mesh->is_cube(e)) {
+				if (mesh->is_volume()) {
+					QuadQuadrature f; f.get_quadrature(disc_orders(e), quadr);
+				} else {
+					HexQuadrature f; f.get_quadrature(disc_orders(e), quadr);
+				}
+			} else {
+				continue;
+			}
+
+			assembler.compute_tensor_value(formulation(), bases[e], gbases[e],
+				quadr.points, fun, local_val);
+
+			if (num_quadr_pts + local_val.rows() >= result.rows()) {
+				result.conservativeResize(2 * result.rows(), result.cols());
+			}
+			result.block(num_quadr_pts, 0, local_val.rows(), local_val.cols()) = local_val;
+			num_quadr_pts += local_val.rows();
+		}
+		result.conservativeResize(num_quadr_pts, result.cols());
 	}
 
 	void State::interpolate_function(const int n_points, const MatrixXd &fun, MatrixXd &result, const bool boundary_only)
@@ -2476,7 +2525,8 @@ namespace polyfem
 				{"solution", ""},
 				{"full_mat", ""},
 				{"stiffness_mat", ""},
-				{"solution_mat", ""}
+				{"solution_mat", ""},
+				{"stress_mat", ""}
 			}}
 		};
 		this->args.merge_patch(args_in);
@@ -2513,6 +2563,7 @@ namespace polyfem
 		const std::string nodes_path = args["export"]["nodes"];
 		const std::string solution_path = args["export"]["solution"];
 		const std::string solmat_path = args["export"]["solution_mat"];
+		const std::string stress_path = args["export"]["stress_mat"];
 
 		if(!solution_path.empty())
 		{
@@ -2556,6 +2607,12 @@ namespace polyfem
 			int problem_dim = (problem->is_scalar() ? 1 : mesh->dimension());
 			compute_vertex_values(problem_dim, bases, sol, result);
 			std::ofstream out(solmat_path);
+			out << result;
+		}
+		if (!stress_path.empty()) {
+			Eigen::MatrixXd result;
+			compute_stress_at_quadrature_points(sol, result);
+			std::ofstream out(stress_path);
 			out << result;
 		}
 	}

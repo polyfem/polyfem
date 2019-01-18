@@ -115,6 +115,7 @@ namespace polyfem
 
 		void compute_vertex_values(int actual_dim, const std::vector< ElementBases > &basis,
 			const MatrixXd &fun, Eigen::MatrixXd &result);
+		void compute_stress_at_quadrature_points(const MatrixXd &fun, Eigen::MatrixXd &result);
 
 		void interpolate_function(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool boundary_only = false);
 		void interpolate_function(const int n_points, const int actual_dim, const std::vector< ElementBases > &basis, const MatrixXd &fun, MatrixXd &result, const bool boundary_only = false);

@@ -2,23 +2,27 @@ dist: trusty
 sudo: required
 language: cpp
 cache: ccache
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - gcc-7
+    - g++-7
+    - xorg-dev
+    - python3
+    - python3-pip
+    - nvidia-opencl-dev
+    - libglu1-mesa-dev
+    - libsuitesparse-dev
+  homebrew:
+    packages:
+    - suite-sparse
+    - ccache
 matrix:
   include:
   - os: linux
     compiler: gcc-7
-    addons:
-      apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        packages:
-        - gcc-7
-        - g++-7
-        - xorg-dev
-        - python3
-        - python3-pip
-        - nvidia-opencl-dev
-        - libglu1-mesa-dev
-        - libsuitesparse-dev
     env:
     - MATRIX_EVAL="export CC=gcc-7 && CXX=g++-7 && CONFIG=Debug"
   - os: osx
@@ -28,7 +32,6 @@ matrix:
     - MATRIX_EVAL="export CONFIG=Debug"
 
 install:
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install suite-sparse ccache; fi
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade python; fi
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
 - pip3 install --user sympy
