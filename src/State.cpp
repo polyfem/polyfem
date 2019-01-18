@@ -958,19 +958,21 @@ namespace polyfem
 		}
 	}
 
-	void State::compute_stress_at_quadrature_points(const MatrixXd &fun, Eigen::MatrixXd &result)
+	void State::compute_stress_at_quadrature_points(const MatrixXd &fun, Eigen::MatrixXd &result, Eigen::VectorXd &von_mises)
 	{
 		const int actual_dim = mesh->dimension();
 		assert(!problem->is_scalar());
 
 		const auto &assembler = AssemblerUtils::instance();
 
-		Eigen::MatrixXd local_val;
+		Eigen::MatrixXd local_val, local_mises;
 		const auto &gbases =  iso_parametric() ? bases : geom_bases;
 
 		int num_quadr_pts = 0;
 		result.resize(disc_orders.sum(), actual_dim*actual_dim);
 		result.setZero();
+		von_mises.resize(disc_orders.sum(), 1);
+		von_mises.setZero();
 		for(int e = 0; e < mesh->n_elements(); ++e) {
 			// Compute quadrature points for element
 			Quadrature quadr;
@@ -990,6 +992,8 @@ namespace polyfem
 				continue;
 			}
 
+			assembler.compute_scalar_value(formulation(), bases[e], gbases[e],
+				quadr.points, fun, local_mises);
 			assembler.compute_tensor_value(formulation(), bases[e], gbases[e],
 				quadr.points, fun, local_val);
 
@@ -997,11 +1001,14 @@ namespace polyfem
 				result.conservativeResize(
 					std::max(num_quadr_pts + local_val.rows() + 1, 2 * result.rows()),
 					result.cols());
+				von_mises.conservativeResize(result.rows(), von_mises.cols());
 			}
 			result.block(num_quadr_pts, 0, local_val.rows(), local_val.cols()) = local_val;
+			von_mises.block(num_quadr_pts, 0, local_val.rows(), local_val.cols()) = local_mises;
 			num_quadr_pts += local_val.rows();
 		}
 		result.conservativeResize(num_quadr_pts, result.cols());
+		von_mises.conservativeResize(num_quadr_pts, von_mises.cols());
 	}
 
 	void State::interpolate_function(const int n_points, const MatrixXd &fun, MatrixXd &result, const bool boundary_only)
@@ -2566,6 +2573,7 @@ namespace polyfem
 		const std::string solution_path = args["export"]["solution"];
 		const std::string solmat_path = args["export"]["solution_mat"];
 		const std::string stress_path = args["export"]["stress_mat"];
+		const std::string mises_path = args["export"]["mises_mat"];
 
 		if(!solution_path.empty())
 		{
@@ -2613,9 +2621,17 @@ namespace polyfem
 		}
 		if (!stress_path.empty()) {
 			Eigen::MatrixXd result;
-			compute_stress_at_quadrature_points(sol, result);
+			Eigen::VectorXd mises;
+			compute_stress_at_quadrature_points(sol, result, mises);
 			std::ofstream out(stress_path);
 			out << result;
+		}
+		if (!mises_path.empty()) {
+			Eigen::MatrixXd result;
+			Eigen::VectorXd mises;
+			compute_stress_at_quadrature_points(sol, result, mises);
+			std::ofstream out(mises_path);
+			out << mises;
 		}
 	}
 
