@@ -2609,12 +2609,14 @@ namespace polyfem
 			int problem_dim = (problem->is_scalar() ? 1 : mesh->dimension());
 			compute_vertex_values(problem_dim, bases, sol, result);
 			std::ofstream out(solmat_path);
+			out.precision(20);
 			out << result;
 		}
 		if (!stress_path.empty()) {
 			Eigen::MatrixXd result;
 			compute_stress_at_quadrature_points(sol, result);
 			std::ofstream out(stress_path);
+			out.precision(20);
 			out << result;
 		}
 	}
