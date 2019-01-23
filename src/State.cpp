@@ -1004,7 +1004,7 @@ namespace polyfem
 				von_mises.conservativeResize(result.rows(), von_mises.cols());
 			}
 			result.block(num_quadr_pts, 0, local_val.rows(), local_val.cols()) = local_val;
-			von_mises.block(num_quadr_pts, 0, local_val.rows(), local_val.cols()) = local_mises;
+			von_mises.block(num_quadr_pts, 0, local_mises.rows(), local_mises.cols()) = local_mises;
 			num_quadr_pts += local_val.rows();
 		}
 		result.conservativeResize(num_quadr_pts, result.cols());
@@ -2633,6 +2633,7 @@ namespace polyfem
 			Eigen::VectorXd mises;
 			compute_stress_at_quadrature_points(sol, result, mises);
 			std::ofstream out(mises_path);
+			out.precision(20);
 			out << mises;
 		}
 	}
