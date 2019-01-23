@@ -2535,7 +2535,8 @@ namespace polyfem
 				{"full_mat", ""},
 				{"stiffness_mat", ""},
 				{"solution_mat", ""},
-				{"stress_mat", ""}
+				{"stress_mat", ""},
+				{"mises", ""}
 			}}
 		};
 		this->args.merge_patch(args_in);
@@ -2573,7 +2574,7 @@ namespace polyfem
 		const std::string solution_path = args["export"]["solution"];
 		const std::string solmat_path = args["export"]["solution_mat"];
 		const std::string stress_path = args["export"]["stress_mat"];
-		const std::string mises_path = args["export"]["mises_mat"];
+		const std::string mises_path = args["export"]["mises"];
 
 		if(!solution_path.empty())
 		{
