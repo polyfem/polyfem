@@ -972,7 +972,7 @@ namespace polyfem
 			X.col(2) = S.col(8);
 			X.col(3) = S.col(1);
 			X.col(4) = S.col(2);
-			X.col(5) = S.col(3);
+			X.col(5) = S.col(5);
 		} else {
 			logger().error("Invalid tensor dimensions.");
 		}
@@ -998,15 +998,15 @@ namespace polyfem
 			Quadrature quadr;
 			if (mesh->is_simplex(e)) {
 				if (mesh->is_volume()) {
-					TetQuadrature f; f.get_quadrature(1, quadr);
+					TetQuadrature f; f.get_quadrature(disc_orders(e), quadr);
 				} else {
-					TriQuadrature f; f.get_quadrature(1, quadr);
+					TriQuadrature f; f.get_quadrature(disc_orders(e), quadr);
 				}
 			} else if (mesh->is_cube(e)) {
 				if (mesh->is_volume()) {
-					QuadQuadrature f; f.get_quadrature(1, quadr);
+					QuadQuadrature f; f.get_quadrature(disc_orders(e), quadr);
 				} else {
-					HexQuadrature f; f.get_quadrature(1, quadr);
+					HexQuadrature f; f.get_quadrature(disc_orders(e), quadr);
 				}
 			} else {
 				continue;
