@@ -958,6 +958,26 @@ namespace polyfem
 		}
 	}
 
+	void flattened_tensor_coeffs(const MatrixXd &S, MatrixXd &X) {
+		if (S.cols() == 4) {
+			X.resize(S.rows(), 3);
+			X.col(0) = S.col(0);
+			X.col(1) = S.col(3);
+			X.col(2) = S.col(1);
+		} else if (S.cols() == 9) {
+			// [S11, S22, S33, S12, S13, S23]
+			X.resize(S.rows(), 6);
+			X.col(0) = S.col(0);
+			X.col(1) = S.col(4);
+			X.col(2) = S.col(8);
+			X.col(3) = S.col(1);
+			X.col(4) = S.col(2);
+			X.col(5) = S.col(3);
+		} else {
+			logger().error("Invalid tensor dimensions.");
+		}
+	}
+
 	void State::compute_stress_at_quadrature_points(const MatrixXd &fun, Eigen::MatrixXd &result, Eigen::VectorXd &von_mises)
 	{
 		const int actual_dim = mesh->dimension();
@@ -965,11 +985,11 @@ namespace polyfem
 
 		const auto &assembler = AssemblerUtils::instance();
 
-		Eigen::MatrixXd local_val, local_mises;
+		Eigen::MatrixXd local_val, local_stress, local_mises;
 		const auto &gbases =  iso_parametric() ? bases : geom_bases;
 
 		int num_quadr_pts = 0;
-		result.resize(disc_orders.sum(), actual_dim*actual_dim);
+		result.resize(disc_orders.sum(), actual_dim == 2 ? 3 : 6);
 		result.setZero();
 		von_mises.resize(disc_orders.sum(), 1);
 		von_mises.setZero();
@@ -978,15 +998,15 @@ namespace polyfem
 			Quadrature quadr;
 			if (mesh->is_simplex(e)) {
 				if (mesh->is_volume()) {
-					TetQuadrature f; f.get_quadrature(disc_orders(e), quadr);
+					TetQuadrature f; f.get_quadrature(1, quadr);
 				} else {
-					TriQuadrature f; f.get_quadrature(disc_orders(e), quadr);
+					TriQuadrature f; f.get_quadrature(1, quadr);
 				}
 			} else if (mesh->is_cube(e)) {
 				if (mesh->is_volume()) {
-					QuadQuadrature f; f.get_quadrature(disc_orders(e), quadr);
+					QuadQuadrature f; f.get_quadrature(1, quadr);
 				} else {
-					HexQuadrature f; f.get_quadrature(disc_orders(e), quadr);
+					HexQuadrature f; f.get_quadrature(1, quadr);
 				}
 			} else {
 				continue;
@@ -1003,7 +1023,8 @@ namespace polyfem
 					result.cols());
 				von_mises.conservativeResize(result.rows(), von_mises.cols());
 			}
-			result.block(num_quadr_pts, 0, local_val.rows(), local_val.cols()) = local_val;
+			flattened_tensor_coeffs(local_val, local_stress);
+			result.block(num_quadr_pts, 0, local_stress.rows(), local_stress.cols()) = local_stress;
 			von_mises.block(num_quadr_pts, 0, local_mises.rows(), local_mises.cols()) = local_mises;
 			num_quadr_pts += local_val.rows();
 		}
