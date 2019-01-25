@@ -103,6 +103,14 @@ void to_geogram_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, GEO::Me
 void from_geogram_mesh(const GEO::Mesh &M, Eigen::MatrixXd &V, Eigen::MatrixXi &F, Eigen::MatrixXi &T);
 
 ///
+/// @brief      { Converts a hex mesh to a Geogram mesh }
+///
+/// @param[in]  mesh  { Input mesh }
+/// @param[out] M     { Output Geogram mesh }
+///
+void to_geogram_mesh(const Mesh3D &mesh, GEO::Mesh &M);
+
+///
 /// @brief      { Compute the signed volume of a surface mesh }
 ///
 /// @param[in]  V     { #V x 3 input mesh vertices }
