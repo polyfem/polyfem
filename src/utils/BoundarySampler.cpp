@@ -236,11 +236,8 @@ namespace polyfem
 		Eigen::MatrixXd right(n_samples, endpoints.cols());
 
 
-		uv.resize(n_samples, 4);
-		uv.col(0) = t;
-		uv.col(1) = 1 - uv.col(0).array();
-		uv.col(2) = t;
-		uv.col(3) = 1 - uv.col(2).array();
+		uv.resize(n_samples*n_samples, endpoints.cols());
+		uv.setZero();
 
 		for (int c = 0; c < 3; ++c) {
 			left.col(c) = (1.0 - t.array()).matrix() * endpoints(0, c) + t * endpoints(1, c);
