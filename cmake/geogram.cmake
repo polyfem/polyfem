@@ -30,7 +30,6 @@ find_path(GEOGRAM_SOURCE_INCLUDE_DIR
 set(GEOGRAM_ROOT ${GEOGRAM_SOURCE_INCLUDE_DIR}/../..)
 
 message("Found Geogram here: ${GEOGRAM_ROOT}")
-MESSAGE("asdasdasd ${CMAKE_SYSTEM_NAME}")
 ################################################################################
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
@@ -40,7 +39,6 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	set(VORPALINE_PLATFORM Linux64-gcc-dynamic CACHE STRING "" FORCE)
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	MESSAGE("1111111 ${CMAKE_SYSTEM_NAME}")
 	set(VORPALINE_PLATFORM Darwin-clang CACHE STRING "" FORCE)
 	set(VORPALINE_BUILD_DYNAMIC false CACHE STRING "" FORCE)
 endif()
