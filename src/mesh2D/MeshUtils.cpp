@@ -639,14 +639,16 @@ void polyfem::to_geogram_mesh(const Mesh3D &mesh, GEO::Mesh &M) {
 			for (size_t k = 0; k < 8; ++k) {
 				lvg[k] = lvp[g2p[k]];
 			}
-			M.cells.create_hex(lvg[0], lvg[1], lvg[2], lvg[3],
+			std::reverse(lvg.begin(), lvg.end());
+			M.cells.create_hex(
+				lvg[0], lvg[1], lvg[2], lvg[3],
 				lvg[4], lvg[5], lvg[6], lvg[7]);
 		} else {
 			// TODO: Support conversion of tets as well!
 		}
 	}
 	M.cells.connect();
-	M.cells.compute_borders();
+	// M.cells.compute_borders();
 	GEO::mesh_reorient(M);
 }
 
