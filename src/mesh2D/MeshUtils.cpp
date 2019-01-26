@@ -4,6 +4,7 @@
 #include <geogram/mesh/mesh_preprocessing.h>
 #include <geogram/mesh/mesh_topology.h>
 #include <geogram/mesh/mesh_geometry.h>
+#include <geogram/mesh/mesh_repair.h>
 #include <geogram/mesh/mesh_AABB.h>
 #include <geogram/voronoi/CVT.h>
 #include <geogram/basic/logger.h>
@@ -645,6 +646,8 @@ void polyfem::to_geogram_mesh(const Mesh3D &mesh, GEO::Mesh &M) {
 		}
 	}
 	M.cells.connect();
+	M.cells.compute_borders();
+	GEO::mesh_reorient(M);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
