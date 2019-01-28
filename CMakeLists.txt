@@ -1,10 +1,10 @@
 ################################################################################
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.1)
 project(PolyFEM)
 ################################################################################
 
-cmake_policy(SET CMP0063 NEW)
-set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+# cmake_policy(SET CMP0063 NEW)
+# set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 # Detects whether this is a top-level project
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
@@ -245,8 +245,8 @@ endif()
 # libigl
 polyfem_download_libigl()
 find_package(LIBIGL REQUIRED)
-target_link_libraries(polyfem PUBLIC igl::core igl::triangle igl::tetgen igl::opengl_glfw_imgui)
-#remove the igl::viewer for cluster deployment
+target_link_libraries(polyfem PUBLIC igl::core igl::triangle igl::tetgen)
+
 
 # Geogram
 polyfem_download_geogram()

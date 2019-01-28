@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 
 
-polyfem_add_application(bc_setter.cpp polyfem igl::core igl::tetgen geogram CLI11::CLI11)
+polyfem_add_application(bc_setter.cpp polyfem igl::core igl::tetgen geogram CLI11::CLI11  igl::opengl_glfw_imgui)
 polyfem_add_application(b_extractor.cpp polyfem igl::core geogram CLI11::CLI11)
 
 polyfem_add_application(extrude_mesh.cpp polyfem CLI11::CLI11)
