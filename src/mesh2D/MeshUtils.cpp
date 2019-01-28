@@ -4,6 +4,7 @@
 #include <geogram/mesh/mesh_preprocessing.h>
 #include <geogram/mesh/mesh_topology.h>
 #include <geogram/mesh/mesh_geometry.h>
+#include <geogram/mesh/mesh_repair.h>
 #include <geogram/mesh/mesh_AABB.h>
 #include <geogram/voronoi/CVT.h>
 #include <geogram/basic/logger.h>
@@ -593,6 +594,62 @@ void polyfem::extract_polyhedra(const Mesh3D &mesh, std::vector<std::unique_ptr<
 
 		polys.emplace_back(std::move(poly));
 	}
+}
+
+// -----------------------------------------------------------------------------
+
+// In Geogram, local vertices of a hex are numbered as follows:
+//
+//   v5────v7
+//   ╱┆    ╱│
+// v1─┼──v3 │
+//  │v4┄┄┄┼v6
+//  │╱    │╱
+// v0────v2
+//
+// However, `get_ordered_vertices_from_hex()` retrieves the local vertices in
+// this order:
+//
+//   v7────v6
+//   ╱┆    ╱│
+// v4─┼──v5 │
+//  │v3┄┄┄┼v2
+//  │╱    │╱
+// v0────v1
+//
+
+void polyfem::to_geogram_mesh(const Mesh3D &mesh, GEO::Mesh &M) {
+	M.clear();
+	// Convert vertices
+	M.vertices.create_vertices((int) mesh.n_vertices());
+	for (int i = 0; i < (int) M.vertices.nb(); ++i) {
+		auto pt = mesh.point(i);
+		GEO::vec3 &p = M.vertices.point(i);
+		p[0] = pt[0];
+		p[1] = pt[1];
+		p[2] = pt[2];
+	}
+	// Convert cells
+	typedef std::array<int, 8> Vector8i;
+	Vector8i g2p = {{0, 4, 1, 5, 3, 7, 2, 6}};
+	for (int c = 0; c < mesh.n_cells(); ++c) {
+		if (mesh.is_cube(c)) {
+			Vector8i lvp = mesh.get_ordered_vertices_from_hex(c);
+			Vector8i lvg;
+			for (size_t k = 0; k < 8; ++k) {
+				lvg[k] = lvp[g2p[k]];
+			}
+			std::reverse(lvg.begin(), lvg.end());
+			M.cells.create_hex(
+				lvg[0], lvg[1], lvg[2], lvg[3],
+				lvg[4], lvg[5], lvg[6], lvg[7]);
+		} else {
+			// TODO: Support conversion of tets as well!
+		}
+	}
+	M.cells.connect();
+	// M.cells.compute_borders();
+	GEO::mesh_reorient(M);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

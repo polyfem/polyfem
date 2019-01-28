@@ -1,4 +1,5 @@
 #include <polyfem/Mesh3D.hpp>
+#include <polyfem/MeshUtils.hpp>
 #include <polyfem/StringUtils.hpp>
 
 #include <polyfem/Logger.hpp>
@@ -226,7 +227,7 @@ namespace polyfem
 			}
 
 			mesh_.type = M.cells.are_simplices() ? MeshType::Tet : MeshType::Hyb;
-		} 
+		}
 		else {
 
 			// Set faces
@@ -322,6 +323,13 @@ namespace polyfem
 	}
 
 	bool Mesh3D::save(const std::string &path) const{
+
+		if (!StringUtils::endswidth(path, ".HYBRID")) {
+			GEO::Mesh M;
+			to_geogram_mesh(*this, M);
+			GEO::mesh_save(M, path);
+			return true;
+		}
 
 		std::fstream f(path, std::ios::out);
 
