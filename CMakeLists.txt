@@ -68,7 +68,7 @@ option(ENABLE_HYPRE       "Enable hypre"           ON)
 option(ENABLE_OPENCL      "Enable OpenCL"          OFF)
 
 option(POLYFEM_WITH_APPS      "Build the apps"          ON)
-option(POLYFEM_WITH_MISC      "Build misc targes"       OFF)
+option(POLYFEM_WITH_MISC      "Build misc targes"       ON)
 
 # Sanitizer options
 option(SANITIZE_ADDRESS   "Sanitize Address"       OFF)
