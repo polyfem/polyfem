@@ -23,8 +23,10 @@
 #ifndef __AUTODIFF_H
 #define __AUTODIFF_H
 
+#ifndef EIGEN_DONT_PARALLELIZE
 #define EIGEN_DONT_PARALLELIZE
-#define EIGEN_NO_DEBUG
+#endif
+
 
 #include <Eigen/Core>
 #include <cmath>
