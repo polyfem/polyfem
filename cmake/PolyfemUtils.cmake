@@ -29,6 +29,7 @@ function(polyfem_autogen MAIN_TARGET PYTHON_SCRIPT OUTPUT_BASE)
 
 		if(NOT PYTHON_VERSION)
 			MESSAGE(WARNING "Unable to run python, ${PYTHON_SCRIPT} not running")
+			polyfem_copy_headers(${PROJECT_SOURCE_DIR}/src/autogen/${OUTPUT_BASE}.hpp)
 			return()
 		endif()
 
@@ -36,6 +37,7 @@ function(polyfem_autogen MAIN_TARGET PYTHON_SCRIPT OUTPUT_BASE)
 
 		if(NOT IS_PYTHON3)
 			MESSAGE(WARNING "Unable to find python 3, ${PYTHON_SCRIPT} not running")
+			polyfem_copy_headers(${PROJECT_SOURCE_DIR}/src/autogen/${OUTPUT_BASE}.hpp)
 			return()
 		else()
 			SET(PYTHON_EXECUTABLE "python")
@@ -49,6 +51,7 @@ function(polyfem_autogen MAIN_TARGET PYTHON_SCRIPT OUTPUT_BASE)
 
 	if(NOT PYTHON_HAS_LIBS)
 		MESSAGE(WARNING "Unable to find sympy and/or numpy, ${PYTHON_SCRIPT} not running")
+		polyfem_copy_headers(${PROJECT_SOURCE_DIR}/src/autogen/${OUTPUT_BASE}.hpp)
 		return()
 	endif()
 
