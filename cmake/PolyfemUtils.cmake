@@ -28,13 +28,15 @@ function(polyfem_autogen MAIN_TARGET PYTHON_SCRIPT OUTPUT_BASE)
 			OUTPUT_VARIABLE PYTHON_VERSION)
 
 		if(NOT PYTHON_VERSION)
-			MESSAGE(FATAL_ERROR "Unable to run python")
+			MESSAGE(WARNING "Unable to run python, ${PYTHON_SCRIPT} not running")
+			return()
 		endif()
 
 		STRING(REGEX MATCH "^3\.*" IS_PYTHON3 ${PYTHON_VERSION})
 
 		if(NOT IS_PYTHON3)
-			MESSAGE(FATAL_ERROR "Unable to find python 3")
+			MESSAGE(WARNING "Unable to find python 3, ${PYTHON_SCRIPT} not running")
+			return()
 		else()
 			SET(PYTHON_EXECUTABLE "python")
 		endif()
@@ -46,7 +48,8 @@ function(polyfem_autogen MAIN_TARGET PYTHON_SCRIPT OUTPUT_BASE)
 			OUTPUT_VARIABLE PYTHON_HAS_LIBS)
 
 	if(NOT PYTHON_HAS_LIBS)
-		MESSAGE(FATAL_ERROR "Please install sympy and/or numpy")
+		MESSAGE(WARNING "Unable to find sympy and/or numpy, ${PYTHON_SCRIPT} not running")
+		return()
 	endif()
 
 
