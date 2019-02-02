@@ -12,7 +12,7 @@ addons:
     - xorg-dev
     - python3
     - python3-pip
-    - nvidia-opencl-dev
+    # - nvidia-opencl-dev
     - libglu1-mesa-dev
     - libsuitesparse-dev
   homebrew:
@@ -34,7 +34,7 @@ matrix:
 install:
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade python; fi
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
-- pip3 install --user sympy
+# - pip3 install --user sympy
 - pip3 install --user cpp-coveralls
 - eval "${MATRIX_EVAL}"
 - ccache --max-size=5.0G

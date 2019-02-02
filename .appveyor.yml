@@ -9,14 +9,14 @@ branches:
 environment:
   matrix:
   - config: Debug
-    PYTHON: "C:\\Python35"
+    # PYTHON: "C:\\Python35"
 install:
-  - "%PYTHON%\\python.exe -m pip install numpy"
-  - "%PYTHON%\\python.exe -m pip install sympy"
+  # - "%PYTHON%\\python.exe -m pip install numpy"
+  # - "%PYTHON%\\python.exe -m pip install sympy"
 build:
   parallel: true
 build_script:
-  - set PATH=%PYTHON%;%PATH%
+  # - set PATH=%PYTHON%;%PATH%
   - cd c:\projects\polyfem
   - mkdir build
   - cd build
