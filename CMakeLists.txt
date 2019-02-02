@@ -422,19 +422,26 @@ endif()
 ################################################################################
 
 set_target_properties(igl_triangle PROPERTIES FOLDER 3rdparty/igl)
-set_target_properties(igl_opengl PROPERTIES FOLDER 3rdparty/igl)
+
 if(TARGET igl_png)
 	set_target_properties(igl_png PROPERTIES FOLDER 3rdparty/igl)
 endif()
-set_target_properties(igl_opengl_glfw_imgui PROPERTIES FOLDER 3rdparty/igl)
+if(TARGET igl_opengl)
+	set_target_properties(igl_opengl PROPERTIES FOLDER 3rdparty/igl)
+	set_target_properties(igl_opengl_glfw_imgui PROPERTIES FOLDER 3rdparty/igl)
+	set_target_properties(igl_opengl_glfw PROPERTIES FOLDER 3rdparty/igl)
+endif()
+
 set_target_properties(igl PROPERTIES FOLDER 3rdparty/igl)
 set_target_properties(igl_tetgen PROPERTIES FOLDER 3rdparty/igl)
-set_target_properties(igl_opengl_glfw PROPERTIES FOLDER 3rdparty/igl)
+
 if(TARGET igl_stb_image)
 	set_target_properties(igl_stb_image PROPERTIES FOLDER 3rdparty/igl)
 endif()
 
-set_target_properties(glad PROPERTIES FOLDER 3rdparty/other)
+if(TARGET igl_opengl)
+	set_target_properties(glad PROPERTIES FOLDER 3rdparty/other)
+endif()
 set_target_properties(tinyfiledialogs_tinyfiledialogs PROPERTIES FOLDER 3rdparty/other)
 if(TARGET igl::opengl_glfw_imgui)
 	set_target_properties(imgui PROPERTIES FOLDER 3rdparty/other)
