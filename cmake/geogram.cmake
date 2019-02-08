@@ -66,7 +66,9 @@ add_subdirectory(${GEOGRAM_ROOT} geogram)
 target_include_directories(geogram SYSTEM PUBLIC ${GEOGRAM_SOURCE_INCLUDE_DIR})
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	target_compile_options(geogram INTERFACE -fopenmp)
+	SET_TARGET_PROPERTIES(geogram PROPERTIES COMPILE_FLAGS -fopenmp LINK_FLAGS -fopenmp)
+	target_compile_options(geogram PUBLIC    -fopenmp)
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
 endif()
 
 ################################################################################
