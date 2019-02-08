@@ -37,7 +37,8 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	set(VORPALINE_PLATFORM Win-vs-generic CACHE STRING "" FORCE)
 	set(VORPALINE_BUILD_DYNAMIC false CACHE STRING "" FORCE)
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	set(VORPALINE_PLATFORM Linux64-gcc-dynamic CACHE STRING "" FORCE)
+	set(VORPALINE_PLATFORM Linux64-gcc CACHE STRING "" FORCE)
+    set(VORPALINE_BUILD_DYNAMIC false CACHE STRING "" FORCE)
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	set(VORPALINE_PLATFORM Darwin-clang CACHE STRING "" FORCE)
 	set(VORPALINE_BUILD_DYNAMIC false CACHE STRING "" FORCE)
@@ -63,6 +64,10 @@ endif()
 
 add_subdirectory(${GEOGRAM_ROOT} geogram)
 target_include_directories(geogram SYSTEM PUBLIC ${GEOGRAM_SOURCE_INCLUDE_DIR})
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+	target_compile_options(geogram INTERFACE -fopenmp)
+endif()
 
 ################################################################################
 
