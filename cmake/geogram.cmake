@@ -69,6 +69,13 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	SET_TARGET_PROPERTIES(geogram PROPERTIES COMPILE_FLAGS -fopenmp LINK_FLAGS -fopenmp)
 	target_compile_options(geogram PUBLIC    -fopenmp)
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
+	find_package(OpenMP)
+	if (OPENMP_FOUND)
+	    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+	    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    else()
+    	MESSAGE(FATAL_ERROR "Unable to find openmp")
+	endif()
 endif()
 
 ################################################################################
