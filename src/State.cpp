@@ -1156,7 +1156,7 @@ namespace polyfem
 	}
 
 
-	void State::load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd&)> &boundary_marker)
+	void State::load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd&)> &boundary_marker, bool skip_boundary_sideset)
 	{
 		bases.clear();
 		pressure_bases.clear();
@@ -1201,7 +1201,8 @@ namespace polyfem
 		if(n_refs > 0)
 			mesh->refine(n_refs, args["refinenemt_location"], parent_elements);
 
-		mesh->compute_boundary_ids(boundary_marker);
+		if(!skip_boundary_sideset)
+			mesh->compute_boundary_ids(boundary_marker);
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());

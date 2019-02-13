@@ -486,6 +486,31 @@ namespace polyfem
 		}
 	}
 
+	void Mesh2D::compute_boundary_ids(const std::function<int(const RowVectorNd&, bool)> &marker)
+	{
+		boundary_ids_.resize(n_edges());
+
+		for(int e = 0; e < n_edges(); ++e)
+		{
+			const bool is_boundary = is_boundary_edge(e);
+			const auto p = edge_barycenter(e);
+			boundary_ids_[e] = marker(p, is_boundary);
+		}
+	}
+
+	void Mesh2D::compute_boundary_ids(const std::function<int(const std::vector<int>&, bool)> &marker)
+	{
+		boundary_ids_.resize(n_edges());
+
+		for(int e = 0; e < n_edges(); ++e)
+		{
+			bool is_boundary = is_boundary_edge(e);
+			std::vector<int> vs = { edge_vertex(e, 0), edge_vertex(e, 1) };
+			std::sort(vs.begin(), vs.end());
+			boundary_ids_[e] = marker(vs, is_boundary);
+		}
+	}
+
 	bool Mesh2D::is_boundary_element(const int element_global_id) const
 	{
 		auto index = get_index_from_face(element_global_id);

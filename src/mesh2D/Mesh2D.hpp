@@ -90,6 +90,8 @@ namespace polyfem
 
 		void compute_boundary_ids(const double eps) override;
 		void compute_boundary_ids(const std::function<int(const RowVectorNd&)> &marker) override;
+		void compute_boundary_ids(const std::function<int(const RowVectorNd&, bool)> &marker) override;
+		void compute_boundary_ids(const std::function<int(const std::vector<int>&, bool)> &marker) override;
 
 		void compute_element_barycenters(Eigen::MatrixXd &barycenters) const override { face_barycenters(barycenters); }
 		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
