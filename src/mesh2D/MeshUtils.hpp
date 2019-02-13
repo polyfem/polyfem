@@ -91,6 +91,7 @@ void signed_squared_distances(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F
 /// @param[out] M     { Output Geogram mesh }
 ///
 void to_geogram_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, GEO::Mesh &M);
+void to_geogram_mesh_3d(const Eigen::MatrixXd &V, const Eigen::MatrixXi &C, GEO::Mesh &M);
 
 ///
 /// @brief      { Extract simplices from a Geogram mesh }

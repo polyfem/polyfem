@@ -467,6 +467,34 @@ void polyfem::to_geogram_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F
 	}
 }
 
+void polyfem::to_geogram_mesh_3d(const Eigen::MatrixXd &V, const Eigen::MatrixXi &C, GEO::Mesh &M) {
+	M.clear();
+	// Setup vertices
+	M.vertices.create_vertices((int) V.rows());
+	assert(V.cols() == 3);
+	for (int i = 0; i < (int) M.vertices.nb(); ++i) {
+		GEO::vec3 &p = M.vertices.point(i);
+		p[0] = V(i, 0);
+		p[1] = V(i, 1);
+		p[2] = V(i, 2);
+	}
+
+	if(C.cols() == 4)
+		M.cells.create_tets((int) C.rows());
+	else if(C.cols() == 8)
+		M.cells.create_hexes((int) C.rows());
+	else
+		assert(false);
+
+	for (int c = 0; c < (int) M.cells.nb(); ++c) {
+		for (int lv = 0; lv < C.cols(); ++lv) {
+			M.cells.set_vertex(c, lv, C(c, lv));
+		}
+	}
+	M.cells.connect();
+	// GEO::mesh_reorient(M);
+}
+
 // -----------------------------------------------------------------------------
 
 void polyfem::from_geogram_mesh(const GEO::Mesh &M, Eigen::MatrixXd &V, Eigen::MatrixXi &F, Eigen::MatrixXi &T) {
