@@ -73,10 +73,11 @@ Acknowledgements & Foundings
 --------
 
 This work was partially supported by:
- - the NSF CAREER award 1652515
- - the NSF grant IIS-1320635
- - the NSF grant DMS-1436591
- - the NSF grant 1835712
- - the SNSF grant P2TIP2_175859
- - Adobe Research
- - nTopology
+
+* the NSF CAREER award 1652515
+* the NSF grant IIS-1320635
+* the NSF grant DMS-1436591
+* the NSF grant 1835712
+* the SNSF grant P2TIP2_175859
+* Adobe Research
+* nTopology
