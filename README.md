@@ -47,6 +47,15 @@ Citation
 If you use PolyFEM in your project, please consider citing our work:
 
 ```bibtex
+@misc{polyfem,
+  author = {Teseo Schneider Jérémie Dumas and Xifeng Gao},
+  title = {{Polyfem}},
+  howpublished = "\url{https://polyfem.github.io/}",
+  year = {2019},
+}
+```
+
+```bibtex
 @article{Schneider:2018:DSA,
     author = {Teseo Schneider and Yixin Hu and Jérémie Dumas and Xifeng Gao and Daniele Panozzo and Denis Zorin},
     journal = {ACM Transactions on Graphics},
@@ -59,3 +68,15 @@ If you use PolyFEM in your project, please consider citing our work:
     year = {2018}
 }
 ```
+
+Acknowledgements & Foundings
+--------
+
+This work was partially supported by:
+ - the NSF CAREER award 1652515
+ - the NSF grant IIS-1320635
+ - the NSF grant DMS-1436591
+ - the NSF grant 1835712
+ - the SNSF grant P2TIP2_175859
+ - Adobe Research
+ - nTopology
