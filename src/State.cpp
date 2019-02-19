@@ -1955,6 +1955,9 @@ namespace polyfem
 			solver->setParameters(params);
 			logger().info("{}...", solver->name());
 
+			if(!solve_export_to_file)
+				solution_frames.emplace_back();
+
 			save_vtu( "step_" + std::to_string(0) + ".vtu");
 			save_wire("step_" + std::to_string(0) + ".obj");
 
@@ -1997,6 +2000,9 @@ namespace polyfem
 						//necessary for the export
 						sol_to_pressure();
 					}
+
+					if(!solve_export_to_file)
+						solution_frames.emplace_back();
 
 					save_vtu( "step_" + std::to_string(t) + ".vtu");
 					save_wire("step_" + std::to_string(t) + ".obj");
@@ -2066,7 +2072,8 @@ namespace polyfem
 					rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, dt*t);
 					rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, dt*t);
 
-
+					if(!solve_export_to_file)
+						solution_frames.emplace_back();
 					save_vtu( "step_" + std::to_string(t) + ".vtu");
 					save_wire("step_" + std::to_string(t) + ".obj");
 
@@ -2135,6 +2142,8 @@ namespace polyfem
 
 				if(args["save_solve_sequence"])
 				{
+					if(!solve_export_to_file)
+						solution_frames.emplace_back();
 					save_vtu( "step_" + std::to_string(prev_t) + ".vtu");
 					save_wire("step_" + std::to_string(prev_t) + ".obj");
 				}
@@ -2185,6 +2194,9 @@ namespace polyfem
 					{
 						Eigen::MatrixXd xxx = sol;
 						sol = x;
+						if(!solve_export_to_file)
+							solution_frames.emplace_back();
+
 						save_vtu( "step_s_" + std::to_string(t) + ".vtu");
 						save_wire("step_s_" + std::to_string(t) + ".obj");
 
@@ -2255,6 +2267,8 @@ namespace polyfem
 					prev_rhs = nl_problem.current_rhs();
 					if(args["save_solve_sequence"])
 					{
+						if(!solve_export_to_file)
+							solution_frames.emplace_back();
 						save_vtu( "step_" + std::to_string(prev_t) + ".vtu");
 						save_wire("step_" + std::to_string(prev_t) + ".obj");
 					}
@@ -2752,7 +2766,7 @@ namespace polyfem
 
 		VTUWriter writer;
 
-		if(fun.cols() != 1 && !mesh->is_volume())
+		if(solve_export_to_file && fun.cols() != 1 && !mesh->is_volume())
 		{
 			fun.conservativeResize(fun.rows(), 3);
 			fun.col(2).setZero();
@@ -2761,20 +2775,35 @@ namespace polyfem
 			exact_fun.col(2).setZero();
 		}
 
-		writer.add_field("solution", fun);
+		if(solve_export_to_file)
+			writer.add_field("solution", fun);
+		else
+			solution_frames.back().solution = fun;
 
 		// if(problem->is_mixed())
 		if(assembler.is_mixed(formulation()))
 		{
 			Eigen::MatrixXd interp_p;
 			interpolate_function(points.rows(), 1, pressure_bases, pressure, interp_p, boundary_only);
-			writer.add_field("pressure", interp_p);
+			if(solve_export_to_file)
+				writer.add_field("pressure", interp_p);
+			else
+				solution_frames.back().pressure = fun;
 		}
 
-		writer.add_field("discr", discr);
+		if(solve_export_to_file)
+			writer.add_field("discr", discr);
 		if(problem->has_exact_sol()){
-			writer.add_field("exact", exact_fun);
-			writer.add_field("error", err);
+			if(solve_export_to_file)
+			{
+				writer.add_field("exact", exact_fun);
+				writer.add_field("error", err);
+			}
+			else
+			{
+				solution_frames.back().exact = exact_fun;
+				solution_frames.back().error = err;
+			}
 		}
 
 
@@ -2782,19 +2811,28 @@ namespace polyfem
 		{
 			Eigen::MatrixXd vals, tvals;
 			compute_scalar_value(points.rows(), sol, vals, boundary_only);
-			writer.add_field("scalar_value", vals);
+			if(solve_export_to_file)
+				writer.add_field("scalar_value", vals);
+			else
+				solution_frames.back().scalar_value = vals;
 
-			compute_tensor_value(points.rows(), sol, tvals, boundary_only);
-			for(int i = 0; i < tvals.cols(); ++i){
-				const int ii = (i / mesh->dimension()) + 1;
-				const int jj = (i % mesh->dimension()) + 1;
-				writer.add_field("tensor_value_" + std::to_string(ii) + std::to_string(jj), tvals.col(i));
+			if(solve_export_to_file)
+			{
+				compute_tensor_value(points.rows(), sol, tvals, boundary_only);
+				for(int i = 0; i < tvals.cols(); ++i){
+					const int ii = (i / mesh->dimension()) + 1;
+					const int jj = (i % mesh->dimension()) + 1;
+					writer.add_field("tensor_value_" + std::to_string(ii) + std::to_string(jj), tvals.col(i));
+				}
 			}
 
 			if(!args["use_spline"])
 			{
 				average_grad_based_function(points.rows(), sol, vals, tvals, boundary_only);
-				writer.add_field("scalar_value_avg", vals);
+				if(solve_export_to_file)
+					writer.add_field("scalar_value_avg", vals);
+				else
+					solution_frames.back().scalar_value_avg = vals;
 				// for(int i = 0; i < tvals.cols(); ++i){
 				// 	const int ii = (i / mesh->dimension()) + 1;
 				// 	const int jj = (i % mesh->dimension()) + 1;
@@ -2805,11 +2843,19 @@ namespace polyfem
 
 		// interpolate_function(pts_index, rhs, fun, boundary_only);
 		// writer.add_field("rhs", fun);
-
-		writer.write_tet_mesh(path, points, tets);
+		if(solve_export_to_file)
+			writer.write_tet_mesh(path, points, tets);
+		else
+		{
+			solution_frames.back().name = path;
+			solution_frames.back().points = points;
+			solution_frames.back().connectivity = tets;
+		}
 	}
 
 	void State::save_wire(const std::string &name, bool isolines) {
+		if(!solve_export_to_file) //TODO?
+			return;
 		const auto &sampler = RefElementSampler::sampler();
 
 		const auto &current_bases = iso_parametric() ? bases : geom_bases;

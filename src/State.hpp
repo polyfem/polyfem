@@ -20,6 +20,20 @@
 
 namespace polyfem
 {
+	class SolutionFrame
+	{
+	public:
+		std::string name;
+		Eigen::MatrixXd points;
+		Eigen::MatrixXi connectivity;
+		Eigen::MatrixXd solution;
+		Eigen::MatrixXd pressure;
+		Eigen::MatrixXd exact;
+		Eigen::MatrixXd error;
+		Eigen::MatrixXd scalar_value;
+		Eigen::MatrixXd scalar_value_avg;
+	};
+
 	class State
 	{
 	public:
@@ -98,6 +112,9 @@ namespace polyfem
 		int non_regular_count;
 		int undefined_count;
 		int multi_singular_boundary_count;
+
+		bool solve_export_to_file = true;
+		std::vector<SolutionFrame> solution_frames;
 
 		json build_json_params();
 
