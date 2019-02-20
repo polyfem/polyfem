@@ -30,11 +30,18 @@ The formula for higher order bases are optionally computed at CMake time using a
 Usage
 -----
 
-The main executable, `./PolyFEM_bin`, can be called with a GUI or through a command-line interface. Simply run: 
+The main executable, `./PolyFEM_bin`, can be called with a GUI or through a command-line interface. Simply run:
 
     ./PolyFEM_bin
 
 A more detailed documentation can be found on the [website](https://polyfem.github.io/).
+
+Documentation
+-------------
+
+The full documentation can be found at [https://polyfem.github.io/](https://polyfem.github.io/)
+
+
 
 License
 -------
@@ -48,7 +55,7 @@ If you use PolyFEM in your project, please consider citing our work:
 
 ```bibtex
 @misc{polyfem,
-  author = {Teseo Schneider Jérémie Dumas and Xifeng Gao},
+  author = {Teseo Schneider and Jérémie Dumas and Xifeng Gao and Denis Zorin and Daniele Panozzo},
   title = {{Polyfem}},
   howpublished = "\url{https://polyfem.github.io/}",
   year = {2019},
@@ -69,8 +76,10 @@ If you use PolyFEM in your project, please consider citing our work:
 }
 ```
 
-Acknowledgements & Foundings
+Acknowledgements & Founding
 --------
+The software is being developed in the [Geometric Computing Lab](https://cims.nyu.edu/gcl/index.html) at NYU Courant Institute of Mathematical Sciences
+
 
 This work was partially supported by:
 
