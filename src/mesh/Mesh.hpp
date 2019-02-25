@@ -78,13 +78,13 @@ namespace polyfem
 		virtual bool is_boundary_element(const int element_global_id) const = 0;
 
 		//IO
-		virtual bool load(const std::string &path) = 0;
-		virtual bool load(const GEO::Mesh &M) = 0;
-		virtual bool save(const std::string &path) const = 0;
 		virtual bool build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F) = 0;
+		virtual bool save(const std::string &path) const = 0;
 
 		virtual void attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes) = 0;
 		inline int order() const { return order_; }
+		inline bool is_rational() const { return is_rational_; }
+		inline bool &is_rational() { return is_rational_; }
 
 		virtual void normalize() = 0;
 
@@ -133,14 +133,23 @@ namespace polyfem
 		virtual void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, const std::vector<bool> &valid_elements) const = 0;
 		virtual void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const = 0;
 
+
+		const std::vector<double> &cell_weights(const int cell_index) const { return cell_weights_[cell_index]; }
+
 	protected:
+		virtual bool load(const std::string &path) = 0;
+		virtual bool load(const GEO::Mesh &M) = 0;
+		
+
 		std::vector<ElementType> elements_tag_;
 		std::vector<int> boundary_ids_;
 		int order_ = 1;
+		bool is_rational_ = false;
 
 		std::vector<EdgeNodes> edge_nodes_;
 		std::vector<FaceNodes> face_nodes_;
 		std::vector<CellNodes> cell_nodes_;
+		std::vector<std::vector<double>> cell_weights_;
 	};
 }
 

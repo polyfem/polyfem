@@ -10,7 +10,7 @@
 
 namespace polyfem
 {
-	bool MshReader::load(const std::string &path, Eigen::MatrixXd &vertices, Eigen::MatrixXi &cells, std::vector<std::vector<int>> &elements)
+	bool MshReader::load(const std::string &path, Eigen::MatrixXd &vertices, Eigen::MatrixXi &cells, std::vector<std::vector<int>> &elements, std::vector<std::vector<double>> &weights)
 	{
 		std::ifstream infile(path.c_str());
 
@@ -23,7 +23,7 @@ namespace polyfem
 		int n_triangles = 0;
 		int n_tets = 0;
 
-		std::vector<std::vector<int>> all_elements;
+		std::vector<std::vector<double>> all_elements;
 
 		while (std::getline(infile, line))
 		{
@@ -127,7 +127,8 @@ namespace polyfem
 					//56-node fifth order tetrahedron
 					assert(elm_type != 31);
 
-					if(elm_type == 2 || elm_type == 9 || elm_type == 21 || elm_type == 23)
+					//60 is the new rational element
+					if(elm_type == 2 || elm_type == 9 || elm_type == 21 || elm_type == 23 || elm_type == 60)
 						++n_triangles;
 					else if(elm_type == 4 || elm_type == 11 || elm_type == 29 || elm_type == 30)
 						++n_tets;
@@ -144,7 +145,7 @@ namespace polyfem
 
 					while(iss.good())
 					{
-						int tmp;
+						double tmp;
 						iss >> tmp;
 						node_list.push_back(tmp);
 					}
@@ -160,17 +161,27 @@ namespace polyfem
 		if(n_tets == 0)
 		{
 			elements.resize(n_triangles);
+			weights.resize(n_triangles);
 			cells.resize(n_triangles, 3);
 
 			for(const auto &els : all_elements)
 			{
 				const int elm_type = els[0];
-				if(elm_type != 2 && elm_type != 9 && elm_type != 21 && elm_type != 23)
+				if(elm_type != 2 && elm_type != 9 && elm_type != 21 && elm_type != 23 && elm_type != 60)
 					continue;
 
 				auto &el = elements[index];
-				for(size_t i = 1; i < els.size(); ++i)
-					el.push_back(els[i] - 1);
+				auto &wh = weights[index];
+				for(size_t i = 1; i < (elm_type == 60 ? 7 : els.size()); ++i)
+					el.push_back(int(els[i]) - 1);
+				if(elm_type == 60)
+				{
+					for(size_t i = 7; i < els.size(); ++i)
+						wh.push_back(els[i]);
+
+					assert(wh.size() == el.size());
+					assert(wh.size() == 6);
+				}
 
 				cells.row(index) << el[0], el[1], el[2];
 
@@ -180,6 +191,7 @@ namespace polyfem
 		else
 		{
 			elements.resize(n_tets);
+			weights.resize(n_tets);
 			cells.resize(n_tets, 4);
 
 			for(const auto &els : all_elements)
@@ -189,6 +201,7 @@ namespace polyfem
 					continue;
 
 				auto &el = elements[index];
+				auto &wh = weights[index];
 				for(size_t i = 1; i < els.size(); ++i)
 					el.push_back(els[i] - 1);
 

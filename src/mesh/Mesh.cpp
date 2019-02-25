@@ -59,8 +59,9 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path, co
 		Eigen::MatrixXd vertices;
 		Eigen::MatrixXi cells;
 		std::vector<std::vector<int>> elements;
+		std::vector<std::vector<double>> weights;
 
-		if(!MshReader::load(path, vertices, cells, elements))
+		if(!MshReader::load(path, vertices, cells, elements, weights))
 			return nullptr;
 
 		std::unique_ptr<polyfem::Mesh> mesh;
@@ -70,8 +71,19 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path, co
 			mesh = std::make_unique<Mesh3D>();
 
 		mesh->build_from_matrices(vertices, cells);
-		if(!force_linear_geometry)
+		if(!force_linear_geometry){
 			mesh->attach_higher_order_nodes(vertices, elements);
+			mesh->cell_weights_ = weights;
+
+			for(const auto &w : weights)
+			{
+				if(!w.empty())
+				{
+					mesh->is_rational_ = true;
+					break;
+				}
+			}
+		}
 		return mesh;
 	}
 	else {

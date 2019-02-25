@@ -44,9 +44,6 @@ namespace polyfem
 		bool is_boundary_face(const int face_global_id) const override { return mesh_.faces[face_global_id].boundary; }
 		bool is_boundary_element(const int element_global_id) const override;
 
-		bool load(const std::string &path) override;
-		bool load(const GEO::Mesh &M) override;
-
 		bool save(const std::string &path) const override;
 		bool save(const std::vector<int> &fs, const int ringN, const std::string &path) const;
 		bool build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F) override;
@@ -125,6 +122,9 @@ namespace polyfem
 		//used for sweeping 2D mesh
 		Mesh3DStorage &mesh_storge() { std::cerr<<"never user this function"<<std::endl; return mesh_; }
 		static void geomesh_2_mesh_storage(const GEO::Mesh &gm, Mesh3DStorage &m);
+	protected:
+		bool load(const std::string &path) override;
+		bool load(const GEO::Mesh &M) override;
 	private:
 		Mesh3DStorage mesh_;
 	};

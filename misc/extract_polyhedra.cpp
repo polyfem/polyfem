@@ -49,19 +49,21 @@ int main(int argc, char** argv) {
 	GEO::Logger::out("Extract") << "Input file: " << filenames[0] << std::endl;
 	GEO::Logger::out("Extract") << "Output folder: " << filenames[1] << std::endl;
 
-	// Declare a mesh
-	Mesh3D mesh;
-
 	// Load the mesh and display timings
+	std::unique_ptr<Mesh> tmp;
 	GEO::Logger::div("Loading");
 	{
 		GEO::Stopwatch W("Load");
-		if (!mesh.load(filenames[0])) {
+		tmp = Mesh::create(filenames[0], true);
+		if (!tmp) {
 			return 1;
 		}
-		std::vector<int> parent_elements;
-		mesh.refine(num_refinement, 0.5, parent_elements);
 	}
+
+	Mesh3D &mesh = *dynamic_cast<Mesh3D *>(tmp.get());
+	std::vector<int> parent_elements;
+	mesh.refine(num_refinement, 0.5, parent_elements);
+
 
 	// Extracting polyhedra
 	std::vector<std::unique_ptr<GEO::Mesh>> polys;

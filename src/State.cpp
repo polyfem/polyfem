@@ -1238,7 +1238,10 @@ namespace polyfem
 		igl::Timer timer; timer.start();
 		logger().info("Loading mesh...");
 		const bool force_lin = args["force_linear_geometry"];
-		mesh = Mesh::create(mesh_path(), force_lin);
+		if(!mesh || !mesh_path().empty())
+		{
+			mesh = Mesh::create(mesh_path(), force_lin);
+		}
 		if (!mesh) {
 			return;
 		}
@@ -1570,6 +1573,8 @@ namespace polyfem
 			logger().info("min p: {} max p: {}", disc_orders.minCoeff(), disc_orders.maxCoeff());
 		}
 
+		const bool was_rational = mesh->is_rational();
+
 		if(mesh->is_volume())
 		{
 			const Mesh3D &tmp_mesh = *dynamic_cast<Mesh3D *>(mesh.get());
@@ -1588,6 +1593,7 @@ namespace polyfem
 				if (!iso_parametric())
 					FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], mesh->order(), has_polys, geom_bases, local_boundary, poly_edge_to_data_geom);
 
+				mesh->is_rational() = false;
 				n_bases = FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, has_polys, bases, local_boundary, poly_edge_to_data);
 			}
 
@@ -1616,6 +1622,7 @@ namespace polyfem
 				if(!iso_parametric())
 					FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], mesh->order(), has_polys, geom_bases, local_boundary, poly_edge_to_data_geom);
 
+				mesh->is_rational() = false;
 				n_bases = FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, has_polys, bases, local_boundary, poly_edge_to_data);
 				// n_bases = SpectralBasis2d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, bases, geom_bases, local_boundary);
 			}
@@ -1627,6 +1634,7 @@ namespace polyfem
 			}
 		}
 		timer.stop();
+		mesh->is_rational() = was_rational;
 
 		auto &gbases = iso_parametric() ? bases : geom_bases;
 

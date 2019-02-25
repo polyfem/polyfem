@@ -65,43 +65,48 @@ namespace polyfem
 
 	bool Mesh2D::load(const std::string &path)
 	{
-		edge_nodes_.clear();
-		face_nodes_.clear();
-		cell_nodes_.clear();
-		order_ = 1;
+		//This method should be used for special loading, like hybrid in 3d
 
-		c2e_.reset();
-		boundary_vertices_.reset();
-		boundary_edges_.reset();
+		// edge_nodes_.clear();
+		// face_nodes_.clear();
+		// cell_nodes_.clear();
+		// order_ = 1;
 
-		mesh_.clear(false,false);
+		// c2e_.reset();
+		// boundary_vertices_.reset();
+		// boundary_edges_.reset();
 
-		if (!StringUtils::endswidth(path, "msh"))
-		{
-			Eigen::MatrixXd vertices;
-			Eigen::MatrixXi cells;
-			std::vector<std::vector<int>> elements;
+		// mesh_.clear(false,false);
 
-			if(!MshReader::load(path, vertices, cells, elements))
-				return false;
+		// if (!StringUtils::endswidth(path, "msh"))
+		// {
+		// 	Eigen::MatrixXd vertices;
+		// 	Eigen::MatrixXi cells;
+		// 	std::vector<std::vector<int>> elements;
+		// 	std::vector<std::vector<double>> weights;
 
-			to_geogram_mesh(vertices, cells, mesh_);
-			attach_higher_order_nodes(vertices, elements);
-		}
-		else
-		{
-			if(!mesh_load(path, mesh_))
-				return false;
-		}
+		// 	if(!MshReader::load(path, vertices, cells, elements, weights))
+		// 		return false;
 
-		orient_normals_2d(mesh_);
-		Navigation::prepare_mesh(mesh_);
-		c2e_ = std::make_unique<GEO::Attribute<GEO::index_t>>(mesh_.facet_corners.attributes(), "edge_id");
-		boundary_vertices_ = std::make_unique<GEO::Attribute<bool>>(mesh_.vertices.attributes(), "boundary_vertex");
-		boundary_edges_ = std::make_unique<GEO::Attribute<bool>>(mesh_.edges.attributes(), "boundary_edge");
+		// 	build_from_matrices(vertices, cells);
+		// 	attach_higher_order_nodes(vertices, elements);
+		// 	cell_weights_ = weights;
+		// }
+		// else
+		// {
+		// 	if(!mesh_load(path, mesh_))
+		// 		return false;
+		// }
 
-		compute_elements_tag();
-		return true;
+		// orient_normals_2d(mesh_);
+		// Navigation::prepare_mesh(mesh_);
+		// c2e_ = std::make_unique<GEO::Attribute<GEO::index_t>>(mesh_.facet_corners.attributes(), "edge_id");
+		// boundary_vertices_ = std::make_unique<GEO::Attribute<bool>>(mesh_.vertices.attributes(), "boundary_vertex");
+		// boundary_edges_ = std::make_unique<GEO::Attribute<bool>>(mesh_.edges.attributes(), "boundary_edge");
+
+		// compute_elements_tag();
+		assert(false);
+		return false;
 	}
 
 	bool Mesh2D::load(const GEO::Mesh &mesh)

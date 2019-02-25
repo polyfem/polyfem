@@ -48,10 +48,8 @@ namespace polyfem
 		bool is_boundary_element(const int element_global_id) const override;
 
 
-		bool load(const std::string &path) override;
-		bool load(const GEO::Mesh &mesh) override;
-		bool save(const std::string &path) const override;
 		bool build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F) override;
+		bool save(const std::string &path) const override;
 
 		void attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes) override;
 		RowVectorNd edge_node(const Navigation::Index &index, const int n_new_nodes, const int i) const;
@@ -97,6 +95,11 @@ namespace polyfem
 		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
 		void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const override;
 		void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, const std::vector<bool> &valid_elements) const override;
+
+	protected:
+		bool load(const std::string &path) override;
+		bool load(const GEO::Mesh &mesh) override;
+		
 	private:
 		GEO::Mesh mesh_;
 		std::unique_ptr<GEO::Attribute<GEO::index_t>> c2e_;

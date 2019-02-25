@@ -639,16 +639,72 @@ int polyfem::FEBasis2d::build_bases(
 			});
 
 
+			const bool rational = mesh.is_rational();
+
 
 			for (int j = 0; j < n_el_bases; ++j) {
 				const int global_index = element_nodes_id[e][j];
+
 
 				if(!skip_interface_element){
 					b.bases[j].init(discr_order, global_index, j, nodes.node_position(global_index));
 				}
 
-				b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::p_basis_value_2d     (discr_order, j, uv, val); });
-				b.bases[j].set_grad ([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::p_grad_basis_value_2d(discr_order, j, uv, val); });
+				if(rational)
+				{
+					const auto &w = mesh.cell_weights(e);
+					//only quadratic
+					assert(discr_order == 2);
+					if(w.empty())
+					{
+						b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::p_basis_value_2d     (discr_order, j, uv, val); });
+						b.bases[j].set_grad ([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::p_grad_basis_value_2d(discr_order, j, uv, val); });
+					}
+					else
+					{
+						assert(w.size() == 6);
+
+						b.bases[j].set_basis([discr_order, j, w](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {
+							polyfem::autogen::p_basis_value_2d(discr_order, j, uv, val);
+							Eigen::MatrixXd denom = val; denom.setZero();
+							Eigen::MatrixXd tmp;
+
+							for(int k = 0; k < 6; ++k)
+							{
+								polyfem::autogen::p_basis_value_2d(discr_order, k, uv, tmp);
+								denom += w[k]*tmp;
+							}
+
+							val = (w[j]*val.array() / denom.array()).eval();
+						});
+
+						b.bases[j].set_grad ([discr_order, j, w](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {
+							Eigen::MatrixXd b;
+							polyfem::autogen::p_basis_value_2d     (discr_order, j, uv, b);
+							polyfem::autogen::p_grad_basis_value_2d(discr_order, j, uv, val);
+							Eigen::MatrixXd denom = b; denom.setZero();
+							Eigen::MatrixXd denom_prime = val; denom_prime.setZero();
+							Eigen::MatrixXd tmp;
+
+							for(int k = 0; k < 6; ++k)
+							{
+								polyfem::autogen::p_basis_value_2d     (discr_order, k, uv, tmp);
+								denom += w[k]*tmp;
+
+								polyfem::autogen::p_grad_basis_value_2d(discr_order, k, uv, tmp);
+								denom_prime += w[k]*tmp;
+							}
+
+							val.col(0) = ((w[j]*val.col(0).array()*denom.array() - w[j]*b.array()*denom_prime.col(0).array() ) / (denom.array() * denom.array())).eval();
+							val.col(1) = ((w[j]*val.col(1).array()*denom.array() - w[j]*b.array()*denom_prime.col(1).array() ) / (denom.array() * denom.array())).eval();
+						});
+					}
+				}
+				else
+				{
+					b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::p_basis_value_2d     (discr_order, j, uv, val); });
+					b.bases[j].set_grad ([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::p_grad_basis_value_2d(discr_order, j, uv, val); });
+				}
 			}
 		}
 		else {

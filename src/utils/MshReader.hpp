@@ -9,6 +9,6 @@ namespace polyfem
 	class MshReader
 	{
 	public:
-		static bool load(const std::string &path, Eigen::MatrixXd &vertices, Eigen::MatrixXi &cells, std::vector<std::vector<int>> &elements);
+		static bool load(const std::string &path, Eigen::MatrixXd &vertices, Eigen::MatrixXi &cells, std::vector<std::vector<int>> &elements, std::vector<std::vector<double>> &weights);
 	};
 }

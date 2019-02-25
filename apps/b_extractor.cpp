@@ -19,8 +19,8 @@ using namespace Eigen;
 
 void load_and_save(const std::string &path, const std::string &out_path)
 {
-	Mesh3D mesh;
-	mesh.load(path);
+	auto tmp = Mesh::create(path, true);
+	Mesh3D &mesh = *dynamic_cast<Mesh3D *>(tmp.get());
 
 	std::cout<<"N vertices "<<mesh.n_vertices()<<std::endl;
 
@@ -57,8 +57,8 @@ void load_and_save(const std::string &path, const std::string &out_path)
 
 void load_and_triangulate(const std::string &path, MatrixXd &V, MatrixXi &F)
 {
-	Mesh3D mesh;
-	mesh.load(path);
+	auto tmp = Mesh::create(path, true);
+	Mesh3D &mesh = *dynamic_cast<Mesh3D *>(tmp.get());
 
 	std::cout<<"N vertices "<<mesh.n_vertices()<<std::endl;
 

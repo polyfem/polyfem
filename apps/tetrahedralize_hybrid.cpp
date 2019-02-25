@@ -51,15 +51,16 @@ int main(int argc, char** argv) {
 	GEO::Logger::out("I/O") << "Input file: " << mesh_path << std::endl;
 	GEO::Logger::out("I/O") << "Output file: " << out_mesh_path << std::endl;
 
-	Mesh3D mesh;
-
+	std::unique_ptr<Mesh> tmp;
 	GEO::Logger::div("Loading");
 	{
 		GEO::Stopwatch W("Load");
-		if (!mesh.load(mesh_path)) {
+		tmp = Mesh::create(mesh_path, true);
+		if (!tmp) {
 			return 1;
 		}
 	}
+	Mesh3D &mesh = *dynamic_cast<Mesh3D *>(tmp.get());
 	mesh.normalize();
 
 	// Load the mesh and call tetgen
