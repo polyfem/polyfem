@@ -52,7 +52,7 @@ namespace polyfem
 			Eigen::MatrixXd nodes;
 		};
 	public:
-		static std::unique_ptr<Mesh> create(const std::string &path, const bool force_linear_geometry);
+		static std::unique_ptr<Mesh> create(const std::string &path);
 		static std::unique_ptr<Mesh> create(GEO::Mesh &M);
 
 		Mesh() = default;
@@ -82,9 +82,8 @@ namespace polyfem
 		virtual bool save(const std::string &path) const = 0;
 
 		virtual void attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes) = 0;
-		inline int order() const { return order_; }
+		inline const Eigen::MatrixXi &orders() const { return orders_; }
 		inline bool is_rational() const { return is_rational_; }
-		inline bool &is_rational() { return is_rational_; }
 
 		virtual void normalize() = 0;
 
@@ -143,7 +142,7 @@ namespace polyfem
 
 		std::vector<ElementType> elements_tag_;
 		std::vector<int> boundary_ids_;
-		int order_ = 1;
+		Eigen::MatrixXi orders_;
 		bool is_rational_ = false;
 
 		std::vector<EdgeNodes> edge_nodes_;

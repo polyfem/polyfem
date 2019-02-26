@@ -95,6 +95,6 @@ TEST_CASE("mshreader", "[utils]") {
     const std::string path = DATA_DIR;
     Eigen::MatrixXd vertices;
     Eigen::MatrixXi cells;
-    const auto mesh = Mesh::create(path + "/circle2.msh", false);
+    const auto mesh = Mesh::create(path + "/circle2.msh");
     REQUIRE(mesh);
 }

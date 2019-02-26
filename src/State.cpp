@@ -272,7 +272,8 @@ namespace polyfem
 		j["quadrature_order"] = args["quadrature_order"];
 		j["mesh_path"] = mesh_path();
 		j["discr_order"] = args["discr_order"];
-		j["geom_order"] = mesh->order();
+		j["geom_order"] = mesh->orders().maxCoeff();
+		j["geom_order_min"] = mesh->orders().minCoeff();
 		j["discr_order_min"] = disc_orders.minCoeff();
 		j["discr_order_max"] = disc_orders.maxCoeff();
 		j["harmonic_samples_res"] = args["n_harmonic_samples"];
@@ -1237,10 +1238,10 @@ namespace polyfem
 
 		igl::Timer timer; timer.start();
 		logger().info("Loading mesh...");
-		const bool force_lin = args["force_linear_geometry"];
+
 		if(!mesh || !mesh_path().empty())
 		{
-			mesh = Mesh::create(mesh_path(), force_lin);
+			mesh = Mesh::create(mesh_path());
 		}
 		if (!mesh) {
 			return;
@@ -1562,6 +1563,18 @@ namespace polyfem
 		const int base_p = args["discr_order"];
 		disc_orders.setConstant(base_p);
 
+		Eigen::MatrixXi geom_disc_orders;
+		if(!iso_parametric())
+		{
+			if(args["force_linear_geometry"] || mesh->orders().size() <= 0)
+			{
+				geom_disc_orders.resizeLike(geom_disc_orders);
+				geom_disc_orders.setConstant(1);
+			}
+			else
+				geom_disc_orders = mesh->orders();
+		}
+
 		igl::Timer timer; timer.start();
 		if(args["use_p_ref"])
 		{
@@ -1573,15 +1586,16 @@ namespace polyfem
 			logger().info("min p: {} max p: {}", disc_orders.minCoeff(), disc_orders.maxCoeff());
 		}
 
-		const bool was_rational = mesh->is_rational();
-
 		if(mesh->is_volume())
 		{
 			const Mesh3D &tmp_mesh = *dynamic_cast<Mesh3D *>(mesh.get());
 			if(args["use_spline"])
 			{
-				if(!iso_parametric())
-					FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, has_polys, geom_bases, local_boundary, poly_edge_to_data_geom);
+				if(!iso_parametric()){
+					logger().error("Splines must be isoparametric, ignoring...");
+					// FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], geom_disc_orders, has_polys, geom_bases, local_boundary, poly_edge_to_data_geom);
+					SplineBasis3d::build_bases(tmp_mesh, args["quadrature_order"], geom_bases, local_boundary, poly_edge_to_data);
+				}
 
 				n_bases = SplineBasis3d::build_bases(tmp_mesh, args["quadrature_order"], bases, local_boundary, poly_edge_to_data);
 
@@ -1591,16 +1605,15 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], mesh->order(), has_polys, geom_bases, local_boundary, poly_edge_to_data_geom);
+					FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], geom_disc_orders, has_polys, true, geom_bases, local_boundary, poly_edge_to_data_geom);
 
-				mesh->is_rational() = false;
-				n_bases = FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, has_polys, bases, local_boundary, poly_edge_to_data);
+				n_bases = FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, has_polys, false, bases, local_boundary, poly_edge_to_data);
 			}
 
 			// if(problem->is_mixed())
 			if(assembler.is_mixed(formulation()))
 			{
-				n_pressure_bases = FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], int(args["pressure_discr_order"]), has_polys, pressure_bases, local_boundary, poly_edge_to_data_geom);
+				n_pressure_bases = FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], int(args["pressure_discr_order"]), has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom);
 			}
 		}
 		else
@@ -1609,8 +1622,11 @@ namespace polyfem
 			if(args["use_spline"])
 			{
 
-				if(!iso_parametric())
-					FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, has_polys, geom_bases, local_boundary, poly_edge_to_data_geom);
+				if(!iso_parametric()){
+					logger().error("Splines must be isoparametric, ignoring...");
+					// FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, has_polys, geom_bases, local_boundary, poly_edge_to_data_geom);
+					n_bases = SplineBasis2d::build_bases(tmp_mesh, args["quadrature_order"], geom_bases, local_boundary, poly_edge_to_data);
+				}
 
 				n_bases = SplineBasis2d::build_bases(tmp_mesh, args["quadrature_order"], bases, local_boundary, poly_edge_to_data);
 
@@ -1620,21 +1636,18 @@ namespace polyfem
 			else
 			{
 				if(!iso_parametric())
-					FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], mesh->order(), has_polys, geom_bases, local_boundary, poly_edge_to_data_geom);
+					FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], geom_disc_orders, has_polys, true, geom_bases, local_boundary, poly_edge_to_data_geom);
 
-				mesh->is_rational() = false;
-				n_bases = FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, has_polys, bases, local_boundary, poly_edge_to_data);
-				// n_bases = SpectralBasis2d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, bases, geom_bases, local_boundary);
+				n_bases = FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, has_polys, false, bases, local_boundary, poly_edge_to_data);
 			}
 
 			// if(problem->is_mixed())
 			if(assembler.is_mixed(formulation()))
 			{
-				n_pressure_bases = FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], int(args["pressure_discr_order"]), has_polys, pressure_bases, local_boundary, poly_edge_to_data_geom);
+				n_pressure_bases = FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], int(args["pressure_discr_order"]), has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom);
 			}
 		}
 		timer.stop();
-		mesh->is_rational() = was_rational;
 
 		auto &gbases = iso_parametric() ? bases : geom_bases;
 

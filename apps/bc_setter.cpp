@@ -137,7 +137,7 @@ bool load(const std::string &path, igl::opengl::glfw::Viewer &viewer,
 
 	C.resize(0, 0);
 
-	auto tmp = Mesh::create(path, false);
+	auto tmp = Mesh::create(path);
 	if (!tmp) {
 		return false;
 	}

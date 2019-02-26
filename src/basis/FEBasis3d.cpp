@@ -189,7 +189,7 @@ std::array<int, 8> hex_vertices_local_to_global(const Mesh3D &mesh, int c) {
 }
 
 
-void tet_local_to_global(const int p, const Mesh3D &mesh, int c, const Eigen::VectorXi &discr_order, std::vector<int> &res, polyfem::MeshNodes &nodes)
+void tet_local_to_global(const bool is_geom_bases, const int p, const Mesh3D &mesh, int c, const Eigen::VectorXi &discr_order, std::vector<int> &res, polyfem::MeshNodes &nodes)
 {
 	const int n_edge_nodes = p > 1 ? ((p-1)*6) : 0;
 	const int nn = p > 2 ? (p - 2) : 0;
@@ -252,20 +252,28 @@ void tet_local_to_global(const int p, const Mesh3D &mesh, int c, const Eigen::Ve
 		auto neighs = mesh.edge_neighs(index.edge);
 		int min_p = discr_order.size() > 0 ? discr_order(c) : 0;
 
-		for(auto cid : neighs)
-		{
-			min_p = std::min(min_p, discr_order.size() > 0 ? discr_order(cid) : 0);
-		}
-
-		if(discr_order.size() > 0 && discr_order(c) >  min_p)
-		{
-			for(int tmp = 0; tmp < p - 1; ++tmp)
-				res.push_back(-le - 10);
-		}
-		else
+		if(is_geom_bases)
 		{
 			auto node_ids = nodes.node_ids_from_edge(index, p - 1);
 			res.insert(res.end(), node_ids.begin(), node_ids.end());
+		}
+		else
+		{
+			for(auto cid : neighs)
+			{
+				min_p = std::min(min_p, discr_order.size() > 0 ? discr_order(cid) : 0);
+			}
+
+			if(discr_order.size() > 0 && discr_order(c) >  min_p)
+			{
+				for(int tmp = 0; tmp < p - 1; ++tmp)
+					res.push_back(-le - 10);
+			}
+			else
+			{
+				auto node_ids = nodes.node_ids_from_edge(index, p - 1);
+				res.insert(res.end(), node_ids.begin(), node_ids.end());
+			}
 		}
 	}
 
@@ -277,15 +285,23 @@ void tet_local_to_global(const int p, const Mesh3D &mesh, int c, const Eigen::Ve
 
 		const bool skip_other = discr_order.size() > 0 && other_cell >= 0 && discr_order(c) >  discr_order(other_cell);
 
-		if(skip_other)
-		{
-			for(int tmp = 0; tmp < n_loc_f; ++tmp)
-				res.push_back(-lf - 1);
-		}
-		else
+		if(is_geom_bases)
 		{
 			auto node_ids = nodes.node_ids_from_face(index, p - 2);
 			res.insert(res.end(), node_ids.begin(), node_ids.end());
+		}
+		else
+		{
+			if(skip_other)
+			{
+				for(int tmp = 0; tmp < n_loc_f; ++tmp)
+					res.push_back(-lf - 1);
+			}
+			else
+			{
+				auto node_ids = nodes.node_ids_from_face(index, p - 2);
+				res.insert(res.end(), node_ids.begin(), node_ids.end());
+			}
 		}
 	}
 
@@ -441,6 +457,7 @@ void compute_nodes(
 	const polyfem::Mesh3D &mesh,
 	const Eigen::VectorXi &discr_orders,
 	const bool has_polys,
+	const bool is_geom_bases,
 	MeshNodes &nodes,
 	std::vector<std::vector<int> > &element_nodes_id,
 	std::vector<polyfem::LocalBoundary> &local_boundary,
@@ -481,7 +498,7 @@ void compute_nodes(
 				local_boundary.emplace_back(lb);
 		} else if(mesh.is_simplex(c)) {
 			// element_nodes_id[c] = polyfem::FEBasis3d::tet_local_to_global(discr_order, mesh, c, discr_orders, nodes);
-			tet_local_to_global(discr_order, mesh, c, discr_orders, element_nodes_id[c], nodes);
+			tet_local_to_global(is_geom_bases, discr_order, mesh, c, discr_orders, element_nodes_id[c], nodes);
 
 
 			auto v = tet_vertices_local_to_global(mesh, c);
@@ -906,6 +923,7 @@ int polyfem::FEBasis3d::build_bases(
 	const int quadrature_order,
 	const int discr_order,
 	const bool has_polys,
+	const bool is_geom_bases,
 	std::vector< ElementBases > &bases,
 	std::vector< LocalBoundary > &local_boundary,
 	std::map<int, InterfaceData> &poly_face_to_data)
@@ -913,7 +931,7 @@ int polyfem::FEBasis3d::build_bases(
 	Eigen::VectorXi discr_orders(mesh.n_cells());
 	discr_orders.setConstant(discr_order);
 
-	return build_bases(mesh, quadrature_order, discr_orders, has_polys, bases, local_boundary, poly_face_to_data);
+	return build_bases(mesh, quadrature_order, discr_orders, has_polys, is_geom_bases, bases, local_boundary, poly_face_to_data);
 }
 
 int polyfem::FEBasis3d::build_bases(
@@ -921,6 +939,7 @@ int polyfem::FEBasis3d::build_bases(
 	const int quadrature_order,
 	const Eigen::VectorXi &discr_orders,
 	const bool has_polys,
+	const bool is_geom_bases,
 	std::vector< ElementBases > &bases,
 	std::vector< LocalBoundary > &local_boundary,
 	std::map<int, InterfaceData> &poly_face_to_data)
@@ -941,9 +960,9 @@ int polyfem::FEBasis3d::build_bases(
 	const int n_face_nodes = nn*nn;
 	const int n_cells_nodes = nn*nn*nn;
 
-	MeshNodes nodes(mesh, has_polys, nn, n_face_nodes, max_p == 0 ? 1 : n_cells_nodes);
+	MeshNodes nodes(mesh, has_polys, !is_geom_bases, nn, n_face_nodes, max_p == 0 ? 1 : n_cells_nodes);
 	std::vector<std::vector<int>> element_nodes_id;
-	compute_nodes(mesh, discr_orders, has_polys, nodes, element_nodes_id, local_boundary, poly_face_to_data);
+	compute_nodes(mesh, discr_orders, has_polys, is_geom_bases, nodes, element_nodes_id, local_boundary, poly_face_to_data);
 	// boundary_nodes = nodes.boundary_nodes();
 
 
@@ -1034,6 +1053,10 @@ int polyfem::FEBasis3d::build_bases(
 			});
 
 
+			const bool rational = is_geom_bases && mesh.is_rational() && !mesh.cell_weights(e).empty();
+			assert(!rational);
+
+
 			for (int j = 0; j < n_el_bases; ++j) {
 				const int global_index = element_nodes_id[e][j];
 				if(!skip_interface_element){
@@ -1051,7 +1074,7 @@ int polyfem::FEBasis3d::build_bases(
 		}
 	}
 
-
+	if(!is_geom_bases){
 	for(int pp = 2; pp <= autogen::MAX_P_BASES; ++pp)
 	{
 		for (int e : interface_elements) {
@@ -1264,7 +1287,7 @@ int polyfem::FEBasis3d::build_bases(
 			// Polygon bases are built later on
 			}
 		}
-	}
+	}}
 
 
 

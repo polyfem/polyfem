@@ -160,7 +160,38 @@ namespace polyfem
 		inline std::string mesh_path() const { return args["mesh"]; }
 
 		inline std::string formulation() const { return problem->is_scalar() ? scalar_formulation() : tensor_formulation(); }
-		inline bool iso_parametric() const { return (non_regular_count > 0 || non_regular_boundary_count > 0 || undefined_count > 0) || (!mesh->is_rational() && !args["use_p_ref"] && args["discr_order"] == mesh->order()) || args["iso_parametric"]; }
+		inline bool iso_parametric() const {
+			if(non_regular_count > 0 || non_regular_boundary_count > 0 || undefined_count > 0)
+				return true;
+
+			if(args["use_spline"])
+				return true;
+
+			if(mesh->is_rational())
+				return false;
+
+			if(args["use_p_ref"])
+				return false;
+
+			if(mesh->orders().size() <= 0){
+				if(args["discr_order"] == 1)
+					return true;
+				else
+					return false;
+			}
+
+			if(mesh->orders().minCoeff() != mesh->orders().maxCoeff())
+				return false;
+
+			if(args["discr_order"] == mesh->orders().minCoeff())
+				return true;
+
+
+			if( args["disc_orders"] == 1 && args["force_linear_geometry"])
+				return true;
+
+			return args["iso_parametric"];
+		}
 
 		inline std::string solver_type() const { return args["solver_type"]; }
 		inline std::string precond_type() const { return args["precond_type"]; }

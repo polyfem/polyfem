@@ -44,7 +44,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(GEO::Mesh &meshin) {
 	return nullptr;
 }
 
-std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path, const bool force_linear_geometry) {
+std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path) {
 	std::string lowername = path;
 
 	std::transform(lowername.begin(), lowername.end(), lowername.begin(), ::tolower);
@@ -71,19 +71,18 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path, co
 			mesh = std::make_unique<Mesh3D>();
 
 		mesh->build_from_matrices(vertices, cells);
-		if(!force_linear_geometry){
-			mesh->attach_higher_order_nodes(vertices, elements);
-			mesh->cell_weights_ = weights;
+		mesh->attach_higher_order_nodes(vertices, elements);
+		mesh->cell_weights_ = weights;
 
-			for(const auto &w : weights)
+		for(const auto &w : weights)
+		{
+			if(!w.empty())
 			{
-				if(!w.empty())
-				{
-					mesh->is_rational_ = true;
-					break;
-				}
+				mesh->is_rational_ = true;
+				break;
 			}
 		}
+
 		return mesh;
 	}
 	else {

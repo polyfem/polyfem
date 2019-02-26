@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
 	GEO::Logger::div("Loading");
 	{
 		GEO::Stopwatch W("Load");
-		tmp = Mesh::create(filenames[0], true);
+		tmp = Mesh::create(filenames[0]);
 		if (!tmp) {
 			return 1;
 		}

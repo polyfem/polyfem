@@ -114,7 +114,6 @@ namespace polyfem
 		edge_nodes_.clear();
 		face_nodes_.clear();
 		cell_nodes_.clear();
-		order_ = 1;
 
 		c2e_.reset();
 		boundary_vertices_.reset();
@@ -146,7 +145,6 @@ namespace polyfem
 		edge_nodes_.clear();
 		face_nodes_.clear();
 		cell_nodes_.clear();
-		order_ = 1;
 
 		c2e_.reset();
 		boundary_vertices_.reset();
@@ -171,10 +169,11 @@ namespace polyfem
 		edge_nodes_.clear();
 		face_nodes_.clear();
 		cell_nodes_.clear();
-		order_ = 1;
 
 		edge_nodes_.resize(n_edges());
 		face_nodes_.resize(n_faces());
+
+		orders_.resize(n_faces(), 1);
 
 		assert(nodes.size() == n_faces());
 
@@ -184,12 +183,14 @@ namespace polyfem
 
 			const auto &nodes_ids = nodes[f];
 
-			if(nodes_ids.size() == 3)
+			if(nodes_ids.size() == 3){
+				orders_(f) = 1;
 				continue;
+			}
 			//P2
 			else if(nodes_ids.size() == 6)
 			{
-				order_ = std::max(order_, 2);
+				orders_(f) = 2;
 
 				for(int le = 0; le < 3; ++le)
 				{
@@ -218,7 +219,7 @@ namespace polyfem
 			//P3
 			else if(nodes_ids.size() == 10)
 			{
-				order_ = std::max(order_, 3);
+				orders_(f) = 3;
 
 				for(int le = 0; le < 3; ++le)
 				{
@@ -276,7 +277,7 @@ namespace polyfem
 			//P4
 			else if(nodes_ids.size() == 15)
 			{
-				order_ = std::max(order_, 4);
+				orders_(f) = 4;
 				assert(false);
 				// unsupported P4 for geometry, need meshes for testing
 			}
@@ -290,7 +291,7 @@ namespace polyfem
 
 	RowVectorNd Mesh2D::edge_node(const Navigation::Index &index, const int n_new_nodes, const int i) const
 	{
-		if(order_ == 1 || edge_nodes_.empty() || edge_nodes_[index.edge].nodes.rows() != n_new_nodes)
+		if(orders_(index.face) == 1 || edge_nodes_.empty() || edge_nodes_[index.edge].nodes.rows() != n_new_nodes)
 		{
 			const auto v1 = point(index.vertex);
 			const auto v2 = point(switch_vertex(index).vertex);
@@ -311,7 +312,7 @@ namespace polyfem
 	{
 		if(is_simplex(index.face))
 		{
-			if(order_ == 1 || order_ == 2 || face_nodes_.empty() || face_nodes_[index.face].nodes.rows() != n_new_nodes)
+			if(orders_(index.face) == 1 || orders_(index.face) == 2 || face_nodes_.empty() || face_nodes_[index.face].nodes.rows() != n_new_nodes)
 			{
 				const auto v1 = point(index.vertex);
 				const auto v2 = point(switch_vertex(index).vertex);
@@ -326,7 +327,7 @@ namespace polyfem
 				return b1 * v1 + b2 * v2 + b3 * v3;
 			}
 
-			assert(order_ == 3);
+			assert(orders_(index.face) == 3);
 			//unsupported P4 for geometry
 			const auto &n = face_nodes_[index.face];
 			return n.nodes.row(0);
@@ -334,7 +335,7 @@ namespace polyfem
 		else if(is_cube(index.face))
 		{
 			//supports only blilinear quads
-			assert(order_ == 1);
+			assert(orders_(index.face) == 1);
 
 			const auto v1 = point(index.vertex);
 			const auto v2 = point(switch_vertex(index).vertex);

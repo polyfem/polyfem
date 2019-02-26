@@ -1047,7 +1047,7 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
         using std::max;
         assert(mesh.is_volume());
 
-        MeshNodes mesh_nodes(mesh, true, 1, 1, 1);
+        MeshNodes mesh_nodes(mesh, true, true, 1, 1, 1);
 
         const int n_els = mesh.n_elements();
         bases.resize(n_els);
@@ -1240,7 +1240,7 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
 
         // std::vector< Eigen::Triplet<double> > entries, entries_t;
 
-        // MeshNodes nodes(mesh, 1, 1, 1);
+        // MeshNodes nodes(mesh, true, true, 1, 1, 1);
         // // Eigen::MatrixXd tmp;
         // std::vector<AssemblyValues> tmp_val;
 

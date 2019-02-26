@@ -48,8 +48,9 @@ namespace {
 
 // -----------------------------------------------------------------------------
 
-polyfem::MeshNodes::MeshNodes(const Mesh &mesh, const bool has_poly, const int max_nodes_per_edge, const int max_nodes_per_face, const int max_nodes_per_cell)
+polyfem::MeshNodes::MeshNodes(const Mesh &mesh, const bool has_poly, const bool connect_nodes, const int max_nodes_per_edge, const int max_nodes_per_face, const int max_nodes_per_cell)
 : mesh_(mesh)
+, connect_nodes_(connect_nodes)
 , edge_offset_(mesh.n_vertices())
 , face_offset_(edge_offset_ + mesh.n_edges() * max_nodes_per_edge)
 , cell_offset_(face_offset_ + mesh.n_faces() * max_nodes_per_face)
@@ -134,7 +135,7 @@ polyfem::MeshNodes::MeshNodes(const Mesh &mesh, const bool has_poly, const int m
 ////////////////////////////////////////////////////////////////////////////////
 
 int polyfem::MeshNodes::node_id_from_primitive(int primitive_id) {
-	if (primitive_to_node_[primitive_id] < 0) {
+	if (primitive_to_node_[primitive_id] < 0 || !connect_nodes_) {
 		primitive_to_node_[primitive_id] = n_nodes();
 		node_to_primitive_.push_back(primitive_id);
 
@@ -164,7 +165,7 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_edge(const Navigation::Index 
 	// const auto v2 = mesh2d->point(mesh2d->switch_vertex(index).vertex);
 
 	const int start_node_id = primitive_to_node_[start];
-	if (start_node_id < 0) {
+	if (start_node_id < 0 || !connect_nodes_) {
 		for(int i = 1; i <= n_new_nodes; ++i)
 		{
 			// const double t = i/(n_new_nodes + 1.0);
@@ -220,7 +221,7 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_edge(const Navigation3D::Inde
 	// const auto v2 = mesh3d->point(mesh3d->switch_vertex(index).vertex);
 
 	const int start_node_id = primitive_to_node_[start];
-	if (start_node_id < 0) {
+	if (start_node_id < 0 || !connect_nodes_) {
 		for(int i = 1; i <= n_new_nodes; ++i)
 		{
 			// const double t = i/(n_new_nodes + 1.0);
@@ -278,7 +279,7 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_face(const Navigation::Index 
 	// const auto v2 = mesh2d->point(mesh2d->switch_vertex(index).vertex);
 	// const auto v3 = mesh2d->point(mesh2d->switch_vertex(mesh2d->switch_edge(index)).vertex);
 
-	if(start_node_id < 0)
+	if(start_node_id < 0 || !connect_nodes_)
 	{
 		int loc_index = 0;
 		for(int i = 1; i <= n_new_nodes; ++i)
@@ -332,7 +333,7 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_face(const Navigation3D::Inde
 
 	const Mesh3D * mesh3d = dynamic_cast<const Mesh3D *>(&mesh_);
 
-	if(start_node_id < 0)
+	if(start_node_id < 0 || !connect_nodes_)
 	{
 		int loc_index = 0;
 		for(int i = 1; i <= n_new_nodes; ++i)

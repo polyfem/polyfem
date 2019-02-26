@@ -34,6 +34,7 @@ namespace polyfem
 			const int quadrature_order,
 			const int discr_order,
 			const bool has_polys,
+			const bool is_geom_bases,
 			std::vector< ElementBases > &bases,
 			std::vector< LocalBoundary > &local_boundary,
 			std::map<int, InterfaceData> &poly_face_to_data);
@@ -43,6 +44,7 @@ namespace polyfem
 			const int quadrature_order,
 			const Eigen::VectorXi &discr_order,
 			const bool has_polys,
+			const bool is_geom_bases,
 			std::vector< ElementBases > &bases,
 			std::vector< LocalBoundary > &local_boundary,
 			std::map<int, InterfaceData> &poly_face_to_data);

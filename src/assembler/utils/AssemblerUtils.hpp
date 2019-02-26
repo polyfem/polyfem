@@ -15,7 +15,7 @@
 #include <polyfem/HookeLinearElasticity.hpp>
 #include <polyfem/SaintVenantElasticity.hpp>
 #include <polyfem/NeoHookeanElasticity.hpp>
-#include <polyfem/OgdenElasticity.hpp>
+// #include <polyfem/OgdenElasticity.hpp>
 
 #include <polyfem/Stokes.hpp>
 #include <polyfem/IncompressibleLinElast.hpp>
@@ -150,7 +150,7 @@ namespace polyfem
 
 		NLAssembler<SaintVenantElasticity> saint_venant_elasticity_;
 		NLAssembler<NeoHookeanElasticity> neo_hookean_elasticity_;
-		NLAssembler<OgdenElasticity> ogden_elasticity_;
+		// NLAssembler<OgdenElasticity> ogden_elasticity_;
 
 		Assembler<StokesVelocity> stokes_velocity_;
 		MixedAssembler<StokesMixed> stokes_mixed_;

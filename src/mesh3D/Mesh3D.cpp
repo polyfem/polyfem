@@ -35,7 +35,6 @@ namespace polyfem
 		edge_nodes_.clear();
 		face_nodes_.clear();
 		cell_nodes_.clear();
-		order_ = 1;
 
 		if (!StringUtils::endswidth(path, ".HYBRID")) {
 			GEO::Mesh M;
@@ -143,7 +142,6 @@ namespace polyfem
 		edge_nodes_.clear();
 		face_nodes_.clear();
 		cell_nodes_.clear();
-		order_ = 1;
 
 		assert(M.vertices.dimension() == 3);
 
@@ -456,7 +454,6 @@ namespace polyfem
 		edge_nodes_.clear();
 		face_nodes_.clear();
 		cell_nodes_.clear();
-		order_ = 1;
 
 		GEO::Mesh M;
 		M.vertices.create_vertices((int) V.rows());
@@ -484,12 +481,13 @@ namespace polyfem
 		edge_nodes_.clear();
 		face_nodes_.clear();
 		cell_nodes_.clear();
-		order_ = 1;
 
 
 		edge_nodes_.resize(n_edges());
 		face_nodes_.resize(n_faces());
 		cell_nodes_.resize(n_cells());
+
+		orders_.resize(n_cells(), 1);
 
 		const auto attach_p2 = [&] (const Navigation3D::Index &index, const std::vector<int> &nodes_ids) {
 			auto &n = edge_nodes_[index.edge];
@@ -615,12 +613,14 @@ namespace polyfem
 
 			const auto &nodes_ids = nodes[c];
 
-			if(nodes_ids.size() == 4)
+			if(nodes_ids.size() == 4){
+				orders_(c) = 1;
 				continue;
+			}
 			//P2
 			else if(nodes_ids.size() == 10)
 			{
-				order_ = std::max(order_, 2);
+				orders_(c) = 2;
 
 				for(int le = 0; le < 3; ++le)
 				{
@@ -640,7 +640,7 @@ namespace polyfem
 			//P3
 			else if(nodes_ids.size() == 20)
 			{
-				order_ = std::max(order_, 3);
+				orders_(c) = 3;
 
 				for(int le = 0; le < 3; ++le)
 				{
@@ -671,7 +671,7 @@ namespace polyfem
 			//P4
 			else if(nodes_ids.size() == 15)
 			{
-				order_ = std::max(order_, 4);
+				orders_(c) = 4;
 				assert(false);
 				// unsupported P4 for geometry, need meshes for testing
 			}
@@ -685,7 +685,7 @@ namespace polyfem
 
 	RowVectorNd Mesh3D::edge_node(const Navigation3D::Index &index, const int n_new_nodes, const int i) const
 	{
-		if(order_ == 1 || edge_nodes_.empty() || edge_nodes_[index.edge].nodes.rows() != n_new_nodes)
+		if(orders_(index.element) == 1 || edge_nodes_.empty() || edge_nodes_[index.edge].nodes.rows() != n_new_nodes)
 		{
 			const auto v1 = point(index.vertex);
 			const auto v2 = point(switch_vertex(index).vertex);
@@ -706,7 +706,7 @@ namespace polyfem
 	{
 		if(is_simplex(index.element))
 		{
-			if(order_ == 1 || order_ == 2 || face_nodes_.empty() || face_nodes_[index.face].nodes.rows() != n_new_nodes)
+			if(orders_(index.element) == 1 || orders_(index.element) == 2 || face_nodes_.empty() || face_nodes_[index.face].nodes.rows() != n_new_nodes)
 			{
 				const auto v1 = point(index.vertex);
 				const auto v2 = point(switch_vertex(index).vertex);
@@ -721,7 +721,7 @@ namespace polyfem
 				return b1 * v1 + b2 * v2 + b3 * v3;
 			}
 
-			assert(order_ == 3);
+			assert(orders_(index.element) == 3);
 			//unsupported P4 for geometry
 			const auto &n = face_nodes_[index.face];
 			return n.nodes.row(0);
@@ -729,7 +729,7 @@ namespace polyfem
 		else if(is_cube(index.element))
 		{
 			//supports only blilinear quads
-			assert(order_ == 1);
+			assert(orders_(index.element) == 1);
 
 			const auto v1 = point(index.vertex);
 			const auto v2 = point(switch_vertex(index).vertex);
@@ -759,7 +759,7 @@ namespace polyfem
 		else if(is_cube(index.element))
 		{
 			//supports only blilinear quads
-			assert(order_ == 1);
+			assert(orders_(index.element) == 1);
 
 			const auto v1 = point(index.vertex);
 			const auto v2 = point(switch_vertex(index).vertex);
