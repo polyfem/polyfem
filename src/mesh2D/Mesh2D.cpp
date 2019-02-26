@@ -291,7 +291,7 @@ namespace polyfem
 
 	RowVectorNd Mesh2D::edge_node(const Navigation::Index &index, const int n_new_nodes, const int i) const
 	{
-		if(orders_(index.face) == 1 || edge_nodes_.empty() || edge_nodes_[index.edge].nodes.rows() != n_new_nodes)
+		if(orders_.size() <= 0 || orders_(index.face) == 1 || edge_nodes_.empty() || edge_nodes_[index.edge].nodes.rows() != n_new_nodes)
 		{
 			const auto v1 = point(index.vertex);
 			const auto v2 = point(switch_vertex(index).vertex);
@@ -312,7 +312,7 @@ namespace polyfem
 	{
 		if(is_simplex(index.face))
 		{
-			if(orders_(index.face) == 1 || orders_(index.face) == 2 || face_nodes_.empty() || face_nodes_[index.face].nodes.rows() != n_new_nodes)
+			if(orders_.size() <= 0 || orders_(index.face) == 1 || orders_(index.face) == 2 || face_nodes_.empty() || face_nodes_[index.face].nodes.rows() != n_new_nodes)
 			{
 				const auto v1 = point(index.vertex);
 				const auto v2 = point(switch_vertex(index).vertex);
@@ -335,7 +335,7 @@ namespace polyfem
 		else if(is_cube(index.face))
 		{
 			//supports only blilinear quads
-			assert(orders_(index.face) == 1);
+			assert(orders_.size() <= 0 || orders_(index.face) == 1);
 
 			const auto v1 = point(index.vertex);
 			const auto v2 = point(switch_vertex(index).vertex);

@@ -1568,7 +1568,7 @@ namespace polyfem
 		{
 			if(args["force_linear_geometry"] || mesh->orders().size() <= 0)
 			{
-				geom_disc_orders.resizeLike(geom_disc_orders);
+				geom_disc_orders.resizeLike(disc_orders);
 				geom_disc_orders.setConstant(1);
 			}
 			else
