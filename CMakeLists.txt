@@ -203,7 +203,7 @@ if(POLYFEM_TOPLEVEL_PROJECT)
 			warnings::all
 			igl::opengl_glfw_imgui
 			igl::png
-			tinyfiledialogs::tinyfiledialogs
+			# tinyfiledialogs::tinyfiledialogs
 			CLI11::CLI11
 	)
 
@@ -442,7 +442,7 @@ endif()
 if(TARGET igl_opengl)
 	set_target_properties(glad PROPERTIES FOLDER 3rdparty/other)
 endif()
-set_target_properties(tinyfiledialogs_tinyfiledialogs PROPERTIES FOLDER 3rdparty/other)
+# set_target_properties(tinyfiledialogs_tinyfiledialogs PROPERTIES FOLDER 3rdparty/other)
 if(TARGET igl::opengl_glfw_imgui)
 	set_target_properties(imgui PROPERTIES FOLDER 3rdparty/other)
 endif()

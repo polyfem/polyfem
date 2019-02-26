@@ -135,13 +135,13 @@ function(polyfem_download_tinyexpr)
     )
 endfunction()
 
-## tinyfiledialogs
-function(polyfem_download_tinyfiledialogs)
-    polyfem_download_project(tinyfiledialogs
-        GIT_REPOSITORY https://git.code.sf.net/p/tinyfiledialogs/code
-        GIT_TAG        511e6500fa9184923d4859e06ee9a6a4e70820c4
-    )
-endfunction()
+# ## tinyfiledialogs
+# function(polyfem_download_tinyfiledialogs)
+#     polyfem_download_project(tinyfiledialogs
+#         GIT_REPOSITORY https://git.code.sf.net/p/tinyfiledialogs/code
+#         GIT_TAG        511e6500fa9184923d4859e06ee9a6a4e70820c4
+#     )
+# endfunction()
 
 
 ## data
