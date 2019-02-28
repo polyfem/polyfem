@@ -4,7 +4,6 @@
 
 #include <polyfem/Logger.hpp>
 
-#include <igl/copyleft/tetgen/tetrahedralize.h>
 #include <geogram/mesh/mesh_io.h>
 #include <fstream>
 
@@ -934,7 +933,6 @@ namespace polyfem
 
 			local_pts[e] = local_pt;
 			local_tris[e] = local_faces;
-			// igl::copyleft::tetgen::tetrahedralize(local_pt, local_faces, "QpYS0", local_pts[e], tets, local_tris[e]);
 
 			total_tris += local_tris[e].rows();
 			total_pts  += local_pts[e].rows();

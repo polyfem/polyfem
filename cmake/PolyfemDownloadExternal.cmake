@@ -23,7 +23,7 @@ endfunction()
 
 ################################################################################
 
-## libigl
+## libigl LGPL - triangle - tetgen
 function(polyfem_download_libigl)
     polyfem_download_project(libigl
         GIT_REPOSITORY https://github.com/libigl/libigl.git
@@ -31,7 +31,7 @@ function(polyfem_download_libigl)
     )
 endfunction()
 
-## Geogram
+## Geogram LGPL
 function(polyfem_download_geogram)
     polyfem_download_project(geogram
         GIT_REPOSITORY https://github.com/alicevision/geogram.git
@@ -39,7 +39,7 @@ function(polyfem_download_geogram)
     )
 endfunction()
 
-## Json
+## Json MIT
 function(polyfem_download_json)
     polyfem_download_project(json
         GIT_REPOSITORY https://github.com/jdumas/json
@@ -47,7 +47,7 @@ function(polyfem_download_json)
     )
 endfunction()
 
-## Catch2
+## Catch2 BSL 1.0
 function(polyfem_download_catch2)
     polyfem_download_project(Catch2
         GIT_REPOSITORY https://github.com/catchorg/Catch2.git
@@ -55,7 +55,7 @@ function(polyfem_download_catch2)
     )
 endfunction()
 
-## CLI11
+## CLI11 3-Clause BSD license
 function(polyfem_download_cli11)
     polyfem_download_project(cli11
         URL     https://github.com/CLIUtils/CLI11/archive/v1.6.1.tar.gz
@@ -63,7 +63,7 @@ function(polyfem_download_cli11)
     )
 endfunction()
 
-## Clipper
+## Clipper (BSL1.0)
 function(polyfem_download_clipper)
     polyfem_download_project(clipper
         URL     https://sourceforge.net/projects/polyclipping/files/clipper_ver6.4.2.zip
@@ -71,7 +71,7 @@ function(polyfem_download_clipper)
     )
 endfunction()
 
-## CppNumericalSolvers
+## CppNumericalSolvers MIT
 function(polyfem_download_CppNumericalSolvers)
     polyfem_download_project(CppNumericalSolvers
         GIT_REPOSITORY https://github.com/PatWie/CppNumericalSolvers.git
@@ -79,7 +79,7 @@ function(polyfem_download_CppNumericalSolvers)
     )
 endfunction()
 
-## spectra
+## spectra MPL 2.0
 function(polyfem_download_spectra)
     polyfem_download_project(spectra
         GIT_REPOSITORY https://github.com/yixuan/spectra.git
@@ -87,7 +87,7 @@ function(polyfem_download_spectra)
     )
 endfunction()
 
-## tbb
+## tbb Apache-2.0
 function(polyfem_download_tbb)
     polyfem_download_project(tbb
         GIT_REPOSITORY https://github.com/wjakob/tbb.git
@@ -95,7 +95,7 @@ function(polyfem_download_tbb)
     )
 endfunction()
 
-## hypre
+## hypre GNU Lesser General Public License
 function(polyfem_download_hypre)
     polyfem_download_project(hypre
         GIT_REPOSITORY https://github.com/LLNL/hypre.git
@@ -104,14 +104,14 @@ function(polyfem_download_hypre)
 endfunction()
 
 ## rbf
-function(polyfem_download_rbf)
-    polyfem_download_project(rbf
-        GIT_REPOSITORY https://bitbucket.org/zulianp/opencl-rbf-pum.git
-        GIT_TAG        master
-    )
-endfunction()
+# function(polyfem_download_rbf)
+#     polyfem_download_project(rbf
+#         GIT_REPOSITORY https://bitbucket.org/zulianp/opencl-rbf-pum.git
+#         GIT_TAG        master
+#     )
+# endfunction()
 
-## Sanitizers
+## Sanitizers MIT
 function(polyfem_download_sanitizers)
     polyfem_download_project(sanitizers-cmake
         GIT_REPOSITORY https://github.com/arsenm/sanitizers-cmake.git
@@ -119,7 +119,7 @@ function(polyfem_download_sanitizers)
     )
 endfunction()
 
-## spdlog
+## spdlog MIT
 function(polyfem_download_spdlog)
     polyfem_download_project(spdlog
         GIT_REPOSITORY https://github.com/gabime/spdlog.git
@@ -127,7 +127,7 @@ function(polyfem_download_spdlog)
     )
 endfunction()
 
-## tinyexpr
+## tinyexpr zlib
 function(polyfem_download_tinyexpr)
     polyfem_download_project(tinyexpr
         GIT_REPOSITORY https://github.com/codeplea/tinyexpr.git

@@ -10,7 +10,6 @@
 #include <polyfem/Logger.hpp>
 
 #include <igl/triangle/triangulate.h>
-#include <igl/copyleft/tetgen/tetrahedralize.h>
 
 #include <geogram/basic/file_system.h>
 #include <geogram/mesh/mesh_io.h>

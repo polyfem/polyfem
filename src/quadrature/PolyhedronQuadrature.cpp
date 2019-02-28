@@ -3,7 +3,7 @@
 #include <polyfem/TetQuadrature.hpp>
 #include <polyfem/MeshUtils.hpp>
 #include <geogram/mesh/mesh_io.h>
-#include <igl/copyleft/tetgen/tetrahedralize.h>
+// #include <igl/copyleft/tetgen/tetrahedralize.h>
 #include <igl/writeMESH.h>
 #include <igl/readMESH.h>
 #include <igl/write_triangle_mesh.h>
