@@ -256,7 +256,7 @@ void sample_polyhedra(
 		auto index = mesh.get_index_from_element(element_index, lf, lv0);
 		index = mesh.switch_element(index);
 		// Eigen::MatrixXd abcd = FEBasis3d::linear_hex_face_local_nodes_coordinates(mesh, index);
-		const auto indices = FEBasis3d::hex_face_local_nodes(1, mesh, index);
+		const auto indices = FEBasis3d::hex_face_local_nodes(false, 1, mesh, index);
 		assert(indices.size() == 4);
 		Eigen::MatrixXd abcd; polyfem::autogen::q_nodes_3d(1, abcd);
 		Eigen::RowVector3d a = abcd.row(indices(0));

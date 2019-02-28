@@ -316,15 +316,15 @@ void tet_local_to_global(const bool is_geom_bases, const int p, const Mesh3D &me
 	assert(res.size() == size_t(4 + n_edge_nodes + n_face_nodes + n_cell_nodes));
 }
 
-void hex_local_to_global(const int q, const Mesh3D &mesh, int c, const Eigen::VectorXi &discr_order, std::vector<int> &res, polyfem::MeshNodes &nodes)
+void hex_local_to_global(const bool serendipity, const int q, const Mesh3D &mesh, int c, const Eigen::VectorXi &discr_order, std::vector<int> &res, polyfem::MeshNodes &nodes)
 {
 	assert(mesh.is_cube(c));
 
 	const int n_edge_nodes = ((q-1)*12);
 	const int nn = (q - 1);
-	const int n_loc_f = nn*nn;
-	const int n_face_nodes = n_loc_f * 6;
-	const int n_cell_nodes = nn * nn * nn;
+	const int n_loc_f = serendipity ? 0 : (nn*nn);
+	const int n_face_nodes = serendipity ? 0 : (n_loc_f * 6);
+	const int n_cell_nodes = serendipity ? 0 : (nn * nn * nn);
 
 
 	if(q == 0)
@@ -420,7 +420,7 @@ void hex_local_to_global(const int q, const Mesh3D &mesh, int c, const Eigen::Ve
 		}
 		else
 		{
-			auto node_ids = nodes.node_ids_from_face(index, q - 1);
+			auto node_ids = nodes.node_ids_from_face(index, serendipity? 0 : (q - 1));
 			assert(node_ids.size() == n_loc_f);
 			res.insert(res.end(), node_ids.begin(), node_ids.end());
 		}
@@ -456,6 +456,7 @@ void hex_local_to_global(const int q, const Mesh3D &mesh, int c, const Eigen::Ve
 void compute_nodes(
 	const polyfem::Mesh3D &mesh,
 	const Eigen::VectorXi &discr_orders,
+	const bool serendipity,
 	const bool has_polys,
 	const bool is_geom_bases,
 	MeshNodes &nodes,
@@ -472,7 +473,7 @@ void compute_nodes(
 		const int discr_order = discr_orders(c);
 
 		if (mesh.is_cube(c)) {
-			hex_local_to_global(discr_order, mesh, c, discr_orders, element_nodes_id[c], nodes);
+			hex_local_to_global(serendipity, discr_order, mesh, c, discr_orders, element_nodes_id[c], nodes);
 
 
 			auto v = hex_vertices_local_to_global(mesh, c);
@@ -541,7 +542,7 @@ void compute_nodes(
 			const int discr_order = discr_orders(c2);
 			if(mesh.is_cube(c2))
 			{
-				indices = polyfem::FEBasis3d::hex_face_local_nodes(discr_order, mesh, index2);
+				indices = polyfem::FEBasis3d::hex_face_local_nodes(serendipity, discr_order, mesh, index2);
 			} else if(mesh.is_simplex(c2)) {
 				indices = polyfem::FEBasis3d::tet_face_local_nodes(discr_order, mesh, index2);
 			}
@@ -737,11 +738,11 @@ Eigen::VectorXi polyfem::FEBasis3d::tet_face_local_nodes(const int p, const Mesh
 }
 
 
-Eigen::VectorXi polyfem::FEBasis3d::hex_face_local_nodes(const int q, const Mesh3D &mesh, Navigation3D::Index index)
+Eigen::VectorXi polyfem::FEBasis3d::hex_face_local_nodes(const bool serendipity, const int q, const Mesh3D &mesh, Navigation3D::Index index)
 {
 	const int nn = q - 1;
 	const int n_edge_nodes = nn * 12;
-	const int n_face_nodes = nn * nn;
+	const int n_face_nodes = serendipity? 0 : nn * nn;
 
 	const int c = index.element;
 	assert(mesh.is_cube(c));
@@ -922,6 +923,7 @@ int polyfem::FEBasis3d::build_bases(
 	const Mesh3D &mesh,
 	const int quadrature_order,
 	const int discr_order,
+	const bool serendipity,
 	const bool has_polys,
 	const bool is_geom_bases,
 	std::vector< ElementBases > &bases,
@@ -931,13 +933,14 @@ int polyfem::FEBasis3d::build_bases(
 	Eigen::VectorXi discr_orders(mesh.n_cells());
 	discr_orders.setConstant(discr_order);
 
-	return build_bases(mesh, quadrature_order, discr_orders, has_polys, is_geom_bases, bases, local_boundary, poly_face_to_data);
+	return build_bases(mesh, quadrature_order, discr_orders, serendipity, has_polys, is_geom_bases, bases, local_boundary, poly_face_to_data);
 }
 
 int polyfem::FEBasis3d::build_bases(
 	const Mesh3D &mesh,
 	const int quadrature_order,
 	const Eigen::VectorXi &discr_orders,
+	const bool serendipity,
 	const bool has_polys,
 	const bool is_geom_bases,
 	std::vector< ElementBases > &bases,
@@ -962,7 +965,7 @@ int polyfem::FEBasis3d::build_bases(
 
 	MeshNodes nodes(mesh, has_polys, !is_geom_bases, nn, n_face_nodes, max_p == 0 ? 1 : n_cells_nodes);
 	std::vector<std::vector<int>> element_nodes_id;
-	compute_nodes(mesh, discr_orders, has_polys, is_geom_bases, nodes, element_nodes_id, local_boundary, poly_face_to_data);
+	compute_nodes(mesh, discr_orders, serendipity, has_polys, is_geom_bases, nodes, element_nodes_id, local_boundary, poly_face_to_data);
 	// boundary_nodes = nodes.boundary_nodes();
 
 
@@ -1004,7 +1007,7 @@ int polyfem::FEBasis3d::build_bases(
 			});
 
 
-			b.set_local_node_from_primitive_func([discr_order, e](const int primitive_id, const Mesh &mesh)
+			b.set_local_node_from_primitive_func([serendipity, discr_order, e](const int primitive_id, const Mesh &mesh)
 			{
 				const auto &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
 				Navigation3D::Index index;
@@ -1016,7 +1019,7 @@ int polyfem::FEBasis3d::build_bases(
 						break;
 				}
 				assert(index.face == primitive_id);
-				return hex_face_local_nodes(discr_order, mesh3d, index);
+				return hex_face_local_nodes(serendipity, discr_order, mesh3d, index);
 			});
 
 			for (int j = 0; j < n_el_bases; ++j) {
@@ -1024,8 +1027,10 @@ int polyfem::FEBasis3d::build_bases(
 
 				b.bases[j].init(discr_order, global_index, j, nodes.node_position(global_index));
 
-				b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::q_basis_value_3d     (discr_order, j, uv, val); });
-				b.bases[j].set_grad ([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::q_grad_basis_value_3d(discr_order, j, uv, val); });
+				const int dtmp = serendipity ? -2 : discr_order;
+
+				b.bases[j].set_basis([dtmp, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::q_basis_value_3d     (dtmp, j, uv, val); });
+				b.bases[j].set_grad ([dtmp, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::q_grad_basis_value_3d(dtmp, j, uv, val); });
 			}
 		}
 		else if(mesh.is_simplex(e)) {

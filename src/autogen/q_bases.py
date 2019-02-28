@@ -137,7 +137,8 @@ if __name__ == "__main__":
     args = parse_args()
 
     dims = [2, 3]
-    orders = [0, 1, 2]
+    orders = [0, 1, 2, -2]
+
 
     cpp = "#include <polyfem/auto_q_bases.hpp>\n\n\n"
     cpp = cpp + "namespace polyfem {\nnamespace autogen " + "{\nnamespace " + "{\n"
@@ -182,6 +183,67 @@ if __name__ == "__main__":
                     fe.points = [[1./2., 1./2.]]
                 else:
                     fe.points = [[1./2., 1./2., 1./2.]]
+            elif order == -2:
+                fe = lambda: None
+                if dim == 2:
+                    fe.points = []
+                    fe.N = []
+                    fe.nbf = lambda: 8
+
+                    for xi_a in [-1, 1]:
+                        for eta_a in [-1, 1]:
+                            tmp = (1/4*(2*x*xi_a-xi_a+1))*(2*eta_a*y-eta_a+1)*(2*eta_a*y+2*x*xi_a-eta_a-xi_a-1)
+                            fe.N.append(tmp)
+                            fe.points.append([(xi_a+1)/2,(eta_a+1)/2])
+
+                    for eta_a in [-1, 1]:
+                        tmp = -2*x*(x-1)*(2*eta_a*y-eta_a+1)
+                        fe.N.append(tmp)
+                        fe.points.append([1/2,(eta_a+1)/2])
+
+                    for xi_a in [-1, 1]:
+                        tmp = -2*y*(y-1)*(2*x*xi_a-xi_a+1)
+                        fe.N.append(tmp)
+                        fe.points.append([(xi_a+1)/2, 1/2])
+
+                    assert(len(fe.points) == 8)
+                    assert(len(fe.N) == 8)
+
+                elif dim == 3:
+                    fe.points = []
+                    fe.N = []
+                    fe.nbf = lambda: 20
+
+                    for xi_a in [-1, 1]:
+                        for eta_a in [-1, 1]:
+                            for zeta_a in [-1, 1]:
+                                tmp = (1/8*(2*x*xi_a-xi_a+1))*(2*eta_a*y-eta_a+1)*(2*z*zeta_a-zeta_a+1)*(2*eta_a*y+2*x*xi_a+2*z*zeta_a-eta_a-xi_a-zeta_a-2)
+                                fe.N.append(tmp)
+                                fe.points.append([(xi_a+1)/2,(eta_a+1)/2,(zeta_a+1)/2])
+
+                    for eta_a in [-1, 1]:
+                        for zeta_a in [-1, 1]:
+                            tmp = -x*(x-1)*(2*eta_a*y-eta_a+1)*(2*z*zeta_a-zeta_a+1)
+                            fe.N.append(tmp)
+                            fe.points.append([1/2,(eta_a+1)/2,(zeta_a+1)/2])
+
+                    for xi_a in [-1, 1]:
+                        for zeta_a in [-1, 1]:
+                            tmp = -y*(y-1)*(2*x*xi_a-xi_a+1)*(2*z*zeta_a-zeta_a+1)
+                            fe.N.append(tmp)
+                            fe.points.append([(xi_a+1)/2,1/2, (zeta_a+1)/2])
+
+                    for xi_a in [-1, 1]:
+                        for eta_a in [-1, 1]:
+                            tmp = -z*(z-1)*(2*x*xi_a-xi_a+1)*(2*eta_a*y-eta_a+1)
+                            fe.N.append(tmp)
+                            fe.points.append([(xi_a+1)/2, (eta_a+1)/2, 1/2])
+
+                    assert(len(fe.points) == 20)
+                    assert(len(fe.N) == 20)
+                else:
+                    assert(False)
+
             else:
                 fe = Lagrange(dim, order)
 
@@ -205,140 +267,140 @@ if __name__ == "__main__":
 
 
             # edge 0 coordinate
-            for i in range(0, order - 1):
+            for i in range(0, abs(order) - 1):
                 for ii in current_indices:
                     if fe.points[ii][1] != 0 or (dim == 3 and fe.points[ii][2] != 0):
                         continue
 
-                    if abs(fe.points[ii][0] - (i + 1) / order) < 1e-10:
+                    if abs(fe.points[ii][0] - (i + 1) / abs(order)) < 1e-10:
                         indices.append(ii)
                         current_indices.remove(ii)
                         break
 
             # edge 1 coordinate
-            for i in range(0, order - 1):
+            for i in range(0, abs(order) - 1):
                 for ii in current_indices:
                     if fe.points[ii][0] != 1 or (dim == 3 and fe.points[ii][2] != 0):
                         continue
 
-                    if abs(fe.points[ii][1] - (i + 1) / order) < 1e-10:
+                    if abs(fe.points[ii][1] - (i + 1) / abs(order)) < 1e-10:
                         indices.append(ii)
                         current_indices.remove(ii)
                         break
 
             # edge 2 coordinate
-            for i in range(0, order - 1):
+            for i in range(0, abs(order) - 1):
                 for ii in current_indices:
                     if fe.points[ii][1] != 1 or (dim == 3 and fe.points[ii][2] != 0):
                         continue
 
-                    if abs(fe.points[ii][0] - (1 - (i + 1) / order)) < 1e-10:
+                    if abs(fe.points[ii][0] - (1 - (i + 1) / abs(order))) < 1e-10:
                         indices.append(ii)
                         current_indices.remove(ii)
                         break
 
             # edge 3 coordinate
-            for i in range(0, order - 1):
+            for i in range(0, abs(order) - 1):
                 for ii in current_indices:
                     if fe.points[ii][0] != 0 or (dim == 3 and fe.points[ii][2] != 0):
                         continue
 
-                    if abs(fe.points[ii][1] - (1 - (i + 1) / order)) < 1e-10:
+                    if abs(fe.points[ii][1] - (1 - (i + 1) / abs(order))) < 1e-10:
                         indices.append(ii)
                         current_indices.remove(ii)
                         break
 
             if dim == 3:
                 # edge 4 coordinate
-                for i in range(0, order - 1):
+                for i in range(0, abs(order) - 1):
                     for ii in current_indices:
                         if fe.points[ii][0] != 0 or fe.points[ii][1] != 0:
                             continue
 
-                        if abs(fe.points[ii][2] - (i + 1) / order) < 1e-10:
+                        if abs(fe.points[ii][2] - (i + 1) / abs(order)) < 1e-10:
                             indices.append(ii)
                             current_indices.remove(ii)
                             break
 
                 # edge 5 coordinate
-                for i in range(0, order - 1):
+                for i in range(0, abs(order) - 1):
                     for ii in current_indices:
                         if fe.points[ii][0] != 1 or fe.points[ii][1] != 0:
                             continue
 
-                        if abs(fe.points[ii][2] - (1 - (i + 1) / order)) < 1e-10:
+                        if abs(fe.points[ii][2] - (1 - (i + 1) / abs(order))) < 1e-10:
                             indices.append(ii)
                             current_indices.remove(ii)
                             break
 
                 # edge 6 coordinate
-                for i in range(0, order - 1):
+                for i in range(0, abs(order) - 1):
                     for ii in current_indices:
                         if fe.points[ii][0] != 1 or fe.points[ii][1] != 1:
                             continue
 
-                        if abs(fe.points[ii][2] - (1 - (i + 1) / order)) < 1e-10:
+                        if abs(fe.points[ii][2] - (1 - (i + 1) / abs(order))) < 1e-10:
                             indices.append(ii)
                             current_indices.remove(ii)
                             break
 
                 # edge 7 coordinate
-                for i in range(0, order - 1):
+                for i in range(0, abs(order) - 1):
                     for ii in current_indices:
                         if fe.points[ii][0] != 0 or fe.points[ii][1] != 1:
                             continue
 
-                        if abs(fe.points[ii][2] - (1 - (i + 1) / order)) < 1e-10:
+                        if abs(fe.points[ii][2] - (1 - (i + 1) / abs(order))) < 1e-10:
                             indices.append(ii)
                             current_indices.remove(ii)
                             break
 
                 # edge 8 coordinate
-                for i in range(0, order - 1):
+                for i in range(0, abs(order) - 1):
                     for ii in current_indices:
                         if fe.points[ii][1] != 0 or fe.points[ii][2] != 1:
                             continue
 
-                        if abs(fe.points[ii][0] - (i + 1) / order) < 1e-10:
+                        if abs(fe.points[ii][0] - (i + 1) / abs(order)) < 1e-10:
                             indices.append(ii)
                             current_indices.remove(ii)
                             break
 
                 # edge 9 coordinate
-                for i in range(0, order - 1):
+                for i in range(0, abs(order) - 1):
                     for ii in current_indices:
                         if fe.points[ii][0] != 1 or fe.points[ii][2] != 1:
                             continue
 
-                        if abs(fe.points[ii][1] - (i + 1) / order) < 1e-10:
+                        if abs(fe.points[ii][1] - (i + 1) / abs(order)) < 1e-10:
                             indices.append(ii)
                             current_indices.remove(ii)
                             break
 
                 # edge 10 coordinate
-                for i in range(0, order - 1):
+                for i in range(0, abs(order) - 1):
                     for ii in current_indices:
                         if fe.points[ii][1] != 1 or fe.points[ii][2] != 1:
                             continue
 
-                        if abs(fe.points[ii][0] - (1 - (i + 1) / order)) < 1e-10:
+                        if abs(fe.points[ii][0] - (1 - (i + 1) / abs(order))) < 1e-10:
                             indices.append(ii)
                             current_indices.remove(ii)
                             break
 
                 # edge 11 coordinate
-                for i in range(0, order - 1):
+                for i in range(0, abs(order) - 1):
                     for ii in current_indices:
                         if fe.points[ii][0] != 0 or fe.points[ii][2] != 1:
                             continue
 
-                        if abs(fe.points[ii][1] - (1 - (i + 1) / order)) < 1e-10:
+                        if abs(fe.points[ii][1] - (1 - (i + 1) / abs(order))) < 1e-10:
                             indices.append(ii)
                             current_indices.remove(ii)
                             break
 
             if dim == 3:
-                nn = max(0, order - 1)
+                nn = max(0, abs(order) - 1)
                 npts = int(nn * nn)
 
                 # side: x = 0
@@ -411,9 +473,10 @@ if __name__ == "__main__":
             for ii in current_indices:
                 indices.append(ii)
 
+            orderN = str(order) if order >= 0 else "m"+str(-order)
             # nodes code gen
-            nodes = "void q_" + str(order) + "_nodes" + suffix + "(Eigen::MatrixXd &res) {\n res.resize(" + str(len(indices)) + ", " + str(dim) + "); res << \n"
-            unique_nodes = unique_nodes + "\tcase " + str(order) + ": " + "q_" + str(order) + "_nodes" + suffix + "(val); break;\n"
+            nodes = "void q_" + orderN + "_nodes" + suffix + "(Eigen::MatrixXd &res) {\n res.resize(" + str(len(indices)) + ", " + str(dim) + "); res << \n"
+            unique_nodes = unique_nodes + "\tcase " + str(order) + ": " + "q_" + orderN + "_nodes" + suffix + "(val); break;\n"
 
             for ii in indices:
                 nodes = nodes + ccode(fe.points[ii][0]) + ", " + ccode(fe.points[ii][1]) + ((", " + ccode(fe.points[ii][2])) if dim == 3 else "") + ",\n"
@@ -421,11 +484,11 @@ if __name__ == "__main__":
             nodes = nodes + ";\n}"
 
             # bases code gen
-            func = "void q_" + str(order) + "_basis_value" + suffix + "(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &result_0)"
-            dfunc = "void q_" + str(order) + "_basis_grad_value" + suffix + "(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
+            func = "void q_" + orderN + "_basis_value" + suffix + "(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &result_0)"
+            dfunc = "void q_" + orderN + "_basis_grad_value" + suffix + "(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
 
-            unique_fun = unique_fun + "\tcase " + str(order) + ": " + "q_" + str(order) + "_basis_value" + suffix + "(local_index, uv, val); break;\n"
-            dunique_fun = dunique_fun + "\tcase " + str(order) + ": " + "q_" + str(order) + "_basis_grad_value" + suffix + "(local_index, uv, val); break;\n"
+            unique_fun = unique_fun + "\tcase " + str(order) + ": " + "q_" + orderN + "_basis_value" + suffix + "(local_index, uv, val); break;\n"
+            dunique_fun = dunique_fun + "\tcase " + str(order) + ": " + "q_" + orderN + "_basis_grad_value" + suffix + "(local_index, uv, val); break;\n"
 
             # hpp = hpp + func + ";\n"
             # hpp = hpp + dfunc + ";\n"

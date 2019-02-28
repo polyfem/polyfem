@@ -33,6 +33,7 @@ namespace polyfem
 			const Mesh3D &mesh,
 			const int quadrature_order,
 			const int discr_order,
+			const bool serendipity,
 			const bool has_polys,
 			const bool is_geom_bases,
 			std::vector< ElementBases > &bases,
@@ -43,6 +44,7 @@ namespace polyfem
 			const Mesh3D &mesh,
 			const int quadrature_order,
 			const Eigen::VectorXi &discr_order,
+			const bool serendipity,
 			const bool has_polys,
 			const bool is_geom_bases,
 			std::vector< ElementBases > &bases,
@@ -50,7 +52,7 @@ namespace polyfem
 			std::map<int, InterfaceData> &poly_face_to_data);
 
 		static Eigen::VectorXi tet_face_local_nodes(const int p, const Mesh3D &mesh, Navigation3D::Index index);
-		static Eigen::VectorXi hex_face_local_nodes(const int q, const Mesh3D &mesh, Navigation3D::Index index);
+		static Eigen::VectorXi hex_face_local_nodes(const bool serendipity, const int q, const Mesh3D &mesh, Navigation3D::Index index);
 	private:
 
 		static Eigen::MatrixXd linear_hex_face_local_nodes_coordinates(const Mesh3D &mesh, Navigation3D::Index index);

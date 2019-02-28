@@ -72,6 +72,7 @@ int main(int argc, char **argv)
 	bool p_ref = false;
 	bool force_linear = false;
 	bool isoparametric = false;
+	bool serendipity = false;
 
 
 	std::string log_file = "";
@@ -103,6 +104,7 @@ int main(int argc, char **argv)
 	command_line.add_flag("--spline", use_splines, "Use spline for quad/hex meshes");
 	command_line.add_flag("--lin_geom", force_linear, "Force use linear geometric mapping");
 	command_line.add_flag("--isoparametric", isoparametric, "Force use isoparametric basis");
+	command_line.add_flag("--serendipity", serendipity, "Use of serendipity elements, only for Q2");
 
 	//disable out
 	command_line.add_flag("--cmd", no_ui, "Runs in command line mode, no ui");
@@ -160,6 +162,7 @@ int main(int argc, char **argv)
 		in_args["output"] = output;
 		in_args["use_p_ref"] = p_ref;
 		in_args["iso_parametric"] = isoparametric;
+		in_args["serendipity"] = serendipity;
 
 		if (!vtu.empty()) {
 			in_args["export"]["vis_mesh"] = vtu;

@@ -177,7 +177,7 @@ namespace polyfem
 				if(args["discr_order"] == 1)
 					return true;
 				else
-					return false;
+					return args["iso_parametric"];
 			}
 
 			if(mesh->orders().minCoeff() != mesh->orders().maxCoeff())

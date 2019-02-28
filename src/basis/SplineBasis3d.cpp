@@ -367,7 +367,7 @@ void explore_face(const Navigation3D::Index &index, const Mesh3D &mesh, MeshNode
     if(mesh_nodes.is_boundary(node_id))
     {
         // local_boundary.add_boundary_primitive(index.face, FEBasis3d::quadr_hex_face_local_nodes(mesh, index)[8]-20);
-        local_boundary.add_boundary_primitive(index.face, FEBasis3d::hex_face_local_nodes(2, mesh, index)[8]-20);
+        local_boundary.add_boundary_primitive(index.face, FEBasis3d::hex_face_local_nodes(false, 2, mesh, index)[8]-20);
         // bounday_nodes.push_back(node_id);
     }
     else if(mesh_nodes.is_interface(node_id))
@@ -780,7 +780,7 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
             {
                 const Navigation3D::Index index = to_vertex[j](start_index);
                 // const int loc_index = FEBasis3d::quadr_hex_face_local_nodes(mesh, index)[0];
-                const int loc_index = FEBasis3d::hex_face_local_nodes(2, mesh, index)[0];
+                const int loc_index = FEBasis3d::hex_face_local_nodes(false, 2, mesh, index)[0];
 
 
                 int current_vertex_node_id = -1;
@@ -832,7 +832,7 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
                 int current_edge_node_id = -1;
                 Eigen::Matrix<double, 1, 3> current_edge_node;
                 // const int loc_index = FEBasis3d::quadr_hex_face_local_nodes(mesh, index)[1];
-                const int loc_index = FEBasis3d::hex_face_local_nodes(2, mesh, index)[1];
+                const int loc_index = FEBasis3d::hex_face_local_nodes(false, 2, mesh, index)[1];
 
 
                 bool is_edge_q2 = true;
@@ -882,7 +882,7 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
                 const int opposite_element = mesh.switch_element(index).element;
                 const bool is_face_q2 = opposite_element < 0 || !mesh.is_spline_compatible(opposite_element);
                 // const int loc_index = FEBasis3d::quadr_hex_face_local_nodes(mesh, index)[8];
-                const int loc_index = FEBasis3d::hex_face_local_nodes(2, mesh, index)[8];
+                const int loc_index = FEBasis3d::hex_face_local_nodes(false, 2, mesh, index)[8];
 
 
                 if (is_face_q2)
@@ -969,14 +969,14 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
                 Eigen::Matrix<double, 9, 3> param_p;
                 {
                     Eigen::MatrixXd hex_loc_nodes; polyfem::autogen::q_nodes_3d(2, hex_loc_nodes);
-                    const auto opposite_indices = FEBasis3d::hex_face_local_nodes(2, mesh, mesh.switch_element(index));
+                    const auto opposite_indices = FEBasis3d::hex_face_local_nodes(false, 2, mesh, mesh.switch_element(index));
                     for(int k = 0; k < 9; ++k)
                         param_p.row(k) = hex_loc_nodes.row(opposite_indices[k]);
                 }
                 const auto &other_bases = bases[opposite_element];
 
                 // const auto &indices     = FEBasis3d::quadr_hex_face_local_nodes(mesh, index);
-                const auto &indices     = FEBasis3d::hex_face_local_nodes(2, mesh, index);
+                const auto &indices     = FEBasis3d::hex_face_local_nodes(false, 2, mesh, index);
 
                 std::array<int, 9> sizes;
 
@@ -1026,7 +1026,7 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
                 if(is_neigh_poly)
                 {
                     // auto e2l = FEBasis3d::quadr_hex_face_local_nodes(mesh, index);
-                    auto e2l = FEBasis3d::hex_face_local_nodes(2, mesh, index);
+                    auto e2l = FEBasis3d::hex_face_local_nodes(false, 2, mesh, index);
 
                     InterfaceData &data = poly_face_to_data[index.face];
 
@@ -1158,7 +1158,7 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
                 assert(index.face == primitive_id);
 
                 // const auto indices = FEBasis3d::quadr_hex_face_local_nodes(mesh3d, index);
-                const auto indices = FEBasis3d::hex_face_local_nodes(2, mesh3d, index);
+                const auto indices = FEBasis3d::hex_face_local_nodes(false, 2, mesh3d, index);
                 Eigen::VectorXi res(indices.size());
 
                 for(size_t i = 0; i< indices.size(); ++i)

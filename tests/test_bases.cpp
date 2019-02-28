@@ -784,6 +784,21 @@ TEST_CASE("Qk_2d", "[bases]") {
 			}
 		}
 	}
+
+	int k = -2;
+	polyfem::autogen::q_nodes_2d(k, pts);
+
+	Eigen::MatrixXd val;
+	for(int i = 0; i < pts.rows(); ++i){
+		polyfem::autogen::q_basis_value_2d(k, i, pts, val);
+
+		for(int j = 0; j < val.size(); ++j){
+			if(i == j)
+				REQUIRE(val(j) == Approx(1).margin(1e-10));
+			else
+				REQUIRE(val(j) == Approx(0).margin(1e-10));
+		}
+	}
 }
 
 
@@ -863,6 +878,23 @@ TEST_CASE("Qk_3d", "[bases]") {
 				else
 					REQUIRE(val(j) == Approx(0).margin(1e-10));
 			}
+		}
+	}
+
+	int k = -2;
+	polyfem::autogen::q_nodes_3d(k, pts);
+
+	Eigen::MatrixXd val;
+	for(int i = 0; i < pts.rows(); ++i){
+		polyfem::autogen::q_basis_value_3d(k, i, pts, val);
+
+		// std::cout<<i<<"\n"<<val<<"\n\n\n"<<std::endl;
+
+		for(int j = 0; j < val.size(); ++j){
+			if(i == j)
+				REQUIRE(val(j) == Approx(1).margin(1e-10));
+			else
+				REQUIRE(val(j) == Approx(0).margin(1e-10));
 		}
 	}
 }
