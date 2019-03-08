@@ -13,7 +13,7 @@
 
 // #include <polyfem/UIState.hpp>
 
-#include <igl/png/writePNG.h>
+// #include <igl/png/writePNG.h>
 #include <igl/per_corner_normals.h>
 #include <igl/write_triangle_mesh.h>
 #include <igl/read_triangle_mesh.h>

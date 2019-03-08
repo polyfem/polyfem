@@ -77,7 +77,7 @@ option(SANITIZE_THREAD    "Sanitize Thread"        OFF)
 option(SANITIZE_UNDEFINED "Sanitize Undefined"     OFF)
 
 # Options for libigl modules
-option(LIBIGL_USE_STATIC_LIBRARY          "Use libigl as static library" ON)
+option(LIBIGL_USE_STATIC_LIBRARY          "Use libigl as static library" OFF)
 option(LIBIGL_WITH_ANTTWEAKBAR            "Use AntTweakBar"              OFF)
 option(LIBIGL_WITH_CGAL                   "Use CGAL"                     OFF)
 option(LIBIGL_WITH_COMISO                 "Use CoMiso"                   OFF)
@@ -89,7 +89,7 @@ option(LIBIGL_WITH_MOSEK                  "Use MOSEK"                    OFF)
 option(LIBIGL_WITH_OPENGL                 "Use OpenGL"                   ON)
 option(LIBIGL_WITH_OPENGL_GLFW            "Use GLFW"                     ON)
 option(LIBIGL_WITH_OPENGL_GLFW_IMGUI      "Use ImGui"                    ON)
-option(LIBIGL_WITH_PNG                    "Use PNG"                      ON)
+option(LIBIGL_WITH_PNG                    "Use PNG"                      OFF)
 option(LIBIGL_WITH_PYTHON                 "Use Python"                   OFF)
 option(LIBIGL_WITH_TETGEN                 "Use Tetgen"                   ON)
 option(LIBIGL_WITH_TRIANGLE               "Use Triangle"                 ON)
@@ -202,7 +202,7 @@ if(POLYFEM_TOPLEVEL_PROJECT)
 			polyfem
 			warnings::all
 			igl::opengl_glfw_imgui
-			igl::png
+			# igl::png
 			# tinyfiledialogs::tinyfiledialogs
 			CLI11::CLI11
 	)
@@ -421,31 +421,31 @@ endif()
 # Clutter management
 ################################################################################
 
-set_target_properties(igl_triangle PROPERTIES FOLDER 3rdparty/igl)
+# set_target_properties(igl_triangle PROPERTIES FOLDER 3rdparty/igl)
 
-if(TARGET igl_png)
-	set_target_properties(igl_png PROPERTIES FOLDER 3rdparty/igl)
-endif()
-if(TARGET igl_opengl)
-	set_target_properties(igl_opengl PROPERTIES FOLDER 3rdparty/igl)
-	set_target_properties(igl_opengl_glfw_imgui PROPERTIES FOLDER 3rdparty/igl)
-	set_target_properties(igl_opengl_glfw PROPERTIES FOLDER 3rdparty/igl)
-endif()
+# if(TARGET igl_png)
+# 	set_target_properties(igl_png PROPERTIES FOLDER 3rdparty/igl)
+# endif()
+# if(TARGET igl_opengl)
+# 	set_target_properties(igl_opengl PROPERTIES FOLDER 3rdparty/igl)
+# 	set_target_properties(igl_opengl_glfw_imgui PROPERTIES FOLDER 3rdparty/igl)
+# 	set_target_properties(igl_opengl_glfw PROPERTIES FOLDER 3rdparty/igl)
+# endif()
 
-set_target_properties(igl PROPERTIES FOLDER 3rdparty/igl)
-set_target_properties(igl_tetgen PROPERTIES FOLDER 3rdparty/igl)
+# set_target_properties(igl PROPERTIES FOLDER 3rdparty/igl)
+# set_target_properties(igl_tetgen PROPERTIES FOLDER 3rdparty/igl)
 
 if(TARGET igl_stb_image)
 	set_target_properties(igl_stb_image PROPERTIES FOLDER 3rdparty/igl)
 endif()
 
-if(TARGET igl_opengl)
-	set_target_properties(glad PROPERTIES FOLDER 3rdparty/other)
-endif()
-# set_target_properties(tinyfiledialogs_tinyfiledialogs PROPERTIES FOLDER 3rdparty/other)
-if(TARGET igl::opengl_glfw_imgui)
-	set_target_properties(imgui PROPERTIES FOLDER 3rdparty/other)
-endif()
+# if(TARGET igl_opengl)
+# 	set_target_properties(glad PROPERTIES FOLDER 3rdparty/other)
+# endif()
+# # set_target_properties(tinyfiledialogs_tinyfiledialogs PROPERTIES FOLDER 3rdparty/other)
+# if(TARGET igl::opengl_glfw_imgui)
+# 	set_target_properties(imgui PROPERTIES FOLDER 3rdparty/other)
+# endif()
 set_target_properties(tetgen PROPERTIES FOLDER 3rdparty/other)
 set_target_properties(triangle PROPERTIES FOLDER 3rdparty/other)
 # set_target_properties(uninstall_geo PROPERTIES FOLDER 3rdparty/other)

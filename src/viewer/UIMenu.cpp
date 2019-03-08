@@ -6,7 +6,7 @@
 #include <polyfem/AssemblerUtils.hpp>
 
 #include <igl/colormap.h>
-#include <igl/png/writePNG.h>
+// #include <igl/png/writePNG.h>
 #include <imgui/imgui.h>
 #include <igl/opengl/glfw/imgui/ImGuiHelpers.h>
 #include <igl/opengl/gl.h>
@@ -544,18 +544,18 @@ void polyfem::UIState::draw_debug() {
 void polyfem::UIState::draw_screenshot() {
 	if (ImGui::Button("Save Screenshot", ImVec2(-1, 0))) {
 		// Allocate temporary buffers
-		Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(6400, 4000);
-		Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> G(6400, 4000);
-		Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> B(6400, 4000);
-		Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(6400, 4000);
+		// Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(6400, 4000);
+		// Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> G(6400, 4000);
+		// Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> B(6400, 4000);
+		// Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(6400, 4000);
 
-		// Draw the scene in the buffers
-		viewer.core.draw_buffer(viewer.data(),false,R,G,B,A);
-		A.setConstant(255);
+		// // Draw the scene in the buffers
+		// viewer.core.draw_buffer(viewer.data(),false,R,G,B,A);
+		// A.setConstant(255);
 
-		// Save it to a PNG
-		std::string path = (screenshot.empty() ? "out.png" : screenshot);
-		igl::png::writePNG(R,G,B,A,path);
+		// // Save it to a PNG
+		// std::string path = (screenshot.empty() ? "out.png" : screenshot);
+		// igl::png::writePNG(R,G,B,A,path);
 	}
 
 	float w = ImGui::GetContentRegionAvailWidth();

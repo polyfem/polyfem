@@ -16,8 +16,8 @@
 #include <igl/per_corner_normals.h>
 #include <igl/write_triangle_mesh.h>
 #include <igl/read_triangle_mesh.h>
-#include <igl/colormap.h>
-#include <igl/png/writePNG.h>
+// #include <igl/colormap.h>
+// #include <igl/png/writePNG.h>
 #include <geogram/mesh/mesh_io.h>
 #include <random>
 #include <memory>

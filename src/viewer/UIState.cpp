@@ -18,7 +18,7 @@
 #include <igl/read_triangle_mesh.h>
 #include <igl/per_vertex_normals.h>
 #include <igl/triangle/triangulate.h>
-#include <igl/png/writePNG.h>
+// #include <igl/png/writePNG.h>
 #include <igl/Timer.h>
 #include <igl/serialize.h>
 #include <igl/isolines.h>
