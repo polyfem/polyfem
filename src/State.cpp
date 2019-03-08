@@ -1005,9 +1005,9 @@ namespace polyfem
 				}
 			} else if (mesh->is_cube(e)) {
 				if (mesh->is_volume()) {
-					QuadQuadrature f; f.get_quadrature(disc_orders(e), quadr);
-				} else {
 					HexQuadrature f; f.get_quadrature(disc_orders(e), quadr);
+				} else {
+					QuadQuadrature f; f.get_quadrature(disc_orders(e), quadr);
 				}
 			} else {
 				continue;

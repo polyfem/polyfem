@@ -5,7 +5,6 @@
 
 namespace polyfem
 {
-
 	namespace Navigation
 	{
 

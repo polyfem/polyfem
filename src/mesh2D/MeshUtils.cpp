@@ -657,6 +657,17 @@ void polyfem::to_geogram_mesh(const Mesh3D &mesh, GEO::Mesh &M) {
 		p[1] = pt[1];
 		p[2] = pt[2];
 	}
+	// Convert faces
+	for (int f = 0, lf = 0; f < mesh.n_faces(); ++f) {
+		if (mesh.is_boundary_face(f)) {
+			int nv = mesh.n_face_vertices(f);
+			M.facets.create_polygon(nv);
+			for (int lv = 0; lv < nv; ++lv) {
+				M.facets.set_vertex(lf, lv, mesh.face_vertex(f, lv));
+			}
+			++lf;
+		}
+	}
 	// Convert cells
 	typedef std::array<int, 8> Vector8i;
 	Vector8i g2p = {{0, 4, 1, 5, 3, 7, 2, 6}};
@@ -675,6 +686,7 @@ void polyfem::to_geogram_mesh(const Mesh3D &mesh, GEO::Mesh &M) {
 			// TODO: Support conversion of tets as well!
 		}
 	}
+	M.facets.connect();
 	M.cells.connect();
 	// M.cells.compute_borders();
 	GEO::mesh_reorient(M);
