@@ -35,7 +35,7 @@ install:
 # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade python; fi
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
 # - pip3 install --user sympy
-- pip3 install --user cpp-coveralls
+# - pip3 install --user cpp-coveralls
 - eval "${MATRIX_EVAL}"
 - ccache --max-size=5.0G
 - ccache -V && ccache --show-stats && ccache --zero-stats
