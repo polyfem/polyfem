@@ -15,7 +15,10 @@ endif()
 
 set(THIRD_PARTY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-list(APPEND CMAKE_MODULE_PATH ${THIRD_PARTY_DIR}/Catch2/contrib)
+
+if(${POLYFEM_TOPLEVEL_PROJECT})
+	list(APPEND CMAKE_MODULE_PATH ${THIRD_PARTY_DIR}/Catch2/contrib)
+endif()
 
 # Color output
 include(UseColors)
@@ -284,9 +287,11 @@ endif()
 target_link_libraries(polyfem PUBLIC tinyexpr::tinyexpr)
 
 # Catch2
-polyfem_download_catch2()
-add_library(catch INTERFACE)
-target_include_directories(catch SYSTEM INTERFACE ${THIRD_PARTY_DIR}/Catch2/single_include/catch2)
+if(${POLYFEM_TOPLEVEL_PROJECT})
+	polyfem_download_catch2()
+	add_library(catch INTERFACE)
+	target_include_directories(catch SYSTEM INTERFACE ${THIRD_PARTY_DIR}/Catch2/single_include/catch2)
+endif()
 
 # Hypre
 if(ENABLE_HYPRE)
