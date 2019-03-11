@@ -81,9 +81,12 @@ namespace polyfem
 		const std::vector< ElementBases > &gbases,
 		Eigen::SparseMatrix<double> &stiffness) const
 	{
-		const int buffer_size = std::min(long(1e8), long(n_basis) * local_assembler_.size());
+		int buffer_size = std::min(long(1e8), long(n_basis) * local_assembler_.size());
+#ifdef USE_TBB
+		buffer_size /= tbb::task_scheduler_init::default_num_threads();
+#endif
 		logger().debug("buffer_size {}", buffer_size);
-
+		try{
 		stiffness.resize(n_basis*local_assembler_.size(), n_basis*local_assembler_.size());
 		stiffness.setZero();
 
@@ -151,7 +154,7 @@ namespace polyfem
 										loc_storage.entries.emplace_back(gj, gi, local_value * wj * wi);
 									}
 
-									if(loc_storage.entries.size() >= 1e8)
+									if(loc_storage.entries.size() >= buffer_size)
 									{
 										loc_storage.tmp_mat.setFromTriplets(loc_storage.entries.begin(), loc_storage.entries.end());
 										loc_storage.stiffness += loc_storage.tmp_mat;
@@ -180,7 +183,6 @@ namespace polyfem
 		}
 #endif
 
-
 #ifdef USE_TBB
 		for (LocalStorage::iterator i = storages.begin(); i != storages.end();  ++i)
 		{
@@ -194,6 +196,11 @@ namespace polyfem
 		stiffness += loc_storage.tmp_mat;
 #endif
 		stiffness.makeCompressed();
+		} catch(std::bad_alloc &ba)
+    	{
+    		logger().error("bad alloc {}", ba.what());
+    		exit(0);
+    	}
 
 		// stiffness.resize(n_basis*local_assembler_.size(), n_basis*local_assembler_.size());
 		// stiffness.setFromTriplets(entries.begin(), entries.end());
