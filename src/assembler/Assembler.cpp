@@ -102,6 +102,7 @@ namespace polyfem
 #ifdef USE_TBB
 		tbb::parallel_for( tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
 		LocalStorage::reference loc_storage = storages.local();
+		loc_storage.entries.reserve(buffer_size);
 		for (int e = r.begin(); e != r.end(); ++e) {
 #else
 		for(int e=0; e < n_bases; ++e) {
@@ -161,7 +162,7 @@ namespace polyfem
 										loc_storage.stiffness.makeCompressed();
 
 										loc_storage.entries.clear();
-										logger().debug("cleaning memory...");
+										logger().debug("cleaning memory. Current storage: {}. mat nnz: {}", loc_storage.entries.capacity(), loc_storage.tmp_mat.nonZeros());
 									}
 								}
 							}
