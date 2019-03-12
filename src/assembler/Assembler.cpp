@@ -81,10 +81,10 @@ namespace polyfem
 		const std::vector< ElementBases > &gbases,
 		Eigen::SparseMatrix<double> &stiffness) const
 	{
-		int buffer_size = std::min(long(1e8), long(n_basis) * local_assembler_.size());
-#ifdef USE_TBB
-		buffer_size /= tbb::task_scheduler_init::default_num_threads();
-#endif
+		const int buffer_size = std::min(long(1e8), long(n_basis) * local_assembler_.size());
+// #ifdef USE_TBB
+// 		buffer_size /= tbb::task_scheduler_init::default_num_threads();
+// #endif
 		logger().debug("buffer_size {}", buffer_size);
 		try{
 		stiffness.resize(n_basis*local_assembler_.size(), n_basis*local_assembler_.size());
@@ -154,7 +154,7 @@ namespace polyfem
 										loc_storage.entries.emplace_back(gj, gi, local_value * wj * wi);
 									}
 
-									if(loc_storage.entries.size() >= buffer_size)
+									if(loc_storage.entries.size() >= 1e8)
 									{
 										loc_storage.tmp_mat.setFromTriplets(loc_storage.entries.begin(), loc_storage.entries.end());
 										loc_storage.stiffness += loc_storage.tmp_mat;
@@ -182,6 +182,7 @@ namespace polyfem
 #else
 		}
 #endif
+		logger().debug("done separate assembly...");
 
 #ifdef USE_TBB
 		for (LocalStorage::iterator i = storages.begin(); i != storages.end();  ++i)
