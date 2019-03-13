@@ -191,13 +191,14 @@ namespace polyfem
 			stiffness += i->stiffness;
 			i->tmp_mat.setFromTriplets(i->entries.begin(), i->entries.end());
 			stiffness += i->tmp_mat;
+			stiffness.makeCompressed();
 		}
 #else
 		stiffness = loc_storage.stiffness;
 		loc_storage.tmp_mat.setFromTriplets(loc_storage.entries.begin(), loc_storage.entries.end());
 		stiffness += loc_storage.tmp_mat;
-#endif
 		stiffness.makeCompressed();
+#endif
 		} catch(std::bad_alloc &ba)
     	{
     		logger().error("bad alloc {}", ba.what());
