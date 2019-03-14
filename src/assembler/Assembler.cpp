@@ -159,10 +159,14 @@ namespace polyfem
 									{
 										loc_storage.tmp_mat.setFromTriplets(loc_storage.entries.begin(), loc_storage.entries.end());
 										loc_storage.stiffness += loc_storage.tmp_mat;
+
+										loc_storage.tmp_mat.setZero();
+										loc_storage.tmp_mat.data().squeeze();
+
 										loc_storage.stiffness.makeCompressed();
 
 										loc_storage.entries.clear();
-										logger().debug("cleaning memory. Current storage: {}. mat nnz: {}", loc_storage.entries.capacity(), loc_storage.tmp_mat.nonZeros());
+										logger().debug("cleaning memory. Current storage: {}. mat nnz: {}", loc_storage.entries.capacity(), loc_storage.stiffness.nonZeros());
 									}
 								}
 							}
@@ -188,9 +192,23 @@ namespace polyfem
 #ifdef USE_TBB
 		for (LocalStorage::iterator i = storages.begin(); i != storages.end();  ++i)
 		{
+			logger().debug("local stiffness: {}, entries: {}", i->stiffness.nonZeros(), i->entries.size());
 			stiffness += i->stiffness;
+
+			i->stiffness.resize(0,0);
+			i->stiffness.data().squeeze();
+
 			i->tmp_mat.setFromTriplets(i->entries.begin(), i->entries.end());
+
+			i->entries.clear();
+			i->entries.shrink_to_fit();
+
+
 			stiffness += i->tmp_mat;
+
+			i->tmp_mat.resize(0,0);
+			i->tmp_mat.data().squeeze();
+
 			stiffness.makeCompressed();
 		}
 #else
