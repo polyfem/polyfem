@@ -193,21 +193,22 @@ namespace polyfem
 		for (LocalStorage::iterator i = storages.begin(); i != storages.end();  ++i)
 		{
 			logger().debug("local stiffness: {}, entries: {}", i->stiffness.nonZeros(), i->entries.size());
+
+			i->tmp_mat.setFromTriplets(i->entries.begin(), i->entries.end());
+			i->entries.clear();
+			i->entries.shrink_to_fit();
+
+			i->stiffness += i->tmp_mat;
+
+			i->tmp_mat.resize(0,0);
+			i->tmp_mat.data().squeeze();
+
+			i->stiffness.makeCompressed();
+
 			stiffness += i->stiffness;
 
 			i->stiffness.resize(0,0);
 			i->stiffness.data().squeeze();
-
-			i->tmp_mat.setFromTriplets(i->entries.begin(), i->entries.end());
-
-			i->entries.clear();
-			i->entries.shrink_to_fit();
-
-
-			stiffness += i->tmp_mat;
-
-			i->tmp_mat.resize(0,0);
-			i->tmp_mat.data().squeeze();
 
 			stiffness.makeCompressed();
 		}
