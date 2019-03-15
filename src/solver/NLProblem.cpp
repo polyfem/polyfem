@@ -32,7 +32,7 @@ namespace polyfem
  // 	// 	auto solver = LinearSolver::create(state.args["solver_type"], state.args["precond_type"]);
 	// 	// solver->setParameters(state.solver_params());
 	// 	// Eigen::VectorXd b, x, guess;
- // 	// 	Eigen::SparseMatrix<double> A;
+ // 	// 	THessian A;
 	// 	// assembler.assemble_problem("LinearElasticity", state.mesh->is_volume(), state.n_bases, state.bases, state.iso_parametric() ? state.bases : state.geom_bases, A);
  // 	// 	if(!rhs_computed)
 	// 	// {
@@ -102,7 +102,7 @@ namespace polyfem
 
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 
-		Eigen::SparseMatrix<double> tmp;
+		THessian tmp;
 		assembler.assemble_energy_hessian(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, full, tmp);
 		// Eigen::saveMarket(tmp, "tmp.mat");
 		// exit(0);
@@ -132,7 +132,7 @@ namespace polyfem
 				continue;
 			}
 
-			for (Eigen::SparseMatrix<double>::InnerIterator it(tmp, k); it; ++it)
+			for (THessian::InnerIterator it(tmp, k); it; ++it)
 			{
 				// std::cout<<it.row()<<" "<<it.col()<<" "<<k<<std::endl;
 				assert(it.col() == k);

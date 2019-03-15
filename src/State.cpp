@@ -1762,7 +1762,7 @@ namespace polyfem
 		// if(problem->is_mixed())
 		if(assembler.is_mixed(formulation()))
 		{
-			Eigen::SparseMatrix<double> velocity_stiffness, mixed_stiffness, pressure_stiffness;
+			StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
 			assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, velocity_stiffness);
 			assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, iso_parametric() ? bases : geom_bases, mixed_stiffness);
 			assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, iso_parametric() ? bases : geom_bases, pressure_stiffness);
@@ -1783,7 +1783,7 @@ namespace polyfem
 
 			for (int k = 0; k < velocity_stiffness.outerSize(); ++k)
 			{
-				for (Eigen::SparseMatrix<double>::InnerIterator it(velocity_stiffness, k); it; ++it)
+				for (StiffnessMatrix::InnerIterator it(velocity_stiffness, k); it; ++it)
 				{
 					blocks.emplace_back(it.row(), it.col(), it.value());
 				}
@@ -1791,7 +1791,7 @@ namespace polyfem
 
 			for (int k = 0; k < mixed_stiffness.outerSize(); ++k)
 			{
-				for (Eigen::SparseMatrix<double>::InnerIterator it(mixed_stiffness, k); it; ++it)
+				for (StiffnessMatrix::InnerIterator it(mixed_stiffness, k); it; ++it)
 				{
 					blocks.emplace_back(it.row(), n_bases * problem_dim + it.col(), it.value());
 					blocks.emplace_back(it.col() + n_bases * problem_dim, it.row(), it.value());
@@ -1801,7 +1801,7 @@ namespace polyfem
 
 			for (int k = 0; k < pressure_stiffness.outerSize(); ++k)
 			{
-				for (Eigen::SparseMatrix<double>::InnerIterator it(pressure_stiffness, k); it; ++it)
+				for (StiffnessMatrix::InnerIterator it(pressure_stiffness, k); it; ++it)
 				{
 					blocks.emplace_back( n_bases * problem_dim + it.row(), n_bases * problem_dim + it.col(), it.value());
 				}
@@ -1819,7 +1819,7 @@ namespace polyfem
 
 			if(problem->is_time_dependent())
 			{
-				Eigen::SparseMatrix<double> velocity_mass;
+				StiffnessMatrix velocity_mass;
 				assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, velocity_mass);
 
 				std::vector< Eigen::Triplet<double> > mass_blocks;
@@ -1827,7 +1827,7 @@ namespace polyfem
 
 				for (int k = 0; k < velocity_mass.outerSize(); ++k)
 				{
-					for (Eigen::SparseMatrix<double>::InnerIterator it(velocity_mass, k); it; ++it)
+					for (StiffnessMatrix::InnerIterator it(velocity_mass, k); it; ++it)
 					{
 						mass_blocks.emplace_back(it.row(), it.col(), it.value());
 					}
@@ -1899,7 +1899,7 @@ namespace polyfem
 			else
 				read_matrix(args["rhs_path"], rhs);
 
-			Eigen::SparseMatrix<double> tmp_mass;
+			StiffnessMatrix tmp_mass;
 			assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, tmp_mass);
 			rhs = tmp_mass * rhs;
 			logger().debug("done!");
@@ -1994,7 +1994,7 @@ namespace polyfem
 
 			if(problem->is_scalar() || assembler.is_mixed(formulation()))
 			{
-				Eigen::SparseMatrix<double> A;
+				StiffnessMatrix A;
 				Eigen::VectorXd b, x;
 				Eigen::MatrixXd current_rhs;
 
@@ -2048,7 +2048,7 @@ namespace polyfem
 				const double beta2 = 0.5;
 
 				Eigen::MatrixXd temp, b;
-				Eigen::SparseMatrix<double> A;
+				StiffnessMatrix A;
 				Eigen::VectorXd x, btmp;
 				Eigen::MatrixXd current_rhs = rhs;
 
@@ -2108,7 +2108,7 @@ namespace polyfem
 			{
 				auto solver = LinearSolver::create(args["solver_type"], args["precond_type"]);
 				solver->setParameters(params);
-				Eigen::SparseMatrix<double> A;
+				StiffnessMatrix A;
 				Eigen::VectorXd b;
 				logger().info("{}...", solver->name());
 
@@ -2136,7 +2136,7 @@ namespace polyfem
 				int steps = args["nl_solver_rhs_steps"];
 				RhsAssembler rhs_assembler(*mesh, n_bases, mesh->dimension(), bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
 
-				Eigen::SparseMatrix<double> nlstiffness;
+				StiffnessMatrix nlstiffness;
 				auto solver = LinearSolver::create(args["solver_type"], args["precond_type"]);
 				Eigen::VectorXd x, b;
 				Eigen::MatrixXd grad;
@@ -2303,7 +2303,7 @@ namespace polyfem
 					// 	Eigen::Matrix<double, Eigen::Dynamic, 1> actual_grad, expected_grad;
 					// 	nl_problem.gradient(tmp_sol, actual_grad);
 
-					// 	Eigen::SparseMatrix<double> hessian;
+					// 	StiffnessMatrix hessian;
 					// 	Eigen::MatrixXd expected_hessian;
 					// 	nl_problem.hessian(tmp_sol, hessian);
 					// 	nl_problem.finiteGradient(tmp_sol, expected_grad, 0);

@@ -277,13 +277,13 @@ namespace polyfem
 			}
 			else
 			{
-				Eigen::SparseMatrix<double> mat(int(total_size), int(indices.size()));
+				StiffnessMatrix mat(int(total_size), int(indices.size()));
 				mat.setFromTriplets(entries.begin(), entries.end());
 
-				Eigen::SparseMatrix<double> mat_t(int(indices.size()), int(total_size));
+				StiffnessMatrix mat_t(int(indices.size()), int(total_size));
 				mat_t.setFromTriplets(entries_t.begin(), entries_t.end());
 
-				Eigen::SparseMatrix<double> A = mat_t * mat;
+				StiffnessMatrix A = mat_t * mat;
 				Eigen::MatrixXd b = mat_t * global_rhs;
 
 

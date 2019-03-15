@@ -24,13 +24,13 @@ void polyfem::LinearSolverEigenDirect<SparseSolver>::getInfo(json &params) const
 
 // Analyze sparsity pattern
 template<typename SparseSolver>
-void polyfem::LinearSolverEigenDirect<SparseSolver>::analyzePattern(const SparseMatrixXd &A) {
+void polyfem::LinearSolverEigenDirect<SparseSolver>::analyzePattern(const StiffnessMatrix &A) {
 	m_Solver.analyzePattern(A);
 }
 
 // Factorize system matrix
 template<typename SparseSolver>
-void polyfem::LinearSolverEigenDirect<SparseSolver>::factorize(const SparseMatrixXd &A) {
+void polyfem::LinearSolverEigenDirect<SparseSolver>::factorize(const StiffnessMatrix &A) {
 	m_Solver.factorize(A);
 	if (m_Solver.info() == Eigen::NumericalIssue) {
 		logger().error("[LinearSolver] NumericalIssue encountered.");
@@ -69,13 +69,13 @@ void polyfem::LinearSolverEigenIterative<SparseSolver>::getInfo(json &params) co
 
 // Analyze sparsity pattern
 template<typename SparseSolver>
-void polyfem::LinearSolverEigenIterative<SparseSolver>::analyzePattern(const SparseMatrixXd &A) {
+void polyfem::LinearSolverEigenIterative<SparseSolver>::analyzePattern(const StiffnessMatrix &A) {
 	m_Solver.analyzePattern(A);
 }
 
 // Factorize system matrix
 template<typename SparseSolver>
-void polyfem::LinearSolverEigenIterative<SparseSolver>::factorize(const SparseMatrixXd &A) {
+void polyfem::LinearSolverEigenIterative<SparseSolver>::factorize(const StiffnessMatrix &A) {
 	m_Solver.factorize(A);
 }
 

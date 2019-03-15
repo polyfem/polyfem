@@ -86,7 +86,7 @@ namespace polyfem {
 #define RETURN_DIRECT_SOLVER_PTR(EigenSolver)                        \
     do {                                                             \
         return std::make_unique<LinearSolverEigenDirect<EigenSolver< \
-            SparseMatrixXd > > >();                                  \
+            polyfem::StiffnessMatrix > > >();                                  \
     } while (0)
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -95,12 +95,12 @@ namespace {
 
 template<template<class, class> class SparseSolver, typename Precond>
 struct MakeSolver {
-	typedef LinearSolverEigenIterative<SparseSolver<LinearSolver::SparseMatrixXd, Precond>> type;
+	typedef LinearSolverEigenIterative<SparseSolver<StiffnessMatrix, Precond>> type;
 };
 
 template<template<class, int, class> class SparseSolver, typename Precond>
 struct MakeSolverSym {
-	typedef LinearSolverEigenIterative<SparseSolver<LinearSolver::SparseMatrixXd,
+	typedef LinearSolverEigenIterative<SparseSolver<StiffnessMatrix,
 		Eigen::Lower|Eigen::Upper, Precond> > type;
 };
 
@@ -141,8 +141,10 @@ std::unique_ptr<LinearSolver> LinearSolver::create(const std::string &solver, co
 		RETURN_DIRECT_SOLVER_PTR(CholmodSupernodalLLT);
 #endif
 #ifdef POLYFEM_WITH_UMFPACK
+#ifndef POLYFEM_LARGE_INDEX
 	} else if (solver == "Eigen::UmfPackLU") {
 		RETURN_DIRECT_SOLVER_PTR(UmfPackLU);
+#endif
 #endif
 #ifdef POLYFEM_WITH_SUPERLU
 	} else if (solver == "Eigen::SuperLU") {
@@ -164,11 +166,14 @@ std::unique_ptr<LinearSolver> LinearSolver::create(const std::string &solver, co
 #endif
 #if EIGEN_VERSION_AT_LEAST(3,3,0)
 	// Available only with Eigen 3.3.0 and newer
+#ifndef POLYFEM_LARGE_INDEX
 	} else if (solver == "Eigen::LeastSquaresConjugateGradient") {
 		return PrecondHelper<BiCGSTAB, LeastSquareDiagonalPreconditioner<double>>::create(precond);
 	} else if (solver == "Eigen::DGMRES") {
 		return PrecondHelper<DGMRES>::create(precond);
 #endif
+#endif
+#ifndef POLYFEM_LARGE_INDEX
 	} else if (solver == "Eigen::ConjugateGradient") {
 		return PrecondHelperSym<ConjugateGradient>::create(precond);
 	} else if (solver == "Eigen::BiCGSTAB") {
@@ -177,6 +182,7 @@ std::unique_ptr<LinearSolver> LinearSolver::create(const std::string &solver, co
 		return PrecondHelper<GMRES>::create(precond);
 	} else if (solver == "Eigen::MINRES") {
 		return PrecondHelperSym<MINRES>::create(precond);
+#endif
 	}
 	throw std::runtime_error("Unrecognized solver type: " + solver);
 }
@@ -208,8 +214,10 @@ std::vector<std::string> LinearSolver::availableSolvers() {
 		"Hypre",
 #endif
 #if EIGEN_VERSION_AT_LEAST(3,3,0)
+#ifndef POLYFEM_LARGE_INDEX
 		"Eigen::LeastSquaresConjugateGradient",
 		"Eigen::DGMRES",
+#endif
 #endif
 		"Eigen::ConjugateGradient",
 		"Eigen::BiCGSTAB",
@@ -242,7 +250,9 @@ std::vector<std::string> LinearSolver::availablePrecond() {
 #if EIGEN_VERSION_AT_LEAST(3,3,0)
 		"Eigen::LeastSquareDiagonalPreconditioner",
 #endif
+#ifndef POLYFEM_LARGE_INDEX
 		"Eigen::IncompleteLUT",
+#endif
 	}};
 }
 

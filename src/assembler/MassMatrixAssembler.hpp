@@ -19,6 +19,6 @@ namespace polyfem
 			const int n_basis,
 			const std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
-			Eigen::SparseMatrix<double> &mass) const;
+			StiffnessMatrix &mass) const;
 	};
 }

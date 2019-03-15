@@ -24,10 +24,10 @@ public:
 	virtual void getInfo(json &params) const override;
 
 	// Analyze sparsity pattern
-	virtual void analyzePattern(const SparseMatrixXd &K) override;
+	virtual void analyzePattern(const StiffnessMatrix &K) override;
 
 	// Factorize system matrix
-	virtual void factorize(const SparseMatrixXd &K) override;
+	virtual void factorize(const StiffnessMatrix &K) override;
 
 	// Solve the linear system
 	virtual void solve(const Ref<const VectorXd> b, Ref<VectorXd> x) override;
@@ -54,10 +54,10 @@ public:
 	virtual void getInfo(json &params) const override;
 
 	// Analyze sparsity pattern
-	virtual void analyzePattern(const SparseMatrixXd &K) override;
+	virtual void analyzePattern(const StiffnessMatrix &K) override;
 
 	// Factorize system matrix
-	virtual void factorize(const SparseMatrixXd &K) override;
+	virtual void factorize(const StiffnessMatrix &K) override;
 
 	// Solve the linear system
 	virtual void solve(const Ref<const VectorXd> b, Ref<VectorXd> x) override;

@@ -2,6 +2,8 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/Common.hpp>
+#include <polyfem/Types.hpp>
+
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <memory>
@@ -23,7 +25,6 @@ class LinearSolver {
 public:
 	// Shortcut alias
 	typedef Eigen::VectorXd VectorXd;
-	typedef Eigen::SparseMatrix<double> SparseMatrixXd;
 	template<typename T> using Ref = Eigen::Ref<T>;
 
 public:
@@ -65,10 +66,10 @@ public:
 	virtual void getInfo(json &params) const {};
 
 	// Analyze sparsity pattern
-	virtual void analyzePattern(const SparseMatrixXd &A) {}
+	virtual void analyzePattern(const StiffnessMatrix &A) {}
 
 	// Factorize system matrix
-	virtual void factorize(const SparseMatrixXd &A) {}
+	virtual void factorize(const StiffnessMatrix &A) {}
 
 	//
 	// @brief         { Solve the linear system Ax = b }

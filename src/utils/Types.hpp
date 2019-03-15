@@ -3,6 +3,7 @@
 #define MAX_QUAD_POINTS -1
 
 #include <Eigen/Dense>
+#include <Eigen/Sparse>
 
 namespace polyfem
 {
@@ -11,5 +12,11 @@ namespace polyfem
 	typedef Eigen::Matrix<double, 1, Eigen::Dynamic, Eigen::RowMajor, 1, 3> RowVectorNd;
 
 	typedef Eigen::Matrix<double, Eigen::Dynamic, 1, 0, MAX_QUAD_POINTS, 1> QuadratureVector;
+
+#ifdef POLYFEM_LARGE_INDEX
+	typedef Eigen::SparseMatrix<double, Eigen::ColMajor, std::ptrdiff_t> StiffnessMatrix;
+#else
+	typedef Eigen::SparseMatrix<double, Eigen::ColMajor> StiffnessMatrix;
+#endif
 }
 

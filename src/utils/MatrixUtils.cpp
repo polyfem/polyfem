@@ -29,7 +29,7 @@ void polyfem::show_matrix_stats(const Eigen::MatrixXd &M) {
 	// logger().trace("{}", lu.solve(M) );
 }
 
-Eigen::Vector4d polyfem::compute_specturm(const Eigen::SparseMatrix<double> &mat)
+Eigen::Vector4d polyfem::compute_specturm(const StiffnessMatrix &mat)
 {
 	typedef Spectra::SparseSymMatProd<double> MatOp;
 	typedef Spectra::SparseSymShiftSolve<double> InvMatOp;

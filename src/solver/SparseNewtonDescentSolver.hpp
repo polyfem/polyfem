@@ -11,7 +11,6 @@
 
 #include <igl/Timer.h>
 #include <igl/line_search.h>
-#include <Eigen/Sparse>
 
 #include <cppoptlib/problem.h>
 #include <cppoptlib/solver/isolver.h>
@@ -32,7 +31,6 @@ namespace cppoptlib {
 
 		using typename Superclass::Scalar;
 		using typename Superclass::TVector;
-		typedef Eigen::SparseMatrix<double> THessian;
 
 		enum class LineSearch {
 			Armijo,
@@ -138,7 +136,7 @@ namespace cppoptlib {
 
 			const int reduced_size = x0.rows();
 
-			THessian id(reduced_size, reduced_size);
+			polyfem::StiffnessMatrix id(reduced_size, reduced_size);
 			id.setIdentity();
 
 			TVector grad = TVector::Zero(reduced_size);
@@ -153,7 +151,7 @@ namespace cppoptlib {
 			linesearch_time = 0;
 			igl::Timer time;
 
-			THessian hessian;
+			polyfem::StiffnessMatrix hessian;
 			this->m_current.reset();
 			AssemblerUtils::instance().clear_cache();
 
@@ -333,11 +331,11 @@ namespace cppoptlib {
 		double inverting_time;
 		double linesearch_time;
 
-		bool has_hessian_nans(const THessian &hessian)
+		bool has_hessian_nans(const polyfem::StiffnessMatrix &hessian)
 		{
 			for (int k = 0; k < hessian.outerSize(); ++k)
 			{
-				for (Eigen::SparseMatrix<double>::InnerIterator it(hessian, k); it; ++it)
+				for (polyfem::StiffnessMatrix::InnerIterator it(hessian, k); it; ++it)
 				{
 					if(std::isnan(it.value()))
 						return true;

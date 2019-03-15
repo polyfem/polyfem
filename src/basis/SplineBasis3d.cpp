@@ -1290,13 +1290,13 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
 
         // Eigen::MatrixXd new_nodes(n_bases, dim);
         // {
-        //     Eigen::SparseMatrix<double> mat(n_constraints*n_elements, n_bases);
-        //     Eigen::SparseMatrix<double> mat_t(n_bases, n_constraints*n_elements);
+        //     StiffnessMatrix mat(n_constraints*n_elements, n_bases);
+        //     StiffnessMatrix mat_t(n_bases, n_constraints*n_elements);
 
         //     mat.setFromTriplets(entries.begin(), entries.end());
         //     mat_t.setFromTriplets(entries_t.begin(), entries_t.end());
 
-        //     Eigen::SparseMatrix<double> A = mat_t * mat;
+        //     StiffnessMatrix A = mat_t * mat;
         //     Eigen::MatrixXd b = mat_t * node_rhs;
 
         //     json params = {

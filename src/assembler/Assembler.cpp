@@ -32,8 +32,8 @@ namespace polyfem
 		{
 		public:
 			std::vector< Eigen::Triplet<double> > entries;
-			Eigen::SparseMatrix<double> tmp_mat;
-			Eigen::SparseMatrix<double> stiffness;
+			StiffnessMatrix tmp_mat;
+			StiffnessMatrix stiffness;
             ElementAssemblyValues vals;
             QuadratureVector da;
 
@@ -79,7 +79,7 @@ namespace polyfem
 		const int n_basis,
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
-		Eigen::SparseMatrix<double> &stiffness) const
+		StiffnessMatrix &stiffness) const
 	{
 		const int buffer_size = std::min(long(1e8), long(n_basis) * local_assembler_.size());
 // #ifdef USE_TBB
@@ -237,7 +237,7 @@ namespace polyfem
 		const std::vector< ElementBases > &psi_bases,
 		const std::vector< ElementBases > &phi_bases,
 		const std::vector< ElementBases > &gbases,
-		Eigen::SparseMatrix<double> &stiffness) const
+		StiffnessMatrix &stiffness) const
 	{
 		assert(phi_bases.size() == psi_bases.size());
 
@@ -448,7 +448,7 @@ namespace polyfem
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
 		const Eigen::MatrixXd &displacement,
-		Eigen::SparseMatrix<double> &grad) const
+		StiffnessMatrix &grad) const
 	{
 		const int buffer_size = std::min(long(1e8), long(n_basis) * local_assembler_.size());
 		// std::cout<<"buffer_size "<<buffer_size<<std::endl;

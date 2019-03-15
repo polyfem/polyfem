@@ -40,14 +40,14 @@ namespace polyfem
 			const int n_basis,
 			const std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
-			Eigen::SparseMatrix<double> &stiffness) const;
+			StiffnessMatrix &stiffness) const;
 
 		void assemble_mass_matrix(const std::string &assembler,
 			const bool is_volume,
 			const int n_basis,
 			const std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
-			Eigen::SparseMatrix<double> &mass) const;
+			StiffnessMatrix &mass) const;
 
 		void assemble_mixed_problem(const std::string &assembler,
 			const bool is_volume,
@@ -56,14 +56,14 @@ namespace polyfem
 			const std::vector< ElementBases > &psi_bases,
 			const std::vector< ElementBases > &phi_bases,
 			const std::vector< ElementBases > &gbases,
-			Eigen::SparseMatrix<double> &stiffness) const;
+			StiffnessMatrix &stiffness) const;
 
 		void assemble_pressure_problem(const std::string &assembler,
 			const bool is_volume,
 			const int n_basis,
 			const std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
-			Eigen::SparseMatrix<double> &stiffness) const;
+			StiffnessMatrix &stiffness) const;
 
 
 		//Non linear
@@ -87,7 +87,7 @@ namespace polyfem
 			const std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
 			const Eigen::MatrixXd &displacement,
-			Eigen::SparseMatrix<double> &hessian) const;
+			StiffnessMatrix &hessian) const;
 
 
 		//plotting

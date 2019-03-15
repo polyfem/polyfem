@@ -1,5 +1,7 @@
 #pragma once
 
+#include <polyfem/Types.hpp>
+
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
@@ -28,6 +30,6 @@ namespace polyfem {
     template<typename T>
 	void read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat);
 
-	Eigen::Vector4d compute_specturm(const Eigen::SparseMatrix<double> &mat);
+	Eigen::Vector4d compute_specturm(const StiffnessMatrix &mat);
 
 } // namespace polyfem

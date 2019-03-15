@@ -75,6 +75,8 @@ option(ENABLE_TBB         "Enable TBB"             ON)
 option(ENABLE_HYPRE       "Enable hypre"           ON)
 option(ENABLE_OPENCL      "Enable OpenCL"          OFF)
 
+option(POLYFEM_LARGE_INDEX    "Build for large indices"       OFF)
+
 option(POLYFEM_WITH_APPS      "Build the apps"          ON)
 option(POLYFEM_WITH_MISC      "Build misc targes"       ON)
 
@@ -146,6 +148,10 @@ include(PolyfemDependencies)
 
 # add_library() can only be called without any source since CMake 3.11 ...
 add_library(polyfem src/State.cpp)
+
+if(${POLYFEM_LARGE_INDEX})
+	target_compile_definitions(polyfem PUBLIC -DPOLYFEM_LARGE_INDEX)
+endif()
 
 # Must be call in the same "CMakeLists.txt" where add_library(polyfem ...) is called
 polyfem_autogen(polyfem eigs.py auto_eigs)

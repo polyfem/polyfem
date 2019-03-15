@@ -60,7 +60,7 @@ namespace polyfem
 		const int n_basis,
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
-		Eigen::SparseMatrix<double> &stiffness) const
+		StiffnessMatrix &stiffness) const
 	{
 		if(assembler == "Helmholtz")
 			helmholtz_.assemble(is_volume, n_basis, bases, gbases, stiffness);
@@ -97,7 +97,7 @@ namespace polyfem
 		const int n_basis,
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
-		Eigen::SparseMatrix<double> &mass) const
+		StiffnessMatrix &mass) const
 	{
 		if(assembler == "Helmholtz" || assembler == "Laplacian")
 			mass_mat_assembler_.assemble(is_volume, 1, n_basis, bases, gbases, mass);
@@ -112,7 +112,7 @@ namespace polyfem
 		const std::vector< ElementBases > &psi_bases,
 		const std::vector< ElementBases > &phi_bases,
 		const std::vector< ElementBases > &gbases,
-		Eigen::SparseMatrix<double> &stiffness) const
+		StiffnessMatrix &stiffness) const
 	{
 		if(assembler == "Bilaplacian")
 			bilaplacian_mixed_.assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, stiffness);
@@ -136,7 +136,7 @@ namespace polyfem
 		const int n_basis,
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
-		Eigen::SparseMatrix<double> &stiffness) const
+		StiffnessMatrix &stiffness) const
 	{
 		if(assembler == "Bilaplacian")
 			bilaplacian_aux_.assemble(is_volume, n_basis, bases, gbases, stiffness);
@@ -196,7 +196,7 @@ namespace polyfem
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
 		const Eigen::MatrixXd &displacement,
-		Eigen::SparseMatrix<double> &hessian) const
+		StiffnessMatrix &hessian) const
 	{
 		if(assembler == "SaintVenant")
 			saint_venant_elasticity_.assemble_hessian(is_volume, n_basis, bases, gbases, displacement, hessian);

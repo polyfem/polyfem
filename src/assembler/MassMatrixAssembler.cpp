@@ -16,8 +16,8 @@ namespace polyfem
 		{
 		public:
 			std::vector< Eigen::Triplet<double> > entries;
-			Eigen::SparseMatrix<double> tmp_mat;
-			Eigen::SparseMatrix<double> mass_mat;
+			StiffnessMatrix tmp_mat;
+			StiffnessMatrix mass_mat;
 
 			LocalThreadMatStorage(const int buffer_size, const int mat_size)
 			{
@@ -34,7 +34,7 @@ namespace polyfem
 		const int n_basis,
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
-		Eigen::SparseMatrix<double> &mass) const
+		StiffnessMatrix &mass) const
 	{
 		const int buffer_size = std::min(long(1e8), long(n_basis) * size);
 		logger().debug("buffer_size {}", buffer_size);

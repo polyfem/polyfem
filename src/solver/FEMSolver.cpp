@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 Eigen::Vector4d polyfem::dirichlet_solve(
-	LinearSolver &solver, Eigen::SparseMatrix<double> &A, Eigen::VectorXd &f,
+	LinearSolver &solver, StiffnessMatrix &A, Eigen::VectorXd &f,
 	const std::vector<int> &dirichlet_nodes, Eigen::VectorXd &u,
 	const std::string &save_path,
 	bool compute_spectrum)
@@ -41,7 +41,7 @@ Eigen::Vector4d polyfem::dirichlet_solve(
 	coeffs.reserve(A.nonZeros());
 	assert(A.rows() == A.cols());
 	for (int k = 0; k < A.outerSize(); ++k) {
-		for (Eigen::SparseMatrix<double>::InnerIterator it(A, k); it; ++it) {
+		for (StiffnessMatrix::InnerIterator it(A, k); it; ++it) {
 			// it.value();
 			// it.row();   // row index
 			// it.col();   // col index (here it is equal to k)

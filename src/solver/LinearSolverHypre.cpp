@@ -44,7 +44,7 @@ void LinearSolverHypre::getInfo(json &params) const {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void LinearSolverHypre::analyzePattern(const SparseMatrixXd &Ain) {
+void LinearSolverHypre::analyzePattern(const StiffnessMatrix &Ain) {
 	if (has_matrix_){
 		HYPRE_IJMatrixDestroy(A);
 		has_matrix_ = false;
@@ -63,7 +63,7 @@ void LinearSolverHypre::analyzePattern(const SparseMatrixXd &Ain) {
 
 	// TODO: More efficient initialization of the Hypre matrix?
 	for (HYPRE_Int k = 0; k < Ain.outerSize(); ++k) {
-		for (Eigen::SparseMatrix<double>::InnerIterator it(Ain, k); it; ++it) {
+		for (StiffnessMatrix::InnerIterator it(Ain, k); it; ++it) {
 			const HYPRE_Int 	i[1] = {it.row()};
 			const HYPRE_Int 	j[1] = {it.col()};
 			const HYPRE_Complex v[1] = {it.value()};

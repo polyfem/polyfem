@@ -6,7 +6,6 @@
 #include <polyfem/State.hpp>
 
 #include <cppoptlib/problem.h>
-#include <Eigen/Sparse>
 
 
 
@@ -16,7 +15,7 @@ namespace polyfem
 	public:
 		using typename cppoptlib::Problem<double>::Scalar;
 		using typename cppoptlib::Problem<double>::TVector;
-		typedef Eigen::SparseMatrix<double> THessian;
+		typedef StiffnessMatrix THessian;
 
 		NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t);
 		NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t, const int full_size, const int reduced_size);

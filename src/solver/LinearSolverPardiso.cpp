@@ -108,10 +108,8 @@ void LinearSolverPardiso::init() {
 
 namespace {
 
-typedef Eigen::SparseMatrix<double> SparseMatrixXd;
-
 // Count number of non-zeros
-int countNonZeros(const SparseMatrixXd &K, bool upperOnly) {
+int countNonZeros(const StiffnessMatrix &K, bool upperOnly) {
 	int count = 0;
 	for (int r = 0; r < K.rows(); ++r) {
 		for (int j = K.outerIndexPtr()[r]; j < K.outerIndexPtr()[r+1]; ++j) {
@@ -125,7 +123,7 @@ int countNonZeros(const SparseMatrixXd &K, bool upperOnly) {
 }
 
 // Compute indices of matrix coeffs in CRS format
-void computeIndices(const SparseMatrixXd &K, Eigen::VectorXi &ia, Eigen::VectorXi &ja, bool upperOnly) {
+void computeIndices(const StiffnessMatrix &K, Eigen::VectorXi &ia, Eigen::VectorXi &ja, bool upperOnly) {
 	int count = 0;
 	for (int r = 0; r < K.rows(); ++r) {
 		ia(r) = count;
@@ -140,7 +138,7 @@ void computeIndices(const SparseMatrixXd &K, Eigen::VectorXi &ia, Eigen::VectorX
 }
 
 // Compute non-zero coefficients and put them in 'a'
-void computeCoeffs(const SparseMatrixXd &K, Eigen::VectorXd &a, bool upperOnly) {
+void computeCoeffs(const StiffnessMatrix &K, Eigen::VectorXd &a, bool upperOnly) {
 	int count = 0;
 	for (int r = 0; r < K.rows(); ++r) {
 		for (int j = K.outerIndexPtr()[r]; j < K.outerIndexPtr()[r+1]; ++j) {
@@ -156,7 +154,7 @@ void computeCoeffs(const SparseMatrixXd &K, Eigen::VectorXd &a, bool upperOnly) 
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void LinearSolverPardiso::analyzePattern(const SparseMatrixXd &A) {
+void LinearSolverPardiso::analyzePattern(const StiffnessMatrix &A) {
 	if (mtype ==-1) { throw std::runtime_error("[Pardiso] mtype not set."); }
 	assert(A.isCompressed());
 
@@ -207,7 +205,7 @@ void LinearSolverPardiso::analyzePattern(const SparseMatrixXd &A) {
 
 // -----------------------------------------------------------------------------
 
-void LinearSolverPardiso::factorize(const SparseMatrixXd &A) {
+void LinearSolverPardiso::factorize(const StiffnessMatrix &A) {
 	if (mtype ==-1) { throw std::runtime_error("[Pardiso] mtype not set."); }
 	assert(ia.size() == A.rows() + 1);
 
