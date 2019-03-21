@@ -371,6 +371,19 @@ namespace polyfem
 			}
 		}
 
+		std::vector<double> sol_at_node(actual_dim);
+
+		if(args["export"]["sol_at_node"] >= 0)
+		{
+			const int node_id = args["export"]["sol_at_node"];
+
+			for(int d = 0; d < actual_dim; ++d)
+			{
+				sol_at_node[d] = sol(node_id*actual_dim + d);
+			}
+		}
+
+		j["sol_at_node"] = sol_at_node;
 		j["sol_min"] = mmin;
 		j["sol_max"] = mmax;
 
@@ -2583,6 +2596,7 @@ namespace polyfem
 			// {"stiffness_mat_save_path", ""},
 
 			{"export", {
+				{"sol_at_node", -1},
 				{"vis_mesh", ""},
 				{"vis_boundary_only", false},
 				{"nodes", ""},

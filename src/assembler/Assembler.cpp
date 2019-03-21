@@ -103,6 +103,9 @@ namespace polyfem
 		tbb::parallel_for( tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
 		LocalStorage::reference loc_storage = storages.local();
 		loc_storage.entries.reserve(buffer_size);
+		loc_storage.stiffness.resize(stiffness.rows(), stiffness.cols());
+		loc_storage.tmp_mat.resize(stiffness.rows(), stiffness.cols());
+
 		for (int e = r.begin(); e != r.end(); ++e) {
 #else
 		for(int e=0; e < n_bases; ++e) {

@@ -983,6 +983,9 @@ namespace polyfem
 								if(show_node){
 									MatrixXd node = l2g.node;
 									data(Visualizations::BNodes).add_points(node, col);
+
+									//TODO text is impossible to hide :(
+									// data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(l2g.index));
 								}
 							}
 						}
