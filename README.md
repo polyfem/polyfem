@@ -63,6 +63,20 @@ If you use PolyFEM in your project, please consider citing our work:
 ```
 
 ```bibtex
+@article{Schneider:2019:PFM,
+  author = {Schneider, Teseo and Dumas, J{\'e}r{\'e}mie and Gao, Xifeng and Botsch, Mario and Panozzo, Daniele and Zorin, Denis},
+  title = {Poly-Spline Finite-Element Method},
+  journal = {ACM Trans. Graph.},
+  volume = {38},
+  number = {3},
+  month = mar,
+  year = {2019},
+  url = {http://doi.acm.org/10.1145/3313797},
+  publisher = {ACM}
+}
+```
+
+```bibtex
 @article{Schneider:2018:DSA,
     author = {Teseo Schneider and Yixin Hu and Jérémie Dumas and Xifeng Gao and Daniele Panozzo and Denis Zorin},
     journal = {ACM Transactions on Graphics},
