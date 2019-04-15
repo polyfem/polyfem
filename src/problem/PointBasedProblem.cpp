@@ -3,6 +3,7 @@
 #include <polyfem/MatrixUtils.hpp>
 
 #include <iostream>
+#include <string>
 
 namespace polyfem
 {
@@ -33,8 +34,10 @@ namespace polyfem
 				read_matrix(data["triangles"], tri);
 			else
 			{
-				if(data.find("rbf") != data.end())
-					rbf = data["rbf"];
+				if(data.find("rbf") != data.end()){
+					const std::string tmp = data["rbf"];
+					rbf = tmp;
+				}
 				if(data.find("epsilon") != data.end())
 					eps = data["epsilon"];
 			}

@@ -1664,6 +1664,8 @@ namespace polyfem
 		}
 		timer.stop();
 
+		build_polygonal_basis();
+
 		auto &gbases = iso_parametric() ? bases : geom_bases;
 
 
@@ -1739,14 +1741,15 @@ namespace polyfem
 
 		if(iso_parametric())
 		{
-			if(mesh->is_volume())
+			if(mesh->is_volume()){
+				if(args["poly_bases"] == "MeanValue")
+					logger().error("MeanValue bases not supported in 3D");
 				new_bases = PolygonalBasis3d::build_bases(formulation(), args["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["quadrature_order"], args["integral_constraints"], bases, bases, poly_edge_to_data, polys_3d);
+			}
 			else
 			{
 				if(args["poly_bases"] == "MeanValue"){
-					// new_bases = MVPolygonalBasis2d::build_bases(formulation(), *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["quadrature_order"], bases, bases, poly_edge_to_data, polys);
-					logger().error("MeanValue bases not supported in 3D");
-					assert(false);
+					new_bases = MVPolygonalBasis2d::build_bases(formulation(), *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["quadrature_order"], bases, bases, poly_edge_to_data, local_boundary, polys);
 				}
 				else
 					new_bases = PolygonalBasis2d::build_bases(formulation(), args["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["quadrature_order"], args["integral_constraints"], bases, bases, poly_edge_to_data, polys);
@@ -1754,11 +1757,14 @@ namespace polyfem
 		}
 		else
 		{
-			if(mesh->is_volume())
+			if(mesh->is_volume()){
+				if(args["poly_bases"] == "MeanValue")
+					logger().error("MeanValue bases not supported in 3D");
 				new_bases = PolygonalBasis3d::build_bases(formulation(), args["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["quadrature_order"], args["integral_constraints"], bases, geom_bases, poly_edge_to_data, polys_3d);
+			}
 			else{
 				if(args["poly_bases"] == "MeanValue")
-					new_bases = MVPolygonalBasis2d::build_bases(formulation(), *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["quadrature_order"], bases, geom_bases, poly_edge_to_data, polys);
+					new_bases = MVPolygonalBasis2d::build_bases(formulation(), *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["quadrature_order"], bases, geom_bases, poly_edge_to_data, local_boundary, polys);
 				else
 					new_bases = PolygonalBasis2d::build_bases(formulation(), args["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["quadrature_order"], args["integral_constraints"], bases, geom_bases, poly_edge_to_data, polys);
 			}

@@ -123,7 +123,7 @@ namespace polyfem
 		void load_mesh();
 		void load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd&)> &boundary_marker, bool skip_boundary_sideset = false);
 		void build_basis();
-		void build_polygonal_basis();
+		
 		void assemble_stiffness_mat();
 		void assemble_rhs();
 		void solve_problem();
@@ -206,6 +206,7 @@ namespace polyfem
 
 	private:
 		void sol_to_pressure();
+		void build_polygonal_basis();
 
 	};
 

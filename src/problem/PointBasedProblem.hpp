@@ -4,6 +4,7 @@
 #include <polyfem/InterpolatedFunction.hpp>
 #include <polyfem/RBFInterpolation.hpp>
 
+#include <polyfem/Common.hpp>
 
 #include <vector>
 #include <Eigen/Dense>

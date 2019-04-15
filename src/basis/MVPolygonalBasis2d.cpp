@@ -9,13 +9,22 @@
 
 namespace polyfem {
 namespace {
+
+	template<typename Expr>
+	inline Eigen::RowVector2d rotatePi_2( const Expr &p)// rotation of pi/2
+	{
+		return Eigen::RowVector2d(-p(1) , p(0));
+	}
+
 	std::vector<int> compute_nonzero_bases_ids(const Mesh2D &mesh, const int element_index,
 		const std::vector< ElementBases > &bases,
-		const std::map<int, InterfaceData> &poly_edge_to_data, const Eigen::MatrixXd &poly)
+		const std::map<int, InterfaceData> &poly_edge_to_data, const Eigen::MatrixXd &poly, std::vector<LocalBoundary> &local_boundary)
 	{
 		const int n_edges = mesh.n_face_vertices(element_index);
 
 		std::vector<int> local_to_global(n_edges);
+		LocalBoundary lb(element_index, BoundaryType::TriLine);
+
 
 		Navigation::Index index = mesh.get_index_from_face(element_index);
 		for (int i = 0; i < n_edges; ++i) {
@@ -82,14 +91,26 @@ namespace {
 				local_to_global[i] = -1;
 
 
+			if (mesh.is_boundary_edge(index.edge) || mesh.get_boundary_id(index.edge) > 0)
+				lb.add_boundary_primitive(index.edge, i);
+
 			index = mesh.next_around_face(index);
+		}
+
+
+		if(!lb.empty()){
+			local_boundary.emplace_back(lb);
 		}
 
 		return local_to_global;
 	}
 
 
-	void meanvalue(const Eigen::MatrixXd &polygon, const Eigen::RowVector2d &point, Eigen::MatrixXd &b, const double tol)
+} // anonymous namespace
+
+////////////////////////////////////////////////////////////////////////////////
+
+	void MVPolygonalBasis2d::meanvalue(const Eigen::MatrixXd &polygon, const Eigen::RowVector2d &point, Eigen::MatrixXd &b, const double tol)
 	{
 		const int n_boundary = polygon.rows();
 
@@ -158,7 +179,7 @@ namespace {
 		b /= W;
 	}
 
-	void meanvalue_derivative(const Eigen::MatrixXd &polygon, const Eigen::RowVector2d &point, Eigen::MatrixXd &derivatives, const double tol)
+	void MVPolygonalBasis2d::meanvalue_derivative(const Eigen::MatrixXd &polygon, const Eigen::RowVector2d &point, Eigen::MatrixXd &derivatives, const double tol)
 	{
 		const int n_boundary = polygon.rows();
 
@@ -199,6 +220,9 @@ namespace {
 			}
 		}
 
+		int on_edge = -1;
+		double w0 = 0, w1 = 0;
+
 		for(int i = 0; i < n_boundary; ++i) {
 			const int ip1 = (i + 1) == n_boundary ? 0 : (i+1);
 
@@ -210,16 +234,37 @@ namespace {
 
 			//we are on the edge
 			if(fabs(areas[i]) < tol && products(i) < 0) {
-				const double denominator = 1.0/(radii(i) + radii(ip1));
+				// const double denominator = 1.0/(radii(i) + radii(ip1));
+				w0 = radii(ip1); // * denominator;
+				w1 = radii(i); // * denominator;
 
-				// b(i) = radii(ip1) * denominator;
-				// b(ip1) = radii(i) * denominator;
-				assert(false);
-				//TODO add derivative
-				return;
+				//https://link.springer.com/article/10.1007/s00371-013-0889-y
+                const Eigen::RowVector2d NE = rotatePi_2(polygon.row(ip1) - polygon.row(i));
+                const double sqrlengthE = NE.squaredNorm();
+
+                const Eigen::RowVector2d N0 = rotatePi_2(point - polygon.row(i));
+                const Eigen::RowVector2d N1 = rotatePi_2( polygon.row(ip1) - point);
+                const double N0norm = N0.norm();
+                const double N1norm = N1.norm();
+
+                const Eigen::RowVector2d gradw0 = (N0.dot(N1) / (2*N0norm*N0norm*N0norm) + 1./(2.*N1norm) + 1./N0norm - 1./N1norm ) * NE / sqrlengthE;
+                const Eigen::RowVector2d gradw1 = (1./(2*N1norm) + N0.dot(N1)/(2*N1norm*N1norm*N1norm) - 1./N0norm + 1./N1norm ) * NE / sqrlengthE;
+
+                w_prime.setZero();
+                w_prime.row(i) = gradw0;
+                w_prime.row(ip1) = gradw1;
+
+                assert(on_edge == -1);
+                on_edge = i;
+                // continue;
+
+                // w_gradients_on_edges[e] = std::pair<point_t,point_t>(gradw0,gradw1);
+
+                // w_gradients[e0] += gradw0;
+                // w_gradients[e1] += gradw1;
+
+				// return;
 			}
-
-
 			const Eigen::RowVector2d vi = polygon.row(i);
 			const Eigen::RowVector2d vip1 = polygon.row(ip1);
 
@@ -227,21 +272,21 @@ namespace {
 			areas_prime(i, 1) = vip1(0)-vi(0);
 
 			products_prime.row(i) = 2 * point - vi - vip1;
-
-			radii_prime.row(i)   = (point-vi)/radii(i);
+			radii_prime.row(i) = (point-vi)/radii(i);
 		}
 
 
 		for(int i = 0; i < n_boundary; ++i)
 		{
+			// if(i == on_edge)
+			// 	continue;
+
 			const int ip1 = (i + 1) == n_boundary ? 0 : (i+1);
 
 			const double denominator = radii(i) * radii(ip1) + products(i);
-
 			const Eigen::RowVector2d denominator_prime = radii_prime.row(i)*radii(ip1)+radii(i)*radii_prime.row(ip1) + products_prime.row(i);
 
-			tangents_prime.row(i)  =(areas_prime.row(i)*denominator - areas(i)*denominator_prime)/(denominator*denominator);
-
+			tangents_prime.row(i) = (areas_prime.row(i)*denominator - areas(i)*denominator_prime)/(denominator*denominator);
 			tangents(i)=areas(i)/denominator;
 		}
 
@@ -253,25 +298,34 @@ namespace {
 		{
 			const int im1 = (i > 0) ? (i-1) : (n_boundary-1);
 
-			w_prime.row(i) = ((tangents_prime.row(im1) + tangents_prime.row(i))*radii(i)-(tangents(im1)+tangents(i))*radii_prime.row(i))/(radii(i)*radii(i));;
-
+			if(i != on_edge && im1 != on_edge)
+				w_prime.row(i) = ((tangents_prime.row(im1) + tangents_prime.row(i))*radii(i)-(tangents(im1)+tangents(i))*radii_prime.row(i))/(radii(i)*radii(i));;
 
 			W_prime += w_prime.row(i);
-			W += (tangents(im1)+tangents(i))/radii(i);
+			if(i == on_edge)
+				W += w0;
+			else if(im1 == on_edge)
+				W += w1;
+			else if(on_edge < 0)
+				W += (tangents(im1)+tangents(i))/radii(i);
 		}
 
 		for(int i = 0; i < n_boundary; ++i){
 			const int im1 = (i > 0) ? (i-1) : (n_boundary-1);
 
-			const double bi=(tangents(im1)+tangents(i))/radii(i);
-			derivatives.row(i)= (w_prime.row(i)*W-bi*W_prime)/(W*W);
+			double wi;
+			if(i == on_edge)
+				wi = w0;
+			else if(im1 == on_edge)
+				wi = w1;
+			else if(on_edge < 0)
+				wi =(tangents(im1)+tangents(i))/radii(i);
+
+			derivatives.row(i) = (w_prime.row(i)*W-wi*W_prime)/(W*W);
 		}
 	}
 
 
-} // anonymous namespace
-
-////////////////////////////////////////////////////////////////////////////////
 
 
 int MVPolygonalBasis2d::build_bases(
@@ -282,6 +336,7 @@ int MVPolygonalBasis2d::build_bases(
 			std::vector< ElementBases > &bases,
 			const std::vector< ElementBases > &gbases,
 			const  std::map<int, InterfaceData> &poly_edge_to_data,
+			std::vector<LocalBoundary> &local_boundary,
 			std::map<int, Eigen::MatrixXd> &mapped_boundary)
 {
 	assert(!mesh.is_volume());
@@ -311,7 +366,7 @@ int MVPolygonalBasis2d::build_bases(
 			polygon.row(i) = mesh.point(gid);
 		}
 
-		std::vector<int> local_to_global = compute_nonzero_bases_ids(mesh, e, bases, poly_edge_to_data, polygon);
+		std::vector<int> local_to_global = compute_nonzero_bases_ids(mesh, e, bases, poly_edge_to_data, polygon, local_boundary);
 
 		for(int i = 0; i < local_to_global.size(); ++i){
 			if(local_to_global[i] >= 0)
@@ -372,6 +427,25 @@ int MVPolygonalBasis2d::build_bases(
 					val[j].grad.row(i) = tmp.row(j);
 				}
 			}
+		});
+
+		b.set_local_node_from_primitive_func([e](const int primitive_id, const Mesh &mesh)
+		{
+			const auto &mesh2d = dynamic_cast<const Mesh2D &>(mesh);
+			auto index = mesh2d.get_index_from_face(e);
+
+			int le;
+			for(le = 0; le < mesh2d.n_face_vertices(e); ++le)
+			{
+				if(index.edge == primitive_id)
+					break;
+				index = mesh2d.next_around_face(index);
+			}
+			assert(index.edge == primitive_id);
+			Eigen::VectorXi result(2);
+			result(0) = le;
+			result(1) = (le+1)%mesh2d.n_face_vertices(e);
+			return result;
 		});
 
 

@@ -1551,7 +1551,6 @@ namespace polyfem
 	{
 		if (!state.mesh) { return; }
 		state.build_basis();
-		state.build_polygonal_basis();
 		available_visualizations.block(Visualizations::DiscrMesh, 0, Visualizations::TotalVisualizations-Visualizations::DiscrMesh, 1).setConstant(false);
 
 		if(skip_visualization) return;

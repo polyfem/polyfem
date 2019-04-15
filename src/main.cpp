@@ -184,7 +184,6 @@ int main(int argc, char **argv)
 		state.compute_mesh_stats();
 
 		state.build_basis();
-		state.build_polygonal_basis();
 
 
 		state.assemble_rhs();
