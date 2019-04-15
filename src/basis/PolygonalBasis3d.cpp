@@ -561,7 +561,7 @@ double compute_epsilon(const Mesh3D &mesh, int e) {
 
 // -----------------------------------------------------------------------------
 
-void PolygonalBasis3d::build_bases(
+int PolygonalBasis3d::build_bases(
 	const std::string &assembler_name,
 	const int nn_samples_per_edge,
 	const Mesh3D &mesh,
@@ -575,7 +575,7 @@ void PolygonalBasis3d::build_bases(
 {
 	assert(mesh.is_volume());
 	if (poly_face_to_data.empty()) {
-		return;
+		return 0;
 	}
 	int n_kernels_per_edge = 4; //(int) std::round(n_samples_per_edge / 3.0);
 	int n_samples_per_edge = 3*n_kernels_per_edge;
@@ -709,6 +709,8 @@ void PolygonalBasis3d::build_bases(
 		mapped_boundary[e].first = triangulated_vertices;
 		mapped_boundary[e].second = triangulated_faces;
 	}
+
+	return 0;
 }
 
 } // namespace polyfem

@@ -1099,7 +1099,7 @@ namespace polyfem
 			for(std::size_t i = 0; i < current_bases.size(); ++i)
 			{
 				const ElementBases &basis = current_bases[i];
-				Eigen::MatrixXd P(basis.bases.size(), 3);
+				// Eigen::MatrixXd P(basis.bases.size(), 3);
 
 				for(std::size_t j = 0; j < basis.bases.size(); ++j)
 				{
@@ -1404,14 +1404,7 @@ namespace polyfem
 				else
 				{
 					MatrixXd poly = state.polys[i];
-					MatrixXi E(poly.rows(),2);
-					for(int e = 0; e < int(poly.rows()); ++e)
-					{
-						E(e, 0) = e;
-						E(e, 1) = (e+1) % poly.rows();
-					}
-
-					igl::triangle::triangulate(poly, E, MatrixXd(0,2), "Qpqa0.0001", vis_pts_poly[i], vis_faces_poly[i]);
+					sampler.sample_polygon(poly, vis_pts_poly[i], vis_faces_poly[i]);
 
 					faces_total_size   += vis_faces_poly[i].rows();
 					points_total_size += vis_pts_poly[i].rows();
@@ -1558,6 +1551,7 @@ namespace polyfem
 	{
 		if (!state.mesh) { return; }
 		state.build_basis();
+		state.build_polygonal_basis();
 		available_visualizations.block(Visualizations::DiscrMesh, 0, Visualizations::TotalVisualizations-Visualizations::DiscrMesh, 1).setConstant(false);
 
 		if(skip_visualization) return;
@@ -1566,12 +1560,6 @@ namespace polyfem
 		viewer.selected_data_index = Visualizations::DiscrMesh;
 		show_mesh();
 		show_nodes();
-	}
-
-	void UIState::build_polygonal_basis()
-	{
-		if (!state.mesh) { return; }
-		state.build_polygonal_basis();
 	}
 
 	void UIState::assemble_stiffness_mat() {

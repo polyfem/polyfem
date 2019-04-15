@@ -435,7 +435,8 @@ namespace {
 						indices = polyfem::FEBasis2d::tri_edge_local_nodes(discr_order, mesh, index2);
 					}
 					else {
-						assert(false);
+						// assert(false);
+						continue;
 					}
 					polyfem::InterfaceData data;
 					assert(indices.size() == 2 + discr_order - 1);

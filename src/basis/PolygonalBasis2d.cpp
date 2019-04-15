@@ -355,7 +355,7 @@ double compute_epsilon(const Mesh2D &mesh, int e) {
 // } // anonymous namespace
 // -----------------------------------------------------------------------------
 
-void PolygonalBasis2d::build_bases(
+int PolygonalBasis2d::build_bases(
 	const std::string &assembler_name,
 	const int n_samples_per_edge,
 	const Mesh2D &mesh,
@@ -369,7 +369,7 @@ void PolygonalBasis2d::build_bases(
 {
 	assert(!mesh.is_volume());
 	if (poly_edge_to_data.empty()) {
-		return;
+		return 0;
 	}
 
 	const auto &assembler = AssemblerUtils::instance();
@@ -487,6 +487,8 @@ void PolygonalBasis2d::build_bases(
 		// Polygon boundary after geometric mapping from neighboring elements
 		mapped_boundary[e] = collocation_points;
 	}
+
+	return 0;
 }
 
 } // namespace polyfem

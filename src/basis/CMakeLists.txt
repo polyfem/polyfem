@@ -20,6 +20,8 @@ set(SOURCES
 	function/RBFWithQuadraticLagrange.cpp
 	function/RBFWithQuadraticLagrange.hpp
 	InterfaceData.hpp
+	MVPolygonalBasis2d.cpp
+	MVPolygonalBasis2d.hpp
 	PolygonalBasis2d.cpp
 	PolygonalBasis2d.hpp
 	PolygonalBasis3d.cpp

@@ -546,6 +546,8 @@ void compute_nodes(
 			} else if(mesh.is_simplex(c2)) {
 				indices = polyfem::FEBasis3d::tet_face_local_nodes(discr_order, mesh, index2);
 			}
+			else
+				continue;
 
 			polyfem::InterfaceData data;
 			data.local_indices.insert(data.local_indices.begin(), indices.data(), indices.data() + indices.size());

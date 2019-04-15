@@ -326,7 +326,7 @@ void polyfem::UIState::draw_settings() {
 	// Actions
 	if (ImGui::CollapsingHeader("Actions", ImGuiTreeNodeFlags_DefaultOpen)) {
 		if (ImGui::Button("Load mesh", ImVec2(-1, 0))) { load_mesh(); }
-		if (ImGui::Button("Build  basis", ImVec2(-1, 0))) { build_basis(); build_polygonal_basis(); }
+		if (ImGui::Button("Build  basis", ImVec2(-1, 0))) { build_basis(); }
 		// if (ImGui::Button("Compute poly bases", ImVec2(-1, 0))) {  }
 		if (ImGui::Button("Build vis mesh", ImVec2(-1, 0))) { build_vis_mesh(); }
 
@@ -339,7 +339,6 @@ void polyfem::UIState::draw_settings() {
 		if (ImGui::Button("Run all", ImVec2(-1, 0))) {
 			load_mesh();
 			build_basis();
-			build_polygonal_basis();
 
 			if(!skip_visualization)
 				build_vis_mesh();

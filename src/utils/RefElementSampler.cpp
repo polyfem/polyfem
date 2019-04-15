@@ -245,4 +245,20 @@ void triangulate_periodic(double target_area, Eigen::MatrixXd &OV, Eigen::Matrix
 
 	}
 
+	void RefElementSampler::sample_polygon(const Eigen::MatrixXd &poly, Eigen::MatrixXd &pts, Eigen::MatrixXi &faces) const
+	{
+		MatrixXi E(poly.rows(),2);
+		for(int e = 0; e < int(poly.rows()); ++e)
+		{
+			E(e, 0) = e;
+			E(e, 1) = (e+1) % poly.rows();
+		}
+		std::stringstream buf;
+		buf.precision(100);
+		buf.setf(std::ios::fixed, std::ios::floatfield);
+		buf<<"Qqa"<<area_param_/1000.;
+
+		igl::triangle::triangulate(poly, E, MatrixXd(0,2), buf.str(), pts, faces);
+	}
+
 }

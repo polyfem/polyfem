@@ -24,6 +24,9 @@ namespace polyfem
 		const Eigen::MatrixXi &simplex_volume() const { return is_volume_ ? simplex_tets_ : simplex_faces_; }
 		const Eigen::MatrixXi &simplex_edges() const { return simplex_edges_; }
 
+
+		void sample_polygon(const Eigen::MatrixXd &poly, Eigen::MatrixXd &pts, Eigen::MatrixXi &faces) const;
+
 	private:
 		RefElementSampler() { }
 		void build();

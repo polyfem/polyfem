@@ -150,7 +150,6 @@ namespace polyfem
 		void build_vis_mesh();
 		void load_mesh();
 		void build_basis();
-		void build_polygonal_basis();
 		void assemble_stiffness_mat();
 		void assemble_rhs();
 		void solve_problem();

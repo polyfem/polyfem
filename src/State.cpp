@@ -17,6 +17,8 @@
 #include <polyfem/PolygonalBasis2d.hpp>
 #include <polyfem/PolygonalBasis3d.hpp>
 
+#include <polyfem/MVPolygonalBasis2d.hpp>
+
 #include <polyfem/AssemblerUtils.hpp>
 #include <polyfem/RhsAssembler.hpp>
 
@@ -1733,24 +1735,40 @@ namespace polyfem
 		//mixed not supports polygonal bases
 		assert(n_pressure_bases == 0 || poly_edge_to_data.size() == 0);
 
+		int new_bases = 0;
+
 		if(iso_parametric())
 		{
 			if(mesh->is_volume())
-				PolygonalBasis3d::build_bases(formulation(), args["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["quadrature_order"], args["integral_constraints"], bases, bases, poly_edge_to_data, polys_3d);
+				new_bases = PolygonalBasis3d::build_bases(formulation(), args["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["quadrature_order"], args["integral_constraints"], bases, bases, poly_edge_to_data, polys_3d);
 			else
-				PolygonalBasis2d::build_bases(formulation(), args["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["quadrature_order"], args["integral_constraints"], bases, bases, poly_edge_to_data, polys);
+			{
+				if(args["poly_bases"] == "MeanValue"){
+					// new_bases = MVPolygonalBasis2d::build_bases(formulation(), *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["quadrature_order"], bases, bases, poly_edge_to_data, polys);
+					logger().error("MeanValue bases not supported in 3D");
+					assert(false);
+				}
+				else
+					new_bases = PolygonalBasis2d::build_bases(formulation(), args["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["quadrature_order"], args["integral_constraints"], bases, bases, poly_edge_to_data, polys);
+			}
 		}
 		else
 		{
 			if(mesh->is_volume())
-				PolygonalBasis3d::build_bases(formulation(), args["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["quadrature_order"], args["integral_constraints"], bases, geom_bases, poly_edge_to_data, polys_3d);
-			else
-				PolygonalBasis2d::build_bases(formulation(), args["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["quadrature_order"], args["integral_constraints"], bases, geom_bases, poly_edge_to_data, polys);
+				new_bases = PolygonalBasis3d::build_bases(formulation(), args["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["quadrature_order"], args["integral_constraints"], bases, geom_bases, poly_edge_to_data, polys_3d);
+			else{
+				if(args["poly_bases"] == "MeanValue")
+					new_bases = MVPolygonalBasis2d::build_bases(formulation(), *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["quadrature_order"], bases, geom_bases, poly_edge_to_data, polys);
+				else
+					new_bases = PolygonalBasis2d::build_bases(formulation(), args["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["quadrature_order"], args["integral_constraints"], bases, geom_bases, poly_edge_to_data, polys);
+			}
 		}
 
 		timer.stop();
 		computing_poly_basis_time = timer.getElapsedTime();
 		logger().info(" took {}s", computing_poly_basis_time);
+
+		n_bases += new_bases;
 	}
 
 	json State::build_json_params()
@@ -2546,13 +2564,13 @@ namespace polyfem
 
 			{"scalar_formulation", "Laplacian"},
 			{"tensor_formulation", "LinearElasticity"},
-			// {"mixed_formulation", "Stokes"},
 
 			{"B", 3},
 			{"h1_formula", false},
 
 			{"quadrature_order", 4},
 			{"discr_order", 1},
+			{"poly_bases", "MFSHarmonic"},
 			{"serendipity", false},
 			{"discr_order_max", autogen::MAX_P_BASES},
 			{"pressure_discr_order", 1},

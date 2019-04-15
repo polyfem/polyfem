@@ -65,7 +65,7 @@ namespace polyfem
 		/// @param[in]  gvalues        { Per-element shape functions for the geometric mapping, evaluated over
 		///                            the element (get boundary of the polygon) }
 		///
-		static void build_bases(
+		static int build_bases(
 			const std::string &assembler_name,
 			const int n_samples_per_edge,
 			const Mesh2D &mesh,
