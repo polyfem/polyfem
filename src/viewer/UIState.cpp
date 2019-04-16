@@ -17,7 +17,6 @@
 #include <igl/per_corner_normals.h>
 #include <igl/read_triangle_mesh.h>
 #include <igl/per_vertex_normals.h>
-#include <igl/triangle/triangulate.h>
 // #include <igl/png/writePNG.h>
 #include <igl/Timer.h>
 #include <igl/serialize.h>
@@ -1395,15 +1394,14 @@ namespace polyfem
 			{
 				if(state.mesh->is_volume())
 				{
-					vis_pts_poly[i] = state.polys_3d[i].first;
-					vis_faces_poly[i] = state.polys_3d[i].second;
+					sampler.sample_polyhedron(state.polys_3d[i].first, state.polys_3d[i].second, vis_pts_poly[i], vis_faces_poly[i]);
 
 					faces_total_size   += vis_faces_poly[i].rows();
 					points_total_size += vis_pts_poly[i].rows();
 				}
 				else
 				{
-					MatrixXd poly = state.polys[i];
+					const MatrixXd &poly = state.polys[i];
 					sampler.sample_polygon(poly, vis_pts_poly[i], vis_faces_poly[i]);
 
 					faces_total_size   += vis_faces_poly[i].rows();

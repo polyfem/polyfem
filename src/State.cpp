@@ -949,6 +949,7 @@ namespace polyfem
 				auto vtx = mesh3d.get_ordered_vertices_from_hex(i);
 				vertices.assign(vtx.begin(), vtx.end());
 			}
+			//TODO poly?
 			assert((int) vertices.size() == (int) local_pts.rows());
 
 			MatrixXd local_res = MatrixXd::Zero(local_pts.rows(), actual_dim);
@@ -1065,6 +1066,8 @@ namespace polyfem
 		int index = 0;
 		const auto &sampler = RefElementSampler::sampler();
 
+		Eigen::MatrixXi vis_faces_poly;
+
 
 		for(int i = 0; i < int(basis.size()); ++i)
 		{
@@ -1078,8 +1081,13 @@ namespace polyfem
 				local_pts = sampler.simplex_points();
 			else if(mesh->is_cube(i))
 				local_pts = sampler.cube_points();
-			// else
-				// local_pts = vis_pts_poly[i];
+			else
+			{
+				if(mesh->is_volume())
+					sampler.sample_polyhedron(polys_3d[i].first, polys_3d[i].second, local_pts, vis_faces_poly);
+				else
+					sampler.sample_polygon(polys[i], local_pts, vis_faces_poly);
+			}
 
 			MatrixXd local_res = MatrixXd::Zero(local_pts.rows(), actual_dim);
 			bs.evaluate_bases(local_pts, tmp);
@@ -1108,6 +1116,7 @@ namespace polyfem
 		const auto &sampler = RefElementSampler::sampler();
 		const auto &assembler = AssemblerUtils::instance();
 
+		Eigen::MatrixXi vis_faces_poly;
 		Eigen::MatrixXd local_val;
 		const auto &gbases =  iso_parametric() ? bases : geom_bases;
 
@@ -1124,8 +1133,13 @@ namespace polyfem
 				local_pts = sampler.simplex_points();
 			else if(mesh->is_cube(i))
 				local_pts = sampler.cube_points();
-			// else
-				// local_pts = vis_pts_poly[i];
+			else
+			{
+				if(mesh->is_volume())
+					sampler.sample_polyhedron(polys_3d[i].first, polys_3d[i].second, local_pts, vis_faces_poly);
+				else
+					sampler.sample_polygon(polys[i], local_pts, vis_faces_poly);
+			}
 
 			assembler.compute_scalar_value(formulation(), bs, gbs, local_pts, fun, local_val);
 
@@ -1145,6 +1159,7 @@ namespace polyfem
 		const auto &sampler = RefElementSampler::sampler();
 		const auto &assembler = AssemblerUtils::instance();
 
+		Eigen::MatrixXi vis_faces_poly;
 		Eigen::MatrixXd local_val;
 		const auto &gbases =  iso_parametric() ? bases : geom_bases;
 
@@ -1161,8 +1176,13 @@ namespace polyfem
 				local_pts = sampler.simplex_points();
 			else if(mesh->is_cube(i))
 				local_pts = sampler.cube_points();
-			// else
-				// local_pts = vis_pts_poly[i];
+			else
+			{
+				if(mesh->is_volume())
+					sampler.sample_polyhedron(polys_3d[i].first, polys_3d[i].second, local_pts, vis_faces_poly);
+				else
+					sampler.sample_polygon(polys[i], local_pts, vis_faces_poly);
+			}
 
 			assembler.compute_tensor_value(formulation(), bs, gbs, local_pts, fun, local_val);
 
@@ -1722,12 +1742,6 @@ namespace polyfem
 		rhs.resize(0, 0);
 		sol.resize(0, 0);
 		pressure.resize(0, 0);
-
-
-
-		// TODO, implement the poly bases for simplices
-		// if(mesh->is_simplicial())
-		// 	return;
 
 		igl::Timer timer; timer.start();
 		logger().info("Computing polygonal basis...");
@@ -2745,6 +2759,9 @@ namespace polyfem
 
 		const bool boundary_only = args["export"]["vis_boundary_only"];
 
+		Eigen::MatrixXd vis_pts_poly;
+		Eigen::MatrixXi vis_faces_poly;
+
 		for(size_t i = 0; i < current_bases.size(); ++i)
 		{
 			const auto &bs = current_bases[i];
@@ -2760,6 +2777,23 @@ namespace polyfem
 			else if(mesh->is_cube(i)){
 				tet_total_size += sampler.cube_volume().rows();
 				pts_total_size += sampler.cube_points().rows();
+			}
+			else
+			{
+				if(mesh->is_volume())
+				{
+					sampler.sample_polyhedron(polys_3d[i].first, polys_3d[i].second, vis_pts_poly, vis_faces_poly);
+
+					tet_total_size += vis_faces_poly.rows();
+					pts_total_size += vis_pts_poly.rows();
+				}
+				else
+				{
+					sampler.sample_polygon(polys[i], vis_pts_poly, vis_faces_poly);
+
+					tet_total_size += vis_faces_poly.rows();
+					pts_total_size += vis_pts_poly.rows();
+				}
 			}
 		}
 
@@ -2781,6 +2815,7 @@ namespace polyfem
 			if(mesh->is_simplex(i))
 			{
 				bs.eval_geom_mapping(sampler.simplex_points(), mapped);
+
 				tets.block(tet_index, 0, sampler.simplex_volume().rows(), tets.cols()) = sampler.simplex_volume().array() + pts_index;
 				tet_index += sampler.simplex_volume().rows();
 
@@ -2791,12 +2826,40 @@ namespace polyfem
 			else if(mesh->is_cube(i))
 			{
 				bs.eval_geom_mapping(sampler.cube_points(), mapped);
+
 				tets.block(tet_index, 0, sampler.cube_volume().rows(), tets.cols()) = sampler.cube_volume().array() + pts_index;
 				tet_index += sampler.cube_volume().rows();
 
 				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
 				discr.block(pts_index, 0, mapped.rows(), 1).setConstant(disc_orders(i));
 				pts_index += mapped.rows();
+			}
+			else
+			{
+				if(mesh->is_volume())
+				{
+					sampler.sample_polyhedron(polys_3d[i].first, polys_3d[i].second, vis_pts_poly, vis_faces_poly);
+					bs.eval_geom_mapping(vis_pts_poly, mapped);
+
+					tets.block(tet_index, 0, vis_faces_poly.rows(), tets.cols()) = vis_faces_poly.array() + pts_index;
+					tet_index += vis_faces_poly.rows();
+
+					points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
+					discr.block(pts_index, 0, mapped.rows(), 1).setConstant(-1);
+					pts_index += mapped.rows();
+				}
+				else
+				{
+					sampler.sample_polygon(polys[i], vis_pts_poly, vis_faces_poly);
+					bs.eval_geom_mapping(vis_pts_poly, mapped);
+
+					tets.block(tet_index, 0, vis_faces_poly.rows(), tets.cols()) = vis_faces_poly.array() + pts_index;
+					tet_index += vis_faces_poly.rows();
+
+					points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
+					discr.block(pts_index, 0, mapped.rows(), 1).setConstant(-1);
+					pts_index += mapped.rows();
+				}
 			}
 		}
 
@@ -2935,6 +2998,7 @@ namespace polyfem
 				pts_total_size += sampler.cube_points().rows();
 				seg_total_size += sampler.cube_edges().rows();
 			}
+			//TODO add edges for poly
 		}
 
 		Eigen::MatrixXd points(pts_total_size, mesh->dimension());

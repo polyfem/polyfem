@@ -244,7 +244,6 @@ namespace polyfem
 
 	double von_mises_stress_for_stress_tensor(const Eigen::MatrixXd &stress)
 	{
-		//TODO???
 		double von_mises_stress;
 
 		if(stress.rows() == 3)

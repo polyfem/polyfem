@@ -261,4 +261,11 @@ void triangulate_periodic(double target_area, Eigen::MatrixXd &OV, Eigen::Matrix
 		igl::triangle::triangulate(poly, E, MatrixXd(0,2), buf.str(), pts, faces);
 	}
 
+	void RefElementSampler::sample_polyhedron(const Eigen::MatrixXd &vertices, const Eigen::MatrixXi &f, Eigen::MatrixXd &pts, Eigen::MatrixXi &faces) const
+	{
+		//TODO
+		pts = vertices;
+		faces = f;
+	}
+
 }

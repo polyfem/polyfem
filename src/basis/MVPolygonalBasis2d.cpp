@@ -235,35 +235,35 @@ namespace {
 			//we are on the edge
 			if(fabs(areas[i]) < tol && products(i) < 0) {
 				// const double denominator = 1.0/(radii(i) + radii(ip1));
-				w0 = radii(ip1); // * denominator;
-				w1 = radii(i); // * denominator;
+				// w0 = radii(ip1); // * denominator;
+				// w1 = radii(i); // * denominator;
 
-				//https://link.springer.com/article/10.1007/s00371-013-0889-y
-                const Eigen::RowVector2d NE = rotatePi_2(polygon.row(ip1) - polygon.row(i));
-                const double sqrlengthE = NE.squaredNorm();
+				// //https://link.springer.com/article/10.1007/s00371-013-0889-y
+    //             const Eigen::RowVector2d NE = rotatePi_2(polygon.row(ip1) - polygon.row(i));
+    //             const double sqrlengthE = NE.squaredNorm();
 
-                const Eigen::RowVector2d N0 = rotatePi_2(point - polygon.row(i));
-                const Eigen::RowVector2d N1 = rotatePi_2( polygon.row(ip1) - point);
-                const double N0norm = N0.norm();
-                const double N1norm = N1.norm();
+    //             const Eigen::RowVector2d N0 = rotatePi_2(point - polygon.row(i));
+    //             const Eigen::RowVector2d N1 = rotatePi_2( polygon.row(ip1) - point);
+    //             const double N0norm = N0.norm();
+    //             const double N1norm = N1.norm();
 
-                const Eigen::RowVector2d gradw0 = (N0.dot(N1) / (2*N0norm*N0norm*N0norm) + 1./(2.*N1norm) + 1./N0norm - 1./N1norm ) * NE / sqrlengthE;
-                const Eigen::RowVector2d gradw1 = (1./(2*N1norm) + N0.dot(N1)/(2*N1norm*N1norm*N1norm) - 1./N0norm + 1./N1norm ) * NE / sqrlengthE;
+    //             const Eigen::RowVector2d gradw0 = (N0.dot(N1) / (2*N0norm*N0norm*N0norm) + 1./(2.*N1norm) + 1./N0norm - 1./N1norm ) * NE / sqrlengthE;
+    //             const Eigen::RowVector2d gradw1 = (1./(2*N1norm) + N0.dot(N1)/(2*N1norm*N1norm*N1norm) - 1./N0norm + 1./N1norm ) * NE / sqrlengthE;
 
-                w_prime.setZero();
-                w_prime.row(i) = gradw0;
-                w_prime.row(ip1) = gradw1;
+    //             w_prime.setZero();
+    //             w_prime.row(i) = gradw0;
+    //             w_prime.row(ip1) = gradw1;
 
-                assert(on_edge == -1);
-                on_edge = i;
+    //             assert(on_edge == -1);
+    //             on_edge = i;
                 // continue;
 
                 // w_gradients_on_edges[e] = std::pair<point_t,point_t>(gradw0,gradw1);
 
                 // w_gradients[e0] += gradw0;
                 // w_gradients[e1] += gradw1;
-
-				// return;
+				assert(false);
+				return;
 			}
 			const Eigen::RowVector2d vi = polygon.row(i);
 			const Eigen::RowVector2d vip1 = polygon.row(ip1);

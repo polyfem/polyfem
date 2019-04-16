@@ -26,6 +26,7 @@ namespace polyfem
 
 
 		void sample_polygon(const Eigen::MatrixXd &poly, Eigen::MatrixXd &pts, Eigen::MatrixXi &faces) const;
+		void sample_polyhedron(const Eigen::MatrixXd &vertices, const Eigen::MatrixXi &f, Eigen::MatrixXd &pts, Eigen::MatrixXi &faces) const;
 
 	private:
 		RefElementSampler() { }
