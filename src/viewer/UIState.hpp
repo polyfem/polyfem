@@ -19,6 +19,7 @@ namespace polyfem
 		enum Visualizations
 		{
 			InputMesh = 0,
+			Sidesets,
 			DiscrMesh,
 			Nodes,
 			PNodes,
@@ -40,7 +41,7 @@ namespace polyfem
 			TotalVisualizations
 		};
 
-		const std::string visualizations_texts[Visualizations::TotalVisualizations] = { "InputMesh", "Diretization", "Nodes", "PNodes", "BNodes", "VisMesh", "Solution", "Error", "ErrorGrad", "VisBasis",  "NavigationIndex", "Debug", "ElementId", "VertexId", "NodesId" };
+		const std::string visualizations_texts[Visualizations::TotalVisualizations] = { "InputMesh", "Sidesets", "Diretization", "Nodes", "PNodes", "BNodes",  "VisMesh", "Solution", "Error", "ErrorGrad", "VisBasis",  "NavigationIndex", "Debug", "ElementId", "VertexId", "NodesId" };
 
 
 	public:
@@ -140,6 +141,7 @@ namespace polyfem
 		void draw_elasticity_bc();
 
 		void show_mesh();
+		void show_sidesets();
 		void show_vis_mesh();
 		void show_nodes();
 		void show_sol();

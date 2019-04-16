@@ -816,6 +816,52 @@ namespace polyfem
 		}
 	}
 
+	void UIState::show_sidesets()
+	{
+		if (!state.mesh) { return; }
+
+		Eigen::MatrixXd pts;
+		Eigen::MatrixXi faces;
+		Eigen::MatrixXd sidesets;
+		Eigen::MatrixXd col;
+		state.get_sidesets(pts, faces, sidesets);
+		igl::colormap(color_map, sidesets, true, col);
+
+		if(visible_visualizations(Visualizations::Sidesets) && !available_visualizations[Visualizations::Sidesets])
+		{
+			reset_flags(Visualizations::Sidesets);
+
+		}
+
+		if(state.mesh->is_volume())
+		{
+			data(Visualizations::Sidesets).set_mesh(pts,faces);
+			data(Visualizations::Sidesets).set_colors(col);
+			Eigen::MatrixXd p0, p1;
+			state.mesh->get_edges(p0, p1);
+
+			data(Visualizations::Sidesets).line_width = line_width;
+			data(Visualizations::Sidesets).add_edges(p0, p1, MatrixXd::Zero(1, 3));
+			data(Visualizations::Sidesets).show_lines = false;
+		}
+		else
+		{
+			data(Visualizations::Sidesets).show_lines = true;
+			data(Visualizations::Sidesets).line_width = line_width;
+			data(Visualizations::Sidesets).set_edges(pts, faces, col);
+		}
+
+		if(visible_visualizations(Visualizations::Sidesets) && !available_visualizations[Visualizations::Sidesets])
+		{
+			available_visualizations[Visualizations::Sidesets] = true;
+			vis_flags[Visualizations::Sidesets].clear();
+			hide_data(Visualizations::Sidesets);
+		}
+
+		if(visible_visualizations(Visualizations::Sidesets))
+			show_data(Visualizations::Sidesets);
+	}
+
 	void UIState::show_mesh()
 	{
 		if (!state.mesh) { return; }
@@ -1539,9 +1585,12 @@ namespace polyfem
 		}
 
 		clear();
-		visible_visualizations.setConstant(false); visible_visualizations(Visualizations::InputMesh) = true;
+		visible_visualizations.setConstant(false);
+		visible_visualizations(Visualizations::InputMesh) = true;
+		visible_visualizations(Visualizations::Sidesets) = true;
 		viewer.selected_data_index = Visualizations::InputMesh;
 		show_mesh();
+		show_sidesets();
 		viewer.core.align_camera_center(tri_pts);
 	}
 
@@ -1556,6 +1605,7 @@ namespace polyfem
 		visible_visualizations.setConstant(false); visible_visualizations(Visualizations::DiscrMesh) = true;  visible_visualizations(Visualizations::Nodes) = true; visible_visualizations(Visualizations::BNodes) = true;
 		viewer.selected_data_index = Visualizations::DiscrMesh;
 		show_mesh();
+		show_sidesets();
 		show_nodes();
 	}
 
@@ -1628,6 +1678,7 @@ namespace polyfem
 		}
 
 		show_mesh();
+		show_sidesets();
 		show_vis_mesh();
 		show_nodes();
 		show_sol();

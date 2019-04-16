@@ -1191,6 +1191,81 @@ namespace polyfem
 		}
 	}
 
+	void State::get_sidesets(Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXd &sidesets)
+	{
+		if(mesh->is_volume())
+		{
+			const Mesh3D &tmp_mesh = *dynamic_cast<Mesh3D *>(mesh.get());
+			int n_pts = 0;
+			int n_faces = 0;
+			for(int f = 0; f < tmp_mesh.n_faces(); ++f){
+				if(tmp_mesh.get_boundary_id(f) > 0){
+					n_pts += tmp_mesh.n_face_vertices(f) + 1;
+					n_faces += tmp_mesh.n_face_vertices(f);
+				}
+			}
+
+			pts.resize(n_pts, 3);
+			faces.resize(n_faces, 3);
+			sidesets.resize(n_pts, 1);
+
+			n_pts = 0;
+			n_faces = 0;
+			for(int f = 0; f < tmp_mesh.n_faces(); ++f){
+				const int sideset = tmp_mesh.get_boundary_id(f);
+				if(sideset > 0){
+					const int n_face_vertices = tmp_mesh.n_face_vertices(f);
+
+					for(int i = 0; i < n_face_vertices; ++i){
+						if(n_face_vertices == 3)
+							faces.row(n_faces) <<  ((i+1)%n_face_vertices + n_pts), (i + n_pts), (n_pts+n_face_vertices);
+						else
+							faces.row(n_faces) <<  (i + n_pts), ((i+1)%n_face_vertices + n_pts), (n_pts+n_face_vertices);
+						++n_faces;
+					}
+
+					for(int i = 0; i < n_face_vertices; ++i){
+						pts.row(n_pts) = tmp_mesh.point(tmp_mesh.face_vertex(f, i));
+						sidesets(n_pts) = sideset;
+
+						++n_pts;
+					}
+
+					pts.row(n_pts) = tmp_mesh.face_barycenter(f);
+					sidesets(n_pts) = sideset;
+					++n_pts;
+				}
+			}
+		}
+		else
+		{
+			const Mesh2D &tmp_mesh = *dynamic_cast<Mesh2D *>(mesh.get());
+			int n_siteset = 0;
+			for(int e = 0; e < tmp_mesh.n_edges(); ++e){
+				if(tmp_mesh.get_boundary_id(e) > 0)
+					++n_siteset;
+			}
+
+			pts.resize(n_siteset*2, 2);
+			faces.resize(n_siteset, 2);
+			sidesets.resize(n_siteset, 1);
+
+			n_siteset = 0;
+			for(int e = 0; e < tmp_mesh.n_edges(); ++e){
+				const int sideset = tmp_mesh.get_boundary_id(e);
+				if(sideset > 0){
+					pts.row(2*n_siteset) = tmp_mesh.point(tmp_mesh.edge_vertex(e, 0));
+					pts.row(2*n_siteset+1) = tmp_mesh.point(tmp_mesh.edge_vertex(e, 1));
+					faces.row(n_siteset) << 2*n_siteset, 2*n_siteset+1;
+					sidesets(n_siteset) = sideset;
+					++n_siteset;
+				}
+			}
+
+			pts.conservativeResize(n_siteset*2, 3);
+			pts.col(2).setZero();
+		}
+	}
 
 	void State::load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd&)> &boundary_marker, bool skip_boundary_sideset)
 	{
