@@ -160,7 +160,7 @@ namespace polyfem
 	void KernelProblem::set_parameters(const json &params)
 	{
 		if(params.count("formulation"))
-			formulation_ = params["formulation"];
+			formulation_ = params["formulation"].get<std::string>();
 
 		if(params.count("n_kernels"))
 			n_kernels_ = params["n_kernels"];

@@ -2,8 +2,11 @@
 
 #include <polyfem/ProblemWithSolution.hpp>
 
-#include <vector>
 #include <Eigen/Dense>
+
+#include <vector>
+#include <string>
+
 
 namespace polyfem
 {
