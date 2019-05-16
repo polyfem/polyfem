@@ -86,12 +86,12 @@ namespace polyfem
 
 		boundary_ids_.clear();
 
-		if(params.find("obstracle") != params.end())
+		if(params.find("obstacle") != params.end())
 		{
-			const auto obstracle = params["obstracle"];
-			if(obstracle.is_array()){
-				for(size_t k = 0; k < obstracle.size(); ++k){
-					const auto tmp = obstracle[k];
+			const auto obstacle = params["obstacle"];
+			if(obstacle.is_array()){
+				for(size_t k = 0; k < obstacle.size(); ++k){
+					const auto tmp = obstacle[k];
 					if(tmp.is_string())
 					{
 						const std::string tmps = tmp;
