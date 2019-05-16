@@ -172,7 +172,9 @@ namespace polyfem
 		Eigen::MatrixXd tmp = sol;
 		sol = tmp.block(0, 0, tmp.rows() - n_pressure_bases, tmp.cols());
 		assert(sol.size() == n_bases * (problem->is_scalar() ? 1 : mesh->dimension()));
+		// assert(sol.size() == n_bases * (problem->is_scalar() ? 1 : mesh->dimension())+1);
 		pressure = tmp.block(tmp.rows()-n_pressure_bases, 0, n_pressure_bases, tmp.cols());
+		// pressure = tmp.block(tmp.rows()-n_pressure_bases-1, 0, n_pressure_bases, tmp.cols());
 		assert(pressure.size() == n_pressure_bases);
 	}
 
@@ -1933,9 +1935,23 @@ namespace polyfem
 				}
 			}
 
+			// for (int k = 0; k < pressure_stiffness.rows(); ++k){
+			// 	// blocks.emplace_back(n_bases * problem_dim + pressure_stiffness.rows(), n_bases * problem_dim + k, 1./pressure_stiffness.rows());
+			// 	blocks.emplace_back(n_bases * problem_dim + k, n_bases * problem_dim + pressure_stiffness.cols(), 1);
+			// }
+			// blocks.emplace_back(n_bases * problem_dim + pressure_stiffness.rows(), n_bases * problem_dim + pressure_stiffness.rows(), 1);
+
 			stiffness.resize(n_bases * problem_dim + n_pressure_bases, n_bases * problem_dim + n_pressure_bases);
+			// stiffness.resize(n_bases * problem_dim + n_pressure_bases + 1, n_bases * problem_dim + n_pressure_bases + 1);
 			stiffness.setFromTriplets(blocks.begin(), blocks.end());
 			stiffness.makeCompressed();
+
+			boundary_nodes.push_back(n_bases * problem_dim + 0);
+			// boundary_nodes.push_back(n_bases * problem_dim + 1);
+			// boundary_nodes.push_back(n_bases * problem_dim + 2);
+			// boundary_nodes.push_back(n_bases * problem_dim + 3);
+			// boundary_nodes.push_back(n_bases * problem_dim + 4);
+			// std::cout<<"asdasda "<<boundary_nodes.size()<<std::endl;
 
 			// Eigen::saveMarket(stiffness, "stiffness.txt");
 			// Eigen::saveMarket(velocity_stiffness, "velocity_stiffness.txt");
@@ -2045,15 +2061,19 @@ namespace polyfem
 		{
 			const int prev_size = rhs.size();
 			rhs.conservativeResize(prev_size + n_pressure_bases, rhs.cols());
+			// rhs.conservativeResize(prev_size + n_pressure_bases+1, rhs.cols());
 			//Divergence free rhs
-			if(formulation() != "Bilaplacian" || local_neumann_boundary.empty())
+			if(formulation() != "Bilaplacian" || local_neumann_boundary.empty()){
 				rhs.block(prev_size, 0, n_pressure_bases, rhs.cols()).setZero();
+				// rhs.block(prev_size, 0, n_pressure_bases+1, rhs.cols()).setZero();
+			}
 			else
 			{
 				Eigen::MatrixXd tmp(n_pressure_bases, 1); tmp.setZero();
 				RhsAssembler rhs_assembler1(*mesh, n_pressure_bases, size, pressure_bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
 				rhs_assembler1.set_bc(std::vector< LocalBoundary >(), std::vector<int>(), args["n_boundary_samples"], local_neumann_boundary, tmp);
 				rhs.block(prev_size, 0, n_pressure_bases, rhs.cols()) = tmp;
+				// rhs.row(prev_size+n_pressure_bases).setZero();
 			}
 		}
 
