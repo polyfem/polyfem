@@ -189,7 +189,7 @@ namespace polyfem
 				return true;
 
 
-			if( args["disc_orders"] == 1 && args["force_linear_geometry"])
+			if( args["discr_order"] == 1 && args["force_linear_geometry"])
 				return true;
 
 			return args["iso_parametric"];
