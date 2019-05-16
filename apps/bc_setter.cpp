@@ -528,7 +528,7 @@ int main(int argc, char **argv)
 		ImGui::End();
 	};
 
-	auto paint = [&](bool flod_fill) {
+	auto paint = [&](int modifier) {
 		int fid;
 		Vector3f bc;
 
@@ -540,7 +540,7 @@ int main(int argc, char **argv)
 		{
 			if(is_volume)
 			{
-				if(!flod_fill)
+				if(modifier == 8)
 				{
 					const int real_face = boundary_2_all(fid);
 					selected(real_face) = current_id;
@@ -552,7 +552,7 @@ int main(int argc, char **argv)
 						C.row(i) = col;
 					}
 				}
-				else
+				else if(modifier == 1 || modifier == 9)
 				{
 					visited.setConstant(false);
 					std::queue<int> to_visit; to_visit.push(fid);
@@ -585,8 +585,11 @@ int main(int argc, char **argv)
 							if(visited(nid))
 								continue;
 
-							if(std::abs(N.row(fid).dot(N.row(nid)))<0.99)
-								continue;
+
+							if(modifier != 9){
+								if(std::abs(N.row(fid).dot(N.row(nid)))<0.99)
+									continue;
+							}
 
 							to_visit.push(nid);
 						}
@@ -650,12 +653,12 @@ int main(int argc, char **argv)
 
 	viewer.callback_mouse_down = [&](igl::opengl::glfw::Viewer& viewer, int, int modifier)->bool
 	{
-		//shift or command
-		if(modifier != 1 && modifier !=8 )
+		//shift or command or command+shift
+		if(modifier != 1 && modifier !=8 && modifier != 9)
 			return false;
 
 		current_modifier = modifier;
-		return paint(current_modifier == 1);
+		return paint(current_modifier);
 	};
 
 	viewer.callback_mouse_move = [&](igl::opengl::glfw::Viewer& viewer, int, int)->bool
@@ -663,7 +666,7 @@ int main(int argc, char **argv)
 		if(!tracking_mouse)
 			return false;
 
-		return paint(current_modifier == 1);
+		return paint(current_modifier);
 	};
 
 	viewer.callback_mouse_up = [&](igl::opengl::glfw::Viewer& viewer, int, int)->bool
