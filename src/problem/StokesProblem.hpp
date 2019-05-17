@@ -43,6 +43,8 @@ namespace polyfem
 		int inflow_;
 		int outflow_;
 
+		int flow_dir_;
+
 		double inflow_amout_;
 		double outflow_amout_;
 	};

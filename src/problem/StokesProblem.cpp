@@ -37,6 +37,7 @@ namespace polyfem
 		boundary_ids_ = {1, 3, 7};
 		inflow_ = 1;
 		outflow_ = 3;
+		flow_dir_ = 0;
 
 		inflow_amout_ = 0.25;
 		outflow_amout_ = 0.25;
@@ -54,9 +55,9 @@ namespace polyfem
 		for(long i = 0; i < pts.rows(); ++i)
 		{
 			if(mesh.get_boundary_id(global_ids(i))== inflow_)
-				val(i, 0)=inflow_amout_;
+				val(i, flow_dir_)=inflow_amout_;
 			else if(mesh.get_boundary_id(global_ids(i))== outflow_)
-				val(i, 0)=outflow_amout_;
+				val(i, flow_dir_)=outflow_amout_;
 		}
 
 		val *= t;
@@ -82,6 +83,11 @@ namespace polyfem
 		if(params.find("outflow_amout") != params.end())
 		{
 			outflow_amout_ = params["outflow_amout"];
+		}
+
+		if(params.find("direction") != params.end())
+		{
+			flow_dir_ = params["direction"];
 		}
 
 		boundary_ids_.clear();
