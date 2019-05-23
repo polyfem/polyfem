@@ -1,6 +1,7 @@
-#include <polyfem/UIState.hpp>
-
 #include <polyfem/State.hpp>
+#ifndef POLYFEM_NO_UI
+#include <polyfem/UIState.hpp>
+#endif
 
 #include <polyfem/LinearSolver.hpp>
 #include <polyfem/StringUtils.hpp>
@@ -173,8 +174,10 @@ int main(int argc, char **argv)
 	}
 
 
+#ifndef POLYFEM_NO_UI
 	if(no_ui)
 	{
+#endif
 		State state;
 		state.init_logger(log_file, log_level, is_quiet);
 		state.init(in_args);
@@ -195,11 +198,13 @@ int main(int argc, char **argv)
 
 		state.save_json();
 		state.export_data();
+#ifndef POLYFEM_NO_UI
 	}
 	else
 	{
 		UIState::ui_state().launch(log_file, log_level, is_quiet, in_args);
 	}
+#endif
 
 
 	return EXIT_SUCCESS;

@@ -44,7 +44,7 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	set(VORPALINE_BUILD_DYNAMIC false CACHE STRING "" FORCE)
 endif()
 
-option(GEOGRAM_WITH_GRAPHICS "Viewers and geogram_gfx library" ON)
+option(GEOGRAM_WITH_GRAPHICS "Viewers and geogram_gfx library" OFF)
 option(GEOGRAM_WITH_LEGACY_NUMERICS "Legacy numerical libraries" OFF)
 option(GEOGRAM_WITH_HLBFGS "Non-linear solver (Yang Liu's HLBFGS)" ON)
 option(GEOGRAM_WITH_TETGEN "Tetrahedral mesher (Hang Si's TetGen)" OFF)
