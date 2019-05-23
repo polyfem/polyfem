@@ -9,6 +9,7 @@
 #include <polyfem/LocalBoundary.hpp>
 #include <polyfem/InterfaceData.hpp>
 #include <polyfem/Common.hpp>
+#include <polyfem/Logger.hpp>
 
 #include <polyfem/Mesh2D.hpp>
 #include <polyfem/Mesh3D.hpp>
@@ -44,6 +45,18 @@ namespace polyfem
 
 		void init(const json &args);
 		void init(const std::string &json);
+
+		void set_log_level(int log_level)
+		{
+			log_level = std::max(0, std::min(6, log_level));
+			spdlog::set_level(static_cast<spdlog::level::level_enum>(log_level));
+		}
+		std::string get_log()
+		{
+			std::stringstream ss;
+			save_json(ss);
+			return ss.str();
+		}
 
 		json args;
 
@@ -122,6 +135,48 @@ namespace polyfem
 
 		void load_mesh();
 		void load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd&)> &boundary_marker, bool skip_boundary_sideset = false);
+		void load_mesh(const std::string &path)
+		{
+			args["mesh"] = path;
+			load_mesh();
+		}
+		void load_mesh(const std::string &path, const std::string &bc_tag)
+		{
+			args["mesh"] = path;
+			args["bc_tag"] = bc_tag;
+			load_mesh();
+		}
+		void load_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
+		{
+			if(V.cols() == 2)
+				mesh = std::make_unique<polyfem::Mesh2D>();
+			else
+				mesh = std::make_unique<polyfem::Mesh3D>();
+			mesh->build_from_matrices(V, F);
+
+			load_mesh();
+		}
+
+
+		void set_boundary_side_set(const std::function<int(const polyfem::RowVectorNd&)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
+		void set_boundary_side_set(const std::function<int(const polyfem::RowVectorNd&, bool)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
+		void set_boundary_side_set(const std::function<int(const std::vector<int>&, bool)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
+
+		void solve()
+		{
+			compute_mesh_stats();
+
+			build_basis();
+
+			assemble_rhs();
+			assemble_stiffness_mat();
+
+			solve_export_to_file = false;
+			solution_frames.clear();
+			solve_problem();
+			solve_export_to_file = true;
+		}
+
 		void build_basis();
 		
 		void assemble_stiffness_mat();
@@ -158,6 +213,66 @@ namespace polyfem
 		void build_vis_mesh(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXd &discr);
 		void save_vtu(const std::string &name);
 		void save_wire(const std::string &name, bool isolines = false);
+
+		const Eigen::MatrixXd &get_solution() const { return sol; }
+		const Eigen::MatrixXd &get_pressure() const { return pressure; }
+
+		void get_sampled_solution(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXd &fun, bool boundary_only = false)
+		{
+			Eigen::MatrixXd discr;
+			const bool tmp = args["export"]["vis_boundary_only"];
+			args["export"]["vis_boundary_only"] = boundary_only;
+
+			build_vis_mesh(points, tets, discr);
+			interpolate_function(points.rows(), sol, fun, boundary_only);
+
+			args["export"]["vis_boundary_only"] = tmp;
+		}
+
+		void get_stresses(Eigen::MatrixXd &fun, bool boundary_only = false)
+		{
+			Eigen::MatrixXd points;
+			Eigen::MatrixXi tets;
+			Eigen::MatrixXd discr;
+			const bool tmp = args["export"]["vis_boundary_only"];
+			args["export"]["vis_boundary_only"] = boundary_only;
+
+			build_vis_mesh(points, tets, discr);
+			compute_tensor_value(points.rows(), sol, fun, boundary_only);
+
+			args["export"]["vis_boundary_only"] = tmp;
+		}
+
+		void get_sampled_mises(Eigen::MatrixXd &fun, bool boundary_only = false)
+		{
+			Eigen::MatrixXd points;
+			Eigen::MatrixXi tets;
+			Eigen::MatrixXd discr;
+			const bool tmp = args["export"]["vis_boundary_only"];
+			args["export"]["vis_boundary_only"] = boundary_only;
+
+			build_vis_mesh(points, tets, discr);
+			compute_scalar_value(points.rows(), sol, fun, boundary_only);
+
+			args["export"]["vis_boundary_only"] = tmp;
+		}
+
+
+		void get_sampled_mises_avg(Eigen::MatrixXd &fun, Eigen::MatrixXd &tfun, bool boundary_only = false)
+		{
+			Eigen::MatrixXd points;
+			Eigen::MatrixXi tets;
+			Eigen::MatrixXd discr;
+			const bool tmp = args["export"]["vis_boundary_only"];
+			args["export"]["vis_boundary_only"] = boundary_only;
+
+			build_vis_mesh(points, tets, discr);
+			average_grad_based_function(points.rows(), sol, fun, tfun, boundary_only);
+
+			args["export"]["vis_boundary_only"] = tmp;
+		}
+
+
 
 		inline std::string mesh_path() const { return args["mesh"]; }
 

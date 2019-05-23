@@ -29,25 +29,6 @@ using namespace Eigen;
 
 int main(int argc, char **argv)
 {
-#ifndef WIN32
-	setenv("GEO_NO_SIGNAL_HANDLER", "1", 1);
-#endif
-
-	GEO::initialize();
-
-#ifdef POLYFEM_WITH_TBB
-	const size_t MB = 1024*1024;
-	const size_t stack_size = 64 * MB;
-	unsigned int num_threads = std::max(1u, std::thread::hardware_concurrency());
-	tbb::task_scheduler_init scheduler(num_threads, stack_size);
-#endif
-
-    // Import standard command line arguments, and custom ones
-	GEO::CmdLine::import_arg_group("standard");
-	GEO::CmdLine::import_arg_group("pre");
-	GEO::CmdLine::import_arg_group("algo");
-
-
 	CLI::App command_line{"polyfem"};
 
 

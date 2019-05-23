@@ -23,7 +23,7 @@ endfunction()
 
 ################################################################################
 
-## libigl LGPL - triangle - tetgen
+## libigl MPL - triangle - tetgen (GPL)
 function(polyfem_download_libigl)
     polyfem_download_project(libigl
         GIT_REPOSITORY https://github.com/libigl/libigl.git
@@ -31,7 +31,7 @@ function(polyfem_download_libigl)
     )
 endfunction()
 
-## Geogram LGPL
+## Geogram BSD
 function(polyfem_download_geogram)
     polyfem_download_project(geogram
         GIT_REPOSITORY https://github.com/alicevision/geogram.git
