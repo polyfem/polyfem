@@ -40,7 +40,7 @@ TEST_CASE("solver", "[solver]") {
 
 #ifdef POLYFEM_WITH_HYPRE
 TEST_CASE("hypre", "[solver]") {
-    const std::string path = DATA_DIR;
+    const std::string path = POLYFEM_DATA_DIR;
     std::cout<<path<<std::endl;
     Eigen::SparseMatrix<double> A;
     const bool ok = loadMarket(A, path + "/A_2.mat");

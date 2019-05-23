@@ -23,7 +23,7 @@ endforeach()
 target_link_libraries(unit_tests PUBLIC polyfem catch warnings::all)
 
 set(DATA_DIR "${THIRD_PARTY_DIR}/data/")
-target_compile_definitions(unit_tests PUBLIC -DDATA_DIR=\"${DATA_DIR}\")
+target_compile_definitions(unit_tests PUBLIC -DPOLYFEM_DATA_DIR=\"${DATA_DIR}\")
 
 
 if(POLYFEM_WITH_SANITIZERS)

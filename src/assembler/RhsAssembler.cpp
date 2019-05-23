@@ -11,7 +11,7 @@
 
 
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 #include <tbb/parallel_for.h>
 #include <tbb/task_scheduler_init.h>
 #include <tbb/enumerable_thread_specific.h>
@@ -421,7 +421,7 @@ namespace polyfem
 
 		if(!problem_.is_rhs_zero())
 		{
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		typedef tbb::enumerable_thread_specific< LocalThreadScalarStorage > LocalStorage;
 		LocalStorage storages((LocalThreadScalarStorage()));
 #else
@@ -430,7 +430,7 @@ namespace polyfem
 
 		const int n_bases = int(bases_.size());
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		tbb::parallel_for( tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
 		LocalStorage::reference loc_storage = storages.local();
 		for (int e = r.begin(); e != r.end(); ++e) {
@@ -471,13 +471,13 @@ namespace polyfem
 					loc_storage.val += forces(p, d) * local_displacement(d) * da(p);
 					// res += forces(p, d) * local_displacement(d) * da(p);
 			}
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		}});
 #else
 		}
 #endif
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		for (LocalStorage::iterator i = storages.begin(); i != storages.end();  ++i)
 		{
 			res += i->val;

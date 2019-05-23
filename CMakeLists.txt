@@ -65,15 +65,15 @@ set(POLYFEM_SMALL_N  105 CACHE STRING "Maximum length for stack-allocated vector
 set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vectors (gradient only).")
 
 # Polyfem options for enabling/disabling optional libraries
-option(ENABLE_CHOLMOD     "Enable Cholmod library" ON)
-option(ENABLE_UMFPACK     "Enable UmfPack library" ON)
-option(ENABLE_SUPERLU     "Enable SuperLU library" OFF)
-option(ENABLE_MKL         "Enable MKL library"     OFF)
-option(ENABLE_PARDISO     "Enable Pardiso library" ON)
-option(ENABLE_MMG         "Enable MMG library"     OFF)
-option(ENABLE_TBB         "Enable TBB"             ON)
-option(ENABLE_HYPRE       "Enable hypre"           ON)
-option(ENABLE_OPENCL      "Enable OpenCL"          OFF)
+option(POLYFEM_WITH_CHOLMOD     "Enable Cholmod library" ON)
+option(POLYFEM_WITH_UMFPACK     "Enable UmfPack library" ON)
+option(POLYFEM_WITH_SUPERLU     "Enable SuperLU library" OFF)
+option(POLYFEM_WITH_MKL         "Enable MKL library"     OFF)
+option(POLYFEM_WITH_PARDISO     "Enable Pardiso library" ON)
+option(POLYFEM_WITH_MMG         "Enable MMG library"     OFF)
+option(POLYFEM_WITH_TBB         "Enable TBB"             ON)
+option(POLYFEM_WITH_HYPRE       "Enable hypre"           ON)
+option(POLYFEM_WITH_OPENCL      "Enable OpenCL"          OFF)
 
 option(POLYFEM_LARGE_INDEX    "Build for large indices"       OFF)
 
@@ -81,10 +81,10 @@ option(POLYFEM_WITH_APPS      "Build the apps"          ON)
 option(POLYFEM_WITH_MISC      "Build misc targes"       ON)
 
 # Sanitizer options
-option(SANITIZE_ADDRESS   "Sanitize Address"       OFF)
-option(SANITIZE_MEMORY    "Sanitize Memory"        OFF)
-option(SANITIZE_THREAD    "Sanitize Thread"        OFF)
-option(SANITIZE_UNDEFINED "Sanitize Undefined"     OFF)
+option(POLYFEM_SANITIZE_ADDRESS   "Sanitize Address"       OFF)
+option(POLYFEM_SANITIZE_MEMORY    "Sanitize Memory"        OFF)
+option(POLYFEM_SANITIZE_THREAD    "Sanitize Thread"        OFF)
+option(POLYFEM_SANITIZE_UNDEFINED "Sanitize Undefined"     OFF)
 
 # Options for libigl modules
 option(LIBIGL_USE_STATIC_LIBRARY          "Use libigl as static library" OFF)
@@ -110,24 +110,24 @@ option(LIBIGL_WITH_XML                    "Use XML"                      OFF)
 
 # Uncomment the following lines to force options which are already cached
 # set(PREFER_LOCAL_LIBS   ON  CACHE BOOL "" FORCE)
-# set(ENABLE_MKL          OFF CACHE BOOL "" FORCE)
-# set(ENABLE_PARDISO      OFF CACHE BOOL "" FORCE)
-# set(ENABLE_MMG          ON  CACHE BOOL "" FORCE)
-# set(ENABLE_TBB          ON  CACHE BOOL "" FORCE)
+# set(POLYFEM_WITH_MKL          OFF CACHE BOOL "" FORCE)
+# set(POLYFEM_WITH_PARDISO      OFF CACHE BOOL "" FORCE)
+# set(POLYFEM_WITH_MMG          ON  CACHE BOOL "" FORCE)
+# set(POLYFEM_WITH_TBB          ON  CACHE BOOL "" FORCE)
 
 # set(POLYFEM_WITH_SANITIZERS   OFF  CACHE BOOL "" FORCE)
-# set(SANITIZE_ADDRESS          ON  CACHE BOOL "" FORCE)
-# set(SANITIZE_MEMORY           ON  CACHE BOOL "" FORCE)
-# set(SANITIZE_THREAD           OFF CACHE BOOL "" FORCE)
-# set(SANITIZE_UNDEFINED        ON  CACHE BOOL "" FORCE)
+# set(POLYFEM_SANITIZE_ADDRESS          ON  CACHE BOOL "" FORCE)
+# set(POLYFEM_SANITIZE_MEMORY           ON  CACHE BOOL "" FORCE)
+# set(POLYFEM_SANITIZE_THREAD           OFF CACHE BOOL "" FORCE)
+# set(POLYFEM_SANITIZE_UNDEFINED        ON  CACHE BOOL "" FORCE)
 
 # set(POLYFEM_SMALL_N 105 CACHE STRING "" FORCE)
 
 # Somehow Pardiso 6 conflicts with libmetis that these guys depends on... Grr
-if(ENABLE_PARDISO)
-	set(ENABLE_CHOLMOD      OFF CACHE BOOL "" FORCE)
-	set(ENABLE_UMFPACK      OFF CACHE BOOL "" FORCE)
-	set(ENABLE_SUPERLU      OFF CACHE BOOL "" FORCE)
+if(POLYFEM_WITH_PARDISO)
+	set(POLYFEM_WITH_CHOLMOD      OFF CACHE BOOL "" FORCE)
+	set(POLYFEM_WITH_UMFPACK      OFF CACHE BOOL "" FORCE)
+	set(POLYFEM_WITH_SUPERLU      OFF CACHE BOOL "" FORCE)
 endif()
 
 ################################################################################
@@ -240,7 +240,7 @@ endif()
 # target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
 
 # TBB
-if(ENABLE_TBB)
+if(POLYFEM_WITH_TBB)
 	polyfem_download_tbb()
 	set(TBB_BUILD_STATIC ON CACHE BOOL " " FORCE)
 	set(TBB_BUILD_SHARED OFF CACHE BOOL " " FORCE)
@@ -251,7 +251,7 @@ if(ENABLE_TBB)
 	add_subdirectory(${THIRD_PARTY_DIR}/tbb tbb)
 	set_property(TARGET tbb_static tbb_def_files PROPERTY FOLDER "dependencies")
 
-	target_compile_definitions(tbb_static PUBLIC -DUSE_TBB)
+	target_compile_definitions(tbb_static PUBLIC -DPOLYFEM_WITH_TBB)
 	target_include_directories(polyfem SYSTEM PUBLIC ${THIRD_PARTY_DIR}/tbb/include)
 	target_link_libraries(polyfem PUBLIC tbb_static)
 endif()
@@ -305,7 +305,7 @@ if(${POLYFEM_TOPLEVEL_PROJECT})
 endif()
 
 # Hypre
-if(ENABLE_HYPRE)
+if(POLYFEM_WITH_HYPRE)
 	polyfem_download_hypre()
 	include(hypre)
 	target_link_libraries(polyfem PUBLIC HYPRE)
@@ -317,7 +317,7 @@ endif()
 ################################################################################
 
 # MMG wrapper
-if(ENABLE_MMG)
+if(POLYFEM_WITH_MMG)
 	include(ExternalProject)
 	set(MMG_DIR "${THIRD_PARTY_DIR}/mmg")
 	ExternalProject_Add(MMG_Project
@@ -346,7 +346,7 @@ if(ENABLE_MMG)
 endif()
 
 # Cholmod solver
-if(ENABLE_CHOLMOD)
+if(POLYFEM_WITH_CHOLMOD)
 	find_package(Cholmod)
 	if(CHOLMOD_FOUND)
 		target_include_directories(polyfem PUBLIC ${CHOLMOD_INCLUDES})
@@ -356,7 +356,7 @@ if(ENABLE_CHOLMOD)
 endif()
 
 # MKL library
-if(ENABLE_MKL)
+if(POLYFEM_WITH_MKL)
 	find_package(MKL)
 	if(MKL_FOUND)
 		target_include_directories(polyfem PUBLIC ${MKL_INCLUDE_DIR})
@@ -366,7 +366,7 @@ if(ENABLE_MKL)
 endif()
 
 # Pardiso solver
-if(ENABLE_PARDISO AND NOT (ENABLE_MKL AND MKL_FOUND))
+if(POLYFEM_WITH_PARDISO AND NOT (POLYFEM_WITH_MKL AND MKL_FOUND))
 	find_package(Pardiso)
 	if(PARDISO_FOUND)
 		find_package(LAPACK)
@@ -392,7 +392,7 @@ if(ENABLE_PARDISO AND NOT (ENABLE_MKL AND MKL_FOUND))
 endif()
 
 # UmfPack solver
-if(ENABLE_UMFPACK)
+if(POLYFEM_WITH_UMFPACK)
 	find_package(Umfpack)
 	if(UMFPACK_FOUND)
 		target_include_directories(polyfem PUBLIC ${UMFPACK_INCLUDES})
@@ -402,7 +402,7 @@ if(ENABLE_UMFPACK)
 endif()
 
 # SuperLU solver
-if(ENABLE_SUPERLU AND NOT (ENABLE_MKL AND MKL_FOUND))
+if(POLYFEM_WITH_SUPERLU AND NOT (POLYFEM_WITH_MKL AND MKL_FOUND))
 	find_package(SuperLU)
 	if(SUPERLU_FOUND)
 		target_include_directories(polyfem PUBLIC ${SUPERLU_INCLUDES})
@@ -413,7 +413,7 @@ if(ENABLE_SUPERLU AND NOT (ENABLE_MKL AND MKL_FOUND))
 endif()
 
 
-# if(ENABLE_OPENCL)
+# if(POLYFEM_WITH_OPENCL)
 # 	find_package(OpenCL)
 # 	if(OpenCL_FOUND)
 # 		polyfem_download_rbf()

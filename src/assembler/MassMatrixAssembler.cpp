@@ -2,7 +2,7 @@
 
 #include <polyfem/Logger.hpp>
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 #include <tbb/parallel_for.h>
 #include <tbb/task_scheduler_init.h>
 #include <tbb/enumerable_thread_specific.h>
@@ -42,7 +42,7 @@ namespace polyfem
 		mass.resize(n_basis*size, n_basis*size);
 		mass.setZero();
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		typedef tbb::enumerable_thread_specific< LocalThreadMatStorage > LocalStorage;
 		LocalStorage storages(LocalThreadMatStorage(buffer_size, mass.rows()));
 #else
@@ -51,7 +51,7 @@ namespace polyfem
 
 		const int n_bases = int(bases.size());
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		tbb::parallel_for( tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
 		LocalStorage::reference loc_storage = storages.local();
 		for (int e = r.begin(); e != r.end(); ++e) {
@@ -124,13 +124,13 @@ namespace polyfem
 
 			// timer.stop();
 			// if (!vals.has_parameterization) { std::cout << "-- Timer: " << timer.getElapsedTime() << std::endl; }
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		}});
 #else
 		}
 #endif
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		for (LocalStorage::iterator i = storages.begin(); i != storages.end();  ++i)
 		{
 			mass += i->mass_mat;

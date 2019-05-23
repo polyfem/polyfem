@@ -46,7 +46,7 @@
 
 #include <polyfem/Logger.hpp>
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 #include <tbb/task_scheduler_init.h>
 #endif
 
@@ -391,7 +391,7 @@ namespace polyfem
 		j["sol_min"] = mmin;
 		j["sol_max"] = mmax;
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		j["num_threads"] = tbb::task_scheduler_init::default_num_threads();
 #else
 		j["num_threads"] = 1;

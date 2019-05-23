@@ -17,7 +17,7 @@
 
 #include <igl/Timer.h>
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 #include <tbb/parallel_for.h>
 #include <tbb/task_scheduler_init.h>
 #include <tbb/enumerable_thread_specific.h>
@@ -82,7 +82,7 @@ namespace polyfem
 		StiffnessMatrix &stiffness) const
 	{
 		const int buffer_size = std::min(long(1e8), long(n_basis) * local_assembler_.size());
-// #ifdef USE_TBB
+// #ifdef POLYFEM_WITH_TBB
 // 		buffer_size /= tbb::task_scheduler_init::default_num_threads();
 // #endif
 		logger().debug("buffer_size {}", buffer_size);
@@ -90,7 +90,7 @@ namespace polyfem
 		stiffness.resize(n_basis*local_assembler_.size(), n_basis*local_assembler_.size());
 		stiffness.setZero();
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		typedef tbb::enumerable_thread_specific< LocalThreadMatStorage > LocalStorage;
 		LocalStorage storages(LocalThreadMatStorage(buffer_size, stiffness.rows(), stiffness.cols()));
 #else
@@ -99,7 +99,7 @@ namespace polyfem
 
 		const int n_bases = int(bases.size());
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		tbb::parallel_for( tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
 		LocalStorage::reference loc_storage = storages.local();
 		loc_storage.entries.reserve(buffer_size);
@@ -185,14 +185,14 @@ namespace polyfem
 
 			// timer.stop();
 			// if (!vals.has_parameterization) { std::cout << "-- Timer: " << timer.getElapsedTime() << std::endl; }
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		}});
 #else
 		}
 #endif
 		logger().debug("done separate assembly...");
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		for (LocalStorage::iterator i = storages.begin(); i != storages.end();  ++i)
 		{
 			logger().debug("local stiffness: {}, entries: {}", i->stiffness.nonZeros(), i->entries.size());
@@ -250,7 +250,7 @@ namespace polyfem
 		stiffness.resize(n_phi_basis*local_assembler_.rows(), n_psi_basis*local_assembler_.cols());
 		stiffness.setZero();
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		typedef tbb::enumerable_thread_specific< LocalThreadMatStorage > LocalStorage;
 		LocalStorage storages(LocalThreadMatStorage(buffer_size, stiffness.rows(), stiffness.cols()));
 #else
@@ -260,7 +260,7 @@ namespace polyfem
 
 		const int n_bases = int(phi_bases.size());
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		tbb::parallel_for( tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
 		LocalStorage::reference loc_storage = storages.local();
         ElementAssemblyValues psi_vals, phi_vals;
@@ -333,14 +333,14 @@ namespace polyfem
 
 			// timer.stop();
 			// if (!vals.has_parameterization) { std::cout << "-- Timer: " << timer.getElapsedTime() << std::endl; }
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		}});
 #else
 		}
 #endif
 
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		for (LocalStorage::iterator i = storages.begin(); i != storages.end();  ++i)
 		{
 			stiffness += i->stiffness;
@@ -371,7 +371,7 @@ namespace polyfem
 		rhs.resize(n_basis*local_assembler_.size(), 1);
 		rhs.setZero();
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		typedef tbb::enumerable_thread_specific< LocalThreadVecStorage > LocalStorage;
 		LocalStorage storages(LocalThreadVecStorage(rhs.size()));
 #else
@@ -381,7 +381,7 @@ namespace polyfem
 
 		const int n_bases = int(bases.size());
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		tbb::parallel_for( tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
 		LocalStorage::reference loc_storage = storages.local();
 		for (int e = r.begin(); e != r.end(); ++e) {
@@ -427,13 +427,13 @@ namespace polyfem
 			// timer.stop();
 			// if (!vals.has_parameterization) { std::cout << "-- Timer: " << timer.getElapsedTime() << std::endl; }
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		}});
 #else
 		}
 #endif
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 	for (LocalStorage::iterator i = storages.begin(); i != storages.end();  ++i)
 	{
 		rhs += i->vec;
@@ -459,7 +459,7 @@ namespace polyfem
 		grad.resize(n_basis*local_assembler_.size(), n_basis*local_assembler_.size());
 		grad.setZero();
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		typedef tbb::enumerable_thread_specific< LocalThreadMatStorage > LocalStorage;
 		LocalStorage storages(LocalThreadMatStorage(buffer_size, grad.rows(), grad.cols()));
 #else
@@ -468,7 +468,7 @@ namespace polyfem
 
 		const int n_bases = int(bases.size());
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		tbb::parallel_for( tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
 		LocalStorage::reference loc_storage = storages.local();
 		for (int e = r.begin(); e != r.end(); ++e) {
@@ -558,14 +558,14 @@ namespace polyfem
 
 			// timer.stop();
 			// if (!vals.has_parameterization) { std::cout << "-- Timer: " << timer.getElapsedTime() << std::endl; }
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		}});
 #else
 		}
 #endif
 
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 	for (LocalStorage::iterator i = storages.begin(); i != storages.end();  ++i)
 	{
 		grad += i->stiffness;
@@ -587,7 +587,7 @@ namespace polyfem
 		const std::vector< ElementBases > &gbases,
 		const Eigen::MatrixXd &displacement) const
 	{
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		typedef tbb::enumerable_thread_specific< LocalThreadScalarStorage > LocalStorage;
 		LocalStorage storages((LocalThreadScalarStorage()));
 #else
@@ -595,7 +595,7 @@ namespace polyfem
 #endif
 		const int n_bases = int(bases.size());
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		tbb::parallel_for( tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
 		LocalStorage::reference loc_storage = storages.local();
 		for (int e = r.begin(); e != r.end(); ++e) {
@@ -614,14 +614,14 @@ namespace polyfem
 
 			const double val = local_assembler_.compute_energy(vals, displacement, loc_storage.da);
 			loc_storage.val += val;
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		}});
 #else
 		}
 #endif
 
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 	double res = 0;
 	for (LocalStorage::iterator i = storages.begin(); i != storages.end();  ++i)
 	{

@@ -92,7 +92,7 @@ TEST_CASE("expression", "[utils]") {
 }
 
 TEST_CASE("mshreader", "[utils]") {
-    const std::string path = DATA_DIR;
+    const std::string path = POLYFEM_DATA_DIR;
     Eigen::MatrixXd vertices;
     Eigen::MatrixXi cells;
     const auto mesh = Mesh::create(path + "/circle2.msh");

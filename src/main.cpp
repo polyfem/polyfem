@@ -15,7 +15,7 @@
 
 #include <CLI/CLI.hpp>
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 #include <tbb/task_scheduler_init.h>
 #include <thread>
 #endif
@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 
 	GEO::initialize();
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 	const size_t MB = 1024*1024;
 	const size_t stack_size = 64 * MB;
 	unsigned int num_threads = std::max(1u, std::thread::hardware_concurrency());
