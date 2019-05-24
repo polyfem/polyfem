@@ -185,6 +185,20 @@ namespace polyfem
 
 	}
 
+	void State::init_logger(std::ostream &os, int log_level)
+	{
+		Logger::init(os);
+		log_level = std::max(0, std::min(6, log_level));
+		spdlog::set_level(static_cast<spdlog::level::level_enum>(log_level));
+		spdlog::flush_every(std::chrono::seconds(3));
+
+		GEO::Logger *geo_logger = GEO::Logger::instance();
+		geo_logger->unregister_all_clients();
+		geo_logger->register_client(new GeoLoggerForward(logger().clone("geogram")));
+		geo_logger->set_pretty(false);
+
+	}
+
 	void State::sol_to_pressure()
 	{
 		// assert(problem->is_mixed());
