@@ -48,7 +48,7 @@ namespace polyfem {
 
 	void Logger::init(std::ostream &os) {
 		std::vector<spdlog::sink_ptr> sinks;
-		sinks.emplace_back(std::make_shared<spdlog::sinks::ostream_sink_mt>(os, true));
+		sinks.emplace_back(std::make_shared<spdlog::sinks::ostream_sink_mt>(os, false));
 
 		aux_init(sinks);
 	}
