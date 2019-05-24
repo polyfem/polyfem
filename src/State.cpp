@@ -77,6 +77,8 @@ DECLARE_DIFFSCALAR_BASE();
 
 using namespace Eigen;
 
+extern "C" size_t getPeakRSS();
+
 
 namespace polyfem
 {
@@ -371,6 +373,8 @@ namespace polyfem
 		j["count_multi_singular_boundary"] = multi_singular_boundary_count;
 
 		j["is_simplicial"] = mesh->n_elements() == simplex_count;
+
+		j["peak_memory"] = getPeakRSS()/(1024*1024);
 
 
 		const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();

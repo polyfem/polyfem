@@ -10,6 +10,7 @@ set(SOURCES
 	ElasticityUtils.cpp
 	ElasticityUtils.hpp
 	EnableWarnings.hpp
+	getRSS.c
 	Logger.cpp
 	Logger.hpp
 	InterpolatedFunction.cpp
