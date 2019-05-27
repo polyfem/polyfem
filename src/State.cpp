@@ -169,6 +169,93 @@ namespace polyfem
 		GEO::CmdLine::import_arg_group("algo");
 
 		problem = ProblemFactory::factory().get_problem("Linear");
+
+		this->args = {
+			{"mesh", ""},
+			{"force_linear_geometry", false},
+			{"bc_tag", ""},
+			{"boundary_id_threshold", -1.0},
+			{"n_refs", 0},
+			{"vismesh_rel_area", 0.00001},
+			{"refinenemt_location", 0.5},
+			{"n_boundary_samples", 6},
+			{"problem", "Franke"},
+			{"normalize_mesh", true},
+
+			{"curved_mesh_size", false},
+
+			{"count_flipped_els", false},
+
+			{"tend", 1},
+			{"time_steps", 10},
+
+			{"scalar_formulation", "Laplacian"},
+			{"tensor_formulation", "LinearElasticity"},
+
+			{"B", 3},
+			{"h1_formula", false},
+
+			{"quadrature_order", 4},
+			{"discr_order", 1},
+			{"poly_bases", "MFSHarmonic"},
+			{"serendipity", false},
+			{"discr_order_max", autogen::MAX_P_BASES},
+			{"pressure_discr_order", 1},
+			{"use_p_ref", false},
+			{"use_spline", false},
+			{"iso_parametric", false},
+			{"integral_constraints", 2},
+
+			{"fit_nodes", false},
+
+			{"n_harmonic_samples", 10},
+
+			{"solver_type", LinearSolver::defaultSolver()},
+			{"precond_type", LinearSolver::defaultPrecond()},
+
+			{"solver_params", json({})},
+			{"line_search", "armijo"},
+			{"nl_solver", "newton"},
+			{"nl_solver_rhs_steps", 1},
+			{"save_solve_sequence", false},
+			{"save_solve_sequence_debug", false},
+
+			{"rhs_path", ""},
+
+			{"params", {
+				{"lambda", 0.32967032967032966},
+				{"mu", 0.3846153846153846},
+				{"k", 1.0},
+				{"elasticity_tensor", json({})},
+				// {"young", 1.0},
+				// {"nu", 0.3},
+				{"alphas", {2.13185026692482, -0.600299816209491}},
+				{"mus", {0.00407251192475097, 0.000167202574129608}},
+				{"Ds", {9.4979, 1000000}}
+			}},
+
+			{"problem_params", json({})},
+
+			{"output", ""},
+			// {"solution", ""},
+			// {"stiffness_mat_save_path", ""},
+
+			{"export", {
+				{"sol_at_node", -1},
+				{"vis_mesh", ""},
+				{"vis_boundary_only", false},
+				{"nodes", ""},
+				{"wire_mesh", ""},
+				{"iso_mesh", ""},
+				{"spectrum", false},
+				{"solution", ""},
+				{"full_mat", ""},
+				{"stiffness_mat", ""},
+				{"solution_mat", ""},
+				{"stress_mat", ""},
+				{"mises", ""}
+			}}
+		};
 	}
 
 	void State::init_logger(const std::string &log_file, int log_level, const bool is_quiet)
@@ -2694,92 +2781,6 @@ namespace polyfem
 
 	void State::init(const json &args_in)
 	{
-		this->args = {
-			{"mesh", ""},
-			{"force_linear_geometry", false},
-			{"bc_tag", ""},
-			{"boundary_id_threshold", -1.0},
-			{"n_refs", 0},
-			{"vismesh_rel_area", 0.00001},
-			{"refinenemt_location", 0.5},
-			{"n_boundary_samples", 6},
-			{"problem", "Franke"},
-			{"normalize_mesh", true},
-
-			{"curved_mesh_size", false},
-
-			{"count_flipped_els", false},
-
-			{"tend", 1},
-			{"time_steps", 10},
-
-			{"scalar_formulation", "Laplacian"},
-			{"tensor_formulation", "LinearElasticity"},
-
-			{"B", 3},
-			{"h1_formula", false},
-
-			{"quadrature_order", 4},
-			{"discr_order", 1},
-			{"poly_bases", "MFSHarmonic"},
-			{"serendipity", false},
-			{"discr_order_max", autogen::MAX_P_BASES},
-			{"pressure_discr_order", 1},
-			{"use_p_ref", false},
-			{"use_spline", false},
-			{"iso_parametric", false},
-			{"integral_constraints", 2},
-
-			{"fit_nodes", false},
-
-			{"n_harmonic_samples", 10},
-
-			{"solver_type", LinearSolver::defaultSolver()},
-			{"precond_type", LinearSolver::defaultPrecond()},
-
-			{"solver_params", json({})},
-			{"line_search", "armijo"},
-			{"nl_solver", "newton"},
-			{"nl_solver_rhs_steps", 1},
-			{"save_solve_sequence", false},
-			{"save_solve_sequence_debug", false},
-
-			{"rhs_path", ""},
-
-			{"params", {
-				{"lambda", 0.32967032967032966},
-				{"mu", 0.3846153846153846},
-				{"k", 1.0},
-				{"elasticity_tensor", json({})},
-				// {"young", 1.0},
-				// {"nu", 0.3},
-				{"alphas", {2.13185026692482, -0.600299816209491}},
-				{"mus", {0.00407251192475097, 0.000167202574129608}},
-				{"Ds", {9.4979, 1000000}}
-			}},
-
-			{"problem_params", json({})},
-
-			{"output", ""},
-			// {"solution", ""},
-			// {"stiffness_mat_save_path", ""},
-
-			{"export", {
-				{"sol_at_node", -1},
-				{"vis_mesh", ""},
-				{"vis_boundary_only", false},
-				{"nodes", ""},
-				{"wire_mesh", ""},
-				{"iso_mesh", ""},
-				{"spectrum", false},
-				{"solution", ""},
-				{"full_mat", ""},
-				{"stiffness_mat", ""},
-				{"solution_mat", ""},
-				{"stress_mat", ""},
-				{"mises", ""}
-			}}
-		};
 		this->args.merge_patch(args_in);
 
 		if(args_in.find("stiffness_mat_save_path") != args_in.end() && !args_in["stiffness_mat_save_path"].empty())
