@@ -1444,9 +1444,6 @@ namespace polyfem
 		logger().info(" took {}s", timer.getElapsedTime());
 
 		RefElementSampler::sampler().init(mesh->is_volume(), mesh->n_elements(), args["vismesh_rel_area"]);
-
-		disc_orders.resize(mesh->n_elements());
-		disc_orders.setConstant(args["discr_order"]);
 	}
 
 	void State::load_mesh()
@@ -1523,108 +1520,104 @@ namespace polyfem
 
 		RefElementSampler::sampler().init(mesh->is_volume(), mesh->n_elements(), args["vismesh_rel_area"]);
 
-		disc_orders.resize(mesh->n_elements());
-		disc_orders.setConstant(args["discr_order"]);
-
-
 
 		// const double poly_percentage = 0.05;
-		const double poly_percentage = 0;
-		const double perturb_t = 0.3;
+		// const double poly_percentage = 0;
+		// const double perturb_t = 0.3;
 
-		if(poly_percentage > 0)
-		{
-			const int n_poly = std::max(1., mesh->n_elements()*poly_percentage);
-			int counter = 0;
-			srand(11);
+		// if(poly_percentage > 0)
+		// {
+		// 	const int n_poly = std::max(1., mesh->n_elements()*poly_percentage);
+		// 	int counter = 0;
+		// 	srand(11);
 
-			for(int trial = 0; trial < n_poly*10; ++trial)
-			{
-				int el_id = rand() % mesh->n_elements();
+		// 	for(int trial = 0; trial < n_poly*10; ++trial)
+		// 	{
+		// 		int el_id = rand() % mesh->n_elements();
 
-				auto tags = mesh->elements_tag();
+		// 		auto tags = mesh->elements_tag();
 
-				if(mesh->is_volume())
-				{
-					assert(false);
-				}
-				else
-				{
-					const Mesh2D &tmp_mesh = *dynamic_cast<Mesh2D *>(mesh.get());
-					auto index = tmp_mesh.get_index_from_face(el_id);
+		// 		if(mesh->is_volume())
+		// 		{
+		// 			assert(false);
+		// 		}
+		// 		else
+		// 		{
+		// 			const Mesh2D &tmp_mesh = *dynamic_cast<Mesh2D *>(mesh.get());
+		// 			auto index = tmp_mesh.get_index_from_face(el_id);
 
-					bool stop = false;
+		// 			bool stop = false;
 
-					for(int i = 0; i < tmp_mesh.n_face_vertices(el_id); ++i)
-					{
-						if(tmp_mesh.is_boundary_edge(index.edge))
-						{
-							stop = true;
-							break;
-						}
+		// 			for(int i = 0; i < tmp_mesh.n_face_vertices(el_id); ++i)
+		// 			{
+		// 				if(tmp_mesh.is_boundary_edge(index.edge))
+		// 				{
+		// 					stop = true;
+		// 					break;
+		// 				}
 
-						const auto neigh_index = tmp_mesh.switch_face(index);
-						if(tags[neigh_index.face] != ElementType::RegularInteriorCube)
-						{
-							stop = true;
-							break;
-						}
+		// 				const auto neigh_index = tmp_mesh.switch_face(index);
+		// 				if(tags[neigh_index.face] != ElementType::RegularInteriorCube)
+		// 				{
+		// 					stop = true;
+		// 					break;
+		// 				}
 
-						const auto f1 = tmp_mesh.switch_face(tmp_mesh.switch_edge(neigh_index						 )).face;
-						const auto f2 = tmp_mesh.switch_face(tmp_mesh.switch_edge(tmp_mesh.switch_vertex(neigh_index))).face;
-						if((f1 >= 0 && tags[f1] != ElementType::RegularInteriorCube) || (f2 >= 0 && tags[f2] != ElementType::RegularInteriorCube ))
-						{
-							stop = true;
-							break;
-						}
+		// 				const auto f1 = tmp_mesh.switch_face(tmp_mesh.switch_edge(neigh_index						 )).face;
+		// 				const auto f2 = tmp_mesh.switch_face(tmp_mesh.switch_edge(tmp_mesh.switch_vertex(neigh_index))).face;
+		// 				if((f1 >= 0 && tags[f1] != ElementType::RegularInteriorCube) || (f2 >= 0 && tags[f2] != ElementType::RegularInteriorCube ))
+		// 				{
+		// 					stop = true;
+		// 					break;
+		// 				}
 
-						index = tmp_mesh.next_around_face(index);
-					}
+		// 				index = tmp_mesh.next_around_face(index);
+		// 			}
 
-					if(stop) continue;
-				}
+		// 			if(stop) continue;
+		// 		}
 
-				mesh->set_tag(el_id, ElementType::InteriorPolytope);
-				++counter;
+		// 		mesh->set_tag(el_id, ElementType::InteriorPolytope);
+		// 		++counter;
 
-				mesh->update_elements_tag();
+		// 		mesh->update_elements_tag();
 
-				if(counter >= n_poly)
-					break;
+		// 		if(counter >= n_poly)
+		// 			break;
 
-			}
-
-
-			if(perturb_t > 0)
-			{
-				if(mesh->is_volume())
-				{
-					assert(false);
-				}
-				else
-				{
-					Mesh2D &tmp_mesh = *dynamic_cast<Mesh2D *>(mesh.get());
-					for(int el_id = 0; el_id < tmp_mesh.n_elements(); ++el_id)
-					{
-						if(!tmp_mesh.is_polytope(el_id))
-							continue;
-
-						const int rand_index = rand() % tmp_mesh.n_face_vertices(el_id);
-						auto index = tmp_mesh.get_index_from_face(el_id);
-						for(int r = 0; r < rand_index; ++r)
-							index = tmp_mesh.next_around_face(index);
-
-						const auto v1 = tmp_mesh.point(index.vertex);
-						const auto v2 = tmp_mesh.point(tmp_mesh.next_around_face(tmp_mesh.next_around_face(index)).vertex);
+		// 	}
 
 
-						const double t = perturb_t + ((double) rand() / (RAND_MAX)) * 0.2 - 0.1;
-						const RowVectorNd v = t * v1 + (1-t) * v2;
-						tmp_mesh.set_point(index.vertex, v);
-					}
-				}
-			}
-		}
+		// 	if(perturb_t > 0)
+		// 	{
+		// 		if(mesh->is_volume())
+		// 		{
+		// 			assert(false);
+		// 		}
+		// 		else
+		// 		{
+		// 			Mesh2D &tmp_mesh = *dynamic_cast<Mesh2D *>(mesh.get());
+		// 			for(int el_id = 0; el_id < tmp_mesh.n_elements(); ++el_id)
+		// 			{
+		// 				if(!tmp_mesh.is_polytope(el_id))
+		// 					continue;
+
+		// 				const int rand_index = rand() % tmp_mesh.n_face_vertices(el_id);
+		// 				auto index = tmp_mesh.get_index_from_face(el_id);
+		// 				for(int r = 0; r < rand_index; ++r)
+		// 					index = tmp_mesh.next_around_face(index);
+
+		// 				const auto v1 = tmp_mesh.point(index.vertex);
+		// 				const auto v2 = tmp_mesh.point(tmp_mesh.next_around_face(tmp_mesh.next_around_face(index)).vertex);
+
+
+		// 				const double t = perturb_t + ((double) rand() / (RAND_MAX)) * 0.2 - 0.1;
+		// 				const RowVectorNd v = t * v1 + (1-t) * v2;
+		// 				tmp_mesh.set_point(index.vertex, v);
+		// 			}
+		// 		}
+		// 	}
+		// }
 
 	}
 
@@ -1782,6 +1775,10 @@ namespace polyfem
 		sigma_avg = 0;
 		sigma_max = 0;
 		sigma_min = 0;
+
+		disc_orders.resize(mesh->n_elements());
+		disc_orders.setConstant(args["discr_order"]);
+
 
 		auto &assembler = AssemblerUtils::instance();
 		const auto params = build_json_params();
