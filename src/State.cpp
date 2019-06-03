@@ -288,6 +288,8 @@ namespace polyfem
 
 	void State::sol_to_pressure()
 	{
+		if (n_pressure_bases <= 0) { logger().error("No pressure bases defined!"); return; }
+
 		// assert(problem->is_mixed());
 		assert(AssemblerUtils::instance().is_mixed(formulation()));
 		Eigen::MatrixXd tmp = sol;
@@ -391,6 +393,9 @@ namespace polyfem
 
 	void State::save_json(nlohmann::json &j)
 	{
+		if (!mesh) { logger().error("Load the mesh first!"); return; }
+		if (sol.size() <= 0) { logger().error("Solve the problem first!"); return; }
+
 		logger().info("Saving json...");
 
 		j["args"] = args;
@@ -725,6 +730,8 @@ namespace polyfem
 
 	void State::interpolate_boundary_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result)
 	{
+		if (!mesh) { logger().error("Load the mesh first!"); return; }
+		if (fun.size() <= 0) { logger().error("Solve the problem first!"); return; }
 		assert(mesh->is_volume());
 
 		const Mesh3D &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
@@ -808,6 +815,10 @@ namespace polyfem
 
 	void State::interpolate_boundary_function_at_vertices(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, MatrixXd &result)
 	{
+		if (!mesh) { logger().error("Load the mesh first!"); return; }
+		if (fun.size() <= 0) { logger().error("Solve the problem first!"); return; }
+		if (!mesh->is_volume()) { logger().error("This function works only on volumetric meshes!"); return; }
+
 		assert(mesh->is_volume());
 
 		const Mesh3D &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
@@ -899,6 +910,12 @@ namespace polyfem
 
 	void State::interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const MatrixXd &disp, const bool compute_avg, MatrixXd &result)
 	{
+		if (!mesh) { logger().error("Load the mesh first!"); return; }
+		if (fun.size() <= 0) { logger().error("Solve the problem first!"); return; }
+		if (disp.size() <= 0) { logger().error("Solve the problem first!"); return; }
+		if (!mesh->is_volume()) { logger().error("This function works only on volumetric meshes!"); return; }
+		if (problem->is_scalar()) { logger().error("Define a tensor problem!"); return; }
+
 		assert(mesh->is_volume());
 		assert(!problem->is_scalar());
 
@@ -975,6 +992,14 @@ namespace polyfem
 
 	void State::average_grad_based_function(const int n_points, const MatrixXd &fun, MatrixXd &result_scalar, MatrixXd &result_tensor, const bool boundary_only)
 	{
+		if (!mesh) { logger().error("Load the mesh first!"); return; }
+		if (fun.size() <= 0) { logger().error("Solve the problem first!"); return; }
+		if (result_scalar.size() <= 0) { logger().error("Solve the problem first!"); return; }
+		if (result_tensor.size() <= 0) { logger().error("Solve the problem first!"); return; }
+		if (!mesh->is_volume()) { logger().error("This function works only on volumetric meshes!"); return; }
+		if (problem->is_scalar()) { logger().error("Define a tensor problem!"); return; }
+
+
 		assert(!problem->is_scalar());
 		const int actual_dim = mesh->dimension();
 
@@ -1047,6 +1072,10 @@ namespace polyfem
 		const MatrixXd &fun,
 		Eigen::MatrixXd &result)
 	{
+		if (!mesh) { logger().error("Load the mesh first!"); return; }
+		if (fun.size() <= 0) { logger().error("Solve the problem first!"); return; }
+		if (!mesh->is_volume()) { logger().error("This function works only on volumetric meshes!"); return; }
+
 		if (!mesh) { return; }
 		if (!mesh->is_volume()) { return; }
 		const Mesh3D &mesh3d = *dynamic_cast<const Mesh3D *>(mesh.get());
@@ -1122,6 +1151,10 @@ namespace polyfem
 
 	void State::compute_stress_at_quadrature_points(const MatrixXd &fun, Eigen::MatrixXd &result, Eigen::VectorXd &von_mises)
 	{
+		if (!mesh) { logger().error("Load the mesh first!"); return; }
+		if (fun.size() <= 0) { logger().error("Solve the problem first!"); return; }
+		if (problem->is_scalar()) { logger().error("Define a tensor problem!"); return; }
+
 		const int actual_dim = mesh->dimension();
 		assert(!problem->is_scalar());
 
@@ -1184,6 +1217,9 @@ namespace polyfem
 
 	void State::interpolate_function(const int n_points, const int actual_dim, const std::vector< ElementBases > &basis, const MatrixXd &fun, MatrixXd &result, const bool boundary_only)
 	{
+		if (!mesh) { logger().error("Load the mesh first!"); return; }
+		if (fun.size() <= 0) { logger().error("Solve the problem first!"); return; }
+
 		std::vector<AssemblyValues> tmp;
 
 		result.resize(n_points, actual_dim);
@@ -1234,6 +1270,9 @@ namespace polyfem
 
 	void State::compute_scalar_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool boundary_only)
 	{
+		if (!mesh) { logger().error("Load the mesh first!"); return; }
+		if (fun.size() <= 0) { logger().error("Solve the problem first!"); return; }
+
 		result.resize(n_points, 1);
 		assert(!problem->is_scalar());
 
@@ -1276,6 +1315,9 @@ namespace polyfem
 
 	void State::compute_tensor_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool boundary_only)
 	{
+		if (!mesh) { logger().error("Load the mesh first!"); return; }
+		if (fun.size() <= 0) { logger().error("Solve the problem first!"); return; }
+
 		const int actual_dim = mesh->dimension();
 		result.resize(n_points, actual_dim*actual_dim);
 		assert(!problem->is_scalar());
@@ -1318,6 +1360,8 @@ namespace polyfem
 
 	void State::get_sidesets(Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXd &sidesets)
 	{
+		if (!mesh) { logger().error("Load the mesh first!"); return; }
+
 		if(mesh->is_volume())
 		{
 			const Mesh3D &tmp_mesh = *dynamic_cast<Mesh3D *>(mesh.get());
@@ -1418,6 +1462,7 @@ namespace polyfem
 		logger().info("Loading mesh...");
 		mesh = Mesh::create(meshin);
 		if (!mesh) {
+			logger().error("Unable to load the mesh");
 			return;
 		}
 
@@ -1476,6 +1521,7 @@ namespace polyfem
 			mesh = Mesh::create(mesh_path());
 		}
 		if (!mesh) {
+			logger().error("unable to load the mesh!");
 			return;
 		}
 
@@ -1623,6 +1669,8 @@ namespace polyfem
 
 	void State::compute_mesh_stats()
 	{
+		if (!mesh) { logger().error("Load the mesh first!"); return; }
+
 		bases.clear();
 		pressure_bases.clear();
 		geom_bases.clear();
@@ -1695,6 +1743,7 @@ namespace polyfem
 		const std::vector< ElementBases > &gbases,
 		Eigen::MatrixXd &basis_integrals)
 	{
+		if (!mesh.is_volume()) { logger().error("Works only on volumetric meshes!"); return; }
 		assert(mesh.is_volume());
 
 		basis_integrals.resize(n_bases, 9);
@@ -1756,6 +1805,8 @@ namespace polyfem
 
 	void State::build_basis()
 	{
+		if (!mesh) { logger().error("Load the mesh first!"); return; }
+
 		bases.clear();
 		pressure_bases.clear();
 		geom_bases.clear();
@@ -1935,6 +1986,9 @@ namespace polyfem
 
 	void State::build_polygonal_basis()
 	{
+		if (!mesh) { logger().error("Load the mesh first!"); return; }
+		if (n_bases <= 0) { logger().error("Build the bases first!"); return; }
+
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
 		sol.resize(0, 0);
@@ -1998,6 +2052,9 @@ namespace polyfem
 
 	void State::assemble_stiffness_mat()
 	{
+		if (!mesh) { logger().error("Load the mesh first!"); return; }
+		if (n_bases <= 0) { logger().error("Build the bases first!"); return; }
+
 		stiffness.resize(0, 0);
 		sol.resize(0, 0);
 		pressure.resize(0, 0);
@@ -2121,6 +2178,9 @@ namespace polyfem
 
 	void State::assemble_rhs()
 	{
+		if (!mesh) { logger().error("Load the mesh first!"); return; }
+		if (n_bases <= 0) { logger().error("Build the bases first!"); return; }
+
 		igl::Timer timer;
 		const std::string rhs_path = args["rhs_path"];
 
@@ -2141,7 +2201,7 @@ namespace polyfem
 		auto &assembler = AssemblerUtils::instance();
 		// assembler.set_parameters(params);
 
-		stiffness.resize(0, 0);
+		// stiffness.resize(0, 0);
 		rhs.resize(0, 0);
 		sol.resize(0, 0);
 		pressure.resize(0, 0);
@@ -2204,6 +2264,11 @@ namespace polyfem
 
 	void State::solve_problem()
 	{
+		if (!mesh) { logger().error("Load the mesh first!"); return; }
+		if (n_bases <= 0) { logger().error("Build the bases first!"); return; }
+		if (stiffness.size() <= 0) { logger().error("Assemble the stiffness matrix first!"); return; }
+		if (rhs.size() <= 0) { logger().error("Assemble the rhs first!"); return; }
+
 		sol.resize(0, 0);
 		pressure.resize(0, 0);
 		spectrum.setZero();
@@ -2625,6 +2690,12 @@ namespace polyfem
 
 	void State::compute_errors()
 	{
+		if (!mesh) { logger().error("Load the mesh first!"); return; }
+		if (n_bases <= 0) { logger().error("Build the bases first!"); return; }
+		if (stiffness.size() <= 0) { logger().error("Assemble the stiffness matrix first!"); return; }
+		if (rhs.size() <= 0) { logger().error("Assemble the rhs first!"); return; }
+		if (sol.size() <= 0) { logger().error("Solve the problem first!"); return; }
+
 		int actual_dim = 1;
 		if(!problem->is_scalar())
 			actual_dim = mesh->dimension();
@@ -2804,6 +2875,12 @@ namespace polyfem
 
 	void State::export_data()
 	{
+		if (!mesh) { logger().error("Load the mesh first!"); return; }
+		if (n_bases <= 0) { logger().error("Build the bases first!"); return; }
+		if (stiffness.size() <= 0) { logger().error("Assemble the stiffness matrix first!"); return; }
+		if (rhs.size() <= 0) { logger().error("Assemble the rhs first!"); return; }
+		if (sol.size() <= 0) { logger().error("Solve the problem first!"); return; }
+
 		// Export vtu mesh of solution + wire mesh of deformed input
 		// + mesh colored with the bases
 		const std::string vis_mesh_path  = args["export"]["vis_mesh"];
@@ -2880,6 +2957,9 @@ namespace polyfem
 
 	void State::build_vis_mesh(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXd &discr)
 	{
+		if (!mesh) { logger().error("Load the mesh first!"); return; }
+		if (n_bases <= 0) { logger().error("Build the bases first!"); return; }
+
 		const auto &sampler = RefElementSampler::sampler();
 
 		const auto &current_bases = iso_parametric() ? bases : geom_bases;
@@ -2998,6 +3078,12 @@ namespace polyfem
 
 	void State::save_vtu(const std::string &path)
 	{
+		if (!mesh) { logger().error("Load the mesh first!"); return; }
+		if (n_bases <= 0) { logger().error("Build the bases first!"); return; }
+		if (stiffness.size() <= 0) { logger().error("Assemble the stiffness matrix first!"); return; }
+		if (rhs.size() <= 0) { logger().error("Assemble the rhs first!"); return; }
+		if (sol.size() <= 0) { logger().error("Solve the problem first!"); return; }
+
 		const auto &assembler = AssemblerUtils::instance();
 
 		Eigen::MatrixXd points;
