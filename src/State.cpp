@@ -994,8 +994,6 @@ namespace polyfem
 	{
 		if (!mesh) { logger().error("Load the mesh first!"); return; }
 		if (fun.size() <= 0) { logger().error("Solve the problem first!"); return; }
-		if (result_scalar.size() <= 0) { logger().error("Solve the problem first!"); return; }
-		if (result_tensor.size() <= 0) { logger().error("Solve the problem first!"); return; }
 		if (!mesh->is_volume()) { logger().error("This function works only on volumetric meshes!"); return; }
 		if (problem->is_scalar()) { logger().error("Define a tensor problem!"); return; }
 
@@ -2266,7 +2264,10 @@ namespace polyfem
 	{
 		if (!mesh) { logger().error("Load the mesh first!"); return; }
 		if (n_bases <= 0) { logger().error("Build the bases first!"); return; }
-		if (stiffness.size() <= 0) { logger().error("Assemble the stiffness matrix first!"); return; }
+
+		const auto &assembler = AssemblerUtils::instance();
+
+		if (assembler.is_linear(formulation()) && stiffness.size() <= 0) { logger().error("Assemble the stiffness matrix first!"); return; }
 		if (rhs.size() <= 0) { logger().error("Assemble the rhs first!"); return; }
 
 		sol.resize(0, 0);
@@ -2279,7 +2280,6 @@ namespace polyfem
 
 		const json &params = solver_params();
 
-		const auto &assembler = AssemblerUtils::instance();
 
 		const std::string full_mat_path = args["export"]["full_mat"];
 		if(!full_mat_path.empty())
