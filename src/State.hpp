@@ -43,6 +43,7 @@ namespace polyfem
 		State();
 		void init_logger(const std::string &log_file, int log_level, const bool is_quiet);
 		void init_logger(std::ostream &os, int log_level);
+		void init_logger(std::vector<spdlog::sink_ptr> &sinks, int log_level);
 
 		void init(const json &args);
 		void init(const std::string &json);

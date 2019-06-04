@@ -286,6 +286,20 @@ namespace polyfem
 
 	}
 
+
+	void State::init_logger(std::vector<spdlog::sink_ptr> &sinks, int log_level)
+	{
+		Logger::init(sinks);
+		log_level = std::max(0, std::min(6, log_level));
+		spdlog::set_level(static_cast<spdlog::level::level_enum>(log_level));
+
+		GEO::Logger *geo_logger = GEO::Logger::instance();
+		geo_logger->unregister_all_clients();
+		geo_logger->register_client(new GeoLoggerForward(logger().clone("geogram")));
+		geo_logger->set_pretty(false);
+
+	}
+
 	void State::sol_to_pressure()
 	{
 		if (n_pressure_bases <= 0) { logger().error("No pressure bases defined!"); return; }
