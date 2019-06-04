@@ -994,7 +994,6 @@ namespace polyfem
 	{
 		if (!mesh) { logger().error("Load the mesh first!"); return; }
 		if (fun.size() <= 0) { logger().error("Solve the problem first!"); return; }
-		if (!mesh->is_volume()) { logger().error("This function works only on volumetric meshes!"); return; }
 		if (problem->is_scalar()) { logger().error("Define a tensor problem!"); return; }
 
 
