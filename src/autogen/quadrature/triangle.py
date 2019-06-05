@@ -87,14 +87,18 @@ def generate_monomials(order):
     return monoms
 
 
-def is_valid(scheme):
+def is_valid(scheme, tol=1e-6):
     """
-    A scheme is valid if 1) all its weights sums up to one,
-    and 2) all its points are inside the reference triangle
+    A scheme is valid if:
+    1. All its weights sums up to one;
+    2. All its points are inside the reference triangle;
+    3. No point lie on an edge.
     """
     return math.isclose(numpy.sum(scheme.weights), 1.0, rel_tol=1e-10) \
         and (scheme.points >= 0).all() \
-        and (scheme.points[:, 0] + scheme.points[:, 1] <= 1).all()
+        and (scheme.points[:, 0] + scheme.points[:, 1] <= 1 - tol).all() \
+        and (scheme.points[:, 0] >= tol).all() \
+        and (scheme.points[:, 1] >= tol).all()
 
 
 def pick_scheme(all_schemes, order):
