@@ -81,14 +81,16 @@ def generate_monomials(order):
     return monoms
 
 
-def is_valid(scheme, tol=1e-6):
+def is_valid(scheme, tol=1e-6, relaxed=False):
     """
     A scheme is valid if:
     1. All its weights sums up to one;
-    2. All its points are inside the reference tetrahedron;
-    3. No point lie on an face.
+    2. All the weights are positive;
+    3. All its points are inside the reference tetrahedron;
+    4. No point lie on an face.
     """
     return math.isclose(numpy.sum(scheme.weights), 1.0, rel_tol=1e-10) \
+        and (relaxed or (scheme.weights >= tol).all()) \
         and (scheme.points >= 0).all() \
         and (scheme.points[:, 0] + scheme.points[:, 1] + scheme.points[:, 2] <= 1 - tol).all() \
         and (scheme.points[:, 0] >= tol).all() \
@@ -96,7 +98,7 @@ def is_valid(scheme, tol=1e-6):
         and (scheme.points[:, 2] >= tol).all()
 
 
-def pick_scheme(all_schemes, order):
+def pick_scheme(all_schemes, order, relaxed=False):
     """
     Picks the best scheme for a given polynomial degree, following this strategy:
     - Tries all schemes with the same order as required.
@@ -115,7 +117,7 @@ def pick_scheme(all_schemes, order):
     best_scheme = None
     threshold = 1e-12  # Only accept quadrature rules with this much precision
     for scheme in all_schemes:
-        if scheme.degree == order and is_valid(scheme):
+        if scheme.degree == order and is_valid(scheme, relaxed=relaxed):
             N = len(scheme.weights)
             ok = True
             error = 0
@@ -168,7 +170,11 @@ def main():
     all_schemes = list_schemes()
     selected = []
     for order in range(1, 16):
+        print("order", order)
         scheme, error = pick_scheme(all_schemes, order)
+        if scheme is None:
+            scheme, error = pick_scheme(all_schemes, order, relaxed=True)
+            assert scheme is not None
         print(error)
         selected.append((order, scheme))
     code = generate_cpp(selected)
