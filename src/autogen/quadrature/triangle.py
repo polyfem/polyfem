@@ -91,10 +91,12 @@ def is_valid(scheme, tol=1e-6):
     """
     A scheme is valid if:
     1. All its weights sums up to one;
-    2. All its points are inside the reference triangle;
-    3. No point lie on an edge.
+    2. All the weights are positive;
+    3. All its points are inside the reference triangle;
+    4. No point lie on an edge.
     """
     return math.isclose(numpy.sum(scheme.weights), 1.0, rel_tol=1e-10) \
+        and (scheme.weights >= tol).all() \
         and (scheme.points >= 0).all() \
         and (scheme.points[:, 0] + scheme.points[:, 1] <= 1 - tol).all() \
         and (scheme.points[:, 0] >= tol).all() \
