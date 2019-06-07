@@ -7,6 +7,8 @@
 #include <polyfem/auto_p_bases.hpp>
 #include <polyfem/auto_q_bases.hpp>
 
+#include <polyfem/Mesh2D.hpp>
+
 #include <cassert>
 
 namespace polyfem
@@ -276,6 +278,84 @@ namespace polyfem
 		}
 		samples.conservativeResize(counter, 3);
 		uv.conservativeResize(counter, 3);
+	}
+
+	void BoundarySampler::sample_polygon_edge(int face_id, int edge_id, int n_samples, const Mesh &mesh, Eigen::MatrixXd &uv, Eigen::MatrixXd &samples)
+	{
+		assert(!mesh.is_volume());
+
+		const Mesh2D &mesh2d = dynamic_cast<const Mesh2D&>(mesh);
+
+		auto index = mesh2d.get_index_from_face(face_id);
+
+		bool found = false;
+		for(int i = 0; i < mesh2d.n_face_vertices(face_id); ++i)
+		{
+			if(index.edge == edge_id)
+			{
+				found = true;
+				break;
+			}
+
+			index = mesh2d.next_around_face(index);
+		}
+
+		assert(found);
+
+		auto p0 = mesh2d.point(index.vertex);
+		auto p1 = mesh2d.point(mesh2d.switch_edge(index).vertex);
+		const Eigen::VectorXd t = Eigen::VectorXd::LinSpaced(n_samples, 0, 1);
+		samples.resize(n_samples, p0.cols());
+
+		uv.resize(n_samples, 2);
+
+		uv.col(0) = (1.0 - t.array());
+		uv.col(1) = t.array();
+
+		for (int c = 0; c < 2; ++c) {
+			samples.col(c) = (1.0 - t.array()) * p0(c) + t.array() * p1(c);
+		}
+	}
+
+	void BoundarySampler::quadrature_for_polygon_edge(int face_id, int edge_id, int order, const Mesh &mesh, Eigen::MatrixXd &uv, Eigen::MatrixXd &points, Eigen::VectorXd &weights)
+	{
+		assert(!mesh.is_volume());
+
+		const Mesh2D &mesh2d = dynamic_cast<const Mesh2D&>(mesh);
+
+		auto index = mesh2d.get_index_from_face(face_id);
+
+		bool found = false;
+		for(int i = 0; i < mesh2d.n_face_vertices(face_id); ++i)
+		{
+			if(index.edge == edge_id)
+			{
+				found = true;
+				break;
+			}
+
+			index = mesh2d.next_around_face(index);
+		}
+
+		assert(found);
+
+		auto p0 = mesh2d.point(index.vertex);
+		auto p1 = mesh2d.point(mesh2d.switch_edge(index).vertex);
+		Quadrature quad;
+		LineQuadrature quad_rule; quad_rule.get_quadrature(order, quad);
+
+		points.resize(quad.points.rows(), p0.cols());
+		uv.resize(quad.points.rows(), 2);
+
+		uv.col(0) = (1.0 - quad.points.array());
+		uv.col(1) = quad.points.array();
+
+		for (int c = 0; c < 2; ++c) {
+			points.col(c) = (1.0 - quad.points.array()) * p0(c) + quad.points.array() * p1(c);
+		}
+
+		weights = quad.weights;
+		weights *= mesh.edge_length(edge_id);
 	}
 }
 

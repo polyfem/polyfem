@@ -553,6 +553,7 @@ namespace polyfem
 				case BoundaryType::QuadLine: BoundarySampler::quadrature_for_quad_edge(local_boundary[i], order, gid, mesh_, tmp_uv, tmp_p, tmp_w); break;
 				case BoundaryType::Quad: 	 BoundarySampler::quadrature_for_quad_face(local_boundary[i], order, gid, mesh_, tmp_uv, tmp_p, tmp_w); break;
 				case BoundaryType::Tri: 	 BoundarySampler::quadrature_for_tri_face(local_boundary[i], order, gid, mesh_, tmp_uv, tmp_p, tmp_w); break;
+				case BoundaryType::Polygon:  BoundarySampler::quadrature_for_polygon_edge(local_boundary.element_id(), local_boundary.global_primitive_id(i), order, mesh_, tmp_uv, tmp_p, tmp_w); break;
 				case BoundaryType::Invalid:  assert(false); break;
 				default: assert(false);
 			}
@@ -593,6 +594,7 @@ namespace polyfem
 				case BoundaryType::QuadLine: BoundarySampler::sample_parametric_quad_edge(local_boundary[i], n_samples, tmp_uv, tmp); break;
 				case BoundaryType::Quad: 	 BoundarySampler::sample_parametric_quad_face(local_boundary[i], n_samples, tmp_uv, tmp); break;
 				case BoundaryType::Tri: 	 BoundarySampler::sample_parametric_tri_face(local_boundary[i], n_samples, tmp_uv, tmp); break;
+				case BoundaryType::Polygon:  BoundarySampler::sample_polygon_edge(local_boundary.element_id(), local_boundary.global_primitive_id(i), n_samples, mesh_, tmp_uv, tmp); break;
 				case BoundaryType::Invalid:  assert(false); break;
 				default: assert(false);
 			}

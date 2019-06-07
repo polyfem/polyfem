@@ -14,6 +14,8 @@ namespace polyfem
 		QuadLine,
 		Tri,
 		Quad,
+		Polygon,
+		Polyhedron,
 		Invalid
 	};
 
