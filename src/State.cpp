@@ -2280,7 +2280,7 @@ namespace polyfem
 
 		const auto &assembler = AssemblerUtils::instance();
 
-		if (assembler.is_linear(formulation()) && stiffness.size() <= 0) { logger().error("Assemble the stiffness matrix first!"); return; }
+		if (assembler.is_linear(formulation()) && stiffness.rows() <= 0) { logger().error("Assemble the stiffness matrix first!"); return; }
 		if (rhs.size() <= 0) { logger().error("Assemble the rhs first!"); return; }
 
 		sol.resize(0, 0);
@@ -2705,7 +2705,7 @@ namespace polyfem
 	{
 		if (!mesh) { logger().error("Load the mesh first!"); return; }
 		if (n_bases <= 0) { logger().error("Build the bases first!"); return; }
-		if (stiffness.size() <= 0) { logger().error("Assemble the stiffness matrix first!"); return; }
+		// if (stiffness.rows() <= 0) { logger().error("Assemble the stiffness matrix first!"); return; }
 		if (rhs.size() <= 0) { logger().error("Assemble the rhs first!"); return; }
 		if (sol.size() <= 0) { logger().error("Solve the problem first!"); return; }
 
@@ -2890,7 +2890,7 @@ namespace polyfem
 	{
 		if (!mesh) { logger().error("Load the mesh first!"); return; }
 		if (n_bases <= 0) { logger().error("Build the bases first!"); return; }
-		if (stiffness.size() <= 0) { logger().error("Assemble the stiffness matrix first!"); return; }
+		// if (stiffness.rows() <= 0) { logger().error("Assemble the stiffness matrix first!"); return; }
 		if (rhs.size() <= 0) { logger().error("Assemble the rhs first!"); return; }
 		if (sol.size() <= 0) { logger().error("Solve the problem first!"); return; }
 
@@ -3093,7 +3093,7 @@ namespace polyfem
 	{
 		if (!mesh) { logger().error("Load the mesh first!"); return; }
 		if (n_bases <= 0) { logger().error("Build the bases first!"); return; }
-		if (stiffness.size() <= 0) { logger().error("Assemble the stiffness matrix first!"); return; }
+		// if (stiffness.rows() <= 0) { logger().error("Assemble the stiffness matrix first!"); return; }
 		if (rhs.size() <= 0) { logger().error("Assemble the rhs first!"); return; }
 		if (sol.size() <= 0) { logger().error("Solve the problem first!"); return; }
 

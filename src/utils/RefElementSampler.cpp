@@ -209,7 +209,7 @@ void RefElementSampler::build()
 				2, 3,
 				3, 0;
 
-			regular_2d_grid(1. / sqrt(area_param_) + 1, false, cube_points_, cube_faces_);
+			regular_2d_grid(std::max(2., round(1. / sqrt(area_param_) + 1)), false, cube_points_, cube_faces_);
 
 			// Extract sampled edges matching the base element edges
 			igl::edges(cube_faces_, cube_edges_);
@@ -233,7 +233,7 @@ void RefElementSampler::build()
 				1, 2,
 				2, 0;
 
-			regular_2d_grid(1. / sqrt(area_param_) + 1, true, simplex_points_, simplex_faces_);
+			regular_2d_grid(std::max(2., round(1. / sqrt(area_param_) + 1)), true, simplex_points_, simplex_faces_);
 
 			// Extract sampled edges matching the base element edges
 			igl::edges(simplex_faces_, simplex_edges_);
