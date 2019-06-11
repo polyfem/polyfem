@@ -19,6 +19,9 @@ endfunction()
 
 # Autogen helper function
 function(polyfem_autogen MAIN_TARGET PYTHON_SCRIPT OUTPUT_BASE)
+	if(NOT POLYFEM_REGENERATE_AUTOGEN)
+		return()
+	endif()
 	find_package(PythonInterp 3 QUIET)
 
 	if(NOT ${PYTHONINTERP_FOUND})

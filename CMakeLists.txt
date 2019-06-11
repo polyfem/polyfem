@@ -66,15 +66,16 @@ set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vector
 option(POLYFEM_NO_UI            "Disables the user interface" OFF)
 
 # Polyfem options for enabling/disabling optional libraries
-option(POLYFEM_WITH_CHOLMOD     "Enable Cholmod library" ON)
-option(POLYFEM_WITH_UMFPACK     "Enable UmfPack library" ON)
-option(POLYFEM_WITH_SUPERLU     "Enable SuperLU library" OFF)
-option(POLYFEM_WITH_MKL         "Enable MKL library"     OFF)
-option(POLYFEM_WITH_PARDISO     "Enable Pardiso library" ON)
-option(POLYFEM_WITH_MMG         "Enable MMG library"     OFF)
-option(POLYFEM_WITH_TBB         "Enable TBB"             ON)
-option(POLYFEM_WITH_HYPRE       "Enable hypre"           ON)
-option(POLYFEM_WITH_OPENCL      "Enable OpenCL"          OFF)
+option(POLYFEM_WITH_CHOLMOD          "Enable Cholmod library"            ON)
+option(POLYFEM_WITH_UMFPACK          "Enable UmfPack library"            ON)
+option(POLYFEM_WITH_SUPERLU          "Enable SuperLU library"            OFF)
+option(POLYFEM_WITH_MKL              "Enable MKL library"                OFF)
+option(POLYFEM_WITH_PARDISO          "Enable Pardiso library"            ON)
+option(POLYFEM_WITH_MMG              "Enable MMG library"                OFF)
+option(POLYFEM_WITH_TBB              "Enable TBB"                        ON)
+option(POLYFEM_WITH_HYPRE            "Enable hypre"                      ON)
+option(POLYFEM_WITH_OPENCL           "Enable OpenCL"                     OFF)
+option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
 
 option(POLYFEM_LARGE_INDEX    "Build for large indices"       OFF)
 
