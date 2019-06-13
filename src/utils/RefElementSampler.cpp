@@ -12,19 +12,19 @@ namespace polyfem
 namespace
 {
 ///
-/// Generate a canonical triangle subdivided fomr a regular grid
+/// Generate a canonical triangle/quad subdivided from a regular grid
 ///
 /// @param[in]  n  			 { n grid quads }
 /// @param[in]  tri			 { is a tri or a quad }
-/// @param[out] OV           { #V x 2 output vertices positions }
-/// @param[out] OF           { #F x 3 output triangle indices }
+/// @param[out] V            { #V x 2 output vertices positions }
+/// @param[out] F            { #F x 3 output triangle indices }
 ///
 void regular_2d_grid(const int n, bool tri, Eigen::MatrixXd &V, Eigen::MatrixXi &F)
 {
 
 	V.resize(n * n, 2);
 	F.resize((n - 1) * (n - 1) * 2, 3);
-	double delta = 1. / (n - 1.);
+	const double delta = 1. / (n - 1.);
 	std::vector<int> map(n * n, -1);
 
 	int index = 0;
@@ -34,7 +34,7 @@ void regular_2d_grid(const int n, bool tri, Eigen::MatrixXd &V, Eigen::MatrixXi 
 		{
         	if(tri && i+j >= n)
             	continue;
-        map[i*n+j]=index;
+        map[i+j*n]=index;
 		V.row(index) << i * delta, j * delta;
 		++index;
 		}
@@ -65,6 +65,103 @@ void regular_2d_grid(const int n, bool tri, Eigen::MatrixXd &V, Eigen::MatrixXi 
 	}
 
 	F.conservativeResize(index, 3);
+}
+
+
+///
+/// Generate a canonical tet/hex subdivided from a regular grid
+///
+/// @param[in]  n  			 { n grid quads }
+/// @param[in]  tet			 { is a tet or a hex }
+/// @param[out] V            { #V x 3 output vertices positions }
+/// @param[out] F            { #F x 3 output triangle indices }
+/// @param[out] T            { #F x 4 output tet indices }
+///
+void regular_3d_grid(const int n, bool tet, Eigen::MatrixXd &V, Eigen::MatrixXi &F, Eigen::MatrixXi &T)
+{
+	const double delta = 1./(n-1.);
+	T.resize((n-1)*(n-1)*(n-1)*6, 4);
+	V.resize(n*n*n,3);
+	std::vector<int> map(n*n*n, -1);
+
+	int index = 0;
+	for(int i=0; i < n; ++i){
+    	for(int j = 0; j < n; ++j) {
+			for(int k = 0; k < n; ++k) {
+            	if(tet && i+j+k >= n)
+                	continue;
+            	map[(i+j*n)*n+k]=index;
+            	V.row(index) << i*delta, j*delta, k*delta;
+            	++index;
+			}
+		}
+	}
+	V.conservativeResize(index, 3);
+
+	std::array<int, 8> indices;
+	std::array<int, 4> tmp;
+	index = 0;
+	for(int i=0; i < n-1; ++i) {
+		for(int j = 0; j < n-1; ++j) {
+			for(int k = 0; k < n-1; ++k) {
+				indices = {{ (i + j*n)*n+k,
+				(i+1 + j*n)*n+k,
+				(i+1 + (j+1)*n)*n+k,
+                (i + (j+1)*n)*n+k,
+
+                (i + j*n)*n+k+1,
+                (i+1 + j*n)*n+k+1,
+                (i+1 + (j+1)*n)*n+k+1,
+                (i + (j+1)*n)*n+k+1
+				}};
+
+				tmp = {{ map[indices[1-1]], map[indices[2-1]], map[indices[4-1]], map[indices[5-1]] }};
+				if(tmp[0] >= 0 && tmp[1] >= 0 && tmp[2] >= 0 && tmp[3] >= 0){
+					T.row(index) << tmp[0], tmp[1], tmp[2], tmp[3];
+					++index;
+				}
+
+				tmp = {{ map[indices[6-1]], map[indices[3-1]], map[indices[7-1]], map[indices[8-1]] }};
+				if(tmp[0] >= 0 && tmp[1] >= 0 && tmp[2] >= 0 && tmp[3] >= 0){
+					T.row(index) << tmp[0], tmp[1], tmp[2], tmp[3];
+					++index;
+				}
+
+				tmp = {{ map[indices[5-1]], map[indices[2-1]], map[indices[6-1]], map[indices[4-1]] }};
+				if(tmp[0] >= 0 && tmp[1] >= 0 && tmp[2] >= 0 && tmp[3] >= 0){
+					T.row(index) << tmp[0], tmp[1], tmp[2], tmp[3];
+					++index;
+				}
+
+				tmp = {{ map[indices[5-1]], map[indices[4-1]], map[indices[8-1]], map[indices[6-1]] }};
+				if(tmp[0] >= 0 && tmp[1] >= 0 && tmp[2] >= 0 && tmp[3] >= 0){
+					T.row(index) << tmp[0], tmp[1], tmp[2], tmp[3];
+					++index;
+				}
+
+				tmp = {{ map[indices[4-1]], map[indices[2-1]], map[indices[6-1]], map[indices[3-1]] }};
+				if(tmp[0] >= 0 && tmp[1] >= 0 && tmp[2] >= 0 && tmp[3] >= 0){
+					T.row(index) << tmp[0], tmp[1], tmp[2], tmp[3];
+					++index;
+				}
+
+				tmp = {{ map[indices[3-1]], map[indices[4-1]], map[indices[8-1]], map[indices[6-1]] }};
+				if(tmp[0] >= 0 && tmp[1] >= 0 && tmp[2] >= 0 && tmp[3] >= 0){
+					T.row(index) << tmp[0], tmp[1], tmp[2], tmp[3];
+					++index;
+				}
+			}
+    	}
+	}
+
+	T.conservativeResize(index, 4);
+
+	// faces=[
+	// T(:,1), T(:,2), T(:,3);
+	// T(:,1), T(:,2), T(:,4);
+	// T(:,2), T(:,3), T(:,4);
+	// T(:,3), T(:,1), T(:,4)];
+	// }
 }
 
 } // anonymous namespace
