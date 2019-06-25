@@ -1,10 +1,12 @@
 #include <polyfem/RefElementSampler.hpp>
 #include <polyfem/MeshUtils.hpp>
 
-#include <igl/copyleft/tetgen/tetrahedralize.h>
 #include <igl/avg_edge_length.h>
 #include <igl/edges.h>
 #include <igl/write_triangle_mesh.h>
+#include <igl/bfs_orient.h>
+
+#include <cassert>
 
 namespace polyfem
 {
@@ -67,6 +69,27 @@ void regular_2d_grid(const int n, bool tri, Eigen::MatrixXd &V, Eigen::MatrixXi 
 	F.conservativeResize(index, 3);
 }
 
+void add_tet(const std::array<int, 4> &tmp, const Eigen::MatrixXd &V, int &index, Eigen::MatrixXi &T)
+{
+	if (tmp[0] >= 0 && tmp[1] >= 0 && tmp[2] >= 0 && tmp[3] >= 0)
+	{
+		const Eigen::Vector3d e0 = V.row(tmp[1]) - V.row(tmp[0]);
+		const Eigen::Vector3d e1 = V.row(tmp[2]) - V.row(tmp[0]);
+		const Eigen::Vector3d e2 = V.row(tmp[3]) - V.row(tmp[0]);
+		double vol = (e0.cross(e1)).dot(e2);
+		if(vol < 0)
+			T.row(index) << tmp[0], tmp[1], tmp[2], tmp[3];
+		else
+			T.row(index) << tmp[0], tmp[1], tmp[3], tmp[2];
+#ifndef NDEBUG
+		const Eigen::Vector3d ed0 = V.row(T(index, 1)) - V.row(T(index, 0));
+		const Eigen::Vector3d ed1 = V.row(T(index, 2)) - V.row(T(index, 0));
+		const Eigen::Vector3d ed2 = V.row(T(index, 3)) - V.row(T(index, 0));
+		assert((ed0.cross(ed1)).dot(ed2) < 0);
+#endif
+		++ index;
+	}
+}
 
 ///
 /// Generate a canonical tet/hex subdivided from a regular grid
@@ -77,9 +100,10 @@ void regular_2d_grid(const int n, bool tri, Eigen::MatrixXd &V, Eigen::MatrixXi 
 /// @param[out] F            { #F x 3 output triangle indices }
 /// @param[out] T            { #F x 4 output tet indices }
 ///
-void regular_3d_grid(const int n, bool tet, Eigen::MatrixXd &V, Eigen::MatrixXi &F, Eigen::MatrixXi &T)
+void regular_3d_grid(const int nn, bool tet, Eigen::MatrixXd &V, Eigen::MatrixXi &F, Eigen::MatrixXi &T)
 {
-	const double delta = 1./(n-1.);
+	const int n = nn;
+	const double delta = 1. / (n - 1.);
 	T.resize((n-1)*(n-1)*(n-1)*6, 4);
 	V.resize(n*n*n,3);
 	std::vector<int> map(n*n*n, -1);
@@ -116,52 +140,46 @@ void regular_3d_grid(const int n, bool tet, Eigen::MatrixXd &V, Eigen::MatrixXi 
 				}};
 
 				tmp = {{ map[indices[1-1]], map[indices[2-1]], map[indices[4-1]], map[indices[5-1]] }};
-				if(tmp[0] >= 0 && tmp[1] >= 0 && tmp[2] >= 0 && tmp[3] >= 0){
-					T.row(index) << tmp[0], tmp[1], tmp[2], tmp[3];
-					++index;
-				}
+				add_tet(tmp, V, index, T);
 
 				tmp = {{ map[indices[6-1]], map[indices[3-1]], map[indices[7-1]], map[indices[8-1]] }};
-				if(tmp[0] >= 0 && tmp[1] >= 0 && tmp[2] >= 0 && tmp[3] >= 0){
-					T.row(index) << tmp[0], tmp[1], tmp[2], tmp[3];
-					++index;
-				}
+				add_tet(tmp, V, index, T);
 
 				tmp = {{ map[indices[5-1]], map[indices[2-1]], map[indices[6-1]], map[indices[4-1]] }};
-				if(tmp[0] >= 0 && tmp[1] >= 0 && tmp[2] >= 0 && tmp[3] >= 0){
-					T.row(index) << tmp[0], tmp[1], tmp[2], tmp[3];
-					++index;
-				}
+				add_tet(tmp, V, index, T);
 
 				tmp = {{ map[indices[5-1]], map[indices[4-1]], map[indices[8-1]], map[indices[6-1]] }};
-				if(tmp[0] >= 0 && tmp[1] >= 0 && tmp[2] >= 0 && tmp[3] >= 0){
-					T.row(index) << tmp[0], tmp[1], tmp[2], tmp[3];
-					++index;
-				}
+				add_tet(tmp, V, index, T);
 
 				tmp = {{ map[indices[4-1]], map[indices[2-1]], map[indices[6-1]], map[indices[3-1]] }};
-				if(tmp[0] >= 0 && tmp[1] >= 0 && tmp[2] >= 0 && tmp[3] >= 0){
-					T.row(index) << tmp[0], tmp[1], tmp[2], tmp[3];
-					++index;
-				}
+				add_tet(tmp, V, index, T);
 
 				tmp = {{ map[indices[3-1]], map[indices[4-1]], map[indices[8-1]], map[indices[6-1]] }};
-				if(tmp[0] >= 0 && tmp[1] >= 0 && tmp[2] >= 0 && tmp[3] >= 0){
-					T.row(index) << tmp[0], tmp[1], tmp[2], tmp[3];
-					++index;
-				}
+				add_tet(tmp, V, index, T);
 			}
     	}
 	}
 
 	T.conservativeResize(index, 4);
 
-	// faces=[
-	// T(:,1), T(:,2), T(:,3);
-	// T(:,1), T(:,2), T(:,4);
-	// T(:,2), T(:,3), T(:,4);
-	// T(:,3), T(:,1), T(:,4)];
-	// }
+	F.resize(4 * index, 3);
+
+	F.block(0, 0, index, 1) = T.col(1);
+	F.block(0, 1, index, 1) = T.col(0);
+	F.block(0, 2, index, 1) = T.col(2);
+
+	F.block(index, 0, index, 1) = T.col(0);
+	F.block(index, 1, index, 1) = T.col(1);
+	F.block(index, 2, index, 1) = T.col(3);
+
+	F.block(2 * index, 0, index, 1) = T.col(1);
+	F.block(2 * index, 1, index, 1) = T.col(2);
+	F.block(2 * index, 2, index, 1) = T.col(3);
+
+	F.block(3 * index, 0, index, 1) = T.col(2);
+	F.block(3 * index, 1, index, 1) = T.col(0);
+	F.block(3 * index, 2, index, 1) = T.col(3);
+
 }
 
 } // anonymous namespace
@@ -189,13 +207,8 @@ void RefElementSampler::build()
 {
 	using namespace Eigen;
 
-	std::stringstream buf;
-	buf.precision(100);
-	buf.setf(std::ios::fixed, std::ios::floatfield);
-
 	if (is_volume_)
 	{
-		buf << "Qpq1.414a" << area_param_;
 		{
 			MatrixXd pts(8, 3);
 			pts << 0, 0, 0,
@@ -228,7 +241,7 @@ void RefElementSampler::build()
 				0, 3, 7,
 				0, 7, 4;
 
-			igl::copyleft::tetgen::tetrahedralize(pts, faces, buf.str(), cube_points_, cube_tets_, cube_faces_);
+			regular_3d_grid(std::max(2., round(1. / pow(area_param_, 1. / 3.) + 1)/2.), false, cube_points_, cube_faces_, cube_tets_);
 
 			// Extract sampled edges matching the base element edges
 			Eigen::MatrixXi edges(12, 2);
@@ -274,8 +287,7 @@ void RefElementSampler::build()
 				2, 1, 3,
 				0, 2, 3;
 
-			MatrixXi tets;
-			igl::copyleft::tetgen::tetrahedralize(pts, faces, buf.str(), simplex_points_, simplex_tets_, simplex_faces_);
+			regular_3d_grid(std::max(2., round(1. / pow(area_param_, 1. / 3.) + 1)), true, simplex_points_, simplex_faces_, simplex_tets_);
 
 			// Extract sampled edges matching the base element edges
 			Eigen::MatrixXi edges;
