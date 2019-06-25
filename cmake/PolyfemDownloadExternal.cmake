@@ -91,7 +91,7 @@ endfunction()
 function(polyfem_download_tbb)
     polyfem_download_project(tbb
         GIT_REPOSITORY https://github.com/wjakob/tbb.git
-        GIT_TAG        08b4341a1893a72656467e96137f1f99d0112547
+        GIT_TAG        344fa84f34089681732a54f5def93a30a3056ab9
     )
 endfunction()
 
