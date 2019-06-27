@@ -103,10 +103,16 @@ option(LIBIGL_WITH_OPENGL_GLFW            "Use GLFW"                     ON)
 option(LIBIGL_WITH_OPENGL_GLFW_IMGUI      "Use ImGui"                    ON)
 option(LIBIGL_WITH_PNG                    "Use PNG"                      OFF)
 option(LIBIGL_WITH_PYTHON                 "Use Python"                   OFF)
-option(LIBIGL_WITH_TETGEN                 "Use Tetgen"                   ON)
+# option(LIBIGL_WITH_TETGEN                 "Use Tetgen"                   OFF)
 option(LIBIGL_WITH_TRIANGLE               "Use Triangle"                 ON)
 option(LIBIGL_WITH_VIEWER                 "Use OpenGL viewer"            ON)
 option(LIBIGL_WITH_XML                    "Use XML"                      OFF)
+
+if(POLYFEM_TOPLEVEL_PROJECT AND POLYFEM_WITH_APPS)
+    option(LIBIGL_WITH_TETGEN                 "Use Tetgen"                   ON)
+else()
+    option(LIBIGL_WITH_TETGEN                 "Use Tetgen"                   OFF)
+endif()
 
 
 if(POLYFEM_NO_UI)
@@ -276,7 +282,7 @@ endif()
 # libigl
 polyfem_download_libigl()
 find_package(LIBIGL REQUIRED)
-target_link_libraries(polyfem PUBLIC igl::core igl::triangle igl::tetgen)
+target_link_libraries(polyfem PUBLIC igl::core igl::triangle)
 
 
 # Geogram
