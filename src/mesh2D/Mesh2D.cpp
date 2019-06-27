@@ -9,7 +9,7 @@
 
 #include <polyfem/Logger.hpp>
 
-#include <igl/triangle/triangulate.h>
+// #include <igl/triangle/triangulate.h>
 
 #include <geogram/basic/file_system.h>
 #include <geogram/mesh/mesh_io.h>
@@ -148,7 +148,7 @@ namespace polyfem
 		c2e_.reset();
 		boundary_vertices_.reset();
 		boundary_edges_.reset();
-		
+
 		mesh_.clear(false,false);
 		to_geogram_mesh(V, F, mesh_);
 
@@ -580,20 +580,28 @@ namespace polyfem
 			const int n_vertices = mesh_.facets.nb_vertices(f);
 
 			Eigen::MatrixXd face_pts(n_vertices, 2);
-			Eigen::MatrixXi edges(n_vertices,2);
+			// Eigen::MatrixXi edges(n_vertices,2);
+			local_tris[f].resize(n_vertices - 2, 3);
 
-			for(int i = 0; i < n_vertices; ++i)
+			for (int i = 0; i < n_vertices; ++i)
 			{
 				const int vertex = mesh_.facets.vertex(f,i);
 				const double *pt = mesh_.vertices.point_ptr(vertex);
 				face_pts(i, 0) = pt[0];
 				face_pts(i, 1) = pt[1];
 
-				edges(i, 0) = i;
-				edges(i, 1) = (i+1) % n_vertices;
+				// edges(i, 0) = i;
+				// edges(i, 1) = (i+1) % n_vertices;
 			}
 
-			igl::triangle::triangulate(face_pts, edges, Eigen::MatrixXd(0,2), "QqYS0", local_pts[f], local_tris[f]);
+			for (int i = 1; i < n_vertices-1; ++i)
+			{
+				local_tris[f].row(i - 1) << 0, i, i + 1;
+			}
+
+			local_pts[f] = face_pts;
+
+			// igl::triangle::triangulate(face_pts, edges, Eigen::MatrixXd(0, 2), "QqYS0", local_pts[f], local_tris[f]);
 
 			total_tris += local_tris[f].rows();
 			total_pts  += local_pts[f].rows();

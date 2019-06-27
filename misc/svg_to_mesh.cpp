@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <CLI/CLI.hpp>
 #include <igl/write_triangle_mesh.h>
-#include <igl/triangle/triangulate.h>
+// #include <igl/triangle/triangulate.h>
 #include <clipper/clipper.hpp>
 #define NANOSVG_ALL_COLOR_KEYWORDS // Include full list of color keywords.
 #define NANOSVG_IMPLEMENTATION     // Expands implementation
