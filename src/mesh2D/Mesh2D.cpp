@@ -601,8 +601,6 @@ namespace polyfem
 
 			local_pts[f] = face_pts;
 
-			// igl::triangle::triangulate(face_pts, edges, Eigen::MatrixXd(0, 2), "QqYS0", local_pts[f], local_tris[f]);
-
 			total_tris += local_tris[f].rows();
 			total_pts  += local_pts[f].rows();
 

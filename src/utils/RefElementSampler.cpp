@@ -4,7 +4,7 @@
 #include <igl/avg_edge_length.h>
 #include <igl/edges.h>
 #include <igl/write_triangle_mesh.h>
-#include <igl/bfs_orient.h>
+#include <igl/upsample.h>
 
 #include <cassert>
 
@@ -359,27 +359,35 @@ void RefElementSampler::build()
 
 void RefElementSampler::sample_polygon(const Eigen::MatrixXd &poly, Eigen::MatrixXd &pts, Eigen::MatrixXi &faces) const
 {
-	// MatrixXi E(poly.rows(), 2);
-	// for (int e = 0; e < int(poly.rows()); ++e)
-	// {
-	// 	E(e, 0) = e;
-	// 	E(e, 1) = (e + 1) % poly.rows();
-	// }
-	// std::stringstream buf;
-	// buf.precision(100);
-	// buf.setf(std::ios::fixed, std::ios::floatfield);
-	// buf << "Qqa" << area_param_ / 1000.;
-
-	// igl::triangle::triangulate(poly, E, MatrixXd(0, 2), buf.str(), pts, faces);
 	pts.resize(poly.rows()+1, poly.cols());
 	pts.block(0, 0, poly.rows(), poly.cols()) = poly;
 	pts.row(poly.rows()) = poly.colwise().mean();
 
 	faces.resize(poly.rows(), 3);
+
+	double area_avg = 0;
+
 	for (int e = 0; e < int(poly.rows()); ++e)
 	{
 		faces.row(e) << e , (e + 1) % poly.rows(), poly.rows();
+
+		Eigen::Matrix2d tmp;
+		tmp.row(0) = pts.row(e) - pts.row(poly.rows());
+		tmp.row(1) = pts.row((e + 1) % poly.rows()) - pts.row(poly.rows());
+		area_avg += fabs(tmp.determinant());
 	}
+
+	area_avg /= poly.rows();
+
+	const int n_refs = area_avg / area_param_ * 40;
+
+	Eigen::MatrixXd new_pts;
+	Eigen::MatrixXi new_faces;
+
+	igl::upsample(pts, faces, new_pts, new_faces, n_refs);
+
+	pts = new_pts;
+	faces = new_faces;
 }
 
 void RefElementSampler::sample_polyhedron(const Eigen::MatrixXd &vertices, const Eigen::MatrixXi &f, Eigen::MatrixXd &pts, Eigen::MatrixXi &faces) const
