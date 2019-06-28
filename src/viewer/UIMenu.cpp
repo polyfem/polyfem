@@ -6,70 +6,69 @@
 #include <polyfem/AssemblerUtils.hpp>
 
 #include <igl/colormap.h>
-// #include <igl/png/writePNG.h>
 #include <imgui/imgui.h>
 #include <igl/opengl/glfw/imgui/ImGuiHelpers.h>
 #include <igl/opengl/gl.h>
 #include <imgui/imgui_internal.h>
-// #include <tinyfiledialogs.h>
 #include <algorithm>
 
 #include <GLFW/glfw3.h>
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace {
-	void push_disabled()
-	{
-		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
-	}
+namespace
+{
+void push_disabled()
+{
+	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+	ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+}
 
-	void pop_disabled()
-	{
-		ImGui::PopItemFlag();
-		ImGui::PopStyleVar();
-	}
+void pop_disabled()
+{
+	ImGui::PopItemFlag();
+	ImGui::PopStyleVar();
+}
 
-
-	namespace FileDialog {
-
-// -----------------------------------------------------------------------------
-
-		// std::string openFileName(const std::string &defaultPath,
-		// 	const std::vector<std::string> &filters, const std::string &desc)
-		// {
-		// 	int n = static_cast<int>(filters.size());
-		// 	std::vector<char const *> filterPatterns(n);
-		// 	for (int i = 0; i < n; ++i) {
-		// 		filterPatterns[i] = filters[i].c_str();
-		// 	}
-		// 	char const * select = tinyfd_openFileDialog("Open File",
-		// 		defaultPath.c_str(), n, filterPatterns.data(), desc.c_str(), 0);
-		// 	if (select == nullptr) {
-		// 		return "";
-		// 	} else {
-		// 		return std::string(select);
-		// 	}
-		// }
+namespace FileDialog
+{
 
 // -----------------------------------------------------------------------------
 
-		// std::string saveFileName(const std::string &defaultPath,
-		// 	const std::vector<std::string> &filters, const std::string &desc)
-		// {
-		// 	int n = static_cast<int>(filters.size());
-		// 	std::vector<char const *> filterPatterns(n);
-		// 	for (int i = 0; i < n; ++i) {
-		// 		filterPatterns[i] = filters[i].c_str();
-		// 	}
-		// 	char const * select = tinyfd_saveFileDialog("Save File",
-		// 		defaultPath.c_str(), n, filterPatterns.data(), desc.c_str());
-		// 	if (select == nullptr) {
-		// 		return "";
-		// 	} else {
-		// 		return std::string(select);
-		// 	}
-		// }
+// std::string openFileName(const std::string &defaultPath,
+// 	const std::vector<std::string> &filters, const std::string &desc)
+// {
+// 	int n = static_cast<int>(filters.size());
+// 	std::vector<char const *> filterPatterns(n);
+// 	for (int i = 0; i < n; ++i) {
+// 		filterPatterns[i] = filters[i].c_str();
+// 	}
+// 	char const * select = tinyfd_openFileDialog("Open File",
+// 		defaultPath.c_str(), n, filterPatterns.data(), desc.c_str(), 0);
+// 	if (select == nullptr) {
+// 		return "";
+// 	} else {
+// 		return std::string(select);
+// 	}
+// }
+
+// -----------------------------------------------------------------------------
+
+// std::string saveFileName(const std::string &defaultPath,
+// 	const std::vector<std::string> &filters, const std::string &desc)
+// {
+// 	int n = static_cast<int>(filters.size());
+// 	std::vector<char const *> filterPatterns(n);
+// 	for (int i = 0; i < n; ++i) {
+// 		filterPatterns[i] = filters[i].c_str();
+// 	}
+// 	char const * select = tinyfd_saveFileDialog("Save File",
+// 		defaultPath.c_str(), n, filterPatterns.data(), desc.c_str());
+// 	if (select == nullptr) {
+// 		return "";
+// 	} else {
+// 		return std::string(select);
+// 	}
+// }
 
 } // namespace FileDialog
 
@@ -78,7 +77,8 @@ namespace {
 ////////////////////////////////////////////////////////////////////////////////
 
 // Draw menu
-void polyfem::UIState::draw_menu() {
+void polyfem::UIState::draw_menu()
+{
 
 	// Viewer settings
 	float viewer_menu_width = 180.f * hidpi_scaling() / pixel_ratio();
@@ -89,10 +89,7 @@ void polyfem::UIState::draw_menu() {
 	bool _viewer_menu_visible = true;
 	ImGui::Begin(
 		"Viewer", &_viewer_menu_visible,
-		ImGuiWindowFlags_NoSavedSettings
-		| ImGuiWindowFlags_AlwaysAutoResize
-		| ImGuiWindowFlags_NoMove
-		);
+		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
 	draw_viewer_menu();
 	draw_labels_window();
 	draw_screenshot();
@@ -106,10 +103,7 @@ void polyfem::UIState::draw_menu() {
 	bool _polyfem_menu_visible = true;
 	ImGui::Begin(
 		"Settings", &_polyfem_menu_visible,
-		ImGuiWindowFlags_NoSavedSettings
-		| ImGuiWindowFlags_AlwaysAutoResize
-		| ImGuiWindowFlags_NoMove
-		);
+		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
 	draw_settings();
 	ImGui::End();
 
@@ -123,10 +117,7 @@ void polyfem::UIState::draw_menu() {
 	bool _debug_menu_visible = true;
 	ImGui::Begin(
 		"View", &_debug_menu_visible,
-		ImGuiWindowFlags_NoSavedSettings
-		| ImGuiWindowFlags_AlwaysAutoResize
-		| ImGuiWindowFlags_NoMove
-		);
+		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
 	draw_debug();
 	ImGui::End();
 
@@ -149,7 +140,8 @@ void polyfem::UIState::draw_menu() {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::UIState::draw_settings() {
+void polyfem::UIState::draw_settings()
+{
 	ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.50f);
 	// ImGui::InputInt("quad", &state.quadrature_order);
 	int discr_order = state.args["discr_order"];
@@ -200,13 +192,14 @@ void polyfem::UIState::draw_settings() {
 	static std::string problem_name = state.problem->name();
 	// static const char *problem_labels = "Linear\0Quadratic\0Franke\0Elastic\0Zero BC\0Franke3D\0ElasticExact\0\0";
 	static const auto problem_names = polyfem::ProblemFactory::factory().get_problem_names();
-	if(ImGui::BeginCombo("Problem", problem_name.c_str()))
+	if (ImGui::BeginCombo("Problem", problem_name.c_str()))
 	{
-		for(auto p_name : problem_names)
+		for (auto p_name : problem_names)
 		{
 			bool is_selected = problem_name == p_name;
 
-			if (ImGui::Selectable(p_name.c_str(), is_selected)){
+			if (ImGui::Selectable(p_name.c_str(), is_selected))
+			{
 				problem_name = p_name;
 				state.problem = ProblemFactory::factory().get_problem(problem_name);
 				state.problem->set_parameters(state.args["problem_params"]);
@@ -234,16 +227,15 @@ void polyfem::UIState::draw_settings() {
 	// ImGui::BeginChild("Forms", ImVec2(ImGui::GetWindowContentRegionWidth(), 100), true);
 	ImGui::Separator();
 
-
 	static const auto scalar_forms = polyfem::AssemblerUtils::instance().scalar_assemblers();
 
 	const bool is_scalar = state.problem->is_scalar();
 
-	if(is_scalar)
+	if (is_scalar)
 	{
-		if(ImGui::BeginCombo("1D-Form", state.scalar_formulation().c_str()))
+		if (ImGui::BeginCombo("1D-Form", state.scalar_formulation().c_str()))
 		{
-			for(auto f : scalar_forms)
+			for (auto f : scalar_forms)
 			{
 				bool is_selected = state.scalar_formulation() == f;
 
@@ -259,9 +251,9 @@ void polyfem::UIState::draw_settings() {
 	else
 	{
 		static const auto tensor_forms = polyfem::AssemblerUtils::instance().tensor_assemblers();
-		if(ImGui::BeginCombo("nD-Form", state.tensor_formulation().c_str()))
+		if (ImGui::BeginCombo("nD-Form", state.tensor_formulation().c_str()))
 		{
-			for(auto f : tensor_forms)
+			for (auto f : tensor_forms)
 			{
 				bool is_selected = state.tensor_formulation() == f;
 
@@ -273,7 +265,6 @@ void polyfem::UIState::draw_settings() {
 			ImGui::EndCombo();
 		}
 	}
-
 
 	// if(is_mixed)
 	// {
@@ -294,29 +285,28 @@ void polyfem::UIState::draw_settings() {
 	// }
 	ImGui::Separator();
 
-
-
-
 	// Solver type
 	auto solvers = LinearSolver::availableSolvers();
 	static int solver_num = std::distance(solvers.begin(), std::find(solvers.begin(), solvers.end(), state.solver_type()));
-	if (ImGui::Combo("Solver", &solver_num, solvers)) {
+	if (ImGui::Combo("Solver", &solver_num, solvers))
+	{
 		state.args["solver_type"] = solvers[solver_num];
 	}
 
 	// Preconditioner
 	auto precond = LinearSolver::availablePrecond();
-	static int precond_num =  std::distance(precond.begin(), std::find(precond.begin(), precond.end(), state.precond_type()));
-	if (ImGui::Combo("Precond", &precond_num, precond)) {
+	static int precond_num = std::distance(precond.begin(), std::find(precond.begin(), precond.end(), state.precond_type()));
+	if (ImGui::Combo("Precond", &precond_num, precond))
+	{
 		state.args["precond_type"] = precond[precond_num];
 	}
-
 
 	ImGui::Separator();
 
 	// Colormap type
 	static int color_map_num = static_cast<int>(color_map);
-	if (ImGui::Combo("Colormap", &color_map_num, "inferno\0jet\0magma\0parula\0plasma\0viridis\0\0")) {
+	if (ImGui::Combo("Colormap", &color_map_num, "inferno\0jet\0magma\0parula\0plasma\0viridis\0\0"))
+	{
 		color_map = static_cast<igl::ColorMapType>(color_map_num);
 	}
 
@@ -324,23 +314,46 @@ void polyfem::UIState::draw_settings() {
 	ImGui::Checkbox("skip visualization", &skip_visualization);
 
 	// Actions
-	if (ImGui::CollapsingHeader("Actions", ImGuiTreeNodeFlags_DefaultOpen)) {
-		if (ImGui::Button("Load mesh", ImVec2(-1, 0))) { load_mesh(); }
-		if (ImGui::Button("Build  basis", ImVec2(-1, 0))) { build_basis(); }
+	if (ImGui::CollapsingHeader("Actions", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		if (ImGui::Button("Load mesh", ImVec2(-1, 0)))
+		{
+			load_mesh();
+		}
+		if (ImGui::Button("Build  basis", ImVec2(-1, 0)))
+		{
+			build_basis();
+		}
 		// if (ImGui::Button("Compute poly bases", ImVec2(-1, 0))) {  }
-		if (ImGui::Button("Build vis mesh", ImVec2(-1, 0))) { build_vis_mesh(); }
+		if (ImGui::Button("Build vis mesh", ImVec2(-1, 0)))
+		{
+			build_vis_mesh();
+		}
 
-		if (ImGui::Button("Assemble rhs", ImVec2(-1, 0))) { assemble_rhs(); }
-		if (ImGui::Button("Assemble stiffness", ImVec2(-1, 0))) { assemble_stiffness_mat(); }
-		if (ImGui::Button("Solve", ImVec2(-1, 0))) { solve_problem(); }
-		if (ImGui::Button("Compute errors", ImVec2(-1, 0))) { compute_errors(); }
+		if (ImGui::Button("Assemble rhs", ImVec2(-1, 0)))
+		{
+			assemble_rhs();
+		}
+		if (ImGui::Button("Assemble stiffness", ImVec2(-1, 0)))
+		{
+			assemble_stiffness_mat();
+		}
+		if (ImGui::Button("Solve", ImVec2(-1, 0)))
+		{
+			solve_problem();
+		}
+		if (ImGui::Button("Compute errors", ImVec2(-1, 0)))
+		{
+			compute_errors();
+		}
 
 		ImGui::Spacing();
-		if (ImGui::Button("Run all", ImVec2(-1, 0))) {
+		if (ImGui::Button("Run all", ImVec2(-1, 0)))
+		{
 			load_mesh();
 			build_basis();
 
-			if(!skip_visualization)
+			if (!skip_visualization)
 				build_vis_mesh();
 
 			assemble_rhs();
@@ -360,23 +373,22 @@ void polyfem::UIState::draw_settings() {
 	ImGui::Separator();
 
 	static GLuint color_bar_texture = 0;
-	static const int width  = ImGui::GetWindowWidth();
+	static const int width = ImGui::GetWindowWidth();
 	static const int height = 20;
-	if(color_bar_texture == 0)
+	if (color_bar_texture == 0)
 	{
-		Eigen::Matrix<unsigned char, Eigen::Dynamic, 4, Eigen::RowMajor> cmap(width*height, 4);
-
+		Eigen::Matrix<unsigned char, Eigen::Dynamic, 4, Eigen::RowMajor> cmap(width * height, 4);
 
 		Eigen::MatrixXd t = Eigen::VectorXd::LinSpaced(width, 0, width);
 		Eigen::MatrixXd col;
 		igl::colormap(color_map, t, true, col);
 		assert(col.rows() == width);
-		for(int i = 0; i < width; ++i)
+		for (int i = 0; i < width; ++i)
 		{
-			for(int j = 0; j < height; ++j)
+			for (int j = 0; j < height; ++j)
 			{
-				for(int c = 0; c < 3; ++c)
-					cmap(j*width+i, c) = col(i, c)*255;
+				for (int c = 0; c < 3; ++c)
+					cmap(j * width + i, c) = col(i, c) * 255;
 			}
 		}
 		cmap.col(3).setConstant(255);
@@ -393,42 +405,46 @@ void polyfem::UIState::draw_settings() {
 	}
 	ImGui::Image(reinterpret_cast<ImTextureID>(color_bar_texture), ImVec2(width, height));
 
-	if(fabs(min_val) <= 1e-20)
+	if (fabs(min_val) <= 1e-20)
 		ImGui::Text("0");
 	else
 	{
 		const int min_power = floor(log10(fabs(min_val)));
-		ImGui::Text("%ge%d", round(min_val * pow(10, -min_power)*100)/100., min_power);
+		ImGui::Text("%ge%d", round(min_val * pow(10, -min_power) * 100) / 100., min_power);
 	}
 
-	if(fabs(max_val) <= 1e-20)
+	if (fabs(max_val) <= 1e-20)
 	{
-		ImGui::SameLine(width-10);
+		ImGui::SameLine(width - 10);
 		ImGui::Text("0");
 	}
 	else
 	{
-		ImGui::SameLine(width-45);
+		ImGui::SameLine(width - 45);
 		const int max_power = floor(log10(fabs(max_val)));
-		ImGui::Text("%ge%d", round(max_val * pow(10, -max_power)*100)/100., max_power);
+		ImGui::Text("%ge%d", round(max_val * pow(10, -max_power) * 100) / 100., max_power);
 	}
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::UIState::draw_debug() {
-	if (ImGui::Button("Clear", ImVec2(-1, 0))) { clear(); }
+void polyfem::UIState::draw_debug()
+{
+	if (ImGui::Button("Clear", ImVec2(-1, 0)))
+	{
+		clear();
+	}
 
-    // ImGui::Columns(1, "visualizations");
-	for(int i = 0; i <= polyfem::UIState::Visualizations::Debug; ++i)
+	// ImGui::Columns(1, "visualizations");
+	for (int i = 0; i <= polyfem::UIState::Visualizations::Debug; ++i)
 	{
 		// if(ImGui::Selectable(visualizations_texts[i].c_str(), viewer.selected_data_index == i))
 		// {
 		// 	viewer.selected_data_index = i;
 		// }
 		// ImGui::NextColumn();
-		if(ImGui::Checkbox(visualizations_texts[i].c_str(), &visible_visualizations(i))){
+		if (ImGui::Checkbox(visualizations_texts[i].c_str(), &visible_visualizations(i)))
+		{
 			redraw();
 		}
 		// ImGui::NextColumn();
@@ -453,95 +469,125 @@ void polyfem::UIState::draw_debug() {
 
 	ImGui::Separator();
 
-	if (ImGui::Button("Show linear r", ImVec2(-1, 0))) { show_linear_reproduction(); }
-	if (ImGui::Button("Show quadra r", ImVec2(-1, 0))) { show_quadratic_reproduction(); }
+	if (ImGui::Button("Show linear r", ImVec2(-1, 0)))
+	{
+		show_linear_reproduction();
+	}
+	if (ImGui::Button("Show quadra r", ImVec2(-1, 0)))
+	{
+		show_quadratic_reproduction();
+	}
 
 	ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.50f);
 	ImGui::InputInt("Basis Num", &vis_basis);
 	ImGui::PopItemWidth();
-	if (ImGui::Button("Show basis", ImVec2(-1, 0))) { show_basis(); }
+	if (ImGui::Button("Show basis", ImVec2(-1, 0)))
+	{
+		show_basis();
+	}
 
 	// Slicing
-	if (ImGui::CollapsingHeader("Slicing", ImGuiTreeNodeFlags_DefaultOpen)) {
+	if (ImGui::CollapsingHeader("Slicing", ImGuiTreeNodeFlags_DefaultOpen))
+	{
 		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.50f);
-		if (ImGui::Combo("Axis", &slice_coord, "X\0Y\0Z\0\0")) {
-			if (is_slicing) { update_slices(); }
+		if (ImGui::Combo("Axis", &slice_coord, "X\0Y\0Z\0\0"))
+		{
+			if (is_slicing)
+			{
+				update_slices();
+			}
 		}
-		if (ImGui::InputFloat("Coord", &slice_position, 0.1f, 1.f, 3)) {
-			if (is_slicing) { update_slices(); }
+		if (ImGui::InputFloat("Coord", &slice_position, 0.1f, 1.f, 3))
+		{
+			if (is_slicing)
+			{
+				update_slices();
+			}
 		}
-		if (ImGui::Checkbox("Enable##Slicing", &is_slicing)) {
+		if (ImGui::Checkbox("Enable##Slicing", &is_slicing))
+		{
 			update_slices();
 		}
 		ImGui::PopItemWidth();
 	}
 
-	if (ImGui::CollapsingHeader("Selection", ImGuiTreeNodeFlags_DefaultOpen)) {
+	if (ImGui::CollapsingHeader("Selection", ImGuiTreeNodeFlags_DefaultOpen))
+	{
 		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.50f);
 		static char buf[1024];
-		if (ImGui::InputText("Element Ids", buf, 1024)) {
+		if (ImGui::InputText("Element Ids", buf, 1024))
+		{
 			auto v = StringUtils::split(buf, ",");
 			selected_elements.resize(v.size());
 			std::transform(v.begin(), v.end(), selected_elements.begin(), [](const std::string &s) { return std::stoi(s); });
 		}
 		ImGui::PopItemWidth();
-		if (ImGui::Button("Show##Selected", ImVec2(-1, 0))) {
+		if (ImGui::Button("Show##Selected", ImVec2(-1, 0)))
+		{
 
-			if(state.mesh->is_volume())
+			if (state.mesh->is_volume())
 				current_3d_index = dynamic_cast<Mesh3D *>(state.mesh.get())->get_index_from_element(selected_elements.front());
 			else
 				current_2d_index = dynamic_cast<Mesh2D *>(state.mesh.get())->get_index_from_face(selected_elements.front());
 
 			plot_selection_and_index(true);
 		}
-		if (ImGui::Button("Switch vertex", ImVec2(-1, 0))) {
-			if(state.mesh->is_volume())
+		if (ImGui::Button("Switch vertex", ImVec2(-1, 0)))
+		{
+			if (state.mesh->is_volume())
 				current_3d_index = dynamic_cast<Mesh3D *>(state.mesh.get())->switch_vertex(current_3d_index);
 			else
 				current_2d_index = dynamic_cast<Mesh2D *>(state.mesh.get())->switch_vertex(current_2d_index);
 
 			plot_selection_and_index();
 		}
-		if (ImGui::Button("Switch edge", ImVec2(-1, 0))) {
-			if(state.mesh->is_volume())
+		if (ImGui::Button("Switch edge", ImVec2(-1, 0)))
+		{
+			if (state.mesh->is_volume())
 				current_3d_index = dynamic_cast<Mesh3D *>(state.mesh.get())->switch_edge(current_3d_index);
 			else
 				current_2d_index = dynamic_cast<Mesh2D *>(state.mesh.get())->switch_edge(current_2d_index);
 
 			plot_selection_and_index();
 		}
-		if (ImGui::Button("Switch face", ImVec2(-1, 0))) {
-			if(state.mesh->is_volume())
+		if (ImGui::Button("Switch face", ImVec2(-1, 0)))
+		{
+			if (state.mesh->is_volume())
 				current_3d_index = dynamic_cast<Mesh3D *>(state.mesh.get())->switch_face(current_3d_index);
-			else{
+			else
+			{
 				current_2d_index = dynamic_cast<Mesh2D *>(state.mesh.get())->switch_face(current_2d_index);
 				selected_elements.push_back(current_2d_index.face);
 			}
 
 			plot_selection_and_index();
 		}
-		if(state.mesh && state.mesh->is_volume())
+		if (state.mesh && state.mesh->is_volume())
 		{
-			if (ImGui::Button("Switch element", ImVec2(-1, 0))) {
+			if (ImGui::Button("Switch element", ImVec2(-1, 0)))
+			{
 				current_3d_index = dynamic_cast<Mesh3D *>(state.mesh.get())->switch_element(current_3d_index);
 				selected_elements.push_back(current_3d_index.element);
 
 				plot_selection_and_index();
 			}
 		}
-		if (ImGui::Button("Save selection", ImVec2(-1, 0))) {
-			if(state.mesh->is_volume()) {
+		if (ImGui::Button("Save selection", ImVec2(-1, 0)))
+		{
+			if (state.mesh->is_volume())
+			{
 				dynamic_cast<Mesh3D *>(state.mesh.get())->save(selected_elements, 2, "mesh.HYBRID");
 			}
 		}
 	}
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::UIState::draw_screenshot() {
-	if (ImGui::Button("Save Screenshot", ImVec2(-1, 0))) {
+void polyfem::UIState::draw_screenshot()
+{
+	if (ImGui::Button("Save Screenshot", ImVec2(-1, 0)))
+	{
 		// Allocate temporary buffers
 		// Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(6400, 4000);
 		// Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> G(6400, 4000);
@@ -559,34 +605,37 @@ void polyfem::UIState::draw_screenshot() {
 
 	float w = ImGui::GetContentRegionAvailWidth();
 	float p = ImGui::GetStyle().FramePadding.x;
-	if (ImGui::Button("Save VTU", ImVec2((w-p)/2.f, 0))) {
+	if (ImGui::Button("Save VTU", ImVec2((w - p) / 2.f, 0)))
+	{
 		state.save_vtu("result.vtu");
 	}
 	ImGui::SameLine(0, p);
-	if (ImGui::Button("Save Wire", ImVec2((w-p)/2.f, 0))) {
+	if (ImGui::Button("Save Wire", ImVec2((w - p) / 2.f, 0)))
+	{
 		state.save_wire("result.obj");
 	}
 
 	ImGui::Separator();
 
-	if(ImGui::Checkbox("Show element ids", &show_element_id))
+	if (ImGui::Checkbox("Show element ids", &show_element_id))
 		show_mesh();
 
-	if(ImGui::Checkbox("Show vertex ids", &show_vertex_id))
+	if (ImGui::Checkbox("Show vertex ids", &show_vertex_id))
 		show_mesh();
 
-	if(ImGui::Checkbox("Show node ids", &show_node_id))
+	if (ImGui::Checkbox("Show node ids", &show_node_id))
 		show_nodes();
 
 	// if(ImGui::Checkbox("Color discr order", &color_using_discr_order))
-		// show_mesh();
+	// show_mesh();
 
 	ImGui::Checkbox("Use 3D funs", &show_funs_in_3d);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::UIState::draw_elasticity_bc() {
+void polyfem::UIState::draw_elasticity_bc()
+{
 	// for(int local_id = 1; local_id <= 6; ++local_id) {
 	// 	viewer_.ngui->addVariable<bool>("Dirichlet " + std::to_string(local_id),
 	// 		[this,local_id](bool val) {
@@ -605,4 +654,3 @@ void polyfem::UIState::draw_elasticity_bc() {
 	// 	});
 	// }
 }
-

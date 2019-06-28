@@ -24,8 +24,6 @@
 
 //TODO carefull with simplices
 
-// #include <polyfem/UIState.hpp>
-
 namespace polyfem
 {
     using namespace Eigen;

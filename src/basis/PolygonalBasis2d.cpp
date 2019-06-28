@@ -11,40 +11,37 @@
 
 #include <polyfem/auto_q_bases.hpp>
 
-// #include <polyfem/UIState.hpp>
-
-// #include <igl/png/writePNG.h>
-#include <igl/per_corner_normals.h>
-#include <igl/write_triangle_mesh.h>
-#include <igl/read_triangle_mesh.h>
-#include <geogram/mesh/mesh_io.h>
 #include <random>
 #include <memory>
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <memory>
 
-
-namespace polyfem {
-namespace {
+namespace polyfem
+{
+namespace
+{
 
 // -----------------------------------------------------------------------------
 
 std::vector<int> compute_nonzero_bases_ids(const Mesh2D &mesh, const int element_index,
-	const std::vector< ElementBases > &bases,
-	const std::map<int, InterfaceData> &poly_edge_to_data)
+										   const std::vector<ElementBases> &bases,
+										   const std::map<int, InterfaceData> &poly_edge_to_data)
 {
 	std::vector<int> local_to_global;
 
 	const int n_edges = mesh.n_face_vertices(element_index);
 	Navigation::Index index = mesh.get_index_from_face(element_index);
-	for (int i = 0; i < n_edges; ++i) {
+	for (int i = 0; i < n_edges; ++i)
+	{
 		const int f2 = mesh.switch_face(index).face;
 		assert(f2 >= 0); // no boundary polygons
 		const InterfaceData &bdata = poly_edge_to_data.at(index.edge);
-		const ElementBases &b=bases[f2];
-		for (int other_local_basis_id : bdata.local_indices) {
-			for (const auto &x : b.bases[other_local_basis_id].global()) {
+		const ElementBases &b = bases[f2];
+		for (int other_local_basis_id : bdata.local_indices)
+		{
+			for (const auto &x : b.bases[other_local_basis_id].global())
+			{
 				const int global_node_id = x.index;
 				local_to_global.push_back(global_node_id);
 			}
@@ -57,8 +54,8 @@ std::vector<int> compute_nonzero_bases_ids(const Mesh2D &mesh, const int element
 	auto it = std::unique(local_to_global.begin(), local_to_global.end());
 	local_to_global.resize(std::distance(local_to_global.begin(), it));
 
-    // assert(int(local_to_global.size()) <= n_edges);
-    return local_to_global;
+	// assert(int(local_to_global.size()) <= n_edges);
+	return local_to_global;
 }
 
 // -----------------------------------------------------------------------------
@@ -77,7 +74,8 @@ void sample_parametric_edge(
 	endpoints.row(1) = tmp.row(indices(1));
 	const Eigen::VectorXd t = Eigen::VectorXd::LinSpaced(n_samples, 0, 1);
 	samples.resize(n_samples, endpoints.cols());
-	for (int c = 0; c < 2; ++c) {
+	for (int c = 0; c < 2; ++c)
+	{
 		samples.col(c) = (1.0 - t.array()).matrix() * endpoints(0, c) + t * endpoints(1, c);
 	}
 }
@@ -85,7 +83,7 @@ void sample_parametric_edge(
 // -----------------------------------------------------------------------------
 
 void compute_offset_kernels(const Eigen::MatrixXd &polygon, int n_kernels, double eps,
-	Eigen::MatrixXd &kernel_centers)
+							Eigen::MatrixXd &kernel_centers)
 {
 	Eigen::MatrixXd offset, samples;
 	std::vector<bool> inside;
@@ -116,8 +114,8 @@ void sample_polygon(
 	const int n_samples_per_edge,
 	const Mesh2D &mesh,
 	const std::map<int, InterfaceData> &poly_edge_to_data,
-	const std::vector< ElementBases > &bases,
-	const std::vector< ElementBases > &gbases,
+	const std::vector<ElementBases> &bases,
+	const std::vector<ElementBases> &gbases,
 	const double eps,
 	std::vector<int> &local_to_global,
 	Eigen::MatrixXd &collocation_points,
@@ -126,7 +124,7 @@ void sample_polygon(
 {
 	const int n_edges = mesh.n_face_vertices(element_index);
 
-	const int n_kernel_per_edges = (n_samples_per_edge - 1)/3;
+	const int n_kernel_per_edges = (n_samples_per_edge - 1) / 3;
 	const int n_collocation_points = (n_samples_per_edge - 1) * n_edges;
 	const int n_kernels = n_kernel_per_edges * n_edges;
 
@@ -142,34 +140,36 @@ void sample_polygon(
 	Eigen::MatrixXd samples, mapped;
 	std::vector<AssemblyValues> basis_val;
 	auto index = mesh.get_index_from_face(element_index);
-	for(int i = 0; i < n_edges; ++i) {
+	for (int i = 0; i < n_edges; ++i)
+	{
 		const int f2 = mesh.switch_face(index).face;
 		assert(f2 >= 0); // no boundary polygons
 
 		const InterfaceData &bdata = poly_edge_to_data.at(index.edge);
-		const ElementBases &b=bases[f2];
-		const ElementBases &gb=gbases[f2];
+		const ElementBases &b = bases[f2];
+		const ElementBases &gb = gbases[f2];
 
 		// Sample collocation points on the boundary edge
 		sample_parametric_edge(mesh, mesh.switch_face(index), n_samples_per_edge, samples);
 		samples.conservativeResize(samples.rows() - 1, samples.cols());
 		gb.eval_geom_mapping(samples, mapped);
-		assert(mapped.rows() == (n_samples_per_edge-1));
-		collocation_points.block(i*(n_samples_per_edge-1), 0, mapped.rows(), mapped.cols()) = mapped;
-
+		assert(mapped.rows() == (n_samples_per_edge - 1));
+		collocation_points.block(i * (n_samples_per_edge - 1), 0, mapped.rows(), mapped.cols()) = mapped;
 
 		b.evaluate_bases(samples, basis_val);
 		// Evaluate field basis and set up the rhs
-		for (int other_local_basis_id : bdata.local_indices) {
+		for (int other_local_basis_id : bdata.local_indices)
+		{
 			// b.bases[other_local_basis_id].basis(samples, basis_val);
 
-			for (const auto &x : b.bases[other_local_basis_id].global()) {
+			for (const auto &x : b.bases[other_local_basis_id].global())
+			{
 				const int global_node_id = x.index;
 				const double weight = x.val;
 
 				const int poly_local_basis_id = std::distance(local_to_global.begin(),
-					std::find(local_to_global.begin(), local_to_global.end(), global_node_id));
-				rhs.block(i*(n_samples_per_edge-1), poly_local_basis_id, basis_val[other_local_basis_id].val.size(), 1) += basis_val[other_local_basis_id].val * weight;
+															  std::find(local_to_global.begin(), local_to_global.end(), global_node_id));
+				rhs.block(i * (n_samples_per_edge - 1), poly_local_basis_id, basis_val[other_local_basis_id].val.size(), 1) += basis_val[other_local_basis_id].val * weight;
 			}
 		}
 
@@ -188,8 +188,8 @@ void PolygonalBasis2d::compute_integral_constraints(
 	const std::string &assembler_name,
 	const Mesh2D &mesh,
 	const int n_bases,
-	const std::vector< ElementBases > &bases,
-	const std::vector< ElementBases > &gbases,
+	const std::vector<ElementBases> &bases,
+	const std::vector<ElementBases> &gbases,
 	Eigen::MatrixXd &basis_integrals)
 {
 	assert(!mesh.is_volume());
@@ -197,14 +197,16 @@ void PolygonalBasis2d::compute_integral_constraints(
 	const auto &assembler = AssemblerUtils::instance();
 	const int dim = assembler.is_tensor(assembler_name) ? 2 : 1;
 
-	basis_integrals.resize(n_bases, RBFWithQuadratic::index_mapping(dim-1, dim-1, 4, dim)+1);
+	basis_integrals.resize(n_bases, RBFWithQuadratic::index_mapping(dim - 1, dim - 1, 4, dim) + 1);
 	basis_integrals.setZero();
 
 	std::array<Eigen::MatrixXd, 5> strong;
 
 	const int n_elements = mesh.n_elements();
-	for(int e = 0; e < n_elements; ++e) {
-		if (mesh.is_polytope(e)) {
+	for (int e = 0; e < n_elements; ++e)
+	{
+		if (mesh.is_polytope(e))
+		{
 			continue;
 		}
 		// ElementAssemblyValues vals = values[e];
@@ -215,7 +217,6 @@ void PolygonalBasis2d::compute_integral_constraints(
 		const auto &quadr = vals.quadrature;
 		const QuadratureVector da = vals.det.array() * quadr.weights.array();
 
-
 		// Computes the discretized integral of the PDE over the element
 		const int n_local_bases = int(vals.basis_values.size());
 
@@ -224,19 +225,21 @@ void PolygonalBasis2d::compute_integral_constraints(
 		RBFWithQuadratic::setup_monomials_vals_2d(n_local_bases, vals.val, vals);
 		RBFWithQuadratic::setup_monomials_strong_2d(dim, assembler_name, vals.val, da, strong);
 
-		for(int j = 0; j < n_local_bases; ++j) {
-			const AssemblyValues &v=vals.basis_values[j];
+		for (int j = 0; j < n_local_bases; ++j)
+		{
+			const AssemblyValues &v = vals.basis_values[j];
 
-			for(int d = 0; d < 5; ++d)
+			for (int d = 0; d < 5; ++d)
 			{
 				const auto tmp = assembler.local_assemble(assembler_name, vals, n_local_bases + d, j, da);
 
-				for(size_t ii = 0; ii < v.global.size(); ++ii) {
-					for(int alpha = 0; alpha < dim; ++alpha)
+				for (size_t ii = 0; ii < v.global.size(); ++ii)
+				{
+					for (int alpha = 0; alpha < dim; ++alpha)
 					{
-						for(int beta = 0; beta < dim; ++beta)
+						for (int beta = 0; beta < dim; ++beta)
 						{
-							const int loc_index = alpha*dim + beta;
+							const int loc_index = alpha * dim + beta;
 							const int r = RBFWithQuadratic::index_mapping(alpha, beta, d, dim);
 
 							basis_integrals(v.global[ii].index, r) += tmp(loc_index) + (strong[d].row(loc_index).transpose().array() * v.val.array()).sum();
@@ -251,12 +254,14 @@ void PolygonalBasis2d::compute_integral_constraints(
 // -----------------------------------------------------------------------------
 
 // Distance from harmonic kernels to polygon boundary
-double compute_epsilon(const Mesh2D &mesh, int e) {
+double compute_epsilon(const Mesh2D &mesh, int e)
+{
 	double area = 0;
 	const int n_edges = mesh.n_face_vertices(e);
 	Navigation::Index index = mesh.get_index_from_face(e);
 
-	for (int i = 0; i < n_edges; ++i) {
+	for (int i = 0; i < n_edges; ++i)
+	{
 		Eigen::Matrix2d det_mat;
 		det_mat.row(0) = mesh.point(index.vertex);
 		det_mat.row(1) = mesh.point(mesh.switch_vertex(index).vertex);
@@ -267,7 +272,7 @@ double compute_epsilon(const Mesh2D &mesh, int e) {
 	}
 	area = std::fabs(area);
 	// const double eps = use_harmonic ? (0.08*area) : 0;
-	const double eps = 0.08*area;
+	const double eps = 0.08 * area;
 
 	return eps;
 }
@@ -362,13 +367,14 @@ int PolygonalBasis2d::build_bases(
 	const int n_bases,
 	const int quadrature_order,
 	const int integral_constraints,
-	std::vector< ElementBases > &bases,
-	const std::vector< ElementBases > &gbases,
+	std::vector<ElementBases> &bases,
+	const std::vector<ElementBases> &gbases,
 	const std::map<int, InterfaceData> &poly_edge_to_data,
 	std::map<int, Eigen::MatrixXd> &mapped_boundary)
 {
 	assert(!mesh.is_volume());
-	if (poly_edge_to_data.empty()) {
+	if (poly_edge_to_data.empty())
+	{
 		return 0;
 	}
 
@@ -381,8 +387,10 @@ int PolygonalBasis2d::build_bases(
 
 	// Step 2: Compute the rest =)
 	PolygonQuadrature poly_quadr;
-	for (int e = 0; e < mesh.n_elements(); ++e) {
-		if (!mesh.is_polytope(e)) {
+	for (int e = 0; e < mesh.n_elements(); ++e)
+	{
+		if (!mesh.is_polytope(e))
+		{
 			continue;
 		}
 		// No boundary polytope
@@ -396,7 +404,7 @@ int PolygonalBasis2d::build_bases(
 		Eigen::MatrixXd rhs; // 1 row per collocation point, 1 column per basis that is nonzero on the polygon boundary
 
 		sample_polygon(e, n_samples_per_edge, mesh, poly_edge_to_data, bases, gbases,
-			eps, local_to_global, collocation_points, kernel_centers, rhs);
+					   eps, local_to_global, collocation_points, kernel_centers, rhs);
 
 		// igl::opengl::glfw::Viewer viewer;
 		// viewer.data().add_points(kernel_centers, Eigen::Vector3d(0,1,1).transpose());
@@ -406,7 +414,6 @@ int PolygonalBasis2d::build_bases(
 		// asd.col(1)=collocation_points.col(1);
 		// asd.col(2)=rhs.col(0);
 		// viewer.data().add_points(asd, Eigen::Vector3d(1,0,1).transpose());
-		
 
 		// for(int asd = 0; asd < collocation_points.rows(); ++asd) {
 		//     viewer.data().add_label(collocation_points.row(asd), std::to_string(asd));
@@ -420,35 +427,34 @@ int PolygonalBasis2d::build_bases(
 		// viewer.data().add_points(kernel_centers, Eigen::Vector3d(0,1,1).transpose());
 		// add_spheres(viewer, kernel_centers, 0.01);
 
-
-		ElementBases &b=bases[e];
+		ElementBases &b = bases[e];
 		b.has_parameterization = false;
 
 		// Compute quadrature points for the polygon
 		Quadrature tmp_quadrature;
 		poly_quadr.get_quadrature(collocation_points, quadrature_order, tmp_quadrature);
 
-		b.set_quadrature([tmp_quadrature](Quadrature &quad){ quad = tmp_quadrature; });
+		b.set_quadrature([tmp_quadrature](Quadrature &quad) { quad = tmp_quadrature; });
 
 		// Compute the weights of the harmonic kernels
 		Eigen::MatrixXd local_basis_integrals(rhs.cols(), basis_integrals.cols());
-		for (long k = 0; k < rhs.cols(); ++k) {
-				local_basis_integrals.row(k) = -basis_integrals.row(local_to_global[k]);
+		for (long k = 0; k < rhs.cols(); ++k)
+		{
+			local_basis_integrals.row(k) = -basis_integrals.row(local_to_global[k]);
 		}
-		auto set_rbf = [&b] (auto rbf) {
-			b.set_bases_func([rbf] (const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &val)
-			{
+		auto set_rbf = [&b](auto rbf) {
+			b.set_bases_func([rbf](const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &val) {
 				Eigen::MatrixXd tmp;
 				rbf->bases_values(uv, tmp);
 				val.resize(tmp.cols());
 				assert(tmp.rows() == uv.rows());
 
-				for(size_t i = 0; i < tmp.cols(); ++i){
+				for (size_t i = 0; i < tmp.cols(); ++i)
+				{
 					val[i].val = tmp.col(i);
 				}
-			} );
-			b.set_grads_func([rbf] (const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &val)
-			{
+			});
+			b.set_grads_func([rbf](const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &val) {
 				Eigen::MatrixXd tmpx, tmpy;
 
 				rbf->bases_grads(0, uv, tmpx);
@@ -457,30 +463,39 @@ int PolygonalBasis2d::build_bases(
 				val.resize(tmpx.cols());
 				assert(tmpx.cols() == tmpy.cols());
 				assert(tmpx.rows() == uv.rows());
-				for(size_t i = 0; i < tmpx.cols(); ++i){
+				for (size_t i = 0; i < tmpx.cols(); ++i)
+				{
 					val[i].grad.resize(uv.rows(), uv.cols());
 					val[i].grad.col(0) = tmpx.col(i);
 					val[i].grad.col(1) = tmpy.col(i);
 				}
 			});
 		};
-		if (integral_constraints == 0) {
+		if (integral_constraints == 0)
+		{
 			set_rbf(std::make_shared<RBFWithLinear>(
 				kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs, false));
-		} else if (integral_constraints == 1) {
+		}
+		else if (integral_constraints == 1)
+		{
 			set_rbf(std::make_shared<RBFWithLinear>(
 				kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs));
-		} else if (integral_constraints == 2) {
+		}
+		else if (integral_constraints == 2)
+		{
 			set_rbf(std::make_shared<RBFWithQuadraticLagrange>(
 				assembler_name, kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs));
-		} else {
+		}
+		else
+		{
 			throw std::runtime_error("Unsupported constraint order: " + std::to_string(integral_constraints));
 		}
 
 		// Set the bases which are nonzero inside the polygon
 		const int n_poly_bases = int(local_to_global.size());
 		b.bases.resize(n_poly_bases);
-		for (int i = 0; i < n_poly_bases; ++i) {
+		for (int i = 0; i < n_poly_bases; ++i)
+		{
 			b.bases[i].init(-2, local_to_global[i], i, Eigen::MatrixXd::Constant(1, 2, std::nan("")));
 		}
 

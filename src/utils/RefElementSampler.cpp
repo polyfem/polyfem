@@ -1,9 +1,7 @@
 #include <polyfem/RefElementSampler.hpp>
 #include <polyfem/MeshUtils.hpp>
 
-#include <igl/avg_edge_length.h>
 #include <igl/edges.h>
-#include <igl/write_triangle_mesh.h>
 #include <igl/upsample.h>
 
 #include <cassert>
@@ -28,15 +26,15 @@ void regular_2d_grid(const int n, bool tri, Eigen::MatrixXd &V, Eigen::MatrixXi 
 	std::vector<int> map(n * n, -1);
 
 	int index = 0;
-	for(int i=0; i < n; ++i)
+	for (int i = 0; i < n; ++i)
 	{
-    	for(int j = 0; j < n; ++j)
+		for (int j = 0; j < n; ++j)
 		{
-        	if(tri && i+j >= n)
-            	continue;
-        map[i+j*n]=index;
-		V.row(index) << i * delta, j * delta;
-		++index;
+			if (tri && i + j >= n)
+				continue;
+			map[i + j * n] = index;
+			V.row(index) << i * delta, j * delta;
+			++index;
 		}
 	}
 
@@ -45,19 +43,20 @@ void regular_2d_grid(const int n, bool tri, Eigen::MatrixXd &V, Eigen::MatrixXi 
 	std::array<int, 3> tmp;
 
 	index = 0;
-	for(int i=0; i < n-1; ++i)
+	for (int i = 0; i < n - 1; ++i)
 	{
-    	for(int j = 0; j < n-1; ++j)
+		for (int j = 0; j < n - 1; ++j)
 		{
-        	tmp = {{ map[i + j*n], map[i+1 + j*n], map[i + (j+1)*n] }};
-			if(tmp[0] >= 0 && tmp[1] >= 0 && tmp[2] >= 0)
+			tmp = {{map[i + j * n], map[i + 1 + j * n], map[i + (j + 1) * n]}};
+			if (tmp[0] >= 0 && tmp[1] >= 0 && tmp[2] >= 0)
 			{
 				F.row(index) << tmp[0], tmp[1], tmp[2];
 				++index;
 			}
 
-			tmp = {{ map[ i + 1 + j * n], map[i + 1 + (j + 1) * n], map[i + (j + 1) * n ] }};
-			if (tmp[0] >= 0 && tmp[1] >= 0 && tmp[2] >= 0) {
+			tmp = {{map[i + 1 + j * n], map[i + 1 + (j + 1) * n], map[i + (j + 1) * n]}};
+			if (tmp[0] >= 0 && tmp[1] >= 0 && tmp[2] >= 0)
+			{
 				F.row(index) << tmp[0], tmp[1], tmp[2];
 				++index;
 			}
@@ -67,7 +66,8 @@ void regular_2d_grid(const int n, bool tri, Eigen::MatrixXd &V, Eigen::MatrixXi 
 	F.conservativeResize(index, 3);
 }
 
-namespace {
+namespace
+{
 
 void add_tet(const std::array<int, 4> &tmp, const Eigen::MatrixXd &V, int &index, Eigen::MatrixXi &T)
 {
@@ -77,7 +77,7 @@ void add_tet(const std::array<int, 4> &tmp, const Eigen::MatrixXd &V, int &index
 		const Eigen::Vector3d e1 = V.row(tmp[2]) - V.row(tmp[0]);
 		const Eigen::Vector3d e2 = V.row(tmp[3]) - V.row(tmp[0]);
 		double vol = (e0.cross(e1)).dot(e2);
-		if(vol < 0)
+		if (vol < 0)
 			T.row(index) << tmp[0], tmp[1], tmp[2], tmp[3];
 		else
 			T.row(index) << tmp[0], tmp[1], tmp[3], tmp[2];
@@ -87,7 +87,7 @@ void add_tet(const std::array<int, 4> &tmp, const Eigen::MatrixXd &V, int &index
 		const Eigen::Vector3d ed2 = V.row(T(index, 3)) - V.row(T(index, 0));
 		assert((ed0.cross(ed1)).dot(ed2) < 0);
 #endif
-		++ index;
+		++index;
 	}
 }
 
@@ -106,19 +106,22 @@ void regular_3d_grid(const int nn, bool tet, Eigen::MatrixXd &V, Eigen::MatrixXi
 {
 	const int n = nn;
 	const double delta = 1. / (n - 1.);
-	T.resize((n-1)*(n-1)*(n-1)*6, 4);
-	V.resize(n*n*n,3);
-	std::vector<int> map(n*n*n, -1);
+	T.resize((n - 1) * (n - 1) * (n - 1) * 6, 4);
+	V.resize(n * n * n, 3);
+	std::vector<int> map(n * n * n, -1);
 
 	int index = 0;
-	for(int i=0; i < n; ++i){
-    	for(int j = 0; j < n; ++j) {
-			for(int k = 0; k < n; ++k) {
-            	if(tet && i+j+k >= n)
-                	continue;
-            	map[(i+j*n)*n+k]=index;
-            	V.row(index) << i*delta, j*delta, k*delta;
-            	++index;
+	for (int i = 0; i < n; ++i)
+	{
+		for (int j = 0; j < n; ++j)
+		{
+			for (int k = 0; k < n; ++k)
+			{
+				if (tet && i + j + k >= n)
+					continue;
+				map[(i + j * n) * n + k] = index;
+				V.row(index) << i * delta, j * delta, k * delta;
+				++index;
 			}
 		}
 	}
@@ -127,39 +130,41 @@ void regular_3d_grid(const int nn, bool tet, Eigen::MatrixXd &V, Eigen::MatrixXi
 	std::array<int, 8> indices;
 	std::array<int, 4> tmp;
 	index = 0;
-	for(int i=0; i < n-1; ++i) {
-		for(int j = 0; j < n-1; ++j) {
-			for(int k = 0; k < n-1; ++k) {
-				indices = {{ (i + j*n)*n+k,
-				(i+1 + j*n)*n+k,
-				(i+1 + (j+1)*n)*n+k,
-                (i + (j+1)*n)*n+k,
+	for (int i = 0; i < n - 1; ++i)
+	{
+		for (int j = 0; j < n - 1; ++j)
+		{
+			for (int k = 0; k < n - 1; ++k)
+			{
+				indices = {{(i + j * n) * n + k,
+							(i + 1 + j * n) * n + k,
+							(i + 1 + (j + 1) * n) * n + k,
+							(i + (j + 1) * n) * n + k,
 
-                (i + j*n)*n+k+1,
-                (i+1 + j*n)*n+k+1,
-                (i+1 + (j+1)*n)*n+k+1,
-                (i + (j+1)*n)*n+k+1
-				}};
+							(i + j * n) * n + k + 1,
+							(i + 1 + j * n) * n + k + 1,
+							(i + 1 + (j + 1) * n) * n + k + 1,
+							(i + (j + 1) * n) * n + k + 1}};
 
-				tmp = {{ map[indices[1-1]], map[indices[2-1]], map[indices[4-1]], map[indices[5-1]] }};
+				tmp = {{map[indices[1 - 1]], map[indices[2 - 1]], map[indices[4 - 1]], map[indices[5 - 1]]}};
 				add_tet(tmp, V, index, T);
 
-				tmp = {{ map[indices[6-1]], map[indices[3-1]], map[indices[7-1]], map[indices[8-1]] }};
+				tmp = {{map[indices[6 - 1]], map[indices[3 - 1]], map[indices[7 - 1]], map[indices[8 - 1]]}};
 				add_tet(tmp, V, index, T);
 
-				tmp = {{ map[indices[5-1]], map[indices[2-1]], map[indices[6-1]], map[indices[4-1]] }};
+				tmp = {{map[indices[5 - 1]], map[indices[2 - 1]], map[indices[6 - 1]], map[indices[4 - 1]]}};
 				add_tet(tmp, V, index, T);
 
-				tmp = {{ map[indices[5-1]], map[indices[4-1]], map[indices[8-1]], map[indices[6-1]] }};
+				tmp = {{map[indices[5 - 1]], map[indices[4 - 1]], map[indices[8 - 1]], map[indices[6 - 1]]}};
 				add_tet(tmp, V, index, T);
 
-				tmp = {{ map[indices[4-1]], map[indices[2-1]], map[indices[6-1]], map[indices[3-1]] }};
+				tmp = {{map[indices[4 - 1]], map[indices[2 - 1]], map[indices[6 - 1]], map[indices[3 - 1]]}};
 				add_tet(tmp, V, index, T);
 
-				tmp = {{ map[indices[3-1]], map[indices[4-1]], map[indices[8-1]], map[indices[6-1]] }};
+				tmp = {{map[indices[3 - 1]], map[indices[4 - 1]], map[indices[8 - 1]], map[indices[6 - 1]]}};
 				add_tet(tmp, V, index, T);
 			}
-    	}
+		}
 	}
 
 	T.conservativeResize(index, 4);
@@ -181,7 +186,6 @@ void regular_3d_grid(const int nn, bool tet, Eigen::MatrixXd &V, Eigen::MatrixXi
 	F.block(3 * index, 0, index, 1) = T.col(2);
 	F.block(3 * index, 1, index, 1) = T.col(0);
 	F.block(3 * index, 2, index, 1) = T.col(3);
-
 }
 
 RefElementSampler &RefElementSampler::sampler()
@@ -241,7 +245,7 @@ void RefElementSampler::build()
 				0, 3, 7,
 				0, 7, 4;
 
-			regular_3d_grid(std::max(2., round(1. / pow(area_param_, 1. / 3.) + 1)/2.), false, cube_points_, cube_faces_, cube_tets_);
+			regular_3d_grid(std::max(2., round(1. / pow(area_param_, 1. / 3.) + 1) / 2.), false, cube_points_, cube_faces_, cube_tets_);
 
 			// Extract sampled edges matching the base element edges
 			Eigen::MatrixXi edges(12, 2);
@@ -359,7 +363,7 @@ void RefElementSampler::build()
 
 void RefElementSampler::sample_polygon(const Eigen::MatrixXd &poly, Eigen::MatrixXd &pts, Eigen::MatrixXi &faces) const
 {
-	pts.resize(poly.rows()+1, poly.cols());
+	pts.resize(poly.rows() + 1, poly.cols());
 	pts.block(0, 0, poly.rows(), poly.cols()) = poly;
 	pts.row(poly.rows()) = poly.colwise().mean();
 
@@ -369,7 +373,7 @@ void RefElementSampler::sample_polygon(const Eigen::MatrixXd &poly, Eigen::Matri
 
 	for (int e = 0; e < int(poly.rows()); ++e)
 	{
-		faces.row(e) << e , (e + 1) % poly.rows(), poly.rows();
+		faces.row(e) << e, (e + 1) % poly.rows(), poly.rows();
 
 		Eigen::Matrix2d tmp;
 		tmp.row(0) = pts.row(e) - pts.row(poly.rows());

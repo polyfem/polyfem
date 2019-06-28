@@ -12,38 +12,37 @@
 #include <polyfem/auto_q_bases.hpp>
 
 #include <igl/per_vertex_normals.h>
-#include <igl/per_corner_normals.h>
-#include <igl/write_triangle_mesh.h>
-#include <igl/read_triangle_mesh.h>
-// #include <igl/colormap.h>
-// #include <igl/png/writePNG.h>
-#include <geogram/mesh/mesh_io.h>
 #include <random>
 #include <memory>
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace polyfem {
-namespace {
+namespace polyfem
+{
+namespace
+{
 
 const int max_num_kernels = 300;
 
 // -----------------------------------------------------------------------------
 
 std::vector<int> compute_nonzero_bases_ids(const Mesh3D &mesh, const int c,
-	const std::vector< ElementBases > &bases,
-	const std::map<int, InterfaceData> &poly_face_to_data)
+										   const std::vector<ElementBases> &bases,
+										   const std::map<int, InterfaceData> &poly_face_to_data)
 {
 	std::vector<int> local_to_global;
 
-	for (int lf = 0; lf < mesh.n_cell_faces(c); ++lf) {
+	for (int lf = 0; lf < mesh.n_cell_faces(c); ++lf)
+	{
 		auto index = mesh.get_index_from_element(c, lf, 0);
 		const int c2 = mesh.switch_element(index).element;
 		assert(c2 >= 0); // no boundary polytope
 		assert(poly_face_to_data.count(index.face) > 0);
 		const InterfaceData &bdata = poly_face_to_data.at(index.face);
-		const ElementBases &b=bases[c2];
-		for (int other_local_basis_id : bdata.local_indices) {
-			for (const auto &x : b.bases[other_local_basis_id].global()) {
+		const ElementBases &b = bases[c2];
+		for (int other_local_basis_id : bdata.local_indices)
+		{
+			for (const auto &x : b.bases[other_local_basis_id].global())
+			{
 				const int global_node_id = x.index;
 				local_to_global.push_back(global_node_id);
 			}
@@ -54,13 +53,14 @@ std::vector<int> compute_nonzero_bases_ids(const Mesh3D &mesh, const int c,
 	auto it = std::unique(local_to_global.begin(), local_to_global.end());
 	local_to_global.resize(std::distance(local_to_global.begin(), it));
 
-    return local_to_global;
+	return local_to_global;
 }
 
 // -----------------------------------------------------------------------------
 
 // Canonical triangle mesh in parametric domain
-void compute_canonical_pattern(int n_samples_per_edge, Eigen::MatrixXd &V, Eigen::MatrixXi &F) {
+void compute_canonical_pattern(int n_samples_per_edge, Eigen::MatrixXd &V, Eigen::MatrixXi &F)
+{
 	regular_2d_grid(n_samples_per_edge, false, V, F);
 
 	// igl::opengl::glfw::Viewer viewer;
@@ -83,14 +83,18 @@ GetAdjacentLocalEdge compute_quad_mesh_from_cell(
 	int num_vertices = 0;
 	std::map<int, int> vertex_g2l;
 	std::map<int, int> face_g2l;
-	for (int lf = 0; lf < mesh.n_cell_faces(c); ++lf) {
+	for (int lf = 0; lf < mesh.n_cell_faces(c); ++lf)
+	{
 		face_g2l.emplace(mesh.get_index_from_element(c, lf, lv0).face, lf);
 	}
-	for (int lf = 0; lf < mesh.n_cell_faces(c); ++lf) {
+	for (int lf = 0; lf < mesh.n_cell_faces(c); ++lf)
+	{
 		auto index = mesh.get_index_from_element(c, lf, lv0);
 		assert(mesh.n_face_vertices(index.face) == 4);
-		for (int lv = 0; lv < 4; ++lv) {
-			if (!vertex_g2l.count(index.vertex)) {
+		for (int lv = 0; lv < 4; ++lv)
+		{
+			if (!vertex_g2l.count(index.vertex))
+			{
 				vertex_g2l.emplace(index.vertex, num_vertices++);
 			}
 			quads[lf][lv] = vertex_g2l.at(index.vertex);
@@ -100,13 +104,18 @@ GetAdjacentLocalEdge compute_quad_mesh_from_cell(
 			int lf2 = face_g2l.at(index2.face);
 			std::get<0>(adj[lf][lv]) = lf2;
 			auto index3 = mesh.get_index_from_element(c, lf2, lv0);
-			for (int lv2 = 0; lv2 < 4; ++lv2) {
-				if (index3.edge == index2.edge) {
+			for (int lv2 = 0; lv2 < 4; ++lv2)
+			{
+				if (index3.edge == index2.edge)
+				{
 					std::get<1>(adj[lf][lv]) = lv2;
-					if (index2.vertex != index3.vertex) {
+					if (index2.vertex != index3.vertex)
+					{
 						assert(mesh.switch_vertex(index3).vertex == index2.vertex);
 						std::get<2>(adj[lf][lv]) = true;
-					} else {
+					}
+					else
+					{
 						std::get<2>(adj[lf][lv]) = false;
 					}
 				}
@@ -117,12 +126,14 @@ GetAdjacentLocalEdge compute_quad_mesh_from_cell(
 		}
 	}
 	V.resize(num_vertices, 3);
-	for (const auto &kv : vertex_g2l) {
+	for (const auto &kv : vertex_g2l)
+	{
 		V.row(kv.second) = mesh.point(kv.first);
 	}
 	F.resize(quads.size(), 4);
 	int f = 0;
-	for (auto q : quads) {
+	for (auto q : quads)
+	{
 		F.row(f++) << q[0], q[1], q[2], q[3];
 	}
 
@@ -134,9 +145,9 @@ GetAdjacentLocalEdge compute_quad_mesh_from_cell(
 // -----------------------------------------------------------------------------
 
 void compute_offset_kernels(const Eigen::MatrixXd &QV, const Eigen::MatrixXi &QF,
-	int n_kernels_per_edge, double eps, Eigen::MatrixXd &kernel_centers,
-	Eigen::MatrixXd &KV, Eigen::MatrixXi &KF,
-	EvalParametersFunc evalFuncGeom, GetAdjacentLocalEdge getAdjLocalEdge)
+							int n_kernels_per_edge, double eps, Eigen::MatrixXd &kernel_centers,
+							Eigen::MatrixXd &KV, Eigen::MatrixXi &KF,
+							EvalParametersFunc evalFuncGeom, GetAdjacentLocalEdge getAdjLocalEdge)
 {
 	Eigen::MatrixXd PV, KN;
 	Eigen::MatrixXi PF;
@@ -146,10 +157,13 @@ void compute_offset_kernels(const Eigen::MatrixXd &QV, const Eigen::MatrixXi &QF
 	orient_closed_surface(KV, KF);
 	double volume = std::pow(signed_volume(KV, KF), 1.0 / 3.0);
 
-	if (true || KV.rows() < max_num_kernels) {
+	if (true || KV.rows() < max_num_kernels)
+	{
 		igl::per_vertex_normals(KV, KF, KN);
 		kernel_centers = KV;
-	} else {
+	}
+	else
+	{
 		// std::cout << "fancy sampling" << std::endl;
 		polyfem::sample_surface(KV, KF, max_num_kernels, kernel_centers, &KN, 10, 10);
 		// std::cout << "size: "<< kernel_centers.size() << std::endl;
@@ -167,15 +181,20 @@ void compute_offset_kernels(const Eigen::MatrixXd &QV, const Eigen::MatrixXi &QF
 	signed_squared_distances(KV, KF, kernel_centers, D);
 	std::vector<Eigen::RowVector3d> remap;
 	std::vector<Eigen::RowVector3d> rejected;
-	for (int v = 0; v < kernel_centers.rows(); ++v) {
-		if (std::sqrt(D(v)) > 0.8 * eps * volume) {
+	for (int v = 0; v < kernel_centers.rows(); ++v)
+	{
+		if (std::sqrt(D(v)) > 0.8 * eps * volume)
+		{
 			remap.push_back(kernel_centers.row(v));
-		} else {
+		}
+		else
+		{
 			// rejected.push_back(kernel_centers.row(v));
 		}
 	}
 	kernel_centers.resize(remap.size(), 3);
-	for (int v = 0; v < kernel_centers.rows(); ++v) {
+	for (int v = 0; v < kernel_centers.rows(); ++v)
+	{
 		kernel_centers.row(v) = remap[v];
 	}
 	// Eigen::MatrixXd rej(rejected.size(), 3);
@@ -207,8 +226,8 @@ void sample_polyhedra(
 	const int quadrature_order,
 	const Mesh3D &mesh,
 	const std::map<int, InterfaceData> &poly_face_to_data,
-	const std::vector< ElementBases > &bases,
-	const std::vector< ElementBases > &gbases,
+	const std::vector<ElementBases> &bases,
+	const std::vector<ElementBases> &gbases,
 	const double eps,
 	std::vector<int> &local_to_global,
 	Eigen::MatrixXd &collocation_points,
@@ -225,33 +244,31 @@ void sample_polyhedra(
 
 	// Compute the image of the canonical pattern vertices through the geometric mapping
 	// of the given local face
-	auto evalFunc = [&] (const Eigen::MatrixXd &uv, Eigen::MatrixXd &mapped, int lf) {
-		const auto & u = uv.col(0).array();
-		const auto & v = uv.col(1).array();
+	auto evalFunc = [&](const Eigen::MatrixXd &uv, Eigen::MatrixXd &mapped, int lf) {
+		const auto &u = uv.col(0).array();
+		const auto &v = uv.col(1).array();
 		auto index = mesh.get_index_from_element(element_index, lf, lv0);
 		index = mesh.switch_element(index);
 		// Eigen::MatrixXd abcd = FEBasis3d::linear_hex_face_local_nodes_coordinates(mesh, index);
 		const auto indices = FEBasis3d::hex_face_local_nodes(false, 1, mesh, index);
 		assert(indices.size() == 4);
-		Eigen::MatrixXd abcd; polyfem::autogen::q_nodes_3d(1, abcd);
+		Eigen::MatrixXd abcd;
+		polyfem::autogen::q_nodes_3d(1, abcd);
 		Eigen::RowVector3d a = abcd.row(indices(0));
 		Eigen::RowVector3d b = abcd.row(indices(1));
 		Eigen::RowVector3d c = abcd.row(indices(2));
 		Eigen::RowVector3d d = abcd.row(indices(3));
-		mapped = ((1-u)*(1-v)).matrix()*a
-			+ (u*(1-v)).matrix()*b
-			+ (u*v).matrix()*c
-			+ ((1-u)*v).matrix()*d;
+		mapped = ((1 - u) * (1 - v)).matrix() * a + (u * (1 - v)).matrix() * b + (u * v).matrix() * c + ((1 - u) * v).matrix() * d;
 		mapped = mapped.array().max(0.0).min(1.0);
 		assert(mapped.maxCoeff() >= 0.0);
 		assert(mapped.maxCoeff() <= 1.0);
 	};
-	auto evalFuncGeom = [&] (const Eigen::MatrixXd &uv, Eigen::MatrixXd &mapped, int lf) {
+	auto evalFuncGeom = [&](const Eigen::MatrixXd &uv, Eigen::MatrixXd &mapped, int lf) {
 		Eigen::MatrixXd samples;
 		evalFunc(uv, samples, lf);
 		auto index = mesh.get_index_from_element(element_index, lf, lv0);
 		index = mesh.switch_element(index);
-		const ElementBases &gb=gbases[index.element];
+		const ElementBases &gb = gbases[index.element];
 		gb.eval_geom_mapping(samples, mapped);
 	};
 
@@ -261,7 +278,7 @@ void sample_polyhedra(
 
 	// Compute kernel centers
 	compute_offset_kernels(QV, QF, n_kernels_per_edge, eps, kernel_centers, KV, KF,
-		evalFuncGeom, getAdjLocalEdge);
+						   evalFuncGeom, getAdjLocalEdge);
 	// if (KV.rows() >= max_num_kernels) { n_samples_per_edge = 5; }
 
 	// Compute collocation points
@@ -280,7 +297,7 @@ void sample_polyhedra(
 	// Compute coarse surface surface for visualization
 	compute_canonical_pattern(n_quadrature_vertices_per_edge, PV, PF);
 	instantiate_pattern(QV, QF, PV, PF, triangulated_vertices, triangulated_faces,
-		nullptr, evalFuncGeom, getAdjLocalEdge);
+						nullptr, evalFuncGeom, getAdjLocalEdge);
 	orient_closed_surface(triangulated_vertices, triangulated_faces);
 
 	// for (int f = 0; f < KF.rows(); ++f) {
@@ -292,10 +309,10 @@ void sample_polyhedra(
 	// 	evalFuncGeom(PV, V, 0);
 	// igl::write_triangle_mesh("foo_dense.obj", collocation_points, CF);
 	// igl::write_triangle_mesh("foo_small.obj", triangulated_vertices, triangulated_faces);
-		// igl::opengl::glfw::Viewer viewer;
-		// viewer.data().set_points(kernel_centers, Eigen::RowVector3d(1,0,1));
-		// viewer.data().set_mesh(KV, KF);
-		// viewer.launch();
+	// igl::opengl::glfw::Viewer viewer;
+	// viewer.data().set_points(kernel_centers, Eigen::RowVector3d(1,0,1));
+	// viewer.data().set_mesh(KV, KF);
+	// viewer.launch();
 	// }
 
 	// igl::opengl::glfw::Viewer viewer;
@@ -314,27 +331,30 @@ void sample_polyhedra(
 	std::vector<AssemblyValues> basis_val;
 	rhs.resize(UV.rows(), local_to_global.size());
 	rhs.setZero();
-	for (int lf = 0; lf < mesh.n_cell_faces(element_index); ++lf) {
+	for (int lf = 0; lf < mesh.n_cell_faces(element_index); ++lf)
+	{
 		auto index = mesh.get_index_from_element(element_index, lf, 0);
 		const int c2 = mesh.switch_element(index).element;
 		assert(c2 >= 0); // no boundary polytope
 
 		const InterfaceData &bdata = poly_face_to_data.at(index.face);
-		const ElementBases &b=bases[c2];
+		const ElementBases &b = bases[c2];
 
-		samples = UV.middleRows(uv_ranges(lf), uv_ranges(lf+1) - uv_ranges(lf));
+		samples = UV.middleRows(uv_ranges(lf), uv_ranges(lf + 1) - uv_ranges(lf));
 		b.evaluate_bases(samples, basis_val);
 
 		// Evaluate field basis and set up the rhs
-		for (int other_local_basis_id : bdata.local_indices) {
+		for (int other_local_basis_id : bdata.local_indices)
+		{
 			// b.bases[other_local_basis_id].basis(samples, basis_val);
 
-			for (const auto &x : b.bases[other_local_basis_id].global()) {
+			for (const auto &x : b.bases[other_local_basis_id].global())
+			{
 				const int global_node_id = x.index;
 				const double weight = x.val;
 
 				const int poly_local_basis_id = std::distance(local_to_global.begin(),
-					std::find(local_to_global.begin(), local_to_global.end(), global_node_id));
+															  std::find(local_to_global.begin(), local_to_global.end(), global_node_id));
 				rhs.block(uv_ranges(lf), poly_local_basis_id, basis_val[other_local_basis_id].val.size(), 1) += basis_val[other_local_basis_id].val * weight;
 			}
 		}
@@ -348,7 +368,7 @@ void sample_polyhedra(
 	translation.setZero();
 	// NV = (NV.rowwise() - translation) / scaling;
 	PolyhedronQuadrature::get_quadrature(NV, triangulated_faces, mesh.kernel(element_index),
-		quadrature_order, quadrature);
+										 quadrature_order, quadrature);
 
 	// Normalization
 	// collocation_points = (collocation_points.rowwise() - translation) / scaling;
@@ -370,8 +390,8 @@ void PolygonalBasis3d::compute_integral_constraints(
 	const std::string &assembler_name,
 	const Mesh3D &mesh,
 	const int n_bases,
-	const std::vector< ElementBases > &bases,
-	const std::vector< ElementBases > &gbases,
+	const std::vector<ElementBases> &bases,
+	const std::vector<ElementBases> &gbases,
 	Eigen::MatrixXd &basis_integrals)
 {
 	assert(mesh.is_volume());
@@ -382,8 +402,10 @@ void PolygonalBasis3d::compute_integral_constraints(
 	rhs.setZero();
 
 	const int n_elements = mesh.n_elements();
-	for(int e = 0; e < n_elements; ++e) {
-		if (mesh.is_polytope(e)) {
+	for (int e = 0; e < n_elements; ++e)
+	{
+		if (mesh.is_polytope(e))
+		{
 			continue;
 		}
 		// ElementAssemblyValues vals = values[e];
@@ -391,11 +413,11 @@ void PolygonalBasis3d::compute_integral_constraints(
 		ElementAssemblyValues vals;
 		vals.compute(e, mesh.is_volume(), bases[e], gbases[e]);
 
-
 		// Computes the discretized integral of the PDE over the element
 		const int n_local_bases = int(vals.basis_values.size());
-		for(int j = 0; j < n_local_bases; ++j) {
-			const AssemblyValues &v=vals.basis_values[j];
+		for (int j = 0; j < n_local_bases; ++j)
+		{
+			const AssemblyValues &v = vals.basis_values[j];
 			const double integral_100 = (v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
 			const double integral_010 = (v.grad_t_m.col(1).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
 			const double integral_001 = (v.grad_t_m.col(2).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
@@ -404,13 +426,14 @@ void PolygonalBasis3d::compute_integral_constraints(
 			const double integral_011 = ((vals.val.col(2).array() * v.grad_t_m.col(1).array() + vals.val.col(1).array() * v.grad_t_m.col(2).array()) * vals.det.array() * vals.quadrature.weights.array()).sum();
 			const double integral_101 = ((vals.val.col(0).array() * v.grad_t_m.col(2).array() + vals.val.col(2).array() * v.grad_t_m.col(0).array()) * vals.det.array() * vals.quadrature.weights.array()).sum();
 
-			const double integral_200 = 2*(vals.val.col(0).array() * v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-			const double integral_020 = 2*(vals.val.col(1).array() * v.grad_t_m.col(1).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-			const double integral_002 = 2*(vals.val.col(2).array() * v.grad_t_m.col(2).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+			const double integral_200 = 2 * (vals.val.col(0).array() * v.grad_t_m.col(0).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+			const double integral_020 = 2 * (vals.val.col(1).array() * v.grad_t_m.col(1).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+			const double integral_002 = 2 * (vals.val.col(2).array() * v.grad_t_m.col(2).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
 
 			const double area = (v.val.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
 
-			for(size_t ii = 0; ii < v.global.size(); ++ii) {
+			for (size_t ii = 0; ii < v.global.size(); ++ii)
+			{
 				basis_integrals(v.global[ii].index, 0) += integral_100 * v.global[ii].val;
 				basis_integrals(v.global[ii].index, 1) += integral_010 * v.global[ii].val;
 				basis_integrals(v.global[ii].index, 2) += integral_001 * v.global[ii].val;
@@ -436,7 +459,8 @@ void PolygonalBasis3d::compute_integral_constraints(
 // -----------------------------------------------------------------------------
 
 // Distance from harmonic kernels to polygon boundary
-double compute_epsilon(const Mesh3D &mesh, int e) {
+double compute_epsilon(const Mesh3D &mesh, int e)
+{
 	// double area = 0;
 	// const int n_edges = mesh.n_element_vertices(e);
 	// for (int i = 0; i < n_edges; ++i) {
@@ -543,25 +567,28 @@ int PolygonalBasis3d::build_bases(
 	const int n_bases,
 	const int quadrature_order,
 	const int integral_constraints,
-	std::vector< ElementBases > &bases,
-	const std::vector< ElementBases > &gbases,
+	std::vector<ElementBases> &bases,
+	const std::vector<ElementBases> &gbases,
 	const std::map<int, InterfaceData> &poly_face_to_data,
-	std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi> > &mapped_boundary)
+	std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &mapped_boundary)
 {
 	assert(mesh.is_volume());
-	if (poly_face_to_data.empty()) {
+	if (poly_face_to_data.empty())
+	{
 		return 0;
 	}
 	int n_kernels_per_edge = 4; //(int) std::round(n_samples_per_edge / 3.0);
-	int n_samples_per_edge = 3*n_kernels_per_edge;
+	int n_samples_per_edge = 3 * n_kernels_per_edge;
 
 	// Step 1: Compute integral constraints
 	Eigen::MatrixXd basis_integrals;
 	compute_integral_constraints(assembler_name, mesh, n_bases, bases, gbases, basis_integrals);
 
 	// Step 2: Compute the rest =)
-	for (int e = 0; e < mesh.n_elements(); ++e) {
-		if (!mesh.is_polytope(e)) {
+	for (int e = 0; e < mesh.n_elements(); ++e)
+	{
+		if (!mesh.is_polytope(e))
+		{
 			continue;
 		}
 		// No boundary polytope
@@ -575,18 +602,18 @@ int PolygonalBasis3d::build_bases(
 		Eigen::MatrixXi triangulated_faces;
 		Eigen::MatrixXd rhs; // 1 row per collocation point, 1 column per basis that is nonzero on the polygon boundary
 
-		ElementBases &b=bases[e];
+		ElementBases &b = bases[e];
 		b.has_parameterization = false;
 
 		Quadrature tmp_quadrature;
 		double scaling;
 		Eigen::RowVector3d translation;
 		sample_polyhedra(e, 2, n_kernels_per_edge, n_samples_per_edge, quadrature_order,
-			mesh, poly_face_to_data, bases, gbases, eps, local_to_global,
-			collocation_points, kernel_centers, rhs, triangulated_vertices,
-			triangulated_faces, tmp_quadrature, scaling, translation);
+						 mesh, poly_face_to_data, bases, gbases, eps, local_to_global,
+						 collocation_points, kernel_centers, rhs, triangulated_vertices,
+						 triangulated_faces, tmp_quadrature, scaling, translation);
 
-		b.set_quadrature([tmp_quadrature](Quadrature &quad){ quad = tmp_quadrature; });
+		b.set_quadrature([tmp_quadrature](Quadrature &quad) { quad = tmp_quadrature; });
 		// b.scaling_ = scaling;
 		// b.translation_ = translation;
 
@@ -623,23 +650,23 @@ int PolygonalBasis3d::build_bases(
 
 		// Compute the weights of the RBF kernels
 		Eigen::MatrixXd local_basis_integrals(rhs.cols(), basis_integrals.cols());
-		for (long k = 0; k < rhs.cols(); ++k) {
+		for (long k = 0; k < rhs.cols(); ++k)
+		{
 			local_basis_integrals.row(k) = -basis_integrals.row(local_to_global[k]);
 		}
-		auto set_rbf = [&b] (auto rbf) {
-			b.set_bases_func([rbf] (const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &val)
-			{
+		auto set_rbf = [&b](auto rbf) {
+			b.set_bases_func([rbf](const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &val) {
 				Eigen::MatrixXd tmp;
 				rbf->bases_values(uv, tmp);
 				val.resize(tmp.cols());
 				assert(tmp.rows() == uv.rows());
 
-				for(size_t i = 0; i < tmp.cols(); ++i){
+				for (size_t i = 0; i < tmp.cols(); ++i)
+				{
 					val[i].val = tmp.col(i);
 				}
 			});
-			b.set_grads_func([rbf] (const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &val)
-			{
+			b.set_grads_func([rbf](const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &val) {
 				Eigen::MatrixXd tmpx, tmpy, tmpz;
 
 				rbf->bases_grads(0, uv, tmpx);
@@ -650,7 +677,8 @@ int PolygonalBasis3d::build_bases(
 				assert(tmpx.cols() == tmpy.cols());
 				assert(tmpx.cols() == tmpz.cols());
 				assert(tmpx.rows() == uv.rows());
-				for(size_t i = 0; i < tmpx.cols(); ++i){
+				for (size_t i = 0; i < tmpx.cols(); ++i)
+				{
 					val[i].grad.resize(uv.rows(), uv.cols());
 					val[i].grad.col(0) = tmpx.col(i);
 					val[i].grad.col(1) = tmpy.col(i);
@@ -658,24 +686,32 @@ int PolygonalBasis3d::build_bases(
 				}
 			});
 		};
-		if (integral_constraints == 0) {
+		if (integral_constraints == 0)
+		{
 			set_rbf(std::make_shared<RBFWithLinear>(
 				kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs, false));
-		} else if (integral_constraints == 1) {
+		}
+		else if (integral_constraints == 1)
+		{
 			set_rbf(std::make_shared<RBFWithLinear>(
 				kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs));
-		} else if (integral_constraints == 2) {
+		}
+		else if (integral_constraints == 2)
+		{
 			set_rbf(std::make_shared<RBFWithQuadratic>(
-			// set_rbf(std::make_shared<RBFWithQuadraticLagrange>(
+				// set_rbf(std::make_shared<RBFWithQuadraticLagrange>(
 				assembler_name, kernel_centers, collocation_points, local_basis_integrals, tmp_quadrature, rhs));
-		} else {
+		}
+		else
+		{
 			throw std::runtime_error("Unsupported constraint order: " + std::to_string(integral_constraints));
 		}
 
 		// Set the bases which are nonzero inside the polygon
 		const int n_poly_bases = int(local_to_global.size());
 		b.bases.resize(n_poly_bases);
-		for (int i = 0; i < n_poly_bases; ++i) {
+		for (int i = 0; i < n_poly_bases; ++i)
+		{
 			b.bases[i].init(-2, local_to_global[i], i, Eigen::MatrixXd::Constant(1, 3, std::nan("")));
 		}
 
