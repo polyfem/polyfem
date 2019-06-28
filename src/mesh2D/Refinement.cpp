@@ -238,7 +238,7 @@ bool polyfem::instantiate_pattern(
 
 	auto pattern = compute_pattern_type(PV, PF, border_vertices);
 	auto valence = vertex_degree(IV, IQ);
-	auto border = igl::is_border_vertex(IV, IQ);
+	// auto border = igl::is_border_vertex(IV, IQ);
 
 	// Check input validity
 	switch (pattern) {

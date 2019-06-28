@@ -282,7 +282,7 @@ endif()
 # libigl
 polyfem_download_libigl()
 find_package(LIBIGL REQUIRED)
-target_link_libraries(polyfem PUBLIC igl::core igl::triangle)
+target_link_libraries(polyfem PUBLIC igl::core)
 
 
 # Geogram

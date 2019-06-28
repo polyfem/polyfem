@@ -4,14 +4,13 @@
 #include <polyfem/FEBasis3d.hpp>
 #include <polyfem/MeshUtils.hpp>
 #include <polyfem/Refinement.hpp>
+#include <polyfem/RefElementSampler.hpp>
 #include <polyfem/RBFWithLinear.hpp>
 #include <polyfem/RBFWithQuadratic.hpp>
 #include <polyfem/RBFWithQuadraticLagrange.hpp>
 
 #include <polyfem/auto_q_bases.hpp>
 
-// #include <polyfem/UIState.hpp>
-#include <igl/triangle/triangulate.h>
 #include <igl/per_vertex_normals.h>
 #include <igl/per_corner_normals.h>
 #include <igl/write_triangle_mesh.h>
@@ -62,31 +61,7 @@ std::vector<int> compute_nonzero_bases_ids(const Mesh3D &mesh, const int c,
 
 // Canonical triangle mesh in parametric domain
 void compute_canonical_pattern(int n_samples_per_edge, Eigen::MatrixXd &V, Eigen::MatrixXi &F) {
-	Eigen::Matrix<double, 4, 2> corners;
-	corners <<
-		0, 0,
-		1, 0,
-		1, 1,
-		0, 1;
-	const Eigen::VectorXd t = Eigen::VectorXd::LinSpaced(n_samples_per_edge, 0, 1).head(n_samples_per_edge - 1);
-	Eigen::MatrixXd P(4*(n_samples_per_edge-1), 2); // Contour of the face
-	Eigen::MatrixXi E(P.rows(), 2);
-	for (int lv = 0; lv < 4; ++lv) {
-		int offset = lv*(n_samples_per_edge-1);
-		for (int d = 0; d < 2; ++d) {
-			P.block(offset, d, n_samples_per_edge-1, 1) =
-				(1.0 - t.array()).matrix() * corners(lv, d) + t * corners((lv+1)%4, d);
-		}
-	}
-	for (int i = 0; i < P.rows(); ++i) {
-		E.row(i) << i, (i+1)%P.rows();
-	}
-
-	assert(n_samples_per_edge > 1);
-	double spacing = 1.0/(n_samples_per_edge-1);
-	double area = 1.0 * std::sqrt(3.0)/4.0*spacing*spacing;
-	std::string flags = "QpYq30a" + std::to_string(area);
-	igl::triangle::triangulate(P, E, Eigen::MatrixXd(0, 2), flags, V, F);
+	regular_2d_grid(n_samples_per_edge, false, V, F);
 
 	// igl::opengl::glfw::Viewer viewer;
 	// viewer.data().set_mesh(V, F);

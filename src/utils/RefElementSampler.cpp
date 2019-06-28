@@ -11,8 +11,6 @@
 namespace polyfem
 {
 
-namespace
-{
 ///
 /// Generate a canonical triangle/quad subdivided from a regular grid
 ///
@@ -69,6 +67,8 @@ void regular_2d_grid(const int n, bool tri, Eigen::MatrixXd &V, Eigen::MatrixXi 
 	F.conservativeResize(index, 3);
 }
 
+namespace {
+
 void add_tet(const std::array<int, 4> &tmp, const Eigen::MatrixXd &V, int &index, Eigen::MatrixXi &T)
 {
 	if (tmp[0] >= 0 && tmp[1] >= 0 && tmp[2] >= 0 && tmp[3] >= 0)
@@ -90,6 +90,8 @@ void add_tet(const std::array<int, 4> &tmp, const Eigen::MatrixXd &V, int &index
 		++ index;
 	}
 }
+
+} // anonymous namespace
 
 ///
 /// Generate a canonical tet/hex subdivided from a regular grid
@@ -181,8 +183,6 @@ void regular_3d_grid(const int nn, bool tet, Eigen::MatrixXd &V, Eigen::MatrixXi
 	F.block(3 * index, 2, index, 1) = T.col(3);
 
 }
-
-} // anonymous namespace
 
 RefElementSampler &RefElementSampler::sampler()
 {
