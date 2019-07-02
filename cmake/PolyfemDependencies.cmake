@@ -44,13 +44,3 @@ if(NOT TARGET clipper::clipper)
 	add_library(clipper::clipper ALIAS clipper_clipper)
 	target_include_directories(clipper_clipper PUBLIC ${POLYFEM_EXTERNAL}/clipper/cpp)
 endif()
-
-# # Tiny file dialogs
-# if(NOT TARGET tinyfiledialogs::tinyfiledialogs)
-# 	polyfem_download_tinyfiledialogs()
-# 	set(TINYFILEDIALOGS_DIR "${POLYFEM_EXTERNAL}/tinyfiledialogs")
-# 	add_library(tinyfiledialogs_tinyfiledialogs ${TINYFILEDIALOGS_DIR}/tinyfiledialogs.c)
-# 	add_library(tinyfiledialogs::tinyfiledialogs ALIAS tinyfiledialogs_tinyfiledialogs)
-# 	target_include_directories(tinyfiledialogs_tinyfiledialogs SYSTEM INTERFACE ${TINYFILEDIALOGS_DIR})
-# 	set_target_properties(tinyfiledialogs_tinyfiledialogs PROPERTIES POSITION_INDEPENDENT_CODE ON)
-# endif()

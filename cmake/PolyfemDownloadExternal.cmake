@@ -23,7 +23,7 @@ endfunction()
 
 ################################################################################
 
-## libigl MPL - triangle - tetgen (GPL)
+## libigl MPL
 function(polyfem_download_libigl)
     polyfem_download_project(libigl
         GIT_REPOSITORY https://github.com/libigl/libigl.git
@@ -47,7 +47,7 @@ function(polyfem_download_json)
     )
 endfunction()
 
-## Catch2 BSL 1.0
+## Catch2 BSL 1.0 optional
 function(polyfem_download_catch2)
     polyfem_download_project(Catch2
         GIT_REPOSITORY https://github.com/catchorg/Catch2.git
@@ -55,7 +55,7 @@ function(polyfem_download_catch2)
     )
 endfunction()
 
-## CLI11 3-Clause BSD license
+## CLI11 3-Clause BSD license optional
 function(polyfem_download_cli11)
     polyfem_download_project(cli11
         URL     https://github.com/CLIUtils/CLI11/archive/v1.6.1.tar.gz
@@ -63,7 +63,7 @@ function(polyfem_download_cli11)
     )
 endfunction()
 
-## Clipper (BSL1.0)
+# Clipper (BSL1.0)
 function(polyfem_download_clipper)
     polyfem_download_project(clipper
         URL     https://sourceforge.net/projects/polyclipping/files/clipper_ver6.4.2.zip
@@ -79,7 +79,7 @@ function(polyfem_download_CppNumericalSolvers)
     )
 endfunction()
 
-## spectra MPL 2.0
+## spectra MPL 2.0 optional
 function(polyfem_download_spectra)
     polyfem_download_project(spectra
         GIT_REPOSITORY https://github.com/yixuan/spectra.git
@@ -103,15 +103,8 @@ function(polyfem_download_hypre)
     )
 endfunction()
 
-## rbf
-# function(polyfem_download_rbf)
-#     polyfem_download_project(rbf
-#         GIT_REPOSITORY https://bitbucket.org/zulianp/opencl-rbf-pum.git
-#         GIT_TAG        master
-#     )
-# endfunction()
 
-## Sanitizers MIT
+## Sanitizers MIT optional
 function(polyfem_download_sanitizers)
     polyfem_download_project(sanitizers-cmake
         GIT_REPOSITORY https://github.com/arsenm/sanitizers-cmake.git
@@ -134,14 +127,6 @@ function(polyfem_download_tinyexpr)
         GIT_TAG        ffb0d41b13e5f8d318db95feb071c220c134fe70
     )
 endfunction()
-
-# ## tinyfiledialogs
-# function(polyfem_download_tinyfiledialogs)
-#     polyfem_download_project(tinyfiledialogs
-#         GIT_REPOSITORY https://git.code.sf.net/p/tinyfiledialogs/code
-#         GIT_TAG        511e6500fa9184923d4859e06ee9a6a4e70820c4
-#     )
-# endfunction()
 
 
 ## data

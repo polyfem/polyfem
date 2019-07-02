@@ -76,6 +76,7 @@ option(POLYFEM_WITH_TBB              "Enable TBB"                        ON)
 option(POLYFEM_WITH_HYPRE            "Enable hypre"                      ON)
 option(POLYFEM_WITH_OPENCL           "Enable OpenCL"                     OFF)
 option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
+option(POLYFEM_WITH_SPECTRA          "Enable computing spectrum"         ON)
 
 option(POLYFEM_LARGE_INDEX    "Build for large indices"       OFF)
 
@@ -123,18 +124,6 @@ endif()
 
 ################################################################################
 
-# Uncomment the following lines to force options which are already cached
-# set(PREFER_LOCAL_LIBS   ON  CACHE BOOL "" FORCE)
-# set(POLYFEM_WITH_MKL          OFF CACHE BOOL "" FORCE)
-# set(POLYFEM_WITH_PARDISO      OFF CACHE BOOL "" FORCE)
-# set(POLYFEM_WITH_MMG          ON  CACHE BOOL "" FORCE)
-# set(POLYFEM_WITH_TBB          ON  CACHE BOOL "" FORCE)
-
-# set(POLYFEM_WITH_SANITIZERS   OFF  CACHE BOOL "" FORCE)
-# set(POLYFEM_SANITIZE_ADDRESS          ON  CACHE BOOL "" FORCE)
-# set(POLYFEM_SANITIZE_MEMORY           ON  CACHE BOOL "" FORCE)
-# set(POLYFEM_SANITIZE_THREAD           OFF CACHE BOOL "" FORCE)
-# set(POLYFEM_SANITIZE_UNDEFINED        ON  CACHE BOOL "" FORCE)
 
 # set(POLYFEM_SMALL_N 105 CACHE STRING "" FORCE)
 
@@ -299,10 +288,13 @@ target_include_directories(cppoptlib SYSTEM INTERFACE ${THIRD_PARTY_DIR}/CppNume
 target_link_libraries(polyfem PUBLIC cppoptlib)
 
 # Spectra
-polyfem_download_spectra()
-add_library(spectra INTERFACE)
-target_include_directories(spectra SYSTEM INTERFACE ${THIRD_PARTY_DIR}/spectra/include)
-target_link_libraries(polyfem PUBLIC spectra)
+if(POLYFEM_WITH_SPECTRA)
+    polyfem_download_spectra()
+    add_library(spectra INTERFACE)
+    target_include_directories(spectra SYSTEM INTERFACE ${THIRD_PARTY_DIR}/spectra/include)
+    target_link_libraries(polyfem PUBLIC spectra)
+    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_SPECTRA)
+endif()
 
 # Json
 polyfem_download_json()
@@ -435,59 +427,19 @@ if(POLYFEM_WITH_SUPERLU AND NOT (POLYFEM_WITH_MKL AND MKL_FOUND))
 endif()
 
 
-# if(POLYFEM_WITH_OPENCL)
-#   find_package(OpenCL)
-#   if(OpenCL_FOUND)
-#       polyfem_download_rbf()
-#       target_include_directories(polyfem PUBLIC ${OpenCL_INCLUDE_DIRS})
-#       target_link_libraries(polyfem PUBLIC OpenCL::OpenCL)
-#       target_compile_definitions(polyfem PUBLIC "-DPOLYFEM_OPENCL -DRBF_PUM_LIB -DRBF_SCRIPT_ROOT=\"${THIRD_PARTY_DIR}rbf/\"")
-
-#       target_sources(polyfem PRIVATE ${THIRD_PARTY_DIR}/rbf/cl.hpp ${THIRD_PARTY_DIR}/rbf/rbf_interpolate.hpp ${THIRD_PARTY_DIR}/rbf/rbf_interpolate.cpp)
-#       target_include_directories(polyfem PUBLIC ${THIRD_PARTY_DIR}/rbf)
-
-#       add_executable(rbf_test ${THIRD_PARTY_DIR}/rbf/cl.hpp ${THIRD_PARTY_DIR}/rbf/rbf_interpolate.hpp ${THIRD_PARTY_DIR}/rbf/rbf_interpolate.cpp)
-#       target_compile_definitions(rbf_test PUBLIC "-DRBF_SCRIPT_ROOT=\"${THIRD_PARTY_DIR}rbf/\"")
-#       target_include_directories(rbf_test PUBLIC ${OpenCL_INCLUDE_DIRS})
-#       target_link_libraries(rbf_test PUBLIC OpenCL::OpenCL)
-#   else()
-#       MESSAGE(WANING "OpenCL not found!")
-#   endif()
-# endif()
 
 ################################################################################
 # Clutter management
 ################################################################################
 
-# set_target_properties(igl_triangle PROPERTIES FOLDER 3rdparty/igl)
-
-# if(TARGET igl_png)
-#   set_target_properties(igl_png PROPERTIES FOLDER 3rdparty/igl)
-# endif()
-# if(TARGET igl_opengl)
-#   set_target_properties(igl_opengl PROPERTIES FOLDER 3rdparty/igl)
-#   set_target_properties(igl_opengl_glfw_imgui PROPERTIES FOLDER 3rdparty/igl)
-#   set_target_properties(igl_opengl_glfw PROPERTIES FOLDER 3rdparty/igl)
-# endif()
-
-# set_target_properties(igl PROPERTIES FOLDER 3rdparty/igl)
-# set_target_properties(igl_tetgen PROPERTIES FOLDER 3rdparty/igl)
-
 if(TARGET igl_stb_image)
     set_target_properties(igl_stb_image PROPERTIES FOLDER 3rdparty/igl)
 endif()
 
-# if(TARGET igl_opengl)
-#   set_target_properties(glad PROPERTIES FOLDER 3rdparty/other)
-# endif()
-# # set_target_properties(tinyfiledialogs_tinyfiledialogs PROPERTIES FOLDER 3rdparty/other)
-# if(TARGET igl::opengl_glfw_imgui)
-#   set_target_properties(imgui PROPERTIES FOLDER 3rdparty/other)
-# endif()
 if(TARGET igl_tetgen)
     set_target_properties(tetgen PROPERTIES FOLDER 3rdparty/other)
 endif()
-# set_target_properties(uninstall_geo PROPERTIES FOLDER 3rdparty/other)
+
 set_target_properties(geogram PROPERTIES FOLDER 3rdparty/other)
 set_target_properties(clipper_clipper PROPERTIES FOLDER 3rdparty/other)
 
