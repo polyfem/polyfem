@@ -267,6 +267,7 @@ void Mesh2D::attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vect
 					}
 					else
 					{
+						assert(n.v2 == nodes_ids[2] && n.v1 == nodes_ids[0]);
 						node_index1 = 8;
 						node_index2 = 7;
 					}
@@ -317,8 +318,10 @@ RowVectorNd Mesh2D::edge_node(const Navigation::Index &index, const int n_new_no
 	const auto &n = edge_nodes_[index.edge];
 	if (n.v1 == index.vertex)
 		return n.nodes.row(i - 1);
-	else
+	else{
+		assert(n.v2 == index.vertex);
 		return n.nodes.row(n.nodes.rows() - i);
+	}
 }
 
 RowVectorNd Mesh2D::face_node(const Navigation::Index &index, const int n_new_nodes, const int i, const int j) const

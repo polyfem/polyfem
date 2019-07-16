@@ -554,7 +554,7 @@ int polyfem::FEBasis2d::build_bases(
 	const int nn = max_p > 1 ? (max_p - 1) : 0;
 	const int n_face_nodes = std::max(nn*nn, max_p == 1 ? 1 : 0);
 
-	MeshNodes nodes(mesh, has_polys, !is_geom_bases, max_p > 1 ? (max_p - 1) : 0, max_p == 0 ? 1 : n_face_nodes);
+	MeshNodes nodes(mesh, has_polys, !is_geom_bases, (max_p > 1 ? (max_p - 1) : 0) * (is_geom_bases?2:1), max_p == 0 ? 1 : n_face_nodes);
 	std::vector<std::vector<int>> element_nodes_id;
 	compute_nodes(mesh, discr_orders, serendipity, has_polys, is_geom_bases, nodes, element_nodes_id, local_boundary, poly_edge_to_data);
 	// boundary_nodes = nodes.boundary_nodes();

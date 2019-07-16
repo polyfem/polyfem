@@ -157,20 +157,36 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_edge(const Navigation::Index 
 	if(n_new_nodes <= 0)
 		return res;
 
-	const int start = edge_offset_ + index.edge * max_nodes_per_edge_;
 
 	const Mesh2D * mesh2d = dynamic_cast<const Mesh2D *>(&mesh_);
+	int start;
+
+	if(connect_nodes_)
+		start = edge_offset_ + index.edge * max_nodes_per_edge_;
+	else{
+		if(mesh2d->is_boundary_edge(index.edge) || mesh2d->switch_face(index).face > index.face)
+			start = edge_offset_ + index.edge * max_nodes_per_edge_;
+		else
+			start = edge_offset_ + index.edge * max_nodes_per_edge_ + max_nodes_per_edge_/2;
+	}
 
 	// const auto v1 = mesh2d->point(index.vertex);
 	// const auto v2 = mesh2d->point(mesh2d->switch_vertex(index).vertex);
-
+	assert(start < primitive_to_node_.size());
 	const int start_node_id = primitive_to_node_[start];
+#ifndef NDEBUG
+	if(!connect_nodes_)
+	{
+		assert(start_node_id < 0);
+	}
+#endif
 	if (start_node_id < 0 || !connect_nodes_) {
 		for(int i = 1; i <= n_new_nodes; ++i)
 		{
 			// const double t = i/(n_new_nodes + 1.0);
 
 			const int primitive_id = start + i - 1;
+			assert(primitive_id < primitive_to_node_.size());
 			primitive_to_node_[primitive_id] = n_nodes();
 			node_to_primitive_.push_back(primitive_id);
 
@@ -328,10 +344,27 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_face(const Navigation3D::Inde
 		return res;
 
 	// assert(mesh_.is_simplex(index.element));
-	const int start = face_offset_ + index.face * max_nodes_per_face_;
+	const Mesh3D *mesh3d = dynamic_cast<const Mesh3D *>(&mesh_);
+	int start;
+
+	if (connect_nodes_)
+		start = start = face_offset_ + index.face * max_nodes_per_face_;
+	else
+	{
+		if (mesh3d->is_boundary_face(index.edge) || mesh3d->switch_element(index).element > index.element)
+			start = face_offset_ + index.face * max_nodes_per_face_;
+		else
+			start = face_offset_ + index.face * max_nodes_per_face_ + max_nodes_per_face_ / 2;
+	}
+
 	const int start_node_id = primitive_to_node_[start];
 
-	const Mesh3D * mesh3d = dynamic_cast<const Mesh3D *>(&mesh_);
+#ifndef NDEBUG
+	if (!connect_nodes_)
+	{
+		assert(start_node_id < 0);
+	}
+#endif
 
 	if(start_node_id < 0 || !connect_nodes_)
 	{
