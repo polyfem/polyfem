@@ -348,7 +348,7 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_face(const Navigation3D::Inde
 	int start;
 
 	if (connect_nodes_)
-		start = start = face_offset_ + index.face * max_nodes_per_face_;
+		start = face_offset_ + index.face * max_nodes_per_face_;
 	else
 	{
 		if (mesh3d->is_boundary_face(index.edge) || mesh3d->switch_element(index).element > index.element)
