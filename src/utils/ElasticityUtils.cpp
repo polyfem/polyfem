@@ -458,6 +458,197 @@ namespace polyfem
 		return res;
 	}
 
+	LameParameters::~LameParameters()
+	{
+		te_free(lambda_expr_);
+		te_free(mu_expr_);
+		delete vals_;
+	}
+
+	LameParameters::LameParameters()
+	{
+		lambda_expr_ = nullptr;
+		mu_expr_ = nullptr;
+		vals_ = new Internal();
+	}
+
+	void LameParameters::lambda_mu(double x, double y, double z, int el_id, double &lambda, double &mu) const
+	{
+		if (lambda_expr_)
+		{
+			assert(mu_expr_);
+			vals_->x = x;
+			vals_->y = y;
+			vals_->z = z;
+
+			double tmpl = te_eval(lambda_expr_);
+			double tmpm = te_eval(mu_expr_);
+			if (!is_lambda_mu_)
+			{
+				lambda = convert_to_lambda(size_ == 3, tmpl, tmpm);
+				mu = convert_to_mu(tmpl, tmpm);
+			}
+			else
+			{
+				lambda = tmpl;
+				mu = tmpm;
+			}
+		}
+		else if(lambda_mat_.size() > 0)
+		{
+			assert(mu_mat_.size()>0);
+
+			lambda = lambda_mat_(el_id);
+			mu = mu_mat_(el_id);
+		}
+		else
+		{
+			lambda = lambda_;
+			mu = mu_;
+		}
+	}
+
+
+	void LameParameters::init(const json &params) {
+		size_ = params["size"];
+		te_free(lambda_expr_);
+		te_free(mu_expr_);
+		lambda_expr_ = nullptr;
+		mu_expr_ = nullptr;
+
+		if (params.count("young"))
+		{
+			set_e_nu(params["young"], params["nu"]);
+		}
+		else if (params.count("E"))
+		{
+			set_e_nu(params["E"], params["nu"]);
+		}
+		else
+		{
+			if (params["lambda"].is_number())
+			{
+				assert(params["mu"].is_number());
+
+				lambda_ = params["lambda"];
+				mu_ = params["mu"];
+
+				lambda_mat_.resize(0, 0);
+				mu_mat_.resize(0, 0);
+			}
+			else if (params["lambda"].is_array())
+			{
+				lambda_mat_.resize(params["lambda"].size(), 1);
+				mu_mat_.resize(params["mu"].size(), 1);
+
+				assert(lambda_mat_.size() == mu_mat_.size());
+
+				for (int i = 0; i < lambda_mat_.size(); ++i)
+				{
+					lambda_mat_(i) = params["lambda"][i];
+					mu_mat_(i) = params["mu"][i];
+				}
+
+				lambda_ = -1;
+				mu_ = -1;
+			}
+			else
+			{
+				te_variable vars[3];
+				vars[0] = {"x", &vals_->x};
+				vars[1] = {"y", &vals_->y};
+				vars[2] = {"z", &vals_->z};
+
+				assert(params["lambda"].is_string());
+				assert(params["mu"].is_string());
+
+				const std::string lambdas = params["lambda"];
+				const std::string mus = params["mu"];
+
+				int err;
+				lambda_expr_ = te_compile(lambdas.c_str(), vars, 3, &err);
+				mu_expr_ = te_compile(mus.c_str(), vars, 3, &err);
+
+				is_lambda_mu_ = true;
+
+				if (!lambda_expr_)
+				{
+					logger().error("Unable to parse {}, error, {}", lambdas, err);
+
+					assert(false);
+				}
+
+				if (!mu_expr_)
+				{
+					logger().error("Unable to parse {}, error, {}", mus, err);
+
+					assert(false);
+				}
+			}
+		}
+	}
+
+	void LameParameters::set_e_nu(const json &E, const json &nu) {
+		if (E.is_number())
+		{
+			assert(nu.is_number());
+
+			lambda_ = convert_to_lambda(size_ == 3, E, nu);
+			mu_ = convert_to_mu(E, nu);
+
+			lambda_mat_.resize(0, 0);
+			mu_mat_.resize(0, 0);
+		}
+		else if (E.is_array())
+		{
+			lambda_mat_.resize(E.size(), 1);
+			mu_mat_.resize(nu.size(), 1);
+			assert(lambda_mat_.size() == mu_mat_.size());
+
+			for(int i = 0; i < lambda_mat_.size(); ++i)
+			{
+				lambda_mat_(i) = convert_to_lambda(size_ == 3, E[i], nu[i]);
+				mu_mat_(i) = convert_to_mu(E[i], nu[i]);
+			}
+
+			lambda_ = -1;
+			mu_ = -1;
+		}
+		else
+		{
+			te_variable vars[3];
+			vars[0] = {"x", &vals_->x};
+			vars[1] = {"y", &vals_->y};
+			vars[2] = {"z", &vals_->z};
+
+			assert(E.is_string());
+			assert(nu.is_string());
+
+			const std::string Es = E;
+			const std::string nus = nu;
+
+			int err;
+			lambda_expr_ = te_compile(Es.c_str(), vars, 3, &err);
+			mu_expr_ = te_compile(nus.c_str(), vars, 3, &err);
+
+			is_lambda_mu_ = false;
+
+			if (!lambda_expr_)
+			{
+				logger().error("Unable to parse {}, error, {}", Es, err);
+
+				assert(false);
+			}
+
+			if (!mu_expr_)
+			{
+				logger().error("Unable to parse {}, error, {}", nus, err);
+
+				assert(false);
+			}
+		}
+	}
+
 
 	//template instantiation
 	template double ElasticityTensor::compute_stress<3>(const std::array<double, 3> &strain, const int j) const;

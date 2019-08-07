@@ -1,12 +1,13 @@
 #pragma once
 
-
+#include <polyfem/Common.hpp>
 #include <polyfem/ElementAssemblyValues.hpp>
 #include <polyfem/ElementBases.hpp>
 #include <polyfem/AutodiffTypes.hpp>
 #include <polyfem/Types.hpp>
 
 #include <Eigen/Dense>
+#include <tinyexpr.h>
 #include <vector>
 #include <array>
 #include <functional>
@@ -78,5 +79,31 @@ namespace polyfem
 	private:
 		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 6, 6> stifness_tensor_;
 		int size_;
+	};
+
+	class LameParameters
+	{
+		public:
+			LameParameters();
+			~LameParameters();
+
+			void init(const json &params);
+
+			void lambda_mu(double x, double y, double z, int el_id, double &lambda, double &mu) const;
+
+		private:
+			struct Internal
+			{
+				double x, y, z;
+			};
+			void set_e_nu(const json &E, const json &nu);
+
+			int size_;
+			double lambda_, mu_;
+			Eigen::MatrixXd lambda_mat_, mu_mat_;
+
+			te_expr *lambda_expr_, *mu_expr_;
+			Internal *vals_;
+			bool is_lambda_mu_;
 	};
 }

@@ -16,7 +16,7 @@ namespace polyfem
 		jac_it.resize(v.rows());
 		for(long i=0; i < v.rows(); ++i)
 			jac_it[i] = Eigen::MatrixXd::Identity(v.cols(), v.cols());
-		
+
 		det.setConstant(1); // volume (det of the geometric mapping)
 		for(std::size_t j = 0; j < basis_values.size(); ++j)
 			basis_values[j].grad_t_m = basis_values[j].grad; // / scaling
@@ -201,6 +201,7 @@ namespace polyfem
 
 	void ElementAssemblyValues::compute(const int el_index, const bool is_volume, const Eigen::MatrixXd &pts, const ElementBases &basis, const ElementBases &gbasis)
 	{
+		element_id = el_index;
 		// const bool poly = !gbasis.has_parameterization;
 
 		basis_values.resize(basis.bases.size());

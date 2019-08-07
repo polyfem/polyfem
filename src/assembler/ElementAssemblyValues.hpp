@@ -1,5 +1,4 @@
-#ifndef ELEMENT_ASSEMBLY_VALUES
-#define ELEMENT_ASSEMBLY_VALUES
+#pragma once
 
 #include <polyfem/AssemblyValues.hpp>
 #include <polyfem/ElementBases.hpp>
@@ -15,6 +14,7 @@ namespace polyfem
         std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>> jac_it;
 
 		Quadrature quadrature;
+		int element_id;
 
 		// img of quadrature points through the geom mapping (global pos in the mesh)
 		Eigen::MatrixXd val; // R^{m x dim}
@@ -42,5 +42,3 @@ namespace polyfem
 		bool is_geom_mapping_positive(const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy) const;
 	};
 }
-
-#endif //ELEMENT_ASSEMBLY_VALUES
