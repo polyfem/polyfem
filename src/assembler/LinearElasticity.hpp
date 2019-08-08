@@ -4,6 +4,7 @@
 
 #include <polyfem/ElementAssemblyValues.hpp>
 #include <polyfem/ElementBases.hpp>
+#include <polyfem/ElasticityUtils.hpp>
 
 #include <polyfem/AutodiffTypes.hpp>
 
@@ -29,17 +30,16 @@ namespace polyfem
 		inline int &size() { return size_; }
 		inline int size() const { return size_; }
 
-		inline double &mu() { return mu_; }
-		inline double mu() const { return mu_; }
+		// inline double &mu() { return mu_; }
+		// inline double mu() const { return mu_; }
 
-		inline double &lambda() { return lambda_; }
-		inline double lambda() const { return lambda_; }
+		// inline double &lambda() { return lambda_; }
+		// inline double lambda() const { return lambda_; }
 
 		void set_parameters(const json &params);
 	private:
 		int size_ = 2;
-		double mu_ = 1;
-		double lambda_ = 1;
+		LameParameters params_;
 
 		void assign_stress_tensor(const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const;
 	};

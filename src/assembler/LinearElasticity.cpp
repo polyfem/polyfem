@@ -2,7 +2,6 @@
 
 #include <polyfem/Basis.hpp>
 #include <polyfem/ElementAssemblyValues.hpp>
-#include <polyfem/ElasticityUtils.hpp>
 
 #include <polyfem/auto_elasticity_rhs.hpp>
 
@@ -12,18 +11,20 @@ namespace polyfem
 	{
 		size() = params["size"];
 
-		if(params.count("young")) {
-			lambda() = convert_to_lambda(size_ == 3, params["young"], params["nu"]);
-			mu() = convert_to_mu(params["young"], params["nu"]);
-		} else if(params.count("E")) {
-			lambda() = convert_to_lambda(size_ == 3, params["E"], params["nu"]);
-			mu() = convert_to_mu(params["E"], params["nu"]);
-		}
-		else
-		{
-			lambda() = params["lambda"];
-			mu() = params["mu"];
-		}
+		params_.init(params);
+
+		// if(params.count("young")) {
+		// 	lambda() = convert_to_lambda(size_ == 3, params["young"], params["nu"]);
+		// 	mu() = convert_to_mu(params["young"], params["nu"]);
+		// } else if(params.count("E")) {
+		// 	lambda() = convert_to_lambda(size_ == 3, params["E"], params["nu"]);
+		// 	mu() = convert_to_mu(params["E"], params["nu"]);
+		// }
+		// else
+		// {
+		// 	lambda() = params["lambda"];
+		// 	mu() = params["mu"];
+		// }
 
 		// std::cout<<mu_<<std::endl;
 		// std::cout<<lambda_<<std::endl;
@@ -49,8 +50,11 @@ namespace polyfem
 			{
 				for(int jj = 0; jj < size(); ++jj)
 				{
-					res_k(jj * size() + ii) = outer(ii * size() + jj)* mu_ + outer(jj * size() + ii)* lambda_;
-					if(ii == jj) res_k(jj * size() + ii) += mu_ * dot;
+					double lambda, mu;
+					params_.lambda_mu(vals.val(k, 0), vals.val(k, 1), size_ == 2 ? 0. : vals.val(k, 2), vals.element_id, lambda, mu);
+
+					res_k(jj * size() + ii) = outer(ii * size() + jj)* mu + outer(jj * size() + ii) * lambda;
+					if(ii == jj) res_k(jj * size() + ii) += mu * dot;
 				}
 			}
 			res += res_k * da(k);
@@ -65,11 +69,14 @@ namespace polyfem
 		assert(pt.size() == size());
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res(size());
 
+		//TODO
+		double lambda, mu;
+		params_.lambda_mu(pt(0).getValue(), pt(1).getValue(), size_ == 2 ? 0. : pt(2).getValue(), 0, lambda, mu);
 
 		if(size() == 2)
-			autogen::linear_elasticity_2d_function(pt, lambda_, mu_, res);
+			autogen::linear_elasticity_2d_function(pt, lambda, mu, res);
 		else if(size() == 3)
-			autogen::linear_elasticity_3d_function(pt, lambda_, mu_, res);
+			autogen::linear_elasticity_3d_function(pt, lambda, mu, res);
 		else
 			assert(false);
 
@@ -128,10 +135,14 @@ namespace polyfem
 			// }
 
 			// displacement_grad = (displacement_grad * vals.jac_it[p]).eval();
+
 			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
 
+			double lambda, mu;
+			params_.lambda_mu(vals.val(p, 0), vals.val(p, 1), size_ == 2 ? 0. : vals.val(p, 2), vals.element_id, lambda, mu);
+
 			const Eigen::MatrixXd strain = (displacement_grad + displacement_grad.transpose())/2;
-			const Eigen::MatrixXd stress = 2 * mu_ * strain + lambda_ * strain.trace() * Eigen::MatrixXd::Identity(size(), size());
+			const Eigen::MatrixXd stress = 2 * mu * strain + lambda * strain.trace() * Eigen::MatrixXd::Identity(size(), size());
 
 			all.row(p) = fun(stress);
 		}

@@ -99,7 +99,7 @@ namespace polyfem
 			void set_e_nu(const json &E, const json &nu);
 
 			int size_;
-			double lambda_, mu_;
+			double lambda_ = 1, mu_ = 1;
 			Eigen::MatrixXd lambda_mat_, mu_mat_;
 
 			te_expr *lambda_expr_, *mu_expr_;

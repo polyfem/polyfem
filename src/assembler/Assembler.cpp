@@ -98,7 +98,8 @@ namespace polyfem
 #endif
 
 		const int n_bases = int(bases.size());
-
+		igl::Timer timerg;
+		timerg.start();
 #ifdef POLYFEM_WITH_TBB
 		tbb::parallel_for( tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
 		LocalStorage::reference loc_storage = storages.local();
@@ -111,7 +112,7 @@ namespace polyfem
 		for(int e=0; e < n_bases; ++e) {
 #endif
             ElementAssemblyValues &vals = loc_storage.vals;
-			igl::Timer timer; timer.start();
+			// igl::Timer timer; timer.start();
 			vals.compute(e, is_volume, bases[e], gbases[e]);
 
 			const Quadrature &quadrature = vals.quadrature;
@@ -135,7 +136,7 @@ namespace polyfem
 					const auto stiffness_val = local_assembler_.assemble(vals, i, j, loc_storage.da);
 					assert(stiffness_val.size() == local_assembler_.size() * local_assembler_.size());
 
-					igl::Timer t1; t1.start();
+					// igl::Timer t1; t1.start();
 					for(int n = 0; n < local_assembler_.size(); ++n)
 					{
 						for(int m = 0; m < local_assembler_.size(); ++m)
@@ -190,8 +191,10 @@ namespace polyfem
 #else
 		}
 #endif
-		logger().debug("done separate assembly...");
+		timerg.stop();
+		logger().debug("done separate assembly {}s...", timerg.getElapsedTime());
 
+		timerg.start();
 #ifdef POLYFEM_WITH_TBB
 		for (LocalStorage::iterator i = storages.begin(); i != storages.end();  ++i)
 		{
@@ -221,6 +224,10 @@ namespace polyfem
 		stiffness += loc_storage.tmp_mat;
 		stiffness.makeCompressed();
 #endif
+
+		timerg.stop();
+		logger().debug("done merge assembly {}s...", timerg.getElapsedTime());
+
 		} catch(std::bad_alloc &ba)
     	{
     		logger().error("bad alloc {}", ba.what());
