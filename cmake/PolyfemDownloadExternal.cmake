@@ -123,8 +123,8 @@ endfunction()
 ## tinyexpr zlib
 function(polyfem_download_tinyexpr)
     polyfem_download_project(tinyexpr
-        GIT_REPOSITORY https://github.com/codeplea/tinyexpr.git
-        GIT_TAG        ffb0d41b13e5f8d318db95feb071c220c134fe70
+        GIT_REPOSITORY https://github.com/polyfem/tinyexpr.git
+        GIT_TAG        eb73c7e4005195bf5c0f1fa28dee3b489d59f821
     )
 endfunction()
 
