@@ -449,7 +449,7 @@ namespace polyfem
 
 	bool Mesh3D::build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
 	{
-		assert(F.cols() == 4);
+		assert(F.cols() == 4 || F.cols() == 8);
 		edge_nodes_.clear();
 		face_nodes_.clear();
 		cell_nodes_.clear();
@@ -463,7 +463,14 @@ namespace polyfem
 			p[2] = V(i, 2);
 		}
 
-		M.cells.create_tets((int) F.rows());
+		if (F.cols() == 4)
+			M.cells.create_tets((int)F.rows());
+		else if (F.cols() == 8)
+			M.cells.create_hexes((int)F.rows());
+		else
+		{
+			throw std::runtime_error("Mesh format not supported");
+		}
 
 		for (int c = 0; c < (int) M.cells.nb(); ++c) {
 			for (int lv = 0; lv < F.cols(); ++lv) {
