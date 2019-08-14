@@ -60,8 +60,8 @@ endif()
 
 # Polyfem options
 option(POLYFEM_WITH_SANITIZERS "Enable sanitizers in compilation targets"   OFF)
-set(POLYFEM_SMALL_N  105 CACHE STRING "Maximum length for stack-allocated vectors (gradient + Hessian).")
-set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vectors (gradient only).")
+set(POLYFEM_SMALL_N  80 CACHE STRING "Maximum length for stack-allocated vectors (gradient + Hessian).")
+set(POLYFEM_BIG_N   5000 CACHE STRING "Maximum length for stack-allocated vectors (gradient only).")
 
 option(POLYFEM_NO_UI            "Disables the user interface" OFF)
 
