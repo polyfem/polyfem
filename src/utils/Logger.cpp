@@ -24,8 +24,18 @@ namespace polyfem {
 			registry_inst.set_tp(tp);
 		}
 
+		auto l = spdlog::get("polyfem");
+
+		bool had_polyfem = l != nullptr;
+
+		if(had_polyfem)
+			spdlog::drop("polyfem");
+
 		Logger::logger_ = std::make_shared<spdlog::async_logger>("polyfem", sinks.begin(), sinks.end(), std::move(tp), spdlog::async_overflow_policy::block);
 		registry_inst.register_and_init(Logger::logger_);
+
+		if(had_polyfem)
+			logger().warn("Removed another polyfem logger");
 	}
 
 	void Logger::init(bool use_cout, const std::string &filename, bool truncate) {
