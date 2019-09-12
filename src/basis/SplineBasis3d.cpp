@@ -830,7 +830,7 @@ void basis_for_regular_hex(MeshNodes &mesh_nodes, const SpaceMatrix &space, cons
                 int current_edge_node_id = -1;
                 Eigen::Matrix<double, 1, 3> current_edge_node;
                 // const int loc_index = FEBasis3d::quadr_hex_face_local_nodes(mesh, index)[1];
-                const int loc_index = FEBasis3d::hex_face_local_nodes(false, 2, mesh, index)[1];
+                const int loc_index = FEBasis3d::hex_face_local_nodes(false, 2, mesh, index)[4];
 
 
                 bool is_edge_q2 = true;
