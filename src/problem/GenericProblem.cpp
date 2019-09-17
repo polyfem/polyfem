@@ -7,15 +7,26 @@ namespace polyfem
 {
 	GenericTensorProblem::GenericTensorProblem(const std::string &name)
 	: Problem(name), is_all_(false)
-	{
-		rhs_.setZero();
-	}
+	{	}
 
 	void GenericTensorProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val.resize(pts.rows(), pts.cols());
-		for(int i = 0; i < val.cols(); ++i)
-			val.col(i).setConstant(rhs_(i));
+
+		if (is_rhs_zero())
+		{
+			val.setZero();
+			return;
+		}
+
+		const bool planar = pts.cols() == 2;
+		for (int i = 0; i < pts.rows(); ++i)
+		{
+			for (int j = 0; j < pts.cols(); ++j)
+				val(i, j) = planar ? rhs_(j)(pts(i, 0), pts(i, 1)) : rhs_(j)(pts(i, 0), pts(i, 1), pts(i, 2));
+		}
+
+		// val.col(i).setConstant(rhs_(i));
 		// val *= t;
 	}
 
@@ -103,7 +114,7 @@ namespace polyfem
 			if(rr.is_array())
 			{
 				for(size_t k = 0; k < rr.size(); ++k)
-					rhs_(k) = rr[k];
+					rhs_(k).init(rr[k]);
 			}
 			else{
 				assert(false);
@@ -199,12 +210,23 @@ namespace polyfem
 
 
 	GenericScalarProblem::GenericScalarProblem(const std::string &name)
-	: Problem(name), rhs_(0), is_all_(false)
-	{	}
+	: Problem(name), is_all_(false)
+	{}
 
 	void GenericScalarProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
-		val = Eigen::MatrixXd::Constant(pts.rows(), 1, rhs_);
+		val.resize(pts.rows(), 1);
+		if(is_rhs_zero())
+		{
+			val.setZero();
+			return;
+		}
+		const bool planar = pts.cols() == 2;
+		for(int i = 0; i < pts.rows(); ++i)
+		{
+			val(i) = planar ? rhs_(pts(i, 0), pts(i, 1)) : rhs_(pts(i, 0), pts(i, 1), pts(i, 2));
+		}
+		// val = Eigen::MatrixXd::Constant(pts.rows(), 1, rhs_);
 		// val *= t;
 	}
 
@@ -261,7 +283,8 @@ namespace polyfem
 	{
 		if(params.find("rhs") != params.end())
 		{
-			rhs_ = params["rhs"];
+			// rhs_ = params["rhs"];
+			rhs_.init(params["rhs"]);
 		}
 
 		if(params.find("dirichlet_boundary") != params.end())

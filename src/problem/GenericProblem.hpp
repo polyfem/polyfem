@@ -14,7 +14,15 @@ namespace polyfem
 		GenericTensorProblem(const std::string &name);
 
 		void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-		bool is_rhs_zero() const override { return fabs(rhs_.maxCoeff())<1e-10 && fabs(rhs_.minCoeff())<1e-10; }
+		bool is_rhs_zero() const override
+		{
+			for (int i = 0; i < 3; ++i)
+			{
+				if (!rhs_(i).is_zero())
+					return false;
+			}
+			return true;
+		}
 
 		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 		void neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
@@ -37,7 +45,7 @@ namespace polyfem
 
 		std::vector<Eigen::Matrix<bool, 1, 3, Eigen::RowMajor>> dirichelt_dimentions_;
 
-		Eigen::Matrix<double, 1, 3, Eigen::RowMajor> rhs_;
+		Eigen::Matrix<ExpressionValue, 1, 3, Eigen::RowMajor> rhs_;
 		bool is_all_;
 	};
 
@@ -48,7 +56,7 @@ namespace polyfem
 		GenericScalarProblem(const std::string &name);
 
 		void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-		bool is_rhs_zero() const override { return fabs(rhs_) < 1e-10; }
+		bool is_rhs_zero() const override { return rhs_.is_zero(); }
 
 		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 		void neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
@@ -62,7 +70,7 @@ namespace polyfem
 		std::vector<Eigen::Matrix<ExpressionValue, 1, 1, Eigen::RowMajor>> neumann_;
 		std::vector<Eigen::Matrix<ExpressionValue, 1, 1, Eigen::RowMajor>> dirichlet_;
 
-		double rhs_;
+		ExpressionValue rhs_;
 		bool is_all_;
 	};
 }
