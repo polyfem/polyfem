@@ -11,18 +11,7 @@ namespace polyfem
 		set_size(params["size"]);
 		assert(size_ == 2 || size_ == 3);
 
-		if(params.count("young")) {
-			lambda() = convert_to_lambda(size_ == 3, params["young"], params["nu"]);
-			mu() = convert_to_mu(params["young"], params["nu"]);
-		} else if(params.count("E")) {
-			lambda() = convert_to_lambda(size_ == 3, params["E"], params["nu"]);
-			mu() = convert_to_mu(params["E"], params["nu"]);
-		}
-		else
-		{
-			lambda() = params["lambda"];
-			mu() = params["mu"];
-		}
+		params_.init(params);
 
 		// std::cout<<mu_<<std::endl;
 		// std::cout<<lambda_<<std::endl;
@@ -63,7 +52,10 @@ namespace polyfem
 					epsj.row(dj) = gradj.row(p);
 					epsj = ((epsj + epsj.transpose()) / 2.0).eval();
 
-					res(dj*size() + di) += 2 * mu_ * (epsi.array() * epsj.array()).sum() * da(p);
+					double lambda, mu;
+					params_.lambda_mu(vals.val(p, 0), vals.val(p, 1), size_ == 2 ? 0. : vals.val(p, 2), vals.element_id, lambda, mu);
+
+					res(dj*size() + di) += 2 * mu * (epsi.array() * epsj.array()).sum() * da(p);
 				}
 			}
 		}
@@ -115,8 +107,11 @@ namespace polyfem
 		{
 			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
 
+			double lambda, mu;
+			params_.lambda_mu(vals.val(p, 0), vals.val(p, 1), size_ == 2 ? 0. : vals.val(p, 2), vals.element_id, lambda, mu);
+
 			const Eigen::MatrixXd strain = (displacement_grad + displacement_grad.transpose())/2;
-			const Eigen::MatrixXd stress = 2 * mu_ * strain + lambda_ * strain.trace() * Eigen::MatrixXd::Identity(size(), size());
+			const Eigen::MatrixXd stress = 2 * mu * strain + lambda * strain.trace() * Eigen::MatrixXd::Identity(size(), size());
 
 			all.row(p) = fun(stress);
 		}
@@ -130,18 +125,7 @@ namespace polyfem
 		set_size(params["size"]);
 		assert(size_ == 2 || size_ == 3);
 
-		if(params.count("young")) {
-			lambda() = convert_to_lambda(size_ == 3, params["young"], params["nu"]);
-			mu() = convert_to_mu(params["young"], params["nu"]);
-		} else if(params.count("E")) {
-			lambda() = convert_to_lambda(size_ == 3, params["E"], params["nu"]);
-			mu() = convert_to_mu(params["E"], params["nu"]);
-		}
-		else
-		{
-			lambda() = params["lambda"];
-			mu() = params["mu"];
-		}
+		// params_.init(params);
 
 		// std::cout<<mu_<<std::endl;
 		// std::cout<<lambda_<<std::endl;
@@ -186,21 +170,10 @@ namespace polyfem
 
 	void IncompressibleLinearElasticityPressure::set_parameters(const json &params)
 	{
-		const int size = params["size"];
-		assert(size == 2 || size == 3);
+		size_ = params["size"];
+		assert(size_ == 2 || size_ == 3);
 
-		if(params.count("young")) {
-			lambda() = convert_to_lambda(size == 3, params["young"], params["nu"]);
-			mu() = convert_to_mu(params["young"], params["nu"]);
-		} else if(params.count("E")) {
-			lambda() = convert_to_lambda(size == 3, params["E"], params["nu"]);
-			mu() = convert_to_mu(params["E"], params["nu"]);
-		}
-		else
-		{
-			lambda() = params["lambda"];
-			mu() = params["mu"];
-		}
+		params_.init(params);
 
 		// std::cout<<mu_<<std::endl;
 		// std::cout<<lambda_<<std::endl;
@@ -214,8 +187,17 @@ namespace polyfem
 		const Eigen::MatrixXd &phii = vals.basis_values[i].val;
 		const Eigen::MatrixXd &phij = vals.basis_values[j].val;
 
-		double res = (phii.array() * phij.array() * da.array()).sum();
-		res *= -1./lambda_;
+		double res = 0;
+
+		for (long p = 0; p < da.size(); ++p){
+			double lambda, mu;
+			params_.lambda_mu(vals.val(p, 0), vals.val(p, 1), size_ == 2 ? 0. : vals.val(p, 2), vals.element_id, lambda, mu);
+
+			res += -phii(p) * phij(p) * da(p) / lambda;
+		}
+
+		// double res = (phii.array() * phij.array() * da.array()).sum();
+		// res *= -1. / lambda;
 
 		return Eigen::Matrix<double, 1, 1>::Constant(res);
 	}

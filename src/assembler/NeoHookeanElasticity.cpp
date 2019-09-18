@@ -21,30 +21,12 @@ namespace polyfem
 	{
 		set_size(params["size"]);
 
-		if(params.count("young")) {
-			set_lambda_mu(
-				convert_to_lambda(size_ == 3, params["young"], params["nu"]),
-				convert_to_mu(params["young"], params["nu"]));
-		} else if(params.count("E")) {
-			set_lambda_mu(
-				convert_to_lambda(size_ == 3, params["E"], params["nu"]),
-				convert_to_mu(params["E"], params["nu"]));
-		}
-		else
-		{
-			set_lambda_mu(params["lambda"], params["mu"]);
-		}
+		params_.init(params);
 	}
 
 	void NeoHookeanElasticity::set_size(const int size)
 	{
 		size_ = size;
-	}
-
-	void NeoHookeanElasticity::set_lambda_mu(const double lambda, const double mu)
-	{
-		lambda_ = lambda;
-		mu_ = mu;
 	}
 
 
@@ -54,11 +36,13 @@ namespace polyfem
 		assert(pt.size() == size());
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res;
 
+		double lambda, mu;
+		params_.lambda_mu(pt(0).getValue(), pt(1).getValue(), size_ == 2 ? 0. : pt(2).getValue(), 0, lambda, mu);
 
 		if(size() == 2)
-			autogen::neo_hookean_2d_function(pt, lambda_, mu_, res);
+			autogen::neo_hookean_2d_function(pt, lambda, mu, res);
 		else if(size() == 3)
-			autogen::neo_hookean_3d_function(pt, lambda_, mu_, res);
+			autogen::neo_hookean_3d_function(pt, lambda, mu, res);
 		else
 			assert(false);
 
@@ -141,9 +125,12 @@ namespace polyfem
 			const Eigen::MatrixXd FmT = def_grad.inverse().transpose();
 			// const double J = def_grad.determinant();
 
+			double lambda, mu;
+			params_.lambda_mu(vals.val(p, 0), vals.val(p, 1), size_ == 2 ? 0. : vals.val(p, 2), vals.element_id, lambda, mu);
+
 			//stress = mu (F - F^{-T}) + lambda ln J F^{-T}
 			//stress = mu * (def_grad - def_grad^{-T}) + lambda ln (det def_grad) def_grad^{-T}
-			Eigen::MatrixXd stress_tensor = mu_*(def_grad - FmT) + lambda_ * std::log(def_grad.determinant()) * FmT;
+			Eigen::MatrixXd stress_tensor = mu*(def_grad - FmT) + lambda * std::log(def_grad.determinant()) * FmT;
 
 			//stess = (mu displacement_grad + lambda ln(J) I)/J
 			// Eigen::MatrixXd stress_tensor = (mu_/J) * displacement_grad + (lambda_/J) * std::log(J)  * Eigen::MatrixXd::Identity(size(), size());
@@ -220,8 +207,12 @@ namespace polyfem
 			for(int d = 0; d < size(); ++d)
 				def_grad(d,d) += T(1);
 
+
+			double lambda, mu;
+			params_.lambda_mu(vals.val(p, 0), vals.val(p, 1), size_ == 2 ? 0. : vals.val(p, 2), vals.element_id, lambda, mu);
+
 			const T log_det_j = log(polyfem::determinant(def_grad));
-			const T val = mu_ / 2 * ( (def_grad.transpose() * def_grad).trace() - size() - 2*log_det_j) + lambda_ /2 * log_det_j * log_det_j;
+			const T val = mu / 2 * ( (def_grad.transpose() * def_grad).trace() - size() - 2*log_det_j) + lambda /2 * log_det_j * log_det_j;
 
 			energy += val * da(p);
 		}

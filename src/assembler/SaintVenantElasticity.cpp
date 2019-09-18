@@ -50,11 +50,14 @@ namespace polyfem
 		if(params["elasticity_tensor"].empty())
 		{
 			if (params.count("young")) {
-				elasticity_tensor_.set_from_young_poisson(params["young"], params["nu"]);
+				if (params["young"].is_number() && params["nu"].is_number())
+					elasticity_tensor_.set_from_young_poisson(params["young"], params["nu"]);
 			} else if (params.count("E")) {
-				elasticity_tensor_.set_from_young_poisson(params["E"], params["nu"]);
+				if (params["E"].is_number() && params["nu"].is_number())
+					elasticity_tensor_.set_from_young_poisson(params["E"], params["nu"]);
 			} else {
-				elasticity_tensor_.set_from_lambda_mu(params["lambda"], params["mu"]);
+				if (params["lambda"].is_number() && params["mu"].is_number())
+					elasticity_tensor_.set_from_lambda_mu(params["lambda"], params["mu"]);
 			}
 		}
 		else
