@@ -508,6 +508,11 @@ namespace polyfem
 		}
 	}
 
+	double iflargerthanzerothenelse(double check, double ttrue, double ffalse)
+	{
+		return check >= 0 ? ttrue : ffalse;
+	}
+
 
 	void LameParameters::init(const json &params) {
 		size_ = params["size"];
@@ -554,10 +559,13 @@ namespace polyfem
 			}
 			else
 			{
-				te_variable vars[3];
+				te_variable vars[4];
 				vars[0] = {"x", &vals_->x};
 				vars[1] = {"y", &vals_->y};
 				vars[2] = {"z", &vals_->z};
+				vars[3].name = "if";
+				vars[3].address = (void *)&iflargerthanzerothenelse;
+				vars[3].type = TE_FUNCTION3;
 
 				assert(params["lambda"].is_string());
 				assert(params["mu"].is_string());
@@ -566,8 +574,8 @@ namespace polyfem
 				const std::string mus = params["mu"];
 
 				int err;
-				lambda_expr_ = te_compile(lambdas.c_str(), vars, 3, &err);
-				mu_expr_ = te_compile(mus.c_str(), vars, 3, &err);
+				lambda_expr_ = te_compile(lambdas.c_str(), vars, 4, &err);
+				mu_expr_ = te_compile(mus.c_str(), vars, 4, &err);
 
 				is_lambda_mu_ = true;
 
@@ -616,10 +624,13 @@ namespace polyfem
 		}
 		else
 		{
-			te_variable vars[3];
+			te_variable vars[4];
 			vars[0] = {"x", &vals_->x};
 			vars[1] = {"y", &vals_->y};
 			vars[2] = {"z", &vals_->z};
+			vars[3].name = "if";
+			vars[3].address = (void *)&iflargerthanzerothenelse;
+			vars[3].type = TE_FUNCTION3;
 
 			assert(E.is_string());
 			assert(nu.is_string());
@@ -628,8 +639,8 @@ namespace polyfem
 			const std::string nus = nu;
 
 			int err;
-			lambda_expr_ = te_compile(Es.c_str(), vars, 3, &err);
-			mu_expr_ = te_compile(nus.c_str(), vars, 3, &err);
+			lambda_expr_ = te_compile(Es.c_str(), vars, 4, &err);
+			mu_expr_ = te_compile(nus.c_str(), vars, 4, &err);
 
 			is_lambda_mu_ = false;
 
