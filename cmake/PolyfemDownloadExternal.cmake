@@ -58,8 +58,8 @@ endfunction()
 ## CLI11 3-Clause BSD license optional
 function(polyfem_download_cli11)
     polyfem_download_project(cli11
-        URL     https://github.com/CLIUtils/CLI11/archive/v1.6.1.tar.gz
-        URL_MD5 48ef97262adb0b47a2f0a7edbda6e2aa
+        URL     https://github.com/CLIUtils/CLI11/archive/v1.8.0.tar.gz
+        URL_MD5 5e5470abcb76422360409297bfc446ac
     )
 endfunction()
 

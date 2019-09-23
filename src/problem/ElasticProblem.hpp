@@ -130,6 +130,11 @@ namespace polyfem
 		bool has_exact_sol() const override { return false; }
 		bool is_scalar() const override { return false; }
 		bool is_time_dependent() const override { return true; }
+
+		void set_parameters(const json &params) override;
+
+	private:
+			double force_ = 0.1;
 	};
 }
 

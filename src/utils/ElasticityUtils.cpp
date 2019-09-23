@@ -300,6 +300,17 @@ namespace polyfem
 	{
 		if(size_ == 2)
 		{
+			if (entries.size() == 4)
+			{
+				set_orthotropic(
+					entries[0],
+					entries[1],
+					entries[2],
+					entries[3]);
+
+				return;
+			}
+
 			assert(entries.size() >= 6);
 
 			(*this)(0, 0) = entries[0];
@@ -313,6 +324,21 @@ namespace polyfem
 		}
 		else
 		{
+			if(entries.size() == 9)
+			{
+				set_orthotropic(
+					entries[0],
+					entries[1],
+					entries[2],
+					entries[3],
+					entries[4],
+					entries[5],
+					entries[6],
+					entries[7],
+					entries[8]);
+
+				return;
+			}
 			assert(entries.size() >= 21);
 
 			(*this)(0, 0) = entries[0];

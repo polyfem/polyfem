@@ -408,10 +408,18 @@ namespace polyfem
 		boundary_ids_ = {4};
 	}
 
+	void GravityProblem::set_parameters(const json &params)
+	{
+		if (params.find("force") != params.end())
+		{
+			force_ = params["force"];
+		}
+	}
+
 	void GravityProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-		val.col(1).setConstant(0.1);
+		val.col(1).setConstant(force_);
 		// val *= t;
 	}
 
@@ -439,7 +447,7 @@ namespace polyfem
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 	}
-	
+
 	void GravityProblem::initial_acceleration(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
