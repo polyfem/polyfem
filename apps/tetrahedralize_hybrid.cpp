@@ -1,7 +1,7 @@
+#include <CLI/CLI.hpp>
 #include <polyfem/Mesh3D.hpp>
 #include <polyfem/MeshUtils.hpp>
 
-#include <CLI/CLI.hpp>
 
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
