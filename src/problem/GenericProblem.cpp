@@ -106,6 +106,19 @@ namespace polyfem
 		val *= t;
 	}
 
+	void GenericTensorProblem::exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	{
+		assert(has_exact_sol());
+		const bool planar = pts.cols() == 2;
+		val.resize(pts.rows(), pts.cols());
+
+		for (int i = 0; i < pts.rows(); ++i)
+		{
+			for (int j = 0; j < pts.cols(); ++j)
+				val(i, j) = planar ? exact_(j)(pts(i, 0), pts(i, 1)) : exact_(j)(pts(i, 0), pts(i, 1), pts(i, 2));
+		}
+	}
+
 	void GenericTensorProblem::set_parameters(const json &params)
 	{
 		if(params.find("rhs") != params.end())
@@ -119,6 +132,28 @@ namespace polyfem
 			else{
 				assert(false);
 			}
+		}
+
+		if (params.find("exact") != params.end())
+		{
+			auto ex = params["exact"];
+			has_exact_ = !ex.is_null();
+			if (has_exact_)
+			{
+				if (ex.is_array())
+				{
+					for (size_t k = 0; k < ex.size(); ++k)
+						exact_(k).init(ex[k]);
+				}
+				else
+				{
+					assert(false);
+				}
+			}
+		}
+		else
+		{
+			has_exact_ = false;
 		}
 
 		if(params.find("dirichlet_boundary") != params.end())
@@ -279,12 +314,34 @@ namespace polyfem
 		val *= t;
 	}
 
+	void GenericScalarProblem::exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	{
+		assert(has_exact_sol());
+		const bool planar = pts.cols() == 2;
+		val.resize(pts.rows(), 1);
+
+		for (int i = 0; i < pts.rows(); ++i)
+		{
+			val(i) = planar ? exact_(pts(i, 0), pts(i, 1)) : exact_(pts(i, 0), pts(i, 1), pts(i, 2));
+		}
+	}
+
 	void GenericScalarProblem::set_parameters(const json &params)
 	{
 		if(params.find("rhs") != params.end())
 		{
 			// rhs_ = params["rhs"];
 			rhs_.init(params["rhs"]);
+		}
+
+		if(params.find("exact") != params.end())
+		{
+			has_exact_ = !params["exact"].is_null();
+			if (has_exact_)
+				exact_.init(params["exact"]);
+		}
+		else {
+			has_exact_ = false;
 		}
 
 		if(params.find("dirichlet_boundary") != params.end())
