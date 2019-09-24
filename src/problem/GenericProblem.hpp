@@ -36,11 +36,13 @@ namespace polyfem
 		bool all_dimentions_dirichelt() const override { return all_dimentions_dirichelt_; }
 
 		void exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
+		void exact_grad(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 
 		// bool is_mixed() const override { return is_mixed_; }
 	private:
 		bool all_dimentions_dirichelt_ = true;
 		bool has_exact_ = false;
+		bool has_exact_grad_ = false;
 		// bool is_mixed_ = false;
 
 		std::vector<Eigen::Matrix<ExpressionValue, 1, 3, Eigen::RowMajor>> forces_;
@@ -50,6 +52,7 @@ namespace polyfem
 
 		Eigen::Matrix<ExpressionValue, 1, 3, Eigen::RowMajor> rhs_;
 		Eigen::Matrix<ExpressionValue, 1, 3, Eigen::RowMajor> exact_;
+		Eigen::Matrix<ExpressionValue, 1, 9, Eigen::RowMajor> exact_grad_;
 		bool is_all_;
 	};
 
@@ -71,6 +74,7 @@ namespace polyfem
 		void set_parameters(const json &params) override;
 
 		void exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
+		void exact_grad(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 
 	private:
 		std::vector<Eigen::Matrix<ExpressionValue, 1, 1, Eigen::RowMajor>> neumann_;
@@ -78,8 +82,10 @@ namespace polyfem
 
 		ExpressionValue rhs_;
 		ExpressionValue exact_;
+		Eigen::Matrix<ExpressionValue, 1, 3, Eigen::RowMajor> exact_grad_;
 		bool is_all_;
 		bool has_exact_ = false;
+		bool has_exact_grad_ = false;
 	};
 }
 

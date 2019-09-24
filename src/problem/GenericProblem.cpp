@@ -119,6 +119,21 @@ namespace polyfem
 		}
 	}
 
+	void GenericTensorProblem::exact_grad(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	{
+		const int size = pts.cols();
+		val.resize(pts.rows(), pts.cols() * size);
+		if (!has_exact_grad_)
+			return;
+
+		const bool planar = size == 2;
+		for (int i = 0; i < pts.rows(); ++i)
+		{
+			for (int j = 0; j < pts.cols()*size; ++j)
+				val(i, j) = planar ? exact_grad_(j)(pts(i, 0), pts(i, 1)) : exact_grad_(j)(pts(i, 0), pts(i, 1), pts(i, 2));
+		}
+	}
+
 	void GenericTensorProblem::set_parameters(const json &params)
 	{
 		if(params.find("rhs") != params.end())
@@ -154,6 +169,28 @@ namespace polyfem
 		else
 		{
 			has_exact_ = false;
+		}
+
+		if (params.find("exact_grad") != params.end())
+		{
+			auto ex = params["exact_grad"];
+			has_exact_grad_ = !ex.is_null();
+			if (has_exact_grad_)
+			{
+				if (ex.is_array())
+				{
+					for (size_t k = 0; k < ex.size(); ++k)
+						exact_grad_(k).init(ex[k]);
+				}
+				else
+				{
+					assert(false);
+				}
+			}
+		}
+		else
+		{
+			has_exact_grad_ = false;
 		}
 
 		if(params.find("dirichlet_boundary") != params.end())
@@ -326,6 +363,20 @@ namespace polyfem
 		}
 	}
 
+	void GenericScalarProblem::exact_grad(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	{
+		val.resize(pts.rows(), pts.cols());
+		if(!has_exact_grad_)
+			return;
+
+		const bool planar = pts.cols() == 2;
+		for (int i = 0; i < pts.rows(); ++i)
+		{
+			for(int j = 0; j < pts.cols(); ++j)
+				val(i, j) = planar ? exact_grad_(j)(pts(i, 0), pts(i, 1)) : exact_grad_(j)(pts(i, 0), pts(i, 1), pts(i, 2));
+		}
+	}
+
 	void GenericScalarProblem::set_parameters(const json &params)
 	{
 		if(params.find("rhs") != params.end())
@@ -342,6 +393,28 @@ namespace polyfem
 		}
 		else {
 			has_exact_ = false;
+		}
+
+		if (params.find("exact_grad") != params.end())
+		{
+			auto ex = params["exact_grad"];
+			has_exact_grad_ = !ex.is_null();
+			if (has_exact_grad_)
+			{
+				if (ex.is_array())
+				{
+					for (size_t k = 0; k < ex.size(); ++k)
+						exact_grad_(k).init(ex[k]);
+				}
+				else
+				{
+					assert(false);
+				}
+			}
+		}
+		else
+		{
+			has_exact_grad_ = false;
 		}
 
 		if(params.find("dirichlet_boundary") != params.end())

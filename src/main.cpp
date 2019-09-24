@@ -1,3 +1,4 @@
+#include <CLI/CLI.hpp>
 #include <polyfem/State.hpp>
 #ifndef POLYFEM_NO_UI
 #include <polyfem/UIState.hpp>
@@ -14,7 +15,7 @@
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
 
-#include <CLI/CLI.hpp>
+
 
 #ifdef POLYFEM_WITH_TBB
 #include <tbb/task_scheduler_init.h>
@@ -101,7 +102,7 @@ int main(int argc, char **argv)
 	command_line.add_option("--log_file", log_file, "Log to a file");
 	command_line.add_option("--log_level", log_level, "Log level 1 debug 2 info");
 
-	
+
 
     try {
         command_line.parse(argc, argv);
@@ -109,7 +110,7 @@ int main(int argc, char **argv)
         return command_line.exit(e);
     }
 
-	
+
 
 	if (!screenshot.empty()) { no_ui = false; }
 
