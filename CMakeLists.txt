@@ -432,10 +432,6 @@ endif()
 # Clutter management
 ################################################################################
 
-if(TARGET igl_stb_image)
-    set_target_properties(igl_stb_image PROPERTIES FOLDER 3rdparty/igl)
-endif()
-
 if(TARGET igl_tetgen)
     set_target_properties(tetgen PROPERTIES FOLDER 3rdparty/other)
 endif()
