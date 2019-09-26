@@ -371,11 +371,27 @@ endif()
 
 # MKL library
 if(POLYFEM_WITH_MKL)
-    find_package(MKL)
+    if ("$ENV{MKLROOT}" STREQUAL "")
+        message(FATAL_ERROR "MKLROOT is not set. Please source the Intel MKL mklvars.sh file.")
+    endif()
+
+    # user defined options for MKL
+    option(MKL_USE_parallel "Use MKL parallel" ON)
+    option(MKL_USE_sdl "Single Dynamic Library or static/dynamic" OFF)
+    set(MKL_USE_interface "lp64" CACHE STRING "for Intel(R)64 compatible arch: ilp64/lp64 or for ia32 arch: cdecl/stdcall")
+
+
+    SET(INTEL_COMPILER_DIR $ENV{MKLROOT}/..)
+
+    find_package(MKL REQUIRED)
+
     if(MKL_FOUND)
         target_include_directories(polyfem PUBLIC ${MKL_INCLUDE_DIR})
         target_link_libraries(polyfem PUBLIC ${MKL_LIBRARIES})
         target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_MKL)
+        target_compile_definitions(polyfem PUBLIC -DEIGEN_USE_MKL_ALL)
+    else()
+        MESSAGE(FATAL_ERROR "unable to find MKL")
     endif()
 endif()
 
