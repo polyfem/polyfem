@@ -3,7 +3,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "LinearSolverPardiso.h"
 #include <thread>
+#ifdef POLYFEM_WITH_MKL
+#include <mkl_pardiso.h>
+#endif
 ////////////////////////////////////////////////////////////////////////////////
+#ifndef POLYFEM_WITH_MKL
 extern "C" {
 // PARDISO prototype.
 void pardisoinit (void   *, int    *,   int *, int *, double *, int *);
@@ -15,6 +19,7 @@ void pardiso_chkvec     (int *, int *, double *, int *);
 void pardiso_printstats (int *, int *, double *, int *, int *, int *,
 											double *, int *);
 }
+#endif
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace polyfem {
@@ -59,7 +64,11 @@ void LinearSolverPardiso::init() {
 
 	error = 0;
 	solver = 0; // Use sparse direct solver
+#ifdef POLYFEM_WITH_MKL
+	pardisoinit(pt, &mtype, iparm);
+#else
 	pardisoinit(pt, &mtype, &solver, iparm, dparm, &error);
+#endif
 
 	if (error != 0) {
 		if (error == -10) {
@@ -188,10 +197,13 @@ void LinearSolverPardiso::analyzePattern(const StiffnessMatrix &A) {
 	//     all memory that is necessary for the factorization.
 	// --------------------------------------------------------------------
 	phase = 11;
-
+#ifdef POLYFEM_WITH_MKL
+	pardiso(pt, &maxfct, &mnum, &mtype, &phase, &numRows, a.data(), ia.data(),
+			ja.data(), &idum, &nrhs, iparm, &msglvl, &ddum, &ddum, &error);
+#else
 	pardiso(pt, &maxfct, &mnum, &mtype, &phase, &numRows, a.data(), ia.data(),
 		ja.data(), &idum, &nrhs, iparm, &msglvl, &ddum, &ddum, &error, dparm);
-
+#endif
 	if (error != 0) {
 		throw std::runtime_error("[Pardiso] ERROR during symbolic factorization: " + std::to_string(error));
 	}
@@ -217,9 +229,13 @@ void LinearSolverPardiso::factorize(const StiffnessMatrix &A) {
 	// --------------------------------------------------------------------
 	phase = 22;
 	// iparm[32] = 1; // Compute determinant
+#ifdef POLYFEM_WITH_MKL
+	pardiso(pt, &maxfct, &mnum, &mtype, &phase, &numRows, a.data(), ia.data(),
+			ja.data(), &idum, &nrhs, iparm, &msglvl, &ddum, &ddum, &error);
+#else
 	pardiso(pt, &maxfct, &mnum, &mtype, &phase, &numRows, a.data(), ia.data(),
 		ja.data(), &idum, &nrhs, iparm, &msglvl, &ddum, &ddum, &error, dparm);
-
+#endif
 	if (error != 0) {
 		throw std::runtime_error("[Pardiso] ERROR during numerical factorization: " + std::to_string(error));
 	}
@@ -272,8 +288,13 @@ void LinearSolverPardiso::solve(const Eigen::Ref<const VectorXd> rhs, Eigen::Ref
 
 	iparm[7] = 1; // Max numbers of iterative refinement steps
 
+#ifdef POLYFEM_WITH_MKL
+	pardiso(pt, &maxfct, &mnum, &mtype, &phase, &numRows, a.data(), ia.data(), ja.data(),
+			&idum, &nrhs, iparm, &msglvl, rhs_ptr, result.data(), &error);
+#else
 	pardiso(pt, &maxfct, &mnum, &mtype, &phase, &numRows, a.data(), ia.data(), ja.data(),
 		&idum, &nrhs, iparm, &msglvl, rhs_ptr, result.data(), &error, dparm);
+#endif
 
 	if (error != 0) {
 		throw std::runtime_error("[Pardiso] ERROR during solution: " + std::to_string(error));
@@ -296,9 +317,13 @@ void LinearSolverPardiso::solve(const Eigen::Ref<const VectorXd> rhs, Eigen::Ref
 		iparm[7]  = 1; // Max numbers of iterative refinement steps.
 		iparm[11] = 1; // Solving with transpose matrix.
 
+#ifdef POLYFEM_WITH_MKL
+		pardiso(pt, &maxfct, &mnum, &mtype, &phase, &numRows, a.data(), ia.data(),
+				ja.data(), &idum, &nrhs, iparm, &msglvl, rhs_ptr, result.data(), &error);
+#else
 		pardiso (pt, &maxfct, &mnum, &mtype, &phase, &numRows, a.data(), ia.data(),
 			ja.data(), &idum, &nrhs, iparm, &msglvl, rhs_ptr, result.data(), &error, dparm);
-
+#endif
 		if (error != 0) {
 			throw std::runtime_error("[Pardiso] ERROR during solution: " + std::to_string(error));
 		}
@@ -318,9 +343,13 @@ void LinearSolverPardiso::solve(const Eigen::Ref<const VectorXd> rhs, Eigen::Ref
 
 void LinearSolverPardiso::freeNumericalFactorizationMemory() {
 	phase = 0; // Release internal memory
-
+#ifdef POLYFEM_WITH_MKL
+	pardiso(pt, &maxfct, &mnum, &mtype, &phase, &numRows, &ddum, ia.data(),
+			ja.data(), &idum, &nrhs, iparm, &msglvl, &ddum, &ddum, &error);
+#else
 	pardiso(pt, &maxfct, &mnum, &mtype, &phase, &numRows, &ddum, ia.data(),
 		ja.data(), &idum, &nrhs, iparm, &msglvl, &ddum, &ddum, &error, dparm);
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -334,9 +363,13 @@ LinearSolverPardiso::~LinearSolverPardiso() {
 	// ..  Termination and release of memory.
 	// --------------------------------------------------------------------
 	phase = -1; // Release internal memory
-
+#ifdef POLYFEM_WITH_MKL
+	pardiso(pt, &maxfct, &mnum, &mtype, &phase, &numRows, &ddum, ia.data(),
+			ja.data(), &idum, &nrhs, iparm, &msglvl, &ddum, &ddum, &error);
+#else
 	pardiso(pt, &maxfct, &mnum, &mtype, &phase, &numRows, &ddum, ia.data(),
 		ja.data(), &idum, &nrhs, iparm, &msglvl, &ddum, &ddum, &error, dparm);
+#endif
 }
 
 } // namespace polyfem
