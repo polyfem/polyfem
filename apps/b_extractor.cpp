@@ -17,7 +17,7 @@ using namespace polyfem;
 using namespace Eigen;
 
 
-void load_and_save(const std::string &path, const std::string &out_path)
+void load_and_save(const std::string &path, double dx, double dy, double dz, const std::string &out_path)
 {
 	auto tmp = Mesh::create(path);
 	Mesh3D &mesh = *dynamic_cast<Mesh3D *>(tmp.get());
@@ -35,7 +35,7 @@ void load_and_save(const std::string &path, const std::string &out_path)
 
 	for(int i = 0; i < mesh.n_vertices(); ++i){
 		const auto tmp = mesh.point(i);
-		file << "v " << tmp(0) << " "<<tmp(1) << " " <<(tmp(2)+50) << "\n";
+		file << "v " << tmp(0)+dx << " "<<tmp(1)+dy << " " << tmp(2)+dz << "\n";
 	}
 	file <<"\n";
 
@@ -55,7 +55,7 @@ void load_and_save(const std::string &path, const std::string &out_path)
 	file.close();
 }
 
-void load_and_triangulate(const std::string &path, MatrixXd &V, MatrixXi &F)
+void load_and_triangulate(const std::string &path, double dx, double dy, double dz, MatrixXd &V, MatrixXi &F)
 {
 	auto tmp = Mesh::create(path);
 	Mesh3D &mesh = *dynamic_cast<Mesh3D *>(tmp.get());
@@ -64,7 +64,7 @@ void load_and_triangulate(const std::string &path, MatrixXd &V, MatrixXi &F)
 
 	V.resize(mesh.n_vertices() + mesh.n_faces(), 3);
 	for(int i = 0; i < mesh.n_vertices(); ++i)
-		V.row(i) = mesh.point(i);
+		V.row(i) = mesh.point(i) + Eigen::RowVector3d(dx, dy, dz);
 
 	int v_index = mesh.n_vertices();
 
@@ -119,10 +119,14 @@ int main(int argc, char **argv)
 	CLI::App command_line{"b_extractor"};
 	std::string path = "";
 	bool not_triangulate = false;
+	double dx = 0, dy = 0, dz = 0;
 	command_line.add_option("--mesh,-m", path, "Path to the input mesh");
 	command_line.add_flag("--not_tri", not_triangulate, "Skips mesh surface triangulation");
+	command_line.add_option("--dx", dx, "x displacement");
+	command_line.add_option("--dy", dy, "y displacement");
+	command_line.add_option("--dz", dz, "z displacement");
 
-    try {
+	try {
         command_line.parse(argc, argv);
     } catch (const CLI::ParseError &e) {
         return command_line.exit(e);
@@ -136,11 +140,11 @@ int main(int argc, char **argv)
 	{
 		if(not_triangulate)
 		{
-			load_and_save(path, path + ".obj");
+			load_and_save(path, dx, dy, dz, path + ".obj");
 		}
 		else
 		{
-			load_and_triangulate(path, V, F);
+			load_and_triangulate(path, dx, dy, dz, V, F);
 			igl::writeOBJ(path + ".obj", V, F);
 		}
 	}
