@@ -372,7 +372,7 @@ endif()
 # MKL library
 if(POLYFEM_WITH_MKL)
     if ("$ENV{MKLROOT}" STREQUAL "")
-        message(FATAL_ERROR "MKLROOT is not set. Please source the Intel MKL mklvars.sh file.")
+        message(WARNING "MKLROOT is not set. Please source the Intel MKL mklvars.sh file.")
     endif()
 
     # user defined options for MKL
