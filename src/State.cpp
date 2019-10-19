@@ -214,6 +214,8 @@ State::State()
 		{"save_solve_sequence", false},
 		{"save_solve_sequence_debug", false},
 
+		{"force_no_ref_for_harmonic", false}
+
 		{"rhs_path", ""},
 
 		{"params", {{"lambda", 0.32967032967032966}, {"mu", 0.3846153846153846}, {"k", 1.0}, {"elasticity_tensor", json({})},
@@ -1627,7 +1629,15 @@ void State::load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVector
 	else
 		logger().info("mesh bb min [{} {} {}], max [{} {} {}]", min(0), min(1), min(2), max(0), max(1), max(2));
 
-	const int n_refs = args["n_refs"];
+	int n_refs = args["n_refs"];
+
+	if (n_refs <= 0 && args["poly_bases"] == "MFSHarmonic" && mesh->has_poly()){
+		 if(args["force_no_ref_for_harmonic"])
+		 	logger.warning("Using harmonic bases without refinement");
+		else
+			n_refs = 1;
+	}
+
 	if (n_refs > 0)
 		mesh->refine(n_refs, args["refinenemt_location"], parent_elements);
 
@@ -1692,7 +1702,16 @@ void State::load_mesh()
 	else
 		logger().info("mesh bb min [{}, {}, {}], max [{}, {}, {}]", min(0), min(1), min(2), max(0), max(1), max(2));
 
-	const int n_refs = args["n_refs"];
+	int n_refs = args["n_refs"];
+
+	if (n_refs <= 0 && args["poly_bases"] == "MFSHarmonic" && mesh->has_poly())
+	{
+		if (args["force_no_ref_for_harmonic"])
+			logger.warning("Using harmonic bases without refinement");
+		else
+			n_refs = 1;
+	}
+
 	if (n_refs > 0)
 		mesh->refine(n_refs, args["refinenemt_location"], parent_elements);
 

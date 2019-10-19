@@ -135,10 +135,21 @@ namespace polyfem
 
 		const std::vector<double> &cell_weights(const int cell_index) const { return cell_weights_[cell_index]; }
 
+		bool has_poly() const
+		{
+			for(int i = 0; i < n_elements(); ++i)
+			{
+				if (is_polytope(i))
+					return true;
+			}
+
+			return false;
+		}
+
 	protected:
 		virtual bool load(const std::string &path) = 0;
 		virtual bool load(const GEO::Mesh &M) = 0;
-		
+
 
 		std::vector<ElementType> elements_tag_;
 		std::vector<int> boundary_ids_;
