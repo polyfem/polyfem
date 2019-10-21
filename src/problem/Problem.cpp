@@ -99,6 +99,7 @@ namespace polyfem
 		problems_.emplace("Cubic", std::make_shared<CubicProblem>("Cubic"));
 		problems_.emplace("Sine", std::make_shared<SineProblem>("Sine"));
 		problems_.emplace("Franke", std::make_shared<FrankeProblem>("Franke"));
+		problems_.emplace("FrankeOld", std::make_shared<FrankeProblemOld>("FrankeOld"));
 		problems_.emplace("Zero_BC", std::make_shared<ZeroBCProblem>("Zero_BC"));
 		problems_.emplace("Elastic", std::make_shared<ElasticProblem>("Elastic"));
 		problems_.emplace("TorsionElastic", std::make_shared<TorsionElasticProblem>("TorsionElastic"));
