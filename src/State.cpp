@@ -214,7 +214,7 @@ State::State()
 		{"save_solve_sequence", false},
 		{"save_solve_sequence_debug", false},
 
-		{"force_no_ref_for_harmonic", false}
+		{"force_no_ref_for_harmonic", false},
 
 		{"rhs_path", ""},
 
@@ -1633,7 +1633,7 @@ void State::load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVector
 
 	if (n_refs <= 0 && args["poly_bases"] == "MFSHarmonic" && mesh->has_poly()){
 		 if(args["force_no_ref_for_harmonic"])
-		 	logger.warning("Using harmonic bases without refinement");
+		 	logger().warn("Using harmonic bases without refinement");
 		else
 			n_refs = 1;
 	}
@@ -1707,7 +1707,7 @@ void State::load_mesh()
 	if (n_refs <= 0 && args["poly_bases"] == "MFSHarmonic" && mesh->has_poly())
 	{
 		if (args["force_no_ref_for_harmonic"])
-			logger.warning("Using harmonic bases without refinement");
+			logger().warn("Using harmonic bases without refinement");
 		else
 			n_refs = 1;
 	}
@@ -3105,13 +3105,13 @@ void State::init(const json &args_in)
 
 	if (args_in.find("stiffness_mat_save_path") != args_in.end() && !args_in["stiffness_mat_save_path"].empty())
 	{
-		logger().warn("[Warning] use export: { stiffness_mat: 'path' } instead of stiffness_mat_save_path");
+		logger().warn("use export: { stiffness_mat: 'path' } instead of stiffness_mat_save_path");
 		this->args["export"]["stiffness_mat"] = args_in["stiffness_mat_save_path"];
 	}
 
 	if (args_in.find("solution") != args_in.end() && !args_in["solution"].empty())
 	{
-		logger().warn("[Warning] use export: { solution: 'path' } instead of solution");
+		logger().warn("use export: { solution: 'path' } instead of solution");
 		this->args["export"]["solution"] = args_in["solution"];
 	}
 
@@ -3121,7 +3121,7 @@ void State::init(const json &args_in)
 
 	if (args["use_spline"] && args["n_refs"] == 0)
 	{
-		logger().warn("[Warning] n_refs > 0 with spline");
+		logger().warn("n_refs > 0 with spline");
 	}
 }
 
