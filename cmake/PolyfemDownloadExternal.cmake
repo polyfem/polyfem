@@ -101,6 +101,8 @@ function(polyfem_download_hypre)
         GIT_REPOSITORY https://github.com/LLNL/hypre.git
         GIT_TAG        v2.15.1
     )
+
+    file(REMOVE ${POLYFEM_EXTERNAL}/hypre/src/utilities/version)
 endfunction()
 
 
