@@ -77,6 +77,7 @@ option(POLYFEM_WITH_HYPRE            "Enable hypre"                      ON)
 option(POLYFEM_WITH_OPENCL           "Enable OpenCL"                     OFF)
 option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
 option(POLYFEM_WITH_SPECTRA          "Enable computing spectrum"         ON)
+option(POLYFEM_WITH_AMGCL            "Use AMGCL"                         OFF)
 
 option(POLYFEM_LARGE_INDEX    "Build for large indices"       OFF)
 
@@ -107,6 +108,7 @@ option(LIBIGL_WITH_PYTHON                 "Use Python"                   OFF)
 option(LIBIGL_WITH_TRIANGLE               "Use Triangle"                 OFF)
 option(LIBIGL_WITH_VIEWER                 "Use OpenGL viewer"            ON)
 option(LIBIGL_WITH_XML                    "Use XML"                      OFF)
+
 
 if(POLYFEM_TOPLEVEL_PROJECT AND POLYFEM_WITH_APPS)
     option(LIBIGL_WITH_TETGEN                 "Use Tetgen"                   ON)
@@ -441,6 +443,15 @@ if(POLYFEM_WITH_SUPERLU AND NOT (POLYFEM_WITH_MKL AND MKL_FOUND))
         target_compile_definitions(polyfem PUBLIC ${SUPERLU_DEFINES})
         target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_SUPERLU)
     endif()
+endif()
+
+
+# amgcl solver
+if(POLYFEM_WITH_AMGCL)
+    polyfem_download_amgcl()
+    add_subdirectory(${THIRD_PARTY_DIR}/amgcl amgcl)
+    target_link_libraries(polyfem PUBLIC amgcl::amgcl)
+    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_AMGCL)
 endif()
 
 

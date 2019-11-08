@@ -21,6 +21,9 @@
 #ifdef POLYFEM_WITH_HYPRE
 #include <polyfem/LinearSolverHypre.hpp>
 #endif
+#ifdef POLYFEM_WITH_AMGCL
+#include <polyfem/LinearSolverAMGCL.hpp>
+#endif
 #include <unsupported/Eigen/IterativeSolvers>
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -164,6 +167,10 @@ std::unique_ptr<LinearSolver> LinearSolver::create(const std::string &solver, co
 	} else if (solver == "Hypre") {
 		return std::make_unique<LinearSolverHypre>();
 #endif
+#ifdef POLYFEM_WITH_AMGCL
+	} else if (solver == "AMGCL") {
+		return std::make_unique<LinearSolverAMGCL>();
+#endif
 #if EIGEN_VERSION_AT_LEAST(3,3,0)
 	// Available only with Eigen 3.3.0 and newer
 #ifndef POLYFEM_LARGE_INDEX
@@ -212,6 +219,9 @@ std::vector<std::string> LinearSolver::availableSolvers() {
 #endif
 #ifdef POLYFEM_WITH_HYPRE
 		"Hypre",
+#endif
+#ifdef POLYFEM_WITH_AMGCL
+		"AMGCL",
 #endif
 #if EIGEN_VERSION_AT_LEAST(3,3,0)
 #ifndef POLYFEM_LARGE_INDEX

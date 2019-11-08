@@ -131,6 +131,15 @@ function(polyfem_download_tinyexpr)
 endfunction()
 
 
+## amgcl mit
+function(polyfem_download_amgcl)
+    polyfem_download_project(amgcl
+        GIT_REPOSITORY https://github.com/ddemidov/amgcl.git
+        GIT_TAG        a2fab1037946de87e448e5fc7539277cd6fb9ec3
+    )
+endfunction()
+
+
 ## data
 function(polyfem_download_polyfem_data)
     polyfem_download_project(data
