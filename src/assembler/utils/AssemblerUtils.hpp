@@ -18,6 +18,7 @@
 // #include <polyfem/OgdenElasticity.hpp>
 
 #include <polyfem/Stokes.hpp>
+#include <polyfem/NavierStokes.hpp>
 #include <polyfem/IncompressibleLinElast.hpp>
 
 #include <polyfem/ProblemWithSolution.hpp>
@@ -129,12 +130,19 @@ namespace polyfem
 		bool is_tensor(const std::string &assembler) const;
 		bool is_mixed(const std::string &assembler) const;
 
+		bool is_gradient_based(const std::string &assembler) const;
+
 		//getters
 		const std::vector<std::string> &scalar_assemblers() const { return scalar_assemblers_; }
 		const std::vector<std::string> &tensor_assemblers() const { return tensor_assemblers_; }
 		// const std::vector<std::string> &mixed_assemblers() const { return mixed_assemblers_; }
 
 		void clear_cache();
+
+		static void merge_mixed_matrices(
+			const int n_bases, const int n_pressure_bases, const int problem_dim,
+			const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
+			StiffnessMatrix &stiffness);
 
 	private:
 		MassMatrixAssembler mass_mat_assembler_;
@@ -155,6 +163,8 @@ namespace polyfem
 		Assembler<StokesVelocity> stokes_velocity_;
 		MixedAssembler<StokesMixed> stokes_mixed_;
 		Assembler<StokesPressure> stokes_pressure_;
+
+		NLAssembler<NavierStokesVelocity> navier_stokes_velocity_;
 
 		Assembler<IncompressibleLinearElasticityDispacement> incompressible_lin_elast_displacement_;
 		MixedAssembler<IncompressibleLinearElasticityMixed> incompressible_lin_elast_mixed_;

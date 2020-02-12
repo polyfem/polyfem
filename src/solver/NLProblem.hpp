@@ -24,11 +24,13 @@ namespace polyfem
 
 		double value(const TVector &x) override;
 		void gradient(const TVector &x, TVector &gradv) override;
+		void gradient_no_rhs(const TVector &x, Eigen::MatrixXd &gradv);
+
 
 		#include <polyfem/DisableWarnings.hpp>
 		void hessian(const TVector &x, THessian &hessian);
+		void hessian_full(const TVector &x, THessian &gradv);
 		#include <polyfem/EnableWarnings.hpp>
-
 
 		template<class FullMat, class ReducedMat>
 		static void full_to_reduced_aux(State &state, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced)
@@ -90,9 +92,12 @@ namespace polyfem
 		AssemblerUtils &assembler;
 		const RhsAssembler &rhs_assembler;
 		Eigen::MatrixXd _current_rhs;
+		StiffnessMatrix cached_stiffness;
 
 		const int full_size, reduced_size;
 		const double t;
 		bool rhs_computed;
+
+		void compute_cached_stiffness();
 	};
 }

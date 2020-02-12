@@ -26,6 +26,7 @@ namespace polyfem
 
 
 		tensor_assemblers_.push_back("Stokes");
+		tensor_assemblers_.push_back("NavierStokes");
 		tensor_assemblers_.push_back("IncompressibleLinearElasticity");
 	}
 
@@ -36,11 +37,19 @@ namespace polyfem
 
 	bool AssemblerUtils::is_tensor(const std::string &assembler) const
 	{
-		return assembler == "LinearElasticity" || assembler == "HookeLinearElasticity" || assembler == "SaintVenant" || assembler == "NeoHookean" /*|| assembler == "Ogden"*/ || assembler == "Stokes" || assembler == "IncompressibleLinearElasticity";
+		return assembler == "LinearElasticity" || assembler == "HookeLinearElasticity" ||
+			   assembler == "SaintVenant" || assembler == "NeoHookean" /*|| assembler == "Ogden"*/ ||
+			   assembler == "Stokes" || assembler == "IncompressibleLinearElasticity" ||
+			   assembler == "NavierStokes";
 	}
 	bool AssemblerUtils::is_mixed(const std::string &assembler) const
 	{
-		return assembler == "Stokes" || assembler == "IncompressibleLinearElasticity" ||  assembler == "Bilaplacian";
+		return assembler == "Stokes" || assembler == "IncompressibleLinearElasticity" || assembler == "Bilaplacian" || assembler == "NavierStokes";
+	}
+
+	bool AssemblerUtils::is_gradient_based(const std::string &assembler) const
+	{
+		return assembler == "NavierStokes";
 	}
 
 	bool AssemblerUtils::is_solution_displacement(const std::string &assembler) const
@@ -52,7 +61,7 @@ namespace polyfem
 
 	bool AssemblerUtils::is_linear(const std::string &assembler) const
 	{
-		return assembler != "SaintVenant" && assembler != "NeoHookean" /*&& assembler != "Ogden"*/;
+		return assembler != "SaintVenant" && assembler != "NeoHookean" && assembler != "NavierStokes" /*&& assembler != "Ogden"*/;
 	}
 
 	void AssemblerUtils::assemble_problem(const std::string &assembler,
@@ -73,7 +82,7 @@ namespace polyfem
 			linear_elasticity_.assemble(is_volume, n_basis, bases, gbases, stiffness);
 		else if(assembler == "HookeLinearElasticity")
 			hooke_linear_elasticity_.assemble(is_volume, n_basis, bases, gbases, stiffness);
-		else if(assembler == "Stokes")
+		else if (assembler == "Stokes" || assembler == "NavierStokes")
 			stokes_velocity_.assemble(is_volume, n_basis, bases, gbases, stiffness);
 		else if(assembler == "IncompressibleLinearElasticity")
 			incompressible_lin_elast_displacement_.assemble(is_volume, n_basis, bases, gbases, stiffness);
@@ -82,6 +91,8 @@ namespace polyfem
 			return;
 		else if(assembler == "NeoHookean")
 			return;
+		// else if (assembler == "NavierStokes")
+			// return;
 		//else if(assembler == "Ogden")
 		//	return;
 		else
@@ -117,8 +128,7 @@ namespace polyfem
 		if(assembler == "Bilaplacian")
 			bilaplacian_mixed_.assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, stiffness);
 
-
-		else if(assembler == "Stokes")
+		else if (assembler == "Stokes" || assembler == "NavierStokes")
 			stokes_mixed_.assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, stiffness);
 		else if(assembler == "IncompressibleLinearElasticity")
 			incompressible_lin_elast_mixed_.assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, stiffness);
@@ -141,8 +151,7 @@ namespace polyfem
 		if(assembler == "Bilaplacian")
 			bilaplacian_aux_.assemble(is_volume, n_basis, bases, gbases, stiffness);
 
-
-		else if(assembler == "Stokes")
+		else if (assembler == "Stokes" || assembler == "NavierStokes")
 			stokes_pressure_.assemble(is_volume, n_basis, bases, gbases, stiffness);
 		else if(assembler == "IncompressibleLinearElasticity")
 			incompressible_lin_elast_pressure_.assemble(is_volume, n_basis, bases, gbases, stiffness);
@@ -184,6 +193,8 @@ namespace polyfem
 			saint_venant_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, grad);
 		else if(assembler == "NeoHookean")
 			neo_hookean_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, grad);
+		else if (assembler == "NavierStokes")
+			navier_stokes_velocity_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, grad);
 		//else if(assembler == "Ogden")
 		//	ogden_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, grad);
 		else
@@ -202,6 +213,8 @@ namespace polyfem
 			saint_venant_elasticity_.assemble_hessian(is_volume, n_basis, bases, gbases, displacement, hessian);
 		else if(assembler == "NeoHookean")
 			neo_hookean_elasticity_.assemble_hessian(is_volume, n_basis, bases, gbases, displacement, hessian);
+		else if (assembler == "NavierStokes")
+			navier_stokes_velocity_.assemble_hessian(is_volume, n_basis, bases, gbases, displacement, hessian);
 		//else if(assembler == "Ogden")
 		//	ogden_elasticity_.assemble_hessian(is_volume, n_basis, bases, gbases, displacement, hessian);
 		else
@@ -234,6 +247,9 @@ namespace polyfem
 
 		else if(assembler == "Stokes")
 			stokes_velocity_.local_assembler().compute_norm_velocity(bs, gbs, local_pts, fun, result);
+		else if (assembler == "NavierStokes")
+			navier_stokes_velocity_.local_assembler().compute_norm_velocity(bs, gbs, local_pts, fun, result);
+
 		else if(assembler == "IncompressibleLinearElasticity")
 			incompressible_lin_elast_displacement_.local_assembler().compute_von_mises_stresses(bs, gbs, local_pts, fun, result);
 
@@ -269,6 +285,8 @@ namespace polyfem
 
 		else if(assembler == "Stokes")
 			stokes_velocity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
+		else if (assembler == "NavierStokes")
+			navier_stokes_velocity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
 		else if(assembler == "IncompressibleLinearElasticity")
 			incompressible_lin_elast_displacement_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
 
@@ -304,6 +322,8 @@ namespace polyfem
 
 		else if(assembler == "Stokes")
 			return stokes_velocity_.local_assembler().compute_rhs(pt);
+		else if (assembler == "NavierStokes")
+			return navier_stokes_velocity_.local_assembler().compute_rhs(pt);
 		else if(assembler == "IncompressibleLinearElasticity")
 			return incompressible_lin_elast_displacement_.local_assembler().compute_rhs(pt);
 
@@ -414,9 +434,63 @@ namespace polyfem
 		stokes_mixed_.local_assembler().set_parameters(params);
 		stokes_pressure_.local_assembler().set_parameters(params);
 
+		navier_stokes_velocity_.local_assembler().set_parameters(params);
+
 		incompressible_lin_elast_displacement_.local_assembler().set_parameters(params);
 		incompressible_lin_elast_mixed_.local_assembler().set_parameters(params);
 		incompressible_lin_elast_pressure_.local_assembler().set_parameters(params);
+	}
+
+	void AssemblerUtils::merge_mixed_matrices(
+		const int n_bases, const int n_pressure_bases, const int problem_dim,
+		const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
+		StiffnessMatrix &stiffness)
+	{
+		assert(velocity_stiffness.rows() == velocity_stiffness.cols());
+		assert(velocity_stiffness.rows() == n_bases * problem_dim);
+
+		assert(mixed_stiffness.size() == 0 || mixed_stiffness.rows() == n_bases * problem_dim);
+		assert(mixed_stiffness.size() == 0 || mixed_stiffness.cols() == n_pressure_bases);
+
+		assert(pressure_stiffness.size() == 0 || pressure_stiffness.rows() == n_pressure_bases);
+		assert(pressure_stiffness.size() == 0 || pressure_stiffness.cols() == n_pressure_bases);
+
+		std::vector<Eigen::Triplet<double>> blocks;
+		blocks.reserve(velocity_stiffness.nonZeros() + 2 * mixed_stiffness.nonZeros() + pressure_stiffness.nonZeros());
+
+		for (int k = 0; k < velocity_stiffness.outerSize(); ++k)
+		{
+			for (StiffnessMatrix::InnerIterator it(velocity_stiffness, k); it; ++it)
+			{
+				blocks.emplace_back(it.row(), it.col(), it.value());
+			}
+		}
+
+		for (int k = 0; k < mixed_stiffness.outerSize(); ++k)
+		{
+			for (StiffnessMatrix::InnerIterator it(mixed_stiffness, k); it; ++it)
+			{
+				blocks.emplace_back(it.row(), n_bases * problem_dim + it.col(), it.value());
+				blocks.emplace_back(it.col() + n_bases * problem_dim, it.row(), it.value());
+			}
+		}
+
+		for (int k = 0; k < pressure_stiffness.outerSize(); ++k)
+		{
+			for (StiffnessMatrix::InnerIterator it(pressure_stiffness, k); it; ++it)
+			{
+				blocks.emplace_back(n_bases * problem_dim + it.row(), n_bases * problem_dim + it.col(), it.value());
+			}
+		}
+
+		stiffness.resize(n_bases * problem_dim + n_pressure_bases, n_bases * problem_dim + n_pressure_bases);
+		stiffness.setFromTriplets(blocks.begin(), blocks.end());
+		stiffness.makeCompressed();
+
+		// Eigen::saveMarket(stiffness, "stiffness.txt");
+		// Eigen::saveMarket(velocity_stiffness, "velocity_stiffness.txt");
+		// Eigen::saveMarket(mixed_stiffness, "mixed_stiffness.txt");
+		// Eigen::saveMarket(pressure_stiffness, "pressure_stiffness.txt");
 	}
 
 }

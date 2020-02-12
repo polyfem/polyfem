@@ -11,6 +11,7 @@
 // #include <polyfem/OgdenElasticity.hpp>
 
 #include <polyfem/Stokes.hpp>
+#include <polyfem/NavierStokes.hpp>
 #include <polyfem/IncompressibleLinElast.hpp>
 
 #include <polyfem/Logger.hpp>
@@ -389,7 +390,7 @@ namespace polyfem
 		const int n_bases = int(bases.size());
 
 #ifdef POLYFEM_WITH_TBB
-		tbb::parallel_for( tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
+		tbb::parallel_for(tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
 		LocalStorage::reference loc_storage = storages.local();
 		for (int e = r.begin(); e != r.end(); ++e) {
 #else
@@ -435,7 +436,7 @@ namespace polyfem
 			// if (!vals.has_parameterization) { std::cout << "-- Timer: " << timer.getElapsedTime() << std::endl; }
 
 #ifdef POLYFEM_WITH_TBB
-		}});
+		} });
 #else
 		}
 #endif
@@ -476,7 +477,7 @@ namespace polyfem
 		const int n_bases = int(bases.size());
 
 #ifdef POLYFEM_WITH_TBB
-		tbb::parallel_for( tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
+		tbb::parallel_for(tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
 		LocalStorage::reference loc_storage = storages.local();
 		for (int e = r.begin(); e != r.end(); ++e) {
 #else
@@ -518,8 +519,8 @@ namespace polyfem
 			{
 				const auto &global_i = vals.basis_values[i].global;
 
-				// for(int j = 0; j < n_loc_bases; ++j)
-				for(int j = 0; j <= i; ++j)
+				for(int j = 0; j < n_loc_bases; ++j)
+				// for(int j = 0; j <= i; ++j)
 				{
 					const auto &global_j = vals.basis_values[j].global;
 
@@ -541,9 +542,9 @@ namespace polyfem
 									const auto wj = global_j[jj].val;
 
 									loc_storage.entries.emplace_back(gi, gj, local_value * wi * wj);
-									if (j < i) {
-										loc_storage.entries.emplace_back(gj, gi, local_value * wj * wi);
-									}
+									// if (j < i) {
+									// 	loc_storage.entries.emplace_back(gj, gi, local_value * wj * wi);
+									// }
 
 									if(loc_storage.entries.size() >= 1e8)
 									{
@@ -566,7 +567,7 @@ namespace polyfem
 			// timer.stop();
 			// if (!vals.has_parameterization) { std::cout << "-- Timer: " << timer.getElapsedTime() << std::endl; }
 #ifdef POLYFEM_WITH_TBB
-		}});
+		} });
 #else
 		}
 #endif
@@ -659,6 +660,8 @@ namespace polyfem
 	template class Assembler<StokesVelocity>;
 	template class MixedAssembler<StokesMixed>;
 	template class Assembler<StokesPressure>;
+
+	template class NLAssembler<NavierStokesVelocity>;
 
 	template class Assembler<IncompressibleLinearElasticityDispacement>;
 	template class MixedAssembler<IncompressibleLinearElasticityMixed>;

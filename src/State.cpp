@@ -2284,92 +2284,39 @@ void State::assemble_stiffness_mat()
 	// if(problem->is_mixed())
 	if (assembler.is_mixed(formulation()))
 	{
-		StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
-		assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, velocity_stiffness);
-		assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, iso_parametric() ? bases : geom_bases, mixed_stiffness);
-		assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, iso_parametric() ? bases : geom_bases, pressure_stiffness);
-
-		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
-
-		assert(velocity_stiffness.rows() == velocity_stiffness.cols());
-		assert(velocity_stiffness.rows() == n_bases * problem_dim);
-
-		assert(mixed_stiffness.rows() == n_bases * problem_dim);
-		assert(mixed_stiffness.cols() == n_pressure_bases);
-
-		assert(pressure_stiffness.rows() == n_pressure_bases);
-		assert(pressure_stiffness.cols() == n_pressure_bases);
-
-		std::vector<Eigen::Triplet<double>> blocks;
-		blocks.reserve(velocity_stiffness.nonZeros() + 2 * mixed_stiffness.nonZeros() + pressure_stiffness.nonZeros());
-
-		for (int k = 0; k < velocity_stiffness.outerSize(); ++k)
+		if (assembler.is_linear(formulation()))
 		{
-			for (StiffnessMatrix::InnerIterator it(velocity_stiffness, k); it; ++it)
+			StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
+			assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, velocity_stiffness);
+			assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, iso_parametric() ? bases : geom_bases, mixed_stiffness);
+			assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, iso_parametric() ? bases : geom_bases, pressure_stiffness);
+
+			const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+
+			AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim,
+												 velocity_stiffness, mixed_stiffness, pressure_stiffness,
+												 stiffness);
+
+			if (problem->is_time_dependent())
 			{
-				blocks.emplace_back(it.row(), it.col(), it.value());
-			}
-		}
+				StiffnessMatrix velocity_mass;
+				assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, velocity_mass);
 
-		for (int k = 0; k < mixed_stiffness.outerSize(); ++k)
-		{
-			for (StiffnessMatrix::InnerIterator it(mixed_stiffness, k); it; ++it)
-			{
-				blocks.emplace_back(it.row(), n_bases * problem_dim + it.col(), it.value());
-				blocks.emplace_back(it.col() + n_bases * problem_dim, it.row(), it.value());
-			}
-		}
+				std::vector<Eigen::Triplet<double>> mass_blocks;
+				mass_blocks.reserve(velocity_mass.nonZeros());
 
-		for (int k = 0; k < pressure_stiffness.outerSize(); ++k)
-		{
-			for (StiffnessMatrix::InnerIterator it(pressure_stiffness, k); it; ++it)
-			{
-				blocks.emplace_back(n_bases * problem_dim + it.row(), n_bases * problem_dim + it.col(), it.value());
-			}
-		}
-
-		// for (int k = 0; k < pressure_stiffness.rows(); ++k){
-		// 	// blocks.emplace_back(n_bases * problem_dim + pressure_stiffness.rows(), n_bases * problem_dim + k, 1./pressure_stiffness.rows());
-		// 	blocks.emplace_back(n_bases * problem_dim + k, n_bases * problem_dim + pressure_stiffness.cols(), 1);
-		// }
-		// blocks.emplace_back(n_bases * problem_dim + pressure_stiffness.rows(), n_bases * problem_dim + pressure_stiffness.rows(), 1);
-
-		stiffness.resize(n_bases * problem_dim + n_pressure_bases, n_bases * problem_dim + n_pressure_bases);
-		// stiffness.resize(n_bases * problem_dim + n_pressure_bases + 1, n_bases * problem_dim + n_pressure_bases + 1);
-		stiffness.setFromTriplets(blocks.begin(), blocks.end());
-		stiffness.makeCompressed();
-
-		boundary_nodes.push_back(n_bases * problem_dim + 0);
-		// boundary_nodes.push_back(n_bases * problem_dim + 1);
-		// boundary_nodes.push_back(n_bases * problem_dim + 2);
-		// boundary_nodes.push_back(n_bases * problem_dim + 3);
-		// boundary_nodes.push_back(n_bases * problem_dim + 4);
-		// std::cout<<"asdasda "<<boundary_nodes.size()<<std::endl;
-
-		// Eigen::saveMarket(stiffness, "stiffness.txt");
-		// Eigen::saveMarket(velocity_stiffness, "velocity_stiffness.txt");
-		// Eigen::saveMarket(mixed_stiffness, "mixed_stiffness.txt");
-		// Eigen::saveMarket(pressure_stiffness, "pressure_stiffness.txt");
-
-		if (problem->is_time_dependent())
-		{
-			StiffnessMatrix velocity_mass;
-			assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, velocity_mass);
-
-			std::vector<Eigen::Triplet<double>> mass_blocks;
-			mass_blocks.reserve(velocity_mass.nonZeros());
-
-			for (int k = 0; k < velocity_mass.outerSize(); ++k)
-			{
-				for (StiffnessMatrix::InnerIterator it(velocity_mass, k); it; ++it)
+				for (int k = 0; k < velocity_mass.outerSize(); ++k)
 				{
-					mass_blocks.emplace_back(it.row(), it.col(), it.value());
+					for (StiffnessMatrix::InnerIterator it(velocity_mass, k); it; ++it)
+					{
+						mass_blocks.emplace_back(it.row(), it.col(), it.value());
+					}
 				}
-			}
 
-			mass.resize(n_bases * problem_dim + n_pressure_bases, problem_dim + n_pressure_bases);
-			mass.setFromTriplets(mass_blocks.begin(), mass_blocks.end());
-			mass.makeCompressed();
+				mass.resize(n_bases * problem_dim + n_pressure_bases, problem_dim + n_pressure_bases);
+				mass.setFromTriplets(mass_blocks.begin(), mass_blocks.end());
+				mass.makeCompressed();
+			}
 		}
 	}
 	else
@@ -2459,6 +2406,17 @@ void State::assemble_rhs()
 		rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs);
 	else
 		rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], std::vector<LocalBoundary>(), rhs);
+
+	//add a pressure node to avoid singular solution
+	if (assembler.is_mixed(formulation()))
+	{
+		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+		boundary_nodes.push_back(n_bases * problem_dim + 0);
+		// boundary_nodes.push_back(n_bases * problem_dim + 1);
+		// boundary_nodes.push_back(n_bases * problem_dim + 2);
+		// boundary_nodes.push_back(n_bases * problem_dim + 3);
+		// boundary_nodes.push_back(n_bases * problem_dim + 4);
+	}
 
 	// if(problem->is_mixed())
 	if (assembler.is_mixed(formulation()))
@@ -2764,14 +2722,16 @@ void State::solve_problem()
 					// nl_problem.reduced_to_full(tmp_sol, temp);
 					// x = temp;
 
-					assembler.assemble_energy_hessian(formulation(), mesh->is_volume(), n_bases, bases, gbases, sol, nlstiffness);
-					assembler.assemble_energy_gradient(formulation(), mesh->is_volume(), n_bases, bases, gbases, sol, grad);
+					// assembler.assemble_energy_hessian(formulation(), mesh->is_volume(), n_bases, bases, gbases, sol, nlstiffness);
+					nl_problem.hessian_full(sol, nlstiffness);
+					// assembler.assemble_energy_gradient(formulation(), mesh->is_volume(), n_bases, bases, gbases, sol, grad);
+					nl_problem.gradient_no_rhs(sol, grad);
 
 					b = grad;
 					for (int bId : boundary_nodes)
 						b(bId) = -(nl_problem.current_rhs()(bId) - prev_rhs(bId));
 					dirichlet_solve(*solver, nlstiffness, b, boundary_nodes, x, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
-
+					// logger().debug("Solver error: {}", (nlstiffness * sol - b).norm());
 					x = sol - x;
 					nl_problem.full_to_reduced(x, tmp_sol);
 					// nl_problem.reduced_to_full(tmp_sol, grad);
@@ -2866,58 +2826,69 @@ void State::solve_problem()
 					save_vtu("step_" + std::to_string(prev_t) + ".vtu");
 					save_wire("step_" + std::to_string(prev_t) + ".obj");
 				}
-
-				// {
-				// 	// tmp_sol.setRandom();
-				// 	Eigen::Matrix<double, Eigen::Dynamic, 1> actual_grad, expected_grad;
-				// 	nl_problem.gradient(tmp_sol, actual_grad);
-
-				// 	StiffnessMatrix hessian;
-				// 	Eigen::MatrixXd expected_hessian;
-				// 	nl_problem.hessian(tmp_sol, hessian);
-				// 	nl_problem.finiteGradient(tmp_sol, expected_grad, 0);
-
-				// 	Eigen::MatrixXd actual_hessian = Eigen::MatrixXd(hessian);
-
-				// 	for(int i = 0; i < actual_hessian.rows(); ++i)
-				// 	{
-				// 		double hhh = 1e-7;
-				// 		VectorXd xp = tmp_sol; xp(i) += hhh;
-				// 		VectorXd xm = tmp_sol; xm(i) -= hhh;
-
-				// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_p;
-				// 		nl_problem.gradient(xp, tmp_grad_p);
-
-				// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_m;
-				// 		nl_problem.gradient(xm, tmp_grad_m);
-
-				// 		Eigen::Matrix<double, Eigen::Dynamic, 1> fd_h = (tmp_grad_p - tmp_grad_m)/hhh/2.;
-
-				// 		const double vp = nl_problem.value(xp);
-				// 		const double vm = nl_problem.value(xm);
-
-				// 		const double fd = (vp-vm)/hhh/2.;
-				// 		const double  diff = std::abs(actual_grad(i) - fd);
-				// 		if(diff > 1e-6)
-				// 			std::cout<<"diff grad "<<i<<": "<<actual_grad(i)<<" vs "<<fd <<" error: " <<diff<<std::endl;
-
-				// 		for(int j = 0; j < actual_hessian.rows(); ++j)
-				// 		{
-				// 			const double diff = std::abs(actual_hessian(i,j) - fd_h(j));
-
-				// 			if(diff > 1e-6)
-				// 				std::cout<<"diff H "<<i<<", "<<j<<": "<<actual_hessian(i,j)<<" vs "<<fd_h(j)<<" error: " <<diff<<std::endl;
-
-				// 		}
-				// 	}
-				// 	// exit(0);
-
-				// 	// std::cout<<"diff grad "<<(actual_grad - expected_grad).array().abs().maxCoeff()<<std::endl;
-				// 	// std::cout<<"diff \n"<<(actual_grad - expected_grad)<<std::endl;
-				// }
 			}
 
+
+			// {
+			// 	boundary_nodes.clear();
+			// 	NLProblem nl_problem(*this, rhs_assembler, t);
+			// 	tmp_sol = rhs;
+
+			// 	// tmp_sol.setRandom();
+			// 	tmp_sol.setOnes();
+			// 	Eigen::Matrix<double, Eigen::Dynamic, 1> actual_grad;
+			// 	nl_problem.gradient(tmp_sol, actual_grad);
+
+			// 	StiffnessMatrix hessian;
+			// 	// Eigen::MatrixXd expected_hessian;
+			// 	nl_problem.hessian(tmp_sol, hessian);
+			// 	// nl_problem.finiteGradient(tmp_sol, expected_grad, 0);
+
+			// 	Eigen::MatrixXd actual_hessian = Eigen::MatrixXd(hessian);
+			// 	// std::cout << "hhh\n"<< actual_hessian<<std::endl;
+
+			// 		for (int i = 0; i < actual_hessian.rows(); ++i)
+			// 	{
+			// 		double hhh = 1e-7;
+			// 		VectorXd xp = tmp_sol; xp(i) += hhh;
+			// 		VectorXd xm = tmp_sol; xm(i) -= hhh;
+
+			// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_p;
+			// 		nl_problem.gradient(xp, tmp_grad_p);
+
+			// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_m;
+			// 		nl_problem.gradient(xm, tmp_grad_m);
+
+			// 		Eigen::Matrix<double, Eigen::Dynamic, 1> fd_h = (tmp_grad_p - tmp_grad_m)/(hhh*2.);
+
+			// 		const double vp = nl_problem.value(xp);
+			// 		const double vm = nl_problem.value(xm);
+
+			// 		const double fd = (vp-vm)/(hhh*2.);
+			// 		const double  diff = std::abs(actual_grad(i) - fd);
+			// 		// if(diff > 1e-6)
+			// 		// 	std::cout<<"diff grad "<<i<<": "<<actual_grad(i)<<" vs "<<fd <<" error: " <<diff<<" rrr: "<<actual_grad(i)/fd<<std::endl;
+
+			// 		for(int j = 0; j < actual_hessian.rows(); ++j)
+			// 		{
+			// 			const double diff = std::abs(actual_hessian(i,j) - fd_h(j));
+
+			// 			if(diff > 1e-5)
+			// 				std::cout<<"diff H "<<i<<", "<<j<<": "<<actual_hessian(i,j)<<" vs "<<fd_h(j)<<" error: " <<diff<<" rrr: "<<actual_hessian(i,j)/fd_h(j)<<std::endl;
+
+			// 		}
+			// 	}
+
+			// 	// std::cout<<"diff grad max "<<(actual_grad - expected_grad).array().abs().maxCoeff()<<std::endl;
+			// 	// std::cout<<"diff \n"<<(actual_grad - expected_grad)<<std::endl;
+			// 	exit(0);
+			// }
+
 			// NLProblem::reduced_to_full_aux(full_size, reduced_size, tmp_sol, rhs, sol);
+			if (assembler.is_mixed(formulation()))
+			{
+				sol_to_pressure();
+			}
 		}
 	}
 

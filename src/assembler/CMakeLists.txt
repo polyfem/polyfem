@@ -28,6 +28,8 @@ set(SOURCES
 	SaintVenantElasticity.hpp
 	Stokes.cpp
 	Stokes.hpp
+	NavierStokes.cpp
+	NavierStokes.hpp
 	utils/AssemblerUtils.cpp
 	utils/AssemblerUtils.hpp
 )
