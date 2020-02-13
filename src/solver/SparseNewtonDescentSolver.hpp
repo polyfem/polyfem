@@ -105,7 +105,7 @@ public:
 
 	double linesearch(const TVector &x, const TVector &grad, ProblemType &objFunc)
 	{
-		static const int MAX_STEP_SIZE_ITER = 12;
+		static const int MAX_STEP_SIZE_ITER = 20;
 
 		const double old_energy = objFunc.value(x);
 		double new_energy = old_energy;
@@ -129,7 +129,8 @@ public:
 			cur_iter++;
 		}
 
-		return step_size;
+		// return step_size;
+		return std::nan("");
 	}
 
 	void minimize(ProblemType &objFunc, TVector &x0)
@@ -165,7 +166,7 @@ public:
 		AssemblerUtils::instance().clear_cache();
 
 		size_t next_hessian = 0;
-		double factor = 1e-5;
+		// double factor = 1e-5;
 		double old_energy = std::nan("");
 		double first_energy = std::nan("");
 		error_code_ = 0;
@@ -178,7 +179,7 @@ public:
 			{
 				time.start();
 				objFunc.hessian(x0, hessian);
-				// hessian += 0.0 * id;
+				// hessian = 1e-8 * id;
 				//factor *= 1e-1;
 				time.stop();
 				polyfem::logger().debug("\tassembly time {}s", time.getElapsedTimeInSec());
@@ -242,7 +243,7 @@ public:
 				rate = MoreThuente<ProblemType, 1>::linesearch(x0, delta_x, objFunc);
 				break;
 			}
-
+			// rate = 1;
 			x0 += rate * delta_x;
 
 			polyfem::logger().debug("\tlinesearch time {}s", time.getElapsedTimeInSec());

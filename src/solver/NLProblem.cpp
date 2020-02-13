@@ -48,7 +48,7 @@ NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const doub
 			TVector grad;
 			gradient(x, grad);
 			// grad -= current_rhs();
-			return 0.5*grad.squaredNorm();
+			return grad.lpNorm<Eigen::Infinity>();
 		}
 
 		Eigen::MatrixXd full;

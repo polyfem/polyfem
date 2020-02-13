@@ -2459,7 +2459,7 @@ void State::solve_problem()
 		return;
 	}
 
-	const auto &assembler = AssemblerUtils::instance();
+	auto &assembler = AssemblerUtils::instance();
 
 	if (assembler.is_linear(formulation()) && stiffness.rows() <= 0)
 	{
@@ -2675,8 +2675,16 @@ void State::solve_problem()
 
 			VectorXd tmp_sol;
 
+
+			auto params = build_json_params();
+			const bool is_fluid = formulation() == "NavierStokes";
+			const double nu_target = params.count("viscosity") ? double(params["viscosity"]) : 1.;
+			double prev_nu = 1;
+			double step_nu = std::min(0.5, 1.0 / steps);
+			double nu = nu_target; //std::max(nu_target, 1.);
+
 			double step_t = 1.0 / steps;
-			double t = step_t;
+			double t = is_fluid? 1 : step_t;
 			double prev_t = 0;
 
 			sol.resizeLike(rhs);
@@ -2703,7 +2711,13 @@ void State::solve_problem()
 			igl::Timer update_timer;
 			while (t <= 1)
 			{
-				logger().info("t: {} prev: {} step: {}", t, prev_t, step_t);
+				if(is_fluid)
+					logger().info("nu: {} prev: {} target: {}", nu, prev_nu, nu_target);
+				else
+					logger().info("t: {} prev: {} step: {}", t, prev_t, step_t);
+
+				params["viscosity"]=nu;
+				assembler.set_parameters(params);
 
 				NLProblem nl_problem(*this, rhs_assembler, t);
 
@@ -2744,6 +2758,8 @@ void State::solve_problem()
 				{
 					Eigen::MatrixXd xxx = sol;
 					sol = x;
+					if (assembler.is_mixed(formulation()))
+						sol_to_pressure();
 					if (!solve_export_to_file)
 						solution_frames.emplace_back();
 
@@ -2765,11 +2781,20 @@ void State::solve_problem()
 
 				if (has_nan)
 				{
-					do
+					if(is_fluid)
 					{
-						step_t /= 2;
-						t = prev_t + step_t;
-					} while (t >= 1);
+						step_nu = std::pow(step_nu, 1. / 1.5);
+						nu = prev_nu;
+						nu = std::max(nu_target, nu * step_nu);
+					}
+					else
+					{
+						do
+						{
+							step_t /= 2;
+							t = prev_t + step_t;
+						} while (t >= 1);
+					}
 					continue;
 				}
 
@@ -2781,17 +2806,30 @@ void State::solve_problem()
 
 					if (nlsolver.error_code() == -10) //Nan
 					{
-						do
+						if (is_fluid)
 						{
-							step_t /= 2;
-							t = prev_t + step_t;
-						} while (t >= 1);
+							step_nu = std::pow(step_nu, 1. / 1.5);
+							nu = prev_nu;
+							nu = std::max(nu_target, nu * step_nu);
+						}
+						else
+						{
+							do
+							{
+								step_t /= 2;
+								t = prev_t + step_t;
+							} while (t >= 1);
+						}
 						continue;
 					}
 					else
 					{
 						prev_t = t;
 						step_t *= 2;
+
+						prev_nu = nu;
+						step_nu = std::pow(step_nu, 1.5);
+						nu = std::max(nu_target, nu * step_nu);
 					}
 
 					if (step_t > 1.0 / steps)
@@ -2816,6 +2854,8 @@ void State::solve_problem()
 				t = prev_t + step_t;
 				if ((prev_t < 1 && t > 1) || abs(t - 1) < 1e-10)
 					t = 1;
+				if(is_fluid)
+					t = 1;
 
 				nl_problem.reduced_to_full(tmp_sol, sol);
 				prev_rhs = nl_problem.current_rhs();
@@ -2826,8 +2866,15 @@ void State::solve_problem()
 					save_vtu("step_" + std::to_string(prev_t) + ".vtu");
 					save_wire("step_" + std::to_string(prev_t) + ".obj");
 				}
+
+				if (is_fluid && prev_nu <= nu_target)
+					break;
 			}
 
+			if (assembler.is_mixed(formulation()))
+			{
+				sol_to_pressure();
+			}
 
 			// {
 			// 	boundary_nodes.clear();
@@ -2885,10 +2932,7 @@ void State::solve_problem()
 			// }
 
 			// NLProblem::reduced_to_full_aux(full_size, reduced_size, tmp_sol, rhs, sol);
-			if (assembler.is_mixed(formulation()))
-			{
-				sol_to_pressure();
-			}
+
 		}
 	}
 
