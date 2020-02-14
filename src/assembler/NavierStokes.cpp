@@ -113,14 +113,183 @@ namespace polyfem
 	Eigen::MatrixXd
 	NavierStokesVelocity::assemble_grad(const ElementAssemblyValues &vals, const Eigen::MatrixXd &velocity, const QuadratureVector &da) const
 	{
-		typedef DScalar1<double, Eigen::VectorXd> GradDScalarT;
-		const auto tmp = compute_grad_aux<GradDScalarT>(vals, velocity, da);
-		Eigen::MatrixXd H(tmp.size(), tmp.size());
-		for(int i = 0; i < tmp.size(); ++i)
-			H.col(i) = tmp(i).getGradient();
+		// typedef DScalar1<double, Eigen::VectorXd> GradDScalarT;
+		// const auto tmp = compute_grad_aux<GradDScalarT>(vals, velocity, da);
+		// Eigen::MatrixXd H(tmp.size(), tmp.size());
+		// for(int i = 0; i < tmp.size(); ++i)
+		// 	H.col(i) = tmp(i).getGradient();
 
-		// std::cout<<H<<std::endl;
+		// // std::cout<<H<<std::endl;
+		// Eigen::MatrixXd Hh = H;
+
+
+
+		// Eigen::MatrixXd H = compute_N(vals, velocity, da) + compute_W(vals, velocity, da);
+
+		//For picard
+		Eigen::MatrixXd H = compute_N(vals, velocity, da);
+
 		return H;
+	}
+
+	//Compute N = int v \cdot \nabla phi_i \cdot \phi_j
+	Eigen::MatrixXd NavierStokesVelocity::compute_N(const ElementAssemblyValues &vals, const Eigen::MatrixXd &velocity, const QuadratureVector &da) const
+	{
+		typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> GradMat;
+
+		assert(velocity.cols() == 1);
+
+		const int n_pts = da.size();
+		const int n_bases = vals.basis_values.size();
+
+		Eigen::Matrix<double, Eigen::Dynamic, 1> local_vel(n_bases * size(), 1);
+		local_vel.setZero();
+		for (size_t i = 0; i < n_bases; ++i)
+		{
+			const auto &bs = vals.basis_values[i];
+			for (size_t ii = 0; ii < bs.global.size(); ++ii)
+			{
+				for (int d = 0; d < size(); ++d)
+				{
+					local_vel(i * size() + d) += bs.global[ii].val * velocity(bs.global[ii].index * size() + d);
+				}
+			}
+		}
+
+
+		Eigen::MatrixXd N(size() * n_bases, size() * n_bases);
+		N.setZero();
+
+		GradMat grad_i(size(), size());
+		GradMat jac_it(size(), size());
+
+		Eigen::VectorXd vel(size(), 1);
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> phi_j(size(), 1);
+
+
+		for (long p = 0; p < n_pts; ++p)
+		{
+			vel .setZero();
+
+			for (size_t i = 0; i < n_bases; ++i)
+			{
+				const auto &bs = vals.basis_values[i];
+				const double val = bs.val(p);
+
+				for (int d = 0; d < size(); ++d)
+				{
+					vel(d) += val * local_vel(i * size() + d);
+				}
+			}
+
+			for (long k = 0; k < jac_it.size(); ++k)
+				jac_it(k) = vals.jac_it[p](k);
+
+			for (int i = 0; i < n_bases; ++i)
+			{
+				const auto &bi = vals.basis_values[i];
+				for (int m = 0; m < size(); ++m)
+				{
+					grad_i.setZero();
+					grad_i.row(m) = bi.grad.row(p);
+					grad_i = grad_i * jac_it;
+
+					for (int j = 0; j < n_bases; ++j)
+					{
+						const auto &bj = vals.basis_values[j];
+						for (int n = 0; n < size(); ++n)
+						{
+							phi_j.setZero();
+							phi_j(n) = bj.val(p);
+							N(i * size() + m, j * size() + n) += (grad_i.transpose() * vel).dot(phi_j) * da(p);
+						}
+					}
+				}
+			}
+		}
+
+		return N;
+	}
+
+	//Compute N = int phi_j \cdot \nabla v \cdot \phi_j
+	Eigen::MatrixXd NavierStokesVelocity::compute_W(const ElementAssemblyValues &vals, const Eigen::MatrixXd &velocity, const QuadratureVector &da) const
+	{
+		typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> GradMat;
+
+		assert(velocity.cols() == 1);
+
+		const int n_pts = da.size();
+		const int n_bases = vals.basis_values.size();
+
+		Eigen::Matrix<double, Eigen::Dynamic, 1> local_vel(n_bases * size(), 1);
+		local_vel.setZero();
+		for (size_t i = 0; i < n_bases; ++i)
+		{
+			const auto &bs = vals.basis_values[i];
+			for (size_t ii = 0; ii < bs.global.size(); ++ii)
+			{
+				for (int d = 0; d < size(); ++d)
+				{
+					local_vel(i * size() + d) += bs.global[ii].val * velocity(bs.global[ii].index * size() + d);
+				}
+			}
+		}
+
+		Eigen::MatrixXd W(size() * n_bases, size() * n_bases);
+		W.setZero();
+
+		GradMat grad_v(size(), size());
+		GradMat jac_it(size(), size());
+
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> phi_i(size(), 1);
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> phi_j(size(), 1);
+
+		for (long p = 0; p < n_pts; ++p)
+		{
+			grad_v.setZero();
+
+			for (size_t i = 0; i < n_bases; ++i)
+			{
+				const auto &bs = vals.basis_values[i];
+				const Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> grad = bs.grad.row(p);
+				assert(grad.size() == size());
+
+				for (int d = 0; d < size(); ++d)
+				{
+					for (int c = 0; c < size(); ++c)
+					{
+						grad_v(d, c) += grad(c) * local_vel(i * size() + d);
+					}
+				}
+			}
+
+			for (long k = 0; k < jac_it.size(); ++k)
+				jac_it(k) = vals.jac_it[p](k);
+			grad_v = (grad_v * jac_it).eval();
+
+			for (int i = 0; i < n_bases; ++i)
+			{
+				const auto &bi = vals.basis_values[i];
+				for (int m = 0; m < size(); ++m)
+				{
+					phi_i.setZero();
+					phi_i(m) = bi.val(p);
+
+					for (int j = 0; j < n_bases; ++j)
+					{
+						const auto &bj = vals.basis_values[j];
+						for (int n = 0; n < size(); ++n)
+						{
+							phi_j.setZero();
+							phi_j(n) = bj.val(p);
+							W(i * size() + m, j * size() + n) += (grad_v.transpose() * phi_i).dot(phi_j) * da(p);
+						}
+					}
+				}
+			}
+		}
+
+		return W;
 	}
 
 	//Compute \int (v . grad v, psi)

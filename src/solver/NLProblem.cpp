@@ -48,7 +48,8 @@ NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const doub
 			TVector grad;
 			gradient(x, grad);
 			// grad -= current_rhs();
-			return grad.lpNorm<Eigen::Infinity>();
+			// return grad.lpNorm<Eigen::Infinity>();
+			return grad.norm();
 		}
 
 		Eigen::MatrixXd full;
@@ -91,6 +92,8 @@ NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const doub
 		grad -= current_rhs();
 
 		full_to_reduced(grad, gradv);
+
+		// std::cout<<"gradv\n"<<gradv<<"\n--------------\n"<<std::endl;
 	}
 
 	void NLProblem::gradient_no_rhs(const TVector &x, Eigen::MatrixXd &grad)

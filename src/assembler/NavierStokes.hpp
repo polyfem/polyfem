@@ -46,5 +46,7 @@ namespace polyfem
 
 		template <typename T>
 		Eigen::Matrix<T, Eigen::Dynamic, 1> compute_grad_aux(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const;
+		Eigen::MatrixXd compute_N(const ElementAssemblyValues &vals, const Eigen::MatrixXd &velocity, const QuadratureVector &da) const;
+		Eigen::MatrixXd compute_W(const ElementAssemblyValues &vals, const Eigen::MatrixXd &velocity, const QuadratureVector &da) const;
 	};
 }

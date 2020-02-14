@@ -1,6 +1,9 @@
 #include <polyfem/AssemblerUtils.hpp>
 #include <polyfem/Logger.hpp>
 
+#include <unsupported/Eigen/SparseExtra>
+
+
 namespace polyfem
 {
 	AssemblerUtils &AssemblerUtils::instance()
@@ -487,7 +490,8 @@ namespace polyfem
 		stiffness.setFromTriplets(blocks.begin(), blocks.end());
 		stiffness.makeCompressed();
 
-		// Eigen::saveMarket(stiffness, "stiffness.txt");
+		// static int c = 0;
+		// Eigen::saveMarket(stiffness, "stiffness"+std::to_string(c++)+".txt");
 		// Eigen::saveMarket(velocity_stiffness, "velocity_stiffness.txt");
 		// Eigen::saveMarket(mixed_stiffness, "mixed_stiffness.txt");
 		// Eigen::saveMarket(pressure_stiffness, "pressure_stiffness.txt");

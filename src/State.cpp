@@ -2131,6 +2131,7 @@ void State::build_basis()
 
 	build_polygonal_basis();
 
+
 	auto &gbases = iso_parametric() ? bases : geom_bases;
 
 	n_flipped = 0;
@@ -2165,6 +2166,19 @@ void State::build_basis()
 	// flipped_elements.resize(std::distance(flipped_elements.begin(), it));
 
 	problem->setup_bc(*mesh, bases, local_boundary, boundary_nodes, local_neumann_boundary);
+
+	//add a pressure node to avoid singular solution
+	if (assembler.is_mixed(formulation()))
+	{
+		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+		boundary_nodes.push_back(n_bases * problem_dim + 0);
+
+		// boundary_nodes.push_back(n_bases * problem_dim + 1);
+		// boundary_nodes.push_back(n_bases * problem_dim + 2);
+		// boundary_nodes.push_back(n_bases * problem_dim + 3);
+		// boundary_nodes.push_back(n_bases * problem_dim + 4);
+	}
+
 
 	const auto &curret_bases = iso_parametric() ? bases : geom_bases;
 	const int n_samples = 10;
@@ -2407,17 +2421,6 @@ void State::assemble_rhs()
 	else
 		rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], std::vector<LocalBoundary>(), rhs);
 
-	//add a pressure node to avoid singular solution
-	if (assembler.is_mixed(formulation()))
-	{
-		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
-		boundary_nodes.push_back(n_bases * problem_dim + 0);
-		// boundary_nodes.push_back(n_bases * problem_dim + 1);
-		// boundary_nodes.push_back(n_bases * problem_dim + 2);
-		// boundary_nodes.push_back(n_bases * problem_dim + 3);
-		// boundary_nodes.push_back(n_bases * problem_dim + 4);
-	}
-
 	// if(problem->is_mixed())
 	if (assembler.is_mixed(formulation()))
 	{
@@ -2653,6 +2656,10 @@ void State::solve_problem()
 			logger().debug("Solver error: {}", (A * sol - b).norm());
 			// sol = rhs;
 
+			// std::ofstream of("sol.txt");
+			// of<<sol<<std::endl;
+			// of.close();
+
 			// if(problem->is_mixed())
 			if (assembler.is_mixed(formulation()))
 			{
@@ -2858,6 +2865,11 @@ void State::solve_problem()
 					t = 1;
 
 				nl_problem.reduced_to_full(tmp_sol, sol);
+
+
+				// std::ofstream of("sol.txt");
+				// of<<sol<<std::endl;
+				// of.close();
 				prev_rhs = nl_problem.current_rhs();
 				if (args["save_solve_sequence"])
 				{

@@ -21,8 +21,8 @@ namespace polyfem
 
 		for(long i = 0; i < pts.rows(); ++i)
 		{
-			if(mesh.get_boundary_id(global_ids(i))== 1)
-				val(i, 1)=0.25;
+			if(mesh.get_boundary_id(global_ids(i))== 4)
+				val(i, 0)=1;
 			// else if(mesh.get_boundary_id(global_ids(i))== 3)
 				// val(i, 1)=-0.25;
 		}

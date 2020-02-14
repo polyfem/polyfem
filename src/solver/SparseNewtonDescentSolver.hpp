@@ -35,15 +35,16 @@ public:
 		ArmijoAlt,
 		Bisection,
 		MoreThuente,
+		None
 	};
 
 	SparseNewtonDescentSolver(const json &solver_param, const std::string &solver_type, const std::string &precond_type)
 		: solver_param(solver_param), solver_type(solver_type), precond_type(precond_type)
 	{
 		auto criteria = this->criteria();
-		criteria.fDelta = 1e-9;
-		criteria.gradNorm = 1e-8;
-		criteria.iterations = 100;
+		criteria.fDelta = solver_param.count("fDelta") ? double(solver_param["fDelta"]):  1e-9;
+		criteria.gradNorm = solver_param.count("gradNorm") ? double(solver_param["gradNorm"]) : 1e-8;
+		criteria.iterations = solver_param.count("nl_iterations") ? int(solver_param["nl_iterations"]) : 100;
 		this->setStopCriteria(criteria);
 	}
 
@@ -64,6 +65,10 @@ public:
 		else if (name == "more_thuente")
 		{
 			line_search = LineSearch::MoreThuente;
+		}
+		else if (name == "none")
+		{
+			line_search = LineSearch::None;
 		}
 		else
 		{
@@ -105,7 +110,7 @@ public:
 
 	double linesearch(const TVector &x, const TVector &grad, ProblemType &objFunc)
 	{
-		static const int MAX_STEP_SIZE_ITER = 20;
+		static const int MAX_STEP_SIZE_ITER = 25;
 
 		const double old_energy = objFunc.value(x);
 		double new_energy = old_energy;
@@ -242,8 +247,11 @@ public:
 			case LineSearch::MoreThuente:
 				rate = MoreThuente<ProblemType, 1>::linesearch(x0, delta_x, objFunc);
 				break;
+			case LineSearch::None:
+				rate = 1e-1;
+				break;
 			}
-			// rate = 1;
+
 			x0 += rate * delta_x;
 
 			polyfem::logger().debug("\tlinesearch time {}s", time.getElapsedTimeInSec());
@@ -263,10 +271,10 @@ public:
 				first_energy = energy;
 			}
 
-			if (std::isnan(energy))
+			if (std::isnan(energy) || std::isinf(energy))
 			{
 				this->m_status = Status::UserDefined;
-				polyfem::logger().debug("stopping because obj func is nan");
+				polyfem::logger().debug("stopping because obj func is nan or inf");
 				error_code_ = -10;
 			}
 

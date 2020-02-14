@@ -149,8 +149,16 @@ void RhsAssembler::set_bc(
 
 	// assert((bounday_nodes.size()/actual_dim)*actual_dim == bounday_nodes.size());
 
-	for (int b : bounday_nodes)
-		is_boundary[b / actual_dim] = true;
+	int skipped_count = 0;
+	for (int b : bounday_nodes){
+		int bindex = b / actual_dim;
+
+		if(bindex < is_boundary.size())
+			is_boundary[bindex] = true;
+		else
+			skipped_count++;
+	}
+	assert(skipped_count==1);
 
 	for (const auto &lb : local_boundary)
 	{

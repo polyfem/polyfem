@@ -1106,6 +1106,51 @@ void UIState::show_nodes()
 	if (visible_visualizations(Visualizations::BNodes))
 		show_data(Visualizations::BNodes);
 
+	if (!available_visualizations[Visualizations::BPNodes])
+	{
+		reset_flags(Visualizations::BPNodes);
+
+		int shown_boundaries = 0;
+		col << 1, 0.5, 0.5;
+		for (std::size_t i = 0; i < state.pressure_bases.size(); ++i)
+		{
+			const ElementBases &basis = state.pressure_bases[i];
+			Eigen::MatrixXd P(basis.bases.size(), 3);
+
+			for (std::size_t j = 0; j < basis.bases.size(); ++j)
+			{
+				for (std::size_t kk = 0; kk < basis.bases[j].global().size(); ++kk)
+				{
+					const Local2Global &l2g = basis.bases[j].global()[kk];
+					int g_index = l2g.index;
+					bool is_boundary = false;
+
+					g_index += state.mesh->dimension()*state.n_bases;
+
+					is_boundary = std::find(state.boundary_nodes.begin(), state.boundary_nodes.end(), g_index) != state.boundary_nodes.end();
+
+					if (is_boundary)
+					{
+						MatrixXd node = l2g.node;
+						data(Visualizations::BPNodes).add_points(node, col);
+						++shown_boundaries;
+					}
+				}
+			}
+
+			// if(shown_boundaries > 4500)
+			// 	break;
+		}
+
+		available_visualizations[Visualizations::BPNodes] = true;
+		vis_flags[Visualizations::BPNodes].clear();
+		hide_data(Visualizations::BPNodes);
+	}
+
+	if (visible_visualizations(Visualizations::BPNodes))
+		show_data(Visualizations::BPNodes);
+
+
 	if (state.n_pressure_bases <= 3500)
 	{
 		if ((visible_visualizations(Visualizations::PNodes) || visible_visualizations(Visualizations::NodesId)) && !available_visualizations[Visualizations::PNodes])
@@ -1130,7 +1175,7 @@ void UIState::show_nodes()
 						data(Visualizations::PNodes).add_points(node, col);
 
 						//TODO text is impossible to hide :(
-						// data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(g_index));
+						data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(g_index));
 					}
 				}
 			}
