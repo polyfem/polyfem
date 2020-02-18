@@ -208,7 +208,7 @@ public:
 			objFunc.gradient(x0, grad);
 			time.stop();
 
-			polyfem::logger().debug("\tgrad time {}s", time.getElapsedTimeInSec());
+			polyfem::logger().debug("\tgrad time {}s norm: {}", time.getElapsedTimeInSec(), grad.norm());
 			grad_time += time.getElapsedTimeInSec();
 
 			// std::cout<<hessian<<std::endl;

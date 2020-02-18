@@ -1175,7 +1175,7 @@ void UIState::show_nodes()
 						data(Visualizations::PNodes).add_points(node, col);
 
 						//TODO text is impossible to hide :(
-						data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(g_index));
+						// data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(g_index));
 					}
 				}
 			}

@@ -14,6 +14,8 @@ set(SOURCES
 	NLProblem.cpp
 	NLProblem.hpp
 	SparseNewtonDescentSolver.hpp
+	NavierStokesSolver.cpp
+	NavierStokesSolver.hpp
 )
 
 prepend_current_path(SOURCES)

@@ -201,7 +201,7 @@ namespace polyfem
 						{
 							phi_j.setZero();
 							phi_j(n) = bj.val(p);
-							N(i * size() + m, j * size() + n) += (grad_i.transpose() * vel).dot(phi_j) * da(p);
+							N(i * size() + m, j * size() + n) += (grad_i * vel).dot(phi_j) * da(p);
 						}
 					}
 				}
@@ -282,7 +282,7 @@ namespace polyfem
 						{
 							phi_j.setZero();
 							phi_j(n) = bj.val(p);
-							W(i * size() + m, j * size() + n) += (grad_v.transpose() * phi_i).dot(phi_j) * da(p);
+							W(i * size() + m, j * size() + n) += (grad_v * phi_i).dot(phi_j) * da(p);
 						}
 					}
 				}
