@@ -105,7 +105,7 @@ namespace polyfem
         const int n_cells = tets.rows();
         os << "<Cells>\n";
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        os << "<DataArray type=\"UInt64\" Name=\"connectivity\" format=\"ascii\">\n";
+        os << "<DataArray type=\"Int64\" Name=\"connectivity\" format=\"ascii\">\n";
 
         const int n_vertices = tets.cols();
 
@@ -134,7 +134,7 @@ namespace polyfem
             max_tag = VTKTagVolume(n_vertices);
         }
 
-        os << "<DataArray type=\"UInt8\" Name=\"types\" format=\"ascii\" RangeMin=\"" << min_tag << "\" RangeMax=\"" << max_tag << "\">\n";
+        os << "<DataArray type=\"Int8\" Name=\"types\" format=\"ascii\" RangeMin=\"" << min_tag << "\" RangeMax=\"" << max_tag << "\">\n";
         for (int i = 0; i < n_cells; ++i)
         {
             if (is_volume_)
@@ -145,7 +145,7 @@ namespace polyfem
         os << "</DataArray>\n";
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        os << "<DataArray type=\"UInt64\" Name=\"offsets\" format=\"ascii\" RangeMin=\"" << n_vertices << "\" RangeMax=\"" << n_cells *n_vertices << "\">\n";
+        os << "<DataArray type=\"Int64\" Name=\"offsets\" format=\"ascii\" RangeMin=\"" << n_vertices << "\" RangeMax=\"" << n_cells *n_vertices << "\">\n";
 
         int acc = n_vertices;
         for (int i = 0; i < n_cells; ++i) {
