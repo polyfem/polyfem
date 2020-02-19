@@ -155,6 +155,32 @@ namespace polyfem
 
 
 
+	FlowWithObstacle::FlowWithObstacle(const std::string &name)
+		: Problem(name)
+	{
+		boundary_ids_ = {1, 2, 4, 7};
+	}
+
+	void FlowWithObstacle::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+	}
+
+	void FlowWithObstacle::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+
+		for (long i = 0; i < pts.rows(); ++i)
+		{
+			if (mesh.get_boundary_id(global_ids(i)) == 1){
+				const double y = pts(i, 1);
+				val(i, 0) = 1.5 * 4 * y * (0.41-y)/(0.41*0.41);
+			}
+
+		}
+
+		val *= t;
+	}
 
 	TimeDependentFlow::TimeDependentFlow(const std::string &name)
 	: Flow(name)
