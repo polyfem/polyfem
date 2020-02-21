@@ -2684,6 +2684,11 @@ void State::solve_problem()
 				const int reduced_size = n_bases * mesh->dimension() - boundary_nodes.size();
 
 				int steps = args["nl_solver_rhs_steps"];
+				if(steps <= 0){
+					RowVectorNd min, max;
+					mesh->bounding_box(min, max);
+					steps = problem->n_incremental_load_steps((max-min).norm());
+				}
 				RhsAssembler rhs_assembler(*mesh, n_bases, mesh->dimension(), bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
 
 				StiffnessMatrix nlstiffness;

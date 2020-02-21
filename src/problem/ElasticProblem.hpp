@@ -20,6 +20,8 @@ namespace polyfem
 
 		bool has_exact_sol() const override { return false; }
 		bool is_scalar() const override { return false; }
+
+		int n_incremental_load_steps(const double diag) const override { return 1/diag; }
 	};
 
 	class TorsionElasticProblem: public Problem
@@ -37,6 +39,9 @@ namespace polyfem
 		bool is_linear_in_time() const override { return false; }
 
 		void set_parameters(const json &params) override;
+
+		int n_incremental_load_steps(const double diag) const override { return 10 * n_turns_; }
+
 	private:
 		double n_turns_ = 0.5;
 		int coordiante_0_ = 0;
@@ -56,6 +61,8 @@ namespace polyfem
 
 		bool has_exact_sol() const override { return false; }
 		bool is_scalar() const override { return false; }
+
+		int n_incremental_load_steps(const double diag) const override { return 2/diag; }
 	};
 
 

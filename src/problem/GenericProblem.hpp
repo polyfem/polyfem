@@ -39,6 +39,8 @@ namespace polyfem
 		void exact_grad(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 
 		// bool is_mixed() const override { return is_mixed_; }
+		int n_incremental_load_steps(const double diag) const override;
+
 	private:
 		bool all_dimentions_dirichelt_ = true;
 		bool has_exact_ = false;

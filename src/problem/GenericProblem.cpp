@@ -270,6 +270,44 @@ namespace polyfem
 		}
 	}
 
+	int GenericTensorProblem::n_incremental_load_steps(const double diag) const
+	{
+		double max;
+		Eigen::Matrix<double, 1, 3, Eigen::RowMajor> tmp;
+
+		for (const auto &vec : forces_)
+		{
+			const int dim = vec.size();
+			for (int i = 0; i < dim; ++i)
+			{
+				tmp[i] = vec[i](0, 0, 0);
+			}
+
+			max = std::max(max, tmp.norm());
+		}
+
+		for (const auto &vec : displacements_)
+		{
+			const int dim = vec.size();
+			for (int i = 0; i < dim; ++i)
+			{
+				tmp[i] = vec[i](0, 0, 0);
+			}
+
+			max = std::max(max, tmp.norm());
+		}
+
+		const int dim = rhs_.size();
+		for (int i = 0; i < dim; ++i)
+		{
+			tmp[i] = rhs_[i](0, 0, 0);
+		}
+
+		max = std::max(max, tmp.norm());
+
+		return 4*max/diag;
+	}
+
 
 
 

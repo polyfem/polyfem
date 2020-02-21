@@ -46,6 +46,8 @@ namespace polyfem
 		virtual void initial_velocity(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { }
 		virtual void initial_acceleration(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { }
 
+		virtual int n_incremental_load_steps(const double diag) const { return 1; }
+
 		virtual void set_parameters(const json &params) { }
 
 		void setup_bc(const Mesh &mesh, const std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &boundary_nodes, std::vector< LocalBoundary > &local_neumann_boundary);
