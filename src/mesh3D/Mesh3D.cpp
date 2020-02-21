@@ -221,7 +221,7 @@ namespace polyfem
 
 			for (int i = 0; i < 1; ++i) {
 				mesh_.elements[i].hex = false;
-			}
+			}//FIME me here!
 
 			mesh_.type = M.cells.are_simplices() ? MeshType::Tet : MeshType::Hyb;
 		}

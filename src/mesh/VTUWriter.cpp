@@ -161,7 +161,7 @@ namespace polyfem
     void VTUWriter::clear()
     {
         point_data_.clear();
-        cell_data_.clear();;
+        cell_data_.clear();
     }
 
     void VTUWriter::add_field(const std::string &name, const Eigen::MatrixXd &data)

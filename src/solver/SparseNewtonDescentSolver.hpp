@@ -190,7 +190,7 @@ public:
 				polyfem::logger().debug("\tassembly time {}s", time.getElapsedTimeInSec());
 				assembly_time += time.getElapsedTimeInSec();
 
-				next_hessian += 5;
+				next_hessian += 1;
 
 				if (iter == 0)
 				{

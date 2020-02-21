@@ -2724,6 +2724,12 @@ void State::solve_problem()
 				igl::Timer update_timer;
 				while (t <= 1)
 				{
+					if (step_t < 1e-10)
+					{
+						logger().error("Step too small, giving up");
+						break;
+					}
+
 					logger().info("t: {} prev: {} step: {}", t, prev_t, step_t);
 
 					NLProblem nl_problem(*this, rhs_assembler, t);
