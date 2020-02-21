@@ -9,6 +9,8 @@
 
 #include <igl/Timer.h>
 
+#include <unsupported/Eigen/SparseExtra>
+
 #include <cmath>
 
 namespace polyfem
@@ -45,7 +47,7 @@ void NavierStokesSolver::minimize(const State &state, const Eigen::MatrixXd &rhs
 	assembler.assemble_mixed_problem(state.formulation(), state.mesh->is_volume(), state.n_pressure_bases, state.n_bases, state.pressure_bases, state.bases, gbases, mixed_stiffness);
 	assembler.assemble_pressure_problem(state.formulation(), state.mesh->is_volume(), state.n_pressure_bases, state.pressure_bases, gbases, pressure_stiffness);
 
-	AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim,
+	AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, false,
 										 velocity_stiffness, mixed_stiffness, pressure_stiffness,
 										 stoke_stiffness);
 	time.stop();
@@ -74,14 +76,14 @@ void NavierStokesSolver::minimize(const State &state, const Eigen::MatrixXd &rhs
 
 	time.start();
 	assembler.assemble_energy_hessian(state.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, x, nl_matrix);
-	AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim,
+	AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, false,
 										 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 										 total_matrix);
 	time.stop();
 	assembly_time = time.getElapsedTimeInSec();
 	logger().debug("\tNavier Stokes assembly time {}s", time.getElapsedTimeInSec());
 
-	Eigen::VectorXd nlres = -total_matrix * x + rhs;
+	Eigen::VectorXd nlres = -(total_matrix * x) + rhs;
 	for (int i : state.boundary_nodes)
 		nlres[i] = 0;
 	Eigen::VectorXd dx;
@@ -107,14 +109,14 @@ void NavierStokesSolver::minimize(const State &state, const Eigen::MatrixXd &rhs
 
 		time.start();
 		assembler.assemble_energy_hessian(state.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, x, nl_matrix);
-		AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim,
+		AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, false,
 											 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 											 total_matrix);
 		time.stop();
 		logger().debug("\tassembly time {}s", time.getElapsedTimeInSec());
 		assembly_time += time.getElapsedTimeInSec();
 
-		nlres = -total_matrix * x + rhs;
+		nlres = -(total_matrix * x) + rhs;
 		for (int i : state.boundary_nodes)
 			nlres[i] = 0;
 		nlres_norm = nlres.norm();

@@ -129,7 +129,7 @@ namespace polyfem
 		//For picard
 		Eigen::MatrixXd H = compute_N(vals, velocity, da);
 
-		return H;
+		return H.transpose();
 	}
 
 	//Compute N = int v \cdot \nabla phi_i \cdot \phi_j

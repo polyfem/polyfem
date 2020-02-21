@@ -38,6 +38,11 @@ namespace polyfem
 		return assembler == "Laplacian" || assembler == "Helmholtz" || assembler == "Bilaplacian";
 	}
 
+	bool AssemblerUtils::is_fluid(const std::string &assembler) const
+	{
+		return assembler == "Stokes" || assembler == "NavierStokes";
+	}
+
 	bool AssemblerUtils::is_tensor(const std::string &assembler) const
 	{
 		return assembler == "LinearElasticity" || assembler == "HookeLinearElasticity" ||
@@ -445,7 +450,7 @@ namespace polyfem
 	}
 
 	void AssemblerUtils::merge_mixed_matrices(
-		const int n_bases, const int n_pressure_bases, const int problem_dim,
+		const int n_bases, const int n_pressure_bases, const int problem_dim, const bool add_average,
 		const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
 		StiffnessMatrix &stiffness)
 	{
@@ -458,8 +463,10 @@ namespace polyfem
 		assert(pressure_stiffness.size() == 0 || pressure_stiffness.rows() == n_pressure_bases);
 		assert(pressure_stiffness.size() == 0 || pressure_stiffness.cols() == n_pressure_bases);
 
+		const int avg_offset = add_average ? 1 : 0;
+
 		std::vector<Eigen::Triplet<double>> blocks;
-		blocks.reserve(velocity_stiffness.nonZeros() + 2 * mixed_stiffness.nonZeros() + pressure_stiffness.nonZeros());
+		blocks.reserve(velocity_stiffness.nonZeros() + 2 * mixed_stiffness.nonZeros() + pressure_stiffness.nonZeros() + 2 * avg_offset * velocity_stiffness.rows());
 
 		for (int k = 0; k < velocity_stiffness.outerSize(); ++k)
 		{
@@ -486,12 +493,22 @@ namespace polyfem
 			}
 		}
 
-		stiffness.resize(n_bases * problem_dim + n_pressure_bases, n_bases * problem_dim + n_pressure_bases);
+		if(add_average)
+		{
+			const double val = 1.0/n_pressure_bases;
+			for (int i = 0; i < n_pressure_bases; ++i)
+			{
+				blocks.emplace_back(n_bases * problem_dim + i, n_bases * problem_dim + n_pressure_bases, val);
+				blocks.emplace_back(n_bases * problem_dim + n_pressure_bases, n_bases * problem_dim + i, val);
+			}
+		}
+
+		stiffness.resize(n_bases * problem_dim + n_pressure_bases + avg_offset, n_bases * problem_dim + n_pressure_bases + avg_offset);
 		stiffness.setFromTriplets(blocks.begin(), blocks.end());
 		stiffness.makeCompressed();
 
 		// static int c = 0;
-		// Eigen::saveMarket(stiffness, "stiffness"+std::to_string(c++)+".txt");
+		// Eigen::saveMarket(stiffness, "stiffness.txt");
 		// Eigen::saveMarket(velocity_stiffness, "velocity_stiffness.txt");
 		// Eigen::saveMarket(mixed_stiffness, "mixed_stiffness.txt");
 		// Eigen::saveMarket(pressure_stiffness, "pressure_stiffness.txt");

@@ -131,6 +131,7 @@ namespace polyfem
 		bool is_mixed(const std::string &assembler) const;
 
 		bool is_gradient_based(const std::string &assembler) const;
+		bool is_fluid(const std::string &assembler) const;
 
 		//getters
 		const std::vector<std::string> &scalar_assemblers() const { return scalar_assemblers_; }
@@ -140,7 +141,7 @@ namespace polyfem
 		void clear_cache();
 
 		static void merge_mixed_matrices(
-			const int n_bases, const int n_pressure_bases, const int problem_dim,
+			const int n_bases, const int n_pressure_bases, const int problem_dim, const bool add_average,
 			const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
 			StiffnessMatrix &stiffness);
 

@@ -158,7 +158,7 @@ void RhsAssembler::set_bc(
 		else
 			skipped_count++;
 	}
-	assert(skipped_count==1);
+	assert(skipped_count<=1);
 
 	for (const auto &lb : local_boundary)
 	{

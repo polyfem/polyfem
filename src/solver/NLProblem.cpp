@@ -80,7 +80,7 @@ NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const doub
 
 			const int problem_dim = state.problem->is_scalar() ? 1 : state.mesh->dimension();
 
-			AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim,
+			AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, false, //assembler.is_fluid(state.formulation()),
 												 velocity_stiffness, mixed_stiffness, pressure_stiffness,
 												 cached_stiffness);
 		}
@@ -189,7 +189,7 @@ NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const doub
 			StiffnessMatrix velocity_stiffness = hessian, mixed_stiffness, pressure_stiffness;
 			const int problem_dim = state.problem->is_scalar() ? 1 : state.mesh->dimension();
 
-			AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim,
+			AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, false, //assembler.is_fluid(state.formulation()),
 												 velocity_stiffness, mixed_stiffness, pressure_stiffness,
 												 hessian);
 

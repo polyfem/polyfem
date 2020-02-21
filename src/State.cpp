@@ -284,11 +284,10 @@ void State::sol_to_pressure()
 	// assert(problem->is_mixed());
 	assert(AssemblerUtils::instance().is_mixed(formulation()));
 	Eigen::MatrixXd tmp = sol;
-	sol = tmp.block(0, 0, tmp.rows() - n_pressure_bases, tmp.cols());
+	int fluid_offset = 0; //AssemblerUtils::instance().is_fluid(formulation()) ? 1 : 0;
+	sol = tmp.block(0, 0, tmp.rows() - n_pressure_bases - fluid_offset, tmp.cols());
 	assert(sol.size() == n_bases * (problem->is_scalar() ? 1 : mesh->dimension()));
-	// assert(sol.size() == n_bases * (problem->is_scalar() ? 1 : mesh->dimension())+1);
-	pressure = tmp.block(tmp.rows() - n_pressure_bases, 0, n_pressure_bases, tmp.cols());
-	// pressure = tmp.block(tmp.rows()-n_pressure_bases-1, 0, n_pressure_bases, tmp.cols());
+	pressure = tmp.block(tmp.rows() - n_pressure_bases - fluid_offset, 0, n_pressure_bases, tmp.cols());
 	assert(pressure.size() == n_pressure_bases);
 }
 
@@ -2169,7 +2168,7 @@ void State::build_basis()
 	problem->setup_bc(*mesh, bases, local_boundary, boundary_nodes, local_neumann_boundary);
 
 	//add a pressure node to avoid singular solution
-	if (assembler.is_mixed(formulation()))
+	if (assembler.is_mixed(formulation())) // && !assembler.is_fluid(formulation()))
 	{
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 		boundary_nodes.push_back(n_bases * problem_dim + 0);
@@ -2308,7 +2307,7 @@ void State::assemble_stiffness_mat()
 
 			const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 
-			AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim,
+			AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, false, //assembler.is_fluid(formulation()),
 												 velocity_stiffness, mixed_stiffness, pressure_stiffness,
 												 stiffness);
 
@@ -2426,13 +2425,13 @@ void State::assemble_rhs()
 	if (assembler.is_mixed(formulation()))
 	{
 		const int prev_size = rhs.size();
-		rhs.conservativeResize(prev_size + n_pressure_bases, rhs.cols());
+		const int n_larger = n_pressure_bases; // + (assembler.is_fluid(formulation()) ? 1 : 0);
+		rhs.conservativeResize(prev_size + n_larger, rhs.cols());
 		// rhs.conservativeResize(prev_size + n_pressure_bases+1, rhs.cols());
 		//Divergence free rhs
 		if (formulation() != "Bilaplacian" || local_neumann_boundary.empty())
 		{
-			rhs.block(prev_size, 0, n_pressure_bases, rhs.cols()).setZero();
-			// rhs.block(prev_size, 0, n_pressure_bases+1, rhs.cols()).setZero();
+			rhs.block(prev_size, 0, n_larger, rhs.cols()).setZero();
 		}
 		else
 		{
@@ -2440,8 +2439,7 @@ void State::assemble_rhs()
 			tmp.setZero();
 			RhsAssembler rhs_assembler1(*mesh, n_pressure_bases, size, pressure_bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
 			rhs_assembler1.set_bc(std::vector<LocalBoundary>(), std::vector<int>(), args["n_boundary_samples"], local_neumann_boundary, tmp);
-			rhs.block(prev_size, 0, n_pressure_bases, rhs.cols()) = tmp;
-			// rhs.row(prev_size+n_pressure_bases).setZero();
+			rhs.block(prev_size, 0, n_larger, rhs.cols()) = tmp;
 		}
 	}
 
