@@ -221,6 +221,8 @@ namespace polyfem
 			saint_venant_elasticity_.assemble_hessian(is_volume, n_basis, bases, gbases, displacement, hessian);
 		else if(assembler == "NeoHookean")
 			neo_hookean_elasticity_.assemble_hessian(is_volume, n_basis, bases, gbases, displacement, hessian);
+		else if (assembler == "NavierStokesPicard")
+			navier_stokes_velocity_picard_.assemble_hessian(is_volume, n_basis, bases, gbases, displacement, hessian);
 		else if (assembler == "NavierStokes")
 			navier_stokes_velocity_.assemble_hessian(is_volume, n_basis, bases, gbases, displacement, hessian);
 		//else if(assembler == "Ogden")
@@ -443,6 +445,7 @@ namespace polyfem
 		stokes_pressure_.local_assembler().set_parameters(params);
 
 		navier_stokes_velocity_.local_assembler().set_parameters(params);
+		navier_stokes_velocity_picard_.local_assembler().set_parameters(params);
 
 		incompressible_lin_elast_displacement_.local_assembler().set_parameters(params);
 		incompressible_lin_elast_mixed_.local_assembler().set_parameters(params);

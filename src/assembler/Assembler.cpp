@@ -661,7 +661,8 @@ namespace polyfem
 	template class MixedAssembler<StokesMixed>;
 	template class Assembler<StokesPressure>;
 
-	template class NLAssembler<NavierStokesVelocity>;
+	template class NLAssembler<NavierStokesVelocity<true>>;
+	template class NLAssembler<NavierStokesVelocity<false>>;
 
 	template class Assembler<IncompressibleLinearElasticityDispacement>;
 	template class MixedAssembler<IncompressibleLinearElasticityMixed>;

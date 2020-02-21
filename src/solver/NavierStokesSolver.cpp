@@ -1,6 +1,5 @@
 #include <polyfem/NavierStokesSolver.hpp>
 
-#include <polyfem/LinearSolver.hpp>
 #include <polyfem/MatrixUtils.hpp>
 #include <polyfem/FEMSolver.hpp>
 #include <polyfem/AssemblerUtils.hpp>
@@ -69,13 +68,41 @@ void NavierStokesSolver::minimize(const State &state, const Eigen::MatrixXd &rhs
 	assembly_time = 0;
 	inverting_time = 0;
 
+	velocity_stiffness *= viscosity;
+	int it = 0;
+	double nlres_norm = 0;
+	it += minimize_aux(state.formulation() + "Picard", state, velocity_stiffness, mixed_stiffness, pressure_stiffness, rhs,     1e-3, solver, nlres_norm, x);
+	it += minimize_aux(state.formulation()           , state, velocity_stiffness, mixed_stiffness, pressure_stiffness, rhs, gradNorm, solver, nlres_norm, x);
+
+	solver_info["iterations"] = it;
+	solver_info["gradNorm"] = nlres_norm;
+
+	assembly_time /= it;
+	inverting_time /= it;
+
+	solver_info["time_assembly"] = assembly_time;
+	solver_info["time_inverting"] = inverting_time;
+	solver_info["time_stokes_assembly"] = stokes_matrix_time;
+	solver_info["time_stokes_solve"] = stokes_solve_time;
+}
+
+int NavierStokesSolver::minimize_aux(const std::string &formulation, const State &state,
+const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
+const Eigen::MatrixXd &rhs, const double grad_norm,
+std::unique_ptr<LinearSolver> &solver, double &nlres_norm,
+ Eigen::VectorXd &x)
+{
+	igl::Timer time;
+	const auto &assembler = AssemblerUtils::instance();
+	const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
+	const int problem_dim = state.problem->is_scalar() ? 1 : state.mesh->dimension();
+
 	StiffnessMatrix nl_matrix;
 	StiffnessMatrix total_matrix;
 
-	velocity_stiffness *=viscosity;
 
 	time.start();
-	assembler.assemble_energy_hessian(state.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, x, nl_matrix);
+	assembler.assemble_energy_hessian(state.formulation() + "Picard", state.mesh->is_volume(), state.n_bases, state.bases, gbases, x, nl_matrix);
 	AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, false,
 										 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 										 total_matrix);
@@ -87,16 +114,22 @@ void NavierStokesSolver::minimize(const State &state, const Eigen::MatrixXd &rhs
 	for (int i : state.boundary_nodes)
 		nlres[i] = 0;
 	Eigen::VectorXd dx;
-	double nlres_norm = nlres.norm();
+	nlres_norm = nlres.norm();
 	logger().debug("\tInitial residula norm {}", nlres_norm);
 
 	int it = 0;
 
-	while (nlres_norm > gradNorm && it < iterations)
+	while (nlres_norm > grad_norm && it < iterations)
 	{
 		++it;
 
 		time.start();
+		if (formulation != state.formulation() + "Picard"){
+			assembler.assemble_energy_hessian(formulation, state.mesh->is_volume(), state.n_bases, state.bases, gbases, x, nl_matrix);
+			AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, false,
+												 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
+												 total_matrix);
+		}
 		dirichlet_solve(*solver, total_matrix, nlres, state.boundary_nodes, dx);
 		// for (int i : state.boundary_nodes)
 		// 	dx[i] = 0;
@@ -108,7 +141,7 @@ void NavierStokesSolver::minimize(const State &state, const Eigen::MatrixXd &rhs
 		//TODO check for nans
 
 		time.start();
-		assembler.assemble_energy_hessian(state.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, x, nl_matrix);
+		assembler.assemble_energy_hessian(state.formulation() + "Picard", state.mesh->is_volume(), state.n_bases, state.bases, gbases, x, nl_matrix);
 		AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, false,
 											 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 											 total_matrix);
@@ -129,16 +162,7 @@ void NavierStokesSolver::minimize(const State &state, const Eigen::MatrixXd &rhs
 	// solver_info["internal_solver_first"] = internal_solver.front();
 	// solver_info["status"] = this->status();
 
-	solver_info["iterations"] = it;
-	solver_info["gradNorm"] = nlres_norm;
-
-	assembly_time /= it;
-	inverting_time /= it;
-
-	solver_info["time_assembly"] = assembly_time;
-	solver_info["time_inverting"] = inverting_time;
-	solver_info["time_stokes_assembly"] = stokes_matrix_time;
-	solver_info["time_stokes_solve"] = stokes_solve_time;
+	return it;
 }
 
 bool NavierStokesSolver::has_nans(const polyfem::StiffnessMatrix &hessian)

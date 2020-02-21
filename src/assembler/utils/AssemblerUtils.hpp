@@ -165,7 +165,8 @@ namespace polyfem
 		MixedAssembler<StokesMixed> stokes_mixed_;
 		Assembler<StokesPressure> stokes_pressure_;
 
-		NLAssembler<NavierStokesVelocity> navier_stokes_velocity_;
+		NLAssembler<NavierStokesVelocity<false>> navier_stokes_velocity_picard_;
+		NLAssembler<NavierStokesVelocity<true>> navier_stokes_velocity_;
 
 		Assembler<IncompressibleLinearElasticityDispacement> incompressible_lin_elast_displacement_;
 		MixedAssembler<IncompressibleLinearElasticityMixed> incompressible_lin_elast_mixed_;

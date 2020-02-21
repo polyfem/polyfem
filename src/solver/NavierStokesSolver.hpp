@@ -3,7 +3,11 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/State.hpp>
 
+#include <polyfem/LinearSolver.hpp>
+
 #include <polyfem/Logger.hpp>
+
+#include <memory>
 
 namespace polyfem
 {
@@ -22,6 +26,11 @@ public:
 	int error_code() const { return 0; }
 
 private:
+	int minimize_aux(const std::string &formulation, const State &state,
+					 const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
+					 const Eigen::MatrixXd &rhs, const double grad_norm,
+					 std::unique_ptr<LinearSolver> &solver,
+					 double &nl_res_norm, Eigen::VectorXd &x);
 	double viscosity;
 
 	const json solver_param;
