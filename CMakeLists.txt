@@ -394,7 +394,7 @@ if(POLYFEM_WITH_MKL)
         target_compile_definitions(polyfem PUBLIC -DEIGEN_USE_MKL_ALL)
         target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_PARDISO)
     else()
-        MESSAGE(FATAL_ERROR "unable to find MKL")
+        MESSAGE(WARNING "unable to find MKL")
     endif()
 endif()
 
