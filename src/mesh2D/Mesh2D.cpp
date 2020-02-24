@@ -27,6 +27,8 @@ void Mesh2D::refine(const int n_refinement, const double t, std::vector<int> &pa
 		return;
 	}
 
+	orders_.resize(0, 0);
+
 	bool all_simplicial = true;
 	for (int e = 0; e < n_elements(); ++e)
 	{

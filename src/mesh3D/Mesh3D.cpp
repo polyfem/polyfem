@@ -11,6 +11,13 @@ namespace polyfem
 {
 	void Mesh3D::refine(const int n_refiniment, const double t, std::vector<int> &parent_nodes)
 	{
+		if (n_refiniment <= 0)
+		{
+			return;
+		}
+
+		//TODO refine high order mesh!
+		orders_.resize(0,0);
 		if (mesh_.type == MeshType::Tet) {
 			MeshProcessing3D::refine_red_refinement_tet(mesh_, n_refiniment);
 		}
