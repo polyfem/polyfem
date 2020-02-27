@@ -159,6 +159,7 @@ namespace polyfem
 		: Problem(name)
 	{
 		boundary_ids_ = {1, 2, 4, 7};
+		U_ = 1.5;
 	}
 
 	void FlowWithObstacle::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
@@ -174,12 +175,20 @@ namespace polyfem
 		{
 			if (mesh.get_boundary_id(global_ids(i)) == 1){
 				const double y = pts(i, 1);
-				val(i, 0) = 1.5 * 4 * y * (0.41-y)/(0.41*0.41);
+				val(i, 0) = U_ * 4 * y * (0.41-y)/(0.41*0.41);
 			}
 
 		}
 
 		val *= t;
+	}
+
+	void FlowWithObstacle::set_parameters(const json &params)
+	{
+		if(params.find("U") != params.end())
+		{
+			U_ = params["U"];
+		}
 	}
 
 	TimeDependentFlow::TimeDependentFlow(const std::string &name)

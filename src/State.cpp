@@ -2669,14 +2669,21 @@ void State::solve_problem()
 		{
 			if(formulation() == "NavierStokes")
 			{
-				auto params = build_json_params();
-				const double viscosity = params.count("viscosity") ? double(params["viscosity"]) : 1.;
+				if (problem->is_time_dependent())
+				{
 
-				NavierStokesSolver ns_solver(viscosity, solver_params(), build_json_params(), solver_type(), precond_type());
-				Eigen::VectorXd x;
-				ns_solver.minimize(*this, rhs, x);
-				sol = x;
-				sol_to_pressure();
+				}
+				else
+				{
+					auto params = build_json_params();
+					const double viscosity = params.count("viscosity") ? double(params["viscosity"]) : 1.;
+
+					NavierStokesSolver ns_solver(viscosity, solver_params(), build_json_params(), solver_type(), precond_type());
+					Eigen::VectorXd x;
+					ns_solver.minimize(*this, rhs, x);
+					sol = x;
+					sol_to_pressure();
+				}
 			}
 			else
 			{
@@ -2689,6 +2696,8 @@ void State::solve_problem()
 					mesh->bounding_box(min, max);
 					steps = problem->n_incremental_load_steps((max-min).norm());
 				}
+				steps = std::max(steps, 1);
+
 				RhsAssembler rhs_assembler(*mesh, n_bases, mesh->dimension(), bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
 
 				StiffnessMatrix nlstiffness;

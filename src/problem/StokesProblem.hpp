@@ -79,6 +79,10 @@ namespace polyfem
 
 		bool has_exact_sol() const override { return false; }
 		bool is_scalar() const override { return false; }
+
+		void set_parameters(const json &params) override;
+	private:
+		double U_;
 	};
 
 	class TimeDependentFlow: public Flow
