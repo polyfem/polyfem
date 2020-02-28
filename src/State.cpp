@@ -2703,7 +2703,7 @@ void State::solve_problem()
 					// {
 					// 	for (StiffnessMatrix::InnerIterator it(velocity_mass, k); it; ++it)
 					// 	{
-					// 		mass_blocks.emplace_back(it.row(), it.col(), it.value());
+					// 		mass_blocks.emplace_back(it.row(), it.row(), it.value());
 					// 	}
 					// }
 
@@ -2711,11 +2711,24 @@ void State::solve_problem()
 					// {
 					// 	for (StiffnessMatrix::InnerIterator it(pressure_mass, k); it; ++it)
 					// 	{
-					// 		mass_blocks.emplace_back(n_bases * problem_dim + it.row(), n_bases * problem_dim+it.col(), it.value());
+					// 		mass_blocks.emplace_back(n_bases * problem_dim + it.row(), n_bases * problem_dim + it.row(), it.value());
 					// 	}
 					// }
 
 					// mass.resize(n_bases * problem_dim + n_pressure_bases, n_bases * problem_dim + n_pressure_bases);
+					// mass.setFromTriplets(mass_blocks.begin(), mass_blocks.end());
+					// mass.makeCompressed();
+
+					// mass_blocks.clear();
+					// for (int k = 0; k < mass.outerSize(); ++k)
+					// {
+					// 	for (StiffnessMatrix::InnerIterator it(mass, k); it; ++it)
+					// 	{
+					// 		assert(it.row() == it.col());
+					// 		if(fabs(it.value()) > 1e-8)
+					// 			mass_blocks.emplace_back(it.row(), it.col(), 1.0/it.value());
+					// 	}
+					// }
 					// mass.setFromTriplets(mass_blocks.begin(), mass_blocks.end());
 					// mass.makeCompressed();
 
@@ -2736,16 +2749,17 @@ void State::solve_problem()
 					// for(int t = 0; t < 100; ++t)
 					// {
 					// 	std::cout<<t<<std::endl;
-					// 	double dt = 0.1;
+					// 	double dt = 0.01;
 					// 	assembler.assemble_energy_hessian(formulation(), mesh->is_volume(), n_bases, bases, gbases, c_sol, nl_matrix);
 					// 	AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, false,
 					// 										velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 					// 										total_matrix);
 
-					// 	c_sol = mass*c_sol + dt * (total_matrix*c_sol);
-					// 	rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, c_sol, dt * t);
+					// 	c_sol = c_sol + dt * (total_matrix*c_sol);
+					// 	rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, c_sol, 1);
 					// 	sol = c_sol;
 					// 	sol_to_pressure();
+					// 	std::cout << sol.size() << std::endl;
 					// 	if (!solve_export_to_file)
 					// 		solution_frames.emplace_back();
 					// 	save_vtu("step_" + std::to_string(t) + ".vtu");
