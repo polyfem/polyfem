@@ -36,6 +36,7 @@
 #include <polyfem/LbfgsSolver.hpp>
 #include <polyfem/SparseNewtonDescentSolver.hpp>
 #include <polyfem/NavierStokesSolver.hpp>
+#include <polyfem/TransientNavierStokesSolver.hpp>
 
 #include <polyfem/auto_p_bases.hpp>
 #include <polyfem/auto_q_bases.hpp>
@@ -2170,8 +2171,8 @@ void State::build_basis()
 	//add a pressure node to avoid singular solution
 	if (assembler.is_mixed(formulation())) // && !assembler.is_fluid(formulation()))
 	{
-		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
-		boundary_nodes.push_back(n_bases * problem_dim + 0);
+		// const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+		// boundary_nodes.push_back(n_bases * problem_dim + 0);
 
 		// boundary_nodes.push_back(n_bases * problem_dim + 1);
 		// boundary_nodes.push_back(n_bases * problem_dim + 2);
@@ -2316,25 +2317,14 @@ void State::assemble_stiffness_mat()
 				StiffnessMatrix velocity_mass;
 				assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, velocity_mass);
 
-				StiffnessMatrix pressure_mass;
-				assembler.assemble_mass_matrix("Helmholtz", mesh->is_volume(), n_pressure_bases, pressure_bases, iso_parametric() ? bases : geom_bases, pressure_mass);
-
 				std::vector<Eigen::Triplet<double>> mass_blocks;
-				mass_blocks.reserve(velocity_mass.nonZeros() + pressure_mass.nonZeros());
+				mass_blocks.reserve(velocity_mass.nonZeros());
 
 				for (int k = 0; k < velocity_mass.outerSize(); ++k)
 				{
 					for (StiffnessMatrix::InnerIterator it(velocity_mass, k); it; ++it)
 					{
 						mass_blocks.emplace_back(it.row(), it.col(), it.value());
-					}
-				}
-
-				for (int k = 0; k < pressure_mass.outerSize(); ++k)
-				{
-					for (StiffnessMatrix::InnerIterator it(pressure_mass, k); it; ++it)
-					{
-						mass_blocks.emplace_back(n_bases * problem_dim + it.row(), n_bases * problem_dim + it.col(), it.value());
 					}
 				}
 
@@ -2686,85 +2676,44 @@ void State::solve_problem()
 
 				if (problem->is_time_dependent())
 				{
-					// const auto &gbases = iso_parametric() ? bases : geom_bases;
-					// const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+					const auto &gbases = iso_parametric() ? bases : geom_bases;
 
-					// RhsAssembler rhs_assembler(*mesh, n_bases, mesh->dimension(), bases, gbases, formulation(), *problem);
-					// StiffnessMatrix velocity_mass;
-					// assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, bases, gbases, velocity_mass);
+					RhsAssembler rhs_assembler(*mesh, n_bases, mesh->dimension(), bases, gbases, formulation(), *problem);
+					StiffnessMatrix velocity_mass;
+					assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, bases, gbases, velocity_mass);
 
-					// StiffnessMatrix pressure_mass;
-					// assembler.assemble_mass_matrix("Helmholtz", mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, pressure_mass);
+					StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
 
-					// std::vector<Eigen::Triplet<double>> mass_blocks;
-					// mass_blocks.reserve(velocity_mass.nonZeros() + pressure_mass.nonZeros());
+					Eigen::VectorXd c_sol(rhs.size());
+					c_sol.setZero();
+					Eigen::VectorXd prev_sol = c_sol;
 
-					// for (int k = 0; k < velocity_mass.outerSize(); ++k)
-					// {
-					// 	for (StiffnessMatrix::InnerIterator it(velocity_mass, k); it; ++it)
-					// 	{
-					// 		mass_blocks.emplace_back(it.row(), it.row(), it.value());
-					// 	}
-					// }
+					assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, gbases, velocity_stiffness);
+					assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, mixed_stiffness);
+					assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, pressure_stiffness);
 
-					// for (int k = 0; k < pressure_mass.outerSize(); ++k)
-					// {
-					// 	for (StiffnessMatrix::InnerIterator it(pressure_mass, k); it; ++it)
-					// 	{
-					// 		mass_blocks.emplace_back(n_bases * problem_dim + it.row(), n_bases * problem_dim + it.row(), it.value());
-					// 	}
-					// }
+					TransientNavierStokesSolver ns_solver(viscosity, solver_params(), build_json_params(), solver_type(), precond_type());
 
-					// mass.resize(n_bases * problem_dim + n_pressure_bases, n_bases * problem_dim + n_pressure_bases);
-					// mass.setFromTriplets(mass_blocks.begin(), mass_blocks.end());
-					// mass.makeCompressed();
+					for(int t = 1; t <= 100; ++t)
+					{
+						std::cout<<t<<std::endl;
+						double dt = 0.01;
+						double time = t*dt;
 
-					// mass_blocks.clear();
-					// for (int k = 0; k < mass.outerSize(); ++k)
-					// {
-					// 	for (StiffnessMatrix::InnerIterator it(mass, k); it; ++it)
-					// 	{
-					// 		assert(it.row() == it.col());
-					// 		if(fabs(it.value()) > 1e-8)
-					// 			mass_blocks.emplace_back(it.row(), it.col(), 1.0/it.value());
-					// 	}
-					// }
-					// mass.setFromTriplets(mass_blocks.begin(), mass_blocks.end());
-					// mass.makeCompressed();
+						rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs, time);
+						ns_solver.minimize(*this, dt, prev_sol,
+										   velocity_stiffness, mixed_stiffness, pressure_stiffness,
+										   velocity_mass, rhs, c_sol);
+						sol = c_sol;
+						sol_to_pressure();
+						prev_sol = c_sol;
 
-					// igl::Timer time;
 
-					// StiffnessMatrix nl_matrix;
-					// StiffnessMatrix total_matrix;
-					// StiffnessMatrix stoke_stiffness;
-					// StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
-
-					// Eigen::MatrixXd c_sol = rhs;
-
-					// assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, gbases, velocity_stiffness);
-					// assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, mixed_stiffness);
-					// assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, pressure_stiffness);
-					// velocity_stiffness *= viscosity;
-
-					// for(int t = 0; t < 100; ++t)
-					// {
-					// 	std::cout<<t<<std::endl;
-					// 	double dt = 0.01;
-					// 	assembler.assemble_energy_hessian(formulation(), mesh->is_volume(), n_bases, bases, gbases, c_sol, nl_matrix);
-					// 	AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, false,
-					// 										velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
-					// 										total_matrix);
-
-					// 	c_sol = c_sol + dt * (total_matrix*c_sol);
-					// 	rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, c_sol, 1);
-					// 	sol = c_sol;
-					// 	sol_to_pressure();
-					// 	std::cout << sol.size() << std::endl;
-					// 	if (!solve_export_to_file)
-					// 		solution_frames.emplace_back();
-					// 	save_vtu("step_" + std::to_string(t) + ".vtu");
-					// 	save_wire("step_" + std::to_string(t) + ".obj");
-					// }
+						if (!solve_export_to_file)
+							solution_frames.emplace_back();
+						save_vtu("step_" + std::to_string(t) + ".vtu");
+						save_wire("step_" + std::to_string(t) + ".obj");
+					}
 				}
 				else
 				{

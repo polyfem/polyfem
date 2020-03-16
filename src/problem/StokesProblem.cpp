@@ -180,7 +180,7 @@ namespace polyfem
 
 		}
 
-		val *= t;
+		//val *= (1-exp(-5*t));
 	}
 
 	void FlowWithObstacle::set_parameters(const json &params)
