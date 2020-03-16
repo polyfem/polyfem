@@ -15,8 +15,8 @@
 namespace polyfem
 {
 
-TransientNavierStokesSolver::TransientNavierStokesSolver(double viscosity, const json &solver_param, const json &problem_params, const std::string &solver_type, const std::string &precond_type)
-	: viscosity(viscosity), solver_param(solver_param), problem_params(problem_params), solver_type(solver_type), precond_type(precond_type)
+TransientNavierStokesSolver::TransientNavierStokesSolver(const json &solver_param, const json &problem_params, const std::string &solver_type, const std::string &precond_type)
+	: solver_param(solver_param), problem_params(problem_params), solver_type(solver_type), precond_type(precond_type)
 {
 	gradNorm = solver_param.count("gradNorm") ? double(solver_param["gradNorm"]) : 1e-8;
 	iterations = solver_param.count("nl_iterations") ? int(solver_param["nl_iterations"]) : 100;

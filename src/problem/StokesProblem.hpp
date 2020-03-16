@@ -20,7 +20,6 @@ namespace polyfem
 
 		bool has_exact_sol() const override { return false; }
 		bool is_scalar() const override { return false; }
-		// bool is_mixed() const override { return true; }
 	};
 
 
@@ -36,7 +35,6 @@ namespace polyfem
 
 		bool has_exact_sol() const override { return false; }
 		bool is_scalar() const override { return false; }
-		// bool is_mixed() const override { return true; }
 	};
 
 
@@ -54,7 +52,6 @@ namespace polyfem
 
 		bool has_exact_sol() const override { return false; }
 		bool is_scalar() const override { return false; }
-		// bool is_mixed() const override { return true; }
 
 		void set_parameters(const json &params) override;
 	private:
@@ -79,10 +76,15 @@ namespace polyfem
 
 		bool has_exact_sol() const override { return false; }
 		bool is_scalar() const override { return false; }
+		bool is_time_dependent() const override { return is_time_depetend_; }
 
 		void set_parameters(const json &params) override;
+
+		void initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
+
 	private:
 		double U_;
+		bool is_time_depetend_;
 	};
 
 	class TimeDependentFlow: public Flow

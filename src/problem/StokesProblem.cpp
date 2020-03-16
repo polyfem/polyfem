@@ -160,6 +160,12 @@ namespace polyfem
 	{
 		boundary_ids_ = {1, 2, 4, 7};
 		U_ = 1.5;
+		is_time_depetend_ = false;
+	}
+
+	void FlowWithObstacle::initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 	}
 
 	void FlowWithObstacle::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
@@ -180,7 +186,8 @@ namespace polyfem
 
 		}
 
-		//val *= (1-exp(-5*t));
+		if (is_time_depetend_)
+			val *= (1 - exp(-5 * t));
 	}
 
 	void FlowWithObstacle::set_parameters(const json &params)
@@ -188,6 +195,11 @@ namespace polyfem
 		if(params.find("U") != params.end())
 		{
 			U_ = params["U"];
+		}
+
+		if (params.find("time_depetend") != params.end())
+		{
+			is_time_depetend_ = params["time_depetend"];
 		}
 	}
 

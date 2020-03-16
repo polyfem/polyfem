@@ -2493,146 +2493,186 @@ void State::solve_problem()
 
 	if (problem->is_time_dependent())
 	{
-		RhsAssembler rhs_assembler(*mesh, n_bases, problem->is_scalar() ? 1 : mesh->dimension(), bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
+
+		const double tend = args["tend"];
+		const int time_steps = args["time_steps"];
+		const double dt = tend / time_steps;
+
+		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		RhsAssembler rhs_assembler(*mesh, n_bases, mesh->dimension(), bases, gbases, formulation(), *problem);
 		rhs_assembler.initial_solution(sol);
 
-		// if(problem->is_mixed())
-		if (assembler.is_mixed(formulation()))
+		if (formulation() == "NavierStokes")
 		{
-			pressure.resize(n_pressure_bases, 1);
-			pressure.setZero();
-		}
+			StiffnessMatrix velocity_mass;
+			assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, bases, gbases, velocity_mass);
 
-		double tend = args["tend"];
-		int time_steps = args["time_steps"];
-		double dt = tend / time_steps;
+			StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
 
-		auto solver = LinearSolver::create(args["solver_type"], args["precond_type"]);
-		solver->setParameters(params);
-		logger().info("{}...", solver->name());
-
-		if (!solve_export_to_file)
-			solution_frames.emplace_back();
-
-		save_vtu("step_" + std::to_string(0) + ".vtu");
-		save_wire("step_" + std::to_string(0) + ".obj");
-
-		// if(problem->is_mixed())
-		if (assembler.is_mixed(formulation()))
-		{
-			pressure.resize(0, 0);
 			const int prev_size = sol.size();
 			sol.conservativeResize(prev_size + n_pressure_bases, sol.cols());
 			//Zero initial pressure
 			sol.block(prev_size, 0, n_pressure_bases, sol.cols()).setZero();
-		}
+			Eigen::VectorXd c_sol = sol;
+			Eigen::VectorXd prev_sol = c_sol;
 
-		if (problem->is_scalar() || assembler.is_mixed(formulation()))
-		{
-			StiffnessMatrix A;
-			Eigen::VectorXd b, x;
-			Eigen::MatrixXd current_rhs;
+			assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, gbases, velocity_stiffness);
+			assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, mixed_stiffness);
+			assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, pressure_stiffness);
+
+			TransientNavierStokesSolver ns_solver(solver_params(), build_json_params(), solver_type(), precond_type());
 
 			for (int t = 1; t <= time_steps; ++t)
 			{
-				rhs_assembler.compute_energy_grad(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs, dt * t, current_rhs);
+				std::cout << t << std::endl;
+				double time = t * dt;
 
-				// if(problem->is_mixed())
-				if (assembler.is_mixed(formulation()))
-				{
-					//divergence free
-					current_rhs.block(current_rhs.rows() - n_pressure_bases, 0, n_pressure_bases, current_rhs.cols()).setZero();
-				}
-
-				A = mass + dt * stiffness;
-				b = dt * current_rhs + mass * sol;
-
-				spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, args["export"]["stiffness_mat"], t == 1 && args["export"]["spectrum"]);
-				sol = x;
-
-				// if(problem->is_mixed())
-				if (assembler.is_mixed(formulation()))
-				{
-					//necessary for the export
-					sol_to_pressure();
-				}
+				rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs, time);
+				ns_solver.minimize(*this, dt, prev_sol,
+								   velocity_stiffness, mixed_stiffness, pressure_stiffness,
+								   velocity_mass, rhs, c_sol);
+				sol = c_sol;
+				sol_to_pressure();
+				prev_sol = c_sol;
 
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
-
 				save_vtu("step_" + std::to_string(t) + ".vtu");
 				save_wire("step_" + std::to_string(t) + ".obj");
-
-				if (assembler.is_mixed(formulation()) && t < time_steps)
-				{
-					const int prev_size = sol.size();
-					sol.conservativeResize(prev_size + n_pressure_bases, sol.cols());
-					//any value would do, pressure is not time dependent.
-					sol.block(prev_size, 0, n_pressure_bases, sol.cols()).setZero();
-				}
-
-				logger().info("{}/{}", t, time_steps);
 			}
 		}
 		else
 		{
-			assert(assembler.is_linear(formulation()));
+			// if (assembler.is_mixed(formulation()))
+			// {
+			// 	pressure.resize(n_pressure_bases, 1);
+			// 	pressure.setZero();
+			// }
 
-			//Newmark
-			const double beta1 = 0.5;
-			const double beta2 = 0.5;
+			auto solver = LinearSolver::create(args["solver_type"], args["precond_type"]);
+			solver->setParameters(params);
+			logger().info("{}...", solver->name());
 
-			Eigen::MatrixXd temp, b;
-			StiffnessMatrix A;
-			Eigen::VectorXd x, btmp;
-			Eigen::MatrixXd current_rhs = rhs;
+			if (!solve_export_to_file)
+				solution_frames.emplace_back();
 
-			Eigen::MatrixXd velocity, acceleration;
-			rhs_assembler.initial_velocity(velocity);
-			rhs_assembler.initial_acceleration(acceleration);
+			save_vtu("step_" + std::to_string(0) + ".vtu");
+			save_wire("step_" + std::to_string(0) + ".obj");
 
-			for (int t = 1; t <= time_steps; ++t)
+			if (assembler.is_mixed(formulation()))
 			{
-				const double dt2 = dt * dt;
+				pressure.resize(0, 0);
+				const int prev_size = sol.size();
+				sol.conservativeResize(prev_size + n_pressure_bases, sol.cols());
+				//Zero initial pressure
+				sol.block(prev_size, 0, n_pressure_bases, sol.cols()).setZero();
+			}
 
-				const Eigen::MatrixXd aOld = acceleration;
-				const Eigen::MatrixXd vOld = velocity;
-				const Eigen::MatrixXd uOld = sol;
+			if (problem->is_scalar() || assembler.is_mixed(formulation()))
+			{
+				StiffnessMatrix A;
+				Eigen::VectorXd b, x;
+				Eigen::MatrixXd current_rhs;
 
-				if (!problem->is_linear_in_time())
+				for (int t = 1; t <= time_steps; ++t)
 				{
-					rhs_assembler.assemble(current_rhs, t);
-					current_rhs *= -1;
+					rhs_assembler.compute_energy_grad(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs, dt * t, current_rhs);
+
+					if (assembler.is_mixed(formulation()))
+					{
+						//divergence free
+						current_rhs.block(current_rhs.rows() - n_pressure_bases, 0, n_pressure_bases, current_rhs.cols()).setZero();
+					}
+
+					A = mass + dt * stiffness;
+					b = dt * current_rhs + mass * sol;
+
+					spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, args["export"]["stiffness_mat"], t == 1 && args["export"]["spectrum"]);
+					sol = x;
+
+					if (assembler.is_mixed(formulation()))
+					{
+						//necessary for the export
+						sol_to_pressure();
+					}
+
+					if (!solve_export_to_file)
+						solution_frames.emplace_back();
+
+					save_vtu("step_" + std::to_string(t) + ".vtu");
+					save_wire("step_" + std::to_string(t) + ".obj");
+
+					if (assembler.is_mixed(formulation()) && t < time_steps)
+					{
+						const int prev_size = sol.size();
+						sol.conservativeResize(prev_size + n_pressure_bases, sol.cols());
+						//any value would do, pressure is not time dependent.
+						sol.block(prev_size, 0, n_pressure_bases, sol.cols()) = pressure;
+					}
+
+					logger().info("{}/{}", t, time_steps);
 				}
+			}
+			else
+			{
+				assert(assembler.is_linear(formulation()));
 
-				// if(!assembler.is_linear(formulation()))
-				// {
-				// 	assembler.assemble_tensor_energy_hessian(rhs_assembler.formulation(), mesh->is_volume(), n_bases, bases, bases, uOld, stiffness);
-				// }
+				//Newmark
+				const double beta1 = 0.5;
+				const double beta2 = 0.5;
 
-				temp = -(uOld + dt * vOld + ((1 - beta1) * dt2 / 2.0) * aOld);
-				b = stiffness * temp + current_rhs;
+				Eigen::MatrixXd temp, b;
+				StiffnessMatrix A;
+				Eigen::VectorXd x, btmp;
+				Eigen::MatrixXd current_rhs = rhs;
 
-				rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, b, dt * t);
+				Eigen::MatrixXd velocity, acceleration;
+				rhs_assembler.initial_velocity(velocity);
+				rhs_assembler.initial_acceleration(acceleration);
 
-				A = stiffness * 0.5 * beta2 * dt2 + mass;
-				btmp = b;
-				spectrum = dirichlet_solve(*solver, A, btmp, boundary_nodes, x, args["export"]["stiffness_mat"], t == 1 && args["export"]["spectrum"]);
-				acceleration = x;
+				for (int t = 1; t <= time_steps; ++t)
+				{
+					const double dt2 = dt * dt;
 
-				sol += dt * vOld + 0.5 * dt2 * ((1 - beta2) * aOld + beta2 * acceleration);
-				velocity += dt * ((1 - beta1) * aOld + beta1 * acceleration);
+					const Eigen::MatrixXd aOld = acceleration;
+					const Eigen::MatrixXd vOld = velocity;
+					const Eigen::MatrixXd uOld = sol;
 
-				rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, dt * t);
-				rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, dt * t);
-				rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, dt * t);
+					if (!problem->is_linear_in_time())
+					{
+						rhs_assembler.assemble(current_rhs, t);
+						current_rhs *= -1;
+					}
 
-				if (!solve_export_to_file)
-					solution_frames.emplace_back();
-				save_vtu("step_" + std::to_string(t) + ".vtu");
-				save_wire("step_" + std::to_string(t) + ".obj");
+					// if(!assembler.is_linear(formulation()))
+					// {
+					// 	assembler.assemble_tensor_energy_hessian(rhs_assembler.formulation(), mesh->is_volume(), n_bases, bases, bases, uOld, stiffness);
+					// }
 
-				logger().info("{}/{}", t, time_steps);
+					temp = -(uOld + dt * vOld + ((1 - beta1) * dt2 / 2.0) * aOld);
+					b = stiffness * temp + current_rhs;
+
+					rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, b, dt * t);
+
+					A = stiffness * 0.5 * beta2 * dt2 + mass;
+					btmp = b;
+					spectrum = dirichlet_solve(*solver, A, btmp, boundary_nodes, x, args["export"]["stiffness_mat"], t == 1 && args["export"]["spectrum"]);
+					acceleration = x;
+
+					sol += dt * vOld + 0.5 * dt2 * ((1 - beta2) * aOld + beta2 * acceleration);
+					velocity += dt * ((1 - beta1) * aOld + beta1 * acceleration);
+
+					rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, dt * t);
+					rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, dt * t);
+					rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, dt * t);
+
+					if (!solve_export_to_file)
+						solution_frames.emplace_back();
+					save_vtu("step_" + std::to_string(t) + ".vtu");
+					save_wire("step_" + std::to_string(t) + ".obj");
+
+					logger().info("{}/{}", t, time_steps);
+				}
 			}
 		}
 	}
@@ -2668,61 +2708,15 @@ void State::solve_problem()
 		}
 		else
 		{
-			if(formulation() == "NavierStokes")
+			if (formulation() == "NavierStokes")
 			{
-
 				auto params = build_json_params();
 				const double viscosity = params.count("viscosity") ? double(params["viscosity"]) : 1.;
-
-				if (problem->is_time_dependent())
-				{
-					const auto &gbases = iso_parametric() ? bases : geom_bases;
-
-					RhsAssembler rhs_assembler(*mesh, n_bases, mesh->dimension(), bases, gbases, formulation(), *problem);
-					StiffnessMatrix velocity_mass;
-					assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, bases, gbases, velocity_mass);
-
-					StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
-
-					Eigen::VectorXd c_sol(rhs.size());
-					c_sol.setZero();
-					Eigen::VectorXd prev_sol = c_sol;
-
-					assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, gbases, velocity_stiffness);
-					assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, mixed_stiffness);
-					assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, pressure_stiffness);
-
-					TransientNavierStokesSolver ns_solver(viscosity, solver_params(), build_json_params(), solver_type(), precond_type());
-
-					for(int t = 1; t <= 100; ++t)
-					{
-						std::cout<<t<<std::endl;
-						double dt = 0.01;
-						double time = t*dt;
-
-						rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs, time);
-						ns_solver.minimize(*this, dt, prev_sol,
-										   velocity_stiffness, mixed_stiffness, pressure_stiffness,
-										   velocity_mass, rhs, c_sol);
-						sol = c_sol;
-						sol_to_pressure();
-						prev_sol = c_sol;
-
-
-						if (!solve_export_to_file)
-							solution_frames.emplace_back();
-						save_vtu("step_" + std::to_string(t) + ".vtu");
-						save_wire("step_" + std::to_string(t) + ".obj");
-					}
-				}
-				else
-				{
-					NavierStokesSolver ns_solver(viscosity, solver_params(), build_json_params(), solver_type(), precond_type());
-					Eigen::VectorXd x;
-					ns_solver.minimize(*this, rhs, x);
-					sol = x;
-					sol_to_pressure();
-				}
+				NavierStokesSolver ns_solver(viscosity, solver_params(), build_json_params(), solver_type(), precond_type());
+				Eigen::VectorXd x;
+				ns_solver.minimize(*this, rhs, x);
+				sol = x;
+				sol_to_pressure();
 			}
 			else
 			{
@@ -2730,10 +2724,11 @@ void State::solve_problem()
 				const int reduced_size = n_bases * mesh->dimension() - boundary_nodes.size();
 
 				int steps = args["nl_solver_rhs_steps"];
-				if(steps <= 0){
+				if (steps <= 0)
+				{
 					RowVectorNd min, max;
 					mesh->bounding_box(min, max);
-					steps = problem->n_incremental_load_steps((max-min).norm());
+					steps = problem->n_incremental_load_steps((max - min).norm());
 				}
 				steps = std::max(steps, 1);
 
@@ -2899,7 +2894,6 @@ void State::solve_problem()
 
 					nl_problem.reduced_to_full(tmp_sol, sol);
 
-
 					// std::ofstream of("sol.txt");
 					// of<<sol<<std::endl;
 					// of.close();
@@ -2974,7 +2968,6 @@ void State::solve_problem()
 				// }
 
 				// NLProblem::reduced_to_full_aux(full_size, reduced_size, tmp_sol, rhs, sol);
-
 			}
 		}
 	}

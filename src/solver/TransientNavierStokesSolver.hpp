@@ -15,7 +15,7 @@ namespace polyfem
 class TransientNavierStokesSolver
 {
 public:
-	TransientNavierStokesSolver(double viscosity, const json &solver_param, const json &problem_params, const std::string &solver_type, const std::string &precond_type);
+	TransientNavierStokesSolver(const json &solver_param, const json &problem_params, const std::string &solver_type, const std::string &precond_type);
 
 	void minimize(const State &state, const double dt, const Eigen::VectorXd &prev_sol,
 				  const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
@@ -35,7 +35,6 @@ private:
 					 const Eigen::VectorXd &rhs, const double grad_norm,
 					 std::unique_ptr<LinearSolver> &solver, double &nlres_norm,
 					 Eigen::VectorXd &x);
-	double viscosity;
 
 	const json solver_param;
 	const std::string solver_type;
