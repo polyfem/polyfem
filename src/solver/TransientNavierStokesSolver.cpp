@@ -25,7 +25,7 @@ TransientNavierStokesSolver::TransientNavierStokesSolver(const json &solver_para
 void TransientNavierStokesSolver::minimize(
 	const State &state, const double dt, const Eigen::VectorXd &prev_sol,
 	const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
-	const StiffnessMatrix &velocity_mass,
+	const StiffnessMatrix &velocity_mass1,
 	const Eigen::MatrixXd &rhs, Eigen::VectorXd &x)
 {
 	auto &assembler = AssemblerUtils::instance();
@@ -37,18 +37,21 @@ void TransientNavierStokesSolver::minimize(
 
 	const int problem_dim = state.mesh->dimension();
 
+	StiffnessMatrix velocity_mass = velocity_mass1/dt;
+	// velocity_mass.setZero();
+
 	igl::Timer time;
 
 	time.start();
 	StiffnessMatrix stoke_stiffness;
-	Eigen::VectorXd prev_sol_mass(prev_sol.size()); //prev_sol_mass=prev_sol
+	Eigen::VectorXd prev_sol_mass(rhs.size()); //prev_sol_mass=prev_sol
 	prev_sol_mass.setZero();
 	prev_sol_mass.block(0, 0, velocity_mass.rows(), 1) = velocity_mass * prev_sol.block(0, 0, velocity_mass.rows(), 1);
 	for (int i : state.boundary_nodes)
 		prev_sol_mass[i] = 0;
 
-	AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, false,
-										 dt * velocity_stiffness + velocity_mass, mixed_stiffness, pressure_stiffness,
+	AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, state.use_avg_pressure,
+										 velocity_stiffness + velocity_mass, mixed_stiffness, pressure_stiffness,
 										 stoke_stiffness);
 	time.stop();
 	stokes_matrix_time = time.getElapsedTimeInSec();
@@ -59,12 +62,17 @@ void TransientNavierStokesSolver::minimize(
 	logger().info("{}...", solver->name());
 
 	Eigen::VectorXd b = rhs + prev_sol_mass;
+
+	if (state.use_avg_pressure){
+		b[b.size()-1] = 0;
+	}
 	dirichlet_solve(*solver, stoke_stiffness, b, state.boundary_nodes, x);
 	// solver->getInfo(solver_info);
 	time.stop();
 	stokes_solve_time = time.getElapsedTimeInSec();
 	logger().debug("\tStokes solve time {}s", time.getElapsedTimeInSec());
 	logger().debug("\tStokes solver error: {}", (stoke_stiffness * x - b).norm());
+	// return;
 
 	assembly_time = 0;
 	inverting_time = 0;
@@ -105,8 +113,8 @@ int TransientNavierStokesSolver::minimize_aux(
 
 	time.start();
 	assembler.assemble_energy_hessian(state.formulation() + "Picard", state.mesh->is_volume(), state.n_bases, state.bases, gbases, x, nl_matrix);
-	AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, false,
-										 dt * (velocity_stiffness + nl_matrix) + velocity_mass, mixed_stiffness, pressure_stiffness,
+	AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, state.use_avg_pressure,
+										 (velocity_stiffness + nl_matrix) + velocity_mass, mixed_stiffness, pressure_stiffness,
 										 total_matrix);
 	time.stop();
 	assembly_time = time.getElapsedTimeInSec();
@@ -129,8 +137,8 @@ int TransientNavierStokesSolver::minimize_aux(
 		time.start();
 		if (formulation != state.formulation() + "Picard"){
 			assembler.assemble_energy_hessian(formulation, state.mesh->is_volume(), state.n_bases, state.bases, gbases, x, nl_matrix);
-			AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, false,
-												 dt * (velocity_stiffness + nl_matrix) + velocity_mass, mixed_stiffness, pressure_stiffness,
+			AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, state.use_avg_pressure,
+												 (velocity_stiffness + nl_matrix) + velocity_mass, mixed_stiffness, pressure_stiffness,
 												 total_matrix);
 		}
 		dirichlet_solve(*solver, total_matrix, nlres, state.boundary_nodes, dx);
@@ -145,8 +153,8 @@ int TransientNavierStokesSolver::minimize_aux(
 
 		time.start();
 		assembler.assemble_energy_hessian(state.formulation() + "Picard", state.mesh->is_volume(), state.n_bases, state.bases, gbases, x, nl_matrix);
-		AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, false,
-											 dt * (velocity_stiffness + nl_matrix) + velocity_mass, mixed_stiffness, pressure_stiffness,
+		AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, state.use_avg_pressure,
+											 (velocity_stiffness + nl_matrix) + velocity_mass, mixed_stiffness, pressure_stiffness,
 											 total_matrix);
 		time.stop();
 		logger().debug("\tassembly time {}s", time.getElapsedTimeInSec());
@@ -155,6 +163,9 @@ int TransientNavierStokesSolver::minimize_aux(
 		nlres = -(total_matrix * x) + rhs;
 		for (int i : state.boundary_nodes)
 			nlres[i] = 0;
+
+		//warning here
+		nlres[nlres.size()-1]=0;
 		nlres_norm = nlres.norm();
 
 		polyfem::logger().debug("\titer: {},  ||g||_2 = {}, ||step|| = {}\n",

@@ -8,33 +8,53 @@
 
 namespace polyfem
 {
-	class DrivenCavity: public Problem
-	{
-	public:
-		DrivenCavity(const std::string &name);
+class ConstantVelocity : public Problem
+{
+public:
+	ConstantVelocity(const std::string &name);
 
-		void rhs(const std::string &formulation, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const override;
-		bool is_rhs_zero() const override { return true; }
+	void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+	bool is_rhs_zero() const override { return true; }
 
-		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const override;
+	void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 
-		bool has_exact_sol() const override { return false; }
-		bool is_scalar() const override { return false; }
-	};
+	bool has_exact_sol() const override { return false; }
+	bool is_scalar() const override { return false; }
 
+	bool is_time_dependent() const override { return is_time_depetend_; }
+	void initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 
-	class DrivenCavitySmooth: public Problem
-	{
-	public:
-		DrivenCavitySmooth(const std::string &name);
+	void set_parameters(const json &params) override;
 
-		void rhs(const std::string &formulation, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const override;
-		bool is_rhs_zero() const override { return true; }
+private:
+	bool is_time_depetend_;
+};
+class DrivenCavity : public Problem
+{
+public:
+	DrivenCavity(const std::string &name);
 
-		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const override;
+	void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+	bool is_rhs_zero() const override { return true; }
 
-		bool has_exact_sol() const override { return false; }
-		bool is_scalar() const override { return false; }
+	void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+
+	bool has_exact_sol() const override { return false; }
+	bool is_scalar() const override { return false; }
+};
+
+class DrivenCavitySmooth : public Problem
+{
+public:
+	DrivenCavitySmooth(const std::string &name);
+
+	void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+	bool is_rhs_zero() const override { return true; }
+
+	void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+
+	bool has_exact_sol() const override { return false; }
+	bool is_scalar() const override { return false; }
 	};
 
 

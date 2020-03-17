@@ -46,7 +46,7 @@ void NavierStokesSolver::minimize(const State &state, const Eigen::MatrixXd &rhs
 	assembler.assemble_mixed_problem(state.formulation(), state.mesh->is_volume(), state.n_pressure_bases, state.n_bases, state.pressure_bases, state.bases, gbases, mixed_stiffness);
 	assembler.assemble_pressure_problem(state.formulation(), state.mesh->is_volume(), state.n_pressure_bases, state.pressure_bases, gbases, pressure_stiffness);
 
-	AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, false,
+	AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, state.use_avg_pressure,
 										 velocity_stiffness, mixed_stiffness, pressure_stiffness,
 										 stoke_stiffness);
 	time.stop();
@@ -71,8 +71,8 @@ void NavierStokesSolver::minimize(const State &state, const Eigen::MatrixXd &rhs
 	velocity_stiffness *= viscosity;
 	int it = 0;
 	double nlres_norm = 0;
-	it += minimize_aux(state.formulation() + "Picard", state, velocity_stiffness, mixed_stiffness, pressure_stiffness, rhs,     1e-3, solver, nlres_norm, x);
-	it += minimize_aux(state.formulation()           , state, velocity_stiffness, mixed_stiffness, pressure_stiffness, rhs, gradNorm, solver, nlres_norm, x);
+	it += minimize_aux(state.formulation() + "Picard", state, velocity_stiffness, mixed_stiffness, pressure_stiffness, b,     1e-3, solver, nlres_norm, x);
+	it += minimize_aux(state.formulation()           , state, velocity_stiffness, mixed_stiffness, pressure_stiffness, b, gradNorm, solver, nlres_norm, x);
 
 	solver_info["iterations"] = it;
 	solver_info["gradNorm"] = nlres_norm;
@@ -86,11 +86,12 @@ void NavierStokesSolver::minimize(const State &state, const Eigen::MatrixXd &rhs
 	solver_info["time_stokes_solve"] = stokes_solve_time;
 }
 
-int NavierStokesSolver::minimize_aux(const std::string &formulation, const State &state,
-const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
-const Eigen::MatrixXd &rhs, const double grad_norm,
-std::unique_ptr<LinearSolver> &solver, double &nlres_norm,
- Eigen::VectorXd &x)
+int NavierStokesSolver::minimize_aux(
+	const std::string &formulation, const State &state,
+	const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
+	const Eigen::VectorXd &rhs, const double grad_norm,
+	std::unique_ptr<LinearSolver> &solver, double &nlres_norm,
+	Eigen::VectorXd &x)
 {
 	igl::Timer time;
 	const auto &assembler = AssemblerUtils::instance();
@@ -103,7 +104,7 @@ std::unique_ptr<LinearSolver> &solver, double &nlres_norm,
 
 	time.start();
 	assembler.assemble_energy_hessian(state.formulation() + "Picard", state.mesh->is_volume(), state.n_bases, state.bases, gbases, x, nl_matrix);
-	AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, false,
+	AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, state.use_avg_pressure,
 										 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 										 total_matrix);
 	time.stop();
@@ -126,7 +127,7 @@ std::unique_ptr<LinearSolver> &solver, double &nlres_norm,
 		time.start();
 		if (formulation != state.formulation() + "Picard"){
 			assembler.assemble_energy_hessian(formulation, state.mesh->is_volume(), state.n_bases, state.bases, gbases, x, nl_matrix);
-			AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, false,
+			AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, state.use_avg_pressure,
 												 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 												 total_matrix);
 		}
@@ -142,7 +143,7 @@ std::unique_ptr<LinearSolver> &solver, double &nlres_norm,
 
 		time.start();
 		assembler.assemble_energy_hessian(state.formulation() + "Picard", state.mesh->is_volume(), state.n_bases, state.bases, gbases, x, nl_matrix);
-		AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, false,
+		AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, state.use_avg_pressure,
 											 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 											 total_matrix);
 		time.stop();

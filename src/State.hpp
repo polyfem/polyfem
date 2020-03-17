@@ -94,6 +94,8 @@ namespace polyfem
 
 		json solver_info;
 
+		bool use_avg_pressure;
+
 		int n_bases, n_pressure_bases;
 		Eigen::VectorXi disc_orders;
 
@@ -180,7 +182,7 @@ namespace polyfem
 		}
 
 		void build_basis();
-		
+
 		void assemble_stiffness_mat();
 		void assemble_rhs();
 		void solve_problem();
