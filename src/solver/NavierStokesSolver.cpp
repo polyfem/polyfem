@@ -27,8 +27,8 @@ void NavierStokesSolver::minimize(const State &state, const Eigen::MatrixXd &rhs
 	auto &assembler = AssemblerUtils::instance();
 	assembler.clear_cache();
 
-	problem_params["viscosity"] = 1;
-	assembler.set_parameters(problem_params);
+	// problem_params["viscosity"] = 1;
+	// assembler.set_parameters(problem_params);
 
 	auto solver = LinearSolver::create(solver_type, precond_type);
 	solver->setParameters(solver_param);
@@ -68,9 +68,10 @@ void NavierStokesSolver::minimize(const State &state, const Eigen::MatrixXd &rhs
 	assembly_time = 0;
 	inverting_time = 0;
 
-	velocity_stiffness *= viscosity;
+	// velocity_stiffness *= viscosity;
 	int it = 0;
 	double nlres_norm = 0;
+	b = rhs;
 	it += minimize_aux(state.formulation() + "Picard", state, velocity_stiffness, mixed_stiffness, pressure_stiffness, b,     1e-3, solver, nlres_norm, x);
 	it += minimize_aux(state.formulation()           , state, velocity_stiffness, mixed_stiffness, pressure_stiffness, b, gradNorm, solver, nlres_norm, x);
 
@@ -137,6 +138,7 @@ int NavierStokesSolver::minimize_aux(
 		time.stop();
 		inverting_time += time.getElapsedTimeInSec();
 		logger().debug("\tinverting time {}s", time.getElapsedTimeInSec());
+		logger().debug("\tinverting error: {}", (total_matrix * dx - nlres).norm());
 
 		x += dx;
 		//TODO check for nans

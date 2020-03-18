@@ -21,7 +21,7 @@ void ConstantVelocity::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, c
 
 	for (long i = 0; i < pts.rows(); ++i)
 	{
-		val(i, 0) = 1;
+		val(i, 1) = 1;
 	}
 
 	// val *= t;

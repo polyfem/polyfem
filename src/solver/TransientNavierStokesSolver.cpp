@@ -79,6 +79,12 @@ void TransientNavierStokesSolver::minimize(
 
 	int it = 0;
 	double nlres_norm = 0;
+	b = rhs + prev_sol_mass;
+
+	if (state.use_avg_pressure)
+	{
+		b[b.size() - 1] = 0;
+	}
 	it += minimize_aux(state.formulation() + "Picard", state, dt, velocity_stiffness, mixed_stiffness, pressure_stiffness, velocity_mass, b,     1e-3, solver, nlres_norm, x);
 	it += minimize_aux(state.formulation()           , state, dt, velocity_stiffness, mixed_stiffness, pressure_stiffness, velocity_mass, b, gradNorm, solver, nlres_norm, x);
 
