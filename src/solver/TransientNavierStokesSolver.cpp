@@ -60,7 +60,6 @@ void TransientNavierStokesSolver::minimize(
 
 
 	time.start();
-	logger().info("{}...", solver->name());
 
 	Eigen::VectorXd b = rhs + prev_sol_mass;
 
@@ -99,6 +98,8 @@ void TransientNavierStokesSolver::minimize(
 	solver_info["time_inverting"] = inverting_time;
 	solver_info["time_stokes_assembly"] = stokes_matrix_time;
 	solver_info["time_stokes_solve"] = stokes_solve_time;
+
+	polyfem::logger().info("finished with niter: {},  ||g||_2 = {}", it, nlres_norm);
 }
 
 int TransientNavierStokesSolver::minimize_aux(
