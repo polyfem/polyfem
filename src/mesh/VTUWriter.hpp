@@ -1,6 +1,8 @@
 #ifndef VTU_WRITER_HPP
 #define VTU_WRITER_HPP
 
+#include <polyfem/Logger.hpp>
+
 #include <Eigen/Dense>
 
 #include <fstream>
@@ -39,7 +41,7 @@ namespace polyfem {
                 n_components_ << "\" format=\"ascii\">\n";
                 if (data_.cols() != 1)
                 {
-                    std::cout << "Warning: writing matrix in vtu file (check ordering of values)" << std::endl;
+                    logger().warn("writing matrix in vtu file (check ordering of values)");
                 }
                 os << data_;
                 os << "</DataArray>\n";

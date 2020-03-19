@@ -1,5 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/Navigation.hpp>
+
+#include <polyfem/Logger.hpp>
+
 #include <algorithm>
 #include <cassert>
 ////////////////////////////////////////////////////////////////////////////////
@@ -154,7 +157,7 @@ Index polyfem::Navigation::switch_face(const GEO::Mesh &M, const GEO::Attribute<
 				return idx;
 			}
 		}
-		std::cout << "Not found" << std::endl;
+		logger().error("Not found");
 		assert(false); // This should not happen
 		return idx;
 	}

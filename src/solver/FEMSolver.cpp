@@ -26,16 +26,16 @@ Eigen::Vector4d polyfem::dirichlet_solve(
 
 	Eigen::VectorXd g = f - ((1.0 - N.array()).matrix()).asDiagonal() * (A * (N.asDiagonal() * f));
 
-	if (0) {
-		Eigen::MatrixXd rhs(g.size(), 6);
-		rhs.col(0) = N;
-		rhs.col(1) = f;
-		rhs.col(2) = N.asDiagonal() * f;
-		rhs.col(3) = A * (N.asDiagonal() * f);
-		rhs.col(4) = ((1.0 - N.array()).matrix()).asDiagonal() * (A * (N.asDiagonal() * f));
-		rhs.col(5) = g;
-		std::cout << rhs << std::endl;
-	}
+	// if (0) {
+	// 	Eigen::MatrixXd rhs(g.size(), 6);
+	// 	rhs.col(0) = N;
+	// 	rhs.col(1) = f;
+	// 	rhs.col(2) = N.asDiagonal() * f;
+	// 	rhs.col(3) = A * (N.asDiagonal() * f);
+	// 	rhs.col(4) = ((1.0 - N.array()).matrix()).asDiagonal() * (A * (N.asDiagonal() * f));
+	// 	rhs.col(5) = g;
+	// 	std::cout << rhs << std::endl;
+	// }
 
 	std::vector<Eigen::Triplet<double>> coeffs;
 	coeffs.reserve(A.nonZeros());

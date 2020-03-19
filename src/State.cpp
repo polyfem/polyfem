@@ -2536,8 +2536,8 @@ void State::solve_problem()
 
 			for (int t = 1; t <= time_steps; ++t)
 			{
-				std::cout << t << std::endl;
 				double time = t * dt;
+				logger().info("{}/{} steps, t={}s", t, time_steps, time);
 
 				bdf.rhs(prev_sol);
 				rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs, time);
