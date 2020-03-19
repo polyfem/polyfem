@@ -23,7 +23,7 @@ TransientNavierStokesSolver::TransientNavierStokesSolver(const json &solver_para
 }
 
 void TransientNavierStokesSolver::minimize(
-	const State &state, const double dt, const Eigen::VectorXd &prev_sol,
+	const State &state, const double alpha, const double dt, const Eigen::VectorXd &prev_sol,
 	const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
 	const StiffnessMatrix &velocity_mass1,
 	const Eigen::MatrixXd &rhs, Eigen::VectorXd &x)
@@ -50,6 +50,7 @@ void TransientNavierStokesSolver::minimize(
 	for (int i : state.boundary_nodes)
 		prev_sol_mass[i] = 0;
 
+	velocity_mass *= alpha;
 	AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, state.use_avg_pressure,
 										 velocity_stiffness + velocity_mass, mixed_stiffness, pressure_stiffness,
 										 stoke_stiffness);

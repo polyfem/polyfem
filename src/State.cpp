@@ -45,6 +45,7 @@
 #include <polyfem/QuadQuadrature.hpp>
 #include <polyfem/TetQuadrature.hpp>
 #include <polyfem/TriQuadrature.hpp>
+#include <polyfem/BDF.hpp>
 
 #include <polyfem/Logger.hpp>
 
@@ -193,6 +194,7 @@ State::State()
 		{"B", 3},
 		{"h1_formula", false},
 
+		{"BDF_order", 1},
 		{"quadrature_order", 4},
 		{"discr_order", 1},
 		{"poly_bases", "MFSHarmonic"},
@@ -2514,11 +2516,17 @@ void State::solve_problem()
 			StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
 
 			const int prev_size = sol.size();
-			sol.conservativeResize(prev_size + n_pressure_bases, sol.cols());
+			sol.conservativeResize(rhs.size(), sol.cols());
 			//Zero initial pressure
 			sol.block(prev_size, 0, n_pressure_bases, sol.cols()).setZero();
+			sol(sol.size()-1) = 0;
 			Eigen::VectorXd c_sol = sol;
-			Eigen::VectorXd prev_sol = c_sol;
+
+			Eigen::VectorXd prev_sol;
+
+			int BDF_order = args["BDF_order"];
+			BDF bdf(BDF_order);
+			bdf.new_solution(c_sol);
 
 			assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, gbases, velocity_stiffness);
 			assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, mixed_stiffness);
@@ -2531,13 +2539,14 @@ void State::solve_problem()
 				std::cout << t << std::endl;
 				double time = t * dt;
 
+				bdf.rhs(prev_sol);
 				rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs, time);
-				ns_solver.minimize(*this, dt, prev_sol,
+				ns_solver.minimize(*this, bdf.alpha(), dt, prev_sol,
 								   velocity_stiffness, mixed_stiffness, pressure_stiffness,
 								   velocity_mass, rhs, c_sol);
+				bdf.new_solution(c_sol);
 				sol = c_sol;
 				sol_to_pressure();
-				prev_sol = c_sol;
 
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();

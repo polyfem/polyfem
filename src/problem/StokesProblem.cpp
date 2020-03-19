@@ -4,8 +4,29 @@
 
 namespace polyfem
 {
-ConstantVelocity::ConstantVelocity(const std::string &name)
+
+TimeDepentendStokesProblem::TimeDepentendStokesProblem(const std::string &name)
 	: Problem(name)
+{
+	is_time_dependent_ = false;
+}
+
+void TimeDepentendStokesProblem::set_parameters(const json &params)
+{
+	if (params.find("time_dependent") != params.end())
+	{
+		is_time_dependent_ = params["time_dependent"];
+	}
+}
+
+void TimeDepentendStokesProblem::initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+{
+	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+	// val = Eigen::MatrixXd::Ones(pts.rows(), pts.cols())*(1 - exp(-5 * 0.01));
+}
+
+ConstantVelocity::ConstantVelocity(const std::string &name)
+	: TimeDepentendStokesProblem(name)
 {
 	// boundary_ids_ = {1};
 }
@@ -26,26 +47,12 @@ void ConstantVelocity::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, c
 
 	// val *= t;
 
-	if (is_time_depetend_)
+	if (is_time_dependent_)
 		val *= (1 - exp(-5 * t));
 }
 
-void ConstantVelocity::initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
-{
-	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-	// val = Eigen::MatrixXd::Ones(pts.rows(), pts.cols())*(1 - exp(-5 * 0.01));
-}
-
-void ConstantVelocity::set_parameters(const json &params)
-{
-	if (params.find("time_depetend") != params.end())
-	{
-		is_time_depetend_ = params["time_depetend"];
-	}
-}
-
 DrivenCavity::DrivenCavity(const std::string &name)
-	: Problem(name)
+	: TimeDepentendStokesProblem(name)
 {
 	// boundary_ids_ = {1};
 }
@@ -67,11 +74,12 @@ void DrivenCavity::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const
 		// val(i, 1)=-0.25;
 	}
 
-	val *= t;
+	if (is_time_dependent_)
+		val *= (1 - exp(-5 * t));
 }
 
 DrivenCavitySmooth::DrivenCavitySmooth(const std::string &name)
-	: Problem(name)
+	: TimeDepentendStokesProblem(name)
 {
 	// boundary_ids_ = {1};
 }
@@ -96,11 +104,12 @@ void DrivenCavitySmooth::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids,
 		// val(i, 1)=-0.25;
 	}
 
-	val *= t;
+	if (is_time_dependent_)
+		val *= (1 - exp(-5 * t));
 }
 
 Flow::Flow(const std::string &name)
-	: Problem(name)
+	: TimeDepentendStokesProblem(name)
 {
 	boundary_ids_ = {1, 3, 7};
 	inflow_ = 1;
@@ -128,11 +137,14 @@ void Flow::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::
 			val(i, flow_dir_) = outflow_amout_;
 	}
 
-	val *= t;
+	if (is_time_dependent_)
+		val *= (1 - exp(-5 * t));
 }
 
 void Flow::set_parameters(const json &params)
 {
+	TimeDepentendStokesProblem::set_parameters(params);
+
 	if (params.find("inflow") != params.end())
 	{
 		inflow_ = params["inflow"];
@@ -197,17 +209,12 @@ void Flow::set_parameters(const json &params)
 }
 
 FlowWithObstacle::FlowWithObstacle(const std::string &name)
-	: Problem(name)
+	: TimeDepentendStokesProblem(name)
 {
 	boundary_ids_ = {1, 2, 4, 7};
 	U_ = 1.5;
-	is_time_depetend_ = false;
 }
 
-void FlowWithObstacle::initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
-{
-	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-}
 
 void FlowWithObstacle::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 {
@@ -227,30 +234,18 @@ void FlowWithObstacle::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, c
 		}
 	}
 
-	if (is_time_depetend_)
+	if (is_time_dependent_)
 		val *= (1 - exp(-5 * t));
 }
 
 void FlowWithObstacle::set_parameters(const json &params)
 {
+	TimeDepentendStokesProblem::set_parameters(params);
+
 	if (params.find("U") != params.end())
 	{
 		U_ = params["U"];
 	}
-
-	if (params.find("time_depetend") != params.end())
-	{
-		is_time_depetend_ = params["time_depetend"];
-	}
 }
 
-TimeDependentFlow::TimeDependentFlow(const std::string &name)
-	: Flow(name)
-{
-}
-
-void TimeDependentFlow::initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
-{
-	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-}
 } // namespace polyfem
