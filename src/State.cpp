@@ -2576,9 +2576,10 @@ void State::solve_problem()
 			{
 				pressure.resize(0, 0);
 				const int prev_size = sol.size();
-				sol.conservativeResize(prev_size + n_pressure_bases, sol.cols());
+				sol.conservativeResize(rhs.size(), sol.cols());
 				//Zero initial pressure
 				sol.block(prev_size, 0, n_pressure_bases, sol.cols()).setZero();
+				sol(sol.size()-1) = 0;
 			}
 
 			if (problem->is_scalar() || assembler.is_mixed(formulation()))
@@ -2586,6 +2587,11 @@ void State::solve_problem()
 				StiffnessMatrix A;
 				Eigen::VectorXd b, x;
 				Eigen::MatrixXd current_rhs;
+
+				int BDF_order = args["BDF_order"];
+				BDF bdf(BDF_order);
+				x = sol;
+				bdf.new_solution(x);
 
 				for (int t = 1; t <= time_steps; ++t)
 				{
@@ -2597,10 +2603,12 @@ void State::solve_problem()
 						current_rhs.block(current_rhs.rows() - n_pressure_bases, 0, n_pressure_bases, current_rhs.cols()).setZero();
 					}
 
-					A = mass + dt * stiffness;
-					b = dt * current_rhs + mass * sol;
+					A = bdf.alpha() * mass + dt * stiffness;
+					bdf.rhs(x);
+					b = dt * current_rhs + mass * x;
 
 					spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, args["export"]["stiffness_mat"], t == 1 && args["export"]["spectrum"]);
+					bdf.new_solution(x);
 					sol = x;
 
 					if (assembler.is_mixed(formulation()))
@@ -2626,7 +2634,7 @@ void State::solve_problem()
 					logger().info("{}/{}", t, time_steps);
 				}
 			}
-			else
+			else //newmark
 			{
 				assert(assembler.is_linear(formulation()));
 
