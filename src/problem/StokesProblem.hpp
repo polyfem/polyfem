@@ -95,4 +95,23 @@ public:
 private:
 	double U_;
 };
+
+class UnitFlowWithObstacle : public TimeDepentendStokesProblem
+{
+public:
+	UnitFlowWithObstacle(const std::string &name);
+
+	void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+	bool is_rhs_zero() const override { return true; }
+
+	void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+
+	void set_parameters(const json &params) override;
+
+private:
+	double U_;
+	int inflow_;
+	int dir_;
+};
+
 } // namespace polyfem

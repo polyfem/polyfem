@@ -215,7 +215,6 @@ FlowWithObstacle::FlowWithObstacle(const std::string &name)
 	U_ = 1.5;
 }
 
-
 void FlowWithObstacle::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 {
 	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
@@ -246,6 +245,102 @@ void FlowWithObstacle::set_parameters(const json &params)
 	{
 		U_ = params["U"];
 	}
+}
+
+UnitFlowWithObstacle::UnitFlowWithObstacle(const std::string &name)
+	: TimeDepentendStokesProblem(name)
+{
+	boundary_ids_ = {1, 2, 4, 7};
+	U_ = 1.5;
+	inflow_ = 1;
+	dir_ = 0;
+}
+
+void UnitFlowWithObstacle::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+}
+
+void UnitFlowWithObstacle::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+
+	for (long i = 0; i < pts.rows(); ++i)
+	{
+		if (mesh.get_boundary_id(global_ids(i)) == inflow_)
+		{
+			if (pts.cols() == 3)
+			{
+				const double u = pts(i, (dir_ + 1) % 3);
+				const double v = pts(i, (dir_ + 2) % 3);
+				val(i, dir_) = U_ * 24 * (1 - u) * u * (1 - v) * v;
+			}
+			else
+			{
+				const double v = pts(i, (dir_ + 1) % 2);
+				val(i, dir_) = U_ * 4 * (1 - v) * v;
+			}
+		}
+	}
+
+	if (is_time_dependent_)
+		val *= (1 - exp(-5 * t));
+}
+
+void UnitFlowWithObstacle::set_parameters(const json &params)
+{
+	TimeDepentendStokesProblem::set_parameters(params);
+
+	if (params.find("U") != params.end())
+	{
+		U_ = params["U"];
+	}
+
+	if (params.find("inflow_id") != params.end())
+	{
+		inflow_ = params["inflow_id"];
+	}
+
+	if (params.find("direction") != params.end())
+	{
+		dir_ = params["direction"];
+	}
+
+	if (params.find("no_slip") != params.end())
+	{
+		boundary_ids_.clear();
+
+		const auto no_slip = params["no_slip"];
+		if (no_slip.is_array())
+		{
+			for (size_t k = 0; k < no_slip.size(); ++k)
+			{
+				const auto tmp = no_slip[k];
+				if (tmp.is_string())
+				{
+					const std::string tmps = tmp;
+					const auto endings = StringUtils::split(tmps, ":");
+					assert(endings.size() == 2);
+					const int start = atoi(endings[0].c_str());
+					const int end = atoi(endings[1].c_str());
+
+					for (int i = start; i <= end; ++i)
+						boundary_ids_.push_back(i);
+				}
+				else
+					boundary_ids_.push_back(tmp);
+			}
+		}
+	}
+
+	boundary_ids_.push_back(inflow_);
+
+	std::sort(boundary_ids_.begin(), boundary_ids_.end());
+	auto it = std::unique(boundary_ids_.begin(), boundary_ids_.end());
+	boundary_ids_.resize(std::distance(boundary_ids_.begin(), it));
+
+	// for(int i : boundary_ids_)
+	// 	std::cout<<"i "<<i<<std::endl;
 }
 
 } // namespace polyfem
