@@ -3,6 +3,8 @@
 #include <polyfem/BoundarySampler.hpp>
 #include <polyfem/LinearSolver.hpp>
 
+#include <polyfem/AssemblerUtils.hpp>
+
 #include <polyfem/Logger.hpp>
 
 #include <Eigen/Sparse>
@@ -121,6 +123,26 @@ void RhsAssembler::time_bc(const std::function<void(const Eigen::MatrixXd &, Eig
 			}
 		}
 	}
+
+
+	StiffnessMatrix mass;
+	json params = {
+		{"mtype", -2}, // matrix type for Pardiso (2 = SPD)
+					   // {"max_iter", 0}, // for iterative solvers
+					   // {"tolerance", 1e-9}, // for iterative solvers
+	};
+	const auto &assembler = AssemblerUtils::instance();
+	assembler.assemble_mass_matrix(formulation_, size_ == 3, n_basis_, bases_, gbases_, mass);
+	auto solver = LinearSolver::create(LinearSolver::defaultSolver(), LinearSolver::defaultPrecond());
+	solver->setParameters(params);
+	solver->analyzePattern(mass);
+	solver->factorize(mass);
+	Eigen::MatrixXd b = sol;
+	for (long i = 0; i < b.cols(); ++i)
+	{
+		solver->solve(b.col(i), sol.col(i));
+	}
+	logger().trace("initial guess solve error {}", (mass * sol - b).norm());
 }
 
 void RhsAssembler::set_bc(
