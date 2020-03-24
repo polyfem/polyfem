@@ -35,8 +35,8 @@ namespace polyfem
 		bool is_dimention_dirichet(const int tag, const int dim) const override;
 		bool all_dimentions_dirichelt() const override { return all_dimentions_dirichelt_; }
 
-		void exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
-		void exact_grad(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
+		void exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		void exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 
 		// bool is_mixed() const override { return is_mixed_; }
 		int n_incremental_load_steps(const double diag) const override;
@@ -75,8 +75,8 @@ namespace polyfem
 
 		void set_parameters(const json &params) override;
 
-		void exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
-		void exact_grad(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
+		void exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		void exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 
 	private:
 		std::vector<Eigen::Matrix<ExpressionValue, 1, 1, Eigen::RowMajor>> neumann_;

@@ -2528,6 +2528,11 @@ void State::solve_problem()
 			BDF bdf(BDF_order);
 			bdf.new_solution(c_sol);
 
+			sol = c_sol;
+			sol_to_pressure();
+			save_vtu("step_" + std::to_string(0) + ".vtu", 0);
+			save_wire("step_" + std::to_string(0) + ".obj");
+
 			assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, gbases, velocity_stiffness);
 			assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, mixed_stiffness);
 			assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, pressure_stiffness);
@@ -2550,7 +2555,7 @@ void State::solve_problem()
 
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
-				save_vtu("step_" + std::to_string(t) + ".vtu");
+				save_vtu("step_" + std::to_string(t) + ".vtu", time);
 				save_wire("step_" + std::to_string(t) + ".obj");
 			}
 		}
@@ -2569,7 +2574,7 @@ void State::solve_problem()
 			if (!solve_export_to_file)
 				solution_frames.emplace_back();
 
-			save_vtu("step_" + std::to_string(0) + ".vtu");
+			save_vtu("step_" + std::to_string(0) + ".vtu", 0);
 			save_wire("step_" + std::to_string(0) + ".obj");
 
 			if (assembler.is_mixed(formulation()))
@@ -2620,7 +2625,7 @@ void State::solve_problem()
 					if (!solve_export_to_file)
 						solution_frames.emplace_back();
 
-					save_vtu("step_" + std::to_string(t) + ".vtu");
+					save_vtu("step_" + std::to_string(t) + ".vtu", dt*t);
 					save_wire("step_" + std::to_string(t) + ".obj");
 
 					if (assembler.is_mixed(formulation()) && t < time_steps)
@@ -2661,7 +2666,7 @@ void State::solve_problem()
 
 					if (!problem->is_linear_in_time())
 					{
-						rhs_assembler.assemble(current_rhs, t);
+						rhs_assembler.assemble(current_rhs, dt*t);
 						current_rhs *= -1;
 					}
 
@@ -2689,7 +2694,7 @@ void State::solve_problem()
 
 					if (!solve_export_to_file)
 						solution_frames.emplace_back();
-					save_vtu("step_" + std::to_string(t) + ".vtu");
+					save_vtu("step_" + std::to_string(t) + ".vtu", dt * t);
 					save_wire("step_" + std::to_string(t) + ".obj");
 
 					logger().info("{}/{}", t, time_steps);
@@ -2743,6 +2748,7 @@ void State::solve_problem()
 			{
 				const int full_size = n_bases * mesh->dimension();
 				const int reduced_size = n_bases * mesh->dimension() - boundary_nodes.size();
+				const double tend = args["tend"];
 
 				int steps = args["nl_solver_rhs_steps"];
 				if (steps <= 0)
@@ -2783,7 +2789,7 @@ void State::solve_problem()
 				{
 					if (!solve_export_to_file)
 						solution_frames.emplace_back();
-					save_vtu("step_" + std::to_string(prev_t) + ".vtu");
+					save_vtu("step_" + std::to_string(prev_t) + ".vtu",tend);
 					save_wire("step_" + std::to_string(prev_t) + ".obj");
 				}
 
@@ -2843,7 +2849,7 @@ void State::solve_problem()
 						if (!solve_export_to_file)
 							solution_frames.emplace_back();
 
-						save_vtu("step_s_" + std::to_string(t) + ".vtu");
+						save_vtu("step_s_" + std::to_string(t) + ".vtu", tend);
 						save_wire("step_s_" + std::to_string(t) + ".obj");
 
 						sol = xxx;
@@ -2923,7 +2929,7 @@ void State::solve_problem()
 					{
 						if (!solve_export_to_file)
 							solution_frames.emplace_back();
-						save_vtu("step_" + std::to_string(prev_t) + ".vtu");
+						save_vtu("step_" + std::to_string(prev_t) + ".vtu", tend);
 						save_wire("step_" + std::to_string(prev_t) + ".obj");
 					}
 				}
@@ -3049,6 +3055,8 @@ void State::compute_errors()
 	// Eigen::MatrixXd err_per_el(n_el, 5);
 	ElementAssemblyValues vals;
 
+	const double tend = args["tend"];
+
 	for (int e = 0; e < n_el; ++e)
 	{
 		// const auto &vals    = values[e];
@@ -3061,8 +3069,8 @@ void State::compute_errors()
 
 		if (problem->has_exact_sol())
 		{
-			problem->exact(vals.val, v_exact);
-			problem->exact_grad(vals.val, v_exact_grad);
+			problem->exact(vals.val, tend, v_exact);
+			problem->exact_grad(vals.val, tend, v_exact_grad);
 		}
 
 		v_approx.resize(vals.val.rows(), actual_dim);
@@ -3241,9 +3249,11 @@ void State::export_data()
 		out.close();
 	}
 
+	const double tend = args["tend"];
+
 	if (!vis_mesh_path.empty())
 	{
-		save_vtu(vis_mesh_path);
+		save_vtu(vis_mesh_path, tend);
 	}
 	if (!wire_mesh_path.empty())
 	{
@@ -3432,7 +3442,7 @@ void State::build_vis_mesh(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen
 	assert(tet_index == tets.rows());
 }
 
-void State::save_vtu(const std::string &path)
+void State::save_vtu(const std::string &path, const double t)
 {
 	if (!mesh)
 	{
@@ -3471,7 +3481,7 @@ void State::save_vtu(const std::string &path)
 
 	if (problem->has_exact_sol())
 	{
-		problem->exact(points, exact_fun);
+		problem->exact(points, t, exact_fun);
 		err = (fun - exact_fun).eval().rowwise().norm();
 	}
 
@@ -3666,23 +3676,25 @@ void State::save_wire(const std::string &name, bool isolines)
 		}
 	}
 
-	Eigen::MatrixXd fun, exact_fun, err;
-
+	Eigen::MatrixXd fun;
 	interpolate_function(pts_index, sol, fun);
 
-	if (problem->has_exact_sol())
-	{
-		problem->exact(points, exact_fun);
-		err = (fun - exact_fun).eval().rowwise().norm();
-	}
+	// Eigen::MatrixXd exact_fun, err;
+
+
+	// if (problem->has_exact_sol())
+	// {
+	// 	problem->exact(points, exact_fun);
+	// 	err = (fun - exact_fun).eval().rowwise().norm();
+	// }
 
 	if (fun.cols() != 1 && !mesh->is_volume())
 	{
 		fun.conservativeResize(fun.rows(), 3);
 		fun.col(2).setZero();
 
-		exact_fun.conservativeResize(exact_fun.rows(), 3);
-		exact_fun.col(2).setZero();
+	// 	exact_fun.conservativeResize(exact_fun.rows(), 3);
+	// 	exact_fun.col(2).setZero();
 	}
 
 	if (!mesh->is_volume())

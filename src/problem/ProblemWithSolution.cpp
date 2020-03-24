@@ -35,11 +35,10 @@ namespace polyfem
 
 	void ProblemWithSolution::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
-		exact(pts, val);
-		val *= t;
+		exact(pts, t, val);
 	}
 
-	void ProblemWithSolution::exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void ProblemWithSolution::exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val.resize(pts.rows(), size_for(pts));
 
@@ -49,7 +48,7 @@ namespace polyfem
 		}
 	}
 
-	void ProblemWithSolution::exact_grad(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void ProblemWithSolution::exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		const int size = size_for(pts);
 		val.resize(pts.rows(), pts.cols() * size);
@@ -102,12 +101,10 @@ namespace polyfem
 
 	void BilaplacianProblemWithSolution::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
-		exact(pts, val);
-		val *= t;
+		exact(pts, t, val);
 	}
 
-
-	void BilaplacianProblemWithSolution::exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void BilaplacianProblemWithSolution::exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val.resize(pts.rows(), 1);
 
@@ -119,7 +116,7 @@ namespace polyfem
 		}
 	}
 
-	void BilaplacianProblemWithSolution::exact_grad(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void BilaplacianProblemWithSolution::exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val.resize(pts.rows(), pts.cols());
 	}

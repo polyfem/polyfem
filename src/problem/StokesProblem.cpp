@@ -343,4 +343,61 @@ void UnitFlowWithObstacle::set_parameters(const json &params)
 	// 	std::cout<<"i "<<i<<std::endl;
 }
 
+TaylorGreenVortexProblem::TaylorGreenVortexProblem(const std::string &name)
+	: Problem(name), viscosity_(1)
+{
+}
+
+void TaylorGreenVortexProblem::initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+{
+	exact(pts, 0, val);
+}
+
+void TaylorGreenVortexProblem::set_parameters(const json &params)
+{
+	if (params.count("viscosity"))
+	{
+		viscosity_ = params["viscosity"];
+	}
+}
+
+void TaylorGreenVortexProblem::exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val.resize(pts.rows(), pts.cols());
+	for(int i = 0; i < pts.rows(); ++i)
+	{
+		const double x = pts(i, 0);
+		const double y = pts(i, 1);
+
+		val(i, 0) =  cos(x) * sin(y) * exp(-2 * viscosity_ * t);
+		val(i, 1) = -sin(x) * cos(y) * exp(-2 * viscosity_ * t);
+	}
+
+}
+
+void TaylorGreenVortexProblem::exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val.resize(pts.rows(), pts.cols() * pts.cols());
+
+	for (int i = 0; i < pts.rows(); ++i)
+	{
+		const double x = pts(i, 0);
+		const double y = pts(i, 1);
+
+		val(i, 0) = -sin(x) * sin(y) * exp(-2 * viscosity_ * t);
+		val(i, 1) =  cos(x) * cos(y) * exp(-2 * viscosity_ * t);
+		val(i, 2) = -cos(x) * cos(y) * exp(-2 * viscosity_ * t);
+		val(i, 3) =  sin(x) * sin(y) * exp(-2 * viscosity_ * t);
+	}
+}
+
+void TaylorGreenVortexProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+}
+void TaylorGreenVortexProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	exact(pts, t, val);
+}
+
 } // namespace polyfem

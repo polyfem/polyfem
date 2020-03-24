@@ -1250,6 +1250,7 @@ void UIState::show_error()
 	{
 		return;
 	}
+	const double tend = state.args["tend"];
 
 	if (visible_visualizations(Visualizations::Error) && !available_visualizations[Visualizations::Error])
 	{
@@ -1258,7 +1259,7 @@ void UIState::show_error()
 		MatrixXd exact_sol;
 
 		interpolate_function(state.sol, global_sol);
-		state.problem->exact(vis_pts, exact_sol);
+		state.problem->exact(vis_pts, tend, exact_sol);
 
 		const MatrixXd err = (global_sol - exact_sol).eval().rowwise().norm();
 		plot_function(err, Visualizations::Error);
@@ -1276,7 +1277,7 @@ void UIState::show_error()
 		MatrixXd exact_sol;
 
 		interpolate_grad_function(state.sol, global_sol);
-		state.problem->exact_grad(vis_pts, exact_sol);
+		state.problem->exact_grad(vis_pts, tend, exact_sol);
 
 		const MatrixXd err = (global_sol - exact_sol).eval().rowwise().norm();
 		plot_function(err, Visualizations::ErrorGrad);

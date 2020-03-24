@@ -215,7 +215,7 @@ namespace polyfem
 		void compute_mesh_stats();
 
 		void build_vis_mesh(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXd &discr);
-		void save_vtu(const std::string &name);
+		void save_vtu(const std::string &name, const double t);
 		void save_wire(const std::string &name, bool isolines = false);
 
 		const Eigen::MatrixXd &get_solution() const { return sol; }

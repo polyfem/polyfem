@@ -607,7 +607,9 @@ void polyfem::UIState::draw_screenshot()
 	float p = ImGui::GetStyle().FramePadding.x;
 	if (ImGui::Button("Save VTU", ImVec2((w - p) / 2.f, 0)))
 	{
-		state.save_vtu("result.vtu");
+		const double tend = state.args["tend"];
+
+		state.save_vtu("result.vtu", tend);
 	}
 	ImGui::SameLine(0, p);
 	if (ImGui::Button("Save Wire", ImVec2((w - p) / 2.f, 0)))

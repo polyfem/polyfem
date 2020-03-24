@@ -106,7 +106,7 @@ namespace polyfem
 		val *= t;
 	}
 
-	void GenericTensorProblem::exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void GenericTensorProblem::exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		assert(has_exact_sol());
 		const bool planar = pts.cols() == 2;
@@ -119,7 +119,7 @@ namespace polyfem
 		}
 	}
 
-	void GenericTensorProblem::exact_grad(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void GenericTensorProblem::exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		const int size = pts.cols();
 		val.resize(pts.rows(), pts.cols() * size);
@@ -389,7 +389,7 @@ namespace polyfem
 		val *= t;
 	}
 
-	void GenericScalarProblem::exact(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void GenericScalarProblem::exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		assert(has_exact_sol());
 		const bool planar = pts.cols() == 2;
@@ -401,7 +401,7 @@ namespace polyfem
 		}
 	}
 
-	void GenericScalarProblem::exact_grad(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void GenericScalarProblem::exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val.resize(pts.rows(), pts.cols());
 		if(!has_exact_grad_)
