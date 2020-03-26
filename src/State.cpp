@@ -2335,7 +2335,7 @@ void State::assemble_stiffness_mat()
 					}
 				}
 
-				mass.resize(n_bases * problem_dim + n_pressure_bases, n_bases * problem_dim + n_pressure_bases);
+				mass.resize(stiffness.rows(), stiffness.cols());
 				mass.setFromTriplets(mass_blocks.begin(), mass_blocks.end());
 				mass.makeCompressed();
 			}
@@ -2561,11 +2561,11 @@ void State::solve_problem()
 		}
 		else
 		{
-			// if (assembler.is_mixed(formulation()))
-			// {
-			// 	pressure.resize(n_pressure_bases, 1);
-			// 	pressure.setZero();
-			// }
+			if (assembler.is_mixed(formulation()))
+			{
+				pressure.resize(n_pressure_bases, 1);
+				pressure.setZero();
+			}
 
 			auto solver = LinearSolver::create(args["solver_type"], args["precond_type"]);
 			solver->setParameters(params);
@@ -2600,12 +2600,15 @@ void State::solve_problem()
 
 				for (int t = 1; t <= time_steps; ++t)
 				{
+					logger().info("{}/{} {}s", t, time_steps, t*dt);
 					rhs_assembler.compute_energy_grad(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs, dt * t, current_rhs);
 
 					if (assembler.is_mixed(formulation()))
 					{
 						//divergence free
-						current_rhs.block(current_rhs.rows() - n_pressure_bases, 0, n_pressure_bases, current_rhs.cols()).setZero();
+						int fluid_offset = use_avg_pressure ? (assembler.is_fluid(formulation()) ? 1 : 0) : 0;
+
+						current_rhs.block(current_rhs.rows() - n_pressure_bases - use_avg_pressure, 0, n_pressure_bases + use_avg_pressure, current_rhs.cols()).setZero();
 					}
 
 					A = bdf.alpha() * mass + dt * stiffness;
@@ -2636,7 +2639,7 @@ void State::solve_problem()
 						sol.block(prev_size, 0, n_pressure_bases, sol.cols()) = pressure;
 					}
 
-					logger().info("{}/{}", t, time_steps);
+
 				}
 			}
 			else //newmark
