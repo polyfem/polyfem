@@ -2525,6 +2525,7 @@ void State::solve_problem()
 			Eigen::VectorXd prev_sol;
 
 			int BDF_order = args["BDF_order"];
+			// int aux_steps = BDF_order-1;
 			BDF bdf(BDF_order);
 			bdf.new_solution(c_sol);
 
@@ -2542,11 +2543,18 @@ void State::solve_problem()
 			for (int t = 1; t <= time_steps; ++t)
 			{
 				double time = t * dt;
-				logger().info("{}/{} steps, t={}s", t, time_steps, time);
+				double current_dt = dt;
+				// if (t <= aux_steps)
+				// {
+				// 	time = t * dt/(aux_steps+1);
+				// 	current_dt = dt / (aux_steps + 1);
+				// }
+
+				logger().info("{}/{} steps, dt={}s t={}s", t, time_steps, current_dt, time);
 
 				bdf.rhs(prev_sol);
 				rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs, time);
-				ns_solver.minimize(*this, bdf.alpha(), dt, prev_sol,
+				ns_solver.minimize(*this, bdf.alpha(), current_dt, prev_sol,
 								   velocity_stiffness, mixed_stiffness, pressure_stiffness,
 								   velocity_mass, rhs, c_sol);
 				bdf.new_solution(c_sol);
@@ -2593,15 +2601,24 @@ void State::solve_problem()
 				Eigen::VectorXd b, x;
 				Eigen::MatrixXd current_rhs;
 
-				int BDF_order = args["BDF_order"];
+				const int BDF_order = args["BDF_order"];
+				// const int aux_steps = BDF_order-1;
 				BDF bdf(BDF_order);
 				x = sol;
 				bdf.new_solution(x);
 
 				for (int t = 1; t <= time_steps; ++t)
 				{
-					logger().info("{}/{} {}s", t, time_steps, t*dt);
-					rhs_assembler.compute_energy_grad(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs, dt * t, current_rhs);
+					double time = t * dt;
+					double current_dt = dt;
+					// if (t <= aux_steps)
+					// {
+					// 	time = t * dt / (aux_steps + 1);
+					// 	current_dt = dt / (aux_steps + 1);
+					// }
+
+					logger().info("{}/{} {}s", t, time_steps, time);
+					rhs_assembler.compute_energy_grad(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs, time, current_rhs);
 
 					if (assembler.is_mixed(formulation()))
 					{
@@ -2611,35 +2628,24 @@ void State::solve_problem()
 						current_rhs.block(current_rhs.rows() - n_pressure_bases - use_avg_pressure, 0, n_pressure_bases + use_avg_pressure, current_rhs.cols()).setZero();
 					}
 
-					A = bdf.alpha() * mass + dt * stiffness;
+					A = bdf.alpha() * mass + current_dt * stiffness;
 					bdf.rhs(x);
-					b = dt * current_rhs + mass * x;
+					b = current_dt * current_rhs + mass * x;
 
-					spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, args["export"]["stiffness_mat"], t == 1 && args["export"]["spectrum"]);
+					spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, args["export"]["stiffness_mat"], t == time_steps && args["export"]["spectrum"]);
 					bdf.new_solution(x);
 					sol = x;
 
 					if (assembler.is_mixed(formulation()))
 					{
-						//necessary for the export
 						sol_to_pressure();
 					}
 
 					if (!solve_export_to_file)
 						solution_frames.emplace_back();
 
-					save_vtu("step_" + std::to_string(t) + ".vtu", dt*t);
+					save_vtu("step_" + std::to_string(t) + ".vtu", time);
 					save_wire("step_" + std::to_string(t) + ".obj");
-
-					if (assembler.is_mixed(formulation()) && t < time_steps)
-					{
-						const int prev_size = sol.size();
-						sol.conservativeResize(prev_size + n_pressure_bases, sol.cols());
-						//any value would do, pressure is not time dependent.
-						sol.block(prev_size, 0, n_pressure_bases, sol.cols()) = pressure;
-					}
-
-
 				}
 			}
 			else //newmark
