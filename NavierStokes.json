@@ -1,0 +1,80 @@
+{
+    "mesh": "./plate.obj",                    
+    "bc_tag": "",                  
+    "boundary_id_threshold": -1,
+    "normalize_mesh": false,         
+
+    "n_refs": 1,                    
+    "refinenemt_location": 0.5,     
+
+    "scalar_formulation": "Laplacian",
+    "tensor_formulation": "NavierStokes",
+    "viscosity": 1,
+
+    "count_flipped_els": false,     
+
+    "iso_parametric": false,        
+    "discr_order": 2,               
+
+    "pressure_discr_order": 1,      
+
+    "output": "",                   
+
+    "problem": "TaylorGreenVortex",            
+    "problem_params": {
+        "time_dependent": true,
+        "viscosity": 1
+    },           
+
+    "n_boundary_samples": 6,        
+    "quadrature_order": 4,          
+
+    "export": {                     
+        "full_mat": "",             
+        "iso_mesh": "",             
+        "nodes": "",                
+        "solution": "",             
+        "spectrum": false,          
+        "stiffness_mat": "",        
+        "vis_boundary_only": false, 
+        "vis_mesh": "output.vtu",
+        "wire_mesh": ""             
+    },
+
+    "use_spline": false,            
+    "fit_nodes": false,             
+
+    "integral_constraints": 2,      
+    "n_harmonic_samples": 10,       
+
+    "B": 3,                         
+    "use_p_ref": false,             
+    "discr_order_max": 4,           
+    "h1_formula": false,            
+
+    "solver_type": "Pardiso",       
+    "precond_type": "Eigen::DiagonalPreconditioner",
+    "solver_params": {},            
+
+    "nl_solver": "newton",          
+    "line_search": "armijo",        
+    "nl_solver_rhs_steps": 1,       
+    "save_solve_sequence": true,   
+
+    "params": {                     
+        "k": 1.0,                   
+
+        "elasticity_tensor": {},    
+
+        "E": 1.5,                   
+        "nu": 0.3,                  
+
+        "lambda": 0.329670329,      
+        "mu": 0.384615384
+    },
+
+    "tend": 0.1,
+    "time_steps": 10,               
+
+    "vismesh_rel_area": 1e-05       
+}
