@@ -58,7 +58,7 @@ TEST_CASE("franke 2d", "[problem]") {
         Eigen::MatrixXd val = (3./4.)*exp(-(1./4.)*cx2-(1./4.)*cy2)+(3./4.)*exp(-(1./49.)*cx1-(9./10.)*y-1./10.)+(1./2.)*exp(-(1./4.)*cx7-(1./4.)*cy3)-(1./5.)*exp(-cx4-cy7);
         fx = val;
 
-        probl->exact(pts, other);
+        probl->exact(pts, 0, other);
         Eigen::MatrixXd diff = (other - val);
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
@@ -70,7 +70,7 @@ TEST_CASE("franke 2d", "[problem]") {
         Eigen::MatrixXd gradX = -0.243e3 / 0.8e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.9e1 * x - 0.2e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y) * x + 0.27e2 / 0.4e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.9e1 * x - 0.2e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y) - 0.243e3 / 0.98e2 * exp(-0.81e2 / 0.49e2 * x * x - 0.18e2 / 0.49e2 * x - 0.59e2 / 0.490e3 - 0.9e1 / 0.10e2 * y) * x - 0.27e2 / 0.98e2 * exp(-0.81e2 / 0.49e2 * x * x - 0.18e2 / 0.49e2 * x - 0.59e2 / 0.490e3 - 0.9e1 / 0.10e2 * y) - 0.81e2 / 0.4e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.63e2 / 0.2e1 * x - 0.29e2 / 0.2e1 - 0.81e2 / 0.4e1 * y * y + 0.27e2 / 0.2e1 * y) * x + 0.63e2 / 0.4e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.63e2 / 0.2e1 * x - 0.29e2 / 0.2e1 - 0.81e2 / 0.4e1 * y * y + 0.27e2 / 0.2e1 * y) + 0.162e3 / 0.5e1 * exp(-0.81e2 * x * x - 0.81e2 * y * y + 0.72e2 * x + 0.126e3 * y - 0.65e2) * x - 0.72e2 / 0.5e1 * exp(-0.81e2 * x * x - 0.81e2 * y * y + 0.72e2 * x + 0.126e3 * y - 0.65e2);
         Eigen::MatrixXd gradY = -0.243e3 / 0.8e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.9e1 * x - 0.2e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y) * y + 0.27e2 / 0.4e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.9e1 * x - 0.2e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y) - 0.27e2 / 0.40e2 * exp(-0.81e2 / 0.49e2 * x * x - 0.18e2 / 0.49e2 * x - 0.59e2 / 0.490e3 - 0.9e1 / 0.10e2 * y) - 0.81e2 / 0.4e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.63e2 / 0.2e1 * x - 0.29e2 / 0.2e1 - 0.81e2 / 0.4e1 * y * y + 0.27e2 / 0.2e1 * y) * y + 0.27e2 / 0.4e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.63e2 / 0.2e1 * x - 0.29e2 / 0.2e1 - 0.81e2 / 0.4e1 * y * y + 0.27e2 / 0.2e1 * y) + 0.162e3 / 0.5e1 * exp(-0.81e2 * x * x - 0.81e2 * y * y + 0.72e2 * x + 0.126e3 * y - 0.65e2) * y - 0.126e3 / 0.5e1 * exp(-0.81e2 * x * x - 0.81e2 * y * y + 0.72e2 * x + 0.126e3 * y - 0.65e2);
 
-        probl->exact_grad(pts, other);
+        probl->exact_grad(pts, 0, other);
 
         Eigen::MatrixXd diff = (other.col(0) - gradX);
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
@@ -161,7 +161,7 @@ TEST_CASE("franke 3d", "[problem]") {
         3./4. * exp(-1./49. * cx1 - 9./10.*y - 1./10. -  9./10.*z - 1./10.) +
         1./2. * exp(-1./4. * cx7 - 1./4. * cy3 - 1./4. * cz5) -
         1./5. * exp(- cx4 - cy7 - cz5);
-        probl->exact(pts, other);
+        probl->exact(pts, 0, other);
         Eigen::MatrixXd diff = (other - val);
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
@@ -176,7 +176,7 @@ TEST_CASE("franke 3d", "[problem]") {
         Eigen::MatrixXd gradY = -0.243e3 / 0.8e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.9e1 * x - 0.3e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y - 0.81e2 / 0.4e1 * z * z + 0.9e1 * z) * y + 0.27e2 / 0.4e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.9e1 * x - 0.3e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y - 0.81e2 / 0.4e1 * z * z + 0.9e1 * z) - 0.27e2 / 0.40e2 * exp(-0.81e2 / 0.49e2 * x * x - 0.18e2 / 0.49e2 * x - 0.54e2 / 0.245e3 - 0.9e1 / 0.10e2 * y - 0.9e1 / 0.10e2 * z) - 0.81e2 / 0.4e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.63e2 / 0.2e1 * x - 0.83e2 / 0.4e1 - 0.81e2 / 0.4e1 * y * y + 0.27e2 / 0.2e1 * y - 0.81e2 / 0.4e1 * z * z + 0.45e2 / 0.2e1 * z) * y + 0.27e2 / 0.4e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.63e2 / 0.2e1 * x - 0.83e2 / 0.4e1 - 0.81e2 / 0.4e1 * y * y + 0.27e2 / 0.2e1 * y - 0.81e2 / 0.4e1 * z * z + 0.45e2 / 0.2e1 * z) + 0.162e3 / 0.5e1 * exp(-0.81e2 * x * x - 0.81e2 * y * y - 0.81e2 * z * z + 0.72e2 * x + 0.126e3 * y + 0.90e2 * z - 0.90e2) * y - 0.126e3 / 0.5e1 * exp(-0.81e2 * x * x - 0.81e2 * y * y - 0.81e2 * z * z + 0.72e2 * x + 0.126e3 * y + 0.90e2 * z - 0.90e2);
         Eigen::MatrixXd gradZ = -0.243e3 / 0.8e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.9e1 * x - 0.3e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y - 0.81e2 / 0.4e1 * z * z + 0.9e1 * z) * z + 0.27e2 / 0.4e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.9e1 * x - 0.3e1 - 0.81e2 / 0.4e1 * y * y + 0.9e1 * y - 0.81e2 / 0.4e1 * z * z + 0.9e1 * z) - 0.27e2 / 0.40e2 * exp(-0.81e2 / 0.49e2 * x * x - 0.18e2 / 0.49e2 * x - 0.54e2 / 0.245e3 - 0.9e1 / 0.10e2 * y - 0.9e1 / 0.10e2 * z) - 0.81e2 / 0.4e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.63e2 / 0.2e1 * x - 0.83e2 / 0.4e1 - 0.81e2 / 0.4e1 * y * y + 0.27e2 / 0.2e1 * y - 0.81e2 / 0.4e1 * z * z + 0.45e2 / 0.2e1 * z) * z + 0.45e2 / 0.4e1 * exp(-0.81e2 / 0.4e1 * x * x + 0.63e2 / 0.2e1 * x - 0.83e2 / 0.4e1 - 0.81e2 / 0.4e1 * y * y + 0.27e2 / 0.2e1 * y - 0.81e2 / 0.4e1 * z * z + 0.45e2 / 0.2e1 * z) + 0.162e3 / 0.5e1 * exp(-0.81e2 * x * x - 0.81e2 * y * y - 0.81e2 * z * z + 0.72e2 * x + 0.126e3 * y + 0.90e2 * z - 0.90e2) * z - 0.18e2 * exp(-0.81e2 * x * x - 0.81e2 * y * y - 0.81e2 * z * z + 0.72e2 * x + 0.126e3 * y + 0.90e2 * z - 0.90e2);
 
-        probl->exact_grad(pts, other);
+        probl->exact_grad(pts, 0, other);
 
         Eigen::MatrixXd diff = (other.col(0) - gradX);
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
@@ -224,7 +224,7 @@ TEST_CASE("linear", "[problem]") {
 
     {
         Eigen::MatrixXd val = x;
-        probl->exact(pts, other);
+        probl->exact(pts, 0, other);
         Eigen::MatrixXd diff = (other - val);
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
@@ -237,7 +237,7 @@ TEST_CASE("linear", "[problem]") {
         gradX.setOnes();
         gradY.setZero();
 
-        probl->exact_grad(pts, other);
+        probl->exact_grad(pts, 0, other);
 
         Eigen::MatrixXd diff = (other.col(0) - gradX);
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
@@ -286,7 +286,7 @@ TEST_CASE("quadratic", "[problem]") {
 
     {
         Eigen::MatrixXd val = x*x;
-        probl->exact(pts, other);
+        probl->exact(pts, 0, other);
         Eigen::MatrixXd diff = (other - val);
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
@@ -298,7 +298,7 @@ TEST_CASE("quadratic", "[problem]") {
         Eigen::MatrixXd gradY = x;
         gradY.setZero();
 
-        probl->exact_grad(pts, other);
+        probl->exact_grad(pts, 0, other);
 
         Eigen::MatrixXd diff = (other.col(0) - gradX);
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
@@ -347,7 +347,7 @@ TEST_CASE("zero bc 2d", "[problem]") {
 
     {
         Eigen::MatrixXd val = (1 - x)  * x * x * y * (1-y) *(1-y);
-        probl->exact(pts, other);
+        probl->exact(pts, 0, other);
         Eigen::MatrixXd diff = (other - val);
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
@@ -382,7 +382,7 @@ TEST_CASE("zero bc 3d", "[problem]") {
 
     {
         Eigen::MatrixXd val = (1 - x)  * x * x * y * (1-y) *(1-y) * z * (1 - z);
-        probl->exact(pts, other);
+        probl->exact(pts, 0, other);
         Eigen::MatrixXd diff = (other - val);
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
@@ -418,7 +418,7 @@ TEST_CASE("elasticity 2d", "[problem]") {
         val.col(0) = (y*y*y + x*x + x*y)/50.;
         val.col(1) = (3*x*x*x*x + x*y*y + x)/50.;
 
-        probl->exact(pts, other);
+        probl->exact(pts, 0, other);
         Eigen::MatrixXd diff = (other - val);
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
@@ -493,7 +493,7 @@ TEST_CASE("elasticity 3d", "[problem]") {
         val.col(1) = (z*x - z*z*z + x*y*y + 3*x*x*x*x)/80.;
         val.col(2) = (x*y*z + z*z*y*y - 2*x)/80.;
 
-        probl->exact(pts, other);
+        probl->exact(pts, 0, other);
         Eigen::MatrixXd diff = (other - val);
 
         REQUIRE(diff.array().abs().maxCoeff() < 1e-10);

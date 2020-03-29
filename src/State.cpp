@@ -2508,6 +2508,89 @@ void State::solve_problem()
 		RhsAssembler rhs_assembler(*mesh, n_bases, mesh->dimension(), bases, gbases, formulation(), *problem);
 		rhs_assembler.initial_solution(sol);
 
+		if (formulation() == "OperatorSplitting")
+		{
+			StiffnessMatrix stiffness;
+			assembler.assemble_problem("Laplacian", mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, stiffness);
+
+			StiffnessMatrix mixed_stiffness;
+			assembler.assemble_mixed_problem("NavierStokes", mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, mixed_stiffness);
+			mixed_stiffness = mixed_stiffness.transpose();
+
+			for (int t = 1; t <= time_steps; t++)
+			{
+				double time = t * dt;
+				logger().info("{}/{} steps, t={}s", t, time_steps, time);
+
+				// advection
+				Eigen::VectorXd new_v = Eigen::VectorXd::Zero(sol.size());
+				
+
+				// incompressibility
+				Eigen::VectorXd div_v = mixed_stiffness * sol;
+
+				auto solver = LinearSolver::create(args["solver_type"], args["precond_type"]);
+				solver->setParameters(params);
+				StiffnessMatrix A;
+				Eigen::VectorXd b;
+				logger().info("{}...", solver->name());
+
+				A = stiffness;
+				Eigen::VectorXd x;
+				b = div_v;
+				spectrum = dirichlet_solve(*solver, A, b, std::vector<int>(1, 0), x, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
+				solver->getInfo(solver_info);
+
+				logger().debug("Solver error: {}", (A * x - b).norm());
+
+				pressure = x;
+
+				ElementAssemblyValues vals;
+				const int n_el = int(bases.size());
+
+				// dim = 2
+				const int local_n_basis = args["discr_order"];
+				Eigen::MatrixXd local_pts;
+				autogen::p_nodes_2d(local_n_basis, local_pts);
+
+				Eigen::VectorXd grad_pressure = Eigen::VectorXd::Zero(sol.size());
+				Eigen::VectorXd occurrence = Eigen::VectorXd::Zero(sol.size() / mesh->dimension());
+
+				for (int e = 0; e < n_el; ++e)
+				{
+					if (iso_parametric())
+						vals.compute(e, mesh->is_volume(), local_pts, pressure_bases[e], pressure_bases[e]);
+					else
+						vals.compute(e, mesh->is_volume(), local_pts, pressure_bases[e], geom_bases[e]);
+
+					for (int j = 0; j < local_pts.rows(); j++)
+					{
+						for (int i = 0; i < vals.basis_values.size(); i++)
+						{
+							for (int d = 0; d < mesh->dimension(); d++)
+							{
+								grad_pressure(bases[e].bases[j].global()[0].index * mesh->dimension() + d) += vals.basis_values[i].grad(i, d) * pressure(pressure_bases[e].bases[i].global()[0].index);
+							}
+						}
+						occurrence(bases[e].bases[j].global()[0].index)++;
+					}
+				}
+
+				for (int i = 0; i < occurrence.size(); i++)
+				{
+					for (int d = 0; d < mesh->dimension(); d++)
+					{
+						grad_pressure(i* mesh->dimension() + d) /= occurrence(i);
+						sol(i* mesh->dimension() + d) -= grad_pressure(i * mesh->dimension() + d);
+					}
+				}
+
+				if (!solve_export_to_file)
+					solution_frames.emplace_back();
+				save_vtu("step_" + std::to_string(t) + ".vtu", time);
+			}
+		}
+
 		if (formulation() == "NavierStokes")
 		{
 			StiffnessMatrix velocity_mass;
@@ -2531,7 +2614,7 @@ void State::solve_problem()
 			sol = c_sol;
 			sol_to_pressure();
 			save_vtu("step_" + std::to_string(0) + ".vtu", 0);
-			save_wire("step_" + std::to_string(0) + ".obj");
+			// save_wire("step_" + std::to_string(0) + ".obj");
 
 			assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, gbases, velocity_stiffness);
 			assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, mixed_stiffness);
@@ -2556,7 +2639,7 @@ void State::solve_problem()
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
 				save_vtu("step_" + std::to_string(t) + ".vtu", time);
-				save_wire("step_" + std::to_string(t) + ".obj");
+				// save_wire("step_" + std::to_string(t) + ".obj");
 			}
 		}
 		else
@@ -2575,7 +2658,7 @@ void State::solve_problem()
 				solution_frames.emplace_back();
 
 			save_vtu("step_" + std::to_string(0) + ".vtu", 0);
-			save_wire("step_" + std::to_string(0) + ".obj");
+			// save_wire("step_" + std::to_string(0) + ".obj");
 
 			if (assembler.is_mixed(formulation()))
 			{
@@ -2629,7 +2712,7 @@ void State::solve_problem()
 						solution_frames.emplace_back();
 
 					save_vtu("step_" + std::to_string(t) + ".vtu", dt*t);
-					save_wire("step_" + std::to_string(t) + ".obj");
+					// save_wire("step_" + std::to_string(t) + ".obj");
 
 					if (assembler.is_mixed(formulation()) && t < time_steps)
 					{
@@ -2698,7 +2781,7 @@ void State::solve_problem()
 					if (!solve_export_to_file)
 						solution_frames.emplace_back();
 					save_vtu("step_" + std::to_string(t) + ".vtu", dt * t);
-					save_wire("step_" + std::to_string(t) + ".obj");
+					// save_wire("step_" + std::to_string(t) + ".obj");
 
 					logger().info("{}/{}", t, time_steps);
 				}
@@ -2793,7 +2876,7 @@ void State::solve_problem()
 					if (!solve_export_to_file)
 						solution_frames.emplace_back();
 					save_vtu("step_" + std::to_string(prev_t) + ".vtu",tend);
-					save_wire("step_" + std::to_string(prev_t) + ".obj");
+					// save_wire("step_" + std::to_string(prev_t) + ".obj");
 				}
 
 				const auto &gbases = iso_parametric() ? bases : geom_bases;
@@ -2853,7 +2936,7 @@ void State::solve_problem()
 							solution_frames.emplace_back();
 
 						save_vtu("step_s_" + std::to_string(t) + ".vtu", tend);
-						save_wire("step_s_" + std::to_string(t) + ".obj");
+						// save_wire("step_s_" + std::to_string(t) + ".obj");
 
 						sol = xxx;
 					}
@@ -2933,7 +3016,7 @@ void State::solve_problem()
 						if (!solve_export_to_file)
 							solution_frames.emplace_back();
 						save_vtu("step_" + std::to_string(prev_t) + ".vtu", tend);
-						save_wire("step_" + std::to_string(prev_t) + ".obj");
+						// save_wire("step_" + std::to_string(prev_t) + ".obj");
 					}
 				}
 
