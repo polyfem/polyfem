@@ -61,6 +61,7 @@
 
 #include <igl/per_face_normals.h>
 #include <igl/AABB.h>
+#include <igl/in_element.h>
 
 #include <unsupported/Eigen/SparseExtra>
 
@@ -2510,23 +2511,150 @@ void State::solve_problem()
 
 		if (formulation() == "OperatorSplitting")
 		{
+			const int dim = mesh->dimension();
+			// coefficient matrix of pressure projection
 			StiffnessMatrix stiffness;
 			assembler.assemble_problem("Laplacian", mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, stiffness);
-
+			
+			// matrix used to calculate divergence of velocity
 			StiffnessMatrix mixed_stiffness;
 			assembler.assemble_mixed_problem("NavierStokes", mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, mixed_stiffness);
 			mixed_stiffness = mixed_stiffness.transpose();
+
+			// number of elements
+			const int n_el = int(bases.size());
+
+			// barycentric coordinates of FEM nodes
+			Eigen::MatrixXd local_pts;
+			autogen::p_nodes_2d(args["discr_order"], local_pts);
+
+			// build V list and T list from mesh
+			const int shape = geom_bases[0].bases.size();		// number of geometry vertices in an element
+
+			Eigen::MatrixXi T(n_el, shape);
+			for (int e = 0; e < n_el; e++)
+			{
+				for (int i = 0; i < shape; i++)
+				{
+					T(e, i) = mesh->cell_vertex_(e, i);
+				}
+			}
+			Eigen::MatrixXd V(mesh->n_vertices(), dim);
+			for (int i = 0; i < V.rows(); i++)
+			{
+				for (int d = 0; d < dim; d++)
+				{
+					V(i, d) = mesh->point(i)(d);
+				}
+			}
+			// to find the cell which a point is in
+			igl::AABB<MatrixXd, 2> tree;
+			tree.init(V, T);
+
+			auto det_func = [](std::vector<RowVectorNd> V) ->double {
+				double det = 0;
+				det += V[0](0) * V[1](1) - V[0](1) * V[1](0);
+				det += V[1](0) * V[2](1) - V[1](1) * V[2](0);
+				det -= V[0](0) * V[2](1) - V[0](1) * V[2](0);
+				return det / 2;
+			};
 
 			for (int t = 1; t <= time_steps; t++)
 			{
 				double time = t * dt;
 				logger().info("{}/{} steps, t={}s", t, time_steps, time);
 
-				// advection
-				Eigen::VectorXd new_v = Eigen::VectorXd::Zero(sol.size());
-				
+				/* advection */
 
-				// incompressibility
+				// to store new velocity
+				Eigen::MatrixXd new_sol = Eigen::MatrixXd::Zero(sol.size(), 1);
+				// number of FEM nodes
+				const int n_vert = sol.size() / dim;
+				Eigen::VectorXi traversed = Eigen::VectorXi::Zero(n_vert);
+
+				for(int e = 0; e < n_el; e++)
+				{
+					// geometry vertices of element e
+					std::vector<RowVectorNd> vert(shape);
+					for (int i = 0; i < shape; i++)
+					{
+						vert[i] = mesh->point(mesh->cell_vertex_(e, i));
+					}
+					
+					// to compute global position with barycentric coordinate
+					ElementAssemblyValues gvals;
+					gvals.compute(e, mesh->is_volume(), local_pts, geom_bases[e], geom_bases[e]);
+
+					for(int i = 0; i < local_pts.rows(); i++)
+					{
+						// global index of this FEM node
+						int global = bases[e].bases[i].global()[0].index;		
+
+						if(traversed(global)) continue;
+						traversed(global) = 1;
+
+						// velocity of this FEM node
+						RowVectorNd vel(dim);
+						for (int d = 0; d < dim; d++)
+						{
+							vel(d) = sol(global * dim + d);
+						}
+
+						// global position of this FEM node
+						RowVectorNd pos = RowVectorNd::Zero(1, dim);
+						for (int j = 0; j < shape; j++)
+						{
+							pos += gvals.basis_values[j].val(i) * vert[j];
+						}
+
+						// semi-lagrangian trace back
+						pos = pos - vel * dt;
+						
+						// to avoid that pos is out of domain
+						RowVectorNd min, max;
+						mesh->bounding_box(min, max);
+						for (int d = 0; d < dim; d++)
+						{
+							if (pos(d) <= min(d)) pos(d) = min(d) + 1e-12;
+							if (pos(d) >= max(d)) pos(d) = max(d) - 1e-12;
+						}
+
+						// a naive way to find the cell in which pos is
+						VectorXi I;
+						igl::in_element(V, T, pos, tree, I);
+
+						std::vector<RowVectorNd> new_vert(shape);
+						for (int i = 0; i < shape; i++)
+						{
+							new_vert[i] = mesh->point(mesh->cell_vertex_(I(0), i));
+						}
+						
+						// barycentric coordinate of pos, only for 2D triangular mesh
+						Eigen::MatrixXd local_pos(1, dim);
+						for (int d = 0; d < dim; d++)
+						{
+							std::vector<RowVectorNd> temp = new_vert;
+							temp[d + 1] = pos;
+							local_pos(d) = abs(det_func(temp));
+						}
+						local_pos /=  abs(det_func(new_vert));
+
+						// interpolation
+						ElementAssemblyValues vals;
+						vals.compute(I(0), mesh->is_volume(), local_pos, bases[I(0)], geom_bases[I(0)]);
+						for (int d = 0; d < dim; d++)
+						{
+							for (int i = 0; i < vals.basis_values.size(); i++)
+							{
+								new_sol(global * dim + d) += vals.basis_values[i].val(0) * sol(bases[I(0)].bases[i].global()[0].index * dim + d);
+							}
+						}
+					}
+				}
+				sol.swap(new_sol);
+
+				/* incompressibility */
+
 				Eigen::VectorXd div_v = mixed_stiffness * sol;
 
 				auto solver = LinearSolver::create(args["solver_type"], args["precond_type"]);
@@ -2546,15 +2674,10 @@ void State::solve_problem()
 				pressure = x;
 
 				ElementAssemblyValues vals;
-				const int n_el = int(bases.size());
 
-				// dim = 2
-				const int local_n_basis = args["discr_order"];
-				Eigen::MatrixXd local_pts;
-				autogen::p_nodes_2d(local_n_basis, local_pts);
-
+				// only for 2D
 				Eigen::VectorXd grad_pressure = Eigen::VectorXd::Zero(sol.size());
-				Eigen::VectorXd occurrence = Eigen::VectorXd::Zero(sol.size() / mesh->dimension());
+				Eigen::VectorXd occurrence = Eigen::VectorXd::Zero(n_vert);
 
 				for (int e = 0; e < n_el; ++e)
 				{
@@ -2567,9 +2690,9 @@ void State::solve_problem()
 					{
 						for (int i = 0; i < vals.basis_values.size(); i++)
 						{
-							for (int d = 0; d < mesh->dimension(); d++)
+							for (int d = 0; d < dim; d++)
 							{
-								grad_pressure(bases[e].bases[j].global()[0].index * mesh->dimension() + d) += vals.basis_values[i].grad(i, d) * pressure(pressure_bases[e].bases[i].global()[0].index);
+								grad_pressure(bases[e].bases[j].global()[0].index * dim + d) += vals.basis_values[i].grad(j, d) * pressure(pressure_bases[e].bases[i].global()[0].index);
 							}
 						}
 						occurrence(bases[e].bases[j].global()[0].index)++;
@@ -2578,10 +2701,10 @@ void State::solve_problem()
 
 				for (int i = 0; i < occurrence.size(); i++)
 				{
-					for (int d = 0; d < mesh->dimension(); d++)
+					for (int d = 0; d < dim; d++)
 					{
-						grad_pressure(i* mesh->dimension() + d) /= occurrence(i);
-						sol(i* mesh->dimension() + d) -= grad_pressure(i * mesh->dimension() + d);
+						grad_pressure(i* dim + d) /= occurrence(i);
+						sol(i* dim + d) -= grad_pressure(i * dim + d);
 					}
 				}
 
@@ -2590,8 +2713,7 @@ void State::solve_problem()
 				save_vtu("step_" + std::to_string(t) + ".vtu", time);
 			}
 		}
-
-		if (formulation() == "NavierStokes")
+		else if (formulation() == "NavierStokes")
 		{
 			StiffnessMatrix velocity_mass;
 			assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, bases, gbases, velocity_mass);

@@ -65,6 +65,7 @@ namespace polyfem
 		void set_point(const int global_index, const RowVectorNd &p);
 
 		virtual RowVectorNd point(const int global_index) const override;
+		virtual int cell_vertex_(const int f_id, const int lv_id) const override { return mesh_.facets.vertex(f_id, lv_id); }
 		virtual RowVectorNd edge_barycenter(const int index) const override;
 		virtual RowVectorNd face_barycenter(const int index) const override;
 		virtual RowVectorNd cell_barycenter(const int index) const override { assert(false); return RowVectorNd(2); }
