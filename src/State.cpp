@@ -68,6 +68,7 @@
 #include <iostream>
 #include <algorithm>
 #include <memory>
+#include <math.h>
 
 #include <polyfem/autodiff.h>
 #include <geogram/basic/logger.h>
@@ -2512,24 +2513,22 @@ void State::solve_problem()
 		if (formulation() == "OperatorSplitting")
 		{
 			const int dim = mesh->dimension();
+			const int n_el = int(bases.size());
 			// coefficient matrix of pressure projection
 			StiffnessMatrix stiffness;
 			assembler.assemble_problem("Laplacian", mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, stiffness);
 			
 			// matrix used to calculate divergence of velocity
 			StiffnessMatrix mixed_stiffness;
-			assembler.assemble_mixed_problem("NavierStokes", mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, mixed_stiffness);
+			assembler.assemble_mixed_problem("Stokes", mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, mixed_stiffness);
 			mixed_stiffness = mixed_stiffness.transpose();
 
-			// number of elements
-			const int n_el = int(bases.size());
-
 			// build V list and T list from mesh
-			const int shape = geom_bases[0].bases.size();		// number of geometry vertices in an element
+			const int shape = gbases[0].bases.size();		// number of geometry vertices in an element
 
 			// barycentric coordinates of FEM nodes
 			Eigen::MatrixXd local_pts;
-			if (dim == 2)
+			assert(dim == 2);
 			{
 				if (shape == 3)
 					autogen::p_nodes_2d(args["discr_order"], local_pts);
@@ -2537,25 +2536,71 @@ void State::solve_problem()
 					autogen::q_nodes_2d(args["discr_order"], local_pts);
 			}
 
-			Eigen::MatrixXi T(n_el, shape);
-			for (int e = 0; e < n_el; e++)
+			Eigen::MatrixXi T;
+			if(shape == 3)
 			{
-				for (int i = 0; i < shape; i++)
+				T.resize(n_el, 3);
+				for (int e = 0; e < n_el; e++)
 				{
-					T(e, i) = mesh->cell_vertex_(e, i);
+					for (int i = 0; i < shape; i++)
+					{
+						T(e, i) = mesh->cell_vertex_(e, i);
+					}
 				}
 			}
+			else
+			{
+				T.resize(n_el * 2, 3);
+				for (int e = 0; e < n_el; e++)
+				{
+					for (int i = 0; i < 3; i++)
+					{
+						T(e, i) = mesh->cell_vertex_(e, i);
+						T(e + n_el, i) = mesh->cell_vertex_(e, (i + 2) % 4);
+					}
+				}
+			}
+
 			Eigen::MatrixXd V(mesh->n_vertices(), dim);
 			for (int i = 0; i < V.rows(); i++)
 			{
+				auto p = mesh->point(i);
 				for (int d = 0; d < dim; d++)
 				{
-					V(i, d) = mesh->point(i)(d);
+					V(i, d) = p(d);
 				}
 			}
 			// to find the cell which a point is in
 			igl::AABB<MatrixXd, 2> tree;
 			tree.init(V, T);
+
+			// std::ofstream out;
+			// out.open("C:\\Users\\zizhou\\Documents\\GitHub\\polyfem\\triangle.obj");
+			// for(int i = 0; i < V.rows(); i++)
+			// {
+			// 	out << "v ";
+			// 	int d;
+			// 	for(d = 0; d < V.cols(); d++)
+			// 	{
+			// 		out << V(i, d) << " ";
+			// 	}
+			// 	for(; d < 3; d++)
+			// 	{
+			// 		out << 0 << " ";
+			// 	}
+			// 	out << std::endl;
+			// }
+			// for(int i = 0; i < T.rows(); i++)
+			// {
+			// 	out << "f ";
+			// 	for(int d = 0; d < T.cols(); d++)
+			// 	{
+			// 		out << T(i, d) + 1 << " ";
+			// 	}
+			// 	out << std::endl;
+			// }
+			// out.close();
+			// exit(0);
 
 			auto det_func = [](std::vector<RowVectorNd> V) ->double {
 				double det = 0;
@@ -2589,7 +2634,16 @@ void State::solve_problem()
 					
 					// to compute global position with barycentric coordinate
 					ElementAssemblyValues gvals;
-					gvals.compute(e, mesh->is_volume(), local_pts, geom_bases[e], geom_bases[e]);
+					gvals.compute(e, mesh->is_volume(), local_pts, gbases[e], gbases[e]);
+
+					for(int i = 0; i < shape; i++)
+					{
+						for(int j = 0; j < shape; j++)
+						{
+							int temp = (i == j) ? 1 : 0;
+							assert(gvals.basis_values[i].val(j) == temp);
+						}
+					}
 
 					for(int i = 0; i < local_pts.rows(); i++)
 					{
@@ -2627,7 +2681,9 @@ void State::solve_problem()
 
 						// a naive way to find the cell in which pos is
 						VectorXi I;
+						assert(dim == 2);
 						igl::in_element(V, T, pos, tree, I);
+						I(0) = I(0) % n_el;
 
 						std::vector<RowVectorNd> new_vert(shape);
 						for (int i = 0; i < shape; i++)
@@ -2636,18 +2692,48 @@ void State::solve_problem()
 						}
 						
 						// barycentric coordinate of pos, only for 2D triangular mesh
-						Eigen::MatrixXd local_pos(1, dim);
-						for (int d = 0; d < dim; d++)
+						Eigen::MatrixXd local_pos = Eigen::MatrixXd::Zero(1, dim);
+						assert(dim == 2);
 						{
-							std::vector<RowVectorNd> temp = new_vert;
-							temp[d + 1] = pos;
-							local_pos(d) = abs(det_func(temp));
+							if (shape == 3)
+							{
+								for (int d = 0; d < dim; d++)
+								{
+									std::vector<RowVectorNd> temp = new_vert;
+									temp[d + 1] = pos;
+									local_pos(d) = abs(det_func(temp));
+								}
+								local_pos /= abs(det_func(new_vert));
+							}
+							else
+							{
+								MatrixXd res;
+								do
+								{
+									res = new_vert[0] * (1 - local_pos(0)) * (1 - local_pos(1)) +
+										new_vert[1] * local_pos(0) * (1 - local_pos(1)) +
+										new_vert[2] * local_pos(0) * local_pos(1) +
+										new_vert[3] * (1 - local_pos(0)) * local_pos(1) - pos;
+									MatrixXd jacobi(dim, dim);
+									jacobi.block(0, 0, dim, 1) = ((new_vert[1] - new_vert[0]) * (1 - local_pos(1)) +
+																(new_vert[2] - new_vert[3]) * local_pos(1)).transpose();
+									jacobi.block(0, 1, dim, 1) = ((new_vert[3] - new_vert[0]) * (1 - local_pos(0)) +
+																(new_vert[2] - new_vert[1]) * local_pos(0)).transpose();
+									jacobi = jacobi.inverse();
+
+									for (int d = 0; d < dim; d++)
+									{
+										for (int d_ = 0; d_ < dim; d_++)
+											local_pos(d) -= jacobi(d, d_) * res(d_);
+										local_pos(d) = std::min(std::max(local_pos(d), 0.0), 1.0);
+									}
+								} while (res.norm() > 1e-14);
+							}
 						}
-						local_pos /=  abs(det_func(new_vert));
 
 						// interpolation
 						ElementAssemblyValues vals;
-						vals.compute(I(0), mesh->is_volume(), local_pos, bases[I(0)], geom_bases[I(0)]);
+						vals.compute(I(0), mesh->is_volume(), local_pos, bases[I(0)], gbases[I(0)]);
 						for (int d = 0; d < dim; d++)
 						{
 							for (int i = 0; i < vals.basis_values.size(); i++)
@@ -2683,33 +2769,31 @@ void State::solve_problem()
 
 				// only for 2D
 				Eigen::VectorXd grad_pressure = Eigen::VectorXd::Zero(sol.size());
-				Eigen::VectorXd occurrence = Eigen::VectorXd::Zero(n_vert);
+				traversed = Eigen::VectorXi::Zero(n_vert);
 
 				for (int e = 0; e < n_el; ++e)
 				{
-					if (iso_parametric())
-						vals.compute(e, mesh->is_volume(), local_pts, pressure_bases[e], pressure_bases[e]);
-					else
-						vals.compute(e, mesh->is_volume(), local_pts, pressure_bases[e], geom_bases[e]);
+					vals.compute(e, mesh->is_volume(), local_pts, pressure_bases[e], gbases[e]);
 
 					for (int j = 0; j < local_pts.rows(); j++)
 					{
+						int global_ = bases[e].bases[j].global()[0].index;
+						if(traversed(global_)) continue;
 						for (int i = 0; i < vals.basis_values.size(); i++)
 						{
 							for (int d = 0; d < dim; d++)
 							{
-								grad_pressure(bases[e].bases[j].global()[0].index * dim + d) += vals.basis_values[i].grad(j, d) * pressure(pressure_bases[e].bases[i].global()[0].index);
+								grad_pressure(global_ * dim + d) += vals.basis_values[i].grad(j, d) * pressure(pressure_bases[e].bases[i].global()[0].index);
 							}
 						}
-						occurrence(bases[e].bases[j].global()[0].index)++;
+						traversed(global_) = 1;
 					}
 				}
 
-				for (int i = 0; i < occurrence.size(); i++)
+				for (int i = 0; i < traversed.size(); i++)
 				{
 					for (int d = 0; d < dim; d++)
 					{
-						grad_pressure(i* dim + d) /= occurrence(i);
 						sol(i* dim + d) -= grad_pressure(i * dim + d);
 					}
 				}
