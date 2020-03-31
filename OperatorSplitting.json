@@ -1,19 +1,20 @@
 {
-    "mesh": "C:/Users/zizhou/Documents/GitHub/polyfem/plate.obj",                    
+    "mesh": "C:/Users/zizhou/Documents/GitHub/polyfem/plate_square.obj",                    
     "bc_tag": "",                  
     "boundary_id_threshold": -1,
     "normalize_mesh": false,         
 
-    "n_refs": 0,                    
+    "n_refs": 2,                    
     "refinenemt_location": 0.5,     
 
     "scalar_formulation": "Laplacian",
     "tensor_formulation": "OperatorSplitting",
-    "viscosity": 1,
+    "viscosity": 0,
 
     "count_flipped_els": false,     
 
-    "iso_parametric": false,        
+    "iso_parametric": false,
+    "force_linear_geometry": true,        
     "discr_order": 2,               
 
     "pressure_discr_order": 1,      
@@ -23,7 +24,7 @@
     "problem": "TaylorGreenVortex",            
     "problem_params": {
         "time_dependent": true,
-        "viscosity": 1
+        "viscosity": 0
     },           
 
     "n_boundary_samples": 6,        
@@ -74,7 +75,7 @@
     },
 
     "tend": 0.1,
-    "time_steps": 5,               
+    "time_steps": 10,               
 
     "vismesh_rel_area": 1e-05       
 }

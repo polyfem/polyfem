@@ -2524,12 +2524,18 @@ void State::solve_problem()
 			// number of elements
 			const int n_el = int(bases.size());
 
-			// barycentric coordinates of FEM nodes
-			Eigen::MatrixXd local_pts;
-			autogen::p_nodes_2d(args["discr_order"], local_pts);
-
 			// build V list and T list from mesh
 			const int shape = geom_bases[0].bases.size();		// number of geometry vertices in an element
+
+			// barycentric coordinates of FEM nodes
+			Eigen::MatrixXd local_pts;
+			if (dim == 2)
+			{
+				if (shape == 3)
+					autogen::p_nodes_2d(args["discr_order"], local_pts);
+				else
+					autogen::q_nodes_2d(args["discr_order"], local_pts);
+			}
 
 			Eigen::MatrixXi T(n_el, shape);
 			for (int e = 0; e < n_el; e++)
