@@ -2523,8 +2523,10 @@ void State::solve_problem()
 			assembler.assemble_mixed_problem("Stokes", mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, mixed_stiffness);
 			mixed_stiffness = mixed_stiffness.transpose();
 
-			// build V list and T list from mesh
-			const int shape = gbases[0].bases.size();		// number of geometry vertices in an element
+			/* build V list and T list from mesh */
+
+			// number of geometry vertices in an element
+			const int shape = gbases[0].bases.size();		
 
 			// barycentric coordinates of FEM nodes
 			Eigen::MatrixXd local_pts;
@@ -2610,6 +2612,48 @@ void State::solve_problem()
 				return det / 2;
 			};
 
+			std::vector<int> bnd_nodes;
+			bnd_nodes.reserve(boundary_nodes.size() / dim);
+			for (auto it = boundary_nodes.begin(); it != boundary_nodes.end(); it++)
+			{
+				if (*it % dim) continue;
+				bnd_nodes.push_back(*it / dim);
+			}
+
+			/* initialize solution */
+			for (int e = 0; e < n_el; e++)
+			{
+				// geometry vertices of element e
+				std::vector<RowVectorNd> vert(shape);
+				for (int i = 0; i < shape; i++)
+				{
+					vert[i] = mesh->point(mesh->cell_vertex_(e, i));
+				}
+
+				// to compute global position with barycentric coordinate
+				ElementAssemblyValues gvals;
+				gvals.compute(e, mesh->is_volume(), local_pts, gbases[e], gbases[e]);
+
+				for (int i = 0; i < local_pts.rows(); i++)
+				{
+					Eigen::MatrixXd pts = Eigen::MatrixXd::Zero(1, dim);
+					for (int j = 0; j < vert.size(); j++)
+					{
+						for (int d = 0; d < dim; d++)
+						{
+							pts(0, d) += vert[j](d) * gvals.basis_values[j].val(i);
+						}
+					}
+					Eigen::MatrixXd val;
+					problem->initial_solution(pts, val);
+					int global = bases[e].bases[i].global()[0].index;
+					for (int d = 0; d < dim; d++)
+					{
+						sol(global* dim + d) = val(d);
+					}
+				}
+			}
+
 			for (int t = 1; t <= time_steps; t++)
 			{
 				double time = t * dt;
@@ -2635,15 +2679,6 @@ void State::solve_problem()
 					// to compute global position with barycentric coordinate
 					ElementAssemblyValues gvals;
 					gvals.compute(e, mesh->is_volume(), local_pts, gbases[e], gbases[e]);
-
-					for(int i = 0; i < shape; i++)
-					{
-						for(int j = 0; j < shape; j++)
-						{
-							int temp = (i == j) ? 1 : 0;
-							assert(gvals.basis_values[i].val(j) == temp);
-						}
-					}
 
 					for(int i = 0; i < local_pts.rows(); i++)
 					{
@@ -2745,6 +2780,51 @@ void State::solve_problem()
 				}
 				sol.swap(new_sol);
 
+				/* apply boundary condition */
+
+				for (auto e = local_boundary.begin(); e != local_boundary.end(); e++)
+				{
+					auto elem = *e;
+					int elem_idx = elem.element_id();
+
+					// geometry vertices of element e
+					std::vector<RowVectorNd> vert(shape);
+					for (int i = 0; i < shape; i++)
+					{
+						vert[i] = mesh->point(mesh->cell_vertex_(elem_idx, i));
+					}
+
+					ElementAssemblyValues gvals;
+					gvals.compute(elem_idx, mesh->is_volume(), local_pts, gbases[elem_idx], gbases[elem_idx]);
+
+					for (int i = 0; i < elem.size(); i++)
+					{
+						for (int local_idx = 0; local_idx < shape; local_idx++)
+						{
+							int global_idx = bases[elem_idx].bases[local_idx].global()[0].index;
+							if (find(bnd_nodes.begin(), bnd_nodes.end(), global_idx) == bnd_nodes.end())
+								continue;
+
+							Eigen::MatrixXd pos = Eigen::MatrixXd::Zero(1, dim);
+							for (int j = 0; j < shape; j++)
+							{
+								for (int d = 0; d < dim; d++)
+								{
+									pos(0, d) += gvals.basis_values[j].val(local_idx) * vert[j](d);
+								}
+							}
+
+							Eigen::MatrixXd val;
+							problem->exact(pos, time, val);
+
+							for (int d = 0; d < dim; d++)
+							{
+								sol(global_idx * dim + d) = val(d);
+							}
+						}
+					}
+				}
+
 				/* incompressibility */
 
 				Eigen::VectorXd div_v = mixed_stiffness * sol;
@@ -2778,7 +2858,6 @@ void State::solve_problem()
 					for (int j = 0; j < local_pts.rows(); j++)
 					{
 						int global_ = bases[e].bases[j].global()[0].index;
-						if(traversed(global_)) continue;
 						for (int i = 0; i < vals.basis_values.size(); i++)
 						{
 							for (int d = 0; d < dim; d++)
@@ -2786,7 +2865,7 @@ void State::solve_problem()
 								grad_pressure(global_ * dim + d) += vals.basis_values[i].grad(j, d) * pressure(pressure_bases[e].bases[i].global()[0].index);
 							}
 						}
-						traversed(global_) = 1;
+						traversed(global_)++;
 					}
 				}
 
@@ -2794,7 +2873,52 @@ void State::solve_problem()
 				{
 					for (int d = 0; d < dim; d++)
 					{
-						sol(i* dim + d) -= grad_pressure(i * dim + d);
+						sol(i* dim + d) -= grad_pressure(i * dim + d) / traversed(i);
+					}
+				}
+
+				/* apply boundary condition */
+
+				for (auto e = local_boundary.begin(); e != local_boundary.end(); e++)
+				{
+					auto elem = *e;
+					int elem_idx = elem.element_id();
+
+					// geometry vertices of element e
+					std::vector<RowVectorNd> vert(shape);
+					for (int i = 0; i < shape; i++)
+					{
+						vert[i] = mesh->point(mesh->cell_vertex_(elem_idx, i));
+					}
+
+					ElementAssemblyValues gvals;
+					gvals.compute(elem_idx, mesh->is_volume(), local_pts, gbases[elem_idx], gbases[elem_idx]);
+
+					for (int i = 0; i < elem.size(); i++)
+					{
+						for (int local_idx = 0; local_idx < shape; local_idx++)
+						{
+							int global_idx = bases[elem_idx].bases[local_idx].global()[0].index;
+							if (find(bnd_nodes.begin(), bnd_nodes.end(), global_idx) == bnd_nodes.end())
+								continue;
+
+							Eigen::MatrixXd pos = Eigen::MatrixXd::Zero(1, dim);
+							for (int j = 0; j < shape; j++)
+							{
+								for (int d = 0; d < dim; d++)
+								{
+									pos(0, d) += gvals.basis_values[j].val(local_idx) * vert[j](d);
+								}
+							}
+
+							Eigen::MatrixXd val;
+							problem->exact(pos, time, val);
+
+							for (int d = 0; d < dim; d++)
+							{
+								sol(global_idx * dim + d) = val(d);
+							}
+						}
 					}
 				}
 
@@ -3347,6 +3471,7 @@ void State::compute_errors()
 	linf_err = 0;
 	lp_err = 0;
 	// double pred_norm = 0;
+	double div_l2 = 0;
 
 	static const int p = 8;
 
@@ -3395,7 +3520,7 @@ void State::compute_errors()
 
 		const auto err = problem->has_exact_sol() ? (v_exact - v_approx).eval().rowwise().norm().eval() : (v_approx).eval().rowwise().norm().eval();
 		const auto err_grad = problem->has_exact_sol() ? (v_exact_grad - v_approx_grad).eval().rowwise().norm().eval() : (v_approx_grad).eval().rowwise().norm().eval();
-
+		const auto div = (v_approx_grad).eval().rowwise().sum().eval();
 		// for(long i = 0; i < err.size(); ++i)
 		// errors.push_back(err(i));
 
@@ -3445,6 +3570,7 @@ void State::compute_errors()
 		l2_err += (err.array() * err.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
 		h1_err += (err_grad.array() * err_grad.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
 		lp_err += (err.array().pow(p) * vals.det.array() * vals.quadrature.weights.array()).sum();
+		div_l2 += (div.array().pow(2) * vals.det.array() * vals.quadrature.weights.array()).sum();
 	}
 
 	h1_semi_err = sqrt(fabs(h1_err));
@@ -3452,6 +3578,7 @@ void State::compute_errors()
 	l2_err = sqrt(fabs(l2_err));
 
 	lp_err = pow(fabs(lp_err), 1. / p);
+	div_l2 = pow(fabs(div_l2), 1. / 2);
 
 	// pred_norm = pow(fabs(pred_norm), 1./p);
 
@@ -3467,6 +3594,7 @@ void State::compute_errors()
 
 	logger().info("-- Linf error: {}", linf_err);
 	logger().info("-- grad max error: {}", grad_max_err);
+	logger().info("-- div l2 norm: {}", div_l2);
 
 	logger().info("total time: {}s", (building_basis_time + assembling_stiffness_mat_time + solving_time));
 
