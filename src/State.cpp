@@ -37,6 +37,7 @@
 #include <polyfem/SparseNewtonDescentSolver.hpp>
 #include <polyfem/NavierStokesSolver.hpp>
 #include <polyfem/TransientNavierStokesSolver.hpp>
+#include <polyfem/OperatorSplittingSolver.hpp>
 
 #include <polyfem/auto_p_bases.hpp>
 #include <polyfem/auto_q_bases.hpp>
@@ -2604,14 +2605,6 @@ void State::solve_problem()
 			// out.close();
 			// exit(0);
 
-			auto det_func = [](std::vector<RowVectorNd> V) ->double {
-				double det = 0;
-				det += V[0](0) * V[1](1) - V[0](1) * V[1](0);
-				det += V[1](0) * V[2](1) - V[1](1) * V[2](0);
-				det -= V[0](0) * V[2](1) - V[0](1) * V[2](0);
-				return det / 2;
-			};
-
 			std::vector<int> bnd_nodes;
 			bnd_nodes.reserve(boundary_nodes.size() / dim);
 			for (auto it = boundary_nodes.begin(); it != boundary_nodes.end(); it++)
@@ -2620,39 +2613,11 @@ void State::solve_problem()
 				bnd_nodes.push_back(*it / dim);
 			}
 
+			OperatorSplittingSolver ss;
+
 			/* initialize solution */
-			for (int e = 0; e < n_el; e++)
-			{
-				// geometry vertices of element e
-				std::vector<RowVectorNd> vert(shape);
-				for (int i = 0; i < shape; i++)
-				{
-					vert[i] = mesh->point(mesh->cell_vertex_(e, i));
-				}
 
-				// to compute global position with barycentric coordinate
-				ElementAssemblyValues gvals;
-				gvals.compute(e, mesh->is_volume(), local_pts, gbases[e], gbases[e]);
-
-				for (int i = 0; i < local_pts.rows(); i++)
-				{
-					Eigen::MatrixXd pts = Eigen::MatrixXd::Zero(1, dim);
-					for (int j = 0; j < vert.size(); j++)
-					{
-						for (int d = 0; d < dim; d++)
-						{
-							pts(0, d) += vert[j](d) * gvals.basis_values[j].val(i);
-						}
-					}
-					Eigen::MatrixXd val;
-					problem->initial_solution(pts, val);
-					int global = bases[e].bases[i].global()[0].index;
-					for (int d = 0; d < dim; d++)
-					{
-						sol(global* dim + d) = val(d);
-					}
-				}
-			}
+			ss.initialize_solution(*mesh, gbases, bases, problem, sol, local_pts);
 
 			for (int t = 1; t <= time_steps; t++)
 			{
@@ -2661,169 +2626,11 @@ void State::solve_problem()
 
 				/* advection */
 
-				// to store new velocity
-				Eigen::MatrixXd new_sol = Eigen::MatrixXd::Zero(sol.size(), 1);
-				// number of FEM nodes
-				const int n_vert = sol.size() / dim;
-				Eigen::VectorXi traversed = Eigen::VectorXi::Zero(n_vert);
-
-				for(int e = 0; e < n_el; e++)
-				{
-					// geometry vertices of element e
-					std::vector<RowVectorNd> vert(shape);
-					for (int i = 0; i < shape; i++)
-					{
-						vert[i] = mesh->point(mesh->cell_vertex_(e, i));
-					}
-					
-					// to compute global position with barycentric coordinate
-					ElementAssemblyValues gvals;
-					gvals.compute(e, mesh->is_volume(), local_pts, gbases[e], gbases[e]);
-
-					for(int i = 0; i < local_pts.rows(); i++)
-					{
-						// global index of this FEM node
-						int global = bases[e].bases[i].global()[0].index;		
-
-						if(traversed(global)) continue;
-						traversed(global) = 1;
-
-						// velocity of this FEM node
-						RowVectorNd vel(dim);
-						for (int d = 0; d < dim; d++)
-						{
-							vel(d) = sol(global * dim + d);
-						}
-
-						// global position of this FEM node
-						RowVectorNd pos = RowVectorNd::Zero(1, dim);
-						for (int j = 0; j < shape; j++)
-						{
-							pos += gvals.basis_values[j].val(i) * vert[j];
-						}
-
-						// semi-lagrangian trace back
-						pos = pos - vel * dt;
-						
-						// to avoid that pos is out of domain
-						RowVectorNd min, max;
-						mesh->bounding_box(min, max);
-						for (int d = 0; d < dim; d++)
-						{
-							if (pos(d) <= min(d)) pos(d) = min(d) + 1e-12;
-							if (pos(d) >= max(d)) pos(d) = max(d) - 1e-12;
-						}
-
-						// a naive way to find the cell in which pos is
-						VectorXi I;
-						assert(dim == 2);
-						igl::in_element(V, T, pos, tree, I);
-						I(0) = I(0) % n_el;
-
-						std::vector<RowVectorNd> new_vert(shape);
-						for (int i = 0; i < shape; i++)
-						{
-							new_vert[i] = mesh->point(mesh->cell_vertex_(I(0), i));
-						}
-						
-						// barycentric coordinate of pos, only for 2D triangular mesh
-						Eigen::MatrixXd local_pos = Eigen::MatrixXd::Zero(1, dim);
-						assert(dim == 2);
-						{
-							if (shape == 3)
-							{
-								for (int d = 0; d < dim; d++)
-								{
-									std::vector<RowVectorNd> temp = new_vert;
-									temp[d + 1] = pos;
-									local_pos(d) = abs(det_func(temp));
-								}
-								local_pos /= abs(det_func(new_vert));
-							}
-							else
-							{
-								MatrixXd res;
-								do
-								{
-									res = new_vert[0] * (1 - local_pos(0)) * (1 - local_pos(1)) +
-										new_vert[1] * local_pos(0) * (1 - local_pos(1)) +
-										new_vert[2] * local_pos(0) * local_pos(1) +
-										new_vert[3] * (1 - local_pos(0)) * local_pos(1) - pos;
-									MatrixXd jacobi(dim, dim);
-									jacobi.block(0, 0, dim, 1) = ((new_vert[1] - new_vert[0]) * (1 - local_pos(1)) +
-																(new_vert[2] - new_vert[3]) * local_pos(1)).transpose();
-									jacobi.block(0, 1, dim, 1) = ((new_vert[3] - new_vert[0]) * (1 - local_pos(0)) +
-																(new_vert[2] - new_vert[1]) * local_pos(0)).transpose();
-									jacobi = jacobi.inverse();
-
-									for (int d = 0; d < dim; d++)
-									{
-										for (int d_ = 0; d_ < dim; d_++)
-											local_pos(d) -= jacobi(d, d_) * res(d_);
-										local_pos(d) = std::min(std::max(local_pos(d), 0.0), 1.0);
-									}
-								} while (res.norm() > 1e-14);
-							}
-						}
-
-						// interpolation
-						ElementAssemblyValues vals;
-						vals.compute(I(0), mesh->is_volume(), local_pos, bases[I(0)], gbases[I(0)]);
-						for (int d = 0; d < dim; d++)
-						{
-							for (int i = 0; i < vals.basis_values.size(); i++)
-							{
-								new_sol(global * dim + d) += vals.basis_values[i].val(0) * sol(bases[I(0)].bases[i].global()[0].index * dim + d);
-							}
-						}
-					}
-				}
-				sol.swap(new_sol);
+				ss.advection(*mesh, gbases, bases, sol, dt, local_pts, V, T, tree);
 
 				/* apply boundary condition */
 
-				for (auto e = local_boundary.begin(); e != local_boundary.end(); e++)
-				{
-					auto elem = *e;
-					int elem_idx = elem.element_id();
-
-					// geometry vertices of element e
-					std::vector<RowVectorNd> vert(shape);
-					for (int i = 0; i < shape; i++)
-					{
-						vert[i] = mesh->point(mesh->cell_vertex_(elem_idx, i));
-					}
-
-					ElementAssemblyValues gvals;
-					gvals.compute(elem_idx, mesh->is_volume(), local_pts, gbases[elem_idx], gbases[elem_idx]);
-
-					for (int i = 0; i < elem.size(); i++)
-					{
-						for (int local_idx = 0; local_idx < shape; local_idx++)
-						{
-							int global_idx = bases[elem_idx].bases[local_idx].global()[0].index;
-							if (find(bnd_nodes.begin(), bnd_nodes.end(), global_idx) == bnd_nodes.end())
-								continue;
-
-							Eigen::MatrixXd pos = Eigen::MatrixXd::Zero(1, dim);
-							for (int j = 0; j < shape; j++)
-							{
-								for (int d = 0; d < dim; d++)
-								{
-									pos(0, d) += gvals.basis_values[j].val(local_idx) * vert[j](d);
-								}
-							}
-
-							Eigen::MatrixXd val;
-							problem->exact(pos, time, val);
-
-							for (int d = 0; d < dim; d++)
-							{
-								sol(global_idx * dim + d) = val(d);
-							}
-						}
-					}
-				}
+				ss.set_bc(*mesh, local_boundary, bnd_nodes, gbases, bases, sol, local_pts, problem, time);
 
 				/* incompressibility */
 
@@ -2839,88 +2646,17 @@ void State::solve_problem()
 				Eigen::VectorXd x;
 				b = div_v;
 				spectrum = dirichlet_solve(*solver, A, b, std::vector<int>(1, 0), x, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
+				pressure = x;
 				solver->getInfo(solver_info);
-
 				logger().debug("Solver error: {}", (A * x - b).norm());
 
-				pressure = x;
-
-				ElementAssemblyValues vals;
-
 				// only for 2D
-				Eigen::VectorXd grad_pressure = Eigen::VectorXd::Zero(sol.size());
-				traversed = Eigen::VectorXi::Zero(n_vert);
-
-				for (int e = 0; e < n_el; ++e)
-				{
-					vals.compute(e, mesh->is_volume(), local_pts, pressure_bases[e], gbases[e]);
-
-					for (int j = 0; j < local_pts.rows(); j++)
-					{
-						int global_ = bases[e].bases[j].global()[0].index;
-						for (int i = 0; i < vals.basis_values.size(); i++)
-						{
-							for (int d = 0; d < dim; d++)
-							{
-								grad_pressure(global_ * dim + d) += vals.basis_values[i].grad(j, d) * pressure(pressure_bases[e].bases[i].global()[0].index);
-							}
-						}
-						traversed(global_)++;
-					}
-				}
-
-				for (int i = 0; i < traversed.size(); i++)
-				{
-					for (int d = 0; d < dim; d++)
-					{
-						sol(i* dim + d) -= grad_pressure(i * dim + d) / traversed(i);
-					}
-				}
+				Eigen::VectorXd grad_pressure;
+				ss.projection(*mesh, n_bases, gbases, bases, pressure_bases, local_pts, pressure, sol);
 
 				/* apply boundary condition */
 
-				for (auto e = local_boundary.begin(); e != local_boundary.end(); e++)
-				{
-					auto elem = *e;
-					int elem_idx = elem.element_id();
-
-					// geometry vertices of element e
-					std::vector<RowVectorNd> vert(shape);
-					for (int i = 0; i < shape; i++)
-					{
-						vert[i] = mesh->point(mesh->cell_vertex_(elem_idx, i));
-					}
-
-					ElementAssemblyValues gvals;
-					gvals.compute(elem_idx, mesh->is_volume(), local_pts, gbases[elem_idx], gbases[elem_idx]);
-
-					for (int i = 0; i < elem.size(); i++)
-					{
-						for (int local_idx = 0; local_idx < shape; local_idx++)
-						{
-							int global_idx = bases[elem_idx].bases[local_idx].global()[0].index;
-							if (find(bnd_nodes.begin(), bnd_nodes.end(), global_idx) == bnd_nodes.end())
-								continue;
-
-							Eigen::MatrixXd pos = Eigen::MatrixXd::Zero(1, dim);
-							for (int j = 0; j < shape; j++)
-							{
-								for (int d = 0; d < dim; d++)
-								{
-									pos(0, d) += gvals.basis_values[j].val(local_idx) * vert[j](d);
-								}
-							}
-
-							Eigen::MatrixXd val;
-							problem->exact(pos, time, val);
-
-							for (int d = 0; d < dim; d++)
-							{
-								sol(global_idx * dim + d) = val(d);
-							}
-						}
-					}
-				}
+				ss.set_bc(*mesh, local_boundary, bnd_nodes, gbases, bases, sol, local_pts, problem, time);
 
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
