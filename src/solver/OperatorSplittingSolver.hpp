@@ -11,9 +11,9 @@ namespace polyfem
 class OperatorSplittingSolver
 {
 public:
-    OperatorSplittingSolver(polyfem::Mesh &mesh, const int shape, const int n_el) 
+    OperatorSplittingSolver(polyfem::Mesh &mesh, const int shape, const int n_el) : shape(shape), n_el(n_el)
     {
-        const int dim = mesh.dimension();
+        dim = mesh.dimension();
         if(shape == 3)
         {
             T.resize(n_el, 3);
@@ -53,8 +53,6 @@ public:
 
     void set_bc(polyfem::Mesh &mesh, const std::vector<polyfem::LocalBoundary> &local_boundary, const std::vector<int> &bnd_nodes, const std::vector<polyfem::ElementBases> &gbases, const std::vector<polyfem::ElementBases> &bases, Eigen::MatrixXd &sol, const Eigen::MatrixXd &local_pts, std::shared_ptr<Problem> problem, const double time)
     {
-        const int dim = mesh.dimension();
-        const int shape = gbases[0].bases.size();
         for (auto e = local_boundary.begin(); e != local_boundary.end(); e++)
         {
             auto elem = *e;
@@ -101,18 +99,17 @@ public:
 
     void projection(polyfem::Mesh &mesh, int n_bases, const std::vector<polyfem::ElementBases> &gbases, const std::vector<polyfem::ElementBases> &bases, const std::vector<polyfem::ElementBases> &pressure_bases, const Eigen::MatrixXd &local_pts, Eigen::MatrixXd &pressure, Eigen::MatrixXd &sol)
     {
-        const int dim = mesh.dimension();
         Eigen::VectorXd grad_pressure = Eigen::VectorXd::Zero(n_bases * dim);
         Eigen::VectorXi traversed = Eigen::VectorXi::Zero(n_bases);
 
         ElementAssemblyValues vals;
-        for (int e = 0; e < bases.size(); ++e)
+        for (int e = 0; e < n_el; ++e)
         {
             vals.compute(e, mesh.is_volume(), local_pts, pressure_bases[e], gbases[e]);
             for (int j = 0; j < local_pts.rows(); j++)
             {
                 int global_ = bases[e].bases[j].global()[0].index;
-                if(traversed(global_)) continue;
+                // if(traversed(global_)) continue;
                 for (int i = 0; i < vals.basis_values.size(); i++)
                 {
                     for (int d = 0; d < dim; d++)
@@ -135,9 +132,7 @@ public:
 
     void initialize_solution(polyfem::Mesh &mesh, const std::vector<polyfem::ElementBases> &gbases, const std::vector<polyfem::ElementBases> &bases, std::shared_ptr<Problem> problem, Eigen::MatrixXd &sol, const Eigen::MatrixXd &local_pts)
     {
-        const int dim = mesh.dimension();
-        const int shape = gbases[0].bases.size();
-        for (int e = 0; e < bases.size(); e++)
+        for (int e = 0; e < n_el; e++)
 			{
 				// geometry vertices of element e
 				std::vector<RowVectorNd> vert(shape);
@@ -181,9 +176,6 @@ public:
 				return det / 2;
 			};
 
-        const int dim = mesh.dimension();
-        const int shape = gbases[0].bases.size();
-        const int n_el = gbases.size();
         // to store new velocity
         Eigen::MatrixXd new_sol = Eigen::MatrixXd::Zero(sol.size(), 1);
         // number of FEM nodes
@@ -303,6 +295,10 @@ public:
         }
         sol.swap(new_sol);
     }
+
+    int dim;
+    int n_el;
+    int shape;
 
     Eigen::MatrixXd V;
     Eigen::MatrixXi T;

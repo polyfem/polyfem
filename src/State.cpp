@@ -2515,7 +2515,29 @@ void State::solve_problem()
 		{
 			const int dim = mesh->dimension();
 			const int n_el = int(bases.size());				// number of elements
-			const int shape = gbases[0].bases.size();		// number of geometry vertices in an element	
+			const int shape = gbases[0].bases.size();		// number of geometry vertices in an element
+			const double viscosity_ = args["viscosity"];	
+
+			// coefficient matrix of viscosity
+			StiffnessMatrix stiffness_viscosity;
+			assembler.assemble_problem("Laplacian", mesh->is_volume(), n_bases, bases, gbases, stiffness_viscosity);
+			StiffnessMatrix mass;
+			assembler.assemble_mass_matrix("Laplacian", mesh->is_volume(), n_bases, bases, gbases, mass);
+			stiffness_viscosity = mass + dt * stiffness_viscosity * viscosity_;
+
+			//std::ofstream out;
+			//out.open("C:\\Users\\zizhou\\Documents\\GitHub\\polyfem\\vis.m");
+			//out << "A = [" << std::endl;
+			//for (int i = 0; i < stiffness_viscosity.outerSize(); i++)
+			//{
+			//	for (StiffnessMatrix::InnerIterator it(stiffness_viscosity, i); it; ++it)
+			//	{
+			//		out << it.row() + 1 << " " << it.col() + 1 << " " << it.value() << std::endl;
+			//	}
+			//}
+			//out << "];";
+			//out.close();
+			//exit(0);
 
 			// coefficient matrix of pressure projection
 			StiffnessMatrix stiffness;
@@ -2591,23 +2613,50 @@ void State::solve_problem()
 
 				ss.set_bc(*mesh, local_boundary, bnd_nodes, gbases, bases, sol, local_pts, problem, time);
 
+				/* viscosity */
+
+				for(int d = 0; d < dim; d++)
+				{
+					auto solver = LinearSolver::create(args["solver_type"], args["precond_type"]);
+					solver->setParameters(params);
+					logger().info("{}...", solver->name());
+
+					Eigen::VectorXd x = sol(Eigen::seq(d, Eigen::last, dim), 0);
+					Eigen::VectorXd rhs = mass * x;
+					StiffnessMatrix A = stiffness_viscosity;
+
+					for (int i = 0; i < bnd_nodes.size(); i++)
+					{
+						rhs(bnd_nodes[i]) = x(bnd_nodes[i]);
+					}
+
+					spectrum = dirichlet_solve(*solver, A, rhs, bnd_nodes, x, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
+
+					for(int j = 0; j < x.size(); j++)
+					{
+						sol(j * dim + d);
+						sol(j * dim + d) = x(j);
+					}
+
+					solver->getInfo(solver_info);
+					logger().debug("Solver error: {}", (A * x - rhs).norm());
+				}
+
 				/* incompressibility */
 
 				Eigen::VectorXd div_v = mixed_stiffness * sol;
 
 				auto solver = LinearSolver::create(args["solver_type"], args["precond_type"]);
 				solver->setParameters(params);
-				StiffnessMatrix A;
-				Eigen::VectorXd b;
 				logger().info("{}...", solver->name());
 
-				A = stiffness;
+				StiffnessMatrix A = stiffness;
 				Eigen::VectorXd x;
-				b = div_v;
-				spectrum = dirichlet_solve(*solver, A, b, std::vector<int>(1, 0), x, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
+				spectrum = dirichlet_solve(*solver, A, div_v, std::vector<int>(1, 0), x, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
 				pressure = x;
+
 				solver->getInfo(solver_info);
-				logger().debug("Solver error: {}", (A * x - b).norm());
+				logger().debug("Solver error: {}", (A * x - div_v).norm());
 
 				Eigen::VectorXd grad_pressure;
 				ss.projection(*mesh, n_bases, gbases, bases, pressure_bases, local_pts, pressure, sol);
@@ -2618,9 +2667,9 @@ void State::solve_problem()
 
 				/* export to vtu */
 
-				if (!solve_export_to_file)
-					solution_frames.emplace_back();
-				save_vtu("step_" + std::to_string(t) + ".vtu", time);
+				// if (!solve_export_to_file)
+				// 	solution_frames.emplace_back();
+				// save_vtu("step_" + std::to_string(t) + ".vtu", time);
 			}
 		}
 		else if (formulation() == "NavierStokes")

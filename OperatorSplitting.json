@@ -3,29 +3,32 @@
     "bc_tag": "",                  
     "boundary_id_threshold": -1,
     "normalize_mesh": false,         
+                     
+    "tend": 0.1,
+    "n_refs": 4, 
+    "time_steps": 8, 
 
-    "n_refs": 2,                    
-    "refinenemt_location": 0.5,     
+    "discr_order": 1,               
+    "pressure_discr_order": 1,  
+
+    "viscosity": 1,
+    "problem": "TaylorGreenVortex",            
+    "problem_params": {
+        "time_dependent": true,
+        "viscosity": 1
+    },   
+
+    "refinenemt_location": 0.5,  
 
     "scalar_formulation": "Laplacian",
     "tensor_formulation": "OperatorSplitting",
-    "viscosity": 0,
 
     "count_flipped_els": false,     
 
     "iso_parametric": false,
-    "force_linear_geometry": true,        
-    "discr_order": 2,               
+    "force_linear_geometry": true,   
 
-    "pressure_discr_order": 1,      
-
-    "output": "",                   
-
-    "problem": "TaylorGreenVortex",            
-    "problem_params": {
-        "time_dependent": true,
-        "viscosity": 0
-    },           
+    "output": "",                            
 
     "n_boundary_samples": 6,        
     "quadrature_order": 4,          
@@ -38,7 +41,7 @@
         "spectrum": false,          
         "stiffness_mat": "",        
         "vis_boundary_only": false, 
-        "vis_mesh": "output.vtu",
+        "vis_mesh": "",
         "wire_mesh": ""             
     },
 
@@ -72,10 +75,7 @@
 
         "lambda": 0.329670329,      
         "mu": 0.384615384
-    },
-
-    "tend": 0.1,
-    "time_steps": 10,               
+    },              
 
     "vismesh_rel_area": 1e-05       
 }
