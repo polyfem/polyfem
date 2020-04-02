@@ -11,7 +11,45 @@ namespace polyfem
 class OperatorSplittingSolver
 {
 public:
-    OperatorSplittingSolver() {};
+    OperatorSplittingSolver(polyfem::Mesh &mesh, const int shape, const int n_el) 
+    {
+        const int dim = mesh.dimension();
+        if(shape == 3)
+        {
+            T.resize(n_el, 3);
+            for (int e = 0; e < n_el; e++)
+            {
+                for (int i = 0; i < shape; i++)
+                {
+                    T(e, i) = mesh.cell_vertex_(e, i);
+                }
+            }
+        }
+        else
+        {
+            T.resize(n_el * 2, 3);
+            for (int e = 0; e < n_el; e++)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    T(e, i) = mesh.cell_vertex_(e, i);
+                    T(e + n_el, i) = mesh.cell_vertex_(e, (i + 2) % 4);
+                }
+            }
+        }
+
+        V = Eigen::MatrixXd::Zero(mesh.n_vertices(), dim);
+        for (int i = 0; i < V.rows(); i++)
+        {
+            auto p = mesh.point(i);
+            for (int d = 0; d < dim; d++)
+            {
+                V(i, d) = p(d);
+            }
+        }
+        // to find the cell which a point is in
+        tree.init(V, T);
+    }
 
     void set_bc(polyfem::Mesh &mesh, const std::vector<polyfem::LocalBoundary> &local_boundary, const std::vector<int> &bnd_nodes, const std::vector<polyfem::ElementBases> &gbases, const std::vector<polyfem::ElementBases> &bases, Eigen::MatrixXd &sol, const Eigen::MatrixXd &local_pts, std::shared_ptr<Problem> problem, const double time)
     {
@@ -64,22 +102,23 @@ public:
     void projection(polyfem::Mesh &mesh, int n_bases, const std::vector<polyfem::ElementBases> &gbases, const std::vector<polyfem::ElementBases> &bases, const std::vector<polyfem::ElementBases> &pressure_bases, const Eigen::MatrixXd &local_pts, Eigen::MatrixXd &pressure, Eigen::MatrixXd &sol)
     {
         const int dim = mesh.dimension();
-        Eigen::VectorXd grad_pressure = Eigen::VectorXd::Zero(n_bases * mesh.dimension());
+        Eigen::VectorXd grad_pressure = Eigen::VectorXd::Zero(n_bases * dim);
         Eigen::VectorXi traversed = Eigen::VectorXi::Zero(n_bases);
 
         ElementAssemblyValues vals;
         for (int e = 0; e < bases.size(); ++e)
         {
             vals.compute(e, mesh.is_volume(), local_pts, pressure_bases[e], gbases[e]);
-
             for (int j = 0; j < local_pts.rows(); j++)
             {
                 int global_ = bases[e].bases[j].global()[0].index;
+                if(traversed(global_)) continue;
                 for (int i = 0; i < vals.basis_values.size(); i++)
                 {
-                    for (int d = 0; d < mesh.dimension(); d++)
+                    for (int d = 0; d < dim; d++)
                     {
-                        grad_pressure(global_ * mesh.dimension() + d) += vals.basis_values[i].grad(j, d) * pressure(pressure_bases[e].bases[i].global()[0].index);
+                        assert(pressure(pressure_bases[e].bases[i].global().size() == 1));
+                        grad_pressure(global_ * dim + d) += vals.basis_values[i].grad_t_m(j, d) * pressure(pressure_bases[e].bases[i].global()[0].index);
                     }
                 }
                 traversed(global_)++;
@@ -89,7 +128,7 @@ public:
         {
             for (int d = 0; d < dim; d++)
             {
-                sol(i* dim + d) -= grad_pressure(i * dim + d) / traversed(i);
+                sol(i * dim + d) -= grad_pressure(i * dim + d) / traversed(i);
             }
         }
     }
@@ -132,7 +171,7 @@ public:
 			}
     }
 
-    void advection(polyfem::Mesh &mesh, const std::vector<polyfem::ElementBases> &gbases, const std::vector<polyfem::ElementBases> &bases, Eigen::MatrixXd &sol, const double dt, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &V, const Eigen::MatrixXi &T, igl::AABB<MatrixXd, 2> &tree)
+    void advection(polyfem::Mesh &mesh, const std::vector<polyfem::ElementBases> &gbases, const std::vector<polyfem::ElementBases> &bases, Eigen::MatrixXd &sol, const double dt, const Eigen::MatrixXd &local_pts)
     {
         auto det_func = [](std::vector<RowVectorNd> V) ->double {
 				double det = 0;
@@ -264,5 +303,9 @@ public:
         }
         sol.swap(new_sol);
     }
+
+    Eigen::MatrixXd V;
+    Eigen::MatrixXi T;
+    igl::AABB<MatrixXd, 2> tree;
 };
 }

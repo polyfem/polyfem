@@ -18,6 +18,7 @@ set(SOURCES
 	NavierStokesSolver.hpp
 	TransientNavierStokesSolver.cpp
 	TransientNavierStokesSolver.hpp
+	OperatorSplittingSolver.hpp
 )
 
 prepend_current_path(SOURCES)

@@ -371,6 +371,8 @@ void TaylorGreenVortexProblem::exact(const Eigen::MatrixXd &pts, const double t,
 
 		val(i, 0) =  cos(x) * sin(y) * exp(-2 * viscosity_ * t);
 		val(i, 1) = -sin(x) * cos(y) * exp(-2 * viscosity_ * t);
+		//val(i, 0) = 0;
+		//val(i, 1) = 0.5 * (8 + 2 * M_PI * x - x * x) * cos(y / 2);
 	}
 
 }

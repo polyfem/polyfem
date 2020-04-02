@@ -2514,7 +2514,9 @@ void State::solve_problem()
 		if (formulation() == "OperatorSplitting")
 		{
 			const int dim = mesh->dimension();
-			const int n_el = int(bases.size());
+			const int n_el = int(bases.size());				// number of elements
+			const int shape = gbases[0].bases.size();		// number of geometry vertices in an element	
+
 			// coefficient matrix of pressure projection
 			StiffnessMatrix stiffness;
 			assembler.assemble_problem("Laplacian", mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, stiffness);
@@ -2523,11 +2525,6 @@ void State::solve_problem()
 			StiffnessMatrix mixed_stiffness;
 			assembler.assemble_mixed_problem("Stokes", mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, mixed_stiffness);
 			mixed_stiffness = mixed_stiffness.transpose();
-
-			/* build V list and T list from mesh */
-
-			// number of geometry vertices in an element
-			const int shape = gbases[0].bases.size();		
 
 			// barycentric coordinates of FEM nodes
 			Eigen::MatrixXd local_pts;
@@ -2539,43 +2536,7 @@ void State::solve_problem()
 					autogen::q_nodes_2d(args["discr_order"], local_pts);
 			}
 
-			Eigen::MatrixXi T;
-			if(shape == 3)
-			{
-				T.resize(n_el, 3);
-				for (int e = 0; e < n_el; e++)
-				{
-					for (int i = 0; i < shape; i++)
-					{
-						T(e, i) = mesh->cell_vertex_(e, i);
-					}
-				}
-			}
-			else
-			{
-				T.resize(n_el * 2, 3);
-				for (int e = 0; e < n_el; e++)
-				{
-					for (int i = 0; i < 3; i++)
-					{
-						T(e, i) = mesh->cell_vertex_(e, i);
-						T(e + n_el, i) = mesh->cell_vertex_(e, (i + 2) % 4);
-					}
-				}
-			}
-
-			Eigen::MatrixXd V(mesh->n_vertices(), dim);
-			for (int i = 0; i < V.rows(); i++)
-			{
-				auto p = mesh->point(i);
-				for (int d = 0; d < dim; d++)
-				{
-					V(i, d) = p(d);
-				}
-			}
-			// to find the cell which a point is in
-			igl::AABB<MatrixXd, 2> tree;
-			tree.init(V, T);
+			OperatorSplittingSolver ss(*mesh, shape, n_el);
 
 			// std::ofstream out;
 			// out.open("C:\\Users\\zizhou\\Documents\\GitHub\\polyfem\\triangle.obj");
@@ -2613,8 +2574,6 @@ void State::solve_problem()
 				bnd_nodes.push_back(*it / dim);
 			}
 
-			OperatorSplittingSolver ss;
-
 			/* initialize solution */
 
 			ss.initialize_solution(*mesh, gbases, bases, problem, sol, local_pts);
@@ -2626,7 +2585,7 @@ void State::solve_problem()
 
 				/* advection */
 
-				ss.advection(*mesh, gbases, bases, sol, dt, local_pts, V, T, tree);
+				ss.advection(*mesh, gbases, bases, sol, dt, local_pts);
 
 				/* apply boundary condition */
 
@@ -2650,13 +2609,14 @@ void State::solve_problem()
 				solver->getInfo(solver_info);
 				logger().debug("Solver error: {}", (A * x - b).norm());
 
-				// only for 2D
 				Eigen::VectorXd grad_pressure;
 				ss.projection(*mesh, n_bases, gbases, bases, pressure_bases, local_pts, pressure, sol);
 
 				/* apply boundary condition */
 
 				ss.set_bc(*mesh, local_boundary, bnd_nodes, gbases, bases, sol, local_pts, problem, time);
+
+				/* export to vtu */
 
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
