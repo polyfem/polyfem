@@ -68,30 +68,27 @@ namespace polyfem
                 ElementAssemblyValues gvals;
                 gvals.compute(elem_idx, mesh.is_volume(), local_pts, gbases[elem_idx], gbases[elem_idx]);
 
-                for (int i = 0; i < elem.size(); i++)
+                for (int local_idx = 0; local_idx < bases[elem_idx].bases.size(); local_idx++)
                 {
-                    for (int local_idx = 0; local_idx < bases[elem_idx].bases.size(); local_idx++)
+                    int global_idx = bases[elem_idx].bases[local_idx].global()[0].index;
+                    if (find(bnd_nodes.begin(), bnd_nodes.end(), global_idx) == bnd_nodes.end())
+                        continue;
+
+                    Eigen::MatrixXd pos = Eigen::MatrixXd::Zero(1, dim);
+                    for (int j = 0; j < shape; j++)
                     {
-                        int global_idx = bases[elem_idx].bases[local_idx].global()[0].index;
-                        if (find(bnd_nodes.begin(), bnd_nodes.end(), global_idx) == bnd_nodes.end())
-                            continue;
-
-                        Eigen::MatrixXd pos = Eigen::MatrixXd::Zero(1, dim);
-                        for (int j = 0; j < shape; j++)
-                        {
-                            for (int d = 0; d < dim; d++)
-                            {
-                                pos(0, d) += gvals.basis_values[j].val(local_idx) * vert[j](d);
-                            }
-                        }
-
-                        Eigen::MatrixXd val;
-                        problem->exact(pos, time, val);
-
                         for (int d = 0; d < dim; d++)
                         {
-                            sol(global_idx * dim + d) = val(d);
+                            pos(0, d) += gvals.basis_values[j].val(local_idx) * vert[j](d);
                         }
+                    }
+
+                    Eigen::MatrixXd val;
+                    problem->exact(pos, time, val);
+
+                    for (int d = 0; d < dim; d++)
+                    {
+                        sol(global_idx * dim + d) = val(d);
                     }
                 }
             }

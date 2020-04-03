@@ -2525,20 +2525,6 @@ void State::solve_problem()
 			assembler.assemble_mass_matrix("Laplacian", mesh->is_volume(), n_bases, bases, gbases, mass);
 			stiffness_viscosity = mass + dt * stiffness_viscosity * viscosity_;
 
-			//std::ofstream out;
-			//out.open("C:\\Users\\zizhou\\Documents\\GitHub\\polyfem\\vis.m");
-			//out << "A = [" << std::endl;
-			//for (int i = 0; i < stiffness_viscosity.outerSize(); i++)
-			//{
-			//	for (StiffnessMatrix::InnerIterator it(stiffness_viscosity, i); it; ++it)
-			//	{
-			//		out << it.row() + 1 << " " << it.col() + 1 << " " << it.value() << std::endl;
-			//	}
-			//}
-			//out << "];";
-			//out.close();
-			//exit(0);
-
 			// coefficient matrix of pressure projection
 			StiffnessMatrix stiffness;
 			assembler.assemble_problem("Laplacian", mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, stiffness);
@@ -2566,34 +2552,6 @@ void State::solve_problem()
 			}
 
 			OperatorSplittingSolver ss(*mesh, shape, n_el);
-
-			// std::ofstream out;
-			// out.open("C:\\Users\\zizhou\\Documents\\GitHub\\polyfem\\triangle.obj");
-			// for(int i = 0; i < V.rows(); i++)
-			// {
-			// 	out << "v ";
-			// 	int d;
-			// 	for(d = 0; d < V.cols(); d++)
-			// 	{
-			// 		out << V(i, d) << " ";
-			// 	}
-			// 	for(; d < 3; d++)
-			// 	{
-			// 		out << 0 << " ";
-			// 	}
-			// 	out << std::endl;
-			// }
-			// for(int i = 0; i < T.rows(); i++)
-			// {
-			// 	out << "f ";
-			// 	for(int d = 0; d < T.cols(); d++)
-			// 	{
-			// 		out << T(i, d) + 1 << " ";
-			// 	}
-			// 	out << std::endl;
-			// }
-			// out.close();
-			// exit(0);
 
 			std::vector<int> bnd_nodes;
 			bnd_nodes.reserve(boundary_nodes.size() / dim);
