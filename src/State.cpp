@@ -2550,12 +2550,19 @@ void State::solve_problem()
 
 			// barycentric coordinates of FEM nodes
 			Eigen::MatrixXd local_pts;
-			assert(dim == 2);
+			if (dim == 2)
 			{
 				if (shape == 3)
 					autogen::p_nodes_2d(args["discr_order"], local_pts);
 				else
 					autogen::q_nodes_2d(args["discr_order"], local_pts);
+			}
+			else
+			{
+				if (shape == 3)
+					autogen::p_nodes_3d(args["discr_order"], local_pts);
+				else
+					autogen::q_nodes_3d(args["discr_order"], local_pts);
 			}
 
 			OperatorSplittingSolver ss(*mesh, shape, n_el);
@@ -2592,7 +2599,7 @@ void State::solve_problem()
 			bnd_nodes.reserve(boundary_nodes.size() / dim);
 			for (auto it = boundary_nodes.begin(); it != boundary_nodes.end(); it++)
 			{
-				if (*it % dim) continue;
+				if (!(*it % dim)) continue;
 				bnd_nodes.push_back(*it / dim);
 			}
 
@@ -2634,7 +2641,6 @@ void State::solve_problem()
 
 					for(int j = 0; j < x.size(); j++)
 					{
-						sol(j * dim + d);
 						sol(j * dim + d) = x(j);
 					}
 

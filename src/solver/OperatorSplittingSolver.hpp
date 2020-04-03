@@ -70,7 +70,7 @@ public:
 
             for (int i = 0; i < elem.size(); i++)
             {
-                for (int local_idx = 0; local_idx < shape; local_idx++)
+                for (int local_idx = 0; local_idx < bases[elem_idx].bases.size(); local_idx++)
                 {
                     int global_idx = bases[elem_idx].bases[local_idx].global()[0].index;
                     if (find(bnd_nodes.begin(), bnd_nodes.end(), global_idx) == bnd_nodes.end())
@@ -109,7 +109,6 @@ public:
             for (int j = 0; j < local_pts.rows(); j++)
             {
                 int global_ = bases[e].bases[j].global()[0].index;
-                // if(traversed(global_)) continue;
                 for (int i = 0; i < vals.basis_values.size(); i++)
                 {
                     for (int d = 0; d < dim; d++)
@@ -168,13 +167,18 @@ public:
 
     void advection(polyfem::Mesh &mesh, const std::vector<polyfem::ElementBases> &gbases, const std::vector<polyfem::ElementBases> &bases, Eigen::MatrixXd &sol, const double dt, const Eigen::MatrixXd &local_pts)
     {
-        auto det_func = [](std::vector<RowVectorNd> V) ->double {
-				double det = 0;
-				det += V[0](0) * V[1](1) - V[0](1) * V[1](0);
-				det += V[1](0) * V[2](1) - V[1](1) * V[2](0);
-				det -= V[0](0) * V[2](1) - V[0](1) * V[2](0);
-				return det / 2;
-			};
+        auto det_func = [=](std::vector<RowVectorNd> V) ->double {
+            Eigen::MatrixXd temp(dim + 1, dim + 1);
+            for(int i = 0; i < dim + 1; i++)
+            {
+                for(int j = 0; j < dim; j++)
+                {
+                    temp(i, j) = V[i](j);
+                }
+                temp(i, dim) = 1;
+            }
+            return temp.determinant() / ((dim == 2) ? 2. : 6.);
+        };
 
         // to store new velocity
         Eigen::MatrixXd new_sol = Eigen::MatrixXd::Zero(sol.size(), 1);
