@@ -2628,7 +2628,12 @@ void State::solve_problem()
 					solver->setParameters(params);
 					logger().info("{}...", solver->name());
 
-					Eigen::VectorXd x = sol(Eigen::seq(d, Eigen::last, dim), 0);
+					Eigen::VectorXd x(sol.size() / dim);
+					for(int j = 0; j < x.size(); j++)
+					{
+						x(j) = sol(j * dim + d);
+					}
+					
 					Eigen::VectorXd rhs = mass * x;
 					StiffnessMatrix A = stiffness_viscosity;
 
