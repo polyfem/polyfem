@@ -428,10 +428,10 @@ Eigen::Matrix<T, 2, 1> simple_function(T x, T y)
 {
 	Eigen::Matrix<T, 2, 1> res;
 
-	res(0) = x * x / 2. + x * y;
-	res(1) = -x * y - y * y / 2.;
-	// res(0) = x * x * x / 3. + x * y * y;
-	// res(1) = -x * x * y - y * y * y / 3.;
+	// res(0) = x * x / 2. + x * y;
+	// res(1) = -x * y - y * y / 2.;
+	res(0) = x * x * x / 3. + x * y * y;
+	res(1) = -x * x * y - y * y * y / 3.;
 
 	return res;
 }

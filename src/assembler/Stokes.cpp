@@ -52,7 +52,7 @@ namespace polyfem
 
 		for(int d = 0; d < size(); ++d)
 		{
-			res(d) = viscosity_*H(d, d);
+			res(d) = viscosity_ * pt(d).getHessian().trace();
 		}
 
 		return res;
