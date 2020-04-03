@@ -13,13 +13,13 @@ class TimeDepentendStokesProblem : public Problem
 public:
 	TimeDepentendStokesProblem(const std::string &name);
 
-	bool has_exact_sol() const override { return false; }
+	virtual bool has_exact_sol() const override { return false; }
 	bool is_scalar() const override { return false; }
 
 	bool is_time_dependent() const override { return is_time_dependent_; }
-	void initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
+	virtual void initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 
-	void set_parameters(const json &params) override;
+	virtual void set_parameters(const json &params) override;
 
 protected:
 	bool is_time_dependent_;
@@ -114,16 +114,14 @@ private:
 	int dir_;
 };
 
-class TaylorGreenVortexProblem : public Problem
+class TaylorGreenVortexProblem : public TimeDepentendStokesProblem
 {
 public:
 	TaylorGreenVortexProblem(const std::string &name);
 
 	bool has_exact_sol() const override { return true; }
-	bool is_scalar() const override { return false; }
-	virtual bool is_rhs_zero() const override { return true; }
+	bool is_rhs_zero() const override { return is_time_dependent_; }
 
-	bool is_time_dependent() const override { return true; }
 	void initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 
 	void set_parameters(const json &params) override;
@@ -135,6 +133,30 @@ public:
 	void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 public:
 	double viscosity_;
+};
+
+class SimpleStokeProblemExact : public ProblemWithSolution
+{
+public:
+	SimpleStokeProblemExact(const std::string &name);
+
+	VectorNd eval_fun(const VectorNd &pt) const override;
+	AutodiffGradPt eval_fun(const AutodiffGradPt &pt) const override;
+	AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt) const override;
+
+	bool is_scalar() const override { return false; }
+};
+
+class SineStokeProblemExact : public ProblemWithSolution
+{
+public:
+	SineStokeProblemExact(const std::string &name);
+
+	VectorNd eval_fun(const VectorNd &pt) const override;
+	AutodiffGradPt eval_fun(const AutodiffGradPt &pt) const override;
+	AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt) const override;
+
+	bool is_scalar() const override { return false; }
 };
 
 } // namespace polyfem
