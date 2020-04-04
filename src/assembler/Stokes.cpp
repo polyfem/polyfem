@@ -48,7 +48,6 @@ namespace polyfem
 	{
 		assert(pt.size() == size());
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res(size());
-		const auto H = pt(0).getHessian();
 
 		for(int d = 0; d < size(); ++d)
 		{

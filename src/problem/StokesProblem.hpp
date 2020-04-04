@@ -114,13 +114,14 @@ private:
 	int dir_;
 };
 
-class TaylorGreenVortexProblem : public TimeDepentendStokesProblem
+class TaylorGreenVortexProblem : public Problem
 {
 public:
 	TaylorGreenVortexProblem(const std::string &name);
 
 	bool has_exact_sol() const override { return true; }
-	bool is_rhs_zero() const override { return is_time_dependent_; }
+	bool is_rhs_zero() const override { return true; }
+	bool is_scalar() const override { return false; }
 
 	void initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 
@@ -145,6 +146,10 @@ public:
 	AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt) const override;
 
 	bool is_scalar() const override { return false; }
+
+	void set_parameters(const json &params) override;
+private:
+	int func_;
 };
 
 class SineStokeProblemExact : public ProblemWithSolution
