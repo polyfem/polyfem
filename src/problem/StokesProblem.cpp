@@ -396,7 +396,41 @@ void TaylorGreenVortexProblem::exact_grad(const Eigen::MatrixXd &pts, const doub
 
 void TaylorGreenVortexProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 {
-	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+	val.resize(pts.rows(), pts.cols());
+
+	const double time_scaling = exp(-2 * viscosity_ * t);
+
+	val.resize(pts.rows(), pts.cols());
+	for (int i = 0; i < pts.rows(); ++i)
+	{
+		DiffScalarBase::setVariableCount(2);
+
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> tmp = pts.row(i).transpose();
+		AutodiffHessianPt tmp_pt(2);
+		for (int d = 0; d < 2; ++d)
+			tmp_pt(d) = AutodiffScalarHessian(d, tmp(d));
+
+		AutodiffHessianPt pt(2);
+		pt(0) = cos(tmp_pt(0)) * sin(tmp_pt(1)) * time_scaling;
+		pt(1) = -sin(tmp_pt(0)) * cos(tmp_pt(1)) * time_scaling;
+
+		for (int d = 0; d < 2; ++d)
+		{
+			val(i, d) = -tmp.dot(pt(d).getGradient()) + viscosity_ * pt(d).getHessian().trace();
+		}
+
+		// const double x = pts(i, 0);
+		// const double y = pts(i, 1);
+
+		// const double nlu = cos(x) * sin(y) * sin(y) * time_scaling2 * sin(x) + sin(x) * cos(y) * cos(y) * time_scaling2 * cos(x);
+		// const double nlv = cos(x) * cos(x) * sin(y) * time_scaling2 * cos(y) + sin(x) * sin(x) * cos(y) * time_scaling2 * sin(y);
+
+		// const double laplu = -2 * cos(x) * sin(y) * time_scaling;
+		// const double laplv = 2 * sin(x) * cos(y) * time_scaling;
+
+		// val(i, 0) = nlu + laplu;
+		// val(i, 1) = nlv + laplv;
+	}
 }
 
 void TaylorGreenVortexProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const

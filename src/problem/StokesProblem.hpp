@@ -122,6 +122,7 @@ public:
 	bool has_exact_sol() const override { return true; }
 	bool is_rhs_zero() const override { return true; }
 	bool is_scalar() const override { return false; }
+	bool is_time_dependent() const override { return true; }
 
 	void initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 
