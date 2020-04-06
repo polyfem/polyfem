@@ -2572,13 +2572,15 @@ void State::solve_problem()
 
 				/* advection */
 
-				ss.advection(*mesh, gbases, bases, sol, dt, local_pts);
+				bool BFS = args["BFS"];
 
-				/* apply boundary condition */
+				ss.advection(*mesh, gbases, bases, sol, dt, local_pts, BFS);
+
+				 /* apply boundary condition */
 
 				ss.set_bc(*mesh, local_boundary, bnd_nodes, gbases, bases, sol, local_pts, problem, time);
 
-				/* viscosity */
+				 /* viscosity */
 
 				for(int d = 0; d < dim; d++)
 				{

@@ -5,17 +5,18 @@
     "normalize_mesh": false,         
                      
     "tend": 0.1,
-    "n_refs": 4, 
-    "time_steps": 8, 
+    "n_refs": 4,
+    "time_steps": 8,
+    "BFS": false,
 
-    "discr_order": 2,               
-    "pressure_discr_order": 1,  
+    "discr_order": 2,
+    "pressure_discr_order": 1,
 
-    "viscosity": 1,
-    "problem": "TaylorGreenVortex",            
+    "viscosity": 0,
+    "problem": "TaylorGreenVortex",
     "problem_params": {
         "time_dependent": true,
-        "viscosity": 1
+        "viscosity": 0
     },   
 
     "refinenemt_location": 0.5,  
@@ -56,7 +57,7 @@
     "discr_order_max": 4,           
     "h1_formula": false,            
 
-    "solver_type": "Pardiso",       
+    "solver_type": "Eigen::ConjugateGradient",       
     "precond_type": "Eigen::DiagonalPreconditioner",
     "solver_params": {},            
 

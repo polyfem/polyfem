@@ -1,4 +1,8 @@
-#include <polyfem/Mesh2D.hpp>
+#pragma once
+
+#include <polyfem/Common.hpp>
+#include <polyfem/State.hpp>
+
 #include <polyfem/AssemblerUtils.hpp>
 #include <memory>
 
@@ -11,9 +15,32 @@ namespace polyfem
     class OperatorSplittingSolver
     {
     public:
-        OperatorSplittingSolver(polyfem::Mesh& mesh, const int shape, const int n_el) : shape(shape), n_el(n_el)
+        OperatorSplittingSolver(const polyfem::Mesh& mesh, const int shape, const int n_el) : shape(shape), n_el(n_el)
         {
             dim = mesh.dimension();
+
+            std::vector<std::list<int>> node_cell_adjacency(mesh.n_vertices());
+            cell_adjacency.resize(n_el);
+
+            for(int e = 0; e < n_el; e++)
+            {
+                for(int i = 0; i < shape; i++)
+                {
+                    node_cell_adjacency[mesh.cell_vertex_(e, i)].push_front(e);
+                }
+            }
+
+            for(int e = 0; e < n_el; e++)
+            {
+                for(int i = 0; i < shape; i++)
+                {
+                    int global = mesh.cell_vertex_(e, i);
+                    for(auto it = node_cell_adjacency[global].begin(); it != node_cell_adjacency[global].end(); it++)
+                    {
+                        cell_adjacency[e].insert(*it);
+                    }
+                }
+            }
             if (shape == 3)
             {
                 T.resize(n_el, 3);
@@ -51,7 +78,7 @@ namespace polyfem
             tree.init(V, T);
         }
 
-        void set_bc(polyfem::Mesh& mesh, const std::vector<polyfem::LocalBoundary>& local_boundary, const std::vector<int>& bnd_nodes, const std::vector<polyfem::ElementBases>& gbases, const std::vector<polyfem::ElementBases>& bases, Eigen::MatrixXd& sol, const Eigen::MatrixXd& local_pts, std::shared_ptr<Problem> problem, const double time)
+        void set_bc(const polyfem::Mesh& mesh, const std::vector<polyfem::LocalBoundary>& local_boundary, const std::vector<int>& bnd_nodes, const std::vector<polyfem::ElementBases>& gbases, const std::vector<polyfem::ElementBases>& bases, Eigen::MatrixXd& sol, const Eigen::MatrixXd& local_pts, const std::shared_ptr<Problem> problem, const double time)
         {
             for (auto e = local_boundary.begin(); e != local_boundary.end(); e++)
             {
@@ -94,7 +121,7 @@ namespace polyfem
             }
         }
 
-        void projection(polyfem::Mesh& mesh, int n_bases, const std::vector<polyfem::ElementBases>& gbases, const std::vector<polyfem::ElementBases>& bases, const std::vector<polyfem::ElementBases>& pressure_bases, const Eigen::MatrixXd& local_pts, Eigen::MatrixXd& pressure, Eigen::MatrixXd& sol)
+        void projection(const polyfem::Mesh& mesh, int n_bases, const std::vector<polyfem::ElementBases>& gbases, const std::vector<polyfem::ElementBases>& bases, const std::vector<polyfem::ElementBases>& pressure_bases, const Eigen::MatrixXd& local_pts, Eigen::MatrixXd& pressure, Eigen::MatrixXd& sol)
         {
             Eigen::VectorXd grad_pressure = Eigen::VectorXd::Zero(n_bases * dim);
             Eigen::VectorXi traversed = Eigen::VectorXi::Zero(n_bases);
@@ -126,7 +153,7 @@ namespace polyfem
             }
         }
 
-        void initialize_solution(polyfem::Mesh& mesh, const std::vector<polyfem::ElementBases>& gbases, const std::vector<polyfem::ElementBases>& bases, std::shared_ptr<Problem> problem, Eigen::MatrixXd& sol, const Eigen::MatrixXd& local_pts)
+        void initialize_solution(const polyfem::Mesh& mesh, const std::vector<polyfem::ElementBases>& gbases, const std::vector<polyfem::ElementBases>& bases, const std::shared_ptr<Problem> problem, Eigen::MatrixXd& sol, const Eigen::MatrixXd& local_pts)
         {
             for (int e = 0; e < n_el; e++)
             {
@@ -162,21 +189,78 @@ namespace polyfem
             }
         }
 
-        void advection(polyfem::Mesh& mesh, const std::vector<polyfem::ElementBases>& gbases, const std::vector<polyfem::ElementBases>& bases, Eigen::MatrixXd& sol, const double dt, const Eigen::MatrixXd& local_pts)
+        int search_cell(const polyfem::Mesh& mesh, const std::vector<polyfem::ElementBases>& gbases, RowVectorNd& pos, const int e_origin, Eigen::MatrixXd& local_pts)
         {
-            auto det_func = [=](std::vector<RowVectorNd> V) ->double {
-                Eigen::MatrixXd temp(dim + 1, dim + 1);
-                for (int i = 0; i < dim + 1; i++)
-                {
-                    for (int j = 0; j < dim; j++)
-                    {
-                        temp(i, j) = V[i](j);
-                    }
-                    temp(i, dim) = 1;
-                }
-                return temp.determinant() / ((dim == 2) ? 2. : 6.);
-            };
+            std::set<int> traversed_cell;
+            std::queue<int> Q;
+            Q.push(e_origin);
 
+            while(!Q.empty())
+            {
+                int p = Q.front();
+                Q.pop();
+
+                for(auto it = cell_adjacency[p].begin(); it != cell_adjacency[p].end(); it++)
+                {
+                    if(traversed_cell.insert(*it).second == false) 
+                        continue;
+                    
+                    calculate_local_pts(mesh, gbases[*it], *it, pos, local_pts);
+
+                    if(local_pts.minCoeff() >= 0)
+                    {
+                        if((shape == 3 && local_pts.sum() <= 1) || (shape == 4 && local_pts.maxCoeff() <= 1))
+                        {
+                            return *it;
+                        }
+                    }
+
+                    Q.push(*it);
+                }
+            }
+        }
+
+        void calculate_local_pts(const polyfem::Mesh& mesh, const polyfem::ElementBases& gbase, const int elem_idx, const RowVectorNd& pos, Eigen::MatrixXd& local_pos)
+        {
+            local_pos = Eigen::MatrixXd::Zero(1, dim);
+            
+            std::vector<RowVectorNd> vert(shape);
+            for (int i = 0; i < shape; i++)
+            {
+                vert[i] = mesh.point(mesh.cell_vertex_(elem_idx, i));
+            }
+
+            ElementAssemblyValues gvals_;
+
+            gvals_.compute(elem_idx, mesh.is_volume(), local_pos, gbase, gbase);
+
+            Eigen::MatrixXd res = -pos;
+            for (int i = 0; i < shape; i++)
+            {
+                res += vert[i] * gvals_.basis_values[i].val(0);
+            }
+
+            Eigen::MatrixXd jacobi = Eigen::MatrixXd::Zero(dim, dim);
+            for (int d1 = 0; d1 < dim; d1++)
+            {
+                for (int d2 = 0; d2 < dim; d2++)
+                {
+                    for (int i = 0; i < shape; i++)
+                    {
+                        jacobi(d1, d2) += vert[i](d1) * gvals_.basis_values[i].grad(0, d2);
+                    }
+                }
+            }
+
+            Eigen::VectorXd delta = jacobi.colPivHouseholderQr().solve(res.transpose());
+            for (int d = 0; d < dim; d++)
+            {
+                local_pos(d) -= delta(d);
+            }
+        }
+
+        void advection(const polyfem::Mesh& mesh, const std::vector<polyfem::ElementBases>& gbases, const std::vector<polyfem::ElementBases>& bases, Eigen::MatrixXd& sol, const double dt, const Eigen::MatrixXd& local_pts, const bool BFS = false, const int order = 1)
+        {
             // to store new velocity
             Eigen::MatrixXd new_sol = Eigen::MatrixXd::Zero(sol.size(), 1);
             // number of FEM nodes
@@ -218,7 +302,7 @@ namespace polyfem
                         pos += gvals.basis_values[j].val(i) * vert[j];
                     }
 
-                    // semi-lagrangian trace back
+                    // trace back
                     pos = pos - vel * dt;
 
                     // to avoid that pos is out of domain
@@ -230,45 +314,19 @@ namespace polyfem
                         if (pos(d) >= max(d)) pos(d) = max(d) - 1e-12;
                     }
 
-                    // a naive way to find the cell in which pos is
-                    VectorXi I;
-                    assert(dim == 2);
-                    igl::in_element(V, T, pos, tree, I);
-                    I(0) = I(0) % n_el;
-
-                    std::vector<RowVectorNd> new_vert(shape);
-                    for (int i = 0; i < shape; i++)
+                    Eigen::VectorXi I(1);
+                    Eigen::MatrixXd local_pos;
+                    
+                    if(!BFS)
                     {
-                        new_vert[i] = mesh.point(mesh.cell_vertex_(I(0), i));
+                        assert(dim == 2);
+                        igl::in_element(V, T, pos, tree, I);
+                        I(0) = I(0) % n_el;
+                        calculate_local_pts(mesh, gbases[I(0)], I(0), pos, local_pos);
                     }
-
-                    // local coordinate of pos
-                    Eigen::MatrixXd local_pos = Eigen::MatrixXd::Zero(1, dim);
-                    ElementAssemblyValues gvals_;
-                    gvals_.compute(I(0), mesh.is_volume(), local_pos, gbases[I(0)], gbases[I(0)]);
-
-                    Eigen::MatrixXd res = -pos;
-                    for (int i = 0; i < shape; i++)
+                    else
                     {
-                        res += new_vert[i] * gvals_.basis_values[i].val(0);
-                    }
-
-                    Eigen::MatrixXd jacobi = Eigen::MatrixXd::Zero(dim, dim);
-                    for (int d1 = 0; d1 < dim; d1++)
-                    {
-                        for (int d2 = 0; d2 < dim; d2++)
-                        {
-                            for (int i = 0; i < shape; i++)
-                            {
-                                jacobi(d1, d2) += new_vert[i](d1) * gvals_.basis_values[i].grad(0, d2);
-                            }
-                        }
-                    }
-
-                    Eigen::VectorXd delta = jacobi.colPivHouseholderQr().solve(res.transpose());
-                    for (int d = 0; d < dim; d++)
-                    {
-                        local_pos(d) -= delta(d);
+                        I(0) = search_cell(mesh, gbases, pos, e, local_pos);
                     }
 
                     // interpolation
@@ -292,6 +350,8 @@ namespace polyfem
 
         Eigen::MatrixXd V;
         Eigen::MatrixXi T;
-        igl::AABB<MatrixXd, 2> tree;
+        igl::AABB<Eigen::MatrixXd, 2> tree;
+
+        std::vector<std::set<int>> cell_adjacency;
     };
 }
