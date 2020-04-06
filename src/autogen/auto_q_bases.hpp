@@ -19,6 +19,6 @@ void q_grad_basis_value_3d(const int q, const int local_index, const Eigen::Matr
 
 
 
-static const int MAX_Q_BASES = 2;
+static const int MAX_Q_BASES = 3;
 
 }}
