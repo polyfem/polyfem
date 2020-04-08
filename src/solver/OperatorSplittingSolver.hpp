@@ -277,6 +277,7 @@ namespace polyfem
                 }
             }
             assert(false);
+            return -1;
         }
 
         void barycentric_coordinate(const Eigen::MatrixXd& points, Eigen::MatrixXd& local_pts)
