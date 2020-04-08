@@ -19,31 +19,9 @@ namespace polyfem
         {
             dim = mesh.dimension();
 
-            std::vector<std::list<int>> node_cell_adjacency(mesh.n_vertices());
-            cell_adjacency.resize(n_el);
-
-            for(int e = 0; e < n_el; e++)
+            if (shape == dim + 1)
             {
-                for(int i = 0; i < shape; i++)
-                {
-                    node_cell_adjacency[mesh.cell_vertex_(e, i)].push_front(e);
-                }
-            }
-
-            for(int e = 0; e < n_el; e++)
-            {
-                for(int i = 0; i < shape; i++)
-                {
-                    int global = mesh.cell_vertex_(e, i);
-                    for(auto it = node_cell_adjacency[global].begin(); it != node_cell_adjacency[global].end(); it++)
-                    {
-                        cell_adjacency[e].insert(*it);
-                    }
-                }
-            }
-            if (shape == 3)
-            {
-                T.resize(n_el, 3);
+                T.resize(n_el, dim + 1);
                 for (int e = 0; e < n_el; e++)
                 {
                     for (int i = 0; i < shape; i++)
@@ -54,6 +32,7 @@ namespace polyfem
             }
             else
             {
+                assert(dim == 2);
                 T.resize(n_el * 2, 3);
                 for (int e = 0; e < n_el; e++)
                 {
@@ -64,7 +43,6 @@ namespace polyfem
                     }
                 }
             }
-
             V = Eigen::MatrixXd::Zero(mesh.n_vertices(), dim);
             for (int i = 0; i < V.rows(); i++)
             {
@@ -76,6 +54,61 @@ namespace polyfem
             }
             // to find the cell which a point is in
             tree.init(V, T);
+
+            cell_num = (int)pow(n_el, 1./dim);
+            hash_table.resize((int)pow(cell_num, dim));
+
+            mesh.bounding_box(min_domain, max_domain);
+
+            for(int e = 0; e < T.rows(); e++)
+            {
+                VectorXd min_ = V.row(T(e, 0));
+                VectorXd max_ = min_;
+
+                for(int i = 1; i < T.cols(); i++)
+                {
+                    VectorXd p = V.row(T(e, i));
+                    for(int d = 0; d < dim; d++)
+                    {
+                        if(min_(d) > p(d)) min_(d) = p(d);
+                        if(max_(d) < p(d)) max_(d) = p(d);
+                    }
+                }
+
+                VectorXi min_int(dim), max_int(dim);
+
+                for(int d = 0; d < dim; d++)
+                {
+                    double temp = cell_num / (max_domain(d) - min_domain(d));
+                    min_int(d) = floor((min_(d) - min_domain(d)) * temp);
+                    max_int(d) = ceil((max_(d) - min_domain(d)) * temp);
+
+                    if(min_int(d) < 0) 
+                        min_int(d) = 0;
+                    if(max_int(d) > cell_num)
+                        max_int(d) = cell_num;
+                }
+
+                for(int x = min_int(0); x < max_int(0); x++)
+                {
+                    for(int y = min_int(1); y < max_int(1); y++)
+                    {
+                        if(dim == 2)
+                        {
+                            int idx = x + y * cell_num;
+                            hash_table[idx].push_front(e);
+                        }
+                        else
+                        {
+                            for(int z = min_int(2); z < max_int(2); z++)
+                            {
+                                int idx = x + (y + z * cell_num) * cell_num;
+                                hash_table[idx].push_front(e);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         void set_bc(const polyfem::Mesh& mesh, const std::vector<polyfem::LocalBoundary>& local_boundary, const std::vector<int>& bnd_nodes, const std::vector<polyfem::ElementBases>& gbases, const std::vector<polyfem::ElementBases>& bases, Eigen::MatrixXd& sol, const Eigen::MatrixXd& local_pts, const std::shared_ptr<Problem> problem, const double time)
@@ -189,34 +222,58 @@ namespace polyfem
             }
         }
 
-        int search_cell(const polyfem::Mesh& mesh, const std::vector<polyfem::ElementBases>& gbases, RowVectorNd& pos, const int e_origin, Eigen::MatrixXd& local_pts)
+        int search_cell(RowVectorNd& pos)
         {
-            std::set<int> traversed_cell;
-            std::queue<int> Q;
-            Q.push(e_origin);
-
-            while(!Q.empty())
+            Eigen::VectorXi pos_int(dim);
+            for(int d = 0; d < dim; d++)
             {
-                int p = Q.front();
-                Q.pop();
+                pos_int(d) = floor((pos(d) - min_domain(d)) / (max_domain(d) - min_domain(d)) * cell_num);
+                if(pos_int(d) < 0) pos_int(d) = 0;
+            }
 
-                for(auto it = cell_adjacency[p].begin(); it != cell_adjacency[p].end(); it++)
+            int idx = 0, dim_num = 1;
+            for(int d = 0; d < dim; d++)
+            {
+                idx += pos_int(d) * dim_num;
+                dim_num *= cell_num;
+            }
+
+            const std::list<int>& list = hash_table[idx];
+            Eigen::MatrixXd points(dim + 2, dim);
+            points.row(dim + 1) = pos;
+            for(auto it = list.begin(); it != list.end(); it++)
+            {
+                for(int i = 0; i <= dim; i++)
                 {
-                    if(traversed_cell.insert(*it).second == false) 
-                        continue;
-                    
-                    calculate_local_pts(mesh, gbases[*it], *it, pos, local_pts);
-
-                    if(local_pts.minCoeff() >= 0)
-                    {
-                        if((shape == 3 && local_pts.sum() <= 1) || (shape == 4 && local_pts.maxCoeff() <= 1))
-                        {
-                            return *it;
-                        }
-                    }
-
-                    Q.push(*it);
+                    points.row(i) = V.row(T(*it, i));
                 }
+                
+                Eigen::MatrixXd local_pts;
+                barycentric_coordinate(points, local_pts);
+
+                if(local_pts.minCoeff() > -1e-13 && local_pts.sum() < 1 + 1e-13)
+                {
+                    return *it;
+                }
+            }
+            assert(false);
+        }
+
+        void barycentric_coordinate(const Eigen::MatrixXd& points, Eigen::MatrixXd& local_pts)
+        {
+            local_pts.resize(1, dim);
+            Eigen::MatrixXd A = Eigen::MatrixXd::Ones(dim + 1, dim + 1);
+            A.block(0, 0, dim + 1, dim) = points.block(0, 0, dim + 1, dim);
+            double det = A.determinant();
+            assert(det > 0);
+            for(int i = 1; i <= dim; i++)
+            {
+                Eigen::MatrixXd B = A;
+                for(int j = 0; j < dim; j++)
+                {
+                    B(i, j) = points(dim + 1, j);
+                }
+                local_pts(i - 1) = B.determinant() / det;
             }
         }
 
@@ -231,7 +288,6 @@ namespace polyfem
             }
 
             ElementAssemblyValues gvals_;
-
             gvals_.compute(elem_idx, mesh.is_volume(), local_pos, gbase, gbase);
 
             Eigen::MatrixXd res = -pos;
@@ -306,12 +362,10 @@ namespace polyfem
                     pos = pos - vel * dt;
 
                     // to avoid that pos is out of domain
-                    RowVectorNd min, max;
-                    mesh.bounding_box(min, max);
                     for (int d = 0; d < dim; d++)
                     {
-                        if (pos(d) <= min(d)) pos(d) = min(d) + 1e-12;
-                        if (pos(d) >= max(d)) pos(d) = max(d) - 1e-12;
+                        if (pos(d) <= min_domain(d)) pos(d) = min_domain(d) + 1e-13;
+                        if (pos(d) >= max_domain(d)) pos(d) = max_domain(d) - 1e-13;
                     }
 
                     Eigen::VectorXi I(1);
@@ -321,13 +375,14 @@ namespace polyfem
                     {
                         assert(dim == 2);
                         igl::in_element(V, T, pos, tree, I);
-                        I(0) = I(0) % n_el;
-                        calculate_local_pts(mesh, gbases[I(0)], I(0), pos, local_pos);
                     }
                     else
                     {
-                        I(0) = search_cell(mesh, gbases, pos, e, local_pos);
+                        I(0) = search_cell(pos);
                     }
+
+                    I(0) = I(0) % n_el;
+                    calculate_local_pts(mesh, gbases[I(0)], I(0), pos, local_pos);
 
                     // interpolation
                     ElementAssemblyValues vals;
@@ -348,10 +403,14 @@ namespace polyfem
         int n_el;
         int shape;
 
+        RowVectorNd min_domain;
+        RowVectorNd max_domain;
+
         Eigen::MatrixXd V;
         Eigen::MatrixXi T;
         igl::AABB<Eigen::MatrixXd, 2> tree;
 
-        std::vector<std::set<int>> cell_adjacency;
+        std::vector<std::list<int>> hash_table;
+        int                         cell_num;
     };
 }
