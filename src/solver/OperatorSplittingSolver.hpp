@@ -111,7 +111,15 @@ namespace polyfem
             }
         }
 
-        void set_bc(const polyfem::Mesh& mesh, const std::vector<polyfem::LocalBoundary>& local_boundary, const std::vector<int>& bnd_nodes, const std::vector<polyfem::ElementBases>& gbases, const std::vector<polyfem::ElementBases>& bases, Eigen::MatrixXd& sol, const Eigen::MatrixXd& local_pts, const std::shared_ptr<Problem> problem, const double time)
+        void set_bc(const polyfem::Mesh& mesh, 
+        const std::vector<polyfem::LocalBoundary>& local_boundary, 
+        const std::vector<int>& bnd_nodes,
+        const std::vector<polyfem::ElementBases>& gbases, 
+        const std::vector<polyfem::ElementBases>& bases, 
+        Eigen::MatrixXd& sol, 
+        const Eigen::MatrixXd& local_pts, 
+        const std::shared_ptr<Problem> problem, 
+        const double time)
         {
             for (auto e = local_boundary.begin(); e != local_boundary.end(); e++)
             {
@@ -154,7 +162,14 @@ namespace polyfem
             }
         }
 
-        void projection(const polyfem::Mesh& mesh, int n_bases, const std::vector<polyfem::ElementBases>& gbases, const std::vector<polyfem::ElementBases>& bases, const std::vector<polyfem::ElementBases>& pressure_bases, const Eigen::MatrixXd& local_pts, Eigen::MatrixXd& pressure, Eigen::MatrixXd& sol)
+        void projection(const polyfem::Mesh& mesh, 
+        int n_bases, 
+        const std::vector<polyfem::ElementBases>& gbases, 
+        const std::vector<polyfem::ElementBases>& bases, 
+        const std::vector<polyfem::ElementBases>& pressure_bases, 
+        const Eigen::MatrixXd& local_pts, 
+        Eigen::MatrixXd& pressure, 
+        Eigen::MatrixXd& sol)
         {
             Eigen::VectorXd grad_pressure = Eigen::VectorXd::Zero(n_bases * dim);
             Eigen::VectorXi traversed = Eigen::VectorXi::Zero(n_bases);
@@ -186,7 +201,12 @@ namespace polyfem
             }
         }
 
-        void initialize_solution(const polyfem::Mesh& mesh, const std::vector<polyfem::ElementBases>& gbases, const std::vector<polyfem::ElementBases>& bases, const std::shared_ptr<Problem> problem, Eigen::MatrixXd& sol, const Eigen::MatrixXd& local_pts)
+        void initialize_solution(const polyfem::Mesh& mesh, 
+        const std::vector<polyfem::ElementBases>& gbases, 
+        const std::vector<polyfem::ElementBases>& bases, 
+        const std::shared_ptr<Problem> problem, 
+        Eigen::MatrixXd& sol, 
+        const Eigen::MatrixXd& local_pts)
         {
             for (int e = 0; e < n_el; e++)
             {
@@ -277,7 +297,11 @@ namespace polyfem
             }
         }
 
-        void calculate_local_pts(const polyfem::Mesh& mesh, const polyfem::ElementBases& gbase, const int elem_idx, const RowVectorNd& pos, Eigen::MatrixXd& local_pos)
+        void calculate_local_pts(const polyfem::Mesh& mesh, 
+        const polyfem::ElementBases& gbase, 
+        const int elem_idx, 
+        const RowVectorNd& pos, 
+        Eigen::MatrixXd& local_pos)
         {
             local_pos = Eigen::MatrixXd::Zero(1, dim);
             
@@ -315,7 +339,14 @@ namespace polyfem
             }
         }
 
-        void advection(const polyfem::Mesh& mesh, const std::vector<polyfem::ElementBases>& gbases, const std::vector<polyfem::ElementBases>& bases, Eigen::MatrixXd& sol, const double dt, const Eigen::MatrixXd& local_pts, const bool BFS = false, const int order = 1)
+        void advection(const polyfem::Mesh& mesh, 
+        const std::vector<polyfem::ElementBases>& gbases, 
+        const std::vector<polyfem::ElementBases>& bases, 
+        Eigen::MatrixXd& sol, 
+        const double dt, 
+        const Eigen::MatrixXd& local_pts, 
+        const bool BFS = true, 
+        const int order = 1)
         {
             // to store new velocity
             Eigen::MatrixXd new_sol = Eigen::MatrixXd::Zero(sol.size(), 1);
@@ -345,11 +376,7 @@ namespace polyfem
                     traversed(global) = 1;
 
                     // velocity of this FEM node
-                    RowVectorNd vel(dim);
-                    for (int d = 0; d < dim; d++)
-                    {
-                        vel(d) = sol(global * dim + d);
-                    }
+                    RowVectorNd vel = sol.block(global * dim, 0, dim, 1).transpose();
 
                     // global position of this FEM node
                     RowVectorNd pos = RowVectorNd::Zero(1, dim);
@@ -368,30 +395,78 @@ namespace polyfem
                         if (pos(d) >= max_domain(d)) pos(d) = max_domain(d) - 1e-13;
                     }
 
-                    Eigen::VectorXi I(1);
+                    int new_elem;
                     Eigen::MatrixXd local_pos;
                     
                     if(!BFS)
                     {
                         assert(dim == 2);
+                        Eigen::VectorXi I(1);
                         igl::in_element(V, T, pos, tree, I);
+                        new_elem = I(0);
                     }
                     else
                     {
-                        I(0) = search_cell(pos);
+                        new_elem = search_cell(pos);
                     }
 
-                    I(0) = I(0) % n_el;
-                    calculate_local_pts(mesh, gbases[I(0)], I(0), pos, local_pos);
+                    new_elem = new_elem % n_el;
+                    calculate_local_pts(mesh, gbases[new_elem], new_elem, pos, local_pos);
 
                     // interpolation
                     ElementAssemblyValues vals;
-                    vals.compute(I(0), mesh.is_volume(), local_pos, bases[I(0)], gbases[I(0)]);
+                    vals.compute(new_elem, mesh.is_volume(), local_pos, bases[new_elem], gbases[new_elem]);
                     for (int d = 0; d < dim; d++)
                     {
                         for (int i = 0; i < vals.basis_values.size(); i++)
                         {
-                            new_sol(global * dim + d) += vals.basis_values[i].val(0) * sol(bases[I(0)].bases[i].global()[0].index * dim + d);
+                            new_sol(global * dim + d) += vals.basis_values[i].val(0) * sol(bases[new_elem].bases[i].global()[0].index * dim + d);
+                        }
+                    }
+
+                    if(order == 2)
+                    {
+                        RowVectorNd vel_1 = new_sol.block(global * dim, 0, dim, 1).transpose();
+                        RowVectorNd vel_2 = RowVectorNd::Zero(dim);
+
+                        pos = pos + vel_1 * dt;
+
+                        // to avoid that pos is out of domain
+                        for (int d = 0; d < dim; d++)
+                        {
+                            if (pos(d) <= min_domain(d)) pos(d) = min_domain(d) + 1e-13;
+                            if (pos(d) >= max_domain(d)) pos(d) = max_domain(d) - 1e-13;
+                        }
+                        
+                        if(!BFS)
+                        {
+                            assert(dim == 2);
+                            Eigen::VectorXi I(1);
+                            igl::in_element(V, T, pos, tree, I);
+                            new_elem = I(0);
+                        }
+                        else
+                        {
+                            new_elem = search_cell(pos);
+                        }
+
+                        new_elem = new_elem % n_el;
+                        calculate_local_pts(mesh, gbases[new_elem], new_elem, pos, local_pos);
+
+                        // interpolation
+                        ElementAssemblyValues vals;
+                        vals.compute(new_elem, mesh.is_volume(), local_pos, bases[new_elem], gbases[new_elem]);
+                        for (int d = 0; d < dim; d++)
+                        {
+                            for (int i = 0; i < vals.basis_values.size(); i++)
+                            {
+                                vel_2(d) += vals.basis_values[i].val(0) * sol(bases[new_elem].bases[i].global()[0].index * dim + d);
+                            }
+                        }
+
+                        for (int d = 0; d < dim; d++)
+                        {
+                            new_sol(global * dim + d) += (vel(d) - vel_2(d)) / 2;
                         }
                     }
                 }

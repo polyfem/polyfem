@@ -2573,8 +2573,9 @@ void State::solve_problem()
 				/* advection */
 
 				bool BFS = args["BFS"];
+				int advection_order = args["advection_order"];
 
-				ss.advection(*mesh, gbases, bases, sol, dt, local_pts, BFS);
+				ss.advection(*mesh, gbases, bases, sol, dt, local_pts, BFS, advection_order);
 
 				 /* apply boundary condition */
 
