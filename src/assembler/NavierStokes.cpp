@@ -26,10 +26,18 @@ namespace polyfem
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
 	NavierStokesVelocity<full_gradient>::compute_rhs(const AutodiffHessianPt &pt) const
 	{
-		//TODO
 		assert(pt.size() == size());
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res(size());
-		assert(false);
+
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> val(size());
+		for (int d = 0; d < size(); ++d)
+			val(d) = pt(d).getValue();
+
+		for (int d = 0; d < size(); ++d)
+		{
+			res(d) = -val.dot(pt(d).getGradient()) + viscosity_ * pt(d).getHessian().trace();
+		}
+
 		return res;
 	}
 

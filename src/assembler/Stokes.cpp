@@ -48,7 +48,12 @@ namespace polyfem
 	{
 		assert(pt.size() == size());
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res(size());
-		assert(false);
+
+		for(int d = 0; d < size(); ++d)
+		{
+			res(d) = viscosity_ * pt(d).getHessian().trace();
+		}
+
 		return res;
 	}
 

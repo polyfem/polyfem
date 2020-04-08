@@ -363,6 +363,7 @@ void TaylorGreenVortexProblem::set_parameters(const json &params)
 
 void TaylorGreenVortexProblem::exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 {
+	const double time_scaling = exp(-2 * viscosity_ * t);
 	val.resize(pts.rows(), pts.cols());
 	for(int i = 0; i < pts.rows(); ++i)
 	{
@@ -379,6 +380,8 @@ void TaylorGreenVortexProblem::exact(const Eigen::MatrixXd &pts, const double t,
 
 void TaylorGreenVortexProblem::exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 {
+	const double time_scaling = exp(-2 * viscosity_ * t);
+
 	val.resize(pts.rows(), pts.cols() * pts.cols());
 
 	for (int i = 0; i < pts.rows(); ++i)
@@ -386,20 +389,292 @@ void TaylorGreenVortexProblem::exact_grad(const Eigen::MatrixXd &pts, const doub
 		const double x = pts(i, 0);
 		const double y = pts(i, 1);
 
-		val(i, 0) = -sin(x) * sin(y) * exp(-2 * viscosity_ * t);
-		val(i, 1) =  cos(x) * cos(y) * exp(-2 * viscosity_ * t);
-		val(i, 2) = -cos(x) * cos(y) * exp(-2 * viscosity_ * t);
-		val(i, 3) =  sin(x) * sin(y) * exp(-2 * viscosity_ * t);
+		val(i, 0) = -sin(x) * sin(y) * time_scaling;
+		val(i, 1) =  cos(x) * cos(y) * time_scaling;
+		val(i, 2) = -cos(x) * cos(y) * time_scaling;
+		val(i, 3) =  sin(x) * sin(y) * time_scaling;
 	}
 }
 
 void TaylorGreenVortexProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 {
-	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+	val.resize(pts.rows(), pts.cols());
+	val.setZero();
 }
+
 void TaylorGreenVortexProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 {
 	exact(pts, t, val);
 }
 
+template <typename T>
+Eigen::Matrix<T, 2, 1> simple_function_const(T x, T y)
+{
+	Eigen::Matrix<T, 2, 1> res;
+
+	res(0) = 1;
+	res(1) = 1;
+
+	return res;
+}
+
+template <typename T>
+Eigen::Matrix<T, 3, 1> simple_function_const(T x, T y, T z)
+{
+	Eigen::Matrix<T, 3, 1> res;
+
+	res(0) = 1;
+	res(1) = 1;
+	res(2) = 0;
+
+	return res;
+}
+
+template <typename T>
+Eigen::Matrix<T, 2, 1> simple_function_lin(T x, T y)
+{
+	Eigen::Matrix<T, 2, 1> res;
+
+	res(0) = x / 2. + y;
+	res(1) = -x - y / 2.;
+
+	return res;
+}
+
+template <typename T>
+Eigen::Matrix<T, 3, 1> simple_function_lin(T x, T y, T z)
+{
+	Eigen::Matrix<T, 3, 1> res;
+
+	res(0) = x / 2. + y;
+	res(1) = -x - y / 2.;
+	res(2) = 0;
+
+	return res;
+}
+
+template <typename T>
+Eigen::Matrix<T, 2, 1> simple_function_cub(T x, T y)
+{
+	Eigen::Matrix<T, 2, 1> res;
+
+	res(0) = x * x * x / 3. + x * y * y;
+	res(1) = -x * x * y - y * y * y / 3.;
+
+	return res;
+}
+
+template <typename T>
+Eigen::Matrix<T, 3, 1> simple_function_cub(T x, T y, T z)
+{
+	Eigen::Matrix<T, 3, 1> res;
+
+	res(0) = x * x * x / 3. + x * y * y;
+	res(1) = -x * x * y - y * y * y / 3.;
+	res(2) = 0;
+
+	return res;
+}
+
+template <typename T>
+Eigen::Matrix<T, 2, 1> simple_function_quad(T x, T y)
+{
+	Eigen::Matrix<T, 2, 1> res;
+
+	res(0) = x * x / 2. + x * y;
+	res(1) = -x * y - y * y / 2.;
+
+	return res;
+}
+
+template <typename T>
+Eigen::Matrix<T, 3, 1> simple_function_quad(T x, T y, T z)
+{
+	Eigen::Matrix<T, 3, 1> res;
+
+	res(0) = x * x / 2. + x * y;
+	res(1) = -x * y - y * y / 2.;
+	res(2) = 0;
+
+	return res;
+}
+
+template <typename T>
+Eigen::Matrix<T, 2, 1> sine_function(T x, T y)
+{
+	Eigen::Matrix<T, 2, 1> res;
+
+	res(0) = cos(x) * sin(y);
+	res(1) = -sin(x) * cos(y);
+
+	return res;
+}
+
+template <typename T>
+Eigen::Matrix<T, 3, 1> sine_function(T x, T y, T z)
+{
+	Eigen::Matrix<T, 3, 1> res;
+
+	res(0) = cos(x) * sin(y);
+	res(1) = -sin(x) * cos(y);
+	res(2) = 0;
+
+	return res;
+}
+
+SimpleStokeProblemExact::SimpleStokeProblemExact(const std::string &name)
+	: ProblemWithSolution(name)
+{
+	func_ = 0;
+}
+
+void SimpleStokeProblemExact::set_parameters(const json &params)
+{
+	if (params.find("func") != params.end())
+	{
+		func_ = params["func"];
+	}
+}
+
+VectorNd SimpleStokeProblemExact::eval_fun(const VectorNd &pt) const
+{
+	if (pt.size() == 2){
+		switch (func_)
+		{
+		case 0:
+			return simple_function_quad(pt(0), pt(1));
+		case 1:
+			return simple_function_cub(pt(0), pt(1));
+		case 2:
+			return simple_function_lin(pt(0), pt(1));
+		case 3:
+			return simple_function_const(pt(0), pt(1));
+		}
+	}
+	else if (pt.size() == 3){
+		switch (func_)
+		{
+		case 0:
+			return simple_function_quad(pt(0), pt(1), pt(2));
+		case 1:
+			return simple_function_cub(pt(0), pt(1), pt(2));
+		case 2:
+			return simple_function_lin(pt(0), pt(1), pt(2));
+		case 3:
+			return simple_function_const(pt(0), pt(1), pt(2));
+		}
+	}
+
+	assert(false);
+	return VectorNd(pt.size());
+}
+
+AutodiffGradPt SimpleStokeProblemExact::eval_fun(const AutodiffGradPt &pt) const
+{
+	if (pt.size() == 2)
+	{
+		switch (func_)
+		{
+		case 0:
+			return simple_function_quad(pt(0), pt(1));
+		case 1:
+			return simple_function_cub(pt(0), pt(1));
+		case 2:
+			return simple_function_lin(pt(0), pt(1));
+		case 3:
+			return simple_function_const(pt(0), pt(1));
+		}
+	}
+	else if (pt.size() == 3)
+	{
+		switch (func_)
+		{
+		case 0:
+			return simple_function_quad(pt(0), pt(1), pt(2));
+		case 1:
+			return simple_function_cub(pt(0), pt(1), pt(2));
+		case 2:
+			return simple_function_lin(pt(0), pt(1), pt(2));
+		case 3:
+			return simple_function_const(pt(0), pt(1), pt(2));
+		}
+	}
+
+	assert(false);
+	return AutodiffGradPt(pt.size());
+}
+
+AutodiffHessianPt SimpleStokeProblemExact::eval_fun(const AutodiffHessianPt &pt) const
+{
+	if (pt.size() == 2)
+	{
+		switch (func_)
+		{
+		case 0:
+			return simple_function_quad(pt(0), pt(1));
+		case 1:
+			return simple_function_cub(pt(0), pt(1));
+		case 2:
+			return simple_function_lin(pt(0), pt(1));
+		case 3:
+			return simple_function_const(pt(0), pt(1));
+		}
+	}
+	else if (pt.size() == 3)
+	{
+		switch (func_)
+		{
+		case 0:
+			return simple_function_quad(pt(0), pt(1), pt(2));
+		case 1:
+			return simple_function_cub(pt(0), pt(1), pt(2));
+		case 2:
+			return simple_function_lin(pt(0), pt(1), pt(2));
+		case 3:
+			return simple_function_const(pt(0), pt(1), pt(2));
+		}
+	}
+
+	assert(false);
+	return AutodiffHessianPt(pt.size());
+}
+
+
+SineStokeProblemExact::SineStokeProblemExact(const std::string &name)
+	: ProblemWithSolution(name)
+{
+}
+
+VectorNd SineStokeProblemExact::eval_fun(const VectorNd &pt) const
+{
+	if (pt.size() == 2)
+		return sine_function(pt(0), pt(1));
+	else if (pt.size() == 3)
+		return sine_function(pt(0), pt(1), pt(2));
+
+	assert(false);
+	return VectorNd(pt.size());
+}
+
+AutodiffGradPt SineStokeProblemExact::eval_fun(const AutodiffGradPt &pt) const
+{
+	if (pt.size() == 2)
+		return sine_function(pt(0), pt(1));
+	else if (pt.size() == 3)
+		return sine_function(pt(0), pt(1), pt(2));
+
+	assert(false);
+	return AutodiffGradPt(pt.size());
+}
+
+AutodiffHessianPt SineStokeProblemExact::eval_fun(const AutodiffHessianPt &pt) const
+{
+	if (pt.size() == 2)
+		return sine_function(pt(0), pt(1));
+	else if (pt.size() == 3)
+		return sine_function(pt(0), pt(1), pt(2));
+
+	assert(false);
+	return AutodiffHessianPt(pt.size());
+}
 } // namespace polyfem
