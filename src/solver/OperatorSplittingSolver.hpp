@@ -9,6 +9,8 @@
 #include <igl/AABB.h>
 #include <igl/in_element.h>
 
+#include <tbb/tbb.h>
+
 namespace polyfem
 {
 
@@ -473,6 +475,137 @@ namespace polyfem
                 }
             }
             sol.swap(new_sol);
+        }
+
+        void advection_particle(const polyfem::Mesh& mesh, const std::vector<polyfem::ElementBases>& gbases, const std::vector<polyfem::ElementBases>& bases, Eigen::MatrixXd& sol, const double dt, const Eigen::MatrixXd& local_pts, const bool BFS = false, const int order = 1)
+        {
+            // to store new velocity and weights for particle grid transfer
+            Eigen::MatrixXd new_sol = Eigen::MatrixXd::Zero(sol.size(), 1);
+            Eigen::MatrixXd new_sol_w = Eigen::MatrixXd::Zero(sol.size() / dim, 1);
+            new_sol_w.array() += 1e-13;
+
+            // resample particles
+            const int ppe = shape; // particle per element
+            std::vector<RowVectorNd> velocity_particle(ppe * n_el);
+            std::vector<ElementAssemblyValues> velocity_interpolator(ppe * n_el);
+            std::vector<int> cellI_particle(ppe * n_el);
+#ifdef POLYFEM_WITH_TBB
+            tbb::parallel_for(0, n_el, 1, [&](int e)
+#else
+            for (int e = 0; e < n_el; ++e)
+#endif
+            {
+                // resample particle in element e
+                Eigen::MatrixXd local_pts_particle;
+                local_pts_particle.setRandom(ppe, dim);
+                local_pts_particle.array() += 1;
+                local_pts_particle.array() /= 2;
+
+                // geometry vertices of element e
+                std::vector<RowVectorNd> vert(shape);
+                for (int i = 0; i < shape; ++i)
+                {
+                    vert[i] = mesh.point(mesh.cell_vertex_(e, i));
+                }
+
+                // construct interpolant
+                ElementAssemblyValues gvals;
+                gvals.compute(e, mesh.is_volume(), local_pts_particle, gbases[e], gbases[e]);
+
+                // compute global position of particles
+                std::vector<RowVectorNd> position_particle(ppe);
+                for (int i = 0; i < ppe; ++i)
+                {
+                    position_particle[i].setZero(1, dim);
+                    for (int j = 0; j < shape; ++j)
+                    {
+                        position_particle[i] += gvals.basis_values[j].val(i) * vert[j];
+                    }
+                }
+
+                // compute velocity
+                ElementAssemblyValues vals;
+                vals.compute(e, mesh.is_volume(), local_pts_particle, bases[e], gbases[e]);
+                for (int j = 0; j < ppe; ++j) {
+                    velocity_particle[e * ppe + j].setZero(1, dim);
+                    for (int i = 0; i < vals.basis_values.size(); ++i)
+                    {
+                        velocity_particle[e * ppe + j] += vals.basis_values[i].val(j) * 
+                            sol.block(bases[e].bases[i].global()[0].index * dim, 0, dim, 1).transpose();
+                    }
+                }
+
+                // update particle position via advection
+                for (int i = 0; i < ppe; ++i) {
+                    position_particle[i] += dt * velocity_particle[e * ppe + i]; //TODO: can use RK
+                    for (int d = 0; d < dim; ++d) {
+                        // periodic:
+                        while (position_particle[i](d) <= min_domain(d)) {
+                            position_particle[i](d) += max_domain(d) - min_domain(d);
+                        }
+                        while (position_particle[i](d) >= max_domain(d)) {
+                            position_particle[i](d) -= max_domain(d) - min_domain(d);
+                        }
+                    }
+                }
+
+                // prepare P2G
+                for (int j = 0; j < ppe; ++j) {
+                    Eigen::VectorXi I(1);
+                    Eigen::MatrixXd local_pos;
+                    
+                    // find cell
+                    if(!BFS)
+                    {
+                        assert(dim == 2);
+                        igl::in_element(V, T, position_particle[j], tree, I);
+                    }
+                    else
+                    {
+                        I(0) = search_cell(position_particle[j]);
+                    }
+
+                    I(0) = I(0) % n_el;
+                    calculate_local_pts(mesh, gbases[I(0)], I(0), position_particle[j], local_pos);
+
+                    // construct interpolator
+                    velocity_interpolator[ppe * e + j].compute(I(0), mesh.is_volume(), local_pos, bases[I(0)], gbases[I(0)]);
+                    cellI_particle[ppe * e + j] = I(0);
+                }
+            }
+#ifdef POLYFEM_WITH_TBB
+            );
+#endif
+
+            // P2G
+            for (int e = 0; e < n_el; ++e)
+            {
+                for (int j = 0; j < ppe; ++j) 
+                {
+                    int cellI = cellI_particle[ppe * e + j];
+                    ElementAssemblyValues& vals = velocity_interpolator[ppe * e + j];
+                    for (int i = 0; i < vals.basis_values.size(); ++i)
+                    {
+                        new_sol.block(bases[cellI].bases[i].global()[0].index * dim, 0, dim, 1) += 
+                            vals.basis_values[i].val(0) * velocity_particle[ppe * e + j].transpose();
+                        new_sol_w(bases[cellI].bases[i].global()[0].index) += vals.basis_values[i].val(0);
+                    }
+                }
+            }
+            //TODO: need to add up boundary velocities and weights because of perodic BC
+
+#ifdef POLYFEM_WITH_TBB
+            tbb::parallel_for(0, (int)new_sol.rows() / dim, 1, [&](int i)
+#else
+            for (int i = 0; i < new_sol.rows() / dim; ++i) 
+#endif
+            {
+                sol.block(i * dim, 0, dim, 1) = new_sol.block(i * dim, 0, dim, 1) / new_sol_w(i, 0);
+            }
+#ifdef POLYFEM_WITH_TBB
+            );
+#endif
+            //TODO: need to think about what to do with negative quadratic weight
         }
 
         int dim;
