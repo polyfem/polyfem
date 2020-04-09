@@ -547,6 +547,16 @@ namespace polyfem
                     RowVectorNd newvel;
                     trace_back(mesh, gbases, bases, position_particle[i], velocity_particle[e * ppe + i], 
                         position_particle[i], newvel, sol, -dt, spatial_hash);
+
+                    // RK3:
+                    // RowVectorNd bypass, vel2, vel3;
+                    // trace_back(mesh, gbases, bases, position_particle[i], velocity_particle[e * ppe + i], 
+                    //     bypass, vel2, sol, -0.5 * dt, spatial_hash);
+                    // trace_back(mesh, gbases, bases, position_particle[i], vel2, 
+                    //     bypass, vel3, sol, -0.75 * dt, spatial_hash);
+                    // trace_back(mesh, gbases, bases, position_particle[i], 
+                    //     2 * velocity_particle[e * ppe + i] + 3 * vel2 + 4 * vel3, 
+                    //     position_particle[i], bypass, sol, -dt / 9, spatial_hash);
                 }
 
                 // prepare P2G
