@@ -2523,7 +2523,6 @@ void State::solve_problem()
 			assembler.assemble_problem("Laplacian", mesh->is_volume(), n_bases, bases, gbases, stiffness_viscosity);
 			StiffnessMatrix mass;
 			assembler.assemble_mass_matrix("Laplacian", mesh->is_volume(), n_bases, bases, gbases, mass);
-			stiffness_viscosity = mass + dt * stiffness_viscosity * viscosity_;
 
 			// coefficient matrix of pressure projection
 			StiffnessMatrix stiffness;
@@ -2565,6 +2564,9 @@ void State::solve_problem()
 
 			ss.initialize_solution(*mesh, gbases, bases, problem, sol, local_pts);
 
+			bool spatial_hash = args["spatial_hash"];
+			int advection_order = args["advection_order"];
+
 			for (int t = 1; t <= time_steps; t++)
 			{
 				double time = t * dt;
@@ -2572,10 +2574,7 @@ void State::solve_problem()
 
 				/* advection */
 
-				bool BFS = args["BFS"];
-				int advection_order = args["advection_order"];
-
-				ss.advection(*mesh, gbases, bases, sol, dt, local_pts, BFS, advection_order);
+				ss.advection(*mesh, gbases, bases, sol, dt, local_pts, spatial_hash, advection_order);
 
 				 /* apply boundary condition */
 
@@ -2596,8 +2595,9 @@ void State::solve_problem()
 					}
 					
 					Eigen::VectorXd rhs = mass * x;
-					StiffnessMatrix A = stiffness_viscosity;
+					StiffnessMatrix A = mass + dt * stiffness_viscosity * viscosity_;
 
+					// keep dirichlet bc
 					for (int i = 0; i < bnd_nodes.size(); i++)
 					{
 						rhs(bnd_nodes[i]) = x(bnd_nodes[i]);

@@ -64,12 +64,12 @@ namespace polyfem
 
             for(int e = 0; e < T.rows(); e++)
             {
-                VectorXd min_ = V.row(T(e, 0));
-                VectorXd max_ = min_;
+                Eigen::VectorXd min_ = V.row(T(e, 0));
+                Eigen::VectorXd max_ = min_;
 
                 for(int i = 1; i < T.cols(); i++)
                 {
-                    VectorXd p = V.row(T(e, i));
+                    Eigen::VectorXd p = V.row(T(e, i));
                     for(int d = 0; d < dim; d++)
                     {
                         if(min_(d) > p(d)) min_(d) = p(d);
@@ -77,7 +77,7 @@ namespace polyfem
                     }
                 }
 
-                VectorXi min_int(dim), max_int(dim);
+                Eigen::VectorXi min_int(dim), max_int(dim);
 
                 for(int d = 0; d < dim; d++)
                 {
@@ -136,7 +136,7 @@ namespace polyfem
                 }
 
                 ElementAssemblyValues gvals;
-                gvals.compute(elem_idx, mesh.is_volume(), local_pts, gbases[elem_idx], gbases[elem_idx]);
+                gvals.compute(elem_idx, dim == 3, local_pts, gbases[elem_idx], gbases[elem_idx]);
 
                 for (int local_idx = 0; local_idx < bases[elem_idx].bases.size(); local_idx++)
                 {
@@ -179,7 +179,7 @@ namespace polyfem
             ElementAssemblyValues vals;
             for (int e = 0; e < n_el; ++e)
             {
-                vals.compute(e, mesh.is_volume(), local_pts, pressure_bases[e], gbases[e]);
+                vals.compute(e, dim == 3, local_pts, pressure_bases[e], gbases[e]);
                 for (int j = 0; j < local_pts.rows(); j++)
                 {
                     int global_ = bases[e].bases[j].global()[0].index;
@@ -221,7 +221,7 @@ namespace polyfem
 
                 // to compute global position with barycentric coordinate
                 ElementAssemblyValues gvals;
-                gvals.compute(e, mesh.is_volume(), local_pts, gbases[e], gbases[e]);
+                gvals.compute(e, dim == 3, local_pts, gbases[e], gbases[e]);
 
                 for (int i = 0; i < local_pts.rows(); i++)
                 {
@@ -251,6 +251,7 @@ namespace polyfem
             {
                 pos_int(d) = floor((pos(d) - min_domain(d)) / (max_domain(d) - min_domain(d)) * cell_num);
                 if(pos_int(d) < 0) pos_int(d) = 0;
+                else if(pos_int(d) >= cell_num) pos_int(d) = cell_num - 1;
             }
 
             int idx = 0, dim_num = 1;
@@ -278,7 +279,7 @@ namespace polyfem
                     return *it;
                 }
             }
-            assert(false);
+            assert(false && "failed to find the cell in which a point is!");
             return -1;
         }
 
@@ -315,7 +316,7 @@ namespace polyfem
             }
 
             ElementAssemblyValues gvals_;
-            gvals_.compute(elem_idx, mesh.is_volume(), local_pos, gbase, gbase);
+            gvals_.compute(elem_idx, dim == 3, local_pos, gbase, gbase);
 
             Eigen::MatrixXd res = -pos;
             for (int i = 0; i < shape; i++)
@@ -342,13 +343,69 @@ namespace polyfem
             }
         }
 
+        void handle_boundary_advection(RowVectorNd& pos)
+        {
+            for (int d = 0; d < dim; d++)
+            {
+                if (pos(d) < min_domain(d)) pos(d) += max_domain(d) - min_domain(d);
+                else if (pos(d) > max_domain(d)) pos(d) -= max_domain(d) - min_domain(d);
+            }
+        }
+
+        void trace_back(const polyfem::Mesh& mesh, 
+        const std::vector<polyfem::ElementBases>& gbases, 
+        const std::vector<polyfem::ElementBases>& bases, 
+        const RowVectorNd& pos_1, 
+        const RowVectorNd& vel_1, 
+        RowVectorNd& pos_2, 
+        RowVectorNd& vel_2, 
+        const Eigen::MatrixXd& sol,
+        const double dt,
+        const bool spatial_hash = true)
+        {
+            int new_elem;
+            Eigen::MatrixXd local_pos;
+
+            pos_2 = pos_1 - vel_1 * dt;
+
+            // to avoid that pos is out of domain
+            handle_boundary_advection(pos_2);
+            
+            if(!spatial_hash)
+            {
+                assert(dim == 2);
+                Eigen::VectorXi I(1);
+                igl::in_element(V, T, pos_2, tree, I);
+                new_elem = I(0);
+            }
+            else
+            {
+                new_elem = search_cell(pos_2);
+            }
+
+            new_elem = new_elem % n_el;
+            calculate_local_pts(mesh, gbases[new_elem], new_elem, pos_2, local_pos);
+
+            // interpolation
+            vel_2 = RowVectorNd::Zero(dim);
+            ElementAssemblyValues vals;
+            vals.compute(new_elem, dim == 3, local_pos, bases[new_elem], gbases[new_elem]);
+            for (int d = 0; d < dim; d++)
+            {
+                for (int i = 0; i < vals.basis_values.size(); i++)
+                {
+                    vel_2(d) += vals.basis_values[i].val(0) * sol(bases[new_elem].bases[i].global()[0].index * dim + d);
+                }
+            }
+        }
+
         void advection(const polyfem::Mesh& mesh, 
         const std::vector<polyfem::ElementBases>& gbases, 
         const std::vector<polyfem::ElementBases>& bases, 
         Eigen::MatrixXd& sol, 
         const double dt, 
         const Eigen::MatrixXd& local_pts, 
-        const bool BFS = true, 
+        const bool spatial_hash = true, 
         const int order = 1)
         {
             // to store new velocity
@@ -368,7 +425,7 @@ namespace polyfem
 
                 // to compute global position with barycentric coordinate
                 ElementAssemblyValues gvals;
-                gvals.compute(e, mesh.is_volume(), local_pts, gbases[e], gbases[e]);
+                gvals.compute(e, dim == 3, local_pts, gbases[e], gbases[e]);
 
                 for (int i = 0; i < local_pts.rows(); i++)
                 {
@@ -378,98 +435,41 @@ namespace polyfem
                     if (traversed(global)) continue;
                     traversed(global) = 1;
 
+                    RowVectorNd vel_1[4], pos_1[4];
+
                     // velocity of this FEM node
-                    RowVectorNd vel = sol.block(global * dim, 0, dim, 1).transpose();
+                    vel_1[0] = sol.block(global * dim, 0, dim, 1).transpose();
 
                     // global position of this FEM node
-                    RowVectorNd pos = RowVectorNd::Zero(1, dim);
+                    pos_1[0] = RowVectorNd::Zero(1, dim);
                     for (int j = 0; j < shape; j++)
                     {
-                        pos += gvals.basis_values[j].val(i) * vert[j];
+                        pos_1[0] += gvals.basis_values[j].val(i) * vert[j];
                     }
 
-                    // trace back
-                    pos = pos - vel * dt;
+                    bool RK3 = false;
 
-                    // to avoid that pos is out of domain
-                    for (int d = 0; d < dim; d++)
+                    if(RK3)
                     {
-                        if (pos(d) <= min_domain(d)) pos(d) = min_domain(d) + 1e-13;
-                        if (pos(d) >= max_domain(d)) pos(d) = max_domain(d) - 1e-13;
-                    }
-
-                    int new_elem;
-                    Eigen::MatrixXd local_pos;
-                    
-                    if(!BFS)
-                    {
-                        assert(dim == 2);
-                        Eigen::VectorXi I(1);
-                        igl::in_element(V, T, pos, tree, I);
-                        new_elem = I(0);
+                        trace_back(mesh, gbases, bases, pos_1[0], vel_1[0], pos_1[1], vel_1[1], sol, 0.5 * dt, spatial_hash);
+                        trace_back(mesh, gbases, bases, pos_1[0], vel_1[1], pos_1[2], vel_1[2], sol, 0.75 * dt, spatial_hash);
+                        trace_back(mesh, gbases, bases, pos_1[0], 2 * vel_1[0] + 3 * vel_1[1] + 4 * vel_1[2], pos_1[2], vel_1[2], sol, dt / 9, spatial_hash);
                     }
                     else
                     {
-                        new_elem = search_cell(pos);
+                        trace_back(mesh, gbases, bases, pos_1[0], vel_1[0], pos_1[2], vel_1[2], sol, dt, spatial_hash);
                     }
 
-                    new_elem = new_elem % n_el;
-                    calculate_local_pts(mesh, gbases[new_elem], new_elem, pos, local_pos);
-
-                    // interpolation
-                    ElementAssemblyValues vals;
-                    vals.compute(new_elem, mesh.is_volume(), local_pos, bases[new_elem], gbases[new_elem]);
-                    for (int d = 0; d < dim; d++)
-                    {
-                        for (int i = 0; i < vals.basis_values.size(); i++)
-                        {
-                            new_sol(global * dim + d) += vals.basis_values[i].val(0) * sol(bases[new_elem].bases[i].global()[0].index * dim + d);
-                        }
-                    }
+                    new_sol.block(global * dim, 0, dim, 1) = vel_1[2].transpose();
 
                     if(order == 2)
                     {
-                        RowVectorNd vel_1 = new_sol.block(global * dim, 0, dim, 1).transpose();
-                        RowVectorNd vel_2 = RowVectorNd::Zero(dim);
-
-                        pos = pos + vel_1 * dt;
-
-                        // to avoid that pos is out of domain
-                        for (int d = 0; d < dim; d++)
-                        {
-                            if (pos(d) <= min_domain(d)) pos(d) = min_domain(d) + 1e-13;
-                            if (pos(d) >= max_domain(d)) pos(d) = max_domain(d) - 1e-13;
-                        }
-                        
-                        if(!BFS)
-                        {
-                            assert(dim == 2);
-                            Eigen::VectorXi I(1);
-                            igl::in_element(V, T, pos, tree, I);
-                            new_elem = I(0);
-                        }
-                        else
-                        {
-                            new_elem = search_cell(pos);
-                        }
-
-                        new_elem = new_elem % n_el;
-                        calculate_local_pts(mesh, gbases[new_elem], new_elem, pos, local_pos);
-
-                        // interpolation
-                        ElementAssemblyValues vals;
-                        vals.compute(new_elem, mesh.is_volume(), local_pos, bases[new_elem], gbases[new_elem]);
-                        for (int d = 0; d < dim; d++)
-                        {
-                            for (int i = 0; i < vals.basis_values.size(); i++)
-                            {
-                                vel_2(d) += vals.basis_values[i].val(0) * sol(bases[new_elem].bases[i].global()[0].index * dim + d);
-                            }
-                        }
+                        RowVectorNd vel_2, pos_2;
+                        trace_back(mesh, gbases, bases, pos_1[2], vel_1[2], pos_2, vel_2, sol, -dt, spatial_hash);
 
                         for (int d = 0; d < dim; d++)
                         {
-                            new_sol(global * dim + d) += (vel(d) - vel_2(d)) / 2;
+                            new_sol(global * dim + d) += (vel_1[0](d) - vel_2(d)) / 2;
                         }
                     }
                 }
@@ -477,7 +477,7 @@ namespace polyfem
             sol.swap(new_sol);
         }
 
-        void advection_particle(const polyfem::Mesh& mesh, const std::vector<polyfem::ElementBases>& gbases, const std::vector<polyfem::ElementBases>& bases, Eigen::MatrixXd& sol, const double dt, const Eigen::MatrixXd& local_pts, const bool BFS = false, const int order = 1)
+        void advection_particle(const polyfem::Mesh& mesh, const std::vector<polyfem::ElementBases>& gbases, const std::vector<polyfem::ElementBases>& bases, Eigen::MatrixXd& sol, const double dt, const Eigen::MatrixXd& local_pts, const bool spatial_hash = false, const int order = 1)
         {
             // to store new velocity and weights for particle grid transfer
             Eigen::MatrixXd new_sol = Eigen::MatrixXd::Zero(sol.size(), 1);
@@ -510,7 +510,7 @@ namespace polyfem
 
                 // construct interpolant
                 ElementAssemblyValues gvals;
-                gvals.compute(e, mesh.is_volume(), local_pts_particle, gbases[e], gbases[e]);
+                gvals.compute(e, dim == 3, local_pts_particle, gbases[e], gbases[e]);
 
                 // compute global position of particles
                 std::vector<RowVectorNd> position_particle(ppe);
@@ -525,7 +525,7 @@ namespace polyfem
 
                 // compute velocity
                 ElementAssemblyValues vals;
-                vals.compute(e, mesh.is_volume(), local_pts_particle, bases[e], gbases[e]);
+                vals.compute(e, dim == 3, local_pts_particle, bases[e], gbases[e]);
                 for (int j = 0; j < ppe; ++j) {
                     velocity_particle[e * ppe + j].setZero(1, dim);
                     for (int i = 0; i < vals.basis_values.size(); ++i)
@@ -555,7 +555,7 @@ namespace polyfem
                     Eigen::MatrixXd local_pos;
                     
                     // find cell
-                    if(!BFS)
+                    if(!spatial_hash)
                     {
                         assert(dim == 2);
                         igl::in_element(V, T, position_particle[j], tree, I);
@@ -569,7 +569,7 @@ namespace polyfem
                     calculate_local_pts(mesh, gbases[I(0)], I(0), position_particle[j], local_pos);
 
                     // construct interpolator
-                    velocity_interpolator[ppe * e + j].compute(I(0), mesh.is_volume(), local_pos, bases[I(0)], gbases[I(0)]);
+                    velocity_interpolator[ppe * e + j].compute(I(0), dim == 3, local_pos, bases[I(0)], gbases[I(0)]);
                     cellI_particle[ppe * e + j] = I(0);
                 }
             }
