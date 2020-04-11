@@ -2516,10 +2516,7 @@ void State::solve_problem()
 			const int dim = mesh->dimension();
 			const int n_el = int(bases.size());				// number of elements
 			const int shape = gbases[0].bases.size();		// number of geometry vertices in an element
-			const double viscosity_ = args["viscosity"];
-			const int diffuse_order = args["diffuse_order"];	
-			bool spatial_hash = args["spatial_hash"];
-			int advection_order = args["advection_order"];
+			const double viscosity_ = args["viscosity"];	
 
 			// coefficient matrix of viscosity
 			StiffnessMatrix stiffness_viscosity;
@@ -2527,7 +2524,7 @@ void State::solve_problem()
 			StiffnessMatrix mass;
 			assembler.assemble_mass_matrix("Laplacian", mesh->is_volume(), n_bases, bases, gbases, mass);
 			StiffnessMatrix bilaplacian;
-			if(diffuse_order == 2)
+			if(args["diffuse_order"] == 2)
 				assembler.assemble_problem("Bilaplacian", mesh->is_volume(), n_bases, bases, gbases, bilaplacian);
 
 			// coefficient matrix of pressure projection
@@ -2576,9 +2573,8 @@ void State::solve_problem()
 				logger().info("{}/{} steps, t={}s", t, time_steps, time);
 
 				/* advection */
-				bool advection = args["advection"];
-				if(advection)
-					ss.advection(*mesh, gbases, bases, sol, dt, local_pts, spatial_hash, advection_order);
+				if(args["advection"])
+					ss.advection(*mesh, gbases, bases, sol, dt, local_pts, args["spatial_hash"], args["advection_order"], args["advection_RK"]);
 
 				 /* apply boundary condition */
 
@@ -2600,7 +2596,7 @@ void State::solve_problem()
 					
 					Eigen::VectorXd rhs;
 					StiffnessMatrix A;
-					if(diffuse_order == 1)
+					if(args["diffuse_order"] == 1)
 					{
 						A = mass + viscosity_ * dt * stiffness_viscosity;
 						rhs = mass * x;

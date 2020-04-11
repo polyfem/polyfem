@@ -5,14 +5,16 @@
     "normalize_mesh": false,         
                      
     "tend": 0.1,
-    "n_refs": 6,
-    "time_steps": 32,
-    "BFS": true,
-    "advection_order": 2,
-    "time_integrator_order": 1,
+    "n_refs": 4,
+    "time_steps": 16,
+    "spatial_hash": true,
+    "advection_order": 1,
+    "diffuse_order": 1,
+    "advection_RK": 2,
 
     "discr_order": 2,
     "pressure_discr_order": 1,
+    "advection": true,
 
     "viscosity": 0,
     "problem": "TaylorGreenVortex",

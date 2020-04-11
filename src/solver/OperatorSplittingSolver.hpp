@@ -414,7 +414,8 @@ namespace polyfem
         const double dt, 
         const Eigen::MatrixXd& local_pts, 
         const bool spatial_hash = true, 
-        const int order = 1)
+        const int order = 1,
+        const int RK = 1)
         {
             // to store new velocity
             Eigen::MatrixXd new_sol = Eigen::MatrixXd::Zero(sol.size(), 1);
@@ -455,30 +456,45 @@ namespace polyfem
                         pos_1[0] += gvals.basis_values[j].val(i) * vert[j];
                     }
 
-                    bool RK3 = false;
-
-                    if(RK3)
+                    if(RK==3)
                     {
                         trace_back(mesh, gbases, bases, pos_1[0], vel_1[0], pos_1[1], vel_1[1], sol, 0.5 * dt, spatial_hash);
                         trace_back(mesh, gbases, bases, pos_1[0], vel_1[1], pos_1[2], vel_1[2], sol, 0.75 * dt, spatial_hash);
-                        trace_back(mesh, gbases, bases, pos_1[0], 2 * vel_1[0] + 3 * vel_1[1] + 4 * vel_1[2], pos_1[2], vel_1[2], sol, dt / 9, spatial_hash);
+                        trace_back(mesh, gbases, bases, pos_1[0], 2 * vel_1[0] + 3 * vel_1[1] + 4 * vel_1[2], pos_1[3], vel_1[3], sol, dt / 9, spatial_hash);
                     }
-                    else
+                    else if(RK==2)
                     {
-                        trace_back(mesh, gbases, bases, pos_1[0], vel_1[0], pos_1[2], vel_1[2], sol, dt, spatial_hash);
+                        trace_back(mesh, gbases, bases, pos_1[0], vel_1[0], pos_1[1], vel_1[1], sol, 0.5 * dt, spatial_hash);
+                        trace_back(mesh, gbases, bases, pos_1[0], vel_1[1], pos_1[3], vel_1[3], sol, dt, spatial_hash);
+                    }
+                    else if(RK==1)
+                    {
+                        trace_back(mesh, gbases, bases, pos_1[0], vel_1[0], pos_1[3], vel_1[3], sol, dt, spatial_hash);
                     }
 
-                    new_sol.block(global * dim, 0, dim, 1) = vel_1[2].transpose();
+                    new_sol.block(global * dim, 0, dim, 1) = vel_1[3].transpose();
 
                     if(order == 2)
                     {
-                        RowVectorNd vel_2, pos_2;
-                        trace_back(mesh, gbases, bases, pos_1[2], vel_1[2], pos_2, vel_2, sol, -dt, spatial_hash);
+                        RowVectorNd vel_2[3], pos_2[3];
 
-                        for (int d = 0; d < dim; d++)
+                        if(RK==3)
                         {
-                            new_sol(global * dim + d) += (vel_1[0](d) - vel_2(d)) / 2;
+                            trace_back(mesh, gbases, bases, pos_1[3], vel_1[3], pos_2[0], vel_2[0], sol, -0.5 * dt, spatial_hash);
+                            trace_back(mesh, gbases, bases, pos_1[3], vel_1[1], pos_2[1], vel_2[1], sol, -0.75 * dt, spatial_hash);
+                            trace_back(mesh, gbases, bases, pos_1[3], 2 * vel_1[3] + 3 * vel_2[0] + 4 * vel_2[1], pos_2[2], vel_2[2], sol, -dt / 9, spatial_hash);
                         }
+                        else if(RK==2)
+                        {
+                            trace_back(mesh, gbases, bases, pos_1[3], vel_1[3], pos_2[0], vel_2[0], sol, -0.5 * dt, spatial_hash);
+                            trace_back(mesh, gbases, bases, pos_1[3], vel_2[0], pos_2[2], vel_2[2], sol, -dt, spatial_hash);
+                        }
+                        else if(RK==1)
+                        {
+                            trace_back(mesh, gbases, bases, pos_1[3], vel_1[3], pos_2[2], vel_2[2], sol, -dt, spatial_hash);
+                        }
+                        
+                        new_sol.block(global * dim, 0, dim, 1) += (vel_1[0] - vel_2[2]).transpose() / 2;
                     }
                 }
             }
