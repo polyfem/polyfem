@@ -347,12 +347,16 @@ namespace polyfem
         {
             for (int d = 0; d < dim; d++)
             {
-                if (pos(d) < min_domain(d)) 
-                    //pos(d) += max_domain(d) - min_domain(d);
-                    pos(d) = min_domain(d) + 1e-13;
-                else if (pos(d) > max_domain(d)) 
-                    //pos(d) -= max_domain(d) - min_domain(d);
-                    pos(d) = max_domain(d) - 1e-13;
+                if (pos(d) < min_domain(d)) {
+                    do {
+                        pos(d) += max_domain(d) - min_domain(d);
+                    } while(pos(d) < min_domain(d));
+                }
+                else if (pos(d) > max_domain(d)) {
+                    do {
+                        pos(d) -= max_domain(d) - min_domain(d);
+                    } while(pos(d) > max_domain(d));
+                }
             }
         }
 
@@ -488,7 +492,6 @@ namespace polyfem
             Eigen::MatrixXd new_sol_w = Eigen::MatrixXd::Zero(sol.size() / dim, 1);
             new_sol_w.array() += 1e-13;
 
-            // resample particles
             const int ppe = shape; // particle per element
             std::vector<RowVectorNd> velocity_particle(ppe * n_el);
             std::vector<ElementAssemblyValues> velocity_interpolator(ppe * n_el);
@@ -541,16 +544,19 @@ namespace polyfem
 
                 // update particle position via advection
                 for (int i = 0; i < ppe; ++i) {
-                    position_particle[i] += dt * velocity_particle[e * ppe + i]; //TODO: can use RK
-                    for (int d = 0; d < dim; ++d) {
-                        // periodic:
-                        while (position_particle[i](d) <= min_domain(d)) {
-                            position_particle[i](d) += max_domain(d) - min_domain(d);
-                        }
-                        while (position_particle[i](d) >= max_domain(d)) {
-                            position_particle[i](d) -= max_domain(d) - min_domain(d);
-                        }
-                    }
+                    RowVectorNd newvel;
+                    trace_back(mesh, gbases, bases, position_particle[i], velocity_particle[e * ppe + i], 
+                        position_particle[i], newvel, sol, -dt, spatial_hash);
+
+                    // RK3:
+                    // RowVectorNd bypass, vel2, vel3;
+                    // trace_back(mesh, gbases, bases, position_particle[i], velocity_particle[e * ppe + i], 
+                    //     bypass, vel2, sol, -0.5 * dt, spatial_hash);
+                    // trace_back(mesh, gbases, bases, position_particle[i], vel2, 
+                    //     bypass, vel3, sol, -0.75 * dt, spatial_hash);
+                    // trace_back(mesh, gbases, bases, position_particle[i], 
+                    //     2 * velocity_particle[e * ppe + i] + 3 * vel2 + 4 * vel3, 
+                    //     position_particle[i], bypass, sol, -dt / 9, spatial_hash);
                 }
 
                 // prepare P2G
