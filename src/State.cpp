@@ -2516,13 +2516,19 @@ void State::solve_problem()
 			const int dim = mesh->dimension();
 			const int n_el = int(bases.size());				// number of elements
 			const int shape = gbases[0].bases.size();		// number of geometry vertices in an element
-			const double viscosity_ = args["viscosity"];	
+			const double viscosity_ = args["viscosity"];
+			const int diffuse_order = args["diffuse_order"];	
+			bool spatial_hash = args["spatial_hash"];
+			int advection_order = args["advection_order"];
 
 			// coefficient matrix of viscosity
 			StiffnessMatrix stiffness_viscosity;
 			assembler.assemble_problem("Laplacian", mesh->is_volume(), n_bases, bases, gbases, stiffness_viscosity);
 			StiffnessMatrix mass;
 			assembler.assemble_mass_matrix("Laplacian", mesh->is_volume(), n_bases, bases, gbases, mass);
+			StiffnessMatrix bilaplacian;
+			if(diffuse_order == 2)
+				assembler.assemble_problem("Bilaplacian", mesh->is_volume(), n_bases, bases, gbases, bilaplacian);
 
 			// coefficient matrix of pressure projection
 			StiffnessMatrix stiffness;
@@ -2564,17 +2570,15 @@ void State::solve_problem()
 
 			ss.initialize_solution(*mesh, gbases, bases, problem, sol, local_pts);
 
-			bool spatial_hash = args["spatial_hash"];
-			int advection_order = args["advection_order"];
-
 			for (int t = 1; t <= time_steps; t++)
 			{
 				double time = t * dt;
 				logger().info("{}/{} steps, t={}s", t, time_steps, time);
 
 				/* advection */
-
-				ss.advection(*mesh, gbases, bases, sol, dt, local_pts, spatial_hash, advection_order);
+				bool advection = args["advection"];
+				if(advection)
+					ss.advection(*mesh, gbases, bases, sol, dt, local_pts, spatial_hash, advection_order);
 
 				 /* apply boundary condition */
 
@@ -2594,8 +2598,18 @@ void State::solve_problem()
 						x(j) = sol(j * dim + d);
 					}
 					
-					Eigen::VectorXd rhs = mass * x;
-					StiffnessMatrix A = mass + dt * stiffness_viscosity * viscosity_;
+					Eigen::VectorXd rhs;
+					StiffnessMatrix A;
+					if(diffuse_order == 1)
+					{
+						A = mass + viscosity_ * dt * stiffness_viscosity;
+						rhs = mass * x;
+					}
+					else
+					{
+						A = mass + 0.5 * viscosity_ * dt * stiffness_viscosity;
+						rhs = pow(0.5 * dt * viscosity_, 2) * bilaplacian * x + x;
+					}
 
 					// keep dirichlet bc
 					for (int i = 0; i < bnd_nodes.size(); i++)
@@ -2667,7 +2681,7 @@ void State::solve_problem()
 
 			sol = c_sol;
 			sol_to_pressure();
-			save_vtu("step_" + std::to_string(0) + ".vtu", 0);
+			// save_vtu("step_" + std::to_string(0) + ".vtu", 0);
 			// save_wire("step_" + std::to_string(0) + ".obj");
 
 			assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, gbases, velocity_stiffness);
@@ -2697,9 +2711,9 @@ void State::solve_problem()
 				sol = c_sol;
 				sol_to_pressure();
 
-				if (!solve_export_to_file)
-					solution_frames.emplace_back();
-				save_vtu("step_" + std::to_string(t) + ".vtu", time);
+				// if (!solve_export_to_file)
+				// 	solution_frames.emplace_back();
+				// save_vtu("step_" + std::to_string(t) + ".vtu", time);
 				// save_wire("step_" + std::to_string(t) + ".obj");
 			}
 		}
