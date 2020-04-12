@@ -54,6 +54,7 @@ namespace polyfem
                     V(i, d) = p(d);
                 }
             }
+
             // to find the cell which a point is in
             tree.init(V, T);
 
@@ -123,9 +124,14 @@ namespace polyfem
         const std::shared_ptr<Problem> problem, 
         const double time)
         {
-            for (auto e = local_boundary.begin(); e != local_boundary.end(); e++)
+            const int size = local_boundary.size();
+#ifdef POLYFEM_WITH_TBB
+            tbb::parallel_for(0, size, 1, [&](int e)
+#else
+            for(int e = 0; e < size; e++)
+#endif
             {
-                auto elem = *e;
+                auto elem = local_boundary[e];
                 int elem_idx = elem.element_id();
 
                 // geometry vertices of element e
@@ -162,6 +168,9 @@ namespace polyfem
                     }
                 }
             }
+#ifdef POLYFEM_WITH_TBB
+            );
+#endif
         }
 
         void projection(const polyfem::Mesh& mesh, 
@@ -210,7 +219,11 @@ namespace polyfem
         Eigen::MatrixXd& sol, 
         const Eigen::MatrixXd& local_pts)
         {
-            for (int e = 0; e < n_el; e++)
+#ifdef POLYFEM_WITH_TBB
+            tbb::parallel_for(0, n_el, 1, [&](int e)
+#else
+            for (int e = 0; e < n_el; ++e)
+#endif
             {
                 // geometry vertices of element e
                 std::vector<RowVectorNd> vert(shape);
@@ -242,6 +255,9 @@ namespace polyfem
                     }
                 }
             }
+#ifdef POLYFEM_WITH_TBB
+            );
+#endif
         }
 
         int search_cell(RowVectorNd& pos)
@@ -423,7 +439,11 @@ namespace polyfem
             const int n_vert = sol.size() / dim;
             Eigen::VectorXi traversed = Eigen::VectorXi::Zero(n_vert);
 
-            for (int e = 0; e < n_el; e++)
+#ifdef POLYFEM_WITH_TBB
+            tbb::parallel_for(0, n_el, 1, [&](int e)
+#else
+            for (int e = 0; e < n_el; ++e)
+#endif
             {
                 // geometry vertices of element e
                 std::vector<RowVectorNd> vert(shape);
@@ -498,6 +518,9 @@ namespace polyfem
                     }
                 }
             }
+#ifdef POLYFEM_WITH_TBB
+            );
+#endif
             sol.swap(new_sol);
         }
 
