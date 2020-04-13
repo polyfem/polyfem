@@ -9,7 +9,9 @@
 #include <igl/AABB.h>
 #include <igl/in_element.h>
 
+#ifdef POLYFEM_WITH_TBB
 #include <tbb/tbb.h>
+#endif
 
 namespace polyfem
 {
