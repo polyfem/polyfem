@@ -5,23 +5,25 @@
     "normalize_mesh": false,         
                      
     "tend": 0.1,
-    "n_refs": 4,
-    "time_steps": 16,
+    "n_refs": 3,
+    "time_steps": 8,
     "spatial_hash": true,
     "advection_order": 1,
     "diffuse_order": 1,
-    "advection_RK": 2,
+    "advection_RK": 1,
+    "separate": false,
 
     "discr_order": 2,
     "pressure_discr_order": 1,
-    "advection": true,
+    "quadrature_order": 4,
+    "advection": false,
 
-    "viscosity": 0,
+    "viscosity": 1,
     "problem": "TaylorGreenVortex",
     "problem_params": {
         "time_dependent": true,
-        "viscosity": 0
-    },   
+        "viscosity": 1
+    },
 
     "refinenemt_location": 0.5,  
 
@@ -36,7 +38,6 @@
     "output": "",                            
 
     "n_boundary_samples": 6,        
-    "quadrature_order": 4,          
 
     "export": {                     
         "full_mat": "",             
@@ -61,7 +62,7 @@
     "discr_order_max": 4,           
     "h1_formula": false,            
 
-    "solver_type": "Eigen::ConjugateGradient",       
+    "solver_type": "Pardiso",       
     "precond_type": "Eigen::DiagonalPreconditioner",
     "solver_params": {},            
 

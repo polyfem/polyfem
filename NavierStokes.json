@@ -1,10 +1,12 @@
 {
-    "mesh": "C:/Users/zizhou/Documents/GitHub/polyfem/plate.obj",                    
+    "mesh": "C:/Users/zizhou/Documents/GitHub/polyfem/plate_tri.obj",                    
     "bc_tag": "",                  
     "boundary_id_threshold": -1,
     "normalize_mesh": false,         
 
-    "n_refs": 0,                    
+    "n_refs": 3,           
+    "tend": 0.1,
+    "time_steps": 32,              
     "refinenemt_location": 0.5,     
 
     "scalar_formulation": "Laplacian",
@@ -15,7 +17,7 @@
 
     "iso_parametric": false,        
     "discr_order": 2,               
-
+    "BDF_order": 2,
     "pressure_discr_order": 1,      
 
     "output": "",                   
@@ -37,7 +39,7 @@
         "spectrum": false,          
         "stiffness_mat": "",        
         "vis_boundary_only": false, 
-        "vis_mesh": "output.vtu",
+        "vis_mesh": "",
         "wire_mesh": ""             
     },
 
@@ -71,10 +73,7 @@
 
         "lambda": 0.329670329,      
         "mu": 0.384615384
-    },
-
-    "tend": 0.1,
-    "time_steps": 5,               
+    },          
 
     "vismesh_rel_area": 1e-05       
 }
