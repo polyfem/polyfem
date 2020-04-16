@@ -556,7 +556,7 @@ namespace polyfem
                     vert[i] = mesh.point(mesh.cell_vertex_(e, i));
                 }
 
-                // construct interpolant
+                // construct interpolant (linear for position)
                 ElementAssemblyValues gvals;
                 gvals.compute(e, dim == 3, local_pts_particle, gbases[e], gbases[e]);
 
@@ -573,7 +573,7 @@ namespace polyfem
 
                 // compute velocity
                 ElementAssemblyValues vals;
-                vals.compute(e, dim == 3, local_pts_particle, bases[e], gbases[e]);
+                vals.compute(e, dim == 3, local_pts_particle, bases[e], gbases[e]); // possibly higher-order
                 for (int j = 0; j < ppe; ++j) {
                     velocity_particle[e * ppe + j].setZero(1, dim);
                     for (int i = 0; i < vals.basis_values.size(); ++i)
@@ -619,8 +619,8 @@ namespace polyfem
                     I(0) = I(0) % n_el;
                     calculate_local_pts(mesh, gbases[I(0)], I(0), position_particle[j], local_pos);
 
-                    // construct interpolator
-                    velocity_interpolator[ppe * e + j].compute(I(0), dim == 3, local_pos, bases[I(0)], gbases[I(0)]);
+                    // construct interpolator (always linear for P2G, can use gaussian or bspline later)
+                    velocity_interpolator[ppe * e + j].compute(I(0), dim == 3, local_pos, gbases[I(0)], gbases[I(0)]);
                     cellI_particle[ppe * e + j] = I(0);
                 }
             }
