@@ -2518,14 +2518,12 @@ void State::solve_problem()
 			const int shape = gbases[0].bases.size();		// number of geometry vertices in an element
 			const double viscosity_ = args["viscosity"];	
 
-			StiffnessMatrix stiffness_viscosity, bilaplacian, mixed_stiffness;
+			StiffnessMatrix stiffness_viscosity, mixed_stiffness;
 			if(args["separate"])
 			{
 				// coefficient matrix of viscosity
 				assembler.assemble_problem("Laplacian", mesh->is_volume(), n_bases, bases, gbases, stiffness_viscosity);
 				assembler.assemble_mass_matrix("Laplacian", mesh->is_volume(), n_bases, bases, gbases, mass);
-				if(args["diffuse_order"] == 2)
-					assembler.assemble_problem("Bilaplacian", mesh->is_volume(), n_bases, bases, gbases, bilaplacian);
 
 				// coefficient matrix of pressure projection
 				assembler.assemble_problem("Laplacian", mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, stiffness);
