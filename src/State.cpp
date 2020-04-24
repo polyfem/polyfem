@@ -2573,10 +2573,7 @@ void State::solve_problem()
 				{
 					ss.set_bc(*mesh, local_boundary, bnd_nodes, gbases, bases, sol, local_pts, problem, time);
 					
-					if(args["separate"])
-						ss.solve_diffusion_2nd(args["solver_type"], args["precond_type"], params,mass,stiffness_viscosity,bnd_nodes,dt/2,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol);
-					else
-						ss.solve_stokes_2nd(args["solver_type"], args["precond_type"], params,mass,stiffness,boundary_nodes,dt/2,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol, pressure,n_pressure_bases);
+					ss.solve_diffusion_2nd(args["solver_type"], args["precond_type"], params,mass,stiffness_viscosity,bnd_nodes,dt/2,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol);
 				}
 				
 				/* advection */
@@ -2590,7 +2587,7 @@ void State::solve_problem()
 				if(!args["separate"])
 				{
 					if(args["splitting_order"] == 1)
-						ss.solve_stokes_2nd(args["solver_type"], args["precond_type"], params,mass,stiffness,boundary_nodes,dt,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol, pressure,n_pressure_bases);
+						ss.solve_stokes_1st(args["solver_type"], args["precond_type"], params,mass,stiffness,boundary_nodes,dt,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol, pressure,n_pressure_bases);
 					else
 						ss.solve_stokes_2nd(args["solver_type"], args["precond_type"], params,mass,stiffness,boundary_nodes,dt/2,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol, pressure,n_pressure_bases);
 				}
