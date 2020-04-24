@@ -3,6 +3,9 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/State.hpp>
 
+#include <polyfem/LinearSolver.hpp>
+#include <polyfem/Logger.hpp>
+
 #include <polyfem/AssemblerUtils.hpp>
 #include <memory>
 
@@ -524,6 +527,212 @@ namespace polyfem
             );
 #endif
             sol.swap(new_sol);
+        }
+
+        void solve_diffusion_1st(const std::string &solver_type, 
+        const std::string &precond, 
+        const json& params,
+        const StiffnessMatrix& mass,
+        const StiffnessMatrix& stiffness_viscosity,
+        const std::vector<int>& bnd_nodes,
+        const double& dt,
+        const double& viscosity_,
+        const std::string &save_path,
+	    bool compute_spectrum,
+        Eigen::MatrixXd& sol)
+        {
+            Eigen::VectorXd rhs;
+            StiffnessMatrix A;
+            
+            for(int d = 0; d < dim; d++)
+            {
+                auto solver = LinearSolver::create(solver_type, precond);
+                solver->setParameters(params);
+                logger().info("{}...", solver->name());
+
+                Eigen::VectorXd x(sol.size() / dim);
+                for(int j = 0; j < x.size(); j++)
+                {
+                    x(j) = sol(j * dim + d);
+                }
+                A = mass + viscosity_ * dt * stiffness_viscosity;
+                rhs = mass * x;
+
+                // keep dirichlet bc
+                for (int i = 0; i < bnd_nodes.size(); i++)
+                {
+                    rhs(bnd_nodes[i]) = x(bnd_nodes[i]);
+                }
+
+                auto spectrum = dirichlet_solve(*solver, A, rhs, bnd_nodes, x, save_path, compute_spectrum);
+
+                for(int j = 0; j < x.size(); j++)
+                {
+                    sol(j * dim + d) = x(j);
+                }
+            }
+        }
+
+        void solve_diffusion_2nd(const std::string &solver_type, 
+        const std::string &precond, 
+        const json& params,
+        const StiffnessMatrix& mass,
+        const StiffnessMatrix& stiffness_viscosity,
+        const std::vector<int>& bnd_nodes,
+        const double& dt,
+        const double& viscosity_,
+        const std::string &save_path,
+	    bool compute_spectrum,
+        Eigen::MatrixXd& sol)
+        {
+            for(int d = 0; d < dim; d++)
+            {
+                auto solver = LinearSolver::create(solver_type, precond);
+                solver->setParameters(params);
+                logger().info("{}...", solver->name());
+
+                Eigen::VectorXd x(sol.size() / dim);
+                for(int j = 0; j < x.size(); j++)
+                {
+                    x(j) = sol(j * dim + d);
+                }
+                Eigen::VectorXd rhs = mass * x - 0.5 * dt * viscosity_ * stiffness_viscosity * x;
+				StiffnessMatrix A = mass;
+
+                // keep dirichlet bc
+                for (int i = 0; i < bnd_nodes.size(); i++)
+                {
+                    rhs(bnd_nodes[i]) = x(bnd_nodes[i]);
+                }
+
+                auto spectrum = dirichlet_solve(*solver, A, rhs, bnd_nodes, x, save_path, compute_spectrum);
+
+                A = mass + 0.5 * dt * viscosity_ * stiffness_viscosity;
+                rhs = mass * x;
+
+                // keep dirichlet bc
+                for (int i = 0; i < bnd_nodes.size(); i++)
+                {
+                    rhs(bnd_nodes[i]) = x(bnd_nodes[i]);
+                }
+
+                spectrum = dirichlet_solve(*solver, A, rhs, bnd_nodes, x, save_path, compute_spectrum);
+
+                for(int j = 0; j < x.size(); j++)
+                {
+                    sol(j * dim + d) = x(j);
+                }
+            }
+        }
+
+        void solve_stokes_1st(const std::string &solver_type, 
+        const std::string &precond, 
+        const json& params,
+        const StiffnessMatrix& mass,
+        const StiffnessMatrix& stiffness,
+        const std::vector<int>& boundary_nodes,
+        const double& dt,
+        const double& viscosity_,
+        const std::string &save_path,
+	    bool compute_spectrum,
+        Eigen::MatrixXd& sol, 
+        Eigen::MatrixXd& pressure,
+        const int& n_pressure_bases)
+        {
+            auto solver = LinearSolver::create(solver_type, precond);
+            solver->setParameters(params);
+            logger().info("{}...", solver->name());
+
+            StiffnessMatrix A;
+            Eigen::VectorXd b, x;
+
+            A = dt * stiffness;
+            A.block(0, 0, sol.rows(), sol.rows()) *= viscosity_;
+            A += mass;
+            b = Eigen::VectorXd::Zero(sol.rows() + n_pressure_bases + 1);
+            b.block(0, 0, sol.rows(), sol.cols()) = mass.block(0, 0, sol.rows(), sol.rows()) * sol;
+
+            for (int i = 0; i < boundary_nodes.size(); i++)
+            {
+                b(boundary_nodes[i]) = sol(boundary_nodes[i]);
+            }
+
+            auto spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, save_path, compute_spectrum);
+            sol = x.block(0, 0, sol.rows(), sol.cols());
+            pressure = x.block(sol.rows(), 0, n_pressure_bases, sol.cols());
+        }
+
+        void solve_stokes_2nd(const std::string &solver_type, 
+        const std::string &precond, 
+        const json& params,
+        const StiffnessMatrix& mass,
+        const StiffnessMatrix& stiffness,
+        const std::vector<int>& boundary_nodes,
+        const double& dt,
+        const double& viscosity_,
+        const std::string &save_path,
+	    bool compute_spectrum,
+        Eigen::MatrixXd& sol, 
+        Eigen::MatrixXd& pressure,
+        const int& n_pressure_bases)
+        {
+            auto solver = LinearSolver::create(solver_type, precond);
+            solver->setParameters(params);
+            logger().info("{}...", solver->name());
+
+            StiffnessMatrix A;
+            Eigen::VectorXd b, x;
+
+            A = dt / 2 * stiffness;
+            A.block(0,0,sol.rows(),sol.rows()) *= 0;
+            A += mass;
+            b = Eigen::VectorXd::Zero(sol.rows() + n_pressure_bases + 1);
+            b.block(0, 0, sol.rows(), sol.cols()) = mass.block(0, 0, sol.rows(), sol.rows()) * sol - dt / 2 * viscosity_ * stiffness.block(0, 0, sol.rows(), sol.rows()) * sol;
+
+            for (int i = 0; i < boundary_nodes.size(); i++)
+            {
+                b(boundary_nodes[i]) = sol(boundary_nodes[i]);
+            }
+
+            auto spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, save_path, compute_spectrum);
+            sol = x.block(0, 0, sol.rows(), sol.cols());
+
+            A = dt / 2 * stiffness;
+            A.block(0, 0, sol.rows(), sol.rows()) *= viscosity_;
+            A += mass;
+            b = Eigen::VectorXd::Zero(sol.rows() + n_pressure_bases + 1);
+            b.block(0, 0, sol.rows(), sol.cols()) = mass.block(0, 0, sol.rows(), sol.rows()) * sol;
+
+            for (int i = 0; i < boundary_nodes.size(); i++)
+            {
+                b(boundary_nodes[i]) = sol(boundary_nodes[i]);
+            }
+
+            spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, save_path, compute_spectrum);
+            sol = x.block(0, 0, sol.rows(), sol.cols());
+            pressure = x.block(sol.rows(), 0, n_pressure_bases, sol.cols());
+        }
+
+        void solve_pressure(const std::string &solver_type, 
+        const std::string &precond, 
+        const json& params,
+        const StiffnessMatrix& stiffness,
+        const StiffnessMatrix& mixed_stiffness,
+        const std::string &save_path,
+	    bool compute_spectrum,
+        Eigen::MatrixXd& sol, 
+        Eigen::MatrixXd& pressure)
+        {
+            Eigen::VectorXd rhs = mixed_stiffness * sol;
+			StiffnessMatrix A = stiffness;
+
+            auto solver = LinearSolver::create(solver_type, precond);
+            solver->setParameters(params);
+            logger().info("{}...", solver->name());
+
+            Eigen::VectorXd x;
+            auto spectrum = dirichlet_solve(*solver, A, rhs, std::vector<int>(1, 0), x, save_path, compute_spectrum);
+            pressure = x;
         }
 
         void advection_particle(const polyfem::Mesh& mesh, const std::vector<polyfem::ElementBases>& gbases, const std::vector<polyfem::ElementBases>& bases, Eigen::MatrixXd& sol, const double dt, const Eigen::MatrixXd& local_pts, const bool spatial_hash = false, const int order = 1)

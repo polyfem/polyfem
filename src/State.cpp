@@ -2569,6 +2569,16 @@ void State::solve_problem()
 				double time = t * dt;
 				logger().info("{}/{} steps, t={}s", t, time_steps, time);
 
+				if(args["splitting_order"] == 2)
+				{
+					ss.set_bc(*mesh, local_boundary, bnd_nodes, gbases, bases, sol, local_pts, problem, time);
+					
+					if(args["separate"])
+						ss.solve_diffusion_2nd(args["solver_type"], args["precond_type"], params,mass,stiffness_viscosity,bnd_nodes,dt/2,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol);
+					else
+						ss.solve_stokes_2nd(args["solver_type"], args["precond_type"], params,mass,stiffness,boundary_nodes,dt/2,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol, pressure,n_pressure_bases);
+				}
+				
 				/* advection */
 				if(args["advection"])
 					ss.advection(*mesh, gbases, bases, sol, dt, local_pts, args["spatial_hash"], args["advection_order"], args["advection_RK"]);
@@ -2579,120 +2589,23 @@ void State::solve_problem()
 				/* Stokes */
 				if(!args["separate"])
 				{
-					auto solver = LinearSolver::create(args["solver_type"], args["precond_type"]);
-					solver->setParameters(params);
-					logger().info("{}...", solver->name());
-
-					StiffnessMatrix A;
-					Eigen::VectorXd b, x;
-
-					A = mass + dt * stiffness;
-					b = Eigen::VectorXd::Zero(sol.rows() + n_pressure_bases + 1);
-					b.block(0, 0, sol.rows(), sol.cols()) = mass.block(0, 0, sol.rows(), sol.rows()) * sol;
-
-					for (int i = 0; i < boundary_nodes.size(); i++)
-					{
-						b(boundary_nodes[i]) = sol(boundary_nodes[i]);
-					}
-
-					spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
-					sol = x.block(0, 0, sol.rows(), sol.cols());
-					pressure = x.block(sol.rows(), 0, n_pressure_bases, sol.cols());
+					if(args["splitting_order"] == 1)
+						ss.solve_stokes_2nd(args["solver_type"], args["precond_type"], params,mass,stiffness,boundary_nodes,dt,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol, pressure,n_pressure_bases);
+					else
+						ss.solve_stokes_2nd(args["solver_type"], args["precond_type"], params,mass,stiffness,boundary_nodes,dt/2,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol, pressure,n_pressure_bases);
 				}
 				else
 				{
 					/* viscosity */
-					Eigen::VectorXd rhs;
-					StiffnessMatrix A;
-					
-					if(args["diffuse_order"] == 1)
-					{
-						/* apply boundary condition */
-						ss.set_bc(*mesh, local_boundary, bnd_nodes, gbases, bases, sol, local_pts, problem, time);
-
-						for(int d = 0; d < dim; d++)
-						{
-							auto solver = LinearSolver::create(args["solver_type"], args["precond_type"]);
-							solver->setParameters(params);
-							logger().info("{}...", solver->name());
-
-							Eigen::VectorXd x(sol.size() / dim);
-							for(int j = 0; j < x.size(); j++)
-							{
-								x(j) = sol(j * dim + d);
-							}
-							A = mass + viscosity_ * dt * stiffness_viscosity;
-							rhs = mass * x;
-
-							// keep dirichlet bc
-							for (int i = 0; i < bnd_nodes.size(); i++)
-							{
-								rhs(bnd_nodes[i]) = x(bnd_nodes[i]);
-							}
-
-							spectrum = dirichlet_solve(*solver, A, rhs, bnd_nodes, x, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
-
-							solver->getInfo(solver_info);
-							logger().debug("Solver error: {}", (A * x - rhs).norm());
-
-							for(int j = 0; j < x.size(); j++)
-							{
-								sol(j * dim + d) = x(j);
-							}
-						}
-					}
+					if(args["splitting_order"] == 1)
+						ss.solve_diffusion_1st(args["solver_type"], args["precond_type"], params,mass,stiffness_viscosity,bnd_nodes,dt,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol);
 					else
-					{
-						ss.set_bc(*mesh, local_boundary, bnd_nodes, gbases, bases, sol, local_pts, problem, time);
-
-						for(int d = 0; d < dim; d++)
-						{
-							auto solver = LinearSolver::create(args["solver_type"], args["precond_type"]);
-							solver->setParameters(params);
-							logger().info("{}...", solver->name());
-
-							Eigen::VectorXd x(sol.size() / dim);
-							for(int j = 0; j < x.size(); j++)
-							{
-								x(j) = sol(j * dim + d);
-							}
-							A = mass + 0.5 * dt * viscosity_ * stiffness_viscosity;
-							rhs = mass * x - 0.5 * dt * viscosity_ * stiffness_viscosity * x;
-
-							// keep dirichlet bc
-							for (int i = 0; i < bnd_nodes.size(); i++)
-							{
-								rhs(bnd_nodes[i]) = x(bnd_nodes[i]);
-							}
-
-							spectrum = dirichlet_solve(*solver, A, rhs, bnd_nodes, x, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
-
-							solver->getInfo(solver_info);
-							logger().debug("Solver error: {}", (A * x - rhs).norm());
-
-							for(int j = 0; j < x.size(); j++)
-							{
-								sol(j * dim + d) = x(j);
-							}
-						}
-					}
+						ss.solve_diffusion_2nd(args["solver_type"], args["precond_type"], params,mass,stiffness_viscosity,bnd_nodes,dt/2,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol);
 
 					/* incompressibility */
 
-					rhs = mixed_stiffness * sol;
-
-					auto solver = LinearSolver::create(args["solver_type"], args["precond_type"]);
-					solver->setParameters(params);
-					logger().info("{}...", solver->name());
-
-					A = stiffness;
-					Eigen::VectorXd x;
-					spectrum = dirichlet_solve(*solver, A, rhs, std::vector<int>(1, 0), x, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
-					pressure = x;
-
-					solver->getInfo(solver_info);
-					logger().debug("Solver error: {}", (A * x - rhs).norm());
-
+					ss.solve_pressure(args["solver_type"], args["precond_type"], params,stiffness,mixed_stiffness,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol, pressure);
+					
 					Eigen::VectorXd grad_pressure;
 					ss.projection(*mesh, n_bases, gbases, bases, pressure_bases, local_pts, pressure, sol);
 

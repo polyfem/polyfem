@@ -9,14 +9,14 @@
     "time_steps": 8,
     "spatial_hash": true,
     "advection_order": 1,
-    "diffuse_order": 1,
+    "splitting_order": 1,
     "advection_RK": 1,
     "separate": false,
 
     "discr_order": 2,
     "pressure_discr_order": 1,
     "quadrature_order": 4,
-    "advection": false,
+    "advection": true,
 
     "viscosity": 1,
     "problem": "TaylorGreenVortex",
