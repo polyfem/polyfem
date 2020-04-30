@@ -219,6 +219,7 @@ State::State()
 		{"nl_solver_rhs_steps", 1},
 		{"save_solve_sequence", false},
 		{"save_solve_sequence_debug", false},
+		{"save_time_sequence", true},
 
 		{"force_no_ref_for_harmonic", false},
 
@@ -2531,8 +2532,12 @@ void State::solve_problem()
 
 			sol = c_sol;
 			sol_to_pressure();
-			save_vtu("step_" + std::to_string(0) + ".vtu", 0);
-			save_wire("step_" + std::to_string(0) + ".obj");
+			if (args["save_time_sequence"]){
+				if (!solve_export_to_file)
+					solution_frames.emplace_back();
+				save_vtu("step_" + std::to_string(0) + ".vtu", 0);
+				save_wire("step_" + std::to_string(0) + ".obj");
+			}
 
 			assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, gbases, velocity_stiffness);
 			assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, mixed_stiffness);
@@ -2561,10 +2566,13 @@ void State::solve_problem()
 				sol = c_sol;
 				sol_to_pressure();
 
-				if (!solve_export_to_file)
-					solution_frames.emplace_back();
-				save_vtu("step_" + std::to_string(t) + ".vtu", time);
-				save_wire("step_" + std::to_string(t) + ".obj");
+				if (args["save_time_sequence"])
+				{
+					if (!solve_export_to_file)
+						solution_frames.emplace_back();
+					save_vtu("step_" + std::to_string(t) + ".vtu", time);
+					save_wire("step_" + std::to_string(t) + ".obj");
+				}
 			}
 		}
 		else
@@ -2579,11 +2587,13 @@ void State::solve_problem()
 			solver->setParameters(params);
 			logger().info("{}...", solver->name());
 
-			if (!solve_export_to_file)
-				solution_frames.emplace_back();
-
-			save_vtu("step_" + std::to_string(0) + ".vtu", 0);
-			save_wire("step_" + std::to_string(0) + ".obj");
+			if (args["save_time_sequence"])
+			{
+				if (!solve_export_to_file)
+					solution_frames.emplace_back();
+				save_vtu("step_" + std::to_string(0) + ".vtu", 0);
+				save_wire("step_" + std::to_string(0) + ".obj");
+			}
 
 			if (assembler.is_mixed(formulation()))
 			{
@@ -2641,11 +2651,14 @@ void State::solve_problem()
 						sol_to_pressure();
 					}
 
-					if (!solve_export_to_file)
-						solution_frames.emplace_back();
+					if (args["save_time_sequence"])
+					{
+						if (!solve_export_to_file)
+							solution_frames.emplace_back();
 
-					save_vtu("step_" + std::to_string(t) + ".vtu", time);
-					save_wire("step_" + std::to_string(t) + ".obj");
+						save_vtu("step_" + std::to_string(t) + ".vtu", time);
+						save_wire("step_" + std::to_string(t) + ".obj");
+					}
 				}
 			}
 			else //newmark
@@ -2701,10 +2714,13 @@ void State::solve_problem()
 					rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, dt * t);
 					rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, dt * t);
 
-					if (!solve_export_to_file)
-						solution_frames.emplace_back();
-					save_vtu("step_" + std::to_string(t) + ".vtu", dt * t);
-					save_wire("step_" + std::to_string(t) + ".obj");
+					if (args["save_time_sequence"])
+					{
+						if (!solve_export_to_file)
+							solution_frames.emplace_back();
+						save_vtu("step_" + std::to_string(t) + ".vtu", dt * t);
+						save_wire("step_" + std::to_string(t) + ".obj");
+					}
 
 					logger().info("{}/{}", t, time_steps);
 				}
