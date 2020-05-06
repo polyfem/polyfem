@@ -2568,16 +2568,11 @@ void State::solve_problem()
 			{
 				double time = t * dt;
 				logger().info("{}/{} steps, t={}s", t, time_steps, time);
-
-				if(args["splitting_order"] == 2)
-				{
-					ss.set_bc(*mesh, local_boundary, bnd_nodes, gbases, bases, sol, local_pts, problem, time);
-					
-					ss.solve_diffusion_2nd(args["solver_type"], args["precond_type"], params,mass,stiffness_viscosity,bnd_nodes,dt/2,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol);
-				}
 				
 				/* advection */
-				if(args["advection"])
+				if(args["particle"])
+					ss.advection_FLIP(*mesh, gbases, bases, sol, dt, local_pts, args["spatial_hash"], args["advection_order"]);
+				else
 					ss.advection(*mesh, gbases, bases, sol, dt, local_pts, args["spatial_hash"], args["advection_order"], args["advection_RK"]);
 
 				/* apply boundary condition */
@@ -2585,22 +2580,13 @@ void State::solve_problem()
 
 				/* Stokes */
 				if(!args["separate"])
-				{
-					if(args["splitting_order"] == 1)
-						ss.solve_stokes_1st(args["solver_type"], args["precond_type"], params,mass,stiffness,boundary_nodes,dt,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol, pressure,n_pressure_bases);
-					else
-						ss.solve_stokes_2nd(args["solver_type"], args["precond_type"], params,mass,stiffness,boundary_nodes,dt/2,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol, pressure,n_pressure_bases);
-				}
+					ss.solve_stokes_1st(args["solver_type"], args["precond_type"], params,mass,stiffness,boundary_nodes,dt,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol, pressure,n_pressure_bases);
 				else
 				{
 					/* viscosity */
-					if(args["splitting_order"] == 1)
-						ss.solve_diffusion_1st(args["solver_type"], args["precond_type"], params,mass,stiffness_viscosity,bnd_nodes,dt,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol);
-					else
-						ss.solve_diffusion_2nd(args["solver_type"], args["precond_type"], params,mass,stiffness_viscosity,bnd_nodes,dt/2,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol);
+					ss.solve_diffusion_1st(args["solver_type"], args["precond_type"], params,mass,stiffness_viscosity,bnd_nodes,dt,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol);
 
 					/* incompressibility */
-
 					ss.solve_pressure(args["solver_type"], args["precond_type"], params,stiffness,mixed_stiffness,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol, pressure);
 					
 					Eigen::VectorXd grad_pressure;
