@@ -20,6 +20,7 @@
 
 #ifdef POLYFEM_WITH_TBB
 #include <tbb/parallel_for.h>
+#include <tbb/parallel_reduce.h>
 #include <tbb/task_scheduler_init.h>
 #include <tbb/enumerable_thread_specific.h>
 #endif
@@ -72,6 +73,53 @@ namespace polyfem
 				val = 0;
 			}
 		};
+
+#ifdef POLYFEM_WITH_TBB
+		template <typename LTM>
+		void merge_matrices(tbb::enumerable_thread_specific<LTM> &storages, StiffnessMatrix &mat)
+		{
+			std::vector<LTM *> flat_view;
+			for (auto i = storages.begin(); i != storages.end(); ++i)
+			{
+				flat_view.emplace_back(&*i);
+			}
+
+			mat = tbb::parallel_reduce(
+				tbb::blocked_range<int>(0, flat_view.size()), mat,
+				[&](const tbb::blocked_range<int> &r, const StiffnessMatrix &m) {
+					StiffnessMatrix tmp = m;
+					for (int e = r.begin(); e != r.end(); ++e)
+					{
+						const auto i = flat_view[e];
+						i->tmp_mat.setFromTriplets(i->entries.begin(), i->entries.end());
+						i->entries.clear();
+						i->entries.shrink_to_fit();
+						i->tmp_mat.makeCompressed();
+
+						i->stiffness += i->tmp_mat;
+
+						i->tmp_mat.resize(0, 0);
+						i->tmp_mat.data().squeeze();
+
+						i->stiffness.makeCompressed();
+
+						tmp += i->stiffness;
+						i->stiffness.resize(0, 0);
+						i->stiffness.data().squeeze();
+
+						tmp.makeCompressed();
+					}
+
+					return tmp;
+				},
+				[](const StiffnessMatrix &a, const StiffnessMatrix &b) {
+					return a + b;
+				}
+			);
+
+			mat.makeCompressed();
+		}
+#endif
 	}
 
 	template<class LocalAssembler>
@@ -197,28 +245,29 @@ namespace polyfem
 
 		timerg.start();
 #ifdef POLYFEM_WITH_TBB
-		for (LocalStorage::iterator i = storages.begin(); i != storages.end();  ++i)
-		{
-			logger().debug("local stiffness: {}, entries: {}", i->stiffness.nonZeros(), i->entries.size());
+		merge_matrices(storages, stiffness);
+		// for (LocalStorage::iterator i = storages.begin(); i != storages.end();  ++i)
+		// {
+		// 	logger().debug("local stiffness: {}, entries: {}", i->stiffness.nonZeros(), i->entries.size());
 
-			i->tmp_mat.setFromTriplets(i->entries.begin(), i->entries.end());
-			i->entries.clear();
-			i->entries.shrink_to_fit();
+		// 	i->tmp_mat.setFromTriplets(i->entries.begin(), i->entries.end());
+		// 	i->entries.clear();
+		// 	i->entries.shrink_to_fit();
 
-			i->stiffness += i->tmp_mat;
+		// 	i->stiffness += i->tmp_mat;
 
-			i->tmp_mat.resize(0,0);
-			i->tmp_mat.data().squeeze();
+		// 	i->tmp_mat.resize(0,0);
+		// 	i->tmp_mat.data().squeeze();
 
-			i->stiffness.makeCompressed();
+		// 	i->stiffness.makeCompressed();
 
-			stiffness += i->stiffness;
+		// 	stiffness += i->stiffness;
 
-			i->stiffness.resize(0,0);
-			i->stiffness.data().squeeze();
+		// 	i->stiffness.resize(0,0);
+		// 	i->stiffness.data().squeeze();
 
-			stiffness.makeCompressed();
-		}
+		// 	stiffness.makeCompressed();
+		// }
 #else
 		stiffness = loc_storage.stiffness;
 		loc_storage.tmp_mat.setFromTriplets(loc_storage.entries.begin(), loc_storage.entries.end());
@@ -267,7 +316,8 @@ namespace polyfem
 #endif
 
 		const int n_bases = int(phi_bases.size());
-
+		igl::Timer timerg;
+		timerg.start();
 #ifdef POLYFEM_WITH_TBB
 		tbb::parallel_for( tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
 		LocalStorage::reference loc_storage = storages.local();
@@ -347,20 +397,26 @@ namespace polyfem
 		}
 #endif
 
+		timerg.stop();
+		logger().trace("done separate assembly {}s...", timerg.getElapsedTime());
 
+		timerg.start();
 #ifdef POLYFEM_WITH_TBB
-		for (LocalStorage::iterator i = storages.begin(); i != storages.end();  ++i)
-		{
-			stiffness += i->stiffness;
-			i->tmp_mat.setFromTriplets(i->entries.begin(), i->entries.end());
-			stiffness += i->tmp_mat;
-		}
+		merge_matrices(storages, stiffness);
+		// for (LocalStorage::iterator i = storages.begin(); i != storages.end();  ++i)
+		// {
+		// 	stiffness += i->stiffness;
+		// 	i->tmp_mat.setFromTriplets(i->entries.begin(), i->entries.end());
+		// 	stiffness += i->tmp_mat;
+		// }
 #else
 		stiffness = loc_storage.stiffness;
 		loc_storage.tmp_mat.setFromTriplets(loc_storage.entries.begin(), loc_storage.entries.end());
 		stiffness += loc_storage.tmp_mat;
-#endif
 		stiffness.makeCompressed();
+#endif
+		timerg.stop();
+		logger().trace("done merge assembly {}s...", timerg.getElapsedTime());
 
 		// stiffness.resize(n_basis*local_assembler_.size(), n_basis*local_assembler_.size());
 		// stiffness.setFromTriplets(entries.begin(), entries.end());
@@ -475,6 +531,8 @@ namespace polyfem
 #endif
 
 		const int n_bases = int(bases.size());
+		igl::Timer timerg;
+		timerg.start();
 
 #ifdef POLYFEM_WITH_TBB
 		tbb::parallel_for(tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
@@ -572,20 +630,42 @@ namespace polyfem
 		}
 #endif
 
+		timerg.stop();
+		logger().trace("done separate assembly {}s...", timerg.getElapsedTime());
+
+		timerg.start();
 
 #ifdef POLYFEM_WITH_TBB
-	for (LocalStorage::iterator i = storages.begin(); i != storages.end();  ++i)
-	{
-		grad += i->stiffness;
-		i->tmp_mat.setFromTriplets(i->entries.begin(), i->entries.end());
-		grad += i->tmp_mat;
-	}
+		merge_matrices(storages, grad);
+		// for (LocalStorage::iterator i = storages.begin(); i != storages.end(); ++i)
+		// {
+		// 	// logger().debug("local stiffness: {}, entries: {}", i->stiffness.nonZeros(), i->entries.size());
+		// 	i->tmp_mat.setFromTriplets(i->entries.begin(), i->entries.end());
+		// 	i->entries.clear();
+		// 	i->entries.shrink_to_fit();
+
+		// 	i->stiffness += i->tmp_mat;
+
+		// 	i->tmp_mat.resize(0, 0);
+		// 	i->tmp_mat.data().squeeze();
+
+		// 	i->stiffness.makeCompressed();
+
+		// 	grad += i->stiffness;
+		// 	i->stiffness.resize(0, 0);
+		// 	i->stiffness.data().squeeze();
+
+		// 	grad.makeCompressed();
+		// }
 #else
 		grad = loc_storage.stiffness;
 		loc_storage.tmp_mat.setFromTriplets(loc_storage.entries.begin(), loc_storage.entries.end());
 		grad += loc_storage.tmp_mat;
-#endif
 		grad.makeCompressed();
+#endif
+
+		timerg.stop();
+		logger().trace("done merge assembly {}s...", timerg.getElapsedTime());
 	}
 
 	template<class LocalAssembler>
