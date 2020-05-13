@@ -420,15 +420,22 @@ namespace polyfem
         {
             for (int d = 0; d < dim; d++)
             {
+                // if (pos(d) < min_domain(d)) {
+                //     do {
+                //         pos(d) += max_domain(d) - min_domain(d);
+                //     } while(pos(d) < min_domain(d));
+                // }
+                // else if (pos(d) > max_domain(d)) {
+                //     do {
+                //         pos(d) -= max_domain(d) - min_domain(d);
+                //     } while(pos(d) > max_domain(d));
+                // }
+
                 if (pos(d) < min_domain(d)) {
-                    do {
-                        pos(d) += max_domain(d) - min_domain(d);
-                    } while(pos(d) < min_domain(d));
+                    pos(d) = min_domain(d) + 1e-13;
                 }
                 else if (pos(d) > max_domain(d)) {
-                    do {
-                        pos(d) -= max_domain(d) - min_domain(d);
-                    } while(pos(d) > max_domain(d));
+                    pos(d) = max_domain(d) - 1e-13;
                 }
             }
         }
