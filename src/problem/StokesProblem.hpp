@@ -137,6 +137,29 @@ public:
 	double viscosity_;
 };
 
+class GenericFlowProblem : public Problem
+{
+public:
+	GenericFlowProblem(const std::string &name);
+
+	bool has_exact_sol() const override { return true; }
+	bool is_rhs_zero() const override { return true; }
+	bool is_scalar() const override { return false; }
+	bool is_time_dependent() const override { return true; }
+
+	void initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
+
+	void set_parameters(const json &params) override;
+
+	void exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+	void exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+
+	void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+	void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+public:
+	double viscosity_;
+};
+
 class SimpleStokeProblemExact : public ProblemWithSolution
 {
 public:

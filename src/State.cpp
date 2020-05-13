@@ -2585,8 +2585,12 @@ void State::solve_problem()
 				else
 				{
 					/* viscosity */
-					ss.solve_diffusion_1st(args["solver_type"], args["precond_type"], params,mass,stiffness_viscosity,bnd_nodes,dt,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol);
+					if(viscosity_ > 0)
+						ss.solve_diffusion_1st(args["solver_type"], args["precond_type"], params,mass,stiffness_viscosity,bnd_nodes,dt,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol);
 
+					/* external force */
+					ss.external_force(*mesh, gbases, bases, dt, sol, local_pts, problem, time);
+					
 					/* incompressibility */
 					ss.solve_pressure(args["solver_type"], args["precond_type"], params,stiffness,mixed_stiffness,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol, pressure);
 					

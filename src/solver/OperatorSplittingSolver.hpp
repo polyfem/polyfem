@@ -178,6 +178,58 @@ namespace polyfem
 #endif
         }
 
+        void external_force(const polyfem::Mesh& mesh,
+        const std::vector<polyfem::ElementBases>& gbases, 
+        const std::vector<polyfem::ElementBases>& bases, 
+        const double dt, 
+        Eigen::MatrixXd& sol, 
+        const Eigen::MatrixXd& local_pts, 
+        const std::shared_ptr<Problem> problem, 
+        const double time)
+        {
+#ifdef POLYFEM_WITH_TBB
+            tbb::parallel_for(0, n_el, 1, [&](int e)
+#else
+            for(int e = 0; e < n_el; e++)
+#endif
+            {
+                // geometry vertices of element e
+                std::vector<RowVectorNd> vert(shape);
+                for (int i = 0; i < shape; i++)
+                {
+                    vert[i] = mesh.point(mesh.cell_vertex_(e, i));
+                }
+
+                ElementAssemblyValues gvals;
+                gvals.compute(e, dim == 3, local_pts, gbases[e], gbases[e]);
+
+                for (int local_idx = 0; local_idx < bases[e].bases.size(); local_idx++)
+                {
+                    int global_idx = bases[e].bases[local_idx].global()[0].index;
+
+                    Eigen::MatrixXd pos = Eigen::MatrixXd::Zero(1, dim);
+                    for (int j = 0; j < shape; j++)
+                    {
+                        for (int d = 0; d < dim; d++)
+                        {
+                            pos(0, d) += gvals.basis_values[j].val(local_idx) * vert[j](d);
+                        }
+                    }
+
+                    Eigen::MatrixXd val;
+                    problem->rhs(std::string(), pos, time, val);
+
+                    for (int d = 0; d < dim; d++)
+                    {
+                        sol(global_idx * dim + d) += val(d) * dt;
+                    }
+                }
+            }
+#ifdef POLYFEM_WITH_TBB
+            );
+#endif
+        }
+
         void projection(const polyfem::Mesh& mesh, 
         int n_bases, 
         const std::vector<polyfem::ElementBases>& gbases, 

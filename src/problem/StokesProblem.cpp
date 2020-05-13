@@ -372,8 +372,6 @@ void TaylorGreenVortexProblem::exact(const Eigen::MatrixXd &pts, const double t,
 
 		val(i, 0) =  cos(x) * sin(y) * exp(-2 * viscosity_ * t);
 		val(i, 1) = -sin(x) * cos(y) * exp(-2 * viscosity_ * t);
-		//val(i, 0) = 0;
-		//val(i, 1) = 0.5 * (8 + 2 * M_PI * x - x * x) * cos(y / 2);
 	}
 
 }
@@ -403,6 +401,73 @@ void TaylorGreenVortexProblem::rhs(const std::string &formulation, const Eigen::
 }
 
 void TaylorGreenVortexProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	exact(pts, t, val);
+}
+
+GenericFlowProblem::GenericFlowProblem(const std::string &name)
+	: Problem(name), viscosity_(1)
+{
+}
+
+void GenericFlowProblem::initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+{
+	exact(pts, 0, val);
+}
+
+void GenericFlowProblem::set_parameters(const json &params)
+{
+	if (params.count("viscosity"))
+	{
+		viscosity_ = params["viscosity"];
+	}
+}
+
+void GenericFlowProblem::exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val.resize(pts.rows(), pts.cols());
+	for(int i = 0; i < pts.rows(); ++i)
+	{
+		const double x = pts(i, 0);
+		const double y = pts(i, 1);
+
+		val(i, 0) =  -t + x * (x / 2 + y);
+		val(i, 1) = t - y * (x + y / 2);
+	}
+}
+
+void GenericFlowProblem::exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	const double time_scaling = exp(-2 * viscosity_ * t);
+
+	val.resize(pts.rows(), pts.cols() * pts.cols());
+
+	for (int i = 0; i < pts.rows(); ++i)
+	{
+		const double x = pts(i, 0);
+		const double y = pts(i, 1);
+
+		val(i, 0) = x + y;
+		val(i, 1) = x;
+		val(i, 2) = -y;
+		val(i, 3) = -x - y;
+	}
+}
+
+void GenericFlowProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val.resize(pts.rows(), pts.cols());
+	for(int i = 0; i < pts.rows(); ++i)
+	{
+		const double x = pts(i, 0);
+		const double y = pts(i, 1);
+
+		val(i, 0) = - viscosity_ - t * y + 0.5 * x * (x * x + x * y + y * y);
+		val(i, 1) = viscosity_ - t * x + 2 + 0.5 * y * (x * x + x * y + y * y);
+	}
+}
+
+void GenericFlowProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 {
 	exact(pts, t, val);
 }
