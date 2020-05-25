@@ -36,6 +36,7 @@ void NavierStokesSolver::minimize(const State &state, const Eigen::MatrixXd &rhs
 
 	const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 	const int problem_dim = state.problem->is_scalar() ? 1 : state.mesh->dimension();
+	const int precond_num = problem_dim * state.n_bases;
 
 	igl::Timer time;
 
@@ -58,7 +59,7 @@ void NavierStokesSolver::minimize(const State &state, const Eigen::MatrixXd &rhs
 	logger().info("{}...", solver->name());
 
 	Eigen::VectorXd b = rhs;
-	dirichlet_solve(*solver, stoke_stiffness, b, state.boundary_nodes, x);
+	dirichlet_solve(*solver, stoke_stiffness, b, state.boundary_nodes, x, precond_num);
 	// solver->getInfo(solver_info);
 	time.stop();
 	stokes_solve_time = time.getElapsedTimeInSec();
@@ -98,6 +99,7 @@ int NavierStokesSolver::minimize_aux(
 	const auto &assembler = AssemblerUtils::instance();
 	const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 	const int problem_dim = state.problem->is_scalar() ? 1 : state.mesh->dimension();
+	const int precond_num = problem_dim * state.n_bases;
 
 	StiffnessMatrix nl_matrix;
 	StiffnessMatrix total_matrix;
@@ -132,7 +134,7 @@ int NavierStokesSolver::minimize_aux(
 												 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 												 total_matrix);
 		}
-		dirichlet_solve(*solver, total_matrix, nlres, state.boundary_nodes, dx);
+		dirichlet_solve(*solver, total_matrix, nlres, state.boundary_nodes, dx, precond_num);
 		// for (int i : state.boundary_nodes)
 		// 	dx[i] = 0;
 		time.stop();

@@ -2617,6 +2617,9 @@ void State::solve_problem()
 				x = sol;
 				bdf.new_solution(x);
 
+				const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+				const int precond_num = problem_dim * n_bases;
+
 				for (int t = 1; t <= time_steps; ++t)
 				{
 					double time = t * dt;
@@ -2642,7 +2645,7 @@ void State::solve_problem()
 					bdf.rhs(x);
 					b = current_dt * current_rhs + mass * x;
 
-					spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, args["export"]["stiffness_mat"], t == time_steps && args["export"]["spectrum"]);
+					spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], t == time_steps && args["export"]["spectrum"]);
 					bdf.new_solution(x);
 					sol = x;
 
@@ -2678,6 +2681,9 @@ void State::solve_problem()
 				rhs_assembler.initial_velocity(velocity);
 				rhs_assembler.initial_acceleration(acceleration);
 
+				const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+				const int precond_num = problem_dim * n_bases;
+
 				for (int t = 1; t <= time_steps; ++t)
 				{
 					const double dt2 = dt * dt;
@@ -2704,7 +2710,7 @@ void State::solve_problem()
 
 					A = stiffness * 0.5 * beta2 * dt2 + mass;
 					btmp = b;
-					spectrum = dirichlet_solve(*solver, A, btmp, boundary_nodes, x, args["export"]["stiffness_mat"], t == 1 && args["export"]["spectrum"]);
+					spectrum = dirichlet_solve(*solver, A, btmp, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], t == 1 && args["export"]["spectrum"]);
 					acceleration = x;
 
 					sol += dt * vOld + 0.5 * dt2 * ((1 - beta2) * aOld + beta2 * acceleration);
@@ -2737,10 +2743,13 @@ void State::solve_problem()
 			Eigen::VectorXd b;
 			logger().info("{}...", solver->name());
 
+			const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+			const int precond_num = problem_dim * n_bases;
+
 			A = stiffness;
 			Eigen::VectorXd x;
 			b = rhs;
-			spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
+			spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
 			sol = x;
 			solver->getInfo(solver_info);
 
@@ -2774,6 +2783,9 @@ void State::solve_problem()
 				const int full_size = n_bases * mesh->dimension();
 				const int reduced_size = n_bases * mesh->dimension() - boundary_nodes.size();
 				const double tend = args["tend"];
+
+				const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+				const int precond_num = problem_dim * n_bases;
 
 				int steps = args["nl_solver_rhs_steps"];
 				if (steps <= 0)
@@ -2855,7 +2867,7 @@ void State::solve_problem()
 						b = grad;
 						for (int bId : boundary_nodes)
 							b(bId) = -(nl_problem.current_rhs()(bId) - prev_rhs(bId));
-						dirichlet_solve(*solver, nlstiffness, b, boundary_nodes, x, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
+						dirichlet_solve(*solver, nlstiffness, b, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
 						// logger().debug("Solver error: {}", (nlstiffness * sol - b).norm());
 						x = sol - x;
 						nl_problem.full_to_reduced(x, tmp_sol);

@@ -44,7 +44,8 @@ void LinearSolverHypre::getInfo(json &params) const {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void LinearSolverHypre::analyzePattern(const StiffnessMatrix &Ain) {
+void LinearSolverHypre::analyzePattern(const StiffnessMatrix &Ain, const int precond_num)
+{
 	if (has_matrix_){
 		HYPRE_IJMatrixDestroy(A);
 		has_matrix_ = false;
