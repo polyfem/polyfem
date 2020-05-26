@@ -675,4 +675,78 @@ AutodiffHessianPt SineStokeProblemExact::eval_fun(const AutodiffHessianPt &pt) c
 	assert(false);
 	return AutodiffHessianPt(pt.size());
 }
+
+TransientStokeProblemExact::TransientStokeProblemExact(const std::string &name)
+	: Problem(name), viscosity_(1), func_(0)
+{
+}
+
+void TransientStokeProblemExact::initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+{
+	exact(pts, 0, val);
+}
+
+void TransientStokeProblemExact::set_parameters(const json &params)
+{
+	if (params.count("viscosity"))
+	{
+		viscosity_ = params["viscosity"];
+	}
+
+	if (params.find("func") != params.end())
+	{
+		func_ = params["func"];
+	}
+}
+
+void TransientStokeProblemExact::exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val.resize(pts.rows(), pts.cols());
+	for (int i = 0; i < pts.rows(); ++i)
+	{
+		const double x = pts(i, 0);
+		const double y = pts(i, 1);
+
+		val(i, 0) = -t + x*x / 2 + x* y;
+		val(i, 1) = t - x * y - y *y / 2;
+	}
+}
+
+void TransientStokeProblemExact::exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	const double time_scaling = exp(-2 * viscosity_ * t);
+
+	val.resize(pts.rows(), pts.cols() * pts.cols());
+
+	// for (int i = 0; i < pts.rows(); ++i)
+	// {
+	// 	const double x = pts(i, 0);
+	// 	const double y = pts(i, 1);
+
+	// 	val(i, 0) = -sin(x) * sin(y) * time_scaling;
+	// 	val(i, 1) = cos(x) * cos(y) * time_scaling;
+	// 	val(i, 2) = -cos(x) * cos(y) * time_scaling;
+	// 	val(i, 3) = sin(x) * sin(y) * time_scaling;
+	// }
+}
+
+void TransientStokeProblemExact::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val.resize(pts.rows(), pts.cols());
+
+	for (int i = 0; i < pts.rows(); ++i)
+	{
+		const double x = pts(i, 0);
+		const double y = pts(i, 1);
+
+		val(i, 0) = -viscosity_ - t * y + 1. / 2. * x * (x * x + x * y + y * y);
+		val(i, 1) =  viscosity_ - t * x + 1. / 2. * y * (x * x + x * y + y * y) + 2;
+	}
+}
+
+void TransientStokeProblemExact::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	exact(pts, t, val);
+}
+
 } // namespace polyfem

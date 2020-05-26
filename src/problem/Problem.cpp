@@ -127,6 +127,7 @@ namespace polyfem
 		problems_.emplace("TaylorGreenVortex", std::make_shared<TaylorGreenVortexProblem>("TaylorGreenVortex"));
 		problems_.emplace("SimpleStokeProblemExact", std::make_shared<SimpleStokeProblemExact>("SimpleStokeProblemExact"));
 		problems_.emplace("SineStokeProblemExact", std::make_shared<SineStokeProblemExact>("SineStokeProblemExact"));
+		problems_.emplace("TransientStokeProblemExact", std::make_shared<TransientStokeProblemExact>("TransientStokeProblemExact"));
 
 		problems_.emplace("TestProblem", std::make_shared<TestProblem>("TestProblem"));
 
