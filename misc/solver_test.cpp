@@ -158,7 +158,7 @@ int main(int argc, char * argv[]) {
 
 	std::cout << "-- Analyzing sparsity pattern..." << std::endl;
 	timer.start();
-	solver->analyzePattern(A);
+	solver->analyzePattern(A, A.rows());
 	timer.stop();
 	params["time_analyze"] = timer.getElapsedTime();
 

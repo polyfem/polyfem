@@ -54,7 +54,6 @@ void LinearSolverAMGCL::analyzePattern(const StiffnessMatrix &Ain, const int pre
 	memcpy(a_.data(), Ain.valuePtr(), Ain.nonZeros() * sizeof(Ain.valuePtr()[0]));
 
 	params_.precond.pmask.resize(numRows, 0);
-	std::cout<<numRows<<std::endl;
 	for (size_t i = precond_num; i < numRows; ++i)
 		params_.precond.pmask[i] = 1;
 
