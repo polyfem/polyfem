@@ -24,9 +24,9 @@ namespace polyfem
 
 		virtual ~ProblemWithSolution() { }
 	protected:
-		virtual VectorNd eval_fun(const VectorNd &pt) const = 0;
-		virtual AutodiffGradPt eval_fun(const AutodiffGradPt &pt) const = 0;
-		virtual AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt) const = 0;
+		virtual VectorNd eval_fun(const VectorNd &pt, double t) const = 0;
+		virtual AutodiffGradPt eval_fun(const AutodiffGradPt &pt, double t) const = 0;
+		virtual AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt, double t) const = 0;
 
 		virtual int size_for(const Eigen::MatrixXd &pts) const { return is_scalar() ? 1 : pts.cols(); }
 	};

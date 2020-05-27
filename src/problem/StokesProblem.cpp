@@ -406,7 +406,7 @@ void TaylorGreenVortexProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &globa
 }
 
 template <typename T>
-Eigen::Matrix<T, 2, 1> simple_function_const(T x, T y)
+Eigen::Matrix<T, 2, 1> simple_function_const(T x, T y, const double t)
 {
 	Eigen::Matrix<T, 2, 1> res;
 
@@ -417,7 +417,7 @@ Eigen::Matrix<T, 2, 1> simple_function_const(T x, T y)
 }
 
 template <typename T>
-Eigen::Matrix<T, 3, 1> simple_function_const(T x, T y, T z)
+Eigen::Matrix<T, 3, 1> simple_function_const(T x, T y, T z, const double t)
 {
 	Eigen::Matrix<T, 3, 1> res;
 
@@ -429,7 +429,7 @@ Eigen::Matrix<T, 3, 1> simple_function_const(T x, T y, T z)
 }
 
 template <typename T>
-Eigen::Matrix<T, 2, 1> simple_function_lin(T x, T y)
+Eigen::Matrix<T, 2, 1> simple_function_lin(T x, T y, const double t)
 {
 	Eigen::Matrix<T, 2, 1> res;
 
@@ -440,7 +440,7 @@ Eigen::Matrix<T, 2, 1> simple_function_lin(T x, T y)
 }
 
 template <typename T>
-Eigen::Matrix<T, 3, 1> simple_function_lin(T x, T y, T z)
+Eigen::Matrix<T, 3, 1> simple_function_lin(T x, T y, T z, const double t)
 {
 	Eigen::Matrix<T, 3, 1> res;
 
@@ -452,7 +452,7 @@ Eigen::Matrix<T, 3, 1> simple_function_lin(T x, T y, T z)
 }
 
 template <typename T>
-Eigen::Matrix<T, 2, 1> simple_function_cub(T x, T y)
+Eigen::Matrix<T, 2, 1> simple_function_cub(T x, T y, const double t)
 {
 	Eigen::Matrix<T, 2, 1> res;
 
@@ -463,7 +463,7 @@ Eigen::Matrix<T, 2, 1> simple_function_cub(T x, T y)
 }
 
 template <typename T>
-Eigen::Matrix<T, 3, 1> simple_function_cub(T x, T y, T z)
+Eigen::Matrix<T, 3, 1> simple_function_cub(T x, T y, T z, const double t)
 {
 	Eigen::Matrix<T, 3, 1> res;
 
@@ -475,7 +475,7 @@ Eigen::Matrix<T, 3, 1> simple_function_cub(T x, T y, T z)
 }
 
 template <typename T>
-Eigen::Matrix<T, 2, 1> simple_function_quad(T x, T y)
+Eigen::Matrix<T, 2, 1> simple_function_quad(T x, T y, const double t)
 {
 	Eigen::Matrix<T, 2, 1> res;
 
@@ -486,7 +486,7 @@ Eigen::Matrix<T, 2, 1> simple_function_quad(T x, T y)
 }
 
 template <typename T>
-Eigen::Matrix<T, 3, 1> simple_function_quad(T x, T y, T z)
+Eigen::Matrix<T, 3, 1> simple_function_quad(T x, T y, T z, const double t)
 {
 	Eigen::Matrix<T, 3, 1> res;
 
@@ -498,7 +498,7 @@ Eigen::Matrix<T, 3, 1> simple_function_quad(T x, T y, T z)
 }
 
 template <typename T>
-Eigen::Matrix<T, 2, 1> sine_function(T x, T y)
+Eigen::Matrix<T, 2, 1> sine_function(T x, T y, const double t)
 {
 	Eigen::Matrix<T, 2, 1> res;
 
@@ -509,7 +509,7 @@ Eigen::Matrix<T, 2, 1> sine_function(T x, T y)
 }
 
 template <typename T>
-Eigen::Matrix<T, 3, 1> sine_function(T x, T y, T z)
+Eigen::Matrix<T, 3, 1> sine_function(T x, T y, T z, const double t)
 {
 	Eigen::Matrix<T, 3, 1> res;
 
@@ -534,32 +534,32 @@ void SimpleStokeProblemExact::set_parameters(const json &params)
 	}
 }
 
-VectorNd SimpleStokeProblemExact::eval_fun(const VectorNd &pt) const
+VectorNd SimpleStokeProblemExact::eval_fun(const VectorNd &pt, const double t) const
 {
 	if (pt.size() == 2){
 		switch (func_)
 		{
 		case 0:
-			return simple_function_quad(pt(0), pt(1));
+			return simple_function_quad(pt(0), pt(1), t);
 		case 1:
-			return simple_function_cub(pt(0), pt(1));
+			return simple_function_cub(pt(0), pt(1), t);
 		case 2:
-			return simple_function_lin(pt(0), pt(1));
+			return simple_function_lin(pt(0), pt(1), t);
 		case 3:
-			return simple_function_const(pt(0), pt(1));
+			return simple_function_const(pt(0), pt(1), t);
 		}
 	}
 	else if (pt.size() == 3){
 		switch (func_)
 		{
 		case 0:
-			return simple_function_quad(pt(0), pt(1), pt(2));
+			return simple_function_quad(pt(0), pt(1), pt(2), t);
 		case 1:
-			return simple_function_cub(pt(0), pt(1), pt(2));
+			return simple_function_cub(pt(0), pt(1), pt(2), t);
 		case 2:
-			return simple_function_lin(pt(0), pt(1), pt(2));
+			return simple_function_lin(pt(0), pt(1), pt(2), t);
 		case 3:
-			return simple_function_const(pt(0), pt(1), pt(2));
+			return simple_function_const(pt(0), pt(1), pt(2), t);
 		}
 	}
 
@@ -567,20 +567,20 @@ VectorNd SimpleStokeProblemExact::eval_fun(const VectorNd &pt) const
 	return VectorNd(pt.size());
 }
 
-AutodiffGradPt SimpleStokeProblemExact::eval_fun(const AutodiffGradPt &pt) const
+AutodiffGradPt SimpleStokeProblemExact::eval_fun(const AutodiffGradPt &pt, const double t) const
 {
 	if (pt.size() == 2)
 	{
 		switch (func_)
 		{
 		case 0:
-			return simple_function_quad(pt(0), pt(1));
+			return simple_function_quad(pt(0), pt(1), t);
 		case 1:
-			return simple_function_cub(pt(0), pt(1));
+			return simple_function_cub(pt(0), pt(1), t);
 		case 2:
-			return simple_function_lin(pt(0), pt(1));
+			return simple_function_lin(pt(0), pt(1), t);
 		case 3:
-			return simple_function_const(pt(0), pt(1));
+			return simple_function_const(pt(0), pt(1), t);
 		}
 	}
 	else if (pt.size() == 3)
@@ -588,13 +588,13 @@ AutodiffGradPt SimpleStokeProblemExact::eval_fun(const AutodiffGradPt &pt) const
 		switch (func_)
 		{
 		case 0:
-			return simple_function_quad(pt(0), pt(1), pt(2));
+			return simple_function_quad(pt(0), pt(1), pt(2), t);
 		case 1:
-			return simple_function_cub(pt(0), pt(1), pt(2));
+			return simple_function_cub(pt(0), pt(1), pt(2), t);
 		case 2:
-			return simple_function_lin(pt(0), pt(1), pt(2));
+			return simple_function_lin(pt(0), pt(1), pt(2), t);
 		case 3:
-			return simple_function_const(pt(0), pt(1), pt(2));
+			return simple_function_const(pt(0), pt(1), pt(2), t);
 		}
 	}
 
@@ -602,20 +602,20 @@ AutodiffGradPt SimpleStokeProblemExact::eval_fun(const AutodiffGradPt &pt) const
 	return AutodiffGradPt(pt.size());
 }
 
-AutodiffHessianPt SimpleStokeProblemExact::eval_fun(const AutodiffHessianPt &pt) const
+AutodiffHessianPt SimpleStokeProblemExact::eval_fun(const AutodiffHessianPt &pt, const double t) const
 {
 	if (pt.size() == 2)
 	{
 		switch (func_)
 		{
 		case 0:
-			return simple_function_quad(pt(0), pt(1));
+			return simple_function_quad(pt(0), pt(1), t);
 		case 1:
-			return simple_function_cub(pt(0), pt(1));
+			return simple_function_cub(pt(0), pt(1), t);
 		case 2:
-			return simple_function_lin(pt(0), pt(1));
+			return simple_function_lin(pt(0), pt(1), t);
 		case 3:
-			return simple_function_const(pt(0), pt(1));
+			return simple_function_const(pt(0), pt(1), t);
 		}
 	}
 	else if (pt.size() == 3)
@@ -623,13 +623,13 @@ AutodiffHessianPt SimpleStokeProblemExact::eval_fun(const AutodiffHessianPt &pt)
 		switch (func_)
 		{
 		case 0:
-			return simple_function_quad(pt(0), pt(1), pt(2));
+			return simple_function_quad(pt(0), pt(1), pt(2), t);
 		case 1:
-			return simple_function_cub(pt(0), pt(1), pt(2));
+			return simple_function_cub(pt(0), pt(1), pt(2), t);
 		case 2:
-			return simple_function_lin(pt(0), pt(1), pt(2));
+			return simple_function_lin(pt(0), pt(1), pt(2), t);
 		case 3:
-			return simple_function_const(pt(0), pt(1), pt(2));
+			return simple_function_const(pt(0), pt(1), pt(2), t);
 		}
 	}
 
@@ -643,34 +643,34 @@ SineStokeProblemExact::SineStokeProblemExact(const std::string &name)
 {
 }
 
-VectorNd SineStokeProblemExact::eval_fun(const VectorNd &pt) const
+VectorNd SineStokeProblemExact::eval_fun(const VectorNd &pt, const double t) const
 {
 	if (pt.size() == 2)
-		return sine_function(pt(0), pt(1));
+		return sine_function(pt(0), pt(1), t);
 	else if (pt.size() == 3)
-		return sine_function(pt(0), pt(1), pt(2));
+		return sine_function(pt(0), pt(1), pt(2), t);
 
 	assert(false);
 	return VectorNd(pt.size());
 }
 
-AutodiffGradPt SineStokeProblemExact::eval_fun(const AutodiffGradPt &pt) const
+AutodiffGradPt SineStokeProblemExact::eval_fun(const AutodiffGradPt &pt, const double t) const
 {
 	if (pt.size() == 2)
-		return sine_function(pt(0), pt(1));
+		return sine_function(pt(0), pt(1), t);
 	else if (pt.size() == 3)
-		return sine_function(pt(0), pt(1), pt(2));
+		return sine_function(pt(0), pt(1), pt(2), t);
 
 	assert(false);
 	return AutodiffGradPt(pt.size());
 }
 
-AutodiffHessianPt SineStokeProblemExact::eval_fun(const AutodiffHessianPt &pt) const
+AutodiffHessianPt SineStokeProblemExact::eval_fun(const AutodiffHessianPt &pt, const double t) const
 {
 	if (pt.size() == 2)
-		return sine_function(pt(0), pt(1));
+		return sine_function(pt(0), pt(1), t);
 	else if (pt.size() == 3)
-		return sine_function(pt(0), pt(1), pt(2));
+		return sine_function(pt(0), pt(1), pt(2), t);
 
 	assert(false);
 	return AutodiffHessianPt(pt.size());

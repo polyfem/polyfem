@@ -142,9 +142,9 @@ class SimpleStokeProblemExact : public ProblemWithSolution
 public:
 	SimpleStokeProblemExact(const std::string &name);
 
-	VectorNd eval_fun(const VectorNd &pt) const override;
-	AutodiffGradPt eval_fun(const AutodiffGradPt &pt) const override;
-	AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt) const override;
+	VectorNd eval_fun(const VectorNd &pt, const double t) const override;
+	AutodiffGradPt eval_fun(const AutodiffGradPt &pt, const double t) const override;
+	AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt, const double t) const override;
 
 	bool is_scalar() const override { return false; }
 
@@ -158,9 +158,9 @@ class SineStokeProblemExact : public ProblemWithSolution
 public:
 	SineStokeProblemExact(const std::string &name);
 
-	VectorNd eval_fun(const VectorNd &pt) const override;
-	AutodiffGradPt eval_fun(const AutodiffGradPt &pt) const override;
-	AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt) const override;
+	VectorNd eval_fun(const VectorNd &pt, const double t) const override;
+	AutodiffGradPt eval_fun(const AutodiffGradPt &pt, const double t) const override;
+	AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt, const double t) const override;
 
 	bool is_scalar() const override { return false; }
 };

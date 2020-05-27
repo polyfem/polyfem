@@ -15,9 +15,9 @@ namespace polyfem
 	public:
 		KernelProblem(const std::string &name);
 
-		VectorNd eval_fun(const VectorNd &pt) const override;
-		AutodiffGradPt eval_fun(const AutodiffGradPt &pt) const override;
-		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt) const override { assert(false); return AutodiffHessianPt(1); }
+		VectorNd eval_fun(const VectorNd &pt, const double t) const override;
+		AutodiffGradPt eval_fun(const AutodiffGradPt &pt, const double t) const override;
+		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt, const double t) const override { assert(false); return AutodiffHessianPt(1); }
 		void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 
 		void set_parameters(const json &params) override;

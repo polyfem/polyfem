@@ -56,26 +56,26 @@ namespace polyfem
 	{ }
 
 
-	VectorNd LinearProblem::eval_fun(const VectorNd &pt) const
+	VectorNd LinearProblem::eval_fun(const VectorNd &pt, const double t) const
 	{
 		VectorNd res(1);
-		res(0) = linear_fun(pt(0), pt(1));
+		res(0) = linear_fun(pt(0), pt(1)) * t;
 
 		return res;
 	}
 
-	AutodiffGradPt LinearProblem::eval_fun(const AutodiffGradPt &pt) const
+	AutodiffGradPt LinearProblem::eval_fun(const AutodiffGradPt &pt, const double t) const
 	{
 		AutodiffGradPt res(1);
-		res(0) = linear_fun(pt(0), pt(1));
+		res(0) = linear_fun(pt(0), pt(1)) * t;
 
 		return res;
 	}
 
-	AutodiffHessianPt LinearProblem::eval_fun(const AutodiffHessianPt &pt) const
+	AutodiffHessianPt LinearProblem::eval_fun(const AutodiffHessianPt &pt, const double t) const
 	{
 		AutodiffHessianPt res(1);
-		res(0) = linear_fun(pt(0), pt(1));
+		res(0) = linear_fun(pt(0), pt(1)) * t;
 
 		return res;
 	}
@@ -90,26 +90,26 @@ namespace polyfem
 	: ProblemWithSolution(name)
 	{ }
 
-	VectorNd QuadraticProblem::eval_fun(const VectorNd &pt) const
+	VectorNd QuadraticProblem::eval_fun(const VectorNd &pt, const double t) const
 	{
 		VectorNd res(1);
-		res(0) = quadratic_fun(pt(0), pt(1));
+		res(0) = quadratic_fun(pt(0), pt(1)) * t;
 
 		return res;
 	}
 
-	AutodiffGradPt QuadraticProblem::eval_fun(const AutodiffGradPt &pt) const
+	AutodiffGradPt QuadraticProblem::eval_fun(const AutodiffGradPt &pt, const double t) const
 	{
 		AutodiffGradPt res(1);
-		res(0) = quadratic_fun(pt(0), pt(1));
+		res(0) = quadratic_fun(pt(0), pt(1)) * t;
 
 		return res;
 	}
 
-	AutodiffHessianPt QuadraticProblem::eval_fun(const AutodiffHessianPt &pt) const
+	AutodiffHessianPt QuadraticProblem::eval_fun(const AutodiffHessianPt &pt, const double t) const
 	{
 		AutodiffHessianPt res(1);
-		res(0) = quadratic_fun(pt(0), pt(1));
+		res(0) = quadratic_fun(pt(0), pt(1)) * t;
 
 		return res;
 	}
@@ -120,26 +120,26 @@ namespace polyfem
 	: ProblemWithSolution(name)
 	{ }
 
-	VectorNd CubicProblem::eval_fun(const VectorNd &pt) const
+	VectorNd CubicProblem::eval_fun(const VectorNd &pt, const double t) const
 	{
 		VectorNd res(1);
-		res(0) = cubic_fun(pt(0), pt(1));
+		res(0) = cubic_fun(pt(0), pt(1)) * t;
 
 		return res;
 	}
 
-	AutodiffGradPt CubicProblem::eval_fun(const AutodiffGradPt &pt) const
+	AutodiffGradPt CubicProblem::eval_fun(const AutodiffGradPt &pt, const double t) const
 	{
 		AutodiffGradPt res(1);
-		res(0) = cubic_fun(pt(0), pt(1));
+		res(0) = cubic_fun(pt(0), pt(1)) * t;
 
 		return res;
 	}
 
-	AutodiffHessianPt CubicProblem::eval_fun(const AutodiffHessianPt &pt) const
+	AutodiffHessianPt CubicProblem::eval_fun(const AutodiffHessianPt &pt, const double t) const
 	{
 		AutodiffHessianPt res(1);
-		res(0) = cubic_fun(pt(0), pt(1));
+		res(0) = cubic_fun(pt(0), pt(1)) * t;
 
 		return res;
 	}
@@ -149,41 +149,41 @@ namespace polyfem
 	: ProblemWithSolution(name)
 	{ }
 
-	VectorNd SineProblem::eval_fun(const VectorNd &pt) const
+	VectorNd SineProblem::eval_fun(const VectorNd &pt, const double t) const
 	{
 		VectorNd res(1);
 		if(pt.size() == 2)
-			res(0) = sine_fun(pt(0), pt(1));
+			res(0) = sine_fun(pt(0), pt(1)) * t;
 		else if(pt.size() == 3)
-			res(0) = sine_fun(pt(0), pt(1), pt(2));
+			res(0) = sine_fun(pt(0), pt(1), pt(2)) * t;
 		else
 			assert(false);
 
 		return res;
 	}
 
-	AutodiffGradPt SineProblem::eval_fun(const AutodiffGradPt &pt) const
+	AutodiffGradPt SineProblem::eval_fun(const AutodiffGradPt &pt, const double t) const
 	{
 		AutodiffGradPt res(1);
 
 		if(pt.size() == 2)
-			res(0) = sine_fun(pt(0), pt(1));
+			res(0) = sine_fun(pt(0), pt(1)) * t;
 		else if(pt.size() == 3)
-			res(0) = sine_fun(pt(0), pt(1), pt(2));
+			res(0) = sine_fun(pt(0), pt(1), pt(2)) * t;
 		else
 			assert(false);
 
 		return res;
 	}
 
-	AutodiffHessianPt SineProblem::eval_fun(const AutodiffHessianPt &pt) const
+	AutodiffHessianPt SineProblem::eval_fun(const AutodiffHessianPt &pt, const double t) const
 	{
 		AutodiffHessianPt res(1);
 
 		if(pt.size() == 2)
-			res(0) = sine_fun(pt(0), pt(1));
+			res(0) = sine_fun(pt(0), pt(1)) * t;
 		else if(pt.size() == 3)
-			res(0) = sine_fun(pt(0), pt(1), pt(2));
+			res(0) = sine_fun(pt(0), pt(1), pt(2)) * t;
 		else
 			assert(false);
 
@@ -196,39 +196,39 @@ namespace polyfem
 	: ProblemWithSolution(name)
 	{ }
 
-	VectorNd ZeroBCProblem::eval_fun(const VectorNd &pt) const
+	VectorNd ZeroBCProblem::eval_fun(const VectorNd &pt, const double t) const
 	{
 		VectorNd res(1);
 		if(pt.size() == 2)
-			res(0) = zero_bc(pt(0), pt(1));
+			res(0) = zero_bc(pt(0), pt(1)) * t;
 		else if(pt.size() == 3)
-			res(0) = zero_bc(pt(0), pt(1), pt(2));
+			res(0) = zero_bc(pt(0), pt(1), pt(2)) * t;
 		else
 			assert(false);
 
 		return res;
 	}
 
-	AutodiffGradPt ZeroBCProblem::eval_fun(const AutodiffGradPt &pt) const
+	AutodiffGradPt ZeroBCProblem::eval_fun(const AutodiffGradPt &pt, const double t) const
 	{
 		AutodiffGradPt res(1);
 		if(pt.size() == 2)
-			res(0) = zero_bc(pt(0), pt(1));
+			res(0) = zero_bc(pt(0), pt(1)) * t;
 		else if(pt.size() == 3)
-			res(0) = zero_bc(pt(0), pt(1), pt(2));
+			res(0) = zero_bc(pt(0), pt(1), pt(2)) * t;
 		else
 			assert(false);
 
 		return res;
 	}
 
-	AutodiffHessianPt ZeroBCProblem::eval_fun(const AutodiffHessianPt &pt) const
+	AutodiffHessianPt ZeroBCProblem::eval_fun(const AutodiffHessianPt &pt, const double t) const
 	{
 		AutodiffHessianPt res(1);
 		if(pt.size() == 2)
-			res(0) = zero_bc(pt(0), pt(1));
+			res(0) = zero_bc(pt(0), pt(1)) * t;
 		else if(pt.size() == 3)
-			res(0) = zero_bc(pt(0), pt(1), pt(2));
+			res(0) = zero_bc(pt(0), pt(1), pt(2)) * t;
 		else
 			assert(false);
 
@@ -268,4 +268,85 @@ namespace polyfem
 		val = Eigen::MatrixXd::Zero(pts.rows(), 1);
 	}
 
+	GenericScalarProblemExact::GenericScalarProblemExact(const std::string &name)
+		: ProblemWithSolution(name), func_(0)
+	{
+	}
+
+	void GenericScalarProblemExact::initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	{
+		exact(pts, 0, val);
+	}
+
+	void GenericScalarProblemExact::set_parameters(const json &params)
+	{
+
+		if (params.find("func") != params.end())
+		{
+			func_ = params["func"];
+		}
+	}
+
+	VectorNd GenericScalarProblemExact::eval_fun(const VectorNd &pt, double t) const
+	{
+		return VectorNd(1);
+	}
+	AutodiffGradPt GenericScalarProblemExact::eval_fun(const AutodiffGradPt &pt, double t) const
+	{
+		return AutodiffGradPt(1);
+	}
+	AutodiffHessianPt GenericScalarProblemExact::eval_fun(const AutodiffHessianPt &pt, double t) const
+	{
+		return AutodiffHessianPt(1);
+	}
+
+	// void GenericScalarProblemExact::exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	// {
+	// 	val.resize(pts.rows(), pts.cols());
+	// 	for (int i = 0; i < pts.rows(); ++i)
+	// 	{
+	// 		const double x = pts(i, 0);
+	// 		const double y = pts(i, 1);
+
+	// 		val(i, 0) = -t + x * x / 2 + x * y;
+	// 		val(i, 1) = t - x * y - y * y / 2;
+	// 	}
+	// }
+
+	// void GenericScalarProblemExact::exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	// {
+	// 	const double time_scaling = exp(-2 * viscosity_ * t);
+
+	// 	val.resize(pts.rows(), pts.cols() * pts.cols());
+
+	// 	// for (int i = 0; i < pts.rows(); ++i)
+	// 	// {
+	// 	// 	const double x = pts(i, 0);
+	// 	// 	const double y = pts(i, 1);
+
+	// 	// 	val(i, 0) = -sin(x) * sin(y) * time_scaling;
+	// 	// 	val(i, 1) = cos(x) * cos(y) * time_scaling;
+	// 	// 	val(i, 2) = -cos(x) * cos(y) * time_scaling;
+	// 	// 	val(i, 3) = sin(x) * sin(y) * time_scaling;
+	// 	// }
+	// }
+
+	// void GenericScalarProblemExact::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	// {
+	// 	val.resize(pts.rows(), pts.cols());
+
+	// 	for (int i = 0; i < pts.rows(); ++i)
+	// 	{
+	// 		const double x = pts(i, 0);
+	// 		const double y = pts(i, 1);
+
+	// 		val(i, 0) = -viscosity_ - t * y + 1. / 2. * x * (x * x + x * y + y * y);
+	// 		val(i, 1) = viscosity_ - t * x + 1. / 2. * y * (x * x + x * y + y * y) + 2;
+	// 	}
+	// }
+
+	// void GenericScalarProblemExact::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	// {
+	// 	exact(pts, t, val);
+	// }
 }

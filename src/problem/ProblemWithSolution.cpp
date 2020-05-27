@@ -25,12 +25,10 @@ namespace polyfem
 			for(long d = 0; d < pts.cols(); ++d)
 				pt(d) = AutodiffScalarHessian(d, pts(i, d));
 
-			const auto res = eval_fun(pt);
+			const auto res = eval_fun(pt, t);
 
 			val.row(i) = assembler.compute_rhs(formulation, res).transpose();
 		}
-
-		val *= t;
 	}
 
 	void ProblemWithSolution::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
@@ -44,7 +42,7 @@ namespace polyfem
 
 		for(long i = 0; i < pts.rows(); ++i)
 		{
-			val.row(i) = eval_fun(VectorNd(pts.row(i)));
+			val.row(i) = eval_fun(VectorNd(pts.row(i)), t);
 		}
 	}
 
@@ -61,7 +59,7 @@ namespace polyfem
 			for(long d = 0; d < pts.cols(); ++d)
 				pt(d) = AutodiffScalarGrad(d, pts(i, d));
 
-			const auto res = eval_fun(pt);
+			const auto res = eval_fun(pt, t);
 
 			for(int m = 0; m < size; ++m)
 			{

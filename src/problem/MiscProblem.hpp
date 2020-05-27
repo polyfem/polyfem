@@ -12,9 +12,9 @@ namespace polyfem
 	public:
 		LinearProblem(const std::string &name);
 
-		VectorNd eval_fun(const VectorNd &pt) const override;
-		AutodiffGradPt eval_fun(const AutodiffGradPt &pt) const override;
-		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt) const override;
+		VectorNd eval_fun(const VectorNd &pt, const double t) const override;
+		AutodiffGradPt eval_fun(const AutodiffGradPt &pt, const double t) const override;
+		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt, const double t) const override;
 
 		bool is_scalar() const override { return true; }
 	};
@@ -24,9 +24,9 @@ namespace polyfem
 	public:
 		QuadraticProblem(const std::string &name);
 
-		VectorNd eval_fun(const VectorNd &pt) const override;
-		AutodiffGradPt eval_fun(const AutodiffGradPt &pt) const override;
-		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt) const override;
+		VectorNd eval_fun(const VectorNd &pt, const double t) const override;
+		AutodiffGradPt eval_fun(const AutodiffGradPt &pt, const double t) const override;
+		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt, const double t) const override;
 
 		bool is_scalar() const override { return true; }
 	};
@@ -36,9 +36,9 @@ namespace polyfem
 	public:
 		CubicProblem(const std::string &name);
 
-		VectorNd eval_fun(const VectorNd &pt) const override;
-		AutodiffGradPt eval_fun(const AutodiffGradPt &pt) const override;
-		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt) const override;
+		VectorNd eval_fun(const VectorNd &pt, const double t) const override;
+		AutodiffGradPt eval_fun(const AutodiffGradPt &pt, const double t) const override;
+		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt, const double t) const override;
 
 		bool is_scalar() const override { return true; }
 	};
@@ -48,9 +48,9 @@ namespace polyfem
 	public:
 		SineProblem(const std::string &name);
 
-		VectorNd eval_fun(const VectorNd &pt) const override;
-		AutodiffGradPt eval_fun(const AutodiffGradPt &pt) const override;
-		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt) const override;
+		VectorNd eval_fun(const VectorNd &pt, const double t) const override;
+		AutodiffGradPt eval_fun(const AutodiffGradPt &pt, const double t) const override;
+		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt, const double t) const override;
 
 		bool is_scalar() const override { return true; }
 	};
@@ -60,9 +60,9 @@ namespace polyfem
 	public:
 		ZeroBCProblem(const std::string &name);
 
-		VectorNd eval_fun(const VectorNd &pt) const override;
-		AutodiffGradPt eval_fun(const AutodiffGradPt &pt) const override;
-		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt) const override;
+		VectorNd eval_fun(const VectorNd &pt, const double t) const override;
+		AutodiffGradPt eval_fun(const AutodiffGradPt &pt, const double t) const override;
+		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt, const double t) const override;
 
 		bool is_scalar() const override { return true; }
 	};
@@ -95,6 +95,26 @@ namespace polyfem
 		bool has_exact_sol() const override { return false; }
 		bool is_scalar() const override { return true; }
 		bool is_time_dependent() const override { return true; }
+	};
+
+	class GenericScalarProblemExact : public ProblemWithSolution
+	{
+	public:
+		GenericScalarProblemExact(const std::string &name);
+
+		bool is_scalar() const override { return true; }
+		bool is_time_dependent() const override { return func_ == 0; }
+
+		void initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
+
+		void set_parameters(const json &params) override;
+
+		VectorNd eval_fun(const VectorNd &pt, double t) const override;
+		AutodiffGradPt eval_fun(const AutodiffGradPt &pt, double t) const override;
+		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt, double t) const override;
+
+	private:
+		int func_;
 	};
 }
 

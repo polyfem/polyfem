@@ -11,7 +11,7 @@ namespace polyfem
 	{ }
 
 
-	VectorNd KernelProblem::eval_fun(const VectorNd &pt) const
+	VectorNd KernelProblem::eval_fun(const VectorNd &pt, const double t) const
 	{
 		AutodiffGradPt a_pt(pt.size());
 
@@ -19,7 +19,7 @@ namespace polyfem
 		for(long i = 0; i < pt.size(); ++i)
 			a_pt(i) = AutodiffScalarGrad(i, pt(i));
 
-		const auto eval = eval_fun(a_pt);
+		const auto eval = eval_fun(a_pt, t);
 
 		VectorNd res(eval.size());
 
@@ -29,7 +29,7 @@ namespace polyfem
 		return res;
 	}
 
-	AutodiffGradPt KernelProblem::eval_fun(const AutodiffGradPt &pt) const
+	AutodiffGradPt KernelProblem::eval_fun(const AutodiffGradPt &pt, const double tt) const
 	{
 		AutodiffGradPt res(is_scalar() ? 1 : pt.size());
 		for(long i = 0; i < res.size(); ++i)
@@ -146,6 +146,8 @@ namespace polyfem
 		{
 			assert(false);
 		}
+
+		res *= AutodiffScalarGrad(tt);
 
 		return res;
 	}

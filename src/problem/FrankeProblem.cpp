@@ -78,42 +78,42 @@ namespace polyfem
 	{ }
 
 
-	VectorNd FrankeProblem::eval_fun(const VectorNd &pt) const
+	VectorNd FrankeProblem::eval_fun(const VectorNd &pt, const double t) const
 	{
 		VectorNd res(1);
 
 		if(pt.size() == 2)
-			res(0) = franke_fun(pt(0), pt(1));
+			res(0) = franke_fun(pt(0), pt(1)) * t;
 		else if(pt.size() == 3)
-			res(0) = franke_fun(pt(0), pt(1), pt(2));
+			res(0) = franke_fun(pt(0), pt(1), pt(2)) * t;
 		else
 			assert(false);
 
 		return res;
 	}
 
-	AutodiffGradPt FrankeProblem::eval_fun(const AutodiffGradPt &pt) const
+	AutodiffGradPt FrankeProblem::eval_fun(const AutodiffGradPt &pt, const double t) const
 	{
 		AutodiffGradPt res(1);
 
 		if(pt.size() == 2)
-			res(0) = franke_fun(pt(0), pt(1));
+			res(0) = franke_fun(pt(0), pt(1)) * t;
 		else if(pt.size() == 3)
-			res(0) = franke_fun(pt(0), pt(1), pt(2));
+			res(0) = franke_fun(pt(0), pt(1), pt(2)) * t;
 		else
 			assert(false);
 
 		return res;
 	}
 
-	AutodiffHessianPt FrankeProblem::eval_fun(const AutodiffHessianPt &pt) const
+	AutodiffHessianPt FrankeProblem::eval_fun(const AutodiffHessianPt &pt, const double t) const
 	{
 		AutodiffHessianPt res(1);
 
 		if(pt.size() == 2)
-			res(0) = franke_fun(pt(0), pt(1));
+			res(0) = franke_fun(pt(0), pt(1)) * t;
 		else if(pt.size() == 3)
-			res(0) = franke_fun(pt(0), pt(1), pt(2));
+			res(0) = franke_fun(pt(0), pt(1), pt(2)) * t;
 		else
 			assert(false);
 
@@ -129,42 +129,42 @@ namespace polyfem
 	{
 	}
 
-	VectorNd FrankeProblemOld::eval_fun(const VectorNd &pt) const
+	VectorNd FrankeProblemOld::eval_fun(const VectorNd &pt, const double t) const
 	{
 		VectorNd res(1);
 
 		if (pt.size() == 2)
-			res(0) = franke_fun(pt(0), pt(1));
+			res(0) = franke_fun(pt(0), pt(1)) * t;
 		else if (pt.size() == 3)
-			res(0) = franke_fun_old(pt(0), pt(1), pt(2));
+			res(0) = franke_fun_old(pt(0), pt(1), pt(2)) * t;
 		else
 			assert(false);
 
 		return res;
 	}
 
-	AutodiffGradPt FrankeProblemOld::eval_fun(const AutodiffGradPt &pt) const
+	AutodiffGradPt FrankeProblemOld::eval_fun(const AutodiffGradPt &pt, const double t) const
 	{
 		AutodiffGradPt res(1);
 
 		if (pt.size() == 2)
-			res(0) = franke_fun(pt(0), pt(1));
+			res(0) = franke_fun(pt(0), pt(1)) * t;
 		else if (pt.size() == 3)
-			res(0) = franke_fun_old(pt(0), pt(1), pt(2));
+			res(0) = franke_fun_old(pt(0), pt(1), pt(2)) * t;
 		else
 			assert(false);
 
 		return res;
 	}
 
-	AutodiffHessianPt FrankeProblemOld::eval_fun(const AutodiffHessianPt &pt) const
+	AutodiffHessianPt FrankeProblemOld::eval_fun(const AutodiffHessianPt &pt, const double t) const
 	{
 		AutodiffHessianPt res(1);
 
 		if (pt.size() == 2)
-			res(0) = franke_fun(pt(0), pt(1));
+			res(0) = franke_fun(pt(0), pt(1)) * t;
 		else if (pt.size() == 3)
-			res(0) = franke_fun_old(pt(0), pt(1), pt(2));
+			res(0) = franke_fun_old(pt(0), pt(1), pt(2)) * t;
 		else
 			assert(false);
 

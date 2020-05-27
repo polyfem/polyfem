@@ -36,9 +36,10 @@ void BDF::rhs(Eigen::VectorXd &rhs) const
     assert(history_.size() > 0);
     rhs.resize(history_.front().size());
     rhs.setZero();
+    const auto &w = weights[history_.size() - 1];
     for (int i = 0; i < history_.size(); ++i)
     {
-        rhs += history_[i] * weights[history_.size() - 1][i];
+        rhs += history_[i] * w[i];
     }
 }
 
