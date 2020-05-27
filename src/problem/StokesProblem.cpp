@@ -677,7 +677,7 @@ AutodiffHessianPt SineStokeProblemExact::eval_fun(const AutodiffHessianPt &pt, c
 }
 
 TransientStokeProblemExact::TransientStokeProblemExact(const std::string &name)
-	: Problem(name), viscosity_(1), func_(0)
+	: Problem(name), func_(0), viscosity_(1)
 {
 }
 
@@ -714,8 +714,6 @@ void TransientStokeProblemExact::exact(const Eigen::MatrixXd &pts, const double 
 
 void TransientStokeProblemExact::exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 {
-	const double time_scaling = exp(-2 * viscosity_ * t);
-
 	val.resize(pts.rows(), pts.cols() * pts.cols());
 
 	// for (int i = 0; i < pts.rows(); ++i)
@@ -742,6 +740,8 @@ void TransientStokeProblemExact::rhs(const std::string &formulation, const Eigen
 		val(i, 0) = -viscosity_ - t * y + 1. / 2. * x * (x * x + x * y + y * y);
 		val(i, 1) =  viscosity_ - t * x + 1. / 2. * y * (x * x + x * y + y * y) + 2;
 	}
+
+	val*=-1;
 }
 
 void TransientStokeProblemExact::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const

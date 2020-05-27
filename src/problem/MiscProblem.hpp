@@ -104,6 +104,7 @@ namespace polyfem
 
 		bool is_scalar() const override { return true; }
 		bool is_time_dependent() const override { return func_ == 0; }
+		bool is_linear_in_time() const override { return false; }
 
 		void initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 
@@ -112,6 +113,8 @@ namespace polyfem
 		VectorNd eval_fun(const VectorNd &pt, double t) const override;
 		AutodiffGradPt eval_fun(const AutodiffGradPt &pt, double t) const override;
 		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt, double t) const override;
+
+		void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 
 	private:
 		int func_;

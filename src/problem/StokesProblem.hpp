@@ -174,6 +174,7 @@ public:
 	bool is_rhs_zero() const override { return false; }
 	bool is_scalar() const override { return false; }
 	bool is_time_dependent() const override { return true; }
+	bool is_linear_in_time() const override { return false; }
 
 	void initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 

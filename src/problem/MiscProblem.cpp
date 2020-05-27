@@ -289,64 +289,26 @@ namespace polyfem
 
 	VectorNd GenericScalarProblemExact::eval_fun(const VectorNd &pt, double t) const
 	{
-		return VectorNd(1);
+		VectorNd res(1);
+		res(0) = pt(0) * pt(0) + pt(1) * pt(1) + t;
+		return res;
 	}
 	AutodiffGradPt GenericScalarProblemExact::eval_fun(const AutodiffGradPt &pt, double t) const
 	{
-		return AutodiffGradPt(1);
+		AutodiffGradPt res(1);
+		res(0) = pt(0) * pt(0) + pt(1) * pt(1) + t;
+		return res;
 	}
 	AutodiffHessianPt GenericScalarProblemExact::eval_fun(const AutodiffHessianPt &pt, double t) const
 	{
-		return AutodiffHessianPt(1);
+		AutodiffHessianPt res(1);
+		res(0) = pt(0) * pt(0) + pt(1) * pt(1) + t;
+		return res;
 	}
 
-	// void GenericScalarProblemExact::exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
-	// {
-	// 	val.resize(pts.rows(), pts.cols());
-	// 	for (int i = 0; i < pts.rows(); ++i)
-	// 	{
-	// 		const double x = pts(i, 0);
-	// 		const double y = pts(i, 1);
-
-	// 		val(i, 0) = -t + x * x / 2 + x * y;
-	// 		val(i, 1) = t - x * y - y * y / 2;
-	// 	}
-	// }
-
-	// void GenericScalarProblemExact::exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
-	// {
-	// 	const double time_scaling = exp(-2 * viscosity_ * t);
-
-	// 	val.resize(pts.rows(), pts.cols() * pts.cols());
-
-	// 	// for (int i = 0; i < pts.rows(); ++i)
-	// 	// {
-	// 	// 	const double x = pts(i, 0);
-	// 	// 	const double y = pts(i, 1);
-
-	// 	// 	val(i, 0) = -sin(x) * sin(y) * time_scaling;
-	// 	// 	val(i, 1) = cos(x) * cos(y) * time_scaling;
-	// 	// 	val(i, 2) = -cos(x) * cos(y) * time_scaling;
-	// 	// 	val(i, 3) = sin(x) * sin(y) * time_scaling;
-	// 	// }
-	// }
-
-	// void GenericScalarProblemExact::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
-	// {
-	// 	val.resize(pts.rows(), pts.cols());
-
-	// 	for (int i = 0; i < pts.rows(); ++i)
-	// 	{
-	// 		const double x = pts(i, 0);
-	// 		const double y = pts(i, 1);
-
-	// 		val(i, 0) = -viscosity_ - t * y + 1. / 2. * x * (x * x + x * y + y * y);
-	// 		val(i, 1) = viscosity_ - t * x + 1. / 2. * y * (x * x + x * y + y * y) + 2;
-	// 	}
-	// }
-
-	// void GenericScalarProblemExact::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
-	// {
-	// 	exact(pts, t, val);
-	// }
+	void GenericScalarProblemExact::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	{
+		ProblemWithSolution::rhs(formulation, pts, t, val);
+		val.array() -= 1;
+	}
 }
