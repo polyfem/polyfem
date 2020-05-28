@@ -103,7 +103,7 @@ namespace polyfem
 		GenericScalarProblemExact(const std::string &name);
 
 		bool is_scalar() const override { return true; }
-		bool is_time_dependent() const override { return func_ == 0; }
+		bool is_time_dependent() const override { return func_ <= 1; }
 		bool is_linear_in_time() const override { return false; }
 
 		void initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;

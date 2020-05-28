@@ -290,25 +290,31 @@ namespace polyfem
 	VectorNd GenericScalarProblemExact::eval_fun(const VectorNd &pt, double t) const
 	{
 		VectorNd res(1);
-		res(0) = pt(0) * pt(0) + pt(1) * pt(1) + t;
+		const double tt = func_ == 0 ? t : t * t;
+		res(0) = pt(0) * pt(0) + pt(1) * pt(1) + tt;
 		return res;
 	}
 	AutodiffGradPt GenericScalarProblemExact::eval_fun(const AutodiffGradPt &pt, double t) const
 	{
 		AutodiffGradPt res(1);
-		res(0) = pt(0) * pt(0) + pt(1) * pt(1) + t;
+		const double tt = func_ == 0 ? t : t * t;
+		res(0) = pt(0) * pt(0) + pt(1) * pt(1) + tt;
 		return res;
 	}
 	AutodiffHessianPt GenericScalarProblemExact::eval_fun(const AutodiffHessianPt &pt, double t) const
 	{
 		AutodiffHessianPt res(1);
-		res(0) = pt(0) * pt(0) + pt(1) * pt(1) + t;
+		const double tt = func_ == 0 ? t : t * t;
+		res(0) = pt(0) * pt(0) + pt(1) * pt(1) + tt;
 		return res;
 	}
 
 	void GenericScalarProblemExact::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		ProblemWithSolution::rhs(formulation, pts, t, val);
-		val.array() -= 1;
+		if (func_ == 0)
+			val.array() -= 1;
+		else
+			val.array() -= 2 * t;
 	}
 }
