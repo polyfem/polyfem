@@ -589,7 +589,7 @@ namespace polyfem
         }
 
         void solve_diffusion_1st(const std::string &solver_type, 
-        const std::string &precond, 
+        const std::string &precond,
         const json& params,
         const StiffnessMatrix& mass,
         const StiffnessMatrix& stiffness_viscosity,
@@ -623,7 +623,9 @@ namespace polyfem
                     rhs(bnd_nodes[i]) = x(bnd_nodes[i]);
                 }
 
-                auto spectrum = dirichlet_solve(*solver, A, rhs, bnd_nodes, x, save_path, compute_spectrum);
+                const int precond_num = A.rows();
+
+                auto spectrum = dirichlet_solve(*solver, A, rhs, bnd_nodes, x, precond_num, save_path, compute_spectrum);
 
                 for(int j = 0; j < x.size(); j++)
                 {
@@ -633,7 +635,7 @@ namespace polyfem
         }
 
         void solve_diffusion_2nd(const std::string &solver_type, 
-        const std::string &precond, 
+        const std::string &precond,
         const json& params,
         const StiffnessMatrix& mass,
         const StiffnessMatrix& stiffness_viscosity,
@@ -664,7 +666,9 @@ namespace polyfem
                     rhs(bnd_nodes[i]) = x(bnd_nodes[i]);
                 }
 
-                auto spectrum = dirichlet_solve(*solver, A, rhs, bnd_nodes, x, save_path, compute_spectrum);
+                const int precond_num = A.rows();
+
+                auto spectrum = dirichlet_solve(*solver, A, rhs, bnd_nodes, x, precond_num, save_path, compute_spectrum);
 
                 A = mass + 0.5 * dt * viscosity_ * stiffness_viscosity;
                 rhs = mass * x;
@@ -675,7 +679,7 @@ namespace polyfem
                     rhs(bnd_nodes[i]) = x(bnd_nodes[i]);
                 }
 
-                spectrum = dirichlet_solve(*solver, A, rhs, bnd_nodes, x, save_path, compute_spectrum);
+                spectrum = dirichlet_solve(*solver, A, rhs, bnd_nodes, x, precond_num, save_path, compute_spectrum);
 
                 for(int j = 0; j < x.size(); j++)
                 {
@@ -716,7 +720,9 @@ namespace polyfem
                 b(boundary_nodes[i]) = sol(boundary_nodes[i]);
             }
 
-            auto spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, save_path, compute_spectrum);
+            const int precond_num = sol.rows();
+
+            auto spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, save_path, compute_spectrum);
             sol = x.block(0, 0, sol.rows(), sol.cols());
             pressure = x.block(sol.rows(), 0, n_pressure_bases, sol.cols());
         }
@@ -753,7 +759,9 @@ namespace polyfem
                 b(boundary_nodes[i]) = sol(boundary_nodes[i]);
             }
 
-            auto spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, save_path, compute_spectrum);
+            const int precond_num = sol.rows();
+
+            auto spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, save_path, compute_spectrum);
             sol = x.block(0, 0, sol.rows(), sol.cols());
 
             A = dt / 2 * stiffness;
@@ -767,7 +775,7 @@ namespace polyfem
                 b(boundary_nodes[i]) = sol(boundary_nodes[i]);
             }
 
-            spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, save_path, compute_spectrum);
+            spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, save_path, compute_spectrum);
             sol = x.block(0, 0, sol.rows(), sol.cols());
             pressure = x.block(sol.rows(), 0, n_pressure_bases, sol.cols());
         }
@@ -790,7 +798,10 @@ namespace polyfem
             logger().info("{}...", solver->name());
 
             Eigen::VectorXd x;
-            auto spectrum = dirichlet_solve(*solver, A, rhs, std::vector<int>(1, 0), x, save_path, compute_spectrum);
+
+            const int precond_num = A.rows();
+
+            auto spectrum = dirichlet_solve(*solver, A, rhs, std::vector<int>(1, 0), x, precond_num, save_path, compute_spectrum);
             pressure = x;
         }
 
