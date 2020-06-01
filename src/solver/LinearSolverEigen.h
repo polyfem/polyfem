@@ -24,7 +24,7 @@ public:
 	virtual void getInfo(json &params) const override;
 
 	// Analyze sparsity pattern
-	virtual void analyzePattern(const StiffnessMatrix &K) override;
+	virtual void analyzePattern(const StiffnessMatrix &K, const int precond_num) override;
 
 	// Factorize system matrix
 	virtual void factorize(const StiffnessMatrix &K) override;
@@ -54,7 +54,7 @@ public:
 	virtual void getInfo(json &params) const override;
 
 	// Analyze sparsity pattern
-	virtual void analyzePattern(const StiffnessMatrix &K) override;
+	virtual void analyzePattern(const StiffnessMatrix &K, const int precond_num) override;
 
 	// Factorize system matrix
 	virtual void factorize(const StiffnessMatrix &K) override;

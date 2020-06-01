@@ -71,9 +71,9 @@ namespace polyfem
 	public:
 		ElasticProblemExact(const std::string &name);
 
-		VectorNd eval_fun(const VectorNd &pt) const override;
-		AutodiffGradPt eval_fun(const AutodiffGradPt &pt) const override;
-		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt) const override;
+		VectorNd eval_fun(const VectorNd &pt, const double t) const override;
+		AutodiffGradPt eval_fun(const AutodiffGradPt &pt, const double t) const override;
+		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt, const double t) const override;
 
 		bool is_scalar() const override { return false; }
 	};
@@ -84,9 +84,9 @@ namespace polyfem
 	public:
 		CompressionElasticProblemExact(const std::string &name);
 
-		VectorNd eval_fun(const VectorNd &pt) const override;
-		AutodiffGradPt eval_fun(const AutodiffGradPt &pt) const override;
-		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt) const override;
+		VectorNd eval_fun(const VectorNd &pt, const double t) const override;
+		AutodiffGradPt eval_fun(const AutodiffGradPt &pt, const double t) const override;
+		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt, const double t) const override;
 
 		bool is_scalar() const override { return false; }
 	};
@@ -98,9 +98,9 @@ namespace polyfem
 	public:
 		QuadraticElasticProblemExact(const std::string &name);
 
-		VectorNd eval_fun(const VectorNd &pt) const override;
-		AutodiffGradPt eval_fun(const AutodiffGradPt &pt) const override;
-		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt) const override;
+		VectorNd eval_fun(const VectorNd &pt, const double t) const override;
+		AutodiffGradPt eval_fun(const AutodiffGradPt &pt, const double t) const override;
+		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt, const double t) const override;
 
 		bool is_scalar() const override { return false; }
 	};
@@ -111,9 +111,9 @@ namespace polyfem
 	public:
 		LinearElasticProblemExact(const std::string &name);
 
-		VectorNd eval_fun(const VectorNd &pt) const override;
-		AutodiffGradPt eval_fun(const AutodiffGradPt &pt) const override;
-		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt) const override;
+		VectorNd eval_fun(const VectorNd &pt, const double t) const override;
+		AutodiffGradPt eval_fun(const AutodiffGradPt &pt, const double t) const override;
+		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt, const double t) const override;
 
 		bool is_scalar() const override { return false; }
 	};

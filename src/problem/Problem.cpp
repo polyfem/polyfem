@@ -100,7 +100,9 @@ namespace polyfem
 		problems_.emplace("Sine", std::make_shared<SineProblem>("Sine"));
 		problems_.emplace("Franke", std::make_shared<FrankeProblem>("Franke"));
 		problems_.emplace("FrankeOld", std::make_shared<FrankeProblemOld>("FrankeOld"));
+		problems_.emplace("GenericScalarExact", std::make_shared<GenericScalarProblemExact>("GenericScalarExact"));
 		problems_.emplace("Zero_BC", std::make_shared<ZeroBCProblem>("Zero_BC"));
+
 		problems_.emplace("Elastic", std::make_shared<ElasticProblem>("Elastic"));
 		problems_.emplace("TorsionElastic", std::make_shared<TorsionElasticProblem>("TorsionElastic"));
 		problems_.emplace("GenericScalar", std::make_shared<GenericScalarProblem>("GenericScalar"));
@@ -128,6 +130,7 @@ namespace polyfem
 		problems_.emplace("GenericFlowProblem", std::make_shared<GenericFlowProblem>("GenericFlowProblem"));
 		problems_.emplace("SimpleStokeProblemExact", std::make_shared<SimpleStokeProblemExact>("SimpleStokeProblemExact"));
 		problems_.emplace("SineStokeProblemExact", std::make_shared<SineStokeProblemExact>("SineStokeProblemExact"));
+		problems_.emplace("TransientStokeProblemExact", std::make_shared<TransientStokeProblemExact>("TransientStokeProblemExact"));
 
 		problems_.emplace("TestProblem", std::make_shared<TestProblem>("TestProblem"));
 

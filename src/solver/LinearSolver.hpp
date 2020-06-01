@@ -66,7 +66,7 @@ public:
 	virtual void getInfo(json &params) const {};
 
 	// Analyze sparsity pattern
-	virtual void analyzePattern(const StiffnessMatrix &A) {}
+	virtual void analyzePattern(const StiffnessMatrix &A, const int precond_num) {}
 
 	// Factorize system matrix
 	virtual void factorize(const StiffnessMatrix &A) {}

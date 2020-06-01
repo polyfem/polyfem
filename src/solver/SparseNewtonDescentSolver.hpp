@@ -141,6 +141,8 @@ public:
 	void minimize(ProblemType &objFunc, TVector &x0)
 	{
 		using namespace polyfem;
+		// const int problem_dim = state.problem->is_scalar() ? 1 : state.mesh->dimension();
+		// const int precond_num = problem_dim * state.n_bases;
 
 		// const json &params = State::state().solver_params();
 		// auto solver = LinearSolver::create(State::state().solver_type(), State::state().precond_type());
@@ -216,7 +218,8 @@ public:
 
 			if (new_hessian)
 			{
-				solver->analyzePattern(hessian);
+				//TODO: get the correct side
+				solver->analyzePattern(hessian, hessian.rows());
 				solver->factorize(hessian);
 			}
 			solver->solve(grad, delta_x);

@@ -135,7 +135,7 @@ void RhsAssembler::time_bc(const std::function<void(const Eigen::MatrixXd &, Eig
 	assembler.assemble_mass_matrix(formulation_, size_ == 3, n_basis_, bases_, gbases_, mass);
 	auto solver = LinearSolver::create(LinearSolver::defaultSolver(), LinearSolver::defaultPrecond());
 	solver->setParameters(params);
-	solver->analyzePattern(mass);
+	solver->analyzePattern(mass, mass.rows());
 	solver->factorize(mass);
 	Eigen::MatrixXd b = sol;
 	for (long i = 0; i < b.cols(); ++i)
@@ -327,7 +327,7 @@ void RhsAssembler::set_bc(
 			// auto solver = LinearSolver::create("", "");
 			auto solver = LinearSolver::create(LinearSolver::defaultSolver(), LinearSolver::defaultPrecond());
 			solver->setParameters(params);
-			solver->analyzePattern(A);
+			solver->analyzePattern(A, A.rows());
 			solver->factorize(A);
 			for (long i = 0; i < b.cols(); ++i)
 			{

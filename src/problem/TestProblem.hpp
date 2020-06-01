@@ -12,9 +12,9 @@ namespace polyfem
 	public:
 		TestProblem(const std::string &name);
 
-		VectorNd eval_fun(const VectorNd &pt) const override { return eval_impl(pt); }
-		AutodiffGradPt eval_fun(const AutodiffGradPt &pt) const override { return eval_impl(pt); }
-		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt) const override { return eval_impl(pt); }
+		VectorNd eval_fun(const VectorNd &pt, const double t) const override { return eval_impl(pt); }
+		AutodiffGradPt eval_fun(const AutodiffGradPt &pt, const double t) const override { return eval_impl(pt); }
+		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt, const double t) const override { return eval_impl(pt); }
 
 		bool is_scalar() const override { return params_["is_scalar"]; }
 

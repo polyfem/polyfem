@@ -50,6 +50,7 @@ int main(int argc, char **argv)
 	int discr_order = 1;
 
 	bool use_splines = false;
+	bool count_flipped_els = false;
 	bool skip_normalization = false;
 	bool no_ui = false;
 	bool p_ref = false;
@@ -85,6 +86,7 @@ int main(int argc, char **argv)
 	command_line.add_option("-q,-p", discr_order, "Discretization order");
 	command_line.add_flag("--p_ref", p_ref, "Use p refimenet");
 	command_line.add_flag("--spline", use_splines, "Use spline for quad/hex meshes");
+	command_line.add_flag("--count_flipped_els", count_flipped_els, "Count flippsed elements");
 	command_line.add_flag("--lin_geom", force_linear, "Force use linear geometric mapping");
 	command_line.add_flag("--isoparametric", isoparametric, "Force use isoparametric basis");
 	command_line.add_flag("--serendipity", serendipity, "Use of serendipity elements, only for Q2");
@@ -142,6 +144,7 @@ int main(int argc, char **argv)
 
 		in_args["discr_order"] = discr_order;
 		in_args["use_spline"] = use_splines;
+		in_args["count_flipped_els"] = count_flipped_els;
 		in_args["output"] = output;
 		in_args["use_p_ref"] = p_ref;
 		in_args["iso_parametric"] = isoparametric;

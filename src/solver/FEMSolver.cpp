@@ -7,6 +7,7 @@
 Eigen::Vector4d polyfem::dirichlet_solve(
 	LinearSolver &solver, StiffnessMatrix &A, Eigen::VectorXd &f,
 	const std::vector<int> &dirichlet_nodes, Eigen::VectorXd &u,
+	const int precond_num,
 	const std::string &save_path,
 	bool compute_spectrum)
 {
@@ -70,8 +71,7 @@ Eigen::Vector4d polyfem::dirichlet_solve(
 		u.setZero();
 	}
 
-
-	solver.analyzePattern(A);
+	solver.analyzePattern(A, precond_num);
 	solver.factorize(A);
 	solver.solve(g, u);
 	f = g;
