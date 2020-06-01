@@ -2509,8 +2509,10 @@ void State::solve_problem()
 		const double dt = tend / time_steps;
 
 		const auto &gbases = iso_parametric() ? bases : geom_bases;
-		RhsAssembler rhs_assembler(*mesh, n_bases, mesh->dimension(), bases, gbases, formulation(), *problem);
+		RhsAssembler rhs_assembler(*mesh, n_bases, problem->is_scalar() ? 1 : mesh->dimension(), bases, gbases, formulation(), *problem);
 		rhs_assembler.initial_solution(sol);
+
+		Eigen::MatrixXd current_rhs = rhs;
 
 		if (formulation() == "OperatorSplitting")
 		{
@@ -2644,24 +2646,28 @@ void State::solve_problem()
 			assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, pressure_stiffness);
 
 			TransientNavierStokesSolver ns_solver(solver_params(), build_json_params(), solver_type(), precond_type());
+			const int n_larger = n_pressure_bases + (use_avg_pressure ? 1 : 0);
 
 			for (int t = 1; t <= time_steps; ++t)
 			{
 				double time = t * dt;
 				double current_dt = dt;
-				// if (t <= aux_steps)
-				// {
-				// 	time = t * dt/(aux_steps+1);
-				// 	current_dt = dt / (aux_steps + 1);
-				// }
 
 				logger().info("{}/{} steps, dt={}s t={}s", t, time_steps, current_dt, time);
 
 				bdf.rhs(prev_sol);
-				rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs, time);
+				rhs_assembler.compute_energy_grad(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs, time, current_rhs);
+				rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, current_rhs, time);
+
+				const int prev_size = current_rhs.size();
+				if (prev_size != n_larger){
+					current_rhs.conservativeResize(prev_size + n_larger, current_rhs.cols());
+					current_rhs.block(prev_size, 0, n_larger, current_rhs.cols()).setZero();
+				}
+
 				ns_solver.minimize(*this, bdf.alpha(), current_dt, prev_sol,
 								   velocity_stiffness, mixed_stiffness, pressure_stiffness,
-								   velocity_mass, rhs, c_sol);
+								   velocity_mass, current_rhs, c_sol);
 				bdf.new_solution(c_sol);
 				sol = c_sol;
 				sol_to_pressure();
@@ -2709,7 +2715,7 @@ void State::solve_problem()
 			{
 				StiffnessMatrix A;
 				Eigen::VectorXd b, x;
-				Eigen::MatrixXd current_rhs;
+
 
 				const int BDF_order = args["BDF_order"];
 				// const int aux_steps = BDF_order-1;
@@ -2717,18 +2723,17 @@ void State::solve_problem()
 				x = sol;
 				bdf.new_solution(x);
 
+				const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+				const int precond_num = problem_dim * n_bases;
+
 				for (int t = 1; t <= time_steps; ++t)
 				{
 					double time = t * dt;
 					double current_dt = dt;
-					// if (t <= aux_steps)
-					// {
-					// 	time = t * dt / (aux_steps + 1);
-					// 	current_dt = dt / (aux_steps + 1);
-					// }
 
 					logger().info("{}/{} {}s", t, time_steps, time);
 					rhs_assembler.compute_energy_grad(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs, time, current_rhs);
+					rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, current_rhs, time);
 
 					if (assembler.is_mixed(formulation()))
 					{
@@ -2738,11 +2743,14 @@ void State::solve_problem()
 						current_rhs.block(current_rhs.rows() - n_pressure_bases - use_avg_pressure, 0, n_pressure_bases + use_avg_pressure, current_rhs.cols()).setZero();
 					}
 
-					A = bdf.alpha() * mass + current_dt * stiffness;
+					A = (bdf.alpha() / current_dt) * mass + stiffness;
 					bdf.rhs(x);
-					b = current_dt * current_rhs + mass * x;
+					b = (mass * x) / current_dt;
+					for (int i : boundary_nodes)
+						b[i] = 0;
+					b += current_rhs;
 
-					spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, args["export"]["stiffness_mat"], t == time_steps && args["export"]["spectrum"]);
+					spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], t == time_steps && args["export"]["spectrum"]);
 					bdf.new_solution(x);
 					sol = x;
 
@@ -2772,11 +2780,13 @@ void State::solve_problem()
 				Eigen::MatrixXd temp, b;
 				StiffnessMatrix A;
 				Eigen::VectorXd x, btmp;
-				Eigen::MatrixXd current_rhs = rhs;
 
 				Eigen::MatrixXd velocity, acceleration;
 				rhs_assembler.initial_velocity(velocity);
 				rhs_assembler.initial_acceleration(acceleration);
+
+				const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+				const int precond_num = problem_dim * n_bases;
 
 				for (int t = 1; t <= time_steps; ++t)
 				{
@@ -2804,7 +2814,7 @@ void State::solve_problem()
 
 					A = stiffness * 0.5 * beta2 * dt2 + mass;
 					btmp = b;
-					spectrum = dirichlet_solve(*solver, A, btmp, boundary_nodes, x, args["export"]["stiffness_mat"], t == 1 && args["export"]["spectrum"]);
+					spectrum = dirichlet_solve(*solver, A, btmp, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], t == 1 && args["export"]["spectrum"]);
 					acceleration = x;
 
 					sol += dt * vOld + 0.5 * dt2 * ((1 - beta2) * aOld + beta2 * acceleration);
@@ -2837,10 +2847,13 @@ void State::solve_problem()
 			Eigen::VectorXd b;
 			logger().info("{}...", solver->name());
 
+			const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+			const int precond_num = problem_dim * n_bases;
+
 			A = stiffness;
 			Eigen::VectorXd x;
 			b = rhs;
-			spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
+			spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
 			sol = x;
 			solver->getInfo(solver_info);
 
@@ -2874,6 +2887,9 @@ void State::solve_problem()
 				const int full_size = n_bases * mesh->dimension();
 				const int reduced_size = n_bases * mesh->dimension() - boundary_nodes.size();
 				const double tend = args["tend"];
+
+				const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+				const int precond_num = problem_dim * n_bases;
 
 				int steps = args["nl_solver_rhs_steps"];
 				if (steps <= 0)
@@ -2955,7 +2971,7 @@ void State::solve_problem()
 						b = grad;
 						for (int bId : boundary_nodes)
 							b(bId) = -(nl_problem.current_rhs()(bId) - prev_rhs(bId));
-						dirichlet_solve(*solver, nlstiffness, b, boundary_nodes, x, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
+						dirichlet_solve(*solver, nlstiffness, b, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
 						// logger().debug("Solver error: {}", (nlstiffness * sol - b).norm());
 						x = sol - x;
 						nl_problem.full_to_reduced(x, tmp_sol);

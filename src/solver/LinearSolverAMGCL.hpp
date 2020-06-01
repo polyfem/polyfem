@@ -7,12 +7,23 @@
 #include <polyfem/LinearSolver.hpp>
 
 #include <amgcl/make_solver.hpp>
-#include <amgcl/solver/cg.hpp>
 #include <amgcl/amg.hpp>
+#include <amgcl/adapter/crs_tuple.hpp>
+
+#include <amgcl/solver/cg.hpp>
+#include <amgcl/solver/bicgstab.hpp>
+#include <amgcl/solver/fgmres.hpp>
+
 #include <amgcl/coarsening/smoothed_aggregation.hpp>
+
 #include <amgcl/relaxation/spai0.hpp>
 #include <amgcl/relaxation/gauss_seidel.hpp>
-#include <amgcl/adapter/crs_tuple.hpp>
+#include <amgcl/relaxation/ilu0.hpp>
+#include <amgcl/relaxation/spai0.hpp>
+
+#include <amgcl/preconditioner/dummy.hpp>
+#include <amgcl/preconditioner/schur_pressure_correction.hpp>
+
 
 #include <Eigen/Core>
 #include <Eigen/Sparse>
@@ -46,7 +57,7 @@ namespace polyfem {
 		virtual void getInfo(json &params) const override;
 
 		// Analyze sparsity pattern
-		virtual void analyzePattern(const StiffnessMatrix &A) override;
+		virtual void analyzePattern(const StiffnessMatrix &A, const int precond_num) override;
 
 		// Factorize system matrix
 		virtual void factorize(const StiffnessMatrix &) override { }
@@ -79,14 +90,28 @@ namespace polyfem {
 		// 	Solver;
 
 		// Use AMG as preconditioner:
+		// typedef amgcl::make_solver<
+		// 	// Use AMG as preconditioner:
+		// 	amgcl::amg<
+		// 		Backend,
+		// 		amgcl::coarsening::smoothed_aggregation,
+		// 		amgcl::relaxation::gauss_seidel>,
+		// 	// And CG as iterative solver:
+		// 	amgcl::solver::cg<Backend>>
+		// 	Solver;
+
 		typedef amgcl::make_solver<
-			// Use AMG as preconditioner:
-			amgcl::amg<
-				Backend,
-				amgcl::coarsening::smoothed_aggregation,
-				amgcl::relaxation::gauss_seidel>,
-			// And CG as iterative solver:
-			amgcl::solver::cg<Backend>>
+			amgcl::preconditioner::schur_pressure_correction<
+				amgcl::make_solver<
+					amgcl::amg<
+						Backend,
+						amgcl::coarsening::smoothed_aggregation,
+						amgcl::relaxation::ilu0>,
+					amgcl::solver::bicgstab<Backend>>,
+				amgcl::make_solver<
+					amgcl::preconditioner::dummy<Backend>,
+					amgcl::solver::bicgstab<Backend>>>,
+			amgcl::solver::fgmres<Backend>>
 			Solver;
 
 		Solver *solver_ = nullptr;

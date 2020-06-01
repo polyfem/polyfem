@@ -35,7 +35,8 @@ void TransientNavierStokesSolver::minimize(
 	solver->setParameters(solver_param);
 	polyfem::logger().debug("\tinternal solver {}", solver->name());
 
-	const int problem_dim = state.mesh->dimension();
+	const int problem_dim = state.problem->is_scalar() ? 1 : state.mesh->dimension();
+	const int precond_num = problem_dim * state.n_bases;
 
 	StiffnessMatrix velocity_mass = velocity_mass1/dt;
 	// velocity_mass.setZero();
@@ -66,7 +67,7 @@ void TransientNavierStokesSolver::minimize(
 	if (state.use_avg_pressure){
 		b[b.size()-1] = 0;
 	}
-	dirichlet_solve(*solver, stoke_stiffness, b, state.boundary_nodes, x);
+	dirichlet_solve(*solver, stoke_stiffness, b, state.boundary_nodes, x, precond_num);
 	// solver->getInfo(solver_info);
 	time.stop();
 	stokes_solve_time = time.getElapsedTimeInSec();
@@ -114,6 +115,7 @@ int TransientNavierStokesSolver::minimize_aux(
 	const auto &assembler = AssemblerUtils::instance();
 	const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 	const int problem_dim = state.problem->is_scalar() ? 1 : state.mesh->dimension();
+	const int precond_num = problem_dim * state.n_bases;
 
 	StiffnessMatrix nl_matrix;
 	StiffnessMatrix total_matrix;
@@ -149,7 +151,7 @@ int TransientNavierStokesSolver::minimize_aux(
 												 (velocity_stiffness + nl_matrix) + velocity_mass, mixed_stiffness, pressure_stiffness,
 												 total_matrix);
 		}
-		dirichlet_solve(*solver, total_matrix, nlres, state.boundary_nodes, dx);
+		dirichlet_solve(*solver, total_matrix, nlres, state.boundary_nodes, dx, precond_num);
 		// for (int i : state.boundary_nodes)
 		// 	dx[i] = 0;
 		time.stop();

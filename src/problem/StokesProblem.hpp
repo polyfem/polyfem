@@ -165,9 +165,9 @@ class SimpleStokeProblemExact : public ProblemWithSolution
 public:
 	SimpleStokeProblemExact(const std::string &name);
 
-	VectorNd eval_fun(const VectorNd &pt) const override;
-	AutodiffGradPt eval_fun(const AutodiffGradPt &pt) const override;
-	AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt) const override;
+	VectorNd eval_fun(const VectorNd &pt, const double t) const override;
+	AutodiffGradPt eval_fun(const AutodiffGradPt &pt, const double t) const override;
+	AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt, const double t) const override;
 
 	bool is_scalar() const override { return false; }
 
@@ -181,11 +181,37 @@ class SineStokeProblemExact : public ProblemWithSolution
 public:
 	SineStokeProblemExact(const std::string &name);
 
-	VectorNd eval_fun(const VectorNd &pt) const override;
-	AutodiffGradPt eval_fun(const AutodiffGradPt &pt) const override;
-	AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt) const override;
+	VectorNd eval_fun(const VectorNd &pt, const double t) const override;
+	AutodiffGradPt eval_fun(const AutodiffGradPt &pt, const double t) const override;
+	AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt, const double t) const override;
 
 	bool is_scalar() const override { return false; }
+};
+
+class TransientStokeProblemExact : public Problem
+{
+public:
+	TransientStokeProblemExact(const std::string &name);
+
+	bool has_exact_sol() const override { return true; }
+	bool is_rhs_zero() const override { return false; }
+	bool is_scalar() const override { return false; }
+	bool is_time_dependent() const override { return true; }
+	bool is_linear_in_time() const override { return false; }
+
+	void initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
+
+	void set_parameters(const json &params) override;
+
+	void exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+	void exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+
+	void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+	void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+
+private:
+	int func_;
+	double viscosity_;
 };
 
 } // namespace polyfem

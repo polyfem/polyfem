@@ -34,7 +34,8 @@ void LinearSolverAMGCL::getInfo(json &params) const {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void LinearSolverAMGCL::analyzePattern(const StiffnessMatrix &Ain) {
+void LinearSolverAMGCL::analyzePattern(const StiffnessMatrix &Ain, const int precond_num)
+{
 	delete solver_;
 
 	// mat = Ain;
@@ -51,6 +52,10 @@ void LinearSolverAMGCL::analyzePattern(const StiffnessMatrix &Ain) {
 
 	a_.resize(Ain.nonZeros());
 	memcpy(a_.data(), Ain.valuePtr(), Ain.nonZeros() * sizeof(Ain.valuePtr()[0]));
+
+	params_.precond.pmask.resize(numRows, 0);
+	for (size_t i = precond_num; i < numRows; ++i)
+		params_.precond.pmask[i] = 1;
 
 	solver_ = new Solver(std::tie(numRows, ia_, ja_, a_), params_);
 

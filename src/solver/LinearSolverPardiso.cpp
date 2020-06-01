@@ -163,7 +163,8 @@ void computeCoeffs(const StiffnessMatrix &K, Eigen::VectorXd &a, bool upperOnly)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void LinearSolverPardiso::analyzePattern(const StiffnessMatrix &A) {
+void LinearSolverPardiso::analyzePattern(const StiffnessMatrix &A, const int precond_num)
+{
 	if (mtype ==-1) { throw std::runtime_error("[Pardiso] mtype not set."); }
 	assert(A.isCompressed());
 

@@ -143,96 +143,96 @@ namespace polyfem
 	namespace
 	{
 		template<typename T>
-		Eigen::Matrix<T, 2, 1> function(T x, T y)
+		Eigen::Matrix<T, 2, 1> function(T x, T y, const double t)
 		{
 			Eigen::Matrix<T, 2, 1> res;
 
-			res(0) = (y*y*y + x*x + x*y)/50.;
-			res(1) = (3*x*x*x*x + x*y*y + x)/50.;
+			res(0) = t*(y*y*y + x*x + x*y)/50.;
+			res(1) = t*(3*x*x*x*x + x*y*y + x)/50.;
 
 			return res;
 		}
 
 		template<typename T>
-		Eigen::Matrix<T, 3, 1> function(T x, T y, T z)
+		Eigen::Matrix<T, 3, 1> function(T x, T y, T z, const double t)
 		{
 			Eigen::Matrix<T, 3, 1> res;
 
-			res(0) = (x*y + x*x + y*y*y + 6*z)/80.;
-			res(1) = (z*x - z*z*z + x*y*y + 3*x*x*x*x)/80.;
-			res(2) = (x*y*z + z*z*y*y - 2*x)/80.;
+			res(0) = t*(x*y + x*x + y*y*y + 6*z)/80.;
+			res(1) = t*(z*x - z*z*z + x*y*y + 3*x*x*x*x)/80.;
+			res(2) = t*(x*y*z + z*z*y*y - 2*x)/80.;
 
 			return res;
 		}
 
 
 		template<typename T>
-		Eigen::Matrix<T, 2, 1> function_compression(T x, T y)
+		Eigen::Matrix<T, 2, 1> function_compression(T x, T y, const double t)
 		{
 			Eigen::Matrix<T, 2, 1> res;
 
-			res(0) = -(y*y*y + x*x + x*y)/20.;
-			res(1) = -(3*x*x*x*x + x*y*y + x)/20.;
+			res(0) = -t*(y*y*y + x*x + x*y)/20.;
+			res(1) = -t*(3*x*x*x*x + x*y*y + x)/20.;
 
 			return res;
 		}
 
 		template<typename T>
-		Eigen::Matrix<T, 3, 1> function_compression(T x, T y, T z)
+		Eigen::Matrix<T, 3, 1> function_compression(T x, T y, T z, const double t)
 		{
 			Eigen::Matrix<T, 3, 1> res;
 
-			res(0) = -(x*y + x*x + y*y*y + 6*z)/14.;
-			res(1) = -(z*x - z*z*z + x*y*y + 3*x*x*x*x)/14.;
-			res(2) = -(x*y*z + z*z*y*y - 2*x)/14.;
+			res(0) = -t*(x*y + x*x + y*y*y + 6*z)/14.;
+			res(1) = -t*(z*x - z*z*z + x*y*y + 3*x*x*x*x)/14.;
+			res(2) = -t*(x*y*z + z*z*y*y - 2*x)/14.;
 
 			return res;
 		}
 
 
 		template<typename T>
-		Eigen::Matrix<T, 2, 1> function_quadratic(T x, T y)
+		Eigen::Matrix<T, 2, 1> function_quadratic(T x, T y, const double t)
 		{
 			Eigen::Matrix<T, 2, 1> res;
 
-			res(0) = -(y*y + x*x + x*y)/50.;
-			res(1) = -(3*x*x + y)/50.;
+			res(0) = -t*(y*y + x*x + x*y)/50.;
+			res(1) = -t*(3*x*x + y)/50.;
 
 			return res;
 		}
 
 		template<typename T>
-		Eigen::Matrix<T, 3, 1> function_quadratic(T x, T y, T z)
+		Eigen::Matrix<T, 3, 1> function_quadratic(T x, T y, T z, const double t)
 		{
 			Eigen::Matrix<T, 3, 1> res;
 
-			res(0) = -(y*y + x*x + x*y + z*y)/50.;
-			res(1) = -(3*x*x + y + z*z)/50.;
-			res(2) = -(x*z + y*y - 2*z)/50.;
+			res(0) = -t*(y*y + x*x + x*y + z*y)/50.;
+			res(1) = -t*(3*x*x + y + z*z)/50.;
+			res(2) = -t*(x*z + y*y - 2*z)/50.;
 
 			return res;
 		}
 
 
 		template<typename T>
-		Eigen::Matrix<T, 2, 1> function_linear(T x, T y)
+		Eigen::Matrix<T, 2, 1> function_linear(T x, T y, const double t)
 		{
 			Eigen::Matrix<T, 2, 1> res;
 
-			res(0) = -(y + x)/50.;
-			res(1) = -(3*x + y)/50.;
+			res(0) = -t*(y + x)/50.;
+			res(1) = -t*(3*x + y)/50.;
 
 			return res;
 		}
 
 		template<typename T>
-		Eigen::Matrix<T, 3, 1> function_linear(T x, T y, T z)
+		Eigen::Matrix<T, 3, 1> function_linear(T x, T y, T z, const double t)
 		{
 			Eigen::Matrix<T, 3, 1> res;
 
-			res(0) = -(y + x + z)/50.;
-			res(1) = -(3*x + y - z)/50.;
-			res(2) = -(x + y - 2*z)/50.;
+			res(0) = -t*(y + x + z)/50.;
+			res(1) = -t*(3*x + y - z)/50.;
+			res(2) = -t*(x + y - 2*z)/50.;
 
 			return res;
 		}
@@ -244,34 +244,34 @@ namespace polyfem
 	: ProblemWithSolution(name)
 	{ }
 
-	VectorNd ElasticProblemExact::eval_fun(const VectorNd &pt) const
+	VectorNd ElasticProblemExact::eval_fun(const VectorNd &pt, const double t) const
 	{
 		if(pt.size() == 2)
-			return function(pt(0), pt(1));
+			return function(pt(0), pt(1), t);
 		else if(pt.size() == 3)
-			return function(pt(0), pt(1), pt(2));
+			return function(pt(0), pt(1), pt(2), t);
 
 		assert(false);
 		return VectorNd(pt.size());
 	}
 
-	AutodiffGradPt ElasticProblemExact::eval_fun(const AutodiffGradPt &pt) const
+	AutodiffGradPt ElasticProblemExact::eval_fun(const AutodiffGradPt &pt, const double t) const
 	{
 		if(pt.size() == 2)
-			return function(pt(0), pt(1));
+			return function(pt(0), pt(1), t);
 		else if(pt.size() == 3)
-			return function(pt(0), pt(1), pt(2));
+			return function(pt(0), pt(1), pt(2), t);
 
 		assert(false);
 		return AutodiffGradPt(pt.size());
 	}
 
-	AutodiffHessianPt ElasticProblemExact::eval_fun(const AutodiffHessianPt &pt) const
+	AutodiffHessianPt ElasticProblemExact::eval_fun(const AutodiffHessianPt &pt, const double t) const
 	{
 		if(pt.size() == 2)
-			return function(pt(0), pt(1));
+			return function(pt(0), pt(1), t);
 		else if(pt.size() == 3)
-			return function(pt(0), pt(1), pt(2));
+			return function(pt(0), pt(1), pt(2), t);
 
 		assert(false);
 		return AutodiffHessianPt(pt.size());
@@ -284,34 +284,34 @@ namespace polyfem
 	: ProblemWithSolution(name)
 	{ }
 
-	VectorNd CompressionElasticProblemExact::eval_fun(const VectorNd &pt) const
+	VectorNd CompressionElasticProblemExact::eval_fun(const VectorNd &pt, const double t) const
 	{
 		if(pt.size() == 2)
-			return function_compression(pt(0), pt(1));
+			return function_compression(pt(0), pt(1), t);
 		else if(pt.size() == 3)
-			return function_compression(pt(0), pt(1), pt(2));
+			return function_compression(pt(0), pt(1), pt(2), t);
 
 		assert(false);
 		return VectorNd(pt.size());
 	}
 
-	AutodiffGradPt CompressionElasticProblemExact::eval_fun(const AutodiffGradPt &pt) const
+	AutodiffGradPt CompressionElasticProblemExact::eval_fun(const AutodiffGradPt &pt, const double t) const
 	{
 		if(pt.size() == 2)
-			return function_compression(pt(0), pt(1));
+			return function_compression(pt(0), pt(1), t);
 		else if(pt.size() == 3)
-			return function_compression(pt(0), pt(1), pt(2));
+			return function_compression(pt(0), pt(1), pt(2), t);
 
 		assert(false);
 		return AutodiffGradPt(pt.size());
 	}
 
-	AutodiffHessianPt CompressionElasticProblemExact::eval_fun(const AutodiffHessianPt &pt) const
+	AutodiffHessianPt CompressionElasticProblemExact::eval_fun(const AutodiffHessianPt &pt, const double t) const
 	{
 		if(pt.size() == 2)
-			return function_compression(pt(0), pt(1));
+			return function_compression(pt(0), pt(1), t);
 		else if(pt.size() == 3)
-			return function_compression(pt(0), pt(1), pt(2));
+			return function_compression(pt(0), pt(1), pt(2), t);
 
 		assert(false);
 		return AutodiffHessianPt(pt.size());
@@ -326,34 +326,34 @@ namespace polyfem
 	: ProblemWithSolution(name)
 	{ }
 
-	VectorNd QuadraticElasticProblemExact::eval_fun(const VectorNd &pt) const
+	VectorNd QuadraticElasticProblemExact::eval_fun(const VectorNd &pt, const double t) const
 	{
 		if(pt.size() == 2)
-			return function_quadratic(pt(0), pt(1));
+			return function_quadratic(pt(0), pt(1), t);
 		else if(pt.size() == 3)
-			return function_quadratic(pt(0), pt(1), pt(2));
+			return function_quadratic(pt(0), pt(1), pt(2), t);
 
 		assert(false);
 		return VectorNd(pt.size());
 	}
 
-	AutodiffGradPt QuadraticElasticProblemExact::eval_fun(const AutodiffGradPt &pt) const
+	AutodiffGradPt QuadraticElasticProblemExact::eval_fun(const AutodiffGradPt &pt, const double t) const
 	{
 		if(pt.size() == 2)
-			return function_quadratic(pt(0), pt(1));
+			return function_quadratic(pt(0), pt(1), t);
 		else if(pt.size() == 3)
-			return function_quadratic(pt(0), pt(1), pt(2));
+			return function_quadratic(pt(0), pt(1), pt(2), t);
 
 		assert(false);
 		return AutodiffGradPt(pt.size());
 	}
 
-	AutodiffHessianPt QuadraticElasticProblemExact::eval_fun(const AutodiffHessianPt &pt) const
+	AutodiffHessianPt QuadraticElasticProblemExact::eval_fun(const AutodiffHessianPt &pt, const double t) const
 	{
 		if(pt.size() == 2)
-			return function_quadratic(pt(0), pt(1));
+			return function_quadratic(pt(0), pt(1), t);
 		else if(pt.size() == 3)
-			return function_quadratic(pt(0), pt(1), pt(2));
+			return function_quadratic(pt(0), pt(1), pt(2), t);
 
 		assert(false);
 		return AutodiffHessianPt(pt.size());
@@ -368,34 +368,34 @@ namespace polyfem
 	: ProblemWithSolution(name)
 	{ }
 
-	VectorNd LinearElasticProblemExact::eval_fun(const VectorNd &pt) const
+	VectorNd LinearElasticProblemExact::eval_fun(const VectorNd &pt, const double t) const
 	{
 		if(pt.size() == 2)
-			return function_linear(pt(0), pt(1));
+			return function_linear(pt(0), pt(1), t);
 		else if(pt.size() == 3)
-			return function_linear(pt(0), pt(1), pt(2));
+			return function_linear(pt(0), pt(1), pt(2), t);
 
 		assert(false);
 		return VectorNd(pt.size());
 	}
 
-	AutodiffGradPt LinearElasticProblemExact::eval_fun(const AutodiffGradPt &pt) const
+	AutodiffGradPt LinearElasticProblemExact::eval_fun(const AutodiffGradPt &pt, const double t) const
 	{
 		if(pt.size() == 2)
-			return function_linear(pt(0), pt(1));
+			return function_linear(pt(0), pt(1), t);
 		else if(pt.size() == 3)
-			return function_linear(pt(0), pt(1), pt(2));
+			return function_linear(pt(0), pt(1), pt(2), t);
 
 		assert(false);
 		return AutodiffGradPt(pt.size());
 	}
 
-	AutodiffHessianPt LinearElasticProblemExact::eval_fun(const AutodiffHessianPt &pt) const
+	AutodiffHessianPt LinearElasticProblemExact::eval_fun(const AutodiffHessianPt &pt, const double t) const
 	{
 		if(pt.size() == 2)
-			return function_linear(pt(0), pt(1));
+			return function_linear(pt(0), pt(1), t);
 		else if(pt.size() == 3)
-			return function_linear(pt(0), pt(1), pt(2));
+			return function_linear(pt(0), pt(1), pt(2), t);
 
 		assert(false);
 		return AutodiffHessianPt(pt.size());
