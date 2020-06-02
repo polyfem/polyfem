@@ -1,0 +1,85 @@
+{
+    "mesh": "C:/Users/zizhou/Documents/GitHub/polyfem/plate_square.obj",
+    "bc_tag": "",                  
+    "boundary_id_threshold": -1,
+    "normalize_mesh": true,         
+    "particle": false,
+    "tend": 0.1,
+    "n_refs": 2,
+    "time_steps": 8,
+    "spatial_hash": true,
+    "advection_order": 1,
+    "advection_RK": 1,
+    "separate": true,
+    "save_time_sequence": false,
+    "discr_order": 1,
+    "pressure_discr_order": 1,
+    "quadrature_order": 4,
+
+    "viscosity": 1,
+    "problem": "TransientStokeProblemExact",
+    "problem_params": {
+        "time_dependent": true,
+        "viscosity": 1
+    },
+
+    "refinenemt_location": 0.5,  
+
+    "scalar_formulation": "Laplacian",
+    "tensor_formulation": "OperatorSplitting",
+
+    "count_flipped_els": false,     
+
+    "iso_parametric": false,
+    "force_linear_geometry": true,   
+
+    "output": "",                            
+
+    "n_boundary_samples": 6,        
+
+    "export": {                     
+        "full_mat": "",             
+        "iso_mesh": "",             
+        "nodes": "",                
+        "solution": "",             
+        "spectrum": false,          
+        "stiffness_mat": "",        
+        "vis_boundary_only": false, 
+        "vis_mesh": "",
+        "wire_mesh": ""             
+    },
+
+    "use_spline": false,            
+    "fit_nodes": false,             
+
+    "integral_constraints": 2,      
+    "n_harmonic_samples": 10,       
+
+    "B": 3,                         
+    "use_p_ref": false,             
+    "discr_order_max": 4,           
+    "h1_formula": false,            
+
+    "solver_type": "Pardiso",       
+    "precond_type": "Eigen::DiagonalPreconditioner",
+    "solver_params": {},            
+
+    "nl_solver": "newton",          
+    "line_search": "armijo",        
+    "nl_solver_rhs_steps": 1,       
+    "save_solve_sequence": true,   
+
+    "params": {                     
+        "k": 1.0,                   
+
+        "elasticity_tensor": {},    
+
+        "E": 1.5,                   
+        "nu": 0.3,                  
+
+        "lambda": 0.329670329,      
+        "mu": 0.384615384
+    },              
+
+    "vismesh_rel_area": 1e-05       
+}

@@ -9,7 +9,7 @@
 	"discr_order": 2,
 	"pressure_discr_order": 1,
 
-	"BDF_order": 2,
+	"BDF_order": 3,
 
 	"tend": 0.1,
 	"time_steps": 8,
@@ -24,7 +24,7 @@
 
 	"export": { },
 
-	"problem": "TaylorGreenVortex",
+	"problem": "TransientStokeProblemExact",
 
 	"tensor_formulation": "NavierStokes",
 	"tensor_formulation2": "Stokes"
