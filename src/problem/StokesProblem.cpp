@@ -370,10 +370,18 @@ void TaylorGreenVortexProblem::exact(const Eigen::MatrixXd &pts, const double t,
 		const double x = pts(i, 0);
 		const double y = pts(i, 1);
 
-		val(i, 0) =  cos(x) * sin(y) * exp(-2 * viscosity_ * t);
-		val(i, 1) = -sin(x) * cos(y) * exp(-2 * viscosity_ * t);
-	}
+		val(i, 0) =  cos(x) * sin(y) * time_scaling;
+		val(i, 1) = -sin(x) * cos(y) * time_scaling;
 
+		if(pts.cols() == 3)
+		{
+			const double z = pts(i, 2);
+
+			val(i, 0) *= sin(z);
+			val(i, 1) *= -sin(z);
+			val(i, 2) = sin(x) * sin(y) * cos(z) * time_scaling;
+		}
+	}
 }
 
 void TaylorGreenVortexProblem::exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
