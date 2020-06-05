@@ -4,13 +4,12 @@
 #include <polyfem/UIState.hpp>
 #endif
 
-#include <polyfem/LinearSolver.hpp>
+#include <polysolve/LinearSolver.hpp>
 #include <polyfem/StringUtils.hpp>
 #include <polyfem/Logger.hpp>
 
 #include <polyfem/Problem.hpp>
 #include <polyfem/AssemblerUtils.hpp>
-#include <polyfem/LinearSolver.hpp>
 
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
@@ -24,6 +23,7 @@
 
 
 using namespace polyfem;
+using namespace polysolve;
 using namespace Eigen;
 
 

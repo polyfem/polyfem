@@ -4,7 +4,7 @@
 #include <polyfem/HexQuadrature.hpp>
 
 
-#include <polyfem/LinearSolver.hpp>
+#include <polysolve/LinearSolver.hpp>
 #include <polyfem/MeshNodes.hpp>
 #include <polyfem/FEBasis3d.hpp>
 #include <polyfem/Types.hpp>
@@ -27,6 +27,7 @@
 namespace polyfem
 {
     using namespace Eigen;
+    using namespace polysolve;
 
     namespace
     {

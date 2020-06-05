@@ -147,7 +147,7 @@ namespace polyfem
 			assert(false);
 		}
 
-		res *= AutodiffScalarGrad(tt);
+		res = res * AutodiffScalarGrad(tt);
 
 		return res;
 	}

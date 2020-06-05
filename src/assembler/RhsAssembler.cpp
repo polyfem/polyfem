@@ -1,7 +1,7 @@
 #include <polyfem/RhsAssembler.hpp>
 
 #include <polyfem/BoundarySampler.hpp>
-#include <polyfem/LinearSolver.hpp>
+#include <polysolve/LinearSolver.hpp>
 
 #include <polyfem/AssemblerUtils.hpp>
 
@@ -21,6 +21,7 @@
 
 namespace polyfem
 {
+	using namespace polysolve;
 namespace
 {
 class LocalThreadScalarStorage

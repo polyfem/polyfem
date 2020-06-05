@@ -1,7 +1,9 @@
 #include <polyfem/NavierStokesSolver.hpp>
 
 #include <polyfem/MatrixUtils.hpp>
-#include <polyfem/FEMSolver.hpp>
+#include <polysolve/FEMSolver.hpp>
+#include <polysolve/LinearSolver.hpp>
+
 #include <polyfem/AssemblerUtils.hpp>
 
 #include <polyfem/Logger.hpp>
@@ -14,6 +16,7 @@
 
 namespace polyfem
 {
+	using namespace polysolve;
 
 NavierStokesSolver::NavierStokesSolver(double viscosity, const json &solver_param, const json &problem_params, const std::string &solver_type, const std::string &precond_type)
 	: viscosity(viscosity), solver_param(solver_param), problem_params(problem_params), solver_type(solver_type), precond_type(precond_type)

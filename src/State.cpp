@@ -22,8 +22,8 @@
 #include <polyfem/AssemblerUtils.hpp>
 #include <polyfem/RhsAssembler.hpp>
 
-#include <polyfem/LinearSolver.hpp>
-#include <polyfem/FEMSolver.hpp>
+#include <polysolve/LinearSolver.hpp>
+#include <polysolve/FEMSolver.hpp>
 
 #include <polyfem/RefElementSampler.hpp>
 
@@ -80,6 +80,7 @@ extern "C" size_t getPeakRSS();
 
 namespace polyfem
 {
+	using namespace polysolve;
 namespace
 {
 template <typename V1, typename V2>

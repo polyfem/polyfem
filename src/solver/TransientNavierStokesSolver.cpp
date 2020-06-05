@@ -1,7 +1,8 @@
 #include <polyfem/TransientNavierStokesSolver.hpp>
 
 #include <polyfem/MatrixUtils.hpp>
-#include <polyfem/FEMSolver.hpp>
+#include <polysolve/LinearSolver.hpp>
+#include <polysolve/FEMSolver.hpp>
 #include <polyfem/AssemblerUtils.hpp>
 
 #include <polyfem/Logger.hpp>
@@ -14,6 +15,7 @@
 
 namespace polyfem
 {
+	using namespace polysolve;
 
 TransientNavierStokesSolver::TransientNavierStokesSolver(const json &solver_param, const json &problem_params, const std::string &solver_type, const std::string &precond_type)
 	: solver_param(solver_param), problem_params(problem_params), solver_type(solver_type), precond_type(precond_type)

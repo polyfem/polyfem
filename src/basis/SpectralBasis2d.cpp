@@ -4,7 +4,6 @@
 #include <polyfem/QuadQuadrature.hpp>
 #include <polyfem/MeshNodes.hpp>
 
-#include <polyfem/LinearSolver.hpp>
 #include <polyfem/FEBasis2d.hpp>
 #include <polyfem/Types.hpp>
 

@@ -8,7 +8,7 @@
 #include <polyfem/ElasticProblem.hpp>
 #include <polyfem/RefElementSampler.hpp>
 
-#include <polyfem/LinearSolver.hpp>
+// #include <polyfem/LinearSolver.hpp>
 #include <polyfem/EdgeSampler.hpp>
 
 #include <polyfem/Logger.hpp>
