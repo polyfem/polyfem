@@ -2561,7 +2561,8 @@ void State::solve_problem()
 				rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, current_rhs, time);
 
 				const int prev_size = current_rhs.size();
-				if (prev_size != n_larger){
+				if (prev_size != rhs.size())
+				{
 					current_rhs.conservativeResize(prev_size + n_larger, current_rhs.cols());
 					current_rhs.block(prev_size, 0, n_larger, current_rhs.cols()).setZero();
 				}
