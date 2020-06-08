@@ -26,28 +26,12 @@ namespace polyfem
         {
             dim = mesh.dimension();
 
-            if (shape == dim + 1)
+            T.resize(n_el, shape);
+            for (int e = 0; e < n_el; e++)
             {
-                T.resize(n_el, dim + 1);
-                for (int e = 0; e < n_el; e++)
+                for (int i = 0; i < shape; i++)
                 {
-                    for (int i = 0; i < shape; i++)
-                    {
-                        T(e, i) = mesh.cell_vertex_(e, i);
-                    }
-                }
-            }
-            else
-            {
-                assert(dim == 2);
-                T.resize(n_el * 2, 3);
-                for (int e = 0; e < n_el; e++)
-                {
-                    for (int i = 0; i < 3; i++)
-                    {
-                        T(e, i) = mesh.cell_vertex_(e, i);
-                        T(e + n_el, i) = mesh.cell_vertex_(e, (i + 2) % 4);
-                    }
+                    T(e, i) = mesh.cell_vertex_(e, i);
                 }
             }
             V = Eigen::MatrixXd::Zero(mesh.n_vertices(), dim);
@@ -59,9 +43,6 @@ namespace polyfem
                     V(i, d) = p(d);
                 }
             }
-
-            // to find the cell which a point is in
-            tree.init(V, T);
 
             cell_num = (int)pow(n_el, 1./dim);
             hash_table.resize((int)pow(cell_num, dim));
@@ -317,7 +298,8 @@ namespace polyfem
 #endif
         }
 
-        int search_cell(RowVectorNd& pos)
+        int search_cell(const std::vector<polyfem::ElementBases>& gbases,
+        RowVectorNd& pos)
         {
             Eigen::VectorXi pos_int(dim);
             for(int d = 0; d < dim; d++)
@@ -335,21 +317,20 @@ namespace polyfem
             }
 
             const std::list<int>& list = hash_table[idx];
-            Eigen::MatrixXd points(dim + 2, dim);
-            points.row(dim + 1) = pos;
             for(auto it = list.begin(); it != list.end(); it++)
-            {
-                for(int i = 0; i <= dim; i++)
-                {
-                    points.row(i) = V.row(T(*it, i));
-                }
-                
+            {            
                 Eigen::MatrixXd local_pts;
-                barycentric_coordinate(points, local_pts);
+                calculate_local_pts(gbases[*it], *it, pos, local_pts);
 
-                if(local_pts.minCoeff() > -1e-13 && local_pts.sum() < 1 + 1e-13)
+                if(shape == dim + 1)
                 {
-                    return *it;
+                    if(local_pts.minCoeff() > -1e-13 && local_pts.sum() < 1 + 1e-13)
+                        return *it;
+                }
+                else
+                {
+                    if(local_pts.minCoeff() > -1e-13 && local_pts.maxCoeff() < 1 + 1e-13)
+                        return *it;
                 }
             }
             assert(false && "failed to find the cell in which a point is!");
@@ -374,18 +355,18 @@ namespace polyfem
             }
         }
 
-        void calculate_local_pts(const polyfem::Mesh& mesh, 
-        const polyfem::ElementBases& gbase, 
-        const int elem_idx, 
+        void calculate_local_pts(const polyfem::ElementBases& gbase, 
+        const int elem_idx,
         const RowVectorNd& pos, 
         Eigen::MatrixXd& local_pos)
         {
             local_pos = Eigen::MatrixXd::Zero(1, dim);
             
-            std::vector<RowVectorNd> vert(shape);
+            std::vector<RowVectorNd> vert(shape,RowVectorNd::Zero(1, dim));
             for (int i = 0; i < shape; i++)
             {
-                vert[i] = mesh.point(mesh.cell_vertex_(elem_idx, i));
+                for(int d = 0; d < dim; d++)
+                    vert[i](d) = V(T(elem_idx, i), d);
             }
 
             ElementAssemblyValues gvals_;
@@ -440,8 +421,7 @@ namespace polyfem
             }
         }
 
-        void trace_back(const polyfem::Mesh& mesh, 
-        const std::vector<polyfem::ElementBases>& gbases, 
+        void trace_back(const std::vector<polyfem::ElementBases>& gbases, 
         const std::vector<polyfem::ElementBases>& bases, 
         const RowVectorNd& pos_1, 
         const RowVectorNd& vel_1, 
@@ -459,20 +439,9 @@ namespace polyfem
             // to avoid that pos is out of domain
             handle_boundary_advection(pos_2);
             
-            if(!spatial_hash)
-            {
-                assert(dim == 2);
-                Eigen::VectorXi I(1);
-                igl::in_element(V, T, pos_2, tree, I);
-                new_elem = I(0);
-            }
-            else
-            {
-                new_elem = search_cell(pos_2);
-            }
+            new_elem = search_cell(gbases, pos_2);
 
-            new_elem = new_elem % n_el;
-            calculate_local_pts(mesh, gbases[new_elem], new_elem, pos_2, local_pos);
+            calculate_local_pts(gbases[new_elem], new_elem, pos_2, local_pos);
 
             // interpolation
             vel_2 = RowVectorNd::Zero(dim);
@@ -510,10 +479,12 @@ namespace polyfem
 #endif
             {
                 // geometry vertices of element e
-                std::vector<RowVectorNd> vert(shape);
+                std::vector<RowVectorNd> vert(shape, RowVectorNd::Zero(1, dim));
                 for (int i = 0; i < shape; i++)
                 {
-                    vert[i] = mesh.point(mesh.cell_vertex_(e, i));
+                    int tmp = T(e,i);
+                    for(int d = 0; d < dim; d++)
+                        vert[i](d) = V(tmp,d);
                 }
 
                 // to compute global position with barycentric coordinate
@@ -540,20 +511,20 @@ namespace polyfem
                         pos_1[0] += gvals.basis_values[j].val(i) * vert[j];
                     }
 
-                    if(RK==3)
+                    if(RK>=3)
                     {
-                        trace_back(mesh, gbases, bases, pos_1[0], vel_1[0], pos_1[1], vel_1[1], sol, 0.5 * dt, spatial_hash);
-                        trace_back(mesh, gbases, bases, pos_1[0], vel_1[1], pos_1[2], vel_1[2], sol, 0.75 * dt, spatial_hash);
-                        trace_back(mesh, gbases, bases, pos_1[0], 2 * vel_1[0] + 3 * vel_1[1] + 4 * vel_1[2], pos_1[3], vel_1[3], sol, dt / 9, spatial_hash);
+                        trace_back( gbases, bases, pos_1[0], vel_1[0], pos_1[1], vel_1[1], sol, 0.5 * dt, spatial_hash);
+                        trace_back( gbases, bases, pos_1[0], vel_1[1], pos_1[2], vel_1[2], sol, 0.75 * dt, spatial_hash);
+                        trace_back( gbases, bases, pos_1[0], 2 * vel_1[0] + 3 * vel_1[1] + 4 * vel_1[2], pos_1[3], vel_1[3], sol, dt / 9, spatial_hash);
                     }
                     else if(RK==2)
                     {
-                        trace_back(mesh, gbases, bases, pos_1[0], vel_1[0], pos_1[1], vel_1[1], sol, 0.5 * dt, spatial_hash);
-                        trace_back(mesh, gbases, bases, pos_1[0], vel_1[1], pos_1[3], vel_1[3], sol, dt, spatial_hash);
+                        trace_back( gbases, bases, pos_1[0], vel_1[0], pos_1[1], vel_1[1], sol, 0.5 * dt, spatial_hash);
+                        trace_back( gbases, bases, pos_1[0], vel_1[1], pos_1[3], vel_1[3], sol, dt, spatial_hash);
                     }
                     else if(RK==1)
                     {
-                        trace_back(mesh, gbases, bases, pos_1[0], vel_1[0], pos_1[3], vel_1[3], sol, dt, spatial_hash);
+                        trace_back( gbases, bases, pos_1[0], vel_1[0], pos_1[3], vel_1[3], sol, dt, spatial_hash);
                     }
 
                     new_sol.block(global * dim, 0, dim, 1) = vel_1[3].transpose();
@@ -562,20 +533,20 @@ namespace polyfem
                     {
                         RowVectorNd vel_2[3], pos_2[3];
 
-                        if(RK==3)
+                        if(RK>=3)
                         {
-                            trace_back(mesh, gbases, bases, pos_1[3], vel_1[3], pos_2[0], vel_2[0], sol, -0.5 * dt, spatial_hash);
-                            trace_back(mesh, gbases, bases, pos_1[3], vel_1[1], pos_2[1], vel_2[1], sol, -0.75 * dt, spatial_hash);
-                            trace_back(mesh, gbases, bases, pos_1[3], 2 * vel_1[3] + 3 * vel_2[0] + 4 * vel_2[1], pos_2[2], vel_2[2], sol, -dt / 9, spatial_hash);
+                            trace_back( gbases, bases, pos_1[3], vel_1[3], pos_2[0], vel_2[0], sol, -0.5 * dt, spatial_hash);
+                            trace_back( gbases, bases, pos_1[3], vel_1[1], pos_2[1], vel_2[1], sol, -0.75 * dt, spatial_hash);
+                            trace_back( gbases, bases, pos_1[3], 2 * vel_1[3] + 3 * vel_2[0] + 4 * vel_2[1], pos_2[2], vel_2[2], sol, -dt / 9, spatial_hash);
                         }
                         else if(RK==2)
                         {
-                            trace_back(mesh, gbases, bases, pos_1[3], vel_1[3], pos_2[0], vel_2[0], sol, -0.5 * dt, spatial_hash);
-                            trace_back(mesh, gbases, bases, pos_1[3], vel_2[0], pos_2[2], vel_2[2], sol, -dt, spatial_hash);
+                            trace_back( gbases, bases, pos_1[3], vel_1[3], pos_2[0], vel_2[0], sol, -0.5 * dt, spatial_hash);
+                            trace_back( gbases, bases, pos_1[3], vel_2[0], pos_2[2], vel_2[2], sol, -dt, spatial_hash);
                         }
                         else if(RK==1)
                         {
-                            trace_back(mesh, gbases, bases, pos_1[3], vel_1[3], pos_2[2], vel_2[2], sol, -dt, spatial_hash);
+                            trace_back( gbases, bases, pos_1[3], vel_1[3], pos_2[2], vel_2[2], sol, -dt, spatial_hash);
                         }
                         
                         new_sol.block(global * dim, 0, dim, 1) += (vel_1[0] - vel_2[2]).transpose() / 2;
@@ -884,7 +855,7 @@ namespace polyfem
                     if (!isRedundant[pI]) {
                         int e = cellI_particle[pI];
                         Eigen::MatrixXd local_pts_particle;
-                        calculate_local_pts(mesh, gbases[e], e, position_particle[pI], local_pts_particle);
+                        calculate_local_pts(gbases[e], e, position_particle[pI], local_pts_particle);
                         
                         ElementAssemblyValues vals;
                         vals.compute(e, dim == 3, local_pts_particle, bases[e], gbases[e]); // possibly higher-order
@@ -965,16 +936,16 @@ namespace polyfem
             {
                 // update particle position via advection
                 RowVectorNd newvel;
-                trace_back(mesh, gbases, bases, position_particle[pI], velocity_particle[pI], 
+                trace_back( gbases, bases, position_particle[pI], velocity_particle[pI], 
                     position_particle[pI], newvel, sol, -dt, spatial_hash);
 
                 // RK3:
                 // RowVectorNd bypass, vel2, vel3;
-                // trace_back(mesh, gbases, bases, position_particle[pI], velocity_particle[pI], 
+                // trace_back( gbases, bases, position_particle[pI], velocity_particle[pI], 
                 //     bypass, vel2, sol, -0.5 * dt, spatial_hash);
-                // trace_back(mesh, gbases, bases, position_particle[pI], vel2, 
+                // trace_back( gbases, bases, position_particle[pI], vel2, 
                 //     bypass, vel3, sol, -0.75 * dt, spatial_hash);
-                // trace_back(mesh, gbases, bases, position_particle[pI], 
+                // trace_back( gbases, bases, position_particle[pI], 
                 //     2 * velocity_particle[pI] + 3 * vel2 + 4 * vel3, 
                 //     position_particle[pI], bypass, sol, -dt / 9, spatial_hash);
 
@@ -983,18 +954,9 @@ namespace polyfem
                 Eigen::MatrixXd local_pos;
                 
                 // find cell
-                if(!spatial_hash)
-                {
-                    assert(dim == 2);
-                    igl::in_element(V, T, position_particle[pI], tree, I);
-                }
-                else
-                {
-                    I(0) = search_cell(position_particle[pI]);
-                }
+                I(0) = search_cell(gbases, position_particle[pI]);
 
-                I(0) = I(0) % n_el;
-                calculate_local_pts(mesh, gbases[I(0)], I(0), position_particle[pI], local_pos);
+                calculate_local_pts(gbases[I(0)], I(0), position_particle[pI], local_pos);
 
                 // construct interpolator (always linear for P2G, can use gaussian or bspline later)
                 velocity_interpolator[pI].compute(I(0), dim == 3, local_pos, gbases[I(0)], gbases[I(0)]);
@@ -1094,16 +1056,16 @@ namespace polyfem
                 // update particle position via advection
                 for (int i = 0; i < ppe; ++i) {
                     RowVectorNd newvel;
-                    trace_back(mesh, gbases, bases, position_particle[ppe * e + i], velocity_particle[e * ppe + i], 
+                    trace_back( gbases, bases, position_particle[ppe * e + i], velocity_particle[e * ppe + i], 
                         position_particle[ppe * e + i], newvel, sol, -dt, spatial_hash);
 
                     // RK3:
                     // RowVectorNd bypass, vel2, vel3;
-                    // trace_back(mesh, gbases, bases, position_particle[ppe * e + i], velocity_particle[e * ppe + i], 
+                    // trace_back( gbases, bases, position_particle[ppe * e + i], velocity_particle[e * ppe + i], 
                     //     bypass, vel2, sol, -0.5 * dt, spatial_hash);
-                    // trace_back(mesh, gbases, bases, position_particle[ppe * e + i], vel2, 
+                    // trace_back( gbases, bases, position_particle[ppe * e + i], vel2, 
                     //     bypass, vel3, sol, -0.75 * dt, spatial_hash);
-                    // trace_back(mesh, gbases, bases, position_particle[ppe * e + i], 
+                    // trace_back( gbases, bases, position_particle[ppe * e + i], 
                     //     2 * velocity_particle[e * ppe + i] + 3 * vel2 + 4 * vel3, 
                     //     position_particle[ppe * e + i], bypass, sol, -dt / 9, spatial_hash);
                 }
@@ -1114,18 +1076,8 @@ namespace polyfem
                     Eigen::MatrixXd local_pos;
                     
                     // find cell
-                    if(!spatial_hash)
-                    {
-                        assert(dim == 2);
-                        igl::in_element(V, T, position_particle[ppe * e + j], tree, I);
-                    }
-                    else
-                    {
-                        I(0) = search_cell(position_particle[ppe * e + j]);
-                    }
-
-                    I(0) = I(0) % n_el;
-                    calculate_local_pts(mesh, gbases[I(0)], I(0), position_particle[ppe * e + j], local_pos);
+                    I(0) = search_cell(gbases, position_particle[ppe * e + j]);
+                    calculate_local_pts(gbases[I(0)], I(0), position_particle[ppe * e + j], local_pos);
 
                     // construct interpolator (always linear for P2G, can use gaussian or bspline later)
                     velocity_interpolator[ppe * e + j].compute(I(0), dim == 3, local_pos, gbases[I(0)], gbases[I(0)]);
@@ -1176,7 +1128,6 @@ namespace polyfem
 
         Eigen::MatrixXd V;
         Eigen::MatrixXi T;
-        igl::AABB<Eigen::MatrixXd, 2> tree;
 
         std::vector<std::list<int>> hash_table;
         int                         cell_num;

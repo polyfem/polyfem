@@ -2547,7 +2547,7 @@ void State::solve_problem()
 			}
 			else
 			{
-				if (shape == 3)
+				if (shape == 4)
 					autogen::p_nodes_3d(args["discr_order"], local_pts);
 				else
 					autogen::q_nodes_3d(args["discr_order"], local_pts);
