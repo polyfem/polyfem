@@ -2553,7 +2553,7 @@ void State::solve_problem()
 					autogen::q_nodes_3d(args["discr_order"], local_pts);
 			}
 
-			OperatorSplittingSolver ss(*mesh, shape, n_el);
+			OperatorSplittingSolver ss(*mesh, shape, n_el, local_boundary);
 
 			std::vector<int> bnd_nodes;
 			bnd_nodes.reserve(boundary_nodes.size() / dim);
@@ -2579,7 +2579,7 @@ void State::solve_problem()
 					ss.advection(*mesh, gbases, bases, sol, dt, local_pts, args["spatial_hash"], args["advection_order"], args["advection_RK"]);
 
 				/* apply boundary condition */
-				ss.set_bc(*mesh, local_boundary, bnd_nodes, gbases, bases, sol, local_pts, problem, time);
+				ss.set_bc(*mesh, bnd_nodes, gbases, bases, sol, local_pts, problem, time);
 
 				/* Stokes */
 				if(!args["separate"])
@@ -2600,8 +2600,7 @@ void State::solve_problem()
 					ss.projection(*mesh, n_bases, gbases, bases, pressure_bases, local_pts, pressure, sol);
 
 					/* apply boundary condition */
-
-					ss.set_bc(*mesh, local_boundary, bnd_nodes, gbases, bases, sol, local_pts, problem, time);
+					ss.set_bc(*mesh, bnd_nodes, gbases, bases, sol, local_pts, problem, time);
 				}
 
 				/* export to vtu */

@@ -22,9 +22,16 @@ namespace polyfem
     class OperatorSplittingSolver
     {
     public:
-        OperatorSplittingSolver(const polyfem::Mesh& mesh, const int shape, const int n_el) : shape(shape), n_el(n_el)
+        OperatorSplittingSolver(const polyfem::Mesh& mesh, const int shape, const int n_el, const std::vector<polyfem::LocalBoundary>& local_boundary) : shape(shape), n_el(n_el)
         {
             dim = mesh.dimension();
+
+            const int size = local_boundary.size();
+            boundary_elem_id.reserve(size);
+            for(int e = 0; e < size; e++)
+            {
+                boundary_elem_id.push_back(local_boundary[e].element_id());
+            }
 
             T.resize(n_el, shape);
             for (int e = 0; e < n_el; e++)
@@ -101,7 +108,6 @@ namespace polyfem
         }
 
         void set_bc(const polyfem::Mesh& mesh, 
-        const std::vector<polyfem::LocalBoundary>& local_boundary, 
         const std::vector<int>& bnd_nodes,
         const std::vector<polyfem::ElementBases>& gbases, 
         const std::vector<polyfem::ElementBases>& bases, 
@@ -110,15 +116,14 @@ namespace polyfem
         const std::shared_ptr<Problem> problem, 
         const double time)
         {
-            const int size = local_boundary.size();
+            const int size = boundary_elem_id.size();
 #ifdef POLYFEM_WITH_TBB
             tbb::parallel_for(0, size, 1, [&](int e)
 #else
             for(int e = 0; e < size; e++)
 #endif
             {
-                auto elem = local_boundary[e];
-                int elem_idx = elem.element_id();
+                int elem_idx = boundary_elem_id[e];
 
                 // geometry vertices of element e
                 std::vector<RowVectorNd> vert(shape);
@@ -399,27 +404,62 @@ namespace polyfem
 
         void handle_boundary_advection(RowVectorNd& pos)
         {
-            for (int d = 0; d < dim; d++)
-            {
-                // if (pos(d) < min_domain(d)) {
-                //     do {
-                //         pos(d) += max_domain(d) - min_domain(d);
-                //     } while(pos(d) < min_domain(d));
-                // }
-                // else if (pos(d) > max_domain(d)) {
-                //     do {
-                //         pos(d) -= max_domain(d) - min_domain(d);
-                //     } while(pos(d) > max_domain(d));
-                // }
+            // assert(dim == 2);
+            // Eigen::MatrixXd points(dim + 1, dim);
+            // for(int d = 0; d < dim; d++)
+            // {
+            //     points(0, d) = pos(d);
+            // }
 
-                if (pos(d) < min_domain(d)) {
-                    pos(d) = min_domain(d) + 1e-13;
-                }
-                else if (pos(d) > max_domain(d)) {
-                    pos(d) = max_domain(d) - 1e-13;
-                }
-            }
+            // for square domain
+            // for (int d = 0; d < dim; d++)
+            // {
+            //     if (pos(d) < min_domain(d)) {
+            //         do {
+            //             pos(d) += max_domain(d) - min_domain(d);
+            //         } while(pos(d) < min_domain(d));
+            //     }
+            //     else if (pos(d) > max_domain(d)) {
+            //         do {
+            //             pos(d) -= max_domain(d) - min_domain(d);
+            //         } while(pos(d) > max_domain(d));
+            //     }
+            // }
+
+            
         }
+
+private:
+
+        double triangle_area(const Eigen::MatrixXd& points)
+        {
+            double e[3] = {0, 0, 0};
+            for(int d = 0; d < dim; d++)
+            {
+                e[0] += pow(points(1, d) - points(2, d), 2);
+                e[1] += pow(points(0, d) - points(2, d), 2);
+                e[2] += pow(points(0, d) - points(1, d), 2);
+            }
+            for(int a = 0; a < 3; a++)
+            {
+                e[a] = sqrt(e[a]);
+            }
+            double p = (e[0] + e[1] + e[2]) / 2;
+            return sqrt( p * (p-e[0]) * (p-e[1]) * (p-e[2]) );
+        }
+
+        double edge_point_dist(const Eigen::MatrixXd& points)
+        {
+            double edge = 0;
+            for(int d = 0; d < dim; d++)
+            {
+                edge += pow(points(1, d) - points(2, d), 2);
+            }
+
+            return 2 * triangle_area(points) / sqrt(edge);
+        }
+
+public:
 
         void trace_back(const std::vector<polyfem::ElementBases>& gbases, 
         const std::vector<polyfem::ElementBases>& bases, 
@@ -1137,5 +1177,7 @@ namespace polyfem
         std::vector<int> cellI_particle;
         Eigen::MatrixXd new_sol;
         Eigen::MatrixXd new_sol_w;
+
+        std::vector<int> boundary_elem_id;
     };
 }
