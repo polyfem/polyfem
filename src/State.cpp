@@ -2158,6 +2158,7 @@ void State::build_basis()
 			if (!vals.is_geom_mapping_positive(mesh->is_volume(), gbases[i]))
 			{
 				++n_flipped;
+				logger().info("element {} is flipped", i);
 
 				// if(!parent_elements.empty())
 				// 	flipped_elements.push_back(parent_elements[i]);
@@ -2185,7 +2186,8 @@ void State::build_basis()
 			// boundary_nodes.push_back(n_bases * problem_dim + 1);
 			// boundary_nodes.push_back(n_bases * problem_dim + 2);
 			// boundary_nodes.push_back(n_bases * problem_dim + 3);
-			// boundary_nodes.push_back(n_bases * problem_dim + 4);
+			// boundary_nodes.push_back(n_bases * problem_dim + 3);
+			// boundary_nodes.push_back(n_bases * problem_dim + 215);
 		}
 	}
 
