@@ -22,7 +22,10 @@ namespace polyfem
     class OperatorSplittingSolver
     {
     public:
-        OperatorSplittingSolver(const polyfem::Mesh& mesh, const int shape, const int n_el, const std::vector<polyfem::LocalBoundary>& local_boundary) : shape(shape), n_el(n_el)
+        OperatorSplittingSolver(const polyfem::Mesh& mesh, 
+        const int shape, const int n_el, 
+        const std::vector<polyfem::LocalBoundary>& local_boundary,
+        const std::vector<int>& boundary_nodes) : shape(shape), n_el(n_el), boundary_nodes(boundary_nodes)
         {
             dim = mesh.dimension();
 
@@ -126,10 +129,11 @@ namespace polyfem
                 int elem_idx = boundary_elem_id[e];
 
                 // geometry vertices of element e
-                std::vector<RowVectorNd> vert(shape);
+                Eigen::MatrixXd vert(shape, dim);
                 for (int i = 0; i < shape; i++)
                 {
-                    vert[i] = mesh.point(mesh.cell_vertex_(elem_idx, i));
+                    for(int d = 0; d < dim; d++)
+                        vert(i, d) = V(T(elem_idx, i), d);
                 }
 
                 ElementAssemblyValues gvals;
@@ -146,7 +150,7 @@ namespace polyfem
                     {
                         for (int d = 0; d < dim; d++)
                         {
-                            pos(0, d) += gvals.basis_values[j].val(local_idx) * vert[j](d);
+                            pos(0, d) += gvals.basis_values[j].val(local_idx) * vert(j, d);
                         }
                     }
 
@@ -303,8 +307,7 @@ namespace polyfem
 #endif
         }
 
-        int search_cell(const std::vector<polyfem::ElementBases>& gbases,
-        RowVectorNd& pos)
+        int search_cell(const std::vector<polyfem::ElementBases>& gbases, RowVectorNd& pos)
         {
             Eigen::VectorXi pos_int(dim);
             for(int d = 0; d < dim; d++)
@@ -338,8 +341,7 @@ namespace polyfem
                         return *it;
                 }
             }
-            assert(false && "failed to find the cell in which a point is!");
-            return -1;
+            return -1; // not inside any elem
         }
 
         void barycentric_coordinate(const Eigen::MatrixXd& points, Eigen::MatrixXd& local_pts)
@@ -402,64 +404,42 @@ namespace polyfem
             }
         }
 
-        void handle_boundary_advection(RowVectorNd& pos)
+        int handle_boundary_advection(RowVectorNd& pos)
         {
-            // assert(dim == 2);
-            // Eigen::MatrixXd points(dim + 1, dim);
-            // for(int d = 0; d < dim; d++)
-            // {
-            //     points(0, d) = pos(d);
-            // }
-
-            // for square domain
-            // for (int d = 0; d < dim; d++)
-            // {
-            //     if (pos(d) < min_domain(d)) {
-            //         do {
-            //             pos(d) += max_domain(d) - min_domain(d);
-            //         } while(pos(d) < min_domain(d));
-            //     }
-            //     else if (pos(d) > max_domain(d)) {
-            //         do {
-            //             pos(d) -= max_domain(d) - min_domain(d);
-            //         } while(pos(d) > max_domain(d));
-            //     }
-            // }
-
-            
-        }
-
-private:
-
-        double triangle_area(const Eigen::MatrixXd& points)
-        {
-            double e[3] = {0, 0, 0};
-            for(int d = 0; d < dim; d++)
+            double dist = 1e10;
+            int idx = -1;
+            const int size = boundary_elem_id.size();
+#ifdef POLYFEM_WITH_TBB
+            tbb::parallel_for(0, size, 1, [&](int e)
+#else
+            for(int e = 0; e < size; e++)
+#endif
             {
-                e[0] += pow(points(1, d) - points(2, d), 2);
-                e[1] += pow(points(0, d) - points(2, d), 2);
-                e[2] += pow(points(0, d) - points(1, d), 2);
+                int elem_idx = boundary_elem_id[e];
+                double dist_ = 0;
+
+                for (int i = 0; i < shape; i++)
+                {
+                    for(int d = 0; d < dim; d++)
+                    {
+                        dist_ += pow( pos(d) - V(T(elem_idx, i), d), 2);
+                    }
+                    dist_ = sqrt(dist_);
+                    if(dist_ < dist)
+                    {
+                        dist = dist_;
+                        idx = elem_idx;
+                        for(int d = 0; d < dim; d++)
+                            pos(d) = V(T(elem_idx, i), d);
+                        break;
+                    }
+                }
             }
-            for(int a = 0; a < 3; a++)
-            {
-                e[a] = sqrt(e[a]);
-            }
-            double p = (e[0] + e[1] + e[2]) / 2;
-            return sqrt( p * (p-e[0]) * (p-e[1]) * (p-e[2]) );
+#ifdef POLYFEM_WITH_TBB
+            );
+#endif
+            return idx;
         }
-
-        double edge_point_dist(const Eigen::MatrixXd& points)
-        {
-            double edge = 0;
-            for(int d = 0; d < dim; d++)
-            {
-                edge += pow(points(1, d) - points(2, d), 2);
-            }
-
-            return 2 * triangle_area(points) / sqrt(edge);
-        }
-
-public:
 
         void trace_back(const std::vector<polyfem::ElementBases>& gbases, 
         const std::vector<polyfem::ElementBases>& bases, 
@@ -468,18 +448,17 @@ public:
         RowVectorNd& pos_2, 
         RowVectorNd& vel_2, 
         const Eigen::MatrixXd& sol,
-        const double dt,
-        const bool spatial_hash = true)
+        const double dt)
         {
             int new_elem;
             Eigen::MatrixXd local_pos;
 
             pos_2 = pos_1 - vel_1 * dt;
 
-            // to avoid that pos is out of domain
-            handle_boundary_advection(pos_2);
-            
-            new_elem = search_cell(gbases, pos_2);
+            if((new_elem = search_cell(gbases, pos_2)) == -1)
+            {
+                new_elem = handle_boundary_advection(pos_2);
+            }
 
             calculate_local_pts(gbases[new_elem], new_elem, pos_2, local_pos);
 
@@ -502,7 +481,6 @@ public:
         Eigen::MatrixXd& sol, 
         const double dt, 
         const Eigen::MatrixXd& local_pts, 
-        const bool spatial_hash = true, 
         const int order = 1,
         const int RK = 1)
         {
@@ -553,18 +531,18 @@ public:
 
                     if(RK>=3)
                     {
-                        trace_back( gbases, bases, pos_1[0], vel_1[0], pos_1[1], vel_1[1], sol, 0.5 * dt, spatial_hash);
-                        trace_back( gbases, bases, pos_1[0], vel_1[1], pos_1[2], vel_1[2], sol, 0.75 * dt, spatial_hash);
-                        trace_back( gbases, bases, pos_1[0], 2 * vel_1[0] + 3 * vel_1[1] + 4 * vel_1[2], pos_1[3], vel_1[3], sol, dt / 9, spatial_hash);
+                        trace_back( gbases, bases, pos_1[0], vel_1[0], pos_1[1], vel_1[1], sol, 0.5 * dt);
+                        trace_back( gbases, bases, pos_1[0], vel_1[1], pos_1[2], vel_1[2], sol, 0.75 * dt);
+                        trace_back( gbases, bases, pos_1[0], 2 * vel_1[0] + 3 * vel_1[1] + 4 * vel_1[2], pos_1[3], vel_1[3], sol, dt / 9);
                     }
                     else if(RK==2)
                     {
-                        trace_back( gbases, bases, pos_1[0], vel_1[0], pos_1[1], vel_1[1], sol, 0.5 * dt, spatial_hash);
-                        trace_back( gbases, bases, pos_1[0], vel_1[1], pos_1[3], vel_1[3], sol, dt, spatial_hash);
+                        trace_back( gbases, bases, pos_1[0], vel_1[0], pos_1[1], vel_1[1], sol, 0.5 * dt);
+                        trace_back( gbases, bases, pos_1[0], vel_1[1], pos_1[3], vel_1[3], sol, dt);
                     }
                     else if(RK==1)
                     {
-                        trace_back( gbases, bases, pos_1[0], vel_1[0], pos_1[3], vel_1[3], sol, dt, spatial_hash);
+                        trace_back( gbases, bases, pos_1[0], vel_1[0], pos_1[3], vel_1[3], sol, dt);
                     }
 
                     new_sol.block(global * dim, 0, dim, 1) = vel_1[3].transpose();
@@ -575,18 +553,18 @@ public:
 
                         if(RK>=3)
                         {
-                            trace_back( gbases, bases, pos_1[3], vel_1[3], pos_2[0], vel_2[0], sol, -0.5 * dt, spatial_hash);
-                            trace_back( gbases, bases, pos_1[3], vel_1[1], pos_2[1], vel_2[1], sol, -0.75 * dt, spatial_hash);
-                            trace_back( gbases, bases, pos_1[3], 2 * vel_1[3] + 3 * vel_2[0] + 4 * vel_2[1], pos_2[2], vel_2[2], sol, -dt / 9, spatial_hash);
+                            trace_back( gbases, bases, pos_1[3], vel_1[3], pos_2[0], vel_2[0], sol, -0.5 * dt);
+                            trace_back( gbases, bases, pos_1[3], vel_1[1], pos_2[1], vel_2[1], sol, -0.75 * dt);
+                            trace_back( gbases, bases, pos_1[3], 2 * vel_1[3] + 3 * vel_2[0] + 4 * vel_2[1], pos_2[2], vel_2[2], sol, -dt / 9);
                         }
                         else if(RK==2)
                         {
-                            trace_back( gbases, bases, pos_1[3], vel_1[3], pos_2[0], vel_2[0], sol, -0.5 * dt, spatial_hash);
-                            trace_back( gbases, bases, pos_1[3], vel_2[0], pos_2[2], vel_2[2], sol, -dt, spatial_hash);
+                            trace_back( gbases, bases, pos_1[3], vel_1[3], pos_2[0], vel_2[0], sol, -0.5 * dt);
+                            trace_back( gbases, bases, pos_1[3], vel_2[0], pos_2[2], vel_2[2], sol, -dt);
                         }
                         else if(RK==1)
                         {
-                            trace_back( gbases, bases, pos_1[3], vel_1[3], pos_2[2], vel_2[2], sol, -dt, spatial_hash);
+                            trace_back( gbases, bases, pos_1[3], vel_1[3], pos_2[2], vel_2[2], sol, -dt);
                         }
                         
                         new_sol.block(global * dim, 0, dim, 1) += (vel_1[0] - vel_2[2]).transpose() / 2;
@@ -704,7 +682,6 @@ public:
         const json& params,
         const StiffnessMatrix& mass,
         const StiffnessMatrix& stiffness,
-        const std::vector<int>& boundary_nodes,
         const double& dt,
         const double& viscosity_,
         const std::string &save_path,
@@ -743,7 +720,6 @@ public:
         const json& params,
         const StiffnessMatrix& mass,
         const StiffnessMatrix& stiffness,
-        const std::vector<int>& boundary_nodes,
         const double& dt,
         const double& viscosity_,
         const std::string &save_path,
@@ -816,7 +792,7 @@ public:
             pressure = x;
         }
 
-        void advection_FLIP(const polyfem::Mesh& mesh, const std::vector<polyfem::ElementBases>& gbases, const std::vector<polyfem::ElementBases>& bases, Eigen::MatrixXd& sol, const double dt, const Eigen::MatrixXd& local_pts, const bool spatial_hash = false, const int order = 1)
+        void advection_FLIP(const polyfem::Mesh& mesh, const std::vector<polyfem::ElementBases>& gbases, const std::vector<polyfem::ElementBases>& bases, Eigen::MatrixXd& sol, const double dt, const Eigen::MatrixXd& local_pts, const int order = 1)
         {
             const int ppe = shape; // particle per element
             const double FLIPRatio = 1;
@@ -977,24 +953,26 @@ public:
                 // update particle position via advection
                 RowVectorNd newvel;
                 trace_back( gbases, bases, position_particle[pI], velocity_particle[pI], 
-                    position_particle[pI], newvel, sol, -dt, spatial_hash);
+                    position_particle[pI], newvel, sol, -dt);
 
                 // RK3:
                 // RowVectorNd bypass, vel2, vel3;
                 // trace_back( gbases, bases, position_particle[pI], velocity_particle[pI], 
-                //     bypass, vel2, sol, -0.5 * dt, spatial_hash);
+                //     bypass, vel2, sol, -0.5 * dt);
                 // trace_back( gbases, bases, position_particle[pI], vel2, 
-                //     bypass, vel3, sol, -0.75 * dt, spatial_hash);
+                //     bypass, vel3, sol, -0.75 * dt);
                 // trace_back( gbases, bases, position_particle[pI], 
                 //     2 * velocity_particle[pI] + 3 * vel2 + 4 * vel3, 
-                //     position_particle[pI], bypass, sol, -dt / 9, spatial_hash);
+                //     position_particle[pI], bypass, sol, -dt / 9);
 
                 // prepare P2G
                 Eigen::VectorXi I(1);
                 Eigen::MatrixXd local_pos;
-                
-                // find cell
-                I(0) = search_cell(gbases, position_particle[pI]);
+
+                if((I(0) = search_cell(gbases, position_particle[pI])) == -1)
+                {
+                    I(0) = handle_boundary_advection(position_particle[pI]);
+                }
 
                 calculate_local_pts(gbases[I(0)], I(0), position_particle[pI], local_pos);
 
@@ -1036,7 +1014,7 @@ public:
 #endif
         }
 
-        void advection_PIC(const polyfem::Mesh& mesh, const std::vector<polyfem::ElementBases>& gbases, const std::vector<polyfem::ElementBases>& bases, Eigen::MatrixXd& sol, const double dt, const Eigen::MatrixXd& local_pts, const bool spatial_hash = false, const int order = 1)
+        void advection_PIC(const polyfem::Mesh& mesh, const std::vector<polyfem::ElementBases>& gbases, const std::vector<polyfem::ElementBases>& bases, Eigen::MatrixXd& sol, const double dt, const Eigen::MatrixXd& local_pts, const int order = 1)
         {
             // to store new velocity and weights for particle grid transfer
             Eigen::MatrixXd new_sol = Eigen::MatrixXd::Zero(sol.size(), 1);
@@ -1097,17 +1075,17 @@ public:
                 for (int i = 0; i < ppe; ++i) {
                     RowVectorNd newvel;
                     trace_back( gbases, bases, position_particle[ppe * e + i], velocity_particle[e * ppe + i], 
-                        position_particle[ppe * e + i], newvel, sol, -dt, spatial_hash);
+                        position_particle[ppe * e + i], newvel, sol, -dt);
 
                     // RK3:
                     // RowVectorNd bypass, vel2, vel3;
                     // trace_back( gbases, bases, position_particle[ppe * e + i], velocity_particle[e * ppe + i], 
-                    //     bypass, vel2, sol, -0.5 * dt, spatial_hash);
+                    //     bypass, vel2, sol, -0.5 * dt);
                     // trace_back( gbases, bases, position_particle[ppe * e + i], vel2, 
-                    //     bypass, vel3, sol, -0.75 * dt, spatial_hash);
+                    //     bypass, vel3, sol, -0.75 * dt);
                     // trace_back( gbases, bases, position_particle[ppe * e + i], 
                     //     2 * velocity_particle[e * ppe + i] + 3 * vel2 + 4 * vel3, 
-                    //     position_particle[ppe * e + i], bypass, sol, -dt / 9, spatial_hash);
+                    //     position_particle[ppe * e + i], bypass, sol, -dt / 9);
                 }
 
                 // prepare P2G
@@ -1116,7 +1094,10 @@ public:
                     Eigen::MatrixXd local_pos;
                     
                     // find cell
-                    I(0) = search_cell(gbases, position_particle[ppe * e + j]);
+                    if((I(0) = search_cell(gbases, position_particle[ppe * e + j])) == -1)
+                    {
+                        I(0) = handle_boundary_advection(position_particle[ppe * e + j]);
+                    }
                     calculate_local_pts(gbases[I(0)], I(0), position_particle[ppe * e + j], local_pos);
 
                     // construct interpolator (always linear for P2G, can use gaussian or bspline later)
@@ -1179,5 +1160,6 @@ public:
         Eigen::MatrixXd new_sol_w;
 
         std::vector<int> boundary_elem_id;
+        std::vector<int> boundary_nodes;
     };
 }

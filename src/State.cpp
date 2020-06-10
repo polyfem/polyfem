@@ -2553,8 +2553,6 @@ void State::solve_problem()
 					autogen::q_nodes_3d(args["discr_order"], local_pts);
 			}
 
-			OperatorSplittingSolver ss(*mesh, shape, n_el, local_boundary);
-
 			std::vector<int> bnd_nodes;
 			bnd_nodes.reserve(boundary_nodes.size() / dim);
 			for (auto it = boundary_nodes.begin(); it != boundary_nodes.end(); it++)
@@ -2562,6 +2560,8 @@ void State::solve_problem()
 				if (!(*it % dim)) continue;
 				bnd_nodes.push_back(*it / dim);
 			}
+
+			OperatorSplittingSolver ss(*mesh, shape, n_el, local_boundary, bnd_nodes);
 
 			/* initialize solution */
 
@@ -2574,16 +2574,16 @@ void State::solve_problem()
 				
 				/* advection */
 				if(args["particle"])
-					ss.advection_FLIP(*mesh, gbases, bases, sol, dt, local_pts, args["spatial_hash"], args["advection_order"]);
+					ss.advection_FLIP(*mesh, gbases, bases, sol, dt, local_pts, args["advection_order"]);
 				else
-					ss.advection(*mesh, gbases, bases, sol, dt, local_pts, args["spatial_hash"], args["advection_order"], args["advection_RK"]);
+					ss.advection(*mesh, gbases, bases, sol, dt, local_pts, args["advection_order"], args["advection_RK"]);
 
 				/* apply boundary condition */
 				ss.set_bc(*mesh, bnd_nodes, gbases, bases, sol, local_pts, problem, time);
 
 				/* Stokes */
 				if(!args["separate"])
-					ss.solve_stokes_1st(args["solver_type"], args["precond_type"], params,mass,stiffness,boundary_nodes,dt,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol, pressure,n_pressure_bases);
+					ss.solve_stokes_1st(args["solver_type"], args["precond_type"], params,mass,stiffness,dt,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol, pressure,n_pressure_bases);
 				else
 				{
 					/* viscosity */
