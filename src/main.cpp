@@ -63,6 +63,8 @@ int main(int argc, char **argv)
 	bool is_quiet = false;
 	int log_level = 1;
 
+	double vis_mesh_res = -1;
+
 	command_line.add_option("-j,--json", json_file, "Simulation json file")->check(CLI::ExistingFile);
 	command_line.add_option("-m,--mesh", path, "Mesh path")->check(CLI::ExistingFile);
 
@@ -90,6 +92,7 @@ int main(int argc, char **argv)
 	command_line.add_flag("--lin_geom", force_linear, "Force use linear geometric mapping");
 	command_line.add_flag("--isoparametric", isoparametric, "Force use isoparametric basis");
 	command_line.add_flag("--serendipity", serendipity, "Use of serendipity elements, only for Q2");
+	command_line.add_option("--vis_mesh_res", vis_mesh_res, "Vis mesh resolution");
 
 	//disable out
 	command_line.add_flag("--cmd", no_ui, "Runs in command line mode, no ui");
@@ -156,6 +159,9 @@ int main(int argc, char **argv)
 		}
 		if (!solver.empty())
 			in_args["solver_type"] = solver;
+
+		if (vis_mesh_res > 0)
+			in_args["vismesh_rel_area"] = vis_mesh_res;
 	}
 
 

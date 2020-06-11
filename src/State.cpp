@@ -2147,6 +2147,7 @@ void State::build_basis()
 	if (args["count_flipped_els"])
 	{
 		logger().info("Counting flipped elements...");
+		const auto &els_tag = mesh->elements_tag();
 
 		// flipped_elements.clear();
 		for (size_t i = 0; i < gbases.size(); ++i)
@@ -2158,7 +2159,24 @@ void State::build_basis()
 			if (!vals.is_geom_mapping_positive(mesh->is_volume(), gbases[i]))
 			{
 				++n_flipped;
-				logger().info("element {} is flipped", i);
+
+				std::string type = "";
+				switch (els_tag[i])
+				{
+				case ElementType::Simplex: type = "Simplex"; break;
+				case ElementType::RegularInteriorCube: type = "RegularInteriorCube"; break;
+				case ElementType::RegularBoundaryCube: type = "RegularBoundaryCube"; break;
+				case ElementType::SimpleSingularInteriorCube: type = "SimpleSingularInteriorCube"; break;
+				case ElementType::MultiSingularInteriorCube: type = "MultiSingularInteriorCube"; break;
+				case ElementType::SimpleSingularBoundaryCube: type = "SimpleSingularBoundaryCube"; break;
+				case ElementType::InterfaceCube: type = "InterfaceCube"; break;
+				case ElementType::MultiSingularBoundaryCube: type = "MultiSingularBoundaryCube"; break;
+				case ElementType::BoundaryPolytope: type = "BoundaryPolytope"; break;
+				case ElementType::InteriorPolytope: type = "InteriorPolytope"; break;
+				case ElementType::Undefined: type = "Undefined"; break;
+				}
+
+				logger().info("element {} is flipped, type {}", i, type);
 
 				// if(!parent_elements.empty())
 				// 	flipped_elements.push_back(parent_elements[i]);
