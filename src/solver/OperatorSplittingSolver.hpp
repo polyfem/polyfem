@@ -183,13 +183,6 @@ namespace polyfem
             for(int e = 0; e < n_el; e++)
 #endif
             {
-                // geometry vertices of element e
-                std::vector<RowVectorNd> vert(shape);
-                for (int i = 0; i < shape; i++)
-                {
-                    vert[i] = mesh.point(mesh.cell_vertex_(e, i));
-                }
-
                 ElementAssemblyValues gvals;
                 gvals.compute(e, dim == 3, local_pts, gbases[e], gbases[e]);
 
@@ -202,7 +195,7 @@ namespace polyfem
                     {
                         for (int d = 0; d < dim; d++)
                         {
-                            pos(0, d) += gvals.basis_values[j].val(local_idx) * vert[j](d);
+                            pos(0, d) += gvals.basis_values[j].val(local_idx) * V(T(e, j), d);
                         }
                     }
 
@@ -272,13 +265,6 @@ namespace polyfem
             for (int e = 0; e < n_el; ++e)
 #endif
             {
-                // geometry vertices of element e
-                std::vector<RowVectorNd> vert(shape);
-                for (int i = 0; i < shape; i++)
-                {
-                    vert[i] = mesh.point(mesh.cell_vertex_(e, i));
-                }
-
                 // to compute global position with barycentric coordinate
                 ElementAssemblyValues gvals;
                 gvals.compute(e, dim == 3, local_pts, gbases[e], gbases[e]);
@@ -286,11 +272,11 @@ namespace polyfem
                 for (int i = 0; i < local_pts.rows(); i++)
                 {
                     Eigen::MatrixXd pts = Eigen::MatrixXd::Zero(1, dim);
-                    for (int j = 0; j < vert.size(); j++)
+                    for (int j = 0; j < shape; j++)
                     {
                         for (int d = 0; d < dim; d++)
                         {
-                            pts(0, d) += vert[j](d) * gvals.basis_values[j].val(i);
+                            pts(0, d) += V(T(e, j), d) * gvals.basis_values[j].val(i);
                         }
                     }
                     Eigen::MatrixXd val;
@@ -342,24 +328,6 @@ namespace polyfem
                 }
             }
             return -1; // not inside any elem
-        }
-
-        void barycentric_coordinate(const Eigen::MatrixXd& points, Eigen::MatrixXd& local_pts)
-        {
-            local_pts.resize(1, dim);
-            Eigen::MatrixXd A = Eigen::MatrixXd::Ones(dim + 1, dim + 1);
-            A.block(0, 0, dim + 1, dim) = points.block(0, 0, dim + 1, dim);
-            double det = A.determinant();
-            assert(det > 0);
-            for(int i = 1; i <= dim; i++)
-            {
-                Eigen::MatrixXd B = A;
-                for(int j = 0; j < dim; j++)
-                {
-                    B(i, j) = points(dim + 1, j);
-                }
-                local_pts(i - 1) = B.determinant() / det;
-            }
         }
 
         void calculate_local_pts(const polyfem::ElementBases& gbase, 
