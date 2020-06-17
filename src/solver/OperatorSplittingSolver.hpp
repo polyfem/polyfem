@@ -293,7 +293,7 @@ namespace polyfem
 #endif
         }
 
-        int search_cell(const std::vector<polyfem::ElementBases>& gbases, RowVectorNd& pos)
+        int search_cell(const std::vector<polyfem::ElementBases>& gbases, RowVectorNd& pos, Eigen::MatrixXd& local_pts)
         {
             Eigen::VectorXi pos_int(dim);
             for(int d = 0; d < dim; d++)
@@ -312,8 +312,7 @@ namespace polyfem
 
             const std::list<int>& list = hash_table[idx];
             for(auto it = list.begin(); it != list.end(); it++)
-            {            
-                Eigen::MatrixXd local_pts;
+            {
                 calculate_local_pts(gbases[*it], *it, pos, local_pts);
 
                 if(shape == dim + 1)
@@ -330,6 +329,18 @@ namespace polyfem
             return -1; // not inside any elem
         }
 
+        bool outside_quad(const std::vector<RowVectorNd>& vert, const RowVectorNd& pos)
+        {
+            double a = (vert[1](0) - vert[0](0)) * (pos(1) - vert[0](1)) - (vert[1](1)-vert[0](1)) * (pos(0) - vert[0](0));
+            double b = (vert[2](0) - vert[1](0)) * (pos(1) - vert[1](1)) - (vert[2](1)-vert[1](1)) * (pos(0) - vert[1](0));
+            double c = (vert[3](0) - vert[2](0)) * (pos(1) - vert[2](1)) - (vert[3](1)-vert[2](1)) * (pos(0) - vert[2](0));
+            double d = (vert[0](0) - vert[3](0)) * (pos(1) - vert[3](1)) - (vert[0](1)-vert[3](1)) * (pos(0) - vert[3](0));
+
+            if((a > 0 && b > 0 && c > 0 && d > 0) || (a < 0 && b < 0 && c < 0 && d < 0))
+                return false;
+            return true;
+        }
+
         void calculate_local_pts(const polyfem::ElementBases& gbase, 
         const int elem_idx,
         const RowVectorNd& pos, 
@@ -343,33 +354,41 @@ namespace polyfem
                 for(int d = 0; d < dim; d++)
                     vert[i](d) = V(T(elem_idx, i), d);
             }
-
-            ElementAssemblyValues gvals_;
-            gvals_.compute(elem_idx, dim == 3, local_pos, gbase, gbase);
-
-            Eigen::MatrixXd res = -pos;
-            for (int i = 0; i < shape; i++)
+            if(shape == 4 && dim == 2 && outside_quad(vert, pos))
             {
-                res += vert[i] * gvals_.basis_values[i].val(0);
+                local_pos(0) = local_pos(1) = -1;
+                return;
             }
-
-            Eigen::MatrixXd jacobi = Eigen::MatrixXd::Zero(dim, dim);
-            for (int d1 = 0; d1 < dim; d1++)
+            Eigen::MatrixXd res;
+            do
             {
-                for (int d2 = 0; d2 < dim; d2++)
+                res = -pos;
+                ElementAssemblyValues gvals_;
+                gvals_.compute(elem_idx, dim == 3, local_pos, gbase, gbase);
+                for (int i = 0; i < shape; i++)
                 {
-                    for (int i = 0; i < shape; i++)
+                    res += vert[i] * gvals_.basis_values[i].val(0);
+                }
+
+                Eigen::MatrixXd jacobi = Eigen::MatrixXd::Zero(dim, dim);
+                for (int d1 = 0; d1 < dim; d1++)
+                {
+                    for (int d2 = 0; d2 < dim; d2++)
                     {
-                        jacobi(d1, d2) += vert[i](d1) * gvals_.basis_values[i].grad(0, d2);
+                        for (int i = 0; i < shape; i++)
+                        {
+                            jacobi(d1, d2) += vert[i](d1) * gvals_.basis_values[i].grad(0, d2);
+                        }
                     }
                 }
-            }
 
-            Eigen::VectorXd delta = jacobi.colPivHouseholderQr().solve(res.transpose());
-            for (int d = 0; d < dim; d++)
-            {
-                local_pos(d) -= delta(d);
+                Eigen::VectorXd delta = jacobi.colPivHouseholderQr().solve(res.transpose());
+                for (int d = 0; d < dim; d++)
+                {
+                    local_pos(d) -= delta(d);
+                }
             }
+            while(res.norm() > 1e-10);
         }
 
         int handle_boundary_advection(RowVectorNd& pos)
@@ -423,12 +442,11 @@ namespace polyfem
 
             pos_2 = pos_1 - vel_1 * dt;
 
-            if((new_elem = search_cell(gbases, pos_2)) == -1)
+            if((new_elem = search_cell(gbases, pos_2, local_pos)) == -1)
             {
                 new_elem = handle_boundary_advection(pos_2);
+                calculate_local_pts(gbases[new_elem], new_elem, pos_2, local_pos);
             }
-
-            calculate_local_pts(gbases[new_elem], new_elem, pos_2, local_pos);
 
             // interpolation
             vel_2 = RowVectorNd::Zero(dim);
@@ -937,12 +955,11 @@ namespace polyfem
                 Eigen::VectorXi I(1);
                 Eigen::MatrixXd local_pos;
 
-                if((I(0) = search_cell(gbases, position_particle[pI])) == -1)
+                if((I(0) = search_cell(gbases, position_particle[pI], local_pos)) == -1)
                 {
                     I(0) = handle_boundary_advection(position_particle[pI]);
+                    calculate_local_pts(gbases[I(0)], I(0), position_particle[pI], local_pos);
                 }
-
-                calculate_local_pts(gbases[I(0)], I(0), position_particle[pI], local_pos);
 
                 // construct interpolator (always linear for P2G, can use gaussian or bspline later)
                 velocity_interpolator[pI].compute(I(0), dim == 3, local_pos, gbases[I(0)], gbases[I(0)]);
@@ -1062,11 +1079,11 @@ namespace polyfem
                     Eigen::MatrixXd local_pos;
                     
                     // find cell
-                    if((I(0) = search_cell(gbases, position_particle[ppe * e + j])) == -1)
+                    if((I(0) = search_cell(gbases, position_particle[ppe * e + j],local_pos)) == -1)
                     {
                         I(0) = handle_boundary_advection(position_particle[ppe * e + j]);
+                        calculate_local_pts(gbases[I(0)], I(0), position_particle[ppe * e + j], local_pos);
                     }
-                    calculate_local_pts(gbases[I(0)], I(0), position_particle[ppe * e + j], local_pos);
 
                     // construct interpolator (always linear for P2G, can use gaussian or bspline later)
                     velocity_interpolator[ppe * e + j].compute(I(0), dim == 3, local_pos, gbases[I(0)], gbases[I(0)]);
