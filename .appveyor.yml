@@ -13,14 +13,14 @@ install:
   # - "%PYTHON%\\python.exe -m pip install numpy"
   # - "%PYTHON%\\python.exe -m pip install sympy"
 build:
-  parallel: true
+  parallel: false
 build_script:
   - cd c:\projects\polyfem
   - mkdir build
   - cd build
   - cmake -DCMAKE_BUILD_TYPE=%config% -DPOLYFEM_WITH_MISC=ON -G "Visual Studio 15 2017 Win64" ../
   - set MSBuildLogger="C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-  - set MSBuildOptions=/v:m /p:Configuration=%config% /logger:%MSBuildLogger%
+  - set MSBuildOptions=/v:m /p:Configuration=%config% /logger:%MSBuildLogger% /m:1
   - msbuild %MSBuildOptions% PolyFEM.sln
 
 test_script:
