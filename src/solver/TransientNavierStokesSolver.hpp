@@ -3,7 +3,7 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/State.hpp>
 
-#include <polyfem/LinearSolver.hpp>
+#include <polysolve/LinearSolver.hpp>
 
 #include <polyfem/Logger.hpp>
 
@@ -33,7 +33,7 @@ private:
 					 const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
 					 const StiffnessMatrix &velocity_mass,
 					 const Eigen::VectorXd &rhs, const double grad_norm,
-					 std::unique_ptr<LinearSolver> &solver, double &nlres_norm,
+					 std::unique_ptr<polysolve::LinearSolver> &solver, double &nlres_norm,
 					 Eigen::VectorXd &x);
 
 	const json solver_param;

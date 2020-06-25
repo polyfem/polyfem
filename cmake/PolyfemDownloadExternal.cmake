@@ -24,6 +24,15 @@ endfunction()
 ################################################################################
 
 ## libigl MPL
+function(polyfem_download_solvers)
+    polyfem_download_project(solvers
+        GIT_REPOSITORY https://github.com/polyfem/polysolve.git
+        GIT_TAG        358fa9769e1b67c0e7883eb2b27f171ab3b59b62
+    )
+endfunction()
+
+
+## libigl MPL
 function(polyfem_download_libigl)
     polyfem_download_project(libigl
         GIT_REPOSITORY https://github.com/libigl/libigl.git
@@ -36,14 +45,6 @@ function(polyfem_download_geogram)
     polyfem_download_project(geogram
         GIT_REPOSITORY https://github.com/alicevision/geogram.git
         GIT_TAG        v1.6.8
-    )
-endfunction()
-
-## Json MIT
-function(polyfem_download_json)
-    polyfem_download_project(json
-        GIT_REPOSITORY https://github.com/jdumas/json
-        GIT_TAG        0901d33bf6e7dfe6f70fd9d142c8f5c6695c6c5b
     )
 endfunction()
 

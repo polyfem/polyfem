@@ -66,20 +66,10 @@ set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vector
 option(POLYFEM_NO_UI            "Disables the user interface" OFF)
 
 # Polyfem options for enabling/disabling optional libraries
-option(POLYFEM_WITH_CHOLMOD          "Enable Cholmod library"            ON)
-option(POLYFEM_WITH_UMFPACK          "Enable UmfPack library"            ON)
-option(POLYFEM_WITH_SUPERLU          "Enable SuperLU library"            OFF)
-option(POLYFEM_WITH_MKL              "Enable MKL library"                OFF)
-option(POLYFEM_WITH_PARDISO          "Enable Pardiso library"            ON)
 option(POLYFEM_WITH_MMG              "Enable MMG library"                OFF)
 option(POLYFEM_WITH_TBB              "Enable TBB"                        ON)
-option(POLYFEM_WITH_HYPRE            "Enable hypre"                      ON)
 option(POLYFEM_WITH_OPENCL           "Enable OpenCL"                     OFF)
 option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
-option(POLYFEM_WITH_SPECTRA          "Enable computing spectrum"         ON)
-option(POLYFEM_WITH_AMGCL            "Use AMGCL"                         OFF)
-
-option(POLYFEM_LARGE_INDEX    "Build for large indices"       OFF)
 
 option(POLYFEM_WITH_APPS      "Build the apps"          ON)
 option(POLYFEM_WITH_MISC      "Build misc targes"       ON)
@@ -89,6 +79,18 @@ option(POLYFEM_SANITIZE_ADDRESS   "Sanitize Address"       OFF)
 option(POLYFEM_SANITIZE_MEMORY    "Sanitize Memory"        OFF)
 option(POLYFEM_SANITIZE_THREAD    "Sanitize Thread"        OFF)
 option(POLYFEM_SANITIZE_UNDEFINED "Sanitize Undefined"     OFF)
+
+#Solver
+option(POLYSOLVE_WITH_CHOLMOD          "Enable Cholmod library"            ON)
+option(POLYSOLVE_WITH_UMFPACK          "Enable UmfPack library"            ON)
+option(POLYSOLVE_WITH_SUPERLU          "Enable SuperLU library"            ON)
+option(POLYSOLVE_WITH_MKL              "Enable MKL library"                ON)
+option(POLYSOLVE_WITH_PARDISO          "Enable Pardiso library"            OFF)
+option(POLYSOLVE_WITH_HYPRE            "Enable hypre"                      ON)
+option(POLYSOLVE_WITH_AMGCL            "Use AMGCL"                         ON)
+option(POLYSOLVE_WITH_SPECTRA          "Enable computing spectrum"         OFF)
+option(POLYSOLVE_LARGE_INDEX    "Build for large indices"                  OFF)
+
 
 # Options for libigl modules
 option(LIBIGL_USE_STATIC_LIBRARY          "Use libigl as static library" OFF)
@@ -129,13 +131,6 @@ endif()
 
 # set(POLYFEM_SMALL_N 105 CACHE STRING "" FORCE)
 
-# Somehow Pardiso 6 conflicts with libmetis that these guys depends on... Grr
-if(POLYFEM_WITH_PARDISO)
-    set(POLYFEM_WITH_CHOLMOD      OFF CACHE BOOL "" FORCE)
-    set(POLYFEM_WITH_UMFPACK      OFF CACHE BOOL "" FORCE)
-    set(POLYFEM_WITH_SUPERLU      OFF CACHE BOOL "" FORCE)
-endif()
-
 ################################################################################
 # Dependencies
 ################################################################################
@@ -154,10 +149,6 @@ include(PolyfemDependencies)
 
 # add_library() can only be called without any source since CMake 3.11 ...
 add_library(polyfem src/State.cpp)
-
-if(${POLYFEM_LARGE_INDEX})
-    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_LARGE_INDEX)
-endif()
 
 # Must be call in the same "CMakeLists.txt" where add_library(polyfem ...) is called
 polyfem_autogen(polyfem eigs.py auto_eigs)
@@ -252,6 +243,10 @@ endif()
 # find_package(Eigen3 REQUIRED)
 # target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
 
+polyfem_download_solvers()
+add_subdirectory(${THIRD_PARTY_DIR}/solvers)
+target_link_libraries(polyfem PUBLIC polysolve)
+
 # TBB
 if(POLYFEM_WITH_TBB)
     polyfem_download_tbb()
@@ -289,20 +284,7 @@ add_library(cppoptlib INTERFACE)
 target_include_directories(cppoptlib SYSTEM INTERFACE ${THIRD_PARTY_DIR}/CppNumericalSolvers/include)
 target_link_libraries(polyfem PUBLIC cppoptlib)
 
-# Spectra
-if(POLYFEM_WITH_SPECTRA)
-    polyfem_download_spectra()
-    add_library(spectra INTERFACE)
-    target_include_directories(spectra SYSTEM INTERFACE ${THIRD_PARTY_DIR}/spectra/include)
-    target_link_libraries(polyfem PUBLIC spectra)
-    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_SPECTRA)
-endif()
 
-# Json
-polyfem_download_json()
-add_library(json INTERFACE)
-target_include_directories(json SYSTEM INTERFACE ${THIRD_PARTY_DIR}/json/include)
-target_link_libraries(polyfem PUBLIC json)
 
 # TinyExpr library
 if(NOT TARGET tinyexpr::tinyexpr)
@@ -320,13 +302,6 @@ if(${POLYFEM_TOPLEVEL_PROJECT})
     target_include_directories(catch SYSTEM INTERFACE ${THIRD_PARTY_DIR}/Catch2/single_include/catch2)
 endif()
 
-# Hypre
-if(POLYFEM_WITH_HYPRE)
-    polyfem_download_hypre()
-    include(hypre)
-    target_link_libraries(polyfem PUBLIC HYPRE)
-    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_HYPRE)
-endif()
 
 ################################################################################
 # Optional libraries
@@ -360,101 +335,6 @@ if(POLYFEM_WITH_MMG)
     target_include_directories(polyfem PUBLIC ${Boost_INCLUDE_DIRS})
     target_link_libraries(polyfem PUBLIC ${Boost_LIBRARIES})
 endif()
-
-# Cholmod solver
-if(POLYFEM_WITH_CHOLMOD)
-    find_package(Cholmod)
-    if(CHOLMOD_FOUND)
-        target_include_directories(polyfem PUBLIC ${CHOLMOD_INCLUDES})
-        target_link_libraries(polyfem PUBLIC ${CHOLMOD_LIBRARIES})
-        target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_CHOLMOD)
-    endif()
-endif()
-
-# MKL library
-if(POLYFEM_WITH_MKL)
-    if ("$ENV{MKLROOT}" STREQUAL "")
-        message(WARNING "MKLROOT is not set. Please source the Intel MKL mklvars.sh file.")
-    endif()
-
-    # user defined options for MKL
-    option(MKL_USE_parallel "Use MKL parallel" ON)
-    option(MKL_USE_sdl "Single Dynamic Library or static/dynamic" OFF)
-    set(MKL_USE_interface "lp64" CACHE STRING "for Intel(R)64 compatible arch: ilp64/lp64 or for ia32 arch: cdecl/stdcall")
-
-
-    SET(INTEL_COMPILER_DIR $ENV{MKLROOT}/..)
-
-    find_package(MKL REQUIRED)
-
-    if(MKL_FOUND)
-        target_include_directories(polyfem PUBLIC ${MKL_INCLUDE_DIR})
-        target_link_libraries(polyfem PUBLIC ${MKL_LIBRARIES})
-        target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_MKL)
-        target_compile_definitions(polyfem PUBLIC -DEIGEN_USE_MKL_ALL)
-        target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_PARDISO)
-    else()
-        MESSAGE(WARNING "unable to find MKL")
-    endif()
-endif()
-
-# Pardiso solver
-if(POLYFEM_WITH_PARDISO AND NOT (POLYFEM_WITH_MKL AND MKL_FOUND))
-    find_package(Pardiso)
-    if(PARDISO_FOUND)
-        find_package(LAPACK)
-        if(LAPACK_FOUND)
-            target_link_libraries(polyfem PUBLIC ${LAPACK_LIBRARIES})
-        else()
-            message(FATAL_ERROR "unable to find lapack")
-        endif()
-
-        # find_package(OpenMP)
-        # if( OpenMP_CXX_FOUND )
-        #   target_link_libraries(polyfem PUBLIC ${OpenMP_CXX_LIBRARIES})
-        #   # target_compile_definitions(polyfem PUBLIC ${OpenMP_CXX_FLAGS})
-        # else()
-        #   message(FATAL_ERROR "unable to find omp")
-        # endif()
-
-        target_link_libraries(polyfem PUBLIC ${PARDISO_LIBRARIES})
-        target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_PARDISO)
-    else()
-        message(WARNING "Pardiso not found, solver will not be available.")
-    endif()
-endif()
-
-# UmfPack solver
-if(POLYFEM_WITH_UMFPACK)
-    find_package(Umfpack)
-    if(UMFPACK_FOUND)
-        target_include_directories(polyfem PUBLIC ${UMFPACK_INCLUDES})
-        target_link_libraries(polyfem PUBLIC ${UMFPACK_LIBRARIES})
-        target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_UMFPACK)
-    endif()
-endif()
-
-# SuperLU solver
-if(POLYFEM_WITH_SUPERLU AND NOT (POLYFEM_WITH_MKL AND MKL_FOUND))
-    find_package(SuperLU)
-    if(SUPERLU_FOUND)
-        target_include_directories(polyfem PUBLIC ${SUPERLU_INCLUDES})
-        target_link_libraries(polyfem PUBLIC ${SUPERLU_LIBRARIES})
-        target_compile_definitions(polyfem PUBLIC ${SUPERLU_DEFINES})
-        target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_SUPERLU)
-    endif()
-endif()
-
-
-# amgcl solver
-if(POLYFEM_WITH_AMGCL)
-    polyfem_download_amgcl()
-    add_subdirectory(${THIRD_PARTY_DIR}/amgcl amgcl)
-    target_link_libraries(polyfem PUBLIC amgcl::amgcl)
-    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_AMGCL)
-endif()
-
-
 
 ################################################################################
 # Clutter management

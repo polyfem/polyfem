@@ -1,7 +1,6 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
-#include <polyfem/LinearSolver.hpp>
 #include <polyfem/NLProblem.hpp>
 #include <polyfem/MatrixUtils.hpp>
 #include <polyfem/State.hpp>

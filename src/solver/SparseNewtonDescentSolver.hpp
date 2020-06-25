@@ -1,7 +1,7 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
-#include <polyfem/LinearSolver.hpp>
+#include <polysolve/LinearSolver.hpp>
 #include <polyfem/NLProblem.hpp>
 #include <polyfem/MatrixUtils.hpp>
 #include <polyfem/State.hpp>
@@ -147,7 +147,7 @@ public:
 		// const json &params = State::state().solver_params();
 		// auto solver = LinearSolver::create(State::state().solver_type(), State::state().precond_type());
 
-		auto solver = LinearSolver::create(solver_type, precond_type);
+		auto solver = polysolve::LinearSolver::create(solver_type, precond_type);
 		solver->setParameters(solver_param);
 		polyfem::logger().debug("\tinternal solver {}", solver->name());
 

@@ -3,7 +3,7 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/State.hpp>
 
-#include <polyfem/LinearSolver.hpp>
+#include <polysolve/LinearSolver.hpp>
 
 #include <polyfem/Logger.hpp>
 
@@ -29,7 +29,7 @@ private:
 	int minimize_aux(const std::string &formulation, const State &state,
 					 const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
 					 const Eigen::VectorXd &rhs, const double grad_norm,
-					 std::unique_ptr<LinearSolver> &solver,
+					 std::unique_ptr<polysolve::LinearSolver> &solver,
 					 double &nl_res_norm, Eigen::VectorXd &x);
 	double viscosity;
 

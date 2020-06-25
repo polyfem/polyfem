@@ -2,7 +2,6 @@
 
 #include <polyfem/TriQuadrature.hpp>
 #include <polyfem/FEBasis2d.hpp>
-#include <polyfem/FEMSolver.hpp>
 
 #include <catch.hpp>
 #include <iostream>
@@ -37,28 +36,3 @@ TEST_CASE("solver", "[solver]") {
     REQUIRE(f(x) < 1e-10);
 }
 
-
-#ifdef POLYFEM_WITH_HYPRE
-TEST_CASE("hypre", "[solver]") {
-    const std::string path = POLYFEM_DATA_DIR;
-    std::cout<<path<<std::endl;
-    Eigen::SparseMatrix<double> A;
-    const bool ok = loadMarket(A, path + "/A_2.mat");
-    REQUIRE(ok);
-
-    auto solver = LinearSolver::create("Hypre", "");
-        // solver->setParameters(params);
-    Eigen::VectorXd b(A.rows()); b.setRandom();
-    Eigen::VectorXd x(b.size());
-
-    solver->analyzePattern(A, A.rows());
-    solver->factorize(A);
-    solver->solve(b, x);
-
-    // solver->getInfo(solver_info);
-
-    // std::cout<<"Solver error: "<<x<<std::endl;
-    const double err = (A*x-b).norm();
-    REQUIRE(err < 1e-8);
-}
-#endif

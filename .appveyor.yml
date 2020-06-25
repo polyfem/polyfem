@@ -1,5 +1,5 @@
 version: 1.0.{build}
-os: Visual Studio 2017
+os: Visual Studio 2019
 platform: x64
 clone_folder: C:\projects\polyfem
 shallow_clone: true
@@ -18,7 +18,7 @@ build_script:
   - cd c:\projects\polyfem
   - mkdir build
   - cd build
-  - cmake -DCMAKE_BUILD_TYPE=%config% -DPOLYFEM_WITH_MISC=ON -G "Visual Studio 15 2017 Win64" ../
+  - cmake -DCMAKE_BUILD_TYPE=%config% -DPOLYFEM_WITH_MISC=ON -G "Visual Studio 16 2019" ../
   - set MSBuildLogger="C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
   - set MSBuildOptions=/v:m /p:Configuration=%config% /logger:%MSBuildLogger%
   - msbuild %MSBuildOptions% PolyFEM.sln
