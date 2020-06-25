@@ -351,7 +351,7 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_face(const Navigation3D::Inde
 		start = face_offset_ + index.face * max_nodes_per_face_;
 	else
 	{
-		if (mesh3d->is_boundary_face(index.edge) || mesh3d->switch_element(index).element > index.element)
+		if (mesh3d->is_boundary_face(index.face) || mesh3d->switch_element(index).element > index.element)
 			start = face_offset_ + index.face * max_nodes_per_face_;
 		else
 			start = face_offset_ + index.face * max_nodes_per_face_ + max_nodes_per_face_ / 2;
@@ -457,7 +457,7 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_cell(const Navigation3D::Inde
 	}
 
 #ifndef NDEBUG
-	if(res.size() == 1)
+	if (res.size() == 1 && connect_nodes_)
 	{
 		const int idx = node_id_from_cell(index.element);
 		assert(idx == res.front());
