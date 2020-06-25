@@ -63,7 +63,7 @@ option(POLYFEM_WITH_SANITIZERS "Enable sanitizers in compilation targets"   OFF)
 set(POLYFEM_SMALL_N  80 CACHE STRING "Maximum length for stack-allocated vectors (gradient + Hessian).")
 set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vectors (gradient only).")
 
-option(POLYFEM_NO_UI            "Disables the user interface" OFF)
+option(POLYFEM_NO_UI            "Disables the user interface" ON)
 
 # Polyfem options for enabling/disabling optional libraries
 option(POLYFEM_WITH_MMG              "Enable MMG library"                OFF)
@@ -85,9 +85,9 @@ option(POLYSOLVE_WITH_CHOLMOD          "Enable Cholmod library"            ON)
 option(POLYSOLVE_WITH_UMFPACK          "Enable UmfPack library"            ON)
 option(POLYSOLVE_WITH_SUPERLU          "Enable SuperLU library"            ON)
 option(POLYSOLVE_WITH_MKL              "Enable MKL library"                ON)
-option(POLYSOLVE_WITH_PARDISO          "Enable Pardiso library"            OFF)
+option(POLYSOLVE_WITH_PARDISO          "Enable Pardiso library"            ON)
 option(POLYSOLVE_WITH_HYPRE            "Enable hypre"                      ON)
-option(POLYSOLVE_WITH_AMGCL            "Use AMGCL"                         ON)
+option(POLYSOLVE_WITH_AMGCL            "Use AMGCL"                         OFF)
 option(POLYSOLVE_WITH_SPECTRA          "Enable computing spectrum"         OFF)
 option(POLYSOLVE_LARGE_INDEX    "Build for large indices"                  OFF)
 

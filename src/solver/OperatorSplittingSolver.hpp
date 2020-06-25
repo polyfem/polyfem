@@ -3,7 +3,7 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/State.hpp>
 
-#include <polyfem/LinearSolver.hpp>
+#include <polysolve/LinearSolver.hpp>
 #include <polyfem/Logger.hpp>
 
 #include <polyfem/AssemblerUtils.hpp>
@@ -15,6 +15,8 @@
 #ifdef POLYFEM_WITH_TBB
 #include <tbb/tbb.h>
 #endif
+
+using namespace polysolve;
 
 namespace polyfem
 {
