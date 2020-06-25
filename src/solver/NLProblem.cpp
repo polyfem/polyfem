@@ -1,7 +1,7 @@
 #include <polyfem/NLProblem.hpp>
 
-#include <polyfem/LinearSolver.hpp>
-#include <polyfem/FEMSolver.hpp>
+#include <polysolve/LinearSolver.hpp>
+#include <polysolve/FEMSolver.hpp>
 
 #include <polyfem/Types.hpp>
 
@@ -9,6 +9,7 @@
 
 namespace polyfem
 {
+	using namespace polysolve;
 	// NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t, const int full_size, const int reduced_size)
 	// : state(state), assembler(AssemblerUtils::instance()), rhs_assembler(rhs_assembler),
 	// full_size(full_size), reduced_size(reduced_size), t(t), rhs_computed(false)

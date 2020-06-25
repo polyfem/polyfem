@@ -13,7 +13,7 @@ namespace polyfem
 
 	typedef Eigen::Matrix<double, Eigen::Dynamic, 1, 0, MAX_QUAD_POINTS, 1> QuadratureVector;
 
-#ifdef POLYFEM_LARGE_INDEX
+#ifdef POLYSOLVE_LARGE_INDEX
 	typedef Eigen::SparseMatrix<double, Eigen::ColMajor, std::ptrdiff_t> StiffnessMatrix;
 #else
 	typedef Eigen::SparseMatrix<double, Eigen::ColMajor> StiffnessMatrix;
