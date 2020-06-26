@@ -356,12 +356,14 @@ namespace polyfem
                 for(int d = 0; d < dim; d++)
                     vert[i](d) = V(T(elem_idx, i), d);
             }
-            if(shape == 4 && dim == 2 && outside_quad(vert, pos))
-            {
-                local_pos(0) = local_pos(1) = -1;
-                return;
-            }
+            // if(shape == 4 && dim == 2 && outside_quad(vert, pos))
+            // {
+            //     local_pos(0) = local_pos(1) = -1;
+            //     return;
+            // }
             Eigen::MatrixXd res;
+            int iter_times = 0;
+            int max_iter = 20;
             do
             {
                 res = -pos;
@@ -389,8 +391,15 @@ namespace polyfem
                 {
                     local_pos(d) -= delta(d);
                 }
+                iter_times++;
             }
-            while(res.norm() > 1e-10);
+            while(res.norm() > 1e-12 && iter_times < max_iter);
+
+            if(iter_times >= max_iter)
+            {
+                for(int d=0; d<dim; d++)
+                    local_pos(d) = -1;
+            }
         }
 
         int handle_boundary_advection(RowVectorNd& pos)
