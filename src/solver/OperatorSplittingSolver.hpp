@@ -405,7 +405,7 @@ namespace polyfem
         int handle_boundary_advection(RowVectorNd& pos)
         {
             double dist = 1e10;
-            int idx = -1;
+            int idx = -1, local_idx = -1;
             const int size = boundary_elem_id.size();
 #ifdef POLYFEM_WITH_TBB
             tbb::parallel_for(0, size, 1, [&](int e)
@@ -414,10 +414,10 @@ namespace polyfem
 #endif
             {
                 int elem_idx = boundary_elem_id[e];
-                double dist_ = 0;
 
                 for (int i = 0; i < shape; i++)
                 {
+                    double dist_ = 0;
                     for(int d = 0; d < dim; d++)
                     {
                         dist_ += pow( pos(d) - V(T(elem_idx, i), d), 2);
@@ -427,15 +427,15 @@ namespace polyfem
                     {
                         dist = dist_;
                         idx = elem_idx;
-                        for(int d = 0; d < dim; d++)
-                            pos(d) = V(T(elem_idx, i), d);
-                        break;
+                        local_idx = i;
                     }
                 }
             }
 #ifdef POLYFEM_WITH_TBB
             );
 #endif
+            for(int d = 0; d < dim; d++)
+                pos(d) = V(T(idx, local_idx), d);
             return idx;
         }
 
