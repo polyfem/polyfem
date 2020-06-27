@@ -2543,19 +2543,19 @@ void State::solve_problem()
 			const double viscosity_ = args["viscosity"];	
 
 			StiffnessMatrix stiffness_viscosity, mixed_stiffness;
-			if(args["separate"])
-			{
-				// coefficient matrix of viscosity
-				assembler.assemble_problem("Laplacian", mesh->is_volume(), n_bases, bases, gbases, stiffness_viscosity);
-				assembler.assemble_mass_matrix("Laplacian", mesh->is_volume(), n_bases, bases, gbases, mass);
+			// coefficient matrix of viscosity
+			assembler.assemble_problem("Laplacian", mesh->is_volume(), n_bases, bases, gbases, stiffness_viscosity);
+			assembler.assemble_mass_matrix("Laplacian", mesh->is_volume(), n_bases, bases, gbases, mass);
 
-				// coefficient matrix of pressure projection
-				assembler.assemble_problem("Laplacian", mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, stiffness);
-				
-				// matrix used to calculate divergence of velocity
-				assembler.assemble_mixed_problem("Stokes", mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, mixed_stiffness);
-				mixed_stiffness = mixed_stiffness.transpose();
-			}
+			// coefficient matrix of pressure projection
+			assembler.assemble_problem("Laplacian", mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, stiffness);
+			
+			// matrix used to calculate divergence of velocity
+			assembler.assemble_mixed_problem("Stokes", mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, mixed_stiffness);
+			mixed_stiffness = mixed_stiffness.transpose();
+
+			StiffnessMatrix velocity_mass;
+			assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, bases, gbases, velocity_mass);
 
 			// barycentric coordinates of FEM nodes
 			Eigen::MatrixXd local_pts;
@@ -2602,33 +2602,28 @@ void State::solve_problem()
 				/* apply boundary condition */
 				ss.set_bc(*mesh, bnd_nodes, gbases, bases, sol, local_pts, problem, time);
 
-				/* Stokes */
-				if(!args["separate"])
-					ss.solve_stokes_1st(args["solver_type"], args["precond_type"], params,mass,stiffness,dt,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol, pressure,n_pressure_bases);
-				else
-				{
-					/* viscosity */
-					if(viscosity_ > 0)
-						ss.solve_diffusion_1st(args["solver_type"], args["precond_type"], params,mass,stiffness_viscosity,bnd_nodes,dt,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol);
+				/* viscosity */
+				if(viscosity_ > 0)
+					ss.solve_diffusion_1st(args["solver_type"], args["precond_type"], params,mass,stiffness_viscosity,bnd_nodes,dt,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol);
 
-					/* external force */
-					ss.external_force(*mesh, gbases, bases, dt, sol, local_pts, problem, time);
-					
-					/* incompressibility */
-					ss.solve_pressure(args["solver_type"], args["precond_type"], params,stiffness,mixed_stiffness,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol, pressure);
-					
-					Eigen::VectorXd grad_pressure;
-					ss.projection(*mesh, n_bases, gbases, bases, pressure_bases, local_pts, pressure, sol);
+				/* external force */
+				ss.external_force(*mesh, gbases, bases, dt, sol, local_pts, problem, time);
+				
+				/* incompressibility */
+				ss.solve_pressure(args["solver_type"], args["precond_type"], params,stiffness,mixed_stiffness,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol, pressure);
+				
+				ss.projection(*mesh, n_bases, gbases, bases, pressure_bases, local_pts, pressure, sol);
 
-					/* apply boundary condition */
-					ss.set_bc(*mesh, bnd_nodes, gbases, bases, sol, local_pts, problem, time);
-				}
+				/* apply boundary condition */
+				ss.set_bc(*mesh, bnd_nodes, gbases, bases, sol, local_pts, problem, time);
 
 				/* export to vtu */
-
-				// if (!solve_export_to_file)
-				// 	solution_frames.emplace_back();
-				// save_vtu("step_" + std::to_string(t) + ".vtu", time);
+				if (args["save_time_sequence"])
+				{
+					if (!solve_export_to_file)
+						solution_frames.emplace_back();
+					save_vtu("step_" + std::to_string(t) + ".vtu", time);
+				}
 			}
 		}
 		else if (formulation() == "NavierStokes")
