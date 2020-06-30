@@ -704,11 +704,15 @@ namespace polyfem
 				node_index2 = 20;
 				node_index3 = 21;
 			}
-			else
+			else if (n_v1 == nodes_ids[1] && n_v2 == nodes_ids[3])
 			{
 				node_index1 = 21;
 				node_index2 = 20;
 				node_index3 = 19;
+			}
+			else
+			{
+				assert(false);
 			}
 
 			n.nodes.resize(3, 3);
@@ -739,89 +743,56 @@ namespace polyfem
 				std::sort(c4.begin(), c4.end());
 
 				int id = 0;
-				int n1 = 0;
-				int n2 = 0;
-				int n3 = 0;
+				int index0 = 0;
+				int index1 = 1;
+				int index2 = 2;
 				if(vid == c1)
 				{
 					id = 22;
-					n1 = nodes_ids[0];
-					n2 = nodes_ids[1];
-					n3 = nodes_ids[2];
+					n.v1 = nodes_ids[0];
+					n.v2 = nodes_ids[1];
+					n.v3 = nodes_ids[2];
+
+					index0 = 0;
+					index1 = 2;
+					index2 = 1; //ok
 				}
 				else if (vid == c2)
 				{
 					id = 25;
-					n1 = nodes_ids[0];
-					n2 = nodes_ids[1];
-					n3 = nodes_ids[3];
+					n.v1 = nodes_ids[0];
+					n.v2 = nodes_ids[1];
+					n.v3 = nodes_ids[3];
+
+					index0 = 0;
+					index1 = 1;
+					index2 = 2; //ok
 				}
 				else if (vid == c3)
 				{
 					id = 28;
-					n1 = nodes_ids[0];
-					n2 = nodes_ids[2];
-					n3 = nodes_ids[3];
+					n.v1 = nodes_ids[0];
+					n.v2 = nodes_ids[2];
+					n.v3 = nodes_ids[3];
+
+					index0 = 0;
+					index1 = 2;
+					index2 = 1; //ok
 				}
 				else if (vid == c4)
 				{
 					id = 31;
-					n1 = nodes_ids[1];
-					n2 = nodes_ids[2];
-					n3 = nodes_ids[3];
+					n.v1 = nodes_ids[1];
+					n.v2 = nodes_ids[2];
+					n.v3 = nodes_ids[3];
+
+					index0 = 1;
+					index1 = 2;
+					index2 = 0; //ok
 				}
 				else
 				{
 					//the face nees to be one of the 4 above
-					assert(false);
-				}
-
-				int index0 = 0;
-				int index1 = 1;
-				int index2 = 2;
-
-				if(n.v1 == n1 && n.v2 == n2 && n.v3 == n3)
-				{
-					index0 = 1;
-					index1 = 2;
-					index2 = 0;
-				}
-				else if(n.v1 == n1 && n.v2 == n3 && n.v3 == n2)
-				{
-					index0 = 1;
-					index1 = 0;
-					index2 = 2;
-				}
-				else if(n.v1 == n2 && n.v2 == n3 && n.v3 == n1)
-				{
-					index0 = 1;
-					index1 = 2;
-					index2 = 0;
-				}
-				else if(n.v1 == n2 && n.v2 == n1 && n.v3 == n3)
-				{
-					//Not sure!
-					index0 = 1;
-					index1 = 0;
-					index2 = 2;
-					// std::cout<<"DDD"<<std::endl;
-					// exit(0);
-				}
-				else if(n.v1 == n3 && n.v2 == n1 && n.v3 == n2)
-				{
-					index0 = 1;
-					index1 = 0;
-					index2 = 2;
-				}
-				else if(n.v1 == n3 && n.v2 == n2 && n.v3 == n1)
-				{
-					index0 = 1;
-					index1 = 2;
-					index2 = 0;
-				}
-				else
-				{
-					//all combinations are being tried, should never happen
 					assert(false);
 				}
 
@@ -994,9 +965,60 @@ namespace polyfem
 			const int jj = j - 1;
 
 			assert(orders_(index.element) == 3 || orders_(index.element) == 4);
-
 			const auto &n = face_nodes_[index.face];
-			return n.nodes.row(jj*n_new_nodes+ii);
+			int lindex = jj * n_new_nodes + ii;
+
+			if(orders_(index.element) == 4)
+			{
+				static const std::array<int, 3> remapping = {{0, 2, 1}};
+				if(n.v1 == index.vertex)
+				{
+					if(n.v2 != next_around_face(index).vertex){
+						lindex = remapping[lindex];
+						assert(n.v3 == next_around_face(index).vertex);
+					}
+					else
+					{
+						assert(n.v2 == next_around_face(index).vertex);
+					}
+				}
+				else if (n.v2 == index.vertex)
+				{
+
+					if (n.v3 != next_around_face(index).vertex)
+					{
+						lindex = remapping[lindex];
+						assert(n.v1 == next_around_face(index).vertex);
+					}
+					else
+					{
+						assert(n.v3 == switch_vertex(index).vertex);
+					}
+
+					lindex = (lindex + 1) % 3;
+				}
+				else if (n.v3 == index.vertex)
+				{
+
+					if (n.v1 != next_around_face(index).vertex)
+					{
+						lindex = remapping[lindex];
+						assert(n.v2 == next_around_face(index).vertex);
+					}
+					else
+					{
+						assert(n.v1 == switch_vertex(index).vertex);
+					}
+
+					lindex = (lindex + 2) % 3;
+				}
+				else
+				{
+					// assert(false);
+				}
+			}
+
+			return n.nodes.row(lindex);
 		}
 		else if(is_cube(index.element))
 		{

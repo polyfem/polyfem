@@ -237,7 +237,7 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_edge(const Navigation3D::Inde
 	// const auto v2 = mesh3d->point(mesh3d->switch_vertex(index).vertex);
 
 	const int start_node_id = primitive_to_node_[start];
-	if (start_node_id < 0 || !connect_nodes_) {
+	if (start_node_id < 0) {
 		for(int i = 1; i <= n_new_nodes; ++i)
 		{
 			// const double t = i/(n_new_nodes + 1.0);
