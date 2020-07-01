@@ -715,15 +715,25 @@ void TransientStokeProblemExact::exact(const Eigen::MatrixXd &pts, const double 
 		const double x = pts(i, 0);
 		const double y = pts(i, 1);
 
-		// val(i, 0) = -t + x*x / 2 + x* y;
-		// val(i, 1) = t - x * y - y *y / 2;
+		if(pts.cols() == 2)
+		{
+			val(i, 0) = -t + x*x / 2 + x* y;
+			val(i, 1) = t - x * y - y *y / 2;
+		}
+		else
+		{
+			const double z = pts(i, 2);
+			val(i, 0) = x*x;
+			val(i, 1) = y*y;
+			val(i, 2) = -2*z*(x+y);
+		}
 
-		const double w = 1.;
-		const double k = sqrt(0.5 * w / viscosity_);
-		const double Q = 1./(pow(cosh(k), 2) - pow(cos(k), 2));
+		// const double w = 1.;
+		// const double k = sqrt(0.5 * w / viscosity_);
+		// const double Q = 1./(pow(cosh(k), 2) - pow(cos(k), 2));
 
-		val(i, 0) = Q * ( sinh(k * y) * cos(k * y) * sinh(k) * cos(k) + cosh(k * y) * sin(k * y) * cosh(k) * sin(k) ) * cos(w * t) + Q * ( sinh(k * y) * cos(k * y) * sin(k) * cosh(k) - cosh(k * y) * sin(k * y) * cos(k) * sinh(k) ) * sin(w * t);
-		val(i, 1) = 0;
+		// val(i, 0) = Q * ( sinh(k * y) * cos(k * y) * sinh(k) * cos(k) + cosh(k * y) * sin(k * y) * cosh(k) * sin(k) ) * cos(w * t) + Q * ( sinh(k * y) * cos(k * y) * sin(k) * cosh(k) - cosh(k * y) * sin(k * y) * cos(k) * sinh(k) ) * sin(w * t);
+		// val(i, 1) = 0;
 	}
 }
 
@@ -751,13 +761,19 @@ void TransientStokeProblemExact::rhs(const std::string &formulation, const Eigen
 	{
 		const double x = pts(i, 0);
 		const double y = pts(i, 1);
-
-		// val(i, 0) = -viscosity_ - t * y + 1. / 2. * x * (x * x + x * y + y * y);
-		// val(i, 1) =  viscosity_ - t * x + 1. / 2. * y * (x * x + x * y + y * y) + 2;
-
-		val(i, 0) = val(i, 1) = 0;
+		if(pts.cols() == 2)
+		{
+			val(i, 0) = -viscosity_ - t * y + 1. / 2. * x * (x * x + x * y + y * y);
+			val(i, 1) =  viscosity_ - t * x + 1. / 2. * y * (x * x + x * y + y * y) + 2;
+		}
+		else
+		{
+			const double z = pts(i, 2);
+			val(i, 0) = 2*(x*x*x-1);
+			val(i, 1) = 2*(y*y*y-1);
+			val(i, 2) = 2*z*(x*x+4*x*y+y*y);
+		}
 	}
-
 	val*=-1;
 }
 
