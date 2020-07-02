@@ -1,17 +1,16 @@
 {
-    "mesh": "C:/Users/zizhou/Documents/GitHub/polyfem/plate_square.obj",
+    "mesh": "C:/Users/zizhou/Documents/GitHub/polyfem/cube_hex.mesh",
     "bc_tag": "",                  
     "boundary_id_threshold": -1,
     "normalize_mesh": true,         
     "particle": false,
     "tend": 0.1,
-    "n_refs": 2,
+    "n_refs": 1,
     "time_steps": 8,
-    "spatial_hash": true,
     "advection_order": 1,
     "advection_RK": 1,
     "save_time_sequence": false,
-    "discr_order": 1,
+    "discr_order": 2,
     "pressure_discr_order": 1,
     "quadrature_order": 4,
 
@@ -61,24 +60,7 @@
 
     "solver_type": "Pardiso",       
     "precond_type": "Eigen::DiagonalPreconditioner",
-    "solver_params": {},            
-
-    "nl_solver": "newton",          
-    "line_search": "armijo",        
-    "nl_solver_rhs_steps": 1,       
-    "save_solve_sequence": true,   
-
-    "params": {                     
-        "k": 1.0,                   
-
-        "elasticity_tensor": {},    
-
-        "E": 1.5,                   
-        "nu": 0.3,                  
-
-        "lambda": 0.329670329,      
-        "mu": 0.384615384
-    },              
+    "solver_params": {},             
 
     "vismesh_rel_area": 1e-05       
 }

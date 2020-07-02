@@ -9,20 +9,20 @@ if __name__ == '__main__':
     vtu_folder = "vtu"
     json_folder = "out"
 
-    discr_order = 1
+    discr_order = 2
     p_discr_order = 1
-    viscosities = [1, 1e-3]
+    viscosities = [1]
 
-    n_refs = [0, 1, 2]
+    n_refs = [0]
     base_ref = 0
     base_steps = [32]
 
-    ext = "obj"
+    ext = "mesh"
 
-    folder_path = "meshes"
+    folder_path = "C:\\Users\\zizhou\\Desktop\\hexlab_hex\\normalized\\small"
     current_folder = cwd = os.getcwd()
 
-    with open("OperatorSplitting.json", 'r') as f:
+    with open("fem.json", 'r') as f:
         json_data = json.load(f)
 
     for viscosity in viscosities:
@@ -43,10 +43,7 @@ if __name__ == '__main__':
                 for ref in n_refs:
                     fname = title + "_" + str(base_step) + "_" + str(viscosity) + "_" + str(ref)
 
-                    if title == "2pi":
-                        json_data["n_refs"] = ref+base_ref
-                    else:
-                        json_data["n_refs"] = ref+base_ref+2
+                    json_data["n_refs"] = ref+base_ref
                     json_data["time_steps"] = int(base_step * 2**ref)
 
                     json_data["output"] = os.path.join(current_folder, json_folder, fname + ".json")
