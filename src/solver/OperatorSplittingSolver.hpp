@@ -112,296 +112,6 @@ namespace polyfem
             }
         }
 
-        void set_bc(const polyfem::Mesh& mesh, 
-        const std::vector<int>& bnd_nodes,
-        const std::vector<polyfem::ElementBases>& gbases, 
-        const std::vector<polyfem::ElementBases>& bases, 
-        Eigen::MatrixXd& sol, 
-        const Eigen::MatrixXd& local_pts, 
-        const std::shared_ptr<Problem> problem, 
-        const double time)
-        {
-            const int size = boundary_elem_id.size();
-#ifdef POLYFEM_WITH_TBB
-            tbb::parallel_for(0, size, 1, [&](int e)
-#else
-            for(int e = 0; e < size; e++)
-#endif
-            {
-                int elem_idx = boundary_elem_id[e];
-
-                // geometry vertices of element e
-                Eigen::MatrixXd vert(shape, dim);
-                for (int i = 0; i < shape; i++)
-                {
-                    for(int d = 0; d < dim; d++)
-                        vert(i, d) = V(T(elem_idx, i), d);
-                }
-
-                ElementAssemblyValues gvals;
-                gvals.compute(elem_idx, dim == 3, local_pts, gbases[elem_idx], gbases[elem_idx]);
-
-                for (int local_idx = 0; local_idx < bases[elem_idx].bases.size(); local_idx++)
-                {
-                    int global_idx = bases[elem_idx].bases[local_idx].global()[0].index;
-                    if (find(bnd_nodes.begin(), bnd_nodes.end(), global_idx) == bnd_nodes.end())
-                        continue;
-
-                    Eigen::MatrixXd pos = Eigen::MatrixXd::Zero(1, dim);
-                    for (int j = 0; j < shape; j++)
-                    {
-                        for (int d = 0; d < dim; d++)
-                        {
-                            pos(0, d) += gvals.basis_values[j].val(local_idx) * vert(j, d);
-                        }
-                    }
-
-                    Eigen::MatrixXd val;
-                    problem->exact(pos, time, val);
-
-                    for (int d = 0; d < dim; d++)
-                    {
-                        sol(global_idx * dim + d) = val(d);
-                    }
-                }
-            }
-#ifdef POLYFEM_WITH_TBB
-            );
-#endif
-        }
-
-        void external_force(const polyfem::Mesh& mesh,
-        const std::vector<polyfem::ElementBases>& gbases, 
-        const std::vector<polyfem::ElementBases>& bases, 
-        const double dt, 
-        Eigen::MatrixXd& sol, 
-        const Eigen::MatrixXd& local_pts, 
-        const std::shared_ptr<Problem> problem, 
-        const double time)
-        {
-#ifdef POLYFEM_WITH_TBB
-            tbb::parallel_for(0, n_el, 1, [&](int e)
-#else
-            for(int e = 0; e < n_el; e++)
-#endif
-            {
-                ElementAssemblyValues gvals;
-                gvals.compute(e, dim == 3, local_pts, gbases[e], gbases[e]);
-
-                for (int local_idx = 0; local_idx < bases[e].bases.size(); local_idx++)
-                {
-                    int global_idx = bases[e].bases[local_idx].global()[0].index;
-
-                    Eigen::MatrixXd pos = Eigen::MatrixXd::Zero(1, dim);
-                    for (int j = 0; j < shape; j++)
-                    {
-                        for (int d = 0; d < dim; d++)
-                        {
-                            pos(0, d) += gvals.basis_values[j].val(local_idx) * V(T(e, j), d);
-                        }
-                    }
-
-                    Eigen::MatrixXd val;
-                    problem->rhs(std::string(), pos, time, val);
-
-                    for (int d = 0; d < dim; d++)
-                    {
-                        sol(global_idx * dim + d) += val(d) * dt;
-                    }
-                }
-            }
-#ifdef POLYFEM_WITH_TBB
-            );
-#endif
-        }
-
-        void projection(const polyfem::Mesh& mesh, 
-        int n_bases, 
-        const std::vector<polyfem::ElementBases>& gbases, 
-        const std::vector<polyfem::ElementBases>& bases, 
-        const std::vector<polyfem::ElementBases>& pressure_bases, 
-        const Eigen::MatrixXd& local_pts, 
-        Eigen::MatrixXd& pressure, 
-        Eigen::MatrixXd& sol)
-        {
-            Eigen::VectorXd grad_pressure = Eigen::VectorXd::Zero(n_bases * dim);
-            Eigen::VectorXi traversed = Eigen::VectorXi::Zero(n_bases);
-
-            ElementAssemblyValues vals;
-            for (int e = 0; e < n_el; ++e)
-            {
-                vals.compute(e, dim == 3, local_pts, pressure_bases[e], gbases[e]);
-                for (int j = 0; j < local_pts.rows(); j++)
-                {
-                    int global_ = bases[e].bases[j].global()[0].index;
-                    for (int i = 0; i < vals.basis_values.size(); i++)
-                    {
-                        for (int d = 0; d < dim; d++)
-                        {
-                            assert(pressure(pressure_bases[e].bases[i].global().size() == 1));
-                            grad_pressure(global_ * dim + d) += vals.basis_values[i].grad_t_m(j, d) * pressure(pressure_bases[e].bases[i].global()[0].index);
-                        }
-                    }
-                    traversed(global_)++;
-                }
-            }
-            for (int i = 0; i < traversed.size(); i++)
-            {
-                for (int d = 0; d < dim; d++)
-                {
-                    sol(i * dim + d) -= grad_pressure(i * dim + d) / traversed(i);
-                }
-            }
-        }
-
-        void initialize_solution(const polyfem::Mesh& mesh, 
-        const std::vector<polyfem::ElementBases>& gbases, 
-        const std::vector<polyfem::ElementBases>& bases, 
-        const std::shared_ptr<Problem> problem, 
-        Eigen::MatrixXd& sol, 
-        const Eigen::MatrixXd& local_pts)
-        {
-#ifdef POLYFEM_WITH_TBB
-            tbb::parallel_for(0, n_el, 1, [&](int e)
-#else
-            for (int e = 0; e < n_el; ++e)
-#endif
-            {
-                // to compute global position with barycentric coordinate
-                ElementAssemblyValues gvals;
-                gvals.compute(e, dim == 3, local_pts, gbases[e], gbases[e]);
-
-                for (int i = 0; i < local_pts.rows(); i++)
-                {
-                    Eigen::MatrixXd pts = Eigen::MatrixXd::Zero(1, dim);
-                    for (int j = 0; j < shape; j++)
-                    {
-                        for (int d = 0; d < dim; d++)
-                        {
-                            pts(0, d) += V(T(e, j), d) * gvals.basis_values[j].val(i);
-                        }
-                    }
-                    Eigen::MatrixXd val;
-                    problem->initial_solution(pts, val);
-                    int global = bases[e].bases[i].global()[0].index;
-                    for (int d = 0; d < dim; d++)
-                    {
-                        sol(global * dim + d) = val(d);
-                    }
-                }
-            }
-#ifdef POLYFEM_WITH_TBB
-            );
-#endif
-        }
-
-        int search_cell(const std::vector<polyfem::ElementBases>& gbases, RowVectorNd& pos, Eigen::MatrixXd& local_pts)
-        {
-            Eigen::VectorXi pos_int(dim);
-            for(int d = 0; d < dim; d++)
-            {
-                pos_int(d) = floor((pos(d) - min_domain(d)) / (max_domain(d) - min_domain(d)) * cell_num);
-                if(pos_int(d) < 0) pos_int(d) = 0;
-                else if(pos_int(d) >= cell_num) pos_int(d) = cell_num - 1;
-            }
-
-            int idx = 0, dim_num = 1;
-            for(int d = 0; d < dim; d++)
-            {
-                idx += pos_int(d) * dim_num;
-                dim_num *= cell_num;
-            }
-
-            const std::list<int>& list = hash_table[idx];
-            for(auto it = list.begin(); it != list.end(); it++)
-            {
-                calculate_local_pts(gbases[*it], *it, pos, local_pts);
-
-                if(shape == dim + 1)
-                {
-                    if(local_pts.minCoeff() > -1e-13 && local_pts.sum() < 1 + 1e-13)
-                        return *it;
-                }
-                else
-                {
-                    if(local_pts.minCoeff() > -1e-13 && local_pts.maxCoeff() < 1 + 1e-13)
-                        return *it;
-                }
-            }
-            return -1; // not inside any elem
-        }
-
-        bool outside_quad(const std::vector<RowVectorNd>& vert, const RowVectorNd& pos)
-        {
-            double a = (vert[1](0) - vert[0](0)) * (pos(1) - vert[0](1)) - (vert[1](1)-vert[0](1)) * (pos(0) - vert[0](0));
-            double b = (vert[2](0) - vert[1](0)) * (pos(1) - vert[1](1)) - (vert[2](1)-vert[1](1)) * (pos(0) - vert[1](0));
-            double c = (vert[3](0) - vert[2](0)) * (pos(1) - vert[2](1)) - (vert[3](1)-vert[2](1)) * (pos(0) - vert[2](0));
-            double d = (vert[0](0) - vert[3](0)) * (pos(1) - vert[3](1)) - (vert[0](1)-vert[3](1)) * (pos(0) - vert[3](0));
-
-            if((a > 0 && b > 0 && c > 0 && d > 0) || (a < 0 && b < 0 && c < 0 && d < 0))
-                return false;
-            return true;
-        }
-
-        void calculate_local_pts(const polyfem::ElementBases& gbase, 
-        const int elem_idx,
-        const RowVectorNd& pos, 
-        Eigen::MatrixXd& local_pos)
-        {
-            local_pos = Eigen::MatrixXd::Zero(1, dim);
-            
-            std::vector<RowVectorNd> vert(shape,RowVectorNd::Zero(1, dim));
-            for (int i = 0; i < shape; i++)
-            {
-                for(int d = 0; d < dim; d++)
-                    vert[i](d) = V(T(elem_idx, i), d);
-            }
-            // if(shape == 4 && dim == 2 && outside_quad(vert, pos))
-            // {
-            //     local_pos(0) = local_pos(1) = -1;
-            //     return;
-            // }
-            Eigen::MatrixXd res;
-            int iter_times = 0;
-            int max_iter = 20;
-            do
-            {
-                res = -pos;
-                ElementAssemblyValues gvals_;
-                gvals_.compute(elem_idx, dim == 3, local_pos, gbase, gbase);
-                for (int i = 0; i < shape; i++)
-                {
-                    res += vert[i] * gvals_.basis_values[i].val(0);
-                }
-
-                Eigen::MatrixXd jacobi = Eigen::MatrixXd::Zero(dim, dim);
-                for (int d1 = 0; d1 < dim; d1++)
-                {
-                    for (int d2 = 0; d2 < dim; d2++)
-                    {
-                        for (int i = 0; i < shape; i++)
-                        {
-                            jacobi(d1, d2) += vert[i](d1) * gvals_.basis_values[i].grad(0, d2);
-                        }
-                    }
-                }
-
-                Eigen::VectorXd delta = jacobi.colPivHouseholderQr().solve(res.transpose());
-                for (int d = 0; d < dim; d++)
-                {
-                    local_pos(d) -= delta(d);
-                }
-                iter_times++;
-            }
-            while(res.norm() > 1e-12 && iter_times < max_iter);
-
-            if(iter_times >= max_iter)
-            {
-                for(int d=0; d<dim; d++)
-                    local_pos(d) = -1;
-            }
-        }
-
         int handle_boundary_advection(RowVectorNd& pos)
         {
             double dist = 1e10;
@@ -572,221 +282,6 @@ namespace polyfem
             );
 #endif
             sol.swap(new_sol);
-        }
-
-        void solve_diffusion_1st(const std::string &solver_type, 
-        const std::string &precond,
-        const json& params,
-        const StiffnessMatrix& mass,
-        const StiffnessMatrix& stiffness_viscosity,
-        const std::vector<int>& bnd_nodes,
-        const double& dt,
-        const double& viscosity_,
-        const std::string &save_path,
-	    bool compute_spectrum,
-        Eigen::MatrixXd& sol)
-        {
-            Eigen::VectorXd rhs;
-            StiffnessMatrix A;
-            
-            for(int d = 0; d < dim; d++)
-            {
-                auto solver = LinearSolver::create(solver_type, precond);
-                solver->setParameters(params);
-                logger().info("{}...", solver->name());
-
-                Eigen::VectorXd x(sol.size() / dim);
-                for(int j = 0; j < x.size(); j++)
-                {
-                    x(j) = sol(j * dim + d);
-                }
-                A = mass + viscosity_ * dt * stiffness_viscosity;
-                rhs = mass * x;
-
-                // keep dirichlet bc
-                for (int i = 0; i < bnd_nodes.size(); i++)
-                {
-                    rhs(bnd_nodes[i]) = x(bnd_nodes[i]);
-                }
-
-                const int precond_num = A.rows();
-
-                auto spectrum = dirichlet_solve(*solver, A, rhs, bnd_nodes, x, precond_num, save_path, compute_spectrum);
-
-                for(int j = 0; j < x.size(); j++)
-                {
-                    sol(j * dim + d) = x(j);
-                }
-            }
-        }
-
-        void solve_diffusion_2nd(const std::string &solver_type, 
-        const std::string &precond,
-        const json& params,
-        const StiffnessMatrix& mass,
-        const StiffnessMatrix& stiffness_viscosity,
-        const std::vector<int>& bnd_nodes,
-        const double& dt,
-        const double& viscosity_,
-        const std::string &save_path,
-	    bool compute_spectrum,
-        Eigen::MatrixXd& sol)
-        {
-            for(int d = 0; d < dim; d++)
-            {
-                auto solver = LinearSolver::create(solver_type, precond);
-                solver->setParameters(params);
-                logger().info("{}...", solver->name());
-
-                Eigen::VectorXd x(sol.size() / dim);
-                for(int j = 0; j < x.size(); j++)
-                {
-                    x(j) = sol(j * dim + d);
-                }
-                Eigen::VectorXd rhs = mass * x - 0.5 * dt * viscosity_ * stiffness_viscosity * x;
-				StiffnessMatrix A = mass;
-
-                // keep dirichlet bc
-                for (int i = 0; i < bnd_nodes.size(); i++)
-                {
-                    rhs(bnd_nodes[i]) = x(bnd_nodes[i]);
-                }
-
-                const int precond_num = A.rows();
-
-                auto spectrum = dirichlet_solve(*solver, A, rhs, bnd_nodes, x, precond_num, save_path, compute_spectrum);
-
-                A = mass + 0.5 * dt * viscosity_ * stiffness_viscosity;
-                rhs = mass * x;
-
-                // keep dirichlet bc
-                for (int i = 0; i < bnd_nodes.size(); i++)
-                {
-                    rhs(bnd_nodes[i]) = x(bnd_nodes[i]);
-                }
-
-                spectrum = dirichlet_solve(*solver, A, rhs, bnd_nodes, x, precond_num, save_path, compute_spectrum);
-
-                for(int j = 0; j < x.size(); j++)
-                {
-                    sol(j * dim + d) = x(j);
-                }
-            }
-        }
-
-        void solve_stokes_1st(const std::string &solver_type, 
-        const std::string &precond, 
-        const json& params,
-        const StiffnessMatrix& mass,
-        const StiffnessMatrix& stiffness,
-        const double& dt,
-        const double& viscosity_,
-        const std::string &save_path,
-	    bool compute_spectrum,
-        Eigen::MatrixXd& sol, 
-        Eigen::MatrixXd& pressure,
-        const int& n_pressure_bases)
-        {
-            auto solver = LinearSolver::create(solver_type, precond);
-            solver->setParameters(params);
-            logger().info("{}...", solver->name());
-
-            StiffnessMatrix A;
-            Eigen::VectorXd b, x;
-
-            A = dt * stiffness;
-            A.block(0, 0, sol.rows(), sol.rows()) *= viscosity_;
-            A += mass;
-            b = Eigen::VectorXd::Zero(sol.rows() + n_pressure_bases + 1);
-            b.block(0, 0, sol.rows(), sol.cols()) = mass.block(0, 0, sol.rows(), sol.rows()) * sol;
-
-            for (int i = 0; i < boundary_nodes.size(); i++)
-            {
-                b(boundary_nodes[i]) = sol(boundary_nodes[i]);
-            }
-
-            const int precond_num = sol.rows();
-
-            auto spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, save_path, compute_spectrum);
-            sol = x.block(0, 0, sol.rows(), sol.cols());
-            pressure = x.block(sol.rows(), 0, n_pressure_bases, sol.cols());
-        }
-
-        void solve_stokes_2nd(const std::string &solver_type, 
-        const std::string &precond, 
-        const json& params,
-        const StiffnessMatrix& mass,
-        const StiffnessMatrix& stiffness,
-        const double& dt,
-        const double& viscosity_,
-        const std::string &save_path,
-	    bool compute_spectrum,
-        Eigen::MatrixXd& sol, 
-        Eigen::MatrixXd& pressure,
-        const int& n_pressure_bases)
-        {
-            auto solver = LinearSolver::create(solver_type, precond);
-            solver->setParameters(params);
-            logger().info("{}...", solver->name());
-
-            StiffnessMatrix A;
-            Eigen::VectorXd b, x;
-
-            A = dt / 2 * stiffness;
-            A.block(0,0,sol.rows(),sol.rows()) *= 0;
-            A += mass;
-            b = Eigen::VectorXd::Zero(sol.rows() + n_pressure_bases + 1);
-            b.block(0, 0, sol.rows(), sol.cols()) = mass.block(0, 0, sol.rows(), sol.rows()) * sol - dt / 2 * viscosity_ * stiffness.block(0, 0, sol.rows(), sol.rows()) * sol;
-
-            for (int i = 0; i < boundary_nodes.size(); i++)
-            {
-                b(boundary_nodes[i]) = sol(boundary_nodes[i]);
-            }
-
-            const int precond_num = sol.rows();
-
-            auto spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, save_path, compute_spectrum);
-            sol = x.block(0, 0, sol.rows(), sol.cols());
-
-            A = dt / 2 * stiffness;
-            A.block(0, 0, sol.rows(), sol.rows()) *= viscosity_;
-            A += mass;
-            b = Eigen::VectorXd::Zero(sol.rows() + n_pressure_bases + 1);
-            b.block(0, 0, sol.rows(), sol.cols()) = mass.block(0, 0, sol.rows(), sol.rows()) * sol;
-
-            for (int i = 0; i < boundary_nodes.size(); i++)
-            {
-                b(boundary_nodes[i]) = sol(boundary_nodes[i]);
-            }
-
-            spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, save_path, compute_spectrum);
-            sol = x.block(0, 0, sol.rows(), sol.cols());
-            pressure = x.block(sol.rows(), 0, n_pressure_bases, sol.cols());
-        }
-
-        void solve_pressure(const std::string &solver_type, 
-        const std::string &precond, 
-        const json& params,
-        const StiffnessMatrix& stiffness,
-        const StiffnessMatrix& mixed_stiffness,
-        const std::string &save_path,
-	    bool compute_spectrum,
-        Eigen::MatrixXd& sol, 
-        Eigen::MatrixXd& pressure)
-        {
-            Eigen::VectorXd rhs = mixed_stiffness * sol;
-			StiffnessMatrix A = stiffness;
-
-            auto solver = LinearSolver::create(solver_type, precond);
-            solver->setParameters(params);
-            logger().info("{}...", solver->name());
-
-            Eigen::VectorXd x;
-
-            const int precond_num = A.rows();
-
-            auto spectrum = dirichlet_solve(*solver, A, rhs, std::vector<int>(1, 0), x, precond_num, save_path, compute_spectrum);
-            pressure = x;
         }
 
         void advection_FLIP(const polyfem::Mesh& mesh, const std::vector<polyfem::ElementBases>& gbases, const std::vector<polyfem::ElementBases>& bases, Eigen::MatrixXd& sol, const double dt, const Eigen::MatrixXd& local_pts, const int order = 1)
@@ -1134,6 +629,537 @@ namespace polyfem
             );
 #endif
             //TODO: need to think about what to do with negative quadratic weight
+        }
+
+        void set_bc(const polyfem::Mesh& mesh, 
+        const std::vector<int>& bnd_nodes,
+        const std::vector<polyfem::ElementBases>& gbases, 
+        const std::vector<polyfem::ElementBases>& bases, 
+        Eigen::MatrixXd& sol, 
+        const Eigen::MatrixXd& local_pts, 
+        const std::shared_ptr<Problem> problem, 
+        const double time)
+        {
+            const int size = boundary_elem_id.size();
+#ifdef POLYFEM_WITH_TBB
+            tbb::parallel_for(0, size, 1, [&](int e)
+#else
+            for(int e = 0; e < size; e++)
+#endif
+            {
+                int elem_idx = boundary_elem_id[e];
+
+                // geometry vertices of element e
+                Eigen::MatrixXd vert(shape, dim);
+                for (int i = 0; i < shape; i++)
+                {
+                    for(int d = 0; d < dim; d++)
+                        vert(i, d) = V(T(elem_idx, i), d);
+                }
+
+                ElementAssemblyValues gvals;
+                gvals.compute(elem_idx, dim == 3, local_pts, gbases[elem_idx], gbases[elem_idx]);
+
+                for (int local_idx = 0; local_idx < bases[elem_idx].bases.size(); local_idx++)
+                {
+                    int global_idx = bases[elem_idx].bases[local_idx].global()[0].index;
+                    if (find(bnd_nodes.begin(), bnd_nodes.end(), global_idx) == bnd_nodes.end())
+                        continue;
+
+                    Eigen::MatrixXd pos = Eigen::MatrixXd::Zero(1, dim);
+                    for (int j = 0; j < shape; j++)
+                    {
+                        for (int d = 0; d < dim; d++)
+                        {
+                            pos(0, d) += gvals.basis_values[j].val(local_idx) * vert(j, d);
+                        }
+                    }
+
+                    Eigen::MatrixXd val;
+                    problem->exact(pos, time, val);
+
+                    for (int d = 0; d < dim; d++)
+                    {
+                        sol(global_idx * dim + d) = val(d);
+                    }
+                }
+            }
+#ifdef POLYFEM_WITH_TBB
+            );
+#endif
+        }
+
+        void solve_diffusion_1st(const std::string &solver_type, 
+        const std::string &precond,
+        const json& params,
+        const StiffnessMatrix& mass,
+        const StiffnessMatrix& stiffness_viscosity,
+        const std::vector<int>& bnd_nodes,
+        const double& dt,
+        const double& viscosity_,
+        const std::string &save_path,
+	    bool compute_spectrum,
+        Eigen::MatrixXd& sol)
+        {
+            Eigen::VectorXd rhs;
+            StiffnessMatrix A;
+            
+            for(int d = 0; d < dim; d++)
+            {
+                auto solver = LinearSolver::create(solver_type, precond);
+                solver->setParameters(params);
+                logger().info("{}...", solver->name());
+
+                Eigen::VectorXd x(sol.size() / dim);
+                for(int j = 0; j < x.size(); j++)
+                {
+                    x(j) = sol(j * dim + d);
+                }
+                A = mass + viscosity_ * dt * stiffness_viscosity;
+                rhs = mass * x;
+
+                // keep dirichlet bc
+                for (int i = 0; i < bnd_nodes.size(); i++)
+                {
+                    rhs(bnd_nodes[i]) = x(bnd_nodes[i]);
+                }
+
+                const int precond_num = A.rows();
+
+                auto spectrum = dirichlet_solve(*solver, A, rhs, bnd_nodes, x, precond_num, save_path, compute_spectrum);
+
+                for(int j = 0; j < x.size(); j++)
+                {
+                    sol(j * dim + d) = x(j);
+                }
+            }
+        }
+
+        void solve_diffusion_2nd(const std::string &solver_type, 
+        const std::string &precond,
+        const json& params,
+        const StiffnessMatrix& mass,
+        const StiffnessMatrix& stiffness_viscosity,
+        const std::vector<int>& bnd_nodes,
+        const double& dt,
+        const double& viscosity_,
+        const std::string &save_path,
+	    bool compute_spectrum,
+        Eigen::MatrixXd& sol)
+        {
+            for(int d = 0; d < dim; d++)
+            {
+                auto solver = LinearSolver::create(solver_type, precond);
+                solver->setParameters(params);
+                logger().info("{}...", solver->name());
+
+                Eigen::VectorXd x(sol.size() / dim);
+                for(int j = 0; j < x.size(); j++)
+                {
+                    x(j) = sol(j * dim + d);
+                }
+                Eigen::VectorXd rhs = mass * x - 0.5 * dt * viscosity_ * stiffness_viscosity * x;
+				StiffnessMatrix A = mass;
+
+                // keep dirichlet bc
+                for (int i = 0; i < bnd_nodes.size(); i++)
+                {
+                    rhs(bnd_nodes[i]) = x(bnd_nodes[i]);
+                }
+
+                const int precond_num = A.rows();
+
+                auto spectrum = dirichlet_solve(*solver, A, rhs, bnd_nodes, x, precond_num, save_path, compute_spectrum);
+
+                A = mass + 0.5 * dt * viscosity_ * stiffness_viscosity;
+                rhs = mass * x;
+
+                // keep dirichlet bc
+                for (int i = 0; i < bnd_nodes.size(); i++)
+                {
+                    rhs(bnd_nodes[i]) = x(bnd_nodes[i]);
+                }
+
+                spectrum = dirichlet_solve(*solver, A, rhs, bnd_nodes, x, precond_num, save_path, compute_spectrum);
+
+                for(int j = 0; j < x.size(); j++)
+                {
+                    sol(j * dim + d) = x(j);
+                }
+            }
+        }
+
+        void external_force(const polyfem::Mesh& mesh,
+        const std::vector<polyfem::ElementBases>& gbases, 
+        const std::vector<polyfem::ElementBases>& bases, 
+        const double dt, 
+        Eigen::MatrixXd& sol, 
+        const Eigen::MatrixXd& local_pts, 
+        const std::shared_ptr<Problem> problem, 
+        const double time)
+        {
+#ifdef POLYFEM_WITH_TBB
+            tbb::parallel_for(0, n_el, 1, [&](int e)
+#else
+            for(int e = 0; e < n_el; e++)
+#endif
+            {
+                ElementAssemblyValues gvals;
+                gvals.compute(e, dim == 3, local_pts, gbases[e], gbases[e]);
+
+                for (int local_idx = 0; local_idx < bases[e].bases.size(); local_idx++)
+                {
+                    int global_idx = bases[e].bases[local_idx].global()[0].index;
+
+                    Eigen::MatrixXd pos = Eigen::MatrixXd::Zero(1, dim);
+                    for (int j = 0; j < shape; j++)
+                    {
+                        for (int d = 0; d < dim; d++)
+                        {
+                            pos(0, d) += gvals.basis_values[j].val(local_idx) * V(T(e, j), d);
+                        }
+                    }
+
+                    Eigen::MatrixXd val;
+                    problem->rhs(std::string(), pos, time, val);
+
+                    for (int d = 0; d < dim; d++)
+                    {
+                        sol(global_idx * dim + d) += val(d) * dt;
+                    }
+                }
+            }
+#ifdef POLYFEM_WITH_TBB
+            );
+#endif
+        }
+
+        void solve_pressure(const std::string &solver_type, 
+        const std::string &precond, 
+        const json& params,
+        const StiffnessMatrix& stiffness,
+        const StiffnessMatrix& mixed_stiffness,
+        const std::string &save_path,
+	    bool compute_spectrum,
+        Eigen::MatrixXd& sol, 
+        Eigen::MatrixXd& pressure)
+        {
+            Eigen::VectorXd rhs = Eigen::VectorXd::Zero(mixed_stiffness.rows() + 1); // mixed_stiffness * sol;
+			StiffnessMatrix A(stiffness.rows() + 1, stiffness.cols() + 1); // stiffness;
+            
+            Eigen::VectorXd temp = mixed_stiffness * sol;
+            for(int i = 0; i < temp.rows(); i++)
+            {
+                rhs(i) = temp(i);
+            }
+
+            std::vector<Eigen::Triplet<double> > coefficients;
+            coefficients.reserve(stiffness.nonZeros() + 2 * stiffness.rows());
+
+            for(int i = 0; i < stiffness.outerSize(); i++)
+            {
+                for(StiffnessMatrix::InnerIterator it(stiffness,i); it; ++it)
+                {
+                    coefficients.push_back(Eigen::Triplet<double>(it.row(),it.col(),it.value()));
+                }
+            }
+
+            const double val = 1. / (A.rows() - 1);
+            for (int i = 0; i < A.rows() - 1; i++)
+            {
+                coefficients.push_back(Eigen::Triplet<double>(i, A.cols() - 1, val));
+                coefficients.push_back(Eigen::Triplet<double>(A.rows() - 1, i, val));
+            }
+
+            A.setFromTriplets(coefficients.begin(), coefficients.end());
+
+            auto solver = LinearSolver::create(solver_type, precond);
+            solver->setParameters(params);
+            logger().info("{}...", solver->name());
+
+            Eigen::VectorXd x;
+
+            const int precond_num = A.rows() - 1;
+
+            auto spectrum = dirichlet_solve(*solver, A, rhs, std::vector<int>(), x, precond_num, save_path, compute_spectrum);
+            pressure = x;
+        }
+
+        void projection(const polyfem::Mesh& mesh, 
+        int n_bases, 
+        const std::vector<polyfem::ElementBases>& gbases, 
+        const std::vector<polyfem::ElementBases>& bases, 
+        const std::vector<polyfem::ElementBases>& pressure_bases, 
+        const Eigen::MatrixXd& local_pts, 
+        Eigen::MatrixXd& pressure, 
+        Eigen::MatrixXd& sol)
+        {
+            Eigen::VectorXd grad_pressure = Eigen::VectorXd::Zero(n_bases * dim);
+            Eigen::VectorXi traversed = Eigen::VectorXi::Zero(n_bases);
+
+            ElementAssemblyValues vals;
+            for (int e = 0; e < n_el; ++e)
+            {
+                vals.compute(e, dim == 3, local_pts, pressure_bases[e], gbases[e]);
+                for (int j = 0; j < local_pts.rows(); j++)
+                {
+                    int global_ = bases[e].bases[j].global()[0].index;
+                    for (int i = 0; i < vals.basis_values.size(); i++)
+                    {
+                        for (int d = 0; d < dim; d++)
+                        {
+                            assert(pressure(pressure_bases[e].bases[i].global().size() == 1));
+                            grad_pressure(global_ * dim + d) += vals.basis_values[i].grad_t_m(j, d) * pressure(pressure_bases[e].bases[i].global()[0].index);
+                        }
+                    }
+                    traversed(global_)++;
+                }
+            }
+            for (int i = 0; i < traversed.size(); i++)
+            {
+                for (int d = 0; d < dim; d++)
+                {
+                    sol(i * dim + d) -= grad_pressure(i * dim + d) / traversed(i);
+                }
+            }
+        }
+
+        void initialize_solution(const polyfem::Mesh& mesh, 
+        const std::vector<polyfem::ElementBases>& gbases, 
+        const std::vector<polyfem::ElementBases>& bases, 
+        const std::shared_ptr<Problem> problem, 
+        Eigen::MatrixXd& sol, 
+        const Eigen::MatrixXd& local_pts)
+        {
+#ifdef POLYFEM_WITH_TBB
+            tbb::parallel_for(0, n_el, 1, [&](int e)
+#else
+            for (int e = 0; e < n_el; ++e)
+#endif
+            {
+                // to compute global position with barycentric coordinate
+                ElementAssemblyValues gvals;
+                gvals.compute(e, dim == 3, local_pts, gbases[e], gbases[e]);
+
+                for (int i = 0; i < local_pts.rows(); i++)
+                {
+                    Eigen::MatrixXd pts = Eigen::MatrixXd::Zero(1, dim);
+                    for (int j = 0; j < shape; j++)
+                    {
+                        for (int d = 0; d < dim; d++)
+                        {
+                            pts(0, d) += V(T(e, j), d) * gvals.basis_values[j].val(i);
+                        }
+                    }
+                    Eigen::MatrixXd val;
+                    problem->initial_solution(pts, val);
+                    int global = bases[e].bases[i].global()[0].index;
+                    for (int d = 0; d < dim; d++)
+                    {
+                        sol(global * dim + d) = val(d);
+                    }
+                }
+            }
+#ifdef POLYFEM_WITH_TBB
+            );
+#endif
+        }
+
+        int search_cell(const std::vector<polyfem::ElementBases>& gbases, RowVectorNd& pos, Eigen::MatrixXd& local_pts)
+        {
+            Eigen::VectorXi pos_int(dim);
+            for(int d = 0; d < dim; d++)
+            {
+                pos_int(d) = floor((pos(d) - min_domain(d)) / (max_domain(d) - min_domain(d)) * cell_num);
+                if(pos_int(d) < 0) pos_int(d) = 0;
+                else if(pos_int(d) >= cell_num) pos_int(d) = cell_num - 1;
+            }
+
+            int idx = 0, dim_num = 1;
+            for(int d = 0; d < dim; d++)
+            {
+                idx += pos_int(d) * dim_num;
+                dim_num *= cell_num;
+            }
+
+            const std::list<int>& list = hash_table[idx];
+            for(auto it = list.begin(); it != list.end(); it++)
+            {
+                calculate_local_pts(gbases[*it], *it, pos, local_pts);
+
+                if(shape == dim + 1)
+                {
+                    if(local_pts.minCoeff() > -1e-13 && local_pts.sum() < 1 + 1e-13)
+                        return *it;
+                }
+                else
+                {
+                    if(local_pts.minCoeff() > -1e-13 && local_pts.maxCoeff() < 1 + 1e-13)
+                        return *it;
+                }
+            }
+            return -1; // not inside any elem
+        }
+
+        bool outside_quad(const std::vector<RowVectorNd>& vert, const RowVectorNd& pos)
+        {
+            double a = (vert[1](0) - vert[0](0)) * (pos(1) - vert[0](1)) - (vert[1](1)-vert[0](1)) * (pos(0) - vert[0](0));
+            double b = (vert[2](0) - vert[1](0)) * (pos(1) - vert[1](1)) - (vert[2](1)-vert[1](1)) * (pos(0) - vert[1](0));
+            double c = (vert[3](0) - vert[2](0)) * (pos(1) - vert[2](1)) - (vert[3](1)-vert[2](1)) * (pos(0) - vert[2](0));
+            double d = (vert[0](0) - vert[3](0)) * (pos(1) - vert[3](1)) - (vert[0](1)-vert[3](1)) * (pos(0) - vert[3](0));
+
+            if((a > 0 && b > 0 && c > 0 && d > 0) || (a < 0 && b < 0 && c < 0 && d < 0))
+                return false;
+            return true;
+        }
+
+        void calculate_local_pts(const polyfem::ElementBases& gbase, 
+        const int elem_idx,
+        const RowVectorNd& pos, 
+        Eigen::MatrixXd& local_pos)
+        {
+            local_pos = Eigen::MatrixXd::Zero(1, dim);
+            
+            std::vector<RowVectorNd> vert(shape,RowVectorNd::Zero(1, dim));
+            for (int i = 0; i < shape; i++)
+            {
+                for(int d = 0; d < dim; d++)
+                    vert[i](d) = V(T(elem_idx, i), d);
+            }
+            // if(shape == 4 && dim == 2 && outside_quad(vert, pos))
+            // {
+            //     local_pos(0) = local_pos(1) = -1;
+            //     return;
+            // }
+            Eigen::MatrixXd res;
+            int iter_times = 0;
+            int max_iter = 20;
+            do
+            {
+                res = -pos;
+                ElementAssemblyValues gvals_;
+                gvals_.compute(elem_idx, dim == 3, local_pos, gbase, gbase);
+                for (int i = 0; i < shape; i++)
+                {
+                    res += vert[i] * gvals_.basis_values[i].val(0);
+                }
+
+                Eigen::MatrixXd jacobi = Eigen::MatrixXd::Zero(dim, dim);
+                for (int d1 = 0; d1 < dim; d1++)
+                {
+                    for (int d2 = 0; d2 < dim; d2++)
+                    {
+                        for (int i = 0; i < shape; i++)
+                        {
+                            jacobi(d1, d2) += vert[i](d1) * gvals_.basis_values[i].grad(0, d2);
+                        }
+                    }
+                }
+
+                Eigen::VectorXd delta = jacobi.colPivHouseholderQr().solve(res.transpose());
+                for (int d = 0; d < dim; d++)
+                {
+                    local_pos(d) -= delta(d);
+                }
+                iter_times++;
+            }
+            while(res.norm() > 1e-12 && iter_times < max_iter);
+
+            if(iter_times >= max_iter)
+            {
+                for(int d=0; d<dim; d++)
+                    local_pos(d) = -1;
+            }
+        }
+
+        void solve_stokes_1st(const std::string &solver_type, 
+        const std::string &precond, 
+        const json& params,
+        const StiffnessMatrix& mass,
+        const StiffnessMatrix& stiffness,
+        const double& dt,
+        const double& viscosity_,
+        const std::string &save_path,
+	    bool compute_spectrum,
+        Eigen::MatrixXd& sol, 
+        Eigen::MatrixXd& pressure,
+        const int& n_pressure_bases)
+        {
+            auto solver = LinearSolver::create(solver_type, precond);
+            solver->setParameters(params);
+            logger().info("{}...", solver->name());
+
+            StiffnessMatrix A;
+            Eigen::VectorXd b, x;
+
+            A = dt * stiffness;
+            A.block(0, 0, sol.rows(), sol.rows()) *= viscosity_;
+            A += mass;
+            b = Eigen::VectorXd::Zero(sol.rows() + n_pressure_bases + 1);
+            b.block(0, 0, sol.rows(), sol.cols()) = mass.block(0, 0, sol.rows(), sol.rows()) * sol;
+
+            for (int i = 0; i < boundary_nodes.size(); i++)
+            {
+                b(boundary_nodes[i]) = sol(boundary_nodes[i]);
+            }
+
+            const int precond_num = sol.rows();
+
+            auto spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, save_path, compute_spectrum);
+            sol = x.block(0, 0, sol.rows(), sol.cols());
+            pressure = x.block(sol.rows(), 0, n_pressure_bases, sol.cols());
+        }
+
+        void solve_stokes_2nd(const std::string &solver_type, 
+        const std::string &precond, 
+        const json& params,
+        const StiffnessMatrix& mass,
+        const StiffnessMatrix& stiffness,
+        const double& dt,
+        const double& viscosity_,
+        const std::string &save_path,
+	    bool compute_spectrum,
+        Eigen::MatrixXd& sol, 
+        Eigen::MatrixXd& pressure,
+        const int& n_pressure_bases)
+        {
+            auto solver = LinearSolver::create(solver_type, precond);
+            solver->setParameters(params);
+            logger().info("{}...", solver->name());
+
+            StiffnessMatrix A;
+            Eigen::VectorXd b, x;
+
+            A = dt / 2 * stiffness;
+            A.block(0,0,sol.rows(),sol.rows()) *= 0;
+            A += mass;
+            b = Eigen::VectorXd::Zero(sol.rows() + n_pressure_bases + 1);
+            b.block(0, 0, sol.rows(), sol.cols()) = mass.block(0, 0, sol.rows(), sol.rows()) * sol - dt / 2 * viscosity_ * stiffness.block(0, 0, sol.rows(), sol.rows()) * sol;
+
+            for (int i = 0; i < boundary_nodes.size(); i++)
+            {
+                b(boundary_nodes[i]) = sol(boundary_nodes[i]);
+            }
+
+            const int precond_num = sol.rows();
+
+            auto spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, save_path, compute_spectrum);
+            sol = x.block(0, 0, sol.rows(), sol.cols());
+
+            A = dt / 2 * stiffness;
+            A.block(0, 0, sol.rows(), sol.rows()) *= viscosity_;
+            A += mass;
+            b = Eigen::VectorXd::Zero(sol.rows() + n_pressure_bases + 1);
+            b.block(0, 0, sol.rows(), sol.cols()) = mass.block(0, 0, sol.rows(), sol.rows()) * sol;
+
+            for (int i = 0; i < boundary_nodes.size(); i++)
+            {
+                b(boundary_nodes[i]) = sol(boundary_nodes[i]);
+            }
+
+            spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, save_path, compute_spectrum);
+            sol = x.block(0, 0, sol.rows(), sol.cols());
+            pressure = x.block(sol.rows(), 0, n_pressure_bases, sol.cols());
         }
 
         int dim;
