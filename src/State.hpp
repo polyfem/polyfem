@@ -214,7 +214,7 @@ namespace polyfem
 
 		void compute_mesh_stats();
 
-		void build_vis_mesh(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXd &discr);
+		void build_vis_mesh(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXi &el_id, Eigen::MatrixXd &discr);
 		void save_vtu(const std::string &name, const double t);
 		void save_wire(const std::string &name, bool isolines = false);
 
@@ -224,10 +224,11 @@ namespace polyfem
 		void get_sampled_solution(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXd &fun, bool boundary_only = false)
 		{
 			Eigen::MatrixXd discr;
+			Eigen::MatrixXi el_id;
 			const bool tmp = args["export"]["vis_boundary_only"];
 			args["export"]["vis_boundary_only"] = boundary_only;
 
-			build_vis_mesh(points, tets, discr);
+			build_vis_mesh(points, tets, el_id, discr);
 			interpolate_function(points.rows(), sol, fun, boundary_only);
 
 			args["export"]["vis_boundary_only"] = tmp;
@@ -237,11 +238,12 @@ namespace polyfem
 		{
 			Eigen::MatrixXd points;
 			Eigen::MatrixXi tets;
+			Eigen::MatrixXi el_id;
 			Eigen::MatrixXd discr;
 			const bool tmp = args["export"]["vis_boundary_only"];
 			args["export"]["vis_boundary_only"] = boundary_only;
 
-			build_vis_mesh(points, tets, discr);
+			build_vis_mesh(points, tets, el_id, discr);
 			compute_tensor_value(points.rows(), sol, fun, boundary_only);
 
 			args["export"]["vis_boundary_only"] = tmp;
@@ -251,11 +253,12 @@ namespace polyfem
 		{
 			Eigen::MatrixXd points;
 			Eigen::MatrixXi tets;
+			Eigen::MatrixXi el_id;
 			Eigen::MatrixXd discr;
 			const bool tmp = args["export"]["vis_boundary_only"];
 			args["export"]["vis_boundary_only"] = boundary_only;
 
-			build_vis_mesh(points, tets, discr);
+			build_vis_mesh(points, tets, el_id, discr);
 			compute_scalar_value(points.rows(), sol, fun, boundary_only);
 
 			args["export"]["vis_boundary_only"] = tmp;
@@ -266,11 +269,12 @@ namespace polyfem
 		{
 			Eigen::MatrixXd points;
 			Eigen::MatrixXi tets;
+			Eigen::MatrixXi el_id;
 			Eigen::MatrixXd discr;
 			const bool tmp = args["export"]["vis_boundary_only"];
 			args["export"]["vis_boundary_only"] = boundary_only;
 
-			build_vis_mesh(points, tets, discr);
+			build_vis_mesh(points, tets, el_id, discr);
 			average_grad_based_function(points.rows(), sol, fun, tfun, boundary_only);
 
 			args["export"]["vis_boundary_only"] = tmp;

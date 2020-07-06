@@ -695,7 +695,7 @@ void UIState::plot_function(const MatrixXd &fun, const Visualizations &layer, do
 			else
 				local_pts = vis_pts_poly[i];
 
-			assembler.compute_scalar_value(state.formulation(), bs, gbs, local_pts, state.sol, stresses);
+			assembler.compute_scalar_value(state.formulation(), i, bs, gbs, local_pts, state.sol, stresses);
 
 			ffun.block(counter, 0, stresses.rows(), 1) = stresses;
 			counter += stresses.rows();

@@ -239,7 +239,23 @@ State::State()
 		// {"solution", ""},
 		// {"stiffness_mat_save_path", ""},
 
-		{"export", {{"sol_at_node", -1}, {"vis_mesh", ""}, {"vis_boundary_only", false}, {"nodes", ""}, {"wire_mesh", ""}, {"iso_mesh", ""}, {"spectrum", false}, {"solution", ""}, {"full_mat", ""}, {"stiffness_mat", ""}, {"solution_mat", ""}, {"stress_mat", ""}, {"mises", ""}}}};
+		{"export", {
+			{"sol_at_node", -1},
+			{"vis_mesh", ""},
+			{"paraview", ""},
+			{"vis_boundary_only", false},
+			{"material_params", false},
+			{"nodes", ""},
+			{"wire_mesh", ""},
+			{"iso_mesh", ""},
+			{"spectrum", false},
+			{"solution", ""},
+			{"full_mat", ""},
+			{"stiffness_mat", ""},
+			{"solution_mat", ""},
+			{"stress_mat", ""},
+			{"mises", ""}
+		}}};
 }
 
 void State::init_logger(const std::string &log_file, int log_level, const bool is_quiet)
@@ -1020,7 +1036,7 @@ void State::interpolate_boundary_tensor_function(const MatrixXd &pts, const Matr
 			// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
 
 			// const auto nodes = bs.local_nodes_for_primitive(face_id, mesh3d);
-			assembler.compute_tensor_value(formulation(), bs, gbs, points, fun, loc_val);
+			assembler.compute_tensor_value(formulation(), e, bs, gbs, points, fun, loc_val);
 			Eigen::VectorXd tmp(loc_val.cols());
 			for (int d = 0; d < loc_val.cols(); ++d)
 				tmp(d) = (loc_val.col(d).array() * weights.array()).sum();
@@ -1107,8 +1123,8 @@ void State::average_grad_based_function(const int n_points, const MatrixXd &fun,
 		const Quadrature &quadrature = vals.quadrature;
 		const double area = (vals.det.array() * quadrature.weights.array()).sum();
 
-		assembler.compute_scalar_value(formulation(), bs, gbs, local_pts, fun, local_val);
-		// assembler.compute_tensor_value(formulation(), bs, gbs, local_pts, fun, local_val);
+		assembler.compute_scalar_value(formulation(), i, bs, gbs, local_pts, fun, local_val);
+		// assembler.compute_tensor_value(formulation(), i, bs, gbs, local_pts, fun, local_val);
 
 		for (size_t j = 0; j < bs.bases.size(); ++j)
 		{
@@ -1310,9 +1326,9 @@ void State::compute_stress_at_quadrature_points(const MatrixXd &fun, Eigen::Matr
 			continue;
 		}
 
-		assembler.compute_scalar_value(formulation(), bases[e], gbases[e],
+		assembler.compute_scalar_value(formulation(), e, bases[e], gbases[e],
 									   quadr.points, fun, local_mises);
-		assembler.compute_tensor_value(formulation(), bases[e], gbases[e],
+		assembler.compute_tensor_value(formulation(), e, bases[e], gbases[e],
 									   quadr.points, fun, local_val);
 
 		if (num_quadr_pts + local_val.rows() >= result.rows())
@@ -1444,7 +1460,7 @@ void State::compute_scalar_value(const int n_points, const Eigen::MatrixXd &fun,
 				sampler.sample_polygon(polys[i], local_pts, vis_faces_poly);
 		}
 
-		assembler.compute_scalar_value(formulation(), bs, gbs, local_pts, fun, local_val);
+		assembler.compute_scalar_value(formulation(), i, bs, gbs, local_pts, fun, local_val);
 
 		result.block(index, 0, local_val.rows(), 1) = local_val;
 		index += local_val.rows();
@@ -1497,7 +1513,7 @@ void State::compute_tensor_value(const int n_points, const Eigen::MatrixXd &fun,
 				sampler.sample_polygon(polys[i], local_pts, vis_faces_poly);
 		}
 
-		assembler.compute_tensor_value(formulation(), bs, gbs, local_pts, fun, local_val);
+		assembler.compute_tensor_value(formulation(), i, bs, gbs, local_pts, fun, local_val);
 
 		result.block(index, 0, local_val.rows(), local_val.cols()) = local_val;
 		index += local_val.rows();
@@ -3294,7 +3310,9 @@ void State::export_data()
 
 	// Export vtu mesh of solution + wire mesh of deformed input
 	// + mesh colored with the bases
-	const std::string vis_mesh_path = args["export"]["vis_mesh"];
+	const std::string paraview_path = args["export"]["paraview"];
+	const std::string old_path = args["export"]["vis_mesh"];
+	const std::string vis_mesh_path = paraview_path.empty() ? old_path : paraview_path;
 	const std::string wire_mesh_path = args["export"]["wire_mesh"];
 	const std::string iso_mesh_path = args["export"]["iso_mesh"];
 	const std::string nodes_path = args["export"]["nodes"];
@@ -3375,7 +3393,7 @@ void State::export_data()
 	}
 }
 
-void State::build_vis_mesh(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXd &discr)
+void State::build_vis_mesh(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXi &el_id, Eigen::MatrixXd &discr)
 {
 	if (!mesh)
 	{
@@ -3438,6 +3456,7 @@ void State::build_vis_mesh(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen
 	points.resize(pts_total_size, mesh->dimension());
 	tets.resize(tet_total_size, mesh->is_volume() ? 4 : 3);
 
+	el_id.resize(pts_total_size, 1);
 	discr.resize(pts_total_size, 1);
 
 	Eigen::MatrixXd mapped, tmp;
@@ -3459,6 +3478,7 @@ void State::build_vis_mesh(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen
 
 			points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
 			discr.block(pts_index, 0, mapped.rows(), 1).setConstant(disc_orders(i));
+			el_id.block(pts_index, 0, mapped.rows(), 1).setConstant(i);
 			pts_index += mapped.rows();
 		}
 		else if (mesh->is_cube(i))
@@ -3470,6 +3490,7 @@ void State::build_vis_mesh(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen
 
 			points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
 			discr.block(pts_index, 0, mapped.rows(), 1).setConstant(disc_orders(i));
+			el_id.block(pts_index, 0, mapped.rows(), 1).setConstant(i);
 			pts_index += mapped.rows();
 		}
 		else
@@ -3484,6 +3505,7 @@ void State::build_vis_mesh(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen
 
 				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
 				discr.block(pts_index, 0, mapped.rows(), 1).setConstant(-1);
+				el_id.block(pts_index, 0, mapped.rows(), 1).setConstant(i);
 				pts_index += mapped.rows();
 			}
 			else
@@ -3496,6 +3518,7 @@ void State::build_vis_mesh(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen
 
 				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
 				discr.block(pts_index, 0, mapped.rows(), 1).setConstant(-1);
+				el_id.block(pts_index, 0, mapped.rows(), 1).setConstant(i);
 				pts_index += mapped.rows();
 			}
 		}
@@ -3533,12 +3556,14 @@ void State::save_vtu(const std::string &path, const double t)
 
 	Eigen::MatrixXd points;
 	Eigen::MatrixXi tets;
+	Eigen::MatrixXi el_id;
 	Eigen::MatrixXd discr;
 
-	build_vis_mesh(points, tets, discr);
+	build_vis_mesh(points, tets, el_id, discr);
 
 	Eigen::MatrixXd fun, exact_fun, err;
 	const bool boundary_only = args["export"]["vis_boundary_only"];
+	const bool material_params = args["export"]["material_params"];
 
 	interpolate_function(points.rows(), sol, fun, boundary_only);
 
@@ -3624,6 +3649,27 @@ void State::save_vtu(const std::string &path, const double t)
 			// 	writer.add_field("tensor_value_avg_" + std::to_string(ii) + std::to_string(jj), tvals.col(i));
 			// }
 		}
+	}
+
+	if(material_params)
+	{
+		LameParameters params;
+		params.init(build_json_params());
+
+		Eigen::MatrixXd lambdas(points.rows(), 1);
+		Eigen::MatrixXd mus(points.rows(), 1);
+
+		for(int i = 0; i < points.rows(); ++i)
+		{
+			double lambda, mu;
+
+			params.lambda_mu(points(i, 0), points(i, 1), points.cols() >= 3 ? points(i, 2) : 0, el_id(i), lambda, mu);
+			lambdas(i) = lambda;
+			mus(i) = mu;
+		}
+
+		writer.add_field("lambda", lambdas);
+		writer.add_field("mu", mus);
 	}
 
 	// interpolate_function(pts_index, rhs, fun, boundary_only);
