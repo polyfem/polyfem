@@ -2582,7 +2582,7 @@ void State::solve_problem()
 				bnd_nodes.push_back(*it / dim);
 			}
 
-			OperatorSplittingSolver ss(*mesh, shape, n_el, local_boundary, bnd_nodes);
+			OperatorSplittingSolver ss(*mesh, shape, n_el, local_boundary, bnd_nodes, mass, stiffness_viscosity, dt, viscosity_, args["solver_type"], args["precond_type"], params, args["export"]["stiffness_mat"]);
 
 			/* initialize solution */
 
@@ -2604,7 +2604,7 @@ void State::solve_problem()
 
 				/* viscosity */
 				if(viscosity_ > 0)
-					ss.solve_diffusion_1st(args["solver_type"], args["precond_type"], params,mass,stiffness_viscosity,bnd_nodes,dt,viscosity_,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol);
+					ss.solve_diffusion_1st(mass, bnd_nodes, sol);
 
 				/* external force */
 				ss.external_force(*mesh, gbases, bases, dt, sol, local_pts, problem, time);

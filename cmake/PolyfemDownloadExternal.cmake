@@ -26,8 +26,8 @@ endfunction()
 ## libigl MPL
 function(polyfem_download_solvers)
     polyfem_download_project(solvers
-        GIT_REPOSITORY https://github.com/polyfem/polysolve.git
-        GIT_TAG        358fa9769e1b67c0e7883eb2b27f171ab3b59b62
+        GIT_REPOSITORY https://github.com/Huangzizhou/polysolve.git
+        GIT_TAG        97250e9f36ff566041423ed13c87c3cc1dc1f6c0
     )
 endfunction()
 

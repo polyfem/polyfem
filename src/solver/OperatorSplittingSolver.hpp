@@ -27,8 +27,24 @@ namespace polyfem
         OperatorSplittingSolver(const polyfem::Mesh& mesh, 
         const int shape, const int n_el, 
         const std::vector<polyfem::LocalBoundary>& local_boundary,
-        const std::vector<int>& boundary_nodes) : shape(shape), n_el(n_el), boundary_nodes(boundary_nodes)
+        const std::vector<int>& boundary_nodes,
+        const StiffnessMatrix& mass,
+        const StiffnessMatrix& stiffness_viscosity,
+        const double& dt,
+        const double& viscosity_,
+        const std::string &solver_type, 
+        const std::string &precond,
+        const json& params,
+        const std::string &save_path) : shape(shape), n_el(n_el), boundary_nodes(boundary_nodes)
         {
+            mat_diffusion = mass + viscosity_ * dt * stiffness_viscosity;
+            StiffnessMatrix mat1 = mat_diffusion;
+
+            solver_diffusion = LinearSolver::create(solver_type, precond);
+            solver_diffusion->setParameters(params);
+            logger().info("{}...", solver_diffusion->name());
+            prefactorize(*solver_diffusion, mat1, boundary_nodes, mat1.rows(), save_path);
+
             dim = mesh.dimension();
 
             const int size = local_boundary.size();
@@ -689,33 +705,17 @@ namespace polyfem
 #endif
         }
 
-        void solve_diffusion_1st(const std::string &solver_type, 
-        const std::string &precond,
-        const json& params,
-        const StiffnessMatrix& mass,
-        const StiffnessMatrix& stiffness_viscosity,
-        const std::vector<int>& bnd_nodes,
-        const double& dt,
-        const double& viscosity_,
-        const std::string &save_path,
-	    bool compute_spectrum,
-        Eigen::MatrixXd& sol)
+        void solve_diffusion_1st(const StiffnessMatrix& mass, const std::vector<int>& bnd_nodes, Eigen::MatrixXd& sol)
         {
             Eigen::VectorXd rhs;
-            StiffnessMatrix A;
             
             for(int d = 0; d < dim; d++)
             {
-                auto solver = LinearSolver::create(solver_type, precond);
-                solver->setParameters(params);
-                logger().info("{}...", solver->name());
-
                 Eigen::VectorXd x(sol.size() / dim);
                 for(int j = 0; j < x.size(); j++)
                 {
                     x(j) = sol(j * dim + d);
                 }
-                A = mass + viscosity_ * dt * stiffness_viscosity;
                 rhs = mass * x;
 
                 // keep dirichlet bc
@@ -724,63 +724,7 @@ namespace polyfem
                     rhs(bnd_nodes[i]) = x(bnd_nodes[i]);
                 }
 
-                const int precond_num = A.rows();
-
-                auto spectrum = dirichlet_solve(*solver, A, rhs, bnd_nodes, x, precond_num, save_path, compute_spectrum);
-
-                for(int j = 0; j < x.size(); j++)
-                {
-                    sol(j * dim + d) = x(j);
-                }
-            }
-        }
-
-        void solve_diffusion_2nd(const std::string &solver_type, 
-        const std::string &precond,
-        const json& params,
-        const StiffnessMatrix& mass,
-        const StiffnessMatrix& stiffness_viscosity,
-        const std::vector<int>& bnd_nodes,
-        const double& dt,
-        const double& viscosity_,
-        const std::string &save_path,
-	    bool compute_spectrum,
-        Eigen::MatrixXd& sol)
-        {
-            for(int d = 0; d < dim; d++)
-            {
-                auto solver = LinearSolver::create(solver_type, precond);
-                solver->setParameters(params);
-                logger().info("{}...", solver->name());
-
-                Eigen::VectorXd x(sol.size() / dim);
-                for(int j = 0; j < x.size(); j++)
-                {
-                    x(j) = sol(j * dim + d);
-                }
-                Eigen::VectorXd rhs = mass * x - 0.5 * dt * viscosity_ * stiffness_viscosity * x;
-				StiffnessMatrix A = mass;
-
-                // keep dirichlet bc
-                for (int i = 0; i < bnd_nodes.size(); i++)
-                {
-                    rhs(bnd_nodes[i]) = x(bnd_nodes[i]);
-                }
-
-                const int precond_num = A.rows();
-
-                auto spectrum = dirichlet_solve(*solver, A, rhs, bnd_nodes, x, precond_num, save_path, compute_spectrum);
-
-                A = mass + 0.5 * dt * viscosity_ * stiffness_viscosity;
-                rhs = mass * x;
-
-                // keep dirichlet bc
-                for (int i = 0; i < bnd_nodes.size(); i++)
-                {
-                    rhs(bnd_nodes[i]) = x(bnd_nodes[i]);
-                }
-
-                spectrum = dirichlet_solve(*solver, A, rhs, bnd_nodes, x, precond_num, save_path, compute_spectrum);
+                dirichlet_solve_prefactorized(*solver_diffusion, mat_diffusion, rhs, bnd_nodes, x);
 
                 for(int j = 0; j < x.size(); j++)
                 {
@@ -1072,96 +1016,6 @@ namespace polyfem
             }
         }
 
-        void solve_stokes_1st(const std::string &solver_type, 
-        const std::string &precond, 
-        const json& params,
-        const StiffnessMatrix& mass,
-        const StiffnessMatrix& stiffness,
-        const double& dt,
-        const double& viscosity_,
-        const std::string &save_path,
-	    bool compute_spectrum,
-        Eigen::MatrixXd& sol, 
-        Eigen::MatrixXd& pressure,
-        const int& n_pressure_bases)
-        {
-            auto solver = LinearSolver::create(solver_type, precond);
-            solver->setParameters(params);
-            logger().info("{}...", solver->name());
-
-            StiffnessMatrix A;
-            Eigen::VectorXd b, x;
-
-            A = dt * stiffness;
-            A.block(0, 0, sol.rows(), sol.rows()) *= viscosity_;
-            A += mass;
-            b = Eigen::VectorXd::Zero(sol.rows() + n_pressure_bases + 1);
-            b.block(0, 0, sol.rows(), sol.cols()) = mass.block(0, 0, sol.rows(), sol.rows()) * sol;
-
-            for (int i = 0; i < boundary_nodes.size(); i++)
-            {
-                b(boundary_nodes[i]) = sol(boundary_nodes[i]);
-            }
-
-            const int precond_num = sol.rows();
-
-            auto spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, save_path, compute_spectrum);
-            sol = x.block(0, 0, sol.rows(), sol.cols());
-            pressure = x.block(sol.rows(), 0, n_pressure_bases, sol.cols());
-        }
-
-        void solve_stokes_2nd(const std::string &solver_type, 
-        const std::string &precond, 
-        const json& params,
-        const StiffnessMatrix& mass,
-        const StiffnessMatrix& stiffness,
-        const double& dt,
-        const double& viscosity_,
-        const std::string &save_path,
-	    bool compute_spectrum,
-        Eigen::MatrixXd& sol, 
-        Eigen::MatrixXd& pressure,
-        const int& n_pressure_bases)
-        {
-            auto solver = LinearSolver::create(solver_type, precond);
-            solver->setParameters(params);
-            logger().info("{}...", solver->name());
-
-            StiffnessMatrix A;
-            Eigen::VectorXd b, x;
-
-            A = dt / 2 * stiffness;
-            A.block(0,0,sol.rows(),sol.rows()) *= 0;
-            A += mass;
-            b = Eigen::VectorXd::Zero(sol.rows() + n_pressure_bases + 1);
-            b.block(0, 0, sol.rows(), sol.cols()) = mass.block(0, 0, sol.rows(), sol.rows()) * sol - dt / 2 * viscosity_ * stiffness.block(0, 0, sol.rows(), sol.rows()) * sol;
-
-            for (int i = 0; i < boundary_nodes.size(); i++)
-            {
-                b(boundary_nodes[i]) = sol(boundary_nodes[i]);
-            }
-
-            const int precond_num = sol.rows();
-
-            auto spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, save_path, compute_spectrum);
-            sol = x.block(0, 0, sol.rows(), sol.cols());
-
-            A = dt / 2 * stiffness;
-            A.block(0, 0, sol.rows(), sol.rows()) *= viscosity_;
-            A += mass;
-            b = Eigen::VectorXd::Zero(sol.rows() + n_pressure_bases + 1);
-            b.block(0, 0, sol.rows(), sol.cols()) = mass.block(0, 0, sol.rows(), sol.rows()) * sol;
-
-            for (int i = 0; i < boundary_nodes.size(); i++)
-            {
-                b(boundary_nodes[i]) = sol(boundary_nodes[i]);
-            }
-
-            spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, save_path, compute_spectrum);
-            sol = x.block(0, 0, sol.rows(), sol.cols());
-            pressure = x.block(sol.rows(), 0, n_pressure_bases, sol.cols());
-        }
-
         int dim;
         int n_el;
         int shape;
@@ -1183,5 +1037,11 @@ namespace polyfem
 
         std::vector<int> boundary_elem_id;
         std::vector<int> boundary_nodes;
+
+        std::unique_ptr<polysolve::LinearSolver> solver_diffusion;
+        std::unique_ptr<polysolve::LinearSolver> solver_projection;
+
+        StiffnessMatrix mat_diffusion;
+        StiffnessMatrix mat_projection;
     };
 }
