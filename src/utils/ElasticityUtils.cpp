@@ -1,4 +1,5 @@
 #include <polyfem/ElasticityUtils.hpp>
+#include <polyfem/MatrixUtils.hpp>
 #include <polyfem/Logger.hpp>
 
 namespace polyfem
@@ -583,6 +584,16 @@ namespace polyfem
 				lambda_ = -1;
 				mu_ = -1;
 			}
+			else if (params["lambda"].is_string())
+			{
+				read_matrix(params["lambda"], lambda_mat_);
+				read_matrix(params["mu"], mu_mat_);
+
+				assert(lambda_mat_.size() == mu_mat_.size());
+
+				lambda_ = -1;
+				mu_ = -1;
+			}
 			else
 			{
 				te_variable vars[4];
@@ -643,6 +654,25 @@ namespace polyfem
 			{
 				lambda_mat_(i) = convert_to_lambda(size_ == 3, E[i], nu[i]);
 				mu_mat_(i) = convert_to_mu(E[i], nu[i]);
+			}
+
+			lambda_ = -1;
+			mu_ = -1;
+		}
+		else if (E.is_string())
+		{
+			Eigen::MatrixXd e_mat, nu_mat;
+			read_matrix(E, e_mat);
+			read_matrix(nu, nu_mat);
+
+			lambda_mat_.resize(e_mat.size(), 1);
+			mu_mat_.resize(nu_mat.size(), 1);
+			assert(lambda_mat_.size() == mu_mat_.size());
+
+			for (int i = 0; i < lambda_mat_.size(); ++i)
+			{
+				lambda_mat_(i) = convert_to_lambda(size_ == 3, e_mat(i), nu_mat(i));
+				mu_mat_(i) = convert_to_mu(e_mat(i), nu_mat(i));
 			}
 
 			lambda_ = -1;

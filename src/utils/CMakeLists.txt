@@ -1,6 +1,8 @@
 set(SOURCES
 	autodiff.h
 	AutodiffTypes.hpp
+	base64Layer.cpp
+	base64Layer.hpp
 	Bessel.hpp
 	BoundarySampler.cpp
 	BoundarySampler.hpp
