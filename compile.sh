@@ -22,6 +22,7 @@ module load cmake/intel/3.7.1
 module load eigen/3.3.1
 module load mesa/intel/17.0.2
 module swap python/intel python3/intel/3.6.3
+module spider boost/intel/1.71.0
 
 module load mpfr/gnu/3.1.5
 module load zlib/intel/1.2.8
