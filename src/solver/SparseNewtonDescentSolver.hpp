@@ -161,6 +161,7 @@ public:
 
 		// TVector full_delta_x;
 		TVector delta_x(reduced_size);
+		delta_x.setZero();
 
 		grad_time = 0;
 		assembly_time = 0;
@@ -301,6 +302,7 @@ public:
 
 			polyfem::logger().debug("\titer: {}, f = {}, ||g||_2 = {}, rate = {}, ||step|| = {}, dot = {}\n",
 									this->m_current.iterations, energy, this->m_current.gradNorm, rate, step, delta_x.dot(grad) / grad.norm());
+			delta_x *= -1;
 		} while (objFunc.callback(this->m_current, x0) && (this->m_status == Status::Continue));
 
 		if (error_code_ != -10)
