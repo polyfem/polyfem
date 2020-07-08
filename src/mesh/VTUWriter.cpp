@@ -1,6 +1,5 @@
 #include <polyfem/VTUWriter.hpp>
 #include <polyfem/Logger.hpp>
-
 namespace polyfem
 {
     namespace
@@ -42,6 +41,11 @@ namespace polyfem
         }
     }
 
+    VTUWriter::VTUWriter(bool binary)
+        : binary_(binary)
+    {
+
+    }
     void VTUWriter::write_point_data(std::ostream &os)
     {
         if (current_scalar_point_data_.empty() && current_vector_point_data_.empty())
@@ -63,7 +67,7 @@ namespace polyfem
 
     void VTUWriter::write_header(const int n_vertices, const int n_elements, std::ostream &os)
     {
-        os << "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\">\n";
+        os << "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\" header_type=\"UInt64\">\n";
         os << "<UnstructuredGrid>\n";
         os << "<Piece NumberOfPoints=\"" << n_vertices << "\" NumberOfCells=\"" << n_elements << "\">\n";
     }
@@ -78,22 +82,45 @@ namespace polyfem
     void VTUWriter::write_points(const Eigen::MatrixXd &points, std::ostream &os)
     {
         os << "<Points>\n";
-        os << "<DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\"ascii\">\n";
-        for (int d = 0; d < points.rows(); ++d)
-        {
-            for (int i = 0; i < points.cols(); ++i)
+        if (binary_){
+
+            Eigen::MatrixXd tmp = points.transpose();
+            if (tmp.rows() != 3)
             {
-                os << points(d, i);
-                if (i < points.cols() - 1)
-                {
-                    os << " ";
-                }
+                tmp.conservativeResize(3, tmp.cols());
+                tmp.row(2).setZero();
             }
 
-            if(!is_volume_)
-                os << " 0";
+            base64Layer base64(os);
 
+            os << "<DataArray type=\"Float64\" NumberOfComponents=\"3\" format=\"binary\">\n";
+            const uint64_t size = tmp.size() * sizeof(double);
+            base64.write(size);
+
+            base64.write(tmp.data(), tmp.size());
+            base64.close();
             os << "\n";
+        }
+        else{
+            os << "<DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\"ascii\">\n";
+
+            for (int d = 0; d < points.rows(); ++d)
+            {
+
+                for (int i = 0; i < points.cols(); ++i)
+                {
+                    os << points(d, i);
+                    if (i < points.cols() - 1)
+                    {
+                        os << " ";
+                    }
+                }
+
+                if (!is_volume_)
+                    os << " 0";
+
+                os << "\n";
+            }
         }
 
         os << "</DataArray>\n";
@@ -103,22 +130,40 @@ namespace polyfem
     void VTUWriter::write_cells(const Eigen::MatrixXi &tets, std::ostream &os)
     {
         const int n_cells = tets.rows();
-        os << "<Cells>\n";
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        os << "<DataArray type=\"Int64\" Name=\"connectivity\" format=\"ascii\">\n";
-
         const int n_vertices = tets.cols();
+        os << "<Cells>\n";
+        base64Layer base64(os);
 
-        for(int c = 0; c < n_cells; ++c)
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if (binary_)
         {
-            for (int i = 0; i < n_vertices; ++i)
+            os << "<DataArray type=\"Int64\" Name=\"connectivity\" format=\"binary\" >\n";
+            const uint64_t size = tets.size() * sizeof(int64_t);
+            base64.write(size);
+
+            Eigen::Matrix<int64_t, Eigen::Dynamic, Eigen::Dynamic> tmp = tets.transpose().template cast<int64_t>();
+            base64.write(tmp.data(), tmp.size());
+            base64.close();
+            os << "\n";
+        }
+        else
+        {
+            os << "<DataArray type=\"Int64\" Name=\"connectivity\" format=\"ascii\">\n";
+
+            for (int c = 0; c < n_cells; ++c)
             {
-                const int v_index = tets(c,i);
-                os << v_index;
-                if (i < n_vertices - 1) {
-                    os << " ";
+                for (int i = 0; i < n_vertices; ++i)
+                {
+                    const int64_t v_index = tets(c, i);
+
+                    os << v_index;
+                    if (i < n_vertices - 1)
+                    {
+                        os << " ";
+                    }
                 }
             }
+
             os << "\n";
         }
 
@@ -134,23 +179,52 @@ namespace polyfem
             max_tag = VTKTagVolume(n_vertices);
         }
 
-        os << "<DataArray type=\"Int8\" Name=\"types\" format=\"ascii\" RangeMin=\"" << min_tag << "\" RangeMax=\"" << max_tag << "\">\n";
+        if (binary_)
+        {
+            os << "<DataArray type=\"Int8\" Name=\"types\" format=\"binary\" RangeMin=\"" << min_tag << "\" RangeMax=\"" << max_tag << "\">\n";
+            const uint64_t size = n_cells * sizeof(int8_t);
+            base64.write(size);
+        }
+        else
+            os << "<DataArray type=\"Int8\" Name=\"types\" format=\"ascii\" RangeMin=\"" << min_tag << "\" RangeMax=\"" << max_tag << "\">\n";
+
         for (int i = 0; i < n_cells; ++i)
         {
-            if (is_volume_)
-                os << VTKTagVolume(n_vertices) << "\n";
+            const int8_t tag = is_volume_ ? VTKTagVolume(n_vertices) : VTKTagPlanar(n_vertices);
+            if(binary_)
+                base64.write(tag);
             else
-                os << VTKTagPlanar(n_vertices) << "\n";
+                os << tag << "\n";
+        }
+        if (binary_)
+        {
+            base64.close();
+            os << "\n";
         }
         os << "</DataArray>\n";
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        os << "<DataArray type=\"Int64\" Name=\"offsets\" format=\"ascii\" RangeMin=\"" << n_vertices << "\" RangeMax=\"" << n_cells *n_vertices << "\">\n";
+        if (binary_)
+        {
+            os << "<DataArray type=\"Int64\" Name=\"offsets\" format=\"binary\" RangeMin=\"" << n_vertices << "\" RangeMax=\"" << n_cells * n_vertices << "\">\n";
+            const uint64_t size = n_cells * sizeof(int64_t);
+            base64.write(size);
+        }
+        else
+            os << "<DataArray type=\"Int64\" Name=\"offsets\" format=\"ascii\" RangeMin=\"" << n_vertices << "\" RangeMax=\"" << n_cells *n_vertices << "\">\n";
 
-        int acc = n_vertices;
+        int64_t acc = n_vertices;
         for (int i = 0; i < n_cells; ++i) {
-            os << acc << "\n";
+            if (binary_)
+                base64.write(acc);
+            else
+                os << acc << "\n";
             acc += n_vertices;
+        }
+        if (binary_)
+        {
+            base64.close();
+            os << "\n";
         }
 
         os << "</DataArray>\n";
@@ -182,14 +256,14 @@ namespace polyfem
 
     void VTUWriter::add_scalar_field(const std::string &name, const Eigen::MatrixXd &data)
     {
-        point_data_.push_back(VTKDataNode<double>());
-        point_data_.back().initialize(name, "Float32", data);
+        point_data_.push_back(VTKDataNode<double>(binary_));
+        point_data_.back().initialize(name, "Float64", data);
         current_scalar_point_data_ = name;
     }
 
     void VTUWriter::add_vector_field(const std::string &name, const Eigen::MatrixXd &data)
     {
-        point_data_.push_back(VTKDataNode<double>());
+        point_data_.push_back(VTKDataNode<double>(binary_));
 
         //FIXME?
         // if (data.cols() == 2)
@@ -202,7 +276,7 @@ namespace polyfem
         //  point_data_.back().initialize(name, "Float32", data3, 3);
         // } else
 
-        point_data_.back().initialize(name, "Float32", data, data.cols());
+        point_data_.back().initialize(name, "Float64", data, data.cols());
         current_vector_point_data_ = name;
     }
 

@@ -231,26 +231,26 @@ namespace polyfem
 			return;
 	}
 
-
 	void AssemblerUtils::compute_scalar_value(const std::string &assembler,
-		const ElementBases &bs,
-		const ElementBases &gbs,
-		const Eigen::MatrixXd &local_pts,
-		const Eigen::MatrixXd &fun,
-		Eigen::MatrixXd &result) const
+											  const int el_id,
+											  const ElementBases &bs,
+											  const ElementBases &gbs,
+											  const Eigen::MatrixXd &local_pts,
+											  const Eigen::MatrixXd &fun,
+											  Eigen::MatrixXd &result) const
 	{
 		if(assembler == "Laplacian" || assembler == "Helmholtz" || assembler == "Bilaplacian")
 			return;
 
 		else if(assembler == "LinearElasticity")
-			linear_elasticity_.local_assembler().compute_von_mises_stresses(bs, gbs, local_pts, fun, result);
+			linear_elasticity_.local_assembler().compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, result);
 		else if(assembler == "HookeLinearElasticity")
-			hooke_linear_elasticity_.local_assembler().compute_von_mises_stresses(bs, gbs, local_pts, fun, result);
+			hooke_linear_elasticity_.local_assembler().compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, result);
 
 		else if(assembler == "SaintVenant")
-			saint_venant_elasticity_.local_assembler().compute_von_mises_stresses(bs, gbs, local_pts, fun, result);
+			saint_venant_elasticity_.local_assembler().compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, result);
 		else if(assembler == "NeoHookean")
-			neo_hookean_elasticity_.local_assembler().compute_von_mises_stresses(bs, gbs, local_pts, fun, result);
+			neo_hookean_elasticity_.local_assembler().compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, result);
 		//else if(assembler == "Ogden")
 		//	ogden_elasticity_.local_assembler().compute_von_mises_stresses(bs, gbs, local_pts, fun, result);
 
@@ -261,35 +261,36 @@ namespace polyfem
 			navier_stokes_velocity_.local_assembler().compute_norm_velocity(bs, gbs, local_pts, fun, result);
 
 		else if(assembler == "IncompressibleLinearElasticity")
-			incompressible_lin_elast_displacement_.local_assembler().compute_von_mises_stresses(bs, gbs, local_pts, fun, result);
+			incompressible_lin_elast_displacement_.local_assembler().compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, result);
 
 		else
 		{
 			logger().warn("{} not found, fallback to default", assembler);
 			assert(false);
-			linear_elasticity_.local_assembler().compute_von_mises_stresses(bs, gbs, local_pts, fun, result);
+			linear_elasticity_.local_assembler().compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, result);
 		}
 	}
 
 	void AssemblerUtils::compute_tensor_value(const std::string &assembler,
-		const ElementBases &bs,
-		const ElementBases &gbs,
-		const Eigen::MatrixXd &local_pts,
-		const Eigen::MatrixXd &fun,
-		Eigen::MatrixXd &result) const
+											  const int el_id,
+											  const ElementBases &bs,
+											  const ElementBases &gbs,
+											  const Eigen::MatrixXd &local_pts,
+											  const Eigen::MatrixXd &fun,
+											  Eigen::MatrixXd &result) const
 	{
 		if(assembler == "Laplacian" || assembler == "Helmholtz" || assembler == "Bilaplacian")
 			return;
 
 		else if(assembler == "LinearElasticity")
-			linear_elasticity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
+			linear_elasticity_.local_assembler().compute_stress_tensor(el_id, bs, gbs, local_pts, fun, result);
 		else if(assembler == "HookeLinearElasticity")
-			hooke_linear_elasticity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
+			hooke_linear_elasticity_.local_assembler().compute_stress_tensor(el_id, bs, gbs, local_pts, fun, result);
 
 		else if(assembler == "SaintVenant")
-			saint_venant_elasticity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
+			saint_venant_elasticity_.local_assembler().compute_stress_tensor(el_id, bs, gbs, local_pts, fun, result);
 		else if(assembler == "NeoHookean")
-			neo_hookean_elasticity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
+			neo_hookean_elasticity_.local_assembler().compute_stress_tensor(el_id, bs, gbs, local_pts, fun, result);
 		//else if(assembler == "Ogden")
 		//	ogden_elasticity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
 
@@ -298,13 +299,13 @@ namespace polyfem
 		else if (assembler == "NavierStokes")
 			navier_stokes_velocity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
 		else if(assembler == "IncompressibleLinearElasticity")
-			incompressible_lin_elast_displacement_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
+			incompressible_lin_elast_displacement_.local_assembler().compute_stress_tensor(el_id, bs, gbs, local_pts, fun, result);
 
 		else
 		{
 			logger().warn("{} not found, fallback to default", assembler);
 			assert(false);
-			linear_elasticity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
+			linear_elasticity_.local_assembler().compute_stress_tensor(el_id, bs, gbs, local_pts, fun, result);
 		}
 	}
 

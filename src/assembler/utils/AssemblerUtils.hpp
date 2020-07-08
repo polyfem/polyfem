@@ -93,18 +93,20 @@ namespace polyfem
 
 		//plotting
 		void compute_scalar_value(const std::string &assembler,
-			const ElementBases &bs,
-			const ElementBases &gbs,
-			const Eigen::MatrixXd &local_pts,
-			const Eigen::MatrixXd &fun,
-			Eigen::MatrixXd &result) const;
+								  const int el_id,
+								  const ElementBases &bs,
+								  const ElementBases &gbs,
+								  const Eigen::MatrixXd &local_pts,
+								  const Eigen::MatrixXd &fun,
+								  Eigen::MatrixXd &result) const;
 
 		void compute_tensor_value(const std::string &assembler,
-			const ElementBases &bs,
-			const ElementBases &gbs,
-			const Eigen::MatrixXd &local_pts,
-			const Eigen::MatrixXd &fun,
-			Eigen::MatrixXd &result) const;
+								  const int el_id,
+								  const ElementBases &bs,
+								  const ElementBases &gbs,
+								  const Eigen::MatrixXd &local_pts,
+								  const Eigen::MatrixXd &fun,
+								  Eigen::MatrixXd &result) const;
 
 		//for errors
 		VectorNd compute_rhs(const std::string &assembler, const AutodiffHessianPt &pt) const;
