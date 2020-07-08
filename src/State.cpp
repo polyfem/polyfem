@@ -2554,8 +2554,8 @@ void State::solve_problem()
 			assembler.assemble_mixed_problem("Stokes", mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, mixed_stiffness);
 			mixed_stiffness = mixed_stiffness.transpose();
 
-			StiffnessMatrix velocity_mass;
-			assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, bases, gbases, velocity_mass);
+			// StiffnessMatrix velocity_mass;
+			// assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, bases, gbases, velocity_mass);
 
 			// barycentric coordinates of FEM nodes
 			Eigen::MatrixXd local_pts;
@@ -2582,7 +2582,7 @@ void State::solve_problem()
 				bnd_nodes.push_back(*it / dim);
 			}
 
-			OperatorSplittingSolver ss(*mesh, shape, n_el, local_boundary, bnd_nodes, mass, stiffness_viscosity, dt, viscosity_, args["solver_type"], args["precond_type"], params, args["export"]["stiffness_mat"]);
+			OperatorSplittingSolver ss(*mesh, shape, n_el, local_boundary, bnd_nodes, mass, stiffness_viscosity, stiffness, dt, viscosity_, args["solver_type"], args["precond_type"], params, args["export"]["stiffness_mat"]);
 
 			/* initialize solution */
 
@@ -2610,7 +2610,7 @@ void State::solve_problem()
 				ss.external_force(*mesh, gbases, bases, dt, sol, local_pts, problem, time);
 				
 				/* incompressibility */
-				ss.solve_pressure(args["solver_type"], args["precond_type"], params,stiffness,mixed_stiffness,args["export"]["stiffness_mat"], args["export"]["spectrum"],sol, pressure);
+				ss.solve_pressure(mixed_stiffness, sol, pressure);
 				
 				ss.projection(*mesh, n_bases, gbases, bases, pressure_bases, local_pts, pressure, sol);
 

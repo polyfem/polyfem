@@ -30,6 +30,7 @@ namespace polyfem
         const std::vector<int>& boundary_nodes,
         const StiffnessMatrix& mass,
         const StiffnessMatrix& stiffness_viscosity,
+        const StiffnessMatrix& stiffness_velocity,
         const double& dt,
         const double& viscosity_,
         const std::string &solver_type, 
@@ -44,6 +45,34 @@ namespace polyfem
             solver_diffusion->setParameters(params);
             logger().info("{}...", solver_diffusion->name());
             prefactorize(*solver_diffusion, mat1, boundary_nodes, mat1.rows(), save_path);
+
+            mat_projection.resize(stiffness_velocity.rows() + 1, stiffness_velocity.cols() + 1);
+
+            std::vector<Eigen::Triplet<double> > coefficients;
+            coefficients.reserve(stiffness_velocity.nonZeros() + 2 * stiffness_velocity.rows());
+
+            for(int i = 0; i < stiffness_velocity.outerSize(); i++)
+            {
+                for(StiffnessMatrix::InnerIterator it(stiffness_velocity,i); it; ++it)
+                {
+                    coefficients.emplace_back(it.row(),it.col(),it.value());
+                }
+            }
+
+            const double val = 1. / (mat_projection.rows() - 1);
+            for (int i = 0; i < mat_projection.rows() - 1; i++)
+            {
+                coefficients.emplace_back(i, mat_projection.cols() - 1, val);
+                coefficients.emplace_back(mat_projection.rows() - 1, i, val);
+            }
+
+            mat_projection.setFromTriplets(coefficients.begin(), coefficients.end());
+            StiffnessMatrix mat2 = mat_projection;
+
+            solver_projection = LinearSolver::create(solver_type, precond);
+            solver_projection->setParameters(params);
+            logger().info("{}...", solver_projection->name());
+            prefactorize(*solver_projection, mat2, std::vector<int>(), mat2.rows() - 1, save_path);
 
             dim = mesh.dimension();
 
@@ -778,54 +807,17 @@ namespace polyfem
 #endif
         }
 
-        void solve_pressure(const std::string &solver_type, 
-        const std::string &precond, 
-        const json& params,
-        const StiffnessMatrix& stiffness,
-        const StiffnessMatrix& mixed_stiffness,
-        const std::string &save_path,
-	    bool compute_spectrum,
-        Eigen::MatrixXd& sol, 
-        Eigen::MatrixXd& pressure)
+        void solve_pressure(const StiffnessMatrix& mixed_stiffness, Eigen::MatrixXd& sol, Eigen::MatrixXd& pressure)
         {
             Eigen::VectorXd rhs = Eigen::VectorXd::Zero(mixed_stiffness.rows() + 1); // mixed_stiffness * sol;
-			StiffnessMatrix A(stiffness.rows() + 1, stiffness.cols() + 1); // stiffness;
-            
             Eigen::VectorXd temp = mixed_stiffness * sol;
             for(int i = 0; i < temp.rows(); i++)
             {
                 rhs(i) = temp(i);
             }
 
-            std::vector<Eigen::Triplet<double> > coefficients;
-            coefficients.reserve(stiffness.nonZeros() + 2 * stiffness.rows());
-
-            for(int i = 0; i < stiffness.outerSize(); i++)
-            {
-                for(StiffnessMatrix::InnerIterator it(stiffness,i); it; ++it)
-                {
-                    coefficients.push_back(Eigen::Triplet<double>(it.row(),it.col(),it.value()));
-                }
-            }
-
-            const double val = 1. / (A.rows() - 1);
-            for (int i = 0; i < A.rows() - 1; i++)
-            {
-                coefficients.push_back(Eigen::Triplet<double>(i, A.cols() - 1, val));
-                coefficients.push_back(Eigen::Triplet<double>(A.rows() - 1, i, val));
-            }
-
-            A.setFromTriplets(coefficients.begin(), coefficients.end());
-
-            auto solver = LinearSolver::create(solver_type, precond);
-            solver->setParameters(params);
-            logger().info("{}...", solver->name());
-
             Eigen::VectorXd x;
-
-            const int precond_num = A.rows() - 1;
-
-            auto spectrum = dirichlet_solve(*solver, A, rhs, std::vector<int>(), x, precond_num, save_path, compute_spectrum);
+            dirichlet_solve_prefactorized(*solver_projection, mat_projection, rhs, std::vector<int>(), x);
             pressure = x;
         }
 
