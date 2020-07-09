@@ -139,6 +139,7 @@ void RhsAssembler::time_bc(const std::function<void(const Eigen::MatrixXd &, Eig
 	solver->analyzePattern(mass, mass.rows());
 	solver->factorize(mass);
 	Eigen::MatrixXd b = sol;
+	sol.setZero();
 	for (long i = 0; i < b.cols(); ++i)
 	{
 		solver->solve(b.col(i), sol.col(i));
@@ -330,6 +331,7 @@ void RhsAssembler::set_bc(
 			solver->setParameters(params);
 			solver->analyzePattern(A, A.rows());
 			solver->factorize(A);
+			coeffs.setZero();
 			for (long i = 0; i < b.cols(); ++i)
 			{
 				solver->solve(b.col(i), coeffs.col(i));

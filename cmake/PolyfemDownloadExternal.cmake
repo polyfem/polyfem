@@ -23,14 +23,13 @@ endfunction()
 
 ################################################################################
 
-## libigl MPL
+## PolySolvers MIT
 function(polyfem_download_solvers)
     polyfem_download_project(solvers
         GIT_REPOSITORY https://github.com/Huangzizhou/polysolve.git
-        GIT_TAG        97250e9f36ff566041423ed13c87c3cc1dc1f6c0
+        GIT_TAG        c828f84df6db6dd53d34b3e342b61ec4c52c1d25
     )
 endfunction()
-
 
 ## libigl MPL
 function(polyfem_download_libigl)
@@ -80,14 +79,6 @@ function(polyfem_download_CppNumericalSolvers)
     )
 endfunction()
 
-## spectra MPL 2.0 optional
-function(polyfem_download_spectra)
-    polyfem_download_project(spectra
-        GIT_REPOSITORY https://github.com/yixuan/spectra.git
-        GIT_TAG        v0.6.2
-    )
-endfunction()
-
 ## tbb Apache-2.0
 function(polyfem_download_tbb)
     polyfem_download_project(tbb
@@ -95,17 +86,6 @@ function(polyfem_download_tbb)
         GIT_TAG        41adc7a7fbe4e6d37fe57186bd85dde99fa61e66
     )
 endfunction()
-
-## hypre GNU Lesser General Public License
-function(polyfem_download_hypre)
-    polyfem_download_project(hypre
-        GIT_REPOSITORY https://github.com/LLNL/hypre.git
-        GIT_TAG        v2.15.1
-    )
-
-    file(REMOVE ${POLYFEM_EXTERNAL}/hypre/src/utilities/version)
-endfunction()
-
 
 ## Sanitizers MIT optional
 function(polyfem_download_sanitizers)
@@ -131,14 +111,6 @@ function(polyfem_download_tinyexpr)
     )
 endfunction()
 
-
-## amgcl mit
-function(polyfem_download_amgcl)
-    polyfem_download_project(amgcl
-        GIT_REPOSITORY https://github.com/ddemidov/amgcl.git
-        GIT_TAG        a2fab1037946de87e448e5fc7539277cd6fb9ec3
-    )
-endfunction()
 
 
 ## data
