@@ -39,6 +39,7 @@ int main(int argc, char **argv)
 	std::string screenshot = "";
 	std::string problem_name = "Franke";
 	std::string json_file = "";
+	std::string febio_file = "";
 
 	int n_refs = 0;
 
@@ -68,7 +69,7 @@ int main(int argc, char **argv)
 
 	command_line.add_option("-j,--json", json_file, "Simulation json file")->check(CLI::ExistingFile);
 	command_line.add_option("-m,--mesh", path, "Mesh path")->check(CLI::ExistingFile);
-
+	command_line.add_option("-b,--febio", febio_file, "FEBio file path")->check(CLI::ExistingFile);
 
 	//for debugging
 	command_line.add_option("--n_refs", n_refs, "Number of refinements");
@@ -175,8 +176,10 @@ int main(int argc, char **argv)
 		state.init_logger(log_file, log_level, is_quiet);
 		state.init(in_args);
 
-
-		state.load_mesh();
+		if (!febio_file.empty())
+			state.load_febio(febio_file);
+		else
+			state.load_mesh();
 		state.compute_mesh_stats();
 
 		state.build_basis();
@@ -197,7 +200,7 @@ int main(int argc, char **argv)
 	}
 	else
 	{
-		UIState::ui_state().launch(log_file, log_level, is_quiet, in_args);
+		UIState::ui_state().launch(log_file, log_level, is_quiet, in_args, febio_file);
 	}
 #endif
 

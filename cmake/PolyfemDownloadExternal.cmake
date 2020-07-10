@@ -112,6 +112,15 @@ function(polyfem_download_tinyexpr)
 endfunction()
 
 
+## tinyxml zlib
+function(polyfem_download_tinyxml)
+    polyfem_download_project(tinyxml
+        GIT_REPOSITORY https://github.com/leethomason/tinyxml2.git
+        GIT_TAG        2c5a6bfdd42ab919e55a613d33c83eb53de71af4
+    )
+endfunction()
+
+
 
 ## data
 function(polyfem_download_polyfem_data)

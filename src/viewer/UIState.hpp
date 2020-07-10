@@ -48,7 +48,7 @@ namespace polyfem
 	public:
 		static UIState &ui_state();
 
-		void launch(const std::string &log_file, int log_level, const bool is_quiet, const json &args);
+		void launch(const std::string &log_file, int log_level, const bool is_quiet, const json &args, const std::string &febio);
 
 		void sertialize(const std::string &name);
 
@@ -121,6 +121,7 @@ namespace polyfem
 	protected:
 		Navigation3D::Index current_3d_index;
 		Navigation::Index 	current_2d_index;
+		std::string febio_file;
 
 		igl::opengl::ViewerData &data(const Visualizations &layer);
 		Eigen::Matrix<bool, Eigen::Dynamic, 1> available_visualizations;

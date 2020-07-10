@@ -138,6 +138,7 @@ namespace polyfem
 		void compute_mesh_size(const Mesh &mesh, const std::vector< ElementBases > &bases, const int n_samples);
 
 		void load_mesh();
+		void load_febio(const std::string &path);
 		void load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd&)> &boundary_marker, bool skip_boundary_sideset = false);
 		void load_mesh(const std::string &path)
 		{
