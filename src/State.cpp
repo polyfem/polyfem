@@ -1742,6 +1742,13 @@ void State::load_mesh()
 	if (n_refs > 0)
 		mesh->refine(n_refs, args["refinenemt_location"], parent_elements);
 
+	std::string export_mesh = args["export_mesh"];
+	if (export_mesh != "")
+	{
+		mesh->save(export_mesh);
+		exit(0);
+	}
+
 	// mesh->set_tag(1712, ElementType::InteriorPolytope);
 
 	const std::string bc_tag_path = args["bc_tag"];
