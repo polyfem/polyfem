@@ -36,15 +36,18 @@ namespace polyfem
         const std::string &solver_type, 
         const std::string &precond,
         const json& params,
-        const std::string &save_path) : shape(shape), n_el(n_el), boundary_nodes(boundary_nodes)
+        const std::string &save_path) : shape(shape), n_el(n_el), boundary_nodes(boundary_nodes), solver_type(solver_type), precond(precond), params(params)
         {
             mat_diffusion = mass + viscosity_ * dt * stiffness_viscosity;
-            StiffnessMatrix mat1 = mat_diffusion;
-
+            
             solver_diffusion = LinearSolver::create(solver_type, precond);
             solver_diffusion->setParameters(params);
             logger().info("{}...", solver_diffusion->name());
-            prefactorize(*solver_diffusion, mat1, boundary_nodes, mat1.rows(), save_path);
+            if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
+            {
+                StiffnessMatrix mat1 = mat_diffusion;
+                prefactorize(*solver_diffusion, mat1, boundary_nodes, mat1.rows(), save_path);
+            }
 
             mat_projection.resize(stiffness_velocity.rows() + 1, stiffness_velocity.cols() + 1);
 
@@ -67,12 +70,14 @@ namespace polyfem
             }
 
             mat_projection.setFromTriplets(coefficients.begin(), coefficients.end());
-            StiffnessMatrix mat2 = mat_projection;
-
             solver_projection = LinearSolver::create(solver_type, precond);
             solver_projection->setParameters(params);
             logger().info("{}...", solver_projection->name());
-            prefactorize(*solver_projection, mat2, std::vector<int>(), mat2.rows() - 1, save_path);
+            if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
+            {
+                StiffnessMatrix mat2 = mat_projection;
+                prefactorize(*solver_projection, mat2, std::vector<int>(), mat2.rows() - 1, save_path);
+            }
 
             dim = mesh.dimension();
 
@@ -753,7 +758,15 @@ namespace polyfem
                     rhs(bnd_nodes[i]) = x(bnd_nodes[i]);
                 }
 
-                dirichlet_solve_prefactorized(*solver_diffusion, mat_diffusion, rhs, bnd_nodes, x);
+                if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
+                {
+                    dirichlet_solve_prefactorized(*solver_diffusion, mat_diffusion, rhs, bnd_nodes, x);
+                }
+                else
+                {
+                    dirichlet_solve(*solver_diffusion, mat_diffusion, rhs, bnd_nodes, x, mat_diffusion.rows(), "", false);
+                }
+                
 
                 for(int j = 0; j < x.size(); j++)
                 {
@@ -816,8 +829,20 @@ namespace polyfem
                 rhs(i) = temp(i);
             }
 
-            Eigen::VectorXd x;
-            dirichlet_solve_prefactorized(*solver_projection, mat_projection, rhs, std::vector<int>(), x);
+            Eigen::VectorXd x(pressure.size());
+            for(int i = 0; i < pressure.size(); i++)
+            {
+                x(i) = pressure(i);
+            }
+            if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
+            {
+                dirichlet_solve_prefactorized(*solver_projection, mat_projection, rhs, std::vector<int>(), x);
+            }
+            else
+            {
+                dirichlet_solve(*solver_projection, mat_projection, rhs, std::vector<int>(), x, mat_projection.rows() - 1, "", false);
+            }
+            
             pressure = x;
         }
 
@@ -1035,5 +1060,9 @@ namespace polyfem
 
         StiffnessMatrix mat_diffusion;
         StiffnessMatrix mat_projection;
+
+        std::string solver_type;
+        std::string precond;
+        json params;
     };
 }
