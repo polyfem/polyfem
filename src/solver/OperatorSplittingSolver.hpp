@@ -844,7 +844,7 @@ namespace polyfem
                     {
                         for (int d = 0; d < dim; d++)
                         {
-                            assert(pressure(pressure_bases[e].bases[i].global().size() == 1));
+                            assert(pressure_bases[e].bases[i].global().size() == 1);
                             grad_pressure(global_ * dim + d) += vals.basis_values[i].grad_t_m(j, d) * pressure(pressure_bases[e].bases[i].global()[0].index);
                         }
                     }
