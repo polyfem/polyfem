@@ -22,6 +22,9 @@ namespace polyfem {
 		// Replace extension after the last "dot"
 		std::string replace_ext(const std::string &filename, const std::string &newext);
 
+		// Trims a string
+		std::string trim(const std::string &string);
+
 	}
 
 } // namespace polyfem

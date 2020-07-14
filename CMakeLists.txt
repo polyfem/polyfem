@@ -295,6 +295,13 @@ if(NOT TARGET tinyexpr::tinyexpr)
 endif()
 target_link_libraries(polyfem PUBLIC tinyexpr::tinyexpr)
 
+# TinyXML library
+if(NOT TARGET tinyxml2)
+    polyfem_download_tinyxml()
+    add_subdirectory(${THIRD_PARTY_DIR}/tinyxml)
+endif()
+target_link_libraries(polyfem PUBLIC tinyxml2)
+
 # Catch2
 if(${POLYFEM_TOPLEVEL_PROJECT})
     polyfem_download_catch2()

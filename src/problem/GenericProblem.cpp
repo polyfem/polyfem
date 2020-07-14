@@ -134,6 +134,16 @@ namespace polyfem
 		}
 	}
 
+	void GenericTensorProblem::add_dirichlet_boundary(const int id, const Eigen::RowVector3d &val, const bool isx, const bool isy, const bool isz)
+	{
+		boundary_ids_.push_back(id);
+		displacements_.emplace_back();
+		for (size_t k = 0; k < val.size(); ++k)
+			displacements_.back()(k).init(val[k]);
+
+		dirichelt_dimentions_.emplace_back(isx, isy, isz);
+	}
+
 	void GenericTensorProblem::set_parameters(const json &params)
 	{
 		if(params.find("rhs") != params.end())

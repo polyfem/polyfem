@@ -1,6 +1,7 @@
 #include "MshReader.hpp"
 
 #include <polyfem/Logger.hpp>
+#include <polyfem/StringUtils.hpp>
 
 #include <fstream>
 #include <string>
@@ -27,6 +28,7 @@ namespace polyfem
 
 		while (std::getline(infile, line))
 		{
+			line = StringUtils::trim(line);
 			++line_number;
 
 			if(line.empty())

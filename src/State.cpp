@@ -1,5 +1,7 @@
 #include <polyfem/State.hpp>
 
+#include <polyfem/StringUtils.hpp>
+
 #include <polyfem/Mesh2D.hpp>
 #include <polyfem/Mesh3D.hpp>
 
@@ -38,6 +40,7 @@
 #include <polyfem/NavierStokesSolver.hpp>
 #include <polyfem/TransientNavierStokesSolver.hpp>
 #include <polyfem/OperatorSplittingSolver.hpp>
+#include <polyfem/GenericProblem.hpp>
 
 #include <polyfem/auto_p_bases.hpp>
 #include <polyfem/auto_q_bases.hpp>
@@ -65,6 +68,8 @@
 #include <igl/in_element.h>
 
 #include <unsupported/Eigen/SparseExtra>
+
+#include <tinyxml2.h>
 
 #include <iostream>
 #include <algorithm>
@@ -1763,10 +1768,13 @@ void State::load_mesh()
 	if (boundary_id_threshold <= 0)
 		boundary_id_threshold = mesh->is_volume() ? 1e-2 : 1e-7;
 
-	if (bc_tag_path.empty())
-		mesh->compute_boundary_ids(boundary_id_threshold);
-	else
-		mesh->load_boundary_ids(bc_tag_path);
+	if (!mesh->has_boundary_ids())
+	{
+		if (bc_tag_path.empty())
+			mesh->compute_boundary_ids(boundary_id_threshold);
+		else
+			mesh->load_boundary_ids(bc_tag_path);
+	}
 
 	timer.stop();
 	logger().info(" took {}s", timer.getElapsedTime());
@@ -1868,6 +1876,164 @@ void State::load_mesh()
 	// 		}
 	// 	}
 	// }
+}
+
+void State::load_febio(const std::string &path)
+{
+	args["normalize_mesh"] = false;
+	tinyxml2::XMLDocument doc;
+	doc.LoadFile(path.c_str());
+	const auto *febio = doc.FirstChildElement("febio_spec");
+	const char * verc = febio->Attribute("version");
+	std::string ver(verc);
+	assert(ver == "2.5");
+
+	//TODO: multimaterial, use id!, other materials will not work
+	const auto *material_node = febio->FirstChildElement("Material")->FirstChildElement("material");
+	const char *mat = material_node->Attribute("type");
+	std::string material(mat);
+
+	const double E = material_node->FirstChildElement("E")->DoubleText();
+	const double nu = material_node->FirstChildElement("v")->DoubleText();
+
+	if (material == "neo-Hookean")
+		args["tensor_formulation"] = "NeoHookean";
+
+	args["params"]["E"] = E;
+	args["params"]["nu"] = E;
+
+	const auto *geometry = febio->FirstChildElement("Geometry");
+	const auto *nodes = geometry->FirstChildElement("Nodes");
+
+	std::vector<Eigen::Vector3d> vertices;
+
+	for (const tinyxml2::XMLElement *child = nodes->FirstChildElement("node"); child != NULL; child = child->NextSiblingElement("node"))
+	{
+		const char *pos_strc = child->GetText();
+		const std::string pos_str(pos_strc);
+		const auto vs = StringUtils::split(pos_str, ",");
+		assert(vs.size() == 3);
+
+		vertices.emplace_back(atof(vs[0].c_str()), atof(vs[1].c_str()), atof(vs[2].c_str()));
+	}
+
+	Eigen::MatrixXd V(vertices.size(), 3);
+	for(int i = 0; i < vertices.size(); ++i)
+		V.row(i) = vertices[i].transpose();
+
+	//TODO: multimaterial, mat!
+	const auto *elements = geometry->FirstChildElement("Elements");
+	const char *el_typec = elements->Attribute("type");
+	std::string el_type(el_typec);
+	assert(el_type == "tet4");
+
+	std::vector<Eigen::Vector4i> tets;
+	for (const tinyxml2::XMLElement *child = elements->FirstChildElement("elem"); child != NULL; child = child->NextSiblingElement("elem"))
+	{
+		const char *idsc = child->GetText();
+		const std::string ids(idsc);
+		const auto tt = StringUtils::split(ids, ",");
+		assert(tt.size() == 4);
+
+		tets.emplace_back(atoi(tt[0].c_str())-1, atoi(tt[1].c_str())-1, atoi(tt[2].c_str())-1, atoi(tt[3].c_str())-1);
+	}
+	Eigen::MatrixXi T(tets.size(), 4);
+	for (int i = 0; i < tets.size(); ++i)
+		T.row(i) = tets[i].transpose();
+
+	load_mesh(V, T);
+
+	std::vector<std::vector<int>> nodeSet(V.rows());
+	int id = 1;
+	std::map<std::string, int> names;
+
+	for (const tinyxml2::XMLElement *child = geometry->FirstChildElement("NodeSet"); child != NULL; child = child->NextSiblingElement("NodeSet"))
+	{
+		const char *namec = elements->Attribute("name");
+		names[std::string(namec)] = id;
+
+		for (const tinyxml2::XMLElement *nodeid = child->FirstChildElement("node"); nodeid != NULL; nodeid = nodeid->NextSiblingElement("node"))
+		{
+			const int nid = nodeid->IntAttribute("id");
+			nodeSet[nid-1].push_back(id);
+		}
+
+		id++;
+	}
+
+	mesh->compute_boundary_ids([&nodeSet](const std::vector<int> &vs, bool is_boundary)
+	{
+		std::vector<int> tmp;
+		for(const int v : vs)
+			tmp.insert(tmp.end(), nodeSet[v].begin(), nodeSet[v].end());
+
+		std::sort(tmp.begin(), tmp.end());
+
+		int prev = -1;
+		int count = 1;
+		for(const int id : tmp)
+		{
+			if(id == prev)
+				count++;
+			else {
+				count = 1;
+				prev = id;
+			}
+			if(count == vs.size())
+				return prev;
+		}
+
+		return 0;
+	});
+
+	problem = ProblemFactory::factory().get_problem("GenericTensor");
+	GenericTensorProblem &gproblem = *dynamic_cast<GenericTensorProblem *>(problem.get());
+
+	const auto *boundaries = febio->FirstChildElement("Boundary");
+
+	for (const tinyxml2::XMLElement *child = boundaries->FirstChildElement("fix"); child != NULL; child = child->NextSiblingElement("fix"))
+	{
+		const std::string name = std::string(child->Attribute("node_set"));
+		const std::string bc = std::string(child->Attribute("bc"));
+		const auto bcs = StringUtils::split(bc, ",");
+
+		bool isx = false;
+		bool isy = false;
+		bool isz = false;
+
+		for(const auto &s : bcs)
+		{
+			if(s == "x")
+				isx=true;
+			else if(s == "y")
+				isy = true;
+			else if (s == "z")
+				isz = true;
+		}
+		gproblem.add_dirichlet_boundary(names[name], Eigen::RowVector3d::Zero(), isx, isy, isz);
+	}
+
+	for (const tinyxml2::XMLElement *child = boundaries->FirstChildElement("prescribe"); child != NULL; child = child->NextSiblingElement("prescribe"))
+	{
+		const std::string name = std::string(child->Attribute("node_set"));
+		const std::string bc = std::string(child->Attribute("bc"));
+
+		bool isx = bc == "x";
+		bool isy = bc == "y";
+		bool isz = bc == "z";
+
+		const double value = atof(child->FirstChildElement("scale")->GetText());
+		Eigen::RowVector3d val = Eigen::RowVector3d::Zero();
+
+		if(isx)
+			val(0) = value;
+		else if (isy)
+			val(1) = value;
+		else if (isz)
+			val(2) = value;
+
+		gproblem.add_dirichlet_boundary(names[name], val, isx, isy, isz);
+	}
 }
 
 void State::compute_mesh_stats()

@@ -1621,7 +1621,7 @@ void UIState::build_vis_mesh()
 
 void UIState::load_mesh()
 {
-	if (state.mesh_path().empty())
+	if (state.mesh_path().empty() && febio_file.empty())
 	{
 		viewer.open_dialog_load_mesh();
 	}
@@ -1636,7 +1636,10 @@ void UIState::load_mesh()
 	vis_flags.clear();
 	vis_flags.resize(Visualizations::TotalVisualizations);
 
-	state.load_mesh();
+	if (febio_file.empty())
+		state.load_mesh();
+	else
+		state.load_febio(febio_file);
 	state.compute_mesh_stats();
 	state.mesh->triangulate_faces(tri_faces, tri_pts, element_ranges);
 	state.mesh->compute_element_barycenters(normalized_barycenter);
@@ -1797,12 +1800,13 @@ void UIState::redraw()
 	show_basis();
 }
 
-void UIState::launch(const std::string &log_file, int log_level, const bool is_quiet, const json &args)
+void UIState::launch(const std::string &log_file, int log_level, const bool is_quiet, const json &args, const std::string &febio_filei)
 {
 	state.init_logger(log_file, log_level, is_quiet);
 	state.init(args);
 
 	viewer.core.background_color.setOnes();
+	febio_file = febio_filei;
 
 	if (screenshot.empty())
 	{

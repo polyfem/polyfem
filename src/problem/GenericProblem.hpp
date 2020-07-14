@@ -41,6 +41,8 @@ namespace polyfem
 		// bool is_mixed() const override { return is_mixed_; }
 		int n_incremental_load_steps(const double diag) const override;
 
+		void add_dirichlet_boundary(const int id, const Eigen::RowVector3d &val, const bool isx, const bool isy, const bool isz);
+
 	private:
 		bool all_dimentions_dirichelt_ = true;
 		bool has_exact_ = false;

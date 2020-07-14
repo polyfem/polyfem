@@ -126,6 +126,7 @@ namespace polyfem
 		virtual void compute_boundary_ids(const std::function<int(const std::vector<int>&, bool)> &marker) = 0;
 		void set_tag(const int el, const ElementType type) { elements_tag_[el] = type; }
 		inline int get_boundary_id(const int primitive) const { return boundary_ids_[primitive]; }
+		inline bool has_boundary_ids() { return !boundary_ids_ .empty(); }
 
 		//Visualization methods
 		virtual void compute_element_barycenters(Eigen::MatrixXd &barycenters) const = 0;
