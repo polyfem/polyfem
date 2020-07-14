@@ -123,6 +123,7 @@ namespace polyfem
 
 		//aux
 		void set_parameters(const json &params);
+		void init_multimaterial(Eigen::MatrixXd &Es, Eigen::MatrixXd &nus);
 
 		bool is_linear(const std::string &assembler) const;
 

@@ -423,7 +423,26 @@ namespace polyfem
 		// ogden_elasticity_.clear_cache();
 	}
 
+	void AssemblerUtils::init_multimaterial(Eigen::MatrixXd &Es, Eigen::MatrixXd &nus)
+	{
+		linear_elasticity_.local_assembler().init_multimaterial(Es, nus);
+		// hooke_linear_elasticity_.local_assembler().set_parameters(params);
 
+		// saint_venant_elasticity_.local_assembler().set_parameters(params);
+		// neo_hookean_elasticity_.local_assembler().set_parameters(params);
+		//// ogden_elasticity_.local_assembler().set_parameters(params);
+
+		//// stokes_velocity_.local_assembler().set_parameters(params);
+		//// stokes_mixed_.local_assembler().set_parameters(params);
+		//// stokes_pressure_.local_assembler().set_parameters(params);
+
+		////navier_stokes_velocity_.local_assembler().set_parameters(params);
+		////navier_stokes_velocity_picard_.local_assembler().set_parameters(params);
+
+		// incompressible_lin_elast_displacement_.local_assembler().set_parameters(params);
+		// incompressible_lin_elast_mixed_.local_assembler().set_parameters(params);
+		// incompressible_lin_elast_pressure_.local_assembler().set_parameters(params);
+	}
 
 	void AssemblerUtils::set_parameters(const json &params)
 	{
