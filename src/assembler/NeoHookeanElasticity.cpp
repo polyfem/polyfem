@@ -17,6 +17,11 @@ namespace polyfem
 		set_size(size_);
 	}
 
+	void NeoHookeanElasticity::init_multimaterial(Eigen::MatrixXd &Es, Eigen::MatrixXd &nus)
+	{
+		params_.init_multimaterial(Es, nus);
+	}
+
 	void NeoHookeanElasticity::set_parameters(const json &params)
 	{
 		set_size(params["size"]);

@@ -28,6 +28,7 @@ namespace polyfem
 		inline int size() const { return size_; }
 
 		void set_parameters(const json &params);
+		void init_multimaterial(Eigen::MatrixXd &Es, Eigen::MatrixXd &nus);
 
 		void compute_von_mises_stresses(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const;
 		void compute_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &tensor) const;
@@ -55,9 +56,10 @@ namespace polyfem
 		inline int cols() const { return 1; }
 
 		void set_parameters(const json &params);
+		void init_multimaterial(Eigen::MatrixXd &Es, Eigen::MatrixXd &nus);
+
 	private:
 		int size_ = -1;
-		// LameParameters params_;
 	};
 
 
@@ -78,6 +80,7 @@ namespace polyfem
 		inline int size() const { return 1; }
 
 		void set_parameters(const json &params);
+		void init_multimaterial(Eigen::MatrixXd &Es, Eigen::MatrixXd &nus);
 
 	private:
 		int size_ = -1;
