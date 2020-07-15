@@ -1753,13 +1753,6 @@ void State::load_mesh()
 	if (n_refs > 0)
 		mesh->refine(n_refs, args["refinenemt_location"], parent_elements);
 
-	std::string export_mesh = args["export_mesh"];
-	if (export_mesh != "")
-	{
-		mesh->save(export_mesh);
-		exit(0);
-	}
-
 	// mesh->set_tag(1712, ElementType::InteriorPolytope);
 
 	const std::string bc_tag_path = args["bc_tag"];
@@ -2793,7 +2786,7 @@ void State::solve_problem()
 			const int dim = mesh->dimension();
 			const int n_el = int(bases.size());				// number of elements
 			const int shape = gbases[0].bases.size();		// number of geometry vertices in an element
-			const double viscosity_ = args["viscosity"];	
+			const double viscosity_ = build_json_params()["viscosity"];
 
 			StiffnessMatrix stiffness_viscosity, mixed_stiffness;
 			// coefficient matrix of viscosity
@@ -2835,7 +2828,7 @@ void State::solve_problem()
 				bnd_nodes.push_back(*it / dim);
 			}
 
-			OperatorSplittingSolver ss(*mesh, shape, n_el, local_boundary, bnd_nodes, mass, stiffness_viscosity, stiffness, dt, viscosity_, args["solver_type"], args["precond_type"], params, args["export"]["stiffness_mat"]);
+			OperatorSplittingSolver ss(*mesh, args["export_mesh"], shape, n_el, local_boundary, bnd_nodes, mass, stiffness_viscosity, stiffness, dt, viscosity_, args["solver_type"], args["precond_type"], params, args["export"]["stiffness_mat"]);
 
 			/* initialize solution */
 

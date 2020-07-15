@@ -9,8 +9,7 @@
 #include <polyfem/AssemblerUtils.hpp>
 #include <memory>
 
-#include <igl/AABB.h>
-#include <igl/in_element.h>
+#include <igl/writeOBJ.h>
 
 #ifdef POLYFEM_WITH_TBB
 #include <tbb/tbb.h>
@@ -24,7 +23,7 @@ namespace polyfem
     class OperatorSplittingSolver
     {
     public:
-        OperatorSplittingSolver(const polyfem::Mesh& mesh, 
+        OperatorSplittingSolver(const polyfem::Mesh& mesh, const std::string &export_mesh_path,
         const int shape, const int n_el, 
         const std::vector<polyfem::LocalBoundary>& local_boundary,
         const std::vector<int>& boundary_nodes,
@@ -104,6 +103,11 @@ namespace polyfem
                 {
                     V(i, d) = p(d);
                 }
+            }
+
+            if (export_mesh_path != "")
+            {
+                igl::writeOBJ(export_mesh_path, V, T);
             }
 
             cell_num = (int)pow(n_el, 1./dim);
