@@ -6,6 +6,11 @@
 
 namespace polyfem
 {
+	void IncompressibleLinearElasticityDispacement::init_multimaterial(Eigen::MatrixXd &Es, Eigen::MatrixXd &nus)
+	{
+		params_.init_multimaterial(Es, nus);
+	}
+
 	void IncompressibleLinearElasticityDispacement::set_parameters(const json &params)
 	{
 		set_size(params["size"]);
@@ -116,8 +121,10 @@ namespace polyfem
 		}
 	}
 
-
-
+	void IncompressibleLinearElasticityMixed::init_multimaterial(Eigen::MatrixXd &Es, Eigen::MatrixXd &nus)
+	{
+		// params_.init_multimaterial(Es, nus);
+	}
 
 	void IncompressibleLinearElasticityMixed::set_parameters(const json &params)
 	{
@@ -165,7 +172,10 @@ namespace polyfem
 		return res;
 	}
 
-
+	void IncompressibleLinearElasticityPressure::init_multimaterial(Eigen::MatrixXd &Es, Eigen::MatrixXd &nus)
+	{
+		params_.init_multimaterial(Es, nus);
+	}
 
 	void IncompressibleLinearElasticityPressure::set_parameters(const json &params)
 	{

@@ -88,6 +88,7 @@ namespace polyfem
 			~LameParameters();
 
 			void init(const json &params);
+			void init_multimaterial(Eigen::MatrixXd &Es, Eigen::MatrixXd &nus);
 
 			void lambda_mu(double x, double y, double z, int el_id, double &lambda, double &mu) const;
 
@@ -105,5 +106,6 @@ namespace polyfem
 			te_expr *lambda_expr_, *mu_expr_;
 			Internal *vals_;
 			bool is_lambda_mu_;
+			bool initialized_;
 	};
 }

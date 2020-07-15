@@ -144,6 +144,14 @@ namespace polyfem
 		dirichelt_dimentions_.emplace_back(isx, isy, isz);
 	}
 
+	void GenericTensorProblem::add_neumann_boundary(const int id, const Eigen::RowVector3d &val)
+	{
+		neumann_boundary_ids_.push_back(id);
+		forces_.emplace_back();
+		for (size_t k = 0; k < val.size(); ++k)
+			forces_.back()(k).init(val[k]);
+	}
+
 	void GenericTensorProblem::set_parameters(const json &params)
 	{
 		if(params.find("rhs") != params.end())

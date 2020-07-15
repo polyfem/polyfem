@@ -36,6 +36,8 @@ namespace polyfem
 		void compute_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &tensor) const;
 
 		void set_parameters(const json &params);
+		void init_multimaterial(Eigen::MatrixXd &Es, Eigen::MatrixXd &nus);
+
 	private:
 		int size_ = 2;
 

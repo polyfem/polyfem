@@ -1883,34 +1883,46 @@ void State::load_febio(const std::string &path)
 	args["normalize_mesh"] = false;
 	tinyxml2::XMLDocument doc;
 	doc.LoadFile(path.c_str());
+
 	const auto *febio = doc.FirstChildElement("febio_spec");
-	const char * verc = febio->Attribute("version");
-	std::string ver(verc);
+	const std::string ver = std::string(febio->Attribute("version"));
 	assert(ver == "2.5");
 
-	//TODO: multimaterial, use id!, other materials will not work
-	const auto *material_node = febio->FirstChildElement("Material")->FirstChildElement("material");
-	const char *mat = material_node->Attribute("type");
-	std::string material(mat);
+	std::map<int, std::pair<double, double>> materials;
+	double E;
+	double nu;
 
-	const double E = material_node->FirstChildElement("E")->DoubleText();
-	const double nu = material_node->FirstChildElement("v")->DoubleText();
+	const tinyxml2::XMLElement *material_parent = febio->FirstChildElement("Material");
+	for (const tinyxml2::XMLElement *material_node = material_parent->FirstChildElement("material"); material_node != NULL; material_node = material_node->NextSiblingElement("material"))
+	{
+		const std::string material = std::string(material_node->Attribute("type"));
+		const int mid = material_node->IntAttribute("id");
 
-	if (material == "neo-Hookean")
-		args["tensor_formulation"] = "NeoHookean";
+		E = material_node->FirstChildElement("E")->DoubleText();
+		nu = material_node->FirstChildElement("v")->DoubleText();
 
-	args["params"]["E"] = E;
-	args["params"]["nu"] = E;
+		//TODO check if all the same
+		if (material == "neo-Hookean")
+				args["tensor_formulation"] = "NeoHookean";
+		else if (material == "isotropic elastic")
+			args["tensor_formulation"] = "LinearElasticity";
+
+		materials[mid] = std::pair<double, double>(E, nu);
+	}
+
+	if (materials.size() == 1)
+	{
+		args["params"]["E"] = E;
+		args["params"]["nu"] = nu;
+	}
 
 	const auto *geometry = febio->FirstChildElement("Geometry");
+
 	const auto *nodes = geometry->FirstChildElement("Nodes");
-
 	std::vector<Eigen::Vector3d> vertices;
-
 	for (const tinyxml2::XMLElement *child = nodes->FirstChildElement("node"); child != NULL; child = child->NextSiblingElement("node"))
 	{
-		const char *pos_strc = child->GetText();
-		const std::string pos_str(pos_strc);
+		const std::string pos_str = std::string(child->GetText());
 		const auto vs = StringUtils::split(pos_str, ",");
 		assert(vs.size() == 3);
 
@@ -1921,25 +1933,36 @@ void State::load_febio(const std::string &path)
 	for(int i = 0; i < vertices.size(); ++i)
 		V.row(i) = vertices[i].transpose();
 
-	//TODO: multimaterial, mat!
-	const auto *elements = geometry->FirstChildElement("Elements");
-	const char *el_typec = elements->Attribute("type");
-	std::string el_type(el_typec);
-	assert(el_type == "tet4");
-
 	std::vector<Eigen::Vector4i> tets;
-	for (const tinyxml2::XMLElement *child = elements->FirstChildElement("elem"); child != NULL; child = child->NextSiblingElement("elem"))
-	{
-		const char *idsc = child->GetText();
-		const std::string ids(idsc);
-		const auto tt = StringUtils::split(ids, ",");
-		assert(tt.size() == 4);
+	std::vector<int> mids;
 
-		tets.emplace_back(atoi(tt[0].c_str())-1, atoi(tt[1].c_str())-1, atoi(tt[2].c_str())-1, atoi(tt[3].c_str())-1);
+	for (const tinyxml2::XMLElement *elements = geometry->FirstChildElement("Elements"); elements != NULL; elements = elements->NextSiblingElement("Elements"))
+	{
+		const std::string el_type = std::string(elements->Attribute("type"));
+		assert(el_type == "tet4");
+
+		const int mid = elements->IntAttribute("mat");
+
+		for (const tinyxml2::XMLElement *child = elements->FirstChildElement("elem"); child != NULL; child = child->NextSiblingElement("elem"))
+		{
+			const std::string ids = std::string(child->GetText());
+			const auto tt = StringUtils::split(ids, ",");
+			assert(tt.size() == 4);
+
+			tets.emplace_back(atoi(tt[0].c_str()) - 1, atoi(tt[1].c_str()) - 1, atoi(tt[2].c_str()) - 1, atoi(tt[3].c_str()) - 1);
+			mids.emplace_back(mid);
+		}
 	}
+
 	Eigen::MatrixXi T(tets.size(), 4);
-	for (int i = 0; i < tets.size(); ++i)
+	Eigen::MatrixXd Es(tets.size(), 1), nus(tets.size(), 1);
+	for (int i = 0; i < tets.size(); ++i){
 		T.row(i) = tets[i].transpose();
+		const auto it = materials.find(mids[i]);
+		assert(it != materials.end());
+		Es(i) = it->second.first;
+		nus(i) = it->second.second;
+	}
 
 	load_mesh(V, T);
 
@@ -1949,13 +1972,32 @@ void State::load_febio(const std::string &path)
 
 	for (const tinyxml2::XMLElement *child = geometry->FirstChildElement("NodeSet"); child != NULL; child = child->NextSiblingElement("NodeSet"))
 	{
-		const char *namec = elements->Attribute("name");
-		names[std::string(namec)] = id;
+		const std::string name = std::string(child->Attribute("name"));
+		names[name] = id;
 
 		for (const tinyxml2::XMLElement *nodeid = child->FirstChildElement("node"); nodeid != NULL; nodeid = nodeid->NextSiblingElement("node"))
 		{
 			const int nid = nodeid->IntAttribute("id");
 			nodeSet[nid-1].push_back(id);
+		}
+
+		id++;
+	}
+
+	for (const tinyxml2::XMLElement *child = geometry->FirstChildElement("Surface"); child != NULL; child = child->NextSiblingElement("Surface"))
+	{
+		const std::string name = std::string(child->Attribute("name"));
+		names[name] = id;
+
+		//TODO  only tri3
+		for (const tinyxml2::XMLElement *nodeid = child->FirstChildElement("tri3"); nodeid != NULL; nodeid = nodeid->NextSiblingElement("tri3"))
+		{
+			const std::string ids = std::string(nodeid->GetText());
+			const auto tt = StringUtils::split(ids, ",");
+			assert(tt.size() == 3);
+			nodeSet[atoi(tt[0].c_str()) - 1].push_back(id);
+			nodeSet[atoi(tt[1].c_str()) - 1].push_back(id);
+			nodeSet[atoi(tt[2].c_str()) - 1].push_back(id);
 		}
 
 		id++;
@@ -1990,7 +2032,6 @@ void State::load_febio(const std::string &path)
 	GenericTensorProblem &gproblem = *dynamic_cast<GenericTensorProblem *>(problem.get());
 
 	const auto *boundaries = febio->FirstChildElement("Boundary");
-
 	for (const tinyxml2::XMLElement *child = boundaries->FirstChildElement("fix"); child != NULL; child = child->NextSiblingElement("fix"))
 	{
 		const std::string name = std::string(child->Attribute("node_set"));
@@ -2033,6 +2074,23 @@ void State::load_febio(const std::string &path)
 			val(2) = value;
 
 		gproblem.add_dirichlet_boundary(names[name], val, isx, isy, isz);
+	}
+
+	const auto *loads = febio->FirstChildElement("Loads");
+	for (const tinyxml2::XMLElement *child = loads->FirstChildElement("surface_load"); child != NULL; child = child->NextSiblingElement("surface_load"))
+	{
+		const std::string name = std::string(child->Attribute("surface"));
+		const std::string traction = std::string(child->FirstChildElement("traction")->GetText());
+		const auto bcs = StringUtils::split(traction, ",");
+		assert(bcs.size() == 3);
+
+		Eigen::RowVector3d force(atof(bcs[0].c_str()), atof(bcs[1].c_str()), atof(bcs[2].c_str()));
+		gproblem.add_neumann_boundary(names[name], force);
+	}
+
+	if (materials.size() > 1)
+	{
+		AssemblerUtils::instance().init_multimaterial(Es, nus);
 	}
 }
 

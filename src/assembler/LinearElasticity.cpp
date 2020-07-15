@@ -7,6 +7,12 @@
 
 namespace polyfem
 {
+	void LinearElasticity::init_multimaterial(Eigen::MatrixXd &Es, Eigen::MatrixXd &nus)
+	{
+		params_.init_multimaterial(Es, nus);
+	}
+
+
 	void LinearElasticity::set_parameters(const json &params)
 	{
 		size() = params["size"];

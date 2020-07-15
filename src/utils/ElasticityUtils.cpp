@@ -497,6 +497,7 @@ namespace polyfem
 		lambda_expr_ = nullptr;
 		mu_expr_ = nullptr;
 		vals_ = new Internal();
+		initialized_ = false;
 	}
 
 	void LameParameters::lambda_mu(double x, double y, double z, int el_id, double &lambda, double &mu) const
@@ -540,6 +541,22 @@ namespace polyfem
 		return check >= 0 ? ttrue : ffalse;
 	}
 
+	void LameParameters::init_multimaterial(Eigen::MatrixXd &Es, Eigen::MatrixXd &nus)
+	{
+		lambda_mat_.resize(Es.size(), 1);
+		mu_mat_.resize(nus.size(), 1);
+		assert(lambda_mat_.size() == mu_mat_.size());
+
+		for (int i = 0; i < lambda_mat_.size(); ++i)
+		{
+			lambda_mat_(i) = convert_to_lambda(size_ == 3, Es(i), nus(i));
+			mu_mat_(i) = convert_to_mu(Es(i), nus(i));
+		}
+
+		lambda_ = -1;
+		mu_ = -1;
+		initialized_ = true;
+	}
 
 	void LameParameters::init(const json &params) {
 		size_ = params["size"];
@@ -547,6 +564,9 @@ namespace polyfem
 		te_free(mu_expr_);
 		lambda_expr_ = nullptr;
 		mu_expr_ = nullptr;
+
+		if(initialized_)
+			return;
 
 		if (params.count("young"))
 		{
