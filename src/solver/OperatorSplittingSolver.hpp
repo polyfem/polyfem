@@ -37,6 +37,40 @@ namespace polyfem
         const json& params,
         const std::string &save_path) : shape(shape), n_el(n_el), boundary_nodes(boundary_nodes), solver_type(solver_type), precond(precond), params(params)
         {
+            dim = mesh.dimension();
+
+            const int size = local_boundary.size();
+            boundary_elem_id.reserve(size);
+            for(int e = 0; e < size; e++)
+            {
+                boundary_elem_id.push_back(local_boundary[e].element_id());
+            }
+
+            T.resize(n_el, shape);
+            for (int e = 0; e < n_el; e++)
+            {
+                for (int i = 0; i < shape; i++)
+                {
+                    T(e, i) = mesh.cell_vertex_(e, i);
+                }
+            }
+            V = Eigen::MatrixXd::Zero(mesh.n_vertices(), 3);
+            for (int i = 0; i < V.rows(); i++)
+            {
+                auto p = mesh.point(i);
+                for (int d = 0; d < dim; d++)
+                {
+                    V(i, d) = p(d);
+                }
+                if (dim == 2) V(i, 2) = 0;
+            }
+
+            if (export_mesh_path != "")
+            {
+                igl::writeOBJ(export_mesh_path, V, T);
+                exit(0);
+            }
+
             mat_diffusion = mass + viscosity_ * dt * stiffness_viscosity;
             
             solver_diffusion = LinearSolver::create(solver_type, precond);
@@ -76,38 +110,6 @@ namespace polyfem
             {
                 StiffnessMatrix mat2 = mat_projection;
                 prefactorize(*solver_projection, mat2, std::vector<int>(), mat2.rows() - 1, save_path);
-            }
-
-            dim = mesh.dimension();
-
-            const int size = local_boundary.size();
-            boundary_elem_id.reserve(size);
-            for(int e = 0; e < size; e++)
-            {
-                boundary_elem_id.push_back(local_boundary[e].element_id());
-            }
-
-            T.resize(n_el, shape);
-            for (int e = 0; e < n_el; e++)
-            {
-                for (int i = 0; i < shape; i++)
-                {
-                    T(e, i) = mesh.cell_vertex_(e, i);
-                }
-            }
-            V = Eigen::MatrixXd::Zero(mesh.n_vertices(), dim);
-            for (int i = 0; i < V.rows(); i++)
-            {
-                auto p = mesh.point(i);
-                for (int d = 0; d < dim; d++)
-                {
-                    V(i, d) = p(d);
-                }
-            }
-
-            if (export_mesh_path != "")
-            {
-                igl::writeOBJ(export_mesh_path, V, T);
             }
 
             cell_num = (int)pow(n_el, 1./dim);
