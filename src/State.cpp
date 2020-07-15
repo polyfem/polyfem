@@ -1987,6 +1987,12 @@ void State::load_febio(const std::string &path)
 		id++;
 	}
 
+	for(auto &n : nodeSet)
+	{
+		std::sort(n.begin(), n.end());
+		n.erase(std::unique(n.begin(), n.end()), n.end());
+	}
+
 	mesh->compute_boundary_ids([&nodeSet](const std::vector<int> &vs, bool is_boundary)
 	{
 		std::vector<int> tmp;
