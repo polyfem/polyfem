@@ -2070,12 +2070,29 @@ void State::load_febio(const std::string &path)
 	for (const tinyxml2::XMLElement *child = loads->FirstChildElement("surface_load"); child != NULL; child = child->NextSiblingElement("surface_load"))
 	{
 		const std::string name = std::string(child->Attribute("surface"));
-		const std::string traction = std::string(child->FirstChildElement("traction")->GetText());
-		const auto bcs = StringUtils::split(traction, ",");
-		assert(bcs.size() == 3);
+		const std::string type = std::string(child->Attribute("type"));
+		if (type == "traction"){
+			const std::string traction = std::string(child->FirstChildElement("traction")->GetText());
+			const auto bcs = StringUtils::split(traction, ",");
+			assert(bcs.size() == 3);
 
-		Eigen::RowVector3d force(atof(bcs[0].c_str()), atof(bcs[1].c_str()), atof(bcs[2].c_str()));
-		gproblem.add_neumann_boundary(names[name], force);
+			Eigen::RowVector3d force(atof(bcs[0].c_str()), atof(bcs[1].c_str()), atof(bcs[2].c_str()));
+			gproblem.add_neumann_boundary(names[name], force);
+		}
+		else if (type == "pressure")
+		{
+			const std::string pressures = std::string(child->FirstChildElement("pressure")->GetText());
+			const double pressure = atof(pressures.c_str());
+			//TODO properly handle pressure bc
+
+			Eigen::RowVector3d force(pressure, pressure, pressure);
+			gproblem.add_neumann_boundary(names[name], force);
+		}
+		else
+		{
+			logger().error("Unsupported surface load {}", type);
+		}
+
 	}
 
 	if (materials.size() > 1)
