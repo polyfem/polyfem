@@ -375,11 +375,7 @@ void TaylorGreenVortexProblem::exact(const Eigen::MatrixXd &pts, const double t,
 
 		if(pts.cols() == 3)
 		{
-			const double z = pts(i, 2);
-
-			val(i, 0) *= sin(z);
-			val(i, 1) *= -sin(z);
-			val(i, 2) = sin(x) * sin(y) * cos(z) * time_scaling;
+			val(i, 2) = 0;
 		}
 	}
 }
