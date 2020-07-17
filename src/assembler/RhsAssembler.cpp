@@ -149,7 +149,7 @@ void RhsAssembler::time_bc(const std::function<void(const Eigen::MatrixXd &, Eig
 
 void RhsAssembler::set_bc(
 	const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &df,
-	const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &nf,
+	const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &nf,
 	const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs) const
 {
 	const int n_el = int(bases_.size());
@@ -394,7 +394,7 @@ void RhsAssembler::set_bc(
 		// }
 
 		// problem_.neumann_bc(mesh_, global_primitive_ids, vals.val, t, rhs_fun);
-		nf(global_primitive_ids, uv, vals.val, rhs_fun);
+		nf(global_primitive_ids, uv, vals.val, normals, rhs_fun);
 
 		// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(0,1,0));
 
@@ -439,7 +439,7 @@ void RhsAssembler::set_bc(const std::vector<LocalBoundary> &local_boundary, cons
 {
 	set_bc(
 		[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) { problem_.bc(mesh_, global_ids, uv, pts, t, val); },
-		[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) { problem_.neumann_bc(mesh_, global_ids, uv, pts, t, val); },
+		[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, Eigen::MatrixXd &val) { problem_.neumann_bc(mesh_, global_ids, uv, pts, normals, t, val); },
 		local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs);
 }
 
@@ -447,7 +447,7 @@ void RhsAssembler::set_velocity_bc(const std::vector<LocalBoundary> &local_bound
 {
 	set_bc(
 		[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) { problem_.velocity_bc(mesh_, global_ids, uv, pts, t, val); },
-		[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) { problem_.neumann_velocity_bc(mesh_, global_ids, uv, pts, t, val); },
+		[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, Eigen::MatrixXd &val) { problem_.neumann_velocity_bc(mesh_, global_ids, uv, pts, normals, t, val); },
 		local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs);
 }
 
@@ -455,7 +455,7 @@ void RhsAssembler::set_acceleration_bc(const std::vector<LocalBoundary> &local_b
 {
 	set_bc(
 		[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) { problem_.acceleration_bc(mesh_, global_ids, uv, pts, t, val); },
-		[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) { problem_.neumann_acceleration_bc(mesh_, global_ids, uv, pts, t, val); },
+		[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, Eigen::MatrixXd &val) { problem_.neumann_acceleration_bc(mesh_, global_ids, uv, pts, normals, t, val); },
 		local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs);
 }
 
@@ -569,7 +569,13 @@ double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement, const s
 		const ElementBases &bs = bases_[e];
 
 		vals.compute(e, mesh_.is_volume(), points, bs, gbs);
-		problem_.neumann_bc(mesh_, global_primitive_ids, uv, vals.val, t, forces);
+
+		for (int n = 0; n < vals.jac_it.size(); ++n)
+		{
+			normals.row(n) = normals.row(n) * vals.jac_it[n];
+			normals.row(n).normalize();
+		}
+		problem_.neumann_bc(mesh_, global_primitive_ids, uv, vals.val, normals, t, forces);
 
 		// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
 

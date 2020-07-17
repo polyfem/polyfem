@@ -2083,10 +2083,8 @@ void State::load_febio(const std::string &path)
 		{
 			const std::string pressures = std::string(child->FirstChildElement("pressure")->GetText());
 			const double pressure = atof(pressures.c_str());
-			//TODO properly handle pressure bc
-
-			Eigen::RowVector3d force(pressure, pressure, pressure);
-			gproblem.add_neumann_boundary(names[name], force);
+			//TODO added minus here
+			gproblem.add_pressure_boundary(names[name], -pressure);
 		}
 		else
 		{
