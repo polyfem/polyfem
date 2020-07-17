@@ -363,19 +363,25 @@ void TaylorGreenVortexProblem::set_parameters(const json &params)
 
 void TaylorGreenVortexProblem::exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 {
-	const double time_scaling = exp(-2 * viscosity_ * t);
 	val.resize(pts.rows(), pts.cols());
 	for(int i = 0; i < pts.rows(); ++i)
 	{
 		const double x = pts(i, 0);
 		const double y = pts(i, 1);
 
-		val(i, 0) =  cos(x) * sin(y) * time_scaling;
-		val(i, 1) = -sin(x) * cos(y) * time_scaling;
-
-		if(pts.cols() == 3)
+		if(pts.cols() == 2)
 		{
-			val(i, 2) = 0;
+			const double time_scaling = exp(-2 * viscosity_ * t);
+			val(i, 0) =  cos(x) * sin(y) * time_scaling;
+			val(i, 1) = -sin(x) * cos(y) * time_scaling;
+		}
+		else
+		{
+			const double z = pts(i, 2);
+			const double time_scaling = -exp(-viscosity_ * t);
+			val(i, 0) = (exp(x)*sin(y+z)+exp(z)*cos(x+y))*time_scaling;
+			val(i, 1) = (exp(y)*sin(z+x)+exp(x)*cos(y+z))*time_scaling;
+			val(i, 2) = (exp(z)*sin(x+y)+exp(y)*sin(z+x))*time_scaling;
 		}
 	}
 }
