@@ -1864,6 +1864,10 @@ void State::load_mesh()
 
 void State::load_febio(const std::string &path)
 {
+	igl::Timer timer;
+	timer.start();
+	logger().info("Loading feb file...");
+
 	args["normalize_mesh"] = false;
 	tinyxml2::XMLDocument doc;
 	doc.LoadFile(path.c_str());
@@ -2097,6 +2101,9 @@ void State::load_febio(const std::string &path)
 	{
 		AssemblerUtils::instance().init_multimaterial(Es, nus);
 	}
+
+	timer.stop();
+	logger().info(" took {}s", timer.getElapsedTime());
 }
 
 void State::compute_mesh_stats()
