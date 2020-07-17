@@ -24,6 +24,14 @@ namespace polyfem
 		static void quadrature_for_tri_face(int index, int order, const int gid, const Mesh &mesh, Eigen::MatrixXd &uv, Eigen::MatrixXd &points, Eigen::VectorXd &weights);
 
 		static void quadrature_for_polygon_edge(int face_id, int edge_id, int order, const Mesh &mesh, Eigen::MatrixXd &uv, Eigen::MatrixXd &points, Eigen::VectorXd &weights);
+
+		static void normal_for_quad_edge(int index, Eigen::MatrixXd &normal);
+		static void normal_for_tri_edge(int index, Eigen::MatrixXd &normal);
+
+		static void normal_for_quad_face(int index, Eigen::MatrixXd &normal);
+		static void normal_for_tri_face(int index, Eigen::MatrixXd &normal);
+
+		static void normal_for_polygon_edge(int face_id, int edge_id, const Mesh &mesh, Eigen::MatrixXd &normal);
 	};
 }
 
