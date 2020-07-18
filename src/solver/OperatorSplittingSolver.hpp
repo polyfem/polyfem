@@ -732,7 +732,7 @@ namespace polyfem
                     }
 
                     Eigen::MatrixXd val;
-                    problem->bc(Mesh(), Eigen::MatrixXi::Zero(1,1), Eigen::MatrixXd::Zero(1,1), pos, time, val);
+                    problem->bc(mesh, Eigen::MatrixXi::Zero(1,1), Eigen::MatrixXd::Zero(1,1), pos, time, val);
 
                     for (int d = 0; d < dim; d++)
                     {
