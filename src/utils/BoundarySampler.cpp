@@ -357,5 +357,83 @@ namespace polyfem
 		weights = quad.weights;
 		weights *= mesh.edge_length(edge_id);
 	}
+
+	void BoundarySampler::normal_for_quad_edge(int index, Eigen::MatrixXd &normal)
+	{
+		auto endpoints = quad_local_node_coordinates_from_edge(index);
+		const Eigen::MatrixXd e = endpoints.row(0) - endpoints.row(1);
+		normal.resize(1,2);
+		normal(0) = -e(1);
+		normal(1) = e(0);
+		normal.normalize();
+	}
+
+	void BoundarySampler::normal_for_tri_edge(int index, Eigen::MatrixXd &normal)
+	{
+		auto endpoints = tri_local_node_coordinates_from_edge(index);
+		const Eigen::MatrixXd e = endpoints.row(0) - endpoints.row(1);
+		normal.resize(1, 2);
+		normal(0) = -e(1);
+		normal(1) = e(0);
+		normal.normalize();
+	}
+
+
+	void BoundarySampler::normal_for_quad_face(int index, Eigen::MatrixXd &normal)
+	{
+		auto endpoints = hex_local_node_coordinates_from_face(index);
+		const Eigen::RowVector3d e1 = endpoints.row(0) - endpoints.row(1);
+		const Eigen::RowVector3d e2 = endpoints.row(0) - endpoints.row(2);
+		normal = e1.cross(e2);
+		normal.normalize();
+
+		if (index == 0 || index == 3 || index == 4)
+			normal *= -1;
+	}
+
+	void BoundarySampler::normal_for_tri_face(int index, Eigen::MatrixXd &normal)
+	{
+		auto endpoints = tet_local_node_coordinates_from_face(index);
+		const Eigen::RowVector3d e1 = endpoints.row(0) - endpoints.row(1);
+		const Eigen::RowVector3d e2 = endpoints.row(0) - endpoints.row(2);
+		normal = e1.cross(e2);
+		normal.normalize();
+
+		if(index == 0)
+			normal *= -1;
+	}
+
+
+	void BoundarySampler::normal_for_polygon_edge(int face_id, int edge_id, const Mesh &mesh, Eigen::MatrixXd &normal)
+	{
+		assert(!mesh.is_volume());
+
+		const Mesh2D &mesh2d = dynamic_cast<const Mesh2D &>(mesh);
+
+		auto index = mesh2d.get_index_from_face(face_id);
+
+		bool found = false;
+		for (int i = 0; i < mesh2d.n_face_vertices(face_id); ++i)
+		{
+			if (index.edge == edge_id)
+			{
+				found = true;
+				break;
+			}
+
+			index = mesh2d.next_around_face(index);
+		}
+
+		assert(found);
+
+		auto p0 = mesh2d.point(index.vertex);
+		auto p1 = mesh2d.point(mesh2d.switch_edge(index).vertex);
+		const Eigen::MatrixXd e = p0-p1;
+		normal.resize(1, 2);
+		normal(0) = -e(1);
+		normal(1) = e(0);
+		normal.normalize();
+	}
+
 }
 

@@ -97,7 +97,7 @@ public:
 		const double Cache = c * grad.dot(searchDir);
 
 		int cur_iter = 0;
-		while (f > f_in + alpha * Cache && cur_iter < MAX_STEP_SIZE_ITER)
+		while ((std::isnan(f) || f > f_in + alpha * Cache) && cur_iter < MAX_STEP_SIZE_ITER)
 		{
 			alpha *= tau;
 			f = objFunc.value(x + alpha * searchDir);
@@ -113,17 +113,16 @@ public:
 		static const int MAX_STEP_SIZE_ITER = 25;
 
 		const double old_energy = objFunc.value(x);
-		double new_energy = old_energy;
 		int cur_iter = 0;
 
 		double step_size = 1;
 
-		while (new_energy >= old_energy && cur_iter < MAX_STEP_SIZE_ITER)
+		while (cur_iter < MAX_STEP_SIZE_ITER)
 		{
 			const TVector new_x = x + step_size * grad;
 
 			double cur_e = objFunc.value(new_x);
-			if (cur_e >= old_energy)
+			if (std::isnan(cur_e)  || cur_e >= old_energy)
 			{
 				step_size /= 2.;
 			}

@@ -1873,6 +1873,10 @@ void State::load_mesh()
 
 void State::load_febio(const std::string &path)
 {
+	igl::Timer timer;
+	timer.start();
+	logger().info("Loading feb file...");
+
 	args["normalize_mesh"] = false;
 	tinyxml2::XMLDocument doc;
 	doc.LoadFile(path.c_str());
@@ -1996,6 +2000,12 @@ void State::load_febio(const std::string &path)
 		id++;
 	}
 
+	for(auto &n : nodeSet)
+	{
+		std::sort(n.begin(), n.end());
+		n.erase(std::unique(n.begin(), n.end()), n.end());
+	}
+
 	mesh->compute_boundary_ids([&nodeSet](const std::vector<int> &vs, bool is_boundary)
 	{
 		std::vector<int> tmp;
@@ -2073,18 +2083,36 @@ void State::load_febio(const std::string &path)
 	for (const tinyxml2::XMLElement *child = loads->FirstChildElement("surface_load"); child != NULL; child = child->NextSiblingElement("surface_load"))
 	{
 		const std::string name = std::string(child->Attribute("surface"));
-		const std::string traction = std::string(child->FirstChildElement("traction")->GetText());
-		const auto bcs = StringUtils::split(traction, ",");
-		assert(bcs.size() == 3);
+		const std::string type = std::string(child->Attribute("type"));
+		if (type == "traction"){
+			const std::string traction = std::string(child->FirstChildElement("traction")->GetText());
+			const auto bcs = StringUtils::split(traction, ",");
+			assert(bcs.size() == 3);
 
-		Eigen::RowVector3d force(atof(bcs[0].c_str()), atof(bcs[1].c_str()), atof(bcs[2].c_str()));
-		gproblem.add_neumann_boundary(names[name], force);
+			Eigen::RowVector3d force(atof(bcs[0].c_str()), atof(bcs[1].c_str()), atof(bcs[2].c_str()));
+			gproblem.add_neumann_boundary(names[name], force);
+		}
+		else if (type == "pressure")
+		{
+			const std::string pressures = std::string(child->FirstChildElement("pressure")->GetText());
+			const double pressure = atof(pressures.c_str());
+			//TODO added minus here
+			gproblem.add_pressure_boundary(names[name], -pressure);
+		}
+		else
+		{
+			logger().error("Unsupported surface load {}", type);
+		}
+
 	}
 
 	if (materials.size() > 1)
 	{
 		AssemblerUtils::instance().init_multimaterial(Es, nus);
 	}
+
+	timer.stop();
+	logger().info(" took {}s", timer.getElapsedTime());
 }
 
 void State::compute_mesh_stats()

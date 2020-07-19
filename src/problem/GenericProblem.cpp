@@ -84,7 +84,7 @@ namespace polyfem
 		val *= t;
 	}
 
-	void GenericTensorProblem::neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	void GenericTensorProblem::neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
 
@@ -98,6 +98,16 @@ namespace polyfem
 				{
 					for(int d = 0; d < val.cols(); ++d)
 						val(i, d) = pts.cols() == 2 ? forces_[b](d)(pts(i, 0), pts(i, 1)) : forces_[b](d)(pts(i, 0), pts(i, 1), pts(i, 2));
+					break;
+				}
+			}
+
+			for (size_t b = 0; b < pressure_boundary_ids_.size(); ++b)
+			{
+				if (id == pressure_boundary_ids_[b])
+				{
+					for (int d = 0; d < val.cols(); ++d)
+						val(i, d) = (pts.cols() == 2 ? pressures_[b](pts(i, 0), pts(i, 1)) : pressures_[b](pts(i, 0), pts(i, 1), pts(i, 2)))*normals(i, d);
 					break;
 				}
 			}
@@ -150,6 +160,13 @@ namespace polyfem
 		forces_.emplace_back();
 		for (size_t k = 0; k < val.size(); ++k)
 			forces_.back()(k).init(val[k]);
+	}
+
+	void GenericTensorProblem::add_pressure_boundary(const int id, const double val)
+	{
+		pressure_boundary_ids_.push_back(id);
+		pressures_.emplace_back();
+		pressures_.back().init(val);
 	}
 
 	void GenericTensorProblem::set_parameters(const json &params)
@@ -286,6 +303,23 @@ namespace polyfem
 				}
 			}
 		}
+
+		if (params.find("pressure_boundary") != params.end())
+		{
+			pressure_boundary_ids_.clear();
+			auto j_boundary = params["pressure_boundary"];
+
+			pressure_boundary_ids_.resize(j_boundary.size());
+			pressures_.resize(j_boundary.size());
+
+			for (size_t i = 0; i < pressure_boundary_ids_.size(); ++i)
+			{
+				pressure_boundary_ids_[i] = j_boundary[i]["id"];
+
+				auto ff = j_boundary[i]["value"];
+				pressures_[i].init(ff);
+			}
+		}
 	}
 
 	int GenericTensorProblem::n_incremental_load_steps(const double diag) const
@@ -386,7 +420,7 @@ namespace polyfem
 		val *= t;
 	}
 
-	void GenericScalarProblem::neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	void GenericScalarProblem::neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), 1);
 

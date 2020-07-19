@@ -35,14 +35,14 @@ namespace polyfem
 
 	private:
 		void set_bc(
-			const std::function<void(const Eigen::MatrixXi&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd &)> &df,
-			const std::function<void(const Eigen::MatrixXi&, const Eigen::MatrixXd&, const Eigen::MatrixXd&, Eigen::MatrixXd &)> &nf,
-			const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector< LocalBoundary > &local_neumann_boundary, Eigen::MatrixXd &rhs) const;
+			const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &df,
+			const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &nf,
+			const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs) const;
 
 		void time_bc(const std::function<void(const Eigen::MatrixXd&, Eigen::MatrixXd&)> &fun,Eigen::MatrixXd &sol) const;
 
 		bool sample_boundary(const LocalBoundary &local_boundary, const int n_samples, const bool skip_computation, Eigen::MatrixXd &uv, Eigen::MatrixXd &samples, Eigen::VectorXi &global_primitive_ids) const;
-		bool boundary_quadrature(const LocalBoundary &local_boundary, const int order, const bool skip_computation, Eigen::MatrixXd &uv, Eigen::MatrixXd &points, Eigen::VectorXd &weights, Eigen::VectorXi &global_primitive_ids) const;
+		bool boundary_quadrature(const LocalBoundary &local_boundary, const int order, const bool skip_computation, Eigen::MatrixXd &uv, Eigen::MatrixXd &points, Eigen::MatrixXd &normals, Eigen::VectorXd &weights, Eigen::VectorXi &global_primitive_ids) const;
 
 		const Mesh &mesh_;
 		const int n_basis_;

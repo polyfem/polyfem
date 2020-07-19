@@ -5,6 +5,7 @@ set(test_sources
 	main.cpp
 	test_bases.cpp
 	test_matrix.cpp
+	test_normal.cpp
 	test_problem.cpp
 	test_quadrature.cpp
 	test_solver.cpp
