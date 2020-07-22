@@ -137,7 +137,7 @@ jobs:
         shell: cmd
         run: |
           cd build
-          msbuild /v:m /p:Configuration=${{ matrix.config }} /p:PreferredToolArchitecture=x64 /GL PolyFEM.sln
+          msbuild /v:m /p:Configuration=${{ matrix.config }} /p:PreferredToolArchitecture=x64 PolyFEM.sln
 
       # - name: Tests
       #   run: cd build; ./tests/unit_tests.exe
