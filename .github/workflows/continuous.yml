@@ -20,14 +20,13 @@ jobs:
   ####################
 
   Unix:
-    name: ${{ matrix.name }} (${{ matrix.config }}, ${{ matrix.static }})
+    name: ${{ matrix.name }} (${{ matrix.config }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-18.04, macos-latest]
-        config: [Release]
-        static: [ON, OFF]
+        config: [Debug, Release]
         include:
           - os: macos-latest
             name: macOS
@@ -61,7 +60,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.ccache
-          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.static }}-cache
+          key: ${{ runner.os }}-${{ matrix.config }}-cache
 
       - name: Prepare ccache
         run: |
@@ -93,12 +92,10 @@ jobs:
       CC: cl.exe
       CXX: cl.exe
       SCCACHE_IDLE_TIMEOUT: "1200"
-      MSBuild: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\MSBuild\\Current\\Bin\\msbuild.exe"
     strategy:
       fail-fast: false
       matrix:
-        config: [Release]
-        static: [ON, OFF]
+        config: [Debug, Release]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v1
@@ -116,7 +113,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ${{ env.appdata }}\Mozilla\sccache
-          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.static }}-cache
+          key: ${{ runner.os }}-${{ matrix.config }}-cache
 
       - name: Prepare sccache
         run: |
