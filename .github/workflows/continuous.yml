@@ -93,7 +93,7 @@ jobs:
       CC: cl.exe
       CXX: cl.exe
       SCCACHE_IDLE_TIMEOUT: "1200"
-      MSBuildLogger: "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\msbuild.exe"
+      MSBuildLogger: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\MSBuild\\Current\\Bin\\msbuild.exe"
     strategy:
       fail-fast: false
       matrix:
