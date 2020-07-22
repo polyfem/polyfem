@@ -130,14 +130,18 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake -DCMAKE_BUILD_TYPE=${{ matrix.config }} -DCMAKE_CXX_COMPILER_LAUNCHER=sccache -DPOLYFEM_WITH_MISC=ON -G "Visual Studio 16 2019" -A x64 ../
+          cmake -DCMAKE_BUILD_TYPE=${{ matrix.config }} -DCMAKE_CXX_COMPILER_LAUNCHER=sccache -DPOLYFEM_WITH_MISC=ON -G "Visual Studio 16 2019" ../
 
 
       - name: Buid
         shell: cmd
         run: |
           cd build
-          msbuild /v:m /p:Configuration=${{ matrix.config }} /p:PreferredToolArchitecture=x64 PolyFEM.sln
+          set MSBuildOptions=/v:m /p:Configuration=${{ matrix.config }} /p:PreferredToolArchitecture=x64
+          msbuild %MSBuildOptions% PolyFEM.sln
 
-      # - name: Tests
-      #   run: cd build; ./tests/unit_tests.exe
+      - name: Tests
+        run: |
+          cd build;
+          ls
+          ls tests
