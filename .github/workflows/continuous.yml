@@ -110,8 +110,6 @@ jobs:
       - name: Set env
         run: |
           echo "::set-env name=appdata::$($env:LOCALAPPDATA)"
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.0.0
 
       - name: Cache build
         id: cache-build
@@ -127,8 +125,9 @@ jobs:
           # Scoop modifies the PATH so we make the modified PATH global.
           echo "::set-env name=PATH::$env:PATH"
 
-        # We run configure + build in the same step, since they both need to call VsDevCmd
-        # Also, cmd uses ^ to break commands into multiple lines (in powershell this is `)
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.0
+
       - name: Configure
         shell: cmd
         run: |
@@ -140,6 +139,7 @@ jobs:
       - name: Buid
         shell: cmd
         run: |
+          cd build
           set MSBuildOptions=/v:m /p:Configuration=${{ matrix.config }}
           msbuild %MSBuildOptions% PolyFEM.sln
 
