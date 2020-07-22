@@ -95,7 +95,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        config: [Debug, Release]
+        config: [Release]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v1
@@ -130,15 +130,14 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake -DCMAKE_BUILD_TYPE=${{ matrix.config }} -DCMAKE_CXX_COMPILER_LAUNCHER=sccache -DPOLYFEM_WITH_MISC=ON -G "Visual Studio 16 2019" ../
+          cmake -DCMAKE_BUILD_TYPE=${{ matrix.config }} -DCMAKE_CXX_COMPILER_LAUNCHER=sccache -DPOLYFEM_WITH_MISC=ON -G "Visual Studio 16 2019" -A x64 ../
 
 
       - name: Buid
         shell: cmd
         run: |
           cd build
-          set MSBuildOptions=/v:m /p:Configuration=${{ matrix.config }} /p:PreferredToolArchitecture=x64
-          msbuild %MSBuildOptions% PolyFEM.sln
+          msbuild /v:m /p:Configuration=${{ matrix.config }} /p:PreferredToolArchitecture=x64 /GL PolyFEM.sln
 
-      - name: Tests
-        run: cd build; ./tests/unit_tests.exe
+      # - name: Tests
+      #   run: cd build; ./tests/unit_tests.exe
