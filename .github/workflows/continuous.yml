@@ -142,6 +142,7 @@ jobs:
 
       - name: Tests
         run: |
-          cd build;
+          cd build
           ls
           ls tests
+          ls tests/unit_tests.dir
