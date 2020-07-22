@@ -110,6 +110,8 @@ jobs:
       - name: Set env
         run: |
           echo "::set-env name=appdata::$($env:LOCALAPPDATA)"
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.0
 
       - name: Cache build
         id: cache-build
@@ -139,7 +141,7 @@ jobs:
         shell: cmd
         run: |
           set MSBuildOptions=/v:m /p:Configuration=${{ matrix.config }}
-          $env:MSBuild %MSBuildOptions% PolyFEM.sln
+          msbuild %MSBuildOptions% PolyFEM.sln
 
       - name: Tests
         run: cd build; ctest --verbose --output-on-failure
