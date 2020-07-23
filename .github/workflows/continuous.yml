@@ -143,6 +143,4 @@ jobs:
       - name: Tests
         run: |
           cd build
-          ls Release
-          ls tests/Release
           tests/Release/unit_tests.exe
