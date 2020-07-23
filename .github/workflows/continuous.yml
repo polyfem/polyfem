@@ -91,7 +91,7 @@ jobs:
     env:
       CC: cl.exe
       CXX: cl.exe
-      SCCACHE_IDLE_TIMEOUT: "1200"
+      SCCACHE_IDLE_TIMEOUT: "12000"
     strategy:
       fail-fast: false
       matrix:
