@@ -95,7 +95,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        config: [Release]
+        config: [Debug, Release]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v1
@@ -139,5 +139,3 @@ jobs:
         run: |
           cd build
           ctest --verbose --output-on-failure
-          ls tests
-      #     tests/unit_tests.exe
