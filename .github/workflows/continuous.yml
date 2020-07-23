@@ -144,5 +144,5 @@ jobs:
         run: |
           cd build
           ls Release
-          ls Release/tests
-          Release/tests/unit_tests.exe
+          ls tests/Release
+          tests/Release/unit_tests.exe
