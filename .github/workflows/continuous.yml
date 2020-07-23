@@ -138,5 +138,6 @@ jobs:
       - name: Tests
         run: |
           cd build
-          ls
-      #     tests/Release/unit_tests.exe
+          ctest --verbose --output-on-failure
+          ls tests
+      #     tests/unit_tests.exe
