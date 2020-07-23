@@ -143,7 +143,6 @@ jobs:
       - name: Tests
         run: |
           cd build
-          ls
-          ls tests
-          ls tests/unit_tests.dir/Release
-          tests/unit_tests.dir/Release/unit_tests.exe
+          ls Release
+          ls Release/tests
+          Release/tests/unit_tests.exe
