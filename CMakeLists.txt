@@ -48,16 +48,6 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 ################################################################################
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-    foreach(config ${CMAKE_CONFIGURATION_TYPES})
-        string(TOUPPER ${config} config)
-        string(REPLACE /MD /MT CMAKE_C_FLAGS_${config} "${CMAKE_C_FLAGS_${config}}")
-        string(REPLACE /MD /MT CMAKE_CXX_FLAGS_${config} "${CMAKE_CXX_FLAGS_${config}}")
-    endforeach()
-endif()
-
-################################################################################
-
 # Polyfem options
 option(POLYFEM_WITH_SANITIZERS "Enable sanitizers in compilation targets"   OFF)
 set(POLYFEM_SMALL_N  80 CACHE STRING "Maximum length for stack-allocated vectors (gradient + Hessian).")
@@ -191,6 +181,17 @@ endif()
 if(POLYFEM_WITH_SANITIZERS)
     add_sanitizers(polyfem)
 endif()
+
+################################################################################
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+    foreach(config ${CMAKE_CONFIGURATION_TYPES})
+        string(TOUPPER ${config} config)
+        string(REPLACE /MD /MT CMAKE_C_FLAGS_${config} "${CMAKE_C_FLAGS_${config}}")
+        string(REPLACE /MD /MT CMAKE_CXX_FLAGS_${config} "${CMAKE_CXX_FLAGS_${config}}")
+    endforeach()
+endif()
+
 
 ################################################################################
 # Polyfem binary
