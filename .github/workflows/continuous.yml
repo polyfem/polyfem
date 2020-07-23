@@ -145,4 +145,5 @@ jobs:
           cd build
           ls
           ls tests
-          ls tests/unit_tests.dir
+          ls tests/unit_tests.dir/Release
+          tests/unit_tests.dir/Release/unit_tests.exe
