@@ -65,11 +65,12 @@ namespace polyfem {
         }
 
         template <typename XMLNode>
-        void load_elements(const XMLNode *geometry, const std::map<int, std::pair<double, double>> &materials, Eigen::MatrixXi &T, std::vector<std::vector<int>> &nodes, Eigen::MatrixXd &Es, Eigen::MatrixXd &nus)
+        int load_elements(const XMLNode *geometry, const std::map<int, std::pair<double, double>> &materials, Eigen::MatrixXi &T, std::vector<std::vector<int>> &nodes, Eigen::MatrixXd &Es, Eigen::MatrixXd &nus)
         {
             std::vector<Eigen::Vector4i> tets;
             nodes.clear();
             std::vector<int> mids;
+            int order = 1;
 
             for (const tinyxml2::XMLElement *elements = geometry->FirstChildElement("Elements"); elements != NULL; elements = elements->NextSiblingElement("Elements"))
             {
@@ -81,6 +82,13 @@ namespace polyfem {
                     logger().error("Unsupported elemet type {}", el_type);
                     continue;
                 }
+
+                if (el_type == "tet4")
+                    order = std::max(1, order);
+                else if (el_type == "tet10")
+                    order = std::max(2, order);
+                else if (el_type == "tet20")
+                    order = std::max(3, order);
 
                 for (const tinyxml2::XMLElement *child = elements->FirstChildElement("elem"); child != NULL; child = child->NextSiblingElement("elem"))
                 {
@@ -110,6 +118,8 @@ namespace polyfem {
                 Es(i) = it->second.first;
                 nus(i) = it->second.second;
             }
+
+            return order;
         }
 
         template <typename XMLNode>
@@ -267,7 +277,7 @@ namespace polyfem {
         Eigen::MatrixXi T;
         std::vector<std::vector<int>> nodes;
         Eigen::MatrixXd Es, nus;
-        load_elements(geometry, materials, T, nodes, Es, nus);
+        state.args["discr_order"] = load_elements(geometry, materials, T, nodes, Es, nus);
 
         state.load_mesh(V, T);
         state.mesh->attach_higher_order_nodes(V, nodes);
