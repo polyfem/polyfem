@@ -27,7 +27,7 @@ endfunction()
 function(polyfem_download_solvers)
     polyfem_download_project(solvers
         GIT_REPOSITORY https://github.com/polyfem/polysolve.git
-        GIT_TAG        23ccf9487772ab1b9554a78d8808179d1b3286a0
+        GIT_TAG        0323f97289eb297558aae2f25faa8bea56d9e60d
     )
 endfunction()
 
