@@ -48,6 +48,9 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 ################################################################################
 
+
+################################################################################
+
 # Polyfem options
 option(POLYFEM_WITH_SANITIZERS "Enable sanitizers in compilation targets"   OFF)
 set(POLYFEM_SMALL_N  80 CACHE STRING "Maximum length for stack-allocated vectors (gradient + Hessian).")
@@ -182,16 +185,17 @@ if(POLYFEM_WITH_SANITIZERS)
     add_sanitizers(polyfem)
 endif()
 
-################################################################################
-
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-    foreach(config ${CMAKE_CONFIGURATION_TYPES})
-        string(TOUPPER ${config} config)
-        string(REPLACE /MD /MT CMAKE_C_FLAGS_${config} "${CMAKE_C_FLAGS_${config}}")
-        string(REPLACE /MD /MT CMAKE_CXX_FLAGS_${config} "${CMAKE_CXX_FLAGS_${config}}")
-    endforeach()
+if(${CMAKE_VERSION} VERSION_LESS "3.15.0")
+    if(MSVC OR MSYS)
+        foreach(config ${CMAKE_CONFIGURATION_TYPES})
+            string(TOUPPER ${config} config)
+            string(REPLACE /MD /MT CMAKE_C_FLAGS_${config} "${CMAKE_C_FLAGS_${config}}")
+            string(REPLACE /MD /MT CMAKE_CXX_FLAGS_${config} "${CMAKE_CXX_FLAGS_${config}}")
+        endforeach()
+    endif()
+else()
+    set_property(TARGET polyfem PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
-
 
 ################################################################################
 # Polyfem binary
@@ -232,6 +236,10 @@ if(POLYFEM_TOPLEVEL_PROJECT)
 
     if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
         set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_bin)
+    endif()
+
+    if(NOT ${CMAKE_VERSION} VERSION_LESS "3.15.0")
+        set_property(TARGET ${PROJECT_NAME}_bin PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
     endif()
 endif()
 
@@ -364,16 +372,6 @@ set_target_properties(clipper_clipper PROPERTIES FOLDER 3rdparty/other)
 
 # Other sources
 add_subdirectory(src)
-
-MESSAGE(STATUS "--- System ${CMAKE_SYSTEM_NAME}")
-
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-    foreach(config ${CMAKE_CONFIGURATION_TYPES})
-        string(TOUPPER ${config} config)
-        string(REPLACE /MD /MT CMAKE_C_FLAGS_${config} "${CMAKE_C_FLAGS_${config}}")
-        string(REPLACE /MD /MT CMAKE_CXX_FLAGS_${config} "${CMAKE_CXX_FLAGS_${config}}")
-    endforeach()
-endif()
 
 # Compile extras only if this is a top-level project
 if(POLYFEM_TOPLEVEL_PROJECT)

@@ -85,7 +85,7 @@ endif()
 
 ################################################################################
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+if(MSVC OR MSYS)
 	# remove warning for multiply defined symbols (caused by multiple
 	# instantiations of STL templates)
 	#target_compile_options(geogram INTERFACE /wd4251)
