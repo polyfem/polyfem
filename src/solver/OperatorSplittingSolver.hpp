@@ -67,7 +67,10 @@ namespace polyfem
 
             if (export_mesh_path != "")
             {
-                igl::writeOBJ(export_mesh_path, V, T);
+                if(dim == 2)
+                    igl::writeOBJ(export_mesh_path, V, T);
+                else
+                    export_3d_mesh(export_mesh_path);
                 exit(0);
             }
 
@@ -166,6 +169,30 @@ namespace polyfem
                     }
                 }
             }
+        }
+
+        void export_3d_mesh(const std::string& export_mesh_path)
+        {
+            std::ofstream FILE(export_mesh_path.c_str(), std::ios::out);
+            const int n_v = V.rows();
+            const int n_e = T.rows();
+
+            FILE << "MeshVersionFormatted 1\nDimension 3\n";
+            FILE << "Vertices\n" << n_v << std::endl;
+            for(int i = 0; i < n_v; i++)
+                FILE << V(i, 0) << " " << V(i, 1) << " " << V(i, 2) << " 0\n";
+            if(T.cols() == 4)
+                FILE << "Tetrahedra\n" << n_e << std::endl;
+            else
+                FILE << "Hexahedra\n" << n_e << std::endl;
+            for(int i = 0; i < n_e; i++)
+            {
+                for(int j = 0; j < T.cols(); j++)
+                    FILE << T(i, j)+1 << " ";
+                FILE << "0\n";
+            }
+            FILE << "End\n";
+            FILE.close();
         }
 
         int handle_boundary_advection(RowVectorNd& pos)

@@ -2591,6 +2591,10 @@ void State::assemble_stiffness_mat()
 		logger().error("Build the bases first!");
 		return;
 	}
+	if (formulation() == "OperatorSplitting")
+	{
+		return;
+	}
 
 	stiffness.resize(0, 0);
 	sol.resize(0, 0);
@@ -2669,6 +2673,10 @@ void State::assemble_rhs()
 	if (n_bases <= 0)
 	{
 		logger().error("Build the bases first!");
+		return;
+	}
+	if (formulation() == "OperatorSplitting")
+	{
 		return;
 	}
 
@@ -2769,12 +2777,12 @@ void State::solve_problem()
 
 	const auto &assembler = AssemblerUtils::instance();
 
-	if (assembler.is_linear(formulation()) && stiffness.rows() <= 0)
+	if (assembler.is_linear(formulation()) && stiffness.rows() <= 0 && formulation() != "OperatorSplitting")
 	{
 		logger().error("Assemble the stiffness matrix first!");
 		return;
 	}
-	if (rhs.size() <= 0)
+	if (rhs.size() <= 0 && formulation() != "OperatorSplitting")
 	{
 		logger().error("Assemble the rhs first!");
 		return;
