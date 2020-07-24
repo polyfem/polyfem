@@ -365,6 +365,8 @@ set_target_properties(clipper_clipper PROPERTIES FOLDER 3rdparty/other)
 # Other sources
 add_subdirectory(src)
 
+MESSAGE(STATUS "--- System ${CMAKE_SYSTEM_NAME}")
+
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     foreach(config ${CMAKE_CONFIGURATION_TYPES})
         string(TOUPPER ${config} config)
