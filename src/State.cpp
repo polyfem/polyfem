@@ -2724,8 +2724,9 @@ void State::solve_problem()
 				assert(assembler.is_linear(formulation()));
 
 				//Newmark
-				const double beta1 = 0.5;
-				const double beta2 = 0.5;
+				const double gamma = 0.5;
+				const double beta = 0.25;
+				// makes the algorithm implicit and equivalent to the trapezoidal rule (unconditionally stable).
 
 				Eigen::MatrixXd temp, b;
 				StiffnessMatrix A;
@@ -2757,18 +2758,18 @@ void State::solve_problem()
 					// 	assembler.assemble_tensor_energy_hessian(rhs_assembler.formulation(), mesh->is_volume(), n_bases, bases, bases, uOld, stiffness);
 					// }
 
-					temp = -(uOld + dt * vOld + ((1 - beta1) * dt2 / 2.0) * aOld);
+					temp = -(uOld + dt * vOld + ((1/2. - beta) * dt2) * aOld);
 					b = stiffness * temp + current_rhs;
 
 					rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, b, dt * t);
 
-					A = stiffness * 0.5 * beta2 * dt2 + mass;
+					A = stiffness * beta * dt2 + mass;
 					btmp = b;
 					spectrum = dirichlet_solve(*solver, A, btmp, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], t == 1 && args["export"]["spectrum"]);
 					acceleration = x;
 
-					sol += dt * vOld + 0.5 * dt2 * ((1 - beta2) * aOld + beta2 * acceleration);
-					velocity += dt * ((1 - beta1) * aOld + beta1 * acceleration);
+					sol += dt * vOld +  dt2 * ((1/2.0 - beta) * aOld + beta * acceleration);
+					velocity += dt * ((1 - gamma) * aOld + gamma * acceleration);
 
 					rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, dt * t);
 					rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, dt * t);
