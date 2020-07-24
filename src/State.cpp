@@ -4,6 +4,7 @@
 
 #include <polyfem/Mesh2D.hpp>
 #include <polyfem/Mesh3D.hpp>
+#include <polyfem/FEBioReader.hpp>
 
 #include <polyfem/FEBasis2d.hpp>
 #include <polyfem/FEBasis3d.hpp>
@@ -39,7 +40,6 @@
 #include <polyfem/SparseNewtonDescentSolver.hpp>
 #include <polyfem/NavierStokesSolver.hpp>
 #include <polyfem/TransientNavierStokesSolver.hpp>
-#include <polyfem/GenericProblem.hpp>
 
 #include <polyfem/auto_p_bases.hpp>
 #include <polyfem/auto_q_bases.hpp>
@@ -67,7 +67,6 @@
 
 #include <unsupported/Eigen/SparseExtra>
 
-#include <tinyxml2.h>
 
 #include <iostream>
 #include <algorithm>
@@ -1864,246 +1863,7 @@ void State::load_mesh()
 
 void State::load_febio(const std::string &path)
 {
-	igl::Timer timer;
-	timer.start();
-	logger().info("Loading feb file...");
-
-	args["normalize_mesh"] = false;
-	tinyxml2::XMLDocument doc;
-	doc.LoadFile(path.c_str());
-
-	const auto *febio = doc.FirstChildElement("febio_spec");
-	const std::string ver = std::string(febio->Attribute("version"));
-	assert(ver == "2.5");
-
-	std::map<int, std::pair<double, double>> materials;
-	double E;
-	double nu;
-
-	const tinyxml2::XMLElement *material_parent = febio->FirstChildElement("Material");
-	for (const tinyxml2::XMLElement *material_node = material_parent->FirstChildElement("material"); material_node != NULL; material_node = material_node->NextSiblingElement("material"))
-	{
-		const std::string material = std::string(material_node->Attribute("type"));
-		const int mid = material_node->IntAttribute("id");
-
-		E = material_node->FirstChildElement("E")->DoubleText();
-		nu = material_node->FirstChildElement("v")->DoubleText();
-
-		//TODO check if all the same
-		if (material == "neo-Hookean")
-				args["tensor_formulation"] = "NeoHookean";
-		else if (material == "isotropic elastic")
-			args["tensor_formulation"] = "LinearElasticity";
-
-		materials[mid] = std::pair<double, double>(E, nu);
-	}
-
-	if (materials.size() == 1)
-	{
-		args["params"]["E"] = E;
-		args["params"]["nu"] = nu;
-	}
-
-	const auto *geometry = febio->FirstChildElement("Geometry");
-
-	const auto *nodes = geometry->FirstChildElement("Nodes");
-	std::vector<Eigen::Vector3d> vertices;
-	for (const tinyxml2::XMLElement *child = nodes->FirstChildElement("node"); child != NULL; child = child->NextSiblingElement("node"))
-	{
-		const std::string pos_str = std::string(child->GetText());
-		const auto vs = StringUtils::split(pos_str, ",");
-		assert(vs.size() == 3);
-
-		vertices.emplace_back(atof(vs[0].c_str()), atof(vs[1].c_str()), atof(vs[2].c_str()));
-	}
-
-	Eigen::MatrixXd V(vertices.size(), 3);
-	for(int i = 0; i < vertices.size(); ++i)
-		V.row(i) = vertices[i].transpose();
-
-	std::vector<Eigen::Vector4i> tets;
-	std::vector<int> mids;
-
-	for (const tinyxml2::XMLElement *elements = geometry->FirstChildElement("Elements"); elements != NULL; elements = elements->NextSiblingElement("Elements"))
-	{
-		const std::string el_type = std::string(elements->Attribute("type"));
-		assert(el_type == "tet4");
-
-		const int mid = elements->IntAttribute("mat");
-
-		for (const tinyxml2::XMLElement *child = elements->FirstChildElement("elem"); child != NULL; child = child->NextSiblingElement("elem"))
-		{
-			const std::string ids = std::string(child->GetText());
-			const auto tt = StringUtils::split(ids, ",");
-			assert(tt.size() == 4);
-
-			tets.emplace_back(atoi(tt[0].c_str()) - 1, atoi(tt[1].c_str()) - 1, atoi(tt[2].c_str()) - 1, atoi(tt[3].c_str()) - 1);
-			mids.emplace_back(mid);
-		}
-	}
-
-	Eigen::MatrixXi T(tets.size(), 4);
-	Eigen::MatrixXd Es(tets.size(), 1), nus(tets.size(), 1);
-	for (int i = 0; i < tets.size(); ++i){
-		T.row(i) = tets[i].transpose();
-		const auto it = materials.find(mids[i]);
-		assert(it != materials.end());
-		Es(i) = it->second.first;
-		nus(i) = it->second.second;
-	}
-
-	load_mesh(V, T);
-
-	std::vector<std::vector<int>> nodeSet(V.rows());
-	int id = 1;
-	std::map<std::string, int> names;
-
-	for (const tinyxml2::XMLElement *child = geometry->FirstChildElement("NodeSet"); child != NULL; child = child->NextSiblingElement("NodeSet"))
-	{
-		const std::string name = std::string(child->Attribute("name"));
-		names[name] = id;
-
-		for (const tinyxml2::XMLElement *nodeid = child->FirstChildElement("node"); nodeid != NULL; nodeid = nodeid->NextSiblingElement("node"))
-		{
-			const int nid = nodeid->IntAttribute("id");
-			nodeSet[nid-1].push_back(id);
-		}
-
-		id++;
-	}
-
-	for (const tinyxml2::XMLElement *child = geometry->FirstChildElement("Surface"); child != NULL; child = child->NextSiblingElement("Surface"))
-	{
-		const std::string name = std::string(child->Attribute("name"));
-		names[name] = id;
-
-		//TODO  only tri3
-		for (const tinyxml2::XMLElement *nodeid = child->FirstChildElement("tri3"); nodeid != NULL; nodeid = nodeid->NextSiblingElement("tri3"))
-		{
-			const std::string ids = std::string(nodeid->GetText());
-			const auto tt = StringUtils::split(ids, ",");
-			assert(tt.size() == 3);
-			nodeSet[atoi(tt[0].c_str()) - 1].push_back(id);
-			nodeSet[atoi(tt[1].c_str()) - 1].push_back(id);
-			nodeSet[atoi(tt[2].c_str()) - 1].push_back(id);
-		}
-
-		id++;
-	}
-
-	for(auto &n : nodeSet)
-	{
-		std::sort(n.begin(), n.end());
-		n.erase(std::unique(n.begin(), n.end()), n.end());
-	}
-
-	mesh->compute_boundary_ids([&nodeSet](const std::vector<int> &vs, bool is_boundary)
-	{
-		std::vector<int> tmp;
-		for(const int v : vs)
-			tmp.insert(tmp.end(), nodeSet[v].begin(), nodeSet[v].end());
-
-		std::sort(tmp.begin(), tmp.end());
-
-		int prev = -1;
-		int count = 1;
-		for(const int id : tmp)
-		{
-			if(id == prev)
-				count++;
-			else {
-				count = 1;
-				prev = id;
-			}
-			if(count == vs.size())
-				return prev;
-		}
-
-		return 0;
-	});
-
-	problem = ProblemFactory::factory().get_problem("GenericTensor");
-	GenericTensorProblem &gproblem = *dynamic_cast<GenericTensorProblem *>(problem.get());
-
-	const auto *boundaries = febio->FirstChildElement("Boundary");
-	for (const tinyxml2::XMLElement *child = boundaries->FirstChildElement("fix"); child != NULL; child = child->NextSiblingElement("fix"))
-	{
-		const std::string name = std::string(child->Attribute("node_set"));
-		const std::string bc = std::string(child->Attribute("bc"));
-		const auto bcs = StringUtils::split(bc, ",");
-
-		bool isx = false;
-		bool isy = false;
-		bool isz = false;
-
-		for(const auto &s : bcs)
-		{
-			if(s == "x")
-				isx=true;
-			else if(s == "y")
-				isy = true;
-			else if (s == "z")
-				isz = true;
-		}
-		gproblem.add_dirichlet_boundary(names[name], Eigen::RowVector3d::Zero(), isx, isy, isz);
-	}
-
-	for (const tinyxml2::XMLElement *child = boundaries->FirstChildElement("prescribe"); child != NULL; child = child->NextSiblingElement("prescribe"))
-	{
-		const std::string name = std::string(child->Attribute("node_set"));
-		const std::string bc = std::string(child->Attribute("bc"));
-
-		bool isx = bc == "x";
-		bool isy = bc == "y";
-		bool isz = bc == "z";
-
-		const double value = atof(child->FirstChildElement("scale")->GetText());
-		Eigen::RowVector3d val = Eigen::RowVector3d::Zero();
-
-		if(isx)
-			val(0) = value;
-		else if (isy)
-			val(1) = value;
-		else if (isz)
-			val(2) = value;
-
-		gproblem.add_dirichlet_boundary(names[name], val, isx, isy, isz);
-	}
-
-	const auto *loads = febio->FirstChildElement("Loads");
-	for (const tinyxml2::XMLElement *child = loads->FirstChildElement("surface_load"); child != NULL; child = child->NextSiblingElement("surface_load"))
-	{
-		const std::string name = std::string(child->Attribute("surface"));
-		const std::string type = std::string(child->Attribute("type"));
-		if (type == "traction"){
-			const std::string traction = std::string(child->FirstChildElement("traction")->GetText());
-			const auto bcs = StringUtils::split(traction, ",");
-			assert(bcs.size() == 3);
-
-			Eigen::RowVector3d force(atof(bcs[0].c_str()), atof(bcs[1].c_str()), atof(bcs[2].c_str()));
-			gproblem.add_neumann_boundary(names[name], force);
-		}
-		else if (type == "pressure")
-		{
-			const std::string pressures = std::string(child->FirstChildElement("pressure")->GetText());
-			const double pressure = atof(pressures.c_str());
-			//TODO added minus here
-			gproblem.add_pressure_boundary(names[name], -pressure);
-		}
-		else
-		{
-			logger().error("Unsupported surface load {}", type);
-		}
-
-	}
-
-	if (materials.size() > 1)
-	{
-		AssemblerUtils::instance().init_multimaterial(Es, nus);
-	}
-
-	timer.stop();
-	logger().info(" took {}s", timer.getElapsedTime());
+	FEBioReader::load(path, *this, "solution.txt");
 }
 
 void State::compute_mesh_stats()
