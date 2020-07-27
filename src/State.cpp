@@ -2631,7 +2631,7 @@ void State::solve_problem()
 				}
 			}
 		}
-		else
+		else //if (formulation() != "NavierStokes")
 		{
 			if (assembler.is_mixed(formulation()))
 			{
@@ -2788,7 +2788,7 @@ void State::solve_problem()
 			}
 		}
 	}
-	else
+	else //if(!problem->is_time_dependent())
 	{
 		if (assembler.is_linear(formulation()))
 		{
@@ -2809,19 +2809,13 @@ void State::solve_problem()
 			solver->getInfo(solver_info);
 
 			logger().debug("Solver error: {}", (A * sol - b).norm());
-			// sol = rhs;
 
-			// std::ofstream of("sol.txt");
-			// of<<sol<<std::endl;
-			// of.close();
-
-			// if(problem->is_mixed())
 			if (assembler.is_mixed(formulation()))
 			{
 				sol_to_pressure();
 			}
 		}
-		else
+		else //if (!assembler.is_linear(formulation()))
 		{
 			if (formulation() == "NavierStokes")
 			{
@@ -2902,21 +2896,7 @@ void State::solve_problem()
 					logger().debug("Updating starting point...");
 					update_timer.start();
 					{
-						// nl_problem.hessian(sol, nlstiffness);
-						// nl_problem.full_to_reduced(sol, tmp_sol);
-						// nl_problem.gradient(tmp_sol, grad);
-						// solver->analyzePattern(nlstiffness);
-						// solver->factorize(nlstiffness);
-						// x.resizeLike(grad);
-						// solver->solve(grad, x);
-
-						// tmp_sol -= x;
-						// nl_problem.reduced_to_full(tmp_sol, temp);
-						// x = temp;
-
-						// assembler.assemble_energy_hessian(formulation(), mesh->is_volume(), n_bases, bases, gbases, sol, nlstiffness);
 						nl_problem.hessian_full(sol, nlstiffness);
-						// assembler.assemble_energy_gradient(formulation(), mesh->is_volume(), n_bases, bases, gbases, sol, grad);
 						nl_problem.gradient_no_rhs(sol, grad);
 
 						b = grad;
@@ -2926,8 +2906,6 @@ void State::solve_problem()
 						// logger().debug("Solver error: {}", (nlstiffness * sol - b).norm());
 						x = sol - x;
 						nl_problem.full_to_reduced(x, tmp_sol);
-						// nl_problem.reduced_to_full(tmp_sol, grad);
-						// x = grad;
 					}
 					update_timer.stop();
 					logger().debug("done!, took {}s", update_timer.getElapsedTime());
