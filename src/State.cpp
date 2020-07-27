@@ -2719,19 +2719,8 @@ void State::solve_problem()
 					}
 				}
 			}
-			else //newmark
+			else //tensor time dependent
 			{
-				assert(assembler.is_linear(formulation()));
-
-				//Newmark
-				const double gamma = 0.5;
-				const double beta = 0.25;
-				// makes the algorithm implicit and equivalent to the trapezoidal rule (unconditionally stable).
-
-				Eigen::MatrixXd temp, b;
-				StiffnessMatrix A;
-				Eigen::VectorXd x, btmp;
-
 				Eigen::MatrixXd velocity, acceleration;
 				rhs_assembler.initial_velocity(velocity);
 				rhs_assembler.initial_acceleration(acceleration);
@@ -2739,51 +2728,165 @@ void State::solve_problem()
 				const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 				const int precond_num = problem_dim * n_bases;
 
-				for (int t = 1; t <= time_steps; ++t)
+				if (assembler.is_linear(formulation()))
 				{
-					const double dt2 = dt * dt;
+					//Newmark
+					const double gamma = 0.5;
+					const double beta = 0.25;
+					// makes the algorithm implicit and equivalent to the trapezoidal rule (unconditionally stable).
 
-					const Eigen::MatrixXd aOld = acceleration;
-					const Eigen::MatrixXd vOld = velocity;
-					const Eigen::MatrixXd uOld = sol;
+					Eigen::MatrixXd temp, b;
+					StiffnessMatrix A;
+					Eigen::VectorXd x, btmp;
 
-					if (!problem->is_linear_in_time())
+					for (int t = 1; t <= time_steps; ++t)
 					{
-						rhs_assembler.assemble(current_rhs, dt*t);
-						current_rhs *= -1;
-					}
+						const double dt2 = dt * dt;
 
-					// if(!assembler.is_linear(formulation()))
+						const Eigen::MatrixXd aOld = acceleration;
+						const Eigen::MatrixXd vOld = velocity;
+						const Eigen::MatrixXd uOld = sol;
+
+						if (!problem->is_linear_in_time())
+						{
+							rhs_assembler.assemble(current_rhs, dt * t);
+							current_rhs *= -1;
+						}
+						temp = -(uOld + dt * vOld + ((1 / 2. - beta) * dt2) * aOld);
+						b = stiffness * temp + current_rhs;
+
+						rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, b, dt * t);
+
+						A = stiffness * beta * dt2 + mass;
+						btmp = b;
+						spectrum = dirichlet_solve(*solver, A, btmp, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], t == 1 && args["export"]["spectrum"]);
+						acceleration = x;
+
+						sol += dt * vOld + dt2 * ((1 / 2.0 - beta) * aOld + beta * acceleration);
+						velocity += dt * ((1 - gamma) * aOld + gamma * acceleration);
+
+						rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, dt * t);
+						rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, dt * t);
+						rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, dt * t);
+
+						if (args["save_time_sequence"])
+						{
+							if (!solve_export_to_file)
+								solution_frames.emplace_back();
+							save_vtu("step_" + std::to_string(t) + ".vtu", dt * t);
+							save_wire("step_" + std::to_string(t) + ".obj");
+						}
+
+						logger().info("{}/{}", t, time_steps);
+					}
+				}
+				else //if (!assembler.is_linear(formulation()))
+				{
 					// {
-					// 	assembler.assemble_tensor_energy_hessian(rhs_assembler.formulation(), mesh->is_volume(), n_bases, bases, bases, uOld, stiffness);
+					// 	boundary_nodes.clear();
+					// 	NLProblem nl_problem(*this, rhs_assembler, 0);
+					// 	tmp_sol = rhs;
+
+					// 	// tmp_sol.setRandom();
+					// 	tmp_sol.setOnes();
+					// 	tmp_sol /=10000.;
+
+					// 	velocity.setZero();
+					// 	VectorXd xxx=tmp_sol;
+					// 	velocity = tmp_sol;
+					// 	nl_problem.init_timestep(xxx, velocity, dt);
+
+
+					// 	Eigen::Matrix<double, Eigen::Dynamic, 1> actual_grad;
+					// 	nl_problem.gradient(tmp_sol, actual_grad);
+
+					// 	StiffnessMatrix hessian;
+					// 	Eigen::MatrixXd expected_hessian;
+					// 	nl_problem.hessian(tmp_sol, hessian);
+
+					// 	Eigen::MatrixXd actual_hessian = Eigen::MatrixXd(hessian);
+					// 	// std::cout << "hhh\n"<< actual_hessian<<std::endl;
+
+					// 	for (int i = 0; i < actual_hessian.rows(); ++i)
+					// 	{
+					// 		double hhh = 1e-6;
+					// 		VectorXd xp = tmp_sol; xp(i) += hhh;
+					// 		VectorXd xm = tmp_sol; xm(i) -= hhh;
+
+					// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_p;
+					// 		nl_problem.gradient(xp, tmp_grad_p);
+
+					// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_m;
+					// 		nl_problem.gradient(xm, tmp_grad_m);
+
+					// 		Eigen::Matrix<double, Eigen::Dynamic, 1> fd_h = (tmp_grad_p - tmp_grad_m)/(hhh*2.);
+
+					// 		const double vp = nl_problem.value(xp);
+					// 		const double vm = nl_problem.value(xm);
+
+					// 		const double fd = (vp-vm)/(hhh*2.);
+					// 		const double  diff = std::abs(actual_grad(i) - fd);
+					// 		if(diff > 1e-6)
+					// 			std::cout<<"diff grad "<<i<<": "<<actual_grad(i)<<" vs "<<fd <<" error: " <<diff<<" rrr: "<<actual_grad(i)/fd<<std::endl;
+
+					// 		for(int j = 0; j < actual_hessian.rows(); ++j)
+					// 		{
+					// 			const double diff = std::abs(actual_hessian(i,j) - fd_h(j));
+
+					// 			if(diff > 1e-5)
+					// 				std::cout<<"diff H "<<i<<", "<<j<<": "<<actual_hessian(i,j)<<" vs "<<fd_h(j)<<" error: " <<diff<<" rrr: "<<actual_hessian(i,j)/fd_h(j)<<std::endl;
+
+					// 		}
+					// 	}
+
+					// 	// std::cout<<"diff grad max "<<(actual_grad - expected_grad).array().abs().maxCoeff()<<std::endl;
+					// 	// std::cout<<"diff \n"<<(actual_grad - expected_grad)<<std::endl;
+					// 	exit(0);
 					// }
 
-					temp = -(uOld + dt * vOld + ((1/2. - beta) * dt2) * aOld);
-					b = stiffness * temp + current_rhs;
+					const int full_size = n_bases * mesh->dimension();
+					const int reduced_size = n_bases * mesh->dimension() - boundary_nodes.size();
+					VectorXd tmp_sol;
 
-					rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, b, dt * t);
+					NLProblem nl_problem(*this, rhs_assembler, 0);
+					nl_problem.init_timestep(sol, velocity, dt);
+					nl_problem.full_to_reduced(sol, tmp_sol);
 
-					A = stiffness * beta * dt2 + mass;
-					btmp = b;
-					spectrum = dirichlet_solve(*solver, A, btmp, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], t == 1 && args["export"]["spectrum"]);
-					acceleration = x;
-
-					sol += dt * vOld +  dt2 * ((1/2.0 - beta) * aOld + beta * acceleration);
-					velocity += dt * ((1 - gamma) * aOld + gamma * acceleration);
-
-					rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, dt * t);
-					rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, dt * t);
-					rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, dt * t);
-
-					if (args["save_time_sequence"])
+					for (int t = 1; t <= time_steps; ++t)
 					{
-						if (!solve_export_to_file)
-							solution_frames.emplace_back();
-						save_vtu("step_" + std::to_string(t) + ".vtu", dt * t);
-						save_wire("step_" + std::to_string(t) + ".obj");
-					}
+						cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
+						nlsolver.setLineSearch(args["line_search"]);
+						nlsolver.minimize(nl_problem, tmp_sol);
 
-					logger().info("{}/{}", t, time_steps);
+						if (nlsolver.error_code() == -10)
+						{
+							logger().error("Unable to solve t={}", t*dt);
+							break;
+						}
+
+						nlsolver.getInfo(solver_info);
+						nl_problem.reduced_to_full(tmp_sol, sol);
+						if (assembler.is_mixed(formulation()))
+						{
+							sol_to_pressure();
+						}
+
+						rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, dt * t);
+
+						nl_problem.update_quantities(t*dt, sol);
+
+
+
+						if (args["save_time_sequence"])
+						{
+							if (!solve_export_to_file)
+								solution_frames.emplace_back();
+							save_vtu("step_" + std::to_string(t) + ".vtu", dt * t);
+							save_wire("step_" + std::to_string(t) + ".obj");
+						}
+
+						logger().info("{}/{}", t, time_steps);
+					}
 				}
 			}
 		}

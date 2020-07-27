@@ -485,7 +485,7 @@ double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement, const s
 
 	if (!problem_.is_rhs_zero())
 	{
-#ifdef POLYFEM_WITH_TBB
+#ifdef POLYFEM_WITH_TBB1
 		typedef tbb::enumerable_thread_specific<LocalThreadScalarStorage> LocalStorage;
 		LocalStorage storages((LocalThreadScalarStorage()));
 #else
@@ -494,7 +494,7 @@ double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement, const s
 
 		const int n_bases = int(bases_.size());
 
-#ifdef POLYFEM_WITH_TBB
+#ifdef POLYFEM_WITH_TBB1
 		tbb::parallel_for(tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
 		LocalStorage::reference loc_storage = storages.local();
 		for (int e = r.begin(); e != r.end(); ++e) {
@@ -536,13 +536,13 @@ double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement, const s
 					loc_storage.val += forces(p, d) * local_displacement(d) * da(p);
 					// res += forces(p, d) * local_displacement(d) * da(p);
 			}
-#ifdef POLYFEM_WITH_TBB
+#ifdef POLYFEM_WITH_TBB1
 		} });
 #else
 		}
 #endif
 
-#ifdef POLYFEM_WITH_TBB
+#ifdef POLYFEM_WITH_TBB1
 		for (LocalStorage::iterator i = storages.begin(); i != storages.end(); ++i)
 		{
 			res += i->val;
