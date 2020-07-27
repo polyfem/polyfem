@@ -6,7 +6,7 @@ namespace polyfem
 	ExpressionValue::~ExpressionValue()
 	{
 		te_free(expr_);
-		delete vals_;
+		expr_ = nullptr;
 	}
 
 	ExpressionValue::ExpressionValue()
