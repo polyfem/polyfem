@@ -220,6 +220,9 @@ namespace polyfem {
         template <typename XMLNode>
         void load_loads(const XMLNode *loads, const std::map<std::string, int> &names, GenericTensorProblem &gproblem)
         {
+            if(loads == nullptr)
+                return;
+
             for (const tinyxml2::XMLElement *child = loads->FirstChildElement("surface_load"); child != NULL; child = child->NextSiblingElement("surface_load"))
             {
                 const std::string name = std::string(child->Attribute("surface"));
