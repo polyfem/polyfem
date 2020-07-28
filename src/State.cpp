@@ -2220,6 +2220,10 @@ void State::build_basis()
 	// auto it = std::unique(flipped_elements.begin(), flipped_elements.end());
 	// flipped_elements.resize(std::distance(flipped_elements.begin(), it));
 
+	logger().info("Extracting boundary mesh...");
+	extract_boundary_mesh();
+	logger().info("Done!");
+
 	problem->setup_bc(*mesh, bases, local_boundary, boundary_nodes, local_neumann_boundary);
 
 	//add a pressure node to avoid singular solution
@@ -2320,6 +2324,79 @@ void State::build_polygonal_basis()
 	logger().info(" took {}s", computing_poly_basis_time);
 
 	n_bases += new_bases;
+}
+
+void State::extract_boundary_mesh()
+{
+	if(mesh->is_volume())
+	{
+
+	}
+	else
+	{
+		const Mesh2D &mesh2d = *dynamic_cast<Mesh2D *>(mesh.get());
+
+		std::map<int, int> global_to_small;
+		std::vector<RowVectorNd> vertices;
+		std::vector<std::pair<int, int>> edges;
+		boundary_to_global.clear();
+		int index = 0;
+
+		for (auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
+		{
+			const auto &lb = *it;
+			const auto &b = bases[lb.element_id()];
+
+			for(int j = 0; j < lb.size(); ++j)
+			{
+				const int eid = lb.global_primitive_id(j);
+				const int lid = lb[j];
+				const auto nodes = b.local_nodes_for_primitive(eid, mesh2d);
+
+				int prev_node = -1;
+
+				for (long n = 0; n < nodes.size(); ++n)
+				{
+					auto &bs = b.bases[nodes(n)];
+					const auto &glob = bs.global();
+					if(glob.size() != 1) continue;
+
+					int gindex = glob.front().index;
+					int ii = 0;
+					const auto it = global_to_small.find(gindex);
+					if(it == global_to_small.end())
+					{
+						global_to_small[gindex] = index;
+						vertices.push_back(glob.front().node);
+						ii = index;
+						assert(boundary_to_global.size() == index);
+						boundary_to_global.push_back(gindex);
+
+						++index;
+					}
+					else
+						ii = it->second;
+
+					if(prev_node >= 0)
+						edges.emplace_back(prev_node, ii);
+					prev_node = ii;
+				}
+			}
+		}
+
+		boundary_nodes_pos.resize(vertices.size(), 3);
+		boundary_elements.resize(edges.size(), 2);
+
+		for (int i = 0; i < vertices.size(); ++i)
+		{
+			boundary_nodes_pos.row(i) << vertices[i](0), vertices[i](1), 0;
+		}
+
+		for (int i = 0; i < edges.size(); ++i)
+		{
+			boundary_elements.row(i) << edges[i].first, edges[i].second;
+		}
+	}
 }
 
 json State::build_json_params()

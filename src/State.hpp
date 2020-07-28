@@ -89,6 +89,10 @@ namespace polyfem
 		Eigen::MatrixXd rhs, rhs_in;
 		Eigen::MatrixXd sol, pressure;
 
+		Eigen::MatrixXd boundary_nodes_pos;
+		Eigen::MatrixXi boundary_elements;
+		std::vector<int> boundary_to_global;
+
 		Eigen::Vector4d spectrum;
 
 
@@ -183,6 +187,7 @@ namespace polyfem
 		}
 
 		void build_basis();
+		void extract_boundary_mesh();
 
 		void assemble_stiffness_mat();
 		void assemble_rhs();
