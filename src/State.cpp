@@ -2330,7 +2330,122 @@ void State::extract_boundary_mesh()
 {
 	if(mesh->is_volume())
 	{
+		const Mesh3D &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
 
+		std::map<int, int> global_to_small;
+		std::vector<RowVectorNd> vertices;
+		std::vector<std::tuple<int, int, int>> tris;
+		boundary_to_global.clear();
+		int index = 0;
+
+		for (auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
+		{
+			const auto &lb = *it;
+			const auto &b = bases[lb.element_id()];
+
+			for (int j = 0; j < lb.size(); ++j)
+			{
+				const int eid = lb.global_primitive_id(j);
+				const int lid = lb[j];
+				const auto nodes = b.local_nodes_for_primitive(eid, mesh3d);
+
+				if (!mesh->is_simplex(lb.element_id()))
+				{
+					logger().warn("skipping element {} since it is not a simplex", eid);
+					continue;
+				}
+
+				std::vector<int> loc_nodes;
+
+				for (long n = 0; n < nodes.size(); ++n)
+				{
+					auto &bs = b.bases[nodes(n)];
+					const auto &glob = bs.global();
+					if (glob.size() != 1)
+						continue;
+
+
+					int gindex = glob.front().index;
+					int ii = 0;
+					const auto it = global_to_small.find(gindex);
+					if (it == global_to_small.end())
+					{
+						global_to_small[gindex] = index;
+						vertices.push_back(glob.front().node);
+						ii = index;
+						assert(boundary_to_global.size() == index);
+						boundary_to_global.push_back(gindex);
+
+						++index;
+					}
+					else
+						ii = it->second;
+
+					loc_nodes.push_back(ii);
+				}
+
+				if(loc_nodes.size() == 3)
+				{
+					tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
+				}
+				else if (loc_nodes.size() == 6)
+				{
+					tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[5]);
+					tris.emplace_back(loc_nodes[3], loc_nodes[1], loc_nodes[4]);
+					tris.emplace_back(loc_nodes[4], loc_nodes[2], loc_nodes[5]);
+					tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[5]);
+				}
+				else if (loc_nodes.size() == 10)
+				{
+					tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[8]);
+					tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[9]);
+					tris.emplace_back(loc_nodes[4], loc_nodes[1], loc_nodes[5]);
+					tris.emplace_back(loc_nodes[5], loc_nodes[6], loc_nodes[9]);
+					tris.emplace_back(loc_nodes[6], loc_nodes[2], loc_nodes[7]);
+					tris.emplace_back(loc_nodes[7], loc_nodes[8], loc_nodes[9]);
+					tris.emplace_back(loc_nodes[8], loc_nodes[3], loc_nodes[9]);
+					tris.emplace_back(loc_nodes[9], loc_nodes[4], loc_nodes[5]);
+					tris.emplace_back(loc_nodes[6], loc_nodes[7], loc_nodes[9]);
+				}
+				else if (loc_nodes.size() == 15)
+				{
+					tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[11]);
+					tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[12]);
+					tris.emplace_back(loc_nodes[3], loc_nodes[12], loc_nodes[11]);
+					tris.emplace_back(loc_nodes[12], loc_nodes[10], loc_nodes[11]);
+					tris.emplace_back(loc_nodes[4], loc_nodes[5], loc_nodes[13]);
+					tris.emplace_back(loc_nodes[4], loc_nodes[13], loc_nodes[12]);
+					tris.emplace_back(loc_nodes[12], loc_nodes[13], loc_nodes[14]);
+					tris.emplace_back(loc_nodes[12], loc_nodes[14], loc_nodes[10]);
+					tris.emplace_back(loc_nodes[14], loc_nodes[9], loc_nodes[10]);
+					tris.emplace_back(loc_nodes[5], loc_nodes[1], loc_nodes[6]);
+					tris.emplace_back(loc_nodes[5], loc_nodes[6], loc_nodes[13]);
+					tris.emplace_back(loc_nodes[6], loc_nodes[7], loc_nodes[13]);
+					tris.emplace_back(loc_nodes[13], loc_nodes[7], loc_nodes[14]);
+					tris.emplace_back(loc_nodes[7], loc_nodes[8], loc_nodes[14]);
+					tris.emplace_back(loc_nodes[14], loc_nodes[8], loc_nodes[9]);
+					tris.emplace_back(loc_nodes[8], loc_nodes[2], loc_nodes[9]);
+				}
+				else
+				{
+					std::cout << loc_nodes.size() << std::endl;
+					assert(false);
+				}
+			}
+		}
+
+		boundary_nodes_pos.resize(vertices.size(), 3);
+		boundary_elements.resize(tris.size(), 3);
+
+		for (int i = 0; i < vertices.size(); ++i)
+		{
+			boundary_nodes_pos.row(i) << vertices[i](0), vertices[i](2), vertices[i](1);
+		}
+
+		for (int i = 0; i < tris.size(); ++i)
+		{
+			boundary_elements.row(i) << std::get<0>(tris[i]), std::get<1>(tris[i]), std::get<2>(tris[i]);
+		}
 	}
 	else
 	{
