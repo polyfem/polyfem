@@ -83,8 +83,8 @@ void polyfem::UIState::draw_menu()
 	// Viewer settings
 	float viewer_menu_width = 180.f * hidpi_scaling() / pixel_ratio();
 
-	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiSetCond_Always);
-	ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f), ImGuiSetCond_Always);
+	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
 	ImGui::SetNextWindowSizeConstraints(ImVec2(viewer_menu_width, -1.0f), ImVec2(viewer_menu_width, -1.0f));
 	bool _viewer_menu_visible = true;
 	ImGui::Begin(
@@ -97,8 +97,8 @@ void polyfem::UIState::draw_menu()
 
 	// Polyfem menu
 	float polyfem_menu_width = 0.8 * viewer_menu_width;
-	ImGui::SetNextWindowPos(ImVec2(viewer_menu_width, 0.0f), ImGuiSetCond_Always);
-	ImGui::SetNextWindowSize(ImVec2(polyfem_menu_width, 0.0f), ImGuiSetCond_Always);
+	ImGui::SetNextWindowPos(ImVec2(viewer_menu_width, 0.0f), ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(polyfem_menu_width, 0.0f), ImGuiCond_Always);
 	ImGui::SetNextWindowSizeConstraints(ImVec2(polyfem_menu_width, -1.0f), ImVec2(polyfem_menu_width, -1.0f));
 	bool _polyfem_menu_visible = true;
 	ImGui::Begin(
@@ -109,10 +109,10 @@ void polyfem::UIState::draw_menu()
 
 	// Debug menu
 	float debug_menu_width = 0.8 * viewer_menu_width;
-	// ImGui::SetNextWindowPos(ImVec2(viewer_menu_width+polyfem_menu_width, 0.0f), ImGuiSetCond_Always);
+	// ImGui::SetNextWindowPos(ImVec2(viewer_menu_width+polyfem_menu_width, 0.0f), ImGuiCond_Always);
 	auto canvas = ImGui::GetIO().DisplaySize;
-	ImGui::SetNextWindowPos(ImVec2(canvas.x - debug_menu_width, 0.0f), ImGuiSetCond_Always);
-	ImGui::SetNextWindowSize(ImVec2(debug_menu_width, 0.0f), ImGuiSetCond_Always);
+	ImGui::SetNextWindowPos(ImVec2(canvas.x - debug_menu_width, 0.0f), ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(debug_menu_width, 0.0f), ImGuiCond_Always);
 	ImGui::SetNextWindowSizeConstraints(ImVec2(debug_menu_width, -1.0f), ImVec2(debug_menu_width, -1.0f));
 	bool _debug_menu_visible = true;
 	ImGui::Begin(
@@ -124,7 +124,7 @@ void polyfem::UIState::draw_menu()
 	// // Elasticity BC
 	// float elasticity_menu_width = 0.8 * viewer_menu_width;
 	// auto canvas = ImGui::GetIO().DisplaySize;
-	// ImGui::SetNextWindowPos(ImVec2(canvas.x - elasticity_menu_width, 0.0f), ImGuiSetCond_Always);
+	// ImGui::SetNextWindowPos(ImVec2(canvas.x - elasticity_menu_width, 0.0f), ImGuiCond_Always);
 	// ImGui::SetNextWindowSize(ImVec2(elasticity_menu_width, 0.0f), ImGuiSetCond_FirstUseEver);
 	// ImGui::SetNextWindowSizeConstraints(ImVec2(elasticity_menu_width, -1.0f), ImVec2(elasticity_menu_width, -1.0f));
 	// bool _elasticity_menu_visible = true;
@@ -595,7 +595,7 @@ void polyfem::UIState::draw_screenshot()
 		// Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(6400, 4000);
 
 		// // Draw the scene in the buffers
-		// viewer.core.draw_buffer(viewer.data(),false,R,G,B,A);
+		// viewer.core().draw_buffer(viewer.data(),false,R,G,B,A);
 		// A.setConstant(255);
 
 		// // Save it to a PNG
