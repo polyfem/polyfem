@@ -4,11 +4,9 @@ on:
   push:
     branches:
       - master
-      - stable
   pull_request:
     branches:
       - master
-      - stable
 
 env:
   CTEST_OUTPUT_ON_FAILURE: ON
