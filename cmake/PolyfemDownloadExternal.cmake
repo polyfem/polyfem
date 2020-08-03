@@ -42,8 +42,8 @@ endfunction()
 ## Geogram BSD
 function(polyfem_download_geogram)
     polyfem_download_project(geogram
-        GIT_REPOSITORY https://github.com/alicevision/geogram.git
-        GIT_TAG        v1.6.8
+        GIT_REPOSITORY https://github.com/polyfem/geogram.git
+        GIT_TAG        c4db99082d8f2ed523cd123dcaf28aa441653720
     )
 endfunction()
 
