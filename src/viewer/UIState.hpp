@@ -127,7 +127,7 @@ namespace polyfem
 		Eigen::Matrix<bool, Eigen::Dynamic, 1> available_visualizations;
 		Eigen::Matrix<bool, Eigen::Dynamic, 1> visible_visualizations;
 
-		std::vector<std::vector<bool>> vis_flags;
+		std::vector<std::vector<unsigned int>> vis_flags;
 		void reset_flags(const Visualizations &layer, bool clear = true);
 		void hide_data(const Visualizations &layer);
 		void show_data(const Visualizations &layer);

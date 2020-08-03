@@ -35,15 +35,15 @@ endfunction()
 function(polyfem_download_libigl)
     polyfem_download_project(libigl
         GIT_REPOSITORY https://github.com/libigl/libigl.git
-        GIT_TAG        c7c06e3735cdf6188bd17507403362065c4ae9dc
+        GIT_TAG        015ac35cd135e3a40c3e71443eeda4a9a4ccf7f5
     )
 endfunction()
 
 ## Geogram BSD
 function(polyfem_download_geogram)
     polyfem_download_project(geogram
-        GIT_REPOSITORY https://github.com/alicevision/geogram.git
-        GIT_TAG        v1.6.8
+        GIT_REPOSITORY https://github.com/polyfem/geogram.git
+        GIT_TAG        e6b9612f1146370e40deaa341b4dd7ef90502102
     )
 endfunction()
 
