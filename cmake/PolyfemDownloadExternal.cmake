@@ -43,7 +43,7 @@ endfunction()
 function(polyfem_download_geogram)
     polyfem_download_project(geogram
         GIT_REPOSITORY https://github.com/polyfem/geogram.git
-        GIT_TAG        c4db99082d8f2ed523cd123dcaf28aa441653720
+        GIT_TAG        e6b9612f1146370e40deaa341b4dd7ef90502102
     )
 endfunction()
 
