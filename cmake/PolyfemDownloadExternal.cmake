@@ -35,7 +35,7 @@ endfunction()
 function(polyfem_download_libigl)
     polyfem_download_project(libigl
         GIT_REPOSITORY https://github.com/libigl/libigl.git
-        GIT_TAG        c7c06e3735cdf6188bd17507403362065c4ae9dc
+        GIT_TAG        015ac35cd135e3a40c3e71443eeda4a9a4ccf7f5
     )
 endfunction()
 
