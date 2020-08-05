@@ -77,7 +77,7 @@ namespace polyfem {
                 const std::string el_type = std::string(elements->Attribute("type"));
                 const int mid = elements->IntAttribute("mat");
 
-                if(el_type != "tet4" && el_type != "tet10") // && el_type != "tet20")
+                if(el_type != "tet4" && el_type != "tet10" && el_type != "tet20")
                 {
                     logger().error("Unsupported elemet type {}", el_type);
                     continue;
@@ -102,8 +102,19 @@ namespace polyfem {
                     for(int n = 0; n < tt.size(); ++n)
                         nodes.back().push_back(atoi(tt[n].c_str()) - 1);
 
-                    if (el_type == "tet10")
+                    if (el_type == "tet10"){
+                        assert(nodes.back().size() == 10);
                         std::swap(nodes.back()[8], nodes.back()[9]);
+                    }
+                    else if (el_type == "tet20"){
+                        assert(nodes.back().size() == 20);
+                        std::swap(nodes.back()[8], nodes.back()[9]);
+                        std::swap(nodes.back()[10], nodes.back()[11]);
+                        std::swap(nodes.back()[12], nodes.back()[15]);
+                        std::swap(nodes.back()[13], nodes.back()[14]);
+                        std::swap(nodes.back()[16], nodes.back()[19]);
+                        std::swap(nodes.back()[17], nodes.back()[19]);
+                    }
                 }
             }
 
