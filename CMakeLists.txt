@@ -48,13 +48,18 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 ################################################################################
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-    foreach(config ${CMAKE_CONFIGURATION_TYPES})
-        string(TOUPPER ${config} config)
-        string(REPLACE /MD /MT CMAKE_C_FLAGS_${config} "${CMAKE_C_FLAGS_${config}}")
-        string(REPLACE /MD /MT CMAKE_CXX_FLAGS_${config} "${CMAKE_CXX_FLAGS_${config}}")
-    endforeach()
-endif()
+
+# if(${CMAKE_VERSION} VERSION_LESS "3.15.0")
+#     if(MSVC OR MSYS)
+#         foreach(config ${CMAKE_CONFIGURATION_TYPES})
+#             string(TOUPPER ${config} config)
+#             string(REPLACE /MD /MT CMAKE_C_FLAGS_${config} "${CMAKE_C_FLAGS_${config}}")
+#             string(REPLACE /MD /MT CMAKE_CXX_FLAGS_${config} "${CMAKE_CXX_FLAGS_${config}}")
+#         endforeach()
+#     endif()
+# else()
+#     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+# endif()
 
 ################################################################################
 
@@ -298,6 +303,9 @@ target_link_libraries(polyfem PUBLIC tinyexpr::tinyexpr)
 # TinyXML library
 if(NOT TARGET tinyxml2)
     polyfem_download_tinyxml()
+    SET(BUILD_SHARED_LIBS OFF)
+    SET(BUILD_STATIC_LIBS ON)
+    SET(BUILD_TESTING OFF)
     add_subdirectory(${THIRD_PARTY_DIR}/tinyxml)
 endif()
 target_link_libraries(polyfem PUBLIC tinyxml2)

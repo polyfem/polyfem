@@ -78,8 +78,8 @@ using namespace Eigen;
 // 	viewer.data().lines = viewer0.data().lines;
 // 	viewer.data().show_lines = false;
 // 	viewer.data().line_width = line_width;
-// 	// viewer.core.background_color.setOnes();
-// 	// viewer.core.set_rotation_type(igl::opengl::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
+// 	// viewer.core().background_color.setOnes();
+// 	// viewer.core().set_rotation_type(igl::opengl::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
 
 // 	// #ifdef IGL_VIEWER_WITH_NANOGUI
 // 	// viewer.callback_init = [&](igl::opengl::glfw::Viewer& viewer_) {
@@ -329,10 +329,10 @@ void UIState::color_mesh(const int n_tris, const std::vector<bool> &valid_elemen
 	}
 
 	data(layer).set_colors(cols);
-	data(layer).show_overlay = true;
-	data(layer).show_faces = true;
+	data(layer).show_overlay = 1;
+	data(layer).show_faces = 1;
 
-	viewer.core.lighting_factor = (light_enabled ? 1.f : 0.f);
+	viewer.core().lighting_factor = (light_enabled ? 1.f : 0.f);
 	// if(!light_enabled){
 	// 	data(layer).F_material_specular.setZero();
 	// 	data(layer).V_material_specular.setZero();
@@ -354,7 +354,7 @@ long UIState::clip_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &t
 		std::fill(valid_elements.begin(), valid_elements.end(), true);
 		data(layer).set_mesh(pts, tris);
 
-		viewer.core.lighting_factor = (light_enabled ? 1.f : 0.f);
+		viewer.core().lighting_factor = (light_enabled ? 1.f : 0.f);
 		// if(!light_enabled){
 		// 	data(layer).F_material_specular.setZero();
 		// 	data(layer).V_material_specular.setZero();
@@ -389,7 +389,7 @@ long UIState::clip_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &t
 
 		data(layer).line_width = line_width;
 		data(layer).add_edges(p0, p1, MatrixXd::Zero(1, 3));
-		data(layer).show_lines = false;
+		data(layer).show_lines = 0;
 
 		return tris.rows();
 	}
@@ -429,7 +429,7 @@ long UIState::show_clipped_elements(const Eigen::MatrixXd &pts, const Eigen::Mat
 
 	data(layer).set_mesh(pts, valid_tri);
 
-	viewer.core.lighting_factor = (light_enabled ? 1.f : 0.f);
+	viewer.core().lighting_factor = (light_enabled ? 1.f : 0.f);
 	// if(!light_enabled){
 	// 	data(layer).F_material_specular.setZero();
 	// 	data(layer).V_material_specular.setZero();
@@ -450,7 +450,7 @@ long UIState::show_clipped_elements(const Eigen::MatrixXd &pts, const Eigen::Mat
 	}
 
 	if (recenter)
-		viewer.core.align_camera_center(pts, valid_tri);
+		viewer.core().align_camera_center(pts, valid_tri);
 
 	MatrixXd p0, p1;
 	if (map_edges)
@@ -465,7 +465,7 @@ long UIState::show_clipped_elements(const Eigen::MatrixXd &pts, const Eigen::Mat
 
 	data(layer).line_width = line_width;
 	data(layer).add_edges(p0, p1, MatrixXd::Zero(1, 3));
-	data(layer).show_lines = false;
+	data(layer).show_lines = 0;
 
 	return valid_tri.rows();
 }
@@ -604,11 +604,11 @@ void UIState::reset_flags(const Visualizations &layer, bool clear)
 	if (clear)
 		data(layer).clear();
 
-	data(layer).show_overlay = true;
-	data(layer).show_faces = true;
-	data(layer).show_lines = true;
-	data(layer).show_vertid = false;
-	data(layer).show_faceid = false;
+	data(layer).show_overlay = 1;
+	data(layer).show_faces = 1;
+	data(layer).show_lines = 1;
+	data(layer).show_vertid = 0;
+	data(layer).show_faceid = 0;
 }
 
 void UIState::hide_data(const Visualizations &layer)
@@ -622,11 +622,11 @@ void UIState::hide_data(const Visualizations &layer)
 			data(layer).show_vertid,
 			data(layer).show_faceid};
 	}
-	data(layer).show_overlay = false;
-	data(layer).show_faces = false;
-	data(layer).show_lines = false;
-	data(layer).show_vertid = false;
-	data(layer).show_faceid = false;
+	data(layer).show_overlay = 0;
+	data(layer).show_faces = 0;
+	data(layer).show_lines = 0;
+	data(layer).show_vertid = 0;
+	data(layer).show_faceid = 0;
 }
 
 void UIState::show_data(const Visualizations &layer)
@@ -733,7 +733,7 @@ void UIState::plot_function(const MatrixXd &fun, const Visualizations &layer, do
 
 		clip_elements(tmp, vis_faces, vis_element_ranges, valid_elements, true, layer);
 
-		data(layer).show_overlay = false;
+		data(layer).show_overlay = 0;
 		// if(show_isolines && fun.cols() != 3)
 		// {
 		// 	Eigen::MatrixXd isoV;
@@ -770,10 +770,10 @@ void UIState::plot_function(const MatrixXd &fun, const Visualizations &layer, do
 				Eigen::MatrixXi isoE;
 				igl::isolines(tmp, vis_faces, Eigen::VectorXd(fun), 20, isoV, isoE);
 				data(layer).set_edges(isoV, isoE, Eigen::RowVector3d(0, 0, 0));
-				data(layer).show_overlay = true;
+				data(layer).show_overlay = 1;
 			}
 			else
-				data(layer).show_overlay = false;
+				data(layer).show_overlay = 0;
 		}
 
 		if (min < max)
@@ -790,7 +790,7 @@ void UIState::plot_function(const MatrixXd &fun, const Visualizations &layer, do
 
 	data(layer).set_colors(col);
 
-	viewer.core.lighting_factor = (light_enabled ? 1.f : 0.f);
+	viewer.core().lighting_factor = (light_enabled ? 1.f : 0.f);
 	// if(!light_enabled){
 	// 	data(layer).F_material_specular.setZero();
 	// 	data(layer).V_material_specular.setZero();
@@ -846,11 +846,11 @@ void UIState::show_sidesets()
 
 		data(Visualizations::Sidesets).line_width = line_width;
 		data(Visualizations::Sidesets).add_edges(p0, p1, MatrixXd::Zero(1, 3));
-		data(Visualizations::Sidesets).show_lines = false;
+		data(Visualizations::Sidesets).show_lines = 0;
 	}
 	else
 	{
-		data(Visualizations::Sidesets).show_lines = true;
+		data(Visualizations::Sidesets).show_lines = 1;
 		data(Visualizations::Sidesets).line_width = line_width;
 		data(Visualizations::Sidesets).set_edges(pts, faces, col);
 	}
@@ -968,7 +968,7 @@ void UIState::show_vis_mesh()
 		reset_flags(Visualizations::VisMesh);
 		std::vector<bool> valid_elements;
 		clip_elements(vis_pts, vis_faces, vis_element_ranges, valid_elements, true, Visualizations::VisMesh);
-		data(Visualizations::VisMesh).show_lines = true;
+		data(Visualizations::VisMesh).show_lines = 1;
 		available_visualizations[Visualizations::VisMesh] = true;
 
 		// data(Visualizations::VisMesh).add_points(state.mesh->face_barycenter(3314), Eigen::RowVector3d(1,0,0));
@@ -1263,7 +1263,7 @@ void UIState::show_error()
 
 		const MatrixXd err = (global_sol - exact_sol).eval().rowwise().norm();
 		plot_function(err, Visualizations::Error);
-		data(Visualizations::Error).show_lines = false;
+		data(Visualizations::Error).show_lines = 0;
 
 		available_visualizations[Visualizations::Error] = true;
 		vis_flags[Visualizations::Error].clear();
@@ -1281,7 +1281,7 @@ void UIState::show_error()
 
 		const MatrixXd err = (global_sol - exact_sol).eval().rowwise().norm();
 		plot_function(err, Visualizations::ErrorGrad);
-		data(Visualizations::ErrorGrad).show_lines = false;
+		data(Visualizations::ErrorGrad).show_lines = 0;
 
 		available_visualizations[Visualizations::ErrorGrad] = true;
 		vis_flags[Visualizations::ErrorGrad].clear();
@@ -1343,7 +1343,7 @@ void UIState::show_sol()
 		MatrixXd global_sol;
 		interpolate_function(state.sol, global_sol);
 		plot_function(global_sol, Visualizations::Solution);
-		data(Visualizations::Solution).show_lines = false;
+		data(Visualizations::Solution).show_lines = 0;
 
 		available_visualizations[Visualizations::Solution] = true;
 		vis_flags[Visualizations::Solution].clear();
@@ -1461,7 +1461,7 @@ void UIState::show_quadratic_reproduction()
 	// std::cout<<err.minCoeff()<<" "<<err.maxCoeff()<<std::endl;
 
 	plot_function(err, Visualizations::Debug);
-	data(Visualizations::Debug).show_lines = false;
+	data(Visualizations::Debug).show_lines = 0;
 
 	available_visualizations[Visualizations::Debug] = true;
 	vis_flags[Visualizations::Debug].clear();
@@ -1657,11 +1657,11 @@ void UIState::load_mesh()
 	{
 		light_enabled = false;
 
-		viewer.core.set_rotation_type(igl::opengl::ViewerCore::RotationType::ROTATION_TYPE_NO_ROTATION);
+		viewer.core().set_rotation_type(igl::opengl::ViewerCore::RotationType::ROTATION_TYPE_NO_ROTATION);
 	}
 	else
 	{
-		viewer.core.set_rotation_type(igl::opengl::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
+		viewer.core().set_rotation_type(igl::opengl::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
 	}
 
 	clear();
@@ -1671,7 +1671,7 @@ void UIState::load_mesh()
 	viewer.selected_data_index = Visualizations::InputMesh;
 	show_mesh();
 	show_sidesets();
-	viewer.core.align_camera_center(tri_pts);
+	viewer.core().align_camera_center(tri_pts);
 }
 
 void UIState::build_basis()
@@ -1805,12 +1805,12 @@ void UIState::launch(const std::string &log_file, int log_level, const bool is_q
 	state.init_logger(log_file, log_level, is_quiet);
 	state.init(args);
 
-	viewer.core.background_color.setOnes();
+	viewer.core().background_color.setOnes();
 	febio_file = febio_filei;
 
 	if (screenshot.empty())
 	{
-		viewer.core.is_animating = true;
+		viewer.core().is_animating = true;
 		viewer.plugins.push_back(this);
 		viewer.launch();
 	}
@@ -1886,7 +1886,7 @@ void UIState::sertialize(const std::string &name)
 //       fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 //     #endif
 //       viewer.data().meshgl.init();
-//       viewer.core.align_camera_center(viewer.data().V, viewer.data().F);
+//       viewer.core().align_camera_center(viewer.data().V, viewer.data().F);
 //       viewer.init();
 
 //       Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(6400, 4000);
@@ -1895,7 +1895,7 @@ void UIState::sertialize(const std::string &name)
 //       Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(6400, 4000);
 
 //     // Draw the scene in the buffers
-//       viewer.core.draw_buffer(viewer.data(),true,R,G,B,A);
+//       viewer.core().draw_buffer(viewer.data(),true,R,G,B,A);
 //       A.setConstant(255);
 
 //     // Save it to a PNG

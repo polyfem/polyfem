@@ -478,7 +478,6 @@ void RhsAssembler::compute_energy_grad(const std::vector<LocalBoundary> &local_b
 
 double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement, const std::vector<LocalBoundary> &local_neumann_boundary, const int resolution, const double t) const
 {
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
 
 	double res = 0;
 	Eigen::MatrixXd forces;
@@ -497,8 +496,12 @@ double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement, const s
 #ifdef POLYFEM_WITH_TBB
 		tbb::parallel_for(tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
 		LocalStorage::reference loc_storage = storages.local();
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
+
 		for (int e = r.begin(); e != r.end(); ++e) {
 #else
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
+
 		for (int e = 0; e < n_bases; ++e)
 		{
 #endif
@@ -551,6 +554,10 @@ double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement, const s
 		res = loc_storage.val;
 #endif
 	}
+
+#ifdef POLYFEM_WITH_TBB
+	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
+#endif
 
 	ElementAssemblyValues vals;
 	//Neumann

@@ -85,7 +85,7 @@ endif()
 
 ################################################################################
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+if(MSVC OR MSYS)
 	# remove warning for multiply defined symbols (caused by multiple
 	# instantiations of STL templates)
 	#target_compile_options(geogram INTERFACE /wd4251)
@@ -101,12 +101,12 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	# we want M_PI etc...
 	target_compile_definitions(geogram INTERFACE -D_USE_MATH_DEFINES)
 
-	if(NOT VORPALINE_BUILD_DYNAMIC)
-		# If we use static library, we link with the static C++ runtime.
-		foreach(config ${CMAKE_CONFIGURATION_TYPES})
-			string(TOUPPER ${config} config)
-			string(REPLACE /MD /MT CMAKE_C_FLAGS_${config} "${CMAKE_C_FLAGS_${config}}")
-			string(REPLACE /MD /MT CMAKE_CXX_FLAGS_${config} "${CMAKE_CXX_FLAGS_${config}}")
-		endforeach()
-	endif()
+	# if(NOT VORPALINE_BUILD_DYNAMIC)
+	# 	# If we use static library, we link with the static C++ runtime.
+	# 	foreach(config ${CMAKE_CONFIGURATION_TYPES})
+	# 		string(TOUPPER ${config} config)
+	# 		string(REPLACE /MD /MT CMAKE_C_FLAGS_${config} "${CMAKE_C_FLAGS_${config}}")
+	# 		string(REPLACE /MD /MT CMAKE_CXX_FLAGS_${config} "${CMAKE_CXX_FLAGS_${config}}")
+	# 	endforeach()
+	# endif()
 endif()

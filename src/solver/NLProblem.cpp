@@ -10,51 +10,75 @@
 namespace polyfem
 {
 	using namespace polysolve;
-	// NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t, const int full_size, const int reduced_size)
-	// : state(state), assembler(AssemblerUtils::instance()), rhs_assembler(rhs_assembler),
-	// full_size(full_size), reduced_size(reduced_size), t(t), rhs_computed(false)
-	// { }
 
-NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t)
-	: state(state), assembler(AssemblerUtils::instance()), rhs_assembler(rhs_assembler),
-	  full_size((assembler.is_mixed(state.formulation()) ? state.n_pressure_bases : 0) + state.n_bases * state.mesh->dimension()),
-	  reduced_size(full_size - state.boundary_nodes.size()),
-	  t(t), rhs_computed(false)
-{ }
+	NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t)
+		: state(state), assembler(AssemblerUtils::instance()), rhs_assembler(rhs_assembler),
+		  full_size((assembler.is_mixed(state.formulation()) ? state.n_pressure_bases : 0) + state.n_bases * state.mesh->dimension()),
+		  reduced_size(full_size - state.boundary_nodes.size()),
+		  t(t), rhs_computed(false), is_time_dependent(state.problem->is_time_dependent())
+	{
+	}
+
+	void NLProblem::init_timestep(const TVector &x_prev, const TVector &v_prev, const double dt)
+	{
+		this->x_prev = x_prev;
+		this->v_prev = v_prev;
+		this->dt = dt;
+	}
+
+	void NLProblem::update_quantities(const double t, const TVector &x)
+	{
+		if (is_time_dependent){
+			v_prev = (x - x_prev) / dt;
+			x_prev = x;
+			rhs_computed = false;
+
+			// rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, dt * t);
+			// rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, dt * t);
+		}
+	}
 
 	const Eigen::MatrixXd &NLProblem::current_rhs()
 	{
-		if(!rhs_computed)
+		if (!rhs_computed)
 		{
 			rhs_assembler.compute_energy_grad(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, state.rhs, t, _current_rhs);
 			rhs_computed = true;
 
-			if (assembler.is_mixed(state.formulation())){
+			if (assembler.is_mixed(state.formulation()))
+			{
 				const int prev_size = _current_rhs.size();
-				if(prev_size < full_size){
+				if (prev_size < full_size)
+				{
 					_current_rhs.conservativeResize(prev_size + state.n_pressure_bases, _current_rhs.cols());
 					_current_rhs.block(prev_size, 0, state.n_pressure_bases, _current_rhs.cols()).setZero();
 				}
 			}
 			assert(_current_rhs.size() == full_size);
+
+			if (is_time_dependent)
+			{
+				const TVector tmp = state.mass*(x_prev + dt * v_prev);
+
+				_current_rhs *= dt * dt / 2;
+				_current_rhs += tmp;
+			}
 		}
 
 		return _current_rhs;
 	}
 
-	double NLProblem::value(const TVector &x) {
-		if(assembler.is_gradient_based(state.formulation()))
+	double NLProblem::value(const TVector &x)
+	{
+		if (assembler.is_gradient_based(state.formulation()))
 		{
-			// Eigen::MatrixXd grad;
 			TVector grad;
 			gradient(x, grad);
-			// grad -= current_rhs();
-			// return grad.lpNorm<Eigen::Infinity>();
 			return grad.norm();
 		}
 
 		Eigen::MatrixXd full;
-		if(x.size() == reduced_size)
+		if (x.size() == reduced_size)
 			reduced_to_full(x, full);
 		else
 			full = x;
@@ -63,9 +87,20 @@ NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const doub
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 
 		const double elastic_energy = assembler.assemble_energy(rhs_assembler.formulation(), state.mesh->is_volume(), state.bases, gbases, full);
-		const double body_energy 	= rhs_assembler.compute_energy(full, state.local_neumann_boundary, state.args["n_boundary_samples"], t);
+		const double body_energy = rhs_assembler.compute_energy(full, state.local_neumann_boundary, state.args["n_boundary_samples"], t);
 
-		return elastic_energy + body_energy;
+		double intertia_energy = 0;
+		double scaling = 1;
+
+		if(is_time_dependent)
+		{
+			scaling = dt * dt / 2.0;
+			const TVector tmp = full - (x_prev + dt * v_prev);
+
+			intertia_energy = 0.5 * tmp.transpose() * state.mass * tmp;
+		}
+
+		return scaling * (elastic_energy + body_energy) + intertia_energy;
 	}
 
 	void NLProblem::compute_cached_stiffness()
@@ -87,9 +122,24 @@ NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const doub
 		}
 	}
 
-	void NLProblem::gradient(const TVector &x, TVector &gradv) {
+	void NLProblem::gradient(const TVector &x, TVector &gradv)
+	{
 		Eigen::MatrixXd grad;
 		gradient_no_rhs(x, grad);
+
+		if(is_time_dependent)
+		{
+			Eigen::MatrixXd full;
+			if (x.size() == reduced_size)
+				reduced_to_full(x, full);
+			else
+				full = x;
+			assert(full.size() == full_size);
+
+			grad *= dt * dt / 2.0;
+			grad += state.mass * full;
+		}
+
 		grad -= current_rhs();
 
 		full_to_reduced(grad, gradv);
@@ -100,7 +150,7 @@ NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const doub
 	void NLProblem::gradient_no_rhs(const TVector &x, Eigen::MatrixXd &grad)
 	{
 		Eigen::MatrixXd full;
-		if(x.size() == reduced_size)
+		if (x.size() == reduced_size)
 			reduced_to_full(x, full);
 		else
 			full = x;
@@ -109,7 +159,7 @@ NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const doub
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 		assembler.assemble_energy_gradient(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, full, grad);
 
-		if(assembler.is_mixed(state.formulation()))
+		if (assembler.is_mixed(state.formulation()))
 		{
 			const int prev_size = grad.size();
 			grad.conservativeResize(prev_size + state.n_pressure_bases, grad.cols());
@@ -121,7 +171,8 @@ NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const doub
 		assert(grad.size() == full_size);
 	}
 
-	void NLProblem::hessian(const TVector &x, THessian &hessian) {
+	void NLProblem::hessian(const TVector &x, THessian &hessian)
+	{
 		THessian tmp;
 		hessian_full(x, tmp);
 
@@ -175,7 +226,7 @@ NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const doub
 	void NLProblem::hessian_full(const TVector &x, THessian &hessian)
 	{
 		Eigen::MatrixXd full;
-		if(x.size() == reduced_size)
+		if (x.size() == reduced_size)
 			reduced_to_full(x, full);
 		else
 			full = x;
@@ -184,11 +235,19 @@ NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const doub
 
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 		assembler.assemble_energy_hessian(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, full, hessian);
+		if (is_time_dependent)
+		{
+			hessian *= dt * dt / 2;
+			hessian += state.mass;
+		}
 
 		if (assembler.is_mixed(state.formulation()))
 		{
 			StiffnessMatrix velocity_stiffness = hessian, mixed_stiffness, pressure_stiffness;
 			const int problem_dim = state.problem->is_scalar() ? 1 : state.mesh->dimension();
+
+			assembler.assemble_mixed_problem(state.formulation(), state.mesh->is_volume(), state.n_pressure_bases, state.n_bases, state.pressure_bases, state.bases, gbases, mixed_stiffness);
+			assembler.assemble_pressure_problem(state.formulation(), state.mesh->is_volume(), state.n_pressure_bases, state.pressure_bases, gbases, pressure_stiffness);
 
 			AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, false, //assembler.is_fluid(state.formulation()),
 												 velocity_stiffness, mixed_stiffness, pressure_stiffness,
@@ -201,7 +260,6 @@ NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const doub
 		assert(hessian.cols() == full_size);
 		// Eigen::saveMarket(tmp, "tmp.mat");
 		// exit(0);
-
 	}
 
 	void NLProblem::full_to_reduced(const Eigen::MatrixXd &full, TVector &reduced) const
@@ -213,4 +271,4 @@ NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const doub
 	{
 		reduced_to_full_aux(state, full_size, reduced_size, reduced, current_rhs(), full);
 	}
-}
+} // namespace polyfem

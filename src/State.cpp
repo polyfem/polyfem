@@ -4,6 +4,7 @@
 
 #include <polyfem/Mesh2D.hpp>
 #include <polyfem/Mesh3D.hpp>
+#include <polyfem/FEBioReader.hpp>
 
 #include <polyfem/FEBasis2d.hpp>
 #include <polyfem/FEBasis3d.hpp>
@@ -40,7 +41,6 @@
 #include <polyfem/NavierStokesSolver.hpp>
 #include <polyfem/TransientNavierStokesSolver.hpp>
 #include <polyfem/OperatorSplittingSolver.hpp>
-#include <polyfem/GenericProblem.hpp>
 
 #include <polyfem/auto_p_bases.hpp>
 #include <polyfem/auto_q_bases.hpp>
@@ -69,7 +69,6 @@
 
 #include <unsupported/Eigen/SparseExtra>
 
-#include <tinyxml2.h>
 
 #include <iostream>
 #include <algorithm>
@@ -1871,246 +1870,7 @@ void State::load_mesh()
 
 void State::load_febio(const std::string &path)
 {
-	igl::Timer timer;
-	timer.start();
-	logger().info("Loading feb file...");
-
-	args["normalize_mesh"] = false;
-	tinyxml2::XMLDocument doc;
-	doc.LoadFile(path.c_str());
-
-	const auto *febio = doc.FirstChildElement("febio_spec");
-	const std::string ver = std::string(febio->Attribute("version"));
-	assert(ver == "2.5");
-
-	std::map<int, std::pair<double, double>> materials;
-	double E;
-	double nu;
-
-	const tinyxml2::XMLElement *material_parent = febio->FirstChildElement("Material");
-	for (const tinyxml2::XMLElement *material_node = material_parent->FirstChildElement("material"); material_node != NULL; material_node = material_node->NextSiblingElement("material"))
-	{
-		const std::string material = std::string(material_node->Attribute("type"));
-		const int mid = material_node->IntAttribute("id");
-
-		E = material_node->FirstChildElement("E")->DoubleText();
-		nu = material_node->FirstChildElement("v")->DoubleText();
-
-		//TODO check if all the same
-		if (material == "neo-Hookean")
-				args["tensor_formulation"] = "NeoHookean";
-		else if (material == "isotropic elastic")
-			args["tensor_formulation"] = "LinearElasticity";
-
-		materials[mid] = std::pair<double, double>(E, nu);
-	}
-
-	if (materials.size() == 1)
-	{
-		args["params"]["E"] = E;
-		args["params"]["nu"] = nu;
-	}
-
-	const auto *geometry = febio->FirstChildElement("Geometry");
-
-	const auto *nodes = geometry->FirstChildElement("Nodes");
-	std::vector<Eigen::Vector3d> vertices;
-	for (const tinyxml2::XMLElement *child = nodes->FirstChildElement("node"); child != NULL; child = child->NextSiblingElement("node"))
-	{
-		const std::string pos_str = std::string(child->GetText());
-		const auto vs = StringUtils::split(pos_str, ",");
-		assert(vs.size() == 3);
-
-		vertices.emplace_back(atof(vs[0].c_str()), atof(vs[1].c_str()), atof(vs[2].c_str()));
-	}
-
-	Eigen::MatrixXd V(vertices.size(), 3);
-	for(int i = 0; i < vertices.size(); ++i)
-		V.row(i) = vertices[i].transpose();
-
-	std::vector<Eigen::Vector4i> tets;
-	std::vector<int> mids;
-
-	for (const tinyxml2::XMLElement *elements = geometry->FirstChildElement("Elements"); elements != NULL; elements = elements->NextSiblingElement("Elements"))
-	{
-		const std::string el_type = std::string(elements->Attribute("type"));
-		assert(el_type == "tet4");
-
-		const int mid = elements->IntAttribute("mat");
-
-		for (const tinyxml2::XMLElement *child = elements->FirstChildElement("elem"); child != NULL; child = child->NextSiblingElement("elem"))
-		{
-			const std::string ids = std::string(child->GetText());
-			const auto tt = StringUtils::split(ids, ",");
-			assert(tt.size() == 4);
-
-			tets.emplace_back(atoi(tt[0].c_str()) - 1, atoi(tt[1].c_str()) - 1, atoi(tt[2].c_str()) - 1, atoi(tt[3].c_str()) - 1);
-			mids.emplace_back(mid);
-		}
-	}
-
-	Eigen::MatrixXi T(tets.size(), 4);
-	Eigen::MatrixXd Es(tets.size(), 1), nus(tets.size(), 1);
-	for (int i = 0; i < tets.size(); ++i){
-		T.row(i) = tets[i].transpose();
-		const auto it = materials.find(mids[i]);
-		assert(it != materials.end());
-		Es(i) = it->second.first;
-		nus(i) = it->second.second;
-	}
-
-	load_mesh(V, T);
-
-	std::vector<std::vector<int>> nodeSet(V.rows());
-	int id = 1;
-	std::map<std::string, int> names;
-
-	for (const tinyxml2::XMLElement *child = geometry->FirstChildElement("NodeSet"); child != NULL; child = child->NextSiblingElement("NodeSet"))
-	{
-		const std::string name = std::string(child->Attribute("name"));
-		names[name] = id;
-
-		for (const tinyxml2::XMLElement *nodeid = child->FirstChildElement("node"); nodeid != NULL; nodeid = nodeid->NextSiblingElement("node"))
-		{
-			const int nid = nodeid->IntAttribute("id");
-			nodeSet[nid-1].push_back(id);
-		}
-
-		id++;
-	}
-
-	for (const tinyxml2::XMLElement *child = geometry->FirstChildElement("Surface"); child != NULL; child = child->NextSiblingElement("Surface"))
-	{
-		const std::string name = std::string(child->Attribute("name"));
-		names[name] = id;
-
-		//TODO  only tri3
-		for (const tinyxml2::XMLElement *nodeid = child->FirstChildElement("tri3"); nodeid != NULL; nodeid = nodeid->NextSiblingElement("tri3"))
-		{
-			const std::string ids = std::string(nodeid->GetText());
-			const auto tt = StringUtils::split(ids, ",");
-			assert(tt.size() == 3);
-			nodeSet[atoi(tt[0].c_str()) - 1].push_back(id);
-			nodeSet[atoi(tt[1].c_str()) - 1].push_back(id);
-			nodeSet[atoi(tt[2].c_str()) - 1].push_back(id);
-		}
-
-		id++;
-	}
-
-	for(auto &n : nodeSet)
-	{
-		std::sort(n.begin(), n.end());
-		n.erase(std::unique(n.begin(), n.end()), n.end());
-	}
-
-	mesh->compute_boundary_ids([&nodeSet](const std::vector<int> &vs, bool is_boundary)
-	{
-		std::vector<int> tmp;
-		for(const int v : vs)
-			tmp.insert(tmp.end(), nodeSet[v].begin(), nodeSet[v].end());
-
-		std::sort(tmp.begin(), tmp.end());
-
-		int prev = -1;
-		int count = 1;
-		for(const int id : tmp)
-		{
-			if(id == prev)
-				count++;
-			else {
-				count = 1;
-				prev = id;
-			}
-			if(count == vs.size())
-				return prev;
-		}
-
-		return 0;
-	});
-
-	problem = ProblemFactory::factory().get_problem("GenericTensor");
-	GenericTensorProblem &gproblem = *dynamic_cast<GenericTensorProblem *>(problem.get());
-
-	const auto *boundaries = febio->FirstChildElement("Boundary");
-	for (const tinyxml2::XMLElement *child = boundaries->FirstChildElement("fix"); child != NULL; child = child->NextSiblingElement("fix"))
-	{
-		const std::string name = std::string(child->Attribute("node_set"));
-		const std::string bc = std::string(child->Attribute("bc"));
-		const auto bcs = StringUtils::split(bc, ",");
-
-		bool isx = false;
-		bool isy = false;
-		bool isz = false;
-
-		for(const auto &s : bcs)
-		{
-			if(s == "x")
-				isx=true;
-			else if(s == "y")
-				isy = true;
-			else if (s == "z")
-				isz = true;
-		}
-		gproblem.add_dirichlet_boundary(names[name], Eigen::RowVector3d::Zero(), isx, isy, isz);
-	}
-
-	for (const tinyxml2::XMLElement *child = boundaries->FirstChildElement("prescribe"); child != NULL; child = child->NextSiblingElement("prescribe"))
-	{
-		const std::string name = std::string(child->Attribute("node_set"));
-		const std::string bc = std::string(child->Attribute("bc"));
-
-		bool isx = bc == "x";
-		bool isy = bc == "y";
-		bool isz = bc == "z";
-
-		const double value = atof(child->FirstChildElement("scale")->GetText());
-		Eigen::RowVector3d val = Eigen::RowVector3d::Zero();
-
-		if(isx)
-			val(0) = value;
-		else if (isy)
-			val(1) = value;
-		else if (isz)
-			val(2) = value;
-
-		gproblem.add_dirichlet_boundary(names[name], val, isx, isy, isz);
-	}
-
-	const auto *loads = febio->FirstChildElement("Loads");
-	for (const tinyxml2::XMLElement *child = loads->FirstChildElement("surface_load"); child != NULL; child = child->NextSiblingElement("surface_load"))
-	{
-		const std::string name = std::string(child->Attribute("surface"));
-		const std::string type = std::string(child->Attribute("type"));
-		if (type == "traction"){
-			const std::string traction = std::string(child->FirstChildElement("traction")->GetText());
-			const auto bcs = StringUtils::split(traction, ",");
-			assert(bcs.size() == 3);
-
-			Eigen::RowVector3d force(atof(bcs[0].c_str()), atof(bcs[1].c_str()), atof(bcs[2].c_str()));
-			gproblem.add_neumann_boundary(names[name], force);
-		}
-		else if (type == "pressure")
-		{
-			const std::string pressures = std::string(child->FirstChildElement("pressure")->GetText());
-			const double pressure = atof(pressures.c_str());
-			//TODO added minus here
-			gproblem.add_pressure_boundary(names[name], -pressure);
-		}
-		else
-		{
-			logger().error("Unsupported surface load {}", type);
-		}
-
-	}
-
-	if (materials.size() > 1)
-	{
-		AssemblerUtils::instance().init_multimaterial(Es, nus);
-	}
-
-	timer.stop();
-	logger().info(" took {}s", timer.getElapsedTime());
+	FEBioReader::load(path, *this, "solution.txt");
 }
 
 void State::compute_mesh_stats()
@@ -2467,6 +2227,10 @@ void State::build_basis()
 	// auto it = std::unique(flipped_elements.begin(), flipped_elements.end());
 	// flipped_elements.resize(std::distance(flipped_elements.begin(), it));
 
+	logger().info("Extracting boundary mesh...");
+	extract_boundary_mesh();
+	logger().info("Done!");
+
 	problem->setup_bc(*mesh, bases, local_boundary, boundary_nodes, local_neumann_boundary);
 
 	//add a pressure node to avoid singular solution
@@ -2567,6 +2331,194 @@ void State::build_polygonal_basis()
 	logger().info(" took {}s", computing_poly_basis_time);
 
 	n_bases += new_bases;
+}
+
+void State::extract_boundary_mesh()
+{
+	if(mesh->is_volume())
+	{
+		const Mesh3D &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
+
+		std::map<int, int> global_to_small;
+		std::vector<RowVectorNd> vertices;
+		std::vector<std::tuple<int, int, int>> tris;
+		boundary_to_global.clear();
+		int index = 0;
+
+		for (auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
+		{
+			const auto &lb = *it;
+			const auto &b = bases[lb.element_id()];
+
+			for (int j = 0; j < lb.size(); ++j)
+			{
+				const int eid = lb.global_primitive_id(j);
+				const int lid = lb[j];
+				const auto nodes = b.local_nodes_for_primitive(eid, mesh3d);
+
+				if (!mesh->is_simplex(lb.element_id()))
+				{
+					logger().warn("skipping element {} since it is not a simplex", eid);
+					continue;
+				}
+
+				std::vector<int> loc_nodes;
+
+				for (long n = 0; n < nodes.size(); ++n)
+				{
+					auto &bs = b.bases[nodes(n)];
+					const auto &glob = bs.global();
+					if (glob.size() != 1)
+						continue;
+
+
+					int gindex = glob.front().index;
+					int ii = 0;
+					const auto it = global_to_small.find(gindex);
+					if (it == global_to_small.end())
+					{
+						global_to_small[gindex] = index;
+						vertices.push_back(glob.front().node);
+						ii = index;
+						assert(boundary_to_global.size() == index);
+						boundary_to_global.push_back(gindex);
+
+						++index;
+					}
+					else
+						ii = it->second;
+
+					loc_nodes.push_back(ii);
+				}
+
+				if(loc_nodes.size() == 3)
+				{
+					tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
+				}
+				else if (loc_nodes.size() == 6)
+				{
+					tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[5]);
+					tris.emplace_back(loc_nodes[3], loc_nodes[1], loc_nodes[4]);
+					tris.emplace_back(loc_nodes[4], loc_nodes[2], loc_nodes[5]);
+					tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[5]);
+				}
+				else if (loc_nodes.size() == 10)
+				{
+					tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[8]);
+					tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[9]);
+					tris.emplace_back(loc_nodes[4], loc_nodes[1], loc_nodes[5]);
+					tris.emplace_back(loc_nodes[5], loc_nodes[6], loc_nodes[9]);
+					tris.emplace_back(loc_nodes[6], loc_nodes[2], loc_nodes[7]);
+					tris.emplace_back(loc_nodes[7], loc_nodes[8], loc_nodes[9]);
+					tris.emplace_back(loc_nodes[8], loc_nodes[3], loc_nodes[9]);
+					tris.emplace_back(loc_nodes[9], loc_nodes[4], loc_nodes[5]);
+					tris.emplace_back(loc_nodes[6], loc_nodes[7], loc_nodes[9]);
+				}
+				else if (loc_nodes.size() == 15)
+				{
+					tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[11]);
+					tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[12]);
+					tris.emplace_back(loc_nodes[3], loc_nodes[12], loc_nodes[11]);
+					tris.emplace_back(loc_nodes[12], loc_nodes[10], loc_nodes[11]);
+					tris.emplace_back(loc_nodes[4], loc_nodes[5], loc_nodes[13]);
+					tris.emplace_back(loc_nodes[4], loc_nodes[13], loc_nodes[12]);
+					tris.emplace_back(loc_nodes[12], loc_nodes[13], loc_nodes[14]);
+					tris.emplace_back(loc_nodes[12], loc_nodes[14], loc_nodes[10]);
+					tris.emplace_back(loc_nodes[14], loc_nodes[9], loc_nodes[10]);
+					tris.emplace_back(loc_nodes[5], loc_nodes[1], loc_nodes[6]);
+					tris.emplace_back(loc_nodes[5], loc_nodes[6], loc_nodes[13]);
+					tris.emplace_back(loc_nodes[6], loc_nodes[7], loc_nodes[13]);
+					tris.emplace_back(loc_nodes[13], loc_nodes[7], loc_nodes[14]);
+					tris.emplace_back(loc_nodes[7], loc_nodes[8], loc_nodes[14]);
+					tris.emplace_back(loc_nodes[14], loc_nodes[8], loc_nodes[9]);
+					tris.emplace_back(loc_nodes[8], loc_nodes[2], loc_nodes[9]);
+				}
+				else
+				{
+					std::cout << loc_nodes.size() << std::endl;
+					assert(false);
+				}
+			}
+		}
+
+		boundary_nodes_pos.resize(vertices.size(), 3);
+		boundary_elements.resize(tris.size(), 3);
+
+		for (int i = 0; i < vertices.size(); ++i)
+		{
+			boundary_nodes_pos.row(i) << vertices[i](0), vertices[i](2), vertices[i](1);
+		}
+
+		for (int i = 0; i < tris.size(); ++i)
+		{
+			boundary_elements.row(i) << std::get<0>(tris[i]), std::get<1>(tris[i]), std::get<2>(tris[i]);
+		}
+	}
+	else
+	{
+		const Mesh2D &mesh2d = *dynamic_cast<Mesh2D *>(mesh.get());
+
+		std::map<int, int> global_to_small;
+		std::vector<RowVectorNd> vertices;
+		std::vector<std::pair<int, int>> edges;
+		boundary_to_global.clear();
+		int index = 0;
+
+		for (auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
+		{
+			const auto &lb = *it;
+			const auto &b = bases[lb.element_id()];
+
+			for(int j = 0; j < lb.size(); ++j)
+			{
+				const int eid = lb.global_primitive_id(j);
+				const int lid = lb[j];
+				const auto nodes = b.local_nodes_for_primitive(eid, mesh2d);
+
+				int prev_node = -1;
+
+				for (long n = 0; n < nodes.size(); ++n)
+				{
+					auto &bs = b.bases[nodes(n)];
+					const auto &glob = bs.global();
+					if(glob.size() != 1) continue;
+
+					int gindex = glob.front().index;
+					int ii = 0;
+					const auto it = global_to_small.find(gindex);
+					if(it == global_to_small.end())
+					{
+						global_to_small[gindex] = index;
+						vertices.push_back(glob.front().node);
+						ii = index;
+						assert(boundary_to_global.size() == index);
+						boundary_to_global.push_back(gindex);
+
+						++index;
+					}
+					else
+						ii = it->second;
+
+					if(prev_node >= 0)
+						edges.emplace_back(prev_node, ii);
+					prev_node = ii;
+				}
+			}
+		}
+
+		boundary_nodes_pos.resize(vertices.size(), 3);
+		boundary_elements.resize(edges.size(), 2);
+
+		for (int i = 0; i < vertices.size(); ++i)
+		{
+			boundary_nodes_pos.row(i) << vertices[i](0), vertices[i](1), 0;
+		}
+
+		for (int i = 0; i < edges.size(); ++i)
+		{
+			boundary_elements.row(i) << edges[i].first, edges[i].second;
+		}
+	}
 }
 
 json State::build_json_params()
@@ -2981,7 +2933,7 @@ void State::solve_problem()
 				}
 			}
 		}
-		else
+		else //if (formulation() != "NavierStokes")
 		{
 			if (assembler.is_mixed(formulation()))
 			{
@@ -3069,18 +3021,8 @@ void State::solve_problem()
 					}
 				}
 			}
-			else //newmark
+			else //tensor time dependent
 			{
-				assert(assembler.is_linear(formulation()));
-
-				//Newmark
-				const double beta1 = 0.5;
-				const double beta2 = 0.5;
-
-				Eigen::MatrixXd temp, b;
-				StiffnessMatrix A;
-				Eigen::VectorXd x, btmp;
-
 				Eigen::MatrixXd velocity, acceleration;
 				rhs_assembler.initial_velocity(velocity);
 				rhs_assembler.initial_acceleration(acceleration);
@@ -3088,56 +3030,170 @@ void State::solve_problem()
 				const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 				const int precond_num = problem_dim * n_bases;
 
-				for (int t = 1; t <= time_steps; ++t)
+				if (assembler.is_linear(formulation()))
 				{
-					const double dt2 = dt * dt;
+					//Newmark
+					const double gamma = 0.5;
+					const double beta = 0.25;
+					// makes the algorithm implicit and equivalent to the trapezoidal rule (unconditionally stable).
 
-					const Eigen::MatrixXd aOld = acceleration;
-					const Eigen::MatrixXd vOld = velocity;
-					const Eigen::MatrixXd uOld = sol;
+					Eigen::MatrixXd temp, b;
+					StiffnessMatrix A;
+					Eigen::VectorXd x, btmp;
 
-					if (!problem->is_linear_in_time())
+					for (int t = 1; t <= time_steps; ++t)
 					{
-						rhs_assembler.assemble(current_rhs, dt*t);
-						current_rhs *= -1;
-					}
+						const double dt2 = dt * dt;
 
-					// if(!assembler.is_linear(formulation()))
+						const Eigen::MatrixXd aOld = acceleration;
+						const Eigen::MatrixXd vOld = velocity;
+						const Eigen::MatrixXd uOld = sol;
+
+						if (!problem->is_linear_in_time())
+						{
+							rhs_assembler.assemble(current_rhs, dt * t);
+							current_rhs *= -1;
+						}
+						temp = -(uOld + dt * vOld + ((1 / 2. - beta) * dt2) * aOld);
+						b = stiffness * temp + current_rhs;
+
+						rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, b, dt * t);
+
+						A = stiffness * beta * dt2 + mass;
+						btmp = b;
+						spectrum = dirichlet_solve(*solver, A, btmp, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], t == 1 && args["export"]["spectrum"]);
+						acceleration = x;
+
+						sol += dt * vOld + dt2 * ((1 / 2.0 - beta) * aOld + beta * acceleration);
+						velocity += dt * ((1 - gamma) * aOld + gamma * acceleration);
+
+						rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, dt * t);
+						rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, dt * t);
+						rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, dt * t);
+
+						if (args["save_time_sequence"])
+						{
+							if (!solve_export_to_file)
+								solution_frames.emplace_back();
+							save_vtu("step_" + std::to_string(t) + ".vtu", dt * t);
+							save_wire("step_" + std::to_string(t) + ".obj");
+						}
+
+						logger().info("{}/{}", t, time_steps);
+					}
+				}
+				else //if (!assembler.is_linear(formulation()))
+				{
 					// {
-					// 	assembler.assemble_tensor_energy_hessian(rhs_assembler.formulation(), mesh->is_volume(), n_bases, bases, bases, uOld, stiffness);
+					// 	boundary_nodes.clear();
+					// 	NLProblem nl_problem(*this, rhs_assembler, 0);
+					// 	tmp_sol = rhs;
+
+					// 	// tmp_sol.setRandom();
+					// 	tmp_sol.setOnes();
+					// 	tmp_sol /=10000.;
+
+					// 	velocity.setZero();
+					// 	VectorXd xxx=tmp_sol;
+					// 	velocity = tmp_sol;
+					// 	nl_problem.init_timestep(xxx, velocity, dt);
+
+
+					// 	Eigen::Matrix<double, Eigen::Dynamic, 1> actual_grad;
+					// 	nl_problem.gradient(tmp_sol, actual_grad);
+
+					// 	StiffnessMatrix hessian;
+					// 	Eigen::MatrixXd expected_hessian;
+					// 	nl_problem.hessian(tmp_sol, hessian);
+
+					// 	Eigen::MatrixXd actual_hessian = Eigen::MatrixXd(hessian);
+					// 	// std::cout << "hhh\n"<< actual_hessian<<std::endl;
+
+					// 	for (int i = 0; i < actual_hessian.rows(); ++i)
+					// 	{
+					// 		double hhh = 1e-6;
+					// 		VectorXd xp = tmp_sol; xp(i) += hhh;
+					// 		VectorXd xm = tmp_sol; xm(i) -= hhh;
+
+					// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_p;
+					// 		nl_problem.gradient(xp, tmp_grad_p);
+
+					// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_m;
+					// 		nl_problem.gradient(xm, tmp_grad_m);
+
+					// 		Eigen::Matrix<double, Eigen::Dynamic, 1> fd_h = (tmp_grad_p - tmp_grad_m)/(hhh*2.);
+
+					// 		const double vp = nl_problem.value(xp);
+					// 		const double vm = nl_problem.value(xm);
+
+					// 		const double fd = (vp-vm)/(hhh*2.);
+					// 		const double  diff = std::abs(actual_grad(i) - fd);
+					// 		if(diff > 1e-6)
+					// 			std::cout<<"diff grad "<<i<<": "<<actual_grad(i)<<" vs "<<fd <<" error: " <<diff<<" rrr: "<<actual_grad(i)/fd<<std::endl;
+
+					// 		for(int j = 0; j < actual_hessian.rows(); ++j)
+					// 		{
+					// 			const double diff = std::abs(actual_hessian(i,j) - fd_h(j));
+
+					// 			if(diff > 1e-5)
+					// 				std::cout<<"diff H "<<i<<", "<<j<<": "<<actual_hessian(i,j)<<" vs "<<fd_h(j)<<" error: " <<diff<<" rrr: "<<actual_hessian(i,j)/fd_h(j)<<std::endl;
+
+					// 		}
+					// 	}
+
+					// 	// std::cout<<"diff grad max "<<(actual_grad - expected_grad).array().abs().maxCoeff()<<std::endl;
+					// 	// std::cout<<"diff \n"<<(actual_grad - expected_grad)<<std::endl;
+					// 	exit(0);
 					// }
 
-					temp = -(uOld + dt * vOld + ((1 - beta1) * dt2 / 2.0) * aOld);
-					b = stiffness * temp + current_rhs;
+					const int full_size = n_bases * mesh->dimension();
+					const int reduced_size = n_bases * mesh->dimension() - boundary_nodes.size();
+					VectorXd tmp_sol;
 
-					rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, b, dt * t);
+					NLProblem nl_problem(*this, rhs_assembler, 0);
+					nl_problem.init_timestep(sol, velocity, dt);
+					nl_problem.full_to_reduced(sol, tmp_sol);
 
-					A = stiffness * 0.5 * beta2 * dt2 + mass;
-					btmp = b;
-					spectrum = dirichlet_solve(*solver, A, btmp, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], t == 1 && args["export"]["spectrum"]);
-					acceleration = x;
-
-					sol += dt * vOld + 0.5 * dt2 * ((1 - beta2) * aOld + beta2 * acceleration);
-					velocity += dt * ((1 - beta1) * aOld + beta1 * acceleration);
-
-					rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, dt * t);
-					rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, dt * t);
-					rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, dt * t);
-
-					if (args["save_time_sequence"])
+					for (int t = 1; t <= time_steps; ++t)
 					{
-						if (!solve_export_to_file)
-							solution_frames.emplace_back();
-						save_vtu("step_" + std::to_string(t) + ".vtu", dt * t);
-						save_wire("step_" + std::to_string(t) + ".obj");
-					}
+						cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
+						nlsolver.setLineSearch(args["line_search"]);
+						nlsolver.minimize(nl_problem, tmp_sol);
 
-					logger().info("{}/{}", t, time_steps);
+						if (nlsolver.error_code() == -10)
+						{
+							logger().error("Unable to solve t={}", t*dt);
+							break;
+						}
+
+						nlsolver.getInfo(solver_info);
+						nl_problem.reduced_to_full(tmp_sol, sol);
+						if (assembler.is_mixed(formulation()))
+						{
+							sol_to_pressure();
+						}
+
+						rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, dt * t);
+
+						nl_problem.update_quantities(t*dt, sol);
+
+
+
+						if (args["save_time_sequence"])
+						{
+							if (!solve_export_to_file)
+								solution_frames.emplace_back();
+							save_vtu("step_" + std::to_string(t) + ".vtu", dt * t);
+							save_wire("step_" + std::to_string(t) + ".obj");
+						}
+
+						logger().info("{}/{}", t, time_steps);
+					}
 				}
 			}
 		}
 	}
-	else
+	else //if(!problem->is_time_dependent())
 	{
 		if (assembler.is_linear(formulation()))
 		{
@@ -3158,19 +3214,13 @@ void State::solve_problem()
 			solver->getInfo(solver_info);
 
 			logger().debug("Solver error: {}", (A * sol - b).norm());
-			// sol = rhs;
 
-			// std::ofstream of("sol.txt");
-			// of<<sol<<std::endl;
-			// of.close();
-
-			// if(problem->is_mixed())
 			if (assembler.is_mixed(formulation()))
 			{
 				sol_to_pressure();
 			}
 		}
-		else
+		else //if (!assembler.is_linear(formulation()))
 		{
 			if (formulation() == "NavierStokes")
 			{
@@ -3251,21 +3301,7 @@ void State::solve_problem()
 					logger().debug("Updating starting point...");
 					update_timer.start();
 					{
-						// nl_problem.hessian(sol, nlstiffness);
-						// nl_problem.full_to_reduced(sol, tmp_sol);
-						// nl_problem.gradient(tmp_sol, grad);
-						// solver->analyzePattern(nlstiffness);
-						// solver->factorize(nlstiffness);
-						// x.resizeLike(grad);
-						// solver->solve(grad, x);
-
-						// tmp_sol -= x;
-						// nl_problem.reduced_to_full(tmp_sol, temp);
-						// x = temp;
-
-						// assembler.assemble_energy_hessian(formulation(), mesh->is_volume(), n_bases, bases, gbases, sol, nlstiffness);
 						nl_problem.hessian_full(sol, nlstiffness);
-						// assembler.assemble_energy_gradient(formulation(), mesh->is_volume(), n_bases, bases, gbases, sol, grad);
 						nl_problem.gradient_no_rhs(sol, grad);
 
 						b = grad;
@@ -3275,8 +3311,6 @@ void State::solve_problem()
 						// logger().debug("Solver error: {}", (nlstiffness * sol - b).norm());
 						x = sol - x;
 						nl_problem.full_to_reduced(x, tmp_sol);
-						// nl_problem.reduced_to_full(tmp_sol, grad);
-						// x = grad;
 					}
 					update_timer.stop();
 					logger().debug("done!, took {}s", update_timer.getElapsedTime());

@@ -142,12 +142,12 @@ bool load(const std::string &path, igl::opengl::glfw::Viewer &viewer,
 		return false;
 	}
 
-	viewer.core.lighting_factor = (tmp->is_volume() ? 1.f : 0.f);
+	viewer.core().lighting_factor = (tmp->is_volume() ? 1.f : 0.f);
 
 	std::cout<<"N vertices "<<tmp->n_vertices()<<std::endl;
 	if(tmp->is_volume())
 	{
-		viewer.core.set_rotation_type(igl::opengl::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
+		viewer.core().set_rotation_type(igl::opengl::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
 
 		Mesh3D &mesh = *dynamic_cast<Mesh3D *>(tmp.get());
 
@@ -210,7 +210,7 @@ bool load(const std::string &path, igl::opengl::glfw::Viewer &viewer,
 	}
 	else
 	{
-		viewer.core.set_rotation_type(igl::opengl::ViewerCore::RotationType::ROTATION_TYPE_NO_ROTATION);
+		viewer.core().set_rotation_type(igl::opengl::ViewerCore::RotationType::ROTATION_TYPE_NO_ROTATION);
 
 		Mesh2D &mesh = *dynamic_cast<Mesh2D *>(tmp.get());
 
@@ -392,7 +392,7 @@ int main(int argc, char **argv)
 					viewer.data().add_edges(p0, p1, RowVector3d(0,0,0));
 					viewer.data().set_mesh(V, F);
 					viewer.data().set_colors(C);
-					viewer.core.align_camera_center(V);
+					viewer.core().align_camera_center(V);
 				}
 				if (ImGui::MenuItem("Save", "Ctrl+S"))
 				{
@@ -411,8 +411,8 @@ int main(int argc, char **argv)
 		const float ui_scaling_factor = menu.hidpi_scaling() / menu.pixel_ratio();
 		const float menu_width = 180 * ui_scaling_factor;
 
-		ImGui::SetNextWindowPos(ImVec2(5,20), ImGuiSetCond_FirstUseEver);
-		ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f), ImGuiSetCond_FirstUseEver);
+		ImGui::SetNextWindowPos(ImVec2(5,20), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(0.0f, 0.0f), ImGuiCond_FirstUseEver);
   		ImGui::SetNextWindowSizeConstraints(ImVec2(menu_width, -1.0f), ImVec2(menu_width, -1.0f));
 
 		static bool show_file_menu = true;
@@ -534,9 +534,9 @@ int main(int argc, char **argv)
 
 		// Cast a ray in the view direction starting from the mouse position
 		double x = viewer.current_mouse_x;
-		double y = viewer.core.viewport(3) - viewer.current_mouse_y;
-		if(igl::unproject_onto_mesh(Vector2f(x,y), viewer.core.view,
-			viewer.core.proj, viewer.core.viewport, V, F, fid, bc))
+		double y = viewer.core().viewport(3) - viewer.current_mouse_y;
+		if(igl::unproject_onto_mesh(Vector2f(x,y), viewer.core().view,
+			viewer.core().proj, viewer.core().viewport, V, F, fid, bc))
 		{
 			if(is_volume)
 			{
@@ -685,7 +685,7 @@ int main(int argc, char **argv)
 			viewer.data().set_colors(RowVector3d(1,1,1));
 			viewer.data().line_width = 4;
 		}
-		viewer.core.align_camera_center(V);
+		viewer.core().align_camera_center(V);
 	}
 	viewer.data().show_lines = false;
 	viewer.launch();

@@ -12,6 +12,8 @@ set(SOURCES
 	ElasticityUtils.cpp
 	ElasticityUtils.hpp
 	EnableWarnings.hpp
+	FEBioReader.cpp
+	FEBioReader.hpp
 	getRSS.c
 	Logger.cpp
 	Logger.hpp

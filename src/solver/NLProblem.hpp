@@ -18,8 +18,7 @@ namespace polyfem
 		typedef StiffnessMatrix THessian;
 
 		NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t);
-		NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t, const int full_size, const int reduced_size);
-
+		void init_timestep(const TVector &x_prev, const TVector &v_prev, const double dt);
 		TVector initial_guess();
 
 		double value(const TVector &x) override;
@@ -85,6 +84,8 @@ namespace polyfem
 		void full_to_reduced(const Eigen::MatrixXd &full, TVector &reduced) const;
 		void reduced_to_full(const TVector &reduced, Eigen::MatrixXd &full);
 
+		void update_quantities(const double t, const TVector &x);
+
 		const Eigen::MatrixXd &current_rhs();
 
 	private:
@@ -97,6 +98,10 @@ namespace polyfem
 		const int full_size, reduced_size;
 		const double t;
 		bool rhs_computed;
+		bool is_time_dependent;
+
+		double dt;
+		TVector x_prev, v_prev;
 
 		void compute_cached_stiffness();
 	};
