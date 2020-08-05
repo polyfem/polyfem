@@ -234,11 +234,9 @@ State::State()
 
 		{"rhs_path", ""},
 
-		{"export_mesh", ""},
 		{"particle", false},
 		{"advection_order", 1},
 		{"advection_RK", 1},
-		{"viscosity", 1},
 
 		{"params", {{"lambda", 0.32967032967032966}, {"mu", 0.3846153846153846}, {"k", 1.0}, {"elasticity_tensor", json({})},
 					// {"young", 1.0},
@@ -2868,7 +2866,7 @@ void State::solve_problem()
 				bnd_nodes.push_back(*it / dim);
 			}
 
-			OperatorSplittingSolver ss(*mesh, args["export_mesh"], shape, n_el, local_boundary, bnd_nodes, mass, stiffness_viscosity, stiffness, dt, viscosity_, args["solver_type"], args["precond_type"], params, args["export"]["stiffness_mat"]);
+			OperatorSplittingSolver ss(*mesh, shape, n_el, local_boundary, bnd_nodes, mass, stiffness_viscosity, stiffness, dt, viscosity_, args["solver_type"], args["precond_type"], params, args["export"]["stiffness_mat"]);
 
 			/* initialize solution */
 

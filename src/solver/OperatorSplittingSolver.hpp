@@ -9,8 +9,6 @@
 #include <polyfem/AssemblerUtils.hpp>
 #include <memory>
 
-#include <igl/writeOBJ.h>
-
 #ifdef POLYFEM_WITH_TBB
 #include <tbb/tbb.h>
 #endif
@@ -23,7 +21,7 @@ namespace polyfem
     class OperatorSplittingSolver
     {
     public:
-        OperatorSplittingSolver(const polyfem::Mesh& mesh, const std::string &export_mesh_path,
+        OperatorSplittingSolver(const polyfem::Mesh& mesh,
         const int shape, const int n_el, 
         const std::vector<polyfem::LocalBoundary>& local_boundary,
         const std::vector<int>& boundary_nodes,
@@ -63,15 +61,6 @@ namespace polyfem
                     V(i, d) = p(d);
                 }
                 if (dim == 2) V(i, 2) = 0;
-            }
-
-            if (export_mesh_path != "")
-            {
-                if(dim == 2)
-                    igl::writeOBJ(export_mesh_path, V, T);
-                else
-                    export_3d_mesh(export_mesh_path);
-                exit(0);
             }
 
             mat_diffusion = mass + viscosity_ * dt * stiffness_viscosity;
