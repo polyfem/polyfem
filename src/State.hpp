@@ -91,7 +91,6 @@ namespace polyfem
 
 		Eigen::MatrixXd boundary_nodes_pos;
 		Eigen::MatrixXi boundary_elements;
-		std::vector<int> boundary_to_global;
 
 		Eigen::Vector4d spectrum;
 

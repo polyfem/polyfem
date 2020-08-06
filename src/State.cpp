@@ -2328,15 +2328,14 @@ void State::build_polygonal_basis()
 
 void State::extract_boundary_mesh()
 {
-	if(mesh->is_volume())
+	boundary_nodes_pos.resize(n_bases, 3);
+	boundary_nodes_pos.setZero();
+
+	if (mesh->is_volume())
 	{
 		const Mesh3D &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
 
-		std::map<int, int> global_to_small;
-		std::vector<RowVectorNd> vertices;
 		std::vector<std::tuple<int, int, int>> tris;
-		boundary_to_global.clear();
-		int index = 0;
 
 		for (auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
 		{
@@ -2366,22 +2365,8 @@ void State::extract_boundary_mesh()
 
 
 					int gindex = glob.front().index;
-					int ii = 0;
-					const auto it = global_to_small.find(gindex);
-					if (it == global_to_small.end())
-					{
-						global_to_small[gindex] = index;
-						vertices.push_back(glob.front().node);
-						ii = index;
-						assert(boundary_to_global.size() == index);
-						boundary_to_global.push_back(gindex);
-
-						++index;
-					}
-					else
-						ii = it->second;
-
-					loc_nodes.push_back(ii);
+					boundary_nodes_pos.row(gindex) = glob.front().node;
+					loc_nodes.push_back(gindex);
 				}
 
 				if(loc_nodes.size() == 3)
@@ -2434,28 +2419,19 @@ void State::extract_boundary_mesh()
 			}
 		}
 
-		boundary_nodes_pos.resize(vertices.size(), 3);
 		boundary_elements.resize(tris.size(), 3);
-
-		for (int i = 0; i < vertices.size(); ++i)
-		{
-			boundary_nodes_pos.row(i) << vertices[i](0), vertices[i](2), vertices[i](1);
-		}
-
 		for (int i = 0; i < tris.size(); ++i)
 		{
 			boundary_elements.row(i) << std::get<0>(tris[i]), std::get<1>(tris[i]), std::get<2>(tris[i]);
 		}
+
+		igl::write_triangle_mesh("test.obj", boundary_nodes_pos, boundary_elements);
 	}
 	else
 	{
 		const Mesh2D &mesh2d = *dynamic_cast<Mesh2D *>(mesh.get());
 
-		std::map<int, int> global_to_small;
-		std::vector<RowVectorNd> vertices;
 		std::vector<std::pair<int, int>> edges;
-		boundary_to_global.clear();
-		int index = 0;
 
 		for (auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
 		{
@@ -2477,36 +2453,16 @@ void State::extract_boundary_mesh()
 					if(glob.size() != 1) continue;
 
 					int gindex = glob.front().index;
-					int ii = 0;
-					const auto it = global_to_small.find(gindex);
-					if(it == global_to_small.end())
-					{
-						global_to_small[gindex] = index;
-						vertices.push_back(glob.front().node);
-						ii = index;
-						assert(boundary_to_global.size() == index);
-						boundary_to_global.push_back(gindex);
-
-						++index;
-					}
-					else
-						ii = it->second;
+					boundary_nodes_pos.row(gindex) << glob.front().node(0), glob.front().node(1), 0;
 
 					if(prev_node >= 0)
-						edges.emplace_back(prev_node, ii);
-					prev_node = ii;
+						edges.emplace_back(prev_node, gindex);
+					prev_node = gindex;
 				}
 			}
 		}
 
-		boundary_nodes_pos.resize(vertices.size(), 3);
 		boundary_elements.resize(edges.size(), 2);
-
-		for (int i = 0; i < vertices.size(); ++i)
-		{
-			boundary_nodes_pos.row(i) << vertices[i](0), vertices[i](1), 0;
-		}
-
 		for (int i = 0; i < edges.size(); ++i)
 		{
 			boundary_elements.row(i) << edges[i].first, edges[i].second;
@@ -4127,7 +4083,7 @@ void State::save_wire(const std::string &name, bool isolines)
 		Eigen::MatrixXd isoV;
 		Eigen::MatrixXi isoE;
 		igl::isolines(points, faces, Eigen::VectorXd(fun), 20, isoV, isoE);
-		igl::write_triangle_mesh("foo.obj", points, faces);
+		// igl::write_triangle_mesh("foo.obj", points, faces);
 		points = isoV;
 		edges = isoE;
 	}
