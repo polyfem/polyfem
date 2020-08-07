@@ -228,6 +228,7 @@ State::State()
 		{"save_solve_sequence", false},
 		{"save_solve_sequence_debug", false},
 		{"save_time_sequence", true},
+		{"skip_frame", 1},
 
 		{"force_no_ref_for_harmonic", false},
 
@@ -2790,9 +2791,6 @@ void State::solve_problem()
 			assembler.assemble_mixed_problem("Stokes", mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, mixed_stiffness);
 			mixed_stiffness = mixed_stiffness.transpose();
 
-			// StiffnessMatrix velocity_mass;
-			// assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, bases, gbases, velocity_mass);
-
 			// barycentric coordinates of FEM nodes
 			Eigen::MatrixXd local_pts;
 			if (dim == 2)
@@ -2823,6 +2821,15 @@ void State::solve_problem()
 			/* initialize solution */
 
 			ss.initialize_solution(*mesh, gbases, bases, problem, sol, local_pts);
+			pressure = Eigen::MatrixXd::Zero(n_pressure_bases, 1);
+
+			/* export to vtu */
+			if (args["save_time_sequence"])
+			{
+				if (!solve_export_to_file)
+					solution_frames.emplace_back();
+				save_vtu("step_" + std::to_string(0) + ".vtu", 0.);
+			}
 
 			for (int t = 1; t <= time_steps; t++)
 			{
@@ -2836,7 +2843,8 @@ void State::solve_problem()
 					ss.advection(*mesh, gbases, bases, sol, dt, local_pts, args["advection_order"], args["advection_RK"]);
 
 				/* apply boundary condition */
-				ss.set_bc(*mesh, bnd_nodes, gbases, bases, sol, local_pts, problem, time);
+				// ss.set_bc(*mesh, bnd_nodes, local_boundary, gbases, bases, sol, local_pts, problem, time);
+				rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, time);
 
 				/* viscosity */
 				if(viscosity_ > 0)
@@ -2851,10 +2859,11 @@ void State::solve_problem()
 				ss.projection(*mesh, n_bases, gbases, bases, pressure_bases, local_pts, pressure, sol);
 
 				/* apply boundary condition */
-				ss.set_bc(*mesh, bnd_nodes, gbases, bases, sol, local_pts, problem, time);
+				// ss.set_bc(*mesh, bnd_nodes, local_boundary, gbases, bases, sol, local_pts, problem, time);
+				rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, time);
 
 				/* export to vtu */
-				if (args["save_time_sequence"])
+				if (args["save_time_sequence"] && !(t % args["skip_frame"]))
 				{
 					if (!solve_export_to_file)
 						solution_frames.emplace_back();
@@ -2889,7 +2898,7 @@ void State::solve_problem()
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
 				save_vtu("step_" + std::to_string(0) + ".vtu", 0);
-				save_wire("step_" + std::to_string(0) + ".obj");
+				// save_wire("step_" + std::to_string(0) + ".obj");
 			}
 
 			assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, gbases, velocity_stiffness);
@@ -2924,12 +2933,12 @@ void State::solve_problem()
 				sol = c_sol;
 				sol_to_pressure();
 
-				if (args["save_time_sequence"])
+				if (args["save_time_sequence"] && !(t % args["skip_frame"]))
 				{
 					if (!solve_export_to_file)
 						solution_frames.emplace_back();
 					save_vtu("step_" + std::to_string(t) + ".vtu", time);
-					save_wire("step_" + std::to_string(t) + ".obj");
+					// save_wire("step_" + std::to_string(t) + ".obj");
 				}
 			}
 		}
