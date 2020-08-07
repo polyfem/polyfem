@@ -2425,7 +2425,7 @@ void State::extract_boundary_mesh()
 			boundary_elements.row(i) << std::get<0>(tris[i]), std::get<1>(tris[i]), std::get<2>(tris[i]);
 		}
 
-		igl::write_triangle_mesh("test.obj", boundary_nodes_pos, boundary_elements);
+		// igl::write_triangle_mesh("test.obj", boundary_nodes_pos, boundary_elements);
 	}
 	else
 	{
