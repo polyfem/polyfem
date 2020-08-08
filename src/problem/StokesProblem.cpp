@@ -247,6 +247,44 @@ void FlowWithObstacle::set_parameters(const json &params)
 	}
 }
 
+CornerFlow::CornerFlow(const std::string &name)
+	: TimeDepentendStokesProblem(name)
+{
+	boundary_ids_ = {1, 2, 4, 7};
+	U_ = 1.5;
+}
+
+void CornerFlow::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+}
+
+void CornerFlow::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+
+	for (long i = 0; i < pts.rows(); ++i)
+	{
+		if (mesh.get_boundary_id(global_ids(i)) == 2)
+		{
+			val(i, 1) = U_;
+		}
+	}
+
+	if (is_time_dependent_)
+		val *= (1 - exp(-5 * t));
+}
+
+void CornerFlow::set_parameters(const json &params)
+{
+	TimeDepentendStokesProblem::set_parameters(params);
+
+	if (params.find("U") != params.end())
+	{
+		U_ = params["U"];
+	}
+}
+
 UnitFlowWithObstacle::UnitFlowWithObstacle(const std::string &name)
 	: TimeDepentendStokesProblem(name)
 {
