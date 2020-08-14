@@ -416,7 +416,7 @@ void TaylorGreenVortexProblem::exact(const Eigen::MatrixXd &pts, const double t,
 		else
 		{
 			const double z = pts(i, 2);
-			const double a = 1. / exp(2*3.141592653589793);
+			const double a = 1. / exp(3.141592653589793);
 			const double time_scaling = -a * exp(-viscosity_ * t);
 			val(i, 0) = (exp(a * x)*sin(a * y+z)+exp(a * z)*cos(a * x+y))*time_scaling;
 			val(i, 1) = (exp(a * y)*sin(a * z+x)+exp(a * x)*cos(a * y+z))*time_scaling;
