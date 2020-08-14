@@ -2863,7 +2863,7 @@ void State::solve_problem()
 				rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, time);
 
 				/* export to vtu */
-				if (args["save_time_sequence"] && !(t % args["skip_frame"]))
+				if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
 				{
 					if (!solve_export_to_file)
 						solution_frames.emplace_back();
