@@ -235,6 +235,7 @@ State::State()
 		{"rhs_path", ""},
 
 		{"particle", false},
+		{"density", false},
 		{"advection_order", 1},
 		{"advection_RK", 1},
 
@@ -2772,6 +2773,25 @@ void State::solve_problem()
 
 		Eigen::MatrixXd current_rhs = rhs;
 
+		Eigen::MatrixXd density(sol.size() / mesh->dimension(), 1);
+		if (args["density"])
+		{
+			for (int i = 0; i < density.rows(); i++)
+			{
+				bool flag = false;
+				for (int d = 0; d < mesh->dimension(); d++)
+				{
+					if (abs(sol(mesh->dimension()*i+d)) > 1e-8)
+					{
+						flag = true;
+						break;
+					}
+				}
+				if (flag) density(i) = 1;
+				else density(i) = 0;
+			}
+		}
+
 		if (formulation() == "OperatorSplitting")
 		{
 			const int dim = mesh->dimension();
@@ -2840,7 +2860,12 @@ void State::solve_problem()
 				if(args["particle"])
 					ss.advection_FLIP(*mesh, gbases, bases, sol, dt, local_pts, args["advection_order"]);
 				else
-					ss.advection(*mesh, gbases, bases, sol, dt, local_pts, args["advection_order"], args["advection_RK"]);
+				{
+					if(args["density"])
+						ss.advection_with_density(*mesh, gbases, bases, sol, density, dt, local_pts, args["advection_order"], args["advection_RK"]);
+					else
+						ss.advection(*mesh, gbases, bases, sol, dt, local_pts, args["advection_order"], args["advection_RK"]);
+				}
 
 				/* apply boundary condition */
 				// ss.set_bc(*mesh, bnd_nodes, local_boundary, gbases, bases, sol, local_pts, problem, time);

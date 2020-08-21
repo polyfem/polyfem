@@ -254,6 +254,41 @@ namespace polyfem
             }
         }
 
+        void trace_back_with_density(const std::vector<polyfem::ElementBases>& gbases, 
+        const std::vector<polyfem::ElementBases>& bases, 
+        const RowVectorNd& pos_1, 
+        const RowVectorNd& vel_1, 
+        RowVectorNd& pos_2, 
+        RowVectorNd& vel_2, 
+        const Eigen::MatrixXd& sol,
+        double& density_2, 
+        const Eigen::MatrixXd& density,
+        const double dt)
+        {
+            int new_elem;
+            Eigen::MatrixXd local_pos;
+
+            pos_2 = pos_1 - vel_1 * dt;
+
+            if((new_elem = search_cell(gbases, pos_2, local_pos)) == -1)
+            {
+                new_elem = handle_boundary_advection(pos_2);
+                calculate_local_pts(gbases[new_elem], new_elem, pos_2, local_pos);
+            }
+
+            // interpolation
+            density_2 = 0;
+            vel_2 = RowVectorNd::Zero(dim);
+            ElementAssemblyValues vals;
+            vals.compute(new_elem, dim == 3, local_pos, bases[new_elem], gbases[new_elem]);
+            for (int i = 0; i < vals.basis_values.size(); i++)
+            {
+                density_2 += vals.basis_values[i].val(0) * density(bases[new_elem].bases[i].global()[0].index);
+                for (int d = 0; d < dim; d++)
+                    vel_2(d) += vals.basis_values[i].val(0) * sol(bases[new_elem].bases[i].global()[0].index * dim + d);
+            }
+        }
+
         void advection(const polyfem::Mesh& mesh, 
         const std::vector<polyfem::ElementBases>& gbases, 
         const std::vector<polyfem::ElementBases>& bases, 
@@ -279,9 +314,9 @@ namespace polyfem
                 std::vector<RowVectorNd> vert(shape, RowVectorNd::Zero(1, dim));
                 for (int i = 0; i < shape; i++)
                 {
-                    int tmp = T(e,i);
+                    int tmp = mesh.cell_vertex_(e, i);
                     for(int d = 0; d < dim; d++)
-                        vert[i](d) = V(tmp,d);
+                        vert[i](d) = mesh.point(i)(d);
                 }
 
                 // to compute global position with barycentric coordinate
@@ -356,6 +391,91 @@ namespace polyfem
             sol.swap(new_sol);
         }
 
+        void advection_with_density(const polyfem::Mesh& mesh, 
+        const std::vector<polyfem::ElementBases>& gbases, 
+        const std::vector<polyfem::ElementBases>& bases, 
+        Eigen::MatrixXd& sol, 
+        Eigen::MatrixXd& density,
+        const double dt, 
+        const Eigen::MatrixXd& local_pts, 
+        const int order = 1,
+        const int RK = 1)
+        {
+            // to store new data
+            Eigen::MatrixXd new_sol = Eigen::MatrixXd::Zero(sol.size(), 1);
+            Eigen::MatrixXd new_density = Eigen::MatrixXd::Zero(density.size(), 1);
+            // number of FEM nodes
+            const int n_vert = sol.size() / dim;
+            Eigen::VectorXi traversed = Eigen::VectorXi::Zero(n_vert);
+
+#ifdef POLYFEM_WITH_TBB
+            tbb::parallel_for(0, n_el, 1, [&](int e)
+#else
+            for (int e = 0; e < n_el; ++e)
+#endif
+            {
+                // geometry vertices of element e
+                std::vector<RowVectorNd> vert(shape, RowVectorNd::Zero(1, dim));
+                for (int i = 0; i < shape; i++)
+                {
+                    int tmp = mesh.cell_vertex_(e, i);
+                    for(int d = 0; d < dim; d++)
+                        vert[i](d) = mesh.point(i)(d);
+                }
+
+                // to compute global position with barycentric coordinate
+                ElementAssemblyValues gvals;
+                gvals.compute(e, dim == 3, local_pts, gbases[e], gbases[e]);
+
+                for (int i = 0; i < local_pts.rows(); i++)
+                {
+                    // global index of this FEM node
+                    int global = bases[e].bases[i].global()[0].index;
+
+                    if (traversed(global)) continue;
+                    traversed(global) = 1;
+
+                    RowVectorNd vel_1[4], pos_1[4];
+                    double den_1[4];
+
+                    // velocity of this FEM node
+                    vel_1[0] = sol.block(global * dim, 0, dim, 1).transpose();
+                    den_1[0] = density(global);
+
+                    // global position of this FEM node
+                    pos_1[0] = RowVectorNd::Zero(1, dim);
+                    for (int j = 0; j < shape; j++)
+                    {
+                        pos_1[0] += gvals.basis_values[j].val(i) * vert[j];
+                    }
+
+                    if(RK>=3)
+                    {
+                        trace_back_with_density( gbases, bases, pos_1[0], vel_1[0], pos_1[1], vel_1[1], sol, den_1[1], density, 0.5 * dt);
+                        trace_back_with_density( gbases, bases, pos_1[0], vel_1[1], pos_1[2], vel_1[2], sol, den_1[2], density, 0.75 * dt);
+                        trace_back_with_density( gbases, bases, pos_1[0], 2 * vel_1[0] + 3 * vel_1[1] + 4 * vel_1[2], pos_1[3], vel_1[3], sol, den_1[3], density, dt / 9);
+                    }
+                    else if(RK==2)
+                    {
+                        trace_back_with_density( gbases, bases, pos_1[0], vel_1[0], pos_1[1], vel_1[1], sol, den_1[1], density, 0.5 * dt);
+                        trace_back_with_density( gbases, bases, pos_1[0], vel_1[1], pos_1[3], vel_1[3], sol, den_1[3], density, dt);
+                    }
+                    else if(RK==1)
+                    {
+                        trace_back_with_density( gbases, bases, pos_1[0], vel_1[0], pos_1[3], vel_1[3], sol, den_1[3], density, dt);
+                    }
+
+                    new_density(global) = den_1[3];
+                    new_sol.block(global * dim, 0, dim, 1) = vel_1[3].transpose();
+                }
+            }
+#ifdef POLYFEM_WITH_TBB
+            );
+#endif
+            density.swap(new_density);
+            sol.swap(new_sol);
+        }
+        
         void advection_FLIP(const polyfem::Mesh& mesh, const std::vector<polyfem::ElementBases>& gbases, const std::vector<polyfem::ElementBases>& bases, Eigen::MatrixXd& sol, const double dt, const Eigen::MatrixXd& local_pts, const int order = 1)
         {
             const int ppe = shape; // particle per element

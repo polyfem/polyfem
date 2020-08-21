@@ -247,6 +247,62 @@ void FlowWithObstacle::set_parameters(const json &params)
 	}
 }
 
+CollidingBalls::CollidingBalls(const std::string &name)
+	: TimeDepentendStokesProblem(name)
+{
+}
+
+void CollidingBalls::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+}
+
+void CollidingBalls::initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+{
+	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+	for(int i = 0; i < pts.rows(); ++i)
+	{
+		const double x = pts(i, 0);
+		const double y = pts(i, 1);
+
+		if(pts.cols() == 2)
+		{
+			double r1 = sqrt(pow(x-0.04,2)+pow(y-0.2,2));
+			double r2 = sqrt(pow(x-0.16,2)+pow(y-0.2,2));
+			
+			if(r1 <= 0.02)
+				val(i, 0) = 0.05;
+			else if(r2 <= 0.02)
+				val(i, 0) = -0.05;
+			val(i, 1) = 0;
+		}
+		else
+		{
+			const double z = pts(i, 2);
+
+			double r1 = sqrt(pow(x-0.04,2)+pow(y-0.2,2)+pow(z-0.2,2));
+			double r2 = sqrt(pow(x-0.16,2)+pow(y-0.2,2)+pow(z-0.2,2));
+			
+			if(r1 <= 0.02)
+				val(i, 0) = 0.05;
+			else if(r2 <= 0.02)
+				val(i, 0) = -0.05;
+			val(i, 1) = 0;
+			val(i, 2) = 0;
+		}
+	}
+}
+
+void CollidingBalls::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+}
+
+void CollidingBalls::set_parameters(const json &params)
+{
+	TimeDepentendStokesProblem::set_parameters(params);
+}
+
 CornerFlow::CornerFlow(const std::string &name)
 	: TimeDepentendStokesProblem(name)
 {
