@@ -462,7 +462,7 @@ namespace polyfem
 			assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
 			loc_storage.da = vals.det.array() * quadrature.weights.array();
 			const int n_loc_bases = int(vals.basis_values.size());
-			const auto val = local_assembler_.assemble(vals, displacement, loc_storage.da);
+			const auto val = local_assembler_.assemble_grad(vals, displacement, loc_storage.da);
 			assert(val.size() == n_loc_bases*local_assembler_.size());
 
 			for(int j = 0; j < n_loc_bases; ++j)
@@ -551,7 +551,7 @@ namespace polyfem
 			loc_storage.da = vals.det.array() * quadrature.weights.array();
 			const int n_loc_bases = int(vals.basis_values.size());
 
-			const auto stiffness_val = local_assembler_.assemble_grad(vals, displacement, loc_storage.da);
+			const auto stiffness_val = local_assembler_.assemble_hessian(vals, displacement, loc_storage.da);
 			assert(stiffness_val.rows() == n_loc_bases * local_assembler_.size());
 			assert(stiffness_val.cols() == n_loc_bases * local_assembler_.size());
 
@@ -732,6 +732,7 @@ namespace polyfem
 	template class Assembler<BilaplacianAux>;
 
 	template class Assembler<LinearElasticity>;
+	template class NLAssembler<LinearElasticity>;
 	template class Assembler<HookeLinearElasticity>;
 	template class NLAssembler<SaintVenantElasticity>;
 	template class NLAssembler<NeoHookeanElasticity>;

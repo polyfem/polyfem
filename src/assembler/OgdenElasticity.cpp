@@ -81,7 +81,7 @@ namespace polyfem
 	}
 
 	Eigen::VectorXd
-	OgdenElasticity::assemble(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
+	OgdenElasticity::assemble_grad(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
 	{
 		// igl::Timer time; time.start();
 
@@ -103,7 +103,7 @@ namespace polyfem
 	}
 
 	Eigen::MatrixXd
-	OgdenElasticity::assemble_grad(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
+	OgdenElasticity::assemble_hessian(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
 	{
 		// igl::Timer time; time.start();
 

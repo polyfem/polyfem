@@ -185,6 +185,8 @@ namespace polyfem
 			return neo_hookean_elasticity_.assemble(is_volume, bases, gbases, displacement);
 		//else if(assembler == "Ogden")
 		//	return ogden_elasticity_.assemble(is_volume, bases, gbases, displacement);
+		else if (assembler == "LinearElasticity")
+			return linear_elasticity_energy_.assemble(is_volume, bases, gbases, displacement);
 		else
 			return 0;
 	}
@@ -203,6 +205,8 @@ namespace polyfem
 			neo_hookean_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, grad);
 		else if (assembler == "NavierStokes")
 			navier_stokes_velocity_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, grad);
+		else if (assembler == "LinearElasticity")
+			linear_elasticity_energy_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, grad);
 		//else if(assembler == "Ogden")
 		//	ogden_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, grad);
 		else
@@ -421,11 +425,13 @@ namespace polyfem
 		saint_venant_elasticity_.clear_cache();
 		neo_hookean_elasticity_.clear_cache();
 		// ogden_elasticity_.clear_cache();
+		linear_elasticity_energy_.clear_cache();
 	}
 
 	void AssemblerUtils::init_multimaterial(Eigen::MatrixXd &Es, Eigen::MatrixXd &nus)
 	{
 		linear_elasticity_.local_assembler().init_multimaterial(Es, nus);
+		linear_elasticity_energy_.local_assembler().init_multimaterial(Es, nus);
 		// hooke_linear_elasticity_.local_assembler().init_multimaterial(Es, nus);
 
 		// saint_venant_elasticity_.local_assembler().init_multimaterial(Es, nus);
@@ -454,6 +460,7 @@ namespace polyfem
 		bilaplacian_aux_.local_assembler().set_parameters(params);
 
 		linear_elasticity_.local_assembler().set_parameters(params);
+		linear_elasticity_energy_.local_assembler().set_parameters(params);
 		hooke_linear_elasticity_.local_assembler().set_parameters(params);
 
 		saint_venant_elasticity_.local_assembler().set_parameters(params);

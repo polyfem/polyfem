@@ -158,6 +158,7 @@ namespace polyfem
 		Assembler<BilaplacianAux> bilaplacian_aux_;
 
 		Assembler<LinearElasticity> linear_elasticity_;
+		NLAssembler<LinearElasticity> linear_elasticity_energy_;
 		Assembler<HookeLinearElasticity> hooke_linear_elasticity_;
 
 		NLAssembler<SaintVenantElasticity> saint_venant_elasticity_;

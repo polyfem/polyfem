@@ -55,7 +55,7 @@ namespace polyfem
 	}
 
 	Eigen::VectorXd
-	NeoHookeanElasticity::assemble(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
+	NeoHookeanElasticity::assemble_grad(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
 	{
 		const int n_bases = vals.basis_values.size();
 
@@ -75,7 +75,7 @@ namespace polyfem
 	}
 
 	Eigen::MatrixXd
-	NeoHookeanElasticity::assemble_grad(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
+	NeoHookeanElasticity::assemble_hessian(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
 	{
 		const int n_bases = vals.basis_values.size();
 		return polyfem::hessian_from_energy(size(), n_bases, vals, displacement, da,
