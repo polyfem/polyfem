@@ -300,6 +300,35 @@ void CollidingBalls::set_parameters(const json &params)
 	TimeDepentendStokesProblem::set_parameters(params);
 }
 
+void CollidingBalls::initial_density(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+{
+	val = Eigen::MatrixXd::Zero(pts.rows(), 1);
+	for(int i = 0; i < pts.rows(); ++i)
+	{
+		const double x = pts(i, 0);
+		const double y = pts(i, 1);
+
+		if(pts.cols() == 2)
+		{
+			double r1 = sqrt(pow(x-0.25,2)+pow(y-0.5,2));
+			double r2 = sqrt(pow(x-0.75,2)+pow(y-0.5,2));
+			
+			if(r1 <= 0.1 || r2 <= 0.1)
+				val(i, 0) = 1;
+		}
+		else
+		{
+			const double z = pts(i, 2);
+
+			double r1 = sqrt(pow(x-0.04,2)+pow(y-0.2,2)+pow(z-0.2,2));
+			double r2 = sqrt(pow(x-0.16,2)+pow(y-0.2,2)+pow(z-0.2,2));
+			
+			if(r1 <= 0.02 || r2 <= 0.02)
+				val(i, 0) = 1;
+		}
+	}
+}
+
 CornerFlow::CornerFlow(const std::string &name)
 	: TimeDepentendStokesProblem(name)
 {

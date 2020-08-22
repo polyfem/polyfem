@@ -45,6 +45,7 @@ namespace polyfem
 		virtual void initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { }
 		virtual void initial_velocity(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { }
 		virtual void initial_acceleration(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { }
+		virtual void initial_density(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { }
 
 		virtual int n_incremental_load_steps(const double diag) const { return 1; }
 

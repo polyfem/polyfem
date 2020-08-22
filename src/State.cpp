@@ -2820,27 +2820,11 @@ void State::solve_problem()
 			OperatorSplittingSolver ss(*mesh, shape, n_el, local_boundary, bnd_nodes, mass, stiffness_viscosity, stiffness, dt, viscosity_, args["solver_type"], args["precond_type"], params, args["export"]["stiffness_mat"]);
 
 			/* initialize solution */
-
-			ss.initialize_solution(*mesh, gbases, bases, problem, sol, local_pts);
-			pressure = Eigen::MatrixXd::Zero(n_pressure_bases, 1);
-
-			density = Eigen::MatrixXd::Zero(sol.size() / mesh->dimension(), 1);
+			density = Eigen::MatrixXd::Zero(sol.size() / dim, 1);
 			if (args["density"])
-			{
-				for (int i = 0; i < density.rows(); i++)
-				{
-					bool flag = false;
-					for (int d = 0; d < mesh->dimension(); d++)
-					{
-						if (abs(sol(mesh->dimension()*i+d)) > 1e-8)
-						{
-							flag = true;
-							break;
-						}
-					}
-					if (flag) density(i) = 1;
-				}
-			}
+				ss.initialize_density(gbases, bases, problem, density, local_pts);
+			
+			pressure = Eigen::MatrixXd::Zero(n_pressure_bases, 1);
 
 			/* export to vtu */
 			if (args["save_time_sequence"])
@@ -2857,7 +2841,11 @@ void State::solve_problem()
 				
 				/* advection */
 				if(args["particle"])
+				{
+					if(args["density"])
+						ss.advect_density(*mesh, gbases, bases, sol, density, dt, local_pts, args["advection_order"], args["advection_RK"]);
 					ss.advection_FLIP(*mesh, gbases, bases, sol, dt, local_pts, args["advection_order"]);
+				}
 				else
 				{
 					if(args["density"])
@@ -2918,6 +2906,40 @@ void State::solve_problem()
 
 			sol = c_sol;
 			sol_to_pressure();
+
+			OperatorSplittingSolver ss;
+			Eigen::MatrixXd local_pts;
+			if (args["density"])
+			{
+				const int dim = mesh->dimension();
+				const int shape = gbases[0].bases.size();
+				if (dim == 2)
+				{
+					if (shape == 3)
+						autogen::p_nodes_2d(args["discr_order"], local_pts);
+					else
+						autogen::q_nodes_2d(args["discr_order"], local_pts);
+				}
+				else
+				{
+					if (shape == 4)
+						autogen::p_nodes_3d(args["discr_order"], local_pts);
+					else
+						autogen::q_nodes_3d(args["discr_order"], local_pts);
+				}
+
+				std::vector<int> bnd_nodes;
+				bnd_nodes.reserve(boundary_nodes.size() / dim);
+				for (auto it = boundary_nodes.begin(); it != boundary_nodes.end(); it++)
+				{
+					if (!(*it % dim)) continue;
+					bnd_nodes.push_back(*it / dim);
+				}
+				ss.initialize_solver(*mesh, shape, int(bases.size()), local_boundary, bnd_nodes);
+				density = Eigen::MatrixXd::Zero(sol.size() / dim, 1);
+				ss.initialize_density(gbases, bases, problem, density, local_pts);
+			}
+
 			if (args["save_time_sequence"]){
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
@@ -2931,7 +2953,7 @@ void State::solve_problem()
 
 			TransientNavierStokesSolver ns_solver(solver_params(), build_json_params(), solver_type(), precond_type());
 			const int n_larger = n_pressure_bases + (use_avg_pressure ? 1 : 0);
-
+			
 			for (int t = 1; t <= time_steps; ++t)
 			{
 				double time = t * dt;
@@ -2939,6 +2961,11 @@ void State::solve_problem()
 
 				logger().info("{}/{} steps, dt={}s t={}s", t, time_steps, current_dt, time);
 
+				if (args["density"])
+				{
+					ss.advect_density(*mesh, gbases, bases, sol, density, dt, local_pts, args["advection_order"], args["advection_RK"]);
+				}
+				
 				bdf.rhs(prev_sol);
 				rhs_assembler.compute_energy_grad(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs, time, current_rhs);
 				rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, current_rhs, time);
@@ -4022,10 +4049,13 @@ void State::save_vtu(const std::string &path, const double t)
 	else
 		solution_frames.back().solution = fun;
 
-	Eigen::MatrixXd interp_density;
-	interpolate_function(points.rows(), 1, bases, density, interp_density, boundary_only);
 	if (args["density"])
-		writer.add_field("density", interp_density);
+	{
+		Eigen::MatrixXd interp_density;
+		interpolate_function(points.rows(), 1, bases, density, interp_density, boundary_only);
+		if (args["density"])
+			writer.add_field("density", interp_density);
+	}
 
 	// if(problem->is_mixed())
 	if (assembler.is_mixed(formulation()))

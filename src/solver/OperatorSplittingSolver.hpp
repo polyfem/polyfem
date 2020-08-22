@@ -21,19 +21,9 @@ namespace polyfem
     class OperatorSplittingSolver
     {
     public:
-        OperatorSplittingSolver(const polyfem::Mesh& mesh,
-        const int shape, const int n_el, 
-        const std::vector<polyfem::LocalBoundary>& local_boundary,
-        const std::vector<int>& boundary_nodes,
-        const StiffnessMatrix& mass,
-        const StiffnessMatrix& stiffness_viscosity,
-        const StiffnessMatrix& stiffness_velocity,
-        const double& dt,
-        const double& viscosity_,
-        const std::string &solver_type, 
-        const std::string &precond,
-        const json& params,
-        const std::string &save_path) : shape(shape), n_el(n_el), boundary_nodes(boundary_nodes), solver_type(solver_type), precond(precond), params(params)
+        void initialize_mesh(const polyfem::Mesh& mesh, 
+        const int shape, const int n_el,
+        const std::vector<polyfem::LocalBoundary>& local_boundary)
         {
             dim = mesh.dimension();
 
@@ -62,53 +52,11 @@ namespace polyfem
                 }
                 if (dim == 2) V(i, 2) = 0;
             }
+        }
 
-            mat_diffusion = mass + viscosity_ * dt * stiffness_viscosity;
-            
-            solver_diffusion = LinearSolver::create(solver_type, precond);
-            solver_diffusion->setParameters(params);
-            logger().info("{}...", solver_diffusion->name());
-            if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
-            {
-                StiffnessMatrix mat1 = mat_diffusion;
-                prefactorize(*solver_diffusion, mat1, boundary_nodes, mat1.rows(), save_path);
-            }
-
-            mat_projection.resize(stiffness_velocity.rows() + 1, stiffness_velocity.cols() + 1);
-
-            std::vector<Eigen::Triplet<double> > coefficients;
-            coefficients.reserve(stiffness_velocity.nonZeros() + 2 * stiffness_velocity.rows());
-
-            for(int i = 0; i < stiffness_velocity.outerSize(); i++)
-            {
-                for(StiffnessMatrix::InnerIterator it(stiffness_velocity,i); it; ++it)
-                {
-                    coefficients.emplace_back(it.row(),it.col(),it.value());
-                }
-            }
-
-            const double val = 1. / (mat_projection.rows() - 1);
-            for (int i = 0; i < mat_projection.rows() - 1; i++)
-            {
-                coefficients.emplace_back(i, mat_projection.cols() - 1, val);
-                coefficients.emplace_back(mat_projection.rows() - 1, i, val);
-            }
-
-            mat_projection.setFromTriplets(coefficients.begin(), coefficients.end());
-            solver_projection = LinearSolver::create(solver_type, precond);
-            solver_projection->setParameters(params);
-            logger().info("{}...", solver_projection->name());
-            if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
-            {
-                StiffnessMatrix mat2 = mat_projection;
-                prefactorize(*solver_projection, mat2, std::vector<int>(), mat2.rows() - 1, save_path);
-            }
-
-            cell_num = (int)pow(n_el, 1./dim);
+        void initialize_hashtable()
+        {
             hash_table.resize((int)pow(cell_num, dim));
-
-            mesh.bounding_box(min_domain, max_domain);
-
             for(int e = 0; e < T.rows(); e++)
             {
                 Eigen::VectorXd min_ = V.row(T(e, 0));
@@ -158,6 +106,96 @@ namespace polyfem
                     }
                 }
             }
+        }
+
+        OperatorSplittingSolver() {}
+
+        void initialize_solver(const polyfem::Mesh& mesh,
+        const int shape_, const int n_el_, 
+        const std::vector<polyfem::LocalBoundary>& local_boundary,
+        const std::vector<int>& boundary_nodes_)
+        {
+            shape = shape_;
+            n_el = n_el_;
+            boundary_nodes = boundary_nodes_;
+
+            initialize_mesh(mesh, shape, n_el, local_boundary);
+
+            cell_num = (int)pow(n_el, 1./dim);
+            mesh.bounding_box(min_domain, max_domain);
+
+            initialize_hashtable();
+        }
+
+        OperatorSplittingSolver(const polyfem::Mesh& mesh,
+        const int shape, const int n_el, 
+        const std::vector<polyfem::LocalBoundary>& local_boundary,
+        const std::vector<int>& boundary_nodes)
+        {
+            initialize_solver(mesh, shape, n_el, local_boundary, boundary_nodes);
+        }
+
+        OperatorSplittingSolver(const polyfem::Mesh& mesh,
+        const int shape, const int n_el, 
+        const std::vector<polyfem::LocalBoundary>& local_boundary,
+        const std::vector<int>& boundary_nodes,
+        const StiffnessMatrix& mass,
+        const StiffnessMatrix& stiffness_viscosity,
+        const StiffnessMatrix& stiffness_velocity,
+        const double& dt,
+        const double& viscosity_,
+        const std::string &solver_type, 
+        const std::string &precond,
+        const json& params,
+        const std::string &save_path) : shape(shape), n_el(n_el), boundary_nodes(boundary_nodes), solver_type(solver_type), precond(precond), params(params)
+        {
+            initialize_mesh(mesh, shape, n_el, local_boundary);
+
+            mat_diffusion = mass + viscosity_ * dt * stiffness_viscosity;
+            
+            solver_diffusion = LinearSolver::create(solver_type, precond);
+            solver_diffusion->setParameters(params);
+            logger().info("{}...", solver_diffusion->name());
+            if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
+            {
+                StiffnessMatrix mat1 = mat_diffusion;
+                prefactorize(*solver_diffusion, mat1, boundary_nodes, mat1.rows(), save_path);
+            }
+
+            mat_projection.resize(stiffness_velocity.rows() + 1, stiffness_velocity.cols() + 1);
+
+            std::vector<Eigen::Triplet<double> > coefficients;
+            coefficients.reserve(stiffness_velocity.nonZeros() + 2 * stiffness_velocity.rows());
+
+            for(int i = 0; i < stiffness_velocity.outerSize(); i++)
+            {
+                for(StiffnessMatrix::InnerIterator it(stiffness_velocity,i); it; ++it)
+                {
+                    coefficients.emplace_back(it.row(),it.col(),it.value());
+                }
+            }
+
+            const double val = 1. / (mat_projection.rows() - 1);
+            for (int i = 0; i < mat_projection.rows() - 1; i++)
+            {
+                coefficients.emplace_back(i, mat_projection.cols() - 1, val);
+                coefficients.emplace_back(mat_projection.rows() - 1, i, val);
+            }
+
+            mat_projection.setFromTriplets(coefficients.begin(), coefficients.end());
+            solver_projection = LinearSolver::create(solver_type, precond);
+            solver_projection->setParameters(params);
+            logger().info("{}...", solver_projection->name());
+            if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
+            {
+                StiffnessMatrix mat2 = mat_projection;
+                prefactorize(*solver_projection, mat2, std::vector<int>(), mat2.rows() - 1, save_path);
+            }
+
+            cell_num = (int)pow(n_el, 1./dim);
+            mesh.bounding_box(min_domain, max_domain);
+
+            initialize_hashtable();
         }
 
         void export_3d_mesh(const std::string& export_mesh_path)
@@ -391,6 +429,88 @@ namespace polyfem
             sol.swap(new_sol);
         }
 
+        void advect_density(const polyfem::Mesh& mesh, 
+        const std::vector<polyfem::ElementBases>& gbases, 
+        const std::vector<polyfem::ElementBases>& bases, 
+        const Eigen::MatrixXd& sol, 
+        Eigen::MatrixXd& density,
+        const double dt, 
+        const Eigen::MatrixXd& local_pts, 
+        const int order = 1,
+        const int RK = 1)
+        {
+            // to store new data
+            Eigen::MatrixXd new_density = Eigen::MatrixXd::Zero(density.size(), 1);
+            // number of FEM nodes
+            const int n_vert = sol.size() / dim;
+            Eigen::VectorXi traversed = Eigen::VectorXi::Zero(n_vert);
+
+#ifdef POLYFEM_WITH_TBB
+            tbb::parallel_for(0, n_el, 1, [&](int e)
+#else
+            for (int e = 0; e < n_el; ++e)
+#endif
+            {
+                // geometry vertices of element e
+                std::vector<RowVectorNd> vert(shape, RowVectorNd::Zero(1, dim));
+                for (int i = 0; i < shape; i++)
+                {
+                    int tmp = mesh.cell_vertex_(e, i);
+                    for(int d = 0; d < dim; d++)
+                        vert[i](d) = mesh.point(tmp)(d);
+                }
+
+                // to compute global position with barycentric coordinate
+                ElementAssemblyValues gvals;
+                gvals.compute(e, dim == 3, local_pts, gbases[e], gbases[e]);
+
+                for (int i = 0; i < local_pts.rows(); i++)
+                {
+                    // global index of this FEM node
+                    int global = bases[e].bases[i].global()[0].index;
+
+                    if (traversed(global)) continue;
+                    traversed(global) = 1;
+
+                    RowVectorNd vel_1[4], pos_1[4];
+                    double den_1[4];
+
+                    // velocity of this FEM node
+                    vel_1[0] = sol.block(global * dim, 0, dim, 1).transpose();
+                    den_1[0] = density(global);
+
+                    // global position of this FEM node
+                    pos_1[0] = RowVectorNd::Zero(1, dim);
+                    for (int j = 0; j < shape; j++)
+                    {
+                        pos_1[0] += gvals.basis_values[j].val(i) * vert[j];
+                    }
+
+                    if(RK>=3)
+                    {
+                        trace_back_with_density( gbases, bases, pos_1[0], vel_1[0], pos_1[1], vel_1[1], sol, den_1[1], density, 0.5 * dt);
+                        trace_back_with_density( gbases, bases, pos_1[0], vel_1[1], pos_1[2], vel_1[2], sol, den_1[2], density, 0.75 * dt);
+                        trace_back_with_density( gbases, bases, pos_1[0], 2 * vel_1[0] + 3 * vel_1[1] + 4 * vel_1[2], pos_1[3], vel_1[3], sol, den_1[3], density, dt / 9);
+                    }
+                    else if(RK==2)
+                    {
+                        trace_back_with_density( gbases, bases, pos_1[0], vel_1[0], pos_1[1], vel_1[1], sol, den_1[1], density, 0.5 * dt);
+                        trace_back_with_density( gbases, bases, pos_1[0], vel_1[1], pos_1[3], vel_1[3], sol, den_1[3], density, dt);
+                    }
+                    else if(RK==1)
+                    {
+                        trace_back_with_density( gbases, bases, pos_1[0], vel_1[0], pos_1[3], vel_1[3], sol, den_1[3], density, dt);
+                    }
+
+                    new_density(global) = den_1[3];
+                }
+            }
+#ifdef POLYFEM_WITH_TBB
+            );
+#endif
+            density.swap(new_density);
+        }
+        
         void advection_with_density(const polyfem::Mesh& mesh, 
         const std::vector<polyfem::ElementBases>& gbases, 
         const std::vector<polyfem::ElementBases>& bases, 
@@ -1027,8 +1147,7 @@ namespace polyfem
             }
         }
 
-        void initialize_solution(const polyfem::Mesh& mesh, 
-        const std::vector<polyfem::ElementBases>& gbases, 
+        void initialize_solution(const std::vector<polyfem::ElementBases>& gbases, 
         const std::vector<polyfem::ElementBases>& bases, 
         const std::shared_ptr<Problem> problem, 
         Eigen::MatrixXd& sol, 
@@ -1060,6 +1179,100 @@ namespace polyfem
                     for (int d = 0; d < dim; d++)
                     {
                         sol(global * dim + d) = val(d);
+                    }
+                }
+            }
+#ifdef POLYFEM_WITH_TBB
+            );
+#endif
+        }
+
+        void initialize_density(const std::vector<polyfem::ElementBases>& gbases, 
+        const std::vector<polyfem::ElementBases>& bases, 
+        const std::shared_ptr<Problem> problem, 
+        Eigen::MatrixXd& density, 
+        const Eigen::MatrixXd& local_pts)
+        {
+#ifdef POLYFEM_WITH_TBB
+            tbb::parallel_for(0, n_el, 1, [&](int e)
+#else
+            for (int e = 0; e < n_el; ++e)
+#endif
+            {
+                // to compute global position with barycentric coordinate
+                ElementAssemblyValues gvals;
+                gvals.compute(e, dim == 3, local_pts, gbases[e], gbases[e]);
+
+                Eigen::VectorXi global(local_pts.rows());
+                Eigen::MatrixXd den;
+                Eigen::MatrixXd pts = Eigen::MatrixXd::Zero(local_pts.rows(), dim);
+
+                for (int i = 0; i < local_pts.rows(); i++)
+                {
+                    for (int j = 0; j < shape; j++)
+                    {
+                        for (int d = 0; d < dim; d++)
+                        {
+                            pts(i, d) += V(T(e, j), d) * gvals.basis_values[j].val(i);
+                        }
+                    }
+                    global(i) = bases[e].bases[i].global()[0].index;
+                }
+
+                problem->initial_density(pts, den);
+
+                for (int i = 0; i < local_pts.rows(); i++)
+                {
+                    density(global(i)) = den(i);
+                }
+            }
+#ifdef POLYFEM_WITH_TBB
+            );
+#endif
+        }
+        
+        void initialize_solution(const std::vector<polyfem::ElementBases>& gbases, 
+        const std::vector<polyfem::ElementBases>& bases, 
+        const std::shared_ptr<Problem> problem, 
+        Eigen::MatrixXd& sol,
+        Eigen::MatrixXd& density, 
+        const Eigen::MatrixXd& local_pts)
+        {
+#ifdef POLYFEM_WITH_TBB
+            tbb::parallel_for(0, n_el, 1, [&](int e)
+#else
+            for (int e = 0; e < n_el; ++e)
+#endif
+            {
+                // to compute global position with barycentric coordinate
+                ElementAssemblyValues gvals;
+                gvals.compute(e, dim == 3, local_pts, gbases[e], gbases[e]);
+
+                Eigen::VectorXi global(local_pts.rows());
+                Eigen::MatrixXd den, val;
+                Eigen::MatrixXd pts = Eigen::MatrixXd::Zero(local_pts.rows(), dim);
+
+                for (int i = 0; i < local_pts.rows(); i++)
+                {
+                    for (int j = 0; j < shape; j++)
+                    {
+                        for (int d = 0; d < dim; d++)
+                        {
+                            pts(i, d) += V(T(e, j), d) * gvals.basis_values[j].val(i);
+                        }
+                    }
+                    global(i) = bases[e].bases[i].global()[0].index;
+                }
+
+                problem->initial_density(pts, den);
+                problem->initial_solution(pts, val);
+
+                for (int i = 0; i < local_pts.rows(); i++)
+                {
+                    density(global(i)) = den(i);
+                    for (int d = 0; d < dim; d++)
+                    {
+                        sol(global(i) * dim + d) = val(i, d);
                     }
                 }
             }
