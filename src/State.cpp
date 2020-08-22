@@ -2773,24 +2773,6 @@ void State::solve_problem()
 
 		Eigen::MatrixXd current_rhs = rhs;
 
-		density = Eigen::MatrixXd::Zero(sol.size() / mesh->dimension(), 1);
-		if (args["density"])
-		{
-			for (int i = 0; i < density.rows(); i++)
-			{
-				bool flag = false;
-				for (int d = 0; d < mesh->dimension(); d++)
-				{
-					if (abs(sol(mesh->dimension()*i+d)) > 1e-8)
-					{
-						flag = true;
-						break;
-					}
-				}
-				if (flag) density(i) = 1;
-			}
-		}
-
 		if (formulation() == "OperatorSplitting")
 		{
 			const int dim = mesh->dimension();
@@ -2841,6 +2823,24 @@ void State::solve_problem()
 
 			ss.initialize_solution(*mesh, gbases, bases, problem, sol, local_pts);
 			pressure = Eigen::MatrixXd::Zero(n_pressure_bases, 1);
+
+			density = Eigen::MatrixXd::Zero(sol.size() / mesh->dimension(), 1);
+			if (args["density"])
+			{
+				for (int i = 0; i < density.rows(); i++)
+				{
+					bool flag = false;
+					for (int d = 0; d < mesh->dimension(); d++)
+					{
+						if (abs(sol(mesh->dimension()*i+d)) > 1e-8)
+						{
+							flag = true;
+							break;
+						}
+					}
+					if (flag) density(i) = 1;
+				}
+			}
 
 			/* export to vtu */
 			if (args["save_time_sequence"])

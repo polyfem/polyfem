@@ -316,7 +316,7 @@ namespace polyfem
                 {
                     int tmp = mesh.cell_vertex_(e, i);
                     for(int d = 0; d < dim; d++)
-                        vert[i](d) = mesh.point(i)(d);
+                        vert[i](d) = mesh.point(tmp)(d);
                 }
 
                 // to compute global position with barycentric coordinate
@@ -420,7 +420,7 @@ namespace polyfem
                 {
                     int tmp = mesh.cell_vertex_(e, i);
                     for(int d = 0; d < dim; d++)
-                        vert[i](d) = mesh.point(i)(d);
+                        vert[i](d) = mesh.point(tmp)(d);
                 }
 
                 // to compute global position with barycentric coordinate
