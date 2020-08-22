@@ -29,6 +29,14 @@ namespace polyfem
 
 		bool has_exact_sol() const override { return has_exact_; }
 		bool is_scalar() const override { return false; }
+		bool is_time_dependent() const override { return is_time_dept_; }
+
+		void velocity_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		void acceleration_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+
+		void initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
+		void initial_velocity(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
+		void initial_acceleration(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 
 		void set_parameters(const json &params) override;
 
@@ -49,6 +57,7 @@ namespace polyfem
 		bool all_dimentions_dirichelt_ = true;
 		bool has_exact_ = false;
 		bool has_exact_grad_ = false;
+		bool is_time_dept_ = false;
 		// bool is_mixed_ = false;
 
 		std::vector<Eigen::Matrix<ExpressionValue, 1, 3, Eigen::RowMajor>> forces_;
@@ -77,6 +86,7 @@ namespace polyfem
 
 		bool has_exact_sol() const override { return has_exact_; }
 		bool is_scalar() const override { return true; }
+		bool is_time_dependent() const override { return is_time_dept_; }
 
 		void set_parameters(const json &params) override;
 
@@ -93,6 +103,7 @@ namespace polyfem
 		bool is_all_;
 		bool has_exact_ = false;
 		bool has_exact_grad_ = false;
+		bool is_time_dept_ = false;
 	};
 }
 

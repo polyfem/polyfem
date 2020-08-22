@@ -171,6 +171,11 @@ namespace polyfem
 
 	void GenericTensorProblem::set_parameters(const json &params)
 	{
+		if(params.find("is_time_dependent") != params.end())
+		{
+			is_time_dept_ = params["is_time_dependent"];
+		}
+
 		if(params.find("rhs") != params.end())
 		{
 			auto rr = params["rhs"];
@@ -360,16 +365,32 @@ namespace polyfem
 		return 4*max/diag;
 	}
 
+	void GenericTensorProblem::velocity_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+	}
 
+	void GenericTensorProblem::acceleration_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+	}
 
+	//TODO
+	void GenericTensorProblem::initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+	}
 
+	//TODO
+	void GenericTensorProblem::initial_velocity(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+	}
 
-
-
-
-
-
-
+	void GenericTensorProblem::initial_acceleration(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+	}
 
 	GenericScalarProblem::GenericScalarProblem(const std::string &name)
 	: Problem(name), is_all_(false)
@@ -469,6 +490,11 @@ namespace polyfem
 
 	void GenericScalarProblem::set_parameters(const json &params)
 	{
+		if (params.find("is_time_dependent") != params.end())
+		{
+			is_time_dept_ = params["is_time_dependent"];
+		}
+
 		if(params.find("rhs") != params.end())
 		{
 			// rhs_ = params["rhs"];
