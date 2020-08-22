@@ -87,7 +87,7 @@ namespace polyfem
 
 		StiffnessMatrix stiffness, mass;
 		Eigen::MatrixXd rhs, rhs_in;
-		Eigen::MatrixXd sol, pressure;
+		Eigen::MatrixXd sol, pressure, density;
 
 		Eigen::MatrixXd boundary_nodes_pos;
 		Eigen::MatrixXi boundary_elements;

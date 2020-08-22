@@ -2773,7 +2773,7 @@ void State::solve_problem()
 
 		Eigen::MatrixXd current_rhs = rhs;
 
-		Eigen::MatrixXd density(sol.size() / mesh->dimension(), 1);
+		density = Eigen::MatrixXd::Zero(sol.size() / mesh->dimension(), 1);
 		if (args["density"])
 		{
 			for (int i = 0; i < density.rows(); i++)
@@ -2788,7 +2788,6 @@ void State::solve_problem()
 					}
 				}
 				if (flag) density(i) = 1;
-				else density(i) = 0;
 			}
 		}
 
@@ -4022,6 +4021,11 @@ void State::save_vtu(const std::string &path, const double t)
 		writer.add_field("solution", fun);
 	else
 		solution_frames.back().solution = fun;
+
+	Eigen::MatrixXd interp_density;
+	interpolate_function(points.rows(), 1, bases, density, interp_density, boundary_only);
+	if (args["density"])
+		writer.add_field("density", interp_density);
 
 	// if(problem->is_mixed())
 	if (assembler.is_mixed(formulation()))
