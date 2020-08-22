@@ -266,13 +266,22 @@ if(POLYFEM_WITH_TBB)
 
     target_compile_definitions(tbb_static PUBLIC -DPOLYFEM_WITH_TBB)
     target_include_directories(polyfem SYSTEM PUBLIC ${THIRD_PARTY_DIR}/tbb/include)
-    target_link_libraries(polyfem PUBLIC tbb_static)
+    add_library(TBB::tbb ALIAS tbb_static)
+
+    target_link_libraries(polyfem PUBLIC TBB::tbb)
 endif()
 
 # libigl
 polyfem_download_libigl()
 find_package(LIBIGL REQUIRED)
 target_link_libraries(polyfem PUBLIC igl::core)
+
+
+# IPC
+option(IPC_TOOLKIT_BUILD_UNIT_TESTS  "Build unit-tests"      OFF)
+polyfem_download_ipc()
+add_subdirectory(${THIRD_PARTY_DIR}/ipc)
+target_link_libraries(polyfem PUBLIC IPCToolkit)
 
 
 # Geogram
