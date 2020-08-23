@@ -25,6 +25,7 @@ namespace polyfem
 		void gradient(const TVector &x, TVector &gradv) override;
 		void gradient_no_rhs(const TVector &x, Eigen::MatrixXd &gradv);
 
+		bool is_step_valid(const TVector &x0, const TVector &x1);
 
 		#include <polyfem/DisableWarnings.hpp>
 		void hessian(const TVector &x, THessian &hessian);
@@ -96,7 +97,7 @@ namespace polyfem
 		StiffnessMatrix cached_stiffness;
 
 		const int full_size, reduced_size;
-		const double t;
+		double t;
 		bool rhs_computed;
 		bool is_time_dependent;
 

@@ -88,7 +88,8 @@ public:
 		const double tau = 0.5;
 
 		double alpha = alpha_init;
-		double f = objFunc.value(x + alpha * searchDir);
+		TVector x1 = x + alpha * searchDir;
+		double f = objFunc.value(x1);
 		const double f_in = objFunc.value(x);
 
 		TVector grad(x.rows());
@@ -97,10 +98,11 @@ public:
 		const double Cache = c * grad.dot(searchDir);
 
 		int cur_iter = 0;
-		while ((std::isnan(f) || f > f_in + alpha * Cache) && cur_iter < MAX_STEP_SIZE_ITER)
+		while ((std::isinf(f) || std::isnan(f) || f > f_in + alpha * Cache || !objFunc.is_step_valid(x, x1)) && cur_iter < MAX_STEP_SIZE_ITER)
 		{
 			alpha *= tau;
-			f = objFunc.value(x + alpha * searchDir);
+			x1 = x + alpha * searchDir;
+			f = objFunc.value(x1);
 
 			cur_iter++;
 		}
@@ -116,15 +118,15 @@ public:
 		int cur_iter = 0;
 
 		double step_size = 1;
+		TVector new_x = x + step_size * grad;
 
 		while (cur_iter < MAX_STEP_SIZE_ITER)
 		{
-			const TVector new_x = x + step_size * grad;
-
 			double cur_e = objFunc.value(new_x);
-			if (std::isnan(cur_e)  || cur_e >= old_energy)
+			if (std::isinf(cur_e) || std::isnan(cur_e) || cur_e >= old_energy || !objFunc.is_step_valid(x, new_x))
 			{
 				step_size /= 2.;
+				new_x = x + step_size * grad;
 			}
 			else
 			{
@@ -133,8 +135,8 @@ public:
 			cur_iter++;
 		}
 
-		// return step_size;
-		return std::nan("");
+		return step_size;
+		// return std::nan("");
 	}
 
 	void minimize(ProblemType &objFunc, TVector &x0)
@@ -218,7 +220,7 @@ public:
 
 			if (new_hessian)
 			{
-				//TODO: get the correct side
+				//TODO: get the correct size
 				solver->analyzePattern(hessian, hessian.rows());
 				solver->factorize(hessian);
 			}

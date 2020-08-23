@@ -30,6 +30,7 @@ namespace polyfem
 		bool has_exact_sol() const override { return has_exact_; }
 		bool is_scalar() const override { return false; }
 		bool is_time_dependent() const override { return is_time_dept_; }
+		bool is_linear_in_time() const override { return !is_time_dept_; }
 
 		void velocity_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 		void acceleration_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
@@ -87,6 +88,7 @@ namespace polyfem
 		bool has_exact_sol() const override { return has_exact_; }
 		bool is_scalar() const override { return true; }
 		bool is_time_dependent() const override { return is_time_dept_; }
+		bool is_linear_in_time() const override { return !is_time_dept_; }
 
 		void set_parameters(const json &params) override;
 

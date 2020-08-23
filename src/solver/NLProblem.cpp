@@ -5,7 +5,11 @@
 
 #include <polyfem/Types.hpp>
 
+#include <ipc.hpp>
+
 #include <unsupported/Eigen/SparseExtra>
+
+static bool disable_collision = true;
 
 namespace polyfem
 {
@@ -17,6 +21,7 @@ namespace polyfem
 		  reduced_size(full_size - state.boundary_nodes.size()),
 		  t(t), rhs_computed(false), is_time_dependent(state.problem->is_time_dependent())
 	{
+		assert(!assembler.is_mixed(state.formulation()));
 	}
 
 	void NLProblem::init_timestep(const TVector &x_prev, const TVector &v_prev, const double dt)
@@ -32,9 +37,10 @@ namespace polyfem
 			v_prev = (x - x_prev) / dt;
 			x_prev = x;
 			rhs_computed = false;
+			this->t = t;
 
-			// rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, dt * t);
-			// rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, dt * t);
+			// rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, t);
+			// rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, t);
 		}
 	}
 
@@ -63,20 +69,76 @@ namespace polyfem
 				_current_rhs *= dt * dt / 2;
 				_current_rhs += tmp;
 			}
+			rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, _current_rhs, t);
 		}
 
 		return _current_rhs;
 	}
 
+
+	bool NLProblem::is_step_valid(const TVector &x0, const TVector &x1)
+	{
+		if (disable_collision)
+			return true;
+		if (!state.args["has_collision"])
+				return true;
+
+		Eigen::MatrixXd full0, full1;
+		if (x0.size() == reduced_size)
+			reduced_to_full(x0, full0);
+		else
+			full0 = x0;
+		if (x1.size() == reduced_size)
+			reduced_to_full(x1, full1);
+		else
+			full1 = x1;
+		assert(full0.size() == full_size);
+		assert(full1.size() == full_size);
+
+		const int problem_dim = state.mesh->dimension();
+		Eigen::MatrixXd reshaped0(full0.size() / problem_dim, problem_dim);
+		Eigen::MatrixXd reshaped1(full1.size() / problem_dim, problem_dim);
+		for (int i = 0; i < full0.size(); i += problem_dim)
+		{
+			for (int d = 0; d < problem_dim; ++d){
+				reshaped0(i / problem_dim, d) = full0(i + d);
+				reshaped1(i / problem_dim, d) = full1(i + d);
+			}
+		}
+		assert((full0.size() / problem_dim) * problem_dim == full0.size());
+		assert(reshaped0(0, 0) == full0(0));
+		assert(reshaped1(0, 0) == full1(0));
+		assert(reshaped0(0, 1) == full0(1));
+		assert(reshaped1(0, 1) == full1(1));
+
+		// {
+		// 	std::ofstream out("test0.obj");
+		// 	for (int i = 0; i < state.boundary_nodes_pos.rows(); ++i)
+		// 		out << "v " << state.boundary_nodes_pos(i, 0) + reshaped0(i, 0) << " " << state.boundary_nodes_pos(i, 1) + reshaped0(i, 1) << " 0\n";
+
+		// 	for (int i = 0; i < state.boundary_edges.rows(); ++i)
+		// 		out << "l " << state.boundary_edges(i, 0) + 1 << " " << state.boundary_edges(i, 1) + 1 << "\n";
+		// 	out.close();
+		// }
+
+		// {
+		// 	std::ofstream out("test1.obj");
+		// 	for (int i = 0; i < state.boundary_nodes_pos.rows(); ++i)
+		// 		out << "v " << state.boundary_nodes_pos(i, 0) + reshaped1(i, 0) << " " << state.boundary_nodes_pos(i, 1) + reshaped1(i, 1) << " 0\n";
+
+		// 	for (int i = 0; i < state.boundary_edges.rows(); ++i)
+		// 		out << "l " << state.boundary_edges(i, 0) + 1 << " " << state.boundary_edges(i, 1) + 1 << "\n";
+		// 	out.close();
+		// }
+
+		// std::cout<<"state.boundary_nodes_pos + reshaped\n"<<full<<std::endl;
+		// std::cout<<"state.boundary_nodes_pos + reshaped\n"<<reshaped<<std::endl;
+
+		return !ipc::is_step_collision_free(state.boundary_nodes_pos + reshaped0, state.boundary_nodes_pos + reshaped1, state.boundary_edges, state.boundary_triangles);
+	}
+
 	double NLProblem::value(const TVector &x)
 	{
-		if (assembler.is_gradient_based(state.formulation()))
-		{
-			TVector grad;
-			gradient(x, grad);
-			return grad.norm();
-		}
-
 		Eigen::MatrixXd full;
 		if (x.size() == reduced_size)
 			reduced_to_full(x, full);
@@ -90,6 +152,7 @@ namespace polyfem
 		const double body_energy = rhs_assembler.compute_energy(full, state.local_neumann_boundary, state.args["n_boundary_samples"], t);
 
 		double intertia_energy = 0;
+		double collision_energy = 0;
 		double scaling = 1;
 
 		if(is_time_dependent)
@@ -100,7 +163,39 @@ namespace polyfem
 			intertia_energy = 0.5 * tmp.transpose() * state.mass * tmp;
 		}
 
-		return scaling * (elastic_energy + body_energy) + intertia_energy;
+		if (!disable_collision && state.args["has_collision"])
+		{
+			const int problem_dim = state.mesh->dimension();
+			Eigen::MatrixXd reshaped(full.size() / problem_dim, problem_dim);
+			for (int i = 0; i < full.size(); i += problem_dim)
+			{
+				for(int d = 0; d < problem_dim; ++d)
+					reshaped(i / problem_dim, d) = full(i + d);
+			}
+			assert(reshaped.rows() * problem_dim == full.size());
+			assert(reshaped(0, 0) == full(0));
+			assert(reshaped(0, 1) == full(1));
+
+			// std::ofstream out("test.obj");
+			// for (int i = 0; i < state.boundary_nodes_pos.rows(); ++i)
+			// 	out << "v " << state.boundary_nodes_pos(i, 0) + reshaped(i, 0) << " " << state.boundary_nodes_pos(i, 1) + reshaped(i, 1) << " 0\n";
+
+			// for (int i = 0; i < state.boundary_edges.rows(); ++i)
+			// 	out << "l " << state.boundary_edges(i, 0) + 1 << " " << state.boundary_edges(i, 1) + 1 << "\n";
+			// out.close();
+
+			// std::cout<<"state.boundary_nodes_pos + reshaped\n"<<full<<std::endl;
+			// std::cout<<"state.boundary_nodes_pos + reshaped\n"<<reshaped<<std::endl;
+
+			double dhat_squared = 1e-6;
+			ccd::Candidates constraint_set;
+			ipc::construct_constraint_set(state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, dhat_squared, constraint_set);
+			collision_energy = ipc::compute_barrier_potential(state.boundary_nodes_pos, state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, constraint_set, dhat_squared);
+
+			std::cout << "collision_energy " << collision_energy << std::endl;
+		}
+
+		return scaling * (elastic_energy + body_energy + 1e8 * collision_energy) + intertia_energy;
 	}
 
 	void NLProblem::compute_cached_stiffness()
@@ -108,17 +203,10 @@ namespace polyfem
 		if (cached_stiffness.size() == 0)
 		{
 			const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
-
-			StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
-			assembler.assemble_problem(state.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, velocity_stiffness);
-			assembler.assemble_mixed_problem(state.formulation(), state.mesh->is_volume(), state.n_pressure_bases, state.n_bases, state.pressure_bases, state.bases, gbases, mixed_stiffness);
-			assembler.assemble_pressure_problem(state.formulation(), state.mesh->is_volume(), state.n_pressure_bases, state.pressure_bases, gbases, pressure_stiffness);
-
-			const int problem_dim = state.problem->is_scalar() ? 1 : state.mesh->dimension();
-
-			AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, false, //assembler.is_fluid(state.formulation()),
-												 velocity_stiffness, mixed_stiffness, pressure_stiffness,
-												 cached_stiffness);
+			if (assembler.is_linear(state.formulation()))
+			{
+				assembler.assemble_problem(state.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, cached_stiffness);
+			}
 		}
 	}
 
@@ -159,15 +247,26 @@ namespace polyfem
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 		assembler.assemble_energy_gradient(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, full, grad);
 
-		if (assembler.is_mixed(state.formulation()))
+		if (!disable_collision && state.args["has_collision"])
 		{
-			const int prev_size = grad.size();
-			grad.conservativeResize(prev_size + state.n_pressure_bases, grad.cols());
-			grad.block(prev_size, 0, state.n_pressure_bases, grad.cols()).setZero();
+			const int problem_dim = state.mesh->dimension();
+			Eigen::MatrixXd reshaped(full.size() / problem_dim, problem_dim);
+			for (int i = 0; i < full.size(); i += problem_dim)
+			{
+				for (int d = 0; d < problem_dim; ++d)
+					reshaped(i / problem_dim, d) = full(i + d);
+			}
+			assert((full.size() / problem_dim) * problem_dim == full.size());
+			assert(reshaped(0, 0) == full(0));
+			assert(reshaped(0, 1) == full(1));
 
-			compute_cached_stiffness();
-			grad += cached_stiffness * full;
+			double dhat_squared = 1e-6;
+			ccd::Candidates constraint_set;
+			ipc::construct_constraint_set(state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, dhat_squared, constraint_set);
+			grad += 1e8 * ipc::compute_barrier_potential_gradient(state.boundary_nodes_pos, state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, constraint_set, dhat_squared);
+			// std::cout << "collision grad " << ipc::compute_barrier_potential_gradient(state.boundary_nodes_pos, state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, constraint_set, dhat_squared).norm() << std::endl;
 		}
+
 		assert(grad.size() == full_size);
 	}
 
@@ -234,28 +333,37 @@ namespace polyfem
 		assert(full.size() == full_size);
 
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
-		assembler.assemble_energy_hessian(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, full, hessian);
+		if (assembler.is_linear(rhs_assembler.formulation())){
+			compute_cached_stiffness();
+			hessian = cached_stiffness;
+		}
+		else
+			assembler.assemble_energy_hessian(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, full, hessian);
 		if (is_time_dependent)
 		{
 			hessian *= dt * dt / 2;
 			hessian += state.mass;
 		}
 
-		if (assembler.is_mixed(state.formulation()))
+		if (!disable_collision && state.args["has_collision"])
 		{
-			StiffnessMatrix velocity_stiffness = hessian, mixed_stiffness, pressure_stiffness;
-			const int problem_dim = state.problem->is_scalar() ? 1 : state.mesh->dimension();
+			const int problem_dim = state.mesh->dimension();
+			Eigen::MatrixXd reshaped(full.size() / problem_dim, problem_dim);
+			for (int i = 0; i < full.size(); i += problem_dim)
+			{
+				for (int d = 0; d < problem_dim; ++d)
+					reshaped(i / problem_dim, d) = full(i + d);
+			}
+			assert((full.size() / problem_dim) * problem_dim == full.size());
+			assert(reshaped(0, 0) == full(0));
+			assert(reshaped(0, 1) == full(1));
 
-			assembler.assemble_mixed_problem(state.formulation(), state.mesh->is_volume(), state.n_pressure_bases, state.n_bases, state.pressure_bases, state.bases, gbases, mixed_stiffness);
-			assembler.assemble_pressure_problem(state.formulation(), state.mesh->is_volume(), state.n_pressure_bases, state.pressure_bases, gbases, pressure_stiffness);
-
-			AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, false, //assembler.is_fluid(state.formulation()),
-												 velocity_stiffness, mixed_stiffness, pressure_stiffness,
-												 hessian);
-
-			compute_cached_stiffness();
-			hessian += cached_stiffness;
+			double dhat_squared = 1e-6;
+			ccd::Candidates constraint_set;
+			ipc::construct_constraint_set(state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, dhat_squared, constraint_set);
+			hessian += 1e8 * ipc::compute_barrier_potential_hessian(state.boundary_nodes_pos, state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, constraint_set, dhat_squared);
 		}
+
 		assert(hessian.rows() == full_size);
 		assert(hessian.cols() == full_size);
 		// Eigen::saveMarket(tmp, "tmp.mat");

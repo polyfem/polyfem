@@ -61,6 +61,7 @@
 #include <igl/remove_duplicate_vertices.h>
 #include <igl/isolines.h>
 #include <igl/write_triangle_mesh.h>
+#include <igl/all_edges.h>
 
 #include <igl/per_face_normals.h>
 #include <igl/AABB.h>
@@ -190,6 +191,8 @@ State::State()
 
 		{"count_flipped_els", false},
 
+		{"has_collision", false},
+
 		{"tend", 1},
 		{"time_steps", 10},
 
@@ -243,23 +246,8 @@ State::State()
 		// {"solution", ""},
 		// {"stiffness_mat_save_path", ""},
 
-		{"export", {
-			{"sol_at_node", -1},
-			{"vis_mesh", ""},
-			{"paraview", ""},
-			{"vis_boundary_only", false},
-			{"material_params", false},
-			{"nodes", ""},
-			{"wire_mesh", ""},
-			{"iso_mesh", ""},
-			{"spectrum", false},
-			{"solution", ""},
-			{"full_mat", ""},
-			{"stiffness_mat", ""},
-			{"solution_mat", ""},
-			{"stress_mat", ""},
-			{"mises", ""}
-		}}};
+		{"export", {{"sol_at_node", -1}, {"vis_mesh", ""}, {"paraview", ""}, {"vis_boundary_only", false}, {"material_params", false}, {"nodes", ""}, {"wire_mesh", ""}, {"iso_mesh", ""}, {"spectrum", false}, {"solution", ""}, {"full_mat", ""}, {"stiffness_mat", ""}, {"solution_mat", ""}, {"stress_mat", ""}, {"mises", ""}}}
+	};
 }
 
 void State::init_logger(const std::string &log_file, int log_level, const bool is_quiet)
@@ -2328,11 +2316,10 @@ void State::build_polygonal_basis()
 
 void State::extract_boundary_mesh()
 {
-	boundary_nodes_pos.resize(n_bases, 3);
-	boundary_nodes_pos.setZero();
-
 	if (mesh->is_volume())
 	{
+		boundary_nodes_pos.resize(n_bases, 3);
+		boundary_nodes_pos.setZero();
 		const Mesh3D &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
 
 		std::vector<std::tuple<int, int, int>> tris;
@@ -2419,16 +2406,19 @@ void State::extract_boundary_mesh()
 			}
 		}
 
-		boundary_elements.resize(tris.size(), 3);
+		boundary_triangles.resize(tris.size(), 3);
 		for (int i = 0; i < tris.size(); ++i)
 		{
-			boundary_elements.row(i) << std::get<0>(tris[i]), std::get<1>(tris[i]), std::get<2>(tris[i]);
+			boundary_triangles.row(i) << std::get<0>(tris[i]), std::get<1>(tris[i]), std::get<2>(tris[i]);
 		}
+		igl::all_edges(boundary_triangles, boundary_edges);
 
-		// igl::write_triangle_mesh("test.obj", boundary_nodes_pos, boundary_elements);
+		// igl::write_triangle_mesh("test.obj", boundary_nodes_pos, boundary_triangles);
 	}
 	else
 	{
+		boundary_nodes_pos.resize(n_bases, 2);
+		boundary_nodes_pos.setZero();
 		const Mesh2D &mesh2d = *dynamic_cast<Mesh2D *>(mesh.get());
 
 		std::vector<std::pair<int, int>> edges;
@@ -2453,7 +2443,7 @@ void State::extract_boundary_mesh()
 					if(glob.size() != 1) continue;
 
 					int gindex = glob.front().index;
-					boundary_nodes_pos.row(gindex) << glob.front().node(0), glob.front().node(1), 0;
+					boundary_nodes_pos.row(gindex) << glob.front().node(0), glob.front().node(1);
 
 					if(prev_node >= 0)
 						edges.emplace_back(prev_node, gindex);
@@ -2462,10 +2452,11 @@ void State::extract_boundary_mesh()
 			}
 		}
 
-		boundary_elements.resize(edges.size(), 2);
+		boundary_triangles.resize(0, 0);
+		boundary_edges.resize(edges.size(), 2);
 		for (int i = 0; i < edges.size(); ++i)
 		{
-			boundary_elements.row(i) << edges[i].first, edges[i].second;
+			boundary_edges.row(i) << edges[i].first, edges[i].second;
 		}
 	}
 }
@@ -2876,7 +2867,7 @@ void State::solve_problem()
 				const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 				const int precond_num = problem_dim * n_bases;
 
-				if (assembler.is_linear(formulation()))
+				if (assembler.is_linear(formulation()) && !args["has_collision"])
 				{
 					//Newmark
 					const double gamma = 0.5;
@@ -2928,7 +2919,7 @@ void State::solve_problem()
 						logger().info("{}/{}", t, time_steps);
 					}
 				}
-				else //if (!assembler.is_linear(formulation()))
+				else //if (!assembler.is_linear(formulation()) || collision)
 				{
 					// {
 					// 	boundary_nodes.clear();
@@ -2996,7 +2987,7 @@ void State::solve_problem()
 					const int reduced_size = n_bases * mesh->dimension() - boundary_nodes.size();
 					VectorXd tmp_sol;
 
-					NLProblem nl_problem(*this, rhs_assembler, 0);
+					NLProblem nl_problem(*this, rhs_assembler, dt);
 					nl_problem.init_timestep(sol, velocity, dt);
 					nl_problem.full_to_reduced(sol, tmp_sol);
 
@@ -3019,9 +3010,9 @@ void State::solve_problem()
 							sol_to_pressure();
 						}
 
-						rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, dt * t);
+						// rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, dt * t);
 
-						nl_problem.update_quantities(t*dt, sol);
+						nl_problem.update_quantities((t+1)*dt, sol);
 
 
 
@@ -3041,7 +3032,7 @@ void State::solve_problem()
 	}
 	else //if(!problem->is_time_dependent())
 	{
-		if (assembler.is_linear(formulation()))
+		if (assembler.is_linear(formulation()) && !args["has_collision"])
 		{
 			auto solver = LinearSolver::create(args["solver_type"], args["precond_type"]);
 			solver->setParameters(params);
@@ -3066,7 +3057,7 @@ void State::solve_problem()
 				sol_to_pressure();
 			}
 		}
-		else //if (!assembler.is_linear(formulation()))
+		else //if (!assembler.is_linear(formulation()) ||  args["has_collision"]))
 		{
 			if (formulation() == "NavierStokes")
 			{
@@ -3146,6 +3137,7 @@ void State::solve_problem()
 
 					logger().debug("Updating starting point...");
 					update_timer.start();
+					if (!args["has_collision"])
 					{
 						nl_problem.hessian_full(sol, nlstiffness);
 						nl_problem.gradient_no_rhs(sol, grad);
@@ -3156,8 +3148,10 @@ void State::solve_problem()
 						dirichlet_solve(*solver, nlstiffness, b, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
 						// logger().debug("Solver error: {}", (nlstiffness * sol - b).norm());
 						x = sol - x;
-						nl_problem.full_to_reduced(x, tmp_sol);
 					}
+					else
+						x = sol;
+					nl_problem.full_to_reduced(x, tmp_sol);
 					update_timer.stop();
 					logger().debug("done!, took {}s", update_timer.getElapsedTime());
 
@@ -3262,7 +3256,7 @@ void State::solve_problem()
 
 				// {
 				// 	boundary_nodes.clear();
-				// 	NLProblem nl_problem(*this, rhs_assembler, t);
+				// 	NLProblem nl_problem(*this, rhs_assembler, 1);
 				// 	tmp_sol = rhs;
 
 				// 	// tmp_sol.setRandom();
@@ -3278,9 +3272,9 @@ void State::solve_problem()
 				// 	Eigen::MatrixXd actual_hessian = Eigen::MatrixXd(hessian);
 				// 	// std::cout << "hhh\n"<< actual_hessian<<std::endl;
 
-				// 		for (int i = 0; i < actual_hessian.rows(); ++i)
+				// 	for (int i = 0; i < actual_hessian.rows(); ++i)
 				// 	{
-				// 		double hhh = 1e-7;
+				// 		double hhh = 1e-6;
 				// 		VectorXd xp = tmp_sol; xp(i) += hhh;
 				// 		VectorXd xm = tmp_sol; xm(i) -= hhh;
 
@@ -3297,14 +3291,14 @@ void State::solve_problem()
 
 				// 		const double fd = (vp-vm)/(hhh*2.);
 				// 		const double  diff = std::abs(actual_grad(i) - fd);
-				// 		// if(diff > 1e-6)
-				// 		// 	std::cout<<"diff grad "<<i<<": "<<actual_grad(i)<<" vs "<<fd <<" error: " <<diff<<" rrr: "<<actual_grad(i)/fd<<std::endl;
+				// 		if(diff > 1e-5)
+				// 			std::cout<<"diff grad "<<i<<": "<<actual_grad(i)<<" vs "<<fd <<" error: " <<diff<<" rrr: "<<actual_grad(i)/fd<<std::endl;
 
 				// 		for(int j = 0; j < actual_hessian.rows(); ++j)
 				// 		{
 				// 			const double diff = std::abs(actual_hessian(i,j) - fd_h(j));
 
-				// 			if(diff > 1e-5)
+				// 			if(diff > 1e-4)
 				// 				std::cout<<"diff H "<<i<<", "<<j<<": "<<actual_hessian(i,j)<<" vs "<<fd_h(j)<<" error: " <<diff<<" rrr: "<<actual_hessian(i,j)/fd_h(j)<<std::endl;
 
 				// 		}

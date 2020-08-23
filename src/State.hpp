@@ -90,7 +90,8 @@ namespace polyfem
 		Eigen::MatrixXd sol, pressure;
 
 		Eigen::MatrixXd boundary_nodes_pos;
-		Eigen::MatrixXi boundary_elements;
+		Eigen::MatrixXi boundary_edges;
+		Eigen::MatrixXi boundary_triangles;
 
 		Eigen::Vector4d spectrum;
 
