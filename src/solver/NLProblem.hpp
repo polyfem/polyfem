@@ -101,6 +101,9 @@ namespace polyfem
 		bool rhs_computed;
 		bool is_time_dependent;
 
+		double _dhat_squared;
+		double _barrier_stiffness;
+
 		double dt;
 		TVector x_prev, v_prev;
 

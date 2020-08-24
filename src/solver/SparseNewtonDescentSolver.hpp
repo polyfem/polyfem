@@ -179,6 +179,14 @@ public:
 		double old_energy = std::nan("");
 		double first_energy = std::nan("");
 		error_code_ = 0;
+
+		time.start();
+		objFunc.gradient(x0, grad);
+		time.stop();
+
+		polyfem::logger().debug("\tgrad time {}s norm: {}", time.getElapsedTimeInSec(), grad.norm());
+		grad_time += time.getElapsedTimeInSec();
+
 		do
 		{
 			const size_t iter = this->m_current.iterations;
@@ -208,13 +216,6 @@ public:
 				}
 			}
 
-			time.start();
-			objFunc.gradient(x0, grad);
-			time.stop();
-
-			polyfem::logger().debug("\tgrad time {}s norm: {}", time.getElapsedTimeInSec(), grad.norm());
-			grad_time += time.getElapsedTimeInSec();
-
 			// std::cout<<hessian<<std::endl;
 			time.start();
 
@@ -225,6 +226,15 @@ public:
 				solver->factorize(hessian);
 			}
 			solver->solve(grad, delta_x);
+
+			//gradient descent, check descent direction
+			const double residual = (hessian*delta_x - grad).norm();
+			if (std::isnan(residual) || residual  > 1e-8)
+			{
+				polyfem::logger().debug("\treverting to gradient descent, since residual is {}", residual);
+
+				delta_x = grad;
+			}
 
 			delta_x *= -1;
 
@@ -258,6 +268,13 @@ public:
 			}
 
 			x0 += rate * delta_x;
+
+			time.start();
+			objFunc.gradient(x0, grad);
+			time.stop();
+
+			polyfem::logger().debug("\tgrad time {}s norm: {}", time.getElapsedTimeInSec(), grad.norm());
+			grad_time += time.getElapsedTimeInSec();
 
 			polyfem::logger().debug("\tlinesearch time {}s", time.getElapsedTimeInSec());
 			linesearch_time += time.getElapsedTimeInSec();

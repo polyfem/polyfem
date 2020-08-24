@@ -22,6 +22,9 @@ namespace polyfem
 		  t(t), rhs_computed(false), is_time_dependent(state.problem->is_time_dependent())
 	{
 		assert(!assembler.is_mixed(state.formulation()));
+
+		_dhat_squared = 1e-6;
+		_barrier_stiffness = 50;
 	}
 
 	void NLProblem::init_timestep(const TVector &x_prev, const TVector &v_prev, const double dt)
@@ -110,9 +113,9 @@ namespace polyfem
 		assert(reshaped1(0, 0) == full1(0));
 		assert(reshaped0(0, 1) == full0(1));
 		assert(reshaped1(0, 1) == full1(1));
-
+		// static int vvvv = 0;
 		// {
-		// 	std::ofstream out("test0.obj");
+		// 	std::ofstream out("test_"+std::to_string(vvvv)+"_0.obj");
 		// 	for (int i = 0; i < state.boundary_nodes_pos.rows(); ++i)
 		// 		out << "v " << state.boundary_nodes_pos(i, 0) + reshaped0(i, 0) << " " << state.boundary_nodes_pos(i, 1) + reshaped0(i, 1) << " 0\n";
 
@@ -122,7 +125,7 @@ namespace polyfem
 		// }
 
 		// {
-		// 	std::ofstream out("test1.obj");
+		// 	std::ofstream out("test_"+std::to_string(vvvv)+"_1.obj");
 		// 	for (int i = 0; i < state.boundary_nodes_pos.rows(); ++i)
 		// 		out << "v " << state.boundary_nodes_pos(i, 0) + reshaped1(i, 0) << " " << state.boundary_nodes_pos(i, 1) + reshaped1(i, 1) << " 0\n";
 
@@ -131,10 +134,15 @@ namespace polyfem
 		// 	out.close();
 		// }
 
+		// vvvv++;
+
+		const bool is_valid = !ipc::is_step_collision_free(state.boundary_nodes_pos + reshaped0, state.boundary_nodes_pos + reshaped1, state.boundary_edges, state.boundary_triangles);
+		// std::cout << "is_valid " << is_valid << std::endl;
+
 		// std::cout<<"state.boundary_nodes_pos + reshaped\n"<<full<<std::endl;
 		// std::cout<<"state.boundary_nodes_pos + reshaped\n"<<reshaped<<std::endl;
 
-		return !ipc::is_step_collision_free(state.boundary_nodes_pos + reshaped0, state.boundary_nodes_pos + reshaped1, state.boundary_edges, state.boundary_triangles);
+		return is_valid;
 	}
 
 	double NLProblem::value(const TVector &x)
@@ -187,15 +195,14 @@ namespace polyfem
 			// std::cout<<"state.boundary_nodes_pos + reshaped\n"<<full<<std::endl;
 			// std::cout<<"state.boundary_nodes_pos + reshaped\n"<<reshaped<<std::endl;
 
-			double dhat_squared = 1e-6;
 			ccd::Candidates constraint_set;
-			ipc::construct_constraint_set(state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, dhat_squared, constraint_set);
-			collision_energy = ipc::compute_barrier_potential(state.boundary_nodes_pos, state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, constraint_set, dhat_squared);
+			ipc::construct_constraint_set(state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, _dhat_squared, constraint_set);
+			collision_energy = ipc::compute_barrier_potential(state.boundary_nodes_pos, state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat_squared);
 
 			std::cout << "collision_energy " << collision_energy << std::endl;
 		}
 
-		return scaling * (elastic_energy + body_energy + 1e8 * collision_energy) + intertia_energy;
+		return scaling * (elastic_energy + body_energy + _barrier_stiffness * collision_energy) + intertia_energy;
 	}
 
 	void NLProblem::compute_cached_stiffness()
@@ -260,11 +267,10 @@ namespace polyfem
 			assert(reshaped(0, 0) == full(0));
 			assert(reshaped(0, 1) == full(1));
 
-			double dhat_squared = 1e-6;
 			ccd::Candidates constraint_set;
-			ipc::construct_constraint_set(state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, dhat_squared, constraint_set);
-			grad += 1e8 * ipc::compute_barrier_potential_gradient(state.boundary_nodes_pos, state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, constraint_set, dhat_squared);
-			// std::cout << "collision grad " << ipc::compute_barrier_potential_gradient(state.boundary_nodes_pos, state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, constraint_set, dhat_squared).norm() << std::endl;
+			ipc::construct_constraint_set(state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, _dhat_squared, constraint_set);
+			grad += _barrier_stiffness * ipc::compute_barrier_potential_gradient(state.boundary_nodes_pos, state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat_squared);
+			std::cout << "collision grad " << ipc::compute_barrier_potential_gradient(state.boundary_nodes_pos, state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat_squared).norm() << std::endl;
 		}
 
 		assert(grad.size() == full_size);
@@ -358,10 +364,9 @@ namespace polyfem
 			assert(reshaped(0, 0) == full(0));
 			assert(reshaped(0, 1) == full(1));
 
-			double dhat_squared = 1e-6;
 			ccd::Candidates constraint_set;
-			ipc::construct_constraint_set(state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, dhat_squared, constraint_set);
-			hessian += 1e8 * ipc::compute_barrier_potential_hessian(state.boundary_nodes_pos, state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, constraint_set, dhat_squared);
+			ipc::construct_constraint_set(state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, _dhat_squared, constraint_set);
+			hessian += _barrier_stiffness * ipc::compute_barrier_potential_hessian(state.boundary_nodes_pos, state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat_squared);
 		}
 
 		assert(hessian.rows() == full_size);
