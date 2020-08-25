@@ -1273,7 +1273,7 @@ namespace polyfem
             openvdb::initialize();
             openvdb::FloatGrid::Ptr grid = openvdb::FloatGrid::create();
             openvdb::FloatGrid::Accessor accessor = grid->getAccessor();
-            
+
             for(int i = 0; i <= grid_cell_num(0); i++)
             {
                 for(int j = 0; j <= grid_cell_num(1); j++)
@@ -1281,7 +1281,7 @@ namespace polyfem
                     if(dim == 2)
                     {
                         const int idx = i + j * (grid_cell_num(0)+1);
-                        openvdb::Coord xyz(i, j, 1);
+                        openvdb::Coord xyz(i, j, 0);
                         if(density(idx) > 1e-8)
                             accessor.setValue(xyz, density(idx));
                     }
@@ -1301,7 +1301,8 @@ namespace polyfem
             grid->setGridClass(openvdb::GRID_FOG_VOLUME);
 
             static int num_frame = 0;
-            openvdb::io::File file("density"+std::tostring(num_frame)+".vdb");
+            const std::string filename = "density"+std::to_string(num_frame)+".vdb";
+            openvdb::io::File file(filename.c_str());
             num_frame++;
 
             openvdb::GridPtrVec(grids);
