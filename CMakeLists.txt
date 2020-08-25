@@ -75,6 +75,7 @@ option(POLYFEM_WITH_MMG              "Enable MMG library"                OFF)
 option(POLYFEM_WITH_TBB              "Enable TBB"                        ON)
 option(POLYFEM_WITH_OPENCL           "Enable OpenCL"                     OFF)
 option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
+option(POLYFEM_WITH_OPENVDB          "Enable OpenVDB"                    OFF)
 
 option(POLYFEM_WITH_APPS      "Build the apps"          ON)
 option(POLYFEM_WITH_MISC      "Build misc targes"       ON)
@@ -86,13 +87,13 @@ option(POLYFEM_SANITIZE_THREAD    "Sanitize Thread"        OFF)
 option(POLYFEM_SANITIZE_UNDEFINED "Sanitize Undefined"     OFF)
 
 #Solver
-option(POLYSOLVE_WITH_CHOLMOD          "Enable Cholmod library"            ON)
-option(POLYSOLVE_WITH_UMFPACK          "Enable UmfPack library"            ON)
-option(POLYSOLVE_WITH_SUPERLU          "Enable SuperLU library"            ON)
+option(POLYSOLVE_WITH_CHOLMOD          "Enable Cholmod library"            OFF)
+option(POLYSOLVE_WITH_UMFPACK          "Enable UmfPack library"            OFF)
+option(POLYSOLVE_WITH_SUPERLU          "Enable SuperLU library"            OFF)
 option(POLYSOLVE_WITH_MKL              "Enable MKL library"                OFF)
-option(POLYSOLVE_WITH_PARDISO          "Enable Pardiso library"            ON)
+option(POLYSOLVE_WITH_PARDISO          "Enable Pardiso library"            OFF)
 option(POLYSOLVE_WITH_HYPRE            "Enable hypre"                      OFF)
-option(POLYSOLVE_WITH_AMGCL            "Use AMGCL"                         ON)
+option(POLYSOLVE_WITH_AMGCL            "Use AMGCL"                         OFF)
 option(POLYSOLVE_WITH_SPECTRA          "Enable computing spectrum"         OFF)
 option(POLYSOLVE_LARGE_INDEX    "Build for large indices"                  OFF)
 
@@ -267,6 +268,15 @@ if(POLYFEM_WITH_TBB)
     target_compile_definitions(tbb_static PUBLIC -DPOLYFEM_WITH_TBB)
     target_include_directories(polyfem SYSTEM PUBLIC ${THIRD_PARTY_DIR}/tbb/include)
     target_link_libraries(polyfem PUBLIC tbb_static)
+endif()
+
+# OpenVDB
+if(POLYFEM_WITH_OPENVDB)
+    find_package(OpenVDB)
+    if(OpenVDB_FOUND)
+        target_link_libraries(polyfem PUBLIC OpenVDB::openvdb)
+        target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_OPENVDB)
+    endif()
 endif()
 
 # libigl

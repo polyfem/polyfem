@@ -13,6 +13,10 @@
 #include <tbb/tbb.h>
 #endif
 
+#ifdef POLYFEM_WITH_OPENVDB
+#include <openvdb/openvdb.h>
+#endif
+
 using namespace polysolve;
 
 namespace polyfem
@@ -21,11 +25,69 @@ namespace polyfem
     class OperatorSplittingSolver
     {
     public:
+        void initialize_grid(const polyfem::Mesh& mesh, const std::vector<polyfem::ElementBases>& gbases, const std::vector<polyfem::ElementBases>& bases)
+        {
+            Eigen::MatrixXd p0, p1, p;
+            mesh.get_edges(p0, p1);
+            p = p0 - p1;
+            resolution = p.rowwise().norm().minCoeff() / 5;
+
+            grid_cell_num = RowVectorNd::Zero(dim);
+            for(int d = 0; d < dim; d++)
+            {
+                grid_cell_num(d) = ceil((max_domain(d) - min_domain(d)) / resolution);
+            }
+            if(dim == 2)
+                density = Eigen::VectorXd::Zero((grid_cell_num(0)+1) * (grid_cell_num(1)+1));
+            else
+                density = Eigen::VectorXd::Zero((grid_cell_num(0)+1) * (grid_cell_num(1)+1) * (grid_cell_num(2)+1));
+
+            // Eigen::MatrixXd local_pos;
+            // RowVectorNd pts = RowVectorNd::Zero(dim);
+            // density_cell_no = Eigen::VectorXi::Zero(density.size());
+            // density_local_weights.resize(density.size());
+            // for(int i = 0; i <= grid_cell_num(0); i++)
+            // {
+            //     pts(0) = i * resolution + min_domain(0);
+            //     for(int j = 0; j <= grid_cell_num(1); j++)
+            //     {
+            //         pts(1) = j * resolution + min_domain(1);
+            //         if(dim == 2)
+            //         {
+            //             const int idx = i + j * (grid_cell_num(0)+1);
+            //             const int elem_id = search_cell(gbases, pts, local_pos);
+            //             density_cell_no(idx) = elem_id;
+            //             if(elem_id != -1)
+            //             {
+            //                 calculate_local_pts(gbases[elem_id], elem_id, pts, local_pos);
+            //                 density_local_weights[idx].compute(elem_id, dim == 3, local_pos, bases[elem_id], gbases[elem_id]);
+            //             }
+            //         }
+            //         else
+            //         {
+            //             for(int k = 0; k <= grid_cell_num(2); k++)
+            //             {
+            //                 pts(2) = k * resolution + min_domain(2);
+            //                 const int idx = i + (j + k*(grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
+            //                 const int elem_id = search_cell(gbases, pts, local_pos);
+            //                 density_cell_no(idx) = elem_id;
+            //                 if(elem_id != -1)
+            //                 {
+            //                     calculate_local_pts(gbases[elem_id], elem_id, pts, local_pos);
+            //                     density_local_weights[idx].compute(elem_id, dim == 3, local_pos, bases[elem_id], gbases[elem_id]);
+            //                 }
+            //             }
+            //         }
+            //     }
+            // }
+        }
+
         void initialize_mesh(const polyfem::Mesh& mesh, 
         const int shape, const int n_el,
         const std::vector<polyfem::LocalBoundary>& local_boundary)
         {
             dim = mesh.dimension();
+            mesh.bounding_box(min_domain, max_domain);
 
             const int size = local_boundary.size();
             boundary_elem_id.reserve(size);
@@ -56,7 +118,8 @@ namespace polyfem
 
         void initialize_hashtable()
         {
-            hash_table.resize((int)pow(cell_num, dim));
+            hash_table_cell_num = (int)pow(n_el, 1./dim);
+            hash_table.resize((int)pow(hash_table_cell_num, dim));
             for(int e = 0; e < T.rows(); e++)
             {
                 Eigen::VectorXd min_ = V.row(T(e, 0));
@@ -76,14 +139,14 @@ namespace polyfem
 
                 for(int d = 0; d < dim; d++)
                 {
-                    double temp = cell_num / (max_domain(d) - min_domain(d));
+                    double temp = hash_table_cell_num / (max_domain(d) - min_domain(d));
                     min_int(d) = floor((min_(d) - min_domain(d)) * temp);
                     max_int(d) = ceil((max_(d) - min_domain(d)) * temp);
 
                     if(min_int(d) < 0) 
                         min_int(d) = 0;
-                    if(max_int(d) > cell_num)
-                        max_int(d) = cell_num;
+                    if(max_int(d) > hash_table_cell_num)
+                        max_int(d) = hash_table_cell_num;
                 }
 
                 for(int x = min_int(0); x < max_int(0); x++)
@@ -92,14 +155,14 @@ namespace polyfem
                     {
                         if(dim == 2)
                         {
-                            int idx = x + y * cell_num;
+                            int idx = x + y * hash_table_cell_num;
                             hash_table[idx].push_front(e);
                         }
                         else
                         {
                             for(int z = min_int(2); z < max_int(2); z++)
                             {
-                                int idx = x + (y + z * cell_num) * cell_num;
+                                int idx = x + (y + z * hash_table_cell_num) * hash_table_cell_num;
                                 hash_table[idx].push_front(e);
                             }
                         }
@@ -120,10 +183,6 @@ namespace polyfem
             boundary_nodes = boundary_nodes_;
 
             initialize_mesh(mesh, shape, n_el, local_boundary);
-
-            cell_num = (int)pow(n_el, 1./dim);
-            mesh.bounding_box(min_domain, max_domain);
-
             initialize_hashtable();
         }
 
@@ -147,9 +206,9 @@ namespace polyfem
         const std::string &solver_type, 
         const std::string &precond,
         const json& params,
-        const std::string &save_path) : shape(shape), n_el(n_el), boundary_nodes(boundary_nodes), solver_type(solver_type), precond(precond), params(params)
+        const std::string &save_path) : solver_type(solver_type), precond(precond), params(params)
         {
-            initialize_mesh(mesh, shape, n_el, local_boundary);
+            initialize_solver(mesh, shape, n_el, local_boundary, boundary_nodes);
 
             mat_diffusion = mass + viscosity_ * dt * stiffness_viscosity;
             
@@ -191,11 +250,6 @@ namespace polyfem
                 StiffnessMatrix mat2 = mat_projection;
                 prefactorize(*solver_projection, mat2, std::vector<int>(), mat2.rows() - 1, save_path);
             }
-
-            cell_num = (int)pow(n_el, 1./dim);
-            mesh.bounding_box(min_domain, max_domain);
-
-            initialize_hashtable();
         }
 
         void export_3d_mesh(const std::string& export_mesh_path)
@@ -292,38 +346,62 @@ namespace polyfem
             }
         }
 
-        void trace_back_with_density(const std::vector<polyfem::ElementBases>& gbases, 
+        void trace_back_density(const std::vector<polyfem::ElementBases>& gbases, 
         const std::vector<polyfem::ElementBases>& bases, 
-        const RowVectorNd& pos_1, 
-        const RowVectorNd& vel_1, 
-        RowVectorNd& pos_2, 
-        RowVectorNd& vel_2, 
+        const RowVectorNd& pos_1,
+        double& val, 
         const Eigen::MatrixXd& sol,
-        double& density_2, 
-        const Eigen::MatrixXd& density,
         const double dt)
         {
-            int new_elem;
+            val = 0;
+            int elem_id;
             Eigen::MatrixXd local_pos;
+            elem_id = search_cell(gbases, pos_1, local_pos);
+            if(elem_id == -1) return; // density outside of domain = 0
 
-            pos_2 = pos_1 - vel_1 * dt;
-
-            if((new_elem = search_cell(gbases, pos_2, local_pos)) == -1)
-            {
-                new_elem = handle_boundary_advection(pos_2);
-                calculate_local_pts(gbases[new_elem], new_elem, pos_2, local_pos);
-            }
-
-            // interpolation
-            density_2 = 0;
-            vel_2 = RowVectorNd::Zero(dim);
+            // vel_2 <- velocity at pos_1
+            calculate_local_pts(gbases[elem_id], elem_id, pos_1, local_pos);
+            RowVectorNd vel_2 = RowVectorNd::Zero(dim);
             ElementAssemblyValues vals;
-            vals.compute(new_elem, dim == 3, local_pos, bases[new_elem], gbases[new_elem]);
-            for (int i = 0; i < vals.basis_values.size(); i++)
+            vals.compute(elem_id, dim == 3, local_pos, bases[elem_id], gbases[elem_id]);
+            for (int d = 0; d < dim; d++)
             {
-                density_2 += vals.basis_values[i].val(0) * density(bases[new_elem].bases[i].global()[0].index);
-                for (int d = 0; d < dim; d++)
-                    vel_2(d) += vals.basis_values[i].val(0) * sol(bases[new_elem].bases[i].global()[0].index * dim + d);
+                for (int i = 0; i < vals.basis_values.size(); i++)
+                {
+                    vel_2(d) += vals.basis_values[i].val(0) * sol(bases[elem_id].bases[i].global()[0].index * dim + d);
+                }
+            }
+            // RK1
+            RowVectorNd pos_2 = pos_1 - vel_2 * dt;
+
+            Eigen::VectorXi int_pos(dim);
+            Eigen::MatrixXd weights(2, dim);
+            for(int d = 0; d < dim; d++)
+            {
+                int_pos(d) = floor((pos_2(d) - min_domain(d)) / resolution);
+                if(int_pos(d) < 0 || int_pos(d) >= grid_cell_num(d)) return;
+                weights(1, d) = (pos_2(d) - min_domain(d)) / resolution - int_pos(d);
+                weights(0, d) = 1 - weights(1, d);
+            }
+            
+            for(int d1 = 0; d1 < 2; d1++)
+            {
+                for(int d2 = 0; d2 < 2; d2++)
+                {
+                    if(dim == 2)
+                    {
+                        const int idx = (int_pos(0) + d1) + (int_pos(1) + d2) * (grid_cell_num(0)+1);
+                        val += density(idx) * weights(d1, 0) * weights(d2, 1);
+                    }
+                    else
+                    {
+                        for(int d3 = 0; d3 < 2; d3++)
+                        {
+                            const int idx = (int_pos(0) + d1) + (int_pos(1) + d2 + (int_pos(2) + d3) * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
+                            val += density(idx) * weights(d1, 0) * weights(d2, 1) * weights(d3, 2);
+                        }
+                    }
+                }
             }
         }
 
@@ -429,171 +507,36 @@ namespace polyfem
             sol.swap(new_sol);
         }
 
-        void advect_density(const polyfem::Mesh& mesh, 
-        const std::vector<polyfem::ElementBases>& gbases, 
+        void advect_density(const std::vector<polyfem::ElementBases>& gbases,
         const std::vector<polyfem::ElementBases>& bases, 
         const Eigen::MatrixXd& sol, 
-        Eigen::MatrixXd& density,
-        const double dt, 
-        const Eigen::MatrixXd& local_pts, 
-        const int order = 1,
-        const int RK = 1)
+        const double dt)
         {
-            // to store new data
-            Eigen::MatrixXd new_density = Eigen::MatrixXd::Zero(density.size(), 1);
-            // number of FEM nodes
-            const int n_vert = sol.size() / dim;
-            Eigen::VectorXi traversed = Eigen::VectorXi::Zero(n_vert);
-
-#ifdef POLYFEM_WITH_TBB
-            tbb::parallel_for(0, n_el, 1, [&](int e)
-#else
-            for (int e = 0; e < n_el; ++e)
-#endif
+            Eigen::VectorXd new_density = Eigen::VectorXd::Zero(density.size());
+            RowVectorNd pos(1, dim);
+            for(int i = 0; i <= grid_cell_num(0); i++)
             {
-                // geometry vertices of element e
-                std::vector<RowVectorNd> vert(shape, RowVectorNd::Zero(1, dim));
-                for (int i = 0; i < shape; i++)
+                pos(0) = i * resolution + min_domain(0);
+                for(int j = 0; j <= grid_cell_num(1); j++)
                 {
-                    int tmp = mesh.cell_vertex_(e, i);
-                    for(int d = 0; d < dim; d++)
-                        vert[i](d) = mesh.point(tmp)(d);
-                }
-
-                // to compute global position with barycentric coordinate
-                ElementAssemblyValues gvals;
-                gvals.compute(e, dim == 3, local_pts, gbases[e], gbases[e]);
-
-                for (int i = 0; i < local_pts.rows(); i++)
-                {
-                    // global index of this FEM node
-                    int global = bases[e].bases[i].global()[0].index;
-
-                    if (traversed(global)) continue;
-                    traversed(global) = 1;
-
-                    RowVectorNd vel_1[4], pos_1[4];
-                    double den_1[4];
-
-                    // velocity of this FEM node
-                    vel_1[0] = sol.block(global * dim, 0, dim, 1).transpose();
-                    den_1[0] = density(global);
-
-                    // global position of this FEM node
-                    pos_1[0] = RowVectorNd::Zero(1, dim);
-                    for (int j = 0; j < shape; j++)
+                    pos(1) = j * resolution + min_domain(1);
+                    if(dim == 2)
                     {
-                        pos_1[0] += gvals.basis_values[j].val(i) * vert[j];
+                        const int idx = i + j * (grid_cell_num(0)+1);
+                        trace_back_density(gbases, bases, pos, new_density[idx], sol, dt);
                     }
-
-                    if(RK>=3)
+                    else
                     {
-                        trace_back_with_density( gbases, bases, pos_1[0], vel_1[0], pos_1[1], vel_1[1], sol, den_1[1], density, 0.5 * dt);
-                        trace_back_with_density( gbases, bases, pos_1[0], vel_1[1], pos_1[2], vel_1[2], sol, den_1[2], density, 0.75 * dt);
-                        trace_back_with_density( gbases, bases, pos_1[0], 2 * vel_1[0] + 3 * vel_1[1] + 4 * vel_1[2], pos_1[3], vel_1[3], sol, den_1[3], density, dt / 9);
+                        for(int k = 0; k <= grid_cell_num(2); k++)
+                        {
+                            pos(2) = k * resolution + min_domain(2);
+                            const int idx = i + (j + k * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
+                            trace_back_density(gbases, bases, pos, new_density[idx], sol, dt);
+                        }
                     }
-                    else if(RK==2)
-                    {
-                        trace_back_with_density( gbases, bases, pos_1[0], vel_1[0], pos_1[1], vel_1[1], sol, den_1[1], density, 0.5 * dt);
-                        trace_back_with_density( gbases, bases, pos_1[0], vel_1[1], pos_1[3], vel_1[3], sol, den_1[3], density, dt);
-                    }
-                    else if(RK==1)
-                    {
-                        trace_back_with_density( gbases, bases, pos_1[0], vel_1[0], pos_1[3], vel_1[3], sol, den_1[3], density, dt);
-                    }
-
-                    new_density(global) = den_1[3];
                 }
             }
-#ifdef POLYFEM_WITH_TBB
-            );
-#endif
             density.swap(new_density);
-        }
-        
-        void advection_with_density(const polyfem::Mesh& mesh, 
-        const std::vector<polyfem::ElementBases>& gbases, 
-        const std::vector<polyfem::ElementBases>& bases, 
-        Eigen::MatrixXd& sol, 
-        Eigen::MatrixXd& density,
-        const double dt, 
-        const Eigen::MatrixXd& local_pts, 
-        const int order = 1,
-        const int RK = 1)
-        {
-            // to store new data
-            Eigen::MatrixXd new_sol = Eigen::MatrixXd::Zero(sol.size(), 1);
-            Eigen::MatrixXd new_density = Eigen::MatrixXd::Zero(density.size(), 1);
-            // number of FEM nodes
-            const int n_vert = sol.size() / dim;
-            Eigen::VectorXi traversed = Eigen::VectorXi::Zero(n_vert);
-
-#ifdef POLYFEM_WITH_TBB
-            tbb::parallel_for(0, n_el, 1, [&](int e)
-#else
-            for (int e = 0; e < n_el; ++e)
-#endif
-            {
-                // geometry vertices of element e
-                std::vector<RowVectorNd> vert(shape, RowVectorNd::Zero(1, dim));
-                for (int i = 0; i < shape; i++)
-                {
-                    int tmp = mesh.cell_vertex_(e, i);
-                    for(int d = 0; d < dim; d++)
-                        vert[i](d) = mesh.point(tmp)(d);
-                }
-
-                // to compute global position with barycentric coordinate
-                ElementAssemblyValues gvals;
-                gvals.compute(e, dim == 3, local_pts, gbases[e], gbases[e]);
-
-                for (int i = 0; i < local_pts.rows(); i++)
-                {
-                    // global index of this FEM node
-                    int global = bases[e].bases[i].global()[0].index;
-
-                    if (traversed(global)) continue;
-                    traversed(global) = 1;
-
-                    RowVectorNd vel_1[4], pos_1[4];
-                    double den_1[4];
-
-                    // velocity of this FEM node
-                    vel_1[0] = sol.block(global * dim, 0, dim, 1).transpose();
-                    den_1[0] = density(global);
-
-                    // global position of this FEM node
-                    pos_1[0] = RowVectorNd::Zero(1, dim);
-                    for (int j = 0; j < shape; j++)
-                    {
-                        pos_1[0] += gvals.basis_values[j].val(i) * vert[j];
-                    }
-
-                    if(RK>=3)
-                    {
-                        trace_back_with_density( gbases, bases, pos_1[0], vel_1[0], pos_1[1], vel_1[1], sol, den_1[1], density, 0.5 * dt);
-                        trace_back_with_density( gbases, bases, pos_1[0], vel_1[1], pos_1[2], vel_1[2], sol, den_1[2], density, 0.75 * dt);
-                        trace_back_with_density( gbases, bases, pos_1[0], 2 * vel_1[0] + 3 * vel_1[1] + 4 * vel_1[2], pos_1[3], vel_1[3], sol, den_1[3], density, dt / 9);
-                    }
-                    else if(RK==2)
-                    {
-                        trace_back_with_density( gbases, bases, pos_1[0], vel_1[0], pos_1[1], vel_1[1], sol, den_1[1], density, 0.5 * dt);
-                        trace_back_with_density( gbases, bases, pos_1[0], vel_1[1], pos_1[3], vel_1[3], sol, den_1[3], density, dt);
-                    }
-                    else if(RK==1)
-                    {
-                        trace_back_with_density( gbases, bases, pos_1[0], vel_1[0], pos_1[3], vel_1[3], sol, den_1[3], density, dt);
-                    }
-
-                    new_density(global) = den_1[3];
-                    new_sol.block(global * dim, 0, dim, 1) = vel_1[3].transpose();
-                }
-            }
-#ifdef POLYFEM_WITH_TBB
-            );
-#endif
-            density.swap(new_density);
-            sol.swap(new_sol);
         }
         
         void advection_FLIP(const polyfem::Mesh& mesh, const std::vector<polyfem::ElementBases>& gbases, const std::vector<polyfem::ElementBases>& bases, Eigen::MatrixXd& sol, const double dt, const Eigen::MatrixXd& local_pts, const int order = 1)
@@ -1187,115 +1130,51 @@ namespace polyfem
 #endif
         }
 
-        void initialize_density(const std::vector<polyfem::ElementBases>& gbases, 
-        const std::vector<polyfem::ElementBases>& bases, 
-        const std::shared_ptr<Problem> problem, 
-        Eigen::MatrixXd& density, 
-        const Eigen::MatrixXd& local_pts)
+        void initialize_density(const std::shared_ptr<Problem> problem)
         {
-#ifdef POLYFEM_WITH_TBB
-            tbb::parallel_for(0, n_el, 1, [&](int e)
-#else
-            for (int e = 0; e < n_el; ++e)
-#endif
+            Eigen::MatrixXd pts(1, dim);
+            Eigen::MatrixXd tmp;
+            for(int i = 0; i <= grid_cell_num(0); i++)
             {
-                // to compute global position with barycentric coordinate
-                ElementAssemblyValues gvals;
-                gvals.compute(e, dim == 3, local_pts, gbases[e], gbases[e]);
-
-                Eigen::VectorXi global(local_pts.rows());
-                Eigen::MatrixXd den;
-                Eigen::MatrixXd pts = Eigen::MatrixXd::Zero(local_pts.rows(), dim);
-
-                for (int i = 0; i < local_pts.rows(); i++)
+                pts(0, 0) = i * resolution + min_domain(0);
+                for(int j = 0; j <= grid_cell_num(1); j++)
                 {
-                    for (int j = 0; j < shape; j++)
+                    pts(0, 1) = j * resolution + min_domain(1);
+                    if(dim == 2)
                     {
-                        for (int d = 0; d < dim; d++)
-                        {
-                            pts(i, d) += V(T(e, j), d) * gvals.basis_values[j].val(i);
-                        }
+                        const int idx = i + j * (grid_cell_num(0)+1);
+                        problem->initial_density(pts, tmp);
+                        density(idx) = tmp(0);
                     }
-                    global(i) = bases[e].bases[i].global()[0].index;
-                }
-
-                problem->initial_density(pts, den);
-
-                for (int i = 0; i < local_pts.rows(); i++)
-                {
-                    density(global(i)) = den(i);
-                }
-            }
-#ifdef POLYFEM_WITH_TBB
-            );
-#endif
-        }
-        
-        void initialize_solution(const std::vector<polyfem::ElementBases>& gbases, 
-        const std::vector<polyfem::ElementBases>& bases, 
-        const std::shared_ptr<Problem> problem, 
-        Eigen::MatrixXd& sol,
-        Eigen::MatrixXd& density, 
-        const Eigen::MatrixXd& local_pts)
-        {
-#ifdef POLYFEM_WITH_TBB
-            tbb::parallel_for(0, n_el, 1, [&](int e)
-#else
-            for (int e = 0; e < n_el; ++e)
-#endif
-            {
-                // to compute global position with barycentric coordinate
-                ElementAssemblyValues gvals;
-                gvals.compute(e, dim == 3, local_pts, gbases[e], gbases[e]);
-
-                Eigen::VectorXi global(local_pts.rows());
-                Eigen::MatrixXd den, val;
-                Eigen::MatrixXd pts = Eigen::MatrixXd::Zero(local_pts.rows(), dim);
-
-                for (int i = 0; i < local_pts.rows(); i++)
-                {
-                    for (int j = 0; j < shape; j++)
+                    else
                     {
-                        for (int d = 0; d < dim; d++)
+                        for(int k = 0; k <= grid_cell_num(2); k++)
                         {
-                            pts(i, d) += V(T(e, j), d) * gvals.basis_values[j].val(i);
+                            pts(0, 2) = k * resolution + min_domain(2);
+                            const int idx = i + (j + k * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
+                            problem->initial_density(pts, tmp);
+                            density(idx) = tmp(0);
                         }
-                    }
-                    global(i) = bases[e].bases[i].global()[0].index;
-                }
-
-                problem->initial_density(pts, den);
-                problem->initial_solution(pts, val);
-
-                for (int i = 0; i < local_pts.rows(); i++)
-                {
-                    density(global(i)) = den(i);
-                    for (int d = 0; d < dim; d++)
-                    {
-                        sol(global(i) * dim + d) = val(i, d);
                     }
                 }
             }
-#ifdef POLYFEM_WITH_TBB
-            );
-#endif
         }
 
-        int search_cell(const std::vector<polyfem::ElementBases>& gbases, RowVectorNd& pos, Eigen::MatrixXd& local_pts)
+        int search_cell(const std::vector<polyfem::ElementBases>& gbases, const RowVectorNd& pos, Eigen::MatrixXd& local_pts)
         {
             Eigen::VectorXi pos_int(dim);
             for(int d = 0; d < dim; d++)
             {
-                pos_int(d) = floor((pos(d) - min_domain(d)) / (max_domain(d) - min_domain(d)) * cell_num);
+                pos_int(d) = floor((pos(d) - min_domain(d)) / (max_domain(d) - min_domain(d)) * hash_table_cell_num);
                 if(pos_int(d) < 0) pos_int(d) = 0;
-                else if(pos_int(d) >= cell_num) pos_int(d) = cell_num - 1;
+                else if(pos_int(d) >= hash_table_cell_num) pos_int(d) = hash_table_cell_num - 1;
             }
 
             int idx = 0, dim_num = 1;
             for(int d = 0; d < dim; d++)
             {
                 idx += pos_int(d) * dim_num;
-                dim_num *= cell_num;
+                dim_num *= hash_table_cell_num;
             }
 
             const std::list<int>& list = hash_table[idx];
@@ -1388,6 +1267,137 @@ namespace polyfem
             }
         }
 
+        void save_density()
+        {
+#ifdef POLYFEM_WITH_OPENVDB
+            openvdb::initialize();
+            openvdb::FloatGrid::Ptr grid = openvdb::FloatGrid::create();
+            openvdb::FloatGrid::Accessor accessor = grid->getAccessor();
+            
+            for(int i = 0; i <= grid_cell_num(0); i++)
+            {
+                for(int j = 0; j <= grid_cell_num(1); j++)
+                {
+                    if(dim == 2)
+                    {
+                        const int idx = i + j * (grid_cell_num(0)+1);
+                        openvdb::Coord xyz(i, j, 1);
+                        if(density(idx) > 1e-8)
+                            accessor.setValue(xyz, density(idx));
+                    }
+                    else
+                    {
+                        for(int k = 0; k <= grid_cell_num(2); k++)
+                        {
+                            const int idx = i + (j + k * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
+                            Openvdb::Coord xyz(i, j, k);
+                            if(density(idx) > 1e-8)
+                                accessor.setValue(xyz, density(idx));
+                        }
+                    }
+                }
+            }
+            grid->setName("density_smoke");
+            grid->setGridClass(openvdb::GRID_FOG_VOLUME);
+
+            static int num_frame = 0;
+            openvdb::io::File file("density"+std::tostring(num_frame)+".vdb");
+            num_frame++;
+
+            openvdb::GridPtrVec(grids);
+            grids.push_back(grid);
+            file.write(grids);
+            file.close();
+#else
+            Eigen::MatrixXd points(3, density.size());
+            Eigen::MatrixXd field(density.size(), 1);
+            Eigen::MatrixXi tets;
+            if(dim == 2) tets.resize(grid_cell_num(0)*grid_cell_num(1), 4);
+            else tets.resize(grid_cell_num(0)*grid_cell_num(1)*grid_cell_num(2), 8);
+            for(int i = 0; i < grid_cell_num(0); i++)
+            {
+                for(int j = 0; j < grid_cell_num(1); j++)
+                {
+                    if(dim == 2)
+                    {
+                        const int idx = i + j * grid_cell_num(0);
+                        tets(idx, 0) = i + j * (grid_cell_num(0)+1);
+                        tets(idx, 1) = (i+1) + j * (grid_cell_num(0)+1);
+                        tets(idx, 2) = (i+1) + (j+1) * (grid_cell_num(0)+1);
+                        tets(idx, 3) = i + (j+1) * (grid_cell_num(0)+1);
+                    }
+                    else
+                    {
+                        for(int k = 0; k < grid_cell_num(2); k++)
+                        {
+                            const int idx = i + (j + k * grid_cell_num(1)) * grid_cell_num(0);
+                            tets(idx, 0) = i + (j + k * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
+                            tets(idx, 1) = (i+1) + (j + k * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
+                            tets(idx, 2) = (i+1) + ((j+1) + k * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
+                            tets(idx, 3) = i + ((j+1) + k * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
+                            tets(idx, 4) = i + (j + (k+1) * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
+                            tets(idx, 5) = (i+1) + (j + (k+1) * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
+                            tets(idx, 6) = (i+1) + ((j+1) + (k+1) * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
+                            tets(idx, 7) = i + ((j+1) + (k+1) * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
+                        }
+                    }
+                }
+            }
+            for(int i = 0; i <= grid_cell_num(0); i++)
+            {
+                for(int j = 0; j <= grid_cell_num(1); j++)
+                {
+                    if(dim == 2)
+                    {
+                        const int idx = i + j * (grid_cell_num(0)+1);
+                        field(idx) = density(idx);
+                        points(0, idx) = i * resolution + min_domain(0);
+                        points(1, idx) = j * resolution + min_domain(1);
+                    }
+                    else
+                    {
+                        for(int k = 0; k <= grid_cell_num(2); k++)
+                        {
+                            const int idx = i + (j + k * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
+                            field(idx) = density(idx);
+                            points(0, idx) = i * resolution + min_domain(0);
+                            points(1, idx) = j * resolution + min_domain(1);
+                            points(2, idx) = k * resolution + min_domain(2);
+                        }
+                    }
+                }
+            }
+            static int num_frame = 0;
+            std::string name = "density"+std::to_string(num_frame)+".vtk";
+            std::ofstream file(name.c_str());
+            num_frame++;
+
+            file << "# vtk DataFile Version 2.0\nDensity\nASCII\nDATASET POLYDATA\n";
+            file << "POINTS " << points.cols() << " float\n";
+            for(int i = 0; i < points.cols(); i++)
+            {
+                for(int d = 0; d < dim; d++) file << points(d, i) << " ";
+                if(dim == 2) file << "0";
+                file << "\n";
+            }
+            file << "POLYGONS " << tets.rows() << " " << tets.size()+tets.rows() << std::endl;
+            for(int e = 0; e < tets.rows(); e++)
+            {
+                file << tets.cols() << " ";
+                for(int k = 0; k < tets.cols(); k++) file << tets(e, k) << " ";
+                file << "\n";
+            }
+            file << "POINT_DATA " << density.size() << "\n";
+            file << "SCALARS density float 1\n";
+            file << "LOOKUP_TABLE my_table\n";
+            for(int i = 0; i < density.size(); i++)
+            {
+                file << density(i) << "\n";
+            }
+            file.close();
+#endif
+        }
+        
         int dim;
         int n_el;
         int shape;
@@ -1399,7 +1409,7 @@ namespace polyfem
         Eigen::MatrixXi T;
 
         std::vector<std::list<int>> hash_table;
-        int                         cell_num;
+        int                         hash_table_cell_num;
 
         std::vector<RowVectorNd> position_particle;
 		std::vector<RowVectorNd> velocity_particle;
@@ -1419,5 +1429,11 @@ namespace polyfem
         std::string solver_type;
         std::string precond;
         json params;
+
+        Eigen::VectorXd density;
+        // Eigen::VectorXi density_cell_no;
+        // std::vector<ElementAssemblyValues> density_local_weights;
+        RowVectorNd grid_cell_num;
+        double resolution;
     };
 }

@@ -279,13 +279,13 @@ void CollidingBalls::initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixX
 		{
 			const double z = pts(i, 2);
 
-			double r1 = sqrt(pow(x-0.04,2)+pow(y-0.2,2)+pow(z-0.2,2));
-			double r2 = sqrt(pow(x-0.16,2)+pow(y-0.2,2)+pow(z-0.2,2));
+			double r1 = sqrt(pow(x-0.25,2)+pow(y-0.5,2)+pow(z-0.5,2));
+			double r2 = sqrt(pow(x-0.75,2)+pow(y-0.5,2)+pow(z-0.5,2));
 			
-			if(r1 <= 0.02)
-				val(i, 0) = 0.05;
-			else if(r2 <= 0.02)
-				val(i, 0) = -0.05;
+			if(r1 <= 0.1)
+				val(i, 0) = 0.2;
+			else if(r2 <= 0.1)
+				val(i, 0) = -0.2;
 		}
 	}
 }

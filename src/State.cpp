@@ -2819,11 +2819,13 @@ void State::solve_problem()
 
 			OperatorSplittingSolver ss(*mesh, shape, n_el, local_boundary, bnd_nodes, mass, stiffness_viscosity, stiffness, dt, viscosity_, args["solver_type"], args["precond_type"], params, args["export"]["stiffness_mat"]);
 
-			/* initialize solution */
-			density = Eigen::MatrixXd::Zero(sol.size() / dim, 1);
 			if (args["density"])
-				ss.initialize_density(gbases, bases, problem, density, local_pts);
-			
+			{
+				ss.initialize_grid(*mesh, gbases, bases);
+				ss.initialize_density(problem);
+			}
+			/* initialize solution */
+			ss.initialize_solution(gbases, bases, problem, sol, local_pts);
 			pressure = Eigen::MatrixXd::Zero(n_pressure_bases, 1);
 
 			/* export to vtu */
@@ -2832,27 +2834,23 @@ void State::solve_problem()
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
 				save_vtu("step_" + std::to_string(0) + ".vtu", 0.);
+				if (args["density"])
+					ss.save_density();
 			}
 
 			for (int t = 1; t <= time_steps; t++)
 			{
 				double time = t * dt;
 				logger().info("{}/{} steps, t={}s", t, time_steps, time);
-				
+
+				if(args["density"])
+					ss.advect_density(gbases, bases, sol, dt);
+	
 				/* advection */
 				if(args["particle"])
-				{
-					if(args["density"])
-						ss.advect_density(*mesh, gbases, bases, sol, density, dt, local_pts, args["advection_order"], args["advection_RK"]);
 					ss.advection_FLIP(*mesh, gbases, bases, sol, dt, local_pts, args["advection_order"]);
-				}
 				else
-				{
-					if(args["density"])
-						ss.advection_with_density(*mesh, gbases, bases, sol, density, dt, local_pts, args["advection_order"], args["advection_RK"]);
-					else
-						ss.advection(*mesh, gbases, bases, sol, dt, local_pts, args["advection_order"], args["advection_RK"]);
-				}
+					ss.advection(*mesh, gbases, bases, sol, dt, local_pts, args["advection_order"], args["advection_RK"]);
 
 				/* apply boundary condition */
 				// ss.set_bc(*mesh, bnd_nodes, local_boundary, gbases, bases, sol, local_pts, problem, time);
@@ -2880,6 +2878,8 @@ void State::solve_problem()
 					if (!solve_export_to_file)
 						solution_frames.emplace_back();
 					save_vtu("step_" + std::to_string(t) + ".vtu", time);
+					if (args["density"])
+						ss.save_density();
 				}
 			}
 		}
@@ -2908,25 +2908,9 @@ void State::solve_problem()
 			sol_to_pressure();
 
 			OperatorSplittingSolver ss;
-			Eigen::MatrixXd local_pts;
 			if (args["density"])
 			{
 				const int dim = mesh->dimension();
-				const int shape = gbases[0].bases.size();
-				if (dim == 2)
-				{
-					if (shape == 3)
-						autogen::p_nodes_2d(args["discr_order"], local_pts);
-					else
-						autogen::q_nodes_2d(args["discr_order"], local_pts);
-				}
-				else
-				{
-					if (shape == 4)
-						autogen::p_nodes_3d(args["discr_order"], local_pts);
-					else
-						autogen::q_nodes_3d(args["discr_order"], local_pts);
-				}
 
 				std::vector<int> bnd_nodes;
 				bnd_nodes.reserve(boundary_nodes.size() / dim);
@@ -2935,9 +2919,9 @@ void State::solve_problem()
 					if (!(*it % dim)) continue;
 					bnd_nodes.push_back(*it / dim);
 				}
-				ss.initialize_solver(*mesh, shape, int(bases.size()), local_boundary, bnd_nodes);
-				density = Eigen::MatrixXd::Zero(sol.size() / dim, 1);
-				ss.initialize_density(gbases, bases, problem, density, local_pts);
+				ss.initialize_solver(*mesh, gbases[0].bases.size(), int(bases.size()), local_boundary, bnd_nodes);
+				ss.initialize_grid(*mesh, gbases, bases);
+				ss.initialize_density(problem);
 			}
 
 			if (args["save_time_sequence"]){
@@ -2945,6 +2929,8 @@ void State::solve_problem()
 					solution_frames.emplace_back();
 				save_vtu("step_" + std::to_string(0) + ".vtu", 0);
 				// save_wire("step_" + std::to_string(0) + ".obj");
+				if (args["density"])
+					ss.save_density();
 			}
 
 			assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, gbases, velocity_stiffness);
@@ -2960,11 +2946,8 @@ void State::solve_problem()
 				double current_dt = dt;
 
 				logger().info("{}/{} steps, dt={}s t={}s", t, time_steps, current_dt, time);
-
-				if (args["density"])
-				{
-					ss.advect_density(*mesh, gbases, bases, sol, density, dt, local_pts, args["advection_order"], args["advection_RK"]);
-				}
+				if(args["density"])
+					ss.advect_density(gbases, bases, sol, dt);
 				
 				bdf.rhs(prev_sol);
 				rhs_assembler.compute_energy_grad(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs, time, current_rhs);
@@ -2990,6 +2973,8 @@ void State::solve_problem()
 						solution_frames.emplace_back();
 					save_vtu("step_" + std::to_string(t) + ".vtu", time);
 					// save_wire("step_" + std::to_string(t) + ".obj");
+					if (args["density"])
+						ss.save_density();
 				}
 			}
 		}
@@ -4048,14 +4033,6 @@ void State::save_vtu(const std::string &path, const double t)
 		writer.add_field("solution", fun);
 	else
 		solution_frames.back().solution = fun;
-
-	if (args["density"])
-	{
-		Eigen::MatrixXd interp_density;
-		interpolate_function(points.rows(), 1, bases, density, interp_density, boundary_only);
-		if (args["density"])
-			writer.add_field("density", interp_density);
-	}
 
 	// if(problem->is_mixed())
 	if (assembler.is_mixed(formulation()))
