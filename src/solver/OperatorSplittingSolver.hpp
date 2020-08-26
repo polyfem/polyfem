@@ -1,9 +1,8 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
-#include <polyfem/State.hpp>
 
-#include <polysolve/LinearSolver.hpp>
+#include <polysolve/FEMSolver.hpp>
 #include <polyfem/Logger.hpp>
 
 #include <polyfem/AssemblerUtils.hpp>
@@ -11,10 +10,6 @@
 
 #ifdef POLYFEM_WITH_TBB
 #include <tbb/tbb.h>
-#endif
-
-#ifdef POLYFEM_WITH_OPENVDB
-#include <openvdb/openvdb.h>
 #endif
 
 using namespace polysolve;
@@ -41,45 +36,6 @@ namespace polyfem
                 density = Eigen::VectorXd::Zero((grid_cell_num(0)+1) * (grid_cell_num(1)+1));
             else
                 density = Eigen::VectorXd::Zero((grid_cell_num(0)+1) * (grid_cell_num(1)+1) * (grid_cell_num(2)+1));
-
-            // Eigen::MatrixXd local_pos;
-            // RowVectorNd pts = RowVectorNd::Zero(dim);
-            // density_cell_no = Eigen::VectorXi::Zero(density.size());
-            // density_local_weights.resize(density.size());
-            // for(int i = 0; i <= grid_cell_num(0); i++)
-            // {
-            //     pts(0) = i * resolution + min_domain(0);
-            //     for(int j = 0; j <= grid_cell_num(1); j++)
-            //     {
-            //         pts(1) = j * resolution + min_domain(1);
-            //         if(dim == 2)
-            //         {
-            //             const int idx = i + j * (grid_cell_num(0)+1);
-            //             const int elem_id = search_cell(gbases, pts, local_pos);
-            //             density_cell_no(idx) = elem_id;
-            //             if(elem_id != -1)
-            //             {
-            //                 calculate_local_pts(gbases[elem_id], elem_id, pts, local_pos);
-            //                 density_local_weights[idx].compute(elem_id, dim == 3, local_pos, bases[elem_id], gbases[elem_id]);
-            //             }
-            //         }
-            //         else
-            //         {
-            //             for(int k = 0; k <= grid_cell_num(2); k++)
-            //             {
-            //                 pts(2) = k * resolution + min_domain(2);
-            //                 const int idx = i + (j + k*(grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
-            //                 const int elem_id = search_cell(gbases, pts, local_pos);
-            //                 density_cell_no(idx) = elem_id;
-            //                 if(elem_id != -1)
-            //                 {
-            //                     calculate_local_pts(gbases[elem_id], elem_id, pts, local_pos);
-            //                     density_local_weights[idx].compute(elem_id, dim == 3, local_pos, bases[elem_id], gbases[elem_id]);
-            //                 }
-            //             }
-            //         }
-            //     }
-            // }
         }
 
         void initialize_mesh(const polyfem::Mesh& mesh, 
@@ -1267,137 +1223,7 @@ namespace polyfem
             }
         }
 
-        void save_density()
-        {
-#ifdef POLYFEM_WITH_OPENVDB
-            openvdb::initialize();
-            openvdb::FloatGrid::Ptr grid = openvdb::FloatGrid::create();
-            openvdb::FloatGrid::Accessor accessor = grid->getAccessor();
-
-            for(int i = 0; i <= grid_cell_num(0); i++)
-            {
-                for(int j = 0; j <= grid_cell_num(1); j++)
-                {
-                    if(dim == 2)
-                    {
-                        const int idx = i + j * (grid_cell_num(0)+1);
-                        openvdb::Coord xyz(i, j, 0);
-                        if(density(idx) > 1e-8)
-                            accessor.setValue(xyz, density(idx));
-                    }
-                    else
-                    {
-                        for(int k = 0; k <= grid_cell_num(2); k++)
-                        {
-                            const int idx = i + (j + k * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
-                            openvdb::Coord xyz(i, j, k);
-                            if(density(idx) > 1e-8)
-                                accessor.setValue(xyz, density(idx));
-                        }
-                    }
-                }
-            }
-            grid->setName("density_smoke");
-            grid->setGridClass(openvdb::GRID_FOG_VOLUME);
-
-            static int num_frame = 0;
-            const std::string filename = "density"+std::to_string(num_frame)+".vdb";
-            openvdb::io::File file(filename.c_str());
-            num_frame++;
-
-            openvdb::GridPtrVec(grids);
-            grids.push_back(grid);
-            file.write(grids);
-            file.close();
-#else
-            Eigen::MatrixXd points(3, density.size());
-            Eigen::MatrixXd field(density.size(), 1);
-            Eigen::MatrixXi tets;
-            if(dim == 2) tets.resize(grid_cell_num(0)*grid_cell_num(1), 4);
-            else tets.resize(grid_cell_num(0)*grid_cell_num(1)*grid_cell_num(2), 8);
-            for(int i = 0; i < grid_cell_num(0); i++)
-            {
-                for(int j = 0; j < grid_cell_num(1); j++)
-                {
-                    if(dim == 2)
-                    {
-                        const int idx = i + j * grid_cell_num(0);
-                        tets(idx, 0) = i + j * (grid_cell_num(0)+1);
-                        tets(idx, 1) = (i+1) + j * (grid_cell_num(0)+1);
-                        tets(idx, 2) = (i+1) + (j+1) * (grid_cell_num(0)+1);
-                        tets(idx, 3) = i + (j+1) * (grid_cell_num(0)+1);
-                    }
-                    else
-                    {
-                        for(int k = 0; k < grid_cell_num(2); k++)
-                        {
-                            const int idx = i + (j + k * grid_cell_num(1)) * grid_cell_num(0);
-                            tets(idx, 0) = i + (j + k * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
-                            tets(idx, 1) = (i+1) + (j + k * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
-                            tets(idx, 2) = (i+1) + ((j+1) + k * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
-                            tets(idx, 3) = i + ((j+1) + k * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
-                            tets(idx, 4) = i + (j + (k+1) * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
-                            tets(idx, 5) = (i+1) + (j + (k+1) * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
-                            tets(idx, 6) = (i+1) + ((j+1) + (k+1) * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
-                            tets(idx, 7) = i + ((j+1) + (k+1) * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
-                        }
-                    }
-                }
-            }
-            for(int i = 0; i <= grid_cell_num(0); i++)
-            {
-                for(int j = 0; j <= grid_cell_num(1); j++)
-                {
-                    if(dim == 2)
-                    {
-                        const int idx = i + j * (grid_cell_num(0)+1);
-                        field(idx) = density(idx);
-                        points(0, idx) = i * resolution + min_domain(0);
-                        points(1, idx) = j * resolution + min_domain(1);
-                    }
-                    else
-                    {
-                        for(int k = 0; k <= grid_cell_num(2); k++)
-                        {
-                            const int idx = i + (j + k * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
-                            field(idx) = density(idx);
-                            points(0, idx) = i * resolution + min_domain(0);
-                            points(1, idx) = j * resolution + min_domain(1);
-                            points(2, idx) = k * resolution + min_domain(2);
-                        }
-                    }
-                }
-            }
-            static int num_frame = 0;
-            std::string name = "density"+std::to_string(num_frame)+".vtk";
-            std::ofstream file(name.c_str());
-            num_frame++;
-
-            file << "# vtk DataFile Version 2.0\nDensity\nASCII\nDATASET POLYDATA\n";
-            file << "POINTS " << points.cols() << " float\n";
-            for(int i = 0; i < points.cols(); i++)
-            {
-                for(int d = 0; d < dim; d++) file << points(d, i) << " ";
-                if(dim == 2) file << "0";
-                file << "\n";
-            }
-            file << "POLYGONS " << tets.rows() << " " << tets.size()+tets.rows() << std::endl;
-            for(int e = 0; e < tets.rows(); e++)
-            {
-                file << tets.cols() << " ";
-                for(int k = 0; k < tets.cols(); k++) file << tets(e, k) << " ";
-                file << "\n";
-            }
-            file << "POINT_DATA " << density.size() << "\n";
-            file << "SCALARS density float 1\n";
-            file << "LOOKUP_TABLE my_table\n";
-            for(int i = 0; i < density.size(); i++)
-            {
-                file << density(i) << "\n";
-            }
-            file.close();
-#endif
-        }
+        void save_density();
         
         int dim;
         int n_el;
