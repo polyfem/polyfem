@@ -75,7 +75,7 @@ option(POLYFEM_WITH_MMG              "Enable MMG library"                OFF)
 option(POLYFEM_WITH_TBB              "Enable TBB"                        ON)
 option(POLYFEM_WITH_OPENCL           "Enable OpenCL"                     OFF)
 option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
-option(POLYFEM_WITH_OPENVDB          "Enable OpenVDB"                    OFF)
+option(POLYFEM_WITH_OPENVDB          "Enable OpenVDB"                    ON)
 
 option(POLYFEM_WITH_APPS      "Build the apps"          ON)
 option(POLYFEM_WITH_MISC      "Build misc targes"       ON)
@@ -272,11 +272,17 @@ endif()
 
 # OpenVDB
 if(POLYFEM_WITH_OPENVDB)
-    find_package(OpenVDB)
-    if(OpenVDB_FOUND)
-        target_link_libraries(polyfem PUBLIC OpenVDB::openvdb)
-        target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_OPENVDB)
-    endif()
+    polyfem_download_openvdb()
+    set(OPENVDB_BUILD_BINARIES OFF CACHE BOOL " " FORCE)
+    set(USE_BLOSC OFF CACHE BOOL " " FORCE)
+    set(OPENVDB_ENABLE_RPATH OFF CACHE BOOL " " FORCE)
+    set(USE_CCACHE OFF CACHE BOOL " " FORCE)
+    set(USE_PKGCONFIG OFF CACHE BOOL " " FORCE)
+    set(USE_EXR OFF CACHE BOOL " " FORCE)
+
+    add_subdirectory(${THIRD_PARTY_DIR}/openvdb openvdb)
+    target_link_libraries(polyfem PUBLIC openvdb)
+    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_OPENVDB)
 endif()
 
 # libigl

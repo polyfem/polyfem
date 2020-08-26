@@ -87,6 +87,14 @@ function(polyfem_download_tbb)
     )
 endfunction()
 
+## OpenVDB
+function(polyfem_download_openvdb)
+    polyfem_download_project(openvdb
+        GIT_REPOSITORY https://github.com/AcademySoftwareFoundation/openvdb.git
+        GIT_TAG        v7.1.0
+    )
+endfunction()
+
 ## Sanitizers MIT optional
 function(polyfem_download_sanitizers)
     polyfem_download_project(sanitizers-cmake
