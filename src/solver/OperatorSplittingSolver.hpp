@@ -1290,7 +1290,7 @@ namespace polyfem
                         for(int k = 0; k <= grid_cell_num(2); k++)
                         {
                             const int idx = i + (j + k * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
-                            Openvdb::Coord xyz(i, j, k);
+                            openvdb::Coord xyz(i, j, k);
                             if(density(idx) > 1e-8)
                                 accessor.setValue(xyz, density(idx));
                         }
