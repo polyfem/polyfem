@@ -6,6 +6,10 @@
 #include <polyfem/Types.hpp>
 
 #include <ipc.hpp>
+#include <barrier/barrier.hpp>
+#include <barrier/adaptive_stiffness.hpp>
+
+#include <igl/write_triangle_mesh.h>
 
 #include <unsupported/Eigen/SparseExtra>
 
@@ -23,7 +27,7 @@ namespace polyfem
 	{
 		assert(!assembler.is_mixed(state.formulation()));
 
-		_dhat_squared = 1e-6;
+		_dhat_squared = 1e-1;
 		_barrier_stiffness = 50;
 	}
 
@@ -78,13 +82,34 @@ namespace polyfem
 		return _current_rhs;
 	}
 
+	void NLProblem::compute_displaced_points(const Eigen::MatrixXd &full, Eigen::MatrixXd &displaced)
+	{
+		assert(full.size() == full_size);
+
+		const int problem_dim = state.mesh->dimension();
+		displaced.resize(full.size() / problem_dim, problem_dim);
+		assert(displaced.rows() * problem_dim == full.size());
+		for (int i = 0; i < full.size(); i += problem_dim)
+		{
+			for (int d = 0; d < problem_dim; ++d)
+			{
+				displaced(i / problem_dim, d) = full(i + d);
+			}
+		}
+
+		assert(displaced(0, 0) == full(0));
+		assert(displaced(0, 1) == full(1));
+
+		displaced += state.boundary_nodes_pos;
+	}
+
 
 	bool NLProblem::is_step_valid(const TVector &x0, const TVector &x1)
 	{
 		if (disable_collision)
 			return true;
 		if (!state.args["has_collision"])
-				return true;
+			return true;
 
 		Eigen::MatrixXd full0, full1;
 		if (x0.size() == reduced_size)
@@ -98,49 +123,49 @@ namespace polyfem
 		assert(full0.size() == full_size);
 		assert(full1.size() == full_size);
 
-		const int problem_dim = state.mesh->dimension();
-		Eigen::MatrixXd reshaped0(full0.size() / problem_dim, problem_dim);
-		Eigen::MatrixXd reshaped1(full1.size() / problem_dim, problem_dim);
-		for (int i = 0; i < full0.size(); i += problem_dim)
-		{
-			for (int d = 0; d < problem_dim; ++d){
-				reshaped0(i / problem_dim, d) = full0(i + d);
-				reshaped1(i / problem_dim, d) = full1(i + d);
-			}
-		}
-		assert((full0.size() / problem_dim) * problem_dim == full0.size());
-		assert(reshaped0(0, 0) == full0(0));
-		assert(reshaped1(0, 0) == full1(0));
-		assert(reshaped0(0, 1) == full0(1));
-		assert(reshaped1(0, 1) == full1(1));
-		// static int vvvv = 0;
-		// {
-		// 	std::ofstream out("test_"+std::to_string(vvvv)+"_0.obj");
-		// 	for (int i = 0; i < state.boundary_nodes_pos.rows(); ++i)
-		// 		out << "v " << state.boundary_nodes_pos(i, 0) + reshaped0(i, 0) << " " << state.boundary_nodes_pos(i, 1) + reshaped0(i, 1) << " 0\n";
+		Eigen::MatrixXd displaced0, displaced1;
 
-		// 	for (int i = 0; i < state.boundary_edges.rows(); ++i)
-		// 		out << "l " << state.boundary_edges(i, 0) + 1 << " " << state.boundary_edges(i, 1) + 1 << "\n";
-		// 	out.close();
-		// }
+		compute_displaced_points(full0, displaced0);
+		compute_displaced_points(full1, displaced1);
 
-		// {
-		// 	std::ofstream out("test_"+std::to_string(vvvv)+"_1.obj");
-		// 	for (int i = 0; i < state.boundary_nodes_pos.rows(); ++i)
-		// 		out << "v " << state.boundary_nodes_pos(i, 0) + reshaped1(i, 0) << " " << state.boundary_nodes_pos(i, 1) + reshaped1(i, 1) << " 0\n";
-
-		// 	for (int i = 0; i < state.boundary_edges.rows(); ++i)
-		// 		out << "l " << state.boundary_edges(i, 0) + 1 << " " << state.boundary_edges(i, 1) + 1 << "\n";
-		// 	out.close();
-		// }
-
-		// vvvv++;
-
-		const bool is_valid = !ipc::is_step_collision_free(state.boundary_nodes_pos + reshaped0, state.boundary_nodes_pos + reshaped1, state.boundary_edges, state.boundary_triangles);
+		const bool is_valid = ipc::is_step_collision_free(displaced0, displaced1, state.boundary_edges, state.boundary_triangles);
 		// std::cout << "is_valid " << is_valid << std::endl;
+		// polyfem::logger().trace("best step {}", ipc::compute_collision_free_stepsize(displaced0, displaced1, state.boundary_edges, state.boundary_triangles));
 
-		// std::cout<<"state.boundary_nodes_pos + reshaped\n"<<full<<std::endl;
-		// std::cout<<"state.boundary_nodes_pos + reshaped\n"<<reshaped<<std::endl;
+		static int vvvv = 0;
+		if (is_valid && displaced0.cols() == 2)
+		{
+			{
+				std::ofstream out("test_"+std::to_string(vvvv)+"_0.obj");
+				for (int i = 0; i < state.boundary_nodes_pos.rows(); ++i)
+					out << "v " << displaced0(i, 0) << " " << displaced0(i, 1) << " 0\n";
+
+				for (int i = 0; i < state.boundary_edges.rows(); ++i)
+					out << "l " << state.boundary_edges(i, 0) + 1 << " " << state.boundary_edges(i, 1) + 1 << "\n";
+				out.close();
+			}
+
+			{
+				std::ofstream out("test_"+std::to_string(vvvv)+"_1.obj");
+				for (int i = 0; i < state.boundary_nodes_pos.rows(); ++i)
+					out << "v " << displaced1(i, 0) << " " << displaced1(i, 1) << " 0\n";
+
+				for (int i = 0; i < state.boundary_edges.rows(); ++i)
+					out << "l " << state.boundary_edges(i, 0) + 1 << " " << state.boundary_edges(i, 1) + 1 << "\n";
+				out.close();
+			}
+
+			vvvv++;
+		}
+		if (is_valid && displaced0.cols() == 3)
+		{
+			igl::write_triangle_mesh("test_" + std::to_string(vvvv) + "_0.obj", displaced0, state.boundary_triangles);
+			igl::write_triangle_mesh("test_" + std::to_string(vvvv) + "_1.obj", displaced1, state.boundary_triangles);
+			vvvv++;
+		}
+
+		// std::cout<<"state.boundary_nodes_pos + displaced\n"<<full<<std::endl;
+		// std::cout<<"state.boundary_nodes_pos + displaced\n"<<displaced<<std::endl;
 
 		return is_valid;
 	}
@@ -173,33 +198,35 @@ namespace polyfem
 
 		if (!disable_collision && state.args["has_collision"])
 		{
-			const int problem_dim = state.mesh->dimension();
-			Eigen::MatrixXd reshaped(full.size() / problem_dim, problem_dim);
-			for (int i = 0; i < full.size(); i += problem_dim)
-			{
-				for(int d = 0; d < problem_dim; ++d)
-					reshaped(i / problem_dim, d) = full(i + d);
-			}
-			assert(reshaped.rows() * problem_dim == full.size());
-			assert(reshaped(0, 0) == full(0));
-			assert(reshaped(0, 1) == full(1));
+			Eigen::MatrixXd displaced;
+			compute_displaced_points(full, displaced);
 
 			// std::ofstream out("test.obj");
 			// for (int i = 0; i < state.boundary_nodes_pos.rows(); ++i)
-			// 	out << "v " << state.boundary_nodes_pos(i, 0) + reshaped(i, 0) << " " << state.boundary_nodes_pos(i, 1) + reshaped(i, 1) << " 0\n";
+			// 	out << "v " << displaced(i, 0) << " " << displaced(i, 1) << " 0\n";
 
 			// for (int i = 0; i < state.boundary_edges.rows(); ++i)
 			// 	out << "l " << state.boundary_edges(i, 0) + 1 << " " << state.boundary_edges(i, 1) + 1 << "\n";
 			// out.close();
 
-			// std::cout<<"state.boundary_nodes_pos + reshaped\n"<<full<<std::endl;
-			// std::cout<<"state.boundary_nodes_pos + reshaped\n"<<reshaped<<std::endl;
+			// std::cout<<" + displaced\n"<<full<<std::endl;
+			// std::cout<<" + displaced\n"<<displaced<<std::endl;
 
 			ccd::Candidates constraint_set;
-			ipc::construct_constraint_set(state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, _dhat_squared, constraint_set);
-			collision_energy = ipc::compute_barrier_potential(state.boundary_nodes_pos, state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat_squared);
+			ipc::construct_constraint_set(displaced, state.boundary_edges, state.boundary_triangles, _dhat_squared, constraint_set);
+			constraint_set.ee_candidates.clear();
+			collision_energy = ipc::compute_barrier_potential(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat_squared);
 
-			std::cout << "collision_energy " << collision_energy << std::endl;
+			if(collision_energy > 0)
+			{
+				igl::write_triangle_mesh("test_mesh.obj", displaced, state.boundary_triangles);
+				// exit(0);
+			}
+
+			polyfem::logger().trace("collision_energy {}", collision_energy);
+			// const double ddd = ipc::compute_minimum_distance(displaced, state.boundary_edges, state.boundary_triangles, constraint_set);
+			// polyfem::logger().trace("min_dist {}", ddd);
+			// polyfem::logger().trace("barrier {}", ipc::barrier(ddd, _dhat_squared));
 		}
 
 		return scaling * (elastic_energy + body_energy + _barrier_stiffness * collision_energy) + intertia_energy;
@@ -254,23 +281,30 @@ namespace polyfem
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 		assembler.assemble_energy_gradient(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, full, grad);
 
+
 		if (!disable_collision && state.args["has_collision"])
 		{
-			const int problem_dim = state.mesh->dimension();
-			Eigen::MatrixXd reshaped(full.size() / problem_dim, problem_dim);
-			for (int i = 0; i < full.size(); i += problem_dim)
-			{
-				for (int d = 0; d < problem_dim; ++d)
-					reshaped(i / problem_dim, d) = full(i + d);
-			}
-			assert((full.size() / problem_dim) * problem_dim == full.size());
-			assert(reshaped(0, 0) == full(0));
-			assert(reshaped(0, 1) == full(1));
+			Eigen::MatrixXd displaced;
+			compute_displaced_points(full, displaced);
+
+			// double max_barrier_stiffness = 0;
+			// const double xxxx = ipc::intial_barrier_stiffness(
+			// 	state.boundary_nodes_pos,
+			// 	displaced,
+			// 	state.boundary_edges, state.boundary_triangles,
+			// 	_dhat_squared,
+			// 	1,
+			// 	grad,
+			// 	max_barrier_stiffness);
+			// polyfem::logger().trace("adaptive stiffness {}", xxxx);
 
 			ccd::Candidates constraint_set;
-			ipc::construct_constraint_set(state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, _dhat_squared, constraint_set);
-			grad += _barrier_stiffness * ipc::compute_barrier_potential_gradient(state.boundary_nodes_pos, state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat_squared);
-			std::cout << "collision grad " << ipc::compute_barrier_potential_gradient(state.boundary_nodes_pos, state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat_squared).norm() << std::endl;
+			ipc::construct_constraint_set(displaced, state.boundary_edges, state.boundary_triangles, _dhat_squared, constraint_set);
+			constraint_set.ee_candidates.clear();
+			grad += _barrier_stiffness * ipc::compute_barrier_potential_gradient(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat_squared);
+			polyfem::logger().trace("collision grad {}", ipc::compute_barrier_potential_gradient(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat_squared).norm() * _barrier_stiffness);
+			const double ddd = ipc::compute_minimum_distance(displaced, state.boundary_edges, state.boundary_triangles, constraint_set);
+			polyfem::logger().trace("min_dist {}", ddd);
 		}
 
 		assert(grad.size() == full_size);
@@ -353,20 +387,13 @@ namespace polyfem
 
 		if (!disable_collision && state.args["has_collision"])
 		{
-			const int problem_dim = state.mesh->dimension();
-			Eigen::MatrixXd reshaped(full.size() / problem_dim, problem_dim);
-			for (int i = 0; i < full.size(); i += problem_dim)
-			{
-				for (int d = 0; d < problem_dim; ++d)
-					reshaped(i / problem_dim, d) = full(i + d);
-			}
-			assert((full.size() / problem_dim) * problem_dim == full.size());
-			assert(reshaped(0, 0) == full(0));
-			assert(reshaped(0, 1) == full(1));
+			Eigen::MatrixXd displaced;
+			compute_displaced_points(full, displaced);
 
 			ccd::Candidates constraint_set;
-			ipc::construct_constraint_set(state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, _dhat_squared, constraint_set);
-			hessian += _barrier_stiffness * ipc::compute_barrier_potential_hessian(state.boundary_nodes_pos, state.boundary_nodes_pos + reshaped, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat_squared);
+			ipc::construct_constraint_set(displaced, state.boundary_edges, state.boundary_triangles, _dhat_squared, constraint_set);
+			constraint_set.ee_candidates.clear();
+			hessian += _barrier_stiffness * ipc::compute_barrier_potential_hessian(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat_squared);
 		}
 
 		assert(hessian.rows() == full_size);

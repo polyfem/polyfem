@@ -98,7 +98,7 @@ public:
 		const double Cache = c * grad.dot(searchDir);
 
 		int cur_iter = 0;
-		while ((std::isinf(f) || std::isnan(f) || f > f_in + alpha * Cache || !objFunc.is_step_valid(x, x1)) && cur_iter < MAX_STEP_SIZE_ITER)
+		while ((std::isinf(f) || std::isnan(f) || f > f_in + alpha * Cache || !objFunc.is_step_valid(x, x1)) && cur_iter <= MAX_STEP_SIZE_ITER)
 		{
 			alpha *= tau;
 			x1 = x + alpha * searchDir;
@@ -107,7 +107,10 @@ public:
 			cur_iter++;
 		}
 
-		return alpha;
+		if(cur_iter >= MAX_STEP_SIZE_ITER)
+			return std::nan("");
+		else
+			return alpha;
 	}
 
 	double linesearch(const TVector &x, const TVector &grad, ProblemType &objFunc)
@@ -123,6 +126,7 @@ public:
 		while (cur_iter < MAX_STEP_SIZE_ITER)
 		{
 			double cur_e = objFunc.value(new_x);
+			// std::cout<< (cur_e - old_energy) <<" "<< !objFunc.is_step_valid(x, new_x) <<std::endl;
 			if (std::isinf(cur_e) || std::isnan(cur_e) || cur_e >= old_energy || !objFunc.is_step_valid(x, new_x))
 			{
 				step_size /= 2.;
@@ -135,8 +139,8 @@ public:
 			cur_iter++;
 		}
 
-		return step_size;
-		// return std::nan("");
+		// return step_size;
+		return std::nan("");
 	}
 
 	void minimize(ProblemType &objFunc, TVector &x0)
@@ -186,13 +190,14 @@ public:
 
 		polyfem::logger().debug("\tgrad time {}s norm: {}", time.getElapsedTimeInSec(), grad.norm());
 		grad_time += time.getElapsedTimeInSec();
+		bool line_search_failed = false;
 
 		do
 		{
 			const size_t iter = this->m_current.iterations;
 			bool new_hessian = iter == next_hessian;
 
-			if (new_hessian)
+			if (new_hessian && !line_search_failed)
 			{
 				time.start();
 				objFunc.hessian(x0, hessian);
@@ -219,20 +224,20 @@ public:
 			// std::cout<<hessian<<std::endl;
 			time.start();
 
-			if (new_hessian)
+			if (new_hessian && !line_search_failed)
 			{
 				//TODO: get the correct size
 				solver->analyzePattern(hessian, hessian.rows());
 				solver->factorize(hessian);
 			}
-			solver->solve(grad, delta_x);
+			if (!line_search_failed)
+				solver->solve(grad, delta_x);
 
 			//gradient descent, check descent direction
 			const double residual = (hessian*delta_x - grad).norm();
-			if (std::isnan(residual) || residual  > 1e-8)
+			if (line_search_failed || std::isnan(residual) || residual > 1e-8)
 			{
 				polyfem::logger().debug("\treverting to gradient descent, since residual is {}", residual);
-
 				delta_x = grad;
 			}
 
@@ -266,6 +271,17 @@ public:
 				rate = 1e-1;
 				break;
 			}
+
+			if(std::isnan(rate))
+			{
+				if(!line_search_failed){
+					line_search_failed = true;
+					polyfem::logger().debug("\tline search failed, reverting to gradient descent");
+
+					continue;
+				}
+			}
+			line_search_failed = false;
 
 			x0 += rate * delta_x;
 

@@ -108,5 +108,6 @@ namespace polyfem
 		TVector x_prev, v_prev;
 
 		void compute_cached_stiffness();
+		void compute_displaced_points(const Eigen::MatrixXd &full, Eigen::MatrixXd &displaced);
 	};
 }

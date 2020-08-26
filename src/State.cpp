@@ -61,7 +61,7 @@
 #include <igl/remove_duplicate_vertices.h>
 #include <igl/isolines.h>
 #include <igl/write_triangle_mesh.h>
-#include <igl/all_edges.h>
+#include <igl/edges.h>
 
 #include <igl/per_face_normals.h>
 #include <igl/AABB.h>
@@ -2409,9 +2409,9 @@ void State::extract_boundary_mesh()
 		boundary_triangles.resize(tris.size(), 3);
 		for (int i = 0; i < tris.size(); ++i)
 		{
-			boundary_triangles.row(i) << std::get<0>(tris[i]), std::get<1>(tris[i]), std::get<2>(tris[i]);
+			boundary_triangles.row(i) << std::get<0>(tris[i]), std::get<2>(tris[i]), std::get<1>(tris[i]);
 		}
-		igl::all_edges(boundary_triangles, boundary_edges);
+		igl::edges(boundary_triangles, boundary_edges);
 
 		// igl::write_triangle_mesh("test.obj", boundary_nodes_pos, boundary_triangles);
 	}
