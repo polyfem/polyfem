@@ -415,20 +415,20 @@ namespace polyfem
                     {
                         const int idx = i + j * (grid_cell_num(0)+1);
 
-                        RowVectorNd vel1;
+                        RowVectorNd vel1, pos_;
                         interpolator(gbases, bases, pos, vel1, sol);
                         if(RK > 1)
                         {
                             RowVectorNd vel2, vel3;
                             interpolator(gbases, bases, pos - 0.5 * dt * vel1, vel2, sol);
                             interpolator(gbases, bases, pos - 0.75 * dt * vel2, vel3, sol);
-                            pos = pos - (2 * vel1 + 3 * vel2 + 4 * vel3) * dt / 9;
+                            pos_ = pos - (2 * vel1 + 3 * vel2 + 4 * vel3) * dt / 9;
                         }
                         else
                         {
-                            pos = pos - vel1 * dt;
+                            pos_ = pos - vel1 * dt;
                         }
-                        interpolator(gbases, bases, pos, new_density[idx], sol);
+                        interpolator(gbases, bases, pos_, new_density[idx], sol);
                     }
                     else
                     {
@@ -437,20 +437,20 @@ namespace polyfem
                             pos(2) = k * resolution + min_domain(2);
                             const int idx = i + (j + k * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
                             
-                            RowVectorNd vel1;
+                            RowVectorNd vel1, pos_;
                             interpolator(gbases, bases, pos, vel1, sol);
                             if(RK > 1)
                             {
                                 RowVectorNd vel2, vel3;
                                 interpolator(gbases, bases, pos - 0.5 * dt * vel1, vel2, sol);
                                 interpolator(gbases, bases, pos - 0.75 * dt * vel2, vel3, sol);
-                                pos = pos - (2 * vel1 + 3 * vel2 + 4 * vel3) * dt / 9;
+                                pos_ = pos - (2 * vel1 + 3 * vel2 + 4 * vel3) * dt / 9;
                             }
                             else
                             {
-                                pos = pos - vel1 * dt;
+                                pos_ = pos - vel1 * dt;
                             }
-                            interpolator(gbases, bases, pos, new_density[idx], sol);
+                            interpolator(gbases, bases, pos_, new_density[idx], sol);
                         }
                     }
                 }
