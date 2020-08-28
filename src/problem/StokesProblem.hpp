@@ -111,6 +111,9 @@ public:
 	void set_parameters(const json &params) override;
 
 	void initial_density(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
+
+private:
+	double U_, radius_;
 };
 
 class CornerFlow : public TimeDepentendStokesProblem

@@ -267,25 +267,25 @@ void CollidingBalls::initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixX
 
 		if(pts.cols() == 2)
 		{
-			double r1 = sqrt(pow(x-0.25,2)+pow(y-0.5,2));
-			double r2 = sqrt(pow(x-0.75,2)+pow(y-0.5,2));
+			double r1 = sqrt(pow(x-0.04,2)+pow(y-0.2,2));
+			double r2 = sqrt(pow(x-0.16,2)+pow(y-0.2,2));
 			
-			if(r1 <= 0.05)
-				val(i, 0) = 0.2;
-			else if(r2 <= 0.05)
-				val(i, 0) = -0.2;
+			if(r1 <= radius_)
+				val(i, 0) = U_;
+			else if(r2 <= radius_)
+				val(i, 0) = -U_;
 		}
 		else
 		{
 			const double z = pts(i, 2);
 
-			double r1 = sqrt(pow(x-0.25,2)+pow(y-0.5,2)+pow(z-0.5,2));
-			double r2 = sqrt(pow(x-0.75,2)+pow(y-0.5,2)+pow(z-0.5,2));
+			double r1 = sqrt(pow(x-0.04,2)+pow(y-0.2,2)+pow(z-0.2,2));
+			double r2 = sqrt(pow(x-0.16,2)+pow(y-0.2,2)+pow(z-0.2,2));
 			
-			if(r1 <= 0.05)
-				val(i, 0) = 0.2;
-			else if(r2 <= 0.05)
-				val(i, 0) = -0.2;
+			if(r1 <= radius_)
+				val(i, 0) = U_;
+			else if(r2 <= radius_)
+				val(i, 0) = -U_;
 		}
 	}
 }
@@ -298,6 +298,16 @@ void CollidingBalls::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, con
 void CollidingBalls::set_parameters(const json &params)
 {
 	TimeDepentendStokesProblem::set_parameters(params);
+
+	if (params.find("U") != params.end())
+	{
+		U_ = params["U"];
+	}
+
+	if (params.find("radius") != params.end())
+	{
+		radius_ = params["radius"];
+	}
 }
 
 void CollidingBalls::initial_density(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
@@ -310,10 +320,10 @@ void CollidingBalls::initial_density(const Eigen::MatrixXd &pts, Eigen::MatrixXd
 
 		if(pts.cols() == 2)
 		{
-			double r1 = sqrt(pow(x-0.25,2)+pow(y-0.5,2));
-			double r2 = sqrt(pow(x-0.75,2)+pow(y-0.5,2));
+			double r1 = sqrt(pow(x-0.04,2)+pow(y-0.2,2));
+			double r2 = sqrt(pow(x-0.16,2)+pow(y-0.2,2));
 			
-			if(r1 <= 0.1 || r2 <= 0.1)
+			if(r1 <= radius_ || r2 <= radius_)
 				val(i, 0) = 1;
 		}
 		else
@@ -323,7 +333,7 @@ void CollidingBalls::initial_density(const Eigen::MatrixXd &pts, Eigen::MatrixXd
 			double r1 = sqrt(pow(x-0.04,2)+pow(y-0.2,2)+pow(z-0.2,2));
 			double r2 = sqrt(pow(x-0.16,2)+pow(y-0.2,2)+pow(z-0.2,2));
 			
-			if(r1 <= 0.02 || r2 <= 0.02)
+			if(r1 <= radius_ || r2 <= radius_)
 				val(i, 0) = 1;
 		}
 	}

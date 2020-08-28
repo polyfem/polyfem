@@ -165,6 +165,7 @@ namespace polyfem
 
 			load_mesh();
 		}
+		void build_grid(const json &mesh_params);
 
 
 		void set_boundary_side_set(const std::function<int(const polyfem::RowVectorNd&)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }

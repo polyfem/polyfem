@@ -236,6 +236,7 @@ State::State()
 
 		{"particle", false},
 		{"density", false},
+		{"density_extra_resolution", 5},
 		{"advection_order", 1},
 		{"advection_RK", 1},
 
@@ -1870,6 +1871,69 @@ void State::load_mesh()
 	// }
 }
 
+void State::build_grid(const json &mesh_params)
+{
+	const int dim = mesh_params["dim"];
+	double X = mesh_params["X"], Y = mesh_params["Y"];
+	int x_n = mesh_params["Xn"], y_n = mesh_params["Yn"];
+	if (dim == 2)
+	{
+		double dx = X / x_n, dy = Y / y_n;
+
+		Eigen::MatrixXd V = Eigen::MatrixXd::Zero((x_n+1) * (y_n+1), dim);
+		for(int i = 0; i <= x_n; i++) for(int j = 0; j <= y_n; j++)
+		{
+			const int idx = i + j * (x_n+1);
+			V(idx, 0) = dx * i;
+			V(idx, 1) = dy * j;
+		}
+
+		Eigen::MatrixXi F = Eigen::MatrixXi::Zero(x_n * y_n, 4);
+		for(int i = 0; i < x_n; i++) for(int j = 0; j < y_n; j++)
+		{
+			const int idx = i + j * x_n;
+			F(idx, 0) = i + j * (x_n + 1);
+			F(idx, 1) = F(idx, 0) + 1;
+			F(idx, 2) = F(idx, 1) + x_n+1;
+			F(idx, 3) = F(idx, 0) + x_n+1;
+		}
+
+		load_mesh(V, F);
+	}
+	else
+	{
+		double Z = mesh_params["Z"];
+		int z_n = mesh_params["Zn"];
+		double dx = X / x_n, dy = Y / y_n, dz = Z / z_n;
+
+		Eigen::MatrixXd V = Eigen::MatrixXd::Zero((x_n+1) * (y_n+1) * (z_n+1), 3);
+		for(int i = 0; i <= x_n; i++) for(int j = 0; j <= y_n; j++) for(int k = 0; k <= z_n; k++)
+		{
+			const int idx = i + (j + k * (y_n+1)) * (x_n+1);
+			V(idx, 0) = dx * i;
+			V(idx, 1) = dy * j;
+			V(idx, 2) = dz * k;
+		}
+
+		Eigen::MatrixXi F = Eigen::MatrixXi::Zero(x_n * y_n * z_n, 8);
+
+		for(int i = 0; i < x_n; i++) for(int j = 0; j < y_n; j++) for(int k = 0; k < z_n; k++)
+		{
+			int idx = i + (j + k * y_n) * x_n;
+			F(idx, 0) = i + (j + k * (y_n+1)) * (x_n+1);
+			F(idx, 1) = F(idx, 0) + 1;
+			F(idx, 2) = F(idx, 1) + x_n+1;
+			F(idx, 3) = F(idx, 0) + x_n+1;
+			F(idx, 4) = F(idx, 0) + (x_n+1) * (y_n+1);
+			F(idx, 5) = F(idx, 1) + (x_n+1) * (y_n+1);
+			F(idx, 6) = F(idx, 2) + (x_n+1) * (y_n+1);
+			F(idx, 7) = F(idx, 3) + (x_n+1) * (y_n+1);
+		}
+
+		load_mesh(V, F);
+	}
+}
+
 void State::load_febio(const std::string &path)
 {
 	FEBioReader::load(path, *this, "solution.txt");
@@ -2821,7 +2885,7 @@ void State::solve_problem()
 
 			if (args["density"])
 			{
-				ss.initialize_grid(*mesh, gbases, bases);
+				ss.initialize_grid(*mesh, gbases, bases, args["density_extra_resolution"]);
 				ss.initialize_density(problem);
 			}
 			/* initialize solution */
@@ -2834,9 +2898,8 @@ void State::solve_problem()
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
 				save_vtu("step_" + std::to_string(0) + ".vtu", 0.);
-				if (args["density"])
-					ss.save_density();
 			}
+			if (args["density"]) ss.save_density();
 
 			for (int t = 1; t <= time_steps; t++)
 			{
@@ -2878,9 +2941,9 @@ void State::solve_problem()
 					if (!solve_export_to_file)
 						solution_frames.emplace_back();
 					save_vtu("step_" + std::to_string(t) + ".vtu", time);
-					if (args["density"])
-						ss.save_density();
 				}
+				if (args["density"] && !(t % (int)args["skip_frame"]))
+					ss.save_density();
 			}
 		}
 		else if (formulation() == "NavierStokes")
@@ -2920,7 +2983,7 @@ void State::solve_problem()
 					bnd_nodes.push_back(*it / dim);
 				}
 				ss.initialize_solver(*mesh, gbases[0].bases.size(), int(bases.size()), local_boundary, bnd_nodes);
-				ss.initialize_grid(*mesh, gbases, bases);
+				ss.initialize_grid(*mesh, gbases, bases, args["density_extra_resolution"]);
 				ss.initialize_density(problem);
 			}
 
@@ -2929,9 +2992,8 @@ void State::solve_problem()
 					solution_frames.emplace_back();
 				save_vtu("step_" + std::to_string(0) + ".vtu", 0);
 				// save_wire("step_" + std::to_string(0) + ".obj");
-				if (args["density"])
-					ss.save_density();
 			}
+			if (args["density"]) ss.save_density();
 
 			assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, gbases, velocity_stiffness);
 			assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, mixed_stiffness);
@@ -2973,9 +3035,9 @@ void State::solve_problem()
 						solution_frames.emplace_back();
 					save_vtu("step_" + std::to_string(t) + ".vtu", time);
 					// save_wire("step_" + std::to_string(t) + ".obj");
-					if (args["density"])
-						ss.save_density();
 				}
+				if (args["density"] && !(t % (int)args["skip_frame"]))
+					ss.save_density();
 			}
 		}
 		else //if (formulation() != "NavierStokes")
