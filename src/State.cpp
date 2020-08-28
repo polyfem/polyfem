@@ -2889,7 +2889,6 @@ void State::solve_problem()
 				ss.initialize_density(problem);
 			}
 			/* initialize solution */
-			ss.initialize_solution(gbases, bases, problem, sol, local_pts);
 			pressure = Eigen::MatrixXd::Zero(n_pressure_bases, 1);
 
 			/* export to vtu */
@@ -2916,7 +2915,6 @@ void State::solve_problem()
 					ss.advection(*mesh, gbases, bases, sol, dt, local_pts, args["advection_order"], args["advection_RK"]);
 
 				/* apply boundary condition */
-				// ss.set_bc(*mesh, bnd_nodes, local_boundary, gbases, bases, sol, local_pts, problem, time);
 				rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, time);
 
 				/* viscosity */
@@ -2929,10 +2927,9 @@ void State::solve_problem()
 				/* incompressibility */
 				ss.solve_pressure(mixed_stiffness, sol, pressure);
 				
-				ss.projection(*mesh, n_bases, gbases, bases, pressure_bases, local_pts, pressure, sol);
+				ss.projection(n_bases, gbases, bases, pressure_bases, local_pts, pressure, sol);
 
 				/* apply boundary condition */
-				// ss.set_bc(*mesh, bnd_nodes, local_boundary, gbases, bases, sol, local_pts, problem, time);
 				rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, time);
 
 				/* export to vtu */

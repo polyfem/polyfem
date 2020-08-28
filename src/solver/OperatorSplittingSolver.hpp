@@ -211,30 +211,6 @@ namespace polyfem
             }
         }
 
-        void export_3d_mesh(const std::string& export_mesh_path)
-        {
-            std::ofstream FILE(export_mesh_path.c_str(), std::ios::out);
-            const int n_v = V.rows();
-            const int n_e = T.rows();
-
-            FILE << "MeshVersionFormatted 1\nDimension 3\n";
-            FILE << "Vertices\n" << n_v << std::endl;
-            for(int i = 0; i < n_v; i++)
-                FILE << V(i, 0) << " " << V(i, 1) << " " << V(i, 2) << " 0\n";
-            if(T.cols() == 4)
-                FILE << "Tetrahedra\n" << n_e << std::endl;
-            else
-                FILE << "Hexahedra\n" << n_e << std::endl;
-            for(int i = 0; i < n_e; i++)
-            {
-                for(int j = 0; j < T.cols(); j++)
-                    FILE << T(i, j)+1 << " ";
-                FILE << "0\n";
-            }
-            FILE << "End\n";
-            FILE.close();
-        }
-
         int handle_boundary_advection(RowVectorNd& pos)
         {
             double dist = 1e10;
@@ -286,79 +262,69 @@ namespace polyfem
 
             pos_2 = pos_1 - vel_1 * dt;
 
-            if((new_elem = search_cell(gbases, pos_2, local_pos)) == -1)
+            interpolator(gbases, bases, pos_2, vel_2, sol);
+        }
+
+        void interpolator(const std::vector<polyfem::ElementBases>& gbases, 
+        const std::vector<polyfem::ElementBases>& bases, 
+        const RowVectorNd& pos, 
+        RowVectorNd& vel, 
+        const Eigen::MatrixXd& sol)
+        {
+            int new_elem;
+            Eigen::MatrixXd local_pos;
+
+            if((new_elem = search_cell(gbases, pos, local_pos)) == -1)
             {
-                new_elem = handle_boundary_advection(pos_2);
-                calculate_local_pts(gbases[new_elem], new_elem, pos_2, local_pos);
+                RowVectorNd pos_ = pos;
+                new_elem = handle_boundary_advection(pos_);
+                calculate_local_pts(gbases[new_elem], new_elem, pos_, local_pos);
             }
 
             // interpolation
-            vel_2 = RowVectorNd::Zero(dim);
+            vel = RowVectorNd::Zero(dim);
             ElementAssemblyValues vals;
             vals.compute(new_elem, dim == 3, local_pos, bases[new_elem], gbases[new_elem]);
             for (int d = 0; d < dim; d++)
             {
                 for (int i = 0; i < vals.basis_values.size(); i++)
                 {
-                    vel_2(d) += vals.basis_values[i].val(0) * sol(bases[new_elem].bases[i].global()[0].index * dim + d);
+                    vel(d) += vals.basis_values[i].val(0) * sol(bases[new_elem].bases[i].global()[0].index * dim + d);
                 }
             }
         }
-
-        void trace_back_density(const std::vector<polyfem::ElementBases>& gbases, 
+        
+        void interpolator(const std::vector<polyfem::ElementBases>& gbases, 
         const std::vector<polyfem::ElementBases>& bases, 
-        const RowVectorNd& pos_1,
-        double& val, 
-        const Eigen::MatrixXd& sol,
-        const double dt)
+        const RowVectorNd& pos,
+        double& val,
+        const Eigen::MatrixXd& sol)
         {
             val = 0;
-            int elem_id;
-            Eigen::MatrixXd local_pos;
-            elem_id = search_cell(gbases, pos_1, local_pos);
-            if(elem_id == -1) return; // density outside of domain = 0
-
-            // vel_2 <- velocity at pos_1
-            calculate_local_pts(gbases[elem_id], elem_id, pos_1, local_pos);
-            RowVectorNd vel_2 = RowVectorNd::Zero(dim);
-            ElementAssemblyValues vals;
-            vals.compute(elem_id, dim == 3, local_pos, bases[elem_id], gbases[elem_id]);
-            for (int d = 0; d < dim; d++)
-            {
-                for (int i = 0; i < vals.basis_values.size(); i++)
-                {
-                    vel_2(d) += vals.basis_values[i].val(0) * sol(bases[elem_id].bases[i].global()[0].index * dim + d);
-                }
-            }
-            // RK1
-            RowVectorNd pos_2 = pos_1 - vel_2 * dt;
 
             Eigen::VectorXi int_pos(dim);
             Eigen::MatrixXd weights(2, dim);
             for(int d = 0; d < dim; d++)
             {
-                int_pos(d) = floor((pos_2(d) - min_domain(d)) / resolution);
+                int_pos(d) = floor((pos(d) - min_domain(d)) / resolution);
                 if(int_pos(d) < 0 || int_pos(d) >= grid_cell_num(d)) return;
-                weights(1, d) = (pos_2(d) - min_domain(d)) / resolution - int_pos(d);
+                weights(1, d) = (pos(d) - min_domain(d)) / resolution - int_pos(d);
                 weights(0, d) = 1 - weights(1, d);
             }
             
-            for(int d1 = 0; d1 < 2; d1++)
+            for(int d1 = 0; d1 < 2; d1++) for(int d2 = 0; d2 < 2; d2++)
             {
-                for(int d2 = 0; d2 < 2; d2++)
+                if(dim == 2)
                 {
-                    if(dim == 2)
+                    const int idx = (int_pos(0) + d1) + (int_pos(1) + d2) * (grid_cell_num(0)+1);
+                    val += density(idx) * weights(d1, 0) * weights(d2, 1);
+                }
+                else
+                {
+                    for(int d3 = 0; d3 < 2; d3++)
                     {
-                        const int idx = (int_pos(0) + d1) + (int_pos(1) + d2) * (grid_cell_num(0)+1);
-                        val += density(idx) * weights(d1, 0) * weights(d2, 1);
-                    }
-                    else
-                    {
-                        for(int d3 = 0; d3 < 2; d3++)
-                        {
-                            const int idx = (int_pos(0) + d1) + (int_pos(1) + d2 + (int_pos(2) + d3) * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
-                            val += density(idx) * weights(d1, 0) * weights(d2, 1) * weights(d3, 2);
-                        }
+                        const int idx = (int_pos(0) + d1) + (int_pos(1) + d2 + (int_pos(2) + d3) * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
+                        val += density(idx) * weights(d1, 0) * weights(d2, 1) * weights(d3, 2);
                     }
                 }
             }
@@ -406,58 +372,18 @@ namespace polyfem
                     if (traversed(global)) continue;
                     traversed(global) = 1;
 
-                    RowVectorNd vel_1[4], pos_1[4];
-
                     // velocity of this FEM node
-                    vel_1[0] = sol.block(global * dim, 0, dim, 1).transpose();
+                    RowVectorNd vel_ = sol.block(global * dim, 0, dim, 1).transpose();
 
                     // global position of this FEM node
-                    pos_1[0] = RowVectorNd::Zero(1, dim);
+                    RowVectorNd pos_ = RowVectorNd::Zero(1, dim);
                     for (int j = 0; j < shape; j++)
-                    {
-                        pos_1[0] += gvals.basis_values[j].val(i) * vert[j];
-                    }
+                        pos_ += gvals.basis_values[j].val(i) * vert[j];
 
-                    if(RK>=3)
-                    {
-                        trace_back( gbases, bases, pos_1[0], vel_1[0], pos_1[1], vel_1[1], sol, 0.5 * dt);
-                        trace_back( gbases, bases, pos_1[0], vel_1[1], pos_1[2], vel_1[2], sol, 0.75 * dt);
-                        trace_back( gbases, bases, pos_1[0], 2 * vel_1[0] + 3 * vel_1[1] + 4 * vel_1[2], pos_1[3], vel_1[3], sol, dt / 9);
-                    }
-                    else if(RK==2)
-                    {
-                        trace_back( gbases, bases, pos_1[0], vel_1[0], pos_1[1], vel_1[1], sol, 0.5 * dt);
-                        trace_back( gbases, bases, pos_1[0], vel_1[1], pos_1[3], vel_1[3], sol, dt);
-                    }
-                    else if(RK==1)
-                    {
-                        trace_back( gbases, bases, pos_1[0], vel_1[0], pos_1[3], vel_1[3], sol, dt);
-                    }
+                    pos_ = pos_ - vel_ * dt;
+                    interpolator( gbases, bases, pos_, vel_, sol);
 
-                    new_sol.block(global * dim, 0, dim, 1) = vel_1[3].transpose();
-
-                    if(order == 2)
-                    {
-                        RowVectorNd vel_2[3], pos_2[3];
-
-                        if(RK>=3)
-                        {
-                            trace_back( gbases, bases, pos_1[3], vel_1[3], pos_2[0], vel_2[0], sol, -0.5 * dt);
-                            trace_back( gbases, bases, pos_1[3], vel_1[1], pos_2[1], vel_2[1], sol, -0.75 * dt);
-                            trace_back( gbases, bases, pos_1[3], 2 * vel_1[3] + 3 * vel_2[0] + 4 * vel_2[1], pos_2[2], vel_2[2], sol, -dt / 9);
-                        }
-                        else if(RK==2)
-                        {
-                            trace_back( gbases, bases, pos_1[3], vel_1[3], pos_2[0], vel_2[0], sol, -0.5 * dt);
-                            trace_back( gbases, bases, pos_1[3], vel_2[0], pos_2[2], vel_2[2], sol, -dt);
-                        }
-                        else if(RK==1)
-                        {
-                            trace_back( gbases, bases, pos_1[3], vel_1[3], pos_2[2], vel_2[2], sol, -dt);
-                        }
-                        
-                        new_sol.block(global * dim, 0, dim, 1) += (vel_1[0] - vel_2[2]).transpose() / 2;
-                    }
+                    new_sol.block(global * dim, 0, dim, 1) = vel_.transpose();
                 }
             }
 #ifdef POLYFEM_WITH_TBB
@@ -469,11 +395,14 @@ namespace polyfem
         void advect_density(const std::vector<polyfem::ElementBases>& gbases,
         const std::vector<polyfem::ElementBases>& bases, 
         const Eigen::MatrixXd& sol, 
-        const double dt)
+        const double dt,
+        const int RK = 3)
         {
             Eigen::VectorXd new_density = Eigen::VectorXd::Zero(density.size());
             RowVectorNd pos(1, dim);
-            for(int i = 0; i <= grid_cell_num(0); i++)
+            const int X = grid_cell_num(0);
+
+            for(int i = 0; i <= X; i++)
             {
                 pos(0) = i * resolution + min_domain(0);
                 for(int j = 0; j <= grid_cell_num(1); j++)
@@ -482,7 +411,21 @@ namespace polyfem
                     if(dim == 2)
                     {
                         const int idx = i + j * (grid_cell_num(0)+1);
-                        trace_back_density(gbases, bases, pos, new_density[idx], sol, dt);
+
+                        RowVectorNd vel1, pos_;
+                        interpolator(gbases, bases, pos, vel1, sol);
+                        if(RK > 1)
+                        {
+                            RowVectorNd vel2, vel3;
+                            interpolator(gbases, bases, pos - 0.5 * dt * vel1, vel2, sol);
+                            interpolator(gbases, bases, pos - 0.75 * dt * vel2, vel3, sol);
+                            pos_ = pos - (2 * vel1 + 3 * vel2 + 4 * vel3) * dt / 9;
+                        }
+                        else
+                        {
+                            pos_ = pos - vel1 * dt;
+                        }
+                        interpolator(gbases, bases, pos_, new_density[idx], sol);
                     }
                     else
                     {
@@ -490,7 +433,21 @@ namespace polyfem
                         {
                             pos(2) = k * resolution + min_domain(2);
                             const int idx = i + (j + k * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
-                            trace_back_density(gbases, bases, pos, new_density[idx], sol, dt);
+                            
+                            RowVectorNd vel1, pos_;
+                            interpolator(gbases, bases, pos, vel1, sol);
+                            if(RK > 1)
+                            {
+                                RowVectorNd vel2, vel3;
+                                interpolator(gbases, bases, pos - 0.5 * dt * vel1, vel2, sol);
+                                interpolator(gbases, bases, pos - 0.75 * dt * vel2, vel3, sol);
+                                pos_ = pos - (2 * vel1 + 3 * vel2 + 4 * vel3) * dt / 9;
+                            }
+                            else
+                            {
+                                pos_ = pos - vel1 * dt;
+                            }
+                            interpolator(gbases, bases, pos_, new_density[idx], sol);
                         }
                     }
                 }
@@ -845,64 +802,6 @@ namespace polyfem
             //TODO: need to think about what to do with negative quadratic weight
         }
 
-        void set_bc(const polyfem::Mesh& mesh, 
-        const std::vector<int>& bnd_nodes,
-        const std::vector<polyfem::ElementBases>& gbases, 
-        const std::vector<polyfem::ElementBases>& bases, 
-        Eigen::MatrixXd& sol, 
-        const Eigen::MatrixXd& local_pts, 
-        const std::shared_ptr<Problem> problem, 
-        const double time)
-        {
-            const int size = boundary_elem_id.size();
-#ifdef POLYFEM_WITH_TBB
-            tbb::parallel_for(0, size, 1, [&](int e)
-#else
-            for(int e = 0; e < size; e++)
-#endif
-            {
-                int elem_idx = boundary_elem_id[e];
-
-                // geometry vertices of element e
-                Eigen::MatrixXd vert(shape, dim);
-                for (int i = 0; i < shape; i++)
-                {
-                    for(int d = 0; d < dim; d++)
-                        vert(i, d) = V(T(elem_idx, i), d);
-                }
-
-                ElementAssemblyValues gvals;
-                gvals.compute(elem_idx, dim == 3, local_pts, gbases[elem_idx], gbases[elem_idx]);
-
-                for (int local_idx = 0; local_idx < bases[elem_idx].bases.size(); local_idx++)
-                {
-                    int global_idx = bases[elem_idx].bases[local_idx].global()[0].index;
-                    if (find(bnd_nodes.begin(), bnd_nodes.end(), global_idx) == bnd_nodes.end())
-                        continue;
-
-                    Eigen::MatrixXd pos = Eigen::MatrixXd::Zero(1, dim);
-                    for (int j = 0; j < shape; j++)
-                    {
-                        for (int d = 0; d < dim; d++)
-                        {
-                            pos(0, d) += gvals.basis_values[j].val(local_idx) * vert(j, d);
-                        }
-                    }
-
-                    Eigen::MatrixXd val;
-                    problem->bc(mesh, Eigen::MatrixXi::Zero(1,1), Eigen::MatrixXd::Zero(1,1), pos, time, val);
-
-                    for (int d = 0; d < dim; d++)
-                    {
-                        sol(global_idx * dim + d) = val(d);
-                    }
-                }
-            }
-#ifdef POLYFEM_WITH_TBB
-            );
-#endif
-        }
-
         void solve_diffusion_1st(const StiffnessMatrix& mass, const std::vector<int>& bnd_nodes, Eigen::MatrixXd& sol)
         {
             Eigen::VectorXd rhs;
@@ -1010,8 +909,7 @@ namespace polyfem
             pressure = x;
         }
 
-        void projection(const polyfem::Mesh& mesh, 
-        int n_bases, 
+        void projection(int n_bases, 
         const std::vector<polyfem::ElementBases>& gbases, 
         const std::vector<polyfem::ElementBases>& bases, 
         const std::vector<polyfem::ElementBases>& pressure_bases, 
@@ -1047,46 +945,6 @@ namespace polyfem
                     sol(i * dim + d) -= grad_pressure(i * dim + d) / traversed(i);
                 }
             }
-        }
-
-        void initialize_solution(const std::vector<polyfem::ElementBases>& gbases, 
-        const std::vector<polyfem::ElementBases>& bases, 
-        const std::shared_ptr<Problem> problem, 
-        Eigen::MatrixXd& sol, 
-        const Eigen::MatrixXd& local_pts)
-        {
-#ifdef POLYFEM_WITH_TBB
-            tbb::parallel_for(0, n_el, 1, [&](int e)
-#else
-            for (int e = 0; e < n_el; ++e)
-#endif
-            {
-                // to compute global position with barycentric coordinate
-                ElementAssemblyValues gvals;
-                gvals.compute(e, dim == 3, local_pts, gbases[e], gbases[e]);
-
-                for (int i = 0; i < local_pts.rows(); i++)
-                {
-                    Eigen::MatrixXd pts = Eigen::MatrixXd::Zero(1, dim);
-                    for (int j = 0; j < shape; j++)
-                    {
-                        for (int d = 0; d < dim; d++)
-                        {
-                            pts(0, d) += V(T(e, j), d) * gvals.basis_values[j].val(i);
-                        }
-                    }
-                    Eigen::MatrixXd val;
-                    problem->initial_solution(pts, val);
-                    int global = bases[e].bases[i].global()[0].index;
-                    for (int d = 0; d < dim; d++)
-                    {
-                        sol(global * dim + d) = val(d);
-                    }
-                }
-            }
-#ifdef POLYFEM_WITH_TBB
-            );
-#endif
         }
 
         void initialize_density(const std::shared_ptr<Problem> problem)
@@ -1155,18 +1013,6 @@ namespace polyfem
             return -1; // not inside any elem
         }
 
-        bool outside_quad(const std::vector<RowVectorNd>& vert, const RowVectorNd& pos)
-        {
-            double a = (vert[1](0) - vert[0](0)) * (pos(1) - vert[0](1)) - (vert[1](1)-vert[0](1)) * (pos(0) - vert[0](0));
-            double b = (vert[2](0) - vert[1](0)) * (pos(1) - vert[1](1)) - (vert[2](1)-vert[1](1)) * (pos(0) - vert[1](0));
-            double c = (vert[3](0) - vert[2](0)) * (pos(1) - vert[2](1)) - (vert[3](1)-vert[2](1)) * (pos(0) - vert[2](0));
-            double d = (vert[0](0) - vert[3](0)) * (pos(1) - vert[3](1)) - (vert[0](1)-vert[3](1)) * (pos(0) - vert[3](0));
-
-            if((a > 0 && b > 0 && c > 0 && d > 0) || (a < 0 && b < 0 && c < 0 && d < 0))
-                return false;
-            return true;
-        }
-
         void calculate_local_pts(const polyfem::ElementBases& gbase, 
         const int elem_idx,
         const RowVectorNd& pos, 
@@ -1180,11 +1026,6 @@ namespace polyfem
                 for(int d = 0; d < dim; d++)
                     vert[i](d) = V(T(elem_idx, i), d);
             }
-            // if(shape == 4 && dim == 2 && outside_quad(vert, pos))
-            // {
-            //     local_pos(0) = local_pos(1) = -1;
-            //     return;
-            // }
             Eigen::MatrixXd res;
             int iter_times = 0;
             int max_iter = 20;

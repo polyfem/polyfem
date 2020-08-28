@@ -250,6 +250,8 @@ void FlowWithObstacle::set_parameters(const json &params)
 CollidingBalls::CollidingBalls(const std::string &name)
 	: TimeDepentendStokesProblem(name)
 {
+	U_ = 0.05;
+	radius_ = 0.02;
 }
 
 void CollidingBalls::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
