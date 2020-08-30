@@ -23,12 +23,9 @@ namespace polyfem
         void initialize_grid(const polyfem::Mesh& mesh, 
         const std::vector<polyfem::ElementBases>& gbases, 
         const std::vector<polyfem::ElementBases>& bases,
-        const double& extra_resolution)
+        const double& density_dx)
         {
-            Eigen::MatrixXd p0, p1, p;
-            mesh.get_edges(p0, p1);
-            p = p0 - p1;
-            resolution = p.rowwise().norm().minCoeff() / extra_resolution;
+            resolution = density_dx;
 
             grid_cell_num = RowVectorNd::Zero(dim);
             for(int d = 0; d < dim; d++)

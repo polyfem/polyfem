@@ -236,7 +236,7 @@ State::State()
 
 		{"particle", false},
 		{"density", false},
-		{"density_extra_resolution", 5},
+		{"density_dx", 1e-3},
 		{"advection_order", 1},
 		{"advection_RK", 1},
 
@@ -2885,7 +2885,7 @@ void State::solve_problem()
 
 			if (args["density"])
 			{
-				ss.initialize_grid(*mesh, gbases, bases, args["density_extra_resolution"]);
+				ss.initialize_grid(*mesh, gbases, bases, args["density_dx"]);
 				ss.initialize_density(problem);
 			}
 			/* initialize solution */
@@ -2980,7 +2980,7 @@ void State::solve_problem()
 					bnd_nodes.push_back(*it / dim);
 				}
 				ss.initialize_solver(*mesh, gbases[0].bases.size(), int(bases.size()), local_boundary, bnd_nodes);
-				ss.initialize_grid(*mesh, gbases, bases, args["density_extra_resolution"]);
+				ss.initialize_grid(*mesh, gbases, bases, args["density_dx"]);
 				ss.initialize_density(problem);
 			}
 
