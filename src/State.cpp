@@ -3025,7 +3025,7 @@ void State::solve_problem()
 				save_vtu("step_" + std::to_string(0) + ".vtu", 0);
 				// save_wire("step_" + std::to_string(0) + ".obj");
 			}
-			if (args["density"] && !(t % (int)args["skip_frame"]))
+			if (args["density"])
 			{
 				logger().info("saving ascii density file...");
 				ss.save_density();
