@@ -397,9 +397,8 @@ namespace polyfem
         {
             Eigen::VectorXd new_density = Eigen::VectorXd::Zero(density.size());
             RowVectorNd pos(1, dim);
-            const int X = grid_cell_num(0);
 
-            for(int i = 0; i <= X; i++)
+            for(int i = 0; i <= grid_cell_num(0); i++)
             {
                 pos(0) = i * resolution + min_domain(0);
                 for(int j = 0; j <= grid_cell_num(1); j++)

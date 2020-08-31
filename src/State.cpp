@@ -1930,7 +1930,29 @@ void State::build_grid(const json &mesh_params)
 			F(idx, 7) = F(idx, 3) + (x_n+1) * (y_n+1);
 		}
 
-		load_mesh(V, F);
+		// load_mesh(V, F);
+		std::ofstream file("box.mesh");
+		file << "MeshVersionFormatted 1\nDimension 3\nVertices\n" << V.rows() << "\n";
+		for(int i = 0; i < V.rows(); i++)
+        {
+		    for(int j = 0; j < V.cols(); j++)
+            {
+		        file << V(i, j) << " ";
+            }
+		    file << "0\n";
+        }
+        file << "Hexahedra\n" << F.rows() << "\n";
+		for(int i = 0; i < F.rows(); i++)
+        {
+		    for(int j = 0; j < F.cols(); j++)
+            {
+		        file << F(i, j)+1 << " ";
+            }
+		    file << "0\n";
+        }
+        file << "End\n";
+		file.close();
+		exit(0);
 	}
 }
 
@@ -2898,7 +2920,12 @@ void State::solve_problem()
 					solution_frames.emplace_back();
 				save_vtu("step_" + std::to_string(0) + ".vtu", 0.);
 			}
-			if (args["density"]) ss.save_density();
+			if (args["density"])
+			{
+				logger().info("saving ascii density file...");
+				ss.save_density();
+				logger().info("finished saving density!");
+			}
 
 			for (int t = 1; t <= time_steps; t++)
 			{
@@ -2906,7 +2933,11 @@ void State::solve_problem()
 				logger().info("{}/{} steps, t={}s", t, time_steps, time);
 
 				if(args["density"])
+				{
+					logger().info("density advection...");
 					ss.advect_density(gbases, bases, sol, dt);
+					logger().info("density advection finished!");
+				}
 	
 				/* advection */
 				if(args["particle"])
@@ -2940,7 +2971,11 @@ void State::solve_problem()
 					save_vtu("step_" + std::to_string(t) + ".vtu", time);
 				}
 				if (args["density"] && !(t % (int)args["skip_frame"]))
+				{
+					logger().info("saving ascii density file...");
 					ss.save_density();
+					logger().info("finished saving density!");
+				}
 			}
 		}
 		else if (formulation() == "NavierStokes")
@@ -2990,7 +3025,12 @@ void State::solve_problem()
 				save_vtu("step_" + std::to_string(0) + ".vtu", 0);
 				// save_wire("step_" + std::to_string(0) + ".obj");
 			}
-			if (args["density"]) ss.save_density();
+			if (args["density"] && !(t % (int)args["skip_frame"]))
+			{
+				logger().info("saving ascii density file...");
+				ss.save_density();
+				logger().info("finished saving density!");
+			}
 
 			assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, gbases, velocity_stiffness);
 			assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, mixed_stiffness);
@@ -3006,7 +3046,11 @@ void State::solve_problem()
 
 				logger().info("{}/{} steps, dt={}s t={}s", t, time_steps, current_dt, time);
 				if(args["density"])
+				{
+					logger().info("density advection...");
 					ss.advect_density(gbases, bases, sol, dt);
+					logger().info("density advection finished!");
+				}
 				
 				bdf.rhs(prev_sol);
 				rhs_assembler.compute_energy_grad(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs, time, current_rhs);
@@ -3034,7 +3078,11 @@ void State::solve_problem()
 					// save_wire("step_" + std::to_string(t) + ".obj");
 				}
 				if (args["density"] && !(t % (int)args["skip_frame"]))
+				{
+					logger().info("saving ascii density file...");
 					ss.save_density();
+					logger().info("finished saving density!");
+				}
 			}
 		}
 		else //if (formulation() != "NavierStokes")
