@@ -396,16 +396,20 @@ namespace polyfem
         const int RK = 3)
         {
             Eigen::VectorXd new_density = Eigen::VectorXd::Zero(density.size());
-            RowVectorNd pos(1, dim);
-
-            for(int i = 0; i <= grid_cell_num(0); i++)
+            const int Nx = grid_cell_num(0);
+#ifdef POLYFEM_WITH_TBB
+            tbb::parallel_for(0, Nx+1, 1, [&](int i)
+#else
+            for(int i = 0; i <= Nx; i++)
+#endif
             {
-                pos(0) = i * resolution + min_domain(0);
                 for(int j = 0; j <= grid_cell_num(1); j++)
                 {
-                    pos(1) = j * resolution + min_domain(1);
                     if(dim == 2)
                     {
+                        RowVectorNd pos(1, dim);
+                        pos(0) = i * resolution + min_domain(0);
+                        pos(1) = j * resolution + min_domain(1);
                         const int idx = i + j * (grid_cell_num(0)+1);
 
                         RowVectorNd vel1, pos_;
@@ -427,6 +431,9 @@ namespace polyfem
                     {
                         for(int k = 0; k <= grid_cell_num(2); k++)
                         {
+                            RowVectorNd pos(1, dim);
+                            pos(0) = i * resolution + min_domain(0);
+                            pos(1) = j * resolution + min_domain(1);
                             pos(2) = k * resolution + min_domain(2);
                             const int idx = i + (j + k * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
                             
@@ -448,6 +455,9 @@ namespace polyfem
                     }
                 }
             }
+#ifdef POLYFEM_WITH_TBB
+            );
+#endif
             density.swap(new_density);
         }
         
