@@ -261,26 +261,26 @@ namespace polyfem
 
 		if(params.find("dirichlet_boundary") != params.end())
 		{
-			boundary_ids_.clear();
+			// boundary_ids_.clear();
+			int offset = boundary_ids_.size();
 			auto j_boundary = params["dirichlet_boundary"];
 
-			boundary_ids_.resize(j_boundary.size());
-			displacements_.resize(j_boundary.size());
-			dirichelt_dimentions_.resize(j_boundary.size());
+			boundary_ids_.resize(offset + j_boundary.size());
+			displacements_.resize(offset + j_boundary.size());
+			dirichelt_dimentions_.resize(offset + j_boundary.size());
 
-
-			for(size_t i = 0; i < boundary_ids_.size(); ++i)
+			for (size_t i = offset; i < boundary_ids_.size(); ++i)
 			{
-				if(j_boundary[i]["id"] == "all")
+				if (j_boundary[i - offset]["id"] == "all")
 				{
 					assert(boundary_ids_.size() == 1);
 					boundary_ids_.clear();
 					is_all_ = true;
 				}
 				else
-					boundary_ids_[i] = j_boundary[i]["id"];
+					boundary_ids_[i] = j_boundary[i - offset]["id"];
 
-				auto ff = j_boundary[i]["value"];
+				auto ff = j_boundary[i - offset]["value"];
 				if(ff.is_array())
 				{
 					for(size_t k = 0; k < ff.size(); ++k)
@@ -295,10 +295,10 @@ namespace polyfem
 				}
 
 				dirichelt_dimentions_[i].setConstant(true);
-				if(j_boundary[i].find("dimension") != j_boundary[i].end())
+				if (j_boundary[i - offset].find("dimension") != j_boundary[i - offset].end())
 				{
 					all_dimentions_dirichelt_ = false;
-					auto &tmp = j_boundary[i]["dimension"];
+					auto &tmp = j_boundary[i - offset]["dimension"];
 					assert(tmp.is_array());
 					for(size_t k = 0; k < tmp.size(); ++k)
 						dirichelt_dimentions_[i](k) = tmp[k];
@@ -308,18 +308,19 @@ namespace polyfem
 
 		if(params.find("neumann_boundary") != params.end())
 		{
-			neumann_boundary_ids_.clear();
+			// neumann_boundary_ids_.clear();
+			const int offset = neumann_boundary_ids_.size();
+
 			auto j_boundary = params["neumann_boundary"];
 
-			neumann_boundary_ids_.resize(j_boundary.size());
-			forces_.resize(j_boundary.size());
+			neumann_boundary_ids_.resize(offset + j_boundary.size());
+			forces_.resize(offset + j_boundary.size());
 
-
-			for(size_t i = 0; i < neumann_boundary_ids_.size(); ++i)
+			for (size_t i = offset; i < neumann_boundary_ids_.size(); ++i)
 			{
-				neumann_boundary_ids_[i] = j_boundary[i]["id"];
+				neumann_boundary_ids_[i] = j_boundary[i - offset]["id"];
 
-				auto ff = j_boundary[i]["value"];
+				auto ff = j_boundary[i - offset]["value"];
 				if(ff.is_array())
 				{
 					for(size_t k = 0; k < ff.size(); ++k)
@@ -337,17 +338,19 @@ namespace polyfem
 
 		if (params.find("pressure_boundary") != params.end())
 		{
-			pressure_boundary_ids_.clear();
+			// pressure_boundary_ids_.clear();
+			const int offset = pressure_boundary_ids_.size();
+
 			auto j_boundary = params["pressure_boundary"];
 
-			pressure_boundary_ids_.resize(j_boundary.size());
-			pressures_.resize(j_boundary.size());
+			pressure_boundary_ids_.resize(offset + j_boundary.size());
+			pressures_.resize(offset + j_boundary.size());
 
-			for (size_t i = 0; i < pressure_boundary_ids_.size(); ++i)
+			for (size_t i = offset; i < pressure_boundary_ids_.size(); ++i)
 			{
-				pressure_boundary_ids_[i] = j_boundary[i]["id"];
+				pressure_boundary_ids_[i] = j_boundary[i-offset]["id"];
 
-				auto ff = j_boundary[i]["value"];
+				auto ff = j_boundary[i-offset]["value"];
 				pressures_[i].init(ff);
 			}
 		}
@@ -561,15 +564,16 @@ namespace polyfem
 
 		if(params.find("dirichlet_boundary") != params.end())
 		{
-			boundary_ids_.clear();
+			// boundary_ids_.clear();
+			const int offset = boundary_ids_.size();
 			auto j_boundary = params["dirichlet_boundary"];
 
-			boundary_ids_.resize(j_boundary.size());
-			dirichlet_.resize(j_boundary.size());
+			boundary_ids_.resize(offset+j_boundary.size());
+			dirichlet_.resize(offset+j_boundary.size());
 
-			for(size_t i = 0; i < boundary_ids_.size(); ++i)
+			for (size_t i = offset; i < boundary_ids_.size(); ++i)
 			{
-				if(j_boundary[i]["id"] == "all")
+				if (j_boundary[i - offset]["id"] == "all")
 				{
 					assert(boundary_ids_.size() == 1);
 
@@ -577,27 +581,27 @@ namespace polyfem
 					boundary_ids_.clear();
 				}
 				else
-					boundary_ids_[i] = j_boundary[i]["id"];
+					boundary_ids_[i] = j_boundary[i - offset]["id"];
 
-				auto ff = j_boundary[i]["value"];
+				auto ff = j_boundary[i - offset]["value"];
 				dirichlet_[i](0).init(ff);
 			}
 		}
 
 		if(params.find("neumann_boundary") != params.end())
 		{
-			neumann_boundary_ids_.clear();
+			// neumann_boundary_ids_.clear();
+			const int offset = neumann_boundary_ids_.size();
 			auto j_boundary = params["neumann_boundary"];
 
-			neumann_boundary_ids_.resize(j_boundary.size());
-			neumann_.resize(j_boundary.size());
+			neumann_boundary_ids_.resize(offset + j_boundary.size());
+			neumann_.resize(offset + j_boundary.size());
 
-
-			for(size_t i = 0; i < neumann_boundary_ids_.size(); ++i)
+			for (size_t i = offset; i < neumann_boundary_ids_.size(); ++i)
 			{
-				neumann_boundary_ids_[i] = j_boundary[i]["id"];
+				neumann_boundary_ids_[i] = j_boundary[i-offset]["id"];
 
-				auto ff = j_boundary[i]["value"];
+				auto ff = j_boundary[i-offset]["value"];
 				neumann_[i](0).init(ff);
 			}
 		}
