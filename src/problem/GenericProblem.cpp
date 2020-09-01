@@ -169,6 +169,32 @@ namespace polyfem
 		pressures_.back().init(val);
 	}
 
+	void GenericTensorProblem::add_dirichlet_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z)> &func, const bool isx, const bool isy, const bool isz)
+	{
+		boundary_ids_.push_back(id);
+		displacements_.emplace_back();
+		for (size_t k = 0; k < displacements_.back().size(); ++k)
+			displacements_.back()(k).init(func, k);
+
+		dirichelt_dimentions_.emplace_back(isx, isy, isz);
+	}
+
+	void GenericTensorProblem::add_neumann_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z)> &func)
+	{
+		neumann_boundary_ids_.push_back(id);
+		forces_.emplace_back();
+		for (size_t k = 0; k < forces_.back().size(); ++k)
+			forces_.back()(k).init(func, k);
+	}
+
+	void GenericTensorProblem::add_pressure_boundary(const int id, const std::function<double(double x, double y, double z)> &func)
+	{
+		pressure_boundary_ids_.push_back(id);
+		pressures_.emplace_back();
+		pressures_.back().init(func);
+	}
+
+
 	void GenericTensorProblem::set_parameters(const json &params)
 	{
 		if(params.find("is_time_dependent") != params.end())
@@ -577,7 +603,31 @@ namespace polyfem
 		}
 	}
 
+	void GenericScalarProblem::add_dirichlet_boundary(const int id, const double val)
+	{
+		boundary_ids_.push_back(id);
+		dirichlet_.emplace_back();
+		dirichlet_.back()(0).init(val);
+	}
 
+	void GenericScalarProblem::add_neumann_boundary(const int id, const double val)
+	{
+		neumann_boundary_ids_.push_back(id);
+		neumann_.emplace_back();
+		neumann_.back()(0).init(val);
+	}
 
+	void GenericScalarProblem::add_dirichlet_boundary(const int id, const std::function<double(double x, double y, double z)> &func)
+	{
+		boundary_ids_.push_back(id);
+		dirichlet_.emplace_back();
+		dirichlet_.back()(0).init(func);
+	}
 
+	void GenericScalarProblem::add_neumann_boundary(const int id, const std::function<double(double x, double y, double z)> &func)
+	{
+		neumann_boundary_ids_.push_back(id);
+		neumann_.emplace_back();
+		neumann_.back()(0).init(func);
+	}
 }

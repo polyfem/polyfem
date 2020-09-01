@@ -54,6 +54,10 @@ namespace polyfem
 		void add_neumann_boundary(const int id, const Eigen::RowVector3d &val);
 		void add_pressure_boundary(const int id, const double val);
 
+		void add_dirichlet_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z)> &func, const bool isx, const bool isy, const bool isz);
+		void add_neumann_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z)> &func);
+		void add_pressure_boundary(const int id, const std::function<double(double x, double y, double z)> &func);
+
 	private:
 		bool all_dimentions_dirichelt_ = true;
 		bool has_exact_ = false;
@@ -94,6 +98,12 @@ namespace polyfem
 
 		void exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 		void exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+
+		void add_dirichlet_boundary(const int id, const double val);
+		void add_neumann_boundary(const int id, const double val);
+
+		void add_dirichlet_boundary(const int id, const std::function<double(double x, double y, double z)> &func);
+		void add_neumann_boundary(const int id, const std::function<double(double x, double y, double z)> &func);
 
 	private:
 		std::vector<Eigen::Matrix<ExpressionValue, 1, 1, Eigen::RowMajor>> neumann_;

@@ -19,15 +19,18 @@ namespace polyfem
 	void ExpressionValue::init(const double val)
 	{
 		te_free(expr_);
+		sfunc_ = nullptr;
+		tfunc_ = nullptr;
 		expr_ = nullptr;
 
 		value_ = val;
 	}
 
-
 	void ExpressionValue::init(const std::string &expr)
 	{
 		value_ = 0;
+		sfunc_ = nullptr;
+		tfunc_ = nullptr;
 		te_free(expr_);
 
 		if(expr.empty())
@@ -65,10 +68,38 @@ namespace polyfem
 		}
 	}
 
+	void ExpressionValue::init(const std::function<double(double x, double y, double z)> &func)
+	{
+		te_free(expr_);
+		expr_ = nullptr;
+		tfunc_ = nullptr;
+		value_ = 0;
+
+		sfunc_ = func;
+	}
+
+	void ExpressionValue::init(const std::function<Eigen::MatrixXd(double x, double y, double z)> &func, const int coo)
+	{
+		te_free(expr_);
+		expr_ = nullptr;
+		sfunc_ = nullptr;
+		value_ = 0;
+
+		tfunc_ = func;
+		tfunc_coo_ = coo;
+	}
+
 	double ExpressionValue::operator()(double x, double y) const
 	{
-		if(!expr_)
+		if(!expr_){
+			if(sfunc_)
+				return sfunc_(x, y, 0);
+
+			if (tfunc_)
+				return tfunc_(x, y, 0)(tfunc_coo_);
+
 			return value_;
+		}
 
 		vals_->x = x;
 		vals_->y = y;
@@ -78,8 +109,16 @@ namespace polyfem
 
 	double ExpressionValue::operator()(double x, double y, double z) const
 	{
-		if(!expr_)
+		if (!expr_)
+		{
+			if (sfunc_)
+				return sfunc_(x, y, z);
+
+			if (tfunc_)
+				return tfunc_(x, y, z)(tfunc_coo_);
+
 			return value_;
+		}
 
 		vals_->x = x;
 		vals_->y = y;

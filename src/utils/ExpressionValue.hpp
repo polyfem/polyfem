@@ -16,6 +16,9 @@ namespace polyfem {
 		void init(const double val);
 		void init(const std::string &expr);
 
+		void init(const std::function<double(double x, double y, double z)> &func);
+		void init(const std::function<Eigen::MatrixXd(double x, double y, double z)> &func, const int coo);
+
 		double operator()(double x, double y) const;
 		double operator()(double x, double y, double z) const;
 
@@ -26,6 +29,10 @@ namespace polyfem {
 		{
 			double x, y, z;
 		};
+
+		std::function<double(double x, double y, double z)> sfunc_;
+		std::function<Eigen::MatrixXd(double x, double y, double z)> tfunc_;
+		int tfunc_coo_;
 
 		te_expr *expr_;
 		double value_;
