@@ -421,6 +421,25 @@ namespace polyfem
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 	}
 
+	void GenericTensorProblem::clear()
+	{
+		all_dimentions_dirichelt_ = true;
+		has_exact_ = false;
+		has_exact_grad_ = false;
+		is_time_dept_ = false;
+
+		forces_.clear();
+		displacements_.clear();
+		pressures_.clear();
+
+		dirichelt_dimentions_.clear();
+
+		rhs_.resize(0, 0);
+		exact_.resize(0, 0);
+		exact_grad_.resize(0, 0);
+		is_all_ = false;
+	}
+
 	GenericScalarProblem::GenericScalarProblem(const std::string &name)
 	: Problem(name), is_all_(false)
 	{}
@@ -633,5 +652,19 @@ namespace polyfem
 		neumann_boundary_ids_.push_back(id);
 		neumann_.emplace_back();
 		neumann_.back()(0).init(func);
+	}
+
+	void GenericScalarProblem::clear()
+	{
+		neumann_.clear();
+		dirichlet_.clear();
+
+		rhs_.clear();
+		exact_.clear();
+		exact_grad_.resize(0, 0);
+		is_all_ = false;
+		has_exact_ = false;
+		has_exact_grad_ = false;
+		is_time_dept_ = false;
 	}
 }

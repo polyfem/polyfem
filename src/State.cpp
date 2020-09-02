@@ -2565,7 +2565,7 @@ void State::assemble_rhs()
 	igl::Timer timer;
 	const std::string rhs_path = args["rhs_path"];
 
-	auto p_params = args["problem_params"];
+	json p_params = {};
 	p_params["formulation"] = formulation();
 	{
 		RowVectorNd min, max, delta;
@@ -3511,6 +3511,7 @@ void State::init(const json &args_in)
 	}
 
 	problem = ProblemFactory::factory().get_problem(args["problem"]);
+	problem->clear();
 	//important for the BC
 	problem->set_parameters(args["problem_params"]);
 

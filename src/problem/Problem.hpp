@@ -40,6 +40,8 @@ namespace polyfem
 		// virtual bool is_mixed() const { return false; }
 		virtual bool is_linear_in_time() const { return true; }
 
+		virtual void clear() { }
+
 
 		virtual bool is_time_dependent() const { return false; }
 		virtual void initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { }

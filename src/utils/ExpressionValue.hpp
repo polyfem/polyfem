@@ -22,6 +22,8 @@ namespace polyfem {
 		double operator()(double x, double y) const;
 		double operator()(double x, double y, double z) const;
 
+		void clear();
+
 		bool is_zero() const { return !expr_ && fabs(value_) < 1e-10; }
 
 	private:

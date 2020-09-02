@@ -16,6 +16,15 @@ namespace polyfem
 		vals_ = new Internal();
 	}
 
+	void ExpressionValue::clear()
+	{
+		te_free(expr_);
+		expr_ = nullptr;
+		sfunc_ = nullptr;
+		tfunc_ = nullptr;
+		value_ = 0;
+	}
+
 	void ExpressionValue::init(const double val)
 	{
 		te_free(expr_);
