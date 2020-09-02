@@ -434,9 +434,12 @@ namespace polyfem
 
 		dirichelt_dimentions_.clear();
 
-		rhs_.resize(0, 0);
-		exact_.resize(0, 0);
-		exact_grad_.resize(0, 0);
+		for(int i = 0; i < rhs_.size(); ++i)
+			rhs_(i).clear();
+		for (int i = 0; i < exact_.size(); ++i)
+			exact_(i).clear();
+		for (int i = 0; i < exact_grad_.size(); ++i)
+			exact_grad_(i).clear();
 		is_all_ = false;
 	}
 
@@ -661,7 +664,8 @@ namespace polyfem
 
 		rhs_.clear();
 		exact_.clear();
-		exact_grad_.resize(0, 0);
+		for (int i = 0; i < exact_grad_.size();++i)
+			exact_grad_(i).clear();
 		is_all_ = false;
 		has_exact_ = false;
 		has_exact_grad_ = false;
