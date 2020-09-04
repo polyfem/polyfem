@@ -23,7 +23,7 @@ namespace polyfem
 		for (int i = 0; i < pts.rows(); ++i)
 		{
 			for (int j = 0; j < pts.cols(); ++j)
-				val(i, j) = planar ? rhs_(j)(pts(i, 0), pts(i, 1)) : rhs_(j)(pts(i, 0), pts(i, 1), pts(i, 2));
+				val(i, j) = planar ? rhs_[j](pts(i, 0), pts(i, 1)) : rhs_[j](pts(i, 0), pts(i, 1), pts(i, 2));
 		}
 
 		// val.col(i).setConstant(rhs_(i));
@@ -64,7 +64,7 @@ namespace polyfem
 			{
 				assert(displacements_.size() == 1);
 				for(int d = 0; d < val.cols(); ++d)
-					val(i, d) = pts.cols() == 2 ? displacements_[0](d)(pts(i, 0), pts(i, 1)) : displacements_[0](d)(pts(i, 0), pts(i, 1), pts(i, 2));
+					val(i, d) = pts.cols() == 2 ? displacements_[0][d](pts(i, 0), pts(i, 1)) : displacements_[0][d](pts(i, 0), pts(i, 1), pts(i, 2));
 			}
 			else
 			{
@@ -74,7 +74,7 @@ namespace polyfem
 					if(id == boundary_ids_[b])
 					{
 						for(int d = 0; d < val.cols(); ++d)
-							val(i, d) = pts.cols() == 2 ? displacements_[b](d)(pts(i, 0), pts(i, 1)) : displacements_[b](d)(pts(i, 0), pts(i, 1), pts(i, 2));
+							val(i, d) = pts.cols() == 2 ? displacements_[b][d](pts(i, 0), pts(i, 1)) : displacements_[b][d](pts(i, 0), pts(i, 1), pts(i, 2));
 						break;
 					}
 				}
@@ -97,7 +97,7 @@ namespace polyfem
 				if(id == neumann_boundary_ids_[b])
 				{
 					for(int d = 0; d < val.cols(); ++d)
-						val(i, d) = pts.cols() == 2 ? forces_[b](d)(pts(i, 0), pts(i, 1)) : forces_[b](d)(pts(i, 0), pts(i, 1), pts(i, 2));
+						val(i, d) = pts.cols() == 2 ? forces_[b][d](pts(i, 0), pts(i, 1)) : forces_[b][d](pts(i, 0), pts(i, 1), pts(i, 2));
 					break;
 				}
 			}
@@ -125,7 +125,7 @@ namespace polyfem
 		for (int i = 0; i < pts.rows(); ++i)
 		{
 			for (int j = 0; j < pts.cols(); ++j)
-				val(i, j) = planar ? exact_(j)(pts(i, 0), pts(i, 1)) : exact_(j)(pts(i, 0), pts(i, 1), pts(i, 2));
+				val(i, j) = planar ? exact_[j](pts(i, 0), pts(i, 1)) : exact_[j](pts(i, 0), pts(i, 1), pts(i, 2));
 		}
 	}
 
@@ -140,7 +140,7 @@ namespace polyfem
 		for (int i = 0; i < pts.rows(); ++i)
 		{
 			for (int j = 0; j < pts.cols()*size; ++j)
-				val(i, j) = planar ? exact_grad_(j)(pts(i, 0), pts(i, 1)) : exact_grad_(j)(pts(i, 0), pts(i, 1), pts(i, 2));
+				val(i, j) = planar ? exact_grad_[j](pts(i, 0), pts(i, 1)) : exact_grad_[j](pts(i, 0), pts(i, 1), pts(i, 2));
 		}
 	}
 
@@ -149,7 +149,7 @@ namespace polyfem
 		boundary_ids_.push_back(id);
 		displacements_.emplace_back();
 		for (size_t k = 0; k < val.size(); ++k)
-			displacements_.back()(k).init(val[k]);
+			displacements_.back()[k].init(val[k]);
 
 		dirichelt_dimentions_.emplace_back(isx, isy, isz);
 	}
@@ -159,7 +159,7 @@ namespace polyfem
 		neumann_boundary_ids_.push_back(id);
 		forces_.emplace_back();
 		for (size_t k = 0; k < val.size(); ++k)
-			forces_.back()(k).init(val[k]);
+			forces_.back()[k].init(val[k]);
 	}
 
 	void GenericTensorProblem::add_pressure_boundary(const int id, const double val)
@@ -174,7 +174,7 @@ namespace polyfem
 		boundary_ids_.push_back(id);
 		displacements_.emplace_back();
 		for (size_t k = 0; k < displacements_.back().size(); ++k)
-			displacements_.back()(k).init(func, k);
+			displacements_.back()[k].init(func, k);
 
 		dirichelt_dimentions_.emplace_back(isx, isy, isz);
 	}
@@ -184,7 +184,7 @@ namespace polyfem
 		neumann_boundary_ids_.push_back(id);
 		forces_.emplace_back();
 		for (size_t k = 0; k < forces_.back().size(); ++k)
-			forces_.back()(k).init(func, k);
+			forces_.back()[k].init(func, k);
 	}
 
 	void GenericTensorProblem::add_pressure_boundary(const int id, const std::function<double(double x, double y, double z)> &func)
@@ -208,7 +208,7 @@ namespace polyfem
 			if(rr.is_array())
 			{
 				for(size_t k = 0; k < rr.size(); ++k)
-					rhs_(k).init(rr[k]);
+					rhs_[k].init(rr[k]);
 			}
 			else{
 				assert(false);
@@ -224,7 +224,7 @@ namespace polyfem
 				if (ex.is_array())
 				{
 					for (size_t k = 0; k < ex.size(); ++k)
-						exact_(k).init(ex[k]);
+						exact_[k].init(ex[k]);
 				}
 				else
 				{
@@ -246,7 +246,7 @@ namespace polyfem
 				if (ex.is_array())
 				{
 					for (size_t k = 0; k < ex.size(); ++k)
-						exact_grad_(k).init(ex[k]);
+						exact_grad_[k].init(ex[k]);
 				}
 				else
 				{
@@ -284,7 +284,7 @@ namespace polyfem
 				if(ff.is_array())
 				{
 					for(size_t k = 0; k < ff.size(); ++k)
-						displacements_[i](k).init(ff[k]);
+						displacements_[i][k].init(ff[k]);
 				}
 				else
 				{
@@ -324,7 +324,7 @@ namespace polyfem
 				if(ff.is_array())
 				{
 					for(size_t k = 0; k < ff.size(); ++k)
-						forces_[i](k).init(ff[k]);
+						forces_[i][k].init(ff[k]);
 				}
 				else
 				{
@@ -435,11 +435,11 @@ namespace polyfem
 		dirichelt_dimentions_.clear();
 
 		for(int i = 0; i < rhs_.size(); ++i)
-			rhs_(i).clear();
+			rhs_[i].clear();
 		for (int i = 0; i < exact_.size(); ++i)
-			exact_(i).clear();
+			exact_[i].clear();
 		for (int i = 0; i < exact_grad_.size(); ++i)
-			exact_grad_(i).clear();
+			exact_grad_[i].clear();
 		is_all_ = false;
 	}
 
@@ -474,7 +474,7 @@ namespace polyfem
 			if(is_all_)
 			{
 				assert(dirichlet_.size() == 1);
-				val(i) = pts.cols() == 2 ? dirichlet_[0](0)(pts(i, 0), pts(i, 1)) : dirichlet_[0](0)(pts(i, 0), pts(i, 1), pts(i, 2));
+				val(i) = pts.cols() == 2 ? dirichlet_[0](pts(i, 0), pts(i, 1)) : dirichlet_[0](pts(i, 0), pts(i, 1), pts(i, 2));
 			}
 			else
 			{
@@ -482,7 +482,7 @@ namespace polyfem
 				{
 					if(id == boundary_ids_[b])
 					{
-						val(i) = pts.cols() == 2 ? dirichlet_[b](0)(pts(i, 0), pts(i, 1)) : dirichlet_[b](0)(pts(i, 0), pts(i, 1), pts(i, 2));
+						val(i) = pts.cols() == 2 ? dirichlet_[b](pts(i, 0), pts(i, 1)) : dirichlet_[b](pts(i, 0), pts(i, 1), pts(i, 2));
 						break;
 					}
 				}
@@ -504,7 +504,7 @@ namespace polyfem
 			{
 				if(id == neumann_boundary_ids_[b])
 				{
-					val(i) = pts.cols() == 2 ? neumann_[b](0)(pts(i, 0), pts(i, 1)) : neumann_[b](0)(pts(i, 0), pts(i, 1), pts(i, 2));
+					val(i) = pts.cols() == 2 ? neumann_[b](pts(i, 0), pts(i, 1)) : neumann_[b](pts(i, 0), pts(i, 1), pts(i, 2));
 					break;
 				}
 			}
@@ -535,7 +535,7 @@ namespace polyfem
 		for (int i = 0; i < pts.rows(); ++i)
 		{
 			for(int j = 0; j < pts.cols(); ++j)
-				val(i, j) = planar ? exact_grad_(j)(pts(i, 0), pts(i, 1)) : exact_grad_(j)(pts(i, 0), pts(i, 1), pts(i, 2));
+				val(i, j) = planar ? exact_grad_[j](pts(i, 0), pts(i, 1)) : exact_grad_[j](pts(i, 0), pts(i, 1), pts(i, 2));
 		}
 	}
 
@@ -571,7 +571,7 @@ namespace polyfem
 				if (ex.is_array())
 				{
 					for (size_t k = 0; k < ex.size(); ++k)
-						exact_grad_(k).init(ex[k]);
+						exact_grad_[k].init(ex[k]);
 				}
 				else
 				{
@@ -606,7 +606,7 @@ namespace polyfem
 					boundary_ids_[i] = j_boundary[i - offset]["id"];
 
 				auto ff = j_boundary[i - offset]["value"];
-				dirichlet_[i](0).init(ff);
+				dirichlet_[i].init(ff);
 			}
 		}
 
@@ -624,7 +624,7 @@ namespace polyfem
 				neumann_boundary_ids_[i] = j_boundary[i-offset]["id"];
 
 				auto ff = j_boundary[i-offset]["value"];
-				neumann_[i](0).init(ff);
+				neumann_[i].init(ff);
 			}
 		}
 	}
@@ -633,28 +633,28 @@ namespace polyfem
 	{
 		boundary_ids_.push_back(id);
 		dirichlet_.emplace_back();
-		dirichlet_.back()(0).init(val);
+		dirichlet_.back().init(val);
 	}
 
 	void GenericScalarProblem::add_neumann_boundary(const int id, const double val)
 	{
 		neumann_boundary_ids_.push_back(id);
 		neumann_.emplace_back();
-		neumann_.back()(0).init(val);
+		neumann_.back().init(val);
 	}
 
 	void GenericScalarProblem::add_dirichlet_boundary(const int id, const std::function<double(double x, double y, double z)> &func)
 	{
 		boundary_ids_.push_back(id);
 		dirichlet_.emplace_back();
-		dirichlet_.back()(0).init(func);
+		dirichlet_.back().init(func);
 	}
 
 	void GenericScalarProblem::add_neumann_boundary(const int id, const std::function<double(double x, double y, double z)> &func)
 	{
 		neumann_boundary_ids_.push_back(id);
 		neumann_.emplace_back();
-		neumann_.back()(0).init(func);
+		neumann_.back().init(func);
 	}
 
 	void GenericScalarProblem::clear()
@@ -665,7 +665,7 @@ namespace polyfem
 		rhs_.clear();
 		exact_.clear();
 		for (int i = 0; i < exact_grad_.size();++i)
-			exact_grad_(i).clear();
+			exact_grad_[i].clear();
 		is_all_ = false;
 		has_exact_ = false;
 		has_exact_grad_ = false;

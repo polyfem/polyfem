@@ -7,6 +7,8 @@ namespace polyfem
 	{
 		te_free(expr_);
 		expr_ = nullptr;
+		sfunc_ = nullptr;
+		tfunc_ = nullptr;
 	}
 
 	ExpressionValue::ExpressionValue()

@@ -3,8 +3,10 @@
 #include <polyfem/Problem.hpp>
 #include <polyfem/ExpressionValue.hpp>
 
-#include <vector>
 #include <Eigen/Dense>
+
+#include <array>
+#include <vector>
 
 namespace polyfem
 {
@@ -18,7 +20,7 @@ namespace polyfem
 		{
 			for (int i = 0; i < 3; ++i)
 			{
-				if (!rhs_(i).is_zero())
+				if (!rhs_[i].is_zero())
 					return false;
 			}
 			return true;
@@ -67,15 +69,15 @@ namespace polyfem
 		bool is_time_dept_ = false;
 		// bool is_mixed_ = false;
 
-		std::vector<Eigen::Matrix<ExpressionValue, 1, 3, Eigen::RowMajor>> forces_;
-		std::vector<Eigen::Matrix<ExpressionValue, 1, 3, Eigen::RowMajor>> displacements_;
+		std::vector<std::array<ExpressionValue, 3>> forces_;
+		std::vector<std::array<ExpressionValue, 3>> displacements_;
 		std::vector<ExpressionValue> pressures_;
 
-		std::vector<Eigen::Matrix<bool, 1, 3, Eigen::RowMajor>> dirichelt_dimentions_;
+		std::vector<Eigen::Matrix<bool, 1, 3>> dirichelt_dimentions_;
 
-		Eigen::Matrix<ExpressionValue, 1, 3, Eigen::RowMajor> rhs_;
-		Eigen::Matrix<ExpressionValue, 1, 3, Eigen::RowMajor> exact_;
-		Eigen::Matrix<ExpressionValue, 1, 9, Eigen::RowMajor> exact_grad_;
+		std::array<ExpressionValue, 3> rhs_;
+		std::array<ExpressionValue, 3> exact_;
+		std::array<ExpressionValue, 9> exact_grad_;
 		bool is_all_;
 	};
 
@@ -110,12 +112,12 @@ namespace polyfem
 		void clear() override;
 
 	private:
-		std::vector<Eigen::Matrix<ExpressionValue, 1, 1, Eigen::RowMajor>> neumann_;
-		std::vector<Eigen::Matrix<ExpressionValue, 1, 1, Eigen::RowMajor>> dirichlet_;
+		std::vector<ExpressionValue> neumann_;
+		std::vector<ExpressionValue> dirichlet_;
 
 		ExpressionValue rhs_;
 		ExpressionValue exact_;
-		Eigen::Matrix<ExpressionValue, 1, 3, Eigen::RowMajor> exact_grad_;
+		std::array<ExpressionValue, 3> exact_grad_;
 		bool is_all_;
 		bool has_exact_ = false;
 		bool has_exact_grad_ = false;
