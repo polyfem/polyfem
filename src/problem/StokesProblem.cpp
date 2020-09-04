@@ -485,6 +485,34 @@ void TaylorGreenVortexProblem::initial_solution(const Eigen::MatrixXd &pts, Eige
 	exact(pts, 0, val);
 }
 
+void TaylorGreenVortexProblem::initial_density(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+{
+	const double radius_ = 1.5707963267948966;
+	val = Eigen::MatrixXd::Zero(pts.rows(), 1);
+	for(int i = 0; i < pts.rows(); ++i)
+	{
+		const double x = pts(i, 0);
+		const double y = pts(i, 1);
+
+		if(pts.cols() == 2)
+		{
+			double r1 = sqrt(pow(x-3.141592653589793,2)+pow(y-3.141592653589793,2));
+			
+			if(r1 <= radius_)
+				val(i, 0) = 1;
+		}
+		else
+		{
+			const double z = pts(i, 2);
+
+			double r1 = sqrt(pow(x-3.141592653589793,2)+pow(y-3.141592653589793,2)+pow(z-3.141592653589793,2));
+			
+			if(r1 <= radius_)
+				val(i, 0) = 1;
+		}
+	}
+}
+
 void TaylorGreenVortexProblem::set_parameters(const json &params)
 {
 	if (params.count("viscosity"))

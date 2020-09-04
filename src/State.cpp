@@ -74,6 +74,7 @@
 #include <algorithm>
 #include <memory>
 #include <math.h>
+#include <iomanip>
 
 #include <polyfem/autodiff.h>
 #include <geogram/basic/logger.h>
@@ -1933,6 +1934,7 @@ void State::build_grid(const json &mesh_params)
 		// load_mesh(V, F);
 		std::ofstream file("box.mesh");
 		file << "MeshVersionFormatted 1\nDimension 3\nVertices\n" << V.rows() << "\n";
+		file.precision(16);
 		for(int i = 0; i < V.rows(); i++)
         {
 		    for(int j = 0; j < V.cols(); j++)

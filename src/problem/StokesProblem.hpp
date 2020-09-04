@@ -161,6 +161,7 @@ public:
 	bool is_time_dependent() const override { return true; }
 
 	void initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
+	void initial_density(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 
 	void set_parameters(const json &params) override;
 
