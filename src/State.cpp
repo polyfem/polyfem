@@ -3137,7 +3137,7 @@ void State::solve_problem()
 
 					logger().debug("Updating starting point...");
 					update_timer.start();
-					if (!args["has_collision"])
+
 					{
 						nl_problem.hessian_full(sol, nlstiffness);
 						nl_problem.gradient_no_rhs(sol, grad);
@@ -3146,11 +3146,16 @@ void State::solve_problem()
 						for (int bId : boundary_nodes)
 							b(bId) = -(nl_problem.current_rhs()(bId) - prev_rhs(bId));
 						dirichlet_solve(*solver, nlstiffness, b, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
+						if (args["has_collision"])
+						{
+							if(nl_problem.is_step_valid(sol, (sol - x).eval()))
+								x = sol - x;
+							else
+								x = sol;
+						}
 						// logger().debug("Solver error: {}", (nlstiffness * sol - b).norm());
-						x = sol - x;
 					}
-					else
-						x = sol;
+
 					nl_problem.full_to_reduced(x, tmp_sol);
 					update_timer.stop();
 					logger().debug("done!, took {}s", update_timer.getElapsedTime());

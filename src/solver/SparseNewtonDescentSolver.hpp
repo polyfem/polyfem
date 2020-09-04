@@ -105,7 +105,7 @@ public:
 		const double Cache = c * grad.dot(searchDir);
 
 		int cur_iter = 0;
-		while ((std::isinf(f) || std::isnan(f) || f > f_in + alpha * Cache || !objFunc.is_step_valid(x, x1)) && cur_iter <= MAX_STEP_SIZE_ITER)
+		while ((std::isinf(f) || std::isnan(f) || f > f_in + alpha * Cache || !objFunc.is_step_valid(x, x1)) && alpha > 1e-7 && cur_iter <= MAX_STEP_SIZE_ITER)
 		{
 			alpha *= tau;
 			x1 = x + alpha * searchDir;
@@ -114,7 +114,7 @@ public:
 			cur_iter++;
 		}
 
-		if(cur_iter >= MAX_STEP_SIZE_ITER)
+		if (cur_iter >= MAX_STEP_SIZE_ITER || alpha <= 1e-7)
 			return std::nan("");
 		else
 			return alpha;
@@ -136,7 +136,7 @@ public:
 
 		// std::cout<<"grad\n"<<grad<<std::endl;
 
-		while (cur_iter < MAX_STEP_SIZE_ITER)
+		while (step_size > 1e-7 || cur_iter < MAX_STEP_SIZE_ITER)
 		{
 			double cur_e = objFunc.value(new_x);
 			const bool valid = objFunc.is_step_valid(x, new_x);
