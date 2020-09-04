@@ -13,13 +13,13 @@
 
 #include <unsupported/Eigen/SparseExtra>
 
-static bool disable_collision = true;
+static bool disable_collision = false;
 
 namespace polyfem
 {
 	using namespace polysolve;
 
-	NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t)
+	NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t, const double dhat)
 		: state(state), assembler(AssemblerUtils::instance()), rhs_assembler(rhs_assembler),
 		  full_size((assembler.is_mixed(state.formulation()) ? state.n_pressure_bases : 0) + state.n_bases * state.mesh->dimension()),
 		  reduced_size(full_size - state.boundary_nodes.size()),
@@ -27,7 +27,7 @@ namespace polyfem
 	{
 		assert(!assembler.is_mixed(state.formulation()));
 
-		_dhat_squared = 1e-1;
+		_dhat_squared = dhat * dhat;
 		_barrier_stiffness = 50;
 	}
 
@@ -103,6 +103,71 @@ namespace polyfem
 		displaced += state.boundary_nodes_pos;
 	}
 
+	double NLProblem::max_step_size(const TVector &x0, const TVector &x1)
+	{
+		if (disable_collision)
+			return 1;
+		if (!state.args["has_collision"])
+			return 1;
+
+		Eigen::MatrixXd full0, full1;
+		if (x0.size() == reduced_size)
+			reduced_to_full(x0, full0);
+		else
+			full0 = x0;
+		if (x1.size() == reduced_size)
+			reduced_to_full(x1, full1);
+		else
+			full1 = x1;
+		assert(full0.size() == full_size);
+		assert(full1.size() == full_size);
+
+		Eigen::MatrixXd displaced0, displaced1;
+
+		compute_displaced_points(full0, displaced0);
+		compute_displaced_points(full1, displaced1);
+
+		const double max_step = ipc::compute_collision_free_stepsize(displaced0, displaced1, state.boundary_edges, state.boundary_triangles);
+		// std::cout << "is_valid " << is_valid << std::endl;
+		// polyfem::logger().trace("best step {}", ipc::compute_collision_free_stepsize(displaced0, displaced1, state.boundary_edges, state.boundary_triangles));
+
+		// static int vvvv = 0;
+		// if (is_valid && displaced0.cols() == 2)
+		// {
+		// 	{
+		// 		std::ofstream out("test_" + std::to_string(vvvv) + "_0.obj");
+		// 		for (int i = 0; i < state.boundary_nodes_pos.rows(); ++i)
+		// 			out << "v " << displaced0(i, 0) << " " << displaced0(i, 1) << " 0\n";
+
+		// 		for (int i = 0; i < state.boundary_edges.rows(); ++i)
+		// 			out << "l " << state.boundary_edges(i, 0) + 1 << " " << state.boundary_edges(i, 1) + 1 << "\n";
+		// 		out.close();
+		// 	}
+
+		// 	{
+		// 		std::ofstream out("test_" + std::to_string(vvvv) + "_1.obj");
+		// 		for (int i = 0; i < state.boundary_nodes_pos.rows(); ++i)
+		// 			out << "v " << displaced1(i, 0) << " " << displaced1(i, 1) << " 0\n";
+
+		// 		for (int i = 0; i < state.boundary_edges.rows(); ++i)
+		// 			out << "l " << state.boundary_edges(i, 0) + 1 << " " << state.boundary_edges(i, 1) + 1 << "\n";
+		// 		out.close();
+		// 	}
+
+		// 	vvvv++;
+		// }
+		// if (is_valid && displaced0.cols() == 3)
+		// {
+		// 	igl::write_triangle_mesh("test_" + std::to_string(vvvv) + "_0.obj", displaced0, state.boundary_triangles);
+		// 	igl::write_triangle_mesh("test_" + std::to_string(vvvv) + "_1.obj", displaced1, state.boundary_triangles);
+		// 	vvvv++;
+		// }
+
+		// std::cout<<"state.boundary_nodes_pos + displaced\n"<<full<<std::endl;
+		// std::cout<<"state.boundary_nodes_pos + displaced\n"<<displaced<<std::endl;
+
+		return max_step;
+	}
 
 	bool NLProblem::is_step_valid(const TVector &x0, const TVector &x1)
 	{
@@ -132,37 +197,37 @@ namespace polyfem
 		// std::cout << "is_valid " << is_valid << std::endl;
 		// polyfem::logger().trace("best step {}", ipc::compute_collision_free_stepsize(displaced0, displaced1, state.boundary_edges, state.boundary_triangles));
 
-		static int vvvv = 0;
-		if (is_valid && displaced0.cols() == 2)
-		{
-			{
-				std::ofstream out("test_"+std::to_string(vvvv)+"_0.obj");
-				for (int i = 0; i < state.boundary_nodes_pos.rows(); ++i)
-					out << "v " << displaced0(i, 0) << " " << displaced0(i, 1) << " 0\n";
+		// static int vvvv = 0;
+		// if (is_valid && displaced0.cols() == 2)
+		// {
+		// 	{
+		// 		std::ofstream out("test_"+std::to_string(vvvv)+"_0.obj");
+		// 		for (int i = 0; i < state.boundary_nodes_pos.rows(); ++i)
+		// 			out << "v " << displaced0(i, 0) << " " << displaced0(i, 1) << " 0\n";
 
-				for (int i = 0; i < state.boundary_edges.rows(); ++i)
-					out << "l " << state.boundary_edges(i, 0) + 1 << " " << state.boundary_edges(i, 1) + 1 << "\n";
-				out.close();
-			}
+		// 		for (int i = 0; i < state.boundary_edges.rows(); ++i)
+		// 			out << "l " << state.boundary_edges(i, 0) + 1 << " " << state.boundary_edges(i, 1) + 1 << "\n";
+		// 		out.close();
+		// 	}
 
-			{
-				std::ofstream out("test_"+std::to_string(vvvv)+"_1.obj");
-				for (int i = 0; i < state.boundary_nodes_pos.rows(); ++i)
-					out << "v " << displaced1(i, 0) << " " << displaced1(i, 1) << " 0\n";
+		// 	{
+		// 		std::ofstream out("test_"+std::to_string(vvvv)+"_1.obj");
+		// 		for (int i = 0; i < state.boundary_nodes_pos.rows(); ++i)
+		// 			out << "v " << displaced1(i, 0) << " " << displaced1(i, 1) << " 0\n";
 
-				for (int i = 0; i < state.boundary_edges.rows(); ++i)
-					out << "l " << state.boundary_edges(i, 0) + 1 << " " << state.boundary_edges(i, 1) + 1 << "\n";
-				out.close();
-			}
+		// 		for (int i = 0; i < state.boundary_edges.rows(); ++i)
+		// 			out << "l " << state.boundary_edges(i, 0) + 1 << " " << state.boundary_edges(i, 1) + 1 << "\n";
+		// 		out.close();
+		// 	}
 
-			vvvv++;
-		}
-		if (is_valid && displaced0.cols() == 3)
-		{
-			igl::write_triangle_mesh("test_" + std::to_string(vvvv) + "_0.obj", displaced0, state.boundary_triangles);
-			igl::write_triangle_mesh("test_" + std::to_string(vvvv) + "_1.obj", displaced1, state.boundary_triangles);
-			vvvv++;
-		}
+		// 	vvvv++;
+		// }
+		// if (is_valid && displaced0.cols() == 3)
+		// {
+		// 	igl::write_triangle_mesh("test_" + std::to_string(vvvv) + "_0.obj", displaced0, state.boundary_triangles);
+		// 	igl::write_triangle_mesh("test_" + std::to_string(vvvv) + "_1.obj", displaced1, state.boundary_triangles);
+		// 	vvvv++;
+		// }
 
 		// std::cout<<"state.boundary_nodes_pos + displaced\n"<<full<<std::endl;
 		// std::cout<<"state.boundary_nodes_pos + displaced\n"<<displaced<<std::endl;
@@ -212,18 +277,25 @@ namespace polyfem
 			// std::cout<<" + displaced\n"<<full<<std::endl;
 			// std::cout<<" + displaced\n"<<displaced<<std::endl;
 
-			ccd::Candidates constraint_set;
+			ipc::Candidates constraint_set;
 			ipc::construct_constraint_set(displaced, state.boundary_edges, state.boundary_triangles, _dhat_squared, constraint_set);
-			constraint_set.ee_candidates.clear();
 			collision_energy = ipc::compute_barrier_potential(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat_squared);
 
-			if(collision_energy > 0)
-			{
-				igl::write_triangle_mesh("test_mesh.obj", displaced, state.boundary_triangles);
-				// exit(0);
-			}
+			// if(collision_energy > 0)
+			// {
+			// 	if(displaced.cols() == 3)
+			// 		igl::write_triangle_mesh("test_mesh.obj", displaced, state.boundary_triangles);
+			// 	else {
+			// 		Eigen::MatrixXd asd(displaced.rows(), 3);
+			// 		asd.col(0) = displaced.col(0);
+			// 		asd.col(1) = displaced.col(1);
+			// 		asd.col(2).setZero();
+			// 		igl::write_triangle_mesh("test_mesh.obj", asd, state.boundary_triangles);
+			// 	}
+			// 	// exit(0);
+			// }
 
-			polyfem::logger().trace("collision_energy {}", collision_energy);
+			// polyfem::logger().trace("collision_energy {}", collision_energy);
 			// const double ddd = ipc::compute_minimum_distance(displaced, state.boundary_edges, state.boundary_triangles, constraint_set);
 			// polyfem::logger().trace("min_dist {}", ddd);
 			// polyfem::logger().trace("barrier {}", ipc::barrier(ddd, _dhat_squared));
@@ -298,13 +370,12 @@ namespace polyfem
 			// 	max_barrier_stiffness);
 			// polyfem::logger().trace("adaptive stiffness {}", xxxx);
 
-			ccd::Candidates constraint_set;
+			ipc::Candidates constraint_set;
 			ipc::construct_constraint_set(displaced, state.boundary_edges, state.boundary_triangles, _dhat_squared, constraint_set);
-			constraint_set.ee_candidates.clear();
 			grad += _barrier_stiffness * ipc::compute_barrier_potential_gradient(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat_squared);
-			polyfem::logger().trace("collision grad {}", ipc::compute_barrier_potential_gradient(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat_squared).norm() * _barrier_stiffness);
-			const double ddd = ipc::compute_minimum_distance(displaced, state.boundary_edges, state.boundary_triangles, constraint_set);
-			polyfem::logger().trace("min_dist {}", ddd);
+			// polyfem::logger().trace("collision grad {}", ipc::compute_barrier_potential_gradient(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat_squared).norm() * _barrier_stiffness);
+			// const double ddd = ipc::compute_minimum_distance(displaced, state.boundary_edges, state.boundary_triangles, constraint_set);
+			// polyfem::logger().trace("min_dist {}", ddd);
 		}
 
 		assert(grad.size() == full_size);
@@ -390,9 +461,8 @@ namespace polyfem
 			Eigen::MatrixXd displaced;
 			compute_displaced_points(full, displaced);
 
-			ccd::Candidates constraint_set;
+			ipc::Candidates constraint_set;
 			ipc::construct_constraint_set(displaced, state.boundary_edges, state.boundary_triangles, _dhat_squared, constraint_set);
-			constraint_set.ee_candidates.clear();
 			hessian += _barrier_stiffness * ipc::compute_barrier_potential_hessian(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat_squared);
 		}
 

@@ -45,6 +45,8 @@ public:
 		criteria.fDelta = solver_param.count("fDelta") ? double(solver_param["fDelta"]):  1e-9;
 		criteria.gradNorm = solver_param.count("gradNorm") ? double(solver_param["gradNorm"]) : 1e-8;
 		criteria.iterations = solver_param.count("nl_iterations") ? int(solver_param["nl_iterations"]) : 100;
+
+		use_gradient_norm_ = solver_param.count("useGradNorm") ? bool(solver_param["useGradNorm"]) : true;
 		this->setStopCriteria(criteria);
 	}
 
@@ -87,8 +89,13 @@ public:
 		const double c = 0.5;
 		const double tau = 0.5;
 
-		double alpha = alpha_init;
-		TVector x1 = x + alpha * searchDir;
+		TVector x1 = x + alpha_init * searchDir;
+		double alpha = std::min(alpha_init, objFunc.max_step_size(x, x1));
+		// polyfem::logger().trace("inital step {}", step_size);
+		if (alpha != alpha_init)
+		{
+			x1 = x + alpha *searchDir;
+		}
 		double f = objFunc.value(x1);
 		const double f_in = objFunc.value(x);
 
@@ -120,14 +127,21 @@ public:
 		const double old_energy = objFunc.value(x);
 		int cur_iter = 0;
 
-		double step_size = 1;
-		TVector new_x = x + step_size * grad;
+		TVector new_x = x + grad;
+		double step_size = std::min(1., objFunc.max_step_size(x, new_x));
+		// polyfem::logger().trace("inital step {}", step_size);
+		if (step_size != 1){
+			new_x = x + step_size * grad;
+		}
+
+		// std::cout<<"grad\n"<<grad<<std::endl;
 
 		while (cur_iter < MAX_STEP_SIZE_ITER)
 		{
 			double cur_e = objFunc.value(new_x);
-			// std::cout<< (cur_e - old_energy) <<" "<< !objFunc.is_step_valid(x, new_x) <<std::endl;
-			if (std::isinf(cur_e) || std::isnan(cur_e) || cur_e >= old_energy || !objFunc.is_step_valid(x, new_x))
+			const bool valid = objFunc.is_step_valid(x, new_x);
+			// polyfem::logger().trace("ls it: {} delta: {} invalid: {} ", cur_iter, (cur_e - old_energy), !valid);
+			if (std::isinf(cur_e) || std::isnan(cur_e) || cur_e >= old_energy || !valid)
 			{
 				step_size /= 2.;
 				new_x = x + step_size * grad;
@@ -284,7 +298,6 @@ public:
 			line_search_failed = false;
 
 			x0 += rate * delta_x;
-
 			time.start();
 			objFunc.gradient(x0, grad);
 			time.stop();
@@ -301,7 +314,7 @@ public:
 			const double step = (rate * delta_x).norm();
 
 			this->m_current.fDelta = 1; //std::abs(old_energy - energy) / std::abs(old_energy);
-			this->m_current.gradNorm = grad.norm();
+			this->m_current.gradNorm = use_gradient_norm_ ? grad.norm() : delta_x.norm();
 			this->m_status = checkConvergence(this->m_stop, this->m_current);
 			old_energy = energy;
 			if (std::isnan(first_energy))
@@ -377,6 +390,7 @@ private:
 	const std::string precond_type;
 
 	int error_code_;
+	bool use_gradient_norm_;
 	json solver_info;
 
 	json internal_solver = json::array();

@@ -121,11 +121,11 @@ function(polyfem_download_tinyxml)
 endfunction()
 
 
-## ipc mit
+## ipc MIT
 function(polyfem_download_ipc)
     polyfem_download_project(ipc
         GIT_REPOSITORY https://github.com/ipc-sim/ipc-toolkit.git
-        GIT_TAG        e475a90f77f18b89bb833cbb301d2f9b9eb3c912
+        GIT_TAG        f400d24d7593e8892da1e0a20792a6b460927be1
     )
 endfunction()
 

@@ -46,7 +46,7 @@ jobs:
             libboost-thread-dev \
             libglu1-mesa-dev \
             libsuitesparse-dev \
-            xorg-dev \
+            # xorg-dev \
             ccache
 
       - name: Dependencies (macOS)

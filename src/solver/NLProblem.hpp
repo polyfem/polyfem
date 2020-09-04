@@ -17,7 +17,7 @@ namespace polyfem
 		using typename cppoptlib::Problem<double>::TVector;
 		typedef StiffnessMatrix THessian;
 
-		NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t);
+		NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t, const double dhat);
 		void init_timestep(const TVector &x_prev, const TVector &v_prev, const double dt);
 		TVector initial_guess();
 
@@ -26,6 +26,7 @@ namespace polyfem
 		void gradient_no_rhs(const TVector &x, Eigen::MatrixXd &gradv);
 
 		bool is_step_valid(const TVector &x0, const TVector &x1);
+		double max_step_size(const TVector &x0, const TVector &x1);
 
 		#include <polyfem/DisableWarnings.hpp>
 		void hessian(const TVector &x, THessian &hessian);

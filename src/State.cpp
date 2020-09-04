@@ -192,6 +192,7 @@ State::State()
 		{"count_flipped_els", false},
 
 		{"has_collision", false},
+		{"dhat", 0.03},
 
 		{"tend", 1},
 		{"time_steps", 10},
@@ -246,8 +247,7 @@ State::State()
 		// {"solution", ""},
 		// {"stiffness_mat_save_path", ""},
 
-		{"export", {{"sol_at_node", -1}, {"vis_mesh", ""}, {"paraview", ""}, {"vis_boundary_only", false}, {"material_params", false}, {"nodes", ""}, {"wire_mesh", ""}, {"iso_mesh", ""}, {"spectrum", false}, {"solution", ""}, {"full_mat", ""}, {"stiffness_mat", ""}, {"solution_mat", ""}, {"stress_mat", ""}, {"mises", ""}}}
-	};
+		{"export", {{"sol_at_node", -1}, {"vis_mesh", ""}, {"paraview", ""}, {"vis_boundary_only", false}, {"material_params", false}, {"nodes", ""}, {"wire_mesh", ""}, {"iso_mesh", ""}, {"spectrum", false}, {"solution", ""}, {"full_mat", ""}, {"stiffness_mat", ""}, {"solution_mat", ""}, {"stress_mat", ""}, {"mises", ""}}}};
 }
 
 void State::init_logger(const std::string &log_file, int log_level, const bool is_quiet)
@@ -2923,7 +2923,7 @@ void State::solve_problem()
 				{
 					// {
 					// 	boundary_nodes.clear();
-					// 	NLProblem nl_problem(*this, rhs_assembler, 0);
+					// 	NLProblem nl_problem(*this, rhs_assembler, 0, args["dhat"]);
 					// 	tmp_sol = rhs;
 
 					// 	// tmp_sol.setRandom();
@@ -2987,7 +2987,7 @@ void State::solve_problem()
 					const int reduced_size = n_bases * mesh->dimension() - boundary_nodes.size();
 					VectorXd tmp_sol;
 
-					NLProblem nl_problem(*this, rhs_assembler, dt);
+					NLProblem nl_problem(*this, rhs_assembler, dt, args["dhat"]);
 					nl_problem.init_timestep(sol, velocity, dt);
 					nl_problem.full_to_reduced(sol, tmp_sol);
 
@@ -3133,7 +3133,7 @@ void State::solve_problem()
 
 					logger().info("t: {} prev: {} step: {}", t, prev_t, step_t);
 
-					NLProblem nl_problem(*this, rhs_assembler, t);
+					NLProblem nl_problem(*this, rhs_assembler, t, args["dhat"]);
 
 					logger().debug("Updating starting point...");
 					update_timer.start();
@@ -3256,7 +3256,7 @@ void State::solve_problem()
 
 				// {
 				// 	boundary_nodes.clear();
-				// 	NLProblem nl_problem(*this, rhs_assembler, 1);
+				// 	NLProblem nl_problem(*this, rhs_assembler, 1, args["dhat"]);
 				// 	tmp_sol = rhs;
 
 				// 	// tmp_sol.setRandom();
