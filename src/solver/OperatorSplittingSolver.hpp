@@ -245,7 +245,7 @@ namespace polyfem
             return idx;
         }
 
-        void trace_back(const std::vector<polyfem::ElementBases>& gbases, 
+        bool trace_back(const std::vector<polyfem::ElementBases>& gbases, 
         const std::vector<polyfem::ElementBases>& bases, 
         const RowVectorNd& pos_1, 
         const RowVectorNd& vel_1, 
@@ -259,20 +259,23 @@ namespace polyfem
 
             pos_2 = pos_1 - vel_1 * dt;
 
-            interpolator(gbases, bases, pos_2, vel_2, sol);
+            return interpolator(gbases, bases, pos_2, vel_2, sol);
         }
 
-        void interpolator(const std::vector<polyfem::ElementBases>& gbases, 
+        bool interpolator(const std::vector<polyfem::ElementBases>& gbases, 
         const std::vector<polyfem::ElementBases>& bases, 
         const RowVectorNd& pos, 
         RowVectorNd& vel, 
         const Eigen::MatrixXd& sol)
         {
+            bool insideDomain = true;
+
             int new_elem;
             Eigen::MatrixXd local_pos;
 
             if((new_elem = search_cell(gbases, pos, local_pos)) == -1)
             {
+                insideDomain = false;
                 RowVectorNd pos_ = pos;
                 new_elem = handle_boundary_advection(pos_);
                 calculate_local_pts(gbases[new_elem], new_elem, pos_, local_pos);
@@ -289,6 +292,8 @@ namespace polyfem
                     vel(d) += vals.basis_values[i].val(0) * sol(bases[new_elem].bases[i].global()[0].index * dim + d);
                 }
             }
+
+            return insideDomain;
         }
         
         void interpolator(const std::vector<polyfem::ElementBases>& gbases, 
@@ -524,10 +529,16 @@ namespace polyfem
                 std::vector<int> redundantPI;
                 std::vector<bool> isRedundant(cellI_particle.size(), false);
                 for (int pI = 0; pI < cellI_particle.size(); ++pI) {
-                    ++counter[cellI_particle[pI]];
-                    if (counter[cellI_particle[pI]] > ppe) {
+                    if (cellI_particle[pI] < 0) {
                         redundantPI.emplace_back(pI);
                         isRedundant[pI] = true;
+                    }
+                    else {
+                        ++counter[cellI_particle[pI]];
+                        if (counter[cellI_particle[pI]] > ppe) {
+                            redundantPI.emplace_back(pI);
+                            isRedundant[pI] = true;
+                        }
                     }
                 }
                 // g2p -- update velocity 
@@ -621,7 +632,7 @@ namespace polyfem
             {
                 // update particle position via advection
                 RowVectorNd newvel;
-                trace_back( gbases, bases, position_particle[pI], velocity_particle[pI], 
+                bool insideDomain = trace_back( gbases, bases, position_particle[pI], velocity_particle[pI], 
                     position_particle[pI], newvel, sol, -dt);
 
                 // RK3:
@@ -638,15 +649,21 @@ namespace polyfem
                 Eigen::VectorXi I(1);
                 Eigen::MatrixXd local_pos;
 
-                if((I(0) = search_cell(gbases, position_particle[pI], local_pos)) == -1)
-                {
-                    I(0) = handle_boundary_advection(position_particle[pI]);
-                    calculate_local_pts(gbases[I(0)], I(0), position_particle[pI], local_pos);
-                }
+                if (insideDomain) {
+                    if((I(0) = search_cell(gbases, position_particle[pI], local_pos)) == -1)
+                    {
+                        I(0) = handle_boundary_advection(position_particle[pI]);
+                        calculate_local_pts(gbases[I(0)], I(0), position_particle[pI], local_pos);
+                    }
 
-                // construct interpolator (always linear for P2G, can use gaussian or bspline later)
-                velocity_interpolator[pI].compute(I(0), dim == 3, local_pos, gbases[I(0)], gbases[I(0)]);
-                cellI_particle[pI] = I(0);
+                    // construct interpolator (always linear for P2G, can use gaussian or bspline later)
+                    velocity_interpolator[pI].compute(I(0), dim == 3, local_pos, gbases[I(0)], gbases[I(0)]);
+                    cellI_particle[pI] = I(0);
+                }
+                else {
+                    cellI_particle[pI] = -1;
+                }
+                
             }
 #ifdef POLYFEM_WITH_TBB
             );
@@ -658,6 +675,9 @@ namespace polyfem
             new_sol_w.array() += 1e-13;
             for (int pI = 0; pI < ppe * n_el; ++pI) {
                 int cellI = cellI_particle[pI];
+                if (cellI == -1) {
+                    continue;
+                }
                 ElementAssemblyValues& vals = velocity_interpolator[pI];
                 for (int i = 0; i < vals.basis_values.size(); ++i)
                 {
@@ -740,10 +760,10 @@ namespace polyfem
                 }
 
                 // update particle position via advection
-                for (int i = 0; i < ppe; ++i) {
+                for (int j = 0; j < ppe; ++j) {
                     RowVectorNd newvel;
-                    trace_back( gbases, bases, position_particle[ppe * e + i], velocity_particle[e * ppe + i], 
-                        position_particle[ppe * e + i], newvel, sol, -dt);
+                    bool insideDomain = trace_back( gbases, bases, position_particle[ppe * e + j], velocity_particle[e * ppe + j], 
+                        position_particle[ppe * e + j], newvel, sol, -dt);
 
                     // RK3:
                     // RowVectorNd bypass, vel2, vel3;
@@ -754,23 +774,26 @@ namespace polyfem
                     // trace_back( gbases, bases, position_particle[ppe * e + i], 
                     //     2 * velocity_particle[e * ppe + i] + 3 * vel2 + 4 * vel3, 
                     //     position_particle[ppe * e + i], bypass, sol, -dt / 9);
-                }
 
-                // prepare P2G
-                for (int j = 0; j < ppe; ++j) {
-                    Eigen::VectorXi I(1);
-                    Eigen::MatrixXd local_pos;
-                    
-                    // find cell
-                    if((I(0) = search_cell(gbases, position_particle[ppe * e + j],local_pos)) == -1)
-                    {
-                        I(0) = handle_boundary_advection(position_particle[ppe * e + j]);
-                        calculate_local_pts(gbases[I(0)], I(0), position_particle[ppe * e + j], local_pos);
+                    // prepare P2G
+                    if (insideDomain) {
+                        Eigen::VectorXi I(1);
+                        Eigen::MatrixXd local_pos;
+
+                        // find cell
+                        if((I(0) = search_cell(gbases, position_particle[ppe * e + j],local_pos)) == -1)
+                        {
+                            I(0) = handle_boundary_advection(position_particle[ppe * e + j]);
+                            calculate_local_pts(gbases[I(0)], I(0), position_particle[ppe * e + j], local_pos);
+                        }
+
+                        // construct interpolator (always linear for P2G, can use gaussian or bspline later)
+                        velocity_interpolator[ppe * e + j].compute(I(0), dim == 3, local_pos, gbases[I(0)], gbases[I(0)]);
+                        cellI_particle[ppe * e + j] = I(0);
                     }
-
-                    // construct interpolator (always linear for P2G, can use gaussian or bspline later)
-                    velocity_interpolator[ppe * e + j].compute(I(0), dim == 3, local_pos, gbases[I(0)], gbases[I(0)]);
-                    cellI_particle[ppe * e + j] = I(0);
+                    else {
+                        cellI_particle[ppe * e + j] = -1;
+                    }
                 }
             }
 #ifdef POLYFEM_WITH_TBB
@@ -783,6 +806,9 @@ namespace polyfem
                 for (int j = 0; j < ppe; ++j) 
                 {
                     int cellI = cellI_particle[ppe * e + j];
+                    if (cellI == -1) {
+                        continue;
+                    }
                     ElementAssemblyValues& vals = velocity_interpolator[ppe * e + j];
                     for (int i = 0; i < vals.basis_values.size(); ++i)
                     {
