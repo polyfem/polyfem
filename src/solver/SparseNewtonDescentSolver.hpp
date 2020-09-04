@@ -165,6 +165,7 @@ public:
 
 		// const json &params = State::state().solver_params();
 		// auto solver = LinearSolver::create(State::state().solver_type(), State::state().precond_type());
+		objFunc.init(x0);
 
 		auto solver = polysolve::LinearSolver::create(solver_type, precond_type);
 		solver->setParameters(solver_param);
@@ -347,10 +348,12 @@ public:
 			//if(rate >= 1 && next_hessian == this->m_current.iterations)
 			//	next_hessian += 2;
 
-			polyfem::logger().debug("\titer: {}, f = {}, ||g||_2 = {}, rate = {}, ||step|| = {}, dot = {}\n",
+			polyfem::logger().debug("\titer: {}, f = {}, ||g||_2 = {}, rate = {}, ||step|| = {}, dot = {}",
 									this->m_current.iterations, energy, this->m_current.gradNorm, rate, step, delta_x.dot(grad) / grad.norm());
 			delta_x *= -1;
 		} while (objFunc.callback(this->m_current, x0) && (this->m_status == Status::Continue));
+
+		polyfem::logger().info("Newton finished niters = {}, f = {}, ||g||_2 = {}", this->m_current.iterations, old_energy, this->m_current.gradNorm);
 
 		if (error_code_ != -10)
 		{
