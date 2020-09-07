@@ -349,9 +349,7 @@ namespace polyfem
 		Eigen::MatrixXd grad;
 		gradient_no_rhs(x, grad);
 
-		const double scaling = is_time_dependent ? (dt * dt / 2.0) : 1;
-
-		grad -= scaling * current_rhs();
+		grad -= current_rhs();
 
 		full_to_reduced(grad, gradv);
 

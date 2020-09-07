@@ -2923,12 +2923,14 @@ void State::solve_problem()
 				{
 					// {
 					// 	boundary_nodes.clear();
+					// 	local_boundary.clear();
+					// 	local_neumann_boundary.clear();
 					// 	NLProblem nl_problem(*this, rhs_assembler, 0, args["dhat"]);
-					// 	tmp_sol = rhs;
+					// 	Eigen::MatrixXd tmp_sol = rhs;
 
 					// 	// tmp_sol.setRandom();
 					// 	tmp_sol.setOnes();
-					// 	tmp_sol /=10000.;
+					// 	// tmp_sol /=10000.;
 
 					// 	velocity.setZero();
 					// 	VectorXd xxx=tmp_sol;
