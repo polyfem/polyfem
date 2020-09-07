@@ -329,7 +329,7 @@ namespace polyfem
 			// polyfem::logger().trace("barrier {}", ipc::barrier(ddd, _dhat_squared));
 		}
 
-		return scaling * (elastic_energy + body_energy + _barrier_stiffness * collision_energy) + intertia_energy;
+		return scaling * (elastic_energy + body_energy) + intertia_energy + _barrier_stiffness * collision_energy;
 	}
 
 	void NLProblem::compute_cached_stiffness()
@@ -349,20 +349,9 @@ namespace polyfem
 		Eigen::MatrixXd grad;
 		gradient_no_rhs(x, grad);
 
-		if(is_time_dependent)
-		{
-			Eigen::MatrixXd full;
-			if (x.size() == reduced_size)
-				reduced_to_full(x, full);
-			else
-				full = x;
-			assert(full.size() == full_size);
+		const double scaling = is_time_dependent ? (dt * dt / 2.0) : 1;
 
-			grad *= dt * dt / 2.0;
-			grad += state.mass * full;
-		}
-
-		grad -= current_rhs();
+		grad -= scaling * current_rhs();
 
 		full_to_reduced(grad, gradv);
 
@@ -371,6 +360,8 @@ namespace polyfem
 
 	void NLProblem::gradient_no_rhs(const TVector &x, Eigen::MatrixXd &grad)
 	{
+		//scaling * (elastic_energy + body_energy) + intertia_energy + _barrier_stiffness * collision_energy;
+
 		Eigen::MatrixXd full;
 		if (x.size() == reduced_size)
 			reduced_to_full(x, full);
@@ -381,6 +372,11 @@ namespace polyfem
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 		assembler.assemble_energy_gradient(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, full, grad);
 
+		if (is_time_dependent)
+		{
+			grad *= dt * dt / 2.0;
+			grad += state.mass * full;
+		}
 
 		if (!disable_collision && state.args["has_collision"])
 		{
@@ -452,6 +448,8 @@ namespace polyfem
 
 	void NLProblem::hessian_full(const TVector &x, THessian &hessian)
 	{
+		//scaling * (elastic_energy + body_energy) + intertia_energy + _barrier_stiffness * collision_energy;
+
 		Eigen::MatrixXd full;
 		if (x.size() == reduced_size)
 			reduced_to_full(x, full);
