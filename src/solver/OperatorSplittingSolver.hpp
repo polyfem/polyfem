@@ -72,10 +72,19 @@ namespace polyfem
             }
         }
 
-        void initialize_hashtable()
+        void initialize_hashtable(const polyfem::Mesh& mesh)
         {
-            hash_table_cell_num = (int)pow(n_el, 1./dim);
-            hash_table.resize((int)pow(hash_table_cell_num, dim));
+            Eigen::MatrixXd p0, p1, p;
+            mesh.get_edges(p0, p1);
+		    p = p0 - p1;
+		    double min_edge_length = p.rowwise().norm().minCoeff();
+
+            int total_cell_num = 1;
+            for(int d = 0; d < dim; d++) {
+                hash_table_cell_num[d] = (int)((max_domain(d) - min_domain(d)) / min_edge_length);
+                total_cell_num *= hash_table_cell_num[d];
+            }
+            hash_table.resize(total_cell_num);
             for(int e = 0; e < T.rows(); e++)
             {
                 Eigen::VectorXd min_ = V.row(T(e, 0));
@@ -95,14 +104,14 @@ namespace polyfem
 
                 for(int d = 0; d < dim; d++)
                 {
-                    double temp = hash_table_cell_num / (max_domain(d) - min_domain(d));
+                    double temp = hash_table_cell_num[d] / (max_domain(d) - min_domain(d));
                     min_int(d) = floor((min_(d) - min_domain(d)) * temp);
                     max_int(d) = ceil((max_(d) - min_domain(d)) * temp);
 
                     if(min_int(d) < 0) 
                         min_int(d) = 0;
-                    if(max_int(d) > hash_table_cell_num)
-                        max_int(d) = hash_table_cell_num;
+                    if(max_int(d) > hash_table_cell_num[d])
+                        max_int(d) = hash_table_cell_num[d];
                 }
 
                 for(int x = min_int(0); x < max_int(0); x++)
@@ -111,14 +120,14 @@ namespace polyfem
                     {
                         if(dim == 2)
                         {
-                            int idx = x + y * hash_table_cell_num;
+                            int idx = x + y * hash_table_cell_num[0];
                             hash_table[idx].push_front(e);
                         }
                         else
                         {
                             for(int z = min_int(2); z < max_int(2); z++)
                             {
-                                int idx = x + (y + z * hash_table_cell_num) * hash_table_cell_num;
+                                int idx = x + (y + z * hash_table_cell_num[1]) * hash_table_cell_num[0];
                                 hash_table[idx].push_front(e);
                             }
                         }
@@ -139,7 +148,7 @@ namespace polyfem
             boundary_nodes = boundary_nodes_;
 
             initialize_mesh(mesh, shape, n_el, local_boundary);
-            initialize_hashtable();
+            initialize_hashtable(mesh);
         }
 
         OperatorSplittingSolver(const polyfem::Mesh& mesh,
@@ -1014,16 +1023,16 @@ namespace polyfem
             Eigen::VectorXi pos_int(dim);
             for(int d = 0; d < dim; d++)
             {
-                pos_int(d) = floor((pos(d) - min_domain(d)) / (max_domain(d) - min_domain(d)) * hash_table_cell_num);
+                pos_int(d) = floor((pos(d) - min_domain(d)) / (max_domain(d) - min_domain(d)) * hash_table_cell_num[d]);
                 if(pos_int(d) < 0) pos_int(d) = 0;
-                else if(pos_int(d) >= hash_table_cell_num) pos_int(d) = hash_table_cell_num - 1;
+                else if(pos_int(d) >= hash_table_cell_num[d]) pos_int(d) = hash_table_cell_num[d] - 1;
             }
 
             int idx = 0, dim_num = 1;
             for(int d = 0; d < dim; d++)
             {
                 idx += pos_int(d) * dim_num;
-                dim_num *= hash_table_cell_num;
+                dim_num *= hash_table_cell_num[d];
             }
 
             const std::list<int>& list = hash_table[idx];
@@ -1112,7 +1121,7 @@ namespace polyfem
         Eigen::MatrixXi T;
 
         std::vector<std::list<int>> hash_table;
-        int                         hash_table_cell_num;
+        std::array<int, 3>          hash_table_cell_num;
 
         std::vector<RowVectorNd> position_particle;
 		std::vector<RowVectorNd> velocity_particle;
