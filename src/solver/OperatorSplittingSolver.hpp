@@ -121,14 +121,14 @@ namespace polyfem
                         if(dim == 2)
                         {
                             int idx = x + y * hash_table_cell_num[0];
-                            hash_table[idx].push_front(e);
+                            hash_table[idx].push_back(e);
                         }
                         else
                         {
                             for(int z = min_int(2); z < max_int(2); z++)
                             {
                                 int idx = x + (y + z * hash_table_cell_num[1]) * hash_table_cell_num[0];
-                                hash_table[idx].push_front(e);
+                                hash_table[idx].push_back(e);
                             }
                         }
                     }
@@ -1035,7 +1035,7 @@ namespace polyfem
                 dim_num *= hash_table_cell_num[d];
             }
 
-            const std::list<int>& list = hash_table[idx];
+            const std::vector<int>& list = hash_table[idx];
             for(auto it = list.begin(); it != list.end(); it++)
             {
                 calculate_local_pts(gbases[*it], *it, pos, local_pts);
@@ -1120,7 +1120,7 @@ namespace polyfem
         Eigen::MatrixXd V;
         Eigen::MatrixXi T;
 
-        std::vector<std::list<int>> hash_table;
+        std::vector<std::vector<int> > hash_table;
         std::array<int, 3>          hash_table_cell_num;
 
         std::vector<RowVectorNd> position_particle;
