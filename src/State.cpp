@@ -2868,6 +2868,7 @@ void State::solve_problem()
 			const int shape = gbases[0].bases.size();		// number of geometry vertices in an element
 			const double viscosity_ = build_json_params()["viscosity"];
 
+			logger().info("Matrices assembly...");
 			StiffnessMatrix stiffness_viscosity, mixed_stiffness;
 			// coefficient matrix of viscosity
 			assembler.assemble_problem("Laplacian", mesh->is_volume(), n_bases, bases, gbases, stiffness_viscosity);
@@ -2879,6 +2880,7 @@ void State::solve_problem()
 			// matrix used to calculate divergence of velocity
 			assembler.assemble_mixed_problem("Stokes", mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, mixed_stiffness);
 			mixed_stiffness = mixed_stiffness.transpose();
+			logger().info("Matrices assembly ends!");
 
 			// barycentric coordinates of FEM nodes
 			Eigen::MatrixXd local_pts;
@@ -2942,25 +2944,31 @@ void State::solve_problem()
 				}
 	
 				/* advection */
+				logger().info("Advection...");
 				if(args["particle"])
 					ss.advection_FLIP(*mesh, gbases, bases, sol, dt, local_pts, args["advection_order"]);
 				else
 					ss.advection(*mesh, gbases, bases, sol, dt, local_pts, args["advection_order"], args["advection_RK"]);
+				logger().info("Advection finished!");
 
 				/* apply boundary condition */
 				rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, time);
 
 				/* viscosity */
+				logger().info("Solving diffusion...");
 				if(viscosity_ > 0)
 					ss.solve_diffusion_1st(mass, bnd_nodes, sol);
+				logger().info("Diffusion solved!");
 
 				/* external force */
 				ss.external_force(*mesh, gbases, bases, dt, sol, local_pts, problem, time);
 				
 				/* incompressibility */
+				logger().info("Pressure projection...");
 				ss.solve_pressure(mixed_stiffness, sol, pressure);
 				
 				ss.projection(n_bases, gbases, bases, pressure_bases, local_pts, pressure, sol);
+				logger().info("Pressure projection finished!");
 
 				/* apply boundary condition */
 				rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, time);

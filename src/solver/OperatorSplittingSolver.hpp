@@ -122,6 +122,7 @@ namespace polyfem
                         {
                             int idx = x + y * hash_table_cell_num[0];
                             hash_table[idx].push_back(e);
+
                         }
                         else
                         {
@@ -134,6 +135,18 @@ namespace polyfem
                     }
                 }
             }
+
+            float average_intersection_num = 0;
+            int max_intersection_num = 0;
+            for (int i = 0; i < hash_table.size(); i++)
+            {
+                average_intersection_num += hash_table[i].size();
+                (hash_table[i].size() > max_intersection_num) ? (max_intersection_num = hash_table[i].size()) : 1;
+            }
+            average_intersection_num /= hash_table.size();
+            logger().info("average intersection number for hash grid: {}", average_intersection_num);
+            logger().info("max intersection number for hash grid: {}", max_intersection_num);
+
         }
 
         OperatorSplittingSolver() {}
@@ -175,11 +188,11 @@ namespace polyfem
         {
             initialize_solver(mesh, shape, n_el, local_boundary, boundary_nodes);
 
+            logger().info("Prefactorization begins...");
             mat_diffusion = mass + viscosity_ * dt * stiffness_viscosity;
             
             solver_diffusion = LinearSolver::create(solver_type, precond);
             solver_diffusion->setParameters(params);
-            logger().info("{}...", solver_diffusion->name());
             if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
             {
                 StiffnessMatrix mat1 = mat_diffusion;
@@ -215,6 +228,7 @@ namespace polyfem
                 StiffnessMatrix mat2 = mat_projection;
                 prefactorize(*solver_projection, mat2, std::vector<int>(), mat2.rows() - 1, save_path);
             }
+            logger().info("Prefactorization ends!");
         }
 
         int handle_boundary_advection(RowVectorNd& pos)
@@ -1057,7 +1071,7 @@ namespace polyfem
             }
         }
 
-        void initialize_density(const std::shared_ptr<Problem> problem)
+        void initialize_density(const std::shared_ptr<Problem>& problem)
         {
             Eigen::MatrixXd pts(1, dim);
             Eigen::MatrixXd tmp;
