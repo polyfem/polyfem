@@ -305,11 +305,7 @@ namespace polyfem
             return insideDomain;
         }
         
-        void interpolator(const std::vector<polyfem::ElementBases>& gbases, 
-        const std::vector<polyfem::ElementBases>& bases, 
-        const RowVectorNd& pos,
-        double& val,
-        const Eigen::MatrixXd& sol)
+        void interpolator(const RowVectorNd& pos, double& val)
         {
             val = 0;
 
@@ -403,6 +399,79 @@ namespace polyfem
             sol.swap(new_sol);
         }
 
+        void advect_density_exact(const std::vector<polyfem::ElementBases>& gbases,
+        const std::vector<polyfem::ElementBases>& bases, 
+        const std::shared_ptr<Problem> problem,
+        const double t,
+        const double dt,
+        const int RK = 3)
+        {
+            Eigen::VectorXd new_density = Eigen::VectorXd::Zero(density.size());
+            const int Nx = grid_cell_num(0);
+#ifdef POLYFEM_WITH_TBB
+            tbb::parallel_for(0, Nx+1, 1, [&](int i)
+#else
+            for(int i = 0; i <= Nx; i++)
+#endif
+            {
+                for(int j = 0; j <= grid_cell_num(1); j++)
+                {
+                    if(dim == 2)
+                    {
+                        Eigen::MatrixXd pos(1, dim);
+                        pos(0) = i * resolution + min_domain(0);
+                        pos(1) = j * resolution + min_domain(1);
+                        const int idx = i + j * (grid_cell_num(0)+1);
+
+                        Eigen::MatrixXd vel1, pos_;
+                        problem->exact(pos, t, vel1);
+                        if(RK > 1)
+                        {
+                            Eigen::MatrixXd vel2, vel3;
+                            problem->exact(pos - 0.5 * dt * vel1, t, vel2);
+                            problem->exact(pos - 0.75 * dt * vel2, t, vel3);
+                            pos_ = pos - (2 * vel1 + 3 * vel2 + 4 * vel3) * dt / 9;
+                        }
+                        else
+                        {
+                            pos_ = pos - vel1 * dt;
+                        }
+                        interpolator(pos_, new_density[idx]);
+                    }
+                    else
+                    {
+                        for(int k = 0; k <= grid_cell_num(2); k++)
+                        {
+                            RowVectorNd pos(1, dim);
+                            pos(0) = i * resolution + min_domain(0);
+                            pos(1) = j * resolution + min_domain(1);
+                            pos(2) = k * resolution + min_domain(2);
+                            const int idx = i + (j + k * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
+                            
+                            Eigen::MatrixXd vel1, pos_;
+                            problem->exact(pos, t, vel1);
+                            if(RK > 1)
+                            {
+                                Eigen::MatrixXd vel2, vel3;
+                                problem->exact(pos - 0.5 * dt * vel1, t, vel2);
+                                problem->exact(pos - 0.75 * dt * vel2, t, vel3);
+                                pos_ = pos - (2 * vel1 + 3 * vel2 + 4 * vel3) * dt / 9;
+                            }
+                            else
+                            {
+                                pos_ = pos - vel1 * dt;
+                            }
+                            interpolator(pos_, new_density[idx]);
+                        }
+                    }
+                }
+            }
+#ifdef POLYFEM_WITH_TBB
+            );
+#endif
+            density.swap(new_density);
+        }
+
         void advect_density(const std::vector<polyfem::ElementBases>& gbases,
         const std::vector<polyfem::ElementBases>& bases, 
         const Eigen::MatrixXd& sol, 
@@ -439,7 +508,7 @@ namespace polyfem
                         {
                             pos_ = pos - vel1 * dt;
                         }
-                        interpolator(gbases, bases, pos_, new_density[idx], sol);
+                        interpolator(pos_, new_density[idx]);
                     }
                     else
                     {
@@ -464,7 +533,7 @@ namespace polyfem
                             {
                                 pos_ = pos - vel1 * dt;
                             }
-                            interpolator(gbases, bases, pos_, new_density[idx], sol);
+                            interpolator(pos_, new_density[idx]);
                         }
                     }
                 }
