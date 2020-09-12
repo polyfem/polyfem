@@ -1054,6 +1054,18 @@ namespace polyfem
             return -1; // not inside any elem
         }
 
+        bool outside_quad(const std::vector<RowVectorNd>& vert, const RowVectorNd& pos)
+        {
+            double a = (vert[1](0) - vert[0](0)) * (pos(1) - vert[0](1)) - (vert[1](1)-vert[0](1)) * (pos(0) - vert[0](0));
+            double b = (vert[2](0) - vert[1](0)) * (pos(1) - vert[1](1)) - (vert[2](1)-vert[1](1)) * (pos(0) - vert[1](0));
+            double c = (vert[3](0) - vert[2](0)) * (pos(1) - vert[2](1)) - (vert[3](1)-vert[2](1)) * (pos(0) - vert[2](0));
+            double d = (vert[0](0) - vert[3](0)) * (pos(1) - vert[3](1)) - (vert[0](1)-vert[3](1)) * (pos(0) - vert[3](0));
+
+            if((a > 0 && b > 0 && c > 0 && d > 0) || (a < 0 && b < 0 && c < 0 && d < 0))
+                return false;
+            return true;
+        }
+
         void calculate_local_pts(const polyfem::ElementBases& gbase, 
         const int elem_idx,
         const RowVectorNd& pos, 
@@ -1066,6 +1078,11 @@ namespace polyfem
             {
                 for(int d = 0; d < dim; d++)
                     vert[i](d) = V(T(elem_idx, i), d);
+            }
+            if(shape == 4 && dim == 2 && outside_quad(vert, pos))
+            {
+                local_pos(0) = local_pos(1) = -1;
+                return;
             }
             Eigen::MatrixXd res;
             int iter_times = 0;
