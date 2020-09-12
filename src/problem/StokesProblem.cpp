@@ -315,6 +315,7 @@ void CollidingBalls::set_parameters(const json &params)
 void CollidingBalls::initial_density(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 {
 	val = Eigen::MatrixXd::Zero(pts.rows(), 1);
+	double epsilon = 0.002;
 	for(int i = 0; i < pts.rows(); ++i)
 	{
 		const double x = pts(i, 0);
@@ -326,7 +327,17 @@ void CollidingBalls::initial_density(const Eigen::MatrixXd &pts, Eigen::MatrixXd
 			double r2 = sqrt(pow(x-0.16,2)+pow(y-0.2,2));
 			
 			if(r1 <= radius_ || r2 <= radius_)
+			{
 				val(i, 0) = 1;
+			}
+			else if(r1 <= radius_ + epsilon)
+			{
+				val(i, 0) = 1 - (r1 - radius_) / epsilon;
+			}
+			else if(r2 <= radius_ + epsilon)
+			{
+				val(i, 0) = 1 - (r2 - radius_) / epsilon;
+			}
 		}
 		else
 		{
@@ -336,7 +347,17 @@ void CollidingBalls::initial_density(const Eigen::MatrixXd &pts, Eigen::MatrixXd
 			double r2 = sqrt(pow(x-0.16,2)+pow(y-0.2,2)+pow(z-0.2,2));
 			
 			if(r1 <= radius_ || r2 <= radius_)
+			{
 				val(i, 0) = 1;
+			}
+			else if(r1 <= radius_ + epsilon)
+			{
+				val(i, 0) = 1 - (r1 - radius_) / epsilon;
+			}
+			else if(r2 <= radius_ + epsilon)
+			{
+				val(i, 0) = 1 - (r2 - radius_) / epsilon;
+			}
 		}
 	}
 }
