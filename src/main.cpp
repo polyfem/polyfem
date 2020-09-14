@@ -31,7 +31,7 @@ using namespace Eigen;
 int main(int argc, char **argv)
 {
 	CLI::App command_line{"polyfem"};
-
+	// Eigen::setNbThreads(1);
 
 	std::string path = "";
 	std::string output = "";

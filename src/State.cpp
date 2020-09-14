@@ -190,6 +190,7 @@ State::State()
 		{"curved_mesh_size", false},
 
 		{"count_flipped_els", false},
+		{"project_to_psd", false},
 
 		{"has_collision", false},
 		{"dhat", 0.03},
@@ -2989,7 +2990,7 @@ void State::solve_problem()
 					const int reduced_size = n_bases * mesh->dimension() - boundary_nodes.size();
 					VectorXd tmp_sol;
 
-					NLProblem nl_problem(*this, rhs_assembler, dt, args["dhat"]);
+					NLProblem nl_problem(*this, rhs_assembler, dt, args["dhat"], args["project_to_psd"]);
 					nl_problem.init_timestep(sol, velocity, dt);
 					nl_problem.full_to_reduced(sol, tmp_sol);
 
@@ -3135,7 +3136,7 @@ void State::solve_problem()
 
 					logger().info("t: {} prev: {} step: {}", t, prev_t, step_t);
 
-					NLProblem nl_problem(*this, rhs_assembler, t, args["dhat"]);
+					NLProblem nl_problem(*this, rhs_assembler, t, args["dhat"], args["project_to_psd"]);
 
 					logger().debug("Updating starting point...");
 					update_timer.start();

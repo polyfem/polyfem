@@ -83,13 +83,13 @@ namespace polyfem
 			Eigen::MatrixXd &grad) const;
 
 		void assemble_energy_hessian(const std::string &assembler,
-			const bool is_volume,
-			const int n_basis,
-			const std::vector< ElementBases > &bases,
-			const std::vector< ElementBases > &gbases,
-			const Eigen::MatrixXd &displacement,
-			StiffnessMatrix &hessian) const;
-
+									 const bool is_volume,
+									 const int n_basis,
+									 const bool project_to_psd,
+									 const std::vector<ElementBases> &bases,
+									 const std::vector<ElementBases> &gbases,
+									 const Eigen::MatrixXd &displacement,
+									 StiffnessMatrix &hessian) const;
 
 		//plotting
 		void compute_scalar_value(const std::string &assembler,

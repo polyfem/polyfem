@@ -142,6 +142,7 @@ public:
 			const bool valid = objFunc.is_step_valid(x, new_x);
 			// polyfem::logger().trace("ls it: {} delta: {} invalid: {} ", cur_iter, (cur_e - old_energy), !valid);
 			if (std::isinf(cur_e) || std::isnan(cur_e) || cur_e >= old_energy || !valid)
+			// if (std::isinf(cur_e) || std::isnan(cur_e) || (cur_e >= old_energy && fabs(cur_e - old_energy) > 1e-10) || !valid)
 			{
 				step_size /= 2.;
 				new_x = x + step_size * grad;

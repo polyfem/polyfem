@@ -68,8 +68,9 @@ namespace polyfem
 		void assemble_hessian(
 			const bool is_volume,
 			const int n_basis,
-			const std::vector< ElementBases > &bases,
-			const std::vector< ElementBases > &gbases,
+			const bool project_to_psd,
+			const std::vector<ElementBases> &bases,
+			const std::vector<ElementBases> &gbases,
 			const Eigen::MatrixXd &displacement,
 			StiffnessMatrix &grad) const;
 

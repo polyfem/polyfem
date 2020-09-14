@@ -214,23 +214,24 @@ namespace polyfem
 	}
 
 	void AssemblerUtils::assemble_energy_hessian(const std::string &assembler,
-		const bool is_volume,
-		const int n_basis,
-		const std::vector< ElementBases > &bases,
-		const std::vector< ElementBases > &gbases,
-		const Eigen::MatrixXd &displacement,
-		StiffnessMatrix &hessian) const
+												 const bool is_volume,
+												 const int n_basis,
+												 const bool project_to_psd,
+												 const std::vector<ElementBases> &bases,
+												 const std::vector<ElementBases> &gbases,
+												 const Eigen::MatrixXd &displacement,
+												 StiffnessMatrix &hessian) const
 	{
 		if(assembler == "SaintVenant")
-			saint_venant_elasticity_.assemble_hessian(is_volume, n_basis, bases, gbases, displacement, hessian);
+			saint_venant_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, displacement, hessian);
 		else if(assembler == "NeoHookean")
-			neo_hookean_elasticity_.assemble_hessian(is_volume, n_basis, bases, gbases, displacement, hessian);
+			neo_hookean_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, displacement, hessian);
 		else if (assembler == "NavierStokesPicard")
-			navier_stokes_velocity_picard_.assemble_hessian(is_volume, n_basis, bases, gbases, displacement, hessian);
+			navier_stokes_velocity_picard_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, displacement, hessian);
 		else if (assembler == "NavierStokes")
-			navier_stokes_velocity_.assemble_hessian(is_volume, n_basis, bases, gbases, displacement, hessian);
+			navier_stokes_velocity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, displacement, hessian);
 		//else if(assembler == "Ogden")
-		//	ogden_elasticity_.assemble_hessian(is_volume, n_basis, bases, gbases, displacement, hessian);
+		//	ogden_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, displacement, hessian);
 		else
 			return;
 	}

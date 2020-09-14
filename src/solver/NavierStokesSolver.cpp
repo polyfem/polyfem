@@ -109,7 +109,7 @@ int NavierStokesSolver::minimize_aux(
 
 
 	time.start();
-	assembler.assemble_energy_hessian(state.formulation() + "Picard", state.mesh->is_volume(), state.n_bases, state.bases, gbases, x, nl_matrix);
+	assembler.assemble_energy_hessian(state.formulation() + "Picard", state.mesh->is_volume(), state.n_bases, false, state.bases, gbases, x, nl_matrix);
 	AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, state.use_avg_pressure,
 										 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 										 total_matrix);
@@ -132,7 +132,7 @@ int NavierStokesSolver::minimize_aux(
 
 		time.start();
 		if (formulation != state.formulation() + "Picard"){
-			assembler.assemble_energy_hessian(formulation, state.mesh->is_volume(), state.n_bases, state.bases, gbases, x, nl_matrix);
+			assembler.assemble_energy_hessian(formulation, state.mesh->is_volume(), state.n_bases, false, state.bases, gbases, x, nl_matrix);
 			AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, state.use_avg_pressure,
 												 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 												 total_matrix);
@@ -149,7 +149,7 @@ int NavierStokesSolver::minimize_aux(
 		//TODO check for nans
 
 		time.start();
-		assembler.assemble_energy_hessian(state.formulation() + "Picard", state.mesh->is_volume(), state.n_bases, state.bases, gbases, x, nl_matrix);
+		assembler.assemble_energy_hessian(state.formulation() + "Picard", state.mesh->is_volume(), state.n_bases, false, state.bases, gbases, x, nl_matrix);
 		AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, state.use_avg_pressure,
 											 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 											 total_matrix);

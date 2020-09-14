@@ -19,11 +19,11 @@ namespace polyfem
 {
 	using namespace polysolve;
 
-	NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t, const double dhat)
+	NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t, const double dhat, const bool project_to_psd)
 		: state(state), assembler(AssemblerUtils::instance()), rhs_assembler(rhs_assembler),
 		  full_size((assembler.is_mixed(state.formulation()) ? state.n_pressure_bases : 0) + state.n_bases * state.mesh->dimension()),
 		  reduced_size(full_size - state.boundary_nodes.size()),
-		  t(t), rhs_computed(false), is_time_dependent(state.problem->is_time_dependent())
+		  t(t), rhs_computed(false), is_time_dependent(state.problem->is_time_dependent()), project_to_psd(project_to_psd)
 	{
 		assert(!assembler.is_mixed(state.formulation()));
 
@@ -462,7 +462,7 @@ namespace polyfem
 			hessian = cached_stiffness;
 		}
 		else
-			assembler.assemble_energy_hessian(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, full, hessian);
+			assembler.assemble_energy_hessian(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, project_to_psd, state.bases, gbases, full, hessian);
 		if (is_time_dependent)
 		{
 			hessian *= dt * dt / 2;

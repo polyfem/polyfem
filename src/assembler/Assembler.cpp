@@ -18,6 +18,8 @@
 
 #include <igl/Timer.h>
 
+#include <utils/eigen_ext.hpp>
+
 #ifdef POLYFEM_WITH_TBB
 #include <tbb/parallel_for.h>
 #include <tbb/parallel_reduce.h>
@@ -512,6 +514,7 @@ namespace polyfem
 	void NLAssembler<LocalAssembler>::assemble_hessian(
 		const bool is_volume,
 		const int n_basis,
+		const bool project_to_psd,
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
 		const Eigen::MatrixXd &displacement,
@@ -551,9 +554,12 @@ namespace polyfem
 			loc_storage.da = vals.det.array() * quadrature.weights.array();
 			const int n_loc_bases = int(vals.basis_values.size());
 
-			const auto stiffness_val = local_assembler_.assemble_hessian(vals, displacement, loc_storage.da);
+			auto stiffness_val = local_assembler_.assemble_hessian(vals, displacement, loc_storage.da);
 			assert(stiffness_val.rows() == n_loc_bases * local_assembler_.size());
 			assert(stiffness_val.cols() == n_loc_bases * local_assembler_.size());
+
+			if (project_to_psd)
+				stiffness_val = Eigen::project_to_psd(stiffness_val);
 
 			// bool has_nan = false;
 			// for(int k = 0; k < stiffness_val.size(); ++k)
