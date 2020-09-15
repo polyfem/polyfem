@@ -476,7 +476,7 @@ namespace polyfem
 
 			ipc::Candidates constraint_set;
 			ipc::construct_constraint_set(displaced, state.boundary_edges, state.boundary_triangles, _dhat_squared, constraint_set);
-			hessian += _barrier_stiffness * ipc::compute_barrier_potential_hessian(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat_squared);
+			hessian += _barrier_stiffness * ipc::compute_barrier_potential_hessian(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat_squared, project_to_psd);
 		}
 
 		assert(hessian.rows() == full_size);

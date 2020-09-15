@@ -8,6 +8,7 @@
 #include <polyfem/Problem.hpp>
 #include <polyfem/LocalBoundary.hpp>
 #include <polyfem/InterfaceData.hpp>
+#include <polyfem/ElasticityUtils.hpp>
 #include <polyfem/Common.hpp>
 #include <polyfem/Logger.hpp>
 
@@ -64,6 +65,7 @@ namespace polyfem
 
 
 		std::shared_ptr<Problem> problem;
+		Density density;
 
 
 		std::vector< ElementBases >    bases;

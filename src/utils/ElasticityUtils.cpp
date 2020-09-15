@@ -736,6 +736,103 @@ namespace polyfem
 		}
 	}
 
+	Density::~Density()
+	{
+		te_free(rho_expr_);
+		delete vals_;
+	}
+
+	Density::Density()
+	{
+		rho_expr_ = nullptr;
+		vals_ = new Internal();
+		initialized_ = false;
+	}
+
+	double Density::operator()(double x, double y, double z, int el_id) const
+	{
+		if (rho_expr_)
+		{
+			vals_->x = x;
+			vals_->y = y;
+			vals_->z = z;
+
+			return te_eval(rho_expr_);
+		}
+		else if (rho_mat_.size() > 0)
+		{
+			return rho_mat_(el_id);
+		}
+		else
+		{
+			return rho_;
+		}
+	}
+
+	void Density::init_multimaterial(Eigen::MatrixXd &rho)
+	{
+		rho_mat_ = rho;
+		rho_ = -1;
+		initialized_ = true;
+	}
+
+	void Density::init(const json &params)
+	{
+		te_free(rho_expr_);
+		rho_expr_ = nullptr;
+
+		if (initialized_)
+			return;
+
+		if (params.count("rho"))
+		{
+			set_rho(params["rho"]);
+		}
+		else if (params.count("density"))
+		{
+			set_rho(params["density"]);
+		}
+	}
+
+	void Density::set_rho(const json &rho)
+	{
+		if (rho.is_number())
+		{
+			rho_ = rho;
+			rho_mat_.resize(0, 0);
+		}
+		else if (rho.is_array())
+		{
+			rho_mat_.resize(rho.size(), 1);
+
+			for (int i = 0; i < rho_mat_.size(); ++i)
+			{
+				rho_mat_(i) =  rho[i];
+			}
+
+			rho_ = -1;
+		}
+		else if (rho.is_string())
+		{
+			te_variable vars[4];
+			vars[0] = {"x", &vals_->x};
+			vars[1] = {"y", &vals_->y};
+			vars[2] = {"z", &vals_->z};
+			vars[3].name = "if";
+			vars[3].address = (void *)&iflargerthanzerothenelse;
+			vars[3].type = TE_FUNCTION3;
+
+			const std::string rhos = rho;
+
+			int err;
+			rho_expr_ = te_compile(rhos.c_str(), vars, 4, &err);
+			if (!rho_expr_)
+			{
+				read_matrix(rho, rho_mat_);
+				rho_ = -1;
+			}
+		}
+	}
 
 	//template instantiation
 	template double ElasticityTensor::compute_stress<3>(const std::array<double, 3> &strain, const int j) const;

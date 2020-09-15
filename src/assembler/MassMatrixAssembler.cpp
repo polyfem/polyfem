@@ -32,6 +32,7 @@ namespace polyfem
 		const bool is_volume,
 		const int size,
 		const int n_basis,
+		const Density &density,
 		const std::vector< ElementBases > &bases,
 		const std::vector< ElementBases > &gbases,
 		StiffnessMatrix &mass) const
@@ -75,7 +76,11 @@ namespace polyfem
 				{
 					const auto &global_j = vals.basis_values[j].global;
 
-					const double tmp = (vals.basis_values[i].val.array() * vals.basis_values[j].val.array() * da.array()).sum();
+					double tmp = 0; //(vals.basis_values[i].val.array() * vals.basis_values[j].val.array() * da.array()).sum();
+					for(int q = 0; q < da.size(); ++q){
+						const double rho = density(vals.val(q, 0), vals.val(q, 1), size == 2 ? 0. : vals.val(q, 2), vals.element_id);
+						tmp += rho * vals.basis_values[i].val(q) * vals.basis_values[j].val(q) * da(q);
+					}
 					if (std::abs(tmp) < 1e-30) { continue; }
 
 

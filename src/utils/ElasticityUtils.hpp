@@ -108,4 +108,31 @@ namespace polyfem
 			bool is_lambda_mu_;
 			bool initialized_;
 	};
+
+	class Density
+	{
+	public:
+		Density();
+		~Density();
+
+		void init(const json &params);
+		void init_multimaterial(Eigen::MatrixXd &rho);
+
+		double operator()(double x, double y, double z, int el_id) const;
+
+	private:
+		void set_rho(const json &rho);
+
+		struct Internal
+		{
+			double x, y, z;
+		};
+
+		double rho_ = 1;
+		Eigen::MatrixXd rho_mat_;
+
+		te_expr *rho_expr_;
+		Internal *vals_;
+		bool initialized_;
+	};
 }

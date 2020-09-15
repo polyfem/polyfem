@@ -44,11 +44,12 @@ namespace polyfem
 			StiffnessMatrix &stiffness) const;
 
 		void assemble_mass_matrix(const std::string &assembler,
-			const bool is_volume,
-			const int n_basis,
-			const std::vector< ElementBases > &bases,
-			const std::vector< ElementBases > &gbases,
-			StiffnessMatrix &mass) const;
+								  const bool is_volume,
+								  const int n_basis,
+								  const Density &density,
+								  const std::vector<ElementBases> &bases,
+								  const std::vector<ElementBases> &gbases,
+								  StiffnessMatrix &mass) const;
 
 		void assemble_mixed_problem(const std::string &assembler,
 			const bool is_volume,

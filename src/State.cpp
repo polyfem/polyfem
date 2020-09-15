@@ -238,6 +238,7 @@ State::State()
 		{"params", {{"lambda", 0.32967032967032966}, {"mu", 0.3846153846153846}, {"k", 1.0}, {"elasticity_tensor", json({})},
 					// {"young", 1.0},
 					// {"nu", 0.3},
+					{"density", 1},
 					{"alphas", {2.13185026692482, -0.600299816209491}},
 					{"mus", {0.00407251192475097, 0.000167202574129608}},
 					{"Ds", {9.4979, 1000000}}}},
@@ -2053,6 +2054,7 @@ void State::build_basis()
 	auto &assembler = AssemblerUtils::instance();
 	const auto params = build_json_params();
 	assembler.set_parameters(params);
+	density.init(params);
 	problem->init(*mesh);
 
 	logger().info("Building {} basis...", (iso_parametric() ? "isoparametric" : "not isoparametric"));
@@ -2512,7 +2514,7 @@ void State::assemble_stiffness_mat()
 			if (problem->is_time_dependent())
 			{
 				StiffnessMatrix velocity_mass;
-				assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, velocity_mass);
+				assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, density, bases, iso_parametric() ? bases : geom_bases, velocity_mass);
 
 				std::vector<Eigen::Triplet<double>> mass_blocks;
 				mass_blocks.reserve(velocity_mass.nonZeros());
@@ -2536,7 +2538,7 @@ void State::assemble_stiffness_mat()
 		assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, stiffness);
 		if (problem->is_time_dependent())
 		{
-			assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, mass);
+			assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, density, bases, iso_parametric() ? bases : geom_bases, mass);
 		}
 	}
 
@@ -2604,7 +2606,7 @@ void State::assemble_rhs()
 			read_matrix(args["rhs_path"], rhs);
 
 		StiffnessMatrix tmp_mass;
-		assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, tmp_mass);
+		assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, density, bases, iso_parametric() ? bases : geom_bases, tmp_mass);
 		rhs = tmp_mass * rhs;
 		logger().debug("done!");
 	}
@@ -2696,14 +2698,14 @@ void State::solve_problem()
 
 		const auto &gbases = iso_parametric() ? bases : geom_bases;
 		RhsAssembler rhs_assembler(*mesh, n_bases, problem->is_scalar() ? 1 : mesh->dimension(), bases, gbases, formulation(), *problem);
-		rhs_assembler.initial_solution(sol);
+		rhs_assembler.initial_solution(density, sol);
 
 		Eigen::MatrixXd current_rhs = rhs;
 
 		if (formulation() == "NavierStokes")
 		{
 			StiffnessMatrix velocity_mass;
-			assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, bases, gbases, velocity_mass);
+			assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, density, bases, gbases, velocity_mass);
 
 			StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
 
@@ -2862,8 +2864,8 @@ void State::solve_problem()
 			else //tensor time dependent
 			{
 				Eigen::MatrixXd velocity, acceleration;
-				rhs_assembler.initial_velocity(velocity);
-				rhs_assembler.initial_acceleration(acceleration);
+				rhs_assembler.initial_velocity(density, velocity);
+				rhs_assembler.initial_acceleration(density, acceleration);
 
 				const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 				const int precond_num = problem_dim * n_bases;

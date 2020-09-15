@@ -112,16 +112,17 @@ namespace polyfem
 	}
 
 	void AssemblerUtils::assemble_mass_matrix(const std::string &assembler,
-		const bool is_volume,
-		const int n_basis,
-		const std::vector< ElementBases > &bases,
-		const std::vector< ElementBases > &gbases,
-		StiffnessMatrix &mass) const
+											  const bool is_volume,
+											  const int n_basis,
+											  const Density &density,
+											  const std::vector<ElementBases> &bases,
+											  const std::vector<ElementBases> &gbases,
+											  StiffnessMatrix &mass) const
 	{
 		if(assembler == "Helmholtz" || assembler == "Laplacian")
-			mass_mat_assembler_.assemble(is_volume, 1, n_basis, bases, gbases, mass);
+			mass_mat_assembler_.assemble(is_volume, 1, n_basis, density, bases, gbases, mass);
 		else
-			mass_mat_assembler_.assemble(is_volume, is_volume ? 3 : 2, n_basis, bases, gbases, mass);
+			mass_mat_assembler_.assemble(is_volume, is_volume ? 3 : 2, n_basis, density, bases, gbases, mass);
 	}
 
 	void AssemblerUtils::assemble_mixed_problem(const std::string &assembler,
