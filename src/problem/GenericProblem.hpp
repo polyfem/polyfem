@@ -60,6 +60,8 @@ namespace polyfem
 		void add_neumann_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z)> &func);
 		void add_pressure_boundary(const int id, const std::function<double(double x, double y, double z)> &func);
 
+		void set_rhs(double x, double y, double z);
+
 		void clear() override;
 
 	private:

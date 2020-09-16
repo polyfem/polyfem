@@ -260,6 +260,41 @@ namespace polyfem {
                 }
             }
         }
+
+        template <typename XMLNode>
+        void load_body_loads(const XMLNode *loads, const std::map<std::string, int> &names, GenericTensorProblem &gproblem)
+        {
+            if (loads == nullptr)
+                return;
+
+            int counter = 0;
+            for (const tinyxml2::XMLElement *child = loads->FirstChildElement("body_load"); child != NULL; child = child->NextSiblingElement("body_load"))
+            {
+                ++counter;
+
+                const std::string name = std::string(child->Attribute("elem_set"));
+                const std::string type = std::string(child->Attribute("type"));
+                if (type == "const")
+                {
+                    const std::string xs = std::string(child->FirstChildElement("x")->GetText());
+                    const std::string ys = std::string(child->FirstChildElement("y")->GetText());
+                    const std::string zs = std::string(child->FirstChildElement("z")->GetText());
+
+                    const double x = atof(xs.c_str());
+                    const double y = atof(ys.c_str());
+                    const double z = atof(zs.c_str());
+
+                    gproblem.set_rhs(x, y, z);
+                }
+                else
+                {
+                    logger().error("Unsupported surface load {}", type);
+                }
+            }
+
+            if(counter > 1)
+                logger().error("Loading only last body load");
+        }
     }
 
     void FEBioReader::load(const std::string &path, State &state, const std::string &export_solution)
@@ -342,6 +377,7 @@ namespace polyfem {
 
         const auto *loads = febio->FirstChildElement("Loads");
         load_loads(loads, names, gproblem);
+        load_body_loads(loads, names, gproblem);
 
         timer.stop();
         logger().info(" took {}s", timer.getElapsedTime());

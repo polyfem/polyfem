@@ -194,6 +194,12 @@ namespace polyfem
 		pressures_.back().init(func);
 	}
 
+	void GenericTensorProblem::set_rhs(double x, double y, double z)
+	{
+		rhs_[0].init(x);
+		rhs_[1].init(y);
+		rhs_[2].init(z);
+	}
 
 	void GenericTensorProblem::set_parameters(const json &params)
 	{
