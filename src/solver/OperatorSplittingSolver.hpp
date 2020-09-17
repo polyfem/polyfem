@@ -16,7 +16,6 @@ using namespace polysolve;
 
 namespace polyfem
 {
-
     class OperatorSplittingSolver
     {
     public:
@@ -1149,6 +1148,111 @@ namespace polyfem
             return true;
         }
 
+        void compute_gbase_val(const int elem_idx, const Eigen::MatrixXd& local_pos, Eigen::MatrixXd& pos)
+        {
+            pos = Eigen::MatrixXd::Zero(1, dim);
+            Eigen::VectorXd weights(shape);
+            const double x = local_pos(0);
+            const double y = local_pos(1);
+            if(dim == 2)
+            {
+                if(shape == 3)
+                {
+                    weights << 1 - x - y, x, y;
+                }
+                else
+                {
+                    weights << (1 - x) * (1 - y), x * (1 - y), 
+                                x * y, y * (1 - x);
+                }
+            }
+            else
+            {
+                const double z = local_pos(2);
+                if(shape == 4)
+                {
+                    weights << 1 - x - y - z, x, y, z;
+                }
+                else
+                {
+                    weights << (1 - x) * (1 - y) * (1 - z),
+                                x * (1 - y) * (1 - z),
+                                x * y * (1 - z),
+                                (1 - x) * y * (1 - z),
+                                (1 - x) * (1 - y) * z,
+                                x * (1 - y) * z,
+                                x * y * z,
+                                (1 - x) * y * z;
+                }
+            }
+            
+            for(int d = 0; d < dim; d++)
+            {
+                for(int j = 0; j < shape; j++)
+                {
+                    pos(d) += V(T(elem_idx, j), d) * weights(j);
+                }
+            }
+        }
+
+        void compute_gbase_jacobi(const int elem_idx, const Eigen::MatrixXd& local_pos, Eigen::MatrixXd& jacobi)
+        {
+            jacobi = Eigen::MatrixXd::Zero(dim, dim);
+            Eigen::MatrixXd weights(shape, dim);
+            const double x = local_pos(0);
+            const double y = local_pos(1);
+            if(dim == 2)
+            {
+                if(shape == 3)
+                {
+                    weights << -1, -1,
+                                1,  0,
+                                0,  1;
+                }
+                else
+                {
+                    weights << y - 1, x - 1,
+                               1 - y,   - x,
+                                   y,     x,
+                                 - y, 1 - x;
+                }
+            }
+            else
+            {
+                const double z = local_pos(2);
+                if(shape == 4)
+                {
+                    weights << -1, -1, -1,
+                                1,  0,  0,
+                                0,  1,  0,
+                                0,  0,  1;
+                }
+                else
+                {
+                    weights << -(1-y)*(1-z), -(1-x)*(1-z), -(1-x)*(1-y),
+                                (1-y)*(1-z),     -x*(1-z),     -x*(1-y),
+                                    y*(1-z),      x*(1-z),         -x*y,
+                                   -y*(1-z),  (1-x)*(1-z),     -(1-x)*y,
+                                   -(1-y)*z,     -(1-x)*z,  (1-x)*(1-y),
+                                    (1-y)*z,         -x*z,      x*(1-y),
+                                        y*z,          x*z,          x*y,
+                                       -y*z,      (1-x)*z,      (1-x)*y;
+
+                }
+            }
+
+            for(int d1 = 0; d1 < dim; d1++)
+            {
+                for(int d2 = 0; d2 < dim; d2++)
+                {
+                    for(int i = 0; i < shape; i++)
+                    {
+                        jacobi(d1, d2) += weights(i, d2) * V(T(elem_idx, i), d1);
+                    }
+                }
+            }
+        }
+
         void calculate_local_pts(const polyfem::ElementBases& gbase, 
         const int elem_idx,
         const RowVectorNd& pos, 
@@ -1173,24 +1277,32 @@ namespace polyfem
             do
             {
                 res = -pos;
-                ElementAssemblyValues gvals_;
-                gvals_.compute(elem_idx, dim == 3, local_pos, gbase, gbase);
-                for (int i = 0; i < shape; i++)
-                {
-                    res += vert[i] * gvals_.basis_values[i].val(0);
-                }
 
-                Eigen::MatrixXd jacobi = Eigen::MatrixXd::Zero(dim, dim);
-                for (int d1 = 0; d1 < dim; d1++)
-                {
-                    for (int d2 = 0; d2 < dim; d2++)
-                    {
-                        for (int i = 0; i < shape; i++)
-                        {
-                            jacobi(d1, d2) += vert[i](d1) * gvals_.basis_values[i].grad(0, d2);
-                        }
-                    }
-                }
+                Eigen::MatrixXd global_pos;
+                compute_gbase_val(elem_idx, local_pos, global_pos);
+                res += global_pos;
+
+                Eigen::MatrixXd jacobi;
+                compute_gbase_jacobi(elem_idx, local_pos, jacobi);
+                
+                // ElementAssemblyValues gvals_;
+                // gvals_.compute(elem_idx, dim == 3, local_pos, gbase, gbase);
+                // for (int i = 0; i < shape; i++)
+                // {
+                //     res += vert[i] * gvals_.basis_values[i].val(0);
+                // }
+
+                // Eigen::MatrixXd jacobi = Eigen::MatrixXd::Zero(dim, dim);
+                // for (int d1 = 0; d1 < dim; d1++)
+                // {
+                //     for (int d2 = 0; d2 < dim; d2++)
+                //     {
+                //         for (int i = 0; i < shape; i++)
+                //         {
+                //             jacobi(d1, d2) += vert[i](d1) * gvals_.basis_values[i].grad(0, d2);
+                //         }
+                //     }
+                // }
 
                 Eigen::VectorXd delta = jacobi.colPivHouseholderQr().solve(res.transpose());
                 for (int d = 0; d < dim; d++)
