@@ -31,21 +31,23 @@ namespace polyfem
 		_barrier_stiffness = 50;
 	}
 
-	void NLProblem::init(const TVector &x)
+	void NLProblem::init(const TVector &full)
 	{
 		if (disable_collision || !state.args["has_collision"])
 			return;
 
-		Eigen::MatrixXd full;
-		if (x.size() == reduced_size)
-			reduced_to_full(x, full);
-		else
-			full = x;
+		// Eigen::MatrixXd full;
+		// if (x.size() == reduced_size)
+		// 	reduced_to_full(x, full);
+		// else
+		// 	full = x;
 		assert(full.size() == full_size);
+		// std::cout << full << std::endl;
 
 		Eigen::MatrixXd grad;
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 		assembler.assemble_energy_gradient(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, full, grad);
+		// std::cout << grad << std::endl;
 		Eigen::MatrixXd displaced;
 		compute_displaced_points(full, displaced);
 		double max_barrier_stiffness = 0;
@@ -54,10 +56,11 @@ namespace polyfem
 			displaced,
 			state.boundary_edges, state.boundary_triangles,
 			_dhat_squared,
-			1,
+			state.avg_mass,
 			grad,
 			max_barrier_stiffness);
-		polyfem::logger().trace("adaptive stiffness {}", _barrier_stiffness);
+		polyfem::logger().debug("adaptive stiffness {}", _barrier_stiffness);
+		// exit(0);
 	}
 
 	void NLProblem::init_timestep(const TVector &x_prev, const TVector &v_prev, const double dt)
@@ -69,7 +72,8 @@ namespace polyfem
 
 	void NLProblem::update_quantities(const double t, const TVector &x)
 	{
-		if (is_time_dependent){
+		if (is_time_dependent)
+		{
 			v_prev = (x - x_prev) / dt;
 			x_prev = x;
 			rhs_computed = false;
@@ -100,7 +104,7 @@ namespace polyfem
 
 			if (is_time_dependent)
 			{
-				const TVector tmp = state.mass*(x_prev + dt * v_prev);
+				const TVector tmp = state.mass * (x_prev + dt * v_prev);
 
 				_current_rhs *= dt * dt / 2;
 				_current_rhs += tmp;
@@ -281,7 +285,7 @@ namespace polyfem
 		double collision_energy = 0;
 		double scaling = 1;
 
-		if(is_time_dependent)
+		if (is_time_dependent)
 		{
 			scaling = dt * dt / 2.0;
 			const TVector tmp = full - (x_prev + dt * v_prev);
@@ -457,7 +461,8 @@ namespace polyfem
 		assert(full.size() == full_size);
 
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
-		if (assembler.is_linear(rhs_assembler.formulation())){
+		if (assembler.is_linear(rhs_assembler.formulation()))
+		{
 			compute_cached_stiffness();
 			hessian = cached_stiffness;
 		}
