@@ -88,7 +88,7 @@ namespace polyfem
 	{
 		if (!rhs_computed)
 		{
-			rhs_assembler.compute_energy_grad(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, state.rhs, t, _current_rhs);
+			rhs_assembler.compute_energy_grad(state.local_boundary, state.boundary_nodes, state.density, state.args["n_boundary_samples"], state.local_neumann_boundary, state.rhs, t, _current_rhs);
 			rhs_computed = true;
 
 			if (assembler.is_mixed(state.formulation()))
@@ -279,7 +279,7 @@ namespace polyfem
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 
 		const double elastic_energy = assembler.assemble_energy(rhs_assembler.formulation(), state.mesh->is_volume(), state.bases, gbases, full);
-		const double body_energy = rhs_assembler.compute_energy(full, state.local_neumann_boundary, state.args["n_boundary_samples"], t);
+		const double body_energy = rhs_assembler.compute_energy(full, state.local_neumann_boundary, state.density, state.args["n_boundary_samples"], t);
 
 		double intertia_energy = 0;
 		double collision_energy = 0;

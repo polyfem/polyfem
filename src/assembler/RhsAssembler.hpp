@@ -11,26 +11,25 @@
 
 #include <vector>
 
-
 namespace polyfem
 {
 	class RhsAssembler
 	{
 	public:
-		RhsAssembler(const Mesh &mesh, const int n_basis, const int size, const std::vector< ElementBases > &bases, const std::vector< ElementBases > &gbases, const std::string &formulation, const Problem &problem);
+		RhsAssembler(const Mesh &mesh, const int n_basis, const int size, const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases, const std::string &formulation, const Problem &problem);
 
-		void assemble(Eigen::MatrixXd &rhs, const double t = 1) const;
+		void assemble(const Density &density, Eigen::MatrixXd &rhs, const double t = 1) const;
 
 		void initial_solution(const Density &density, Eigen::MatrixXd &sol) const;
 		void initial_velocity(const Density &density, Eigen::MatrixXd &sol) const;
 		void initial_acceleration(const Density &density, Eigen::MatrixXd &sol) const;
 
-		void set_bc(const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector< LocalBoundary > &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t = 1) const;
-		void set_velocity_bc(const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector< LocalBoundary > &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t = 1) const;
-		void set_acceleration_bc(const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector< LocalBoundary > &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t = 1) const;
+		void set_bc(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t = 1) const;
+		void set_velocity_bc(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t = 1) const;
+		void set_acceleration_bc(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t = 1) const;
 
-		double compute_energy(const Eigen::MatrixXd &displacement, const std::vector< LocalBoundary > &local_neumann_boundary, const int resolution, const double t) const;
-		void compute_energy_grad(const std::vector< LocalBoundary > &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector< LocalBoundary > &local_neumann_boundary, const Eigen::MatrixXd &final_rhs, const double t, Eigen::MatrixXd &rhs) const;
+		double compute_energy(const Eigen::MatrixXd &displacement, const std::vector<LocalBoundary> &local_neumann_boundary, const Density &density, const int resolution, const double t) const;
+		void compute_energy_grad(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const Density &density, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, const Eigen::MatrixXd &final_rhs, const double t, Eigen::MatrixXd &rhs) const;
 
 		inline const std::string &formulation() const { return formulation_; }
 
@@ -48,11 +47,11 @@ namespace polyfem
 		const Mesh &mesh_;
 		const int n_basis_;
 		const int size_;
-		const std::vector< ElementBases > &bases_;
-		const std::vector< ElementBases > &gbases_;
+		const std::vector<ElementBases> &bases_;
+		const std::vector<ElementBases> &gbases_;
 		const std::string formulation_;
 		const Problem &problem_;
 	};
-}
+} // namespace polyfem
 
 #endif //RHS_ASSEMBLER_HPP

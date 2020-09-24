@@ -2651,7 +2651,7 @@ namespace polyfem
 		}
 		else
 		{
-			rhs_assembler.assemble(rhs);
+			rhs_assembler.assemble(density, rhs);
 			rhs *= -1;
 		}
 
@@ -2787,7 +2787,7 @@ namespace polyfem
 					logger().info("{}/{} steps, dt={}s t={}s", t, time_steps, current_dt, time);
 
 					bdf.rhs(prev_sol);
-					rhs_assembler.compute_energy_grad(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs, time, current_rhs);
+					rhs_assembler.compute_energy_grad(local_boundary, boundary_nodes, density, args["n_boundary_samples"], local_neumann_boundary, rhs, time, current_rhs);
 					rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, current_rhs, time);
 
 					const int prev_size = current_rhs.size();
@@ -2863,7 +2863,7 @@ namespace polyfem
 						double current_dt = dt;
 
 						logger().info("{}/{} {}s", t, time_steps, time);
-						rhs_assembler.compute_energy_grad(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs, time, current_rhs);
+						rhs_assembler.compute_energy_grad(local_boundary, boundary_nodes, density, args["n_boundary_samples"], local_neumann_boundary, rhs, time, current_rhs);
 						rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, current_rhs, time);
 
 						if (assembler.is_mixed(formulation()))
@@ -2930,7 +2930,7 @@ namespace polyfem
 
 							if (!problem->is_linear_in_time())
 							{
-								rhs_assembler.assemble(current_rhs, dt * t);
+								rhs_assembler.assemble(density, current_rhs, dt * t);
 								current_rhs *= -1;
 							}
 							temp = -(uOld + dt * vOld + ((1 / 2. - beta) * dt2) * aOld);

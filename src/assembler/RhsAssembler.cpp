@@ -42,7 +42,7 @@ namespace polyfem
 	{
 	}
 
-	void RhsAssembler::assemble(Eigen::MatrixXd &rhs, const double t) const
+	void RhsAssembler::assemble(const Density &density, Eigen::MatrixXd &rhs, const double t) const
 	{
 		rhs = Eigen::MatrixXd::Zero(n_basis_ * size_, 1);
 		if (!problem_.is_rhs_zero())
@@ -60,7 +60,14 @@ namespace polyfem
 				problem_.rhs(formulation_, vals.val, t, rhs_fun);
 
 				for (int d = 0; d < size_; ++d)
-					rhs_fun.col(d) = rhs_fun.col(d).array() * vals.det.array() * quadrature.weights.array();
+				{
+					//rhs_fun.col(d) = rhs_fun.col(d).array() * vals.det.array() * quadrature.weights.array();
+					for (int q = 0; q < quadrature.weights.size(); ++q)
+					{
+						const double rho = density(vals.val(q, 0), vals.val(q, 1), size_ == 2 ? 0. : vals.val(q, 2), vals.element_id);
+						rhs_fun(q, d) *= vals.det(q) * quadrature.weights(q) * rho;
+					}
+				}
 
 				const int n_loc_bases_ = int(vals.basis_values.size());
 				for (int i = 0; i < n_loc_bases_; ++i)
@@ -459,7 +466,7 @@ namespace polyfem
 			local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs);
 	}
 
-	void RhsAssembler::compute_energy_grad(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, const Eigen::MatrixXd &final_rhs, const double t, Eigen::MatrixXd &rhs) const
+	void RhsAssembler::compute_energy_grad(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const Density &density, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, const Eigen::MatrixXd &final_rhs, const double t, Eigen::MatrixXd &rhs) const
 	{
 		if (problem_.is_linear_in_time())
 		{
@@ -470,13 +477,13 @@ namespace polyfem
 		}
 		else
 		{
-			assemble(rhs, t);
+			assemble(density, rhs, t);
 			rhs *= -1;
 			set_bc(local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs, t);
 		}
 	}
 
-	double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement, const std::vector<LocalBoundary> &local_neumann_boundary, const int resolution, const double t) const
+	double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement, const std::vector<LocalBoundary> &local_neumann_boundary, const Density &density, const int resolution, const double t) const
 	{
 
 		double res = 0;
@@ -534,10 +541,12 @@ namespace polyfem
 						}
 					}
 				}
+				const double rho = density(vals.val(p, 0), vals.val(p, 1), size_ == 2 ? 0. : vals.val(p, 2), vals.element_id);
 
-				for(int d = 0; d < size_; ++d)
-					loc_storage.val += forces(p, d) * local_displacement(d) * da(p);
+				for(int d = 0; d < size_; ++d){
+					loc_storage.val += forces(p, d) * local_displacement(d) * da(p) * rho;
 					// res += forces(p, d) * local_displacement(d) * da(p);
+				}
 			}
 #ifdef POLYFEM_WITH_TBB
 		} });

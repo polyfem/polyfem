@@ -10,13 +10,16 @@
 
 #include <tinyxml2.h>
 
-namespace polyfem {
-    namespace {
-        template<typename XMLNode>
-        std::string load_materials(const XMLNode *febio, std::map<int, std::pair<double, double>> &materials)
+namespace polyfem
+{
+    namespace
+    {
+        template <typename XMLNode>
+        std::string load_materials(const XMLNode *febio, std::map<int, std::tuple<double, double, double>> &materials)
         {
             double E;
             double nu;
+            double rho;
             std::vector<std::string> material_names;
 
             const tinyxml2::XMLElement *material_parent = febio->FirstChildElement("Material");
@@ -27,6 +30,10 @@ namespace polyfem {
 
                 E = material_node->FirstChildElement("E")->DoubleText();
                 nu = material_node->FirstChildElement("v")->DoubleText();
+                if (material_node->FirstChildElement("density"))
+                    rho = material_node->FirstChildElement("density")->DoubleText();
+                else
+                    rho = 1;
 
                 //TODO check if all the same
                 if (material == "neo-Hookean")
@@ -36,7 +43,7 @@ namespace polyfem {
                 else
                     logger().error("Unsupported material {}", material);
 
-                materials[mid] = std::pair<double, double>(E, nu);
+                materials[mid] = std::tuple<double, double, double>(E, nu, rho);
             }
 
             std::sort(material_names.begin(), material_names.end());
@@ -65,7 +72,7 @@ namespace polyfem {
         }
 
         template <typename XMLNode>
-        int load_elements(const XMLNode *geometry, const std::map<int, std::pair<double, double>> &materials, Eigen::MatrixXi &T, std::vector<std::vector<int>> &nodes, Eigen::MatrixXd &Es, Eigen::MatrixXd &nus)
+        int load_elements(const XMLNode *geometry, const std::map<int, std::tuple<double, double, double>> &materials, Eigen::MatrixXi &T, std::vector<std::vector<int>> &nodes, Eigen::MatrixXd &Es, Eigen::MatrixXd &nus, Eigen::MatrixXd &rhos)
         {
             std::vector<Eigen::Vector4i> tets;
             nodes.clear();
@@ -77,7 +84,7 @@ namespace polyfem {
                 const std::string el_type = std::string(elements->Attribute("type"));
                 const int mid = elements->IntAttribute("mat");
 
-                if(el_type != "tet4" && el_type != "tet10" && el_type != "tet20")
+                if (el_type != "tet4" && el_type != "tet10" && el_type != "tet20")
                 {
                     logger().error("Unsupported elemet type {}", el_type);
                     continue;
@@ -99,14 +106,16 @@ namespace polyfem {
                     tets.emplace_back(atoi(tt[0].c_str()) - 1, atoi(tt[1].c_str()) - 1, atoi(tt[2].c_str()) - 1, atoi(tt[3].c_str()) - 1);
                     nodes.emplace_back();
                     mids.emplace_back(mid);
-                    for(int n = 0; n < tt.size(); ++n)
+                    for (int n = 0; n < tt.size(); ++n)
                         nodes.back().push_back(atoi(tt[n].c_str()) - 1);
 
-                    if (el_type == "tet10"){
+                    if (el_type == "tet10")
+                    {
                         assert(nodes.back().size() == 10);
                         std::swap(nodes.back()[8], nodes.back()[9]);
                     }
-                    else if (el_type == "tet20"){
+                    else if (el_type == "tet20")
+                    {
                         assert(nodes.back().size() == 20);
                         std::swap(nodes.back()[8], nodes.back()[9]);
                         std::swap(nodes.back()[10], nodes.back()[11]);
@@ -121,13 +130,15 @@ namespace polyfem {
             T.resize(tets.size(), 4);
             Es.resize(tets.size(), 1);
             nus.resize(tets.size(), 1);
+            rhos.resize(tets.size(), 1);
             for (int i = 0; i < tets.size(); ++i)
             {
                 T.row(i) = tets[i].transpose();
                 const auto it = materials.find(mids[i]);
                 assert(it != materials.end());
-                Es(i) = it->second.first;
-                nus(i) = it->second.second;
+                Es(i) = std::get<0>(it->second);
+                nus(i) = std::get<1>(it->second);
+                rhos(i) = std::get<2>(it->second);
             }
 
             return order;
@@ -231,7 +242,7 @@ namespace polyfem {
         template <typename XMLNode>
         void load_loads(const XMLNode *loads, const std::map<std::string, int> &names, GenericTensorProblem &gproblem)
         {
-            if(loads == nullptr)
+            if (loads == nullptr)
                 return;
 
             for (const tinyxml2::XMLElement *child = loads->FirstChildElement("surface_load"); child != NULL; child = child->NextSiblingElement("surface_load"))
@@ -285,6 +296,7 @@ namespace polyfem {
                     const double z = atof(zs.c_str());
 
                     gproblem.set_rhs(x, y, z);
+                    std::cout << "xxx" << x << " " << y << " " << z << std::endl;
                 }
                 else
                 {
@@ -292,10 +304,10 @@ namespace polyfem {
                 }
             }
 
-            if(counter > 1)
+            if (counter > 1)
                 logger().error("Loading only last body load");
         }
-    }
+    } // namespace
 
     void FEBioReader::load(const std::string &path, State &state, const std::string &export_solution)
     {
@@ -314,9 +326,8 @@ namespace polyfem {
         const std::string ver = std::string(febio->Attribute("version"));
         assert(ver == "2.5");
 
-        std::map<int, std::pair<double, double>> materials;
+        std::map<int, std::tuple<double, double, double>> materials;
         state.args["tensor_formulation"] = load_materials(febio, materials);
-
 
         const auto *geometry = febio->FirstChildElement("Geometry");
 
@@ -325,20 +336,24 @@ namespace polyfem {
 
         Eigen::MatrixXi T;
         std::vector<std::vector<int>> nodes;
-        Eigen::MatrixXd Es, nus;
-        state.args["discr_order"] = load_elements(geometry, materials, T, nodes, Es, nus);
+        Eigen::MatrixXd Es, nus, rhos;
+        const int element_order = load_elements(geometry, materials, T, nodes, Es, nus, rhos);
+        const int current_order = state.args["discr_order"];
+        state.args["discr_order"] = std::max(current_order, element_order);
 
         state.load_mesh(V, T);
         state.mesh->attach_higher_order_nodes(V, nodes);
 
         if (materials.size() == 1)
         {
-            state.args["params"]["E"] = materials.begin()->second.first;
-            state.args["params"]["nu"] = materials.begin()->second.second;
+            state.args["params"]["E"] = std::get<0>(materials.begin()->second);
+            state.args["params"]["nu"] = std::get<1>(materials.begin()->second);
+            state.args["params"]["rho"] = std::get<2>(materials.begin()->second);
         }
         else
         {
             AssemblerUtils::instance().init_multimaterial(Es, nus);
+            state.density.init_multimaterial(rhos);
         }
 
         std::vector<std::vector<int>> nodeSet;
@@ -382,4 +397,4 @@ namespace polyfem {
         timer.stop();
         logger().info(" took {}s", timer.getElapsedTime());
     }
-}
+} // namespace polyfem

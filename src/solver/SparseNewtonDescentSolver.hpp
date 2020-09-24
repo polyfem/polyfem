@@ -84,7 +84,7 @@ namespace cppoptlib
 
 		double armijo_linesearch(const TVector &x, const TVector &searchDir, ProblemType &objFunc, const double alpha_init = 1.0)
 		{
-			static const int MAX_STEP_SIZE_ITER = 12;
+			static const int MAX_STEP_SIZE_ITER = 20;
 
 			const double c = 0.5;
 			const double tau = 0.5;
@@ -114,7 +114,9 @@ namespace cppoptlib
 				cur_iter++;
 			}
 
-			if (cur_iter >= MAX_STEP_SIZE_ITER || alpha <= 1e-7)
+			// std::cout << cur_iter << " " << MAX_STEP_SIZE_ITER << " " << alpha << std::endl;
+
+			if (alpha <= 1e-7)
 				return std::nan("");
 			else
 				return alpha;
@@ -253,7 +255,7 @@ namespace cppoptlib
 
 				//gradient descent, check descent direction
 				const double residual = (hessian * delta_x - grad).norm();
-				if (line_search_failed || std::isnan(residual) || residual > 1e-8)
+				if (line_search_failed || std::isnan(residual) || residual > 1e-7)
 				{
 					polyfem::logger().debug("\treverting to gradient descent, since residual is {}", residual);
 					delta_x = grad;
@@ -296,7 +298,7 @@ namespace cppoptlib
 					{
 						line_search_failed = true;
 						polyfem::logger().debug("\tline search failed, reverting to gradient descent");
-
+						this->m_status = Status::Continue;
 						continue;
 					}
 				}
