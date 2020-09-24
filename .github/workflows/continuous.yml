@@ -137,6 +137,4 @@ jobs:
       - name: Tests
         run: |
           cd build
-          cp C:\Miniconda\Library\bin\mpir.dll .\
-          cp C:\Miniconda\Library\bin\gmp.dll .\
           ctest --verbose --output-on-failure
