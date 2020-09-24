@@ -14,19 +14,14 @@
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
 
-
-
 #ifdef POLYFEM_WITH_TBB
 #include <tbb/task_scheduler_init.h>
 #include <thread>
 #endif
 
-
 using namespace polyfem;
 using namespace polysolve;
 using namespace Eigen;
-
-
 
 int main(int argc, char **argv)
 {
@@ -58,7 +53,7 @@ int main(int argc, char **argv)
 	bool force_linear = false;
 	bool isoparametric = false;
 	bool serendipity = false;
-
+	bool project_to_psd = false;
 
 	std::string log_file = "";
 	bool is_quiet = false;
@@ -74,7 +69,6 @@ int main(int argc, char **argv)
 	//for debugging
 	command_line.add_option("--n_refs", n_refs, "Number of refinements");
 	command_line.add_flag("--not_norm", skip_normalization, "Skips mesh normalization");
-
 
 	const ProblemFactory &p_factory = ProblemFactory::factory();
 	command_line.add_set("--problem", problem_name, std::set<std::string>(p_factory.get_problem_names().begin(), p_factory.get_problem_names().end()), "Problem name");
@@ -96,6 +90,7 @@ int main(int argc, char **argv)
 	command_line.add_flag("--serendipity", serendipity, "Use of serendipity elements, only for Q2");
 	command_line.add_flag("--stop_after_build_basis", stop_after_build_basis, "Stop after build bases");
 	command_line.add_option("--vis_mesh_res", vis_mesh_res, "Vis mesh resolution");
+	command_line.add_flag("--project_to_psd", project_to_psd, "Project local matrices to psd");
 
 	//disable out
 	command_line.add_flag("--cmd", no_ui, "Runs in command line mode, no ui");
@@ -105,26 +100,27 @@ int main(int argc, char **argv)
 	command_line.add_option("--vtu", vtu, "Vtu output file");
 	command_line.add_option("--screenshot", screenshot, "screenshot (disabled)");
 
-
 	command_line.add_flag("--quiet", is_quiet, "Disable cout for logging");
 	command_line.add_option("--log_file", log_file, "Log to a file");
 	command_line.add_option("--log_level", log_level, "Log level 1 debug 2 info");
 
+	try
+	{
+		command_line.parse(argc, argv);
+	}
+	catch (const CLI::ParseError &e)
+	{
+		return command_line.exit(e);
+	}
 
-
-    try {
-        command_line.parse(argc, argv);
-    } catch (const CLI::ParseError &e) {
-        return command_line.exit(e);
-    }
-
-
-
-	if (!screenshot.empty()) { no_ui = false; }
+	if (!screenshot.empty())
+	{
+		no_ui = false;
+	}
 
 	json in_args = json({});
 
-	if(!json_file.empty())
+	if (!json_file.empty())
 	{
 		std::ifstream file(json_file);
 
@@ -141,12 +137,11 @@ int main(int argc, char **argv)
 		in_args["n_refs"] = n_refs;
 		in_args["problem"] = problem_name;
 		in_args["normalize_mesh"] = !skip_normalization;
-
+		in_args["project_to_psd"] = project_to_psd;
 
 		in_args["scalar_formulation"] = scalar_formulation;
 		in_args["tensor_formulation"] = tensor_formulation;
 		// in_args["mixed_formulation"] = mixed_formulation;
-
 
 		in_args["discr_order"] = discr_order;
 		in_args["use_spline"] = use_splines;
@@ -156,7 +151,8 @@ int main(int argc, char **argv)
 		in_args["iso_parametric"] = isoparametric;
 		in_args["serendipity"] = serendipity;
 
-		if (!vtu.empty()) {
+		if (!vtu.empty())
+		{
 			in_args["export"]["vis_mesh"] = vtu;
 			in_args["export"]["wire_mesh"] = StringUtils::replace_ext(vtu, "obj");
 		}
@@ -167,9 +163,8 @@ int main(int argc, char **argv)
 			in_args["vismesh_rel_area"] = vis_mesh_res;
 	}
 
-
 #ifndef POLYFEM_NO_UI
-	if(no_ui)
+	if (no_ui)
 	{
 #endif
 		State state;
@@ -184,7 +179,7 @@ int main(int argc, char **argv)
 
 		state.build_basis();
 
-		if(stop_after_build_basis)
+		if (stop_after_build_basis)
 			return EXIT_SUCCESS;
 
 		state.assemble_rhs();
@@ -204,7 +199,5 @@ int main(int argc, char **argv)
 	}
 #endif
 
-
 	return EXIT_SUCCESS;
 }
-
