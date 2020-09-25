@@ -304,8 +304,6 @@ namespace cppoptlib
 				}
 				line_search_failed = false;
 
-				std::cout << "delta_x" << delta_x.norm() << " " << rate << std::endl;
-
 				x0 += rate * delta_x;
 				time.start();
 				objFunc.gradient(x0, grad);
