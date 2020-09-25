@@ -564,6 +564,9 @@ namespace polyfem
 #endif
 		}
 
+		if (problem_.is_linear_in_time() && !problem_.is_time_dependent())
+			res *= t;
+
 		// #ifdef POLYFEM_WITH_TBB
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
 		// #endif

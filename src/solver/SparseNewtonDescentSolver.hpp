@@ -84,7 +84,7 @@ namespace cppoptlib
 
 		double armijo_linesearch(const TVector &x, const TVector &searchDir, ProblemType &objFunc, const double alpha_init = 1.0)
 		{
-			static const int MAX_STEP_SIZE_ITER = 20;
+			static const int MAX_STEP_SIZE_ITER = 12;
 
 			const double c = 0.5;
 			const double tau = 0.5;
@@ -303,6 +303,8 @@ namespace cppoptlib
 					}
 				}
 				line_search_failed = false;
+
+				std::cout << "delta_x" << delta_x.norm() << " " << rate << std::endl;
 
 				x0 += rate * delta_x;
 				time.start();

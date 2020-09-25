@@ -296,7 +296,6 @@ namespace polyfem
                     const double z = atof(zs.c_str());
 
                     gproblem.set_rhs(x, y, z);
-                    std::cout << "xxx" << x << " " << y << " " << z << std::endl;
                 }
                 else
                 {
