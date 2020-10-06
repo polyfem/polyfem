@@ -99,7 +99,7 @@ endfunction()
 function(polyfem_download_spdlog)
     polyfem_download_project(spdlog
         GIT_REPOSITORY https://github.com/gabime/spdlog.git
-        GIT_TAG         v1.3.1
+        GIT_TAG        v1.3.1
     )
 endfunction()
 
@@ -125,7 +125,7 @@ endfunction()
 function(polyfem_download_ipc)
     polyfem_download_project(ipc
         GIT_REPOSITORY https://github.com/ipc-sim/ipc-toolkit.git
-        GIT_TAG        f400d24d7593e8892da1e0a20792a6b460927be1
+        GIT_TAG        7c1f798c15b9dab0ff1fada913df54e986aacae5
     )
 endfunction()
 

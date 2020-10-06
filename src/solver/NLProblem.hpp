@@ -104,7 +104,7 @@ namespace polyfem
 		bool is_time_dependent;
 		bool project_to_psd;
 
-		double _dhat_squared;
+		double _dhat;
 		double _barrier_stiffness;
 
 		double dt;

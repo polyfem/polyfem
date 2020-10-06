@@ -10,15 +10,19 @@
 #include <mutex>
 #include <iostream>
 
-namespace polyfem {
+namespace polyfem
+{
 	std::shared_ptr<spdlog::async_logger> Logger::logger_;
 
 	// See https://github.com/gabime/spdlog#asynchronous-logger-with-multi-sinks
-	void Logger::init(std::vector<spdlog::sink_ptr> &sinks) {
+	void Logger::init(std::vector<spdlog::sink_ptr> &sinks)
+	{
 		auto l = spdlog::get("polyfem");
 		bool had_polyfem = l != nullptr;
-		if(had_polyfem)
+		if (had_polyfem)
+		{
 			spdlog::drop("polyfem");
+		}
 
 		spdlog::init_thread_pool(8192, 1);
 		Logger::logger_ =
@@ -28,30 +32,31 @@ namespace polyfem {
 				spdlog::thread_pool(), spdlog::async_overflow_policy::block);
 		spdlog::register_logger(logger_);
 
-		if(had_polyfem)
+		if (had_polyfem)
 			logger().warn("Removed another polyfem logger");
 	}
 
-	void Logger::init(bool use_cout, const std::string &filename, bool truncate) {
+	void Logger::init(bool use_cout, const std::string &filename, bool truncate)
+	{
 		std::vector<spdlog::sink_ptr> sinks;
-		if (use_cout) {
+		if (use_cout)
+		{
 			sinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
 		}
-		if (!filename.empty()) {
+		if (!filename.empty())
+		{
 			sinks.emplace_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>(filename, truncate));
 		}
 
 		init(sinks);
 	}
 
-
-	void Logger::init(std::ostream &os) {
+	void Logger::init(std::ostream &os)
+	{
 		std::vector<spdlog::sink_ptr> sinks;
 		sinks.emplace_back(std::make_shared<spdlog::sinks::ostream_sink_mt>(os, false));
 
 		init(sinks);
 	}
 
-
-
-}
+} // namespace polyfem

@@ -150,7 +150,7 @@ namespace polyfem
 		{
 			solver->solve(b.col(i), sol.col(i));
 		}
-		logger().trace("initial guess solve error {}", (mass * sol - b).norm());
+		logger().trace("mass matrix error {}", (mass * sol - b).norm());
 	}
 
 	void RhsAssembler::set_bc(

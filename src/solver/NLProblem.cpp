@@ -5,9 +5,9 @@
 
 #include <polyfem/Types.hpp>
 
-#include <ipc.hpp>
-#include <barrier/barrier.hpp>
-#include <barrier/adaptive_stiffness.hpp>
+#include <ipc/ipc.hpp>
+#include <ipc/barrier/barrier.hpp>
+#include <ipc/barrier/adaptive_stiffness.hpp>
 
 #include <igl/write_triangle_mesh.h>
 
@@ -27,7 +27,7 @@ namespace polyfem
 	{
 		assert(!assembler.is_mixed(state.formulation()));
 
-		_dhat_squared = dhat * dhat;
+		_dhat = dhat;
 		_barrier_stiffness = 50;
 	}
 
@@ -55,7 +55,7 @@ namespace polyfem
 			state.boundary_nodes_pos,
 			displaced,
 			state.boundary_edges, state.boundary_triangles,
-			_dhat_squared,
+			_dhat,
 			state.avg_mass,
 			grad,
 			max_barrier_stiffness);
@@ -208,6 +208,8 @@ namespace polyfem
 		if (!state.args["has_collision"])
 			return true;
 
+#ifndef NDEBUG
+		//max_step_size should return a collision free step
 		Eigen::MatrixXd full0, full1;
 		if (x0.size() == reduced_size)
 			reduced_to_full(x0, full0);
@@ -263,8 +265,11 @@ namespace polyfem
 
 		// std::cout<<"state.boundary_nodes_pos + displaced\n"<<full<<std::endl;
 		// std::cout<<"state.boundary_nodes_pos + displaced\n"<<displaced<<std::endl;
-
+		assert(is_valid);
 		return is_valid;
+#else
+		return true;
+#endif
 	}
 
 	double NLProblem::value(const TVector &x)
@@ -309,9 +314,9 @@ namespace polyfem
 			// std::cout<<" + displaced\n"<<full<<std::endl;
 			// std::cout<<" + displaced\n"<<displaced<<std::endl;
 
-			ipc::Candidates constraint_set;
-			ipc::construct_constraint_set(displaced, state.boundary_edges, state.boundary_triangles, _dhat_squared, constraint_set);
-			collision_energy = ipc::compute_barrier_potential(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat_squared);
+			ipc::Constraints constraint_set;
+			ipc::construct_constraint_set(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, _dhat, constraint_set);
+			collision_energy = ipc::compute_barrier_potential(state.boundary_nodes_pos, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat);
 
 			// if(collision_energy > 0)
 			// {
@@ -330,7 +335,7 @@ namespace polyfem
 			polyfem::logger().trace("collision_energy {}", collision_energy);
 			// const double ddd = ipc::compute_minimum_distance(displaced, state.boundary_edges, state.boundary_triangles, constraint_set);
 			// polyfem::logger().trace("min_dist {}", ddd);
-			// polyfem::logger().trace("barrier {}", ipc::barrier(ddd, _dhat_squared));
+			// polyfem::logger().trace("barrier {}", ipc::barrier(ddd, _dhat));
 		}
 
 		return scaling * (elastic_energy + body_energy) + intertia_energy + _barrier_stiffness * collision_energy;
@@ -385,10 +390,9 @@ namespace polyfem
 			Eigen::MatrixXd displaced;
 			compute_displaced_points(full, displaced);
 
-			ipc::Candidates constraint_set;
-			ipc::construct_constraint_set(displaced, state.boundary_edges, state.boundary_triangles, _dhat_squared, constraint_set);
-			grad += _barrier_stiffness * ipc::compute_barrier_potential_gradient(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat_squared);
-			// polyfem::logger().trace("collision grad {}", ipc::compute_barrier_potential_gradient(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat_squared).norm() * _barrier_stiffness);
+			ipc::Constraints constraint_set;
+			ipc::construct_constraint_set(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, _dhat, constraint_set);
+			grad += _barrier_stiffness * ipc::compute_barrier_potential_gradient(state.boundary_nodes_pos, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat);
 			// const double ddd = ipc::compute_minimum_distance(displaced, state.boundary_edges, state.boundary_triangles, constraint_set);
 			// polyfem::logger().trace("min_dist {}", ddd);
 		}
@@ -479,9 +483,9 @@ namespace polyfem
 			Eigen::MatrixXd displaced;
 			compute_displaced_points(full, displaced);
 
-			ipc::Candidates constraint_set;
-			ipc::construct_constraint_set(displaced, state.boundary_edges, state.boundary_triangles, _dhat_squared, constraint_set);
-			hessian += _barrier_stiffness * ipc::compute_barrier_potential_hessian(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat_squared, project_to_psd);
+			ipc::Constraints constraint_set;
+			ipc::construct_constraint_set(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, _dhat, constraint_set);
+			hessian += _barrier_stiffness * ipc::compute_barrier_potential_hessian(state.boundary_nodes_pos, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat, project_to_psd);
 		}
 
 		assert(hessian.rows() == full_size);
