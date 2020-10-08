@@ -131,7 +131,7 @@ namespace cppoptlib
 
 			TVector new_x = x + grad;
 			double step_size = std::min(1., objFunc.max_step_size(x, new_x));
-			// polyfem::logger().trace("inital step {}", step_size);
+			polyfem::logger().trace("inital step {}", step_size);
 			if (step_size != 1)
 			{
 				new_x = x + step_size * grad;
@@ -143,9 +143,9 @@ namespace cppoptlib
 			{
 				double cur_e = objFunc.value(new_x);
 				const bool valid = objFunc.is_step_valid(x, new_x);
-				// polyfem::logger().trace("ls it: {} delta: {} invalid: {} ", cur_iter, (cur_e - old_energy), !valid);
+				polyfem::logger().trace("ls it: {} delta: {} invalid: {} ", cur_iter, (cur_e - old_energy), !valid);
 				if (std::isinf(cur_e) || std::isnan(cur_e) || cur_e >= old_energy || !valid)
-				// if (std::isinf(cur_e) || std::isnan(cur_e) || (cur_e >= old_energy && fabs(cur_e - old_energy) > 1e-10) || !valid)
+				// if (std::isinf(cur_e) || std::isnan(cur_e) || (cur_e >= old_energy && fabs(cur_e - old_energy) > 1e-7) || !valid)
 				{
 					step_size /= 2.;
 					new_x = x + step_size * grad;
