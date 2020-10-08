@@ -190,8 +190,6 @@ namespace polyfem
 		if (!state.args["has_collision"])
 			return true;
 
-#ifndef NDEBUG
-		//max_step_size should return a collision free step
 		Eigen::MatrixXd full0, full1;
 		if (x0.size() == reduced_size)
 			reduced_to_full(x0, full0);
@@ -211,11 +209,7 @@ namespace polyfem
 
 		const bool is_valid = ipc::is_step_collision_free(displaced0, displaced1, state.boundary_edges, state.boundary_triangles);
 
-		assert(is_valid);
 		return is_valid;
-#else
-		return true;
-#endif
 	}
 
 	double NLProblem::value(const TVector &x)

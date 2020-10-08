@@ -105,13 +105,25 @@ namespace cppoptlib
 			const double Cache = c * grad.dot(searchDir);
 
 			int cur_iter = 0;
-			while ((std::isinf(f) || std::isnan(f) || f > f_in + alpha * Cache || !objFunc.is_step_valid(x, x1)) && alpha > 1e-7 && cur_iter <= MAX_STEP_SIZE_ITER)
+#ifndef NDEBUG
+			//max_step_size should return a collision free step
+			bool valid = objFunc.is_step_valid(x, x1);
+			assert(valid);
+#else
+			bool valid = true;
+#endif
+			while ((std::isinf(f) || std::isnan(f) || f > f_in + alpha * Cache || !valid) && alpha > 1e-7 && cur_iter <= MAX_STEP_SIZE_ITER)
 			{
 				alpha *= tau;
 				x1 = x + alpha * searchDir;
 				f = objFunc.value(x1);
 
 				cur_iter++;
+#ifndef NDEBUG
+				//max_step_size should return a collision free step
+				valid = objFunc.is_step_valid(x, x1);
+				assert(valid);
+#endif
 			}
 
 			// std::cout << cur_iter << " " << MAX_STEP_SIZE_ITER << " " << alpha << std::endl;
@@ -142,7 +154,13 @@ namespace cppoptlib
 			while (step_size > 1e-7 || cur_iter < MAX_STEP_SIZE_ITER)
 			{
 				double cur_e = objFunc.value(new_x);
+#ifndef NDEBUG
+				//max_step_size should return a collision free step
 				const bool valid = objFunc.is_step_valid(x, new_x);
+				assert(valid);
+#else
+				const bool valid = true;
+#endif
 				polyfem::logger().trace("ls it: {} delta: {} invalid: {} ", cur_iter, (cur_e - old_energy), !valid);
 				if (std::isinf(cur_e) || std::isnan(cur_e) || cur_e >= old_energy || !valid)
 				// if (std::isinf(cur_e) || std::isnan(cur_e) || (cur_e >= old_energy && fabs(cur_e - old_energy) > 1e-7) || !valid)

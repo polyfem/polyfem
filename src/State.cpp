@@ -2510,7 +2510,7 @@ namespace polyfem
 		sol.resize(0, 0);
 		pressure.resize(0, 0);
 		mass.resize(0, 0);
-		avg_mass = 0;
+		avg_mass = 1;
 
 		igl::Timer timer;
 		timer.start();
