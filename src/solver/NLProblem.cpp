@@ -57,10 +57,11 @@ namespace polyfem
 		// exit(0);
 	}
 
-	void NLProblem::init_timestep(const TVector &x_prev, const TVector &v_prev, const double dt)
+	void NLProblem::init_timestep(const TVector &x_prev, const TVector &v_prev, const TVector &a_prev, const double dt)
 	{
 		this->x_prev = x_prev;
 		this->v_prev = v_prev;
+		this->a_prev = a_prev;
 		this->dt = dt;
 	}
 
@@ -68,8 +69,30 @@ namespace polyfem
 	{
 		if (is_time_dependent)
 		{
+			const double gamma = 0.5;
+			const double beta = 0.25;
+
 			v_prev = (x - x_prev) / dt;
 			x_prev = x;
+
+			// //newmark?
+			// v_prev += dt * (1 - gamma) * a_prev;
+			// a_prev = (x - x_prev) / (dt * dt * beta);
+			// v_prev += dt * gamma * a_prev;
+			// x_prev = x;
+
+			// rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, t);
+			// rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, t);
+
+			rhs_computed = false;
+			this->t = t;
+		}
+	}
+
+	void NLProblem::substepping(const double t)
+	{
+		if (is_time_dependent)
+		{
 			rhs_computed = false;
 			this->t = t;
 

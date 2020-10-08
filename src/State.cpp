@@ -3031,7 +3031,7 @@ namespace polyfem
 						VectorXd tmp_sol;
 
 						NLProblem nl_problem(*this, rhs_assembler, dt, args["dhat"], args["project_to_psd"]);
-						nl_problem.init_timestep(sol, velocity, dt);
+						nl_problem.init_timestep(sol, velocity, acceleration, dt);
 						nl_problem.full_to_reduced(sol, tmp_sol);
 
 						for (int t = 1; t <= time_steps; ++t)
@@ -3043,9 +3043,48 @@ namespace polyfem
 
 							if (nlsolver.error_code() == -10)
 							{
+								double substep_delta = 0.5;
+								double substep = substep_delta;
+								bool solved = false;
+
+								while (substep_delta > 1e-4 && !solved)
+								{
+									logger().debug("Substepping {}/{}, dt={}", (t - 1 + substep) * dt, t * dt, substep_delta);
+									nl_problem.substepping((t - 1 + substep) * dt);
+									nl_problem.full_to_reduced(sol, tmp_sol);
+									nlsolver.minimize(nl_problem, tmp_sol);
+
+									if (nlsolver.error_code() == -10)
+									{
+										substep -= substep_delta;
+										substep_delta /= 2;
+									}
+									else
+									{
+										logger().trace("Done {}/{}, dt={}", (t - 1 + substep) * dt, t * dt, substep_delta);
+										nl_problem.reduced_to_full(tmp_sol, sol);
+										substep_delta *= 2;
+									}
+
+									solved = substep >= 1;
+
+									substep += substep_delta;
+									if (substep >= 1)
+									{
+										substep_delta -= substep - 1;
+										substep = 1;
+									}
+								}
+							}
+
+							if (nlsolver.error_code() == -10)
+							{
 								logger().error("Unable to solve t={}", t * dt);
+								save_vtu("stop.vtu", dt * t);
 								break;
 							}
+
+							logger().debug("Step solved!");
 
 							nlsolver.getInfo(solver_info);
 							nl_problem.reduced_to_full(tmp_sol, sol);

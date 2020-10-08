@@ -212,6 +212,14 @@ namespace cppoptlib
 
 			// std::cout<<"x0\n"<<x0<<std::endl;
 
+			if (std::isnan(grad.norm()))
+			{
+				this->m_status = Status::UserDefined;
+				polyfem::logger().debug("stopping because first grad is nan");
+				error_code_ = -10;
+				return;
+			}
+
 			do
 			{
 				const size_t iter = this->m_current.iterations;
