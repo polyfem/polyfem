@@ -75,8 +75,8 @@ namespace polyfem
 	private:
 		double angular_v0_ = 0.5;
 		double angular_v1_ = -0.5;
-		std::array<int, 2> coordiante_0_ = {0, 1};
-		std::array<int, 2> coordiante_1_ = {0, 1};
+		std::array<int, 2> coordiante_0_ = {{0, 1}};
+		std::array<int, 2> coordiante_1_ = {{0, 1}};
 		RowVectorNd trans_0_;
 		RowVectorNd trans_1_;
 	};
