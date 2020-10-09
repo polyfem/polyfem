@@ -10,7 +10,7 @@
 
 namespace polyfem
 {
-	class GenericTensorProblem: public Problem
+	class GenericTensorProblem : public Problem
 	{
 	public:
 		GenericTensorProblem(const std::string &name);
@@ -75,6 +75,10 @@ namespace polyfem
 		std::vector<std::array<ExpressionValue, 3>> displacements_;
 		std::vector<ExpressionValue> pressures_;
 
+		std::array<ExpressionValue, 3> initial_position_;
+		std::array<ExpressionValue, 3> initial_velocity_;
+		std::array<ExpressionValue, 3> initial_acceleration_;
+
 		std::vector<Eigen::Matrix<bool, 1, 3>> dirichelt_dimentions_;
 
 		std::array<ExpressionValue, 3> rhs_;
@@ -83,8 +87,7 @@ namespace polyfem
 		bool is_all_;
 	};
 
-
-	class GenericScalarProblem: public Problem
+	class GenericScalarProblem : public Problem
 	{
 	public:
 		GenericScalarProblem(const std::string &name);
@@ -125,5 +128,4 @@ namespace polyfem
 		bool has_exact_grad_ = false;
 		bool is_time_dept_ = false;
 	};
-}
-
+} // namespace polyfem

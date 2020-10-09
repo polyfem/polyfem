@@ -85,22 +85,22 @@ namespace polyfem
 		}
 	}
 
-	void RhsAssembler::initial_solution(const Density &density, Eigen::MatrixXd &sol) const
+	void RhsAssembler::initial_solution(Eigen::MatrixXd &sol) const
 	{
-		time_bc([&](const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) { problem_.initial_solution(pts, val); }, density, sol);
+		time_bc([&](const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) { problem_.initial_solution(pts, val); }, sol);
 	}
 
-	void RhsAssembler::initial_velocity(const Density &density, Eigen::MatrixXd &sol) const
+	void RhsAssembler::initial_velocity(Eigen::MatrixXd &sol) const
 	{
-		time_bc([&](const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) { problem_.initial_velocity(pts, val); }, density, sol);
+		time_bc([&](const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) { problem_.initial_velocity(pts, val); }, sol);
 	}
 
-	void RhsAssembler::initial_acceleration(const Density &density, Eigen::MatrixXd &sol) const
+	void RhsAssembler::initial_acceleration(Eigen::MatrixXd &sol) const
 	{
-		time_bc([&](const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) { problem_.initial_acceleration(pts, val); }, density, sol);
+		time_bc([&](const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) { problem_.initial_acceleration(pts, val); }, sol);
 	}
 
-	void RhsAssembler::time_bc(const std::function<void(const Eigen::MatrixXd &, Eigen::MatrixXd &)> &fun, const Density &density, Eigen::MatrixXd &sol) const
+	void RhsAssembler::time_bc(const std::function<void(const Eigen::MatrixXd &, Eigen::MatrixXd &)> &fun, Eigen::MatrixXd &sol) const
 	{
 		sol = Eigen::MatrixXd::Zero(n_basis_ * size_, 1);
 		Eigen::MatrixXd loc_sol;
@@ -139,7 +139,8 @@ namespace polyfem
 						   // {"tolerance", 1e-9}, // for iterative solvers
 		};
 		const auto &assembler = AssemblerUtils::instance();
-		assembler.assemble_mass_matrix(formulation_, size_ == 3, n_basis_, density, bases_, gbases_, mass);
+		Density d;
+		assembler.assemble_mass_matrix(formulation_, size_ == 3, n_basis_, d, bases_, gbases_, mass);
 		auto solver = LinearSolver::create(LinearSolver::defaultSolver(), LinearSolver::defaultPrecond());
 		solver->setParameters(params);
 		solver->analyzePattern(mass, mass.rows());

@@ -2737,7 +2737,7 @@ namespace polyfem
 
 			const auto &gbases = iso_parametric() ? bases : geom_bases;
 			RhsAssembler rhs_assembler(*mesh, n_bases, problem->is_scalar() ? 1 : mesh->dimension(), bases, gbases, formulation(), *problem);
-			rhs_assembler.initial_solution(density, sol);
+			rhs_assembler.initial_solution(sol);
 
 			Eigen::MatrixXd current_rhs = rhs;
 
@@ -2903,8 +2903,8 @@ namespace polyfem
 				else //tensor time dependent
 				{
 					Eigen::MatrixXd velocity, acceleration;
-					rhs_assembler.initial_velocity(density, velocity);
-					rhs_assembler.initial_acceleration(density, acceleration);
+					rhs_assembler.initial_velocity(velocity);
+					rhs_assembler.initial_acceleration(acceleration);
 
 					const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 					const int precond_num = problem_dim * n_bases;
