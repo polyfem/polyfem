@@ -29,6 +29,7 @@
 #include <polysolve/FEMSolver.hpp>
 
 #include <polyfem/RefElementSampler.hpp>
+#include <polyfem/BoxSetter.hpp>
 
 #include <polyfem/Common.hpp>
 
@@ -248,7 +249,7 @@ namespace polyfem
 			// {"solution", ""},
 			// {"stiffness_mat_save_path", ""},
 
-			{"export", {{"sol_at_node", -1}, {"vis_mesh", ""}, {"paraview", ""}, {"vis_boundary_only", false}, {"material_params", false}, {"nodes", ""}, {"wire_mesh", ""}, {"iso_mesh", ""}, {"spectrum", false}, {"solution", ""}, {"full_mat", ""}, {"stiffness_mat", ""}, {"solution_mat", ""}, {"stress_mat", ""}, {"mises", ""}}}};
+			{"export", {{"sol_at_node", -1}, {"vis_mesh", ""}, {"paraview", ""}, {"vis_boundary_only", false}, {"material_params", false}, {"body_ids", false}, {"nodes", ""}, {"wire_mesh", ""}, {"iso_mesh", ""}, {"spectrum", false}, {"solution", ""}, {"full_mat", ""}, {"stiffness_mat", ""}, {"solution_mat", ""}, {"stress_mat", ""}, {"mises", ""}}}};
 	}
 
 	void State::init_logger(const std::string &log_file, int log_level, const bool is_quiet)
@@ -1661,6 +1662,7 @@ namespace polyfem
 
 		if (!skip_boundary_sideset)
 			mesh->compute_boundary_ids(boundary_marker);
+		BoxSetter::set_sidesets(args, *mesh);
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
@@ -1748,6 +1750,7 @@ namespace polyfem
 			else
 				mesh->load_boundary_ids(bc_tag_path);
 		}
+		BoxSetter::set_sidesets(args, *mesh);
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
@@ -3888,6 +3891,7 @@ namespace polyfem
 		Eigen::MatrixXd fun, exact_fun, err;
 		const bool boundary_only = args["export"]["vis_boundary_only"];
 		const bool material_params = args["export"]["material_params"];
+		const bool body_ids = args["export"]["body_ids"];
 
 		interpolate_function(points.rows(), sol, fun, boundary_only);
 
@@ -3994,6 +3998,19 @@ namespace polyfem
 
 			writer.add_field("lambda", lambdas);
 			writer.add_field("mu", mus);
+		}
+
+		if (body_ids)
+		{
+
+			Eigen::MatrixXd ids(points.rows(), 1);
+
+			for (int i = 0; i < points.rows(); ++i)
+			{
+				ids(i) = mesh->get_body_id(el_id(i));
+			}
+
+			writer.add_field("body_ids", ids);
 		}
 
 		// interpolate_function(pts_index, rhs, fun, boundary_only);

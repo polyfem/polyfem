@@ -366,42 +366,45 @@ namespace polyfem
 		if (params.find("initial_solution") != params.end())
 		{
 			auto rr = params["initial_solution"];
-			if (rr.is_array())
+			initial_position_.resize(rr.size());
+			assert(rr.is_array());
+
+			for (size_t k = 0; k < rr.size(); ++k)
 			{
-				for (size_t k = 0; k < rr.size(); ++k)
-					initial_position_[k].init(rr[k]);
-			}
-			else
-			{
-				assert(false);
+				initial_position_[k].first = rr[k]["id"];
+				const auto v = rr[k]["value"];
+				for (size_t d = 0; d < v.size(); ++d)
+					initial_position_[k].second[d].init(v[d]);
 			}
 		}
 
 		if (params.find("initial_velocity") != params.end())
 		{
 			auto rr = params["initial_velocity"];
-			if (rr.is_array())
+			initial_velocity_.resize(rr.size());
+			assert(rr.is_array());
+
+			for (size_t k = 0; k < rr.size(); ++k)
 			{
-				for (size_t k = 0; k < rr.size(); ++k)
-					initial_velocity_[k].init(rr[k]);
-			}
-			else
-			{
-				assert(false);
+				initial_velocity_[k].first = rr[k]["id"];
+				const auto v = rr[k]["value"];
+				for (size_t d = 0; d < v.size(); ++d)
+					initial_velocity_[k].second[d].init(v[d]);
 			}
 		}
 
 		if (params.find("initial_acceleration") != params.end())
 		{
 			auto rr = params["initial_acceleration"];
-			if (rr.is_array())
+			initial_acceleration_.resize(rr.size());
+			assert(rr.is_array());
+
+			for (size_t k = 0; k < rr.size(); ++k)
 			{
-				for (size_t k = 0; k < rr.size(); ++k)
-					initial_acceleration_[k].init(rr[k]);
-			}
-			else
-			{
-				assert(false);
+				initial_acceleration_[k].first = rr[k]["id"];
+				const auto v = rr[k]["value"];
+				for (size_t d = 0; d < v.size(); ++d)
+					initial_acceleration_[k].second[d].init(v[d]);
 			}
 		}
 	}
@@ -459,36 +462,99 @@ namespace polyfem
 	void GenericTensorProblem::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		val.resize(pts.rows(), pts.cols());
+		if (initial_position_.empty())
+		{
+			val.setZero();
+			return;
+		}
 
 		const bool planar = pts.cols() == 2;
 		for (int i = 0; i < pts.rows(); ++i)
 		{
+			const int id = mesh.get_body_id(global_ids(i));
+			int index = -1;
+			for (int j = 0; j < initial_position_.size(); ++j)
+			{
+				if (initial_position_[j].first == id)
+				{
+					index = j;
+					break;
+				}
+			}
+			if (index < 0)
+			{
+				val.row(i).setZero();
+				continue;
+			}
+
 			for (int j = 0; j < pts.cols(); ++j)
-				val(i, j) = planar ? initial_position_[j](pts(i, 0), pts(i, 1)) : initial_position_[j](pts(i, 0), pts(i, 1), pts(i, 2));
+				val(i, j) = planar ? initial_position_[index].second[j](pts(i, 0), pts(i, 1)) : initial_position_[index].second[j](pts(i, 0), pts(i, 1), pts(i, 2));
 		}
 	}
 
 	void GenericTensorProblem::initial_velocity(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		val.resize(pts.rows(), pts.cols());
+		if (initial_velocity_.empty())
+		{
+			val.setZero();
+			return;
+		}
 
 		const bool planar = pts.cols() == 2;
 		for (int i = 0; i < pts.rows(); ++i)
 		{
+			const int id = mesh.get_body_id(global_ids(i));
+			int index = -1;
+			for (int j = 0; j < initial_velocity_.size(); ++j)
+			{
+				if (initial_velocity_[j].first == id)
+				{
+					index = j;
+					break;
+				}
+			}
+			if (index < 0)
+			{
+				val.row(i).setZero();
+				continue;
+			}
+
 			for (int j = 0; j < pts.cols(); ++j)
-				val(i, j) = planar ? initial_velocity_[j](pts(i, 0), pts(i, 1)) : initial_velocity_[j](pts(i, 0), pts(i, 1), pts(i, 2));
+				val(i, j) = planar ? initial_velocity_[index].second[j](pts(i, 0), pts(i, 1)) : initial_velocity_[index].second[j](pts(i, 0), pts(i, 1), pts(i, 2));
 		}
 	}
 
 	void GenericTensorProblem::initial_acceleration(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		val.resize(pts.rows(), pts.cols());
+		if (initial_acceleration_.empty())
+		{
+			val.setZero();
+			return;
+		}
 
 		const bool planar = pts.cols() == 2;
 		for (int i = 0; i < pts.rows(); ++i)
 		{
+			const int id = mesh.get_body_id(global_ids(i));
+			int index = -1;
+			for (int j = 0; j < initial_acceleration_.size(); ++j)
+			{
+				if (initial_acceleration_[j].first == id)
+				{
+					index = j;
+					break;
+				}
+			}
+			if (index < 0)
+			{
+				val.row(i).setZero();
+				continue;
+			}
+
 			for (int j = 0; j < pts.cols(); ++j)
-				val(i, j) = planar ? initial_acceleration_[j](pts(i, 0), pts(i, 1)) : initial_acceleration_[j](pts(i, 0), pts(i, 1), pts(i, 2));
+				val(i, j) = planar ? initial_acceleration_[index].second[j](pts(i, 0), pts(i, 1)) : initial_acceleration_[index].second[j](pts(i, 0), pts(i, 1), pts(i, 2));
 		}
 	}
 
@@ -502,6 +568,10 @@ namespace polyfem
 		forces_.clear();
 		displacements_.clear();
 		pressures_.clear();
+
+		initial_position_.clear();
+		initial_velocity_.clear();
+		initial_acceleration_.clear();
 
 		dirichelt_dimentions_.clear();
 
