@@ -140,15 +140,15 @@ namespace polyfem
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 	}
 
-	void DoubleTorsionElasticProblem::initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void DoubleTorsionElasticProblem::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 	}
-	void DoubleTorsionElasticProblem::initial_velocity(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void DoubleTorsionElasticProblem::initial_velocity(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 	}
-	void DoubleTorsionElasticProblem::initial_acceleration(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void DoubleTorsionElasticProblem::initial_acceleration(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 	}
@@ -556,17 +556,17 @@ namespace polyfem
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 	}
 
-	void GravityProblem::initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void GravityProblem::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 	}
 
-	void GravityProblem::initial_velocity(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void GravityProblem::initial_velocity(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 	}
 
-	void GravityProblem::initial_acceleration(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void GravityProblem::initial_acceleration(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 	}

@@ -87,33 +87,36 @@ namespace polyfem
 
 	void RhsAssembler::initial_solution(Eigen::MatrixXd &sol) const
 	{
-		time_bc([&](const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) { problem_.initial_solution(pts, val); }, sol);
+		time_bc([&](const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) { problem_.initial_solution(mesh, global_ids, pts, val); }, sol);
 	}
 
 	void RhsAssembler::initial_velocity(Eigen::MatrixXd &sol) const
 	{
-		time_bc([&](const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) { problem_.initial_velocity(pts, val); }, sol);
+		time_bc([&](const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) { problem_.initial_velocity(mesh, global_ids, pts, val); }, sol);
 	}
 
 	void RhsAssembler::initial_acceleration(Eigen::MatrixXd &sol) const
 	{
-		time_bc([&](const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) { problem_.initial_acceleration(pts, val); }, sol);
+		time_bc([&](const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) { problem_.initial_acceleration(mesh, global_ids, pts, val); }, sol);
 	}
 
-	void RhsAssembler::time_bc(const std::function<void(const Eigen::MatrixXd &, Eigen::MatrixXd &)> &fun, Eigen::MatrixXd &sol) const
+	void RhsAssembler::time_bc(const std::function<void(const Mesh &, const Eigen::MatrixXi &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &fun, Eigen::MatrixXd &sol) const
 	{
 		sol = Eigen::MatrixXd::Zero(n_basis_ * size_, 1);
 		Eigen::MatrixXd loc_sol;
 
 		const int n_elements = int(bases_.size());
 		ElementAssemblyValues vals;
+		Eigen::MatrixXi ids;
 		for (int e = 0; e < n_elements; ++e)
 		{
 			vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
+			ids.resize(vals.val.rows(), 1);
+			ids.setConstant(e);
 
 			const Quadrature &quadrature = vals.quadrature;
 			//problem_.initial_solution(vals.val, loc_sol);
-			fun(vals.val, loc_sol);
+			fun(mesh_, ids, vals.val, loc_sol);
 
 			for (int d = 0; d < size_; ++d)
 				loc_sol.col(d) = loc_sol.col(d).array() * vals.det.array() * quadrature.weights.array();

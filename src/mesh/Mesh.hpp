@@ -14,18 +14,19 @@ namespace polyfem
 	// NOTE:
 	// For the purpose of the tagging, elements (facets in 2D, cells in 3D) adjacent to a polytope
 	// are tagged as boundary, and vertices incident to a polytope are also considered as boundary.
-	enum class ElementType {
-		Simplex, 					// Triangle/tet element
-		RegularInteriorCube,        // Regular quad/hex inside a 3^n patch
+	enum class ElementType
+	{
+		Simplex,					// Triangle/tet element
+		RegularInteriorCube,		// Regular quad/hex inside a 3^n patch
 		SimpleSingularInteriorCube, // Quad/hex incident to exactly 1 singular vertex (in 2D) or edge (in 3D)
-		MultiSingularInteriorCube,  // Quad/Hex incident to more than 1 singular vertices (should not happen in 2D)
-		RegularBoundaryCube,        // Boundary quad/hex, where all boundary vertices/edges are incident to at most 2 quads/hexes
+		MultiSingularInteriorCube,	// Quad/Hex incident to more than 1 singular vertices (should not happen in 2D)
+		RegularBoundaryCube,		// Boundary quad/hex, where all boundary vertices/edges are incident to at most 2 quads/hexes
 		SimpleSingularBoundaryCube, // Quad incident to exactly 1 singular vertex (in 2D); hex incident to exactly 1 singular interior edge, 0 singular boundary edge, 1 boundary face (in 3D)
-		MultiSingularBoundaryCube,  // Boundary hex that is not regular nor SimpleSingularBoundaryCube
-		InterfaceCube,              // Quad/hex that is at the interface with a polytope (if a cube has both external boundary and and interface with a polytope, it is marked as interface)
-		InteriorPolytope,           // Interior polytope
-		BoundaryPolytope,           // Boundary polytope
-		Undefined                   // For invalid configurations
+		MultiSingularBoundaryCube,	// Boundary hex that is not regular nor SimpleSingularBoundaryCube
+		InterfaceCube,				// Quad/hex that is at the interface with a polytope (if a cube has both external boundary and and interface with a polytope, it is marked as interface)
+		InteriorPolytope,			// Interior polytope
+		BoundaryPolytope,			// Boundary polytope
+		Undefined					// For invalid configurations
 	};
 
 	class Mesh
@@ -51,6 +52,7 @@ namespace polyfem
 			int v1, v2, v3, v4;
 			Eigen::MatrixXd nodes;
 		};
+
 	public:
 		static std::unique_ptr<Mesh> create(const std::string &path);
 		static std::unique_ptr<Mesh> create(GEO::Mesh &M);
@@ -91,11 +93,22 @@ namespace polyfem
 		virtual void compute_elements_tag() = 0;
 		virtual void update_elements_tag() { assert(false); }
 
-
 		//d-1 primitive sizes
-		virtual double edge_length(const int gid) const { assert(false);  return 0; }
-		virtual double quad_area(const int gid) const { assert(false);  return 0; }
-		virtual double tri_area(const int gid) const { assert(false);  return 0; }
+		virtual double edge_length(const int gid) const
+		{
+			assert(false);
+			return 0;
+		}
+		virtual double quad_area(const int gid) const
+		{
+			assert(false);
+			return 0;
+		}
+		virtual double tri_area(const int gid) const
+		{
+			assert(false);
+			return 0;
+		}
 
 		//Nodal access
 		virtual RowVectorNd point(const int global_index) const = 0;
@@ -106,7 +119,7 @@ namespace polyfem
 		void face_barycenters(Eigen::MatrixXd &barycenters) const;
 		void cell_barycenters(Eigen::MatrixXd &barycenters) const;
 
-		virtual void bounding_box(RowVectorNd &min, RowVectorNd &max) const  = 0;
+		virtual void bounding_box(RowVectorNd &min, RowVectorNd &max) const = 0;
 
 		//Queries on the tags
 		bool is_spline_compatible(const int el_id) const;
@@ -116,16 +129,25 @@ namespace polyfem
 
 		const std::vector<ElementType> &elements_tag() const { return elements_tag_; }
 
-
 		//Boundary condition handling
-		virtual void compute_boundary_ids(const double eps) = 0;
 		virtual void load_boundary_ids(const std::string &path);
-		virtual void compute_boundary_ids(const std::function<int(const RowVectorNd&)> &marker) = 0;
-		virtual void compute_boundary_ids(const std::function<int(const RowVectorNd&, bool)> &marker) = 0;
-		virtual void compute_boundary_ids(const std::function<int(const std::vector<int>&, bool)> &marker) = 0;
+		virtual void compute_boundary_ids(const double eps) = 0;
+		virtual void compute_boundary_ids(const std::function<int(const RowVectorNd &)> &marker) = 0;
+		virtual void compute_boundary_ids(const std::function<int(const RowVectorNd &, bool)> &marker) = 0;
+		virtual void compute_boundary_ids(const std::function<int(const std::vector<int> &, bool)> &marker) = 0;
+		virtual void compute_body_ids(const std::function<int(const RowVectorNd &)> &marker) = 0;
+
 		void set_tag(const int el, const ElementType type) { elements_tag_[el] = type; }
 		inline int get_boundary_id(const int primitive) const { return boundary_ids_[primitive]; }
-		inline bool has_boundary_ids() { return !boundary_ids_ .empty(); }
+		inline int get_body_id(const int primitive) const
+		{
+			if (has_body_ids())
+				return body_ids_[primitive];
+			else
+				return 0;
+		}
+		inline bool has_boundary_ids() const { return !boundary_ids_.empty(); }
+		inline bool has_body_ids() const { return !body_ids_.empty(); }
 
 		//Visualization methods
 		virtual void compute_element_barycenters(Eigen::MatrixXd &barycenters) const = 0;
@@ -133,12 +155,11 @@ namespace polyfem
 		virtual void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, const std::vector<bool> &valid_elements) const = 0;
 		virtual void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const = 0;
 
-
 		const std::vector<double> &cell_weights(const int cell_index) const { return cell_weights_[cell_index]; }
 
 		bool has_poly() const
 		{
-			for(int i = 0; i < n_elements(); ++i)
+			for (int i = 0; i < n_elements(); ++i)
 			{
 				if (is_polytope(i))
 					return true;
@@ -151,9 +172,9 @@ namespace polyfem
 		virtual bool load(const std::string &path) = 0;
 		virtual bool load(const GEO::Mesh &M) = 0;
 
-
 		std::vector<ElementType> elements_tag_;
 		std::vector<int> boundary_ids_;
+		std::vector<int> body_ids_;
 		Eigen::MatrixXi orders_;
 		bool is_rational_ = false;
 
@@ -162,6 +183,6 @@ namespace polyfem
 		std::vector<CellNodes> cell_nodes_;
 		std::vector<std::vector<double>> cell_weights_;
 	};
-}
+} // namespace polyfem
 
 #endif //MESH_HPP

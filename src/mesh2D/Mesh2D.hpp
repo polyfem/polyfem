@@ -27,26 +27,28 @@ namespace polyfem
 		int n_edges() const override { return mesh_.edges.nb(); }
 		int n_vertices() const override { return mesh_.vertices.nb(); }
 
-		inline int n_face_vertices(const int f_id) const {return mesh_.facets.nb_vertices(f_id); }
+		inline int n_face_vertices(const int f_id) const { return mesh_.facets.nb_vertices(f_id); }
 
 		inline int face_vertex(const int f_id, const int lv_id) const { return mesh_.facets.vertex(f_id, lv_id); }
 		inline int edge_vertex(const int e_id, const int lv_id) const { return mesh_.edges.vertex(e_id, lv_id); }
 
-		bool is_boundary_vertex(const int vertex_global_id) const override {
+		bool is_boundary_vertex(const int vertex_global_id) const override
+		{
 			// GEO::Attribute<bool> boundary_vertices(mesh_.vertices.attributes(), "boundary_vertex");
 			return (*boundary_vertices_)[vertex_global_id];
 		}
-		bool is_boundary_edge(const int edge_global_id) const override {
+		bool is_boundary_edge(const int edge_global_id) const override
+		{
 			// GEO::Attribute<bool> boundary_edges(mesh_.edges.attributes(), "boundary_edge");
 			return (*boundary_edges_)[edge_global_id];
 		}
-		bool is_boundary_face(const int face_global_id) const override {
+		bool is_boundary_face(const int face_global_id) const override
+		{
 			assert(false);
 			return false;
 		}
 
 		bool is_boundary_element(const int element_global_id) const override;
-
 
 		bool build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F) override;
 		bool save(const std::string &path) const override;
@@ -67,11 +69,13 @@ namespace polyfem
 		virtual RowVectorNd point(const int global_index) const override;
 		virtual RowVectorNd edge_barycenter(const int index) const override;
 		virtual RowVectorNd face_barycenter(const int index) const override;
-		virtual RowVectorNd cell_barycenter(const int index) const override { assert(false); return RowVectorNd(2); }
-
+		virtual RowVectorNd cell_barycenter(const int index) const override
+		{
+			assert(false);
+			return RowVectorNd(2);
+		}
 
 		virtual void bounding_box(RowVectorNd &min, RowVectorNd &max) const override;
-
 
 		// Navigation wrapper
 		inline Navigation::Index get_index_from_face(int f, int lv = 0) const { return Navigation::get_index_from_face(mesh_, *c2e_, f, lv); }
@@ -85,11 +89,12 @@ namespace polyfem
 		inline Navigation::Index next_around_face(Navigation::Index idx) const { return switch_edge(switch_vertex(idx)); }
 		inline Navigation::Index next_around_vertex(Navigation::Index idx) const { return switch_face(switch_edge(idx)); }
 
-
 		void compute_boundary_ids(const double eps) override;
-		void compute_boundary_ids(const std::function<int(const RowVectorNd&)> &marker) override;
-		void compute_boundary_ids(const std::function<int(const RowVectorNd&, bool)> &marker) override;
-		void compute_boundary_ids(const std::function<int(const std::vector<int>&, bool)> &marker) override;
+		void compute_boundary_ids(const std::function<int(const RowVectorNd &)> &marker) override;
+		void compute_boundary_ids(const std::function<int(const RowVectorNd &, bool)> &marker) override;
+		void compute_boundary_ids(const std::function<int(const std::vector<int> &, bool)> &marker) override;
+
+		void compute_body_ids(const std::function<int(const RowVectorNd &)> &marker) override;
 
 		void compute_element_barycenters(Eigen::MatrixXd &barycenters) const override { face_barycenters(barycenters); }
 		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
@@ -99,13 +104,13 @@ namespace polyfem
 	protected:
 		bool load(const std::string &path) override;
 		bool load(const GEO::Mesh &mesh) override;
-		
+
 	private:
 		GEO::Mesh mesh_;
 		std::unique_ptr<GEO::Attribute<GEO::index_t>> c2e_;
 		std::unique_ptr<GEO::Attribute<bool>> boundary_vertices_;
 		std::unique_ptr<GEO::Attribute<bool>> boundary_edges_;
 	};
-}
+} // namespace polyfem
 
 #endif //MESH_2D_HPP

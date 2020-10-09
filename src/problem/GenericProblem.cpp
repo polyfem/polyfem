@@ -456,7 +456,7 @@ namespace polyfem
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 	}
 
-	void GenericTensorProblem::initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void GenericTensorProblem::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		val.resize(pts.rows(), pts.cols());
 
@@ -468,7 +468,7 @@ namespace polyfem
 		}
 	}
 
-	void GenericTensorProblem::initial_velocity(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void GenericTensorProblem::initial_velocity(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		val.resize(pts.rows(), pts.cols());
 
@@ -480,7 +480,7 @@ namespace polyfem
 		}
 	}
 
-	void GenericTensorProblem::initial_acceleration(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void GenericTensorProblem::initial_acceleration(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		val.resize(pts.rows(), pts.cols());
 
