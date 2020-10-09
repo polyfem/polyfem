@@ -44,7 +44,7 @@ namespace polyfem
     {
 
         std::vector<std::pair<int, BBox>> boundary = get_boxes(args, "boundary_sidesets");
-        std::vector<std::pair<int, BBox>> body = get_boxes(args, "body_sidesets");
+        std::vector<std::pair<int, BBox>> body = get_boxes(args, "body_ids");
 
         if (!boundary.empty())
         {
