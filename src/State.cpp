@@ -1663,6 +1663,7 @@ namespace polyfem
 		if (!skip_boundary_sideset)
 			mesh->compute_boundary_ids(boundary_marker);
 		BoxSetter::set_sidesets(args, *mesh);
+		set_multimaterial();
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
@@ -1751,6 +1752,7 @@ namespace polyfem
 				mesh->load_boundary_ids(bc_tag_path);
 		}
 		BoxSetter::set_sidesets(args, *mesh);
+		set_multimaterial();
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
@@ -1856,7 +1858,59 @@ namespace polyfem
 
 	void State::load_febio(const std::string &path)
 	{
-		FEBioReader::load(path, *this, "solution.txt");
+		FEBioReader::load(path, *this);
+	}
+
+	void State::set_multimaterial()
+	{
+		if (args.find("body_params") == args.end())
+			return;
+
+		const auto &body_params = args["body_params"];
+		assert(body_params.is_array());
+		Eigen::MatrixXd Es(mesh->n_elements(), 1), nus(mesh->n_elements(), 1), rhos(mesh->n_elements(), 1);
+		Es.setConstant(100);
+		nus.setConstant(0.3);
+		rhos.setOnes();
+
+		std::map<int, std::tuple<double, double, double>> materials;
+		for (int i = 0; i < body_params.size(); ++i)
+		{
+			const auto &mat = body_params[i];
+			const int mid = mat["id"];
+			Density d;
+			d.init(mat);
+
+			const double rho = d(0, 0, 0, 0);
+			const double E = mat["E"];
+			const double nu = mat["nu"];
+
+			materials[mid] = std::tuple<double, double, double>(E, nu, rho);
+			// std::cout << mid << " " << E << " " << nu << " " << rho << " " << std::endl;
+		}
+
+		std::string missing = "";
+
+		for (int e = 0; e < mesh->n_elements(); ++e)
+		{
+			const int bid = mesh->get_body_id(e);
+			const auto it = materials.find(bid);
+			if (it == materials.end())
+			{
+				missing += std::to_string(bid) + ", ";
+				continue;
+			}
+
+			Es(e) = std::get<0>(it->second);
+			nus(e) = std::get<1>(it->second);
+			rhos(e) = std::get<2>(it->second);
+			// std::cout << e << " " << Es(e) << " " << nus(e) << std::endl;
+		}
+
+		AssemblerUtils::instance().init_multimaterial(Es, nus);
+		density.init_multimaterial(rhos);
+		if (missing.size() >= 0)
+			logger().warn("Missing parameters for {}", missing);
 	}
 
 	void State::compute_mesh_stats()
@@ -4016,6 +4070,7 @@ namespace polyfem
 
 			Eigen::MatrixXd lambdas(points.rows(), 1);
 			Eigen::MatrixXd mus(points.rows(), 1);
+			Eigen::MatrixXd rhos(points.rows(), 1);
 
 			for (int i = 0; i < points.rows(); ++i)
 			{
@@ -4024,10 +4079,12 @@ namespace polyfem
 				params.lambda_mu(points(i, 0), points(i, 1), points.cols() >= 3 ? points(i, 2) : 0, el_id(i), lambda, mu);
 				lambdas(i) = lambda;
 				mus(i) = mu;
+				rhos(i) = density(points(i, 0), points(i, 1), points.cols() >= 3 ? points(i, 2) : 0, el_id(i));
 			}
 
 			writer.add_field("lambda", lambdas);
 			writer.add_field("mu", mus);
+			writer.add_field("rho", rhos);
 		}
 
 		if (body_ids)
