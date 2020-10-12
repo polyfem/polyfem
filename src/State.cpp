@@ -3600,6 +3600,36 @@ namespace polyfem
 			this->args["export"]["solution"] = args_in["solution"];
 		}
 
+		if (this->args["has_collision"])
+		{
+			std::string psd = "";
+			std::string gradNorm = "";
+			std::string useGradNorm = "";
+
+			if (args_in.find("project_to_psd") == args_in.end())
+			{
+				args["project_to_psd"] = true;
+				psd = "Chaning default project to psd to true ";
+			}
+
+			if (args_in.find("solver_params") == args_in.end() || args_in["solver_params"].find("gradNorm") == args_in["solver_params"].end())
+			{
+				args["solver_params"]["gradNorm"] = 1e-5;
+				gradNorm = "Chaning default convergence to 1e-5 ";
+			}
+
+			if (args_in.find("solver_params") == args_in.end() || args_in["solver_params"].find("useGradNorm") == args_in["solver_params"].end())
+			{
+				args["solver_params"]["useGradNorm"] = false;
+				useGradNorm = "Chaning convergence check to Newton direction ";
+			}
+
+			std::string message = psd + gradNorm + useGradNorm;
+
+			if (message.length() > 0)
+				logger().warn(message);
+		}
+
 		problem = ProblemFactory::factory().get_problem(args["problem"]);
 		problem->clear();
 		//important for the BC
