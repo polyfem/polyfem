@@ -46,7 +46,7 @@ namespace polyfem
 		Eigen::MatrixXd displaced;
 		compute_displaced_points(full, displaced);
 		double max_barrier_stiffness = 0;
-		_barrier_stiffness = ipc::intial_barrier_stiffness(
+		_barrier_stiffness = ipc::initial_barrier_stiffness(
 			state.boundary_nodes_pos,
 			displaced,
 			state.boundary_edges, state.boundary_triangles,
