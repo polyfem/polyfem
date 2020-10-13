@@ -62,7 +62,7 @@ namespace polyfem
 					//rhs_fun.col(d) = rhs_fun.col(d).array() * vals.det.array() * quadrature.weights.array();
 					for (int q = 0; q < quadrature.weights.size(); ++q)
 					{
-						const double rho = density(vals.val(q, 0), vals.val(q, 1), size_ == 2 ? 0. : vals.val(q, 2), vals.element_id);
+						const double rho = density(vals.val(q, 0), vals.val(q, 1), vals.val.cols() == 2 ? 0. : vals.val(q, 2), vals.element_id);
 						rhs_fun(q, d) *= vals.det(q) * quadrature.weights(q) * rho;
 					}
 				}
@@ -542,7 +542,7 @@ namespace polyfem
 						}
 					}
 				}
-				const double rho = density(vals.val(p, 0), vals.val(p, 1), size_ == 2 ? 0. : vals.val(p, 2), vals.element_id);
+				const double rho = density(vals.val(p, 0), vals.val(p, 1), vals.val.cols() == 2 ? 0. : vals.val(p, 2), vals.element_id);
 
 				for(int d = 0; d < size_; ++d){
 					loc_storage.val += forces(p, d) * local_displacement(d) * da(p) * rho;
