@@ -530,7 +530,7 @@ namespace polyfem
 		return check >= 0 ? ttrue : ffalse;
 	}
 
-	void LameParameters::init_multimaterial(Eigen::MatrixXd &Es, Eigen::MatrixXd &nus)
+	void LameParameters::init_multimaterial(const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus)
 	{
 		lambda_mat_.resize(Es.size(), 1);
 		mu_mat_.resize(nus.size(), 1);
@@ -760,7 +760,7 @@ namespace polyfem
 		}
 	}
 
-	void Density::init_multimaterial(Eigen::MatrixXd &rho)
+	void Density::init_multimaterial(const Eigen::MatrixXd &rho)
 	{
 		rho_mat_ = rho;
 		rho_ = -1;

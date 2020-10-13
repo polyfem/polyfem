@@ -11,7 +11,6 @@
 #include <Eigen/Dense>
 #include <functional>
 
-
 namespace polyfem
 {
 	class LinearElasticity
@@ -41,7 +40,7 @@ namespace polyfem
 		// inline double lambda() const { return lambda_; }
 
 		void set_parameters(const json &params);
-		void init_multimaterial(Eigen::MatrixXd &Es, Eigen::MatrixXd &nus);
+		void init_multimaterial(const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus);
 
 	private:
 		int size_ = 2;
@@ -52,4 +51,4 @@ namespace polyfem
 		template <typename T>
 		T compute_energy_aux(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const;
 	};
-}
+} // namespace polyfem

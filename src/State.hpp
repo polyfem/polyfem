@@ -153,7 +153,7 @@ namespace polyfem
 			args["bc_tag"] = bc_tag;
 			load_mesh();
 		}
-		void set_multimaterial();
+		void set_multimaterial(const std::function<void(const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &)> &setter);
 
 		void load_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
 		{

@@ -1663,7 +1663,10 @@ namespace polyfem
 		if (!skip_boundary_sideset)
 			mesh->compute_boundary_ids(boundary_marker);
 		BoxSetter::set_sidesets(args, *mesh);
-		set_multimaterial();
+		set_multimaterial([&](const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus, const Eigen::MatrixXd &rhos) {
+			AssemblerUtils::instance().init_multimaterial(Es, nus);
+			density.init_multimaterial(rhos);
+		});
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
@@ -1752,7 +1755,10 @@ namespace polyfem
 				mesh->load_boundary_ids(bc_tag_path);
 		}
 		BoxSetter::set_sidesets(args, *mesh);
-		set_multimaterial();
+		set_multimaterial([&](const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus, const Eigen::MatrixXd &rhos) {
+			AssemblerUtils::instance().init_multimaterial(Es, nus);
+			density.init_multimaterial(rhos);
+		});
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
@@ -1861,7 +1867,7 @@ namespace polyfem
 		FEBioReader::load(path, *this);
 	}
 
-	void State::set_multimaterial()
+	void State::set_multimaterial(const std::function<void(const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &)> &setter)
 	{
 		if (args.find("body_params") == args.end())
 			return;
@@ -1907,9 +1913,8 @@ namespace polyfem
 			// std::cout << e << " " << Es(e) << " " << nus(e) << std::endl;
 		}
 
-		AssemblerUtils::instance().init_multimaterial(Es, nus);
-		density.init_multimaterial(rhos);
-		if (missing.size() >= 0)
+		setter(Es, nus, rhos);
+		if (missing.size() > 0)
 			logger().warn("Missing parameters for {}", missing);
 	}
 
@@ -4067,6 +4072,10 @@ namespace polyfem
 		{
 			LameParameters params;
 			params.init(build_json_params());
+
+			set_multimaterial([&](const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus, const Eigen::MatrixXd &rhos) {
+				params.init_multimaterial(Es, nus);
+			});
 
 			Eigen::MatrixXd lambdas(points.rows(), 1);
 			Eigen::MatrixXd mus(points.rows(), 1);
