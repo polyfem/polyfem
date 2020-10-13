@@ -1,14 +1,15 @@
 #ifndef RHS_ASSEMBLER_HPP
 #define RHS_ASSEMBLER_HPP
 
-#include <functional>
-
 #include <polyfem/ElementAssemblyValues.hpp>
+#include <polyfem/AssemblerUtils.hpp>
+
 #include <polyfem/Problem.hpp>
 #include <polyfem/LocalBoundary.hpp>
 #include <polyfem/ElasticityUtils.hpp>
 #include <polyfem/Types.hpp>
 
+#include <functional>
 #include <vector>
 
 namespace polyfem
@@ -16,7 +17,7 @@ namespace polyfem
 	class RhsAssembler
 	{
 	public:
-		RhsAssembler(const Mesh &mesh, const int n_basis, const int size, const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases, const std::string &formulation, const Problem &problem);
+		RhsAssembler(const AssemblerUtils &assembler, const Mesh &mesh, const int n_basis, const int size, const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases, const std::string &formulation, const Problem &problem);
 
 		void assemble(const Density &density, Eigen::MatrixXd &rhs, const double t = 1) const;
 
@@ -44,6 +45,7 @@ namespace polyfem
 		bool sample_boundary(const LocalBoundary &local_boundary, const int n_samples, const bool skip_computation, Eigen::MatrixXd &uv, Eigen::MatrixXd &samples, Eigen::VectorXi &global_primitive_ids) const;
 		bool boundary_quadrature(const LocalBoundary &local_boundary, const int order, const bool skip_computation, Eigen::MatrixXd &uv, Eigen::MatrixXd &points, Eigen::MatrixXd &normals, Eigen::VectorXd &weights, Eigen::VectorXi &global_primitive_ids) const;
 
+		const AssemblerUtils &assembler_;
 		const Mesh &mesh_;
 		const int n_basis_;
 		const int size_;

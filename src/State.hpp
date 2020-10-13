@@ -8,6 +8,7 @@
 #include <polyfem/Problem.hpp>
 #include <polyfem/LocalBoundary.hpp>
 #include <polyfem/InterfaceData.hpp>
+#include <polyfem/AssemblerUtils.hpp>
 #include <polyfem/ElasticityUtils.hpp>
 #include <polyfem/Common.hpp>
 #include <polyfem/Logger.hpp>
@@ -63,6 +64,7 @@ namespace polyfem
 
 		json args;
 
+		AssemblerUtils assembler;
 		std::shared_ptr<Problem> problem;
 		Density density;
 

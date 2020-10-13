@@ -15,7 +15,7 @@ namespace polyfem
 	public:
 		GenericTensorProblem(const std::string &name);
 
-		void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		void rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 		bool is_rhs_zero() const override
 		{
 			for (int i = 0; i < 3; ++i)
@@ -92,7 +92,7 @@ namespace polyfem
 	public:
 		GenericScalarProblem(const std::string &name);
 
-		void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		void rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 		bool is_rhs_zero() const override { return rhs_.is_zero(); }
 
 		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;

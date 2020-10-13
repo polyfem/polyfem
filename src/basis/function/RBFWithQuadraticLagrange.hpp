@@ -1,6 +1,7 @@
 #pragma once
 
 #include <polyfem/Quadrature.hpp>
+#include <polyfem/AssemblerUtils.hpp>
 #include <Eigen/Dense>
 
 namespace polyfem
@@ -12,7 +13,6 @@ namespace polyfem
 	class RBFWithQuadraticLagrange
 	{
 	public:
-
 		///
 		/// @brief      { Initialize RBF functions over a polytope element. }
 		///
@@ -34,9 +34,9 @@ namespace polyfem
 		/// @param[in]  with_constraints      { Impose integral constraints to guarantee linear
 		///                                   reproduction for the Poisson equation }
 		///
-		RBFWithQuadraticLagrange(const std::string &assembler_name, const Eigen::MatrixXd &centers, const Eigen::MatrixXd &collocation_points,
-			const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
-			Eigen::MatrixXd &rhs, bool with_constraints = true);
+		RBFWithQuadraticLagrange(const AssemblerUtils &assembler, const std::string &assembler_name, const Eigen::MatrixXd &centers, const Eigen::MatrixXd &collocation_points,
+								 const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
+								 Eigen::MatrixXd &rhs, bool with_constraints = true);
 
 		///
 		/// @brief      { Evaluates one RBF function over a list of coordinates }
@@ -84,15 +84,15 @@ namespace polyfem
 
 		// Computes the constraint matrix C that we want to impose (C w = d)
 		void compute_constraints_matrix_2d_old(const int num_bases, const Quadrature &quadr, Eigen::MatrixXd &C) const;
-		void compute_constraints_matrix_2d(const std::string &assembler_name, const int num_bases, const Quadrature &quadr, Eigen::MatrixXd &C) const;
+		void compute_constraints_matrix_2d(const AssemblerUtils &assembler, const std::string &assembler_name, const int num_bases, const Quadrature &quadr, Eigen::MatrixXd &C) const;
 
 		// Computes the constraint matrix C that we want to impose (C w = d)
 		void compute_constraints_matrix_3d(const int num_bases, const Quadrature &quadr, Eigen::MatrixXd &C) const;
 
 		// Computes the weights by solving a (possibly constrained) linear least square
-		void compute_weights(const std::string &assembler_name, const Eigen::MatrixXd &collocation_points,
-			const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
-			Eigen::MatrixXd &rhs, bool with_constraints);
+		void compute_weights(const AssemblerUtils &assembler, const std::string &assembler_name, const Eigen::MatrixXd &collocation_points,
+							 const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
+							 Eigen::MatrixXd &rhs, bool with_constraints);
 
 	private:
 		// #C x dim matrix of kernel center positions
@@ -101,4 +101,4 @@ namespace polyfem
 		// (#C + dim + 1) x #B matrix of weights extending the #B bases that are non-vanishing on the polytope
 		Eigen::MatrixXd weights_;
 	};
-}
+} // namespace polyfem

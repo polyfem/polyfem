@@ -17,60 +17,60 @@
 
 namespace
 {
-void push_disabled()
-{
-	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-	ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
-}
+	void push_disabled()
+	{
+		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+	}
 
-void pop_disabled()
-{
-	ImGui::PopItemFlag();
-	ImGui::PopStyleVar();
-}
+	void pop_disabled()
+	{
+		ImGui::PopItemFlag();
+		ImGui::PopStyleVar();
+	}
 
-namespace FileDialog
-{
+	namespace FileDialog
+	{
 
-// -----------------------------------------------------------------------------
+		// -----------------------------------------------------------------------------
 
-// std::string openFileName(const std::string &defaultPath,
-// 	const std::vector<std::string> &filters, const std::string &desc)
-// {
-// 	int n = static_cast<int>(filters.size());
-// 	std::vector<char const *> filterPatterns(n);
-// 	for (int i = 0; i < n; ++i) {
-// 		filterPatterns[i] = filters[i].c_str();
-// 	}
-// 	char const * select = tinyfd_openFileDialog("Open File",
-// 		defaultPath.c_str(), n, filterPatterns.data(), desc.c_str(), 0);
-// 	if (select == nullptr) {
-// 		return "";
-// 	} else {
-// 		return std::string(select);
-// 	}
-// }
+		// std::string openFileName(const std::string &defaultPath,
+		// 	const std::vector<std::string> &filters, const std::string &desc)
+		// {
+		// 	int n = static_cast<int>(filters.size());
+		// 	std::vector<char const *> filterPatterns(n);
+		// 	for (int i = 0; i < n; ++i) {
+		// 		filterPatterns[i] = filters[i].c_str();
+		// 	}
+		// 	char const * select = tinyfd_openFileDialog("Open File",
+		// 		defaultPath.c_str(), n, filterPatterns.data(), desc.c_str(), 0);
+		// 	if (select == nullptr) {
+		// 		return "";
+		// 	} else {
+		// 		return std::string(select);
+		// 	}
+		// }
 
-// -----------------------------------------------------------------------------
+		// -----------------------------------------------------------------------------
 
-// std::string saveFileName(const std::string &defaultPath,
-// 	const std::vector<std::string> &filters, const std::string &desc)
-// {
-// 	int n = static_cast<int>(filters.size());
-// 	std::vector<char const *> filterPatterns(n);
-// 	for (int i = 0; i < n; ++i) {
-// 		filterPatterns[i] = filters[i].c_str();
-// 	}
-// 	char const * select = tinyfd_saveFileDialog("Save File",
-// 		defaultPath.c_str(), n, filterPatterns.data(), desc.c_str());
-// 	if (select == nullptr) {
-// 		return "";
-// 	} else {
-// 		return std::string(select);
-// 	}
-// }
+		// std::string saveFileName(const std::string &defaultPath,
+		// 	const std::vector<std::string> &filters, const std::string &desc)
+		// {
+		// 	int n = static_cast<int>(filters.size());
+		// 	std::vector<char const *> filterPatterns(n);
+		// 	for (int i = 0; i < n; ++i) {
+		// 		filterPatterns[i] = filters[i].c_str();
+		// 	}
+		// 	char const * select = tinyfd_saveFileDialog("Save File",
+		// 		defaultPath.c_str(), n, filterPatterns.data(), desc.c_str());
+		// 	if (select == nullptr) {
+		// 		return "";
+		// 	} else {
+		// 		return std::string(select);
+		// 	}
+		// }
 
-} // namespace FileDialog
+	} // namespace FileDialog
 
 } // anonymous namespace
 
@@ -227,7 +227,7 @@ void polyfem::UIState::draw_settings()
 	// ImGui::BeginChild("Forms", ImVec2(ImGui::GetWindowContentRegionWidth(), 100), true);
 	ImGui::Separator();
 
-	static const auto scalar_forms = polyfem::AssemblerUtils::instance().scalar_assemblers();
+	static const auto scalar_forms = polyfem::AssemblerUtils::scalar_assemblers();
 
 	const bool is_scalar = state.problem->is_scalar();
 
@@ -250,7 +250,7 @@ void polyfem::UIState::draw_settings()
 
 	else
 	{
-		static const auto tensor_forms = polyfem::AssemblerUtils::instance().tensor_assemblers();
+		static const auto tensor_forms = polyfem::AssemblerUtils::tensor_assemblers();
 		if (ImGui::BeginCombo("nD-Form", state.tensor_formulation().c_str()))
 		{
 			for (auto f : tensor_forms)

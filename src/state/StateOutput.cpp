@@ -1,7 +1,5 @@
 #include <polyfem/State.hpp>
 
-#include <polyfem/AssemblerUtils.hpp>
-
 #include <polyfem/RefElementSampler.hpp>
 
 #include <polyfem/VTUWriter.hpp>
@@ -691,8 +689,6 @@ namespace polyfem
             logger().error("Solve the problem first!");
             return;
         }
-
-        const auto &assembler = AssemblerUtils::instance();
 
         Eigen::MatrixXd points;
         Eigen::MatrixXi tets;

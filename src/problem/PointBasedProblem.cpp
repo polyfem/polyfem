@@ -9,16 +9,17 @@ namespace polyfem
 {
 	bool PointBasedTensorProblem::BCValue::init(const json &data)
 	{
-		Eigen::Matrix<bool, 3, 1> dd; dd.setConstant(true);
+		Eigen::Matrix<bool, 3, 1> dd;
+		dd.setConstant(true);
 		bool all_dimentions_dirichelt = true;
 
-		if(data.is_array())
+		if (data.is_array())
 		{
 			assert(data.size() == 3);
 			init((double)data[0], (double)data[1], (double)data[2], dd);
 			//TODO add dimension
 		}
-		else if(data.is_object())
+		else if (data.is_object())
 		{
 			Eigen::MatrixXd fun, pts;
 			Eigen::MatrixXi tri;
@@ -30,29 +31,30 @@ namespace polyfem
 			read_matrix(data["points"], pts);
 			pts = pts.block(0, 0, pts.rows(), 2).eval();
 			is_tri = data.find("triangles") != data.end();
-			if(is_tri)
+			if (is_tri)
 				read_matrix(data["triangles"], tri);
 			else
 			{
-				if(data.find("rbf") != data.end()){
+				if (data.find("rbf") != data.end())
+				{
 					const std::string tmp = data["rbf"];
 					rbf = tmp;
 				}
-				if(data.find("epsilon") != data.end())
+				if (data.find("epsilon") != data.end())
 					eps = data["epsilon"];
 			}
 
 			const int coord = data["coordinate"];
-			if(data.find("dimension") != data.end())
+			if (data.find("dimension") != data.end())
 			{
 				all_dimentions_dirichelt = false;
 				auto &tmp = data["dimension"];
 				assert(tmp.is_array());
-				for(size_t k = 0; k < tmp.size(); ++k)
+				for (size_t k = 0; k < tmp.size(); ++k)
 					dd(k) = tmp[k];
 			}
 
-			if(is_tri)
+			if (is_tri)
 				init(pts, tri, fun, coord, dd);
 			else
 				init(pts, fun, rbf, eps, coord, dd);
@@ -67,14 +69,15 @@ namespace polyfem
 
 	Eigen::RowVector3d PointBasedTensorProblem::BCValue::operator()(const Eigen::RowVector3d &pt) const
 	{
-		if(is_val)
+		if (is_val)
 		{
 			return val.transpose();
 		}
-		Eigen::RowVector2d pt2; pt2 << pt(coordiante_0), pt(coordiante_1);
+		Eigen::RowVector2d pt2;
+		pt2 << pt(coordiante_0), pt(coordiante_1);
 		Eigen::RowVector3d res;
 
-		if(is_tri)
+		if (is_tri)
 			res = tri_func.interpolate(pt2);
 		else
 			res = rbf_func.interpolate(pt2);
@@ -83,12 +86,12 @@ namespace polyfem
 	}
 
 	PointBasedTensorProblem::PointBasedTensorProblem(const std::string &name)
-	: Problem(name), rhs_(0), scaling_(1)
+		: Problem(name), rhs_(0), scaling_(1)
 	{
 		translation_.setZero();
 	}
 
-	void PointBasedTensorProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	void PointBasedTensorProblem::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Constant(pts.rows(), pts.cols(), rhs_);
 		val *= t;
@@ -98,15 +101,15 @@ namespace polyfem
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
 
-		for(long i = 0; i < pts.rows(); ++i)
+		for (long i = 0; i < pts.rows(); ++i)
 		{
 			const int id = mesh.get_boundary_id(global_ids(i));
-			const auto &pt3d = (pts.row(i) + translation_.transpose())/scaling_;
-			for(size_t b = 0; b < boundary_ids_.size(); ++b)
+			const auto &pt3d = (pts.row(i) + translation_.transpose()) / scaling_;
+			for (size_t b = 0; b < boundary_ids_.size(); ++b)
 			{
-				if(id == boundary_ids_[b])
+				if (id == boundary_ids_[b])
 				{
-					val.row(i) = bc_[b](pt3d)*scaling_;
+					val.row(i) = bc_[b](pt3d) * scaling_;
 				}
 			}
 		}
@@ -142,12 +145,12 @@ namespace polyfem
 
 	bool PointBasedTensorProblem::is_dimention_dirichet(const int tag, const int dim) const
 	{
-		if(all_dimentions_dirichelt())
+		if (all_dimentions_dirichelt())
 			return true;
 
-		for(size_t b = 0; b < boundary_ids_.size(); ++b)
+		for (size_t b = 0; b < boundary_ids_.size(); ++b)
 		{
-			if(tag == boundary_ids_[b])
+			if (tag == boundary_ids_[b])
 			{
 				return bc_[b].is_dirichet_dim(dim);
 			}
@@ -159,31 +162,31 @@ namespace polyfem
 
 	void PointBasedTensorProblem::set_parameters(const json &params)
 	{
-		if(initialized_)
+		if (initialized_)
 			return;
 
-		if(params.find("scaling") != params.end())
+		if (params.find("scaling") != params.end())
 		{
 			scaling_ = params["scaling"];
 		}
 
-		if(params.find("rhs") != params.end())
+		if (params.find("rhs") != params.end())
 		{
 			rhs_ = params["rhs"];
 		}
 
-		if(params.find("translation") != params.end())
+		if (params.find("translation") != params.end())
 		{
 			const auto &j_translation = params["translation"];
 
 			assert(j_translation.is_array());
 			assert(j_translation.size() == 3);
 
-			for(int k = 0; k < 3; ++k)
+			for (int k = 0; k < 3; ++k)
 				translation_(k) = j_translation[k];
 		}
 
-		if(params.find("boundary_ids") != params.end())
+		if (params.find("boundary_ids") != params.end())
 		{
 			boundary_ids_.clear();
 			auto j_boundary = params["boundary_ids"];
@@ -191,14 +194,13 @@ namespace polyfem
 			boundary_ids_.resize(j_boundary.size());
 			bc_.resize(boundary_ids_.size());
 
-			for(size_t i = 0; i < boundary_ids_.size(); ++i)
+			for (size_t i = 0; i < boundary_ids_.size(); ++i)
 			{
 				boundary_ids_[i] = j_boundary[i]["id"];
 				const auto ff = j_boundary[i]["value"];
 				const bool all_d = bc_[i].init(ff);
 				all_dimentions_dirichelt_ = all_dimentions_dirichelt_ && all_d;
-
 			}
 		}
 	}
-}
+} // namespace polyfem

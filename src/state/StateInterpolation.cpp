@@ -1,7 +1,6 @@
 #include <polyfem/State.hpp>
 
 #include <polyfem/BoundarySampler.hpp>
-#include <polyfem/AssemblerUtils.hpp>
 #include <polyfem/RefElementSampler.hpp>
 
 #include <polyfem/HexQuadrature.hpp>
@@ -272,8 +271,6 @@ namespace polyfem
 
         int counter = 0;
 
-        const auto &assembler = AssemblerUtils::instance();
-
         for (int e = 0; e < mesh3d.n_elements(); ++e)
         {
             const ElementBases &gbs = gbases[e];
@@ -350,8 +347,6 @@ namespace polyfem
         avg_scalar.setZero();
         // avg_tensor.setZero();
         areas.setZero();
-
-        const auto &assembler = AssemblerUtils::instance();
 
         Eigen::MatrixXd local_val;
         const auto &gbases = iso_parametric() ? bases : geom_bases;
@@ -544,8 +539,6 @@ namespace polyfem
         const int actual_dim = mesh->dimension();
         assert(!problem->is_scalar());
 
-        const auto &assembler = AssemblerUtils::instance();
-
         Eigen::MatrixXd local_val, local_stress, local_mises;
         const auto &gbases = iso_parametric() ? bases : geom_bases;
 
@@ -696,7 +689,6 @@ namespace polyfem
 
         int index = 0;
         const auto &sampler = RefElementSampler::sampler();
-        const auto &assembler = AssemblerUtils::instance();
 
         Eigen::MatrixXi vis_faces_poly;
         Eigen::MatrixXd local_val;
@@ -749,7 +741,6 @@ namespace polyfem
 
         int index = 0;
         const auto &sampler = RefElementSampler::sampler();
-        const auto &assembler = AssemblerUtils::instance();
 
         Eigen::MatrixXi vis_faces_poly;
         Eigen::MatrixXd local_val;

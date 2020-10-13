@@ -21,7 +21,6 @@
 
 #include <polyfem/EdgeSampler.hpp>
 
-#include <polyfem/AssemblerUtils.hpp>
 #include <polyfem/RhsAssembler.hpp>
 
 #include <polysolve/LinearSolver.hpp>
@@ -70,10 +69,10 @@ namespace polyfem
 		}
 
 		// assert(problem->is_mixed());
-		assert(AssemblerUtils::instance().is_mixed(formulation()));
+		assert(AssemblerUtils::is_mixed(formulation()));
 		Eigen::MatrixXd tmp = sol;
 
-		int fluid_offset = use_avg_pressure ? (AssemblerUtils::instance().is_fluid(formulation()) ? 1 : 0) : 0;
+		int fluid_offset = use_avg_pressure ? (AssemblerUtils::is_fluid(formulation()) ? 1 : 0) : 0;
 		sol = tmp.block(0, 0, tmp.rows() - n_pressure_bases - fluid_offset, tmp.cols());
 		assert(sol.size() == n_bases * (problem->is_scalar() ? 1 : mesh->dimension()));
 		pressure = tmp.block(tmp.rows() - n_pressure_bases - fluid_offset, 0, n_pressure_bases, tmp.cols());
@@ -313,7 +312,6 @@ namespace polyfem
 		disc_orders.resize(mesh->n_elements());
 		disc_orders.setConstant(args["discr_order"]);
 
-		auto &assembler = AssemblerUtils::instance();
 		const auto params = build_json_params();
 		assembler.set_parameters(params);
 		density.init(params);
@@ -564,7 +562,7 @@ namespace polyfem
 			{
 				if (args["poly_bases"] == "MeanValue")
 					logger().error("MeanValue bases not supported in 3D");
-				new_bases = PolygonalBasis3d::build_bases(formulation(), args["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["quadrature_order"], args["integral_constraints"], bases, bases, poly_edge_to_data, polys_3d);
+				new_bases = PolygonalBasis3d::build_bases(assembler, formulation(), args["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["quadrature_order"], args["integral_constraints"], bases, bases, poly_edge_to_data, polys_3d);
 			}
 			else
 			{
@@ -573,7 +571,7 @@ namespace polyfem
 					new_bases = MVPolygonalBasis2d::build_bases(formulation(), *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["quadrature_order"], bases, bases, poly_edge_to_data, local_boundary, polys);
 				}
 				else
-					new_bases = PolygonalBasis2d::build_bases(formulation(), args["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["quadrature_order"], args["integral_constraints"], bases, bases, poly_edge_to_data, polys);
+					new_bases = PolygonalBasis2d::build_bases(assembler, formulation(), args["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["quadrature_order"], args["integral_constraints"], bases, bases, poly_edge_to_data, polys);
 			}
 		}
 		else
@@ -582,14 +580,14 @@ namespace polyfem
 			{
 				if (args["poly_bases"] == "MeanValue")
 					logger().error("MeanValue bases not supported in 3D");
-				new_bases = PolygonalBasis3d::build_bases(formulation(), args["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["quadrature_order"], args["integral_constraints"], bases, geom_bases, poly_edge_to_data, polys_3d);
+				new_bases = PolygonalBasis3d::build_bases(assembler, formulation(), args["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["quadrature_order"], args["integral_constraints"], bases, geom_bases, poly_edge_to_data, polys_3d);
 			}
 			else
 			{
 				if (args["poly_bases"] == "MeanValue")
 					new_bases = MVPolygonalBasis2d::build_bases(formulation(), *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["quadrature_order"], bases, geom_bases, poly_edge_to_data, local_boundary, polys);
 				else
-					new_bases = PolygonalBasis2d::build_bases(formulation(), args["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["quadrature_order"], args["integral_constraints"], bases, geom_bases, poly_edge_to_data, polys);
+					new_bases = PolygonalBasis2d::build_bases(assembler, formulation(), args["n_harmonic_samples"], *dynamic_cast<Mesh2D *>(mesh.get()), n_bases, args["quadrature_order"], args["integral_constraints"], bases, geom_bases, poly_edge_to_data, polys);
 			}
 		}
 
@@ -630,8 +628,6 @@ namespace polyfem
 		igl::Timer timer;
 		timer.start();
 		logger().info("Assembling stiffness mat...");
-
-		auto &assembler = AssemblerUtils::instance();
 
 		// if(problem->is_mixed())
 		if (assembler.is_mixed(formulation()))
@@ -736,7 +732,6 @@ namespace polyfem
 		problem->set_parameters(p_params);
 
 		// const auto params = build_json_params();
-		auto &assembler = AssemblerUtils::instance();
 		// assembler.set_parameters(params);
 
 		// stiffness.resize(0, 0);
@@ -749,7 +744,7 @@ namespace polyfem
 
 		const int size = problem->is_scalar() ? 1 : mesh->dimension();
 
-		RhsAssembler rhs_assembler(*mesh, n_bases, size, bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
+		RhsAssembler rhs_assembler(assembler, *mesh, n_bases, size, bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
 		if (!rhs_path.empty() || rhs_in.size() > 0)
 		{
 			logger().debug("Loading rhs...");
@@ -790,7 +785,7 @@ namespace polyfem
 			{
 				Eigen::MatrixXd tmp(n_pressure_bases, 1);
 				tmp.setZero();
-				RhsAssembler rhs_assembler1(*mesh, n_pressure_bases, size, pressure_bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
+				RhsAssembler rhs_assembler1(assembler, *mesh, n_pressure_bases, size, pressure_bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
 				rhs_assembler1.set_bc(std::vector<LocalBoundary>(), std::vector<int>(), args["n_boundary_samples"], local_neumann_boundary, tmp);
 				rhs.block(prev_size, 0, n_larger, rhs.cols()) = tmp;
 			}
@@ -813,8 +808,6 @@ namespace polyfem
 			logger().error("Build the bases first!");
 			return;
 		}
-
-		const auto &assembler = AssemblerUtils::instance();
 
 		if (assembler.is_linear(formulation()) && stiffness.rows() <= 0)
 		{
@@ -851,7 +844,7 @@ namespace polyfem
 			const double dt = tend / time_steps;
 
 			const auto &gbases = iso_parametric() ? bases : geom_bases;
-			RhsAssembler rhs_assembler(*mesh, n_bases, problem->is_scalar() ? 1 : mesh->dimension(), bases, gbases, formulation(), *problem);
+			RhsAssembler rhs_assembler(assembler, *mesh, n_bases, problem->is_scalar() ? 1 : mesh->dimension(), bases, gbases, formulation(), *problem);
 			rhs_assembler.initial_solution(sol);
 
 			Eigen::MatrixXd current_rhs = rhs;
@@ -912,6 +905,7 @@ namespace polyfem
 						current_rhs.block(prev_size, 0, n_larger, current_rhs.cols()).setZero();
 					}
 
+					assembler.clear_cache();
 					ns_solver.minimize(*this, bdf.alpha(), current_dt, prev_sol,
 									   velocity_stiffness, mixed_stiffness, pressure_stiffness,
 									   velocity_mass, current_rhs, c_sol);
@@ -1261,6 +1255,7 @@ namespace polyfem
 					const double viscosity = params.count("viscosity") ? double(params["viscosity"]) : 1.;
 					NavierStokesSolver ns_solver(viscosity, solver_params(), build_json_params(), solver_type(), precond_type());
 					Eigen::VectorXd x;
+					assembler.clear_cache();
 					ns_solver.minimize(*this, rhs, x);
 					sol = x;
 					sol_to_pressure();
@@ -1283,7 +1278,7 @@ namespace polyfem
 					}
 					steps = std::max(steps, 1);
 
-					RhsAssembler rhs_assembler(*mesh, n_bases, mesh->dimension(), bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
+					RhsAssembler rhs_assembler(assembler, *mesh, n_bases, mesh->dimension(), bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
 
 					StiffnessMatrix nlstiffness;
 					auto solver = LinearSolver::create(args["solver_type"], args["precond_type"]);
@@ -1390,6 +1385,8 @@ namespace polyfem
 							} while (t >= 1);
 							continue;
 						}
+
+						assembler.clear_cache();
 
 						if (args["nl_solver"] == "newton")
 						{

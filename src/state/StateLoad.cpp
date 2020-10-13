@@ -9,8 +9,6 @@
 
 #include <polyfem/BoxSetter.hpp>
 
-#include <polyfem/AssemblerUtils.hpp>
-
 #include <igl/Timer.h>
 namespace polyfem
 {
@@ -74,7 +72,7 @@ namespace polyfem
             mesh->compute_boundary_ids(boundary_marker);
         BoxSetter::set_sidesets(args, *mesh);
         set_multimaterial([&](const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus, const Eigen::MatrixXd &rhos) {
-            AssemblerUtils::instance().init_multimaterial(Es, nus);
+            assembler.init_multimaterial(Es, nus);
             density.init_multimaterial(rhos);
         });
 
@@ -166,7 +164,7 @@ namespace polyfem
         }
         BoxSetter::set_sidesets(args, *mesh);
         set_multimaterial([&](const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus, const Eigen::MatrixXd &rhos) {
-            AssemblerUtils::instance().init_multimaterial(Es, nus);
+            assembler.init_multimaterial(Es, nus);
             density.init_multimaterial(rhos);
         });
 

@@ -19,19 +19,14 @@
 #include <polyfem/NavierStokes.hpp>
 #include <polyfem/IncompressibleLinElast.hpp>
 
-#include <polyfem/ProblemWithSolution.hpp>
-
 #include <vector>
 
 namespace polyfem
 {
 	class AssemblerUtils
 	{
-	private:
-		AssemblerUtils();
-
 	public:
-		static AssemblerUtils &instance();
+		AssemblerUtils();
 
 		//Linear
 		void assemble_problem(const std::string &assembler,
@@ -123,20 +118,20 @@ namespace polyfem
 		void set_parameters(const json &params);
 		void init_multimaterial(const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus);
 
-		bool is_linear(const std::string &assembler) const;
+		static bool is_linear(const std::string &assembler);
 
-		bool is_solution_displacement(const std::string &assembler) const;
+		static bool is_solution_displacement(const std::string &assembler);
 
-		bool is_scalar(const std::string &assembler) const;
-		bool is_tensor(const std::string &assembler) const;
-		bool is_mixed(const std::string &assembler) const;
+		static bool is_scalar(const std::string &assembler);
+		static bool is_tensor(const std::string &assembler);
+		static bool is_mixed(const std::string &assembler);
 
-		bool is_gradient_based(const std::string &assembler) const;
-		bool is_fluid(const std::string &assembler) const;
+		static bool is_gradient_based(const std::string &assembler);
+		static bool is_fluid(const std::string &assembler);
 
 		//getters
-		const std::vector<std::string> &scalar_assemblers() const { return scalar_assemblers_; }
-		const std::vector<std::string> &tensor_assemblers() const { return tensor_assemblers_; }
+		static std::vector<std::string> scalar_assemblers();
+		static std::vector<std::string> tensor_assemblers();
 		// const std::vector<std::string> &mixed_assemblers() const { return mixed_assemblers_; }
 
 		void clear_cache();

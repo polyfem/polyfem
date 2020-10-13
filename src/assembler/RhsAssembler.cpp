@@ -3,8 +3,6 @@
 #include <polyfem/BoundarySampler.hpp>
 #include <polysolve/LinearSolver.hpp>
 
-#include <polyfem/AssemblerUtils.hpp>
-
 #include <polyfem/Logger.hpp>
 
 #include <Eigen/Sparse>
@@ -37,8 +35,8 @@ namespace polyfem
 		};
 	} // namespace
 
-	RhsAssembler::RhsAssembler(const Mesh &mesh, const int n_basis, const int size, const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases, const std::string &formulation, const Problem &problem)
-		: mesh_(mesh), n_basis_(n_basis), size_(size), bases_(bases), gbases_(gbases), formulation_(formulation), problem_(problem)
+	RhsAssembler::RhsAssembler(const AssemblerUtils &assembler, const Mesh &mesh, const int n_basis, const int size, const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases, const std::string &formulation, const Problem &problem)
+		: assembler_(assembler), mesh_(mesh), n_basis_(n_basis), size_(size), bases_(bases), gbases_(gbases), formulation_(formulation), problem_(problem)
 	{
 	}
 
@@ -57,7 +55,7 @@ namespace polyfem
 
 				const Quadrature &quadrature = vals.quadrature;
 
-				problem_.rhs(formulation_, vals.val, t, rhs_fun);
+				problem_.rhs(assembler_, formulation_, vals.val, t, rhs_fun);
 
 				for (int d = 0; d < size_; ++d)
 				{
@@ -141,9 +139,8 @@ namespace polyfem
 						   // {"max_iter", 0}, // for iterative solvers
 						   // {"tolerance", 1e-9}, // for iterative solvers
 		};
-		const auto &assembler = AssemblerUtils::instance();
 		Density d;
-		assembler.assemble_mass_matrix(formulation_, size_ == 3, n_basis_, d, bases_, gbases_, mass);
+		assembler_.assemble_mass_matrix(formulation_, size_ == 3, n_basis_, d, bases_, gbases_, mass);
 		auto solver = LinearSolver::create(LinearSolver::defaultSolver(), LinearSolver::defaultPrecond());
 		solver->setParameters(params);
 		solver->analyzePattern(mass, mass.rows());
@@ -523,7 +520,7 @@ namespace polyfem
 			const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
 
-			problem_.rhs(formulation_, vals.val, t, forces);
+			problem_.rhs(assembler_, formulation_, vals.val, t, forces);
 			assert(forces.rows() == da.size());
 			assert(forces.cols() == size_);
 

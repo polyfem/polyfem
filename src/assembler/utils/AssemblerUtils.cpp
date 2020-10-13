@@ -5,66 +5,59 @@
 
 namespace polyfem
 {
-	AssemblerUtils &AssemblerUtils::instance()
-	{
-		static AssemblerUtils instance;
-
-		return instance;
-	}
-
 	AssemblerUtils::AssemblerUtils()
 	{
-		scalar_assemblers_.push_back("Laplacian");
-		scalar_assemblers_.push_back("Helmholtz");
-		scalar_assemblers_.push_back("Bilaplacian");
-
-		tensor_assemblers_.push_back("LinearElasticity");
-		tensor_assemblers_.push_back("HookeLinearElasticity");
-
-		tensor_assemblers_.push_back("SaintVenant");
-		tensor_assemblers_.push_back("NeoHookean");
-		// tensor_assemblers_.push_back("Ogden");
-
-		tensor_assemblers_.push_back("Stokes");
-		tensor_assemblers_.push_back("NavierStokes");
-		tensor_assemblers_.push_back("IncompressibleLinearElasticity");
 	}
 
-	bool AssemblerUtils::is_scalar(const std::string &assembler) const
+	std::vector<std::string> AssemblerUtils::scalar_assemblers() { return {"Laplacian", "Helmholtz", "Bilaplacian"}; }
+	std::vector<std::string> AssemblerUtils::tensor_assemblers()
+	{
+		return {
+			"LinearElasticity",
+			"HookeLinearElasticity",
+			"SaintVenant",
+			"NeoHookean",
+			// "Ogden",
+			"Stokes",
+			"NavierStokes",
+			"IncompressibleLinearElasticity"};
+	}
+
+	bool AssemblerUtils::is_scalar(const std::string &assembler)
 	{
 		return assembler == "Laplacian" || assembler == "Helmholtz" || assembler == "Bilaplacian";
 	}
 
-	bool AssemblerUtils::is_fluid(const std::string &assembler) const
+	bool AssemblerUtils::is_fluid(const std::string &assembler)
 	{
 		return assembler == "Stokes" || assembler == "NavierStokes";
 	}
 
-	bool AssemblerUtils::is_tensor(const std::string &assembler) const
+	bool AssemblerUtils::is_tensor(const std::string &assembler)
 	{
 		return assembler == "LinearElasticity" || assembler == "HookeLinearElasticity" ||
 			   assembler == "SaintVenant" || assembler == "NeoHookean" /*|| assembler == "Ogden"*/ ||
 			   assembler == "Stokes" || assembler == "IncompressibleLinearElasticity" ||
 			   assembler == "NavierStokes";
 	}
-	bool AssemblerUtils::is_mixed(const std::string &assembler) const
+	bool AssemblerUtils::is_mixed(const std::string &assembler)
 	{
 		return assembler == "Stokes" || assembler == "IncompressibleLinearElasticity" || assembler == "Bilaplacian" || assembler == "NavierStokes";
 	}
 
-	bool AssemblerUtils::is_gradient_based(const std::string &assembler) const
+	bool AssemblerUtils::is_gradient_based(const std::string &assembler)
 	{
 		return assembler == "NavierStokes";
 	}
 
-	bool AssemblerUtils::is_solution_displacement(const std::string &assembler) const
+	bool AssemblerUtils::is_solution_displacement(const std::string &assembler)
 	{
 		return assembler == "LinearElasticity" || assembler == "HookeLinearElasticity" ||
 			   assembler == "SaintVenant" || assembler == "NeoHookean" || /*assembler == "Ogden" ||*/
 			   assembler == "IncompressibleLinearElasticity";
 	}
 
-	bool AssemblerUtils::is_linear(const std::string &assembler) const
+	bool AssemblerUtils::is_linear(const std::string &assembler)
 	{
 		return assembler != "SaintVenant" && assembler != "NeoHookean" && assembler != "NavierStokes" /*&& assembler != "Ogden"*/;
 	}

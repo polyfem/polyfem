@@ -6,7 +6,7 @@
 #include <polyfem/ElasticProblem.hpp>
 #include <polyfem/PointBasedProblem.hpp>
 #include <polyfem/GenericProblem.hpp>
-#include <polyfem/KernelProblem.hpp>
+// #include <polyfem/KernelProblem.hpp>
 #include <polyfem/StokesProblem.hpp>
 #include <polyfem/TestProblem.hpp>
 #include <polyfem/NodeProblem.hpp>
@@ -117,7 +117,7 @@ namespace polyfem
 		problems_.emplace("QuadraticElasticExact", std::make_shared<QuadraticElasticProblemExact>("QuadraticElasticExact"));
 		problems_.emplace("LinearElasticExact", std::make_shared<LinearElasticProblemExact>("LinearElasticExact"));
 		problems_.emplace("PointBasedTensor", std::make_shared<PointBasedTensorProblem>("PointBasedTensor"));
-		problems_.emplace("Kernel", std::make_shared<KernelProblem>("Kernel"));
+		// problems_.emplace("Kernel", std::make_shared<KernelProblem>("Kernel"));
 		problems_.emplace("Node", std::make_shared<NodeProblem>("Node"));
 
 		problems_.emplace("TimeDependentScalar", std::make_shared<TimeDependentProblem>("TimeDependentScalar"));

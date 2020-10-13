@@ -233,7 +233,7 @@ namespace polyfem
 	{
 	}
 
-	void MinSurfProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	void MinSurfProblem::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val = -10 * Eigen::MatrixXd::Ones(pts.rows(), 1);
 	}
@@ -248,7 +248,7 @@ namespace polyfem
 	{
 	}
 
-	void TimeDependentProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	void TimeDependentProblem::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Ones(pts.rows(), 1);
 	}
@@ -304,9 +304,9 @@ namespace polyfem
 		return res;
 	}
 
-	void GenericScalarProblemExact::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	void GenericScalarProblemExact::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
-		ProblemWithSolution::rhs(formulation, pts, t, val);
+		ProblemWithSolution::rhs(assembler, formulation, pts, t, val);
 		if (func_ == 0)
 			val.array() -= 1;
 		else

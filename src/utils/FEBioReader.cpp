@@ -351,7 +351,7 @@ namespace polyfem
         }
         else
         {
-            AssemblerUtils::instance().init_multimaterial(Es, nus);
+            state.assembler.init_multimaterial(Es, nus);
             state.density.init_multimaterial(rhos);
         }
 

@@ -2,6 +2,7 @@
 
 #include <polyfem/Quadrature.hpp>
 #include <polyfem/ElementAssemblyValues.hpp>
+#include <polyfem/AssemblerUtils.hpp>
 
 #include <Eigen/Dense>
 
@@ -12,11 +13,11 @@ namespace polyfem
 	public:
 		inline static int index_mapping(const int alpha, const int beta, const int d, const int ass_dim)
 		{
-			return ass_dim*ass_dim*d + ass_dim * beta + alpha;
+			return ass_dim * ass_dim * d + ass_dim * beta + alpha;
 		}
 
 		static void setup_monomials_vals_2d(const int star_index, const Eigen::MatrixXd &pts, ElementAssemblyValues &vals);
-		static void setup_monomials_strong_2d(const int dim, const std::string &assembler_name, const Eigen::MatrixXd &pts, const QuadratureVector &da, std::array<Eigen::MatrixXd, 5> &strong);
+		static void setup_monomials_strong_2d(const int dim, const AssemblerUtils &assembler, const std::string &assembler_name, const Eigen::MatrixXd &pts, const QuadratureVector &da, std::array<Eigen::MatrixXd, 5> &strong);
 
 		///
 		/// @brief      { Initialize RBF functions over a polytope element. }
@@ -39,9 +40,9 @@ namespace polyfem
 		/// @param[in]  with_constraints      { Impose integral constraints to guarantee linear
 		///                                   reproduction for the Poisson equation }
 		///
-		RBFWithQuadratic(const std::string &assembler_name, const Eigen::MatrixXd &centers, const Eigen::MatrixXd &collocation_points,
-			const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
-			Eigen::MatrixXd &rhs, bool with_constraints = true);
+		RBFWithQuadratic(const AssemblerUtils &assembler, const std::string &assembler_name, const Eigen::MatrixXd &centers, const Eigen::MatrixXd &collocation_points,
+						 const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
+						 Eigen::MatrixXd &rhs, bool with_constraints = true);
 
 		///
 		/// @brief      { Evaluates one RBF function over a list of coordinates }
@@ -89,20 +90,20 @@ namespace polyfem
 
 		// Computes the relationship w = L v + t between the unknowns (v) and the weights w
 		void compute_constraints_matrix_2d_old(const int num_bases, const Quadrature &quadr,
-			const Eigen::MatrixXd &local_basis_integral, Eigen::MatrixXd &L, Eigen::MatrixXd &t) const;
+											   const Eigen::MatrixXd &local_basis_integral, Eigen::MatrixXd &L, Eigen::MatrixXd &t) const;
 
 		// Computes the relationship w = L v + t between the unknowns (v) and the weights w
-		void compute_constraints_matrix_2d(const std::string &assembler_name, const int num_bases, const Quadrature &quadr,
-			const Eigen::MatrixXd &local_basis_integral, Eigen::MatrixXd &L, Eigen::MatrixXd &t) const;
+		void compute_constraints_matrix_2d(const AssemblerUtils &assembler, const std::string &assembler_name, const int num_bases, const Quadrature &quadr,
+										   const Eigen::MatrixXd &local_basis_integral, Eigen::MatrixXd &L, Eigen::MatrixXd &t) const;
 
 		// Computes the relationship w = L v + t between the unknowns (v) and the weights w
-		void compute_constraints_matrix_3d(const std::string &assembler_name, const int num_bases, const Quadrature &quadr,
-			const Eigen::MatrixXd &local_basis_integral, Eigen::MatrixXd &L, Eigen::MatrixXd &t) const;
+		void compute_constraints_matrix_3d(const AssemblerUtils &assembler, const std::string &assembler_name, const int num_bases, const Quadrature &quadr,
+										   const Eigen::MatrixXd &local_basis_integral, Eigen::MatrixXd &L, Eigen::MatrixXd &t) const;
 
 		// Computes the weights by solving a (possibly constrained) linear least square
-		void compute_weights(const std::string &assembler_name, const Eigen::MatrixXd &collocation_points,
-			const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
-			Eigen::MatrixXd &rhs, bool with_constraints);
+		void compute_weights(const AssemblerUtils &assembler, const std::string &assembler_name, const Eigen::MatrixXd &collocation_points,
+							 const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
+							 Eigen::MatrixXd &rhs, bool with_constraints);
 
 	private:
 		// #C x dim matrix of kernel center positions
@@ -111,4 +112,4 @@ namespace polyfem
 		// (#C + dim + 1) x #B matrix of weights extending the #B bases that are non-vanishing on the polytope
 		Eigen::MatrixXd weights_;
 	};
-}
+} // namespace polyfem

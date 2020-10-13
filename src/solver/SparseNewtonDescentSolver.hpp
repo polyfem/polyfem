@@ -212,7 +212,6 @@ namespace cppoptlib
 
 			polyfem::StiffnessMatrix hessian;
 			this->m_current.reset();
-			AssemblerUtils::instance().clear_cache();
 
 			size_t next_hessian = 0;
 			// double factor = 1e-5;

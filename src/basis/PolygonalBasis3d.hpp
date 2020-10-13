@@ -1,6 +1,7 @@
 #pragma once
 
 #include <polyfem/Mesh3D.hpp>
+#include <polyfem/AssemblerUtils.hpp>
 #include <polyfem/ElementBases.hpp>
 #include <polyfem/ElementAssemblyValues.hpp>
 #include <polyfem/InterfaceData.hpp>
@@ -9,14 +10,12 @@
 #include <vector>
 #include <map>
 
-
 namespace polyfem
 {
 
 	class PolygonalBasis3d
 	{
 	public:
-
 		// Compute the integral constraints for each basis of the mesh. This step is PDE-dependent.
 		//
 		// @param[in]  mesh             Input volume mesh
@@ -29,11 +28,12 @@ namespace polyfem
 		//                              mesh must verify
 		//
 		static void compute_integral_constraints(
+			const AssemblerUtils &assembler,
 			const std::string &assembler_name,
 			const Mesh3D &mesh,
 			const int n_bases,
-			const std::vector< ElementBases > &bases,
-			const std::vector< ElementBases > &gbases,
+			const std::vector<ElementBases> &bases,
+			const std::vector<ElementBases> &gbases,
 			Eigen::MatrixXd &basis_integrals);
 
 		///
@@ -63,16 +63,16 @@ namespace polyfem
 		///                            the element (get boundary of the polygon) }
 		///
 		static int build_bases(
+			const AssemblerUtils &assembler,
 			const std::string &assembler_name,
 			const int n_samples_per_edge,
 			const Mesh3D &mesh,
 			const int n_bases,
 			const int quadrature_order,
 			const int integral_constraints,
-			std::vector< ElementBases > &bases,
-			const std::vector< ElementBases > &gbases,
+			std::vector<ElementBases> &bases,
+			const std::vector<ElementBases> &gbases,
 			const std::map<int, InterfaceData> &poly_face_to_data,
-			std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi> > &mapped_boundary);
+			std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &mapped_boundary);
 	};
-}
-
+} // namespace polyfem

@@ -1,7 +1,7 @@
-#ifndef PROBLEM_HPP
-#define PROBLEM_HPP
+#pragma once
 
 #include <polyfem/ElementBases.hpp>
+#include <polyfem/AssemblerUtils.hpp>
 #include <polyfem/LocalBoundary.hpp>
 #include <polyfem/Mesh.hpp>
 
@@ -19,7 +19,7 @@ namespace polyfem
 		Problem(const std::string &name);
 		virtual void init(const Mesh &mesh) {}
 
-		virtual void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const = 0;
+		virtual void rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const = 0;
 		virtual bool is_rhs_zero() const = 0;
 
 		virtual void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const = 0;
@@ -86,5 +86,3 @@ namespace polyfem
 		std::vector<std::string> problem_names_;
 	};
 } // namespace polyfem
-
-#endif //PROBLEM_HPP
