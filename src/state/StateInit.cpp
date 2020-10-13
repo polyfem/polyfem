@@ -223,11 +223,18 @@ namespace polyfem
             std::string psd = "";
             std::string gradNorm = "";
             std::string useGradNorm = "";
+            std::string linesearch = "";
 
             if (args_in.find("project_to_psd") == args_in.end())
             {
                 args["project_to_psd"] = true;
                 psd = "Chaning default project to psd to true ";
+            }
+
+            if (args_in.find("line_search") == args_in.end())
+            {
+                args["line_search"] = "bisection";
+                linesearch = "Chaning default linesearch to bisection ";
             }
 
             if (args_in.find("solver_params") == args_in.end() || args_in["solver_params"].find("gradNorm") == args_in["solver_params"].end())
@@ -242,7 +249,7 @@ namespace polyfem
                 useGradNorm = "Chaning convergence check to Newton direction ";
             }
 
-            std::string message = psd + gradNorm + useGradNorm;
+            std::string message = psd + linesearch + gradNorm + useGradNorm;
 
             if (message.length() > 0)
                 logger().warn(message);
