@@ -154,12 +154,6 @@ include(PolyfemDependencies)
 # Polyfem library
 ################################################################################
 
-if(WIN32)
-    SET( CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /LTCG:PGOPTIMIZE")
-    SET( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /LTCG:PGOPTIMIZE")
-    SET( CMAKE_EXE_LINKER_FLAGS    "${CMAKE_EXE_LINKER_FLAGS} /LTCG:PGOPTIMIZE")
-endif()
-
 # add_library() can only be called without any source since CMake 3.11 ...
 add_library(polyfem src/State.cpp)
 

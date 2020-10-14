@@ -94,7 +94,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        config: [Debug, Release]
+        config: [Debug]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v1
