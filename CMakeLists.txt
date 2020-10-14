@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.1)
 project(PolyFEM)
 ################################################################################
 
+cmake_policy(SET CMP0079 NEW)
+
 # cmake_policy(SET CMP0063 NEW)
 # set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
