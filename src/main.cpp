@@ -74,8 +74,10 @@ int main(int argc, char **argv)
 	const ProblemFactory &p_factory = ProblemFactory::factory();
 	command_line.add_set("--problem", problem_name, std::set<std::string>(p_factory.get_problem_names().begin(), p_factory.get_problem_names().end()), "Problem name");
 
-	command_line.add_set("--sform", scalar_formulation, std::set<std::string>(AssemblerUtils::scalar_assemblers().begin(), AssemblerUtils::scalar_assemblers().end()), "Scalar formulation");
-	command_line.add_set("--tform", tensor_formulation, std::set<std::string>(AssemblerUtils::tensor_assemblers().begin(), AssemblerUtils::tensor_assemblers().end()), "Tensor formulation");
+	const auto sa = AssemblerUtils::scalar_assemblers();
+	const auto ta = AssemblerUtils::tensor_assemblers();
+	command_line.add_set("--sform", scalar_formulation, std::set<std::string>(sa.begin(), sa.end()), "Scalar formulation");
+	command_line.add_set("--tform", tensor_formulation, std::set<std::string>(ta.begin(), ta.end()), "Tensor formulation");
 	// command_line.add_set("--mform", mixed_formulation, std::set<std::string>(assembler.mixed_assemblers().begin(), assembler.mixed_assemblers().end()),  "Mixed formulation");
 
 	const std::vector<std::string> solvers = LinearSolver::availableSolvers();
