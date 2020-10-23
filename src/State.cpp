@@ -690,6 +690,20 @@ namespace polyfem
 
 			avg_mass /= mass.rows();
 			logger().trace("avg mass {}", avg_mass);
+
+			// std::vector<Eigen::Triplet<double>> lumped;
+
+			// for (int k = 0; k < mass.outerSize(); ++k)
+			// {
+			// 	for (StiffnessMatrix::InnerIterator it(mass, k); it; ++it)
+			// 	{
+			// 		lumped.emplace_back(it.row(), it.row(), it.value());
+			// 	}
+			// }
+
+			// mass.resize(mass.rows(), mass.cols());
+			// mass.setFromTriplets(lumped.begin(), lumped.end());
+			// mass.makeCompressed();
 		}
 
 		timer.stop();
