@@ -252,10 +252,23 @@ namespace polyfem
                 if (type == "traction")
                 {
                     const std::string traction = std::string(child->FirstChildElement("traction")->GetText());
+
+                    Eigen::RowVector3d scalev;
+                    scalev.setOnes();
+
+                    for (const tinyxml2::XMLElement *scale = child->FirstChildElement("scale"); scale != NULL; scale = scale->NextSiblingElement("scale"))
+                    {
+                        const std::string scales = std::string(scale->GetText());
+                        const int scale_loc = child->IntAttribute("lc");
+
+                        scalev[scale_loc] = atof(scales.c_str());
+                    }
+
                     const auto bcs = StringUtils::split(traction, ",");
                     assert(bcs.size() == 3);
 
                     Eigen::RowVector3d force(atof(bcs[0].c_str()), atof(bcs[1].c_str()), atof(bcs[2].c_str()));
+                    force.array() *= scalev.array();
                     gproblem.add_neumann_boundary(names.at(name), force);
                 }
                 else if (type == "pressure")
@@ -392,6 +405,9 @@ namespace polyfem
         const auto *loads = febio->FirstChildElement("Loads");
         load_loads(loads, names, gproblem);
         load_body_loads(loads, names, gproblem);
+
+        // state.args["line_search"] = "bisection";
+        // state.args["project_to_psd"] = true;
 
         timer.stop();
         logger().info(" took {}s", timer.getElapsedTime());
