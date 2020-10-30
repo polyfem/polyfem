@@ -2857,9 +2857,33 @@ void State::solve_problem()
 
 		const auto &gbases = iso_parametric() ? bases : geom_bases;
 		RhsAssembler rhs_assembler(*mesh, n_bases, problem->is_scalar() ? 1 : mesh->dimension(), bases, gbases, formulation(), *problem);
-		rhs_assembler.initial_solution(sol);
+		// rhs_assembler.initial_solution(sol);
 
 		Eigen::MatrixXd current_rhs = rhs;
+
+		// initialize the solution
+		Eigen::MatrixXd local_pts;
+		if (mesh->dimension() == 2)
+		{
+			if (gbases[0].bases.size() == 3) autogen::p_nodes_2d(args["discr_order"], local_pts);
+			else autogen::q_nodes_2d(args["discr_order"], local_pts);
+		}
+		else
+		{
+			if (gbases[0].bases.size() == 4) autogen::p_nodes_3d(args["discr_order"], local_pts);
+			else autogen::q_nodes_3d(args["discr_order"], local_pts);
+		}
+		std::vector<int> bnd_nodes;
+		bnd_nodes.reserve(boundary_nodes.size() / mesh->dimension());
+		for (auto it = boundary_nodes.begin(); it != boundary_nodes.end(); it++)
+		{
+			if (!(*it % mesh->dimension())) continue;
+			bnd_nodes.push_back(*it / mesh->dimension());
+		}
+		{
+			OperatorSplittingSolver ss_(*mesh, gbases[0].bases.size(), int(bases.size()), local_boundary, bnd_nodes);
+			ss_.initialize_solution(gbases, bases, problem, sol, local_pts);
+		}
 
 		if (formulation() == "OperatorSplitting")
 		{
@@ -2881,31 +2905,6 @@ void State::solve_problem()
 			assembler.assemble_mixed_problem("Stokes", mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, mixed_stiffness);
 			mixed_stiffness = mixed_stiffness.transpose();
 			logger().info("Matrices assembly ends!");
-
-			// barycentric coordinates of FEM nodes
-			Eigen::MatrixXd local_pts;
-			if (dim == 2)
-			{
-				if (shape == 3)
-					autogen::p_nodes_2d(args["discr_order"], local_pts);
-				else
-					autogen::q_nodes_2d(args["discr_order"], local_pts);
-			}
-			else
-			{
-				if (shape == 4)
-					autogen::p_nodes_3d(args["discr_order"], local_pts);
-				else
-					autogen::q_nodes_3d(args["discr_order"], local_pts);
-			}
-
-			std::vector<int> bnd_nodes;
-			bnd_nodes.reserve(boundary_nodes.size() / dim);
-			for (auto it = boundary_nodes.begin(); it != boundary_nodes.end(); it++)
-			{
-				if (!(*it % dim)) continue;
-				bnd_nodes.push_back(*it / dim);
-			}
 
 			OperatorSplittingSolver ss(*mesh, shape, n_el, local_boundary, bnd_nodes, mass, stiffness_viscosity, stiffness, dt, viscosity_, args["solver_type"], args["precond_type"], params, args["export"]["stiffness_mat"]);
 
@@ -3015,15 +3014,6 @@ void State::solve_problem()
 			OperatorSplittingSolver ss;
 			if (args["density"])
 			{
-				const int dim = mesh->dimension();
-
-				std::vector<int> bnd_nodes;
-				bnd_nodes.reserve(boundary_nodes.size() / dim);
-				for (auto it = boundary_nodes.begin(); it != boundary_nodes.end(); it++)
-				{
-					if (!(*it % dim)) continue;
-					bnd_nodes.push_back(*it / dim);
-				}
 				ss.initialize_solver(*mesh, gbases[0].bases.size(), int(bases.size()), local_boundary, bnd_nodes);
 				ss.initialize_grid(*mesh, gbases, bases, args["density_dx"]);
 				ss.initialize_density(problem);

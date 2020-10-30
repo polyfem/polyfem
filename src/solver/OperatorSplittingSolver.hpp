@@ -230,6 +230,46 @@ namespace polyfem
             logger().info("Prefactorization ends!");
         }
 
+        void initialize_solution(const std::vector<polyfem::ElementBases>& gbases, 
+        const std::vector<polyfem::ElementBases>& bases, 
+        const std::shared_ptr<Problem> problem, 
+        Eigen::MatrixXd& sol, 
+        const Eigen::MatrixXd& local_pts)
+        {
+#ifdef POLYFEM_WITH_TBB
+            tbb::parallel_for(0, n_el, 1, [&](int e)
+#else
+            for (int e = 0; e < n_el; ++e)
+#endif
+            {
+                // to compute global position with barycentric coordinate
+                ElementAssemblyValues gvals;
+                gvals.compute(e, dim == 3, local_pts, gbases[e], gbases[e]);
+
+                for (int i = 0; i < local_pts.rows(); i++)
+                {
+                    Eigen::MatrixXd pts = Eigen::MatrixXd::Zero(1, dim);
+                    for (int j = 0; j < shape; j++)
+                    {
+                        for (int d = 0; d < dim; d++)
+                        {
+                            pts(0, d) += V(T(e, j), d) * gvals.basis_values[j].val(i);
+                        }
+                    }
+                    Eigen::MatrixXd val;
+                    problem->initial_solution(pts, val);
+                    int global = bases[e].bases[i].global()[0].index;
+                    for (int d = 0; d < dim; d++)
+                    {
+                        sol(global * dim + d) = val(d);
+                    }
+                }
+            }
+#ifdef POLYFEM_WITH_TBB
+            );
+#endif
+        }
+
         int handle_boundary_advection(RowVectorNd& pos)
         {
             double dist = 1e10;
