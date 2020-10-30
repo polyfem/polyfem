@@ -8,8 +8,8 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=8
-#SBATCH --time=2:00:00
-#SBATCH --mem=16GB
+#SBATCH --time=1:00:00
+#SBATCH --mem=8GB
 ##SBATCH --reservation=panozzo
 
 # Load modules

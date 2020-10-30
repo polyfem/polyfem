@@ -62,19 +62,19 @@ void TransientNavierStokesSolver::minimize(
 	logger().debug("\tStokes matrix assembly time {}s", time.getElapsedTimeInSec());
 
 
-	time.start();
+	// time.start();
 
 	Eigen::VectorXd b = rhs + prev_sol_mass;
 
-	if (state.use_avg_pressure){
-		b[b.size()-1] = 0;
-	}
-	dirichlet_solve(*solver, stoke_stiffness, b, state.boundary_nodes, x, precond_num);
-	// solver->getInfo(solver_info);
-	time.stop();
-	stokes_solve_time = time.getElapsedTimeInSec();
-	logger().debug("\tStokes solve time {}s", time.getElapsedTimeInSec());
-	logger().debug("\tStokes solver error: {}", (stoke_stiffness * x - b).norm());
+	// if (state.use_avg_pressure){
+	// 	b[b.size()-1] = 0;
+	// }
+	// dirichlet_solve(*solver, stoke_stiffness, b, state.boundary_nodes, x, precond_num);
+	// // solver->getInfo(solver_info);
+	// time.stop();
+	// stokes_solve_time = time.getElapsedTimeInSec();
+	// logger().debug("\tStokes solve time {}s", time.getElapsedTimeInSec());
+	// logger().debug("\tStokes solver error: {}", (stoke_stiffness * x - b).norm());
 	// return;
 
 	assembly_time = 0;
@@ -88,7 +88,7 @@ void TransientNavierStokesSolver::minimize(
 	{
 		b[b.size() - 1] = 0;
 	}
-	it += minimize_aux(state.formulation() + "Picard", state, dt, velocity_stiffness, mixed_stiffness, pressure_stiffness, velocity_mass, b,     1e-3, solver, nlres_norm, x);
+	// it += minimize_aux(state.formulation() + "Picard", state, dt, velocity_stiffness, mixed_stiffness, pressure_stiffness, velocity_mass, b,     1e-3, solver, nlres_norm, x);
 	it += minimize_aux(state.formulation()           , state, dt, velocity_stiffness, mixed_stiffness, pressure_stiffness, velocity_mass, b, gradNorm, solver, nlres_norm, x);
 
 	solver_info["iterations"] = it;
@@ -153,6 +153,11 @@ int TransientNavierStokesSolver::minimize_aux(
 												 (velocity_stiffness + nl_matrix) + velocity_mass, mixed_stiffness, pressure_stiffness,
 												 total_matrix);
 		}
+		time.stop();
+		assembly_time += time.getElapsedTimeInSec();
+		logger().debug("\tNavier Stokes assembly time {}s", time.getElapsedTimeInSec());
+
+		time.start();
 		dirichlet_solve(*solver, total_matrix, nlres, state.boundary_nodes, dx, precond_num);
 		// for (int i : state.boundary_nodes)
 		// 	dx[i] = 0;
