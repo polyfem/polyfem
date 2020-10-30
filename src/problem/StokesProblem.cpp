@@ -6,6 +6,7 @@ namespace polyfem
 {
 	namespace
 	{
+		//https://math.stackexchange.com/questions/101480/are-there-other-kinds-of-bump-functions-than-e-frac1x2-1
 		double bump(double r)
 		{
 			const auto f = [](double x) { return x <= 0 ? 0 : exp(-1. / x); };
