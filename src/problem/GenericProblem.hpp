@@ -10,6 +10,26 @@
 
 namespace polyfem
 {
+	class Interpolation
+	{
+	public:
+		virtual ~Interpolation() {}
+		virtual double eval(const double t) const { return t; }
+		virtual void init(const json &params) {}
+
+		static std::shared_ptr<Interpolation> build(const json &params);
+	};
+
+	class LinearRamp : public Interpolation
+	{
+	public:
+		double eval(const double t) const override;
+		void init(const json &params) override;
+
+	private:
+		double to_;
+	};
+
 	class GenericTensorProblem : public Problem
 	{
 	public:
@@ -72,8 +92,11 @@ namespace polyfem
 		// bool is_mixed_ = false;
 
 		std::vector<std::array<ExpressionValue, 3>> forces_;
+		std::vector<std::shared_ptr<Interpolation>> forces_interpolation_;
 		std::vector<std::array<ExpressionValue, 3>> displacements_;
+		std::vector<std::shared_ptr<Interpolation>> displacements_interpolation_;
 		std::vector<ExpressionValue> pressures_;
+		std::vector<std::shared_ptr<Interpolation>> pressure_interpolation_;
 
 		std::vector<std::pair<int, std::array<ExpressionValue, 3>>> initial_position_;
 		std::vector<std::pair<int, std::array<ExpressionValue, 3>>> initial_velocity_;

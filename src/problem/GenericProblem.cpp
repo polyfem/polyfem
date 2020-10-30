@@ -5,6 +5,36 @@
 
 namespace polyfem
 {
+
+	std::shared_ptr<Interpolation> Interpolation::build(const json &params)
+	{
+		const std::string type = params["type"];
+		std::shared_ptr<Interpolation> res = nullptr;
+
+		if (type == "linear_ramp")
+			res = std::make_shared<LinearRamp>();
+		else
+			logger().error("Usupported interpolation type {}", type);
+
+		if (res)
+			res->init(params);
+
+		return res;
+	}
+
+	double LinearRamp::eval(const double t) const
+	{
+		if (t >= to_)
+			return to_;
+
+		return t;
+	}
+
+	void LinearRamp::init(const json &params)
+	{
+		to_ = params["to"];
+	}
+
 	GenericTensorProblem::GenericTensorProblem(const std::string &name)
 		: Problem(name), is_all_(false)
 	{
@@ -66,6 +96,7 @@ namespace polyfem
 				assert(displacements_.size() == 1);
 				for (int d = 0; d < val.cols(); ++d)
 					val(i, d) = pts.cols() == 2 ? displacements_[0][d](pts(i, 0), pts(i, 1)) : displacements_[0][d](pts(i, 0), pts(i, 1), pts(i, 2));
+				val.row(i) *= displacements_interpolation_[0]->eval(t);
 			}
 			else
 			{
@@ -76,13 +107,14 @@ namespace polyfem
 					{
 						for (int d = 0; d < val.cols(); ++d)
 							val(i, d) = pts.cols() == 2 ? displacements_[b][d](pts(i, 0), pts(i, 1)) : displacements_[b][d](pts(i, 0), pts(i, 1), pts(i, 2));
+						val.row(i) *= displacements_interpolation_[b]->eval(t);
 						break;
 					}
 				}
 			}
 		}
 
-		val *= t;
+		// val *= t;
 	}
 
 	void GenericTensorProblem::neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const
@@ -99,6 +131,7 @@ namespace polyfem
 				{
 					for (int d = 0; d < val.cols(); ++d)
 						val(i, d) = pts.cols() == 2 ? forces_[b][d](pts(i, 0), pts(i, 1)) : forces_[b][d](pts(i, 0), pts(i, 1), pts(i, 2));
+					val.row(i) *= forces_interpolation_[b]->eval(t);
 					break;
 				}
 			}
@@ -109,12 +142,13 @@ namespace polyfem
 				{
 					for (int d = 0; d < val.cols(); ++d)
 						val(i, d) = (pts.cols() == 2 ? pressures_[b](pts(i, 0), pts(i, 1)) : pressures_[b](pts(i, 0), pts(i, 1), pts(i, 2))) * normals(i, d);
+					val.row(i) *= pressure_interpolation_[b]->eval(t);
 					break;
 				}
 			}
 		}
 
-		val *= t;
+		// val *= t;
 	}
 
 	void GenericTensorProblem::exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
@@ -149,6 +183,7 @@ namespace polyfem
 	{
 		boundary_ids_.push_back(id);
 		displacements_.emplace_back();
+		displacements_interpolation_.emplace_back(std::make_shared<Interpolation>());
 		for (size_t k = 0; k < val.size(); ++k)
 			displacements_.back()[k].init(val[k]);
 
@@ -158,6 +193,7 @@ namespace polyfem
 	void GenericTensorProblem::add_neumann_boundary(const int id, const Eigen::RowVector3d &val)
 	{
 		neumann_boundary_ids_.push_back(id);
+		forces_interpolation_.emplace_back(std::make_shared<Interpolation>());
 		forces_.emplace_back();
 		for (size_t k = 0; k < val.size(); ++k)
 			forces_.back()[k].init(val[k]);
@@ -166,6 +202,7 @@ namespace polyfem
 	void GenericTensorProblem::add_pressure_boundary(const int id, const double val)
 	{
 		pressure_boundary_ids_.push_back(id);
+		pressure_interpolation_.emplace_back(std::make_shared<Interpolation>());
 		pressures_.emplace_back();
 		pressures_.back().init(val);
 	}
@@ -174,6 +211,7 @@ namespace polyfem
 	{
 		boundary_ids_.push_back(id);
 		displacements_.emplace_back();
+		displacements_interpolation_.emplace_back(std::make_shared<Interpolation>());
 		for (size_t k = 0; k < displacements_.back().size(); ++k)
 			displacements_.back()[k].init(func, k);
 
@@ -184,6 +222,7 @@ namespace polyfem
 	{
 		neumann_boundary_ids_.push_back(id);
 		forces_.emplace_back();
+		forces_interpolation_.emplace_back(std::make_shared<Interpolation>());
 		for (size_t k = 0; k < forces_.back().size(); ++k)
 			forces_.back()[k].init(func, k);
 	}
@@ -191,6 +230,7 @@ namespace polyfem
 	void GenericTensorProblem::add_pressure_boundary(const int id, const std::function<double(double x, double y, double z)> &func)
 	{
 		pressure_boundary_ids_.push_back(id);
+		pressure_interpolation_.emplace_back(std::make_shared<Interpolation>());
 		pressures_.emplace_back();
 		pressures_.back().init(func);
 	}
@@ -275,6 +315,7 @@ namespace polyfem
 
 			boundary_ids_.resize(offset + j_boundary.size());
 			displacements_.resize(offset + j_boundary.size());
+			displacements_interpolation_.resize(offset + j_boundary.size());
 			dirichelt_dimentions_.resize(offset + j_boundary.size());
 
 			for (size_t i = offset; i < boundary_ids_.size(); ++i)
@@ -311,6 +352,11 @@ namespace polyfem
 					for (size_t k = 0; k < tmp.size(); ++k)
 						dirichelt_dimentions_[i](k) = tmp[k];
 				}
+
+				if (j_boundary[i - offset].find("interpolation") != j_boundary[i - offset].end())
+					displacements_interpolation_[i] = Interpolation::build(j_boundary[i - offset]["interpolation"]);
+				else
+					displacements_interpolation_[i] = std::make_shared<Interpolation>();
 			}
 		}
 
@@ -323,6 +369,7 @@ namespace polyfem
 
 			neumann_boundary_ids_.resize(offset + j_boundary.size());
 			forces_.resize(offset + j_boundary.size());
+			forces_interpolation_.resize(offset + j_boundary.size());
 
 			for (size_t i = offset; i < neumann_boundary_ids_.size(); ++i)
 			{
@@ -341,6 +388,11 @@ namespace polyfem
 					forces_[i][1].init(0);
 					forces_[i][2].init(0);
 				}
+
+				if (j_boundary[i - offset].find("interpolation") != j_boundary[i - offset].end())
+					forces_interpolation_[i] = Interpolation::build(j_boundary[i - offset]["interpolation"]);
+				else
+					forces_interpolation_[i] = std::make_shared<Interpolation>();
 			}
 		}
 
@@ -353,6 +405,7 @@ namespace polyfem
 
 			pressure_boundary_ids_.resize(offset + j_boundary.size());
 			pressures_.resize(offset + j_boundary.size());
+			pressure_interpolation_.resize(offset + j_boundary.size());
 
 			for (size_t i = offset; i < pressure_boundary_ids_.size(); ++i)
 			{
@@ -360,6 +413,11 @@ namespace polyfem
 
 				auto ff = j_boundary[i - offset]["value"];
 				pressures_[i].init(ff);
+
+				if (j_boundary[i - offset].find("interpolation") != j_boundary[i - offset].end())
+					pressure_interpolation_[i] = Interpolation::build(j_boundary[i - offset]["interpolation"]);
+				else
+					pressure_interpolation_[i] = std::make_shared<Interpolation>();
 			}
 		}
 
@@ -566,8 +624,11 @@ namespace polyfem
 		is_time_dept_ = false;
 
 		forces_.clear();
+		forces_interpolation_.clear();
 		displacements_.clear();
+		displacements_interpolation_.clear();
 		pressures_.clear();
+		pressure_interpolation_.clear();
 
 		initial_position_.clear();
 		initial_velocity_.clear();
