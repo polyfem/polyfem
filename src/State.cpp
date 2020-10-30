@@ -1351,13 +1351,10 @@ namespace polyfem
 							for (int bId : boundary_nodes)
 								b(bId) = -(nl_problem.current_rhs()(bId) - prev_rhs(bId));
 							dirichlet_solve(*solver, nlstiffness, b, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
-							if (args["has_collision"])
-							{
-								if (nl_problem.is_step_valid(sol, (sol - x).eval()))
-									x = sol - x;
-								else
-									x = sol;
-							}
+							if (nl_problem.is_step_valid(sol, (sol - x).eval()))
+								x = sol - x;
+							else
+								x = sol;
 							// logger().debug("Solver error: {}", (nlstiffness * sol - b).norm());
 						}
 
