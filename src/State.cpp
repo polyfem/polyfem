@@ -757,8 +757,15 @@ namespace polyfem
 		logger().info("Assigning rhs...");
 
 		const int size = problem->is_scalar() ? 1 : mesh->dimension();
+		json rhs_solver_params = args["rhs_solver_params"];
+		rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 
-		RhsAssembler rhs_assembler(assembler, *mesh, n_bases, size, bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
+		RhsAssembler rhs_assembler(assembler, *mesh,
+								   n_bases, size,
+								   bases, iso_parametric() ? bases : geom_bases,
+								   formulation(), *problem,
+								   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
+
 		if (!rhs_path.empty() || rhs_in.size() > 0)
 		{
 			logger().debug("Loading rhs...");
@@ -799,7 +806,12 @@ namespace polyfem
 			{
 				Eigen::MatrixXd tmp(n_pressure_bases, 1);
 				tmp.setZero();
-				RhsAssembler rhs_assembler1(assembler, *mesh, n_pressure_bases, size, pressure_bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
+
+				RhsAssembler rhs_assembler1(assembler, *mesh,
+											n_pressure_bases, size,
+											pressure_bases, iso_parametric() ? bases : geom_bases,
+											formulation(), *problem,
+											args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
 				rhs_assembler1.set_bc(std::vector<LocalBoundary>(), std::vector<int>(), args["n_boundary_samples"], local_neumann_boundary, tmp);
 				rhs.block(prev_size, 0, n_larger, rhs.cols()) = tmp;
 			}
@@ -858,7 +870,14 @@ namespace polyfem
 			const double dt = tend / time_steps;
 
 			const auto &gbases = iso_parametric() ? bases : geom_bases;
-			RhsAssembler rhs_assembler(assembler, *mesh, n_bases, problem->is_scalar() ? 1 : mesh->dimension(), bases, gbases, formulation(), *problem);
+			json rhs_solver_params = args["rhs_solver_params"];
+			rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
+
+			RhsAssembler rhs_assembler(assembler, *mesh,
+									   n_bases, problem->is_scalar() ? 1 : mesh->dimension(),
+									   bases, gbases,
+									   formulation(), *problem,
+									   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
 			rhs_assembler.initial_solution(sol);
 
 			Eigen::MatrixXd current_rhs = rhs;
@@ -1292,7 +1311,14 @@ namespace polyfem
 					}
 					steps = std::max(steps, 1);
 
-					RhsAssembler rhs_assembler(assembler, *mesh, n_bases, mesh->dimension(), bases, iso_parametric() ? bases : geom_bases, formulation(), *problem);
+					json rhs_solver_params = args["rhs_solver_params"];
+					rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
+
+					RhsAssembler rhs_assembler(assembler, *mesh,
+											   n_bases, mesh->dimension(),
+											   bases, iso_parametric() ? bases : geom_bases,
+											   formulation(), *problem,
+											   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
 
 					StiffnessMatrix nlstiffness;
 					auto solver = LinearSolver::create(args["solver_type"], args["precond_type"]);

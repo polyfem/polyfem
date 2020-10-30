@@ -35,8 +35,16 @@ namespace polyfem
 		};
 	} // namespace
 
-	RhsAssembler::RhsAssembler(const AssemblerUtils &assembler, const Mesh &mesh, const int n_basis, const int size, const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases, const std::string &formulation, const Problem &problem)
-		: assembler_(assembler), mesh_(mesh), n_basis_(n_basis), size_(size), bases_(bases), gbases_(gbases), formulation_(formulation), problem_(problem)
+	RhsAssembler::RhsAssembler(const AssemblerUtils &assembler, const Mesh &mesh,
+							   const int n_basis, const int size,
+							   const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases,
+							   const std::string &formulation, const Problem &problem,
+							   const std::string &solver, const std::string &preconditioner, const json &solver_params)
+		: assembler_(assembler), mesh_(mesh),
+		  n_basis_(n_basis), size_(size),
+		  bases_(bases), gbases_(gbases),
+		  formulation_(formulation), problem_(problem),
+		  solver_(solver), preconditioner_(preconditioner), solver_params_(solver_params)
 	{
 	}
 
@@ -134,15 +142,10 @@ namespace polyfem
 		}
 
 		StiffnessMatrix mass;
-		json params = {
-			{"mtype", -2}, // matrix type for Pardiso (2 = SPD)
-						   // {"max_iter", 0}, // for iterative solvers
-						   // {"tolerance", 1e-9}, // for iterative solvers
-		};
 		Density d;
 		assembler_.assemble_mass_matrix(formulation_, size_ == 3, n_basis_, d, bases_, gbases_, mass);
-		auto solver = LinearSolver::create(LinearSolver::defaultSolver(), LinearSolver::defaultPrecond());
-		solver->setParameters(params);
+		auto solver = LinearSolver::create(solver_, preconditioner_);
+		solver->setParameters(solver_params_);
 		solver->analyzePattern(mass, mass.rows());
 		solver->factorize(mass);
 		Eigen::MatrixXd b = sol;
@@ -327,16 +330,8 @@ namespace polyfem
 				Eigen::MatrixXd b = mat_t * global_rhs;
 
 				Eigen::MatrixXd coeffs(b.rows(), b.cols());
-
-				json params = {
-					{"mtype", -2}, // matrix type for Pardiso (2 = SPD)
-								   // {"max_iter", 0}, // for iterative solvers
-								   // {"tolerance", 1e-9}, // for iterative solvers
-				};
-
-				// auto solver = LinearSolver::create("", "");
-				auto solver = LinearSolver::create(LinearSolver::defaultSolver(), LinearSolver::defaultPrecond());
-				solver->setParameters(params);
+				auto solver = LinearSolver::create(solver_, preconditioner_);
+				solver->setParameters(solver_params_);
 				solver->analyzePattern(A, A.rows());
 				solver->factorize(A);
 				coeffs.setZero();

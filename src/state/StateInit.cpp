@@ -134,8 +134,12 @@ namespace polyfem
 
             {"solver_type", LinearSolver::defaultSolver()},
             {"precond_type", LinearSolver::defaultPrecond()},
-
             {"solver_params", json({})},
+
+            {"rhs_solver_type", LinearSolver::defaultSolver()},
+            {"rhs_precond_type", LinearSolver::defaultPrecond()},
+            {"rhs_solver_params", json({})},
+
             {"line_search", "armijo"},
             {"nl_solver", "newton"},
             {"nl_solver_rhs_steps", 1},

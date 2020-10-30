@@ -17,7 +17,11 @@ namespace polyfem
 	class RhsAssembler
 	{
 	public:
-		RhsAssembler(const AssemblerUtils &assembler, const Mesh &mesh, const int n_basis, const int size, const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases, const std::string &formulation, const Problem &problem);
+		RhsAssembler(const AssemblerUtils &assembler, const Mesh &mesh,
+					 const int n_basis, const int size,
+					 const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases,
+					 const std::string &formulation, const Problem &problem,
+					 const std::string &solver, const std::string &preconditioner, const json &solver_params);
 
 		void assemble(const Density &density, Eigen::MatrixXd &rhs, const double t = 1) const;
 
@@ -53,6 +57,8 @@ namespace polyfem
 		const std::vector<ElementBases> &gbases_;
 		const std::string formulation_;
 		const Problem &problem_;
+		const std::string solver_, preconditioner_;
+		const json solver_params_;
 	};
 } // namespace polyfem
 
