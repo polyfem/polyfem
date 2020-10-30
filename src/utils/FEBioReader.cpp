@@ -283,9 +283,8 @@ namespace polyfem
                     for (const tinyxml2::XMLElement *scale = child->FirstChildElement("scale"); scale != NULL; scale = scale->NextSiblingElement("scale"))
                     {
                         const std::string scales = std::string(scale->GetText());
-                        const int scale_loc = child->IntAttribute("lc");
-
-                        scalev[scale_loc] = atof(scales.c_str());
+                        // const int scale_loc = child->IntAttribute("lc");
+                        scalev.setConstant(atof(scales.c_str()));
                     }
 
                     const auto bcs = StringUtils::split(traction, ",");
