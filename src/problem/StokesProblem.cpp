@@ -88,12 +88,6 @@ namespace polyfem
 			const double r1 = sqrt((pts(i, 0) - 0.04) * (pts(i, 0) - 0.04) + (pts(i, 1) - 0.2) * (pts(i, 1) - 0.2));
 			const double r2 = sqrt((pts(i, 0) - 0.16) * (pts(i, 0) - 0.16) + (pts(i, 1) - 0.2) * (pts(i, 1) - 0.2));
 
-			// if (r1 < 0.02)
-			// {
-			// 	std::cout << r1 << " " << 0.05 * bump(r1 * 70) - 0.05 * bump(r2 * 70) << std::endl;
-			// 	int ad = 1 - k(r1 / 70);
-			// }
-
 			val(i, 0) = 0.05 * bump(r1 * 70) - 0.05 * bump(r2 * 70);
 		}
 	}
