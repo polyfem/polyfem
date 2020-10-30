@@ -133,7 +133,7 @@ namespace polyfem
 
                     if (!mesh->is_simplex(lb.element_id()))
                     {
-                        logger().warn("skipping element {} since it is not a simplex", eid);
+                        logger().trace("skipping element {} since it is not a simplex", eid);
                         continue;
                     }
 
@@ -206,7 +206,8 @@ namespace polyfem
             {
                 boundary_triangles.row(i) << std::get<0>(tris[i]), std::get<2>(tris[i]), std::get<1>(tris[i]);
             }
-            igl::edges(boundary_triangles, boundary_edges);
+            if (boundary_triangles.rows() > 0)
+                igl::edges(boundary_triangles, boundary_edges);
 
             // igl::write_triangle_mesh("test.obj", boundary_nodes_pos, boundary_triangles);
         }

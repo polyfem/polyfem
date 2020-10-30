@@ -74,17 +74,18 @@ namespace polyfem
         template <typename XMLNode>
         int load_elements(const XMLNode *geometry, const std::map<int, std::tuple<double, double, double>> &materials, Eigen::MatrixXi &T, std::vector<std::vector<int>> &nodes, Eigen::MatrixXd &Es, Eigen::MatrixXd &nus, Eigen::MatrixXd &rhos)
         {
-            std::vector<Eigen::Vector4i> tets;
+            std::vector<Eigen::VectorXi> els;
             nodes.clear();
             std::vector<int> mids;
             int order = 1;
+            bool is_hex = false;
 
             for (const tinyxml2::XMLElement *elements = geometry->FirstChildElement("Elements"); elements != NULL; elements = elements->NextSiblingElement("Elements"))
             {
                 const std::string el_type = std::string(elements->Attribute("type"));
                 const int mid = elements->IntAttribute("mat");
 
-                if (el_type != "tet4" && el_type != "tet10" && el_type != "tet20")
+                if (el_type != "tet4" && el_type != "tet10" && el_type != "tet20" && el_type != "hex8")
                 {
                     logger().error("Unsupported elemet type {}", el_type);
                     continue;
@@ -96,14 +97,25 @@ namespace polyfem
                     order = std::max(2, order);
                 else if (el_type == "tet20")
                     order = std::max(3, order);
+                else if (el_type == "hex8")
+                {
+                    order = std::max(1, order);
+                    is_hex = true;
+                }
 
                 for (const tinyxml2::XMLElement *child = elements->FirstChildElement("elem"); child != NULL; child = child->NextSiblingElement("elem"))
                 {
                     const std::string ids = std::string(child->GetText());
                     const auto tt = StringUtils::split(ids, ",");
                     assert(tt.size() >= 4);
+                    const int node_size = is_hex ? 8 : 4;
 
-                    tets.emplace_back(atoi(tt[0].c_str()) - 1, atoi(tt[1].c_str()) - 1, atoi(tt[2].c_str()) - 1, atoi(tt[3].c_str()) - 1);
+                    els.emplace_back(node_size);
+
+                    for (int n = 0; n < node_size; ++n)
+                    {
+                        els.back()[n] = atoi(tt[n].c_str()) - 1;
+                    }
                     nodes.emplace_back();
                     mids.emplace_back(mid);
                     for (int n = 0; n < tt.size(); ++n)
@@ -127,13 +139,13 @@ namespace polyfem
                 }
             }
 
-            T.resize(tets.size(), 4);
-            Es.resize(tets.size(), 1);
-            nus.resize(tets.size(), 1);
-            rhos.resize(tets.size(), 1);
-            for (int i = 0; i < tets.size(); ++i)
+            T.resize(els.size(), is_hex ? 8 : 4);
+            Es.resize(els.size(), 1);
+            nus.resize(els.size(), 1);
+            rhos.resize(els.size(), 1);
+            for (int i = 0; i < els.size(); ++i)
             {
-                T.row(i) = tets[i].transpose();
+                T.row(i) = els[i].transpose();
                 const auto it = materials.find(mids[i]);
                 assert(it != materials.end());
                 Es(i) = std::get<0>(it->second);
@@ -179,6 +191,18 @@ namespace polyfem
                     nodeSet[atoi(tt[0].c_str()) - 1].push_back(id);
                     nodeSet[atoi(tt[1].c_str()) - 1].push_back(id);
                     nodeSet[atoi(tt[2].c_str()) - 1].push_back(id);
+                }
+
+                for (const tinyxml2::XMLElement *nodeid = child->FirstChildElement("quad4"); nodeid != NULL; nodeid = nodeid->NextSiblingElement("quad4"))
+                {
+                    const std::string ids = std::string(nodeid->GetText());
+                    const auto tt = StringUtils::split(ids, ",");
+                    assert(tt.size() == 4);
+                    const int index3 = atoi(tt[3].c_str()) - 1;
+                    nodeSet[atoi(tt[0].c_str()) - 1].push_back(id);
+                    nodeSet[atoi(tt[1].c_str()) - 1].push_back(id);
+                    nodeSet[atoi(tt[2].c_str()) - 1].push_back(id);
+                    nodeSet[index3].push_back(id);
                 }
 
                 id++;
@@ -354,7 +378,8 @@ namespace polyfem
         state.args["discr_order"] = std::max(current_order, element_order);
 
         state.load_mesh(V, T);
-        state.mesh->attach_higher_order_nodes(V, nodes);
+        if (T.cols() == 4)
+            state.mesh->attach_higher_order_nodes(V, nodes);
 
         if (materials.size() == 1)
         {
