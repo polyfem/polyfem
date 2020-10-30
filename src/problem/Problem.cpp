@@ -125,6 +125,7 @@ namespace polyfem
 		problems_.emplace("Gravity", std::make_shared<GravityProblem>("Gravity"));
 
 		problems_.emplace("ConstantVelocity", std::make_shared<ConstantVelocity>("ConstantVelocity"));
+		problems_.emplace("TwoSpheres", std::make_shared<TwoSpheres>("TwoSpheres"));
 		problems_.emplace("DrivenCavity", std::make_shared<DrivenCavity>("DrivenCavity"));
 		problems_.emplace("DrivenCavitySmooth", std::make_shared<DrivenCavitySmooth>("DrivenCavitySmooth"));
 		problems_.emplace("Flow", std::make_shared<Flow>("Flow"));

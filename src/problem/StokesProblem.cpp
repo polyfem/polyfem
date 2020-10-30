@@ -4,6 +4,17 @@
 
 namespace polyfem
 {
+	namespace
+	{
+		double bump(double r)
+		{
+			const auto f = [](double x) { return x <= 0 ? 0 : exp(-1. / x); };
+			const auto g = [&f](double x) { return f(x) / (f(x) + f(1. - x)); };
+			const auto h = [&g](double x) { return g(x - 1); };
+			const auto k = [&h](double x) { return h(x * x); };
+			return 1 - k(r);
+		}
+	} // namespace
 
 	TimeDepentendStokesProblem::TimeDepentendStokesProblem(const std::string &name)
 		: Problem(name)
@@ -49,6 +60,41 @@ namespace polyfem
 
 		if (is_time_dependent_)
 			val *= (1 - exp(-5 * t));
+	}
+
+	TwoSpheres::TwoSpheres(const std::string &name)
+		: TimeDepentendStokesProblem(name)
+	{
+		// boundary_ids_ = {1};
+	}
+
+	void TwoSpheres::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+	}
+
+	void TwoSpheres::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+	}
+
+	void TwoSpheres::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+
+		for (int i = 0; i < pts.rows(); ++i)
+		{
+			const double r1 = sqrt((pts(i, 0) - 0.04) * (pts(i, 0) - 0.04) + (pts(i, 1) - 0.2) * (pts(i, 1) - 0.2));
+			const double r2 = sqrt((pts(i, 0) - 0.16) * (pts(i, 0) - 0.16) + (pts(i, 1) - 0.2) * (pts(i, 1) - 0.2));
+
+			// if (r1 < 0.02)
+			// {
+			// 	std::cout << r1 << " " << 0.05 * bump(r1 * 70) - 0.05 * bump(r2 * 70) << std::endl;
+			// 	int ad = 1 - k(r1 / 70);
+			// }
+
+			val(i, 0) = 0.05 * bump(r1 * 70) - 0.05 * bump(r2 * 70);
+		}
 	}
 
 	DrivenCavity::DrivenCavity(const std::string &name)
