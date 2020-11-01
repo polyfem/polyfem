@@ -6,55 +6,55 @@ namespace polyfem
 {
 	namespace
 	{
-		template<typename T>
+		template <typename T>
 		T linear_fun(T x, T y)
 		{
 			return x;
 		}
 
-		template<typename T>
+		template <typename T>
 		T quadratic_fun(T x, T y)
 		{
 			T v = x;
-			return v*v;
+			return v * v;
 		}
 
-		template<typename T>
+		template <typename T>
 		T cubic_fun(T x, T y)
 		{
-			T v = (2*y-0.9);
-			return v*v*v*v + 0.1;
+			T v = (2 * y - 0.9);
+			return v * v * v * v + 0.1;
 		}
 
-		template<typename T>
+		template <typename T>
 		T sine_fun(T x, T y)
 		{
-			return sin(x*10)*sin(y*10);
+			return sin(x * 10) * sin(y * 10);
 		}
 
-		template<typename T>
+		template <typename T>
 		T sine_fun(T x, T y, T z)
 		{
-			return sin(x*10)*sin(y*10)*sin(z*10);
+			return sin(x * 10) * sin(y * 10) * sin(z * 10);
 		}
 
-		template<typename T>
+		template <typename T>
 		T zero_bc(T x, T y)
 		{
-			return (1 - x)  * x * x * y * (1-y) *(1-y);
+			return (1 - x) * x * x * y * (1 - y) * (1 - y);
 		}
 
-		template<typename T>
+		template <typename T>
 		T zero_bc(T x, T y, T z)
 		{
-			return (1 - x)  * x * x * y * (1-y) *(1-y) * z * (1 - z);
+			return (1 - x) * x * x * y * (1 - y) * (1 - y) * z * (1 - z);
 		}
-	}
+	} // namespace
 
 	LinearProblem::LinearProblem(const std::string &name)
-	: ProblemWithSolution(name)
-	{ }
-
+		: ProblemWithSolution(name)
+	{
+	}
 
 	VectorNd LinearProblem::eval_fun(const VectorNd &pt, const double t) const
 	{
@@ -80,15 +80,10 @@ namespace polyfem
 		return res;
 	}
 
-
-
-
-
-
-
 	QuadraticProblem::QuadraticProblem(const std::string &name)
-	: ProblemWithSolution(name)
-	{ }
+		: ProblemWithSolution(name)
+	{
+	}
 
 	VectorNd QuadraticProblem::eval_fun(const VectorNd &pt, const double t) const
 	{
@@ -114,11 +109,10 @@ namespace polyfem
 		return res;
 	}
 
-
-
 	CubicProblem::CubicProblem(const std::string &name)
-	: ProblemWithSolution(name)
-	{ }
+		: ProblemWithSolution(name)
+	{
+	}
 
 	VectorNd CubicProblem::eval_fun(const VectorNd &pt, const double t) const
 	{
@@ -144,17 +138,17 @@ namespace polyfem
 		return res;
 	}
 
-
 	SineProblem::SineProblem(const std::string &name)
-	: ProblemWithSolution(name)
-	{ }
+		: ProblemWithSolution(name)
+	{
+	}
 
 	VectorNd SineProblem::eval_fun(const VectorNd &pt, const double t) const
 	{
 		VectorNd res(1);
-		if(pt.size() == 2)
+		if (pt.size() == 2)
 			res(0) = sine_fun(pt(0), pt(1)) * t;
-		else if(pt.size() == 3)
+		else if (pt.size() == 3)
 			res(0) = sine_fun(pt(0), pt(1), pt(2)) * t;
 		else
 			assert(false);
@@ -166,9 +160,9 @@ namespace polyfem
 	{
 		AutodiffGradPt res(1);
 
-		if(pt.size() == 2)
+		if (pt.size() == 2)
 			res(0) = sine_fun(pt(0), pt(1)) * t;
-		else if(pt.size() == 3)
+		else if (pt.size() == 3)
 			res(0) = sine_fun(pt(0), pt(1), pt(2)) * t;
 		else
 			assert(false);
@@ -180,9 +174,9 @@ namespace polyfem
 	{
 		AutodiffHessianPt res(1);
 
-		if(pt.size() == 2)
+		if (pt.size() == 2)
 			res(0) = sine_fun(pt(0), pt(1)) * t;
-		else if(pt.size() == 3)
+		else if (pt.size() == 3)
 			res(0) = sine_fun(pt(0), pt(1), pt(2)) * t;
 		else
 			assert(false);
@@ -190,18 +184,17 @@ namespace polyfem
 		return res;
 	}
 
-
-
 	ZeroBCProblem::ZeroBCProblem(const std::string &name)
-	: ProblemWithSolution(name)
-	{ }
+		: ProblemWithSolution(name)
+	{
+	}
 
 	VectorNd ZeroBCProblem::eval_fun(const VectorNd &pt, const double t) const
 	{
 		VectorNd res(1);
-		if(pt.size() == 2)
+		if (pt.size() == 2)
 			res(0) = zero_bc(pt(0), pt(1)) * t;
-		else if(pt.size() == 3)
+		else if (pt.size() == 3)
 			res(0) = zero_bc(pt(0), pt(1), pt(2)) * t;
 		else
 			assert(false);
@@ -212,9 +205,9 @@ namespace polyfem
 	AutodiffGradPt ZeroBCProblem::eval_fun(const AutodiffGradPt &pt, const double t) const
 	{
 		AutodiffGradPt res(1);
-		if(pt.size() == 2)
+		if (pt.size() == 2)
 			res(0) = zero_bc(pt(0), pt(1)) * t;
-		else if(pt.size() == 3)
+		else if (pt.size() == 3)
 			res(0) = zero_bc(pt(0), pt(1), pt(2)) * t;
 		else
 			assert(false);
@@ -225,9 +218,9 @@ namespace polyfem
 	AutodiffHessianPt ZeroBCProblem::eval_fun(const AutodiffHessianPt &pt, const double t) const
 	{
 		AutodiffHessianPt res(1);
-		if(pt.size() == 2)
+		if (pt.size() == 2)
 			res(0) = zero_bc(pt(0), pt(1)) * t;
-		else if(pt.size() == 3)
+		else if (pt.size() == 3)
 			res(0) = zero_bc(pt(0), pt(1), pt(2)) * t;
 		else
 			assert(false);
@@ -236,34 +229,36 @@ namespace polyfem
 	}
 
 	MinSurfProblem::MinSurfProblem(const std::string &name)
-	: Problem(name)
-	{ }
-
-	void MinSurfProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const
+		: Problem(name)
 	{
-		val = -10*Eigen::MatrixXd::Ones(pts.rows(), 1);
 	}
 
-	void MinSurfProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const
+	void MinSurfProblem::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	{
+		val = -10 * Eigen::MatrixXd::Ones(pts.rows(), 1);
+	}
+
+	void MinSurfProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), 1);
 	}
 
 	TimeDependentProblem::TimeDependentProblem(const std::string &name)
-	: Problem(name)
-	{ }
+		: Problem(name)
+	{
+	}
 
-	void TimeDependentProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const
+	void TimeDependentProblem::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Ones(pts.rows(), 1);
 	}
 
-	void TimeDependentProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts,const double t, Eigen::MatrixXd &val) const
+	void TimeDependentProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), 1);
 	}
 
-	void TimeDependentProblem::initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void TimeDependentProblem::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), 1);
 	}
@@ -273,7 +268,7 @@ namespace polyfem
 	{
 	}
 
-	void GenericScalarProblemExact::initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	void GenericScalarProblemExact::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		exact(pts, 0, val);
 	}
@@ -309,12 +304,12 @@ namespace polyfem
 		return res;
 	}
 
-	void GenericScalarProblemExact::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	void GenericScalarProblemExact::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
-		ProblemWithSolution::rhs(formulation, pts, t, val);
+		ProblemWithSolution::rhs(assembler, formulation, pts, t, val);
 		if (func_ == 0)
 			val.array() -= 1;
 		else
 			val.array() -= 2 * t;
 	}
-}
+} // namespace polyfem

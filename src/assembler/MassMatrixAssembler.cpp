@@ -15,7 +15,7 @@ namespace polyfem
 		class LocalThreadMatStorage
 		{
 		public:
-			std::vector< Eigen::Triplet<double> > entries;
+			std::vector<Eigen::Triplet<double>> entries;
 			StiffnessMatrix tmp_mat;
 			StiffnessMatrix mass_mat;
 
@@ -26,24 +26,25 @@ namespace polyfem
 				mass_mat.resize(mat_size, mat_size);
 			}
 		};
-	}
+	} // namespace
 
 	void MassMatrixAssembler::assemble(
 		const bool is_volume,
 		const int size,
 		const int n_basis,
-		const std::vector< ElementBases > &bases,
-		const std::vector< ElementBases > &gbases,
+		const Density &density,
+		const std::vector<ElementBases> &bases,
+		const std::vector<ElementBases> &gbases,
 		StiffnessMatrix &mass) const
 	{
 		const int buffer_size = std::min(long(1e8), long(n_basis) * size);
 		logger().debug("buffer_size {}", buffer_size);
 
-		mass.resize(n_basis*size, n_basis*size);
+		mass.resize(n_basis * size, n_basis * size);
 		mass.setZero();
 
 #ifdef POLYFEM_WITH_TBB
-		typedef tbb::enumerable_thread_specific< LocalThreadMatStorage > LocalStorage;
+		typedef tbb::enumerable_thread_specific<LocalThreadMatStorage> LocalStorage;
 		LocalStorage storages(LocalThreadMatStorage(buffer_size, mass.rows()));
 #else
 		LocalThreadMatStorage loc_storage(buffer_size, mass.rows());
@@ -52,11 +53,12 @@ namespace polyfem
 		const int n_bases = int(bases.size());
 
 #ifdef POLYFEM_WITH_TBB
-		tbb::parallel_for( tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
+		tbb::parallel_for(tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
 		LocalStorage::reference loc_storage = storages.local();
 		for (int e = r.begin(); e != r.end(); ++e) {
 #else
-		for(int e=0; e < n_bases; ++e) {
+		for (int e = 0; e < n_bases; ++e)
+		{
 #endif
 			ElementAssemblyValues vals;
 			vals.compute(e, is_volume, bases[e], gbases[e]);
@@ -75,7 +77,11 @@ namespace polyfem
 				{
 					const auto &global_j = vals.basis_values[j].global;
 
-					const double tmp = (vals.basis_values[i].val.array() * vals.basis_values[j].val.array() * da.array()).sum();
+					double tmp = 0; //(vals.basis_values[i].val.array() * vals.basis_values[j].val.array() * da.array()).sum();
+					for(int q = 0; q < da.size(); ++q){
+						const double rho = density(vals.val(q, 0), vals.val(q, 1), vals.val.cols() == 2 ? 0. : vals.val(q, 2), vals.element_id);
+						tmp += rho * vals.basis_values[i].val(q) * vals.basis_values[j].val(q) * da(q);
+					}
 					if (std::abs(tmp) < 1e-30) { continue; }
 
 
@@ -122,16 +128,16 @@ namespace polyfem
 
 			}
 
-			// timer.stop();
-			// if (!vals.has_parameterization) { std::cout << "-- Timer: " << timer.getElapsedTime() << std::endl; }
+				// timer.stop();
+				// if (!vals.has_parameterization) { std::cout << "-- Timer: " << timer.getElapsedTime() << std::endl; }
 #ifdef POLYFEM_WITH_TBB
-		}});
+		} });
 #else
 		}
 #endif
 
 #ifdef POLYFEM_WITH_TBB
-		for (LocalStorage::iterator i = storages.begin(); i != storages.end();  ++i)
+		for (LocalStorage::iterator i = storages.begin(); i != storages.end(); ++i)
 		{
 			mass += i->mass_mat;
 			i->tmp_mat.setFromTriplets(i->entries.begin(), i->entries.end());
@@ -144,4 +150,4 @@ namespace polyfem
 #endif
 		mass.makeCompressed();
 	}
-}
+} // namespace polyfem

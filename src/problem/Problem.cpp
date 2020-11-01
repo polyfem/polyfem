@@ -6,7 +6,7 @@
 #include <polyfem/ElasticProblem.hpp>
 #include <polyfem/PointBasedProblem.hpp>
 #include <polyfem/GenericProblem.hpp>
-#include <polyfem/KernelProblem.hpp>
+// #include <polyfem/KernelProblem.hpp>
 #include <polyfem/StokesProblem.hpp>
 #include <polyfem/TestProblem.hpp>
 #include <polyfem/NodeProblem.hpp>
@@ -17,37 +17,38 @@
 namespace polyfem
 {
 	Problem::Problem(const std::string &name)
-	: name_(name)
-	{ }
-
-	void Problem::setup_bc(const Mesh &mesh, const std::vector< ElementBases > &bases, std::vector< LocalBoundary > &local_boundary, std::vector< int > &boundary_nodes, std::vector< LocalBoundary > &local_neumann_boundary)
+		: name_(name)
 	{
-		std::vector< LocalBoundary > new_local_boundary;
+	}
+
+	void Problem::setup_bc(const Mesh &mesh, const std::vector<ElementBases> &bases, std::vector<LocalBoundary> &local_boundary, std::vector<int> &boundary_nodes, std::vector<LocalBoundary> &local_neumann_boundary)
+	{
+		std::vector<LocalBoundary> new_local_boundary;
 		local_neumann_boundary.clear();
-		for(auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
+		for (auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
 		{
 			const auto &lb = *it;
 			LocalBoundary new_lb(lb.element_id(), lb.type());
 			LocalBoundary new_neumann_lb(lb.element_id(), lb.type());
-			for(int i = 0; i < lb.size(); ++i)
+			for (int i = 0; i < lb.size(); ++i)
 			{
 				const int primitive_g_id = lb.global_primitive_id(i);
 				const int tag = mesh.get_boundary_id(primitive_g_id);
 
-				if(tag <= 0)
+				if (tag <= 0)
 					continue;
 
-				if(boundary_ids_.empty() || std::find(boundary_ids_.begin(), boundary_ids_.end(), tag) != boundary_ids_.end())
+				if (boundary_ids_.empty() || std::find(boundary_ids_.begin(), boundary_ids_.end(), tag) != boundary_ids_.end())
 					new_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
-				if(std::find(neumann_boundary_ids_.begin(), neumann_boundary_ids_.end(), tag) != neumann_boundary_ids_.end())
+				if (std::find(neumann_boundary_ids_.begin(), neumann_boundary_ids_.end(), tag) != neumann_boundary_ids_.end())
 					new_neumann_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
 				if (std::find(pressure_boundary_ids_.begin(), pressure_boundary_ids_.end(), tag) != pressure_boundary_ids_.end())
 					new_neumann_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
 			}
 
-			if(!new_lb.empty())
+			if (!new_lb.empty())
 				new_local_boundary.emplace_back(new_lb);
-			if(!new_neumann_lb.empty())
+			if (!new_neumann_lb.empty())
 				local_neumann_boundary.emplace_back(new_neumann_lb);
 		}
 		local_boundary.clear();
@@ -57,22 +58,24 @@ namespace polyfem
 
 		const int dim = is_scalar() ? 1 : mesh.dimension();
 
-		for(auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
+		for (auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
 		{
 			const auto &lb = *it;
 			const auto &b = bases[lb.element_id()];
-			for(int i = 0; i < lb.size(); ++i)
+			for (int i = 0; i < lb.size(); ++i)
 			{
 				const int primitive_global_id = lb.global_primitive_id(i);
 				const auto nodes = b.local_nodes_for_primitive(primitive_global_id, mesh);
 
-				for(long n = 0; n < nodes.size(); ++n){
+				for (long n = 0; n < nodes.size(); ++n)
+				{
 					auto &bs = b.bases[nodes(n)];
-					for(size_t g = 0; g < bs.global().size(); ++g){
+					for (size_t g = 0; g < bs.global().size(); ++g)
+					{
 						const int base_index = bs.global()[g].index * dim;
-						for(int d = 0; d < dim; ++d)
+						for (int d = 0; d < dim; ++d)
 						{
-							if(is_dimention_dirichet(mesh.get_boundary_id(primitive_global_id), d))
+							if (is_dimention_dirichet(mesh.get_boundary_id(primitive_global_id), d))
 								boundary_nodes.push_back(base_index + d);
 						}
 					}
@@ -84,7 +87,6 @@ namespace polyfem
 		auto it = std::unique(boundary_nodes.begin(), boundary_nodes.end());
 		boundary_nodes.resize(std::distance(boundary_nodes.begin(), it));
 	}
-
 
 	const ProblemFactory &ProblemFactory::factory()
 	{
@@ -106,6 +108,7 @@ namespace polyfem
 
 		problems_.emplace("Elastic", std::make_shared<ElasticProblem>("Elastic"));
 		problems_.emplace("TorsionElastic", std::make_shared<TorsionElasticProblem>("TorsionElastic"));
+		problems_.emplace("DoubleTorsionElastic", std::make_shared<DoubleTorsionElasticProblem>("DoubleTorsionElastic"));
 		problems_.emplace("GenericScalar", std::make_shared<GenericScalarProblem>("GenericScalar"));
 		problems_.emplace("GenericTensor", std::make_shared<GenericTensorProblem>("GenericTensor"));
 		problems_.emplace("ElasticZeroBC", std::make_shared<ElasticProblemZeroBC>("ElasticZeroBC"));
@@ -114,7 +117,7 @@ namespace polyfem
 		problems_.emplace("QuadraticElasticExact", std::make_shared<QuadraticElasticProblemExact>("QuadraticElasticExact"));
 		problems_.emplace("LinearElasticExact", std::make_shared<LinearElasticProblemExact>("LinearElasticExact"));
 		problems_.emplace("PointBasedTensor", std::make_shared<PointBasedTensorProblem>("PointBasedTensor"));
-		problems_.emplace("Kernel", std::make_shared<KernelProblem>("Kernel"));
+		// problems_.emplace("Kernel", std::make_shared<KernelProblem>("Kernel"));
 		problems_.emplace("Node", std::make_shared<NodeProblem>("Node"));
 
 		problems_.emplace("TimeDependentScalar", std::make_shared<TimeDependentProblem>("TimeDependentScalar"));
@@ -122,6 +125,7 @@ namespace polyfem
 		problems_.emplace("Gravity", std::make_shared<GravityProblem>("Gravity"));
 
 		problems_.emplace("ConstantVelocity", std::make_shared<ConstantVelocity>("ConstantVelocity"));
+		problems_.emplace("TwoSpheres", std::make_shared<TwoSpheres>("TwoSpheres"));
 		problems_.emplace("DrivenCavity", std::make_shared<DrivenCavity>("DrivenCavity"));
 		problems_.emplace("DrivenCavitySmooth", std::make_shared<DrivenCavitySmooth>("DrivenCavitySmooth"));
 		problems_.emplace("Flow", std::make_shared<Flow>("Flow"));
@@ -138,7 +142,7 @@ namespace polyfem
 
 		problems_.emplace("BilaplacianProblemWithSolution", std::make_shared<BilaplacianProblemWithSolution>("BilaplacianProblemWithSolution"));
 
-		for(auto it = problems_.begin(); it != problems_.end(); ++it)
+		for (auto it = problems_.begin(); it != problems_.end(); ++it)
 			problem_names_.push_back(it->first);
 	}
 
@@ -146,11 +150,10 @@ namespace polyfem
 	{
 		auto it = problems_.find(problem);
 
-		if(it == problems_.end())
+		if (it == problems_.end())
 			return problems_.at("Linear");
 
 		return it->second;
 	}
 
-
-}
+} // namespace polyfem

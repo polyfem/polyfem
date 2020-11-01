@@ -1,7 +1,5 @@
 #pragma once
 
-
-
 #include <polyfem/Common.hpp>
 
 #include <polyfem/Assembler.hpp>
@@ -21,75 +19,70 @@
 #include <polyfem/NavierStokes.hpp>
 #include <polyfem/IncompressibleLinElast.hpp>
 
-#include <polyfem/ProblemWithSolution.hpp>
-
 #include <vector>
 
 namespace polyfem
 {
 	class AssemblerUtils
 	{
-	private:
-		AssemblerUtils();
-
 	public:
-		static AssemblerUtils &instance();
+		AssemblerUtils();
 
 		//Linear
 		void assemble_problem(const std::string &assembler,
-			const bool is_volume,
-			const int n_basis,
-			const std::vector< ElementBases > &bases,
-			const std::vector< ElementBases > &gbases,
-			StiffnessMatrix &stiffness) const;
+							  const bool is_volume,
+							  const int n_basis,
+							  const std::vector<ElementBases> &bases,
+							  const std::vector<ElementBases> &gbases,
+							  StiffnessMatrix &stiffness) const;
 
 		void assemble_mass_matrix(const std::string &assembler,
-			const bool is_volume,
-			const int n_basis,
-			const std::vector< ElementBases > &bases,
-			const std::vector< ElementBases > &gbases,
-			StiffnessMatrix &mass) const;
+								  const bool is_volume,
+								  const int n_basis,
+								  const Density &density,
+								  const std::vector<ElementBases> &bases,
+								  const std::vector<ElementBases> &gbases,
+								  StiffnessMatrix &mass) const;
 
 		void assemble_mixed_problem(const std::string &assembler,
-			const bool is_volume,
-			const int n_psi_basis,
-			const int n_phi_basis,
-			const std::vector< ElementBases > &psi_bases,
-			const std::vector< ElementBases > &phi_bases,
-			const std::vector< ElementBases > &gbases,
-			StiffnessMatrix &stiffness) const;
+									const bool is_volume,
+									const int n_psi_basis,
+									const int n_phi_basis,
+									const std::vector<ElementBases> &psi_bases,
+									const std::vector<ElementBases> &phi_bases,
+									const std::vector<ElementBases> &gbases,
+									StiffnessMatrix &stiffness) const;
 
 		void assemble_pressure_problem(const std::string &assembler,
-			const bool is_volume,
-			const int n_basis,
-			const std::vector< ElementBases > &bases,
-			const std::vector< ElementBases > &gbases,
-			StiffnessMatrix &stiffness) const;
-
+									   const bool is_volume,
+									   const int n_basis,
+									   const std::vector<ElementBases> &bases,
+									   const std::vector<ElementBases> &gbases,
+									   StiffnessMatrix &stiffness) const;
 
 		//Non linear
 		double assemble_energy(const std::string &assembler,
-			const bool is_volume,
-			const std::vector< ElementBases > &bases,
-			const std::vector< ElementBases > &gbases,
-			const Eigen::MatrixXd &displacement) const;
+							   const bool is_volume,
+							   const std::vector<ElementBases> &bases,
+							   const std::vector<ElementBases> &gbases,
+							   const Eigen::MatrixXd &displacement) const;
 
 		void assemble_energy_gradient(const std::string &assembler,
-			const bool is_volume,
-			const int n_basis,
-			const std::vector< ElementBases > &bases,
-			const std::vector< ElementBases > &gbases,
-			const Eigen::MatrixXd &displacement,
-			Eigen::MatrixXd &grad) const;
+									  const bool is_volume,
+									  const int n_basis,
+									  const std::vector<ElementBases> &bases,
+									  const std::vector<ElementBases> &gbases,
+									  const Eigen::MatrixXd &displacement,
+									  Eigen::MatrixXd &grad) const;
 
 		void assemble_energy_hessian(const std::string &assembler,
-			const bool is_volume,
-			const int n_basis,
-			const std::vector< ElementBases > &bases,
-			const std::vector< ElementBases > &gbases,
-			const Eigen::MatrixXd &displacement,
-			StiffnessMatrix &hessian) const;
-
+									 const bool is_volume,
+									 const int n_basis,
+									 const bool project_to_psd,
+									 const std::vector<ElementBases> &bases,
+									 const std::vector<ElementBases> &gbases,
+									 const Eigen::MatrixXd &displacement,
+									 StiffnessMatrix &hessian) const;
 
 		//plotting
 		void compute_scalar_value(const std::string &assembler,
@@ -114,31 +107,31 @@ namespace polyfem
 		//for constraints
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 		local_assemble(const std::string &assembler,
-			const ElementAssemblyValues &vals,
-			const int i,
-			const int j,
-			const QuadratureVector &da) const;
+					   const ElementAssemblyValues &vals,
+					   const int i,
+					   const int j,
+					   const QuadratureVector &da) const;
 
 		Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> kernel(const std::string &assembler, const int dim, const AutodiffScalarGrad &r) const;
 
 		//aux
 		void set_parameters(const json &params);
-		void init_multimaterial(Eigen::MatrixXd &Es, Eigen::MatrixXd &nus);
+		void init_multimaterial(const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus);
 
-		bool is_linear(const std::string &assembler) const;
+		static bool is_linear(const std::string &assembler);
 
-		bool is_solution_displacement(const std::string &assembler) const;
+		static bool is_solution_displacement(const std::string &assembler);
 
-		bool is_scalar(const std::string &assembler) const;
-		bool is_tensor(const std::string &assembler) const;
-		bool is_mixed(const std::string &assembler) const;
+		static bool is_scalar(const std::string &assembler);
+		static bool is_tensor(const std::string &assembler);
+		static bool is_mixed(const std::string &assembler);
 
-		bool is_gradient_based(const std::string &assembler) const;
-		bool is_fluid(const std::string &assembler) const;
+		static bool is_gradient_based(const std::string &assembler);
+		static bool is_fluid(const std::string &assembler);
 
 		//getters
-		const std::vector<std::string> &scalar_assemblers() const { return scalar_assemblers_; }
-		const std::vector<std::string> &tensor_assemblers() const { return tensor_assemblers_; }
+		static std::vector<std::string> scalar_assemblers();
+		static std::vector<std::string> tensor_assemblers();
 		// const std::vector<std::string> &mixed_assemblers() const { return mixed_assemblers_; }
 
 		void clear_cache();
@@ -158,6 +151,7 @@ namespace polyfem
 		Assembler<BilaplacianAux> bilaplacian_aux_;
 
 		Assembler<LinearElasticity> linear_elasticity_;
+		NLAssembler<LinearElasticity> linear_elasticity_energy_;
 		Assembler<HookeLinearElasticity> hooke_linear_elasticity_;
 
 		NLAssembler<SaintVenantElasticity> saint_venant_elasticity_;
@@ -179,4 +173,4 @@ namespace polyfem
 		std::vector<std::string> tensor_assemblers_;
 		std::vector<std::string> mixed_assemblers_;
 	};
-}
+} // namespace polyfem

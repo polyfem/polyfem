@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.1)
 project(PolyFEM)
 ################################################################################
 
+cmake_policy(SET CMP0079 NEW)
+
 # cmake_policy(SET CMP0063 NEW)
 # set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
@@ -267,7 +269,9 @@ if(POLYFEM_WITH_TBB)
 
     target_compile_definitions(tbb_static PUBLIC -DPOLYFEM_WITH_TBB)
     target_include_directories(polyfem SYSTEM PUBLIC ${THIRD_PARTY_DIR}/tbb/include)
-    target_link_libraries(polyfem PUBLIC tbb_static)
+    add_library(TBB::tbb ALIAS tbb_static)
+
+    target_link_libraries(polyfem PUBLIC TBB::tbb)
 endif()
 
 # OpenVDB
@@ -289,6 +293,14 @@ endif()
 polyfem_download_libigl()
 find_package(LIBIGL REQUIRED)
 target_link_libraries(polyfem PUBLIC igl::core)
+
+
+# IPC
+option(IPC_TOOLKIT_BUILD_UNIT_TESTS  "Build unit-tests"      OFF)
+option(IPC_TOOLKIT_WITH_LOGGER       "Enables logger "       OFF)
+polyfem_download_ipc()
+add_subdirectory(${THIRD_PARTY_DIR}/ipc)
+target_link_libraries(polyfem PUBLIC IPCToolkit)
 
 
 # Geogram

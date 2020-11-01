@@ -76,10 +76,8 @@ namespace polyfem
 		Navigation3D::Index get_index_from_element_edge(int hi, int v0, int v1) const { return Navigation3D::get_index_from_element_edge(mesh_, hi, v0, v1); }
 		Navigation3D::Index get_index_from_element_face(int hi, int v0, int v1, int v2) const { return Navigation3D::get_index_from_element_tri(mesh_, hi, v0, v1, v2); }
 
-
-		inline std::vector<uint32_t> vertex_neighs(const int v_gid) const {return mesh_.vertices[v_gid].neighbor_hs; }
-		inline std::vector<uint32_t> edge_neighs(const int e_gid) const {return mesh_.edges[e_gid].neighbor_hs; }
-
+		inline std::vector<uint32_t> vertex_neighs(const int v_gid) const { return mesh_.vertices[v_gid].neighbor_hs; }
+		inline std::vector<uint32_t> edge_neighs(const int e_gid) const { return mesh_.edges[e_gid].neighbor_hs; }
 
 		// Navigation in a surface mesh
 		Navigation3D::Index switch_vertex(Navigation3D::Index idx) const { return Navigation3D::switch_vertex(mesh_, idx); }
@@ -90,7 +88,6 @@ namespace polyfem
 		// Iterate in a mesh
 		inline Navigation3D::Index next_around_edge(Navigation3D::Index idx) const { return Navigation3D::next_around_3Dedge(mesh_, idx); }
 		inline Navigation3D::Index next_around_face(Navigation3D::Index idx) const { return Navigation3D::next_around_2Dface(mesh_, idx); }
-
 
 		void to_face_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 6> &to_face) const;
 		void to_vertex_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 8> &to_vertex) const;
@@ -106,14 +103,22 @@ namespace polyfem
 		std::array<int, 8> get_ordered_vertices_from_hex(const int element_index) const;
 		std::array<int, 4> get_ordered_vertices_from_tet(const int element_index) const;
 
-		void get_vertex_elements_neighs(const int v_id, std::vector<int> &ids) const { ids.clear(); ids.insert(ids.begin(), mesh_.vertices[v_id].neighbor_hs.begin(), mesh_.vertices[v_id].neighbor_hs.end()); }
-		void get_edge_elements_neighs(const int e_id, std::vector<int> &ids) const { ids.clear(); ids.insert(ids.begin(), mesh_.edges[e_id].neighbor_hs.begin(), mesh_.edges[e_id].neighbor_hs.end()); }
-
+		void get_vertex_elements_neighs(const int v_id, std::vector<int> &ids) const
+		{
+			ids.clear();
+			ids.insert(ids.begin(), mesh_.vertices[v_id].neighbor_hs.begin(), mesh_.vertices[v_id].neighbor_hs.end());
+		}
+		void get_edge_elements_neighs(const int e_id, std::vector<int> &ids) const
+		{
+			ids.clear();
+			ids.insert(ids.begin(), mesh_.edges[e_id].neighbor_hs.begin(), mesh_.edges[e_id].neighbor_hs.end());
+		}
 
 		void compute_boundary_ids(const double eps) override;
-		void compute_boundary_ids(const std::function<int(const RowVectorNd&)> &marker) override;
-		void compute_boundary_ids(const std::function<int(const RowVectorNd&, bool)> &marker) override;
-		void compute_boundary_ids(const std::function<int(const std::vector<int>&, bool)> &marker) override;
+		void compute_boundary_ids(const std::function<int(const RowVectorNd &)> &marker) override;
+		void compute_boundary_ids(const std::function<int(const RowVectorNd &, bool)> &marker) override;
+		void compute_boundary_ids(const std::function<int(const std::vector<int> &, bool)> &marker) override;
+		void compute_body_ids(const std::function<int(const RowVectorNd &)> &marker) override;
 
 		void compute_element_barycenters(Eigen::MatrixXd &barycenters) const override { cell_barycenters(barycenters); }
 		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
@@ -121,12 +126,18 @@ namespace polyfem
 		void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, const std::vector<bool> &valid_elements) const override;
 
 		//used for sweeping 2D mesh
-		Mesh3DStorage &mesh_storge() { std::cerr<<"never user this function"<<std::endl; return mesh_; }
+		Mesh3DStorage &mesh_storge()
+		{
+			std::cerr << "never user this function" << std::endl;
+			return mesh_;
+		}
 		static void geomesh_2_mesh_storage(const GEO::Mesh &gm, Mesh3DStorage &m);
+
 	protected:
 		bool load(const std::string &path) override;
 		bool load(const GEO::Mesh &M) override;
+
 	private:
 		Mesh3DStorage mesh_;
 	};
-}
+} // namespace polyfem

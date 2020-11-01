@@ -102,7 +102,7 @@ namespace polyfem
 	}
 
 	Eigen::VectorXd
-	SaintVenantElasticity::assemble(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
+	SaintVenantElasticity::assemble_grad(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
 	{
 		// igl::Timer time; time.start();
 
@@ -124,7 +124,7 @@ namespace polyfem
 	}
 
 	Eigen::MatrixXd
-	SaintVenantElasticity::assemble_grad(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
+	SaintVenantElasticity::assemble_hessian(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
 	{
 		// igl::Timer time; time.start();
 

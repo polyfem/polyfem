@@ -117,7 +117,7 @@ namespace polyfem
 
 	template <bool full_gradient>
 	Eigen::VectorXd
-	NavierStokesVelocity<full_gradient>::assemble(const ElementAssemblyValues &vals, const Eigen::MatrixXd &velocity, const QuadratureVector &da) const
+	NavierStokesVelocity<full_gradient>::assemble_grad(const ElementAssemblyValues &vals, const Eigen::MatrixXd &velocity, const QuadratureVector &da) const
 	{
 		assert(false);
 		return Eigen::VectorXd(vals.basis_values.size()*size());
@@ -125,7 +125,7 @@ namespace polyfem
 
 	template <bool full_gradient>
 	Eigen::MatrixXd
-	NavierStokesVelocity<full_gradient>::assemble_grad(const ElementAssemblyValues &vals, const Eigen::MatrixXd &velocity, const QuadratureVector &da) const
+	NavierStokesVelocity<full_gradient>::assemble_hessian(const ElementAssemblyValues &vals, const Eigen::MatrixXd &velocity, const QuadratureVector &da) const
 	{
 		Eigen::MatrixXd H;
 		if (full_gradient)

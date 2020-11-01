@@ -11,7 +11,6 @@
 #include <Eigen/Dense>
 #include <functional>
 
-
 namespace polyfem
 {
 	class IncompressibleLinearElasticityDispacement
@@ -28,10 +27,11 @@ namespace polyfem
 		inline int size() const { return size_; }
 
 		void set_parameters(const json &params);
-		void init_multimaterial(Eigen::MatrixXd &Es, Eigen::MatrixXd &nus);
+		void init_multimaterial(const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus);
 
 		void compute_von_mises_stresses(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const;
 		void compute_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &tensor) const;
+
 	private:
 		int size_ = -1;
 
@@ -56,12 +56,11 @@ namespace polyfem
 		inline int cols() const { return 1; }
 
 		void set_parameters(const json &params);
-		void init_multimaterial(Eigen::MatrixXd &Es, Eigen::MatrixXd &nus);
+		void init_multimaterial(const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus);
 
 	private:
 		int size_ = -1;
 	};
-
 
 	class IncompressibleLinearElasticityPressure
 	{
@@ -74,16 +73,16 @@ namespace polyfem
 		compute_rhs(const AutodiffHessianPt &pt) const
 		{
 			assert(false);
-			return Eigen::Matrix<double, 1, 1>::Zero(1,1);
+			return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
 		}
 
 		inline int size() const { return 1; }
 
 		void set_parameters(const json &params);
-		void init_multimaterial(Eigen::MatrixXd &Es, Eigen::MatrixXd &nus);
+		void init_multimaterial(const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus);
 
 	private:
 		int size_ = -1;
 		LameParameters params_;
 	};
-}
+} // namespace polyfem

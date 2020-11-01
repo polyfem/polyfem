@@ -12,6 +12,7 @@ target_sources(polyfem PRIVATE ${SOURCES})
 # Subfolders
 ################################################################################
 
+add_subdirectory(state)
 add_subdirectory(assembler)
 add_subdirectory(autogen)
 add_subdirectory(basis)

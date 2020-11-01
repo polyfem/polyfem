@@ -4,6 +4,18 @@
 
 namespace polyfem
 {
+	namespace
+	{
+		//https://math.stackexchange.com/questions/101480/are-there-other-kinds-of-bump-functions-than-e-frac1x2-1
+		double bump(double r)
+		{
+			const auto f = [](double x) { return x <= 0 ? 0 : exp(-1. / x); };
+			const auto g = [&f](double x) { return f(x) / (f(x) + f(1. - x)); };
+			const auto h = [&g](double x) { return g(x - 1); };
+			const auto k = [&h](double x) { return h(x * x); };
+			return 1 - k(r);
+		}
+	} // namespace
 
 TimeDepentendStokesProblem::TimeDepentendStokesProblem(const std::string &name)
 	: Problem(name)
@@ -19,7 +31,7 @@ void TimeDepentendStokesProblem::set_parameters(const json &params)
 	}
 }
 
-void TimeDepentendStokesProblem::initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+void TimeDepentendStokesProblem::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 {
 	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 	// val = Eigen::MatrixXd::Ones(pts.rows(), pts.cols())*(1 - exp(-5 * 0.01));
@@ -31,7 +43,7 @@ ConstantVelocity::ConstantVelocity(const std::string &name)
 	// boundary_ids_ = {1};
 }
 
-void ConstantVelocity::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+void ConstantVelocity::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 {
 	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 }
@@ -51,13 +63,77 @@ void ConstantVelocity::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, c
 		val *= (1 - exp(-5 * t));
 }
 
+TwoSpheres::TwoSpheres(const std::string &name)
+	: TimeDepentendStokesProblem(name)
+{
+	// boundary_ids_ = {1};
+}
+
+void TwoSpheres::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+}
+
+void TwoSpheres::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+}
+
+void TwoSpheres::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+{
+	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+
+	for (int i = 0; i < pts.rows(); ++i)
+	{
+		if(pts.cols() == 2)
+		{
+			const double r1 = sqrt((pts(i, 0) - 0.04) * (pts(i, 0) - 0.04) + (pts(i, 1) - 0.2) * (pts(i, 1) - 0.2));
+			const double r2 = sqrt((pts(i, 0) - 0.16) * (pts(i, 0) - 0.16) + (pts(i, 1) - 0.2) * (pts(i, 1) - 0.2));
+
+			val(i, 0) = 0.05 * bump(r1 * 70) - 0.05 * bump(r2 * 70);
+		}
+		else
+		{
+			const double r1 = sqrt((pts(i, 0) - 0.04) * (pts(i, 0) - 0.04) + (pts(i, 1) - 0.2) * (pts(i, 1) - 0.2) + (pts(i, 2) - 0.2) * (pts(i, 2) - 0.2));
+			const double r2 = sqrt((pts(i, 0) - 0.16) * (pts(i, 0) - 0.16) + (pts(i, 1) - 0.2) * (pts(i, 1) - 0.2) + (pts(i, 2) - 0.2) * (pts(i, 2) - 0.2));
+
+			val(i, 0) = 0.05 * bump(r1 * 70) - 0.05 * bump(r2 * 70);
+		}
+	}
+}
+
+void TwoSpheres::initial_density(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+{
+	val = Eigen::MatrixXd::Zero(pts.rows(), 1);
+	for(int i = 0; i < pts.rows(); ++i)
+	{
+		const double x = pts(i, 0);
+		const double y = pts(i, 1);
+
+		if(pts.cols() == 2)
+		{
+			const double r1 = sqrt((pts(i, 0) - 0.04) * (pts(i, 0) - 0.04) + (pts(i, 1) - 0.2) * (pts(i, 1) - 0.2));
+			const double r2 = sqrt((pts(i, 0) - 0.16) * (pts(i, 0) - 0.16) + (pts(i, 1) - 0.2) * (pts(i, 1) - 0.2));
+			
+			val(i, 0) = bump(r1 * 70) + bump(r2 * 70);
+		}
+		else
+		{
+			const double r1 = sqrt((pts(i, 0) - 0.04) * (pts(i, 0) - 0.04) + (pts(i, 1) - 0.2) * (pts(i, 1) - 0.2) + (pts(i, 2) - 0.2) * (pts(i, 2) - 0.2));
+			const double r2 = sqrt((pts(i, 0) - 0.16) * (pts(i, 0) - 0.16) + (pts(i, 1) - 0.2) * (pts(i, 1) - 0.2) + (pts(i, 2) - 0.2) * (pts(i, 2) - 0.2));
+			
+			val(i, 0) = bump(r1 * 70) + bump(r2 * 70);
+		}
+	}
+}
+
 DrivenCavity::DrivenCavity(const std::string &name)
 	: TimeDepentendStokesProblem(name)
 {
 	// boundary_ids_ = {1};
 }
 
-void DrivenCavity::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+void DrivenCavity::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 {
 	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 }
@@ -84,7 +160,7 @@ DrivenCavitySmooth::DrivenCavitySmooth(const std::string &name)
 	// boundary_ids_ = {1};
 }
 
-void DrivenCavitySmooth::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+void DrivenCavitySmooth::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 {
 	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 }
@@ -120,7 +196,7 @@ Flow::Flow(const std::string &name)
 	outflow_amout_ = 0.25;
 }
 
-void Flow::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+void Flow::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 {
 	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 }
@@ -215,7 +291,7 @@ FlowWithObstacle::FlowWithObstacle(const std::string &name)
 	U_ = 1.5;
 }
 
-void FlowWithObstacle::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+void FlowWithObstacle::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 {
 	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 }
@@ -254,12 +330,12 @@ CollidingBalls::CollidingBalls(const std::string &name)
 	radius_ = 0.02;
 }
 
-void CollidingBalls::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+void CollidingBalls::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 {
 	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 }
 
-void CollidingBalls::initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+void CollidingBalls::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 {
 	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 	for(int i = 0; i < pts.rows(); ++i)
@@ -369,7 +445,7 @@ CornerFlow::CornerFlow(const std::string &name)
 	U_ = 1.5;
 }
 
-void CornerFlow::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+void CornerFlow::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 {
 	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 }
@@ -409,7 +485,7 @@ UnitFlowWithObstacle::UnitFlowWithObstacle(const std::string &name)
 	dir_ = 0;
 }
 
-void UnitFlowWithObstacle::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+void UnitFlowWithObstacle::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 {
 	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 }
@@ -501,37 +577,9 @@ TaylorGreenVortexProblem::TaylorGreenVortexProblem(const std::string &name)
 {
 }
 
-void TaylorGreenVortexProblem::initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+void TaylorGreenVortexProblem::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 {
 	exact(pts, 0, val);
-}
-
-void TaylorGreenVortexProblem::initial_density(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
-{
-	const double radius_ = 1.5707963267948966;
-	val = Eigen::MatrixXd::Zero(pts.rows(), 1);
-	for(int i = 0; i < pts.rows(); ++i)
-	{
-		const double x = pts(i, 0);
-		const double y = pts(i, 1);
-
-		if(pts.cols() == 2)
-		{
-			double r1 = sqrt(pow(x-3.141592653589793,2)+pow(y-3.141592653589793,2));
-			
-			if(r1 <= radius_)
-				val(i, 0) = 1;
-		}
-		else
-		{
-			const double z = pts(i, 2);
-
-			double r1 = sqrt(pow(x-3.141592653589793,2)+pow(y-3.141592653589793,2)+pow(z-3.141592653589793,2));
-			
-			if(r1 <= radius_)
-				val(i, 0) = 1;
-		}
-	}
 }
 
 void TaylorGreenVortexProblem::set_parameters(const json &params)
@@ -586,7 +634,7 @@ void TaylorGreenVortexProblem::exact_grad(const Eigen::MatrixXd &pts, const doub
 	}
 }
 
-void TaylorGreenVortexProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+void TaylorGreenVortexProblem::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 {
 	val.resize(pts.rows(), pts.cols());
 	val.setZero();
@@ -873,7 +921,7 @@ TransientStokeProblemExact::TransientStokeProblemExact(const std::string &name)
 {
 }
 
-void TransientStokeProblemExact::initial_solution(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+void TransientStokeProblemExact::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 {
 	exact(pts, 0, val);
 }
@@ -937,7 +985,7 @@ void TransientStokeProblemExact::exact_grad(const Eigen::MatrixXd &pts, const do
 	// }
 }
 
-void TransientStokeProblemExact::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+void TransientStokeProblemExact::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 {
 	val.resize(pts.rows(), pts.cols());
 

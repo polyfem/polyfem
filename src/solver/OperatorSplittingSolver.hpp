@@ -1,7 +1,8 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
-
+#include <polyfem/LocalBoundary.hpp>
+#include <polyfem/Problem.hpp>
 #include <polysolve/FEMSolver.hpp>
 #include <polyfem/Logger.hpp>
 
@@ -39,7 +40,7 @@ namespace polyfem
 
         void initialize_mesh(const polyfem::Mesh& mesh, 
         const int shape, const int n_el,
-        const std::vector<polyfem::LocalBoundary>& local_boundary)
+        const std::vector<LocalBoundary>& local_boundary)
         {
             dim = mesh.dimension();
             mesh.bounding_box(min_domain, max_domain);
@@ -152,7 +153,7 @@ namespace polyfem
 
         void initialize_solver(const polyfem::Mesh& mesh,
         const int shape_, const int n_el_, 
-        const std::vector<polyfem::LocalBoundary>& local_boundary,
+        const std::vector<LocalBoundary>& local_boundary,
         const std::vector<int>& boundary_nodes_)
         {
             shape = shape_;
@@ -165,7 +166,7 @@ namespace polyfem
 
         OperatorSplittingSolver(const polyfem::Mesh& mesh,
         const int shape, const int n_el, 
-        const std::vector<polyfem::LocalBoundary>& local_boundary,
+        const std::vector<LocalBoundary>& local_boundary,
         const std::vector<int>& boundary_nodes)
         {
             initialize_solver(mesh, shape, n_el, local_boundary, boundary_nodes);
@@ -173,7 +174,7 @@ namespace polyfem
 
         OperatorSplittingSolver(const polyfem::Mesh& mesh,
         const int shape, const int n_el, 
-        const std::vector<polyfem::LocalBoundary>& local_boundary,
+        const std::vector<LocalBoundary>& local_boundary,
         const std::vector<int>& boundary_nodes,
         const StiffnessMatrix& mass,
         const StiffnessMatrix& stiffness_viscosity,
@@ -217,6 +218,7 @@ namespace polyfem
                 coefficients.emplace_back(i, mat_projection.cols() - 1, val);
                 coefficients.emplace_back(mat_projection.rows() - 1, i, val);
             }
+            coefficients.emplace_back(mat_projection.rows() - 1, mat_projection.cols() - 1, 2);
 
             mat_projection.setFromTriplets(coefficients.begin(), coefficients.end());
             solver_projection = LinearSolver::create(solver_type, precond);
@@ -230,7 +232,8 @@ namespace polyfem
             logger().info("Prefactorization ends!");
         }
 
-        void initialize_solution(const std::vector<polyfem::ElementBases>& gbases, 
+        void initialize_solution(const polyfem::Mesh& mesh,
+        const std::vector<polyfem::ElementBases>& gbases, 
         const std::vector<polyfem::ElementBases>& bases, 
         const std::shared_ptr<Problem> problem, 
         Eigen::MatrixXd& sol, 
@@ -251,13 +254,14 @@ namespace polyfem
                     Eigen::MatrixXd pts = Eigen::MatrixXd::Zero(1, dim);
                     for (int j = 0; j < shape; j++)
                     {
+                        auto vertex = mesh.point(mesh.cell_vertex_(e, j));
                         for (int d = 0; d < dim; d++)
                         {
-                            pts(0, d) += V(T(e, j), d) * gvals.basis_values[j].val(i);
+                            pts(0, d) += vertex(d) * gvals.basis_values[j].val(i);
                         }
                     }
                     Eigen::MatrixXd val;
-                    problem->initial_solution(pts, val);
+                    problem->initial_solution(mesh, Eigen::MatrixXi::Zero(1,1), pts, val);
                     int global = bases[e].bases[i].global()[0].index;
                     for (int d = 0; d < dim; d++)
                     {
@@ -1002,6 +1006,7 @@ namespace polyfem
         }
 
         void external_force(const polyfem::Mesh& mesh,
+        const AssemblerUtils& assembler,
         const std::vector<polyfem::ElementBases>& gbases, 
         const std::vector<polyfem::ElementBases>& bases, 
         const double dt, 
@@ -1033,7 +1038,7 @@ namespace polyfem
                     }
 
                     Eigen::MatrixXd val;
-                    problem->rhs(std::string(), pos, time, val);
+                    problem->rhs(assembler, std::string(), pos, time, val);
 
                     for (int d = 0; d < dim; d++)
                     {

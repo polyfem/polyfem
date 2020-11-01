@@ -5,9 +5,10 @@
 #include <polyfem/ElementAssemblyValues.hpp>
 #include <polyfem/Problem.hpp>
 #include <polyfem/Mesh.hpp>
-#include <polyfem/Problem.hpp>
 #include <polyfem/LocalBoundary.hpp>
 #include <polyfem/InterfaceData.hpp>
+#include <polyfem/AssemblerUtils.hpp>
+#include <polyfem/ElasticityUtils.hpp>
 #include <polyfem/Common.hpp>
 #include <polyfem/Logger.hpp>
 
@@ -62,39 +63,37 @@ namespace polyfem
 
 		json args;
 
-
+		AssemblerUtils assembler;
 		std::shared_ptr<Problem> problem;
+		Density density;
 
+		std::vector<ElementBases> bases;
+		std::vector<ElementBases> pressure_bases;
+		std::vector<ElementBases> geom_bases;
 
-		std::vector< ElementBases >    bases;
-		std::vector< ElementBases >    pressure_bases;
-		std::vector< ElementBases >    geom_bases;
-
-		std::vector< int >                   boundary_nodes;
-		std::vector< LocalBoundary >         local_boundary;
-		std::vector< LocalBoundary >         local_neumann_boundary;
-		std::map<int, InterfaceData> 		 poly_edge_to_data;
+		std::vector<int> boundary_nodes;
+		std::vector<LocalBoundary> local_boundary;
+		std::vector<LocalBoundary> local_neumann_boundary;
+		std::map<int, InterfaceData> poly_edge_to_data;
 
 		std::vector<int> flipped_elements;
-
-
 
 		std::unique_ptr<Mesh> mesh;
 
 		std::map<int, Eigen::MatrixXd> polys;
-		std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi> > polys_3d;
+		std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> polys_3d;
 		std::vector<int> parent_elements;
 
+		double avg_mass;
 		StiffnessMatrix stiffness, mass;
 		Eigen::MatrixXd rhs, rhs_in;
 		Eigen::MatrixXd sol, pressure;
 
 		Eigen::MatrixXd boundary_nodes_pos;
-		Eigen::MatrixXi boundary_elements;
-		std::vector<int> boundary_to_global;
+		Eigen::MatrixXi boundary_edges;
+		Eigen::MatrixXi boundary_triangles;
 
 		Eigen::Vector4d spectrum;
-
 
 		json solver_info;
 
@@ -139,11 +138,11 @@ namespace polyfem
 
 		json build_json_params();
 
-		void compute_mesh_size(const Mesh &mesh, const std::vector< ElementBases > &bases, const int n_samples);
+		void compute_mesh_size(const Mesh &mesh, const std::vector<ElementBases> &bases, const int n_samples);
 
 		void load_mesh();
 		void load_febio(const std::string &path);
-		void load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd&)> &boundary_marker, bool skip_boundary_sideset = false);
+		void load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd &)> &boundary_marker, bool skip_boundary_sideset = false);
 		void load_mesh(const std::string &path)
 		{
 			args["mesh"] = path;
@@ -155,9 +154,11 @@ namespace polyfem
 			args["bc_tag"] = bc_tag;
 			load_mesh();
 		}
+		void set_multimaterial(const std::function<void(const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &)> &setter);
+
 		void load_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
 		{
-			if(V.cols() == 2)
+			if (V.cols() == 2)
 				mesh = std::make_unique<polyfem::Mesh2D>();
 			else
 				mesh = std::make_unique<polyfem::Mesh3D>();
@@ -167,10 +168,9 @@ namespace polyfem
 		}
 		void build_grid(const json &mesh_params);
 
-
-		void set_boundary_side_set(const std::function<int(const polyfem::RowVectorNd&)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
-		void set_boundary_side_set(const std::function<int(const polyfem::RowVectorNd&, bool)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
-		void set_boundary_side_set(const std::function<int(const std::vector<int>&, bool)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
+		void set_boundary_side_set(const std::function<int(const polyfem::RowVectorNd &)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
+		void set_boundary_side_set(const std::function<int(const polyfem::RowVectorNd &, bool)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
+		void set_boundary_side_set(const std::function<int(const std::vector<int> &, bool)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
 
 		void solve()
 		{
@@ -196,12 +196,12 @@ namespace polyfem
 		void compute_errors();
 		void export_data();
 
-		void compute_vertex_values(int actual_dim, const std::vector< ElementBases > &basis,
-			const MatrixXd &fun, Eigen::MatrixXd &result);
-		void compute_stress_at_quadrature_points(const MatrixXd &fun, Eigen::MatrixXd &result, Eigen::VectorXd & von_mises);
+		void compute_vertex_values(int actual_dim, const std::vector<ElementBases> &basis,
+								   const MatrixXd &fun, Eigen::MatrixXd &result);
+		void compute_stress_at_quadrature_points(const MatrixXd &fun, Eigen::MatrixXd &result, Eigen::VectorXd &von_mises);
 
 		void interpolate_function(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool boundary_only = false);
-		void interpolate_function(const int n_points, const int actual_dim, const std::vector< ElementBases > &basis, const MatrixXd &fun, MatrixXd &result, const bool boundary_only = false);
+		void interpolate_function(const int n_points, const int actual_dim, const std::vector<ElementBases> &basis, const MatrixXd &fun, MatrixXd &result, const bool boundary_only = false);
 
 		void compute_scalar_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool boundary_only = false);
 		void compute_tensor_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool boundary_only = false);
@@ -213,7 +213,6 @@ namespace polyfem
 		void interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result);
 
 		void get_sidesets(Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXd &sidesets);
-
 
 		void save_json(std::ostream &out);
 		void save_json(nlohmann::json &j);
@@ -271,7 +270,6 @@ namespace polyfem
 			args["export"]["vis_boundary_only"] = tmp;
 		}
 
-
 		void get_sampled_mises_avg(Eigen::MatrixXd &fun, Eigen::MatrixXd &tfun, bool boundary_only = false)
 		{
 			Eigen::MatrixXd points;
@@ -287,39 +285,38 @@ namespace polyfem
 			args["export"]["vis_boundary_only"] = tmp;
 		}
 
-
-
 		inline std::string mesh_path() const { return args["mesh"]; }
 
 		inline std::string formulation() const { return problem->is_scalar() ? scalar_formulation() : tensor_formulation(); }
-		inline bool iso_parametric() const {
-			if(non_regular_count > 0 || non_regular_boundary_count > 0 || undefined_count > 0)
+		inline bool iso_parametric() const
+		{
+			if (non_regular_count > 0 || non_regular_boundary_count > 0 || undefined_count > 0)
 				return true;
 
-			if(args["use_spline"])
+			if (args["use_spline"])
 				return true;
 
-			if(mesh->is_rational())
+			if (mesh->is_rational())
 				return false;
 
-			if(args["use_p_ref"])
+			if (args["use_p_ref"])
 				return false;
 
-			if(mesh->orders().size() <= 0){
-				if(args["discr_order"] == 1)
+			if (mesh->orders().size() <= 0)
+			{
+				if (args["discr_order"] == 1)
 					return true;
 				else
 					return args["iso_parametric"];
 			}
 
-			if(mesh->orders().minCoeff() != mesh->orders().maxCoeff())
+			if (mesh->orders().minCoeff() != mesh->orders().maxCoeff())
 				return false;
 
-			if(args["discr_order"] == mesh->orders().minCoeff())
+			if (args["discr_order"] == mesh->orders().minCoeff())
 				return true;
 
-
-			if( args["discr_order"] == 1 && args["force_linear_geometry"])
+			if (args["discr_order"] == 1 && args["force_linear_geometry"])
 				return true;
 
 			return args["iso_parametric"];
@@ -339,9 +336,7 @@ namespace polyfem
 	private:
 		void sol_to_pressure();
 		void build_polygonal_basis();
-
 	};
 
-}
+} // namespace polyfem
 #endif //STATE_HPP
-

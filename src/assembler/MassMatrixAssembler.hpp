@@ -1,6 +1,7 @@
 #pragma once
 
 #include <polyfem/ElementAssemblyValues.hpp>
+#include <polyfem/ElasticityUtils.hpp>
 
 #include <Eigen/Sparse>
 #include <vector>
@@ -17,8 +18,9 @@ namespace polyfem
 			const bool is_volume,
 			const int size,
 			const int n_basis,
-			const std::vector< ElementBases > &bases,
-			const std::vector< ElementBases > &gbases,
+			const Density &density,
+			const std::vector<ElementBases> &bases,
+			const std::vector<ElementBases> &gbases,
 			StiffnessMatrix &mass) const;
 	};
 }

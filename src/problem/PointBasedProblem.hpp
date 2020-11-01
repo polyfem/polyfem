@@ -11,7 +11,7 @@
 
 namespace polyfem
 {
-	class PointBasedTensorProblem: public Problem
+	class PointBasedTensorProblem : public Problem
 	{
 	private:
 		class BCValue
@@ -19,7 +19,8 @@ namespace polyfem
 		public:
 			BCValue()
 			{
-				Eigen::Matrix<bool, 3, 1> dd; dd.setConstant(true);
+				Eigen::Matrix<bool, 3, 1> dd;
+				dd.setConstant(true);
 				init(0, 0, 0, dd);
 			}
 
@@ -68,6 +69,7 @@ namespace polyfem
 			}
 
 			bool is_dirichet_dim(const int d) const { return dirichelt_dims(d); }
+
 		private:
 			Eigen::Vector3d val;
 			InterpolatedFunction2d tri_func;
@@ -78,10 +80,11 @@ namespace polyfem
 			int coordiante_1 = 1;
 			Eigen::Matrix<bool, 3, 1> dirichelt_dims;
 		};
+
 	public:
 		PointBasedTensorProblem(const std::string &name);
 
-		void rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		void rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 		bool is_rhs_zero() const override { return abs(rhs_) < 1e-10; }
 
 		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
@@ -93,19 +96,22 @@ namespace polyfem
 
 		void add_constant(const int bc_tag, const Eigen::Vector3d &value)
 		{
-			Eigen::Matrix<bool, 3, 1> dd; dd.setConstant(true);
+			Eigen::Matrix<bool, 3, 1> dd;
+			dd.setConstant(true);
 			add_constant(bc_tag, value, dd);
 		}
 
 		void add_function(const int bc_tag, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tri, const int coord)
 		{
-			Eigen::Matrix<bool, 3, 1> dd; dd.setConstant(true);
+			Eigen::Matrix<bool, 3, 1> dd;
+			dd.setConstant(true);
 			add_function(bc_tag, func, pts, tri, coord, dd);
 		}
 
 		void add_function(const int bc_tag, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const std::string &rbf, const double eps, const int coord)
 		{
-			Eigen::Matrix<bool, 3, 1> dd; dd.setConstant(true);
+			Eigen::Matrix<bool, 3, 1> dd;
+			dd.setConstant(true);
 			add_function(bc_tag, func, pts, rbf, eps, coord, dd);
 		}
 
@@ -115,6 +121,7 @@ namespace polyfem
 
 		bool is_dimention_dirichet(const int tag, const int dim) const override;
 		bool all_dimentions_dirichelt() const override { return all_dimentions_dirichelt_; }
+
 	private:
 		bool initialized_ = false;
 		bool all_dimentions_dirichelt_ = true;
@@ -123,5 +130,4 @@ namespace polyfem
 		Eigen::Vector3d translation_;
 		std::vector<BCValue> bc_;
 	};
-}
-
+} // namespace polyfem

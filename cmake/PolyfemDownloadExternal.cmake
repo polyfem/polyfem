@@ -35,7 +35,7 @@ endfunction()
 function(polyfem_download_libigl)
     polyfem_download_project(libigl
         GIT_REPOSITORY https://github.com/libigl/libigl.git
-        GIT_TAG        015ac35cd135e3a40c3e71443eeda4a9a4ccf7f5
+        GIT_TAG        45cfc79fede992ea3923ded9de3c21d1c4faced1
     )
 endfunction()
 
@@ -107,7 +107,7 @@ endfunction()
 function(polyfem_download_spdlog)
     polyfem_download_project(spdlog
         GIT_REPOSITORY https://github.com/gabime/spdlog.git
-        GIT_TAG         v1.3.1
+        GIT_TAG        v1.3.1
     )
 endfunction()
 
@@ -125,6 +125,15 @@ function(polyfem_download_tinyxml)
     polyfem_download_project(tinyxml
         GIT_REPOSITORY https://github.com/leethomason/tinyxml2.git
         GIT_TAG        2c5a6bfdd42ab919e55a613d33c83eb53de71af4
+    )
+endfunction()
+
+
+## ipc MIT
+function(polyfem_download_ipc)
+    polyfem_download_project(ipc
+        GIT_REPOSITORY https://github.com/ipc-sim/ipc-toolkit.git
+        GIT_TAG        80c5cde5e5631d538e191867dd7f9bad1592fb2b
     )
 endfunction()
 
