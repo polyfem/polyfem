@@ -80,7 +80,8 @@ namespace polyfem
 
             int total_cell_num = 1;
             for(int d = 0; d < dim; d++) {
-                hash_table_cell_num[d] = (int)((max_domain(d) - min_domain(d)) / min_edge_length);
+                hash_table_cell_num[d] = (int)std::round((max_domain(d) - min_domain(d)) / min_edge_length);
+                logger().debug("hash grid in {} dimension: {}", d, hash_table_cell_num[d]);
                 total_cell_num *= hash_table_cell_num[d];
             }
             hash_table.resize(total_cell_num);
@@ -104,8 +105,8 @@ namespace polyfem
                 for(int d = 0; d < dim; d++)
                 {
                     double temp = hash_table_cell_num[d] / (max_domain(d) - min_domain(d));
-                    min_int(d) = floor((min_(d) - min_domain(d)) * temp);
-                    max_int(d) = ceil((max_(d) - min_domain(d)) * temp);
+                    min_int(d) = floor((min_(d) * (1 + 1e-4) - min_domain(d)) * temp);
+                    max_int(d) = ceil((max_(d) * (1 - 1e-4) - min_domain(d)) * temp);
 
                     if(min_int(d) < 0) 
                         min_int(d) = 0;
@@ -143,9 +144,8 @@ namespace polyfem
                 (hash_table[i].size() > max_intersection_num) ? (max_intersection_num = hash_table[i].size()) : 1;
             }
             average_intersection_num /= hash_table.size();
-            logger().info("average intersection number for hash grid: {}", average_intersection_num);
-            logger().info("max intersection number for hash grid: {}", max_intersection_num);
-
+            logger().debug("average intersection number for hash grid: {}", average_intersection_num);
+            logger().debug("max intersection number for hash grid: {}", max_intersection_num);
         }
 
         OperatorSplittingSolver() {}

@@ -555,9 +555,7 @@ double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement, const s
 #endif
 	}
 
-#ifdef POLYFEM_WITH_TBB
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
-#endif
 
 	ElementAssemblyValues vals;
 	//Neumann

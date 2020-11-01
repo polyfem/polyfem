@@ -1935,6 +1935,7 @@ void State::build_grid(const json &mesh_params)
 		std::ofstream file("box.mesh");
 		file << "MeshVersionFormatted 1\nDimension 3\nVertices\n" << V.rows() << "\n";
 		file.precision(16);
+		file.setf(std::ios_base::showpoint);
 		for(int i = 0; i < V.rows(); i++)
         {
 		    for(int j = 0; j < V.cols(); j++)
@@ -2857,7 +2858,7 @@ void State::solve_problem()
 
 		const auto &gbases = iso_parametric() ? bases : geom_bases;
 		RhsAssembler rhs_assembler(*mesh, n_bases, problem->is_scalar() ? 1 : mesh->dimension(), bases, gbases, formulation(), *problem);
-		// rhs_assembler.initial_solution(sol);
+		rhs_assembler.initial_solution(sol);
 
 		Eigen::MatrixXd current_rhs = rhs;
 
@@ -2880,10 +2881,11 @@ void State::solve_problem()
 			if (!(*it % mesh->dimension())) continue;
 			bnd_nodes.push_back(*it / mesh->dimension());
 		}
-		{
-			OperatorSplittingSolver ss_(*mesh, gbases[0].bases.size(), int(bases.size()), local_boundary, bnd_nodes);
-			ss_.initialize_solution(gbases, bases, problem, sol, local_pts);
-		}
+		// {
+		// 	OperatorSplittingSolver ss_(*mesh, gbases[0].bases.size(), int(bases.size()), local_boundary, bnd_nodes);
+		// 	sol = Eigen::MatrixXd::Zero(n_bases * mesh->dimension(),1);
+		// 	ss_.initialize_solution(gbases, bases, problem, sol, local_pts);
+		// }
 
 		if (formulation() == "OperatorSplitting")
 		{
