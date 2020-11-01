@@ -63,7 +63,11 @@ namespace polyfem
 
 		time.start();
 
-		Eigen::VectorXd b; // = rhs + prev_sol_mass;
+		Eigen::VectorXd b = rhs + prev_sol_mass;
+		for (int i : state.boundary_nodes)
+		{
+			x(i) = b(i);
+		}
 
 		// if (state.use_avg_pressure)
 		// {
@@ -82,7 +86,7 @@ namespace polyfem
 
 		int it = 0;
 		double nlres_norm = 0;
-		b = rhs + prev_sol_mass;
+		// b = rhs + prev_sol_mass;
 
 		if (state.use_avg_pressure)
 		{
