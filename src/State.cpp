@@ -786,11 +786,6 @@ namespace polyfem
 			rhs *= -1;
 		}
 
-		if (formulation() != "Bilaplacian")
-			rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs);
-		else
-			rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], std::vector<LocalBoundary>(), rhs);
-
 		// if(problem->is_mixed())
 		if (assembler.is_mixed(formulation()))
 		{
@@ -1262,6 +1257,18 @@ namespace polyfem
 				StiffnessMatrix A;
 				Eigen::VectorXd b;
 				logger().info("{}...", solver->name());
+				json rhs_solver_params = args["rhs_solver_params"];
+				rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
+				RhsAssembler rhs_assembler(assembler, *mesh,
+										   n_bases, mesh->dimension(),
+										   bases, iso_parametric() ? bases : geom_bases,
+										   formulation(), *problem,
+										   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
+
+				if (formulation() != "Bilaplacian")
+					rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs);
+				else
+					rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], std::vector<LocalBoundary>(), rhs);
 
 				const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 				const int precond_num = problem_dim * n_bases;
@@ -1289,6 +1296,15 @@ namespace polyfem
 					NavierStokesSolver ns_solver(viscosity, solver_params(), build_json_params(), solver_type(), precond_type());
 					Eigen::VectorXd x;
 					assembler.clear_cache();
+					json rhs_solver_params = args["rhs_solver_params"];
+					rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
+
+					RhsAssembler rhs_assembler(assembler, *mesh,
+											   n_bases, mesh->dimension(),
+											   bases, iso_parametric() ? bases : geom_bases,
+											   formulation(), *problem,
+											   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
+					rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs);
 					ns_solver.minimize(*this, rhs, x);
 					sol = x;
 					sol_to_pressure();
@@ -1372,12 +1388,14 @@ namespace polyfem
 						{
 							nl_problem.hessian_full(sol, nlstiffness);
 							nl_problem.gradient_no_rhs(sol, grad);
+							rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, grad, t);
 
 							b = grad;
 							for (int bId : boundary_nodes)
 								b(bId) = -(nl_problem.current_rhs()(bId) - prev_rhs(bId));
 							dirichlet_solve(*solver, nlstiffness, b, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
-							if (nl_problem.is_step_valid(sol, (sol - x).eval()))
+							const bool valid = nl_problem.is_step_valid(sol, (sol - x).eval());
+							if (valid)
 								x = sol - x;
 							else
 								x = sol;
