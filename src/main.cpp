@@ -54,6 +54,7 @@ int main(int argc, char **argv)
 	bool isoparametric = false;
 	bool serendipity = false;
 	bool project_to_psd = false;
+	bool export_material_params = false;
 
 	std::string log_file = "";
 	bool is_quiet = false;
@@ -106,6 +107,8 @@ int main(int argc, char **argv)
 	command_line.add_flag("--quiet", is_quiet, "Disable cout for logging");
 	command_line.add_option("--log_file", log_file, "Log to a file");
 	command_line.add_option("--log_level", log_level, "Log level 1 debug 2 info");
+
+	command_line.add_flag("--export_material_params", export_material_params, "Export material parameters");
 
 	try
 	{
@@ -166,6 +169,9 @@ int main(int argc, char **argv)
 
 		if (vis_mesh_res > 0)
 			in_args["vismesh_rel_area"] = vis_mesh_res;
+
+		if (export_material_params)
+			in_args["export"]["material_params"] = true;
 	}
 
 #ifndef POLYFEM_NO_UI

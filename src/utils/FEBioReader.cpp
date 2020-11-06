@@ -388,6 +388,9 @@ namespace polyfem
         }
         else
         {
+            json params = state.args["params"];
+            params["size"] = 3;
+            state.assembler.set_parameters(params);
             state.assembler.init_multimaterial(Es, nus);
             state.density.init_multimaterial(rhos);
         }
