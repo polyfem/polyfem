@@ -185,6 +185,12 @@ namespace polyfem
 
 	bool NLProblem::is_step_valid(const TVector &x0, const TVector &x1)
 	{
+		TVector grad = TVector::Zero(reduced_size);
+		gradient(x1, grad);
+
+		if (std::isnan(grad.norm()))
+			return false;
+
 		if (disable_collision)
 			return true;
 		if (!state.args["has_collision"])
