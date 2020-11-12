@@ -1259,8 +1259,9 @@ namespace polyfem
 				logger().info("{}...", solver->name());
 				json rhs_solver_params = args["rhs_solver_params"];
 				rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
+				const int size = problem->is_scalar() ? 1 : mesh->dimension();
 				RhsAssembler rhs_assembler(assembler, *mesh,
-										   n_bases, mesh->dimension(),
+										   n_bases, size,
 										   bases, iso_parametric() ? bases : geom_bases,
 										   formulation(), *problem,
 										   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
@@ -1329,9 +1330,9 @@ namespace polyfem
 
 					json rhs_solver_params = args["rhs_solver_params"];
 					rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
-
+					const int size = problem->is_scalar() ? 1 : mesh->dimension();
 					RhsAssembler rhs_assembler(assembler, *mesh,
-											   n_bases, mesh->dimension(),
+											   n_bases, size,
 											   bases, iso_parametric() ? bases : geom_bases,
 											   formulation(), *problem,
 											   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
