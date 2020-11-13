@@ -16,8 +16,8 @@
 module purge
 
 module load mercurial/intel/4.0.1
-module load gcc/6.3.0
-module load cmake/intel/3.7.1
+module load gcc/9.1.0
+module load cmake/intel/3.16.3
 module load eigen/3.3.1
 module load mesa/intel/17.0.2
 module swap python/intel python3/intel/3.6.3
@@ -40,6 +40,9 @@ export PARDISO_LIC_PATH="${HOME}/.pardiso"
 export PARDISO_INSTALL_PREFIX="${HOME}/.local"
 export OMP_NUM_THREADS=8
 
+export CMAKE_INCLUDE_PATH=$(env | grep _INC= | cut -d= -f2 | xargs | sed -e 's/ /:/g')
+export CMAKE_LIBRARY_PATH=$(env | grep _LIB= | cut -d= -f2 | xargs | sed -e 's/ /:/g')
+
 # Run job
 cd "${SLURM_SUBMIT_DIR}"
 mkdir build
@@ -54,5 +57,5 @@ fi
 mkdir ${BUILD}
 pushd ${BUILD}
 cmake -DCMAKE_BUILD_TYPE=${BUILD} ../..
-make -j8
+make -j 8
 popd
