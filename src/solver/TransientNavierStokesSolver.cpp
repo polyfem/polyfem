@@ -186,6 +186,11 @@ namespace polyfem
 			polyfem::logger().debug("\titer: {},  ||g||_2 = {}, ||step|| = {}\n",
 									it, nlres_norm, dx.norm());
 		}
+		
+		if (it >= iterations)
+		{
+			logger().error("Reaching the max number of iterations!");
+		}
 
 		// solver_info["internal_solver"] = internal_solver;
 		// solver_info["internal_solver_first"] = internal_solver.front();
