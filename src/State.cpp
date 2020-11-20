@@ -45,22 +45,12 @@
 #include <polyfem/Logger.hpp>
 
 #include <igl/Timer.h>
-#include <igl/remove_unreferenced.h>
-#include <igl/remove_duplicate_vertices.h>
-#include <igl/isolines.h>
-#include <igl/write_triangle_mesh.h>
-
-#include <igl/per_face_normals.h>
-#include <igl/AABB.h>
-#include <igl/in_element.h>
 
 #include <unsupported/Eigen/SparseExtra>
 
 #include <iostream>
 #include <algorithm>
 #include <memory>
-#include <math.h>
-#include <iomanip>
 
 #include <polyfem/autodiff.h>
 DECLARE_DIFFSCALAR_BASE();
@@ -896,11 +886,6 @@ namespace polyfem
 			rhs *= -1;
 		}
 
-		if (formulation() != "Bilaplacian")
-			rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs);
-		else
-			rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], std::vector<LocalBoundary>(), rhs);
-
 		// if(problem->is_mixed())
 		if (assembler.is_mixed(formulation()))
 		{
@@ -1040,11 +1025,6 @@ namespace polyfem
 
 				OperatorSplittingSolver ss(*mesh, shape, n_el, local_boundary, bnd_nodes, mass, stiffness_viscosity, stiffness, dt, viscosity_, args["solver_type"], args["precond_type"], params, args["export"]["stiffness_mat"]);
 
-				if (args["density"])
-				{
-					ss.initialize_grid(*mesh, gbases, bases, args["density_dx"]);
-					ss.initialize_density(problem);
-				}
 				/* initialize solution */
 				pressure = Eigen::MatrixXd::Zero(n_pressure_bases, 1);
 
@@ -1055,24 +1035,11 @@ namespace polyfem
 						solution_frames.emplace_back();
 					save_vtu("step_" + std::to_string(0) + ".vtu", 0.);
 				}
-				if (args["density"])
-				{
-					logger().info("saving ascii density file...");
-					ss.save_density();
-					logger().info("finished saving density!");
-				}
 
 				for (int t = 1; t <= time_steps; t++)
 				{
 					double time = t * dt;
 					logger().info("{}/{} steps, t={}s", t, time_steps, time);
-
-					if(args["density"])
-					{
-						logger().info("density advection...");
-						ss.advect_density(gbases, bases, sol, dt);
-						logger().info("density advection finished!");
-					}
 		
 					/* advection */
 					logger().info("Advection...");
@@ -1111,12 +1078,6 @@ namespace polyfem
 							solution_frames.emplace_back();
 						save_vtu("step_" + std::to_string(t) + ".vtu", time);
 					}
-					if (args["density"] && !(t % (int)args["skip_frame"]))
-					{
-						logger().info("saving ascii density file...");
-						ss.save_density();
-						logger().info("finished saving density!");
-					}
 				}
 			}
 			else if (formulation() == "NavierStokes")
@@ -1142,26 +1103,12 @@ namespace polyfem
 
 				sol = c_sol;
 				sol_to_pressure();
-
-				OperatorSplittingSolver ss;
-				if (args["density"])
+				if (args["save_time_sequence"])
 				{
-					ss.initialize_solver(*mesh, gbases[0].bases.size(), int(bases.size()), local_boundary, bnd_nodes);
-					ss.initialize_grid(*mesh, gbases, bases, args["density_dx"]);
-					ss.initialize_density(problem);
-				}
-
-				if (args["save_time_sequence"]){
-				if (!solve_export_to_file)
-					solution_frames.emplace_back();
-				save_vtu("step_" + std::to_string(0) + ".vtu", 0);
-				// save_wire("step_" + std::to_string(0) + ".obj");
-				}
-				if (args["density"])
-				{
-					logger().info("saving ascii density file...");
-					ss.save_density();
-					logger().info("finished saving density!");
+					if (!solve_export_to_file)
+						solution_frames.emplace_back();
+					save_vtu("step_" + std::to_string(0) + ".vtu", 0);
+					// save_wire("step_" + std::to_string(0) + ".obj");
 				}
 
 				assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, gbases, velocity_stiffness);
@@ -1177,12 +1124,6 @@ namespace polyfem
 					double current_dt = dt;
 
 					logger().info("{}/{} steps, dt={}s t={}s", t, time_steps, current_dt, time);
-					if(args["density"])
-					{
-						logger().info("density advection...");
-						ss.advect_density(gbases, bases, sol, dt);
-						logger().info("density advection finished!");
-					}
 
 					bdf.rhs(prev_sol);
 					rhs_assembler.compute_energy_grad(local_boundary, boundary_nodes, density, args["n_boundary_samples"], local_neumann_boundary, rhs, time, current_rhs);
@@ -1209,12 +1150,6 @@ namespace polyfem
 							solution_frames.emplace_back();
 						save_vtu("step_" + std::to_string(t) + ".vtu", time);
 						// save_wire("step_" + std::to_string(t) + ".obj");
-					}
-					if (args["density"] && !(t % (int)args["skip_frame"]))
-					{
-						logger().info("saving ascii density file...");
-						ss.save_density();
-						logger().info("finished saving density!");
 					}
 				}
 			}
@@ -1525,6 +1460,19 @@ namespace polyfem
 				StiffnessMatrix A;
 				Eigen::VectorXd b;
 				logger().info("{}...", solver->name());
+				json rhs_solver_params = args["rhs_solver_params"];
+				rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
+				const int size = problem->is_scalar() ? 1 : mesh->dimension();
+				RhsAssembler rhs_assembler(assembler, *mesh,
+										   n_bases, size,
+										   bases, iso_parametric() ? bases : geom_bases,
+										   formulation(), *problem,
+										   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
+
+				if (formulation() != "Bilaplacian")
+					rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs);
+				else
+					rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], std::vector<LocalBoundary>(), rhs);
 
 				const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 				const int precond_num = problem_dim * n_bases;
@@ -1552,6 +1500,15 @@ namespace polyfem
 					NavierStokesSolver ns_solver(viscosity, solver_params(), build_json_params(), solver_type(), precond_type());
 					Eigen::VectorXd x;
 					assembler.clear_cache();
+					json rhs_solver_params = args["rhs_solver_params"];
+					rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
+
+					RhsAssembler rhs_assembler(assembler, *mesh,
+											   n_bases, mesh->dimension(),
+											   bases, iso_parametric() ? bases : geom_bases,
+											   formulation(), *problem,
+											   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
+					rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs);
 					ns_solver.minimize(*this, rhs, x);
 					sol = x;
 					sol_to_pressure();
@@ -1576,9 +1533,9 @@ namespace polyfem
 
 					json rhs_solver_params = args["rhs_solver_params"];
 					rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
-
+					const int size = problem->is_scalar() ? 1 : mesh->dimension();
 					RhsAssembler rhs_assembler(assembler, *mesh,
-											   n_bases, mesh->dimension(),
+											   n_bases, size,
 											   bases, iso_parametric() ? bases : geom_bases,
 											   formulation(), *problem,
 											   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
@@ -1635,12 +1592,14 @@ namespace polyfem
 						{
 							nl_problem.hessian_full(sol, nlstiffness);
 							nl_problem.gradient_no_rhs(sol, grad);
+							rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, grad, t);
 
 							b = grad;
 							for (int bId : boundary_nodes)
 								b(bId) = -(nl_problem.current_rhs()(bId) - prev_rhs(bId));
 							dirichlet_solve(*solver, nlstiffness, b, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
-							if (nl_problem.is_step_valid(sol, (sol - x).eval()))
+							const bool valid = nl_problem.is_step_valid(sol, (sol - x).eval());
+							if (valid)
 								x = sol - x;
 							else
 								x = sol;

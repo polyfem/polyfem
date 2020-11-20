@@ -55,15 +55,17 @@ namespace polyfem
         template <typename XMLNode>
         void load_nodes(const XMLNode *geometry, Eigen::MatrixXd &V)
         {
-            const auto *nodes = geometry->FirstChildElement("Nodes");
             std::vector<Eigen::Vector3d> vertices;
-            for (const tinyxml2::XMLElement *child = nodes->FirstChildElement("node"); child != NULL; child = child->NextSiblingElement("node"))
+            for (const tinyxml2::XMLElement *nodes = geometry->FirstChildElement("Nodes"); nodes != NULL; nodes = nodes->NextSiblingElement("Nodes"))
             {
-                const std::string pos_str = std::string(child->GetText());
-                const auto vs = StringUtils::split(pos_str, ",");
-                assert(vs.size() == 3);
+                for (const tinyxml2::XMLElement *child = nodes->FirstChildElement("node"); child != NULL; child = child->NextSiblingElement("node"))
+                {
+                    const std::string pos_str = std::string(child->GetText());
+                    const auto vs = StringUtils::split(pos_str, ",");
+                    assert(vs.size() == 3);
 
-                vertices.emplace_back(atof(vs[0].c_str()), atof(vs[1].c_str()), atof(vs[2].c_str()));
+                    vertices.emplace_back(atof(vs[0].c_str()), atof(vs[1].c_str()), atof(vs[2].c_str()));
+                }
             }
 
             V.resize(vertices.size(), 3);
@@ -72,7 +74,7 @@ namespace polyfem
         }
 
         template <typename XMLNode>
-        int load_elements(const XMLNode *geometry, const std::map<int, std::tuple<double, double, double>> &materials, Eigen::MatrixXi &T, std::vector<std::vector<int>> &nodes, Eigen::MatrixXd &Es, Eigen::MatrixXd &nus, Eigen::MatrixXd &rhos)
+        int load_elements(const XMLNode *geometry, const int numV, const std::map<int, std::tuple<double, double, double>> &materials, Eigen::MatrixXi &T, std::vector<std::vector<int>> &nodes, Eigen::MatrixXd &Es, Eigen::MatrixXd &nus, Eigen::MatrixXd &rhos)
         {
             std::vector<Eigen::VectorXi> els;
             nodes.clear();
@@ -115,6 +117,7 @@ namespace polyfem
                     for (int n = 0; n < node_size; ++n)
                     {
                         els.back()[n] = atoi(tt[n].c_str()) - 1;
+                        assert(els.back()[n] < numV);
                     }
                     nodes.emplace_back();
                     mids.emplace_back(mid);
@@ -372,7 +375,7 @@ namespace polyfem
         Eigen::MatrixXi T;
         std::vector<std::vector<int>> nodes;
         Eigen::MatrixXd Es, nus, rhos;
-        const int element_order = load_elements(geometry, materials, T, nodes, Es, nus, rhos);
+        const int element_order = load_elements(geometry, V.rows(), materials, T, nodes, Es, nus, rhos);
         const int current_order = state.args["discr_order"];
         state.args["discr_order"] = std::max(current_order, element_order);
 
@@ -388,6 +391,9 @@ namespace polyfem
         }
         else
         {
+            json params = state.args["params"];
+            params["size"] = 3;
+            state.assembler.set_parameters(params);
             state.assembler.init_multimaterial(Es, nus);
             state.density.init_multimaterial(rhos);
         }

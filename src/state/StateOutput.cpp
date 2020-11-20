@@ -791,12 +791,7 @@ namespace polyfem
 
         if (material_params)
         {
-            LameParameters params;
-            params.init(build_json_params());
-
-            set_multimaterial([&](const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus, const Eigen::MatrixXd &rhos) {
-                params.init_multimaterial(Es, nus);
-            });
+            const LameParameters &params = assembler.lame_params();
 
             Eigen::MatrixXd lambdas(points.rows(), 1);
             Eigen::MatrixXd mus(points.rows(), 1);

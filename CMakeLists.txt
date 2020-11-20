@@ -274,21 +274,6 @@ if(POLYFEM_WITH_TBB)
     target_link_libraries(polyfem PUBLIC TBB::tbb)
 endif()
 
-# OpenVDB
-if(POLYFEM_WITH_OPENVDB)
-    polyfem_download_openvdb()
-    set(OPENVDB_BUILD_BINARIES OFF CACHE BOOL " " FORCE)
-    set(USE_BLOSC OFF CACHE BOOL " " FORCE)
-    set(OPENVDB_ENABLE_RPATH OFF CACHE BOOL " " FORCE)
-    set(USE_CCACHE OFF CACHE BOOL " " FORCE)
-    set(USE_PKGCONFIG OFF CACHE BOOL " " FORCE)
-    set(USE_EXR OFF CACHE BOOL " " FORCE)
-
-    add_subdirectory(${THIRD_PARTY_DIR}/openvdb openvdb)
-    target_link_libraries(polyfem PUBLIC openvdb)
-    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_OPENVDB)
-endif()
-
 # libigl
 polyfem_download_libigl()
 find_package(LIBIGL REQUIRED)

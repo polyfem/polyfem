@@ -117,6 +117,7 @@ namespace polyfem
 		//aux
 		void set_parameters(const json &params);
 		void init_multimaterial(const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus);
+		const LameParameters &lame_params() const { return linear_elasticity_.local_assembler().lame_params(); }
 
 		static bool is_linear(const std::string &assembler);
 
