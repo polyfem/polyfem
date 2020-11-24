@@ -190,6 +190,7 @@ namespace polyfem
 		if (it >= iterations)
 		{
 			logger().error("Reaching the max number of iterations!");
+			exit(0);
 		}
 
 		// solver_info["internal_solver"] = internal_solver;
