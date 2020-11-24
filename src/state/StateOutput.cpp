@@ -258,6 +258,109 @@ namespace polyfem
         }
     }
 
+    void State::extract_boundary_mesh_pressure()
+    {
+        if (mesh->is_volume())
+        {
+            boundary_nodes_pos_pressure.resize(n_pressure_bases, 3);
+            boundary_nodes_pos_pressure.setZero();
+            const Mesh3D &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
+
+            std::vector<std::tuple<int, int, int>> tris;
+
+            for (auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
+            {
+                const auto &lb = *it;
+                const auto &b = pressure_bases[lb.element_id()];
+
+                for (int j = 0; j < lb.size(); ++j)
+                {
+                    const int eid = lb.global_primitive_id(j);
+                    const int lid = lb[j];
+                    const auto nodes = b.local_nodes_for_primitive(eid, mesh3d);
+
+                    if (!mesh->is_simplex(lb.element_id()))
+                    {
+                        logger().trace("skipping element {} since it is not a simplex", eid);
+                        continue;
+                    }
+
+                    std::vector<int> loc_nodes;
+
+                    for (long n = 0; n < nodes.size(); ++n)
+                    {
+                        auto &bs = b.bases[nodes(n)];
+                        const auto &glob = bs.global();
+                        if (glob.size() != 1)
+                            continue;
+
+                        int gindex = glob.front().index;
+                        boundary_nodes_pos_pressure.row(gindex) = glob.front().node;
+                        loc_nodes.push_back(gindex);
+                    }
+
+                    if (loc_nodes.size() == 3)
+                    {
+                        tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
+                    }
+                    else if (loc_nodes.size() == 6)
+                    {
+                        tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[5]);
+                        tris.emplace_back(loc_nodes[3], loc_nodes[1], loc_nodes[4]);
+                        tris.emplace_back(loc_nodes[4], loc_nodes[2], loc_nodes[5]);
+                        tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[5]);
+                    }
+                    else if (loc_nodes.size() == 10)
+                    {
+                        tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[8]);
+                        tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[9]);
+                        tris.emplace_back(loc_nodes[4], loc_nodes[1], loc_nodes[5]);
+                        tris.emplace_back(loc_nodes[5], loc_nodes[6], loc_nodes[9]);
+                        tris.emplace_back(loc_nodes[6], loc_nodes[2], loc_nodes[7]);
+                        tris.emplace_back(loc_nodes[7], loc_nodes[8], loc_nodes[9]);
+                        tris.emplace_back(loc_nodes[8], loc_nodes[3], loc_nodes[9]);
+                        tris.emplace_back(loc_nodes[9], loc_nodes[4], loc_nodes[5]);
+                        tris.emplace_back(loc_nodes[6], loc_nodes[7], loc_nodes[9]);
+                    }
+                    else if (loc_nodes.size() == 15)
+                    {
+                        tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[11]);
+                        tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[12]);
+                        tris.emplace_back(loc_nodes[3], loc_nodes[12], loc_nodes[11]);
+                        tris.emplace_back(loc_nodes[12], loc_nodes[10], loc_nodes[11]);
+                        tris.emplace_back(loc_nodes[4], loc_nodes[5], loc_nodes[13]);
+                        tris.emplace_back(loc_nodes[4], loc_nodes[13], loc_nodes[12]);
+                        tris.emplace_back(loc_nodes[12], loc_nodes[13], loc_nodes[14]);
+                        tris.emplace_back(loc_nodes[12], loc_nodes[14], loc_nodes[10]);
+                        tris.emplace_back(loc_nodes[14], loc_nodes[9], loc_nodes[10]);
+                        tris.emplace_back(loc_nodes[5], loc_nodes[1], loc_nodes[6]);
+                        tris.emplace_back(loc_nodes[5], loc_nodes[6], loc_nodes[13]);
+                        tris.emplace_back(loc_nodes[6], loc_nodes[7], loc_nodes[13]);
+                        tris.emplace_back(loc_nodes[13], loc_nodes[7], loc_nodes[14]);
+                        tris.emplace_back(loc_nodes[7], loc_nodes[8], loc_nodes[14]);
+                        tris.emplace_back(loc_nodes[14], loc_nodes[8], loc_nodes[9]);
+                        tris.emplace_back(loc_nodes[8], loc_nodes[2], loc_nodes[9]);
+                    }
+                    else
+                    {
+                        std::cout << loc_nodes.size() << std::endl;
+                        assert(false);
+                    }
+                }
+            }
+
+            boundary_triangles_pressure.resize(tris.size(), 3);
+            for (int i = 0; i < tris.size(); ++i)
+            {
+                boundary_triangles_pressure.row(i) << std::get<0>(tris[i]), std::get<2>(tris[i]), std::get<1>(tris[i]);
+            }
+            if (boundary_triangles_pressure.rows() > 0)
+                igl::edges(boundary_triangles_pressure, boundary_edges);
+
+            // igl::write_triangle_mesh("test.obj", boundary_nodes_pos_pressure, boundary_triangles_pressure);
+        }
+    }
+
     void State::save_json()
     {
         const std::string out_path = args["output"];
@@ -666,7 +769,7 @@ namespace polyfem
         assert(pts_index == points.rows());
         assert(tet_index == tets.rows());
     }
-
+    
     void State::save_vtu(const std::string &path, const double t)
     {
         if (!mesh)
@@ -834,6 +937,53 @@ namespace polyfem
             solution_frames.back().name = path;
             solution_frames.back().points = points;
             solution_frames.back().connectivity = tets;
+        }
+    }
+
+    void State::save_boundary_vtu(const std::string &path)
+    {
+        if (!mesh)
+        {
+            logger().error("Load the mesh first!");
+            return;
+        }
+        if (n_bases <= 0)
+        {
+            logger().error("Build the bases first!");
+            return;
+        }
+        if (rhs.size() <= 0)
+        {
+            logger().error("Assemble the rhs first!");
+            return;
+        }
+        if (sol.size() <= 0)
+        {
+            logger().error("Solve the problem first!");
+            return;
+        }
+    
+        std::ofstream file(path);
+        file << "# vtk DataFile Version 2.0\n";
+        file << "Object surface\n";
+        file << "ASCII\n";
+        file << "DATASET POLYDATA\n";
+        file << "POINTS " << boundary_nodes_pos_pressure.rows() << " float\n";
+        for (size_t i = 0; i < boundary_nodes_pos_pressure.rows(); i++)
+        {
+            file << boundary_nodes_pos_pressure(i, 0) << " " << boundary_nodes_pos_pressure(i, 1) << " " << boundary_nodes_pos_pressure(i, 2) << std::endl;
+        }
+        file << "POLYGONS " << boundary_triangles_pressure.rows() << " " << boundary_triangles_pressure.rows() * (boundary_triangles_pressure.cols() + 1) << std::endl;
+        for (size_t i = 0; i < boundary_triangles_pressure.rows(); i++)
+        {
+            file << "3 " << boundary_triangles_pressure(i, 0) << " " << boundary_triangles_pressure(i, 1) << " " << boundary_triangles_pressure(i, 2) << std::endl;
+        }
+        file << "POINT_DATA " << boundary_nodes_pos_pressure.rows() << std::endl;
+        file << "SCALARS pressure float 1\n";
+        file << "LOOKUP_TABLE my_table\n";
+        for (size_t i = 0; i < boundary_nodes_pos_pressure.rows(); i++)
+        {
+            file << pressure(i) << std::endl;
         }
     }
 

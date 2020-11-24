@@ -90,8 +90,10 @@ namespace polyfem
 		Eigen::MatrixXd sol, pressure;
 
 		Eigen::MatrixXd boundary_nodes_pos;
+		Eigen::MatrixXd boundary_nodes_pos_pressure;
 		Eigen::MatrixXi boundary_edges;
 		Eigen::MatrixXi boundary_triangles;
+		Eigen::MatrixXd boundary_triangles_pressure;
 
 		Eigen::Vector4d spectrum;
 
@@ -189,6 +191,7 @@ namespace polyfem
 
 		void build_basis();
 		void extract_boundary_mesh();
+		void extract_boundary_mesh_pressure();
 
 		void assemble_stiffness_mat();
 		void assemble_rhs();
@@ -223,6 +226,7 @@ namespace polyfem
 		void build_vis_mesh(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXi &el_id, Eigen::MatrixXd &discr);
 		void save_vtu(const std::string &name, const double t);
 		void save_wire(const std::string &name, bool isolines = false);
+		void save_boundary_vtu(const std::string &path);
 
 		const Eigen::MatrixXd &get_solution() const { return sol; }
 		const Eigen::MatrixXd &get_pressure() const { return pressure; }

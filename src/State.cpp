@@ -582,6 +582,7 @@ namespace polyfem
 
 		logger().info("Extracting boundary mesh...");
 		extract_boundary_mesh();
+		extract_boundary_mesh_pressure();
 		logger().info("Done!");
 
 		problem->setup_bc(*mesh, bases, local_boundary, boundary_nodes, local_neumann_boundary);
@@ -1034,6 +1035,7 @@ namespace polyfem
 					if (!solve_export_to_file)
 						solution_frames.emplace_back();
 					save_vtu("step_" + std::to_string(0) + ".vtu", 0.);
+					save_boundary_vtu("boundary_" + std::to_string(0) + ".vtk");
 				}
 
 				for (int t = 1; t <= time_steps; t++)
@@ -1077,6 +1079,7 @@ namespace polyfem
 						if (!solve_export_to_file)
 							solution_frames.emplace_back();
 						save_vtu("step_" + std::to_string(t) + ".vtu", time);
+						save_boundary_vtu("boundary_" + std::to_string(t) + ".vtk");
 					}
 				}
 			}
@@ -1108,6 +1111,7 @@ namespace polyfem
 					if (!solve_export_to_file)
 						solution_frames.emplace_back();
 					save_vtu("step_" + std::to_string(0) + ".vtu", 0);
+					save_boundary_vtu("boundary_" + std::to_string(0) + ".vtk");
 					// save_wire("step_" + std::to_string(0) + ".obj");
 				}
 
@@ -1149,6 +1153,7 @@ namespace polyfem
 						if (!solve_export_to_file)
 							solution_frames.emplace_back();
 						save_vtu("step_" + std::to_string(t) + ".vtu", time);
+						save_boundary_vtu("boundary_" + std::to_string(t) + ".vtk");
 						// save_wire("step_" + std::to_string(t) + ".obj");
 					}
 				}
