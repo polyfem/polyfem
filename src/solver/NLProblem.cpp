@@ -15,6 +15,15 @@
 
 static bool disable_collision = false;
 
+/*
+m \frac{\partial^2 u}{\partial t^2} = \psi = \text{div}(\sigma[u])\\
+u^{t+1} = u(t+\Delta t)\approx u(t) + \Delta t \dot u + \frac{\Delta t^2} 2 \ddot u \\
+= u(t) + \Delta t \dot u + \frac{\Delta t^2}{2} \psi\\
+M u^{t+1}_h \approx M u^t_h + \Delta t M v^t_h + \frac{\Delta t^2} {2} A u^{t+1}_h \\
+%
+M (u^{t+1}_h - (u^t_h + \Delta t v^t_h)) - \frac{\Delta t^2} {2} A u^{t+1}_h
+*/
+
 namespace polyfem
 {
 	using namespace polysolve;
@@ -124,7 +133,7 @@ namespace polyfem
 			{
 				const TVector tmp = state.mass * (x_prev + dt * v_prev);
 
-				_current_rhs *= dt * dt / 2;
+				_current_rhs *= dt * dt; // / 2.0;
 				_current_rhs += tmp;
 			}
 			rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, _current_rhs, t);
@@ -238,11 +247,21 @@ namespace polyfem
 
 		if (is_time_dependent)
 		{
-			scaling = dt * dt / 2.0;
+			scaling = dt * dt; // / 2.0;
 			const TVector tmp = full - (x_prev + dt * v_prev);
 
 			intertia_energy = 0.5 * tmp.transpose() * state.mass * tmp;
 		}
+
+		/*
+		\frac 1 2 (x-(x^t+hv^t+h^2M^{-1}f_e))^TM(x-(x^t+hv^t+h^2M^{-1}f_e))=\\
+		\frac 1 2 (x-x^t-hv^t-h^2M^{-1}f_e)^TM(x-x^t-hv^t-h^2M^{-1}f_e)=\\
+		\frac 1 2 (t-h^2M^{-1}f_e)^TM(t-h^2M^{-1}f_e)=\\
+		\frac 1 2 (t^T M-h^2f_e^T)(t-h^2M^{-1}f_e)=\\
+		\frac 1 2 (t^T M t - h^2 t^T f_e
+		-h^2f_e^T t + h^4f_e^T M^{-1}f_e)=\\
+		\frac 1 2 (t^T M t - 2 h^2 t^T f_e + h^4f_e^T M^{-1}f_e)
+		*/
 
 		if (!disable_collision && state.args["has_collision"])
 		{
@@ -299,7 +318,7 @@ namespace polyfem
 
 		if (is_time_dependent)
 		{
-			grad *= dt * dt / 2.0;
+			grad *= dt * dt; // / 2.0;
 			grad += state.mass * full;
 		}
 
@@ -394,7 +413,7 @@ namespace polyfem
 			assembler.assemble_energy_hessian(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, project_to_psd, state.bases, gbases, full, hessian);
 		if (is_time_dependent)
 		{
-			hessian *= dt * dt / 2;
+			hessian *= dt * dt; // / 2.0;
 			hessian += state.mass;
 		}
 

@@ -280,7 +280,7 @@ namespace cppoptlib
 
 				//gradient descent, check descent direction
 				const double residual = (hessian * delta_x - grad).norm();
-				if (line_search_failed || std::isnan(residual) || residual > 1e-7)
+				if (line_search_failed || std::isnan(residual)) //  || residual > 1e-7)
 				{
 					polyfem::logger().debug("\treverting to gradient descent, since residual is {}", residual);
 					delta_x = grad;

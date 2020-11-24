@@ -691,19 +691,23 @@ namespace polyfem
 			avg_mass /= mass.rows();
 			logger().trace("avg mass {}", avg_mass);
 
-			// std::vector<Eigen::Triplet<double>> lumped;
+			if (args["lump_mass_matrix"])
+			{
 
-			// for (int k = 0; k < mass.outerSize(); ++k)
-			// {
-			// 	for (StiffnessMatrix::InnerIterator it(mass, k); it; ++it)
-			// 	{
-			// 		lumped.emplace_back(it.row(), it.row(), it.value());
-			// 	}
-			// }
+				std::vector<Eigen::Triplet<double>> lumped;
 
-			// mass.resize(mass.rows(), mass.cols());
-			// mass.setFromTriplets(lumped.begin(), lumped.end());
-			// mass.makeCompressed();
+				for (int k = 0; k < mass.outerSize(); ++k)
+				{
+					for (StiffnessMatrix::InnerIterator it(mass, k); it; ++it)
+					{
+						lumped.emplace_back(it.row(), it.row(), it.value());
+					}
+				}
+
+				mass.resize(mass.rows(), mass.cols());
+				mass.setFromTriplets(lumped.begin(), lumped.end());
+				mass.makeCompressed();
+			}
 		}
 
 		timer.stop();
@@ -863,6 +867,7 @@ namespace polyfem
 			const double tend = args["tend"];
 			const int time_steps = args["time_steps"];
 			const double dt = tend / time_steps;
+			logger().info("dt={}", dt);
 
 			const auto &gbases = iso_parametric() ? bases : geom_bases;
 			json rhs_solver_params = args["rhs_solver_params"];
