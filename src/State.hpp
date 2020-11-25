@@ -92,6 +92,7 @@ namespace polyfem
 		Eigen::MatrixXd boundary_nodes_pos;
 		Eigen::MatrixXd boundary_nodes_pos_pressure;
 		Eigen::MatrixXi boundary_edges;
+		Eigen::MatrixXi boundary_edges_pressure;
 		Eigen::MatrixXi boundary_triangles;
 		Eigen::MatrixXd boundary_triangles_pressure;
 

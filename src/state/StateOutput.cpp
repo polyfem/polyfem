@@ -359,6 +359,51 @@ namespace polyfem
 
             // igl::write_triangle_mesh("test.obj", boundary_nodes_pos_pressure, boundary_triangles_pressure);
         }
+        else
+        {
+            boundary_nodes_pos_pressure.resize(n_pressure_bases, 2);
+            boundary_nodes_pos_pressure.setZero();
+            const Mesh2D &mesh2d = *dynamic_cast<Mesh2D *>(mesh.get());
+
+            std::vector<std::pair<int, int>> edges;
+
+            for (auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
+            {
+                const auto &lb = *it;
+                const auto &b = pressure_bases[lb.element_id()];
+
+                for (int j = 0; j < lb.size(); ++j)
+                {
+                    const int eid = lb.global_primitive_id(j);
+                    const int lid = lb[j];
+                    const auto nodes = b.local_nodes_for_primitive(eid, mesh2d);
+
+                    int prev_node = -1;
+
+                    for (long n = 0; n < nodes.size(); ++n)
+                    {
+                        auto &bs = b.bases[nodes(n)];
+                        const auto &glob = bs.global();
+                        if (glob.size() != 1)
+                            continue;
+
+                        int gindex = glob.front().index;
+                        boundary_nodes_pos_pressure.row(gindex) << glob.front().node(0), glob.front().node(1);
+
+                        if (prev_node >= 0)
+                            edges.emplace_back(prev_node, gindex);
+                        prev_node = gindex;
+                    }
+                }
+            }
+
+            boundary_triangles_pressure.resize(0, 0);
+            boundary_edges_pressure.resize(edges.size(), 2);
+            for (int i = 0; i < edges.size(); ++i)
+            {
+                boundary_edges_pressure.row(i) << edges[i].first, edges[i].second;
+            }
+        }
     }
 
     void State::save_json()
@@ -973,10 +1018,21 @@ namespace polyfem
         {
             file << boundary_nodes_pos_pressure(i, 0) << " " << boundary_nodes_pos_pressure(i, 1) << " " << boundary_nodes_pos_pressure(i, 2) << std::endl;
         }
-        file << "POLYGONS " << boundary_triangles_pressure.rows() << " " << boundary_triangles_pressure.rows() * (boundary_triangles_pressure.cols() + 1) << std::endl;
-        for (size_t i = 0; i < boundary_triangles_pressure.rows(); i++)
+        if (mesh->is_volume())
         {
-            file << "3 " << boundary_triangles_pressure(i, 0) << " " << boundary_triangles_pressure(i, 1) << " " << boundary_triangles_pressure(i, 2) << std::endl;
+            file << "POLYGONS " << boundary_triangles_pressure.rows() << " " << boundary_triangles_pressure.rows() * (boundary_triangles_pressure.cols() + 1) << std::endl;
+            for (size_t i = 0; i < boundary_triangles_pressure.rows(); i++)
+            {
+                file << "3 " << boundary_triangles_pressure(i, 0) << " " << boundary_triangles_pressure(i, 1) << " " << boundary_triangles_pressure(i, 2) << std::endl;
+            }
+        }
+        else
+        {
+            file << "LINES " << boundary_edges_pressure.rows() << " " << boundary_edges_pressure.rows() * (boundary_edges_pressure.cols() + 1) << std::endl;
+            for (size_t i = 0; i < boundary_edges_pressure.rows(); i++)
+            {
+                file << "2 " << boundary_edges_pressure(i, 0) << " " << boundary_edges_pressure(i, 1) << std::endl;
+            }
         }
         file << "POINT_DATA " << boundary_nodes_pos_pressure.rows() << std::endl;
         file << "SCALARS pressure float 1\n";
