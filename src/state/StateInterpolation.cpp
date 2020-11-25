@@ -671,6 +671,53 @@ namespace polyfem
         }
     }
 
+    void State::interpolate_at_local_vals(const int el_index, const MatrixXd &local_pts, MatrixXd &result, MatrixXd &result_grad)
+    {
+        if (!mesh)
+        {
+            logger().error("Load the mesh first!");
+            return;
+        }
+        if (sol.size() <= 0)
+        {
+            logger().error("Solve the problem first!");
+            return;
+        }
+
+        int actual_dim = 1;
+        if (!problem->is_scalar())
+            actual_dim = mesh->dimension();
+
+        const auto &gbases = iso_parametric() ? bases : geom_bases;
+        const ElementBases &gbs = gbases[el_index];
+        const ElementBases &bs = bases[el_index];
+
+        ElementAssemblyValues vals;
+        vals.compute(el_index, mesh->is_volume(), local_pts, bs, gbs);
+
+        result.resize(vals.val.rows(), actual_dim);
+        result.setZero();
+
+        result_grad.resize(vals.val.rows(), mesh->dimension() * actual_dim);
+        result_grad.setZero();
+
+        const int n_loc_bases = int(vals.basis_values.size());
+
+        for (int i = 0; i < n_loc_bases; ++i)
+        {
+            const auto &val = vals.basis_values[i];
+
+            for (size_t ii = 0; ii < val.global.size(); ++ii)
+            {
+                for (int d = 0; d < actual_dim; ++d)
+                {
+                    result.col(d) += val.global[ii].val * sol(val.global[ii].index * actual_dim + d) * val.val;
+                    result_grad.block(0, d * val.grad_t_m.cols(), result_grad.rows(), val.grad_t_m.cols()) += val.global[ii].val * sol(val.global[ii].index * actual_dim + d) * val.grad_t_m;
+                }
+            }
+        }
+    }
+
     void State::compute_scalar_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool boundary_only)
     {
         if (!mesh)

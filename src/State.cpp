@@ -1658,7 +1658,7 @@ namespace polyfem
 
 			for (int i = 0; i < n_loc_bases; ++i)
 			{
-				auto val = vals.basis_values[i];
+				const auto &val = vals.basis_values[i];
 
 				for (size_t ii = 0; ii < val.global.size(); ++ii)
 				{
