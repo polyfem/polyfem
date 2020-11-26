@@ -622,6 +622,7 @@ namespace polyfem
         if (!vis_mesh_path.empty())
         {
             save_vtu(vis_mesh_path, tend);
+            save_boundary_vtu("boundary.vtk");
         }
         if (!wire_mesh_path.empty())
         {

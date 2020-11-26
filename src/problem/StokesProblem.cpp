@@ -40,7 +40,7 @@ void TimeDepentendStokesProblem::initial_solution(const Mesh &mesh, const Eigen:
 ConstantVelocity::ConstantVelocity(const std::string &name)
 	: TimeDepentendStokesProblem(name)
 {
-	// boundary_ids_ = {1};
+	boundary_ids_ = {1, 2, 3, 4, 5, 6, 7};
 }
 
 void ConstantVelocity::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
@@ -54,13 +54,16 @@ void ConstantVelocity::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, c
 
 	for (long i = 0; i < pts.rows(); ++i)
 	{
-		val(i, 1) = 1;
+		if (mesh.get_boundary_id(global_ids(i)) != 7)
+		{
+			val(i, 1) = 1;
+		}
 	}
 
 	// val *= t;
 
-	if (is_time_dependent_)
-		val *= (1 - exp(-5 * t));
+	// if (is_time_dependent_)
+	// 	val *= (1 - exp(-5 * t));
 }
 
 TwoSpheres::TwoSpheres(const std::string &name)
@@ -320,121 +323,6 @@ void FlowWithObstacle::set_parameters(const json &params)
 	if (params.find("U") != params.end())
 	{
 		U_ = params["U"];
-	}
-}
-
-CollidingBalls::CollidingBalls(const std::string &name)
-	: TimeDepentendStokesProblem(name)
-{
-	U_ = 0.05;
-	radius_ = 0.02;
-}
-
-void CollidingBalls::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
-{
-	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-}
-
-void CollidingBalls::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
-{
-	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-	for(int i = 0; i < pts.rows(); ++i)
-	{
-		const double x = pts(i, 0);
-		const double y = pts(i, 1);
-
-		if(pts.cols() == 2)
-		{
-			double r1 = sqrt(pow(x-0.04,2)+pow(y-0.2,2));
-			double r2 = sqrt(pow(x-0.16,2)+pow(y-0.2,2));
-			
-			if(r1 <= radius_)
-				val(i, 0) = U_;
-			else if(r2 <= radius_)
-				val(i, 0) = -U_;
-		}
-		else
-		{
-			const double z = pts(i, 2);
-
-			double r1 = sqrt(pow(x-0.04,2)+pow(y-0.2,2)+pow(z-0.2,2));
-			double r2 = sqrt(pow(x-0.16,2)+pow(y-0.2,2)+pow(z-0.2,2));
-			
-			if(r1 <= radius_)
-				val(i, 0) = U_;
-			else if(r2 <= radius_)
-				val(i, 0) = -U_;
-		}
-	}
-}
-
-void CollidingBalls::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
-{
-	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-}
-
-void CollidingBalls::set_parameters(const json &params)
-{
-	TimeDepentendStokesProblem::set_parameters(params);
-
-	if (params.find("U") != params.end())
-	{
-		U_ = params["U"];
-	}
-
-	if (params.find("radius") != params.end())
-	{
-		radius_ = params["radius"];
-	}
-}
-
-void CollidingBalls::initial_density(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
-{
-	val = Eigen::MatrixXd::Zero(pts.rows(), 1);
-	double epsilon = 0.002;
-	for(int i = 0; i < pts.rows(); ++i)
-	{
-		const double x = pts(i, 0);
-		const double y = pts(i, 1);
-
-		if(pts.cols() == 2)
-		{
-			double r1 = sqrt(pow(x-0.04,2)+pow(y-0.2,2));
-			double r2 = sqrt(pow(x-0.16,2)+pow(y-0.2,2));
-			
-			if(r1 <= radius_ || r2 <= radius_)
-			{
-				val(i, 0) = 1;
-			}
-			else if(r1 <= radius_ + epsilon)
-			{
-				val(i, 0) = 1 - (r1 - radius_) / epsilon;
-			}
-			else if(r2 <= radius_ + epsilon)
-			{
-				val(i, 0) = 1 - (r2 - radius_) / epsilon;
-			}
-		}
-		else
-		{
-			const double z = pts(i, 2);
-
-			double r1 = sqrt(pow(x-0.04,2)+pow(y-0.2,2)+pow(z-0.2,2));
-			double r2 = sqrt(pow(x-0.16,2)+pow(y-0.2,2)+pow(z-0.2,2));
-			
-			if(r1 <= radius_ || r2 <= radius_)
-			{
-				val(i, 0) = 1;
-			}
-			else if(r1 <= radius_ + epsilon)
-			{
-				val(i, 0) = 1 - (r1 - radius_) / epsilon;
-			}
-			else if(r2 <= radius_ + epsilon)
-			{
-				val(i, 0) = 1 - (r2 - radius_) / epsilon;
-			}
-		}
 	}
 }
 

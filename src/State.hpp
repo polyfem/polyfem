@@ -94,7 +94,7 @@ namespace polyfem
 		Eigen::MatrixXi boundary_edges;
 		Eigen::MatrixXi boundary_edges_pressure;
 		Eigen::MatrixXi boundary_triangles;
-		Eigen::MatrixXd boundary_triangles_pressure;
+		Eigen::MatrixXi boundary_triangles_pressure;
 
 		Eigen::Vector4d spectrum;
 
