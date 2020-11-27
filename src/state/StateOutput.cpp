@@ -1015,12 +1015,12 @@ namespace polyfem
         file << "ASCII\n";
         file << "DATASET POLYDATA\n";
         file << "POINTS " << boundary_nodes_pos_pressure.rows() << " float\n";
-        for (size_t i = 0; i < boundary_nodes_pos_pressure.rows(); i++)
-        {
-            file << boundary_nodes_pos_pressure(i, 0) << " " << boundary_nodes_pos_pressure(i, 1) << " " << boundary_nodes_pos_pressure(i, 2) << std::endl;
-        }
         if (mesh->is_volume())
         {
+            for (size_t i = 0; i < boundary_nodes_pos_pressure.rows(); i++)
+            {
+                file << boundary_nodes_pos_pressure(i, 0) << " " << boundary_nodes_pos_pressure(i, 1) << " " << boundary_nodes_pos_pressure(i, 2) << std::endl;
+            }
             file << "POLYGONS " << boundary_triangles_pressure.rows() << " " << boundary_triangles_pressure.rows() * (boundary_triangles_pressure.cols() + 1) << std::endl;
             for (size_t i = 0; i < boundary_triangles_pressure.rows(); i++)
             {
@@ -1029,6 +1029,10 @@ namespace polyfem
         }
         else
         {
+            for (size_t i = 0; i < boundary_nodes_pos_pressure.rows(); i++)
+            {
+                file << boundary_nodes_pos_pressure(i, 0) << " " << boundary_nodes_pos_pressure(i, 1) << " 0.0" << std::endl;
+            }
             file << "LINES " << boundary_edges_pressure.rows() << " " << boundary_edges_pressure.rows() * (boundary_edges_pressure.cols() + 1) << std::endl;
             for (size_t i = 0; i < boundary_edges_pressure.rows(); i++)
             {

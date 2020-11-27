@@ -290,7 +290,7 @@ void Flow::set_parameters(const json &params)
 FlowWithObstacle::FlowWithObstacle(const std::string &name)
 	: TimeDepentendStokesProblem(name)
 {
-	boundary_ids_ = {1, 2, 4, 7};
+	boundary_ids_ = {1, 2, 4, 5, 6, 7};
 	U_ = 1.5;
 }
 
@@ -463,6 +463,7 @@ void UnitFlowWithObstacle::set_parameters(const json &params)
 TaylorGreenVortexProblem::TaylorGreenVortexProblem(const std::string &name)
 	: Problem(name), viscosity_(1)
 {
+	boundary_ids_ = {1, 2, 3, 4, 5, 6, 7};
 }
 
 void TaylorGreenVortexProblem::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
@@ -495,7 +496,7 @@ void TaylorGreenVortexProblem::exact(const Eigen::MatrixXd &pts, const double t,
 		else
 		{
 			const double z = pts(i, 2);
-			const double a = 1. / exp(3.141592653589793);
+			const double a = 1.;
 			const double time_scaling = -a * exp(-viscosity_ * t);
 			val(i, 0) = (exp(a * x)*sin(a * y+z)+exp(a * z)*cos(a * x+y))*time_scaling;
 			val(i, 1) = (exp(a * y)*sin(a * z+x)+exp(a * x)*cos(a * y+z))*time_scaling;

@@ -81,7 +81,7 @@ namespace polyfem
 
             int total_cell_num = 1;
             for(int d = 0; d < dim; d++) {
-                hash_table_cell_num[d] = (int)std::round((max_domain(d) - min_domain(d)) / min_edge_length);
+                hash_table_cell_num[d] = (int)std::round((max_domain(d) - min_domain(d)) / min_edge_length) * 4;
                 logger().debug("hash grid in {} dimension: {}", d, hash_table_cell_num[d]);
                 total_cell_num *= hash_table_cell_num[d];
             }
