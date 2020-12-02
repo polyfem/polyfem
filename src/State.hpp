@@ -243,9 +243,7 @@ namespace polyfem
 			args["bc_tag"] = bc_tag;
 			load_mesh();
 		}
-
-		void set_multimaterial(const std::function<void(const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &)> &setter);
-
+		//load the mesh from V and F, V is #vertices x dim, F is #elements x size (size = 3 for triangle mesh, size=4 for a quaud mesh if dim is 2)
 		void load_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
 		{
 			if (V.cols() == 2)
@@ -257,10 +255,18 @@ namespace polyfem
 			load_mesh();
 		}
 
+		//set the multimaterial, this is mean for internal usage.
+		void set_multimaterial(const std::function<void(const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &)> &setter);
+
+		//set the boundary sideset
+		//from a lambda that takes the face/edge barycenter
 		void set_boundary_side_set(const std::function<int(const polyfem::RowVectorNd &)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
+		//from a lambda that takes the face/edge barycenter and a flag if the face/edge is boundary or not (used to set internal boundaries)
 		void set_boundary_side_set(const std::function<int(const polyfem::RowVectorNd &, bool)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
+		//from a lambda that takes the face/edge vertices and a flag if the face/edge is boundary or not (used to set internal boundaries)
 		void set_boundary_side_set(const std::function<int(const std::vector<int> &, bool)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
 
+		//solves the problem
 		void solve()
 		{
 			compute_mesh_stats();
@@ -276,48 +282,82 @@ namespace polyfem
 			solve_export_to_file = true;
 		}
 
-		void build_basis();
-		void extract_boundary_mesh();
+		//internal methods, they are called from solve
 
+		//builds the bases step 2 of solve
+		void build_basis();
+		//extracts the boundary mesh for collision, called in build_basis
+		void extract_boundary_mesh();
+		//assemble matrices, step 4 of solve
 		void assemble_stiffness_mat();
+		//compute rhs, step 3 of solve
 		void assemble_rhs();
+		//solves the proble, step 5
 		void solve_problem();
+
+		//compute the errors, not part of solve
 		void compute_errors();
+		//saves all data on the disk according to the input params
 		void export_data();
 
+		//evaluates the function fun at the vertices on the mesh
+		//actual dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
 		void compute_vertex_values(int actual_dim, const std::vector<ElementBases> &basis,
 								   const MatrixXd &fun, Eigen::MatrixXd &result);
+		//compute von mises stress at quadrature points for the function fun, also compute the interpolated function
 		void compute_stress_at_quadrature_points(const MatrixXd &fun, Eigen::MatrixXd &result, Eigen::VectorXd &von_mises);
-
+		//interpolate the function fun. n_points is the size of the output. boundary_only interpolates only at boundary elements
 		void interpolate_function(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool boundary_only = false);
+		//interpolate the function fun. n_points is the size of the output. boundary_only interpolates only at boundary elements
+		//actual dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
 		void interpolate_function(const int n_points, const int actual_dim, const std::vector<ElementBases> &basis, const MatrixXd &fun, MatrixXd &result, const bool boundary_only = false);
 
+		//interpolate solution and gradient at in element el_index for the local_pts in the reference element
 		void interpolate_at_local_vals(const int el_index, const MatrixXd &local_pts, MatrixXd &result, MatrixXd &result_grad);
 
+		//computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)
 		void compute_scalar_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool boundary_only = false);
-		void compute_tensor_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool boundary_only = false);
+		//computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)
+		//the scalar value is averaged around every node to make it continuos
 		void average_grad_based_function(const int n_points, const MatrixXd &fun, MatrixXd &result_scalar, MatrixXd &result_tensor, const bool boundary_only = false);
+		//compute tensor quantity (ie stress tensor or velocy)
+		void compute_tensor_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool boundary_only = false);
 
+		//computes integrated solution (fun) per surface face. pts and faces are the boundary are the boundary on the rest configuration
 		void interpolate_boundary_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result);
+		//computes integrated solution (fun) per surface face vertex. pts and faces are the boundary are the boundary on the rest configuration
 		void interpolate_boundary_function_at_vertices(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, MatrixXd &result);
+		//computes traction foces for fun (tensor * surface normal) solution per surface face. pts and faces are the boundary on the rest configuration.
+		//disp is the displacement of the surface vertices
 		void interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const MatrixXd &disp, const bool compute_avg, MatrixXd &result);
+		//same as above with disp=0
 		void interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result);
 
+		//returns a triangulated representation of the sideset. sidesets contains integers mapping to faces
 		void get_sidesets(Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXd &sidesets);
 
+		//saves the output statistic to a stream
 		void save_json(std::ostream &out);
+		//saves the output statistic to a json object
 		void save_json(nlohmann::json &j);
+		//saves the output statistic to disc accoding to params
 		void save_json();
 
+		//compute stats (counts els type, mesh lenght, etc), step 1 of solve
 		void compute_mesh_stats();
 
+		//builds visualzation mesh, upsampled mesh used for visualization
+		//the visualization mesh is a dense mesh per element all disconnected
+		//it also retuns the mapping to element id and discretization of every elment
+		//works in 2 and 3d. if the mesh is not simplicial it gets tri/tet halized
 		void build_vis_mesh(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXi &el_id, Eigen::MatrixXd &discr);
+
+		//saves the vtu file for time t, internal usage
 		void save_vtu(const std::string &name, const double t);
+		//saves an obj of the wireframe, internal usage
 		void save_wire(const std::string &name, bool isolines = false);
 
-		const Eigen::MatrixXd &get_solution() const { return sol; }
-		const Eigen::MatrixXd &get_pressure() const { return pressure; }
-
+		//samples to solution on the visualization mesh and return the vis mesh (points and tets) and the interpolated values (fun)
 		void get_sampled_solution(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXd &fun, bool boundary_only = false)
 		{
 			Eigen::MatrixXd discr;
@@ -331,6 +371,7 @@ namespace polyfem
 			args["export"]["vis_boundary_only"] = tmp;
 		}
 
+		//samples to stess tensor on the visualization mesh and return them (fun)
 		void get_stresses(Eigen::MatrixXd &fun, bool boundary_only = false)
 		{
 			Eigen::MatrixXd points;
@@ -346,6 +387,7 @@ namespace polyfem
 			args["export"]["vis_boundary_only"] = tmp;
 		}
 
+		//samples to von mises stesses on the visualization mesh and return them (fun)
 		void get_sampled_mises(Eigen::MatrixXd &fun, bool boundary_only = false)
 		{
 			Eigen::MatrixXd points;
@@ -361,6 +403,7 @@ namespace polyfem
 			args["export"]["vis_boundary_only"] = tmp;
 		}
 
+		//samples to averaged von mises stesses on the visualization mesh and return them (fun)
 		void get_sampled_mises_avg(Eigen::MatrixXd &fun, Eigen::MatrixXd &tfun, bool boundary_only = false)
 		{
 			Eigen::MatrixXd points;
@@ -376,9 +419,13 @@ namespace polyfem
 			args["export"]["vis_boundary_only"] = tmp;
 		}
 
+		//returns the path of the input mesh (wrappers around the arguments)
 		inline std::string mesh_path() const { return args["mesh"]; }
 
+		//return the formulation (checks if the problem is scalar or not)
 		inline std::string formulation() const { return problem->is_scalar() ? scalar_formulation() : tensor_formulation(); }
+
+		//check if using iso parametric bases
 		inline bool iso_parametric() const
 		{
 			if (non_regular_count > 0 || non_regular_boundary_count > 0 || undefined_count > 0)
@@ -413,19 +460,24 @@ namespace polyfem
 			return args["iso_parametric"];
 		}
 
+		//returns solver, preconditioner and solver parameters (wrappers around the arguments)
 		inline std::string solver_type() const { return args["solver_type"]; }
 		inline std::string precond_type() const { return args["precond_type"]; }
 		inline const json &solver_params() const { return args["solver_params"]; }
 
+		//returns the tensor and scalar formulation (wrappers around the arguments)
 		inline std::string scalar_formulation() const { return args["scalar_formulation"]; }
 		inline std::string tensor_formulation() const { return args["tensor_formulation"]; }
 		// inline std::string mixed_formulation() const { return args["mixed_formulation"]; }
 
+		//compute a priori prefinement in 2d and 3d, fills disc_orders
 		void p_refinement(const Mesh2D &mesh2d);
 		void p_refinement(const Mesh3D &mesh3d);
 
 	private:
+		//splits the solution in solution and pressure for mixed problems
 		void sol_to_pressure();
+		//builds bases for polygons, called inside build_basis
 		void build_polygonal_basis();
 	};
 
