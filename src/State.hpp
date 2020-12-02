@@ -23,6 +23,7 @@
 
 namespace polyfem
 {
+	//class used to save the solution of time dependent problems in code instead of saving it to the disc
 	class SolutionFrame
 	{
 	public:
@@ -37,24 +38,41 @@ namespace polyfem
 		Eigen::MatrixXd scalar_value_avg;
 	};
 
+	//main class that contains the polyfem solver
 	class State
 	{
 	public:
 		~State() = default;
 
 		State();
+
+		//initalizing the logger
+		//log_file is to write it to a file (use log_file="") to output to consolle
+		//log_level 0 all message, 6 no message. 2 is info, 1 is debug
+		//quiet the log
 		void init_logger(const std::string &log_file, int log_level, const bool is_quiet);
+
+		//initalizing the logger
+		//writes to an outputstream
 		void init_logger(std::ostream &os, int log_level);
+
+		//initalizing the logger meant for internal usage
 		void init_logger(std::vector<spdlog::sink_ptr> &sinks, int log_level);
 
+		//initialize the polyfem solver with a json settings
 		void init(const json &args);
-		void init(const std::string &json);
+		// void init(const std::string &json);
 
+		//change log level, log_level 0 all message, 6 no message. 2 is info, 1 is debug
 		void set_log_level(int log_level)
 		{
 			log_level = std::max(0, std::min(6, log_level));
 			spdlog::set_level(static_cast<spdlog::level::level_enum>(log_level));
 		}
+
+		//get the output log as json
+		//this is *not* what gets printed but more informative
+		//information, eg it contains runtimes, errors, etc.
 		std::string get_log()
 		{
 			std::stringstream ss;
@@ -62,67 +80,123 @@ namespace polyfem
 			return ss.str();
 		}
 
+		//solver settings
 		json args;
 
+		//assembler, it dispatches call to the differnt assembers based on the formulation
 		AssemblerUtils assembler;
+		//current problem, it contains rhs and bc
 		std::shared_ptr<Problem> problem;
+
+		//density of the input, default=1.
 		Density density;
 
+		//FE bases, the size is #elements
 		std::vector<ElementBases> bases;
+		//FE pressure bases for mixed elements, the size is #elements
 		std::vector<ElementBases> pressure_bases;
+
+		//Geometric mapping bases, if the elements are isoparametric, this list is empty
 		std::vector<ElementBases> geom_bases;
 
+		//list of boundary nodes
 		std::vector<int> boundary_nodes;
+		//mapping from elements to nodes for dirichlet boundary conditions
 		std::vector<LocalBoundary> local_boundary;
+		//mapping from elements to nodes for neumann boundary conditions
 		std::vector<LocalBoundary> local_neumann_boundary;
+		//nodes on the boundary of polygonal elements, used for harmonic bases
 		std::map<int, InterfaceData> poly_edge_to_data;
 
-		std::vector<int> flipped_elements;
-
+		//current mesh, it can be a Mesh2D or Mesh3D
 		std::unique_ptr<Mesh> mesh;
 
+		//polygons, used since poly have no geom mapping
 		std::map<int, Eigen::MatrixXd> polys;
+		//polyhedra, used since poly have no geom mapping
 		std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> polys_3d;
+
+		//parent element used to track refinements
 		std::vector<int> parent_elements;
 
+		//average system mass, used for contact with IPC
 		double avg_mass;
+
+		//stiffness and mass matrix.
+		//Stiffness is not compute for non linea problems
+		//Mass is computed only for time dependent problems
 		StiffnessMatrix stiffness, mass;
+		//System righ-hand side.
+		//rhs_in is an input that, if not empty, gets copied to rhs
 		Eigen::MatrixXd rhs, rhs_in;
+
+		//solution and pressure solution
+		//if the problem is not mixed, pressure is empty
 		Eigen::MatrixXd sol, pressure;
 
+		//boundary mesh used for collision
+		//boundary_nodes_pos contains the total number of nodes, the internal ones are zero
+		//for high-order fem the faces are triangulated
+		//this is currently supported only for tri and tet meshes
 		Eigen::MatrixXd boundary_nodes_pos;
 		Eigen::MatrixXi boundary_edges;
 		Eigen::MatrixXi boundary_triangles;
 
+		//spectrum of the stiffness matrix, enable only if POLYSOLVE_WITH_SPECTRA is ON (off by default)
 		Eigen::Vector4d spectrum;
 
+		//information of the solver, eg num iteration, time, errors, etc
+		//the informations varies depending on the solver
 		json solver_info;
 
+		//use average pressure for stokes problem to fix the additional dofs, true by default
+		//if false, it will fix one pressure node to zero
 		bool use_avg_pressure;
 
+		//number of bases and pressure bases
 		int n_bases, n_pressure_bases;
+		//vector of discretization oders, used when not all elements have the same degree
+		//one per element
 		Eigen::VectorXi disc_orders;
 
+		//max edge lenght
 		double mesh_size;
+		//min edge lenght
 		double min_edge_length;
+		//avg edge lenght
 		double average_edge_length;
 
+		//errors, lp_err is in fact an L8 error
 		double l2_err, linf_err, lp_err, h1_err, h1_semi_err, grad_max_err;
 
+		//non zeros and sytem matrix size
+		//num dof is the totdal dof in the system
 		long long nn_zero, mat_size, num_dofs;
 
+		//timings
+		//construct the basis
 		double building_basis_time;
+		//load the mesh
 		double loading_mesh_time;
+		//build the polygonal/polyhedral bases
 		double computing_poly_basis_time;
+		//assembly
 		double assembling_stiffness_mat_time;
+		//computing the rhs
 		double assigning_rhs_time;
+		//solve
 		double solving_time;
+		//compute error
 		double computing_errors_time;
+
+		//statiscs on angle, compute only when using p_ref (false by default)
 		double max_angle;
 		double sigma_max, sigma_min, sigma_avg;
 
+		//number of flipped elements, compute only when using count_flipped_els (false by default)
 		int n_flipped;
 
+		//statiscs on the mesh, see Polyspline paper for desciption
 		int simplex_count;
 		int regular_count;
 		int regular_boundary_count;
@@ -134,27 +208,42 @@ namespace polyfem
 		int undefined_count;
 		int multi_singular_boundary_count;
 
+		//flag to decide if exporting the time dependent solution to files
+		//or save it in the solution_frames array
 		bool solve_export_to_file = true;
 		std::vector<SolutionFrame> solution_frames;
 
+		//utility function that gets the problem params (eg material)
+		//it adds the problem dimension from the problem and PDE
 		json build_json_params();
 
+		//computes the mesh size, it samples every edges n_samples times
+		//uses curved_mesh_size (false by default) to compute the size of
+		//the linear mesh
 		void compute_mesh_size(const Mesh &mesh, const std::vector<ElementBases> &bases, const int n_samples);
 
+		//loads the mesh from the json arguments
 		void load_mesh();
+		//loads a febio file
 		void load_febio(const std::string &path);
+		//loads the mesh from a geogram mesh, skip_boundary_sideset = false it uses the lambda boundary_marker to assigm the sideset
+		//the input of the lambda is the face barycenter, the output is the sideset id
 		void load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd &)> &boundary_marker, bool skip_boundary_sideset = false);
+		//loads a mesh from a path
 		void load_mesh(const std::string &path)
 		{
 			args["mesh"] = path;
 			load_mesh();
 		}
+		//loads a mesh from a path and uses the bc_tag to assign sideset ids
+		//the bc_tag file should contain a list of integers, one per face
 		void load_mesh(const std::string &path, const std::string &bc_tag)
 		{
 			args["mesh"] = path;
 			args["bc_tag"] = bc_tag;
 			load_mesh();
 		}
+
 		void set_multimaterial(const std::function<void(const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &)> &setter);
 
 		void load_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
