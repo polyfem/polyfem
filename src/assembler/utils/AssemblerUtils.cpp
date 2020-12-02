@@ -45,11 +45,6 @@ namespace polyfem
 		return assembler == "Stokes" || assembler == "IncompressibleLinearElasticity" || assembler == "Bilaplacian" || assembler == "NavierStokes";
 	}
 
-	bool AssemblerUtils::is_gradient_based(const std::string &assembler)
-	{
-		return assembler == "NavierStokes";
-	}
-
 	bool AssemblerUtils::is_solution_displacement(const std::string &assembler)
 	{
 		return assembler == "LinearElasticity" || assembler == "HookeLinearElasticity" ||

@@ -9,11 +9,17 @@
 #include <cmath>
 #include <memory>
 
+//mass matrix assembler
 namespace polyfem
 {
 	class MassMatrixAssembler
 	{
 	public:
+		//assembles the mass matrix
+		//mesh is volumetric
+		//size of the problem (eg, 1 for laplace)
+		//number of bases, bases and geom bases
+		//density, class that can evaluate per point density
 		void assemble(
 			const bool is_volume,
 			const int size,
@@ -23,4 +29,4 @@ namespace polyfem
 			const std::vector<ElementBases> &gbases,
 			StiffnessMatrix &mass) const;
 	};
-}
+} // namespace polyfem

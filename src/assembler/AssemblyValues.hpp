@@ -1,13 +1,13 @@
 #ifndef ASSEMBLY_VALUES_HPP
 #define ASSEMBLY_VALUES_HPP
 
-
 #include <polyfem/Quadrature.hpp>
 #include <polyfem/Basis.hpp>
 
 #include <Eigen/Dense>
 #include <iostream>
 
+//stores per local bases evaluations
 namespace polyfem
 {
 	class AssemblyValues
@@ -15,7 +15,7 @@ namespace polyfem
 	public:
 		// Weighted sum to express the current ("virtual") node as a linear-combination
 		// of the real (unknown) nodes
-		std::vector< Local2Global > global;
+		std::vector<Local2Global> global;
 
 		// Evaluation of the basis over the quadrature points of the element
 		Eigen::MatrixXd val; // R^m
@@ -32,6 +32,6 @@ namespace polyfem
 			grad_t_m.resize(grad.rows(), grad.cols());
 		}
 	};
-}
+} // namespace polyfem
 
 #endif //ASSEMBLY_VALUES_HPP

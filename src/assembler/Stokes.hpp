@@ -10,9 +10,9 @@
 #include <Eigen/Dense>
 #include <functional>
 
-
 namespace polyfem
 {
+	//stokes local assembler for velocity
 	class StokesVelocity
 	{
 	public:
@@ -20,6 +20,7 @@ namespace polyfem
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 		assemble(const ElementAssemblyValues &vals, const int i, const int j, const QuadratureVector &da) const;
 
+		//not implemented!
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
 		compute_rhs(const AutodiffHessianPt &pt) const;
 
@@ -36,6 +37,7 @@ namespace polyfem
 		double viscosity_ = 1;
 	};
 
+	//stokes mixed assembler (velocity phi and pressure psi)
 	class StokesMixed
 	{
 	public:
@@ -52,11 +54,12 @@ namespace polyfem
 		inline int cols() const { return 1; }
 
 		void set_parameters(const json &params);
+
 	private:
 		int size_ = 2;
 	};
 
-
+	//pressure only for stokes is zero
 	class StokesPressure
 	{
 	public:
@@ -64,18 +67,18 @@ namespace polyfem
 		Eigen::Matrix<double, 1, 1>
 		assemble(const ElementAssemblyValues &vals, const int i, const int j, const QuadratureVector &da) const
 		{
-			return Eigen::Matrix<double, 1, 1>::Zero(1,1);
+			return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
 		}
 
 		Eigen::Matrix<double, 1, 1>
 		compute_rhs(const AutodiffHessianPt &pt) const
 		{
 			assert(false);
-			return Eigen::Matrix<double, 1, 1>::Zero(1,1);
+			return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
 		}
 
 		inline int size() const { return 1; }
 
-		void set_parameters(const json &params) { }
+		void set_parameters(const json &params) {}
 	};
-}
+} // namespace polyfem

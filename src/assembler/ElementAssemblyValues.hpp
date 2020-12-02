@@ -7,11 +7,14 @@
 
 namespace polyfem
 {
+	//stores per elment bases evaluation
 	class ElementAssemblyValues
 	{
 	public:
+		//per basis values
 		std::vector<AssemblyValues> basis_values;
-        std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>> jac_it;
+		//inverse transpose jacobian of geom mapping
+		std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>> jac_it;
 
 		Quadrature quadrature;
 		int element_id;
@@ -22,10 +25,14 @@ namespace polyfem
 		// det(∑∇φi.Ni) det fo the jacobian of geometric mapping (constant for P1)
 		Eigen::VectorXd det; // R^{m x 1}
 
+		//only poly elements have no parameterization
 		bool has_parameterization = true;
 
+		//computes the per element values at the quadrature points
 		void compute(const int el_index, const bool is_volume, const ElementBases &basis, const ElementBases &gbasis);
+		//computes the per element values at the local (ref el) points (pts)
 		void compute(const int el_index, const bool is_volume, const Eigen::MatrixXd &pts, const ElementBases &basis, const ElementBases &gbasis);
+		//check if the element is flipped
 		bool is_geom_mapping_positive(const bool is_volume, const ElementBases &gbasis) const;
 
 	private:
@@ -41,4 +48,4 @@ namespace polyfem
 		bool is_geom_mapping_positive(const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy, const Eigen::MatrixXd &dz) const;
 		bool is_geom_mapping_positive(const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy) const;
 	};
-}
+} // namespace polyfem
