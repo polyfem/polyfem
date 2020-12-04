@@ -673,12 +673,17 @@ namespace polyfem
 
     void State::interpolate_at_local_vals(const int el_index, const MatrixXd &local_pts, MatrixXd &result, MatrixXd &result_grad)
     {
+        interpolate_at_local_vals(el_index, local_pts, sol, result, result_grad);
+    }
+
+    void State::interpolate_at_local_vals(const int el_index, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad)
+    {
         if (!mesh)
         {
             logger().error("Load the mesh first!");
             return;
         }
-        if (sol.size() <= 0)
+        if (fun.size() <= 0)
         {
             logger().error("Solve the problem first!");
             return;
@@ -689,6 +694,8 @@ namespace polyfem
             actual_dim = mesh->dimension();
 
         assert(local_pts.cols() == mesh->dimension());
+        assert(fun.size() == sol.size());
+        assert(fun.rows() == sol.rows());
 
         const auto &gbases = iso_parametric() ? bases : geom_bases;
         const ElementBases &gbs = gbases[el_index];
@@ -713,8 +720,8 @@ namespace polyfem
             {
                 for (int d = 0; d < actual_dim; ++d)
                 {
-                    result.col(d) += val.global[ii].val * sol(val.global[ii].index * actual_dim + d) * val.val;
-                    result_grad.block(0, d * val.grad_t_m.cols(), result_grad.rows(), val.grad_t_m.cols()) += val.global[ii].val * sol(val.global[ii].index * actual_dim + d) * val.grad_t_m;
+                    result.col(d) += val.global[ii].val * fun(val.global[ii].index * actual_dim + d) * val.val;
+                    result_grad.block(0, d * val.grad_t_m.cols(), result_grad.rows(), val.grad_t_m.cols()) += val.global[ii].val * fun(val.global[ii].index * actual_dim + d) * val.grad_t_m;
                 }
             }
         }
