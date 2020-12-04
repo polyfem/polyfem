@@ -460,6 +460,78 @@ void UnitFlowWithObstacle::set_parameters(const json &params)
 	// 	std::cout<<"i "<<i<<std::endl;
 }
 
+StokesLawProblem::StokesLawProblem(const std::string &name)
+	: Problem(name), viscosity_(1e2), radius(0.5)
+{
+	boundary_ids_ = {1, 2, 3, 4, 5, 6, 7};
+	is_time_dependent_ = false;
+}
+
+void StokesLawProblem::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+{
+	exact(pts, 0, val);
+}
+
+void StokesLawProblem::set_parameters(const json &params)
+{
+	if (params.count("viscosity"))
+	{
+		viscosity_ = params["viscosity"];
+	}
+	if (params.count("radius"))
+	{
+		radius = params["radius"];
+	}
+	if (params.find("time_dependent") != params.end())
+	{
+		is_time_dependent_ = params["time_dependent"];
+	}
+}
+
+void StokesLawProblem::exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val.resize(pts.rows(), pts.cols());
+	val.setZero();
+	for(int i = 0; i < pts.rows(); ++i)
+	{
+		const double x = pts(i, 0);
+		const double y = pts(i, 1);
+
+		if(pts.cols() == 2)
+		{
+			val(i, 0) = 1;
+			val(i, 1) = val(i, 0);
+		}
+		else
+		{
+			const double z = pts(i, 2);
+			const double norm = sqrt(x*x+y*y+z*z);
+			const double tmp1 = 3 * (x+y+z) / pow(norm, 5);
+			const double tmp2 = (x+y+z) / pow(norm, 3);
+			val(i, 0) = pow(radius, 3) / 4 * (tmp1 * x - 1 / pow(norm, 3)) + 1 - 3 * radius / 4 * (1 / norm + tmp2 * x);
+			val(i, 1) = pow(radius, 3) / 4 * (tmp1 * y - 1 / pow(norm, 3)) + 1 - 3 * radius / 4 * (1 / norm + tmp2 * y);
+			val(i, 2) = pow(radius, 3) / 4 * (tmp1 * z - 1 / pow(norm, 3)) + 1 - 3 * radius / 4 * (1 / norm + tmp2 * z);
+		}
+	}
+}
+
+void StokesLawProblem::exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val.resize(pts.rows(), pts.cols() * pts.cols());
+	val.setZero();
+}
+
+void StokesLawProblem::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val.resize(pts.rows(), pts.cols());
+	val.setZero();
+}
+
+void StokesLawProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	exact(pts, t, val);
+}
+
 TaylorGreenVortexProblem::TaylorGreenVortexProblem(const std::string &name)
 	: Problem(name), viscosity_(1)
 {

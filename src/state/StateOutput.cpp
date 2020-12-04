@@ -600,6 +600,7 @@ namespace polyfem
         const std::string paraview_path = args["export"]["paraview"];
         const std::string old_path = args["export"]["vis_mesh"];
         const std::string vis_mesh_path = paraview_path.empty() ? old_path : paraview_path;
+        const std::string vis_boundary_path = args["export"]["boundary"];
         const std::string wire_mesh_path = args["export"]["wire_mesh"];
         const std::string iso_mesh_path = args["export"]["iso_mesh"];
         const std::string nodes_path = args["export"]["nodes"];
@@ -622,7 +623,10 @@ namespace polyfem
         if (!vis_mesh_path.empty())
         {
             save_vtu(vis_mesh_path, tend);
-            save_boundary_vtu("boundary.vtk");
+        }
+        if (!vis_boundary_path.empty())
+        {
+            save_boundary_vtu(vis_boundary_path);
         }
         if (!wire_mesh_path.empty())
         {
