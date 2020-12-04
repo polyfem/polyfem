@@ -688,6 +688,8 @@ namespace polyfem
         if (!problem->is_scalar())
             actual_dim = mesh->dimension();
 
+        assert(local_pts.cols() == mesh->dimension());
+
         const auto &gbases = iso_parametric() ? bases : geom_bases;
         const ElementBases &gbs = gbases[el_index];
         const ElementBases &bs = bases[el_index];
