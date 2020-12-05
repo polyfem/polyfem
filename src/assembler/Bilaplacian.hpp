@@ -10,19 +10,18 @@
 #include <Eigen/Dense>
 #include <functional>
 
-
 namespace polyfem
 {
+	//local assembler for bilaplacian, see laplacian
 	// 0 L
 	// L M
 	class BilaplacianMain
 	{
 	public:
-		// res is R
 		Eigen::Matrix<double, 1, 1>
 		assemble(const ElementAssemblyValues &vals, const int i, const int j, const QuadratureVector &da) const
 		{
-			return Eigen::Matrix<double, 1, 1>::Zero(1,1);
+			return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
 		}
 
 		Eigen::Matrix<double, 1, 1>
@@ -30,7 +29,7 @@ namespace polyfem
 
 		inline int size() const { return 1; }
 
-		void set_parameters(const json &params) { }
+		void set_parameters(const json &params) {}
 	};
 
 	class BilaplacianMixed
@@ -44,16 +43,14 @@ namespace polyfem
 		compute_rhs(const AutodiffHessianPt &pt) const
 		{
 			assert(false);
-			return Eigen::Matrix<double, 1, 1>::Zero(1,1);
+			return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
 		}
-
 
 		inline int rows() const { return 1; }
 		inline int cols() const { return 1; }
 
-		void set_parameters(const json &params) { }
+		void set_parameters(const json &params) {}
 	};
-
 
 	class BilaplacianAux
 	{
@@ -66,11 +63,11 @@ namespace polyfem
 		compute_rhs(const AutodiffHessianPt &pt) const
 		{
 			assert(false);
-			return Eigen::Matrix<double, 1, 1>::Zero(1,1);
+			return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
 		}
 
 		inline int size() const { return 1; }
 
-		void set_parameters(const json &params) { }
+		void set_parameters(const json &params) {}
 	};
-}
+} // namespace polyfem

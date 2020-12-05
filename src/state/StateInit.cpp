@@ -148,6 +148,7 @@ namespace polyfem
             {"save_time_sequence", true},
 
             {"force_no_ref_for_harmonic", false},
+            {"lump_mass_matrix", false},
 
             {"rhs_path", ""},
 

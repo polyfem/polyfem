@@ -6,6 +6,7 @@
 #include <polyfem/ElementAssemblyValues.hpp>
 #include <Eigen/Dense>
 
+//local assembler for helmolhz equation, see Laplace
 namespace polyfem
 {
 	class Helmholtz
@@ -18,10 +19,10 @@ namespace polyfem
 
 		inline int size() const { return 1; }
 
+		//sets the k parameter
 		void set_parameters(const json &params);
 
 	private:
 		double k_ = 1;
 	};
-}
-
+} // namespace polyfem

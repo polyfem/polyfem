@@ -11,8 +11,11 @@
 #include <Eigen/Dense>
 #include <functional>
 
+//local assembler for incompressible model, pressure is separate (see Stokes)
 namespace polyfem
 {
+
+	//displacement assembler
 	class IncompressibleLinearElasticityDispacement
 	{
 	public:
@@ -40,6 +43,7 @@ namespace polyfem
 		void assign_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const;
 	};
 
+	//mixed, displacement and pressure
 	class IncompressibleLinearElasticityMixed
 	{
 	public:
@@ -62,6 +66,7 @@ namespace polyfem
 		int size_ = -1;
 	};
 
+	//pressure only part
 	class IncompressibleLinearElasticityPressure
 	{
 	public:

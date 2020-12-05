@@ -12,6 +12,7 @@
 #include <Eigen/Dense>
 #include <array>
 
+//local assembler for HookeLinearElasticity C : (F+F^T)/2, see linear elasticity
 namespace polyfem
 {
 	class HookeLinearElasticity
@@ -33,7 +34,9 @@ namespace polyfem
 
 		void set_size(const int size);
 
+		//sets the elasticty tensor
 		void set_parameters(const json &params);
+
 	private:
 		int size_ = 2;
 
@@ -41,6 +44,6 @@ namespace polyfem
 
 		void assign_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const;
 	};
-}
+} // namespace polyfem
 
 #endif //HOOKE_LINEAR_ELASTICITY_HPP

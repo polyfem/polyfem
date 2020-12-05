@@ -23,19 +23,21 @@
 
 namespace polyfem
 {
+	//factory class that dispaces call to the different assemblers
+	//templated with differnt local assemblers
 	class AssemblerUtils
 	{
 	public:
 		AssemblerUtils();
 
-		//Linear
+		//Linear, assembler is the name of the formulation
 		void assemble_problem(const std::string &assembler,
 							  const bool is_volume,
 							  const int n_basis,
 							  const std::vector<ElementBases> &bases,
 							  const std::vector<ElementBases> &gbases,
 							  StiffnessMatrix &stiffness) const;
-
+		//mass matrix assembler, assembler is the name of the formulation
 		void assemble_mass_matrix(const std::string &assembler,
 								  const bool is_volume,
 								  const int n_basis,
@@ -44,6 +46,7 @@ namespace polyfem
 								  const std::vector<ElementBases> &gbases,
 								  StiffnessMatrix &mass) const;
 
+		//mixed assembler phi is the tensor, psi the scalar, assembler is the name of the formulation
 		void assemble_mixed_problem(const std::string &assembler,
 									const bool is_volume,
 									const int n_psi_basis,
@@ -52,7 +55,7 @@ namespace polyfem
 									const std::vector<ElementBases> &phi_bases,
 									const std::vector<ElementBases> &gbases,
 									StiffnessMatrix &stiffness) const;
-
+		//pressure pressure assembler, assembler is the name of the formulation
 		void assemble_pressure_problem(const std::string &assembler,
 									   const bool is_volume,
 									   const int n_basis,
@@ -60,13 +63,14 @@ namespace polyfem
 									   const std::vector<ElementBases> &gbases,
 									   StiffnessMatrix &stiffness) const;
 
-		//Non linear
+		//Non linear energy, assembler is the name of the formulation
 		double assemble_energy(const std::string &assembler,
 							   const bool is_volume,
 							   const std::vector<ElementBases> &bases,
 							   const std::vector<ElementBases> &gbases,
 							   const Eigen::MatrixXd &displacement) const;
 
+		//non linear gradient, assembler is the name of the formulation
 		void assemble_energy_gradient(const std::string &assembler,
 									  const bool is_volume,
 									  const int n_basis,
@@ -74,7 +78,7 @@ namespace polyfem
 									  const std::vector<ElementBases> &gbases,
 									  const Eigen::MatrixXd &displacement,
 									  Eigen::MatrixXd &grad) const;
-
+		//non-linear hessian, assembler is the name of the formulation
 		void assemble_energy_hessian(const std::string &assembler,
 									 const bool is_volume,
 									 const int n_basis,
@@ -84,7 +88,7 @@ namespace polyfem
 									 const Eigen::MatrixXd &displacement,
 									 StiffnessMatrix &hessian) const;
 
-		//plotting
+		//plotting (eg von mises), assembler is the name of the formulation
 		void compute_scalar_value(const std::string &assembler,
 								  const int el_id,
 								  const ElementBases &bs,
@@ -92,7 +96,7 @@ namespace polyfem
 								  const Eigen::MatrixXd &local_pts,
 								  const Eigen::MatrixXd &fun,
 								  Eigen::MatrixXd &result) const;
-
+		//computes tensor, assembler is the name of the formulation
 		void compute_tensor_value(const std::string &assembler,
 								  const int el_id,
 								  const ElementBases &bs,
@@ -101,10 +105,10 @@ namespace polyfem
 								  const Eigen::MatrixXd &fun,
 								  Eigen::MatrixXd &result) const;
 
-		//for errors
+		//for errors, uses the rhs methods inside local assemblers
 		VectorNd compute_rhs(const std::string &assembler, const AutodiffHessianPt &pt) const;
 
-		//for constraints
+		//for constraints in polygonal bases
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 		local_assemble(const std::string &assembler,
 					   const ElementAssemblyValues &vals,
@@ -112,37 +116,47 @@ namespace polyfem
 					   const int j,
 					   const QuadratureVector &da) const;
 
+		//returns the kernel of the assembler, if present
 		Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> kernel(const std::string &assembler, const int dim, const AutodiffScalarGrad &r) const;
 
-		//aux
+		//dispaces to all set parameters of the local assemblers
 		void set_parameters(const json &params);
 		void init_multimaterial(const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus);
 		const LameParameters &lame_params() const { return linear_elasticity_.local_assembler().lame_params(); }
 
+		//checks if assembler is linear
 		static bool is_linear(const std::string &assembler);
 
+		//checks if assembler solution is displacement (true for elasticty)
 		static bool is_solution_displacement(const std::string &assembler);
 
+		//checks if assembler is scalar (Laplace and Helmolz)
 		static bool is_scalar(const std::string &assembler);
+		//checks if assembler is tensor (other)
 		static bool is_tensor(const std::string &assembler);
+		//checks if assembler is mixed (eg, stokes)
 		static bool is_mixed(const std::string &assembler);
-
-		static bool is_gradient_based(const std::string &assembler);
+		//checks if it is a fluid simulation
 		static bool is_fluid(const std::string &assembler);
 
-		//getters
+		//gets the names of all assemblers
 		static std::vector<std::string> scalar_assemblers();
 		static std::vector<std::string> tensor_assemblers();
 		// const std::vector<std::string> &mixed_assemblers() const { return mixed_assemblers_; }
 
+		//not used
 		void clear_cache();
 
+		//utility to merge 3 blocks of mixed matrices, A=velocity_stiffness, B=mixed_stiffness, and C=pressure_stiffness
+		// A   B
+		// B^T C
 		static void merge_mixed_matrices(
 			const int n_bases, const int n_pressure_bases, const int problem_dim, const bool add_average,
 			const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
 			StiffnessMatrix &stiffness);
 
 	private:
+		//all assemblers
 		MassMatrixAssembler mass_mat_assembler_;
 		Assembler<Laplacian> laplacian_;
 		Assembler<Helmholtz> helmholtz_;
@@ -169,9 +183,5 @@ namespace polyfem
 		Assembler<IncompressibleLinearElasticityDispacement> incompressible_lin_elast_displacement_;
 		MixedAssembler<IncompressibleLinearElasticityMixed> incompressible_lin_elast_mixed_;
 		Assembler<IncompressibleLinearElasticityPressure> incompressible_lin_elast_pressure_;
-
-		std::vector<std::string> scalar_assemblers_;
-		std::vector<std::string> tensor_assemblers_;
-		std::vector<std::string> mixed_assemblers_;
 	};
 } // namespace polyfem
