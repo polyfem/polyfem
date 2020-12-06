@@ -1008,6 +1008,9 @@ namespace polyfem
 			// 	ss_.initialize_solution(*mesh, gbases, bases, problem, sol, local_pts);
 			// }
 
+			RowVectorNd drag_center(3); drag_center << 0, 0, 0;
+			double drag_radius = 3;
+
 			if (formulation() == "OperatorSplitting")
 			{
 				const int dim = mesh->dimension();
@@ -1117,6 +1120,7 @@ namespace polyfem
 						solution_frames.emplace_back();
 					save_vtu("step_" + std::to_string(0) + ".vtu", 0);
 					save_boundary_vtu("boundary_" + std::to_string(0) + ".vtk");
+					logger().info("drag force = {}", get_drag_force(drag_center, drag_radius));
 					// save_wire("step_" + std::to_string(0) + ".obj");
 				}
 
@@ -1152,6 +1156,8 @@ namespace polyfem
 					bdf.new_solution(c_sol);
 					sol = c_sol;
 					sol_to_pressure();
+
+					logger().info("drag force = {}", get_drag_force(drag_center, drag_radius));
 
 					if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
 					{

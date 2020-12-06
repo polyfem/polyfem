@@ -340,6 +340,8 @@ namespace polyfem
 		//same as above with disp=0
 		void interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result);
 
+		double get_drag_force(const RowVectorNd& center, const double radius);
+
 		//returns a triangulated representation of the sideset. sidesets contains integers mapping to faces
 		void get_sidesets(Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXd &sidesets);
 
