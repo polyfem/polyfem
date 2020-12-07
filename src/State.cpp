@@ -1009,7 +1009,14 @@ namespace polyfem
 			// }
 
 			RowVectorNd drag_center(3); drag_center << 0, 0, 0;
-			double drag_radius = 3;
+			double drag_radius = 0.6;
+			if (params.find("drag") != params.end())
+			{
+				drag_center(0) = args["drag"]["x"];
+				drag_center(1) = args["drag"]["y"];
+				drag_center(2) = args["drag"]["z"];
+				drag_radius = args["drag"]["radius"];
+			}
 
 			if (formulation() == "OperatorSplitting")
 			{
@@ -1081,6 +1088,8 @@ namespace polyfem
 					/* apply boundary condition */
 					rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, time);
 
+					logger().info("drag force = {}", get_drag_force(drag_center, drag_radius));
+
 					/* export to vtu */
 					if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
 					{
@@ -1120,7 +1129,6 @@ namespace polyfem
 						solution_frames.emplace_back();
 					save_vtu("step_" + std::to_string(0) + ".vtu", 0);
 					save_boundary_vtu("boundary_" + std::to_string(0) + ".vtk");
-					logger().info("drag force = {}", get_drag_force(drag_center, drag_radius));
 					// save_wire("step_" + std::to_string(0) + ".obj");
 				}
 

@@ -330,7 +330,7 @@ namespace polyfem
             if (mesh3d.is_boundary_face(f))
             {
                 RowVectorNd point = mesh3d.point(mesh3d.face_vertex(f, 0));
-                if((point-center).norm() < radius)
+                if((point - center).norm() < radius)
                     n_boundary_faces++;
             }
 
@@ -352,8 +352,7 @@ namespace polyfem
         for(int p = 0; p < pts.rows(); p++)
         {
             RowVectorNd point = mesh3d.point(p);
-            for(int d = 0; d < 3; d++)
-                pts(p, d) = point(d);
+            pts.block(p, 0, 1, 3) = point;
         }
 
         MatrixXd result;
@@ -406,12 +405,13 @@ namespace polyfem
                 else
                     assert(false);
 
-                ElementAssemblyValues vals;
-                vals.compute(e, true, points, bs, gbs);
                 Eigen::VectorXd loc_val = Eigen::VectorXd::Zero(points.rows());
-                for (int i = 0; i < vals.basis_values.size(); i++)
+                for (int i = 0; i < points.rows(); i++)
                 {
-                    loc_val(i) += vals.basis_values[i].val(0) * pressure(bs.bases[i].global()[0].index);
+                    ElementAssemblyValues vals;
+                    vals.compute(e, true, points.block(i, 0, 1, 3), bs, gbs);
+                    for (int j = 0; j < vals.basis_values.size(); j++)
+                        loc_val(i) += vals.basis_values[j].val(0) * pressure(bs.bases[j].global()[0].index);
                 }
 
                 double tmp = (loc_val.array() * weights.array()).sum();
@@ -424,7 +424,7 @@ namespace polyfem
                 assert(dist < 1e-16);
 
                 assert(std::isnan(result(I, 0)));
-                result(I) = normals(I, 0) * tmp;
+                result(I) = (normals(I, 0) + normals(I, 1) + normals(I, 2)) / sqrt(3) * tmp;
                 ++counter;
             }
         }
