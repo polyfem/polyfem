@@ -1088,7 +1088,7 @@ namespace polyfem
 					/* apply boundary condition */
 					rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, time);
 
-					logger().info("drag force = {}", get_drag_force(drag_center, drag_radius));
+					// logger().info("drag force = {}", get_drag_force(drag_center, drag_radius));
 
 					/* export to vtu */
 					if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
@@ -1165,7 +1165,7 @@ namespace polyfem
 					sol = c_sol;
 					sol_to_pressure();
 
-					logger().info("drag force = {}", get_drag_force(drag_center, drag_radius));
+					// logger().info("drag force = {}", get_drag_force(drag_center, drag_radius));
 
 					if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
 					{
@@ -1953,6 +1953,17 @@ namespace polyfem
 		lp_err = pow(fabs(lp_err), 1. / p);
 
 		// pred_norm = pow(fabs(pred_norm), 1./p);
+
+		RowVectorNd drag_center(3); drag_center << 0, 0, 0;
+		double drag_radius = 0.6;
+		if (args.find("drag") != args.end())
+		{
+			drag_center(0) = args["drag"]["x"];
+			drag_center(1) = args["drag"]["y"];
+			drag_center(2) = args["drag"]["z"];
+			drag_radius = args["drag"]["radius"];
+		}
+		logger().info("drag force = {}", get_drag_force(drag_center, drag_radius));
 
 		timer.stop();
 		computing_errors_time = timer.getElapsedTime();

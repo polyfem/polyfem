@@ -499,8 +499,7 @@ void StokesLawProblem::exact(const Eigen::MatrixXd &pts, const double t, Eigen::
 
 		if(pts.cols() == 2)
 		{
-			val(i, 0) = 1;
-			val(i, 1) = val(i, 0);
+			val(i, 1) = 1;
 		}
 		else
 		{
@@ -529,7 +528,31 @@ void StokesLawProblem::rhs(const AssemblerUtils &assembler, const std::string &f
 
 void StokesLawProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 {
-	exact(pts, t, val);
+	val.resize(pts.rows(), pts.cols());
+	val.setZero();
+	for(int i = 0; i < pts.rows(); ++i)
+	{
+		const double x = pts(i, 0);
+		const double y = pts(i, 1);
+
+		if(pts.cols() == 2)
+		{
+			if (mesh.get_boundary_id(global_ids(i)) != 7)
+			{
+				val(i, 1) = 1;
+			}
+		}
+		else
+		{
+			const double z = pts(i, 2);
+			const double norm = sqrt(x*x+y*y+z*z);
+			const double tmp1 = 3 * (x+y+z) / pow(norm, 5);
+			const double tmp2 = (x+y+z) / pow(norm, 3);
+			val(i, 0) = pow(radius, 3) / 4 * (tmp1 * x - 1 / pow(norm, 3)) + 1 - 3 * radius / 4 * (1 / norm + tmp2 * x);
+			val(i, 1) = pow(radius, 3) / 4 * (tmp1 * y - 1 / pow(norm, 3)) + 1 - 3 * radius / 4 * (1 / norm + tmp2 * y);
+			val(i, 2) = pow(radius, 3) / 4 * (tmp1 * z - 1 / pow(norm, 3)) + 1 - 3 * radius / 4 * (1 / norm + tmp2 * z);
+		}
+	}
 }
 
 TaylorGreenVortexProblem::TaylorGreenVortexProblem(const std::string &name)

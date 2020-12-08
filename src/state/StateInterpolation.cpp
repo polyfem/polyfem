@@ -372,7 +372,10 @@ namespace polyfem
             //    normal(p) = normals(f, p);
             //}
             if (point.dot(normal) < 0)
-                normal *= -1;
+            {
+                for(int d = 0; d < 3; d++) 
+                    normals(f, d) *= -1;
+            }
         }
 
         Eigen::MatrixXd points, uv;
