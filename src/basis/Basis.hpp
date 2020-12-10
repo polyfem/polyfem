@@ -20,18 +20,20 @@ namespace polyfem
 	class Local2Global
 	{
 	public:
-		int index; // global index of the actual node
+		int index;	// global index of the actual node
 		double val; // weight
 
 		RowVectorNd node; // node position
 
 		Local2Global()
 			: index(-1), val(0)
-		{ }
+		{
+		}
 
 		Local2Global(const int _index, const RowVectorNd &_node, const double _val)
 			: index(_index), val(_val), node(_node)
-		{ }
+		{
+		}
 	};
 
 	///
@@ -66,7 +68,11 @@ namespace polyfem
 		/// @param[in]  uv    { #uv x dim matrix of parameters to evaluate }
 		/// @param[out] val   { #uv x 1 vector of computed values }
 		///
-		void eval_basis(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const { assert(basis_); basis_(uv, val); }
+		void eval_basis(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const
+		{
+			assert(basis_);
+			basis_(uv, val);
+		}
 
 		///
 		/// @brief      Evaluate the gradient of the basis function.
@@ -74,34 +80,41 @@ namespace polyfem
 		/// @param[in]  uv    { #uv x dim matrix of parameters to evaluate }
 		/// @param[out] val   { #uv x dim matrix of computed gradients }
 		///
-		void eval_grad(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const { assert(grad_); grad_(uv, val); }
+		void eval_grad(const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) const
+		{
+			assert(grad_);
+			grad_(uv, val);
+		}
 
-		inline const std::vector< Local2Global > &global() const { return global_; }
-		inline std::vector< Local2Global > &global() { return global_; }
+		//list of local to global mappings
+		inline const std::vector<Local2Global> &global() const { return global_; }
+		inline std::vector<Local2Global> &global() { return global_; }
 
+		//setting the basis lambda and its gradint
 		inline void set_basis(const Fun &fun) { basis_ = fun; }
 		inline void set_grad(const Fun &fun) { grad_ = fun; }
 
 		inline bool is_defined() const { return (basis_ ? true : false); }
 		inline int order() const { return order_; }
 
-		friend std::ostream& operator<< (std::ostream& os, const Basis &obj)
+		//output
+		friend std::ostream &operator<<(std::ostream &os, const Basis &obj)
 		{
-			os << obj.local_index_ <<":\n";
-			for(auto l2g : obj.global_)
-				os <<"\tl2g: " << l2g.index << " ("<< l2g.node <<") "<< l2g.val <<"\n";
+			os << obj.local_index_ << ":\n";
+			for (auto l2g : obj.global_)
+				os << "\tl2g: " << l2g.index << " (" << l2g.node << ") " << l2g.val << "\n";
 
 			return os;
 		}
 
 	private:
-		std::vector< Local2Global > global_; // list of real nodes influencing the basis
-		int local_index_; // local index inside the element (for debugging purposes)
+		std::vector<Local2Global> global_; // list of real nodes influencing the basis
+		int local_index_;				   // local index inside the element (for debugging purposes)
 		int order_;
 
-		Fun basis_;
+		Fun basis_; //basis and gadient
 		Fun grad_;
 	};
-}
+} // namespace polyfem
 
 #endif //BASIS_HPP
