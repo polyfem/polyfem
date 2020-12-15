@@ -377,9 +377,8 @@ namespace polyfem
 			return laplacian_.local_assembler().kernel(dim, r);
 		else if (assembler == "Helmholtz")
 			return helmholtz_.local_assembler().kernel(dim, r);
-
-		// else if(assembler == "LinearElasticity")
-		// 	return linear_elasticity_.local_assembler().kernel(dim, r);
+		else if(assembler == "LinearElasticity")
+			return linear_elasticity_.local_assembler().kernel(dim, r);
 		// else if(assembler == "HookeLinearElasticity")
 		// 	return hooke_linear_elasticity_.local_assembler().kernel(dim, r);
 

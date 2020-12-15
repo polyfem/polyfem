@@ -255,4 +255,29 @@ namespace polyfem
 			all.row(p) = fun(stress);
 		}
 	}
+
+	Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> LinearElasticity::kernel(const int dim, const Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> &r) const
+	{
+		Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> res(dim);
+
+		double mu, nu;
+		// missing the code for giving values to mu and nu in params_
+
+		if (dim == 2)
+		{
+			res(0) = 1. / (8 * M_PI * mu * (1 - nu)) * ((3 - 4 * nu) * log(1. / r.norm()) + r(0) * r(0) / r.squaredNorm());
+			res(1) = 1. / (8 * M_PI * mu * (1 - nu)) * r(0) * r(1) / r.squaredNorm();
+		}
+		else if (dim == 3)
+		{
+			res(0) = 1. / (16 * M_PI * mu * (1 - nu)) * ((3 - 4 * nu) / r.norm() + r(0) * r(0) / r.norm() / r.squaredNorm());
+			res(1) = 1. / (16 * M_PI * mu * (1 - nu)) * r(0) * r(1) / r.norm() / r.squaredNorm();
+			res(2) = 1. / (16 * M_PI * mu * (1 - nu)) * r(0) * r(2) / r.norm() / r.squaredNorm();
+		}
+		else
+			assert(false);
+
+		return res;
+	}
+
 } // namespace polyfem

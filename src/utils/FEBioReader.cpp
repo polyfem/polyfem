@@ -14,6 +14,12 @@ namespace polyfem
 {
     namespace
     {
+        struct BCData
+        {
+            Eigen::RowVector3d val;
+            bool isx, isy, isz;
+        };
+
         template <typename XMLNode>
         std::string load_materials(const XMLNode *febio, std::map<int, std::tuple<double, double, double>> &materials)
         {
@@ -48,7 +54,11 @@ namespace polyfem
 
             std::sort(material_names.begin(), material_names.end());
             material_names.erase(std::unique(material_names.begin(), material_names.end()), material_names.end());
-            assert(material_names.size() == 1);
+            // assert(material_names.size() == 1);
+            if (material_names.size() != 1)
+            {
+                logger().warn("Files contains {} materials, but using only {}", material_names.size(), material_names.front());
+            }
             return material_names.front();
         }
 
@@ -169,6 +179,11 @@ namespace polyfem
             for (const tinyxml2::XMLElement *child = geometry->FirstChildElement("NodeSet"); child != NULL; child = child->NextSiblingElement("NodeSet"))
             {
                 const std::string name = std::string(child->Attribute("name"));
+                if (names.find(name) != names.end())
+                {
+                    logger().warn("Nodeset {} already exists", name);
+                    continue;
+                }
                 names[name] = id;
 
                 for (const tinyxml2::XMLElement *nodeid = child->FirstChildElement("node"); nodeid != NULL; nodeid = nodeid->NextSiblingElement("node"))
@@ -221,26 +236,56 @@ namespace polyfem
         template <typename XMLNode>
         void load_boundary_conditions(const XMLNode *boundaries, const std::map<std::string, int> &names, GenericTensorProblem &gproblem)
         {
+            std::map<std::string, BCData> allbc;
             for (const tinyxml2::XMLElement *child = boundaries->FirstChildElement("fix"); child != NULL; child = child->NextSiblingElement("fix"))
             {
                 const std::string name = std::string(child->Attribute("node_set"));
                 const std::string bc = std::string(child->Attribute("bc"));
                 const auto bcs = StringUtils::split(bc, ",");
 
-                bool isx = false;
-                bool isy = false;
-                bool isz = false;
+                BCData bcdata;
+                bcdata.val = Eigen::RowVector3d::Zero();
+                bcdata.isx = false;
+                bcdata.isy = false;
+                bcdata.isz = false;
 
                 for (const auto &s : bcs)
                 {
                     if (s == "x")
-                        isx = true;
+                        bcdata.isx = true;
                     else if (s == "y")
-                        isy = true;
+                        bcdata.isy = true;
                     else if (s == "z")
-                        isz = true;
+                        bcdata.isz = true;
                 }
-                gproblem.add_dirichlet_boundary(names.at(name), Eigen::RowVector3d::Zero(), isx, isy, isz);
+
+                auto it = allbc.find(name);
+                if (it == allbc.end())
+                {
+                    allbc[name] = bcdata;
+                }
+                else
+                {
+                    if (bcdata.isx)
+                    {
+                        assert(!it->second.isx);
+                        it->second.isx = true;
+                        it->second.val(0) = 0;
+                    }
+                    if (bcdata.isy)
+                    {
+                        assert(!it->second.isz);
+                        it->second.isy = true;
+                        it->second.val(1) = 0;
+                    }
+                    if (bcdata.isz)
+                    {
+                        assert(!it->second.isz);
+                        it->second.isz = true;
+                        it->second.val(2) = 0;
+                    }
+                }
+                // gproblem.add_dirichlet_boundary(names.at(name), Eigen::RowVector3d::Zero(), isx, isy, isz);
             }
 
             for (const tinyxml2::XMLElement *child = boundaries->FirstChildElement("prescribe"); child != NULL; child = child->NextSiblingElement("prescribe"))
@@ -248,21 +293,54 @@ namespace polyfem
                 const std::string name = std::string(child->Attribute("node_set"));
                 const std::string bc = std::string(child->Attribute("bc"));
 
-                bool isx = bc == "x";
-                bool isy = bc == "y";
-                bool isz = bc == "z";
+                BCData bcdata;
+                bcdata.isx = bc == "x";
+                bcdata.isy = bc == "y";
+                bcdata.isz = bc == "z";
 
                 const double value = atof(child->FirstChildElement("scale")->GetText());
-                Eigen::RowVector3d val = Eigen::RowVector3d::Zero();
+                bcdata.val = Eigen::RowVector3d::Zero();
 
-                if (isx)
-                    val(0) = value;
-                else if (isy)
-                    val(1) = value;
-                else if (isz)
-                    val(2) = value;
+                if (bcdata.isx)
+                    bcdata.val(0) = value;
+                else if (bcdata.isy)
+                    bcdata.val(1) = value;
+                else if (bcdata.isz)
+                    bcdata.val(2) = value;
 
-                gproblem.add_dirichlet_boundary(names.at(name), val, isx, isy, isz);
+                auto it = allbc.find(name);
+                if (it == allbc.end())
+                {
+                    allbc[name] = bcdata;
+                }
+                else
+                {
+                    if (bcdata.isx)
+                    {
+                        assert(!it->second.isx);
+                        it->second.isx = true;
+                        it->second.val(0) = bcdata.val(0);
+                    }
+                    if (bcdata.isy)
+                    {
+                        assert(!it->second.isy);
+                        it->second.isy = true;
+                        it->second.val(1) = bcdata.val(1);
+                    }
+                    if (bcdata.isz)
+                    {
+                        assert(!it->second.isz);
+                        it->second.isz = true;
+                        it->second.val(2) = bcdata.val(2);
+                    }
+                }
+
+                // gproblem.add_dirichlet_boundary(names.at(name), val, isx, isy, isz);
+            }
+
+            for (auto it = allbc.begin(); it != allbc.end(); ++it)
+            {
+                gproblem.add_dirichlet_boundary(names.at(it->first), it->second.val, it->second.isx, it->second.isy, it->second.isz);
             }
         }
 
@@ -368,6 +446,23 @@ namespace polyfem
         state.args["tensor_formulation"] = load_materials(febio, materials);
 
         const auto *geometry = febio->FirstChildElement("Geometry");
+
+        bool has_collisions = false;
+
+        for (const tinyxml2::XMLElement *spair = geometry->FirstChildElement("SurfacePair"); spair != NULL; spair = spair->NextSiblingElement("SurfacePair"))
+        {
+            has_collisions = true;
+        }
+
+        if (has_collisions)
+        {
+            state.args["has_collision"] = true;
+            // state.args["dhat"] = 1e-3;
+            state.args["project_to_psd"] = true;
+            state.args["line_search"] = "bisection";
+            state.args["solver_params"]["gradNorm"] = 1e-5;
+            state.args["solver_params"]["useGradNorm"] = false;
+        }
 
         Eigen::MatrixXd V;
         load_nodes(geometry, V);
