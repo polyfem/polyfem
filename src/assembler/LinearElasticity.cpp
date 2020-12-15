@@ -256,12 +256,17 @@ namespace polyfem
 		}
 	}
 
-	Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> LinearElasticity::kernel(const int dim, const Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> &r) const
+	Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> LinearElasticity::kernel(const int dim, const AutodiffGradPt &r) const
 	{
 		Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> res(dim);
+		assert(r.size() == dim);
 
-		double mu, nu;
+		double mu, nu, lambda;
 		// missing the code for giving values to mu and nu in params_
+		//per body lame parameter dont work here!
+		params_.lambda_mu(0, 0, 0, 0, lambda, mu);
+
+		//TODO convert to nu!
 
 		if (dim == 2)
 		{

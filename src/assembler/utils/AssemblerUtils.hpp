@@ -117,7 +117,7 @@ namespace polyfem
 					   const QuadratureVector &da) const;
 
 		//returns the kernel of the assembler, if present
-		Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> kernel(const std::string &assembler, const int dim, const AutodiffScalarGrad &r) const;
+		Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> kernel(const std::string &assembler, const int dim, const AutodiffGradPt &rvect, const AutodiffScalarGrad &r) const;
 
 		//dispaces to all set parameters of the local assemblers
 		void set_parameters(const json &params);

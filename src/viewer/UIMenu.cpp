@@ -4,6 +4,7 @@
 #include <polyfem/StringUtils.hpp>
 #include <polyfem/Mesh3D.hpp>
 #include <polyfem/AssemblerUtils.hpp>
+#include <polyfem/KernelProblem.hpp>
 
 #include <igl/colormap.h>
 #include <imgui/imgui.h>
@@ -203,6 +204,12 @@ void polyfem::UIState::draw_settings()
 				problem_name = p_name;
 				state.problem = ProblemFactory::factory().get_problem(problem_name);
 				state.problem->set_parameters(state.args["problem_params"]);
+
+				if (problem_name == "Kernel")
+				{
+					KernelProblem &kprob = *dynamic_cast<KernelProblem *>(state.problem.get());
+					kprob.state = &state;
+				}
 			}
 			if (is_selected)
 				ImGui::SetItemDefaultFocus();
