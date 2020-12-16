@@ -191,6 +191,6 @@ namespace polyfem
 
 	bool KernelProblem::is_scalar() const
 	{
-		return state->assembler.is_linear(formulation_);
+		return state->assembler.is_scalar(formulation_);
 	}
 } // namespace polyfem
