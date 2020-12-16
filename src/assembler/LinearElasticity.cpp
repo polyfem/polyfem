@@ -262,11 +262,11 @@ namespace polyfem
 		assert(r.size() == dim);
 
 		double mu, nu, lambda;
-		// missing the code for giving values to mu and nu in params_
 		//per body lame parameter dont work here!
 		params_.lambda_mu(0, 0, 0, 0, lambda, mu);
 
-		//TODO convert to nu!
+		// convert to nu!
+		nu = lambda / 2 / (lambda + mu);
 
 		if (dim == 2)
 		{
