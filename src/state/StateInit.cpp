@@ -5,6 +5,7 @@
 
 #include <polyfem/RefElementSampler.hpp>
 #include <polyfem/Logger.hpp>
+#include <polyfem/KernelProblem.hpp>
 
 #include <polysolve/LinearSolver.hpp>
 
@@ -262,6 +263,11 @@ namespace polyfem
 
         problem = ProblemFactory::factory().get_problem(args["problem"]);
         problem->clear();
+        if (args["problem"] == "Kernel")
+        {
+            KernelProblem &kprob = *dynamic_cast<KernelProblem *>(problem.get());
+            kprob.state = this;
+        }
         //important for the BC
         problem->set_parameters(args["problem_params"]);
 

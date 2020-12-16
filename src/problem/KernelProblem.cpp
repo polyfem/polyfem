@@ -1,3 +1,4 @@
+#include <polyfem/State.hpp>
 #include <polyfem/KernelProblem.hpp>
 #include <polyfem/AssemblerUtils.hpp>
 
@@ -7,23 +8,23 @@ namespace polyfem
 {
 
 	KernelProblem::KernelProblem(const std::string &name)
-	: ProblemWithSolution(name)
-	{ }
-
+		: ProblemWithSolution(name)
+	{
+	}
 
 	VectorNd KernelProblem::eval_fun(const VectorNd &pt, const double t) const
 	{
 		AutodiffGradPt a_pt(pt.size());
 
 		DiffScalarBase::setVariableCount(pt.size());
-		for(long i = 0; i < pt.size(); ++i)
+		for (long i = 0; i < pt.size(); ++i)
 			a_pt(i) = AutodiffScalarGrad(i, pt(i));
 
 		const auto eval = eval_fun(a_pt, t);
 
 		VectorNd res(eval.size());
 
-		for(long i = 0; i < eval.size(); ++i)
+		for (long i = 0; i < eval.size(); ++i)
 			res(i) = eval(i).getValue();
 
 		return res;
@@ -32,113 +33,130 @@ namespace polyfem
 	AutodiffGradPt KernelProblem::eval_fun(const AutodiffGradPt &pt, const double tt) const
 	{
 		AutodiffGradPt res(is_scalar() ? 1 : pt.size());
-		for(long i = 0; i < res.size(); ++i)
+		for (long i = 0; i < res.size(); ++i)
 			res(i) = AutodiffScalarGrad(0);
 
-		const auto &assembler = AssemblerUtils::instance();
+		const auto &assembler = state->assembler;
 
 		const Eigen::VectorXd t = Eigen::VectorXd::LinSpaced(n_kernels_, 0, 1);
-		if(pt.size() == 2)
+		if (pt.size() == 2)
 		{
-			for(long i = 0; i < t.size(); ++i)
+			for (long i = 0; i < t.size(); ++i)
 			{
-				const auto dx = pt(0)-(0 - kernel_distance_);
-				const auto dy = pt(1)-t(i);
-				res += assembler.kernel(formulation_, 2, sqrt(dx*dx + dy*dy));
+				const auto dx = pt(0) - (0 - kernel_distance_);
+				const auto dy = pt(1) - t(i);
+				AutodiffGradPt rvect(2);
+				rvect << dx, dy;
+				res += assembler.kernel(formulation_, 2, rvect, sqrt(dx * dx + dy * dy));
 			}
 
-			for(long i = 0; i < t.size(); ++i)
+			for (long i = 0; i < t.size(); ++i)
 			{
-				const auto dx = pt(0)-(1 + kernel_distance_);
-				const auto dy = pt(1)-t(i);
-				res += assembler.kernel(formulation_, 2, sqrt(dx*dx + dy*dy));
+				const auto dx = pt(0) - (1 + kernel_distance_);
+				const auto dy = pt(1) - t(i);
+				AutodiffGradPt rvect(2);
+				rvect << dx, dy;
+				res += assembler.kernel(formulation_, 2, rvect, sqrt(dx * dx + dy * dy));
 			}
 
-			for(long i = 0; i < t.size(); ++i)
+			for (long i = 0; i < t.size(); ++i)
 			{
-				const auto dx = pt(0)-t(i);
-				const auto dy = pt(1)-(0 - kernel_distance_);
-				res += assembler.kernel(formulation_, 2, sqrt(dx*dx + dy*dy));
+				const auto dx = pt(0) - t(i);
+				const auto dy = pt(1) - (0 - kernel_distance_);
+				AutodiffGradPt rvect(2);
+				rvect << dx, dy;
+				res += assembler.kernel(formulation_, 2, rvect, sqrt(dx * dx + dy * dy));
 			}
 
-			for(long i = 0; i < t.size(); ++i)
+			for (long i = 0; i < t.size(); ++i)
 			{
-				const auto dx = pt(0)-t(i);
-				const auto dy = pt(1)-(1 + kernel_distance_);
-				res += assembler.kernel(formulation_, 2, sqrt(dx*dx + dy*dy));
+				const auto dx = pt(0) - t(i);
+				const auto dy = pt(1) - (1 + kernel_distance_);
+				AutodiffGradPt rvect(2);
+				rvect << dx, dy;
+				res += assembler.kernel(formulation_, 2, rvect, sqrt(dx * dx + dy * dy));
 			}
 		}
-		else if(pt.size() == 3)
+		else if (pt.size() == 3)
 		{
 			///////////////////X
-			for(long i = 0; i < t.size(); ++i)
+			for (long i = 0; i < t.size(); ++i)
 			{
-				for(long j = 0; j < t.size(); ++j)
+				for (long j = 0; j < t.size(); ++j)
 				{
-					const auto dx = pt(0)-(0 - kernel_distance_);
-					const auto dy = pt(1)-t(i);
-					const auto dz = pt(2)-t(j);
-					res += assembler.kernel(formulation_, 3, sqrt(dx*dx + dy*dy + dz*dz));
+					const auto dx = pt(0) - (0 - kernel_distance_);
+					const auto dy = pt(1) - t(i);
+					const auto dz = pt(2) - t(j);
+					AutodiffGradPt rvect(3);
+					rvect << dx, dy, dz;
+					res += assembler.kernel(formulation_, 3, rvect, sqrt(dx * dx + dy * dy + dz * dz));
 				}
 			}
 
-			for(long i = 0; i < t.size(); ++i)
+			for (long i = 0; i < t.size(); ++i)
 			{
-				for(long j = 0; j < t.size(); ++j)
+				for (long j = 0; j < t.size(); ++j)
 				{
-					const auto dx = pt(0)-(1 + kernel_distance_);
-					const auto dy = pt(1)-t(i);
-					const auto dz = pt(2)-t(j);
-					res += assembler.kernel(formulation_, 3, sqrt(dx*dx + dy*dy + dz*dz));
+					const auto dx = pt(0) - (1 + kernel_distance_);
+					const auto dy = pt(1) - t(i);
+					const auto dz = pt(2) - t(j);
+					AutodiffGradPt rvect(3);
+					rvect << dx, dy, dz;
+					res += assembler.kernel(formulation_, 3, rvect, sqrt(dx * dx + dy * dy + dz * dz));
 				}
 			}
-
 
 			///////////////////Y
-			for(long i = 0; i < t.size(); ++i)
+			for (long i = 0; i < t.size(); ++i)
 			{
-				for(long j = 0; j < t.size(); ++j)
+				for (long j = 0; j < t.size(); ++j)
 				{
-					const auto dx = pt(0)-t(i);
-					const auto dy = pt(1)-(0 - kernel_distance_);
-					const auto dz = pt(2)-t(j);
-					res += assembler.kernel(formulation_, 3, sqrt(dx*dx + dy*dy + dz*dz));
+					const auto dx = pt(0) - t(i);
+					const auto dy = pt(1) - (0 - kernel_distance_);
+					const auto dz = pt(2) - t(j);
+					AutodiffGradPt rvect(3);
+					rvect << dx, dy, dz;
+					res += assembler.kernel(formulation_, 3, rvect, sqrt(dx * dx + dy * dy + dz * dz));
 				}
 			}
 
-			for(long i = 0; i < t.size(); ++i)
+			for (long i = 0; i < t.size(); ++i)
 			{
-				for(long j = 0; j < t.size(); ++j)
+				for (long j = 0; j < t.size(); ++j)
 				{
-					const auto dx = pt(0)-t(i);
-					const auto dy = pt(1)-(1 + kernel_distance_);
-					const auto dz = pt(2)-t(j);
-					res += assembler.kernel(formulation_, 3, sqrt(dx*dx + dy*dy + dz*dz));
+					const auto dx = pt(0) - t(i);
+					const auto dy = pt(1) - (1 + kernel_distance_);
+					const auto dz = pt(2) - t(j);
+					AutodiffGradPt rvect(3);
+					rvect << dx, dy, dz;
+					res += assembler.kernel(formulation_, 3, rvect, sqrt(dx * dx + dy * dy + dz * dz));
 				}
 			}
-
-
 
 			///////////////////Z
-			for(long i = 0; i < t.size(); ++i)
+			for (long i = 0; i < t.size(); ++i)
 			{
-				for(long j = 0; j < t.size(); ++j)
+				for (long j = 0; j < t.size(); ++j)
 				{
-					const auto dx = pt(0)-t(i);
-					const auto dy = pt(1)-t(j);
-					const auto dz = pt(2)-(0 - kernel_distance_);
-					res += assembler.kernel(formulation_, 3, sqrt(dx*dx + dy*dy + dz*dz));
+					const auto dx = pt(0) - t(i);
+					const auto dy = pt(1) - t(j);
+					const auto dz = pt(2) - (0 - kernel_distance_);
+					AutodiffGradPt rvect(3);
+					rvect << dx, dy, dz;
+					res += assembler.kernel(formulation_, 3, rvect, sqrt(dx * dx + dy * dy + dz * dz));
 				}
 			}
 
-			for(long i = 0; i < t.size(); ++i)
+			for (long i = 0; i < t.size(); ++i)
 			{
-				for(long j = 0; j < t.size(); ++j)
+				for (long j = 0; j < t.size(); ++j)
 				{
-					const auto dx = pt(0)-t(i);
-					const auto dy = pt(1)-t(j);
-					const auto dz = pt(2)-(1 + kernel_distance_);
-					res += assembler.kernel(formulation_, 3, sqrt(dx*dx + dy*dy + dz*dz));
+					const auto dx = pt(0) - t(i);
+					const auto dy = pt(1) - t(j);
+					const auto dz = pt(2) - (1 + kernel_distance_);
+					AutodiffGradPt rvect(3);
+					rvect << dx, dy, dz;
+					res += assembler.kernel(formulation_, 3, rvect, sqrt(dx * dx + dy * dy + dz * dz));
 				}
 			}
 		}
@@ -152,7 +170,7 @@ namespace polyfem
 		return res;
 	}
 
-	void KernelProblem::rhs(const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	void KernelProblem::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		const int size = size_for(pts);
 		val.resize(pts.rows(), size);
@@ -161,19 +179,18 @@ namespace polyfem
 
 	void KernelProblem::set_parameters(const json &params)
 	{
-		if(params.count("formulation"))
+		if (params.count("formulation"))
 			formulation_ = params["formulation"].get<std::string>();
 
-		if(params.count("n_kernels"))
+		if (params.count("n_kernels"))
 			n_kernels_ = params["n_kernels"];
 
-		if(params.count("kernel_distance"))
+		if (params.count("kernel_distance"))
 			kernel_distance_ = params["kernel_distance"];
 	}
 
 	bool KernelProblem::is_scalar() const
 	{
-		const auto &assembler = AssemblerUtils::instance();
-		return assembler.is_linear(formulation_);
+		return state->assembler.is_linear(formulation_);
 	}
-}
+} // namespace polyfem

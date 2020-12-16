@@ -371,15 +371,14 @@ namespace polyfem
 		}
 	}
 
-	Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> AssemblerUtils::kernel(const std::string &assembler, const int dim, const AutodiffScalarGrad &r) const
+	Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> AssemblerUtils::kernel(const std::string &assembler, const int dim, const AutodiffGradPt &rvect, const AutodiffScalarGrad &r) const
 	{
 		if (assembler == "Laplacian")
 			return laplacian_.local_assembler().kernel(dim, r);
 		else if (assembler == "Helmholtz")
 			return helmholtz_.local_assembler().kernel(dim, r);
-
-		// else if(assembler == "LinearElasticity")
-		// 	return linear_elasticity_.local_assembler().kernel(dim, r);
+		else if (assembler == "LinearElasticity")
+			return linear_elasticity_.local_assembler().kernel(dim, rvect);
 		// else if(assembler == "HookeLinearElasticity")
 		// 	return hooke_linear_elasticity_.local_assembler().kernel(dim, r);
 

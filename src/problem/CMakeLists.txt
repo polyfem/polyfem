@@ -7,8 +7,8 @@ set(SOURCES
 	ElasticProblem.hpp
 	FrankeProblem.cpp
 	FrankeProblem.hpp
-	# KernelProblem.cpp
-	# KernelProblem.hpp
+	KernelProblem.cpp
+	KernelProblem.hpp
 	MiscProblem.cpp
 	MiscProblem.hpp
 	NodeProblem.cpp

@@ -205,6 +205,9 @@ namespace polyfem
 		if (!state.args["has_collision"])
 			return true;
 
+		// if (!state.problem->is_time_dependent())
+		// return false;
+
 		Eigen::MatrixXd full0, full1;
 		if (x0.size() == reduced_size)
 			reduced_to_full(x0, full0);
@@ -221,6 +224,9 @@ namespace polyfem
 
 		compute_displaced_points(full0, displaced0);
 		compute_displaced_points(full1, displaced1);
+
+		// igl::write_triangle_mesh("0.obj", displaced0, state.boundary_triangles);
+		// igl::write_triangle_mesh("1.obj", displaced1, state.boundary_triangles);
 
 		const bool is_valid = ipc::is_step_collision_free(displaced0, displaced1, state.boundary_edges, state.boundary_triangles);
 
