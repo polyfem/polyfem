@@ -84,11 +84,11 @@ namespace polyfem
         }
 
         template <typename XMLNode>
-        int load_elements(const XMLNode *geometry, const int numV, const std::map<int, std::tuple<double, double, double>> &materials, Eigen::MatrixXi &T, std::vector<std::vector<int>> &nodes, Eigen::MatrixXd &Es, Eigen::MatrixXd &nus, Eigen::MatrixXd &rhos)
+        int load_elements(const XMLNode *geometry, const int numV, const std::map<int, std::tuple<double, double, double>> &materials, Eigen::MatrixXi &T, std::vector<std::vector<int>> &nodes, Eigen::MatrixXd &Es, Eigen::MatrixXd &nus, Eigen::MatrixXd &rhos, std::vector<int> &mids)
         {
             std::vector<Eigen::VectorXi> els;
             nodes.clear();
-            std::vector<int> mids;
+            mids.clear();
             int order = 1;
             bool is_hex = false;
 
@@ -435,6 +435,8 @@ namespace polyfem
         if (!export_solution.empty())
             state.args["export"]["solution_mat"] = export_solution;
 
+        state.args["export"]["body_ids"] = true;
+
         tinyxml2::XMLDocument doc;
         doc.LoadFile(path.c_str());
 
@@ -469,14 +471,18 @@ namespace polyfem
 
         Eigen::MatrixXi T;
         std::vector<std::vector<int>> nodes;
+        std::vector<int> mids;
+
         Eigen::MatrixXd Es, nus, rhos;
-        const int element_order = load_elements(geometry, V.rows(), materials, T, nodes, Es, nus, rhos);
+        const int element_order = load_elements(geometry, V.rows(), materials, T, nodes, Es, nus, rhos, mids);
         const int current_order = state.args["discr_order"];
         state.args["discr_order"] = std::max(current_order, element_order);
 
         state.load_mesh(V, T);
         if (T.cols() == 4)
             state.mesh->attach_higher_order_nodes(V, nodes);
+
+        state.mesh->set_body_ids(mids);
 
         if (materials.size() == 1)
         {
