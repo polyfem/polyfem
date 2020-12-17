@@ -494,6 +494,7 @@ namespace polyfem
 
 		logger().info("Extracting boundary mesh...");
 		extract_boundary_mesh();
+		extract_vis_boundary_mesh();
 		logger().info("Done!");
 
 		problem->setup_bc(*mesh, bases, local_boundary, boundary_nodes, local_neumann_boundary);

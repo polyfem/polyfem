@@ -142,6 +142,11 @@ namespace polyfem
 		Eigen::MatrixXi boundary_edges;
 		Eigen::MatrixXi boundary_triangles;
 
+		//boundary visualization mesh
+		Eigen::MatrixXd boundary_vis_vertices;
+		Eigen::MatrixXi boundary_vis_elements;
+		Eigen::MatrixXd boundary_vis_normals;
+
 		//spectrum of the stiffness matrix, enable only if POLYSOLVE_WITH_SPECTRA is ON (off by default)
 		Eigen::Vector4d spectrum;
 
@@ -288,6 +293,8 @@ namespace polyfem
 		void build_basis();
 		//extracts the boundary mesh for collision, called in build_basis
 		void extract_boundary_mesh();
+		//extracts the boundary mesh for visualization, called in build_basis
+		void extract_vis_boundary_mesh();
 		//assemble matrices, step 4 of solve
 		void assemble_stiffness_mat();
 		//compute rhs, step 3 of solve

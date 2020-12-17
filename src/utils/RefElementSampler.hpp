@@ -44,12 +44,16 @@ namespace polyfem
 		const Eigen::MatrixXi &simplex_volume() const { return is_volume_ ? simplex_tets_ : simplex_faces_; }
 		const Eigen::MatrixXi &simplex_edges() const { return simplex_edges_; }
 
-
 		void sample_polygon(const Eigen::MatrixXd &poly, Eigen::MatrixXd &pts, Eigen::MatrixXi &faces) const;
 		void sample_polyhedron(const Eigen::MatrixXd &vertices, const Eigen::MatrixXi &f, Eigen::MatrixXd &pts, Eigen::MatrixXi &faces) const;
 
+		inline int num_samples() const
+		{
+			return is_volume_ ? std::max(2., round(1. / pow(area_param_, 1. / 3.) + 1)) : std::max(2., round(1. / sqrt(area_param_) + 1));
+		}
+
 	private:
-		RefElementSampler() { }
+		RefElementSampler() {}
 		void build();
 
 		Eigen::MatrixXi cube_tets_;
@@ -67,8 +71,6 @@ namespace polyfem
 
 		double area_param_;
 		double is_volume_;
-
-
 	};
 
-}
+} // namespace polyfem

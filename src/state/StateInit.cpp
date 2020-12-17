@@ -167,7 +167,7 @@ namespace polyfem
             // {"solution", ""},
             // {"stiffness_mat_save_path", ""},
 
-            {"export", {{"sol_at_node", -1}, {"vis_mesh", ""}, {"paraview", ""}, {"vis_boundary_only", false}, {"material_params", false}, {"body_ids", false}, {"nodes", ""}, {"wire_mesh", ""}, {"iso_mesh", ""}, {"spectrum", false}, {"solution", ""}, {"full_mat", ""}, {"stiffness_mat", ""}, {"solution_mat", ""}, {"stress_mat", ""}, {"mises", ""}}}};
+            {"export", {{"sol_at_node", -1}, {"surface", ""}, {"vis_mesh", ""}, {"paraview", ""}, {"vis_boundary_only", false}, {"material_params", false}, {"body_ids", false}, {"nodes", ""}, {"wire_mesh", ""}, {"iso_mesh", ""}, {"spectrum", false}, {"solution", ""}, {"full_mat", ""}, {"stiffness_mat", ""}, {"solution_mat", ""}, {"stress_mat", ""}, {"mises", ""}}}};
     }
 
     void State::init_logger(const std::string &log_file, int log_level, const bool is_quiet)
