@@ -683,7 +683,7 @@ namespace polyfem
             discr.resize(boundary_vis_vertices.rows(), 1);
             fun.resize(boundary_vis_vertices.rows(), actual_dim);
             interp_p.resize(boundary_vis_vertices.rows(), 1);
-            vect.resize(boundary_vis_vertices.rows(), mesh->is_volume() ? 3 : 2);
+            vect.resize(boundary_vis_vertices.rows(), mesh->dimension());
 
             for (int i = 0; i < boundary_vis_vertices.rows(); ++i)
             {
@@ -705,13 +705,15 @@ namespace polyfem
 
                 if (actual_dim == 1)
                 {
-                    for (int j = 0; j < actual_dim; ++j)
+                    assert(lgrad.size() == mesh->dimension());
+                    for (int j = 0; j < mesh->dimension(); ++j)
                     {
                         vect(i, j) = lgrad(j);
                     }
                 }
                 else
                 {
+                    assert(lgrad.size() == actual_dim * actual_dim);
                     Map<Eigen::MatrixXd> tensor(lgrad.data(), actual_dim, actual_dim);
                     vect.row(i) = boundary_vis_normals.row(i) * tensor;
                 }
