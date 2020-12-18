@@ -11,21 +11,24 @@
 #include <iostream>
 #include <vector>
 
-namespace polyfem {
+namespace polyfem
+{
     namespace
     {
-        template<typename T>
+        template <typename T>
         class VTKDataNode
         {
 
         public:
             VTKDataNode(bool binary)
                 : binary_(binary)
-            { }
+            {
+            }
 
             VTKDataNode(const std::string &name, const double binary, const std::string &numeric_type, const Eigen::MatrixXd &data = Eigen::MatrixXd(), const int n_components = 1)
-                : name_(name), binary_(binary), numeric_type_(numeric_type), data_(binary_? data.transpose() : data), n_components_(n_components)
-            { }
+                : name_(name), binary_(binary), numeric_type_(numeric_type), data_(binary_ ? data.transpose() : data), n_components_(n_components)
+            {
+            }
 
             // const inline Eigen::MatrixXd &data() { return data_; }
 
@@ -70,21 +73,21 @@ namespace polyfem {
             Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> data_;
             int n_components_;
         };
-    }
-
+    } // namespace
 
     class VTUWriter
     {
     public:
         VTUWriter(bool binary = true);
 
-        bool write_tet_mesh(const std::string &path, const Eigen::MatrixXd &points, const Eigen::MatrixXi &tets);
+        bool write_mesh(const std::string &path, const Eigen::MatrixXd &points, const Eigen::MatrixXi &cells);
 
         void add_field(const std::string &name, const Eigen::MatrixXd &data);
         void add_scalar_field(const std::string &name, const Eigen::MatrixXd &data);
         void add_vector_field(const std::string &name, const Eigen::MatrixXd &data);
 
         void clear();
+
     private:
         bool is_volume_;
         bool binary_;
@@ -98,8 +101,8 @@ namespace polyfem {
         void write_header(const int n_vertices, const int n_elements, std::ostream &os);
         void write_footer(std::ostream &os);
         void write_points(const Eigen::MatrixXd &points, std::ostream &os);
-        void write_cells(const Eigen::MatrixXi &tets, std::ostream &os);
+        void write_cells(const Eigen::MatrixXi &cells, std::ostream &os);
     };
-}
+} // namespace polyfem
 
 #endif //VTU_WRITER_HPP

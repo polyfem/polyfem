@@ -1051,7 +1051,7 @@ namespace polyfem
         // interpolate_function(pts_index, rhs, fun, boundary_only);
         // writer.add_field("rhs", fun);
         if (solve_export_to_file)
-            writer.write_tet_mesh(path, points, tets);
+            writer.write_mesh(path, points, tets);
         else
         {
             solution_frames.back().name = path;
