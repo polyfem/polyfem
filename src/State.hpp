@@ -144,7 +144,9 @@ namespace polyfem
 
 		//boundary visualization mesh
 		Eigen::MatrixXd boundary_vis_vertices;
+		Eigen::MatrixXd boundary_vis_local_vertices;
 		Eigen::MatrixXi boundary_vis_elements;
+		Eigen::MatrixXi boundary_vis_elements_ids;
 		Eigen::MatrixXd boundary_vis_normals;
 
 		//spectrum of the stiffness matrix, enable only if POLYSOLVE_WITH_SPECTRA is ON (off by default)
@@ -323,6 +325,8 @@ namespace polyfem
 		void interpolate_at_local_vals(const int el_index, const MatrixXd &local_pts, MatrixXd &result, MatrixXd &result_grad);
 		//interpolate the function fun and its gradient at in element el_index for the local_pts in the reference element
 		void interpolate_at_local_vals(const int el_index, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad);
+		//interpolate the function fun and its gradient at in element el_index for the local_pts in the reference element using bases bases
+		void interpolate_at_local_vals(const int el_index, const std::vector<ElementBases> &bases, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad);
 
 		//computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)
 		void compute_scalar_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool boundary_only = false);

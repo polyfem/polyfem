@@ -113,7 +113,8 @@ namespace polyfem
 
     void State::extract_vis_boundary_mesh()
     {
-        std::vector<Eigen::MatrixXd> vertices, allnormals;
+        std::vector<Eigen::MatrixXd> lv, vertices, allnormals;
+        std::vector<int> el_ids;
         Eigen::VectorXi global_primitive_ids;
         Eigen::MatrixXd uv, local_pts, tmp_n, normals;
         ElementAssemblyValues vals;
@@ -164,6 +165,8 @@ namespace polyfem
                 }
 
                 vertices.emplace_back();
+                lv.emplace_back(local_pts);
+                el_ids.push_back(lb.element_id());
                 gbs.eval_geom_mapping(local_pts, vertices.back());
                 vals.compute(lb.element_id(), mesh->is_volume(), local_pts, bs, gbs);
                 const int tris_start = tris.size();
@@ -258,6 +261,8 @@ namespace polyfem
         }
 
         boundary_vis_vertices.resize(size, vertices.front().cols());
+        boundary_vis_local_vertices.resize(size, vertices.front().cols());
+        boundary_vis_elements_ids.resize(size, 1);
         boundary_vis_normals.resize(size, vertices.front().cols());
 
         if (mesh->is_volume())
@@ -266,11 +271,15 @@ namespace polyfem
             boundary_vis_elements.resize(edges.size(), 2);
 
         int index = 0;
+        int ii = 0;
         for (const auto &v : vertices)
         {
             boundary_vis_vertices.block(index, 0, v.rows(), v.cols()) = v;
+            boundary_vis_local_vertices.block(index, 0, v.rows(), v.cols()) = lv[ii];
+            boundary_vis_elements_ids.block(index, 0, v.rows(), 1).setConstant(el_ids[ii++]);
             index += v.rows();
         }
+
         index = 0;
         for (const auto &n : allnormals)
         {
@@ -659,9 +668,118 @@ namespace polyfem
 
         if (!export_surface.empty())
         {
+            const bool material_params = args["export"]["material_params"];
+            const bool body_ids = args["export"]["body_ids"];
+
             VTUWriter writer;
-            writer.add_field("normals", boundary_vis_normals);
-            writer.write_mesh(export_surface, boundary_vis_vertices, boundary_vis_elements);
+            Eigen::MatrixXd fun, interp_p, discr, vect;
+
+            Eigen::MatrixXd lsol, lp, lgrad, lpgrad;
+
+            int actual_dim = 1;
+            if (!problem->is_scalar())
+                actual_dim = mesh->dimension();
+
+            discr.resize(boundary_vis_vertices.rows(), 1);
+            fun.resize(boundary_vis_vertices.rows(), actual_dim);
+            interp_p.resize(boundary_vis_vertices.rows(), 1);
+            vect.resize(boundary_vis_vertices.rows(), mesh->is_volume() ? 3 : 2);
+
+            for (int i = 0; i < boundary_vis_vertices.rows(); ++i)
+            {
+                const int el_index = boundary_vis_elements_ids(i);
+                interpolate_at_local_vals(el_index, boundary_vis_local_vertices.row(i), sol, lsol, lgrad);
+                assert(lsol.size() == actual_dim);
+                if (assembler.is_mixed(formulation()))
+                {
+                    interpolate_at_local_vals(el_index, pressure_bases, boundary_vis_local_vertices.row(i), pressure, lp, lpgrad);
+                    assert(lp.size() == 0);
+                    interp_p(i) = lp(0);
+                }
+
+                discr(i) = disc_orders(el_index);
+                for (int j = 0; j < actual_dim; ++j)
+                {
+                    fun(i, j) = lsol(j);
+                }
+
+                if (actual_dim == 1)
+                {
+                    for (int j = 0; j < actual_dim; ++j)
+                    {
+                        vect(i, j) = lgrad(j);
+                    }
+                }
+                else
+                {
+                    Map<Eigen::MatrixXd> tensor(lgrad.data(), actual_dim, actual_dim);
+                    vect.row(i) = boundary_vis_normals.row(i) * tensor;
+                }
+            }
+
+            if (solve_export_to_file)
+            {
+                writer.add_field("normals", boundary_vis_normals);
+                writer.add_field("solution", fun);
+                if (assembler.is_mixed(formulation()))
+                    writer.add_field("pressure", interp_p);
+                writer.add_field("discr", discr);
+
+                if (actual_dim == 1)
+                    writer.add_field("solution_grad", vect);
+                else
+                    writer.add_field("traction_force", vect);
+            }
+            else
+            {
+                solution_frames.back().solution = fun;
+                if (assembler.is_mixed(formulation()))
+                    solution_frames.back().pressure = interp_p;
+            }
+
+            if (material_params)
+            {
+                const LameParameters &params = assembler.lame_params();
+
+                Eigen::MatrixXd lambdas(boundary_vis_vertices.rows(), 1);
+                Eigen::MatrixXd mus(boundary_vis_vertices.rows(), 1);
+                Eigen::MatrixXd rhos(boundary_vis_vertices.rows(), 1);
+
+                for (int i = 0; i < boundary_vis_vertices.rows(); ++i)
+                {
+                    double lambda, mu;
+
+                    params.lambda_mu(boundary_vis_vertices(i, 0), boundary_vis_vertices(i, 1), boundary_vis_vertices.cols() >= 3 ? boundary_vis_vertices(i, 2) : 0, boundary_vis_elements_ids(i), lambda, mu);
+                    lambdas(i) = lambda;
+                    mus(i) = mu;
+                    rhos(i) = density(boundary_vis_vertices(i, 0), boundary_vis_vertices(i, 1), boundary_vis_vertices.cols() >= 3 ? boundary_vis_vertices(i, 2) : 0, boundary_vis_elements_ids(i));
+                }
+
+                writer.add_field("lambda", lambdas);
+                writer.add_field("mu", mus);
+                writer.add_field("rho", rhos);
+            }
+
+            if (body_ids)
+            {
+
+                Eigen::MatrixXd ids(boundary_vis_vertices.rows(), 1);
+
+                for (int i = 0; i < boundary_vis_vertices.rows(); ++i)
+                {
+                    ids(i) = mesh->get_body_id(boundary_vis_elements_ids(i));
+                }
+
+                writer.add_field("body_ids", ids);
+            }
+            if (solve_export_to_file)
+                writer.write_mesh(export_surface, boundary_vis_vertices, boundary_vis_elements);
+            else
+            {
+                solution_frames.back().name = export_surface;
+                solution_frames.back().points = boundary_vis_vertices;
+                solution_frames.back().connectivity = boundary_vis_elements;
+            }
         }
 
         const double tend = args["tend"];
@@ -930,7 +1048,7 @@ namespace polyfem
             if (solve_export_to_file)
                 writer.add_field("pressure", interp_p);
             else
-                solution_frames.back().pressure = fun;
+                solution_frames.back().pressure = interp_p;
         }
 
         if (solve_export_to_file)
