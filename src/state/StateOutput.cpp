@@ -659,37 +659,9 @@ namespace polyfem
 
         if (!export_surface.empty())
         {
-            std::ofstream os(export_surface);
-            for (int i = 0; i < boundary_vis_vertices.rows(); ++i)
-            {
-                os << "v ";
-                for (int j = 0; j < boundary_vis_vertices.cols(); ++j)
-                {
-                    os << boundary_vis_vertices(i, j) << " ";
-                }
-                if (!mesh->is_volume())
-                    os << "0";
-                os << "\n";
-
-                os << "vn ";
-                for (int j = 0; j < boundary_vis_normals.cols(); ++j)
-                {
-                    os << boundary_vis_normals(i, j) << " ";
-                }
-                if (!mesh->is_volume())
-                    os << "0";
-                os << "\n";
-            }
-
-            for (int i = 0; i < boundary_vis_elements.rows(); ++i)
-            {
-                os << (mesh->is_volume() ? "f " : "l ");
-                for (int j = 0; j < boundary_vis_elements.cols(); ++j)
-                {
-                    os << boundary_vis_elements(i, j) + 1 << "//" << boundary_vis_elements(i, j) + 1 << " ";
-                }
-                os << "\n";
-            }
+            VTUWriter writer;
+            writer.add_field("normals", boundary_vis_normals);
+            writer.write_mesh(export_surface, boundary_vis_vertices, boundary_vis_elements);
         }
 
         const double tend = args["tend"];

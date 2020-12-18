@@ -4,6 +4,7 @@ namespace polyfem
 {
     namespace
     {
+        static const int VTK_LINE = 3;
         static const int VTK_TETRA = 10;
         static const int VTK_TRIANGLE = 5;
         static const int VTK_QUAD = 9;
@@ -32,6 +33,8 @@ namespace polyfem
         {
             switch (n_vertices)
             {
+            case 2:
+                return VTK_LINE;
             case 3:
                 return VTK_TRIANGLE;
             case 4:
