@@ -35,5 +35,6 @@ namespace polyfem
 		std::string formulation_ = "Laplacian";
 		int n_kernels_ = 5;
 		double kernel_distance_ = 0.05;
+		Eigen::VectorXd kernel_weights_;
 	};
 } // namespace polyfem
