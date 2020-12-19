@@ -794,6 +794,11 @@ namespace polyfem
 
     void State::interpolate_at_local_vals(const int el_index, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad)
     {
+        interpolate_at_local_vals(el_index, bases, local_pts, fun, result, result_grad);
+    }
+
+    void State::interpolate_at_local_vals(const int el_index, const std::vector<ElementBases> &bases, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad)
+    {
         if (!mesh)
         {
             logger().error("Load the mesh first!");

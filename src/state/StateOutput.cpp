@@ -1,5 +1,6 @@
 #include <polyfem/State.hpp>
 
+#include <polyfem/BoundarySampler.hpp>
 #include <polyfem/RefElementSampler.hpp>
 
 #include <polyfem/VTUWriter.hpp>
@@ -107,6 +108,201 @@ namespace polyfem
 
             pts.conservativeResize(n_siteset * 2, 3);
             pts.col(2).setZero();
+        }
+    }
+
+    void State::extract_vis_boundary_mesh()
+    {
+        std::vector<Eigen::MatrixXd> lv, vertices, allnormals;
+        std::vector<int> el_ids;
+        Eigen::VectorXi global_primitive_ids;
+        Eigen::MatrixXd uv, local_pts, tmp_n, normals;
+        ElementAssemblyValues vals;
+        const auto &sampler = RefElementSampler::sampler();
+        const int n_samples = sampler.num_samples();
+        int size = 0;
+
+        std::vector<std::pair<int, int>> edges;
+        std::vector<std::tuple<int, int, int>> tris;
+
+        const auto &gbases = iso_parametric() ? bases : geom_bases;
+
+        for (auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
+        {
+            const auto &lb = *it;
+            const auto &gbs = gbases[lb.element_id()];
+            const auto &bs = bases[lb.element_id()];
+
+            for (int k = 0; k < lb.size(); ++k)
+            {
+                switch (lb.type())
+                {
+                case BoundaryType::TriLine:
+                    BoundarySampler::normal_for_tri_edge(lb[k], tmp_n);
+                    BoundarySampler::sample_parametric_tri_edge(lb[k], n_samples, uv, local_pts);
+                    break;
+                case BoundaryType::QuadLine:
+                    BoundarySampler::normal_for_quad_edge(lb[k], tmp_n);
+                    BoundarySampler::sample_parametric_quad_edge(lb[k], n_samples, uv, local_pts);
+                    break;
+                case BoundaryType::Quad:
+                    BoundarySampler::normal_for_quad_face(lb[k], tmp_n);
+                    BoundarySampler::sample_parametric_quad_face(lb[k], n_samples, uv, local_pts);
+                    break;
+                case BoundaryType::Tri:
+                    BoundarySampler::normal_for_tri_face(lb[k], tmp_n);
+                    BoundarySampler::sample_parametric_tri_face(lb[k], n_samples, uv, local_pts);
+                    break;
+                case BoundaryType::Polygon:
+                    BoundarySampler::normal_for_polygon_edge(lb[k], lb.global_primitive_id(k), *mesh, tmp_n);
+                    BoundarySampler::sample_polygon_edge(lb.element_id(), lb.global_primitive_id(k), n_samples, *mesh, uv, local_pts);
+                    break;
+                case BoundaryType::Invalid:
+                    assert(false);
+                    break;
+                default:
+                    assert(false);
+                }
+
+                vertices.emplace_back();
+                lv.emplace_back(local_pts);
+                el_ids.push_back(lb.element_id());
+                gbs.eval_geom_mapping(local_pts, vertices.back());
+                vals.compute(lb.element_id(), mesh->is_volume(), local_pts, bs, gbs);
+                const int tris_start = tris.size();
+
+                if (mesh->is_volume())
+                {
+                    if (lb.type() == BoundaryType::Quad)
+                    {
+                        const auto map = [n_samples, size](int i, int j) { return j * n_samples + i + size; };
+
+                        for (int j = 0; j < n_samples - 1; ++j)
+                        {
+                            for (int i = 0; i < n_samples - 1; ++i)
+                            {
+                                tris.emplace_back(map(i, j), map(i + 1, j), map(i, j + 1));
+                                tris.emplace_back(map(i + 1, j + 1), map(i, j + 1), map(i + 1, j));
+                            }
+                        }
+                    }
+                    else if (lb.type() == BoundaryType::Tri)
+                    {
+                        int index = 0;
+                        std::vector<int> mapp(n_samples * n_samples, -1);
+                        for (int j = 0; j < n_samples; ++j)
+                        {
+                            for (int i = 0; i < n_samples - j; ++i)
+                            {
+                                mapp[j * n_samples + i] = index;
+                                ++index;
+                            }
+                        }
+                        const auto map = [mapp, n_samples](int i, int j) { return mapp[j * n_samples + i]; };
+
+                        for (int j = 0; j < n_samples - 1; ++j)
+                        {
+                            for (int i = 0; i < n_samples - j; ++i)
+                            {
+                                if (map(i, j) >= 0 && map(i + 1, j) >= 0 && map(i, j + 1) >= 0)
+                                    tris.emplace_back(map(i, j) + size, map(i + 1, j) + size, map(i, j + 1) + size);
+
+                                if (map(i + 1, j + 1) >= 0 && map(i, j + 1) >= 0 && map(i + 1, j) >= 0)
+                                    tris.emplace_back(map(i + 1, j + 1) + size, map(i, j + 1) + size, map(i + 1, j) + size);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        assert(false);
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < vertices.back().rows() - 1; ++i)
+                        edges.emplace_back(i + size, i + size + 1);
+                }
+
+                normals.resize(vals.jac_it.size(), tmp_n.cols());
+
+                for (int n = 0; n < vals.jac_it.size(); ++n)
+                {
+                    normals.row(n) = tmp_n * vals.jac_it[n];
+                    normals.row(n).normalize();
+                }
+
+                allnormals.push_back(normals);
+
+                tmp_n.setZero();
+                for (int n = 0; n < vals.jac_it.size(); ++n)
+                {
+                    tmp_n += normals.row(n);
+                }
+
+                if (mesh->is_volume())
+                {
+                    Eigen::Vector3d e1 = vertices.back().row(std::get<1>(tris.back()) - size) - vertices.back().row(std::get<0>(tris.back()) - size);
+                    Eigen::Vector3d e2 = vertices.back().row(std::get<2>(tris.back()) - size) - vertices.back().row(std::get<0>(tris.back()) - size);
+
+                    Eigen::Vector3d n = e1.cross(e2);
+                    Eigen::Vector3d nn = tmp_n.transpose();
+
+                    if (n.dot(nn) < 0)
+                    {
+                        for (int i = tris_start; i < tris.size(); ++i)
+                        {
+                            tris[i] = std::tuple<int, int, int>(std::get<0>(tris[i]), std::get<2>(tris[i]), std::get<1>(tris[i]));
+                        }
+                    }
+                }
+
+                size += vertices.back().rows();
+            }
+        }
+
+        boundary_vis_vertices.resize(size, vertices.front().cols());
+        boundary_vis_local_vertices.resize(size, vertices.front().cols());
+        boundary_vis_elements_ids.resize(size, 1);
+        boundary_vis_normals.resize(size, vertices.front().cols());
+
+        if (mesh->is_volume())
+            boundary_vis_elements.resize(tris.size(), 3);
+        else
+            boundary_vis_elements.resize(edges.size(), 2);
+
+        int index = 0;
+        int ii = 0;
+        for (const auto &v : vertices)
+        {
+            boundary_vis_vertices.block(index, 0, v.rows(), v.cols()) = v;
+            boundary_vis_local_vertices.block(index, 0, v.rows(), v.cols()) = lv[ii];
+            boundary_vis_elements_ids.block(index, 0, v.rows(), 1).setConstant(el_ids[ii++]);
+            index += v.rows();
+        }
+
+        index = 0;
+        for (const auto &n : allnormals)
+        {
+            boundary_vis_normals.block(index, 0, n.rows(), n.cols()) = n;
+            index += n.rows();
+        }
+
+        index = 0;
+        if (mesh->is_volume())
+        {
+            for (const auto &t : tris)
+            {
+                boundary_vis_elements.row(index) << std::get<0>(t), std::get<1>(t), std::get<2>(t);
+                ++index;
+            }
+        }
+        else
+        {
+            for (const auto &e : edges)
+            {
+                boundary_vis_elements.row(index) << e.first, e.second;
+                ++index;
+            }
         }
     }
 
@@ -605,6 +801,7 @@ namespace polyfem
         const std::string iso_mesh_path = args["export"]["iso_mesh"];
         const std::string nodes_path = args["export"]["nodes"];
         const std::string solution_path = args["export"]["solution"];
+        const std::string export_surface = args["export"]["surface"];
         const std::string solmat_path = args["export"]["solution_mat"];
         const std::string stress_path = args["export"]["stress_mat"];
         const std::string mises_path = args["export"]["mises"];
@@ -616,6 +813,124 @@ namespace polyfem
             out << std::scientific;
             out << sol << std::endl;
             out.close();
+        }
+
+        if (!export_surface.empty())
+        {
+            const bool material_params = args["export"]["material_params"];
+            const bool body_ids = args["export"]["body_ids"];
+
+            VTUWriter writer;
+            Eigen::MatrixXd fun, interp_p, discr, vect;
+
+            Eigen::MatrixXd lsol, lp, lgrad, lpgrad;
+
+            int actual_dim = 1;
+            if (!problem->is_scalar())
+                actual_dim = mesh->dimension();
+
+            discr.resize(boundary_vis_vertices.rows(), 1);
+            fun.resize(boundary_vis_vertices.rows(), actual_dim);
+            interp_p.resize(boundary_vis_vertices.rows(), 1);
+            vect.resize(boundary_vis_vertices.rows(), mesh->dimension());
+
+            for (int i = 0; i < boundary_vis_vertices.rows(); ++i)
+            {
+                const int el_index = boundary_vis_elements_ids(i);
+                interpolate_at_local_vals(el_index, boundary_vis_local_vertices.row(i), sol, lsol, lgrad);
+                assert(lsol.size() == actual_dim);
+                if (assembler.is_mixed(formulation()))
+                {
+                    interpolate_at_local_vals(el_index, pressure_bases, boundary_vis_local_vertices.row(i), pressure, lp, lpgrad);
+                    assert(lp.size() == 0);
+                    interp_p(i) = lp(0);
+                }
+
+                discr(i) = disc_orders(el_index);
+                for (int j = 0; j < actual_dim; ++j)
+                {
+                    fun(i, j) = lsol(j);
+                }
+
+                if (actual_dim == 1)
+                {
+                    assert(lgrad.size() == mesh->dimension());
+                    for (int j = 0; j < mesh->dimension(); ++j)
+                    {
+                        vect(i, j) = lgrad(j);
+                    }
+                }
+                else
+                {
+                    assert(lgrad.size() == actual_dim * actual_dim);
+                    Map<Eigen::MatrixXd> tensor(lgrad.data(), actual_dim, actual_dim);
+                    vect.row(i) = boundary_vis_normals.row(i) * tensor;
+                }
+            }
+
+            if (solve_export_to_file)
+            {
+                writer.add_field("normals", boundary_vis_normals);
+                writer.add_field("solution", fun);
+                if (assembler.is_mixed(formulation()))
+                    writer.add_field("pressure", interp_p);
+                writer.add_field("discr", discr);
+
+                if (actual_dim == 1)
+                    writer.add_field("solution_grad", vect);
+                else
+                    writer.add_field("traction_force", vect);
+            }
+            else
+            {
+                solution_frames.back().solution = fun;
+                if (assembler.is_mixed(formulation()))
+                    solution_frames.back().pressure = interp_p;
+            }
+
+            if (material_params)
+            {
+                const LameParameters &params = assembler.lame_params();
+
+                Eigen::MatrixXd lambdas(boundary_vis_vertices.rows(), 1);
+                Eigen::MatrixXd mus(boundary_vis_vertices.rows(), 1);
+                Eigen::MatrixXd rhos(boundary_vis_vertices.rows(), 1);
+
+                for (int i = 0; i < boundary_vis_vertices.rows(); ++i)
+                {
+                    double lambda, mu;
+
+                    params.lambda_mu(boundary_vis_vertices(i, 0), boundary_vis_vertices(i, 1), boundary_vis_vertices.cols() >= 3 ? boundary_vis_vertices(i, 2) : 0, boundary_vis_elements_ids(i), lambda, mu);
+                    lambdas(i) = lambda;
+                    mus(i) = mu;
+                    rhos(i) = density(boundary_vis_vertices(i, 0), boundary_vis_vertices(i, 1), boundary_vis_vertices.cols() >= 3 ? boundary_vis_vertices(i, 2) : 0, boundary_vis_elements_ids(i));
+                }
+
+                writer.add_field("lambda", lambdas);
+                writer.add_field("mu", mus);
+                writer.add_field("rho", rhos);
+            }
+
+            if (body_ids)
+            {
+
+                Eigen::MatrixXd ids(boundary_vis_vertices.rows(), 1);
+
+                for (int i = 0; i < boundary_vis_vertices.rows(); ++i)
+                {
+                    ids(i) = mesh->get_body_id(boundary_vis_elements_ids(i));
+                }
+
+                writer.add_field("body_ids", ids);
+            }
+            if (solve_export_to_file)
+                writer.write_mesh(export_surface, boundary_vis_vertices, boundary_vis_elements);
+            else
+            {
+                solution_frames.back().name = export_surface;
+                solution_frames.back().points = boundary_vis_vertices;
+                solution_frames.back().connectivity = boundary_vis_elements;
+            }
         }
 
         const double tend = args["tend"];
@@ -888,7 +1203,7 @@ namespace polyfem
             if (solve_export_to_file)
                 writer.add_field("pressure", interp_p);
             else
-                solution_frames.back().pressure = fun;
+                solution_frames.back().pressure = interp_p;
         }
 
         if (solve_export_to_file)
@@ -981,7 +1296,7 @@ namespace polyfem
         // interpolate_function(pts_index, rhs, fun, boundary_only);
         // writer.add_field("rhs", fun);
         if (solve_export_to_file)
-            writer.write_tet_mesh(path, points, tets);
+            writer.write_mesh(path, points, tets);
         else
         {
             solution_frames.back().name = path;

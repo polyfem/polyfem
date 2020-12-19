@@ -7,7 +7,6 @@
 
 #include <polyfem/AssemblyValues.hpp>
 
-
 #include <vector>
 
 namespace polyfem
@@ -59,22 +58,45 @@ namespace polyfem
 		/// @brief      { Checks if all the bases are complete }
 		bool is_complete() const;
 
-		friend std::ostream& operator<< (std::ostream& os, const ElementBases &obj)
+		friend std::ostream &operator<<(std::ostream &os, const ElementBases &obj)
 		{
-			for(std::size_t i = 0; i < obj.bases.size(); ++i)
-				os << "local base "<<i <<":\n" << obj.bases[i] <<"\n";
+			for (std::size_t i = 0; i < obj.bases.size(); ++i)
+				os << "local base " << i << ":\n"
+				   << obj.bases[i] << "\n";
 
 			return os;
 		}
 
 		void set_quadrature(const QuadratureFunction &fun) { quadrature_builder_ = fun; }
 
-		void evaluate_bases(const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &basis_values) const { if (eval_bases_func_) { eval_bases_func_(uv, basis_values); } else { evaluate_bases_default(uv, basis_values); } }
-		void evaluate_grads(const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &basis_values) const { if (eval_grads_func_) { eval_grads_func_(uv, basis_values); } else { evaluate_grads_default(uv, basis_values); } }
+		//evaluation functions
+		void evaluate_bases(const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &basis_values) const
+		{
+			if (eval_bases_func_)
+			{
+				eval_bases_func_(uv, basis_values);
+			}
+			else
+			{
+				evaluate_bases_default(uv, basis_values);
+			}
+		}
+		void evaluate_grads(const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &basis_values) const
+		{
+			if (eval_grads_func_)
+			{
+				eval_grads_func_(uv, basis_values);
+			}
+			else
+			{
+				evaluate_grads_default(uv, basis_values);
+			}
+		}
 
 		void set_bases_func(EvalBasesFunc fun) { eval_bases_func_ = fun; }
 		void set_grads_func(EvalBasesFunc fun) { eval_grads_func_ = fun; }
 
+		//sets mapping from local nodes to global nodes
 		void set_local_node_from_primitive_func(LocalNodeFromPrimitiveFunc fun) { local_node_from_primitive_ = fun; }
 
 	private:
@@ -88,6 +110,6 @@ namespace polyfem
 
 		LocalNodeFromPrimitiveFunc local_node_from_primitive_;
 	};
-}
+} // namespace polyfem
 
 #endif

@@ -583,6 +583,9 @@ namespace polyfem
 		logger().info("Extracting boundary mesh...");
 		extract_boundary_mesh();
 		extract_boundary_mesh_pressure();
+		const std::string export_surface = args["export"]["surface"];
+		if (!export_surface.empty())
+			extract_vis_boundary_mesh();
 		logger().info("Done!");
 
 		problem->setup_bc(*mesh, bases, local_boundary, boundary_nodes, local_neumann_boundary);
@@ -1622,11 +1625,13 @@ namespace polyfem
 							for (int bId : boundary_nodes)
 								b(bId) = -(nl_problem.current_rhs()(bId) - prev_rhs(bId));
 							dirichlet_solve(*solver, nlstiffness, b, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
+							logger().trace("Checking step");
 							const bool valid = nl_problem.is_step_valid(sol, (sol - x).eval());
 							if (valid)
 								x = sol - x;
 							else
 								x = sol;
+							logger().trace("Done checking step");
 							// logger().debug("Solver error: {}", (nlstiffness * sol - b).norm());
 						}
 
