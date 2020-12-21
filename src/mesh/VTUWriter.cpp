@@ -4,7 +4,7 @@ namespace polyfem
 {
     namespace
     {
-        // http://victorsndvg.github.io/FEconv/formats/vtk.xhtml
+        // https://vtk.org/doc/nightly/html/vtkCellType_8h_source.html#l00069
         static const int VTK_LINE = 3;
         static const int VTK_TETRA = 10;
         static const int VTK_TRIANGLE = 5;

@@ -678,10 +678,13 @@ namespace polyfem
 
     void State::interpolate_at_local_vals(const int el_index, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad)
     {
-        interpolate_at_local_vals(el_index, bases, local_pts, fun, result, result_grad);
+        int actual_dim = 1;
+        if (!problem->is_scalar())
+            actual_dim = mesh->dimension();
+        interpolate_at_local_vals(el_index, actual_dim, bases, local_pts, fun, result, result_grad);
     }
 
-    void State::interpolate_at_local_vals(const int el_index, const std::vector<ElementBases> &bases, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad)
+    void State::interpolate_at_local_vals(const int el_index, const int actual_dim, const std::vector<ElementBases> &bases, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad)
     {
         if (!mesh)
         {
@@ -694,13 +697,8 @@ namespace polyfem
             return;
         }
 
-        int actual_dim = 1;
-        if (!problem->is_scalar())
-            actual_dim = mesh->dimension();
-
         assert(local_pts.cols() == mesh->dimension());
-        assert(fun.size() == sol.size());
-        assert(fun.rows() == sol.rows());
+        assert(fun.cols() == 1);
 
         const auto &gbases = iso_parametric() ? bases : geom_bases;
         const ElementBases &gbs = gbases[el_index];
