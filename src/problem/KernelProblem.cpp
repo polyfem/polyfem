@@ -3,6 +3,7 @@
 #include <polyfem/AssemblerUtils.hpp>
 
 #include <iostream>
+#include <fstream>
 
 namespace polyfem
 {
@@ -41,13 +42,16 @@ namespace polyfem
 		const Eigen::VectorXd t = Eigen::VectorXd::LinSpaced(n_kernels_, 0, 1);
 		if (pt.size() == 2)
 		{
+			assert(kernel_weights_.size() == t.size() * 4);
+			
 			for (long i = 0; i < t.size(); ++i)
 			{
 				const auto dx = pt(0) - (0 - kernel_distance_);
 				const auto dy = pt(1) - t(i);
 				AutodiffGradPt rvect(2);
 				rvect << dx, dy;
-				res += assembler.kernel(formulation_, 2, rvect, sqrt(dx * dx + dy * dy));
+				if (kernel_weights_(i) > 0)
+					res += assembler.kernel(formulation_, 2, rvect, sqrt(dx * dx + dy * dy)) * polyfem::AutodiffScalarGrad(kernel_weights_(i));
 			}
 
 			for (long i = 0; i < t.size(); ++i)
@@ -56,7 +60,8 @@ namespace polyfem
 				const auto dy = pt(1) - t(i);
 				AutodiffGradPt rvect(2);
 				rvect << dx, dy;
-				res += assembler.kernel(formulation_, 2, rvect, sqrt(dx * dx + dy * dy));
+				if (kernel_weights_(t.size() + i) > 0)
+					res += assembler.kernel(formulation_, 2, rvect, sqrt(dx * dx + dy * dy)) * polyfem::AutodiffScalarGrad(kernel_weights_(t.size() + i));
 			}
 
 			for (long i = 0; i < t.size(); ++i)
@@ -65,7 +70,8 @@ namespace polyfem
 				const auto dy = pt(1) - (0 - kernel_distance_);
 				AutodiffGradPt rvect(2);
 				rvect << dx, dy;
-				res += assembler.kernel(formulation_, 2, rvect, sqrt(dx * dx + dy * dy));
+				if (kernel_weights_(t.size() * 2 + i) > 0)
+					res += assembler.kernel(formulation_, 2, rvect, sqrt(dx * dx + dy * dy)) * polyfem::AutodiffScalarGrad(kernel_weights_(t.size() * 2 + i));
 			}
 
 			for (long i = 0; i < t.size(); ++i)
@@ -74,11 +80,14 @@ namespace polyfem
 				const auto dy = pt(1) - (1 + kernel_distance_);
 				AutodiffGradPt rvect(2);
 				rvect << dx, dy;
-				res += assembler.kernel(formulation_, 2, rvect, sqrt(dx * dx + dy * dy));
+				if (kernel_weights_(t.size() * 3 + i) > 0)
+					res += assembler.kernel(formulation_, 2, rvect, sqrt(dx * dx + dy * dy)) * polyfem::AutodiffScalarGrad(kernel_weights_(t.size() * 3 + i));
 			}
 		}
 		else if (pt.size() == 3)
 		{
+			assert(kernel_weights_.size() == t.size() * t.size() * 6);
+			 
 			///////////////////X
 			for (long i = 0; i < t.size(); ++i)
 			{
@@ -89,7 +98,8 @@ namespace polyfem
 					const auto dz = pt(2) - t(j);
 					AutodiffGradPt rvect(3);
 					rvect << dx, dy, dz;
-					res += assembler.kernel(formulation_, 3, rvect, sqrt(dx * dx + dy * dy + dz * dz));
+					if (kernel_weights_(i * t.size() + j) > 0)
+						res += assembler.kernel(formulation_, 3, rvect, sqrt(dx * dx + dy * dy + dz * dz)) * polyfem::AutodiffScalarGrad(kernel_weights_(i * t.size() + j));
 				}
 			}
 
@@ -102,7 +112,8 @@ namespace polyfem
 					const auto dz = pt(2) - t(j);
 					AutodiffGradPt rvect(3);
 					rvect << dx, dy, dz;
-					res += assembler.kernel(formulation_, 3, rvect, sqrt(dx * dx + dy * dy + dz * dz));
+					if (kernel_weights_(t.size() * t.size() + i * t.size() + j) > 0)
+						res += assembler.kernel(formulation_, 3, rvect, sqrt(dx * dx + dy * dy + dz * dz)) * polyfem::AutodiffScalarGrad(kernel_weights_(t.size() * t.size() + i * t.size() + j));
 				}
 			}
 
@@ -116,7 +127,8 @@ namespace polyfem
 					const auto dz = pt(2) - t(j);
 					AutodiffGradPt rvect(3);
 					rvect << dx, dy, dz;
-					res += assembler.kernel(formulation_, 3, rvect, sqrt(dx * dx + dy * dy + dz * dz));
+					if (kernel_weights_(t.size() * t.size() * 2 + i * t.size() + j) > 0)
+						res += assembler.kernel(formulation_, 3, rvect, sqrt(dx * dx + dy * dy + dz * dz)) * polyfem::AutodiffScalarGrad(kernel_weights_(t.size() * t.size() * 2 + i * t.size() + j));
 				}
 			}
 
@@ -129,7 +141,8 @@ namespace polyfem
 					const auto dz = pt(2) - t(j);
 					AutodiffGradPt rvect(3);
 					rvect << dx, dy, dz;
-					res += assembler.kernel(formulation_, 3, rvect, sqrt(dx * dx + dy * dy + dz * dz));
+					if (kernel_weights_(t.size() * t.size() * 3 + i * t.size() + j) > 0)
+						res += assembler.kernel(formulation_, 3, rvect, sqrt(dx * dx + dy * dy + dz * dz)) * polyfem::AutodiffScalarGrad(kernel_weights_(t.size() * t.size() * 3 + i * t.size() + j));
 				}
 			}
 
@@ -143,7 +156,8 @@ namespace polyfem
 					const auto dz = pt(2) - (0 - kernel_distance_);
 					AutodiffGradPt rvect(3);
 					rvect << dx, dy, dz;
-					res += assembler.kernel(formulation_, 3, rvect, sqrt(dx * dx + dy * dy + dz * dz));
+					if (kernel_weights_(t.size() * t.size() * 4 + i * t.size() + j) > 0)
+						res += assembler.kernel(formulation_, 3, rvect, sqrt(dx * dx + dy * dy + dz * dz)) * polyfem::AutodiffScalarGrad(kernel_weights_(t.size() * t.size() * 4 + i * t.size() + j));;
 				}
 			}
 
@@ -156,7 +170,8 @@ namespace polyfem
 					const auto dz = pt(2) - (1 + kernel_distance_);
 					AutodiffGradPt rvect(3);
 					rvect << dx, dy, dz;
-					res += assembler.kernel(formulation_, 3, rvect, sqrt(dx * dx + dy * dy + dz * dz));
+					if (kernel_weights_(t.size() * t.size() * 5 + i * t.size() + j) > 0)
+						res += assembler.kernel(formulation_, 3, rvect, sqrt(dx * dx + dy * dy + dz * dz)) * polyfem::AutodiffScalarGrad(kernel_weights_(t.size() * t.size() * 5 + i * t.size() + j));;
 				}
 			}
 		}
@@ -187,6 +202,19 @@ namespace polyfem
 
 		if (params.count("kernel_distance"))
 			kernel_distance_ = params["kernel_distance"];
+
+		if (params.count("kernel_weights"))
+		{
+			std::ifstream in(params["kernel_weights"].get<std::string>());
+			std::string token;
+			in >> token;
+			int n_weights;
+			in >> n_weights;
+			kernel_weights_.resize(n_weights);
+			for (int i = 0; i < n_weights; ++i)
+				in >> kernel_weights_(i);
+		}
+			
 	}
 
 	bool KernelProblem::is_scalar() const
