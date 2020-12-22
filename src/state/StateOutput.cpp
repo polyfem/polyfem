@@ -841,8 +841,8 @@ namespace polyfem
                 assert(lsol.size() == actual_dim);
                 if (assembler.is_mixed(formulation()))
                 {
-                    interpolate_at_local_vals(el_index, pressure_bases, boundary_vis_local_vertices.row(i), pressure, lp, lpgrad);
-                    assert(lp.size() == 0);
+                    interpolate_at_local_vals(el_index, 1, pressure_bases, boundary_vis_local_vertices.row(i), pressure, lp, lpgrad);
+                    assert(lp.size() == 1);
                     interp_p(i) = lp(0);
                 }
 
