@@ -210,13 +210,14 @@ namespace polyfem
 
 		//if(layer == Visualizations::InputMesh)
 		{
-			const long n_tris = show_clipped_elements(tri_pts, tri_faces, element_ranges, valid_elements, false, Visualizations::NavigationIndex, recenter);
-			color_mesh(n_tris, valid_elements, Visualizations::NavigationIndex);
+			// const long n_tris = show_clipped_elements(tri_pts, tri_faces, element_ranges, valid_elements, false, Visualizations::NavigationIndex, recenter);
+			// color_mesh(n_tris, valid_elements, Visualizations::NavigationIndex);
 		}
 		// else
-		// {
-		// show_clipped_elements(vis_pts, vis_faces, vis_element_ranges, valid_elements, true, Visualizations::NavigationIndex, recenter);
-		// }
+		{
+			const long n_tris = show_clipped_elements(vis_pts, vis_faces, vis_element_ranges, valid_elements, false, Visualizations::NavigationIndex, recenter);
+			color_mesh(n_tris, valid_elements, Visualizations::NavigationIndex);
+		}
 
 		if (state.mesh->is_volume())
 		{

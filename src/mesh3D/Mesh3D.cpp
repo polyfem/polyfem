@@ -881,6 +881,9 @@ namespace polyfem
 				}
 
 				n.nodes.resize(3, 3);
+				assert(id + index0 < nodes_ids.size());
+				assert(id + index1 < nodes_ids.size());
+				assert(id + index2 < nodes_ids.size());
 				n.nodes.row(0) << V(nodes_ids[id + index0], 0), V(nodes_ids[id + index0], 1), V(nodes_ids[id + index0], 2);
 				n.nodes.row(1) << V(nodes_ids[id + index1], 0), V(nodes_ids[id + index1], 1), V(nodes_ids[id + index1], 2);
 				n.nodes.row(2) << V(nodes_ids[id + index2], 0), V(nodes_ids[id + index2], 1), V(nodes_ids[id + index2], 2);
@@ -890,13 +893,14 @@ namespace polyfem
 		const auto attach_p4_cell = [&](const Navigation3D::Index &index, const std::vector<int> &nodes_ids) {
 			auto &n = cell_nodes_[index.element];
 			assert(nodes_ids.size() == 35);
+			assert(n.nodes.size() == 0);
 
 			if (n.nodes.size() <= 0)
 			{
 				n.v1 = cell_vertex(index.element, 0);
 				n.v2 = cell_vertex(index.element, 1);
 				n.v3 = cell_vertex(index.element, 2);
-				n.v3 = cell_vertex(index.element, 3);
+				n.v4 = cell_vertex(index.element, 3);
 				n.nodes.resize(1, 3);
 
 				n.nodes << V(nodes_ids[34], 0), V(nodes_ids[34], 1), V(nodes_ids[34], 2);
