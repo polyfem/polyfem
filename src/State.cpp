@@ -1043,6 +1043,7 @@ namespace polyfem
 					if (!solve_export_to_file)
 						solution_frames.emplace_back();
 					save_vtu("step_" + std::to_string(0) + ".vtu", 0.);
+					extract_vis_boundary_mesh();
 					save_boundary_vtu("boundary_" + std::to_string(0) + ".vtu");
 				}
 
