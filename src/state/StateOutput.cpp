@@ -796,7 +796,7 @@ namespace polyfem
         const std::string paraview_path = args["export"]["paraview"];
         const std::string old_path = args["export"]["vis_mesh"];
         const std::string vis_mesh_path = paraview_path.empty() ? old_path : paraview_path;
-        const std::string vis_boundary_path = args["export"]["boundary"];
+        // const std::string vis_boundary_path = args["export"]["boundary"];
         const std::string wire_mesh_path = args["export"]["wire_mesh"];
         const std::string iso_mesh_path = args["export"]["iso_mesh"];
         const std::string nodes_path = args["export"]["nodes"];
@@ -939,10 +939,10 @@ namespace polyfem
         {
             save_vtu(vis_mesh_path, tend);
         }
-        if (!vis_boundary_path.empty())
-        {
-            save_boundary_vtu(vis_boundary_path);
-        }
+        // if (!vis_boundary_path.empty())
+        // {
+        //     save_boundary_vtu(vis_boundary_path);
+        // }
         if (!wire_mesh_path.empty())
         {
             save_wire(wire_mesh_path);
@@ -1305,65 +1305,97 @@ namespace polyfem
         }
     }
 
-    void State::save_boundary_vtu(const std::string &path)
+    void State::save_boundary_vtu(const std::string &export_surface)
     {
-        if (!mesh)
+        const bool body_ids = args["export"]["body_ids"];
+
+        VTUWriter writer;
+        Eigen::MatrixXd fun, interp_p, discr, vect;
+
+        Eigen::MatrixXd lsol, lp, lgrad, lpgrad;
+
+        int actual_dim = 1;
+        if (!problem->is_scalar())
+            actual_dim = mesh->dimension();
+
+        discr.resize(boundary_vis_vertices.rows(), 1);
+        fun.resize(boundary_vis_vertices.rows(), actual_dim);
+        interp_p.resize(boundary_vis_vertices.rows(), 1);
+        vect.resize(boundary_vis_vertices.rows(), mesh->dimension());
+
+        for (int i = 0; i < boundary_vis_vertices.rows(); ++i)
         {
-            logger().error("Load the mesh first!");
-            return;
-        }
-        if (n_bases <= 0)
-        {
-            logger().error("Build the bases first!");
-            return;
-        }
-        if (rhs.size() <= 0)
-        {
-            logger().error("Assemble the rhs first!");
-            return;
-        }
-        if (sol.size() <= 0)
-        {
-            logger().error("Solve the problem first!");
-            return;
-        }
-    
-        std::ofstream file(path);
-        file << "# vtk DataFile Version 2.0\n";
-        file << "Object surface\n";
-        file << "ASCII\n";
-        file << "DATASET POLYDATA\n";
-        file << "POINTS " << boundary_nodes_pos_pressure.rows() << " float\n";
-        if (mesh->is_volume())
-        {
-            for (size_t i = 0; i < boundary_nodes_pos_pressure.rows(); i++)
+            const int el_index = boundary_vis_elements_ids(i);
+            interpolate_at_local_vals(el_index, boundary_vis_local_vertices.row(i), sol, lsol, lgrad);
+            assert(lsol.size() == actual_dim);
+            if (assembler.is_mixed(formulation()))
             {
-                file << boundary_nodes_pos_pressure(i, 0) << " " << boundary_nodes_pos_pressure(i, 1) << " " << boundary_nodes_pos_pressure(i, 2) << std::endl;
+                interpolate_at_local_vals(el_index, 1, pressure_bases, boundary_vis_local_vertices.row(i), pressure, lp, lpgrad);
+                assert(lp.size() == 1);
+                interp_p(i) = lp(0);
             }
-            file << "POLYGONS " << boundary_triangles_pressure.rows() << " " << boundary_triangles_pressure.rows() * (boundary_triangles_pressure.cols() + 1) << std::endl;
-            for (size_t i = 0; i < boundary_triangles_pressure.rows(); i++)
+
+            discr(i) = disc_orders(el_index);
+            for (int j = 0; j < actual_dim; ++j)
             {
-                file << "3 " << boundary_triangles_pressure(i, 0) << " " << boundary_triangles_pressure(i, 1) << " " << boundary_triangles_pressure(i, 2) << std::endl;
+                fun(i, j) = lsol(j);
             }
+
+            if (actual_dim == 1)
+            {
+                assert(lgrad.size() == mesh->dimension());
+                for (int j = 0; j < mesh->dimension(); ++j)
+                {
+                    vect(i, j) = lgrad(j);
+                }
+            }
+            else
+            {
+                assert(lgrad.size() == actual_dim * actual_dim);
+                Map<Eigen::MatrixXd> tensor(lgrad.data(), actual_dim, actual_dim);
+                vect.row(i) = boundary_vis_normals.row(i) * tensor;
+            }
+        }
+
+        if (solve_export_to_file)
+        {
+            writer.add_field("normals", boundary_vis_normals);
+            writer.add_field("solution", fun);
+            if (assembler.is_mixed(formulation()))
+                writer.add_field("pressure", interp_p);
+            writer.add_field("discr", discr);
+
+            if (actual_dim == 1)
+                writer.add_field("solution_grad", vect);
+            else
+                writer.add_field("traction_force", vect);
         }
         else
         {
-            for (size_t i = 0; i < boundary_nodes_pos_pressure.rows(); i++)
-            {
-                file << boundary_nodes_pos_pressure(i, 0) << " " << boundary_nodes_pos_pressure(i, 1) << " 0.0" << std::endl;
-            }
-            file << "LINES " << boundary_edges_pressure.rows() << " " << boundary_edges_pressure.rows() * (boundary_edges_pressure.cols() + 1) << std::endl;
-            for (size_t i = 0; i < boundary_edges_pressure.rows(); i++)
-            {
-                file << "2 " << boundary_edges_pressure(i, 0) << " " << boundary_edges_pressure(i, 1) << std::endl;
-            }
+            solution_frames.back().solution = fun;
+            if (assembler.is_mixed(formulation()))
+                solution_frames.back().pressure = interp_p;
         }
-        file << "POINT_DATA " << boundary_nodes_pos_pressure.rows() << std::endl;
-        file << "SCALARS pressure float 1\n";
-        file << "LOOKUP_TABLE my_table\n";
-        for (size_t i = 0; i < boundary_nodes_pos_pressure.rows(); i++)
+
+        if (body_ids)
         {
-            file << pressure(i) << std::endl;
+
+            Eigen::MatrixXd ids(boundary_vis_vertices.rows(), 1);
+
+            for (int i = 0; i < boundary_vis_vertices.rows(); ++i)
+            {
+                ids(i) = mesh->get_body_id(boundary_vis_elements_ids(i));
+            }
+
+            writer.add_field("body_ids", ids);
+        }
+        if (solve_export_to_file)
+            writer.write_mesh(export_surface, boundary_vis_vertices, boundary_vis_elements);
+        else
+        {
+            solution_frames.back().name = export_surface;
+            solution_frames.back().points = boundary_vis_vertices;
+            solution_frames.back().connectivity = boundary_vis_elements;
         }
     }
 
