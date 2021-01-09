@@ -939,10 +939,6 @@ namespace polyfem
         {
             save_vtu(vis_mesh_path, tend);
         }
-        // if (!vis_boundary_path.empty())
-        // {
-        //     save_boundary_vtu(vis_boundary_path);
-        // }
         if (!wire_mesh_path.empty())
         {
             save_wire(wire_mesh_path);
