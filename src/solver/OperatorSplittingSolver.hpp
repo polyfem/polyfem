@@ -1077,6 +1077,21 @@ namespace polyfem
             pressure = x;
         }
 
+        void projection(StiffnessMatrix& velocity_mass, const StiffnessMatrix& mixed_stiffness, Eigen::MatrixXd& sol, Eigen::MatrixXd& pressure)
+        {
+            Eigen::VectorXd rhs = mixed_stiffness.transpose() * pressure;
+            Eigen::VectorXd dx = Eigen::VectorXd::Zero(sol.size());
+
+            for (int i = 0; i < boundary_nodes.size(); i++)
+            {
+                rhs(boundary_nodes[i]) = 0;
+            }
+
+            dirichlet_solve(*solver_projection, velocity_mass, rhs, boundary_nodes, dx, velocity_mass.rows(), "", false);
+
+            sol += dx;
+        }
+
         void projection(int n_bases, 
         const std::vector<polyfem::ElementBases>& gbases, 
         const std::vector<polyfem::ElementBases>& bases, 

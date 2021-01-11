@@ -1019,7 +1019,7 @@ namespace polyfem
 				const double viscosity_ = build_json_params()["viscosity"];
 
 				logger().info("Matrices assembly...");
-				StiffnessMatrix stiffness_viscosity, mixed_stiffness;
+				StiffnessMatrix stiffness_viscosity, mixed_stiffness, velocity_mass;
 				// coefficient matrix of viscosity
 				assembler.assemble_problem("Laplacian", mesh->is_volume(), n_bases, bases, gbases, stiffness_viscosity);
 				assembler.assemble_mass_matrix("Laplacian", mesh->is_volume(), n_bases, density, bases, gbases, mass);
@@ -1029,6 +1029,7 @@ namespace polyfem
 				
 				// matrix used to calculate divergence of velocity
 				assembler.assemble_mixed_problem("Stokes", mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, mixed_stiffness);
+				assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, density, bases, gbases, velocity_mass);
 				mixed_stiffness = mixed_stiffness.transpose();
 				logger().info("Matrices assembly ends!");
 
@@ -1076,13 +1077,14 @@ namespace polyfem
 					logger().info("Pressure projection...");
 					ss.solve_pressure(mixed_stiffness, sol, pressure);
 					
-					ss.projection(n_bases, gbases, bases, pressure_bases, local_pts, pressure, sol);
+					// ss.projection(n_bases, gbases, bases, pressure_bases, local_pts, pressure, sol);
+					ss.projection(velocity_mass, mixed_stiffness, sol, pressure);
 					logger().info("Pressure projection finished!");
 
 					pressure = pressure / dt;
 
 					/* apply boundary condition */
-					rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, time);
+					// rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, time);
 
 					/* export to vtu */
 					if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
