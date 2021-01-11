@@ -175,10 +175,12 @@ namespace polyfem
         OperatorSplittingSolver(const polyfem::Mesh& mesh,
         const int shape, const int n_el, 
         const std::vector<LocalBoundary>& local_boundary,
-        const std::vector<int>& boundary_nodes,
+        const std::vector<int>& boundary_nodes_,
+        const std::vector<int>& bnd_nodes,
         const StiffnessMatrix& mass,
         const StiffnessMatrix& stiffness_viscosity,
         const StiffnessMatrix& stiffness_velocity,
+        const StiffnessMatrix& mass_velocity,
         const double& dt,
         const double& viscosity_,
         const std::string &solver_type, 
@@ -186,9 +188,18 @@ namespace polyfem
         const json& params,
         const std::string &save_path) : solver_type(solver_type)
         {
-            initialize_solver(mesh, shape, n_el, local_boundary, boundary_nodes);
+            initialize_solver(mesh, shape, n_el, local_boundary, bnd_nodes);
 
             logger().info("Prefactorization begins...");
+
+            solver_mass = LinearSolver::create(solver_type, precond);
+            solver_mass->setParameters(params);
+            if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
+            {
+                StiffnessMatrix mat1 = mass_velocity;
+                prefactorize(*solver_mass, mat1, boundary_nodes_, mat1.rows(), save_path);
+            }
+
             mat_diffusion = mass + viscosity_ * dt * stiffness_viscosity;
             
             solver_diffusion = LinearSolver::create(solver_type, precond);
@@ -196,7 +207,7 @@ namespace polyfem
             if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
             {
                 StiffnessMatrix mat1 = mat_diffusion;
-                prefactorize(*solver_diffusion, mat1, boundary_nodes, mat1.rows(), save_path);
+                prefactorize(*solver_diffusion, mat1, bnd_nodes, mat1.rows(), save_path);
             }
 
             mat_projection.resize(stiffness_velocity.rows() + 1, stiffness_velocity.cols() + 1);
@@ -1060,7 +1071,7 @@ namespace polyfem
                 rhs(i) = temp(i);
             }
 
-            Eigen::VectorXd x(pressure.size());
+            Eigen::VectorXd x = Eigen::VectorXd::Zero(rhs.size());
             for(int i = 0; i < pressure.size(); i++)
             {
                 x(i) = pressure(i);
@@ -1074,10 +1085,10 @@ namespace polyfem
                 dirichlet_solve(*solver_projection, mat_projection, rhs, std::vector<int>(), x, mat_projection.rows() - 1, "", false);
             }
             
-            pressure = x;
+            pressure = x.head(x.size()-1);
         }
 
-        void projection(StiffnessMatrix& velocity_mass, const StiffnessMatrix& mixed_stiffness, Eigen::MatrixXd& sol, Eigen::MatrixXd& pressure)
+        void projection(StiffnessMatrix& velocity_mass, const StiffnessMatrix& mixed_stiffness, const std::vector<int>& boundary_nodes_, Eigen::MatrixXd& sol, Eigen::MatrixXd& pressure)
         {
             Eigen::VectorXd rhs = mixed_stiffness.transpose() * pressure;
             Eigen::VectorXd dx = Eigen::VectorXd::Zero(sol.size());
@@ -1087,9 +1098,16 @@ namespace polyfem
                 rhs(boundary_nodes[i]) = 0;
             }
 
-            dirichlet_solve(*solver_projection, velocity_mass, rhs, boundary_nodes, dx, velocity_mass.rows(), "", false);
+            if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
+            {
+                dirichlet_solve_prefactorized(*solver_mass, velocity_mass, rhs, boundary_nodes_, dx);
+            }
+            else
+            {
+                dirichlet_solve(*solver_mass, velocity_mass, rhs, boundary_nodes_, dx, velocity_mass.rows(), "", false);
+            }
 
-            sol += dx;
+            sol -= dx;
         }
 
         void projection(int n_bases, 
@@ -1406,6 +1424,7 @@ namespace polyfem
 
         std::unique_ptr<polysolve::LinearSolver> solver_diffusion;
         std::unique_ptr<polysolve::LinearSolver> solver_projection;
+        std::unique_ptr<polysolve::LinearSolver> solver_mass;
 
         StiffnessMatrix mat_diffusion;
         StiffnessMatrix mat_projection;

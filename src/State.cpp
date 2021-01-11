@@ -1029,11 +1029,11 @@ namespace polyfem
 				
 				// matrix used to calculate divergence of velocity
 				assembler.assemble_mixed_problem("Stokes", mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, mixed_stiffness);
-				assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, density, bases, gbases, velocity_mass);
+				assembler.assemble_mass_matrix("Stokes", mesh->is_volume(), n_bases, density, bases, gbases, velocity_mass);
 				mixed_stiffness = mixed_stiffness.transpose();
 				logger().info("Matrices assembly ends!");
 
-				OperatorSplittingSolver ss(*mesh, shape, n_el, local_boundary, bnd_nodes, mass, stiffness_viscosity, stiffness, dt, viscosity_, args["solver_type"], args["precond_type"], params, args["export"]["stiffness_mat"]);
+				OperatorSplittingSolver ss(*mesh, shape, n_el, local_boundary, boundary_nodes, bnd_nodes, mass, stiffness_viscosity, stiffness, velocity_mass, dt, viscosity_, args["solver_type"], args["precond_type"], params, args["export"]["stiffness_mat"]);
 
 				/* initialize solution */
 				pressure = Eigen::MatrixXd::Zero(n_pressure_bases, 1);
@@ -1078,7 +1078,7 @@ namespace polyfem
 					ss.solve_pressure(mixed_stiffness, sol, pressure);
 					
 					// ss.projection(n_bases, gbases, bases, pressure_bases, local_pts, pressure, sol);
-					ss.projection(velocity_mass, mixed_stiffness, sol, pressure);
+					ss.projection(velocity_mass, mixed_stiffness, boundary_nodes, sol, pressure);
 					logger().info("Pressure projection finished!");
 
 					pressure = pressure / dt;
