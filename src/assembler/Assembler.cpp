@@ -128,6 +128,7 @@ namespace polyfem
 		const int n_basis,
 		const std::vector<ElementBases> &bases,
 		const std::vector<ElementBases> &gbases,
+		const AssemblyValsCache &cache,
 		StiffnessMatrix &stiffness) const
 	{
 		const int buffer_size = std::min(long(1e8), long(n_basis) * local_assembler_.size());
@@ -430,6 +431,7 @@ namespace polyfem
 		const int n_basis,
 		const std::vector<ElementBases> &bases,
 		const std::vector<ElementBases> &gbases,
+		const AssemblyValsCache &cache,
 		const Eigen::MatrixXd &displacement,
 		Eigen::MatrixXd &rhs) const
 	{
@@ -515,6 +517,7 @@ namespace polyfem
 		const bool project_to_psd,
 		const std::vector<ElementBases> &bases,
 		const std::vector<ElementBases> &gbases,
+		const AssemblyValsCache &cache,
 		const Eigen::MatrixXd &displacement,
 		StiffnessMatrix &grad) const
 	{
@@ -545,7 +548,8 @@ namespace polyfem
 #endif
 			ElementAssemblyValues &vals = loc_storage.vals;
 			// igl::Timer timer; timer.start();
-			vals.compute(e, is_volume, bases[e], gbases[e]);
+			// vals.compute(e, is_volume, bases[e], gbases[e]);
+			cache.compute(e, is_volume, bases[e], gbases[e], vals);
 
 			const Quadrature &quadrature = vals.quadrature;
 
@@ -678,6 +682,7 @@ namespace polyfem
 		const bool is_volume,
 		const std::vector<ElementBases> &bases,
 		const std::vector<ElementBases> &gbases,
+		const AssemblyValsCache &cache,
 		const Eigen::MatrixXd &displacement) const
 	{
 #ifdef POLYFEM_WITH_TBB

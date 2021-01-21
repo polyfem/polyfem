@@ -62,23 +62,24 @@ namespace polyfem
 										  const int n_basis,
 										  const std::vector<ElementBases> &bases,
 										  const std::vector<ElementBases> &gbases,
+										  const AssemblyValsCache &cache,
 										  StiffnessMatrix &stiffness) const
 	{
 		if (assembler == "Helmholtz")
-			helmholtz_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+			helmholtz_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
 		else if (assembler == "Laplacian")
-			laplacian_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+			laplacian_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
 		else if (assembler == "Bilaplacian")
-			bilaplacian_main_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+			bilaplacian_main_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
 
 		else if (assembler == "LinearElasticity")
-			linear_elasticity_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+			linear_elasticity_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
 		else if (assembler == "HookeLinearElasticity")
-			hooke_linear_elasticity_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+			hooke_linear_elasticity_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
 		else if (assembler == "Stokes" || assembler == "NavierStokes")
-			stokes_velocity_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+			stokes_velocity_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
 		else if (assembler == "IncompressibleLinearElasticity")
-			incompressible_lin_elast_displacement_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+			incompressible_lin_elast_displacement_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
 
 		else if (assembler == "SaintVenant")
 			return;
@@ -92,7 +93,7 @@ namespace polyfem
 		{
 			logger().warn("{} not found, fallback to default", assembler);
 			assert(false);
-			laplacian_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+			laplacian_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
 		}
 	}
 
@@ -102,8 +103,10 @@ namespace polyfem
 											  const Density &density,
 											  const std::vector<ElementBases> &bases,
 											  const std::vector<ElementBases> &gbases,
+											  const AssemblyValsCache &cache,
 											  StiffnessMatrix &mass) const
 	{
+		//TODO use cache
 		if (assembler == "Helmholtz" || assembler == "Laplacian")
 			mass_mat_assembler_.assemble(is_volume, 1, n_basis, density, bases, gbases, mass);
 		else
@@ -119,6 +122,7 @@ namespace polyfem
 												const std::vector<ElementBases> &gbases,
 												StiffnessMatrix &stiffness) const
 	{
+		//TODO add cache
 		if (assembler == "Bilaplacian")
 			bilaplacian_mixed_.assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, stiffness);
 
@@ -140,21 +144,22 @@ namespace polyfem
 												   const int n_basis,
 												   const std::vector<ElementBases> &bases,
 												   const std::vector<ElementBases> &gbases,
+												   const AssemblyValsCache &cache,
 												   StiffnessMatrix &stiffness) const
 	{
 		if (assembler == "Bilaplacian")
-			bilaplacian_aux_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+			bilaplacian_aux_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
 
 		else if (assembler == "Stokes" || assembler == "NavierStokes")
-			stokes_pressure_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+			stokes_pressure_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
 		else if (assembler == "IncompressibleLinearElasticity")
-			incompressible_lin_elast_pressure_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+			incompressible_lin_elast_pressure_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
 
 		else
 		{
 			logger().warn("{} not found, fallback to default", assembler);
 			assert(false);
-			stokes_pressure_.assemble(is_volume, n_basis, bases, gbases, stiffness);
+			stokes_pressure_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
 		}
 	}
 
@@ -162,16 +167,17 @@ namespace polyfem
 										   const bool is_volume,
 										   const std::vector<ElementBases> &bases,
 										   const std::vector<ElementBases> &gbases,
+										   const AssemblyValsCache &cache,
 										   const Eigen::MatrixXd &displacement) const
 	{
 		if (assembler == "SaintVenant")
-			return saint_venant_elasticity_.assemble(is_volume, bases, gbases, displacement);
+			return saint_venant_elasticity_.assemble(is_volume, bases, gbases, cache, displacement);
 		else if (assembler == "NeoHookean")
-			return neo_hookean_elasticity_.assemble(is_volume, bases, gbases, displacement);
+			return neo_hookean_elasticity_.assemble(is_volume, bases, gbases, cache, displacement);
 		//else if(assembler == "Ogden")
-		//	return ogden_elasticity_.assemble(is_volume, bases, gbases, displacement);
+		//	return ogden_elasticity_.assemble(is_volume, bases, gbases, cache, displacement);
 		else if (assembler == "LinearElasticity")
-			return linear_elasticity_energy_.assemble(is_volume, bases, gbases, displacement);
+			return linear_elasticity_energy_.assemble(is_volume, bases, gbases, cache, displacement);
 		else
 			return 0;
 	}
@@ -181,19 +187,20 @@ namespace polyfem
 												  const int n_basis,
 												  const std::vector<ElementBases> &bases,
 												  const std::vector<ElementBases> &gbases,
+												  const AssemblyValsCache &cache,
 												  const Eigen::MatrixXd &displacement,
 												  Eigen::MatrixXd &grad) const
 	{
 		if (assembler == "SaintVenant")
-			saint_venant_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, grad);
+			saint_venant_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, cache, displacement, grad);
 		else if (assembler == "NeoHookean")
-			neo_hookean_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, grad);
+			neo_hookean_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, cache, displacement, grad);
 		else if (assembler == "NavierStokes")
-			navier_stokes_velocity_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, grad);
+			navier_stokes_velocity_.assemble_grad(is_volume, n_basis, bases, gbases, cache, displacement, grad);
 		else if (assembler == "LinearElasticity")
-			linear_elasticity_energy_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, grad);
+			linear_elasticity_energy_.assemble_grad(is_volume, n_basis, bases, gbases, cache, displacement, grad);
 		//else if(assembler == "Ogden")
-		//	ogden_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, displacement, grad);
+		//	ogden_elasticity_.assemble_grad(is_volume, n_basis, bases, gbases, cache, displacement, grad);
 		else
 			return;
 	}
@@ -204,19 +211,20 @@ namespace polyfem
 												 const bool project_to_psd,
 												 const std::vector<ElementBases> &bases,
 												 const std::vector<ElementBases> &gbases,
+												 const AssemblyValsCache &cache,
 												 const Eigen::MatrixXd &displacement,
 												 StiffnessMatrix &hessian) const
 	{
 		if (assembler == "SaintVenant")
-			saint_venant_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, displacement, hessian);
+			saint_venant_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, displacement, hessian);
 		else if (assembler == "NeoHookean")
-			neo_hookean_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, displacement, hessian);
+			neo_hookean_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, displacement, hessian);
 		else if (assembler == "NavierStokesPicard")
-			navier_stokes_velocity_picard_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, displacement, hessian);
+			navier_stokes_velocity_picard_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, displacement, hessian);
 		else if (assembler == "NavierStokes")
-			navier_stokes_velocity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, displacement, hessian);
+			navier_stokes_velocity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, displacement, hessian);
 		//else if(assembler == "Ogden")
-		//	ogden_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, displacement, hessian);
+		//	ogden_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, displacement, hessian);
 		else
 			return;
 	}

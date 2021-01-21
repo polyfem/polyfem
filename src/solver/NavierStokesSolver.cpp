@@ -46,9 +46,10 @@ namespace polyfem
 		time.start();
 		StiffnessMatrix stoke_stiffness;
 		StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
-		assembler.assemble_problem(state.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, velocity_stiffness);
+		assembler.assemble_problem(state.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, state.ass_vals_cache, velocity_stiffness);
 		assembler.assemble_mixed_problem(state.formulation(), state.mesh->is_volume(), state.n_pressure_bases, state.n_bases, state.pressure_bases, state.bases, gbases, mixed_stiffness);
-		assembler.assemble_pressure_problem(state.formulation(), state.mesh->is_volume(), state.n_pressure_bases, state.pressure_bases, gbases, pressure_stiffness);
+		//TODO!!!!
+		assembler.assemble_pressure_problem(state.formulation(), state.mesh->is_volume(), state.n_pressure_bases, state.pressure_bases, gbases, state.ass_vals_cache, pressure_stiffness);
 
 		AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, state.use_avg_pressure,
 											 velocity_stiffness, mixed_stiffness, pressure_stiffness,
@@ -108,7 +109,7 @@ namespace polyfem
 		StiffnessMatrix total_matrix;
 
 		time.start();
-		assembler.assemble_energy_hessian(state.formulation() + "Picard", state.mesh->is_volume(), state.n_bases, false, state.bases, gbases, x, nl_matrix);
+		assembler.assemble_energy_hessian(state.formulation() + "Picard", state.mesh->is_volume(), state.n_bases, false, state.bases, gbases, state.ass_vals_cache, x, nl_matrix);
 		AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, state.use_avg_pressure,
 											 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 											 total_matrix);
@@ -132,7 +133,7 @@ namespace polyfem
 			time.start();
 			if (formulation != state.formulation() + "Picard")
 			{
-				assembler.assemble_energy_hessian(formulation, state.mesh->is_volume(), state.n_bases, false, state.bases, gbases, x, nl_matrix);
+				assembler.assemble_energy_hessian(formulation, state.mesh->is_volume(), state.n_bases, false, state.bases, gbases, state.ass_vals_cache, x, nl_matrix);
 				AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, state.use_avg_pressure,
 													 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 													 total_matrix);
@@ -149,7 +150,7 @@ namespace polyfem
 			//TODO check for nans
 
 			time.start();
-			assembler.assemble_energy_hessian(state.formulation() + "Picard", state.mesh->is_volume(), state.n_bases, false, state.bases, gbases, x, nl_matrix);
+			assembler.assemble_energy_hessian(state.formulation() + "Picard", state.mesh->is_volume(), state.n_bases, false, state.bases, gbases, state.ass_vals_cache, x, nl_matrix);
 			AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, state.use_avg_pressure,
 												 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 												 total_matrix);

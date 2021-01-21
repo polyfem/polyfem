@@ -4,6 +4,8 @@ set(SOURCES
 	Bilaplacian.cpp
 	Bilaplacian.hpp
 	AssemblyValues.hpp
+	AssemblyValsCache.cpp
+	AssemblyValsCache.hpp
 	ElementAssemblyValues.cpp
 	ElementAssemblyValues.hpp
 	Helmholtz.cpp

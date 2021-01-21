@@ -2,6 +2,7 @@
 #define ASSEMBLER_HPP
 
 #include <polyfem/ElementAssemblyValues.hpp>
+#include <polyfem/AssemblyValsCache.hpp>
 
 #include <Eigen/Sparse>
 #include <vector>
@@ -26,6 +27,7 @@ namespace polyfem
 			const int n_basis,
 			const std::vector<ElementBases> &bases,
 			const std::vector<ElementBases> &gbases,
+			const AssemblyValsCache &cache,
 			StiffnessMatrix &stiffness) const;
 
 		//references to local assemblers
@@ -70,6 +72,7 @@ namespace polyfem
 			const int n_basis,
 			const std::vector<ElementBases> &bases,
 			const std::vector<ElementBases> &gbases,
+			const AssemblyValsCache &cache,
 			const Eigen::MatrixXd &displacement,
 			Eigen::MatrixXd &rhs) const;
 		//assemble hessian of energy (grad)
@@ -79,6 +82,7 @@ namespace polyfem
 			const bool project_to_psd,
 			const std::vector<ElementBases> &bases,
 			const std::vector<ElementBases> &gbases,
+			const AssemblyValsCache &cache,
 			const Eigen::MatrixXd &displacement,
 			StiffnessMatrix &grad) const;
 
@@ -87,6 +91,7 @@ namespace polyfem
 			const bool is_volume,
 			const std::vector<ElementBases> &bases,
 			const std::vector<ElementBases> &gbases,
+			const AssemblyValsCache &cache,
 			const Eigen::MatrixXd &displacement) const;
 
 		inline LocalAssembler &local_assembler() { return local_assembler_; }
