@@ -244,8 +244,6 @@ namespace polyfem
 				trans_1_(1) = bbox_center[coordiante_1_[1]];
 			}
 		}
-
-		std::cout << boundary_ids_[0] << " " << boundary_ids_[1] << std::endl;
 	}
 
 	ElasticProblemZeroBC::ElasticProblemZeroBC(const std::string &name)
@@ -567,6 +565,58 @@ namespace polyfem
 	}
 
 	void GravityProblem::initial_acceleration(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+	}
+
+	WalkProblem::WalkProblem(const std::string &name)
+		: Problem(name)
+	{
+		boundary_ids_ = {1, 2};
+	}
+
+	void WalkProblem::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+		// val *= t;
+	}
+
+	void WalkProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
+
+		for (long i = 0; i < pts.rows(); ++i)
+		{
+			if (mesh.get_boundary_id(global_ids(i)) == 1)
+				val(i, 2) = 0.2 * sin(t);
+			else if (mesh.get_boundary_id(global_ids(i)) == 2)
+				val(i, 2) = -0.2 * sin(t);
+		}
+
+		val *= t;
+	}
+
+	void WalkProblem::velocity_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+	}
+
+	void WalkProblem::acceleration_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+	}
+
+	void WalkProblem::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+	}
+
+	void WalkProblem::initial_velocity(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+	{
+		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+	}
+
+	void WalkProblem::initial_acceleration(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 	}

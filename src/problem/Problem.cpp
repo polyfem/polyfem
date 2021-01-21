@@ -107,6 +107,7 @@ namespace polyfem
 		problems_.emplace("Zero_BC", std::make_shared<ZeroBCProblem>("Zero_BC"));
 
 		problems_.emplace("Elastic", std::make_shared<ElasticProblem>("Elastic"));
+		problems_.emplace("Walk", std::make_shared<WalkProblem>("Walk"));
 		problems_.emplace("TorsionElastic", std::make_shared<TorsionElasticProblem>("TorsionElastic"));
 		problems_.emplace("DoubleTorsionElastic", std::make_shared<DoubleTorsionElasticProblem>("DoubleTorsionElastic"));
 		problems_.emplace("GenericScalar", std::make_shared<GenericScalarProblem>("GenericScalar"));
