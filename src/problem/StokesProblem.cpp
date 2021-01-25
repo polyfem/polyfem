@@ -326,6 +326,77 @@ void FlowWithObstacle::set_parameters(const json &params)
 	}
 }
 
+Kovnaszy::Kovnaszy(const std::string &name)
+	: Problem(name), viscosity_(1)
+{
+	boundary_ids_ = {1, 2, 3, 4, 5, 6, 7};
+}
+
+void Kovnaszy::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+{
+	exact(pts, 0, val);
+}
+
+void Kovnaszy::set_parameters(const json &params)
+{
+	if (params.count("viscosity"))
+	{
+		viscosity_ = params["viscosity"];
+	}
+}
+
+void Kovnaszy::exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val.resize(pts.rows(), pts.cols());
+	const double a = 0.5 / viscosity_ - sqrt(0.25 / viscosity_ / viscosity_ + 4 * M_PI * M_PI);
+	for(int i = 0; i < pts.rows(); ++i)
+	{
+		const double x = pts(i, 0);
+		const double y = pts(i, 1);
+
+		if(pts.cols() == 2)
+		{
+			val(i, 0) = 1 - exp(a*x)*cos(2*M_PI*y);
+			val(i, 1) = a*exp(a*x)*sin(2*M_PI*y)/(2*M_PI);
+		}
+		else
+		{
+			val(i, 0) = 1 - exp(a*x)*cos(2*M_PI*y);
+			val(i, 1) = a*exp(a*x)*sin(2*M_PI*y)/(2*M_PI);
+			val(i, 2) = 0;
+		}
+	}
+}
+
+void Kovnaszy::exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	const double time_scaling = exp(-2 * viscosity_ * t);
+
+	val.resize(pts.rows(), pts.cols() * pts.cols());
+	const double a = 0.5 / viscosity_ - sqrt(0.25 / viscosity_ / viscosity_ + 4 * M_PI * M_PI);
+	for (int i = 0; i < pts.rows(); ++i)
+	{
+		const double x = pts(i, 0);
+		const double y = pts(i, 1);
+
+		val(i, 0) = -a*exp(a*x)*cos(2*M_PI*y);
+		val(i, 1) = 2*M_PI*exp(a*x)*sin(2*M_PI*y);
+		val(i, 2) = a*a*exp(a*x)*sin(2*M_PI*y)/(2*M_PI);
+		val(i, 3) = a*exp(a*x)*cos(2*M_PI*y);
+	}
+}
+
+void Kovnaszy::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val.resize(pts.rows(), pts.cols());
+	val.setZero();
+}
+
+void Kovnaszy::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	exact(pts, t, val);
+}
+
 CornerFlow::CornerFlow(const std::string &name)
 	: TimeDepentendStokesProblem(name)
 {
@@ -577,6 +648,7 @@ void TaylorGreenVortexProblem::set_parameters(const json &params)
 void TaylorGreenVortexProblem::exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 {
 	val.resize(pts.rows(), pts.cols());
+	const double T = 1;
 	for(int i = 0; i < pts.rows(); ++i)
 	{
 		const double x = pts(i, 0);
@@ -584,9 +656,9 @@ void TaylorGreenVortexProblem::exact(const Eigen::MatrixXd &pts, const double t,
 
 		if(pts.cols() == 2)
 		{
-			const double time_scaling = exp(-2 * viscosity_ * t);
-			val(i, 0) =  cos(x) * sin(y) * time_scaling;
-			val(i, 1) = -sin(x) * cos(y) * time_scaling;
+			const double time_scaling = exp(-2 * viscosity_ * T * T * t);
+			val(i, 0) =  cos(T * x) * sin(T * y) * time_scaling;
+			val(i, 1) = -sin(T * x) * cos(T * y) * time_scaling;
 		}
 		else
 		{
