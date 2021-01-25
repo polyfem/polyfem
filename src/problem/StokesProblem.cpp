@@ -330,6 +330,7 @@ Kovnaszy::Kovnaszy(const std::string &name)
 	: Problem(name), viscosity_(1)
 {
 	boundary_ids_ = {1, 2, 3, 4, 5, 6, 7};
+	is_time_dependent_ = false;
 }
 
 void Kovnaszy::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
@@ -342,6 +343,10 @@ void Kovnaszy::set_parameters(const json &params)
 	if (params.count("viscosity"))
 	{
 		viscosity_ = params["viscosity"];
+	}
+	if (params.find("time_dependent") != params.end())
+	{
+		is_time_dependent_ = params["time_dependent"];
 	}
 }
 
@@ -370,8 +375,6 @@ void Kovnaszy::exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd
 
 void Kovnaszy::exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 {
-	const double time_scaling = exp(-2 * viscosity_ * t);
-
 	val.resize(pts.rows(), pts.cols() * pts.cols());
 	const double a = 0.5 / viscosity_ - sqrt(0.25 / viscosity_ / viscosity_ + 4 * M_PI * M_PI);
 	for (int i = 0; i < pts.rows(); ++i)
