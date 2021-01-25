@@ -106,8 +106,8 @@ namespace polyfem
                 for(int d = 0; d < dim; d++)
                 {
                     double temp = hash_table_cell_num[d] / (max_domain(d) - min_domain(d));
-                    min_int(d) = floor((min_(d) * (1 + 1e-4) - min_domain(d)) * temp);
-                    max_int(d) = ceil((max_(d) * (1 - 1e-4) - min_domain(d)) * temp);
+                    min_int(d) = floor((min_(d) * (1 + 1e-12) - min_domain(d)) * temp);
+                    max_int(d) = ceil((max_(d) * (1 - 1e-12) - min_domain(d)) * temp);
 
                     if(min_int(d) < 0) 
                         min_int(d) = 0;
@@ -154,11 +154,11 @@ namespace polyfem
         void initialize_solver(const polyfem::Mesh& mesh,
         const int shape_, const int n_el_, 
         const std::vector<LocalBoundary>& local_boundary,
-        const std::vector<int>& boundary_nodes_)
+        const std::vector<int>& bnd_nodes)
         {
             shape = shape_;
             n_el = n_el_;
-            boundary_nodes = boundary_nodes_;
+            boundary_nodes = bnd_nodes;
 
             initialize_mesh(mesh, shape, n_el, local_boundary);
             initialize_hashtable(mesh);
@@ -167,9 +167,9 @@ namespace polyfem
         OperatorSplittingSolver(const polyfem::Mesh& mesh,
         const int shape, const int n_el, 
         const std::vector<LocalBoundary>& local_boundary,
-        const std::vector<int>& boundary_nodes)
+        const std::vector<int>& bnd_nodes)
         {
-            initialize_solver(mesh, shape, n_el, local_boundary, boundary_nodes);
+            initialize_solver(mesh, shape, n_el, local_boundary, bnd_nodes);
         }
 
         OperatorSplittingSolver(const polyfem::Mesh& mesh,
@@ -1088,14 +1088,14 @@ namespace polyfem
             pressure = x.head(x.size()-1);
         }
 
-        void projection(StiffnessMatrix& velocity_mass, const StiffnessMatrix& mixed_stiffness, const std::vector<int>& boundary_nodes_, Eigen::MatrixXd& sol, Eigen::MatrixXd& pressure)
+        void projection(const StiffnessMatrix& velocity_mass, const StiffnessMatrix& mixed_stiffness, const std::vector<int>& boundary_nodes_, Eigen::MatrixXd& sol, const Eigen::MatrixXd& pressure)
         {
             Eigen::VectorXd rhs = mixed_stiffness.transpose() * pressure;
             Eigen::VectorXd dx = Eigen::VectorXd::Zero(sol.size());
 
-            for (int i = 0; i < boundary_nodes.size(); i++)
+            for (int i = 0; i < boundary_nodes_.size(); i++)
             {
-                rhs(boundary_nodes[i]) = 0;
+                rhs(boundary_nodes_[i]) = 0;
             }
 
             if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
@@ -1104,7 +1104,8 @@ namespace polyfem
             }
             else
             {
-                dirichlet_solve(*solver_mass, velocity_mass, rhs, boundary_nodes_, dx, velocity_mass.rows(), "", false);
+                auto mat = velocity_mass;
+                dirichlet_solve(*solver_mass, mat, rhs, boundary_nodes_, dx, velocity_mass.rows(), "", false);
             }
 
             sol -= dx;

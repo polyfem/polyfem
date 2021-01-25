@@ -1056,14 +1056,14 @@ namespace polyfem
 					/* advection */
 					logger().info("Advection...");
 					if(args["particle"])
-						ss.advection_FLIP(*mesh, gbases, bases, sol, dt, local_pts, args["advection_order"]);
+						ss.advection_FLIP(*mesh, gbases, bases, sol, dt, local_pts);
 					else
-						ss.advection(*mesh, gbases, bases, sol, dt, local_pts, args["advection_order"], args["advection_RK"]);
+						ss.advection(*mesh, gbases, bases, sol, dt, local_pts);
 					logger().info("Advection finished!");
 
 					/* apply boundary condition */
 					rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, time);
-
+					
 					/* viscosity */
 					logger().info("Solving diffusion...");
 					if(viscosity_ > 0)
