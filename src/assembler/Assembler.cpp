@@ -616,7 +616,6 @@ namespace polyfem
 		timerg.stop();
 		logger().trace("done separate assembly {}s...", timerg.getElapsedTime());
 
-		exit(0);
 		timerg.start();
 
 #ifdef POLYFEM_WITH_TBB
