@@ -102,6 +102,7 @@ namespace polyfem
 
 		//used to store assembly values for small problems
 		AssemblyValsCache ass_vals_cache;
+		AssemblyValsCache pressure_ass_vals_cache;
 
 		//list of boundary nodes
 		std::vector<int> boundary_nodes;

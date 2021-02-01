@@ -52,6 +52,8 @@ namespace polyfem
 			const std::vector<ElementBases> &psi_bases,
 			const std::vector<ElementBases> &phi_bases,
 			const std::vector<ElementBases> &gbases,
+			const AssemblyValsCache &psi_cache,
+			const AssemblyValsCache &phi_cache,
 			StiffnessMatrix &stiffness) const;
 
 		inline LocalAssembler &local_assembler() { return local_assembler_; }

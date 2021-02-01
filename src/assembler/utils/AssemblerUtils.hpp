@@ -56,6 +56,8 @@ namespace polyfem
 									const std::vector<ElementBases> &psi_bases,
 									const std::vector<ElementBases> &phi_bases,
 									const std::vector<ElementBases> &gbases,
+									const AssemblyValsCache &psi_cache,
+									const AssemblyValsCache &phi_cache,
 									StiffnessMatrix &stiffness) const;
 		//pressure pressure assembler, assembler is the name of the formulation
 		void assemble_pressure_problem(const std::string &assembler,

@@ -530,6 +530,8 @@ namespace polyfem
 		logger().info("n pressure bases: {}", n_pressure_bases);
 
 		ass_vals_cache.init(mesh->is_volume(), bases, curret_bases);
+		if (assembler.is_mixed(formulation()))
+			pressure_ass_vals_cache.init(mesh->is_volume(), pressure_bases, curret_bases);
 	}
 
 	void State::build_polygonal_basis()
@@ -641,8 +643,8 @@ namespace polyfem
 			{
 				StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
 				assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, velocity_stiffness);
-				assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, iso_parametric() ? bases : geom_bases, mixed_stiffness);
-				assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, pressure_stiffness);
+				assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
+				assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache, pressure_stiffness);
 
 				const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 
@@ -813,7 +815,7 @@ namespace polyfem
 
 				RhsAssembler rhs_assembler1(assembler, *mesh,
 											n_pressure_bases, size,
-											pressure_bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
+											pressure_bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache,
 											formulation(), *problem,
 											args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
 				rhs_assembler1.set_bc(std::vector<LocalBoundary>(), std::vector<int>(), args["n_boundary_samples"], local_neumann_boundary, tmp);
@@ -919,9 +921,8 @@ namespace polyfem
 				}
 
 				assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, gbases, ass_vals_cache, velocity_stiffness);
-				assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, mixed_stiffness);
-				//TODO!!!!
-				assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, ass_vals_cache, pressure_stiffness);
+				assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
+				assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, pressure_ass_vals_cache, pressure_stiffness);
 
 				TransientNavierStokesSolver ns_solver(solver_params(), build_json_params(), solver_type(), precond_type());
 				const int n_larger = n_pressure_bases + (use_avg_pressure ? 1 : 0);
