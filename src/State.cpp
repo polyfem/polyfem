@@ -529,9 +529,12 @@ namespace polyfem
 		logger().info("n bases: {}", n_bases);
 		logger().info("n pressure bases: {}", n_pressure_bases);
 
-		ass_vals_cache.init(mesh->is_volume(), bases, curret_bases);
-		if (assembler.is_mixed(formulation()))
-			pressure_ass_vals_cache.init(mesh->is_volume(), pressure_bases, curret_bases);
+		if (bases.size() <= args["cache_size"])
+		{
+			ass_vals_cache.init(mesh->is_volume(), bases, curret_bases);
+			if (assembler.is_mixed(formulation()))
+				pressure_ass_vals_cache.init(mesh->is_volume(), pressure_bases, curret_bases);
+		}
 	}
 
 	void State::build_polygonal_basis()
