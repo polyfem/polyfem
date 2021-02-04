@@ -37,12 +37,12 @@ namespace polyfem
 
 	RhsAssembler::RhsAssembler(const AssemblerUtils &assembler, const Mesh &mesh,
 							   const int n_basis, const int size,
-							   const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases,
+							   const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases, const AssemblyValsCache &ass_vals_cache,
 							   const std::string &formulation, const Problem &problem,
 							   const std::string &solver, const std::string &preconditioner, const json &solver_params)
 		: assembler_(assembler), mesh_(mesh),
 		  n_basis_(n_basis), size_(size),
-		  bases_(bases), gbases_(gbases),
+		  bases_(bases), gbases_(gbases), ass_vals_cache_(ass_vals_cache),
 		  formulation_(formulation), problem_(problem),
 		  solver_(solver), preconditioner_(preconditioner), solver_params_(solver_params)
 	{
@@ -143,7 +143,7 @@ namespace polyfem
 
 		StiffnessMatrix mass;
 		Density d;
-		assembler_.assemble_mass_matrix(formulation_, size_ == 3, n_basis_, d, bases_, gbases_, mass);
+		assembler_.assemble_mass_matrix(formulation_, size_ == 3, n_basis_, d, bases_, gbases_, ass_vals_cache_, mass);
 		auto solver = LinearSolver::create(solver_, preconditioner_);
 		solver->setParameters(solver_params_);
 		solver->analyzePattern(mass, mass.rows());

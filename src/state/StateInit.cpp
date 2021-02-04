@@ -128,6 +128,7 @@ namespace polyfem
             {"use_spline", false},
             {"iso_parametric", false},
             {"integral_constraints", 2},
+            {"cache_size", 1000000},
 
             {"fit_nodes", false},
 

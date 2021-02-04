@@ -528,6 +528,13 @@ namespace polyfem
 		logger().info("h: {}", mesh_size);
 		logger().info("n bases: {}", n_bases);
 		logger().info("n pressure bases: {}", n_pressure_bases);
+
+		if (bases.size() <= args["cache_size"])
+		{
+			ass_vals_cache.init(mesh->is_volume(), bases, curret_bases);
+			if (assembler.is_mixed(formulation()))
+				pressure_ass_vals_cache.init(mesh->is_volume(), pressure_bases, curret_bases);
+		}
 	}
 
 	void State::build_polygonal_basis()
@@ -638,9 +645,9 @@ namespace polyfem
 			if (assembler.is_linear(formulation()))
 			{
 				StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
-				assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, velocity_stiffness);
-				assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, iso_parametric() ? bases : geom_bases, mixed_stiffness);
-				assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, iso_parametric() ? bases : geom_bases, pressure_stiffness);
+				assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, velocity_stiffness);
+				assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
+				assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache, pressure_stiffness);
 
 				const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 
@@ -651,7 +658,7 @@ namespace polyfem
 				if (problem->is_time_dependent())
 				{
 					StiffnessMatrix velocity_mass;
-					assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, density, bases, iso_parametric() ? bases : geom_bases, velocity_mass);
+					assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, density, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, velocity_mass);
 
 					std::vector<Eigen::Triplet<double>> mass_blocks;
 					mass_blocks.reserve(velocity_mass.nonZeros());
@@ -672,10 +679,10 @@ namespace polyfem
 		}
 		else
 		{
-			assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, stiffness);
+			assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, stiffness);
 			if (problem->is_time_dependent())
 			{
-				assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, density, bases, iso_parametric() ? bases : geom_bases, mass);
+				assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, density, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, mass);
 			}
 		}
 
@@ -769,7 +776,7 @@ namespace polyfem
 
 		RhsAssembler rhs_assembler(assembler, *mesh,
 								   n_bases, size,
-								   bases, iso_parametric() ? bases : geom_bases,
+								   bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 								   formulation(), *problem,
 								   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
 
@@ -783,7 +790,7 @@ namespace polyfem
 				read_matrix(args["rhs_path"], rhs);
 
 			StiffnessMatrix tmp_mass;
-			assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, density, bases, iso_parametric() ? bases : geom_bases, tmp_mass);
+			assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, density, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, tmp_mass);
 			rhs = tmp_mass * rhs;
 			logger().debug("done!");
 		}
@@ -811,7 +818,7 @@ namespace polyfem
 
 				RhsAssembler rhs_assembler1(assembler, *mesh,
 											n_pressure_bases, size,
-											pressure_bases, iso_parametric() ? bases : geom_bases,
+											pressure_bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache,
 											formulation(), *problem,
 											args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
 				rhs_assembler1.set_bc(std::vector<LocalBoundary>(), std::vector<int>(), args["n_boundary_samples"], local_neumann_boundary, tmp);
@@ -878,7 +885,7 @@ namespace polyfem
 
 			RhsAssembler rhs_assembler(assembler, *mesh,
 									   n_bases, problem->is_scalar() ? 1 : mesh->dimension(),
-									   bases, gbases,
+									   bases, gbases, ass_vals_cache,
 									   formulation(), *problem,
 									   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
 			rhs_assembler.initial_solution(sol);
@@ -888,7 +895,7 @@ namespace polyfem
 			if (formulation() == "NavierStokes")
 			{
 				StiffnessMatrix velocity_mass;
-				assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, density, bases, gbases, velocity_mass);
+				assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, density, bases, gbases, ass_vals_cache, velocity_mass);
 
 				StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
 
@@ -916,9 +923,9 @@ namespace polyfem
 					save_wire("step_" + std::to_string(0) + ".obj");
 				}
 
-				assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, gbases, velocity_stiffness);
-				assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, mixed_stiffness);
-				assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, pressure_stiffness);
+				assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, gbases, ass_vals_cache, velocity_stiffness);
+				assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
+				assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, pressure_ass_vals_cache, pressure_stiffness);
 
 				TransientNavierStokesSolver ns_solver(solver_params(), build_json_params(), solver_type(), precond_type());
 				const int n_larger = n_pressure_bases + (use_avg_pressure ? 1 : 0);
@@ -1270,7 +1277,7 @@ namespace polyfem
 				const int size = problem->is_scalar() ? 1 : mesh->dimension();
 				RhsAssembler rhs_assembler(assembler, *mesh,
 										   n_bases, size,
-										   bases, iso_parametric() ? bases : geom_bases,
+										   bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 										   formulation(), *problem,
 										   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
 
@@ -1310,7 +1317,7 @@ namespace polyfem
 
 					RhsAssembler rhs_assembler(assembler, *mesh,
 											   n_bases, mesh->dimension(),
-											   bases, iso_parametric() ? bases : geom_bases,
+											   bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 											   formulation(), *problem,
 											   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
 					rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs);
@@ -1341,7 +1348,7 @@ namespace polyfem
 					const int size = problem->is_scalar() ? 1 : mesh->dimension();
 					RhsAssembler rhs_assembler(assembler, *mesh,
 											   n_bases, size,
-											   bases, iso_parametric() ? bases : geom_bases,
+											   bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 											   formulation(), *problem,
 											   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
 
