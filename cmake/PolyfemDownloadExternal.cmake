@@ -130,6 +130,16 @@ function(polyfem_download_ipc)
 endfunction()
 
 
+# MshIO Apache-2.0
+function(polyfem_download_mshio)
+    polyfem_download_project(mshio
+        GIT_REPOSITORY https://github.com/qnzhou/MshIO.git
+        GIT_TAG        a500f107c1ca97bdcc9e53118e2d5964df11f539
+    )
+endfunction()
+
+
+
 
 ## data
 function(polyfem_download_polyfem_data)
