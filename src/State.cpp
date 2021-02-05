@@ -1416,7 +1416,7 @@ namespace polyfem
 								x = sol - x;
 							else
 								x = sol;
-							logger().trace("Done checking step");
+							logger().trace("Done checking step, was {}valid", valid ? "" : "in");
 							// logger().debug("Solver error: {}", (nlstiffness * sol - b).norm());
 						}
 
