@@ -16,14 +16,20 @@ namespace polyfem
 	{
 		mshio::MshSpec spec = mshio::load_msh(path);
 		const auto &nodes = spec.nodes;
+		const auto &els = spec.elements;
 		const int n_vertices = nodes.num_nodes;
-		const int dim = nodes.entity_blocks[0].entity_dim;
+		int dim = -1;
+
+		for (const auto &e : els.entity_blocks)
+		{
+			dim = std::max(dim, e.entity_dim);
+		}
 
 		vertices.resize(n_vertices, dim);
 		int index = 0;
 		for (const auto &n : nodes.entity_blocks)
 		{
-			for (int i = 0; i < n.num_nodes_in_block * n.entity_dim; i += n.entity_dim)
+			for (int i = 0; i < n.num_nodes_in_block * dim; i += dim)
 			{
 				if (dim == 2)
 					vertices.row(index) << n.data[i], n.data[i + 1];
@@ -34,37 +40,37 @@ namespace polyfem
 			}
 		}
 
-		const auto &els = spec.elements;
-
 		int cells_cols = -1;
 		int num_els = 0;
 		for (const auto &e : els.entity_blocks)
 		{
+			if (e.entity_dim != dim)
+				continue;
 			const int type = e.element_type;
 
 			if (type == 2 || type == 9 || type == 21 || type == 23 || type == 25) //tri
 			{
-				assert(cells_cols == -1);
+				assert(cells_cols == -1 || cells_cols == 3);
 				cells_cols = 3;
-				num_els = e.num_elements_in_block;
+				num_els += e.num_elements_in_block;
 			}
 			else if (type == 3 || type == 10) //quad
 			{
-				assert(cells_cols == -1);
+				assert(cells_cols == -1 || cells_cols == 4);
 				cells_cols = 4;
-				num_els = e.num_elements_in_block;
+				num_els += e.num_elements_in_block;
 			}
 			else if (type == 4 || type == 11 || type == 29 || type == 30 || type == 31) //tet
 			{
-				assert(cells_cols == -1);
+				assert(cells_cols == -1 || cells_cols == 4);
 				cells_cols = 4;
-				num_els = e.num_elements_in_block;
+				num_els += e.num_elements_in_block;
 			}
 			else if (type == 5 || type == 12) //hex
 			{
-				assert(cells_cols == -1);
+				assert(cells_cols == -1 || cells_cols == 8);
 				cells_cols = 8;
-				num_els = e.num_elements_in_block;
+				num_els += e.num_elements_in_block;
 			}
 		}
 		assert(cells_cols > 0);
@@ -72,8 +78,11 @@ namespace polyfem
 		cells.resize(num_els, cells_cols);
 		elements.resize(num_els);
 		weights.resize(num_els);
+		int cell_index = 0;
 		for (const auto &e : els.entity_blocks)
 		{
+			if (e.entity_dim != dim)
+				continue;
 			const int type = e.element_type;
 			if (type == 2 || type == 9 || type == 21 || type == 23 || type == 25 ||
 				type == 3 || type == 10 ||
@@ -83,7 +92,6 @@ namespace polyfem
 				const size_t n_nodes = mshio::nodes_per_element(type);
 				for (int i = 0; i < e.data.size(); i += (n_nodes + 1))
 				{
-					const int cell_index = e.data[i] - 1;
 					index = 0;
 					for (int j = i + 1; j <= i + cells_cols; ++j)
 						cells(cell_index, index++) = e.data[j] - 1;
@@ -92,6 +100,7 @@ namespace polyfem
 					{
 						elements[cell_index].push_back(e.data[j] - 1);
 					}
+					++cell_index;
 				}
 			}
 		}
