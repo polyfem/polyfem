@@ -155,7 +155,14 @@ namespace polyfem
             for (int lf = 0; lf < mesh3d.n_cell_faces(e); ++lf)
             {
                 const int face_id = mesh3d.cell_face(e, lf);
-                if (!mesh3d.is_boundary_face(face_id))
+                // if (!mesh3d.is_boundary_face(face_id))
+                //     continue;
+                int I;
+                Eigen::RowVector3d C;
+                const Eigen::RowVector3d bary = mesh3d.face_barycenter(face_id);
+
+                const double dist = tree.squared_distance(pts, faces, bary, I, C);
+                if (dist > 1e-15)
                     continue;
 
                 if (mesh3d.is_simplex(e))
@@ -183,13 +190,6 @@ namespace polyfem
                             loc_val.col(d) += b.global()[ii].val * v.val * fun(b.global()[ii].index * actual_dim + d);
                     }
                 }
-
-                int I;
-                Eigen::RowVector3d C;
-                const Eigen::RowVector3d bary = mesh3d.face_barycenter(face_id);
-
-                const double dist = tree.squared_distance(pts, faces, bary, I, C);
-                assert(dist < 1e-16);
 
                 for (int lv_id = 0; lv_id < faces.cols(); ++lv_id)
                 {
@@ -279,7 +279,15 @@ namespace polyfem
             for (int lf = 0; lf < mesh3d.n_cell_faces(e); ++lf)
             {
                 const int face_id = mesh3d.cell_face(e, lf);
-                if (!mesh3d.is_boundary_face(face_id))
+                // if (!mesh3d.is_boundary_face(face_id))
+                //     continue;
+
+                int I;
+                Eigen::RowVector3d C;
+                const Eigen::RowVector3d bary = mesh3d.face_barycenter(face_id);
+
+                const double dist = tree.squared_distance(pts, faces, bary, I, C);
+                if (dist > 1e-15)
                     continue;
 
                 if (mesh->is_simplex(e))
@@ -301,13 +309,6 @@ namespace polyfem
                 for (int d = 0; d < loc_val.cols(); ++d)
                     tmp(d) = (loc_val.col(d).array() * weights.array()).sum();
                 const Eigen::MatrixXd tensor = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 3, 3);
-
-                int I;
-                Eigen::RowVector3d C;
-                const Eigen::RowVector3d bary = mesh3d.face_barycenter(face_id);
-
-                const double dist = tree.squared_distance(pts, faces, bary, I, C);
-                assert(dist < 1e-16);
 
                 assert(std::isnan(result(I, 0)));
                 result.row(I) = normals.row(I) * tensor;
