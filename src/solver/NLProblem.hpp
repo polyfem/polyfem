@@ -20,22 +20,29 @@ namespace polyfem
 		void init_timestep(const TVector &x_prev, const TVector &v_prev, const TVector &a_prev, const double dt);
 		TVector initial_guess();
 
-		double value(const TVector &x) override;
-		void gradient(const TVector &x, TVector &gradv) override;
-		void gradient_no_rhs(const TVector &x, Eigen::MatrixXd &gradv);
+		virtual double value(const TVector &x) override;
+		virtual void gradient(const TVector &x, TVector &gradv) override;
+		virtual void gradient_no_rhs(const TVector &x, Eigen::MatrixXd &gradv);
 
 		bool is_step_valid(const TVector &x0, const TVector &x1);
+		bool is_step_collision_free(const TVector &x0, const TVector &x1);
 		double max_step_size(const TVector &x0, const TVector &x1);
 
 #include <polyfem/DisableWarnings.hpp>
-		void hessian(const TVector &x, THessian &hessian);
-		void hessian_full(const TVector &x, THessian &gradv);
+		virtual void hessian(const TVector &x, THessian &hessian);
+		virtual void hessian_full(const TVector &x, THessian &gradv);
 #include <polyfem/EnableWarnings.hpp>
 
 		template <class FullMat, class ReducedMat>
 		static void full_to_reduced_aux(State &state, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced)
 		{
 			using namespace polyfem;
+
+			if (full_size == reduced_size)
+			{
+				reduced = full;
+				return;
+			}
 
 			assert(full.size() == full_size);
 			assert(full.cols() == 1);
@@ -60,6 +67,12 @@ namespace polyfem
 		static void reduced_to_full_aux(State &state, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full)
 		{
 			using namespace polyfem;
+
+			if (full_size == reduced_size)
+			{
+				full = reduced;
+				return;
+			}
 
 			assert(reduced.size() == reduced_size);
 			assert(reduced.cols() == 1);
@@ -90,6 +103,9 @@ namespace polyfem
 
 		const Eigen::MatrixXd &current_rhs();
 
+	protected:
+		double _barrier_stiffness;
+
 	private:
 		State &state;
 		AssemblerUtils &assembler;
@@ -104,7 +120,6 @@ namespace polyfem
 		bool project_to_psd;
 
 		double _dhat;
-		double _barrier_stiffness;
 
 		double dt;
 		TVector x_prev, v_prev, a_prev;

@@ -56,13 +56,14 @@ namespace polyfem
 		compute_displaced_points(full, displaced);
 		double max_barrier_stiffness = 0;
 		_barrier_stiffness = ipc::initial_barrier_stiffness(
-			state.boundary_nodes_pos,
-			displaced,
-			state.boundary_edges, state.boundary_triangles,
-			_dhat,
-			state.avg_mass,
-			grad,
-			max_barrier_stiffness);
+								 state.boundary_nodes_pos,
+								 displaced,
+								 state.boundary_edges, state.boundary_triangles,
+								 _dhat,
+								 state.avg_mass,
+								 grad,
+								 max_barrier_stiffness) *
+							 1e6;
 		polyfem::logger().debug("adaptive stiffness {}", _barrier_stiffness);
 		// exit(0);
 	}
@@ -136,7 +137,8 @@ namespace polyfem
 				_current_rhs *= dt * dt; // / 2.0;
 				_current_rhs += tmp;
 			}
-			rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, _current_rhs, t);
+			if (reduced_size != full_size)
+				rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, _current_rhs, t);
 		}
 
 		return _current_rhs;
@@ -187,19 +189,16 @@ namespace polyfem
 		compute_displaced_points(full0, displaced0);
 		compute_displaced_points(full1, displaced1);
 
+		igl::write_triangle_mesh("s0.obj", displaced0, state.boundary_triangles);
+		igl::write_triangle_mesh("s1.obj", displaced1, state.boundary_triangles);
+
 		const double max_step = ipc::compute_collision_free_stepsize(displaced0, displaced1, state.boundary_edges, state.boundary_triangles);
 		polyfem::logger().trace("best step {}", max_step);
 		return max_step;
 	}
 
-	bool NLProblem::is_step_valid(const TVector &x0, const TVector &x1)
+	bool NLProblem::is_step_collision_free(const TVector &x0, const TVector &x1)
 	{
-		TVector grad = TVector::Zero(reduced_size);
-		gradient(x1, grad);
-
-		if (std::isnan(grad.norm()))
-			return false;
-
 		if (disable_collision)
 			return true;
 		if (!state.args["has_collision"])
@@ -225,12 +224,23 @@ namespace polyfem
 		compute_displaced_points(full0, displaced0);
 		compute_displaced_points(full1, displaced1);
 
-		// igl::write_triangle_mesh("0.obj", displaced0, state.boundary_triangles);
-		// igl::write_triangle_mesh("1.obj", displaced1, state.boundary_triangles);
+		igl::write_triangle_mesh("0.obj", displaced0, state.boundary_triangles);
+		igl::write_triangle_mesh("1.obj", displaced1, state.boundary_triangles);
 
 		const bool is_valid = ipc::is_step_collision_free(displaced0, displaced1, state.boundary_edges, state.boundary_triangles);
 
 		return is_valid;
+	}
+
+	bool NLProblem::is_step_valid(const TVector &x0, const TVector &x1)
+	{
+		TVector grad = TVector::Zero(reduced_size);
+		gradient(x1, grad);
+
+		if (std::isnan(grad.norm()))
+			return false;
+
+		return true;
 	}
 
 	double NLProblem::value(const TVector &x)
