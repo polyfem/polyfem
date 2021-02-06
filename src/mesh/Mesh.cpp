@@ -83,8 +83,12 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path)
 			mesh = std::make_unique<Mesh3D>();
 
 		mesh->build_from_matrices(vertices, cells);
-		mesh->attach_higher_order_nodes(vertices, elements);
-		mesh->cell_weights_ = weights;
+		//Only tris and tets
+		if ((vertices.cols() == 2 && cells.cols() == 3) || (vertices.cols() == 3 && cells.cols() == 4))
+		{
+			mesh->attach_higher_order_nodes(vertices, elements);
+			mesh->cell_weights_ = weights;
+		}
 
 		for (const auto &w : weights)
 		{
