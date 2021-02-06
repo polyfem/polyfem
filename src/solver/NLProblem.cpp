@@ -28,10 +28,10 @@ namespace polyfem
 {
 	using namespace polysolve;
 
-	NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t, const double dhat, const bool project_to_psd)
+	NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t, const double dhat, const bool project_to_psd, const bool no_reduced)
 		: state(state), assembler(state.assembler), rhs_assembler(rhs_assembler),
 		  full_size((assembler.is_mixed(state.formulation()) ? state.n_pressure_bases : 0) + state.n_bases * state.mesh->dimension()),
-		  reduced_size(full_size - state.boundary_nodes.size()),
+		  reduced_size(full_size - (no_reduced ? 0 : state.boundary_nodes.size())),
 		  t(t), rhs_computed(false), is_time_dependent(state.problem->is_time_dependent()), project_to_psd(project_to_psd)
 	{
 		assert(!assembler.is_mixed(state.formulation()));
@@ -349,6 +349,12 @@ namespace polyfem
 	{
 		THessian tmp;
 		hessian_full(x, tmp);
+
+		if (reduced_size == full_size)
+		{
+			hessian = tmp;
+			return;
+		}
 
 		std::vector<Eigen::Triplet<double>> entries;
 

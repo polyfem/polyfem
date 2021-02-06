@@ -27,6 +27,7 @@
 #include <polysolve/FEMSolver.hpp>
 
 #include <polyfem/NLProblem.hpp>
+#include <polyfem/ALNLProblem.hpp>
 #include <polyfem/LbfgsSolver.hpp>
 #include <polyfem/SparseNewtonDescentSolver.hpp>
 #include <polyfem/NavierStokesSolver.hpp>
@@ -1398,7 +1399,8 @@ namespace polyfem
 
 						logger().info("t: {} prev: {} step: {}", t, prev_t, step_t);
 
-						NLProblem nl_problem(*this, rhs_assembler, t, args["dhat"], args["project_to_psd"]);
+						// NLProblem nl_problem(*this, rhs_assembler, t, args["dhat"], args["project_to_psd"]);
+						ALNLProblem nl_problem(*this, rhs_assembler, prev_t, t, args["dhat"], args["project_to_psd"], 1e6);
 
 						logger().debug("Updating starting point...");
 						update_timer.start();
@@ -1465,7 +1467,7 @@ namespace polyfem
 
 						if (args["nl_solver"] == "newton")
 						{
-							cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
+							cppoptlib::SparseNewtonDescentSolver<ALNLProblem> nlsolver(solver_params(), solver_type(), precond_type());
 							nlsolver.setLineSearch(args["line_search"]);
 							nl_problem.init(x);
 							nlsolver.minimize(nl_problem, tmp_sol);
@@ -1492,7 +1494,7 @@ namespace polyfem
 						}
 						else if (args["nl_solver"] == "lbfgs")
 						{
-							cppoptlib::LbfgsSolverL2<NLProblem> nlsolver;
+							cppoptlib::LbfgsSolverL2<ALNLProblem> nlsolver;
 							nlsolver.setLineSearch(args["line_search"]);
 							nlsolver.setDebug(cppoptlib::DebugLevel::High);
 							nlsolver.minimize(nl_problem, tmp_sol);
