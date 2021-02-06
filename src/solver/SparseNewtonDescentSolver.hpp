@@ -105,13 +105,11 @@ namespace cppoptlib
 			const double Cache = c * grad.dot(searchDir);
 
 			int cur_iter = 0;
-#ifndef NDEBUG
-			//max_step_size should return a collision free step
 			bool valid = objFunc.is_step_valid(x, x1);
-			assert(valid);
-#else
-			bool valid = true;
-#endif
+
+			//max_step_size should return a collision free step
+			assert(objFunc.is_step_collision_free(x, x1));
+
 			while ((std::isinf(f) || std::isnan(f) || f > f_in + alpha * Cache || !valid) && alpha > 1e-7 && cur_iter <= MAX_STEP_SIZE_ITER)
 			{
 				alpha *= tau;
@@ -119,11 +117,10 @@ namespace cppoptlib
 				f = objFunc.value(x1);
 
 				cur_iter++;
-#ifndef NDEBUG
-				//max_step_size should return a collision free step
 				valid = objFunc.is_step_valid(x, x1);
-				assert(valid);
-#endif
+
+				//max_step_size should return a collision free step
+				assert(objFunc.is_step_collision_free(x, x1));
 			}
 
 			// std::cout << cur_iter << " " << MAX_STEP_SIZE_ITER << " " << alpha << std::endl;
@@ -148,25 +145,29 @@ namespace cppoptlib
 			{
 				new_x = x + step_size * grad;
 			}
+			polyfem::logger().trace("blaaaa {}", objFunc.max_step_size(x, new_x));
+			while (!objFunc.is_step_collision_free(x, new_x))
+			{
+				step_size /= 2;
+				new_x = x + step_size * grad;
+			}
+			assert(objFunc.is_step_collision_free(x, new_x));
 
 			// std::cout<<"grad\n"<<grad<<std::endl;
 
 			while (step_size > 1e-7 || cur_iter < MAX_STEP_SIZE_ITER)
 			{
 				double cur_e = objFunc.value(new_x);
-#ifndef NDEBUG
-				//max_step_size should return a collision free step
 				const bool valid = objFunc.is_step_valid(x, new_x);
-				assert(valid);
-#else
-				const bool valid = true;
-#endif
+
 				polyfem::logger().trace("ls it: {} delta: {} invalid: {} ", cur_iter, (cur_e - old_energy), !valid);
 				if (std::isinf(cur_e) || std::isnan(cur_e) || cur_e >= old_energy || !valid)
 				// if (std::isinf(cur_e) || std::isnan(cur_e) || (cur_e >= old_energy && fabs(cur_e - old_energy) > 1e-7) || !valid)
 				{
 					step_size /= 2.;
 					new_x = x + step_size * grad;
+					//max_step_size should return a collision free step
+					assert(objFunc.is_step_collision_free(x, new_x));
 				}
 				else
 				{
@@ -280,6 +281,7 @@ namespace cppoptlib
 
 				//gradient descent, check descent direction
 				const double residual = (hessian * delta_x - grad).norm();
+				polyfem::logger().trace("residual {}", residual);
 				if (line_search_failed || std::isnan(residual)) //  || residual > 1e-7)
 				{
 					polyfem::logger().debug("\treverting to gradient descent, since residual is {}", residual);
@@ -346,7 +348,7 @@ namespace cppoptlib
 				const double step = (rate * delta_x).norm();
 
 				this->m_current.fDelta = 1; //std::abs(old_energy - energy) / std::abs(old_energy);
-				this->m_current.gradNorm = use_gradient_norm_ ? grad.norm() : delta_x.norm();
+				this->m_current.gradNorm = grad.norm() < 1e-13 ? grad.norm() : (use_gradient_norm_ ? grad.norm() : delta_x.norm());
 				this->m_status = checkConvergence(this->m_stop, this->m_current);
 				old_energy = energy;
 				if (std::isnan(first_energy))

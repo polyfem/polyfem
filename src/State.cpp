@@ -1389,90 +1389,99 @@ namespace polyfem
 
 					const auto &gbases = iso_parametric() ? bases : geom_bases;
 					igl::Timer update_timer;
-					while (t <= 1)
+					if (true)
 					{
-						if (step_t < 1e-10)
-						{
-							logger().error("Step too small, giving up");
-							break;
-						}
+						ALNLProblem alnl_problem(*this, rhs_assembler, t, args["dhat"], args["project_to_psd"], 1);
+						x = sol;
+						tmp_sol = x;
 
-						logger().info("t: {} prev: {} step: {}", t, prev_t, step_t);
+						cppoptlib::SparseNewtonDescentSolver<ALNLProblem> alnlsolver(solver_params(), solver_type(), precond_type());
+						alnlsolver.setLineSearch(args["line_search"]);
+						alnl_problem.init(x);
+						alnlsolver.minimize(alnl_problem, tmp_sol);
+						json alnl_solver_info;
+						alnlsolver.getInfo(alnl_solver_info);
 
-						// NLProblem nl_problem(*this, rhs_assembler, t, args["dhat"], args["project_to_psd"]);
-						ALNLProblem nl_problem(*this, rhs_assembler, prev_t, t, args["dhat"], args["project_to_psd"], 1e6);
-
-						logger().debug("Updating starting point...");
-						update_timer.start();
-
-						{
-							nl_problem.hessian_full(sol, nlstiffness);
-							nl_problem.gradient_no_rhs(sol, grad);
-							rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, grad, t);
-
-							b = grad;
-							for (int bId : boundary_nodes)
-								b(bId) = -(nl_problem.current_rhs()(bId) - prev_rhs(bId));
-							dirichlet_solve(*solver, nlstiffness, b, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
-							logger().trace("Checking step");
-							const bool valid = nl_problem.is_step_valid(sol, (sol - x).eval());
-							if (valid)
-								x = sol - x;
-							else
-								x = sol;
-							logger().trace("Done checking step, was {}valid", valid ? "" : "in");
-							// logger().debug("Solver error: {}", (nlstiffness * sol - b).norm());
-						}
-
+						NLProblem nl_problem(*this, rhs_assembler, t, args["dhat"], args["project_to_psd"]);
+						x = tmp_sol;
 						nl_problem.full_to_reduced(x, tmp_sol);
-						update_timer.stop();
-						logger().debug("done!, took {}s", update_timer.getElapsedTime());
 
-						if (args["save_solve_sequence_debug"])
+						cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
+						nlsolver.setLineSearch(args["line_search"]);
+						nl_problem.init(x);
+						nlsolver.minimize(nl_problem, tmp_sol);
+						json nl_solver_info;
+						nlsolver.getInfo(nl_solver_info);
+
+						nl_problem.reduced_to_full(tmp_sol, sol);
+						solver_info = {{"al_solver", alnl_solver_info}, {"other", nl_solver_info}};
+					}
+					else
+					{
+						while (t <= 1)
 						{
-							Eigen::MatrixXd xxx = sol;
-							sol = x;
-							if (assembler.is_mixed(formulation()))
-								sol_to_pressure();
-							if (!solve_export_to_file)
-								solution_frames.emplace_back();
-
-							save_vtu("step_s_" + std::to_string(t) + ".vtu", tend);
-							save_wire("step_s_" + std::to_string(t) + ".obj");
-
-							sol = xxx;
-						}
-
-						bool has_nan = false;
-						for (int k = 0; k < tmp_sol.size(); ++k)
-						{
-							if (std::isnan(tmp_sol[k]))
+							if (step_t < 1e-10)
 							{
-								has_nan = true;
+								logger().error("Step too small, giving up");
 								break;
 							}
-						}
 
-						if (has_nan)
-						{
-							do
+							logger().info("t: {} prev: {} step: {}", t, prev_t, step_t);
+
+							NLProblem nl_problem(*this, rhs_assembler, t, args["dhat"], args["project_to_psd"]);
+
+							logger().debug("Updating starting point...");
+							update_timer.start();
+
 							{
-								step_t /= 2;
-								t = prev_t + step_t;
-							} while (t >= 1);
-							continue;
-						}
+								nl_problem.hessian_full(sol, nlstiffness);
+								nl_problem.gradient_no_rhs(sol, grad);
+								rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, grad, t);
 
-						assembler.clear_cache();
+								b = grad;
+								for (int bId : boundary_nodes)
+									b(bId) = -(nl_problem.current_rhs()(bId) - prev_rhs(bId));
+								dirichlet_solve(*solver, nlstiffness, b, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
+								logger().trace("Checking step");
+								const bool valid = nl_problem.is_step_collision_free(sol, (sol - x).eval());
+								if (valid)
+									x = sol - x;
+								else
+									x = sol;
+								logger().trace("Done checking step, was {}valid", valid ? "" : "in");
+								// logger().debug("Solver error: {}", (nlstiffness * sol - b).norm());
+							}
 
-						if (args["nl_solver"] == "newton")
-						{
-							cppoptlib::SparseNewtonDescentSolver<ALNLProblem> nlsolver(solver_params(), solver_type(), precond_type());
-							nlsolver.setLineSearch(args["line_search"]);
-							nl_problem.init(x);
-							nlsolver.minimize(nl_problem, tmp_sol);
+							nl_problem.full_to_reduced(x, tmp_sol);
+							update_timer.stop();
+							logger().debug("done!, took {}s", update_timer.getElapsedTime());
 
-							if (nlsolver.error_code() == -10) //Nan
+							if (args["save_solve_sequence_debug"])
+							{
+								Eigen::MatrixXd xxx = sol;
+								sol = x;
+								if (assembler.is_mixed(formulation()))
+									sol_to_pressure();
+								if (!solve_export_to_file)
+									solution_frames.emplace_back();
+
+								save_vtu("step_s_" + std::to_string(t) + ".vtu", tend);
+								save_wire("step_s_" + std::to_string(t) + ".obj");
+
+								sol = xxx;
+							}
+
+							bool has_nan = false;
+							for (int k = 0; k < tmp_sol.size(); ++k)
+							{
+								if (std::isnan(tmp_sol[k]))
+								{
+									has_nan = true;
+									break;
+								}
+							}
+
+							if (has_nan)
 							{
 								do
 								{
@@ -1481,111 +1490,131 @@ namespace polyfem
 								} while (t >= 1);
 								continue;
 							}
+
+							assembler.clear_cache();
+
+							if (args["nl_solver"] == "newton")
+							{
+								cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
+								nlsolver.setLineSearch(args["line_search"]);
+								nl_problem.init(x);
+								nlsolver.minimize(nl_problem, tmp_sol);
+
+								if (nlsolver.error_code() == -10) //Nan
+								{
+									do
+									{
+										step_t /= 2;
+										t = prev_t + step_t;
+									} while (t >= 1);
+									continue;
+								}
+								else
+								{
+									prev_t = t;
+									step_t *= 2;
+								}
+
+								if (step_t > 1.0 / steps)
+									step_t = 1.0 / steps;
+
+								nlsolver.getInfo(solver_info);
+							}
+							else if (args["nl_solver"] == "lbfgs")
+							{
+								cppoptlib::LbfgsSolverL2<NLProblem> nlsolver;
+								nlsolver.setLineSearch(args["line_search"]);
+								nlsolver.setDebug(cppoptlib::DebugLevel::High);
+								nlsolver.minimize(nl_problem, tmp_sol);
+
+								prev_t = t;
+							}
 							else
 							{
-								prev_t = t;
-								step_t *= 2;
+								throw std::invalid_argument("[State] invalid solver type for non-linear problem");
 							}
 
-							if (step_t > 1.0 / steps)
-								step_t = 1.0 / steps;
+							t = prev_t + step_t;
+							if ((prev_t < 1 && t > 1) || abs(t - 1) < 1e-10)
+								t = 1;
 
-							nlsolver.getInfo(solver_info);
+							nl_problem.reduced_to_full(tmp_sol, sol);
+
+							// std::ofstream of("sol.txt");
+							// of<<sol<<std::endl;
+							// of.close();
+							prev_rhs = nl_problem.current_rhs();
+							if (args["save_solve_sequence"])
+							{
+								if (!solve_export_to_file)
+									solution_frames.emplace_back();
+								save_vtu("step_" + std::to_string(prev_t) + ".vtu", tend);
+								save_wire("step_" + std::to_string(prev_t) + ".obj");
+							}
 						}
-						else if (args["nl_solver"] == "lbfgs")
+
+						if (assembler.is_mixed(formulation()))
 						{
-							cppoptlib::LbfgsSolverL2<ALNLProblem> nlsolver;
-							nlsolver.setLineSearch(args["line_search"]);
-							nlsolver.setDebug(cppoptlib::DebugLevel::High);
-							nlsolver.minimize(nl_problem, tmp_sol);
-
-							prev_t = t;
-						}
-						else
-						{
-							throw std::invalid_argument("[State] invalid solver type for non-linear problem");
+							sol_to_pressure();
 						}
 
-						t = prev_t + step_t;
-						if ((prev_t < 1 && t > 1) || abs(t - 1) < 1e-10)
-							t = 1;
+						// {
+						// 	boundary_nodes.clear();
+						// 	NLProblem nl_problem(*this, rhs_assembler, 1, args["dhat"]);
+						// 	tmp_sol = rhs;
 
-						nl_problem.reduced_to_full(tmp_sol, sol);
+						// 	// tmp_sol.setRandom();
+						// 	tmp_sol.setOnes();
+						// 	Eigen::Matrix<double, Eigen::Dynamic, 1> actual_grad;
+						// 	nl_problem.gradient(tmp_sol, actual_grad);
 
-						// std::ofstream of("sol.txt");
-						// of<<sol<<std::endl;
-						// of.close();
-						prev_rhs = nl_problem.current_rhs();
-						if (args["save_solve_sequence"])
-						{
-							if (!solve_export_to_file)
-								solution_frames.emplace_back();
-							save_vtu("step_" + std::to_string(prev_t) + ".vtu", tend);
-							save_wire("step_" + std::to_string(prev_t) + ".obj");
-						}
+						// 	StiffnessMatrix hessian;
+						// 	// Eigen::MatrixXd expected_hessian;
+						// 	nl_problem.hessian(tmp_sol, hessian);
+						// 	// nl_problem.finiteGradient(tmp_sol, expected_grad, 0);
+
+						// 	Eigen::MatrixXd actual_hessian = Eigen::MatrixXd(hessian);
+						// 	// std::cout << "hhh\n"<< actual_hessian<<std::endl;
+
+						// 	for (int i = 0; i < actual_hessian.rows(); ++i)
+						// 	{
+						// 		double hhh = 1e-6;
+						// 		VectorXd xp = tmp_sol; xp(i) += hhh;
+						// 		VectorXd xm = tmp_sol; xm(i) -= hhh;
+
+						// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_p;
+						// 		nl_problem.gradient(xp, tmp_grad_p);
+
+						// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_m;
+						// 		nl_problem.gradient(xm, tmp_grad_m);
+
+						// 		Eigen::Matrix<double, Eigen::Dynamic, 1> fd_h = (tmp_grad_p - tmp_grad_m)/(hhh*2.);
+
+						// 		const double vp = nl_problem.value(xp);
+						// 		const double vm = nl_problem.value(xm);
+
+						// 		const double fd = (vp-vm)/(hhh*2.);
+						// 		const double  diff = std::abs(actual_grad(i) - fd);
+						// 		if(diff > 1e-5)
+						// 			std::cout<<"diff grad "<<i<<": "<<actual_grad(i)<<" vs "<<fd <<" error: " <<diff<<" rrr: "<<actual_grad(i)/fd<<std::endl;
+
+						// 		for(int j = 0; j < actual_hessian.rows(); ++j)
+						// 		{
+						// 			const double diff = std::abs(actual_hessian(i,j) - fd_h(j));
+
+						// 			if(diff > 1e-4)
+						// 				std::cout<<"diff H "<<i<<", "<<j<<": "<<actual_hessian(i,j)<<" vs "<<fd_h(j)<<" error: " <<diff<<" rrr: "<<actual_hessian(i,j)/fd_h(j)<<std::endl;
+
+						// 		}
+						// 	}
+
+						// 	// std::cout<<"diff grad max "<<(actual_grad - expected_grad).array().abs().maxCoeff()<<std::endl;
+						// 	// std::cout<<"diff \n"<<(actual_grad - expected_grad)<<std::endl;
+						// 	exit(0);
+						// }
+
+						// NLProblem::reduced_to_full_aux(full_size, reduced_size, tmp_sol, rhs, sol);
 					}
-
-					if (assembler.is_mixed(formulation()))
-					{
-						sol_to_pressure();
-					}
-
-					// {
-					// 	boundary_nodes.clear();
-					// 	NLProblem nl_problem(*this, rhs_assembler, 1, args["dhat"]);
-					// 	tmp_sol = rhs;
-
-					// 	// tmp_sol.setRandom();
-					// 	tmp_sol.setOnes();
-					// 	Eigen::Matrix<double, Eigen::Dynamic, 1> actual_grad;
-					// 	nl_problem.gradient(tmp_sol, actual_grad);
-
-					// 	StiffnessMatrix hessian;
-					// 	// Eigen::MatrixXd expected_hessian;
-					// 	nl_problem.hessian(tmp_sol, hessian);
-					// 	// nl_problem.finiteGradient(tmp_sol, expected_grad, 0);
-
-					// 	Eigen::MatrixXd actual_hessian = Eigen::MatrixXd(hessian);
-					// 	// std::cout << "hhh\n"<< actual_hessian<<std::endl;
-
-					// 	for (int i = 0; i < actual_hessian.rows(); ++i)
-					// 	{
-					// 		double hhh = 1e-6;
-					// 		VectorXd xp = tmp_sol; xp(i) += hhh;
-					// 		VectorXd xm = tmp_sol; xm(i) -= hhh;
-
-					// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_p;
-					// 		nl_problem.gradient(xp, tmp_grad_p);
-
-					// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_m;
-					// 		nl_problem.gradient(xm, tmp_grad_m);
-
-					// 		Eigen::Matrix<double, Eigen::Dynamic, 1> fd_h = (tmp_grad_p - tmp_grad_m)/(hhh*2.);
-
-					// 		const double vp = nl_problem.value(xp);
-					// 		const double vm = nl_problem.value(xm);
-
-					// 		const double fd = (vp-vm)/(hhh*2.);
-					// 		const double  diff = std::abs(actual_grad(i) - fd);
-					// 		if(diff > 1e-5)
-					// 			std::cout<<"diff grad "<<i<<": "<<actual_grad(i)<<" vs "<<fd <<" error: " <<diff<<" rrr: "<<actual_grad(i)/fd<<std::endl;
-
-					// 		for(int j = 0; j < actual_hessian.rows(); ++j)
-					// 		{
-					// 			const double diff = std::abs(actual_hessian(i,j) - fd_h(j));
-
-					// 			if(diff > 1e-4)
-					// 				std::cout<<"diff H "<<i<<", "<<j<<": "<<actual_hessian(i,j)<<" vs "<<fd_h(j)<<" error: " <<diff<<" rrr: "<<actual_hessian(i,j)/fd_h(j)<<std::endl;
-
-					// 		}
-					// 	}
-
-					// 	// std::cout<<"diff grad max "<<(actual_grad - expected_grad).array().abs().maxCoeff()<<std::endl;
-					// 	// std::cout<<"diff \n"<<(actual_grad - expected_grad)<<std::endl;
-					// 	exit(0);
-					// }
-
-					// NLProblem::reduced_to_full_aux(full_size, reduced_size, tmp_sol, rhs, sol);
 				}
 			}
 		}
