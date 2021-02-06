@@ -29,7 +29,7 @@ namespace polyfem
 		int index = 0;
 		for (const auto &n : nodes.entity_blocks)
 		{
-			for (int i = 0; i < n.num_nodes_in_block * dim; i += dim)
+			for (int i = 0; i < n.num_nodes_in_block * 3; i += 3)
 			{
 				if (dim == 2)
 					vertices.row(index) << n.data[i], n.data[i + 1];
