@@ -50,7 +50,7 @@ namespace polyfem
 
 		Eigen::MatrixXd grad;
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
-		assembler.assemble_energy_gradient(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, full, grad);
+		assembler.assemble_energy_gradient(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, state.ass_vals_cache, full, grad);
 		// std::cout << grad << std::endl;
 		Eigen::MatrixXd displaced;
 		compute_displaced_points(full, displaced);
@@ -244,7 +244,7 @@ namespace polyfem
 
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 
-		const double elastic_energy = assembler.assemble_energy(rhs_assembler.formulation(), state.mesh->is_volume(), state.bases, gbases, full);
+		const double elastic_energy = assembler.assemble_energy(rhs_assembler.formulation(), state.mesh->is_volume(), state.bases, gbases, state.ass_vals_cache, full);
 		const double body_energy = rhs_assembler.compute_energy(full, state.local_neumann_boundary, state.density, state.args["n_boundary_samples"], t);
 
 		double intertia_energy = 0;
@@ -291,7 +291,7 @@ namespace polyfem
 			const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 			if (assembler.is_linear(state.formulation()))
 			{
-				assembler.assemble_problem(state.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, cached_stiffness);
+				assembler.assemble_problem(state.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, state.ass_vals_cache, cached_stiffness);
 			}
 		}
 	}
@@ -320,7 +320,7 @@ namespace polyfem
 		assert(full.size() == full_size);
 
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
-		assembler.assemble_energy_gradient(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, full, grad);
+		assembler.assemble_energy_gradient(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, state.ass_vals_cache, full, grad);
 
 		if (is_time_dependent)
 		{
@@ -416,7 +416,7 @@ namespace polyfem
 			hessian = cached_stiffness;
 		}
 		else
-			assembler.assemble_energy_hessian(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, project_to_psd, state.bases, gbases, full, hessian);
+			assembler.assemble_energy_hessian(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, project_to_psd, state.bases, gbases, state.ass_vals_cache, full, hessian);
 		if (is_time_dependent)
 		{
 			hessian *= dt * dt; // / 2.0;

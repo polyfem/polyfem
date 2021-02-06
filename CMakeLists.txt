@@ -288,6 +288,12 @@ add_subdirectory(${THIRD_PARTY_DIR}/ipc)
 target_link_libraries(polyfem PUBLIC IPCToolkit)
 
 
+# MSHIO
+polyfem_download_mshio()
+add_subdirectory(${THIRD_PARTY_DIR}/mshio)
+target_link_libraries(polyfem PUBLIC mshio)
+
+
 # Geogram
 polyfem_download_geogram()
 include(geogram)

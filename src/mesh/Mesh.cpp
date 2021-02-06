@@ -12,10 +12,13 @@
 #include <geogram/mesh/mesh_geometry.h>
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace {
+namespace
+{
 
-	bool is_planar(const GEO::Mesh &M) {
-		if (M.vertices.dimension() == 2) {
+	bool is_planar(const GEO::Mesh &M)
+	{
+		if (M.vertices.dimension() == 2)
+		{
 			return true;
 		}
 		assert(M.vertices.dimension() == 3);
@@ -26,16 +29,22 @@ namespace {
 
 } // anonymous namespace
 
-std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(GEO::Mesh &meshin) {
-	if (is_planar(meshin)) {
+std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(GEO::Mesh &meshin)
+{
+	if (is_planar(meshin))
+	{
 		std::unique_ptr<polyfem::Mesh> mesh = std::make_unique<Mesh2D>();
-		if (mesh->load(meshin)) {
+		if (mesh->load(meshin))
+		{
 			return mesh;
 		}
-	} else {
+	}
+	else
+	{
 		std::unique_ptr<polyfem::Mesh> mesh = std::make_unique<Mesh3D>();
 		meshin.cells.connect();
-		if (mesh->load(meshin)) {
+		if (mesh->load(meshin))
+		{
 			return mesh;
 		}
 	}
@@ -44,13 +53,16 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(GEO::Mesh &meshin) {
 	return nullptr;
 }
 
-std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path) {
+std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path)
+{
 	std::string lowername = path;
 
 	std::transform(lowername.begin(), lowername.end(), lowername.begin(), ::tolower);
-	if (StringUtils::endswidth(lowername, ".hybrid")) {
+	if (StringUtils::endswidth(lowername, ".hybrid"))
+	{
 		std::unique_ptr<polyfem::Mesh> mesh = std::make_unique<Mesh3D>();
-		if (mesh->load(path)){
+		if (mesh->load(path))
+		{
 			return mesh;
 		}
 	}
@@ -61,11 +73,11 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path) {
 		std::vector<std::vector<int>> elements;
 		std::vector<std::vector<double>> weights;
 
-		if(!MshReader::load(path, vertices, cells, elements, weights))
+		if (!MshReader::load(path, vertices, cells, elements, weights))
 			return nullptr;
 
 		std::unique_ptr<polyfem::Mesh> mesh;
-		if(cells.cols() == 3)
+		if (vertices.cols() == 2)
 			mesh = std::make_unique<Mesh2D>();
 		else
 			mesh = std::make_unique<Mesh3D>();
@@ -74,9 +86,9 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path) {
 		mesh->attach_higher_order_nodes(vertices, elements);
 		mesh->cell_weights_ = weights;
 
-		for(const auto &w : weights)
+		for (const auto &w : weights)
 		{
-			if(!w.empty())
+			if (!w.empty())
 			{
 				mesh->is_rational_ = true;
 				break;
@@ -85,9 +97,11 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path) {
 
 		return mesh;
 	}
-	else {
+	else
+	{
 		GEO::Mesh tmp;
-		if (GEO::mesh_load(path, tmp)) {
+		if (GEO::mesh_load(path, tmp))
+		{
 			return create(tmp);
 		}
 	}
@@ -97,23 +111,29 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::Mesh::edge_barycenters(Eigen::MatrixXd &barycenters) const {
+void polyfem::Mesh::edge_barycenters(Eigen::MatrixXd &barycenters) const
+{
 	barycenters.resize(n_edges(), dimension());
-	for (int e = 0; e < n_edges(); ++e) {
+	for (int e = 0; e < n_edges(); ++e)
+	{
 		barycenters.row(e) = edge_barycenter(e);
 	}
 }
 
-void polyfem::Mesh::face_barycenters(Eigen::MatrixXd &barycenters) const {
+void polyfem::Mesh::face_barycenters(Eigen::MatrixXd &barycenters) const
+{
 	barycenters.resize(n_faces(), dimension());
-	for (int f = 0; f < n_faces(); ++f) {
+	for (int f = 0; f < n_faces(); ++f)
+	{
 		barycenters.row(f) = face_barycenter(f);
 	}
 }
 
-void polyfem::Mesh::cell_barycenters(Eigen::MatrixXd &barycenters) const {
+void polyfem::Mesh::cell_barycenters(Eigen::MatrixXd &barycenters) const
+{
 	barycenters.resize(n_cells(), dimension());
-	for (int c = 0; c < n_cells(); ++c) {
+	for (int c = 0; c < n_cells(); ++c)
+	{
 		barycenters.row(c) = cell_barycenter(c);
 	}
 }
@@ -123,20 +143,19 @@ void polyfem::Mesh::cell_barycenters(Eigen::MatrixXd &barycenters) const {
 //Queries on the tags
 bool polyfem::Mesh::is_spline_compatible(const int el_id) const
 {
-	if(is_volume()){
-		return
-		elements_tag_[el_id] == ElementType::RegularInteriorCube ||
-		elements_tag_[el_id] == ElementType::RegularBoundaryCube; // ||
-		// elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube ||
-		// elements_tag_[el_id] == ElementType::SimpleSingularBoundaryCube;
+	if (is_volume())
+	{
+		return elements_tag_[el_id] == ElementType::RegularInteriorCube ||
+			   elements_tag_[el_id] == ElementType::RegularBoundaryCube; // ||
+																		 // elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube ||
+																		 // elements_tag_[el_id] == ElementType::SimpleSingularBoundaryCube;
 	}
 	else
 	{
-		return
-		elements_tag_[el_id] == ElementType::RegularInteriorCube ||
-		elements_tag_[el_id] == ElementType::RegularBoundaryCube; // ||
-		// elements_tag_[el_id] == ElementType::InterfaceCube ||
-		// elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube;
+		return elements_tag_[el_id] == ElementType::RegularInteriorCube ||
+			   elements_tag_[el_id] == ElementType::RegularBoundaryCube; // ||
+																		 // elements_tag_[el_id] == ElementType::InterfaceCube ||
+																		 // elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube;
 	}
 }
 
@@ -144,31 +163,29 @@ bool polyfem::Mesh::is_spline_compatible(const int el_id) const
 
 bool polyfem::Mesh::is_cube(const int el_id) const
 {
-	return
-	elements_tag_[el_id] == ElementType::InterfaceCube ||
+	return elements_tag_[el_id] == ElementType::InterfaceCube ||
 
-	elements_tag_[el_id] == ElementType::RegularInteriorCube ||
-	elements_tag_[el_id] == ElementType::RegularBoundaryCube ||
+		   elements_tag_[el_id] == ElementType::RegularInteriorCube ||
+		   elements_tag_[el_id] == ElementType::RegularBoundaryCube ||
 
-	elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube ||
-	elements_tag_[el_id] == ElementType::SimpleSingularBoundaryCube ||
+		   elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube ||
+		   elements_tag_[el_id] == ElementType::SimpleSingularBoundaryCube ||
 
-	elements_tag_[el_id] == ElementType::MultiSingularInteriorCube ||
-	elements_tag_[el_id] == ElementType::MultiSingularBoundaryCube;
+		   elements_tag_[el_id] == ElementType::MultiSingularInteriorCube ||
+		   elements_tag_[el_id] == ElementType::MultiSingularBoundaryCube;
 }
 
 // -----------------------------------------------------------------------------
 
 bool polyfem::Mesh::is_polytope(const int el_id) const
 {
-	return
-	elements_tag_[el_id] == ElementType::InteriorPolytope ||
-	elements_tag_[el_id] == ElementType::BoundaryPolytope;
+	return elements_tag_[el_id] == ElementType::InteriorPolytope ||
+		   elements_tag_[el_id] == ElementType::BoundaryPolytope;
 }
 
 void polyfem::Mesh::load_boundary_ids(const std::string &path)
 {
-	boundary_ids_.resize(is_volume()? n_faces() : n_edges());
+	boundary_ids_.resize(is_volume() ? n_faces() : n_edges());
 
 	std::ifstream file(path);
 
@@ -191,6 +208,5 @@ void polyfem::Mesh::load_boundary_ids(const std::string &path)
 
 bool polyfem::Mesh::is_simplex(const int el_id) const
 {
-	return
-	elements_tag_[el_id] == ElementType::Simplex;
+	return elements_tag_[el_id] == ElementType::Simplex;
 }

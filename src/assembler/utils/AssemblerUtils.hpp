@@ -36,6 +36,7 @@ namespace polyfem
 							  const int n_basis,
 							  const std::vector<ElementBases> &bases,
 							  const std::vector<ElementBases> &gbases,
+							  const AssemblyValsCache &cache,
 							  StiffnessMatrix &stiffness) const;
 		//mass matrix assembler, assembler is the name of the formulation
 		void assemble_mass_matrix(const std::string &assembler,
@@ -44,6 +45,7 @@ namespace polyfem
 								  const Density &density,
 								  const std::vector<ElementBases> &bases,
 								  const std::vector<ElementBases> &gbases,
+								  const AssemblyValsCache &cache,
 								  StiffnessMatrix &mass) const;
 
 		//mixed assembler phi is the tensor, psi the scalar, assembler is the name of the formulation
@@ -54,6 +56,8 @@ namespace polyfem
 									const std::vector<ElementBases> &psi_bases,
 									const std::vector<ElementBases> &phi_bases,
 									const std::vector<ElementBases> &gbases,
+									const AssemblyValsCache &psi_cache,
+									const AssemblyValsCache &phi_cache,
 									StiffnessMatrix &stiffness) const;
 		//pressure pressure assembler, assembler is the name of the formulation
 		void assemble_pressure_problem(const std::string &assembler,
@@ -61,6 +65,7 @@ namespace polyfem
 									   const int n_basis,
 									   const std::vector<ElementBases> &bases,
 									   const std::vector<ElementBases> &gbases,
+									   const AssemblyValsCache &cache,
 									   StiffnessMatrix &stiffness) const;
 
 		//Non linear energy, assembler is the name of the formulation
@@ -68,6 +73,7 @@ namespace polyfem
 							   const bool is_volume,
 							   const std::vector<ElementBases> &bases,
 							   const std::vector<ElementBases> &gbases,
+							   const AssemblyValsCache &cache,
 							   const Eigen::MatrixXd &displacement) const;
 
 		//non linear gradient, assembler is the name of the formulation
@@ -76,6 +82,7 @@ namespace polyfem
 									  const int n_basis,
 									  const std::vector<ElementBases> &bases,
 									  const std::vector<ElementBases> &gbases,
+									  const AssemblyValsCache &cache,
 									  const Eigen::MatrixXd &displacement,
 									  Eigen::MatrixXd &grad) const;
 		//non-linear hessian, assembler is the name of the formulation
@@ -85,6 +92,7 @@ namespace polyfem
 									 const bool project_to_psd,
 									 const std::vector<ElementBases> &bases,
 									 const std::vector<ElementBases> &gbases,
+									 const AssemblyValsCache &cache,
 									 const Eigen::MatrixXd &displacement,
 									 StiffnessMatrix &hessian) const;
 

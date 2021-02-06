@@ -55,6 +55,7 @@ int main(int argc, char **argv)
 	bool serendipity = false;
 	bool project_to_psd = false;
 	bool export_material_params = false;
+	bool save_solve_sequence_debug = false;
 
 	std::string log_file = "";
 	bool is_quiet = false;
@@ -95,6 +96,7 @@ int main(int argc, char **argv)
 	command_line.add_option("--vis_mesh_res", vis_mesh_res, "Vis mesh resolution");
 	command_line.add_flag("--project_to_psd", project_to_psd, "Project local matrices to psd");
 	command_line.add_option("--n_incr_load", nl_solver_rhs_steps, "Number of incremeltal load");
+	command_line.add_flag("--save_incr_load", save_solve_sequence_debug, "Save incremental steps");
 
 	//disable out
 	command_line.add_flag("--cmd", no_ui, "Runs in command line mode, no ui");
@@ -158,6 +160,7 @@ int main(int argc, char **argv)
 		in_args["serendipity"] = serendipity;
 
 		in_args["nl_solver_rhs_steps"] = nl_solver_rhs_steps;
+		in_args["save_solve_sequence_debug"] = save_solve_sequence_debug;
 
 		if (!vtu.empty())
 		{

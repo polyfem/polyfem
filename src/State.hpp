@@ -3,6 +3,7 @@
 
 #include <polyfem/ElementBases.hpp>
 #include <polyfem/ElementAssemblyValues.hpp>
+#include <polyfem/AssemblyValsCache.hpp>
 #include <polyfem/Problem.hpp>
 #include <polyfem/Mesh.hpp>
 #include <polyfem/LocalBoundary.hpp>
@@ -97,6 +98,10 @@ namespace polyfem
 
 		//Geometric mapping bases, if the elements are isoparametric, this list is empty
 		std::vector<ElementBases> geom_bases;
+
+		//used to store assembly values for small problems
+		AssemblyValsCache ass_vals_cache;
+		AssemblyValsCache pressure_ass_vals_cache;
 
 		//list of boundary nodes
 		std::vector<int> boundary_nodes;
