@@ -1084,14 +1084,14 @@ namespace polyfem
 					logger().info("Pressure projection...");
 					ss.solve_pressure(mixed_stiffness, sol, pressure);
 					
-					// ss.projection(n_bases, gbases, bases, pressure_bases, local_pts, pressure, sol);
-					ss.projection(velocity_mass, mixed_stiffness, boundary_nodes, sol, pressure);
+					ss.projection(n_bases, gbases, bases, pressure_bases, local_pts, pressure, sol);
+					// ss.projection(velocity_mass, mixed_stiffness, boundary_nodes, sol, pressure);
 					logger().info("Pressure projection finished!");
 
 					pressure = pressure / dt;
 
 					/* apply boundary condition */
-					// rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, time);
+					rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, time);
 
 					/* export to vtu */
 					if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))

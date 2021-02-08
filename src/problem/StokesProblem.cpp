@@ -153,8 +153,8 @@ void DrivenCavity::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const
 		// val(i, 1)=-0.25;
 	}
 
-	if (is_time_dependent_)
-		val *= (1 - exp(-5 * t));
+	// if (is_time_dependent_)
+	// 	val *= (1 - exp(-5 * t));
 }
 
 DrivenCavitySmooth::DrivenCavitySmooth(const std::string &name)
@@ -183,8 +183,8 @@ void DrivenCavitySmooth::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids,
 		// val(i, 1)=-0.25;
 	}
 
-	if (is_time_dependent_)
-		val *= (1 - exp(-5 * t));
+	// if (is_time_dependent_)
+	// 	val *= (1 - exp(-5 * t));
 }
 
 Flow::Flow(const std::string &name)
@@ -651,7 +651,7 @@ void TaylorGreenVortexProblem::set_parameters(const json &params)
 void TaylorGreenVortexProblem::exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 {
 	val.resize(pts.rows(), pts.cols());
-	const double T = 1;
+	const double T = 6.283185307179586;
 	for(int i = 0; i < pts.rows(); ++i)
 	{
 		const double x = pts(i, 0);
