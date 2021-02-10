@@ -463,6 +463,7 @@ namespace polyfem
             state.args["project_to_psd"] = true;
             state.args["line_search"] = "bisection";
             state.args["solver_params"]["gradNorm"] = 1e-5;
+            state.args["solver_params"]["nl_iterations"] = 200;
             state.args["solver_params"]["useGradNorm"] = false;
         }
 
