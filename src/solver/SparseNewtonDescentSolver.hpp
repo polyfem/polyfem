@@ -139,19 +139,7 @@ namespace cppoptlib
 			int cur_iter = 0;
 
 			TVector new_x = x + grad;
-			double step_size = std::min(1., objFunc.max_step_size(x, new_x));
-			polyfem::logger().trace("inital step {}", step_size);
-			if (step_size != 1)
-			{
-				new_x = x + step_size * grad;
-			}
-			polyfem::logger().trace("blaaaa {}", objFunc.max_step_size(x, new_x));
-			while (!objFunc.is_step_collision_free(x, new_x))
-			{
-				step_size /= 2;
-				new_x = x + step_size * grad;
-			}
-			assert(objFunc.is_step_collision_free(x, new_x));
+			double step_size = 1;
 
 			// std::cout<<"grad\n"<<grad<<std::endl;
 
@@ -167,17 +155,35 @@ namespace cppoptlib
 					step_size /= 2.;
 					new_x = x + step_size * grad;
 					//max_step_size should return a collision free step
-					assert(objFunc.is_step_collision_free(x, new_x));
+					// assert(objFunc.is_step_collision_free(x, new_x));
 				}
 				else
 				{
-					return step_size;
+					break;
 				}
 				cur_iter++;
 			}
 
-			// return step_size;
-			return std::nan("");
+			if (cur_iter >= MAX_STEP_SIZE_ITER && step_size <= 1e-7)
+			{
+				return std::nan("");
+			}
+
+			const double tmp = objFunc.max_step_size(x, new_x);
+			step_size *= tmp;
+			polyfem::logger().trace("final step ratio {}, step {}", tmp, step_size);
+
+			new_x = x + step_size * grad;
+			while (!objFunc.is_step_collision_free(x, new_x))
+			{
+				polyfem::logger().error("step is not collisin free!!");
+				step_size /= 2;
+				new_x = x + step_size * grad;
+			}
+			assert(objFunc.is_step_collision_free(x, new_x));
+
+			return step_size;
+			// return std::nan("");
 		}
 
 		void minimize(ProblemType &objFunc, TVector &x0)
@@ -378,8 +384,17 @@ namespace cppoptlib
 					}
 				}
 
+				if(objFunc.stop(x0))
+				{
+					this->m_status = Status::UserDefined;
+					error_code_ = 0;
+					polyfem::logger().debug("\tObjective decided to stop");
+				}
+
 				//if(rate >= 1 && next_hessian == this->m_current.iterations)
 				//	next_hessian += 2;
+
+				objFunc.post_step(x0);
 
 				polyfem::logger().debug("\titer: {}, f = {}, ||g||_2 = {}, rate = {}, ||step|| = {}, dot = {}",
 										this->m_current.iterations, energy, this->m_current.gradNorm, rate, step, delta_x.dot(grad) / grad.norm());

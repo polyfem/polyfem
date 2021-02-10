@@ -22,6 +22,8 @@ namespace polyfem
     {
         std::vector<Eigen::Triplet<double>> entries;
 
+        stop_dist_ = 1e-1 * state.min_edge_length;
+
         for (const auto bn : state.boundary_nodes)
             entries.emplace_back(bn, bn, 2 * weight_);
 
@@ -70,6 +72,7 @@ namespace polyfem
         TVector tmp;
         super::gradient_no_rhs(x, gradv);
         compute_distance(x, tmp);
+        //logger().trace("dist grad {}", tmp.norm());
         tmp *= 2 * weight_ / _barrier_stiffness;
 
         gradv += tmp;
@@ -83,5 +86,14 @@ namespace polyfem
         // hessian = hessian_ / _barrier_stiffness;
 
         hessian.makeCompressed();
+    }
+
+    bool ALNLProblem::stop(const TVector &x)
+    {
+        TVector distv;
+        compute_distance(x, distv);
+        const double dist = distv.norm();
+
+        return dist < stop_dist_;
     }
 } // namespace polyfem
