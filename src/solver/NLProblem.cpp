@@ -496,6 +496,20 @@ namespace polyfem
 			polyfem::logger().debug("2x on stiffness {}", _barrier_stiffness);
 		}
 
+		// Eigen::MatrixXd grad;
+		// const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
+		// assembler.assemble_energy_gradient(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, state.ass_vals_cache, full, grad);
+
+		// double max_barrier_stiffness = 0;
+		// _barrier_stiffness = ipc::initial_barrier_stiffness(
+		// 	state.boundary_nodes_pos,
+		// 	displaced,
+		// 	state.boundary_edges, state.boundary_triangles,
+		// 	_dhat,
+		// 	state.avg_mass,
+		// 	grad,
+		// 	max_barrier_stiffness);
+
 		_prev_distance = dist;
 	}
 } // namespace polyfem

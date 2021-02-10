@@ -22,7 +22,7 @@ namespace polyfem
     {
         std::vector<Eigen::Triplet<double>> entries;
 
-        stop_dist_ = 1e-1 * state.min_edge_length;
+        // stop_dist_ = 1e-2 * state.min_edge_length;
 
         for (const auto bn : state.boundary_nodes)
             entries.emplace_back(bn, bn, 2 * weight_);
@@ -90,10 +90,10 @@ namespace polyfem
 
     bool ALNLProblem::stop(const TVector &x)
     {
-        TVector distv;
-        compute_distance(x, distv);
-        const double dist = distv.norm();
+        // TVector distv;
+        // compute_distance(x, distv);
+        // const double dist = distv.norm();
 
-        return dist < stop_dist_;
+        return false; //dist < stop_dist_;
     }
 } // namespace polyfem
