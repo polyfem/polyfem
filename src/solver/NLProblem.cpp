@@ -38,6 +38,7 @@ namespace polyfem
 
 		_dhat = dhat;
 		_barrier_stiffness = 1;
+		_prev_distance = -1;
 	}
 
 	void NLProblem::init(const TVector &full)
@@ -56,14 +57,13 @@ namespace polyfem
 		compute_displaced_points(full, displaced);
 		double max_barrier_stiffness = 0;
 		_barrier_stiffness = ipc::initial_barrier_stiffness(
-								 state.boundary_nodes_pos,
-								 displaced,
-								 state.boundary_edges, state.boundary_triangles,
-								 _dhat,
-								 state.avg_mass,
-								 grad,
-								 max_barrier_stiffness) *
-							 1e6;
+			state.boundary_nodes_pos,
+			displaced,
+			state.boundary_edges, state.boundary_triangles,
+			_dhat,
+			state.avg_mass,
+			grad,
+			max_barrier_stiffness);
 		polyfem::logger().debug("adaptive stiffness {}", _barrier_stiffness);
 		// exit(0);
 	}
@@ -338,6 +338,8 @@ namespace polyfem
 			grad += state.mass * full;
 		}
 
+		// logger().trace("grad norm {}", grad.norm());
+
 		grad /= _barrier_stiffness;
 
 		if (!disable_collision && state.args["has_collision"])
@@ -348,8 +350,7 @@ namespace polyfem
 			ipc::Constraints constraint_set;
 			ipc::construct_constraint_set(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, _dhat, constraint_set);
 			grad += ipc::compute_barrier_potential_gradient(displaced, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat);
-			// const double ddd = ipc::compute_minimum_distance(displaced, state.boundary_edges, state.boundary_triangles, constraint_set);
-			// polyfem::logger().trace("min_dist {}", ddd);
+			// logger().trace("ipc grad norm {}", ipc::compute_barrier_potential_gradient(displaced, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat).norm());
 		}
 
 		assert(grad.size() == full_size);
@@ -465,5 +466,36 @@ namespace polyfem
 	void NLProblem::reduced_to_full(const TVector &reduced, Eigen::MatrixXd &full)
 	{
 		reduced_to_full_aux(state, full_size, reduced_size, reduced, current_rhs(), full);
+	}
+
+	void NLProblem::post_step(const TVector &x0)
+	{
+		Eigen::MatrixXd full;
+		if (x0.size() == reduced_size)
+			reduced_to_full(x0, full);
+		else
+			full = x0;
+
+		assert(full.size() == full_size);
+
+		Eigen::MatrixXd displaced;
+
+		compute_displaced_points(full, displaced);
+		ipc::Constraints constraint_set;
+		ipc::construct_constraint_set(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, _dhat, constraint_set);
+		const double dist = ipc::compute_minimum_distance(displaced, state.boundary_edges, state.boundary_triangles, constraint_set);
+		polyfem::logger().trace("min_dist {}", dist);
+
+		const Eigen::MatrixXd box_min = state.boundary_nodes_pos.colwise().minCoeff();
+		const Eigen::MatrixXd box_max = state.boundary_nodes_pos.colwise().maxCoeff();
+		const double diag = (box_max - box_min).squaredNorm();
+
+		if (dist < _prev_distance && dist < 1e-8 * diag && _prev_distance < 1e-8 * diag)
+		{
+			_barrier_stiffness *= 2;
+			polyfem::logger().debug("2x on stiffness {}", _barrier_stiffness);
+		}
+
+		_prev_distance = dist;
 	}
 } // namespace polyfem

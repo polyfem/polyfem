@@ -1391,7 +1391,7 @@ namespace polyfem
 					igl::Timer update_timer;
 					if (true)
 					{
-						ALNLProblem alnl_problem(*this, rhs_assembler, t, args["dhat"], args["project_to_psd"], 1);
+						ALNLProblem alnl_problem(*this, rhs_assembler, t, args["dhat"], args["project_to_psd"], 1e6);
 						x = sol;
 						tmp_sol = x;
 

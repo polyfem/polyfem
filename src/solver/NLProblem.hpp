@@ -28,6 +28,8 @@ namespace polyfem
 		bool is_step_collision_free(const TVector &x0, const TVector &x1);
 		double max_step_size(const TVector &x0, const TVector &x1);
 
+		void post_step(const TVector &x0);
+
 #include <polyfem/DisableWarnings.hpp>
 		virtual void hessian(const TVector &x, THessian &hessian);
 		virtual void hessian_full(const TVector &x, THessian &gradv);
@@ -103,6 +105,8 @@ namespace polyfem
 
 		const Eigen::MatrixXd &current_rhs();
 
+		virtual bool stop(const TVector &x) { return false; }
+
 	protected:
 		double _barrier_stiffness;
 
@@ -120,6 +124,7 @@ namespace polyfem
 		bool project_to_psd;
 
 		double _dhat;
+		double _prev_distance;
 
 		double dt;
 		TVector x_prev, v_prev, a_prev;
