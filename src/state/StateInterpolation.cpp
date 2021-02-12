@@ -215,12 +215,12 @@ namespace polyfem
         }
     }
 
-    void State::interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result)
+    void State::interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result, MatrixXd &stresses, MatrixXd &mises)
     {
-        interpolate_boundary_tensor_function(pts, faces, fun, Eigen::MatrixXd::Zero(pts.rows(), pts.cols()), compute_avg, result);
+        interpolate_boundary_tensor_function(pts, faces, fun, Eigen::MatrixXd::Zero(pts.rows(), pts.cols()), compute_avg, result, stresses, mises);
     }
 
-    void State::interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const MatrixXd &disp, const bool compute_avg, MatrixXd &result)
+    void State::interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const MatrixXd &disp, const bool compute_avg, MatrixXd &result, MatrixXd &stresses, MatrixXd &mises)
     {
         if (!mesh)
         {
@@ -265,8 +265,15 @@ namespace polyfem
         tree.init(pts, faces);
 
         const auto &gbases = iso_parametric() ? bases : geom_bases;
+
         result.resize(faces.rows(), actual_dim);
         result.setConstant(std::numeric_limits<double>::quiet_NaN());
+
+        stresses.resize(faces.rows(), actual_dim * actual_dim);
+        stresses.setConstant(std::numeric_limits<double>::quiet_NaN());
+
+        mises.resize(faces.rows(), 1);
+        mises.setConstant(std::numeric_limits<double>::quiet_NaN());
 
         int counter = 0;
 
@@ -321,7 +328,7 @@ namespace polyfem
                         }
                     }
 
-                    if(count == faces.cols())
+                    if (count == faces.cols())
                         break;
                 }
                 assert(lfid < mesh3d.n_cell_faces(e));
@@ -339,7 +346,8 @@ namespace polyfem
                 else
                     assert(false);
 
-                Eigen::RowVector3d tet_n; tet_n.setZero();
+                Eigen::RowVector3d tet_n;
+                tet_n.setZero();
                 ElementAssemblyValues vals;
                 vals.compute(e, true, points, bs, gbs);
                 for (int n = 0; n < vals.jac_it.size(); ++n)
@@ -349,21 +357,34 @@ namespace polyfem
                     tet_n += tmp;
                 }
 
-                Eigen::MatrixXd loc_val;
+                Eigen::MatrixXd loc_val, local_mises;
                 assembler.compute_tensor_value(formulation(), e, bs, gbs, points, fun, loc_val);
+                assembler.compute_scalar_value(formulation(), e, bs, gbs, points, fun, local_mises);
                 Eigen::VectorXd tmp(loc_val.cols());
+                const double tmp_mises = (local_mises.array() * weights.array()).sum();
+
                 for (int d = 0; d < loc_val.cols(); ++d)
                     tmp(d) = (loc_val.col(d).array() * weights.array()).sum();
                 const Eigen::MatrixXd tensor = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 3, 3);
 
-                assert(std::isnan(result(I, 0)));
                 const Eigen::RowVector3d tmpn = normals.row(I);
                 const Eigen::RowVector3d tmptf = tmpn * tensor;
                 if (tmpn.dot(tet_n) > 0)
                 {
+                    assert(std::isnan(result(I, 0)));
+                    assert(std::isnan(stresses(I, 0)));
+                    assert(std::isnan(mises(I)));
+
                     result.row(I) = tmptf;
+                    stresses.row(I) = tmp;
+                    mises(I) = tmp_mises;
+
                     if (compute_avg)
+                    {
                         result.row(I) /= weights.sum();
+                        stresses.row(I) /= weights.sum();
+                        mises(I) /= weights.sum();
+                    }
                     ++counter;
                 }
             }
