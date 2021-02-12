@@ -1389,7 +1389,7 @@ namespace polyfem
 
 					const auto &gbases = iso_parametric() ? bases : geom_bases;
 					igl::Timer update_timer;
-					if (true)
+					if (args["has_collision"])
 					{
 						ALNLProblem alnl_problem(*this, rhs_assembler, t, args["dhat"], args["project_to_psd"], 1e6);
 						x = sol;

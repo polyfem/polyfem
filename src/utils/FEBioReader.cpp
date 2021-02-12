@@ -456,10 +456,17 @@ namespace polyfem
             has_collisions = true;
         }
 
+        Eigen::MatrixXd V;
+        load_nodes(geometry, V);
+
+        const Eigen::MatrixXd box_min = V.colwise().minCoeff();
+        const Eigen::MatrixXd box_max = V.colwise().maxCoeff();
+        const double diag = (box_max - box_min).norm();
+
         if (has_collisions)
         {
             state.args["has_collision"] = true;
-            // state.args["dhat"] = 1e-3;
+            state.args["dhat"] = 1e-3 * diag;
             state.args["project_to_psd"] = true;
             state.args["line_search"] = "bisection";
             state.args["solver_params"]["gradNorm"] = 1e-5;
@@ -467,8 +474,7 @@ namespace polyfem
             state.args["solver_params"]["useGradNorm"] = false;
         }
 
-        Eigen::MatrixXd V;
-        load_nodes(geometry, V);
+        logger().trace("dhat = {}", 1e-3 * diag);
 
         Eigen::MatrixXi T;
         std::vector<std::vector<int>> nodes;
