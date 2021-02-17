@@ -420,7 +420,10 @@ void CornerFlow::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const E
 	{
 		if (mesh.get_boundary_id(global_ids(i)) == 2)
 		{
-			val(i, 1) = U_;
+			const double x = pts(i, 0);
+			const double y = pts(i, 1);
+			val(i, 1) = U_ * 4 * x * (0.5 - x) / 0.5 / 0.5;
+			// val(i, 1) = U_;
 		}
 	}
 
@@ -435,6 +438,55 @@ void CornerFlow::set_parameters(const json &params)
 	if (params.find("U") != params.end())
 	{
 		U_ = params["U"];
+	}
+	if (params.find("time_dependent") != params.end())
+	{
+		is_time_dependent_ = params["time_dependent"];
+	}
+}
+
+Lshape::Lshape(const std::string &name)
+	: TimeDepentendStokesProblem(name)
+{
+	boundary_ids_ = {1, 2, 4, 7};
+	U_ = 1;
+}
+
+void Lshape::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+}
+
+void Lshape::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+
+	for (long i = 0; i < pts.rows(); ++i)
+	{
+		if (mesh.get_boundary_id(global_ids(i)) == 1)
+		{
+			const double x = pts(i, 0);
+			const double y = pts(i, 1);
+			// val(i, 0) = U_ * (y - 0.2) * (0.5 - y) / 0.15 / 0.15;
+			val(i, 0) = U_;
+		}
+	}
+
+	if (is_time_dependent_)
+		val *= (1 - exp(-5 * t));
+}
+
+void Lshape::set_parameters(const json &params)
+{
+	TimeDepentendStokesProblem::set_parameters(params);
+
+	if (params.find("U") != params.end())
+	{
+		U_ = params["U"];
+	}
+	if (params.find("time_dependent") != params.end())
+	{
+		is_time_dependent_ = params["time_dependent"];
 	}
 }
 
@@ -627,6 +679,72 @@ void StokesLawProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, c
 			val(i, 2) = pow(radius, 3) / 4 * (tmp1 * z - 1 / pow(norm, 3)) + 1 - 3 * radius / 4 * (1 / norm + tmp2 * z);
 		}
 	}
+}
+
+Airfoil::Airfoil(const std::string &name)
+	: Problem(name)
+{
+	boundary_ids_ = {1, 2, 3, 4, 5, 6, 7};
+	is_time_dependent_ = false;
+}
+
+void Airfoil::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+{
+	exact(pts, 0, val);
+}
+
+void Airfoil::set_parameters(const json &params)
+{
+	if (params.find("time_dependent") != params.end())
+	{
+		is_time_dependent_ = params["time_dependent"];
+	}
+}
+
+void Airfoil::exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val.resize(pts.rows(), pts.cols());
+	val.setZero();
+	for(int i = 0; i < pts.rows(); ++i)
+	{
+		const double x = pts(i, 0);
+		const double y = pts(i, 1);
+
+		val(i, 0) = 1;
+	}
+
+	if (is_time_dependent_)
+		val *= (1 - exp(-5 * t));
+}
+
+void Airfoil::exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val.resize(pts.rows(), pts.cols() * pts.cols());
+	val.setZero();
+}
+
+void Airfoil::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val.resize(pts.rows(), pts.cols());
+	val.setZero();
+}
+
+void Airfoil::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val.resize(pts.rows(), pts.cols());
+	val.setZero();
+	for(int i = 0; i < pts.rows(); ++i)
+	{
+		const double x = pts(i, 0);
+		const double y = pts(i, 1);
+
+		if (mesh.get_boundary_id(global_ids(i)) != 7)
+		{
+			val(i, 0) = 1;
+		}
+	}
+	if (is_time_dependent_)
+		val *= (1 - exp(-5 * t));
 }
 
 TaylorGreenVortexProblem::TaylorGreenVortexProblem(const std::string &name)

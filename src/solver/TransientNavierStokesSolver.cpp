@@ -69,16 +69,16 @@ namespace polyfem
 			x(i) = b(i);
 		}
 
-		// if (state.use_avg_pressure)
-		// {
-		// 	b[b.size() - 1] = 0;
-		// }
-		// dirichlet_solve(*solver, stoke_stiffness, b, state.boundary_nodes, x, precond_num);
-		// solver->getInfo(solver_info);
-		// time.stop();
-		// stokes_solve_time = time.getElapsedTimeInSec();
-		// logger().debug("\tStokes solve time {}s", time.getElapsedTimeInSec());
-		// logger().debug("\tStokes solver error: {}", (stoke_stiffness * x - b).norm());
+		if (state.use_avg_pressure)
+		{
+			b[b.size() - 1] = 0;
+		}
+		dirichlet_solve(*solver, stoke_stiffness, b, state.boundary_nodes, x, precond_num);
+		solver->getInfo(solver_info);
+		time.stop();
+		stokes_solve_time = time.getElapsedTimeInSec();
+		logger().debug("\tStokes solve time {}s", time.getElapsedTimeInSec());
+		logger().debug("\tStokes solver error: {}", (stoke_stiffness * x - b).norm());
 		// return;
 
 		assembly_time = 0;
@@ -86,13 +86,13 @@ namespace polyfem
 
 		int it = 0;
 		double nlres_norm = 0;
-		// b = rhs + prev_sol_mass;
+		b = rhs + prev_sol_mass;
 
 		if (state.use_avg_pressure)
 		{
 			b[b.size() - 1] = 0;
 		}
-		// it += minimize_aux(state.formulation() + "Picard", state, dt, velocity_stiffness, mixed_stiffness, pressure_stiffness, velocity_mass, b, 1e-3, solver, nlres_norm, x);
+		it += minimize_aux(state.formulation() + "Picard", state, dt, velocity_stiffness, mixed_stiffness, pressure_stiffness, velocity_mass, b, 1e-3, solver, nlres_norm, x);
 		it += minimize_aux(state.formulation(), state, dt, velocity_stiffness, mixed_stiffness, pressure_stiffness, velocity_mass, b, gradNorm, solver, nlres_norm, x);
 
 		solver_info["iterations"] = it;
