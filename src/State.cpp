@@ -507,7 +507,9 @@ namespace polyfem
 			if (!use_avg_pressure)
 			{
 				const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
-				boundary_nodes.push_back(n_bases * problem_dim + 0);
+				const bool has_neumann = args["has_neumann"];
+				if (!has_neumann)
+					boundary_nodes.push_back(n_bases * problem_dim + 0);
 
 				// boundary_nodes.push_back(n_bases * problem_dim + 1);
 				// boundary_nodes.push_back(n_bases * problem_dim + 2);
