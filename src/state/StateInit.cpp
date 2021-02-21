@@ -86,8 +86,6 @@ namespace polyfem
 
         problem = ProblemFactory::factory().get_problem("Linear");
 
-        use_avg_pressure = true;
-
         this->args = {
             {"mesh", ""},
             {"force_linear_geometry", false},
@@ -125,6 +123,7 @@ namespace polyfem
             {"discr_order_max", autogen::MAX_P_BASES},
             {"pressure_discr_order", 1},
             {"use_p_ref", false},
+            {"has_neumann", false},
             {"use_spline", false},
             {"iso_parametric", false},
             {"integral_constraints", 2},
@@ -212,6 +211,8 @@ namespace polyfem
     void State::init(const json &args_in)
     {
         this->args.merge_patch(args_in);
+
+        use_avg_pressure = !args["has_neumann"];
 
         if (args_in.find("stiffness_mat_save_path") != args_in.end() && !args_in["stiffness_mat_save_path"].empty())
         {
