@@ -371,9 +371,11 @@ namespace polyfem
 		//works in 2 and 3d. if the mesh is not simplicial it gets tri/tet halized
 		void build_vis_mesh(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXi &el_id, Eigen::MatrixXd &discr);
 
-		//saves the vtu file for time t, internal usage
+		//saves the vtu file for time t
 		void save_vtu(const std::string &name, const double t);
-		//saves an obj of the wireframe, internal usage
+		//saves the surface vtu file for for surface quantites, eg traction forces
+		void save_surface(const std::string &name);
+		//saves an obj of the wireframe
 		void save_wire(const std::string &name, bool isolines = false);
 
 		//samples to solution on the visualization mesh and return the vis mesh (points and tets) and the interpolated values (fun)
