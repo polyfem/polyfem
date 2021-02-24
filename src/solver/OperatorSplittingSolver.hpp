@@ -633,6 +633,12 @@ namespace polyfem
                     local_pts_particle.setRandom(ppe, dim);
                     local_pts_particle.array() += 1;
                     local_pts_particle.array() /= 2;
+                    if (shape == 3 && dim == 2 && local_pts_particle.sum() > 1) {
+                        double x = 1 - local_pts_particle(0, 1);
+                        local_pts_particle(0, 1) = 1 - local_pts_particle(0, 0);
+                        local_pts_particle(0, 0) = x;
+                        //TODO: dim == 3
+                    }
 
                     // geometry vertices of element e
                     std::vector<RowVectorNd> vert(shape);
@@ -742,6 +748,12 @@ namespace polyfem
                         local_pts_particle.setRandom(1, dim);
                         local_pts_particle.array() += 1;
                         local_pts_particle.array() /= 2;
+                        if (shape == 3 && dim == 2 && local_pts_particle.sum() > 1) {
+                            double x = 1 - local_pts_particle(0, 1);
+                            local_pts_particle(0, 1) = 1 - local_pts_particle(0, 0);
+                            local_pts_particle(0, 0) = x;
+                            //TODO: dim == 3
+                        }
 
                         // compute global position and velocity of particles
                         // construct interpolant (linear for position)
@@ -795,20 +807,20 @@ namespace polyfem
                 Eigen::VectorXi I(1);
                 Eigen::MatrixXd local_pos;
 
-                if (insideDomain) {
-                    if((I(0) = search_cell(gbases, position_particle[pI], local_pos)) == -1)
-                    {
-                        I(0) = handle_boundary_advection(position_particle[pI]);
-                        calculate_local_pts(gbases[I(0)], I(0), position_particle[pI], local_pos);
-                    }
+                // if (insideDomain) {
+                if((I(0) = search_cell(gbases, position_particle[pI], local_pos)) == -1)
+                {
+                    I(0) = handle_boundary_advection(position_particle[pI]);
+                    calculate_local_pts(gbases[I(0)], I(0), position_particle[pI], local_pos);
+                }
 
-                    // construct interpolator (always linear for P2G, can use gaussian or bspline later)
-                    velocity_interpolator[pI].compute(I(0), dim == 3, local_pos, gbases[I(0)], gbases[I(0)]);
-                    cellI_particle[pI] = I(0);
-                }
-                else {
-                    cellI_particle[pI] = -1;
-                }
+                // construct interpolator (always linear for P2G, can use gaussian or bspline later)
+                velocity_interpolator[pI].compute(I(0), dim == 3, local_pos, gbases[I(0)], gbases[I(0)]);
+                cellI_particle[pI] = I(0);
+                // }
+                // else {
+                //     cellI_particle[pI] = -1;
+                // }
                 
             }
 #ifdef POLYFEM_WITH_TBB
