@@ -1087,7 +1087,13 @@ namespace polyfem
             else
             {
                 assert(lgrad.size() == actual_dim * actual_dim);
-                Map<Eigen::MatrixXd> tensor(lgrad.data(), actual_dim, actual_dim);
+                Eigen::MatrixXd tensor_flat;
+                const auto &gbases = iso_parametric() ? bases : geom_bases;
+                const ElementBases &gbs = gbases[el_index];
+                const ElementBases &bs = bases[el_index];
+                assembler.compute_tensor_value(formulation(), el_index, bs, gbs, boundary_vis_local_vertices.row(i), sol, tensor_flat);
+                assert(tensor_flat.size() == actual_dim * actual_dim);
+                Map<Eigen::MatrixXd> tensor(tensor_flat.data(), actual_dim, actual_dim);
                 vect.row(i) = boundary_vis_normals.row(i) * tensor;
             }
         }
