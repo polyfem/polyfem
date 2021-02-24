@@ -633,11 +633,13 @@ namespace polyfem
                     local_pts_particle.setRandom(ppe, dim);
                     local_pts_particle.array() += 1;
                     local_pts_particle.array() /= 2;
-                    if (shape == 3 && dim == 2 && local_pts_particle.sum() > 1) {
-                        double x = 1 - local_pts_particle(0, 1);
-                        local_pts_particle(0, 1) = 1 - local_pts_particle(0, 0);
-                        local_pts_particle(0, 0) = x;
-                        //TODO: dim == 3
+                    for (int ppeI = 0; ppeI < ppe; ++ppeI) {
+                        if (shape == 3 && dim == 2 && local_pts_particle.row(ppeI).sum() > 1) {
+                            double x = 1 - local_pts_particle(ppeI, 1);
+                            local_pts_particle(ppeI, 1) = 1 - local_pts_particle(ppeI, 0);
+                            local_pts_particle(ppeI, 0) = x;
+                            //TODO: dim == 3
+                        }
                     }
 
                     // geometry vertices of element e
