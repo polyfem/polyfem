@@ -382,7 +382,7 @@ namespace polyfem
 		void save_surface(const std::string &name);
 		//saves an obj of the wireframe
 		void save_wire(const std::string &name, bool isolines = false);
-		void save_boundary_vtu(const std::string &path);
+		// void save_boundary_vtu(const std::string &path);
 
 		//samples to solution on the visualization mesh and return the vis mesh (points and tets) and the interpolated values (fun)
 		void get_sampled_solution(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXd &fun, bool boundary_only = false)

@@ -1054,7 +1054,7 @@ namespace polyfem
 						solution_frames.emplace_back();
 					save_vtu("step_" + std::to_string(0) + ".vtu", 0.);
 					extract_vis_boundary_mesh();
-					save_boundary_vtu("boundary_" + std::to_string(0) + ".vtu");
+					save_surface("boundary_" + std::to_string(0) + ".vtu");
 				}
 
 				for (int t = 1; t <= time_steps; t++)
@@ -1101,7 +1101,7 @@ namespace polyfem
 						if (!solve_export_to_file)
 							solution_frames.emplace_back();
 						save_vtu("step_" + std::to_string(t) + ".vtu", time);
-						save_boundary_vtu("boundary_" + std::to_string(t) + ".vtu");
+						save_surface("boundary_" + std::to_string(t) + ".vtu");
 					}
 				}
 			}
@@ -1134,7 +1134,7 @@ namespace polyfem
 						solution_frames.emplace_back();
 					save_vtu("step_" + std::to_string(0) + ".vtu", 0);
 					extract_vis_boundary_mesh();
-					save_boundary_vtu("boundary_" + std::to_string(0) + ".vtu");
+					save_surface("boundary_" + std::to_string(0) + ".vtu");
 					// save_wire("step_" + std::to_string(0) + ".obj");
 				}
 
@@ -1176,7 +1176,7 @@ namespace polyfem
 						if (!solve_export_to_file)
 							solution_frames.emplace_back();
 						save_vtu("step_" + std::to_string(t) + ".vtu", time);
-						save_boundary_vtu("boundary_" + std::to_string(t) + ".vtu");
+						save_surface("boundary_" + std::to_string(t) + ".vtu");
 						// save_wire("step_" + std::to_string(t) + ".obj");
 					}
 				}
