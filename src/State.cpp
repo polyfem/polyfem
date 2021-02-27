@@ -583,8 +583,8 @@ namespace polyfem
 		logger().info("Extracting boundary mesh...");
 		extract_boundary_mesh();
 		extract_boundary_mesh_pressure();
-		const std::string export_surface = args["export"]["surface"];
-		if (!export_surface.empty())
+		// const std::string export_surface = args["export"]["surface"];
+		// if (!export_surface.empty())
 			extract_vis_boundary_mesh();
 		logger().info("Done!");
 

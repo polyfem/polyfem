@@ -817,120 +817,7 @@ namespace polyfem
 
         if (!export_surface.empty())
         {
-            const bool material_params = args["export"]["material_params"];
-            const bool body_ids = args["export"]["body_ids"];
-
-            VTUWriter writer;
-            Eigen::MatrixXd fun, interp_p, discr, vect;
-
-            Eigen::MatrixXd lsol, lp, lgrad, lpgrad;
-
-            int actual_dim = 1;
-            if (!problem->is_scalar())
-                actual_dim = mesh->dimension();
-
-            discr.resize(boundary_vis_vertices.rows(), 1);
-            fun.resize(boundary_vis_vertices.rows(), actual_dim);
-            interp_p.resize(boundary_vis_vertices.rows(), 1);
-            vect.resize(boundary_vis_vertices.rows(), mesh->dimension());
-
-            for (int i = 0; i < boundary_vis_vertices.rows(); ++i)
-            {
-                const int el_index = boundary_vis_elements_ids(i);
-                interpolate_at_local_vals(el_index, boundary_vis_local_vertices.row(i), sol, lsol, lgrad);
-                assert(lsol.size() == actual_dim);
-                if (assembler.is_mixed(formulation()))
-                {
-                    interpolate_at_local_vals(el_index, 1, pressure_bases, boundary_vis_local_vertices.row(i), pressure, lp, lpgrad);
-                    assert(lp.size() == 1);
-                    interp_p(i) = lp(0);
-                }
-
-                discr(i) = disc_orders(el_index);
-                for (int j = 0; j < actual_dim; ++j)
-                {
-                    fun(i, j) = lsol(j);
-                }
-
-                if (actual_dim == 1)
-                {
-                    assert(lgrad.size() == mesh->dimension());
-                    for (int j = 0; j < mesh->dimension(); ++j)
-                    {
-                        vect(i, j) = lgrad(j);
-                    }
-                }
-                else
-                {
-                    assert(lgrad.size() == actual_dim * actual_dim);
-                    Map<Eigen::MatrixXd> tensor(lgrad.data(), actual_dim, actual_dim);
-                    vect.row(i) = boundary_vis_normals.row(i) * tensor;
-                }
-            }
-
-            if (solve_export_to_file)
-            {
-                writer.add_field("normals", boundary_vis_normals);
-                writer.add_field("solution", fun);
-                if (assembler.is_mixed(formulation()))
-                    writer.add_field("pressure", interp_p);
-                writer.add_field("discr", discr);
-
-                if (actual_dim == 1)
-                    writer.add_field("solution_grad", vect);
-                else
-                    writer.add_field("traction_force", vect);
-            }
-            else
-            {
-                solution_frames.back().solution = fun;
-                if (assembler.is_mixed(formulation()))
-                    solution_frames.back().pressure = interp_p;
-            }
-
-            if (material_params)
-            {
-                const LameParameters &params = assembler.lame_params();
-
-                Eigen::MatrixXd lambdas(boundary_vis_vertices.rows(), 1);
-                Eigen::MatrixXd mus(boundary_vis_vertices.rows(), 1);
-                Eigen::MatrixXd rhos(boundary_vis_vertices.rows(), 1);
-
-                for (int i = 0; i < boundary_vis_vertices.rows(); ++i)
-                {
-                    double lambda, mu;
-
-                    params.lambda_mu(boundary_vis_vertices(i, 0), boundary_vis_vertices(i, 1), boundary_vis_vertices.cols() >= 3 ? boundary_vis_vertices(i, 2) : 0, boundary_vis_elements_ids(i), lambda, mu);
-                    lambdas(i) = lambda;
-                    mus(i) = mu;
-                    rhos(i) = density(boundary_vis_vertices(i, 0), boundary_vis_vertices(i, 1), boundary_vis_vertices.cols() >= 3 ? boundary_vis_vertices(i, 2) : 0, boundary_vis_elements_ids(i));
-                }
-
-                writer.add_field("lambda", lambdas);
-                writer.add_field("mu", mus);
-                writer.add_field("rho", rhos);
-            }
-
-            if (body_ids)
-            {
-
-                Eigen::MatrixXd ids(boundary_vis_vertices.rows(), 1);
-
-                for (int i = 0; i < boundary_vis_vertices.rows(); ++i)
-                {
-                    ids(i) = mesh->get_body_id(boundary_vis_elements_ids(i));
-                }
-
-                writer.add_field("body_ids", ids);
-            }
-            if (solve_export_to_file)
-                writer.write_mesh(export_surface, boundary_vis_vertices, boundary_vis_elements);
-            else
-            {
-                solution_frames.back().name = export_surface;
-                solution_frames.back().points = boundary_vis_vertices;
-                solution_frames.back().connectivity = boundary_vis_elements;
-            }
+            save_surface(export_surface);
         }
 
         const double tend = args["tend"];
@@ -1301,8 +1188,9 @@ namespace polyfem
         }
     }
 
-    void State::save_boundary_vtu(const std::string &export_surface)
+    void State::save_surface(const std::string &export_surface)
     {
+        const bool material_params = args["export"]["material_params"];
         const bool body_ids = args["export"]["body_ids"];
 
         VTUWriter writer;
@@ -1348,7 +1236,13 @@ namespace polyfem
             else
             {
                 assert(lgrad.size() == actual_dim * actual_dim);
-                Map<Eigen::MatrixXd> tensor(lgrad.data(), actual_dim, actual_dim);
+                Eigen::MatrixXd tensor_flat;
+                const auto &gbases = iso_parametric() ? bases : geom_bases;
+                const ElementBases &gbs = gbases[el_index];
+                const ElementBases &bs = bases[el_index];
+                assembler.compute_tensor_value(formulation(), el_index, bs, gbs, boundary_vis_local_vertices.row(i), sol, tensor_flat);
+                assert(tensor_flat.size() == actual_dim * actual_dim);
+                Map<Eigen::MatrixXd> tensor(tensor_flat.data(), actual_dim, actual_dim);
                 vect.row(i) = boundary_vis_normals.row(i) * tensor;
             }
         }
@@ -1371,6 +1265,29 @@ namespace polyfem
             solution_frames.back().solution = fun;
             if (assembler.is_mixed(formulation()))
                 solution_frames.back().pressure = interp_p;
+        }
+
+        if (material_params)
+        {
+            const LameParameters &params = assembler.lame_params();
+
+            Eigen::MatrixXd lambdas(boundary_vis_vertices.rows(), 1);
+            Eigen::MatrixXd mus(boundary_vis_vertices.rows(), 1);
+            Eigen::MatrixXd rhos(boundary_vis_vertices.rows(), 1);
+
+            for (int i = 0; i < boundary_vis_vertices.rows(); ++i)
+            {
+                double lambda, mu;
+
+                params.lambda_mu(boundary_vis_vertices(i, 0), boundary_vis_vertices(i, 1), boundary_vis_vertices.cols() >= 3 ? boundary_vis_vertices(i, 2) : 0, boundary_vis_elements_ids(i), lambda, mu);
+                lambdas(i) = lambda;
+                mus(i) = mu;
+                rhos(i) = density(boundary_vis_vertices(i, 0), boundary_vis_vertices(i, 1), boundary_vis_vertices.cols() >= 3 ? boundary_vis_vertices(i, 2) : 0, boundary_vis_elements_ids(i));
+            }
+
+            writer.add_field("lambda", lambdas);
+            writer.add_field("mu", mus);
+            writer.add_field("rho", rhos);
         }
 
         if (body_ids)
