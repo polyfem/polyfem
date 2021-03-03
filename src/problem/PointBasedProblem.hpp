@@ -60,8 +60,16 @@ namespace polyfem
 				rbf_func.init(fun, pts, rbf, eps);
 				is_tri = false;
 
-				coordiante_0 = (coord + 1) % 3;
-				coordiante_1 = (coord + 2) % 3;
+				if (coord >= 0)
+				{
+					coordiante_0 = (coord + 1) % 3;
+					coordiante_1 = (coord + 2) % 3;
+				}
+				else
+				{
+					coordiante_0 = -1;
+					coordiante_1 = -1;
+				}
 
 				dirichelt_dims = dd;
 
@@ -88,6 +96,7 @@ namespace polyfem
 		bool is_rhs_zero() const override { return abs(rhs_) < 1e-10; }
 
 		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		void neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const override;
 
 		bool has_exact_sol() const override { return false; }
 		bool is_scalar() const override { return false; }
@@ -115,9 +124,9 @@ namespace polyfem
 			add_function(bc_tag, func, pts, rbf, eps, coord, dd);
 		}
 
-		void add_constant(const int bc_tag, const Eigen::Vector3d &value, const Eigen::Matrix<bool, 3, 1> &dd);
-		void add_function(const int bc_tag, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tri, const int coord, const Eigen::Matrix<bool, 3, 1> &dd);
-		void add_function(const int bc_tag, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const std::string &rbf, const double eps, const int coord, const Eigen::Matrix<bool, 3, 1> &dd);
+		void add_constant(const int bc_tag, const Eigen::Vector3d &value, const Eigen::Matrix<bool, 3, 1> &dd, const bool is_neumann = false);
+		void add_function(const int bc_tag, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tri, const int coord, const Eigen::Matrix<bool, 3, 1> &dd, const bool is_neumann = false);
+		void add_function(const int bc_tag, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const std::string &rbf, const double eps, const int coord, const Eigen::Matrix<bool, 3, 1> &dd, const bool is_neumann = false);
 
 		bool is_dimention_dirichet(const int tag, const int dim) const override;
 		bool all_dimentions_dirichelt() const override { return all_dimentions_dirichelt_; }
@@ -129,5 +138,6 @@ namespace polyfem
 		double scaling_;
 		Eigen::Vector3d translation_;
 		std::vector<BCValue> bc_;
+		std::vector<BCValue> neumann_bc_;
 	};
 } // namespace polyfem
