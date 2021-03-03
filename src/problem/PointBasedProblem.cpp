@@ -197,7 +197,10 @@ namespace polyfem
 		{
 			neumann_boundary_ids_.push_back(bc_tag);
 			neumann_bc_.emplace_back();
-			neumann_bc_.back().init(pts.block(0, 0, pts.rows(), 2), func, rbf, eps, coord, dd);
+			if (coord >= 0)
+				neumann_bc_.back().init(pts.block(0, 0, pts.rows(), 2), func, rbf, eps, coord, dd);
+			else
+				neumann_bc_.back().init(pts, func, rbf, eps, coord, dd);
 		}
 		else
 		{
@@ -205,7 +208,10 @@ namespace polyfem
 
 			boundary_ids_.push_back(bc_tag);
 			bc_.emplace_back();
-			bc_.back().init(pts.block(0, 0, pts.rows(), 2), func, rbf, eps, coord, dd);
+			if (coord >= 0)
+				bc_.back().init(pts.block(0, 0, pts.rows(), 2), func, rbf, eps, coord, dd);
+			else
+				bc_.back().init(pts, func, rbf, eps, coord, dd);
 		}
 	}
 
