@@ -79,9 +79,9 @@ namespace polyfem
 		    p = p0 - p1;
 		    double min_edge_length = p.rowwise().norm().minCoeff();
 
-            int total_cell_num = 1;
+            long total_cell_num = 1;
             for(int d = 0; d < dim; d++) {
-                hash_table_cell_num[d] = (int)std::round((max_domain(d) - min_domain(d)) / min_edge_length) * 4;
+                hash_table_cell_num[d] = (long)std::round((max_domain(d) - min_domain(d)) / min_edge_length) * 4;
                 logger().debug("hash grid in {} dimension: {}", d, hash_table_cell_num[d]);
                 total_cell_num *= hash_table_cell_num[d];
             }
@@ -101,7 +101,7 @@ namespace polyfem
                     }
                 }
 
-                Eigen::VectorXi min_int(dim), max_int(dim);
+                Eigen::Matrix<long, Eigen::Dynamic, 1> min_int(dim), max_int(dim);
 
                 for(int d = 0; d < dim; d++)
                 {
@@ -115,21 +115,21 @@ namespace polyfem
                         max_int(d) = hash_table_cell_num[d];
                 }
 
-                for(int x = min_int(0); x < max_int(0); x++)
+                for(long x = min_int(0); x < max_int(0); x++)
                 {
-                    for(int y = min_int(1); y < max_int(1); y++)
+                    for(long y = min_int(1); y < max_int(1); y++)
                     {
                         if(dim == 2)
                         {
-                            int idx = x + y * hash_table_cell_num[0];
+                            long idx = x + y * hash_table_cell_num[0];
                             hash_table[idx].push_back(e);
 
                         }
                         else
                         {
-                            for(int z = min_int(2); z < max_int(2); z++)
+                            for(long z = min_int(2); z < max_int(2); z++)
                             {
-                                int idx = x + (y + z * hash_table_cell_num[1]) * hash_table_cell_num[0];
+                                long idx = x + (y + z * hash_table_cell_num[1]) * hash_table_cell_num[0];
                                 hash_table[idx].push_back(e);
                             }
                         }
@@ -272,7 +272,7 @@ namespace polyfem
                         }
                     }
                     Eigen::MatrixXd val;
-                    problem->initial_solution(mesh, Eigen::MatrixXi::Zero(1,1), pts, val);
+                    problem->initial_solution(mesh, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>::Zero(1,1), pts, val);
                     int global = bases[e].bases[i].global()[0].index;
                     for (int d = 0; d < dim; d++)
                     {
@@ -377,7 +377,7 @@ namespace polyfem
         {
             val = 0;
 
-            Eigen::VectorXi int_pos(dim);
+            Eigen::Matrix<long, Eigen::Dynamic, 1> int_pos(dim);
             Eigen::MatrixXd weights(2, dim);
             for(int d = 0; d < dim; d++)
             {
@@ -391,14 +391,14 @@ namespace polyfem
             {
                 if(dim == 2)
                 {
-                    const int idx = (int_pos(0) + d1) + (int_pos(1) + d2) * (grid_cell_num(0)+1);
+                    const long idx = (int_pos(0) + d1) + (int_pos(1) + d2) * (grid_cell_num(0)+1);
                     val += density(idx) * weights(d1, 0) * weights(d2, 1);
                 }
                 else
                 {
                     for(int d3 = 0; d3 < 2; d3++)
                     {
-                        const int idx = (int_pos(0) + d1) + (int_pos(1) + d2 + (int_pos(2) + d3) * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
+                        const long idx = (int_pos(0) + d1) + (int_pos(1) + d2 + (int_pos(2) + d3) * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
                         val += density(idx) * weights(d1, 0) * weights(d2, 1) * weights(d3, 2);
                     }
                 }
@@ -489,7 +489,7 @@ namespace polyfem
                         Eigen::MatrixXd pos(1, dim);
                         pos(0) = i * resolution + min_domain(0);
                         pos(1) = j * resolution + min_domain(1);
-                        const int idx = i + j * (grid_cell_num(0)+1);
+                        const long idx = i + (long)j * (grid_cell_num(0)+1);
 
                         Eigen::MatrixXd vel1, pos_;
                         problem->exact(pos, t, vel1);
@@ -514,7 +514,7 @@ namespace polyfem
                             pos(0) = i * resolution + min_domain(0);
                             pos(1) = j * resolution + min_domain(1);
                             pos(2) = k * resolution + min_domain(2);
-                            const int idx = i + (j + k * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
+                            const long idx = i + (j + (long)k * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
                             
                             Eigen::MatrixXd vel1, pos_;
                             problem->exact(pos, t, vel1);
@@ -561,7 +561,7 @@ namespace polyfem
                         RowVectorNd pos(1, dim);
                         pos(0) = i * resolution + min_domain(0);
                         pos(1) = j * resolution + min_domain(1);
-                        const int idx = i + j * (grid_cell_num(0)+1);
+                        const long idx = i + (long)j * (grid_cell_num(0)+1);
 
                         RowVectorNd vel1, pos_;
                         interpolator(gbases, bases, pos, vel1, sol);
@@ -586,7 +586,7 @@ namespace polyfem
                             pos(0) = i * resolution + min_domain(0);
                             pos(1) = j * resolution + min_domain(1);
                             pos(2) = k * resolution + min_domain(2);
-                            const int idx = i + (j + k * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
+                            const long idx = i + (j + (long)k * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
                             
                             RowVectorNd vel1, pos_;
                             interpolator(gbases, bases, pos, vel1, sol);
@@ -1166,24 +1166,24 @@ namespace polyfem
         {
             Eigen::MatrixXd pts(1, dim);
             Eigen::MatrixXd tmp;
-            for(int i = 0; i <= grid_cell_num(0); i++)
+            for(long i = 0; i <= grid_cell_num(0); i++)
             {
                 pts(0, 0) = i * resolution + min_domain(0);
-                for(int j = 0; j <= grid_cell_num(1); j++)
+                for(long j = 0; j <= grid_cell_num(1); j++)
                 {
                     pts(0, 1) = j * resolution + min_domain(1);
                     if(dim == 2)
                     {
-                        const int idx = i + j * (grid_cell_num(0)+1);
+                        const long idx = i + j * (grid_cell_num(0)+1);
                         problem->initial_density(pts, tmp);
                         density(idx) = tmp(0);
                     }
                     else
                     {
-                        for(int k = 0; k <= grid_cell_num(2); k++)
+                        for(long k = 0; k <= grid_cell_num(2); k++)
                         {
                             pts(0, 2) = k * resolution + min_domain(2);
-                            const int idx = i + (j + k * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
+                            const long idx = i + (j + k * (grid_cell_num(1)+1)) * (grid_cell_num(0)+1);
                             problem->initial_density(pts, tmp);
                             density(idx) = tmp(0);
                         }
@@ -1192,9 +1192,9 @@ namespace polyfem
             }
         }
 
-        int search_cell(const std::vector<polyfem::ElementBases>& gbases, const RowVectorNd& pos, Eigen::MatrixXd& local_pts)
+        long search_cell(const std::vector<polyfem::ElementBases>& gbases, const RowVectorNd& pos, Eigen::MatrixXd& local_pts)
         {
-            Eigen::VectorXi pos_int(dim);
+            Eigen::Matrix<long, Eigen::Dynamic, 1> pos_int(dim);
             for(int d = 0; d < dim; d++)
             {
                 pos_int(d) = floor((pos(d) - min_domain(d)) / (max_domain(d) - min_domain(d)) * hash_table_cell_num[d]);
@@ -1202,14 +1202,14 @@ namespace polyfem
                 else if(pos_int(d) >= hash_table_cell_num[d]) pos_int(d) = hash_table_cell_num[d] - 1;
             }
 
-            int idx = 0, dim_num = 1;
+            long idx = 0, dim_num = 1;
             for(int d = 0; d < dim; d++)
             {
                 idx += pos_int(d) * dim_num;
                 dim_num *= hash_table_cell_num[d];
             }
 
-            const std::vector<int>& list = hash_table[idx];
+            const std::vector<long>& list = hash_table[idx];
             for(auto it = list.begin(); it != list.end(); it++)
             {
                 calculate_local_pts(gbases[*it], *it, pos, local_pts);
@@ -1424,8 +1424,8 @@ namespace polyfem
         Eigen::MatrixXd V;
         Eigen::MatrixXi T;
 
-        std::vector<std::vector<int> > hash_table;
-        std::array<int, 3>          hash_table_cell_num;
+        std::vector<std::vector<long> > hash_table;
+        std::array<long, 3>          hash_table_cell_num;
 
         std::vector<RowVectorNd> position_particle;
 		std::vector<RowVectorNd> velocity_particle;

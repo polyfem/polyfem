@@ -37,4 +37,4 @@ export CMAKE_LIBRARY_PATH=$(env | grep _LIB= | cut -d= -f2 | xargs | sed -e 's/ 
 mkdir build
 cd build
 cmake ..
-make
+make -j 8
