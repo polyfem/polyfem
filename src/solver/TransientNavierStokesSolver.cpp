@@ -77,6 +77,24 @@ namespace polyfem
 		logger().debug("\tStokes solver error: {}", (stoke_stiffness * x - b).norm());
 		// return;
 
+		std::vector<bool> zero_col(stoke_stiffness.cols(), true);
+		for (int k = 0; k < stoke_stiffness.outerSize(); ++k)
+		{
+			for (StiffnessMatrix::InnerIterator it(stoke_stiffness, k); it; ++it)
+			{
+				if (fabs(it.value()) > 1e-12)
+					zero_col[it.col()] = false;
+			}
+		}
+		std::vector<int> skipping;
+		for (int i = 0; i < zero_col.size(); ++i)
+		{
+			if (zero_col[i])
+			{
+				skipping.push_back(i);
+			}
+		}
+
 		assembly_time = 0;
 		inverting_time = 0;
 
@@ -88,8 +106,8 @@ namespace polyfem
 		{
 			b[b.size() - 1] = 0;
 		}
-		it += minimize_aux(state.formulation() + "Picard", state, dt, velocity_stiffness, mixed_stiffness, pressure_stiffness, velocity_mass, b, 1e-3, solver, nlres_norm, x);
-		it += minimize_aux(state.formulation(), state, dt, velocity_stiffness, mixed_stiffness, pressure_stiffness, velocity_mass, b, gradNorm, solver, nlres_norm, x);
+		it += minimize_aux(state.formulation() + "Picard", skipping, state, dt, velocity_stiffness, mixed_stiffness, pressure_stiffness, velocity_mass, b, 1e-3, solver, nlres_norm, x);
+		it += minimize_aux(state.formulation(), skipping, state, dt, velocity_stiffness, mixed_stiffness, pressure_stiffness, velocity_mass, b, gradNorm, solver, nlres_norm, x);
 
 		solver_info["iterations"] = it;
 		solver_info["gradNorm"] = nlres_norm;
@@ -106,7 +124,7 @@ namespace polyfem
 	}
 
 	int TransientNavierStokesSolver::minimize_aux(
-		const std::string &formulation, const State &state, const double dt,
+		const std::string &formulation, const std::vector<int> &skipping, const State &state, const double dt,
 		const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
 		const StiffnessMatrix &velocity_mass,
 		const Eigen::VectorXd &rhs, const double grad_norm,
@@ -133,6 +151,8 @@ namespace polyfem
 
 		Eigen::VectorXd nlres = -(total_matrix * x) + rhs;
 		for (int i : state.boundary_nodes)
+			nlres[i] = 0;
+		for (int i : skipping)
 			nlres[i] = 0;
 		Eigen::VectorXd dx;
 		nlres_norm = nlres.norm();
@@ -174,9 +194,11 @@ namespace polyfem
 			nlres = -(total_matrix * x) + rhs;
 			for (int i : state.boundary_nodes)
 				nlres[i] = 0;
+			for (int i : skipping)
+				nlres[i] = 0;
 
-			//warning here
-			nlres[nlres.size() - 1] = 0;
+			// if (state.use_avg_pressure)
+			// nlres[nlres.size() - 1] = 0;
 			nlres_norm = nlres.norm();
 
 			polyfem::logger().debug("\titer: {},  ||g||_2 = {}, ||step|| = {}\n",

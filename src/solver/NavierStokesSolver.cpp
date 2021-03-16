@@ -69,6 +69,24 @@ namespace polyfem
 		logger().debug("\tStokes solve time {}s", time.getElapsedTimeInSec());
 		logger().debug("\tStokes solver error: {}", (stoke_stiffness * x - b).norm());
 
+		std::vector<bool> zero_col(stoke_stiffness.cols(), true);
+		for (int k = 0; k < stoke_stiffness.outerSize(); ++k)
+		{
+			for (StiffnessMatrix::InnerIterator it(stoke_stiffness, k); it; ++it)
+			{
+				if (fabs(it.value()) > 1e-12)
+					zero_col[it.col()] = false;
+			}
+		}
+		std::vector<int> skipping;
+		for (int i = 0; i < zero_col.size(); ++i)
+		{
+			if (zero_col[i])
+			{
+				skipping.push_back(i);
+			}
+		}
+
 		assembly_time = 0;
 		inverting_time = 0;
 
@@ -76,8 +94,8 @@ namespace polyfem
 		int it = 0;
 		double nlres_norm = 0;
 		b = rhs;
-		it += minimize_aux(state.formulation() + "Picard", state, velocity_stiffness, mixed_stiffness, pressure_stiffness, b, 1e-3, solver, nlres_norm, x);
-		it += minimize_aux(state.formulation(), state, velocity_stiffness, mixed_stiffness, pressure_stiffness, b, gradNorm, solver, nlres_norm, x);
+		it += minimize_aux(state.formulation() + "Picard", skipping, state, velocity_stiffness, mixed_stiffness, pressure_stiffness, b, 1e-3, solver, nlres_norm, x);
+		it += minimize_aux(state.formulation(), skipping, state, velocity_stiffness, mixed_stiffness, pressure_stiffness, b, gradNorm, solver, nlres_norm, x);
 
 		solver_info["iterations"] = it;
 		solver_info["gradNorm"] = nlres_norm;
@@ -92,7 +110,7 @@ namespace polyfem
 	}
 
 	int NavierStokesSolver::minimize_aux(
-		const std::string &formulation, const State &state,
+		const std::string &formulation, const std::vector<int> &skipping, const State &state,
 		const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
 		const Eigen::VectorXd &rhs, const double grad_norm,
 		std::unique_ptr<LinearSolver> &solver, double &nlres_norm,
@@ -118,6 +136,8 @@ namespace polyfem
 
 		Eigen::VectorXd nlres = -(total_matrix * x) + rhs;
 		for (int i : state.boundary_nodes)
+			nlres[i] = 0;
+		for (int i : skipping)
 			nlres[i] = 0;
 		Eigen::VectorXd dx;
 		nlres_norm = nlres.norm();
@@ -159,6 +179,8 @@ namespace polyfem
 
 			nlres = -(total_matrix * x) + rhs;
 			for (int i : state.boundary_nodes)
+				nlres[i] = 0;
+			for (int i : skipping)
 				nlres[i] = 0;
 			nlres_norm = nlres.norm();
 
