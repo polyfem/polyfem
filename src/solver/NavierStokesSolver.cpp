@@ -62,7 +62,7 @@ namespace polyfem
 		logger().info("{}...", solver->name());
 
 		Eigen::VectorXd b = rhs;
-		dirichlet_solve(*solver, stoke_stiffness, b, state.boundary_nodes, x, precond_num);
+		dirichlet_solve(*solver, stoke_stiffness, b, state.boundary_nodes, x, precond_num, "", false, true, state.use_avg_pressure);
 		// solver->getInfo(solver_info);
 		time.stop();
 		stokes_solve_time = time.getElapsedTimeInSec();
@@ -137,7 +137,7 @@ namespace polyfem
 													 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 													 total_matrix);
 			}
-			dirichlet_solve(*solver, total_matrix, nlres, state.boundary_nodes, dx, precond_num);
+			dirichlet_solve(*solver, total_matrix, nlres, state.boundary_nodes, dx, precond_num, "", false, true, state.use_avg_pressure);
 			// for (int i : state.boundary_nodes)
 			// 	dx[i] = 0;
 			time.stop();
