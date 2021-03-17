@@ -1249,7 +1249,7 @@ namespace polyfem
 							b[i] = 0;
 						b += current_rhs;
 
-						spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], t == time_steps && args["export"]["spectrum"]);
+						spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], t == time_steps && args["export"]["spectrum"], assembler.is_fluid(formulation()), use_avg_pressure);
 						bdf.new_solution(x);
 						sol = x;
 
@@ -1308,7 +1308,7 @@ namespace polyfem
 
 							A = stiffness * beta * dt2 + mass;
 							btmp = b;
-							spectrum = dirichlet_solve(*solver, A, btmp, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], t == 1 && args["export"]["spectrum"]);
+							spectrum = dirichlet_solve(*solver, A, btmp, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], t == 1 && args["export"]["spectrum"], assembler.is_fluid(formulation()), use_avg_pressure);
 							acceleration = x;
 
 							sol += dt * vOld + dt2 * ((1 / 2.0 - beta) * aOld + beta * acceleration);
@@ -1508,7 +1508,7 @@ namespace polyfem
 				A = stiffness;
 				Eigen::VectorXd x;
 				b = rhs;
-				spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
+				spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], args["export"]["spectrum"], assembler.is_fluid(formulation()), use_avg_pressure);
 				sol = x;
 				solver->getInfo(solver_info);
 

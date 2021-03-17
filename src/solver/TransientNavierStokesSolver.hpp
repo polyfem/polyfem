@@ -12,48 +12,48 @@
 namespace polyfem
 {
 
-class TransientNavierStokesSolver
-{
-public:
-	TransientNavierStokesSolver(const json &solver_param, const json &problem_params, const std::string &solver_type, const std::string &precond_type);
-
-	void minimize(const State &state, const double alpha, const double dt, const Eigen::VectorXd &prev_sol,
-				  const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
-				  const StiffnessMatrix &velocity_mass,
-				  const Eigen::MatrixXd &rhs, Eigen::VectorXd &x);
-	void getInfo(json &params)
+	class TransientNavierStokesSolver
 	{
-		params = solver_info;
-	}
+	public:
+		TransientNavierStokesSolver(const json &solver_param, const json &problem_params, const std::string &solver_type, const std::string &precond_type);
 
-	int error_code() const { return 0; }
+		void minimize(const State &state, const double alpha, const double dt, const Eigen::VectorXd &prev_sol,
+					  const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
+					  const StiffnessMatrix &velocity_mass,
+					  const Eigen::MatrixXd &rhs, Eigen::VectorXd &x);
+		void getInfo(json &params)
+		{
+			params = solver_info;
+		}
 
-private:
-	int minimize_aux(const std::string &formulation, const State &state, const double dt,
-					 const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
-					 const StiffnessMatrix &velocity_mass,
-					 const Eigen::VectorXd &rhs, const double grad_norm,
-					 std::unique_ptr<polysolve::LinearSolver> &solver, double &nlres_norm,
-					 Eigen::VectorXd &x);
+		int error_code() const { return 0; }
 
-	const json solver_param;
-	const std::string solver_type;
-	const std::string precond_type;
+	private:
+		int minimize_aux(const std::string &formulation, const std::vector<int> &skipping, const State &state, const double dt,
+						 const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
+						 const StiffnessMatrix &velocity_mass,
+						 const Eigen::VectorXd &rhs, const double grad_norm,
+						 std::unique_ptr<polysolve::LinearSolver> &solver, double &nlres_norm,
+						 Eigen::VectorXd &x);
 
-	double gradNorm;
-	int iterations;
+		const json solver_param;
+		const std::string solver_type;
+		const std::string precond_type;
 
-	json solver_info;
-	json problem_params;
+		double gradNorm;
+		int iterations;
 
-	json internal_solver = json::array();
+		json solver_info;
+		json problem_params;
 
-	double assembly_time;
-	double inverting_time;
-	double stokes_matrix_time;
-	double stokes_solve_time;
+		json internal_solver = json::array();
 
-	bool
-	has_nans(const polyfem::StiffnessMatrix &hessian);
-};
+		double assembly_time;
+		double inverting_time;
+		double stokes_matrix_time;
+		double stokes_solve_time;
+
+		bool
+		has_nans(const polyfem::StiffnessMatrix &hessian);
+	};
 } // namespace polyfem

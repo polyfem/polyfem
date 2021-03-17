@@ -1018,7 +1018,7 @@ namespace polyfem
                 }
                 else
                 {
-                    dirichlet_solve(*solver_diffusion, mat_diffusion, rhs, bnd_nodes, x, mat_diffusion.rows(), "", false);
+                    dirichlet_solve(*solver_diffusion, mat_diffusion, rhs, bnd_nodes, x, mat_diffusion.rows(), "", false, false, false);
                 }
                 
 
@@ -1095,7 +1095,7 @@ namespace polyfem
             }
             else
             {
-                dirichlet_solve(*solver_projection, mat_projection, rhs, std::vector<int>(), x, mat_projection.rows() - 1, "", false);
+                dirichlet_solve(*solver_projection, mat_projection, rhs, std::vector<int>(), x, mat_projection.rows() - 1, "", false, false, false);
             }
             
             pressure = x.head(x.size()-1);
@@ -1118,7 +1118,7 @@ namespace polyfem
             else
             {
                 auto mat = velocity_mass;
-                dirichlet_solve(*solver_mass, mat, rhs, boundary_nodes_, dx, velocity_mass.rows(), "", false);
+                dirichlet_solve(*solver_mass, mat, rhs, boundary_nodes_, dx, velocity_mass.rows(), "", false, false, false);
             }
 
             sol -= dx;
