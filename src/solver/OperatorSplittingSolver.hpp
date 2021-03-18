@@ -77,11 +77,11 @@ namespace polyfem
             Eigen::MatrixXd p0, p1, p;
             mesh.get_edges(p0, p1);
 		    p = p0 - p1;
-		    double min_edge_length = p.rowwise().norm().minCoeff();
+		    double avg_edge_length = p.rowwise().norm().mean();
 
             long total_cell_num = 1;
             for(int d = 0; d < dim; d++) {
-                hash_table_cell_num[d] = (long)std::round((max_domain(d) - min_domain(d)) / min_edge_length) * 4;
+                hash_table_cell_num[d] = (long)std::round((max_domain(d) - min_domain(d)) / avg_edge_length) * 4;
                 logger().debug("hash grid in {} dimension: {}", d, hash_table_cell_num[d]);
                 total_cell_num *= hash_table_cell_num[d];
             }
@@ -331,9 +331,6 @@ namespace polyfem
         const Eigen::MatrixXd& sol,
         const double dt)
         {
-            int new_elem;
-            Eigen::MatrixXd local_pos;
-
             pos_2 = pos_1 - vel_1 * dt;
 
             return interpolator(gbases, bases, pos_2, vel_2, sol);
