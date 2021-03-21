@@ -788,7 +788,7 @@ void TaylorGreenVortexProblem::exact(const Eigen::MatrixXd &pts, const double t,
 			const double time_scaling = -a * exp(-viscosity_ * t);
 			val(i, 0) = (exp(a * x)*sin(a * y+z)+exp(a * z)*cos(a * x+y))*time_scaling;
 			val(i, 1) = (exp(a * y)*sin(a * z+x)+exp(a * x)*cos(a * y+z))*time_scaling;
-			val(i, 2) = (exp(a * z)*sin(a * x+y)+exp(a * y)*sin(a * z+x))*time_scaling;
+			val(i, 2) = (exp(a * z)*sin(a * x+y)+exp(a * y)*cos(a * z+x))*time_scaling;
 		}
 	}
 }
