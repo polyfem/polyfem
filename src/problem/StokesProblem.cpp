@@ -174,13 +174,23 @@ void DrivenCavitySmooth::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids,
 
 	for (long i = 0; i < pts.rows(); ++i)
 	{
-		if (mesh.get_boundary_id(global_ids(i)) == 4)
+		if(pts.cols() == 2)
 		{
-			const double x = pts(i, 0);
-			val(i, 0) = 4 * (1 - x) * x;
+			if (mesh.get_boundary_id(global_ids(i)) == 4)
+			{
+				const double x = pts(i, 0);
+				val(i, 0) = 4 * (1 - x) * x;
+			}
 		}
-		// else if(mesh.get_boundary_id(global_ids(i))== 3)
-		// val(i, 1)=-0.25;
+		else
+		{
+			if (mesh.get_boundary_id(global_ids(i)) == 6)
+			{
+				const double x = pts(i, 0);
+				const double y = pts(i, 1);
+				val(i, 0) = 16 * (1 - x) * x * (1 - y) * y;
+			}
+		}
 	}
 
 	// if (is_time_dependent_)
@@ -305,10 +315,22 @@ void FlowWithObstacle::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, c
 
 	for (long i = 0; i < pts.rows(); ++i)
 	{
-		if (mesh.get_boundary_id(global_ids(i)) == 1)
+		if(pts.cols() == 2)
 		{
-			const double y = pts(i, 1);
-			val(i, 0) = U_ * 4 * y * (0.41 - y) / (0.41 * 0.41);
+			if (mesh.get_boundary_id(global_ids(i)) == 1)
+			{
+				const double y = pts(i, 1);
+				val(i, 0) = U_ * 4 * y * (0.41 - y) / (0.41 * 0.41);
+			}
+		}
+		else
+		{
+			if (mesh.get_boundary_id(global_ids(i)) == 1)
+			{
+				const double y = pts(i, 1);
+				const double z = pts(i, 2);
+				val(i, 0) = U_ * 4 * y * (0.41 - y) / (0.41 * 0.41) * 4 * z * (0.41 - z) / (0.41 * 0.41);
+			}
 		}
 	}
 
@@ -795,19 +817,20 @@ void TaylorGreenVortexProblem::exact(const Eigen::MatrixXd &pts, const double t,
 
 void TaylorGreenVortexProblem::exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 {
-	const double time_scaling = exp(-2 * viscosity_ * t);
-
 	val.resize(pts.rows(), pts.cols() * pts.cols());
-
 	for (int i = 0; i < pts.rows(); ++i)
 	{
 		const double x = pts(i, 0);
 		const double y = pts(i, 1);
 
-		val(i, 0) = -sin(x) * sin(y) * time_scaling;
-		val(i, 1) =  cos(x) * cos(y) * time_scaling;
-		val(i, 2) = -cos(x) * cos(y) * time_scaling;
-		val(i, 3) =  sin(x) * sin(y) * time_scaling;
+		if(pts.cols() == 2)
+		{
+			const double time_scaling = exp(-2 * viscosity_ * t);
+			val(i, 0) = -sin(x) * sin(y) * time_scaling;
+			val(i, 1) =  cos(x) * cos(y) * time_scaling;
+			val(i, 2) = -cos(x) * cos(y) * time_scaling;
+			val(i, 3) =  sin(x) * sin(y) * time_scaling;
+		}
 	}
 }
 
