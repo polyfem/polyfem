@@ -45,6 +45,8 @@
 
 #include <igl/Timer.h>
 
+#include <BVH.hpp>
+
 #include <unsupported/Eigen/SparseExtra>
 
 #include <iostream>
@@ -536,6 +538,102 @@ namespace polyfem
 			ass_vals_cache.init(mesh->is_volume(), bases, curret_bases);
 			if (assembler.is_mixed(formulation()))
 				pressure_ass_vals_cache.init(mesh->is_volume(), pressure_bases, curret_bases);
+		}
+
+		if (args["export"]["sol_on_grid"] > 0)
+		{
+			const double spacing = args["export"]["sol_on_grid"];
+			RowVectorNd min, max;
+			mesh->bounding_box(min, max);
+			const RowVectorNd delta = max - min;
+			const int nx = delta[0] / spacing + 1;
+			const int ny = delta[1] / spacing + 1;
+			const int nz = delta.cols() >= 3 ? (delta[2] / spacing + 1) : 1;
+			const int n = nx * ny * nz;
+
+			grid_points.resize(n, delta.cols());
+			int index = 0;
+			for (int i = 0; i < nx; ++i)
+			{
+				const double x = (delta[0] / (nx - 1)) * i + min[0];
+
+				for (int j = 0; j < ny; ++j)
+				{
+					const double y = (delta[1] / (ny - 1)) * j + min[1];
+
+					if (delta.cols() <= 2)
+					{
+						grid_points.row(index++) << x, y;
+					}
+					else
+					{
+						for (int k = 0; k < nz; ++k)
+						{
+							const double z = (delta[2] / (nz - 1)) * k + min[2];
+							grid_points.row(index++) << x, y, z;
+						}
+					}
+				}
+			}
+
+			assert(index == n);
+
+			std::vector<std::array<Eigen::Vector3d, 2>> boxes;
+			mesh->elements_boxes(boxes);
+
+			BVH::BVH bvh;
+			bvh.init(boxes);
+
+			const double eps = 1e-6;
+
+			grid_points_to_elements.resize(grid_points.rows(), 1);
+			grid_points_to_elements.setConstant(-1);
+
+			grid_points_bc.resize(grid_points.rows(), mesh->is_volume() ? 4 : 3);
+
+			for (int i = 0; i < grid_points.rows(); ++i)
+			{
+				const Eigen::Vector3d min(
+					grid_points(i, 0) - eps,
+					grid_points(i, 1) - eps,
+					(mesh->is_volume() ? grid_points(i, 2) : 0) - eps);
+
+				const Eigen::Vector3d max(
+					grid_points(i, 0) + eps,
+					grid_points(i, 1) + eps,
+					(mesh->is_volume() ? grid_points(i, 2) : 0) + eps);
+
+				std::vector<unsigned int> candidates;
+
+				bvh.intersect_box(min, max, candidates);
+
+				for (const auto cand : candidates)
+				{
+					if (!mesh->is_simplex(cand))
+					{
+						logger().warn("Element {} is not simplex, skipping", cand);
+						continue;
+					}
+
+					Eigen::MatrixXd coords;
+					mesh->barycentric_coords(grid_points.row(i), cand, coords);
+
+					for (int d = 0; d < coords.size(); ++d)
+					{
+						if (fabs(coords(d)) < 1e-8)
+							coords(d) = 0;
+						else if (fabs(coords(d) - 1) < 1e-8)
+							coords(d) = 1;
+					}
+
+					if (coords.array().minCoeff() >= 0 && coords.array().maxCoeff() <= 1)
+					{
+						grid_points_to_elements(i) = cand;
+						grid_points_bc.row(i) = coords;
+						break;
+					}
+				}
+			}
 		}
 	}
 

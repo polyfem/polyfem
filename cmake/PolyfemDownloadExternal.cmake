@@ -130,6 +130,14 @@ function(polyfem_download_ipc)
 endfunction()
 
 
+# BVH MIT
+function(polyfem_download_BVH)
+    polyfem_download_project(BVH
+        GIT_REPOSITORY https://github.com/geometryprocessing/SimpleBVH.git
+        GIT_TAG        15574502f6cb8039b0bfa4a85ccad04e09deaf05
+    )
+endfunction()
+
 # MshIO Apache-2.0
 function(polyfem_download_mshio)
     polyfem_download_project(mshio

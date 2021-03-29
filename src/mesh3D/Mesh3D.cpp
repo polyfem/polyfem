@@ -4,6 +4,8 @@
 
 #include <polyfem/Logger.hpp>
 
+#include <igl/barycentric_coordinates.h>
+
 #include <geogram/mesh/mesh_io.h>
 #include <fstream>
 
@@ -1958,5 +1960,41 @@ namespace polyfem
 			}
 			MeshProcessing3D::build_connectivity(m);
 		}
+	}
+
+	void Mesh3D::elements_boxes(std::vector<std::array<Eigen::Vector3d, 2>> &boxes) const
+	{
+		boxes.resize(n_elements());
+
+		for (int i = 0; i < n_elements(); ++i)
+		{
+			auto &box = boxes[i];
+			box[0].setConstant(std::numeric_limits<double>::max());
+			box[1].setConstant(std::numeric_limits<double>::min());
+
+			for (int j = 0; j < n_cell_vertices(i); ++j)
+			{
+				const int v_id = cell_vertex(i, j);
+				for (int d = 0; d < 3; ++d)
+				{
+					box[0][d] = std::min(box[0][d], point(v_id)[d]);
+					box[1][d] = std::max(box[1][d], point(v_id)[d]);
+				}
+			}
+		}
+	}
+
+	void Mesh3D::barycentric_coords(const RowVectorNd &p, const int el_id, Eigen::MatrixXd &coord) const
+	{
+		assert(is_simplex(el_id));
+
+		const auto indices = get_ordered_vertices_from_tet(el_id);
+
+		const auto A = point(indices[0]);
+		const auto B = point(indices[1]);
+		const auto C = point(indices[2]);
+		const auto D = point(indices[3]);
+
+		igl::barycentric_coordinates(p, A, B, C, D, coord);
 	}
 } // namespace polyfem

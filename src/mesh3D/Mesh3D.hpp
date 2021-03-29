@@ -37,6 +37,9 @@ namespace polyfem
 		inline int cell_edge(const int c_id, const int le_id) const { return mesh_.elements[c_id].es[le_id]; }
 		inline int face_vertex(const int f_id, const int lv_id) const { return mesh_.faces[f_id].vs[lv_id]; }
 
+		void elements_boxes(std::vector<std::array<Eigen::Vector3d, 2>> &boxes) const override;
+		void barycentric_coords(const RowVectorNd &p, const int el_id, Eigen::MatrixXd &coord) const override;
+
 		bool is_boundary_vertex(const int vertex_global_id) const override { return mesh_.vertices[vertex_global_id].boundary; }
 		bool is_boundary_edge(const int edge_global_id) const override { return mesh_.edges[edge_global_id].boundary; }
 		bool is_boundary_face(const int face_global_id) const override { return mesh_.faces[face_global_id].boundary; }
