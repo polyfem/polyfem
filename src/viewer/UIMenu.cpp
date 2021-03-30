@@ -92,7 +92,7 @@ void polyfem::UIState::draw_menu()
 		"Viewer", &_viewer_menu_visible,
 		ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
 	draw_viewer_menu();
-	draw_labels_window();
+	// draw_labels_window();
 	draw_screenshot();
 	ImGui::End();
 
@@ -504,7 +504,7 @@ void polyfem::UIState::draw_debug()
 				update_slices();
 			}
 		}
-		if (ImGui::InputFloat("Coord", &slice_position, 0.1f, 1.f, 3))
+		if (ImGui::InputFloat("Coord", &slice_position, 0.1f, 1.f, "%.3f"))
 		{
 			if (is_slicing)
 			{

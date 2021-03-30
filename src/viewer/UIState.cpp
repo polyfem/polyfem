@@ -608,8 +608,8 @@ namespace polyfem
 		data(layer).show_overlay = 1;
 		data(layer).show_faces = 1;
 		data(layer).show_lines = 1;
-		data(layer).show_vertid = 0;
-		data(layer).show_faceid = 0;
+		data(layer).show_vertex_labels = 0;
+		data(layer).show_face_labels = 0;
 	}
 
 	void UIState::hide_data(const Visualizations &layer)
@@ -620,14 +620,15 @@ namespace polyfem
 				data(layer).show_overlay,
 				data(layer).show_faces,
 				data(layer).show_lines,
-				data(layer).show_vertid,
-				data(layer).show_faceid};
+				data(layer).show_vertex_labels,
+				data(layer).show_face_labels
+            };
 		}
 		data(layer).show_overlay = 0;
 		data(layer).show_faces = 0;
 		data(layer).show_lines = 0;
-		data(layer).show_vertid = 0;
-		data(layer).show_faceid = 0;
+		data(layer).show_vertex_labels = 0;
+		data(layer).show_face_labels = 0;
 	}
 
 	void UIState::show_data(const Visualizations &layer)
@@ -637,8 +638,8 @@ namespace polyfem
 		data(layer).show_overlay = flags[0];
 		data(layer).show_faces = flags[1];
 		data(layer).show_lines = flags[2];
-		data(layer).show_vertid = flags[3];
-		data(layer).show_faceid = flags[4];
+		data(layer).show_vertex_labels = flags[3];
+		data(layer).show_face_labels = flags[4];
 	}
 
 	UIState::UIState()

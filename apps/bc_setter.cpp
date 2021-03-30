@@ -466,14 +466,14 @@ int main(int argc, char **argv)
 
 				if(vals.bc_value[i-1] == 0)
 				{
-					ImGui::InputFloat(xlabel.c_str(), &vals.vals[i-1][0], 0, 0, 3);
+					ImGui::InputFloat(xlabel.c_str(), &vals.vals[i-1][0], 0, 0, "%.3f");
 
 					if(vector_problem){
 						ImGui::SameLine();
-						ImGui::InputFloat(ylabel.c_str(), &vals.vals[i-1][1], 0, 0, 3);
+						ImGui::InputFloat(ylabel.c_str(), &vals.vals[i-1][1], 0, 0, "%.3f");
 						if(is_volume){
 							ImGui::SameLine();
-							ImGui::InputFloat(zlabel.c_str(), &vals.vals[i-1][2], 0, 0, 3);
+							ImGui::InputFloat(zlabel.c_str(), &vals.vals[i-1][2], 0, 0, "%.3f");
 						}
 					}
 				}
