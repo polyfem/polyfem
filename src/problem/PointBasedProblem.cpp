@@ -29,7 +29,14 @@ namespace polyfem
 
 			read_matrix(data["function"], fun);
 			read_matrix(data["points"], pts);
-			pts = pts.block(0, 0, pts.rows(), 2).eval();
+
+			int coord = -1;
+			if (data.find("coordinate") != data.end())
+				coord = data["coordinate"];
+
+			if (coord >= 0)
+				pts = pts.block(0, 0, pts.rows(), 2).eval();
+
 			is_tri = data.find("triangles") != data.end();
 			if (is_tri)
 				read_matrix(data["triangles"], tri);
@@ -44,7 +51,6 @@ namespace polyfem
 					eps = data["epsilon"];
 			}
 
-			const int coord = data["coordinate"];
 			if (data.find("dimension") != data.end())
 			{
 				all_dimentions_dirichelt = false;
@@ -73,14 +79,25 @@ namespace polyfem
 		{
 			return val.transpose();
 		}
-		Eigen::RowVector2d pt2;
-		pt2 << pt(coordiante_0), pt(coordiante_1);
 		Eigen::RowVector3d res;
 
-		if (is_tri)
-			res = tri_func.interpolate(pt2);
+		if (coordiante_0 >= 0)
+		{
+			Eigen::RowVector2d pt2;
+			pt2 << pt(coordiante_0), pt(coordiante_1);
+
+			if (is_tri)
+				res = tri_func.interpolate(pt2);
+			else
+				res = rbf_func.interpolate(pt2);
+		}
 		else
-			res = rbf_func.interpolate(pt2);
+		{
+			if (is_tri)
+				res = tri_func.interpolate(pt);
+			else
+				res = rbf_func.interpolate(pt);
+		}
 
 		return res;
 	}
@@ -105,6 +122,7 @@ namespace polyfem
 		{
 			const int id = mesh.get_boundary_id(global_ids(i));
 			const auto &pt3d = (pts.row(i) + translation_.transpose()) / scaling_;
+
 			for (size_t b = 0; b < boundary_ids_.size(); ++b)
 			{
 				if (id == boundary_ids_[b])
@@ -117,30 +135,84 @@ namespace polyfem
 		val *= t;
 	}
 
-	void PointBasedTensorProblem::add_constant(const int bc_tag, const Eigen::Vector3d &value, const Eigen::Matrix<bool, 3, 1> &dd)
+	void PointBasedTensorProblem::neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const
 	{
-		all_dimentions_dirichelt_ = all_dimentions_dirichelt_ && dd(0) && dd(1) && dd(2);
-		boundary_ids_.push_back(bc_tag);
-		bc_.emplace_back();
-		bc_.back().init(value, dd);
+		val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
+
+		for (long i = 0; i < pts.rows(); ++i)
+		{
+			const int id = mesh.get_boundary_id(global_ids(i));
+			const auto &pt3d = (pts.row(i) + translation_.transpose()) / scaling_;
+
+			for (size_t b = 0; b < neumann_boundary_ids_.size(); ++b)
+			{
+				if (id == neumann_boundary_ids_[b])
+				{
+					val.row(i) = neumann_bc_[b](pt3d) * scaling_;
+				}
+			}
+		}
+
+		val *= t;
 	}
 
-	void PointBasedTensorProblem::add_function(const int bc_tag, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tri, const int coord, const Eigen::Matrix<bool, 3, 1> &dd)
+	void PointBasedTensorProblem::add_constant(const int bc_tag, const Eigen::Vector3d &value, const Eigen::Matrix<bool, 3, 1> &dd, const bool is_neumann)
 	{
-		all_dimentions_dirichelt_ = all_dimentions_dirichelt_ && dd(0) && dd(1) && dd(2);
-
-		boundary_ids_.push_back(bc_tag);
-		bc_.emplace_back();
-		bc_.back().init(pts.block(0, 0, pts.rows(), 2), tri, func, coord, dd);
+		if (is_neumann)
+		{
+			neumann_boundary_ids_.push_back(bc_tag);
+			neumann_bc_.emplace_back();
+			neumann_bc_.back().init(value, dd);
+		}
+		else
+		{
+			all_dimentions_dirichelt_ = all_dimentions_dirichelt_ && dd(0) && dd(1) && dd(2);
+			boundary_ids_.push_back(bc_tag);
+			bc_.emplace_back();
+			bc_.back().init(value, dd);
+		}
 	}
 
-	void PointBasedTensorProblem::add_function(const int bc_tag, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const std::string &rbf, const double eps, const int coord, const Eigen::Matrix<bool, 3, 1> &dd)
+	void PointBasedTensorProblem::add_function(const int bc_tag, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tri, const int coord, const Eigen::Matrix<bool, 3, 1> &dd, const bool is_neumann)
 	{
-		all_dimentions_dirichelt_ = all_dimentions_dirichelt_ && dd(0) && dd(1) && dd(2);
+		if (is_neumann)
+		{
+			neumann_boundary_ids_.push_back(bc_tag);
+			neumann_bc_.emplace_back();
+			neumann_bc_.back().init(pts.block(0, 0, pts.rows(), 2), tri, func, coord, dd);
+		}
+		else
+		{
+			all_dimentions_dirichelt_ = all_dimentions_dirichelt_ && dd(0) && dd(1) && dd(2);
 
-		boundary_ids_.push_back(bc_tag);
-		bc_.emplace_back();
-		bc_.back().init(pts.block(0, 0, pts.rows(), 2), func, rbf, eps, coord, dd);
+			boundary_ids_.push_back(bc_tag);
+			bc_.emplace_back();
+			bc_.back().init(pts.block(0, 0, pts.rows(), 2), tri, func, coord, dd);
+		}
+	}
+
+	void PointBasedTensorProblem::add_function(const int bc_tag, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const std::string &rbf, const double eps, const int coord, const Eigen::Matrix<bool, 3, 1> &dd, const bool is_neumann)
+	{
+		if (is_neumann)
+		{
+			neumann_boundary_ids_.push_back(bc_tag);
+			neumann_bc_.emplace_back();
+			if (coord >= 0)
+				neumann_bc_.back().init(pts.block(0, 0, pts.rows(), 2), func, rbf, eps, coord, dd);
+			else
+				neumann_bc_.back().init(pts, func, rbf, eps, coord, dd);
+		}
+		else
+		{
+			all_dimentions_dirichelt_ = all_dimentions_dirichelt_ && dd(0) && dd(1) && dd(2);
+
+			boundary_ids_.push_back(bc_tag);
+			bc_.emplace_back();
+			if (coord >= 0)
+				bc_.back().init(pts.block(0, 0, pts.rows(), 2), func, rbf, eps, coord, dd);
+			else
+				bc_.back().init(pts, func, rbf, eps, coord, dd);
+		}
 	}
 
 	bool PointBasedTensorProblem::is_dimention_dirichet(const int tag, const int dim) const
@@ -200,6 +272,22 @@ namespace polyfem
 				const auto ff = j_boundary[i]["value"];
 				const bool all_d = bc_[i].init(ff);
 				all_dimentions_dirichelt_ = all_dimentions_dirichelt_ && all_d;
+			}
+		}
+
+		if (params.find("neumann_boundary_ids") != params.end())
+		{
+			neumann_boundary_ids_.clear();
+			auto j_boundary = params["neumann_boundary_ids"];
+
+			neumann_boundary_ids_.resize(j_boundary.size());
+			neumann_bc_.resize(neumann_boundary_ids_.size());
+
+			for (size_t i = 0; i < neumann_boundary_ids_.size(); ++i)
+			{
+				neumann_boundary_ids_[i] = j_boundary[i]["id"];
+				const auto ff = j_boundary[i]["value"];
+				neumann_bc_[i].init(ff);
 			}
 		}
 	}

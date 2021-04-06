@@ -1,6 +1,7 @@
 # https://raw.githubusercontent.com/sympy/sympy/master/examples/advanced/fem.py
 from sympy import *
 import os
+import numpy as np
 import argparse
 from sympy.printing import ccode
 
@@ -142,6 +143,10 @@ class Lagrange:
             equations.append(ex)
 
         A = create_matrix(equations, coeffs)
+
+        if A.shape[0] > 25:
+            A = A.evalf()
+
         Ainv = A.inv()
 
         b = eye(len(equations))
@@ -174,7 +179,8 @@ if __name__ == "__main__":
     # orders = [4]
 
     cpp = "#include <polyfem/auto_p_bases.hpp>\n\n\n"
-    cpp = cpp + "namespace polyfem {\nnamespace autogen " + "{\nnamespace " + "{\n"
+    cpp = cpp + \
+        "namespace polyfem {\nnamespace autogen " + "{\nnamespace " + "{\n"
 
     hpp = "#pragma once\n\n#include <Eigen/Dense>\n\n"
     hpp = hpp + "namespace polyfem {\nnamespace autogen " + "{\n"
@@ -183,10 +189,13 @@ if __name__ == "__main__":
         print(str(dim) + "D")
         suffix = "_2d" if dim == 2 else "_3d"
 
-        unique_nodes = "void p_nodes" + suffix + "(const int p, Eigen::MatrixXd &val)"
+        unique_nodes = "void p_nodes" + suffix + \
+            "(const int p, Eigen::MatrixXd &val)"
 
-        unique_fun = "void p_basis_value" + suffix + "(const int p, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
-        dunique_fun = "void p_grad_basis_value" + suffix + "(const int p, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
+        unique_fun = "void p_basis_value" + suffix + \
+            "(const int p, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
+        dunique_fun = "void p_grad_basis_value" + suffix + \
+            "(const int p, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
 
         hpp = hpp + unique_nodes + ";\n\n"
 
@@ -207,7 +216,7 @@ if __name__ == "__main__":
             print("\t-processing " + str(order))
 
             if order == 0:
-                fe = lambda: None
+                def fe(): return None
                 fe.nbf = lambda: 1
 
                 fe.N = [1]
@@ -218,8 +227,6 @@ if __name__ == "__main__":
                     fe.points = [[1./3., 1./3., 1./3.]]
             else:
                 fe = Lagrange(dim, order)
-
-
 
             current_indices = list(range(0, len(fe.points)))
             indices = []
@@ -362,20 +369,28 @@ if __name__ == "__main__":
                 indices.append(ii)
 
             # nodes code gen
-            nodes = "void p_" + str(order) + "_nodes" + suffix + "(Eigen::MatrixXd &res) {\n res.resize(" + str(len(indices)) + ", " + str(dim) + "); res << \n"
-            unique_nodes = unique_nodes + "\tcase " + str(order) + ": " + "p_" + str(order) + "_nodes" + suffix + "(val); break;\n"
+            nodes = "void p_" + str(order) + "_nodes" + suffix + "(Eigen::MatrixXd &res) {\n res.resize(" + str(
+                len(indices)) + ", " + str(dim) + "); res << \n"
+            unique_nodes = unique_nodes + "\tcase " + \
+                str(order) + ": " + "p_" + str(order) + \
+                "_nodes" + suffix + "(val); break;\n"
 
             for ii in indices:
-                nodes = nodes + ccode(fe.points[ii][0]) + ", " + ccode(fe.points[ii][1]) + ((", " + ccode(fe.points[ii][2])) if dim == 3 else "") + ",\n"
+                nodes = nodes + ccode(fe.points[ii][0]) + ", " + ccode(fe.points[ii][1]) + (
+                    (", " + ccode(fe.points[ii][2])) if dim == 3 else "") + ",\n"
             nodes = nodes[:-2]
             nodes = nodes + ";\n}"
 
             # bases code gen
-            func = "void p_" + str(order) + "_basis_value" + suffix + "(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &result_0)"
-            dfunc = "void p_" + str(order) + "_basis_grad_value" + suffix + "(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
+            func = "void p_" + str(order) + "_basis_value" + suffix + \
+                "(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &result_0)"
+            dfunc = "void p_" + str(order) + "_basis_grad_value" + suffix + \
+                "(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
 
-            unique_fun = unique_fun + "\tcase " + str(order) + ": " + "p_" + str(order) + "_basis_value" + suffix + "(local_index, uv, val); break;\n"
-            dunique_fun = dunique_fun + "\tcase " + str(order) + ": " + "p_" + str(order) + "_basis_grad_value" + suffix + "(local_index, uv, val); break;\n"
+            unique_fun = unique_fun + "\tcase " + str(order) + ": " + "p_" + str(
+                order) + "_basis_value" + suffix + "(local_index, uv, val); break;\n"
+            dunique_fun = dunique_fun + "\tcase " + str(order) + ": " + "p_" + str(
+                order) + "_basis_grad_value" + suffix + "(local_index, uv, val); break;\n"
 
             # hpp = hpp + func + ";\n"
             # hpp = hpp + dfunc + ";\n"
@@ -390,19 +405,24 @@ if __name__ == "__main__":
                 base = base + "result_0.resize(x.size(),1);\n"
 
             base = base + "switch(local_index){\n"
-            dbase = dbase + "val.resize(uv.rows(), uv.cols());\n Eigen::ArrayXd result_0(uv.rows());\n" + "switch(local_index){\n"
+            dbase = dbase + \
+                "val.resize(uv.rows(), uv.cols());\n Eigen::ArrayXd result_0(uv.rows());\n" + \
+                "switch(local_index){\n"
 
             for i in range(0, fe.nbf()):
                 real_index = indices[i]
                 # real_index = i
 
-                base = base + "\tcase " + str(i) + ": {" + pretty_print.C99_print(simplify(fe.N[real_index])).replace(" = 1;", ".setOnes();") + "} break;\n"
+                base = base + "\tcase " + str(i) + ": {" + pretty_print.C99_print(
+                    simplify(fe.N[real_index])).replace(" = 1;", ".setOnes();") + "} break;\n"
                 dbase = dbase + "\tcase " + str(i) + ": {" + \
                     "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], x))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(0) = result_0; }" \
-                    "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], y))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(1) = result_0; }"
+                    "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], y))).replace(" = 0;", ".setZero();").replace(
+                        " = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(1) = result_0; }"
 
                 if dim == 3:
-                    dbase = dbase + "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], z))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(2) = result_0; }"
+                    dbase = dbase + "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], z))).replace(" = 0;", ".setZero();").replace(
+                        " = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(2) = result_0; }"
 
                 dbase = dbase + "} break;\n"
 
@@ -420,7 +440,8 @@ if __name__ == "__main__":
         unique_fun = unique_fun + "\tdefault: assert(false);\n}}"
         dunique_fun = dunique_fun + "\tdefault: assert(false);\n}}"
 
-        cpp = cpp + "}\n\n" + unique_nodes + "\n" + unique_fun + "\n\n" + dunique_fun + "\n" + "\nnamespace " + "{\n"
+        cpp = cpp + "}\n\n" + unique_nodes + "\n" + unique_fun + \
+            "\n\n" + dunique_fun + "\n" + "\nnamespace " + "{\n"
         hpp = hpp + "\n"
 
     hpp = hpp + "\nstatic const int MAX_P_BASES = " + str(max(orders)) + ";\n"

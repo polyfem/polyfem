@@ -58,38 +58,40 @@ namespace polyfem
 
 			return res;
 		}
+	}
 
-		Eigen::MatrixXd tet_local_node_coordinates_from_face(int lf)
-		{
-			Eigen::Matrix<int, 4, 3> fv;
-			fv.row(0) << 0, 1, 2;
-			fv.row(1) << 0, 1, 3;
-			fv.row(2) << 1, 2, 3;
-			fv.row(3) << 2, 0, 3;
 
-			Eigen::MatrixXd res(3,3);
-			for(int i = 0; i < 3; ++i)
-				res.row(i) = linear_tet_local_node_coordinates(fv(lf, i));
 
-			return res;
-		}
+	Eigen::MatrixXd BoundarySampler::tet_local_node_coordinates_from_face(int lf)
+	{
+		Eigen::Matrix<int, 4, 3> fv;
+		fv.row(0) << 0, 1, 2;
+		fv.row(1) << 0, 1, 3;
+		fv.row(2) << 1, 2, 3;
+		fv.row(3) << 2, 0, 3;
 
-		Eigen::MatrixXd hex_local_node_coordinates_from_face(int lf)
-		{
-			Eigen::Matrix<int, 6, 4> fv;
-			fv.row(0) << 0, 3, 7, 4;
-			fv.row(1) << 1, 2, 6, 5;
-			fv.row(2) << 0, 1, 5, 4;
-			fv.row(3) << 3, 2, 6, 7;
-			fv.row(4) << 0, 1, 2, 3;
-			fv.row(5) << 4, 5, 6, 7;
+		Eigen::MatrixXd res(3,3);
+		for(int i = 0; i < 3; ++i)
+			res.row(i) = linear_tet_local_node_coordinates(fv(lf, i));
 
-			Eigen::MatrixXd res(4,3);
-			for(int i = 0; i < 4; ++i)
-				res.row(i) = linear_hex_local_node_coordinates(fv(lf, i));
+		return res;
+	}
 
-			return res;
-		}
+	Eigen::MatrixXd BoundarySampler::hex_local_node_coordinates_from_face(int lf)
+	{
+		Eigen::Matrix<int, 6, 4> fv;
+		fv.row(0) << 0, 3, 7, 4;
+		fv.row(1) << 1, 2, 6, 5;
+		fv.row(2) << 0, 1, 5, 4;
+		fv.row(3) << 3, 2, 6, 7;
+		fv.row(4) << 0, 1, 2, 3;
+		fv.row(5) << 4, 5, 6, 7;
+
+		Eigen::MatrixXd res(4,3);
+		for(int i = 0; i < 4; ++i)
+			res.row(i) = linear_hex_local_node_coordinates(fv(lf, i));
+
+		return res;
 	}
 
 	void BoundarySampler::quadrature_for_quad_edge(int index, int order, int gid, const Mesh &mesh, Eigen::MatrixXd &uv, Eigen::MatrixXd &points, Eigen::VectorXd &weights)

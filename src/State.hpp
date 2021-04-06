@@ -346,11 +346,11 @@ namespace polyfem
 		void interpolate_boundary_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result);
 		//computes integrated solution (fun) per surface face vertex. pts and faces are the boundary are the boundary on the rest configuration
 		void interpolate_boundary_function_at_vertices(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, MatrixXd &result);
-		//computes traction foces for fun (tensor * surface normal) solution per surface face. pts and faces are the boundary on the rest configuration.
+		//computes traction foces for fun (tensor * surface normal) result, stress tensor, and von mises, per surface face. pts and faces are the boundary on the rest configuration.
 		//disp is the displacement of the surface vertices
-		void interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const MatrixXd &disp, const bool compute_avg, MatrixXd &result);
+		void interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const MatrixXd &disp, const bool compute_avg, MatrixXd &result, MatrixXd &stresses, MatrixXd &mises);
 		//same as above with disp=0
-		void interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result);
+		void interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result, MatrixXd &stresses, MatrixXd &mises);
 
 		//returns a triangulated representation of the sideset. sidesets contains integers mapping to faces
 		void get_sidesets(Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXd &sidesets);
@@ -371,9 +371,11 @@ namespace polyfem
 		//works in 2 and 3d. if the mesh is not simplicial it gets tri/tet halized
 		void build_vis_mesh(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXi &el_id, Eigen::MatrixXd &discr);
 
-		//saves the vtu file for time t, internal usage
+		//saves the vtu file for time t
 		void save_vtu(const std::string &name, const double t);
-		//saves an obj of the wireframe, internal usage
+		//saves the surface vtu file for for surface quantites, eg traction forces
+		void save_surface(const std::string &name);
+		//saves an obj of the wireframe
 		void save_wire(const std::string &name, bool isolines = false);
 
 		//samples to solution on the visualization mesh and return the vis mesh (points and tets) and the interpolated values (fun)

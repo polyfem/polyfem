@@ -27,7 +27,7 @@ endfunction()
 function(polyfem_download_solvers)
     polyfem_download_project(solvers
         GIT_REPOSITORY https://github.com/polyfem/polysolve.git
-        GIT_TAG        248b97ac21cf5950ed9835fcbeb0d44408366d9e
+        GIT_TAG        499a2bdb8ee1984c68bf8d622e48aebb41cf53f8
     )
 endfunction()
 
@@ -35,7 +35,7 @@ endfunction()
 function(polyfem_download_libigl)
     polyfem_download_project(libigl
         GIT_REPOSITORY https://github.com/libigl/libigl.git
-        GIT_TAG        45cfc79fede992ea3923ded9de3c21d1c4faced1
+        GIT_TAG        v2.3.0
     )
 endfunction()
 
