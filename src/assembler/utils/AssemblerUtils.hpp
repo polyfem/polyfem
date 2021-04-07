@@ -13,6 +13,7 @@
 #include <polyfem/HookeLinearElasticity.hpp>
 #include <polyfem/SaintVenantElasticity.hpp>
 #include <polyfem/NeoHookeanElasticity.hpp>
+#include <polyfem/MultiModel.hpp>
 // #include <polyfem/OgdenElasticity.hpp>
 
 #include <polyfem/Stokes.hpp>
@@ -130,6 +131,7 @@ namespace polyfem
 		//dispaces to all set parameters of the local assemblers
 		void set_parameters(const json &params);
 		void init_multimaterial(const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus);
+		void init_multimodels(const std::vector<std::string> &materials);
 		const LameParameters &lame_params() const { return linear_elasticity_.local_assembler().lame_params(); }
 
 		//checks if assembler is linear
@@ -179,6 +181,7 @@ namespace polyfem
 
 		NLAssembler<SaintVenantElasticity> saint_venant_elasticity_;
 		NLAssembler<NeoHookeanElasticity> neo_hookean_elasticity_;
+		NLAssembler<MultiModel> multi_models_elasticity_;
 		// NLAssembler<OgdenElasticity> ogden_elasticity_;
 
 		Assembler<StokesVelocity> stokes_velocity_;

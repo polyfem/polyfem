@@ -8,6 +8,7 @@
 #include <polyfem/HookeLinearElasticity.hpp>
 #include <polyfem/SaintVenantElasticity.hpp>
 #include <polyfem/NeoHookeanElasticity.hpp>
+#include <polyfem/MultiModel.hpp>
 // #include <polyfem/OgdenElasticity.hpp>
 
 #include <polyfem/Stokes.hpp>
@@ -700,6 +701,7 @@ namespace polyfem
 	template class Assembler<HookeLinearElasticity>;
 	template class NLAssembler<SaintVenantElasticity>;
 	template class NLAssembler<NeoHookeanElasticity>;
+	template class NLAssembler<MultiModel>;
 	// template class NLAssembler<OgdenElasticity>;
 
 	template class Assembler<StokesVelocity>;

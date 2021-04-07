@@ -21,7 +21,7 @@ namespace polyfem
         };
 
         template <typename XMLNode>
-        std::string load_materials(const XMLNode *febio, std::map<int, std::tuple<double, double, double>> &materials)
+        std::string load_materials(const XMLNode *febio, std::map<int, std::tuple<double, double, double, std::string>> &materials)
         {
             double E;
             double nu;
@@ -41,15 +41,19 @@ namespace polyfem
                 else
                     rho = 1;
 
-                //TODO check if all the same
+                std::string mat = "";
                 if (material == "neo-Hookean")
-                    material_names.push_back("NeoHookean");
+                    mat = "NeoHookean";
                 else if (material == "isotropic elastic")
-                    material_names.push_back("LinearElasticity");
+                    mat = "LinearElasticity";
                 else
-                    logger().error("Unsupported material {}", material);
+                {
+                    logger().error("Unsupported material {}, reverting to isotropic elastic", material);
+                    mat = "LinearElasticity";
+                }
 
-                materials[mid] = std::tuple<double, double, double>(E, nu, rho);
+                material_names.push_back(mat);
+                materials[mid] = std::tuple<double, double, double, std::string>(E, nu, rho, mat);
             }
 
             std::sort(material_names.begin(), material_names.end());
@@ -57,7 +61,7 @@ namespace polyfem
             // assert(material_names.size() == 1);
             if (material_names.size() != 1)
             {
-                logger().warn("Files contains {} materials, but using only {}", material_names.size(), material_names.front());
+                return "MultiModels";
             }
             return material_names.front();
         }
@@ -84,7 +88,7 @@ namespace polyfem
         }
 
         template <typename XMLNode>
-        int load_elements(const XMLNode *geometry, const int numV, const std::map<int, std::tuple<double, double, double>> &materials, Eigen::MatrixXi &T, std::vector<std::vector<int>> &nodes, Eigen::MatrixXd &Es, Eigen::MatrixXd &nus, Eigen::MatrixXd &rhos, std::vector<int> &mids)
+        int load_elements(const XMLNode *geometry, const int numV, const std::map<int, std::tuple<double, double, double, std::string>> &materials, Eigen::MatrixXi &T, std::vector<std::vector<int>> &nodes, Eigen::MatrixXd &Es, Eigen::MatrixXd &nus, Eigen::MatrixXd &rhos, std::vector<std::string> &mats, std::vector<int> &mids)
         {
             std::vector<Eigen::VectorXi> els;
             nodes.clear();
@@ -156,6 +160,7 @@ namespace polyfem
             Es.resize(els.size(), 1);
             nus.resize(els.size(), 1);
             rhos.resize(els.size(), 1);
+            mats.resize(els.size());
             for (int i = 0; i < els.size(); ++i)
             {
                 T.row(i) = els[i].transpose();
@@ -164,6 +169,7 @@ namespace polyfem
                 Es(i) = std::get<0>(it->second);
                 nus(i) = std::get<1>(it->second);
                 rhos(i) = std::get<2>(it->second);
+                mats[i] = std::get<3>(it->second);
             }
 
             return order;
@@ -444,7 +450,7 @@ namespace polyfem
         const std::string ver = std::string(febio->Attribute("version"));
         assert(ver == "2.5");
 
-        std::map<int, std::tuple<double, double, double>> materials;
+        std::map<int, std::tuple<double, double, double, std::string>> materials;
         state.args["tensor_formulation"] = load_materials(febio, materials);
 
         const auto *geometry = febio->FirstChildElement("Geometry");
@@ -481,7 +487,8 @@ namespace polyfem
         std::vector<int> mids;
 
         Eigen::MatrixXd Es, nus, rhos;
-        const int element_order = load_elements(geometry, V.rows(), materials, T, nodes, Es, nus, rhos, mids);
+        std::vector<std::string> mats;
+        const int element_order = load_elements(geometry, V.rows(), materials, T, nodes, Es, nus, rhos, mats, mids);
         const int current_order = state.args["discr_order"];
         state.args["discr_order"] = std::max(current_order, element_order);
 
@@ -503,6 +510,7 @@ namespace polyfem
             params["size"] = 3;
             state.assembler.set_parameters(params);
             state.assembler.init_multimaterial(Es, nus);
+            state.assembler.init_multimodels(mats);
             state.density.init_multimaterial(rhos);
         }
 
