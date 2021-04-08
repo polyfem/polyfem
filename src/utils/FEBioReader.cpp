@@ -21,6 +21,30 @@ namespace polyfem
         };
 
         template <typename XMLNode>
+        bool load_control(const XMLNode *control, json &args)
+        {
+            const auto *tsn = control->FirstChildElement("time_steps");
+            const auto *ssn = control->FirstChildElement("step_size");
+            if (tsn && ssn)
+            {
+                const int time_steps = tsn->IntText();
+                const double step_size = ssn->DoubleText();
+                args["tend"] = step_size * time_steps;
+                args["time_steps"] = time_steps;
+            }
+
+            const auto *an = control->FirstChildElement("analysis");
+
+            if (an)
+            {
+                const std::string type = std::string(an->Attribute("type"));
+                return type == "dynamic";
+            }
+
+            return false;
+        }
+
+        template <typename XMLNode>
         std::string load_materials(const XMLNode *febio, std::map<int, std::tuple<double, double, double, std::string>> &materials)
         {
             double E;
@@ -240,7 +264,7 @@ namespace polyfem
         }
 
         template <typename XMLNode>
-        void load_boundary_conditions(const XMLNode *boundaries, const std::map<std::string, int> &names, GenericTensorProblem &gproblem)
+        void load_boundary_conditions(const XMLNode *boundaries, const std::map<std::string, int> &names, const double dt, GenericTensorProblem &gproblem)
         {
             std::map<std::string, BCData> allbc;
             for (const tinyxml2::XMLElement *child = boundaries->FirstChildElement("fix"); child != NULL; child = child->NextSiblingElement("fix"))
@@ -304,7 +328,7 @@ namespace polyfem
                 bcdata.isy = bc == "y";
                 bcdata.isz = bc == "z";
 
-                const double value = atof(child->FirstChildElement("scale")->GetText());
+                const double value = atof(child->FirstChildElement("scale")->GetText()) * (gproblem.is_time_dependent() ? dt : 1);
                 bcdata.val = Eigen::RowVector3d::Zero();
 
                 if (bcdata.isx)
@@ -351,7 +375,7 @@ namespace polyfem
         }
 
         template <typename XMLNode>
-        void load_loads(const XMLNode *loads, const std::map<std::string, int> &names, GenericTensorProblem &gproblem)
+        void load_loads(const XMLNode *loads, const std::map<std::string, int> &names, const double dt, GenericTensorProblem &gproblem)
         {
             if (loads == nullptr)
                 return;
@@ -379,12 +403,15 @@ namespace polyfem
 
                     Eigen::RowVector3d force(atof(bcs[0].c_str()), atof(bcs[1].c_str()), atof(bcs[2].c_str()));
                     force.array() *= scalev.array();
+
+                    if (gproblem.is_time_dependent())
+                        force *= dt;
                     gproblem.add_neumann_boundary(names.at(name), force);
                 }
                 else if (type == "pressure")
                 {
                     const std::string pressures = std::string(child->FirstChildElement("pressure")->GetText());
-                    const double pressure = atof(pressures.c_str());
+                    const double pressure = atof(pressures.c_str()) * (gproblem.is_time_dependent() ? dt : 1);
                     //TODO added minus here
                     gproblem.add_pressure_boundary(names.at(name), -pressure);
                 }
@@ -449,6 +476,13 @@ namespace polyfem
         const auto *febio = doc.FirstChildElement("febio_spec");
         const std::string ver = std::string(febio->Attribute("version"));
         assert(ver == "2.5");
+
+        const auto *control = febio->FirstChildElement("Control");
+        bool time_dependent = false;
+        if (control)
+        {
+            time_dependent = load_control(control, state.args);
+        }
 
         std::map<int, std::tuple<double, double, double, std::string>> materials;
         state.args["tensor_formulation"] = load_materials(febio, materials);
@@ -544,12 +578,14 @@ namespace polyfem
 
         state.problem = ProblemFactory::factory().get_problem("GenericTensor");
         GenericTensorProblem &gproblem = *dynamic_cast<GenericTensorProblem *>(state.problem.get());
+        gproblem.set_time_dependent(time_dependent);
 
+        const double dt = 1; //double(state.args["tend"]) / int(state.args["time_steps"]);
         const auto *boundaries = febio->FirstChildElement("Boundary");
-        load_boundary_conditions(boundaries, names, gproblem);
+        load_boundary_conditions(boundaries, names, dt, gproblem);
 
         const auto *loads = febio->FirstChildElement("Loads");
-        load_loads(loads, names, gproblem);
+        load_loads(loads, names, dt, gproblem);
         load_body_loads(loads, names, gproblem);
 
         // state.args["line_search"] = "bisection";

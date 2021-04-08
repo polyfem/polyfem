@@ -188,6 +188,9 @@ namespace polyfem
 			displacements_.back()[k].init(val[k]);
 
 		dirichelt_dimentions_.emplace_back(isx, isy, isz);
+
+		if (!isx || !isy || !isz)
+			all_dimentions_dirichelt_ = false;
 	}
 
 	void GenericTensorProblem::add_neumann_boundary(const int id, const Eigen::RowVector3d &val)
@@ -216,6 +219,9 @@ namespace polyfem
 			displacements_.back()[k].init(func, k);
 
 		dirichelt_dimentions_.emplace_back(isx, isy, isz);
+
+		if (!isx || !isy || !isz)
+			all_dimentions_dirichelt_ = false;
 	}
 
 	void GenericTensorProblem::add_neumann_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z)> &func)
