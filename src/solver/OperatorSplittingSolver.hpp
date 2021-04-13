@@ -194,7 +194,7 @@ namespace polyfem
 
             solver_mass = LinearSolver::create(solver_type, precond);
             solver_mass->setParameters(params);
-            if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
+            // if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
             {
                 StiffnessMatrix mat1 = mass_velocity;
                 prefactorize(*solver_mass, mat1, boundary_nodes_, mat1.rows(), save_path);
@@ -204,7 +204,7 @@ namespace polyfem
             
             solver_diffusion = LinearSolver::create(solver_type, precond);
             solver_diffusion->setParameters(params);
-            if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
+            // if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
             {
                 StiffnessMatrix mat1 = mat_diffusion;
                 prefactorize(*solver_diffusion, mat1, bnd_nodes, mat1.rows(), save_path);
@@ -235,10 +235,10 @@ namespace polyfem
             solver_projection = LinearSolver::create(solver_type, precond);
             solver_projection->setParameters(params);
             logger().info("{}...", solver_projection->name());
-            if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
+            // if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
             {
                 StiffnessMatrix mat2 = mat_projection;
-                prefactorize(*solver_projection, mat2, std::vector<int>(), mat2.rows() - 1, save_path);
+                prefactorize(*solver_projection, mat2, std::vector<int>(), mat2.rows(), save_path);
             }
             logger().info("Prefactorization ends!");
         }
@@ -1009,14 +1009,14 @@ namespace polyfem
                     rhs(bnd_nodes[i]) = x(bnd_nodes[i]);
                 }
 
-                if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
+                // if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
                 {
                     dirichlet_solve_prefactorized(*solver_diffusion, mat_diffusion, rhs, bnd_nodes, x);
                 }
-                else
-                {
-                    dirichlet_solve(*solver_diffusion, mat_diffusion, rhs, bnd_nodes, x, mat_diffusion.rows(), "", false, false, false);
-                }
+                // else
+                // {
+                    // dirichlet_solve(*solver_diffusion, mat_diffusion, rhs, bnd_nodes, x, mat_diffusion.rows(), "", false, false, false);
+                // }
                 
 
                 for(int j = 0; j < x.size(); j++)
@@ -1086,14 +1086,14 @@ namespace polyfem
             {
                 x(i) = pressure(i);
             }
-            if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
-            {
+            // if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
+            // {
                 dirichlet_solve_prefactorized(*solver_projection, mat_projection, rhs, std::vector<int>(), x);
-            }
-            else
-            {
-                dirichlet_solve(*solver_projection, mat_projection, rhs, std::vector<int>(), x, mat_projection.rows() - 1, "", false, false, false);
-            }
+            // }
+            // else
+            // {
+                // dirichlet_solve(*solver_projection, mat_projection, rhs, std::vector<int>(), x, mat_projection.rows() - 1, "", false, false, false);
+            // }
             
             pressure = x.head(x.size()-1);
         }

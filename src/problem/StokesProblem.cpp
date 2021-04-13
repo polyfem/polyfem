@@ -193,8 +193,8 @@ void DrivenCavitySmooth::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids,
 		}
 	}
 
-	// if (is_time_dependent_)
-	// 	val *= (1 - exp(-5 * t));
+	if (is_time_dependent_)
+		val *= (1 - exp(-5 * t));
 }
 
 Flow::Flow(const std::string &name)
