@@ -805,19 +805,13 @@ namespace polyfem
                 //     position_particle[pI], bypass, sol, -dt / 9);
 
                 // prepare P2G
-                Eigen::VectorXi I(1);
-                Eigen::MatrixXd local_pos;
-
                 if (insideDomain) {
-                    if((I(0) = search_cell(gbases, position_particle[pI], local_pos)) == -1)
-                    {
-                        I(0) = handle_boundary_advection(position_particle[pI]);
-                        calculate_local_pts(gbases[I(0)], I(0), position_particle[pI], local_pos);
-                    }
+                    Eigen::MatrixXd local_pos;
+                    cellI_particle[pI] = search_cell(gbases, position_particle[pI], local_pos);
 
                     // construct interpolator (always linear for P2G, can use gaussian or bspline later)
-                    velocity_interpolator[pI].compute(I(0), dim == 3, local_pos, gbases[I(0)], gbases[I(0)]);
-                    cellI_particle[pI] = I(0);
+                    velocity_interpolator[pI].compute(cellI_particle[pI], dim == 3, local_pos, 
+                        gbases[cellI_particle[pI]], gbases[cellI_particle[pI]]);
                 }
                 else {
                     cellI_particle[pI] = -1;
