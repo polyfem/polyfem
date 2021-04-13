@@ -322,7 +322,7 @@ namespace polyfem
             return idx;
         }
 
-        bool trace_back(const std::vector<polyfem::ElementBases>& gbases, 
+        int trace_back(const std::vector<polyfem::ElementBases>& gbases, 
         const std::vector<polyfem::ElementBases>& bases, 
         const RowVectorNd& pos_1, 
         const RowVectorNd& vel_1, 
@@ -336,7 +336,7 @@ namespace polyfem
             return interpolator(gbases, bases, pos_2, vel_2, sol);
         }
 
-        bool interpolator(const std::vector<polyfem::ElementBases>& gbases, 
+        int interpolator(const std::vector<polyfem::ElementBases>& gbases, 
         const std::vector<polyfem::ElementBases>& bases, 
         const RowVectorNd& pos, 
         RowVectorNd& vel, 
@@ -366,8 +366,10 @@ namespace polyfem
                     vel(d) += vals.basis_values[i].val(0) * sol(bases[new_elem].bases[i].global()[0].index * dim + d);
                 }
             }
-
-            return insideDomain;
+            if (insideDomain)
+                return new_elem;
+            else
+                return -1;
         }
         
         void interpolator(const RowVectorNd& pos, double& val)
