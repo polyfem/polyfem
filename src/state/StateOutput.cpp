@@ -910,10 +910,17 @@ namespace polyfem
         {
             const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
             Eigen::MatrixXd tmp, tmp_grad;
+            Eigen::MatrixXd tmp_p, tmp_grad_p;
             Eigen::MatrixXd res(grid_points_to_elements.size(), problem_dim);
             res.setConstant(std::numeric_limits<double>::quiet_NaN());
             Eigen::MatrixXd res_grad(grid_points_to_elements.size(), problem_dim * problem_dim);
             res_grad.setConstant(std::numeric_limits<double>::quiet_NaN());
+
+            Eigen::MatrixXd res_p(grid_points_to_elements.size(), 1);
+            res_p.setConstant(std::numeric_limits<double>::quiet_NaN());
+            Eigen::MatrixXd res_grad_p(grid_points_to_elements.size(), problem_dim);
+            res_grad_p.setConstant(std::numeric_limits<double>::quiet_NaN());
+
             for (int i = 0; i < grid_points_to_elements.size(); ++i)
             {
                 const int el_id = grid_points_to_elements(i);
@@ -928,6 +935,13 @@ namespace polyfem
 
                 res.row(i) = tmp;
                 res_grad.row(i) = tmp_grad;
+
+                if (assembler.is_mixed(formulation()))
+                {
+                    interpolate_at_local_vals(el_id, 1, pressure_bases, pt, pressure, tmp_p, tmp_grad_p);
+                    res_p.row(i) = tmp_p;
+                    res_grad_p.row(i) = tmp_grad_p;
+                }
             }
 
             std::ofstream os(path + "_sol.txt");
@@ -938,6 +952,15 @@ namespace polyfem
 
             std::ofstream osgg(path + "_grid.txt");
             osgg << grid_points;
+
+            if (assembler.is_mixed(formulation()))
+            {
+                std::ofstream osp(path + "_p_sol.txt");
+                osp << tmp_p;
+
+                std::ofstream osgp(path + "_p_grad.txt");
+                osgp << tmp_grad_p;
+            }
         }
 
         interpolate_function(points.rows(), sol, fun, boundary_only);
