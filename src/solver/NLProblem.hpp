@@ -108,10 +108,11 @@ namespace polyfem
 		virtual bool stop(const TVector &x) { return false; }
 
 	protected:
+		State &state;
 		double _barrier_stiffness;
+		void compute_displaced_points(const Eigen::MatrixXd &full, Eigen::MatrixXd &displaced);
 
 	private:
-		State &state;
 		AssemblerUtils &assembler;
 		const RhsAssembler &rhs_assembler;
 		Eigen::MatrixXd _current_rhs;
@@ -130,6 +131,6 @@ namespace polyfem
 		TVector x_prev, v_prev, a_prev;
 
 		void compute_cached_stiffness();
-		void compute_displaced_points(const Eigen::MatrixXd &full, Eigen::MatrixXd &displaced);
+
 	};
 } // namespace polyfem

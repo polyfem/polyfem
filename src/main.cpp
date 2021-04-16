@@ -62,6 +62,7 @@ int main(int argc, char **argv)
 	bool stop_after_build_basis = false;
 	int log_level = 1;
 	int nl_solver_rhs_steps = 1;
+	int cache_size = -1;
 
 	double vis_mesh_res = -1;
 
@@ -97,6 +98,8 @@ int main(int argc, char **argv)
 	command_line.add_flag("--project_to_psd", project_to_psd, "Project local matrices to psd");
 	command_line.add_option("--n_incr_load", nl_solver_rhs_steps, "Number of incremeltal load");
 	command_line.add_flag("--save_incr_load", save_solve_sequence_debug, "Save incremental steps");
+
+	command_line.add_option("--cache_size", cache_size, "Size of the cached assembly values");
 
 	//disable out
 	command_line.add_flag("--cmd", no_ui, "Runs in command line mode, no ui");
@@ -146,6 +149,9 @@ int main(int argc, char **argv)
 		in_args["problem"] = problem_name;
 		in_args["normalize_mesh"] = !skip_normalization;
 		in_args["project_to_psd"] = project_to_psd;
+
+		if (cache_size >= 0)
+			in_args["cache_size"] = cache_size;
 
 		in_args["scalar_formulation"] = scalar_formulation;
 		in_args["tensor_formulation"] = tensor_formulation;

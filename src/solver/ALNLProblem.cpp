@@ -63,7 +63,11 @@ namespace polyfem
 
         logger().trace("dist {}", sqrt(dist));
 
-        return val + weight_ * dist / _barrier_stiffness;
+        // Eigen::MatrixXd ddd;
+        // compute_displaced_points(x, ddd);
+        // igl::write_triangle_mesh("step.obj", ddd, state.boundary_triangles);
+
+        return val + weight_ * dist; // / _barrier_stiffness;
         // return weight_ * dist / _barrier_stiffness;
     }
 
@@ -73,7 +77,7 @@ namespace polyfem
         super::gradient_no_rhs(x, gradv);
         compute_distance(x, tmp);
         //logger().trace("dist grad {}", tmp.norm());
-        tmp *= 2 * weight_ / _barrier_stiffness;
+        tmp *= 2 * weight_; // / _barrier_stiffness;
 
         gradv += tmp;
         // gradv = tmp;
@@ -82,7 +86,7 @@ namespace polyfem
     void ALNLProblem::hessian_full(const TVector &x, THessian &hessian)
     {
         super::hessian_full(x, hessian);
-        hessian += hessian_ / _barrier_stiffness;
+        hessian += hessian_; // / _barrier_stiffness;
         // hessian = hessian_ / _barrier_stiffness;
 
         hessian.makeCompressed();

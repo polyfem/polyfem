@@ -470,6 +470,11 @@ namespace polyfem
 
 	void NLProblem::post_step(const TVector &x0)
 	{
+		if (disable_collision)
+			return;
+		if (!state.args["has_collision"])
+			return;
+
 		Eigen::MatrixXd full;
 		if (x0.size() == reduced_size)
 			reduced_to_full(x0, full);

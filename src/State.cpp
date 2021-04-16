@@ -532,11 +532,15 @@ namespace polyfem
 		logger().info("n bases: {}", n_bases);
 		logger().info("n pressure bases: {}", n_pressure_bases);
 
-		if (bases.size() <= args["cache_size"])
+		if (n_bases <= args["cache_size"])
 		{
+			timer.start();
+			logger().info("Building cache...");
 			ass_vals_cache.init(mesh->is_volume(), bases, curret_bases);
 			if (assembler.is_mixed(formulation()))
 				pressure_ass_vals_cache.init(mesh->is_volume(), pressure_bases, curret_bases);
+
+			logger().info(" took {}s", timer.getElapsedTime());
 		}
 	}
 
@@ -1389,8 +1393,62 @@ namespace polyfem
 
 					const auto &gbases = iso_parametric() ? bases : geom_bases;
 					igl::Timer update_timer;
-					if (args["has_collision"])
+					if (args["use_al"] || args["has_collision"])
 					{
+						// {
+						// 	ALNLProblem nl_problem(*this, rhs_assembler, 1, args["dhat"], false, 1e6);
+						// 	tmp_sol = rhs;
+						// 	tmp_sol.setRandom();
+						// 	// tmp_sol.setOnes();
+						// 	Eigen::Matrix<double, Eigen::Dynamic, 1> actual_grad;
+						// 	nl_problem.gradient(tmp_sol, actual_grad);
+
+						// 	StiffnessMatrix hessian;
+						// 	// Eigen::MatrixXd expected_hessian;
+						// 	nl_problem.hessian(tmp_sol, hessian);
+						// 	// nl_problem.finiteGradient(tmp_sol, expected_grad, 0);
+
+						// 	// Eigen::MatrixXd actual_hessian = Eigen::MatrixXd(hessian);
+						// 	// 	// std::cout << "hhh\n"<< actual_hessian<<std::endl;
+
+						// 	for (int i = 0; i < hessian.rows(); ++i)
+						// 	{
+						// 		double hhh = 1e-6;
+						// 		VectorXd xp = tmp_sol;
+						// 		xp(i) += hhh;
+						// 		VectorXd xm = tmp_sol;
+						// 		xm(i) -= hhh;
+
+						// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_p;
+						// 		nl_problem.gradient(xp, tmp_grad_p);
+
+						// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_m;
+						// 		nl_problem.gradient(xm, tmp_grad_m);
+
+						// 		Eigen::Matrix<double, Eigen::Dynamic, 1> fd_h = (tmp_grad_p - tmp_grad_m) / (hhh * 2.);
+
+						// 		const double vp = nl_problem.value(xp);
+						// 		const double vm = nl_problem.value(xm);
+
+						// 		const double fd = (vp - vm) / (hhh * 2.);
+						// 		const double diff = std::abs(actual_grad(i) - fd);
+						// 		if (diff > 1e-5)
+						// 			std::cout << "diff grad " << i << ": " << actual_grad(i) << " vs " << fd << " error: " << diff << " rrr: " << actual_grad(i) / fd << std::endl;
+
+						// 		for (int j = 0; j < hessian.rows(); ++j)
+						// 		{
+						// 			const double diff = std::abs(hessian.coeffRef(i, j) - fd_h(j));
+
+						// 			if (diff > 1e-4)
+						// 				std::cout << "diff H " << i << ", " << j << ": " << hessian.coeffRef(i, j) << " vs " << fd_h(j) << " error: " << diff << " rrr: " << hessian.coeffRef(i, j) / fd_h(j) << std::endl;
+						// 		}
+						// 	}
+
+						// 	// 	// std::cout<<"diff grad max "<<(actual_grad - expected_grad).array().abs().maxCoeff()<<std::endl;
+						// 	// 	// std::cout<<"diff \n"<<(actual_grad - expected_grad)<<std::endl;
+						// 	exit(0);
+						// }
+
 						ALNLProblem alnl_problem(*this, rhs_assembler, t, args["dhat"], args["project_to_psd"], 1e6);
 						x = sol;
 						tmp_sol = x;
