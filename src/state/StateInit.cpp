@@ -103,6 +103,7 @@ namespace polyfem
             {"count_flipped_els", false},
             {"project_to_psd", false},
             {"use_al", false},
+            {"min_component", -1},
 
             {"has_collision", false},
             {"dhat", 0.03},

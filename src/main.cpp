@@ -64,6 +64,9 @@ int main(int argc, char **argv)
 	int nl_solver_rhs_steps = 1;
 	int cache_size = -1;
 
+	bool use_al = false;
+	int min_component = -1;
+
 	double vis_mesh_res = -1;
 
 	command_line.add_option("-j,--json", json_file, "Simulation json file")->check(CLI::ExistingFile);
@@ -86,6 +89,7 @@ int main(int argc, char **argv)
 	const std::vector<std::string> solvers = LinearSolver::availableSolvers();
 	command_line.add_set("--solver", solver, std::set<std::string>(solvers.begin(), solvers.end()), "Solver to use");
 
+	command_line.add_option("--al", use_al, "Use augmented lagrangian");
 	command_line.add_option("-q,-p", discr_order, "Discretization order");
 	command_line.add_flag("--p_ref", p_ref, "Use p refimenet");
 	command_line.add_flag("--spline", use_splines, "Use spline for quad/hex meshes");
@@ -100,6 +104,7 @@ int main(int argc, char **argv)
 	command_line.add_flag("--save_incr_load", save_solve_sequence_debug, "Save incremental steps");
 
 	command_line.add_option("--cache_size", cache_size, "Size of the cached assembly values");
+	command_line.add_option("--min_component", min_component, "Mimimum number of faces in connected compoment for contact");
 
 	//disable out
 	command_line.add_flag("--cmd", no_ui, "Runs in command line mode, no ui");
@@ -152,6 +157,12 @@ int main(int argc, char **argv)
 
 		if (cache_size >= 0)
 			in_args["cache_size"] = cache_size;
+
+		if (use_al)
+			in_args["use_al"] = use_al;
+
+		if (min_component > 0)
+			in_args["min_component"] = min_component;
 
 		in_args["scalar_formulation"] = scalar_formulation;
 		in_args["tensor_formulation"] = tensor_formulation;

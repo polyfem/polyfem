@@ -15,6 +15,8 @@
 #include <igl/isolines.h>
 #include <igl/write_triangle_mesh.h>
 #include <igl/edges.h>
+#include <igl/facet_adjacency_matrix.h>
+#include <igl/connected_components.h>
 
 extern "C" size_t getPeakRSS();
 
@@ -402,6 +404,45 @@ namespace polyfem
             {
                 boundary_triangles.row(i) << std::get<0>(tris[i]), std::get<2>(tris[i]), std::get<1>(tris[i]);
             }
+
+            if (args["min_component"] > 0)
+            {
+                Eigen::SparseMatrix<int> adj;
+                igl::facet_adjacency_matrix(boundary_triangles, adj);
+                Eigen::MatrixXi C, counts;
+                igl::connected_components(adj, C, counts);
+
+                std::vector<int> valid;
+                const int min_count = args["min_component"];
+
+                for (int i = 0; i < counts.size(); ++i)
+                {
+                    if (counts(i) >= min_count)
+                    {
+                        valid.push_back(i);
+                    }
+                }
+
+                tris.clear();
+                for (int i = 0; i < C.size(); ++i)
+                {
+                    for (int v : valid)
+                    {
+                        if (v == C(i))
+                        {
+                            tris.emplace_back(boundary_triangles(i, 0), boundary_triangles(i, 1), boundary_triangles(i, 2));
+                            break;
+                        }
+                    }
+                }
+
+                boundary_triangles.resize(tris.size(), 3);
+                for (int i = 0; i < tris.size(); ++i)
+                {
+                    boundary_triangles.row(i) << std::get<0>(tris[i]), std::get<1>(tris[i]), std::get<2>(tris[i]);
+                }
+            }
+
             if (boundary_triangles.rows() > 0)
                 igl::edges(boundary_triangles, boundary_edges);
 
