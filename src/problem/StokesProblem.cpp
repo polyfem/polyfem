@@ -301,6 +301,7 @@ FlowWithObstacle::FlowWithObstacle(const std::string &name)
 	: TimeDepentendStokesProblem(name)
 {
 	boundary_ids_ = {1, 2, 4, 5, 6, 7};
+	pressure_boundary_ids_ = {3};
 	U_ = 1.5;
 }
 
@@ -426,6 +427,7 @@ CornerFlow::CornerFlow(const std::string &name)
 	: TimeDepentendStokesProblem(name)
 {
 	boundary_ids_ = {1, 2, 4, 7};
+	pressure_boundary_ids_ = {3};
 	U_ = 1.5;
 }
 
@@ -471,6 +473,7 @@ Lshape::Lshape(const std::string &name)
 	: TimeDepentendStokesProblem(name)
 {
 	boundary_ids_ = {1, 2, 4, 7};
+	pressure_boundary_ids_ = {3};
 	U_ = 1;
 }
 

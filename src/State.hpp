@@ -105,6 +105,8 @@ namespace polyfem
 
 		//list of boundary nodes
 		std::vector<int> boundary_nodes;
+		//list of neumann boundary nodes
+		std::vector<int> pressure_boundary_nodes;
 		//mapping from elements to nodes for dirichlet boundary conditions
 		std::vector<LocalBoundary> local_boundary;
 		//mapping from elements to nodes for neumann boundary conditions

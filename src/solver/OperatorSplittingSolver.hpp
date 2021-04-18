@@ -176,6 +176,7 @@ namespace polyfem
         const int shape, const int n_el, 
         const std::vector<LocalBoundary>& local_boundary,
         const std::vector<int>& boundary_nodes_,
+        const std::vector<int>& pressure_boundary_nodes,
         const std::vector<int>& bnd_nodes,
         const StiffnessMatrix& mass,
         const StiffnessMatrix& stiffness_viscosity,
@@ -210,7 +211,10 @@ namespace polyfem
                 prefactorize(*solver_diffusion, mat1, bnd_nodes, mat1.rows(), save_path);
             }
 
-            mat_projection.resize(stiffness_velocity.rows() + 1, stiffness_velocity.cols() + 1);
+            if (pressure_boundary_nodes.size() == 0)
+                mat_projection.resize(stiffness_velocity.rows() + 1, stiffness_velocity.cols() + 1);
+            else
+                mat_projection.resize(stiffness_velocity.rows(), stiffness_velocity.cols());
 
             std::vector<Eigen::Triplet<double> > coefficients;
             coefficients.reserve(stiffness_velocity.nonZeros() + 2 * stiffness_velocity.rows());
@@ -223,13 +227,16 @@ namespace polyfem
                 }
             }
 
-            const double val = 1. / (mat_projection.rows() - 1);
-            for (int i = 0; i < mat_projection.rows() - 1; i++)
+            if (pressure_boundary_nodes.size() == 0)
             {
-                coefficients.emplace_back(i, mat_projection.cols() - 1, val);
-                coefficients.emplace_back(mat_projection.rows() - 1, i, val);
+                const double val = 1. / (mat_projection.rows() - 1);
+                for (int i = 0; i < mat_projection.rows() - 1; i++)
+                {
+                    coefficients.emplace_back(i, mat_projection.cols() - 1, val);
+                    coefficients.emplace_back(mat_projection.rows() - 1, i, val);
+                }
+                coefficients.emplace_back(mat_projection.rows() - 1, mat_projection.cols() - 1, 2);
             }
-            coefficients.emplace_back(mat_projection.rows() - 1, mat_projection.cols() - 1, 2);
 
             mat_projection.setFromTriplets(coefficients.begin(), coefficients.end());
             solver_projection = LinearSolver::create(solver_type, precond);
@@ -238,7 +245,7 @@ namespace polyfem
             // if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
             {
                 StiffnessMatrix mat2 = mat_projection;
-                prefactorize(*solver_projection, mat2, std::vector<int>(), mat2.rows(), save_path);
+                prefactorize(*solver_projection, mat2, pressure_boundary_nodes, mat2.rows(), save_path);
             }
             logger().info("Prefactorization ends!");
         }
@@ -1053,9 +1060,14 @@ namespace polyfem
 #endif
         }
 
-        void solve_pressure(const StiffnessMatrix& mixed_stiffness, Eigen::MatrixXd& sol, Eigen::MatrixXd& pressure)
+        void solve_pressure(const StiffnessMatrix& mixed_stiffness, const std::vector<int>& pressure_boundary_nodes, Eigen::MatrixXd& sol, Eigen::MatrixXd& pressure)
         {
-            Eigen::VectorXd rhs = Eigen::VectorXd::Zero(mixed_stiffness.rows() + 1); // mixed_stiffness * sol;
+            Eigen::VectorXd rhs;
+            if (pressure_boundary_nodes.size() == 0)
+                rhs = Eigen::VectorXd::Zero(mixed_stiffness.rows() + 1); // mixed_stiffness * sol;
+            else
+                rhs = Eigen::VectorXd::Zero(mixed_stiffness.rows()); // mixed_stiffness * sol;
+            
             Eigen::VectorXd temp = mixed_stiffness * sol;
             for(int i = 0; i < temp.rows(); i++)
             {
@@ -1067,16 +1079,25 @@ namespace polyfem
             {
                 x(i) = pressure(i);
             }
+
+            for(int i = 0; i < pressure_boundary_nodes.size(); i++)
+            {
+                rhs(pressure_boundary_nodes[i]) = 0;
+                x(pressure_boundary_nodes[i]) = 0;
+            }
             // if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
             // {
-                dirichlet_solve_prefactorized(*solver_projection, mat_projection, rhs, std::vector<int>(), x);
+                dirichlet_solve_prefactorized(*solver_projection, mat_projection, rhs, pressure_boundary_nodes, x);
             // }
             // else
             // {
                 // dirichlet_solve(*solver_projection, mat_projection, rhs, std::vector<int>(), x, mat_projection.rows() - 1, "", false, false, false);
             // }
             
-            pressure = x.head(x.size()-1);
+            if(pressure_boundary_nodes.size() == 0)
+                pressure = x.head(x.size()-1);
+            else
+                pressure = x;
         }
 
         void projection(const StiffnessMatrix& velocity_mass, const StiffnessMatrix& mixed_stiffness, const std::vector<int>& boundary_nodes_, Eigen::MatrixXd& sol, const Eigen::MatrixXd& pressure)

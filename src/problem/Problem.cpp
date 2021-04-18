@@ -21,7 +21,7 @@ namespace polyfem
 	{
 	}
 
-	void Problem::setup_bc(const Mesh &mesh, const std::vector<ElementBases> &bases, std::vector<LocalBoundary> &local_boundary, std::vector<int> &boundary_nodes, std::vector<LocalBoundary> &local_neumann_boundary)
+	void Problem::setup_bc(const Mesh &mesh, const std::vector<ElementBases> &bases, const std::vector<ElementBases> &pressure_bases, std::vector<LocalBoundary> &local_boundary, std::vector<int> &boundary_nodes, std::vector<LocalBoundary> &local_neumann_boundary, std::vector<int> &pressure_boundary_nodes)
 	{
 		std::vector<LocalBoundary> new_local_boundary;
 		local_neumann_boundary.clear();
@@ -55,6 +55,7 @@ namespace polyfem
 		std::swap(local_boundary, new_local_boundary);
 
 		boundary_nodes.clear();
+		pressure_boundary_nodes.clear();
 
 		const int dim = is_scalar() ? 1 : mesh.dimension();
 
@@ -83,9 +84,34 @@ namespace polyfem
 			}
 		}
 
+		for (auto it = local_neumann_boundary.begin(); it != local_neumann_boundary.end(); ++it)
+		{
+			const auto &lb = *it;
+			const auto &b = pressure_bases[lb.element_id()];
+			for (int i = 0; i < lb.size(); ++i)
+			{
+				const int primitive_global_id = lb.global_primitive_id(i);
+				const auto nodes = b.local_nodes_for_primitive(primitive_global_id, mesh);
+
+				for (long n = 0; n < nodes.size(); ++n)
+				{
+					auto &bs = b.bases[nodes(n)];
+					for (size_t g = 0; g < bs.global().size(); ++g)
+					{
+						const int base_index = bs.global()[g].index;
+						pressure_boundary_nodes.push_back(base_index);
+					}
+				}
+			}
+		}
+
 		std::sort(boundary_nodes.begin(), boundary_nodes.end());
 		auto it = std::unique(boundary_nodes.begin(), boundary_nodes.end());
 		boundary_nodes.resize(std::distance(boundary_nodes.begin(), it));
+
+		std::sort(pressure_boundary_nodes.begin(), pressure_boundary_nodes.end());
+		auto it_ = std::unique(pressure_boundary_nodes.begin(), pressure_boundary_nodes.end());
+		pressure_boundary_nodes.resize(std::distance(pressure_boundary_nodes.begin(), it_));
 	}
 
 	const ProblemFactory &ProblemFactory::factory()

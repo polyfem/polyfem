@@ -52,7 +52,7 @@ namespace polyfem
 
 		virtual void set_parameters(const json &params) {}
 
-		void setup_bc(const Mesh &mesh, const std::vector<ElementBases> &bases, std::vector<LocalBoundary> &local_boundary, std::vector<int> &boundary_nodes, std::vector<LocalBoundary> &local_neumann_boundary);
+		void setup_bc(const Mesh &mesh, const std::vector<ElementBases> &bases, const std::vector<ElementBases> &pressure_bases, std::vector<LocalBoundary> &local_boundary, std::vector<int> &boundary_nodes, std::vector<LocalBoundary> &local_neumann_boundary, std::vector<int> &pressure_boundary_nodes);
 
 		// std::vector<int> &boundary_ids() { return boundary_ids_; }
 		// const std::vector<int> &boundary_ids() const { return boundary_ids_; }

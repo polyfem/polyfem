@@ -588,7 +588,7 @@ namespace polyfem
 			extract_vis_boundary_mesh();
 		logger().info("Done!");
 
-		problem->setup_bc(*mesh, bases, local_boundary, boundary_nodes, local_neumann_boundary);
+		problem->setup_bc(*mesh, bases, pressure_bases, local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes);
 
 		//add a pressure node to avoid singular solution
 		if (assembler.is_mixed(formulation())) // && !assembler.is_fluid(formulation()))
@@ -1042,7 +1042,7 @@ namespace polyfem
 				mixed_stiffness = mixed_stiffness.transpose();
 				logger().info("Matrices assembly ends!");
 
-				OperatorSplittingSolver ss(*mesh, shape, n_el, local_boundary, boundary_nodes, bnd_nodes, mass, stiffness_viscosity, stiffness, velocity_mass, dt, viscosity_, args["solver_type"], args["precond_type"], params, args["export"]["stiffness_mat"]);
+				OperatorSplittingSolver ss(*mesh, shape, n_el, local_boundary, boundary_nodes, pressure_boundary_nodes, bnd_nodes, mass, stiffness_viscosity, stiffness, velocity_mass, dt, viscosity_, args["solver_type"], args["precond_type"], params, args["export"]["stiffness_mat"]);
 
 				/* initialize solution */
 				pressure = Eigen::MatrixXd::Zero(n_pressure_bases, 1);
@@ -1084,7 +1084,7 @@ namespace polyfem
 					
 					/* incompressibility */
 					logger().info("Pressure projection...");
-					ss.solve_pressure(mixed_stiffness, sol, pressure);
+					ss.solve_pressure(mixed_stiffness, pressure_boundary_nodes, sol, pressure);
 					
 					ss.projection(n_bases, gbases, bases, pressure_bases, local_pts, pressure, sol);
 					// ss.projection(velocity_mass, mixed_stiffness, boundary_nodes, sol, pressure);
