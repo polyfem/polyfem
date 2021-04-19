@@ -956,10 +956,10 @@ namespace polyfem
             if (assembler.is_mixed(formulation()))
             {
                 std::ofstream osp(path + "_p_sol.txt");
-                osp << tmp_p;
+                osp << res_p;
 
                 std::ofstream osgp(path + "_p_grad.txt");
-                osgp << tmp_grad_p;
+                osgp << res_grad_p;
             }
         }
 
