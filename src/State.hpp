@@ -154,6 +154,11 @@ namespace polyfem
 		Eigen::MatrixXi boundary_vis_elements_ids;
 		Eigen::MatrixXd boundary_vis_normals;
 
+		//grid mesh
+		Eigen::MatrixXd grid_points;
+		Eigen::MatrixXi grid_points_to_elements;
+		Eigen::MatrixXd grid_points_bc;
+
 		//spectrum of the stiffness matrix, enable only if POLYSOLVE_WITH_SPECTRA is ON (off by default)
 		Eigen::Vector4d spectrum;
 

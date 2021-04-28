@@ -9,6 +9,8 @@
 
 #include <polyfem/Logger.hpp>
 
+#include <igl/barycentric_coordinates.h>
+
 #include <geogram/basic/file_system.h>
 #include <geogram/mesh/mesh_io.h>
 #include <geogram/mesh/mesh_geometry.h>
@@ -694,6 +696,46 @@ namespace polyfem
 			index = next_around_face(index);
 		}
 		return bary / n_vertices;
+	}
+
+	void Mesh2D::elements_boxes(std::vector<std::array<Eigen::Vector3d, 2>> &boxes) const
+	{
+		boxes.resize(n_elements());
+
+		for (int i = 0; i < n_elements(); ++i)
+		{
+			auto &box = boxes[i];
+			box[0] << std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0;
+			box[1] << std::numeric_limits<double>::min(), std::numeric_limits<double>::min(), 0;
+
+			auto index = get_index_from_face(i);
+
+			for (int j = 0; j < n_face_vertices(i); ++j)
+			{
+				for (int d = 0; d < 2; ++d)
+				{
+					box[0][d] = std::min(box[0][d], point(index.vertex)[d]);
+					box[1][d] = std::max(box[1][d], point(index.vertex)[d]);
+				}
+				index = next_around_face(index);
+			}
+		}
+	}
+
+	void Mesh2D::barycentric_coords(const RowVectorNd &p, const int el_id, Eigen::MatrixXd &coords) const
+	{
+		assert(is_simplex(el_id));
+
+		auto index = get_index_from_face(el_id);
+		const auto A = point(index.vertex);
+
+		index = next_around_face(index);
+		const auto B = point(index.vertex);
+
+		index = next_around_face(index);
+		const auto C = point(index.vertex);
+
+		igl::barycentric_coordinates(p, A, B, C, coords);
 	}
 
 } // namespace polyfem

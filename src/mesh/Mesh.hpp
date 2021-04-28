@@ -119,6 +119,9 @@ namespace polyfem
 		void face_barycenters(Eigen::MatrixXd &barycenters) const;
 		void cell_barycenters(Eigen::MatrixXd &barycenters) const;
 
+		virtual void elements_boxes(std::vector<std::array<Eigen::Vector3d, 2>> &boxes) const = 0;
+		virtual void barycentric_coords(const RowVectorNd &p, const int el_id, Eigen::MatrixXd &coord) const = 0;
+
 		virtual void bounding_box(RowVectorNd &min, RowVectorNd &max) const = 0;
 
 		//Queries on the tags
