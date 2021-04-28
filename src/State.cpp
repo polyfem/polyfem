@@ -160,7 +160,7 @@ namespace polyfem
 
 	void State::set_multimaterial(const std::function<void(const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &)> &setter)
 	{
-		if (args.find("body_params") == args.end())
+		if (!args.contains("body_params"))
 			return;
 
 		const auto &body_params = args["body_params"];

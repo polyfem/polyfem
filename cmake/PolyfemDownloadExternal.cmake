@@ -27,7 +27,7 @@ endfunction()
 function(polyfem_download_solvers)
     polyfem_download_project(solvers
         GIT_REPOSITORY https://github.com/polyfem/polysolve.git
-        GIT_TAG        499a2bdb8ee1984c68bf8d622e48aebb41cf53f8
+        GIT_TAG        1303631131117e51f95f45562b89d96de616abc5
     )
 endfunction()
 
@@ -125,7 +125,7 @@ endfunction()
 function(polyfem_download_ipc)
     polyfem_download_project(ipc
         GIT_REPOSITORY https://github.com/ipc-sim/ipc-toolkit.git
-        GIT_TAG        57e21cf9c33d1b855d526fa896c2e1d656da7809
+        GIT_TAG        8afc537df609288dabe49667580636de206524ed
     )
 endfunction()
 

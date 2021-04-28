@@ -31,27 +31,27 @@ namespace polyfem
 			read_matrix(data["points"], pts);
 
 			int coord = -1;
-			if (data.find("coordinate") != data.end())
+			if (data.contains("coordinate"))
 				coord = data["coordinate"];
 
 			if (coord >= 0)
 				pts = pts.block(0, 0, pts.rows(), 2).eval();
 
-			is_tri = data.find("triangles") != data.end();
+			is_tri = data.contains("triangles");
 			if (is_tri)
 				read_matrix(data["triangles"], tri);
 			else
 			{
-				if (data.find("rbf") != data.end())
+				if (data.contains("rbf"))
 				{
 					const std::string tmp = data["rbf"];
 					rbf = tmp;
 				}
-				if (data.find("epsilon") != data.end())
+				if (data.contains("epsilon"))
 					eps = data["epsilon"];
 			}
 
-			if (data.find("dimension") != data.end())
+			if (data.contains("dimension"))
 			{
 				all_dimentions_dirichelt = false;
 				auto &tmp = data["dimension"];
@@ -237,17 +237,17 @@ namespace polyfem
 		if (initialized_)
 			return;
 
-		if (params.find("scaling") != params.end())
+		if (params.contains("scaling"))
 		{
 			scaling_ = params["scaling"];
 		}
 
-		if (params.find("rhs") != params.end())
+		if (params.contains("rhs"))
 		{
 			rhs_ = params["rhs"];
 		}
 
-		if (params.find("translation") != params.end())
+		if (params.contains("translation"))
 		{
 			const auto &j_translation = params["translation"];
 
@@ -258,7 +258,7 @@ namespace polyfem
 				translation_(k) = j_translation[k];
 		}
 
-		if (params.find("boundary_ids") != params.end())
+		if (params.contains("boundary_ids"))
 		{
 			boundary_ids_.clear();
 			auto j_boundary = params["boundary_ids"];
@@ -275,7 +275,7 @@ namespace polyfem
 			}
 		}
 
-		if (params.find("neumann_boundary_ids") != params.end())
+		if (params.contains("neumann_boundary_ids"))
 		{
 			neumann_boundary_ids_.clear();
 			auto j_boundary = params["neumann_boundary_ids"];

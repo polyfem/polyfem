@@ -250,12 +250,12 @@ namespace polyfem
 
 	void GenericTensorProblem::set_parameters(const json &params)
 	{
-		if (params.find("is_time_dependent") != params.end())
+		if (params.contains("is_time_dependent"))
 		{
 			is_time_dept_ = params["is_time_dependent"];
 		}
 
-		if (params.find("rhs") != params.end())
+		if (params.contains("rhs"))
 		{
 			auto rr = params["rhs"];
 			if (rr.is_array())
@@ -269,7 +269,7 @@ namespace polyfem
 			}
 		}
 
-		if (params.find("exact") != params.end())
+		if (params.contains("exact"))
 		{
 			auto ex = params["exact"];
 			has_exact_ = !ex.is_null();
@@ -291,7 +291,7 @@ namespace polyfem
 			has_exact_ = false;
 		}
 
-		if (params.find("exact_grad") != params.end())
+		if (params.contains("exact_grad"))
 		{
 			auto ex = params["exact_grad"];
 			has_exact_grad_ = !ex.is_null();
@@ -313,7 +313,7 @@ namespace polyfem
 			has_exact_grad_ = false;
 		}
 
-		if (params.find("dirichlet_boundary") != params.end())
+		if (params.contains("dirichlet_boundary"))
 		{
 			// boundary_ids_.clear();
 			int offset = boundary_ids_.size();
@@ -350,7 +350,7 @@ namespace polyfem
 				}
 
 				dirichelt_dimentions_[i].setConstant(true);
-				if (j_boundary[i - offset].find("dimension") != j_boundary[i - offset].end())
+				if (j_boundary[i - offset].contains("dimension"))
 				{
 					all_dimentions_dirichelt_ = false;
 					auto &tmp = j_boundary[i - offset]["dimension"];
@@ -359,14 +359,14 @@ namespace polyfem
 						dirichelt_dimentions_[i](k) = tmp[k];
 				}
 
-				if (j_boundary[i - offset].find("interpolation") != j_boundary[i - offset].end())
+				if (j_boundary[i - offset].contains("interpolation"))
 					displacements_interpolation_[i] = Interpolation::build(j_boundary[i - offset]["interpolation"]);
 				else
 					displacements_interpolation_[i] = std::make_shared<Interpolation>();
 			}
 		}
 
-		if (params.find("neumann_boundary") != params.end())
+		if (params.contains("neumann_boundary"))
 		{
 			// neumann_boundary_ids_.clear();
 			const int offset = neumann_boundary_ids_.size();
@@ -395,14 +395,14 @@ namespace polyfem
 					forces_[i][2].init(0);
 				}
 
-				if (j_boundary[i - offset].find("interpolation") != j_boundary[i - offset].end())
+				if (j_boundary[i - offset].contains("interpolation"))
 					forces_interpolation_[i] = Interpolation::build(j_boundary[i - offset]["interpolation"]);
 				else
 					forces_interpolation_[i] = std::make_shared<Interpolation>();
 			}
 		}
 
-		if (params.find("pressure_boundary") != params.end())
+		if (params.contains("pressure_boundary"))
 		{
 			// pressure_boundary_ids_.clear();
 			const int offset = pressure_boundary_ids_.size();
@@ -420,14 +420,14 @@ namespace polyfem
 				auto ff = j_boundary[i - offset]["value"];
 				pressures_[i].init(ff);
 
-				if (j_boundary[i - offset].find("interpolation") != j_boundary[i - offset].end())
+				if (j_boundary[i - offset].contains("interpolation"))
 					pressure_interpolation_[i] = Interpolation::build(j_boundary[i - offset]["interpolation"]);
 				else
 					pressure_interpolation_[i] = std::make_shared<Interpolation>();
 			}
 		}
 
-		if (params.find("initial_solution") != params.end())
+		if (params.contains("initial_solution"))
 		{
 			auto rr = params["initial_solution"];
 			initial_position_.resize(rr.size());
@@ -442,7 +442,7 @@ namespace polyfem
 			}
 		}
 
-		if (params.find("initial_velocity") != params.end())
+		if (params.contains("initial_velocity"))
 		{
 			auto rr = params["initial_velocity"];
 			initial_velocity_.resize(rr.size());
@@ -457,7 +457,7 @@ namespace polyfem
 			}
 		}
 
-		if (params.find("initial_acceleration") != params.end())
+		if (params.contains("initial_acceleration"))
 		{
 			auto rr = params["initial_acceleration"];
 			initial_acceleration_.resize(rr.size());
@@ -750,18 +750,18 @@ namespace polyfem
 
 	void GenericScalarProblem::set_parameters(const json &params)
 	{
-		if (params.find("is_time_dependent") != params.end())
+		if (params.contains("is_time_dependent"))
 		{
 			is_time_dept_ = params["is_time_dependent"];
 		}
 
-		if (params.find("rhs") != params.end())
+		if (params.contains("rhs"))
 		{
 			// rhs_ = params["rhs"];
 			rhs_.init(params["rhs"]);
 		}
 
-		if (params.find("exact") != params.end())
+		if (params.contains("exact"))
 		{
 			has_exact_ = !params["exact"].is_null();
 			if (has_exact_)
@@ -772,7 +772,7 @@ namespace polyfem
 			has_exact_ = false;
 		}
 
-		if (params.find("exact_grad") != params.end())
+		if (params.contains("exact_grad"))
 		{
 			auto ex = params["exact_grad"];
 			has_exact_grad_ = !ex.is_null();
@@ -794,7 +794,7 @@ namespace polyfem
 			has_exact_grad_ = false;
 		}
 
-		if (params.find("dirichlet_boundary") != params.end())
+		if (params.contains("dirichlet_boundary"))
 		{
 			// boundary_ids_.clear();
 			const int offset = boundary_ids_.size();
@@ -820,7 +820,7 @@ namespace polyfem
 			}
 		}
 
-		if (params.find("neumann_boundary") != params.end())
+		if (params.contains("neumann_boundary"))
 		{
 			// neumann_boundary_ids_.clear();
 			const int offset = neumann_boundary_ids_.size();

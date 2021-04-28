@@ -216,13 +216,13 @@ namespace polyfem
 
         use_avg_pressure = !args["has_neumann"];
 
-        if (args_in.find("stiffness_mat_save_path") != args_in.end() && !args_in["stiffness_mat_save_path"].empty())
+        if (args_in.contains("stiffness_mat_save_path") && !args_in["stiffness_mat_save_path"].empty())
         {
             logger().warn("use export: { stiffness_mat: 'path' } instead of stiffness_mat_save_path");
             this->args["export"]["stiffness_mat"] = args_in["stiffness_mat_save_path"];
         }
 
-        if (args_in.find("solution") != args_in.end() && !args_in["solution"].empty())
+        if (args_in.contains("solution") && !args_in["solution"].empty())
         {
             logger().warn("use export: { solution: 'path' } instead of solution");
             this->args["export"]["solution"] = args_in["solution"];
@@ -230,39 +230,29 @@ namespace polyfem
 
         if (this->args["has_collision"])
         {
-            std::string psd = "";
-            std::string gradNorm = "";
-            std::string useGradNorm = "";
-            std::string linesearch = "";
-
-            if (args_in.find("project_to_psd") == args_in.end())
+            if (!args_in.contains("project_to_psd"))
             {
                 args["project_to_psd"] = true;
-                psd = "Chaning default project to psd to true ";
+                logger().warn("Changing default project to psd to true");
             }
 
-            if (args_in.find("line_search") == args_in.end())
+            if (!args_in.contains("line_search"))
             {
                 args["line_search"] = "bisection";
-                linesearch = "Chaning default linesearch to bisection ";
+                logger().warn("Changing default linesearch to bisection");
             }
 
-            if (args_in.find("solver_params") == args_in.end() || args_in["solver_params"].find("gradNorm") == args_in["solver_params"].end())
+            if (!args_in.contains("solver_params") || !args_in["solver_params"].contains("gradNorm"))
             {
                 args["solver_params"]["gradNorm"] = 1e-5;
-                gradNorm = "Chaning default convergence to 1e-5 ";
+                logger().warn("Changing default convergence to 1e-5");
             }
 
-            if (args_in.find("solver_params") == args_in.end() || args_in["solver_params"].find("useGradNorm") == args_in["solver_params"].end())
+            if (!args_in.contains("solver_params") || !args_in["solver_params"].contains("useGradNorm"))
             {
                 args["solver_params"]["useGradNorm"] = false;
-                useGradNorm = "Chaning convergence check to Newton direction ";
+                logger().warn("Changing convergence check to Newton direction");
             }
-
-            std::string message = psd + linesearch + gradNorm + useGradNorm;
-
-            if (message.length() > 0)
-                logger().warn(message);
         }
 
         problem = ProblemFactory::factory().get_problem(args["problem"]);

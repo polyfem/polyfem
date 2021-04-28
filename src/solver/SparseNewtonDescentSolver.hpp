@@ -176,7 +176,7 @@ namespace cppoptlib
 			new_x = x + step_size * grad;
 			while (!objFunc.is_step_collision_free(x, new_x))
 			{
-				polyfem::logger().error("step is not collisin free!!");
+				polyfem::logger().error("step is not collision free!!");
 				step_size /= 2;
 				new_x = x + step_size * grad;
 			}

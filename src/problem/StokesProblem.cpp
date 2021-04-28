@@ -25,7 +25,7 @@ namespace polyfem
 
 	void TimeDepentendStokesProblem::set_parameters(const json &params)
 	{
-		if (params.find("time_dependent") != params.end())
+		if (params.contains("time_dependent"))
 		{
 			is_time_dependent_ = params["time_dependent"];
 		}
@@ -186,34 +186,34 @@ namespace polyfem
 	{
 		TimeDepentendStokesProblem::set_parameters(params);
 
-		if (params.find("inflow") != params.end())
+		if (params.contains("inflow"))
 		{
 			inflow_ = params["inflow"];
 		}
 
-		if (params.find("outflow") != params.end())
+		if (params.contains("outflow"))
 		{
 			outflow_ = params["outflow"];
 		}
 
-		if (params.find("inflow_amout") != params.end())
+		if (params.contains("inflow_amout"))
 		{
 			inflow_amout_ = params["inflow_amout"];
 		}
 
-		if (params.find("outflow_amout") != params.end())
+		if (params.contains("outflow_amout"))
 		{
 			outflow_amout_ = params["outflow_amout"];
 		}
 
-		if (params.find("direction") != params.end())
+		if (params.contains("direction"))
 		{
 			flow_dir_ = params["direction"];
 		}
 
 		boundary_ids_.clear();
 
-		if (params.find("obstacle") != params.end())
+		if (params.contains("obstacle"))
 		{
 			const auto obstacle = params["obstacle"];
 			if (obstacle.is_array())
@@ -282,7 +282,7 @@ namespace polyfem
 	{
 		TimeDepentendStokesProblem::set_parameters(params);
 
-		if (params.find("U") != params.end())
+		if (params.contains("U"))
 		{
 			U_ = params["U"];
 		}
@@ -332,22 +332,22 @@ namespace polyfem
 	{
 		TimeDepentendStokesProblem::set_parameters(params);
 
-		if (params.find("U") != params.end())
+		if (params.contains("U"))
 		{
 			U_ = params["U"];
 		}
 
-		if (params.find("inflow_id") != params.end())
+		if (params.contains("inflow_id"))
 		{
 			inflow_ = params["inflow_id"];
 		}
 
-		if (params.find("direction") != params.end())
+		if (params.contains("direction"))
 		{
 			dir_ = params["direction"];
 		}
 
-		if (params.find("no_slip") != params.end())
+		if (params.contains("no_slip"))
 		{
 			boundary_ids_.clear();
 
@@ -576,7 +576,7 @@ namespace polyfem
 
 	void SimpleStokeProblemExact::set_parameters(const json &params)
 	{
-		if (params.find("func") != params.end())
+		if (params.contains("func"))
 		{
 			func_ = params["func"];
 		}
@@ -742,7 +742,7 @@ namespace polyfem
 			viscosity_ = params["viscosity"];
 		}
 
-		if (params.find("func") != params.end())
+		if (params.contains("func"))
 		{
 			func_ = params["func"];
 		}

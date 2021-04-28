@@ -276,7 +276,7 @@ namespace polyfem
 	void GenericScalarProblemExact::set_parameters(const json &params)
 	{
 
-		if (params.find("func") != params.end())
+		if (params.contains("func"))
 		{
 			func_ = params["func"];
 		}

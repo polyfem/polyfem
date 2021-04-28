@@ -172,18 +172,18 @@ namespace polyfem
 
 	void NodeProblem::set_parameters(const json &params)
 	{
-		if (params.find("rhs") != params.end())
+		if (params.contains("rhs"))
 		{
 			rhs_ = params["rhs"];
 		}
 
-		if (params.find("values") != params.end())
+		if (params.contains("values"))
 		{
 			const std::string path = params["values"];
 			values_.load(path);
 		}
 
-		if (params.find("dirichlet_boundary") != params.end())
+		if (params.contains("dirichlet_boundary"))
 		{
 			boundary_ids_.clear();
 			auto j_boundary = params["dirichlet_boundary"];
@@ -204,7 +204,7 @@ namespace polyfem
 
 				dirichelt_dimentions_[i].setConstant(false);
 
-				if (j_boundary[i].find("dimension") != j_boundary[i].end())
+				if (j_boundary[i].contains("dimension"))
 				{
 					all_dimentions_dirichelt_ = false;
 					auto &tmp = j_boundary[i]["dimension"];
@@ -215,7 +215,7 @@ namespace polyfem
 			}
 		}
 
-		if (params.find("neumann_boundary") != params.end())
+		if (params.contains("neumann_boundary"))
 		{
 			neumann_boundary_ids_.clear();
 			auto j_boundary = params["neumann_boundary"];

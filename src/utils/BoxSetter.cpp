@@ -10,13 +10,13 @@ namespace polyfem
     std::shared_ptr<Selection> Selection::build(const json &selection)
     {
         std::shared_ptr<Selection> res = nullptr;
-        if (selection.find("box") != selection.end())
+        if (selection.contains("box"))
             res = std::make_shared<Box>(selection);
-        else if (selection.find("center") != selection.end())
+        else if (selection.contains("center"))
             res = std::make_shared<Sphere>(selection);
-        else if (selection.find("axis") != selection.end())
+        else if (selection.contains("axis"))
             res = std::make_shared<AxisPlane>(selection);
-        else if (selection.find("normal") != selection.end())
+        else if (selection.contains("normal"))
             res = std::make_shared<Plane>(selection);
         else
         {
@@ -125,7 +125,7 @@ namespace polyfem
         {
             std::vector<std::pair<int, std::shared_ptr<Selection>>> selections;
 
-            if (args.find(key) != args.end())
+            if (args.contains(key))
             {
                 const auto boundary = args[key];
                 assert(boundary.is_array());

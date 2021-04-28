@@ -96,7 +96,7 @@ option(POLYSOLVE_WITH_PARDISO          "Enable Pardiso library"            OFF)
 option(POLYSOLVE_WITH_HYPRE            "Enable hypre"                      ON)
 option(POLYSOLVE_WITH_AMGCL            "Use AMGCL"                         ON)
 option(POLYSOLVE_WITH_SPECTRA          "Enable computing spectrum"         OFF)
-option(POLYSOLVE_LARGE_INDEX    "Build for large indices"                  OFF)
+option(POLYSOLVE_LARGE_INDEX           "Build for large indices"           OFF)
 
 
 # Options for libigl modules
@@ -281,7 +281,7 @@ target_link_libraries(polyfem PUBLIC igl::core)
 
 # IPC
 option(IPC_TOOLKIT_BUILD_UNIT_TESTS  "Build unit-tests"      OFF)
-option(IPC_TOOLKIT_WITH_LOGGER       "Enables logger "       OFF)
+option(IPC_TOOLKIT_WITH_LOGGER       "Enables logger"        OFF)
 polyfem_download_ipc()
 add_subdirectory(${THIRD_PARTY_DIR}/ipc)
 target_link_libraries(polyfem PUBLIC IPCToolkit)

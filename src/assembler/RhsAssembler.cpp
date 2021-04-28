@@ -218,7 +218,7 @@ namespace polyfem
 					// if(std::find(bounday_nodes.begin(), bounday_nodes.end(), size_ * b.global()[ii].index) != bounday_nodes.end())
 					if (is_boundary[b.global()[ii].index])
 					{
-						//if(global_index_to_col.find( b.global()[ii].index ) == global_index_to_col.end())
+						// if(!global_index_to_col.contains(b.global()[ii].index))
 						if (global_index_to_col(b.global()[ii].index) == -1)
 						{
 							// global_index_to_col[b.global()[ii].index] = index++;
