@@ -10,11 +10,34 @@
 #include <iostream>
 #include <vector>
 
+#include <ghc/fs_std.hpp> // filesystem
+
 namespace polyfem
 {
 	bool MshReader::load(const std::string &path, Eigen::MatrixXd &vertices, Eigen::MatrixXi &cells, std::vector<std::vector<int>> &elements, std::vector<std::vector<double>> &weights)
 	{
-		mshio::MshSpec spec = mshio::load_msh(path);
+		if (!fs::exists(path))
+		{
+			logger().error("Msh file does not exist: {}", path);
+			return false;
+		}
+
+		mshio::MshSpec spec;
+		try
+		{
+			spec = mshio::load_msh(path);
+		}
+		catch (const std::exception &err)
+		{
+			logger().error("{}", err.what());
+			return false;
+		}
+		catch (...)
+		{
+			logger().error("Unknown error while reading MSH file: {}", path);
+			return false;
+		}
+
 		const auto &nodes = spec.nodes;
 		const auto &els = spec.elements;
 		const int n_vertices = nodes.num_nodes;
@@ -48,25 +71,25 @@ namespace polyfem
 				continue;
 			const int type = e.element_type;
 
-			if (type == 2 || type == 9 || type == 21 || type == 23 || type == 25) //tri
+			if (type == 2 || type == 9 || type == 21 || type == 23 || type == 25) // tri
 			{
 				assert(cells_cols == -1 || cells_cols == 3);
 				cells_cols = 3;
 				num_els += e.num_elements_in_block;
 			}
-			else if (type == 3 || type == 10) //quad
+			else if (type == 3 || type == 10) // quad
 			{
 				assert(cells_cols == -1 || cells_cols == 4);
 				cells_cols = 4;
 				num_els += e.num_elements_in_block;
 			}
-			else if (type == 4 || type == 11 || type == 29 || type == 30 || type == 31) //tet
+			else if (type == 4 || type == 11 || type == 29 || type == 30 || type == 31) // tet
 			{
 				assert(cells_cols == -1 || cells_cols == 4);
 				cells_cols = 4;
 				num_els += e.num_elements_in_block;
 			}
-			else if (type == 5 || type == 12) //hex
+			else if (type == 5 || type == 12) // hex
 			{
 				assert(cells_cols == -1 || cells_cols == 8);
 				cells_cols = 8;

@@ -19,6 +19,8 @@
 #include <thread>
 #endif
 
+#include <ghc/fs_std.hpp> // filesystem
+
 using namespace polyfem;
 using namespace polysolve;
 using namespace Eigen;
@@ -106,10 +108,10 @@ int main(int argc, char **argv)
 	command_line.add_option("--cache_size", cache_size, "Size of the cached assembly values");
 	command_line.add_option("--min_component", min_component, "Mimimum number of faces in connected compoment for contact");
 
-	//disable out
+	// disable out
 	command_line.add_flag("--cmd", no_ui, "Runs in command line mode, no ui");
 
-	//IO
+	// IO
 	command_line.add_option("--output", output, "Output json file");
 	command_line.add_option("--vtu", vtu, "Vtu output file");
 	command_line.add_option("--screenshot", screenshot, "screenshot (disabled)");
@@ -145,6 +147,20 @@ int main(int argc, char **argv)
 		else
 			logger().error("unable to open {} file", json_file);
 		file.close();
+
+		// If the mesh path does not exist make it relative to the json_file
+		if (in_args.contains("mesh") && !in_args["mesh"].empty())
+		{
+			fs::path mesh_path(in_args["mesh"].get<std::string>());
+			if (!mesh_path.is_absolute() && !fs::exists(mesh_path))
+			{
+				fs::path json_file_path(json_file);
+				in_args["mesh"] = fs::weakly_canonical(
+									  json_file_path.parent_path() / mesh_path)
+									  .string();
+				logger().info("using mesh path: \"{}\"", in_args["mesh"]);
+			}
+		}
 	}
 	else
 	{
@@ -206,6 +222,14 @@ int main(int argc, char **argv)
 			state.load_febio(febio_file);
 		else
 			state.load_mesh();
+
+		// Mesh was not loaded successfully; load_mesh() logged the error.
+		if (state.mesh == nullptr)
+		{
+			// Cannot proceed without a mesh.
+			return EXIT_FAILURE;
+		}
+
 		state.compute_mesh_stats();
 
 		state.build_basis();

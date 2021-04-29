@@ -10,6 +10,8 @@
 
 #include <geogram/mesh/mesh_io.h>
 #include <geogram/mesh/mesh_geometry.h>
+
+#include <ghc/fs_std.hpp> // filesystem
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace
@@ -55,6 +57,12 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(GEO::Mesh &meshin)
 
 std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path)
 {
+	if (!fs::exists(path))
+	{
+		logger().error("Mesh file does not exist: {}", path);
+		return nullptr;
+	}
+
 	std::string lowername = path;
 
 	std::transform(lowername.begin(), lowername.end(), lowername.begin(), ::tolower);
@@ -83,7 +91,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path)
 			mesh = std::make_unique<Mesh3D>();
 
 		mesh->build_from_matrices(vertices, cells);
-		//Only tris and tets
+		// Only tris and tets
 		if ((vertices.cols() == 2 && cells.cols() == 3) || (vertices.cols() == 3 && cells.cols() == 4))
 		{
 			mesh->attach_higher_order_nodes(vertices, elements);
@@ -144,22 +152,20 @@ void polyfem::Mesh::cell_barycenters(Eigen::MatrixXd &barycenters) const
 
 ////////////////////////////////////////////////////////////////////////////////
 
-//Queries on the tags
+// Queries on the tags
 bool polyfem::Mesh::is_spline_compatible(const int el_id) const
 {
 	if (is_volume())
 	{
 		return elements_tag_[el_id] == ElementType::RegularInteriorCube ||
-			   elements_tag_[el_id] == ElementType::RegularBoundaryCube; // ||
-																		 // elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube ||
-																		 // elements_tag_[el_id] == ElementType::SimpleSingularBoundaryCube;
+			   elements_tag_[el_id] == ElementType::RegularBoundaryCube;
+		// || elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube || elements_tag_[el_id] == ElementType::SimpleSingularBoundaryCube;
 	}
 	else
 	{
 		return elements_tag_[el_id] == ElementType::RegularInteriorCube ||
-			   elements_tag_[el_id] == ElementType::RegularBoundaryCube; // ||
-																		 // elements_tag_[el_id] == ElementType::InterfaceCube ||
-																		 // elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube;
+			   elements_tag_[el_id] == ElementType::RegularBoundaryCube;
+		// || elements_tag_[el_id] == ElementType::InterfaceCube || elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube;
 	}
 }
 

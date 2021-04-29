@@ -170,10 +170,7 @@ set(MESH_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tests/")
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_MESH_PATH=\"${MESH_PATH}\")
 
 # Dependencies
-target_link_libraries(polyfem
-    PUBLIC
-        clipper::clipper
-)
+target_link_libraries(polyfem PUBLIC clipper::clipper)
 
 # Extra warnings
 target_link_libraries(polyfem PRIVATE warnings::all)
@@ -312,8 +309,6 @@ add_library(cppoptlib INTERFACE)
 target_include_directories(cppoptlib SYSTEM INTERFACE ${THIRD_PARTY_DIR}/CppNumericalSolvers/include)
 target_link_libraries(polyfem PUBLIC cppoptlib)
 
-
-
 # TinyExpr library
 if(NOT TARGET tinyexpr::tinyexpr)
     polyfem_download_tinyexpr()
@@ -340,6 +335,7 @@ if(${POLYFEM_TOPLEVEL_PROJECT})
     target_include_directories(catch SYSTEM INTERFACE ${THIRD_PARTY_DIR}/Catch2/single_include/catch2)
 endif()
 
+target_link_libraries(polyfem PUBLIC ghc::filesystem)
 
 ################################################################################
 # Optional libraries

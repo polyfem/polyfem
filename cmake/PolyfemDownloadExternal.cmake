@@ -63,7 +63,7 @@ function(polyfem_download_cli11)
     )
 endfunction()
 
-# Clipper (BSL1.0)
+## Clipper (BSL1.0)
 function(polyfem_download_clipper)
     polyfem_download_project(clipper
         URL     https://sourceforge.net/projects/polyclipping/files/clipper_ver6.4.2.zip
@@ -111,7 +111,6 @@ function(polyfem_download_tinyexpr)
     )
 endfunction()
 
-
 ## tinyxml zlib
 function(polyfem_download_tinyxml)
     polyfem_download_project(tinyxml
@@ -119,7 +118,6 @@ function(polyfem_download_tinyxml)
         GIT_TAG        2c5a6bfdd42ab919e55a613d33c83eb53de71af4
     )
 endfunction()
-
 
 ## ipc MIT
 function(polyfem_download_ipc)
@@ -129,8 +127,7 @@ function(polyfem_download_ipc)
     )
 endfunction()
 
-
-# BVH MIT
+## BVH MIT
 function(polyfem_download_BVH)
     polyfem_download_project(BVH
         GIT_REPOSITORY https://github.com/geometryprocessing/SimpleBVH.git
@@ -138,7 +135,7 @@ function(polyfem_download_BVH)
     )
 endfunction()
 
-# MshIO Apache-2.0
+## MshIO Apache-2.0
 function(polyfem_download_mshio)
     polyfem_download_project(mshio
         GIT_REPOSITORY https://github.com/qnzhou/MshIO.git
@@ -146,13 +143,18 @@ function(polyfem_download_mshio)
     )
 endfunction()
 
-
-
-
 ## data
 function(polyfem_download_polyfem_data)
     polyfem_download_project(data
         GIT_REPOSITORY https://github.com/polyfem/polyfem-data
         GIT_TAG        6b39f58be033d5cca57d5d3fd8ed206ae041e25d
+    )
+endfunction()
+
+## filesystem library for C++11 and C++14 (MIT)
+function(polyfem_download_filesystem)
+    polyfem_download_project(filesystem
+        GIT_REPOSITORY https://github.com/gulrak/filesystem.git
+        GIT_TAG        v1.5.4
     )
 endfunction()
