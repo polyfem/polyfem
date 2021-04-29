@@ -158,7 +158,8 @@ int main(int argc, char **argv)
 				in_args["mesh"] = fs::weakly_canonical(
 									  json_file_path.parent_path() / mesh_path)
 									  .string();
-				logger().info("using mesh path: \"{}\"", in_args["mesh"]);
+				logger().info("using mesh path: \"{}\"",
+							  in_args["mesh"].get<std::string>());
 			}
 		}
 	}
