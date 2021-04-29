@@ -45,7 +45,7 @@ namespace polyfem
 		//inialize material parameter
 		void set_parameters(const json &params);
 		//initialize material param per element
-		void init_multimaterial(const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus);
+		void init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus);
 		//initialized multi models
 		inline void init_multimodels(const std::vector<std::string> &mats) { multi_material_models_ = mats; }
 

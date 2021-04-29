@@ -130,7 +130,7 @@ namespace polyfem
 
 		//dispaces to all set parameters of the local assemblers
 		void set_parameters(const json &params);
-		void init_multimaterial(const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus);
+		void init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus);
 		void init_multimodels(const std::vector<std::string> &materials);
 		const LameParameters &lame_params() const { return linear_elasticity_.local_assembler().lame_params(); }
 

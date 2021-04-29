@@ -530,7 +530,7 @@ namespace polyfem
 		return check >= 0 ? ttrue : ffalse;
 	}
 
-	void LameParameters::init_multimaterial(const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus)
+	void LameParameters::init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus)
 	{
 		lambda_mat_.resize(Es.size(), 1);
 		mu_mat_.resize(nus.size(), 1);
@@ -538,7 +538,7 @@ namespace polyfem
 
 		for (int i = 0; i < lambda_mat_.size(); ++i)
 		{
-			lambda_mat_(i) = convert_to_lambda(size_ == 3, Es(i), nus(i));
+			lambda_mat_(i) = convert_to_lambda(is_volume, Es(i), nus(i));
 			mu_mat_(i) = convert_to_mu(Es(i), nus(i));
 		}
 

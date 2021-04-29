@@ -439,27 +439,27 @@ namespace polyfem
 		linear_elasticity_energy_.clear_cache();
 	}
 
-	void AssemblerUtils::init_multimaterial(const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus)
+	void AssemblerUtils::init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus)
 	{
-		linear_elasticity_.local_assembler().init_multimaterial(Es, nus);
-		linear_elasticity_energy_.local_assembler().init_multimaterial(Es, nus);
-		// hooke_linear_elasticity_.local_assembler().init_multimaterial(Es, nus);
+		linear_elasticity_.local_assembler().init_multimaterial(is_volume, Es, nus);
+		linear_elasticity_energy_.local_assembler().init_multimaterial(is_volume, Es, nus);
+		// hooke_linear_elasticity_.local_assembler().init_multimaterial(is_volume, Es, nus);
 
-		// saint_venant_elasticity_.local_assembler().init_multimaterial(Es, nus);
-		neo_hookean_elasticity_.local_assembler().init_multimaterial(Es, nus);
-		multi_models_elasticity_.local_assembler().init_multimaterial(Es, nus);
-		// ogden_elasticity_.local_assembler().init_multimaterial(Es, nus);
+		// saint_venant_elasticity_.local_assembler().init_multimaterial(is_volume, Es, nus);
+		neo_hookean_elasticity_.local_assembler().init_multimaterial(is_volume, Es, nus);
+		multi_models_elasticity_.local_assembler().init_multimaterial(is_volume, Es, nus);
+		// ogden_elasticity_.local_assembler().init_multimaterial(is_volume, Es, nus);
 
-		// stokes_velocity_.local_assembler().init_multimaterial(Es, nus);
-		// stokes_mixed_.local_assembler().init_multimaterial(Es, nus);
-		// stokes_pressure_.local_assembler().init_multimaterial(Es, nus);
+		// stokes_velocity_.local_assembler().init_multimaterial(is_volume, Es, nus);
+		// stokes_mixed_.local_assembler().init_multimaterial(is_volume, Es, nus);
+		// stokes_pressure_.local_assembler().init_multimaterial(is_volume, Es, nus);
 
-		//navier_stokes_velocity_.local_assembler().init_multimaterial(Es, nus);
-		//navier_stokes_velocity_picard_.local_assembler().init_multimaterial(Es, nus);
+		//navier_stokes_velocity_.local_assembler().init_multimaterial(is_volume, Es, nus);
+		//navier_stokes_velocity_picard_.local_assembler().init_multimaterial(is_volume, Es, nus);
 
-		incompressible_lin_elast_displacement_.local_assembler().init_multimaterial(Es, nus);
-		incompressible_lin_elast_mixed_.local_assembler().init_multimaterial(Es, nus);
-		incompressible_lin_elast_pressure_.local_assembler().init_multimaterial(Es, nus);
+		incompressible_lin_elast_displacement_.local_assembler().init_multimaterial(is_volume, Es, nus);
+		incompressible_lin_elast_mixed_.local_assembler().init_multimaterial(is_volume, Es, nus);
+		incompressible_lin_elast_pressure_.local_assembler().init_multimaterial(is_volume, Es, nus);
 	}
 
 	void AssemblerUtils::init_multimodels(const std::vector<std::string> &materials)

@@ -18,11 +18,11 @@ namespace polyfem
 		linear_elasticity_.size() = size;
 	}
 
-	void MultiModel::init_multimaterial(const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus)
+	void MultiModel::init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus)
 	{
 		// saint_venant_.init_multimaterial(Es, nus);
-		neo_hookean_.init_multimaterial(Es, nus);
-		linear_elasticity_.init_multimaterial(Es, nus);
+		neo_hookean_.init_multimaterial(is_volume, Es, nus);
+		linear_elasticity_.init_multimaterial(is_volume, Es, nus);
 	}
 
 	void MultiModel::set_parameters(const json &params)
