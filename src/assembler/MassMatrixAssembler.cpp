@@ -18,6 +18,8 @@ namespace polyfem
 			std::vector<Eigen::Triplet<double>> entries;
 			StiffnessMatrix tmp_mat;
 			StiffnessMatrix mass_mat;
+			ElementAssemblyValues vals;
+			QuadratureVector da;
 
 			LocalThreadMatStorage(const int buffer_size, const int mat_size)
 			{
@@ -55,18 +57,23 @@ namespace polyfem
 #ifdef POLYFEM_WITH_TBB
 		tbb::parallel_for(tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
 		LocalStorage::reference loc_storage = storages.local();
+		// loc_storage.entries.reserve(buffer_size);
+		// loc_storage.tmp_mat.resize(mass.rows(), mass.cols());
+		// loc_storage.mass_mat.resize(mass.rows(), mass.cols());
+
 		for (int e = r.begin(); e != r.end(); ++e) {
 #else
 		for (int e = 0; e < n_bases; ++e)
 		{
 #endif
-			ElementAssemblyValues vals;
+			ElementAssemblyValues &vals = loc_storage.vals;
+			//todo cache
 			vals.compute(e, is_volume, bases[e], gbases[e]);
 
 			const Quadrature &quadrature = vals.quadrature;
 
 			assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
-			const QuadratureVector da = vals.det.array() * quadrature.weights.array();
+			loc_storage.da = vals.det.array() * quadrature.weights.array();
 			const int n_loc_bases = int(vals.basis_values.size());
 
 			for(int i = 0; i < n_loc_bases; ++i)
@@ -78,9 +85,9 @@ namespace polyfem
 					const auto &global_j = vals.basis_values[j].global;
 
 					double tmp = 0; //(vals.basis_values[i].val.array() * vals.basis_values[j].val.array() * da.array()).sum();
-					for(int q = 0; q < da.size(); ++q){
+					for(int q = 0; q < loc_storage.da.size(); ++q){
 						const double rho = density(vals.val(q, 0), vals.val(q, 1), vals.val.cols() == 2 ? 0. : vals.val(q, 2), vals.element_id);
-						tmp += rho * vals.basis_values[i].val(q) * vals.basis_values[j].val(q) * da(q);
+						tmp += rho * vals.basis_values[i].val(q) * vals.basis_values[j].val(q) * loc_storage.da(q);
 					}
 					if (std::abs(tmp) < 1e-30) { continue; }
 
@@ -111,6 +118,11 @@ namespace polyfem
 									{
 										loc_storage.tmp_mat.setFromTriplets(loc_storage.entries.begin(), loc_storage.entries.end());
 										loc_storage.mass_mat += loc_storage.tmp_mat;
+										loc_storage.mass_mat.makeCompressed();
+
+										loc_storage.tmp_mat.setZero();
+										loc_storage.tmp_mat.data().squeeze();
+
 										loc_storage.mass_mat.makeCompressed();
 
 										loc_storage.entries.clear();

@@ -82,8 +82,8 @@ endfunction()
 ## tbb Apache-2.0
 function(polyfem_download_tbb)
     polyfem_download_project(tbb
-        GIT_REPOSITORY https://github.com/nTopology/tbb.git
-        GIT_TAG        41adc7a7fbe4e6d37fe57186bd85dde99fa61e66
+        GIT_REPOSITORY https://github.com/wjakob/tbb.git
+        GIT_TAG        141b0e310e1fb552bdca887542c9c1a8544d6503
     )
 endfunction()
 

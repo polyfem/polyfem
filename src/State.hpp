@@ -505,6 +505,10 @@ namespace polyfem
 		void sol_to_pressure();
 		//builds bases for polygons, called inside build_basis
 		void build_polygonal_basis();
+
+#ifdef USE_TBB
+		tbb::task_scheduler_init scheduler;
+#endif
 	};
 
 } // namespace polyfem
