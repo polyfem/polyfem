@@ -37,6 +37,7 @@ namespace polyfem
 		const Density &density,
 		const std::vector<ElementBases> &bases,
 		const std::vector<ElementBases> &gbases,
+		const AssemblyValsCache &cache,
 		StiffnessMatrix &mass) const
 	{
 		const int buffer_size = std::min(long(1e8), long(n_basis) * size);
@@ -67,8 +68,8 @@ namespace polyfem
 		{
 #endif
 			ElementAssemblyValues &vals = loc_storage.vals;
-			//todo cache
-			vals.compute(e, is_volume, bases[e], gbases[e]);
+			// vals.compute(e, is_volume, bases[e], gbases[e]);
+			cache.compute(e, is_volume, bases[e], gbases[e], vals);
 
 			const Quadrature &quadrature = vals.quadrature;
 

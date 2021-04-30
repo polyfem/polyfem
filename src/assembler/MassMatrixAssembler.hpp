@@ -1,6 +1,7 @@
 #pragma once
 
 #include <polyfem/ElementAssemblyValues.hpp>
+#include <polyfem/AssemblyValsCache.hpp>
 #include <polyfem/ElasticityUtils.hpp>
 
 #include <Eigen/Sparse>
@@ -27,6 +28,7 @@ namespace polyfem
 			const Density &density,
 			const std::vector<ElementBases> &bases,
 			const std::vector<ElementBases> &gbases,
+			const AssemblyValsCache &cache,
 			StiffnessMatrix &mass) const;
 	};
 } // namespace polyfem

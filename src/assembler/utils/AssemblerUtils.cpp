@@ -111,9 +111,9 @@ namespace polyfem
 	{
 		//TODO use cache
 		if (assembler == "Helmholtz" || assembler == "Laplacian")
-			mass_mat_assembler_.assemble(is_volume, 1, n_basis, density, bases, gbases, mass);
+			mass_mat_assembler_.assemble(is_volume, 1, n_basis, density, bases, gbases, cache, mass);
 		else
-			mass_mat_assembler_.assemble(is_volume, is_volume ? 3 : 2, n_basis, density, bases, gbases, mass);
+			mass_mat_assembler_.assemble(is_volume, is_volume ? 3 : 2, n_basis, density, bases, gbases, cache, mass);
 	}
 
 	void AssemblerUtils::assemble_mixed_problem(const std::string &assembler,
