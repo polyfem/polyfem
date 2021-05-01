@@ -179,8 +179,13 @@ target_link_libraries(polyfem PUBLIC clipper::clipper)
 # Extra warnings
 target_link_libraries(polyfem PRIVATE warnings::all)
 
-# Use C++14
-target_compile_features(polyfem PUBLIC ${CXX14_FEATURES})
+if(POLYFEM_WITH_CPP_THREADS)
+    # Use C++17
+    target_compile_features(polyfem PUBLIC ${CXX17_FEATURES})
+else()
+    # Use C++14
+    target_compile_features(polyfem PUBLIC ${CXX14_FEATURES})
+endif()
 
 # No limit yay
 target_compile_definitions(polyfem PUBLIC -DEIGEN_STACK_ALLOCATION_LIMIT=0)
