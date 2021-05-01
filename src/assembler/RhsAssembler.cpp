@@ -484,7 +484,6 @@ namespace polyfem
 	{
 
 		double res = 0;
-		Eigen::MatrixXd forces;
 
 		if (!problem_.is_rhs_zero())
 		{
@@ -495,6 +494,7 @@ namespace polyfem
 			LocalStorage storages((LocalThreadScalarStorage()));
 #else
 			LocalThreadScalarStorage loc_storage;
+			Eigen::MatrixXd forces;
 #endif
 
 			const int n_bases = int(bases_.size());
@@ -503,12 +503,13 @@ namespace polyfem
 			polyfem::par_for(n_bases, [&](int start, int end, int t) {
 			auto &loc_storage = storages[t];
 			Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
+			Eigen::MatrixXd forces;
 			for(int e = start; e < end; ++e) {
 #elif defined(POLYFEM_WITH_TBB)
 			tbb::parallel_for(tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
 				LocalStorage::reference loc_storage = storages.local();
 				Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
-
+				Eigen::MatrixXd forces;
 				for (int e = r.begin(); e != r.end(); ++e)
 				{
 #else
@@ -578,6 +579,9 @@ namespace polyfem
 			res *= t;
 
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
+#if defined(POLYFEM_WITH_CPP_THREADS) || defined(POLYFEM_WITH_TBB)
+		Eigen::MatrixXd forces;
+#endif
 
 		ElementAssemblyValues vals;
 		//Neumann
