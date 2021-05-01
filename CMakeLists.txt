@@ -156,6 +156,8 @@ include(PolyfemDependencies)
 
 # add_library() can only be called without any source since CMake 3.11 ...
 add_library(polyfem src/State.cpp)
+#TODO
+target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_CPP_THREADS)
 
 # Must be call in the same "CMakeLists.txt" where add_library(polyfem ...) is called
 polyfem_autogen(polyfem eigs.py auto_eigs)

@@ -1,4 +1,5 @@
 #include <polyfem/RhsAssembler.hpp>
+#include <polyfem/par_for.hpp>
 
 #include <polyfem/BoundarySampler.hpp>
 #include <polysolve/LinearSolver.hpp>
@@ -487,7 +488,9 @@ namespace polyfem
 
 		if (!problem_.is_rhs_zero())
 		{
-#ifdef POLYFEM_WITH_TBB
+#if defined(POLYFEM_WITH_CPP_THREADS)
+			std::vector<LocalThreadScalarStorage> storages(polyfem::get_n_threads());
+#elif defined(POLYFEM_WITH_TBB)
 			typedef tbb::enumerable_thread_specific<LocalThreadScalarStorage> LocalStorage;
 			LocalStorage storages((LocalThreadScalarStorage()));
 #else
@@ -496,12 +499,18 @@ namespace polyfem
 
 			const int n_bases = int(bases_.size());
 
-#ifdef POLYFEM_WITH_TBB
+#if defined(POLYFEM_WITH_CPP_THREADS)
+			polyfem::par_for(n_bases, [&](int start, int end, int t) {
+			auto &loc_storage = storages[t];
+			Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
+			for(int e = start; e < end; ++e) {
+#elif defined(POLYFEM_WITH_TBB)
 			tbb::parallel_for(tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
-		LocalStorage::reference loc_storage = storages.local();
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
+				LocalStorage::reference loc_storage = storages.local();
+				Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
 
-		for (int e = r.begin(); e != r.end(); ++e) {
+				for (int e = r.begin(); e != r.end(); ++e)
+				{
 #else
 			Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
 
@@ -544,28 +553,31 @@ namespace polyfem
 					// res += forces(p, d) * local_displacement(d) * da(p);
 				}
 			}
-#ifdef POLYFEM_WITH_TBB
+#if defined(POLYFEM_WITH_CPP_THREADS) || defined(POLYFEM_WITH_TBB)
 		} });
 #else
-			}
+				}
 #endif
 
-#ifdef POLYFEM_WITH_TBB
-			for (LocalStorage::iterator i = storages.begin(); i != storages.end(); ++i)
+#if defined(POLYFEM_WITH_CPP_THREADS)
+			for (const auto &t : storages)
 			{
-				res += i->val;
+				res += t.val;
 			}
+#elif defined(POLYFEM_WITH_TBB)
+				for (LocalStorage::iterator i = storages.begin(); i != storages.end(); ++i)
+				{
+					res += i->val;
+				}
 #else
-			res = loc_storage.val;
+				res = loc_storage.val;
 #endif
 		}
 
 		if (problem_.is_linear_in_time() && !problem_.is_time_dependent())
 			res *= t;
 
-		// #ifdef POLYFEM_WITH_TBB
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
-		// #endif
 
 		ElementAssemblyValues vals;
 		//Neumann
