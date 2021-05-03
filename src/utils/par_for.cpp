@@ -6,6 +6,7 @@ namespace polyfem
 {
 	void par_for(const int size, const std::function<void(int, int, int)> &func)
 	{
+#ifdef POLYFEM_WITH_CPP_THREADS
 		const size_t n_threads = get_n_threads();
 		std::vector<std::thread> threads(n_threads);
 
@@ -18,5 +19,6 @@ namespace polyfem
 				t));
 		}
 		std::for_each(threads.begin(), threads.end(), [](std::thread &x) { x.join(); });
+#endif
 	}
 }

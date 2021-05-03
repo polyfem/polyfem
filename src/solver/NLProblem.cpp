@@ -490,16 +490,17 @@ namespace polyfem
 		ipc::construct_constraint_set(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, _dhat, constraint_set);
 		const double dist = ipc::compute_minimum_distance(displaced, state.boundary_edges, state.boundary_triangles, constraint_set);
 		polyfem::logger().trace("min_dist {}", dist);
+		// igl::write_triangle_mesh("step.obj", displaced, state.boundary_triangles);
 
-		const Eigen::MatrixXd box_min = state.boundary_nodes_pos.colwise().minCoeff();
-		const Eigen::MatrixXd box_max = state.boundary_nodes_pos.colwise().maxCoeff();
-		const double diag = (box_max - box_min).squaredNorm();
+		// const Eigen::MatrixXd box_min = state.boundary_nodes_pos.colwise().minCoeff();
+		// const Eigen::MatrixXd box_max = state.boundary_nodes_pos.colwise().maxCoeff();
+		// const double diag = (box_max - box_min).squaredNorm();
 
-		if (dist < _prev_distance && dist < 1e-8 * diag && _prev_distance < 1e-8 * diag)
-		{
-			_barrier_stiffness *= 2;
-			polyfem::logger().debug("2x on stiffness {}", _barrier_stiffness);
-		}
+		// if (dist < _prev_distance && dist < 1e-8 * diag && _prev_distance < 1e-8 * diag)
+		// {
+		// 	_barrier_stiffness *= 2;
+		// 	polyfem::logger().debug("2x on stiffness {}", _barrier_stiffness);
+		// }
 
 		Eigen::MatrixXd grad;
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
@@ -514,6 +515,7 @@ namespace polyfem
 			state.avg_mass,
 			grad,
 			max_barrier_stiffness);
+		polyfem::logger().debug("new stiffness {}", _barrier_stiffness);
 
 		_prev_distance = dist;
 	}
