@@ -91,7 +91,7 @@ int main(int argc, char **argv)
 	const std::vector<std::string> solvers = LinearSolver::availableSolvers();
 	command_line.add_set("--solver", solver, std::set<std::string>(solvers.begin(), solvers.end()), "Solver to use");
 
-	command_line.add_option("--al", use_al, "Use augmented lagrangian");
+	command_line.add_flag("--al", use_al, "Use augmented lagrangian");
 	command_line.add_option("-q,-p", discr_order, "Discretization order");
 	command_line.add_flag("--p_ref", p_ref, "Use p refimenet");
 	command_line.add_flag("--spline", use_splines, "Use spline for quad/hex meshes");
