@@ -206,6 +206,9 @@ namespace polyfem
 			int id = 1;
 			names.clear();
 
+			std::vector<std::vector<int>> prev_nodes;
+			std::vector<std::string> tmp_names;
+
 			for (const tinyxml2::XMLElement *child = geometry->FirstChildElement("NodeSet"); child != NULL; child = child->NextSiblingElement("NodeSet"))
 			{
 				const std::string name = std::string(child->Attribute("name"));
@@ -214,17 +217,48 @@ namespace polyfem
 					logger().warn("Nodeset {} already exists", name);
 					continue;
 				}
-				names[name] = id;
+
+				std::vector<int> tmp;
+				for (const tinyxml2::XMLElement *nodeid = child->FirstChildElement("node"); nodeid != NULL; nodeid = nodeid->NextSiblingElement("node"))
+				{
+					const int nid = nodeid->IntAttribute("id");
+					tmp.push_back(nid);
+				}
+
+				bool found = false;
+				for (int i = 0; i < prev_nodes.size(); ++i)
+				{
+					if (prev_nodes[i] == tmp)
+					{
+						found = true;
+						names[name] = names[tmp_names[i]];
+						logger().trace("Id {},  '{}' and '{}' are now the same", i, name, tmp_names[i]);
+						break;
+					}
+				}
+
+				if (!found)
+				{
+					prev_nodes.emplace_back(tmp);
+					tmp_names.emplace_back(name);
+					names[name] = id;
+					id++;
+				}
+			}
+
+			for (const tinyxml2::XMLElement *child = geometry->FirstChildElement("NodeSet"); child != NULL; child = child->NextSiblingElement("NodeSet"))
+			{
+				const std::string name = std::string(child->Attribute("name"));
+				const int lid = names.at(name);
 
 				for (const tinyxml2::XMLElement *nodeid = child->FirstChildElement("node"); nodeid != NULL; nodeid = nodeid->NextSiblingElement("node"))
 				{
 					const int nid = nodeid->IntAttribute("id");
-					nodeSet[nid - 1].push_back(id);
+					nodeSet[nid - 1].push_back(lid);
 				}
-
-				id++;
 			}
 
+			//Duplicated surface id
 			for (const tinyxml2::XMLElement *child = geometry->FirstChildElement("Surface"); child != NULL; child = child->NextSiblingElement("Surface"))
 			{
 				const std::string name = std::string(child->Attribute("name"));
@@ -512,9 +546,9 @@ namespace polyfem
 			state.args["solver_params"]["gradNorm"] = 1e-5;
 			state.args["solver_params"]["nl_iterations"] = 200;
 			state.args["solver_params"]["useGradNorm"] = false;
-		}
 
-		logger().trace("dhat = {}", 1e-3 * diag);
+			logger().trace("dhat = {}", 1e-3 * diag);
+		}
 
 		Eigen::MatrixXi T;
 		std::vector<std::vector<int>> nodes;
