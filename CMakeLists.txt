@@ -74,10 +74,10 @@ option(POLYFEM_NO_UI            "Disables the user interface" OFF)
 
 # Polyfem options for enabling/disabling optional libraries
 option(POLYFEM_WITH_MMG              "Enable MMG library"                OFF)
-option(POLYFEM_WITH_TBB              "Enable TBB"                        ON)
 option(POLYFEM_WITH_OPENCL           "Enable OpenCL"                     OFF)
 option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
-option(POLYFEM_WITH_CPP_THREADS       "Use c++11 threads"                ON)
+set(POLYFEM_THREADING "CPP" CACHE STRING "Multithreading library to use (options: CPP, TBB, NONE)")
+set_property(CACHE POLYFEM_THREADING PROPERTY STRINGS "CPP" "TBB" "NONE")
 
 option(POLYFEM_WITH_APPS      "Build the apps"          ON)
 option(POLYFEM_WITH_MISC      "Build misc targes"       ON)
@@ -157,9 +157,6 @@ include(PolyfemDependencies)
 
 # add_library() can only be called without any source since CMake 3.11 ...
 add_library(polyfem src/State.cpp)
-if(POLYFEM_WITH_CPP_THREADS)
-    target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_CPP_THREADS)
-endif()
 
 # Must be call in the same "CMakeLists.txt" where add_library(polyfem ...) is called
 polyfem_autogen(polyfem eigs.py auto_eigs)
@@ -179,7 +176,7 @@ target_link_libraries(polyfem PUBLIC clipper::clipper)
 # Extra warnings
 target_link_libraries(polyfem PRIVATE warnings::all)
 
-if(POLYFEM_WITH_CPP_THREADS)
+if(POLYFEM_THREADING STREQUAL "CPP")
     # Use C++17
     target_compile_features(polyfem PUBLIC ${CXX17_FEATURES})
 else()
@@ -261,7 +258,9 @@ add_subdirectory(${THIRD_PARTY_DIR}/solvers)
 target_link_libraries(polyfem PUBLIC polysolve)
 
 # TBB
-if(POLYFEM_WITH_TBB)
+if(POLYFEM_THREADING STREQUAL "CPP")
+    target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_CPP_THREADS)
+elseif(POLYFEM_THREADING STREQUAL "TBB")
     polyfem_download_tbb()
     set(TBB_BUILD_STATIC ON CACHE BOOL " " FORCE)
     set(TBB_BUILD_SHARED OFF CACHE BOOL " " FORCE)
