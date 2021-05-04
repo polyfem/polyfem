@@ -104,13 +104,26 @@ namespace polyfem
 
 		igl::Timer timer;
 		timer.start();
-		logger().info("Loading mesh...");
 
-		if (!mesh || !mesh_path().empty())
+		if (mesh == nullptr)
 		{
-			mesh = Mesh::create(mesh_path());
+			if (!mesh_path().empty())
+			{
+				logger().info("Loading mesh {} ...", mesh_path());
+				mesh = Mesh::create(mesh_path());
+			}
+			else if (args.contains("meshes"))
+			{
+				logger().info("Loading meshes ...");
+				mesh = Mesh::create(args["meshes"].get<std::vector<json>>());
+			}
 		}
-		if (!mesh)
+		else
+		{
+			logger().info("Loading mesh ...");
+		}
+
+		if (mesh == nullptr)
 		{
 			logger().error("unable to load the mesh!");
 			return;

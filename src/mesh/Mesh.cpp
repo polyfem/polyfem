@@ -12,6 +12,8 @@
 #include <geogram/mesh/mesh_geometry.h>
 
 #include <ghc/fs_std.hpp> // filesystem
+
+#include <igl/PI.h>
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace
@@ -59,7 +61,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path)
 {
 	if (!fs::exists(path))
 	{
-		logger().error("Mesh file does not exist: {}", path);
+		logger().error(path.empty() ? "No mesh provided!" : "Mesh file does not exist: {}", path);
 		return nullptr;
 	}
 
@@ -121,6 +123,219 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path)
 	return nullptr;
 }
 
+template <typename Derived>
+void from_json(const json &j, Eigen::MatrixBase<Derived> &v)
+{
+	auto jv = j.get<std::vector<typename Derived::Scalar>>();
+	v = Eigen::Map<Derived>(jv.data(), long(jv.size()));
+}
+
+template <typename T>
+inline T deg2rad(T deg)
+{
+	return deg / 180 * igl::PI;
+}
+
+std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &meshes)
+{
+	if (meshes.empty())
+	{
+		logger().error("Provided meshes is empty!");
+		return nullptr;
+	}
+
+	Eigen::MatrixXd vertices;
+	Eigen::MatrixXi cells;
+	std::vector<std::vector<int>> elements;
+	std::vector<std::vector<double>> weights;
+	int dim = 0;
+	int cell_cols = 0;
+
+	for (int i = 0; i < meshes.size(); i++)
+	{
+		// NOTE: All units by default are expressed in standard SI units
+		// • position: position of the model origin
+		// • rotation: degrees as XYZ euler angles around the model origin
+		// • scale: scale the vertices around the model origin
+		// • dimensions: dimensions of the scaled object (mutually exclusive to
+		//               "scale")
+		// • enabled: skip the body if this field is false
+		json jmesh = R"({
+				"position": [0.0, 0.0, 0.0],
+				"rotation": [0.0, 0.0, 0.0],
+				"scale": [1.0, 1.0, 1.0],
+				"enabled": true
+			})"_json;
+		jmesh.merge_patch(meshes[i]);
+
+		if (!jmesh["enabled"].get<bool>())
+		{
+			continue;
+		}
+
+		if (!jmesh.contains("mesh"))
+		{
+			logger().error("Mesh {:d} is mising a \"mesh\" field", i);
+			continue;
+		}
+
+		std::string mesh_path = jmesh["mesh"];
+		std::string lowername = mesh_path;
+		std::transform(
+			lowername.begin(), lowername.end(), lowername.begin(), ::tolower);
+		if (!StringUtils::endswidth(lowername, ".msh"))
+		{
+			logger().error("Unsupported mesh type in meshes: {}", mesh_path);
+			continue;
+		}
+
+		Eigen::MatrixXd tmp_vertices;
+		Eigen::MatrixXi tmp_cells;
+		std::vector<std::vector<int>> tmp_elements;
+		std::vector<std::vector<double>> tmp_weights;
+
+		if (!MshReader::load(
+				mesh_path, tmp_vertices, tmp_cells, tmp_elements, tmp_weights))
+		{
+			logger().error("Unable to load mesh: {}", mesh_path);
+			continue;
+		}
+
+		if (dim == 0)
+		{
+			dim = tmp_vertices.cols();
+		}
+		else if (dim != tmp_vertices.cols())
+		{
+			logger().error("Mixed dimension meshes is not implemented!");
+			continue;
+		}
+
+		if (cell_cols == 0)
+		{
+			cell_cols = tmp_cells.cols();
+		}
+		else if (cell_cols != tmp_cells.cols())
+		{
+			logger().error("Mixed cell types is not implemented!");
+			continue;
+		}
+
+		RowVectorNd scale;
+		if (jmesh.contains("dimensions"))
+		{
+			VectorNd initial_dimensions =
+				(vertices.colwise().maxCoeff() - vertices.colwise().minCoeff())
+					.cwiseAbs();
+			initial_dimensions =
+				(initial_dimensions.array() == 0).select(1, initial_dimensions);
+			from_json(jmesh["dimensions"], scale);
+			assert(scale.size() >= dim);
+			scale.conservativeResize(dim);
+			scale.array() /= initial_dimensions.array();
+		}
+		else if (jmesh["scale"].is_number())
+		{
+			scale.setConstant(dim, jmesh["scale"].get<double>());
+		}
+		else
+		{
+			assert(jmesh["scale"].is_array());
+			from_json(jmesh["scale"], scale);
+			assert(scale.size() >= dim);
+			scale.conservativeResize(dim);
+		}
+		tmp_vertices *= scale.asDiagonal();
+
+		// Rotate around the models origin NOT the bodies center of mass.
+		// We could expose this choice as a "rotate_around" field.
+		MatrixNd R;
+		if (jmesh["rotation"].is_number())
+		{
+			assert(dim == 2);
+			R = Eigen::Rotation2Dd(
+					deg2rad(jmesh["rotation"].get<double>()))
+					.toRotationMatrix();
+		}
+		else
+		{
+			assert(dim == 3);
+			assert(jmesh["rotation"].is_array());
+			Eigen::Vector3d rot;
+			from_json(jmesh["rotation"], rot);
+			rot = deg2rad(rot);
+			// XYZ Euler angles, this is arbitrary and based on the default
+			// in Blender. An alternative is to provide a field
+			// "rotation_type" which specifies the type of rotation encoded
+			// in `rot`.
+			R = (Eigen::AngleAxisd(rot.z(), Eigen::Vector3d::UnitX())
+				 * Eigen::AngleAxisd(rot.y(), Eigen::Vector3d::UnitY())
+				 * Eigen::AngleAxisd(rot.x(), Eigen::Vector3d::UnitZ()))
+					.toRotationMatrix();
+		}
+		tmp_vertices *= R.transpose(); // (R*Vᵀ)ᵀ = V*Rᵀ
+
+		RowVectorNd position;
+		from_json(jmesh["position"], position);
+		assert(position.size() >= dim);
+		position.conservativeResize(dim);
+		tmp_vertices.rowwise() += position;
+
+		size_t vertices_offset = vertices.rows();
+		vertices.conservativeResize(
+			vertices.rows() + tmp_vertices.rows(), dim);
+		vertices.bottomRows(tmp_vertices.rows()) = tmp_vertices;
+
+		cells.conservativeResize(cells.rows() + tmp_cells.rows(), cell_cols);
+		cells.bottomRows(tmp_cells.rows()) = tmp_cells.array() + vertices_offset;
+
+		for (auto &element : tmp_elements)
+		{
+			for (auto &id : element)
+			{
+				id += vertices_offset;
+			}
+		}
+		elements.insert(elements.end(), tmp_elements.begin(), tmp_elements.end());
+
+		weights.insert(weights.end(), tmp_weights.begin(), tmp_weights.end());
+	}
+
+	if (vertices.size() == 0)
+	{
+		return nullptr;
+	}
+
+	std::unique_ptr<polyfem::Mesh> mesh;
+	if (vertices.cols() == 2)
+	{
+		mesh = std::make_unique<Mesh2D>();
+	}
+	else
+	{
+		mesh = std::make_unique<Mesh3D>();
+	}
+
+	mesh->build_from_matrices(vertices, cells);
+	// Only tris and tets
+	if ((vertices.cols() == 2 && cells.cols() == 3) || (vertices.cols() == 3 && cells.cols() == 4))
+	{
+		mesh->attach_higher_order_nodes(vertices, elements);
+		mesh->cell_weights_ = weights;
+	}
+
+	for (const auto &w : weights)
+	{
+		if (!w.empty())
+		{
+			mesh->is_rational_ = true;
+			break;
+		}
+	}
+
+	return mesh;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 void polyfem::Mesh::edge_barycenters(Eigen::MatrixXd &barycenters) const
@@ -157,15 +372,17 @@ bool polyfem::Mesh::is_spline_compatible(const int el_id) const
 {
 	if (is_volume())
 	{
-		return elements_tag_[el_id] == ElementType::RegularInteriorCube ||
-			   elements_tag_[el_id] == ElementType::RegularBoundaryCube;
-		// || elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube || elements_tag_[el_id] == ElementType::SimpleSingularBoundaryCube;
+		return elements_tag_[el_id] == ElementType::RegularInteriorCube
+			   || elements_tag_[el_id] == ElementType::RegularBoundaryCube;
+		// || elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube
+		// || elements_tag_[el_id] == ElementType::SimpleSingularBoundaryCube;
 	}
 	else
 	{
-		return elements_tag_[el_id] == ElementType::RegularInteriorCube ||
-			   elements_tag_[el_id] == ElementType::RegularBoundaryCube;
-		// || elements_tag_[el_id] == ElementType::InterfaceCube || elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube;
+		return elements_tag_[el_id] == ElementType::RegularInteriorCube
+			   || elements_tag_[el_id] == ElementType::RegularBoundaryCube;
+		// || elements_tag_[el_id] == ElementType::InterfaceCube
+		// || elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube;
 	}
 }
 
@@ -173,24 +390,21 @@ bool polyfem::Mesh::is_spline_compatible(const int el_id) const
 
 bool polyfem::Mesh::is_cube(const int el_id) const
 {
-	return elements_tag_[el_id] == ElementType::InterfaceCube ||
-
-		   elements_tag_[el_id] == ElementType::RegularInteriorCube ||
-		   elements_tag_[el_id] == ElementType::RegularBoundaryCube ||
-
-		   elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube ||
-		   elements_tag_[el_id] == ElementType::SimpleSingularBoundaryCube ||
-
-		   elements_tag_[el_id] == ElementType::MultiSingularInteriorCube ||
-		   elements_tag_[el_id] == ElementType::MultiSingularBoundaryCube;
+	return elements_tag_[el_id] == ElementType::InterfaceCube
+		   || elements_tag_[el_id] == ElementType::RegularInteriorCube
+		   || elements_tag_[el_id] == ElementType::RegularBoundaryCube
+		   || elements_tag_[el_id] == ElementType::SimpleSingularInteriorCube
+		   || elements_tag_[el_id] == ElementType::SimpleSingularBoundaryCube
+		   || elements_tag_[el_id] == ElementType::MultiSingularInteriorCube
+		   || elements_tag_[el_id] == ElementType::MultiSingularBoundaryCube;
 }
 
 // -----------------------------------------------------------------------------
 
 bool polyfem::Mesh::is_polytope(const int el_id) const
 {
-	return elements_tag_[el_id] == ElementType::InteriorPolytope ||
-		   elements_tag_[el_id] == ElementType::BoundaryPolytope;
+	return elements_tag_[el_id] == ElementType::InteriorPolytope
+		   || elements_tag_[el_id] == ElementType::BoundaryPolytope;
 }
 
 void polyfem::Mesh::load_boundary_ids(const std::string &path)

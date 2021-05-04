@@ -196,7 +196,7 @@ namespace polyfem
 			const auto it = materials.find(bid);
 			if (it == materials.end())
 			{
-				missing += std::to_string(bid) + ", ";
+				missing += fmt::format("{:d}, ", bid);
 				continue;
 			}
 
@@ -1024,8 +1024,8 @@ namespace polyfem
 				{
 					if (!solve_export_to_file)
 						solution_frames.emplace_back();
-					save_vtu("step_" + std::to_string(0) + ".vtu", 0);
-					save_wire("step_" + std::to_string(0) + ".obj");
+					save_vtu("step_0.vtu", 0);
+					save_wire("step_0.obj");
 				}
 
 				assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, gbases, ass_vals_cache, velocity_stiffness);
@@ -1065,8 +1065,8 @@ namespace polyfem
 					{
 						if (!solve_export_to_file)
 							solution_frames.emplace_back();
-						save_vtu("step_" + std::to_string(t) + ".vtu", time);
-						save_wire("step_" + std::to_string(t) + ".obj");
+						save_vtu(fmt::format("step_{:d}.vtu", t), time);
+						save_wire(fmt::format("step_{:d}.obj", t));
 					}
 				}
 			}
@@ -1086,8 +1086,8 @@ namespace polyfem
 				{
 					if (!solve_export_to_file)
 						solution_frames.emplace_back();
-					save_vtu("step_" + std::to_string(0) + ".vtu", 0);
-					save_wire("step_" + std::to_string(0) + ".obj");
+					save_vtu("step_0.vtu", 0);
+					save_wire("step_0.obj");
 				}
 
 				if (assembler.is_mixed(formulation()))
@@ -1152,8 +1152,8 @@ namespace polyfem
 							if (!solve_export_to_file)
 								solution_frames.emplace_back();
 
-							save_vtu("step_" + std::to_string(t) + ".vtu", time);
-							save_wire("step_" + std::to_string(t) + ".obj");
+							save_vtu(fmt::format("step_{:d}.vtu", t), time);
+							save_wire(fmt::format("step_{:d}.obj", t));
 						}
 					}
 				}
@@ -1211,8 +1211,8 @@ namespace polyfem
 							{
 								if (!solve_export_to_file)
 									solution_frames.emplace_back();
-								save_vtu("step_" + std::to_string(t) + ".vtu", dt * t);
-								save_wire("step_" + std::to_string(t) + ".obj");
+								save_vtu(fmt::format("step_{:d}.vtu", t), dt * t);
+								save_wire(fmt::format("step_{:d}.obj", t));
 							}
 
 							logger().info("{}/{}", t, time_steps);
@@ -1407,8 +1407,8 @@ namespace polyfem
 								{
 									if (!solve_export_to_file)
 										solution_frames.emplace_back();
-									save_vtu("step_" + std::to_string(t) + ".vtu", dt * t);
-									save_wire("step_" + std::to_string(t) + ".obj");
+									save_vtu(fmt::format("step_{:d}.vtu", t), dt * t);
+									save_wire(fmt::format("step_{:d}.obj", t));
 								}
 
 								logger().info("{}/{}", t, time_steps);
@@ -1535,8 +1535,8 @@ namespace polyfem
 					{
 						if (!solve_export_to_file)
 							solution_frames.emplace_back();
-						save_vtu("step_" + std::to_string(prev_t) + ".vtu", tend);
-						save_wire("step_" + std::to_string(prev_t) + ".obj");
+						save_vtu(fmt::format("step_{:d}.vtu", prev_t), tend);
+						save_wire(fmt::format("step_{:d}.obj", prev_t));
 					}
 
 					const auto &gbases = iso_parametric() ? bases : geom_bases;
@@ -1671,8 +1671,8 @@ namespace polyfem
 								if (!solve_export_to_file)
 									solution_frames.emplace_back();
 
-								save_vtu("step_s_" + std::to_string(t) + ".vtu", tend);
-								save_wire("step_s_" + std::to_string(t) + ".obj");
+								save_vtu(fmt::format("step_s_{:d}.vtu", t), tend);
+								save_wire(fmt::format("step_s_{:d}.obj", t));
 
 								sol = xxx;
 							}
@@ -1754,8 +1754,8 @@ namespace polyfem
 							{
 								if (!solve_export_to_file)
 									solution_frames.emplace_back();
-								save_vtu("step_" + std::to_string(prev_t) + ".vtu", tend);
-								save_wire("step_" + std::to_string(prev_t) + ".obj");
+								save_vtu(fmt::format("step_{:d}.vtu", prev_t), tend);
+								save_wire(fmt::format("step_{:d}.obj", prev_t));
 							}
 						}
 

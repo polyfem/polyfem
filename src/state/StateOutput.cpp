@@ -1074,7 +1074,7 @@ namespace polyfem
 				{
 					const int ii = (i / mesh->dimension()) + 1;
 					const int jj = (i % mesh->dimension()) + 1;
-					writer.add_field("tensor_value_" + std::to_string(ii) + std::to_string(jj), tvals.col(i));
+					writer.add_field(fmt::format("tensor_value_{:d}{:d}", ii, jj), tvals.col(i));
 				}
 			}
 

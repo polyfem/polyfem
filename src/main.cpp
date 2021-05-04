@@ -25,6 +25,30 @@ using namespace polyfem;
 using namespace polysolve;
 using namespace Eigen;
 
+std::string resolve_path(
+	const std::string &path,
+	const std::string &input_file_path)
+{
+	if (path.empty())
+	{
+		return path;
+	}
+
+	fs::path resolved_path(path);
+	if (resolved_path.is_absolute())
+	{
+		return resolved_path.string();
+	}
+	else if (fs::exists(resolved_path))
+	{
+		return fs::weakly_canonical(resolved_path).string();
+	}
+
+	return fs::weakly_canonical(
+			   fs::path(input_file_path).parent_path() / resolved_path)
+		.string();
+}
+
 int main(int argc, char **argv)
 {
 	CLI::App command_line{"polyfem"};
@@ -109,16 +133,16 @@ int main(int argc, char **argv)
 	command_line.add_option("--min_component", min_component, "Mimimum number of faces in connected compoment for contact");
 
 	// disable out
-	command_line.add_flag("--cmd", no_ui, "Runs in command line mode, no ui");
+	command_line.add_flag("--cmd,--ngui", no_ui, "Runs in command line mode, no ui");
 
 	// IO
 	command_line.add_option("--output", output, "Output json file");
-	command_line.add_option("--vtu", vtu, "Vtu output file");
+	command_line.add_option("--vtu", vtu, "VTU output file");
 	command_line.add_option("--screenshot", screenshot, "screenshot (disabled)");
 
 	command_line.add_flag("--quiet", is_quiet, "Disable cout for logging");
 	command_line.add_option("--log_file", log_file, "Log to a file");
-	command_line.add_option("--log_level", log_level, "Log level 1 debug 2 info");
+	command_line.add_option("--log_level", log_level, "Log level 0=trace, 1=debug, 2=info, 3=warn, 4=error, 5=critical, 6=off");
 
 	command_line.add_flag("--export_material_params", export_material_params, "Export material parameters");
 
@@ -149,17 +173,20 @@ int main(int argc, char **argv)
 		file.close();
 
 		// If the mesh path does not exist make it relative to the json_file
-		if (in_args.contains("mesh") && !in_args["mesh"].empty())
+		if (in_args.contains("mesh"))
 		{
-			fs::path mesh_path(in_args["mesh"].get<std::string>());
-			if (!mesh_path.is_absolute() && !fs::exists(mesh_path))
+			in_args["mesh"] = resolve_path(in_args["mesh"], json_file);
+		}
+
+		// If the meshes paths does not exist make it relative to the json_file
+		if (in_args.contains("meshes") && !in_args["meshes"].empty())
+		{
+			for (json &json_mesh : in_args["meshes"])
 			{
-				fs::path json_file_path(json_file);
-				in_args["mesh"] = fs::weakly_canonical(
-									  json_file_path.parent_path() / mesh_path)
-									  .string();
-				logger().info("using mesh path: \"{}\"",
-							  in_args["mesh"].get<std::string>());
+				if (json_mesh.contains("mesh"))
+				{
+					json_mesh["mesh"] = resolve_path(json_mesh["mesh"], json_file);
+				}
 			}
 		}
 	}

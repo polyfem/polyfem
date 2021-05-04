@@ -13,13 +13,13 @@ IndentCaseLabels: false
 SortIncludes: false
 BreakStringLiterals: false
 AlignTrailingComments: true
-FixNamespaceComments: false
+FixNamespaceComments: true
 ContinuationIndentWidth: 4
 NamespaceIndentation: All
 AccessModifierOffset: -4
+BreakBeforeBinaryOperators: NonAssignment
 # ReflowComments: true
 # BinPackParameters: false
 # AllowAllParametersOfDeclarationOnNextLine: true
 # AlignAfterOpenBracket: AlwaysBreak
-# BreakBeforeBinaryOperators: NonAssignment
 ...
