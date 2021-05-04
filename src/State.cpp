@@ -1289,80 +1289,130 @@ namespace polyfem
 
 						NLProblem nl_problem(*this, rhs_assembler, dt, args["dhat"], args["project_to_psd"]);
 						nl_problem.init_timestep(sol, velocity, acceleration, dt);
-						nl_problem.full_to_reduced(sol, tmp_sol);
 
-						for (int t = 1; t <= time_steps; ++t)
+						if (args["use_al"] || args["has_collision"])
 						{
-							cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
-							nlsolver.setLineSearch(args["line_search"]);
-							nl_problem.init(sol);
-							nlsolver.minimize(nl_problem, tmp_sol);
+							ALNLProblem alnl_problem(*this, rhs_assembler, dt, args["dhat"], args["project_to_psd"], 1e6);
+							alnl_problem.init_timestep(sol, velocity, acceleration, dt);
 
-							if (nlsolver.error_code() == -10)
+							for (int t = 1; t <= time_steps; ++t)
 							{
-								double substep_delta = 0.5;
-								double substep = substep_delta;
-								bool solved = false;
+								cppoptlib::SparseNewtonDescentSolver<ALNLProblem> alnlsolver(solver_params(), solver_type(), precond_type());
+								alnlsolver.setLineSearch(args["line_search"]);
+								alnl_problem.init(sol);
+								tmp_sol = sol;
+								alnlsolver.minimize(alnl_problem, tmp_sol);
+								json alnl_solver_info;
+								alnlsolver.getInfo(alnl_solver_info);
+								sol = tmp_sol;
 
-								while (substep_delta > 1e-4 && !solved)
+								cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
+								nlsolver.setLineSearch(args["line_search"]);
+								nl_problem.init(sol);
+								nl_problem.full_to_reduced(sol, tmp_sol);
+								nlsolver.minimize(nl_problem, tmp_sol);
+								json nl_solver_info;
+								nlsolver.getInfo(nl_solver_info);
+								nl_problem.reduced_to_full(tmp_sol, sol);
+
+								if (assembler.is_mixed(formulation()))
 								{
-									logger().debug("Substepping {}/{}, dt={}", (t - 1 + substep) * dt, t * dt, substep_delta);
-									nl_problem.substepping((t - 1 + substep) * dt);
-									nl_problem.full_to_reduced(sol, tmp_sol);
-									nlsolver.minimize(nl_problem, tmp_sol);
+									sol_to_pressure();
+								}
 
-									if (nlsolver.error_code() == -10)
-									{
-										substep -= substep_delta;
-										substep_delta /= 2;
-									}
-									else
-									{
-										logger().trace("Done {}/{}, dt={}", (t - 1 + substep) * dt, t * dt, substep_delta);
-										nl_problem.reduced_to_full(tmp_sol, sol);
-										substep_delta *= 2;
-									}
+								nl_problem.update_quantities((t + 1) * dt, sol);
+								alnl_problem.update_quantities((t + 1) * dt, sol);
 
-									solved = substep >= 1;
+								if (args["save_time_sequence"])
+								{
+									if (!solve_export_to_file)
+										solution_frames.emplace_back();
+									save_vtu("step_" + std::to_string(t) + ".vtu", dt * t);
+									save_wire("step_" + std::to_string(t) + ".obj");
+								}
 
-									substep += substep_delta;
-									if (substep >= 1)
+								logger().info("{}/{}", t, time_steps);
+
+								solver_info = {{"al_solver", alnl_solver_info}, {"other", nl_solver_info}};
+							}
+						}
+						else
+						{
+							nl_problem.full_to_reduced(sol, tmp_sol);
+
+							for (int t = 1; t <= time_steps; ++t)
+							{
+								cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
+								nlsolver.setLineSearch(args["line_search"]);
+								nl_problem.init(sol);
+								nlsolver.minimize(nl_problem, tmp_sol);
+
+								if (nlsolver.error_code() == -10)
+								{
+									double substep_delta = 0.5;
+									double substep = substep_delta;
+									bool solved = false;
+
+									while (substep_delta > 1e-4 && !solved)
 									{
-										substep_delta -= substep - 1;
-										substep = 1;
+										logger().debug("Substepping {}/{}, dt={}", (t - 1 + substep) * dt, t * dt, substep_delta);
+										nl_problem.substepping((t - 1 + substep) * dt);
+										nl_problem.full_to_reduced(sol, tmp_sol);
+										nlsolver.minimize(nl_problem, tmp_sol);
+
+										if (nlsolver.error_code() == -10)
+										{
+											substep -= substep_delta;
+											substep_delta /= 2;
+										}
+										else
+										{
+											logger().trace("Done {}/{}, dt={}", (t - 1 + substep) * dt, t * dt, substep_delta);
+											nl_problem.reduced_to_full(tmp_sol, sol);
+											substep_delta *= 2;
+										}
+
+										solved = substep >= 1;
+
+										substep += substep_delta;
+										if (substep >= 1)
+										{
+											substep_delta -= substep - 1;
+											substep = 1;
+										}
 									}
 								}
+
+								if (nlsolver.error_code() == -10)
+								{
+									logger().error("Unable to solve t={}", t * dt);
+									save_vtu("stop.vtu", dt * t);
+									break;
+								}
+
+								logger().debug("Step solved!");
+
+								nlsolver.getInfo(solver_info);
+								nl_problem.reduced_to_full(tmp_sol, sol);
+								if (assembler.is_mixed(formulation()))
+								{
+									sol_to_pressure();
+								}
+
+								// rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, dt * t);
+
+								nl_problem.update_quantities((t + 1) * dt, sol);
+
+								if (args["save_time_sequence"])
+								{
+									if (!solve_export_to_file)
+										solution_frames.emplace_back();
+									save_vtu("step_" + std::to_string(t) + ".vtu", dt * t);
+									save_wire("step_" + std::to_string(t) + ".obj");
+								}
+
+								logger().info("{}/{}", t, time_steps);
 							}
-
-							if (nlsolver.error_code() == -10)
-							{
-								logger().error("Unable to solve t={}", t * dt);
-								save_vtu("stop.vtu", dt * t);
-								break;
-							}
-
-							logger().debug("Step solved!");
-
-							nlsolver.getInfo(solver_info);
-							nl_problem.reduced_to_full(tmp_sol, sol);
-							if (assembler.is_mixed(formulation()))
-							{
-								sol_to_pressure();
-							}
-
-							// rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, dt * t);
-
-							nl_problem.update_quantities((t + 1) * dt, sol);
-
-							if (args["save_time_sequence"])
-							{
-								if (!solve_export_to_file)
-									solution_frames.emplace_back();
-								save_vtu("step_" + std::to_string(t) + ".vtu", dt * t);
-								save_wire("step_" + std::to_string(t) + ".obj");
-							}
-
-							logger().info("{}/{}", t, time_steps);
 						}
 					}
 				}

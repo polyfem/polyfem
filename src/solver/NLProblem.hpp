@@ -100,7 +100,7 @@ namespace polyfem
 		void full_to_reduced(const Eigen::MatrixXd &full, TVector &reduced) const;
 		void reduced_to_full(const TVector &reduced, Eigen::MatrixXd &full);
 
-		void update_quantities(const double t, const TVector &x);
+		virtual void update_quantities(const double t, const TVector &x);
 		void substepping(const double t);
 
 		const Eigen::MatrixXd &current_rhs();
@@ -111,17 +111,17 @@ namespace polyfem
 		State &state;
 		double _barrier_stiffness;
 		void compute_displaced_points(const Eigen::MatrixXd &full, Eigen::MatrixXd &displaced);
+		const RhsAssembler &rhs_assembler;
+		bool is_time_dependent;
 
 	private:
 		AssemblerUtils &assembler;
-		const RhsAssembler &rhs_assembler;
 		Eigen::MatrixXd _current_rhs;
 		StiffnessMatrix cached_stiffness;
 
 		const int full_size, reduced_size;
 		double t;
 		bool rhs_computed;
-		bool is_time_dependent;
 		bool project_to_psd;
 
 		double _dhat;
@@ -131,6 +131,5 @@ namespace polyfem
 		TVector x_prev, v_prev, a_prev;
 
 		void compute_cached_stiffness();
-
 	};
 } // namespace polyfem

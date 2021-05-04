@@ -138,7 +138,9 @@ namespace polyfem
 				_current_rhs += tmp;
 			}
 			if (reduced_size != full_size)
+			{
 				rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, _current_rhs, t);
+			}
 		}
 
 		return _current_rhs;

@@ -15,89 +15,101 @@
 
 namespace polyfem
 {
-    using namespace polysolve;
+	using namespace polysolve;
 
-    ALNLProblem::ALNLProblem(State &state, const RhsAssembler &rhs_assembler, const double t, const double dhat, const bool project_to_psd, const double weight)
-        : super(state, rhs_assembler, t, dhat, project_to_psd, true), weight_(weight)
-    {
-        std::vector<Eigen::Triplet<double>> entries;
+	ALNLProblem::ALNLProblem(State &state, const RhsAssembler &rhs_assembler, const double t, const double dhat, const bool project_to_psd, const double weight)
+		: super(state, rhs_assembler, t, dhat, project_to_psd, true), weight_(weight)
+	{
+		std::vector<Eigen::Triplet<double>> entries;
 
-        // stop_dist_ = 1e-2 * state.min_edge_length;
+		// stop_dist_ = 1e-2 * state.min_edge_length;
 
-        for (const auto bn : state.boundary_nodes)
-            entries.emplace_back(bn, bn, 2 * weight_);
+		for (const auto bn : state.boundary_nodes)
+			entries.emplace_back(bn, bn, 2 * weight_);
 
-        hessian_.resize(state.n_bases * state.mesh->dimension(), state.n_bases * state.mesh->dimension());
-        hessian_.setFromTriplets(entries.begin(), entries.end());
-        hessian_.makeCompressed();
+		hessian_.resize(state.n_bases * state.mesh->dimension(), state.n_bases * state.mesh->dimension());
+		hessian_.setFromTriplets(entries.begin(), entries.end());
+		hessian_.makeCompressed();
 
-        displaced_.resize(hessian_.rows(), 1);
-        displaced_.setZero();
+		displaced_.resize(hessian_.rows(), 1);
+		displaced_.setZero();
 
-        rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, displaced_, t);
+		rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, displaced_, t);
 
-        std::vector<bool> mask(hessian_.rows(), true);
+		std::vector<bool> mask(hessian_.rows(), true);
 
-        for (const auto bn : state.boundary_nodes)
-            mask[bn] = false;
+		for (const auto bn : state.boundary_nodes)
+			mask[bn] = false;
 
-        for (int i = 0; i < mask.size(); ++i)
-            if (mask[i])
-                not_boundary_.push_back(i);
-    }
+		for (int i = 0; i < mask.size(); ++i)
+			if (mask[i])
+				not_boundary_.push_back(i);
+	}
 
-    void ALNLProblem::compute_distance(const TVector &x, TVector &res)
-    {
-        res = x - displaced_;
+	void ALNLProblem::update_quantities(const double t, const TVector &x)
+	{
+		super::update_quantities(t, x);
+		if (is_time_dependent)
+		{
+			displaced_.resize(hessian_.rows(), 1);
+			displaced_.setZero();
 
-        for (const auto bn : not_boundary_)
-            res[bn] = 0;
-    }
+			rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, displaced_, t);
+		}
+	}
 
-    double ALNLProblem::value(const TVector &x)
-    {
-        const double val = super::value(x);
-        TVector distv;
-        compute_distance(x, distv);
-        const double dist = distv.squaredNorm();
+	void ALNLProblem::compute_distance(const TVector &x, TVector &res)
+	{
+		res = x - displaced_;
 
-        logger().trace("dist {}", sqrt(dist));
+		for (const auto bn : not_boundary_)
+			res[bn] = 0;
+	}
 
-        // Eigen::MatrixXd ddd;
-        // compute_displaced_points(x, ddd);
-        // igl::write_triangle_mesh("step.obj", ddd, state.boundary_triangles);
+	double ALNLProblem::value(const TVector &x)
+	{
+		const double val = super::value(x);
+		TVector distv;
+		compute_distance(x, distv);
+		const double dist = distv.squaredNorm();
 
-        return val + weight_ * dist; // / _barrier_stiffness;
-        // return weight_ * dist / _barrier_stiffness;
-    }
+		logger().trace("dist {}", sqrt(dist));
 
-    void ALNLProblem::gradient_no_rhs(const TVector &x, Eigen::MatrixXd &gradv)
-    {
-        TVector tmp;
-        super::gradient_no_rhs(x, gradv);
-        compute_distance(x, tmp);
-        //logger().trace("dist grad {}", tmp.norm());
-        tmp *= 2 * weight_; // / _barrier_stiffness;
+		Eigen::MatrixXd ddd;
+		compute_displaced_points(x, ddd);
+		igl::write_triangle_mesh("step.obj", ddd, state.boundary_triangles);
 
-        gradv += tmp;
-        // gradv = tmp;
-    }
+		return val + weight_ * dist; // / _barrier_stiffness;
+									 // return weight_ * dist / _barrier_stiffness;
+	}
 
-    void ALNLProblem::hessian_full(const TVector &x, THessian &hessian)
-    {
-        super::hessian_full(x, hessian);
-        hessian += hessian_; // / _barrier_stiffness;
-        // hessian = hessian_ / _barrier_stiffness;
+	void ALNLProblem::gradient_no_rhs(const TVector &x, Eigen::MatrixXd &gradv)
+	{
+		TVector tmp;
+		super::gradient_no_rhs(x, gradv);
+		compute_distance(x, tmp);
+		//logger().trace("dist grad {}", tmp.norm());
+		tmp *= 2 * weight_; // / _barrier_stiffness;
 
-        hessian.makeCompressed();
-    }
+		gradv += tmp;
+		// gradv = tmp;
+	}
 
-    bool ALNLProblem::stop(const TVector &x)
-    {
-        // TVector distv;
-        // compute_distance(x, distv);
-        // const double dist = distv.norm();
+	void ALNLProblem::hessian_full(const TVector &x, THessian &hessian)
+	{
+		super::hessian_full(x, hessian);
+		hessian += hessian_; // / _barrier_stiffness;
+		// hessian = hessian_ / _barrier_stiffness;
 
-        return false; //dist < stop_dist_;
-    }
+		hessian.makeCompressed();
+	}
+
+	bool ALNLProblem::stop(const TVector &x)
+	{
+		// TVector distv;
+		// compute_distance(x, distv);
+		// const double dist = distv.norm();
+
+		return false; //dist < stop_dist_;
+	}
 } // namespace polyfem
