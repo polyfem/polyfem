@@ -602,6 +602,8 @@ namespace polyfem
 		std::map<std::string, int> names;
 		load_node_sets(geometry, V.rows(), nodeSet, names);
 		state.mesh->compute_boundary_ids([&nodeSet](const std::vector<int> &vs, bool is_boundary) {
+			if (!is_boundary)
+				return 0;
 			std::vector<int> tmp;
 			for (const int v : vs)
 				tmp.insert(tmp.end(), nodeSet[v].begin(), nodeSet[v].end());
