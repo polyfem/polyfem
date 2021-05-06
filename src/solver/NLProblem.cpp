@@ -43,19 +43,36 @@ namespace polyfem
 
 	void NLProblem::init(const TVector &full)
 	{
-		_barrier_stiffness = 1;
 		if (disable_collision || !state.args["has_collision"])
 			return;
 
 		assert(full.size() == full_size);
+		update_barrier_stiffness(full);
+		// exit(0);
+	}
+
+	void NLProblem::update_barrier_stiffness(const TVector &full)
+	{
+		assert(full.size() == full_size);
+		_barrier_stiffness = 1;
+		if (disable_collision || !state.args["has_collision"])
+			return;
 
 		Eigen::MatrixXd grad;
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 		assembler.assemble_energy_gradient(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, state.ass_vals_cache, full, grad);
-		// std::cout << grad << std::endl;
+
+		if (is_time_dependent)
+		{
+			grad *= dt * dt; // / 2.0;
+			grad += state.mass * full;
+		}
+
+		grad -= current_rhs();
+
 		Eigen::MatrixXd displaced;
 		compute_displaced_points(full, displaced);
-		double max_barrier_stiffness = 0;
+
 		_barrier_stiffness = ipc::initial_barrier_stiffness(
 			state.boundary_nodes_pos,
 			displaced,
@@ -63,9 +80,8 @@ namespace polyfem
 			_dhat,
 			state.avg_mass,
 			grad,
-			max_barrier_stiffness);
+			max_barrier_stiffness_);
 		polyfem::logger().debug("adaptive stiffness {}", _barrier_stiffness);
-		// exit(0);
 	}
 
 	void NLProblem::init_timestep(const TVector &x_prev, const TVector &v_prev, const TVector &a_prev, const double dt)
@@ -97,6 +113,8 @@ namespace polyfem
 
 			rhs_computed = false;
 			this->t = t;
+
+			update_barrier_stiffness(x);
 		}
 	}
 
@@ -494,31 +512,23 @@ namespace polyfem
 		polyfem::logger().trace("min_dist {}", dist);
 		// igl::write_triangle_mesh("step.obj", displaced, state.boundary_triangles);
 
-		// const Eigen::MatrixXd box_min = state.boundary_nodes_pos.colwise().minCoeff();
-		// const Eigen::MatrixXd box_max = state.boundary_nodes_pos.colwise().maxCoeff();
-		// const double diag = (box_max - box_min).squaredNorm();
+		if (is_time_dependent)
+		{
+			const Eigen::MatrixXd box_min = state.boundary_nodes_pos.colwise().minCoeff();
+			const Eigen::MatrixXd box_max = state.boundary_nodes_pos.colwise().maxCoeff();
+			const double diag = (box_max - box_min).squaredNorm();
 
-		// if (dist < _prev_distance && dist < 1e-8 * diag && _prev_distance < 1e-8 * diag)
-		// {
-		// 	_barrier_stiffness *= 2;
-		// 	polyfem::logger().debug("2x on stiffness {}", _barrier_stiffness);
-		// }
-
-		Eigen::MatrixXd grad;
-		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
-		assembler.assemble_energy_gradient(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, state.ass_vals_cache, full, grad);
-
-		double max_barrier_stiffness = 0;
-		_barrier_stiffness = ipc::initial_barrier_stiffness(
-			state.boundary_nodes_pos,
-			displaced,
-			state.boundary_edges, state.boundary_triangles,
-			_dhat,
-			state.avg_mass,
-			grad,
-			max_barrier_stiffness);
-		polyfem::logger().debug("new stiffness {}", _barrier_stiffness);
-
+			if (dist < _prev_distance && dist < 1e-8 * diag && _prev_distance < 1e-8 * diag)
+			{
+				_barrier_stiffness *= 2;
+				_barrier_stiffness = std::min(max_barrier_stiffness_, _barrier_stiffness);
+				polyfem::logger().debug("2x on stiffness {}", _barrier_stiffness);
+			}
+		}
+		else
+		{
+			update_barrier_stiffness(full);
+		}
 		_prev_distance = dist;
 	}
 } // namespace polyfem

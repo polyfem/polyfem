@@ -126,10 +126,12 @@ namespace polyfem
 
 		double _dhat;
 		double _prev_distance;
+		double max_barrier_stiffness_;
 
 		double dt;
 		TVector x_prev, v_prev, a_prev;
 
 		void compute_cached_stiffness();
+		void update_barrier_stiffness(const TVector &full);
 	};
 } // namespace polyfem
