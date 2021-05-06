@@ -119,6 +119,7 @@ namespace polyfem
 			mids.clear();
 			int order = 1;
 			bool is_hex = false;
+			std::string type = "";
 
 			for (const tinyxml2::XMLElement *elements = geometry->FirstChildElement("Elements"); elements != NULL; elements = elements->NextSiblingElement("Elements"))
 			{
@@ -128,6 +129,19 @@ namespace polyfem
 				if (el_type != "tet4" && el_type != "tet10" && el_type != "tet20" && el_type != "hex8")
 				{
 					logger().error("Unsupported elemet type {}", el_type);
+					continue;
+				}
+
+				if (type.empty())
+				{
+					if (el_type == "tet4" || el_type == "tet10" || el_type == "tet20")
+						type = "tet";
+					else
+						type = "hex";
+				}
+				else if (el_type.rfind(type, 0) != 0)
+				{
+					logger().error("Unsupported elemet type {} since the mesh contains also {}", el_type, type);
 					continue;
 				}
 
@@ -232,7 +246,7 @@ namespace polyfem
 					{
 						found = true;
 						names[name] = names[tmp_names[i]];
-						logger().trace("Id {},  '{}' and '{}' are now the same", i, name, tmp_names[i]);
+						logger().trace("Id {}, '{}' and '{}' are now the same", names.at(name), name, tmp_names[i]);
 						break;
 					}
 				}
@@ -300,10 +314,11 @@ namespace polyfem
 		template <typename XMLNode>
 		void load_boundary_conditions(const XMLNode *boundaries, const std::map<std::string, int> &names, const double dt, GenericTensorProblem &gproblem)
 		{
-			std::map<std::string, BCData> allbc;
+			std::map<int, BCData> allbc;
 			for (const tinyxml2::XMLElement *child = boundaries->FirstChildElement("fix"); child != NULL; child = child->NextSiblingElement("fix"))
 			{
 				const std::string name = std::string(child->Attribute("node_set"));
+				const int id = names.at(name);
 				const std::string bc = std::string(child->Attribute("bc"));
 				const auto bcs = StringUtils::split(bc, ",");
 
@@ -323,10 +338,10 @@ namespace polyfem
 						bcdata.isz = true;
 				}
 
-				auto it = allbc.find(name);
+				auto it = allbc.find(id);
 				if (it == allbc.end())
 				{
-					allbc[name] = bcdata;
+					allbc[id] = bcdata;
 				}
 				else
 				{
@@ -349,12 +364,12 @@ namespace polyfem
 						it->second.val(2) = 0;
 					}
 				}
-				// gproblem.add_dirichlet_boundary(names.at(name), Eigen::RowVector3d::Zero(), isx, isy, isz);
 			}
 
 			for (const tinyxml2::XMLElement *child = boundaries->FirstChildElement("prescribe"); child != NULL; child = child->NextSiblingElement("prescribe"))
 			{
 				const std::string name = std::string(child->Attribute("node_set"));
+				const int id = names.at(name);
 				const std::string bc = std::string(child->Attribute("bc"));
 
 				BCData bcdata;
@@ -372,10 +387,10 @@ namespace polyfem
 				else if (bcdata.isz)
 					bcdata.val(2) = value;
 
-				auto it = allbc.find(name);
+				auto it = allbc.find(id);
 				if (it == allbc.end())
 				{
-					allbc[name] = bcdata;
+					allbc[id] = bcdata;
 				}
 				else
 				{
@@ -398,13 +413,12 @@ namespace polyfem
 						it->second.val(2) = bcdata.val(2);
 					}
 				}
-
-				// gproblem.add_dirichlet_boundary(names.at(name), val, isx, isy, isz);
 			}
 
 			for (auto it = allbc.begin(); it != allbc.end(); ++it)
 			{
-				gproblem.add_dirichlet_boundary(names.at(it->first), it->second.val, it->second.isx, it->second.isy, it->second.isz);
+				logger().trace("adding Dirichelt id={} value=({},{},{}) fixed=({}, {}, {})", it->first, it->second.val(0), it->second.val(1), it->second.val(2), it->second.isx, it->second.isy, it->second.isz);
+				gproblem.add_dirichlet_boundary(it->first, it->second.val, it->second.isx, it->second.isy, it->second.isz);
 			}
 		}
 
@@ -440,6 +454,7 @@ namespace polyfem
 
 					if (gproblem.is_time_dependent())
 						force *= dt;
+					logger().trace("adding Neumann id={} force=({},{},{})", names.at(name), force(0), force(1), force(2));
 					gproblem.add_neumann_boundary(names.at(name), force);
 				}
 				else if (type == "pressure")
@@ -447,6 +462,7 @@ namespace polyfem
 					const std::string pressures = std::string(child->FirstChildElement("pressure")->GetText());
 					const double pressure = atof(pressures.c_str()) * (gproblem.is_time_dependent() ? dt : 1);
 					//TODO added minus here
+					logger().trace("adding Pressure id={} pressure={}", names.at(name), -pressure);
 					gproblem.add_pressure_boundary(names.at(name), -pressure);
 				}
 				else
