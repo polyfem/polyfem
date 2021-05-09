@@ -106,8 +106,8 @@ namespace polyfem
                 for(int d = 0; d < dim; d++)
                 {
                     double temp = hash_table_cell_num[d] / (max_domain(d) - min_domain(d));
-                    min_int(d) = floor((min_(d) * (1 + 1e-12) - min_domain(d)) * temp);
-                    max_int(d) = ceil((max_(d) * (1 - 1e-12) - min_domain(d)) * temp);
+                    min_int(d) = floor((min_(d) * (1 - 1e-14) - min_domain(d)) * temp);
+                    max_int(d) = ceil((max_(d) * (1 + 1e-14) - min_domain(d)) * temp);
 
                     if(min_int(d) < 0) 
                         min_int(d) = 0;
