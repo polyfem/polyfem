@@ -148,6 +148,8 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 	Eigen::MatrixXi cells;
 	std::vector<std::vector<int>> elements;
 	std::vector<std::vector<double>> weights;
+	std::vector<int> body_ids;
+	std::vector<int> boundary_ids;
 	int dim = 0;
 	int cell_cols = 0;
 
@@ -164,7 +166,9 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 				"position": [0.0, 0.0, 0.0],
 				"rotation": [0.0, 0.0, 0.0],
 				"scale": [1.0, 1.0, 1.0],
-				"enabled": true
+				"enabled": true,
+				"body_id": 0,
+				"boundary_id": 0
 			})"_json;
 		jmesh.merge_patch(meshes[i]);
 
@@ -299,6 +303,12 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 		elements.insert(elements.end(), tmp_elements.begin(), tmp_elements.end());
 
 		weights.insert(weights.end(), tmp_weights.begin(), tmp_weights.end());
+
+		for (int ci = 0; ci < tmp_cells.rows(); ci++)
+		{
+			body_ids.push_back(jmesh["body_id"].get<int>());
+			boundary_ids.push_back(jmesh["boundary_id"].get<int>());
+		}
 	}
 
 	if (vertices.size() == 0)
@@ -332,6 +342,9 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 			break;
 		}
 	}
+
+	mesh->set_body_ids(body_ids);
+	mesh->set_boundary_ids(boundary_ids);
 
 	return mesh;
 }

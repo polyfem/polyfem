@@ -155,13 +155,17 @@ namespace polyfem
 
 			{"rhs_path", ""},
 
-			{"params", {{"lambda", 0.32967032967032966}, {"mu", 0.3846153846153846}, {"k", 1.0}, {"elasticity_tensor", json({})},
-						// {"young", 1.0},
-						// {"nu", 0.3},
-						{"density", 1},
-						{"alphas", {2.13185026692482, -0.600299816209491}},
-						{"mus", {0.00407251192475097, 0.000167202574129608}},
-						{"Ds", {9.4979, 1000000}}}},
+			{"params",
+			 {{"lambda", 0.32967032967032966},
+			  {"mu", 0.3846153846153846},
+			  {"k", 1.0},
+			  {"elasticity_tensor", json({})},
+			  // {"young", 1.0},
+			  // {"nu", 0.3},
+			  {"density", 1},
+			  {"alphas", {2.13185026692482, -0.600299816209491}},
+			  {"mus", {0.00407251192475097, 0.000167202574129608}},
+			  {"Ds", {9.4979, 1000000}}}},
 
 			{"problem_params", json({})},
 
@@ -169,7 +173,25 @@ namespace polyfem
 			// {"solution", ""},
 			// {"stiffness_mat_save_path", ""},
 
-			{"export", {{"sol_at_node", -1}, {"surface", ""}, {"vis_mesh", ""}, {"sol_on_grid", -1}, {"paraview", ""}, {"vis_boundary_only", false}, {"material_params", false}, {"body_ids", false}, {"nodes", ""}, {"wire_mesh", ""}, {"iso_mesh", ""}, {"spectrum", false}, {"solution", ""}, {"full_mat", ""}, {"stiffness_mat", ""}, {"solution_mat", ""}, {"stress_mat", ""}, {"mises", ""}}}};
+			{"export",
+			 {{"sol_at_node", -1},
+			  {"surface", ""},
+			  {"vis_mesh", ""},
+			  {"sol_on_grid", -1},
+			  {"paraview", ""},
+			  {"vis_boundary_only", false},
+			  {"material_params", false},
+			  {"body_ids", false},
+			  {"nodes", ""},
+			  {"wire_mesh", ""},
+			  {"iso_mesh", ""},
+			  {"spectrum", false},
+			  {"solution", ""},
+			  {"full_mat", ""},
+			  {"stiffness_mat", ""},
+			  {"solution_mat", ""},
+			  {"stress_mat", ""},
+			  {"mises", ""}}}};
 	}
 
 	void State::init_logger(const std::string &log_file, int log_level, const bool is_quiet)

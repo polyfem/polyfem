@@ -613,7 +613,7 @@ namespace polyfem
 				assert(stiffness_val.cols() == n_loc_bases * local_assembler_.size());
 
 				if (project_to_psd)
-					stiffness_val = Eigen::project_to_psd(stiffness_val);
+					stiffness_val = ipc::project_to_psd(stiffness_val);
 
 				// bool has_nan = false;
 				// for(int k = 0; k < stiffness_val.size(); ++k)

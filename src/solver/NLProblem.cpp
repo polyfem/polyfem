@@ -8,6 +8,7 @@
 #include <ipc/ipc.hpp>
 #include <ipc/barrier/barrier.hpp>
 #include <ipc/barrier/adaptive_stiffness.hpp>
+#include <ipc/utils/world_bbox_diagonal_length.hpp>
 
 #include <igl/write_triangle_mesh.h>
 
@@ -508,27 +509,27 @@ namespace polyfem
 		compute_displaced_points(full, displaced);
 		ipc::Constraints constraint_set;
 		ipc::construct_constraint_set(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, _dhat, constraint_set);
-		const double dist = ipc::compute_minimum_distance(displaced, state.boundary_edges, state.boundary_triangles, constraint_set);
-		polyfem::logger().trace("min_dist {}", dist);
+		const double dist_sqr = ipc::compute_minimum_distance(displaced, state.boundary_edges, state.boundary_triangles, constraint_set);
+		polyfem::logger().trace("min_dist {}", sqrt(dist_sqr));
 		// igl::write_triangle_mesh("step.obj", displaced, state.boundary_triangles);
 
 		if (is_time_dependent)
 		{
-			const Eigen::MatrixXd box_min = state.boundary_nodes_pos.colwise().minCoeff();
-			const Eigen::MatrixXd box_max = state.boundary_nodes_pos.colwise().maxCoeff();
-			const double diag = (box_max - box_min).squaredNorm();
-
-			if (dist < _prev_distance && dist < 1e-8 * diag && _prev_distance < 1e-8 * diag)
+			double prev_barrier_stiffness = _barrier_stiffness;
+			ipc::update_barrier_stiffness(
+				_prev_distance, dist_sqr, max_barrier_stiffness_,
+				_barrier_stiffness, ipc::world_bbox_diagonal_length(displaced));
+			if (prev_barrier_stiffness != _barrier_stiffness)
 			{
-				_barrier_stiffness *= 2;
-				_barrier_stiffness = std::min(max_barrier_stiffness_, _barrier_stiffness);
-				polyfem::logger().debug("2x on stiffness {}", _barrier_stiffness);
+				polyfem::logger().debug(
+					"updated barrier stiffness from {:g} to {:g}",
+					prev_barrier_stiffness, _barrier_stiffness);
 			}
 		}
 		else
 		{
 			update_barrier_stiffness(full);
 		}
-		_prev_distance = dist;
+		_prev_distance = dist_sqr;
 	}
 } // namespace polyfem

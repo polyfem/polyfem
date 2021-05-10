@@ -141,8 +141,30 @@ namespace cppoptlib
 			TVector new_x = x + grad;
 			double step_size = 1;
 
-			// std::cout<<"grad\n"<<grad<<std::endl;
+			// Find step that does not result in nan or infinite energy
+			while (step_size > 1e-7 || cur_iter < MAX_STEP_SIZE_ITER)
+			{
+				double cur_e = objFunc.value(new_x);
+				const bool valid = objFunc.is_step_valid(x, new_x);
 
+				if (!std::isfinite(cur_e) || !valid)
+				{
+					step_size /= 2.;
+					new_x = x + step_size * grad;
+				}
+				else
+				{
+					break;
+				}
+				cur_iter++;
+			}
+
+			// Find step that is collision free
+			const double tmp = objFunc.max_step_size(x, new_x);
+			step_size *= tmp; // TODO: Safeguard this with a round down
+			new_x = x + step_size * grad;
+
+			// Find step that reduces the energy
 			while (step_size > 1e-7 || cur_iter < MAX_STEP_SIZE_ITER)
 			{
 				double cur_e = objFunc.value(new_x);
@@ -168,11 +190,9 @@ namespace cppoptlib
 				return std::nan("");
 			}
 
-			const double tmp = objFunc.max_step_size(x, new_x);
-			step_size *= tmp;
 			polyfem::logger().trace("final step ratio {}, step {}", tmp, step_size);
 
-			new_x = x + step_size * grad;
+			// safe guard check
 			while (!objFunc.is_step_collision_free(x, new_x))
 			{
 				polyfem::logger().error("step is not collision free!!");
@@ -182,7 +202,6 @@ namespace cppoptlib
 			assert(objFunc.is_step_collision_free(x, new_x));
 
 			return step_size;
-			// return std::nan("");
 		}
 
 		void minimize(ProblemType &objFunc, TVector &x0)
