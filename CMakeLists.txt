@@ -203,48 +203,6 @@ if(POLYFEM_WITH_SANITIZERS)
 endif()
 
 ################################################################################
-# Polyfem binary
-################################################################################
-
-# Main executable
-if(POLYFEM_TOPLEVEL_PROJECT)
-    add_executable(${PROJECT_NAME}_bin src/main.cpp)
-
-    source_group("gui" FILES src/main.cpp)
-    if(NOT POLYFEM_NO_UI)
-        source_group("gui" FILES src/viewer/UIState.cpp)
-        source_group("gui" FILES src/viewer/UIState.hpp)
-        source_group("gui" FILES src/viewer/UIMenu.cpp)
-
-        target_include_directories(${PROJECT_NAME}_bin PUBLIC src/viewer)
-    else()
-        target_compile_definitions(${PROJECT_NAME}_bin PUBLIC -DPOLYFEM_NO_UI)
-    endif()
-
-    target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
-    target_link_libraries(${PROJECT_NAME}_bin
-        PUBLIC
-            polyfem
-            warnings::all
-            CLI11::CLI11
-    )
-
-    if(NOT POLYFEM_NO_UI)
-        target_link_libraries(${PROJECT_NAME}_bin PUBLIC igl::opengl_glfw_imgui)
-        # igl::png
-        # tinyfiledialogs::tinyfiledialogs
-    endif()
-
-    if(POLYFEM_WITH_SANITIZERS)
-        add_sanitizers(${PROJECT_NAME}_bin)
-    endif()
-
-    if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
-        set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_bin)
-    endif()
-endif()
-
-################################################################################
 # Required libraries
 ################################################################################
 
@@ -278,18 +236,19 @@ elseif(POLYFEM_THREADING STREQUAL "TBB")
     target_link_libraries(polyfem PUBLIC TBB::tbb)
 endif()
 
-# libigl
-polyfem_download_libigl()
-find_package(LIBIGL REQUIRED)
-target_link_libraries(polyfem PUBLIC igl::core)
-
-
 # IPC
 option(IPC_TOOLKIT_BUILD_UNIT_TESTS  "Build unit-tests"      OFF)
 option(IPC_TOOLKIT_WITH_LOGGER       "Enables logger"        OFF)
 polyfem_download_ipc()
 add_subdirectory(${THIRD_PARTY_DIR}/ipc)
 target_link_libraries(polyfem PUBLIC IPCToolkit)
+
+# libigl
+if(NOT TARGET igl::core)
+    polyfem_download_libigl()
+    find_package(LIBIGL REQUIRED)
+endif()
+target_link_libraries(polyfem PUBLIC igl::core)
 
 # BVH
 polyfem_download_BVH()
@@ -376,6 +335,49 @@ if(POLYFEM_WITH_MMG)
     find_package(Boost 1.61 QUIET REQUIRED COMPONENTS filesystem system)
     target_include_directories(polyfem PUBLIC ${Boost_INCLUDE_DIRS})
     target_link_libraries(polyfem PUBLIC ${Boost_LIBRARIES})
+endif()
+
+
+################################################################################
+# Polyfem binary
+################################################################################
+
+# Main executable
+if(POLYFEM_TOPLEVEL_PROJECT)
+    add_executable(${PROJECT_NAME}_bin src/main.cpp)
+
+    source_group("gui" FILES src/main.cpp)
+    if(NOT POLYFEM_NO_UI)
+        source_group("gui" FILES src/viewer/UIState.cpp)
+        source_group("gui" FILES src/viewer/UIState.hpp)
+        source_group("gui" FILES src/viewer/UIMenu.cpp)
+
+        target_include_directories(${PROJECT_NAME}_bin PUBLIC src/viewer)
+    else()
+        target_compile_definitions(${PROJECT_NAME}_bin PUBLIC -DPOLYFEM_NO_UI)
+    endif()
+
+    target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
+    target_link_libraries(${PROJECT_NAME}_bin
+        PUBLIC
+            polyfem
+            warnings::all
+            CLI11::CLI11
+    )
+
+    if(NOT POLYFEM_NO_UI)
+        target_link_libraries(${PROJECT_NAME}_bin PUBLIC igl::opengl_glfw_imgui)
+        # igl::png
+        # tinyfiledialogs::tinyfiledialogs
+    endif()
+
+    if(POLYFEM_WITH_SANITIZERS)
+        add_sanitizers(${PROJECT_NAME}_bin)
+    endif()
+
+    if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
+        set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_bin)
+    endif()
 endif()
 
 ################################################################################
