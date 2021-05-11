@@ -123,7 +123,7 @@ endfunction()
 function(polyfem_download_ipc)
     polyfem_download_project(ipc
         GIT_REPOSITORY https://github.com/ipc-sim/ipc-toolkit.git
-        GIT_TAG        8ad05772430d5bddf59a38215f13012257c6255b
+        GIT_TAG        667358e6a6f2b6cbc81b0b8e565c1d16df2533f1
     )
 endfunction()
 
