@@ -314,7 +314,7 @@ namespace polyfem
 				{
 					for (int d = 0; d < size_; ++d)
 					{
-						if (problem_.all_dimentions_dirichelt() || std::find(bounday_nodes.begin(), bounday_nodes.end(), indices[i] * size_ + d) != bounday_nodes.end())
+						if (problem_.all_dimensions_dirichlet() || std::find(bounday_nodes.begin(), bounday_nodes.end(), indices[i] * size_ + d) != bounday_nodes.end())
 							rhs(indices[i] * size_ + d) = 0;
 					}
 				}
@@ -346,7 +346,7 @@ namespace polyfem
 				{
 					for (int d = 0; d < size_; ++d)
 					{
-						if (problem_.all_dimentions_dirichelt() || std::find(bounday_nodes.begin(), bounday_nodes.end(), indices[i] * size_ + d) != bounday_nodes.end())
+						if (problem_.all_dimensions_dirichlet() || std::find(bounday_nodes.begin(), bounday_nodes.end(), indices[i] * size_ + d) != bounday_nodes.end())
 							rhs(indices[i] * size_ + d) = coeffs(i, d);
 					}
 				}

@@ -56,10 +56,10 @@ namespace polyfem
 		// std::vector<int> &boundary_ids() { return boundary_ids_; }
 		// const std::vector<int> &boundary_ids() const { return boundary_ids_; }
 
-		virtual bool is_dimention_dirichet(const int tag, const int dim) const { return true; }
+		virtual bool is_dimension_dirichet(const int tag, const int dim) const { return true; }
 
 		//here for efficiency reasons
-		virtual bool all_dimentions_dirichelt() const { return true; }
+		virtual bool all_dimensions_dirichlet() const { return true; }
 
 		virtual ~Problem() {}
 

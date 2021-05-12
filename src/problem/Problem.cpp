@@ -75,7 +75,7 @@ namespace polyfem
 						const int base_index = bs.global()[g].index * dim;
 						for (int d = 0; d < dim; ++d)
 						{
-							if (is_dimention_dirichet(mesh.get_boundary_id(primitive_global_id), d))
+							if (is_dimension_dirichet(mesh.get_boundary_id(primitive_global_id), d))
 								boundary_nodes.push_back(base_index + d);
 						}
 					}

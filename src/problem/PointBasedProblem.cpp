@@ -11,7 +11,7 @@ namespace polyfem
 	{
 		Eigen::Matrix<bool, 3, 1> dd;
 		dd.setConstant(true);
-		bool all_dimentions_dirichelt = true;
+		bool all_dimensions_dirichlet = true;
 
 		if (data.is_array())
 		{
@@ -53,7 +53,7 @@ namespace polyfem
 
 			if (data.contains("dimension"))
 			{
-				all_dimentions_dirichelt = false;
+				all_dimensions_dirichlet = false;
 				auto &tmp = data["dimension"];
 				assert(tmp.is_array());
 				for (size_t k = 0; k < tmp.size(); ++k)
@@ -70,7 +70,7 @@ namespace polyfem
 			init(0, 0, 0, dd);
 		}
 
-		return all_dimentions_dirichelt;
+		return all_dimensions_dirichlet;
 	}
 
 	Eigen::RowVector3d PointBasedTensorProblem::BCValue::operator()(const Eigen::RowVector3d &pt) const
@@ -166,7 +166,7 @@ namespace polyfem
 		}
 		else
 		{
-			all_dimentions_dirichelt_ = all_dimentions_dirichelt_ && dd(0) && dd(1) && dd(2);
+			all_dimensions_dirichlet_ = all_dimensions_dirichlet_ && dd(0) && dd(1) && dd(2);
 			boundary_ids_.push_back(bc_tag);
 			bc_.emplace_back();
 			bc_.back().init(value, dd);
@@ -183,7 +183,7 @@ namespace polyfem
 		}
 		else
 		{
-			all_dimentions_dirichelt_ = all_dimentions_dirichelt_ && dd(0) && dd(1) && dd(2);
+			all_dimensions_dirichlet_ = all_dimensions_dirichlet_ && dd(0) && dd(1) && dd(2);
 
 			boundary_ids_.push_back(bc_tag);
 			bc_.emplace_back();
@@ -204,7 +204,7 @@ namespace polyfem
 		}
 		else
 		{
-			all_dimentions_dirichelt_ = all_dimentions_dirichelt_ && dd(0) && dd(1) && dd(2);
+			all_dimensions_dirichlet_ = all_dimensions_dirichlet_ && dd(0) && dd(1) && dd(2);
 
 			boundary_ids_.push_back(bc_tag);
 			bc_.emplace_back();
@@ -215,9 +215,9 @@ namespace polyfem
 		}
 	}
 
-	bool PointBasedTensorProblem::is_dimention_dirichet(const int tag, const int dim) const
+	bool PointBasedTensorProblem::is_dimension_dirichet(const int tag, const int dim) const
 	{
-		if (all_dimentions_dirichelt())
+		if (all_dimensions_dirichlet())
 			return true;
 
 		for (size_t b = 0; b < boundary_ids_.size(); ++b)
@@ -271,7 +271,7 @@ namespace polyfem
 				boundary_ids_[i] = j_boundary[i]["id"];
 				const auto ff = j_boundary[i]["value"];
 				const bool all_d = bc_[i].init(ff);
-				all_dimentions_dirichelt_ = all_dimentions_dirichelt_ && all_d;
+				all_dimensions_dirichlet_ = all_dimensions_dirichlet_ && all_d;
 			}
 		}
 

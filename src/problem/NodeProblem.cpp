@@ -34,7 +34,7 @@ namespace polyfem
 
 			bool flag;
 			input >> flag;
-			raw_dirichelt_.push_back(flag);
+			raw_dirichlet_.push_back(flag);
 
 			double temp;
 			raw_data_.emplace_back();
@@ -53,18 +53,18 @@ namespace polyfem
 		if (!data_.empty())
 		{
 			assert(data_.size() == n_primitive);
-			assert(dirichelt_.size() == n_primitive);
+			assert(dirichlet_.size() == n_primitive);
 			return;
 		}
 
 		data_.resize(n_primitive);
-		dirichelt_.resize(n_primitive);
+		dirichlet_.resize(n_primitive);
 
 		for (size_t i = 0; i < raw_ids_.size(); ++i)
 		{
 			const int index = raw_ids_[i];
 
-			dirichelt_[index] = raw_dirichelt_[i];
+			dirichlet_[index] = raw_dirichlet_[i];
 
 			data_[index].resize(raw_data_[i].size());
 			for (size_t j = 0; j < raw_data_[i].size(); ++j)
@@ -72,9 +72,9 @@ namespace polyfem
 		}
 	}
 
-	double NodeValues::interpolate(const int p_id, const Eigen::MatrixXd &uv, bool is_dirichelt) const
+	double NodeValues::interpolate(const int p_id, const Eigen::MatrixXd &uv, bool is_dirichlet) const
 	{
-		assert(dirichelt_[p_id] == is_dirichelt);
+		assert(dirichlet_[p_id] == is_dirichlet);
 
 		const auto &vals = data_[p_id];
 		assert(uv.size() == vals.size());
@@ -147,21 +147,21 @@ namespace polyfem
 		val *= t;
 	}
 
-	bool NodeProblem::is_dimention_dirichet(const int tag, const int dim) const
+	bool NodeProblem::is_dimension_dirichet(const int tag, const int dim) const
 	{
-		if (all_dimentions_dirichelt())
+		if (all_dimensions_dirichlet())
 			return true;
 
 		if (is_all_)
 		{
-			return dirichelt_dimentions_[0][dim];
+			return dirichlet_dimensions_[0][dim];
 		}
 
 		for (size_t b = 0; b < boundary_ids_.size(); ++b)
 		{
 			if (tag == boundary_ids_[b])
 			{
-				auto &tmp = dirichelt_dimentions_[b];
+				auto &tmp = dirichlet_dimensions_[b];
 				return tmp[dim];
 			}
 		}
@@ -189,7 +189,7 @@ namespace polyfem
 			auto j_boundary = params["dirichlet_boundary"];
 
 			boundary_ids_.resize(j_boundary.size());
-			dirichelt_dimentions_.resize(j_boundary.size());
+			dirichlet_dimensions_.resize(j_boundary.size());
 
 			for (size_t i = 0; i < boundary_ids_.size(); ++i)
 			{
@@ -202,15 +202,15 @@ namespace polyfem
 				else
 					boundary_ids_[i] = j_boundary[i]["id"];
 
-				dirichelt_dimentions_[i].setConstant(false);
+				dirichlet_dimensions_[i].setConstant(false);
 
 				if (j_boundary[i].contains("dimension"))
 				{
-					all_dimentions_dirichelt_ = false;
+					all_dimensions_dirichlet_ = false;
 					auto &tmp = j_boundary[i]["dimension"];
 					assert(tmp.is_array());
 					for (size_t k = 0; k < tmp.size(); ++k)
-						dirichelt_dimentions_[i](k) = tmp[k];
+						dirichlet_dimensions_[i](k) = tmp[k];
 				}
 			}
 		}

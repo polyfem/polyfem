@@ -417,7 +417,7 @@ namespace polyfem
 
 			for (auto it = allbc.begin(); it != allbc.end(); ++it)
 			{
-				logger().trace("adding Dirichelt id={} value=({},{},{}) fixed=({}, {}, {})", it->first, it->second.val(0), it->second.val(1), it->second.val(2), it->second.isx, it->second.isy, it->second.isz);
+				logger().trace("adding Dirichlet id={} value=({},{},{}) fixed=({}, {}, {})", it->first, it->second.val(0), it->second.val(1), it->second.val(2), it->second.isx, it->second.isy, it->second.isz);
 				gproblem.add_dirichlet_boundary(it->first, it->second.val, it->second.isx, it->second.isy, it->second.isz);
 			}
 		}

@@ -64,8 +64,8 @@ namespace polyfem
 
 		void set_parameters(const json &params) override;
 
-		bool is_dimention_dirichet(const int tag, const int dim) const override;
-		bool all_dimentions_dirichelt() const override { return all_dimentions_dirichelt_; }
+		bool is_dimension_dirichet(const int tag, const int dim) const override;
+		bool all_dimensions_dirichlet() const override { return all_dimensions_dirichlet_; }
 
 		void exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 		void exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
@@ -86,7 +86,7 @@ namespace polyfem
 		void clear() override;
 
 	private:
-		bool all_dimentions_dirichelt_ = true;
+		bool all_dimensions_dirichlet_ = true;
 		bool has_exact_ = false;
 		bool has_exact_grad_ = false;
 		bool is_time_dept_ = false;
@@ -103,7 +103,7 @@ namespace polyfem
 		std::vector<std::pair<int, std::array<ExpressionValue, 3>>> initial_velocity_;
 		std::vector<std::pair<int, std::array<ExpressionValue, 3>>> initial_acceleration_;
 
-		std::vector<Eigen::Matrix<bool, 1, 3>> dirichelt_dimentions_;
+		std::vector<Eigen::Matrix<bool, 1, 3>> dirichlet_dimensions_;
 
 		std::array<ExpressionValue, 3> rhs_;
 		std::array<ExpressionValue, 3> exact_;
