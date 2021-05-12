@@ -13,6 +13,8 @@
 
 #include <ghc/fs_std.hpp> // filesystem
 
+#include <Eigen/Geometry>
+
 #include <igl/boundary_facets.h>
 #include <igl/PI.h>
 ////////////////////////////////////////////////////////////////////////////////
@@ -137,6 +139,54 @@ inline T deg2rad(T deg)
 	return deg / 180 * igl::PI;
 }
 
+Eigen::Matrix3d build_rotation_matrix(const Eigen::VectorXd &r, std::string mode = "xyz")
+{
+	std::transform(mode.begin(), mode.end(), mode.begin(), ::tolower);
+
+	if (mode == "axis_angle")
+	{
+		assert(r.size() == 4);
+		double angle = r[0];
+		Eigen::Vector3d axis = r.tail<3>().normalized();
+		return Eigen::AngleAxisd(angle, axis).toRotationMatrix();
+	}
+
+	if (mode == "quaternion")
+	{
+		assert(r.size() == 4);
+		Eigen::Vector4d q = r.normalized();
+		return Eigen::Quaterniond(q).toRotationMatrix();
+	}
+
+	if (mode == "rotation_vector")
+	{
+		assert(r.size() == 3);
+		double angle = r.norm();
+		if (angle != 0)
+		{
+			return Eigen::AngleAxisd(angle, r / angle).toRotationMatrix();
+		}
+		else
+		{
+			return Eigen::Matrix3d::Identity();
+		}
+	}
+
+	Eigen::Matrix3d R = Eigen::Matrix3d::Identity();
+
+	assert(r.size() >= 3);
+	for (int i = 0; i < mode.size(); i++)
+	{
+		int j = mode[i] - 'x';
+		assert(j >= 0 && j < 3);
+		Eigen::Vector3d axis = Eigen::Vector3d::Zero();
+		axis[j] = 1;
+		R = Eigen::AngleAxisd(r[j], axis).toRotationMatrix() * R;
+	}
+
+	return R;
+}
+
 std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &meshes)
 {
 	if (meshes.empty())
@@ -166,6 +216,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 		json jmesh = R"({
 				"position": [0.0, 0.0, 0.0],
 				"rotation": [0.0, 0.0, 0.0],
+				"rotation_mode": "xyz",
 				"scale": [1.0, 1.0, 1.0],
 				"enabled": true,
 				"body_id": 0,
@@ -273,10 +324,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 			// in Blender. An alternative is to provide a field
 			// "rotation_type" which specifies the type of rotation encoded
 			// in `rot`.
-			R = (Eigen::AngleAxisd(rot.z(), Eigen::Vector3d::UnitX())
-				 * Eigen::AngleAxisd(rot.y(), Eigen::Vector3d::UnitY())
-				 * Eigen::AngleAxisd(rot.x(), Eigen::Vector3d::UnitZ()))
-					.toRotationMatrix();
+			R = build_rotation_matrix(rot, jmesh["rotation_mode"].get<std::string>());
 		}
 		tmp_vertices *= R.transpose(); // (R*Vᵀ)ᵀ = V*Rᵀ
 
