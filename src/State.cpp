@@ -980,8 +980,18 @@ namespace polyfem
 		{
 
 			const double tend = args["tend"];
-			const int time_steps = args["time_steps"];
-			const double dt = tend / time_steps;
+			double dt;
+			int time_steps;
+			if (args.contains("dt")) // Explicit timestep param. has priority
+			{
+				dt = args["dt"];
+				time_steps = int(ceil(tend / dt));
+			}
+			else
+			{
+				time_steps = args["time_steps"];
+				dt = tend / time_steps;
+			}
 			logger().info("dt={}", dt);
 
 			const auto &gbases = iso_parametric() ? bases : geom_bases;
