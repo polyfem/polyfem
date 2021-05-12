@@ -13,6 +13,7 @@
 
 #include <ghc/fs_std.hpp> // filesystem
 
+#include <igl/boundary_facets.h>
 #include <igl/PI.h>
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -221,7 +222,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 		}
 		else if (cell_cols != tmp_cells.cols())
 		{
-			logger().error("Mixed cell types is not implemented!");
+			logger().error("Mixed tet and hex meshes is not implemented!");
 			continue;
 		}
 
@@ -307,7 +308,24 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 		for (int ci = 0; ci < tmp_cells.rows(); ci++)
 		{
 			body_ids.push_back(jmesh["body_id"].get<int>());
-			boundary_ids.push_back(jmesh["boundary_id"].get<int>());
+		}
+
+		if (cell_cols == 3 || cell_cols == 4)
+		{
+			// NOTE: This will make every face in the mesh a boundary
+			Eigen::MatrixXi BF;
+			igl::boundary_facets(tmp_cells, BF);
+			// Every face that is not a boundary will have exactly two copies
+			assert(BF.rows() % 2 == 0);
+			int num_faces = (4 * tmp_cells.rows() - BF.rows()) / 2 + BF.rows();
+			for (int fi = 0; fi < num_faces; fi++)
+			{
+				boundary_ids.push_back(jmesh["boundary_id"].get<int>());
+			}
+		}
+		else if (jmesh["boundary_id"].get<int>() > 0)
+		{
+			logger().error("mesh `boundary_id` only implemented for triangle or tet meshes!");
 		}
 	}
 

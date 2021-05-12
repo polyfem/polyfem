@@ -133,7 +133,8 @@ namespace cppoptlib
 
 		double linesearch(const TVector &x, const TVector &grad, ProblemType &objFunc)
 		{
-			static const int MAX_STEP_SIZE_ITER = 25;
+			static const int MAX_STEP_SIZE_ITER = std::numeric_limits<int>::max();
+			static const double MIN_STEP_SIZE = 0;
 
 			const double old_energy = objFunc.value(x);
 			int cur_iter = 0;
@@ -142,7 +143,7 @@ namespace cppoptlib
 			double step_size = 1;
 
 			// Find step that does not result in nan or infinite energy
-			while (step_size > 1e-7 || cur_iter < MAX_STEP_SIZE_ITER)
+			while (step_size > MIN_STEP_SIZE && cur_iter < MAX_STEP_SIZE_ITER)
 			{
 				double cur_e = objFunc.value(new_x);
 				const bool valid = objFunc.is_step_valid(x, new_x);
@@ -159,13 +160,24 @@ namespace cppoptlib
 				cur_iter++;
 			}
 
+			if (cur_iter >= MAX_STEP_SIZE_ITER || step_size <= MIN_STEP_SIZE)
+			{
+				polyfem::logger().error("line-search failed {:d} {:g}", cur_iter, step_size);
+				return std::nan("");
+			}
+
 			// Find step that is collision free
 			const double tmp = objFunc.max_step_size(x, new_x);
+			if (tmp == 0)
+			{
+				polyfem::logger().error("CCD produced a stepsize of zero!");
+				return std::nan("");
+			}
 			step_size *= tmp; // TODO: Safeguard this with a round down
 			new_x = x + step_size * grad;
 
 			// Find step that reduces the energy
-			while (step_size > 1e-7 || cur_iter < MAX_STEP_SIZE_ITER)
+			while (step_size > MIN_STEP_SIZE && cur_iter < MAX_STEP_SIZE_ITER)
 			{
 				double cur_e = objFunc.value(new_x);
 				const bool valid = objFunc.is_step_valid(x, new_x);
@@ -185,8 +197,9 @@ namespace cppoptlib
 				cur_iter++;
 			}
 
-			if (cur_iter >= MAX_STEP_SIZE_ITER && step_size <= 1e-7)
+			if (cur_iter >= MAX_STEP_SIZE_ITER || step_size <= MIN_STEP_SIZE)
 			{
+				polyfem::logger().error("line-search failed {:d} {:g}", cur_iter, step_size);
 				return std::nan("");
 			}
 

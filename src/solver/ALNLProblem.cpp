@@ -13,6 +13,8 @@
 
 #include <unsupported/Eigen/SparseExtra>
 
+// #define USE_DIV_BARRIER_STIFFNESS
+
 namespace polyfem
 {
 	using namespace polysolve;
@@ -79,8 +81,11 @@ namespace polyfem
 		compute_displaced_points(x, ddd);
 		igl::write_triangle_mesh("step.obj", ddd, state.boundary_triangles);
 
-		return val + weight_ * dist; // / _barrier_stiffness;
-									 // return weight_ * dist / _barrier_stiffness;
+#ifdef USE_DIV_BARRIER_STIFFNESS
+		return val + weight_ * dist / _barrier_stiffness;
+#else
+		return val + weight_ * dist;
+#endif
 	}
 
 	void ALNLProblem::gradient_no_rhs(const TVector &x, Eigen::MatrixXd &gradv)
@@ -89,7 +94,11 @@ namespace polyfem
 		super::gradient_no_rhs(x, gradv);
 		compute_distance(x, tmp);
 		//logger().trace("dist grad {}", tmp.norm());
-		tmp *= 2 * weight_; // / _barrier_stiffness;
+#ifdef USE_DIV_BARRIER_STIFFNESS
+		tmp *= 2 * weight_ / _barrier_stiffness;
+#else
+		tmp *= 2 * weight_;
+#endif
 
 		gradv += tmp;
 		// gradv = tmp;
@@ -98,9 +107,11 @@ namespace polyfem
 	void ALNLProblem::hessian_full(const TVector &x, THessian &hessian)
 	{
 		super::hessian_full(x, hessian);
-		hessian += hessian_; // / _barrier_stiffness;
-		// hessian = hessian_ / _barrier_stiffness;
-
+#ifdef USE_DIV_BARRIER_STIFFNESS
+		hessian += hessian_ / _barrier_stiffness;
+#else
+		hessian += hessian_;
+#endif
 		hessian.makeCompressed();
 	}
 

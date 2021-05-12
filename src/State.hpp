@@ -448,6 +448,11 @@ namespace polyfem
 		//returns the path of the input mesh (wrappers around the arguments)
 		inline std::string mesh_path() const { return args["mesh"]; }
 
+		inline bool has_mesh() const
+		{
+			return !mesh_path().empty() || (args.contains("meshes") && !args["meshes"].empty());
+		}
+
 		//return the formulation (checks if the problem is scalar or not)
 		inline std::string formulation() const { return problem->is_scalar() ? scalar_formulation() : tensor_formulation(); }
 

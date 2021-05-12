@@ -621,8 +621,7 @@ namespace polyfem
 				data(layer).show_faces,
 				data(layer).show_lines,
 				data(layer).show_vertex_labels,
-				data(layer).show_face_labels
-            };
+				data(layer).show_face_labels};
 		}
 		data(layer).show_overlay = 0;
 		data(layer).show_faces = 0;
@@ -1622,7 +1621,7 @@ namespace polyfem
 
 	void UIState::load_mesh()
 	{
-		if (state.mesh_path().empty() && febio_file.empty())
+		if (!state.has_mesh() && febio_file.empty())
 		{
 			viewer.open_dialog_load_mesh();
 		}

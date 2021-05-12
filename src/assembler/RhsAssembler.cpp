@@ -579,9 +579,7 @@ namespace polyfem
 			res *= t;
 
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
-#if defined(POLYFEM_WITH_CPP_THREADS) || defined(POLYFEM_WITH_TBB)
 		Eigen::MatrixXd forces;
-#endif
 
 		ElementAssemblyValues vals;
 		//Neumann
