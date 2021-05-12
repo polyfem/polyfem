@@ -139,14 +139,18 @@ inline T deg2rad(T deg)
 	return deg / 180 * igl::PI;
 }
 
-Eigen::Matrix3d build_rotation_matrix(const Eigen::VectorXd &r, std::string mode = "xyz")
+Eigen::Matrix3d build_rotation_matrix(const json &jr, std::string mode = "xyz")
 {
+	assert(jr.is_array());
+	Eigen::VectorXd r;
+	from_json(jr, r);
+
 	std::transform(mode.begin(), mode.end(), mode.begin(), ::tolower);
 
 	if (mode == "axis_angle")
 	{
 		assert(r.size() == 4);
-		double angle = r[0];
+		double angle = deg2rad(r[0]); // NOTE: assumes input angle is in degrees
 		Eigen::Vector3d axis = r.tail<3>().normalized();
 		return Eigen::AngleAxisd(angle, axis).toRotationMatrix();
 	}
@@ -157,6 +161,9 @@ Eigen::Matrix3d build_rotation_matrix(const Eigen::VectorXd &r, std::string mode
 		Eigen::Vector4d q = r.normalized();
 		return Eigen::Quaterniond(q).toRotationMatrix();
 	}
+
+	// The following expect the input is given in degrees
+	r = deg2rad(r);
 
 	if (mode == "rotation_vector")
 	{
@@ -316,15 +323,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 		else
 		{
 			assert(dim == 3);
-			assert(jmesh["rotation"].is_array());
-			Eigen::Vector3d rot;
-			from_json(jmesh["rotation"], rot);
-			rot = deg2rad(rot);
-			// XYZ Euler angles, this is arbitrary and based on the default
-			// in Blender. An alternative is to provide a field
-			// "rotation_type" which specifies the type of rotation encoded
-			// in `rot`.
-			R = build_rotation_matrix(rot, jmesh["rotation_mode"].get<std::string>());
+			R = build_rotation_matrix(jmesh["rotation"], jmesh["rotation_mode"].get<std::string>());
 		}
 		tmp_vertices *= R.transpose(); // (R*Vᵀ)ᵀ = V*Rᵀ
 
