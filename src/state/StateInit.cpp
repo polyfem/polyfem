@@ -130,6 +130,7 @@ namespace polyfem
 			{"iso_parametric", false},
 			{"integral_constraints", 2},
 			{"cache_size", 1000000},
+			{"al_weight", 1e6},
 
 			{"fit_nodes", false},
 

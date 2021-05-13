@@ -4,6 +4,7 @@
 #include <polyfem/ElementBases.hpp>
 #include <polyfem/ElementAssemblyValues.hpp>
 #include <polyfem/AssemblyValsCache.hpp>
+#include <polyfem/RhsAssembler.hpp>
 #include <polyfem/Problem.hpp>
 #include <polyfem/Mesh.hpp>
 #include <polyfem/Problem.hpp>
@@ -313,6 +314,15 @@ namespace polyfem
 		void assemble_rhs();
 		//solves the proble, step 5
 		void solve_problem();
+
+		//Aux solving functions, c_sol=x are necessary since they contain the pressure, while sol dosent
+		void solve_transient_navier_stokes(const int time_steps, const double dt, const RhsAssembler &rhs_assembler, Eigen::VectorXd &c_sol);
+		void solve_transient_scalar(const int time_steps, const double dt, const RhsAssembler &rhs_assembler, Eigen::VectorXd &x);
+		void solve_transient_tensor_linear(const int time_steps, const double dt, const RhsAssembler &rhs_assembler);
+		void solve_transient_tensor_non_linear(const int time_steps, const double dt, const RhsAssembler &rhs_assembler);
+		void solve_linear();
+		void solve_navier_stokes();
+		void solve_non_linear();
 
 		//compute the errors, not part of solve
 		void compute_errors();
