@@ -14,10 +14,22 @@ namespace polyfem
 	{
 	public:
 		virtual ~Interpolation() {}
-		virtual double eval(const double t) const { return t; }
+		virtual double eval(const double t) const = 0;
 		virtual void init(const json &params) {}
 
 		static std::shared_ptr<Interpolation> build(const json &params);
+	};
+
+	class NoInterpolation : public Interpolation
+	{
+	public:
+		double eval(const double t) const override { return 1; };
+	};
+
+	class LinearInterpolation : public Interpolation
+	{
+	public:
+		double eval(const double t) const override { return t; }
 	};
 
 	class LinearRamp : public Interpolation
@@ -77,9 +89,9 @@ namespace polyfem
 		void add_neumann_boundary(const int id, const Eigen::RowVector3d &val);
 		void add_pressure_boundary(const int id, const double val);
 
-		void add_dirichlet_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z)> &func, const bool isx, const bool isy, const bool isz);
-		void add_neumann_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z)> &func);
-		void add_pressure_boundary(const int id, const std::function<double(double x, double y, double z)> &func);
+		void add_dirichlet_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const bool isx, const bool isy, const bool isz);
+		void add_neumann_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func);
+		void add_pressure_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func);
 
 		void set_rhs(double x, double y, double z);
 
@@ -136,14 +148,17 @@ namespace polyfem
 		void add_dirichlet_boundary(const int id, const double val);
 		void add_neumann_boundary(const int id, const double val);
 
-		void add_dirichlet_boundary(const int id, const std::function<double(double x, double y, double z)> &func);
-		void add_neumann_boundary(const int id, const std::function<double(double x, double y, double z)> &func);
+		void add_dirichlet_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func);
+		void add_neumann_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func);
 
 		void clear() override;
 
 	private:
 		std::vector<ExpressionValue> neumann_;
 		std::vector<ExpressionValue> dirichlet_;
+
+		std::vector<std::shared_ptr<Interpolation>> neumann_interpolation_;
+		std::vector<std::shared_ptr<Interpolation>> dirichlet_interpolation_;
 
 		ExpressionValue rhs_;
 		ExpressionValue exact_;
