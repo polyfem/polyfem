@@ -37,6 +37,9 @@ namespace polyfem
 		value_ = val;
 	}
 
+	static double max(double a, double b) { return a > b ? a : b; }
+	static double min(double a, double b) { return a < b ? a : b; }
+
 	void ExpressionValue::init(const std::string &expr)
 	{
 		value_ = 0;
@@ -50,14 +53,17 @@ namespace polyfem
 			return;
 		}
 
-		te_variable vars[4];
-		vars[0] = {"x", &vals_->x};
-		vars[1] = {"y", &vals_->y};
-		vars[2] = {"z", &vals_->z};
-		vars[3] = {"t", &vals_->t};
+		te_variable vars[] = {
+			{"max", (const void *)max, TE_FUNCTION2},
+			{"min", (const void *)min, TE_FUNCTION2},
+			{"x", &vals_->x},
+			{"y", &vals_->y},
+			{"z", &vals_->z},
+			{"t", &vals_->t},
+		};
 
 		int err;
-		expr_ = te_compile(expr.c_str(), vars, 4, &err);
+		expr_ = te_compile(expr.c_str(), vars, 6, &err);
 
 		if (!expr_)
 		{
