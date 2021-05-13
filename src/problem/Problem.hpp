@@ -38,7 +38,7 @@ namespace polyfem
 		virtual bool has_exact_sol() const = 0;
 		virtual bool is_scalar() const = 0;
 		// virtual bool is_mixed() const { return false; }
-		virtual bool is_linear_in_time() const { return true; }
+		virtual bool is_constant_in_time() const { return true; }
 
 		virtual void clear() {}
 

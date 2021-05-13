@@ -111,7 +111,6 @@ namespace polyfem
 	void PointBasedTensorProblem::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Constant(pts.rows(), pts.cols(), rhs_);
-		val *= t;
 	}
 
 	void PointBasedTensorProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
@@ -131,8 +130,6 @@ namespace polyfem
 				}
 			}
 		}
-
-		val *= t;
 	}
 
 	void PointBasedTensorProblem::neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const
@@ -152,8 +149,6 @@ namespace polyfem
 				}
 			}
 		}
-
-		val *= t;
 	}
 
 	void PointBasedTensorProblem::add_constant(const int bc_tag, const Eigen::Vector3d &value, const Eigen::Matrix<bool, 3, 1> &dd, const bool is_neumann)

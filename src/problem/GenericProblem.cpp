@@ -63,9 +63,6 @@ namespace polyfem
 				val(i, j) = rhs_[j](x, y, z, t);
 			}
 		}
-
-		// val.col(i).setConstant(rhs_(i));
-		// val *= t;
 	}
 
 	bool GenericTensorProblem::is_dimension_dirichet(const int tag, const int dim) const
@@ -683,8 +680,6 @@ namespace polyfem
 			double x = pts(i, 0), y = pts(i, 1), z = planar ? 0 : pts(i, 2);
 			val(i) = rhs_(x, y, z, t);
 		}
-		// val = Eigen::MatrixXd::Constant(pts.rows(), 1, rhs_);
-		// val *= t;
 	}
 
 	void GenericScalarProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const

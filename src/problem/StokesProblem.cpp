@@ -9,10 +9,14 @@ namespace polyfem
 		//https://math.stackexchange.com/questions/101480/are-there-other-kinds-of-bump-functions-than-e-frac1x2-1
 		double bump(double r)
 		{
-			const auto f = [](double x) { return x <= 0 ? 0 : exp(-1. / x); };
-			const auto g = [&f](double x) { return f(x) / (f(x) + f(1. - x)); };
-			const auto h = [&g](double x) { return g(x - 1); };
-			const auto k = [&h](double x) { return h(x * x); };
+			const auto f = [](double x)
+			{ return x <= 0 ? 0 : exp(-1. / x); };
+			const auto g = [&f](double x)
+			{ return f(x) / (f(x) + f(1. - x)); };
+			const auto h = [&g](double x)
+			{ return g(x - 1); };
+			const auto k = [&h](double x)
+			{ return h(x * x); };
 			return 1 - k(r);
 		}
 	} // namespace
@@ -56,8 +60,6 @@ namespace polyfem
 		{
 			val(i, 1) = 1;
 		}
-
-		// val *= t;
 
 		if (is_time_dependent_)
 			val *= (1 - exp(-5 * t));

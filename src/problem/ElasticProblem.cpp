@@ -14,7 +14,6 @@ namespace polyfem
 	void ElasticProblem::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-		// val *= t;
 	}
 
 	void ElasticProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
@@ -32,8 +31,6 @@ namespace polyfem
 			else if (mesh.get_boundary_id(global_ids(i)) == 6)
 				val(i, 1) = 0.25;
 		}
-
-		val *= t;
 	}
 
 	TorsionElasticProblem::TorsionElasticProblem(const std::string &name)
@@ -48,7 +45,6 @@ namespace polyfem
 	void TorsionElasticProblem::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-		// val *= t;
 	}
 
 	void TorsionElasticProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
@@ -128,7 +124,6 @@ namespace polyfem
 	void DoubleTorsionElasticProblem::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-		// val *= t;
 	}
 
 	void DoubleTorsionElasticProblem::velocity_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
@@ -256,7 +251,6 @@ namespace polyfem
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		val.col(1).setConstant(0.5);
-		val *= t;
 	}
 
 	void ElasticProblemZeroBC::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
@@ -268,7 +262,6 @@ namespace polyfem
 			if (mesh.get_boundary_id(global_ids(i)) > 0)
 				val.row(i).setZero();
 		}
-		// val *= t;
 	}
 
 	namespace
@@ -536,7 +529,6 @@ namespace polyfem
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		val.col(1).setConstant(force_);
-		// val *= t;
 	}
 
 	void GravityProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
@@ -578,7 +570,6 @@ namespace polyfem
 	void WalkProblem::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-		// val *= t;
 	}
 
 	void WalkProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
@@ -592,8 +583,6 @@ namespace polyfem
 			else if (mesh.get_boundary_id(global_ids(i)) == 2)
 				val(i, 2) = -0.2 * sin(t);
 		}
-
-		val *= t;
 	}
 
 	void WalkProblem::velocity_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const

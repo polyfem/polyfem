@@ -36,7 +36,7 @@ namespace polyfem
 
 		bool has_exact_sol() const override { return false; }
 		bool is_scalar() const override { return false; }
-		bool is_linear_in_time() const override { return false; }
+		bool is_constant_in_time() const override { return false; }
 
 		void set_parameters(const json &params) override;
 
@@ -67,7 +67,7 @@ namespace polyfem
 
 		bool has_exact_sol() const override { return false; }
 		bool is_scalar() const override { return false; }
-		bool is_linear_in_time() const override { return false; }
+		bool is_constant_in_time() const override { return false; }
 		bool is_time_dependent() const override { return true; }
 
 		void set_parameters(const json &params) override;
@@ -189,6 +189,7 @@ namespace polyfem
 		bool has_exact_sol() const override { return false; }
 		bool is_scalar() const override { return false; }
 		bool is_time_dependent() const override { return true; }
+		bool is_constant_in_time() const override { return false; }
 
 		int n_incremental_load_steps(const double diag) const override { return 1 / diag; }
 	};

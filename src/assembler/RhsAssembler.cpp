@@ -477,7 +477,7 @@ namespace polyfem
 
 	void RhsAssembler::compute_energy_grad(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const Density &density, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, const Eigen::MatrixXd &final_rhs, const double t, Eigen::MatrixXd &rhs) const
 	{
-		if (problem_.is_linear_in_time())
+		if (problem_.is_constant_in_time())
 		{
 			rhs = final_rhs;
 		}
@@ -586,9 +586,6 @@ namespace polyfem
 				res = loc_storage.val;
 #endif
 		}
-
-		if (problem_.is_linear_in_time() && !problem_.is_time_dependent())
-			res *= t;
 
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
 		Eigen::MatrixXd forces;
