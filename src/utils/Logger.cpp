@@ -24,7 +24,10 @@ namespace polyfem
 			spdlog::drop("polyfem");
 		}
 
-		spdlog::init_thread_pool(8192, 1);
+		if (spdlog::thread_pool() == nullptr)
+		{
+			spdlog::init_thread_pool(8192, 1);
+		}
 		Logger::logger_ =
 			std::make_shared<spdlog::async_logger>(
 				"polyfem",

@@ -242,26 +242,81 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 			continue;
 		}
 
-		std::string mesh_path = jmesh["mesh"];
-		std::string lowername = mesh_path;
-		std::transform(
-			lowername.begin(), lowername.end(), lowername.begin(), ::tolower);
-		if (!StringUtils::endswidth(lowername, ".msh"))
-		{
-			logger().error("Unsupported mesh type in meshes: {}", mesh_path);
-			continue;
-		}
-
 		Eigen::MatrixXd tmp_vertices;
 		Eigen::MatrixXi tmp_cells;
 		std::vector<std::vector<int>> tmp_elements;
 		std::vector<std::vector<double>> tmp_weights;
 
-		if (!MshReader::load(
-				mesh_path, tmp_vertices, tmp_cells, tmp_elements, tmp_weights))
+		std::string mesh_path = jmesh["mesh"];
+		std::string lowername = mesh_path;
+		std::transform(
+			lowername.begin(), lowername.end(), lowername.begin(), ::tolower);
+		if (StringUtils::endswidth(lowername, ".msh"))
 		{
-			logger().error("Unable to load mesh: {}", mesh_path);
-			continue;
+			if (!MshReader::load(mesh_path, tmp_vertices, tmp_cells, tmp_elements, tmp_weights))
+			{
+				logger().error("Unable to load mesh: {}", mesh_path);
+				continue;
+			}
+		}
+		else
+		{
+			GEO::Mesh tmp;
+			if (!GEO::mesh_load(mesh_path, tmp))
+			{
+				logger().error("Unable to load mesh: {}", mesh_path);
+				continue;
+			}
+
+			int tmp_dim = std::max(dim, is_planar(tmp.vertices.dimension()) ? 2 : 3);
+			tmp_vertices.resize(tmp.vertices.nb(), tmp_dim);
+			for (int vi = 0; vi < tmp.vertices.nb(); vi++)
+			{
+				const auto &v = tmp.vertices.point(vi);
+				for (int vj = 0; vj < tmp_dim; vj++)
+				{
+					tmp_vertices(vi, vj) = v[vj];
+				}
+			}
+
+			if (tmp.cells.nb())
+			{
+				int tmp_cell_cols = tmp.cells.nb_vertices(0);
+				tmp_cells.resize(tmp.cells.nb(), tmp_cell_cols);
+				for (int ci = 0; ci < tmp.cells.nb(); ci++)
+				{
+					assert(tmp_cell_cols == tmp.cells.nb_vertices(ci));
+					for (int cj = 0; cj < tmp.cells.nb_vertices(ci); cj++)
+					{
+						tmp_cells(ci, cj) = tmp.cells.vertex(ci, cj);
+					}
+				}
+			}
+			else
+			{
+				assert(tmp.facets.nb());
+				int tmp_cell_cols = tmp.facets.nb_vertices(0);
+				tmp_cells.resize(tmp.facets.nb(), tmp_cell_cols);
+				for (int ci = 0; ci < tmp.facets.nb(); ci++)
+				{
+					assert(tmp_cell_cols == tmp.facets.nb_vertices(ci));
+					for (int cj = 0; cj < tmp.facets.nb_vertices(ci); cj++)
+					{
+						tmp_cells(ci, cj) = tmp.facets.vertex(ci, cj);
+					}
+				}
+			}
+
+			tmp_elements.resize(tmp_cells.rows());
+			for (int ci = 0; ci < tmp_cells.rows(); ci++)
+			{
+				tmp_elements[ci].resize(tmp_cells.cols());
+				for (int cj = 0; cj < tmp_cells.cols(); cj++)
+				{
+					tmp_elements[ci][cj] = tmp_cells(ci, cj);
+				}
+			}
+			tmp_weights.resize(tmp_cells.rows());
 		}
 
 		if (dim == 0)
@@ -280,7 +335,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 		}
 		else if (cell_cols != tmp_cells.cols())
 		{
-			logger().error("Mixed tet and hex meshes is not implemented!");
+			logger().error("Mixed tet and hex (tri and quad) meshes is not implemented!");
 			continue;
 		}
 
@@ -312,7 +367,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 
 		// Rotate around the models origin NOT the bodies center of mass.
 		// We could expose this choice as a "rotate_around" field.
-		MatrixNd R;
+		MatrixNd R = MatrixNd::Identity(dim, dim);
 		if (jmesh["rotation"].is_number())
 		{
 			assert(dim == 2);
@@ -320,9 +375,9 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 					deg2rad(jmesh["rotation"].get<double>()))
 					.toRotationMatrix();
 		}
-		else
+		else if (dim == 3) // input array rotation is only available for 3D
 		{
-			assert(dim == 3);
+			assert(jmesh["rotation"].is_array());
 			R = build_rotation_matrix(jmesh["rotation"], jmesh["rotation_mode"].get<std::string>());
 		}
 		tmp_vertices *= R.transpose(); // (R*Vᵀ)ᵀ = V*Rᵀ
@@ -363,8 +418,8 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 			Eigen::MatrixXi BF;
 			igl::boundary_facets(tmp_cells, BF);
 			// Every face that is not a boundary will have exactly two copies
-			assert(BF.rows() % 2 == 0);
-			int num_faces = (4 * tmp_cells.rows() - BF.rows()) / 2 + BF.rows();
+			int facets_per_cell = tmp_cells.cols();
+			int num_faces = (facets_per_cell * tmp_cells.rows() - BF.rows()) / 2 + BF.rows();
 			for (int fi = 0; fi < num_faces; fi++)
 			{
 				boundary_ids.push_back(jmesh["boundary_id"].get<int>());

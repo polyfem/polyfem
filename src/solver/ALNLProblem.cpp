@@ -79,6 +79,11 @@ namespace polyfem
 
 		Eigen::MatrixXd ddd;
 		compute_displaced_points(x, ddd);
+		if (ddd.cols() == 2)
+		{
+			ddd.conservativeResize(ddd.rows(), 3);
+			ddd.col(2).setZero();
+		}
 		igl::write_triangle_mesh("step.obj", ddd, state.boundary_triangles);
 
 #ifdef USE_DIV_BARRIER_STIFFNESS

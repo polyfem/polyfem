@@ -238,7 +238,6 @@ endif()
 
 # IPC
 option(IPC_TOOLKIT_BUILD_UNIT_TESTS  "Build unit-tests"      OFF)
-option(IPC_TOOLKIT_WITH_LOGGER       "Enables logger"        OFF)
 polyfem_download_ipc()
 add_subdirectory(${THIRD_PARTY_DIR}/ipc)
 target_link_libraries(polyfem PUBLIC IPCToolkit)

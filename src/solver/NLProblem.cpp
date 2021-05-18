@@ -212,8 +212,11 @@ namespace polyfem
 		compute_displaced_points(full0, displaced0);
 		compute_displaced_points(full1, displaced1);
 
-		igl::write_triangle_mesh("s0.obj", displaced0, state.boundary_triangles);
-		igl::write_triangle_mesh("s1.obj", displaced1, state.boundary_triangles);
+		if (displaced0.cols() == 3)
+		{
+			igl::write_triangle_mesh("s0.obj", displaced0, state.boundary_triangles);
+			igl::write_triangle_mesh("s1.obj", displaced1, state.boundary_triangles);
+		}
 
 		const double max_step = ipc::compute_collision_free_stepsize(displaced0, displaced1, state.boundary_edges, state.boundary_triangles);
 		polyfem::logger().trace("best step {}", max_step);
@@ -247,8 +250,11 @@ namespace polyfem
 		compute_displaced_points(full0, displaced0);
 		compute_displaced_points(full1, displaced1);
 
-		igl::write_triangle_mesh("0.obj", displaced0, state.boundary_triangles);
-		igl::write_triangle_mesh("1.obj", displaced1, state.boundary_triangles);
+		if (displaced0.cols() == 3)
+		{
+			igl::write_triangle_mesh("0.obj", displaced0, state.boundary_triangles);
+			igl::write_triangle_mesh("1.obj", displaced1, state.boundary_triangles);
+		}
 
 		const bool is_valid = ipc::is_step_collision_free(displaced0, displaced1, state.boundary_edges, state.boundary_triangles);
 
