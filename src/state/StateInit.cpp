@@ -233,7 +233,7 @@ namespace polyfem
 		geo_logger->set_pretty(false);
 	}
 
-	void State::init(const json &args_in)
+	void State::init(const json &args_in, const std::string &output_dir)
 	{
 		this->args.merge_patch(args_in);
 
@@ -292,6 +292,20 @@ namespace polyfem
 		{
 			logger().warn("n_refs > 0 with spline");
 		}
+
+		// Resolve all output paths
+		this->output_dir = output_dir;
+		args["output"] = resolve_output_path(args["output"]);
+		args["export"]["paraview"] = resolve_output_path(args["export"]["paraview"]);
+		args["export"]["vis_mesh"] = resolve_output_path(args["export"]["paraview"]);
+		args["export"]["wire_mesh"] = resolve_output_path(args["export"]["wire_mesh"]);
+		args["export"]["iso_mesh"] = resolve_output_path(args["export"]["iso_mesh"]);
+		args["export"]["nodes"] = resolve_output_path(args["export"]["nodes"]);
+		args["export"]["solution"] = resolve_output_path(args["export"]["solution"]);
+		args["export"]["surface"] = resolve_output_path(args["export"]["surface"]);
+		args["export"]["solution_mat"] = resolve_output_path(args["export"]["solution_mat"]);
+		args["export"]["stress_mat"] = resolve_output_path(args["export"]["stress_mat"]);
+		args["export"]["mises"] = resolve_output_path(args["export"]["mises"]);
 	}
 
 } // namespace polyfem

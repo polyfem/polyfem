@@ -19,6 +19,8 @@
 #include <igl/facet_adjacency_matrix.h>
 #include <igl/connected_components.h>
 
+#include <ghc/fs_std.hpp> // filesystem
+
 extern "C" size_t getPeakRSS();
 
 namespace polyfem
@@ -494,6 +496,15 @@ namespace polyfem
 				boundary_edges.row(i) << edges[i].first, edges[i].second;
 			}
 		}
+	}
+
+	std::string State::resolve_output_path(const std::string &path)
+	{
+		if (output_dir.empty() || path.empty() || fs::path(path).is_absolute())
+		{
+			return path;
+		}
+		return fs::weakly_canonical(fs::path(output_dir) / path).string();
 	}
 
 	void State::save_json()

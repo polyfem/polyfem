@@ -1008,8 +1008,8 @@ namespace polyfem
 			{
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
-				save_vtu("step_0.vtu", 0);
-				save_wire("step_0.obj");
+				save_vtu(resolve_output_path("step_0.vtu"), 0);
+				save_wire(resolve_output_path("step_0.obj"));
 			}
 
 			if (formulation() == "NavierStokes")

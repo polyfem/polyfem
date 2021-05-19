@@ -71,8 +71,8 @@ namespace polyfem
 			{
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
-				save_vtu(fmt::format("step_{:d}.vtu", t), time);
-				save_wire(fmt::format("step_{:d}.obj", t));
+				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), time);
+				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
 			}
 		}
 	}
@@ -135,8 +135,8 @@ namespace polyfem
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
 
-				save_vtu(fmt::format("step_{:d}.vtu", t), time);
-				save_wire(fmt::format("step_{:d}.obj", t));
+				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), time);
+				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
 			}
 		}
 	}
@@ -200,8 +200,8 @@ namespace polyfem
 			{
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
-				save_vtu(fmt::format("step_{:d}.vtu", t), dt * t);
-				save_wire(fmt::format("step_{:d}.obj", t));
+				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), dt * t);
+				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
 			}
 
 			logger().info("{}/{}", t, time_steps);
@@ -320,8 +320,8 @@ namespace polyfem
 			{
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
-				save_vtu("step_" + std::to_string(t) + ".vtu", dt * t);
-				save_wire("step_" + std::to_string(t) + ".obj");
+				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), dt * t);
+				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
 			}
 
 			logger().info("{}/{}", t, time_steps);

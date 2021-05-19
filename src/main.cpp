@@ -54,23 +54,27 @@ int main(int argc, char **argv)
 	CLI::App command_line{"polyfem"};
 	// Eigen::setNbThreads(1);
 
-	std::string path = "";
-	std::string output = "";
-	std::string vtu = "";
-	std::string screenshot = "";
-	std::string problem_name = "Franke";
+	// Input
+	std::string mesh_file = "";
 	std::string json_file = "";
 	std::string febio_file = "";
 
-	int n_refs = 0;
+	// Output
+	std::string output_dir = "";
+	std::string output_json = "";
+	std::string output_vtu = "";
+	std::string screenshot = "";
 
+	// Problem
+	std::string problem_name = "Franke";
 	std::string scalar_formulation = "Laplacian";
-	std::string tensor_formulation = "LinearElasticity"; //"SaintVenant";
-	// std::string mixed_formulation = "Stokes"; //"SaintVenant";
+	std::string tensor_formulation = "LinearElasticity"; // "SaintVenant";
+	// std::string mixed_formulation = "Stokes"; // "SaintVenant";
 	std::string solver = "";
 
 	int discr_order = 1;
 
+	int n_refs = 0;
 	bool use_splines = false;
 	bool count_flipped_els = false;
 	bool skip_normalization = false;
@@ -96,10 +100,10 @@ int main(int argc, char **argv)
 	double vis_mesh_res = -1;
 
 	command_line.add_option("-j,--json", json_file, "Simulation json file")->check(CLI::ExistingFile);
-	command_line.add_option("-m,--mesh", path, "Mesh path")->check(CLI::ExistingFile);
+	command_line.add_option("-m,--mesh", mesh_file, "Mesh path")->check(CLI::ExistingFile);
 	command_line.add_option("-b,--febio", febio_file, "FEBio file path")->check(CLI::ExistingFile);
 
-	//for debugging
+	// for debugging
 	command_line.add_option("--n_refs", n_refs, "Number of refinements");
 	command_line.add_flag("--not_norm", skip_normalization, "Skips mesh normalization");
 
@@ -113,7 +117,7 @@ int main(int argc, char **argv)
 	// command_line.add_set("--mform", mixed_formulation, std::set<std::string>(assembler.mixed_assemblers().begin(), assembler.mixed_assemblers().end()),  "Mixed formulation");
 
 	const std::vector<std::string> solvers = LinearSolver::availableSolvers();
-	command_line.add_set("--solver", solver, std::set<std::string>(solvers.begin(), solvers.end()), "Solver to use");
+	command_line.add_set("--solver", solver, std::set<std::string>(solvers.begin(), solvers.end()), "Linear solver to use");
 
 	command_line.add_flag("--al", use_al, "Use augmented lagrangian");
 	command_line.add_option("-q,-p", discr_order, "Discretization order");
@@ -133,11 +137,12 @@ int main(int argc, char **argv)
 	command_line.add_option("--min_component", min_component, "Mimimum number of faces in connected compoment for contact");
 
 	// disable out
-	command_line.add_flag("--cmd,--ngui", no_ui, "Runs in command line mode, no ui");
+	command_line.add_flag("--cmd,--ngui", no_ui, "Runs in command line mode, no GUI");
 
 	// IO
-	command_line.add_option("--output", output, "Output json file");
-	command_line.add_option("--vtu", vtu, "VTU output file");
+	command_line.add_option("-o,--output_dir", output_dir, "Directory for output files")->check(CLI::ExistingDirectory | CLI::NonexistentPath);
+	command_line.add_option("--output,--output_json", output_json, "Output json file");
+	command_line.add_option("--vtu,--output_vtu", output_vtu, "Output VTU file");
 	command_line.add_option("--screenshot", screenshot, "screenshot (disabled)");
 
 	command_line.add_flag("--quiet", is_quiet, "Disable cout for logging");
@@ -192,7 +197,7 @@ int main(int argc, char **argv)
 	}
 	else
 	{
-		in_args["mesh"] = path;
+		in_args["mesh"] = mesh_file;
 		in_args["force_linear_geometry"] = force_linear;
 		in_args["n_refs"] = n_refs;
 		in_args["problem"] = problem_name;
@@ -215,7 +220,7 @@ int main(int argc, char **argv)
 		in_args["discr_order"] = discr_order;
 		in_args["use_spline"] = use_splines;
 		in_args["count_flipped_els"] = count_flipped_els;
-		in_args["output"] = output;
+		in_args["output"] = output_json;
 		in_args["use_p_ref"] = p_ref;
 		in_args["iso_parametric"] = isoparametric;
 		in_args["serendipity"] = serendipity;
@@ -223,10 +228,10 @@ int main(int argc, char **argv)
 		in_args["nl_solver_rhs_steps"] = nl_solver_rhs_steps;
 		in_args["save_solve_sequence_debug"] = save_solve_sequence_debug;
 
-		if (!vtu.empty())
+		if (!output_vtu.empty())
 		{
-			in_args["export"]["vis_mesh"] = vtu;
-			in_args["export"]["wire_mesh"] = StringUtils::replace_ext(vtu, "obj");
+			in_args["export"]["vis_mesh"] = output_vtu;
+			in_args["export"]["wire_mesh"] = StringUtils::replace_ext(output_vtu, "obj");
 		}
 		if (!solver.empty())
 			in_args["solver_type"] = solver;
@@ -238,13 +243,18 @@ int main(int argc, char **argv)
 			in_args["export"]["material_params"] = true;
 	}
 
+	if (!output_dir.empty())
+	{
+		fs::create_directories(output_dir);
+	}
+
 #ifndef POLYFEM_NO_UI
 	if (no_ui)
 	{
 #endif
 		State state;
 		state.init_logger(log_file, log_level, is_quiet);
-		state.init(in_args);
+		state.init(in_args, output_dir);
 
 		if (!febio_file.empty())
 			state.load_febio(febio_file);

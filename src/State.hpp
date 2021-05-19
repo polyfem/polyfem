@@ -62,7 +62,7 @@ namespace polyfem
 		void init_logger(std::vector<spdlog::sink_ptr> &sinks, int log_level);
 
 		//initialize the polyfem solver with a json settings
-		void init(const json &args);
+		void init(const json &args, const std::string &output_dir = "");
 		// void init(const std::string &json);
 
 		//change log level, log_level 0 all message, 6 no message. 2 is info, 1 is debug
@@ -84,6 +84,9 @@ namespace polyfem
 
 		//solver settings
 		json args;
+
+		// Directory for output files
+		std::string output_dir;
 
 		//assembler, it dispatches call to the differnt assembers based on the formulation
 		AssemblerUtils assembler;
@@ -369,6 +372,9 @@ namespace polyfem
 
 		//returns a triangulated representation of the sideset. sidesets contains integers mapping to faces
 		void get_sidesets(Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXd &sidesets);
+
+		// Resolve path relative to output_dir if the path is not absolute
+		std::string resolve_output_path(const std::string &path);
 
 		//saves the output statistic to a stream
 		void save_json(std::ostream &out);
