@@ -297,7 +297,7 @@ namespace polyfem
 		this->output_dir = output_dir;
 		args["output"] = resolve_output_path(args["output"]);
 		args["export"]["paraview"] = resolve_output_path(args["export"]["paraview"]);
-		args["export"]["vis_mesh"] = resolve_output_path(args["export"]["paraview"]);
+		args["export"]["vis_mesh"] = resolve_output_path(args["export"]["vis_mesh"]);
 		args["export"]["wire_mesh"] = resolve_output_path(args["export"]["wire_mesh"]);
 		args["export"]["iso_mesh"] = resolve_output_path(args["export"]["iso_mesh"]);
 		args["export"]["nodes"] = resolve_output_path(args["export"]["nodes"]);
