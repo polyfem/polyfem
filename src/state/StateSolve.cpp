@@ -290,24 +290,47 @@ namespace polyfem
 
 		// if (args["use_al"] || args["has_collision"])
 		// {
-		ALNLProblem alnl_problem(*this, rhs_assembler, dt, args["dhat"], args["project_to_psd"], args["al_weight"]);
+		double al_weight = args["al_weight"];
+		const double max_al_weight = args["max_al_weight"];
+		ALNLProblem alnl_problem(*this, rhs_assembler, dt, args["dhat"], args["project_to_psd"], al_weight);
 		alnl_problem.init_timestep(sol, velocity, acceleration, dt);
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
-			cppoptlib::SparseNewtonDescentSolver<ALNLProblem> alnlsolver(solver_params(), solver_type(), precond_type());
-			alnlsolver.setLineSearch(args["line_search"]);
-			alnl_problem.init(sol);
-			tmp_sol = sol;
-			alnlsolver.minimize(alnl_problem, tmp_sol);
-			json alnl_solver_info;
-			alnlsolver.getInfo(alnl_solver_info);
-			sol = tmp_sol;
+			nl_problem.full_to_reduced(sol, tmp_sol);
+			assert(sol.size() == rhs.size());
+			assert(tmp_sol.size() < rhs.size());
+
+			while (!std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
+			{
+				alnl_problem.set_weight(al_weight);
+				logger().trace("Solving AL Problem");
+
+				cppoptlib::SparseNewtonDescentSolver<ALNLProblem> alnlsolver(solver_params(), solver_type(), precond_type());
+				alnlsolver.setLineSearch(args["line_search"]);
+				alnl_problem.init(sol);
+				tmp_sol = sol;
+				alnlsolver.minimize(alnl_problem, tmp_sol);
+				// json alnl_solver_info;
+				// alnlsolver.getInfo(alnl_solver_info);
+
+				sol = tmp_sol;
+				nl_problem.full_to_reduced(sol, tmp_sol);
+
+				al_weight *= 2;
+
+				if (al_weight >= max_al_weight)
+				{
+					logger().error("Unable to solve AL problem, weight {} >= {}, stopping", al_weight, max_al_weight);
+					break;
+				}
+			}
+
+			al_weight = args["al_weight"];
 
 			cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
 			nlsolver.setLineSearch(args["line_search"]);
 			nl_problem.init(sol);
-			nl_problem.full_to_reduced(sol, tmp_sol);
 			nlsolver.minimize(nl_problem, tmp_sol);
 			json nl_solver_info;
 			nlsolver.getInfo(nl_solver_info);
@@ -326,7 +349,7 @@ namespace polyfem
 
 			logger().info("{}/{}", t, time_steps);
 
-			solver_info = {{"al_solver", alnl_solver_info}, {"other", nl_solver_info}};
+			solver_info = {{"other", nl_solver_info}};
 		}
 		// }
 		// else
@@ -496,11 +519,10 @@ namespace polyfem
 								   formulation(), *problem,
 								   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
 
-		Eigen::VectorXd x, tmp_sol;
+		Eigen::VectorXd tmp_sol;
 
 		sol.resizeLike(rhs);
 		sol.setZero();
-		x = sol;
 
 		// if (args["use_al"] || args["has_collision"])
 		// {
@@ -560,28 +582,48 @@ namespace polyfem
 		}
 
 		ALNLProblem alnl_problem(*this, rhs_assembler, 1, args["dhat"], args["project_to_psd"], args["al_weight"]);
-		tmp_sol = x;
-
-		cppoptlib::SparseNewtonDescentSolver<ALNLProblem> alnlsolver(solver_params(), solver_type(), precond_type());
-		alnlsolver.setLineSearch(args["line_search"]);
-		alnl_problem.init(x);
-		alnlsolver.minimize(alnl_problem, tmp_sol);
-		json alnl_solver_info;
-		alnlsolver.getInfo(alnl_solver_info);
-
 		NLProblem nl_problem(*this, rhs_assembler, 1, args["dhat"], args["project_to_psd"]);
-		x = tmp_sol;
-		nl_problem.full_to_reduced(x, tmp_sol);
+
+		double al_weight = args["al_weight"];
+		const double max_al_weight = args["max_al_weight"];
+		nl_problem.full_to_reduced(sol, tmp_sol);
+
+		//TODO: maybe add linear solver here?
+
+		while (!std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
+		{
+			alnl_problem.set_weight(al_weight);
+			logger().trace("Solving AL Problem");
+
+			cppoptlib::SparseNewtonDescentSolver<ALNLProblem> alnlsolver(solver_params(), solver_type(), precond_type());
+			alnlsolver.setLineSearch(args["line_search"]);
+			alnl_problem.init(sol);
+			tmp_sol = sol;
+			alnlsolver.minimize(alnl_problem, tmp_sol);
+			// json alnl_solver_info;
+			// alnlsolver.getInfo(alnl_solver_info);
+
+			sol = tmp_sol;
+			nl_problem.full_to_reduced(sol, tmp_sol);
+
+			al_weight *= 2;
+
+			if (al_weight >= max_al_weight)
+			{
+				logger().error("Unable to solve AL problem, weight {} >= {}, stopping", al_weight, max_al_weight);
+				break;
+			}
+		}
 
 		cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
 		nlsolver.setLineSearch(args["line_search"]);
-		nl_problem.init(x);
+		nl_problem.init(sol);
 		nlsolver.minimize(nl_problem, tmp_sol);
 		json nl_solver_info;
 		nlsolver.getInfo(nl_solver_info);
 
 		nl_problem.reduced_to_full(tmp_sol, sol);
-		solver_info = {{"al_solver", alnl_solver_info}, {"other", nl_solver_info}};
+		solver_info = {{"other", nl_solver_info}};
 		// }
 		// else
 		// {

@@ -131,6 +131,7 @@ namespace polyfem
 			{"integral_constraints", 2},
 			{"cache_size", 1000000},
 			{"al_weight", 1e6},
+			{"max_al_weight", 1e11},
 
 			{"fit_nodes", false},
 

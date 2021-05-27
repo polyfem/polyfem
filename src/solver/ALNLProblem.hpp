@@ -19,6 +19,7 @@ namespace polyfem
 
 		ALNLProblem(State &state, const RhsAssembler &rhs_assembler, const double t, const double dhat, const bool project_to_psd, const double weight);
 		TVector initial_guess();
+		void set_weight(const double w) { weight_ = w; }
 
 		double value(const TVector &x) override;
 		void gradient_no_rhs(const TVector &x, Eigen::MatrixXd &gradv) override;
@@ -31,7 +32,7 @@ namespace polyfem
 #include <polyfem/EnableWarnings.hpp>
 
 	private:
-		const double weight_;
+		double weight_;
 		double stop_dist_;
 		THessian hessian_;
 		std::vector<int> not_boundary_;
