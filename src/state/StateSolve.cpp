@@ -59,7 +59,6 @@ namespace polyfem
 				current_rhs.block(prev_size, 0, n_larger, current_rhs.cols()).setZero();
 			}
 
-			assembler.clear_cache();
 			ns_solver.minimize(*this, bdf.alpha(), current_dt, prev_sol,
 							   velocity_stiffness, mixed_stiffness, pressure_stiffness,
 							   velocity_mass, current_rhs, c_sol);
@@ -482,7 +481,6 @@ namespace polyfem
 		const double viscosity = params.count("viscosity") ? double(params["viscosity"]) : 1.;
 		NavierStokesSolver ns_solver(viscosity, solver_params(), build_json_params(), solver_type(), precond_type());
 		Eigen::VectorXd x;
-		assembler.clear_cache();
 		json rhs_solver_params = args["rhs_solver_params"];
 		rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 
@@ -734,8 +732,6 @@ namespace polyfem
 		// 			} while (t >= 1);
 		// 			continue;
 		// 		}
-
-		// 		assembler.clear_cache();
 
 		// 		if (args["nl_solver"] == "newton")
 		// 		{

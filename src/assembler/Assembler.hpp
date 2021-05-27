@@ -99,9 +99,6 @@ namespace polyfem
 		inline LocalAssembler &local_assembler() { return local_assembler_; }
 		inline const LocalAssembler &local_assembler() const { return local_assembler_; }
 
-		//unused
-		void clear_cache() {}
-
 	private:
 		LocalAssembler local_assembler_;
 	};

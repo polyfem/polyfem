@@ -31,7 +31,6 @@ namespace polyfem
 		const Eigen::MatrixXd &rhs, Eigen::VectorXd &x)
 	{
 		const auto &assembler = state.assembler;
-		// assembler.clear_cache();
 
 		auto solver = LinearSolver::create(solver_type, precond_type);
 		solver->setParameters(solver_param);

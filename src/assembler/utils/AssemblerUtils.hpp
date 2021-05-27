@@ -154,9 +154,6 @@ namespace polyfem
 		static std::vector<std::string> tensor_assemblers();
 		// const std::vector<std::string> &mixed_assemblers() const { return mixed_assemblers_; }
 
-		//not used
-		void clear_cache();
-
 		//utility to merge 3 blocks of mixed matrices, A=velocity_stiffness, B=mixed_stiffness, and C=pressure_stiffness
 		// A   B
 		// B^T C

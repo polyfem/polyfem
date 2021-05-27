@@ -36,10 +36,7 @@ namespace polyfem
 
 	bool AssemblerUtils::is_tensor(const std::string &assembler)
 	{
-		return assembler == "LinearElasticity" || assembler == "HookeLinearElasticity" ||
-			   assembler == "SaintVenant" || assembler == "NeoHookean" || assembler == "MultiModels" /*|| assembler == "Ogden"*/ ||
-			   assembler == "Stokes" || assembler == "IncompressibleLinearElasticity" ||
-			   assembler == "NavierStokes";
+		return assembler == "LinearElasticity" || assembler == "HookeLinearElasticity" || assembler == "SaintVenant" || assembler == "NeoHookean" || assembler == "MultiModels" /*|| assembler == "Ogden"*/ || assembler == "Stokes" || assembler == "IncompressibleLinearElasticity" || assembler == "NavierStokes";
 	}
 	bool AssemblerUtils::is_mixed(const std::string &assembler)
 	{
@@ -48,8 +45,7 @@ namespace polyfem
 
 	bool AssemblerUtils::is_solution_displacement(const std::string &assembler)
 	{
-		return assembler == "LinearElasticity" || assembler == "HookeLinearElasticity" ||
-			   assembler == "SaintVenant" || assembler == "NeoHookean" || assembler == "MultiModels" || /*assembler == "Ogden" ||*/
+		return assembler == "LinearElasticity" || assembler == "HookeLinearElasticity" || assembler == "SaintVenant" || assembler == "NeoHookean" || assembler == "MultiModels" || /*assembler == "Ogden" ||*/
 			   assembler == "IncompressibleLinearElasticity";
 	}
 
@@ -428,15 +424,6 @@ namespace polyfem
 			assert(false);
 			return laplacian_.local_assembler().kernel(dim, r);
 		}
-	}
-
-	void AssemblerUtils::clear_cache()
-	{
-		saint_venant_elasticity_.clear_cache();
-		neo_hookean_elasticity_.clear_cache();
-		multi_models_elasticity_.clear_cache();
-		// ogden_elasticity_.clear_cache();
-		linear_elasticity_energy_.clear_cache();
 	}
 
 	void AssemblerUtils::init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus)

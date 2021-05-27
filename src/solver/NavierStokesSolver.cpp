@@ -28,7 +28,6 @@ namespace polyfem
 	void NavierStokesSolver::minimize(const State &state, const Eigen::MatrixXd &rhs, Eigen::VectorXd &x)
 	{
 		const auto &assembler = state.assembler;
-		// assembler.clear_cache();
 
 		// problem_params["viscosity"] = 1;
 		// assembler.set_parameters(problem_params);
