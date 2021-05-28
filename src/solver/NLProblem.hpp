@@ -6,6 +6,8 @@
 
 #include <polyfem/MatrixUtils.hpp>
 
+#include <ipc/collision_constraint.hpp>
+
 #include <cppoptlib/problem.h>
 
 namespace polyfem
@@ -104,6 +106,7 @@ namespace polyfem
 
 		virtual void update_quantities(const double t, const TVector &x);
 		void substepping(const double t);
+		void solution_changed(const TVector &newX);
 
 		const Eigen::MatrixXd &current_rhs();
 
@@ -133,6 +136,8 @@ namespace polyfem
 
 		double dt;
 		TVector x_prev, v_prev, a_prev;
+
+		ipc::Constraints _constraint_set;
 
 		void compute_cached_stiffness();
 		void update_barrier_stiffness(const TVector &full);

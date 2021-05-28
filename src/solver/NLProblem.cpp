@@ -330,9 +330,7 @@ namespace polyfem
 			Eigen::MatrixXd displaced;
 			compute_displaced_points(full, displaced);
 
-			ipc::Constraints constraint_set;
-			ipc::construct_constraint_set(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, _dhat, constraint_set);
-			collision_energy = ipc::compute_barrier_potential(displaced, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat);
+			collision_energy = ipc::compute_barrier_potential(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat);
 
 			polyfem::logger().trace("collision_energy {}", collision_energy);
 		}
@@ -403,14 +401,12 @@ namespace polyfem
 			Eigen::MatrixXd displaced;
 			compute_displaced_points(full, displaced);
 
-			ipc::Constraints constraint_set;
-			ipc::construct_constraint_set(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, _dhat, constraint_set);
 #ifdef USE_DIV_BARRIER_STIFFNESS
-			grad += ipc::compute_barrier_potential_gradient(displaced, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat);
+			grad += ipc::compute_barrier_potential_gradient(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat);
 #else
-			grad += _barrier_stiffness * ipc::compute_barrier_potential_gradient(displaced, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat);
+			grad += _barrier_stiffness * ipc::compute_barrier_potential_gradient(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat);
 #endif
-			// logger().trace("ipc grad norm {}", ipc::compute_barrier_potential_gradient(displaced, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat).norm());
+			// logger().trace("ipc grad norm {}", ipc::compute_barrier_potential_gradient(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat).norm());
 		}
 
 		assert(grad.size() == full_size);
@@ -531,16 +527,13 @@ namespace polyfem
 			polyfem::logger().trace("\tdisplace pts time {}s", timeri.getElapsedTimeInSec());
 			timeri.start();
 
-			ipc::Constraints constraint_set;
-			ipc::construct_constraint_set(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, _dhat, constraint_set);
-
 			timeri.stop();
 			polyfem::logger().trace("\tconstraint set time {}s", timeri.getElapsedTimeInSec());
 			timeri.start();
 #ifdef USE_DIV_BARRIER_STIFFNESS
-			hessian += ipc::compute_barrier_potential_hessian(displaced, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat, project_to_psd);
+			hessian += ipc::compute_barrier_potential_hessian(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat, project_to_psd);
 #else
-			hessian += _barrier_stiffness * ipc::compute_barrier_potential_hessian(displaced, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat, project_to_psd);
+			hessian += _barrier_stiffness * ipc::compute_barrier_potential_hessian(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat, project_to_psd);
 #endif
 			timeri.stop();
 			polyfem::logger().trace("\tonly ipc hessian time {}s", timeri.getElapsedTimeInSec());
@@ -565,6 +558,28 @@ namespace polyfem
 		reduced_to_full_aux(state, full_size, reduced_size, reduced, current_rhs(), full);
 	}
 
+	void NLProblem::solution_changed(const TVector &newX)
+	{
+		if (disable_collision)
+			return;
+		if (!state.args["has_collision"])
+			return;
+
+		Eigen::MatrixXd full;
+		if (newX.size() == reduced_size)
+			reduced_to_full(newX, full);
+		else
+			full = newX;
+
+		assert(full.size() == full_size);
+
+		Eigen::MatrixXd displaced;
+
+		compute_displaced_points(full, displaced);
+
+		ipc::construct_constraint_set(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, _dhat, _constraint_set);
+	}
+
 	void NLProblem::post_step(const TVector &x0)
 	{
 		if (disable_collision)
@@ -583,9 +598,8 @@ namespace polyfem
 		Eigen::MatrixXd displaced;
 
 		compute_displaced_points(full, displaced);
-		ipc::Constraints constraint_set;
-		ipc::construct_constraint_set(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, _dhat, constraint_set);
-		const double dist_sqr = ipc::compute_minimum_distance(displaced, state.boundary_edges, state.boundary_triangles, constraint_set);
+
+		const double dist_sqr = ipc::compute_minimum_distance(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set);
 		polyfem::logger().trace("min_dist {}", sqrt(dist_sqr));
 		// igl::write_triangle_mesh("step.obj", displaced, state.boundary_triangles);
 

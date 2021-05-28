@@ -88,19 +88,28 @@ namespace cppoptlib
 
 			const double c = 0.5;
 			const double tau = 0.5;
+			const double f_in = objFunc.value(x);
+
+			TVector grad(x.rows());
+			objFunc.gradient(x, grad);
 
 			TVector x1 = x + alpha_init * searchDir;
+			// time.start();
+			objFunc.solution_changed(x1);
+			// time.stop();
+			// polyfem::logger().trace("\tconstrain set update in LS {}s", time.getElapsedTimeInSec());
 			double alpha = std::min(alpha_init, objFunc.max_step_size(x, x1));
 			// polyfem::logger().trace("inital step {}", step_size);
 			if (alpha != alpha_init)
 			{
 				x1 = x + alpha * searchDir;
+				// time.start();
+				objFunc.solution_changed(x1);
+				// time.stop();
+				// polyfem::logger().trace("\tconstrain set update in LS {}s", time.getElapsedTimeInSec());
 			}
-			double f = objFunc.value(x1);
-			const double f_in = objFunc.value(x);
 
-			TVector grad(x.rows());
-			objFunc.gradient(x, grad);
+			double f = objFunc.value(x1);
 
 			const double Cache = c * grad.dot(searchDir);
 
@@ -114,6 +123,12 @@ namespace cppoptlib
 			{
 				alpha *= tau;
 				x1 = x + alpha * searchDir;
+
+				// time.start();
+				objFunc.solution_changed(x1);
+				// time.stop();
+				// polyfem::logger().trace("\tconstrain set update in LS {}s", time.getElapsedTimeInSec());
+
 				f = objFunc.value(x1);
 
 				cur_iter++;
@@ -142,6 +157,11 @@ namespace cppoptlib
 			TVector new_x = x + grad;
 			double step_size = 1;
 
+			// time.start();
+			objFunc.solution_changed(new_x);
+			// time.stop();
+			// polyfem::logger().trace("\tconstrain set update in LS {}s", time.getElapsedTimeInSec());
+
 			// Find step that does not result in nan or infinite energy
 			while (step_size > MIN_STEP_SIZE && cur_iter < MAX_STEP_SIZE_ITER)
 			{
@@ -152,6 +172,11 @@ namespace cppoptlib
 				{
 					step_size /= 2.;
 					new_x = x + step_size * grad;
+
+					// time.start();
+					objFunc.solution_changed(new_x);
+					// time.stop();
+					// polyfem::logger().trace("\tconstrain set update in LS {}s", time.getElapsedTimeInSec());
 				}
 				else
 				{
@@ -175,6 +200,10 @@ namespace cppoptlib
 			}
 			step_size *= tmp; // TODO: Safeguard this with a round down
 			new_x = x + step_size * grad;
+			// time.start();
+			objFunc.solution_changed(new_x);
+			// time.stop();
+			// polyfem::logger().trace("\tconstrain set update in LS {}s", time.getElapsedTimeInSec());
 
 			// Find step that reduces the energy
 			while (step_size > MIN_STEP_SIZE && cur_iter < MAX_STEP_SIZE_ITER)
@@ -189,6 +218,11 @@ namespace cppoptlib
 					new_x = x + step_size * grad;
 					//max_step_size should return a collision free step
 					// assert(objFunc.is_step_collision_free(x, new_x));
+
+					// time.start();
+					objFunc.solution_changed(new_x);
+					// time.stop();
+					// polyfem::logger().trace("\tconstrain set update in LS {}s", time.getElapsedTimeInSec());
 				}
 				else
 				{
@@ -211,6 +245,10 @@ namespace cppoptlib
 				polyfem::logger().error("step is not collision free!!");
 				step_size /= 2;
 				new_x = x + step_size * grad;
+				// time.start();
+				objFunc.solution_changed(new_x);
+				// time.stop();
+				// polyfem::logger().trace("\tconstrain set update in LS {}s", time.getElapsedTimeInSec());
 			}
 			assert(objFunc.is_step_collision_free(x, new_x));
 
@@ -256,6 +294,11 @@ namespace cppoptlib
 			double old_energy = std::nan("");
 			double first_energy = std::nan("");
 			error_code_ = 0;
+
+			time.start();
+			objFunc.solution_changed(x0);
+			time.stop();
+			polyfem::logger().debug("\tconstrain set update {}s", time.getElapsedTimeInSec());
 
 			time.start();
 			objFunc.gradient(x0, grad);
@@ -369,6 +412,12 @@ namespace cppoptlib
 				line_search_failed = false;
 
 				x0 += rate * delta_x;
+
+				time.start();
+				objFunc.solution_changed(x0);
+				time.stop();
+				polyfem::logger().debug("\tconstrain set update {}s", time.getElapsedTimeInSec());
+
 				time.start();
 				objFunc.gradient(x0, grad);
 				time.stop();
