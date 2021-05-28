@@ -399,6 +399,10 @@ namespace cppoptlib
 					break;
 				}
 
+				time.stop();
+				polyfem::logger().debug("\tlinesearch time {}s", time.getElapsedTimeInSec());
+				linesearch_time += time.getElapsedTimeInSec();
+
 				if (std::isnan(rate))
 				{
 					if (!line_search_failed)
@@ -424,9 +428,6 @@ namespace cppoptlib
 
 				polyfem::logger().debug("\tgrad time {}s norm: {}", time.getElapsedTimeInSec(), grad.norm());
 				grad_time += time.getElapsedTimeInSec();
-
-				polyfem::logger().debug("\tlinesearch time {}s", time.getElapsedTimeInSec());
-				linesearch_time += time.getElapsedTimeInSec();
 
 				++this->m_current.iterations;
 
