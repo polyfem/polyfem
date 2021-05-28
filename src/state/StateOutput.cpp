@@ -19,6 +19,8 @@
 #include <igl/facet_adjacency_matrix.h>
 #include <igl/connected_components.h>
 
+#include <ipc/utils/faces_to_edges.hpp>
+
 #include <ghc/fs_std.hpp> // filesystem
 
 extern "C" size_t getPeakRSS();
@@ -180,7 +182,8 @@ namespace polyfem
 				{
 					if (lb.type() == BoundaryType::Quad)
 					{
-						const auto map = [n_samples, size](int i, int j) { return j * n_samples + i + size; };
+						const auto map = [n_samples, size](int i, int j)
+						{ return j * n_samples + i + size; };
 
 						for (int j = 0; j < n_samples - 1; ++j)
 						{
@@ -203,7 +206,8 @@ namespace polyfem
 								++index;
 							}
 						}
-						const auto map = [mapp, n_samples](int i, int j) { return mapp[j * n_samples + i]; };
+						const auto map = [mapp, n_samples](int i, int j)
+						{ return mapp[j * n_samples + i]; };
 
 						for (int j = 0; j < n_samples - 1; ++j)
 						{
@@ -313,6 +317,7 @@ namespace polyfem
 
 	void State::extract_boundary_mesh()
 	{
+		boundary_faces_to_edges.resize(0, 0);
 		if (mesh->is_volume())
 		{
 			boundary_nodes_pos.resize(n_bases, 3);
@@ -448,6 +453,8 @@ namespace polyfem
 
 			if (boundary_triangles.rows() > 0)
 				igl::edges(boundary_triangles, boundary_edges);
+
+			boundary_faces_to_edges = ipc::faces_to_edges(boundary_triangles, boundary_edges);
 
 			// igl::write_triangle_mesh("test.obj", boundary_nodes_pos, boundary_triangles);
 		}
