@@ -250,47 +250,47 @@ namespace polyfem
             logger().info("Prefactorization ends!");
         }
 
-        void initialize_solution(const polyfem::Mesh& mesh,
-        const std::vector<polyfem::ElementBases>& gbases, 
-        const std::vector<polyfem::ElementBases>& bases, 
-        const std::shared_ptr<Problem> problem, 
-        Eigen::MatrixXd& sol, 
-        const Eigen::MatrixXd& local_pts)
-        {
-#ifdef POLYFEM_WITH_TBB
-            tbb::parallel_for(0, n_el, 1, [&](int e)
-#else
-            for (int e = 0; e < n_el; ++e)
-#endif
-            {
-                // to compute global position with barycentric coordinate
-                ElementAssemblyValues gvals;
-                gvals.compute(e, dim == 3, local_pts, gbases[e], gbases[e]);
+//         void initialize_solution(const polyfem::Mesh& mesh,
+//         const std::vector<polyfem::ElementBases>& gbases, 
+//         const std::vector<polyfem::ElementBases>& bases, 
+//         const std::shared_ptr<Problem> problem, 
+//         Eigen::MatrixXd& sol, 
+//         const Eigen::MatrixXd& local_pts)
+//         {
+// #ifdef POLYFEM_WITH_TBB
+//             tbb::parallel_for(0, n_el, 1, [&](int e)
+// #else
+//             for (int e = 0; e < n_el; ++e)
+// #endif
+//             {
+//                 // to compute global position with barycentric coordinate
+//                 ElementAssemblyValues gvals;
+//                 gvals.compute(e, dim == 3, local_pts, gbases[e], gbases[e]);
 
-                for (int i = 0; i < local_pts.rows(); i++)
-                {
-                    Eigen::MatrixXd pts = Eigen::MatrixXd::Zero(1, dim);
-                    for (int j = 0; j < shape; j++)
-                    {
-                        auto vertex = mesh.point(mesh.cell_vertex_(e, j));
-                        for (int d = 0; d < dim; d++)
-                        {
-                            pts(0, d) += vertex(d) * gvals.basis_values[j].val(i);
-                        }
-                    }
-                    Eigen::MatrixXd val;
-                    problem->initial_solution(mesh, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>::Zero(1,1), pts, val);
-                    int global = bases[e].bases[i].global()[0].index;
-                    for (int d = 0; d < dim; d++)
-                    {
-                        sol(global * dim + d) = val(d);
-                    }
-                }
-            }
-#ifdef POLYFEM_WITH_TBB
-            );
-#endif
-        }
+//                 for (int i = 0; i < local_pts.rows(); i++)
+//                 {
+//                     Eigen::MatrixXd pts = Eigen::MatrixXd::Zero(1, dim);
+//                     for (int j = 0; j < shape; j++)
+//                     {
+//                         auto vertex = mesh.point(mesh.cell_vertex_(e, j));
+//                         for (int d = 0; d < dim; d++)
+//                         {
+//                             pts(0, d) += vertex(d) * gvals.basis_values[j].val(i);
+//                         }
+//                     }
+//                     Eigen::MatrixXd val;
+//                     problem->initial_solution(mesh, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>::Zero(1,1), pts, val);
+//                     int global = bases[e].bases[i].global()[0].index;
+//                     for (int d = 0; d < dim; d++)
+//                     {
+//                         sol(global * dim + d) = val(d);
+//                     }
+//                 }
+//             }
+// #ifdef POLYFEM_WITH_TBB
+//             );
+// #endif
+//         }
 
         int handle_boundary_advection(RowVectorNd& pos)
         {
@@ -432,18 +432,9 @@ namespace polyfem
             for (int e = 0; e < n_el; ++e)
 #endif
             {
-                // geometry vertices of element e
-                std::vector<RowVectorNd> vert(shape, RowVectorNd::Zero(1, dim));
-                for (int i = 0; i < shape; i++)
-                {
-                    int tmp = mesh.cell_vertex_(e, i);
-                    for(int d = 0; d < dim; d++)
-                        vert[i](d) = mesh.point(tmp)(d);
-                }
-
                 // to compute global position with barycentric coordinate
-                ElementAssemblyValues gvals;
-                gvals.compute(e, dim == 3, local_pts, gbases[e], gbases[e]);
+                Eigen::MatrixXd mapped;
+                gbases[e].eval_geom_mapping(local_pts, mapped);
 
                 for (int i = 0; i < local_pts.rows(); i++)
                 {
@@ -458,10 +449,9 @@ namespace polyfem
 
                     // global position of this FEM node
                     RowVectorNd pos_ = RowVectorNd::Zero(1, dim);
-                    for (int j = 0; j < shape; j++)
-                        pos_ += gvals.basis_values[j].val(i) * vert[j];
+                    for (int d = 0; d < dim; d++)
+                        pos_(d) = mapped(i, d) - vel_(d) * dt;
 
-                    pos_ = pos_ - vel_ * dt;
                     Eigen::MatrixXd local_pos;
                     interpolator( gbases, bases, pos_, vel_, local_pos, sol);
 
@@ -650,26 +640,21 @@ namespace polyfem
                         }
                     }
 
-                    // geometry vertices of element e
-                    std::vector<RowVectorNd> vert(shape);
                     for (int i = 0; i < shape; ++i)
-                    {
                         cellI_particle[e * ppe + i] = e;
-                        vert[i] = mesh.point(mesh.cell_vertex_(e, i));
-                    }
 
                     // compute global position and velocity of particles
                     // construct interpolant (linear for position)
-                    ElementAssemblyValues gvals;
-                    gvals.compute(e, dim == 3, local_pts_particle, gbases[e], gbases[e]);
+                    Eigen::MatrixXd mapped;
+                    gbases[e].eval_geom_mapping(local_pts_particle, mapped);
                     // construct interpolant (for velocity)
                     ElementAssemblyValues vals;
                     vals.compute(e, dim == 3, local_pts_particle, bases[e], gbases[e]); // possibly higher-order
                     for (int j = 0; j < ppe; ++j) {
                         position_particle[ppe * e + j].setZero(1, dim);
-                        for (int i = 0; i < shape; ++i)
+                        for (int d = 0; d < dim; d++)
                         {
-                            position_particle[ppe * e + j] += gvals.basis_values[i].val(j) * vert[i];
+                            position_particle[ppe * e + j](d) = mapped(j, d);
                         }
                         
                         velocity_particle[e * ppe + j].setZero(1, dim);
@@ -741,12 +726,6 @@ namespace polyfem
                         continue;
                     }
 
-                    // geometry vertices of element e
-                    std::vector<RowVectorNd> vert(shape);
-                    for (int i = 0; i < shape; ++i)
-                    {
-                        vert[i] = mesh.point(mesh.cell_vertex_(e, i));
-                    }
                     while (counter[e] < ppe) {
                         int pI = redundantPI.back();
                         redundantPI.pop_back();
@@ -767,13 +746,10 @@ namespace polyfem
 
                         // compute global position and velocity of particles
                         // construct interpolant (linear for position)
-                        ElementAssemblyValues gvals;
-                        gvals.compute(e, dim == 3, local_pts_particle, gbases[e], gbases[e]);
-                        position_particle[pI].setZero(1, dim);
-                        for (int i = 0; i < shape; ++i)
-                        {
-                            position_particle[pI] += gvals.basis_values[i].val(0) * vert[i];
-                        }
+                        Eigen::MatrixXd mapped;
+                        gbases[e].eval_geom_mapping(local_pts_particle, mapped);
+                        for (int d = 0; d < dim; d++)
+                            position_particle[pI](d) = mapped(0, d);
 
                         // construct interpolant (for velocity)
                         ElementAssemblyValues vals;
@@ -1030,21 +1006,16 @@ namespace polyfem
             for(int e = 0; e < n_el; e++)
 #endif
             {
-                ElementAssemblyValues gvals;
-                gvals.compute(e, dim == 3, local_pts, gbases[e], gbases[e]);
+                Eigen::MatrixXd mapped;
+                gbases[e].eval_geom_mapping(local_pts, mapped);
 
                 for (int local_idx = 0; local_idx < bases[e].bases.size(); local_idx++)
                 {
                     int global_idx = bases[e].bases[local_idx].global()[0].index;
 
                     Eigen::MatrixXd pos = Eigen::MatrixXd::Zero(1, dim);
-                    for (int j = 0; j < shape; j++)
-                    {
-                        for (int d = 0; d < dim; d++)
-                        {
-                            pos(0, d) += gvals.basis_values[j].val(local_idx) * V(T(e, j), d);
-                        }
-                    }
+                    for (int d = 0; d < dim; d++)
+                        pos(0, d) = mapped(local_idx, d);
 
                     Eigen::MatrixXd val;
                     problem->rhs(assembler, std::string(), pos, time, val);
@@ -1197,8 +1168,8 @@ namespace polyfem
             for(int d = 0; d < dim; d++)
             {
                 pos_int(d) = floor((pos(d) - min_domain(d)) / (max_domain(d) - min_domain(d)) * hash_table_cell_num[d]);
-                if(pos_int(d) < 0) pos_int(d) = 0;
-                else if(pos_int(d) >= hash_table_cell_num[d]) pos_int(d) = hash_table_cell_num[d] - 1;
+                if(pos_int(d) < 0) return -1;
+                else if(pos_int(d) >= hash_table_cell_num[d]) return -1;
             }
 
             long idx = 0, dim_num = 1;
@@ -1351,12 +1322,6 @@ namespace polyfem
         {
             local_pos = Eigen::MatrixXd::Zero(1, dim);
             
-            std::vector<RowVectorNd> vert(shape,RowVectorNd::Zero(1, dim));
-            for (int i = 0; i < shape; i++)
-            {
-                for(int d = 0; d < dim; d++)
-                    vert[i](d) = V(T(elem_idx, i), d);
-            }
             // if(shape == 4 && dim == 2 && outside_quad(vert, pos))
             // {
             //     local_pos(0) = local_pos(1) = -1;
@@ -1369,31 +1334,14 @@ namespace polyfem
             {
                 res = -pos;
 
-                Eigen::MatrixXd global_pos;
-                compute_gbase_val(elem_idx, local_pos, global_pos);
-                res += global_pos;
+                Eigen::MatrixXd mapped;
+                gbase.eval_geom_mapping(local_pos, mapped);
+                for (int d = 0; d < dim; d++)
+                    res(d) += mapped(0, d);
 
-                Eigen::MatrixXd jacobi;
-                compute_gbase_jacobi(elem_idx, local_pos, jacobi);
-                
-                // ElementAssemblyValues gvals_;
-                // gvals_.compute(elem_idx, dim == 3, local_pos, gbase, gbase);
-                // for (int i = 0; i < shape; i++)
-                // {
-                //     res += vert[i] * gvals_.basis_values[i].val(0);
-                // }
-
-                // Eigen::MatrixXd jacobi = Eigen::MatrixXd::Zero(dim, dim);
-                // for (int d1 = 0; d1 < dim; d1++)
-                // {
-                //     for (int d2 = 0; d2 < dim; d2++)
-                //     {
-                //         for (int i = 0; i < shape; i++)
-                //         {
-                //             jacobi(d1, d2) += vert[i](d1) * gvals_.basis_values[i].grad(0, d2);
-                //         }
-                //     }
-                // }
+                std::vector<Eigen::MatrixXd> grads;
+                gbase.eval_geom_mapping_grads(local_pos, grads);
+                Eigen::MatrixXd jacobi = grads[0].transpose();
 
                 Eigen::VectorXd delta = jacobi.colPivHouseholderQr().solve(res.transpose());
                 for (int d = 0; d < dim; d++)
@@ -1401,6 +1349,8 @@ namespace polyfem
                     local_pos(d) -= delta(d);
                 }
                 iter_times++;
+                if (shape == dim + 1)
+                    break;
             }
             while(res.norm() > 1e-12 && iter_times < max_iter);
 
