@@ -138,9 +138,10 @@ namespace polyfem
 
 		StiffnessMatrix nl_matrix;
 		StiffnessMatrix total_matrix;
+		SpareMatrixCache mat_cache;
 
 		time.start();
-		assembler.assemble_energy_hessian(state.formulation() + "Picard", state.mesh->is_volume(), state.n_bases, false, state.bases, gbases, state.ass_vals_cache, x, nl_matrix);
+		assembler.assemble_energy_hessian(state.formulation() + "Picard", state.mesh->is_volume(), state.n_bases, false, state.bases, gbases, state.ass_vals_cache, x, mat_cache, nl_matrix);
 		AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, state.use_avg_pressure,
 											 (velocity_stiffness + nl_matrix) + velocity_mass, mixed_stiffness, pressure_stiffness,
 											 total_matrix);
@@ -166,7 +167,7 @@ namespace polyfem
 			time.start();
 			if (formulation != state.formulation() + "Picard")
 			{
-				assembler.assemble_energy_hessian(formulation, state.mesh->is_volume(), state.n_bases, false, state.bases, gbases, state.ass_vals_cache, x, nl_matrix);
+				assembler.assemble_energy_hessian(formulation, state.mesh->is_volume(), state.n_bases, false, state.bases, gbases, state.ass_vals_cache, x, mat_cache, nl_matrix);
 				AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, state.use_avg_pressure,
 													 (velocity_stiffness + nl_matrix) + velocity_mass, mixed_stiffness, pressure_stiffness,
 													 total_matrix);
@@ -182,7 +183,7 @@ namespace polyfem
 			//TODO check for nans
 
 			time.start();
-			assembler.assemble_energy_hessian(state.formulation() + "Picard", state.mesh->is_volume(), state.n_bases, false, state.bases, gbases, state.ass_vals_cache, x, nl_matrix);
+			assembler.assemble_energy_hessian(state.formulation() + "Picard", state.mesh->is_volume(), state.n_bases, false, state.bases, gbases, state.ass_vals_cache, x, mat_cache, nl_matrix);
 			AssemblerUtils::merge_mixed_matrices(state.n_bases, state.n_pressure_bases, problem_dim, state.use_avg_pressure,
 												 (velocity_stiffness + nl_matrix) + velocity_mass, mixed_stiffness, pressure_stiffness,
 												 total_matrix);

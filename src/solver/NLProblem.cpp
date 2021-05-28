@@ -476,7 +476,7 @@ namespace polyfem
 			hessian = cached_stiffness;
 		}
 		else
-			assembler.assemble_energy_hessian(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, project_to_psd, state.bases, gbases, state.ass_vals_cache, full, hessian);
+			assembler.assemble_energy_hessian(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, project_to_psd, state.bases, gbases, state.ass_vals_cache, full, mat_cache, hessian);
 		if (is_time_dependent)
 		{
 			hessian *= dt * dt; // / 2.0;

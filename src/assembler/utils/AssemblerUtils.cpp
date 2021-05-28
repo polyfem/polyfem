@@ -220,21 +220,22 @@ namespace polyfem
 												 const std::vector<ElementBases> &gbases,
 												 const AssemblyValsCache &cache,
 												 const Eigen::MatrixXd &displacement,
+												 SpareMatrixCache &mat_cache,
 												 StiffnessMatrix &hessian) const
 	{
 		if (assembler == "SaintVenant")
-			saint_venant_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, displacement, hessian);
+			saint_venant_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, displacement, mat_cache, hessian);
 		else if (assembler == "NeoHookean")
-			neo_hookean_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, displacement, hessian);
+			neo_hookean_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, displacement, mat_cache, hessian);
 		else if (assembler == "MultiModels")
-			multi_models_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, displacement, hessian);
+			multi_models_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, displacement, mat_cache, hessian);
 
 		else if (assembler == "NavierStokesPicard")
-			navier_stokes_velocity_picard_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, displacement, hessian);
+			navier_stokes_velocity_picard_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, displacement, mat_cache, hessian);
 		else if (assembler == "NavierStokes")
-			navier_stokes_velocity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, displacement, hessian);
+			navier_stokes_velocity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, displacement, mat_cache, hessian);
 		//else if(assembler == "Ogden")
-		//	ogden_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, displacement, hessian);
+		//	ogden_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, displacement, mat_cache, hessian);
 		else
 			return;
 	}

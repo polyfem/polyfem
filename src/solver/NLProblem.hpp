@@ -4,6 +4,8 @@
 #include <polyfem/RhsAssembler.hpp>
 #include <polyfem/State.hpp>
 
+#include <polyfem/MatrixUtils.hpp>
+
 #include <cppoptlib/problem.h>
 
 namespace polyfem
@@ -118,6 +120,7 @@ namespace polyfem
 		AssemblerUtils &assembler;
 		Eigen::MatrixXd _current_rhs;
 		StiffnessMatrix cached_stiffness;
+		SpareMatrixCache mat_cache;
 
 		const int full_size, reduced_size;
 		double t;

@@ -20,6 +20,8 @@
 #include <polyfem/NavierStokes.hpp>
 #include <polyfem/IncompressibleLinElast.hpp>
 
+#include <polyfem/MatrixUtils.hpp>
+
 #include <vector>
 
 namespace polyfem
@@ -95,6 +97,7 @@ namespace polyfem
 									 const std::vector<ElementBases> &gbases,
 									 const AssemblyValsCache &cache,
 									 const Eigen::MatrixXd &displacement,
+									 SpareMatrixCache &mat_cache,
 									 StiffnessMatrix &hessian) const;
 
 		//plotting (eg von mises), assembler is the name of the formulation

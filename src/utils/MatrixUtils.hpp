@@ -30,4 +30,37 @@ namespace polyfem
 	template <typename T>
 	void read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat);
 
+	class SpareMatrixCache
+	{
+	public:
+		SpareMatrixCache() {}
+		SpareMatrixCache(const size_t size);
+		SpareMatrixCache(const SpareMatrixCache &other);
+
+		void init(const size_t size);
+		void init(const SpareMatrixCache &other);
+
+		void set_zero();
+
+		inline void reserve(const size_t size) { entries_.reserve(size); }
+		inline size_t entries_size() const { return entries_.size(); }
+		inline size_t capacity() const { return entries_.capacity(); }
+		inline size_t non_zeros() const { return mapping_.empty() ? mat_.nonZeros() : values_.size(); }
+
+		void add_value(const int i, const int j, const double value);
+		StiffnessMatrix get_matrix(const bool compute_mapping = true);
+		void prune();
+
+		SpareMatrixCache operator+(const SpareMatrixCache &a) const;
+		void operator+=(const SpareMatrixCache &o);
+
+	private:
+		size_t size_;
+		StiffnessMatrix tmp_, mat_;
+		std::vector<Eigen::Triplet<double>> entries_;
+		std::vector<std::vector<std::pair<int, size_t>>> mapping_;
+		std::vector<int> inner_index_, outer_index_;
+		std::vector<double> values_;
+	};
+
 } // namespace polyfem
