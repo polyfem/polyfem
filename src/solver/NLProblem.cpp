@@ -577,7 +577,7 @@ namespace polyfem
 
 		compute_displaced_points(full, displaced);
 
-		ipc::construct_constraint_set(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, _dhat, _constraint_set);
+		ipc::construct_constraint_set(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, _dhat, _constraint_set, true, Eigen::VectorXi(), state.boundary_faces_to_edges);
 	}
 
 	void NLProblem::post_step(const TVector &x0)

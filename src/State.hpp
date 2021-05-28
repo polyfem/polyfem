@@ -150,6 +150,7 @@ namespace polyfem
 		Eigen::MatrixXd boundary_nodes_pos;
 		Eigen::MatrixXi boundary_edges;
 		Eigen::MatrixXi boundary_triangles;
+		Eigen::MatrixXi boundary_faces_to_edges;
 
 		//boundary visualization mesh
 		Eigen::MatrixXd boundary_vis_vertices;
