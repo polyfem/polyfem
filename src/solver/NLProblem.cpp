@@ -220,8 +220,23 @@ namespace polyfem
 			igl::write_triangle_mesh("s1.obj", displaced1, state.boundary_triangles);
 		}
 
-		const double max_step = ipc::compute_collision_free_stepsize(displaced0, displaced1, state.boundary_edges, state.boundary_triangles);
+		double max_step = ipc::compute_collision_free_stepsize(displaced0, displaced1, state.boundary_edges, state.boundary_triangles);
 		polyfem::logger().trace("best step {}", max_step);
+
+		// This will check for static intersections as a failsafe. Not needed if we use our conservative CCD.
+		// Eigen::MatrixXd displaced_toi = (displaced1 - displaced0) * max_step + displaced0;
+		// while (ipc::has_intersections(displaced_toi, state.boundary_edges, state.boundary_triangles))
+		// {
+		// 	double Linf = (displaced_toi - displaced0).lpNorm<Eigen::Infinity>();
+		// 	logger().warn("taking max_step results in intersections (max_step={:g})", max_step);
+		// 	max_step /= 2.0;
+		// 	if (max_step <= 0 || Linf == 0)
+		// 	{
+		// 		logger().error("Unable to find an intersection free step size (max_step={:g} L∞={:g})", max_step, Linf);
+		// 	}
+		// 	displaced_toi = (displaced1 - displaced0) * max_step + displaced0;
+		// }
+
 		return max_step;
 	}
 

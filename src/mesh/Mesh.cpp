@@ -206,8 +206,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 	Eigen::MatrixXi cells;
 	std::vector<std::vector<int>> elements;
 	std::vector<std::vector<double>> weights;
-	std::vector<int> body_ids;
-	std::vector<int> boundary_ids;
+	std::vector<int> body_vertices_start, body_ids, boundary_ids;
 	int dim = 0;
 	int cell_cols = 0;
 
@@ -388,19 +387,19 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 		position.conservativeResize(dim);
 		tmp_vertices.rowwise() += position;
 
-		size_t vertices_offset = vertices.rows();
+		body_vertices_start.push_back(vertices.rows());
 		vertices.conservativeResize(
 			vertices.rows() + tmp_vertices.rows(), dim);
 		vertices.bottomRows(tmp_vertices.rows()) = tmp_vertices;
 
 		cells.conservativeResize(cells.rows() + tmp_cells.rows(), cell_cols);
-		cells.bottomRows(tmp_cells.rows()) = tmp_cells.array() + vertices_offset;
+		cells.bottomRows(tmp_cells.rows()) = tmp_cells.array() + body_vertices_start.back();
 
 		for (auto &element : tmp_elements)
 		{
 			for (auto &id : element)
 			{
-				id += vertices_offset;
+				id += body_vertices_start.back();
 			}
 		}
 		elements.insert(elements.end(), tmp_elements.begin(), tmp_elements.end());
@@ -412,23 +411,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 			body_ids.push_back(jmesh["body_id"].get<int>());
 		}
 
-		if (cell_cols == 3 || cell_cols == 4)
-		{
-			// NOTE: This will make every face in the mesh a boundary
-			Eigen::MatrixXi BF;
-			igl::boundary_facets(tmp_cells, BF);
-			// Every face that is not a boundary will have exactly two copies
-			int facets_per_cell = tmp_cells.cols();
-			int num_faces = (facets_per_cell * tmp_cells.rows() - BF.rows()) / 2 + BF.rows();
-			for (int fi = 0; fi < num_faces; fi++)
-			{
-				boundary_ids.push_back(jmesh["boundary_id"].get<int>());
-			}
-		}
-		else if (jmesh["boundary_id"].get<int>() > 0)
-		{
-			logger().error("mesh `boundary_id` only implemented for triangle or tet meshes!");
-		}
+		boundary_ids.push_back(jmesh["boundary_id"].get<int>());
 	}
 
 	if (vertices.size() == 0)
@@ -464,7 +447,22 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 	}
 
 	mesh->set_body_ids(body_ids);
-	mesh->set_boundary_ids(boundary_ids);
+	assert(body_vertices_start.size() == boundary_ids.size());
+	mesh->compute_boundary_ids([&](const std::vector<int> &vis, bool is_boundary) {
+		if (!is_boundary)
+		{
+			return -1;
+		}
+
+		for (int i = 0; i < body_vertices_start.size() - 1; i++)
+		{
+			if (body_vertices_start[i] <= vis[0] && vis[0] < body_vertices_start[i + 1])
+			{
+				return boundary_ids[i];
+			}
+		}
+		return boundary_ids.back();
+	});
 
 	return mesh;
 }
