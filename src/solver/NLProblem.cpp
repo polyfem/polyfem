@@ -14,6 +14,8 @@
 
 #include <unsupported/Eigen/SparseExtra>
 
+#include <igl/Timer.h>
+
 static bool disable_collision = false;
 
 // #define USE_DIV_BARRIER_STIFFNESS
@@ -461,11 +463,18 @@ namespace polyfem
 	{
 		//scaling * (elastic_energy + body_energy) + intertia_energy + _barrier_stiffness * collision_energy;
 
+		igl::Timer timer;
+		timer.start();
+
 		Eigen::MatrixXd full;
 		if (x.size() == reduced_size)
 			reduced_to_full(x, full);
 		else
 			full = x;
+
+		timer.stop();
+		polyfem::logger().trace("\treduced to full time {}s", timer.getElapsedTimeInSec());
+		timer.start();
 
 		assert(full.size() == full_size);
 
@@ -477,11 +486,18 @@ namespace polyfem
 		}
 		else
 			assembler.assemble_energy_hessian(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, project_to_psd, state.bases, gbases, state.ass_vals_cache, full, mat_cache, hessian);
+
+		timer.stop();
+		polyfem::logger().trace("\telastic hessian time {}s", timer.getElapsedTimeInSec());
+		timer.start();
 		if (is_time_dependent)
 		{
 			hessian *= dt * dt; // / 2.0;
 			hessian += state.mass;
 		}
+
+		timer.stop();
+		polyfem::logger().trace("\tinertia hessian time {}s", timer.getElapsedTimeInSec());
 
 #ifdef USE_DIV_BARRIER_STIFFNESS
 		hessian /= _barrier_stiffness;
@@ -489,16 +505,33 @@ namespace polyfem
 
 		if (!disable_collision && state.args["has_collision"])
 		{
+			timer.start();
+
+			igl::Timer timeri;
+			timeri.start();
+
 			Eigen::MatrixXd displaced;
 			compute_displaced_points(full, displaced);
+			timeri.stop();
+			polyfem::logger().trace("\tdisplace pts time {}s", timeri.getElapsedTimeInSec());
+			timeri.start();
 
 			ipc::Constraints constraint_set;
 			ipc::construct_constraint_set(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, _dhat, constraint_set);
+
+			timeri.stop();
+			polyfem::logger().trace("\tconstraint set time {}s", timeri.getElapsedTimeInSec());
+			timeri.start();
 #ifdef USE_DIV_BARRIER_STIFFNESS
 			hessian += ipc::compute_barrier_potential_hessian(displaced, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat, project_to_psd);
 #else
 			hessian += _barrier_stiffness * ipc::compute_barrier_potential_hessian(displaced, state.boundary_edges, state.boundary_triangles, constraint_set, _dhat, project_to_psd);
 #endif
+			timeri.stop();
+			polyfem::logger().trace("\tonly ipc hessian time {}s", timeri.getElapsedTimeInSec());
+
+			timer.stop();
+			polyfem::logger().trace("\tipc hessian time {}s", timer.getElapsedTimeInSec());
 		}
 
 		assert(hessian.rows() == full_size);

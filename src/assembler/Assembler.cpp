@@ -559,10 +559,10 @@ namespace polyfem
 		const int buffer_size = std::min(long(1e8), long(n_basis) * local_assembler_.size());
 		// std::cout<<"buffer_size "<<buffer_size<<std::endl;
 
-		grad.resize(n_basis * local_assembler_.size(), n_basis * local_assembler_.size());
-		grad.setZero();
+		// grad.resize(n_basis * local_assembler_.size(), n_basis * local_assembler_.size());
+		// grad.setZero();
 
-		mat_cache.init(grad.rows());
+		mat_cache.init(n_basis * local_assembler_.size());
 		mat_cache.set_zero();
 
 #if defined(POLYFEM_WITH_CPP_THREADS)

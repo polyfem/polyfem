@@ -515,7 +515,7 @@ namespace polyfem
 		logger().info("Loading feb file...");
 
 		state.args["normalize_mesh"] = false;
-		state.args["quadrature_order"] = 1;
+		state.args["quadrature_order"] = 0;
 		if (!export_solution.empty())
 			state.args["export"]["solution_mat"] = export_solution;
 
