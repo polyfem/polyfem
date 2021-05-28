@@ -515,6 +515,7 @@ namespace polyfem
 		logger().info("Loading feb file...");
 
 		state.args["normalize_mesh"] = false;
+		state.args["quadrature_order"] = 1;
 		if (!export_solution.empty())
 			state.args["export"]["solution_mat"] = export_solution;
 
@@ -601,32 +602,33 @@ namespace polyfem
 		std::vector<std::vector<int>> nodeSet;
 		std::map<std::string, int> names;
 		load_node_sets(geometry, V.rows(), nodeSet, names);
-		state.mesh->compute_boundary_ids([&nodeSet](const std::vector<int> &vs, bool is_boundary) {
-			if (!is_boundary)
-				return 0;
-			std::vector<int> tmp;
-			for (const int v : vs)
-				tmp.insert(tmp.end(), nodeSet[v].begin(), nodeSet[v].end());
+		state.mesh->compute_boundary_ids([&nodeSet](const std::vector<int> &vs, bool is_boundary)
+										 {
+											 if (!is_boundary)
+												 return 0;
+											 std::vector<int> tmp;
+											 for (const int v : vs)
+												 tmp.insert(tmp.end(), nodeSet[v].begin(), nodeSet[v].end());
 
-			std::sort(tmp.begin(), tmp.end());
+											 std::sort(tmp.begin(), tmp.end());
 
-			int prev = -1;
-			int count = 1;
-			for (const int id : tmp)
-			{
-				if (id == prev)
-					count++;
-				else
-				{
-					count = 1;
-					prev = id;
-				}
-				if (count == vs.size())
-					return prev;
-			}
+											 int prev = -1;
+											 int count = 1;
+											 for (const int id : tmp)
+											 {
+												 if (id == prev)
+													 count++;
+												 else
+												 {
+													 count = 1;
+													 prev = id;
+												 }
+												 if (count == vs.size())
+													 return prev;
+											 }
 
-			return 0;
-		});
+											 return 0;
+										 });
 
 		state.problem = ProblemFactory::factory().get_problem("GenericTensor");
 		GenericTensorProblem &gproblem = *dynamic_cast<GenericTensorProblem *>(state.problem.get());
