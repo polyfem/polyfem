@@ -649,7 +649,7 @@ int polyfem::FEBasis2d::build_bases(
 		}
 		else if (mesh.is_simplex(e))
 		{
-			const int real_order = std::max(quadrature_order, (discr_order - 1) * 2) + 1;
+			const int real_order = std::max(quadrature_order, (discr_order - 1) * 2 + 1);
 			b.set_quadrature([real_order](Quadrature &quad)
 							 {
 								 TriQuadrature tri_quadrature;
