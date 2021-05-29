@@ -26,12 +26,17 @@ namespace polyfem
 
 		virtual double value(const TVector &x) override;
 		virtual void gradient(const TVector &x, TVector &gradv) override;
-		virtual void gradient_no_rhs(const TVector &x, Eigen::MatrixXd &gradv);
+		virtual void gradient_no_rhs(const TVector &x, Eigen::MatrixXd &gradv, const bool only_elastic = false);
+
+		virtual double value(const TVector &x, const bool only_elastic);
+		void gradient(const TVector &x, TVector &gradv, const bool only_elastic);
 
 		bool is_step_valid(const TVector &x0, const TVector &x1);
 		bool is_step_collision_free(const TVector &x0, const TVector &x1);
 		double max_step_size(const TVector &x0, const TVector &x1);
 
+		void line_search_begin(const TVector &x0, const TVector &x1);
+		void line_search_end();
 		void post_step(const TVector &x0);
 
 #include <polyfem/DisableWarnings.hpp>
@@ -138,6 +143,7 @@ namespace polyfem
 		TVector x_prev, v_prev, a_prev;
 
 		ipc::Constraints _constraint_set;
+		ipc::Candidates _candidates;
 
 		void compute_cached_stiffness();
 		void update_barrier_stiffness(const TVector &full);

@@ -21,8 +21,9 @@ namespace polyfem
 		TVector initial_guess();
 		void set_weight(const double w) { weight_ = w; }
 
-		double value(const TVector &x) override;
-		void gradient_no_rhs(const TVector &x, Eigen::MatrixXd &gradv) override;
+		double value(const TVector &x) override { return super::value(x); }
+		double value(const TVector &x, const bool only_elastic) override;
+		void gradient_no_rhs(const TVector &x, Eigen::MatrixXd &gradv, const bool only_elastic = false) override;
 		void update_quantities(const double t, const TVector &x) override;
 
 		bool stop(const TVector &x) override;

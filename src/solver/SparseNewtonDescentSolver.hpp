@@ -16,6 +16,7 @@
 #include <cppoptlib/linesearch/morethuente.h>
 
 #include <cmath>
+#include <cfenv>
 
 namespace cppoptlib
 {
@@ -94,6 +95,8 @@ namespace cppoptlib
 			objFunc.gradient(x, grad);
 
 			TVector x1 = x + alpha_init * searchDir;
+
+			objFunc.line_search_begin(x, x1);
 			// time.start();
 			objFunc.solution_changed(x1);
 			// time.stop();
@@ -138,6 +141,8 @@ namespace cppoptlib
 				assert(objFunc.is_step_collision_free(x, x1));
 			}
 
+			objFunc.line_search_end();
+
 			// std::cout << cur_iter << " " << MAX_STEP_SIZE_ITER << " " << alpha << std::endl;
 
 			if (alpha <= 1e-7)
@@ -157,26 +162,20 @@ namespace cppoptlib
 			TVector new_x = x + grad;
 			double step_size = 1;
 
-			// time.start();
-			objFunc.solution_changed(new_x);
-			// time.stop();
-			// polyfem::logger().trace("\tconstrain set update in LS {}s", time.getElapsedTimeInSec());
+			igl::Timer time;
+			igl::Timer time1;
 
+			time.start();
 			// Find step that does not result in nan or infinite energy
 			while (step_size > MIN_STEP_SIZE && cur_iter < MAX_STEP_SIZE_ITER)
 			{
-				double cur_e = objFunc.value(new_x);
+				double cur_e = objFunc.value(new_x, true);
 				const bool valid = objFunc.is_step_valid(x, new_x);
 
 				if (!std::isfinite(cur_e) || !valid)
 				{
 					step_size /= 2.;
 					new_x = x + step_size * grad;
-
-					// time.start();
-					objFunc.solution_changed(new_x);
-					// time.stop();
-					// polyfem::logger().trace("\tconstrain set update in LS {}s", time.getElapsedTimeInSec());
 				}
 				else
 				{
@@ -184,6 +183,8 @@ namespace cppoptlib
 				}
 				cur_iter++;
 			}
+			time.stop();
+			polyfem::logger().trace("\t\tfist loop in LS {}s, checking for nan or inf", time.getElapsedTimeInSec());
 
 			if (cur_iter >= MAX_STEP_SIZE_ITER || step_size <= MIN_STEP_SIZE)
 			{
@@ -191,21 +192,38 @@ namespace cppoptlib
 				return std::nan("");
 			}
 
+			time.start();
+			objFunc.line_search_begin(x, new_x);
+			time.stop();
+			polyfem::logger().trace("\t\tbroad phase CCD {}s", time.getElapsedTimeInSec());
+
+			time.start();
 			// Find step that is collision free
 			const double tmp = objFunc.max_step_size(x, new_x);
 			if (tmp == 0)
 			{
 				polyfem::logger().error("CCD produced a stepsize of zero!");
+				objFunc.line_search_end();
 				return std::nan("");
 			}
-			step_size *= tmp; // TODO: Safeguard this with a round down
+			time.stop();
+			polyfem::logger().trace("\t\tCCD in LS {}s", time.getElapsedTimeInSec());
+
+#pragma STDC FENV_ACCESS ON
+			const int current_roudn = std::fegetround();
+			std::fesetround(FE_DOWNWARD);
+			step_size *= tmp; // TODO: check me if correct
+			std::fesetround(current_roudn);
+
 			new_x = x + step_size * grad;
-			// time.start();
+
+			time.start();
 			objFunc.solution_changed(new_x);
-			// time.stop();
-			// polyfem::logger().trace("\tconstrain set update in LS {}s", time.getElapsedTimeInSec());
+			time.stop();
+			polyfem::logger().trace("\t\tconstrain set update in LS {}s", time.getElapsedTimeInSec());
 
 			// Find step that reduces the energy
+			time.start();
 			while (step_size > MIN_STEP_SIZE && cur_iter < MAX_STEP_SIZE_ITER)
 			{
 				double cur_e = objFunc.value(new_x);
@@ -219,10 +237,10 @@ namespace cppoptlib
 					//max_step_size should return a collision free step
 					// assert(objFunc.is_step_collision_free(x, new_x));
 
-					// time.start();
+					time1.start();
 					objFunc.solution_changed(new_x);
-					// time.stop();
-					// polyfem::logger().trace("\tconstrain set update in LS {}s", time.getElapsedTimeInSec());
+					time1.stop();
+					polyfem::logger().trace("\t\t\tconstrain set update in LS {}s", time1.getElapsedTimeInSec());
 				}
 				else
 				{
@@ -230,16 +248,21 @@ namespace cppoptlib
 				}
 				cur_iter++;
 			}
+			time.stop();
+			polyfem::logger().trace("\t\tenergy min in LS {}s", time.getElapsedTimeInSec());
 
 			if (cur_iter >= MAX_STEP_SIZE_ITER || step_size <= MIN_STEP_SIZE)
 			{
 				polyfem::logger().error("line-search failed {:d} {:g}", cur_iter, step_size);
+				objFunc.line_search_end();
 				return std::nan("");
 			}
 
 			polyfem::logger().trace("final step ratio {}, step {}", tmp, step_size);
 
+#ifndef NDEBUG
 			// safe guard check
+			time.start();
 			while (!objFunc.is_step_collision_free(x, new_x))
 			{
 				polyfem::logger().error("step is not collision free!!");
@@ -251,7 +274,11 @@ namespace cppoptlib
 				// polyfem::logger().trace("\tconstrain set update in LS {}s", time.getElapsedTimeInSec());
 			}
 			assert(objFunc.is_step_collision_free(x, new_x));
+			time.stop();
+			polyfem::logger().trace("\t\tsafeguard in LS {}s", time.getElapsedTimeInSec());
+#endif
 
+			objFunc.line_search_end();
 			return step_size;
 		}
 

@@ -68,9 +68,9 @@ namespace polyfem
 			res[bn] = 0;
 	}
 
-	double ALNLProblem::value(const TVector &x)
+	double ALNLProblem::value(const TVector &x, const bool only_elastic)
 	{
-		const double val = super::value(x);
+		const double val = super::value(x, only_elastic);
 		TVector distv;
 		compute_distance(x, distv);
 		const double dist = distv.squaredNorm();
@@ -93,10 +93,10 @@ namespace polyfem
 #endif
 	}
 
-	void ALNLProblem::gradient_no_rhs(const TVector &x, Eigen::MatrixXd &gradv)
+	void ALNLProblem::gradient_no_rhs(const TVector &x, Eigen::MatrixXd &gradv, const bool only_elastic)
 	{
 		TVector tmp;
-		super::gradient_no_rhs(x, gradv);
+		super::gradient_no_rhs(x, gradv, only_elastic);
 		compute_distance(x, tmp);
 		//logger().trace("dist grad {}", tmp.norm());
 #ifdef USE_DIV_BARRIER_STIFFNESS

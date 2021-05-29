@@ -190,6 +190,38 @@ namespace polyfem
 		displaced += state.boundary_nodes_pos;
 	}
 
+	void NLProblem::line_search_begin(const TVector &x0, const TVector &x1)
+	{
+		if (disable_collision)
+			return;
+		if (!state.args["has_collision"])
+			return;
+
+		Eigen::MatrixXd full0, full1;
+		if (x0.size() == reduced_size)
+			reduced_to_full(x0, full0);
+		else
+			full0 = x0;
+		if (x1.size() == reduced_size)
+			reduced_to_full(x1, full1);
+		else
+			full1 = x1;
+		assert(full0.size() == full_size);
+		assert(full1.size() == full_size);
+
+		Eigen::MatrixXd displaced0, displaced1;
+
+		compute_displaced_points(full0, displaced0);
+		compute_displaced_points(full1, displaced1);
+
+		construct_ccd_candidates(displaced0, displaced1, state.boundary_edges, state.boundary_triangles, _candidates);
+	}
+
+	void NLProblem::line_search_end()
+	{
+		_candidates.clear();
+	}
+
 	double NLProblem::max_step_size(const TVector &x0, const TVector &x1)
 	{
 		if (disable_collision)
@@ -220,7 +252,7 @@ namespace polyfem
 			igl::write_triangle_mesh("s1.obj", displaced1, state.boundary_triangles);
 		}
 
-		double max_step = ipc::compute_collision_free_stepsize(displaced0, displaced1, state.boundary_edges, state.boundary_triangles);
+		double max_step = ipc::compute_collision_free_stepsize(_candidates, displaced0, displaced1, state.boundary_edges, state.boundary_triangles);
 		polyfem::logger().trace("best step {}", max_step);
 
 		// This will check for static intersections as a failsafe. Not needed if we use our conservative CCD.
@@ -273,7 +305,7 @@ namespace polyfem
 			igl::write_triangle_mesh("1.obj", displaced1, state.boundary_triangles);
 		}
 
-		const bool is_valid = ipc::is_step_collision_free(displaced0, displaced1, state.boundary_edges, state.boundary_triangles);
+		const bool is_valid = ipc::is_step_collision_free(_candidates, displaced0, displaced1, state.boundary_edges, state.boundary_triangles);
 
 		return is_valid;
 	}
@@ -281,7 +313,7 @@ namespace polyfem
 	bool NLProblem::is_step_valid(const TVector &x0, const TVector &x1)
 	{
 		TVector grad = TVector::Zero(reduced_size);
-		gradient(x1, grad);
+		gradient(x1, grad, true);
 
 		if (std::isnan(grad.norm()))
 			return false;
@@ -290,6 +322,11 @@ namespace polyfem
 	}
 
 	double NLProblem::value(const TVector &x)
+	{
+		return value(x, false);
+	}
+
+	double NLProblem::value(const TVector &x, const bool only_elastic)
 	{
 		Eigen::MatrixXd full;
 		if (x.size() == reduced_size)
@@ -325,7 +362,7 @@ namespace polyfem
 		\frac 1 2 (t^T M t - 2 h^2 t^T f_e + h^4f_e^T M^{-1}f_e)
 		*/
 
-		if (!disable_collision && state.args["has_collision"])
+		if (!only_elastic && !disable_collision && state.args["has_collision"])
 		{
 			Eigen::MatrixXd displaced;
 			compute_displaced_points(full, displaced);
@@ -356,8 +393,13 @@ namespace polyfem
 
 	void NLProblem::gradient(const TVector &x, TVector &gradv)
 	{
+		gradient(x, gradv, false);
+	}
+
+	void NLProblem::gradient(const TVector &x, TVector &gradv, const bool only_elastic)
+	{
 		Eigen::MatrixXd grad;
-		gradient_no_rhs(x, grad);
+		gradient_no_rhs(x, grad, only_elastic);
 
 #ifdef USE_DIV_BARRIER_STIFFNESS
 		grad -= current_rhs() / _barrier_stiffness;
@@ -370,7 +412,7 @@ namespace polyfem
 		// std::cout<<"gradv\n"<<gradv<<"\n--------------\n"<<std::endl;
 	}
 
-	void NLProblem::gradient_no_rhs(const TVector &x, Eigen::MatrixXd &grad)
+	void NLProblem::gradient_no_rhs(const TVector &x, Eigen::MatrixXd &grad, const bool only_elastic)
 	{
 		//scaling * (elastic_energy + body_energy) + intertia_energy + _barrier_stiffness * collision_energy;
 
@@ -396,7 +438,7 @@ namespace polyfem
 		grad /= _barrier_stiffness;
 #endif
 
-		if (!disable_collision && state.args["has_collision"])
+		if (!only_elastic && !disable_collision && state.args["has_collision"])
 		{
 			Eigen::MatrixXd displaced;
 			compute_displaced_points(full, displaced);
@@ -577,7 +619,12 @@ namespace polyfem
 
 		compute_displaced_points(full, displaced);
 
-		ipc::construct_constraint_set(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, _dhat, _constraint_set, true, Eigen::VectorXi(), state.boundary_faces_to_edges);
+		if (_candidates.size() > 0)
+			ipc::construct_constraint_set(_candidates, state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles,
+										  _dhat, _constraint_set, state.boundary_faces_to_edges);
+		else
+			ipc::construct_constraint_set(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles,
+										  _dhat, _constraint_set, true, Eigen::VectorXi(), state.boundary_faces_to_edges);
 	}
 
 	void NLProblem::post_step(const TVector &x0)
