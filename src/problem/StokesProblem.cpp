@@ -809,11 +809,10 @@ void TaylorGreenVortexProblem::exact(const Eigen::MatrixXd &pts, const double t,
 		else
 		{
 			const double z = pts(i, 2);
-			const double a = 1.;
-			const double time_scaling = -a * exp(-viscosity_ * t);
-			val(i, 0) = (exp(a * x)*sin(a * y+z)+exp(a * z)*cos(a * x+y))*time_scaling;
-			val(i, 1) = (exp(a * y)*sin(a * z+x)+exp(a * x)*cos(a * y+z))*time_scaling;
-			val(i, 2) = (exp(a * z)*sin(a * x+y)+exp(a * y)*cos(a * z+x))*time_scaling;
+			const double time_scaling = -exp(-viscosity_ * t);
+			val(i, 0) = (exp(x)*sin(y+z)+exp(z)*cos(x+y))*time_scaling;
+			val(i, 1) = (exp(y)*sin(z+x)+exp(x)*cos(y+z))*time_scaling;
+			val(i, 2) = (exp(z)*sin(x+y)+exp(y)*cos(z+x))*time_scaling;
 		}
 	}
 }
@@ -821,6 +820,7 @@ void TaylorGreenVortexProblem::exact(const Eigen::MatrixXd &pts, const double t,
 void TaylorGreenVortexProblem::exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 {
 	val.resize(pts.rows(), pts.cols() * pts.cols());
+	const double T = 6.283185307179586;
 	for (int i = 0; i < pts.rows(); ++i)
 	{
 		const double x = pts(i, 0);
@@ -828,11 +828,25 @@ void TaylorGreenVortexProblem::exact_grad(const Eigen::MatrixXd &pts, const doub
 
 		if(pts.cols() == 2)
 		{
-			const double time_scaling = exp(-2 * viscosity_ * t);
-			val(i, 0) = -sin(x) * sin(y) * time_scaling;
-			val(i, 1) =  cos(x) * cos(y) * time_scaling;
-			val(i, 2) = -cos(x) * cos(y) * time_scaling;
-			val(i, 3) =  sin(x) * sin(y) * time_scaling;
+			const double time_scaling = exp(-2 * viscosity_ * T * T * t);
+			val(i, 0) = -T * sin(T * x) * sin(T * y) * time_scaling;
+			val(i, 1) =  T * cos(T * x) * cos(T * y) * time_scaling;
+			val(i, 2) = -T * cos(T * x) * cos(T * y) * time_scaling;
+			val(i, 3) =  T * sin(T * x) * sin(T * y) * time_scaling;
+		}
+		else
+		{
+			const double z = pts(i, 2);
+			const double time_scaling = exp(-viscosity_ * t);
+			val(i, 0) =  time_scaling*( exp(z)*sin(x+y) -exp(x)*sin(y+z) );
+			val(i, 1) =  time_scaling*( exp(z)*sin(y+x) -exp(x)*cos(z+y) );
+			val(i, 2) = -time_scaling*( exp(z)*cos(x+y) +exp(x)*cos(y+z) );
+			val(i, 3) = -time_scaling*( exp(y)*cos(x+z) +exp(x)*cos(y+z) );
+			val(i, 4) =  time_scaling*( exp(x)*sin(z+y) -exp(y)*sin(x+z) );
+			val(i, 5) =  time_scaling*( exp(x)*sin(z+y) -exp(y)*cos(x+z) );
+			val(i, 6) =  time_scaling*( exp(y)*sin(x+z) -exp(z)*cos(y+x) );
+			val(i, 7) = -time_scaling*( exp(z)*cos(x+y) +exp(y)*cos(x+z) );
+			val(i, 8) =  time_scaling*( exp(y)*sin(x+z) -exp(z)*sin(y+x) );
 		}
 	}
 }
