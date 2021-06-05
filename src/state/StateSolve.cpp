@@ -303,7 +303,7 @@ namespace polyfem
 			while (!std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
 			{
 				alnl_problem.set_weight(al_weight);
-				logger().trace("Solving AL Problem");
+				logger().debug("Solving AL Problem with weight {}", al_weight);
 
 				cppoptlib::SparseNewtonDescentSolver<ALNLProblem> alnlsolver(solver_params(), solver_type(), precond_type());
 				alnlsolver.setLineSearch(args["line_search"]);
@@ -326,6 +326,7 @@ namespace polyfem
 			}
 
 			al_weight = args["al_weight"];
+			logger().debug("Solving Problem");
 
 			cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
 			nlsolver.setLineSearch(args["line_search"]);
@@ -588,10 +589,11 @@ namespace polyfem
 
 		//TODO: maybe add linear solver here?
 
+		int index = 0;
 		while (!std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
 		{
 			alnl_problem.set_weight(al_weight);
-			logger().trace("Solving AL Problem");
+			logger().debug("Solving AL Problem with weight {}", al_weight);
 
 			cppoptlib::SparseNewtonDescentSolver<ALNLProblem> alnlsolver(solver_params(), solver_type(), precond_type());
 			alnlsolver.setLineSearch(args["line_search"]);
@@ -611,8 +613,18 @@ namespace polyfem
 				logger().error("Unable to solve AL problem, weight {} >= {}, stopping", al_weight, max_al_weight);
 				break;
 			}
+
+			if (args["save_solve_sequence_debug"])
+			{
+				if (!solve_export_to_file)
+					solution_frames.emplace_back();
+				save_vtu(fmt::format("step_{:d}.vtu", index), 1);
+				save_wire(fmt::format("step_{:d}.obj", index));
+			}
+			++index;
 		}
 
+		logger().debug("Solving Problem");
 		cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
 		nlsolver.setLineSearch(args["line_search"]);
 		nl_problem.init(sol);

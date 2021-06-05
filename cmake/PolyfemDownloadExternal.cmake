@@ -139,7 +139,7 @@ endfunction()
 function(polyfem_download_mshio)
     polyfem_download_project(mshio
         GIT_REPOSITORY https://github.com/qnzhou/MshIO.git
-        GIT_TAG        a500f107c1ca97bdcc9e53118e2d5964df11f539
+        GIT_TAG        201eeba436e38043b7e716be82ec5e218cbae74d
     )
 endfunction()
 

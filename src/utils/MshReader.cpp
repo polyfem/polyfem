@@ -3,7 +3,7 @@
 #include <polyfem/Logger.hpp>
 #include <polyfem/StringUtils.hpp>
 
-#include <MshIO/mshio.h>
+#include <mshio/mshio.h>
 
 #include <fstream>
 #include <string>
@@ -41,6 +41,7 @@ namespace polyfem
 		const auto &nodes = spec.nodes;
 		const auto &els = spec.elements;
 		const int n_vertices = nodes.num_nodes;
+		const int max_tag = nodes.max_node_tag;
 		int dim = -1;
 
 		for (const auto &e : els.entity_blocks)
@@ -49,6 +50,7 @@ namespace polyfem
 		}
 
 		vertices.resize(n_vertices, dim);
+		std::vector<int> tag_to_index(max_tag + 1, -1);
 		int index = 0;
 		for (const auto &n : nodes.entity_blocks)
 		{
@@ -59,6 +61,8 @@ namespace polyfem
 				if (dim == 3)
 					vertices.row(index) << n.data[i], n.data[i + 1], n.data[i + 2];
 
+				assert(n.tags[i / 3] < tag_to_index.size());
+				tag_to_index[n.tags[i / 3]] = index;
 				++index;
 			}
 		}
@@ -107,21 +111,24 @@ namespace polyfem
 			if (e.entity_dim != dim)
 				continue;
 			const int type = e.element_type;
-			if (type == 2 || type == 9 || type == 21 || type == 23 || type == 25 ||
-				type == 3 || type == 10 ||
-				type == 4 || type == 11 || type == 29 || type == 30 || type == 31 ||
-				type == 5 || type == 12)
+			if (type == 2 || type == 9 || type == 21 || type == 23 || type == 25 || type == 3 || type == 10 || type == 4 || type == 11 || type == 29 || type == 30 || type == 31 || type == 5 || type == 12)
 			{
 				const size_t n_nodes = mshio::nodes_per_element(type);
 				for (int i = 0; i < e.data.size(); i += (n_nodes + 1))
 				{
 					index = 0;
 					for (int j = i + 1; j <= i + cells_cols; ++j)
-						cells(cell_index, index++) = e.data[j] - 1;
+					{
+						const int v_index = tag_to_index[e.data[j]];
+						assert(v_index < n_vertices);
+						cells(cell_index, index++) = v_index;
+					}
 
 					for (int j = i + 1; j < i + 1 + n_nodes; ++j)
 					{
-						elements[cell_index].push_back(e.data[j] - 1);
+						const int v_index = tag_to_index[e.data[j]];
+						assert(v_index < n_vertices);
+						elements[cell_index].push_back(v_index);
 					}
 					++cell_index;
 				}
