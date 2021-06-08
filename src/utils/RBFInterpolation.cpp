@@ -14,6 +14,7 @@ namespace polyfem
 
 	void RBFInterpolation::init(const Eigen::MatrixXd &fun, const Eigen::MatrixXd &pts, const std::string &rbf, const double eps)
 	{
+		assert(pts.rows() >= 0);
 #ifdef POLYFEM_OPENCL
 		std::vector<double> pointscl(pts.size());
 		std::vector<double> functioncl(fun.rows());
@@ -42,38 +43,46 @@ namespace polyfem
 
 		if (rbf == "multiquadric")
 		{
-			tmp = [eps](const double r) { return sqrt((r / eps) * (r / eps) + 1); };
+			tmp = [eps](const double r)
+			{ return sqrt((r / eps) * (r / eps) + 1); };
 		}
 		else if (rbf == "inverse" || rbf == "inverse_multiquadric" || rbf == "inverse multiquadric")
 		{
-			tmp = [eps](const double r) { return 1.0 / sqrt((r / eps) * (r / eps) + 1); };
+			tmp = [eps](const double r)
+			{ return 1.0 / sqrt((r / eps) * (r / eps) + 1); };
 		}
 		else if (rbf == "gaussian")
 		{
-			tmp = [eps](const double r) { return exp(-(r / eps) * (r / eps)); };
+			tmp = [eps](const double r)
+			{ return exp(-(r / eps) * (r / eps)); };
 		}
 		else if (rbf == "linear")
 		{
-			tmp = [](const double r) { return r; };
+			tmp = [](const double r)
+			{ return r; };
 		}
 		else if (rbf == "cubic")
 		{
-			tmp = [](const double r) { return r * r * r; };
+			tmp = [](const double r)
+			{ return r * r * r; };
 		}
 		else if (rbf == "quintic")
 		{
-			tmp = [](const double r) { return r * r * r * r * r; };
+			tmp = [](const double r)
+			{ return r * r * r * r * r; };
 		}
 		else if (rbf == "thin_plate" || rbf == "thin-plate")
 		{
-			tmp = [](const double r) { return abs(r) < 1e-10 ? 0 : (r * r * log(r)); };
+			tmp = [](const double r)
+			{ return abs(r) < 1e-10 ? 0 : (r * r * log(r)); };
 		}
 		else
 		{
 			logger().warn("Unable to match {} rbf, falling back to multiquadric", rbf);
 			assert(false);
 
-			tmp = [eps](const double r) { return sqrt((r / eps) * (r / eps) + 1); };
+			tmp = [eps](const double r)
+			{ return sqrt((r / eps) * (r / eps) + 1); };
 		}
 
 		init(fun, pts, tmp);
@@ -94,6 +103,7 @@ namespace polyfem
 #ifdef POLYFEM_OPENCL
 		assert(false);
 #else
+		assert(pts.rows() >= 0);
 		assert(pts.rows() == fun.rows());
 
 		rbf_ = rbf;
@@ -162,4 +172,4 @@ namespace polyfem
 #endif
 		return res;
 	}
-}
+} // namespace polyfem
