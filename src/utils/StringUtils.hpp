@@ -3,9 +3,11 @@
 #include <vector>
 #include <string>
 
-namespace polyfem {
+namespace polyfem
+{
 
-	namespace StringUtils {
+	namespace StringUtils
+	{
 
 		// Split a string into tokens
 		std::vector<std::string> split(const std::string &str, const std::string &delimiters = " ");
@@ -25,6 +27,10 @@ namespace polyfem {
 		// Trims a string
 		std::string trim(const std::string &string);
 
-	}
+	} // namespace StringUtils
+
+	std::string resolve_path(
+		const std::string &path,
+		const std::string &input_file_path);
 
 } // namespace polyfem

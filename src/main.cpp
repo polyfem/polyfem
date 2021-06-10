@@ -25,30 +25,6 @@ using namespace polyfem;
 using namespace polysolve;
 using namespace Eigen;
 
-std::string resolve_path(
-	const std::string &path,
-	const std::string &input_file_path)
-{
-	if (path.empty())
-	{
-		return path;
-	}
-
-	fs::path resolved_path(path);
-	if (resolved_path.is_absolute())
-	{
-		return resolved_path.string();
-	}
-	else if (fs::exists(resolved_path))
-	{
-		return fs::weakly_canonical(resolved_path).string();
-	}
-
-	return fs::weakly_canonical(
-			   fs::path(input_file_path).parent_path() / resolved_path)
-		.string();
-}
-
 int main(int argc, char **argv)
 {
 	CLI::App command_line{"polyfem"};

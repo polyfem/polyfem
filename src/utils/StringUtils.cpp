@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <functional>
 
+#include <ghc/fs_std.hpp> // filesystem
+
 // Split a string into tokens
 std::vector<std::string> polyfem::StringUtils::split(const std::string &str, const std::string &delimiters)
 {
@@ -29,8 +31,7 @@ std::vector<std::string> polyfem::StringUtils::split(const std::string &str, con
 std::istream &polyfem::StringUtils::skip(std::istream &in, char x)
 {
 	std::string dummy;
-	while ((in >> std::ws).peek() ==
-		   std::char_traits<char>::to_int_type(x))
+	while ((in >> std::ws).peek() == std::char_traits<char>::to_int_type(x))
 	{
 		std::getline(in, dummy);
 	}
@@ -97,4 +98,28 @@ namespace
 std::string polyfem::StringUtils::trim(const std::string &string)
 {
 	return rtrim(ltrim(string));
+}
+
+std::string polyfem::resolve_path(
+	const std::string &path,
+	const std::string &input_file_path)
+{
+	if (path.empty())
+	{
+		return path;
+	}
+
+	fs::path resolved_path(path);
+	if (resolved_path.is_absolute())
+	{
+		return resolved_path.string();
+	}
+	else if (fs::exists(resolved_path))
+	{
+		return fs::weakly_canonical(resolved_path).string();
+	}
+
+	return fs::weakly_canonical(
+			   fs::path(input_file_path).parent_path() / resolved_path)
+		.string();
 }
