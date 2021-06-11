@@ -287,6 +287,8 @@ namespace polyfem
 		NLProblem nl_problem(*this, rhs_assembler, dt, args["dhat"], args["project_to_psd"]);
 		nl_problem.init_timestep(sol, velocity, acceleration, dt);
 
+		solver_info = json::array();
+
 		// if (args["use_al"] || args["has_collision"])
 		// {
 		double al_weight = args["al_weight"];
@@ -310,8 +312,13 @@ namespace polyfem
 				alnl_problem.init(sol);
 				tmp_sol = sol;
 				alnlsolver.minimize(alnl_problem, tmp_sol);
-				// json alnl_solver_info;
-				// alnlsolver.getInfo(alnl_solver_info);
+				json alnl_solver_info;
+				alnlsolver.getInfo(alnl_solver_info);
+
+				solver_info.push_back({{"type", "al"},
+									   {"t", t},
+									   {"weight", al_weight},
+									   {"info", alnl_solver_info}});
 
 				sol = tmp_sol;
 				nl_problem.full_to_reduced(sol, tmp_sol);
@@ -349,7 +356,9 @@ namespace polyfem
 
 			logger().info("{}/{}", t, time_steps);
 
-			solver_info = {{"other", nl_solver_info}};
+			solver_info.push_back({{"type", "rc"},
+								   {"t", t},
+								   {"info", nl_solver_info}});
 		}
 		// }
 		// else
@@ -589,6 +598,8 @@ namespace polyfem
 
 		//TODO: maybe add linear solver here?
 
+		solver_info = json::array();
+
 		int index = 0;
 		while (!std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
 		{
@@ -600,8 +611,12 @@ namespace polyfem
 			alnl_problem.init(sol);
 			tmp_sol = sol;
 			alnlsolver.minimize(alnl_problem, tmp_sol);
-			// json alnl_solver_info;
-			// alnlsolver.getInfo(alnl_solver_info);
+			json alnl_solver_info;
+			alnlsolver.getInfo(alnl_solver_info);
+
+			solver_info.push_back({{"type", "al"},
+								   {"weight", al_weight},
+								   {"info", alnl_solver_info}});
 
 			sol = tmp_sol;
 			nl_problem.full_to_reduced(sol, tmp_sol);
@@ -633,7 +648,8 @@ namespace polyfem
 		nlsolver.getInfo(nl_solver_info);
 
 		nl_problem.reduced_to_full(tmp_sol, sol);
-		solver_info = {{"other", nl_solver_info}};
+		solver_info.push_back({{"type", "rc"},
+							   {"info", nl_solver_info}});
 		// }
 		// else
 		// {

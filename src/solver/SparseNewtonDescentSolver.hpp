@@ -185,6 +185,7 @@ namespace cppoptlib
 			}
 			time.stop();
 			polyfem::logger().trace("\t\tfist loop in LS {}s, checking for nan or inf", time.getElapsedTimeInSec());
+			chekcing_for_nan_inf_time += time.getElapsedTimeInSec();
 
 			if (cur_iter >= MAX_STEP_SIZE_ITER || step_size <= MIN_STEP_SIZE)
 			{
@@ -196,6 +197,7 @@ namespace cppoptlib
 			objFunc.line_search_begin(x, new_x);
 			time.stop();
 			polyfem::logger().trace("\t\tbroad phase CCD {}s", time.getElapsedTimeInSec());
+			broad_phase_ccd_time += time.getElapsedTimeInSec();
 
 			time.start();
 			// Find step that is collision free
@@ -208,6 +210,7 @@ namespace cppoptlib
 			}
 			time.stop();
 			polyfem::logger().trace("\t\tCCD in LS {}s", time.getElapsedTimeInSec());
+			ccd_time += time.getElapsedTimeInSec();
 
 #pragma STDC FENV_ACCESS ON
 			const int current_roudn = std::fegetround();
@@ -221,6 +224,7 @@ namespace cppoptlib
 			objFunc.solution_changed(new_x);
 			time.stop();
 			polyfem::logger().trace("\t\tconstrain set update in LS {}s", time.getElapsedTimeInSec());
+			constrain_set_update_time += time.getElapsedTimeInSec();
 
 			// Find step that reduces the energy
 			time.start();
@@ -250,6 +254,7 @@ namespace cppoptlib
 			}
 			time.stop();
 			polyfem::logger().trace("\t\tenergy min in LS {}s", time.getElapsedTimeInSec());
+			classical_linesearch_time += time.getElapsedTimeInSec();
 
 			if (cur_iter >= MAX_STEP_SIZE_ITER || step_size <= MIN_STEP_SIZE)
 			{
@@ -311,6 +316,13 @@ namespace cppoptlib
 			assembly_time = 0;
 			inverting_time = 0;
 			linesearch_time = 0;
+			obj_fun_time = 0;
+			chekcing_for_nan_inf_time = 0;
+			broad_phase_ccd_time = 0;
+			ccd_time = 0;
+			constrain_set_update_time = 0;
+			classical_linesearch_time = 0;
+
 			igl::Timer time;
 
 			polyfem::StiffnessMatrix hessian;
@@ -326,6 +338,7 @@ namespace cppoptlib
 			objFunc.solution_changed(x0);
 			time.stop();
 			polyfem::logger().debug("\tconstrain set update {}s", time.getElapsedTimeInSec());
+			constrain_set_update_time += time.getElapsedTimeInSec();
 
 			time.start();
 			objFunc.gradient(x0, grad);
@@ -448,6 +461,7 @@ namespace cppoptlib
 				objFunc.solution_changed(x0);
 				time.stop();
 				polyfem::logger().debug("\tconstrain set update {}s", time.getElapsedTimeInSec());
+				obj_fun_time += time.getElapsedTimeInSec();
 
 				time.start();
 				objFunc.gradient(x0, grad);
@@ -528,12 +542,27 @@ namespace cppoptlib
 				assembly_time /= crit.iterations;
 				inverting_time /= crit.iterations;
 				linesearch_time /= crit.iterations;
+
+				constrain_set_update_time /= crit.iterations;
+				obj_fun_time /= crit.iterations;
+
+				chekcing_for_nan_inf_time /= crit.iterations;
+				broad_phase_ccd_time /= crit.iterations;
+				ccd_time /= crit.iterations;
+				classical_linesearch_time /= crit.iterations;
 			}
 
 			solver_info["time_grad"] = grad_time;
 			solver_info["time_assembly"] = assembly_time;
 			solver_info["time_inverting"] = inverting_time;
 			solver_info["time_linesearch"] = linesearch_time;
+			solver_info["time_constrain_set_update"] = constrain_set_update_time;
+			solver_info["time_obj_fun"] = obj_fun_time;
+
+			solver_info["time_chekcing_for_nan_inf"] = chekcing_for_nan_inf_time;
+			solver_info["time_broad_phase_ccd"] = broad_phase_ccd_time;
+			solver_info["time_ccd"] = ccd_time;
+			solver_info["time_classical_linesearch"] = classical_linesearch_time;
 		}
 
 		void getInfo(json &params)
@@ -560,6 +589,12 @@ namespace cppoptlib
 		double assembly_time;
 		double inverting_time;
 		double linesearch_time;
+		double constrain_set_update_time;
+		double obj_fun_time;
+		double chekcing_for_nan_inf_time;
+		double broad_phase_ccd_time;
+		double ccd_time;
+		double classical_linesearch_time;
 
 		bool has_hessian_nans(const polyfem::StiffnessMatrix &hessian)
 		{

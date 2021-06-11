@@ -180,14 +180,8 @@ int main(int argc, char **argv)
 		in_args["normalize_mesh"] = !skip_normalization;
 		in_args["project_to_psd"] = project_to_psd;
 
-		if (cache_size >= 0)
-			in_args["cache_size"] = cache_size;
-
 		if (use_al)
 			in_args["use_al"] = use_al;
-
-		if (min_component > 0)
-			in_args["min_component"] = min_component;
 
 		in_args["scalar_formulation"] = scalar_formulation;
 		in_args["tensor_formulation"] = tensor_formulation;
@@ -196,7 +190,7 @@ int main(int argc, char **argv)
 		in_args["discr_order"] = discr_order;
 		in_args["use_spline"] = use_splines;
 		in_args["count_flipped_els"] = count_flipped_els;
-		in_args["output"] = output_json;
+
 		in_args["use_p_ref"] = p_ref;
 		in_args["iso_parametric"] = isoparametric;
 		in_args["serendipity"] = serendipity;
@@ -204,24 +198,36 @@ int main(int argc, char **argv)
 		in_args["nl_solver_rhs_steps"] = nl_solver_rhs_steps;
 		in_args["save_solve_sequence_debug"] = save_solve_sequence_debug;
 
-		if (!output_vtu.empty())
-		{
-			in_args["export"]["vis_mesh"] = output_vtu;
-			in_args["export"]["wire_mesh"] = StringUtils::replace_ext(output_vtu, "obj");
-		}
-		if (!solver.empty())
-			in_args["solver_type"] = solver;
-
-		if (vis_mesh_res > 0)
-			in_args["vismesh_rel_area"] = vis_mesh_res;
-
 		if (export_material_params)
 			in_args["export"]["material_params"] = true;
 	}
 
+	if (!output_json.empty())
+		in_args["output"] = output_json;
+	if (!solver.empty())
+		in_args["solver_type"] = solver;
+	if (cache_size >= 0)
+		in_args["cache_size"] = cache_size;
+	if (!output_vtu.empty())
+	{
+		in_args["export"]["vis_mesh"] = output_vtu;
+		in_args["export"]["wire_mesh"] = StringUtils::replace_ext(output_vtu, "obj");
+	}
+
+	if (min_component > 0)
+		in_args["min_component"] = min_component;
+
+	if (vis_mesh_res > 0)
+		in_args["vismesh_rel_area"] = vis_mesh_res;
+
 	if (!output_dir.empty())
 	{
 		fs::create_directories(output_dir);
+	}
+
+	if (!output_json.empty())
+	{
+		fs::create_directories(fs::path(output_json).parent_path());
 	}
 
 #ifndef POLYFEM_NO_UI
