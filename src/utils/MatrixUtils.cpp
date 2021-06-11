@@ -26,7 +26,7 @@ void polyfem::show_matrix_stats(const Eigen::MatrixXd &M)
 }
 
 template <typename T>
-void polyfem::read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat)
+bool polyfem::read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat)
 {
 	std::fstream file;
 	file.open(path.c_str());
@@ -35,6 +35,8 @@ void polyfem::read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynam
 	{
 		logger().error("Failed to open file: {}", path);
 		file.close();
+
+		return false;
 	}
 
 	std::string s;
@@ -56,7 +58,11 @@ void polyfem::read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynam
 	{
 		logger().error("list to matrix error");
 		file.close();
+
+		return false;
 	}
+
+	return true;
 }
 
 polyfem::SpareMatrixCache::SpareMatrixCache(const size_t size)
@@ -241,5 +247,5 @@ void polyfem::SpareMatrixCache::operator+=(const SpareMatrixCache &o)
 }
 
 //template instantiation
-template void polyfem::read_matrix<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
-template void polyfem::read_matrix<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
+template bool polyfem::read_matrix<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
+template bool polyfem::read_matrix<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);

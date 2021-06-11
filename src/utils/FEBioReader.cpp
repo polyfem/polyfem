@@ -2,8 +2,10 @@
 
 #include <polyfem/GenericProblem.hpp>
 #include <polyfem/AssemblerUtils.hpp>
+#include <polyfem/RBFInterpolation.hpp>
 
 #include <polyfem/StringUtils.hpp>
+#include <polyfem/MatrixUtils.hpp>
 #include <polyfem/Logger.hpp>
 
 #include <igl/Timer.h>
@@ -312,7 +314,7 @@ namespace polyfem
 		}
 
 		template <typename XMLNode>
-		void load_boundary_conditions(const XMLNode *boundaries, const std::map<std::string, int> &names, const double dt, GenericTensorProblem &gproblem)
+		void load_boundary_conditions(const XMLNode *boundaries, const std::map<std::string, int> &names, const double dt, const std::string &root_file, GenericTensorProblem &gproblem)
 		{
 			std::map<int, BCData> allbc;
 			for (const tinyxml2::XMLElement *child = boundaries->FirstChildElement("fix"); child != NULL; child = child->NextSiblingElement("fix"))
@@ -419,6 +421,33 @@ namespace polyfem
 			{
 				logger().trace("adding Dirichlet id={} value=({},{},{}) fixed=({}, {}, {})", it->first, it->second.val(0), it->second.val(1), it->second.val(2), it->second.isx, it->second.isy, it->second.isz);
 				gproblem.add_dirichlet_boundary(it->first, it->second.val, it->second.isx, it->second.isy, it->second.isz);
+			}
+
+			for (const tinyxml2::XMLElement *child = boundaries->FirstChildElement("vector_bc"); child != NULL; child = child->NextSiblingElement("vector_bc"))
+			{
+				const std::string name = std::string(child->Attribute("node_set"));
+				const int id = names.at(name);
+				const std::string centers = resolve_path(std::string(child->Attribute("centers")), root_file);
+				const std::string values = resolve_path(std::string(child->Attribute("values")), root_file);
+				const std::string rbf = "thin_plate"; //TODO
+				const double eps = 1e-3;			  //TODO
+				//TODO add is x,y,z
+
+				Eigen::MatrixXd centers_mat, values_mat;
+				read_matrix(centers, centers_mat);
+				read_matrix(values, values_mat);
+
+				RBFInterpolation interp(values_mat, centers_mat, rbf, eps);
+				gproblem.add_dirichlet_boundary(
+					id, [interp](double x, double y, double z, double t)
+					{
+						Eigen::Matrix<double, 3, 1> v;
+						v[0] = x;
+						v[1] = y;
+						v[2] = z;
+						return interp.interpolate(v);
+					},
+					true, true, true);
 			}
 		}
 
@@ -636,7 +665,7 @@ namespace polyfem
 
 		const double dt = 1; //double(state.args["tend"]) / int(state.args["time_steps"]);
 		const auto *boundaries = febio->FirstChildElement("Boundary");
-		load_boundary_conditions(boundaries, names, dt, gproblem);
+		load_boundary_conditions(boundaries, names, dt, path, gproblem);
 
 		const auto *loads = febio->FirstChildElement("Loads");
 		load_loads(loads, names, dt, gproblem);

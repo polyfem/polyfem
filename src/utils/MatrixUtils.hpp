@@ -28,7 +28,7 @@ namespace polyfem
 	}
 
 	template <typename T>
-	void read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat);
+	bool read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat);
 
 	class SpareMatrixCache
 	{
