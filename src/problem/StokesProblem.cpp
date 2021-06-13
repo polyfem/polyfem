@@ -153,8 +153,47 @@ void DrivenCavity::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const
 		// val(i, 1)=-0.25;
 	}
 
-	// if (is_time_dependent_)
-	// 	val *= (1 - exp(-5 * t));
+	if (is_time_dependent_)
+		// val *= (1 - exp(-5 * t));
+	{
+		if (t < 1)
+			val *= sin(M_PI*t/2);
+	}
+}
+
+DrivenCavityC0::DrivenCavityC0(const std::string &name)
+	: TimeDepentendStokesProblem(name)
+{
+	// boundary_ids_ = {1};
+}
+
+void DrivenCavityC0::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+}
+
+void DrivenCavityC0::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+{
+	val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+
+	for (long i = 0; i < pts.rows(); ++i)
+	{
+		if(pts.cols() == 2)
+		{
+			if (mesh.get_boundary_id(global_ids(i)) == 4)
+			{
+				const double x = pts(i, 0);
+				val(i, 0) = 4 * x * (1-x);
+			}
+		}
+	}
+
+	if (is_time_dependent_)
+		// val *= (1 - exp(-5 * t));
+	{
+		if (t < 1)
+			val *= sin(M_PI*t/2);
+	}
 }
 
 DrivenCavitySmooth::DrivenCavitySmooth(const std::string &name)
@@ -179,22 +218,20 @@ void DrivenCavitySmooth::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids,
 			if (mesh.get_boundary_id(global_ids(i)) == 4)
 			{
 				const double x = pts(i, 0);
-				val(i, 0) = 4 * (1 - x) * x;
-			}
-		}
-		else
-		{
-			if (mesh.get_boundary_id(global_ids(i)) == 6)
-			{
-				const double x = pts(i, 0);
-				const double y = pts(i, 1);
-				val(i, 0) = 16 * (1 - x) * x * (1 - y) * y;
+				if (x < 0.02 || x > 1 - 0.02)
+					val(i, 0) = 0;
+				else
+					val(i, 0) = 50 * exp(1. / ((x-0.5)*(x-0.5)-0.25));
 			}
 		}
 	}
 
 	if (is_time_dependent_)
-		val *= (1 - exp(-5 * t));
+		// val *= (1 - exp(-5 * t));
+	{
+		if (t < 1)
+			val *= sin(M_PI*t/2);
+	}
 }
 
 Flow::Flow(const std::string &name)

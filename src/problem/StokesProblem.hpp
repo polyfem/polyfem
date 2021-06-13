@@ -60,6 +60,18 @@ namespace polyfem
 		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 	};
 
+	class DrivenCavityC0 : public TimeDepentendStokesProblem
+	{
+	public:
+		DrivenCavityC0(const std::string &name);
+
+		void rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		bool is_rhs_zero() const override { return true; }
+
+		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+	};
+
+
 	class DrivenCavitySmooth : public TimeDepentendStokesProblem
 	{
 	public:
