@@ -158,10 +158,11 @@ jobs:
       - name: Runner
         run: |
           cd build
-          PolyFEM_bin.exe --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --sform Laplacian
-          PolyFEM_bin.exe --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --sform Helmholtz
-          PolyFEM_bin.exe --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform HookeLinearElasticity
-          PolyFEM_bin.exe --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform LinearElasticity
-          PolyFEM_bin.exe --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform NeoHookean
-          PolyFEM_bin.exe --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform SaintVenant
-          PolyFEM_bin.exe --json ../3rdparty/data/contact/examples/3D/unit-tests/5-cubes-fast.json --cmd
+          ls
+          .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --sform Laplacian
+          .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --sform Helmholtz
+          .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --tform HookeLinearElasticity
+          .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --tform LinearElasticity
+          .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --tform NeoHookean
+          .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --tform SaintVenant
+          .\PolyFEM_bin.exe --json ..\3rdparty\data\contact\examples\3D\unit-tests\5-cubes-fast.json --cmd
