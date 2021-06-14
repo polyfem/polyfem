@@ -25,6 +25,7 @@ jobs:
       matrix:
         os: [ubuntu-18.04, macos-latest]
         config: [Debug, Release]
+        threading: [CPP, TBB, NONE]
         include:
           - os: macos-latest
             name: macOS
@@ -73,13 +74,25 @@ jobs:
           cmake .. \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
-            -DPOLYFEM_WITH_MISC=ON
+            -DPOLYFEM_WITH_MISC=ON \
+            -DPOLYFEM_THREADING=${{ matrix.threading }}
 
       - name: Build
         run: cd build; make -j2; ccache --show-stats
 
       - name: Tests
         run: cd build; ctest --verbose --output-on-failure
+
+      - name: Runner
+        run: |
+          cd build
+          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --sform Laplacian
+          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --sform Helmholtz
+          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform HookeLinearElasticity
+          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform LinearElasticity
+          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform NeoHookean
+          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform SaintVenant
+          ./PolyFEM_bin --json ../3rdparty/data/contact/examples/3D/unit-tests/5-cubes.json --cmd --solver Hypre
 
   ####################
   # Windows
@@ -95,6 +108,7 @@ jobs:
       fail-fast: false
       matrix:
         config: [Debug]
+        threading: [TBB, NONE]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v1
@@ -130,7 +144,7 @@ jobs:
             -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ^
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
             -DPOLYFEM_WITH_MISC=ON ^
-            -DPOLYFEM_THREADING=TBB ^
+            -DPOLYFEM_THREADING=${{ matrix.threading }} ^
             -B build ^
             -S .
           cd build
@@ -140,3 +154,14 @@ jobs:
         run: |
           cd build
           ctest --verbose --output-on-failure
+
+      - name: Runner
+        run: |
+          cd build
+          PolyFEM_bin.exe --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --sform Laplacian
+          PolyFEM_bin.exe --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --sform Helmholtz
+          PolyFEM_bin.exe --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform HookeLinearElasticity
+          PolyFEM_bin.exe --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform LinearElasticity
+          PolyFEM_bin.exe --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform NeoHookean
+          PolyFEM_bin.exe --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform SaintVenant
+          PolyFEM_bin.exe --json ../3rdparty/data/contact/examples/3D/unit-tests/5-cubes.json --cmd --solver Hypre
