@@ -272,6 +272,8 @@ namespace polyfem
 			stiffness.makeCompressed();
 #elif defined(POLYFEM_WITH_TBB)
 				SpareMatrixCache tmp_cache;
+				tmp_cache.init(stiffness.rows());
+				tmp_cache.set_zero();
 				merge_matrices(storages, tmp_cache);
 
 				stiffness = tmp_cache.get_matrix(false);
@@ -424,6 +426,8 @@ namespace polyfem
 		stiffness.makeCompressed();
 #elif defined(POLYFEM_WITH_TBB)
 				SpareMatrixCache tmp_cache;
+				tmp_cache.init(stiffness.rows());
+				tmp_cache.set_zero();
 				merge_matrices(storages, tmp_cache);
 				stiffness = tmp_cache.get_matrix(false);
 
