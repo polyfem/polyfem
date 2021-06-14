@@ -18,7 +18,7 @@ jobs:
   ####################
 
   Unix:
-    name: ${{ matrix.name }} (${{ matrix.config }})
+    name: ${{ matrix.name }} (${{ matrix.config }}, ${{ matrix.threading }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -60,7 +60,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.ccache
-          key: ${{ runner.os }}-${{ matrix.config }}-cache
+          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
 
       - name: Prepare ccache
         run: |
@@ -92,7 +92,7 @@ jobs:
           ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform LinearElasticity
           ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform NeoHookean
           ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform SaintVenant
-          ./PolyFEM_bin --json ../3rdparty/data/contact/examples/3D/unit-tests/5-cubes.json --cmd --solver Hypre
+          ./PolyFEM_bin --json ../3rdparty/data/contact/examples/3D/unit-tests/5-cubes-fast.json --cmd
 
   ####################
   # Windows
@@ -126,7 +126,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ${{ env.appdata }}\Mozilla\sccache
-          key: ${{ runner.os }}-${{ matrix.config }}-cache
+          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
 
       - name: Prepare sccache
         run: |
@@ -164,4 +164,4 @@ jobs:
           PolyFEM_bin.exe --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform LinearElasticity
           PolyFEM_bin.exe --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform NeoHookean
           PolyFEM_bin.exe --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform SaintVenant
-          PolyFEM_bin.exe --json ../3rdparty/data/contact/examples/3D/unit-tests/5-cubes.json --cmd --solver Hypre
+          PolyFEM_bin.exe --json ../3rdparty/data/contact/examples/3D/unit-tests/5-cubes-fast.json --cmd
