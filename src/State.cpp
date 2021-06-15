@@ -964,20 +964,28 @@ namespace polyfem
 
 		if (problem->is_time_dependent())
 		{
-			const double tend = args["tend"];
+			double tend = args["tend"];
+			const double t0 = args["t0"];
 			double dt;
 			int time_steps;
 			if (args.contains("dt")) // Explicit timestep param. has priority
 			{
 				dt = args["dt"];
-				time_steps = int(ceil(tend / dt));
+				time_steps = int(ceil((tend - t0) / dt));
 			}
 			else
 			{
 				time_steps = args["time_steps"];
-				dt = tend / time_steps;
+				dt = (tend - t0) / time_steps;
 			}
-			logger().info("dt={}", dt);
+
+			if (tend <= t0)
+			{
+				dt = args["dt"];
+				time_steps = args["time_steps"];
+				tend = t0 + time_steps * dt;
+			}
+			logger().info("t0={}, dt={}, tend={}", t0, dt, tend);
 
 			const auto &gbases = iso_parametric() ? bases : geom_bases;
 			json rhs_solver_params = args["rhs_solver_params"];
@@ -988,7 +996,12 @@ namespace polyfem
 									   bases, gbases, ass_vals_cache,
 									   formulation(), *problem,
 									   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
-			rhs_assembler.initial_solution(sol);
+
+			const std::string u_path = resolve_path(args["import"]["u_path"], args["root_path"]);
+			if (!u_path.empty())
+				read_matrix(u_path, sol);
+			else
+				rhs_assembler.initial_solution(sol);
 
 			if (assembler.is_mixed(formulation()))
 			{
@@ -1013,13 +1026,13 @@ namespace polyfem
 			}
 
 			if (formulation() == "NavierStokes")
-				solve_transient_navier_stokes(time_steps, dt, rhs_assembler, c_sol);
+				solve_transient_navier_stokes(time_steps, t0, dt, rhs_assembler, c_sol);
 			else if (problem->is_scalar() || assembler.is_mixed(formulation()))
-				solve_transient_scalar(time_steps, dt, rhs_assembler, c_sol);
+				solve_transient_scalar(time_steps, t0, dt, rhs_assembler, c_sol);
 			else if (assembler.is_linear(formulation()) && !args["has_collision"])
-				solve_transient_tensor_linear(time_steps, dt, rhs_assembler);
+				solve_transient_tensor_linear(time_steps, t0, dt, rhs_assembler);
 			else
-				solve_transient_tensor_non_linear(time_steps, dt, rhs_assembler);
+				solve_transient_tensor_non_linear(time_steps, t0, dt, rhs_assembler);
 		}
 		else //if(!problem->is_time_dependent())
 		{

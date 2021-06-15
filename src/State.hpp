@@ -326,10 +326,10 @@ namespace polyfem
 		void solve_problem();
 
 		//Aux solving functions, c_sol=x are necessary since they contain the pressure, while sol dosent
-		void solve_transient_navier_stokes(const int time_steps, const double dt, const RhsAssembler &rhs_assembler, Eigen::VectorXd &c_sol);
-		void solve_transient_scalar(const int time_steps, const double dt, const RhsAssembler &rhs_assembler, Eigen::VectorXd &x);
-		void solve_transient_tensor_linear(const int time_steps, const double dt, const RhsAssembler &rhs_assembler);
-		void solve_transient_tensor_non_linear(const int time_steps, const double dt, const RhsAssembler &rhs_assembler);
+		void solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler, Eigen::VectorXd &c_sol);
+		void solve_transient_scalar(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler, Eigen::VectorXd &x);
+		void solve_transient_tensor_linear(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler);
+		void solve_transient_tensor_non_linear(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler);
 		void solve_linear();
 		void solve_navier_stokes();
 		void solve_non_linear();

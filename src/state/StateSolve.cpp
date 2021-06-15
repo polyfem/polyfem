@@ -13,9 +13,13 @@
 #include <polysolve/LinearSolver.hpp>
 #include <polysolve/FEMSolver.hpp>
 
+#include <polyfem/StringUtils.hpp>
+
+#include <fstream>
+
 namespace polyfem
 {
-	void State::solve_transient_navier_stokes(const int time_steps, const double dt, const RhsAssembler &rhs_assembler, Eigen::VectorXd &c_sol)
+	void State::solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler, Eigen::VectorXd &c_sol)
 	{
 		assert(formulation() == "NavierStokes" && problem->is_time_dependent());
 
@@ -43,7 +47,7 @@ namespace polyfem
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
-			double time = t * dt;
+			double time = t0 + t * dt;
 			double current_dt = dt;
 
 			logger().info("{}/{} steps, dt={}s t={}s", t, time_steps, current_dt, time);
@@ -76,7 +80,7 @@ namespace polyfem
 		}
 	}
 
-	void State::solve_transient_scalar(const int time_steps, const double dt, const RhsAssembler &rhs_assembler, Eigen::VectorXd &x)
+	void State::solve_transient_scalar(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler, Eigen::VectorXd &x)
 	{
 		assert((problem->is_scalar() || assembler.is_mixed(formulation())) && problem->is_time_dependent());
 
@@ -99,7 +103,7 @@ namespace polyfem
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
-			double time = t * dt;
+			double time = t0 + t * dt;
 			double current_dt = dt;
 
 			logger().info("{}/{} {}s", t, time_steps, time);
@@ -140,7 +144,7 @@ namespace polyfem
 		}
 	}
 
-	void State::solve_transient_tensor_linear(const int time_steps, const double dt, const RhsAssembler &rhs_assembler)
+	void State::solve_transient_tensor_linear(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler)
 	{
 		assert(!problem->is_scalar() && assembler.is_linear(formulation()) && !args["has_collision"] && problem->is_time_dependent());
 		assert(!assembler.is_mixed(formulation()));
@@ -150,9 +154,20 @@ namespace polyfem
 		solver->setParameters(params);
 		logger().info("{}...", solver->name());
 
+		const std::string v_path = resolve_path(args["import"]["v_path"], args["root_path"]);
+		const std::string a_path = resolve_path(args["import"]["a_path"], args["root_path"]);
+
 		Eigen::MatrixXd velocity, acceleration;
-		rhs_assembler.initial_velocity(velocity);
-		rhs_assembler.initial_acceleration(acceleration);
+
+		if (!v_path.empty())
+			read_matrix(v_path, velocity);
+		else
+			rhs_assembler.initial_velocity(velocity);
+		if (!a_path.empty())
+			read_matrix(a_path, acceleration);
+		else
+			rhs_assembler.initial_acceleration(acceleration);
+
 		Eigen::MatrixXd current_rhs = rhs;
 
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
@@ -175,13 +190,13 @@ namespace polyfem
 			const Eigen::MatrixXd vOld = velocity;
 			const Eigen::MatrixXd uOld = sol;
 
-			rhs_assembler.assemble(density, current_rhs, dt * t);
+			rhs_assembler.assemble(density, current_rhs, t0 + dt * t);
 			current_rhs *= -1;
 
 			temp = -(uOld + dt * vOld + ((1 / 2. - beta) * dt2) * aOld);
 			b = stiffness * temp + current_rhs;
 
-			rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, b, dt * t);
+			rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, b, t0 + dt * t);
 
 			A = stiffness * beta * dt2 + mass;
 			btmp = b;
@@ -191,23 +206,47 @@ namespace polyfem
 			sol += dt * vOld + dt2 * ((1 / 2.0 - beta) * aOld + beta * acceleration);
 			velocity += dt * ((1 - gamma) * aOld + gamma * acceleration);
 
-			rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, dt * t);
-			rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, dt * t);
-			rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, dt * t);
+			rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, t0 + dt * t);
+			rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, t0 + dt * t);
+			rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, t0 + dt * t);
 
 			if (args["save_time_sequence"])
 			{
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
-				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), dt * t);
+				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), t0 + dt * t);
 				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
 			}
 
-			logger().info("{}/{}", t, time_steps);
+			logger().info("{}/{} t={}", t, time_steps, t0 + dt * t);
+		}
+
+		{
+			const std::string u_path = resolve_output_path(args["export"]["u_path"]);
+			const std::string v_path = resolve_output_path(args["export"]["v_path"]);
+			const std::string a_path = resolve_output_path(args["export"]["a_path"]);
+
+			if (!u_path.empty())
+			{
+				std::ofstream os(u_path);
+				os << sol;
+			}
+
+			if (!v_path.empty())
+			{
+				std::ofstream os(v_path);
+				os << velocity;
+			}
+
+			if (!a_path.empty())
+			{
+				std::ofstream os(a_path);
+				os << acceleration;
+			}
 		}
 	}
 
-	void State::solve_transient_tensor_non_linear(const int time_steps, const double dt, const RhsAssembler &rhs_assembler)
+	void State::solve_transient_tensor_non_linear(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler)
 	{
 		assert(!problem->is_scalar() && (!assembler.is_linear(formulation()) || args["has_collision"]) && problem->is_time_dependent());
 		assert(!assembler.is_mixed(formulation()));
@@ -276,15 +315,25 @@ namespace polyfem
 		// 	exit(0);
 		// }
 
+		const std::string v_path = resolve_path(args["import"]["v_path"], args["root_path"]);
+		const std::string a_path = resolve_path(args["import"]["a_path"], args["root_path"]);
+
 		Eigen::MatrixXd velocity, acceleration;
-		rhs_assembler.initial_velocity(velocity);
-		rhs_assembler.initial_acceleration(acceleration);
+
+		if (!v_path.empty())
+			read_matrix(v_path, velocity);
+		else
+			rhs_assembler.initial_velocity(velocity);
+		if (!a_path.empty())
+			read_matrix(a_path, acceleration);
+		else
+			rhs_assembler.initial_acceleration(acceleration);
 
 		const int full_size = n_bases * mesh->dimension();
 		const int reduced_size = n_bases * mesh->dimension() - boundary_nodes.size();
 		VectorXd tmp_sol;
 
-		NLProblem nl_problem(*this, rhs_assembler, dt, args["dhat"], args["project_to_psd"]);
+		NLProblem nl_problem(*this, rhs_assembler, t0 + dt, args["dhat"], args["project_to_psd"]);
 		nl_problem.init_timestep(sol, velocity, acceleration, dt);
 
 		solver_info = json::array();
@@ -293,7 +342,7 @@ namespace polyfem
 		// {
 		double al_weight = args["al_weight"];
 		const double max_al_weight = args["max_al_weight"];
-		ALNLProblem alnl_problem(*this, rhs_assembler, dt, args["dhat"], args["project_to_psd"], al_weight);
+		ALNLProblem alnl_problem(*this, rhs_assembler, t0 + dt, args["dhat"], args["project_to_psd"], al_weight);
 		alnl_problem.init_timestep(sol, velocity, acceleration, dt);
 
 		for (int t = 1; t <= time_steps; ++t)
@@ -343,18 +392,18 @@ namespace polyfem
 			nlsolver.getInfo(nl_solver_info);
 			nl_problem.reduced_to_full(tmp_sol, sol);
 
-			nl_problem.update_quantities((t + 1) * dt, sol);
-			alnl_problem.update_quantities((t + 1) * dt, sol);
+			nl_problem.update_quantities(t0 + (t + 1) * dt, sol);
+			alnl_problem.update_quantities(t0 + (t + 1) * dt, sol);
 
 			if (args["save_time_sequence"])
 			{
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
-				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), dt * t);
+				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), t0 + dt * t);
 				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
 			}
 
-			logger().info("{}/{}", t, time_steps);
+			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 
 			solver_info.push_back({{"type", "rc"},
 								   {"t", t},
@@ -439,6 +488,10 @@ namespace polyfem
 		// 		logger().info("{}/{}", t, time_steps);
 		// 	}
 		// }
+		nl_problem.save_raw(
+			resolve_output_path(args["export"]["u_path"]),
+			resolve_output_path(args["export"]["v_path"]),
+			resolve_output_path(args["export"]["a_path"]));
 	}
 
 	void State::solve_linear()

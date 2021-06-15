@@ -87,6 +87,7 @@ namespace polyfem
 		problem = ProblemFactory::factory().get_problem("Linear");
 
 		this->args = {
+			{"root_path", ""},
 			{"mesh", ""},
 			{"force_linear_geometry", false},
 			{"bc_tag", ""},
@@ -108,6 +109,7 @@ namespace polyfem
 			{"has_collision", false},
 			{"dhat", 0.03},
 
+			{"t0", 0},
 			{"tend", 1},
 			{"time_steps", 10},
 
@@ -175,6 +177,11 @@ namespace polyfem
 			// {"solution", ""},
 			// {"stiffness_mat_save_path", ""},
 
+			{"import",
+			 {{"u_path", ""},
+			  {"v_path", ""},
+			  {"a_path", ""}}},
+
 			{"export",
 			 {{"sol_at_node", -1},
 			  {"surface", ""},
@@ -193,6 +200,9 @@ namespace polyfem
 			  {"stiffness_mat", ""},
 			  {"solution_mat", ""},
 			  {"stress_mat", ""},
+			  {"u_path", ""},
+			  {"v_path", ""},
+			  {"a_path", ""},
 			  {"mises", ""}}}};
 	}
 

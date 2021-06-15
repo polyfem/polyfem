@@ -148,6 +148,8 @@ int main(int argc, char **argv)
 			logger().error("unable to open {} file", json_file);
 		file.close();
 
+		in_args["root_path"] = json_file;
+
 		// If the mesh path does not exist make it relative to the json_file
 		if (in_args.contains("mesh"))
 		{
@@ -168,6 +170,7 @@ int main(int argc, char **argv)
 	}
 	else
 	{
+		in_args["root_path"] = mesh_file;
 		in_args["mesh"] = mesh_file;
 		in_args["force_linear_geometry"] = force_linear;
 		in_args["n_refs"] = n_refs;

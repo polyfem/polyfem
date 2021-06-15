@@ -669,4 +669,25 @@ namespace polyfem
 		}
 		_prev_distance = dist_sqr;
 	}
+
+	void NLProblem::save_raw(const std::string &x_path, const std::string &v_path, const std::string &a_path)
+	{
+		if (!x_path.empty())
+		{
+			std::ofstream os(x_path);
+			os << x_prev;
+		}
+
+		if (!v_path.empty())
+		{
+			std::ofstream os(v_path);
+			os << v_prev;
+		}
+
+		if (!a_path.empty())
+		{
+			std::ofstream os(a_path);
+			os << a_prev;
+		}
+	}
 } // namespace polyfem

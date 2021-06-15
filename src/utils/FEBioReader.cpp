@@ -549,6 +549,7 @@ namespace polyfem
 			state.args["export"]["solution_mat"] = export_solution;
 
 		state.args["export"]["body_ids"] = true;
+		state.args["root_path"] = path;
 
 		tinyxml2::XMLDocument doc;
 		doc.LoadFile(path.c_str());
