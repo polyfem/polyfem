@@ -593,6 +593,7 @@ namespace polyfem
 			state.args["solver_params"]["gradNorm"] = 1e-5;
 			state.args["solver_params"]["nl_iterations"] = 200;
 			state.args["solver_params"]["useGradNorm"] = false;
+			state.args["solver_params"]["conv_tol"] = 1e-6;
 
 			logger().trace("dhat = {}", 1e-3 * diag);
 		}
