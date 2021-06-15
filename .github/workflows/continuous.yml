@@ -53,7 +53,7 @@ jobs:
 
       - name: Dependencies (macOS)
         if: runner.os == 'macOS'
-        run: brew install suite-sparse ccache
+        run: brew install ccache
 
       - name: Cache Build
         id: cache-build
