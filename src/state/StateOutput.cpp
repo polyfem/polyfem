@@ -207,7 +207,11 @@ namespace polyfem
 							}
 						}
 						const auto map = [mapp, n_samples](int i, int j)
-						{ return mapp[j * n_samples + i]; };
+						{
+							if (j * n_samples + i >= mapp.size())
+								return -1;
+							return mapp[j * n_samples + i];
+						};
 
 						for (int j = 0; j < n_samples - 1; ++j)
 						{
