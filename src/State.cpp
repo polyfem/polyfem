@@ -936,7 +936,7 @@ namespace polyfem
 			return;
 		}
 
-		if (assembler.is_linear(formulation()) && stiffness.rows() <= 0)
+		if (assembler.is_linear(formulation()) && !args["has_collision"] && stiffness.rows() <= 0)
 		{
 			logger().error("Assemble the stiffness matrix first!");
 			return;
