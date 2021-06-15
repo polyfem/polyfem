@@ -147,20 +147,28 @@ namespace polyfem
 			}
 		}
 
-		StiffnessMatrix mass;
-		Density d;
-		assembler_.assemble_mass_matrix(formulation_, size_ == 3, n_basis_, d, bases_, gbases_, ass_vals_cache_, mass);
-		auto solver = LinearSolver::create(solver_, preconditioner_);
-		solver->setParameters(solver_params_);
-		solver->analyzePattern(mass, mass.rows());
-		solver->factorize(mass);
 		Eigen::MatrixXd b = sol;
 		sol.setZero();
-		for (long i = 0; i < b.cols(); ++i)
+
+		const double mmin = b.minCoeff();
+		const double mmax = b.maxCoeff();
+
+		if (fabs(mmin) > 1e-8 || fabs(mmax) > 1e-8)
 		{
-			solver->solve(b.col(i), sol.col(i));
+			StiffnessMatrix mass;
+			Density d;
+			assembler_.assemble_mass_matrix(formulation_, size_ == 3, n_basis_, d, bases_, gbases_, ass_vals_cache_, mass);
+			auto solver = LinearSolver::create(solver_, preconditioner_);
+			solver->setParameters(solver_params_);
+			solver->analyzePattern(mass, mass.rows());
+			solver->factorize(mass);
+
+			for (long i = 0; i < b.cols(); ++i)
+			{
+				solver->solve(b.col(i), sol.col(i));
+			}
+			logger().trace("mass matrix error {}", (mass * sol - b).norm());
 		}
-		logger().trace("mass matrix error {}", (mass * sol - b).norm());
 	}
 
 	void RhsAssembler::set_bc(
