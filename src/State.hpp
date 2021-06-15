@@ -20,6 +20,12 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+
+// #ifdef POLYFEM_WITH_TBB
+// #include <thread>
+// #include <tbb/task_scheduler_init.h>
+// #endif
+
 #include <memory>
 #include <string>
 
@@ -528,9 +534,9 @@ namespace polyfem
 		//builds bases for polygons, called inside build_basis
 		void build_polygonal_basis();
 
-#ifdef USE_TBB
-		tbb::task_scheduler_init scheduler;
-#endif
+		// #ifdef USE_TBB
+		// 		tbb::task_scheduler_init scheduler;
+		// #endif
 	};
 
 } // namespace polyfem

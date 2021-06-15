@@ -158,7 +158,6 @@ jobs:
       - name: Runner
         run: |
           cd build
-          ls
           .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --sform Laplacian
           .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --sform Helmholtz
           .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --tform HookeLinearElasticity

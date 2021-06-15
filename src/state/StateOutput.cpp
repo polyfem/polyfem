@@ -7,9 +7,9 @@
 #include <polyfem/VTUWriter.hpp>
 #include <polyfem/MeshUtils.hpp>
 
-#ifdef POLYFEM_WITH_TBB
-#include <tbb/task_scheduler_init.h>
-#endif
+// #ifdef POLYFEM_WITH_TBB
+// #include <tbb/task_scheduler_init.h>
+// #endif
 
 #include <igl/remove_unreferenced.h>
 #include <igl/remove_duplicate_vertices.h>
@@ -671,7 +671,7 @@ namespace polyfem
 #if defined(POLYFEM_WITH_CPP_THREADS)
 		j["num_threads"] = polyfem::get_n_threads();
 #elif defined(POLYFEM_WITH_TBB)
-		j["num_threads"] = tbb::task_scheduler_init::default_num_threads();
+		j["num_threads"] = std::thread::hardware_concurrency(); //tbb::task_scheduler_init::default_num_threads();
 #else
 		j["num_threads"] = 1;
 #endif

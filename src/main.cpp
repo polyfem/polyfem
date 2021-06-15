@@ -14,11 +14,6 @@
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
 
-#ifdef POLYFEM_WITH_TBB
-#include <tbb/task_scheduler_init.h>
-#include <thread>
-#endif
-
 #include <ghc/fs_std.hpp> // filesystem
 
 using namespace polyfem;
