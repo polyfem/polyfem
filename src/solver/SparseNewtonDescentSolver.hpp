@@ -159,8 +159,8 @@ namespace cppoptlib
 			const double old_energy = objFunc.value(x);
 			int cur_iter = 0;
 
-			TVector new_x = x + grad;
 			double step_size = 1;
+			TVector new_x = x + grad * step_size;
 
 			igl::Timer time;
 			igl::Timer time1;

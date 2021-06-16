@@ -351,6 +351,7 @@ namespace polyfem
 			assert(sol.size() == rhs.size());
 			assert(tmp_sol.size() < rhs.size());
 
+			nl_problem.solution_changed(tmp_sol);
 			while (!std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
 			{
 				alnl_problem.set_weight(al_weight);
@@ -654,6 +655,7 @@ namespace polyfem
 		solver_info = json::array();
 
 		int index = 0;
+		nl_problem.solution_changed(tmp_sol);
 		while (!std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
 		{
 			alnl_problem.set_weight(al_weight);
