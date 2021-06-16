@@ -375,16 +375,16 @@ namespace cppoptlib
 
 					next_hessian += 1;
 
-					if (iter == 0)
-					{
-						if (has_hessian_nans(hessian))
-						{
-							this->m_status = Status::UserDefined;
-							polyfem::logger().debug("stopping because hessian is nan");
-							error_code_ = -10;
-							break;
-						}
-					}
+					// if (iter == 0)
+					// {
+					// 	if (has_hessian_nans(hessian))
+					// 	{
+					// 		this->m_status = Status::UserDefined;
+					// 		polyfem::logger().debug("stopping because hessian is nan");
+					// 		error_code_ = -10;
+					// 		break;
+					// 	}
+					// }
 				}
 
 				// std::cout<<hessian<<std::endl;
