@@ -488,7 +488,10 @@ namespace polyfem
 		extract_vis_boundary_mesh();
 		logger().info("Done!");
 
+		const int prev_b_size = local_boundary.size();
 		problem->setup_bc(*mesh, bases, local_boundary, boundary_nodes, local_neumann_boundary);
+		args["has_neumann"] = local_neumann_boundary.size() > 0 || local_boundary.size() < prev_b_size;
+		use_avg_pressure = !args["has_neumann"];
 
 		//add a pressure node to avoid singular solution
 		if (assembler.is_mixed(formulation())) // && !assembler.is_fluid(formulation()))
