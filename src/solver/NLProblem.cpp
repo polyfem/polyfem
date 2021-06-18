@@ -627,6 +627,27 @@ namespace polyfem
 										  _dhat, _constraint_set, true, Eigen::VectorXi(), state.boundary_faces_to_edges);
 	}
 
+	double NLProblem::heuristic_max_step(const TVector &dx)
+	{
+		// if (disable_collision)
+		// 	return 1;
+		// if (!state.args["has_collision"])
+		// 	return 1;
+
+		// //pSize = average(searchDir)
+		// const double pSize = dx.lpNorm<1>() / dx.size();
+		// const double voxelSize = state.average_edge_length / 3.0;
+
+		// const double spanSize = pSize / voxelSize;
+		// std::cout << "pSize " << pSize << " spanSize " << spanSize << " voxelSize " << voxelSize << " avg " << state.average_edge_length << std::endl;
+		// if (spanSize > 1)
+		// {
+		// 	return 1 / spanSize;
+		// }
+
+		return 1;
+	}
+
 	void NLProblem::post_step(const TVector &x0)
 	{
 		if (disable_collision)

@@ -83,7 +83,7 @@ namespace cppoptlib
 			solver_info["line_search"] = name;
 		}
 
-		double armijo_linesearch(const TVector &x, const TVector &searchDir, ProblemType &objFunc, const double alpha_init = 1.0)
+		double armijo_linesearch(const TVector &x, const TVector &searchDir, ProblemType &objFunc, double alpha_init = 1.0)
 		{
 			static const int MAX_STEP_SIZE_ITER = 12;
 
@@ -93,6 +93,8 @@ namespace cppoptlib
 
 			TVector grad(x.rows());
 			objFunc.gradient(x, grad);
+
+			alpha_init = std::min(objFunc.heuristic_max_step(searchDir), alpha_init);
 
 			TVector x1 = x + alpha_init * searchDir;
 
@@ -159,7 +161,7 @@ namespace cppoptlib
 			const double old_energy = objFunc.value(x);
 			int cur_iter = 0;
 
-			double step_size = 1;
+			double step_size = objFunc.heuristic_max_step(grad);
 			TVector new_x = x + grad * step_size;
 
 			igl::Timer time;

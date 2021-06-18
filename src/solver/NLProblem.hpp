@@ -119,6 +119,8 @@ namespace polyfem
 
 		void save_raw(const std::string &x_path, const std::string &v_path, const std::string &a_path);
 
+		double heuristic_max_step(const TVector &dx);
+
 	protected:
 		State &state;
 		double _barrier_stiffness;
