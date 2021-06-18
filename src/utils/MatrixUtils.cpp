@@ -73,12 +73,20 @@ polyfem::SpareMatrixCache::SpareMatrixCache(const size_t size)
 	mat_.setZero();
 }
 
+polyfem::SpareMatrixCache::SpareMatrixCache(const size_t rows, const size_t cols)
+	: size_(rows == cols ? rows : 0)
+{
+	tmp_.resize(rows, cols);
+	mat_.resize(rows, cols);
+	mat_.setZero();
+}
+
 polyfem::SpareMatrixCache::SpareMatrixCache(const SpareMatrixCache &other)
 	: size_(other.size_), mapping_(other.mapping_),
 	  inner_index_(other.inner_index_), outer_index_(other.outer_index_), values_(other.values_.size())
 {
-	tmp_.resize(size_, size_);
-	mat_.resize(size_, size_);
+	tmp_.resize(other.mat_.rows(), other.mat_.cols());
+	mat_.resize(other.mat_.rows(), other.mat_.cols());
 	mat_.setZero();
 	std::fill(values_.begin(), values_.end(), 0);
 }
@@ -93,6 +101,16 @@ void polyfem::SpareMatrixCache::init(const size_t size)
 	mat_.setZero();
 }
 
+void polyfem::SpareMatrixCache::init(const size_t rows, const size_t cols)
+{
+	assert(mapping_.empty());
+
+	size_ = rows == cols ? rows : 0;
+	tmp_.resize(rows, cols);
+	mat_.resize(rows, cols);
+	mat_.setZero();
+}
+
 void polyfem::SpareMatrixCache::init(const SpareMatrixCache &other)
 {
 	size_ = other.size_;
@@ -102,8 +120,8 @@ void polyfem::SpareMatrixCache::init(const SpareMatrixCache &other)
 	outer_index_ = other.outer_index_;
 	values_.resize(other.values_.size());
 
-	tmp_.resize(size_, size_);
-	mat_.resize(size_, size_);
+	tmp_.resize(other.mat_.rows(), other.mat_.cols());
+	mat_.resize(other.mat_.rows(), other.mat_.cols());
 	mat_.setZero();
 	std::fill(values_.begin(), values_.end(), 0);
 }
@@ -164,7 +182,7 @@ polyfem::StiffnessMatrix polyfem::SpareMatrixCache::get_matrix(const bool comput
 
 	if (mapping_.empty())
 	{
-		if (compute_mapping)
+		if (compute_mapping && size_ > 0)
 		{
 			values_.resize(mat_.nonZeros());
 			inner_index_.resize(mat_.nonZeros());
@@ -197,6 +215,7 @@ polyfem::StiffnessMatrix polyfem::SpareMatrixCache::get_matrix(const bool comput
 	}
 	else
 	{
+		assert(size_ > 0);
 		mat_ = Eigen::Map<const StiffnessMatrix>(size_, size_, values_.size(), &outer_index_[0], &inner_index_[0], &values_[0]);
 		logger().trace("Using cache");
 	}

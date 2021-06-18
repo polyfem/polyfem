@@ -35,9 +35,11 @@ namespace polyfem
 	public:
 		SpareMatrixCache() {}
 		SpareMatrixCache(const size_t size);
+		SpareMatrixCache(const size_t rows, const size_t cols);
 		SpareMatrixCache(const SpareMatrixCache &other);
 
 		void init(const size_t size);
+		void init(const size_t rows, const size_t cols);
 		void init(const SpareMatrixCache &other);
 
 		void set_zero();

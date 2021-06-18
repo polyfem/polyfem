@@ -17,7 +17,7 @@ namespace polyfem
 			"HookeLinearElasticity",
 			"SaintVenant",
 			"NeoHookean",
-			"MultiModels"
+			"MultiModels",
 			// "Ogden",
 			"Stokes",
 			"NavierStokes",

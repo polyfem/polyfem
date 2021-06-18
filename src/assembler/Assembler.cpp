@@ -55,9 +55,9 @@ namespace polyfem
 
 			void init(const int buffer_size, const int rows, const int cols)
 			{
-				assert(rows == cols);
+				// assert(rows == cols);
 				cache.reserve(buffer_size);
-				cache.init(rows);
+				cache.init(rows, cols);
 			}
 
 			void init(const int buffer_size, const SpareMatrixCache &c)
@@ -271,7 +271,7 @@ namespace polyfem
 			stiffness.makeCompressed();
 #elif defined(POLYFEM_WITH_TBB)
 				SpareMatrixCache tmp_cache;
-				tmp_cache.init(stiffness.rows());
+				tmp_cache.init(stiffness.rows(), stiffness.cols());
 				tmp_cache.set_zero();
 				merge_matrices(storages, tmp_cache);
 
@@ -425,7 +425,7 @@ namespace polyfem
 		stiffness.makeCompressed();
 #elif defined(POLYFEM_WITH_TBB)
 				SpareMatrixCache tmp_cache;
-				tmp_cache.init(stiffness.rows());
+				tmp_cache.init(stiffness.rows(), stiffness.cols());
 				tmp_cache.set_zero();
 				merge_matrices(storages, tmp_cache);
 				stiffness = tmp_cache.get_matrix(false);

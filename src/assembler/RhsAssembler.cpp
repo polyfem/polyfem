@@ -493,6 +493,17 @@ namespace polyfem
 			assemble(density, rhs, t);
 			rhs *= -1;
 			set_bc(local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs, t);
+
+			if (rhs.size() != final_rhs.size())
+			{
+				const int prev_size = rhs.size();
+				rhs.conservativeResize(final_rhs.size(), rhs.cols());
+				//Zero initial pressure
+				rhs.block(prev_size, 0, final_rhs.size() - prev_size, rhs.cols()).setZero();
+				rhs(rhs.size() - 1) = 0;
+			}
+
+			assert(rhs.size() == final_rhs.size());
 		}
 	}
 
