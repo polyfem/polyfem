@@ -95,6 +95,7 @@ jobs:
           ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform LinearElasticity
           ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform NeoHookean
           ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform SaintVenant
+          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform Stokes
           ./PolyFEM_bin --json ../3rdparty/data/contact/examples/3D/unit-tests/5-cubes-fast.json --cmd
 
   ####################
@@ -167,4 +168,5 @@ jobs:
           .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --tform LinearElasticity
           .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --tform NeoHookean
           .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --tform SaintVenant
+          .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --tform Stokes
           .\PolyFEM_bin.exe --json ..\3rdparty\data\contact\examples\3D\unit-tests\5-cubes-fast.json --cmd
