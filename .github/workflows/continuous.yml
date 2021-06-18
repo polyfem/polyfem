@@ -63,7 +63,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ env.CACHE_PATH }}
-          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
+          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
 
       - name: Prepare ccache
         run: |
@@ -130,7 +131,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ env.appdata }}\Mozilla\sccache
-          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
+          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
 
       - name: Prepare sccache
         run: |
