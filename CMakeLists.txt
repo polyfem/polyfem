@@ -254,12 +254,10 @@ polyfem_download_BVH()
 add_subdirectory(${THIRD_PARTY_DIR}/BVH)
 target_link_libraries(polyfem PUBLIC BVH_lib)
 
-
 # MSHIO
 polyfem_download_mshio()
 add_subdirectory(${THIRD_PARTY_DIR}/mshio)
 target_link_libraries(polyfem PUBLIC mshio)
-
 
 # Geogram
 polyfem_download_geogram()
@@ -301,6 +299,7 @@ if(${POLYFEM_TOPLEVEL_PROJECT})
     target_include_directories(catch SYSTEM INTERFACE ${THIRD_PARTY_DIR}/Catch2/single_include/catch2)
 endif()
 
+# Filesystem
 target_link_libraries(polyfem PUBLIC ghc::filesystem)
 
 ################################################################################
