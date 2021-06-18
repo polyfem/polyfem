@@ -7,6 +7,7 @@
 #include <polyfem/MatrixUtils.hpp>
 
 #include <ipc/collision_constraint.hpp>
+#include <ipc/friction/friction_constraint.hpp>
 
 #include <cppoptlib/problem.h>
 
@@ -112,6 +113,9 @@ namespace polyfem
 		virtual void update_quantities(const double t, const TVector &x);
 		void substepping(const double t);
 		void solution_changed(const TVector &newX);
+		void update_lagging(const TVector &x, bool start_of_timestep);
+
+		bool lagging_converged(const TVector &x, bool do_lagging_update = true);
 
 		const Eigen::MatrixXd &current_rhs();
 
@@ -125,6 +129,7 @@ namespace polyfem
 		State &state;
 		double _barrier_stiffness;
 		void compute_displaced_points(const Eigen::MatrixXd &full, Eigen::MatrixXd &displaced);
+		void reduced_to_full_displaced_points(const TVector &reduced, Eigen::MatrixXd &displaced);
 		const RhsAssembler &rhs_assembler;
 		bool is_time_dependent;
 
@@ -143,10 +148,16 @@ namespace polyfem
 		double _prev_distance;
 		double max_barrier_stiffness_;
 
+		// friction variables
+		double _epsv;					///< @brief The boundary between static and dynamic friction.
+		double _mu;						///< @brief Coefficient of friction.
+		Eigen::MatrixXd displaced_prev; ///< @brief Displaced vertices at the start of the time-step.
+
 		double dt;
 		TVector x_prev, v_prev, a_prev;
 
 		ipc::Constraints _constraint_set;
+		ipc::FrictionConstraints _friction_constraint_set;
 		ipc::Candidates _candidates;
 
 		void compute_cached_stiffness();

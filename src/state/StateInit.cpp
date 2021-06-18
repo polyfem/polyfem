@@ -107,7 +107,11 @@ namespace polyfem
 			{"min_component", -1},
 
 			{"has_collision", false},
-			{"dhat", 0.03},
+			{"dhat", 1e-3},
+			{"epsv", 1e-3},
+			{"mu", 0.0},
+			{"friction_iterations", 1},
+			{"friction_convergence_tol", 1e-2},
 
 			{"t0", 0},
 			{"tend", 1},
@@ -287,6 +291,21 @@ namespace polyfem
 				args["solver_params"]["useGradNorm"] = false;
 				logger().warn("Changing convergence check to Newton direction");
 			}
+		}
+
+		if (args["friction_iterations"] == 0)
+		{
+			logger().info("specified friction_iterations is 0; disabling friction");
+			args["mu"] = 0.0;
+		}
+		else if (args["friction_iterations"] <= 0)
+		{
+			args["friction_iterations"] = std::numeric_limits<int>::max();
+		}
+
+		if (args["mu"] == 0.0)
+		{
+			args["friction_iterations"] = 0;
 		}
 
 		problem = ProblemFactory::factory().get_problem(args["problem"]);

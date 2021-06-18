@@ -28,6 +28,11 @@ M u^{t+1}_h \approx M u^t_h + \Delta t M v^t_h + \frac{\Delta t^2} {2} A u^{t+1}
 %
 M (u^{t+1}_h - (u^t_h + \Delta t v^t_h)) - \frac{\Delta t^2} {2} A u^{t+1}_h
 */
+// mü = ψ = div(σ[u])
+// uᵗ⁺¹ = u(t + Δt) ≈ u(t) + Δtu̇ + ½Δt²ü = u(t) + Δtu̇ + ½Δt²ψ
+// Muₕᵗ⁺¹ ≈ Muₕᵗ + ΔtMvₕᵗ ½Δt²Auₕᵗ⁺¹
+// Root-finding form:
+// M(uₕᵗ⁺¹ - (uₕᵗ + Δtvₕᵗ)) - ½Δt²Auₕᵗ⁺¹ = 0
 
 namespace polyfem
 {
@@ -42,6 +47,8 @@ namespace polyfem
 		assert(!assembler.is_mixed(state.formulation()));
 
 		_dhat = dhat;
+		_epsv = state.args["epsv"];
+		_mu = state.args["mu"];
 		_barrier_stiffness = 1;
 		_prev_distance = -1;
 	}
@@ -95,6 +102,47 @@ namespace polyfem
 		this->v_prev = v_prev;
 		this->a_prev = a_prev;
 		this->dt = dt;
+	}
+
+	void NLProblem::update_lagging(const TVector &x, bool start_of_timestep)
+	{
+		Eigen::MatrixXd displaced;
+		reduced_to_full_displaced_points(x, displaced);
+
+		if (_mu != 0)
+		{
+			ipc::construct_constraint_set(
+				state.boundary_nodes_pos, displaced, state.boundary_edges,
+				state.boundary_triangles, _dhat, _constraint_set, true,
+				Eigen::VectorXi(), state.boundary_faces_to_edges);
+			ipc::construct_friction_constraint_set(
+				displaced, state.boundary_edges, state.boundary_triangles,
+				_constraint_set, _dhat, _barrier_stiffness, _mu,
+				_friction_constraint_set);
+		}
+
+		if (start_of_timestep)
+		{
+			displaced_prev = displaced;
+		}
+	}
+
+	bool NLProblem::lagging_converged(const TVector &x, bool do_lagging_update)
+	{
+		if (do_lagging_update)
+		{
+			update_lagging(x, /*start_of_timestep=*/false);
+		}
+		// else assume the lagging was updated before
+
+		// Check || ∇B(xᵗ⁺¹) - h² Σ F(xᵗ⁺¹, λᵗ⁺¹, Tᵗ⁺¹)|| ≦ ϵ_d
+		//     ≡ || ∇B(xᵗ⁺¹) + ∇D(xᵗ⁺¹, λᵗ⁺¹, Tᵗ⁺¹)|| ≤ ϵ_d
+		TVector grad;
+		gradient(x, grad);
+		double tol = state.args.value("friction_convergence_tol", 1e-2);
+		double grad_norm = grad.norm();
+		logger().debug("Lagging convergece grad_norm={:g} tol={:g}", grad_norm, tol);
+		return grad.norm() <= tol;
 	}
 
 	void NLProblem::update_quantities(const double t, const TVector &x)
@@ -190,6 +238,18 @@ namespace polyfem
 		displaced += state.boundary_nodes_pos;
 	}
 
+	void NLProblem::reduced_to_full_displaced_points(const TVector &reduced, Eigen::MatrixXd &displaced)
+	{
+		Eigen::MatrixXd full;
+		if (reduced.size() == reduced_size)
+			reduced_to_full(reduced, full);
+		else
+			full = reduced;
+		assert(full.size() == full_size);
+
+		compute_displaced_points(full, displaced);
+	}
+
 	void NLProblem::line_search_begin(const TVector &x0, const TVector &x1)
 	{
 		if (disable_collision)
@@ -197,22 +257,9 @@ namespace polyfem
 		if (!state.args["has_collision"])
 			return;
 
-		Eigen::MatrixXd full0, full1;
-		if (x0.size() == reduced_size)
-			reduced_to_full(x0, full0);
-		else
-			full0 = x0;
-		if (x1.size() == reduced_size)
-			reduced_to_full(x1, full1);
-		else
-			full1 = x1;
-		assert(full0.size() == full_size);
-		assert(full1.size() == full_size);
-
 		Eigen::MatrixXd displaced0, displaced1;
-
-		compute_displaced_points(full0, displaced0);
-		compute_displaced_points(full1, displaced1);
+		reduced_to_full_displaced_points(x0, displaced0);
+		reduced_to_full_displaced_points(x1, displaced1);
 
 		construct_ccd_candidates(displaced0, displaced1, state.boundary_edges, state.boundary_triangles, _candidates);
 	}
@@ -229,22 +276,9 @@ namespace polyfem
 		if (!state.args["has_collision"])
 			return 1;
 
-		Eigen::MatrixXd full0, full1;
-		if (x0.size() == reduced_size)
-			reduced_to_full(x0, full0);
-		else
-			full0 = x0;
-		if (x1.size() == reduced_size)
-			reduced_to_full(x1, full1);
-		else
-			full1 = x1;
-		assert(full0.size() == full_size);
-		assert(full1.size() == full_size);
-
 		Eigen::MatrixXd displaced0, displaced1;
-
-		compute_displaced_points(full0, displaced0);
-		compute_displaced_points(full1, displaced1);
+		reduced_to_full_displaced_points(x0, displaced0);
+		reduced_to_full_displaced_points(x1, displaced1);
 
 		// if (displaced0.cols() == 3)
 		// {
@@ -282,22 +316,9 @@ namespace polyfem
 		// if (!state.problem->is_time_dependent())
 		// return false;
 
-		Eigen::MatrixXd full0, full1;
-		if (x0.size() == reduced_size)
-			reduced_to_full(x0, full0);
-		else
-			full0 = x0;
-		if (x1.size() == reduced_size)
-			reduced_to_full(x1, full1);
-		else
-			full1 = x1;
-		assert(full0.size() == full_size);
-		assert(full1.size() == full_size);
-
 		Eigen::MatrixXd displaced0, displaced1;
-
-		compute_displaced_points(full0, displaced0);
-		compute_displaced_points(full1, displaced1);
+		reduced_to_full_displaced_points(x0, displaced0);
+		reduced_to_full_displaced_points(x1, displaced1);
 
 		// if (displaced0.cols() == 3)
 		// {
@@ -342,6 +363,7 @@ namespace polyfem
 
 		double intertia_energy = 0;
 		double collision_energy = 0;
+		double friction_energy = 0;
 		double scaling = 1;
 
 		if (is_time_dependent)
@@ -368,14 +390,15 @@ namespace polyfem
 			compute_displaced_points(full, displaced);
 
 			collision_energy = ipc::compute_barrier_potential(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat);
+			friction_energy = ipc::compute_friction_potential(displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set, _epsv * dt);
 
 			polyfem::logger().trace("collision_energy {}", collision_energy);
 		}
 
 #ifdef USE_DIV_BARRIER_STIFFNESS
-		return (scaling * (elastic_energy + body_energy) + intertia_energy) / _barrier_stiffness + collision_energy;
+		return (scaling * (elastic_energy + body_energy) + intertia_energy + friction_energy) / _barrier_stiffness + collision_energy;
 #else
-		return scaling * (elastic_energy + body_energy) + intertia_energy + _barrier_stiffness * collision_energy;
+		return scaling * (elastic_energy + body_energy) + intertia_energy + _barrier_stiffness * collision_energy + friction_energy;
 #endif
 	}
 
@@ -445,8 +468,13 @@ namespace polyfem
 
 #ifdef USE_DIV_BARRIER_STIFFNESS
 			grad += ipc::compute_barrier_potential_gradient(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat);
+			grad += ipc::compute_friction_potential_gradient(
+						displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set, _epsv * dt)
+					/ barrier_stiffness;
 #else
 			grad += _barrier_stiffness * ipc::compute_barrier_potential_gradient(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat);
+			grad += ipc::compute_friction_potential_gradient(
+				displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set, _epsv * dt);
 #endif
 			// logger().trace("ipc grad norm {}", ipc::compute_barrier_potential_gradient(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat).norm());
 		}
@@ -574,8 +602,13 @@ namespace polyfem
 			timeri.start();
 #ifdef USE_DIV_BARRIER_STIFFNESS
 			hessian += ipc::compute_barrier_potential_hessian(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat, project_to_psd);
+			hessian += ipc::compute_friction_potential_hessian(
+						   displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set, _epsv * dt, project_to_psd)
+					   / _barrier_stiffness;
 #else
 			hessian += _barrier_stiffness * ipc::compute_barrier_potential_hessian(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat, project_to_psd);
+			hessian += ipc::compute_friction_potential_hessian(
+				displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set, _epsv * dt, project_to_psd);
 #endif
 			timeri.stop();
 			polyfem::logger().trace("\tonly ipc hessian time {}s", timeri.getElapsedTimeInSec());
@@ -607,17 +640,8 @@ namespace polyfem
 		if (!state.args["has_collision"])
 			return;
 
-		Eigen::MatrixXd full;
-		if (newX.size() == reduced_size)
-			reduced_to_full(newX, full);
-		else
-			full = newX;
-
-		assert(full.size() == full_size);
-
 		Eigen::MatrixXd displaced;
-
-		compute_displaced_points(full, displaced);
+		reduced_to_full_displaced_points(newX, displaced);
 
 		if (_candidates.size() > 0)
 			ipc::construct_constraint_set(_candidates, state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles,

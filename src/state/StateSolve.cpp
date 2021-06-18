@@ -351,6 +351,14 @@ namespace polyfem
 			assert(sol.size() == rhs.size());
 			assert(tmp_sol.size() < rhs.size());
 
+			nl_problem.update_lagging(tmp_sol, /*start_of_timestep=*/true);
+			alnl_problem.update_lagging(sol, /*start_of_timestep=*/true);
+
+			if (args["friction_iterations"] > 0)
+			{
+				logger().debug("Lagging iteration 1");
+			}
+
 			nl_problem.solution_changed(tmp_sol);
 			while (!std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
 			{
@@ -392,6 +400,27 @@ namespace polyfem
 			json nl_solver_info;
 			nlsolver.getInfo(nl_solver_info);
 			nl_problem.reduced_to_full(tmp_sol, sol);
+
+			// Lagging loop (start at 1 because we already did an iteration above)
+			int lag_i;
+			for (lag_i = 1; lag_i < args["friction_iterations"] && !nl_problem.lagging_converged(tmp_sol, /*do_lagging_update=*/true); lag_i++)
+			{
+				logger().debug("Lagging iteration {:d}", lag_i + 1);
+				nl_problem.init(sol);
+				nlsolver.minimize(nl_problem, tmp_sol);
+				json nl_solver_info;
+				nlsolver.getInfo(nl_solver_info);
+				nl_problem.reduced_to_full(tmp_sol, sol);
+			}
+
+			if (args["friction_iterations"] > 0)
+			{
+				logger().info(
+					lag_i >= args["friction_iterations"]
+						? "Maxed out at {:d} lagging iteration{}"
+						: "Convered using {:d} lagging iteration{}",
+					lag_i, lag_i > 1 ? "s" : "");
+			}
 
 			nl_problem.update_quantities(t0 + (t + 1) * dt, sol);
 			alnl_problem.update_quantities(t0 + (t + 1) * dt, sol);
