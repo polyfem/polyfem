@@ -1053,6 +1053,64 @@ namespace polyfem
         const bool boundary_only = args["export"]["vis_boundary_only"];
         const bool material_params = args["export"]["material_params"];
         const bool body_ids = args["export"]["body_ids"];
+        const bool sol_on_grid = args["export"]["sol_on_grid"] > 0;
+
+        if (sol_on_grid)
+        {
+            const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+            Eigen::MatrixXd tmp, tmp_grad;
+            Eigen::MatrixXd tmp_p, tmp_grad_p;
+            Eigen::MatrixXd res(grid_points_to_elements.size(), problem_dim);
+            res.setConstant(std::numeric_limits<double>::quiet_NaN());
+            Eigen::MatrixXd res_grad(grid_points_to_elements.size(), problem_dim * problem_dim);
+            res_grad.setConstant(std::numeric_limits<double>::quiet_NaN());
+
+            Eigen::MatrixXd res_p(grid_points_to_elements.size(), 1);
+            res_p.setConstant(std::numeric_limits<double>::quiet_NaN());
+            Eigen::MatrixXd res_grad_p(grid_points_to_elements.size(), problem_dim);
+            res_grad_p.setConstant(std::numeric_limits<double>::quiet_NaN());
+
+            for (int i = 0; i < grid_points_to_elements.size(); ++i)
+            {
+                const int el_id = grid_points_to_elements(i);
+                if (el_id < 0)
+                    continue;
+                assert(mesh->is_simplex(el_id));
+                const Eigen::MatrixXd bc = grid_points_bc.row(i);
+                Eigen::MatrixXd pt(1, bc.cols() - 1);
+                for (int d = 1; d < bc.cols(); ++d)
+                    pt(d - 1) = bc(d);
+                interpolate_at_local_vals(el_id, pt, tmp, tmp_grad);
+
+                res.row(i) = tmp;
+                res_grad.row(i) = tmp_grad;
+
+                if (assembler.is_mixed(formulation()))
+                {
+                    interpolate_at_local_vals(el_id, 1, pressure_bases, pt, pressure, tmp_p, tmp_grad_p);
+                    res_p.row(i) = tmp_p;
+                    res_grad_p.row(i) = tmp_grad_p;
+                }
+            }
+
+            std::ofstream os(path + "_sol.txt");
+            os << res;
+
+            std::ofstream osg(path + "_grad.txt");
+            osg << res_grad;
+
+            std::ofstream osgg(path + "_grid.txt");
+            osgg << grid_points;
+
+            if (assembler.is_mixed(formulation()))
+            {
+                std::ofstream osp(path + "_p_sol.txt");
+                osp << res_p;
+
+                std::ofstream osgp(path + "_p_grad.txt");
+                osgp << res_grad_p;
+            }
+        }
 
         interpolate_function(points.rows(), sol, fun, boundary_only);
 

@@ -40,6 +40,9 @@ namespace polyfem
 
 
 
+		void elements_boxes(std::vector<std::array<Eigen::Vector3d, 2>> &boxes) const override;
+		void barycentric_coords(const RowVectorNd &p, const int el_id, Eigen::MatrixXd &coord) const override;
+
 		bool is_boundary_vertex(const int vertex_global_id) const override { return mesh_.vertices[vertex_global_id].boundary; }
 		bool is_boundary_edge(const int edge_global_id) const override { return mesh_.edges[edge_global_id].boundary; }
 		bool is_boundary_face(const int face_global_id) const override { return mesh_.faces[face_global_id].boundary; }

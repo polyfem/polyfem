@@ -287,6 +287,11 @@ polyfem_download_ipc()
 add_subdirectory(${THIRD_PARTY_DIR}/ipc)
 target_link_libraries(polyfem PUBLIC IPCToolkit)
 
+# BVH
+polyfem_download_BVH()
+add_subdirectory(${THIRD_PARTY_DIR}/BVH)
+target_link_libraries(polyfem PUBLIC BVH_lib)
+
 
 # MSHIO
 polyfem_download_mshio()

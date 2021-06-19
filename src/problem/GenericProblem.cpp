@@ -280,10 +280,6 @@ namespace polyfem
 				}
 			}
 		}
-		else
-		{
-			has_exact_ = false;
-		}
 
 		if (params.find("exact_grad") != params.end())
 		{
@@ -301,10 +297,6 @@ namespace polyfem
 					assert(false);
 				}
 			}
-		}
-		else
-		{
-			has_exact_grad_ = false;
 		}
 
 		if (params.find("dirichlet_boundary") != params.end())
@@ -761,10 +753,6 @@ namespace polyfem
 			if (has_exact_)
 				exact_.init(params["exact"]);
 		}
-		else
-		{
-			has_exact_ = false;
-		}
 
 		if (params.find("exact_grad") != params.end())
 		{
@@ -782,10 +770,6 @@ namespace polyfem
 					assert(false);
 				}
 			}
-		}
-		else
-		{
-			has_exact_grad_ = false;
 		}
 
 		if (params.find("dirichlet_boundary") != params.end())
