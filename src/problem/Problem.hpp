@@ -68,6 +68,7 @@ namespace polyfem
 		std::vector<int> boundary_ids_;
 		std::vector<int> neumann_boundary_ids_;
 		std::vector<int> pressure_boundary_ids_;
+		std::vector<int> splitting_pressure_boundary_ids_;
 
 	private:
 		std::string name_;
