@@ -1,10 +1,11 @@
 #include <polyfem/ImplicitTimeIntegrator.hpp>
 
-#include <fstream>
-
 #include <polyfem/ImplicitEuler.hpp>
 #include <polyfem/ImplicitNewmark.hpp>
 #include <polyfem/Logger.hpp>
+#include <polyfem/MatrixUtils.hpp>
+
+#include <fstream>
 
 namespace polyfem
 {
@@ -20,22 +21,13 @@ namespace polyfem
 	void ImplicitTimeIntegrator::save_raw(const std::string &x_path, const std::string &v_path, const std::string &a_path) const
 	{
 		if (!x_path.empty())
-		{
-			std::ofstream os(x_path);
-			os << x_prev;
-		}
+			write_matrix_binary(x_path, x_prev);
 
 		if (!v_path.empty())
-		{
-			std::ofstream os(v_path);
-			os << v_prev;
-		}
+			write_matrix_binary(v_path, v_prev);
 
 		if (!a_path.empty())
-		{
-			std::ofstream os(a_path);
-			os << a_prev;
-		}
+			write_matrix_binary(a_path, a_prev);
 	}
 
 	std::shared_ptr<ImplicitTimeIntegrator> ImplicitTimeIntegrator::construct_time_integrator(const std::string &name)

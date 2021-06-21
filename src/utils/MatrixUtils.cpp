@@ -65,6 +65,55 @@ bool polyfem::read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynam
 	return true;
 }
 
+template <typename T>
+bool polyfem::read_matrix_binary(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat)
+{
+	typedef typename Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>::Index Index;
+
+	std::ifstream in(path, std::ios::in | std::ios::binary);
+	if (!in.good())
+	{
+		logger().error("Failed to open file: {}", path);
+		in.close();
+
+		return false;
+	}
+
+	Index rows = 0, cols = 0;
+	in.read((char *)(&rows), sizeof(Index));
+	in.read((char *)(&cols), sizeof(Index));
+
+	mat.resize(rows, cols);
+	in.read((char *)mat.data(), rows * cols * sizeof(T));
+	in.close();
+
+	return true;
+}
+
+template <typename Mat>
+bool polyfem::write_matrix_binary(const std::string &path, const Mat &mat)
+{
+	typedef typename Mat::Index Index;
+	typedef typename Mat::Scalar Scalar;
+	std::ofstream out(path, std::ios::out | std::ios::binary);
+
+	if (!out.good())
+	{
+		logger().error("Failed to write to file: {}", path);
+		out.close();
+
+		return false;
+	}
+
+	const Index rows = mat.rows(), cols = mat.cols();
+	out.write((const char *)(&rows), sizeof(Index));
+	out.write((const char *)(&cols), sizeof(Index));
+	out.write((const char *)mat.data(), rows * cols * sizeof(Scalar));
+	out.close();
+
+	return true;
+}
+
 polyfem::SpareMatrixCache::SpareMatrixCache(const size_t size)
 	: size_(size)
 {
@@ -268,3 +317,11 @@ void polyfem::SpareMatrixCache::operator+=(const SpareMatrixCache &o)
 //template instantiation
 template bool polyfem::read_matrix<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
 template bool polyfem::read_matrix<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
+
+template bool polyfem::read_matrix_binary<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
+template bool polyfem::read_matrix_binary<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
+
+template bool polyfem::write_matrix_binary<Eigen::MatrixXd>(const std::string &, const Eigen::MatrixXd &);
+template bool polyfem::write_matrix_binary<Eigen::MatrixXf>(const std::string &, const Eigen::MatrixXf &);
+template bool polyfem::write_matrix_binary<Eigen::VectorXd>(const std::string &, const Eigen::VectorXd &);
+template bool polyfem::write_matrix_binary<Eigen::VectorXf>(const std::string &, const Eigen::VectorXf &);

@@ -1003,7 +1003,7 @@ namespace polyfem
 
 			const std::string u_path = resolve_path(args["import"]["u_path"], args["root_path"]);
 			if (!u_path.empty())
-				read_matrix(u_path, sol);
+				read_matrix_binary(u_path, sol);
 			else
 				rhs_assembler.initial_solution(sol);
 

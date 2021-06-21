@@ -160,11 +160,11 @@ namespace polyfem
 		Eigen::MatrixXd velocity, acceleration;
 
 		if (!v_path.empty())
-			read_matrix(v_path, velocity);
+			read_matrix_binary(v_path, velocity);
 		else
 			rhs_assembler.initial_velocity(velocity);
 		if (!a_path.empty())
-			read_matrix(a_path, acceleration);
+			read_matrix_binary(a_path, acceleration);
 		else
 			rhs_assembler.initial_acceleration(acceleration);
 
@@ -227,22 +227,11 @@ namespace polyfem
 			const std::string a_path = resolve_output_path(args["export"]["a_path"]);
 
 			if (!u_path.empty())
-			{
-				std::ofstream os(u_path);
-				os << sol;
-			}
-
+				write_matrix_binary(u_path, sol);
 			if (!v_path.empty())
-			{
-				std::ofstream os(v_path);
-				os << velocity;
-			}
-
+				write_matrix_binary(v_path, velocity);
 			if (!a_path.empty())
-			{
-				std::ofstream os(a_path);
-				os << acceleration;
-			}
+				write_matrix_binary(a_path, acceleration);
 		}
 	}
 
@@ -321,11 +310,11 @@ namespace polyfem
 		Eigen::MatrixXd velocity, acceleration;
 
 		if (!v_path.empty())
-			read_matrix(v_path, velocity);
+			read_matrix_binary(v_path, velocity);
 		else
 			rhs_assembler.initial_velocity(velocity);
 		if (!a_path.empty())
-			read_matrix(a_path, acceleration);
+			read_matrix_binary(a_path, acceleration);
 		else
 			rhs_assembler.initial_acceleration(acceleration);
 
