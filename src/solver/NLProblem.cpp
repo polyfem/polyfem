@@ -392,7 +392,7 @@ namespace polyfem
 			collision_energy = ipc::compute_barrier_potential(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat);
 			friction_energy = ipc::compute_friction_potential(displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set, _epsv * dt);
 
-			polyfem::logger().trace("collision_energy {}", collision_energy);
+			polyfem::logger().trace("collision_energy {}, friction_energy {}", collision_energy, friction_energy);
 		}
 
 #ifdef USE_DIV_BARRIER_STIFFNESS
