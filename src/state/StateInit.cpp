@@ -116,6 +116,10 @@ namespace polyfem
 			{"t0", 0},
 			{"tend", 1},
 			{"time_steps", 10},
+			{"time_integrator", "ImplicitEuler"},
+			{"time_integrator_params",
+			 {{"gamma", 0.5},
+			  {"beta", 0.25}}},
 
 			{"scalar_formulation", "Laplacian"},
 			{"tensor_formulation", "LinearElasticity"},

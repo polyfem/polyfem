@@ -266,7 +266,7 @@ namespace polyfem
 		// 	velocity.setZero();
 		// 	VectorXd xxx=tmp_sol;
 		// 	velocity = tmp_sol;
-		// 	nl_problem.init_timestep(xxx, velocity, dt);
+		// 	nl_problem.init_time_integrator(xxx, velocity, dt);
 
 		// 	Eigen::Matrix<double, Eigen::Dynamic, 1> actual_grad;
 		// 	nl_problem.gradient(tmp_sol, actual_grad);
@@ -334,7 +334,7 @@ namespace polyfem
 		VectorXd tmp_sol;
 
 		NLProblem nl_problem(*this, rhs_assembler, t0 + dt, args["dhat"], args["project_to_psd"]);
-		nl_problem.init_timestep(sol, velocity, acceleration, dt);
+		nl_problem.init_time_integrator(sol, velocity, acceleration, dt);
 
 		solver_info = json::array();
 
@@ -343,7 +343,7 @@ namespace polyfem
 		double al_weight = args["al_weight"];
 		const double max_al_weight = args["max_al_weight"];
 		ALNLProblem alnl_problem(*this, rhs_assembler, t0 + dt, args["dhat"], args["project_to_psd"], al_weight);
-		alnl_problem.init_timestep(sol, velocity, acceleration, dt);
+		alnl_problem.init_time_integrator(sol, velocity, acceleration, dt);
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
