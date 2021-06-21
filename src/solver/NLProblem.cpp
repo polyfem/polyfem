@@ -51,6 +51,8 @@ namespace polyfem
 		_mu = state.args["mu"];
 		_barrier_stiffness = 1;
 		_prev_distance = -1;
+		time_integrator = ImplicitTimeIntegrator::construct_time_integrator(state.args["time_integrator"]);
+		time_integrator->set_parameters(state.args["time_integrator_params"]);
 	}
 
 	void NLProblem::init(const TVector &full)
@@ -76,7 +78,7 @@ namespace polyfem
 
 		if (is_time_dependent)
 		{
-			grad *= dt * dt; // / 2.0;
+			grad *= time_integrator->acceleration_scaling();
 			grad += state.mass * full;
 		}
 
@@ -96,12 +98,9 @@ namespace polyfem
 		polyfem::logger().debug("adaptive stiffness {}", _barrier_stiffness);
 	}
 
-	void NLProblem::init_timestep(const TVector &x_prev, const TVector &v_prev, const TVector &a_prev, const double dt)
+	void NLProblem::init_time_integrator(const TVector &x_prev, const TVector &v_prev, const TVector &a_prev, const double dt)
 	{
-		this->x_prev = x_prev;
-		this->v_prev = v_prev;
-		this->a_prev = a_prev;
-		this->dt = dt;
+		time_integrator->init(x_prev, v_prev, a_prev, dt);
 	}
 
 	void NLProblem::update_lagging(const TVector &x, bool start_of_timestep)
@@ -149,17 +148,7 @@ namespace polyfem
 	{
 		if (is_time_dependent)
 		{
-			const double gamma = 0.5;
-			const double beta = 0.25;
-
-			v_prev = (x - x_prev) / dt;
-			x_prev = x;
-
-			// //newmark?
-			// v_prev += dt * (1 - gamma) * a_prev;
-			// a_prev = (x - x_prev) / (dt * dt * beta);
-			// v_prev += dt * gamma * a_prev;
-			// x_prev = x;
+			time_integrator->update_quantities(x);
 
 			// rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, t);
 			// rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, t);
@@ -203,10 +192,8 @@ namespace polyfem
 
 			if (is_time_dependent)
 			{
-				const TVector tmp = state.mass * (x_prev + dt * v_prev);
-
-				_current_rhs *= dt * dt; // / 2.0;
-				_current_rhs += tmp;
+				_current_rhs *= time_integrator->acceleration_scaling();
+				_current_rhs += state.mass * time_integrator->x_tilde();
 			}
 			if (reduced_size != full_size)
 			{
@@ -362,15 +349,11 @@ namespace polyfem
 		const double body_energy = rhs_assembler.compute_energy(full, state.local_neumann_boundary, state.density, state.args["n_boundary_samples"], t);
 
 		double intertia_energy = 0;
-		double collision_energy = 0;
-		double friction_energy = 0;
 		double scaling = 1;
-
 		if (is_time_dependent)
 		{
-			scaling = dt * dt; // / 2.0;
-			const TVector tmp = full - (x_prev + dt * v_prev);
-
+			scaling = time_integrator->acceleration_scaling();
+			const TVector tmp = full - time_integrator->x_tilde();
 			intertia_energy = 0.5 * tmp.transpose() * state.mass * tmp;
 		}
 
@@ -384,13 +367,15 @@ namespace polyfem
 		\frac 1 2 (t^T M t - 2 h^2 t^T f_e + h^4f_e^T M^{-1}f_e)
 		*/
 
+		double collision_energy = 0;
+		double friction_energy = 0;
 		if (!only_elastic && !disable_collision && state.args["has_collision"])
 		{
 			Eigen::MatrixXd displaced;
 			compute_displaced_points(full, displaced);
 
 			collision_energy = ipc::compute_barrier_potential(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat);
-			friction_energy = ipc::compute_friction_potential(displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set, _epsv * dt);
+			friction_energy = ipc::compute_friction_potential(displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set, _epsv * dt());
 
 			polyfem::logger().trace("collision_energy {}, friction_energy {}", collision_energy, friction_energy);
 		}
@@ -451,7 +436,7 @@ namespace polyfem
 
 		if (is_time_dependent)
 		{
-			grad *= dt * dt; // / 2.0;
+			grad *= time_integrator->acceleration_scaling();
 			grad += state.mass * full;
 		}
 
@@ -469,12 +454,12 @@ namespace polyfem
 #ifdef USE_DIV_BARRIER_STIFFNESS
 			grad += ipc::compute_barrier_potential_gradient(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat);
 			grad += ipc::compute_friction_potential_gradient(
-						displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set, _epsv * dt)
+						displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set, _epsv * dt())
 					/ barrier_stiffness;
 #else
 			grad += _barrier_stiffness * ipc::compute_barrier_potential_gradient(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat);
 			grad += ipc::compute_friction_potential_gradient(
-				displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set, _epsv * dt);
+				displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set, _epsv * dt());
 #endif
 			// logger().trace("ipc grad norm {}", ipc::compute_barrier_potential_gradient(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat).norm());
 		}
@@ -573,7 +558,7 @@ namespace polyfem
 		timer.start();
 		if (is_time_dependent)
 		{
-			hessian *= dt * dt; // / 2.0;
+			hessian *= time_integrator->acceleration_scaling();
 			hessian += state.mass;
 		}
 
@@ -603,12 +588,12 @@ namespace polyfem
 #ifdef USE_DIV_BARRIER_STIFFNESS
 			hessian += ipc::compute_barrier_potential_hessian(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat, project_to_psd);
 			hessian += ipc::compute_friction_potential_hessian(
-						   displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set, _epsv * dt, project_to_psd)
+						   displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set, _epsv * dt(), project_to_psd)
 					   / _barrier_stiffness;
 #else
 			hessian += _barrier_stiffness * ipc::compute_barrier_potential_hessian(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat, project_to_psd);
 			hessian += ipc::compute_friction_potential_hessian(
-				displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set, _epsv * dt, project_to_psd);
+				displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set, _epsv * dt(), project_to_psd);
 #endif
 			timeri.stop();
 			polyfem::logger().trace("\tonly ipc hessian time {}s", timeri.getElapsedTimeInSec());
@@ -717,22 +702,6 @@ namespace polyfem
 
 	void NLProblem::save_raw(const std::string &x_path, const std::string &v_path, const std::string &a_path)
 	{
-		if (!x_path.empty())
-		{
-			std::ofstream os(x_path);
-			os << x_prev;
-		}
-
-		if (!v_path.empty())
-		{
-			std::ofstream os(v_path);
-			os << v_prev;
-		}
-
-		if (!a_path.empty())
-		{
-			std::ofstream os(a_path);
-			os << a_prev;
-		}
+		time_integrator->save_raw(x_path, v_path, a_path);
 	}
 } // namespace polyfem

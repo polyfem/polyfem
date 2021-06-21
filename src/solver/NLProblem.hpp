@@ -3,6 +3,7 @@
 #include <polyfem/AssemblerUtils.hpp>
 #include <polyfem/RhsAssembler.hpp>
 #include <polyfem/State.hpp>
+#include <polyfem/ImplicitTimeIntegrator.hpp>
 
 #include <polyfem/MatrixUtils.hpp>
 
@@ -22,7 +23,7 @@ namespace polyfem
 
 		NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t, const double dhat, const bool project_to_psd, const bool no_reduced = false);
 		void init(const TVector &displacement);
-		void init_timestep(const TVector &x_prev, const TVector &v_prev, const TVector &a_prev, const double dt);
+		void init_time_integrator(const TVector &x_prev, const TVector &v_prev, const TVector &a_prev, const double dt);
 		TVector initial_guess();
 
 		virtual double value(const TVector &x) override;
@@ -153,12 +154,13 @@ namespace polyfem
 		double _mu;						///< @brief Coefficient of friction.
 		Eigen::MatrixXd displaced_prev; ///< @brief Displaced vertices at the start of the time-step.
 
-		double dt;
-		TVector x_prev, v_prev, a_prev;
+		const double &dt() const { return time_integrator->dt(); }
 
 		ipc::Constraints _constraint_set;
 		ipc::FrictionConstraints _friction_constraint_set;
 		ipc::Candidates _candidates;
+
+		std::shared_ptr<ImplicitTimeIntegrator> time_integrator;
 
 		void compute_cached_stiffness();
 		void update_barrier_stiffness(const TVector &full);

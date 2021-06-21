@@ -9,6 +9,7 @@
 #include <polyfem/Logger.hpp>
 
 #include <polyfem/Problem.hpp>
+#include <polyfem/ImplicitTimeIntegrator.hpp>
 #include <polyfem/AssemblerUtils.hpp>
 
 #include <geogram/basic/command_line.h>
@@ -40,6 +41,7 @@ int main(int argc, char **argv)
 	std::string problem_name = "Franke";
 	std::string scalar_formulation = "Laplacian";
 	std::string tensor_formulation = "LinearElasticity"; // "SaintVenant";
+	std::string time_integrator_name = "ImplicitEuler";
 	// std::string mixed_formulation = "Stokes"; // "SaintVenant";
 	std::string solver = "";
 
@@ -122,6 +124,9 @@ int main(int argc, char **argv)
 
 	command_line.add_flag("--export_material_params", export_material_params, "Export material parameters");
 
+	const auto &time_integrator_names = ImplicitTimeIntegrator::get_time_integrator_names();
+	command_line.add_set("--time_integrator", time_integrator_name, std::set<std::string>(time_integrator_names.begin(), time_integrator_names.end()), "Time integrator name");
+
 	try
 	{
 		command_line.parse(argc, argv);
@@ -175,6 +180,7 @@ int main(int argc, char **argv)
 		in_args["force_linear_geometry"] = force_linear;
 		in_args["n_refs"] = n_refs;
 		in_args["problem"] = problem_name;
+		in_args["time_integrator"] = time_integrator_name;
 		in_args["normalize_mesh"] = !skip_normalization;
 		in_args["project_to_psd"] = project_to_psd;
 
