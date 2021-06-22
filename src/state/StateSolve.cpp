@@ -351,6 +351,7 @@ namespace polyfem
 			nl_problem.line_search_begin(sol, tmp_sol);
 			while (!std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
 			{
+				nl_problem.line_search_end();
 				alnl_problem.set_weight(al_weight);
 				logger().debug("Solving AL Problem with weight {}", al_weight);
 
@@ -378,7 +379,7 @@ namespace polyfem
 					break;
 				}
 			}
-
+			nl_problem.line_search_end();
 			al_weight = args["al_weight"];
 			logger().debug("Solving Problem");
 
@@ -676,6 +677,7 @@ namespace polyfem
 		nl_problem.line_search_begin(sol, tmp_sol);
 		while (!std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
 		{
+			nl_problem.line_search_end();
 			alnl_problem.set_weight(al_weight);
 			logger().debug("Solving AL Problem with weight {}", al_weight);
 
@@ -711,7 +713,7 @@ namespace polyfem
 			}
 			++index;
 		}
-
+		nl_problem.line_search_end();
 		logger().debug("Solving Problem");
 		cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
 		nlsolver.setLineSearch(args["line_search"]);
