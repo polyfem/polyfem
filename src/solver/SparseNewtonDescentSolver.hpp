@@ -186,7 +186,7 @@ namespace cppoptlib
 				cur_iter++;
 			}
 			time.stop();
-			polyfem::logger().trace("\t\tfist loop in LS {}s, checking for nan or inf", time.getElapsedTimeInSec());
+			polyfem::logger().trace("\t\tfist loop in LS {}s, checking for nan or inf. Stepsize = {:g}", time.getElapsedTimeInSec(), step_size);
 			chekcing_for_nan_inf_time += time.getElapsedTimeInSec();
 
 			if (cur_iter >= MAX_STEP_SIZE_ITER || step_size <= MIN_STEP_SIZE)

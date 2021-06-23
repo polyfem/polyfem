@@ -242,20 +242,24 @@ namespace polyfem
 
 		// FD for debug
 		// {
+		// 	Eigen::MatrixXd velocity, acceleration;
 		// 	boundary_nodes.clear();
 		// 	local_boundary.clear();
-		// 	local_neumann_boundary.clear();
-		// 	NLProblem nl_problem(*this, rhs_assembler, 0, args["dhat"]);
+		// 	// local_neumann_boundary.clear();
+		// 	NLProblem nl_problem(*this, rhs_assembler, t0, args["dhat"], false);
 		// 	Eigen::MatrixXd tmp_sol = rhs;
 
 		// 	// tmp_sol.setRandom();
-		// 	tmp_sol.setOnes();
+		// 	tmp_sol.setZero();
 		// 	// tmp_sol /=10000.;
 
 		// 	velocity.setZero();
-		// 	VectorXd xxx=tmp_sol;
+		// 	VectorXd xxx = tmp_sol;
 		// 	velocity = tmp_sol;
-		// 	nl_problem.init_time_integrator(xxx, velocity, dt);
+		// 	velocity.setZero();
+		// 	acceleration = tmp_sol;
+		// 	acceleration.setZero();
+		// 	nl_problem.init_time_integrator(xxx, velocity, acceleration, dt);
 
 		// 	Eigen::Matrix<double, Eigen::Dynamic, 1> actual_grad;
 		// 	nl_problem.gradient(tmp_sol, actual_grad);
@@ -270,8 +274,10 @@ namespace polyfem
 		// 	for (int i = 0; i < actual_hessian.rows(); ++i)
 		// 	{
 		// 		double hhh = 1e-6;
-		// 		VectorXd xp = tmp_sol; xp(i) += hhh;
-		// 		VectorXd xm = tmp_sol; xm(i) -= hhh;
+		// 		VectorXd xp = tmp_sol;
+		// 		xp(i) += hhh;
+		// 		VectorXd xm = tmp_sol;
+		// 		xm(i) -= hhh;
 
 		// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_p;
 		// 		nl_problem.gradient(xp, tmp_grad_p);
@@ -279,23 +285,22 @@ namespace polyfem
 		// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_m;
 		// 		nl_problem.gradient(xm, tmp_grad_m);
 
-		// 		Eigen::Matrix<double, Eigen::Dynamic, 1> fd_h = (tmp_grad_p - tmp_grad_m)/(hhh*2.);
+		// 		Eigen::Matrix<double, Eigen::Dynamic, 1> fd_h = (tmp_grad_p - tmp_grad_m) / (hhh * 2.);
 
 		// 		const double vp = nl_problem.value(xp);
 		// 		const double vm = nl_problem.value(xm);
 
-		// 		const double fd = (vp-vm)/(hhh*2.);
-		// 		const double  diff = std::abs(actual_grad(i) - fd);
-		// 		if(diff > 1e-6)
-		// 			std::cout<<"diff grad "<<i<<": "<<actual_grad(i)<<" vs "<<fd <<" error: " <<diff<<" rrr: "<<actual_grad(i)/fd<<std::endl;
+		// 		const double fd = (vp - vm) / (hhh * 2.);
+		// 		const double diff = std::abs(actual_grad(i) - fd);
+		// 		if (diff > 1e-6)
+		// 			std::cout << "diff grad " << i << ": " << actual_grad(i) << " vs " << fd << " error: " << diff << " rrr: " << actual_grad(i) / fd << std::endl;
 
-		// 		for(int j = 0; j < actual_hessian.rows(); ++j)
+		// 		for (int j = 0; j < actual_hessian.rows(); ++j)
 		// 		{
-		// 			const double diff = std::abs(actual_hessian(i,j) - fd_h(j));
+		// 			const double diff = std::abs(actual_hessian(i, j) - fd_h(j));
 
-		// 			if(diff > 1e-5)
-		// 				std::cout<<"diff H "<<i<<", "<<j<<": "<<actual_hessian(i,j)<<" vs "<<fd_h(j)<<" error: " <<diff<<" rrr: "<<actual_hessian(i,j)/fd_h(j)<<std::endl;
-
+		// 			if (diff > 1e-5)
+		// 				std::cout << "diff H " << i << ", " << j << ": " << actual_hessian(i, j) << " vs " << fd_h(j) << " error: " << diff << " rrr: " << actual_hessian(i, j) / fd_h(j) << std::endl;
 		// 		}
 		// 	}
 

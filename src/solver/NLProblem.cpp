@@ -189,15 +189,18 @@ namespace polyfem
 				}
 			}
 			assert(_current_rhs.size() == full_size);
+			rhs_assembler.set_bc(std::vector<LocalBoundary>(), std::vector<int>(), state.args["n_boundary_samples"], state.local_neumann_boundary, _current_rhs, t);
 
 			if (is_time_dependent)
 			{
 				_current_rhs *= time_integrator->acceleration_scaling();
 				_current_rhs += state.mass * time_integrator->x_tilde();
 			}
+
 			if (reduced_size != full_size)
 			{
-				rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, _current_rhs, t);
+				// rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, _current_rhs, t);
+				rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], std::vector<LocalBoundary>(), _current_rhs, t);
 			}
 		}
 

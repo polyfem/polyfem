@@ -492,7 +492,7 @@ namespace polyfem
 		{
 			assemble(density, rhs, t);
 			rhs *= -1;
-			set_bc(local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs, t);
+			// set_bc(local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs, t);
 
 			if (rhs.size() != final_rhs.size())
 			{
