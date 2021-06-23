@@ -108,6 +108,7 @@ namespace polyfem
 
             {"tend", 1},
             {"time_steps", 10},
+            {"skip_frame", 1},
 
             {"scalar_formulation", "Laplacian"},
             {"tensor_formulation", "LinearElasticity"},
