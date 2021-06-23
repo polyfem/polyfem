@@ -31,12 +31,20 @@ namespace polyfem
 		if (t >= to_)
 			return to_;
 
-		return t;
+		if (t <= form_)
+			return 0;
+
+		return t - form_;
 	}
 
 	void LinearRamp::init(const json &params)
 	{
 		to_ = params["to"];
+
+		if (params.contains("from"))
+			form_ = params["from"];
+		else
+			form_ = 0;
 	}
 
 	GenericTensorProblem::GenericTensorProblem(const std::string &name)
@@ -197,11 +205,11 @@ namespace polyfem
 		}
 	}
 
-	void GenericTensorProblem::add_dirichlet_boundary(const int id, const Eigen::RowVector3d &val, const bool isx, const bool isy, const bool isz)
+	void GenericTensorProblem::add_dirichlet_boundary(const int id, const Eigen::RowVector3d &val, const bool isx, const bool isy, const bool isz, const std::shared_ptr<Interpolation> &interp)
 	{
 		boundary_ids_.push_back(id);
 		displacements_.emplace_back();
-		displacements_interpolation_.emplace_back(std::make_shared<NoInterpolation>());
+		displacements_interpolation_.emplace_back(interp);
 		for (size_t k = 0; k < val.size(); ++k)
 			displacements_.back()[k].init(val[k]);
 
@@ -211,28 +219,28 @@ namespace polyfem
 			all_dimensions_dirichlet_ = false;
 	}
 
-	void GenericTensorProblem::add_neumann_boundary(const int id, const Eigen::RowVector3d &val)
+	void GenericTensorProblem::add_neumann_boundary(const int id, const Eigen::RowVector3d &val, const std::shared_ptr<Interpolation> &interp)
 	{
 		neumann_boundary_ids_.push_back(id);
-		forces_interpolation_.emplace_back(std::make_shared<NoInterpolation>());
+		forces_interpolation_.emplace_back(interp);
 		forces_.emplace_back();
 		for (size_t k = 0; k < val.size(); ++k)
 			forces_.back()[k].init(val[k]);
 	}
 
-	void GenericTensorProblem::add_pressure_boundary(const int id, const double val)
+	void GenericTensorProblem::add_pressure_boundary(const int id, const double val, const std::shared_ptr<Interpolation> &interp)
 	{
 		pressure_boundary_ids_.push_back(id);
-		pressure_interpolation_.emplace_back(std::make_shared<NoInterpolation>());
+		pressure_interpolation_.emplace_back(interp);
 		pressures_.emplace_back();
 		pressures_.back().init(val);
 	}
 
-	void GenericTensorProblem::add_dirichlet_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const bool isx, const bool isy, const bool isz)
+	void GenericTensorProblem::add_dirichlet_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const bool isx, const bool isy, const bool isz, const std::shared_ptr<Interpolation> &interp)
 	{
 		boundary_ids_.push_back(id);
 		displacements_.emplace_back();
-		displacements_interpolation_.emplace_back(std::make_shared<NoInterpolation>());
+		displacements_interpolation_.emplace_back(interp);
 		for (size_t k = 0; k < displacements_.back().size(); ++k)
 			displacements_.back()[k].init(func, k);
 
@@ -242,19 +250,19 @@ namespace polyfem
 			all_dimensions_dirichlet_ = false;
 	}
 
-	void GenericTensorProblem::add_neumann_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func)
+	void GenericTensorProblem::add_neumann_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp)
 	{
 		neumann_boundary_ids_.push_back(id);
 		forces_.emplace_back();
-		forces_interpolation_.emplace_back(std::make_shared<NoInterpolation>());
+		forces_interpolation_.emplace_back(interp);
 		for (size_t k = 0; k < forces_.back().size(); ++k)
 			forces_.back()[k].init(func, k);
 	}
 
-	void GenericTensorProblem::add_pressure_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func)
+	void GenericTensorProblem::add_pressure_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp)
 	{
 		pressure_boundary_ids_.push_back(id);
-		pressure_interpolation_.emplace_back(std::make_shared<NoInterpolation>());
+		pressure_interpolation_.emplace_back(interp);
 		pressures_.emplace_back();
 		pressures_.back().init(func);
 	}
@@ -857,36 +865,36 @@ namespace polyfem
 		}
 	}
 
-	void GenericScalarProblem::add_dirichlet_boundary(const int id, const double val)
+	void GenericScalarProblem::add_dirichlet_boundary(const int id, const double val, const std::shared_ptr<Interpolation> &interp)
 	{
 		boundary_ids_.push_back(id);
 		dirichlet_.emplace_back();
 		dirichlet_.back().init(val);
-		dirichlet_interpolation_.emplace_back(std::make_shared<NoInterpolation>());
+		dirichlet_interpolation_.emplace_back(interp);
 	}
 
-	void GenericScalarProblem::add_neumann_boundary(const int id, const double val)
+	void GenericScalarProblem::add_neumann_boundary(const int id, const double val, const std::shared_ptr<Interpolation> &interp)
 	{
 		neumann_boundary_ids_.push_back(id);
 		neumann_.emplace_back();
 		neumann_.back().init(val);
-		neumann_interpolation_.emplace_back(std::make_shared<NoInterpolation>());
+		neumann_interpolation_.emplace_back(interp);
 	}
 
-	void GenericScalarProblem::add_dirichlet_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func)
+	void GenericScalarProblem::add_dirichlet_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp)
 	{
 		boundary_ids_.push_back(id);
 		dirichlet_.emplace_back();
 		dirichlet_.back().init(func);
-		dirichlet_interpolation_.emplace_back(std::make_shared<NoInterpolation>());
+		dirichlet_interpolation_.emplace_back(interp);
 	}
 
-	void GenericScalarProblem::add_neumann_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func)
+	void GenericScalarProblem::add_neumann_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp)
 	{
 		neumann_boundary_ids_.push_back(id);
 		neumann_.emplace_back();
 		neumann_.back().init(func);
-		neumann_interpolation_.emplace_back(std::make_shared<NoInterpolation>());
+		neumann_interpolation_.emplace_back(interp);
 	}
 
 	void GenericScalarProblem::clear()

@@ -22,6 +22,14 @@ namespace polyfem
 			bool isx, isy, isz;
 		};
 
+		std::shared_ptr<Interpolation> get_interpolation(const bool time_dependent)
+		{
+			if (time_dependent)
+				return std::make_shared<LinearInterpolation>();
+			else
+				return std::make_shared<NoInterpolation>();
+		}
+
 		template <typename XMLNode>
 		bool load_control(const XMLNode *control, json &args)
 		{
@@ -420,7 +428,7 @@ namespace polyfem
 			for (auto it = allbc.begin(); it != allbc.end(); ++it)
 			{
 				logger().trace("adding Dirichlet id={} value=({},{},{}) fixed=({}, {}, {})", it->first, it->second.val(0), it->second.val(1), it->second.val(2), it->second.isx, it->second.isy, it->second.isz);
-				gproblem.add_dirichlet_boundary(it->first, it->second.val, it->second.isx, it->second.isy, it->second.isz);
+				gproblem.add_dirichlet_boundary(it->first, it->second.val, it->second.isx, it->second.isy, it->second.isz, get_interpolation(gproblem.is_time_dependent()));
 			}
 
 			for (const tinyxml2::XMLElement *child = boundaries->FirstChildElement("vector_bc"); child != NULL; child = child->NextSiblingElement("vector_bc"))
@@ -447,7 +455,7 @@ namespace polyfem
 						v[2] = z;
 						return interp.interpolate(v);
 					},
-					true, true, true);
+					true, true, true, get_interpolation(gproblem.is_time_dependent()));
 			}
 		}
 
@@ -484,7 +492,7 @@ namespace polyfem
 					if (gproblem.is_time_dependent())
 						force *= dt;
 					logger().trace("adding Neumann id={} force=({},{},{})", names.at(name), force(0), force(1), force(2));
-					gproblem.add_neumann_boundary(names.at(name), force);
+					gproblem.add_neumann_boundary(names.at(name), force, get_interpolation(gproblem.is_time_dependent()));
 				}
 				else if (type == "pressure")
 				{
@@ -492,7 +500,7 @@ namespace polyfem
 					const double pressure = atof(pressures.c_str()) * (gproblem.is_time_dependent() ? dt : 1);
 					//TODO added minus here
 					logger().trace("adding Pressure id={} pressure={}", names.at(name), -pressure);
-					gproblem.add_pressure_boundary(names.at(name), -pressure);
+					gproblem.add_pressure_boundary(names.at(name), -pressure, get_interpolation(gproblem.is_time_dependent()));
 				}
 				else
 				{

@@ -40,6 +40,7 @@ namespace polyfem
 
 	private:
 		double to_;
+		double form_;
 	};
 
 	class GenericTensorProblem : public Problem
@@ -85,13 +86,13 @@ namespace polyfem
 		// bool is_mixed() const override { return is_mixed_; }
 		int n_incremental_load_steps(const double diag) const override;
 
-		void add_dirichlet_boundary(const int id, const Eigen::RowVector3d &val, const bool isx, const bool isy, const bool isz);
-		void add_neumann_boundary(const int id, const Eigen::RowVector3d &val);
-		void add_pressure_boundary(const int id, const double val);
+		void add_dirichlet_boundary(const int id, const Eigen::RowVector3d &val, const bool isx, const bool isy, const bool isz, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
+		void add_neumann_boundary(const int id, const Eigen::RowVector3d &val, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
+		void add_pressure_boundary(const int id, const double val, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
 
-		void add_dirichlet_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const bool isx, const bool isy, const bool isz);
-		void add_neumann_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func);
-		void add_pressure_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func);
+		void add_dirichlet_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const bool isx, const bool isy, const bool isz, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
+		void add_neumann_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
+		void add_pressure_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
 
 		void set_rhs(double x, double y, double z);
 
@@ -145,11 +146,11 @@ namespace polyfem
 		void exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 		void exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 
-		void add_dirichlet_boundary(const int id, const double val);
-		void add_neumann_boundary(const int id, const double val);
+		void add_dirichlet_boundary(const int id, const double val, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
+		void add_neumann_boundary(const int id, const double val, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
 
-		void add_dirichlet_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func);
-		void add_neumann_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func);
+		void add_dirichlet_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
+		void add_neumann_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
 
 		void clear() override;
 
