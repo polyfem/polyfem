@@ -796,7 +796,6 @@ namespace polyfem
         const std::string paraview_path = args["export"]["paraview"];
         const std::string old_path = args["export"]["vis_mesh"];
         const std::string vis_mesh_path = paraview_path.empty() ? old_path : paraview_path;
-        // const std::string vis_boundary_path = args["export"]["boundary"];
         const std::string wire_mesh_path = args["export"]["wire_mesh"];
         const std::string iso_mesh_path = args["export"]["iso_mesh"];
         const std::string nodes_path = args["export"]["nodes"];
@@ -1017,7 +1016,6 @@ namespace polyfem
         assert(pts_index == points.rows());
         assert(tet_index == tets.rows());
     }
-    
     void State::save_vtu(const std::string &path, const double t)
     {
         if (!mesh)
@@ -1147,92 +1145,92 @@ namespace polyfem
                 solution_frames.back().pressure = interp_p;
         }
 
-        // if (solve_export_to_file)
-        //     writer.add_field("discr", discr);
-        // if (problem->has_exact_sol())
-        // {
-        //     if (solve_export_to_file)
-        //     {
-        //         writer.add_field("exact", exact_fun);
-        //         writer.add_field("error", err);
-        //     }
-        //     else
-        //     {
-        //         solution_frames.back().exact = exact_fun;
-        //         solution_frames.back().error = err;
-        //     }
-        // }
+        if (solve_export_to_file)
+            writer.add_field("discr", discr);
+        if (problem->has_exact_sol())
+        {
+            if (solve_export_to_file)
+            {
+                writer.add_field("exact", exact_fun);
+                writer.add_field("error", err);
+            }
+            else
+            {
+                solution_frames.back().exact = exact_fun;
+                solution_frames.back().error = err;
+            }
+        }
 
-        // if (fun.cols() != 1)
-        // {
-        //     Eigen::MatrixXd vals, tvals;
-        //     compute_scalar_value(points.rows(), sol, vals, boundary_only);
-        //     if (solve_export_to_file)
-        //         writer.add_field("scalar_value", vals);
-        //     else
-        //         solution_frames.back().scalar_value = vals;
+        if (fun.cols() != 1)
+        {
+            Eigen::MatrixXd vals, tvals;
+            compute_scalar_value(points.rows(), sol, vals, boundary_only);
+            if (solve_export_to_file)
+                writer.add_field("scalar_value", vals);
+            else
+                solution_frames.back().scalar_value = vals;
 
-        //     if (solve_export_to_file)
-        //     {
-        //         compute_tensor_value(points.rows(), sol, tvals, boundary_only);
-        //         for (int i = 0; i < tvals.cols(); ++i)
-        //         {
-        //             const int ii = (i / mesh->dimension()) + 1;
-        //             const int jj = (i % mesh->dimension()) + 1;
-        //             writer.add_field("tensor_value_" + std::to_string(ii) + std::to_string(jj), tvals.col(i));
-        //         }
-        //     }
+            if (solve_export_to_file)
+            {
+                compute_tensor_value(points.rows(), sol, tvals, boundary_only);
+                for (int i = 0; i < tvals.cols(); ++i)
+                {
+                    const int ii = (i / mesh->dimension()) + 1;
+                    const int jj = (i % mesh->dimension()) + 1;
+                    writer.add_field("tensor_value_" + std::to_string(ii) + std::to_string(jj), tvals.col(i));
+                }
+            }
 
-        //     if (!args["use_spline"])
-        //     {
-        //         average_grad_based_function(points.rows(), sol, vals, tvals, boundary_only);
-        //         if (solve_export_to_file)
-        //             writer.add_field("scalar_value_avg", vals);
-        //         else
-        //             solution_frames.back().scalar_value_avg = vals;
-        //         // for(int i = 0; i < tvals.cols(); ++i){
-        //         // 	const int ii = (i / mesh->dimension()) + 1;
-        //         // 	const int jj = (i % mesh->dimension()) + 1;
-        //         // 	writer.add_field("tensor_value_avg_" + std::to_string(ii) + std::to_string(jj), tvals.col(i));
-        //         // }
-        //     }
-        // }
+            if (!args["use_spline"])
+            {
+                average_grad_based_function(points.rows(), sol, vals, tvals, boundary_only);
+                if (solve_export_to_file)
+                    writer.add_field("scalar_value_avg", vals);
+                else
+                    solution_frames.back().scalar_value_avg = vals;
+                // for(int i = 0; i < tvals.cols(); ++i){
+                // 	const int ii = (i / mesh->dimension()) + 1;
+                // 	const int jj = (i % mesh->dimension()) + 1;
+                // 	writer.add_field("tensor_value_avg_" + std::to_string(ii) + std::to_string(jj), tvals.col(i));
+                // }
+            }
+        }
 
-        // if (material_params)
-        // {
-        //     const LameParameters &params = assembler.lame_params();
+        if (material_params)
+        {
+            const LameParameters &params = assembler.lame_params();
 
-        //     Eigen::MatrixXd lambdas(points.rows(), 1);
-        //     Eigen::MatrixXd mus(points.rows(), 1);
-        //     Eigen::MatrixXd rhos(points.rows(), 1);
+            Eigen::MatrixXd lambdas(points.rows(), 1);
+            Eigen::MatrixXd mus(points.rows(), 1);
+            Eigen::MatrixXd rhos(points.rows(), 1);
 
-        //     for (int i = 0; i < points.rows(); ++i)
-        //     {
-        //         double lambda, mu;
+            for (int i = 0; i < points.rows(); ++i)
+            {
+                double lambda, mu;
 
-        //         params.lambda_mu(points(i, 0), points(i, 1), points.cols() >= 3 ? points(i, 2) : 0, el_id(i), lambda, mu);
-        //         lambdas(i) = lambda;
-        //         mus(i) = mu;
-        //         rhos(i) = density(points(i, 0), points(i, 1), points.cols() >= 3 ? points(i, 2) : 0, el_id(i));
-        //     }
+                params.lambda_mu(points(i, 0), points(i, 1), points.cols() >= 3 ? points(i, 2) : 0, el_id(i), lambda, mu);
+                lambdas(i) = lambda;
+                mus(i) = mu;
+                rhos(i) = density(points(i, 0), points(i, 1), points.cols() >= 3 ? points(i, 2) : 0, el_id(i));
+            }
 
-        //     writer.add_field("lambda", lambdas);
-        //     writer.add_field("mu", mus);
-        //     writer.add_field("rho", rhos);
-        // }
+            writer.add_field("lambda", lambdas);
+            writer.add_field("mu", mus);
+            writer.add_field("rho", rhos);
+        }
 
-        // if (body_ids)
-        // {
+        if (body_ids)
+        {
 
-        //     Eigen::MatrixXd ids(points.rows(), 1);
+            Eigen::MatrixXd ids(points.rows(), 1);
 
-        //     for (int i = 0; i < points.rows(); ++i)
-        //     {
-        //         ids(i) = mesh->get_body_id(el_id(i));
-        //     }
+            for (int i = 0; i < points.rows(); ++i)
+            {
+                ids(i) = mesh->get_body_id(el_id(i));
+            }
 
-        //     writer.add_field("body_ids", ids);
-        // }
+            writer.add_field("body_ids", ids);
+        }
 
         // interpolate_function(pts_index, rhs, fun, boundary_only);
         // writer.add_field("rhs", fun);

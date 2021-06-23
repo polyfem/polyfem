@@ -64,16 +64,12 @@ namespace polyfem
 		time.start();
 
 		Eigen::VectorXd b = rhs + prev_sol_mass;
-		for (int i : state.boundary_nodes)
-		{
-			x(i) = b(i);
-		}
 
 		if (state.use_avg_pressure)
 		{
 			b[b.size() - 1] = 0;
 		}
-		// dirichlet_solve(*solver, stoke_stiffness, b, state.boundary_nodes, x, precond_num, "", false, true, state.use_avg_pressure);
+		dirichlet_solve(*solver, stoke_stiffness, b, state.boundary_nodes, x, precond_num, "", false, true, state.use_avg_pressure);
 		// solver->getInfo(solver_info);
 		time.stop();
 		stokes_solve_time = time.getElapsedTimeInSec();
@@ -110,7 +106,7 @@ namespace polyfem
 		{
 			b[b.size() - 1] = 0;
 		}
-		// it += minimize_aux(state.formulation() + "Picard", skipping, state, dt, velocity_stiffness, mixed_stiffness, pressure_stiffness, velocity_mass, b, 1e-3, solver, nlres_norm, x);
+		it += minimize_aux(state.formulation() + "Picard", skipping, state, dt, velocity_stiffness, mixed_stiffness, pressure_stiffness, velocity_mass, b, 1e-3, solver, nlres_norm, x);
 		it += minimize_aux(state.formulation(), skipping, state, dt, velocity_stiffness, mixed_stiffness, pressure_stiffness, velocity_mass, b, gradNorm, solver, nlres_norm, x);
 
 		solver_info["iterations"] = it;
@@ -122,7 +118,7 @@ namespace polyfem
 		solver_info["time_assembly"] = assembly_time;
 		solver_info["time_inverting"] = inverting_time;
 		solver_info["time_stokes_assembly"] = stokes_matrix_time;
-		solver_info["time_stokes_solve"] = 0;
+		solver_info["time_stokes_solve"] = stokes_solve_time;
 
 		polyfem::logger().info("finished with niter: {},  ||g||_2 = {}", it, nlres_norm);
 	}
