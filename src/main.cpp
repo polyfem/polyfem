@@ -188,13 +188,7 @@ int main(int argc, char **argv)
 		if (!febio_file.empty())
 			state.load_febio(febio_file);
 		else
-		{
-			if(in_args.find("uniform_grid") != in_args.end())
-				state.build_grid(in_args["uniform_grid"]);
-			else
-				state.load_mesh();
-
-		}
+			state.load_mesh();
 		state.compute_mesh_stats();
 
 		state.build_basis();
