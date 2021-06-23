@@ -1144,9 +1144,7 @@ namespace polyfem
 					if (!solve_export_to_file)
 						solution_frames.emplace_back();
 					save_vtu("step_" + std::to_string(0) + ".vtu", 0);
-					extract_vis_boundary_mesh();
-					save_surface("boundary_" + std::to_string(0) + ".vtu");
-					// save_wire("step_" + std::to_string(0) + ".obj");
+					save_wire("step_" + std::to_string(0) + ".obj");
 				}
 
 				assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, gbases, ass_vals_cache, velocity_stiffness);
@@ -1187,8 +1185,7 @@ namespace polyfem
 						if (!solve_export_to_file)
 							solution_frames.emplace_back();
 						save_vtu("step_" + std::to_string(t) + ".vtu", time);
-						save_surface("boundary_" + std::to_string(t) + ".vtu");
-						// save_wire("step_" + std::to_string(t) + ".obj");
+						save_wire("step_" + std::to_string(t) + ".obj");
 					}
 				}
 			}

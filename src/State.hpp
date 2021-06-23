@@ -6,6 +6,7 @@
 #include <polyfem/AssemblyValsCache.hpp>
 #include <polyfem/Problem.hpp>
 #include <polyfem/Mesh.hpp>
+#include <polyfem/Problem.hpp>
 #include <polyfem/LocalBoundary.hpp>
 #include <polyfem/InterfaceData.hpp>
 #include <polyfem/AssemblerUtils.hpp>

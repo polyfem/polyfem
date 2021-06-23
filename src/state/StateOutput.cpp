@@ -1016,6 +1016,7 @@ namespace polyfem
         assert(pts_index == points.rows());
         assert(tet_index == tets.rows());
     }
+
     void State::save_vtu(const std::string &path, const double t)
     {
         if (!mesh)
