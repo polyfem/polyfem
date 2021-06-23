@@ -88,13 +88,13 @@ option(POLYFEM_SANITIZE_THREAD    "Sanitize Thread"        OFF)
 option(POLYFEM_SANITIZE_UNDEFINED "Sanitize Undefined"     OFF)
 
 #Solver
-option(POLYSOLVE_WITH_CHOLMOD          "Enable Cholmod library"            OFF)
-option(POLYSOLVE_WITH_UMFPACK          "Enable UmfPack library"            OFF)
-option(POLYSOLVE_WITH_SUPERLU          "Enable SuperLU library"            OFF)
+option(POLYSOLVE_WITH_CHOLMOD          "Enable Cholmod library"            ON)
+option(POLYSOLVE_WITH_UMFPACK          "Enable UmfPack library"            ON)
+option(POLYSOLVE_WITH_SUPERLU          "Enable SuperLU library"            ON)
 option(POLYSOLVE_WITH_MKL              "Enable MKL library"                ON)
 option(POLYSOLVE_WITH_PARDISO          "Enable Pardiso library"            OFF)
-option(POLYSOLVE_WITH_HYPRE            "Enable hypre"                      OFF)
-option(POLYSOLVE_WITH_AMGCL            "Use AMGCL"                         OFF)
+option(POLYSOLVE_WITH_HYPRE            "Enable hypre"                      ON)
+option(POLYSOLVE_WITH_AMGCL            "Use AMGCL"                         ON)
 option(POLYSOLVE_WITH_SPECTRA          "Enable computing spectrum"         OFF)
 option(POLYSOLVE_LARGE_INDEX    "Build for large indices"                  OFF)
 
