@@ -77,7 +77,6 @@ option(POLYFEM_WITH_MMG              "Enable MMG library"                OFF)
 option(POLYFEM_WITH_TBB              "Enable TBB"                        ON)
 option(POLYFEM_WITH_OPENCL           "Enable OpenCL"                     OFF)
 option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
-option(POLYFEM_WITH_OPENVDB          "Enable OpenVDB"                    OFF)
 
 option(POLYFEM_WITH_APPS      "Build the apps"          ON)
 option(POLYFEM_WITH_MISC      "Build misc targes"       ON)
