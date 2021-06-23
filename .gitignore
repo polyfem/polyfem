@@ -52,7 +52,7 @@ __pycache__
 *.code-workspace
 .vscode/
 .idea/
-build*/
+build/
 cmake-build-*/
 bin
 bin_rel*
@@ -61,10 +61,6 @@ build
 xcode*
 3rdparty*
 /data
-debug/
-release/
-out/
-.vs/
 
 
 # Plotting temporary files
@@ -80,6 +76,3 @@ python/temp-plot.html
 # src/autogen/auto_q_bases.hpp
 # src/autogen/auto_p_bases.cpp
 # src/autogen/auto_p_bases.hpp
-*.vdb
-*.vtu
-.DS_Store

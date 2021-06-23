@@ -8,8 +8,8 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=8
-#SBATCH --time=1:00:00
-#SBATCH --mem=8GB
+#SBATCH --time=2:00:00
+#SBATCH --mem=16GB
 
 # Load modules
 module purge
@@ -18,10 +18,6 @@ module load gcc/10.2.0
 module load cmake/3.18.4
 module load intel/19.1.2
 module load boost/intel/1.74.0
-# module load mpfr/gnu/3.1.5
-# module load zlib/intel/1.2.8
-# module load mpc/gnu/1.0.3
-# module load blast+/2.7.1
 
 export CC=${GCC_ROOT}/bin/gcc
 export CXX=${GCC_ROOT}/bin/g++
@@ -34,7 +30,18 @@ export CMAKE_INCLUDE_PATH=$(env | grep _INC= | cut -d= -f2 | xargs | sed -e 's/ 
 export CMAKE_LIBRARY_PATH=$(env | grep _LIB= | cut -d= -f2 | xargs | sed -e 's/ /:/g')
 
 # Run job
+cd "${SLURM_SUBMIT_DIR}"
 mkdir build
 cd build
-cmake ..
-make -j 8
+
+echo ${BUILD}
+
+if [ -z "${BUILD}" ]; then
+	BUILD=Release
+fi
+
+mkdir ${BUILD}
+pushd ${BUILD}
+cmake -DCMAKE_BUILD_TYPE=${BUILD} ../..
+make -j8
+popd

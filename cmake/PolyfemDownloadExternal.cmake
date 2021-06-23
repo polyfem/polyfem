@@ -26,8 +26,8 @@ endfunction()
 ## PolySolvers MIT
 function(polyfem_download_solvers)
     polyfem_download_project(solvers
-        GIT_REPOSITORY https://github.com/Huangzizhou/polysolve.git
-        GIT_TAG        e795015
+        GIT_REPOSITORY https://github.com/polyfem/polysolve.git
+        GIT_TAG        a94e9b8ed8302d4b479533c67419f31addb1e987
     )
 endfunction()
 
@@ -84,14 +84,6 @@ function(polyfem_download_tbb)
     polyfem_download_project(tbb
         GIT_REPOSITORY https://github.com/nTopology/tbb.git
         GIT_TAG        41adc7a7fbe4e6d37fe57186bd85dde99fa61e66
-    )
-endfunction()
-
-## OpenVDB
-function(polyfem_download_openvdb)
-    polyfem_download_project(openvdb
-        GIT_REPOSITORY https://github.com/AcademySoftwareFoundation/openvdb.git
-        GIT_TAG        v7.1.0
     )
 endfunction()
 
