@@ -10,7 +10,7 @@ on:
 
 env:
   CTEST_OUTPUT_ON_FAILURE: ON
-  CTEST_PARALLEL_LEVEL: 1
+  CTEST_PARALLEL_LEVEL: 2
 
 jobs:
   ####################
@@ -76,7 +76,7 @@ jobs:
             -DPOLYFEM_WITH_MISC=ON
 
       - name: Build
-        run: cd build; make; ccache --show-stats
+        run: cd build; make -j2; ccache --show-stats
 
       - name: Tests
         run: cd build; ctest --verbose --output-on-failure
