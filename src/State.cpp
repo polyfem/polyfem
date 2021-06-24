@@ -1133,6 +1133,8 @@ namespace polyfem
 
 			if (formulation() == "NavierStokes")
 				solve_transient_navier_stokes(time_steps, t0, dt, rhs_assembler, c_sol);
+			else if (formulation() == "OperatorSplitting")
+				solve_transient_navier_stokes_split(time_steps, dt, rhs_assembler);
 			else if (problem->is_scalar() || assembler.is_mixed(formulation()))
 				solve_transient_scalar(time_steps, t0, dt, rhs_assembler, c_sol);
 			else if (assembler.is_linear(formulation()) && !args["has_collision"])
