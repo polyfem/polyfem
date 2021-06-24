@@ -13,7 +13,7 @@
 
 namespace polyfem
 {
-	//similar to HookeLinear but with non-linear stress strain: C:(F+F^T F^T F)/2
+	// Similar to HookeLinear but with non-linear stress strain: C:½(F+Fᵀ+FᵀF)
 	class SaintVenantElasticity
 	{
 	public:

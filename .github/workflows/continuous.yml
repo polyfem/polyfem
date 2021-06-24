@@ -18,13 +18,14 @@ jobs:
   ####################
 
   Unix:
-    name: ${{ matrix.name }} (${{ matrix.config }})
+    name: ${{ matrix.name }} (${{ matrix.config }}, ${{ matrix.threading }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-18.04, macos-latest]
         config: [Debug, Release]
+        threading: [CPP, TBB, NONE]
         include:
           - os: macos-latest
             name: macOS
@@ -49,17 +50,21 @@ jobs:
           libsuitesparse-dev \
           xorg-dev \
           ccache
+          echo 'CACHE_PATH=~/.ccache' >> "$GITHUB_ENV"
 
       - name: Dependencies (macOS)
         if: runner.os == 'macOS'
-        run: brew install suite-sparse ccache
+        run: |
+          brew install ccache
+          echo 'CACHE_PATH=~/Library/Caches/ccache' >> "$GITHUB_ENV"
 
       - name: Cache Build
         id: cache-build
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
-          path: ~/.ccache
-          key: ${{ runner.os }}-${{ matrix.config }}-cache
+          path: ${{ env.CACHE_PATH }}
+          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
 
       - name: Prepare ccache
         run: |
@@ -73,13 +78,27 @@ jobs:
           cmake .. \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
-            -DPOLYFEM_WITH_MISC=ON
+            -DPOLYFEM_WITH_MISC=ON \
+            -DPOLYFEM_THREADING=${{ matrix.threading }}
 
       - name: Build
         run: cd build; make -j2; ccache --show-stats
 
       - name: Tests
         run: cd build; ctest --verbose --output-on-failure
+
+      - name: Runner
+        run: |
+          cd build
+          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --sform Laplacian
+          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --sform Helmholtz
+          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform HookeLinearElasticity
+          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform LinearElasticity
+          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform NeoHookean
+          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform SaintVenant
+          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform Stokes
+          ./PolyFEM_bin --json ../3rdparty/data/contact/examples/3D/unit-tests/5-cubes-fast.json --cmd
+          ./PolyFEM_bin --febio ../3rdparty/data/lin-neo.feb --cmd
 
   ####################
   # Windows
@@ -95,6 +114,7 @@ jobs:
       fail-fast: false
       matrix:
         config: [Debug]
+        threading: [TBB, NONE]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v1
@@ -109,10 +129,11 @@ jobs:
 
       - name: Cache build
         id: cache-build
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ${{ env.appdata }}\Mozilla\sccache
-          key: ${{ runner.os }}-${{ matrix.config }}-cache
+          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
 
       - name: Prepare sccache
         run: |
@@ -130,6 +151,7 @@ jobs:
             -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ^
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
             -DPOLYFEM_WITH_MISC=ON ^
+            -DPOLYFEM_THREADING=${{ matrix.threading }} ^
             -B build ^
             -S .
           cd build
@@ -139,3 +161,16 @@ jobs:
         run: |
           cd build
           ctest --verbose --output-on-failure
+
+      - name: Runner
+        run: |
+          cd build
+          .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --sform Laplacian
+          .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --sform Helmholtz
+          .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --tform HookeLinearElasticity
+          .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --tform LinearElasticity
+          .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --tform NeoHookean
+          .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --tform SaintVenant
+          .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --tform Stokes
+          # .\PolyFEM_bin.exe --json ..\3rdparty\data\contact\examples\3D\unit-tests\5-cubes-fast.json --cmd
+          .\PolyFEM_bin.exe --febio ..\3rdparty\data\lin-neo.feb --cmd

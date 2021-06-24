@@ -20,6 +20,8 @@ set(SOURCES
 	LinearElasticity.hpp
 	MassMatrixAssembler.cpp
 	MassMatrixAssembler.hpp
+	MultiModel.cpp
+	MultiModel.hpp
 	NeoHookeanElasticity.cpp
 	NeoHookeanElasticity.hpp
 	# OgdenElasticity.cpp

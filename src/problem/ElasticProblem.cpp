@@ -14,7 +14,6 @@ namespace polyfem
 	void ElasticProblem::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-		// val *= t;
 	}
 
 	void ElasticProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
@@ -32,8 +31,6 @@ namespace polyfem
 			else if (mesh.get_boundary_id(global_ids(i)) == 6)
 				val(i, 1) = 0.25;
 		}
-
-		val *= t;
 	}
 
 	TorsionElasticProblem::TorsionElasticProblem(const std::string &name)
@@ -48,7 +45,6 @@ namespace polyfem
 	void TorsionElasticProblem::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-		// val *= t;
 	}
 
 	void TorsionElasticProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
@@ -80,29 +76,29 @@ namespace polyfem
 
 	void TorsionElasticProblem::set_parameters(const json &params)
 	{
-		if (params.find("axis_coordiante") != params.end())
+		if (params.contains("axis_coordiante"))
 		{
 			const int coord = params["axis_coordiante"];
 			coordiante_0_ = (coord + 1) % 3;
 			coordiante_1_ = (coord + 2) % 3;
 		}
 
-		if (params.find("n_turns") != params.end())
+		if (params.contains("n_turns"))
 		{
 			n_turns_ = params["n_turns"];
 		}
 
-		if (params.find("fixed_boundary") != params.end())
+		if (params.contains("fixed_boundary"))
 		{
 			boundary_ids_[0] = params["fixed_boundary"];
 		}
 
-		if (params.find("turning_boundary") != params.end())
+		if (params.contains("turning_boundary"))
 		{
 			boundary_ids_[1] = params["turning_boundary"];
 		}
 
-		if (params.find("bbox_center") != params.end())
+		if (params.contains("bbox_center"))
 		{
 			auto bbox_center = params["bbox_center"];
 			if (bbox_center.is_array() && bbox_center.size() >= 3)
@@ -128,7 +124,6 @@ namespace polyfem
 	void DoubleTorsionElasticProblem::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-		// val *= t;
 	}
 
 	void DoubleTorsionElasticProblem::velocity_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
@@ -198,41 +193,41 @@ namespace polyfem
 
 	void DoubleTorsionElasticProblem::set_parameters(const json &params)
 	{
-		if (params.find("axis_coordiante0") != params.end())
+		if (params.contains("axis_coordiante0"))
 		{
 			const int coord = params["axis_coordiante0"];
 			coordiante_0_[0] = (coord + 1) % 3;
 			coordiante_0_[1] = (coord + 2) % 3;
 		}
 
-		if (params.find("axis_coordiante1") != params.end())
+		if (params.contains("axis_coordiante1"))
 		{
 			const int coord = params["axis_coordiante1"];
 			coordiante_1_[0] = (coord + 1) % 3;
 			coordiante_1_[1] = (coord + 2) % 3;
 		}
 
-		if (params.find("angular_v0") != params.end())
+		if (params.contains("angular_v0"))
 		{
 			angular_v0_ = params["angular_v0"];
 		}
 
-		if (params.find("angular_v1") != params.end())
+		if (params.contains("angular_v1"))
 		{
 			angular_v1_ = params["angular_v1"];
 		}
 
-		if (params.find("turning_boundary0") != params.end())
+		if (params.contains("turning_boundary0"))
 		{
 			boundary_ids_[0] = params["turning_boundary0"];
 		}
 
-		if (params.find("turning_boundary1") != params.end())
+		if (params.contains("turning_boundary1"))
 		{
 			boundary_ids_[1] = params["turning_boundary1"];
 		}
 
-		if (params.find("bbox_center") != params.end())
+		if (params.contains("bbox_center"))
 		{
 			auto bbox_center = params["bbox_center"];
 			if (bbox_center.is_array() && bbox_center.size() >= 3)
@@ -256,7 +251,6 @@ namespace polyfem
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		val.col(1).setConstant(0.5);
-		val *= t;
 	}
 
 	void ElasticProblemZeroBC::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
@@ -268,7 +262,6 @@ namespace polyfem
 			if (mesh.get_boundary_id(global_ids(i)) > 0)
 				val.row(i).setZero();
 		}
-		// val *= t;
 	}
 
 	namespace
@@ -526,7 +519,7 @@ namespace polyfem
 
 	void GravityProblem::set_parameters(const json &params)
 	{
-		if (params.find("force") != params.end())
+		if (params.contains("force"))
 		{
 			force_ = params["force"];
 		}
@@ -536,7 +529,6 @@ namespace polyfem
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		val.col(1).setConstant(force_);
-		// val *= t;
 	}
 
 	void GravityProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
@@ -578,7 +570,6 @@ namespace polyfem
 	void WalkProblem::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-		// val *= t;
 	}
 
 	void WalkProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
@@ -592,8 +583,6 @@ namespace polyfem
 			else if (mesh.get_boundary_id(global_ids(i)) == 2)
 				val(i, 2) = -0.2 * sin(t);
 		}
-
-		val *= t;
 	}
 
 	void WalkProblem::velocity_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const

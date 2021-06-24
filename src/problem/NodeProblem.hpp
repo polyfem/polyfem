@@ -27,14 +27,14 @@ namespace polyfem
 		}
 
 	private:
-		double interpolate(const int p_id, const Eigen::MatrixXd &uv, bool is_dirichelt) const;
+		double interpolate(const int p_id, const Eigen::MatrixXd &uv, bool is_dirichlet) const;
 
 		std::vector<int> raw_ids_;
 		std::vector<std::vector<double>> raw_data_;
-		std::vector<bool> raw_dirichelt_;
+		std::vector<bool> raw_dirichlet_;
 
 		std::vector<Eigen::VectorXd> data_;
-		std::vector<bool> dirichelt_;
+		std::vector<bool> dirichlet_;
 	};
 
 	class NodeProblem : public Problem
@@ -54,12 +54,12 @@ namespace polyfem
 
 		void set_parameters(const json &params) override;
 
-		bool is_dimention_dirichet(const int tag, const int dim) const override;
-		bool all_dimentions_dirichelt() const override { return all_dimentions_dirichelt_; }
+		bool is_dimension_dirichet(const int tag, const int dim) const override;
+		bool all_dimensions_dirichlet() const override { return all_dimensions_dirichlet_; }
 
 	private:
-		bool all_dimentions_dirichelt_ = true;
-		std::vector<Eigen::Matrix<bool, 1, 3, Eigen::RowMajor>> dirichelt_dimentions_;
+		bool all_dimensions_dirichlet_ = true;
+		std::vector<Eigen::Matrix<bool, 1, 3, Eigen::RowMajor>> dirichlet_dimensions_;
 		double rhs_;
 		NodeValues values_;
 		bool is_all_;

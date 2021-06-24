@@ -104,7 +104,7 @@ namespace polyfem
 
 		bool is_scalar() const override { return true; }
 		bool is_time_dependent() const override { return func_ <= 1; }
-		bool is_linear_in_time() const override { return false; }
+		bool is_constant_in_time() const override { return false; }
 
 		void initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 

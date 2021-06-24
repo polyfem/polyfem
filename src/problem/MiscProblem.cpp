@@ -59,7 +59,7 @@ namespace polyfem
 	VectorNd LinearProblem::eval_fun(const VectorNd &pt, const double t) const
 	{
 		VectorNd res(1);
-		res(0) = linear_fun(pt(0), pt(1)) * t;
+		res(0) = linear_fun(pt(0), pt(1));
 
 		return res;
 	}
@@ -67,7 +67,7 @@ namespace polyfem
 	AutodiffGradPt LinearProblem::eval_fun(const AutodiffGradPt &pt, const double t) const
 	{
 		AutodiffGradPt res(1);
-		res(0) = linear_fun(pt(0), pt(1)) * t;
+		res(0) = linear_fun(pt(0), pt(1));
 
 		return res;
 	}
@@ -75,7 +75,7 @@ namespace polyfem
 	AutodiffHessianPt LinearProblem::eval_fun(const AutodiffHessianPt &pt, const double t) const
 	{
 		AutodiffHessianPt res(1);
-		res(0) = linear_fun(pt(0), pt(1)) * t;
+		res(0) = linear_fun(pt(0), pt(1));
 
 		return res;
 	}
@@ -88,7 +88,7 @@ namespace polyfem
 	VectorNd QuadraticProblem::eval_fun(const VectorNd &pt, const double t) const
 	{
 		VectorNd res(1);
-		res(0) = quadratic_fun(pt(0), pt(1)) * t;
+		res(0) = quadratic_fun(pt(0), pt(1));
 
 		return res;
 	}
@@ -96,7 +96,7 @@ namespace polyfem
 	AutodiffGradPt QuadraticProblem::eval_fun(const AutodiffGradPt &pt, const double t) const
 	{
 		AutodiffGradPt res(1);
-		res(0) = quadratic_fun(pt(0), pt(1)) * t;
+		res(0) = quadratic_fun(pt(0), pt(1));
 
 		return res;
 	}
@@ -104,7 +104,7 @@ namespace polyfem
 	AutodiffHessianPt QuadraticProblem::eval_fun(const AutodiffHessianPt &pt, const double t) const
 	{
 		AutodiffHessianPt res(1);
-		res(0) = quadratic_fun(pt(0), pt(1)) * t;
+		res(0) = quadratic_fun(pt(0), pt(1));
 
 		return res;
 	}
@@ -117,7 +117,7 @@ namespace polyfem
 	VectorNd CubicProblem::eval_fun(const VectorNd &pt, const double t) const
 	{
 		VectorNd res(1);
-		res(0) = cubic_fun(pt(0), pt(1)) * t;
+		res(0) = cubic_fun(pt(0), pt(1));
 
 		return res;
 	}
@@ -125,7 +125,7 @@ namespace polyfem
 	AutodiffGradPt CubicProblem::eval_fun(const AutodiffGradPt &pt, const double t) const
 	{
 		AutodiffGradPt res(1);
-		res(0) = cubic_fun(pt(0), pt(1)) * t;
+		res(0) = cubic_fun(pt(0), pt(1));
 
 		return res;
 	}
@@ -133,7 +133,7 @@ namespace polyfem
 	AutodiffHessianPt CubicProblem::eval_fun(const AutodiffHessianPt &pt, const double t) const
 	{
 		AutodiffHessianPt res(1);
-		res(0) = cubic_fun(pt(0), pt(1)) * t;
+		res(0) = cubic_fun(pt(0), pt(1));
 
 		return res;
 	}
@@ -147,9 +147,9 @@ namespace polyfem
 	{
 		VectorNd res(1);
 		if (pt.size() == 2)
-			res(0) = sine_fun(pt(0), pt(1)) * t;
+			res(0) = sine_fun(pt(0), pt(1));
 		else if (pt.size() == 3)
-			res(0) = sine_fun(pt(0), pt(1), pt(2)) * t;
+			res(0) = sine_fun(pt(0), pt(1), pt(2));
 		else
 			assert(false);
 
@@ -161,9 +161,9 @@ namespace polyfem
 		AutodiffGradPt res(1);
 
 		if (pt.size() == 2)
-			res(0) = sine_fun(pt(0), pt(1)) * t;
+			res(0) = sine_fun(pt(0), pt(1));
 		else if (pt.size() == 3)
-			res(0) = sine_fun(pt(0), pt(1), pt(2)) * t;
+			res(0) = sine_fun(pt(0), pt(1), pt(2));
 		else
 			assert(false);
 
@@ -175,9 +175,9 @@ namespace polyfem
 		AutodiffHessianPt res(1);
 
 		if (pt.size() == 2)
-			res(0) = sine_fun(pt(0), pt(1)) * t;
+			res(0) = sine_fun(pt(0), pt(1));
 		else if (pt.size() == 3)
-			res(0) = sine_fun(pt(0), pt(1), pt(2)) * t;
+			res(0) = sine_fun(pt(0), pt(1), pt(2));
 		else
 			assert(false);
 
@@ -193,9 +193,9 @@ namespace polyfem
 	{
 		VectorNd res(1);
 		if (pt.size() == 2)
-			res(0) = zero_bc(pt(0), pt(1)) * t;
+			res(0) = zero_bc(pt(0), pt(1));
 		else if (pt.size() == 3)
-			res(0) = zero_bc(pt(0), pt(1), pt(2)) * t;
+			res(0) = zero_bc(pt(0), pt(1), pt(2));
 		else
 			assert(false);
 
@@ -206,9 +206,9 @@ namespace polyfem
 	{
 		AutodiffGradPt res(1);
 		if (pt.size() == 2)
-			res(0) = zero_bc(pt(0), pt(1)) * t;
+			res(0) = zero_bc(pt(0), pt(1));
 		else if (pt.size() == 3)
-			res(0) = zero_bc(pt(0), pt(1), pt(2)) * t;
+			res(0) = zero_bc(pt(0), pt(1), pt(2));
 		else
 			assert(false);
 
@@ -219,9 +219,9 @@ namespace polyfem
 	{
 		AutodiffHessianPt res(1);
 		if (pt.size() == 2)
-			res(0) = zero_bc(pt(0), pt(1)) * t;
+			res(0) = zero_bc(pt(0), pt(1));
 		else if (pt.size() == 3)
-			res(0) = zero_bc(pt(0), pt(1), pt(2)) * t;
+			res(0) = zero_bc(pt(0), pt(1), pt(2));
 		else
 			assert(false);
 
@@ -276,7 +276,7 @@ namespace polyfem
 	void GenericScalarProblemExact::set_parameters(const json &params)
 	{
 
-		if (params.find("func") != params.end())
+		if (params.contains("func"))
 		{
 			func_ = params["func"];
 		}

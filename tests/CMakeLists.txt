@@ -8,6 +8,7 @@ set(test_sources
 	test_normal.cpp
 	test_problem.cpp
 	test_quadrature.cpp
+	test_rbf.cpp
 	test_solver.cpp
 	test_tbb.cpp
 	test_utils.cpp

@@ -4,6 +4,7 @@
 #include <polyfem/ElementBases.hpp>
 #include <polyfem/ElementAssemblyValues.hpp>
 #include <polyfem/AssemblyValsCache.hpp>
+#include <polyfem/RhsAssembler.hpp>
 #include <polyfem/Problem.hpp>
 #include <polyfem/Mesh.hpp>
 #include <polyfem/LocalBoundary.hpp>
@@ -18,6 +19,12 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+
+// #ifdef POLYFEM_WITH_TBB
+// #include <thread>
+// #include <tbb/task_scheduler_init.h>
+// #endif
+
 #include <memory>
 #include <string>
 
@@ -60,7 +67,7 @@ namespace polyfem
 		void init_logger(std::vector<spdlog::sink_ptr> &sinks, int log_level);
 
 		//initialize the polyfem solver with a json settings
-		void init(const json &args);
+		void init(const json &args, const std::string &output_dir = "");
 		// void init(const std::string &json);
 
 		//change log level, log_level 0 all message, 6 no message. 2 is info, 1 is debug
@@ -82,6 +89,9 @@ namespace polyfem
 
 		//solver settings
 		json args;
+
+		// Directory for output files
+		std::string output_dir;
 
 		//assembler, it dispatches call to the differnt assembers based on the formulation
 		AssemblerUtils assembler;
@@ -150,6 +160,7 @@ namespace polyfem
 		Eigen::MatrixXi boundary_edges_pressure;
 		Eigen::MatrixXi boundary_triangles;
 		Eigen::MatrixXi boundary_triangles_pressure;
+		Eigen::MatrixXi boundary_faces_to_edges;
 
 		//boundary visualization mesh
 		Eigen::MatrixXd boundary_vis_vertices;
@@ -321,6 +332,16 @@ namespace polyfem
 		//solves the proble, step 5
 		void solve_problem();
 
+		//Aux solving functions, c_sol=x are necessary since they contain the pressure, while sol dosent
+		void solve_transient_navier_stokes_split(const int time_steps, const double dt, Eigen::VectorXd &c_sol);
+		void solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler, Eigen::VectorXd &c_sol);
+		void solve_transient_scalar(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler, Eigen::VectorXd &x);
+		void solve_transient_tensor_linear(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler);
+		void solve_transient_tensor_non_linear(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler);
+		void solve_linear();
+		void solve_navier_stokes();
+		void solve_non_linear();
+
 		//compute the errors, not part of solve
 		void compute_errors();
 		//saves all data on the disk according to the input params
@@ -366,6 +387,9 @@ namespace polyfem
 
 		//returns a triangulated representation of the sideset. sidesets contains integers mapping to faces
 		void get_sidesets(Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXd &sidesets);
+
+		// Resolve path relative to output_dir if the path is not absolute
+		std::string resolve_output_path(const std::string &path);
 
 		//saves the output statistic to a stream
 		void save_json(std::ostream &out);
@@ -456,6 +480,11 @@ namespace polyfem
 		//returns the path of the input mesh (wrappers around the arguments)
 		inline std::string mesh_path() const { return args["mesh"]; }
 
+		inline bool has_mesh() const
+		{
+			return !mesh_path().empty() || (args.contains("meshes") && !args["meshes"].empty());
+		}
+
 		//return the formulation (checks if the problem is scalar or not)
 		inline std::string formulation() const { return problem->is_scalar() ? scalar_formulation() : tensor_formulation(); }
 
@@ -513,6 +542,10 @@ namespace polyfem
 		void sol_to_pressure();
 		//builds bases for polygons, called inside build_basis
 		void build_polygonal_basis();
+
+		// #ifdef USE_TBB
+		// 		tbb::task_scheduler_init scheduler;
+		// #endif
 	};
 
 } // namespace polyfem

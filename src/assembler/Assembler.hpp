@@ -3,6 +3,7 @@
 
 #include <polyfem/ElementAssemblyValues.hpp>
 #include <polyfem/AssemblyValsCache.hpp>
+#include <polyfem/MatrixUtils.hpp>
 
 #include <Eigen/Sparse>
 #include <vector>
@@ -86,6 +87,7 @@ namespace polyfem
 			const std::vector<ElementBases> &gbases,
 			const AssemblyValsCache &cache,
 			const Eigen::MatrixXd &displacement,
+			SpareMatrixCache &mat_cache,
 			StiffnessMatrix &grad) const;
 
 		//assemble energy
@@ -98,9 +100,6 @@ namespace polyfem
 
 		inline LocalAssembler &local_assembler() { return local_assembler_; }
 		inline const LocalAssembler &local_assembler() const { return local_assembler_; }
-
-		//unused
-		void clear_cache() {}
 
 	private:
 		LocalAssembler local_assembler_;

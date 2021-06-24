@@ -39,7 +39,7 @@ namespace polyfem
 		void initial_acceleration(Eigen::MatrixXd &sol) const;
 
 		//sets boundary conditions to rhs, the boundary conditions are projected (Dirichlet) integrated (Neumann) at resolution
-		//local boundary stores the mapping from elemment to nodes for Dirichelt nodes
+		//local boundary stores the mapping from elemment to nodes for Dirichlet nodes
 		//local local_neumann_boundary stores the mapping from elemment to nodes for Neumann nodes
 		//calls set_bc
 		void set_bc(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t = 1) const;

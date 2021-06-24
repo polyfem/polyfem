@@ -3,6 +3,12 @@
 #include <polyfem/AssemblerUtils.hpp>
 #include <polyfem/RhsAssembler.hpp>
 #include <polyfem/State.hpp>
+#include <polyfem/ImplicitTimeIntegrator.hpp>
+
+#include <polyfem/MatrixUtils.hpp>
+
+#include <ipc/collision_constraint.hpp>
+#include <ipc/friction/friction_constraint.hpp>
 
 #include <cppoptlib/problem.h>
 
@@ -15,27 +21,41 @@ namespace polyfem
 		using typename cppoptlib::Problem<double>::TVector;
 		typedef StiffnessMatrix THessian;
 
-		NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t, const double dhat, const bool project_to_psd);
+		NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t, const double dhat, const bool project_to_psd, const bool no_reduced = false);
 		void init(const TVector &displacement);
-		void init_timestep(const TVector &x_prev, const TVector &v_prev, const TVector &a_prev, const double dt);
+		void init_time_integrator(const TVector &x_prev, const TVector &v_prev, const TVector &a_prev, const double dt);
 		TVector initial_guess();
 
-		double value(const TVector &x) override;
-		void gradient(const TVector &x, TVector &gradv) override;
-		void gradient_no_rhs(const TVector &x, Eigen::MatrixXd &gradv);
+		virtual double value(const TVector &x) override;
+		virtual void gradient(const TVector &x, TVector &gradv) override;
+		virtual void gradient_no_rhs(const TVector &x, Eigen::MatrixXd &gradv, const bool only_elastic = false);
+
+		virtual double value(const TVector &x, const bool only_elastic);
+		void gradient(const TVector &x, TVector &gradv, const bool only_elastic);
 
 		bool is_step_valid(const TVector &x0, const TVector &x1);
+		bool is_step_collision_free(const TVector &x0, const TVector &x1);
 		double max_step_size(const TVector &x0, const TVector &x1);
 
+		void line_search_begin(const TVector &x0, const TVector &x1);
+		void line_search_end();
+		void post_step(const TVector &x0);
+
 #include <polyfem/DisableWarnings.hpp>
-		void hessian(const TVector &x, THessian &hessian);
-		void hessian_full(const TVector &x, THessian &gradv);
+		virtual void hessian(const TVector &x, THessian &hessian);
+		virtual void hessian_full(const TVector &x, THessian &gradv);
 #include <polyfem/EnableWarnings.hpp>
 
 		template <class FullMat, class ReducedMat>
 		static void full_to_reduced_aux(State &state, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced)
 		{
 			using namespace polyfem;
+
+			if (full_size == reduced_size)
+			{
+				reduced = full;
+				return;
+			}
 
 			assert(full.size() == full_size);
 			assert(full.cols() == 1);
@@ -61,6 +81,12 @@ namespace polyfem
 		{
 			using namespace polyfem;
 
+			if (full_size == reduced_size)
+			{
+				full = reduced;
+				return;
+			}
+
 			assert(reduced.size() == reduced_size);
 			assert(reduced.cols() == 1);
 			full.resize(full_size, 1);
@@ -85,31 +111,58 @@ namespace polyfem
 		void full_to_reduced(const Eigen::MatrixXd &full, TVector &reduced) const;
 		void reduced_to_full(const TVector &reduced, Eigen::MatrixXd &full);
 
-		void update_quantities(const double t, const TVector &x);
+		virtual void update_quantities(const double t, const TVector &x);
 		void substepping(const double t);
+		void solution_changed(const TVector &newX);
+		void update_lagging(const TVector &x, bool start_of_timestep);
+
+		bool lagging_converged(const TVector &x, bool do_lagging_update = true);
 
 		const Eigen::MatrixXd &current_rhs();
 
-	private:
+		virtual bool stop(const TVector &x) { return false; }
+
+		void save_raw(const std::string &x_path, const std::string &v_path, const std::string &a_path);
+
+		double heuristic_max_step(const TVector &dx);
+
+	protected:
 		State &state;
-		AssemblerUtils &assembler;
+		double _barrier_stiffness;
+		void compute_displaced_points(const Eigen::MatrixXd &full, Eigen::MatrixXd &displaced);
+		void reduced_to_full_displaced_points(const TVector &reduced, Eigen::MatrixXd &displaced);
 		const RhsAssembler &rhs_assembler;
+		bool is_time_dependent;
+
+	private:
+		AssemblerUtils &assembler;
 		Eigen::MatrixXd _current_rhs;
 		StiffnessMatrix cached_stiffness;
+		SpareMatrixCache mat_cache;
 
 		const int full_size, reduced_size;
 		double t;
 		bool rhs_computed;
-		bool is_time_dependent;
 		bool project_to_psd;
 
 		double _dhat;
-		double _barrier_stiffness;
+		double _prev_distance;
+		double max_barrier_stiffness_;
 
-		double dt;
-		TVector x_prev, v_prev, a_prev;
+		// friction variables
+		double _epsv;					///< @brief The boundary between static and dynamic friction.
+		double _mu;						///< @brief Coefficient of friction.
+		Eigen::MatrixXd displaced_prev; ///< @brief Displaced vertices at the start of the time-step.
+
+		const double &dt() const { return time_integrator->dt(); }
+
+		ipc::Constraints _constraint_set;
+		ipc::FrictionConstraints _friction_constraint_set;
+		ipc::Candidates _candidates;
+
+		std::shared_ptr<ImplicitTimeIntegrator> time_integrator;
 
 		void compute_cached_stiffness();
-		void compute_displaced_points(const Eigen::MatrixXd &full, Eigen::MatrixXd &displaced);
+		void update_barrier_stiffness(const TVector &full);
 	};
 } // namespace polyfem

@@ -1,0 +1,25 @@
+---
+# https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+Language: Cpp
+# BasedOnStyle: WebKit
+# ColumnLimit: 80
+ColumnLimit: 0
+UseTab: Always
+IndentWidth: 4
+TabWidth: 4
+BreakBeforeBraces: Allman
+AllowShortIfStatementsOnASingleLine: false
+IndentCaseLabels: false
+SortIncludes: false
+BreakStringLiterals: false
+AlignTrailingComments: true
+FixNamespaceComments: true
+ContinuationIndentWidth: 4
+NamespaceIndentation: All
+AccessModifierOffset: -4
+BreakBeforeBinaryOperators: NonAssignment
+# ReflowComments: true
+# BinPackParameters: false
+# AllowAllParametersOfDeclarationOnNextLine: true
+# AlignAfterOpenBracket: AlwaysBreak
+...

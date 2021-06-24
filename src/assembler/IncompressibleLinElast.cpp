@@ -6,9 +6,9 @@
 
 namespace polyfem
 {
-	void IncompressibleLinearElasticityDispacement::init_multimaterial(const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus)
+	void IncompressibleLinearElasticityDispacement::init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus)
 	{
-		params_.init_multimaterial(Es, nus);
+		params_.init_multimaterial(is_volume, Es, nus);
 	}
 
 	void IncompressibleLinearElasticityDispacement::set_parameters(const json &params)
@@ -119,7 +119,7 @@ namespace polyfem
 		}
 	}
 
-	void IncompressibleLinearElasticityMixed::init_multimaterial(const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus)
+	void IncompressibleLinearElasticityMixed::init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus)
 	{
 		// params_.init_multimaterial(Es, nus);
 	}
@@ -171,9 +171,9 @@ namespace polyfem
 		return res;
 	}
 
-	void IncompressibleLinearElasticityPressure::init_multimaterial(const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus)
+	void IncompressibleLinearElasticityPressure::init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus)
 	{
-		params_.init_multimaterial(Es, nus);
+		params_.init_multimaterial(is_volume, Es, nus);
 	}
 
 	void IncompressibleLinearElasticityPressure::set_parameters(const json &params)

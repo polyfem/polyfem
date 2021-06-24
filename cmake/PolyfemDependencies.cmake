@@ -25,22 +25,29 @@ endif()
 
 # spdlog
 if(NOT TARGET spdlog::spdlog)
-	polyfem_download_spdlog()
-	add_subdirectory(${POLYFEM_EXTERNAL}/spdlog)
+    polyfem_download_spdlog()
+    add_subdirectory(${POLYFEM_EXTERNAL}/spdlog)
 endif()
 
 # CL11
 if(${POLYFEM_TOPLEVEL_PROJECT})
-if(NOT TARGET CLI11::CLI11)
-    polyfem_download_cli11()
-    add_subdirectory(${POLYFEM_EXTERNAL}/cli11)
-endif()
+    if(NOT TARGET CLI11::CLI11)
+        polyfem_download_cli11()
+        add_subdirectory(${POLYFEM_EXTERNAL}/cli11)
+    endif()
 endif()
 
 # Clipper
 if(NOT TARGET clipper::clipper)
-	polyfem_download_clipper()
-	add_library(clipper_clipper ${POLYFEM_EXTERNAL}/clipper/cpp/clipper.cpp)
-	add_library(clipper::clipper ALIAS clipper_clipper)
-	target_include_directories(clipper_clipper PUBLIC ${POLYFEM_EXTERNAL}/clipper/cpp)
+    polyfem_download_clipper()
+    add_library(clipper_clipper ${POLYFEM_EXTERNAL}/clipper/cpp/clipper.cpp)
+    add_library(clipper::clipper ALIAS clipper_clipper)
+    target_include_directories(clipper_clipper PUBLIC ${POLYFEM_EXTERNAL}/clipper/cpp)
+endif()
+
+# GHC Filesystem
+if(NOT TARGET ghc::filesystem)
+    polyfem_download_filesystem()
+    add_subdirectory(${POLYFEM_EXTERNAL}/filesystem)
+    add_library(ghc::filesystem ALIAS ghc_filesystem)
 endif()

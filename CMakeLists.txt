@@ -74,9 +74,10 @@ option(POLYFEM_NO_UI            "Disables the user interface" OFF)
 
 # Polyfem options for enabling/disabling optional libraries
 option(POLYFEM_WITH_MMG              "Enable MMG library"                OFF)
-option(POLYFEM_WITH_TBB              "Enable TBB"                        ON)
 option(POLYFEM_WITH_OPENCL           "Enable OpenCL"                     OFF)
 option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
+set(POLYFEM_THREADING "TBB" CACHE STRING "Multithreading library to use (options: CPP, TBB, NONE)")
+set_property(CACHE POLYFEM_THREADING PROPERTY STRINGS "CPP" "TBB" "NONE")
 
 option(POLYFEM_WITH_APPS      "Build the apps"          ON)
 option(POLYFEM_WITH_MISC      "Build misc targes"       ON)
@@ -96,7 +97,7 @@ option(POLYSOLVE_WITH_PARDISO          "Enable Pardiso library"            OFF)
 option(POLYSOLVE_WITH_HYPRE            "Enable hypre"                      ON)
 option(POLYSOLVE_WITH_AMGCL            "Use AMGCL"                         ON)
 option(POLYSOLVE_WITH_SPECTRA          "Enable computing spectrum"         OFF)
-option(POLYSOLVE_LARGE_INDEX    "Build for large indices"                  OFF)
+option(POLYSOLVE_LARGE_INDEX           "Build for large indices"           OFF)
 
 
 # Options for libigl modules
@@ -170,16 +171,18 @@ set(MESH_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tests/")
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_MESH_PATH=\"${MESH_PATH}\")
 
 # Dependencies
-target_link_libraries(polyfem
-    PUBLIC
-        clipper::clipper
-)
+target_link_libraries(polyfem PUBLIC clipper::clipper)
 
 # Extra warnings
 target_link_libraries(polyfem PRIVATE warnings::all)
 
-# Use C++14
-target_compile_features(polyfem PUBLIC ${CXX14_FEATURES})
+if(POLYFEM_THREADING STREQUAL "CPP")
+    # Use C++17
+    target_compile_features(polyfem PUBLIC ${CXX17_FEATURES})
+else()
+    # Use C++14
+    target_compile_features(polyfem PUBLIC ${CXX14_FEATURES})
+endif()
 
 # No limit yay
 target_compile_definitions(polyfem PUBLIC -DEIGEN_STACK_ALLOCATION_LIMIT=0)
@@ -198,6 +201,140 @@ endif()
 if(POLYFEM_WITH_SANITIZERS)
     add_sanitizers(polyfem)
 endif()
+
+################################################################################
+# Required libraries
+################################################################################
+
+# Eigen
+# Uncomment to use the system's version of Eigen (e.g. to use Eigen 3.3)
+# find_package(Eigen3 REQUIRED)
+# target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
+
+polyfem_download_solvers()
+add_subdirectory(${THIRD_PARTY_DIR}/solvers)
+target_link_libraries(polyfem PUBLIC polysolve)
+
+# TBB
+if(POLYFEM_THREADING STREQUAL "CPP")
+    target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_CPP_THREADS)
+elseif(POLYFEM_THREADING STREQUAL "TBB")
+    polyfem_download_tbb()
+    set(TBB_BUILD_STATIC ON CACHE BOOL " " FORCE)
+    set(TBB_BUILD_SHARED OFF CACHE BOOL " " FORCE)
+    set(TBB_BUILD_TBBMALLOC OFF CACHE BOOL " " FORCE)
+    set(TBB_BUILD_TBBMALLOC_PROXY OFF CACHE BOOL " " FORCE)
+    set(TBB_BUILD_TESTS OFF CACHE BOOL " " FORCE)
+
+    add_subdirectory(${THIRD_PARTY_DIR}/tbb tbb)
+    set_property(TARGET tbb_static tbb_def_files PROPERTY FOLDER "dependencies")
+
+    target_compile_definitions(tbb_static PUBLIC -DPOLYFEM_WITH_TBB)
+    target_include_directories(polyfem SYSTEM PUBLIC ${THIRD_PARTY_DIR}/tbb/include)
+    add_library(TBB::tbb ALIAS tbb_static)
+
+    target_link_libraries(polyfem PUBLIC TBB::tbb)
+endif()
+
+# IPC
+option(IPC_TOOLKIT_BUILD_UNIT_TESTS  "Build unit-tests"      OFF)
+polyfem_download_ipc()
+add_subdirectory(${THIRD_PARTY_DIR}/ipc)
+target_link_libraries(polyfem PUBLIC IPCToolkit)
+
+# libigl
+if(NOT TARGET igl::core)
+    polyfem_download_libigl()
+    find_package(LIBIGL REQUIRED)
+endif()
+target_link_libraries(polyfem PUBLIC igl::core)
+
+# BVH
+polyfem_download_BVH()
+add_subdirectory(${THIRD_PARTY_DIR}/BVH)
+target_link_libraries(polyfem PUBLIC BVH_lib)
+
+# MSHIO
+polyfem_download_mshio()
+add_subdirectory(${THIRD_PARTY_DIR}/mshio)
+target_link_libraries(polyfem PUBLIC mshio)
+
+# Geogram
+polyfem_download_geogram()
+include(geogram)
+target_link_libraries(polyfem PUBLIC geogram)
+
+#spdlog
+target_link_libraries(polyfem PUBLIC spdlog::spdlog)
+
+# CppNumericalSolvers
+polyfem_download_CppNumericalSolvers()
+add_library(cppoptlib INTERFACE)
+target_include_directories(cppoptlib SYSTEM INTERFACE ${THIRD_PARTY_DIR}/CppNumericalSolvers/include)
+target_link_libraries(polyfem PUBLIC cppoptlib)
+
+# TinyExpr library
+if(NOT TARGET tinyexpr::tinyexpr)
+    polyfem_download_tinyexpr()
+    add_library(tinyexpr_tinyexpr ${THIRD_PARTY_DIR}/tinyexpr/tinyexpr.c)
+    target_include_directories(tinyexpr_tinyexpr SYSTEM PUBLIC ${THIRD_PARTY_DIR}/tinyexpr)
+    add_library(tinyexpr::tinyexpr ALIAS tinyexpr_tinyexpr)
+endif()
+target_link_libraries(polyfem PUBLIC tinyexpr::tinyexpr)
+
+# TinyXML library
+if(NOT TARGET tinyxml2)
+    polyfem_download_tinyxml()
+    SET(BUILD_SHARED_LIBS OFF)
+    SET(BUILD_STATIC_LIBS ON)
+    SET(BUILD_TESTING OFF)
+    add_subdirectory(${THIRD_PARTY_DIR}/tinyxml)
+endif()
+target_link_libraries(polyfem PUBLIC tinyxml2)
+
+# Catch2
+if(${POLYFEM_TOPLEVEL_PROJECT})
+    polyfem_download_catch2()
+    add_library(catch INTERFACE)
+    target_include_directories(catch SYSTEM INTERFACE ${THIRD_PARTY_DIR}/Catch2/single_include/catch2)
+endif()
+
+# Filesystem
+target_link_libraries(polyfem PUBLIC ghc::filesystem)
+
+################################################################################
+# Optional libraries
+################################################################################
+
+# MMG wrapper
+if(POLYFEM_WITH_MMG)
+    include(ExternalProject)
+    set(MMG_DIR "${THIRD_PARTY_DIR}/mmg")
+    ExternalProject_Add(MMG_Project
+        PREFIX "${MMG_DIR}"
+        GIT_REPOSITORY https://github.com/MmgTools/mmg.git
+        GIT_TAG "v5.3.8"
+
+        UPDATE_COMMAND ""
+        PATCH_COMMAND ""
+
+        CMAKE_ARGS
+            -DCMAKE_PREFIX_PATH=${MMG_DIR}/bin
+            -DBUILD_SHARED_LIBS=OFF
+            "-DCMAKE_INSTALL_PREFIX=${MMG_DIR}/"
+
+        TEST_COMMAND "")
+
+    set(MMG_PATH "${THIRD_PARTY_DIR}/mmg/bin/mmg3d_O3")
+    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_MMG_PATH=\"${MMG_PATH}\")
+    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_MMG)
+
+    # Boost
+    find_package(Boost 1.61 QUIET REQUIRED COMPONENTS filesystem system)
+    target_include_directories(polyfem PUBLIC ${Boost_INCLUDE_DIRS})
+    target_link_libraries(polyfem PUBLIC ${Boost_LIBRARIES})
+endif()
+
 
 ################################################################################
 # Polyfem binary
@@ -239,139 +376,6 @@ if(POLYFEM_TOPLEVEL_PROJECT)
     if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
         set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_bin)
     endif()
-endif()
-
-################################################################################
-# Required libraries
-################################################################################
-
-# Eigen
-# Uncomment to use the system's version of Eigen (e.g. to use Eigen 3.3)
-# find_package(Eigen3 REQUIRED)
-# target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
-
-polyfem_download_solvers()
-add_subdirectory(${THIRD_PARTY_DIR}/solvers)
-target_link_libraries(polyfem PUBLIC polysolve)
-
-# TBB
-if(POLYFEM_WITH_TBB)
-    polyfem_download_tbb()
-    set(TBB_BUILD_STATIC ON CACHE BOOL " " FORCE)
-    set(TBB_BUILD_SHARED OFF CACHE BOOL " " FORCE)
-    set(TBB_BUILD_TBBMALLOC OFF CACHE BOOL " " FORCE)
-    set(TBB_BUILD_TBBMALLOC_PROXY OFF CACHE BOOL " " FORCE)
-    set(TBB_BUILD_TESTS OFF CACHE BOOL " " FORCE)
-
-    add_subdirectory(${THIRD_PARTY_DIR}/tbb tbb)
-    set_property(TARGET tbb_static tbb_def_files PROPERTY FOLDER "dependencies")
-
-    target_compile_definitions(tbb_static PUBLIC -DPOLYFEM_WITH_TBB)
-    target_include_directories(polyfem SYSTEM PUBLIC ${THIRD_PARTY_DIR}/tbb/include)
-    add_library(TBB::tbb ALIAS tbb_static)
-
-    target_link_libraries(polyfem PUBLIC TBB::tbb)
-endif()
-
-# libigl
-polyfem_download_libigl()
-find_package(LIBIGL REQUIRED)
-target_link_libraries(polyfem PUBLIC igl::core)
-
-
-# IPC
-option(IPC_TOOLKIT_BUILD_UNIT_TESTS  "Build unit-tests"      OFF)
-option(IPC_TOOLKIT_WITH_LOGGER       "Enables logger "       OFF)
-polyfem_download_ipc()
-add_subdirectory(${THIRD_PARTY_DIR}/ipc)
-target_link_libraries(polyfem PUBLIC IPCToolkit)
-
-# BVH
-polyfem_download_BVH()
-add_subdirectory(${THIRD_PARTY_DIR}/BVH)
-target_link_libraries(polyfem PUBLIC BVH_lib)
-
-
-# MSHIO
-polyfem_download_mshio()
-add_subdirectory(${THIRD_PARTY_DIR}/mshio)
-target_link_libraries(polyfem PUBLIC mshio)
-
-
-# Geogram
-polyfem_download_geogram()
-include(geogram)
-target_link_libraries(polyfem PUBLIC geogram)
-
-#spdlog
-target_link_libraries(polyfem PUBLIC spdlog::spdlog)
-
-# CppNumericalSolvers
-polyfem_download_CppNumericalSolvers()
-add_library(cppoptlib INTERFACE)
-target_include_directories(cppoptlib SYSTEM INTERFACE ${THIRD_PARTY_DIR}/CppNumericalSolvers/include)
-target_link_libraries(polyfem PUBLIC cppoptlib)
-
-
-
-# TinyExpr library
-if(NOT TARGET tinyexpr::tinyexpr)
-    polyfem_download_tinyexpr()
-    add_library(tinyexpr_tinyexpr ${THIRD_PARTY_DIR}/tinyexpr/tinyexpr.c)
-    target_include_directories(tinyexpr_tinyexpr SYSTEM PUBLIC ${THIRD_PARTY_DIR}/tinyexpr)
-    add_library(tinyexpr::tinyexpr ALIAS tinyexpr_tinyexpr)
-endif()
-target_link_libraries(polyfem PUBLIC tinyexpr::tinyexpr)
-
-# TinyXML library
-if(NOT TARGET tinyxml2)
-    polyfem_download_tinyxml()
-    SET(BUILD_SHARED_LIBS OFF)
-    SET(BUILD_STATIC_LIBS ON)
-    SET(BUILD_TESTING OFF)
-    add_subdirectory(${THIRD_PARTY_DIR}/tinyxml)
-endif()
-target_link_libraries(polyfem PUBLIC tinyxml2)
-
-# Catch2
-if(${POLYFEM_TOPLEVEL_PROJECT})
-    polyfem_download_catch2()
-    add_library(catch INTERFACE)
-    target_include_directories(catch SYSTEM INTERFACE ${THIRD_PARTY_DIR}/Catch2/single_include/catch2)
-endif()
-
-
-################################################################################
-# Optional libraries
-################################################################################
-
-# MMG wrapper
-if(POLYFEM_WITH_MMG)
-    include(ExternalProject)
-    set(MMG_DIR "${THIRD_PARTY_DIR}/mmg")
-    ExternalProject_Add(MMG_Project
-        PREFIX "${MMG_DIR}"
-        GIT_REPOSITORY https://github.com/MmgTools/mmg.git
-        GIT_TAG "v5.3.8"
-
-        UPDATE_COMMAND ""
-        PATCH_COMMAND ""
-
-        CMAKE_ARGS
-            -DCMAKE_PREFIX_PATH=${MMG_DIR}/bin
-            -DBUILD_SHARED_LIBS=OFF
-            "-DCMAKE_INSTALL_PREFIX=${MMG_DIR}/"
-
-        TEST_COMMAND "")
-
-    set(MMG_PATH "${THIRD_PARTY_DIR}/mmg/bin/mmg3d_O3")
-    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_MMG_PATH=\"${MMG_PATH}\")
-    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_MMG)
-
-    # Boost
-    find_package(Boost 1.61 QUIET REQUIRED COMPONENTS filesystem system)
-    target_include_directories(polyfem PUBLIC ${Boost_INCLUDE_DIRS})
-    target_link_libraries(polyfem PUBLIC ${Boost_LIBRARIES})
 endif()
 
 ################################################################################

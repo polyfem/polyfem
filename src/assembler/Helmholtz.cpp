@@ -30,7 +30,7 @@ namespace polyfem
 
 	void Helmholtz::set_parameters(const json &params)
 	{
-		if (params.find("k") != params.end()) {
+		if (params.contains("k")) {
 			k_ = params["k"];
 		}
 	}

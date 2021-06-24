@@ -8,6 +8,7 @@
 #include <polyfem/RBFWithLinear.hpp>
 #include <polyfem/RBFWithQuadratic.hpp>
 #include <polyfem/RBFWithQuadraticLagrange.hpp>
+#include <polyfem/Logger.hpp>
 
 #include <polyfem/auto_q_bases.hpp>
 
@@ -706,7 +707,7 @@ namespace polyfem
 			}
 			else
 			{
-				throw std::runtime_error("Unsupported constraint order: " + std::to_string(integral_constraints));
+				throw std::runtime_error(fmt::format("Unsupported constraint order: {:d}", integral_constraints));
 			}
 
 			// Set the bases which are nonzero inside the polygon

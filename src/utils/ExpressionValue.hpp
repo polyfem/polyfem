@@ -4,8 +4,8 @@
 
 #include <tinyexpr.h>
 
-
-namespace polyfem {
+namespace polyfem
+{
 
 	class ExpressionValue
 	{
@@ -18,9 +18,10 @@ namespace polyfem {
 
 		void init(const std::function<double(double x, double y, double z)> &func);
 		void init(const std::function<Eigen::MatrixXd(double x, double y, double z)> &func, const int coo);
+		void init(const std::function<double(double x, double y, double z, double t)> &func);
+		void init(const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const int coo);
 
-		double operator()(double x, double y) const;
-		double operator()(double x, double y, double z) const;
+		double operator()(double x, double y, double z = 0, double t = 0) const;
 
 		void clear();
 
@@ -29,11 +30,11 @@ namespace polyfem {
 	private:
 		struct Internal
 		{
-			double x, y, z;
+			double x, y, z, t;
 		};
 
-		std::function<double(double x, double y, double z)> sfunc_;
-		std::function<Eigen::MatrixXd(double x, double y, double z)> tfunc_;
+		std::function<double(double x, double y, double z, double t)> sfunc_;
+		std::function<Eigen::MatrixXd(double x, double y, double z, double t)> tfunc_;
 		int tfunc_coo_;
 
 		te_expr *expr_;

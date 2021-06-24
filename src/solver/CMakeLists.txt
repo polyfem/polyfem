@@ -2,6 +2,8 @@ set(SOURCES
 	LbfgsSolver.hpp
 	NLProblem.cpp
 	NLProblem.hpp
+	ALNLProblem.cpp
+	ALNLProblem.hpp
 	SparseNewtonDescentSolver.hpp
 	NavierStokesSolver.cpp
 	NavierStokesSolver.hpp

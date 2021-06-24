@@ -621,8 +621,7 @@ namespace polyfem
 				data(layer).show_faces,
 				data(layer).show_lines,
 				data(layer).show_vertex_labels,
-				data(layer).show_face_labels
-            };
+				data(layer).show_face_labels};
 		}
 		data(layer).show_overlay = 0;
 		data(layer).show_faces = 0;
@@ -832,7 +831,8 @@ namespace polyfem
 		Eigen::MatrixXd sidesets;
 		Eigen::MatrixXd col;
 		state.get_sidesets(pts, faces, sidesets);
-		igl::colormap(color_map, sidesets, true, col);
+		if (sidesets.size() != 0)
+			igl::colormap(color_map, sidesets, true, col);
 
 		if (visible_visualizations(Visualizations::Sidesets) && !available_visualizations[Visualizations::Sidesets])
 		{
@@ -842,7 +842,8 @@ namespace polyfem
 		if (state.mesh->is_volume())
 		{
 			data(Visualizations::Sidesets).set_mesh(pts, faces);
-			data(Visualizations::Sidesets).set_colors(col);
+			if (col.size() != 0)
+				data(Visualizations::Sidesets).set_colors(col);
 			Eigen::MatrixXd p0, p1;
 			state.mesh->get_edges(p0, p1);
 
@@ -854,7 +855,8 @@ namespace polyfem
 		{
 			data(Visualizations::Sidesets).show_lines = 1;
 			data(Visualizations::Sidesets).line_width = line_width;
-			data(Visualizations::Sidesets).set_edges(pts, faces, col);
+			if (col.size() != 0)
+				data(Visualizations::Sidesets).set_edges(pts, faces, col);
 		}
 
 		if (visible_visualizations(Visualizations::Sidesets) && !available_visualizations[Visualizations::Sidesets])
@@ -1622,7 +1624,7 @@ namespace polyfem
 
 	void UIState::load_mesh()
 	{
-		if (state.mesh_path().empty() && febio_file.empty())
+		if (!state.has_mesh() && febio_file.empty())
 		{
 			viewer.open_dialog_load_mesh();
 		}

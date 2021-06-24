@@ -31,14 +31,14 @@ namespace polyfem
 			void init(const double x, const double y, const double z, const Eigen::Matrix<bool, 3, 1> &dd)
 			{
 				this->val << x, y, z;
-				dirichelt_dims = dd;
+				dirichlet_dims = dd;
 				is_val = true;
 			}
 
 			void init(const Eigen::Vector3d &v, const Eigen::Matrix<bool, 3, 1> &dd)
 			{
 				this->val = v;
-				dirichelt_dims = dd;
+				dirichlet_dims = dd;
 				is_val = true;
 			}
 
@@ -50,7 +50,7 @@ namespace polyfem
 				coordiante_0 = (coord + 1) % 3;
 				coordiante_1 = (coord + 2) % 3;
 
-				dirichelt_dims = dd;
+				dirichlet_dims = dd;
 
 				is_val = false;
 			}
@@ -71,12 +71,12 @@ namespace polyfem
 					coordiante_1 = -1;
 				}
 
-				dirichelt_dims = dd;
+				dirichlet_dims = dd;
 
 				is_val = false;
 			}
 
-			bool is_dirichet_dim(const int d) const { return dirichelt_dims(d); }
+			bool is_dirichet_dim(const int d) const { return dirichlet_dims(d); }
 
 		private:
 			Eigen::Vector3d val;
@@ -86,7 +86,7 @@ namespace polyfem
 			bool is_tri;
 			int coordiante_0 = 0;
 			int coordiante_1 = 1;
-			Eigen::Matrix<bool, 3, 1> dirichelt_dims;
+			Eigen::Matrix<bool, 3, 1> dirichlet_dims;
 		};
 
 	public:
@@ -128,12 +128,12 @@ namespace polyfem
 		void add_function(const int bc_tag, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tri, const int coord, const Eigen::Matrix<bool, 3, 1> &dd, const bool is_neumann = false);
 		void add_function(const int bc_tag, const Eigen::MatrixXd &func, const Eigen::MatrixXd &pts, const std::string &rbf, const double eps, const int coord, const Eigen::Matrix<bool, 3, 1> &dd, const bool is_neumann = false);
 
-		bool is_dimention_dirichet(const int tag, const int dim) const override;
-		bool all_dimentions_dirichelt() const override { return all_dimentions_dirichelt_; }
+		bool is_dimension_dirichet(const int tag, const int dim) const override;
+		bool all_dimensions_dirichlet() const override { return all_dimensions_dirichlet_; }
 
 	private:
 		bool initialized_ = false;
-		bool all_dimentions_dirichelt_ = true;
+		bool all_dimensions_dirichlet_ = true;
 		double rhs_;
 		double scaling_;
 		Eigen::Vector3d translation_;

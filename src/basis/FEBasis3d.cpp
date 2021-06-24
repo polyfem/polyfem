@@ -1028,24 +1028,26 @@ int polyfem::FEBasis3d::build_bases(
 		if (mesh.is_cube(e))
 		{
 			// hex_quadrature.get_quadrature(quadrature_order, b.quadrature);
-			b.set_quadrature([quadrature_order](Quadrature &quad) {
-				HexQuadrature hex_quadrature;
-				hex_quadrature.get_quadrature(quadrature_order, quad);
-			});
+			b.set_quadrature([quadrature_order](Quadrature &quad)
+							 {
+								 HexQuadrature hex_quadrature;
+								 hex_quadrature.get_quadrature(quadrature_order, quad);
+							 });
 
-			b.set_local_node_from_primitive_func([serendipity, discr_order, e](const int primitive_id, const Mesh &mesh) {
-				const auto &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
-				Navigation3D::Index index;
+			b.set_local_node_from_primitive_func([serendipity, discr_order, e](const int primitive_id, const Mesh &mesh)
+												 {
+													 const auto &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
+													 Navigation3D::Index index;
 
-				for (int lf = 0; lf < 6; ++lf)
-				{
-					index = mesh3d.get_index_from_element(e, lf, 0);
-					if (index.face == primitive_id)
-						break;
-				}
-				assert(index.face == primitive_id);
-				return hex_face_local_nodes(serendipity, discr_order, mesh3d, index);
-			});
+													 for (int lf = 0; lf < 6; ++lf)
+													 {
+														 index = mesh3d.get_index_from_element(e, lf, 0);
+														 if (index.face == primitive_id)
+															 break;
+													 }
+													 assert(index.face == primitive_id);
+													 return hex_face_local_nodes(serendipity, discr_order, mesh3d, index);
+												 });
 
 			for (int j = 0; j < n_el_bases; ++j)
 			{
@@ -1055,32 +1057,36 @@ int polyfem::FEBasis3d::build_bases(
 
 				const int dtmp = serendipity ? -2 : discr_order;
 
-				b.bases[j].set_basis([dtmp, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::q_basis_value_3d(dtmp, j, uv, val); });
-				b.bases[j].set_grad([dtmp, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::q_grad_basis_value_3d(dtmp, j, uv, val); });
+				b.bases[j].set_basis([dtmp, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+									 { polyfem::autogen::q_basis_value_3d(dtmp, j, uv, val); });
+				b.bases[j].set_grad([dtmp, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+									{ polyfem::autogen::q_grad_basis_value_3d(dtmp, j, uv, val); });
 			}
 		}
 		else if (mesh.is_simplex(e))
 		{
-			const int real_order = std::max(quadrature_order, (discr_order - 1) * 2);
+			const int real_order = std::max(quadrature_order, (discr_order - 1) * 2 + 1);
 
-			b.set_quadrature([real_order](Quadrature &quad) {
-				TetQuadrature tet_quadrature;
-				tet_quadrature.get_quadrature(real_order, quad);
-			});
+			b.set_quadrature([real_order](Quadrature &quad)
+							 {
+								 TetQuadrature tet_quadrature;
+								 tet_quadrature.get_quadrature(real_order, quad);
+							 });
 
-			b.set_local_node_from_primitive_func([discr_order, e](const int primitive_id, const Mesh &mesh) {
-				const auto &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
-				Navigation3D::Index index;
+			b.set_local_node_from_primitive_func([discr_order, e](const int primitive_id, const Mesh &mesh)
+												 {
+													 const auto &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
+													 Navigation3D::Index index;
 
-				for (int lf = 0; lf < mesh3d.n_cell_faces(e); ++lf)
-				{
-					index = mesh3d.get_index_from_element(e, lf, 0);
-					if (index.face == primitive_id)
-						break;
-				}
-				assert(index.face == primitive_id);
-				return tet_face_local_nodes(discr_order, mesh3d, index);
-			});
+													 for (int lf = 0; lf < mesh3d.n_cell_faces(e); ++lf)
+													 {
+														 index = mesh3d.get_index_from_element(e, lf, 0);
+														 if (index.face == primitive_id)
+															 break;
+													 }
+													 assert(index.face == primitive_id);
+													 return tet_face_local_nodes(discr_order, mesh3d, index);
+												 });
 
 			const bool rational = is_geom_bases && mesh.is_rational() && !mesh.cell_weights(e).empty();
 			assert(!rational);
@@ -1093,8 +1099,10 @@ int polyfem::FEBasis3d::build_bases(
 					b.bases[j].init(discr_order, global_index, j, nodes.node_position(global_index));
 				}
 
-				b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::p_basis_value_3d(discr_order, j, uv, val); });
-				b.bases[j].set_grad([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::p_grad_basis_value_3d(discr_order, j, uv, val); });
+				b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+									 { polyfem::autogen::p_basis_value_3d(discr_order, j, uv, val); });
+				b.bases[j].set_grad([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+									{ polyfem::autogen::p_grad_basis_value_3d(discr_order, j, uv, val); });
 			}
 		}
 		else

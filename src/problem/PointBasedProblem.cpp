@@ -11,7 +11,7 @@ namespace polyfem
 	{
 		Eigen::Matrix<bool, 3, 1> dd;
 		dd.setConstant(true);
-		bool all_dimentions_dirichelt = true;
+		bool all_dimensions_dirichlet = true;
 
 		if (data.is_array())
 		{
@@ -31,29 +31,29 @@ namespace polyfem
 			read_matrix(data["points"], pts);
 
 			int coord = -1;
-			if (data.find("coordinate") != data.end())
+			if (data.contains("coordinate"))
 				coord = data["coordinate"];
 
 			if (coord >= 0)
 				pts = pts.block(0, 0, pts.rows(), 2).eval();
 
-			is_tri = data.find("triangles") != data.end();
+			is_tri = data.contains("triangles");
 			if (is_tri)
 				read_matrix(data["triangles"], tri);
 			else
 			{
-				if (data.find("rbf") != data.end())
+				if (data.contains("rbf"))
 				{
 					const std::string tmp = data["rbf"];
 					rbf = tmp;
 				}
-				if (data.find("epsilon") != data.end())
+				if (data.contains("epsilon"))
 					eps = data["epsilon"];
 			}
 
-			if (data.find("dimension") != data.end())
+			if (data.contains("dimension"))
 			{
-				all_dimentions_dirichelt = false;
+				all_dimensions_dirichlet = false;
 				auto &tmp = data["dimension"];
 				assert(tmp.is_array());
 				for (size_t k = 0; k < tmp.size(); ++k)
@@ -70,7 +70,7 @@ namespace polyfem
 			init(0, 0, 0, dd);
 		}
 
-		return all_dimentions_dirichelt;
+		return all_dimensions_dirichlet;
 	}
 
 	Eigen::RowVector3d PointBasedTensorProblem::BCValue::operator()(const Eigen::RowVector3d &pt) const
@@ -111,7 +111,6 @@ namespace polyfem
 	void PointBasedTensorProblem::rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 	{
 		val = Eigen::MatrixXd::Constant(pts.rows(), pts.cols(), rhs_);
-		val *= t;
 	}
 
 	void PointBasedTensorProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
@@ -131,8 +130,6 @@ namespace polyfem
 				}
 			}
 		}
-
-		val *= t;
 	}
 
 	void PointBasedTensorProblem::neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const
@@ -152,8 +149,6 @@ namespace polyfem
 				}
 			}
 		}
-
-		val *= t;
 	}
 
 	void PointBasedTensorProblem::add_constant(const int bc_tag, const Eigen::Vector3d &value, const Eigen::Matrix<bool, 3, 1> &dd, const bool is_neumann)
@@ -166,7 +161,7 @@ namespace polyfem
 		}
 		else
 		{
-			all_dimentions_dirichelt_ = all_dimentions_dirichelt_ && dd(0) && dd(1) && dd(2);
+			all_dimensions_dirichlet_ = all_dimensions_dirichlet_ && dd(0) && dd(1) && dd(2);
 			boundary_ids_.push_back(bc_tag);
 			bc_.emplace_back();
 			bc_.back().init(value, dd);
@@ -183,7 +178,7 @@ namespace polyfem
 		}
 		else
 		{
-			all_dimentions_dirichelt_ = all_dimentions_dirichelt_ && dd(0) && dd(1) && dd(2);
+			all_dimensions_dirichlet_ = all_dimensions_dirichlet_ && dd(0) && dd(1) && dd(2);
 
 			boundary_ids_.push_back(bc_tag);
 			bc_.emplace_back();
@@ -204,7 +199,7 @@ namespace polyfem
 		}
 		else
 		{
-			all_dimentions_dirichelt_ = all_dimentions_dirichelt_ && dd(0) && dd(1) && dd(2);
+			all_dimensions_dirichlet_ = all_dimensions_dirichlet_ && dd(0) && dd(1) && dd(2);
 
 			boundary_ids_.push_back(bc_tag);
 			bc_.emplace_back();
@@ -215,9 +210,9 @@ namespace polyfem
 		}
 	}
 
-	bool PointBasedTensorProblem::is_dimention_dirichet(const int tag, const int dim) const
+	bool PointBasedTensorProblem::is_dimension_dirichet(const int tag, const int dim) const
 	{
-		if (all_dimentions_dirichelt())
+		if (all_dimensions_dirichlet())
 			return true;
 
 		for (size_t b = 0; b < boundary_ids_.size(); ++b)
@@ -237,17 +232,17 @@ namespace polyfem
 		if (initialized_)
 			return;
 
-		if (params.find("scaling") != params.end())
+		if (params.contains("scaling"))
 		{
 			scaling_ = params["scaling"];
 		}
 
-		if (params.find("rhs") != params.end())
+		if (params.contains("rhs"))
 		{
 			rhs_ = params["rhs"];
 		}
 
-		if (params.find("translation") != params.end())
+		if (params.contains("translation"))
 		{
 			const auto &j_translation = params["translation"];
 
@@ -258,7 +253,7 @@ namespace polyfem
 				translation_(k) = j_translation[k];
 		}
 
-		if (params.find("boundary_ids") != params.end())
+		if (params.contains("boundary_ids"))
 		{
 			boundary_ids_.clear();
 			auto j_boundary = params["boundary_ids"];
@@ -271,11 +266,11 @@ namespace polyfem
 				boundary_ids_[i] = j_boundary[i]["id"];
 				const auto ff = j_boundary[i]["value"];
 				const bool all_d = bc_[i].init(ff);
-				all_dimentions_dirichelt_ = all_dimentions_dirichelt_ && all_d;
+				all_dimensions_dirichlet_ = all_dimensions_dirichlet_ && all_d;
 			}
 		}
 
-		if (params.find("neumann_boundary_ids") != params.end())
+		if (params.contains("neumann_boundary_ids"))
 		{
 			neumann_boundary_ids_.clear();
 			auto j_boundary = params["neumann_boundary_ids"];
