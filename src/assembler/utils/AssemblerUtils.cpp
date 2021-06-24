@@ -73,7 +73,7 @@ namespace polyfem
 			linear_elasticity_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
 		else if (assembler == "HookeLinearElasticity")
 			hooke_linear_elasticity_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
-		else if (assembler == "Stokes" || assembler == "NavierStokes")
+		else if (assembler == "Stokes" || assembler == "NavierStokes" || assembler == "OperatorSplitting")
 			stokes_velocity_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
 		else if (assembler == "IncompressibleLinearElasticity")
 			incompressible_lin_elast_displacement_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
@@ -86,8 +86,6 @@ namespace polyfem
 			return;
 		// else if (assembler == "NavierStokes")
 			// return;
-		else if(assembler == "OperatorSplitting")
-			return;
 		//else if(assembler == "Ogden")
 		//	return;
 		else

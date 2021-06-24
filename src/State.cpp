@@ -931,12 +931,6 @@ namespace polyfem
 			logger().error("Build the bases first!");
 			return;
 		}
-		if (formulation() == "OperatorSplitting")
-		{
-			rhs.resize(1,1);
-			assigning_rhs_time = 0;
-			return;
-		}
 
 		igl::Timer timer;
 		const std::string rhs_path = args["rhs_path"];
@@ -1001,6 +995,11 @@ namespace polyfem
 			const int prev_size = rhs.size();
 			const int n_larger = n_pressure_bases + (use_avg_pressure ? (assembler.is_fluid(formulation()) ? 1 : 0) : 0);
 			rhs.conservativeResize(prev_size + n_larger, rhs.cols());
+			if (formulation() == "OperatorSplitting")
+			{
+				assigning_rhs_time = 0;
+				return;
+			}
 			//Divergence free rhs
 			if (formulation() != "Bilaplacian" || local_neumann_boundary.empty())
 			{
@@ -1133,8 +1132,9 @@ namespace polyfem
 
 			if (formulation() == "NavierStokes")
 				solve_transient_navier_stokes(time_steps, t0, dt, rhs_assembler, c_sol);
-			else if (formulation() == "OperatorSplitting")
+			else if (formulation() == "OperatorSplitting") {
 				solve_transient_navier_stokes_split(time_steps, dt, rhs_assembler);
+			}
 			else if (problem->is_scalar() || assembler.is_mixed(formulation()))
 				solve_transient_scalar(time_steps, t0, dt, rhs_assembler, c_sol);
 			else if (assembler.is_linear(formulation()) && !args["has_collision"])

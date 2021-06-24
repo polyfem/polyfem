@@ -28,14 +28,15 @@ namespace polyfem
 		assert(formulation() == "OperatorSplitting" && problem->is_time_dependent());
 		const json &params = solver_params();
 		Eigen::MatrixXd local_pts;
+		auto &gbases = iso_parametric() ? bases : geom_bases;
 		if (mesh->dimension() == 2)
 		{
-			if (geom_bases[0].bases.size() == 3) autogen::p_nodes_2d(args["discr_order"], local_pts);
+			if (gbases[0].bases.size() == 3) autogen::p_nodes_2d(args["discr_order"], local_pts);
 			else autogen::q_nodes_2d(args["discr_order"], local_pts);
 		}
 		else
 		{
-			if (geom_bases[0].bases.size() == 4) autogen::p_nodes_3d(args["discr_order"], local_pts);
+			if (gbases[0].bases.size() == 4) autogen::p_nodes_3d(args["discr_order"], local_pts);
 			else autogen::q_nodes_3d(args["discr_order"], local_pts);
 		}
 		std::vector<int> bnd_nodes;
@@ -48,21 +49,21 @@ namespace polyfem
 
 		const int dim = mesh->dimension();
 		const int n_el = int(bases.size());				// number of elements
-		const int shape = geom_bases[0].bases.size();		// number of geometry vertices in an element
+		const int shape = gbases[0].bases.size();		// number of geometry vertices in an element
 		const double viscosity_ = build_json_params()["viscosity"];
 
 		logger().info("Matrices assembly...");
 		StiffnessMatrix stiffness_viscosity, mixed_stiffness, velocity_mass;
 		// coefficient matrix of viscosity
-		assembler.assemble_problem("Laplacian", mesh->is_volume(), n_bases, bases, geom_bases, ass_vals_cache, stiffness_viscosity);
-		assembler.assemble_mass_matrix("Laplacian", mesh->is_volume(), n_bases, density, bases, geom_bases, ass_vals_cache, mass);
+		assembler.assemble_problem("Laplacian", mesh->is_volume(), n_bases, bases, gbases, ass_vals_cache, stiffness_viscosity);
+		assembler.assemble_mass_matrix("Laplacian", mesh->is_volume(), n_bases, density, bases, gbases, ass_vals_cache, mass);
 		
 		// coefficient matrix of pressure projection
-		assembler.assemble_problem("Laplacian", mesh->is_volume(), n_pressure_bases, pressure_bases, geom_bases, pressure_ass_vals_cache, stiffness);
+		assembler.assemble_problem("Laplacian", mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, pressure_ass_vals_cache, stiffness);
 		
 		// matrix used to calculate divergence of velocity
-		assembler.assemble_mixed_problem("Stokes", mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, geom_bases, pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
-		assembler.assemble_mass_matrix("Stokes", mesh->is_volume(), n_bases, density, bases, geom_bases, ass_vals_cache, velocity_mass);
+		assembler.assemble_mixed_problem("Stokes", mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
+		assembler.assemble_mass_matrix("Stokes", mesh->is_volume(), n_bases, density, bases, gbases, ass_vals_cache, velocity_mass);
 		mixed_stiffness = mixed_stiffness.transpose();
 		logger().info("Matrices assembly ends!");
 
@@ -79,9 +80,9 @@ namespace polyfem
 			/* advection */
 			logger().info("Advection...");
 			if(args["particle"])
-				ss.advection_FLIP(*mesh, geom_bases, bases, sol, dt, local_pts);
+				ss.advection_FLIP(*mesh, gbases, bases, sol, dt, local_pts);
 			else
-				ss.advection(*mesh, geom_bases, bases, sol, dt, local_pts);
+				ss.advection(*mesh, gbases, bases, sol, dt, local_pts);
 			logger().info("Advection finished!");
 
 			/* apply boundary condition */
@@ -94,13 +95,13 @@ namespace polyfem
 			logger().info("Diffusion solved!");
 
 			/* external force */
-			ss.external_force(*mesh, assembler, geom_bases, bases, dt, sol, local_pts, problem, time);
+			ss.external_force(*mesh, assembler, gbases, bases, dt, sol, local_pts, problem, time);
 			
 			/* incompressibility */
 			logger().info("Pressure projection...");
 			ss.solve_pressure(mixed_stiffness, pressure_boundary_nodes, sol, pressure);
 			
-			ss.projection(n_bases, geom_bases, bases, pressure_bases, local_pts, pressure, sol);
+			ss.projection(n_bases, gbases, bases, pressure_bases, local_pts, pressure, sol);
 			// ss.projection(velocity_mass, mixed_stiffness, boundary_nodes, sol, pressure);
 			logger().info("Pressure projection finished!");
 
