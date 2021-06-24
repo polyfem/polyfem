@@ -413,7 +413,7 @@ namespace polyfem
 				logger().info(
 					lag_i >= args["friction_iterations"]
 						? "Maxed out at {:d} lagging iteration{}"
-						: "Convered using {:d} lagging iteration{}",
+						: "Converged using {:d} lagging iteration{}",
 					lag_i, lag_i > 1 ? "s" : "");
 			}
 
