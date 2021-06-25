@@ -320,8 +320,7 @@ namespace polyfem
 		//builds the bases step 2 of solve
 		void build_basis();
 		//extracts the boundary mesh for collision, called in build_basis
-		void extract_boundary_mesh();
-		void extract_boundary_mesh_pressure();
+		void extract_boundary_mesh(bool for_pressure = false);
 
 		//extracts the boundary mesh for visualization, called in build_basis
 		void extract_vis_boundary_mesh();
