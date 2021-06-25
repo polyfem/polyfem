@@ -307,7 +307,7 @@ namespace polyfem
 		//else if(assembler == "Ogden")
 		//	ogden_elasticity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
 
-		else if(assembler == "Stokes" || assembler == "OperatorSplitting")
+		else if (assembler == "Stokes" || assembler == "OperatorSplitting") //WARNING stokes and NS dont have el_id
 			stokes_velocity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
 		else if (assembler == "NavierStokes")
 			navier_stokes_velocity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
