@@ -319,13 +319,17 @@ namespace polyfem
 		}
 	}
 
-	void State::extract_boundary_mesh()
-	{
-		boundary_faces_to_edges.resize(0, 0);
+	void State::extract_boundary_mesh(bool for_pressure)
+	{	
+		auto &boundary_triangles_ = (!for_pressure) ? boundary_triangles : boundary_triangles_pressure;
+		auto &boundary_edges_ = (!for_pressure) ? boundary_edges : boundary_edges_pressure;
+		auto &boundary_nodes_pos_ = (!for_pressure) ? boundary_nodes_pos : boundary_nodes_pos_pressure;
+		if (!for_pressure)
+			boundary_faces_to_edges.resize(0, 0);
 		if (mesh->is_volume())
 		{
-			boundary_nodes_pos.resize(n_bases, 3);
-			boundary_nodes_pos.setZero();
+			boundary_nodes_pos_.resize(n_bases, 3);
+			boundary_nodes_pos_.setZero();
 			const Mesh3D &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
 
 			std::vector<std::tuple<int, int, int>> tris;
@@ -333,7 +337,7 @@ namespace polyfem
 			for (auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
 			{
 				const auto &lb = *it;
-				const auto &b = bases[lb.element_id()];
+				const auto &b = (!for_pressure) ? bases[lb.element_id()] : pressure_bases[lb.element_id()];
 
 				for (int j = 0; j < lb.size(); ++j)
 				{
@@ -357,7 +361,7 @@ namespace polyfem
 							continue;
 
 						int gindex = glob.front().index;
-						boundary_nodes_pos.row(gindex) = glob.front().node;
+						boundary_nodes_pos_.row(gindex) = glob.front().node;
 						loc_nodes.push_back(gindex);
 					}
 
@@ -411,16 +415,16 @@ namespace polyfem
 				}
 			}
 
-			boundary_triangles.resize(tris.size(), 3);
+			boundary_triangles_.resize(tris.size(), 3);
 			for (int i = 0; i < tris.size(); ++i)
 			{
-				boundary_triangles.row(i) << std::get<0>(tris[i]), std::get<2>(tris[i]), std::get<1>(tris[i]);
+				boundary_triangles_.row(i) << std::get<0>(tris[i]), std::get<2>(tris[i]), std::get<1>(tris[i]);
 			}
 
 			if (args["min_component"] > 0)
 			{
 				Eigen::SparseMatrix<int> adj;
-				igl::facet_adjacency_matrix(boundary_triangles, adj);
+				igl::facet_adjacency_matrix(boundary_triangles_, adj);
 				Eigen::MatrixXi C, counts;
 				igl::connected_components(adj, C, counts);
 
@@ -442,30 +446,30 @@ namespace polyfem
 					{
 						if (v == C(i))
 						{
-							tris.emplace_back(boundary_triangles(i, 0), boundary_triangles(i, 1), boundary_triangles(i, 2));
+							tris.emplace_back(boundary_triangles_(i, 0), boundary_triangles_(i, 1), boundary_triangles_(i, 2));
 							break;
 						}
 					}
 				}
 
-				boundary_triangles.resize(tris.size(), 3);
+				boundary_triangles_.resize(tris.size(), 3);
 				for (int i = 0; i < tris.size(); ++i)
 				{
-					boundary_triangles.row(i) << std::get<0>(tris[i]), std::get<1>(tris[i]), std::get<2>(tris[i]);
+					boundary_triangles_.row(i) << std::get<0>(tris[i]), std::get<1>(tris[i]), std::get<2>(tris[i]);
 				}
 			}
 
-			if (boundary_triangles.rows() > 0)
-				igl::edges(boundary_triangles, boundary_edges);
+			if (boundary_triangles_.rows() > 0)
+				igl::edges(boundary_triangles_, boundary_edges_);
 
-			boundary_faces_to_edges = ipc::faces_to_edges(boundary_triangles, boundary_edges);
+			boundary_faces_to_edges = ipc::faces_to_edges(boundary_triangles_, boundary_edges_);
 
-			// igl::write_triangle_mesh("test.obj", boundary_nodes_pos, boundary_triangles);
+			// igl::write_triangle_mesh("test.obj", boundary_nodes_pos_, boundary_triangles_);
 		}
 		else
 		{
-			boundary_nodes_pos.resize(n_bases, 2);
-			boundary_nodes_pos.setZero();
+			boundary_nodes_pos_.resize(n_bases, 2);
+			boundary_nodes_pos_.setZero();
 			const Mesh2D &mesh2d = *dynamic_cast<Mesh2D *>(mesh.get());
 
 			std::vector<std::pair<int, int>> edges;
@@ -473,7 +477,7 @@ namespace polyfem
 			for (auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
 			{
 				const auto &lb = *it;
-				const auto &b = bases[lb.element_id()];
+				const auto &b = (!for_pressure) ? bases[lb.element_id()] : pressure_bases[lb.element_id()];
 
 				for (int j = 0; j < lb.size(); ++j)
 				{
@@ -491,7 +495,7 @@ namespace polyfem
 							continue;
 
 						int gindex = glob.front().index;
-						boundary_nodes_pos.row(gindex) << glob.front().node(0), glob.front().node(1);
+						boundary_nodes_pos_.row(gindex) << glob.front().node(0), glob.front().node(1);
 
 						if (prev_node >= 0)
 							edges.emplace_back(prev_node, gindex);
@@ -500,11 +504,11 @@ namespace polyfem
 				}
 			}
 
-			boundary_triangles.resize(0, 0);
-			boundary_edges.resize(edges.size(), 2);
+			boundary_triangles_.resize(0, 0);
+			boundary_edges_.resize(edges.size(), 2);
 			for (int i = 0; i < edges.size(); ++i)
 			{
-				boundary_edges.row(i) << edges[i].first, edges[i].second;
+				boundary_edges_.row(i) << edges[i].first, edges[i].second;
 			}
 		}
 	}

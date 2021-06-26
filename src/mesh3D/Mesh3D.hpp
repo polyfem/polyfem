@@ -32,7 +32,7 @@ namespace polyfem
 		inline int n_face_vertices(const int f_id) const { return mesh_.faces[f_id].vs.size(); }
 		inline int n_cell_vertices(const int c_id) const { return mesh_.elements[c_id].vs.size(); }
 		inline int n_cell_faces(const int c_id) const { return mesh_.elements[c_id].fs.size(); }
-		inline int cell_vertex(const int c_id, const int lv_id) const { return mesh_.elements[c_id].vs[lv_id]; }
+		inline int cell_vertex(const int c_id, const int lv_id) const override { return mesh_.elements[c_id].vs[lv_id]; }
 		inline int cell_face(const int c_id, const int lf_id) const { return mesh_.elements[c_id].fs[lf_id]; }
 		inline int cell_edge(const int c_id, const int le_id) const { return mesh_.elements[c_id].es[le_id]; }
 		inline int face_vertex(const int f_id, const int lv_id) const { return mesh_.faces[f_id].vs[lv_id]; }

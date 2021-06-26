@@ -113,6 +113,7 @@ namespace polyfem
 
 		//Nodal access
 		virtual RowVectorNd point(const int global_index) const = 0;
+		virtual int cell_vertex(const int f_id, const int lv_id) const = 0;
 		virtual RowVectorNd edge_barycenter(const int e) const = 0;
 		virtual RowVectorNd face_barycenter(const int f) const = 0;
 		virtual RowVectorNd cell_barycenter(const int c) const = 0;

@@ -483,13 +483,15 @@ namespace polyfem
 
 		logger().info("Extracting boundary mesh...");
 		extract_boundary_mesh();
+		if (n_pressure_bases > 0)
+			extract_boundary_mesh(true);
 		// const std::string export_surface = args["export"]["surface"];
 		// if (!export_surface.empty())
 		extract_vis_boundary_mesh();
 		logger().info("Done!");
 
 		const int prev_b_size = local_boundary.size();
-		problem->setup_bc(*mesh, bases, local_boundary, boundary_nodes, local_neumann_boundary);
+		problem->setup_bc(*mesh, bases, pressure_bases, local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes);
 		args["has_neumann"] = local_neumann_boundary.size() > 0 || local_boundary.size() < prev_b_size;
 		use_avg_pressure = !args["has_neumann"];
 
@@ -722,6 +724,12 @@ namespace polyfem
 			logger().error("Build the bases first!");
 			return;
 		}
+		if (formulation() == "OperatorSplitting")
+		{
+			stiffness.resize(1,1);
+			assembling_stiffness_mat_time = 0;
+			return;
+		}
 
 		stiffness.resize(0, 0);
 		sol.resize(0, 0);
@@ -901,6 +909,11 @@ namespace polyfem
 			const int prev_size = rhs.size();
 			const int n_larger = n_pressure_bases + (use_avg_pressure ? (assembler.is_fluid(formulation()) ? 1 : 0) : 0);
 			rhs.conservativeResize(prev_size + n_larger, rhs.cols());
+			if (formulation() == "OperatorSplitting")
+			{
+				assigning_rhs_time = 0;
+				return;
+			}
 			//Divergence free rhs
 			if (formulation() != "Bilaplacian" || local_neumann_boundary.empty())
 			{
@@ -1027,10 +1040,15 @@ namespace polyfem
 					solution_frames.emplace_back();
 				save_vtu(resolve_output_path("step_0.vtu"), 0);
 				save_wire(resolve_output_path("step_0.obj"));
+				// extract_vis_boundary_mesh();
+				// save_surface(resolve_output_path("boundary_0.vtu"));
 			}
 
 			if (formulation() == "NavierStokes")
 				solve_transient_navier_stokes(time_steps, t0, dt, rhs_assembler, c_sol);
+			else if (formulation() == "OperatorSplitting") {
+				solve_transient_navier_stokes_split(time_steps, dt, rhs_assembler);
+			}
 			else if (problem->is_scalar() || assembler.is_mixed(formulation()))
 				solve_transient_scalar(time_steps, t0, dt, rhs_assembler, c_sol);
 			else if (assembler.is_linear(formulation()) && !args["has_collision"])

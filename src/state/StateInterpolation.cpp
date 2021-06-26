@@ -392,7 +392,7 @@ namespace polyfem
 
         assert(counter == result.rows());
     }
-
+    
     void State::average_grad_based_function(const int n_points, const MatrixXd &fun, MatrixXd &result_scalar, MatrixXd &result_tensor, const bool boundary_only)
     {
         if (!mesh)

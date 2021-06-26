@@ -116,6 +116,8 @@ namespace polyfem
 
 		//list of boundary nodes
 		std::vector<int> boundary_nodes;
+		//list of neumann boundary nodes
+		std::vector<int> pressure_boundary_nodes;
 		//mapping from elements to nodes for dirichlet boundary conditions
 		std::vector<LocalBoundary> local_boundary;
 		//mapping from elements to nodes for neumann boundary conditions
@@ -154,8 +156,11 @@ namespace polyfem
 		//for high-order fem the faces are triangulated
 		//this is currently supported only for tri and tet meshes
 		Eigen::MatrixXd boundary_nodes_pos;
+		Eigen::MatrixXd boundary_nodes_pos_pressure;
 		Eigen::MatrixXi boundary_edges;
+		Eigen::MatrixXi boundary_edges_pressure;
 		Eigen::MatrixXi boundary_triangles;
+		Eigen::MatrixXi boundary_triangles_pressure;
 		Eigen::MatrixXi boundary_faces_to_edges;
 
 		//boundary visualization mesh
@@ -315,7 +320,8 @@ namespace polyfem
 		//builds the bases step 2 of solve
 		void build_basis();
 		//extracts the boundary mesh for collision, called in build_basis
-		void extract_boundary_mesh();
+		void extract_boundary_mesh(bool for_pressure = false);
+
 		//extracts the boundary mesh for visualization, called in build_basis
 		void extract_vis_boundary_mesh();
 		//assemble matrices, step 4 of solve
@@ -326,6 +332,7 @@ namespace polyfem
 		void solve_problem();
 
 		//Aux solving functions, c_sol=x are necessary since they contain the pressure, while sol dosent
+		void solve_transient_navier_stokes_split(const int time_steps, const double dt, const RhsAssembler &rhs_assembler);
 		void solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler, Eigen::VectorXd &c_sol);
 		void solve_transient_scalar(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler, Eigen::VectorXd &x);
 		void solve_transient_tensor_linear(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler);

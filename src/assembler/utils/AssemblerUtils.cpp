@@ -31,16 +31,16 @@ namespace polyfem
 
 	bool AssemblerUtils::is_fluid(const std::string &assembler)
 	{
-		return assembler == "Stokes" || assembler == "NavierStokes";
+		return assembler == "Stokes" || assembler == "NavierStokes" || assembler == "OperatorSplitting";
 	}
 
 	bool AssemblerUtils::is_tensor(const std::string &assembler)
 	{
-		return assembler == "LinearElasticity" || assembler == "HookeLinearElasticity" || assembler == "SaintVenant" || assembler == "NeoHookean" || assembler == "MultiModels" /*|| assembler == "Ogden"*/ || assembler == "Stokes" || assembler == "IncompressibleLinearElasticity" || assembler == "NavierStokes";
+		return assembler == "LinearElasticity" || assembler == "HookeLinearElasticity" || assembler == "SaintVenant" || assembler == "NeoHookean" || assembler == "MultiModels" /*|| assembler == "Ogden"*/ || assembler == "Stokes" || assembler == "IncompressibleLinearElasticity" || assembler == "NavierStokes" || assembler == "OperatorSplitting";
 	}
 	bool AssemblerUtils::is_mixed(const std::string &assembler)
 	{
-		return assembler == "Stokes" || assembler == "IncompressibleLinearElasticity" || assembler == "Bilaplacian" || assembler == "NavierStokes";
+		return assembler == "OperatorSplitting" || assembler == "Stokes" || assembler == "IncompressibleLinearElasticity" || assembler == "Bilaplacian" || assembler == "NavierStokes";
 	}
 
 	bool AssemblerUtils::is_solution_displacement(const std::string &assembler)
@@ -73,7 +73,7 @@ namespace polyfem
 			linear_elasticity_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
 		else if (assembler == "HookeLinearElasticity")
 			hooke_linear_elasticity_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
-		else if (assembler == "Stokes" || assembler == "NavierStokes")
+		else if (assembler == "Stokes" || assembler == "NavierStokes" || assembler == "OperatorSplitting")
 			stokes_velocity_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
 		else if (assembler == "IncompressibleLinearElasticity")
 			incompressible_lin_elast_displacement_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
@@ -85,7 +85,7 @@ namespace polyfem
 		else if (assembler == "MultiModels")
 			return;
 		// else if (assembler == "NavierStokes")
-		// return;
+			// return;
 		//else if(assembler == "Ogden")
 		//	return;
 		else
@@ -127,7 +127,7 @@ namespace polyfem
 		if (assembler == "Bilaplacian")
 			bilaplacian_mixed_.assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, psi_cache, phi_cache, stiffness);
 
-		else if (assembler == "Stokes" || assembler == "NavierStokes")
+		else if (assembler == "Stokes" || assembler == "NavierStokes" || assembler == "OperatorSplitting")
 			stokes_mixed_.assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, psi_cache, phi_cache, stiffness);
 		else if (assembler == "IncompressibleLinearElasticity")
 			incompressible_lin_elast_mixed_.assemble(is_volume, n_psi_basis, n_phi_basis, psi_bases, phi_bases, gbases, psi_cache, phi_cache, stiffness);
@@ -151,7 +151,7 @@ namespace polyfem
 		if (assembler == "Bilaplacian")
 			bilaplacian_aux_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
 
-		else if (assembler == "Stokes" || assembler == "NavierStokes")
+		else if (assembler == "Stokes" || assembler == "NavierStokes" || assembler == "OperatorSplitting")
 			stokes_pressure_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
 		else if (assembler == "IncompressibleLinearElasticity")
 			incompressible_lin_elast_pressure_.assemble(is_volume, n_basis, bases, gbases, cache, stiffness);
@@ -265,7 +265,8 @@ namespace polyfem
 		//else if(assembler == "Ogden")
 		//	ogden_elasticity_.local_assembler().compute_von_mises_stresses(bs, gbs, local_pts, fun, result);
 
-		else if (assembler == "Stokes") //WARNING stokes and NS dont have el_id
+
+		else if(assembler == "Stokes" || assembler == "OperatorSplitting")
 			stokes_velocity_.local_assembler().compute_norm_velocity(bs, gbs, local_pts, fun, result);
 		else if (assembler == "NavierStokes")
 			navier_stokes_velocity_.local_assembler().compute_norm_velocity(bs, gbs, local_pts, fun, result);
@@ -306,7 +307,7 @@ namespace polyfem
 		//else if(assembler == "Ogden")
 		//	ogden_elasticity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
 
-		else if (assembler == "Stokes") //WARNING stokes and NS dont have el_id
+		else if (assembler == "Stokes" || assembler == "OperatorSplitting") //WARNING stokes and NS dont have el_id
 			stokes_velocity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
 		else if (assembler == "NavierStokes")
 			navier_stokes_velocity_.local_assembler().compute_stress_tensor(bs, gbs, local_pts, fun, result);
@@ -344,7 +345,7 @@ namespace polyfem
 		//else if(assembler == "Ogden")
 		//	return ogden_elasticity_.local_assembler().compute_rhs(pt);
 
-		else if (assembler == "Stokes")
+		else if(assembler == "Stokes" || assembler == "OperatorSplitting")
 			return stokes_velocity_.local_assembler().compute_rhs(pt);
 		else if (assembler == "NavierStokes")
 			return navier_stokes_velocity_.local_assembler().compute_rhs(pt);
@@ -384,7 +385,7 @@ namespace polyfem
 		// else if(assembler == "Ogden")
 		// 	return ogden_elasticity_.local_assembler().assemble(vals, i, j, da);
 
-		else if (assembler == "Stokes")
+		else if(assembler == "Stokes" || assembler == "OperatorSplitting")
 			return stokes_velocity_.local_assembler().assemble(vals, i, j, da);
 		else if (assembler == "IncompressibleLinearElasticity")
 			return incompressible_lin_elast_displacement_.local_assembler().assemble(vals, i, j, da);

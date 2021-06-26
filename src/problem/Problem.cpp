@@ -21,15 +21,17 @@ namespace polyfem
 	{
 	}
 
-	void Problem::setup_bc(const Mesh &mesh, const std::vector<ElementBases> &bases, std::vector<LocalBoundary> &local_boundary, std::vector<int> &boundary_nodes, std::vector<LocalBoundary> &local_neumann_boundary)
+	void Problem::setup_bc(const Mesh &mesh, const std::vector<ElementBases> &bases, const std::vector<ElementBases> &pressure_bases, std::vector<LocalBoundary> &local_boundary, std::vector<int> &boundary_nodes, std::vector<LocalBoundary> &local_neumann_boundary, std::vector<int> &pressure_boundary_nodes)
 	{
 		std::vector<LocalBoundary> new_local_boundary;
+		std::vector<LocalBoundary> new_local_pressure_dirichlet_boundary;
 		local_neumann_boundary.clear();
 		for (auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
 		{
 			const auto &lb = *it;
 			LocalBoundary new_lb(lb.element_id(), lb.type());
 			LocalBoundary new_neumann_lb(lb.element_id(), lb.type());
+			LocalBoundary new_pressure_dirichlet_lb(lb.element_id(), lb.type());
 			for (int i = 0; i < lb.size(); ++i)
 			{
 				const int primitive_g_id = lb.global_primitive_id(i);
@@ -44,17 +46,22 @@ namespace polyfem
 					new_neumann_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
 				if (std::find(pressure_boundary_ids_.begin(), pressure_boundary_ids_.end(), tag) != pressure_boundary_ids_.end())
 					new_neumann_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
+				if (std::find(splitting_pressure_boundary_ids_.begin(), splitting_pressure_boundary_ids_.end(), tag) != splitting_pressure_boundary_ids_.end())
+					new_pressure_dirichlet_lb.add_boundary_primitive(lb.global_primitive_id(i), lb[i]);
 			}
 
 			if (!new_lb.empty())
 				new_local_boundary.emplace_back(new_lb);
 			if (!new_neumann_lb.empty())
 				local_neumann_boundary.emplace_back(new_neumann_lb);
+			if (!new_pressure_dirichlet_lb.empty())
+				new_local_pressure_dirichlet_boundary.emplace_back(new_pressure_dirichlet_lb);
 		}
 		local_boundary.clear();
 		std::swap(local_boundary, new_local_boundary);
 
 		boundary_nodes.clear();
+		pressure_boundary_nodes.clear();
 
 		const int dim = is_scalar() ? 1 : mesh.dimension();
 
@@ -83,9 +90,34 @@ namespace polyfem
 			}
 		}
 
+		for (auto it = new_local_pressure_dirichlet_boundary.begin(); it != new_local_pressure_dirichlet_boundary.end(); ++it)
+		{
+			const auto &lb = *it;
+			const auto &b = pressure_bases[lb.element_id()];
+			for (int i = 0; i < lb.size(); ++i)
+			{
+				const int primitive_global_id = lb.global_primitive_id(i);
+				const auto nodes = b.local_nodes_for_primitive(primitive_global_id, mesh);
+
+				for (long n = 0; n < nodes.size(); ++n)
+				{
+					auto &bs = b.bases[nodes(n)];
+					for (size_t g = 0; g < bs.global().size(); ++g)
+					{
+						const int base_index = bs.global()[g].index;
+						pressure_boundary_nodes.push_back(base_index);
+					}
+				}
+			}
+		}
+
 		std::sort(boundary_nodes.begin(), boundary_nodes.end());
 		auto it = std::unique(boundary_nodes.begin(), boundary_nodes.end());
 		boundary_nodes.resize(std::distance(boundary_nodes.begin(), it));
+
+		std::sort(pressure_boundary_nodes.begin(), pressure_boundary_nodes.end());
+		auto it_ = std::unique(pressure_boundary_nodes.begin(), pressure_boundary_nodes.end());
+		pressure_boundary_nodes.resize(std::distance(pressure_boundary_nodes.begin(), it_));
 	}
 
 	const ProblemFactory &ProblemFactory::factory()
@@ -128,14 +160,20 @@ namespace polyfem
 		problems_.emplace("ConstantVelocity", std::make_shared<ConstantVelocity>("ConstantVelocity"));
 		problems_.emplace("TwoSpheres", std::make_shared<TwoSpheres>("TwoSpheres"));
 		problems_.emplace("DrivenCavity", std::make_shared<DrivenCavity>("DrivenCavity"));
+		problems_.emplace("DrivenCavityC0", std::make_shared<DrivenCavityC0>("DrivenCavityC0"));
 		problems_.emplace("DrivenCavitySmooth", std::make_shared<DrivenCavitySmooth>("DrivenCavitySmooth"));
 		problems_.emplace("Flow", std::make_shared<Flow>("Flow"));
 		problems_.emplace("FlowWithObstacle", std::make_shared<FlowWithObstacle>("FlowWithObstacle"));
+		problems_.emplace("CornerFlow", std::make_shared<CornerFlow>("CornerFlow"));
 		problems_.emplace("UnitFlowWithObstacle", std::make_shared<UnitFlowWithObstacle>("UnitFlowWithObstacle"));
+		problems_.emplace("StokesLaw", std::make_shared<StokesLawProblem>("StokesLaw"));
 		problems_.emplace("TaylorGreenVortex", std::make_shared<TaylorGreenVortexProblem>("TaylorGreenVortex"));
 		problems_.emplace("SimpleStokeProblemExact", std::make_shared<SimpleStokeProblemExact>("SimpleStokeProblemExact"));
 		problems_.emplace("SineStokeProblemExact", std::make_shared<SineStokeProblemExact>("SineStokeProblemExact"));
 		problems_.emplace("TransientStokeProblemExact", std::make_shared<TransientStokeProblemExact>("TransientStokeProblemExact"));
+		problems_.emplace("Kovnaszy", std::make_shared<Kovnaszy>("Kovnaszy"));
+		problems_.emplace("Airfoil", std::make_shared<Airfoil>("Airfoil"));
+		problems_.emplace("Lshape", std::make_shared<Lshape>("Lshape"));
 
 		problems_.emplace("TestProblem", std::make_shared<TestProblem>("TestProblem"));
 

@@ -46,12 +46,13 @@ namespace polyfem
 		virtual void initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const {}
 		virtual void initial_velocity(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const {}
 		virtual void initial_acceleration(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const {}
+		virtual void initial_density(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { }
 
 		virtual int n_incremental_load_steps(const double diag) const { return 1; }
 
 		virtual void set_parameters(const json &params) {}
 
-		void setup_bc(const Mesh &mesh, const std::vector<ElementBases> &bases, std::vector<LocalBoundary> &local_boundary, std::vector<int> &boundary_nodes, std::vector<LocalBoundary> &local_neumann_boundary);
+		void setup_bc(const Mesh &mesh, const std::vector<ElementBases> &bases, const std::vector<ElementBases> &pressure_bases, std::vector<LocalBoundary> &local_boundary, std::vector<int> &boundary_nodes, std::vector<LocalBoundary> &local_neumann_boundary, std::vector<int> &pressure_boundary_nodes);
 
 		// std::vector<int> &boundary_ids() { return boundary_ids_; }
 		// const std::vector<int> &boundary_ids() const { return boundary_ids_; }
@@ -67,6 +68,7 @@ namespace polyfem
 		std::vector<int> boundary_ids_;
 		std::vector<int> neumann_boundary_ids_;
 		std::vector<int> pressure_boundary_ids_;
+		std::vector<int> splitting_pressure_boundary_ids_;
 
 	private:
 		std::string name_;

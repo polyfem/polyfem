@@ -116,6 +116,7 @@ namespace polyfem
 			{"t0", 0},
 			{"tend", 1},
 			{"time_steps", 10},
+			{"skip_frame", 1},
 			{"time_integrator", "ImplicitEuler"},
 			{"time_integrator_params",
 			 {{"gamma", 0.5},

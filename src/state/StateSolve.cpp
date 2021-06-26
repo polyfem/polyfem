@@ -2,6 +2,7 @@
 
 #include <polyfem/BDF.hpp>
 #include <polyfem/TransientNavierStokesSolver.hpp>
+#include <polyfem/OperatorSplittingSolver.hpp>
 #include <polyfem/NavierStokesSolver.hpp>
 
 #include <polyfem/NLProblem.hpp>
@@ -15,10 +16,112 @@
 
 #include <polyfem/StringUtils.hpp>
 
+#include <polyfem/auto_p_bases.hpp>
+#include <polyfem/auto_q_bases.hpp>
+
 #include <fstream>
 
 namespace polyfem
 {
+	void State::solve_transient_navier_stokes_split(const int time_steps, const double dt, const RhsAssembler &rhs_assembler)
+	{
+		assert(formulation() == "OperatorSplitting" && problem->is_time_dependent());
+		const json &params = solver_params();
+		Eigen::MatrixXd local_pts;
+		auto &gbases = iso_parametric() ? bases : geom_bases;
+		if (mesh->dimension() == 2)
+		{
+			if (gbases[0].bases.size() == 3) autogen::p_nodes_2d(args["discr_order"], local_pts);
+			else autogen::q_nodes_2d(args["discr_order"], local_pts);
+		}
+		else
+		{
+			if (gbases[0].bases.size() == 4) autogen::p_nodes_3d(args["discr_order"], local_pts);
+			else autogen::q_nodes_3d(args["discr_order"], local_pts);
+		}
+		std::vector<int> bnd_nodes;
+		bnd_nodes.reserve(boundary_nodes.size() / mesh->dimension());
+		for (auto it = boundary_nodes.begin(); it != boundary_nodes.end(); it++)
+		{
+			if (!(*it % mesh->dimension())) continue;
+			bnd_nodes.push_back(*it / mesh->dimension());
+		}
+
+		const int dim = mesh->dimension();
+		const int n_el = int(bases.size());				// number of elements
+		const int shape = gbases[0].bases.size();		// number of geometry vertices in an element
+		const double viscosity_ = build_json_params()["viscosity"];
+
+		logger().info("Matrices assembly...");
+		StiffnessMatrix stiffness_viscosity, mixed_stiffness, velocity_mass;
+		// coefficient matrix of viscosity
+		assembler.assemble_problem("Laplacian", mesh->is_volume(), n_bases, bases, gbases, ass_vals_cache, stiffness_viscosity);
+		assembler.assemble_mass_matrix("Laplacian", mesh->is_volume(), n_bases, density, bases, gbases, ass_vals_cache, mass);
+		
+		// coefficient matrix of pressure projection
+		assembler.assemble_problem("Laplacian", mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, pressure_ass_vals_cache, stiffness);
+		
+		// matrix used to calculate divergence of velocity
+		assembler.assemble_mixed_problem("Stokes", mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
+		assembler.assemble_mass_matrix("Stokes", mesh->is_volume(), n_bases, density, bases, gbases, ass_vals_cache, velocity_mass);
+		mixed_stiffness = mixed_stiffness.transpose();
+		logger().info("Matrices assembly ends!");
+
+		OperatorSplittingSolver ss(*mesh, shape, n_el, local_boundary, boundary_nodes, pressure_boundary_nodes, bnd_nodes, mass, stiffness_viscosity, stiffness, velocity_mass, dt, viscosity_, args["solver_type"], args["precond_type"], params, args["export"]["stiffness_mat"]);
+
+		/* initialize solution */
+		pressure = Eigen::MatrixXd::Zero(n_pressure_bases, 1);
+
+		for (int t = 1; t <= time_steps; t++)
+		{
+			double time = t * dt;
+			logger().info("{}/{} steps, t={}s", t, time_steps, time);
+
+			/* advection */
+			logger().info("Advection...");
+			if(args["particle"])
+				ss.advection_FLIP(*mesh, gbases, bases, sol, dt, local_pts);
+			else
+				ss.advection(*mesh, gbases, bases, sol, dt, local_pts);
+			logger().info("Advection finished!");
+
+			/* apply boundary condition */
+			rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, time);
+			
+			/* viscosity */
+			logger().info("Solving diffusion...");
+			if(viscosity_ > 0)
+				ss.solve_diffusion_1st(mass, bnd_nodes, sol);
+			logger().info("Diffusion solved!");
+
+			/* external force */
+			ss.external_force(*mesh, assembler, gbases, bases, dt, sol, local_pts, problem, time);
+			
+			/* incompressibility */
+			logger().info("Pressure projection...");
+			ss.solve_pressure(mixed_stiffness, pressure_boundary_nodes, sol, pressure);
+			
+			ss.projection(n_bases, gbases, bases, pressure_bases, local_pts, pressure, sol);
+			// ss.projection(velocity_mass, mixed_stiffness, boundary_nodes, sol, pressure);
+			logger().info("Pressure projection finished!");
+
+			pressure = pressure / dt;
+
+			/* apply boundary condition */
+			rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, time);
+
+			/* export to vtu */
+			if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
+			{
+				if (!solve_export_to_file)
+					solution_frames.emplace_back();
+				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), time);
+				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
+				// save_surface(resolve_output_path(fmt::format("boundary_{:d}.vtu", t)));
+			}
+		}
+	}
+
 	void State::solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler, Eigen::VectorXd &c_sol)
 	{
 		assert(formulation() == "NavierStokes" && problem->is_time_dependent());
@@ -70,12 +173,13 @@ namespace polyfem
 			sol = c_sol;
 			sol_to_pressure();
 
-			if (args["save_time_sequence"])
+			if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
 			{
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
 				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), time);
 				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
+				// save_surface(resolve_output_path(fmt::format("boundary_{:d}.vtu", t)));
 			}
 		}
 	}
@@ -133,7 +237,7 @@ namespace polyfem
 				sol_to_pressure();
 			}
 
-			if (args["save_time_sequence"])
+			if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
 			{
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
@@ -210,7 +314,7 @@ namespace polyfem
 			rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, t0 + dt * t);
 			rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, t0 + dt * t);
 
-			if (args["save_time_sequence"])
+			if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
 			{
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
@@ -420,7 +524,7 @@ namespace polyfem
 			nl_problem.update_quantities(t0 + (t + 1) * dt, sol);
 			alnl_problem.update_quantities(t0 + (t + 1) * dt, sol);
 
-			if (args["save_time_sequence"])
+			if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
 			{
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
@@ -502,7 +606,7 @@ namespace polyfem
 
 		// 		nl_problem.update_quantities((t + 1) * dt, sol);
 
-		// 		if (args["save_time_sequence"])
+		// 		if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
 		// 		{
 		// 			if (!solve_export_to_file)
 		// 				solution_frames.emplace_back();

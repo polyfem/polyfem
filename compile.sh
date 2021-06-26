@@ -10,28 +10,14 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --time=2:00:00
 #SBATCH --mem=16GB
-##SBATCH --reservation=panozzo
-#SBATCH --partition=c18_25
 
 # Load modules
 module purge
 
-module load mercurial/intel/4.0.1
-module load gcc/6.3.0
-module load cmake/intel/3.7.1
-module load eigen/3.3.1
-module load mesa/intel/17.0.2
-module swap python/intel python3/intel/3.6.3
-
-module load mpfr/gnu/3.1.5
-module load zlib/intel/1.2.8
-module load suitesparse/intel/4.5.4
-module load lapack/gnu/3.7.0
-module load gmp/gnu/6.1.2
-module load mpc/gnu/1.0.3
-module load cuda/8.0.44
-module load tbb/intel/2017u3
-module load blast+/2.7.1
+module load gcc/10.2.0
+module load cmake/3.18.4
+module load intel/19.1.2
+module load boost/intel/1.74.0
 
 export CC=${GCC_ROOT}/bin/gcc
 export CXX=${GCC_ROOT}/bin/g++
@@ -39,6 +25,9 @@ export CXX=${GCC_ROOT}/bin/g++
 export PARDISO_LIC_PATH="${HOME}/.pardiso"
 export PARDISO_INSTALL_PREFIX="${HOME}/.local"
 export OMP_NUM_THREADS=8
+
+export CMAKE_INCLUDE_PATH=$(env | grep _INC= | cut -d= -f2 | xargs | sed -e 's/ /:/g')
+export CMAKE_LIBRARY_PATH=$(env | grep _LIB= | cut -d= -f2 | xargs | sed -e 's/ /:/g')
 
 # Run job
 cd "${SLURM_SUBMIT_DIR}"

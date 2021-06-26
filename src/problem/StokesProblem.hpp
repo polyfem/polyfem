@@ -47,6 +47,7 @@ namespace polyfem
 
 		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 		void initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
+		void initial_density(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 	};
 
 	class DrivenCavity : public TimeDepentendStokesProblem
@@ -59,6 +60,18 @@ namespace polyfem
 
 		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 	};
+
+	class DrivenCavityC0 : public TimeDepentendStokesProblem
+	{
+	public:
+		DrivenCavityC0(const std::string &name);
+
+		void rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		bool is_rhs_zero() const override { return true; }
+
+		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+	};
+
 
 	class DrivenCavitySmooth : public TimeDepentendStokesProblem
 	{
@@ -93,21 +106,78 @@ namespace polyfem
 		double outflow_amout_;
 	};
 
-	class FlowWithObstacle : public TimeDepentendStokesProblem
-	{
+class FlowWithObstacle : public TimeDepentendStokesProblem
+{
+public:
+	FlowWithObstacle(const std::string &name);
+
+	void rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+	bool is_rhs_zero() const override { return true; }
+
+	void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+
+	void set_parameters(const json &params) override;
+
+private:
+	double U_;
+};
+
+class Kovnaszy : public Problem
+{
 	public:
-		FlowWithObstacle(const std::string &name);
+		Kovnaszy(const std::string &name);
 
-		void rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		bool has_exact_sol() const override { return true; }
 		bool is_rhs_zero() const override { return true; }
+		bool is_scalar() const override { return false; }
+		bool is_time_dependent() const override { return is_time_dependent_; }
 
-		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		void initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 
 		void set_parameters(const json &params) override;
 
-	private:
-		double U_;
-	};
+		void exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		void exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+
+		void rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+
+	public:
+		double viscosity_;
+		bool is_time_dependent_;
+};
+
+class CornerFlow : public TimeDepentendStokesProblem
+{
+public:
+	CornerFlow(const std::string &name);
+
+	void rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+	bool is_rhs_zero() const override { return true; }
+
+	void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+
+	void set_parameters(const json &params) override;
+
+private:
+	double U_;
+};
+
+class Lshape : public TimeDepentendStokesProblem
+{
+public:
+	Lshape(const std::string &name);
+
+	void rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+	bool is_rhs_zero() const override { return true; }
+
+	void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+
+	void set_parameters(const json &params) override;
+
+private:
+	double U_;
+};
 
 	class UnitFlowWithObstacle : public TimeDepentendStokesProblem
 	{
@@ -149,6 +219,55 @@ namespace polyfem
 
 	public:
 		double viscosity_;
+	};
+
+	class StokesLawProblem : public Problem
+	{
+	public:
+		StokesLawProblem(const std::string &name);
+
+		bool has_exact_sol() const override { return true; }
+		bool is_rhs_zero() const override { return true; }
+		bool is_scalar() const override { return false; }
+		bool is_time_dependent() const override { return is_time_dependent_; }
+
+		void initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
+
+		void set_parameters(const json &params) override;
+
+		void exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		void exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+
+		void rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+
+	public:
+		double viscosity_, radius;
+		bool is_time_dependent_;
+	};
+
+	class Airfoil : public Problem
+	{
+	public:
+		Airfoil(const std::string &name);
+
+		bool has_exact_sol() const override { return true; }
+		bool is_rhs_zero() const override { return true; }
+		bool is_scalar() const override { return false; }
+		bool is_time_dependent() const override { return is_time_dependent_; }
+
+		void initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
+
+		void set_parameters(const json &params) override;
+
+		void exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		void exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+
+		void rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+
+	public:
+		bool is_time_dependent_;
 	};
 
 	class SimpleStokeProblemExact : public ProblemWithSolution
