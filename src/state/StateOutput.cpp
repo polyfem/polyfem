@@ -327,7 +327,7 @@ namespace polyfem
 		if (!for_pressure)
 			boundary_faces_to_edges.resize(0, 0);
 		if (mesh->is_volume())
-		{	
+		{
 			boundary_nodes_pos_.resize(n_bases, 3);
 			boundary_nodes_pos_.setZero();
 			const Mesh3D &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());

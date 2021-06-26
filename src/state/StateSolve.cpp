@@ -237,7 +237,7 @@ namespace polyfem
 				sol_to_pressure();
 			}
 
-			if (args["save_time_sequence"])
+			if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
 			{
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
@@ -314,7 +314,7 @@ namespace polyfem
 			rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, t0 + dt * t);
 			rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, t0 + dt * t);
 
-			if (args["save_time_sequence"])
+			if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
 			{
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
@@ -519,7 +519,7 @@ namespace polyfem
 			nl_problem.update_quantities(t0 + (t + 1) * dt, sol);
 			alnl_problem.update_quantities(t0 + (t + 1) * dt, sol);
 
-			if (args["save_time_sequence"])
+			if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
 			{
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
@@ -601,7 +601,7 @@ namespace polyfem
 
 		// 		nl_problem.update_quantities((t + 1) * dt, sol);
 
-		// 		if (args["save_time_sequence"])
+		// 		if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
 		// 		{
 		// 			if (!solve_export_to_file)
 		// 				solution_frames.emplace_back();

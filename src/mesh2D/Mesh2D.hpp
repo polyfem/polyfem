@@ -31,6 +31,7 @@ namespace polyfem
 
 		inline int face_vertex(const int f_id, const int lv_id) const { return mesh_.facets.vertex(f_id, lv_id); }
 		inline int edge_vertex(const int e_id, const int lv_id) const { return mesh_.edges.vertex(e_id, lv_id); }
+		inline int cell_vertex(const int f_id, const int lv_id) const override { return mesh_.facets.vertex(f_id, lv_id); }
 
 		void elements_boxes(std::vector<std::array<Eigen::Vector3d, 2>> &boxes) const override;
 		void barycentric_coords(const RowVectorNd &p, const int el_id, Eigen::MatrixXd &coord) const override;
@@ -70,7 +71,6 @@ namespace polyfem
 		void set_point(const int global_index, const RowVectorNd &p);
 
 		virtual RowVectorNd point(const int global_index) const override;
-		virtual int cell_vertex_(const int f_id, const int lv_id) const override { return mesh_.facets.vertex(f_id, lv_id); }
 		virtual RowVectorNd edge_barycenter(const int index) const override;
 		virtual RowVectorNd face_barycenter(const int index) const override;
 		virtual RowVectorNd cell_barycenter(const int index) const override

@@ -57,7 +57,7 @@ namespace polyfem
             {
                 for (int i = 0; i < shape; i++)
                 {
-                    T(e, i) = mesh.cell_vertex_(e, i);
+                    T(e, i) = mesh.cell_vertex(e, i);
                 }
             }
             V = Eigen::MatrixXd::Zero(mesh.n_vertices(), 3);
@@ -272,7 +272,7 @@ namespace polyfem
 //                     Eigen::MatrixXd pts = Eigen::MatrixXd::Zero(1, dim);
 //                     for (int j = 0; j < shape; j++)
 //                     {
-//                         auto vertex = mesh.point(mesh.cell_vertex_(e, j));
+//                         auto vertex = mesh.point(mesh.cell_vertex(e, j));
 //                         for (int d = 0; d < dim; d++)
 //                         {
 //                             pts(0, d) += vertex(d) * gvals.basis_values[j].val(i);
@@ -862,7 +862,7 @@ namespace polyfem
                 std::vector<RowVectorNd> vert(shape);
                 for (int i = 0; i < shape; ++i)
                 {
-                    vert[i] = mesh.point(mesh.cell_vertex_(e, i));
+                    vert[i] = mesh.point(mesh.cell_vertex(e, i));
                 }
 
                 // construct interpolant (linear for position)
