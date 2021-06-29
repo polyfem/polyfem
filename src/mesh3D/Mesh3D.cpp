@@ -282,7 +282,8 @@ namespace polyfem
 			// 	// }
 			// }
 
-			auto opposite_cell_facet = [&M](int c, int cf) {
+			auto opposite_cell_facet = [&M](int c, int cf)
+			{
 				GEO::index_t c2 = M.cell_facets.adjacent_cell(cf);
 				if (c2 == GEO::NO_FACET)
 				{
@@ -306,11 +307,14 @@ namespace polyfem
 			// Creates 1 hex or polyhedral element for each cell of the input mesh
 			int facet_counter = 0;
 			mesh_.elements.resize(M.cells.nb());
+			bool is_hex = true;
 			for (int c = 0; c < (int)M.cells.nb(); ++c)
 			{
 				Element &cell = mesh_.elements[c];
 				cell.id = c;
 				cell.hex = (M.cells.type(c) == GEO::MESH_HEX);
+
+				is_hex = is_hex && cell.hex;
 
 				int nf = M.cells.nb_facets(c);
 				cell.fs.resize(nf);
@@ -362,7 +366,7 @@ namespace polyfem
 				mesh_.elements[c].v_in_Kernel.push_back(p[1]);
 				mesh_.elements[c].v_in_Kernel.push_back(p[2]);
 			}
-			mesh_.type = M.cells.are_simplices() ? MeshType::Tet : MeshType::Hyb;
+			mesh_.type = is_hex ? MeshType::Hex : (M.cells.are_simplices() ? MeshType::Tet : MeshType::Hyb);
 		}
 
 		Navigation3D::prepare_mesh(mesh_);
@@ -554,11 +558,16 @@ namespace polyfem
 			throw std::runtime_error("Mesh format not supported");
 		}
 
+		static const std::vector<int> permute_tet = {0, 1, 2, 3};
+		//polyfem uses the msh file format for hexes ordering!
+		static const std::vector<int> permute_hex = {1, 0, 2, 3, 5, 4, 6, 7};
+		const std::vector<int> permute = F.cols() == 4 ? permute_tet : permute_hex;
+
 		for (int c = 0; c < (int)M.cells.nb(); ++c)
 		{
 			for (int lv = 0; lv < F.cols(); ++lv)
 			{
-				M.cells.set_vertex(c, lv, F(c, lv));
+				M.cells.set_vertex(c, lv, F(c, permute[lv]));
 			}
 		}
 		M.cells.connect();
@@ -578,7 +587,8 @@ namespace polyfem
 
 		orders_.resize(n_cells(), 1);
 
-		const auto attach_p2 = [&](const Navigation3D::Index &index, const std::vector<int> &nodes_ids) {
+		const auto attach_p2 = [&](const Navigation3D::Index &index, const std::vector<int> &nodes_ids)
+		{
 			auto &n = edge_nodes_[index.edge];
 
 			if (n.nodes.size() > 0)
@@ -610,7 +620,8 @@ namespace polyfem
 			n.nodes << V(nodes_ids[node_index], 0), V(nodes_ids[node_index], 1), V(nodes_ids[node_index], 2);
 		};
 
-		const auto attach_p3 = [&](const Navigation3D::Index &index, const std::vector<int> &nodes_ids) {
+		const auto attach_p3 = [&](const Navigation3D::Index &index, const std::vector<int> &nodes_ids)
+		{
 			auto &n = edge_nodes_[index.edge];
 
 			if (n.nodes.size() > 0)
@@ -692,7 +703,8 @@ namespace polyfem
 			n.nodes.row(1) << V(nodes_ids[node_index2], 0), V(nodes_ids[node_index2], 1), V(nodes_ids[node_index2], 2);
 		};
 
-		const auto attach_p3_face = [&](const Navigation3D::Index &index, const std::vector<int> &nodes_ids, int id) {
+		const auto attach_p3_face = [&](const Navigation3D::Index &index, const std::vector<int> &nodes_ids, int id)
+		{
 			auto &n = face_nodes_[index.face];
 			if (n.nodes.size() <= 0)
 			{
@@ -704,7 +716,8 @@ namespace polyfem
 			}
 		};
 
-		const auto attach_p4 = [&](const Navigation3D::Index &index, const std::vector<int> &nodes_ids) {
+		const auto attach_p4 = [&](const Navigation3D::Index &index, const std::vector<int> &nodes_ids)
+		{
 			auto &n = edge_nodes_[index.edge];
 
 			if (n.nodes.size() > 0)
@@ -807,7 +820,8 @@ namespace polyfem
 			n.nodes.row(2) << V(nodes_ids[node_index3], 0), V(nodes_ids[node_index3], 1), V(nodes_ids[node_index3], 2);
 		};
 
-		const auto attach_p4_face = [&](const Navigation3D::Index &index, const std::vector<int> &nodes_ids) {
+		const auto attach_p4_face = [&](const Navigation3D::Index &index, const std::vector<int> &nodes_ids)
+		{
 			auto &n = face_nodes_[index.face];
 			if (n.nodes.size() <= 0)
 			{
@@ -892,7 +906,8 @@ namespace polyfem
 			}
 		};
 
-		const auto attach_p4_cell = [&](const Navigation3D::Index &index, const std::vector<int> &nodes_ids) {
+		const auto attach_p4_cell = [&](const Navigation3D::Index &index, const std::vector<int> &nodes_ids)
+		{
 			auto &n = cell_nodes_[index.element];
 			assert(nodes_ids.size() == 35);
 			assert(n.nodes.size() == 0);
@@ -1803,50 +1818,76 @@ namespace polyfem
 	void Mesh3D::to_face_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 6> &to_face) const
 	{
 		//top
-		to_face[0] = [&](Navigation3D::Index idx) { return switch_face(switch_edge(switch_vertex(switch_edge(switch_face(idx))))); };
+		to_face[0] = [&](Navigation3D::Index idx)
+		{ return switch_face(switch_edge(switch_vertex(switch_edge(switch_face(idx))))); };
 		//bottom
-		to_face[1] = [&](Navigation3D::Index idx) { return idx; };
+		to_face[1] = [&](Navigation3D::Index idx)
+		{ return idx; };
 
 		//left
-		to_face[2] = [&](Navigation3D::Index idx) { return switch_face(switch_edge(switch_vertex(idx))); };
+		to_face[2] = [&](Navigation3D::Index idx)
+		{ return switch_face(switch_edge(switch_vertex(idx))); };
 		//right
-		to_face[3] = [&](Navigation3D::Index idx) { return switch_face(switch_edge(idx)); };
+		to_face[3] = [&](Navigation3D::Index idx)
+		{ return switch_face(switch_edge(idx)); };
 
 		//back
-		to_face[4] = [&](Navigation3D::Index idx) { return switch_face(switch_edge(switch_vertex(switch_edge(switch_vertex(idx))))); };
+		to_face[4] = [&](Navigation3D::Index idx)
+		{ return switch_face(switch_edge(switch_vertex(switch_edge(switch_vertex(idx))))); };
 		//front
-		to_face[5] = [&](Navigation3D::Index idx) { return switch_face(idx); };
+		to_face[5] = [&](Navigation3D::Index idx)
+		{ return switch_face(idx); };
 	}
 
 	void Mesh3D::to_vertex_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 8> &to_vertex) const
 	{
-		to_vertex[0] = [&](Navigation3D::Index idx) { return idx; };
-		to_vertex[1] = [&](Navigation3D::Index idx) { return switch_vertex(idx); };
-		to_vertex[2] = [&](Navigation3D::Index idx) { return switch_vertex(switch_edge(switch_vertex(idx))); };
-		to_vertex[3] = [&](Navigation3D::Index idx) { return switch_vertex(switch_edge(idx)); };
+		to_vertex[0] = [&](Navigation3D::Index idx)
+		{ return idx; };
+		to_vertex[1] = [&](Navigation3D::Index idx)
+		{ return switch_vertex(idx); };
+		to_vertex[2] = [&](Navigation3D::Index idx)
+		{ return switch_vertex(switch_edge(switch_vertex(idx))); };
+		to_vertex[3] = [&](Navigation3D::Index idx)
+		{ return switch_vertex(switch_edge(idx)); };
 
-		to_vertex[4] = [&](Navigation3D::Index idx) { return switch_vertex(switch_edge(switch_face(idx))); };
-		to_vertex[5] = [&](Navigation3D::Index idx) { return switch_vertex(switch_edge(switch_vertex(switch_edge(switch_face(idx))))); };
-		to_vertex[6] = [&](Navigation3D::Index idx) { return switch_vertex(switch_edge(switch_face(switch_vertex(switch_edge(switch_vertex(idx)))))); };
-		to_vertex[7] = [&](Navigation3D::Index idx) { return switch_vertex(switch_edge(switch_face(switch_vertex(switch_edge(idx))))); };
+		to_vertex[4] = [&](Navigation3D::Index idx)
+		{ return switch_vertex(switch_edge(switch_face(idx))); };
+		to_vertex[5] = [&](Navigation3D::Index idx)
+		{ return switch_vertex(switch_edge(switch_vertex(switch_edge(switch_face(idx))))); };
+		to_vertex[6] = [&](Navigation3D::Index idx)
+		{ return switch_vertex(switch_edge(switch_face(switch_vertex(switch_edge(switch_vertex(idx)))))); };
+		to_vertex[7] = [&](Navigation3D::Index idx)
+		{ return switch_vertex(switch_edge(switch_face(switch_vertex(switch_edge(idx))))); };
 	}
 
 	void Mesh3D::to_edge_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 12> &to_edge) const
 	{
-		to_edge[0] = [&](Navigation3D::Index idx) { return idx; };
-		to_edge[1] = [&](Navigation3D::Index idx) { return switch_edge(switch_vertex(idx)); };
-		to_edge[2] = [&](Navigation3D::Index idx) { return switch_edge(switch_vertex(switch_edge(switch_vertex(idx)))); };
-		to_edge[3] = [&](Navigation3D::Index idx) { return switch_edge(switch_vertex(switch_edge(switch_vertex(switch_edge(switch_vertex(idx)))))); };
+		to_edge[0] = [&](Navigation3D::Index idx)
+		{ return idx; };
+		to_edge[1] = [&](Navigation3D::Index idx)
+		{ return switch_edge(switch_vertex(idx)); };
+		to_edge[2] = [&](Navigation3D::Index idx)
+		{ return switch_edge(switch_vertex(switch_edge(switch_vertex(idx)))); };
+		to_edge[3] = [&](Navigation3D::Index idx)
+		{ return switch_edge(switch_vertex(switch_edge(switch_vertex(switch_edge(switch_vertex(idx)))))); };
 
-		to_edge[4] = [&](Navigation3D::Index idx) { return switch_edge(switch_face(idx)); };
-		to_edge[5] = [&](Navigation3D::Index idx) { return switch_edge(switch_face(switch_edge(switch_vertex(idx)))); };
-		to_edge[6] = [&](Navigation3D::Index idx) { return switch_edge(switch_face(switch_edge(switch_vertex(switch_edge(switch_vertex(idx)))))); };
-		to_edge[7] = [&](Navigation3D::Index idx) { return switch_edge(switch_face(switch_edge(switch_vertex(switch_edge(switch_vertex(switch_edge(switch_vertex(idx)))))))); };
+		to_edge[4] = [&](Navigation3D::Index idx)
+		{ return switch_edge(switch_face(idx)); };
+		to_edge[5] = [&](Navigation3D::Index idx)
+		{ return switch_edge(switch_face(switch_edge(switch_vertex(idx)))); };
+		to_edge[6] = [&](Navigation3D::Index idx)
+		{ return switch_edge(switch_face(switch_edge(switch_vertex(switch_edge(switch_vertex(idx)))))); };
+		to_edge[7] = [&](Navigation3D::Index idx)
+		{ return switch_edge(switch_face(switch_edge(switch_vertex(switch_edge(switch_vertex(switch_edge(switch_vertex(idx)))))))); };
 
-		to_edge[8] = [&](Navigation3D::Index idx) { return switch_edge(switch_vertex(switch_edge(switch_face(idx)))); };
-		to_edge[9] = [&](Navigation3D::Index idx) { return switch_edge(switch_vertex(switch_edge(switch_face(switch_edge(switch_vertex(idx)))))); };
-		to_edge[10] = [&](Navigation3D::Index idx) { return switch_edge(switch_vertex(switch_edge(switch_face(switch_edge(switch_vertex(switch_edge(switch_vertex(idx)))))))); };
-		to_edge[11] = [&](Navigation3D::Index idx) { return switch_edge(switch_vertex(switch_edge(switch_face(switch_edge(switch_vertex(switch_edge(switch_vertex(switch_edge(switch_vertex(idx)))))))))); };
+		to_edge[8] = [&](Navigation3D::Index idx)
+		{ return switch_edge(switch_vertex(switch_edge(switch_face(idx)))); };
+		to_edge[9] = [&](Navigation3D::Index idx)
+		{ return switch_edge(switch_vertex(switch_edge(switch_face(switch_edge(switch_vertex(idx)))))); };
+		to_edge[10] = [&](Navigation3D::Index idx)
+		{ return switch_edge(switch_vertex(switch_edge(switch_face(switch_edge(switch_vertex(switch_edge(switch_vertex(idx)))))))); };
+		to_edge[11] = [&](Navigation3D::Index idx)
+		{ return switch_edge(switch_vertex(switch_edge(switch_face(switch_edge(switch_vertex(switch_edge(switch_vertex(switch_edge(switch_vertex(idx)))))))))); };
 	}
 
 	//   v7────v6
