@@ -63,6 +63,7 @@ int main(int argc, char **argv)
 	std::string log_file = "";
 	bool is_quiet = false;
 	bool stop_after_build_basis = false;
+	bool lump_mass_mat = false;
 	int log_level = 1;
 	int nl_solver_rhs_steps = 1;
 	int cache_size = -1;
@@ -105,6 +106,7 @@ int main(int argc, char **argv)
 	command_line.add_flag("--project_to_psd", project_to_psd, "Project local matrices to psd");
 	command_line.add_option("--n_incr_load", nl_solver_rhs_steps, "Number of incremeltal load");
 	command_line.add_flag("--save_incr_load", save_solve_sequence_debug, "Save incremental steps");
+	command_line.add_flag("--lump_mass_mat", lump_mass_mat, "Lump the mass matrix");
 
 	command_line.add_option("--cache_size", cache_size, "Size of the cached assembly values");
 	command_line.add_option("--min_component", min_component, "Mimimum number of faces in connected compoment for contact");
@@ -205,6 +207,9 @@ int main(int argc, char **argv)
 		if (export_material_params)
 			in_args["export"]["material_params"] = true;
 	}
+
+	if (!in_args.contains("lump_mass_matrix"))
+		in_args["lump_mass_matrix"] = lump_mass_mat;
 
 	if (!output_json.empty())
 		in_args["output"] = output_json;
