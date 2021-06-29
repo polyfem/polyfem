@@ -726,7 +726,7 @@ namespace polyfem
 		}
 		if (formulation() == "OperatorSplitting")
 		{
-			stiffness.resize(1,1);
+			stiffness.resize(1, 1);
 			assembling_stiffness_mat_time = 0;
 			return;
 		}
@@ -1046,7 +1046,8 @@ namespace polyfem
 
 			if (formulation() == "NavierStokes")
 				solve_transient_navier_stokes(time_steps, t0, dt, rhs_assembler, c_sol);
-			else if (formulation() == "OperatorSplitting") {
+			else if (formulation() == "OperatorSplitting")
+			{
 				solve_transient_navier_stokes_split(time_steps, dt, rhs_assembler);
 			}
 			else if (problem->is_scalar() || assembler.is_mixed(formulation()))
@@ -1094,6 +1095,9 @@ namespace polyfem
 			logger().error("Solve the problem first!");
 			return;
 		}
+
+		if (!args["compute_error"])
+			return;
 
 		int actual_dim = 1;
 		if (!problem->is_scalar())

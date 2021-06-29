@@ -98,6 +98,7 @@ namespace polyfem
 			{"n_boundary_samples", 6},
 			{"problem", "Franke"},
 			{"normalize_mesh", true},
+			{"compute_error", true},
 
 			{"curved_mesh_size", false},
 
