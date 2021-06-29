@@ -457,6 +457,43 @@ namespace polyfem
 					},
 					true, true, true, get_interpolation(gproblem.is_time_dependent()));
 			}
+
+			const bool is_time_dept = gproblem.is_time_dependent();
+			for (const tinyxml2::XMLElement *child = boundaries->FirstChildElement("scaling"); child != NULL; child = child->NextSiblingElement("scaling"))
+			{
+				const std::string centres = std::string(child->Attribute("center"));
+				const std::string factors = std::string(child->Attribute("factor"));
+				const std::string name = std::string(child->Attribute("node_set"));
+				const int id = names.at(name);
+
+				const auto centrec = StringUtils::split(centres, ",");
+				if (centrec.size() != 3)
+				{
+					logger().error("Skipping scaling, center is not 3d");
+					continue;
+				}
+				const Eigen::Vector3d center(
+					atof(centrec[0].c_str()),
+					atof(centrec[1].c_str()),
+					atof(centrec[2].c_str()));
+
+				const double scaling = atof(factors.c_str());
+				gproblem.add_dirichlet_boundary(
+					id, [center, scaling, is_time_dept](double x, double y, double z, double t)
+					{
+						Eigen::Matrix<double, 3, 1> v;
+						v[0] = x;
+						v[1] = y;
+						v[2] = z;
+						const double s = is_time_dept ? (scaling * t) : scaling;
+						v -= center;
+						v *= s;
+						v += center;
+
+						return v;
+					},
+					true, true, true);
+			}
 		}
 
 		template <typename XMLNode>
@@ -606,6 +643,8 @@ namespace polyfem
 			logger().trace("dhat = {}", 1e-3 * diag);
 		}
 
+		state.args["compute_error"] = false;
+
 		Eigen::MatrixXi T;
 		std::vector<std::vector<int>> nodes;
 		std::vector<int> mids;
@@ -615,6 +654,9 @@ namespace polyfem
 		const int element_order = load_elements(geometry, V.rows(), materials, T, nodes, Es, nus, rhos, mats, mids);
 		const int current_order = state.args["discr_order"];
 		state.args["discr_order"] = std::max(current_order, element_order);
+
+		if (state.args["discr_order"] == 1)
+			state.args["vismesh_rel_area"] = 100000;
 
 		state.load_mesh(V, T);
 		if (T.cols() == 4)
