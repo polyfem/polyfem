@@ -460,9 +460,10 @@ namespace polyfem
 			}
 
 			if (boundary_triangles_.rows() > 0)
+			{
 				igl::edges(boundary_triangles_, boundary_edges_);
-
-			boundary_faces_to_edges = ipc::faces_to_edges(boundary_triangles_, boundary_edges_);
+				boundary_faces_to_edges = ipc::faces_to_edges(boundary_triangles_, boundary_edges_);
+			}
 
 			// igl::write_triangle_mesh("test.obj", boundary_nodes_pos_, boundary_triangles_);
 		}
