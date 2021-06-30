@@ -344,15 +344,16 @@ namespace cppoptlib
 
 			time.start();
 			objFunc.gradient(x0, grad);
+			this->m_current.gradNorm = grad.norm();
 			time.stop();
 
-			polyfem::logger().debug("\tgrad time {}s norm: {}", time.getElapsedTimeInSec(), grad.norm());
+			polyfem::logger().debug("\tgrad time {}s norm: {}", time.getElapsedTimeInSec(), this->m_current.gradNorm);
 			grad_time += time.getElapsedTimeInSec();
 			bool line_search_failed = false;
 
 			// std::cout<<"x0\n"<<x0<<std::endl;
 
-			if (std::isnan(grad.norm()))
+			if (std::isnan(this->m_current.gradNorm))
 			{
 				this->m_status = Status::UserDefined;
 				polyfem::logger().debug("stopping because first grad is nan");
@@ -457,6 +458,14 @@ namespace cppoptlib
 				}
 				line_search_failed = false;
 
+				if (std::isnan(rate))
+				{
+					this->m_status = Status::UserDefined;
+					polyfem::logger().error("Line search failed, stopping");
+					error_code_ = -10;
+					break;
+				}
+
 				x0 += rate * delta_x;
 
 				time.start();
@@ -527,32 +536,30 @@ namespace cppoptlib
 
 			polyfem::logger().info("Newton finished niters = {}, f = {}, ||g||_2 = {}", this->m_current.iterations, old_energy, this->m_current.gradNorm);
 
-			if (error_code_ != -10)
-			{
-				solver_info["internal_solver"] = internal_solver;
-				solver_info["internal_solver_first"] = internal_solver.front();
-				solver_info["status"] = this->status();
+			solver_info["internal_solver"] = internal_solver;
+			solver_info["internal_solver_first"] = internal_solver.front();
+			solver_info["status"] = this->status();
+			solver_info["error_code"] = error_code_;
 
-				const auto &crit = this->criteria();
-				solver_info["iterations"] = crit.iterations;
-				solver_info["xDelta"] = crit.xDelta;
-				solver_info["fDelta"] = crit.fDelta;
-				solver_info["gradNorm"] = crit.gradNorm;
-				solver_info["condition"] = crit.condition;
+			const auto &crit = this->criteria();
+			solver_info["iterations"] = crit.iterations;
+			solver_info["xDelta"] = crit.xDelta;
+			solver_info["fDelta"] = crit.fDelta;
+			solver_info["gradNorm"] = crit.gradNorm;
+			solver_info["condition"] = crit.condition;
 
-				grad_time /= crit.iterations;
-				assembly_time /= crit.iterations;
-				inverting_time /= crit.iterations;
-				linesearch_time /= crit.iterations;
+			grad_time /= crit.iterations;
+			assembly_time /= crit.iterations;
+			inverting_time /= crit.iterations;
+			linesearch_time /= crit.iterations;
 
-				constrain_set_update_time /= crit.iterations;
-				obj_fun_time /= crit.iterations;
+			constrain_set_update_time /= crit.iterations;
+			obj_fun_time /= crit.iterations;
 
-				chekcing_for_nan_inf_time /= crit.iterations;
-				broad_phase_ccd_time /= crit.iterations;
-				ccd_time /= crit.iterations;
-				classical_linesearch_time /= crit.iterations;
-			}
+			chekcing_for_nan_inf_time /= crit.iterations;
+			broad_phase_ccd_time /= crit.iterations;
+			ccd_time /= crit.iterations;
+			classical_linesearch_time /= crit.iterations;
 
 			solver_info["time_grad"] = grad_time;
 			solver_info["time_assembly"] = assembly_time;
