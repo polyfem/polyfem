@@ -342,8 +342,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 		if (jmesh.contains("dimensions"))
 		{
 			VectorNd initial_dimensions =
-				(vertices.colwise().maxCoeff() - vertices.colwise().minCoeff())
-					.cwiseAbs();
+				(tmp_vertices.colwise().maxCoeff() - tmp_vertices.colwise().minCoeff()).cwiseAbs();
 			initial_dimensions =
 				(initial_dimensions.array() == 0).select(1, initial_dimensions);
 			from_json(jmesh["dimensions"], scale);
