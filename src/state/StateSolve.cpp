@@ -53,7 +53,7 @@ namespace polyfem
 		}
 
 		const int dim = mesh->dimension();
-		const int n_el = int(bases.size());		  // number of elements
+		const int n_el = int(bases.size());       // number of elements
 		const int shape = gbases[0].bases.size(); // number of geometry vertices in an element
 		const double viscosity_ = build_json_params()["viscosity"];
 
