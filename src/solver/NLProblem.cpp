@@ -113,7 +113,8 @@ namespace polyfem
 			ipc::construct_constraint_set(
 				state.boundary_nodes_pos, displaced, state.boundary_edges,
 				state.boundary_triangles, _dhat, _constraint_set, true,
-				Eigen::VectorXi(), state.boundary_faces_to_edges);
+				ipc::BroadPhaseMethod::HASH_GRID, Eigen::VectorXi(),
+				state.boundary_faces_to_edges);
 			ipc::construct_friction_constraint_set(
 				displaced, state.boundary_edges, state.boundary_triangles,
 				_constraint_set, _dhat, _barrier_stiffness, _mu,
@@ -251,7 +252,11 @@ namespace polyfem
 		reduced_to_full_displaced_points(x0, displaced0);
 		reduced_to_full_displaced_points(x1, displaced1);
 
-		construct_ccd_candidates(displaced0, displaced1, state.boundary_edges, state.boundary_triangles, _candidates);
+		ipc::construct_collision_candidates(
+			displaced0, displaced1, state.boundary_edges,
+			state.boundary_triangles, _candidates, /*inflation_radius=*/0,
+			ipc::BroadPhaseMethod::HASH_GRID, /*ignore_codimensional_vertices=*/true,
+			/*vertex_group_ids=*/Eigen::VectorXi());
 	}
 
 	void NLProblem::line_search_end()
@@ -636,7 +641,7 @@ namespace polyfem
 										  _dhat, _constraint_set, state.boundary_faces_to_edges);
 		else
 			ipc::construct_constraint_set(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles,
-										  _dhat, _constraint_set, true, Eigen::VectorXi(), state.boundary_faces_to_edges);
+										  _dhat, _constraint_set, true, ipc::BroadPhaseMethod::HASH_GRID, Eigen::VectorXi(), state.boundary_faces_to_edges);
 	}
 
 	double NLProblem::heuristic_max_step(const TVector &dx)
