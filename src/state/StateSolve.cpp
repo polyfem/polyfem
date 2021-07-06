@@ -128,7 +128,8 @@ namespace polyfem
 
 		save_pvd(
 			resolve_output_path("sim.pvd"),
-			[](int i) { return fmt::format("step_{:d}.vtu", i); },
+			[](int i)
+			{ return fmt::format("step_{:d}.vtu", i); },
 			time_steps, /*t0=*/0, dt);
 	}
 
@@ -195,7 +196,8 @@ namespace polyfem
 
 		save_pvd(
 			resolve_output_path("sim.pvd"),
-			[](int i) { return fmt::format("step_{:d}.vtu", i); },
+			[](int i)
+			{ return fmt::format("step_{:d}.vtu", i); },
 			time_steps, t0, dt);
 	}
 
@@ -264,7 +266,8 @@ namespace polyfem
 
 		save_pvd(
 			resolve_output_path("sim.pvd"),
-			[](int i) { return fmt::format("step_{:d}.vtu", i); },
+			[](int i)
+			{ return fmt::format("step_{:d}.vtu", i); },
 			time_steps, t0, dt);
 	}
 
@@ -360,7 +363,8 @@ namespace polyfem
 
 		save_pvd(
 			resolve_output_path("sim.pvd"),
-			[](int i) { return fmt::format("step_{:d}.vtu", i); },
+			[](int i)
+			{ return fmt::format("step_{:d}.vtu", i); },
 			time_steps, t0, dt);
 	}
 
@@ -649,7 +653,8 @@ namespace polyfem
 
 		save_pvd(
 			resolve_output_path("sim.pvd"),
-			[](int i) { return fmt::format("step_{:d}.vtu", i); },
+			[](int i)
+			{ return fmt::format("step_{:d}.vtu", i); },
 			time_steps, t0, dt);
 	}
 
@@ -807,6 +812,9 @@ namespace polyfem
 		double al_weight = args["al_weight"];
 		const double max_al_weight = args["max_al_weight"];
 		nl_problem.full_to_reduced(sol, tmp_sol);
+
+		nl_problem.update_lagging(tmp_sol, /*start_of_timestep=*/true);
+		alnl_problem.update_lagging(sol, /*start_of_timestep=*/true);
 
 		//TODO: maybe add linear solver here?
 
