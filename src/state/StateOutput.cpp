@@ -23,6 +23,8 @@
 
 #include <ghc/fs_std.hpp> // filesystem
 
+#include <tinyxml2.h>
+
 extern "C" size_t getPeakRSS();
 
 namespace polyfem
@@ -182,8 +184,7 @@ namespace polyfem
 				{
 					if (lb.type() == BoundaryType::Quad)
 					{
-						const auto map = [n_samples, size](int i, int j)
-						{ return j * n_samples + i + size; };
+						const auto map = [n_samples, size](int i, int j) { return j * n_samples + i + size; };
 
 						for (int j = 0; j < n_samples - 1; ++j)
 						{
@@ -206,8 +207,7 @@ namespace polyfem
 								++index;
 							}
 						}
-						const auto map = [mapp, n_samples](int i, int j)
-						{
+						const auto map = [mapp, n_samples](int i, int j) {
 							if (j * n_samples + i >= mapp.size())
 								return -1;
 							return mapp[j * n_samples + i];
@@ -320,7 +320,7 @@ namespace polyfem
 	}
 
 	void State::extract_boundary_mesh(bool for_pressure)
-	{	
+	{
 		auto &boundary_triangles_ = (!for_pressure) ? boundary_triangles : boundary_triangles_pressure;
 		auto &boundary_edges_ = (!for_pressure) ? boundary_edges : boundary_edges_pressure;
 		auto &boundary_nodes_pos_ = (!for_pressure) ? boundary_nodes_pos : boundary_nodes_pos_pressure;
@@ -1475,6 +1475,43 @@ namespace polyfem
 		edges.conservativeResize(new_size, edges.cols());
 
 		save_edges(name, points, edges);
+	}
+
+	void State::save_pvd(const std::string &name, const std::function<std::string(int)> &vtu_names, int time_steps, double t0, double dt)
+	{
+		FILE *pvd_file = fopen(name.c_str(), "w");
+		if (pvd_file == NULL)
+		{
+			logger().error("Unable to open PVD file \"{}\" for writing.", name);
+			return;
+		}
+
+		tinyxml2::XMLPrinter printer(pvd_file);
+		printer.PushHeader(true, true);
+
+		// https://www.paraview.org/Wiki/ParaView/Data_formats#PVD_File_Format
+		printer.OpenElement("VTKFile");
+		printer.PushAttribute("type", "Collection");
+		printer.PushAttribute("version", "0.1");
+		printer.PushAttribute("byte_order", "LittleEndian");
+		printer.PushAttribute("compressor", "vtkZLibDataCompressor");
+
+		printer.OpenElement("Collection");
+
+		for (int i = 0; i <= time_steps; i++)
+		{
+			printer.OpenElement("DataSet");
+			printer.PushAttribute("timestep", fmt::format("{:g}", t0 + i * dt).c_str());
+			printer.PushAttribute("group", "");
+			printer.PushAttribute("part", "0");
+			printer.PushAttribute("file", vtu_names(i).c_str());
+			printer.CloseElement();
+		}
+
+		printer.CloseElement();
+		printer.CloseElement();
+
+		fclose(pvd_file);
 	}
 
 } // namespace polyfem
