@@ -446,6 +446,8 @@ namespace polyfem
 				read_matrix(values, values_mat);
 
 				RBFInterpolation interp(values_mat, centers_mat, rbf, eps);
+				logger().trace("adding vector Dirichlet id={} centers={} values={} rbf={} eps={}", id, centers, values, rbf, eps);
+
 				gproblem.add_dirichlet_boundary(
 					id, [interp](double x, double y, double z, double t)
 					{
@@ -478,19 +480,22 @@ namespace polyfem
 					atof(centrec[2].c_str()));
 
 				const double scaling = atof(factors.c_str());
+				logger().trace("adding scaling Dirichlet id={} center=({},{},{}) scaling={}", id, center(0), center(1), center(2), scaling);
 				gproblem.add_dirichlet_boundary(
 					id, [center, scaling, is_time_dept](double x, double y, double z, double t)
 					{
 						Eigen::Matrix<double, 3, 1> v;
+						Eigen::Matrix<double, 3, 1> target;
 						v[0] = x;
 						v[1] = y;
 						v[2] = z;
-						const double s = is_time_dept ? (scaling * t) : scaling;
-						v -= center;
-						v *= s;
-						v += center;
+						target = v;
 
-						return v;
+						const double s = is_time_dept ? (scaling * t) : scaling;
+						target -= center;
+						target *= s;
+						target += center;
+						return (target - v).eval();
 					},
 					true, true, true);
 			}

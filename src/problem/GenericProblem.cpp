@@ -106,9 +106,9 @@ namespace polyfem
 			if (is_all_)
 			{
 				assert(displacements_.size() == 1);
+				double x = pts(i, 0), y = pts(i, 1), z = pts.cols() == 2 ? 0 : pts(i, 2);
 				for (int d = 0; d < val.cols(); ++d)
 				{
-					double x = pts(i, 0), y = pts(i, 1), z = pts.cols() == 2 ? 0 : pts(i, 2);
 					val(i, d) = displacements_[0][d](x, y, z, t);
 				}
 				val.row(i) *= displacements_interpolation_[0]->eval(t);
@@ -120,9 +120,9 @@ namespace polyfem
 				{
 					if (id == boundary_ids_[b])
 					{
+						double x = pts(i, 0), y = pts(i, 1), z = pts.cols() == 2 ? 0 : pts(i, 2);
 						for (int d = 0; d < val.cols(); ++d)
 						{
-							double x = pts(i, 0), y = pts(i, 1), z = pts.cols() == 2 ? 0 : pts(i, 2);
 							val(i, d) = displacements_[b][d](x, y, z, t);
 						}
 						val.row(i) *= displacements_interpolation_[b]->eval(t);
