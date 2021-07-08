@@ -68,6 +68,9 @@ int main(int argc, char **argv)
 	int nl_solver_rhs_steps = 1;
 	int cache_size = -1;
 
+	double ccd_max_iterations = -1;
+	std::string ccd_method = "";
+
 	bool use_al = false;
 	int min_component = -1;
 
@@ -128,6 +131,11 @@ int main(int argc, char **argv)
 
 	const auto &time_integrator_names = ImplicitTimeIntegrator::get_time_integrator_names();
 	command_line.add_set("--time_integrator", time_integrator_name, std::set<std::string>(time_integrator_names.begin(), time_integrator_names.end()), "Time integrator name");
+
+	//CCD
+	const std::vector<std::string> ccd_methods = {"", "brute_force", "spatial_hash", "hash_grid"};
+	command_line.add_option("--ccd_max_iterations", ccd_max_iterations, "Max number of CCD iterations");
+	command_line.add_set("--ccd_method", ccd_method, std::set<std::string>(ccd_methods.begin(), ccd_methods.end()), "CCD Method");
 
 	try
 	{
@@ -222,6 +230,12 @@ int main(int argc, char **argv)
 		in_args["export"]["vis_mesh"] = output_vtu;
 		in_args["export"]["wire_mesh"] = StringUtils::replace_ext(output_vtu, "obj");
 	}
+
+	if (ccd_max_iterations > 0)
+		in_args["solver_params"]["ccd_max_iterations"] = int(ccd_max_iterations);
+
+	if (ccd_method.empty())
+		in_args["solver_params"]["ccd_method"] = ccd_method;
 
 	if (min_component > 0)
 		in_args["min_component"] = min_component;
