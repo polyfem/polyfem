@@ -53,6 +53,30 @@ namespace polyfem
 		_prev_distance = -1;
 		time_integrator = ImplicitTimeIntegrator::construct_time_integrator(state.args["time_integrator"]);
 		time_integrator->set_parameters(state.args["time_integrator_params"]);
+
+		if (state.args["solver_params"].contains("ccd_method"))
+		{
+			const std::string ccd_method = state.args["solver_params"]["ccd_method"];
+
+			if (ccd_method == "brute_force")
+				_broad_phase_method = ipc::BroadPhaseMethod::BRUTE_FORCE;
+			else if (ccd_method == "spatial_hash")
+				_broad_phase_method = ipc::BroadPhaseMethod::SPATIAL_HASH;
+			else
+				_broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
+		}
+
+		else
+			_broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
+
+		if (state.args["solver_params"].contains("ccd_tolerance"))
+			_ccd_tolerance = state.args["solver_params"]["ccd_tolerance"];
+		else
+			_ccd_tolerance = 1e-6;
+		if (state.args["solver_params"].contains("ccd_max_iterations"))
+			_ccd_max_iterations = state.args["solver_params"]["ccd_max_iterations"];
+		else
+			_ccd_max_iterations = 1e6;
 	}
 
 	void NLProblem::init(const TVector &full)
@@ -112,8 +136,8 @@ namespace polyfem
 		{
 			ipc::construct_constraint_set(
 				state.boundary_nodes_pos, displaced, state.boundary_edges,
-				state.boundary_triangles, _dhat, _constraint_set, true,
-				ipc::BroadPhaseMethod::HASH_GRID, Eigen::VectorXi(),
+				state.boundary_triangles, _dhat, _constraint_set, _ignore_codimensional_vertices,
+				_broad_phase_method, Eigen::VectorXi(),
 				state.boundary_faces_to_edges);
 			ipc::construct_friction_constraint_set(
 				displaced, state.boundary_edges, state.boundary_triangles,
@@ -255,7 +279,7 @@ namespace polyfem
 		ipc::construct_collision_candidates(
 			displaced0, displaced1, state.boundary_edges,
 			state.boundary_triangles, _candidates, /*inflation_radius=*/0,
-			ipc::BroadPhaseMethod::HASH_GRID, /*ignore_codimensional_vertices=*/true,
+			_broad_phase_method, _ignore_codimensional_vertices,
 			/*vertex_group_ids=*/Eigen::VectorXi());
 	}
 
@@ -281,7 +305,11 @@ namespace polyfem
 		// 	igl::write_triangle_mesh("s1.obj", displaced1, state.boundary_triangles);
 		// }
 
-		double max_step = ipc::compute_collision_free_stepsize(_candidates, displaced0, displaced1, state.boundary_edges, state.boundary_triangles);
+		double max_step = ipc::compute_collision_free_stepsize(
+			_candidates,
+			displaced0, displaced1,
+			state.boundary_edges, state.boundary_triangles,
+			_ccd_tolerance, _ccd_max_iterations);
 		polyfem::logger().trace("best step {}", max_step);
 
 		// This will check for static intersections as a failsafe. Not needed if we use our conservative CCD.
@@ -321,7 +349,10 @@ namespace polyfem
 		// 	igl::write_triangle_mesh("1.obj", displaced1, state.boundary_triangles);
 		// }
 
-		const bool is_valid = ipc::is_step_collision_free(_candidates, displaced0, displaced1, state.boundary_edges, state.boundary_triangles);
+		const bool is_valid = ipc::is_step_collision_free(_candidates,
+														  displaced0, displaced1,
+														  state.boundary_edges, state.boundary_triangles,
+														  _ccd_tolerance, _ccd_max_iterations);
 
 		return is_valid;
 	}
@@ -641,7 +672,7 @@ namespace polyfem
 										  _dhat, _constraint_set, state.boundary_faces_to_edges);
 		else
 			ipc::construct_constraint_set(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles,
-										  _dhat, _constraint_set, true, ipc::BroadPhaseMethod::HASH_GRID, Eigen::VectorXi(), state.boundary_faces_to_edges);
+										  _dhat, _constraint_set, _ignore_codimensional_vertices, _broad_phase_method, Eigen::VectorXi(), state.boundary_faces_to_edges);
 	}
 
 	double NLProblem::heuristic_max_step(const TVector &dx)

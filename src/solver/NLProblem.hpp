@@ -8,6 +8,7 @@
 #include <polyfem/MatrixUtils.hpp>
 
 #include <ipc/collision_constraint.hpp>
+#include <ipc/broad_phase/broad_phase.hpp>
 #include <ipc/friction/friction_constraint.hpp>
 
 #include <cppoptlib/problem.h>
@@ -150,9 +151,14 @@ namespace polyfem
 		double max_barrier_stiffness_;
 
 		// friction variables
-		double _epsv;					///< @brief The boundary between static and dynamic friction.
-		double _mu;						///< @brief Coefficient of friction.
+		double _epsv;                   ///< @brief The boundary between static and dynamic friction.
+		double _mu;                     ///< @brief Coefficient of friction.
 		Eigen::MatrixXd displaced_prev; ///< @brief Displaced vertices at the start of the time-step.
+
+		ipc::BroadPhaseMethod _broad_phase_method;
+		bool _ignore_codimensional_vertices = true;
+		double _ccd_tolerance;
+		int _ccd_max_iterations;
 
 		const double &dt() const { return time_integrator->dt(); }
 
