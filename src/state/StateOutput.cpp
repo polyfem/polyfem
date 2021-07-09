@@ -184,7 +184,8 @@ namespace polyfem
 				{
 					if (lb.type() == BoundaryType::Quad)
 					{
-						const auto map = [n_samples, size](int i, int j) { return j * n_samples + i + size; };
+						const auto map = [n_samples, size](int i, int j)
+						{ return j * n_samples + i + size; };
 
 						for (int j = 0; j < n_samples - 1; ++j)
 						{
@@ -207,7 +208,8 @@ namespace polyfem
 								++index;
 							}
 						}
-						const auto map = [mapp, n_samples](int i, int j) {
+						const auto map = [mapp, n_samples](int i, int j)
+						{
 							if (j * n_samples + i >= mapp.size())
 								return -1;
 							return mapp[j * n_samples + i];
@@ -1172,6 +1174,7 @@ namespace polyfem
 	{
 		const bool material_params = args["export"]["material_params"];
 		const bool body_ids = args["export"]["body_ids"];
+		// const bool contact_forces = args["export"]["contact_forces"];
 
 		VTUWriter writer;
 		Eigen::MatrixXd fun, interp_p, discr, vect;

@@ -74,9 +74,11 @@ namespace polyfem
 		else
 			_ccd_tolerance = 1e-6;
 		if (state.args["solver_params"].contains("ccd_max_iterations"))
-			_ccd_max_iterations = state.args["solver_params"]["ccd_max_iterations"];
+			_max_ccd_max_iterations = state.args["solver_params"]["ccd_max_iterations"];
 		else
-			_ccd_max_iterations = 1e6;
+			_max_ccd_max_iterations = 1e6;
+
+		_ccd_max_iterations = _max_ccd_max_iterations;
 	}
 
 	void NLProblem::init(const TVector &full)

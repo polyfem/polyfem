@@ -201,6 +201,7 @@ namespace polyfem
 			  {"vis_boundary_only", false},
 			  {"material_params", false},
 			  {"body_ids", false},
+			  {"contact_forces", false},
 			  {"nodes", ""},
 			  {"wire_mesh", ""},
 			  {"iso_mesh", ""},

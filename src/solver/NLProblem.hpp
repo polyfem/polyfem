@@ -127,6 +127,9 @@ namespace polyfem
 
 		double heuristic_max_step(const TVector &dx);
 
+		inline int max_ccd_max_iterations() const { return _max_ccd_max_iterations; }
+		inline void set_ccd_max_iterations(int v) { _ccd_max_iterations = v; }
+
 	protected:
 		State &state;
 		double _barrier_stiffness;
@@ -158,7 +161,7 @@ namespace polyfem
 		ipc::BroadPhaseMethod _broad_phase_method;
 		bool _ignore_codimensional_vertices = true;
 		double _ccd_tolerance;
-		int _ccd_max_iterations;
+		int _ccd_max_iterations, _max_ccd_max_iterations;
 
 		const double &dt() const { return time_integrator->dt(); }
 

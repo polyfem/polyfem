@@ -302,6 +302,8 @@ namespace cppoptlib
 			solver->setParameters(solver_param);
 			polyfem::logger().debug("\tinternal solver {}", solver->name());
 
+			// objFunc.set_ccd_max_iterations(objFunc.max_ccd_max_iterations() / 10);
+
 			const int reduced_size = x0.rows();
 
 			polyfem::StiffnessMatrix id(reduced_size, reduced_size);
@@ -365,6 +367,9 @@ namespace cppoptlib
 			{
 				const size_t iter = this->m_current.iterations;
 				bool new_hessian = iter == next_hessian;
+
+				// if (iter >= 10)
+				// 	objFunc.set_ccd_max_iterations(objFunc.max_ccd_max_iterations());
 
 				if (new_hessian && !line_search_failed)
 				{
