@@ -20,6 +20,7 @@
 #include <igl/connected_components.h>
 
 #include <ipc/utils/faces_to_edges.hpp>
+#include <ipc/ipc.hpp>
 
 #include <ghc/fs_std.hpp> // filesystem
 
@@ -725,7 +726,6 @@ namespace polyfem
 		const std::string iso_mesh_path = args["export"]["iso_mesh"];
 		const std::string nodes_path = args["export"]["nodes"];
 		const std::string solution_path = args["export"]["solution"];
-		const std::string export_surface = args["export"]["surface"];
 		const std::string solmat_path = args["export"]["solution_mat"];
 		const std::string stress_path = args["export"]["stress_mat"];
 		const std::string mises_path = args["export"]["mises"];
@@ -737,11 +737,6 @@ namespace polyfem
 			out << std::scientific;
 			out << sol << std::endl;
 			out.close();
-		}
-
-		if (!export_surface.empty())
-		{
-			save_surface(export_surface);
 		}
 
 		const double tend = args["tend"];
@@ -1168,13 +1163,19 @@ namespace polyfem
 			solution_frames.back().points = points;
 			solution_frames.back().connectivity = tets;
 		}
+
+		const bool export_surface = args["export"]["surface"];
+		if (export_surface)
+		{
+			save_surface(path.substr(0, path.length() - 4) + "_surf.vtu");
+		}
 	}
 
 	void State::save_surface(const std::string &export_surface)
 	{
 		const bool material_params = args["export"]["material_params"];
 		const bool body_ids = args["export"]["body_ids"];
-		// const bool contact_forces = args["export"]["contact_forces"];
+		const bool contact_forces = args["export"]["contact_forces"] && !problem->is_scalar();
 
 		VTUWriter writer;
 		Eigen::MatrixXd fun, interp_p, discr, vect;
@@ -1228,6 +1229,49 @@ namespace polyfem
 				Map<Eigen::MatrixXd> tensor(tensor_flat.data(), actual_dim, actual_dim);
 				vect.row(i) = boundary_vis_normals.row(i) * tensor;
 			}
+		}
+
+		if (contact_forces && solve_export_to_file)
+		{
+			const int problem_dim = mesh->dimension();
+			Eigen::MatrixXd displaced(sol.size() / problem_dim, problem_dim);
+			assert(displaced.rows() * problem_dim == sol.size());
+			for (int i = 0; i < sol.size(); i += problem_dim)
+			{
+				for (int d = 0; d < problem_dim; ++d)
+				{
+					displaced(i / problem_dim, d) = sol(i + d);
+				}
+			}
+			assert(displaced(0, 0) == sol(0));
+			assert(displaced(0, 1) == sol(1));
+
+			VTUWriter contact_writer;
+			writer.add_field("solution", displaced);
+
+			displaced += boundary_nodes_pos;
+			ipc::Constraints constraint_set;
+			ipc::construct_constraint_set(boundary_nodes_pos, displaced, boundary_edges, boundary_triangles,
+										  args["dhat"], constraint_set, true, ipc::BroadPhaseMethod::HASH_GRID, Eigen::VectorXi(), boundary_faces_to_edges);
+			const Eigen::MatrixXd cgrad = ipc::compute_barrier_potential_gradient(displaced, boundary_edges, boundary_triangles, constraint_set, args["dhat"]);
+			assert(cgrad.size() == sol.size());
+
+			Eigen::MatrixXd cgrad_reshaped(cgrad.size() / problem_dim, problem_dim);
+			assert(cgrad_reshaped.rows() * problem_dim == cgrad.size());
+			for (int i = 0; i < cgrad.size(); i += problem_dim)
+			{
+				for (int d = 0; d < problem_dim; ++d)
+				{
+					cgrad_reshaped(i / problem_dim, d) = cgrad(i + d);
+				}
+			}
+
+			writer.add_field("contact_forces", cgrad_reshaped);
+
+			if (problem_dim == 3)
+				writer.write_mesh(export_surface.substr(0, export_surface.length() - 4) + "_contact.vtu", boundary_nodes_pos, boundary_triangles);
+			else
+				writer.write_mesh(export_surface.substr(0, export_surface.length() - 4) + "_contact.vtu", boundary_nodes_pos, boundary_edges);
 		}
 
 		if (solve_export_to_file)

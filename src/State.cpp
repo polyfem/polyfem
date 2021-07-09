@@ -1040,8 +1040,6 @@ namespace polyfem
 					solution_frames.emplace_back();
 				save_vtu(resolve_output_path("step_0.vtu"), 0);
 				save_wire(resolve_output_path("step_0.obj"));
-				// extract_vis_boundary_mesh();
-				// save_surface(resolve_output_path("boundary_0.vtu"));
 			}
 
 			if (formulation() == "NavierStokes")

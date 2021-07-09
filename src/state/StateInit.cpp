@@ -194,7 +194,7 @@ namespace polyfem
 
 			{"export",
 			 {{"sol_at_node", -1},
-			  {"surface", ""},
+			  {"surface", false},
 			  {"vis_mesh", ""},
 			  {"sol_on_grid", -1},
 			  {"paraview", ""},
@@ -339,7 +339,6 @@ namespace polyfem
 		args["export"]["iso_mesh"] = resolve_output_path(args["export"]["iso_mesh"]);
 		args["export"]["nodes"] = resolve_output_path(args["export"]["nodes"]);
 		args["export"]["solution"] = resolve_output_path(args["export"]["solution"]);
-		args["export"]["surface"] = resolve_output_path(args["export"]["surface"]);
 		args["export"]["solution_mat"] = resolve_output_path(args["export"]["solution_mat"]);
 		args["export"]["stress_mat"] = resolve_output_path(args["export"]["stress_mat"]);
 		args["export"]["mises"] = resolve_output_path(args["export"]["mises"]);

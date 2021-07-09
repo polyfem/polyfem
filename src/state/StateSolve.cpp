@@ -122,7 +122,6 @@ namespace polyfem
 					solution_frames.emplace_back();
 				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), time);
 				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
-				// save_surface(resolve_output_path(fmt::format("boundary_{:d}.vtu", t)));
 			}
 		}
 
@@ -190,7 +189,6 @@ namespace polyfem
 					solution_frames.emplace_back();
 				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), time);
 				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
-				// save_surface(resolve_output_path(fmt::format("boundary_{:d}.vtu", t)));
 			}
 		}
 
@@ -199,6 +197,27 @@ namespace polyfem
 			[](int i)
 			{ return fmt::format("step_{:d}.vtu", i); },
 			time_steps, t0, dt);
+
+		const bool export_surface = args["export"]["surface"];
+		const bool contact_forces = args["export"]["contact_forces"] && !problem->is_scalar();
+
+		if (export_surface)
+		{
+			save_pvd(
+				resolve_output_path("sim_surf.pvd"),
+				[](int i)
+				{ return fmt::format("step_{:d}_surf.vtu", i); },
+				time_steps, t0, dt);
+
+			if (contact_forces)
+			{
+				save_pvd(
+					resolve_output_path("sim_surf_contact.pvd"),
+					[](int i)
+					{ return fmt::format("step_{:d}_surf_contact.vtu", i); },
+					time_steps, t0, dt);
+			}
+		}
 	}
 
 	void State::solve_transient_scalar(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler, Eigen::VectorXd &x)
