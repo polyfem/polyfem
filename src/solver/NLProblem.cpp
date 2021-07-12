@@ -312,7 +312,7 @@ namespace polyfem
 			displaced0, displaced1,
 			state.boundary_edges, state.boundary_triangles,
 			_ccd_tolerance, _ccd_max_iterations);
-		polyfem::logger().trace("best step {}", max_step);
+		// polyfem::logger().trace("best step {}", max_step);
 
 		// This will check for static intersections as a failsafe. Not needed if we use our conservative CCD.
 		// Eigen::MatrixXd displaced_toi = (displaced1 - displaced0) * max_step + displaced0;
