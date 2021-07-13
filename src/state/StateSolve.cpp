@@ -768,6 +768,10 @@ namespace polyfem
 		sol.resizeLike(rhs);
 		sol.setZero();
 
+		const std::string u_path = resolve_path(args["import"]["u_path"], args["root_path"]);
+		if (!u_path.empty())
+			read_matrix_binary(u_path, sol);
+
 		// if (args["use_al"] || args["has_collision"])
 		// {
 		//FD
@@ -891,6 +895,12 @@ namespace polyfem
 		nl_problem.reduced_to_full(tmp_sol, sol);
 		solver_info.push_back({{"type", "rc"},
 							   {"info", nl_solver_info}});
+
+		{
+			const std::string u_path = resolve_path(args["export"]["u_path"], args["root_path"]);
+			if (!u_path.empty())
+				write_matrix_binary(u_path, sol);
+		}
 		// }
 		// else
 		// {
