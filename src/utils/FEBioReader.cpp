@@ -598,11 +598,22 @@ namespace polyfem
 		if (!args_in.contains("quadrature_order"))
 			state.args["quadrature_order"] = 0;
 
-		if (!export_solution.empty() && !args_in["export"].contains("quadrature_order"))
-			state.args["export"]["solution_mat"] = export_solution;
+		if (args_in.contains("export"))
+		{
+			if (!export_solution.empty() && !args_in["export"].contains("solution_mat"))
+				state.args["export"]["solution_mat"] = export_solution;
 
-		if (!args_in["export"].contains("body_ids"))
+			if (!args_in["export"].contains("body_ids"))
+				state.args["export"]["body_ids"] = true;
+		}
+		else
+		{
+			if (!export_solution.empty())
+				state.args["export"]["solution_mat"] = export_solution;
+
 			state.args["export"]["body_ids"] = true;
+		}
+
 		state.args["root_path"] = path;
 
 		tinyxml2::XMLDocument doc;
@@ -654,17 +665,27 @@ namespace polyfem
 			if (!args_in.contains("line_search"))
 				state.args["line_search"] = "bisection";
 
-			if (!args_in["solver_params"].contains("gradNorm"))
+			if (args_in.contains("solver_params"))
+			{
+				if (!args_in["solver_params"].contains("gradNorm"))
+					state.args["solver_params"]["gradNorm"] = 1e-5;
+
+				if (!args_in["solver_params"].contains("nl_iterations"))
+					state.args["solver_params"]["nl_iterations"] = 200;
+
+				if (!args_in["solver_params"].contains("useGradNorm"))
+					state.args["solver_params"]["useGradNorm"] = false;
+
+				if (!args_in["solver_params"].contains("conv_tol"))
+					state.args["solver_params"]["conv_tol"] = 1e-6;
+			}
+			else
+			{
 				state.args["solver_params"]["gradNorm"] = 1e-5;
-
-			if (!args_in["solver_params"].contains("nl_iterations"))
 				state.args["solver_params"]["nl_iterations"] = 200;
-
-			if (!args_in["solver_params"].contains("useGradNorm"))
 				state.args["solver_params"]["useGradNorm"] = false;
-
-			if (!args_in["solver_params"].contains("conv_tol"))
 				state.args["solver_params"]["conv_tol"] = 1e-6;
+			}
 
 			logger().trace("dhat = {}", 1e-3 * diag);
 		}
