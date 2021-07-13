@@ -214,16 +214,23 @@ namespace cppoptlib
 
 #pragma STDC FENV_ACCESS ON
 			const int current_roudn = std::fegetround();
+			std::fesetround(FE_DOWNWARD);
+			step_size *= tmp; // TODO: check me if correct
+			std::fesetround(current_roudn);
+			polyfem::logger().trace("\t\tpre TOI={}, ss={}", tmp, step_size);
 			while (tmp != 1)
 			{
+				new_x = x + step_size * grad;
+				tmp = objFunc.max_step_size(x, new_x);
+
 				std::fesetround(FE_DOWNWARD);
 				step_size *= tmp; // TODO: check me if correct
 				std::fesetround(current_roudn);
-				new_x = x + step_size * grad;
-				tmp = objFunc.max_step_size(x, new_x);
+				if (tmp != 1)
+					polyfem::logger().trace("\t\trepeating TOI={}, ss={}", tmp, step_size);
 			}
 
-			polyfem::logger().trace("\t\tCCD in LS {}s, step={}", time.getElapsedTimeInSec(), tmp);
+			polyfem::logger().trace("\t\tCCD in LS {}s, step={}", time.getElapsedTimeInSec(), step_size);
 			ccd_time += time.getElapsedTimeInSec();
 
 			// #pragma STDC FENV_ACCESS ON
