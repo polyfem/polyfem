@@ -262,7 +262,7 @@ int main(int argc, char **argv)
 		state.init(in_args, output_dir);
 
 		if (!febio_file.empty())
-			state.load_febio(febio_file);
+			state.load_febio(febio_file, in_args);
 		else
 			state.load_mesh();
 

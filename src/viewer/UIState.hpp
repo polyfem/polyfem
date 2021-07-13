@@ -8,7 +8,6 @@
 #include <igl/opengl/glfw/imgui/ImGuiMenu.h>
 #include <map>
 
-
 namespace polyfem
 {
 	class UIState : public igl::opengl::glfw::imgui::ImGuiMenu
@@ -42,8 +41,7 @@ namespace polyfem
 			TotalVisualizations
 		};
 
-		const std::string visualizations_texts[Visualizations::TotalVisualizations] = { "InputMesh", "Sidesets", "Diretization", "Nodes", "PNodes", "BNodes", "BPNodes", "VisMesh", "Solution", "Error", "ErrorGrad", "VisBasis",  "NavigationIndex", "Debug", "ElementId", "VertexId", "NodesId" };
-
+		const std::string visualizations_texts[Visualizations::TotalVisualizations] = {"InputMesh", "Sidesets", "Diretization", "Nodes", "PNodes", "BNodes", "BPNodes", "VisMesh", "Solution", "Error", "ErrorGrad", "VisBasis", "NavigationIndex", "Debug", "ElementId", "VertexId", "NodesId"};
 
 	public:
 		static UIState &ui_state();
@@ -51,7 +49,6 @@ namespace polyfem
 		void launch(const std::string &log_file, int log_level, const bool is_quiet, const json &args, const std::string &febio);
 
 		void sertialize(const std::string &name);
-
 
 		bool skip_visualization = false;
 		bool show_funs_in_3d = false;
@@ -63,7 +60,6 @@ namespace polyfem
 
 		Eigen::MatrixXi tri_faces, vis_faces;
 		Eigen::MatrixXd tri_pts, vis_pts;
-
 
 		std::map<int, Eigen::MatrixXi> vis_faces_poly;
 		std::map<int, Eigen::MatrixXd> vis_pts_poly;
@@ -120,8 +116,9 @@ namespace polyfem
 
 	protected:
 		Navigation3D::Index current_3d_index;
-		Navigation::Index 	current_2d_index;
+		Navigation::Index current_2d_index;
 		std::string febio_file;
+		json in_args;
 
 		igl::opengl::ViewerData &data(const Visualizations &layer);
 		Eigen::Matrix<bool, Eigen::Dynamic, 1> available_visualizations;
@@ -163,7 +160,7 @@ namespace polyfem
 		bool is_quad(const ElementBases &bs) const;
 		bool is_tri(const ElementBases &bs) const;
 
-		void plot_function(const Eigen::MatrixXd &fun, const Visualizations &layer, double min=0, double max=-1);
+		void plot_function(const Eigen::MatrixXd &fun, const Visualizations &layer, double min = 0, double max = -1);
 		void interpolate_function(const Eigen::MatrixXd &fun, Eigen::MatrixXd &result);
 		void interpolate_grad_function(const Eigen::MatrixXd &fun, Eigen::MatrixXd &result);
 
@@ -171,9 +168,8 @@ namespace polyfem
 		long show_clipped_elements(const Eigen::MatrixXd &pts, const Eigen::MatrixXi &tris, const std::vector<int> &ranges, const std::vector<bool> &valid_elements, const bool map_edges, const Visualizations &layer, const bool recenter = false);
 		void color_mesh(const int n_tris, const std::vector<bool> &valid_elements, const Visualizations &layer);
 		void plot_selection_and_index(const bool recenter = false);
-		void get_plot_edges(const Mesh &mesh, const std::vector< ElementBases > &bases, const std::vector< ElementBases > &gbases, const int n_samples, const std::vector<bool> &valid_elements, const Visualizations &layer, Eigen::MatrixXd &pp0, Eigen::MatrixXd &pp1);
+		void get_plot_edges(const Mesh &mesh, const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases, const int n_samples, const std::vector<bool> &valid_elements, const Visualizations &layer, Eigen::MatrixXd &pp0, Eigen::MatrixXd &pp1);
 	};
 
-}
+} // namespace polyfem
 #endif //UI_UISTATE_HPP
-

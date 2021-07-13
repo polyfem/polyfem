@@ -1359,7 +1359,8 @@ namespace polyfem
 
 	void UIState::show_linear_reproduction()
 	{
-		auto ff = [](double x, double y) { return -0.1 + .3 * x - .5 * y; };
+		auto ff = [](double x, double y)
+		{ return -0.1 + .3 * x - .5 * y; };
 
 		MatrixXd fun = MatrixXd::Zero(state.n_bases, 1);
 
@@ -1403,12 +1404,14 @@ namespace polyfem
 
 	void UIState::show_quadratic_reproduction()
 	{
-		auto ff = [](double x, double y) {
+		auto ff = [](double x, double y)
+		{
 			const double v = (2 * y - 0.9);
 			return v * v;
 		};
 
-		auto ff1 = [](double x, double y) {
+		auto ff1 = [](double x, double y)
+		{
 			Eigen::RowVector2d res;
 			res(0) = 0;
 			res(1) = 8 * y - 3.6;
@@ -1642,7 +1645,7 @@ namespace polyfem
 		if (febio_file.empty())
 			state.load_mesh();
 		else
-			state.load_febio(febio_file);
+			state.load_febio(febio_file, in_args);
 		state.compute_mesh_stats();
 		state.mesh->triangulate_faces(tri_faces, tri_pts, element_ranges);
 		state.mesh->compute_element_barycenters(normalized_barycenter);
@@ -1810,6 +1813,7 @@ namespace polyfem
 
 		viewer.core().background_color.setOnes();
 		febio_file = febio_filei;
+		in_args = args;
 
 		if (screenshot.empty())
 		{

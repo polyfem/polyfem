@@ -257,8 +257,8 @@ namespace polyfem
 
 		//loads the mesh from the json arguments
 		void load_mesh();
-		//loads a febio file
-		void load_febio(const std::string &path);
+		//loads a febio file, uses args_in for default
+		void load_febio(const std::string &path, const json &args_in);
 		//loads the mesh from a geogram mesh, skip_boundary_sideset = false it uses the lambda boundary_marker to assigm the sideset
 		//the input of the lambda is the face barycenter, the output is the sideset id
 		void load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd &)> &boundary_marker, bool skip_boundary_sideset = false);

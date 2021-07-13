@@ -438,7 +438,7 @@ namespace polyfem
 				const std::string centers = resolve_path(std::string(child->Attribute("centers")), root_file);
 				const std::string values = resolve_path(std::string(child->Attribute("values")), root_file);
 				const std::string rbf = "thin_plate"; //TODO
-				const double eps = 1e-3;			  //TODO
+				const double eps = 1e-3;              //TODO
 				//TODO add is x,y,z
 
 				Eigen::MatrixXd centers_mat, values_mat;
@@ -587,18 +587,22 @@ namespace polyfem
 		}
 	} // namespace
 
-	void FEBioReader::load(const std::string &path, State &state, const std::string &export_solution)
+	void FEBioReader::load(const std::string &path, const json &args_in, State &state, const std::string &export_solution)
 	{
 		igl::Timer timer;
 		timer.start();
 		logger().info("Loading feb file...");
 
-		state.args["normalize_mesh"] = false;
-		state.args["quadrature_order"] = 0;
-		if (!export_solution.empty())
+		if (!args_in.contains("normalize_mesh"))
+			state.args["normalize_mesh"] = false;
+		if (!args_in.contains("quadrature_order"))
+			state.args["quadrature_order"] = 0;
+
+		if (!export_solution.empty() && !args_in["export"].contains("quadrature_order"))
 			state.args["export"]["solution_mat"] = export_solution;
 
-		state.args["export"]["body_ids"] = true;
+		if (!args_in["export"].contains("body_ids"))
+			state.args["export"]["body_ids"] = true;
 		state.args["root_path"] = path;
 
 		tinyxml2::XMLDocument doc;
@@ -616,7 +620,10 @@ namespace polyfem
 		}
 
 		std::map<int, std::tuple<double, double, double, std::string>> materials;
-		state.args["tensor_formulation"] = load_materials(febio, materials);
+
+		const std::string formulation_in = load_materials(febio, materials);
+		if (!args_in.contains("tensor_formulation"))
+			state.args["tensor_formulation"] = formulation_in;
 
 		const auto *geometry = febio->FirstChildElement("Geometry");
 
@@ -637,18 +644,33 @@ namespace polyfem
 		if (has_collisions)
 		{
 			state.args["has_collision"] = true;
-			state.args["dhat"] = 1e-3 * diag;
-			state.args["project_to_psd"] = true;
-			state.args["line_search"] = "bisection";
-			state.args["solver_params"]["gradNorm"] = 1e-5;
-			state.args["solver_params"]["nl_iterations"] = 200;
-			state.args["solver_params"]["useGradNorm"] = false;
-			state.args["solver_params"]["conv_tol"] = 1e-6;
+
+			if (!args_in.contains("dhat"))
+				state.args["dhat"] = 1e-3 * diag;
+
+			if (!args_in.contains("project_to_psd"))
+				state.args["project_to_psd"] = true;
+
+			if (!args_in.contains("line_search"))
+				state.args["line_search"] = "bisection";
+
+			if (!args_in["solver_params"].contains("gradNorm"))
+				state.args["solver_params"]["gradNorm"] = 1e-5;
+
+			if (!args_in["solver_params"].contains("nl_iterations"))
+				state.args["solver_params"]["nl_iterations"] = 200;
+
+			if (!args_in["solver_params"].contains("useGradNorm"))
+				state.args["solver_params"]["useGradNorm"] = false;
+
+			if (!args_in["solver_params"].contains("conv_tol"))
+				state.args["solver_params"]["conv_tol"] = 1e-6;
 
 			logger().trace("dhat = {}", 1e-3 * diag);
 		}
 
-		state.args["compute_error"] = false;
+		if (!args_in.contains("compute_error"))
+			state.args["compute_error"] = false;
 
 		Eigen::MatrixXi T;
 		std::vector<std::vector<int>> nodes;
