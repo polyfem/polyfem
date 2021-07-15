@@ -527,6 +527,7 @@ namespace polyfem
 
 				sol = tmp_sol;
 				nl_problem.full_to_reduced(sol, tmp_sol);
+				nl_problem.line_search_begin(sol, tmp_sol);
 
 				al_weight *= 2;
 
@@ -865,6 +866,7 @@ namespace polyfem
 
 			sol = tmp_sol;
 			nl_problem.full_to_reduced(sol, tmp_sol);
+			nl_problem.line_search_begin(sol, tmp_sol);
 
 			al_weight *= 2;
 
