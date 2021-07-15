@@ -98,28 +98,34 @@ namespace polyfem
 		if (disable_collision || !state.args["has_collision"])
 			return;
 
-		Eigen::MatrixXd grad;
+		Eigen::MatrixXd grad_energy;
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
-		assembler.assemble_energy_gradient(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, state.ass_vals_cache, full, grad);
+		assembler.assemble_energy_gradient(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, state.ass_vals_cache, full, grad_energy);
 
 		if (is_time_dependent)
 		{
-			grad *= time_integrator->acceleration_scaling();
-			grad += state.mass * full;
+			grad_energy *= time_integrator->acceleration_scaling();
+			grad_energy += state.mass * full;
 		}
 
-		grad -= current_rhs();
+		grad_energy -= current_rhs();
 
 		Eigen::MatrixXd displaced;
 		compute_displaced_points(full, displaced);
 
+		ipc::construct_constraint_set(
+			state.boundary_nodes_pos, displaced, state.boundary_edges,
+			state.boundary_triangles, _dhat, _constraint_set, state.boundary_faces_to_edges,
+			/*dmin=*/0, _broad_phase_method, _ignore_codimensional_vertices);
+		Eigen::VectorXd grad_barrier = ipc::compute_barrier_potential_gradient(
+			displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat);
+
 		_barrier_stiffness = ipc::initial_barrier_stiffness(
-			state.boundary_nodes_pos,
-			displaced,
-			state.boundary_edges, state.boundary_triangles,
+			ipc::world_bbox_diagonal_length(displaced),
 			_dhat,
 			state.avg_mass,
-			grad,
+			grad_energy,
+			grad_barrier,
 			max_barrier_stiffness_);
 		polyfem::logger().debug("adaptive stiffness {}", _barrier_stiffness);
 	}
@@ -138,9 +144,8 @@ namespace polyfem
 		{
 			ipc::construct_constraint_set(
 				state.boundary_nodes_pos, displaced, state.boundary_edges,
-				state.boundary_triangles, _dhat, _constraint_set, _ignore_codimensional_vertices,
-				_broad_phase_method, Eigen::VectorXi(),
-				state.boundary_faces_to_edges);
+				state.boundary_triangles, _dhat, _constraint_set, state.boundary_faces_to_edges,
+				/*dmin=*/0, _broad_phase_method, _ignore_codimensional_vertices);
 			ipc::construct_friction_constraint_set(
 				displaced, state.boundary_edges, state.boundary_triangles,
 				_constraint_set, _dhat, _barrier_stiffness, _mu,
@@ -281,8 +286,7 @@ namespace polyfem
 		ipc::construct_collision_candidates(
 			displaced0, displaced1, state.boundary_edges,
 			state.boundary_triangles, _candidates, /*inflation_radius=*/0,
-			_broad_phase_method, _ignore_codimensional_vertices,
-			/*vertex_group_ids=*/Eigen::VectorXi());
+			_broad_phase_method, _ignore_codimensional_vertices);
 	}
 
 	void NLProblem::line_search_end()
@@ -674,7 +678,7 @@ namespace polyfem
 										  _dhat, _constraint_set, state.boundary_faces_to_edges);
 		else
 			ipc::construct_constraint_set(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles,
-										  _dhat, _constraint_set, _ignore_codimensional_vertices, _broad_phase_method, Eigen::VectorXi(), state.boundary_faces_to_edges);
+										  _dhat, _constraint_set, state.boundary_faces_to_edges, /*dmin=*/0, _broad_phase_method, _ignore_codimensional_vertices);
 	}
 
 	double NLProblem::heuristic_max_step(const TVector &dx)
