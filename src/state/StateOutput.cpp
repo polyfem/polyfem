@@ -1252,7 +1252,8 @@ namespace polyfem
 			displaced += boundary_nodes_pos;
 			ipc::Constraints constraint_set;
 			ipc::construct_constraint_set(boundary_nodes_pos, displaced, boundary_edges, boundary_triangles,
-										  args["dhat"], constraint_set, true, ipc::BroadPhaseMethod::HASH_GRID, Eigen::VectorXi(), boundary_faces_to_edges);
+										  args["dhat"], constraint_set, boundary_faces_to_edges, /*dmin=*/0,
+										  ipc::BroadPhaseMethod::HASH_GRID, /*ignore_codimensional_vertices=*/true);
 			const Eigen::MatrixXd cgrad = ipc::compute_barrier_potential_gradient(displaced, boundary_edges, boundary_triangles, constraint_set, args["dhat"]);
 			assert(cgrad.size() == sol.size());
 
