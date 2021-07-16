@@ -689,8 +689,11 @@ namespace polyfem
 		}
 
 		logger().trace("has_collision={}, dhat={}", has_collisions, double(state.args["dhat"]));
-		logger().trace("gradNorm={}, nl_iterations={}, useGradNorm={}, conv_tol={}",
-					   double(state.args["solver_params"]["gradNorm"]), int(state.args["solver_params"]["nl_iterations"]), bool(state.args["solver_params"]["useGradNorm"]), double(state.args["solver_params"]["conv_tol"]));
+		logger().trace("gradNorm={} nl_iterations={} useGradNorm={} conv_tol={}",
+					   state.args["solver_params"].contains("gradNorm") ? double(state.args["solver_params"]["gradNorm"]) : -1,
+					   state.args["solver_params"].contains("nl_iterations") ? int(state.args["solver_params"]["nl_iterations"]) : -1,
+					   state.args["solver_params"].contains("useGradNorm") ? bool(state.args["solver_params"]["useGradNorm"]) : false,
+					   state.args["solver_params"].contains("conv_tol") ? double(state.args["solver_params"]["conv_tol"]) : -1);
 
 		if (!args_in.contains("compute_error"))
 			state.args["compute_error"] = false;
