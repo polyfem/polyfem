@@ -23,6 +23,25 @@
 
 namespace polyfem
 {
+	namespace
+	{
+		void import_matrix(const std::string &path, const json &import, Eigen::MatrixXd &mat)
+		{
+			if (import.contains("offset"))
+			{
+				const int offset = import["offset"];
+
+				Eigen::MatrixXd tmp;
+				read_matrix_binary(path, tmp);
+				mat.block(0, 0, offset, 1) = tmp.block(0, 0, offset, 1);
+			}
+			else
+			{
+				read_matrix_binary(path, mat);
+			}
+		}
+	} // namespace
+
 	void State::solve_transient_navier_stokes_split(const int time_steps, const double dt, const RhsAssembler &rhs_assembler)
 	{
 		assert(formulation() == "OperatorSplitting" && problem->is_time_dependent());
@@ -307,11 +326,11 @@ namespace polyfem
 		Eigen::MatrixXd velocity, acceleration;
 
 		if (!v_path.empty())
-			read_matrix_binary(v_path, velocity);
+			import_matrix(v_path, args["import"], velocity);
 		else
 			rhs_assembler.initial_velocity(velocity);
 		if (!a_path.empty())
-			read_matrix_binary(a_path, acceleration);
+			import_matrix(a_path, args["import"], acceleration);
 		else
 			rhs_assembler.initial_acceleration(acceleration);
 
@@ -479,11 +498,11 @@ namespace polyfem
 		Eigen::MatrixXd velocity, acceleration;
 
 		if (!v_path.empty())
-			read_matrix_binary(v_path, velocity);
+			import_matrix(v_path, args["import"], velocity);
 		else
 			rhs_assembler.initial_velocity(velocity);
 		if (!a_path.empty())
-			read_matrix_binary(a_path, acceleration);
+			import_matrix(a_path, args["import"], acceleration);
 		else
 			rhs_assembler.initial_acceleration(acceleration);
 
@@ -804,7 +823,7 @@ namespace polyfem
 
 		const std::string u_path = resolve_path(args["import"]["u_path"], args["root_path"]);
 		if (!u_path.empty())
-			read_matrix_binary(u_path, sol);
+			import_matrix(u_path, args["import"], sol);
 
 		// if (args["use_al"] || args["has_collision"])
 		// {
