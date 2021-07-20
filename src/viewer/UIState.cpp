@@ -483,7 +483,7 @@ namespace polyfem
 		result.resize(vis_pts.rows(), actual_dim);
 
 		int index = 0;
-		const auto &sampler = RefElementSampler::sampler();
+		const auto &sampler = state.ref_element_sampler;
 
 		for (int i = 0; i < int(state.bases.size()); ++i)
 		{
@@ -531,7 +531,7 @@ namespace polyfem
 		std::vector<Eigen::MatrixXd> j_g_mapping;
 		std::vector<Eigen::MatrixXd> grads;
 
-		const auto &sampler = RefElementSampler::sampler();
+		const auto &sampler = state.ref_element_sampler;
 
 		for (int i = 0; i < int(state.bases.size()); ++i)
 		{
@@ -670,7 +670,7 @@ namespace polyfem
 
 		MatrixXd col;
 		std::vector<bool> valid_elements;
-		const auto &sampler = RefElementSampler::sampler();
+		const auto &sampler = state.ref_element_sampler;
 
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 
@@ -1496,7 +1496,7 @@ namespace polyfem
 		int faces_total_size = 0, points_total_size = 0;
 		vis_element_ranges.push_back(0);
 
-		const auto &sampler = RefElementSampler::sampler();
+		const auto &sampler = state.ref_element_sampler;
 
 		for (int i = 0; i < int(current_bases.size()); ++i)
 		{

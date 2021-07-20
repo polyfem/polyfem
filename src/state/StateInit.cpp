@@ -3,7 +3,6 @@
 #include <polyfem/auto_p_bases.hpp>
 #include <polyfem/auto_q_bases.hpp>
 
-#include <polyfem/RefElementSampler.hpp>
 #include <polyfem/Logger.hpp>
 #include <polyfem/KernelProblem.hpp>
 

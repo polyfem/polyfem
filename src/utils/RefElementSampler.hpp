@@ -28,8 +28,7 @@ namespace polyfem
 	class RefElementSampler
 	{
 	public:
-		static RefElementSampler &sampler();
-
+		RefElementSampler() {}
 		void init(const bool is_volume, const int n_elements, const double target_rel_area);
 
 		const Eigen::MatrixXd &cube_corners() const { return cube_corners_; }
@@ -53,7 +52,6 @@ namespace polyfem
 		}
 
 	private:
-		RefElementSampler() {}
 		void build();
 
 		Eigen::MatrixXi cube_tets_;

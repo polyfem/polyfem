@@ -138,7 +138,8 @@ namespace polyfem
 				F.row(f++) << q[0], q[1], q[2], q[3];
 			}
 
-			return [adj](int q, int lv) {
+			return [adj](int q, int lv)
+			{
 				return adj[q][lv];
 			};
 		}
@@ -245,7 +246,8 @@ namespace polyfem
 
 			// Compute the image of the canonical pattern vertices through the geometric mapping
 			// of the given local face
-			auto evalFunc = [&](const Eigen::MatrixXd &uv, Eigen::MatrixXd &mapped, int lf) {
+			auto evalFunc = [&](const Eigen::MatrixXd &uv, Eigen::MatrixXd &mapped, int lf)
+			{
 				const auto &u = uv.col(0).array();
 				const auto &v = uv.col(1).array();
 				auto index = mesh.get_index_from_element(element_index, lf, lv0);
@@ -264,7 +266,8 @@ namespace polyfem
 				assert(mapped.maxCoeff() >= 0.0);
 				assert(mapped.maxCoeff() <= 1.0);
 			};
-			auto evalFuncGeom = [&](const Eigen::MatrixXd &uv, Eigen::MatrixXd &mapped, int lf) {
+			auto evalFuncGeom = [&](const Eigen::MatrixXd &uv, Eigen::MatrixXd &mapped, int lf)
+			{
 				Eigen::MatrixXd samples;
 				evalFunc(uv, samples, lf);
 				auto index = mesh.get_index_from_element(element_index, lf, lv0);
@@ -616,7 +619,8 @@ namespace polyfem
 							 collocation_points, kernel_centers, rhs, triangulated_vertices,
 							 triangulated_faces, tmp_quadrature, scaling, translation);
 
-			b.set_quadrature([tmp_quadrature](Quadrature &quad) { quad = tmp_quadrature; });
+			b.set_quadrature([tmp_quadrature](Quadrature &quad)
+							 { quad = tmp_quadrature; });
 			// b.scaling_ = scaling;
 			// b.translation_ = translation;
 
@@ -657,37 +661,40 @@ namespace polyfem
 			{
 				local_basis_integrals.row(k) = -basis_integrals.row(local_to_global[k]);
 			}
-			auto set_rbf = [&b](auto rbf) {
-				b.set_bases_func([rbf](const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &val) {
-					Eigen::MatrixXd tmp;
-					rbf->bases_values(uv, tmp);
-					val.resize(tmp.cols());
-					assert(tmp.rows() == uv.rows());
+			auto set_rbf = [&b](auto rbf)
+			{
+				b.set_bases_func([rbf](const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &val)
+								 {
+									 Eigen::MatrixXd tmp;
+									 rbf->bases_values(uv, tmp);
+									 val.resize(tmp.cols());
+									 assert(tmp.rows() == uv.rows());
 
-					for (size_t i = 0; i < tmp.cols(); ++i)
-					{
-						val[i].val = tmp.col(i);
-					}
-				});
-				b.set_grads_func([rbf](const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &val) {
-					Eigen::MatrixXd tmpx, tmpy, tmpz;
+									 for (size_t i = 0; i < tmp.cols(); ++i)
+									 {
+										 val[i].val = tmp.col(i);
+									 }
+								 });
+				b.set_grads_func([rbf](const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &val)
+								 {
+									 Eigen::MatrixXd tmpx, tmpy, tmpz;
 
-					rbf->bases_grads(0, uv, tmpx);
-					rbf->bases_grads(1, uv, tmpy);
-					rbf->bases_grads(2, uv, tmpz);
+									 rbf->bases_grads(0, uv, tmpx);
+									 rbf->bases_grads(1, uv, tmpy);
+									 rbf->bases_grads(2, uv, tmpz);
 
-					val.resize(tmpx.cols());
-					assert(tmpx.cols() == tmpy.cols());
-					assert(tmpx.cols() == tmpz.cols());
-					assert(tmpx.rows() == uv.rows());
-					for (size_t i = 0; i < tmpx.cols(); ++i)
-					{
-						val[i].grad.resize(uv.rows(), uv.cols());
-						val[i].grad.col(0) = tmpx.col(i);
-						val[i].grad.col(1) = tmpy.col(i);
-						val[i].grad.col(2) = tmpz.col(i);
-					}
-				});
+									 val.resize(tmpx.cols());
+									 assert(tmpx.cols() == tmpy.cols());
+									 assert(tmpx.cols() == tmpz.cols());
+									 assert(tmpx.rows() == uv.rows());
+									 for (size_t i = 0; i < tmpx.cols(); ++i)
+									 {
+										 val[i].grad.resize(uv.rows(), uv.cols());
+										 val[i].grad.col(0) = tmpx.col(i);
+										 val[i].grad.col(1) = tmpy.col(i);
+										 val[i].grad.col(2) = tmpz.col(i);
+									 }
+								 });
 			};
 			if (integral_constraints == 0)
 			{

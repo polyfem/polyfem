@@ -46,7 +46,7 @@ namespace polyfem
 		virtual void initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const {}
 		virtual void initial_velocity(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const {}
 		virtual void initial_acceleration(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const {}
-		virtual void initial_density(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const { }
+		virtual void initial_density(const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const {}
 
 		virtual int n_incremental_load_steps(const double diag) const { return 1; }
 
@@ -84,7 +84,7 @@ namespace polyfem
 
 	private:
 		ProblemFactory();
-		std::map<std::string, std::shared_ptr<Problem>> problems_;
+		std::map<std::string, std::function<std::shared_ptr<Problem>()>> problems_;
 		std::vector<std::string> problem_names_;
 	};
 } // namespace polyfem

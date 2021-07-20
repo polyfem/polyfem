@@ -2,7 +2,6 @@
 #include <polyfem/par_for.hpp>
 
 #include <polyfem/BoundarySampler.hpp>
-#include <polyfem/RefElementSampler.hpp>
 
 #include <polyfem/VTUWriter.hpp>
 #include <polyfem/MeshUtils.hpp>
@@ -128,7 +127,7 @@ namespace polyfem
 		Eigen::VectorXi global_primitive_ids;
 		Eigen::MatrixXd uv, local_pts, tmp_n, normals;
 		ElementAssemblyValues vals;
-		const auto &sampler = RefElementSampler::sampler();
+		const auto &sampler = ref_element_sampler;
 		const int n_samples = sampler.num_samples();
 		int size = 0;
 
@@ -815,7 +814,7 @@ namespace polyfem
 			return;
 		}
 
-		const auto &sampler = RefElementSampler::sampler();
+		const auto &sampler = ref_element_sampler;
 
 		const auto &current_bases = iso_parametric() ? bases : geom_bases;
 		int tet_total_size = 0;
@@ -1344,7 +1343,7 @@ namespace polyfem
 	{
 		if (!solve_export_to_file) //TODO?
 			return;
-		const auto &sampler = RefElementSampler::sampler();
+		const auto &sampler = ref_element_sampler;
 
 		const auto &current_bases = iso_parametric() ? bases : geom_bases;
 		int seg_total_size = 0;

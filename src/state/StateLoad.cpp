@@ -5,8 +5,6 @@
 #include <polyfem/Mesh2D.hpp>
 #include <polyfem/Mesh3D.hpp>
 
-#include <polyfem/RefElementSampler.hpp>
-
 #include <polyfem/BoxSetter.hpp>
 
 #include <igl/Timer.h>
@@ -80,7 +78,7 @@ namespace polyfem
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
-		RefElementSampler::sampler().init(mesh->is_volume(), mesh->n_elements(), args["vismesh_rel_area"]);
+		ref_element_sampler.init(mesh->is_volume(), mesh->n_elements(), args["vismesh_rel_area"]);
 	}
 
 	void State::load_mesh()
@@ -186,7 +184,7 @@ namespace polyfem
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
-		RefElementSampler::sampler().init(mesh->is_volume(), mesh->n_elements(), args["vismesh_rel_area"]);
+		ref_element_sampler.init(mesh->is_volume(), mesh->n_elements(), args["vismesh_rel_area"]);
 
 		// const double poly_percentage = 0.05;
 		// const double poly_percentage = 0;

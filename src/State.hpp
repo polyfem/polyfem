@@ -8,6 +8,7 @@
 #include <polyfem/Problem.hpp>
 #include <polyfem/Mesh.hpp>
 #include <polyfem/Problem.hpp>
+#include <polyfem/RefElementSampler.hpp>
 #include <polyfem/LocalBoundary.hpp>
 #include <polyfem/InterfaceData.hpp>
 #include <polyfem/AssemblerUtils.hpp>
@@ -127,6 +128,8 @@ namespace polyfem
 
 		//current mesh, it can be a Mesh2D or Mesh3D
 		std::unique_ptr<Mesh> mesh;
+		//used to sample the solution
+		RefElementSampler ref_element_sampler;
 
 		//polygons, used since poly have no geom mapping
 		std::map<int, Eigen::MatrixXd> polys;
