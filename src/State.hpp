@@ -189,6 +189,9 @@ namespace polyfem
 		//if false, it will fix one pressure node to zero
 		bool use_avg_pressure;
 
+		//stores if input json contains dhat
+		bool has_dhat = false;
+
 		//number of bases and pressure bases
 		int n_bases, n_pressure_bases;
 		//vector of discretization oders, used when not all elements have the same degree

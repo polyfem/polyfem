@@ -657,7 +657,10 @@ namespace polyfem
 			state.args["has_collision"] = true;
 
 			if (!args_in.contains("dhat"))
+			{
 				state.args["dhat"] = 1e-3 * diag;
+				state.has_dhat = false;
+			}
 
 			if (!args_in.contains("project_to_psd"))
 				state.args["project_to_psd"] = true;

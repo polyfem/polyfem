@@ -108,6 +108,7 @@ namespace polyfem
 
 			{"has_collision", false},
 			{"dhat", 1e-3},
+			{"dhat_percentage", 0.8},
 			{"epsv", 1e-3},
 			{"mu", 0.0},
 			{"friction_iterations", 1},
@@ -257,6 +258,7 @@ namespace polyfem
 	void State::init(const json &args_in, const std::string &output_dir)
 	{
 		this->args.merge_patch(args_in);
+		has_dhat = args_in.contains("dhat");
 
 		use_avg_pressure = !args["has_neumann"];
 

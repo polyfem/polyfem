@@ -517,6 +517,20 @@ namespace polyfem
 		const int n_samples = 10;
 		compute_mesh_size(*mesh, curret_bases, n_samples);
 
+		if (args["has_collision"])
+		{
+			if (!has_dhat && args["dhat"] > min_edge_length)
+			{
+				args["dhat"] = double(args["dhat_percentage"]) * min_edge_length;
+				logger().debug("dhat set to {}", double(args["dhat"]));
+			}
+			else
+			{
+				if (args["dhat"] > min_edge_length)
+					logger().warn("dhat larger than min edge, {} > {}", double(args["dhat"]), min_edge_length);
+			}
+		}
+
 		building_basis_time = timer.getElapsedTime();
 		logger().info(" took {}s", building_basis_time);
 
