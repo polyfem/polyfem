@@ -85,7 +85,7 @@ namespace polyfem
 		else if (assembler == "MultiModels")
 			return;
 		// else if (assembler == "NavierStokes")
-			// return;
+		// return;
 		//else if(assembler == "Ogden")
 		//	return;
 		else
@@ -234,6 +234,9 @@ namespace polyfem
 			navier_stokes_velocity_picard_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, displacement, mat_cache, hessian);
 		else if (assembler == "NavierStokes")
 			navier_stokes_velocity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, displacement, mat_cache, hessian);
+		else if (assembler == "LinearElasticity")
+			linear_elasticity_energy_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, displacement, mat_cache, hessian);
+
 		//else if(assembler == "Ogden")
 		//	ogden_elasticity_.assemble_hessian(is_volume, n_basis, project_to_psd, bases, gbases, cache, displacement, mat_cache, hessian);
 		else
@@ -265,8 +268,7 @@ namespace polyfem
 		//else if(assembler == "Ogden")
 		//	ogden_elasticity_.local_assembler().compute_von_mises_stresses(bs, gbs, local_pts, fun, result);
 
-
-		else if(assembler == "Stokes" || assembler == "OperatorSplitting")
+		else if (assembler == "Stokes" || assembler == "OperatorSplitting")
 			stokes_velocity_.local_assembler().compute_norm_velocity(bs, gbs, local_pts, fun, result);
 		else if (assembler == "NavierStokes")
 			navier_stokes_velocity_.local_assembler().compute_norm_velocity(bs, gbs, local_pts, fun, result);
@@ -345,7 +347,7 @@ namespace polyfem
 		//else if(assembler == "Ogden")
 		//	return ogden_elasticity_.local_assembler().compute_rhs(pt);
 
-		else if(assembler == "Stokes" || assembler == "OperatorSplitting")
+		else if (assembler == "Stokes" || assembler == "OperatorSplitting")
 			return stokes_velocity_.local_assembler().compute_rhs(pt);
 		else if (assembler == "NavierStokes")
 			return navier_stokes_velocity_.local_assembler().compute_rhs(pt);
@@ -385,7 +387,7 @@ namespace polyfem
 		// else if(assembler == "Ogden")
 		// 	return ogden_elasticity_.local_assembler().assemble(vals, i, j, da);
 
-		else if(assembler == "Stokes" || assembler == "OperatorSplitting")
+		else if (assembler == "Stokes" || assembler == "OperatorSplitting")
 			return stokes_velocity_.local_assembler().assemble(vals, i, j, da);
 		else if (assembler == "IncompressibleLinearElasticity")
 			return incompressible_lin_elast_displacement_.local_assembler().assemble(vals, i, j, da);
