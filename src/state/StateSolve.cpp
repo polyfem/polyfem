@@ -510,7 +510,18 @@ namespace polyfem
 
 		if (args["has_collision"])
 		{
-			if (ipc::has_intersections(sol, boundary_edges, boundary_triangles))
+			const int problem_dim = mesh->dimension();
+			Eigen::MatrixXd tmp = boundary_nodes_pos;
+			assert(tmp.rows() * problem_dim == sol.size());
+			for (int i = 0; i < sol.size(); i += problem_dim)
+			{
+				for (int d = 0; d < problem_dim; ++d)
+				{
+					tmp(i / problem_dim, d) += sol(i + d);
+				}
+			}
+
+			if (ipc::has_intersections(tmp, boundary_edges, boundary_triangles))
 			{
 				logger().error("Unable to solve, initial solution has intersections!");
 				throw "Unable to solve, initial solution has intersections!";
