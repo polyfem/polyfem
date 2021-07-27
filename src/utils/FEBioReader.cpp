@@ -214,6 +214,11 @@ namespace polyfem
 				T.row(i) = els[i].transpose();
 				const auto it = materials.find(mids[i]);
 				assert(it != materials.end());
+				if (it == materials.end())
+				{
+					logger().error("Unable to find material {}", mids[i]);
+					throw "Invalid material";
+				}
 				Es(i) = std::get<0>(it->second);
 				nus(i) = std::get<1>(it->second);
 				rhos(i) = std::get<2>(it->second);
@@ -328,6 +333,11 @@ namespace polyfem
 			for (const tinyxml2::XMLElement *child = boundaries->FirstChildElement("fix"); child != NULL; child = child->NextSiblingElement("fix"))
 			{
 				const std::string name = std::string(child->Attribute("node_set"));
+				if (names.find(name) == names.end())
+				{
+					logger().error("Sideset {} not present, skipping", name);
+					continue;
+				}
 				const int id = names.at(name);
 				const std::string bc = std::string(child->Attribute("bc"));
 				const auto bcs = StringUtils::split(bc, ",");
@@ -379,6 +389,11 @@ namespace polyfem
 			for (const tinyxml2::XMLElement *child = boundaries->FirstChildElement("prescribe"); child != NULL; child = child->NextSiblingElement("prescribe"))
 			{
 				const std::string name = std::string(child->Attribute("node_set"));
+				if (names.find(name) == names.end())
+				{
+					logger().error("Sideset {} not present, skipping", name);
+					continue;
+				}
 				const int id = names.at(name);
 				const std::string bc = std::string(child->Attribute("bc"));
 
@@ -434,6 +449,11 @@ namespace polyfem
 			for (const tinyxml2::XMLElement *child = boundaries->FirstChildElement("vector_bc"); child != NULL; child = child->NextSiblingElement("vector_bc"))
 			{
 				const std::string name = std::string(child->Attribute("node_set"));
+				if (names.find(name) == names.end())
+				{
+					logger().error("Sideset {} not present, skipping", name);
+					continue;
+				}
 				const int id = names.at(name);
 				const std::string centers = resolve_path(std::string(child->Attribute("centers")), root_file);
 				const std::string values = resolve_path(std::string(child->Attribute("values")), root_file);
@@ -466,6 +486,11 @@ namespace polyfem
 				const std::string centres = std::string(child->Attribute("center"));
 				const std::string factors = std::string(child->Attribute("factor"));
 				const std::string name = std::string(child->Attribute("node_set"));
+				if (names.find(name) == names.end())
+				{
+					logger().error("Sideset {} not present, skipping", name);
+					continue;
+				}
 				const int id = names.at(name);
 
 				const auto centrec = StringUtils::split(centres, ",");
@@ -618,10 +643,20 @@ namespace polyfem
 
 		tinyxml2::XMLDocument doc;
 		doc.LoadFile(path.c_str());
+		if (doc.Error())
+		{
+			logger().error("Unable to read {}, error {}", path, doc.ErrorStr());
+			throw "Invalid XML";
+		}
 
 		const auto *febio = doc.FirstChildElement("febio_spec");
 		const std::string ver = std::string(febio->Attribute("version"));
 		assert(ver == "2.5");
+		if (ver != "2.5")
+		{
+			logger().error("Unsuppoted FEBio version {}, use 2.5", ver);
+			throw "Unsuppoted FEBio version";
+		}
 
 		const auto *control = febio->FirstChildElement("Control");
 		bool time_dependent = false;
