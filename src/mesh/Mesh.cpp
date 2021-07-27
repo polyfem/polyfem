@@ -31,7 +31,8 @@ namespace
 		assert(M.vertices.dimension() == 3);
 		GEO::vec3 min_corner, max_corner;
 		GEO::get_bbox(M, &min_corner[0], &max_corner[0]);
-		return (max_corner[2] - min_corner[2]) < 1e-5;
+		const double diff = (max_corner[2] - min_corner[2]);
+		return diff > 0 && diff < 1e-5;
 	}
 
 } // anonymous namespace
@@ -447,21 +448,22 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 
 	mesh->set_body_ids(body_ids);
 	assert(body_vertices_start.size() == boundary_ids.size());
-	mesh->compute_boundary_ids([&](const std::vector<int> &vis, bool is_boundary) {
-		if (!is_boundary)
-		{
-			return -1;
-		}
+	mesh->compute_boundary_ids([&](const std::vector<int> &vis, bool is_boundary)
+							   {
+								   if (!is_boundary)
+								   {
+									   return -1;
+								   }
 
-		for (int i = 0; i < body_vertices_start.size() - 1; i++)
-		{
-			if (body_vertices_start[i] <= vis[0] && vis[0] < body_vertices_start[i + 1])
-			{
-				return boundary_ids[i];
-			}
-		}
-		return boundary_ids.back();
-	});
+								   for (int i = 0; i < body_vertices_start.size() - 1; i++)
+								   {
+									   if (body_vertices_start[i] <= vis[0] && vis[0] < body_vertices_start[i + 1])
+									   {
+										   return boundary_ids[i];
+									   }
+								   }
+								   return boundary_ids.back();
+							   });
 
 	return mesh;
 }

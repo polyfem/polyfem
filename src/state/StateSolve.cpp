@@ -19,6 +19,8 @@
 #include <polyfem/auto_p_bases.hpp>
 #include <polyfem/auto_q_bases.hpp>
 
+#include <ipc/ipc.hpp>
+
 #include <fstream>
 
 namespace polyfem
@@ -505,6 +507,15 @@ namespace polyfem
 			import_matrix(a_path, args["import"], acceleration);
 		else
 			rhs_assembler.initial_acceleration(acceleration);
+
+		if (args["has_collision"])
+		{
+			if (ipc::has_intersections(sol, boundary_edges, boundary_triangles))
+			{
+				logger().error("Unable to solve, initial solution has intersections!");
+				throw "Unable to solve, initial solution has intersections!";
+			}
+		}
 
 		const int full_size = n_bases * mesh->dimension();
 		const int reduced_size = n_bases * mesh->dimension() - boundary_nodes.size();
