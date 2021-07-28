@@ -38,11 +38,10 @@ int main(int argc, char **argv)
 	std::string screenshot = "";
 
 	// Problem
-	std::string problem_name = "Franke";
-	std::string scalar_formulation = "Laplacian";
-	std::string tensor_formulation = "LinearElasticity"; // "SaintVenant";
-	std::string time_integrator_name = "ImplicitEuler";
-	// std::string mixed_formulation = "Stokes"; // "SaintVenant";
+	std::string problem_name = "";
+	std::string scalar_formulation = "";
+	std::string tensor_formulation = ""; // "SaintVenant";
+	std::string time_integrator_name = "";
 	std::string solver = "";
 
 	int discr_order = 1;
@@ -189,17 +188,20 @@ int main(int argc, char **argv)
 		in_args["mesh"] = mesh_file;
 		in_args["force_linear_geometry"] = force_linear;
 		in_args["n_refs"] = n_refs;
-		in_args["problem"] = problem_name;
-		in_args["time_integrator"] = time_integrator_name;
+		if (!problem_name.empty())
+			in_args["problem"] = problem_name;
+		if (!time_integrator_name.empty())
+			in_args["time_integrator"] = time_integrator_name;
 		in_args["normalize_mesh"] = !skip_normalization;
 		in_args["project_to_psd"] = project_to_psd;
 
 		if (use_al)
 			in_args["use_al"] = use_al;
 
-		in_args["scalar_formulation"] = scalar_formulation;
-		in_args["tensor_formulation"] = tensor_formulation;
-		// in_args["mixed_formulation"] = mixed_formulation;
+		if (!scalar_formulation.empty())
+			in_args["scalar_formulation"] = scalar_formulation;
+		if (!tensor_formulation.empty())
+			in_args["tensor_formulation"] = tensor_formulation;
 
 		in_args["discr_order"] = discr_order;
 		in_args["use_spline"] = use_splines;
