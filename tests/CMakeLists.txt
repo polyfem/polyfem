@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.1)
 
 set(test_sources
 	main.cpp
+	test_assembler.cpp
 	test_bases.cpp
 	test_matrix.cpp
 	test_normal.cpp

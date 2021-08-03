@@ -42,8 +42,10 @@
 #include <algorithm>
 #include <memory>
 
+#ifndef __AUTODIFF_H
 #include <polyfem/autodiff.h>
 DECLARE_DIFFSCALAR_BASE();
+#endif
 
 using namespace Eigen;
 
