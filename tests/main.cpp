@@ -4,8 +4,3 @@
 
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
-
-#ifndef __AUTODIFF_H
-#include <polyfem/autodiff.h>
-DECLARE_DIFFSCALAR_BASE();
-#endif
