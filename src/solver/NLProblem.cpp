@@ -523,6 +523,9 @@ namespace polyfem
 			return;
 		}
 
+		igl::Timer timer;
+		timer.start();
+
 		std::vector<Eigen::Triplet<double>> entries;
 
 		Eigen::VectorXi indices(full_size);
@@ -568,6 +571,9 @@ namespace polyfem
 		hessian.resize(reduced_size, reduced_size);
 		hessian.setFromTriplets(entries.begin(), entries.end());
 		hessian.makeCompressed();
+
+		timer.stop();
+		polyfem::logger().trace("\tremoving costraint time {}s", timer.getElapsedTimeInSec());
 	}
 
 	void NLProblem::hessian_full(const TVector &x, THessian &hessian)
@@ -624,11 +630,11 @@ namespace polyfem
 			Eigen::MatrixXd displaced;
 			compute_displaced_points(full, displaced);
 			timeri.stop();
-			polyfem::logger().trace("\tdisplace pts time {}s", timeri.getElapsedTimeInSec());
+			polyfem::logger().trace("\t\tdisplace pts time {}s", timeri.getElapsedTimeInSec());
 			timeri.start();
 
 			timeri.stop();
-			polyfem::logger().trace("\tconstraint set time {}s", timeri.getElapsedTimeInSec());
+			polyfem::logger().trace("\t\tconstraint set time {}s", timeri.getElapsedTimeInSec());
 			timeri.start();
 #ifdef USE_DIV_BARRIER_STIFFNESS
 			hessian += ipc::compute_barrier_potential_hessian(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat, project_to_psd);
@@ -641,7 +647,7 @@ namespace polyfem
 				displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set, _epsv * dt(), project_to_psd);
 #endif
 			timeri.stop();
-			polyfem::logger().trace("\tonly ipc hessian time {}s", timeri.getElapsedTimeInSec());
+			polyfem::logger().trace("\t\tonly ipc hessian time {}s", timeri.getElapsedTimeInSec());
 
 			timer.stop();
 			polyfem::logger().trace("\tipc hessian time {}s", timer.getElapsedTimeInSec());
