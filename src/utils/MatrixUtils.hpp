@@ -54,6 +54,7 @@ namespace polyfem
 		inline size_t entries_size() const { return entries_.size(); }
 		inline size_t capacity() const { return entries_.capacity(); }
 		inline size_t non_zeros() const { return mapping_.empty() ? mat_.nonZeros() : values_.size(); }
+		inline size_t mapping_size() const { return mapping_.size(); }
 
 		void add_value(const int i, const int j, const double value);
 		StiffnessMatrix get_matrix(const bool compute_mapping = true);
@@ -69,6 +70,12 @@ namespace polyfem
 		std::vector<std::vector<std::pair<int, size_t>>> mapping_;
 		std::vector<int> inner_index_, outer_index_;
 		std::vector<double> values_;
+		const SpareMatrixCache *main_cache_ = nullptr;
+
+		inline const std::vector<std::vector<std::pair<int, size_t>>> &mapping() const
+		{
+			return main_cache_ == nullptr ? mapping_ : main_cache_->mapping_;
+		}
 	};
 
 } // namespace polyfem

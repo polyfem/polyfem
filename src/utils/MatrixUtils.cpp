@@ -1,8 +1,14 @@
 #include <polyfem/MatrixUtils.hpp>
 
+#include <polyfem/par_for.hpp>
+
 #include <polyfem/Logger.hpp>
 
 #include <igl/list_to_matrix.h>
+
+#ifdef POLYFEM_WITH_TBB
+#include <tbb/parallel_for.h>
+#endif
 
 #include <iostream>
 #include <fstream>
@@ -131,18 +137,13 @@ polyfem::SpareMatrixCache::SpareMatrixCache(const size_t rows, const size_t cols
 }
 
 polyfem::SpareMatrixCache::SpareMatrixCache(const SpareMatrixCache &other)
-	: size_(other.size_), mapping_(other.mapping_),
-	  inner_index_(other.inner_index_), outer_index_(other.outer_index_), values_(other.values_.size())
 {
-	tmp_.resize(other.mat_.rows(), other.mat_.cols());
-	mat_.resize(other.mat_.rows(), other.mat_.cols());
-	mat_.setZero();
-	std::fill(values_.begin(), values_.end(), 0);
+	init(other);
 }
 
 void polyfem::SpareMatrixCache::init(const size_t size)
 {
-	assert(mapping_.empty() || size_ == size);
+	assert(mapping().empty() || size_ == size);
 
 	size_ = size;
 	tmp_.resize(size_, size_);
@@ -152,7 +153,7 @@ void polyfem::SpareMatrixCache::init(const size_t size)
 
 void polyfem::SpareMatrixCache::init(const size_t rows, const size_t cols)
 {
-	assert(mapping_.empty());
+	assert(mapping().empty());
 
 	size_ = rows == cols ? rows : 0;
 	tmp_.resize(rows, cols);
@@ -162,11 +163,15 @@ void polyfem::SpareMatrixCache::init(const size_t rows, const size_t cols)
 
 void polyfem::SpareMatrixCache::init(const SpareMatrixCache &other)
 {
+	if (main_cache_ == nullptr)
+	{
+		if (other.main_cache_ == nullptr)
+			main_cache_ = &other;
+		else
+			main_cache_ = other.main_cache_;
+	}
 	size_ = other.size_;
-	mapping_ = other.mapping_;
 
-	inner_index_ = other.inner_index_;
-	outer_index_ = other.outer_index_;
 	values_.resize(other.values_.size());
 
 	tmp_.resize(other.mat_.rows(), other.mat_.cols());
@@ -185,14 +190,14 @@ void polyfem::SpareMatrixCache::set_zero()
 
 void polyfem::SpareMatrixCache::add_value(const int i, const int j, const double value)
 {
-	if (mapping_.empty())
+	if (mapping().empty())
 	{
 		entries_.emplace_back(i, j, value);
 	}
 	else
 	{
-		//mapping_[i].find(j)
-		const auto &map = mapping_[i];
+		//mapping()[i].find(j)
+		const auto &map = mapping()[i];
 		bool found = false;
 		for (const auto &p : map)
 		{
@@ -209,7 +214,7 @@ void polyfem::SpareMatrixCache::add_value(const int i, const int j, const double
 
 void polyfem::SpareMatrixCache::prune()
 {
-	if (mapping_.empty())
+	if (mapping().empty())
 	{
 		tmp_.setFromTriplets(entries_.begin(), entries_.end());
 		tmp_.makeCompressed();
@@ -229,10 +234,12 @@ polyfem::StiffnessMatrix polyfem::SpareMatrixCache::get_matrix(const bool comput
 {
 	prune();
 
-	if (mapping_.empty())
+	if (mapping().empty())
 	{
 		if (compute_mapping && size_ > 0)
 		{
+			assert(main_cache_ == nullptr);
+
 			values_.resize(mat_.nonZeros());
 			inner_index_.resize(mat_.nonZeros());
 			outer_index_.resize(mat_.rows() + 1);
@@ -265,7 +272,9 @@ polyfem::StiffnessMatrix polyfem::SpareMatrixCache::get_matrix(const bool comput
 	else
 	{
 		assert(size_ > 0);
-		mat_ = Eigen::Map<const StiffnessMatrix>(size_, size_, values_.size(), &outer_index_[0], &inner_index_[0], &values_[0]);
+		const auto &outer_index = main_cache_ == nullptr ? outer_index_ : main_cache_->outer_index_;
+		const auto &inner_index = main_cache_ == nullptr ? inner_index_ : main_cache_->inner_index_;
+		mat_ = Eigen::Map<const StiffnessMatrix>(size_, size_, values_.size(), &outer_index[0], &inner_index[0], &values_[0]);
 		logger().trace("Using cache");
 	}
 	std::fill(values_.begin(), values_.end(), 0);
@@ -276,20 +285,40 @@ polyfem::SpareMatrixCache polyfem::SpareMatrixCache::operator+(const SpareMatrix
 {
 	SpareMatrixCache out(a);
 
-	if (a.mapping_.empty() || mapping_.empty())
+	if (a.mapping().empty() || mapping().empty())
 	{
 		out.mat_ = a.mat_ + mat_;
 	}
 	else
 	{
-		assert(a.inner_index_.size() == inner_index_.size());
-		assert(a.outer_index_.size() == outer_index_.size());
+		const auto &outer_index = main_cache_ == nullptr ? outer_index_ : main_cache_->outer_index_;
+		const auto &inner_index = main_cache_ == nullptr ? inner_index_ : main_cache_->inner_index_;
+		const auto &aouter_index = a.main_cache_ == nullptr ? a.outer_index_ : a.main_cache_->outer_index_;
+		const auto &ainner_index = a.main_cache_ == nullptr ? a.inner_index_ : a.main_cache_->inner_index_;
+		assert(ainner_index.size() == inner_index.size());
+		assert(aouter_index.size() == outer_index.size());
 		assert(a.values_.size() == values_.size());
 
+#if defined(POLYFEM_WITH_CPP_THREADS)
+		polyfem::par_for(a.values_.size(), [&](int start, int end, int t)
+						 {
+							 for (int i = start; i < end; ++i)
+							 {
+#elif defined(POLYFEM_WITH_TBB)
+		tbb::parallel_for(tbb::blocked_range<int>(0, a.values_.size()), [&](const tbb::blocked_range<int> &r) {
+			for (int i = r.begin(); i != r.end(); ++i)
+			{
+#else
 		for (int i = 0; i < a.values_.size(); ++i)
 		{
-			out.values_[i] = a.values_[i] + values_[i];
-		}
+#endif
+								 out.values_[i] = a.values_[i] + values_[i];
+#if defined(POLYFEM_WITH_CPP_THREADS) || defined(POLYFEM_WITH_TBB)
+							 }
+						 });
+#else
+			}
+#endif
 	}
 
 	return out;
@@ -297,20 +326,40 @@ polyfem::SpareMatrixCache polyfem::SpareMatrixCache::operator+(const SpareMatrix
 
 void polyfem::SpareMatrixCache::operator+=(const SpareMatrixCache &o)
 {
-	if (mapping_.empty() || o.mapping_.empty())
+	if (mapping().empty() || o.mapping().empty())
 	{
 		mat_ += o.mat_;
 	}
 	else
 	{
-		assert(inner_index_.size() == o.inner_index_.size());
-		assert(outer_index_.size() == o.outer_index_.size());
+		const auto &outer_index = main_cache_ == nullptr ? outer_index_ : main_cache_->outer_index_;
+		const auto &inner_index = main_cache_ == nullptr ? inner_index_ : main_cache_->inner_index_;
+		const auto &oouter_index = o.main_cache_ == nullptr ? o.outer_index_ : o.main_cache_->outer_index_;
+		const auto &oinner_index = o.main_cache_ == nullptr ? o.inner_index_ : o.main_cache_->inner_index_;
+		assert(inner_index.size() == oinner_index.size());
+		assert(outer_index.size() == oouter_index.size());
 		assert(values_.size() == o.values_.size());
 
-		for (int i = 0; i < o.values_.size(); ++i)
-		{
-			values_[i] += o.values_[i];
-		}
+#if defined(POLYFEM_WITH_CPP_THREADS)
+		polyfem::par_for(o.values_.size(), [&](int start, int end, int t)
+						 {
+							 for (int i = start; i < end; ++i)
+							 {
+#elif defined(POLYFEM_WITH_TBB)
+		tbb::parallel_for(tbb::blocked_range<int>(0, o.values_.size()), [&](const tbb::blocked_range<int> &r) {
+				for (int i = r.begin(); i != r.end(); ++i)
+				{
+#else
+			for (int i = 0; i < o.values_.size(); ++i)
+			{
+#endif
+								 values_[i] += o.values_[i];
+#if defined(POLYFEM_WITH_CPP_THREADS) || defined(POLYFEM_WITH_TBB)
+							 }
+						 });
+#else
+				}
+#endif
 	}
 }
 
