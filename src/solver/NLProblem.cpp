@@ -36,6 +36,21 @@ M (u^{t+1}_h - (u^t_h + \Delta t v^t_h)) - \frac{\Delta t^2} {2} A u^{t+1}_h
 
 namespace polyfem
 {
+	namespace
+	{
+		void write_triangle_mesh(const std::string &path, const Eigen::MatrixXd &v, const Eigen::MatrixXi &f)
+		{
+			std::ofstream os(path);
+			os.precision(15);
+
+			for (int i = 0; i < v.rows(); ++i)
+				os << "v " << v(i, 0) << " " << v(i, 1) << " " << v(i, 2) << "\n";
+
+			for (int i = 0; i < f.rows(); ++i)
+				os << "f " << f(i, 0) + 1 << " " << f(i, 1) + 1 << " " << f(i, 2) + 1 << "\n";
+		}
+	} // namespace
+
 	using namespace polysolve;
 
 	NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t, const double dhat, const bool project_to_psd, const bool no_reduced)
