@@ -5,23 +5,19 @@ namespace polyfem
 {
 	ExpressionValue::~ExpressionValue()
 	{
-		te_free(expr_);
-		expr_ = nullptr;
 		sfunc_ = nullptr;
 		tfunc_ = nullptr;
 	}
 
 	ExpressionValue::ExpressionValue()
 	{
-		expr_ = nullptr;
+		expr_ = "";
 		value_ = 0;
-		vals_ = new Internal();
 	}
 
 	void ExpressionValue::clear()
 	{
-		te_free(expr_);
-		expr_ = nullptr;
+		expr_ = "";
 		sfunc_ = nullptr;
 		tfunc_ = nullptr;
 		value_ = 0;
@@ -29,10 +25,9 @@ namespace polyfem
 
 	void ExpressionValue::init(const double val)
 	{
-		te_free(expr_);
 		sfunc_ = nullptr;
 		tfunc_ = nullptr;
-		expr_ = nullptr;
+		expr_ = "";
 
 		value_ = val;
 	}
@@ -45,32 +40,33 @@ namespace polyfem
 		value_ = 0;
 		sfunc_ = nullptr;
 		tfunc_ = nullptr;
-		te_free(expr_);
+
+		expr_ = expr;
 
 		if (expr.empty())
 		{
-			expr_ = nullptr;
 			return;
 		}
+
+		double x = 0, y = 0, z = 0, t = 0;
 
 		te_variable vars[] = {
 			{"max", (const void *)max, TE_FUNCTION2},
 			{"min", (const void *)min, TE_FUNCTION2},
-			{"x", &vals_->x},
-			{"y", &vals_->y},
-			{"z", &vals_->z},
-			{"t", &vals_->t},
+			{"x", &x, TE_VARIABLE},
+			{"y", &y, TE_VARIABLE},
+			{"z", &z, TE_VARIABLE},
+			{"t", &t, TE_VARIABLE},
 		};
 
 		int err;
-		expr_ = te_compile(expr.c_str(), vars, 6, &err);
-
-		if (!expr_)
+		te_expr *tmp = te_compile(expr.c_str(), vars, 6, &err);
+		if (!tmp)
 		{
 			logger().error("Unable to parse {}, error, {}", expr, err);
-
 			assert(false);
 		}
+		te_free(tmp);
 	}
 
 	void ExpressionValue::init(const json &vals)
@@ -87,29 +83,28 @@ namespace polyfem
 
 	void ExpressionValue::init(const std::function<double(double x, double y, double z)> &func)
 	{
-		te_free(expr_);
-		expr_ = nullptr;
+		expr_ = "";
 		tfunc_ = nullptr;
 		value_ = 0;
 
-		sfunc_ = [func](double x, double y, double z, double t) { return func(x, y, z); };
+		sfunc_ = [func](double x, double y, double z, double t)
+		{ return func(x, y, z); };
 	}
 
 	void ExpressionValue::init(const std::function<Eigen::MatrixXd(double x, double y, double z)> &func, const int coo)
 	{
-		te_free(expr_);
-		expr_ = nullptr;
+		expr_ = "";
 		sfunc_ = nullptr;
 		value_ = 0;
 
-		tfunc_ = [func](double x, double y, double z, double t) { return func(x, y, z); };
+		tfunc_ = [func](double x, double y, double z, double t)
+		{ return func(x, y, z); };
 		tfunc_coo_ = coo;
 	}
 
 	void ExpressionValue::init(const std::function<double(double x, double y, double z, double t)> &func)
 	{
-		te_free(expr_);
-		expr_ = nullptr;
+		expr_ = "";
 		tfunc_ = nullptr;
 		value_ = 0;
 
@@ -118,8 +113,7 @@ namespace polyfem
 
 	void ExpressionValue::init(const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const int coo)
 	{
-		te_free(expr_);
-		expr_ = nullptr;
+		expr_ = "";
 		sfunc_ = nullptr;
 		value_ = 0;
 
@@ -129,7 +123,7 @@ namespace polyfem
 
 	double ExpressionValue::operator()(double x, double y, double z, double t) const
 	{
-		if (!expr_)
+		if (expr_.empty())
 		{
 			if (sfunc_)
 				return sfunc_(x, y, z, t);
@@ -140,12 +134,22 @@ namespace polyfem
 			return value_;
 		}
 
-		vals_->x = x;
-		vals_->y = y;
-		vals_->z = z;
-		vals_->t = t;
+		te_variable vars[] = {
+			{"max", (const void *)max, TE_FUNCTION2},
+			{"min", (const void *)min, TE_FUNCTION2},
+			{"x", &x, TE_VARIABLE},
+			{"y", &y, TE_VARIABLE},
+			{"z", &z, TE_VARIABLE},
+			{"t", &t, TE_VARIABLE},
+		};
 
-		return te_eval(expr_);
+		int err;
+		te_expr *tmp = te_compile(expr_.c_str(), vars, 6, &err);
+		assert(tmp != nullptr);
+		const auto res = te_eval(tmp);
+		te_free(tmp);
+
+		return res;
 	}
 
 } // namespace polyfem

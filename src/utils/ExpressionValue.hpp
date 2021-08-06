@@ -25,21 +25,15 @@ namespace polyfem
 
 		void clear();
 
-		bool is_zero() const { return !expr_ && fabs(value_) < 1e-10; }
+		bool is_zero() const { return expr_.empty() && fabs(value_) < 1e-10; }
 
 	private:
-		struct Internal
-		{
-			double x, y, z, t;
-		};
-
 		std::function<double(double x, double y, double z, double t)> sfunc_;
 		std::function<Eigen::MatrixXd(double x, double y, double z, double t)> tfunc_;
 		int tfunc_coo_;
 
-		te_expr *expr_;
+		std::string expr_;
 		double value_;
-		Internal *vals_;
 	};
 
 } // namespace polyfem
