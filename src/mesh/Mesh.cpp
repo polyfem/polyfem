@@ -32,7 +32,8 @@ namespace
 		GEO::vec3 min_corner, max_corner;
 		GEO::get_bbox(M, &min_corner[0], &max_corner[0]);
 		const double diff = (max_corner[2] - min_corner[2]);
-		return diff > 0 && diff < 1e-5;
+
+		return fabs(diff) < 1e-5;
 	}
 
 } // anonymous namespace
