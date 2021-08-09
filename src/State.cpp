@@ -895,6 +895,7 @@ namespace polyfem
 								   n_bases, size,
 								   bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 								   formulation(), *problem,
+								   args["bc_method"],
 								   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
 
 		if (!rhs_path.empty() || rhs_in.size() > 0)
@@ -942,6 +943,7 @@ namespace polyfem
 											n_pressure_bases, size,
 											pressure_bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache,
 											formulation(), *problem,
+											args["bc_method"],
 											args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
 				rhs_assembler1.set_bc(std::vector<LocalBoundary>(), std::vector<int>(), args["n_boundary_samples"], local_neumann_boundary, tmp);
 				rhs.block(prev_size, 0, n_larger, rhs.cols()) = tmp;
@@ -1026,6 +1028,7 @@ namespace polyfem
 									   n_bases, problem->is_scalar() ? 1 : mesh->dimension(),
 									   bases, gbases, ass_vals_cache,
 									   formulation(), *problem,
+									   args["bc_method"],
 									   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
 
 			const std::string u_path = resolve_path(args["import"]["u_path"], args["root_path"]);

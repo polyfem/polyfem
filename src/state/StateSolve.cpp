@@ -769,6 +769,7 @@ namespace polyfem
 								   n_bases, size,
 								   bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 								   formulation(), *problem,
+								   args["bc_method"],
 								   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
 
 		if (formulation() != "Bilaplacian")
@@ -809,6 +810,7 @@ namespace polyfem
 								   n_bases, mesh->dimension(),
 								   bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 								   formulation(), *problem,
+								   args["bc_method"],
 								   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
 		rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs);
 		ns_solver.minimize(*this, rhs, x);
@@ -836,6 +838,7 @@ namespace polyfem
 								   n_bases, size,
 								   bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 								   formulation(), *problem,
+								   args["bc_method"],
 								   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
 
 		Eigen::VectorXd tmp_sol;

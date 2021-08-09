@@ -39,11 +39,13 @@ namespace polyfem
 							   const int n_basis, const int size,
 							   const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases, const AssemblyValsCache &ass_vals_cache,
 							   const std::string &formulation, const Problem &problem,
+							   const std::string bc_method,
 							   const std::string &solver, const std::string &preconditioner, const json &solver_params)
 		: assembler_(assembler), mesh_(mesh),
 		  n_basis_(n_basis), size_(size),
 		  bases_(bases), gbases_(gbases), ass_vals_cache_(ass_vals_cache),
 		  formulation_(formulation), problem_(problem),
+		  bc_method_(bc_method),
 		  solver_(solver), preconditioner_(preconditioner), solver_params_(solver_params)
 	{
 	}
@@ -171,10 +173,8 @@ namespace polyfem
 		}
 	}
 
-	void RhsAssembler::set_bc(
-		const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &df,
-		const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &nf,
-		const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs) const
+	void RhsAssembler::lsq_bc(const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &df,
+							  const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, Eigen::MatrixXd &rhs) const
 	{
 		const int n_el = int(bases_.size());
 
@@ -365,8 +365,83 @@ namespace polyfem
 				}
 			}
 		}
+	}
+
+	void RhsAssembler::sample_bc(const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &df,
+								 const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, Eigen::MatrixXd &rhs) const
+	{
+		const int n_el = int(bases_.size());
+
+		Eigen::MatrixXd rhs_fun;
+		Eigen::VectorXi global_primitive_ids(1);
+		Eigen::MatrixXd nans(1, 1);
+		nans(0) = std::nan("");
+
+#ifndef NDEBUG
+		Eigen::Matrix<bool, Eigen::Dynamic, 1> is_boundary(n_basis_);
+		is_boundary.setConstant(false);
+
+		const int actual_dim = problem_.is_scalar() ? 1 : mesh_.dimension();
+
+		int skipped_count = 0;
+		for (int b : bounday_nodes)
+		{
+			int bindex = b / actual_dim;
+
+			if (bindex < is_boundary.size())
+				is_boundary[bindex] = true;
+			else
+				skipped_count++;
+		}
+		assert(skipped_count <= 1);
+#endif
+
+		for (const auto &lb : local_boundary)
+		{
+			const int e = lb.element_id();
+			const ElementBases &bs = bases_[e];
+
+			for (int i = 0; i < lb.size(); ++i)
+			{
+				global_primitive_ids(0) = lb.global_primitive_id(i);
+				const auto nodes = bs.local_nodes_for_primitive(global_primitive_ids(0), mesh_);
+
+				for (long n = 0; n < nodes.size(); ++n)
+				{
+					const auto &b = bs.bases[nodes(n)];
+					const auto &glob = b.global();
+
+					for (size_t ii = 0; ii < glob.size(); ++ii)
+					{
+						assert(is_boundary[glob[ii].index]);
+
+						//TODO, missing UV!!!!
+						df(global_primitive_ids, nans, glob[ii].node, rhs_fun);
+
+						for (int d = 0; d < size_; ++d)
+						{
+							if (problem_.all_dimensions_dirichlet() || std::find(bounday_nodes.begin(), bounday_nodes.end(), glob[ii].index + d) != bounday_nodes.end())
+								rhs(glob[ii].index + d) = rhs_fun(0, d);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	void RhsAssembler::set_bc(
+		const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &df,
+		const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &nf,
+		const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs) const
+	{
+		if (bc_method_ == "sample")
+			sample_bc(df, local_boundary, bounday_nodes, rhs);
+		else
+			lsq_bc(df, local_boundary, bounday_nodes, resolution, rhs);
 
 		//Neumann
+		Eigen::MatrixXd uv, samples, gtmp, rhs_fun;
+		Eigen::VectorXi global_primitive_ids;
 		Eigen::MatrixXd points, normals;
 		Eigen::VectorXd weights;
 

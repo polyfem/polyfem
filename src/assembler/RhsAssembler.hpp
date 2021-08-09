@@ -26,6 +26,7 @@ namespace polyfem
 					 const int n_basis, const int size,
 					 const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases, const AssemblyValsCache &ass_vals_cache,
 					 const std::string &formulation, const Problem &problem,
+					 const std::string bc_method,
 					 const std::string &solver, const std::string &preconditioner, const json &solver_params);
 
 		//computes the rhs of a problem by \int \phi rho rhs
@@ -57,6 +58,18 @@ namespace polyfem
 		inline const std::string &formulation() const { return formulation_; }
 
 	private:
+		//leastsquares fit bc
+		void lsq_bc(const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &df,
+					const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, Eigen::MatrixXd &rhs) const;
+
+		//integrate bc
+		// void integrate_bc(const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &df,
+		// const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, Eigen::MatrixXd &rhs) const;
+
+		//sample bc at nodes
+		void sample_bc(const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &df,
+					   const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, Eigen::MatrixXd &rhs) const;
+
 		//set boundary condition
 		//the 2 lambdas are callback to dirichlet df and neumann nf
 		//diriclet boundary condition are projected on the FEM bases, it inverts a linear system
@@ -84,6 +97,7 @@ namespace polyfem
 		const AssemblyValsCache &ass_vals_cache_;
 		const std::string formulation_;
 		const Problem &problem_;
+		const std::string bc_method_;
 		const std::string solver_, preconditioner_;
 		const json solver_params_;
 	};

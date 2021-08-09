@@ -233,20 +233,8 @@ namespace cppoptlib
 			polyfem::logger().trace("\t\tCCD in LS {}s, step={}", time.getElapsedTimeInSec(), step_size);
 			ccd_time += time.getElapsedTimeInSec();
 
-			// #pragma STDC FENV_ACCESS ON
-			// 			const int current_roudn = std::fegetround();
-			// 			std::fesetround(FE_DOWNWARD);
-			// 			step_size *= tmp; // TODO: check me if correct
-			// 			std::fesetround(current_roudn);
-
 			new_x = x + step_size * grad;
 
-			// if (objFunc.max_step_size(x, new_x) != 1)
-			// {
-			// 	new_x = x + grad;
-			// 	objFunc.is_step_collision_free(x, new_x);
-			// 	exit(0);
-			// }
 			time.start();
 			objFunc.solution_changed(new_x);
 			time.stop();
