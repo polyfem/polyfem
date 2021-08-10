@@ -420,12 +420,97 @@ namespace polyfem
 
 						for (int d = 0; d < size_; ++d)
 						{
-							if (problem_.all_dimensions_dirichlet() || std::find(bounday_nodes.begin(), bounday_nodes.end(), glob[ii].index + d) != bounday_nodes.end())
-								rhs(glob[ii].index + d) = rhs_fun(0, d);
+							if (problem_.all_dimensions_dirichlet() || std::find(bounday_nodes.begin(), bounday_nodes.end(), glob[ii].index * size_ + d) != bounday_nodes.end())
+								rhs(glob[ii].index * size_ + d) = rhs_fun(0, d);
 						}
 					}
 				}
 			}
+		}
+	}
+
+	void RhsAssembler::integrate_bc(const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &df,
+									const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, Eigen::MatrixXd &rhs) const
+	{
+		Eigen::MatrixXd uv, samples, rhs_fun, normals, mapped;
+		Eigen::VectorXd weights;
+
+		Eigen::VectorXi global_primitive_ids;
+		std::vector<AssemblyValues> tmp_val;
+
+		Eigen::Matrix<bool, Eigen::Dynamic, 1> is_boundary(n_basis_);
+		is_boundary.setConstant(false);
+
+		Eigen::MatrixXd areas(rhs.rows(), 1);
+		areas.setZero();
+
+		const int actual_dim = problem_.is_scalar() ? 1 : mesh_.dimension();
+
+		int skipped_count = 0;
+		for (int b : bounday_nodes)
+		{
+			rhs(b) = 0;
+			int bindex = b / actual_dim;
+
+			if (bindex < is_boundary.size())
+				is_boundary[bindex] = true;
+			else
+				skipped_count++;
+		}
+		assert(skipped_count <= 1);
+
+		for (const auto &lb : local_boundary)
+		{
+			const int e = lb.element_id();
+			bool has_samples = boundary_quadrature(lb, resolution, false, uv, samples, normals, weights, global_primitive_ids);
+
+			if (!has_samples)
+				continue;
+
+			const ElementBases &bs = bases_[e];
+			const ElementBases &gbs = gbases_[e];
+
+			bs.evaluate_bases(samples, tmp_val);
+			gbs.eval_geom_mapping(samples, mapped);
+
+			df(global_primitive_ids, uv, mapped, rhs_fun);
+
+			for (int d = 0; d < size_; ++d)
+				rhs_fun.col(d) = rhs_fun.col(d).array() * weights.array();
+
+			const int n_local_bases = int(bs.bases.size());
+
+			for (int j = 0; j < n_local_bases; ++j)
+			{
+				const Basis &b = bs.bases[j];
+				const auto &tmp = tmp_val[j].val;
+				const auto &glob = b.global();
+
+				for (size_t g = 0; g < glob.size(); ++g)
+				{
+					if (!is_boundary[glob[g].index])
+						continue;
+
+					for (int d = 0; d < size_; ++d)
+					{
+						const double rhs_value = (rhs_fun.col(d).array() * tmp.array()).sum();
+
+						const int g_index = glob[g].index * size_ + d;
+						if (problem_.all_dimensions_dirichlet() || std::find(bounday_nodes.begin(), bounday_nodes.end(), g_index) != bounday_nodes.end())
+						{
+							rhs(g_index) += rhs_value * glob[g].val;
+							areas(g_index) += weights.sum();
+						}
+					}
+				}
+			}
+		}
+
+		for (int b : bounday_nodes)
+		{
+			// assert(areas(b) != 0);
+			if (areas(b) != 0)
+				rhs(b) /= areas(b);
 		}
 	}
 
@@ -436,6 +521,8 @@ namespace polyfem
 	{
 		if (bc_method_ == "sample")
 			sample_bc(df, local_boundary, bounday_nodes, rhs);
+		else if (bc_method_ == "integrate")
+			integrate_bc(df, local_boundary, bounday_nodes, resolution, rhs);
 		else
 			lsq_bc(df, local_boundary, bounday_nodes, resolution, rhs);
 
@@ -447,8 +534,6 @@ namespace polyfem
 
 		ElementAssemblyValues vals;
 
-		// std::ofstream fff("text.obj");
-		// int aaaa = 0;
 		for (const auto &lb : local_neumann_boundary)
 		{
 			const int e = lb.element_id();
@@ -467,24 +552,6 @@ namespace polyfem
 				normals.row(n) = normals.row(n) * vals.jac_it[n];
 				normals.row(n).normalize();
 			}
-
-			// for (int aa = 0; aa < normals.rows(); ++aa, ++aaaa)
-			// {
-			// 	fff << "v " <<vals.val(aa, 0) << " " << vals.val(aa, 1);
-			// 	if(vals.val.cols() == 2)
-			// 		fff<<" 0\n";
-			// 	else
-			// 		fff << " " << vals.val(aa, 2) << "\n";
-
-			// 	fff << "v " << vals.val(aa, 0) + normals(aa, 0)/100 << " " << vals.val(aa, 1) + normals(aa, 1)/100;
-			// 	if (vals.val.cols() == 2)
-			// 		fff << " 0\n";
-			// 	else
-			// 		fff << " " << vals.val(aa, 2) + normals(aa, 2)/100 << "\n";
-
-			// 	fff << "l " << 2 * aaaa + 1 << " " << 2 * aaaa + 2 <<"\n";
-			// }
-
 			// problem_.neumann_bc(mesh_, global_primitive_ids, vals.val, t, rhs_fun);
 			nf(global_primitive_ids, uv, vals.val, normals, rhs_fun);
 
@@ -514,17 +581,12 @@ namespace polyfem
 							if (is_neumann)
 							{
 								rhs(g_index) += rhs_value * v.global[g].val;
-								// UIState::ui_state().debug_data().add_points(v.global[g].node, Eigen::RowVector3d(1,0,0));
 							}
-							// else
-							// std::cout<<"skipping "<<g_index<<" "<<rhs_value * v.global[g].val<<std::endl;
 						}
 					}
 				}
 			}
 		}
-
-		// fff.close();
 	}
 
 	void RhsAssembler::set_bc(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t) const
