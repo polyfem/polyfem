@@ -458,6 +458,7 @@ namespace polyfem
 				skipped_count++;
 		}
 		assert(skipped_count <= 1);
+		ElementAssemblyValues vals;
 
 		for (const auto &lb : local_boundary)
 		{
@@ -470,36 +471,35 @@ namespace polyfem
 			const ElementBases &bs = bases_[e];
 			const ElementBases &gbs = gbases_[e];
 
-			bs.evaluate_bases(samples, tmp_val);
-			gbs.eval_geom_mapping(samples, mapped);
+			vals.compute(e, mesh_.is_volume(), samples, bs, gbs);
 
-			df(global_primitive_ids, uv, mapped, rhs_fun);
+			df(global_primitive_ids, uv, vals.val, rhs_fun);
 
 			for (int d = 0; d < size_; ++d)
 				rhs_fun.col(d) = rhs_fun.col(d).array() * weights.array();
 
-			const int n_local_bases = int(bs.bases.size());
-
-			for (int j = 0; j < n_local_bases; ++j)
+			for (int i = 0; i < lb.size(); ++i)
 			{
-				const Basis &b = bs.bases[j];
-				const auto &tmp = tmp_val[j].val;
-				const auto &glob = b.global();
+				const int primitive_global_id = lb.global_primitive_id(i);
+				const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, mesh_);
 
-				for (size_t g = 0; g < glob.size(); ++g)
+				for (long n = 0; n < nodes.size(); ++n)
 				{
-					if (!is_boundary[glob[g].index])
-						continue;
-
+					// const auto &b = bs.bases[nodes(n)];
+					const AssemblyValues &v = vals.basis_values[nodes(n)];
+					const double area = (weights.array() * v.val.array()).sum();
 					for (int d = 0; d < size_; ++d)
 					{
-						const double rhs_value = (rhs_fun.col(d).array() * tmp.array()).sum();
+						const double rhs_value = (rhs_fun.col(d).array() * v.val.array()).sum();
 
-						const int g_index = glob[g].index * size_ + d;
-						if (problem_.all_dimensions_dirichlet() || std::find(bounday_nodes.begin(), bounday_nodes.end(), g_index) != bounday_nodes.end())
+						for (size_t g = 0; g < v.global.size(); ++g)
 						{
-							rhs(g_index) += rhs_value * glob[g].val;
-							areas(g_index) += weights.sum();
+							const int g_index = v.global[g].index * size_ + d;
+							if (problem_.all_dimensions_dirichlet() || std::find(bounday_nodes.begin(), bounday_nodes.end(), g_index) != bounday_nodes.end())
+							{
+								rhs(g_index) += rhs_value * v.global[g].val;
+								areas(g_index) += area * v.global[g].val;
+							}
 						}
 					}
 				}
@@ -508,9 +508,8 @@ namespace polyfem
 
 		for (int b : bounday_nodes)
 		{
-			// assert(areas(b) != 0);
-			if (areas(b) != 0)
-				rhs(b) /= areas(b);
+			assert(areas(b) != 0);
+			rhs(b) /= areas(b);
 		}
 	}
 
