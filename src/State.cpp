@@ -1020,6 +1020,10 @@ namespace polyfem
 			}
 			logger().info("t0={}, dt={}, tend={}", t0, dt, tend);
 
+			igl::Timer td_timer;
+			td_timer.start();
+			logger().trace("Setup rhs...");
+
 			const auto &gbases = iso_parametric() ? bases : geom_bases;
 			json rhs_solver_params = args["rhs_solver_params"];
 			rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
@@ -1051,12 +1055,22 @@ namespace polyfem
 
 			if (assembler.is_mixed(formulation()))
 				sol_to_pressure();
+
+			td_timer.stop();
+			logger().trace("done, took {}s", td_timer.getElapsedTime());
+
 			if (args["save_time_sequence"])
 			{
+				td_timer.start();
+				logger().trace("Saving VTU...");
+
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
 				save_vtu(resolve_output_path("step_0.vtu"), 0);
 				save_wire(resolve_output_path("step_0.obj"));
+
+				td_timer.stop();
+				logger().trace("done, took {}s", td_timer.getElapsedTime());
 			}
 
 			if (formulation() == "NavierStokes")

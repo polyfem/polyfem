@@ -494,6 +494,9 @@ namespace polyfem
 		// 	exit(0);
 		// }
 
+		igl::Timer timer;
+		timer.start();
+		logger().trace("Reading matrices...");
 		const std::string v_path = resolve_path(args["import"]["v_path"], args["root_path"]);
 		const std::string a_path = resolve_path(args["import"]["a_path"], args["root_path"]);
 
@@ -508,8 +511,13 @@ namespace polyfem
 		else
 			rhs_assembler.initial_acceleration(acceleration);
 
+		timer.stop();
+		logger().trace("done, took {}s", timer.getElapsedTime());
+
 		if (args["has_collision"])
 		{
+			timer.start();
+			logger().trace("Checking collisions...");
 			const int problem_dim = mesh->dimension();
 			Eigen::MatrixXd tmp = boundary_nodes_pos;
 			assert(tmp.rows() * problem_dim == sol.size());
@@ -526,7 +534,13 @@ namespace polyfem
 				logger().error("Unable to solve, initial solution has intersections!");
 				throw "Unable to solve, initial solution has intersections!";
 			}
+
+			timer.stop();
+			logger().trace("done, took {}s", timer.getElapsedTime());
 		}
+
+		timer.start();
+		logger().trace("Init time integrators...");
 
 		const int full_size = n_bases * mesh->dimension();
 		const int reduced_size = n_bases * mesh->dimension() - boundary_nodes.size();
@@ -544,14 +558,23 @@ namespace polyfem
 		ALNLProblem alnl_problem(*this, rhs_assembler, t0 + dt, args["dhat"], args["project_to_psd"], al_weight);
 		alnl_problem.init_time_integrator(sol, velocity, acceleration, dt);
 
+		timer.stop();
+		logger().trace("done, took {}s", timer.getElapsedTime());
+
 		for (int t = 1; t <= time_steps; ++t)
 		{
 			nl_problem.full_to_reduced(sol, tmp_sol);
 			assert(sol.size() == rhs.size());
 			assert(tmp_sol.size() < rhs.size());
 
+			timer.start();
+			logger().trace("Updating lagging...");
+
 			nl_problem.update_lagging(tmp_sol, /*start_of_timestep=*/true);
 			alnl_problem.update_lagging(sol, /*start_of_timestep=*/true);
+
+			timer.stop();
+			logger().trace("done, took {}s", timer.getElapsedTime());
 
 			if (args["friction_iterations"] > 0)
 			{
@@ -623,15 +646,26 @@ namespace polyfem
 					lag_i, lag_i > 1 ? "s" : "");
 			}
 
+			timer.start();
+			logger().trace("Update quantities...");
+
 			nl_problem.update_quantities(t0 + (t + 1) * dt, sol);
 			alnl_problem.update_quantities(t0 + (t + 1) * dt, sol);
+			timer.stop();
+			logger().trace("done, took {}s", timer.getElapsedTime());
 
 			if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
 			{
+				timer.start();
+				logger().trace("Saving VTU...");
+
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
 				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), t0 + dt * t);
 				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
+
+				timer.stop();
+				logger().trace("done, took {}s", timer.getElapsedTime());
 			}
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);

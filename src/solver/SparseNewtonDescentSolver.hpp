@@ -553,7 +553,17 @@ namespace cppoptlib
 			} while (objFunc.callback(this->m_current, x0) && (this->m_status == Status::Continue));
 
 			polyfem::logger().info("Newton finished niters = {}, f = {}, ||g||_2 = {}", this->m_current.iterations, old_energy, this->m_current.gradNorm);
-
+			polyfem::logger().trace("grad {}s, assembly {}s, inverting {}s, linesearch {}s, constrain_set_update {}s, obj_fun {}s, chekcing_for_nan_inf {}s, broad_phase_ccd {}s, ccd {}s, classical_linesearch {}s",
+									grad_time,
+									assembly_time,
+									inverting_time,
+									linesearch_time,
+									constrain_set_update_time,
+									obj_fun_time,
+									chekcing_for_nan_inf_time,
+									broad_phase_ccd_time,
+									ccd_time,
+									classical_linesearch_time);
 			solver_info["internal_solver"] = internal_solver;
 			solver_info["internal_solver_first"] = internal_solver.front();
 			solver_info["status"] = this->status();
