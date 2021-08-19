@@ -158,14 +158,19 @@ namespace cppoptlib
 			static const int MAX_STEP_SIZE_ITER = std::numeric_limits<int>::max();
 			static const double MIN_STEP_SIZE = 0;
 
+			igl::Timer time;
+			igl::Timer time1;
+
+			time.start();
+
 			const double old_energy = objFunc.value(x);
 			int cur_iter = 0;
 
 			double step_size = objFunc.heuristic_max_step(grad);
 			TVector new_x = x + grad * step_size;
 
-			igl::Timer time;
-			igl::Timer time1;
+			time.stop();
+			polyfem::logger().trace("\t\tLS begin {}s", time.getElapsedTimeInSec());
 
 			time.start();
 			// Find step that does not result in nan or infinite energy
@@ -210,30 +215,31 @@ namespace cppoptlib
 				objFunc.line_search_end();
 				return std::nan("");
 			}
-			time.stop();
 
 #pragma STDC FENV_ACCESS ON
 			const int current_roudn = std::fegetround();
 			std::fesetround(FE_DOWNWARD);
 			step_size *= tmp; // TODO: check me if correct
 			std::fesetround(current_roudn);
-			polyfem::logger().trace("\t\tpre TOI={}, ss={}", tmp, step_size);
-			while (tmp != 1)
-			{
-				new_x = x + step_size * grad;
-				tmp = objFunc.max_step_size(x, new_x);
+			// polyfem::logger().trace("\t\tpre TOI={}, ss={}", tmp, step_size);
 
-				std::fesetround(FE_DOWNWARD);
-				step_size *= tmp; // TODO: check me if correct
-				std::fesetround(current_roudn);
-				if (tmp != 1)
-					polyfem::logger().trace("\t\trepeating TOI={}, ss={}", tmp, step_size);
-			}
+			// while (tmp != 1)
+			// {
+			// 	new_x = x + step_size * grad;
+			// 	tmp = objFunc.max_step_size(x, new_x);
 
-			polyfem::logger().trace("\t\tCCD in LS {}s, step={}", time.getElapsedTimeInSec(), step_size);
-			ccd_time += time.getElapsedTimeInSec();
+			// 	std::fesetround(FE_DOWNWARD);
+			// 	step_size *= tmp; // TODO: check me if correct
+			// 	std::fesetround(current_roudn);
+			// 	if (tmp != 1)
+			// 		polyfem::logger().trace("\t\trepeating TOI={}, ss={}", tmp, step_size);
+			// }
 
 			new_x = x + step_size * grad;
+
+			time.stop();
+			polyfem::logger().trace("\t\tCCD in LS {}s, step={}", time.getElapsedTimeInSec(), step_size);
+			ccd_time += time.getElapsedTimeInSec();
 
 			time.start();
 			objFunc.solution_changed(new_x);
@@ -298,12 +304,17 @@ namespace cppoptlib
 			polyfem::logger().trace("\t\tsafeguard in LS {}s", time.getElapsedTimeInSec());
 #endif
 
+			time.start();
 			objFunc.line_search_end();
+			time.stop();
+			polyfem::logger().trace("\t\tLS end {}s", time.getElapsedTimeInSec());
+
 			return step_size;
 		}
 
 		void minimize(ProblemType &objFunc, TVector &x0)
 		{
+			igl::Timer time;
 			using namespace polyfem;
 			// const int problem_dim = state.problem->is_scalar() ? 1 : state.mesh->dimension();
 			// const int precond_num = problem_dim * state.n_bases;
@@ -311,16 +322,16 @@ namespace cppoptlib
 			// const json &params = State::state().solver_params();
 			// auto solver = LinearSolver::create(State::state().solver_type(), State::state().precond_type());
 
+			time.start();
 			auto solver = polysolve::LinearSolver::create(solver_type, precond_type);
 			solver->setParameters(solver_param);
-			polyfem::logger().debug("\tinternal solver {}", solver->name());
+			time.stop();
+			polyfem::logger().debug("\tinternal solver {}, took {}s", solver->name(), time.getElapsedTimeInSec());
 
 			// objFunc.set_ccd_max_iterations(objFunc.max_ccd_max_iterations() / 10);
 
+			time.start();
 			const int reduced_size = x0.rows();
-
-			polyfem::StiffnessMatrix id(reduced_size, reduced_size);
-			id.setIdentity();
 
 			TVector grad = TVector::Zero(reduced_size);
 			// TVector full_grad;
@@ -340,8 +351,6 @@ namespace cppoptlib
 			constrain_set_update_time = 0;
 			classical_linesearch_time = 0;
 
-			igl::Timer time;
-
 			polyfem::StiffnessMatrix hessian;
 			this->m_current.reset();
 
@@ -350,6 +359,9 @@ namespace cppoptlib
 			double old_energy = std::nan("");
 			double first_energy = std::nan("");
 			error_code_ = 0;
+
+			time.stop();
+			polyfem::logger().trace("\tinitialization took {}s", solver->name(), time.getElapsedTimeInSec());
 
 			time.start();
 			objFunc.solution_changed(x0);
