@@ -766,7 +766,7 @@ namespace polyfem
 		_prev_distance = dist_sqr;
 	}
 
-	void NLProblem::save_raw(const std::string &x_path, const std::string &v_path, const std::string &a_path)
+	void NLProblem::save_raw(const std::string &x_path, const std::string &v_path, const std::string &a_path) const
 	{
 		time_integrator->save_raw(x_path, v_path, a_path);
 	}

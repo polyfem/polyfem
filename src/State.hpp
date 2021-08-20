@@ -53,6 +53,7 @@ namespace polyfem
 	class StepData
 	{
 	public:
+		std::shared_ptr<RhsAssembler> rhs_assembler;
 		std::shared_ptr<NLProblem> nl_problem;
 		std::shared_ptr<ALNLProblem> alnl_problem;
 	};
@@ -350,11 +351,13 @@ namespace polyfem
 		//timedependent stuff cached
 		StepData step_data;
 		//Aux solving functions, c_sol=x are necessary since they contain the pressure, while sol dosent
+		void init_transient(Eigen::VectorXd &c_sol);
 		void solve_transient_navier_stokes_split(const int time_steps, const double dt, const RhsAssembler &rhs_assembler);
 		void solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler, Eigen::VectorXd &c_sol);
 		void solve_transient_scalar(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler, Eigen::VectorXd &x);
 		void solve_transient_tensor_linear(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler);
 		void solve_transient_tensor_non_linear(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler);
+		void solve_transient_tensor_non_linear_init(const double t0, const double dt, const RhsAssembler &rhs_assembler);
 		void solve_transient_tensor_non_linear_step(const double t0, const double dt, const int t, json &solver_info);
 		void solve_linear();
 		void solve_navier_stokes();

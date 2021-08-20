@@ -44,6 +44,64 @@ namespace polyfem
 		}
 	} // namespace
 
+	void State::init_transient(Eigen::VectorXd &c_sol)
+	{
+		igl::Timer td_timer;
+		td_timer.start();
+		logger().trace("Setup rhs...");
+
+		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		json rhs_solver_params = args["rhs_solver_params"];
+		rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
+
+		step_data.rhs_assembler = std::make_shared<RhsAssembler>(
+			assembler, *mesh,
+			n_bases, problem->is_scalar() ? 1 : mesh->dimension(),
+			bases, gbases, ass_vals_cache,
+			formulation(), *problem,
+			args["bc_method"],
+			args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
+		RhsAssembler &rhs_assembler = *step_data.rhs_assembler;
+
+		const std::string u_path = resolve_path(args["import"]["u_path"], args["root_path"]);
+		if (!u_path.empty())
+			read_matrix_binary(u_path, sol);
+		else
+			rhs_assembler.initial_solution(sol);
+
+		if (assembler.is_mixed(formulation()))
+		{
+			pressure.resize(0, 0);
+			const int prev_size = sol.size();
+			sol.conservativeResize(rhs.size(), sol.cols());
+			//Zero initial pressure
+			sol.block(prev_size, 0, n_pressure_bases, sol.cols()).setZero();
+			sol(sol.size() - 1) = 0;
+		}
+
+		c_sol = sol;
+
+		if (assembler.is_mixed(formulation()))
+			sol_to_pressure();
+
+		td_timer.stop();
+		logger().trace("done, took {}s", td_timer.getElapsedTime());
+
+		if (args["save_time_sequence"])
+		{
+			td_timer.start();
+			logger().trace("Saving VTU...");
+
+			if (!solve_export_to_file)
+				solution_frames.emplace_back();
+			save_vtu(resolve_output_path("step_0.vtu"), 0);
+			save_wire(resolve_output_path("step_0.obj"));
+
+			td_timer.stop();
+			logger().trace("done, took {}s", td_timer.getElapsedTime());
+		}
+	}
+
 	void State::solve_transient_navier_stokes_split(const int time_steps, const double dt, const RhsAssembler &rhs_assembler)
 	{
 		assert(formulation() == "OperatorSplitting" && problem->is_time_dependent());
@@ -422,6 +480,129 @@ namespace polyfem
 
 	void State::solve_transient_tensor_non_linear(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler)
 	{
+		solve_transient_tensor_non_linear_init(t0, dt, rhs_assembler);
+
+		for (int t = 1; t <= time_steps; ++t)
+		{
+			solve_transient_tensor_non_linear_step(t0, dt, t, solver_info);
+			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
+		}
+		// }
+		// else
+		// {
+		// 	nl_problem.full_to_reduced(sol, tmp_sol);
+
+		// 	for (int t = 1; t <= time_steps; ++t)
+		// 	{
+		// 		cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
+		// 		nlsolver.setLineSearch(args["line_search"]);
+		// 		nl_problem.init(sol);
+		// 		nlsolver.minimize(nl_problem, tmp_sol);
+
+		// 		if (nlsolver.error_code() == -10)
+		// 		{
+		// 			double substep_delta = 0.5;
+		// 			double substep = substep_delta;
+		// 			bool solved = false;
+
+		// 			while (substep_delta > 1e-4 && !solved)
+		// 			{
+		// 				logger().debug("Substepping {}/{}, dt={}", (t - 1 + substep) * dt, t * dt, substep_delta);
+		// 				nl_problem.substepping((t - 1 + substep) * dt);
+		// 				nl_problem.full_to_reduced(sol, tmp_sol);
+		// 				nlsolver.minimize(nl_problem, tmp_sol);
+
+		// 				if (nlsolver.error_code() == -10)
+		// 				{
+		// 					substep -= substep_delta;
+		// 					substep_delta /= 2;
+		// 				}
+		// 				else
+		// 				{
+		// 					logger().trace("Done {}/{}, dt={}", (t - 1 + substep) * dt, t * dt, substep_delta);
+		// 					nl_problem.reduced_to_full(tmp_sol, sol);
+		// 					substep_delta *= 2;
+		// 				}
+
+		// 				solved = substep >= 1;
+
+		// 				substep += substep_delta;
+		// 				if (substep >= 1)
+		// 				{
+		// 					substep_delta -= substep - 1;
+		// 					substep = 1;
+		// 				}
+		// 			}
+		// 		}
+
+		// 		if (nlsolver.error_code() == -10)
+		// 		{
+		// 			logger().error("Unable to solve t={}", t * dt);
+		// 			save_vtu("stop.vtu", dt * t);
+		// 			break;
+		// 		}
+
+		// 		logger().debug("Step solved!");
+
+		// 		nlsolver.getInfo(solver_info);
+		// 		nl_problem.reduced_to_full(tmp_sol, sol);
+		// 		if (assembler.is_mixed(formulation()))
+		// 		{
+		// 			sol_to_pressure();
+		// 		}
+
+		// 		// rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, dt * t);
+
+		// 		nl_problem.update_quantities((t + 1) * dt, sol);
+
+		// 		if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
+		// 		{
+		// 			if (!solve_export_to_file)
+		// 				solution_frames.emplace_back();
+		// 			save_vtu(fmt::format("step_{:d}.vtu", t), dt * t);
+		// 			save_wire(fmt::format("step_{:d}.obj", t));
+		// 		}
+
+		// 		logger().info("{}/{}", t, time_steps);
+		// 	}
+		// }
+		const NLProblem &nl_problem = *step_data.nl_problem;
+
+		nl_problem.save_raw(
+			resolve_output_path(args["export"]["u_path"]),
+			resolve_output_path(args["export"]["v_path"]),
+			resolve_output_path(args["export"]["a_path"]));
+
+		save_pvd(
+			resolve_output_path("sim.pvd"),
+			[](int i)
+			{ return fmt::format("step_{:d}.vtu", i); },
+			time_steps, t0, dt);
+
+		const bool export_surface = args["export"]["surface"];
+		const bool contact_forces = args["export"]["contact_forces"] && !problem->is_scalar();
+
+		if (export_surface)
+		{
+			save_pvd(
+				resolve_output_path("sim_surf.pvd"),
+				[](int i)
+				{ return fmt::format("step_{:d}_surf.vtu", i); },
+				time_steps, t0, dt);
+
+			if (contact_forces)
+			{
+				save_pvd(
+					resolve_output_path("sim_surf_contact.pvd"),
+					[](int i)
+					{ return fmt::format("step_{:d}_surf_contact.vtu", i); },
+					time_steps, t0, dt);
+			}
+		}
+	}
+
+	void State::solve_transient_tensor_non_linear_init(const double t0, const double dt, const RhsAssembler &rhs_assembler)
+	{
 		assert(!problem->is_scalar() && (!assembler.is_linear(formulation()) || args["has_collision"]) && problem->is_time_dependent());
 		assert(!assembler.is_mixed(formulation()));
 
@@ -561,122 +742,6 @@ namespace polyfem
 
 		timer.stop();
 		logger().trace("done, took {}s", timer.getElapsedTime());
-
-		for (int t = 1; t <= time_steps; ++t)
-		{
-			solve_transient_tensor_non_linear_step(t0, dt, t, solver_info);
-			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
-		}
-		// }
-		// else
-		// {
-		// 	nl_problem.full_to_reduced(sol, tmp_sol);
-
-		// 	for (int t = 1; t <= time_steps; ++t)
-		// 	{
-		// 		cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
-		// 		nlsolver.setLineSearch(args["line_search"]);
-		// 		nl_problem.init(sol);
-		// 		nlsolver.minimize(nl_problem, tmp_sol);
-
-		// 		if (nlsolver.error_code() == -10)
-		// 		{
-		// 			double substep_delta = 0.5;
-		// 			double substep = substep_delta;
-		// 			bool solved = false;
-
-		// 			while (substep_delta > 1e-4 && !solved)
-		// 			{
-		// 				logger().debug("Substepping {}/{}, dt={}", (t - 1 + substep) * dt, t * dt, substep_delta);
-		// 				nl_problem.substepping((t - 1 + substep) * dt);
-		// 				nl_problem.full_to_reduced(sol, tmp_sol);
-		// 				nlsolver.minimize(nl_problem, tmp_sol);
-
-		// 				if (nlsolver.error_code() == -10)
-		// 				{
-		// 					substep -= substep_delta;
-		// 					substep_delta /= 2;
-		// 				}
-		// 				else
-		// 				{
-		// 					logger().trace("Done {}/{}, dt={}", (t - 1 + substep) * dt, t * dt, substep_delta);
-		// 					nl_problem.reduced_to_full(tmp_sol, sol);
-		// 					substep_delta *= 2;
-		// 				}
-
-		// 				solved = substep >= 1;
-
-		// 				substep += substep_delta;
-		// 				if (substep >= 1)
-		// 				{
-		// 					substep_delta -= substep - 1;
-		// 					substep = 1;
-		// 				}
-		// 			}
-		// 		}
-
-		// 		if (nlsolver.error_code() == -10)
-		// 		{
-		// 			logger().error("Unable to solve t={}", t * dt);
-		// 			save_vtu("stop.vtu", dt * t);
-		// 			break;
-		// 		}
-
-		// 		logger().debug("Step solved!");
-
-		// 		nlsolver.getInfo(solver_info);
-		// 		nl_problem.reduced_to_full(tmp_sol, sol);
-		// 		if (assembler.is_mixed(formulation()))
-		// 		{
-		// 			sol_to_pressure();
-		// 		}
-
-		// 		// rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, dt * t);
-
-		// 		nl_problem.update_quantities((t + 1) * dt, sol);
-
-		// 		if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
-		// 		{
-		// 			if (!solve_export_to_file)
-		// 				solution_frames.emplace_back();
-		// 			save_vtu(fmt::format("step_{:d}.vtu", t), dt * t);
-		// 			save_wire(fmt::format("step_{:d}.obj", t));
-		// 		}
-
-		// 		logger().info("{}/{}", t, time_steps);
-		// 	}
-		// }
-		nl_problem.save_raw(
-			resolve_output_path(args["export"]["u_path"]),
-			resolve_output_path(args["export"]["v_path"]),
-			resolve_output_path(args["export"]["a_path"]));
-
-		save_pvd(
-			resolve_output_path("sim.pvd"),
-			[](int i)
-			{ return fmt::format("step_{:d}.vtu", i); },
-			time_steps, t0, dt);
-
-		const bool export_surface = args["export"]["surface"];
-		const bool contact_forces = args["export"]["contact_forces"] && !problem->is_scalar();
-
-		if (export_surface)
-		{
-			save_pvd(
-				resolve_output_path("sim_surf.pvd"),
-				[](int i)
-				{ return fmt::format("step_{:d}_surf.vtu", i); },
-				time_steps, t0, dt);
-
-			if (contact_forces)
-			{
-				save_pvd(
-					resolve_output_path("sim_surf_contact.pvd"),
-					[](int i)
-					{ return fmt::format("step_{:d}_surf_contact.vtu", i); },
-					time_steps, t0, dt);
-			}
-		}
 	}
 
 	void State::solve_transient_tensor_non_linear_step(const double t0, const double dt, const int t, json &solver_info)

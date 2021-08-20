@@ -123,7 +123,7 @@ namespace polyfem
 
 		virtual bool stop(const TVector &x) { return false; }
 
-		void save_raw(const std::string &x_path, const std::string &v_path, const std::string &a_path);
+		void save_raw(const std::string &x_path, const std::string &v_path, const std::string &a_path) const;
 
 		double heuristic_max_step(const TVector &dx);
 

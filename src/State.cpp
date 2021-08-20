@@ -1019,58 +1019,9 @@ namespace polyfem
 			}
 			logger().info("t0={}, dt={}, tend={}", t0, dt, tend);
 
-			igl::Timer td_timer;
-			td_timer.start();
-			logger().trace("Setup rhs...");
-
-			const auto &gbases = iso_parametric() ? bases : geom_bases;
-			json rhs_solver_params = args["rhs_solver_params"];
-			rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
-
-			RhsAssembler rhs_assembler(assembler, *mesh,
-									   n_bases, problem->is_scalar() ? 1 : mesh->dimension(),
-									   bases, gbases, ass_vals_cache,
-									   formulation(), *problem,
-									   args["bc_method"],
-									   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
-
-			const std::string u_path = resolve_path(args["import"]["u_path"], args["root_path"]);
-			if (!u_path.empty())
-				read_matrix_binary(u_path, sol);
-			else
-				rhs_assembler.initial_solution(sol);
-
-			if (assembler.is_mixed(formulation()))
-			{
-				pressure.resize(0, 0);
-				const int prev_size = sol.size();
-				sol.conservativeResize(rhs.size(), sol.cols());
-				//Zero initial pressure
-				sol.block(prev_size, 0, n_pressure_bases, sol.cols()).setZero();
-				sol(sol.size() - 1) = 0;
-			}
-
-			Eigen::VectorXd c_sol = sol;
-
-			if (assembler.is_mixed(formulation()))
-				sol_to_pressure();
-
-			td_timer.stop();
-			logger().trace("done, took {}s", td_timer.getElapsedTime());
-
-			if (args["save_time_sequence"])
-			{
-				td_timer.start();
-				logger().trace("Saving VTU...");
-
-				if (!solve_export_to_file)
-					solution_frames.emplace_back();
-				save_vtu(resolve_output_path("step_0.vtu"), 0);
-				save_wire(resolve_output_path("step_0.obj"));
-
-				td_timer.stop();
-				logger().trace("done, took {}s", td_timer.getElapsedTime());
-			}
+			Eigen::VectorXd c_sol;
+			init_transient(c_sol);
+			RhsAssembler &rhs_assembler = *step_data.rhs_assembler;
 
 			if (formulation() == "NavierStokes")
 				solve_transient_navier_stokes(time_steps, t0, dt, rhs_assembler, c_sol);
