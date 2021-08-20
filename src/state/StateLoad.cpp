@@ -114,7 +114,7 @@ namespace polyfem
 			else if (args.contains("meshes"))
 			{
 				logger().info("Loading meshes ...");
-				mesh = Mesh::create(args["meshes"].get<std::vector<json>>());
+				mesh = Mesh::create(args["meshes"].get<std::vector<json>>(), args["root_path"]);
 			}
 		}
 		else

@@ -1,7 +1,6 @@
 #include <polyfem/State.hpp>
 #include <polyfem/Common.hpp>
 
-#include <polyfem/StringUtils.hpp>
 #include <polyfem/MatrixUtils.hpp>
 
 #include <polyfem/Mesh2D.hpp>

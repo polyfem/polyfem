@@ -170,22 +170,22 @@ int main(int argc, char **argv)
 		in_args["root_path"] = json_file;
 
 		// If the mesh path does not exist make it relative to the json_file
-		if (in_args.contains("mesh"))
-		{
-			in_args["mesh"] = resolve_path(in_args["mesh"], json_file);
-		}
+		// if (in_args.contains("mesh"))
+		// {
+		// 	in_args["mesh"] = resolve_path(in_args["mesh"], json_file);
+		// }
 
 		// If the meshes paths does not exist make it relative to the json_file
-		if (in_args.contains("meshes") && !in_args["meshes"].empty())
-		{
-			for (json &json_mesh : in_args["meshes"])
-			{
-				if (json_mesh.contains("mesh"))
-				{
-					json_mesh["mesh"] = resolve_path(json_mesh["mesh"], json_file);
-				}
-			}
-		}
+		// if (in_args.contains("meshes") && !in_args["meshes"].empty())
+		// {
+		// 	for (json &json_mesh : in_args["meshes"])
+		// 	{
+		// 		if (json_mesh.contains("mesh"))
+		// 		{
+		// 			json_mesh["mesh"] = resolve_path(json_mesh["mesh"], json_file);
+		// 		}
+		// 	}
+		// }
 	}
 	else
 	{

@@ -196,7 +196,7 @@ Eigen::Matrix3d build_rotation_matrix(const json &jr, std::string mode = "xyz")
 	return R;
 }
 
-std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &meshes)
+std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &meshes, const std::string &root_path)
 {
 	if (meshes.empty())
 	{
@@ -248,7 +248,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 		std::vector<std::vector<int>> tmp_elements;
 		std::vector<std::vector<double>> tmp_weights;
 
-		std::string mesh_path = jmesh["mesh"];
+		std::string mesh_path = resolve_path(jmesh["mesh"], root_path); //jmesh["mesh"];
 		std::string lowername = mesh_path;
 		std::transform(
 			lowername.begin(), lowername.end(), lowername.begin(), ::tolower);

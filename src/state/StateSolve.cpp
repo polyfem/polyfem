@@ -546,7 +546,8 @@ namespace polyfem
 		const int reduced_size = n_bases * mesh->dimension() - boundary_nodes.size();
 		VectorXd tmp_sol;
 
-		NLProblem nl_problem(*this, rhs_assembler, t0 + dt, args["dhat"], args["project_to_psd"]);
+		step_data.nl_problem = std::make_shared<NLProblem>(*this, rhs_assembler, t0 + dt, args["dhat"], args["project_to_psd"]);
+		NLProblem &nl_problem = *step_data.nl_problem;
 		nl_problem.init_time_integrator(sol, velocity, acceleration, dt);
 
 		solver_info = json::array();
@@ -554,8 +555,8 @@ namespace polyfem
 		// if (args["use_al"] || args["has_collision"])
 		// {
 		double al_weight = args["al_weight"];
-		const double max_al_weight = args["max_al_weight"];
-		ALNLProblem alnl_problem(*this, rhs_assembler, t0 + dt, args["dhat"], args["project_to_psd"], al_weight);
+		step_data.alnl_problem = std::make_shared<ALNLProblem>(*this, rhs_assembler, t0 + dt, args["dhat"], args["project_to_psd"], al_weight);
+		ALNLProblem &alnl_problem = *step_data.alnl_problem;
 		alnl_problem.init_time_integrator(sol, velocity, acceleration, dt);
 
 		timer.stop();
@@ -563,116 +564,8 @@ namespace polyfem
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
-			nl_problem.full_to_reduced(sol, tmp_sol);
-			assert(sol.size() == rhs.size());
-			assert(tmp_sol.size() < rhs.size());
-
-			timer.start();
-			logger().trace("Updating lagging...");
-
-			nl_problem.update_lagging(tmp_sol, /*start_of_timestep=*/true);
-			alnl_problem.update_lagging(sol, /*start_of_timestep=*/true);
-
-			timer.stop();
-			logger().trace("done, took {}s", timer.getElapsedTime());
-
-			if (args["friction_iterations"] > 0)
-			{
-				logger().debug("Lagging iteration 1");
-			}
-
-			nl_problem.line_search_begin(sol, tmp_sol);
-			while (!std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
-			{
-				nl_problem.line_search_end();
-				alnl_problem.set_weight(al_weight);
-				logger().debug("Solving AL Problem with weight {}", al_weight);
-
-				cppoptlib::SparseNewtonDescentSolver<ALNLProblem> alnlsolver(solver_params(), solver_type(), precond_type());
-				alnlsolver.setLineSearch(args["line_search"]);
-				alnl_problem.init(sol);
-				tmp_sol = sol;
-				alnlsolver.minimize(alnl_problem, tmp_sol);
-				json alnl_solver_info;
-				alnlsolver.getInfo(alnl_solver_info);
-
-				solver_info.push_back({{"type", "al"},
-									   {"t", t},
-									   {"weight", al_weight},
-									   {"info", alnl_solver_info}});
-
-				sol = tmp_sol;
-				nl_problem.full_to_reduced(sol, tmp_sol);
-				nl_problem.line_search_begin(sol, tmp_sol);
-
-				al_weight *= 2;
-
-				if (al_weight >= max_al_weight)
-				{
-					logger().error("Unable to solve AL problem, weight {} >= {}, stopping", al_weight, max_al_weight);
-					break;
-				}
-			}
-			nl_problem.line_search_end();
-			al_weight = args["al_weight"];
-			logger().debug("Solving Problem");
-
-			cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
-			nlsolver.setLineSearch(args["line_search"]);
-			nl_problem.init(sol);
-			nlsolver.minimize(nl_problem, tmp_sol);
-			json nl_solver_info;
-			nlsolver.getInfo(nl_solver_info);
-			nl_problem.reduced_to_full(tmp_sol, sol);
-
-			// Lagging loop (start at 1 because we already did an iteration above)
-			int lag_i;
-			for (lag_i = 1; lag_i < args["friction_iterations"] && !nl_problem.lagging_converged(tmp_sol, /*do_lagging_update=*/true); lag_i++)
-			{
-				logger().debug("Lagging iteration {:d}", lag_i + 1);
-				nl_problem.init(sol);
-				nlsolver.minimize(nl_problem, tmp_sol);
-				json nl_solver_info;
-				nlsolver.getInfo(nl_solver_info);
-				nl_problem.reduced_to_full(tmp_sol, sol);
-			}
-
-			if (args["friction_iterations"] > 0)
-			{
-				logger().info(
-					lag_i >= args["friction_iterations"]
-						? "Maxed out at {:d} lagging iteration{}"
-						: "Converged using {:d} lagging iteration{}",
-					lag_i, lag_i > 1 ? "s" : "");
-			}
-
-			timer.start();
-			logger().trace("Update quantities...");
-
-			nl_problem.update_quantities(t0 + (t + 1) * dt, sol);
-			alnl_problem.update_quantities(t0 + (t + 1) * dt, sol);
-			timer.stop();
-			logger().trace("done, took {}s", timer.getElapsedTime());
-
-			if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
-			{
-				timer.start();
-				logger().trace("Saving VTU...");
-
-				if (!solve_export_to_file)
-					solution_frames.emplace_back();
-				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), t0 + dt * t);
-				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
-
-				timer.stop();
-				logger().trace("done, took {}s", timer.getElapsedTime());
-			}
-
+			solve_transient_tensor_non_linear_step(t0, dt, t, solver_info);
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
-
-			solver_info.push_back({{"type", "rc"},
-								   {"t", t},
-								   {"info", nl_solver_info}});
 		}
 		// }
 		// else
@@ -784,6 +677,125 @@ namespace polyfem
 					time_steps, t0, dt);
 			}
 		}
+	}
+
+	void State::solve_transient_tensor_non_linear_step(const double t0, const double dt, const int t, json &solver_info)
+	{
+		VectorXd tmp_sol;
+		NLProblem &nl_problem = *step_data.nl_problem;
+		ALNLProblem &alnl_problem = *step_data.alnl_problem;
+		igl::Timer timer;
+
+		double al_weight = args["al_weight"];
+		const double max_al_weight = args["max_al_weight"];
+
+		nl_problem.full_to_reduced(sol, tmp_sol);
+		assert(sol.size() == rhs.size());
+		assert(tmp_sol.size() < rhs.size());
+
+		timer.start();
+		logger().trace("Updating lagging...");
+
+		nl_problem.update_lagging(tmp_sol, /*start_of_timestep=*/true);
+		alnl_problem.update_lagging(sol, /*start_of_timestep=*/true);
+
+		timer.stop();
+		logger().trace("done, took {}s", timer.getElapsedTime());
+
+		if (args["friction_iterations"] > 0)
+		{
+			logger().debug("Lagging iteration 1");
+		}
+
+		nl_problem.line_search_begin(sol, tmp_sol);
+		while (!std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
+		{
+			nl_problem.line_search_end();
+			alnl_problem.set_weight(al_weight);
+			logger().debug("Solving AL Problem with weight {}", al_weight);
+
+			cppoptlib::SparseNewtonDescentSolver<ALNLProblem> alnlsolver(solver_params(), solver_type(), precond_type());
+			alnlsolver.setLineSearch(args["line_search"]);
+			alnl_problem.init(sol);
+			tmp_sol = sol;
+			alnlsolver.minimize(alnl_problem, tmp_sol);
+			json alnl_solver_info;
+			alnlsolver.getInfo(alnl_solver_info);
+
+			solver_info.push_back({{"type", "al"},
+								   {"t", t},
+								   {"weight", al_weight},
+								   {"info", alnl_solver_info}});
+
+			sol = tmp_sol;
+			nl_problem.full_to_reduced(sol, tmp_sol);
+			nl_problem.line_search_begin(sol, tmp_sol);
+
+			al_weight *= 2;
+
+			if (al_weight >= max_al_weight)
+			{
+				logger().error("Unable to solve AL problem, weight {} >= {}, stopping", al_weight, max_al_weight);
+				break;
+			}
+		}
+		nl_problem.line_search_end();
+		logger().debug("Solving Problem");
+
+		cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
+		nlsolver.setLineSearch(args["line_search"]);
+		nl_problem.init(sol);
+		nlsolver.minimize(nl_problem, tmp_sol);
+		json nl_solver_info;
+		nlsolver.getInfo(nl_solver_info);
+		nl_problem.reduced_to_full(tmp_sol, sol);
+
+		// Lagging loop (start at 1 because we already did an iteration above)
+		int lag_i;
+		for (lag_i = 1; lag_i < args["friction_iterations"] && !nl_problem.lagging_converged(tmp_sol, /*do_lagging_update=*/true); lag_i++)
+		{
+			logger().debug("Lagging iteration {:d}", lag_i + 1);
+			nl_problem.init(sol);
+			nlsolver.minimize(nl_problem, tmp_sol);
+			json nl_solver_info;
+			nlsolver.getInfo(nl_solver_info);
+			nl_problem.reduced_to_full(tmp_sol, sol);
+		}
+
+		if (args["friction_iterations"] > 0)
+		{
+			logger().info(
+				lag_i >= args["friction_iterations"]
+					? "Maxed out at {:d} lagging iteration{}"
+					: "Converged using {:d} lagging iteration{}",
+				lag_i, lag_i > 1 ? "s" : "");
+		}
+
+		timer.start();
+		logger().trace("Update quantities...");
+
+		nl_problem.update_quantities(t0 + (t + 1) * dt, sol);
+		alnl_problem.update_quantities(t0 + (t + 1) * dt, sol);
+		timer.stop();
+		logger().trace("done, took {}s", timer.getElapsedTime());
+
+		if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
+		{
+			timer.start();
+			logger().trace("Saving VTU...");
+
+			if (!solve_export_to_file)
+				solution_frames.emplace_back();
+			save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), t0 + dt * t);
+			save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
+
+			timer.stop();
+			logger().trace("done, took {}s", timer.getElapsedTime());
+		}
+
+		solver_info.push_back({{"type", "rc"},
+							   {"t", t},
+							   {"info", nl_solver_info}});
 	}
 
 	void State::solve_linear()

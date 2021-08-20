@@ -18,6 +18,7 @@
 
 #include <polyfem/Mesh2D.hpp>
 #include <polyfem/Mesh3D.hpp>
+#include <polyfem/StringUtils.hpp>
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
@@ -45,6 +46,15 @@ namespace polyfem
 		Eigen::MatrixXd error;
 		Eigen::MatrixXd scalar_value;
 		Eigen::MatrixXd scalar_value_avg;
+	};
+
+	class NLProblem;
+	class ALNLProblem;
+	class StepData
+	{
+	public:
+		std::shared_ptr<NLProblem> nl_problem;
+		std::shared_ptr<ALNLProblem> alnl_problem;
 	};
 
 	//main class that contains the polyfem solver
@@ -337,12 +347,15 @@ namespace polyfem
 		//solves the proble, step 5
 		void solve_problem();
 
+		//timedependent stuff cached
+		StepData step_data;
 		//Aux solving functions, c_sol=x are necessary since they contain the pressure, while sol dosent
 		void solve_transient_navier_stokes_split(const int time_steps, const double dt, const RhsAssembler &rhs_assembler);
 		void solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler, Eigen::VectorXd &c_sol);
 		void solve_transient_scalar(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler, Eigen::VectorXd &x);
 		void solve_transient_tensor_linear(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler);
 		void solve_transient_tensor_non_linear(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler);
+		void solve_transient_tensor_non_linear_step(const double t0, const double dt, const int t, json &solver_info);
 		void solve_linear();
 		void solve_navier_stokes();
 		void solve_non_linear();
@@ -484,7 +497,7 @@ namespace polyfem
 		}
 
 		//returns the path of the input mesh (wrappers around the arguments)
-		inline std::string mesh_path() const { return args["mesh"]; }
+		inline std::string mesh_path() const { return resolve_path(args["mesh"], args["root_path"]); }
 
 		inline bool has_mesh() const
 		{
