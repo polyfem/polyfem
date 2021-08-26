@@ -379,16 +379,14 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 		// Rotate around the models origin NOT the bodies center of mass.
 		// We could expose this choice as a "rotate_around" field.
 		MatrixNd R = MatrixNd::Identity(dim, dim);
-		if (jmesh["rotation"].is_number())
+		if (dim == 2 && jmesh["rotation"].is_number())
 		{
-			assert(dim == 2);
 			R = Eigen::Rotation2Dd(
 					deg2rad(jmesh["rotation"].get<double>()))
 					.toRotationMatrix();
 		}
-		else if (dim == 3) // input array rotation is only available for 3D
+		else if (dim == 3)
 		{
-			assert(jmesh["rotation"].is_array());
 			R = build_rotation_matrix(jmesh["rotation"], jmesh["rotation_mode"].get<std::string>());
 		}
 		tmp_vertices *= R.transpose(); // (R*Vᵀ)ᵀ = V*Rᵀ
