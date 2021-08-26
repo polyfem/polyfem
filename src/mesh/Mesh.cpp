@@ -143,11 +143,23 @@ inline T deg2rad(T deg)
 
 Eigen::Matrix3d build_rotation_matrix(const json &jr, std::string mode = "xyz")
 {
-	assert(jr.is_array());
-	Eigen::VectorXd r;
-	from_json(jr, r);
-
 	std::transform(mode.begin(), mode.end(), mode.begin(), ::tolower);
+
+	Eigen::VectorXd r;
+	if (jr.is_number())
+	{
+		r.setZero(3);
+		assert(mode.size() == 1); // must be either "x", "y", or "z"
+		int i = mode[0] - 'x';
+		assert(i >= 0 && i < 3);
+		r[i] = jr.get<double>();
+	}
+	else
+	{
+		assert(jr.is_array());
+		from_json(jr, r);
+		assert(r.size() >= 3);
+	}
 
 	if (mode == "axis_angle")
 	{
@@ -183,7 +195,6 @@ Eigen::Matrix3d build_rotation_matrix(const json &jr, std::string mode = "xyz")
 
 	Eigen::Matrix3d R = Eigen::Matrix3d::Identity();
 
-	assert(r.size() >= 3);
 	for (int i = 0; i < mode.size(); i++)
 	{
 		int j = mode[i] - 'x';
@@ -449,22 +460,21 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 
 	mesh->set_body_ids(body_ids);
 	assert(body_vertices_start.size() == boundary_ids.size());
-	mesh->compute_boundary_ids([&](const std::vector<int> &vis, bool is_boundary)
-							   {
-								   if (!is_boundary)
-								   {
-									   return -1;
-								   }
+	mesh->compute_boundary_ids([&](const std::vector<int> &vis, bool is_boundary) {
+		if (!is_boundary)
+		{
+			return -1;
+		}
 
-								   for (int i = 0; i < body_vertices_start.size() - 1; i++)
-								   {
-									   if (body_vertices_start[i] <= vis[0] && vis[0] < body_vertices_start[i + 1])
-									   {
-										   return boundary_ids[i];
-									   }
-								   }
-								   return boundary_ids.back();
-							   });
+		for (int i = 0; i < body_vertices_start.size() - 1; i++)
+		{
+			if (body_vertices_start[i] <= vis[0] && vis[0] < body_vertices_start[i + 1])
+			{
+				return boundary_ids[i];
+			}
+		}
+		return boundary_ids.back();
+	});
 
 	return mesh;
 }
