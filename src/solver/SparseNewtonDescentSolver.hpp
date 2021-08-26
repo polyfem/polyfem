@@ -155,7 +155,7 @@ namespace cppoptlib
 
 		double linesearch(const TVector &x, const TVector &grad, ProblemType &objFunc)
 		{
-			static const int MAX_STEP_SIZE_ITER = std::numeric_limits<int>::max();
+			static const int MAX_STEP_SIZE_ITER = 25; //std::numeric_limits<int>::max();
 			static const double MIN_STEP_SIZE = 0;
 
 			igl::Timer time;
@@ -255,7 +255,8 @@ namespace cppoptlib
 				const bool valid = objFunc.is_step_valid(x, new_x);
 
 				polyfem::logger().trace("ls it: {} delta: {} invalid: {} ", cur_iter, (cur_e - old_energy), !valid);
-				if (std::isinf(cur_e) || std::isnan(cur_e) || (cur_e >= old_energy && fabs(cur_e - old_energy) > 1e-12) || !valid)
+				// if (std::isinf(cur_e) || std::isnan(cur_e) || (cur_e >= old_energy && fabs(cur_e - old_energy) > 1e-12) || !valid)
+				if (std::isinf(cur_e) || std::isnan(cur_e) || cur_e >= old_energy || !valid)
 				{
 					step_size /= 2.;
 					new_x = x + step_size * grad;
@@ -435,7 +436,7 @@ namespace cppoptlib
 				//gradient descent, check descent direction
 				const double residual = (hessian * delta_x - grad).norm();
 				polyfem::logger().trace("residual {}", residual);
-				if (line_search_failed || std::isnan(residual)) //  || residual > 1e-7)
+				if (line_search_failed || std::isnan(residual) || residual > 1e-7)
 				{
 					polyfem::logger().debug("\treverting to gradient descent, since residual is {}", residual);
 					delta_x = grad;
