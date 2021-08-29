@@ -211,6 +211,15 @@ endif()
 # find_package(Eigen3 REQUIRED)
 # target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
 
+# IPC
+if(NOT TARGET ipc::toolkit)
+    option(IPC_TOOLKIT_BUILD_UNIT_TESTS "Build unit-tests" OFF)
+    polyfem_download_ipc()
+    add_subdirectory(${THIRD_PARTY_DIR}/ipc)
+endif()
+target_link_libraries(polyfem PUBLIC ipc::toolkit)
+
+# polysolve
 polyfem_download_solvers()
 add_subdirectory(${THIRD_PARTY_DIR}/solvers)
 target_link_libraries(polyfem PUBLIC polysolve)
@@ -219,28 +228,24 @@ target_link_libraries(polyfem PUBLIC polysolve)
 if(POLYFEM_THREADING STREQUAL "CPP")
     target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_CPP_THREADS)
 elseif(POLYFEM_THREADING STREQUAL "TBB")
-    polyfem_download_tbb()
-    set(TBB_BUILD_STATIC ON CACHE BOOL " " FORCE)
-    set(TBB_BUILD_SHARED OFF CACHE BOOL " " FORCE)
-    set(TBB_BUILD_TBBMALLOC OFF CACHE BOOL " " FORCE)
-    set(TBB_BUILD_TBBMALLOC_PROXY OFF CACHE BOOL " " FORCE)
-    set(TBB_BUILD_TESTS OFF CACHE BOOL " " FORCE)
+    if(NOT TARGET TBB::tbb)
+        polyfem_download_tbb()
+        set(TBB_BUILD_STATIC ON CACHE BOOL " " FORCE)
+        set(TBB_BUILD_SHARED OFF CACHE BOOL " " FORCE)
+        set(TBB_BUILD_TBBMALLOC OFF CACHE BOOL " " FORCE)
+        set(TBB_BUILD_TBBMALLOC_PROXY OFF CACHE BOOL " " FORCE)
+        set(TBB_BUILD_TESTS OFF CACHE BOOL " " FORCE)
 
-    add_subdirectory(${THIRD_PARTY_DIR}/tbb tbb)
-    set_property(TARGET tbb_static tbb_def_files PROPERTY FOLDER "dependencies")
+        add_subdirectory(${THIRD_PARTY_DIR}/tbb tbb)
+        set_property(TARGET tbb_static tbb_def_files PROPERTY FOLDER "dependencies")
 
-    target_compile_definitions(tbb_static PUBLIC -DPOLYFEM_WITH_TBB)
-    target_include_directories(polyfem SYSTEM PUBLIC ${THIRD_PARTY_DIR}/tbb/include)
-    add_library(TBB::tbb ALIAS tbb_static)
+        target_compile_definitions(tbb_static PUBLIC -DPOLYFEM_WITH_TBB)
+        target_include_directories(polyfem SYSTEM PUBLIC ${THIRD_PARTY_DIR}/tbb/include)
+        add_library(TBB::tbb ALIAS tbb_static)
+    endif()
 
     target_link_libraries(polyfem PUBLIC TBB::tbb)
 endif()
-
-# IPC
-option(IPC_TOOLKIT_BUILD_UNIT_TESTS  "Build unit-tests"      OFF)
-polyfem_download_ipc()
-add_subdirectory(${THIRD_PARTY_DIR}/ipc)
-target_link_libraries(polyfem PUBLIC IPCToolkit)
 
 # libigl
 if(NOT TARGET igl::core)

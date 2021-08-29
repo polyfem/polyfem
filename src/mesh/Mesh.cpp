@@ -158,7 +158,6 @@ Eigen::Matrix3d build_rotation_matrix(const json &jr, std::string mode = "xyz")
 	{
 		assert(jr.is_array());
 		from_json(jr, r);
-		assert(r.size() >= 3);
 	}
 
 	if (mode == "axis_angle")
