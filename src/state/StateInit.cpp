@@ -131,7 +131,7 @@ namespace polyfem
 			{"h1_formula", false},
 
 			{"BDF_order", 1},
-			{"quadrature_order", 4},
+			{"quadrature_order", -1},
 			{"discr_order", 1},
 			{"poly_bases", "MFSHarmonic"},
 			{"serendipity", false},
