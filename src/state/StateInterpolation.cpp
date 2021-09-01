@@ -214,12 +214,12 @@ namespace polyfem
 		}
 	}
 
-	void State::interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result, MatrixXd &stresses, MatrixXd &mises)
+	void State::interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result, MatrixXd &stresses, MatrixXd &mises, const bool skip_orientation)
 	{
-		interpolate_boundary_tensor_function(pts, faces, fun, Eigen::MatrixXd::Zero(pts.rows(), pts.cols()), compute_avg, result, stresses, mises);
+		interpolate_boundary_tensor_function(pts, faces, fun, Eigen::MatrixXd::Zero(pts.rows(), pts.cols()), compute_avg, result, stresses, mises, skip_orientation);
 	}
 
-	void State::interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const MatrixXd &disp, const bool compute_avg, MatrixXd &result, MatrixXd &stresses, MatrixXd &mises)
+	void State::interpolate_boundary_tensor_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const MatrixXd &disp, const bool compute_avg, MatrixXd &result, MatrixXd &stresses, MatrixXd &mises, bool skip_orientation)
 	{
 		if (!mesh)
 		{
@@ -368,7 +368,7 @@ namespace polyfem
 
 				const Eigen::RowVector3d tmpn = normals.row(I);
 				const Eigen::RowVector3d tmptf = tmpn * tensor;
-				if (tmpn.dot(tet_n) > 0)
+				if (skip_orientation || tmpn.dot(tet_n) > 0)
 				{
 					assert(std::isnan(result(I, 0)));
 					assert(std::isnan(stresses(I, 0)));
