@@ -1027,11 +1027,12 @@ int polyfem::FEBasis3d::build_bases(
 
 		if (mesh.is_cube(e))
 		{
-			// hex_quadrature.get_quadrature(quadrature_order, b.quadrature);
-			b.set_quadrature([quadrature_order](Quadrature &quad)
+			const int real_order = std::max(quadrature_order, (discr_order - 1) * 2 + 1);
+			// hex_quadrature.get_quadrature(real_order, b.quadrature);
+			b.set_quadrature([real_order](Quadrature &quad)
 							 {
 								 HexQuadrature hex_quadrature;
-								 hex_quadrature.get_quadrature(quadrature_order, quad);
+								 hex_quadrature.get_quadrature(real_order, quad);
 							 });
 
 			b.set_local_node_from_primitive_func([serendipity, discr_order, e](const int primitive_id, const Mesh &mesh)
