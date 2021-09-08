@@ -206,8 +206,7 @@ namespace polyfem
 
 		save_pvd(
 			resolve_output_path("sim.pvd"),
-			[](int i)
-			{ return fmt::format("step_{:d}.vtu", i); },
+			[](int i) { return fmt::format("step_{:d}.vtu", i); },
 			time_steps, /*t0=*/0, dt);
 
 		const bool export_surface = args["export"]["surface"];
@@ -216,8 +215,7 @@ namespace polyfem
 		{
 			save_pvd(
 				resolve_output_path("sim_surf.pvd"),
-				[](int i)
-				{ return fmt::format("step_{:d}_surf.vtu", i); },
+				[](int i) { return fmt::format("step_{:d}_surf.vtu", i); },
 				time_steps, /*t0=*/0, dt);
 		}
 	}
@@ -284,8 +282,7 @@ namespace polyfem
 
 		save_pvd(
 			resolve_output_path("sim.pvd"),
-			[](int i)
-			{ return fmt::format("step_{:d}.vtu", i); },
+			[](int i) { return fmt::format("step_{:d}.vtu", i); },
 			time_steps, t0, dt);
 
 		const bool export_surface = args["export"]["surface"];
@@ -294,8 +291,7 @@ namespace polyfem
 		{
 			save_pvd(
 				resolve_output_path("sim_surf.pvd"),
-				[](int i)
-				{ return fmt::format("step_{:d}_surf.vtu", i); },
+				[](int i) { return fmt::format("step_{:d}_surf.vtu", i); },
 				time_steps, t0, dt);
 		}
 	}
@@ -365,8 +361,7 @@ namespace polyfem
 
 		save_pvd(
 			resolve_output_path("sim.pvd"),
-			[](int i)
-			{ return fmt::format("step_{:d}.vtu", i); },
+			[](int i) { return fmt::format("step_{:d}.vtu", i); },
 			time_steps, t0, dt);
 	}
 
@@ -462,8 +457,7 @@ namespace polyfem
 
 		save_pvd(
 			resolve_output_path("sim.pvd"),
-			[](int i)
-			{ return fmt::format("step_{:d}.vtu", i); },
+			[](int i) { return fmt::format("step_{:d}.vtu", i); },
 			time_steps, t0, dt);
 
 		const bool export_surface = args["export"]["surface"];
@@ -472,8 +466,7 @@ namespace polyfem
 		{
 			save_pvd(
 				resolve_output_path("sim_surf.pvd"),
-				[](int i)
-				{ return fmt::format("step_{:d}_surf.vtu", i); },
+				[](int i) { return fmt::format("step_{:d}_surf.vtu", i); },
 				time_steps, t0, dt);
 		}
 	}
@@ -575,8 +568,7 @@ namespace polyfem
 
 		save_pvd(
 			resolve_output_path("sim.pvd"),
-			[](int i)
-			{ return fmt::format("step_{:d}.vtu", i); },
+			[](int i) { return fmt::format("step_{:d}.vtu", i); },
 			time_steps, t0, dt);
 
 		const bool export_surface = args["export"]["surface"];
@@ -586,16 +578,14 @@ namespace polyfem
 		{
 			save_pvd(
 				resolve_output_path("sim_surf.pvd"),
-				[](int i)
-				{ return fmt::format("step_{:d}_surf.vtu", i); },
+				[](int i) { return fmt::format("step_{:d}_surf.vtu", i); },
 				time_steps, t0, dt);
 
 			if (contact_forces)
 			{
 				save_pvd(
 					resolve_output_path("sim_surf_contact.pvd"),
-					[](int i)
-					{ return fmt::format("step_{:d}_surf_contact.vtu", i); },
+					[](int i) { return fmt::format("step_{:d}_surf_contact.vtu", i); },
 					time_steps, t0, dt);
 			}
 		}
@@ -822,8 +812,8 @@ namespace polyfem
 			logger().debug("Lagging iteration {:d}", lag_i + 1);
 			nl_problem.init(sol);
 			nlsolver.minimize(nl_problem, tmp_sol);
-			json nl_solver_info;
-			nlsolver.getInfo(nl_solver_info);
+			// json nl_solver_info;
+			// nlsolver.getInfo(nl_solver_info);
 			nl_problem.reduced_to_full(tmp_sol, sol);
 		}
 

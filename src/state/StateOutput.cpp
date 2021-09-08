@@ -184,8 +184,7 @@ namespace polyfem
 				{
 					if (lb.type() == BoundaryType::Quad)
 					{
-						const auto map = [n_samples, size](int i, int j)
-						{ return j * n_samples + i + size; };
+						const auto map = [n_samples, size](int i, int j) { return j * n_samples + i + size; };
 
 						for (int j = 0; j < n_samples - 1; ++j)
 						{
@@ -208,8 +207,7 @@ namespace polyfem
 								++index;
 							}
 						}
-						const auto map = [mapp, n_samples](int i, int j)
-						{
+						const auto map = [mapp, n_samples](int i, int j) {
 							if (j * n_samples + i >= mapp.size())
 								return -1;
 							return mapp[j * n_samples + i];
@@ -336,9 +334,8 @@ namespace polyfem
 
 			std::vector<std::tuple<int, int, int>> tris;
 
-			for (auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
+			for (const LocalBoundary &lb : local_boundary)
 			{
-				const auto &lb = *it;
 				const auto &b = (!for_pressure) ? bases[lb.element_id()] : pressure_bases[lb.element_id()];
 
 				for (int j = 0; j < lb.size(); ++j)
@@ -1559,6 +1556,8 @@ namespace polyfem
 		printer.CloseElement();
 
 		fclose(pvd_file);
+
+		logger().info("Simulation results written to: {}", name);
 	}
 
 } // namespace polyfem

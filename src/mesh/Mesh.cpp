@@ -279,7 +279,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 				continue;
 			}
 
-			int tmp_dim = std::max(dim, is_planar(tmp.vertices.dimension()) ? 2 : 3);
+			int tmp_dim = std::max(dim, is_planar(tmp) ? 2 : 3);
 			tmp_vertices.resize(tmp.vertices.nb(), tmp_dim);
 			for (int vi = 0; vi < tmp.vertices.nb(); vi++)
 			{

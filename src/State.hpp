@@ -154,7 +154,7 @@ namespace polyfem
 		double avg_mass;
 
 		//stiffness and mass matrix.
-		//Stiffness is not compute for non linea problems
+		//Stiffness is not compute for non linear problems
 		//Mass is computed only for time dependent problems
 		StiffnessMatrix stiffness, mass;
 		//System righ-hand side.
