@@ -8,9 +8,6 @@
 #include <polyfem/NLProblem.hpp>
 #include <polyfem/ALNLProblem.hpp>
 
-#include <polyfem/LbfgsSolver.hpp>
-#include <polyfem/SparseNewtonDescentSolver.hpp>
-
 #include <polysolve/LinearSolver.hpp>
 #include <polysolve/FEMSolver.hpp>
 
@@ -769,13 +766,13 @@ namespace polyfem
 			alnl_problem.set_weight(al_weight);
 			logger().debug("Solving AL Problem with weight {}", al_weight);
 
-			cppoptlib::SparseNewtonDescentSolver<ALNLProblem> alnlsolver(solver_params(), solver_type(), precond_type());
-			alnlsolver.setLineSearch(args["line_search"]);
+			std::unique_ptr<cppoptlib::NonlinearSolver<ALNLProblem>> alnlsolver = make_nl_solver<ALNLProblem>();
+			alnlsolver->setLineSearch(args["line_search"]);
 			alnl_problem.init(sol);
 			tmp_sol = sol;
-			alnlsolver.minimize(alnl_problem, tmp_sol);
+			alnlsolver->minimize(alnl_problem, tmp_sol);
 			json alnl_solver_info;
-			alnlsolver.getInfo(alnl_solver_info);
+			alnlsolver->getInfo(alnl_solver_info);
 
 			solver_info.push_back({{"type", "al"},
 								   {"t", t},
@@ -797,12 +794,12 @@ namespace polyfem
 		nl_problem.line_search_end();
 		logger().debug("Solving Problem");
 
-		cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
-		nlsolver.setLineSearch(args["line_search"]);
+		std::unique_ptr<cppoptlib::NonlinearSolver<NLProblem>> nlsolver = make_nl_solver<NLProblem>();
+		nlsolver->setLineSearch(args["line_search"]);
 		nl_problem.init(sol);
-		nlsolver.minimize(nl_problem, tmp_sol);
+		nlsolver->minimize(nl_problem, tmp_sol);
 		json nl_solver_info;
-		nlsolver.getInfo(nl_solver_info);
+		nlsolver->getInfo(nl_solver_info);
 		nl_problem.reduced_to_full(tmp_sol, sol);
 
 		// Lagging loop (start at 1 because we already did an iteration above)
@@ -811,9 +808,9 @@ namespace polyfem
 		{
 			logger().debug("Lagging iteration {:d}", lag_i + 1);
 			nl_problem.init(sol);
-			nlsolver.minimize(nl_problem, tmp_sol);
+			nlsolver->minimize(nl_problem, tmp_sol);
 			// json nl_solver_info;
-			// nlsolver.getInfo(nl_solver_info);
+			// nlsolver->getInfo(nl_solver_info);
 			nl_problem.reduced_to_full(tmp_sol, sol);
 		}
 
@@ -1030,13 +1027,13 @@ namespace polyfem
 			alnl_problem.set_weight(al_weight);
 			logger().debug("Solving AL Problem with weight {}", al_weight);
 
-			cppoptlib::SparseNewtonDescentSolver<ALNLProblem> alnlsolver(solver_params(), solver_type(), precond_type());
-			alnlsolver.setLineSearch(args["line_search"]);
+			std::unique_ptr<cppoptlib::NonlinearSolver<ALNLProblem>> alnlsolver = make_nl_solver<ALNLProblem>();
+			alnlsolver->setLineSearch(args["line_search"]);
 			alnl_problem.init(sol);
 			tmp_sol = sol;
-			alnlsolver.minimize(alnl_problem, tmp_sol);
+			alnlsolver->minimize(alnl_problem, tmp_sol);
 			json alnl_solver_info;
-			alnlsolver.getInfo(alnl_solver_info);
+			alnlsolver->getInfo(alnl_solver_info);
 
 			solver_info.push_back({{"type", "al"},
 								   {"weight", al_weight},
@@ -1065,12 +1062,12 @@ namespace polyfem
 		}
 		nl_problem.line_search_end();
 		logger().debug("Solving Problem");
-		cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
-		nlsolver.setLineSearch(args["line_search"]);
+		std::unique_ptr<cppoptlib::NonlinearSolver<NLProblem>> nlsolver = make_nl_solver<NLProblem>();
+		nlsolver->setLineSearch(args["line_search"]);
 		nl_problem.init(sol);
-		nlsolver.minimize(nl_problem, tmp_sol);
+		nlsolver->minimize(nl_problem, tmp_sol);
 		json nl_solver_info;
-		nlsolver.getInfo(nl_solver_info);
+		nlsolver->getInfo(nl_solver_info);
 
 		nl_problem.reduced_to_full(tmp_sol, sol);
 		solver_info.push_back({{"type", "rc"},

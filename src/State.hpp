@@ -16,6 +16,9 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/Logger.hpp>
 
+#include <polyfem/SparseNewtonDescentSolver.hpp>
+#include <polyfem/LBFGSSolver.hpp>
+
 #include <polyfem/Mesh2D.hpp>
 #include <polyfem/Mesh3D.hpp>
 #include <polyfem/StringUtils.hpp>
@@ -543,6 +546,26 @@ namespace polyfem
 				return true;
 
 			return args["iso_parametric"];
+		}
+
+		template <typename ProblemType>
+		std::unique_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver()
+		{
+			std::string name = args["nl_solver"];
+			if (name == "newton")
+			{
+				return std::make_unique<cppoptlib::SparseNewtonDescentSolver<ProblemType>>(
+					solver_params(), solver_type(), precond_type());
+			}
+			else if (name == "lbfgs")
+			{
+				return std::make_unique<cppoptlib::LBFGSSolver<ProblemType>>(
+					solver_params());
+			}
+			else
+			{
+				throw std::invalid_argument(fmt::format("invalid nonlinear solver type: {}", name));
+			}
 		}
 
 		//returns solver, preconditioner and solver parameters (wrappers around the arguments)

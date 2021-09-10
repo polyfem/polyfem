@@ -1,5 +1,5 @@
 ################################################################################
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.14)
 project(PolyFEM)
 ################################################################################
 
@@ -17,11 +17,12 @@ endif()
 
 
 if(INPUT_THIRD_PARTY_DIR)
-    set(THIRD_PARTY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${INPUT_THIRD_PARTY_DIR}/)
+    set(THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${INPUT_THIRD_PARTY_DIR}/")
 else()
-    set(THIRD_PARTY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/)
+    set(THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/")
 endif()
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/recipes/")
 
 if(${POLYFEM_TOPLEVEL_PROJECT})
     list(APPEND CMAKE_MODULE_PATH ${THIRD_PARTY_DIR}/Catch2/contrib)
@@ -119,11 +120,10 @@ option(LIBIGL_WITH_TRIANGLE               "Use Triangle"                 OFF)
 option(LIBIGL_WITH_VIEWER                 "Use OpenGL viewer"            ON)
 option(LIBIGL_WITH_XML                    "Use XML"                      OFF)
 
-
 if(POLYFEM_TOPLEVEL_PROJECT AND POLYFEM_WITH_APPS)
-    option(LIBIGL_WITH_TETGEN                 "Use Tetgen"                   ON)
+    set(LIBIGL_WITH_TETGEN ON CACHE BOOL "Use Tetgen" FORCE)
 else()
-    option(LIBIGL_WITH_TETGEN                 "Use Tetgen"                   OFF)
+    option(LIBIGL_WITH_TETGEN "Use Tetgen" OFF)
 endif()
 
 
@@ -277,6 +277,10 @@ polyfem_download_CppNumericalSolvers()
 add_library(cppoptlib INTERFACE)
 target_include_directories(cppoptlib SYSTEM INTERFACE ${THIRD_PARTY_DIR}/CppNumericalSolvers/include)
 target_link_libraries(polyfem PUBLIC cppoptlib)
+
+# LBFGSpp
+include(LBFGSpp)
+target_link_libraries(polyfem PUBLIC LBFGSpp::LBFGSpp)
 
 # TinyExpr library
 if(NOT TARGET tinyexpr::tinyexpr)

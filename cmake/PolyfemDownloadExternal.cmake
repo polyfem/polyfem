@@ -115,7 +115,7 @@ endfunction()
 function(polyfem_download_tinyxml)
     polyfem_download_project(tinyxml
         GIT_REPOSITORY https://github.com/leethomason/tinyxml2.git
-        GIT_TAG        2c5a6bfdd42ab919e55a613d33c83eb53de71af4
+        GIT_TAG        9.0.0
     )
 endfunction()
 
