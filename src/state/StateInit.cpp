@@ -256,8 +256,32 @@ namespace polyfem
 		geo_logger->set_pretty(false);
 	}
 
-	void State::init(const json &args_in, const std::string &output_dir)
+	void State::init(const json &p_args_in, const std::string &output_dir)
 	{
+		json args_in = p_args_in; // mutable copy
+
+		if (args_in.contains("default_params"))
+		{
+			std::string default_params_path = resolve_path(
+				args_in["default_params"], args_in["root_path"]);
+			if (!default_params_path.empty())
+			{
+				std::ifstream file(default_params_path);
+				if (file.is_open())
+				{
+					json default_params;
+					file >> default_params;
+					file.close();
+					default_params.merge_patch(args_in);
+					args_in = default_params;
+				}
+				else
+				{
+					logger().error("unable to open default params {} file", default_params_path);
+				}
+			}
+		}
+
 		this->args.merge_patch(args_in);
 		has_dhat = args_in.contains("dhat");
 
