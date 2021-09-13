@@ -80,6 +80,7 @@ option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
 set(POLYFEM_THREADING "TBB" CACHE STRING "Multithreading library to use (options: CPP, TBB, NONE)")
 set_property(CACHE POLYFEM_THREADING PROPERTY STRINGS "CPP" "TBB" "NONE")
 
+option(POLYFEM_WITH_TESTS     "Build tests"             ON)
 option(POLYFEM_WITH_APPS      "Build the apps"          ON)
 option(POLYFEM_WITH_MISC      "Build misc targes"       ON)
 
@@ -283,12 +284,7 @@ include(LBFGSpp)
 target_link_libraries(polyfem PUBLIC LBFGSpp::LBFGSpp)
 
 # TinyExpr library
-if(NOT TARGET tinyexpr::tinyexpr)
-    polyfem_download_tinyexpr()
-    add_library(tinyexpr_tinyexpr ${THIRD_PARTY_DIR}/tinyexpr/tinyexpr.c)
-    target_include_directories(tinyexpr_tinyexpr SYSTEM PUBLIC ${THIRD_PARTY_DIR}/tinyexpr)
-    add_library(tinyexpr::tinyexpr ALIAS tinyexpr_tinyexpr)
-endif()
+include(tinyexpr)
 target_link_libraries(polyfem PUBLIC tinyexpr::tinyexpr)
 
 # TinyXML library
@@ -417,7 +413,9 @@ if(POLYFEM_TOPLEVEL_PROJECT)
     endif()
 
     # Unit tests
-    include(CTest)
-    enable_testing()
-    add_subdirectory(tests)
+    if(POLYFEM_WITH_TESTS)
+        include(CTest)
+        enable_testing()
+        add_subdirectory(tests)
+    endif()
 endif()

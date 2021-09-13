@@ -103,14 +103,6 @@ function(polyfem_download_spdlog)
     )
 endfunction()
 
-## tinyexpr zlib
-function(polyfem_download_tinyexpr)
-    polyfem_download_project(tinyexpr
-        GIT_REPOSITORY https://github.com/polyfem/tinyexpr.git
-        GIT_TAG        eb73c7e4005195bf5c0f1fa28dee3b489d59f821
-    )
-endfunction()
-
 ## tinyxml zlib
 function(polyfem_download_tinyxml)
     polyfem_download_project(tinyxml

@@ -1,3 +1,6 @@
+# LBFGSpp (https://github.com/yixuan/LBFGSpp)
+# License: MIT
+
 if(TARGET LBGFSpp::LBGFSpp)
     return()
 endif()
