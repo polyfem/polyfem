@@ -440,16 +440,16 @@ namespace polyfem
 		}
 
 		{
-			const std::string u_path = resolve_output_path(args["export"]["u_path"]);
-			const std::string v_path = resolve_output_path(args["export"]["v_path"]);
-			const std::string a_path = resolve_output_path(args["export"]["a_path"]);
+			const std::string u_out_path = resolve_output_path(args["export"]["u_path"]);
+			const std::string v_out_path = resolve_output_path(args["export"]["v_path"]);
+			const std::string a_out_path = resolve_output_path(args["export"]["a_path"]);
 
-			if (!u_path.empty())
-				write_matrix_binary(u_path, sol);
-			if (!v_path.empty())
-				write_matrix_binary(v_path, velocity);
-			if (!a_path.empty())
-				write_matrix_binary(a_path, acceleration);
+			if (!u_out_path.empty())
+				write_matrix_binary(u_out_path, sol);
+			if (!v_out_path.empty())
+				write_matrix_binary(v_out_path, velocity);
+			if (!a_out_path.empty())
+				write_matrix_binary(a_out_path, acceleration);
 		}
 
 		save_pvd(

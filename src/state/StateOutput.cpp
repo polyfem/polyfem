@@ -166,6 +166,9 @@ namespace polyfem
 					BoundarySampler::normal_for_polygon_edge(lb[k], lb.global_primitive_id(k), *mesh, tmp_n);
 					BoundarySampler::sample_polygon_edge(lb.element_id(), lb.global_primitive_id(k), n_samples, *mesh, uv, local_pts);
 					break;
+				case BoundaryType::Polyhedron:
+					assert(false);
+					break;
 				case BoundaryType::Invalid:
 					assert(false);
 					break;

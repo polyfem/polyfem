@@ -23,7 +23,7 @@ set(MY_FLAGS
 		-Wformat=2
 		-Wuninitialized
 		-Wcast-qual
-		-Wmissing-noreturn
+		# -Wmissing-noreturn
 		-Wmissing-format-attribute
 		-Wredundant-decls
 
@@ -50,7 +50,7 @@ set(MY_FLAGS
 		# -Wno-sign-conversion
 		#-Wsign-conversion
 
-		-Wshadow
+		# -Wshadow
 
 		-Wstrict-null-sentinel
 		-Woverloaded-virtual
@@ -59,7 +59,7 @@ set(MY_FLAGS
 		-Wstrict-aliasing
 		-Wstrict-aliasing=2
 		-Wswitch-default
-		-Wswitch-enum
+		# -Wswitch-enum
 		-Wswitch-unreachable
 
 		-Wcast-align
@@ -118,9 +118,9 @@ set(MY_FLAGS
 		#-Wno-c++98-compat
 		#-Wno-c++98-compat-pedantic
 
-		###########################
-		# Need to check if those are still valid today
-		###########################
+		################################################
+		# Need to check if those are still valid today #
+		################################################
 
 		#-Wimplicit-atomic-properties
 		#-Wmissing-declarations
@@ -137,6 +137,20 @@ set(MY_FLAGS
 		# Gives meaningful stack traces
 		-fno-omit-frame-pointer
 		-fno-optimize-sibling-calls
+
+		#####################
+		# Disabled warnings #
+		#####################
+
+		-Wno-missing-noreturn
+		-Wno-shadow
+		-Wno-switch-enum
+		-Wno-unused-command-line-argument
+		-Wno-unused-function
+		-Wno-unused-private-field
+		-Wno-unused-lambda-capture
+		-Wno-reorder-ctor
+		-Wno-missing-field-initializers
 )
 
 # Flags above don't make sense for MSVC
