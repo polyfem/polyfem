@@ -18,7 +18,7 @@
 
 static bool disable_collision = false;
 
-#define USE_DIV_BARRIER_STIFFNESS
+// #define USE_DIV_BARRIER_STIFFNESS
 
 /*
 m \frac{\partial^2 u}{\partial t^2} = \psi = \text{div}(\sigma[u])\\
