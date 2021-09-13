@@ -20,8 +20,13 @@ namespace cppoptlib
 		using typename Superclass::Scalar;
 		using typename Superclass::TVector;
 
-		SparseNewtonDescentSolver(const json &solver_params, const std::string &linear_solver_type, const std::string &linear_precond_type)
-			: Superclass(solver_params), linear_solver_type(linear_solver_type), linear_precond_type(linear_precond_type)
+		SparseNewtonDescentSolver(
+			const json &solver_params,
+			const std::string &linear_solver_type,
+			const std::string &linear_precond_type)
+			: Superclass(solver_params),
+			  linear_solver_type(linear_solver_type),
+			  linear_precond_type(linear_precond_type)
 		{
 		}
 
@@ -45,15 +50,22 @@ namespace cppoptlib
 			igl::Timer timer;
 
 			timer.start();
-			linear_solver = polysolve::LinearSolver::create(linear_solver_type, linear_precond_type);
+			linear_solver = polysolve::LinearSolver::create(
+				linear_solver_type, linear_precond_type);
 			linear_solver->setParameters(this->solver_params);
 			timer.stop();
-			polyfem::logger().debug("\tinternal solver {}, took {}s", linear_solver->name(), timer.getElapsedTimeInSec());
+			polyfem::logger().debug(
+				"\tinternal solver {}, took {}s",
+				linear_solver->name(), timer.getElapsedTimeInSec());
 
 			next_hessian = 0;
 		}
 
-		virtual void compute_search_direction(ProblemType &objFunc, const TVector &x, const TVector &grad, TVector &direction)
+		virtual void compute_search_direction(
+			ProblemType &objFunc,
+			const TVector &x,
+			const TVector &grad,
+			TVector &direction) override
 		{
 			igl::Timer timer;
 
@@ -63,7 +75,8 @@ namespace cppoptlib
 				timer.start();
 				objFunc.hessian(x, hessian);
 				timer.stop();
-				polyfem::logger().debug("\tassembly time {}s", timer.getElapsedTimeInSec());
+				polyfem::logger().debug(
+					"\tassembly time {}s", timer.getElapsedTimeInSec());
 				this->assembly_time += timer.getElapsedTimeInSec();
 
 				next_hessian += 1;
@@ -94,13 +107,17 @@ namespace cppoptlib
 			polyfem::logger().trace("residual {}", residual);
 			if (this->line_search_failed || std::isnan(residual) || residual > 1e-7)
 			{
-				polyfem::logger().debug("\treverting to gradient descent, since residual is {}", residual);
+				polyfem::logger().debug(
+					"\treverting to gradient descent, since residual is {}",
+					residual);
 				direction = grad;
 			}
 
 			direction *= -1; // Descent
 			timer.stop();
-			polyfem::logger().debug("\tinverting time {}s", timer.getElapsedTimeInSec());
+			polyfem::logger().debug(
+				"\tinverting time {}s",
+				timer.getElapsedTimeInSec());
 			this->inverting_time += timer.getElapsedTimeInSec();
 
 			json info;
@@ -113,7 +130,8 @@ namespace cppoptlib
 			if (new_hessian)
 			{
 				this->m_status = Status::UserDefined;
-				polyfem::logger().debug("stopping because ||step||={} is too small", step);
+				polyfem::logger().debug(
+					"stopping because ||step||={} is too small", step);
 				this->m_error_code = -1;
 			}
 			else
@@ -131,7 +149,7 @@ namespace cppoptlib
 			this->solver_info["internal_solver_first"] = internal_solver_info.front();
 		}
 
-		bool has_hessian_nans(const polyfem::StiffnessMatrix &hessian)
+		static bool has_hessian_nans(const polyfem::StiffnessMatrix &hessian)
 		{
 			for (int k = 0; k < hessian.outerSize(); ++k)
 			{

@@ -552,12 +552,12 @@ namespace polyfem
 		std::unique_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver()
 		{
 			std::string name = args["nl_solver"];
-			if (name == "newton")
+			if (name == "newton" || name == "Newton")
 			{
 				return std::make_unique<cppoptlib::SparseNewtonDescentSolver<ProblemType>>(
 					solver_params(), solver_type(), precond_type());
 			}
-			else if (name == "lbfgs")
+			else if (name == "lbfgs" || name == "LBFGS" || name == "L-BFGS")
 			{
 				return std::make_unique<cppoptlib::LBFGSSolver<ProblemType>>(
 					solver_params());

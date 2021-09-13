@@ -3,10 +3,7 @@
 #include <polyfem/Common.hpp>
 
 // Line search methods
-#include <polyfem/ArmijoLineSearch.hpp>
-#include <polyfem/BisectionLineSearch.hpp>
-#include <polyfem/CppOptArmijoLineSearch.hpp>
-#include <polyfem/MoreThuenteLineSearch.hpp>
+#include <polyfem/LineSearch.hpp>
 
 #include <polyfem/Logger.hpp>
 
@@ -42,34 +39,7 @@ namespace cppoptlib
 
 		void setLineSearch(const std::string &line_search_name)
 		{
-			if (line_search_name == "armijo")
-			{
-				m_line_search = std::make_unique<polyfem::ArmijoLineSearch<ProblemType>>();
-			}
-			else if (line_search_name == "armijo_alt")
-			{
-				m_line_search = std::make_unique<polyfem::CppOptArmijoLineSearch<ProblemType>>();
-			}
-			else if (line_search_name == "bisection")
-			{
-				m_line_search = std::make_unique<polyfem::BisectionLineSearch<ProblemType>>();
-			}
-			else if (line_search_name == "more_thuente")
-			{
-				m_line_search = std::make_unique<polyfem::MoreThuenteLineSearch<ProblemType>>();
-			}
-			else if (line_search_name == "none")
-			{
-				m_line_search = nullptr;
-			}
-			else
-			{
-				std::string msg = fmt::format("[{}] Unknown line search {}.", name(), line_search_name);
-				polyfem::logger().error(msg);
-				throw std::invalid_argument(msg);
-			}
-
-			polyfem::logger().debug("\tline search {}", line_search_name);
+			m_line_search = polyfem::LineSearch<ProblemType>::construct_line_search(line_search_name);
 			solver_info["line_search"] = line_search_name;
 		}
 
@@ -210,18 +180,20 @@ namespace cppoptlib
 				delta_x *= -1;
 			} while (objFunc.callback(this->m_current, x) && (this->m_status == Status::Continue));
 
-			polyfem::logger().info("Newton finished niters = {}, f = {}, ||g||_2 = {}", this->m_current.iterations, old_energy, this->m_current.gradNorm);
-			polyfem::logger().trace("grad {}s, assembly {}s, inverting {}s, linesearch {}s, constrain_set_update {}s, obj_fun {}s, chekcing_for_nan_inf {}s, broad_phase_ccd {}s, ccd {}s, classical_linesearch {}s",
-									grad_time,
-									assembly_time,
-									inverting_time,
-									linesearch_time,
-									constrain_set_update_time + (m_line_search ? m_line_search->constrain_set_update_time : 0),
-									obj_fun_time,
-									m_line_search ? m_line_search->checking_for_nan_inf_time : 0,
-									m_line_search ? m_line_search->broad_phase_ccd_time : 0,
-									m_line_search ? m_line_search->ccd_time : 0,
-									m_line_search ? m_line_search->classical_linesearch_time : 0);
+			if (this->m_status == Status::IterationLimit)
+			{
+				polyfem::logger().warn(
+					"{} reached iteration limit (niters = {}, f = {}, ||g||_2 = {})",
+					name(), this->m_current.iterations, old_energy, this->m_current.gradNorm);
+			}
+			else
+			{
+				polyfem::logger().info(
+					"{} finished (niters = {}, f = {}, ||g||_2 = {})",
+					name(), this->m_current.iterations, old_energy, this->m_current.gradNorm);
+			}
+
+			log_times();
 			update_solver_info();
 		}
 
@@ -283,7 +255,7 @@ namespace cppoptlib
 	protected:
 		const json solver_params;
 
-		std::unique_ptr<polyfem::LineSearch<ProblemType>> m_line_search;
+		std::shared_ptr<polyfem::LineSearch<ProblemType>> m_line_search;
 		bool line_search_failed;
 
 		int m_error_code;
@@ -353,6 +325,21 @@ namespace cppoptlib
 				solver_info["time_classical_linesearch"] =
 					m_line_search->classical_linesearch_time / crit.iterations;
 			}
+		}
+
+		void log_times()
+		{
+			polyfem::logger().trace("grad {}s, assembly {}s, inverting {}s, linesearch {}s, constrain_set_update {}s, obj_fun {}s, chekcing_for_nan_inf {}s, broad_phase_ccd {}s, ccd {}s, classical_linesearch {}s",
+									grad_time,
+									assembly_time,
+									inverting_time,
+									linesearch_time,
+									constrain_set_update_time + (m_line_search ? m_line_search->constrain_set_update_time : 0),
+									obj_fun_time,
+									m_line_search ? m_line_search->checking_for_nan_inf_time : 0,
+									m_line_search ? m_line_search->broad_phase_ccd_time : 0,
+									m_line_search ? m_line_search->ccd_time : 0,
+									m_line_search ? m_line_search->classical_linesearch_time : 0);
 		}
 	};
 } // namespace cppoptlib

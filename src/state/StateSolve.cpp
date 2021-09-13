@@ -800,26 +800,40 @@ namespace polyfem
 		nlsolver->minimize(nl_problem, tmp_sol);
 		json nl_solver_info;
 		nlsolver->getInfo(nl_solver_info);
+		solver_info.push_back({{"type", "rc"},
+							   {"t", t},
+							   {"info", nl_solver_info}});
 		nl_problem.reduced_to_full(tmp_sol, sol);
 
 		// Lagging loop (start at 1 because we already did an iteration above)
 		int lag_i;
-		for (lag_i = 1; lag_i < args["friction_iterations"] && !nl_problem.lagging_converged(tmp_sol, /*do_lagging_update=*/true); lag_i++)
+		bool lagging_converged = nl_problem.lagging_converged(tmp_sol, /*do_lagging_update=*/true);
+		for (lag_i = 1; lag_i < args["friction_iterations"]; lag_i++)
 		{
 			logger().debug("Lagging iteration {:d}", lag_i + 1);
 			nl_problem.init(sol);
 			nlsolver->minimize(nl_problem, tmp_sol);
-			// json nl_solver_info;
-			// nlsolver->getInfo(nl_solver_info);
+
+			nlsolver->getInfo(nl_solver_info);
+			solver_info.push_back({{"type", "rc"},
+								   {"t", t},
+								   {"lag_i", lag_i},
+								   {"info", nl_solver_info}});
+
 			nl_problem.reduced_to_full(tmp_sol, sol);
+			lagging_converged = nl_problem.lagging_converged(tmp_sol, /*do_lagging_update=*/true);
+			if (lagging_converged)
+			{
+				break;
+			}
 		}
 
 		if (args["friction_iterations"] > 0)
 		{
 			logger().info(
-				lag_i >= args["friction_iterations"]
-					? "Maxed out at {:d} lagging iteration{}"
-					: "Converged using {:d} lagging iteration{}",
+				lagging_converged
+					? "Friction lagging converged using {:d} lagging iteration{}"
+					: "Friction lagging maxed out at {:d} lagging iteration{}",
 				lag_i, lag_i > 1 ? "s" : "");
 		}
 
@@ -844,10 +858,6 @@ namespace polyfem
 			timer.stop();
 			logger().trace("done, took {}s", timer.getElapsedTime());
 		}
-
-		solver_info.push_back({{"type", "rc"},
-							   {"t", t},
-							   {"info", nl_solver_info}});
 	}
 
 	void State::solve_linear()

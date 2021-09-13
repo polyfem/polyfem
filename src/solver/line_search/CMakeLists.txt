@@ -1,5 +1,6 @@
 set(SOURCES
 	LineSearch.hpp
+	LineSearch.tpp
 	ArmijoLineSearch.hpp
 	BisectionLineSearch.hpp
 	CppOptArmijoLineSearch.hpp

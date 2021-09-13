@@ -29,6 +29,11 @@ namespace polyfem
 			timer.start();
 
 			const double old_energy = objFunc.value(x);
+			if (std::isnan(old_energy))
+			{
+				logger().error("Original energy in line search is nan!");
+				return std::nan("");
+			}
 			int cur_iter = 0;
 
 			double step_size = objFunc.heuristic_max_step(grad);
@@ -41,7 +46,8 @@ namespace polyfem
 			// Find step that does not result in nan or infinite energy
 			while (step_size > MIN_STEP_SIZE && cur_iter < MAX_STEP_SIZE_ITER)
 			{
-				double cur_e = objFunc.value(new_x, true);
+				// Compute the new energy value without contacts
+				double cur_e = objFunc.value(new_x, /*only_elastic=*/true);
 				const bool valid = objFunc.is_step_valid(x, new_x);
 
 				if (!std::isfinite(cur_e) || !valid)
@@ -61,7 +67,9 @@ namespace polyfem
 
 			if (cur_iter >= MAX_STEP_SIZE_ITER || step_size <= MIN_STEP_SIZE)
 			{
-				logger().error("line-search failed {:d} {:g}", cur_iter, step_size);
+				logger().error(
+					"Line search failed to find a valid finite energy step (old_energy={:g} cur_iter={:d} step_size={:g})!",
+					old_energy, cur_iter, step_size);
 				return std::nan("");
 			}
 
@@ -76,7 +84,7 @@ namespace polyfem
 			double tmp = objFunc.max_step_size(x, new_x);
 			if (tmp == 0)
 			{
-				logger().error("CCD produced a stepsize of zero!");
+				logger().error("Line search failed because CCD produced a stepsize of zero!");
 				objFunc.line_search_end();
 				return std::nan("");
 			}
@@ -114,14 +122,16 @@ namespace polyfem
 
 			// Find step that reduces the energy
 			timer.start();
+			double cur_energy = std::nan("");
+			bool is_step_valid = false;
 			while (step_size > MIN_STEP_SIZE && cur_iter < MAX_STEP_SIZE_ITER)
 			{
-				double cur_e = objFunc.value(new_x);
-				const bool valid = objFunc.is_step_valid(x, new_x);
+				cur_energy = objFunc.value(new_x);
+				is_step_valid = objFunc.is_step_valid(x, new_x);
 
-				logger().trace("ls it: {} delta: {} invalid: {} ", cur_iter, (cur_e - old_energy), !valid);
-				// if (std::isinf(cur_e) || std::isnan(cur_e) || (cur_e >= old_energy && fabs(cur_e - old_energy) > 1e-12) || !valid)
-				if (std::isinf(cur_e) || std::isnan(cur_e) || cur_e >= old_energy || !valid)
+				logger().trace("ls it: {} delta: {} invalid: {} ", cur_iter, (cur_energy - old_energy), !is_step_valid);
+				// if (!std::isfinite(cur_energy) || (cur_energy >= old_energy && fabs(cur_energy - old_energy) > 1e-12) || !is_step_valid)
+				if (!std::isfinite(cur_energy) || cur_energy >= old_energy || !is_step_valid)
 				{
 					step_size /= 2.;
 					new_x = x + step_size * grad;
@@ -145,7 +155,10 @@ namespace polyfem
 
 			if (cur_iter >= MAX_STEP_SIZE_ITER || step_size <= MIN_STEP_SIZE)
 			{
-				logger().error("line-search failed {:d} {:g}", cur_iter, step_size);
+				logger().error(
+					"Line search failed to find descent step "
+					"(old_energy={:.16g} cur_energy={:.16g} is_step_valid={} cur_iter={:d} step_size={:g})",
+					old_energy, cur_energy, is_step_valid ? "true" : "false", cur_iter, step_size);
 				objFunc.line_search_end();
 				return std::nan("");
 			}

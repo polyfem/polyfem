@@ -9,12 +9,15 @@ namespace polyfem
 		using Scalar = typename ProblemType::Scalar;
 		using TVector = typename ProblemType::TVector;
 
+		LineSearch() {}
 		virtual ~LineSearch() = default;
 
 		virtual double linesearch(
 			const TVector &x,
 			const TVector &grad,
 			ProblemType &objFunc) = 0;
+
+		static std::shared_ptr<LineSearch<ProblemType>> construct_line_search(const std::string &name);
 
 		virtual void reset_times()
 		{
@@ -32,3 +35,5 @@ namespace polyfem
 		double classical_linesearch_time;
 	};
 } // namespace polyfem
+
+#include "LineSearch.tpp"

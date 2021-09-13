@@ -32,11 +32,11 @@ namespace polyfem
 
 	std::shared_ptr<ImplicitTimeIntegrator> ImplicitTimeIntegrator::construct_time_integrator(const std::string &name)
 	{
-		if (name == "ImplicitEuler")
+		if (name == "implict_euler" || name == "ImplicitEuler")
 		{
 			return std::make_shared<ImplicitEuler>();
 		}
-		else if (name == "ImplicitNewmark")
+		else if (name == "implict_newmark" || name == "ImplicitNewmark")
 		{
 			return std::make_shared<ImplicitNewmark>();
 		}

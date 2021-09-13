@@ -53,7 +53,11 @@ namespace cppoptlib
 			m_prev_grad.resize(x.size());
 		}
 
-		virtual void compute_search_direction(ProblemType &objFunc, const TVector &x, const TVector &grad, TVector &direction)
+		virtual void compute_search_direction(
+			ProblemType &objFunc,
+			const TVector &x,
+			const TVector &grad,
+			TVector &direction) override
 		{
 			if (this->m_current.iterations == 0 || this->line_search_failed)
 			{

@@ -18,7 +18,7 @@
 
 static bool disable_collision = false;
 
-// #define USE_DIV_BARRIER_STIFFNESS
+#define USE_DIV_BARRIER_STIFFNESS
 
 /*
 m \frac{\partial^2 u}{\partial t^2} = \psi = \text{div}(\sigma[u])\\
@@ -300,7 +300,8 @@ namespace polyfem
 
 		ipc::construct_collision_candidates(
 			displaced0, displaced1, state.boundary_edges,
-			state.boundary_triangles, _candidates, /*inflation_radius=*/0,
+			state.boundary_triangles, _candidates,
+			/*inflation_radius=*/_dhat / 1.99, // divide by 1.99 instead of 2 to be conservative
 			_broad_phase_method, _ignore_codimensional_vertices);
 	}
 
@@ -515,7 +516,7 @@ namespace polyfem
 			grad += ipc::compute_barrier_potential_gradient(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat);
 			grad += ipc::compute_friction_potential_gradient(
 						displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set, _epsv * dt())
-					/ barrier_stiffness;
+					/ _barrier_stiffness;
 #else
 			grad += _barrier_stiffness * ipc::compute_barrier_potential_gradient(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat);
 			grad += ipc::compute_friction_potential_gradient(
