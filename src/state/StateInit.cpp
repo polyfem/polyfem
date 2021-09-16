@@ -326,21 +326,26 @@ namespace polyfem
 				args["solver_params"]["useGradNorm"] = false;
 				logger().warn("Changing convergence check to Newton direction");
 			}
-		}
 
-		if (args["friction_iterations"] == 0)
-		{
-			logger().info("specified friction_iterations is 0; disabling friction");
-			args["mu"] = 0.0;
-		}
-		else if (args["friction_iterations"] <= 0)
-		{
-			args["friction_iterations"] = std::numeric_limits<int>::max();
-		}
+			if (args["friction_iterations"] == 0)
+			{
+				logger().info("specified friction_iterations is 0; disabling friction");
+				args["mu"] = 0.0;
+			}
+			else if (args["friction_iterations"] <= 0)
+			{
+				args["friction_iterations"] = std::numeric_limits<int>::max();
+			}
 
-		if (args["mu"] == 0.0)
+			if (args["mu"] == 0.0)
+			{
+				args["friction_iterations"] = 0;
+			}
+		}
+		else
 		{
 			args["friction_iterations"] = 0;
+			args["mu"] = 0;
 		}
 
 		problem = ProblemFactory::factory().get_problem(args["problem"]);

@@ -35,7 +35,7 @@ namespace polyfem
 	private:
 		double weight_;
 		double stop_dist_;
-		THessian hessian_;
+		THessian hessian_AL_;
 		std::vector<int> not_boundary_;
 		Eigen::MatrixXd displaced_;
 

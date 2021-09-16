@@ -35,6 +35,7 @@ set(SOURCES
 	StringUtils.hpp
 	ExpressionValue.cpp
 	ExpressionValue.hpp
+	Timer.hpp
 	Types.hpp
 )
 

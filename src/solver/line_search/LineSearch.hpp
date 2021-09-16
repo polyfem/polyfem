@@ -12,7 +12,7 @@ namespace polyfem
 		LineSearch() {}
 		virtual ~LineSearch() = default;
 
-		virtual double linesearch(
+		virtual double line_search(
 			const TVector &x,
 			const TVector &grad,
 			ProblemType &objFunc) = 0;
@@ -25,14 +25,14 @@ namespace polyfem
 			broad_phase_ccd_time = 0;
 			ccd_time = 0;
 			constrain_set_update_time = 0;
-			classical_linesearch_time = 0;
+			classical_line_search_time = 0;
 		}
 
 		double checking_for_nan_inf_time;
 		double broad_phase_ccd_time;
 		double ccd_time;
 		double constrain_set_update_time;
-		double classical_linesearch_time;
+		double classical_line_search_time;
 	};
 } // namespace polyfem
 

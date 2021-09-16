@@ -27,18 +27,18 @@ namespace polyfem
 		// stop_dist_ = 1e-2 * state.min_edge_length;
 
 		for (const auto bn : state.boundary_nodes)
-			entries.emplace_back(bn, bn, 2 * weight_);
+			entries.emplace_back(bn, bn, weight_);
 
-		hessian_.resize(state.n_bases * state.mesh->dimension(), state.n_bases * state.mesh->dimension());
-		hessian_.setFromTriplets(entries.begin(), entries.end());
-		hessian_.makeCompressed();
+		hessian_AL_.resize(state.n_bases * state.mesh->dimension(), state.n_bases * state.mesh->dimension());
+		hessian_AL_.setFromTriplets(entries.begin(), entries.end());
+		hessian_AL_.makeCompressed();
 
-		displaced_.resize(hessian_.rows(), 1);
+		displaced_.resize(hessian_AL_.rows(), 1);
 		displaced_.setZero();
 
 		rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, displaced_, t);
 
-		std::vector<bool> mask(hessian_.rows(), true);
+		std::vector<bool> mask(hessian_AL_.rows(), true);
 
 		for (const auto bn : state.boundary_nodes)
 			mask[bn] = false;
@@ -53,7 +53,7 @@ namespace polyfem
 		super::update_quantities(t, x);
 		if (is_time_dependent)
 		{
-			displaced_.resize(hessian_.rows(), 1);
+			displaced_.resize(hessian_AL_.rows(), 1);
 			displaced_.setZero();
 
 			rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, displaced_, t);
@@ -73,7 +73,9 @@ namespace polyfem
 		const double val = super::value(x, only_elastic);
 		TVector distv;
 		compute_distance(x, distv);
-		const double dist = distv.squaredNorm();
+		Eigen::MatrixXd distv_full;
+		reduced_to_full(distv, distv_full);
+		const double dist = distv_full.rowwise().squaredNorm().sum();
 
 		logger().trace("dist {}", sqrt(dist));
 
@@ -87,25 +89,26 @@ namespace polyfem
 		igl::write_triangle_mesh("step.obj", ddd, state.boundary_triangles);
 
 #ifdef USE_DIV_BARRIER_STIFFNESS
-		return val + weight_ * dist / _barrier_stiffness;
+		return val + weight_ / 2 * dist / _barrier_stiffness;
 #else
-		return val + weight_ * dist;
+		return val + weight_ / 2 * dist;
 #endif
 	}
 
 	void ALNLProblem::gradient_no_rhs(const TVector &x, Eigen::MatrixXd &gradv, const bool only_elastic)
 	{
-		TVector tmp;
 		super::gradient_no_rhs(x, gradv, only_elastic);
-		compute_distance(x, tmp);
+
+		TVector grad_AL;
+		compute_distance(x, grad_AL);
 		//logger().trace("dist grad {}", tmp.norm());
 #ifdef USE_DIV_BARRIER_STIFFNESS
-		tmp *= 2 * weight_ / _barrier_stiffness;
+		grad_AL *= weight_ / _barrier_stiffness;
 #else
-		tmp *= 2 * weight_;
+		grad_AL *= weight_;
 #endif
 
-		gradv += tmp;
+		gradv += grad_AL;
 		// gradv = tmp;
 	}
 
@@ -113,9 +116,9 @@ namespace polyfem
 	{
 		super::hessian_full(x, hessian);
 #ifdef USE_DIV_BARRIER_STIFFNESS
-		hessian += hessian_ / _barrier_stiffness;
+		hessian += hessian_AL_ / _barrier_stiffness;
 #else
-		hessian += hessian_;
+		hessian += hessian_AL_;
 #endif
 		hessian.makeCompressed();
 	}

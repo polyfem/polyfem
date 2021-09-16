@@ -117,6 +117,7 @@ namespace polyfem
 		void solution_changed(const TVector &newX);
 		void update_lagging(const TVector &x, bool start_of_timestep);
 
+		double compute_lagging_error(const TVector &x, bool do_lagging_update = true);
 		bool lagging_converged(const TVector &x, bool do_lagging_update = true);
 
 		const Eigen::MatrixXd &current_rhs();

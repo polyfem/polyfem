@@ -173,7 +173,7 @@ namespace polyfem
 		}
 	}
 
-	bool NLProblem::lagging_converged(const TVector &x, bool do_lagging_update)
+	double NLProblem::compute_lagging_error(const TVector &x, bool do_lagging_update)
 	{
 		if (do_lagging_update)
 		{
@@ -185,10 +185,15 @@ namespace polyfem
 		//     ≡ || ∇B(xᵗ⁺¹) + ∇D(xᵗ⁺¹, λᵗ⁺¹, Tᵗ⁺¹)|| ≤ ϵ_d
 		TVector grad;
 		gradient(x, grad);
+		return grad.norm();
+	}
+
+	bool NLProblem::lagging_converged(const TVector &x, bool do_lagging_update)
+	{
 		double tol = state.args.value("friction_convergence_tol", 1e-2);
-		double grad_norm = grad.norm();
+		double grad_norm = compute_lagging_error(x, do_lagging_update);
 		logger().debug("Lagging convergece grad_norm={:g} tol={:g}", grad_norm, tol);
-		return grad.norm() <= tol;
+		return grad_norm <= tol;
 	}
 
 	void NLProblem::update_quantities(const double t, const TVector &x)
@@ -289,9 +294,7 @@ namespace polyfem
 
 	void NLProblem::line_search_begin(const TVector &x0, const TVector &x1)
 	{
-		if (disable_collision)
-			return;
-		if (!state.args["has_collision"])
+		if (disable_collision || !state.args["has_collision"])
 			return;
 
 		Eigen::MatrixXd displaced0, displaced1;
@@ -312,9 +315,7 @@ namespace polyfem
 
 	double NLProblem::max_step_size(const TVector &x0, const TVector &x1)
 	{
-		if (disable_collision)
-			return 1;
-		if (!state.args["has_collision"])
+		if (disable_collision || !state.args["has_collision"])
 			return 1;
 
 		Eigen::MatrixXd displaced0, displaced1;
@@ -353,9 +354,7 @@ namespace polyfem
 
 	bool NLProblem::is_step_collision_free(const TVector &x0, const TVector &x1)
 	{
-		if (disable_collision)
-			return true;
-		if (!state.args["has_collision"])
+		if (disable_collision || !state.args["has_collision"])
 			return true;
 
 		// if (!state.problem->is_time_dependent())
@@ -440,6 +439,11 @@ namespace polyfem
 
 			polyfem::logger().trace("collision_energy {}, friction_energy {}", collision_energy, friction_energy);
 		}
+
+		// logger().trace("|constraints|={} |friction_constraints|={}", _constraint_set.size(), _friction_constraint_set.size());
+		// logger().trace(
+		// 	"elastic_energy={:.16g} body_energy={:.16g} intertia_energy={:.16g} collision_energy={:.16g} friction_energy={:.16g}",
+		// 	scaling * elastic_energy, scaling * body_energy, intertia_energy, _barrier_stiffness * collision_energy, friction_energy);
 
 #ifdef USE_DIV_BARRIER_STIFFNESS
 		return (scaling * (elastic_energy + body_energy) + intertia_energy + friction_energy) / _barrier_stiffness + collision_energy;
@@ -687,9 +691,7 @@ namespace polyfem
 
 	void NLProblem::solution_changed(const TVector &newX)
 	{
-		if (disable_collision)
-			return;
-		if (!state.args["has_collision"])
+		if (disable_collision || !state.args["has_collision"])
 			return;
 
 		Eigen::MatrixXd displaced;
@@ -705,9 +707,7 @@ namespace polyfem
 
 	double NLProblem::heuristic_max_step(const TVector &dx)
 	{
-		// if (disable_collision)
-		// 	return 1;
-		// if (!state.args["has_collision"])
+		// if (disable_collision || !state.args["has_collision"])
 		// 	return 1;
 
 		// //pSize = average(searchDir)
@@ -726,9 +726,7 @@ namespace polyfem
 
 	void NLProblem::post_step(const TVector &x0)
 	{
-		if (disable_collision)
-			return;
-		if (!state.args["has_collision"])
+		if (disable_collision || !state.args["has_collision"])
 			return;
 
 		Eigen::MatrixXd full;

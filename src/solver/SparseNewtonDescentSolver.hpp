@@ -6,12 +6,10 @@
 #include <polyfem/MatrixUtils.hpp>
 
 #include <polyfem/Logger.hpp>
-
-#include <igl/Timer.h>
+#include <polyfem/Timer.hpp>
 
 namespace cppoptlib
 {
-
 	template <typename ProblemType>
 	class SparseNewtonDescentSolver : public NonlinearSolver<ProblemType>
 	{
@@ -30,7 +28,7 @@ namespace cppoptlib
 		{
 		}
 
-		std::string name() const override { return "SparseNewtonDescentSolver"; }
+		std::string name() const override { return "Newton"; }
 
 	private:
 		std::unique_ptr<polysolve::LinearSolver> linear_solver;
@@ -47,78 +45,67 @@ namespace cppoptlib
 		{
 			Superclass::reset(objFunc, x);
 
-			igl::Timer timer;
-
-			timer.start();
 			linear_solver = polysolve::LinearSolver::create(
 				linear_solver_type, linear_precond_type);
 			linear_solver->setParameters(this->solver_params);
-			timer.stop();
-			polyfem::logger().debug(
-				"\tinternal solver {}, took {}s",
-				linear_solver->name(), timer.getElapsedTimeInSec());
 
 			next_hessian = 0;
 		}
 
-		virtual void compute_search_direction(
+		virtual void compute_update_direction(
 			ProblemType &objFunc,
 			const TVector &x,
 			const TVector &grad,
 			TVector &direction) override
 		{
-			igl::Timer timer;
+			if (this->use_gradient_descent)
+			{
+				direction = -grad;
+				return;
+			}
 
 			new_hessian = this->m_current.iterations == next_hessian;
-			if (new_hessian && !this->line_search_failed)
+			if (new_hessian)
 			{
-				timer.start();
+				POLYFEM_SCOPED_TIMER("[timing] assembly time {}s", this->assembly_time);
 				objFunc.hessian(x, hessian);
-				timer.stop();
-				polyfem::logger().debug(
-					"\tassembly time {}s", timer.getElapsedTimeInSec());
-				this->assembly_time += timer.getElapsedTimeInSec();
 
-				next_hessian += 1;
+				++next_hessian;
 
 				// if (this->m_current.iterations == 0 && has_hessian_nans(hessian))
 				// {
 				// 	this->m_status = Status::UserDefined;
 				// 	polyfem::logger().debug("stopping because hessian is nan");
-				// 	this->m_error_code = -10;
+				// 	this->m_error_code = Superclass::ErrorCode::NanEncountered;
 				// 	throw std::runtime_error("stopping because hessian is nan");
 				// }
 			}
 
-			timer.start();
-			if (new_hessian && !this->line_search_failed)
 			{
-				//TODO: get the correct size
-				linear_solver->analyzePattern(hessian, hessian.rows());
-				linear_solver->factorize(hessian);
-			}
-			if (!this->line_search_failed)
-			{
+				POLYFEM_SCOPED_TIMER("[timing] linear solve {}s", this->inverting_time);
+				if (new_hessian)
+				{
+					//TODO: get the correct size
+					linear_solver->analyzePattern(hessian, hessian.rows());
+					linear_solver->factorize(hessian);
+				}
 				linear_solver->solve(grad, direction);
 			}
 
 			//gradient descent, check descent direction
 			const double residual = (hessian * direction - grad).norm();
-			polyfem::logger().trace("residual {}", residual);
-			if (this->line_search_failed || std::isnan(residual) || residual > 1e-7)
+			if (std::isnan(residual) || residual > 1e-7)
 			{
-				polyfem::logger().debug(
-					"\treverting to gradient descent, since residual is {}",
-					residual);
+				polyfem::logger().warn("large linear solve residual ({}); reverting to gradient descent", residual);
 				direction = grad;
+				this->use_gradient_descent = true;
+			}
+			else
+			{
+				polyfem::logger().trace("linear solve residual {}", residual);
 			}
 
 			direction *= -1; // Descent
-			timer.stop();
-			polyfem::logger().debug(
-				"\tinverting time {}s",
-				timer.getElapsedTimeInSec());
-			this->inverting_time += timer.getElapsedTimeInSec();
 
 			json info;
 			linear_solver->getInfo(info);
@@ -129,15 +116,28 @@ namespace cppoptlib
 		{
 			if (new_hessian)
 			{
-				this->m_status = Status::UserDefined;
-				polyfem::logger().debug(
-					"stopping because ||step||={} is too small", step);
-				this->m_error_code = -1;
+				if (this->use_gradient_descent)
+				{
+					polyfem::logger().warn(
+						"[{}] (iter={}) ||step||={} is too small; stopping",
+						name(), this->m_current.iterations, step);
+					this->m_status = Status::UserDefined;
+					this->m_error_code = Superclass::ErrorCode::StepTooSmall;
+				}
+				else
+				{
+					polyfem::logger().debug(
+						"[{}] (iter={}) ||step||={} is too small; trying gradient descent",
+						name(), this->m_current.iterations, step);
+					this->use_gradient_descent = true;
+				}
 			}
 			else
 			{
 				next_hessian = this->m_current.iterations;
-				polyfem::logger().debug("\tstep small force recompute hessian");
+				polyfem::logger().debug(
+					"[{}] (iter={}) ||step||={} is too small; force recompute hessian",
+					name(), this->m_current.iterations, step);
 			}
 		}
 

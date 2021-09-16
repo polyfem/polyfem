@@ -15,8 +15,8 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/Logger.hpp>
 
-#include <polyfem/SparseNewtonDescentSolver.hpp>
-#include <polyfem/LBFGSSolver.hpp>
+// Instead of including this do a forward declaration
+// #include <polyfem/NonlinearSolver.hpp>
 
 #include <polyfem/Mesh2D.hpp>
 #include <polyfem/Mesh3D.hpp>
@@ -31,6 +31,13 @@
 
 #include <memory>
 #include <string>
+
+// Forward declaration
+namespace cppoptlib
+{
+	template <typename ProblemType>
+	class NonlinearSolver;
+}
 
 namespace polyfem
 {
@@ -547,24 +554,7 @@ namespace polyfem
 		}
 
 		template <typename ProblemType>
-		std::unique_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver()
-		{
-			std::string name = args["nl_solver"];
-			if (name == "newton" || name == "Newton")
-			{
-				return std::make_unique<cppoptlib::SparseNewtonDescentSolver<ProblemType>>(
-					solver_params(), solver_type(), precond_type());
-			}
-			else if (name == "lbfgs" || name == "LBFGS" || name == "L-BFGS")
-			{
-				return std::make_unique<cppoptlib::LBFGSSolver<ProblemType>>(
-					solver_params());
-			}
-			else
-			{
-				throw std::invalid_argument(fmt::format("invalid nonlinear solver type: {}", name));
-			}
-		}
+		std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver() const;
 
 		//returns solver, preconditioner and solver parameters (wrappers around the arguments)
 		inline std::string solver_type() const { return args["solver_type"]; }

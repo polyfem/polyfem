@@ -28,7 +28,7 @@ namespace cppoptlib
 		{
 		}
 
-		std::string name() const override { return "LBFGSSolver"; }
+		std::string name() const override { return "L-BFGS"; }
 
 	protected:
 		LBFGSpp::BFGSMat<Scalar> m_bfgs; // Approximation to the Hessian matrix
@@ -51,15 +51,18 @@ namespace cppoptlib
 			m_bfgs.reset(x.size(), m_history_size);
 			m_prev_x.resize(x.size());
 			m_prev_grad.resize(x.size());
+
+			// Use gradient descent for first iteration
+			this->use_gradient_descent = true;
 		}
 
-		virtual void compute_search_direction(
+		virtual void compute_update_direction(
 			ProblemType &objFunc,
 			const TVector &x,
 			const TVector &grad,
 			TVector &direction) override
 		{
-			if (this->m_current.iterations == 0 || this->line_search_failed)
+			if (this->use_gradient_descent)
 			{
 				// Use gradient descent in the first iteration or if the previous iteration failed
 				direction = -grad;

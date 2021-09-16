@@ -5,6 +5,9 @@
 #include <polyfem/OperatorSplittingSolver.hpp>
 #include <polyfem/NavierStokesSolver.hpp>
 
+#include <polyfem/SparseNewtonDescentSolver.hpp>
+#include <polyfem/LBFGSSolver.hpp>
+
 #include <polyfem/NLProblem.hpp>
 #include <polyfem/ALNLProblem.hpp>
 
@@ -40,6 +43,26 @@ namespace polyfem
 			}
 		}
 	} // namespace
+
+	template <typename ProblemType>
+	std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> State::make_nl_solver() const
+	{
+		std::string name = args["nl_solver"];
+		if (name == "newton" || name == "Newton")
+		{
+			return std::make_shared<cppoptlib::SparseNewtonDescentSolver<ProblemType>>(
+				solver_params(), solver_type(), precond_type());
+		}
+		else if (name == "lbfgs" || name == "LBFGS" || name == "L-BFGS")
+		{
+			return std::make_shared<cppoptlib::LBFGSSolver<ProblemType>>(
+				solver_params());
+		}
+		else
+		{
+			throw std::invalid_argument(fmt::format("invalid nonlinear solver type: {}", name));
+		}
+	}
 
 	void State::init_transient(Eigen::VectorXd &c_sol)
 	{
@@ -766,7 +789,7 @@ namespace polyfem
 			alnl_problem.set_weight(al_weight);
 			logger().debug("Solving AL Problem with weight {}", al_weight);
 
-			std::unique_ptr<cppoptlib::NonlinearSolver<ALNLProblem>> alnlsolver = make_nl_solver<ALNLProblem>();
+			std::shared_ptr<cppoptlib::NonlinearSolver<ALNLProblem>> alnlsolver = make_nl_solver<ALNLProblem>();
 			alnlsolver->setLineSearch(args["line_search"]);
 			alnl_problem.init(sol);
 			tmp_sol = sol;
@@ -794,7 +817,7 @@ namespace polyfem
 		nl_problem.line_search_end();
 		logger().debug("Solving Problem");
 
-		std::unique_ptr<cppoptlib::NonlinearSolver<NLProblem>> nlsolver = make_nl_solver<NLProblem>();
+		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nlsolver = make_nl_solver<NLProblem>();
 		nlsolver->setLineSearch(args["line_search"]);
 		nl_problem.init(sol);
 		nlsolver->minimize(nl_problem, tmp_sol);
@@ -808,7 +831,7 @@ namespace polyfem
 		// Lagging loop (start at 1 because we already did an iteration above)
 		int lag_i;
 		bool lagging_converged = nl_problem.lagging_converged(tmp_sol, /*do_lagging_update=*/true);
-		for (lag_i = 1; lag_i < args["friction_iterations"]; lag_i++)
+		for (lag_i = 1; !lagging_converged && lag_i < args["friction_iterations"]; lag_i++)
 		{
 			logger().debug("Lagging iteration {:d}", lag_i + 1);
 			nl_problem.init(sol);
@@ -822,19 +845,16 @@ namespace polyfem
 
 			nl_problem.reduced_to_full(tmp_sol, sol);
 			lagging_converged = nl_problem.lagging_converged(tmp_sol, /*do_lagging_update=*/true);
-			if (lagging_converged)
-			{
-				break;
-			}
 		}
 
 		if (args["friction_iterations"] > 0)
 		{
-			logger().info(
-				lagging_converged
-					? "Friction lagging converged using {:d} lagging iteration{}"
-					: "Friction lagging maxed out at {:d} lagging iteration{}",
-				lag_i, lag_i > 1 ? "s" : "");
+			logger().log(
+				lagging_converged ? spdlog::level::info : spdlog::level::warn,
+				"{} {:d} lagging iteration(s) (err={:g} tol={:g})",
+				lagging_converged ? "Friction lagging converged using" : "Friction lagging maxed out at",
+				lag_i, nl_problem.compute_lagging_error(tmp_sol, /*do_lagging_update=*/false),
+				args["friction_convergence_tol"].get<double>());
 		}
 
 		timer.start();
@@ -1037,7 +1057,7 @@ namespace polyfem
 			alnl_problem.set_weight(al_weight);
 			logger().debug("Solving AL Problem with weight {}", al_weight);
 
-			std::unique_ptr<cppoptlib::NonlinearSolver<ALNLProblem>> alnlsolver = make_nl_solver<ALNLProblem>();
+			std::shared_ptr<cppoptlib::NonlinearSolver<ALNLProblem>> alnlsolver = make_nl_solver<ALNLProblem>();
 			alnlsolver->setLineSearch(args["line_search"]);
 			alnl_problem.init(sol);
 			tmp_sol = sol;
@@ -1072,7 +1092,7 @@ namespace polyfem
 		}
 		nl_problem.line_search_end();
 		logger().debug("Solving Problem");
-		std::unique_ptr<cppoptlib::NonlinearSolver<NLProblem>> nlsolver = make_nl_solver<NLProblem>();
+		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nlsolver = make_nl_solver<NLProblem>();
 		nlsolver->setLineSearch(args["line_search"]);
 		nl_problem.init(sol);
 		nlsolver->minimize(nl_problem, tmp_sol);
@@ -1323,4 +1343,8 @@ namespace polyfem
 		// }
 	}
 
+	////////////////////////////////////////////////////////////////////////
+	// Template instantiations
+	template std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> State::make_nl_solver() const;
+	template std::shared_ptr<cppoptlib::NonlinearSolver<ALNLProblem>> State::make_nl_solver() const;
 } // namespace polyfem

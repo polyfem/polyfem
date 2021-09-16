@@ -12,7 +12,7 @@ namespace polyfem
 		using typename Superclass::Scalar;
 		using typename Superclass::TVector;
 
-		double linesearch(
+		double line_search(
 			const TVector &x,
 			const TVector &searchDir,
 			ProblemType &objFunc) override
