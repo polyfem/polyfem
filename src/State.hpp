@@ -586,9 +586,9 @@ namespace polyfem
 		//builds bases for polygons, called inside build_basis
 		void build_polygonal_basis();
 
-#ifdef POLYFEM_WITH_TBB
-		tbb::task_scheduler_init scheduler;
-#endif
+		// #ifdef POLYFEM_WITH_TBB
+		// 		tbb::task_scheduler_init scheduler;
+		// #endif
 	};
 
 } // namespace polyfem
