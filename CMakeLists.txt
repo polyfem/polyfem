@@ -83,6 +83,7 @@ set_property(CACHE POLYFEM_THREADING PROPERTY STRINGS "CPP" "TBB" "NONE")
 option(POLYFEM_WITH_TESTS     "Build tests"             ON)
 option(POLYFEM_WITH_APPS      "Build the apps"          ON)
 option(POLYFEM_WITH_MISC      "Build misc targes"       ON)
+option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"       ON)
 
 # Sanitizer options
 option(POLYFEM_SANITIZE_ADDRESS   "Sanitize Address"       OFF)
@@ -172,7 +173,10 @@ set(MESH_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tests/")
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_MESH_PATH=\"${MESH_PATH}\")
 
 # Dependencies
-target_link_libraries(polyfem PUBLIC clipper::clipper)
+if(POLYFEM_WITH_CLIPPER)
+    target_link_libraries(polyfem PUBLIC clipper::clipper)
+    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_CLIPPER)
+endif()
 
 # Extra warnings
 target_link_libraries(polyfem PRIVATE warnings::all)
@@ -391,7 +395,9 @@ if(TARGET igl_tetgen)
 endif()
 
 set_target_properties(geogram PROPERTIES FOLDER 3rdparty/other)
-set_target_properties(clipper_clipper PROPERTIES FOLDER 3rdparty/other)
+if(POLYFEM_WITH_CLIPPER)
+    set_target_properties(clipper_clipper PROPERTIES FOLDER 3rdparty/other)
+endif()
 
 ################################################################################
 # Subdirectories

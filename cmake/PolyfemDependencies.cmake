@@ -38,7 +38,7 @@ if(${POLYFEM_TOPLEVEL_PROJECT})
 endif()
 
 # Clipper
-if(NOT TARGET clipper::clipper)
+if(POLYFEM_WITH_CLIPPER AND NOT TARGET clipper::clipper)
     polyfem_download_clipper()
     add_library(clipper_clipper ${POLYFEM_EXTERNAL}/clipper/cpp/clipper.cpp)
     add_library(clipper::clipper ALIAS clipper_clipper)
