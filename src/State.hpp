@@ -25,9 +25,9 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
-#ifdef POLYFEM_WITH_TBB
-#include <tbb/task_scheduler_init.h>
-#endif
+// #ifdef POLYFEM_WITH_TBB
+// #include <tbb/task_scheduler_init.h>
+// #endif
 
 #include <memory>
 #include <string>
