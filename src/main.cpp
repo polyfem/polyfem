@@ -68,6 +68,7 @@ int main(int argc, char **argv)
 	int log_level = 1;
 	int nl_solver_rhs_steps = 1;
 	int cache_size = -1;
+	size_t max_threads = std::numeric_limits<size_t>::max();
 
 	double ccd_max_iterations = -1;
 	std::string ccd_method = "";
@@ -76,6 +77,8 @@ int main(int argc, char **argv)
 	int min_component = -1;
 
 	double vis_mesh_res = -1;
+
+	command_line.add_option("--max_threads", max_threads, "Maximum number of threads");
 
 	command_line.add_option("-j,--json", json_file, "Simulation json file")->check(CLI::ExistingFile);
 	command_line.add_option("-m,--mesh", mesh_file, "Mesh path")->check(CLI::ExistingFile);
@@ -267,7 +270,7 @@ int main(int argc, char **argv)
 	if (no_ui)
 	{
 #endif
-		State state;
+		State state(max_threads);
 		state.init_logger(log_file, log_level, is_quiet);
 		state.init(in_args, output_dir);
 

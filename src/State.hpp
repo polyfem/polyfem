@@ -1,5 +1,4 @@
-#ifndef STATE_HPP
-#define STATE_HPP
+#pragma once
 
 #include <polyfem/ElementBases.hpp>
 #include <polyfem/ElementAssemblyValues.hpp>
@@ -26,10 +25,9 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
-// #ifdef POLYFEM_WITH_TBB
-// #include <thread>
-// #include <tbb/task_scheduler_init.h>
-// #endif
+#ifdef POLYFEM_WITH_TBB
+#include <tbb/task_scheduler_init.h>
+#endif
 
 #include <memory>
 #include <string>
@@ -67,7 +65,7 @@ namespace polyfem
 	public:
 		~State() = default;
 
-		State();
+		State(const unsigned int max_threads = std::numeric_limits<unsigned int>::max());
 
 		//initalizing the logger
 		//log_file is to write it to a file (use log_file="") to output to consolle
@@ -588,10 +586,9 @@ namespace polyfem
 		//builds bases for polygons, called inside build_basis
 		void build_polygonal_basis();
 
-		// #ifdef USE_TBB
-		// 		tbb::task_scheduler_init scheduler;
-		// #endif
+#ifdef POLYFEM_WITH_TBB
+		tbb::task_scheduler_init scheduler;
+#endif
 	};
 
 } // namespace polyfem
-#endif //STATE_HPP

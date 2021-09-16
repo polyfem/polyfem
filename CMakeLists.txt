@@ -239,13 +239,12 @@ elseif(POLYFEM_THREADING STREQUAL "TBB")
 
         add_subdirectory(${THIRD_PARTY_DIR}/tbb tbb)
         set_property(TARGET tbb_static tbb_def_files PROPERTY FOLDER "dependencies")
-
-        target_compile_definitions(tbb_static PUBLIC -DPOLYFEM_WITH_TBB)
         target_include_directories(polyfem SYSTEM PUBLIC ${THIRD_PARTY_DIR}/tbb/include)
         add_library(TBB::tbb ALIAS tbb_static)
     endif()
 
     target_link_libraries(polyfem PUBLIC TBB::tbb)
+    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_TBB)
 endif()
 
 # libigl

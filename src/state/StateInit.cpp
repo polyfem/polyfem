@@ -5,6 +5,7 @@
 
 #include <polyfem/Logger.hpp>
 #include <polyfem/KernelProblem.hpp>
+#include <polyfem/par_for.hpp>
 
 #include <polysolve/LinearSolver.hpp>
 
@@ -62,7 +63,7 @@ namespace polyfem
 		};
 	} // namespace
 
-	State::State()
+	State::State(const unsigned int max_threads)
 	{
 		using namespace polysolve;
 #ifndef WIN32
@@ -70,11 +71,12 @@ namespace polyfem
 #endif
 
 		GEO::initialize();
+		const unsigned int num_threads = std::min(max_threads, std::max(1u, std::thread::hardware_concurrency()));
+		NThread::get().num_threads = num_threads;
 
-#ifdef USE_TBB
+#ifdef POLYFEM_WITH_TBB
 		const size_t MB = 1024 * 1024;
 		const size_t stack_size = 64 * MB;
-		unsigned int num_threads = std::max(1u, std::thread::hardware_concurrency());
 		scheduler.initialize(num_threads, stack_size);
 #endif
 

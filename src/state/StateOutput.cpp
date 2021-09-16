@@ -187,7 +187,8 @@ namespace polyfem
 				{
 					if (lb.type() == BoundaryType::Quad)
 					{
-						const auto map = [n_samples, size](int i, int j) { return j * n_samples + i + size; };
+						const auto map = [n_samples, size](int i, int j)
+						{ return j * n_samples + i + size; };
 
 						for (int j = 0; j < n_samples - 1; ++j)
 						{
@@ -210,7 +211,8 @@ namespace polyfem
 								++index;
 							}
 						}
-						const auto map = [mapp, n_samples](int i, int j) {
+						const auto map = [mapp, n_samples](int i, int j)
+						{
 							if (j * n_samples + i >= mapp.size())
 								return -1;
 							return mapp[j * n_samples + i];
@@ -682,7 +684,7 @@ namespace polyfem
 #if defined(POLYFEM_WITH_CPP_THREADS)
 		j["num_threads"] = polyfem::get_n_threads();
 #elif defined(POLYFEM_WITH_TBB)
-		j["num_threads"] = std::thread::hardware_concurrency(); //tbb::task_scheduler_init::default_num_threads();
+		j["num_threads"] = get_n_threads();
 #else
 		j["num_threads"] = 1;
 #endif
