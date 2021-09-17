@@ -259,7 +259,7 @@ namespace polyfem
 		return _current_rhs;
 	}
 
-	void NLProblem::compute_displaced_points(const Eigen::MatrixXd &full, Eigen::MatrixXd &displaced)
+	void NLProblem::compute_displaced_points(const TVector &full, Eigen::MatrixXd &displaced)
 	{
 		assert(full.size() == full_size);
 
@@ -282,7 +282,7 @@ namespace polyfem
 
 	void NLProblem::reduced_to_full_displaced_points(const TVector &reduced, Eigen::MatrixXd &displaced)
 	{
-		Eigen::MatrixXd full;
+		TVector full;
 		if (reduced.size() == reduced_size)
 			reduced_to_full(reduced, full);
 		else
@@ -396,7 +396,7 @@ namespace polyfem
 
 	double NLProblem::value(const TVector &x, const bool only_elastic)
 	{
-		Eigen::MatrixXd full;
+		TVector full;
 		if (x.size() == reduced_size)
 			reduced_to_full(x, full);
 		else
@@ -489,7 +489,7 @@ namespace polyfem
 	{
 		//scaling * (elastic_energy + body_energy) + intertia_energy + _barrier_stiffness * collision_energy;
 
-		Eigen::MatrixXd full;
+		TVector full;
 		if (x.size() == reduced_size)
 			reduced_to_full(x, full);
 		else
@@ -603,7 +603,7 @@ namespace polyfem
 		igl::Timer timer;
 		timer.start();
 
-		Eigen::MatrixXd full;
+		TVector full;
 		if (x.size() == reduced_size)
 			reduced_to_full(x, full);
 		else
@@ -679,16 +679,6 @@ namespace polyfem
 		// exit(0);
 	}
 
-	void NLProblem::full_to_reduced(const Eigen::MatrixXd &full, TVector &reduced) const
-	{
-		full_to_reduced_aux(state, full_size, reduced_size, full, reduced);
-	}
-
-	void NLProblem::reduced_to_full(const TVector &reduced, Eigen::MatrixXd &full)
-	{
-		reduced_to_full_aux(state, full_size, reduced_size, reduced, current_rhs(), full);
-	}
-
 	void NLProblem::solution_changed(const TVector &newX)
 	{
 		if (disable_collision || !state.args["has_collision"])
@@ -729,7 +719,7 @@ namespace polyfem
 		if (disable_collision || !state.args["has_collision"])
 			return;
 
-		Eigen::MatrixXd full;
+		TVector full;
 		if (x0.size() == reduced_size)
 			reduced_to_full(x0, full);
 		else

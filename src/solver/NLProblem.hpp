@@ -109,8 +109,18 @@ namespace polyfem
 			assert(j == reduced.size());
 		}
 
-		void full_to_reduced(const Eigen::MatrixXd &full, TVector &reduced) const;
-		void reduced_to_full(const TVector &reduced, Eigen::MatrixXd &full);
+		// Templated to allow VectorX* or MatrixX* input, but the size of full
+		// will always be (fullsize, 1)
+		template <class FullVector>
+		void full_to_reduced(const FullVector &full, TVector &reduced) const
+		{
+			full_to_reduced_aux(state, full_size, reduced_size, full, reduced);
+		}
+		template <class FullVector>
+		void reduced_to_full(const TVector &reduced, FullVector &full)
+		{
+			reduced_to_full_aux(state, full_size, reduced_size, reduced, current_rhs(), full);
+		}
 
 		virtual void update_quantities(const double t, const TVector &x);
 		void substepping(const double t);
@@ -134,7 +144,7 @@ namespace polyfem
 	protected:
 		State &state;
 		double _barrier_stiffness;
-		void compute_displaced_points(const Eigen::MatrixXd &full, Eigen::MatrixXd &displaced);
+		void compute_displaced_points(const TVector &full, Eigen::MatrixXd &displaced);
 		void reduced_to_full_displaced_points(const TVector &reduced, Eigen::MatrixXd &displaced);
 		const RhsAssembler &rhs_assembler;
 		bool is_time_dependent;
