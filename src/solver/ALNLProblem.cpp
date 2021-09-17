@@ -71,13 +71,21 @@ namespace polyfem
 	double ALNLProblem::value(const TVector &x, const bool only_elastic)
 	{
 		const double val = super::value(x, only_elastic);
+
+		// ₙ
+		// ∑ ½ κ mₖ ‖ xₖ - x̂ₖ ‖²
+		// ᵏ
 		TVector distv;
 		compute_distance(x, distv);
-		Eigen::MatrixXd distv_full;
-		reduced_to_full(distv, distv_full);
-		const double dist = distv_full.rowwise().squaredNorm().sum();
+		// TODO: multiply by the (lumped?) mass matrix
+		const double AL_penalty = weight_ / 2 * distv.squaredNorm();
 
-		logger().trace("dist {}", sqrt(dist));
+		// TODO: Implement Lagrangian potential if needed (i.e., penalty weight exceeds maximum)
+		// ₙ     __
+		// ∑ -⎷ mₖ λₖᵀ (xₖ - x̂ₖ)
+		// ᵏ
+
+		logger().trace("AL_penalty={}", sqrt(AL_penalty));
 
 		Eigen::MatrixXd ddd;
 		compute_displaced_points(x, ddd);
@@ -89,9 +97,9 @@ namespace polyfem
 		igl::write_triangle_mesh("step.obj", ddd, state.boundary_triangles);
 
 #ifdef USE_DIV_BARRIER_STIFFNESS
-		return val + weight_ / 2 * dist / _barrier_stiffness;
+		return val + AL_penalty / _barrier_stiffness;
 #else
-		return val + weight_ / 2 * dist;
+		return val + AL_penalty;
 #endif
 	}
 
