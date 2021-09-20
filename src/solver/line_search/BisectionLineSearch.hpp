@@ -81,7 +81,10 @@ namespace polyfem
 				POLYFEM_SCOPED_TIMER("[timing] energy min in LS {}s", this->classical_line_search_time);
 				step_size = compute_descent_step_size(x, delta_x, objFunc, old_energy, step_size);
 				if (std::isnan(step_size))
+				{
+					// Superclass::save_sampled_values("failed-line-search-values.csv", x, delta_x, objFunc);
 					return std::nan("");
+				}
 			}
 
 			const double descent_step_size = step_size;

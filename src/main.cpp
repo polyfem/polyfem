@@ -65,7 +65,7 @@ int main(int argc, char **argv)
 	bool is_quiet = false;
 	bool stop_after_build_basis = false;
 	bool lump_mass_mat = false;
-	int log_level = 1;
+	spdlog::level::level_enum log_level = spdlog::level::debug;
 	int nl_solver_rhs_steps = 1;
 	int cache_size = -1;
 	size_t max_threads = std::numeric_limits<size_t>::max();
@@ -122,7 +122,7 @@ int main(int argc, char **argv)
 	command_line.add_option("--min_component", min_component, "Mimimum number of faces in connected compoment for contact");
 
 	// disable out
-	command_line.add_flag("--cmd,--ngui", no_ui, "Runs in command line mode, no GUI");
+	command_line.add_flag("--cmd,--ngui,!--gui", no_ui, "Runs in command line mode, no GUI");
 
 	// IO
 	command_line.add_option("-o,--output_dir", output_dir, "Directory for output files")->check(CLI::ExistingDirectory | CLI::NonexistentPath);
@@ -132,26 +132,29 @@ int main(int argc, char **argv)
 
 	command_line.add_flag("--quiet", is_quiet, "Disable cout for logging");
 	command_line.add_option("--log_file", log_file, "Log to a file");
-	command_line.add_option("--log_level", log_level, "Log level 0=trace, 1=debug, 2=info, 3=warn, 4=error, 5=critical, 6=off");
+	const std::vector<std::pair<std::string, spdlog::level::level_enum>>
+		SPDLOG_LEVEL_NAMES_TO_LEVELS = {
+			{"trace", spdlog::level::trace},
+			{"debug", spdlog::level::debug},
+			{"info", spdlog::level::info},
+			{"warning", spdlog::level::warn},
+			{"error", spdlog::level::err},
+			{"critical", spdlog::level::critical},
+			{"off", spdlog::level::off}};
+	command_line.add_option("--log_level", log_level, "Log level")
+		->transform(CLI::CheckedTransformer(SPDLOG_LEVEL_NAMES_TO_LEVELS, CLI::ignore_case));
 
 	command_line.add_flag("--export_material_params", export_material_params, "Export material parameters");
 
 	const auto &time_integrator_names = ImplicitTimeIntegrator::get_time_integrator_names();
 	command_line.add_set("--time_integrator", time_integrator_name, std::set<std::string>(time_integrator_names.begin(), time_integrator_names.end()), "Time integrator name");
 
-	//CCD
+	// CCD
 	const std::vector<std::string> ccd_methods = {"", "brute_force", "spatial_hash", "hash_grid"};
 	command_line.add_option("--ccd_max_iterations", ccd_max_iterations, "Max number of CCD iterations");
 	command_line.add_set("--ccd_method", ccd_method, std::set<std::string>(ccd_methods.begin(), ccd_methods.end()), "CCD Method");
 
-	try
-	{
-		command_line.parse(argc, argv);
-	}
-	catch (const CLI::ParseError &e)
-	{
-		return command_line.exit(e);
-	}
+	CLI11_PARSE(command_line, argc, argv);
 
 	if (!screenshot.empty())
 	{

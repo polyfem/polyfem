@@ -53,9 +53,7 @@ namespace polyfem
 		super::update_quantities(t, x);
 		if (is_time_dependent)
 		{
-			displaced_.resize(hessian_AL_.rows(), 1);
-			displaced_.setZero();
-
+			displaced_.setZero(hessian_AL_.rows(), 1);
 			rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, displaced_, t);
 		}
 	}

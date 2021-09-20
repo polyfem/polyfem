@@ -19,6 +19,13 @@ namespace polyfem
 
 		static std::shared_ptr<LineSearch<ProblemType>> construct_line_search(const std::string &name);
 
+		static void save_sampled_values(const std::string &filename,
+										const TVector &x,
+										const TVector &grad,
+										ProblemType &objFunc,
+										const double starting_step_size = 1e-1,
+										const int num_samples = 1000);
+
 		virtual void reset_times()
 		{
 			checking_for_nan_inf_time = 0;
