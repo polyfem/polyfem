@@ -139,7 +139,7 @@ endfunction()
 function(polyfem_download_polyfem_data)
     polyfem_download_project(data
         GIT_REPOSITORY https://github.com/polyfem/polyfem-data
-        GIT_TAG        cae167d68b78ba32282b3e9446e6d8f36008456f
+        GIT_TAG        cf4a14791ffc197dff68e0884c05acd51ee445dc
     )
 endfunction()
 

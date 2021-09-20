@@ -71,7 +71,7 @@ namespace polyfem
 #endif
 
 		GEO::initialize();
-		const unsigned int num_threads = std::min(max_threads, std::max(1u, std::thread::hardware_concurrency()));
+		const unsigned int num_threads = std::max(1u, std::min(max_threads, std::thread::hardware_concurrency()));
 		NThread::get().num_threads = num_threads;
 #ifdef POLYFEM_WITH_TBB
 		thread_limiter = std::make_shared<tbb::global_control>(tbb::global_control::max_allowed_parallelism, num_threads);
