@@ -25,9 +25,9 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
-// #ifdef POLYFEM_WITH_TBB
-// #include <tbb/task_scheduler_init.h>
-// #endif
+#ifdef POLYFEM_WITH_TBB
+#include <tbb/global_control.h>
+#endif
 
 #include <memory>
 #include <string>
@@ -576,9 +576,9 @@ namespace polyfem
 		//builds bases for polygons, called inside build_basis
 		void build_polygonal_basis();
 
-		// #ifdef POLYFEM_WITH_TBB
-		// 		tbb::task_scheduler_init scheduler;
-		// #endif
+#ifdef POLYFEM_WITH_TBB
+		std::shared_ptr<tbb::global_control> thread_limiter;
+#endif
 	};
 
 } // namespace polyfem
