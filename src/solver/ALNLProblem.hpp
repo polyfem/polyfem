@@ -25,6 +25,7 @@ namespace polyfem
 		double value(const TVector &x, const bool only_elastic) override;
 		void gradient_no_rhs(const TVector &x, Eigen::MatrixXd &gradv, const bool only_elastic = false) override;
 		void update_quantities(const double t, const TVector &x) override;
+		void update_target(const double t);
 
 		bool stop(const TVector &x) override;
 
@@ -37,7 +38,7 @@ namespace polyfem
 		double stop_dist_;
 		THessian hessian_AL_;
 		std::vector<int> not_boundary_;
-		Eigen::MatrixXd displaced_;
+		Eigen::MatrixXd target_x_; // actually a vector with the same size as x
 
 		void compute_distance(const TVector &x, TVector &res);
 	};

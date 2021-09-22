@@ -176,23 +176,26 @@ namespace polyfem
 				return std::nan("");
 			}
 
-#pragma STDC FENV_ACCESS ON
-			const int current_round = std::fegetround();
-			std::fesetround(FE_DOWNWARD);
-			step_size *= max_step_size; // TODO: check me if correct
-			std::fesetround(current_round);
-			// logger().trace("\t\tpre TOI={}, ss={}", tmp, step_size);
+			{ // clang-format off
+				#pragma STDC FENV_ACCESS ON
+				const int current_round = std::fegetround();
+				std::fesetround(FE_DOWNWARD);
+				step_size *= max_step_size; // TODO: check me if correct
+				std::fesetround(current_round);
+			} // clang-format on
 
-			// while (tmp != 1)
+			// logger().trace("\t\tpre TOI={}, ss={}", max_step_size, step_size);
+
+			// while (max_step_size != 1)
 			// {
 			// 	new_x = x + step_size * delta_x;
-			// 	tmp = objFunc.max_step_size(x, new_x);
+			// 	max_step_size = objFunc.max_step_size(x, new_x);
 			//
 			// 	std::fesetround(FE_DOWNWARD);
-			// 	step_size *= tmp; // TODO: check me if correct
+			// 	step_size *= max_step_size; // TODO: check me if correct
 			// 	std::fesetround(current_roudn);
-			// 	if (tmp != 1)
-			// 		logger().trace("\t\trepeating TOI={}, ss={}", tmp, step_size);
+			// 	if (max_step_size != 1)
+			// 		logger().trace("\t\trepeating TOI={}, ss={}", max_step_size, step_size);
 			// }
 
 			return step_size;

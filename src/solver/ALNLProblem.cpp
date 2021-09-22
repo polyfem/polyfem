@@ -33,10 +33,7 @@ namespace polyfem
 		hessian_AL_.setFromTriplets(entries.begin(), entries.end());
 		hessian_AL_.makeCompressed();
 
-		displaced_.resize(hessian_AL_.rows(), 1);
-		displaced_.setZero();
-
-		rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, displaced_, t);
+		update_target(t);
 
 		std::vector<bool> mask(hessian_AL_.rows(), true);
 
@@ -48,19 +45,24 @@ namespace polyfem
 				not_boundary_.push_back(i);
 	}
 
+	void ALNLProblem::update_target(const double t)
+	{
+		target_x_.setZero(hessian_AL_.rows(), 1);
+		rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, target_x_, t);
+	}
+
 	void ALNLProblem::update_quantities(const double t, const TVector &x)
 	{
 		super::update_quantities(t, x);
 		if (is_time_dependent)
 		{
-			displaced_.setZero(hessian_AL_.rows(), 1);
-			rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, displaced_, t);
+			update_target(t);
 		}
 	}
 
 	void ALNLProblem::compute_distance(const TVector &x, TVector &res)
 	{
-		res = x - displaced_;
+		res = x - target_x_;
 
 		for (const auto bn : not_boundary_)
 			res[bn] = 0;
