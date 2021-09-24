@@ -120,6 +120,36 @@ bool polyfem::write_matrix_binary(const std::string &path, const Mat &mat)
 	return true;
 }
 
+bool polyfem::write_sparse_matrix_csv(const std::string &path, const Eigen::SparseMatrix<double> &mat)
+{
+	std::ofstream csv(path, std::ios::out);
+
+	if (!csv.good())
+	{
+		logger().error("Failed to write to file: {}", path);
+		csv.close();
+
+		return false;
+	}
+
+	csv << std::setprecision(std::numeric_limits<long double>::digits10 + 2);
+
+	csv << fmt::format("shape,{},{}\n", mat.rows(), mat.cols());
+	csv << "Row,Col,Val\n";
+	for (int k = 0; k < mat.outerSize(); ++k)
+	{
+		for (Eigen::SparseMatrix<double>::InnerIterator it(mat, k); it; ++it)
+		{
+			csv << it.row() << "," // row index
+				<< it.col() << "," // col index (here it is equal to k)
+				<< it.value() << "\n";
+		}
+	}
+	csv.close();
+
+	return true;
+}
+
 polyfem::SpareMatrixCache::SpareMatrixCache(const size_t size)
 	: size_(size)
 {
@@ -300,10 +330,9 @@ polyfem::SpareMatrixCache polyfem::SpareMatrixCache::operator+(const SpareMatrix
 		assert(a.values_.size() == values_.size());
 
 #if defined(POLYFEM_WITH_CPP_THREADS)
-		polyfem::par_for(a.values_.size(), [&](int start, int end, int t)
-						 {
-							 for (int i = start; i < end; ++i)
-							 {
+		polyfem::par_for(a.values_.size(), [&](int start, int end, int t) {
+			for (int i = start; i < end; ++i)
+			{
 #elif defined(POLYFEM_WITH_TBB)
 		tbb::parallel_for(tbb::blocked_range<int>(0, a.values_.size()), [&](const tbb::blocked_range<int> &r) {
 			for (int i = r.begin(); i != r.end(); ++i)
@@ -312,10 +341,10 @@ polyfem::SpareMatrixCache polyfem::SpareMatrixCache::operator+(const SpareMatrix
 		for (int i = 0; i < a.values_.size(); ++i)
 		{
 #endif
-								 out.values_[i] = a.values_[i] + values_[i];
+				out.values_[i] = a.values_[i] + values_[i];
 #if defined(POLYFEM_WITH_CPP_THREADS) || defined(POLYFEM_WITH_TBB)
-							 }
-						 });
+			}
+		});
 #else
 			}
 #endif
@@ -341,10 +370,9 @@ void polyfem::SpareMatrixCache::operator+=(const SpareMatrixCache &o)
 		assert(values_.size() == o.values_.size());
 
 #if defined(POLYFEM_WITH_CPP_THREADS)
-		polyfem::par_for(o.values_.size(), [&](int start, int end, int t)
-						 {
-							 for (int i = start; i < end; ++i)
-							 {
+		polyfem::par_for(o.values_.size(), [&](int start, int end, int t) {
+			for (int i = start; i < end; ++i)
+			{
 #elif defined(POLYFEM_WITH_TBB)
 		tbb::parallel_for(tbb::blocked_range<int>(0, o.values_.size()), [&](const tbb::blocked_range<int> &r) {
 				for (int i = r.begin(); i != r.end(); ++i)
@@ -353,10 +381,10 @@ void polyfem::SpareMatrixCache::operator+=(const SpareMatrixCache &o)
 			for (int i = 0; i < o.values_.size(); ++i)
 			{
 #endif
-								 values_[i] += o.values_[i];
+				values_[i] += o.values_[i];
 #if defined(POLYFEM_WITH_CPP_THREADS) || defined(POLYFEM_WITH_TBB)
-							 }
-						 });
+			}
+		});
 #else
 				}
 #endif

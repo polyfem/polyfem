@@ -87,7 +87,19 @@ namespace cppoptlib
 				{
 					//TODO: get the correct size
 					linear_solver->analyzePattern(hessian, hessian.rows());
-					linear_solver->factorize(hessian);
+
+					try
+					{
+						linear_solver->factorize(hessian);
+					}
+					catch (const std::runtime_error &err)
+					{
+						polyfem::logger().error("Unable to factorize Hessian: \"{}\"", err.what());
+						// polyfem::write_sparse_matrix_csv("problematic_hessian.csv", hessian);
+						this->use_gradient_descent = true;
+						direction = -grad;
+						return;
+					}
 				}
 				linear_solver->solve(grad, direction);
 			}

@@ -4,6 +4,8 @@
 #include <polysolve/FEMSolver.hpp>
 
 #include <polyfem/Types.hpp>
+#include <polyfem/Timer.hpp>
+#include <polyfem/MatrixUtils.hpp>
 
 #include <ipc/ipc.hpp>
 #include <ipc/barrier/barrier.hpp>
@@ -11,8 +13,6 @@
 #include <ipc/utils/world_bbox_diagonal_length.hpp>
 
 #include <igl/write_triangle_mesh.h>
-
-#include <unsupported/Eigen/SparseExtra>
 
 #include <igl/Timer.h>
 
@@ -543,8 +543,7 @@ namespace polyfem
 			return;
 		}
 
-		igl::Timer timer;
-		timer.start();
+		POLYFEM_SCOPED_TIMER_NO_GLOBAL("\tremoving costraint time {}s");
 
 		std::vector<Eigen::Triplet<double>> entries;
 
@@ -591,92 +590,94 @@ namespace polyfem
 		hessian.resize(reduced_size, reduced_size);
 		hessian.setFromTriplets(entries.begin(), entries.end());
 		hessian.makeCompressed();
-
-		timer.stop();
-		polyfem::logger().trace("\tremoving costraint time {}s", timer.getElapsedTimeInSec());
+		// write_sparse_matrix_csv("hessian.csv", hessian);
 	}
 
 	void NLProblem::hessian_full(const TVector &x, THessian &hessian)
 	{
 		//scaling * (elastic_energy + body_energy) + intertia_energy + _barrier_stiffness * collision_energy;
 
-		igl::Timer timer;
-		timer.start();
-
 		TVector full;
-		if (x.size() == reduced_size)
-			reduced_to_full(x, full);
-		else
-			full = x;
-
-		timer.stop();
-		polyfem::logger().trace("\treduced to full time {}s", timer.getElapsedTimeInSec());
-		timer.start();
-
+		{
+			POLYFEM_SCOPED_TIMER_NO_GLOBAL("\treduced to full time {}s");
+			if (x.size() == reduced_size)
+				reduced_to_full(x, full);
+			else
+				full = x;
+		}
 		assert(full.size() == full_size);
 
-		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
-		if (assembler.is_linear(rhs_assembler.formulation()))
+		THessian energy_hessian(full_size, full_size);
 		{
-			compute_cached_stiffness();
-			hessian = cached_stiffness;
-		}
-		else
-			assembler.assemble_energy_hessian(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, project_to_psd, state.bases, gbases, state.ass_vals_cache, full, mat_cache, hessian);
+			POLYFEM_SCOPED_TIMER_NO_GLOBAL("\telastic hessian time {}s");
 
-		timer.stop();
-		polyfem::logger().trace("\telastic hessian time {}s", timer.getElapsedTimeInSec());
-		timer.start();
+			const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
+			if (assembler.is_linear(rhs_assembler.formulation()))
+			{
+				compute_cached_stiffness();
+				energy_hessian = cached_stiffness;
+			}
+			else
+			{
+				assembler.assemble_energy_hessian(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, project_to_psd, state.bases, gbases, state.ass_vals_cache, full, mat_cache, energy_hessian);
+			}
+
+			if (is_time_dependent)
+			{
+				energy_hessian *= time_integrator->acceleration_scaling();
+			}
+		}
+
+		THessian inertia_hessian(full_size, full_size);
 		if (is_time_dependent)
 		{
-			hessian *= time_integrator->acceleration_scaling();
-			hessian += state.mass;
+			POLYFEM_SCOPED_TIMER_NO_GLOBAL("\tinertia hessian time {}s");
+			inertia_hessian = state.mass;
 		}
 
-		timer.stop();
-		polyfem::logger().trace("\tinertia hessian time {}s", timer.getElapsedTimeInSec());
-
-#ifdef USE_DIV_BARRIER_STIFFNESS
-		hessian /= _barrier_stiffness;
-#endif
-
+		THessian barrier_hessian(full_size, full_size), friction_hessian(full_size, full_size);
 		if (!disable_collision && state.args["has_collision"])
 		{
-			timer.start();
-
-			igl::Timer timeri;
-			timeri.start();
+			POLYFEM_SCOPED_TIMER_NO_GLOBAL("\tipc hessian(s) time {}s");
 
 			Eigen::MatrixXd displaced;
-			compute_displaced_points(full, displaced);
-			timeri.stop();
-			polyfem::logger().trace("\t\tdisplace pts time {}s", timeri.getElapsedTimeInSec());
-			timeri.start();
+			{
+				POLYFEM_SCOPED_TIMER_NO_GLOBAL("\t\tdisplace pts time {}s");
+				compute_displaced_points(full, displaced);
+			}
 
-			timeri.stop();
-			polyfem::logger().trace("\t\tconstraint set time {}s", timeri.getElapsedTimeInSec());
-			timeri.start();
-#ifdef USE_DIV_BARRIER_STIFFNESS
-			hessian += ipc::compute_barrier_potential_hessian(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat, project_to_psd);
-			hessian += ipc::compute_friction_potential_hessian(
-						   displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set, _epsv * dt(), project_to_psd)
-					   / _barrier_stiffness;
-#else
-			hessian += _barrier_stiffness * ipc::compute_barrier_potential_hessian(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat, project_to_psd);
-			hessian += ipc::compute_friction_potential_hessian(
-				displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set, _epsv * dt(), project_to_psd);
-#endif
-			timeri.stop();
-			polyfem::logger().trace("\t\tonly ipc hessian time {}s", timeri.getElapsedTimeInSec());
+			// {
+			// 	POLYFEM_SCOPED_TIMER_NO_GLOBAL("\t\tconstraint set time {}s");
+			// }
 
-			timer.stop();
-			polyfem::logger().trace("\tipc hessian time {}s", timer.getElapsedTimeInSec());
+			{
+				POLYFEM_SCOPED_TIMER_NO_GLOBAL("\t\tbarrier hessian time {}s");
+				barrier_hessian = ipc::compute_barrier_potential_hessian(
+					displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat, project_to_psd);
+			}
+
+			{
+				POLYFEM_SCOPED_TIMER_NO_GLOBAL("\t\tfriction hessian time {}s");
+				friction_hessian = ipc::compute_friction_potential_hessian(
+					displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set,
+					_epsv * dt(), project_to_psd);
+			}
 		}
 
+		// Summing the hessian matrices like this might be less efficient than multiple `hessian += ...`, but
+		// it is much easier to read and export the individual matrices for inspection.
+#ifdef USE_DIV_BARRIER_STIFFNESS
+		hessian = (energy_hessian + inertia_hessian + friction_hessian) / _barrier_stiffness + barrier_hessian;
+#else
+		hessian = energy_hessian + inertia_hessian + _barrier_stiffness * barrier_hessian + friction_hessian;
+#endif
 		assert(hessian.rows() == full_size);
 		assert(hessian.cols() == full_size);
-		// Eigen::saveMarket(tmp, "tmp.mat");
-		// exit(0);
+
+		// write_sparse_matrix_csv("energy_hessian.csv", energy_hessian);
+		// write_sparse_matrix_csv("inertia_hessian.csv", inertia_hessian);
+		// write_sparse_matrix_csv("barrier_hessian.csv", _barrier_stiffness * barrier_hessian);
+		// write_sparse_matrix_csv("friction_hessian.csv", friction_hessian);
 	}
 
 	void NLProblem::solution_changed(const TVector &newX)

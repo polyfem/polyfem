@@ -21,6 +21,8 @@ set(SOURCES
 	Logger.hpp
 	InterpolatedFunction.cpp
 	InterpolatedFunction.hpp
+	JSONUtils.cpp
+	JSONUtils.hpp
 	MatrixUtils.cpp
 	MatrixUtils.hpp
 	MshReader.cpp

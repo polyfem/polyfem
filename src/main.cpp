@@ -11,6 +11,7 @@
 #include <polyfem/Problem.hpp>
 #include <polyfem/ImplicitTimeIntegrator.hpp>
 #include <polyfem/AssemblerUtils.hpp>
+#include <polyfem/JSONUtils.hpp>
 
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
@@ -174,6 +175,12 @@ int main(int argc, char **argv)
 		file.close();
 
 		in_args["root_path"] = json_file;
+
+		if (in_args.contains("default_params"))
+		{
+			apply_default_params(in_args);
+			in_args.erase("default_params"); // Remove this so state does not redo the apply
+		}
 
 		// If the mesh path does not exist make it relative to the json_file
 		// if (in_args.contains("mesh"))

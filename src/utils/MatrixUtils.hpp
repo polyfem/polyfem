@@ -36,6 +36,8 @@ namespace polyfem
 	template <typename Mat>
 	bool write_matrix_binary(const std::string &path, const Mat &mat);
 
+	bool write_sparse_matrix_csv(const std::string &path, const Eigen::SparseMatrix<double> &mat);
+
 	class SpareMatrixCache
 	{
 	public:
