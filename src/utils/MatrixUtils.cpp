@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <iomanip> // setprecision
 #include <vector>
 
 void polyfem::show_matrix_stats(const Eigen::MatrixXd &M)
