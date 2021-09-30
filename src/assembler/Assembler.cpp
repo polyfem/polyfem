@@ -93,43 +93,6 @@ namespace polyfem
 				val = 0;
 			}
 		};
-
-#ifdef POLYFEM_WITH_TBB
-		template <typename LTM>
-		void merge_matrices(tbb::enumerable_thread_specific<LTM> &storages, SpareMatrixCache &mat)
-		{
-			for (auto &t : storages)
-			{
-				t.cache.prune();
-				mat += t.cache;
-			}
-			// std::vector<LTM *> flat_view;
-			// for (auto i = storages.begin(); i != storages.end(); ++i)
-			// {
-			// 	flat_view.emplace_back(&*i);
-			// }
-
-			// mat = tbb::parallel_reduce(
-			// 	tbb::blocked_range<int>(0, flat_view.size()), mat,
-			// 	[&](const tbb::blocked_range<int> &r, const SpareMatrixCache &m)
-			// 	{
-			// 		SpareMatrixCache tmp = m;
-			// 		for (int e = r.begin(); e != r.end(); ++e)
-			// 		{
-			// 			const auto i = flat_view[e];
-			// 			i->cache.prune();
-
-			// 			tmp += i->cache;
-			// 		}
-
-			// 		return tmp;
-			// 	},
-			// 	[](const SpareMatrixCache &a, const SpareMatrixCache &b)
-			// 	{
-			// 		return a + b;
-			// 	});
-		}
-#endif
 	} // namespace
 
 	template <class LocalAssembler>
@@ -263,19 +226,12 @@ namespace polyfem
 			logger().debug("done separate assembly {}s...", timerg.getElapsedTime());
 
 			timerg.start();
-#if defined(POLYFEM_WITH_CPP_THREADS)
+#if defined(POLYFEM_WITH_CPP_THREADS) || defined(POLYFEM_WITH_TBB)
 			for (auto &t : storages)
 			{
 				stiffness += t.cache.get_matrix(false);
 			}
 			stiffness.makeCompressed();
-#elif defined(POLYFEM_WITH_TBB)
-				SpareMatrixCache tmp_cache;
-				tmp_cache.init(stiffness.rows(), stiffness.cols());
-				tmp_cache.set_zero();
-				merge_matrices(storages, tmp_cache);
-
-				stiffness = tmp_cache.get_matrix(false);
 #else
 				loc_storage.cache.prune();
 				stiffness = loc_storage.cache.get_matrix(false);
@@ -417,19 +373,12 @@ namespace polyfem
 
 		timerg.start();
 
-#if defined(POLYFEM_WITH_CPP_THREADS)
+#if defined(POLYFEM_WITH_CPP_THREADS) || defined(POLYFEM_WITH_TBB)
 		for (auto &t : storages)
 		{
 			stiffness += t.cache.get_matrix(false);
 		}
 		stiffness.makeCompressed();
-#elif defined(POLYFEM_WITH_TBB)
-				SpareMatrixCache tmp_cache;
-				tmp_cache.init(stiffness.rows(), stiffness.cols());
-				tmp_cache.set_zero();
-				merge_matrices(storages, tmp_cache);
-				stiffness = tmp_cache.get_matrix(false);
-
 #else
 				loc_storage.cache.prune();
 				stiffness = loc_storage.cache.get_matrix(false);
@@ -694,9 +643,12 @@ namespace polyfem
 		{
 			mat_cache += t.cache;
 		}
-
 #elif defined(POLYFEM_WITH_TBB)
-						merge_matrices(storages, mat_cache);
+						for (auto &t : storages)
+						{
+							t.cache.prune();
+							mat += t.cache;
+						}
 #else
 						loc_storage.cache.prune();
 						mat_cache += loc_storage.cache;
