@@ -647,7 +647,7 @@ namespace polyfem
 						for (auto &t : storages)
 						{
 							t.cache.prune();
-							mat += t.cache;
+							mat_cache += t.cache;
 						}
 #else
 						loc_storage.cache.prune();
