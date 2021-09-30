@@ -771,7 +771,7 @@ namespace polyfem
 		timer.start();
 		logger().trace("Updating lagging...");
 
-		nl_problem.update_lagging(tmp_sol, /*start_of_timestep=*/true);
+		nl_problem.update_lagging(sol, /*start_of_timestep=*/true);
 		alnl_problem.update_lagging(sol, /*start_of_timestep=*/true);
 
 		timer.stop();
@@ -1042,7 +1042,7 @@ namespace polyfem
 		const double max_al_weight = args["max_al_weight"];
 		nl_problem.full_to_reduced(sol, tmp_sol);
 
-		nl_problem.update_lagging(tmp_sol, /*start_of_timestep=*/true);
+		nl_problem.update_lagging(sol, /*start_of_timestep=*/true);
 		alnl_problem.update_lagging(sol, /*start_of_timestep=*/true);
 
 		//TODO: maybe add linear solver here?

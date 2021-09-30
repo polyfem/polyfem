@@ -153,7 +153,8 @@ namespace cppoptlib
 					this->m_status = Status::Continue;
 				}
 
-				if (this->m_current.iterations > 0 && this->m_status != Status::Continue)
+				// Converge on the first iteration iff the line search failed and the gradient is small
+				if ((use_gradient_descent || this->m_current.iterations > 0) && this->m_status != Status::Continue)
 				{
 					// converged
 					break;

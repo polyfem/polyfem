@@ -27,7 +27,7 @@ endfunction()
 function(polyfem_download_solvers)
     polyfem_download_project(solvers
         GIT_REPOSITORY https://github.com/polyfem/polysolve.git
-        GIT_TAG        a94e9b8ed8302d4b479533c67419f31addb1e987
+        GIT_TAG        72e5eaca17b1ae975fa5a7149627a17e6b13cf80
     )
 endfunction()
 
@@ -115,7 +115,7 @@ endfunction()
 function(polyfem_download_ipc)
     polyfem_download_project(ipc
         GIT_REPOSITORY https://github.com/ipc-sim/ipc-toolkit.git
-        GIT_TAG        eb07cde62810fe285ac4d17f1ea2639c1d7baa68
+        GIT_TAG        c11f3d201ef354d4c1849b1763cd7d9fc535c459
     )
 endfunction()
 
@@ -139,7 +139,7 @@ endfunction()
 function(polyfem_download_polyfem_data)
     polyfem_download_project(data
         GIT_REPOSITORY https://github.com/polyfem/polyfem-data
-        GIT_TAG        cae167d68b78ba32282b3e9446e6d8f36008456f
+        GIT_TAG        c810c5547bd238f68558433f1829b0fad39ac2f2
     )
 endfunction()
 

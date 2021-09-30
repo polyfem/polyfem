@@ -9,9 +9,13 @@
 
 #include <polysolve/LinearSolver.hpp>
 
+#include <polyfem/JSONUtils.hpp>
+
 #include <geogram/basic/logger.h>
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
+
+#include <ipc/utils/logger.hpp>
 
 namespace polyfem
 {
@@ -71,14 +75,11 @@ namespace polyfem
 #endif
 
 		GEO::initialize();
-		const unsigned int num_threads = std::min(max_threads, std::max(1u, std::thread::hardware_concurrency()));
+		const unsigned int num_threads = std::max(1u, std::min(max_threads, std::thread::hardware_concurrency()));
 		NThread::get().num_threads = num_threads;
-
-		// #ifdef POLYFEM_WITH_TBB
-		// 		const size_t MB = 1024 * 1024;
-		// 		const size_t stack_size = 64 * MB;
-		// 		scheduler.initialize(num_threads, stack_size);
-		// #endif
+#ifdef POLYFEM_WITH_TBB
+		thread_limiter = std::make_shared<tbb::global_control>(tbb::global_control::max_allowed_parallelism, num_threads);
+#endif
 
 		// Import standard command line arguments, and custom ones
 		GEO::CmdLine::import_arg_group("standard");
@@ -231,6 +232,8 @@ namespace polyfem
 		geo_logger->unregister_all_clients();
 		geo_logger->register_client(new GeoLoggerForward(logger().clone("geogram")));
 		geo_logger->set_pretty(false);
+
+		IPC_LOG(set_level(static_cast<spdlog::level::level_enum>(log_level)));
 	}
 
 	void State::init_logger(std::ostream &os, int log_level)
@@ -263,26 +266,7 @@ namespace polyfem
 		json args_in = p_args_in; // mutable copy
 
 		if (args_in.contains("default_params"))
-		{
-			std::string default_params_path = resolve_path(
-				args_in["default_params"], args_in["root_path"]);
-			if (!default_params_path.empty())
-			{
-				std::ifstream file(default_params_path);
-				if (file.is_open())
-				{
-					json default_params;
-					file >> default_params;
-					file.close();
-					default_params.merge_patch(args_in);
-					args_in = default_params;
-				}
-				else
-				{
-					logger().error("unable to open default params {} file", default_params_path);
-				}
-			}
-		}
+			apply_default_params(args_in);
 
 		this->args.merge_patch(args_in);
 		has_dhat = args_in.contains("dhat");
