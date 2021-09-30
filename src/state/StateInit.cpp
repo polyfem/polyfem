@@ -198,6 +198,7 @@ namespace polyfem
 
 			{"export",
 			 {{"sol_at_node", -1},
+			  {"high_order_mesh", true},
 			  {"surface", false},
 			  {"vis_mesh", ""},
 			  {"sol_on_grid", -1},

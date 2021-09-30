@@ -383,10 +383,10 @@ namespace polyfem
 		//compute von mises stress at quadrature points for the function fun, also compute the interpolated function
 		void compute_stress_at_quadrature_points(const MatrixXd &fun, Eigen::MatrixXd &result, Eigen::VectorXd &von_mises);
 		//interpolate the function fun. n_points is the size of the output. boundary_only interpolates only at boundary elements
-		void interpolate_function(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool boundary_only = false);
+		void interpolate_function(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool use_sampler, const bool boundary_only);
 		//interpolate the function fun. n_points is the size of the output. boundary_only interpolates only at boundary elements
 		//actual dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
-		void interpolate_function(const int n_points, const int actual_dim, const std::vector<ElementBases> &basis, const MatrixXd &fun, MatrixXd &result, const bool boundary_only = false);
+		void interpolate_function(const int n_points, const int actual_dim, const std::vector<ElementBases> &basis, const MatrixXd &fun, MatrixXd &result, const bool use_sampler, const bool boundary_only);
 
 		//interpolate solution and gradient at in element el_index for the local_pts in the reference element (calls interpolate_at_local_vals with sol)
 		void interpolate_at_local_vals(const int el_index, const MatrixXd &local_pts, MatrixXd &result, MatrixXd &result_grad);
@@ -397,12 +397,12 @@ namespace polyfem
 		void interpolate_at_local_vals(const int el_index, const int actual_dim, const std::vector<ElementBases> &bases, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad);
 
 		//computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)
-		void compute_scalar_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool boundary_only = false);
+		void compute_scalar_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool use_sampler, const bool boundary_only);
 		//computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)
 		//the scalar value is averaged around every node to make it continuos
-		void average_grad_based_function(const int n_points, const MatrixXd &fun, MatrixXd &result_scalar, MatrixXd &result_tensor, const bool boundary_only = false);
+		void average_grad_based_function(const int n_points, const MatrixXd &fun, MatrixXd &result_scalar, MatrixXd &result_tensor, const bool use_sampler, const bool boundary_only);
 		//compute tensor quantity (ie stress tensor or velocy)
-		void compute_tensor_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool boundary_only = false);
+		void compute_tensor_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool use_sampler, const bool boundary_only);
 
 		//computes integrated solution (fun) per surface face. pts and faces are the boundary are the boundary on the rest configuration
 		void interpolate_boundary_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result);
@@ -435,6 +435,7 @@ namespace polyfem
 		//it also retuns the mapping to element id and discretization of every elment
 		//works in 2 and 3d. if the mesh is not simplicial it gets tri/tet halized
 		void build_vis_mesh(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXi &el_id, Eigen::MatrixXd &discr);
+		void build_high_oder_vis_mesh(Eigen::MatrixXd &points, std::vector<std::vector<int>> &elements, Eigen::MatrixXi &el_id, Eigen::MatrixXd &discr);
 
 		//saves the vtu file for time t
 		void save_vtu(const std::string &name, const double t);
@@ -454,7 +455,7 @@ namespace polyfem
 			args["export"]["vis_boundary_only"] = boundary_only;
 
 			build_vis_mesh(points, tets, el_id, discr);
-			interpolate_function(points.rows(), sol, fun, boundary_only);
+			interpolate_function(points.rows(), sol, fun, false, boundary_only);
 
 			args["export"]["vis_boundary_only"] = tmp;
 		}
@@ -470,7 +471,7 @@ namespace polyfem
 			args["export"]["vis_boundary_only"] = boundary_only;
 
 			build_vis_mesh(points, tets, el_id, discr);
-			compute_tensor_value(points.rows(), sol, fun, boundary_only);
+			compute_tensor_value(points.rows(), sol, fun, false, boundary_only);
 
 			args["export"]["vis_boundary_only"] = tmp;
 		}
@@ -486,7 +487,7 @@ namespace polyfem
 			args["export"]["vis_boundary_only"] = boundary_only;
 
 			build_vis_mesh(points, tets, el_id, discr);
-			compute_scalar_value(points.rows(), sol, fun, boundary_only);
+			compute_scalar_value(points.rows(), sol, fun, false, boundary_only);
 
 			args["export"]["vis_boundary_only"] = tmp;
 		}
@@ -502,7 +503,7 @@ namespace polyfem
 			args["export"]["vis_boundary_only"] = boundary_only;
 
 			build_vis_mesh(points, tets, el_id, discr);
-			average_grad_based_function(points.rows(), sol, fun, tfun, boundary_only);
+			average_grad_based_function(points.rows(), sol, fun, tfun, false, boundary_only);
 
 			args["export"]["vis_boundary_only"] = tmp;
 		}

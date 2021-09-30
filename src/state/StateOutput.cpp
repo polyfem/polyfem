@@ -6,6 +6,9 @@
 #include <polyfem/VTUWriter.hpp>
 #include <polyfem/MeshUtils.hpp>
 
+#include <polyfem/auto_p_bases.hpp>
+#include <polyfem/auto_q_bases.hpp>
+
 // #ifdef POLYFEM_WITH_TBB
 // #include <tbb/task_scheduler_init.h>
 // #endif
@@ -938,6 +941,121 @@ namespace polyfem
 		assert(tet_index == tets.rows());
 	}
 
+	void State::build_high_oder_vis_mesh(Eigen::MatrixXd &points, std::vector<std::vector<int>> &elements, Eigen::MatrixXi &el_id, Eigen::MatrixXd &discr)
+	{
+		if (!mesh)
+		{
+			logger().error("Load the mesh first!");
+			return;
+		}
+		if (n_bases <= 0)
+		{
+			logger().error("Build the bases first!");
+			return;
+		}
+		assert(mesh->is_linear());
+
+		std::vector<RowVectorNd> nodes;
+		int pts_total_size = 0;
+		elements.resize(bases.size());
+		Eigen::MatrixXd ref_pts;
+
+		for (size_t i = 0; i < bases.size(); ++i)
+		{
+			const auto &bs = bases[i];
+			if (mesh->is_volume())
+			{
+				if (mesh->is_simplex(i))
+					autogen::p_nodes_3d(disc_orders(i), ref_pts);
+				else if (mesh->is_cube(i))
+					autogen::q_nodes_3d(disc_orders(i), ref_pts);
+				else
+					continue;
+			}
+			else
+			{
+				if (mesh->is_simplex(i))
+					autogen::p_nodes_2d(disc_orders(i), ref_pts);
+				else if (mesh->is_cube(i))
+					autogen::q_nodes_2d(disc_orders(i), ref_pts);
+				else
+					continue;
+			}
+
+			pts_total_size += ref_pts.rows();
+		}
+
+		points.resize(pts_total_size, mesh->dimension());
+
+		el_id.resize(pts_total_size, 1);
+		discr.resize(pts_total_size, 1);
+
+		Eigen::MatrixXd mapped;
+		int pts_index = 0;
+
+		for (size_t i = 0; i < bases.size(); ++i)
+		{
+			const auto &bs = bases[i];
+			if (mesh->is_volume())
+			{
+				if (mesh->is_simplex(i))
+					autogen::p_nodes_3d(disc_orders(i), ref_pts);
+				else if (mesh->is_cube(i))
+					autogen::q_nodes_3d(disc_orders(i), ref_pts);
+				else
+					continue;
+			}
+			else
+			{
+				if (mesh->is_simplex(i))
+					autogen::p_nodes_2d(disc_orders(i), ref_pts);
+				else if (mesh->is_cube(i))
+					autogen::q_nodes_2d(disc_orders(i), ref_pts);
+				else
+					continue;
+			}
+
+			bs.eval_geom_mapping(ref_pts, mapped);
+
+			for (int j = 0; j < mapped.rows(); ++j)
+			{
+				points.row(pts_index) = mapped.row(j);
+				el_id(pts_index) = i;
+				discr(pts_index) = disc_orders(i);
+				elements[i].push_back(pts_index);
+
+				pts_index++;
+			}
+
+			if (mesh->is_simplex(i))
+			{
+				if (mesh->is_volume())
+				{
+					const int n_nodes = elements[i].size();
+					if (disc_orders(i) >= 3)
+					{
+
+						std::swap(elements[i][16], elements[i][17]);
+						std::swap(elements[i][17], elements[i][18]);
+						std::swap(elements[i][18], elements[i][19]);
+					}
+					//TODO: higher than 3
+				}
+				else
+				{
+					if (disc_orders(i) == 4)
+					{
+						const int n_nodes = elements[i].size();
+						std::swap(elements[i][n_nodes - 1], elements[i][n_nodes - 2]);
+					}
+				}
+			}
+			//TODO: hexes
+		}
+
+		assert(pts_index == points.rows());
+	}
+
 	void State::save_vtu(const std::string &path, const double t)
 	{
 		if (!mesh)
@@ -966,11 +1084,17 @@ namespace polyfem
 		Eigen::MatrixXi tets;
 		Eigen::MatrixXi el_id;
 		Eigen::MatrixXd discr;
+		std::vector<std::vector<int>> elements;
 
-		build_vis_mesh(points, tets, el_id, discr);
+		const bool use_sampler = !(mesh->is_linear() && solve_export_to_file && args["export"]["high_order_mesh"]);
+
+		if (use_sampler)
+			build_vis_mesh(points, tets, el_id, discr);
+		else
+			build_high_oder_vis_mesh(points, elements, el_id, discr);
 
 		Eigen::MatrixXd fun, exact_fun, err;
-		const bool boundary_only = args["export"]["vis_boundary_only"];
+		const bool boundary_only = use_sampler && args["export"]["vis_boundary_only"];
 		const bool material_params = args["export"]["material_params"];
 		const bool body_ids = args["export"]["body_ids"];
 		const bool sol_on_grid = args["export"]["sol_on_grid"] > 0;
@@ -1032,7 +1156,7 @@ namespace polyfem
 			}
 		}
 
-		interpolate_function(points.rows(), sol, fun, boundary_only);
+		interpolate_function(points.rows(), sol, fun, use_sampler, boundary_only);
 
 		if (problem->has_exact_sol())
 		{
@@ -1060,7 +1184,7 @@ namespace polyfem
 		if (assembler.is_mixed(formulation()))
 		{
 			Eigen::MatrixXd interp_p;
-			interpolate_function(points.rows(), 1, pressure_bases, pressure, interp_p, boundary_only);
+			interpolate_function(points.rows(), 1, pressure_bases, pressure, interp_p, use_sampler, boundary_only);
 			if (solve_export_to_file)
 				writer.add_field("pressure", interp_p);
 			else
@@ -1086,7 +1210,7 @@ namespace polyfem
 		if (fun.cols() != 1)
 		{
 			Eigen::MatrixXd vals, tvals;
-			compute_scalar_value(points.rows(), sol, vals, boundary_only);
+			compute_scalar_value(points.rows(), sol, vals, use_sampler, boundary_only);
 			if (solve_export_to_file)
 				writer.add_field("scalar_value", vals);
 			else
@@ -1094,7 +1218,7 @@ namespace polyfem
 
 			if (solve_export_to_file)
 			{
-				compute_tensor_value(points.rows(), sol, tvals, boundary_only);
+				compute_tensor_value(points.rows(), sol, tvals, use_sampler, boundary_only);
 				for (int i = 0; i < tvals.cols(); ++i)
 				{
 					const int ii = (i / mesh->dimension()) + 1;
@@ -1105,7 +1229,7 @@ namespace polyfem
 
 			if (!args["use_spline"])
 			{
-				average_grad_based_function(points.rows(), sol, vals, tvals, boundary_only);
+				average_grad_based_function(points.rows(), sol, vals, tvals, use_sampler, boundary_only);
 				if (solve_export_to_file)
 					writer.add_field("scalar_value_avg", vals);
 				else
@@ -1157,7 +1281,12 @@ namespace polyfem
 		// interpolate_function(pts_index, rhs, fun, boundary_only);
 		// writer.add_field("rhs", fun);
 		if (solve_export_to_file)
-			writer.write_mesh(path, points, tets);
+		{
+			if (elements.empty())
+				writer.write_mesh(path, points, tets);
+			else
+				writer.write_mesh(path, points, elements, true);
+		}
 		else
 		{
 			solution_frames.back().name = path;
@@ -1443,7 +1572,7 @@ namespace polyfem
 		}
 
 		Eigen::MatrixXd fun;
-		interpolate_function(pts_index, sol, fun);
+		interpolate_function(pts_index, sol, fun, /*use_sampler*/ true, false);
 
 		// Eigen::MatrixXd exact_fun, err;
 

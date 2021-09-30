@@ -392,7 +392,7 @@ namespace polyfem
 		assert(counter == result.rows());
 	}
 
-	void State::average_grad_based_function(const int n_points, const MatrixXd &fun, MatrixXd &result_scalar, MatrixXd &result_tensor, const bool boundary_only)
+	void State::average_grad_based_function(const int n_points, const MatrixXd &fun, MatrixXd &result_scalar, MatrixXd &result_tensor, const bool use_sampler, const bool boundary_only)
 	{
 		if (!mesh)
 		{
@@ -470,7 +470,7 @@ namespace polyfem
 
 		avg_scalar.array() /= areas.array();
 
-		interpolate_function(n_points, 1, bases, avg_scalar, result_scalar, boundary_only);
+		interpolate_function(n_points, 1, bases, avg_scalar, result_scalar, use_sampler, boundary_only);
 		// interpolate_function(n_points, actual_dim*actual_dim, bases, avg_tensor, result_tensor, boundary_only);
 	}
 
@@ -675,15 +675,15 @@ namespace polyfem
 		von_mises.conservativeResize(num_quadr_pts, von_mises.cols());
 	}
 
-	void State::interpolate_function(const int n_points, const MatrixXd &fun, MatrixXd &result, const bool boundary_only)
+	void State::interpolate_function(const int n_points, const MatrixXd &fun, MatrixXd &result, const bool use_sampler, const bool boundary_only)
 	{
 		int actual_dim = 1;
 		if (!problem->is_scalar())
 			actual_dim = mesh->dimension();
-		interpolate_function(n_points, actual_dim, bases, fun, result, boundary_only);
+		interpolate_function(n_points, actual_dim, bases, fun, result, use_sampler, boundary_only);
 	}
 
-	void State::interpolate_function(const int n_points, const int actual_dim, const std::vector<ElementBases> &basis, const MatrixXd &fun, MatrixXd &result, const bool boundary_only)
+	void State::interpolate_function(const int n_points, const int actual_dim, const std::vector<ElementBases> &basis, const MatrixXd &fun, MatrixXd &result, const bool use_sampler, const bool boundary_only)
 	{
 		if (!mesh)
 		{
@@ -713,16 +713,40 @@ namespace polyfem
 			if (boundary_only && mesh->is_volume() && !mesh->is_boundary_element(i))
 				continue;
 
-			if (mesh->is_simplex(i))
-				local_pts = sampler.simplex_points();
-			else if (mesh->is_cube(i))
-				local_pts = sampler.cube_points();
+			if (use_sampler)
+			{
+				if (mesh->is_simplex(i))
+					local_pts = sampler.simplex_points();
+				else if (mesh->is_cube(i))
+					local_pts = sampler.cube_points();
+				else
+				{
+					if (mesh->is_volume())
+						sampler.sample_polyhedron(polys_3d[i].first, polys_3d[i].second, local_pts, vis_faces_poly);
+					else
+						sampler.sample_polygon(polys[i], local_pts, vis_faces_poly);
+				}
+			}
 			else
 			{
 				if (mesh->is_volume())
-					sampler.sample_polyhedron(polys_3d[i].first, polys_3d[i].second, local_pts, vis_faces_poly);
+				{
+					if (mesh->is_simplex(i))
+						autogen::p_nodes_3d(disc_orders(i), local_pts);
+					else if (mesh->is_cube(i))
+						autogen::q_nodes_3d(disc_orders(i), local_pts);
+					else
+						continue;
+				}
 				else
-					sampler.sample_polygon(polys[i], local_pts, vis_faces_poly);
+				{
+					if (mesh->is_simplex(i))
+						autogen::p_nodes_2d(disc_orders(i), local_pts);
+					else if (mesh->is_cube(i))
+						autogen::q_nodes_2d(disc_orders(i), local_pts);
+					else
+						continue;
+				}
 			}
 
 			MatrixXd local_res = MatrixXd::Zero(local_pts.rows(), actual_dim);
@@ -802,7 +826,7 @@ namespace polyfem
 		}
 	}
 
-	void State::compute_scalar_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool boundary_only)
+	void State::compute_scalar_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool use_sampler, const bool boundary_only)
 	{
 		if (!mesh)
 		{
@@ -834,16 +858,40 @@ namespace polyfem
 			const ElementBases &gbs = gbases[i];
 			Eigen::MatrixXd local_pts;
 
-			if (mesh->is_simplex(i))
-				local_pts = sampler.simplex_points();
-			else if (mesh->is_cube(i))
-				local_pts = sampler.cube_points();
+			if (use_sampler)
+			{
+				if (mesh->is_simplex(i))
+					local_pts = sampler.simplex_points();
+				else if (mesh->is_cube(i))
+					local_pts = sampler.cube_points();
+				else
+				{
+					if (mesh->is_volume())
+						sampler.sample_polyhedron(polys_3d[i].first, polys_3d[i].second, local_pts, vis_faces_poly);
+					else
+						sampler.sample_polygon(polys[i], local_pts, vis_faces_poly);
+				}
+			}
 			else
 			{
 				if (mesh->is_volume())
-					sampler.sample_polyhedron(polys_3d[i].first, polys_3d[i].second, local_pts, vis_faces_poly);
+				{
+					if (mesh->is_simplex(i))
+						autogen::p_nodes_3d(disc_orders(i), local_pts);
+					else if (mesh->is_cube(i))
+						autogen::q_nodes_3d(disc_orders(i), local_pts);
+					else
+						continue;
+				}
 				else
-					sampler.sample_polygon(polys[i], local_pts, vis_faces_poly);
+				{
+					if (mesh->is_simplex(i))
+						autogen::p_nodes_2d(disc_orders(i), local_pts);
+					else if (mesh->is_cube(i))
+						autogen::q_nodes_2d(disc_orders(i), local_pts);
+					else
+						continue;
+				}
 			}
 
 			assembler.compute_scalar_value(formulation(), i, bs, gbs, local_pts, fun, local_val);
@@ -853,7 +901,7 @@ namespace polyfem
 		}
 	}
 
-	void State::compute_tensor_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool boundary_only)
+	void State::compute_tensor_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool use_sampler, const bool boundary_only)
 	{
 		if (!mesh)
 		{
@@ -886,16 +934,40 @@ namespace polyfem
 			const ElementBases &gbs = gbases[i];
 			Eigen::MatrixXd local_pts;
 
-			if (mesh->is_simplex(i))
-				local_pts = sampler.simplex_points();
-			else if (mesh->is_cube(i))
-				local_pts = sampler.cube_points();
+			if (use_sampler)
+			{
+				if (mesh->is_simplex(i))
+					local_pts = sampler.simplex_points();
+				else if (mesh->is_cube(i))
+					local_pts = sampler.cube_points();
+				else
+				{
+					if (mesh->is_volume())
+						sampler.sample_polyhedron(polys_3d[i].first, polys_3d[i].second, local_pts, vis_faces_poly);
+					else
+						sampler.sample_polygon(polys[i], local_pts, vis_faces_poly);
+				}
+			}
 			else
 			{
 				if (mesh->is_volume())
-					sampler.sample_polyhedron(polys_3d[i].first, polys_3d[i].second, local_pts, vis_faces_poly);
+				{
+					if (mesh->is_simplex(i))
+						autogen::p_nodes_3d(disc_orders(i), local_pts);
+					else if (mesh->is_cube(i))
+						autogen::q_nodes_3d(disc_orders(i), local_pts);
+					else
+						continue;
+				}
 				else
-					sampler.sample_polygon(polys[i], local_pts, vis_faces_poly);
+				{
+					if (mesh->is_simplex(i))
+						autogen::p_nodes_2d(disc_orders(i), local_pts);
+					else if (mesh->is_cube(i))
+						autogen::q_nodes_2d(disc_orders(i), local_pts);
+					else
+						continue;
+				}
 			}
 
 			assembler.compute_tensor_value(formulation(), i, bs, gbs, local_pts, fun, local_val);

@@ -176,6 +176,8 @@ namespace polyfem
 			return false;
 		}
 
+		inline bool is_linear() { return orders_.size() == 0 || orders_.maxCoeff() == 1; }
+
 	protected:
 		virtual bool load(const std::string &path) = 0;
 		virtual bool load(const GEO::Mesh &M) = 0;
