@@ -29,6 +29,8 @@ set(SOURCES
 	MshReader.hpp
 	par_for.cpp
 	par_for.hpp
+	raster.cpp
+	raster.hpp
 	RBFInterpolation.cpp
 	RBFInterpolation.hpp
 	RefElementSampler.cpp
