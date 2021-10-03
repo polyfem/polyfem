@@ -3,9 +3,6 @@
 #include <polyfem/Mesh3D.hpp>
 #include <polyfem/Common.hpp>
 
-#include <geogram/basic/command_line.h>
-#include <geogram/basic/command_line_args.h>
-
 #include <igl/opengl/glfw/imgui/ImGuiMenu.h>
 #include <igl/opengl/glfw/imgui/ImGuiHelpers.h>
 #include <igl/adjacency_list.h>
@@ -33,7 +30,7 @@ static const ImGuiWindowFlags WINDOW_FLAGS = ImGuiWindowFlags_NoScrollbar | ImGu
 struct BCVals
 {
 	std::vector<std::array<float, 3>> vals;
-	std::vector<Matrix<std::array<char, BUF_SIZE>, 3, 1>> funs;
+	std::vector<std::array<std::array<char, BUF_SIZE>, 3>> funs;
 	std::vector<int> bc_type;
 	std::vector<int> bc_value;
 
@@ -49,15 +46,11 @@ struct BCVals
 
 	void append()
 	{
-		vals.push_back(std::array<float, 3>());
-		vals.back()[0] = vals.back()[1] = vals.back()[2] = 0;
-		Matrix<std::array<char, BUF_SIZE>, 3, 1> tmp;
-		for (int i = 0; i < 3; ++i)
-		{
-			for (int j = 0; j < BUF_SIZE; ++j)
-				tmp(i)[j] = 0;
-		}
-		funs.push_back(tmp);
+		vals.push_back({0, 0, 0});
+
+		funs.emplace_back();
+		for (int i = 0; i < 3; i++)
+			std::fill(funs.back()[i].begin(), funs.back()[i].end(), char(0));
 
 		bc_type.push_back(0);
 		bc_value.push_back(0);
@@ -74,10 +67,7 @@ RowVector3d color(int bc, int n_cols, bool is_volume)
 	RowVector3d col;
 	if (bc == 0)
 	{
-		if (is_volume)
-			col << 1, 1, 1;
-		else
-			col << 0, 0, 0;
+		col.setConstant(is_volume ? 1 : 0);
 	}
 	else
 	{
@@ -94,12 +84,9 @@ RowVector3d color(int bc, int n_cols, bool is_volume)
 template <typename VecT1, typename VecT2, typename VecT3>
 double point_segment_distance(const VecT1 &aa, const VecT2 &bb, const VecT3 &pp)
 {
-	Eigen::Vector2d a;
-	a << aa(0), aa(1);
-	Eigen::Vector2d b;
-	b << bb(0), bb(1);
-	Eigen::Vector2d p;
-	p << pp(0), pp(1);
+	Eigen::Vector2d a(aa(0), aa(1));
+	Eigen::Vector2d b(bb(0), bb(1));
+	Eigen::Vector2d p(pp(0), pp(1));
 
 	const Eigen::Vector2d n = b - a;
 	const Eigen::Vector2d pa = a - p;
@@ -150,6 +137,7 @@ bool load(const std::string &path, igl::opengl::glfw::Viewer &viewer,
 	if (tmp->is_volume())
 	{
 		viewer.core().set_rotation_type(igl::opengl::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
+		viewer.core().orthographic = false;
 
 		Mesh3D &mesh = *dynamic_cast<Mesh3D *>(tmp.get());
 
@@ -212,6 +200,7 @@ bool load(const std::string &path, igl::opengl::glfw::Viewer &viewer,
 	else
 	{
 		viewer.core().set_rotation_type(igl::opengl::ViewerCore::RotationType::ROTATION_TYPE_NO_ROTATION);
+		viewer.core().orthographic = true;
 
 		Mesh2D &mesh = *dynamic_cast<Mesh2D *>(tmp.get());
 
@@ -245,8 +234,37 @@ bool load(const std::string &path, igl::opengl::glfw::Viewer &viewer,
 			++index;
 		}
 
-		p0.conservativeResize(index, 3);
-		p1.conservativeResize(index, 3);
+		const int n_boundary_edges = index;
+
+		p0.conservativeResize(n_boundary_edges, 3);
+		p1.conservativeResize(n_boundary_edges, 3);
+
+		igl::triangle_triangle_adjacency(F, adj);
+		adj.setConstant(n_boundary_edges, 2, -1); // Assumes manifold mesh
+		for (int i = 0; i < n_boundary_edges; ++i)
+		{
+			int ni = 0;
+			for (int j = 0; j < n_boundary_edges && ni < 2; ++j)
+			{
+				if (i == j)
+					continue;
+
+				if (p0.row(i) == p0.row(j) || p0.row(i) == p1.row(j)
+					|| p1.row(i) == p0.row(j) || p1.row(i) == p1.row(j))
+				{
+					adj(i, ni++) = j;
+				}
+			}
+			assert(ni == 2);
+		}
+
+		N.resize(n_boundary_edges, 2);
+		for (int i = 0; i < n_boundary_edges; ++i)
+		{
+			N(i, 0) = p1(i, 1) - p0(i, 1); //  dy
+			N(i, 1) = p0(i, 0) - p1(i, 0); // -dx
+			N.row(i).normalize();
+		}
 
 		C = MatrixXd::Constant(p0.rows(), 3, 0);
 		selected.resize(mesh.n_edges());
@@ -262,9 +280,7 @@ void save(const std::string &path, const VectorXi &selected, const BCVals &vals,
 	file.open(path + ".txt");
 
 	if (file.good())
-	{
 		file << selected;
-	}
 
 	file.close();
 
@@ -308,37 +324,20 @@ void save(const std::string &path, const VectorXi &selected, const BCVals &vals,
 	};
 
 	file.open(path + ".json");
-	file << args.dump(4) << std::endl;
+	if (file.good())
+		file << args.dump(4) << std::endl;
 	file.close();
 }
 
 int main(int argc, char **argv)
 {
-#ifndef WIN32
-	setenv("GEO_NO_SIGNAL_HANDLER", "1", 1);
-#endif
-
-	GEO::initialize();
-
-	// Import standard command line arguments, and custom ones
-	GEO::CmdLine::import_arg_group("standard");
-	GEO::CmdLine::import_arg_group("pre");
-	GEO::CmdLine::import_arg_group("algo");
-
 	igl::opengl::glfw::Viewer viewer;
 
 	CLI::App command_line{"bc_settter"};
 	std::string path = "";
-	command_line.add_option("--mesh,-m", path, "Path to the input mesh");
+	command_line.add_option("mesh,--mesh,-m", path, "Path to the input mesh");
 
-	try
-	{
-		command_line.parse(argc, argv);
-	}
-	catch (const CLI::ParseError &e)
-	{
-		return command_line.exit(e);
-	}
+	CLI11_PARSE(command_line, argc, argv);
 
 	int current_id = 1;
 	bool tracking_mouse = false;
@@ -483,16 +482,16 @@ int main(int argc, char **argv)
 				}
 				else
 				{
-					ImGui::InputText(xlabel.c_str(), vals.funs[i - 1](0).data(), BUF_SIZE);
+					ImGui::InputText(xlabel.c_str(), vals.funs[i - 1][0].data(), BUF_SIZE);
 
 					if (vector_problem)
 					{
 						ImGui::SameLine();
-						ImGui::InputText(ylabel.c_str(), vals.funs[i - 1](1).data(), BUF_SIZE);
+						ImGui::InputText(ylabel.c_str(), vals.funs[i - 1][1].data(), BUF_SIZE);
 						if (is_volume)
 						{
 							ImGui::SameLine();
-							ImGui::InputText(zlabel.c_str(), vals.funs[i - 1](2).data(), BUF_SIZE);
+							ImGui::InputText(zlabel.c_str(), vals.funs[i - 1][2].data(), BUF_SIZE);
 						}
 					}
 				}
@@ -535,138 +534,137 @@ int main(int argc, char **argv)
 	};
 
 	auto paint = [&](int modifier) {
-		int fid;
-		Vector3f bc;
-
-		// Cast a ray in the view direction starting from the mouse position
-		double x = viewer.current_mouse_x;
-		double y = viewer.core().viewport(3) - viewer.current_mouse_y;
-		if (igl::unproject_onto_mesh(Vector2f(x, y), viewer.core().view,
-									 viewer.core().proj, viewer.core().viewport, V, F, fid, bc))
+		// Determine which boundary element was clicked
+		const double mouse_x = viewer.current_mouse_x;
+		const double mouse_y = viewer.core().viewport(3) - viewer.current_mouse_y;
+		int id = -1;
+		if (is_volume)
 		{
+			// Cast a ray in the view direction starting from the mouse position
+			Vector3f bc;
+			bool hit = igl::unproject_onto_mesh(
+				Eigen::Vector2f(mouse_x, mouse_y), viewer.core().view,
+				viewer.core().proj, viewer.core().viewport, V, F, id, bc);
+			if (!hit)
+				return false;
+		}
+		else
+		{
+			const Eigen::Vector3f p = igl::unproject(
+				Eigen::Vector3f(mouse_x, mouse_y, 0), viewer.core().view,
+				viewer.core().proj, viewer.core().viewport);
+
+			// Find closest edge to the point
+			double min_dist = std::numeric_limits<double>::infinity();
+			for (size_t i = 0; i < p1.rows(); ++i)
+			{
+				double d = point_segment_distance(p0.row(i), p1.row(i), p);
+				if (d < min_dist)
+				{
+					id = i;
+					min_dist = d;
+				}
+			}
+			if (min_dist > 0.1)
+				return false;
+		}
+		assert(id >= 0);
+
+		if (modifier == IGL_MOD_CONTROL || modifier == IGL_MOD_SUPER)
+		{
+			const int real_id = boundary_2_all(id);
+			selected(real_id) = current_id;
+			const auto col = color(selected[real_id], vals.size(), is_volume);
+
 			if (is_volume)
 			{
-				if (modifier == 8)
+				const auto &loc_faces = all_2_local(real_id);
+				for (int i : loc_faces)
 				{
-					const int real_face = boundary_2_all(fid);
-					selected(real_face) = current_id;
-					const auto &loc_faces = all_2_local(real_face);
+					C.row(i) = col;
+				}
+			}
+			else
+			{
+				C.row(id) = col;
+			}
+		}
+		else if (modifier & IGL_MOD_SHIFT)
+		{
+			visited.setConstant(false);
+			std::queue<int> to_visit;
+			to_visit.push(id);
 
-					const auto col = color(selected[real_face], vals.size(), is_volume);
+			while (!to_visit.empty())
+			{
+				const int visiting_id = to_visit.front();
+				to_visit.pop();
 
+				if (visited(visiting_id))
+					continue;
+
+				visited(visiting_id) = true;
+
+				const int real_id = boundary_2_all(visiting_id);
+				selected(real_id) = current_id;
+				const auto col = color(selected[real_id], vals.size(), is_volume);
+
+				if (is_volume)
+				{
+					const auto &loc_faces = all_2_local(real_id);
 					for (int i : loc_faces)
 					{
 						C.row(i) = col;
 					}
 				}
-				else if (modifier == 1 || modifier == 9)
+				else
 				{
-					visited.setConstant(false);
-					std::queue<int> to_visit;
-					to_visit.push(fid);
+					C.row(visiting_id) = col;
+				}
 
-					while (!to_visit.empty())
+				assert(visiting_id < adj.size());
+				// auto &neighs = adj[visiting_id];
+				for (int i = 0; i < adj.cols(); ++i)
+				{
+					const int nid = adj(visiting_id, i);
+					if (visited(nid))
+						continue;
+
+					if (modifier != (IGL_MOD_SHIFT | IGL_MOD_CONTROL) && modifier != (IGL_MOD_SHIFT | IGL_MOD_SUPER))
 					{
-						const int id = to_visit.front();
-						to_visit.pop();
-
-						if (visited(id))
+						if (std::abs(N.row(id).dot(N.row(nid))) < 0.99)
 							continue;
-
-						visited(id) = true;
-
-						const int real_face = boundary_2_all(id);
-						selected(real_face) = current_id;
-						const auto &loc_faces = all_2_local(real_face);
-
-						const auto col = color(selected[real_face], vals.size(), is_volume);
-
-						for (int i : loc_faces)
-						{
-							C.row(i) = col;
-						}
-
-						assert(id < adj.size());
-						// auto &neighs = adj[id];
-						for (int i = 0; i < 3; ++i)
-						{
-							const int nid = adj(id, i);
-							if (visited(nid))
-								continue;
-
-							if (modifier != 9)
-							{
-								if (std::abs(N.row(fid).dot(N.row(nid))) < 0.99)
-									continue;
-							}
-
-							to_visit.push(nid);
-						}
-					}
-				}
-
-				viewer.data().set_colors(C);
-			}
-			else
-			{
-				//TODO
-
-				const auto min_bc = bc.minCoeff();
-
-				if (min_bc < 0.1)
-				{
-					// const int index = min_bc == bc[0] ? 0 : (min_bc == bc[1] ? 1 : 2);
-					// const int id0 = F(fid, (index + 1)%3);
-					// const int id1 = F(fid, (index + 2)%3);
-
-					const Eigen::MatrixXd p = V.row(F(fid, 0)) * bc(0) + V.row(F(fid, 1)) * bc(1) + V.row(F(fid, 2)) * bc(2);
-					double min_dist = std::numeric_limits<double>::max();
-
-					int eid = -1;
-
-					for (size_t i = 0; i < p1.rows(); ++i)
-					{
-						double d = point_segment_distance(p0.row(i), p1.row(i), p);
-
-						if (d < min_dist)
-						{
-							eid = i;
-							min_dist = d;
-						}
 					}
 
-					assert(eid >= 0);
-					std::cout << eid << " " << min_dist << std::endl;
-
-					const int real_edge = boundary_2_all(eid);
-
-					// if(min_dist < 0.1)
-					{
-						selected(real_edge) = current_id;
-						const auto col = color(selected[real_edge], vals.size(), is_volume);
-						C.row(eid) = col;
-					}
-
-					viewer.data().set_edges(p0, Eigen::MatrixXi(0, 2), RowVector3d(0, 0, 0));
-					viewer.data().add_edges(p0, p1, C);
+					to_visit.push(nid);
 				}
 			}
-
-			tracking_mouse = true;
-			return true;
 		}
-		return false;
+
+		if (is_volume)
+		{
+			viewer.data().set_colors(C);
+		}
+		else
+		{
+			viewer.data().set_edges(p0, Eigen::MatrixXi(0, 2), RowVector3d(0, 0, 0));
+			viewer.data().add_edges(p0, p1, C);
+		}
+
+		tracking_mouse = true;
+		return true;
 	};
 
-	int current_modifier = -1;
+	int current_modifier = 0;
 
 	viewer.callback_mouse_down = [&](igl::opengl::glfw::Viewer &viewer, int, int modifier) -> bool {
 		//shift or command or command+shift
-		if (modifier != 1 && modifier != 8 && modifier != 9)
-			return false;
-
-		current_modifier = modifier;
-		return paint(current_modifier);
+		if (modifier & (IGL_MOD_SHIFT | IGL_MOD_CONTROL | IGL_MOD_SUPER))
+		{
+			current_modifier = modifier;
+			return paint(current_modifier);
+		}
+		return false;
 	};
 
 	viewer.callback_mouse_move = [&](igl::opengl::glfw::Viewer &viewer, int, int) -> bool {
@@ -678,6 +676,52 @@ int main(int argc, char **argv)
 
 	viewer.callback_mouse_up = [&](igl::opengl::glfw::Viewer &viewer, int, int) -> bool {
 		tracking_mouse = false;
+		return false;
+	};
+
+	viewer.callback_key_down = [&](igl::opengl::glfw::Viewer &viewer, unsigned int key, int modifiers) -> bool {
+		if (modifiers & (IGL_MOD_SUPER | IGL_MOD_CONTROL) && (key == 'O' || key == 'o'))
+		{
+			std::string fname = igl::file_dialog_open();
+
+			if (fname.length() > 0)
+			{
+				is_volume = load(fname, viewer, V, F, p0, p1, N, adj, selected, all_2_local, boundary_2_all, C);
+				visited.resize(F.rows());
+
+				vals.reset();
+
+				viewer.data().clear();
+				viewer.data().add_edges(p0, p1, RowVector3d(0, 0, 0));
+				viewer.data().set_mesh(V, F);
+				viewer.data().set_colors(C);
+				viewer.core().align_camera_center(V);
+			}
+
+			return true;
+		}
+		if (modifiers & (IGL_MOD_SUPER | IGL_MOD_CONTROL) && (key == 'S' || key == 's'))
+		{
+			std::string fname = igl::file_dialog_save();
+
+			if (fname.length() > 0)
+				save(fname, selected, vals, vector_problem);
+
+			return true;
+		}
+		return false;
+	};
+
+	viewer.callback_key_pressed = [&](igl::opengl::glfw::Viewer &viewer, unsigned int key, int modifiers) -> bool {
+		if (!is_volume && (key == 'O' || key == 'o'))
+		{
+			return true; // Ignore request to change out of orthographic when in 2D
+		}
+		if (key >= '0' && key <= std::min('0' + int(vals.size()), int('9')))
+		{
+			current_id = key - '0';
+			return true;
+		}
 		return false;
 	};
 
