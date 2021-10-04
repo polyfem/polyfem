@@ -34,7 +34,7 @@ namespace polyfem
 #elif defined(POLYFEM_WITH_TBB)
 		return tbb::enumerable_thread_specific<LocalStorage>(initial_local_storage);
 #else
-		return std::array<LocalStorage, 1>{initial_local_storage};
+		return std::array<LocalStorage, 1>{{initial_local_storage}};
 #endif
 	}
 
@@ -42,8 +42,8 @@ namespace polyfem
 	inline auto &get_local_thread_storage(Storages &storage)
 	{
 #if defined(POLYFEM_WITH_CPP_THREADS)
-		assert(thread_id >= 0);
-		return storage[_thread_id];
+		assert(par_for_thread_id >= 0);
+		return storage[par_for_thread_id];
 #elif defined(POLYFEM_WITH_TBB)
 		return storage.local();
 #else
