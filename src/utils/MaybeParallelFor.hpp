@@ -21,7 +21,7 @@ namespace polyfem
 	// The return type depends on the threading library used.
 	//     TBB         ⟹ `std::vector<LocalStorage>`
 	//     C++ Threads ⟹ `tbb::enumerable_thread_specific<LocalStorage>`
-	//     none        ⟹ `LocalStorage`
+	//     none        ⟹ `std::array<LocalStorage, 1>`
 	template <typename LocalStorage>
 	inline auto create_thread_storage(const LocalStorage &initial_local_storage);
 
