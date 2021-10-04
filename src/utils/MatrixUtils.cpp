@@ -1,14 +1,9 @@
 #include <polyfem/MatrixUtils.hpp>
 
-#include <polyfem/par_for.hpp>
-
+#include <polyfem/MaybeParallelFor.hpp>
 #include <polyfem/Logger.hpp>
 
 #include <igl/list_to_matrix.h>
-
-#ifdef POLYFEM_WITH_TBB
-#include <tbb/parallel_for.h>
-#endif
 
 #include <iostream>
 #include <fstream>
@@ -330,25 +325,12 @@ polyfem::SpareMatrixCache polyfem::SpareMatrixCache::operator+(const SpareMatrix
 		assert(aouter_index.size() == outer_index.size());
 		assert(a.values_.size() == values_.size());
 
-#if defined(POLYFEM_WITH_CPP_THREADS)
-		polyfem::par_for(a.values_.size(), [&](int start, int end, int t) {
+		maybe_parallel_for(a.values_.size(), [&](int start, int end) {
 			for (int i = start; i < end; ++i)
 			{
-#elif defined(POLYFEM_WITH_TBB)
-		tbb::parallel_for(tbb::blocked_range<int>(0, a.values_.size()), [&](const tbb::blocked_range<int> &r) {
-			for (int i = r.begin(); i != r.end(); ++i)
-			{
-#else
-		for (int i = 0; i < a.values_.size(); ++i)
-		{
-#endif
 				out.values_[i] = a.values_[i] + values_[i];
-#if defined(POLYFEM_WITH_CPP_THREADS) || defined(POLYFEM_WITH_TBB)
 			}
 		});
-#else
-			}
-#endif
 	}
 
 	return out;
@@ -370,25 +352,12 @@ void polyfem::SpareMatrixCache::operator+=(const SpareMatrixCache &o)
 		assert(outer_index.size() == oouter_index.size());
 		assert(values_.size() == o.values_.size());
 
-#if defined(POLYFEM_WITH_CPP_THREADS)
-		polyfem::par_for(o.values_.size(), [&](int start, int end, int t) {
+		maybe_parallel_for(o.values_.size(), [&](int start, int end) {
 			for (int i = start; i < end; ++i)
 			{
-#elif defined(POLYFEM_WITH_TBB)
-		tbb::parallel_for(tbb::blocked_range<int>(0, o.values_.size()), [&](const tbb::blocked_range<int> &r) {
-				for (int i = r.begin(); i != r.end(); ++i)
-				{
-#else
-			for (int i = 0; i < o.values_.size(); ++i)
-			{
-#endif
 				values_[i] += o.values_[i];
-#if defined(POLYFEM_WITH_CPP_THREADS) || defined(POLYFEM_WITH_TBB)
 			}
 		});
-#else
-				}
-#endif
 	}
 }
 
