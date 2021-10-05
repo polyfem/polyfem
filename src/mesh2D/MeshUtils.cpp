@@ -1,5 +1,14 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/MeshUtils.hpp>
+
+#include <polyfem/StringUtils.hpp>
+#include <polyfem/Logger.hpp>
+#include <polyfem/MshReader.hpp>
+
+#include <igl/PI.h>
+
+#include <geogram/mesh/mesh_io.h>
+#include <geogram/mesh/mesh_geometry.h>
 #include <geogram/basic/geometry.h>
 #include <geogram/mesh/mesh_preprocessing.h>
 #include <geogram/mesh/mesh_topology.h>
@@ -9,6 +18,104 @@
 #include <geogram/voronoi/CVT.h>
 #include <geogram/basic/logger.h>
 ////////////////////////////////////////////////////////////////////////////////
+
+namespace polyfem
+{
+	namespace
+	{
+		bool is_planar(const GEO::Mesh &M)
+		{
+			if (M.vertices.dimension() == 2)
+			{
+				return true;
+			}
+			assert(M.vertices.dimension() == 3);
+			GEO::vec3 min_corner, max_corner;
+			GEO::get_bbox(M, &min_corner[0], &max_corner[0]);
+			const double diff = (max_corner[2] - min_corner[2]);
+
+			return fabs(diff) < 1e-5;
+		}
+
+		template <typename Derived>
+		void from_json(const json &j, Eigen::MatrixBase<Derived> &v)
+		{
+			auto jv = j.get<std::vector<typename Derived::Scalar>>();
+			v = Eigen::Map<Derived>(jv.data(), long(jv.size()));
+		}
+
+		template <typename T>
+		inline T deg2rad(T deg)
+		{
+			return deg / 180 * igl::PI;
+		}
+
+		Eigen::Matrix3d build_rotation_matrix(const json &jr, std::string mode = "xyz")
+		{
+			std::transform(mode.begin(), mode.end(), mode.begin(), ::tolower);
+
+			Eigen::VectorXd r;
+			if (jr.is_number())
+			{
+				r.setZero(3);
+				assert(mode.size() == 1); // must be either "x", "y", or "z"
+				int i = mode[0] - 'x';
+				assert(i >= 0 && i < 3);
+				r[i] = jr.get<double>();
+			}
+			else
+			{
+				assert(jr.is_array());
+				from_json(jr, r);
+			}
+
+			if (mode == "axis_angle")
+			{
+				assert(r.size() == 4);
+				double angle = deg2rad(r[0]); // NOTE: assumes input angle is in degrees
+				Eigen::Vector3d axis = r.tail<3>().normalized();
+				return Eigen::AngleAxisd(angle, axis).toRotationMatrix();
+			}
+
+			if (mode == "quaternion")
+			{
+				assert(r.size() == 4);
+				Eigen::Vector4d q = r.normalized();
+				return Eigen::Quaterniond(q).toRotationMatrix();
+			}
+
+			// The following expect the input is given in degrees
+			r = deg2rad(r);
+
+			if (mode == "rotation_vector")
+			{
+				assert(r.size() == 3);
+				double angle = r.norm();
+				if (angle != 0)
+				{
+					return Eigen::AngleAxisd(angle, r / angle).toRotationMatrix();
+				}
+				else
+				{
+					return Eigen::Matrix3d::Identity();
+				}
+			}
+
+			Eigen::Matrix3d R = Eigen::Matrix3d::Identity();
+
+			for (int i = 0; i < mode.size(); i++)
+			{
+				int j = mode[i] - 'x';
+				assert(j >= 0 && j < 3);
+				Eigen::Vector3d axis = Eigen::Vector3d::Zero();
+				axis[j] = 1;
+				R = Eigen::AngleAxisd(r[j], axis).toRotationMatrix() * R;
+			}
+
+			return R;
+		}
+	} // namespace
+} // namespace polyfem
 
 GEO::vec3 polyfem::mesh_vertex(const GEO::Mesh &M, GEO::index_t v)
 {
@@ -952,6 +1059,165 @@ void polyfem::extract_parent_edges(const Eigen::MatrixXd &IV, const Eigen::Matri
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+
+void polyfem::read_mesh_from_json(const json &mesh, const std::string &root_path, Eigen::MatrixXd &tmp_vertices, Eigen::MatrixXi &tmp_cells, std::vector<std::vector<int>> &tmp_elements, std::vector<std::vector<double>> &tmp_weights, json &jmesh)
+{
+	tmp_vertices.resize(0, 0);
+	tmp_cells.resize(0, 0);
+	tmp_elements.clear();
+	tmp_weights.clear();
+
+	// NOTE: All units by default are expressed in standard SI units
+	// • position: position of the model origin
+	// • rotation: degrees as XYZ euler angles around the model origin
+	// • scale: scale the vertices around the model origin
+	// • dimensions: dimensions of the scaled object (mutually exclusive to
+	//               "scale")
+	// • enabled: skip the body if this field is false
+	jmesh = R"({
+				"position": [0.0, 0.0, 0.0],
+				"rotation": [0.0, 0.0, 0.0],
+				"rotation_mode": "xyz",
+				"scale": [1.0, 1.0, 1.0],
+				"enabled": true,
+				"body_id": 0,
+				"boundary_id": 0
+			})"_json;
+	jmesh.merge_patch(mesh);
+
+	if (!jmesh["enabled"].get<bool>())
+	{
+		return;
+	}
+
+	if (!jmesh.contains("mesh"))
+	{
+		logger().error("Mesh {} is mising a \"mesh\" field", mesh.get<std::string>());
+		return;
+	}
+
+	std::string mesh_path = resolve_path(jmesh["mesh"], root_path);
+	std::string lowername = mesh_path;
+	std::transform(
+		lowername.begin(), lowername.end(), lowername.begin(), ::tolower);
+	int tmp_dim;
+
+	if (StringUtils::endswidth(lowername, ".msh"))
+	{
+		if (!MshReader::load(mesh_path, tmp_vertices, tmp_cells, tmp_elements, tmp_weights))
+		{
+			logger().error("Unable to load mesh: {}", mesh_path);
+			return;
+		}
+
+		tmp_dim = tmp_vertices.cols();
+	}
+	else
+	{
+		GEO::Mesh tmp;
+		if (!GEO::mesh_load(mesh_path, tmp))
+		{
+			logger().error("Unable to load mesh: {}", mesh_path);
+			return;
+		}
+
+		tmp_dim = is_planar(tmp) ? 2 : 3;
+		tmp_vertices.resize(tmp.vertices.nb(), tmp_dim);
+		for (int vi = 0; vi < tmp.vertices.nb(); vi++)
+		{
+			const auto &v = tmp.vertices.point(vi);
+			for (int vj = 0; vj < tmp_dim; vj++)
+			{
+				tmp_vertices(vi, vj) = v[vj];
+			}
+		}
+
+		if (tmp.cells.nb())
+		{
+			int tmp_cell_cols = tmp.cells.nb_vertices(0);
+			tmp_cells.resize(tmp.cells.nb(), tmp_cell_cols);
+			for (int ci = 0; ci < tmp.cells.nb(); ci++)
+			{
+				assert(tmp_cell_cols == tmp.cells.nb_vertices(ci));
+				for (int cj = 0; cj < tmp.cells.nb_vertices(ci); cj++)
+				{
+					tmp_cells(ci, cj) = tmp.cells.vertex(ci, cj);
+				}
+			}
+		}
+		else
+		{
+			assert(tmp.facets.nb());
+			int tmp_cell_cols = tmp.facets.nb_vertices(0);
+			tmp_cells.resize(tmp.facets.nb(), tmp_cell_cols);
+			for (int ci = 0; ci < tmp.facets.nb(); ci++)
+			{
+				assert(tmp_cell_cols == tmp.facets.nb_vertices(ci));
+				for (int cj = 0; cj < tmp.facets.nb_vertices(ci); cj++)
+				{
+					tmp_cells(ci, cj) = tmp.facets.vertex(ci, cj);
+				}
+			}
+		}
+
+		tmp_elements.resize(tmp_cells.rows());
+		for (int ci = 0; ci < tmp_cells.rows(); ci++)
+		{
+			tmp_elements[ci].resize(tmp_cells.cols());
+			for (int cj = 0; cj < tmp_cells.cols(); cj++)
+			{
+				tmp_elements[ci][cj] = tmp_cells(ci, cj);
+			}
+		}
+		tmp_weights.resize(tmp_cells.rows());
+	}
+
+	RowVectorNd scale;
+	if (jmesh.contains("dimensions"))
+	{
+		VectorNd initial_dimensions =
+			(tmp_vertices.colwise().maxCoeff() - tmp_vertices.colwise().minCoeff()).cwiseAbs();
+		initial_dimensions =
+			(initial_dimensions.array() == 0).select(1, initial_dimensions);
+		from_json(jmesh["dimensions"], scale);
+		assert(scale.size() >= tmp_dim);
+		scale.conservativeResize(tmp_dim);
+		scale.array() /= initial_dimensions.array();
+	}
+	else if (jmesh["scale"].is_number())
+	{
+		scale.setConstant(tmp_dim, jmesh["scale"].get<double>());
+	}
+	else
+	{
+		assert(jmesh["scale"].is_array());
+		from_json(jmesh["scale"], scale);
+		assert(scale.size() >= tmp_dim);
+		scale.conservativeResize(tmp_dim);
+	}
+	tmp_vertices *= scale.asDiagonal();
+
+	// Rotate around the models origin NOT the bodies center of mass.
+	// We could expose this choice as a "rotate_around" field.
+	MatrixNd R = MatrixNd::Identity(tmp_dim, tmp_dim);
+	if (tmp_vertices.cols() == 2 && jmesh["rotation"].is_number())
+	{
+		R = Eigen::Rotation2Dd(
+				deg2rad(jmesh["rotation"].get<double>()))
+				.toRotationMatrix();
+	}
+	else if (tmp_vertices.cols() == 3)
+	{
+		R = build_rotation_matrix(jmesh["rotation"], jmesh["rotation_mode"].get<std::string>());
+	}
+	tmp_vertices *= R.transpose(); // (R*Vᵀ)ᵀ = V*Rᵀ
+
+	RowVectorNd position;
+	from_json(jmesh["position"], position);
+	assert(position.size() >= tmp_dim);
+	position.conservativeResize(tmp_dim);
+	tmp_vertices.rowwise() += position;
+}
 
 void polyfem::save_edges(const std::string &filename, const Eigen::MatrixXd &V, const Eigen::MatrixXi &E)
 {
