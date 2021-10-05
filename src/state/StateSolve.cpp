@@ -215,19 +215,19 @@ namespace polyfem
 			rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, time);
 
 			/* export to vtu */
-			if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
+			if (args["save_time_sequence"] && !(t % args["skip_frame"].get<int>()))
 			{
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
 				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), time);
 				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
+
+				save_pvd(
+					resolve_output_path(args["export"]["time_sequence"]),
+					[](int i) { return fmt::format("step_{:d}.vtu", i); },
+					t, /*t0=*/0, dt, args["skip_frame"].get<int>());
 			}
 		}
-
-		save_pvd(
-			resolve_output_path("sim.pvd"),
-			[](int i) { return fmt::format("step_{:d}.vtu", i); },
-			time_steps, /*t0=*/0, dt);
 
 		const bool export_surface = args["export"]["surface"];
 
@@ -291,19 +291,19 @@ namespace polyfem
 			sol = c_sol;
 			sol_to_pressure();
 
-			if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
+			if (args["save_time_sequence"] && !(t % args["skip_frame"].get<int>()))
 			{
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
 				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), time);
 				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
+
+				save_pvd(
+					resolve_output_path(args["export"]["time_sequence"]),
+					[](int i) { return fmt::format("step_{:d}.vtu", i); },
+					t, t0, dt, args["skip_frame"].get<int>());
 			}
 		}
-
-		save_pvd(
-			resolve_output_path("sim.pvd"),
-			[](int i) { return fmt::format("step_{:d}.vtu", i); },
-			time_steps, t0, dt);
 
 		const bool export_surface = args["export"]["surface"];
 
@@ -369,20 +369,20 @@ namespace polyfem
 				sol_to_pressure();
 			}
 
-			if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
+			if (args["save_time_sequence"] && !(t % args["skip_frame"].get<int>()))
 			{
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
 
 				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), time);
 				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
+
+				save_pvd(
+					resolve_output_path(args["export"]["time_sequence"]),
+					[](int i) { return fmt::format("step_{:d}.vtu", i); },
+					t, t0, dt, args["skip_frame"].get<int>());
 			}
 		}
-
-		save_pvd(
-			resolve_output_path("sim.pvd"),
-			[](int i) { return fmt::format("step_{:d}.vtu", i); },
-			time_steps, t0, dt);
 	}
 
 	void State::solve_transient_tensor_linear(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler)
@@ -451,12 +451,17 @@ namespace polyfem
 			rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, t0 + dt * t);
 			rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, t0 + dt * t);
 
-			if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
+			if (args["save_time_sequence"] && !(t % args["skip_frame"].get<int>()))
 			{
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
 				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), t0 + dt * t);
 				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
+
+				save_pvd(
+					resolve_output_path(args["export"]["time_sequence"]),
+					[](int i) { return fmt::format("step_{:d}.vtu", i); },
+					t, t0, dt, args["skip_frame"].get<int>());
 			}
 
 			logger().info("{}/{} t={}", t, time_steps, t0 + dt * t);
@@ -474,11 +479,6 @@ namespace polyfem
 			if (!a_out_path.empty())
 				write_matrix_binary(a_out_path, acceleration);
 		}
-
-		save_pvd(
-			resolve_output_path("sim.pvd"),
-			[](int i) { return fmt::format("step_{:d}.vtu", i); },
-			time_steps, t0, dt);
 
 		const bool export_surface = args["export"]["surface"];
 
@@ -499,6 +499,14 @@ namespace polyfem
 		{
 			solve_transient_tensor_non_linear_step(t0, dt, t, solver_info);
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
+
+			if (args["save_time_sequence"] && !(t % args["skip_frame"].get<int>()))
+			{
+				save_pvd(
+					resolve_output_path(args["export"]["time_sequence"]),
+					[](int i) { return fmt::format("step_{:d}.vtu", i); },
+					t, t0, dt, args["skip_frame"].get<int>());
+			}
 		}
 		// }
 		// else
@@ -568,7 +576,7 @@ namespace polyfem
 
 		// 		nl_problem.update_quantities((t + 1) * dt, sol);
 
-		// 		if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
+		// 		if (args["save_time_sequence"] && !(t % args["skip_frame"].get<int>()))
 		// 		{
 		// 			if (!solve_export_to_file)
 		// 				solution_frames.emplace_back();
@@ -585,11 +593,6 @@ namespace polyfem
 			resolve_output_path(args["export"]["u_path"]),
 			resolve_output_path(args["export"]["v_path"]),
 			resolve_output_path(args["export"]["a_path"]));
-
-		save_pvd(
-			resolve_output_path("sim.pvd"),
-			[](int i) { return fmt::format("step_{:d}.vtu", i); },
-			time_steps, t0, dt);
 
 		const bool export_surface = args["export"]["surface"];
 		const bool contact_forces = args["export"]["contact_forces"] && !problem->is_scalar();
@@ -865,7 +868,7 @@ namespace polyfem
 		timer.stop();
 		logger().trace("done, took {}s", timer.getElapsedTime());
 
-		if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
+		if (args["save_time_sequence"] && !(t % args["skip_frame"].get<int>()))
 		{
 			timer.start();
 			logger().trace("Saving VTU...");
