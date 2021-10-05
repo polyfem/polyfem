@@ -15,7 +15,7 @@ namespace polyfem
 	// Perform a parallel (maybe) for loop.
 	// The parallel for used depends on the compile definitions.
 	// The overall for loop is from 0 up to `size` with an increment of 1.
-	inline void maybe_parallel_for(int size, const std::function<void(int, int)> &partial_for);
+	inline void maybe_parallel_for(int size, const std::function<void(int, int, int)> &partial_for);
 
 	// Returns thread specific storage for further use in `maybe_parallel_for()`.
 	// The return type depends on the threading library used.
@@ -26,7 +26,7 @@ namespace polyfem
 	inline auto create_thread_storage(const LocalStorage &initial_local_storage);
 
 	template <typename Storages>
-	inline auto &get_local_thread_storage(Storages &storage);
+	inline auto &get_local_thread_storage(Storages &storage, int thread_id);
 
 } // namespace polyfem
 

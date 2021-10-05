@@ -325,7 +325,7 @@ polyfem::SpareMatrixCache polyfem::SpareMatrixCache::operator+(const SpareMatrix
 		assert(aouter_index.size() == outer_index.size());
 		assert(a.values_.size() == values_.size());
 
-		maybe_parallel_for(a.values_.size(), [&](int start, int end) {
+		maybe_parallel_for(a.values_.size(), [&](int start, int end, int thread_id) {
 			for (int i = start; i < end; ++i)
 			{
 				out.values_[i] = a.values_[i] + values_[i];
@@ -352,7 +352,7 @@ void polyfem::SpareMatrixCache::operator+=(const SpareMatrixCache &o)
 		assert(outer_index.size() == oouter_index.size());
 		assert(values_.size() == o.values_.size());
 
-		maybe_parallel_for(o.values_.size(), [&](int start, int end) {
+		maybe_parallel_for(o.values_.size(), [&](int start, int end, int thread_id) {
 			for (int i = start; i < end; ++i)
 			{
 				values_[i] += o.values_[i];

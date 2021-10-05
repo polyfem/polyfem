@@ -13,16 +13,16 @@
 namespace polyfem
 {
 
-	inline void maybe_parallel_for(int size, const std::function<void(int, int)> &partial_for)
+	inline void maybe_parallel_for(int size, const std::function<void(int, int, int)> &partial_for)
 	{
 #if defined(POLYFEM_WITH_CPP_THREADS)
 		par_for(size, partial_for);
 #elif defined(POLYFEM_WITH_TBB)
 		tbb::parallel_for(tbb::blocked_range<int>(0, size), [&](const tbb::blocked_range<int> &r) {
-			partial_for(r.begin(), r.end());
+			partial_for(r.begin(), r.end(), tbb::task_arena::current_thread_index());
 		});
 #else
-		partial_for(0, size); // actually the full for loop
+		partial_for(0, size, /*thread_id=*/0); // actually the full for loop
 #endif
 	}
 
@@ -39,15 +39,15 @@ namespace polyfem
 	}
 
 	template <typename Storages>
-	inline auto &get_local_thread_storage(Storages &storage)
+	inline auto &get_local_thread_storage(Storages &storage, int thread_id)
 	{
 #if defined(POLYFEM_WITH_CPP_THREADS)
-		assert(par_for_thread_id >= 0);
-		return storage[par_for_thread_id];
+		return storage[thread_id];
 #elif defined(POLYFEM_WITH_TBB)
 		return storage.local();
 #else
-		assert(storage.size() == 0);
+		assert(thread_id == 0);
+		assert(storage.size() == 1);
 		return storage[0];
 #endif
 	}

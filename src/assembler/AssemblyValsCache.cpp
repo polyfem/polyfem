@@ -8,7 +8,7 @@ namespace polyfem
 		const int n_bases = bases.size();
 		cache.resize(n_bases);
 
-		maybe_parallel_for(n_bases, [&](int start, int end) {
+		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
 			for (int e = start; e < end; ++e)
 			{
 				cache[e].compute(e, is_volume, bases[e], gbases[e]);

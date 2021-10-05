@@ -114,8 +114,8 @@ namespace polyfem
 			igl::Timer timerg;
 			timerg.start();
 
-			maybe_parallel_for(n_bases, [&](int start, int end) {
-				LocalThreadMatStorage &local_storage = get_local_thread_storage(storage);
+			maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+				LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);
 
 				for (int e = start; e < end; ++e)
 				{
@@ -239,8 +239,8 @@ namespace polyfem
 		igl::Timer timerg;
 		timerg.start();
 
-		maybe_parallel_for(n_bases, [&](int start, int end) {
-			LocalThreadMatStorage &local_storage = get_local_thread_storage(storage);
+		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+			LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);
 			ElementAssemblyValues psi_vals, phi_vals;
 
 			for (int e = start; e < end; ++e)
@@ -337,8 +337,8 @@ namespace polyfem
 
 		const int n_bases = int(bases.size());
 
-		maybe_parallel_for(n_bases, [&](int start, int end) {
-			LocalThreadVecStorage &local_storage = get_local_thread_storage(storage);
+		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+			LocalThreadVecStorage &local_storage = get_local_thread_storage(storage, thread_id);
 
 			for (int e = start; e < end; ++e)
 			{
@@ -420,8 +420,8 @@ namespace polyfem
 		igl::Timer timerg;
 		timerg.start();
 
-		maybe_parallel_for(n_bases, [&](int start, int end) {
-			LocalThreadMatStorage &local_storage = get_local_thread_storage(storage);
+		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+			LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);
 
 			for (int e = start; e < end; ++e)
 			{
@@ -533,9 +533,9 @@ namespace polyfem
 		auto storage = create_thread_storage(LocalThreadScalarStorage());
 		const int n_bases = int(bases.size());
 
-		maybe_parallel_for(n_bases, [&](int start, int end) {
+		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
 			// igl::Timer timer; timer.start();
-			LocalThreadScalarStorage &local_storage = get_local_thread_storage(storage);
+			LocalThreadScalarStorage &local_storage = get_local_thread_storage(storage, thread_id);
 			ElementAssemblyValues &vals = local_storage.vals;
 
 			for (int e = start; e < end; ++e)

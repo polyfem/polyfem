@@ -657,8 +657,8 @@ namespace polyfem
 			auto storage = create_thread_storage(LocalThreadScalarStorage());
 			const int n_bases = int(bases_.size());
 
-			maybe_parallel_for(n_bases, [&](int start, int end) {
-				LocalThreadScalarStorage &local_storage = get_local_thread_storage(storage);
+			maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+				LocalThreadScalarStorage &local_storage = get_local_thread_storage(storage, thread_id);
 				VectorNd local_displacement(size_);
 				Eigen::MatrixXd forces;
 

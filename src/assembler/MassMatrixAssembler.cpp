@@ -54,8 +54,8 @@ namespace polyfem
 
 		const int n_bases = int(bases.size());
 
-		maybe_parallel_for(n_bases, [&](int start, int end) {
-			LocalThreadMatStorage &local_storage = get_local_thread_storage(storage);
+		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+			LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);
 
 			for (int e = start; e < end; ++e)
 			{
