@@ -1,5 +1,5 @@
 #include <polyfem/RhsAssembler.hpp>
-#include <polyfem/par_for.hpp>
+#include <polyfem/MaybeParallelFor.hpp>
 
 #include <polyfem/BoundarySampler.hpp>
 #include <polysolve/LinearSolver.hpp>
@@ -7,11 +7,6 @@
 #include <polyfem/Logger.hpp>
 
 #include <Eigen/Sparse>
-
-#ifdef POLYFEM_WITH_TBB
-#include <tbb/parallel_for.h>
-#include <tbb/enumerable_thread_specific.h>
-#endif
 
 #include <iostream>
 #include <map>
@@ -95,22 +90,25 @@ namespace polyfem
 
 	void RhsAssembler::initial_solution(Eigen::MatrixXd &sol) const
 	{
-		time_bc([&](const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val)
-				{ problem_.initial_solution(mesh, global_ids, pts, val); },
+		time_bc([&](const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) {
+			problem_.initial_solution(mesh, global_ids, pts, val);
+		},
 				sol);
 	}
 
 	void RhsAssembler::initial_velocity(Eigen::MatrixXd &sol) const
 	{
-		time_bc([&](const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val)
-				{ problem_.initial_velocity(mesh, global_ids, pts, val); },
+		time_bc([&](const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) {
+			problem_.initial_velocity(mesh, global_ids, pts, val);
+		},
 				sol);
 	}
 
 	void RhsAssembler::initial_acceleration(Eigen::MatrixXd &sol) const
 	{
-		time_bc([&](const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val)
-				{ problem_.initial_acceleration(mesh, global_ids, pts, val); },
+		time_bc([&](const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) {
+			problem_.initial_acceleration(mesh, global_ids, pts, val);
+		},
 				sol);
 	}
 
@@ -591,30 +589,36 @@ namespace polyfem
 	void RhsAssembler::set_bc(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t) const
 	{
 		set_bc(
-			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val)
-			{ problem_.bc(mesh_, global_ids, uv, pts, t, val); },
-			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, Eigen::MatrixXd &val)
-			{ problem_.neumann_bc(mesh_, global_ids, uv, pts, normals, t, val); },
+			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) {
+				problem_.bc(mesh_, global_ids, uv, pts, t, val);
+			},
+			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, Eigen::MatrixXd &val) {
+				problem_.neumann_bc(mesh_, global_ids, uv, pts, normals, t, val);
+			},
 			local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs);
 	}
 
 	void RhsAssembler::set_velocity_bc(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t) const
 	{
 		set_bc(
-			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val)
-			{ problem_.velocity_bc(mesh_, global_ids, uv, pts, t, val); },
-			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, Eigen::MatrixXd &val)
-			{ problem_.neumann_velocity_bc(mesh_, global_ids, uv, pts, normals, t, val); },
+			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) {
+				problem_.velocity_bc(mesh_, global_ids, uv, pts, t, val);
+			},
+			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, Eigen::MatrixXd &val) {
+				problem_.neumann_velocity_bc(mesh_, global_ids, uv, pts, normals, t, val);
+			},
 			local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs);
 	}
 
 	void RhsAssembler::set_acceleration_bc(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t) const
 	{
 		set_bc(
-			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val)
-			{ problem_.acceleration_bc(mesh_, global_ids, uv, pts, t, val); },
-			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, Eigen::MatrixXd &val)
-			{ problem_.neumann_acceleration_bc(mesh_, global_ids, uv, pts, normals, t, val); },
+			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) {
+				problem_.acceleration_bc(mesh_, global_ids, uv, pts, t, val);
+			},
+			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, Eigen::MatrixXd &val) {
+				problem_.neumann_acceleration_bc(mesh_, global_ids, uv, pts, normals, t, val);
+			},
 			local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs);
 	}
 
@@ -650,98 +654,61 @@ namespace polyfem
 
 		if (!problem_.is_rhs_zero())
 		{
-#if defined(POLYFEM_WITH_CPP_THREADS)
-			std::vector<LocalThreadScalarStorage> storages(polyfem::get_n_threads());
-#elif defined(POLYFEM_WITH_TBB)
-			typedef tbb::enumerable_thread_specific<LocalThreadScalarStorage> LocalStorage;
-			LocalStorage storages((LocalThreadScalarStorage()));
-#else
-			LocalThreadScalarStorage loc_storage;
-			Eigen::MatrixXd forces;
-#endif
-
+			auto storage = create_thread_storage(LocalThreadScalarStorage());
 			const int n_bases = int(bases_.size());
 
-#if defined(POLYFEM_WITH_CPP_THREADS)
-			polyfem::par_for(n_bases, [&](int start, int end, int t)
-							 {
-								 auto &loc_storage = storages[t];
-								 Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
-								 Eigen::MatrixXd forces;
-								 for (int e = start; e < end; ++e)
-								 {
-#elif defined(POLYFEM_WITH_TBB)
-			tbb::parallel_for(tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
-				LocalStorage::reference loc_storage = storages.local();
-				Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
+			maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+				LocalThreadScalarStorage &local_storage = get_local_thread_storage(storage, thread_id);
+				VectorNd local_displacement(size_);
 				Eigen::MatrixXd forces;
-				for (int e = r.begin(); e != r.end(); ++e)
+
+				for (int e = start; e < end; ++e)
 				{
-#else
-			Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
+					ElementAssemblyValues &vals = local_storage.vals;
+					vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
 
-			for (int e = 0; e < n_bases; ++e)
-			{
-#endif
-									 ElementAssemblyValues &vals = loc_storage.vals;
-									 vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
+					const Quadrature &quadrature = vals.quadrature;
+					const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
-									 const Quadrature &quadrature = vals.quadrature;
-									 const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
+					problem_.rhs(assembler_, formulation_, vals.val, t, forces);
+					assert(forces.rows() == da.size());
+					assert(forces.cols() == size_);
 
-									 problem_.rhs(assembler_, formulation_, vals.val, t, forces);
-									 assert(forces.rows() == da.size());
-									 assert(forces.cols() == size_);
+					for (long p = 0; p < da.size(); ++p)
+					{
+						local_displacement.setZero();
 
-									 for (long p = 0; p < da.size(); ++p)
-									 {
-										 local_displacement.setZero();
+						for (size_t i = 0; i < vals.basis_values.size(); ++i)
+						{
+							const auto &bs = vals.basis_values[i];
+							assert(bs.val.size() == da.size());
+							const double b_val = bs.val(p);
 
-										 for (size_t i = 0; i < vals.basis_values.size(); ++i)
-										 {
-											 const auto &bs = vals.basis_values[i];
-											 assert(bs.val.size() == da.size());
-											 const double b_val = bs.val(p);
+							for (int d = 0; d < size_; ++d)
+							{
+								for (std::size_t ii = 0; ii < bs.global.size(); ++ii)
+								{
+									local_displacement(d) += (bs.global[ii].val * b_val) * displacement(bs.global[ii].index * size_ + d);
+								}
+							}
+						}
+						const double rho = density(vals.val(p, 0), vals.val(p, 1), vals.val.cols() == 2 ? 0. : vals.val(p, 2), vals.element_id);
 
-											 for (int d = 0; d < size_; ++d)
-											 {
-												 for (std::size_t ii = 0; ii < bs.global.size(); ++ii)
-												 {
-													 local_displacement(d) += (bs.global[ii].val * b_val) * displacement(bs.global[ii].index * size_ + d);
-												 }
-											 }
-										 }
-										 const double rho = density(vals.val(p, 0), vals.val(p, 1), vals.val.cols() == 2 ? 0. : vals.val(p, 2), vals.element_id);
-
-										 for (int d = 0; d < size_; ++d)
-										 {
-											 loc_storage.val += forces(p, d) * local_displacement(d) * da(p) * rho;
-											 // res += forces(p, d) * local_displacement(d) * da(p);
-										 }
-									 }
-#if defined(POLYFEM_WITH_CPP_THREADS) || defined(POLYFEM_WITH_TBB)
-								 }
-							 });
-#else
+						for (int d = 0; d < size_; ++d)
+						{
+							local_storage.val += forces(p, d) * local_displacement(d) * da(p) * rho;
+							// res += forces(p, d) * local_displacement(d) * da(p);
+						}
+					}
 				}
-#endif
+			});
 
-#if defined(POLYFEM_WITH_CPP_THREADS)
-			for (const auto &t : storages)
-			{
-				res += t.val;
-			}
-#elif defined(POLYFEM_WITH_TBB)
-				for (LocalStorage::iterator i = storages.begin(); i != storages.end(); ++i)
-				{
-					res += i->val;
-				}
-#else
-				res = loc_storage.val;
-#endif
+			// Serially merge local storages
+			for (const LocalThreadScalarStorage &local_storage : storage)
+				res += local_storage.val;
 		}
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
+		VectorNd local_displacement(size_);
 		Eigen::MatrixXd forces;
 
 		ElementAssemblyValues vals;

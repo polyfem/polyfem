@@ -1,5 +1,4 @@
 #include <polyfem/Assembler.hpp>
-#include <polyfem/par_for.hpp>
 
 #include <polyfem/Laplacian.hpp>
 #include <polyfem/Helmholtz.hpp>
@@ -17,16 +16,11 @@
 #include <polyfem/IncompressibleLinElast.hpp>
 
 #include <polyfem/Logger.hpp>
+#include <polyfem/MaybeParallelFor.hpp>
 
 #include <igl/Timer.h>
 
 #include <ipc/utils/eigen_ext.hpp>
-
-#ifdef POLYFEM_WITH_TBB
-#include <tbb/parallel_for.h>
-#include <tbb/parallel_reduce.h>
-#include <tbb/enumerable_thread_specific.h>
-#endif
 
 namespace polyfem
 {
@@ -114,129 +108,98 @@ namespace polyfem
 			stiffness.resize(n_basis * local_assembler_.size(), n_basis * local_assembler_.size());
 			stiffness.setZero();
 
-#if defined(POLYFEM_WITH_CPP_THREADS)
-			std::vector<LocalThreadMatStorage> storages(polyfem::get_n_threads());
-#elif defined(POLYFEM_WITH_TBB)
-			typedef tbb::enumerable_thread_specific<LocalThreadMatStorage> LocalStorage;
-			LocalStorage storages(LocalThreadMatStorage(buffer_size, stiffness.rows(), stiffness.cols()));
-#else
-			LocalThreadMatStorage loc_storage(buffer_size, stiffness.rows(), stiffness.cols());
-#endif
+			auto storage = create_thread_storage(LocalThreadMatStorage(buffer_size, stiffness.rows(), stiffness.cols()));
 
 			const int n_bases = int(bases.size());
 			igl::Timer timerg;
 			timerg.start();
-#if defined(POLYFEM_WITH_CPP_THREADS)
-			polyfem::par_for(n_bases, [&](int start, int end, int t)
-							 {
-								 auto &loc_storage = storages[t];
-								 loc_storage.init(buffer_size, stiffness.rows(), stiffness.cols());
-								 for (int e = start; e < end; ++e)
-								 {
-#elif defined(POLYFEM_WITH_TBB)
-			tbb::parallel_for(tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
-				LocalStorage::reference loc_storage = storages.local();
 
-				for (int e = r.begin(); e != r.end(); ++e)
+			maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+				LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);
+
+				for (int e = start; e < end; ++e)
 				{
-#else
-			for (int e = 0; e < n_bases; ++e)
-			{
-#endif
-									 ElementAssemblyValues &vals = loc_storage.vals;
-									 // igl::Timer timer; timer.start();
-									 // vals.compute(e, is_volume, bases[e], gbases[e]);
-									 cache.compute(e, is_volume, bases[e], gbases[e], vals);
+					ElementAssemblyValues &vals = local_storage.vals;
+					// igl::Timer timer; timer.start();
+					// vals.compute(e, is_volume, bases[e], gbases[e]);
+					cache.compute(e, is_volume, bases[e], gbases[e], vals);
 
-									 const Quadrature &quadrature = vals.quadrature;
+					const Quadrature &quadrature = vals.quadrature;
 
-									 assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
-									 loc_storage.da = vals.det.array() * quadrature.weights.array();
-									 const int n_loc_bases = int(vals.basis_values.size());
+					assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
+					local_storage.da = vals.det.array() * quadrature.weights.array();
+					const int n_loc_bases = int(vals.basis_values.size());
 
-									 for (int i = 0; i < n_loc_bases; ++i)
-									 {
-										 // const AssemblyValues &values_i = vals.basis_values[i];
-										 // const Eigen::MatrixXd &gradi = values_i.grad_t_m;
-										 const auto &global_i = vals.basis_values[i].global;
+					for (int i = 0; i < n_loc_bases; ++i)
+					{
+						// const AssemblyValues &values_i = vals.basis_values[i];
+						// const Eigen::MatrixXd &gradi = values_i.grad_t_m;
+						const auto &global_i = vals.basis_values[i].global;
 
-										 for (int j = 0; j <= i; ++j)
-										 {
-											 // const AssemblyValues &values_j = vals.basis_values[j];
-											 // const Eigen::MatrixXd &gradj = values_j.grad_t_m;
-											 const auto &global_j = vals.basis_values[j].global;
+						for (int j = 0; j <= i; ++j)
+						{
+							// const AssemblyValues &values_j = vals.basis_values[j];
+							// const Eigen::MatrixXd &gradj = values_j.grad_t_m;
+							const auto &global_j = vals.basis_values[j].global;
 
-											 const auto stiffness_val = local_assembler_.assemble(vals, i, j, loc_storage.da);
-											 assert(stiffness_val.size() == local_assembler_.size() * local_assembler_.size());
+							const auto stiffness_val = local_assembler_.assemble(vals, i, j, local_storage.da);
+							assert(stiffness_val.size() == local_assembler_.size() * local_assembler_.size());
 
-											 // igl::Timer t1; t1.start();
-											 for (int n = 0; n < local_assembler_.size(); ++n)
-											 {
-												 for (int m = 0; m < local_assembler_.size(); ++m)
-												 {
-													 const double local_value = stiffness_val(n * local_assembler_.size() + m);
-													 if (std::abs(local_value) < 1e-30)
-													 {
-														 continue;
-													 }
+							// igl::Timer t1; t1.start();
+							for (int n = 0; n < local_assembler_.size(); ++n)
+							{
+								for (int m = 0; m < local_assembler_.size(); ++m)
+								{
+									const double local_value = stiffness_val(n * local_assembler_.size() + m);
+									if (std::abs(local_value) < 1e-30)
+									{
+										continue;
+									}
 
-													 for (size_t ii = 0; ii < global_i.size(); ++ii)
-													 {
-														 const auto gi = global_i[ii].index * local_assembler_.size() + m;
-														 const auto wi = global_i[ii].val;
+									for (size_t ii = 0; ii < global_i.size(); ++ii)
+									{
+										const auto gi = global_i[ii].index * local_assembler_.size() + m;
+										const auto wi = global_i[ii].val;
 
-														 for (size_t jj = 0; jj < global_j.size(); ++jj)
-														 {
-															 const auto gj = global_j[jj].index * local_assembler_.size() + n;
-															 const auto wj = global_j[jj].val;
+										for (size_t jj = 0; jj < global_j.size(); ++jj)
+										{
+											const auto gj = global_j[jj].index * local_assembler_.size() + n;
+											const auto wj = global_j[jj].val;
 
-															 loc_storage.cache.add_value(gi, gj, local_value * wi * wj);
-															 if (j < i)
-															 {
-																 loc_storage.cache.add_value(gj, gi, local_value * wj * wi);
-															 }
+											local_storage.cache.add_value(gi, gj, local_value * wi * wj);
+											if (j < i)
+											{
+												local_storage.cache.add_value(gj, gi, local_value * wj * wi);
+											}
 
-															 if (loc_storage.cache.entries_size() >= 1e8)
-															 {
-																 loc_storage.cache.prune();
-																 logger().debug("cleaning memory. Current storage: {}. mat nnz: {}", loc_storage.cache.capacity(), loc_storage.cache.non_zeros());
-															 }
-														 }
-													 }
-												 }
-											 }
+											if (local_storage.cache.entries_size() >= 1e8)
+											{
+												local_storage.cache.prune();
+												logger().debug("cleaning memory. Current storage: {}. mat nnz: {}", local_storage.cache.capacity(), local_storage.cache.non_zeros());
+											}
+										}
+									}
+								}
+							}
 
-											 // t1.stop();
-											 // if (!vals.has_parameterization) { std::cout << "-- t1: " << t1.getElapsedTime() << std::endl; }
-										 }
-									 }
+							// t1.stop();
+							// if (!vals.has_parameterization) { std::cout << "-- t1: " << t1.getElapsedTime() << std::endl; }
+						}
+					}
 
 					// timer.stop();
 					// if (!vals.has_parameterization) { std::cout << "-- Timer: " << timer.getElapsedTime() << std::endl; }
-#if defined(POLYFEM_WITH_CPP_THREADS) || defined(POLYFEM_WITH_TBB)
-								 }
-#if defined(POLYFEM_WITH_CPP_THREADS)
-								 loc_storage.cache.prune();
-#endif
-							 });
-#else
 				}
-#endif
+			});
+
 			timerg.stop();
 			logger().debug("done separate assembly {}s...", timerg.getElapsedTime());
 
 			timerg.start();
-#if defined(POLYFEM_WITH_CPP_THREADS) || defined(POLYFEM_WITH_TBB)
-			for (auto &t : storages)
-			{
-				stiffness += t.cache.get_matrix(false);
-			}
+			// Serially merge local storages
+			for (LocalThreadMatStorage &local_storage : storage)
+				stiffness += local_storage.cache.get_matrix(false); // will also prune
 			stiffness.makeCompressed();
-#else
-				loc_storage.cache.prune();
-				stiffness = loc_storage.cache.get_matrix(false);
-#endif
-
 			timerg.stop();
 			logger().debug("done merge assembly {}s...", timerg.getElapsedTime());
 		}
@@ -270,119 +233,86 @@ namespace polyfem
 		stiffness.resize(n_phi_basis * local_assembler_.rows(), n_psi_basis * local_assembler_.cols());
 		stiffness.setZero();
 
-#if defined(POLYFEM_WITH_CPP_THREADS)
-		std::vector<LocalThreadMatStorage> storages(polyfem::get_n_threads());
-#elif defined(POLYFEM_WITH_TBB)
-			typedef tbb::enumerable_thread_specific<LocalThreadMatStorage> LocalStorage;
-			LocalStorage storages(LocalThreadMatStorage(buffer_size, stiffness.rows(), stiffness.cols()));
-#else
-			LocalThreadMatStorage loc_storage(buffer_size, stiffness.rows(), stiffness.cols());
-			ElementAssemblyValues psi_vals, phi_vals;
-#endif
+		auto storage = create_thread_storage(LocalThreadMatStorage(buffer_size, stiffness.rows(), stiffness.cols()));
 
 		const int n_bases = int(phi_bases.size());
 		igl::Timer timerg;
 		timerg.start();
-#if defined(POLYFEM_WITH_CPP_THREADS)
-		polyfem::par_for(n_bases, [&](int start, int end, int t)
-						 {
-							 auto &loc_storage = storages[t];
-							 loc_storage.init(buffer_size, stiffness.rows(), stiffness.cols());
-							 ElementAssemblyValues psi_vals, phi_vals;
-							 for (int e = start; e < end; ++e)
-							 {
-#elif defined(POLYFEM_WITH_TBB)
-		tbb::parallel_for(tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
-				LocalStorage::reference loc_storage = storages.local();
-				ElementAssemblyValues psi_vals, phi_vals;
-				for (int e = r.begin(); e != r.end(); ++e)
-				{
-#else
-			for (int e = 0; e < n_bases; ++e)
+
+		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+			LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);
+			ElementAssemblyValues psi_vals, phi_vals;
+
+			for (int e = start; e < end; ++e)
 			{
-#endif
-								 // psi_vals.compute(e, is_volume, psi_bases[e], gbases[e]);
-								 // phi_vals.compute(e, is_volume, phi_bases[e], gbases[e]);
-								 psi_cache.compute(e, is_volume, psi_bases[e], gbases[e], psi_vals);
-								 phi_cache.compute(e, is_volume, phi_bases[e], gbases[e], phi_vals);
+				// psi_vals.compute(e, is_volume, psi_bases[e], gbases[e]);
+				// phi_vals.compute(e, is_volume, phi_bases[e], gbases[e]);
+				psi_cache.compute(e, is_volume, psi_bases[e], gbases[e], psi_vals);
+				phi_cache.compute(e, is_volume, phi_bases[e], gbases[e], phi_vals);
 
-								 const Quadrature &quadrature = phi_vals.quadrature;
+				const Quadrature &quadrature = phi_vals.quadrature;
 
-								 assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
-								 loc_storage.da = phi_vals.det.array() * quadrature.weights.array();
-								 const int n_phi_loc_bases = int(phi_vals.basis_values.size());
-								 const int n_psi_loc_bases = int(psi_vals.basis_values.size());
+				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
+				local_storage.da = phi_vals.det.array() * quadrature.weights.array();
+				const int n_phi_loc_bases = int(phi_vals.basis_values.size());
+				const int n_psi_loc_bases = int(psi_vals.basis_values.size());
 
-								 for (int i = 0; i < n_psi_loc_bases; ++i)
-								 {
-									 const auto &global_i = psi_vals.basis_values[i].global;
+				for (int i = 0; i < n_psi_loc_bases; ++i)
+				{
+					const auto &global_i = psi_vals.basis_values[i].global;
 
-									 for (int j = 0; j < n_phi_loc_bases; ++j)
-									 {
-										 const auto &global_j = phi_vals.basis_values[j].global;
+					for (int j = 0; j < n_phi_loc_bases; ++j)
+					{
+						const auto &global_j = phi_vals.basis_values[j].global;
 
-										 const auto stiffness_val = local_assembler_.assemble(psi_vals, phi_vals, i, j, loc_storage.da);
-										 assert(stiffness_val.size() == local_assembler_.rows() * local_assembler_.cols());
+						const auto stiffness_val = local_assembler_.assemble(psi_vals, phi_vals, i, j, local_storage.da);
+						assert(stiffness_val.size() == local_assembler_.rows() * local_assembler_.cols());
 
-										 // igl::Timer t1; t1.start();
-										 for (int n = 0; n < local_assembler_.rows(); ++n)
-										 {
-											 for (int m = 0; m < local_assembler_.cols(); ++m)
-											 {
-												 const double local_value = stiffness_val(n * local_assembler_.cols() + m);
-												 if (std::abs(local_value) < 1e-30)
-												 {
-													 continue;
-												 }
+						// igl::Timer t1; t1.start();
+						for (int n = 0; n < local_assembler_.rows(); ++n)
+						{
+							for (int m = 0; m < local_assembler_.cols(); ++m)
+							{
+								const double local_value = stiffness_val(n * local_assembler_.cols() + m);
+								if (std::abs(local_value) < 1e-30)
+								{
+									continue;
+								}
 
-												 for (size_t ii = 0; ii < global_i.size(); ++ii)
-												 {
-													 const auto gi = global_i[ii].index * local_assembler_.cols() + m;
-													 const auto wi = global_i[ii].val;
+								for (size_t ii = 0; ii < global_i.size(); ++ii)
+								{
+									const auto gi = global_i[ii].index * local_assembler_.cols() + m;
+									const auto wi = global_i[ii].val;
 
-													 for (size_t jj = 0; jj < global_j.size(); ++jj)
-													 {
-														 const auto gj = global_j[jj].index * local_assembler_.rows() + n;
-														 const auto wj = global_j[jj].val;
+									for (size_t jj = 0; jj < global_j.size(); ++jj)
+									{
+										const auto gj = global_j[jj].index * local_assembler_.rows() + n;
+										const auto wj = global_j[jj].val;
 
-														 loc_storage.cache.add_value(gj, gi, local_value * wi * wj);
+										local_storage.cache.add_value(gj, gi, local_value * wi * wj);
 
-														 if (loc_storage.cache.entries_size() >= 1e8)
-														 {
-															 loc_storage.cache.prune();
-															 logger().debug("cleaning memory...");
-														 }
-													 }
-												 }
-											 }
-										 }
-									 }
-								 }
-#if defined(POLYFEM_WITH_CPP_THREADS) || defined(POLYFEM_WITH_TBB)
-							 }
-#if defined(POLYFEM_WITH_CPP_THREADS)
-							 loc_storage.cache.prune();
-#endif
-						 });
-#else
+										if (local_storage.cache.entries_size() >= 1e8)
+										{
+											local_storage.cache.prune();
+											logger().debug("cleaning memory...");
+										}
+									}
+								}
+							}
+						}
+					}
 				}
-#endif
+			}
+		});
 
 		timerg.stop();
 		logger().trace("done separate assembly {}s...", timerg.getElapsedTime());
 
 		timerg.start();
-
-#if defined(POLYFEM_WITH_CPP_THREADS) || defined(POLYFEM_WITH_TBB)
-		for (auto &t : storages)
-		{
-			stiffness += t.cache.get_matrix(false);
-		}
+		// Serially merge local storages
+		for (LocalThreadMatStorage &local_storage : storage)
+			stiffness += local_storage.cache.get_matrix(false); // will also prune
 		stiffness.makeCompressed();
-#else
-				loc_storage.cache.prune();
-				stiffness = loc_storage.cache.get_matrix(false);
-#endif
 		timerg.stop();
 		logger().trace("done merge assembly {}s...", timerg.getElapsedTime());
 
@@ -403,97 +333,64 @@ namespace polyfem
 		rhs.resize(n_basis * local_assembler_.size(), 1);
 		rhs.setZero();
 
-#if defined(POLYFEM_WITH_CPP_THREADS)
-		std::vector<LocalThreadVecStorage> storages(polyfem::get_n_threads(), rhs.size());
-#elif defined(POLYFEM_WITH_TBB)
-				typedef tbb::enumerable_thread_specific<LocalThreadVecStorage> LocalStorage;
-				LocalStorage storages(LocalThreadVecStorage(rhs.size()));
-#else
-				LocalThreadVecStorage loc_storage(rhs.size());
-#endif
+		auto storage = create_thread_storage(LocalThreadVecStorage(rhs.size()));
 
 		const int n_bases = int(bases.size());
 
-#if defined(POLYFEM_WITH_CPP_THREADS)
-		polyfem::par_for(n_bases, [&](int start, int end, int t)
-						 {
-							 auto &loc_storage = storages[t];
-							 assert(loc_storage.vec.size() == rhs.size());
-							 for (int e = start; e < end; ++e)
-							 {
-#elif defined(POLYFEM_WITH_TBB)
-		tbb::parallel_for(tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
-					LocalStorage::reference loc_storage = storages.local();
-					for (int e = r.begin(); e != r.end(); ++e)
-					{
-#else
-				for (int e = 0; e < n_bases; ++e)
+		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+			LocalThreadVecStorage &local_storage = get_local_thread_storage(storage, thread_id);
+
+			for (int e = start; e < end; ++e)
+			{
+				// igl::Timer timer; timer.start();
+
+				ElementAssemblyValues &vals = local_storage.vals;
+				// vals.compute(e, is_volume, bases[e], gbases[e]);
+				cache.compute(e, is_volume, bases[e], gbases[e], vals);
+
+				const Quadrature &quadrature = vals.quadrature;
+
+				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
+				local_storage.da = vals.det.array() * quadrature.weights.array();
+				const int n_loc_bases = int(vals.basis_values.size());
+
+				const auto val = local_assembler_.assemble_grad(vals, displacement, local_storage.da);
+				assert(val.size() == n_loc_bases * local_assembler_.size());
+
+				for (int j = 0; j < n_loc_bases; ++j)
 				{
-#endif
-								 // igl::Timer timer; timer.start();
+					const auto &global_j = vals.basis_values[j].global;
 
-								 ElementAssemblyValues &vals = loc_storage.vals;
-								 // vals.compute(e, is_volume, bases[e], gbases[e]);
-								 cache.compute(e, is_volume, bases[e], gbases[e], vals);
+					// igl::Timer t1; t1.start();
+					for (int m = 0; m < local_assembler_.size(); ++m)
+					{
+						const double local_value = val(j * local_assembler_.size() + m);
+						if (std::abs(local_value) < 1e-30)
+						{
+							continue;
+						}
 
-								 const Quadrature &quadrature = vals.quadrature;
+						for (size_t jj = 0; jj < global_j.size(); ++jj)
+						{
+							const auto gj = global_j[jj].index * local_assembler_.size() + m;
+							const auto wj = global_j[jj].val;
 
-								 assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
-								 loc_storage.da = vals.det.array() * quadrature.weights.array();
-								 const int n_loc_bases = int(vals.basis_values.size());
+							local_storage.vec(gj) += local_value * wj;
+						}
+					}
 
-								 const auto val = local_assembler_.assemble_grad(vals, displacement, loc_storage.da);
-								 assert(val.size() == n_loc_bases * local_assembler_.size());
-
-								 for (int j = 0; j < n_loc_bases; ++j)
-								 {
-									 const auto &global_j = vals.basis_values[j].global;
-
-									 // igl::Timer t1; t1.start();
-									 for (int m = 0; m < local_assembler_.size(); ++m)
-									 {
-										 const double local_value = val(j * local_assembler_.size() + m);
-										 if (std::abs(local_value) < 1e-30)
-										 {
-											 continue;
-										 }
-
-										 for (size_t jj = 0; jj < global_j.size(); ++jj)
-										 {
-											 const auto gj = global_j[jj].index * local_assembler_.size() + m;
-											 const auto wj = global_j[jj].val;
-
-											 loc_storage.vec(gj) += local_value * wj;
-										 }
-									 }
-
-									 // t1.stop();
-									 // if (!vals.has_parameterization) { std::cout << "-- t1: " << t1.getElapsedTime() << std::endl; }
-								 }
+					// t1.stop();
+					// if (!vals.has_parameterization) { std::cout << "-- t1: " << t1.getElapsedTime() << std::endl; }
+				}
 
 				// timer.stop();
 				// if (!vals.has_parameterization) { std::cout << "-- Timer: " << timer.getElapsedTime() << std::endl; }
+			}
+		});
 
-#if defined(POLYFEM_WITH_CPP_THREADS) || defined(POLYFEM_WITH_TBB)
-							 }
-						 });
-#else
-					}
-#endif
-
-#if defined(POLYFEM_WITH_CPP_THREADS)
-		for (const auto &t : storages)
-		{
-			rhs += t.vec;
-		}
-#elif defined(POLYFEM_WITH_TBB)
-					for (LocalStorage::iterator i = storages.begin(); i != storages.end(); ++i)
-					{
-						rhs += i->vec;
-					}
-#else
-					rhs = loc_storage.vec;
-#endif
+		// Serially merge local storages
+		for (const LocalThreadVecStorage &local_storage : storage)
+			rhs += local_storage.vec;
 	}
 
 	template <class LocalAssembler>
@@ -517,143 +414,108 @@ namespace polyfem
 		mat_cache.init(n_basis * local_assembler_.size());
 		mat_cache.set_zero();
 
-#if defined(POLYFEM_WITH_CPP_THREADS)
-		std::vector<LocalThreadMatStorage> storages(polyfem::get_n_threads());
-#elif defined(POLYFEM_WITH_TBB)
-					typedef tbb::enumerable_thread_specific<LocalThreadMatStorage> LocalStorage;
-					LocalStorage storages(LocalThreadMatStorage(buffer_size, mat_cache));
-#else
-					LocalThreadMatStorage loc_storage(buffer_size, mat_cache);
-#endif
+		auto storage = create_thread_storage(LocalThreadMatStorage(buffer_size, mat_cache));
 
 		const int n_bases = int(bases.size());
 		igl::Timer timerg;
 		timerg.start();
 
-#if defined(POLYFEM_WITH_CPP_THREADS)
-		polyfem::par_for(n_bases, [&](int start, int end, int t)
-						 {
-							 auto &loc_storage = storages[t];
-							 loc_storage.init(buffer_size, mat_cache);
-							 for (int e = start; e < end; ++e)
-							 {
-#elif defined(POLYFEM_WITH_TBB)
-		tbb::parallel_for(tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
-						LocalStorage::reference loc_storage = storages.local();
-						for (int e = r.begin(); e != r.end(); ++e)
-						{
-#else
-					for (int e = 0; e < n_bases; ++e)
+		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+			LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);
+
+			for (int e = start; e < end; ++e)
+			{
+				ElementAssemblyValues &vals = local_storage.vals;
+				cache.compute(e, is_volume, bases[e], gbases[e], vals);
+
+				const Quadrature &quadrature = vals.quadrature;
+
+				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
+				local_storage.da = vals.det.array() * quadrature.weights.array();
+				const int n_loc_bases = int(vals.basis_values.size());
+
+				auto stiffness_val = local_assembler_.assemble_hessian(vals, displacement, local_storage.da);
+				assert(stiffness_val.rows() == n_loc_bases * local_assembler_.size());
+				assert(stiffness_val.cols() == n_loc_bases * local_assembler_.size());
+
+				if (project_to_psd)
+					stiffness_val = ipc::project_to_psd(stiffness_val);
+
+				// bool has_nan = false;
+				// for(int k = 0; k < stiffness_val.size(); ++k)
+				// {
+				// 	if(std::isnan(stiffness_val(k)))
+				// 	{
+				// 		has_nan = true;
+				// 		break;
+				// 	}
+				// }
+
+				// if(has_nan)
+				// {
+				// 	local_storage.entries.emplace_back(0, 0, std::nan(""));
+				// 	break;
+				// }
+
+				for (int i = 0; i < n_loc_bases; ++i)
+				{
+					const auto &global_i = vals.basis_values[i].global;
+
+					for (int j = 0; j < n_loc_bases; ++j)
+					// for(int j = 0; j <= i; ++j)
 					{
-#endif
-								 ElementAssemblyValues &vals = loc_storage.vals;
-								 cache.compute(e, is_volume, bases[e], gbases[e], vals);
+						const auto &global_j = vals.basis_values[j].global;
 
-								 const Quadrature &quadrature = vals.quadrature;
+						for (int n = 0; n < local_assembler_.size(); ++n)
+						{
+							for (int m = 0; m < local_assembler_.size(); ++m)
+							{
+								const double local_value = stiffness_val(i * local_assembler_.size() + m, j * local_assembler_.size() + n);
+								//  if (std::abs(local_value) < 1e-30)
+								//  {
+								// 	 continue;
+								//  }
 
-								 assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
-								 loc_storage.da = vals.det.array() * quadrature.weights.array();
-								 const int n_loc_bases = int(vals.basis_values.size());
+								for (size_t ii = 0; ii < global_i.size(); ++ii)
+								{
+									const auto gi = global_i[ii].index * local_assembler_.size() + m;
+									const auto wi = global_i[ii].val;
 
-								 auto stiffness_val = local_assembler_.assemble_hessian(vals, displacement, loc_storage.da);
-								 assert(stiffness_val.rows() == n_loc_bases * local_assembler_.size());
-								 assert(stiffness_val.cols() == n_loc_bases * local_assembler_.size());
+									for (size_t jj = 0; jj < global_j.size(); ++jj)
+									{
+										const auto gj = global_j[jj].index * local_assembler_.size() + n;
+										const auto wj = global_j[jj].val;
 
-								 if (project_to_psd)
-									 stiffness_val = ipc::project_to_psd(stiffness_val);
+										local_storage.cache.add_value(gi, gj, local_value * wi * wj);
+										// if (j < i) {
+										// 	local_storage.entries.emplace_back(gj, gi, local_value * wj * wi);
+										// }
 
-								 // bool has_nan = false;
-								 // for(int k = 0; k < stiffness_val.size(); ++k)
-								 // {
-								 // 	if(std::isnan(stiffness_val(k)))
-								 // 	{
-								 // 		has_nan = true;
-								 // 		break;
-								 // 	}
-								 // }
-
-								 // if(has_nan)
-								 // {
-								 // 	loc_storage.entries.emplace_back(0, 0, std::nan(""));
-								 // 	break;
-								 // }
-
-								 for (int i = 0; i < n_loc_bases; ++i)
-								 {
-									 const auto &global_i = vals.basis_values[i].global;
-
-									 for (int j = 0; j < n_loc_bases; ++j)
-									 // for(int j = 0; j <= i; ++j)
-									 {
-										 const auto &global_j = vals.basis_values[j].global;
-
-										 for (int n = 0; n < local_assembler_.size(); ++n)
-										 {
-											 for (int m = 0; m < local_assembler_.size(); ++m)
-											 {
-												 const double local_value = stiffness_val(i * local_assembler_.size() + m, j * local_assembler_.size() + n);
-												 //  if (std::abs(local_value) < 1e-30)
-												 //  {
-												 // 	 continue;
-												 //  }
-
-												 for (size_t ii = 0; ii < global_i.size(); ++ii)
-												 {
-													 const auto gi = global_i[ii].index * local_assembler_.size() + m;
-													 const auto wi = global_i[ii].val;
-
-													 for (size_t jj = 0; jj < global_j.size(); ++jj)
-													 {
-														 const auto gj = global_j[jj].index * local_assembler_.size() + n;
-														 const auto wj = global_j[jj].val;
-
-														 loc_storage.cache.add_value(gi, gj, local_value * wi * wj);
-														 // if (j < i) {
-														 // 	loc_storage.entries.emplace_back(gj, gi, local_value * wj * wi);
-														 // }
-
-														 if (loc_storage.cache.entries_size() >= 1e8)
-														 {
-															 loc_storage.cache.prune();
-															 logger().debug("cleaning memory...");
-														 }
-													 }
-												 }
-											 }
-										 }
-									 }
-								 }
-#if defined(POLYFEM_WITH_CPP_THREADS) || defined(POLYFEM_WITH_TBB)
-							 }
-#if defined(POLYFEM_WITH_CPP_THREADS)
-							 loc_storage.cache.prune();
-#endif
-						 });
-#else
+										if (local_storage.cache.entries_size() >= 1e8)
+										{
+											local_storage.cache.prune();
+											logger().debug("cleaning memory...");
+										}
+									}
+								}
+							}
 						}
-#endif
+					}
+				}
+			}
+		});
 
 		timerg.stop();
 		logger().trace("done separate assembly {}s...", timerg.getElapsedTime());
 
 		timerg.start();
 
-#if defined(POLYFEM_WITH_CPP_THREADS)
-		for (const auto &t : storages)
+		// Serially merge local storages
+		for (LocalThreadMatStorage &local_storage : storage)
 		{
-			mat_cache += t.cache;
+			local_storage.cache.prune();
+			mat_cache += local_storage.cache;
 		}
-#elif defined(POLYFEM_WITH_TBB)
-						for (auto &t : storages)
-						{
-							t.cache.prune();
-							mat_cache += t.cache;
-						}
-#else
-						loc_storage.cache.prune();
-						mat_cache += loc_storage.cache;
-#endif
-
 		grad = mat_cache.get_matrix();
 
 		timerg.stop();
@@ -668,69 +530,34 @@ namespace polyfem
 		const AssemblyValsCache &cache,
 		const Eigen::MatrixXd &displacement) const
 	{
-#if defined(POLYFEM_WITH_CPP_THREADS)
-		std::vector<LocalThreadScalarStorage> storages(polyfem::get_n_threads());
-#elif defined(POLYFEM_WITH_TBB)
-						typedef tbb::enumerable_thread_specific<LocalThreadScalarStorage> LocalStorage;
-						LocalStorage storages((LocalThreadScalarStorage()));
-#else
-						LocalThreadScalarStorage loc_storage;
-#endif
+		auto storage = create_thread_storage(LocalThreadScalarStorage());
 		const int n_bases = int(bases.size());
 
-#if defined(POLYFEM_WITH_CPP_THREADS)
-		polyfem::par_for(n_bases, [&](int start, int end, int t)
-						 {
-							 auto &loc_storage = storages[t];
-							 for (int e = start; e < end; ++e)
-							 {
-#elif defined(POLYFEM_WITH_TBB)
-		tbb::parallel_for(tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
-							LocalStorage::reference loc_storage = storages.local();
-							for (int e = r.begin(); e != r.end(); ++e)
-							{
-#else
-						for (int e = 0; e < n_bases; ++e)
-						{
-#endif
-								 // igl::Timer timer; timer.start();
+		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+			// igl::Timer timer; timer.start();
+			LocalThreadScalarStorage &local_storage = get_local_thread_storage(storage, thread_id);
+			ElementAssemblyValues &vals = local_storage.vals;
 
-								 ElementAssemblyValues &vals = loc_storage.vals;
-								 cache.compute(e, is_volume, bases[e], gbases[e], vals);
+			for (int e = start; e < end; ++e)
+			{
+				ElementAssemblyValues &vals = local_storage.vals;
+				cache.compute(e, is_volume, bases[e], gbases[e], vals);
 
-								 const Quadrature &quadrature = vals.quadrature;
+				const Quadrature &quadrature = vals.quadrature;
 
-								 assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
-								 loc_storage.da = vals.det.array() * quadrature.weights.array();
+				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
+				local_storage.da = vals.det.array() * quadrature.weights.array();
 
-								 const double val = local_assembler_.compute_energy(vals, displacement, loc_storage.da);
-								 loc_storage.val += val;
-#if defined(POLYFEM_WITH_CPP_THREADS) || defined(POLYFEM_WITH_TBB)
-							 }
-						 });
-#else
-							}
-#endif
+				const double val = local_assembler_.compute_energy(vals, displacement, local_storage.da);
+				local_storage.val += val;
+			}
+		});
 
-#if defined(POLYFEM_WITH_CPP_THREADS)
 		double res = 0;
-		for (const auto &t : storages)
-		{
-			res += t.val;
-		}
-
+		// Serially merge local storages
+		for (const LocalThreadScalarStorage &local_storage : storage)
+			res += local_storage.val;
 		return res;
-#elif defined(POLYFEM_WITH_TBB)
-							double res = 0;
-							for (LocalStorage::const_iterator i = storages.begin(); i != storages.end(); ++i)
-							{
-								res += i->val;
-							}
-
-							return res;
-#else
-							return loc_storage.val;
-#endif
 	}
 
 	//template instantiation

@@ -25,6 +25,8 @@ set(SOURCES
 	JSONUtils.hpp
 	MatrixUtils.cpp
 	MatrixUtils.hpp
+	MaybeParallelFor.hpp
+	MaybeParallelFor.tpp
 	MshReader.cpp
 	MshReader.hpp
 	par_for.cpp

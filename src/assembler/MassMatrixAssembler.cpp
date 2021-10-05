@@ -1,12 +1,7 @@
 #include "MassMatrixAssembler.hpp"
 
-#include <polyfem/par_for.hpp>
+#include <polyfem/MaybeParallelFor.hpp>
 #include <polyfem/Logger.hpp>
-
-#ifdef POLYFEM_WITH_TBB
-#include <tbb/parallel_for.h>
-#include <tbb/enumerable_thread_specific.h>
-#endif
 
 namespace polyfem
 {
@@ -55,144 +50,103 @@ namespace polyfem
 		mass.resize(n_basis * size, n_basis * size);
 		mass.setZero();
 
-#if defined(POLYFEM_WITH_CPP_THREADS)
-		std::vector<LocalThreadMatStorage> storages(polyfem::get_n_threads());
-#elif defined(POLYFEM_WITH_TBB)
-		typedef tbb::enumerable_thread_specific<LocalThreadMatStorage> LocalStorage;
-		LocalStorage storages(LocalThreadMatStorage(buffer_size, mass.rows()));
-#else
-		LocalThreadMatStorage loc_storage(buffer_size, mass.rows());
-#endif
+		auto storage = create_thread_storage(LocalThreadMatStorage(buffer_size, mass.rows()));
 
 		const int n_bases = int(bases.size());
 
-#if defined(POLYFEM_WITH_CPP_THREADS)
-		polyfem::par_for(n_bases, [&](int start, int end, int t)
-						 {
-							 auto &loc_storage = storages[t];
-							 loc_storage.init(buffer_size, mass.rows());
-							 for (int e = start; e < end; ++e)
-							 {
-#elif defined(POLYFEM_WITH_TBB)
-		tbb::parallel_for(tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
-			LocalStorage::reference loc_storage = storages.local();
-			// loc_storage.entries.reserve(buffer_size);
-			// loc_storage.tmp_mat.resize(mass.rows(), mass.cols());
-			// loc_storage.mass_mat.resize(mass.rows(), mass.cols());
+		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+			LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);
 
-			for (int e = r.begin(); e != r.end(); ++e)
+			for (int e = start; e < end; ++e)
 			{
-#else
-		for (int e = 0; e < n_bases; ++e)
-		{
-#endif
-								 ElementAssemblyValues &vals = loc_storage.vals;
-								 // vals.compute(e, is_volume, bases[e], gbases[e]);
-								 cache.compute(e, is_volume, bases[e], gbases[e], vals);
+				ElementAssemblyValues &vals = local_storage.vals;
+				// vals.compute(e, is_volume, bases[e], gbases[e]);
+				cache.compute(e, is_volume, bases[e], gbases[e], vals);
 
-								 const Quadrature &quadrature = vals.quadrature;
+				const Quadrature &quadrature = vals.quadrature;
 
-								 assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
-								 loc_storage.da = vals.det.array() * quadrature.weights.array();
-								 const int n_loc_bases = int(vals.basis_values.size());
+				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
+				local_storage.da = vals.det.array() * quadrature.weights.array();
+				const int n_loc_bases = int(vals.basis_values.size());
 
-								 for (int i = 0; i < n_loc_bases; ++i)
-								 {
-									 const auto &global_i = vals.basis_values[i].global;
+				for (int i = 0; i < n_loc_bases; ++i)
+				{
+					const auto &global_i = vals.basis_values[i].global;
 
-									 for (int j = 0; j <= i; ++j)
-									 {
-										 const auto &global_j = vals.basis_values[j].global;
+					for (int j = 0; j <= i; ++j)
+					{
+						const auto &global_j = vals.basis_values[j].global;
 
-										 double tmp = 0; //(vals.basis_values[i].val.array() * vals.basis_values[j].val.array() * da.array()).sum();
-										 for (int q = 0; q < loc_storage.da.size(); ++q)
-										 {
-											 const double rho = density(vals.val(q, 0), vals.val(q, 1), vals.val.cols() == 2 ? 0. : vals.val(q, 2), vals.element_id);
-											 tmp += rho * vals.basis_values[i].val(q) * vals.basis_values[j].val(q) * loc_storage.da(q);
-										 }
-										 if (std::abs(tmp) < 1e-30)
-										 {
-											 continue;
-										 }
+						double tmp = 0; //(vals.basis_values[i].val.array() * vals.basis_values[j].val.array() * da.array()).sum();
+						for (int q = 0; q < local_storage.da.size(); ++q)
+						{
+							const double rho = density(vals.val(q, 0), vals.val(q, 1), vals.val.cols() == 2 ? 0. : vals.val(q, 2), vals.element_id);
+							tmp += rho * vals.basis_values[i].val(q) * vals.basis_values[j].val(q) * local_storage.da(q);
+						}
+						if (std::abs(tmp) < 1e-30)
+						{
+							continue;
+						}
 
-										 for (int n = 0; n < size; ++n)
-										 {
-											 //local matrix is diagonal
-											 const int m = n;
-											 // for(int m = 0; m < size; ++m)
-											 {
-												 const double local_value = tmp; //val(n*size+m);
-												 for (size_t ii = 0; ii < global_i.size(); ++ii)
-												 {
-													 const auto gi = global_i[ii].index * size + m;
-													 const auto wi = global_i[ii].val;
+						for (int n = 0; n < size; ++n)
+						{
+							//local matrix is diagonal
+							const int m = n;
+							// for(int m = 0; m < size; ++m)
+							{
+								const double local_value = tmp; //val(n*size+m);
+								for (size_t ii = 0; ii < global_i.size(); ++ii)
+								{
+									const auto gi = global_i[ii].index * size + m;
+									const auto wi = global_i[ii].val;
 
-													 for (size_t jj = 0; jj < global_j.size(); ++jj)
-													 {
-														 const auto gj = global_j[jj].index * size + n;
-														 const auto wj = global_j[jj].val;
+									for (size_t jj = 0; jj < global_j.size(); ++jj)
+									{
+										const auto gj = global_j[jj].index * size + n;
+										const auto wj = global_j[jj].val;
 
-														 loc_storage.entries.emplace_back(gi, gj, local_value * wi * wj);
-														 if (j < i)
-														 {
-															 loc_storage.entries.emplace_back(gj, gi, local_value * wj * wi);
-														 }
+										local_storage.entries.emplace_back(gi, gj, local_value * wi * wj);
+										if (j < i)
+										{
+											local_storage.entries.emplace_back(gj, gi, local_value * wj * wi);
+										}
 
-														 if (loc_storage.entries.size() >= 1e8)
-														 {
-															 loc_storage.tmp_mat.setFromTriplets(loc_storage.entries.begin(), loc_storage.entries.end());
-															 loc_storage.mass_mat += loc_storage.tmp_mat;
-															 loc_storage.mass_mat.makeCompressed();
+										if (local_storage.entries.size() >= 1e8)
+										{
+											local_storage.tmp_mat.setFromTriplets(local_storage.entries.begin(), local_storage.entries.end());
+											local_storage.mass_mat += local_storage.tmp_mat;
+											local_storage.mass_mat.makeCompressed();
 
-															 loc_storage.tmp_mat.setZero();
-															 loc_storage.tmp_mat.data().squeeze();
+											local_storage.tmp_mat.setZero();
+											local_storage.tmp_mat.data().squeeze();
 
-															 loc_storage.mass_mat.makeCompressed();
+											local_storage.mass_mat.makeCompressed();
 
-															 loc_storage.entries.clear();
-															 logger().debug("cleaning memory...");
-														 }
-													 }
-												 }
-											 }
-										 }
+											local_storage.entries.clear();
+											logger().debug("cleaning memory...");
+										}
+									}
+								}
+							}
+						}
 
-										 // t1.stop();
-										 // if (!vals.has_parameterization) { std::cout << "-- t1: " << t1.getElapsedTime() << std::endl; }
-									 }
-								 }
+						// t1.stop();
+						// if (!vals.has_parameterization) { std::cout << "-- t1: " << t1.getElapsedTime() << std::endl; }
+					}
+				}
 
 				// timer.stop();
 				// if (!vals.has_parameterization) { std::cout << "-- Timer: " << timer.getElapsedTime() << std::endl; }
-#if defined(POLYFEM_WITH_CPP_THREADS) || defined(POLYFEM_WITH_TBB)
-							 }
-#if defined(POLYFEM_WITH_CPP_THREADS)
-							 loc_storage.tmp_mat.setFromTriplets(loc_storage.entries.begin(), loc_storage.entries.end());
-							 loc_storage.mass_mat += loc_storage.tmp_mat;
-							 loc_storage.mass_mat.makeCompressed();
-#endif
-						 });
-#else
 			}
-#endif
+		});
 
-#if defined(POLYFEM_WITH_CPP_THREADS)
-		for (const auto &t : storages)
+		// Serially merge local storages
+		for (LocalThreadMatStorage &local_storage : storage)
 		{
-			mass += t.mass_mat;
+			mass += local_storage.mass_mat;
+			local_storage.tmp_mat.setFromTriplets(local_storage.entries.begin(), local_storage.entries.end());
+			mass += local_storage.tmp_mat;
 		}
-#elif defined(POLYFEM_WITH_TBB)
-			for (LocalStorage::iterator i = storages.begin(); i != storages.end(); ++i)
-			{
-				mass += i->mass_mat;
-				i->tmp_mat.setFromTriplets(i->entries.begin(), i->entries.end());
-				mass += i->tmp_mat;
-			}
-#else
-			mass = loc_storage.mass_mat;
-			loc_storage.tmp_mat.setFromTriplets(loc_storage.entries.begin(), loc_storage.entries.end());
-			mass += loc_storage.tmp_mat;
-#endif
 		mass.makeCompressed();
-	}
+	} // namespace polyfem
 } // namespace polyfem

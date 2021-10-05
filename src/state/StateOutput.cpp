@@ -190,8 +190,7 @@ namespace polyfem
 				{
 					if (lb.type() == BoundaryType::Quad)
 					{
-						const auto map = [n_samples, size](int i, int j)
-						{ return j * n_samples + i + size; };
+						const auto map = [n_samples, size](int i, int j) { return j * n_samples + i + size; };
 
 						for (int j = 0; j < n_samples - 1; ++j)
 						{
@@ -214,8 +213,7 @@ namespace polyfem
 								++index;
 							}
 						}
-						const auto map = [mapp, n_samples](int i, int j)
-						{
+						const auto map = [mapp, n_samples](int i, int j) {
 							if (j * n_samples + i >= mapp.size())
 								return -1;
 							return mapp[j * n_samples + i];
@@ -532,7 +530,7 @@ namespace polyfem
 
 	void State::save_json()
 	{
-		const std::string out_path = args["output"];
+		const std::string out_path = resolve_output_path(args["output"]);
 		if (!out_path.empty())
 		{
 			std::ofstream out(out_path);
@@ -723,16 +721,16 @@ namespace polyfem
 
 		// Export vtu mesh of solution + wire mesh of deformed input
 		// + mesh colored with the bases
-		const std::string paraview_path = args["export"]["paraview"];
-		const std::string old_path = args["export"]["vis_mesh"];
-		const std::string vis_mesh_path = paraview_path.empty() ? old_path : paraview_path;
-		const std::string wire_mesh_path = args["export"]["wire_mesh"];
-		const std::string iso_mesh_path = args["export"]["iso_mesh"];
-		const std::string nodes_path = args["export"]["nodes"];
-		const std::string solution_path = args["export"]["solution"];
-		const std::string solmat_path = args["export"]["solution_mat"];
-		const std::string stress_path = args["export"]["stress_mat"];
-		const std::string mises_path = args["export"]["mises"];
+		const std::string paraview_path = resolve_output_path(args["export"]["paraview"]);
+		const std::string old_path = resolve_output_path(args["export"]["vis_mesh"]);
+		const std::string vis_mesh_path = resolve_output_path(paraview_path.empty() ? old_path : paraview_path);
+		const std::string wire_mesh_path = resolve_output_path(args["export"]["wire_mesh"]);
+		const std::string iso_mesh_path = resolve_output_path(args["export"]["iso_mesh"]);
+		const std::string nodes_path = resolve_output_path(args["export"]["nodes"]);
+		const std::string solution_path = resolve_output_path(args["export"]["solution"]);
+		const std::string solmat_path = resolve_output_path(args["export"]["solution_mat"]);
+		const std::string stress_path = resolve_output_path(args["export"]["stress_mat"]);
+		const std::string mises_path = resolve_output_path(args["export"]["mises"]);
 
 		if (!solution_path.empty())
 		{
@@ -1655,7 +1653,7 @@ namespace polyfem
 		save_edges(name, points, edges);
 	}
 
-	void State::save_pvd(const std::string &name, const std::function<std::string(int)> &vtu_names, int time_steps, double t0, double dt)
+	void State::save_pvd(const std::string &name, const std::function<std::string(int)> &vtu_names, int time_steps, double t0, double dt, int skip_frame)
 	{
 		FILE *pvd_file = fopen(name.c_str(), "w");
 		if (pvd_file == NULL)
@@ -1676,7 +1674,7 @@ namespace polyfem
 
 		printer.OpenElement("Collection");
 
-		for (int i = 0; i <= time_steps; i++)
+		for (int i = 0; i <= time_steps; i += skip_frame)
 		{
 			printer.OpenElement("DataSet");
 			printer.PushAttribute("timestep", fmt::format("{:g}", t0 + i * dt).c_str());
@@ -1690,8 +1688,6 @@ namespace polyfem
 		printer.CloseElement();
 
 		fclose(pvd_file);
-
-		logger().info("Simulation results written to: {}", name);
 	}
 
 } // namespace polyfem

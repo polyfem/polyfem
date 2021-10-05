@@ -444,7 +444,7 @@ namespace polyfem
 		//saves an obj of the wireframe
 		void save_wire(const std::string &name, bool isolines = false);
 		// save a PVD of a time dependent simulation
-		void save_pvd(const std::string &name, const std::function<std::string(int)> &vtu_names, int time_steps, double t0, double dt);
+		void save_pvd(const std::string &name, const std::function<std::string(int)> &vtu_names, int time_steps, double t0, double dt, int skip_frame = 1);
 
 		//samples to solution on the visualization mesh and return the vis mesh (points and tets) and the interpolated values (fun)
 		void get_sampled_solution(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXd &fun, bool boundary_only = false)

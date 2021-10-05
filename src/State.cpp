@@ -1019,6 +1019,13 @@ namespace polyfem
 			}
 			logger().info("t0={}, dt={}, tend={}", t0, dt, tend);
 
+			// Pre log the output path for easier watching
+			if (args["save_time_sequence"])
+			{
+				logger().info("Time sequence of simulation will be written to: {}",
+							  resolve_output_path(args["export"]["time_sequence"]));
+			}
+
 			Eigen::VectorXd c_sol;
 			init_transient(c_sol);
 			RhsAssembler &rhs_assembler = *step_data.rhs_assembler;
@@ -1026,15 +1033,19 @@ namespace polyfem
 			if (formulation() == "NavierStokes")
 				solve_transient_navier_stokes(time_steps, t0, dt, rhs_assembler, c_sol);
 			else if (formulation() == "OperatorSplitting")
-			{
 				solve_transient_navier_stokes_split(time_steps, dt, rhs_assembler);
-			}
 			else if (problem->is_scalar() || assembler.is_mixed(formulation()))
 				solve_transient_scalar(time_steps, t0, dt, rhs_assembler, c_sol);
-			else if (assembler.is_linear(formulation()) && !args["has_collision"])
+			else if (assembler.is_linear(formulation()) && !args["has_collision"]) // Collisions add nonlinearity to the problem
 				solve_transient_tensor_linear(time_steps, t0, dt, rhs_assembler);
 			else
 				solve_transient_tensor_non_linear(time_steps, t0, dt, rhs_assembler);
+
+			if (args["save_time_sequence"])
+			{
+				logger().info("Time sequence of simulation written to: {}",
+							  resolve_output_path(args["export"]["time_sequence"]));
+			}
 		}
 		else //if(!problem->is_time_dependent())
 		{
