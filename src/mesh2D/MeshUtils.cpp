@@ -1082,6 +1082,7 @@ void polyfem::read_mesh_from_json(const json &mesh, const std::string &root_path
 				"enabled": true,
 				"body_id": 0,
 				"boundary_id": 0
+				"displacement": [0.0, 0.0, 0.0]
 			})"_json;
 	jmesh.merge_patch(mesh);
 

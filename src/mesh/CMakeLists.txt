@@ -4,6 +4,8 @@ set(SOURCES
 	Mesh.hpp
 	MeshNodes.cpp
 	MeshNodes.hpp
+	Obstacle.cpp
+	Obstacle.hpp
 	VTUWriter.cpp
 	VTUWriter.hpp
 )
