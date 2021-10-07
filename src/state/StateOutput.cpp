@@ -1177,10 +1177,25 @@ namespace polyfem
 
 		interpolate_function(points.rows(), sol, fun, use_sampler, boundary_only);
 
+		if (obstacle.n_vertices() > 0)
+		{
+			fun.conservativeResize(fun.rows() + obstacle.n_vertices(), fun.cols());
+			obstacle.update_displacement(t, fun);
+		}
+
 		if (problem->has_exact_sol())
 		{
 			problem->exact(points, t, exact_fun);
 			err = (fun - exact_fun).eval().rowwise().norm();
+
+			if (obstacle.n_vertices() > 0)
+			{
+				exact_fun.conservativeResize(exact_fun.rows() + obstacle.n_vertices(), exact_fun.cols());
+				obstacle.update_displacement(t, exact_fun);
+
+				err.conservativeResize(err.rows() + obstacle.n_vertices(), 1);
+				err.bottomRows(obstacle.n_vertices()).setZero();
+			}
 		}
 
 		VTUWriter writer;
@@ -1190,14 +1205,11 @@ namespace polyfem
 			fun.conservativeResize(fun.rows(), 3);
 			fun.col(2).setZero();
 
-			exact_fun.conservativeResize(exact_fun.rows(), 3);
-			exact_fun.col(2).setZero();
-		}
-
-		if (obstacle.n_vertices() > 0)
-		{
-			fun.conservativeResize(fun.rows() + obstacle.n_vertices(), fun.cols());
-			obstacle.update_displacement(t, fun);
+			if (problem->has_exact_sol())
+			{
+				exact_fun.conservativeResize(exact_fun.rows(), 3);
+				exact_fun.col(2).setZero();
+			}
 		}
 
 		if (solve_export_to_file)
@@ -1233,15 +1245,6 @@ namespace polyfem
 			writer.add_field("discr", discr);
 		if (problem->has_exact_sol())
 		{
-			if (obstacle.n_vertices() > 0)
-			{
-				exact_fun.conservativeResize(exact_fun.rows() + obstacle.n_vertices(), exact_fun.cols());
-				obstacle.update_displacement(t, exact_fun);
-
-				err.conservativeResize(err.rows() + obstacle.n_vertices(), err.cols());
-				obstacle.update_displacement(t, err);
-			}
-
 			if (solve_export_to_file)
 			{
 				writer.add_field("exact", exact_fun);
