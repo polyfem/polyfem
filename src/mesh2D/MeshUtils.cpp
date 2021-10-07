@@ -607,8 +607,7 @@ namespace
 			box.xyz_max[2] = max_corner[2];
 
 			std::vector<std::pair<double, int>> inter;
-			auto action = [&M, &inter, &center](GEO::index_t f)
-			{
+			auto action = [&M, &inter, &center](GEO::index_t f) {
 				double z;
 				if (int s = intersect_ray_z(M, f, center, z))
 				{
@@ -1081,7 +1080,7 @@ void polyfem::read_mesh_from_json(const json &mesh, const std::string &root_path
 				"scale": [1.0, 1.0, 1.0],
 				"enabled": true,
 				"body_id": 0,
-				"boundary_id": 0
+				"boundary_id": 0,
 				"displacement": [0.0, 0.0, 0.0]
 			})"_json;
 	jmesh.merge_patch(mesh);
