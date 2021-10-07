@@ -241,22 +241,21 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 
 	mesh->set_body_ids(body_ids);
 	assert(body_vertices_start.size() == boundary_ids.size());
-	mesh->compute_boundary_ids([&](const std::vector<int> &vis, bool is_boundary)
-							   {
-								   if (!is_boundary)
-								   {
-									   return -1;
-								   }
+	mesh->compute_boundary_ids([&](const std::vector<int> &vis, bool is_boundary) {
+		if (!is_boundary)
+		{
+			return -1;
+		}
 
-								   for (int i = 0; i < body_vertices_start.size() - 1; i++)
-								   {
-									   if (body_vertices_start[i] <= vis[0] && vis[0] < body_vertices_start[i + 1])
-									   {
-										   return boundary_ids[i];
-									   }
-								   }
-								   return boundary_ids.back();
-							   });
+		for (int i = 0; i < body_vertices_start.size() - 1; i++)
+		{
+			if (body_vertices_start[i] <= vis[0] && vis[0] < body_vertices_start[i + 1])
+			{
+				return boundary_ids[i];
+			}
+		}
+		return boundary_ids.back();
+	});
 
 	return mesh;
 }

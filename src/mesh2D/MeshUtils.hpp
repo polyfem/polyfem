@@ -191,13 +191,13 @@ namespace polyfem
 	///
 	/// @brief      read a mesh from json, includes scaling, rotation and transformations
 	///
-	/// @param[in]  mesh	 	{ json object with the mesh data }
-	/// @param[in]  root_path 	{ root path for relative loading }
-	/// @param[out] V         	{ #V x 3/2 output vertices positions }
-	/// @param[out]  C         	{ #C cells (e.g., tri/tets/quad/hexes) }
-	/// @param[out]  elements   { #C indices for high-order nodes }
-	/// @param[out]  w    	    { #C weights for rational polynomials }
-	/// @param[out]  jmesh      { json object patched with all default informations }
+	/// @param[in]  mesh      { json object with the mesh data }
+	/// @param[in]  root_path { root path for relative loading }
+	/// @param[out] V         { #V x 3/2 output vertices positions }
+	/// @param[out] C         { #C cells (e.g., tri/tets/quad/hexes) }
+	/// @param[out] elements  { #C indices for high-order nodes }
+	/// @param[out] w         { #C weights for rational polynomials }
+	/// @param[out] jmesh     { json object patched with all default informations }
 	///
 	void read_mesh_from_json(const json &mesh, const std::string &root_path, Eigen::MatrixXd &tmp_vertices, Eigen::MatrixXi &tmp_cells, std::vector<std::vector<int>> &tmp_elements, std::vector<std::vector<double>> &tmp_weights, json &jmesh);
 
