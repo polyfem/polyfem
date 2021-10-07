@@ -3,6 +3,7 @@
 
 #include <polyfem/ElementAssemblyValues.hpp>
 #include <polyfem/AssemblerUtils.hpp>
+#include <polyfem/Obstacle.hpp>
 
 #include <polyfem/Problem.hpp>
 #include <polyfem/LocalBoundary.hpp>
@@ -22,7 +23,7 @@ namespace polyfem
 		//size of the problem, bases
 		//formulation, problem
 		//and solver used internally
-		RhsAssembler(const AssemblerUtils &assembler, const Mesh &mesh,
+		RhsAssembler(const AssemblerUtils &assembler, const Mesh &mesh, const Obstacle &obstacle,
 					 const int n_basis, const int size,
 					 const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases, const AssemblyValsCache &ass_vals_cache,
 					 const std::string &formulation, const Problem &problem,
@@ -90,6 +91,7 @@ namespace polyfem
 
 		const AssemblerUtils &assembler_;
 		const Mesh &mesh_;
+		const Obstacle &obstacle_;
 		const int n_basis_;
 		const int size_;
 		const std::vector<ElementBases> &bases_;

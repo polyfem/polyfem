@@ -75,7 +75,7 @@ namespace polyfem
 		rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 
 		step_data.rhs_assembler = std::make_shared<RhsAssembler>(
-			assembler, *mesh,
+			assembler, *mesh, obstacle,
 			n_bases, problem->is_scalar() ? 1 : mesh->dimension(),
 			bases, gbases, ass_vals_cache,
 			formulation(), *problem,
@@ -769,7 +769,7 @@ namespace polyfem
 
 		nl_problem.full_to_reduced(sol, tmp_sol);
 		assert(sol.size() == rhs.size());
-		assert(tmp_sol.size() < rhs.size());
+		assert(tmp_sol.size() <= rhs.size());
 
 		timer.start();
 		logger().trace("Updating lagging...");
@@ -896,7 +896,7 @@ namespace polyfem
 		json rhs_solver_params = args["rhs_solver_params"];
 		rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 		const int size = problem->is_scalar() ? 1 : mesh->dimension();
-		RhsAssembler rhs_assembler(assembler, *mesh,
+		RhsAssembler rhs_assembler(assembler, *mesh, obstacle,
 								   n_bases, size,
 								   bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 								   formulation(), *problem,
@@ -937,7 +937,7 @@ namespace polyfem
 		json rhs_solver_params = args["rhs_solver_params"];
 		rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 
-		RhsAssembler rhs_assembler(assembler, *mesh,
+		RhsAssembler rhs_assembler(assembler, *mesh, obstacle,
 								   n_bases, mesh->dimension(),
 								   bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 								   formulation(), *problem,
@@ -965,7 +965,7 @@ namespace polyfem
 		json rhs_solver_params = args["rhs_solver_params"];
 		rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 		const int size = problem->is_scalar() ? 1 : mesh->dimension();
-		RhsAssembler rhs_assembler(assembler, *mesh,
+		RhsAssembler rhs_assembler(assembler, *mesh, obstacle,
 								   n_bases, size,
 								   bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 								   formulation(), *problem,

@@ -4,13 +4,30 @@
 #include <polyfem/Logger.hpp>
 
 #include <igl/edges.h>
+#include <ipc/utils/faces_to_edges.hpp>
 
 namespace polyfem
 {
+	void Obstacle::clear()
+	{
+		dim_ = 0;
+		v_.resize(0, 0);
+		f_.resize(0, 0);
+		e_.resize(0, 0);
+		f_2_e_.resize(0, 0);
+
+		in_f_.resize(0, 0);
+		in_e_.resize(0, 0);
+
+		displacements_.clear();
+		displacements_interpolation_.clear();
+
+		endings_.clear();
+	}
+
 	void Obstacle::init(const json &meshes, const std::string &root_path)
 	{
-		v_.resize(0, 0);
-		dim_ = 0;
+		clear();
 
 		for (int i = 0; i < meshes.size(); i++)
 		{
@@ -44,11 +61,15 @@ namespace polyfem
 			}
 			else if (tmp_cells.cols() == 3)
 			{
-				Eigen::MatrixXi tmp_edges;
+				Eigen::MatrixXi tmp_edges, tmp_f_2_e;
 				igl::edges(tmp_cells, tmp_edges);
+				tmp_f_2_e = ipc::faces_to_edges(tmp_cells, tmp_edges);
 
 				f_.conservativeResize(f_.rows() + tmp_cells.rows(), 3);
 				f_.bottomRows(tmp_cells.rows()) = tmp_cells.array() + v_.rows();
+
+				f_2_e_.conservativeResize(f_2_e_.rows() + tmp_f_2_e.rows(), tmp_f_2_e.cols());
+				f_2_e_.bottomRows(tmp_f_2_e.rows()) = tmp_f_2_e.array() + e_.rows();
 
 				e_.conservativeResize(e_.rows() + tmp_edges.rows(), 2);
 				e_.bottomRows(tmp_edges.rows()) = tmp_edges.array() + v_.rows();
@@ -96,6 +117,28 @@ namespace polyfem
 				for (int d = 0; d < dim_; ++d)
 				{
 					sol(offset + i * dim_ + d) = disp[d](x, y, z, t) * interp_val;
+				}
+			}
+
+			start = to;
+		}
+	}
+
+	void Obstacle::set_zero(Eigen::MatrixXd &sol) const
+	{
+		const int offset = sol.rows() - v_.rows() * dim_;
+
+		int start = 0;
+
+		for (int k = 0; k < endings_.size(); ++k)
+		{
+			const int to = endings_[k];
+
+			for (int i = start; i < to; ++i)
+			{
+				for (int d = 0; d < dim_; ++d)
+				{
+					sol(offset + i * dim_ + d) = 0;
 				}
 			}
 

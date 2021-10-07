@@ -480,6 +480,9 @@ namespace polyfem
 		// auto it = std::unique(flipped_elements.begin(), flipped_elements.end());
 		// flipped_elements.resize(std::distance(flipped_elements.begin(), it));
 
+		const int prev_bases = n_bases;
+		n_bases += obstacle.n_vertices();
+
 		logger().info("Extracting boundary mesh...");
 		extract_boundary_mesh();
 		if (n_pressure_bases > 0)
@@ -493,13 +496,13 @@ namespace polyfem
 		problem->setup_bc(*mesh, bases, pressure_bases, local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes);
 		args["has_neumann"] = local_neumann_boundary.size() > 0 || local_boundary.size() < prev_b_size;
 		use_avg_pressure = !args["has_neumann"];
+		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 
 		//add a pressure node to avoid singular solution
 		if (assembler.is_mixed(formulation())) // && !assembler.is_fluid(formulation()))
 		{
 			if (!use_avg_pressure)
 			{
-				const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 				const bool has_neumann = args["has_neumann"];
 				if (!has_neumann)
 					boundary_nodes.push_back(n_bases * problem_dim + 0);
@@ -510,6 +513,12 @@ namespace polyfem
 				// boundary_nodes.push_back(n_bases * problem_dim + 3);
 				// boundary_nodes.push_back(n_bases * problem_dim + 215);
 			}
+		}
+
+		for (int i = prev_bases; i < n_bases; ++i)
+		{
+			for (int d = 0; d < problem_dim; ++d)
+				boundary_nodes.push_back(i * problem_dim + d);
 		}
 
 		const auto &curret_bases = iso_parametric() ? bases : geom_bases;
@@ -529,6 +538,8 @@ namespace polyfem
 					logger().warn("dhat larger than min edge, {} > {}", double(args["dhat"]), min_edge_length);
 			}
 		}
+
+		std::cout << "n_bases" << n_bases << std::endl;
 
 		building_basis_time = timer.getElapsedTime();
 		logger().info(" took {}s", building_basis_time);
@@ -890,7 +901,7 @@ namespace polyfem
 		json rhs_solver_params = args["rhs_solver_params"];
 		rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 
-		RhsAssembler rhs_assembler(assembler, *mesh,
+		RhsAssembler rhs_assembler(assembler, *mesh, obstacle,
 								   n_bases, size,
 								   bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 								   formulation(), *problem,
@@ -938,7 +949,7 @@ namespace polyfem
 				Eigen::MatrixXd tmp(n_pressure_bases, 1);
 				tmp.setZero();
 
-				RhsAssembler rhs_assembler1(assembler, *mesh,
+				RhsAssembler rhs_assembler1(assembler, *mesh, obstacle,
 											n_pressure_bases, size,
 											pressure_bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache,
 											formulation(), *problem,

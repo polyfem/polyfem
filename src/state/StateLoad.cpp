@@ -22,6 +22,7 @@ namespace polyfem
 		polys.clear();
 		poly_edge_to_data.clear();
 		parent_elements.clear();
+		obstacle.clear();
 
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
@@ -77,6 +78,13 @@ namespace polyfem
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
+		timer.start();
+		logger().info("Loading obstacles...");
+		if (args.contains("obstacles"))
+			obstacle.init(args["obstacles"], args["root_path"]);
+		timer.stop();
+		logger().info(" took {}s", timer.getElapsedTime());
+
 		ref_element_sampler.init(mesh->is_volume(), mesh->n_elements(), args["vismesh_rel_area"]);
 	}
 
@@ -91,6 +99,7 @@ namespace polyfem
 		polys.clear();
 		poly_edge_to_data.clear();
 		parent_elements.clear();
+		obstacle.clear();
 
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
@@ -183,6 +192,13 @@ namespace polyfem
 		logger().info(" took {}s", timer.getElapsedTime());
 
 		ref_element_sampler.init(mesh->is_volume(), mesh->n_elements(), args["vismesh_rel_area"]);
+
+		timer.start();
+		logger().info("Loading obstacles...");
+		if (args.contains("obstacles"))
+			obstacle.init(args["obstacles"], args["root_path"]);
+		timer.stop();
+		logger().info(" took {}s", timer.getElapsedTime());
 
 		// const double poly_percentage = 0.05;
 		// const double poly_percentage = 0;
@@ -284,6 +300,14 @@ namespace polyfem
 	void State::load_febio(const std::string &path, const json &args_in)
 	{
 		FEBioReader::load(path, args_in, *this);
+
+		igl::Timer timer;
+		timer.start();
+		logger().info("Loading obstacles...");
+		if (args.contains("obstacles"))
+			obstacle.init(args["obstacles"], args["root_path"]);
+		timer.stop();
+		logger().info(" took {}s", timer.getElapsedTime());
 	}
 
 	void State::compute_mesh_stats()

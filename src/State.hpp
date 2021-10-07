@@ -6,6 +6,7 @@
 #include <polyfem/RhsAssembler.hpp>
 #include <polyfem/Problem.hpp>
 #include <polyfem/Mesh.hpp>
+#include <polyfem/Obstacle.hpp>
 #include <polyfem/Problem.hpp>
 #include <polyfem/RefElementSampler.hpp>
 #include <polyfem/LocalBoundary.hpp>
@@ -147,6 +148,8 @@ namespace polyfem
 
 		//current mesh, it can be a Mesh2D or Mesh3D
 		std::unique_ptr<Mesh> mesh;
+		//Obstacles used in collisions
+		Obstacle obstacle;
 		//used to sample the solution
 		RefElementSampler ref_element_sampler;
 

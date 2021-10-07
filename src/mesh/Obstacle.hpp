@@ -17,17 +17,22 @@ namespace polyfem
 		inline const Eigen::MatrixXd &v() const { return v_; }
 		inline const Eigen::MatrixXi &f() const { return f_; }
 		inline const Eigen::MatrixXi &e() const { return e_; }
+		inline const Eigen::MatrixXi &f_2_e() const { return f_2_e_; }
 
 		inline const Eigen::MatrixXi get_face_connectivity() const { return in_f_; }
 		inline const Eigen::MatrixXi get_edge_connectivity() const { return in_e_; }
 
 		void update_displacement(const double t, Eigen::MatrixXd &sol) const;
+		void set_zero(Eigen::MatrixXd &sol) const;
+
+		void clear();
 
 	private:
 		int dim_;
 		Eigen::MatrixXd v_;
 		Eigen::MatrixXi f_;
 		Eigen::MatrixXi e_;
+		Eigen::MatrixXi f_2_e_;
 
 		Eigen::MatrixXi in_f_;
 		Eigen::MatrixXi in_e_;

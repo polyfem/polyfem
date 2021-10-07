@@ -30,13 +30,13 @@ namespace polyfem
 		};
 	} // namespace
 
-	RhsAssembler::RhsAssembler(const AssemblerUtils &assembler, const Mesh &mesh,
+	RhsAssembler::RhsAssembler(const AssemblerUtils &assembler, const Mesh &mesh, const Obstacle &obstacle,
 							   const int n_basis, const int size,
 							   const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases, const AssemblyValsCache &ass_vals_cache,
 							   const std::string &formulation, const Problem &problem,
 							   const std::string bc_method,
 							   const std::string &solver, const std::string &preconditioner, const json &solver_params)
-		: assembler_(assembler), mesh_(mesh),
+		: assembler_(assembler), mesh_(mesh), obstacle_(obstacle),
 		  n_basis_(n_basis), size_(size),
 		  bases_(bases), gbases_(gbases), ass_vals_cache_(ass_vals_cache),
 		  formulation_(formulation), problem_(problem),
@@ -596,6 +596,8 @@ namespace polyfem
 				problem_.neumann_bc(mesh_, global_ids, uv, pts, normals, t, val);
 			},
 			local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs);
+
+		obstacle_.update_displacement(t, rhs);
 	}
 
 	void RhsAssembler::set_velocity_bc(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t) const
@@ -608,6 +610,8 @@ namespace polyfem
 				problem_.neumann_velocity_bc(mesh_, global_ids, uv, pts, normals, t, val);
 			},
 			local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs);
+
+		obstacle_.set_zero(rhs);
 	}
 
 	void RhsAssembler::set_acceleration_bc(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t) const
@@ -620,6 +624,8 @@ namespace polyfem
 				problem_.neumann_acceleration_bc(mesh_, global_ids, uv, pts, normals, t, val);
 			},
 			local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs);
+
+		obstacle_.set_zero(rhs);
 	}
 
 	void RhsAssembler::compute_energy_grad(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const Density &density, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, const Eigen::MatrixXd &final_rhs, const double t, Eigen::MatrixXd &rhs) const
