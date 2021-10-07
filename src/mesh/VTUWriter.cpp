@@ -10,12 +10,20 @@ namespace polyfem
 		static const int VTK_TRIANGLE = 5;
 		static const int VTK_QUAD = 9;
 		static const int VTK_HEXAHEDRON = 12;
-		static const int VTK_POLYGON = 7;
+		// static const int VTK_POLYGON = 7;
 
-		inline static int VTKTagVolume(const int n_vertices)
+		static const int VTK_LAGRANGE_TRIANGLE = 69;
+		static const int VTK_LAGRANGE_QUADRILATERAL = 70;
+
+		static const int VTK_LAGRANGE_TETRAHEDRON = 71;
+		static const int VTK_LAGRANGE_HEXAHEDRON = 72;
+
+		inline static int VTKTagVolume(const int n_vertices, bool is_simplex)
 		{
 			switch (n_vertices)
 			{
+			case 2:
+				return VTK_LINE;
 			case 3:
 				return VTK_TRIANGLE;
 			case 4:
@@ -23,14 +31,14 @@ namespace polyfem
 			case 8:
 				return VTK_HEXAHEDRON;
 			default:
-				//element type not supported. To add it (http://www.vtk.org/VTK/img/file-formats.pdf)
-				logger().error("{} not supported", n_vertices);
-				assert(false);
-				return -1;
+				if (is_simplex)
+					return VTK_LAGRANGE_TETRAHEDRON;
+				else
+					return VTK_LAGRANGE_HEXAHEDRON;
 			}
 		}
 
-		inline static int VTKTagPlanar(const int n_vertices)
+		inline static int VTKTagPlanar(const int n_vertices, bool is_simplex)
 		{
 			switch (n_vertices)
 			{
@@ -41,10 +49,10 @@ namespace polyfem
 			case 4:
 				return VTK_QUAD;
 			default:
-				//element type not supported. To add it (http://www.vtk.org/VTK/img/file-formats.pdf)
-				logger().error("{} not supported", n_vertices);
-				assert(false);
-				return -1;
+				if (is_simplex)
+					return VTK_LAGRANGE_TRIANGLE;
+				else
+					return VTK_LAGRANGE_QUADRILATERAL;
 			}
 		}
 	} // namespace
@@ -179,30 +187,19 @@ namespace polyfem
 
 		os << "</DataArray>\n";
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		int min_tag, max_tag;
-		if (!is_volume_)
-		{
-			min_tag = VTKTagPlanar(n_cell_vertices);
-			max_tag = VTKTagPlanar(n_cell_vertices);
-		}
-		else
-		{
-			min_tag = VTKTagVolume(n_cell_vertices);
-			max_tag = VTKTagVolume(n_cell_vertices);
-		}
-
+		const int int_tag = is_volume_ ? VTKTagVolume(n_cell_vertices, true) : VTKTagPlanar(n_cell_vertices, true);
 		if (binary_)
 		{
-			os << "<DataArray type=\"Int8\" Name=\"types\" format=\"binary\" RangeMin=\"" << min_tag << "\" RangeMax=\"" << max_tag << "\">\n";
+			os << "<DataArray type=\"Int8\" Name=\"types\" format=\"binary\">\n";
 			const uint64_t size = n_cells * sizeof(int8_t);
 			base64.write(size);
 		}
 		else
-			os << "<DataArray type=\"Int8\" Name=\"types\" format=\"ascii\" RangeMin=\"" << min_tag << "\" RangeMax=\"" << max_tag << "\">\n";
+			os << "<DataArray type=\"Int8\" Name=\"types\" format=\"ascii\">\n";
 
 		for (int i = 0; i < n_cells; ++i)
 		{
-			const int8_t tag = min_tag;
+			const int8_t tag = int_tag;
 			if (binary_)
 				base64.write(tag);
 			else
@@ -218,12 +215,12 @@ namespace polyfem
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		if (binary_)
 		{
-			os << "<DataArray type=\"Int64\" Name=\"offsets\" format=\"binary\" RangeMin=\"" << n_cell_vertices << "\" RangeMax=\"" << n_cells * n_cell_vertices << "\">\n";
+			os << "<DataArray type=\"Int64\" Name=\"offsets\" format=\"binary\">\n";
 			const uint64_t size = n_cells * sizeof(int64_t);
 			base64.write(size);
 		}
 		else
-			os << "<DataArray type=\"Int64\" Name=\"offsets\" format=\"ascii\" RangeMin=\"" << n_cell_vertices << "\" RangeMax=\"" << n_cells * n_cell_vertices << "\">\n";
+			os << "<DataArray type=\"Int64\" Name=\"offsets\" format=\"ascii\">\n";
 
 		int64_t acc = n_cell_vertices;
 		for (int i = 0; i < n_cells; ++i)
@@ -297,33 +294,18 @@ namespace polyfem
 
 		os << "</DataArray>\n";
 		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		int int_tag;
-		if (is_volume_)
-		{
-			if (is_simplex)
-				int_tag = 71; //VTK_LAGRANGE_TETRAHEDRON
-			else
-				int_tag = 72; //VTK_LAGRANGE_HEXAHEDRON
-		}
-		else
-		{
-			if (is_simplex)
-				int_tag = 69; //VTK_LAGRANGE_TRIANGLE
-			else
-				int_tag = 70; //VTK_LAGRANGE_QUADRILATERAL
-		}
-
 		if (binary_)
 		{
-			os << "<DataArray type=\"UInt8\" Name=\"types\" format=\"binary\" RangeMin=\"" << int_tag << "\" RangeMax=\"" << int_tag << "\">\n";
+			os << "<DataArray type=\"UInt8\" Name=\"types\" format=\"binary\">\n";
 			const uint64_t size = n_cells * sizeof(uint8_t);
 			base64.write(size);
 		}
 		else
-			os << "<DataArray type=\"UInt8\" Name=\"types\" format=\"ascii\" RangeMin=\"" << int_tag << "\" RangeMax=\"" << int_tag << "\">\n";
+			os << "<DataArray type=\"UInt8\" Name=\"types\" format=\"ascii\">\n";
 
 		for (int i = 0; i < n_cells; ++i)
 		{
+			const int int_tag = is_volume_ ? VTKTagVolume(cells[i].size(), is_simplex) : VTKTagPlanar(cells[i].size(), is_simplex);
 			const uint8_t tag = int_tag;
 
 			if (binary_)
@@ -339,20 +321,16 @@ namespace polyfem
 		os << "</DataArray>\n";
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		int64_t acc = 0;
-		for (int i = 0; i < n_cells; ++i)
-			acc += cells[i].size();
-
 		if (binary_)
 		{
-			os << "<DataArray type=\"Int64\" Name=\"offsets\" format=\"binary\" RangeMin=\"" << cells.front().size() << "\" RangeMax=\"" << acc << "\">\n";
+			os << "<DataArray type=\"Int64\" Name=\"offsets\" format=\"binary\">\n";
 			const uint64_t size = n_cells * sizeof(int64_t);
 			base64.write(size);
 		}
 		else
-			os << "<DataArray type=\"Int64\" Name=\"offsets\" format=\"ascii\" RangeMin=\"" << cells.front().size() << "\" RangeMax=\"" << acc << "\">\n";
+			os << "<DataArray type=\"Int64\" Name=\"offsets\" format=\"ascii\">\n";
 
-		acc = 0;
+		int64_t acc = 0;
 		for (int i = 0; i < n_cells; ++i)
 		{
 			acc += cells[i].size();
