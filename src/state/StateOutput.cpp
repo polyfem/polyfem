@@ -1194,6 +1194,12 @@ namespace polyfem
 			exact_fun.col(2).setZero();
 		}
 
+		if (obstacle.n_vertices() > 0)
+		{
+			fun.conservativeResize(fun.rows() + obstacle.n_vertices(), fun.cols());
+			obstacle.update_displacement(t, fun);
+		}
+
 		if (solve_export_to_file)
 			writer.add_field("solution", fun);
 		else
@@ -1204,16 +1210,38 @@ namespace polyfem
 		{
 			Eigen::MatrixXd interp_p;
 			interpolate_function(points.rows(), 1, pressure_bases, pressure, interp_p, use_sampler, boundary_only);
+
+			if (obstacle.n_vertices() > 0)
+			{
+				interp_p.conservativeResize(interp_p.size() + obstacle.n_vertices(), 1);
+				interp_p.bottomRows(obstacle.n_vertices()).setZero();
+			}
+
 			if (solve_export_to_file)
 				writer.add_field("pressure", interp_p);
 			else
 				solution_frames.back().pressure = interp_p;
 		}
 
+		if (obstacle.n_vertices() > 0)
+		{
+			discr.conservativeResize(discr.size() + obstacle.n_vertices(), 1);
+			discr.bottomRows(obstacle.n_vertices()).setZero();
+		}
+
 		if (solve_export_to_file)
 			writer.add_field("discr", discr);
 		if (problem->has_exact_sol())
 		{
+			if (obstacle.n_vertices() > 0)
+			{
+				exact_fun.conservativeResize(exact_fun.rows() + obstacle.n_vertices(), exact_fun.cols());
+				obstacle.update_displacement(t, exact_fun);
+
+				err.conservativeResize(err.rows() + obstacle.n_vertices(), err.cols());
+				obstacle.update_displacement(t, err);
+			}
+
 			if (solve_export_to_file)
 			{
 				writer.add_field("exact", exact_fun);
@@ -1230,6 +1258,13 @@ namespace polyfem
 		{
 			Eigen::MatrixXd vals, tvals;
 			compute_scalar_value(points.rows(), sol, vals, use_sampler, boundary_only);
+
+			if (obstacle.n_vertices() > 0)
+			{
+				vals.conservativeResize(vals.size() + obstacle.n_vertices(), 1);
+				vals.bottomRows(obstacle.n_vertices()).setZero();
+			}
+
 			if (solve_export_to_file)
 				writer.add_field("scalar_value", vals);
 			else
@@ -1240,15 +1275,28 @@ namespace polyfem
 				compute_tensor_value(points.rows(), sol, tvals, use_sampler, boundary_only);
 				for (int i = 0; i < tvals.cols(); ++i)
 				{
+					Eigen::MatrixXd tmp = tvals.col(i);
+					if (obstacle.n_vertices() > 0)
+					{
+						tmp.conservativeResize(tmp.size() + obstacle.n_vertices(), 1);
+						tmp.bottomRows(obstacle.n_vertices()).setZero();
+					}
+
 					const int ii = (i / mesh->dimension()) + 1;
 					const int jj = (i % mesh->dimension()) + 1;
-					writer.add_field(fmt::format("tensor_value_{:d}{:d}", ii, jj), tvals.col(i));
+					writer.add_field(fmt::format("tensor_value_{:d}{:d}", ii, jj), tmp);
 				}
 			}
 
 			if (!args["use_spline"])
 			{
 				average_grad_based_function(points.rows(), sol, vals, tvals, use_sampler, boundary_only);
+				if (obstacle.n_vertices() > 0)
+				{
+					vals.conservativeResize(vals.size() + obstacle.n_vertices(), 1);
+					vals.bottomRows(obstacle.n_vertices()).setZero();
+				}
+
 				if (solve_export_to_file)
 					writer.add_field("scalar_value_avg", vals);
 				else
@@ -1279,6 +1327,18 @@ namespace polyfem
 				rhos(i) = density(points(i, 0), points(i, 1), points.cols() >= 3 ? points(i, 2) : 0, el_id(i));
 			}
 
+			if (obstacle.n_vertices() > 0)
+			{
+				lambdas.conservativeResize(lambdas.size() + obstacle.n_vertices(), 1);
+				lambdas.bottomRows(obstacle.n_vertices()).setZero();
+
+				mus.conservativeResize(mus.size() + obstacle.n_vertices(), 1);
+				mus.bottomRows(obstacle.n_vertices()).setZero();
+
+				rhos.conservativeResize(rhos.size() + obstacle.n_vertices(), 1);
+				rhos.bottomRows(obstacle.n_vertices()).setZero();
+			}
+
 			writer.add_field("lambda", lambdas);
 			writer.add_field("mu", mus);
 			writer.add_field("rho", rhos);
@@ -1294,6 +1354,12 @@ namespace polyfem
 				ids(i) = mesh->get_body_id(el_id(i));
 			}
 
+			if (obstacle.n_vertices() > 0)
+			{
+				ids.conservativeResize(ids.size() + obstacle.n_vertices(), 1);
+				ids.bottomRows(obstacle.n_vertices()).setZero();
+			}
+
 			writer.add_field("body_ids", ids);
 		}
 
@@ -1301,6 +1367,43 @@ namespace polyfem
 		// writer.add_field("rhs", fun);
 		if (solve_export_to_file)
 		{
+			if (obstacle.n_vertices() > 0)
+			{
+				const int orig_p = points.rows();
+				points.conservativeResize(points.rows() + obstacle.n_vertices(), points.cols());
+				points.bottomRows(obstacle.n_vertices()) = obstacle.v();
+
+				if (elements.empty())
+				{
+					for (int i = 0; i < tets.rows(); ++i)
+					{
+						elements.emplace_back();
+						for (int j = 0; j < tets.cols(); ++j)
+							elements.back().push_back(tets(i, j));
+					}
+				}
+
+				for (int i = 0; i < obstacle.get_face_connectivity().rows(); ++i)
+				{
+					elements.emplace_back();
+					for (int j = 0; j < obstacle.get_face_connectivity().cols(); ++j)
+						elements.back().push_back(obstacle.get_face_connectivity()(i, j) + orig_p);
+				}
+
+				for (int i = 0; i < obstacle.get_edge_connectivity().rows(); ++i)
+				{
+					elements.emplace_back();
+					for (int j = 0; j < obstacle.get_edge_connectivity().cols(); ++j)
+						elements.back().push_back(obstacle.get_edge_connectivity()(i, j) + orig_p);
+				}
+
+				for (int i = 0; i < obstacle.get_vertex_connectivity().rows(); ++i)
+				{
+					elements.emplace_back();
+					elements.back().push_back(obstacle.get_vertex_connectivity()(i) + orig_p);
+				}
+			}
+
 			if (elements.empty())
 				writer.write_mesh(path, points, tets);
 			else

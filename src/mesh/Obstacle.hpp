@@ -21,6 +21,7 @@ namespace polyfem
 
 		inline const Eigen::MatrixXi get_face_connectivity() const { return in_f_; }
 		inline const Eigen::MatrixXi get_edge_connectivity() const { return in_e_; }
+		inline const Eigen::MatrixXi get_vertex_connectivity() const { return in_v_; }
 
 		void update_displacement(const double t, Eigen::MatrixXd &sol) const;
 		void set_zero(Eigen::MatrixXd &sol) const;
@@ -34,6 +35,7 @@ namespace polyfem
 		Eigen::MatrixXi e_;
 		Eigen::MatrixXi f_2_e_;
 
+		Eigen::MatrixXi in_v_;
 		Eigen::MatrixXi in_f_;
 		Eigen::MatrixXi in_e_;
 

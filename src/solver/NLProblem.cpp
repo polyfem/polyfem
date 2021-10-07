@@ -369,6 +369,15 @@ namespace polyfem
 		// 	igl::write_triangle_mesh("0.obj", displaced0, state.boundary_triangles);
 		// 	igl::write_triangle_mesh("1.obj", displaced1, state.boundary_triangles);
 		// }
+		// else
+		// {
+		// 	Eigen::MatrixXd asd(displaced0.rows(), 3);
+		// 	asd.setZero();
+		// 	asd.block(0, 0, displaced0.rows(), 2) = displaced0;
+		// 	igl::write_triangle_mesh("0.obj", asd, state.boundary_triangles);
+		// 	asd.block(0, 0, displaced1.rows(), 2) = displaced1;
+		// 	igl::write_triangle_mesh("1.obj", asd, state.boundary_triangles);
+		// }
 
 		const bool is_valid = ipc::is_step_collision_free(_candidates,
 														  displaced0, displaced1,

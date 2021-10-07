@@ -18,6 +18,7 @@ namespace polyfem
 
 		in_f_.resize(0, 0);
 		in_e_.resize(0, 0);
+		in_v_.resize(0, 0);
 
 		displacements_.clear();
 		displacements_interpolation_.clear();
@@ -54,10 +55,18 @@ namespace polyfem
 				continue;
 			}
 
+			if (tmp_cells.cols() == 1)
+			{
+				in_v_.conservativeResize(in_v_.rows() + tmp_cells.rows(), 1);
+				in_v_.bottomRows(tmp_cells.rows()) = tmp_cells.array() + v_.rows();
+			}
 			if (tmp_cells.cols() == 2)
 			{
 				e_.conservativeResize(e_.rows() + tmp_cells.rows(), 2);
 				e_.bottomRows(tmp_cells.rows()) = tmp_cells.array() + v_.rows();
+
+				in_e_.conservativeResize(in_e_.rows() + tmp_cells.rows(), 2);
+				in_e_.bottomRows(tmp_cells.rows()) = tmp_cells.array() + v_.rows();
 			}
 			else if (tmp_cells.cols() == 3)
 			{
@@ -67,6 +76,9 @@ namespace polyfem
 
 				f_.conservativeResize(f_.rows() + tmp_cells.rows(), 3);
 				f_.bottomRows(tmp_cells.rows()) = tmp_cells.array() + v_.rows();
+
+				in_f_.conservativeResize(in_f_.rows() + tmp_cells.rows(), 3);
+				in_f_.bottomRows(tmp_cells.rows()) = tmp_cells.array() + v_.rows();
 
 				f_2_e_.conservativeResize(f_2_e_.rows() + tmp_f_2_e.rows(), tmp_f_2_e.cols());
 				f_2_e_.bottomRows(tmp_f_2_e.rows()) = tmp_f_2_e.array() + e_.rows();
@@ -99,50 +111,106 @@ namespace polyfem
 
 	void Obstacle::update_displacement(const double t, Eigen::MatrixXd &sol) const
 	{
-		const int offset = sol.rows() - v_.rows() * dim_;
-
-		int start = 0;
-
-		for (int k = 0; k < endings_.size(); ++k)
+		if (sol.cols() == 1)
 		{
-			const int to = endings_[k];
-			const auto &disp = displacements_[k];
-			const auto &interp = displacements_interpolation_[k];
+			const int offset = sol.rows() - v_.rows() * dim_;
 
-			for (int i = start; i < to; ++i)
+			int start = 0;
+
+			for (int k = 0; k < endings_.size(); ++k)
 			{
-				double x = v_(i, 0), y = v_(i, 1), z = dim_ == 2 ? 0 : v_(i, 2);
-				const double interp_val = interp->eval(t);
+				const int to = endings_[k];
+				const auto &disp = displacements_[k];
+				const auto &interp = displacements_interpolation_[k];
 
-				for (int d = 0; d < dim_; ++d)
+				for (int i = start; i < to; ++i)
 				{
-					sol(offset + i * dim_ + d) = disp[d](x, y, z, t) * interp_val;
-				}
-			}
+					double x = v_(i, 0), y = v_(i, 1), z = dim_ == 2 ? 0 : v_(i, 2);
+					const double interp_val = interp->eval(t);
 
-			start = to;
+					for (int d = 0; d < dim_; ++d)
+					{
+						sol(offset + i * dim_ + d) = disp[d](x, y, z, t) * interp_val;
+					}
+				}
+
+				start = to;
+			}
+			assert(endings_.empty() || (start * dim_ + offset) == sol.rows());
+		}
+		else
+		{
+			const int offset = sol.rows() - v_.rows();
+
+			int start = 0;
+
+			for (int k = 0; k < endings_.size(); ++k)
+			{
+				const int to = endings_[k];
+				const auto &disp = displacements_[k];
+				const auto &interp = displacements_interpolation_[k];
+
+				for (int i = start; i < to; ++i)
+				{
+					double x = v_(i, 0), y = v_(i, 1), z = dim_ == 2 ? 0 : v_(i, 2);
+					const double interp_val = interp->eval(t);
+
+					for (int d = 0; d < dim_; ++d)
+					{
+						sol(offset + i, d) = disp[d](x, y, z, t) * interp_val;
+					}
+				}
+
+				start = to;
+			}
+			assert(endings_.empty() || (start + offset) == sol.rows());
 		}
 	}
 
 	void Obstacle::set_zero(Eigen::MatrixXd &sol) const
 	{
-		const int offset = sol.rows() - v_.rows() * dim_;
-
-		int start = 0;
-
-		for (int k = 0; k < endings_.size(); ++k)
+		//TODO better way to do this!
+		if (sol.cols() == 1)
 		{
-			const int to = endings_[k];
+			const int offset = sol.rows() - v_.rows() * dim_;
 
-			for (int i = start; i < to; ++i)
+			int start = 0;
+
+			for (int k = 0; k < endings_.size(); ++k)
 			{
-				for (int d = 0; d < dim_; ++d)
-				{
-					sol(offset + i * dim_ + d) = 0;
-				}
-			}
+				const int to = endings_[k];
 
-			start = to;
+				for (int i = start; i < to; ++i)
+				{
+					for (int d = 0; d < dim_; ++d)
+					{
+						sol(offset + i * dim_ + d) = 0;
+					}
+				}
+
+				start = to;
+			}
+		}
+		else
+		{
+			const int offset = sol.rows() - v_.rows();
+
+			int start = 0;
+
+			for (int k = 0; k < endings_.size(); ++k)
+			{
+				const int to = endings_[k];
+
+				for (int i = start; i < to; ++i)
+				{
+					for (int d = 0; d < dim_; ++d)
+					{
+						sol(offset + i, d) = 0;
+					}
+				}
+
+				start = to;
+			}
 		}
 	}
 } // namespace polyfem

@@ -5,6 +5,7 @@ namespace polyfem
 	namespace
 	{
 		// https://vtk.org/doc/nightly/html/vtkCellType_8h_source.html#l00069
+		static const int VTK_VERTEX = 1;
 		static const int VTK_LINE = 3;
 		static const int VTK_TETRA = 10;
 		static const int VTK_TRIANGLE = 5;
@@ -22,6 +23,8 @@ namespace polyfem
 		{
 			switch (n_vertices)
 			{
+			case 1:
+				return VTK_VERTEX;
 			case 2:
 				return VTK_LINE;
 			case 3:
@@ -42,6 +45,8 @@ namespace polyfem
 		{
 			switch (n_vertices)
 			{
+			case 1:
+				return VTK_VERTEX;
 			case 2:
 				return VTK_LINE;
 			case 3:
