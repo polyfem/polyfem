@@ -521,7 +521,7 @@ namespace polyfem
 			}
 		}
 
-		if (!for_pressure && obstacle.n_vertices() >= 0)
+		if (!for_pressure && obstacle.n_vertices() > 0)
 		{
 			const int n_v = boundary_nodes_pos.rows() - obstacle.n_vertices();
 			const int n_e = boundary_edges.rows();
