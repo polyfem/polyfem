@@ -19,9 +19,9 @@ namespace polyfem
 		inline const Eigen::MatrixXi &e() const { return e_; }
 		inline const Eigen::MatrixXi &f_2_e() const { return f_2_e_; }
 
-		inline const Eigen::MatrixXi get_face_connectivity() const { return in_f_; }
-		inline const Eigen::MatrixXi get_edge_connectivity() const { return in_e_; }
-		inline const Eigen::MatrixXi get_vertex_connectivity() const { return in_v_; }
+		inline const Eigen::MatrixXi &get_face_connectivity() const { return in_f_; }
+		inline const Eigen::MatrixXi &get_edge_connectivity() const { return in_e_; }
+		inline const Eigen::MatrixXi &get_vertex_connectivity() const { return in_v_; }
 
 		void update_displacement(const double t, Eigen::MatrixXd &sol) const;
 		void set_zero(Eigen::MatrixXd &sol) const;
