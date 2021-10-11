@@ -1,10 +1,13 @@
 #include <polyfem/Obstacle.hpp>
 
 #include <polyfem/MeshUtils.hpp>
+#include <polyfem/JSONUtils.hpp>
+#include <polyfem/StringUtils.hpp>
 #include <polyfem/Logger.hpp>
 
 #include <igl/edges.h>
 #include <ipc/utils/faces_to_edges.hpp>
+#include <ipc/utils/eigen_ext.hpp>
 
 namespace polyfem
 {
@@ -24,193 +27,285 @@ namespace polyfem
 		displacements_interpolation_.clear();
 
 		endings_.clear();
+
+		planes_.clear();
 	}
 
-	void Obstacle::init(const json &meshes, const std::string &root_path)
+	void Obstacle::init(const json &obstacles, const std::string &root_path, const int dim)
 	{
 		clear();
 
-		for (int i = 0; i < meshes.size(); i++)
+		dim_ = dim;
+
+		for (int i = 0; i < obstacles.size(); i++)
 		{
-			json jmesh;
-			Eigen::MatrixXd tmp_vertices;
-			Eigen::MatrixXi tmp_cells;
-			std::vector<std::vector<int>> tmp_elements;
-			std::vector<std::vector<double>> tmp_weights;
-
-			read_mesh_from_json(meshes[i], root_path, tmp_vertices, tmp_cells, tmp_elements, tmp_weights, jmesh);
-
-			if (tmp_vertices.size() == 0 || tmp_cells.size() == 0)
+			if (!obstacles[i].value("enabled", true))
 			{
 				continue;
 			}
 
-			if (dim_ == 0)
+			std::string type = obstacles[i].value("type", /*default=*/"mesh");
+			if (type == "mesh")
 			{
-				dim_ = tmp_vertices.cols();
+				append_mesh(obstacles[i], root_path);
 			}
-			else if (dim_ != tmp_vertices.cols())
+			else if (type == "plane")
 			{
-				logger().error("Mixed dimension meshes is not implemented!");
-				continue;
+				append_plane(obstacles[i]);
 			}
-
-			if (tmp_cells.cols() == 1)
+			else if (type == "ground")
 			{
-				in_v_.conservativeResize(in_v_.rows() + tmp_cells.rows(), 1);
-				in_v_.bottomRows(tmp_cells.rows()) = tmp_cells.array() + v_.rows();
+				append_ground(obstacles[i]);
 			}
-			if (tmp_cells.cols() == 2)
-			{
-				e_.conservativeResize(e_.rows() + tmp_cells.rows(), 2);
-				e_.bottomRows(tmp_cells.rows()) = tmp_cells.array() + v_.rows();
-
-				in_e_.conservativeResize(in_e_.rows() + tmp_cells.rows(), 2);
-				in_e_.bottomRows(tmp_cells.rows()) = tmp_cells.array() + v_.rows();
-			}
-			else if (tmp_cells.cols() == 3)
-			{
-				Eigen::MatrixXi tmp_edges, tmp_f_2_e;
-				igl::edges(tmp_cells, tmp_edges);
-				tmp_f_2_e = ipc::faces_to_edges(tmp_cells, tmp_edges);
-
-				f_.conservativeResize(f_.rows() + tmp_cells.rows(), 3);
-				f_.bottomRows(tmp_cells.rows()) = tmp_cells.array() + v_.rows();
-
-				in_f_.conservativeResize(in_f_.rows() + tmp_cells.rows(), 3);
-				in_f_.bottomRows(tmp_cells.rows()) = tmp_cells.array() + v_.rows();
-
-				f_2_e_.conservativeResize(f_2_e_.rows() + tmp_f_2_e.rows(), tmp_f_2_e.cols());
-				f_2_e_.bottomRows(tmp_f_2_e.rows()) = tmp_f_2_e.array() + e_.rows();
-
-				e_.conservativeResize(e_.rows() + tmp_edges.rows(), 2);
-				e_.bottomRows(tmp_edges.rows()) = tmp_edges.array() + v_.rows();
-			}
-			else
-			{
-				logger().error("Obstacle supports only segments and triangles!");
-				continue;
-			}
-
-			v_.conservativeResize(v_.rows() + tmp_vertices.rows(), dim_);
-			v_.bottomRows(tmp_vertices.rows()) = tmp_vertices;
-
-			displacements_.emplace_back();
-			for (size_t k = 0; k < dim_; ++k)
-				displacements_.back()[k].init(jmesh["displacement"][k]);
-
-			const std::string interpolation = jmesh.contains("interpolation") ? jmesh["interpolation"].get<std::string>() : "";
-			if (interpolation.empty())
-				displacements_interpolation_.emplace_back(std::make_shared<NoInterpolation>());
-			else
-				displacements_interpolation_.emplace_back(Interpolation::build(interpolation));
-
-			endings_.push_back(v_.rows());
 		}
+	}
+
+	void Obstacle::append_mesh(const json &mesh_in, const std::string &root_path)
+	{
+		json jmesh;
+		apply_default_mesh_parameters(mesh_in, jmesh);
+
+		if (!mesh_in.contains("mesh"))
+		{
+			logger().error("Obstacle {} is mising a \"mesh\" field", mesh_in.get<std::string>());
+			return;
+		}
+		const std::string mesh_path = resolve_path(jmesh["mesh"], root_path);
+
+		Eigen::MatrixXd vertices;
+		Eigen::VectorXi codim_vertices;
+		Eigen::MatrixXi codim_edges, faces;
+		read_surface_mesh(mesh_path, vertices, codim_vertices, codim_edges, faces);
+
+		if (vertices.size() == 0)
+		{
+			return;
+		}
+
+		if (dim_ < vertices.cols()) // Drop the extra dimensions
+		{
+			assert(vertices.rightCols(vertices.cols() - dim_).isZero());
+			vertices.conservativeResize(vertices.rows(), dim_);
+		}
+		else if (dim_ > vertices.cols()) // Pad the vertices with zero in the extra dimensions
+		{
+			const int vertices_cols = vertices.cols();
+			vertices.conservativeResize(vertices.rows(), dim_);
+			vertices.rightCols(dim_ - vertices_cols).setZero();
+		}
+
+		transform_mesh_from_json(jmesh, vertices);
+
+		if (codim_vertices.size())
+		{
+			in_v_.conservativeResize(in_v_.rows() + codim_vertices.rows(), 1);
+			in_v_.bottomRows(codim_vertices.rows()) = codim_vertices.array() + v_.rows();
+		}
+
+		if (codim_edges.size())
+		{
+			e_.conservativeResize(e_.rows() + codim_edges.rows(), 2);
+			e_.bottomRows(codim_edges.rows()) = codim_edges.array() + v_.rows();
+
+			in_e_.conservativeResize(in_e_.rows() + codim_edges.rows(), 2);
+			in_e_.bottomRows(codim_edges.rows()) = codim_edges.array() + v_.rows();
+		}
+
+		if (faces.size() && faces.cols() == 3)
+		{
+			f_.conservativeResize(f_.rows() + faces.rows(), 3);
+			f_.bottomRows(faces.rows()) = faces.array() + v_.rows();
+
+			in_f_.conservativeResize(in_f_.rows() + faces.rows(), 3);
+			in_f_.bottomRows(faces.rows()) = faces.array() + v_.rows();
+
+			Eigen::MatrixXi edges;
+			igl::edges(faces, edges);
+
+			const Eigen::MatrixXi tmp_f_2_e = ipc::faces_to_edges(faces, edges);
+			f_2_e_.conservativeResize(f_2_e_.rows() + tmp_f_2_e.rows(), 3);
+			f_2_e_.bottomRows(tmp_f_2_e.rows()) = tmp_f_2_e.array() + e_.rows();
+
+			e_.conservativeResize(e_.rows() + edges.rows(), 2);
+			e_.bottomRows(edges.rows()) = edges.array() + v_.rows();
+		}
+		else if (faces.size())
+		{
+			logger().error("Obstacle supports only segments and triangles!");
+			return;
+		}
+
+		v_.conservativeResize(v_.rows() + vertices.rows(), dim_);
+		v_.bottomRows(vertices.rows()) = vertices;
+
+		displacements_.emplace_back();
+		for (size_t k = 0; k < dim_; ++k)
+			displacements_.back()[k].init(jmesh["displacement"][k]);
+
+		const std::string interpolation = jmesh.value("interpolation", /*default=*/"");
+		if (interpolation.empty())
+			displacements_interpolation_.emplace_back(std::make_shared<NoInterpolation>());
+		else
+			displacements_interpolation_.emplace_back(Interpolation::build(interpolation));
+
+		endings_.push_back(v_.rows());
+	}
+
+	void Obstacle::append_plane(const json &plane_in)
+	{
+		json plane = R"({
+			"position": [0.0, 0.0, 0.0],
+			"normal": [0.0, 1.0, 0.0]
+			"enabled": true
+		})"_json;
+		plane.merge_patch(plane_in);
+
+		if (!plane["enabled"].get<bool>())
+		{
+			return;
+		}
+
+		VectorNd origin, normal;
+		from_json(plane["position"], origin);
+		from_json(plane["normal"], normal);
+
+		if (dim_ == 0)
+			dim_ = origin.size();
+
+		assert(normal.size() >= dim_);
+		normal = normal.head(dim_).normalized();
+
+		assert(origin.size() >= dim_);
+		origin = origin.head(dim_);
+
+		planes_.emplace_back(origin, normal);
+	}
+
+	void Obstacle::append_ground(const json &ground_in)
+	{
+		json ground = R"({
+			"height": 0,
+			"normal": [0.0, 1.0, 0.0]
+			"enabled": true
+		})"_json;
+		ground.merge_patch(ground_in);
+
+		VectorNd normal;
+		from_json(ground["normal"], normal);
+
+		if (dim_ == 0)
+			dim_ = normal.size();
+
+		assert(normal.size() >= dim_);
+		normal = normal.head(dim_).normalized();
+
+		VectorNd origin = ground["height"].get<double>() * normal;
+
+		planes_.emplace_back(origin, normal);
 	}
 
 	void Obstacle::update_displacement(const double t, Eigen::MatrixXd &sol) const
 	{
-		if (sol.cols() == 1)
+		// NOTE: assumes obstacle displacements is stored at the bottom of sol
+		const int offset = sol.rows() - v_.rows() * (sol.cols() == 1 ? dim_ : 1);
+
+		int start = 0;
+
+		for (int k = 0; k < endings_.size(); ++k)
 		{
-			const int offset = sol.rows() - v_.rows() * dim_;
+			const int to = endings_[k];
+			const auto &disp = displacements_[k];
+			const auto &interp = displacements_interpolation_[k];
 
-			int start = 0;
-
-			for (int k = 0; k < endings_.size(); ++k)
+			for (int i = start; i < to; ++i)
 			{
-				const int to = endings_[k];
-				const auto &disp = displacements_[k];
-				const auto &interp = displacements_interpolation_[k];
+				double x = v_(i, 0), y = v_(i, 1), z = dim_ == 2 ? 0 : v_(i, 2);
+				const double interp_val = interp->eval(t);
 
-				for (int i = start; i < to; ++i)
+				for (int d = 0; d < dim_; ++d)
 				{
-					double x = v_(i, 0), y = v_(i, 1), z = dim_ == 2 ? 0 : v_(i, 2);
-					const double interp_val = interp->eval(t);
-
-					for (int d = 0; d < dim_; ++d)
+					if (sol.cols() == 1)
 					{
 						sol(offset + i * dim_ + d) = disp[d](x, y, z, t) * interp_val;
 					}
-				}
-
-				start = to;
-			}
-			assert(endings_.empty() || (start * dim_ + offset) == sol.rows());
-		}
-		else
-		{
-			const int offset = sol.rows() - v_.rows();
-
-			int start = 0;
-
-			for (int k = 0; k < endings_.size(); ++k)
-			{
-				const int to = endings_[k];
-				const auto &disp = displacements_[k];
-				const auto &interp = displacements_interpolation_[k];
-
-				for (int i = start; i < to; ++i)
-				{
-					double x = v_(i, 0), y = v_(i, 1), z = dim_ == 2 ? 0 : v_(i, 2);
-					const double interp_val = interp->eval(t);
-
-					for (int d = 0; d < dim_; ++d)
+					else
 					{
 						sol(offset + i, d) = disp[d](x, y, z, t) * interp_val;
 					}
 				}
-
-				start = to;
 			}
-			assert(endings_.empty() || (start + offset) == sol.rows());
+
+			start = to;
 		}
+		assert(endings_.empty() || (start * (sol.cols() == 1 ? dim_ : 1) + offset) == sol.rows());
 	}
 
 	void Obstacle::set_zero(Eigen::MatrixXd &sol) const
 	{
-		//TODO better way to do this!
-		if (sol.cols() == 1)
+		// NOTE: assumes obstacle displacements is stored at the bottom of sol
+		sol.bottomRows(v_.rows() * (sol.cols() == 1 ? dim_ : 1)).setZero();
+	}
+
+	void Obstacle::Plane::construct_vis_mesh()
+	{
+		constexpr int size_x = 10;
+		constexpr int size_y = 10;
+
+		if (dim_ == 2)
 		{
-			const int offset = sol.rows() - v_.rows() * dim_;
+			Eigen::Vector2d tangent(normal().y(), -normal().x());
 
-			int start = 0;
-
-			for (int k = 0; k < endings_.size(); ++k)
+			vis_v_.resize(size_x + 1, 2);
+			for (int x = 0; x <= size_x; ++x)
 			{
-				const int to = endings_[k];
+				vis_v_.row(x) = (x - size_x / 2.0) * tangent;
+			}
 
-				for (int i = start; i < to; ++i)
-				{
-					for (int d = 0; d < dim_; ++d)
-					{
-						sol(offset + i * dim_ + d) = 0;
-					}
-				}
-
-				start = to;
+			vis_e_.resize(size_x, 2);
+			for (int x = 0; x < size_x; ++x)
+			{
+				vis_e_.row(x) << x, x + 1;
 			}
 		}
 		else
 		{
-			const int offset = sol.rows() - v_.rows();
+			assert(dim_ == 3);
 
-			int start = 0;
+			Eigen::Vector3d cross_x = ipc::cross(Eigen::Vector3d::UnitX(), normal());
+			Eigen::Vector3d cross_y = ipc::cross(Eigen::Vector3d::UnitY(), normal());
 
-			for (int k = 0; k < endings_.size(); ++k)
+			Eigen::Vector3d tangent_x, tangent_y;
+			if (cross_x.squaredNorm() > cross_y.squaredNorm())
 			{
-				const int to = endings_[k];
-
-				for (int i = start; i < to; ++i)
-				{
-					for (int d = 0; d < dim_; ++d)
-					{
-						sol(offset + i, d) = 0;
-					}
-				}
-
-				start = to;
+				tangent_x = cross_x.normalized();
+				tangent_y = ipc::cross(normal(), cross_x).normalized();
 			}
+			else
+			{
+				tangent_x = cross_y.normalized();
+				tangent_y = ipc::cross(normal(), cross_y).normalized();
+			}
+
+			vis_v_.resize((size_x + 1) * (size_y + 1), 3);
+			for (int x = 0; x <= size_x; ++x)
+			{
+				for (int y = 0; y <= size_y; ++y)
+				{
+					vis_v_.row(x * size_y + y) = (x - size_x / 2.0) * tangent_x + (y - size_y / 2.0) * tangent_y;
+				}
+			}
+
+			vis_f_.resize(2 * size_x * size_y, 3);
+			for (int x = 0; x < size_x; ++x)
+			{
+				for (int y = 0; y < size_y; ++y)
+				{
+					vis_f_.row(2 * (x * size_x + y)) << x * size_x + y, x * size_x + y + 1, (x + 1) * size_x + y;
+					vis_f_.row(2 * (x * size_x + y) + 1) << x * size_x + y + 1, (x + 1) * size_x + (y + 1), (x + 1) * size_x + y;
+				}
+			}
+
+			igl::edges(vis_f_, vis_e_);
 		}
 	}
 } // namespace polyfem

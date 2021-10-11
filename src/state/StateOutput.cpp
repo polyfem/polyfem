@@ -331,8 +331,6 @@ namespace polyfem
 		auto &boundary_edges_ = (!for_pressure) ? boundary_edges : boundary_edges_pressure;
 		auto &boundary_nodes_pos_ = (!for_pressure) ? boundary_nodes_pos : boundary_nodes_pos_pressure;
 
-		std::cout << n_bases << std::endl;
-
 		if (!for_pressure)
 			boundary_faces_to_edges.resize(0, 0);
 		if (mesh->is_volume())
@@ -526,17 +524,27 @@ namespace polyfem
 			const int n_v = boundary_nodes_pos.rows() - obstacle.n_vertices();
 			const int n_e = boundary_edges.rows();
 			//boundary_nodes_pos uses n_bases that already contains the obstacle
-			boundary_nodes_pos.bottomRows(obstacle.v().rows()) = obstacle.v();
+			if (obstacle.v().size())
+				boundary_nodes_pos.bottomRows(obstacle.v().rows()) = obstacle.v();
 
-			boundary_edges.conservativeResize(boundary_edges.rows() + obstacle.e().rows(), 2);
-			boundary_edges.bottomRows(obstacle.e().rows()) = obstacle.e().array() + n_v;
+			if (obstacle.e().size())
+			{
+				boundary_edges.conservativeResize(boundary_edges.rows() + obstacle.e().rows(), 2);
+				boundary_edges.bottomRows(obstacle.e().rows()) = obstacle.e().array() + n_v;
+			}
 
-			boundary_triangles.conservativeResize(boundary_triangles.rows() + obstacle.f().rows(), 3);
-			boundary_triangles.bottomRows(obstacle.f().rows()) = obstacle.f().array() + n_v;
+			if (obstacle.f().size())
+			{
+				boundary_triangles.conservativeResize(boundary_triangles.rows() + obstacle.f().rows(), 3);
+				boundary_triangles.bottomRows(obstacle.f().rows()) = obstacle.f().array() + n_v;
+			}
 
-			const int tmp = std::max(boundary_faces_to_edges.cols(), obstacle.f_2_e().cols());
-			boundary_faces_to_edges.conservativeResize(boundary_faces_to_edges.rows() + obstacle.f_2_e().rows(), tmp);
-			boundary_faces_to_edges.bottomRows(obstacle.f_2_e().rows()) = obstacle.f_2_e().array() + n_e;
+			if (obstacle.f_2_e().size())
+			{
+				const int tmp = std::max(boundary_faces_to_edges.cols(), obstacle.f_2_e().cols());
+				boundary_faces_to_edges.conservativeResize(boundary_faces_to_edges.rows() + obstacle.f_2_e().rows(), tmp);
+				boundary_faces_to_edges.bottomRows(obstacle.f_2_e().rows()) = obstacle.f_2_e().array() + n_e;
+			}
 		}
 	}
 

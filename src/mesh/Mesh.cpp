@@ -73,7 +73,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path)
 	std::string lowername = path;
 
 	std::transform(lowername.begin(), lowername.end(), lowername.begin(), ::tolower);
-	if (StringUtils::endswidth(lowername, ".hybrid"))
+	if (StringUtils::endswith(lowername, ".hybrid"))
 	{
 		std::unique_ptr<polyfem::Mesh> mesh = std::make_unique<Mesh3D>();
 		if (mesh->load(path))
@@ -81,7 +81,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path)
 			return mesh;
 		}
 	}
-	else if (StringUtils::endswidth(lowername, ".msh"))
+	else if (StringUtils::endswith(lowername, ".msh"))
 	{
 		Eigen::MatrixXd vertices;
 		Eigen::MatrixXi cells;
@@ -147,18 +147,34 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 
 	for (int i = 0; i < meshes.size(); i++)
 	{
-		json jmesh;
 		Eigen::MatrixXd tmp_vertices;
 		Eigen::MatrixXi tmp_cells;
 		std::vector<std::vector<int>> tmp_elements;
 		std::vector<std::vector<double>> tmp_weights;
 
-		read_mesh_from_json(meshes[i], root_path, tmp_vertices, tmp_cells, tmp_elements, tmp_weights, jmesh);
+		json jmesh;
+		apply_default_mesh_parameters(meshes[i], jmesh);
+
+		if (!jmesh["enabled"].get<bool>())
+		{
+			continue;
+		}
+
+		if (!meshes[i].contains("mesh"))
+		{
+			logger().error("Mesh {} is mising a \"mesh\" field", meshes[i].get<std::string>());
+			continue;
+		}
+		const std::string mesh_path = resolve_path(jmesh["mesh"], root_path);
+
+		read_fem_mesh(mesh_path, tmp_vertices, tmp_cells, tmp_elements, tmp_weights);
 
 		if (tmp_vertices.size() == 0 || tmp_cells.size() == 0)
 		{
 			continue;
 		}
+
+		transform_mesh_from_json(jmesh, tmp_vertices);
 
 		if (dim == 0)
 		{

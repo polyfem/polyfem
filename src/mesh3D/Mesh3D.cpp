@@ -46,7 +46,7 @@ namespace polyfem
 		face_nodes_.clear();
 		cell_nodes_.clear();
 
-		if (!StringUtils::endswidth(path, ".HYBRID"))
+		if (!StringUtils::endswith(path, ".HYBRID"))
 		{
 			GEO::Mesh M;
 			GEO::mesh_load(path, M);
@@ -379,7 +379,7 @@ namespace polyfem
 	bool Mesh3D::save(const std::string &path) const
 	{
 
-		if (!StringUtils::endswidth(path, ".HYBRID"))
+		if (!StringUtils::endswith(path, ".HYBRID"))
 		{
 			GEO::Mesh M;
 			to_geogram_mesh(*this, M);

@@ -44,10 +44,3 @@ if(POLYFEM_WITH_CLIPPER AND NOT TARGET clipper::clipper)
     add_library(clipper::clipper ALIAS clipper_clipper)
     target_include_directories(clipper_clipper PUBLIC ${POLYFEM_EXTERNAL}/clipper/cpp)
 endif()
-
-# GHC Filesystem
-if(NOT TARGET ghc::filesystem)
-    polyfem_download_filesystem()
-    add_subdirectory(${POLYFEM_EXTERNAL}/filesystem)
-    add_library(ghc::filesystem ALIAS ghc_filesystem)
-endif()

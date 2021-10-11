@@ -539,7 +539,7 @@ namespace polyfem
 			}
 		}
 
-		std::cout << "n_bases" << n_bases << std::endl;
+		logger().info("n_bases {}", n_bases);
 
 		building_basis_time = timer.getElapsedTime();
 		logger().info(" took {}s", building_basis_time);

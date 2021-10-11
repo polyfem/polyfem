@@ -45,7 +45,7 @@ bool polyfem::StringUtils::startswith(const std::string &str, const std::string 
 }
 
 // Tests whether a string ends with a given suffix
-bool polyfem::StringUtils::endswidth(const std::string &str, const std::string &suffix)
+bool polyfem::StringUtils::endswith(const std::string &str, const std::string &suffix)
 {
 	if (str.length() >= suffix.length())
 	{

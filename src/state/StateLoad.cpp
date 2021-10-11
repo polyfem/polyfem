@@ -81,7 +81,7 @@ namespace polyfem
 		timer.start();
 		logger().info("Loading obstacles...");
 		if (args.contains("obstacles"))
-			obstacle.init(args["obstacles"], args["root_path"]);
+			obstacle.init(args["obstacles"], args["root_path"], mesh->dimension());
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
@@ -196,7 +196,7 @@ namespace polyfem
 		timer.start();
 		logger().info("Loading obstacles...");
 		if (args.contains("obstacles"))
-			obstacle.init(args["obstacles"], args["root_path"]);
+			obstacle.init(args["obstacles"], args["root_path"], mesh->dimension());
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
@@ -305,7 +305,7 @@ namespace polyfem
 		timer.start();
 		logger().info("Loading obstacles...");
 		if (args.contains("obstacles"))
-			obstacle.init(args["obstacles"], args["root_path"]);
+			obstacle.init(args["obstacles"], args["root_path"], mesh->dimension());
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 	}

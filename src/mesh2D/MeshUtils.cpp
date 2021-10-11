@@ -4,6 +4,7 @@
 #include <polyfem/StringUtils.hpp>
 #include <polyfem/Logger.hpp>
 #include <polyfem/MshReader.hpp>
+#include <polyfem/OBJReader.hpp>
 #include <polyfem/JSONUtils.hpp>
 
 #include <igl/PI.h>
@@ -982,13 +983,8 @@ void polyfem::extract_parent_edges(const Eigen::MatrixXd &IV, const Eigen::Matri
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::read_mesh_from_json(const json &mesh, const std::string &root_path, Eigen::MatrixXd &tmp_vertices, Eigen::MatrixXi &tmp_cells, std::vector<std::vector<int>> &tmp_elements, std::vector<std::vector<double>> &tmp_weights, json &jmesh)
+void polyfem::apply_default_mesh_parameters(const json &mesh_in, json &mesh_out)
 {
-	tmp_vertices.resize(0, 0);
-	tmp_cells.resize(0, 0);
-	tmp_elements.clear();
-	tmp_weights.clear();
-
 	// NOTE: All units by default are expressed in standard SI units
 	// • position: position of the model origin
 	// • rotation: degrees as XYZ euler angles around the model origin
@@ -996,7 +992,7 @@ void polyfem::read_mesh_from_json(const json &mesh, const std::string &root_path
 	// • dimensions: dimensions of the scaled object (mutually exclusive to
 	//               "scale")
 	// • enabled: skip the body if this field is false
-	jmesh = R"({
+	mesh_out = R"({
 				"position": [0.0, 0.0, 0.0],
 				"rotation": [0.0, 0.0, 0.0],
 				"rotation_mode": "xyz",
@@ -1006,140 +1002,254 @@ void polyfem::read_mesh_from_json(const json &mesh, const std::string &root_path
 				"boundary_id": 0,
 				"displacement": [0.0, 0.0, 0.0]
 			})"_json;
-	jmesh.merge_patch(mesh);
+	mesh_out.merge_patch(mesh_in);
+}
 
-	if (!jmesh["enabled"].get<bool>())
-	{
-		return;
-	}
+void polyfem::read_fem_mesh(
+	const std::string &mesh_path,
+	Eigen::MatrixXd &vertices,
+	Eigen::MatrixXi &cells,
+	std::vector<std::vector<int>> &elements,
+	std::vector<std::vector<double>> &weights)
+{
+	vertices.resize(0, 0);
+	cells.resize(0, 0);
+	elements.clear();
+	weights.clear();
 
-	if (!jmesh.contains("mesh"))
-	{
-		logger().error("Mesh {} is mising a \"mesh\" field", mesh.get<std::string>());
-		return;
-	}
-
-	std::string mesh_path = resolve_path(jmesh["mesh"], root_path);
 	std::string lowername = mesh_path;
 	std::transform(
 		lowername.begin(), lowername.end(), lowername.begin(), ::tolower);
-	int tmp_dim;
 
-	if (StringUtils::endswidth(lowername, ".msh"))
+	if (StringUtils::endswith(lowername, ".msh"))
 	{
-		if (!MshReader::load(mesh_path, tmp_vertices, tmp_cells, tmp_elements, tmp_weights))
+		if (!MshReader::load(mesh_path, vertices, cells, elements, weights))
 		{
 			logger().error("Unable to load mesh: {}", mesh_path);
 			return;
 		}
-
-		tmp_dim = tmp_vertices.cols();
 	}
 	else
 	{
-		GEO::Mesh tmp;
-		if (!GEO::mesh_load(mesh_path, tmp))
+		GEO::Mesh mesh;
+		if (!GEO::mesh_load(mesh_path, mesh))
 		{
 			logger().error("Unable to load mesh: {}", mesh_path);
 			return;
 		}
 
-		tmp_dim = is_planar(tmp) ? 2 : 3;
-		tmp_vertices.resize(tmp.vertices.nb(), tmp_dim);
-		for (int vi = 0; vi < tmp.vertices.nb(); vi++)
+		int dim = is_planar(mesh) ? 2 : 3;
+		vertices.resize(mesh.vertices.nb(), dim);
+		for (int vi = 0; vi < mesh.vertices.nb(); vi++)
 		{
-			const auto &v = tmp.vertices.point(vi);
-			for (int vj = 0; vj < tmp_dim; vj++)
+			const auto &v = mesh.vertices.point(vi);
+			for (int vj = 0; vj < dim; vj++)
 			{
-				tmp_vertices(vi, vj) = v[vj];
+				vertices(vi, vj) = v[vj];
 			}
 		}
 
-		if (tmp.cells.nb())
+		if (mesh.cells.nb())
 		{
-			int tmp_cell_cols = tmp.cells.nb_vertices(0);
-			tmp_cells.resize(tmp.cells.nb(), tmp_cell_cols);
-			for (int ci = 0; ci < tmp.cells.nb(); ci++)
+			int cell_cols = mesh.cells.nb_vertices(0);
+			cells.resize(mesh.cells.nb(), cell_cols);
+			for (int ci = 0; ci < mesh.cells.nb(); ci++)
 			{
-				assert(tmp_cell_cols == tmp.cells.nb_vertices(ci));
-				for (int cj = 0; cj < tmp.cells.nb_vertices(ci); cj++)
+				assert(cell_cols == mesh.cells.nb_vertices(ci));
+				for (int cj = 0; cj < mesh.cells.nb_vertices(ci); cj++)
 				{
-					tmp_cells(ci, cj) = tmp.cells.vertex(ci, cj);
+					cells(ci, cj) = mesh.cells.vertex(ci, cj);
 				}
 			}
 		}
 		else
 		{
-			assert(tmp.facets.nb());
-			int tmp_cell_cols = tmp.facets.nb_vertices(0);
-			tmp_cells.resize(tmp.facets.nb(), tmp_cell_cols);
-			for (int ci = 0; ci < tmp.facets.nb(); ci++)
+			assert(mesh.facets.nb());
+			int cell_cols = mesh.facets.nb_vertices(0);
+			cells.resize(mesh.facets.nb(), cell_cols);
+			for (int ci = 0; ci < mesh.facets.nb(); ci++)
 			{
-				assert(tmp_cell_cols == tmp.facets.nb_vertices(ci));
-				for (int cj = 0; cj < tmp.facets.nb_vertices(ci); cj++)
+				assert(cell_cols == mesh.facets.nb_vertices(ci));
+				for (int cj = 0; cj < mesh.facets.nb_vertices(ci); cj++)
 				{
-					tmp_cells(ci, cj) = tmp.facets.vertex(ci, cj);
+					cells(ci, cj) = mesh.facets.vertex(ci, cj);
 				}
 			}
 		}
 
-		tmp_elements.resize(tmp_cells.rows());
-		for (int ci = 0; ci < tmp_cells.rows(); ci++)
+		elements.resize(cells.rows());
+		for (int ci = 0; ci < cells.rows(); ci++)
 		{
-			tmp_elements[ci].resize(tmp_cells.cols());
-			for (int cj = 0; cj < tmp_cells.cols(); cj++)
+			elements[ci].resize(cells.cols());
+			for (int cj = 0; cj < cells.cols(); cj++)
 			{
-				tmp_elements[ci][cj] = tmp_cells(ci, cj);
+				elements[ci][cj] = cells(ci, cj);
 			}
 		}
-		tmp_weights.resize(tmp_cells.rows());
+		weights.resize(cells.rows());
 	}
+}
 
-	RowVectorNd scale;
-	if (jmesh.contains("dimensions"))
+void find_codim_vertices(
+	const Eigen::MatrixXd &vertices,
+	const Eigen::MatrixXi &codim_edges,
+	const Eigen::MatrixXi &faces,
+	Eigen::VectorXi &codim_vertices)
+{
+	std::vector<bool> is_vertex_codim(vertices.rows(), true);
+	for (int i = 0; i < codim_edges.rows(); i++)
 	{
-		VectorNd initial_dimensions =
-			(tmp_vertices.colwise().maxCoeff() - tmp_vertices.colwise().minCoeff()).cwiseAbs();
-		initial_dimensions =
-			(initial_dimensions.array() == 0).select(1, initial_dimensions);
-		from_json(jmesh["dimensions"], scale);
-		assert(scale.size() >= tmp_dim);
-		scale.conservativeResize(tmp_dim);
-		scale.array() /= initial_dimensions.array();
+		for (int j = 0; j < codim_edges.cols(); j++)
+		{
+			is_vertex_codim[codim_edges(i, j)] = false;
+		}
 	}
-	else if (jmesh["scale"].is_number())
+	for (int i = 0; i < faces.rows(); i++)
 	{
-		scale.setConstant(tmp_dim, jmesh["scale"].get<double>());
+		for (int j = 0; j < faces.cols(); j++)
+		{
+			is_vertex_codim[faces(i, j)] = false;
+		}
+	}
+	const auto n_codim_vertices = std::count(is_vertex_codim.begin(), is_vertex_codim.end(), true);
+	codim_vertices.resize(n_codim_vertices);
+	for (int i = 0, ci = 0; i < vertices.rows(); i++)
+	{
+		if (is_vertex_codim[i])
+		{
+			codim_vertices[ci++] = i;
+		}
+	}
+}
+
+void polyfem::read_surface_mesh(
+	const std::string &mesh_path,
+	Eigen::MatrixXd &vertices,
+	Eigen::VectorXi &codim_vertices,
+	Eigen::MatrixXi &codim_edges,
+	Eigen::MatrixXi &faces)
+{
+	vertices.resize(0, 0);
+	codim_vertices.resize(0);
+	codim_edges.resize(0, 0);
+	faces.resize(0, 0);
+
+	std::string lowername = mesh_path;
+	std::transform(
+		lowername.begin(), lowername.end(), lowername.begin(), ::tolower);
+
+	bool read_success;
+	if (StringUtils::endswith(lowername, ".msh"))
+	{
+		Eigen::MatrixXi cells;
+		std::vector<std::vector<int>> elements;
+		std::vector<std::vector<double>> weights;
+		read_success = MshReader::load(mesh_path, vertices, cells, elements, weights);
+		// TODO: Extract the surface from the cells
+		// find_surface(cells, faces);
+		faces = cells; // Assumes MSH is only surface or 2D triangles
+	}
+	else if (StringUtils::endswith(lowername, ".obj")) // Use specialized OBJ reader function with polyline support
+	{
+		read_success = OBJReader::load(mesh_path, vertices, codim_edges, faces);
 	}
 	else
 	{
-		assert(jmesh["scale"].is_array());
-		from_json(jmesh["scale"], scale);
-		assert(scale.size() >= tmp_dim);
-		scale.conservativeResize(tmp_dim);
+		GEO::Mesh mesh;
+		read_success = GEO::mesh_load(mesh_path, mesh);
+
+		if (read_success)
+		{
+			int dim = is_planar(mesh) ? 2 : 3;
+			vertices.resize(mesh.vertices.nb(), dim);
+			for (int vi = 0; vi < mesh.vertices.nb(); vi++)
+			{
+				const auto &v = mesh.vertices.point(vi);
+				for (int vj = 0; vj < dim; vj++)
+				{
+					vertices(vi, vj) = v[vj];
+				}
+			}
+
+			// TODO: Check that this works even for a volumetric mesh
+			assert(mesh.facets.nb());
+			int face_cols = mesh.facets.nb_vertices(0);
+			faces.resize(mesh.facets.nb(), face_cols);
+			for (int fi = 0; fi < mesh.facets.nb(); fi++)
+			{
+				assert(face_cols == mesh.facets.nb_vertices(fi));
+				for (int fj = 0; fj < mesh.facets.nb_vertices(fi); fj++)
+				{
+					faces(fi, fj) = mesh.facets.vertex(fi, fj);
+				}
+			}
+		}
 	}
-	tmp_vertices *= scale.asDiagonal();
+
+	if (!read_success)
+	{
+		logger().error("Unable to load mesh: {}", mesh_path);
+		return;
+	}
+
+	find_codim_vertices(vertices, codim_edges, faces, codim_vertices);
+}
+
+void polyfem::transform_mesh_from_json(const json &mesh, Eigen::MatrixXd &vertices)
+{
+	const int dim = vertices.cols();
+
+	RowVectorNd scale;
+	if (mesh.contains("dimensions"))
+	{
+		VectorNd initial_dimensions =
+			(vertices.colwise().maxCoeff() - vertices.colwise().minCoeff()).cwiseAbs();
+		initial_dimensions =
+			(initial_dimensions.array() == 0).select(1, initial_dimensions);
+		from_json(mesh["dimensions"], scale);
+		const int scale_size = scale.size();
+		scale.conservativeResize(dim);
+		if (scale_size < dim)
+			scale.tail(dim - scale_size).setZero();
+		scale.array() /= initial_dimensions.array();
+	}
+	else if (mesh["scale"].is_number())
+	{
+		scale.setConstant(dim, mesh["scale"].get<double>());
+	}
+	else
+	{
+		assert(mesh["scale"].is_array());
+		from_json(mesh["scale"], scale);
+		const int scale_size = scale.size();
+		scale.conservativeResize(dim);
+		if (scale_size < dim)
+			scale.tail(dim - scale_size).setZero();
+	}
+	vertices *= scale.asDiagonal();
 
 	// Rotate around the models origin NOT the bodies center of mass.
 	// We could expose this choice as a "rotate_around" field.
-	MatrixNd R = MatrixNd::Identity(tmp_dim, tmp_dim);
-	if (tmp_vertices.cols() == 2 && jmesh["rotation"].is_number())
+	MatrixNd R = MatrixNd::Identity(dim, dim);
+	if (dim == 2 && mesh["rotation"].is_number())
 	{
 		R = Eigen::Rotation2Dd(
-				deg2rad(jmesh["rotation"].get<double>()))
+				deg2rad(mesh["rotation"].get<double>()))
 				.toRotationMatrix();
 	}
-	else if (tmp_vertices.cols() == 3)
+	else if (dim == 3)
 	{
-		R = to_rotation_matrix(jmesh["rotation"], jmesh["rotation_mode"]);
+		R = to_rotation_matrix(mesh["rotation"], mesh["rotation_mode"]);
 	}
-	tmp_vertices *= R.transpose(); // (R*Vᵀ)ᵀ = V*Rᵀ
+	vertices *= R.transpose(); // (R*Vᵀ)ᵀ = V*Rᵀ
 
 	RowVectorNd position;
-	from_json(jmesh["position"], position);
-	assert(position.size() >= tmp_dim);
-	position.conservativeResize(tmp_dim);
-	tmp_vertices.rowwise() += position;
+	from_json(mesh["position"], position);
+	const int position_size = position.size();
+	position.conservativeResize(dim);
+	if (position_size < dim)
+		position.tail(dim - position_size).setZero();
+	vertices.rowwise() += position;
 }
 
 void polyfem::save_edges(const std::string &filename, const Eigen::MatrixXd &V, const Eigen::MatrixXi &E)

@@ -29,6 +29,8 @@ set(SOURCES
 	MaybeParallelFor.tpp
 	MshReader.cpp
 	MshReader.hpp
+	OBJReader.cpp
+	OBJReader.hpp
 	par_for.cpp
 	par_for.hpp
 	raster.cpp

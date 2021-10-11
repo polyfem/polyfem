@@ -1,20 +1,32 @@
-################################################################################
-cmake_minimum_required(VERSION 3.14)
-project(PolyFEM)
-################################################################################
-
-cmake_policy(SET CMP0079 NEW)
-
-# cmake_policy(SET CMP0063 NEW)
-# set(CMAKE_CXX_VISIBILITY_PRESET hidden)
-
 # Detects whether this is a top-level project
-if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
-    set(POLYFEM_TOPLEVEL_PROJECT ON)
-else()
+get_directory_property(HAS_PARENT PARENT_DIRECTORY)
+if(HAS_PARENT)
     set(POLYFEM_TOPLEVEL_PROJECT OFF)
+else()
+    set(POLYFEM_TOPLEVEL_PROJECT ON)
 endif()
 
+# Check required CMake version
+set(REQUIRED_CMAKE_VERSION "3.14.0")
+if(POLYFEM_TOPLEVEL_PROJECT)
+    cmake_minimum_required(VERSION ${REQUIRED_CMAKE_VERSION})
+else()
+    # Don't use cmake_minimum_required here to avoid implicitly overriding parent policies
+    if(${CMAKE_VERSION} VERSION_LESS ${REQUIRED_CMAKE_VERSION})
+        message(FATAL_ERROR "CMake required version to build PolyFEM is ${REQUIRED_CMAKE_VERSION}")
+    endif()
+endif()
+
+# Include user-provided default options if available. We do that before the main
+# `project()` so that we can define the C/C++ compilers from the option file.
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/PolyFEMOptions.cmake)
+    message(STATUS "Using local options file: ${CMAKE_CURRENT_SOURCE_DIR}/PolyFEMOptions.cmake")
+    include(${CMAKE_CURRENT_SOURCE_DIR}/PolyFEMOptions.cmake)
+endif()
+
+################################################################################
+project(PolyFEM DESCRIPTION "A polyvalent C++ FEM library")
+################################################################################
 
 if(INPUT_THIRD_PARTY_DIR)
     set(THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${INPUT_THIRD_PARTY_DIR}/")
@@ -24,7 +36,7 @@ endif()
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/recipes/")
 
-if(${POLYFEM_TOPLEVEL_PROJECT})
+if(POLYFEM_TOPLEVEL_PROJECT)
     list(APPEND CMAKE_MODULE_PATH ${THIRD_PARTY_DIR}/Catch2/contrib)
 endif()
 
@@ -216,12 +228,7 @@ endif()
 # find_package(Eigen3 REQUIRED)
 # target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
 
-# IPC
-if(NOT TARGET ipc::toolkit)
-    option(IPC_TOOLKIT_BUILD_UNIT_TESTS "Build unit-tests" OFF)
-    polyfem_download_ipc()
-    add_subdirectory(${THIRD_PARTY_DIR}/ipc)
-endif()
+include(ipc_toolkit)
 target_link_libraries(polyfem PUBLIC ipc::toolkit)
 
 # polysolve
@@ -301,13 +308,14 @@ endif()
 target_link_libraries(polyfem PUBLIC tinyxml2)
 
 # Catch2
-if(${POLYFEM_TOPLEVEL_PROJECT})
+if(POLYFEM_TOPLEVEL_PROJECT)
     polyfem_download_catch2()
     add_library(catch INTERFACE)
     target_include_directories(catch SYSTEM INTERFACE ${THIRD_PARTY_DIR}/Catch2/single_include/catch2)
 endif()
 
 # Filesystem
+include(filesystem)
 target_link_libraries(polyfem PUBLIC ghc::filesystem)
 
 ################################################################################

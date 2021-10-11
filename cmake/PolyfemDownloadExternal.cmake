@@ -111,14 +111,6 @@ function(polyfem_download_tinyxml)
     )
 endfunction()
 
-## ipc MIT
-function(polyfem_download_ipc)
-    polyfem_download_project(ipc
-        GIT_REPOSITORY https://github.com/ipc-sim/ipc-toolkit.git
-        GIT_TAG        c11f3d201ef354d4c1849b1763cd7d9fc535c459
-    )
-endfunction()
-
 ## BVH MIT
 function(polyfem_download_BVH)
     polyfem_download_project(BVH
@@ -140,13 +132,5 @@ function(polyfem_download_polyfem_data)
     polyfem_download_project(data
         GIT_REPOSITORY https://github.com/polyfem/polyfem-data
         GIT_TAG        c810c5547bd238f68558433f1829b0fad39ac2f2
-    )
-endfunction()
-
-## filesystem library for C++11 and C++14 (MIT)
-function(polyfem_download_filesystem)
-    polyfem_download_project(filesystem
-        GIT_REPOSITORY https://github.com/gulrak/filesystem.git
-        GIT_TAG        v1.5.4
     )
 endfunction()
