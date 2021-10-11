@@ -723,7 +723,7 @@ namespace polyfem
 				}
 			}
 
-			if (ipc::has_intersections(tmp, boundary_edges, boundary_triangles))
+			if (ipc::has_intersections(tmp, boundary_edges, boundary_triangles, [&](size_t vi, size_t vj) { return !is_obstacle_vertex(vi) || !is_obstacle_vertex(vj); }))
 			{
 				logger().error("Unable to solve, initial solution has intersections!");
 				throw "Unable to solve, initial solution has intersections!";

@@ -131,7 +131,8 @@ namespace polyfem
 		ipc::construct_constraint_set(
 			state.boundary_nodes_pos, displaced, state.boundary_edges,
 			state.boundary_triangles, _dhat, _constraint_set, state.boundary_faces_to_edges,
-			/*dmin=*/0, _broad_phase_method, _ignore_codimensional_vertices);
+			/*dmin=*/0, _broad_phase_method, _ignore_codimensional_vertices,
+			[&](size_t vi, size_t vj) { return can_vertices_collide(vi, vj); });
 		Eigen::VectorXd grad_barrier = ipc::compute_barrier_potential_gradient(
 			displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat);
 
@@ -160,7 +161,8 @@ namespace polyfem
 			ipc::construct_constraint_set(
 				state.boundary_nodes_pos, displaced, state.boundary_edges,
 				state.boundary_triangles, _dhat, _constraint_set, state.boundary_faces_to_edges,
-				/*dmin=*/0, _broad_phase_method, _ignore_codimensional_vertices);
+				/*dmin=*/0, _broad_phase_method, _ignore_codimensional_vertices,
+				[&](size_t vi, size_t vj) { return can_vertices_collide(vi, vj); });
 			ipc::construct_friction_constraint_set(
 				displaced, state.boundary_edges, state.boundary_triangles,
 				_constraint_set, _dhat, _barrier_stiffness, _mu,
@@ -305,7 +307,8 @@ namespace polyfem
 			displaced0, displaced1, state.boundary_edges,
 			state.boundary_triangles, _candidates,
 			/*inflation_radius=*/_dhat / 1.99, // divide by 1.99 instead of 2 to be conservative
-			_broad_phase_method, _ignore_codimensional_vertices);
+			_broad_phase_method, _ignore_codimensional_vertices,
+			[&](size_t vi, size_t vj) { return can_vertices_collide(vi, vj); });
 	}
 
 	void NLProblem::line_search_end()
@@ -329,15 +332,13 @@ namespace polyfem
 		// }
 
 		double max_step = ipc::compute_collision_free_stepsize(
-			_candidates,
-			displaced0, displaced1,
-			state.boundary_edges, state.boundary_triangles,
-			_ccd_tolerance, _ccd_max_iterations);
+			_candidates, displaced0, displaced1, state.boundary_edges,
+			state.boundary_triangles, _ccd_tolerance, _ccd_max_iterations);
 		// polyfem::logger().trace("best step {}", max_step);
 
 		// This will check for static intersections as a failsafe. Not needed if we use our conservative CCD.
 		// Eigen::MatrixXd displaced_toi = (displaced1 - displaced0) * max_step + displaced0;
-		// while (ipc::has_intersections(displaced_toi, state.boundary_edges, state.boundary_triangles))
+		// while (ipc::has_intersections(displaced_toi, state.boundary_edges, state.boundary_triangles, [&](size_t vi, size_t vj){return can_vertices_collide(vi, vj);}))
 		// {
 		// 	double Linf = (displaced_toi - displaced0).lpNorm<Eigen::Infinity>();
 		// 	logger().warn("taking max_step results in intersections (max_step={:g})", max_step);
@@ -379,10 +380,9 @@ namespace polyfem
 		// 	igl::write_triangle_mesh("1.obj", asd, state.boundary_triangles);
 		// }
 
-		const bool is_valid = ipc::is_step_collision_free(_candidates,
-														  displaced0, displaced1,
-														  state.boundary_edges, state.boundary_triangles,
-														  _ccd_tolerance, _ccd_max_iterations);
+		const bool is_valid = ipc::is_step_collision_free(
+			_candidates, displaced0, displaced1, state.boundary_edges,
+			state.boundary_triangles, _ccd_tolerance, _ccd_max_iterations);
 
 		return is_valid;
 	}
@@ -698,11 +698,14 @@ namespace polyfem
 		reduced_to_full_displaced_points(newX, displaced);
 
 		if (_candidates.size() > 0)
-			ipc::construct_constraint_set(_candidates, state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles,
-										  _dhat, _constraint_set, state.boundary_faces_to_edges);
+			ipc::construct_constraint_set(
+				_candidates, state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles,
+				_dhat, _constraint_set, state.boundary_faces_to_edges);
 		else
-			ipc::construct_constraint_set(state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles,
-										  _dhat, _constraint_set, state.boundary_faces_to_edges, /*dmin=*/0, _broad_phase_method, _ignore_codimensional_vertices);
+			ipc::construct_constraint_set(
+				state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, _dhat, _constraint_set,
+				state.boundary_faces_to_edges, /*dmin=*/0, _broad_phase_method, _ignore_codimensional_vertices,
+				[&](size_t vi, size_t vj) { return can_vertices_collide(vi, vj); });
 	}
 
 	double NLProblem::heuristic_max_step(const TVector &dx)

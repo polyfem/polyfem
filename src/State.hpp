@@ -574,6 +574,11 @@ namespace polyfem
 		void p_refinement(const Mesh2D &mesh2d);
 		void p_refinement(const Mesh3D &mesh3d);
 
+		bool is_obstacle_vertex(const size_t vi) const
+		{
+			return vi >= mesh->n_vertices();
+		}
+
 	private:
 		//splits the solution in solution and pressure for mixed problems
 		void sol_to_pressure();

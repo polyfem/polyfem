@@ -142,10 +142,17 @@ namespace polyfem
 		inline void set_ccd_max_iterations(int v) { _ccd_max_iterations = v; }
 
 	protected:
-		State &state;
-		double _barrier_stiffness;
 		void compute_displaced_points(const TVector &full, Eigen::MatrixXd &displaced);
 		void reduced_to_full_displaced_points(const TVector &reduced, Eigen::MatrixXd &displaced);
+
+		bool can_vertices_collide(const size_t vi, const size_t vj) const
+		{
+			// obstacles do not collide with other obstacles
+			return !state.is_obstacle_vertex(vi) || !state.is_obstacle_vertex(vj);
+		}
+
+		State &state;
+		double _barrier_stiffness;
 		const RhsAssembler &rhs_assembler;
 		bool is_time_dependent;
 
