@@ -49,7 +49,7 @@ namespace polyfem
 
 	const std::vector<std::string> &ImplicitTimeIntegrator::get_time_integrator_names()
 	{
-		static const std::vector<std::string> names = {{std::string("ImplicitEuler"), std::string("ImplicitNewmark")}};
+		static const std::vector<std::string> names = {std::string("ImplicitEuler"), std::string("ImplicitNewmark")};
 		return names;
 	}
 

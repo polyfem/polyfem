@@ -40,6 +40,31 @@ namespace polyfem
 		double ccd_time;
 		double constrain_set_update_time;
 		double classical_line_search_time;
+
+	protected:
+			double min_step_size = 0;
+			int max_step_size_iter = 100;
+			int cur_iter = 0;
+
+		double compute_nan_free_step_size(
+			const TVector &x,
+			const TVector &delta_x,
+			ProblemType &objFunc,
+			const double starting_step_size, const double rate);
+
+		double compute_collision_free_step_size(
+			const TVector &x,
+			const TVector &delta_x,
+			ProblemType &objFunc,
+			const double starting_step_size);
+#ifndef NDEBUG
+		double compute_debug_collision_free_step_size(
+			const typename ProblemType::TVector &x,
+			const typename ProblemType::TVector &delta_x,
+			ProblemType &objFunc,
+			const double starting_step_size,
+			const double rate);
+#endif
 	};
 } // namespace polyfem
 
