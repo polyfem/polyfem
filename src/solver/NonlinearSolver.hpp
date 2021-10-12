@@ -31,11 +31,11 @@ namespace cppoptlib
 			: solver_params(solver_params)
 		{
 			auto criteria = this->criteria();
-			criteria.fDelta = solver_params.count("fDelta") ? double(solver_params["fDelta"]) : 1e-9;
-			criteria.gradNorm = solver_params.count("gradNorm") ? double(solver_params["gradNorm"]) : 1e-8;
-			criteria.iterations = solver_params.count("nl_iterations") ? int(solver_params["nl_iterations"]) : 3000;
+			criteria.fDelta = solver_params.value("fDelta", 1e-9);
+			criteria.gradNorm = solver_params.value("gradNorm", 1e-8);
+			criteria.iterations = solver_params.value("nl_iterations", 3000);
 
-			use_gradient_norm = solver_params.count("useGradNorm") ? bool(solver_params["useGradNorm"]) : true;
+			use_gradient_norm = solver_params.value("useGradNorm", true);
 			this->setStopCriteria(criteria);
 
 			setLineSearch("armijo");
@@ -147,7 +147,7 @@ namespace cppoptlib
 					first_energy = energy;
 				}
 
-				if (!use_gradient_norm && this->m_status != Status::Continue && grad_norm > 1e-2)
+				if (!use_gradient_norm && this->m_status != Status::Continue && this->m_status != Status::IterationLimit && grad_norm > 1e-2)
 				{
 					polyfem::logger().debug("[{}] converged with large gradient (||∇f||={}); continuing", name(), grad_norm);
 					this->m_status = Status::Continue;
@@ -336,17 +336,19 @@ namespace cppoptlib
 			solver_info["gradNorm"] = crit.gradNorm;
 			solver_info["condition"] = crit.condition;
 
-			grad_time /= crit.iterations;
-			assembly_time /= crit.iterations;
-			inverting_time /= crit.iterations;
-			line_search_time /= crit.iterations;
+			double per_iteration = crit.iterations ? crit.iterations : 1;
+
+			grad_time /= per_iteration;
+			assembly_time /= per_iteration;
+			inverting_time /= per_iteration;
+			line_search_time /= per_iteration;
 
 			if (m_line_search)
 			{
 				constrain_set_update_time += m_line_search->constrain_set_update_time;
 			}
-			constrain_set_update_time /= crit.iterations;
-			obj_fun_time /= crit.iterations;
+			constrain_set_update_time /= per_iteration;
+			obj_fun_time /= per_iteration;
 
 			solver_info["time_grad"] = grad_time;
 			solver_info["time_assembly"] = assembly_time;
@@ -358,12 +360,12 @@ namespace cppoptlib
 			if (m_line_search)
 			{
 				solver_info["time_chekcing_for_nan_inf"] =
-					m_line_search->checking_for_nan_inf_time / crit.iterations;
+					m_line_search->checking_for_nan_inf_time / per_iteration;
 				solver_info["time_broad_phase_ccd"] =
-					m_line_search->broad_phase_ccd_time / crit.iterations;
-				solver_info["time_ccd"] = m_line_search->ccd_time / crit.iterations;
+					m_line_search->broad_phase_ccd_time / per_iteration;
+				solver_info["time_ccd"] = m_line_search->ccd_time / per_iteration;
 				solver_info["time_classical_line_search"] =
-					m_line_search->classical_line_search_time / crit.iterations;
+					m_line_search->classical_line_search_time / per_iteration;
 			}
 		}
 

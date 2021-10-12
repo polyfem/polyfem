@@ -563,6 +563,11 @@ namespace polyfem
 		if (!out_path.empty())
 		{
 			std::ofstream out(out_path);
+			if (!out.is_open())
+			{
+				logger().error("Unable to save simulation JSON to {}", out_path);
+				return;
+			}
 			save_json(out);
 			out.close();
 		}
