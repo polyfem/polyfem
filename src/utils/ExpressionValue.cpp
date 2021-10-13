@@ -45,6 +45,10 @@ namespace polyfem
 	{
 		return x * sin(theta) + y * cos(theta);
 	}
+	static double smooth_abs(double x, double k)
+	{
+		return tanh(k * x) * x;
+	}
 
 	void ExpressionValue::init(const std::string &expr)
 	{
@@ -71,6 +75,7 @@ namespace polyfem
 			{"deg2rad", (const void *)deg2rad, TE_FUNCTION1},
 			{"rotate_2D_x", (const void *)rotate_2D_x, TE_FUNCTION3},
 			{"rotate_2D_y", (const void *)rotate_2D_y, TE_FUNCTION3},
+			{"smooth_abs", (const void *)smooth_abs, TE_FUNCTION2},
 		};
 
 		int err;
@@ -157,6 +162,7 @@ namespace polyfem
 			{"deg2rad", (const void *)deg2rad, TE_FUNCTION1},
 			{"rotate_2D_x", (const void *)rotate_2D_x, TE_FUNCTION3},
 			{"rotate_2D_y", (const void *)rotate_2D_y, TE_FUNCTION3},
+			{"smooth_abs", (const void *)smooth_abs, TE_FUNCTION2},
 		};
 
 		int err;
