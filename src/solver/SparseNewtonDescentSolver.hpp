@@ -85,7 +85,7 @@ namespace cppoptlib
 				POLYFEM_SCOPED_TIMER("[timing] linear solve {}s", this->inverting_time);
 				if (new_hessian)
 				{
-					//TODO: get the correct size
+					// TODO: get the correct size
 					linear_solver->analyzePattern(hessian, hessian.rows());
 
 					try
@@ -94,22 +94,22 @@ namespace cppoptlib
 					}
 					catch (const std::runtime_error &err)
 					{
-						polyfem::logger().error("Unable to factorize Hessian: \"{}\"", err.what());
+						polyfem::logger().error("Unable to factorize Hessian: \"{}\"; reverting to gradient descent", err.what());
 						// polyfem::write_sparse_matrix_csv("problematic_hessian.csv", hessian);
 						this->use_gradient_descent = true;
 						direction = -grad;
 						return;
 					}
 				}
-				linear_solver->solve(grad, direction);
+				linear_solver->solve(-grad, direction); // H Δx = -g
 			}
 
-			//gradient descent, check descent direction
-			const double residual = (hessian * direction - grad).norm();
+			// gradient descent, check descent direction
+			const double residual = (hessian * direction + grad).norm(); // H Δx + g = 0
 			if (std::isnan(residual) || residual > 1e-7)
 			{
 				polyfem::logger().warn("large linear solve residual ({}); reverting to gradient descent", residual);
-				direction = grad;
+				direction = -grad;
 				this->use_gradient_descent = true;
 			}
 			else
@@ -117,7 +117,12 @@ namespace cppoptlib
 				polyfem::logger().trace("linear solve residual {}", residual);
 			}
 
-			direction *= -1; // Descent
+			if (grad.squaredNorm() != 0 && direction.dot(grad) >= 0)
+			{
+				polyfem::logger().warn("Newton direction is not a descent direction (Δx⋅g={}≥0); reverting to gradient descent", direction.dot(grad));
+				direction = -grad;
+				this->use_gradient_descent = true;
+			}
 
 			json info;
 			linear_solver->getInfo(info);
