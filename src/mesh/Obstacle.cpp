@@ -165,9 +165,8 @@ namespace polyfem
 			return;
 		}
 
-		VectorNd origin, normal;
-		from_json(plane["position"], origin);
-		from_json(plane["normal"], normal);
+		VectorNd origin = plane["position"];
+		VectorNd normal = plane["normal"];
 
 		if (dim_ == 0)
 			dim_ = origin.size();
@@ -190,8 +189,7 @@ namespace polyfem
 		})"_json;
 		ground.merge_patch(ground_in);
 
-		VectorNd normal;
-		from_json(ground["normal"], normal);
+		VectorNd normal = ground["normal"];
 
 		if (dim_ == 0)
 			dim_ = normal.size();

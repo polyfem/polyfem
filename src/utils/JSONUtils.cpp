@@ -50,7 +50,7 @@ namespace polyfem
 		else
 		{
 			assert(jr.is_array());
-			from_json(jr, r);
+			r = jr;
 		}
 
 		if (mode == "axis_angle")

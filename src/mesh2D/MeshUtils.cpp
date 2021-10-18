@@ -1295,7 +1295,7 @@ void polyfem::transform_mesh_from_json(const json &mesh, Eigen::MatrixXd &vertic
 			(vertices.colwise().maxCoeff() - vertices.colwise().minCoeff()).cwiseAbs();
 		initial_dimensions =
 			(initial_dimensions.array() == 0).select(1, initial_dimensions);
-		from_json(mesh["dimensions"], scale);
+		scale = mesh["dimensions"];
 		const int scale_size = scale.size();
 		scale.conservativeResize(dim);
 		if (scale_size < dim)
@@ -1309,7 +1309,7 @@ void polyfem::transform_mesh_from_json(const json &mesh, Eigen::MatrixXd &vertic
 	else
 	{
 		assert(mesh["scale"].is_array());
-		from_json(mesh["scale"], scale);
+		scale = mesh["scale"];
 		const int scale_size = scale.size();
 		scale.conservativeResize(dim);
 		if (scale_size < dim)
@@ -1332,8 +1332,7 @@ void polyfem::transform_mesh_from_json(const json &mesh, Eigen::MatrixXd &vertic
 	}
 	vertices *= R.transpose(); // (R*Vᵀ)ᵀ = V*Rᵀ
 
-	RowVectorNd position;
-	from_json(mesh["position"], position);
+	RowVectorNd position = mesh["position"];
 	const int position_size = position.size();
 	position.conservativeResize(dim);
 	if (position_size < dim)

@@ -16,16 +16,46 @@ namespace polyfem
 		return deg / 180 * igl::PI;
 	}
 
-	// Convert the given JSON array (or scalar) to a Eigen::Vector.
-	template <typename Derived>
-	void from_json(const json &j, Eigen::MatrixBase<Derived> &v)
-	{
-		auto jv = j.get<std::vector<typename Derived::Scalar>>();
-		v = Eigen::Map<Derived>(jv.data(), long(jv.size()));
-	}
-
 	// Converts a JSON rotation expressed in the given rotation mode to a 3D rotation matrix.
 	// NOTE: mode is a copy because the mode will be transformed to be case insensitive
 	Eigen::Matrix3d to_rotation_matrix(const json &jr, std::string mode = "xyz");
 
 } // namespace polyfem
+
+namespace nlohmann
+{
+	template <typename T, int dim, int max_dim = dim>
+	using Vector = Eigen::Matrix<T, dim, 1, Eigen::ColMajor, max_dim, 1>;
+	template <typename T, int dim, int max_dim = dim>
+	using RowVector = Eigen::Matrix<T, 1, dim, Eigen::RowMajor, 1, max_dim>;
+
+	template <typename T, int dim, int max_dim>
+	struct adl_serializer<Vector<T, dim, max_dim>>
+	{
+		static void to_json(json &j, const Vector<T, dim, max_dim> &v)
+		{
+			j = std::vector<T>(v.data(), v.data() + v.size());
+		}
+
+		static void from_json(const json &j, Vector<T, dim, max_dim> &v)
+		{
+			auto jv = j.get<std::vector<T>>();
+			v = Eigen::Map<Vector<T, dim, max_dim>>(jv.data(), long(jv.size()));
+		}
+	};
+
+	template <typename T, int dim, int max_dim>
+	struct adl_serializer<RowVector<T, dim, max_dim>>
+	{
+		static void to_json(json &j, const RowVector<T, dim, max_dim> &v)
+		{
+			j = std::vector<T>(v.data(), v.data() + v.size());
+		}
+
+		static void from_json(const json &j, RowVector<T, dim, max_dim> &v)
+		{
+			auto jv = j.get<std::vector<T>>();
+			v = Eigen::Map<Vector<T, dim, max_dim>>(jv.data(), long(jv.size()));
+		}
+	};
+} // namespace nlohmann
