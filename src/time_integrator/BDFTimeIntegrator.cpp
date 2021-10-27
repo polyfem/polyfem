@@ -20,7 +20,7 @@ namespace polyfem
 								 const std::vector<Eigen::VectorXd> &a_prevs,
 								 double dt)
 	{
-		assert(x_prev.size() > 0 && x_prevs.size() <= 6);
+		assert(x_prevs.size() > 0 && x_prevs.size() <= 6);
 		assert(x_prevs.size() == v_prevs.size());
 		assert(x_prevs.size() == a_prevs.size());
 
