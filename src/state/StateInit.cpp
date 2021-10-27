@@ -318,7 +318,7 @@ namespace polyfem
 				logger().info("specified friction_iterations is 0; disabling friction");
 				args["mu"] = 0.0;
 			}
-			else if (args["friction_iterations"] <= 0)
+			else if (args["friction_iterations"] < 0)
 			{
 				args["friction_iterations"] = std::numeric_limits<int>::max();
 			}
