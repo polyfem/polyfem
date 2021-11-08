@@ -9,18 +9,18 @@ PolyFEM
 Compilation
 -----------
 
-All the C++ dependencies required to build the code are included. It should work on Windows, macOS and Linux, and it should build out of the box with CMake:
+All the C++ dependencies required to build the code are included. It should work on Windows, macOS, and Linux, and it should build out-of-the-box with CMake:
 
     mkdir build
     cd build
     cmake ..
     make -j4
 
-On Linux `zenity` is required for the file dialog window to work. On macOS and Windows the native windows are used directly.
+On Linux, `zenity` is required for the file dialog window to work. On macOS and Windows, the native windows are used directly.
 
 
 ### Optional
-The formula for higher order bases are optionally computed at CMake time using an external python script. Consequently, PolyFEM might requires a working installation of Python and some additional packages in order to build correctly:
+The formula for higher-order bases is optionally computed at CMake time using an external python script. Consequently, PolyFEM might requires a working installation of Python and some additional packages to build correctly:
 
 - `numpy` and `sympy` (optional)
 - `quadpy` (optional)
@@ -44,7 +44,7 @@ The full documentation can be found at [https://polyfem.github.io/](https://poly
 License
 -------
 
-The code of PolyFEM itself is licensed under [MIT License](LICENSE). However, please be mindful of third-party libraries which are used by PolyFEM, and may be available under a different license.
+The code of PolyFEM itself is licensed under [MIT License](LICENSE). However, please be mindful of third-party libraries which are used by PolyFEM and may be available under a different license.
 
 Citation
 --------
@@ -88,9 +88,9 @@ If you use PolyFEM in your project, please consider citing our work:
 }
 ```
 
-Acknowledgements & Funding
+Acknowledgments & Funding
 --------
-The software is being developed in the [Geometric Computing Lab](https://cims.nyu.edu/gcl/index.html) at NYU Courant Institute of Mathematical Sciences
+The software is being developed in the [Geometric Computing Lab](https://cims.nyu.edu/gcl/index.html) at NYU Courant Institute of Mathematical Sciences and at the University of Victoria, Canada.
 
 
 This work was partially supported by:
@@ -100,5 +100,6 @@ This work was partially supported by:
 * the NSF grant DMS-1436591
 * the NSF grant 1835712
 * the SNSF grant P2TIP2_175859
+* the NSERC grant DGECR-2021-00461
 * Adobe Research
 * nTopology
