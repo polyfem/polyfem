@@ -90,7 +90,7 @@ If you use PolyFEM in your project, please consider citing our work:
 
 Acknowledgments & Funding
 --------
-The software is being developed in the [Geometric Computing Lab](https://cims.nyu.edu/gcl/index.html) at NYU Courant Institute of Mathematical Sciences and at the University of Victoria, Canada.
+The software is being developed in the [Geometric Computing Lab](https://cims.nyu.edu/gcl/index.html) at NYU Courant Institute of Mathematical Sciences and the University of Victoria, Canada.
 
 
 This work was partially supported by:
@@ -100,6 +100,7 @@ This work was partially supported by:
 * the NSF grant DMS-1436591
 * the NSF grant 1835712
 * the SNSF grant P2TIP2_175859
+* the NSERC grant RGPIN-2021-03707
 * the NSERC grant DGECR-2021-00461
 * Adobe Research
 * nTopology
