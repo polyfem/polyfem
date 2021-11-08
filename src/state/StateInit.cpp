@@ -15,6 +15,9 @@
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
 
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/ostream_sink.h>
 #include <ipc/utils/logger.hpp>
 
 namespace polyfem
@@ -225,30 +228,24 @@ namespace polyfem
 
 	void State::init_logger(const std::string &log_file, int log_level, const bool is_quiet)
 	{
-		Logger::init(!is_quiet, log_file);
-		log_level = std::max(0, std::min(6, log_level));
-		spdlog::set_level(static_cast<spdlog::level::level_enum>(log_level));
+		std::vector<spdlog::sink_ptr> sinks;
+		if (!is_quiet)
+		{
+			sinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
+		}
+		if (!log_file.empty())
+		{
+			sinks.emplace_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>(log_file, /*truncate=*/true));
+		}
+		init_logger(sinks, log_level);
 		spdlog::flush_every(std::chrono::seconds(3));
-
-		GEO::Logger *geo_logger = GEO::Logger::instance();
-		geo_logger->unregister_all_clients();
-		geo_logger->register_client(new GeoLoggerForward(logger().clone("geogram")));
-		geo_logger->set_pretty(false);
-
-		IPC_LOG(set_level(static_cast<spdlog::level::level_enum>(log_level)));
 	}
 
 	void State::init_logger(std::ostream &os, int log_level)
 	{
-		Logger::init(os);
-		log_level = std::max(0, std::min(6, log_level));
-		spdlog::set_level(static_cast<spdlog::level::level_enum>(log_level));
-		spdlog::flush_every(std::chrono::seconds(3));
-
-		GEO::Logger *geo_logger = GEO::Logger::instance();
-		geo_logger->unregister_all_clients();
-		geo_logger->register_client(new GeoLoggerForward(logger().clone("geogram")));
-		geo_logger->set_pretty(false);
+		std::vector<spdlog::sink_ptr> sinks;
+		sinks.emplace_back(std::make_shared<spdlog::sinks::ostream_sink_mt>(os, false));
+		init_logger(sinks, log_level);
 	}
 
 	void State::init_logger(std::vector<spdlog::sink_ptr> &sinks, int log_level)
@@ -261,6 +258,9 @@ namespace polyfem
 		geo_logger->unregister_all_clients();
 		geo_logger->register_client(new GeoLoggerForward(logger().clone("geogram")));
 		geo_logger->set_pretty(false);
+
+		IPC_LOGGER(init(sinks));
+		IPC_LOG(set_level(static_cast<spdlog::level::level_enum>(log_level)));
 	}
 
 	void State::init(const json &p_args_in, const std::string &output_dir)
@@ -318,7 +318,7 @@ namespace polyfem
 				logger().info("specified friction_iterations is 0; disabling friction");
 				args["mu"] = 0.0;
 			}
-			else if (args["friction_iterations"] <= 0)
+			else if (args["friction_iterations"] < 0)
 			{
 				args["friction_iterations"] = std::numeric_limits<int>::max();
 			}

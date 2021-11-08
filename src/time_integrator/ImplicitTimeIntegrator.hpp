@@ -2,6 +2,7 @@
 
 #include <map>
 #include <vector>
+#include <deque>
 
 #include <Eigen/Core>
 #include <nlohmann/json.hpp>
@@ -34,7 +35,17 @@ namespace polyfem
 
 	protected:
 		double _dt;
-		Eigen::VectorXd x_prev, v_prev, a_prev;
-	};
+		// Store the necessary previous values for single or multi-step integration
+		std::deque<Eigen::VectorXd> x_prevs, v_prevs, a_prevs;
 
+		// Convenience functions for getting the most recent previous values
+		Eigen::VectorXd &x_prev() { return x_prevs.front(); }
+		const Eigen::VectorXd &x_prev() const { return x_prevs.front(); }
+
+		Eigen::VectorXd &v_prev() { return v_prevs.front(); }
+		const Eigen::VectorXd &v_prev() const { return v_prevs.front(); }
+
+		Eigen::VectorXd &a_prev() { return a_prevs.front(); }
+		const Eigen::VectorXd &a_prev() const { return a_prevs.front(); }
+	};
 } // namespace polyfem
