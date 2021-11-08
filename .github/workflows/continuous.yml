@@ -3,10 +3,10 @@ name: Build
 on:
   push:
     branches:
-      - master
+      - all
   pull_request:
     branches:
-      - master
+      - all
 
 env:
   CTEST_OUTPUT_ON_FAILURE: ON
