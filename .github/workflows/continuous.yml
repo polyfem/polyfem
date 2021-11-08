@@ -1,12 +1,6 @@
 name: Build
 
-on:
-  push:
-    branches:
-      - all
-  pull_request:
-    branches:
-      - all
+on: [push]
 
 env:
   CTEST_OUTPUT_ON_FAILURE: ON
