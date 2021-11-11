@@ -202,7 +202,7 @@ namespace cppoptlib
 				objFunc.post_step(x);
 
 				polyfem::logger().debug(
-					"[{}] iter={:} f={} ||∇f||={} ||Δx||={} Δx⋅∇f(x)={} g={} tol={} rate={} ||step||={}",
+					"[{}] iter={:} f={} ‖∇f‖={} ‖Δx‖={} Δx⋅∇f(x)={} g={} tol={} rate={} ‖step‖={}",
 					name(), this->m_current.iterations, energy, grad_norm, delta_x_norm, delta_x.dot(grad),
 					this->m_current.gradNorm, this->m_stop.gradNorm, rate, step);
 				++this->m_current.iterations;

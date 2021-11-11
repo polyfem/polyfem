@@ -268,12 +268,10 @@ namespace polyfem
 		const int problem_dim = state.mesh->dimension();
 		displaced.resize(full.size() / problem_dim, problem_dim);
 		assert(displaced.rows() * problem_dim == full.size());
-		for (int i = 0; i < full.size(); i += problem_dim)
+		// Unflatten rowwises, so every problem_dim elements in full become a row
+		for (int i = 0; i < full.size(); ++i)
 		{
-			for (int d = 0; d < problem_dim; ++d)
-			{
-				displaced(i / problem_dim, d) = full(i + d);
-			}
+			displaced(i / problem_dim, i % problem_dim) = full(i);
 		}
 
 		assert(displaced(0, 0) == full(0));
@@ -385,6 +383,19 @@ namespace polyfem
 			state.boundary_triangles, _ccd_tolerance, _ccd_max_iterations);
 
 		return is_valid;
+	}
+
+	bool NLProblem::is_intersection_free(const TVector &x)
+	{
+		if (disable_collision || !state.args["has_collision"])
+			return true;
+
+		Eigen::MatrixXd displaced;
+		reduced_to_full_displaced_points(x, displaced);
+
+		return !ipc::has_intersections(
+			displaced, state.boundary_edges, state.boundary_triangles,
+			[&](size_t vi, size_t vj) { return can_vertices_collide(vi, vj); });
 	}
 
 	bool NLProblem::is_step_valid(const TVector &x0, const TVector &x1)

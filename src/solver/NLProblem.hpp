@@ -37,6 +37,7 @@ namespace polyfem
 		bool is_step_valid(const TVector &x0, const TVector &x1);
 		bool is_step_collision_free(const TVector &x0, const TVector &x1);
 		double max_step_size(const TVector &x0, const TVector &x1);
+		bool is_intersection_free(const TVector &x);
 
 		void line_search_begin(const TVector &x0, const TVector &x1);
 		void line_search_end();
