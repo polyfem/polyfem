@@ -3,7 +3,7 @@
 #include <polyfem/AssemblerUtils.hpp>
 #include <polyfem/Common.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 #include <iostream>
 ////////////////////////////////////////////////////////////////////////////////
 
