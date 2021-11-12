@@ -685,7 +685,7 @@ Eigen::VectorXi polyfem::FEBasis3d::tet_face_local_nodes(const int p, const Mesh
 	if (n_face_nodes == 0)
 	{
 	}
-	if (n_face_nodes == 1)
+	else if (n_face_nodes == 1)
 		result[ii++] = 4 + n_edge_nodes + lf;
 	else // if (n_face_nodes == 3)
 	{
