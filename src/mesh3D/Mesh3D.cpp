@@ -18,7 +18,7 @@ namespace polyfem
 			return;
 		}
 
-		//TODO refine high order mesh!
+		// TODO refine high order mesh!
 		orders_.resize(0, 0);
 		if (mesh_.type == MeshType::Tet)
 		{
@@ -147,7 +147,7 @@ namespace polyfem
 
 		fclose(f);
 
-		//remove horrible kernels and replace with barycenters
+		// remove horrible kernels and replace with barycenters
 		for (int c = 0; c < n_cells(); ++c)
 		{
 			auto bary = cell_barycenter(c);
@@ -261,7 +261,7 @@ namespace polyfem
 			for (int i = 0; i < 1; ++i)
 			{
 				mesh_.elements[i].hex = false;
-			} //FIME me here!
+			} // FIME me here!
 
 			mesh_.type = M.cells.are_simplices() ? MeshType::Tet : MeshType::Hyb;
 		}
@@ -488,7 +488,7 @@ namespace polyfem
 				mesh.elements.push_back(ele_);
 			}
 
-		//save
+		// save
 		std::fstream f(path, std::ios::out);
 
 		f << mesh.points.cols() << " " << mesh.faces.size() << " " << 3 * mesh.elements.size() << std::endl;
@@ -558,7 +558,7 @@ namespace polyfem
 		}
 
 		static const std::vector<int> permute_tet = {0, 1, 2, 3};
-		//polyfem uses the msh file format for hexes ordering!
+		// polyfem uses the msh file format for hexes ordering!
 		static const std::vector<int> permute_hex = {1, 0, 2, 3, 5, 4, 6, 7};
 		const std::vector<int> permute = F.cols() == 4 ? permute_tet : permute_hex;
 
@@ -826,10 +826,10 @@ namespace polyfem
 				std::array<int, 3> vid = {{n.v1, n.v2, n.v3}};
 				std::sort(vid.begin(), vid.end());
 
-				std::array<int, 3> c1 = {{nodes_ids[0], nodes_ids[1], nodes_ids[2]}}; //22
-				std::array<int, 3> c2 = {{nodes_ids[0], nodes_ids[1], nodes_ids[3]}}; //25
-				std::array<int, 3> c3 = {{nodes_ids[0], nodes_ids[2], nodes_ids[3]}}; //28
-				std::array<int, 3> c4 = {{nodes_ids[1], nodes_ids[2], nodes_ids[3]}}; //31
+				std::array<int, 3> c1 = {{nodes_ids[0], nodes_ids[1], nodes_ids[2]}}; // 22
+				std::array<int, 3> c2 = {{nodes_ids[0], nodes_ids[1], nodes_ids[3]}}; // 25
+				std::array<int, 3> c3 = {{nodes_ids[0], nodes_ids[2], nodes_ids[3]}}; // 28
+				std::array<int, 3> c4 = {{nodes_ids[1], nodes_ids[2], nodes_ids[3]}}; // 31
 
 				std::sort(c1.begin(), c1.end());
 				std::sort(c2.begin(), c2.end());
@@ -849,7 +849,7 @@ namespace polyfem
 
 					index0 = 0;
 					index1 = 2;
-					index2 = 1; //ok
+					index2 = 1; // ok
 				}
 				else if (vid == c2)
 				{
@@ -860,7 +860,7 @@ namespace polyfem
 
 					index0 = 0;
 					index1 = 1;
-					index2 = 2; //ok
+					index2 = 2; // ok
 				}
 				else if (vid == c3)
 				{
@@ -871,7 +871,7 @@ namespace polyfem
 
 					index0 = 0;
 					index1 = 2;
-					index2 = 1; //ok
+					index2 = 1; // ok
 				}
 				else if (vid == c4)
 				{
@@ -882,11 +882,11 @@ namespace polyfem
 
 					index0 = 1;
 					index1 = 2;
-					index2 = 0; //ok
+					index2 = 0; // ok
 				}
 				else
 				{
-					//the face nees to be one of the 4 above
+					// the face nees to be one of the 4 above
 					assert(false);
 				}
 
@@ -930,7 +930,7 @@ namespace polyfem
 				orders_(c) = 1;
 				continue;
 			}
-			//P2
+			// P2
 			else if (nodes_ids.size() == 10)
 			{
 				orders_(c) = 2;
@@ -950,7 +950,7 @@ namespace polyfem
 				index = switch_edge(switch_face(index));
 				attach_p2(index, nodes_ids);
 			}
-			//P3
+			// P3
 			else if (nodes_ids.size() == 20)
 			{
 				orders_(c) = 3;
@@ -981,7 +981,7 @@ namespace polyfem
 					attach_p3_face(switch_face(next_around_face(next_around_face(index))), nodes_ids, 16);
 				}
 			}
-			//P4
+			// P4
 			else if (nodes_ids.size() == 35)
 			{
 				orders_(c) = 4;
@@ -1013,7 +1013,7 @@ namespace polyfem
 
 				attach_p4_cell(get_index_from_element(c), nodes_ids);
 			}
-			//unsupported
+			// unsupported
 			else
 			{
 				assert(false);
@@ -1122,7 +1122,7 @@ namespace polyfem
 		}
 		else if (is_cube(index.element))
 		{
-			//supports only blilinear quads
+			// supports only blilinear quads
 			assert(orders_.size() <= 0 || orders_(index.element) == 1);
 
 			const auto v1 = point(index.vertex);
@@ -1142,8 +1142,9 @@ namespace polyfem
 
 	RowVectorNd Mesh3D::cell_node(const Navigation3D::Index &index, const int n_new_nodes, const int i, const int j, const int k) const
 	{
-		if (is_simplex(index.element) && orders_.size() > 0 && orders_(index.element) == 4)
+		if (is_simplex(index.element) && orders_.size() > 0 && orders_(index.element) == n_new_nodes + 3)
 		{
+			assert(n_new_nodes == 1); // test higher than 4 oder meshes
 			const auto &n = cell_nodes_[index.element];
 			assert(n.nodes.rows() == 1);
 			return n.nodes;
@@ -1154,12 +1155,31 @@ namespace polyfem
 
 		if (is_simplex(index.element))
 		{
-			assert(n_new_nodes == 1);
-			return cell_barycenter(index.element);
+			if (n_new_nodes == 1)
+				return cell_barycenter(index.element);
+			else
+			{
+				const auto v1 = point(index.vertex);
+				const auto v2 = point(switch_vertex(index).vertex);
+				const auto v3 = point(switch_vertex(switch_edge(switch_vertex(index))).vertex);
+				const auto v4 = point(switch_vertex(switch_edge(switch_face(index))).vertex);
+
+				const double w1 = double(i) / (n_new_nodes + 3);
+				const double w2 = double(j) / (n_new_nodes + 3);
+				const double w3 = double(k) / (n_new_nodes + 3);
+				const double w4 = 1 - w1 - w2 - w3;
+
+				// return v1 * w3
+				// 	   + v2 * w4
+				// 	   + v3 * w1
+				// 	   + v4 * w2;
+
+				return w4 * v1 + w1 * v2 + w2 * v3 + w3 * v4;
+			}
 		}
 		else if (is_cube(index.element))
 		{
-			//supports only blilinear quads
+			// supports only blilinear hexes
 			assert(orders_.size() <= 0 || orders_(index.element) == 1);
 
 			const auto v1 = point(index.vertex);
@@ -1542,7 +1562,7 @@ namespace polyfem
 		for (auto &t : ele_tag)
 			t = ElementType::RegularInteriorCube;
 
-		//boundary flags
+		// boundary flags
 		std::vector<bool> bv_flag(mesh_.vertices.size(), false), be_flag(mesh_.edges.size(), false), bf_flag(mesh_.faces.size(), false);
 		for (auto f : mesh_.faces)
 			if (f.boundary)
@@ -1593,7 +1613,7 @@ namespace polyfem
 				if (on_boundary)
 				{
 					ele_tag[ele.id] = ElementType::MultiSingularBoundaryCube;
-					//has no boundary edge--> singular
+					// has no boundary edge--> singular
 					bool boundary_edge = false, boundary_edge_singular = false, interior_edge_singular = false;
 					int n_interior_edge_singular = 0;
 					for (auto eid : ele.es)
@@ -1636,7 +1656,7 @@ namespace polyfem
 									nh++;
 							if (nh > 4)
 								has_iregular_v = true;
-							continue; //not sure the conditions
+							continue; // not sure the conditions
 						}
 						else
 						{
@@ -1675,7 +1695,7 @@ namespace polyfem
 					continue;
 				}
 
-				//type 1
+				// type 1
 				bool has_irregular_v = false;
 				for (auto vid : ele.vs)
 					if (mesh_.vertices[vid].neighbor_hs.size() != 8)
@@ -1688,7 +1708,7 @@ namespace polyfem
 					ele_tag[ele.id] = ElementType::RegularInteriorCube;
 					continue;
 				}
-				//type 2
+				// type 2
 				bool has_singular_v = false;
 				int n_irregular_v = 0;
 				for (auto vid : ele.vs)
@@ -1727,7 +1747,7 @@ namespace polyfem
 			}
 		}
 
-		//TODO correct?
+		// TODO correct?
 		for (auto &ele : mesh_.elements)
 		{
 			if (ele.vs.size() == 4)
@@ -1810,19 +1830,19 @@ namespace polyfem
 
 	void Mesh3D::to_face_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 6> &to_face) const
 	{
-		//top
+		// top
 		to_face[0] = [&](Navigation3D::Index idx) { return switch_face(switch_edge(switch_vertex(switch_edge(switch_face(idx))))); };
-		//bottom
+		// bottom
 		to_face[1] = [&](Navigation3D::Index idx) { return idx; };
 
-		//left
+		// left
 		to_face[2] = [&](Navigation3D::Index idx) { return switch_face(switch_edge(switch_vertex(idx))); };
-		//right
+		// right
 		to_face[3] = [&](Navigation3D::Index idx) { return switch_face(switch_edge(idx)); };
 
-		//back
+		// back
 		to_face[4] = [&](Navigation3D::Index idx) { return switch_face(switch_edge(switch_vertex(switch_edge(switch_vertex(idx))))); };
-		//front
+		// front
 		to_face[5] = [&](Navigation3D::Index idx) { return switch_face(idx); };
 	}
 

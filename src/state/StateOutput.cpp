@@ -415,8 +415,8 @@ namespace polyfem
 					}
 					else
 					{
-						std::cout << loc_nodes.size() << std::endl;
-						assert(false);
+						logger().warn("Skipping face as it has {} nodes, boundary export supported up to p4", loc_nodes.size());
+						// assert(false);
 					}
 				}
 			}
@@ -523,7 +523,7 @@ namespace polyfem
 		{
 			const int n_v = boundary_nodes_pos.rows() - obstacle.n_vertices();
 			const int n_e = boundary_edges.rows();
-			//boundary_nodes_pos uses n_bases that already contains the obstacle
+			// boundary_nodes_pos uses n_bases that already contains the obstacle
 			if (obstacle.v().size())
 				boundary_nodes_pos.bottomRows(obstacle.v().rows()) = obstacle.v();
 
@@ -1071,7 +1071,8 @@ namespace polyfem
 						std::swap(elements[i][17], elements[i][18]);
 						std::swap(elements[i][18], elements[i][19]);
 					}
-					//TODO: higher than 3
+					if (disc_orders(i) > 4)
+						logger().warn("not implementd!!!"); // TODO: higher than 3
 				}
 				else
 				{
@@ -1080,9 +1081,12 @@ namespace polyfem
 						const int n_nodes = elements[i].size();
 						std::swap(elements[i][n_nodes - 1], elements[i][n_nodes - 2]);
 					}
+					if (disc_orders(i) > 4)
+						logger().warn("not implementd!!!"); // TODO: higher than 3
 				}
 			}
-			//TODO: hexes
+			else
+				logger().warn("not implementd!!!"); // TODO: hexes
 		}
 
 		assert(pts_index == points.rows());
@@ -1611,7 +1615,7 @@ namespace polyfem
 
 	void State::save_wire(const std::string &name, bool isolines)
 	{
-		if (!solve_export_to_file) //TODO?
+		if (!solve_export_to_file) // TODO?
 			return;
 		const auto &sampler = ref_element_sampler;
 
@@ -1635,7 +1639,7 @@ namespace polyfem
 				pts_total_size += sampler.cube_points().rows();
 				seg_total_size += sampler.cube_edges().rows();
 			}
-			//TODO add edges for poly
+			// TODO add edges for poly
 		}
 
 		Eigen::MatrixXd points(pts_total_size, mesh->dimension());
@@ -1677,7 +1681,7 @@ namespace polyfem
 
 		if (mesh->is_volume())
 		{
-			//reverse all faces
+			// reverse all faces
 			for (long i = 0; i < faces.rows(); ++i)
 			{
 				const int v0 = faces(i, 0);
