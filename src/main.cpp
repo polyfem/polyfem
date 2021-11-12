@@ -116,7 +116,7 @@ int main(int argc, char **argv)
 	command_line.add_flag("--save_incr_load", save_solve_sequence_debug, "Save incremental steps");
 	command_line.add_flag("--lump_mass_mat", lump_mass_mat, "Lump the mass matrix");
 
-	const std::vector<std::string> bc_methods = {"", "sample", "lsq", "integrate"};
+	const std::vector<std::string> bc_methods = {"", "sample", "lsq"}; //, "integrate"};
 	command_line.add_set("--bc_method", bc_method, std::set<std::string>(bc_methods.begin(), bc_methods.end()), "Method used for boundary conditions");
 
 	command_line.add_option("--cache_size", cache_size, "Size of the cached assembly values");
