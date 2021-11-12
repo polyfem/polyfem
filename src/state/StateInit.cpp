@@ -109,7 +109,7 @@ namespace polyfem
 			{"curved_mesh_size", false},
 
 			{"count_flipped_els", false},
-			{"project_to_psd", true},
+			{"project_to_psd", false},
 			{"use_al", false},
 			{"min_component", -1},
 
@@ -289,11 +289,11 @@ namespace polyfem
 
 		if (this->args["has_collision"])
 		{
-			// if (!args_in.contains("project_to_psd"))
-			// {
-			// 	args["project_to_psd"] = true;
-			// 	logger().warn("Changing default project to psd to true");
-			// }
+			if (!args_in.contains("project_to_psd"))
+			{
+				args["project_to_psd"] = true;
+				logger().warn("Changing default project to psd to true");
+			}
 
 			if (!args_in.contains("line_search"))
 			{
@@ -341,7 +341,7 @@ namespace polyfem
 			KernelProblem &kprob = *dynamic_cast<KernelProblem *>(problem.get());
 			kprob.state = this;
 		}
-		//important for the BC
+		// important for the BC
 		problem->set_parameters(args["problem_params"]);
 
 		if (args["use_spline"] && args["n_refs"] == 0)
