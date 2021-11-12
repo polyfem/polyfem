@@ -3,7 +3,7 @@
 #include <polyfem/TriQuadrature.hpp>
 #include <polyfem/FEBasis2d.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 #include <iostream>
 #include <cppoptlib/meta.h>
 #include <cppoptlib/problem.h>

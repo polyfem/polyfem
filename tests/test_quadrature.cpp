@@ -6,7 +6,7 @@
 #include <cmath>
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;

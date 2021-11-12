@@ -36,10 +36,6 @@ endif()
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/recipes/")
 
-if(POLYFEM_TOPLEVEL_PROJECT)
-    list(APPEND CMAKE_MODULE_PATH ${THIRD_PARTY_DIR}/Catch2/contrib)
-endif()
-
 # Color output
 include(UseColors)
 
@@ -306,13 +302,6 @@ if(NOT TARGET tinyxml2)
     add_subdirectory(${THIRD_PARTY_DIR}/tinyxml)
 endif()
 target_link_libraries(polyfem PUBLIC tinyxml2)
-
-# Catch2
-if(POLYFEM_TOPLEVEL_PROJECT)
-    polyfem_download_catch2()
-    add_library(catch INTERFACE)
-    target_include_directories(catch SYSTEM INTERFACE ${THIRD_PARTY_DIR}/Catch2/single_include/catch2)
-endif()
 
 # Filesystem
 include(filesystem)

@@ -47,14 +47,6 @@ function(polyfem_download_geogram)
     )
 endfunction()
 
-## Catch2 BSL 1.0 optional
-function(polyfem_download_catch2)
-    polyfem_download_project(Catch2
-        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-        GIT_TAG        v2.4.2
-    )
-endfunction()
-
 ## CLI11 3-Clause BSD license optional
 function(polyfem_download_cli11)
     polyfem_download_project(cli11

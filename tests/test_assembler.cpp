@@ -1,6 +1,6 @@
 #include <polyfem/State.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 #include <iostream>
 
 using namespace polyfem;

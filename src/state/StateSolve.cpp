@@ -715,12 +715,10 @@ namespace polyfem
 			const int problem_dim = mesh->dimension();
 			Eigen::MatrixXd tmp = boundary_nodes_pos;
 			assert(tmp.rows() * problem_dim == sol.size());
-			for (int i = 0; i < sol.size(); i += problem_dim)
+			// Unflatten rowwises, so every problem_dim elements in full become a row.
+			for (int i = 0; i < sol.size(); ++i)
 			{
-				for (int d = 0; d < problem_dim; ++d)
-				{
-					tmp(i / problem_dim, d) += sol(i + d);
-				}
+				tmp(i / problem_dim, i % problem_dim) += sol(i);
 			}
 
 			if (ipc::has_intersections(tmp, boundary_edges, boundary_triangles, [&](size_t vi, size_t vj) { return !is_obstacle_vertex(vi) || !is_obstacle_vertex(vj); }))
