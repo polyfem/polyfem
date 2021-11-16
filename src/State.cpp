@@ -310,7 +310,7 @@ namespace polyfem
 
 		local_boundary.clear();
 		local_neumann_boundary.clear();
-		std::map<int, InterfaceData> poly_edge_to_data_geom; //temp dummy variable
+		std::map<int, InterfaceData> poly_edge_to_data_geom; // temp dummy variable
 
 		const int base_p = args["discr_order"];
 		disc_orders.setConstant(base_p);
@@ -498,7 +498,7 @@ namespace polyfem
 		use_avg_pressure = !args["has_neumann"];
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 
-		//add a pressure node to avoid singular solution
+		// add a pressure node to avoid singular solution
 		if (assembler.is_mixed(formulation())) // && !assembler.is_fluid(formulation()))
 		{
 			if (!use_avg_pressure)
@@ -681,7 +681,7 @@ namespace polyfem
 
 		// std::sort(boundary_nodes.begin(), boundary_nodes.end());
 
-		//mixed not supports polygonal bases
+		// mixed not supports polygonal bases
 		assert(n_pressure_bases == 0 || poly_edge_to_data.size() == 0);
 
 		int new_bases = 0;
@@ -805,7 +805,7 @@ namespace polyfem
 		}
 		else
 		{
-			if (!args["has_collision"]) //collisions are non-linear
+			if (!args["has_collision"]) // collisions are non-linear
 				assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, stiffness);
 			if (problem->is_time_dependent())
 			{
@@ -939,7 +939,7 @@ namespace polyfem
 				assigning_rhs_time = 0;
 				return;
 			}
-			//Divergence free rhs
+			// Divergence free rhs
 			if (formulation() != "Bilaplacian" || local_neumann_boundary.empty())
 			{
 				rhs.block(prev_size, 0, n_larger, rhs.cols()).setZero();
@@ -1007,20 +1007,23 @@ namespace polyfem
 
 		if (problem->is_time_dependent())
 		{
-			double tend = args["tend"];
 			const double t0 = args["t0"];
-			double dt;
-			int time_steps;
-			if (args.contains("dt")) // Explicit timestep param. has priority
-			{
-				dt = args["dt"];
-				time_steps = int(ceil((tend - t0) / dt));
-			}
-			else
-			{
-				time_steps = args["time_steps"];
+			double tend = args.value("tend", 1); // default=1
+			int time_steps = args["time_steps"]; // default=10 set in State::State()
+			double dt = args.value("dt", tend / time_steps);
+			if (args.contains("tend"))
+				if (args.contains("dt")) // Explicit timestep param. has priority
+					time_steps = int(ceil((tend - t0) / dt));
+				else
+					dt = (tend - t0) / time_steps;
+			else if (args.contains("dt")) // Compute tend from dt and time_steps
+				tend = dt * time_steps + t0;
+			else // Use default tend
 				dt = (tend - t0) / time_steps;
-			}
+			// Store these for possible use later
+			args["tend"] = tend;
+			args["dt"] = dt;
+			args["time_steps"] = time_steps;
 
 			if (tend <= t0)
 			{
@@ -1058,7 +1061,7 @@ namespace polyfem
 							  resolve_output_path(args["export"]["time_sequence"]));
 			}
 		}
-		else //if(!problem->is_time_dependent())
+		else // if(!problem->is_time_dependent())
 		{
 			if (formulation() == "NavierStokes")
 				solve_navier_stokes();

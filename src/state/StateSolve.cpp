@@ -94,7 +94,7 @@ namespace polyfem
 			pressure.resize(0, 0);
 			const int prev_size = sol.size();
 			sol.conservativeResize(rhs.size(), sol.cols());
-			//Zero initial pressure
+			// Zero initial pressure
 			sol.block(prev_size, 0, n_pressure_bases, sol.cols()).setZero();
 			sol(sol.size() - 1) = 0;
 		}
@@ -348,7 +348,7 @@ namespace polyfem
 
 			if (assembler.is_mixed(formulation()))
 			{
-				//divergence free
+				// divergence free
 				int fluid_offset = use_avg_pressure ? (assembler.is_fluid(formulation()) ? 1 : 0) : 0;
 				current_rhs.block(current_rhs.rows() - n_pressure_bases - use_avg_pressure, 0, n_pressure_bases + use_avg_pressure, current_rhs.cols()).setZero();
 			}
@@ -414,7 +414,7 @@ namespace polyfem
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 		const int precond_num = problem_dim * n_bases;
 
-		//Newmark
+		// Newmark
 		const double gamma = 0.5;
 		const double beta = 0.25;
 		// makes the algorithm implicit and equivalent to the trapezoidal rule (unconditionally stable).
@@ -783,8 +783,18 @@ namespace polyfem
 			logger().debug("Lagging iteration 1");
 		}
 
+		// Check for zero displacement to avoid CCD (assuming no initial intersections)
+		bool is_initial_displacement_zero;
+		{
+			VectorXd full_tmp_sol, full_sol;
+			nl_problem.reduced_to_full(tmp_sol, full_tmp_sol);
+			nl_problem.reduced_to_full(sol, full_sol);
+			is_initial_displacement_zero = (full_tmp_sol - full_sol).lpNorm<Eigen::Infinity>() == 0.0;
+		}
+
 		nl_problem.line_search_begin(sol, tmp_sol);
-		while (!std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
+		while (!std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol)
+			   || (!is_initial_displacement_zero && !nl_problem.is_step_collision_free(sol, tmp_sol)))
 		{
 			nl_problem.line_search_end();
 			alnl_problem.set_weight(al_weight);
@@ -981,7 +991,7 @@ namespace polyfem
 
 		// if (args["use_al"] || args["has_collision"])
 		// {
-		//FD
+		// FD
 		{
 			// 	ALNLProblem nl_problem(*this, rhs_assembler, 1, args["dhat"], false, 1e6);
 			// 	tmp_sol = rhs;
@@ -1046,7 +1056,7 @@ namespace polyfem
 		nl_problem.update_lagging(sol, /*start_of_timestep=*/true);
 		alnl_problem.update_lagging(sol, /*start_of_timestep=*/true);
 
-		//TODO: maybe add linear solver here?
+		// TODO: maybe add linear solver here?
 
 		solver_info = json::array();
 

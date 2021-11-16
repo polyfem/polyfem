@@ -122,7 +122,7 @@ namespace cppoptlib
 					m_error_code = ErrorCode::NanEncountered;
 					break;
 				}
-				this->m_current.fDelta = 1; //std::abs(old_energy - energy) / std::abs(old_energy);
+				this->m_current.fDelta = 1; // std::abs(old_energy - energy) / std::abs(old_energy);
 
 				// If the gradient norm is really small we found a minimum
 				if (!use_gradient_norm && !use_gradient_descent && grad_norm > 1e-13)
@@ -196,7 +196,7 @@ namespace cppoptlib
 					polyfem::logger().debug("Objective decided to stop");
 				}
 
-				//if(rate >= 1 && next_hessian == this->m_current.iterations)
+				// if(rate >= 1 && next_hessian == this->m_current.iterations)
 				//	next_hessian += 2;
 
 				objFunc.post_step(x);

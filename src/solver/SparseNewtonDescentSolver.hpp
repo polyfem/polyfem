@@ -135,7 +135,7 @@ namespace cppoptlib
 			{
 				if (this->use_gradient_descent)
 				{
-					polyfem::logger().warn(
+					polyfem::logger().error(
 						"[{}] (iter={}) ||step||={} is too small; stopping",
 						name(), this->m_current.iterations, step);
 					this->m_status = Status::UserDefined;
@@ -143,7 +143,7 @@ namespace cppoptlib
 				}
 				else
 				{
-					polyfem::logger().debug(
+					polyfem::logger().warn(
 						"[{}] (iter={}) ||step||={} is too small; trying gradient descent",
 						name(), this->m_current.iterations, step);
 					this->use_gradient_descent = true;

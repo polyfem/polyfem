@@ -122,7 +122,6 @@ namespace polyfem
 			{"friction_convergence_tol", 1e-2},
 
 			{"t0", 0},
-			{"tend", 1},
 			{"time_steps", 10},
 			{"skip_frame", 1},
 			{"time_integrator", "ImplicitEuler"},
