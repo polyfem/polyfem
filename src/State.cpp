@@ -1130,7 +1130,7 @@ namespace polyfem
 		// Eigen::MatrixXd err_per_el(n_el, 5);
 		ElementAssemblyValues vals;
 
-		const double tend = args["tend"];
+		const double tend = args.value("tend", 1.0); // default=1
 
 		for (int e = 0; e < n_el; ++e)
 		{

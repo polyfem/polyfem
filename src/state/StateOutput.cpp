@@ -775,7 +775,7 @@ namespace polyfem
 			out.close();
 		}
 
-		const double tend = args["tend"];
+		const double tend = args.value("tend", 1.0); // default=1
 
 		if (!vis_mesh_path.empty())
 		{

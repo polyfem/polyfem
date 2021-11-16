@@ -1253,7 +1253,7 @@ namespace polyfem
 		{
 			return;
 		}
-		const double tend = state.args["tend"];
+		const double tend = state.args.value("tend", 1.0); // default=1
 
 		if (visible_visualizations(Visualizations::Error) && !available_visualizations[Visualizations::Error])
 		{

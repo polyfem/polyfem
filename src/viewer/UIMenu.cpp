@@ -151,8 +151,8 @@ void polyfem::UIState::draw_settings()
 
 	// ImGui::InputInt("b", &state.n_boundary_samples);
 
-	//ImGui::InputFloat("lambda", &state.lambda, 0, 0, 3);
-	//ImGui::InputFloat("mu", &state.mu, 0, 0, 3);
+	// ImGui::InputFloat("lambda", &state.lambda, 0, 0, 3);
+	// ImGui::InputFloat("mu", &state.mu, 0, 0, 3);
 	int n_refs = state.args["n_refs"];
 	ImGui::InputInt("refs", &n_refs);
 	state.args["n_refs"] = n_refs;
@@ -614,7 +614,7 @@ void polyfem::UIState::draw_screenshot()
 	float p = ImGui::GetStyle().FramePadding.x;
 	if (ImGui::Button("Save VTU", ImVec2((w - p) / 2.f, 0)))
 	{
-		const double tend = state.args["tend"];
+		const double tend = state.args.value("tend", 1.0); // default=1
 
 		state.save_vtu("result.vtu", tend);
 	}
