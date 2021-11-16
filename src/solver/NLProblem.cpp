@@ -363,6 +363,14 @@ namespace polyfem
 		reduced_to_full_displaced_points(x0, displaced0);
 		reduced_to_full_displaced_points(x1, displaced1);
 
+		// Skip CCD if the displacement is zero.
+		if ((displaced1 - displaced0).lpNorm<Eigen::Infinity>() == 0.0)
+		{
+			// Assumes initially intersection-free
+			assert(is_intersection_free(x0));
+			return true;
+		}
+
 		// if (displaced0.cols() == 3)
 		// {
 		// 	igl::write_triangle_mesh("0.obj", displaced0, state.boundary_triangles);
@@ -507,7 +515,7 @@ namespace polyfem
 
 	void NLProblem::gradient_no_rhs(const TVector &x, Eigen::MatrixXd &grad, const bool only_elastic)
 	{
-		//scaling * (elastic_energy + body_energy) + intertia_energy + _barrier_stiffness * collision_energy;
+		// scaling * (elastic_energy + body_energy) + intertia_energy + _barrier_stiffness * collision_energy;
 
 		TVector full;
 		if (x.size() == reduced_size)
@@ -615,7 +623,7 @@ namespace polyfem
 
 	void NLProblem::hessian_full(const TVector &x, THessian &hessian)
 	{
-		//scaling * (elastic_energy + body_energy) + intertia_energy + _barrier_stiffness * collision_energy;
+		// scaling * (elastic_energy + body_energy) + intertia_energy + _barrier_stiffness * collision_energy;
 
 		TVector full;
 		{

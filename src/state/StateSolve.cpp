@@ -783,18 +783,8 @@ namespace polyfem
 			logger().debug("Lagging iteration 1");
 		}
 
-		// Check for zero displacement to avoid CCD (assuming no initial intersections)
-		bool is_initial_displacement_zero;
-		{
-			VectorXd full_tmp_sol, full_sol;
-			nl_problem.reduced_to_full(tmp_sol, full_tmp_sol);
-			nl_problem.reduced_to_full(sol, full_sol);
-			is_initial_displacement_zero = (full_tmp_sol - full_sol).lpNorm<Eigen::Infinity>() == 0.0;
-		}
-
 		nl_problem.line_search_begin(sol, tmp_sol);
-		while (!std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol)
-			   || (!is_initial_displacement_zero && !nl_problem.is_step_collision_free(sol, tmp_sol)))
+		while (!std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
 		{
 			nl_problem.line_search_end();
 			alnl_problem.set_weight(al_weight);

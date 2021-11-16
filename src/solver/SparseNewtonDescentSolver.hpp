@@ -163,7 +163,7 @@ namespace cppoptlib
 			Superclass::update_solver_info();
 
 			this->solver_info["internal_solver"] = internal_solver_info;
-			this->solver_info["internal_solver_first"] = internal_solver_info.front();
+			this->solver_info["internal_solver_first"] = internal_solver_info.size() ? internal_solver_info.front() : json(nullptr);
 		}
 
 		static bool has_hessian_nans(const polyfem::StiffnessMatrix &hessian)

@@ -1008,8 +1008,8 @@ namespace polyfem
 		if (problem->is_time_dependent())
 		{
 			const double t0 = args["t0"];
-			double tend = args.value("tend", 1); // default=1
-			int time_steps = args["time_steps"]; // default=10 set in State::State()
+			double tend = args.value("tend", 1.0); // default=1
+			int time_steps = args["time_steps"];   // default=10 set in State::State()
 			double dt = args.value("dt", tend / time_steps);
 			if (args.contains("tend"))
 				if (args.contains("dt")) // Explicit timestep param. has priority
