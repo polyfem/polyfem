@@ -84,14 +84,8 @@ namespace polyfem
 		else
 			_broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
 
-		if (state.args["solver_params"].contains("ccd_tolerance"))
-			_ccd_tolerance = state.args["solver_params"]["ccd_tolerance"];
-		else
-			_ccd_tolerance = 1e-6;
-		if (state.args["solver_params"].contains("ccd_max_iterations"))
-			_max_ccd_max_iterations = state.args["solver_params"]["ccd_max_iterations"];
-		else
-			_max_ccd_max_iterations = 1e6;
+		_ccd_tolerance = state.args["solver_params"].value("ccd_tolerance", 1e-6);
+		_max_ccd_max_iterations = state.args["solver_params"].value("ccd_max_iterations", 1e6);
 
 		_ccd_max_iterations = _max_ccd_max_iterations;
 	}
