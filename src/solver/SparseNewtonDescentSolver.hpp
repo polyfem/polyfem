@@ -135,18 +135,20 @@ namespace cppoptlib
 			{
 				if (this->use_gradient_descent)
 				{
-					polyfem::logger().error(
-						"[{}] (iter={}) ||step||={} is too small; stopping",
-						name(), this->m_current.iterations, step);
-					this->m_status = Status::UserDefined;
-					this->m_error_code = Superclass::ErrorCode::StepTooSmall;
+					// How did this not converge then?
+					// polyfem::logger().error(
+					// 	"[{}] (iter={}) ||step||={} is too small; stopping",
+					// 	name(), this->m_current.iterations, step);
+					// this->m_status = Status::UserDefined;
+					// this->m_error_code = Superclass::ErrorCode::StepTooSmall;
 				}
 				else
 				{
-					polyfem::logger().warn(
-						"[{}] (iter={}) ||step||={} is too small; trying gradient descent",
-						name(), this->m_current.iterations, step);
-					this->use_gradient_descent = true;
+					// Switching to gradient descent in this case will ruin quadratic convergence so don't.
+					// polyfem::logger().warn(
+					// 	"[{}] (iter={}) ||step||={} is too small; trying gradient descent",
+					// 	name(), this->m_current.iterations, step);
+					// this->use_gradient_descent = true;
 				}
 			}
 			else
