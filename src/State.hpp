@@ -182,6 +182,7 @@ namespace polyfem
 		//this is currently supported only for tri and tet meshes
 		Eigen::MatrixXd boundary_nodes_pos;
 		Eigen::MatrixXd boundary_nodes_pos_pressure;
+		Eigen::VectorXi codimensional_nodes;
 		Eigen::MatrixXi boundary_edges;
 		Eigen::MatrixXi boundary_edges_pressure;
 		Eigen::MatrixXi boundary_triangles;

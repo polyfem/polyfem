@@ -21,7 +21,7 @@ namespace polyfem
 
 		in_f_.resize(0, 0);
 		in_e_.resize(0, 0);
-		in_v_.resize(0, 0);
+		in_v_.resize(0);
 
 		displacements_.clear();
 		displacements_interpolation_.clear();
@@ -98,8 +98,11 @@ namespace polyfem
 
 		if (codim_vertices.size())
 		{
-			in_v_.conservativeResize(in_v_.rows() + codim_vertices.rows(), 1);
-			in_v_.bottomRows(codim_vertices.rows()) = codim_vertices.array() + v_.rows();
+			codim_v_.conservativeResize(codim_v_.size() + codim_vertices.size());
+			codim_v_.tail(codim_vertices.size()) = codim_vertices.array() + v_.rows();
+
+			in_v_.conservativeResize(in_v_.size() + codim_vertices.size());
+			in_v_.tail(codim_vertices.size()) = codim_vertices.array() + v_.rows();
 		}
 
 		if (codim_edges.size())

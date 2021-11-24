@@ -123,9 +123,9 @@ namespace polyfem
 		compute_displaced_points(full, displaced);
 
 		ipc::construct_constraint_set(
-			state.boundary_nodes_pos, displaced, state.boundary_edges,
+			state.boundary_nodes_pos, displaced, state.codimensional_nodes, state.boundary_edges,
 			state.boundary_triangles, _dhat, _constraint_set, state.boundary_faces_to_edges,
-			/*dmin=*/0, _broad_phase_method, _ignore_codimensional_vertices,
+			/*dmin=*/0, _broad_phase_method,
 			[&](size_t vi, size_t vj) { return can_vertices_collide(vi, vj); });
 		Eigen::VectorXd grad_barrier = ipc::compute_barrier_potential_gradient(
 			displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat);
@@ -153,9 +153,9 @@ namespace polyfem
 		if (_mu != 0)
 		{
 			ipc::construct_constraint_set(
-				state.boundary_nodes_pos, displaced, state.boundary_edges,
-				state.boundary_triangles, _dhat, _constraint_set, state.boundary_faces_to_edges,
-				/*dmin=*/0, _broad_phase_method, _ignore_codimensional_vertices,
+				state.boundary_nodes_pos, displaced, state.codimensional_nodes, state.boundary_edges,
+				state.boundary_triangles, _dhat, _constraint_set,
+				state.boundary_faces_to_edges, /*dmin=*/0, _broad_phase_method,
 				[&](size_t vi, size_t vj) { return can_vertices_collide(vi, vj); });
 			ipc::construct_friction_constraint_set(
 				displaced, state.boundary_edges, state.boundary_triangles,
@@ -296,11 +296,10 @@ namespace polyfem
 		reduced_to_full_displaced_points(x1, displaced1);
 
 		ipc::construct_collision_candidates(
-			displaced0, displaced1, state.boundary_edges,
+			displaced0, displaced1, state.codimensional_nodes, state.boundary_edges,
 			state.boundary_triangles, _candidates,
 			/*inflation_radius=*/_dhat / 1.99, // divide by 1.99 instead of 2 to be conservative
-			_broad_phase_method, _ignore_codimensional_vertices,
-			[&](size_t vi, size_t vj) { return can_vertices_collide(vi, vj); });
+			_broad_phase_method, [&](size_t vi, size_t vj) { return can_vertices_collide(vi, vj); });
 	}
 
 	void NLProblem::line_search_end()
@@ -716,8 +715,9 @@ namespace polyfem
 				_dhat, _constraint_set, state.boundary_faces_to_edges);
 		else
 			ipc::construct_constraint_set(
-				state.boundary_nodes_pos, displaced, state.boundary_edges, state.boundary_triangles, _dhat, _constraint_set,
-				state.boundary_faces_to_edges, /*dmin=*/0, _broad_phase_method, _ignore_codimensional_vertices,
+				state.boundary_nodes_pos, displaced, state.codimensional_nodes,
+				state.boundary_edges, state.boundary_triangles, _dhat, _constraint_set,
+				state.boundary_faces_to_edges, /*dmin=*/0, _broad_phase_method,
 				[&](size_t vi, size_t vj) { return can_vertices_collide(vi, vj); });
 	}
 

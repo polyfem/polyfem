@@ -178,7 +178,6 @@ namespace polyfem
 		Eigen::MatrixXd displaced_prev; ///< @brief Displaced vertices at the start of the time-step.
 
 		ipc::BroadPhaseMethod _broad_phase_method;
-		bool _ignore_codimensional_vertices = true;
 		double _ccd_tolerance;
 		int _ccd_max_iterations, _max_ccd_max_iterations;
 
