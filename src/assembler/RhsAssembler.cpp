@@ -120,54 +120,85 @@ namespace polyfem
 		const int n_elements = int(bases_.size());
 		ElementAssemblyValues vals;
 		Eigen::MatrixXi ids;
-		for (int e = 0; e < n_elements; ++e)
+
+		if (bc_method_ == "sample")
 		{
-			vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
-			ids.resize(vals.val.rows(), 1);
-			ids.setConstant(e);
-
-			const Quadrature &quadrature = vals.quadrature;
-			//problem_.initial_solution(vals.val, loc_sol);
-			fun(mesh_, ids, vals.val, loc_sol);
-
-			for (int d = 0; d < size_; ++d)
-				loc_sol.col(d) = loc_sol.col(d).array() * vals.det.array() * quadrature.weights.array();
-
-			const int n_loc_bases_ = int(vals.basis_values.size());
-			for (int i = 0; i < n_loc_bases_; ++i)
+			for (int e = 0; e < n_elements; ++e)
 			{
-				const AssemblyValues &v = vals.basis_values[i];
+				const ElementBases &bs = bases_[e];
+				vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
+				ids.resize(1, 1);
+				ids.setConstant(e);
 
-				for (int d = 0; d < size_; ++d)
+				for (long i = 0; i < bs.bases.size(); ++i)
 				{
-					const double sol_value = (loc_sol.col(d).array() * v.val.array()).sum();
-					for (std::size_t ii = 0; ii < v.global.size(); ++ii)
-						sol(v.global[ii].index * size_ + d) += sol_value * v.global[ii].val;
+					const auto &b = bs.bases[i];
+					const auto &glob = b.global();
+					assert(glob.size() == 1);
+					for (size_t ii = 0; ii < glob.size(); ++ii)
+					{
+						fun(mesh_, ids, glob[ii].node, loc_sol);
+
+						for (int d = 0; d < size_; ++d)
+						{
+							sol(glob[ii].index * size_ + d) = loc_sol(d) * glob[ii].val;
+						}
+					}
 				}
 			}
 		}
-
-		Eigen::MatrixXd b = sol;
-		sol.setZero();
-
-		const double mmin = b.minCoeff();
-		const double mmax = b.maxCoeff();
-
-		if (fabs(mmin) > 1e-8 || fabs(mmax) > 1e-8)
+		else
 		{
-			StiffnessMatrix mass;
-			Density d;
-			assembler_.assemble_mass_matrix(formulation_, size_ == 3, n_basis_, d, bases_, gbases_, ass_vals_cache_, mass);
-			auto solver = LinearSolver::create(solver_, preconditioner_);
-			solver->setParameters(solver_params_);
-			solver->analyzePattern(mass, mass.rows());
-			solver->factorize(mass);
 
-			for (long i = 0; i < b.cols(); ++i)
+			for (int e = 0; e < n_elements; ++e)
 			{
-				solver->solve(b.col(i), sol.col(i));
+				vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
+				ids.resize(vals.val.rows(), 1);
+				ids.setConstant(e);
+
+				const Quadrature &quadrature = vals.quadrature;
+				//problem_.initial_solution(vals.val, loc_sol);
+				fun(mesh_, ids, vals.val, loc_sol);
+
+				for (int d = 0; d < size_; ++d)
+					loc_sol.col(d) = loc_sol.col(d).array() * vals.det.array() * quadrature.weights.array();
+
+				const int n_loc_bases_ = int(vals.basis_values.size());
+				for (int i = 0; i < n_loc_bases_; ++i)
+				{
+					const AssemblyValues &v = vals.basis_values[i];
+
+					for (int d = 0; d < size_; ++d)
+					{
+						const double sol_value = (loc_sol.col(d).array() * v.val.array()).sum();
+						for (std::size_t ii = 0; ii < v.global.size(); ++ii)
+							sol(v.global[ii].index * size_ + d) += sol_value * v.global[ii].val;
+					}
+				}
 			}
-			logger().trace("mass matrix error {}", (mass * sol - b).norm());
+
+			Eigen::MatrixXd b = sol;
+			sol.setZero();
+
+			const double mmin = b.minCoeff();
+			const double mmax = b.maxCoeff();
+
+			if (fabs(mmin) > 1e-8 || fabs(mmax) > 1e-8)
+			{
+				StiffnessMatrix mass;
+				Density d;
+				assembler_.assemble_mass_matrix(formulation_, size_ == 3, n_basis_, d, bases_, gbases_, ass_vals_cache_, mass);
+				auto solver = LinearSolver::create(solver_, preconditioner_);
+				solver->setParameters(solver_params_);
+				solver->analyzePattern(mass, mass.rows());
+				solver->factorize(mass);
+
+				for (long i = 0; i < b.cols(); ++i)
+				{
+					solver->solve(b.col(i), sol.col(i));
+				}
+				logger().trace("mass matrix error {}", (mass * sol - b).norm());
+			}
 		}
 	}
 
