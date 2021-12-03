@@ -129,7 +129,7 @@ jobs:
           ccache -V && ccache --show-stats && ccache --zero-stats
 
       - name: Configure x86
-        if: ${{ matrix.arc }} == 'x86'
+        if: matrix.arc == 'x86'
         run: |
           mkdir -p build
           cd build
@@ -139,8 +139,9 @@ jobs:
             -DPOLYFEM_WITH_MISC=ON \
             -DPOLYFEM_WITH_CLIPPER=OFF \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
+
       - name: Configure arm64
-        if: ${{ matrix.arc }} == 'arm64'
+        if: matrix.arc == 'arm64'
         run: |
           mkdir -p build
           cd build
@@ -156,11 +157,11 @@ jobs:
         run: cd build; make -j2; ccache --show-stats
 
       - name: Tests
-        if: ${{ matrix.arc }} == 'x86' # no ARM vm on actions yet
+        if: matrix.arc == 'x86' # no ARM vm on actions yet
         run: cd build; ctest --verbose --output-on-failure
 
       - name: Runner
-        if: ${{ matrix.arc }} == 'x86' # no ARM vm on actions yet
+        if: matrix.arc == 'x86' # no ARM vm on actions yet
         run: |
           cd build
           ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --sform Laplacian
