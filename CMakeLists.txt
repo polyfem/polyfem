@@ -110,6 +110,13 @@ option(POLYSOLVE_WITH_AMGCL            "Use AMGCL"                         ON)
 option(POLYSOLVE_WITH_SPECTRA          "Enable computing spectrum"         OFF)
 option(POLYSOLVE_LARGE_INDEX           "Build for large indices"           OFF)
 
+if(CMAKE_OSX_ARCHITECTURES STREQUAL arm64)
+    set(POLYSOLVE_WITH_CHOLMOD    OFF CACHE BOOL "Enable Cholmod library"  FORCE)
+    set(POLYSOLVE_WITH_UMFPACK    OFF CACHE BOOL "Enable UmfPack library"  FORCE)
+    set(POLYSOLVE_WITH_SUPERLU    OFF CACHE BOOL "Enable SuperLU library"  FORCE)
+    set(POLYSOLVE_WITH_MKL        OFF CACHE BOOL "Enable MKL library"      FORCE)
+endif()
+
 
 # Options for libigl modules
 option(LIBIGL_USE_STATIC_LIBRARY          "Use libigl as static library" OFF)
