@@ -48,8 +48,10 @@ namespace polyfem
 		//utulity function that computes energy, the template is used for double, DScalar1, and DScalar2 in energy, gradient and hessian
 		template <typename T>
 		T compute_energy_aux(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const;
-		double compute_energy_aux_test(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da, Eigen::Matrix<double, Eigen::Dynamic, 1> &G_flattened, Eigen::MatrixXd &H) const;
-		double compute_energy_aux_gradient_test(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da, Eigen::Matrix<double, Eigen::Dynamic, 1> &G_flattened) const;
+		template <int n_basis, int dim>
+		double compute_energy_aux_test(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da, Eigen::MatrixXd &H) const;
+		template <int n_basis, int dim>
+		double compute_energy_aux_gradient_test(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da, Eigen::VectorXd &G_flattened) const;
 
 		void assign_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const;
 	};

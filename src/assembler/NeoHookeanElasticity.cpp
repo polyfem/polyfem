@@ -1,4 +1,5 @@
 // #define EIGEN_STACK_ALLOCATION_LIMIT 0
+# define EIGEN_NO_DEBUG
 
 #include <polyfem/NeoHookeanElasticity.hpp>
 
@@ -7,6 +8,7 @@
 
 #include <polyfem/MatrixUtils.hpp>
 #include <igl/Timer.h>
+
 
 namespace polyfem
 {
@@ -75,66 +77,133 @@ namespace polyfem
 	Eigen::VectorXd
 	NeoHookeanElasticity::assemble_grad(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
 	{
-		// const int n_bases = vals.basis_values.size();
+		Eigen::Matrix<double, Eigen::Dynamic, 1> gradient;
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1> gradient(size()*(size()+1));
-		Eigen::MatrixXd hessian(size()*(size()+1),size()*(size()+1));
-		hessian.setZero();
-		// if (size()==2) {
-		// 	Eigen::VectorXd gradient(6);
-		// 	Eigen::MatrixXd hessian(6,6);	
-		// }
-		// else if (size()==3) {
-		// 	Eigen::VectorXd gradient(12);
-		// 	Eigen::MatrixXd hessian(12,12);	
-		// }
-		
-		// double energy = compute_energy_aux_gradient_test(vals, displacement, da, gradient);
-		// return gradient;
+		if (size()==2) {
+			if (vals.basis_values.size() == 3) {
+				gradient.resize(6);
+				double energy = compute_energy_aux_gradient_test<3, 2>(vals, displacement, da, gradient);
+			}
+			else if (vals.basis_values.size() == 6) {
+				gradient.resize(12);
+				double energy = compute_energy_aux_gradient_test<6, 2>(vals, displacement, da, gradient);
+			}
+			else if (vals.basis_values.size() == 10) {
+				gradient.resize(20);
+				double energy = compute_energy_aux_gradient_test<10, 2>(vals, displacement, da, gradient);
+			}
+			// else {
+			// 	// Eigen::Matrix<double, Eigen::Dynamic, 1> gradient;
+			// 	// Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> hessian;
+			// 	// hessian.setZero();
+			// 	double energy = compute_energy_aux_test<-1, 2>(vals, displacement, da, hessian);
+			// 	return hessian;
+			// }
+		}
 
-		double energy = compute_energy_aux_test(vals, displacement, da, gradient, hessian);
+		if (size()==3) {
+			if (vals.basis_values.size() == 4) {
+				gradient.resize(12);
+				double energy = compute_energy_aux_gradient_test<4, 3>(vals, displacement, da, gradient);
+			}
+			else if (vals.basis_values.size() == 10) {
+				gradient.resize(30);
+				double energy = compute_energy_aux_gradient_test<10, 3>(vals, displacement, da, gradient);
+			}
+			else if (vals.basis_values.size() == 20) {
+				gradient.resize(60);
+				double energy = compute_energy_aux_gradient_test<20, 3>(vals, displacement, da, gradient);
+			}
+			// else {
+			// 	// Eigen::Matrix<double, Eigen::Dynamic, 1> gradient;
+			// 	// Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> hessian;
+			// 	// hessian.setZero();
+			// 	double energy = compute_energy_aux_test<-1, 3>(vals, displacement, da, hessian);
+			// 	return hessian;
+			// }
+		}
+
 		return gradient;
-	}
-
-	Eigen::MatrixXd
-	NeoHookeanElasticity::assemble_hessian(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
-	{
-		const int n_bases = vals.basis_values.size();
-		return polyfem::hessian_from_energy(
-			size(), n_bases, vals, displacement, da,
-			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 6, 1>, Eigen::Matrix<double, 6, 6>>>(vals, displacement, da); },
-			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 8, 1>, Eigen::Matrix<double, 8, 8>>>(vals, displacement, da); },
-			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 12, 1>, Eigen::Matrix<double, 12, 12>>>(vals, displacement, da); },
-			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 18, 1>, Eigen::Matrix<double, 18, 18>>>(vals, displacement, da); },
-			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 24, 1>, Eigen::Matrix<double, 24, 24>>>(vals, displacement, da); },
-			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 30, 1>, Eigen::Matrix<double, 30, 30>>>(vals, displacement, da); },
-			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 60, 1>, Eigen::Matrix<double, 60, 60>>>(vals, displacement, da); },
-			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 81, 1>, Eigen::Matrix<double, 81, 81>>>(vals, displacement, da); },
-			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, SMALL_N, SMALL_N>>>(vals, displacement, da); },
-			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>>(vals, displacement, da); });
 	}
 
 	// Eigen::MatrixXd
 	// NeoHookeanElasticity::assemble_hessian(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
 	// {
-	// 	Eigen::Matrix<double, Eigen::Dynamic, 1> gradient(size()*(size()+1));
-	// 	Eigen::MatrixXd hessian(size()*(size()+1),size()*(size()+1));
-	// 	hessian.setZero();
-	// 	// if (size()==2) {
-	// 	// 	Eigen::VectorXd gradient(6);
-	// 	// 	Eigen::MatrixXd hessian(6,6);	
-	// 	// }
-	// 	// else if (size()==3) {
-	// 	// 	Eigen::VectorXd gradient(12);
-	// 	// 	Eigen::MatrixXd hessian(12,12);	
-	// 	// }
-		
-	// 	// double energy = compute_energy_aux_gradient_test(vals, displacement, da, gradient);
-	// 	// return gradient;
-
-	// 	double energy = compute_energy_aux_test(vals, displacement, da, gradient, hessian);
-	// 	return hessian;
+	// 	const int n_bases = vals.basis_values.size();
+	// 	return polyfem::hessian_from_energy(
+	// 		size(), n_bases, vals, displacement, da,
+	// 		[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 6, 1>, Eigen::Matrix<double, 6, 6>>>(vals, displacement, da); },
+	// 		[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 8, 1>, Eigen::Matrix<double, 8, 8>>>(vals, displacement, da); },
+	// 		[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 12, 1>, Eigen::Matrix<double, 12, 12>>>(vals, displacement, da); },
+	// 		[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 18, 1>, Eigen::Matrix<double, 18, 18>>>(vals, displacement, da); },
+	// 		[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 24, 1>, Eigen::Matrix<double, 24, 24>>>(vals, displacement, da); },
+	// 		[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 30, 1>, Eigen::Matrix<double, 30, 30>>>(vals, displacement, da); },
+	// 		[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 60, 1>, Eigen::Matrix<double, 60, 60>>>(vals, displacement, da); },
+	// 		[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 81, 1>, Eigen::Matrix<double, 81, 81>>>(vals, displacement, da); },
+	// 		[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, SMALL_N, SMALL_N>>>(vals, displacement, da); },
+	// 		[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>>(vals, displacement, da); });
 	// }
+
+	Eigen::MatrixXd
+	NeoHookeanElasticity::assemble_hessian(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
+	{
+		Eigen::MatrixXd hessian;
+		// hessian.setZero();
+
+		if (size()==2) {
+			if (vals.basis_values.size() == 3) {
+				hessian.resize(6, 6);
+				hessian.setZero();
+				// double energy = compute_energy_aux_test<3, 2>(vals, displacement, da, hessian);
+			}
+			else if (vals.basis_values.size() == 6) {
+				hessian.resize(12, 12);
+				hessian.setZero();
+				// double energy = compute_energy_aux_test<6, 2>(vals, displacement, da, hessian);
+			}
+			else if (vals.basis_values.size() == 10) {
+				hessian.resize(20, 20);
+				hessian.setZero();
+				// double energy = compute_energy_aux_test<10, 2>(vals, displacement, da, hessian);
+			}
+			// else {
+			// 	// Eigen::Matrix<double, Eigen::Dynamic, 1> gradient;
+			// 	// Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> hessian;
+			// 	// hessian.setZero();
+			// 	double energy = compute_energy_aux_test<-1, 2>(vals, displacement, da, hessian);
+			// 	return hessian;
+			// }
+		}
+
+		if (size()==3) {
+			if (vals.basis_values.size() == 4) {
+				// Eigen::Matrix<double, 12, 12> hessian1;
+				hessian.resize(12, 12);
+				hessian.setZero();
+				double energy = compute_energy_aux_test<4, 3>(vals, displacement, da, hessian);
+				// return hessian;
+			}
+			else if (vals.basis_values.size() == 10) {
+				hessian.resize(30, 30);
+				hessian.setZero();
+				// double energy = compute_energy_aux_test<10, 3>(vals, displacement, da, hessian);
+			}
+			else if (vals.basis_values.size() == 20) {
+				hessian.resize(60, 60);
+				hessian.setZero();
+				// double energy = compute_energy_aux_test<20, 3>(vals, displacement, da, hessian);
+			}
+			// else {
+			// 	// Eigen::Matrix<double, Eigen::Dynamic, 1> gradient;
+			// 	// Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> hessian;
+			// 	// hessian.setZero();
+			// 	double energy = compute_energy_aux_test<-1, 3>(vals, displacement, da, hessian);
+			// 	return hessian;
+			// }
+		}
+
+		return hessian;
+	}
 
 	void NeoHookeanElasticity::compute_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
 	{
@@ -270,29 +339,10 @@ namespace polyfem
 		return energy;
 	}
 
-	Eigen::VectorXd cross(Eigen::VectorXd &u, Eigen::VectorXd &v) {
+	template <int dim>
+	Eigen::Matrix<double, dim, dim> hat(Eigen::Matrix<double, dim, 1> x) {
 
-		Eigen::Matrix<double, 3, 1> prod;
-		prod(0) = u(1)*v(2) - u(2)*v(1);
-		prod(1) = u(2)*v(0) - u(0)*v(2);
-		prod(2) = u(0)*v(1) - u(1)*v(0);
-
-		return prod;
-	}
-
-	Eigen::Matrix<double, 3, 1> cross(Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> &u, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> &v) {
-
-		Eigen::Matrix<double, 3, 1> prod;
-		prod(0) = u(1)*v(2) - u(2)*v(1);
-		prod(1) = u(2)*v(0) - u(0)*v(2);
-		prod(2) = u(0)*v(1) - u(1)*v(0);
-
-		return prod;
-	}
-
-	Eigen::MatrixXd hat(Eigen::VectorXd &x) {
-
-		Eigen::Matrix<double, 3, 3> prod;
+		Eigen::Matrix<double, dim, dim> prod;
 		prod.setZero();
 
 		prod(0,1) = -1*x(2);
@@ -305,22 +355,20 @@ namespace polyfem
 		return prod;
 	}
 
-	Eigen::Matrix<double, 3, 3> hat(Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> &x) {
+	template <int dim>
+	Eigen::Matrix<double, dim, 1> cross(Eigen::Matrix<double, dim, 1> x, Eigen::Matrix<double, dim, 1> y) {
 
-		Eigen::Matrix<double, 3, 3> prod;
-		prod.setZero();
+		Eigen::Matrix<double, dim, 1> z;
+		z.setZero();
 
-		prod(0,1) = -1*x(2);
-		prod(0,2) = x(1);
-		prod(1,0) = x(2);
-		prod(1,2) = -1*x(0);
-		prod(2,0) = -1*x(1);
-		prod(2,1) = x(0);
+		z(0) = x(1)*y(2) - x(2)*y(1);
+		z(1) = x(2)*y(0) - x(0)*y(2);
+		z(2) = x(0)*y(1) - x(1)*y(0);
 
-		return prod;
+		return z;
 	}
 
-
+	template <int n_basis, int dim>
 	double NeoHookeanElasticity::compute_energy_aux_gradient_test(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da, Eigen::Matrix<double, Eigen::Dynamic, 1> &G_flattened) const
 	{
 
@@ -328,7 +376,7 @@ namespace polyfem
 
 		const int n_pts = da.size();
 
-		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, Eigen::Dynamic, 3> local_disp(vals.basis_values.size(), size());
+		Eigen::Matrix<double, n_basis, dim> local_disp(vals.basis_values.size(), size());
 		local_disp.setZero();
 		for (size_t i = 0; i < vals.basis_values.size(); ++i)
 		{
@@ -344,29 +392,29 @@ namespace polyfem
 
 		double energy = 0.0;
 
-		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> def_grad(size(), size());
+		Eigen::Matrix<double, dim, dim> def_grad(size(), size());
 
-		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, Eigen::Dynamic, 3> G(size() + 1, size());
+		Eigen::Matrix<double, n_basis, dim> G(vals.basis_values.size(), size());
 		G.setZero();
 
 		for (long p = 0; p < n_pts; ++p)
 		{
-			Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, Eigen::Dynamic, 3> grad(vals.basis_values.size(), size());
+			Eigen::Matrix<double, n_basis, dim> grad(vals.basis_values.size(), size());
 
 			for (size_t i = 0; i < vals.basis_values.size(); ++i)
 			{
 				 grad.row(i) = vals.basis_values[i].grad.row(p);
 			}
 
-			Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, Eigen::Dynamic> jac_it = vals.jac_it[p];
+			Eigen::Matrix<double, dim, dim> jac_it = vals.jac_it[p];
 
 			//Id + grad d
-			def_grad = local_disp.transpose()*grad*jac_it + Eigen::MatrixXd::Identity(size(), size());
+			def_grad = local_disp.transpose()*grad*jac_it + Eigen::Matrix<double, dim, dim>::Identity(size(), size());
 
 			const double J = def_grad.determinant();
 			const double log_det_j = log(J);
 
-			Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> delJ_delF(size(),size());
+			Eigen::Matrix<double, dim, dim> delJ_delF(size(),size());
 			delJ_delF.setZero();
 			
 			if(size() == 2) {
@@ -377,15 +425,19 @@ namespace polyfem
 				delJ_delF(1,1) = def_grad(0,0);
 			}
 
-			else if(size() == 3) {
+			else if(dim == 3) {
 
-				Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> u(def_grad.rows()); 
-				Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> v(def_grad.rows());
-				Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> w(def_grad.rows());
+				Eigen::Matrix<double, dim, 1> u(def_grad.rows()); 
+				Eigen::Matrix<double, dim, 1> v(def_grad.rows());
+				Eigen::Matrix<double, dim, 1> w(def_grad.rows());
 
 				u = def_grad.col(0);
 				v = def_grad.col(1);
 				w = def_grad.col(2);
+
+				// delJ_delF.col(0) = v.cross(w);
+				// delJ_delF.col(1) = w.cross(u);
+				// delJ_delF.col(2) = u.cross(v);
 
 				delJ_delF.col(0) = cross(v, w);
 				delJ_delF.col(1) = cross(w, u);
@@ -396,40 +448,36 @@ namespace polyfem
 			double lambda, mu;
 			params_.lambda_mu(vals.val(p, 0), vals.val(p, 1), size_ == 2 ? 0. : vals.val(p, 2), vals.element_id, lambda, mu);
 
-			Eigen::MatrixXd delF_delU = grad*jac_it;
+			Eigen::Matrix<double, n_basis, dim> delF_delU = grad*jac_it;
 
-			Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, Eigen::Dynamic, 3> gradient = mu*def_grad - mu*(1/J)*delJ_delF + lambda*log_det_j*(1/J)*delJ_delF;
-			gradient = delF_delU*gradient.transpose();
+			Eigen::Matrix<double, dim, dim> gradient_temp = mu*def_grad - mu*(1/J)*delJ_delF + lambda*log_det_j*(1/J)*delJ_delF;
+			Eigen::Matrix<double, n_basis, dim> gradient = delF_delU*gradient_temp.transpose();
 
-			// std::cout<<"log_det_j: "<<log_det_j<<"\n";
 			double val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * log_det_j) + lambda / 2 * log_det_j * log_det_j;
 		
-			G += gradient * da(p);
-			// H.noalias() += hessian * da(p);
+			G.noalias() += gradient * da(p);
 			energy += val * da(p);
 		}
-		// std::cout<<"H: "<<H<<"\n";
-		// std::cout<<"G: "<<G<<"\n";
 
-		G.transposeInPlace();
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, Eigen::Dynamic, 1> temp(Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, 1, 0, Eigen::Dynamic, 1>>(G.data(), G.size()));
+		Eigen::Matrix<double, dim, n_basis> G_T = G.transpose();
+		Eigen::Matrix<double, n_basis*dim, 1> temp(Eigen::Map<Eigen::Matrix<double, n_basis*dim, 1>>(G_T.data(), G_T.size()));
 		G_flattened = temp;
 
 		return energy;
 	}
 
 
-
-	double NeoHookeanElasticity::compute_energy_aux_test(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da, Eigen::Matrix<double, Eigen::Dynamic, 1> &G_flattened, Eigen::MatrixXd &H) const
+	template <int n_basis, int dim>
+	double NeoHookeanElasticity::compute_energy_aux_test(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da, Eigen::MatrixXd &H) const
 	{
-		// typedef Eigen::Matrix<T, Eigen::Dynamic, 1> AutoDiffVect;
-		// typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
-
 		assert(displacement.cols() == 1);
+
+		Eigen::Matrix<double, dim*n_basis, dim*n_basis> H_temp;
+		H_temp.setZero();
 
 		const int n_pts = da.size();
 
-		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, Eigen::Dynamic, 3> local_disp(vals.basis_values.size(), size());
+		Eigen::Matrix<double, n_basis, dim> local_disp(vals.basis_values.size(), size());
 		local_disp.setZero();
 		for (size_t i = 0; i < vals.basis_values.size(); ++i)
 		{
@@ -445,32 +493,32 @@ namespace polyfem
 
 		double energy = 0.0;
 
-		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> def_grad(size(), size());
+		Eigen::Matrix<double, dim, dim> def_grad(size(), size());
 
 		// Might be some issue in the size of G
-		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, Eigen::Dynamic, 3> G(size()+1, size());
+		Eigen::Matrix<double, n_basis, dim> G(vals.basis_values.size(), size());
 		G.setZero();
 
 		for (long p = 0; p < n_pts; ++p)
 		{
-			Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, Eigen::Dynamic, 3> grad(vals.basis_values.size(), size());
+			Eigen::Matrix<double, n_basis, dim> grad(vals.basis_values.size(), size());
 
 			for (size_t i = 0; i < vals.basis_values.size(); ++i)
 			{
 				 grad.row(i) = vals.basis_values[i].grad.row(p);
 			}
 
-			Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, Eigen::Dynamic> jac_it = vals.jac_it[p];
+			Eigen::Matrix<double, dim, dim> jac_it = vals.jac_it[p];
 
 			//Id + grad d
-			def_grad = local_disp.transpose()*grad*jac_it + Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>::Identity(size(), size());
+			def_grad = local_disp.transpose()*grad*jac_it + Eigen::Matrix<double, dim, dim>::Identity(size(), size());
 
 			const double J = def_grad.determinant();
 			double log_det_j = log(J);
 
-			Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> delJ_delF(size(), size());
+			Eigen::Matrix<double, dim, dim> delJ_delF(size(), size());
 			delJ_delF.setZero();
-			Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9> del2J_delF2(size()*size(), size()*size());
+			Eigen::Matrix<double, dim*dim, dim*dim> del2J_delF2(size()*size(), size()*size());
 			del2J_delF2.setZero();
 			
 			if(size() == 2) {
@@ -487,75 +535,69 @@ namespace polyfem
 			}
 
 			else if(size() == 3) {
-
-				Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> u(def_grad.rows()); 
-				Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> v(def_grad.rows());
-				Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> w(def_grad.rows());
-
-				// delJ_delF = Eigen::MatrixXd::Zero(3, 3);
-				// del2J_delF2 = Eigen::MatrixXd::Zero(9,9);
+				Eigen::Matrix<double, dim, 1> u(def_grad.rows()); 
+				Eigen::Matrix<double, dim, 1> v(def_grad.rows());
+				Eigen::Matrix<double, dim, 1> w(def_grad.rows());
 
 				u = def_grad.col(0);
 				v = def_grad.col(1);
 				w = def_grad.col(2);
 
+				// delJ_delF.col(0) = v.cross(w);
+				// delJ_delF.col(1) = w.cross(u);
+				// delJ_delF.col(2) = u.cross(v);
+
 				delJ_delF.col(0) = cross(v, w);
 				delJ_delF.col(1) = cross(w, u);
 				delJ_delF.col(2) = cross(u, v);
 
-				del2J_delF2.block<3,3>(0,6) = hat(v);
-				del2J_delF2.block<3,3>(6,0) = -1*hat(v);
-				del2J_delF2.block<3,3>(0,3) = -1*hat(w);
-				del2J_delF2.block<3,3>(3,0) = hat(w);
-				del2J_delF2.block<3,3>(3,6) = -1*hat(u);
-				del2J_delF2.block<3,3>(6,3) = hat(u);
+				del2J_delF2.template block<dim,dim>(0,6) = hat<dim>(v);
+				del2J_delF2.template block<dim,dim>(6,0) = -1*hat<dim>(v);
+				del2J_delF2.template block<dim,dim>(0,3) = -1*hat<dim>(w);
+				del2J_delF2.template block<dim,dim>(3,0) = hat<dim>(w);
+				del2J_delF2.template block<dim,dim>(3,6) = -1*hat<dim>(u);
+				del2J_delF2.template block<dim,dim>(6,3) = hat<dim>(u);
 			}
 
 			double lambda, mu;
 			params_.lambda_mu(vals.val(p, 0), vals.val(p, 1), size_ == 2 ? 0. : vals.val(p, 2), vals.element_id, lambda, mu);
 
-			const Eigen::MatrixXd delF_delU = grad*jac_it;
+			// const Eigen::Matrix<double, dim, dim> delF_delU = grad*jac_it;
 
-			Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, Eigen::Dynamic, 3> gradient = mu*def_grad - mu*(1/J)*delJ_delF + lambda*log_det_j*(1/J)*delJ_delF;
+			// Eigen::Matrix<double, dim, dim> gradient = mu*def_grad - mu*(1/J)*delJ_delF + lambda*log_det_j*(1/J)*delJ_delF;
 			// Eigen::MatrixXd gradient = mu*def_grad - mu*(1/J)*delJ_delF + lambda*log_det_j*(1/J)*delJ_delF;
-			gradient = delF_delU*gradient.transpose();
+			// gradient = delF_delU*gradient.transpose();
 
-			Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9> id = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9>::Identity(del2J_delF2.rows(), del2J_delF2.cols());
+			Eigen::Matrix<double, dim*dim, dim*dim> id = Eigen::Matrix<double, dim*dim, dim*dim>::Identity(size()*size(), size()*size());
 
 			delJ_delF.transposeInPlace();
-			Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> g_j = Eigen::Map<const Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>>(delJ_delF.data(), delJ_delF.size());
+			Eigen::Matrix<double, dim*dim, 1> g_j = Eigen::Map<const Eigen::Matrix<double, dim*dim, 1>>(delJ_delF.data(), delJ_delF.size());
 
-			Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9> hessian_temp = (mu*id) + (((mu+lambda*(1-log(J)))/(J*J))*(g_j*g_j.transpose())) + (((lambda*log(J)-mu)/(J))*del2J_delF2);
+			Eigen::Matrix<double, dim*dim, dim*dim> hessian_temp = (mu*id) + (((mu+lambda*(1-log(J)))/(J*J))*(g_j*g_j.transpose())) + (((lambda*log(J)-mu)/(J))*del2J_delF2);
 
-			Eigen::MatrixXd delF_delU_tensor(grad.size(), jac_it.size());
+			Eigen::Matrix<double, n_basis*dim, dim*dim> delF_delU_tensor(grad.size(), jac_it.size());
 
 			for (size_t i = 0; i < local_disp.rows(); ++i) {
 				for (size_t j = 0; j < local_disp.cols(); ++j) {
-
-					Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, Eigen::Dynamic> temp(jac_it.rows(), jac_it.cols());
+					Eigen::Matrix<double, dim, dim> temp(size(), size());
 					temp.setZero();
 					temp.row(j) = grad.row(i);
 					temp = temp*jac_it;
 					temp.transposeInPlace();
-					Eigen::Matrix<double, Eigen::Dynamic, 1, 0, Eigen::Dynamic, 1> temp_flattened(Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, 1, 0, Eigen::Dynamic, 1>>(temp.data(), temp.size()));
+					Eigen::Matrix<double, dim*dim, 1> temp_flattened(Eigen::Map<Eigen::Matrix<double, dim*dim, 1>>(temp.data(), temp.size()));
 					delF_delU_tensor.row(i * size() + j) = temp_flattened;
 				}
 			}
 
-			const Eigen::MatrixXd hessian = delF_delU_tensor * hessian_temp * delF_delU_tensor.transpose();
-			// Eigen::SparseMatrix<double> hessian = hessian_dense.sparseView();
+			Eigen::Matrix<double, n_basis*dim, n_basis*dim> hessian = delF_delU_tensor * hessian_temp * delF_delU_tensor.transpose();
 
-			// std::cout<<"log_det_j: "<<log_det_j<<"\n";
 			double val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * log_det_j) + lambda / 2 * log_det_j * log_det_j;
 		
-			G.noalias() += gradient * da(p);
-			H.noalias() += hessian * da(p);
+			// G.noalias() += gradient * da(p);
+			H_temp.noalias() += hessian * da(p);
 			energy += val * da(p);
 		}
-		// std::cout<<"H: "<<H<<"\n";
-		G.transposeInPlace();
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, Eigen::Dynamic, 1> temp(Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, 1>>(G.data(), G.size()));
-		G_flattened = temp;
+		H = H_temp;
 
 		return energy;
 	}
