@@ -163,6 +163,8 @@ namespace polyfem
 		StiffnessMatrix cached_stiffness;
 		SpareMatrixCache mat_cache;
 
+		bool ignore_inertia;
+
 		const int full_size, reduced_size;
 		double t;
 		bool rhs_computed;

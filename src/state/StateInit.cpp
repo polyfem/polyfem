@@ -117,6 +117,7 @@ namespace polyfem
 			{"dhat", 1e-3},
 			{"dhat_percentage", 0.8},
 			{"force_al", false},
+			{"ignore_inertia", false},
 			{"epsv", 1e-3},
 			{"mu", 0.0},
 			{"friction_iterations", 1},

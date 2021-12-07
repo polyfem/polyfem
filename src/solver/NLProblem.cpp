@@ -57,7 +57,7 @@ namespace polyfem
 		: state(state), assembler(state.assembler), rhs_assembler(rhs_assembler),
 		  full_size((assembler.is_mixed(state.formulation()) ? state.n_pressure_bases : 0) + state.n_bases * state.mesh->dimension()),
 		  reduced_size(full_size - (no_reduced ? 0 : state.boundary_nodes.size())),
-		  t(t), rhs_computed(false), is_time_dependent(state.problem->is_time_dependent()), project_to_psd(project_to_psd)
+		  t(t), rhs_computed(false), is_time_dependent(state.problem->is_time_dependent()), ignore_inertia(state.args["ignore_inertia"]), project_to_psd(project_to_psd)
 	{
 		assert(!assembler.is_mixed(state.formulation()));
 
@@ -111,7 +111,7 @@ namespace polyfem
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 		assembler.assemble_energy_gradient(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, state.ass_vals_cache, full, grad_energy);
 
-		if (is_time_dependent)
+		if (!ignore_inertia && is_time_dependent)
 		{
 			grad_energy *= time_integrator->acceleration_scaling();
 			grad_energy += state.mass * full;
@@ -196,7 +196,8 @@ namespace polyfem
 	{
 		if (is_time_dependent)
 		{
-			time_integrator->update_quantities(x);
+			if (!ignore_inertia)
+				time_integrator->update_quantities(x);
 
 			// rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, t);
 			// rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, t);
@@ -239,7 +240,7 @@ namespace polyfem
 			assert(_current_rhs.size() == full_size);
 			rhs_assembler.set_bc(std::vector<LocalBoundary>(), std::vector<int>(), state.args["n_boundary_samples"], state.local_neumann_boundary, _current_rhs, t);
 
-			if (is_time_dependent)
+			if (!ignore_inertia && is_time_dependent)
 			{
 				_current_rhs *= time_integrator->acceleration_scaling();
 				_current_rhs += state.mass * time_integrator->x_tilde();
@@ -431,7 +432,7 @@ namespace polyfem
 
 		double intertia_energy = 0;
 		double scaling = 1;
-		if (is_time_dependent)
+		if (!ignore_inertia && is_time_dependent)
 		{
 			scaling = time_integrator->acceleration_scaling();
 			const TVector tmp = full - time_integrator->x_tilde();
@@ -520,7 +521,7 @@ namespace polyfem
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 		assembler.assemble_energy_gradient(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, state.ass_vals_cache, full, grad);
 
-		if (is_time_dependent)
+		if (!ignore_inertia && is_time_dependent)
 		{
 			grad *= time_integrator->acceleration_scaling();
 			grad += state.mass * full;
@@ -643,14 +644,14 @@ namespace polyfem
 				assembler.assemble_energy_hessian(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, project_to_psd, state.bases, gbases, state.ass_vals_cache, full, mat_cache, energy_hessian);
 			}
 
-			if (is_time_dependent)
+			if (!ignore_inertia && is_time_dependent)
 			{
 				energy_hessian *= time_integrator->acceleration_scaling();
 			}
 		}
 
 		THessian inertia_hessian(full_size, full_size);
-		if (is_time_dependent)
+		if (!ignore_inertia && is_time_dependent)
 		{
 			POLYFEM_SCOPED_TIMER_NO_GLOBAL("\tinertia hessian time {}s");
 			inertia_hessian = state.mass;
