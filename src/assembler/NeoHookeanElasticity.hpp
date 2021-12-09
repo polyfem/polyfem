@@ -22,6 +22,7 @@ namespace polyfem
 		//energy, gradient, and hessian used in newton method
 		Eigen::MatrixXd assemble_hessian(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const;
 		Eigen::VectorXd assemble_grad(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const;
+
 		double compute_energy(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const;
 
 		//rhs for fabbricated solution, compute with automatic sympy code
@@ -47,6 +48,10 @@ namespace polyfem
 		//utulity function that computes energy, the template is used for double, DScalar1, and DScalar2 in energy, gradient and hessian
 		template <typename T>
 		T compute_energy_aux(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const;
+		template <int n_basis, int dim>
+		double compute_energy_aux_fast(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da, Eigen::MatrixXd &H) const;
+		template <int n_basis, int dim>
+		double compute_energy_aux_gradient_fast(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da, Eigen::VectorXd &G_flattened) const;
 
 		void assign_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const;
 	};
