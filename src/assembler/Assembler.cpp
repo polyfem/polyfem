@@ -166,10 +166,10 @@ namespace polyfem
 											const auto gj = global_j[jj].index * local_assembler_.size() + n;
 											const auto wj = global_j[jj].val;
 
-											local_storage.cache.add_value(gi, gj, local_value * wi * wj);
+											local_storage.cache.add_value(e, gi, gj, local_value * wi * wj);
 											if (j < i)
 											{
-												local_storage.cache.add_value(gj, gi, local_value * wj * wi);
+												local_storage.cache.add_value(e, gj, gi, local_value * wj * wi);
 											}
 
 											if (local_storage.cache.entries_size() >= 1e8)
@@ -289,7 +289,7 @@ namespace polyfem
 										const auto gj = global_j[jj].index * local_assembler_.rows() + n;
 										const auto wj = global_j[jj].val;
 
-										local_storage.cache.add_value(gj, gi, local_value * wi * wj);
+										local_storage.cache.add_value(e, gj, gi, local_value * wi * wj);
 
 										if (local_storage.cache.entries_size() >= 1e8)
 										{
@@ -486,7 +486,7 @@ namespace polyfem
 										const auto gj = global_j[jj].index * local_assembler_.size() + n;
 										const auto wj = global_j[jj].val;
 
-										local_storage.cache.add_value(gi, gj, local_value * wi * wj);
+										local_storage.cache.add_value(e, gi, gj, local_value * wi * wj);
 										// if (j < i) {
 										// 	local_storage.entries.emplace_back(gj, gi, local_value * wj * wi);
 										// }
