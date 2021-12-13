@@ -53,145 +53,184 @@ namespace polyfem
 		return res;
 	}
 
-	// Eigen::VectorXd
-	// NeoHookeanElasticity::assemble_grad(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
-	// {
-	// 	const int n_bases = vals.basis_values.size();
-
-	// 	return polyfem::gradient_from_energy(
-	// 		size(), n_bases, vals, displacement, da,
-	// 		[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 6, 1>>>(vals, displacement, da); },
-	// 		[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 8, 1>>>(vals, displacement, da); },
-	// 		[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 12, 1>>>(vals, displacement, da); },
-	// 		[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 18, 1>>>(vals, displacement, da); },
-	// 		[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 24, 1>>>(vals, displacement, da); },
-	// 		[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 30, 1>>>(vals, displacement, da); },
-	// 		[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 60, 1>>>(vals, displacement, da); },
-	// 		[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 81, 1>>>(vals, displacement, da); },
-	// 		[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>>>(vals, displacement, da); },
-	// 		[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, BIG_N, 1>>>(vals, displacement, da); },
-	// 		[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::VectorXd>>(vals, displacement, da); });
-	// }
-
 	Eigen::VectorXd
 	NeoHookeanElasticity::assemble_grad(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
 	{
-		Eigen::Matrix<double, Eigen::Dynamic, 1> gradient;
+		const int n_bases = vals.basis_values.size();
 
-		if (size() == 2)
-		{
-			if (vals.basis_values.size() == 3)
-			{
-				gradient.resize(6);
-				double energy = compute_energy_aux_gradient_fast<3, 2>(vals, displacement, da, gradient);
-			}
-			else if (vals.basis_values.size() == 6)
-			{
-				gradient.resize(12);
-				double energy = compute_energy_aux_gradient_fast<6, 2>(vals, displacement, da, gradient);
-			}
-			else if (vals.basis_values.size() == 10)
-			{
-				gradient.resize(20);
-				double energy = compute_energy_aux_gradient_fast<10, 2>(vals, displacement, da, gradient);
-			}
-			else
-			{
-				double energy = compute_energy_aux_gradient_fast<-1, 2>(vals, displacement, da, gradient);
-				return gradient;
-			}
-		}
-
-		if (size() == 3)
-		{
-			if (vals.basis_values.size() == 4)
-			{
-				gradient.resize(12);
-				double energy = compute_energy_aux_gradient_fast<4, 3>(vals, displacement, da, gradient);
-			}
-			else if (vals.basis_values.size() == 10)
-			{
-				gradient.resize(30);
-				double energy = compute_energy_aux_gradient_fast<10, 3>(vals, displacement, da, gradient);
-			}
-			else if (vals.basis_values.size() == 20)
-			{
-				gradient.resize(60);
-				double energy = compute_energy_aux_gradient_fast<20, 3>(vals, displacement, da, gradient);
-			}
-			else
-			{
-				double energy = compute_energy_aux_gradient_fast<-1, 3>(vals, displacement, da, gradient);
-				return gradient;
-			}
-		}
-
-		return gradient;
+		return polyfem::gradient_from_energy(
+			size(), n_bases, vals, displacement, da,
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 6, 1>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 8, 1>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 12, 1>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 18, 1>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 24, 1>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 30, 1>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 60, 1>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 81, 1>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, BIG_N, 1>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::VectorXd>>(vals, displacement, da); });
 	}
 
 	Eigen::MatrixXd
 	NeoHookeanElasticity::assemble_hessian(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
 	{
-		Eigen::MatrixXd hessian;
+		// igl::Timer time; time.start();
 
-		if (size() == 2)
-		{
-			if (vals.basis_values.size() == 3)
-			{
-				hessian.resize(6, 6);
-				hessian.setZero();
-				double energy = compute_energy_aux_fast<3, 2>(vals, displacement, da, hessian);
-			}
-			else if (vals.basis_values.size() == 6)
-			{
-				hessian.resize(12, 12);
-				hessian.setZero();
-				double energy = compute_energy_aux_fast<6, 2>(vals, displacement, da, hessian);
-			}
-			else if (vals.basis_values.size() == 10)
-			{
-				hessian.resize(20, 20);
-				hessian.setZero();
-				double energy = compute_energy_aux_fast<10, 2>(vals, displacement, da, hessian);
-			}
-			else
-			{
-				hessian.setZero();
-				double energy = compute_energy_aux_fast<-1, 2>(vals, displacement, da, hessian);
-				return hessian;
-			}
-		}
+		const int n_bases = vals.basis_values.size();
+		return polyfem::hessian_from_energy(
+			size(), n_bases, vals, displacement, da,
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 6, 1>, Eigen::Matrix<double, 6, 6>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 8, 1>, Eigen::Matrix<double, 8, 8>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 12, 1>, Eigen::Matrix<double, 12, 12>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 18, 1>, Eigen::Matrix<double, 18, 18>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 24, 1>, Eigen::Matrix<double, 24, 24>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 30, 1>, Eigen::Matrix<double, 30, 30>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 60, 1>, Eigen::Matrix<double, 60, 60>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 81, 1>, Eigen::Matrix<double, 81, 81>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, SMALL_N, SMALL_N>>>(vals, displacement, da); },
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>>(vals, displacement, da); });
 
-		if (size() == 3)
-		{
-			if (vals.basis_values.size() == 4)
-			{
-				hessian.resize(12, 12);
-				hessian.setZero();
-				double energy = compute_energy_aux_fast<4, 3>(vals, displacement, da, hessian);
-			}
-			else if (vals.basis_values.size() == 10)
-			{
-				hessian.resize(30, 30);
-				hessian.setZero();
-				double energy = compute_energy_aux_fast<10, 3>(vals, displacement, da, hessian);
-			}
-			else if (vals.basis_values.size() == 20)
-			{
-				hessian.resize(60, 60);
-				hessian.setZero();
-				double energy = compute_energy_aux_fast<20, 3>(vals, displacement, da, hessian);
-			}
-			else
-			{
-				hessian.setZero();
-				double energy = compute_energy_aux_fast<-1, 3>(vals, displacement, da, hessian);
-				return hessian;
-			}
-		}
+		// Eigen::MatrixXd hessian;
+		// hessian.resize(12, 12);
+		// hessian.setZero();
+		// compute_energy_aux_fast<4, 3>(vals, displacement, da, hessian);
+		// bool bad = false;
+		// for (int i = 0; i < hessian.size(); ++i)
+		// {
+		// 	if (fabs(HHH(i) - hessian(i)) > 1e-10)
+		// 	{
+		// 		std::cout << HHH(i) << " " << hessian(i) << " " << fabs(HHH(i) - hessian(i)) << std::endl;
+		// 		bad = true;
+		// 	}
+		// }
 
-		return hessian;
+		// if (bad)
+		// 	exit(0);
+
+		// return HHH;
 	}
+
+	// Eigen::VectorXd
+	// NeoHookeanElasticity::assemble_grad(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
+	// {
+	// 	Eigen::Matrix<double, Eigen::Dynamic, 1> gradient;
+
+	// 	if (size() == 2)
+	// 	{
+	// 		if (vals.basis_values.size() == 3)
+	// 		{
+	// 			gradient.resize(6);
+	// 			double energy = compute_energy_aux_gradient_fast<3, 2>(vals, displacement, da, gradient);
+	// 		}
+	// 		else if (vals.basis_values.size() == 6)
+	// 		{
+	// 			gradient.resize(12);
+	// 			double energy = compute_energy_aux_gradient_fast<6, 2>(vals, displacement, da, gradient);
+	// 		}
+	// 		else if (vals.basis_values.size() == 10)
+	// 		{
+	// 			gradient.resize(20);
+	// 			double energy = compute_energy_aux_gradient_fast<10, 2>(vals, displacement, da, gradient);
+	// 		}
+	// 		else
+	// 		{
+	// 			double energy = compute_energy_aux_gradient_fast<-1, 2>(vals, displacement, da, gradient);
+	// 			return gradient;
+	// 		}
+	// 	}
+
+	// 	if (size() == 3)
+	// 	{
+	// 		if (vals.basis_values.size() == 4)
+	// 		{
+	// 			gradient.resize(12);
+	// 			double energy = compute_energy_aux_gradient_fast<4, 3>(vals, displacement, da, gradient);
+	// 		}
+	// 		else if (vals.basis_values.size() == 10)
+	// 		{
+	// 			gradient.resize(30);
+	// 			double energy = compute_energy_aux_gradient_fast<10, 3>(vals, displacement, da, gradient);
+	// 		}
+	// 		else if (vals.basis_values.size() == 20)
+	// 		{
+	// 			gradient.resize(60);
+	// 			double energy = compute_energy_aux_gradient_fast<20, 3>(vals, displacement, da, gradient);
+	// 		}
+	// 		else
+	// 		{
+	// 			double energy = compute_energy_aux_gradient_fast<-1, 3>(vals, displacement, da, gradient);
+	// 			return gradient;
+	// 		}
+	// 	}
+
+	// 	return gradient;
+	// }
+
+	// Eigen::MatrixXd
+	// NeoHookeanElasticity::assemble_hessian(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
+	// {
+	// 	Eigen::MatrixXd hessian;
+
+	// 	if (size() == 2)
+	// 	{
+	// 		if (vals.basis_values.size() == 3)
+	// 		{
+	// 			hessian.resize(6, 6);
+	// 			hessian.setZero();
+	// 			double energy = compute_energy_aux_fast<3, 2>(vals, displacement, da, hessian);
+	// 		}
+	// 		else if (vals.basis_values.size() == 6)
+	// 		{
+	// 			hessian.resize(12, 12);
+	// 			hessian.setZero();
+	// 			double energy = compute_energy_aux_fast<6, 2>(vals, displacement, da, hessian);
+	// 		}
+	// 		else if (vals.basis_values.size() == 10)
+	// 		{
+	// 			hessian.resize(20, 20);
+	// 			hessian.setZero();
+	// 			double energy = compute_energy_aux_fast<10, 2>(vals, displacement, da, hessian);
+	// 		}
+	// 		else
+	// 		{
+	// 			hessian.setZero();
+	// 			double energy = compute_energy_aux_fast<-1, 2>(vals, displacement, da, hessian);
+	// 			return hessian;
+	// 		}
+	// 	}
+
+	// 	if (size() == 3)
+	// 	{
+	// 		if (vals.basis_values.size() == 4)
+	// 		{
+	// 			hessian.resize(12, 12);
+	// 			hessian.setZero();
+	// 			double energy = compute_energy_aux_fast<4, 3>(vals, displacement, da, hessian);
+	// 		}
+	// 		else if (vals.basis_values.size() == 10)
+	// 		{
+	// 			hessian.resize(30, 30);
+	// 			hessian.setZero();
+	// 			double energy = compute_energy_aux_fast<10, 3>(vals, displacement, da, hessian);
+	// 		}
+	// 		else if (vals.basis_values.size() == 20)
+	// 		{
+	// 			hessian.resize(60, 60);
+	// 			hessian.setZero();
+	// 			double energy = compute_energy_aux_fast<20, 3>(vals, displacement, da, hessian);
+	// 		}
+	// 		else
+	// 		{
+	// 			hessian.setZero();
+	// 			double energy = compute_energy_aux_fast<-1, 3>(vals, displacement, da, hessian);
+	// 			return hessian;
+	// 		}
+	// 	}
+
+	// 	return hessian;
+	// }
 
 	void NeoHookeanElasticity::compute_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
 	{
