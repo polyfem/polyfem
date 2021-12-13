@@ -22,6 +22,15 @@ using namespace polyfem;
 using namespace polysolve;
 using namespace Eigen;
 
+bool has_arg(const CLI::App &command_line, const std::string &value)
+{
+	const auto *opt = command_line.get_option_no_throw(value);
+	if (!opt)
+		return false;
+
+	return opt->count() > 0;
+}
+
 int main(int argc, char **argv)
 {
 	CLI::App command_line{"polyfem"};
@@ -181,39 +190,32 @@ int main(int argc, char **argv)
 			apply_default_params(in_args);
 			in_args.erase("default_params"); // Remove this so state does not redo the apply
 		}
-
-		// If the mesh path does not exist make it relative to the json_file
-		// if (in_args.contains("mesh"))
-		// {
-		// 	in_args["mesh"] = resolve_path(in_args["mesh"], json_file);
-		// }
-
-		// If the meshes paths does not exist make it relative to the json_file
-		// if (in_args.contains("meshes") && !in_args["meshes"].empty())
-		// {
-		// 	for (json &json_mesh : in_args["meshes"])
-		// 	{
-		// 		if (json_mesh.contains("mesh"))
-		// 		{
-		// 			json_mesh["mesh"] = resolve_path(json_mesh["mesh"], json_file);
-		// 		}
-		// 	}
-		// }
 	}
 	else
 	{
 		in_args["root_path"] = mesh_file;
-		in_args["mesh"] = mesh_file;
-		in_args["force_linear_geometry"] = force_linear;
-		in_args["n_refs"] = n_refs;
+		if (has_arg(command_line, "mesh"))
+			in_args["mesh"] = mesh_file;
+
+		if (has_arg(command_line, "lin_geom"))
+			in_args["force_linear_geometry"] = force_linear;
+
+		if (has_arg(command_line, "n_refs"))
+			in_args["n_refs"] = n_refs;
+
 		if (!problem_name.empty())
 			in_args["problem"] = problem_name;
+
 		if (!time_integrator_name.empty())
 			in_args["time_integrator"] = time_integrator_name;
-		in_args["normalize_mesh"] = !skip_normalization;
-		in_args["project_to_psd"] = project_to_psd;
 
-		if (use_al)
+		if (has_arg(command_line, "not_norm"))
+			in_args["normalize_mesh"] = !skip_normalization;
+
+		if (has_arg(command_line, "project_to_psd"))
+			in_args["project_to_psd"] = project_to_psd;
+
+		if (has_arg(command_line, "al"))
 			in_args["use_al"] = use_al;
 
 		if (!scalar_formulation.empty())
@@ -221,25 +223,35 @@ int main(int argc, char **argv)
 		if (!tensor_formulation.empty())
 			in_args["tensor_formulation"] = tensor_formulation;
 
-		in_args["discr_order"] = discr_order;
-		in_args["use_spline"] = use_splines;
-		in_args["count_flipped_els"] = count_flipped_els;
+		if (has_arg(command_line, "p") || has_arg(command_line, "q"))
+			in_args["discr_order"] = discr_order;
 
-		in_args["use_p_ref"] = p_ref;
-		in_args["iso_parametric"] = isoparametric;
-		in_args["serendipity"] = serendipity;
+		if (has_arg(command_line, "spline"))
+			in_args["use_spline"] = use_splines;
 
-		in_args["nl_solver_rhs_steps"] = nl_solver_rhs_steps;
-		in_args["save_solve_sequence_debug"] = save_solve_sequence_debug;
+		if (has_arg(command_line, "count_flipped_els"))
+			in_args["count_flipped_els"] = count_flipped_els;
 
-		if (export_material_params)
+		if (has_arg(command_line, "p_ref"))
+			in_args["use_p_ref"] = p_ref;
+		if (has_arg(command_line, "isoparametric"))
+			in_args["iso_parametric"] = isoparametric;
+		if (has_arg(command_line, "serendipity"))
+			in_args["serendipity"] = serendipity;
+
+		if (has_arg(command_line, "n_incr_load"))
+			in_args["nl_solver_rhs_steps"] = nl_solver_rhs_steps;
+		if (has_arg(command_line, "save_incr_load"))
+			in_args["save_solve_sequence_debug"] = save_solve_sequence_debug;
+
+		if (has_arg(command_line, "export_material_params"))
 			in_args["export"]["material_params"] = true;
 	}
 
 	if (!bc_method.empty())
 		in_args["bc_method"] = bc_method;
 
-	if (!in_args.contains("lump_mass_matrix"))
+	if (!in_args.contains("lump_mass_matrix") && has_arg(command_line, "lump_mass_mat"))
 		in_args["lump_mass_matrix"] = lump_mass_mat;
 
 	if (!output_json.empty())
