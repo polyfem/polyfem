@@ -44,7 +44,7 @@ namespace cppoptlib
 		TVector m_prev_x;    // Previous x
 		TVector m_prev_grad; // Previous gradient
 
-		void reset(ProblemType &objFunc, TVector &x) override
+		void reset(const ProblemType &objFunc, const TVector &x) override
 		{
 			Superclass::reset(objFunc, x);
 

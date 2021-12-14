@@ -41,7 +41,7 @@ namespace cppoptlib
 		size_t next_hessian;              // Avoid recomputing hessian on line search failures
 		bool new_hessian;
 
-		void reset(ProblemType &objFunc, TVector &x) override
+		void reset(const ProblemType &objFunc, const TVector &x) override
 		{
 			Superclass::reset(objFunc, x);
 
