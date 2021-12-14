@@ -24,7 +24,7 @@ using namespace Eigen;
 
 bool has_arg(const CLI::App &command_line, const std::string &value)
 {
-	const auto *opt = command_line.get_option_no_throw(value);
+	const auto *opt = command_line.get_option_no_throw(value.size() == 1 ? ("-" + value) : ("--" + value));
 	if (!opt)
 		return false;
 
@@ -194,7 +194,7 @@ int main(int argc, char **argv)
 	else
 	{
 		in_args["root_path"] = mesh_file;
-		if (has_arg(command_line, "mesh"))
+		if (has_arg(command_line, "mesh") || has_arg(command_line, "m"))
 			in_args["mesh"] = mesh_file;
 
 		if (has_arg(command_line, "lin_geom"))
