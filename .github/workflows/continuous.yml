@@ -78,11 +78,12 @@ jobs:
           cd build
           ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --sform Laplacian
           ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --sform Helmholtz
-          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform HookeLinearElasticity
-          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform LinearElasticity
-          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform NeoHookean
-          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform SaintVenant
-          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform Stokes
+          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --problem ElasticExact --tform HookeLinearElasticity
+          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --problem ElasticExact --tform LinearElasticity
+          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --problem ElasticExact --tform NeoHookean
+          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --problem ElasticExact --tform SaintVenant
+          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --problem DrivenCavity --tform Stokes
+          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --problem DrivenCavity --tform NavierStokes
           ./PolyFEM_bin --json ../3rdparty/data/contact/examples/3D/unit-tests/5-cubes-fast.json --cmd
           ./PolyFEM_bin --febio ../3rdparty/data/lin-neo.feb --cmd
 
@@ -166,11 +167,12 @@ jobs:
           cd build
           ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --sform Laplacian
           ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --sform Helmholtz
-          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform HookeLinearElasticity
-          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform LinearElasticity
-          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform NeoHookean
-          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform SaintVenant
-          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --tform Stokes
+          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --problem ElasticExact --tform HookeLinearElasticity
+          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --problem ElasticExact --tform LinearElasticity
+          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --problem ElasticExact --tform NeoHookean
+          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --problem ElasticExact --tform SaintVenant
+          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --problem DrivenCavity --tform Stokes
+          ./PolyFEM_bin --mesh ../3rdparty/data/contact/meshes/3D/simple/cube.msh --cmd --problem DrivenCavity --tform NavierStokes
           ./PolyFEM_bin --json ../3rdparty/data/contact/examples/3D/unit-tests/5-cubes-fast.json --cmd
           ./PolyFEM_bin --febio ../3rdparty/data/lin-neo.feb --cmd
 
@@ -242,10 +244,11 @@ jobs:
           cd build
           .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --sform Laplacian
           .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --sform Helmholtz
-          .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --tform HookeLinearElasticity
-          .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --tform LinearElasticity
-          .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --tform NeoHookean
-          .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --tform SaintVenant
-          .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --tform Stokes
+          .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --problem ElasticExact --tform HookeLinearElasticity
+          .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --problem ElasticExact --tform LinearElasticity
+          .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --problem ElasticExact --tform NeoHookean
+          .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --problem ElasticExact --tform SaintVenant
+          .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --problem DrivenCavity --tform Stokes
+          .\PolyFEM_bin.exe --mesh ..\3rdparty\data\contact\meshes\3D\simple\cube.msh --cmd --problem DrivenCavity --tform NavierStokes
           # .\PolyFEM_bin.exe --json ..\3rdparty\data\contact\examples\3D\unit-tests\5-cubes-fast.json --cmd
           .\PolyFEM_bin.exe --febio ..\3rdparty\data\lin-neo.feb --cmd
