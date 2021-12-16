@@ -70,6 +70,9 @@ namespace cppoptlib
 			double old_energy = std::nan("");
 			double first_energy = std::nan("");
 
+			Timer total_time("Non-linear solver time");
+			total_time.start();
+
 			do
 			{
 				// ----------------
@@ -208,6 +211,8 @@ namespace cppoptlib
 				++this->m_current.iterations;
 			} while (objFunc.callback(this->m_current, x) && (this->m_status == Status::Continue));
 
+			total_time.stop();
+
 			// -----------
 			// Log results
 			// -----------
@@ -230,8 +235,8 @@ namespace cppoptlib
 				level = spdlog::level::err;
 			}
 			polyfem::logger().log(
-				level, "[{}] {} (niters={} f={} ||∇f||={} ||Δx||={} Δx⋅∇f(x)={} g={} tol={})",
-				name(), msg, this->m_current.iterations, old_energy, grad.norm(), delta_x.norm(),
+				level, "[{}] {}, took {}s (niters={} f={} ||∇f||={} ||Δx||={} Δx⋅∇f(x)={} g={} tol={})",
+				name(), msg, total_time.getElapsedTimeInSec(), this->m_current.iterations, old_energy, grad.norm(), delta_x.norm(),
 				delta_x.dot(grad), this->m_current.gradNorm, this->m_stop.gradNorm);
 
 			log_times();
