@@ -288,6 +288,11 @@ int main(int argc, char **argv)
 		fs::create_directories(fs::path(output_json).parent_path());
 	}
 
+	if (!in_args.contains("rhs_solver_type") && in_args.contains("solver_type"))
+	{
+		in_args["rhs_solver_type"] = in_args["solver_type"];
+	}
+
 #ifndef POLYFEM_NO_UI
 	if (no_ui)
 	{
