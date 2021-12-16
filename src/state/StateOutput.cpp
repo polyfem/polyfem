@@ -527,6 +527,12 @@ namespace polyfem
 			if (obstacle.v().size())
 				boundary_nodes_pos.bottomRows(obstacle.v().rows()) = obstacle.v();
 
+			if (obstacle.codim_v().size())
+			{
+				codimensional_nodes.conservativeResize(codimensional_nodes.size() + obstacle.codim_v().size());
+				codimensional_nodes.tail(obstacle.codim_v().size()) = obstacle.codim_v().array() + n_v;
+			}
+
 			if (obstacle.e().size())
 			{
 				boundary_edges.conservativeResize(boundary_edges.rows() + obstacle.e().rows(), 2);
@@ -1417,7 +1423,7 @@ namespace polyfem
 						elements.back().push_back(obstacle.get_edge_connectivity()(i, j) + orig_p);
 				}
 
-				for (int i = 0; i < obstacle.get_vertex_connectivity().rows(); ++i)
+				for (int i = 0; i < obstacle.get_vertex_connectivity().size(); ++i)
 				{
 					elements.emplace_back();
 					elements.back().push_back(obstacle.get_vertex_connectivity()(i) + orig_p);
@@ -1523,10 +1529,13 @@ namespace polyfem
 
 			displaced += boundary_nodes_pos;
 			ipc::Constraints constraint_set;
-			ipc::construct_constraint_set(boundary_nodes_pos, displaced, boundary_edges, boundary_triangles,
-										  args["dhat"], constraint_set, boundary_faces_to_edges, /*dmin=*/0,
-										  ipc::BroadPhaseMethod::HASH_GRID, /*ignore_codimensional_vertices=*/true,
-										  [&](size_t vi, size_t vj) { return !is_obstacle_vertex(vi) || !is_obstacle_vertex(vj); });
+			ipc::construct_constraint_set(
+				boundary_nodes_pos, displaced, codimensional_nodes,
+				boundary_edges, boundary_triangles, args["dhat"],
+				constraint_set, boundary_faces_to_edges, /*dmin=*/0,
+				ipc::BroadPhaseMethod::HASH_GRID, [&](size_t vi, size_t vj) {
+					return !is_obstacle_vertex(vi) || !is_obstacle_vertex(vj);
+				});
 			const Eigen::MatrixXd cgrad = ipc::compute_barrier_potential_gradient(displaced, boundary_edges, boundary_triangles, constraint_set, args["dhat"]);
 			assert(cgrad.size() == sol.size());
 

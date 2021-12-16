@@ -277,7 +277,7 @@ namespace cppoptlib
 
 	protected:
 		// Reset the solver at the start of a minimization
-		virtual void reset(ProblemType &objFunc, TVector &x)
+		virtual void reset(const ProblemType &objFunc, const TVector &x)
 		{
 			this->m_current.reset();
 			reset_times();

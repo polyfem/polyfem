@@ -784,8 +784,10 @@ namespace polyfem
 		}
 
 		nl_problem.line_search_begin(sol, tmp_sol);
-		while (!std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
+		bool force_al = args["force_al"];
+		while (force_al || !std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
 		{
+			force_al = false;
 			nl_problem.line_search_end();
 			alnl_problem.set_weight(al_weight);
 			logger().debug("Solving AL Problem with weight {}", al_weight);
@@ -972,8 +974,11 @@ namespace polyfem
 
 		Eigen::VectorXd tmp_sol;
 
-		sol.resizeLike(rhs);
-		sol.setZero();
+		if (sol.size() != rhs.size())
+		{
+			sol.resizeLike(rhs);
+			sol.setZero();
+		}
 
 		const std::string u_path = resolve_path(args["import"]["u_path"], args["root_path"]);
 		if (!u_path.empty())
@@ -1052,8 +1057,10 @@ namespace polyfem
 
 		int index = 0;
 		nl_problem.line_search_begin(sol, tmp_sol);
-		while (!std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
+		bool force_al = args["force_al"];
+		while (force_al || !std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
 		{
+			force_al = false;
 			nl_problem.line_search_end();
 			alnl_problem.set_weight(al_weight);
 			logger().debug("Solving AL Problem with weight {}", al_weight);

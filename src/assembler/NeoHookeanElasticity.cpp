@@ -1,4 +1,5 @@
 // #define EIGEN_STACK_ALLOCATION_LIMIT 0
+// #define EIGEN_NO_DEBUG
 
 #include <polyfem/NeoHookeanElasticity.hpp>
 
@@ -191,6 +192,126 @@ namespace polyfem
 		return hessian;
 	}
 
+	// Eigen::VectorXd
+	// NeoHookeanElasticity::assemble_grad(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
+	// {
+	// 	Eigen::Matrix<double, Eigen::Dynamic, 1> gradient;
+
+	// 	if (size() == 2)
+	// 	{
+	// 		if (vals.basis_values.size() == 3)
+	// 		{
+	// 			gradient.resize(6);
+	// 			double energy = compute_energy_aux_gradient_fast<3, 2>(vals, displacement, da, gradient);
+	// 		}
+	// 		else if (vals.basis_values.size() == 6)
+	// 		{
+	// 			gradient.resize(12);
+	// 			double energy = compute_energy_aux_gradient_fast<6, 2>(vals, displacement, da, gradient);
+	// 		}
+	// 		else if (vals.basis_values.size() == 10)
+	// 		{
+	// 			gradient.resize(20);
+	// 			double energy = compute_energy_aux_gradient_fast<10, 2>(vals, displacement, da, gradient);
+	// 		}
+	// 		else
+	// 		{
+	// 			double energy = compute_energy_aux_gradient_fast<-1, 2>(vals, displacement, da, gradient);
+	// 			return gradient;
+	// 		}
+	// 	}
+
+	// 	if (size() == 3)
+	// 	{
+	// 		if (vals.basis_values.size() == 4)
+	// 		{
+	// 			gradient.resize(12);
+	// 			double energy = compute_energy_aux_gradient_fast<4, 3>(vals, displacement, da, gradient);
+	// 		}
+	// 		else if (vals.basis_values.size() == 10)
+	// 		{
+	// 			gradient.resize(30);
+	// 			double energy = compute_energy_aux_gradient_fast<10, 3>(vals, displacement, da, gradient);
+	// 		}
+	// 		else if (vals.basis_values.size() == 20)
+	// 		{
+	// 			gradient.resize(60);
+	// 			double energy = compute_energy_aux_gradient_fast<20, 3>(vals, displacement, da, gradient);
+	// 		}
+	// 		else
+	// 		{
+	// 			double energy = compute_energy_aux_gradient_fast<-1, 3>(vals, displacement, da, gradient);
+	// 			return gradient;
+	// 		}
+	// 	}
+
+	// 	return gradient;
+	// }
+
+	// Eigen::MatrixXd
+	// NeoHookeanElasticity::assemble_hessian(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
+	// {
+	// 	Eigen::MatrixXd hessian;
+
+	// 	if (size() == 2)
+	// 	{
+	// 		if (vals.basis_values.size() == 3)
+	// 		{
+	// 			hessian.resize(6, 6);
+	// 			hessian.setZero();
+	// 			double energy = compute_energy_aux_fast<3, 2>(vals, displacement, da, hessian);
+	// 		}
+	// 		else if (vals.basis_values.size() == 6)
+	// 		{
+	// 			hessian.resize(12, 12);
+	// 			hessian.setZero();
+	// 			double energy = compute_energy_aux_fast<6, 2>(vals, displacement, da, hessian);
+	// 		}
+	// 		else if (vals.basis_values.size() == 10)
+	// 		{
+	// 			hessian.resize(20, 20);
+	// 			hessian.setZero();
+	// 			double energy = compute_energy_aux_fast<10, 2>(vals, displacement, da, hessian);
+	// 		}
+	// 		else
+	// 		{
+	// 			hessian.setZero();
+	// 			double energy = compute_energy_aux_fast<-1, 2>(vals, displacement, da, hessian);
+	// 			return hessian;
+	// 		}
+	// 	}
+
+	// 	if (size() == 3)
+	// 	{
+	// 		if (vals.basis_values.size() == 4)
+	// 		{
+	// 			hessian.resize(12, 12);
+	// 			hessian.setZero();
+	// 			double energy = compute_energy_aux_fast<4, 3>(vals, displacement, da, hessian);
+	// 		}
+	// 		else if (vals.basis_values.size() == 10)
+	// 		{
+	// 			hessian.resize(30, 30);
+	// 			hessian.setZero();
+	// 			double energy = compute_energy_aux_fast<10, 3>(vals, displacement, da, hessian);
+	// 		}
+	// 		else if (vals.basis_values.size() == 20)
+	// 		{
+	// 			hessian.resize(60, 60);
+	// 			hessian.setZero();
+	// 			double energy = compute_energy_aux_fast<20, 3>(vals, displacement, da, hessian);
+	// 		}
+	// 		else
+	// 		{
+	// 			hessian.setZero();
+	// 			double energy = compute_energy_aux_fast<-1, 3>(vals, displacement, da, hessian);
+	// 			return hessian;
+	// 		}
+	// 	}
+
+	// 	return hessian;
+	// }
+
 	void NeoHookeanElasticity::compute_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
 	{
 		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, size() * size(), stresses, [&](const Eigen::MatrixXd &stress) {
@@ -330,13 +451,13 @@ namespace polyfem
 
 		Eigen::Matrix<double, dim, dim> prod;
 		prod.setZero();
-
-		prod(0,1) = -1*x(2);
-		prod(0,2) = x(1);
-		prod(1,0) = x(2);
-		prod(1,2) = -1*x(0);
-		prod(2,0) = -1*x(1);
-		prod(2,1) = x(0);
+    
+		prod(0, 1) = -1 * x(2);
+		prod(0, 2) = x(1);
+		prod(1, 0) = x(2);
+		prod(1, 2) = -1 * x(0);
+		prod(2, 0) = -1 * x(1);
+		prod(2, 1) = x(0);
 
 		return prod;
 	}
@@ -347,9 +468,9 @@ namespace polyfem
 		Eigen::Matrix<double, dim, 1> z;
 		z.setZero();
 
-		z(0) = x(1)*y(2) - x(2)*y(1);
-		z(1) = x(2)*y(0) - x(0)*y(2);
-		z(2) = x(0)*y(1) - x(1)*y(0);
+		z(0) = x(1) * y(2) - x(2) * y(1);
+		z(1) = x(2) * y(0) - x(0) * y(2);
+		z(2) = x(0) * y(1) - x(1) * y(0);
 
 		return z;
 	}
@@ -389,31 +510,33 @@ namespace polyfem
 
 			for (size_t i = 0; i < vals.basis_values.size(); ++i)
 			{
-				 grad.row(i) = vals.basis_values[i].grad.row(p);
+				grad.row(i) = vals.basis_values[i].grad.row(p);
 			}
 
 			Eigen::Matrix<double, dim, dim> jac_it = vals.jac_it[p];
 
 			//Id + grad d
-			def_grad = local_disp.transpose()*grad*jac_it + Eigen::Matrix<double, dim, dim>::Identity(size(), size());
+			def_grad = local_disp.transpose() * grad * jac_it + Eigen::Matrix<double, dim, dim>::Identity(size(), size());
 
 			const double J = def_grad.determinant();
 			const double log_det_j = log(J);
 
-			Eigen::Matrix<double, dim, dim> delJ_delF(size(),size());
+			Eigen::Matrix<double, dim, dim> delJ_delF(size(), size());
 			delJ_delF.setZero();
-			
-			if(size() == 2) {
 
-				delJ_delF(0,0) = def_grad(1,1);
-				delJ_delF(0,1) = -1*def_grad(1,0);
-				delJ_delF(1,0) = -1*def_grad(0,1);
-				delJ_delF(1,1) = def_grad(0,0);
+			if (dim == 2)
+			{
+
+				delJ_delF(0, 0) = def_grad(1, 1);
+				delJ_delF(0, 1) = -1 * def_grad(1, 0);
+				delJ_delF(1, 0) = -1 * def_grad(0, 1);
+				delJ_delF(1, 1) = def_grad(0, 0);
 			}
 
-			else if(dim == 3) {
+			else if (dim == 3)
+			{
 
-				Eigen::Matrix<double, dim, 1> u(def_grad.rows()); 
+				Eigen::Matrix<double, dim, 1> u(def_grad.rows());
 				Eigen::Matrix<double, dim, 1> v(def_grad.rows());
 				Eigen::Matrix<double, dim, 1> w(def_grad.rows());
 
@@ -421,34 +544,32 @@ namespace polyfem
 				v = def_grad.col(1);
 				w = def_grad.col(2);
 
-				delJ_delF.col(0) = cross(v, w);
-				delJ_delF.col(1) = cross(w, u);
-				delJ_delF.col(2) = cross(u, v);
+				delJ_delF.col(0) = cross<dim>(v, w);
+				delJ_delF.col(1) = cross<dim>(w, u);
+				delJ_delF.col(2) = cross<dim>(u, v);
 			}
-
 
 			double lambda, mu;
 			params_.lambda_mu(vals.val(p, 0), vals.val(p, 1), size_ == 2 ? 0. : vals.val(p, 2), vals.element_id, lambda, mu);
 
-			Eigen::Matrix<double, n_basis, dim> delF_delU = grad*jac_it;
+			Eigen::Matrix<double, n_basis, dim> delF_delU = grad * jac_it;
 
-			Eigen::Matrix<double, dim, dim> gradient_temp = mu*def_grad - mu*(1/J)*delJ_delF + lambda*log_det_j*(1/J)*delJ_delF;
-			Eigen::Matrix<double, n_basis, dim> gradient = delF_delU*gradient_temp.transpose();
+			Eigen::Matrix<double, dim, dim> gradient_temp = mu * def_grad - mu * (1 / J) * delJ_delF + lambda * log_det_j * (1 / J) * delJ_delF;
+			Eigen::Matrix<double, n_basis, dim> gradient = delF_delU * gradient_temp.transpose();
 
 			double val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * log_det_j) + lambda / 2 * log_det_j * log_det_j;
-		
+
 			G.noalias() += gradient * da(p);
 			energy += val * da(p);
 		}
 
 		Eigen::Matrix<double, dim, n_basis> G_T = G.transpose();
 
-		Eigen::Matrix<double, (n_basis==-1) ? -1 : n_basis*dim, 1> temp(Eigen::Map<Eigen::Matrix<double, (n_basis==-1) ? -1 : n_basis*dim, 1>>(G_T.data(), G_T.size()));
+		Eigen::Matrix<double, (n_basis == -1) ? -1 : n_basis * dim, 1> temp(Eigen::Map<Eigen::Matrix<double, (n_basis == -1) ? -1 : n_basis * dim, 1>>(G_T.data(), G_T.size()));
 		G_flattened = temp;
 
 		return energy;
 	}
-
 
 	template <int n_basis, int dim>
 	double NeoHookeanElasticity::compute_energy_aux_fast(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da, Eigen::MatrixXd &H) const
@@ -481,28 +602,29 @@ namespace polyfem
 
 			for (size_t i = 0; i < vals.basis_values.size(); ++i)
 			{
-				 grad.row(i) = vals.basis_values[i].grad.row(p);
+				grad.row(i) = vals.basis_values[i].grad.row(p);
 			}
 
 			Eigen::Matrix<double, dim, dim> jac_it = vals.jac_it[p];
 
 			//Id + grad d
-			def_grad = local_disp.transpose()*grad*jac_it + Eigen::Matrix<double, dim, dim>::Identity(size(), size());
+			def_grad = local_disp.transpose() * grad * jac_it + Eigen::Matrix<double, dim, dim>::Identity(size(), size());
 
 			const double J = def_grad.determinant();
-			const double log_det_j = log(J);
+			double log_det_j = log(J);
 
 			Eigen::Matrix<double, dim, dim> delJ_delF(size(), size());
 			delJ_delF.setZero();
-			Eigen::Matrix<double, dim*dim, dim*dim> del2J_delF2(size()*size(), size()*size());
+			Eigen::Matrix<double, dim * dim, dim * dim> del2J_delF2(size() * size(), size() * size());
 			del2J_delF2.setZero();
-			
-			if(size() == 2) {
 
-				delJ_delF(0,0) = def_grad(1,1);
-				delJ_delF(0,1) = -1*def_grad(1,0);
-				delJ_delF(1,0) = -1*def_grad(0,1);
-				delJ_delF(1,1) = def_grad(0,0);
+			if (dim == 2)
+			{
+
+				delJ_delF(0, 0) = def_grad(1, 1);
+				delJ_delF(0, 1) = -1 * def_grad(1, 0);
+				delJ_delF(1, 0) = -1 * def_grad(0, 1);
+				delJ_delF(1, 1) = def_grad(0, 0);
 
 				del2J_delF2(0, 3) = 1;
 				del2J_delF2(1, 2) = -1;
@@ -519,16 +641,16 @@ namespace polyfem
 				v = def_grad.col(1);
 				w = def_grad.col(2);
 
-				delJ_delF.col(0) = cross(v, w);
-				delJ_delF.col(1) = cross(w, u);
-				delJ_delF.col(2) = cross(u, v);
+				delJ_delF.col(0) = cross<dim>(v, w);
+				delJ_delF.col(1) = cross<dim>(w, u);
+				delJ_delF.col(2) = cross<dim>(u, v);
 
-				del2J_delF2.template block<dim,dim>(0,6) = hat<dim>(v);
-				del2J_delF2.template block<dim,dim>(6,0) = -1*hat<dim>(v);
-				del2J_delF2.template block<dim,dim>(0,3) = -1*hat<dim>(w);
-				del2J_delF2.template block<dim,dim>(3,0) = hat<dim>(w);
-				del2J_delF2.template block<dim,dim>(3,6) = -1*hat<dim>(u);
-				del2J_delF2.template block<dim,dim>(6,3) = hat<dim>(u);
+				del2J_delF2.template block<dim, dim>(0, 6) = hat<dim>(v);
+				del2J_delF2.template block<dim, dim>(6, 0) = -1 * hat<dim>(v);
+				del2J_delF2.template block<dim, dim>(0, 3) = -1 * hat<dim>(w);
+				del2J_delF2.template block<dim, dim>(3, 0) = hat<dim>(w);
+				del2J_delF2.template block<dim, dim>(3, 6) = -1 * hat<dim>(u);
+				del2J_delF2.template block<dim, dim>(6, 3) = hat<dim>(u);
 			}
 
 			double lambda, mu;
