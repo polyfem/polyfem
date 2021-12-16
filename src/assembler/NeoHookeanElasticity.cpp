@@ -1,5 +1,4 @@
 // #define EIGEN_STACK_ALLOCATION_LIMIT 0
-# define EIGEN_NO_DEBUG
 
 #include <polyfem/NeoHookeanElasticity.hpp>
 
