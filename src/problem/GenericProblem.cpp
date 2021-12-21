@@ -1044,7 +1044,6 @@ namespace polyfem
 
 		if (params.contains("rhs"))
 		{
-			// rhs_ = params["rhs"];
 			rhs_.init(params["rhs"]);
 		}
 
@@ -1113,6 +1112,7 @@ namespace polyfem
 
 			neumann_boundary_ids_.resize(offset + j_boundary.size());
 			neumann_.resize(offset + j_boundary.size());
+			neumann_interpolation_.resize(offset + j_boundary.size());
 
 			for (size_t i = offset; i < neumann_boundary_ids_.size(); ++i)
 			{
