@@ -51,6 +51,11 @@ namespace polyfem
 
 		//class that stores and compute lame parameters per point
 		const LameParameters &lame_params() const { return linear_elasticity_.lame_params(); }
+		void set_params(const LameParameters &params)
+		{
+			neo_hookean_.set_params(params);
+			linear_elasticity_.set_params(params);
+		}
 
 	private:
 		int size_ = 2;

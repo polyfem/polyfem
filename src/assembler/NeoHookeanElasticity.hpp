@@ -39,6 +39,7 @@ namespace polyfem
 		//sets material params
 		void set_parameters(const json &params);
 		void init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus);
+		void set_params(const LameParameters &params) { params_ = params; }
 
 	private:
 		int size_ = 2;
