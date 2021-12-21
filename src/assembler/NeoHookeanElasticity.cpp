@@ -132,7 +132,7 @@ namespace polyfem
 			}
 			else
 			{
-				compute_energy_aux_gradient_fast<-1, 2>(vals, displacement, da, gradient);
+				compute_energy_aux_gradient_fast<Eigen::Dynamic, 2>(vals, displacement, da, gradient);
 				return gradient;
 			}
 		}
@@ -156,7 +156,7 @@ namespace polyfem
 			}
 			else
 			{
-				compute_energy_aux_gradient_fast<-1, 3>(vals, displacement, da, gradient);
+				compute_energy_aux_gradient_fast<Eigen::Dynamic, 3>(vals, displacement, da, gradient);
 				return gradient;
 			}
 		}
@@ -192,7 +192,7 @@ namespace polyfem
 			else
 			{
 				hessian.setZero();
-				compute_energy_hessian_aux_fast<-1, 2>(vals, displacement, da, hessian);
+				compute_energy_hessian_aux_fast<Eigen::Dynamic, 2>(vals, displacement, da, hessian);
 				return hessian;
 			}
 		}
@@ -220,7 +220,7 @@ namespace polyfem
 			else
 			{
 				hessian.setZero();
-				compute_energy_hessian_aux_fast<-1, 3>(vals, displacement, da, hessian);
+				compute_energy_hessian_aux_fast<Eigen::Dynamic, 3>(vals, displacement, da, hessian);
 				return hessian;
 			}
 		}
@@ -369,11 +369,11 @@ namespace polyfem
 		Eigen::Matrix<double, dim, dim> prod;
 		prod.setZero();
 
-		prod(0, 1) = -1 * x(2);
+		prod(0, 1) = -x(2);
 		prod(0, 2) = x(1);
 		prod(1, 0) = x(2);
-		prod(1, 2) = -1 * x(0);
-		prod(2, 0) = -1 * x(1);
+		prod(1, 2) = -x(0);
+		prod(2, 0) = -x(1);
 		prod(2, 1) = x(0);
 
 		return prod;
@@ -444,8 +444,8 @@ namespace polyfem
 			{
 
 				delJ_delF(0, 0) = def_grad(1, 1);
-				delJ_delF(0, 1) = -1 * def_grad(1, 0);
-				delJ_delF(1, 0) = -1 * def_grad(0, 1);
+				delJ_delF(0, 1) = -def_grad(1, 0);
+				delJ_delF(1, 0) = -def_grad(0, 1);
 				delJ_delF(1, 1) = def_grad(0, 0);
 			}
 
@@ -480,7 +480,8 @@ namespace polyfem
 
 		Eigen::Matrix<double, dim, n_basis> G_T = G.transpose();
 
-		Eigen::Matrix<double, (n_basis == -1) ? -1 : n_basis * dim, 1> temp(Eigen::Map<Eigen::Matrix<double, (n_basis == -1) ? -1 : n_basis * dim, 1>>(G_T.data(), G_T.size()));
+		constexpr int N = (n_basis == Eigen::Dynamic) ? Eigen::Dynamic : n_basis * dim;
+		Eigen::Matrix<double, N, 1> temp(Eigen::Map<Eigen::Matrix<double, N, 1>>(G_T.data(), G_T.size()));
 		G_flattened = temp;
 	}
 
@@ -489,6 +490,7 @@ namespace polyfem
 	{
 		assert(displacement.cols() == 1);
 
+		constexpr int N = (n_basis == Eigen::Dynamic) ? Eigen::Dynamic : n_basis * dim;
 		const int n_pts = da.size();
 
 		Eigen::Matrix<double, n_basis, dim> local_disp(vals.basis_values.size(), size());
@@ -531,10 +533,9 @@ namespace polyfem
 
 			if (dim == 2)
 			{
-
 				delJ_delF(0, 0) = def_grad(1, 1);
-				delJ_delF(0, 1) = -1 * def_grad(1, 0);
-				delJ_delF(1, 0) = -1 * def_grad(0, 1);
+				delJ_delF(0, 1) = -def_grad(1, 0);
+				delJ_delF(1, 0) = -def_grad(0, 1);
 				delJ_delF(1, 1) = def_grad(0, 0);
 
 				del2J_delF2(0, 3) = 1;
@@ -542,7 +543,6 @@ namespace polyfem
 				del2J_delF2(2, 1) = -1;
 				del2J_delF2(3, 0) = 1;
 			}
-
 			else if (size() == 3)
 			{
 				Eigen::Matrix<double, dim, 1> u(def_grad.rows());
@@ -558,10 +558,10 @@ namespace polyfem
 				delJ_delF.col(2) = cross<dim>(u, v);
 
 				del2J_delF2.template block<dim, dim>(0, 6) = hat<dim>(v);
-				del2J_delF2.template block<dim, dim>(6, 0) = -1 * hat<dim>(v);
-				del2J_delF2.template block<dim, dim>(0, 3) = -1 * hat<dim>(w);
+				del2J_delF2.template block<dim, dim>(6, 0) = -hat<dim>(v);
+				del2J_delF2.template block<dim, dim>(0, 3) = -hat<dim>(w);
 				del2J_delF2.template block<dim, dim>(3, 0) = hat<dim>(w);
-				del2J_delF2.template block<dim, dim>(3, 6) = -1 * hat<dim>(u);
+				del2J_delF2.template block<dim, dim>(3, 6) = -hat<dim>(u);
 				del2J_delF2.template block<dim, dim>(6, 3) = hat<dim>(u);
 			}
 
@@ -574,7 +574,7 @@ namespace polyfem
 
 			Eigen::Matrix<double, dim * dim, dim *dim> hessian_temp = (mu * id) + (((mu + lambda * (1 - log_det_j)) / (J * J)) * (g_j * g_j.transpose())) + (((lambda * log_det_j - mu) / (J)) * del2J_delF2);
 
-			Eigen::Matrix<double, dim * dim, (n_basis == -1) ? -1 : n_basis * dim> delF_delU_tensor(jac_it.size(), grad.size());
+			Eigen::Matrix<double, dim * dim, N> delF_delU_tensor(jac_it.size(), grad.size());
 
 			for (size_t i = 0; i < local_disp.rows(); ++i)
 			{
@@ -589,7 +589,7 @@ namespace polyfem
 				}
 			}
 
-			Eigen::Matrix<double, (n_basis == -1) ? -1 : n_basis * dim, (n_basis == -1) ? -1 : n_basis *dim> hessian = delF_delU_tensor.transpose() * hessian_temp * delF_delU_tensor;
+			Eigen::Matrix<double, N, N> hessian = delF_delU_tensor.transpose() * hessian_temp * delF_delU_tensor;
 
 			double val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * log_det_j) + lambda / 2 * log_det_j * log_det_j;
 
