@@ -240,9 +240,7 @@ include(spdlog)
 target_link_libraries(polyfem PUBLIC spdlog::spdlog)
 
 # CppNumericalSolvers
-polyfem_download_CppNumericalSolvers()
-add_library(cppoptlib INTERFACE)
-target_include_directories(cppoptlib SYSTEM INTERFACE ${THIRD_PARTY_DIR}/CppNumericalSolvers/include)
+include(cppoptlib)
 target_link_libraries(polyfem PUBLIC cppoptlib)
 
 # LBFGSpp

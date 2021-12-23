@@ -24,15 +24,6 @@ endfunction()
 ################################################################################
 
 
-## CppNumericalSolvers MIT
-function(polyfem_download_CppNumericalSolvers)
-    polyfem_download_project(CppNumericalSolvers
-        GIT_REPOSITORY https://github.com/PatWie/CppNumericalSolvers.git
-        GIT_TAG        7eddf28fa5a8872a956d3c8666055cac2f5a535d
-    )
-endfunction()
-
-
 
 ## data
 function(polyfem_download_polyfem_data)
