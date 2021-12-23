@@ -169,6 +169,7 @@ target_compile_definitions(polyfem PUBLIC -DPOLYFEM_MESH_PATH=\"${MESH_PATH}\")
 
 # Dependencies
 if(POLYFEM_WITH_CLIPPER)
+    include(clipper)
     target_link_libraries(polyfem PUBLIC clipper::clipper)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_CLIPPER)
 endif()
@@ -353,9 +354,6 @@ if(TARGET igl_tetgen)
 endif()
 
 set_target_properties(geogram PROPERTIES FOLDER 3rdparty/other)
-if(POLYFEM_WITH_CLIPPER)
-    set_target_properties(clipper_clipper PROPERTIES FOLDER 3rdparty/other)
-endif()
 
 ################################################################################
 # Subdirectories

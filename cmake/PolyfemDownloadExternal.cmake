@@ -33,14 +33,6 @@ function(polyfem_download_geogram)
 endfunction()
 
 
-## Clipper (BSL1.0)
-function(polyfem_download_clipper)
-    polyfem_download_project(clipper
-        URL     https://sourceforge.net/projects/polyclipping/files/clipper_ver6.4.2.zip
-        URL_MD5 100b4ec56c5308bac2d10f3966e35e11
-    )
-endfunction()
-
 ## CppNumericalSolvers MIT
 function(polyfem_download_CppNumericalSolvers)
     polyfem_download_project(CppNumericalSolvers

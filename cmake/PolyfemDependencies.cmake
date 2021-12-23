@@ -12,16 +12,3 @@ set(POLYFEM_EXTERNAL ${THIRD_PARTY_DIR})
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 list(REMOVE_DUPLICATES CMAKE_MODULE_PATH)
 include(PolyfemDownloadExternal)
-
-################################################################################
-# Required libraries
-################################################################################
-
-
-# Clipper
-if(POLYFEM_WITH_CLIPPER AND NOT TARGET clipper::clipper)
-    polyfem_download_clipper()
-    add_library(clipper_clipper ${POLYFEM_EXTERNAL}/clipper/cpp/clipper.cpp)
-    add_library(clipper::clipper ALIAS clipper_clipper)
-    target_include_directories(clipper_clipper PUBLIC ${POLYFEM_EXTERNAL}/clipper/cpp)
-endif()
