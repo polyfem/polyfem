@@ -72,7 +72,7 @@ set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vector
 option(POLYFEM_NO_UI            "Disables the user interface" OFF)
 
 # Polyfem options for enabling/disabling optional libraries
-option(POLYFEM_WITH_MMG              "Enable MMG library"                OFF)
+# option(POLYFEM_WITH_MMG              "Enable MMG library"                OFF)
 option(POLYFEM_WITH_OPENCL           "Enable OpenCL"                     OFF)
 option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
 set(POLYFEM_THREADING "TBB" CACHE STRING "Multithreading library to use (options: CPP, TBB, NONE)")
@@ -264,34 +264,34 @@ target_link_libraries(polyfem PUBLIC ghc::filesystem)
 # Optional libraries
 ################################################################################
 
-# MMG wrapper
-if(POLYFEM_WITH_MMG)
-    include(ExternalProject)
-    set(MMG_DIR "${POLYFEM_DATA_DIR}/mmg")
-    ExternalProject_Add(MMG_Project
-        PREFIX "${MMG_DIR}"
-        GIT_REPOSITORY https://github.com/MmgTools/mmg.git
-        GIT_TAG "v5.3.8"
+# # MMG wrapper
+# if(POLYFEM_WITH_MMG)
+#     include(ExternalProject)
+#     set(MMG_DIR "${POLYFEM_DATA_DIR}/mmg")
+#     ExternalProject_Add(MMG_Project
+#         PREFIX "${MMG_DIR}"
+#         GIT_REPOSITORY https://github.com/MmgTools/mmg.git
+#         GIT_TAG "v5.3.8"
 
-        UPDATE_COMMAND ""
-        PATCH_COMMAND ""
+#         UPDATE_COMMAND ""
+#         PATCH_COMMAND ""
 
-        CMAKE_ARGS
-            -DCMAKE_PREFIX_PATH=${MMG_DIR}/bin
-            -DBUILD_SHARED_LIBS=OFF
-            "-DCMAKE_INSTALL_PREFIX=${MMG_DIR}/"
+#         CMAKE_ARGS
+#             -DCMAKE_PREFIX_PATH=${MMG_DIR}/bin
+#             -DBUILD_SHARED_LIBS=OFF
+#             "-DCMAKE_INSTALL_PREFIX=${MMG_DIR}/"
 
-        TEST_COMMAND "")
+#         TEST_COMMAND "")
 
-    set(MMG_PATH "${POLYFEM_DATA_DIR}/mmg/bin/mmg3d_O3")
-    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_MMG_PATH=\"${MMG_PATH}\")
-    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_MMG)
+#     set(MMG_PATH "${POLYFEM_DATA_DIR}/mmg/bin/mmg3d_O3")
+#     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_MMG_PATH=\"${MMG_PATH}\")
+#     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_MMG)
 
-    # Boost
-    find_package(Boost 1.61 QUIET REQUIRED COMPONENTS filesystem system)
-    target_include_directories(polyfem PUBLIC ${Boost_INCLUDE_DIRS})
-    target_link_libraries(polyfem PUBLIC ${Boost_LIBRARIES})
-endif()
+#     # Boost
+#     find_package(Boost 1.61 QUIET REQUIRED COMPONENTS filesystem system)
+#     target_include_directories(polyfem PUBLIC ${Boost_INCLUDE_DIRS})
+#     target_link_libraries(polyfem PUBLIC ${Boost_LIBRARIES})
+# endif()
 
 
 ################################################################################
