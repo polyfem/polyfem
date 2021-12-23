@@ -64,13 +64,6 @@ function(polyfem_download_sanitizers)
     )
 endfunction()
 
-## spdlog MIT
-function(polyfem_download_spdlog)
-    polyfem_download_project(spdlog
-        GIT_REPOSITORY https://github.com/gabime/spdlog.git
-        GIT_TAG        v1.3.1
-    )
-endfunction()
 
 ## tinyxml zlib
 function(polyfem_download_tinyxml)

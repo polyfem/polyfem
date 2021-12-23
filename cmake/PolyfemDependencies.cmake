@@ -23,11 +23,6 @@ if(POLYFEM_WITH_SANITIZERS)
     find_package(Sanitizers)
 endif()
 
-# spdlog
-if(NOT TARGET spdlog::spdlog)
-    polyfem_download_spdlog()
-    add_subdirectory(${POLYFEM_EXTERNAL}/spdlog)
-endif()
 
 # CL11
 if(${POLYFEM_TOPLEVEL_PROJECT})

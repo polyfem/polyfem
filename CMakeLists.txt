@@ -246,6 +246,7 @@ include(geogram)
 target_link_libraries(polyfem PUBLIC geogram)
 
 #spdlog
+include(spdlog)
 target_link_libraries(polyfem PUBLIC spdlog::spdlog)
 
 # CppNumericalSolvers
