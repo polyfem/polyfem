@@ -23,14 +23,6 @@ endfunction()
 
 ################################################################################
 
-## PolySolvers MIT
-function(polyfem_download_solvers)
-    polyfem_download_project(solvers
-        GIT_REPOSITORY https://github.com/polyfem/polysolve.git
-        GIT_TAG        42dd524fba08b8ebb54791eb257f4fb405cc0a14
-    )
-endfunction()
-
 ## libigl MPL
 function(polyfem_download_libigl)
     polyfem_download_project(libigl
@@ -68,14 +60,6 @@ function(polyfem_download_CppNumericalSolvers)
     polyfem_download_project(CppNumericalSolvers
         GIT_REPOSITORY https://github.com/PatWie/CppNumericalSolvers.git
         GIT_TAG        7eddf28fa5a8872a956d3c8666055cac2f5a535d
-    )
-endfunction()
-
-## tbb Apache-2.0
-function(polyfem_download_tbb)
-    polyfem_download_project(tbb
-        GIT_REPOSITORY https://github.com/wjakob/tbb.git
-        GIT_TAG        141b0e310e1fb552bdca887542c9c1a8544d6503
     )
 endfunction()
 

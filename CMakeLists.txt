@@ -60,20 +60,6 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 ################################################################################
 
 
-# if(${CMAKE_VERSION} VERSION_LESS "3.15.0")
-#     if(MSVC OR MSYS)
-#         foreach(config ${CMAKE_CONFIGURATION_TYPES})
-#             string(TOUPPER ${config} config)
-#             string(REPLACE /MD /MT CMAKE_C_FLAGS_${config} "${CMAKE_C_FLAGS_${config}}")
-#             string(REPLACE /MD /MT CMAKE_CXX_FLAGS_${config} "${CMAKE_CXX_FLAGS_${config}}")
-#         endforeach()
-#     endif()
-# else()
-#     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
-# endif()
-
-################################################################################
-
 # Polyfem options
 option(POLYFEM_WITH_SANITIZERS "Enable sanitizers in compilation targets"   OFF)
 set(POLYFEM_SMALL_N  80 CACHE STRING "Maximum length for stack-allocated vectors (gradient + Hessian).")
@@ -233,24 +219,11 @@ target_link_libraries(polyfem PUBLIC ipc::toolkit)
 include(polysolver)
 target_link_libraries(polyfem PUBLIC polysolve)
 
-# TBB
+# Threading
 if(POLYFEM_THREADING STREQUAL "CPP")
     target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_CPP_THREADS)
 elseif(POLYFEM_THREADING STREQUAL "TBB")
-    if(NOT TARGET TBB::tbb)
-        polyfem_download_tbb()
-        set(TBB_BUILD_STATIC ON CACHE BOOL " " FORCE)
-        set(TBB_BUILD_SHARED OFF CACHE BOOL " " FORCE)
-        set(TBB_BUILD_TBBMALLOC OFF CACHE BOOL " " FORCE)
-        set(TBB_BUILD_TBBMALLOC_PROXY OFF CACHE BOOL " " FORCE)
-        set(TBB_BUILD_TESTS OFF CACHE BOOL " " FORCE)
-
-        add_subdirectory(${THIRD_PARTY_DIR}/tbb tbb)
-        set_property(TARGET tbb_static tbb_def_files PROPERTY FOLDER "dependencies")
-        target_include_directories(polyfem SYSTEM PUBLIC ${THIRD_PARTY_DIR}/tbb/include)
-        add_library(TBB::tbb ALIAS tbb_static)
-    endif()
-
+    include(tbb)
     target_link_libraries(polyfem PUBLIC TBB::tbb)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_TBB)
 endif()
