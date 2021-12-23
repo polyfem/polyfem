@@ -32,13 +32,6 @@ function(polyfem_download_geogram)
     )
 endfunction()
 
-## CLI11 3-Clause BSD license optional
-function(polyfem_download_cli11)
-    polyfem_download_project(cli11
-        URL     https://github.com/CLIUtils/CLI11/archive/v1.8.0.tar.gz
-        URL_MD5 5e5470abcb76422360409297bfc446ac
-    )
-endfunction()
 
 ## Clipper (BSL1.0)
 function(polyfem_download_clipper)
@@ -53,14 +46,6 @@ function(polyfem_download_CppNumericalSolvers)
     polyfem_download_project(CppNumericalSolvers
         GIT_REPOSITORY https://github.com/PatWie/CppNumericalSolvers.git
         GIT_TAG        7eddf28fa5a8872a956d3c8666055cac2f5a535d
-    )
-endfunction()
-
-## Sanitizers MIT optional
-function(polyfem_download_sanitizers)
-    polyfem_download_project(sanitizers-cmake
-        GIT_REPOSITORY https://github.com/arsenm/sanitizers-cmake.git
-        GIT_TAG        6947cff3a9c9305eb9c16135dd81da3feb4bf87f
     )
 endfunction()
 

@@ -331,6 +331,7 @@ if(POLYFEM_TOPLEVEL_PROJECT)
     endif()
 
     target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
+    include(cli11)
     target_link_libraries(${PROJECT_NAME}_bin
         PUBLIC
             polyfem

@@ -24,14 +24,6 @@ if(POLYFEM_WITH_SANITIZERS)
 endif()
 
 
-# CL11
-if(${POLYFEM_TOPLEVEL_PROJECT})
-    if(NOT TARGET CLI11::CLI11)
-        polyfem_download_cli11()
-        add_subdirectory(${POLYFEM_EXTERNAL}/cli11)
-    endif()
-endif()
-
 # Clipper
 if(POLYFEM_WITH_CLIPPER AND NOT TARGET clipper::clipper)
     polyfem_download_clipper()
