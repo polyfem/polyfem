@@ -226,17 +226,11 @@ endif()
 # Required libraries
 ################################################################################
 
-# Eigen
-# Uncomment to use the system's version of Eigen (e.g. to use Eigen 3.3)
-# find_package(Eigen3 REQUIRED)
-# target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
-
 include(ipc_toolkit)
 target_link_libraries(polyfem PUBLIC ipc::toolkit)
 
 # polysolve
-polyfem_download_solvers()
-add_subdirectory(${THIRD_PARTY_DIR}/solvers)
+include(polysolver)
 target_link_libraries(polyfem PUBLIC polysolve)
 
 # TBB
