@@ -33,9 +33,8 @@ target_link_libraries(unit_tests PUBLIC Catch2::Catch2)
 # Compiler options
 ################################################################################
 
-polyfem_download_polyfem_data()
-set(DATA_DIR "${THIRD_PARTY_DIR}/data/")
-target_compile_definitions(unit_tests PUBLIC -DPOLYFEM_DATA_DIR=\"${DATA_DIR}\")
+include(polyfem_data)
+target_compile_definitions(unit_tests PUBLIC -DPOLYFEM_DATA_DIR=\"${POLYFEM_DATA_DIR}\")
 
 target_compile_definitions(unit_tests PUBLIC CATCH_CONFIG_ENABLE_BENCHMARKING)
 

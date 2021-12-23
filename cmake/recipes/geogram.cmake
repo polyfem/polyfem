@@ -44,7 +44,7 @@ FetchContent_Declare(
     GIT_TAG        14001ad54398a478681c6bba7eaf10729068b5ce
     GIT_SHALLOW FALSE
 )
-# FetchContent_MakeAvailable(polyfem_geogram)
+FetchContent_MakeAvailable(polyfem_geogram)
 
 find_path(GEOGRAM_SOURCE_INCLUDE_DIR
 		geogram/basic/common.h
@@ -57,7 +57,7 @@ set(GEOGRAM_ROOT ${GEOGRAM_SOURCE_INCLUDE_DIR}/../..)
 
 message(STATUS "Found Geogram here: ${GEOGRAM_ROOT}")
 
-add_subdirectory(${GEOGRAM_ROOT} geogram)
+# add_subdirectory(${GEOGRAM_ROOT} geogram)
 target_include_directories(geogram SYSTEM PUBLIC ${GEOGRAM_SOURCE_INCLUDE_DIR})
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")

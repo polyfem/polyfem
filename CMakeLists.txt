@@ -28,11 +28,15 @@ endif()
 project(PolyFEM DESCRIPTION "A polyvalent C++ FEM library")
 ################################################################################
 
-if(INPUT_THIRD_PARTY_DIR)
-    set(THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${INPUT_THIRD_PARTY_DIR}/")
+if(INPUT_POLYFEM_DATA_ROOT)
+    set(POLYFEM_DATA_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/${INPUT_POLYFEM_DATA_ROOT}/")
 else()
-    set(THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/")
+    set(POLYFEM_DATA_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/data/")
 endif()
+if(NOT EXISTS ${POLYFEM_DATA_ROOT})
+    file(MAKE_DIRECTORY ${POLYFEM_DATA_ROOT})
+endif()
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/recipes/")
 
@@ -164,9 +168,6 @@ polyfem_autogen(polyfem elasticity_rhs.py auto_elasticity_rhs)
 # Public include directory for polyfem
 target_include_directories(polyfem PUBLIC ${PROJECT_BINARY_DIR}/include)
 
-set(MESH_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tests/")
-target_compile_definitions(polyfem PUBLIC -DPOLYFEM_MESH_PATH=\"${MESH_PATH}\")
-
 # Dependencies
 if(POLYFEM_WITH_CLIPPER)
     include(clipper)
@@ -266,7 +267,7 @@ target_link_libraries(polyfem PUBLIC ghc::filesystem)
 # MMG wrapper
 if(POLYFEM_WITH_MMG)
     include(ExternalProject)
-    set(MMG_DIR "${THIRD_PARTY_DIR}/mmg")
+    set(MMG_DIR "${POLYFEM_DATA_DIR}/mmg")
     ExternalProject_Add(MMG_Project
         PREFIX "${MMG_DIR}"
         GIT_REPOSITORY https://github.com/MmgTools/mmg.git
@@ -282,7 +283,7 @@ if(POLYFEM_WITH_MMG)
 
         TEST_COMMAND "")
 
-    set(MMG_PATH "${THIRD_PARTY_DIR}/mmg/bin/mmg3d_O3")
+    set(MMG_PATH "${POLYFEM_DATA_DIR}/mmg/bin/mmg3d_O3")
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_MMG_PATH=\"${MMG_PATH}\")
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_MMG)
 
