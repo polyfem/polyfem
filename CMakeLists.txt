@@ -232,7 +232,6 @@ include(mshio)
 target_link_libraries(polyfem PUBLIC mshio)
 
 # Geogram
-polyfem_download_geogram()
 include(geogram)
 target_link_libraries(polyfem PUBLIC geogram)
 
@@ -344,16 +343,6 @@ if(POLYFEM_TOPLEVEL_PROJECT)
         set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_bin)
     endif()
 endif()
-
-################################################################################
-# Clutter management
-################################################################################
-
-if(TARGET igl_tetgen)
-    set_target_properties(tetgen PROPERTIES FOLDER 3rdparty/other)
-endif()
-
-set_target_properties(geogram PROPERTIES FOLDER 3rdparty/other)
 
 ################################################################################
 # Subdirectories

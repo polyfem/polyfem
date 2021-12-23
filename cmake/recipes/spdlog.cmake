@@ -23,6 +23,7 @@ FetchContent_Declare(
     spdlog
     GIT_REPOSITORY https://github.com/gabime/spdlog.git
     GIT_TAG        v1.6.1
+    GIT_SHALLOW FALSE
 )
 
 option(SPDLOG_INSTALL "Generate the install target" ON)

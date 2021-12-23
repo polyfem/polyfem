@@ -24,15 +24,6 @@ endfunction()
 ################################################################################
 
 
-## Geogram BSD
-function(polyfem_download_geogram)
-    polyfem_download_project(geogram
-        GIT_REPOSITORY https://github.com/polyfem/geogram.git
-        GIT_TAG        14001ad54398a478681c6bba7eaf10729068b5ce
-    )
-endfunction()
-
-
 ## CppNumericalSolvers MIT
 function(polyfem_download_CppNumericalSolvers)
     polyfem_download_project(CppNumericalSolvers
