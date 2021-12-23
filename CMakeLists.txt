@@ -229,10 +229,7 @@ elseif(POLYFEM_THREADING STREQUAL "TBB")
 endif()
 
 # libigl
-if(NOT TARGET igl::core)
-    polyfem_download_libigl()
-    find_package(LIBIGL REQUIRED)
-endif()
+include(libigl)
 target_link_libraries(polyfem PUBLIC igl::core)
 
 # BVH

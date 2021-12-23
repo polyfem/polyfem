@@ -23,13 +23,6 @@ endfunction()
 
 ################################################################################
 
-## libigl MPL
-function(polyfem_download_libigl)
-    polyfem_download_project(libigl
-        GIT_REPOSITORY https://github.com/libigl/libigl.git
-        GIT_TAG        v2.3.0
-    )
-endfunction()
 
 ## Geogram BSD
 function(polyfem_download_geogram)
