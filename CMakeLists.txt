@@ -140,17 +140,11 @@ endif()
 
 # set(POLYFEM_SMALL_N 105 CACHE STRING "" FORCE)
 
-################################################################################
-# Dependencies
-################################################################################
-
 # Sanitizers
 if(POLYFEM_WITH_SANITIZERS)
     include(sanitizers)
 endif()
 
-# Setup dependencies
-include(PolyfemDependencies)
 
 ################################################################################
 # Polyfem library
@@ -167,13 +161,6 @@ polyfem_autogen(polyfem elasticity_rhs.py auto_elasticity_rhs)
 
 # Public include directory for polyfem
 target_include_directories(polyfem PUBLIC ${PROJECT_BINARY_DIR}/include)
-
-# Dependencies
-if(POLYFEM_WITH_CLIPPER)
-    include(clipper)
-    target_link_libraries(polyfem PUBLIC clipper::clipper)
-    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_CLIPPER)
-endif()
 
 # Extra warnings
 target_link_libraries(polyfem PRIVATE warnings::all)
@@ -292,6 +279,12 @@ target_link_libraries(polyfem PUBLIC ghc::filesystem)
 #     target_include_directories(polyfem PUBLIC ${Boost_INCLUDE_DIRS})
 #     target_link_libraries(polyfem PUBLIC ${Boost_LIBRARIES})
 # endif()
+
+if(POLYFEM_WITH_CLIPPER)
+    include(clipper)
+    target_link_libraries(polyfem PUBLIC clipper::clipper)
+    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_CLIPPER)
+endif()
 
 
 ################################################################################
