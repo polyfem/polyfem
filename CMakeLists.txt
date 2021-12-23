@@ -237,8 +237,7 @@ include(BVH)
 target_link_libraries(polyfem PUBLIC BVH_lib)
 
 # MSHIO
-polyfem_download_mshio()
-add_subdirectory(${THIRD_PARTY_DIR}/mshio)
+include(mshio)
 target_link_libraries(polyfem PUBLIC mshio)
 
 # Geogram

@@ -80,13 +80,6 @@ function(polyfem_download_tinyxml)
     )
 endfunction()
 
-## MshIO Apache-2.0
-function(polyfem_download_mshio)
-    polyfem_download_project(mshio
-        GIT_REPOSITORY https://github.com/qnzhou/MshIO.git
-        GIT_TAG        9dc616b3e04ff9383aa60e0aba0be07bc3b39a87
-    )
-endfunction()
 
 ## data
 function(polyfem_download_polyfem_data)

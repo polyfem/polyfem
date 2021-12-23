@@ -32,6 +32,8 @@ FetchContent_Populate(libigl)
 
 include(eigen)
 
+set(LIBIGL_WITH_PREDICATES ON CACHE BOOL "Use exact predicates" FORCE)
+
 list(APPEND CMAKE_MODULE_PATH ${libigl_SOURCE_DIR}/cmake)
 include(${libigl_SOURCE_DIR}/cmake/libigl.cmake ${libigl_BINARY_DIR})
 
