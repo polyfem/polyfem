@@ -233,8 +233,7 @@ include(libigl)
 target_link_libraries(polyfem PUBLIC igl::core)
 
 # BVH
-polyfem_download_BVH()
-add_subdirectory(${THIRD_PARTY_DIR}/BVH)
+include(BVH)
 target_link_libraries(polyfem PUBLIC BVH_lib)
 
 # MSHIO
