@@ -79,12 +79,6 @@ option(POLYFEM_WITH_APPS      "Build the apps"          ON)
 option(POLYFEM_WITH_MISC      "Build misc targes"       ON)
 option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"       ON)
 
-# Sanitizer options
-option(POLYFEM_SANITIZE_ADDRESS   "Sanitize Address"       OFF)
-option(POLYFEM_SANITIZE_MEMORY    "Sanitize Memory"        OFF)
-option(POLYFEM_SANITIZE_THREAD    "Sanitize Thread"        OFF)
-option(POLYFEM_SANITIZE_UNDEFINED "Sanitize Undefined"     OFF)
-
 #Solver
 option(POLYSOLVE_WITH_CHOLMOD          "Enable Cholmod library"            ON)
 option(POLYSOLVE_WITH_UMFPACK          "Enable UmfPack library"            ON)
@@ -148,7 +142,7 @@ endif()
 
 # Sanitizers
 if(POLYFEM_WITH_SANITIZERS)
-    list(APPEND CMAKE_MODULE_PATH ${THIRD_PARTY_DIR}/sanitizers-cmake/cmake)
+    include(sanitizers)
 endif()
 
 # Setup dependencies
@@ -202,10 +196,6 @@ target_compile_definitions(polyfem PUBLIC -DPOLYFEM_BIG_N=${POLYFEM_BIG_N})
 
 if("$ENV{CLUSTER}" STREQUAL "PRINCE")
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_ON_HPC)
-endif()
-
-if(POLYFEM_WITH_SANITIZERS)
-    add_sanitizers(polyfem)
 endif()
 
 ################################################################################

@@ -17,12 +17,6 @@ include(PolyfemDownloadExternal)
 # Required libraries
 ################################################################################
 
-# Sanitizers
-if(POLYFEM_WITH_SANITIZERS)
-    polyfem_download_sanitizers()
-    find_package(Sanitizers)
-endif()
-
 
 # Clipper
 if(POLYFEM_WITH_CLIPPER AND NOT TARGET clipper::clipper)
