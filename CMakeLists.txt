@@ -254,13 +254,7 @@ include(tinyexpr)
 target_link_libraries(polyfem PUBLIC tinyexpr::tinyexpr)
 
 # TinyXML library
-if(NOT TARGET tinyxml2)
-    polyfem_download_tinyxml()
-    SET(BUILD_SHARED_LIBS OFF)
-    SET(BUILD_STATIC_LIBS ON)
-    SET(BUILD_TESTING OFF)
-    add_subdirectory(${THIRD_PARTY_DIR}/tinyxml)
-endif()
+include(tinyxml)
 target_link_libraries(polyfem PUBLIC tinyxml2)
 
 # Filesystem
