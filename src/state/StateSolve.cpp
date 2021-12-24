@@ -333,9 +333,8 @@ namespace polyfem
 		// const int aux_steps = BDF_order-1;
 		BDF bdf(BDF_order);
 		bdf.new_solution(x);
-		s
 
-			const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 		const int precond_num = problem_dim * n_bases;
 
 		for (int t = 1; t <= time_steps; ++t)

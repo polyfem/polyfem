@@ -275,7 +275,7 @@ namespace polyfem
 
 		use_avg_pressure = !args["has_neumann"];
 
-		if (args_in.contains("BDF_order")
+		if (args_in.contains("BDF_order"))
 		{
 			logger().warn("use export: time_integrator_params: { num_steps: <value> } instead of BDF_order");
 			this->args["time_integrator_params"]["num_steps"] = args_in["BDF_order"];
