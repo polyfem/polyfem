@@ -1,6 +1,4 @@
 set(SOURCES
-	BDF.hpp
-	BDF.cpp
 	HexQuadrature.cpp
 	HexQuadrature.hpp
 	LineQuadrature.cpp

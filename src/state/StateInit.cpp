@@ -137,7 +137,6 @@ namespace polyfem
 			{"B", 3},
 			{"h1_formula", false},
 
-			{"BDF_order", 1},
 			{"quadrature_order", -1},
 			{"discr_order", 1},
 			{"poly_bases", "MFSHarmonic"},
@@ -275,6 +274,12 @@ namespace polyfem
 		has_dhat = args_in.contains("dhat");
 
 		use_avg_pressure = !args["has_neumann"];
+
+		if (args_in.contains("BDF_order")
+		{
+			logger().warn("use export: time_integrator_params: { num_steps: <value> } instead of BDF_order");
+			this->args["time_integrator_params"]["num_steps"] = args_in["BDF_order"];
+		}
 
 		if (args_in.contains("stiffness_mat_save_path") && !args_in["stiffness_mat_save_path"].empty())
 		{

@@ -254,7 +254,7 @@ namespace polyfem
 
 		Eigen::VectorXd prev_sol;
 
-		int BDF_order = args["BDF_order"];
+		int BDF_order = args["time_integrator_params"].value("num_steps", 1);
 		// int aux_steps = BDF_order-1;
 		BDF bdf(BDF_order);
 		bdf.new_solution(c_sol);
@@ -329,12 +329,13 @@ namespace polyfem
 		Eigen::VectorXd b;
 		Eigen::MatrixXd current_rhs = rhs;
 
-		const int BDF_order = args["BDF_order"];
+		const int BDF_order = args["time_integrator_params"].value("num_steps", 1);
 		// const int aux_steps = BDF_order-1;
 		BDF bdf(BDF_order);
 		bdf.new_solution(x);
+		s
 
-		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
+			const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 		const int precond_num = problem_dim * n_bases;
 
 		for (int t = 1; t <= time_steps; ++t)
@@ -415,8 +416,8 @@ namespace polyfem
 		const int precond_num = problem_dim * n_bases;
 
 		// Newmark
-		const double gamma = 0.5;
-		const double beta = 0.25;
+		const double gamma = args["time_integrator_params"]["gamma"];
+		const double beta = args["time_integrator_params"]["beta"];
 		// makes the algorithm implicit and equivalent to the trapezoidal rule (unconditionally stable).
 
 		Eigen::MatrixXd temp, b;
