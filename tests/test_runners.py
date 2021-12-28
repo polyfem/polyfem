@@ -16,19 +16,19 @@ def run_one(args, errs, margin):
 
     print("running", " ".join(cmd))
     out = subprocess.check_output(cmd)
-    out = str(out)
+    out = out.decode("utf-8")
 
     err_str = ["L2 error","Lp error","H1 error","H1 semi error","Linf error","grad max error"]
 
     for i,k in enumerate(err_str):
         index = out.find(k)
         index += len(k)+2
-        end = out.find("[", index)
-        end -= 2
+        end = out.find("\n", index)
         num = float(out[index:end])
         if abs(num - errs[i]) >= margin:
-            print("err: {}, expected: {}, difference {} >= {}".format(num, errs[i], abs(num - errs[i]), margin))
-        assert(abs(num - errs[i]) < margin or abs(num) < 1e-15 )
+            print(out)
+            print("{} err: {}, expected: {}, difference {} >= {}".format(k, num, errs[i], abs(num - errs[i]), margin))
+        assert(abs(num - errs[i]) < margin)
 
 if __name__ == "__main__":
     run_one(
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     if sys.platform != "win32":
         run_one(
             ["--json",  "../data/data/contact/examples/3D/unit-tests/5-cubes-fast.json",  "--cmd"],
-            [0.011771999999999986,0.039362054350912154,0.011771999999999986,0.689552086746,0.058859999999999996,0.058859999999999996],
+            [0.011771999999999986,0.039362054350912154,0.011771999999999986,7.982054466618666e-17,0.058859999999999996,0.058859999999999996],
             1e-8
         )
 
