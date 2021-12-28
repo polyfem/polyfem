@@ -7,10 +7,12 @@ def run_one(args, errs, margin):
     path = os.getcwd()
     poolyfem_exe = os.path.join(path, "PolyFEM_bin")
 
+    if sys.platform == "win32":
+        poolyfem_exe += ".exe"
+
     cmd = [poolyfem_exe] + args
 
-    if sys.platform == "win32":
-        cmd += ".exe"
+
 
     print("running", " ".join(cmd))
     out = subprocess.check_output(cmd)
