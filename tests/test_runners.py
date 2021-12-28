@@ -28,7 +28,7 @@ def run_one(args, errs, margin):
         num = float(out[index:end])
         if abs(num - errs[i]) >= margin:
             print("err: {}, expected: {}, difference {} >= {}".format(num, errs[i], abs(num - errs[i]), margin))
-        assert(abs(num - errs[i]) < margin)
+        assert(abs(num - errs[i]) < margin or abs(num) < 1e-15 )
 
 if __name__ == "__main__":
     run_one(
