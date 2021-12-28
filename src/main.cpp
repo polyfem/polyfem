@@ -70,6 +70,7 @@ int main(int argc, char **argv)
 	bool project_to_psd = false;
 	bool export_material_params = false;
 	bool save_solve_sequence_debug = false;
+	bool compute_errors = false;
 
 	std::string log_file = "";
 	bool is_quiet = false;
@@ -124,6 +125,7 @@ int main(int argc, char **argv)
 	command_line.add_option("--n_incr_load", nl_solver_rhs_steps, "Number of incremeltal load");
 	command_line.add_flag("--save_incr_load", save_solve_sequence_debug, "Save incremental steps");
 	command_line.add_flag("--lump_mass_mat", lump_mass_mat, "Lump the mass matrix");
+	command_line.add_flag("--compute_errors", compute_errors, "Computes the errors");
 
 	const std::vector<std::string> bc_methods = {"", "sample", "lsq"}; //, "integrate"};
 	command_line.add_set("--bc_method", bc_method, std::set<std::string>(bc_methods.begin(), bc_methods.end()), "Method used for boundary conditions");
@@ -253,6 +255,9 @@ int main(int argc, char **argv)
 
 	if (!in_args.contains("lump_mass_matrix") && has_arg(command_line, "lump_mass_mat"))
 		in_args["lump_mass_matrix"] = lump_mass_mat;
+
+	if (has_arg(command_line, "compute_errors"))
+		in_args["compute_error"] = compute_errors;
 
 	if (!output_json.empty())
 		in_args["output"] = output_json;
