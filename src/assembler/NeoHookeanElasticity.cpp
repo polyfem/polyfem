@@ -267,7 +267,7 @@ namespace polyfem
 			// const double J = def_grad.determinant();
 
 			double lambda, mu;
-			params_.lambda_mu(vals.quadrature.points.row(p), vals.val.row(p), vals.element_id, lambda, mu);
+			params_.lambda_mu(local_pts.row(p), vals.val.row(p), vals.element_id, lambda, mu);
 
 			//stress = mu (F - F^{-T}) + lambda ln J F^{-T}
 			//stress = mu * (def_grad - def_grad^{-T}) + lambda ln (det def_grad) def_grad^{-T}
