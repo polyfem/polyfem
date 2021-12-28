@@ -165,7 +165,7 @@ namespace polyfem
 			Density d;
 			d.init(mat);
 
-			const double rho = d(0, 0, 0, 0);
+			const double rho = d(0, 0, 0, 0, 0, 0, 0);
 			const double E = mat["E"];
 			const double nu = mat["nu"];
 

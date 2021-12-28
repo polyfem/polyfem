@@ -38,7 +38,8 @@ namespace polyfem
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res;
 
 		double lambda, mu;
-		params_.lambda_mu(pt(0).getValue(), pt(1).getValue(), size_ == 2 ? 0. : pt(2).getValue(), 0, lambda, mu);
+		//TODO!
+		params_.lambda_mu(0, 0, 0, pt(0).getValue(), pt(1).getValue(), size_ == 2 ? 0. : pt(2).getValue(), 0, lambda, mu);
 
 		if (size() == 2)
 			autogen::neo_hookean_2d_function(pt, lambda, mu, res);
@@ -266,7 +267,7 @@ namespace polyfem
 			// const double J = def_grad.determinant();
 
 			double lambda, mu;
-			params_.lambda_mu(vals.val(p, 0), vals.val(p, 1), size_ == 2 ? 0. : vals.val(p, 2), vals.element_id, lambda, mu);
+			params_.lambda_mu(vals.quadrature.points.row(p), vals.val.row(p), vals.element_id, lambda, mu);
 
 			//stress = mu (F - F^{-T}) + lambda ln J F^{-T}
 			//stress = mu * (def_grad - def_grad^{-T}) + lambda ln (det def_grad) def_grad^{-T}
@@ -352,7 +353,7 @@ namespace polyfem
 				def_grad(d, d) += T(1);
 
 			double lambda, mu;
-			params_.lambda_mu(vals.val(p, 0), vals.val(p, 1), size_ == 2 ? 0. : vals.val(p, 2), vals.element_id, lambda, mu);
+			params_.lambda_mu(vals.quadrature.points.row(p), vals.val.row(p), vals.element_id, lambda, mu);
 
 			const T log_det_j = log(polyfem::determinant(def_grad));
 			const T val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * log_det_j) + lambda / 2 * log_det_j * log_det_j;
@@ -466,7 +467,7 @@ namespace polyfem
 			}
 
 			double lambda, mu;
-			params_.lambda_mu(vals.val(p, 0), vals.val(p, 1), size_ == 2 ? 0. : vals.val(p, 2), vals.element_id, lambda, mu);
+			params_.lambda_mu(vals.quadrature.points.row(p), vals.val.row(p), vals.element_id, lambda, mu);
 
 			Eigen::Matrix<double, n_basis, dim> delF_delU = grad * jac_it;
 
@@ -566,7 +567,7 @@ namespace polyfem
 			}
 
 			double lambda, mu;
-			params_.lambda_mu(vals.val(p, 0), vals.val(p, 1), size_ == 2 ? 0. : vals.val(p, 2), vals.element_id, lambda, mu);
+			params_.lambda_mu(vals.quadrature.points.row(p), vals.val.row(p), vals.element_id, lambda, mu);
 
 			Eigen::Matrix<double, dim * dim, dim *dim> id = Eigen::Matrix<double, dim * dim, dim * dim>::Identity(size() * size(), size() * size());
 

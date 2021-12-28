@@ -1343,15 +1343,48 @@ namespace polyfem
 			Eigen::MatrixXd mus(points.rows(), 1);
 			Eigen::MatrixXd rhos(points.rows(), 1);
 
-			for (int i = 0; i < points.rows(); ++i)
-			{
-				double lambda, mu;
+			Eigen::MatrixXd local_pts;
+			Eigen::MatrixXi vis_faces_poly;
 
-				params.lambda_mu(points(i, 0), points(i, 1), points.cols() >= 3 ? points(i, 2) : 0, el_id(i), lambda, mu);
-				lambdas(i) = lambda;
-				mus(i) = mu;
-				rhos(i) = density(points(i, 0), points(i, 1), points.cols() >= 3 ? points(i, 2) : 0, el_id(i));
+			const auto &gbases = iso_parametric() ? bases : geom_bases;
+
+			int index = 0;
+			const auto &sampler = ref_element_sampler;
+			for (int e = 0; e < int(bases.size()); ++e)
+			{
+				const ElementBases &gbs = gbases[e];
+				const ElementBases &bs = bases[e];
+
+				if (mesh->is_simplex(e))
+					local_pts = sampler.simplex_points();
+				else if (mesh->is_cube(e))
+					local_pts = sampler.cube_points();
+				else
+				{
+					if (mesh->is_volume())
+						sampler.sample_polyhedron(polys_3d[e].first, polys_3d[e].second, local_pts, vis_faces_poly);
+					else
+						sampler.sample_polygon(polys[e], local_pts, vis_faces_poly);
+				}
+
+				ElementAssemblyValues vals;
+				vals.compute(e, mesh->is_volume(), local_pts, bs, gbs);
+
+				for (int j = 0; j < vals.val.rows(); ++j)
+				{
+					double lambda, mu;
+
+					params.lambda_mu(local_pts.row(j), vals.val.row(j), e, lambda, mu);
+					lambdas(index) = lambda;
+					mus(index) = mu;
+
+					rhos(index) = density(local_pts.row(j), vals.val.row(j), e);
+
+					++index;
+				}
 			}
+
+			assert(index == points.rows());
 
 			if (obstacle.n_vertices() > 0)
 			{
@@ -1589,10 +1622,10 @@ namespace polyfem
 			{
 				double lambda, mu;
 
-				params.lambda_mu(boundary_vis_vertices(i, 0), boundary_vis_vertices(i, 1), boundary_vis_vertices.cols() >= 3 ? boundary_vis_vertices(i, 2) : 0, boundary_vis_elements_ids(i), lambda, mu);
+				params.lambda_mu(boundary_vis_local_vertices.row(i), boundary_vis_vertices.row(i), boundary_vis_elements_ids(i), lambda, mu);
 				lambdas(i) = lambda;
 				mus(i) = mu;
-				rhos(i) = density(boundary_vis_vertices(i, 0), boundary_vis_vertices(i, 1), boundary_vis_vertices.cols() >= 3 ? boundary_vis_vertices(i, 2) : 0, boundary_vis_elements_ids(i));
+				rhos(i) = density(boundary_vis_local_vertices.row(i), boundary_vis_vertices.row(i), boundary_vis_elements_ids(i));
 			}
 
 			writer.add_field("lambda", lambdas);
