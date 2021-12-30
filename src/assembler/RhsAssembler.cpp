@@ -56,7 +56,8 @@ namespace polyfem
 			ElementAssemblyValues vals;
 			for (int e = 0; e < n_elements; ++e)
 			{
-				vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
+				// vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
+				ass_vals_cache_.compute(e, mesh_.is_volume(), bases_[e], gbases_[e], vals);
 
 				const Quadrature &quadrature = vals.quadrature;
 
@@ -126,7 +127,8 @@ namespace polyfem
 			for (int e = 0; e < n_elements; ++e)
 			{
 				const ElementBases &bs = bases_[e];
-				vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
+				// vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
+				ass_vals_cache_.compute(e, mesh_.is_volume(), bases_[e], gbases_[e], vals);
 				ids.resize(1, 1);
 				ids.setConstant(e);
 
@@ -152,7 +154,8 @@ namespace polyfem
 
 			for (int e = 0; e < n_elements; ++e)
 			{
-				vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
+				// vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
+				ass_vals_cache_.compute(e, mesh_.is_volume(), bases_[e], gbases_[e], vals);
 				ids.resize(vals.val.rows(), 1);
 				ids.setConstant(e);
 
@@ -702,7 +705,8 @@ namespace polyfem
 				for (int e = start; e < end; ++e)
 				{
 					ElementAssemblyValues &vals = local_storage.vals;
-					vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
+					// vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
+					ass_vals_cache_.compute(e, mesh_.is_volume(), bases_[e], gbases_[e], vals);
 
 					const Quadrature &quadrature = vals.quadrature;
 					const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
