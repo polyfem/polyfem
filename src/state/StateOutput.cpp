@@ -1341,6 +1341,8 @@ namespace polyfem
 
 			Eigen::MatrixXd lambdas(points.rows(), 1);
 			Eigen::MatrixXd mus(points.rows(), 1);
+			Eigen::MatrixXd Es(points.rows(), 1);
+			Eigen::MatrixXd nus(points.rows(), 1);
 			Eigen::MatrixXd rhos(points.rows(), 1);
 
 			Eigen::MatrixXd local_pts;
@@ -1378,6 +1380,9 @@ namespace polyfem
 					lambdas(index) = lambda;
 					mus(index) = mu;
 
+					Es(index) = mu * (3.0 * lambda + 2.0 * mu) / (lambda + mu);
+					nus(index) = lambda / (2.0 * (lambda + mu));
+
 					rhos(index) = density(local_pts.row(j), vals.val.row(j), e);
 
 					++index;
@@ -1394,12 +1399,20 @@ namespace polyfem
 				mus.conservativeResize(mus.size() + obstacle.n_vertices(), 1);
 				mus.bottomRows(obstacle.n_vertices()).setZero();
 
+				Es.conservativeResize(Es.size() + obstacle.n_vertices(), 1);
+				Es.bottomRows(obstacle.n_vertices()).setZero();
+
+				nus.conservativeResize(nus.size() + obstacle.n_vertices(), 1);
+				nus.bottomRows(obstacle.n_vertices()).setZero();
+
 				rhos.conservativeResize(rhos.size() + obstacle.n_vertices(), 1);
 				rhos.bottomRows(obstacle.n_vertices()).setZero();
 			}
 
 			writer.add_field("lambda", lambdas);
 			writer.add_field("mu", mus);
+			writer.add_field("E", Es);
+			writer.add_field("nu", nus);
 			writer.add_field("rho", rhos);
 		}
 
@@ -1616,6 +1629,8 @@ namespace polyfem
 
 			Eigen::MatrixXd lambdas(boundary_vis_vertices.rows(), 1);
 			Eigen::MatrixXd mus(boundary_vis_vertices.rows(), 1);
+			Eigen::MatrixXd Es(boundary_vis_vertices.rows(), 1);
+			Eigen::MatrixXd nus(boundary_vis_vertices.rows(), 1);
 			Eigen::MatrixXd rhos(boundary_vis_vertices.rows(), 1);
 
 			for (int i = 0; i < boundary_vis_vertices.rows(); ++i)
@@ -1625,11 +1640,15 @@ namespace polyfem
 				params.lambda_mu(boundary_vis_local_vertices.row(i), boundary_vis_vertices.row(i), boundary_vis_elements_ids(i), lambda, mu);
 				lambdas(i) = lambda;
 				mus(i) = mu;
+				Es(i) = mu * (3.0 * lambda + 2.0 * mu) / (lambda + mu);
+				nus(i) = lambda / (2.0 * (lambda + mu));
 				rhos(i) = density(boundary_vis_local_vertices.row(i), boundary_vis_vertices.row(i), boundary_vis_elements_ids(i));
 			}
 
 			writer.add_field("lambda", lambdas);
 			writer.add_field("mu", mus);
+			writer.add_field("lambda", Es);
+			writer.add_field("mu", nus);
 			writer.add_field("rho", rhos);
 		}
 
