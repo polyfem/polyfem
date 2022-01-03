@@ -30,6 +30,9 @@ namespace polyfem
 	template <typename T>
 	bool read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat);
 
+	template <typename Mat>
+	bool write_matrix(const std::string &path, const Mat &mat);
+
 	template <typename T>
 	bool read_matrix_binary(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat);
 

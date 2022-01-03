@@ -67,6 +67,25 @@ bool polyfem::read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynam
 	return true;
 }
 
+template <typename Mat>
+bool polyfem::write_matrix(const std::string &path, const Mat &mat)
+{
+	std::ofstream out(path);
+	if (!out.good())
+	{
+		logger().error("Failed to write to file: {}", path);
+		out.close();
+
+		return false;
+	}
+
+	out.precision(15);
+	out << mat;
+	out.close();
+
+	return true;
+}
+
 template <typename T>
 bool polyfem::read_matrix_binary(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat)
 {
@@ -458,6 +477,11 @@ void polyfem::SpareMatrixCache::operator+=(const SpareMatrixCache &o)
 //template instantiation
 template bool polyfem::read_matrix<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
 template bool polyfem::read_matrix<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
+
+template bool polyfem::write_matrix<Eigen::MatrixXd>(const std::string &, const Eigen::MatrixXd &);
+template bool polyfem::write_matrix<Eigen::MatrixXf>(const std::string &, const Eigen::MatrixXf &);
+template bool polyfem::write_matrix<Eigen::VectorXd>(const std::string &, const Eigen::VectorXd &);
+template bool polyfem::write_matrix<Eigen::VectorXf>(const std::string &, const Eigen::VectorXf &);
 
 template bool polyfem::read_matrix_binary<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
 template bool polyfem::read_matrix_binary<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);

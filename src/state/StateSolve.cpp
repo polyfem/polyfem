@@ -34,12 +34,12 @@ namespace polyfem
 				const int offset = import["offset"];
 
 				Eigen::MatrixXd tmp;
-				read_matrix_binary(path, tmp);
+				read_matrix(path, tmp);
 				mat.block(0, 0, offset, 1) = tmp.block(0, 0, offset, 1);
 			}
 			else
 			{
-				read_matrix_binary(path, mat);
+				read_matrix(path, mat);
 			}
 		}
 	} // namespace
@@ -85,7 +85,7 @@ namespace polyfem
 
 		const std::string u_path = resolve_path(args["import"]["u_path"], args["root_path"]);
 		if (!u_path.empty())
-			read_matrix_binary(u_path, sol);
+			read_matrix(u_path, sol);
 		else
 			rhs_assembler.initial_solution(sol);
 
@@ -473,11 +473,11 @@ namespace polyfem
 			const std::string a_out_path = resolve_output_path(args["export"]["a_path"]);
 
 			if (!u_out_path.empty())
-				write_matrix_binary(u_out_path, sol);
+				write_matrix(u_out_path, sol);
 			if (!v_out_path.empty())
-				write_matrix_binary(v_out_path, velocity);
+				write_matrix(v_out_path, velocity);
 			if (!a_out_path.empty())
-				write_matrix_binary(a_out_path, acceleration);
+				write_matrix(a_out_path, acceleration);
 		}
 
 		const bool export_surface = args["export"]["surface"];
@@ -1114,7 +1114,7 @@ namespace polyfem
 		{
 			const std::string u_path = resolve_path(args["export"]["u_path"], args["root_path"]);
 			if (!u_path.empty())
-				write_matrix_binary(u_path, sol);
+				write_matrix(u_path, sol);
 		}
 		// }
 		// else

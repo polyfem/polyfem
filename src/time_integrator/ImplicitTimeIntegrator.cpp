@@ -28,13 +28,13 @@ namespace polyfem
 	void ImplicitTimeIntegrator::save_raw(const std::string &x_path, const std::string &v_path, const std::string &a_path) const
 	{
 		if (!x_path.empty())
-			write_matrix_binary(x_path, x_prev());
+			write_matrix(x_path, x_prev());
 
 		if (!v_path.empty())
-			write_matrix_binary(v_path, v_prev());
+			write_matrix(v_path, v_prev());
 
 		if (!a_path.empty())
-			write_matrix_binary(a_path, a_prev());
+			write_matrix(a_path, a_prev());
 	}
 
 	std::shared_ptr<ImplicitTimeIntegrator> ImplicitTimeIntegrator::construct_time_integrator(const std::string &name)
