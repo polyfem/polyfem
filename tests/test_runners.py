@@ -58,13 +58,13 @@ if __name__ == "__main__":
     )
 
     run_one(
-        ["--mesh", "../data/data/contact/meshes/3D/simple/cube.msh", "--cmd", "--n_refs", "1", "--problem", "ElasticExact", "--tform", "NeoHookean", "-p", "3"],
+        ["--mesh", "../data/data/contact/meshes/3D/simple/cube.msh", "--cmd", "--n_refs", "1", "--problem", "ElasticExact", "--tform", "NeoHookean", "-p", "3", "--solver", "Eigen::SimplicialLDLT"],
         [4.083170198731961e-05, 0.00015726784141436345, 0.00068053938804395, 0.0006793133524317424, 0.00031649685403384715, 0.0006601509467064132],
         1e-8
     )
 
     run_one(
-        ["--mesh", "../data/data/contact/meshes/3D/simple/cube.msh", "--cmd", "--n_refs", "1", "--problem", "ElasticExact", "--tform", "NeoHookean", "-p", "4"],
+        ["--mesh", "../data/data/contact/meshes/3D/simple/cube.msh", "--cmd", "--n_refs", "1", "--problem", "ElasticExact", "--tform", "NeoHookean", "-p", "4", "--solver", "Eigen::SimplicialLDLT"],
         [6.80013839401405e-09, 2.14988447311059e-08, 1.6054231219286324e-07, 1.603982297971303e-07, 4.6108080698545184e-08, 4.013285642307949e-07],
         1e-8
     )
