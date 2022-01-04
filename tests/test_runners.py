@@ -14,7 +14,7 @@ def run_one(args, errs, margin):
 
 
 
-    print("running", " ".join(cmd))
+    print(" ".join(cmd))
     out = subprocess.check_output(cmd)
     out = out.decode("utf-8")
 
@@ -54,6 +54,18 @@ if __name__ == "__main__":
     run_one(
         ["--mesh", "../data/data/contact/meshes/3D/simple/cube.msh", "--cmd", "--n_refs", "1", "--problem", "ElasticExact", "--tform", "NeoHookean"],
         [0.0051299463758777445, 0.007273504953205199, 0.041472207643984106, 0.04115370769501033, 0.010061026263237665, 0.05483214512781843],
+        1e-8
+    )
+
+    run_one(
+        ["--mesh", "../data/data/contact/meshes/3D/simple/cube.msh", "--cmd", "--n_refs", "1", "--problem", "ElasticExact", "--tform", "NeoHookean", "-p", "3"],
+        [4.083170198731961e-05, 0.00015726784141436345, 0.00068053938804395, 0.0006793133524317424, 0.00031649685403384715, 0.0006601509467064132],
+        1e-8
+    )
+
+    run_one(
+        ["--mesh", "../data/data/contact/meshes/3D/simple/cube.msh", "--cmd", "--n_refs", "1", "--problem", "ElasticExact", "--tform", "NeoHookean", "-p", "4"],
+        [6.80013839401405e-09, 2.14988447311059e-08, 1.6054231219286324e-07, 1.603982297971303e-07, 4.6108080698545184e-08, 4.013285642307949e-07],
         1e-8
     )
 

@@ -133,13 +133,13 @@ namespace polyfem
 			}
 			else
 			{
+				gradient.resize(vals.basis_values.size() * 2);
 				compute_energy_aux_gradient_fast<Eigen::Dynamic, 2>(vals, displacement, da, gradient);
-				return gradient;
 			}
 		}
-
-		if (size() == 3)
+		else //if (size() == 3)
 		{
+			assert(size() == 3);
 			if (vals.basis_values.size() == 4)
 			{
 				gradient.resize(12);
@@ -157,8 +157,8 @@ namespace polyfem
 			}
 			else
 			{
+				gradient.resize(vals.basis_values.size() * 3);
 				compute_energy_aux_gradient_fast<Eigen::Dynamic, 3>(vals, displacement, da, gradient);
-				return gradient;
 			}
 		}
 
@@ -192,14 +192,14 @@ namespace polyfem
 			}
 			else
 			{
+				hessian.resize(vals.basis_values.size() * 2, vals.basis_values.size() * 2);
 				hessian.setZero();
 				compute_energy_hessian_aux_fast<Eigen::Dynamic, 2>(vals, displacement, da, hessian);
-				return hessian;
 			}
 		}
-
-		if (size() == 3)
+		else //if (size() == 3)
 		{
+			assert(size() == 3);
 			if (vals.basis_values.size() == 4)
 			{
 				hessian.resize(12, 12);
@@ -220,9 +220,9 @@ namespace polyfem
 			}
 			else
 			{
+				hessian.resize(vals.basis_values.size() * 3, vals.basis_values.size() * 3);
 				hessian.setZero();
 				compute_energy_hessian_aux_fast<Eigen::Dynamic, 3>(vals, displacement, da, hessian);
-				return hessian;
 			}
 		}
 
