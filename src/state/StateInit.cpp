@@ -295,11 +295,11 @@ namespace polyfem
 
 		if (this->args["has_collision"])
 		{
-			if (!args_in.contains("project_to_psd"))
-			{
-				args["project_to_psd"] = true;
-				logger().warn("Changing default project to psd to true");
-			}
+			// if (!args_in.contains("project_to_psd"))
+			// {
+			// 	args["project_to_psd"] = true;
+			// 	logger().warn("Changing default project to psd to true");
+			// }
 
 			if (!args_in.contains("line_search"))
 			{

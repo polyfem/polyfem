@@ -94,7 +94,7 @@ namespace polyfem
 			ddd.conservativeResize(ddd.rows(), 3);
 			ddd.col(2).setZero();
 		}
-		igl::write_triangle_mesh("step.obj", ddd, state.boundary_triangles);
+		// igl::write_triangle_mesh("step.obj", ddd, state.boundary_triangles);
 
 #ifdef USE_DIV_BARRIER_STIFFNESS
 		return val + AL_penalty / _barrier_stiffness;
