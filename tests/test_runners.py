@@ -63,11 +63,12 @@ if __name__ == "__main__":
         1e-8
     )
 
-    run_one(
-        ["--mesh", "../data/data/contact/meshes/3D/simple/cube.msh", "--cmd", "--problem", "ElasticExact", "--tform", "NeoHookean", "-p", "4", "--solver", "Eigen::SimplicialLDLT"],
-        [1.3287076839116818e-07, 2.628334984159712e-07, 1.7222873642153572e-06, 1.7171543680878033e-06, 4.423485882777132e-07, 5.921716770113337e-06],
-        1e-8
-    )
+    if sys.platform != "darwin": # too much memory on CI
+        run_one(
+            ["--mesh", "../data/data/contact/meshes/3D/simple/cube.msh", "--cmd", "--problem", "ElasticExact", "--tform", "NeoHookean", "-p", "4", "--solver", "Eigen::SimplicialLDLT"],
+            [1.3287076839116818e-07, 2.628334984159712e-07, 1.7222873642153572e-06, 1.7171543680878033e-06, 4.423485882777132e-07, 5.921716770113337e-06],
+            1e-8
+        )
 
     run_one(
         ["--mesh", "../data/data/contact/meshes/3D/simple/cube.msh", "--cmd", "--n_refs", "1", "--problem", "ElasticExact", "--tform", "SaintVenant"],
