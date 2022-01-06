@@ -83,6 +83,9 @@ option(POLYFEM_WITH_APPS      "Build the apps"          ON)
 option(POLYFEM_WITH_MISC      "Build misc targes"       ON)
 option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"       ON)
 
+option(POLYFEM_DIV_BARRIER_STIFFNESS "Divide the energy terms by the contact barrier stiffeness" OFF)
+mark_as_advanced(POLYFEM_DIV_BARRIER_STIFFNESS)
+
 #Solver
 option(POLYSOLVE_WITH_CHOLMOD          "Enable Cholmod library"            ON)
 option(POLYSOLVE_WITH_UMFPACK          "Enable UmfPack library"            ON)
@@ -185,6 +188,10 @@ target_compile_definitions(polyfem PUBLIC -DPOLYFEM_BIG_N=${POLYFEM_BIG_N})
 
 if("$ENV{CLUSTER}" STREQUAL "PRINCE")
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_ON_HPC)
+endif()
+
+if(POLYFEM_DIV_BARRIER_STIFFNESS)
+    target_compile_definitions(polyfem PUBLIC POLYFEM_DIV_BARRIER_STIFFNESS)
 endif()
 
 ################################################################################

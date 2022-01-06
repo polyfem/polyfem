@@ -18,8 +18,6 @@
 
 static bool disable_collision = false;
 
-// #define USE_DIV_BARRIER_STIFFNESS
-
 /*
 m \frac{\partial^2 u}{\partial t^2} = \psi = \text{div}(\sigma[u])\\
 u^{t+1} = u(t+\Delta t)\approx u(t) + \Delta t \dot u + \frac{\Delta t^2} 2 \ddot u \\
@@ -467,7 +465,7 @@ namespace polyfem
 		// 	"elastic_energy={:.16g} body_energy={:.16g} intertia_energy={:.16g} collision_energy={:.16g} friction_energy={:.16g}",
 		// 	scaling * elastic_energy, scaling * body_energy, intertia_energy, _barrier_stiffness * collision_energy, friction_energy);
 
-#ifdef USE_DIV_BARRIER_STIFFNESS
+#ifdef POLYFEM_DIV_BARRIER_STIFFNESS
 		return (scaling * (elastic_energy + body_energy) + intertia_energy + friction_energy) / _barrier_stiffness + collision_energy;
 #else
 		return scaling * (elastic_energy + body_energy) + intertia_energy + _barrier_stiffness * collision_energy + friction_energy;
@@ -496,7 +494,7 @@ namespace polyfem
 		Eigen::MatrixXd grad;
 		gradient_no_rhs(x, grad, only_elastic);
 
-#ifdef USE_DIV_BARRIER_STIFFNESS
+#ifdef POLYFEM_DIV_BARRIER_STIFFNESS
 		grad -= current_rhs() / _barrier_stiffness;
 #else
 		grad -= current_rhs();
@@ -529,7 +527,7 @@ namespace polyfem
 
 		// logger().trace("grad norm {}", grad.norm());
 
-#ifdef USE_DIV_BARRIER_STIFFNESS
+#ifdef POLYFEM_DIV_BARRIER_STIFFNESS
 		grad /= _barrier_stiffness;
 #endif
 
@@ -538,7 +536,7 @@ namespace polyfem
 			Eigen::MatrixXd displaced;
 			compute_displaced_points(full, displaced);
 
-#ifdef USE_DIV_BARRIER_STIFFNESS
+#ifdef POLYFEM_DIV_BARRIER_STIFFNESS
 			grad += ipc::compute_barrier_potential_gradient(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat);
 			grad += ipc::compute_friction_potential_gradient(
 						displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set, _epsv * dt())
@@ -688,7 +686,7 @@ namespace polyfem
 
 		// Summing the hessian matrices like this might be less efficient than multiple `hessian += ...`, but
 		// it is much easier to read and export the individual matrices for inspection.
-#ifdef USE_DIV_BARRIER_STIFFNESS
+#ifdef POLYFEM_DIV_BARRIER_STIFFNESS
 		hessian = (energy_hessian + inertia_hessian + friction_hessian) / _barrier_stiffness + barrier_hessian;
 #else
 		hessian = energy_hessian + inertia_hessian + _barrier_stiffness * barrier_hessian + friction_hessian;
