@@ -6,6 +6,7 @@
 #include <tbb/enumerable_thread_specific.h>
 #elif defined(POLYFEM_WITH_CPP_THREADS)
 #include <polyfem/par_for.hpp>
+#include <execution>
 #else
 // Not using parallel for
 #endif
@@ -23,6 +24,19 @@ namespace polyfem
 		});
 #else
 		partial_for(0, size, /*thread_id=*/0); // actually the full for loop
+#endif
+	}
+
+	inline void maybe_parallel_for(int size, const std::function<void(int)> &body)
+	{
+#if defined(POLYFEM_WITH_CPP_THREADS)
+		for (int i = 0; i < size; ++i)
+			body(i);
+#elif defined(POLYFEM_WITH_TBB)
+		tbb::parallel_for(0, size, body);
+#else
+		for (int i = 0; i < size; ++i)
+			body(i);
 #endif
 	}
 
