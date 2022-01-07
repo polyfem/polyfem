@@ -36,6 +36,7 @@ namespace cppoptlib
 			criteria.iterations = solver_params.value("nl_iterations", 3000);
 
 			use_gradient_norm = solver_params.value("useGradNorm", true);
+			normalize_gradient = solver_params.value("relativeGradient", false);
 			this->setStopCriteria(criteria);
 
 			setLineSearch("armijo");
@@ -70,6 +71,8 @@ namespace cppoptlib
 			double old_energy = std::nan("");
 			double first_energy = std::nan("");
 
+			double first_grad_norm = -1;
+
 			Timer total_time("Non-linear solver time");
 			total_time.start();
 
@@ -96,6 +99,9 @@ namespace cppoptlib
 					m_error_code = ErrorCode::NanEncountered;
 					break;
 				}
+
+				if (first_grad_norm < 0)
+					first_grad_norm = grad_norm;
 
 				// ------------------------
 				// Compute update direction
@@ -139,7 +145,7 @@ namespace cppoptlib
 				}
 				else
 				{
-					this->m_current.gradNorm = grad_norm;
+					this->m_current.gradNorm = grad_norm / (normalize_gradient ? first_grad_norm : 1);
 				}
 
 				this->m_status = checkConvergence(this->m_stop, this->m_current);
@@ -305,6 +311,7 @@ namespace cppoptlib
 
 		ErrorCode m_error_code;
 		bool use_gradient_norm;
+		bool normalize_gradient;
 
 		json solver_info;
 
@@ -340,6 +347,8 @@ namespace cppoptlib
 			solver_info["fDelta"] = crit.fDelta;
 			solver_info["gradNorm"] = crit.gradNorm;
 			solver_info["condition"] = crit.condition;
+			solver_info["use_gradient_norm"] = use_gradient_norm;
+			solver_info["relative_gradient"] = normalize_gradient;
 
 			double per_iteration = crit.iterations ? crit.iterations : 1;
 
