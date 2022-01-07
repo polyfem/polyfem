@@ -13,8 +13,6 @@
 
 #include <unsupported/Eigen/SparseExtra>
 
-// #define USE_DIV_BARRIER_STIFFNESS
-
 namespace polyfem
 {
 	using namespace polysolve;
@@ -96,7 +94,7 @@ namespace polyfem
 		}
 		// igl::write_triangle_mesh("step.obj", ddd, state.boundary_triangles);
 
-#ifdef USE_DIV_BARRIER_STIFFNESS
+#ifdef POLYFEM_DIV_BARRIER_STIFFNESS
 		return val + AL_penalty / _barrier_stiffness;
 #else
 		return val + AL_penalty;
@@ -110,7 +108,7 @@ namespace polyfem
 		TVector grad_AL;
 		compute_distance(x, grad_AL);
 		//logger().trace("dist grad {}", tmp.norm());
-#ifdef USE_DIV_BARRIER_STIFFNESS
+#ifdef POLYFEM_DIV_BARRIER_STIFFNESS
 		grad_AL *= weight_ / _barrier_stiffness;
 #else
 		grad_AL *= weight_;
@@ -123,7 +121,7 @@ namespace polyfem
 	void ALNLProblem::hessian_full(const TVector &x, THessian &hessian)
 	{
 		super::hessian_full(x, hessian);
-#ifdef USE_DIV_BARRIER_STIFFNESS
+#ifdef POLYFEM_DIV_BARRIER_STIFFNESS
 		hessian += hessian_AL_ / _barrier_stiffness;
 #else
 		hessian += hessian_AL_;
