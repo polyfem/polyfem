@@ -16,7 +16,7 @@
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
 
-#include <ghc/fs_std.hpp> // filesystem
+#include <filesystem>
 
 using namespace polyfem;
 using namespace polysolve;
@@ -33,6 +33,8 @@ bool has_arg(const CLI::App &command_line, const std::string &value)
 
 int main(int argc, char **argv)
 {
+	using namespace std::filesystem;
+
 	CLI::App command_line{"polyfem"};
 	// Eigen::setNbThreads(1);
 
@@ -293,12 +295,14 @@ int main(int argc, char **argv)
 
 	if (!output_dir.empty())
 	{
-		fs::create_directories(output_dir);
+		create_directories(output_dir);
 	}
 
 	if (!output_json.empty())
 	{
-		fs::create_directories(fs::path(output_json).parent_path());
+		const auto parent = path(output_json).parent_path();
+		if (!parent.empty())
+			create_directories(parent);
 	}
 
 	if (!in_args.contains("rhs_solver_type") && in_args.contains("solver_type"))

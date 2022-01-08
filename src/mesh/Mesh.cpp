@@ -12,11 +12,11 @@
 #include <geogram/mesh/mesh_io.h>
 #include <geogram/mesh/mesh_geometry.h>
 
-#include <ghc/fs_std.hpp> // filesystem
-
 #include <Eigen/Geometry>
 
 #include <igl/boundary_facets.h>
+
+#include <filesystem>
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace
@@ -64,7 +64,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(GEO::Mesh &meshin)
 
 std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path)
 {
-	if (!fs::exists(path))
+	if (!std::filesystem::exists(path))
 	{
 		logger().error(path.empty() ? "No mesh provided!" : "Mesh file does not exist: {}", path);
 		return nullptr;

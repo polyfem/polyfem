@@ -24,9 +24,9 @@
 #include <ipc/utils/faces_to_edges.hpp>
 #include <ipc/ipc.hpp>
 
-#include <ghc/fs_std.hpp> // filesystem
-
 #include <tinyxml2.h>
+
+#include <filesystem>
 
 extern "C" size_t getPeakRSS();
 
@@ -556,11 +556,11 @@ namespace polyfem
 
 	std::string State::resolve_output_path(const std::string &path)
 	{
-		if (output_dir.empty() || path.empty() || fs::path(path).is_absolute())
+		if (output_dir.empty() || path.empty() || std::filesystem::path(path).is_absolute())
 		{
 			return path;
 		}
-		return fs::weakly_canonical(fs::path(output_dir) / path).string();
+		return std::filesystem::weakly_canonical(std::filesystem::path(output_dir) / path).string();
 	}
 
 	void State::save_json()

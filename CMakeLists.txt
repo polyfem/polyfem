@@ -168,13 +168,9 @@ target_include_directories(polyfem PUBLIC ${PROJECT_BINARY_DIR}/include)
 # Extra warnings
 target_link_libraries(polyfem PRIVATE warnings::all)
 
-if(POLYFEM_THREADING STREQUAL "CPP")
-    # Use C++17
-    target_compile_features(polyfem PUBLIC ${CXX17_FEATURES})
-else()
-    # Use C++14
-    target_compile_features(polyfem PUBLIC ${CXX14_FEATURES})
-endif()
+
+# Use C++17
+target_compile_features(polyfem PUBLIC ${CXX17_FEATURES})
 
 # No limit yay
 target_compile_definitions(polyfem PUBLIC -DEIGEN_STACK_ALLOCATION_LIMIT=0)
@@ -250,9 +246,6 @@ target_link_libraries(polyfem PUBLIC tinyexpr::tinyexpr)
 include(tinyxml)
 target_link_libraries(polyfem PUBLIC tinyxml2)
 
-# Filesystem
-include(filesystem)
-target_link_libraries(polyfem PUBLIC ghc::filesystem)
 
 ################################################################################
 # Optional libraries

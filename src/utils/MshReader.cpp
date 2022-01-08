@@ -10,13 +10,13 @@
 #include <iostream>
 #include <vector>
 
-#include <ghc/fs_std.hpp> // filesystem
+#include <filesystem> // filesystem
 
 namespace polyfem
 {
 	bool MshReader::load(const std::string &path, Eigen::MatrixXd &vertices, Eigen::MatrixXi &cells, std::vector<std::vector<int>> &elements, std::vector<std::vector<double>> &weights)
 	{
-		if (!fs::exists(path))
+		if (!std::filesystem::exists(path))
 		{
 			logger().error("Msh file does not exist: {}", path);
 			return false;
