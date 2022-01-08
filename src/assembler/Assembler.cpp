@@ -216,7 +216,7 @@ namespace polyfem
 			std::vector<Eigen::Triplet<double>> triplets(triplet_count);
 
 			// Parallel copy into triplets
-			tbb::parallel_for(0, int(storages.size()), [&](int i) {
+			maybe_parallel_for(storages.size(), [&](int i) {
 				const auto *s = storages[i];
 				const int offset = offsets[i];
 				for (int j = 0; j < s->cache.entries().size(); ++j)

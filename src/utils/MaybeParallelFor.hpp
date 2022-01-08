@@ -16,6 +16,7 @@ namespace polyfem
 	// The parallel for used depends on the compile definitions.
 	// The overall for loop is from 0 up to `size` with an increment of 1.
 	inline void maybe_parallel_for(int size, const std::function<void(int, int, int)> &partial_for);
+	inline void maybe_parallel_for(int size, const std::function<void(int)> &body);
 
 	// Returns thread specific storage for further use in `maybe_parallel_for()`.
 	// The return type depends on the threading library used.
