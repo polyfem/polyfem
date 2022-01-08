@@ -80,6 +80,7 @@ int main(int argc, char **argv)
 	int nl_solver_rhs_steps = 1;
 	int cache_size = -1;
 	size_t max_threads = std::numeric_limits<size_t>::max();
+	double f_delta = 0;
 
 	double ccd_max_iterations = -1;
 	std::string ccd_method = "";
@@ -141,6 +142,7 @@ int main(int argc, char **argv)
 	command_line.add_option("--output,--output_json", output_json, "Output json file");
 	command_line.add_option("--vtu,--output_vtu", output_vtu, "Output VTU file");
 	command_line.add_option("--screenshot", screenshot, "screenshot (disabled)");
+	command_line.add_option("--f_delta", f_delta, "non linear tolerance");
 
 	command_line.add_flag("--quiet", is_quiet, "Disable cout for logging");
 	command_line.add_option("--log_file", log_file, "Log to a file");
@@ -248,6 +250,12 @@ int main(int argc, char **argv)
 
 		if (has_arg(command_line, "export_material_params"))
 			in_args["export"]["material_params"] = true;
+
+		if (has_arg(command_line, "f_delta"))
+		{
+			in_args["solver_params"] = {};
+			in_args["solver_params"]["fDelta"] = f_delta;
+		}
 	}
 
 	if (!bc_method.empty())
