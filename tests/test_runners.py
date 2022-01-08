@@ -1,6 +1,7 @@
 import subprocess
 import os
 import sys
+import json
 
 
 def run_one(args, errs, margin):
@@ -10,25 +11,27 @@ def run_one(args, errs, margin):
     if sys.platform == "win32":
         poolyfem_exe += ".exe"
 
-    cmd = [poolyfem_exe] + args
+    cmd = [poolyfem_exe] + args + ["--output", "tmp.json"]
 
 
 
     print(" ".join(cmd))
-    out = subprocess.check_output(cmd)
-    out = out.decode("utf-8")
+    subprocess.check_output(cmd)
+    # out = out.decode("utf-8")
 
-    err_str = ["L2 error","Lp error","H1 error","H1 semi error","Linf error","grad max error"]
+    err_str = ["err_l2","err_lp","err_h1","err_h1_semi","err_linf","err_linf_grad"]
 
-    for i,k in enumerate(err_str):
-        index = out.find(k)
-        index += len(k)+2
-        end = out.find("\n", index)
-        num = float(out[index:end])
-        if abs(num - errs[i]) >= margin:
-            print(out)
-            print("{} err: {}, expected: {}, difference {} >= {}".format(k, num, errs[i], abs(num - errs[i]), margin))
-        assert(abs(num - errs[i]) < margin)
+    with open("tmp.json") as f:
+        data = json.load(f)
+
+        for i,k in enumerate(err_str):
+            expected = errs[i]
+            value = data[k]
+            if abs(value - expected) >= margin:
+                print(data)
+                print("{} value: {}, expected: {}, difference {} >= {}".format(k, value, expected, abs(value - expected), margin))
+            assert(abs(value - expected) < margin)
+
 
 if __name__ == "__main__":
     run_one(
