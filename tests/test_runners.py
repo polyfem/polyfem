@@ -54,26 +54,26 @@ if __name__ == "__main__":
     run_one(
         ["--mesh", "../data/data/contact/meshes/3D/simple/cube.msh", "--cmd", "--n_refs", "1", "--problem", "ElasticExact", "--tform", "NeoHookean"],
         [0.005129946375877744, 0.007273504953205196, 0.041472207643984106, 0.04115370769501033, 0.01006102626323766, 0.054832145127818456],
-        1e-8
+        1e-7
     )
 
     run_one(
         ["--mesh", "../data/data/contact/meshes/3D/simple/cube.msh", "--cmd", "--problem", "ElasticExact", "--tform", "NeoHookean", "-p", "3", "--solver", "Eigen::SimplicialLDLT"],
         [0.00026914175293163043, 0.00030767125405190725, 0.0023574622840964975, 0.002342048491762364, 0.0003709364513102658, 0.0038508053568526235],
-        1e-8
+        1e-7
     )
 
     if sys.platform != "darwin": # too much memory on CI
         run_one(
             ["--mesh", "../data/data/contact/meshes/3D/simple/cube.msh", "--cmd", "--problem", "ElasticExact", "--tform", "NeoHookean", "-p", "4", "--solver", "Eigen::SimplicialLDLT"],
             [1.3287076839149297e-07, 2.628334984177216e-07, 1.7222873642188449e-06, 1.7171543680912764e-06, 4.423485882799039e-07, 5.921716770190064e-06],
-            1e-8
+            1e-7
         )
 
     run_one(
         ["--mesh", "../data/data/contact/meshes/3D/simple/cube.msh", "--cmd", "--n_refs", "1", "--problem", "ElasticExact", "--tform", "SaintVenant", "--solver", "Eigen::SimplicialLDLT"],
         [0.005130143730924622, 0.00728650729281807, 0.041484890207615144, 0.04116646378835493, 0.010083460622798305, 0.054747447617836904],
-        1e-8
+        1e-7
     )
 
 
@@ -81,12 +81,12 @@ if __name__ == "__main__":
         run_one(
             ["--json",  "../data/data/contact/examples/3D/unit-tests/5-cubes-fast.json",  "--cmd"],
             [0.011771999999999979, 0.03936205435091213, 0.011771999999999979, 6.534697153261478e-17, 0.05885999999999997, 0.05885999999999997],
-            1e-8
+            1e-7
         )
 
     run_one(
         ["--febio", "../data/data/lin-neo.feb", "--cmd", "--compute_errors"],
         [0.00331754154779869, 0.0013471375792506895, 0.003620654027880733, 0.0014501909075147475, 0.0010758137283069988, 0.0010758137283069988],
-        1e-8
+        1e-7
     )
 
