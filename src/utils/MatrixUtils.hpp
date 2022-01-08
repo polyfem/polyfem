@@ -68,6 +68,9 @@ namespace polyfem
 		SpareMatrixCache operator+(const SpareMatrixCache &a) const;
 		void operator+=(const SpareMatrixCache &o);
 
+		const StiffnessMatrix &mat() const { return mat_; }
+		const std::vector<Eigen::Triplet<double>> &entries() const { return entries_; }
+
 	private:
 		size_t size_;
 		StiffnessMatrix tmp_, mat_;
