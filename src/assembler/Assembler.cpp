@@ -196,25 +196,46 @@ namespace polyfem
 			logger().debug("done separate assembly {}s...", timerg.getElapsedTime());
 
 			// Assemble the stiffness matrix by concatenating the tuples in each local storage
-			igl::Timer timer1, timer2;
-			timer1.start();
+			igl::Timer timer1, timer2, timer3;
 
-			// Preallocates the triplet storage
-			std::vector<const LocalThreadMatStorage *> storages(storage.size());
-			std::vector<int> offsets(storage.size());
+			// Collect thread storages
+			std::vector<LocalThreadMatStorage *> storages(storage.size());
 			int index = 0;
-			int triplet_count = 0;
-			for (const auto &local_storage : storage)
+			for (auto &local_storage : storage)
 			{
-				offsets[index] = triplet_count;
 				storages[index] = &local_storage;
-
-				triplet_count += local_storage.cache.entries().size();
-				triplet_count += local_storage.cache.mat().nonZeros();
 				++index;
 			}
-			std::vector<Eigen::Triplet<double>> triplets(triplet_count);
 
+			timerg.start();
+			maybe_parallel_for(storages.size(), [&](int i) {
+				auto *s = storages[i];
+				s->cache.prune();
+			});
+			timerg.stop();
+			logger().debug("done pruning triplets {}s...", timerg.getElapsedTime());
+
+			// Prepares for parallel concatenation
+			std::vector<int> offsets(storage.size());
+
+			index = 0;
+			int triplet_count = 0;
+			for (auto &local_storage : storage)
+			{
+				offsets[index] = triplet_count;
+				++index;
+				triplet_count += local_storage.cache.entries().size();
+				triplet_count += local_storage.cache.mat().nonZeros();
+			}
+
+			timer1.start();
+			std::vector<Eigen::Triplet<double>> triplets(triplet_count);
+			timer1.stop();
+
+			logger().debug("done allocate triplets {}s...", timer1.getElapsedTime());
+			logger().debug("Triplets Count: {}", triplet_count);
+
+			timer2.start();
 			// Parallel copy into triplets
 			maybe_parallel_for(storages.size(), [&](int i) {
 				const auto *s = storages[i];
@@ -237,25 +258,29 @@ namespace polyfem
 				}
 			});
 
-			timer1.stop();
-			logger().debug("done concatenate triplets {}s...", timer1.getElapsedTime());
+			timer2.stop();
+			logger().debug("done concatenate triplets {}s...", timer2.getElapsedTime());
 
-			timer2.start();
+			timer3.start();
 			// Sort and assemble
 			stiffness.setFromTriplets(triplets.begin(), triplets.end());
-			timer2.stop();
+			timer3.stop();
 
-			logger().debug("done setFromTriplets assembly {}s...", timer2.getElapsedTime());
+			logger().debug("done setFromTriplets assembly {}s...", timer3.getElapsedTime());
 
-			// Old serial version
+			// // Old serial version
+			// StiffnessMatrix stiffness_old;
+			// stiffness_old.resize(n_basis * local_assembler_.size(), n_basis * local_assembler_.size());
+			// stiffness_old.setZero();
 			// timerg.start();
 			// // Serially merge local storages
 			// for (LocalThreadMatStorage &local_storage : storage)
-			// 	stiffness += local_storage.cache.get_matrix(false); // will also prune
-			// stiffness.makeCompressed();
+			// 	stiffness_old += local_storage.cache.get_matrix(false); // will also prune
+			// stiffness_old.makeCompressed();
 			// timerg.stop();
-			// logger().debug("done merge assembly {}s...", timerg.getElapsedTime());
-			// logger().debug("Assembly difference {}", (stiffness - stiffness_fast).norm());
+			// logger().debug("SERIAL:   assembly {}s...", timerg.getElapsedTime());
+			// logger().debug("PARALLEL: assembly {}s...", timer1.getElapsedTime() + timer2.getElapsedTime() + timer3.getElapsedTime());
+			// logger().debug("Assembly difference {}", (stiffness - stiffness_old).norm());
 
 			//exit(0);
 		}
