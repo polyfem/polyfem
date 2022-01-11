@@ -24,7 +24,7 @@ namespace polyfem
 			const TVector &x,
 			const TVector &searchDir,
 			ProblemType &objFunc) override
-		{		
+		{
 			TVector grad(x.rows());
 			double f_in, alpha;
 			double alpha_init = default_alpha_init;
@@ -52,7 +52,6 @@ namespace polyfem
 				if (std::isnan(alpha_init))
 					return std::nan("");
 			}
-
 
 			const double nan_free_step_size = alpha_init;
 
@@ -82,7 +81,12 @@ namespace polyfem
 					objFunc.solution_changed(x1);
 				}
 
-				f = objFunc.value(x1);
+				objFunc.gradient(x, grad);
+				const bool use_grad_norm = grad.norm() < this->use_grad_norm_tol;
+				if (use_grad_norm)
+					f_in = grad.squaredNorm();
+
+				f = use_grad_norm ? grad.squaredNorm() : objFunc.value(x1);
 				const double Cache = c * grad.dot(searchDir);
 				valid = objFunc.is_step_valid(x, x1);
 
@@ -99,7 +103,14 @@ namespace polyfem
 						objFunc.solution_changed(x1);
 					}
 
-					f = objFunc.value(x1);
+					if (use_grad_norm)
+					{
+						objFunc.gradient(x1, grad);
+						f = grad.squaredNorm();
+					}
+					else
+						f = objFunc.value(x1);
+
 					valid = objFunc.is_step_valid(x, x1);
 
 					//max_step_size should return a collision free step
@@ -148,14 +159,12 @@ namespace polyfem
 				"Line search finished (nan_free_step_size={} collision_free_step_size={} descent_step_size={} final_step_size={})",
 				nan_free_step_size, collision_free_step_size, descent_step_size, alpha);
 
-			
 			return alpha;
 		}
 
-		protected:
-			const double default_alpha_init = 1.0;
-			const double c = 0.5;
-			const double tau = 0.5;
-		
+	protected:
+		const double default_alpha_init = 1.0;
+		const double c = 0.5;
+		const double tau = 0.5;
 	};
 } // namespace polyfem

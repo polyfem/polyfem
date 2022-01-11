@@ -41,10 +41,12 @@ namespace polyfem
 		double constrain_set_update_time;
 		double classical_line_search_time;
 
+		double use_grad_norm_tol = -1;
+
 	protected:
-			double min_step_size = 0;
-			int max_step_size_iter = 100;
-			int cur_iter = 0;
+		double min_step_size = 0;
+		int max_step_size_iter = 100;
+		int cur_iter = 0;
 
 		double compute_nan_free_step_size(
 			const TVector &x,

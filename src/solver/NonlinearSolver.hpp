@@ -31,12 +31,13 @@ namespace cppoptlib
 			: solver_params(solver_params)
 		{
 			auto criteria = this->criteria();
-			criteria.fDelta = solver_params.value("fDelta", 1e-9);
+			criteria.fDelta = solver_params.value("fDelta", -1);
 			criteria.gradNorm = solver_params.value("gradNorm", 1e-8);
 			criteria.iterations = solver_params.value("nl_iterations", 3000);
 
 			use_gradient_norm = solver_params.value("useGradNorm", true);
 			normalize_gradient = solver_params.value("relativeGradient", false);
+			use_grad_norm_tol = solver_params.value("use_grad_norm_tol", -1);
 			this->setStopCriteria(criteria);
 
 			setLineSearch("armijo");
@@ -75,6 +76,8 @@ namespace cppoptlib
 
 			Timer total_time("Non-linear solver time");
 			total_time.start();
+
+			m_line_search->use_grad_norm_tol = use_grad_norm_tol;
 
 			do
 			{
@@ -312,6 +315,7 @@ namespace cppoptlib
 		ErrorCode m_error_code;
 		bool use_gradient_norm;
 		bool normalize_gradient;
+		double use_grad_norm_tol;
 
 		json solver_info;
 

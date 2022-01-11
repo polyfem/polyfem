@@ -125,10 +125,16 @@ namespace polyfem
 			const TVector &x,
 			const TVector &delta_x,
 			ProblemType &objFunc,
-			const double old_energy,
+			const double old_energy_in,
 			const double starting_step_size = 1)
 		{
 			double step_size = starting_step_size;
+
+			TVector grad(x.rows());
+			objFunc.gradient(x, grad);
+			const bool use_grad_norm = grad.norm() < this->use_grad_norm_tol;
+
+			const double old_energy = use_grad_norm ? grad.squaredNorm() : old_energy_in;
 
 			// Find step that reduces the energy
 			double cur_energy = std::nan("");
@@ -142,7 +148,14 @@ namespace polyfem
 					objFunc.solution_changed(new_x);
 				}
 
-				cur_energy = objFunc.value(new_x);
+				if (use_grad_norm)
+				{
+					objFunc.gradient(new_x, grad);
+					cur_energy = grad.squaredNorm();
+				}
+				else
+					cur_energy = objFunc.value(new_x);
+
 				is_step_valid = objFunc.is_step_valid(x, new_x);
 
 				logger().trace("ls it: {} delta: {} invalid: {} ", this->cur_iter, (cur_energy - old_energy), !is_step_valid);
