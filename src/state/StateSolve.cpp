@@ -414,48 +414,38 @@ namespace polyfem
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 		const int precond_num = problem_dim * n_bases;
 
-		// Newmark
-		const double gamma = args["time_integrator_params"]["gamma"];
-		const double beta = args["time_integrator_params"]["beta"];
-		// makes the algorithm implicit and equivalent to the trapezoidal rule (unconditionally stable).
-
 		Eigen::MatrixXd temp, b;
 		StiffnessMatrix A;
 		Eigen::VectorXd x, btmp;
 
+		auto time_integrator = ImplicitTimeIntegrator::construct_time_integrator(args["time_integrator"]);
+		time_integrator->set_parameters(args["time_integrator_params"]);
+		time_integrator->init(sol, velocity, acceleration, dt);
+
 		for (int t = 1; t <= time_steps; ++t)
 		{
-			const double dt2 = dt * dt;
+			const double time = t0 + dt * t;
 
-			const Eigen::MatrixXd aOld = acceleration;
-			const Eigen::MatrixXd vOld = velocity;
-			const Eigen::MatrixXd uOld = sol;
+			rhs_assembler.assemble(density, current_rhs, time);
+			rhs_assembler.set_bc(std::vector<LocalBoundary>(), std::vector<int>(), args["n_boundary_samples"], local_neumann_boundary, current_rhs, time);
 
-			rhs_assembler.assemble(density, current_rhs, t0 + dt * t);
-			current_rhs *= -1;
+			current_rhs *= time_integrator->acceleration_scaling();
+			current_rhs += mass * time_integrator->x_tilde();
+			rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], std::vector<LocalBoundary>(), current_rhs, time);
 
-			temp = -(uOld + dt * vOld + ((1 / 2. - beta) * dt2) * aOld);
-			b = stiffness * temp + current_rhs;
+			b = -current_rhs;
 
-			rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, b, t0 + dt * t);
-
-			A = stiffness * beta * dt2 + mass;
+			A = stiffness * time_integrator->acceleration_scaling() + mass;
 			btmp = b;
 			spectrum = dirichlet_solve(*solver, A, btmp, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], t == 1 && args["export"]["spectrum"], assembler.is_fluid(formulation()), use_avg_pressure);
-			acceleration = x;
-
-			sol += dt * vOld + dt2 * ((1 / 2.0 - beta) * aOld + beta * acceleration);
-			velocity += dt * ((1 - gamma) * aOld + gamma * acceleration);
-
-			rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, t0 + dt * t);
-			rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, t0 + dt * t);
-			rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, t0 + dt * t);
+			time_integrator->update_quantities(x);
+			sol = x;
 
 			if (args["save_time_sequence"] && !(t % args["skip_frame"].get<int>()))
 			{
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
-				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), t0 + dt * t);
+				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), time);
 				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
 
 				save_pvd(
@@ -464,7 +454,7 @@ namespace polyfem
 					t, t0, dt, args["skip_frame"].get<int>());
 			}
 
-			logger().info("{}/{} t={}", t, time_steps, t0 + dt * t);
+			logger().info("{}/{} t={}", t, time_steps, time);
 		}
 
 		{
