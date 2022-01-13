@@ -364,6 +364,12 @@ namespace polyfem
 			bdf.new_solution(x);
 			sol = x;
 
+			const auto error = (A * x - b).norm();
+			if (error > 1e-4)
+				logger().error("Solver error: {}", error);
+			else
+				logger().debug("Solver error: {}", error);
+
 			if (assembler.is_mixed(formulation()))
 			{
 				sol_to_pressure();
@@ -440,6 +446,12 @@ namespace polyfem
 			spectrum = dirichlet_solve(*solver, A, btmp, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], t == 1 && args["export"]["spectrum"], assembler.is_fluid(formulation()), use_avg_pressure);
 			time_integrator->update_quantities(x);
 			sol = x;
+
+			const auto error = (A * x - b).norm();
+			if (error > 1e-4)
+				logger().error("Solver error: {}", error);
+			else
+				logger().debug("Solver error: {}", error);
 
 			if (args["save_time_sequence"] && !(t % args["skip_frame"].get<int>()))
 			{
@@ -908,7 +920,11 @@ namespace polyfem
 		sol = x;
 		solver->getInfo(solver_info);
 
-		logger().debug("Solver error: {}", (A * sol - b).norm());
+		const auto error = (A * x - b).norm();
+		if (error > 1e-4)
+			logger().error("Solver error: {}", error);
+		else
+			logger().debug("Solver error: {}", error);
 
 		if (assembler.is_mixed(formulation()))
 		{
