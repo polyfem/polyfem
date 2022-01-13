@@ -30,6 +30,9 @@ namespace cppoptlib
 
 		std::string name() const override { return "Newton"; }
 
+	protected:
+		virtual int default_descent_strategy() override { return 0; }
+
 	private:
 		std::unique_ptr<polysolve::LinearSolver> linear_solver;
 		const std::string linear_solver_type;
@@ -47,29 +50,29 @@ namespace cppoptlib
 			linear_solver->setParameters(this->solver_params);
 		}
 
-		virtual void compute_update_direction(
+		virtual bool compute_update_direction(
 			ProblemType &objFunc,
 			const TVector &x,
 			const TVector &grad,
 			TVector &direction) override
 		{
-			if (this->use_gradient_descent)
+			if (this->descent_strategy == 2)
 			{
 				direction = -grad;
-				return;
+				return true;
 			}
 
 			{
 				POLYFEM_SCOPED_TIMER("[timing] assembly time {}s", this->assembly_time);
-				objFunc.hessian(x, hessian);
 
-				// if (this->m_current.iterations == 0 && has_hessian_nans(hessian))
-				// {
-				// 	this->m_status = Status::UserDefined;
-				// 	polyfem::logger().debug("stopping because hessian is nan");
-				// 	this->m_error_code = Superclass::ErrorCode::NanEncountered;
-				// 	throw std::runtime_error("stopping because hessian is nan");
-				// }
+				if (this->descent_strategy == 1)
+					objFunc.set_projet_to_psd(true);
+				else if (this->descent_strategy == 0)
+					objFunc.set_projet_to_psd(false);
+				else
+					assert(false);
+
+				objFunc.hessian(x, hessian);
 			}
 
 			{
@@ -83,11 +86,10 @@ namespace cppoptlib
 				}
 				catch (const std::runtime_error &err)
 				{
-					polyfem::logger().error("Unable to factorize Hessian: \"{}\"; reverting to gradient descent", err.what());
+					this->descent_strategy++;
+					polyfem::logger().error("Unable to factorize Hessian: \"{}\"; reverting to {}", err.what(), this->descent_strategy);
 					// polyfem::write_sparse_matrix_csv("problematic_hessian.csv", hessian);
-					this->use_gradient_descent = true;
-					direction = -grad;
-					return;
+					return false;
 				}
 
 				linear_solver->solve(-grad, direction); // H Δx = -g
@@ -97,9 +99,9 @@ namespace cppoptlib
 			const double residual = (hessian * direction + grad).norm(); // H Δx + g = 0
 			if (std::isnan(residual) || residual > 1e-7)
 			{
-				polyfem::logger().warn("large linear solve residual ({}); reverting to gradient descent", residual);
-				direction = -grad;
-				this->use_gradient_descent = true;
+				this->descent_strategy++;
+				polyfem::logger().warn("large linear solve residual ({}, ||∇f||={}); reverting to {}", residual, grad.norm(), this->descent_strategy);
+				return false;
 			}
 			else
 			{
@@ -108,35 +110,39 @@ namespace cppoptlib
 
 			if (grad.squaredNorm() != 0 && direction.dot(grad) >= 0)
 			{
-				polyfem::logger().warn("Newton direction is not a descent direction (Δx⋅g={}≥0); reverting to gradient descent", direction.dot(grad));
-				direction = -grad;
-				this->use_gradient_descent = true;
+				this->descent_strategy++;
+				polyfem::logger().warn("Newton direction is not a descent direction (Δx⋅g={}≥0); reverting to {}", direction.dot(grad), this->descent_strategy);
+				return false;
 			}
 
 			json info;
 			linear_solver->getInfo(info);
 			internal_solver_info.push_back(info);
+
+			return true;
 		}
 
 		void handle_small_step(double step) override
 		{
-			if (this->use_gradient_descent)
-			{
-				// How did this not converge then?
-				// polyfem::logger().error(
-				// 	"[{}] (iter={}) ||step||={} is too small; stopping",
-				// 	name(), this->m_current.iterations, step);
-				// this->m_status = Status::UserDefined;
-				// this->m_error_code = Superclass::ErrorCode::StepTooSmall;
-			}
-			else
-			{
-				// Switching to gradient descent in this case will ruin quadratic convergence so don't.
-				// polyfem::logger().warn(
-				// 	"[{}] (iter={}) ||step||={} is too small; trying gradient descent",
-				// 	name(), this->m_current.iterations, step);
-				// this->use_gradient_descent = true;
-			}
+			if (this->descent_strategy == 0) //try to project to psd
+				this->descent_strategy = 1;
+			// if (this->use_gradient_descent)
+			// {
+			// 	// How did this not converge then?
+			// 	// polyfem::logger().error(
+			// 	// 	"[{}] (iter={}) ||step||={} is too small; stopping",
+			// 	// 	name(), this->m_current.iterations, step);
+			// 	// this->m_status = Status::UserDefined;
+			// 	// this->m_error_code = Superclass::ErrorCode::StepTooSmall;
+			// }
+			// else
+			// {
+			// 	// Switching to gradient descent in this case will ruin quadratic convergence so don't.
+			// 	// polyfem::logger().warn(
+			// 	// 	"[{}] (iter={}) ||step||={} is too small; trying gradient descent",
+			// 	// 	name(), this->m_current.iterations, step);
+			// 	// this->use_gradient_descent = true;
+			// }
 		}
 
 		void update_solver_info() override

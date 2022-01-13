@@ -31,6 +31,9 @@ namespace cppoptlib
 		std::string name() const override { return "L-BFGS"; }
 
 	protected:
+		virtual int default_descent_strategy() override { return 1; }
+
+	protected:
 		LBFGSpp::BFGSMat<Scalar> m_bfgs; // Approximation to the Hessian matrix
 
 		/// The number of corrections to approximate the inverse Hessian matrix.
@@ -53,16 +56,16 @@ namespace cppoptlib
 			m_prev_grad.resize(x.size());
 
 			// Use gradient descent for first iteration
-			this->use_gradient_descent = true;
+			this->descent_strategy = 2;
 		}
 
-		virtual void compute_update_direction(
+		virtual bool compute_update_direction(
 			ProblemType &objFunc,
 			const TVector &x,
 			const TVector &grad,
 			TVector &direction) override
 		{
-			if (this->use_gradient_descent)
+			if (this->descent_strategy == 2)
 			{
 				// Use gradient descent in the first iteration or if the previous iteration failed
 				direction = -grad;
@@ -80,6 +83,8 @@ namespace cppoptlib
 
 			m_prev_x = x;
 			m_prev_grad = grad;
+
+			return true;
 		}
 	};
 } // namespace cppoptlib

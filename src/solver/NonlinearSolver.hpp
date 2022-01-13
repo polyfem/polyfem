@@ -70,7 +70,6 @@ namespace cppoptlib
 
 			// Set these to nan to indicate they have not been computed yet
 			double old_energy = std::nan("");
-			double first_energy = std::nan("");
 
 			double first_grad_norm = -1;
 
@@ -81,12 +80,18 @@ namespace cppoptlib
 
 			do
 			{
-				// ----------------
-				// Compute gradient
-				// ----------------
 				{
 					POLYFEM_SCOPED_TIMER("[timing] constrain set update {}s", constrain_set_update_time);
 					objFunc.solution_changed(x);
+				}
+
+				const double energy = objFunc.value(x);
+				if (!std::isfinite(energy))
+				{
+					this->m_status = Status::UserDefined;
+					polyfem::logger().error("f(x) is nan or inf; stopping");
+					m_error_code = ErrorCode::NanEncountered;
+					break;
 				}
 
 				{
@@ -111,7 +116,8 @@ namespace cppoptlib
 				// ------------------------
 
 				// Compute a Δx to update the variable
-				compute_update_direction(objFunc, x, grad, delta_x);
+				if (!compute_update_direction(objFunc, x, grad, delta_x))
+					continue;
 
 				const double delta_x_norm = delta_x.norm();
 				if (std::isnan(delta_x_norm))
@@ -122,23 +128,9 @@ namespace cppoptlib
 					break;
 				}
 
-				// ---------------------
-				// Check for convergence
-				// ---------------------
-
-				const double energy = objFunc.value(x);
-				if (!std::isfinite(energy))
+				if (!use_gradient_norm)
 				{
-					this->m_status = Status::UserDefined;
-					polyfem::logger().error("f(x) is nan or inf; stopping");
-					m_error_code = ErrorCode::NanEncountered;
-					break;
-				}
-				this->m_current.fDelta = std::abs(old_energy - energy) / std::abs(old_energy);
-
-				// If the gradient norm is really small we found a minimum
-				if (!use_gradient_norm && !use_gradient_descent && grad_norm > 1e-13)
-				{
+					//TODO, we shold remove this
 					// Use the maximum absolute displacement value divided by the timestep,
 					// so the units are in velocity units.
 					// TODO: Set this to the actual timestep
@@ -148,29 +140,27 @@ namespace cppoptlib
 				}
 				else
 				{
+					//if normalize_gradient, use relative to first norm
 					this->m_current.gradNorm = grad_norm / (normalize_gradient ? first_grad_norm : 1);
 				}
+				this->m_current.fDelta = std::abs(old_energy - energy) / std::abs(old_energy);
 
 				this->m_status = checkConvergence(this->m_stop, this->m_current);
 
 				old_energy = energy;
-				if (std::isnan(first_energy))
-				{
-					first_energy = energy;
-				}
 
-				if (!use_gradient_norm && this->m_status != Status::Continue && this->m_status != Status::IterationLimit && grad_norm > 1e-2)
-				{
-					polyfem::logger().debug("[{}] converged with large gradient (||∇f||={}); continuing", name(), grad_norm);
-					this->m_status = Status::Continue;
-				}
+				// if (!use_gradient_norm && this->m_status != Status::Continue && this->m_status != Status::IterationLimit && grad_norm > 1e-2)
+				// {
+				// 	polyfem::logger().debug("[{}] converged with large gradient (||∇f||={}); continuing", name(), grad_norm);
+				// 	this->m_status = Status::Continue;
+				// }
 
-				// Converge on the first iteration iff the line search failed and the gradient is small
-				if ((use_gradient_descent || this->m_current.iterations > 0) && this->m_status != Status::Continue)
-				{
-					// converged
-					break;
-				}
+				// // Converge on the first iteration iff the line search failed and the gradient is small
+				// if ((descent_strategy == 2 || this->m_current.iterations > 0) && this->m_status != Status::Continue)
+				// {
+				// 	// converged
+				// 	break;
+				// }
 
 				// ---------------
 				// Variable update
@@ -180,11 +170,17 @@ namespace cppoptlib
 				double rate = line_search(x, delta_x, objFunc);
 				if (std::isnan(rate))
 				{
-					// use_gradient_descent set by line_search upon failure
-					if (use_gradient_descent)
+					// descent_strategy set by line_search upon failure
+					if (descent_strategy < 2) //2 is the max, grad descent
+					{
+						descent_strategy++;
 						continue; // Try the step again with gradient descent
+					}
 					else
+					{
+						logger().error("[{}] failed to converge with large gradient (||∇f||={})", name(), grad_norm);
 						break; // Line search failed twice, so quit!
+					}
 				}
 
 				x += rate * delta_x;
@@ -193,13 +189,13 @@ namespace cppoptlib
 				// Post update
 				// -----------
 
-				use_gradient_descent = false; // Reset this for the next iterations
+				descent_strategy = default_descent_strategy(); // Reset this for the next iterations
 
 				const double step = (rate * delta_x).norm();
-				if (this->m_status == Status::Continue && step < 1e-10)
-				{
-					handle_small_step(step);
-				}
+				// if (this->m_status == Status::Continue && step < 1e-10)
+				// {
+				// 	handle_small_step(step);
+				// }
 
 				if (objFunc.stop(x))
 				{
@@ -261,17 +257,17 @@ namespace cppoptlib
 
 			double rate = m_line_search->line_search(x, delta_x, objFunc);
 
-			if (std::isnan(rate) && !use_gradient_descent)
+			if (std::isnan(rate) && descent_strategy < 2)
 			{
-				use_gradient_descent = true;
+				descent_strategy++;
 				polyfem::logger().log(
 					this->m_current.iterations > 0 ? spdlog::level::err : spdlog::level::warn,
-					"Line search failed; reverting to gradient descent");
+					"Line search failed; reverting to {}", descent_strategy);
 				this->m_status = Status::Continue;
 			}
-			else if (std::isnan(rate) && use_gradient_descent)
+			else if (std::isnan(rate) && descent_strategy == 2)
 			{
-				use_gradient_descent = false;
+				descent_strategy = default_descent_strategy();
 				polyfem::logger().log(
 					this->m_current.iterations > 0 ? spdlog::level::err : spdlog::level::warn,
 					"Line search failed on gradient descent; stopping");
@@ -296,21 +292,22 @@ namespace cppoptlib
 			this->m_current.reset();
 			reset_times();
 			m_error_code = ErrorCode::Success;
-			use_gradient_descent = false;
+			descent_strategy = default_descent_strategy();
 		}
 
 		// Compute the search/update direction
-		virtual void compute_update_direction(ProblemType &objFunc, const TVector &x_vec, const TVector &grad, TVector &direction) = 0;
+		virtual bool compute_update_direction(ProblemType &objFunc, const TVector &x_vec, const TVector &grad, TVector &direction) = 0;
 
 		// Special handling for small steps
 		virtual void handle_small_step(double step) {}
 
 	protected:
 		const json solver_params;
+		virtual int default_descent_strategy() = 0;
 
 		std::shared_ptr<polyfem::LineSearch<ProblemType>> m_line_search;
 
-		bool use_gradient_descent;
+		int descent_strategy; //0, newton, 1 spd, 2 gradiant
 
 		ErrorCode m_error_code;
 		bool use_gradient_norm;

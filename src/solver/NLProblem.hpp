@@ -142,6 +142,9 @@ namespace polyfem
 		inline int max_ccd_max_iterations() const { return _max_ccd_max_iterations; }
 		inline void set_ccd_max_iterations(int v) { _ccd_max_iterations = v; }
 
+		void set_projet_to_psd(bool val) { project_to_psd = val; }
+		bool is_projet_to_psd() const { return project_to_psd; }
+
 	protected:
 		void compute_displaced_points(const TVector &full, Eigen::MatrixXd &displaced);
 		void reduced_to_full_displaced_points(const TVector &reduced, Eigen::MatrixXd &displaced);
