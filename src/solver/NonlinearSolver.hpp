@@ -36,7 +36,7 @@ namespace cppoptlib
 			criteria.iterations = solver_params.value("nl_iterations", 1000);
 
 			use_gradient_norm = solver_params.value("useGradNorm", true);
-			normalize_gradient = solver_params.value("relativeGradient", true);
+			normalize_gradient = solver_params.value("relativeGradient", false);
 			use_grad_norm_tol = solver_params.value("use_grad_norm_tol", 1e-4);
 			this->setStopCriteria(criteria);
 
@@ -149,7 +149,7 @@ namespace cppoptlib
 					//if normalize_gradient, use relative to first norm
 					this->m_current.gradNorm = grad_norm / (normalize_gradient ? first_grad_norm : 1);
 				}
-				this->m_current.fDelta = std::abs(old_energy - energy);// / std::abs(old_energy);
+				this->m_current.fDelta = std::abs(old_energy - energy); // / std::abs(old_energy);
 
 				this->m_status = checkConvergence(this->m_stop, this->m_current);
 
