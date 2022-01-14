@@ -597,4 +597,25 @@ namespace polyfem
 			H += hessian * da(p);
 		}
 	}
+
+	void NeoHookeanElasticity::compute_dstress_dgradu_multiply_mat(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &mat, Eigen::MatrixXd &stress, Eigen::MatrixXd &result) const
+	{
+		double lambda, mu;
+		params_.lambda_mu(local_pts, global_pts, el_id, lambda, mu);
+
+		Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(grad_u_i.rows(), grad_u_i.cols()) + grad_u_i;
+		Eigen::MatrixXd FmT = def_grad.inverse().transpose();
+
+		stress = mu * (def_grad - FmT) + lambda * std::log(def_grad.determinant()) * FmT;
+		result = mu * mat + FmT * mat.transpose() * FmT * (mu - lambda * std::log(def_grad.determinant())) + lambda * (FmT.array() * mat.array()).sum() * FmT;
+	}
+
+	void NeoHookeanElasticity::compute_dstress_dmu_dlambda(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, Eigen::MatrixXd &dstress_dmu, Eigen::MatrixXd &dstress_dlambda) const
+	{
+		Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(grad_u_i.rows(), grad_u_i.cols()) + grad_u_i;
+		Eigen::MatrixXd FmT = def_grad.inverse().transpose();
+		dstress_dmu = def_grad - FmT;
+		dstress_dlambda = std::log(def_grad.determinant()) * FmT;
+	}
+
 } // namespace polyfem
