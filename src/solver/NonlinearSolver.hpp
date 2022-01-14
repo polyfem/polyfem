@@ -31,13 +31,13 @@ namespace cppoptlib
 			: solver_params(solver_params)
 		{
 			auto criteria = this->criteria();
-			criteria.fDelta = solver_params.value("fDelta", -1.0);
+			criteria.fDelta = solver_params.value("fDelta", 1e-10);
 			criteria.gradNorm = solver_params.value("gradNorm", 1e-8);
-			criteria.iterations = solver_params.value("nl_iterations", 3000);
+			criteria.iterations = solver_params.value("nl_iterations", 1000);
 
 			use_gradient_norm = solver_params.value("useGradNorm", true);
-			normalize_gradient = solver_params.value("relativeGradient", false);
-			use_grad_norm_tol = solver_params.value("use_grad_norm_tol", 1e-7);
+			normalize_gradient = solver_params.value("relativeGradient", true);
+			use_grad_norm_tol = solver_params.value("use_grad_norm_tol", 1e-4);
 			this->setStopCriteria(criteria);
 
 			setLineSearch("armijo");
@@ -91,6 +91,7 @@ namespace cppoptlib
 					this->m_status = Status::UserDefined;
 					polyfem::logger().error("f(x) is nan or inf; stopping");
 					m_error_code = ErrorCode::NanEncountered;
+					throw("f(x) is nan or inf; stopping");
 					break;
 				}
 
@@ -105,6 +106,7 @@ namespace cppoptlib
 					this->m_status = Status::UserDefined;
 					polyfem::logger().error("Gradient is nan; stopping");
 					m_error_code = ErrorCode::NanEncountered;
+					throw("Gradient is nan; stopping");
 					break;
 				}
 
@@ -117,7 +119,10 @@ namespace cppoptlib
 
 				// Compute a Δx to update the variable
 				if (!compute_update_direction(objFunc, x, grad, delta_x))
+				{
+					this->m_status = Status::Continue;
 					continue;
+				}
 
 				const double delta_x_norm = delta_x.norm();
 				if (std::isnan(delta_x_norm))
@@ -125,6 +130,7 @@ namespace cppoptlib
 					this->m_status = Status::UserDefined;
 					polyfem::logger().error("Δx is nan; stopping");
 					m_error_code = ErrorCode::NanEncountered;
+					throw("Δx is nan; stopping");
 					break;
 				}
 
@@ -173,12 +179,15 @@ namespace cppoptlib
 					// descent_strategy set by line_search upon failure
 					if (descent_strategy < 2) //2 is the max, grad descent
 					{
+						this->m_status = Status::Continue;
 						descent_strategy++;
+
 						continue; // Try the step again with gradient descent
 					}
 					else
 					{
 						logger().error("[{}] failed to converge with large gradient (||∇f||={})", name(), grad_norm);
+						throw("failed to converge with large gradient");
 						break; // Line search failed twice, so quit!
 					}
 				}
@@ -227,16 +236,22 @@ namespace cppoptlib
 			if (this->m_status == Status::IterationLimit)
 			{
 				msg = "Reached iteration limit";
+				polyfem::logger().error("Reached iteration limit");
+				throw("Reached iteration limit");
 				level = spdlog::level::err;
 			}
 			else if (this->m_current.iterations == 0)
 			{
 				msg = "Unable to take a step";
+				polyfem::logger().error(msg);
+				throw(msg);
 				level = this->m_status == Status::UserDefined ? spdlog::level::err : spdlog::level::warn;
 			}
 			else if (this->m_status == Status::UserDefined)
 			{
 				msg = "Failed to find minimizer";
+				polyfem::logger().error(msg);
+				throw(msg);
 				level = spdlog::level::err;
 			}
 			polyfem::logger().log(
