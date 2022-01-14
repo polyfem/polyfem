@@ -37,7 +37,7 @@ namespace cppoptlib
 
 			use_gradient_norm = solver_params.value("useGradNorm", true);
 			normalize_gradient = solver_params.value("relativeGradient", false);
-			use_grad_norm_tol = solver_params.value("use_grad_norm_tol", -1.0);
+			use_grad_norm_tol = solver_params.value("use_grad_norm_tol", 1e-7);
 			this->setStopCriteria(criteria);
 
 			setLineSearch("armijo");
@@ -227,7 +227,7 @@ namespace cppoptlib
 			if (this->m_status == Status::IterationLimit)
 			{
 				msg = "Reached iteration limit";
-				level = spdlog::level::warn;
+				level = spdlog::level::err;
 			}
 			else if (this->m_current.iterations == 0)
 			{
@@ -261,7 +261,7 @@ namespace cppoptlib
 			{
 				descent_strategy++;
 				polyfem::logger().log(
-					this->m_current.iterations > 0 ? spdlog::level::err : spdlog::level::warn,
+					spdlog::level::warn,
 					"Line search failed; reverting to {}", descent_strategy);
 				this->m_status = Status::Continue;
 			}
