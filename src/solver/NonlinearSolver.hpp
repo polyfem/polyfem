@@ -149,7 +149,7 @@ namespace cppoptlib
 					//if normalize_gradient, use relative to first norm
 					this->m_current.gradNorm = grad_norm / (normalize_gradient ? first_grad_norm : 1);
 				}
-				this->m_current.fDelta = std::abs(old_energy - energy) / std::abs(old_energy);
+				this->m_current.fDelta = std::abs(old_energy - energy);// / std::abs(old_energy);
 
 				this->m_status = checkConvergence(this->m_stop, this->m_current);
 
@@ -282,7 +282,7 @@ namespace cppoptlib
 			}
 			else if (std::isnan(rate) && descent_strategy == 2)
 			{
-				descent_strategy = default_descent_strategy();
+				// descent_strategy = default_descent_strategy();
 				polyfem::logger().log(
 					this->m_current.iterations > 0 ? spdlog::level::err : spdlog::level::warn,
 					"Line search failed on gradient descent; stopping");
