@@ -298,4 +298,19 @@ namespace polyfem
 		return res;
 	}
 
+	void LinearElasticity::compute_dstress_dgradu_multiply_mat(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &mat, Eigen::MatrixXd &stress, Eigen::MatrixXd &result) const
+	{
+		double lambda, mu;
+		params_.lambda_mu(local_pts, global_pts, el_id, lambda, mu);
+
+		stress = mu * (grad_u_i + grad_u_i.transpose()) + lambda * grad_u_i.trace() * Eigen::MatrixXd::Identity(size(), size());
+		result = mu * (mat + mat.transpose()) + lambda * mat.trace() * Eigen::MatrixXd::Identity(size(), size());
+	}
+
+	void LinearElasticity::compute_dstress_dmu_dlambda(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, Eigen::MatrixXd &dstress_dmu, Eigen::MatrixXd &dstress_dlambda) const
+	{
+		dstress_dmu = grad_u_i.transpose() + grad_u_i;
+		dstress_dlambda = grad_u_i.trace() * Eigen::MatrixXd::Identity(grad_u_i.rows(), grad_u_i.cols());
+	}
+
 } // namespace polyfem

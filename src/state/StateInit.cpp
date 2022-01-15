@@ -293,29 +293,23 @@ namespace polyfem
 
 		if (this->args["has_collision"])
 		{
-			// if (!args_in.contains("project_to_psd"))
-			// {
-			// 	args["project_to_psd"] = true;
-			// 	logger().warn("Changing default project to psd to true");
-			// }
-
 			if (!args_in.contains("line_search"))
 			{
 				args["line_search"] = "bisection";
 				logger().warn("Changing default linesearch to bisection");
 			}
 
-			if (!args_in.contains("solver_params") || !args_in["solver_params"].contains("gradNorm"))
-			{
-				args["solver_params"]["gradNorm"] = 1e-5;
-				logger().warn("Changing default convergence to 1e-5");
-			}
+			// if (!args_in.contains("solver_params") || !args_in["solver_params"].contains("gradNorm"))
+			// {
+			// 	args["solver_params"]["gradNorm"] = 1e-5;
+			// 	logger().warn("Changing default convergence to 1e-5");
+			// }
 
-			if (!args_in.contains("solver_params") || !args_in["solver_params"].contains("useGradNorm"))
-			{
-				args["solver_params"]["useGradNorm"] = false;
-				logger().warn("Changing convergence check to Newton direction");
-			}
+			// if (!args_in.contains("solver_params") || !args_in["solver_params"].contains("useGradNorm"))
+			// {
+			// 	args["solver_params"]["useGradNorm"] = false;
+			// 	logger().warn("Changing convergence check to Newton direction");
+			// }
 
 			if (args["friction_iterations"] == 0)
 			{

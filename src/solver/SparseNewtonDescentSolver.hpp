@@ -97,7 +97,7 @@ namespace cppoptlib
 
 			// gradient descent, check descent direction
 			const double residual = (hessian * direction + grad).norm(); // H Δx + g = 0
-			if (std::isnan(residual) || residual > 1e-7)
+			if (std::isnan(residual))                                    // || residual > 1e-7)
 			{
 				this->descent_strategy++;
 				polyfem::logger().warn("large linear solve residual ({}, ||∇f||={}); reverting to {}", residual, grad.norm(), this->descent_strategy);
