@@ -250,7 +250,6 @@ namespace polyfem
 
 	void State::init_logger(std::vector<spdlog::sink_ptr> &sinks, int log_level)
 	{
-		Logger::init(sinks);
 		log_level = std::max(0, std::min(6, log_level));
 		spdlog::set_level(static_cast<spdlog::level::level_enum>(log_level));
 
@@ -259,7 +258,6 @@ namespace polyfem
 		geo_logger->register_client(new GeoLoggerForward(logger().clone("geogram")));
 		geo_logger->set_pretty(false);
 
-		IPC_LOGGER(init(sinks));
 		IPC_LOG(set_level(static_cast<spdlog::level::level_enum>(log_level)));
 	}
 
