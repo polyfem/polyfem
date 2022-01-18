@@ -299,18 +299,6 @@ namespace polyfem
 				logger().warn("Changing default linesearch to bisection");
 			}
 
-			// if (!args_in.contains("solver_params") || !args_in["solver_params"].contains("gradNorm"))
-			// {
-			// 	args["solver_params"]["gradNorm"] = 1e-5;
-			// 	logger().warn("Changing default convergence to 1e-5");
-			// }
-
-			// if (!args_in.contains("solver_params") || !args_in["solver_params"].contains("useGradNorm"))
-			// {
-			// 	args["solver_params"]["useGradNorm"] = false;
-			// 	logger().warn("Changing convergence check to Newton direction");
-			// }
-
 			if (args["friction_iterations"] == 0)
 			{
 				logger().info("specified friction_iterations is 0; disabling friction");
