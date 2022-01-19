@@ -577,7 +577,7 @@ namespace polyfem
 
 		bool is_obstacle_vertex(const size_t vi) const
 		{
-			return vi >= mesh->n_vertices();
+			return vi >= boundary_nodes_pos.rows() - obstacle.n_vertices();
 		}
 
 	private:

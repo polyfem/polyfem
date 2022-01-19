@@ -135,7 +135,7 @@ namespace polyfem
 			grad_energy,
 			grad_barrier,
 			max_barrier_stiffness_);
-		polyfem::logger().debug("adaptive stiffness {}", _barrier_stiffness);
+		polyfem::logger().debug("adaptive barrier stiffness {}", _barrier_stiffness);
 	}
 
 	void NLProblem::init_time_integrator(const TVector &x_prev, const TVector &v_prev, const TVector &a_prev, const double dt)
@@ -328,14 +328,16 @@ namespace polyfem
 
 		// This will check for static intersections as a failsafe. Not needed if we use our conservative CCD.
 		// Eigen::MatrixXd displaced_toi = (displaced1 - displaced0) * max_step + displaced0;
-		// while (ipc::has_intersections(displaced_toi, state.boundary_edges, state.boundary_triangles, [&](size_t vi, size_t vj){return can_vertices_collide(vi, vj);}))
+		// while (ipc::has_intersections(displaced_toi, state.boundary_edges, state.boundary_triangles, [&](size_t vi, size_t vj) { return can_vertices_collide(vi, vj); }))
 		// {
 		// 	double Linf = (displaced_toi - displaced0).lpNorm<Eigen::Infinity>();
 		// 	logger().warn("taking max_step results in intersections (max_step={:g})", max_step);
 		// 	max_step /= 2.0;
 		// 	if (max_step <= 0 || Linf == 0)
 		// 	{
-		// 		logger().error("Unable to find an intersection free step size (max_step={:g} L∞={:g})", max_step, Linf);
+		// 		std::string msg = fmt::format("Unable to find an intersection free step size (max_step={:g} L∞={:g})", max_step, Linf);
+		// 		logger().error(msg);
+		// 		throw msg;
 		// 	}
 		// 	displaced_toi = (displaced1 - displaced0) * max_step + displaced0;
 		// }

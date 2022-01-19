@@ -827,7 +827,7 @@ namespace polyfem
 			}
 
 			avg_mass /= mass.rows();
-			logger().trace("avg mass {}", avg_mass);
+			logger().info("avgerage mass {}", avg_mass);
 
 			if (args["lump_mass_matrix"])
 			{
