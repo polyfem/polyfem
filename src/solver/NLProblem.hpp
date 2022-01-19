@@ -156,6 +156,7 @@ namespace polyfem
 		}
 
 		State &state;
+		bool use_adaptive_barrier_stiffness;
 		double _barrier_stiffness;
 		const RhsAssembler &rhs_assembler;
 		bool is_time_dependent;

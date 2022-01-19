@@ -116,6 +116,7 @@ namespace polyfem
 			{"has_collision", false},
 			{"dhat", 1e-3},
 			{"dhat_percentage", 0.8},
+			{"barrier_stiffness", "adaptive"},
 			{"force_al", false},
 			{"ignore_inertia", false},
 			{"epsv", 1e-3},

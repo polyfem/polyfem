@@ -62,7 +62,18 @@ namespace polyfem
 		_dhat = dhat;
 		_epsv = state.args["epsv"];
 		_mu = state.args["mu"];
-		_barrier_stiffness = 1;
+		use_adaptive_barrier_stiffness = !state.args["barrier_stiffness"].is_number();
+		if (use_adaptive_barrier_stiffness)
+		{
+			_barrier_stiffness = 1;
+			logger().debug("using adaptive barrier stiffness");
+		}
+		else
+		{
+			assert(state.args["barrier_stiffness"].is_number());
+			_barrier_stiffness = state.args["barrier_stiffness"];
+			logger().debug("using fixed barrier stiffness of {}", _barrier_stiffness);
+		}
 		_prev_distance = -1;
 		time_integrator = ImplicitTimeIntegrator::construct_time_integrator(state.args["time_integrator"]);
 		time_integrator->set_parameters(state.args["time_integrator_params"]);
@@ -94,7 +105,10 @@ namespace polyfem
 			return;
 
 		assert(full.size() == full_size);
-		update_barrier_stiffness(full);
+		if (use_adaptive_barrier_stiffness)
+		{
+			update_barrier_stiffness(full);
+		}
 		// exit(0);
 	}
 
@@ -203,7 +217,10 @@ namespace polyfem
 			rhs_computed = false;
 			this->t = t;
 
-			update_barrier_stiffness(x);
+			if (use_adaptive_barrier_stiffness)
+			{
+				update_barrier_stiffness(x);
+			}
 		}
 	}
 
@@ -761,23 +778,25 @@ namespace polyfem
 		const double dist_sqr = ipc::compute_minimum_distance(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set);
 		polyfem::logger().trace("min_dist {}", sqrt(dist_sqr));
 		// igl::write_triangle_mesh("step.obj", displaced, state.boundary_triangles);
-
-		if (is_time_dependent)
+		if (use_adaptive_barrier_stiffness)
 		{
-			double prev_barrier_stiffness = _barrier_stiffness;
-			ipc::update_barrier_stiffness(
-				_prev_distance, dist_sqr, max_barrier_stiffness_,
-				_barrier_stiffness, ipc::world_bbox_diagonal_length(displaced));
-			if (prev_barrier_stiffness != _barrier_stiffness)
+			if (is_time_dependent)
 			{
-				polyfem::logger().debug(
-					"updated barrier stiffness from {:g} to {:g}",
-					prev_barrier_stiffness, _barrier_stiffness);
+				double prev_barrier_stiffness = _barrier_stiffness;
+				ipc::update_barrier_stiffness(
+					_prev_distance, dist_sqr, max_barrier_stiffness_,
+					_barrier_stiffness, ipc::world_bbox_diagonal_length(displaced));
+				if (prev_barrier_stiffness != _barrier_stiffness)
+				{
+					polyfem::logger().debug(
+						"updated barrier stiffness from {:g} to {:g}",
+						prev_barrier_stiffness, _barrier_stiffness);
+				}
 			}
-		}
-		else
-		{
-			update_barrier_stiffness(full);
+			else
+			{
+				update_barrier_stiffness(full);
+			}
 		}
 		_prev_distance = dist_sqr;
 	}
