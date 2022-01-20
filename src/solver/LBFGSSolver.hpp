@@ -33,6 +33,20 @@ namespace cppoptlib
 	protected:
 		virtual int default_descent_strategy() override { return 1; }
 
+		using Superclass::descent_strategy_name;
+		std::string descent_strategy_name(int descent_strategy) const override
+		{
+			switch (descent_strategy)
+			{
+			case 1:
+				return "L-BFGS";
+			case 2:
+				return "gradient descent";
+			default:
+				throw "invalid descent strategy";
+			}
+		}
+
 	protected:
 		LBFGSpp::BFGSMat<Scalar> m_bfgs; // Approximation to the Hessian matrix
 

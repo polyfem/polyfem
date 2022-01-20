@@ -32,6 +32,21 @@ namespace cppoptlib
 
 	protected:
 		virtual int default_descent_strategy() override { return 0; }
+		using Superclass::descent_strategy_name;
+		std::string descent_strategy_name(int descent_strategy) const override
+		{
+			switch (descent_strategy)
+			{
+			case 0:
+				return "Newton";
+			case 1:
+				return "projected Newton";
+			case 2:
+				return "gradient descent";
+			default:
+				throw "invalid descent strategy";
+			}
+		}
 
 	private:
 		std::unique_ptr<polysolve::LinearSolver> linear_solver;
@@ -87,7 +102,9 @@ namespace cppoptlib
 				catch (const std::runtime_error &err)
 				{
 					this->descent_strategy++;
-					polyfem::logger().error("Unable to factorize Hessian: \"{}\"; reverting to {}", err.what(), this->descent_strategy);
+					polyfem::logger().error(
+						"Unable to factorize Hessian: \"{}\"; reverting to {}",
+						err.what(), this->descent_strategy_name());
 					// polyfem::write_sparse_matrix_csv("problematic_hessian.csv", hessian);
 					return false;
 				}
@@ -100,8 +117,14 @@ namespace cppoptlib
 			if (std::isnan(residual))                                    // || residual > 1e-7)
 			{
 				this->descent_strategy++;
-				polyfem::logger().warn("large linear solve residual ({}, ||∇f||={}); reverting to {}", residual, grad.norm(), this->descent_strategy);
+				polyfem::logger().warn(
+					"nan linear solve residual {} (||∇f||={}); reverting to {}",
+					residual, grad.norm(), this->descent_strategy_name());
 				return false;
+			}
+			else if (residual > 1e-5)
+			{
+				polyfem::logger().warn("large linear solve residual {} (||∇f||={})", residual, grad.norm());
 			}
 			else
 			{
@@ -111,7 +134,9 @@ namespace cppoptlib
 			if (grad.squaredNorm() != 0 && direction.dot(grad) >= 0)
 			{
 				this->descent_strategy++;
-				polyfem::logger().warn("Newton direction is not a descent direction (Δx⋅g={}≥0); reverting to {}", direction.dot(grad), this->descent_strategy);
+				polyfem::logger().warn(
+					"Newton direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
+					direction.dot(grad), this->descent_strategy_name());
 				return false;
 			}
 

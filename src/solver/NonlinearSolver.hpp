@@ -277,7 +277,7 @@ namespace cppoptlib
 				descent_strategy++;
 				polyfem::logger().log(
 					spdlog::level::warn,
-					"Line search failed; reverting to {}", descent_strategy);
+					"Line search failed; reverting to {}", descent_strategy_name());
 				this->m_status = Status::Continue;
 			}
 			else if (std::isnan(rate) && descent_strategy == 2)
@@ -319,6 +319,8 @@ namespace cppoptlib
 	protected:
 		const json solver_params;
 		virtual int default_descent_strategy() = 0;
+		virtual std::string descent_strategy_name(int descent_strategy) const = 0;
+		virtual std::string descent_strategy_name() const { return descent_strategy_name(this->descent_strategy); };
 
 		std::shared_ptr<polyfem::LineSearch<ProblemType>> m_line_search;
 

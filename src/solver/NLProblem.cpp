@@ -66,13 +66,13 @@ namespace polyfem
 		if (use_adaptive_barrier_stiffness)
 		{
 			_barrier_stiffness = 1;
-			logger().debug("using adaptive barrier stiffness");
+			logger().debug("Using adaptive barrier stiffness");
 		}
 		else
 		{
 			assert(state.args["barrier_stiffness"].is_number());
 			_barrier_stiffness = state.args["barrier_stiffness"];
-			logger().debug("using fixed barrier stiffness of {}", _barrier_stiffness);
+			logger().debug("Using fixed barrier stiffness of {}", _barrier_stiffness);
 		}
 		_prev_distance = -1;
 		time_integrator = ImplicitTimeIntegrator::construct_time_integrator(state.args["time_integrator"]);
