@@ -98,7 +98,8 @@ namespace polyfem
 		const AssemblyValsCache &cache,
 		StiffnessMatrix &stiffness) const
 	{
-		const int buffer_size = std::min(long(1e8), long(n_basis) * local_assembler_.size());
+		const int max_triplets_size = int(1e7);
+		const int buffer_size = std::min(long(max_triplets_size), long(n_basis) * local_assembler_.size());
 		// #ifdef POLYFEM_WITH_TBB
 		// 		buffer_size /= tbb::task_scheduler_init::default_num_threads();
 		// #endif
@@ -172,7 +173,7 @@ namespace polyfem
 												local_storage.cache.add_value(e, gj, gi, local_value * wj * wi);
 											}
 
-											if (local_storage.cache.entries_size() >= 1e8)
+											if (local_storage.cache.entries_size() >= max_triplets_size)
 											{
 												local_storage.cache.prune();
 												logger().debug("cleaning memory. Current storage: {}. mat nnz: {}", local_storage.cache.capacity(), local_storage.cache.non_zeros());
@@ -228,59 +229,65 @@ namespace polyfem
 				triplet_count += local_storage.cache.mat().nonZeros();
 			}
 
-			timer1.start();
-			std::vector<Eigen::Triplet<double>> triplets(triplet_count);
-			timer1.stop();
+			std::vector<Eigen::Triplet<double>> triplets;
 
-			logger().debug("done allocate triplets {}s...", timer1.getElapsedTime());
-			logger().debug("Triplets Count: {}", triplet_count);
+			if (triplet_count >= triplets.max_size())
+			{
+				// Serial fallback version in case the vector of triplets cannot be allocated
 
-			timer2.start();
-			// Parallel copy into triplets
-			maybe_parallel_for(storages.size(), [&](int i) {
-				const auto *s = storages[i];
-				const int offset = offsets[i];
-				for (int j = 0; j < s->cache.entries().size(); ++j)
-				{
-					triplets[offset + j] = s->cache.entries()[j];
-				}
-				if (s->cache.mat().nonZeros() > 0)
-				{
-					int count = 0;
-					for (int k = 0; k < s->cache.mat().outerSize(); ++k)
+				logger().warn("Cannot allocate space for triplets, switching to serial assembly.");
+
+				timerg.start();
+				// Serially merge local storages
+				for (LocalThreadMatStorage &local_storage : storage)
+					stiffness += local_storage.cache.get_matrix(false); // will also prune
+				stiffness.makeCompressed();
+				timerg.stop();
+
+				logger().debug("Serial assembly time: {}s...", timerg.getElapsedTime());
+			}
+			else
+			{
+				timer1.start();
+				triplets.resize(triplet_count);
+				timer1.stop();
+
+				logger().debug("done allocate triplets {}s...", timer1.getElapsedTime());
+				logger().debug("Triplets Count: {}", triplet_count);
+
+				timer2.start();
+				// Parallel copy into triplets
+				maybe_parallel_for(storages.size(), [&](int i) {
+					const auto *s = storages[i];
+					const int offset = offsets[i];
+					for (int j = 0; j < s->cache.entries().size(); ++j)
 					{
-						for (Eigen::SparseMatrix<double>::InnerIterator it(s->cache.mat(), k); it; ++it)
+						triplets[offset + j] = s->cache.entries()[j];
+					}
+					if (s->cache.mat().nonZeros() > 0)
+					{
+						int count = 0;
+						for (int k = 0; k < s->cache.mat().outerSize(); ++k)
 						{
-							assert(count < s->cache.mat().nonZeros());
-							triplets[offset + s->cache.entries().size() + count++] = Eigen::Triplet<double>(it.row(), it.col(), it.value());
+							for (Eigen::SparseMatrix<double>::InnerIterator it(s->cache.mat(), k); it; ++it)
+							{
+								assert(count < s->cache.mat().nonZeros());
+								triplets[offset + s->cache.entries().size() + count++] = Eigen::Triplet<double>(it.row(), it.col(), it.value());
+							}
 						}
 					}
-				}
-			});
+				});
 
-			timer2.stop();
-			logger().debug("done concatenate triplets {}s...", timer2.getElapsedTime());
+				timer2.stop();
+				logger().debug("done concatenate triplets {}s...", timer2.getElapsedTime());
 
-			timer3.start();
-			// Sort and assemble
-			stiffness.setFromTriplets(triplets.begin(), triplets.end());
-			timer3.stop();
+				timer3.start();
+				// Sort and assemble
+				stiffness.setFromTriplets(triplets.begin(), triplets.end());
+				timer3.stop();
 
-			logger().debug("done setFromTriplets assembly {}s...", timer3.getElapsedTime());
-
-			// // Old serial version
-			// StiffnessMatrix stiffness_old;
-			// stiffness_old.resize(n_basis * local_assembler_.size(), n_basis * local_assembler_.size());
-			// stiffness_old.setZero();
-			// timerg.start();
-			// // Serially merge local storages
-			// for (LocalThreadMatStorage &local_storage : storage)
-			// 	stiffness_old += local_storage.cache.get_matrix(false); // will also prune
-			// stiffness_old.makeCompressed();
-			// timerg.stop();
-			// logger().debug("SERIAL:   assembly {}s...", timerg.getElapsedTime());
-			// logger().debug("PARALLEL: assembly {}s...", timer1.getElapsedTime() + timer2.getElapsedTime() + timer3.getElapsedTime());
-			// logger().debug("Assembly difference {}", (stiffness - stiffness_old).norm());
+				logger().debug("done setFromTriplets assembly {}s...", timer3.getElapsedTime());
+			}
 
 			//exit(0);
 		}
@@ -308,7 +315,8 @@ namespace polyfem
 	{
 		assert(phi_bases.size() == psi_bases.size());
 
-		const int buffer_size = std::min(long(1e8), long(std::max(n_psi_basis, n_phi_basis)) * std::max(local_assembler_.rows(), local_assembler_.cols()));
+		const int max_triplets_size = int(1e7);
+		const int buffer_size = std::min(long(max_triplets_size), long(std::max(n_psi_basis, n_phi_basis)) * std::max(local_assembler_.rows(), local_assembler_.cols()));
 		logger().debug("buffer_size {}", buffer_size);
 
 		stiffness.resize(n_phi_basis * local_assembler_.rows(), n_psi_basis * local_assembler_.cols());
@@ -372,7 +380,7 @@ namespace polyfem
 
 										local_storage.cache.add_value(e, gj, gi, local_value * wi * wj);
 
-										if (local_storage.cache.entries_size() >= 1e8)
+										if (local_storage.cache.entries_size() >= max_triplets_size)
 										{
 											local_storage.cache.prune();
 											logger().debug("cleaning memory...");
@@ -486,7 +494,8 @@ namespace polyfem
 		SpareMatrixCache &mat_cache,
 		StiffnessMatrix &grad) const
 	{
-		const int buffer_size = std::min(long(1e8), long(n_basis) * local_assembler_.size());
+		const int max_triplets_size = int(1e7);
+		const int buffer_size = std::min(long(max_triplets_size), long(n_basis) * local_assembler_.size());
 		// std::cout<<"buffer_size "<<buffer_size<<std::endl;
 
 		// grad.resize(n_basis * local_assembler_.size(), n_basis * local_assembler_.size());
@@ -572,7 +581,7 @@ namespace polyfem
 										// 	local_storage.entries.emplace_back(gj, gi, local_value * wj * wi);
 										// }
 
-										if (local_storage.cache.entries_size() >= 1e8)
+										if (local_storage.cache.entries_size() >= max_triplets_size)
 										{
 											local_storage.cache.prune();
 											logger().debug("cleaning memory...");
