@@ -39,14 +39,6 @@ target_compile_definitions(unit_tests PUBLIC -DPOLYFEM_DATA_DIR=\"${POLYFEM_DATA
 target_compile_definitions(unit_tests PUBLIC CATCH_CONFIG_ENABLE_BENCHMARKING)
 
 ################################################################################
-# Sanitizers
-################################################################################
-
-if(POLYFEM_WITH_SANITIZERS)
-	add_sanitizers(unit_tests)
-endif()
-
-################################################################################
 # Register tests
 ################################################################################
 

@@ -65,7 +65,6 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 
 # Polyfem options
-option(POLYFEM_WITH_SANITIZERS "Enable sanitizers in compilation targets"   OFF)
 set(POLYFEM_SMALL_N  80 CACHE STRING "Maximum length for stack-allocated vectors (gradient + Hessian).")
 set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vectors (gradient only).")
 
@@ -144,9 +143,7 @@ endif()
 # set(POLYFEM_SMALL_N 105 CACHE STRING "" FORCE)
 
 # Sanitizers
-if(POLYFEM_WITH_SANITIZERS)
-    include(sanitizers)
-endif()
+include(sanitizers)
 
 
 ################################################################################
@@ -319,10 +316,6 @@ if(POLYFEM_TOPLEVEL_PROJECT)
         target_link_libraries(${PROJECT_NAME}_bin PUBLIC igl::opengl_glfw_imgui)
         # igl::png
         # tinyfiledialogs::tinyfiledialogs
-    endif()
-
-    if(POLYFEM_WITH_SANITIZERS)
-        add_sanitizers(${PROJECT_NAME}_bin)
     endif()
 
     if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
