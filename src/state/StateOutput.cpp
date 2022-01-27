@@ -552,6 +552,16 @@ namespace polyfem
 				boundary_faces_to_edges.bottomRows(obstacle.f_2_e().rows()) = obstacle.f_2_e().array() + n_e;
 			}
 		}
+
+		if (!for_pressure)
+		{
+			std::vector<bool> is_on_surface = ipc::SurfaceMesh::construct_is_on_surface(boundary_nodes_pos.rows(), boundary_edges);
+			for (int i = 0; i < codimensional_nodes.size(); i++)
+			{
+				is_on_surface[codimensional_nodes[i]] = true;
+			}
+			contact_surface_mesh = ipc::SurfaceMesh(is_on_surface, boundary_nodes_pos, boundary_edges, boundary_triangles);
+		}
 	}
 
 	std::string State::resolve_output_path(const std::string &path)
@@ -1576,15 +1586,14 @@ namespace polyfem
 			writer.add_field("solution", displaced);
 
 			displaced += boundary_nodes_pos;
+			Eigen::MatrixXd displaced_surface = contact_surface_mesh.surface_vertices(displaced);
 			ipc::Constraints constraint_set;
 			ipc::construct_constraint_set(
-				boundary_nodes_pos, displaced, codimensional_nodes,
-				boundary_edges, boundary_triangles, args["dhat"],
-				constraint_set, boundary_faces_to_edges, /*dmin=*/0,
-				ipc::BroadPhaseMethod::HASH_GRID, [&](size_t vi, size_t vj) {
-					return !is_obstacle_vertex(vi) || !is_obstacle_vertex(vj);
-				});
-			const Eigen::MatrixXd cgrad = ipc::compute_barrier_potential_gradient(displaced, boundary_edges, boundary_triangles, constraint_set, args["dhat"]);
+				contact_surface_mesh, displaced_surface, args["dhat"], constraint_set,
+				/*dmin=*/0, ipc::BroadPhaseMethod::HASH_GRID);
+			Eigen::MatrixXd cgrad = ipc::compute_barrier_potential_gradient(
+				contact_surface_mesh, displaced_surface, constraint_set, args["dhat"]);
+			cgrad = contact_surface_mesh.map_surface_to_full(cgrad);
 			assert(cgrad.size() == sol.size());
 
 			Eigen::MatrixXd cgrad_reshaped(cgrad.size() / problem_dim, problem_dim);

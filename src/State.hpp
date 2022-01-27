@@ -33,6 +33,8 @@
 #include <memory>
 #include <string>
 
+#include <ipc/surface_mesh.hpp>
+
 // Forward declaration
 namespace cppoptlib
 {
@@ -190,6 +192,7 @@ namespace polyfem
 		Eigen::MatrixXi boundary_triangles;
 		Eigen::MatrixXi boundary_triangles_pressure;
 		Eigen::MatrixXi boundary_faces_to_edges;
+		ipc::SurfaceMesh contact_surface_mesh;
 
 		//boundary visualization mesh
 		Eigen::MatrixXd boundary_vis_vertices;

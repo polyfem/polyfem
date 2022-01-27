@@ -127,7 +127,7 @@ namespace cppoptlib
 			}
 			else if (residual > 1e-5)
 			{
-				polyfem::logger().debug("large linear solve residual {} (||∇f||={})", residual, grad.norm());
+				polyfem::logger().warn("large linear solve residual {} (||∇f||={})", residual, grad.norm());
 			}
 			else
 			{

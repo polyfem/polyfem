@@ -167,10 +167,9 @@ int main(int argc, char **argv)
 	// CCD
 	int ccd_max_iterations;
 	std::string broad_phase_method;
-	const std::vector<std::string> ccd_methods = {"", "brute_force", "spatial_hash", "hash_grid"};
 	command_line.add_option("--ccd_max_iterations", ccd_max_iterations, "Max number of CCD iterations");
 	command_line.add_option("--broad_phase_method", broad_phase_method, "CCD Method")
-		->check(CLI::IsMember({"brute_force", "hash_grid", "spatial_hash"}));
+		->check(CLI::IsMember({"brute_force", "hash_grid", "spatial_hash", "sweep_and_tiniest_queue"}));
 
 	CLI11_PARSE(command_line, argc, argv);
 

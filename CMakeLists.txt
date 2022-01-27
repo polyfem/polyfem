@@ -353,3 +353,29 @@ if(POLYFEM_TOPLEVEL_PROJECT)
         add_subdirectory(tests)
     endif()
 endif()
+
+################################################################################
+# CUDA
+################################################################################
+
+if(true)
+  include(CheckLanguage)
+  check_language(CUDA)
+  if(CMAKE_CUDA_COMPILER)
+    enable_language(CUDA)
+  else()
+    message(FATAL_ERROR "No CUDA support found!")
+  endif()
+
+  set_target_properties(polyfem PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+  
+  # Nvidia RTX8000 -> compute_75
+  # Nvidia V100 -> compute_70
+  # Nvidia 1080/1080Ti -> compute_61
+  # Nvidia 3080Ti -> compute_86
+  if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+    set(CMAKE_CUDA_ARCHITECTURES 70 75 86)
+  endif()
+  set_target_properties(polyfem PROPERTIES CUDA_ARCHITECTURES "70;75;86")
+  set_target_properties(PolyFEM_bin PROPERTIES CUDA_ARCHITECTURES "70;75;86")
+endif()
