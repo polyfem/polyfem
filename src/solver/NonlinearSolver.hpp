@@ -391,7 +391,7 @@ namespace cppoptlib
 
 			if (m_line_search)
 			{
-				solver_info["time_chekcing_for_nan_inf"] =
+				solver_info["time_checking_for_nan_inf"] =
 					m_line_search->checking_for_nan_inf_time / per_iteration;
 				solver_info["time_broad_phase_ccd"] =
 					m_line_search->broad_phase_ccd_time / per_iteration;
@@ -403,7 +403,7 @@ namespace cppoptlib
 
 		void log_times()
 		{
-			polyfem::logger().debug("[timing] grad {}s, assembly {}s, inverting {}s, line_search {}s, constrain_set_update {}s, obj_fun {}s, chekcing_for_nan_inf {}s, broad_phase_ccd {}s, ccd {}s, classical_line_search {}s",
+			polyfem::logger().debug("[timing] grad {}s, assembly {}s, inverting {}s, line_search {}s, constrain_set_update {}s, obj_fun {}s, checking_for_nan_inf {}s, broad_phase_ccd {}s, ccd {}s, classical_line_search {}s",
 									grad_time,
 									assembly_time,
 									inverting_time,

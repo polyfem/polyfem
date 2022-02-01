@@ -72,6 +72,7 @@ namespace polyfem
 
 			{
 				POLYFEM_SCOPED_TIMER("[timing] CCD narrow-phase {}s", this->ccd_time);
+				logger().trace("Performing narrow-phase CCD");
 				step_size = this->compute_collision_free_step_size(x, delta_x, objFunc, step_size);
 				if (std::isnan(step_size))
 					return std::nan("");
