@@ -7,6 +7,8 @@
 
 #include <polyfem/BoxSetter.hpp>
 
+#include <polyfem/JSONUtils.hpp>
+
 #include <igl/Timer.h>
 namespace polyfem
 {
@@ -119,7 +121,7 @@ namespace polyfem
 				logger().info("Loading mesh {} ...", mesh_path());
 				mesh = Mesh::create(mesh_path());
 			}
-			else if (args.contains("meshes"))
+			else if (is_param_valid(args, "meshes"))
 			{
 				logger().info("Loading meshes ...");
 				mesh = Mesh::create(args["meshes"].get<std::vector<json>>(), args["root_path"]);
@@ -195,7 +197,7 @@ namespace polyfem
 
 		timer.start();
 		logger().info("Loading obstacles...");
-		if (args.contains("obstacles"))
+		if (is_param_valid(args, "obstacles"))
 			obstacle.init(args["obstacles"], args["root_path"], mesh->dimension());
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());

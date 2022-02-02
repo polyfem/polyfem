@@ -81,9 +81,9 @@ namespace cppoptlib
 				POLYFEM_SCOPED_TIMER("[timing] assembly time {}s", this->assembly_time);
 
 				if (this->descent_strategy == 1)
-					objFunc.set_projet_to_psd(true);
+					objFunc.set_project_to_psd(true);
 				else if (this->descent_strategy == 0)
-					objFunc.set_projet_to_psd(false);
+					objFunc.set_project_to_psd(false);
 				else
 					assert(false);
 
@@ -102,7 +102,9 @@ namespace cppoptlib
 				catch (const std::runtime_error &err)
 				{
 					this->descent_strategy++;
-					polyfem::logger().error(
+					// Warning if we switch to projected Newton, else error
+					polyfem::logger().log(
+						this->descent_strategy == 1 ? spdlog::level::warn : spdlog::level::err,
 						"Unable to factorize Hessian: \"{}\"; reverting to {}",
 						err.what(), this->descent_strategy_name());
 					// polyfem::write_sparse_matrix_csv("problematic_hessian.csv", hessian);
@@ -117,7 +119,8 @@ namespace cppoptlib
 			if (std::isnan(residual))                                    // || residual > 1e-7)
 			{
 				this->descent_strategy++;
-				polyfem::logger().warn(
+				polyfem::logger().log(
+					this->descent_strategy == 1 ? spdlog::level::warn : spdlog::level::err,
 					"nan linear solve residual {} (||∇f||={}); reverting to {}",
 					residual, grad.norm(), this->descent_strategy_name());
 				return false;
@@ -134,7 +137,8 @@ namespace cppoptlib
 			if (grad.squaredNorm() != 0 && direction.dot(grad) >= 0)
 			{
 				this->descent_strategy++;
-				polyfem::logger().warn(
+				polyfem::logger().log(
+					this->descent_strategy == 1 ? spdlog::level::warn : spdlog::level::err,
 					"Newton direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
 					direction.dot(grad), this->descent_strategy_name());
 				return false;

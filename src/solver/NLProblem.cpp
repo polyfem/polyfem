@@ -32,6 +32,21 @@ M (u^{t+1}_h - (u^t_h + \Delta t v^t_h)) - \frac{\Delta t^2} {2} A u^{t+1}_h
 // Root-finding form:
 // M(uₕᵗ⁺¹ - (uₕᵗ + Δtvₕᵗ)) - ½Δt²Auₕᵗ⁺¹ = 0
 
+// map BroadPhaseMethod values to JSON as strings
+namespace ipc
+{
+	NLOHMANN_JSON_SERIALIZE_ENUM(
+		ipc::BroadPhaseMethod,
+		{
+			{ipc::BroadPhaseMethod::HASH_GRID, "hash_grid"}, // also default
+			{ipc::BroadPhaseMethod::HASH_GRID, "HG"},
+			{ipc::BroadPhaseMethod::BRUTE_FORCE, "brute_force"},
+			{ipc::BroadPhaseMethod::BRUTE_FORCE, "BF"},
+			{ipc::BroadPhaseMethod::SPATIAL_HASH, "spatial_hash"},
+			{ipc::BroadPhaseMethod::SPATIAL_HASH, "SH"},
+		});
+}
+
 namespace polyfem
 {
 	namespace
@@ -78,25 +93,9 @@ namespace polyfem
 		time_integrator = ImplicitTimeIntegrator::construct_time_integrator(state.args["time_integrator"]);
 		time_integrator->set_parameters(state.args["time_integrator_params"]);
 
-		if (state.args["solver_params"].contains("ccd_method"))
-		{
-			const std::string ccd_method = state.args["solver_params"]["ccd_method"];
-
-			if (ccd_method == "brute_force")
-				_broad_phase_method = ipc::BroadPhaseMethod::BRUTE_FORCE;
-			else if (ccd_method == "spatial_hash")
-				_broad_phase_method = ipc::BroadPhaseMethod::SPATIAL_HASH;
-			else
-				_broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
-		}
-
-		else
-			_broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
-
-		_ccd_tolerance = state.args["solver_params"].value("ccd_tolerance", 1e-6);
-		_max_ccd_max_iterations = state.args["solver_params"].value("ccd_max_iterations", 1e6);
-
-		_ccd_max_iterations = _max_ccd_max_iterations;
+		_broad_phase_method = state.args["solver_params"]["broad_phase_method"];
+		_ccd_tolerance = state.args["solver_params"]["ccd_tolerance"];
+		_ccd_max_iterations = state.args["solver_params"]["ccd_max_iterations"];
 	}
 
 	void NLProblem::init(const TVector &full)

@@ -31,13 +31,13 @@ namespace cppoptlib
 			: solver_params(solver_params)
 		{
 			auto criteria = this->criteria();
-			criteria.fDelta = solver_params.value("fDelta", 1e-10);
-			criteria.gradNorm = solver_params.value("gradNorm", 1e-8);
-			criteria.iterations = solver_params.value("nl_iterations", 1000);
+			criteria.fDelta = solver_params["fDelta"];
+			criteria.gradNorm = solver_params["gradNorm"];
+			criteria.iterations = solver_params["nl_iterations"];
 
-			use_gradient_norm = solver_params.value("useGradNorm", true);
-			normalize_gradient = solver_params.value("relativeGradient", false);
-			use_grad_norm_tol = solver_params.value("use_grad_norm_tol", 1e-4);
+			use_gradient_norm = solver_params["useGradNorm"];
+			normalize_gradient = solver_params["relativeGradient"];
+			use_grad_norm_tol = solver_params["use_grad_norm_tol"];
 			this->setStopCriteria(criteria);
 
 			setLineSearch("armijo");
@@ -54,8 +54,6 @@ namespace cppoptlib
 		void minimize(ProblemType &objFunc, TVector &x)
 		{
 			using namespace polyfem;
-
-			// objFunc.set_ccd_max_iterations(objFunc.max_ccd_max_iterations() / 10);
 
 			// ---------------------------
 			// Initialize the minimization

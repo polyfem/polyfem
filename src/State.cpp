@@ -30,6 +30,7 @@
 #include <polyfem/TriQuadrature.hpp>
 
 #include <polyfem/Logger.hpp>
+#include <polyfem/JSONUtils.hpp>
 
 #include <igl/Timer.h>
 
@@ -147,7 +148,7 @@ namespace polyfem
 
 	void State::set_multimaterial(const std::function<void(const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &)> &setter)
 	{
-		if (!args.contains("body_params"))
+		if (!is_param_valid(args, "body_params"))
 			return;
 
 		const auto &body_params = args["body_params"];
@@ -1009,18 +1010,24 @@ namespace polyfem
 		if (problem->is_time_dependent())
 		{
 			const double t0 = args["t0"];
-			double tend = args.value("tend", 1.0); // default=1
-			int time_steps = args["time_steps"];   // default=10 set in State::State()
-			double dt = args.value("dt", tend / time_steps);
-			if (args.contains("tend"))
-				if (args.contains("dt")) // Explicit timestep param. has priority
+			double tend = args["tend"]; // default=1
+			int time_steps = args["time_steps"];
+			if (time_steps <= 0) // default=10
+				time_steps = 10;
+			double dt = args["dt"];
+			if (tend > 0)
+				if (dt > 0) // Explicit timestep param. has priority
 					time_steps = int(ceil((tend - t0) / dt));
 				else
 					dt = (tend - t0) / time_steps;
-			else if (args.contains("dt")) // Compute tend from dt and time_steps
+			else if (dt > 0) // Compute tend from dt and time_steps
 				tend = dt * time_steps + t0;
 			else // Use default tend
+			{
+				tend = 1;
 				dt = (tend - t0) / time_steps;
+			}
+			assert(tend > 0 && dt > 0 && time_steps > 0);
 			// Store these for possible use later
 			args["tend"] = tend;
 			args["dt"] = dt;
@@ -1028,8 +1035,6 @@ namespace polyfem
 
 			if (tend <= t0)
 			{
-				dt = args["dt"];
-				time_steps = args["time_steps"];
 				tend = t0 + time_steps * dt;
 			}
 			logger().info("t0={}, dt={}, tend={}", t0, dt, tend);

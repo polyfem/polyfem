@@ -20,6 +20,10 @@ namespace polyfem
 	// NOTE: mode is a copy because the mode will be transformed to be case insensitive
 	Eigen::Matrix3d to_rotation_matrix(const json &jr, std::string mode = "xyz");
 
+	void check_for_unknown_args(const json &args, const json &args_in);
+
+	bool is_param_valid(const json &params, const std::string &key);
+
 } // namespace polyfem
 
 namespace nlohmann

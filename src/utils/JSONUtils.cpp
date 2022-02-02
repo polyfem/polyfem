@@ -99,4 +99,34 @@ namespace polyfem
 		return R;
 	}
 
+	// check that incomming json doesn't have any unkown keys to avoid stupid bugs
+	void check_for_unknown_args(const json &args, const json &args_in)
+	{
+		auto patch = json::diff(args, args_in);
+		for (auto &op : patch)
+		{
+			if (op["op"].get<std::string>().compare("add") == 0)
+			{
+				auto new_path = json::json_pointer(op["path"].get<std::string>());
+				if (!args_in[new_path.parent_pointer()].is_array()
+					&& new_path.back().size() != 0
+					&& new_path.back().front() != '#')
+				{
+					if (new_path.parent_pointer().back() != "solver_params"
+						&& new_path.parent_pointer().back() != "problem_params")
+					{
+						logger().warn(
+							"Unknown key in json path={}",
+							op["path"].get<std::string>());
+					}
+				}
+			}
+		}
+	}
+
+	bool is_param_valid(const json &params, const std::string &key)
+	{
+		return params.contains(key) && !params[key].is_null();
+	}
+
 } // namespace polyfem

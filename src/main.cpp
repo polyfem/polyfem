@@ -84,9 +84,6 @@ int main(int argc, char **argv)
 	size_t max_threads = std::numeric_limits<size_t>::max();
 	double f_delta = 0;
 
-	double ccd_max_iterations = -1;
-	std::string ccd_method = "";
-
 	bool use_al = false;
 	int min_component = -1;
 
@@ -103,16 +100,17 @@ int main(int argc, char **argv)
 	command_line.add_flag("--not_norm", skip_normalization, "Skips mesh normalization");
 
 	const ProblemFactory &p_factory = ProblemFactory::factory();
-	command_line.add_set("--problem", problem_name, std::set<std::string>(p_factory.get_problem_names().begin(), p_factory.get_problem_names().end()), "Problem name");
+	command_line.add_option("--problem", problem_name, "Problem name")
+		->check(CLI::IsMember(p_factory.get_problem_names()));
 
 	const auto sa = AssemblerUtils::scalar_assemblers();
 	const auto ta = AssemblerUtils::tensor_assemblers();
-	command_line.add_set("--sform", scalar_formulation, std::set<std::string>(sa.begin(), sa.end()), "Scalar formulation");
-	command_line.add_set("--tform", tensor_formulation, std::set<std::string>(ta.begin(), ta.end()), "Tensor formulation");
-	// command_line.add_set("--mform", mixed_formulation, std::set<std::string>(assembler.mixed_assemblers().begin(), assembler.mixed_assemblers().end()),  "Mixed formulation");
+	command_line.add_option("--sform", scalar_formulation, "Scalar formulation")->check(CLI::IsMember(sa));
+	command_line.add_option("--tform", tensor_formulation, "Tensor formulation")->check(CLI::IsMember(ta));
+	// command_line.add_option("--mform", mixed_formulation,  "Mixed formulation")->check(CLI::IsMember(assembler.mixed_assemblers()));
 
 	const std::vector<std::string> solvers = LinearSolver::availableSolvers();
-	command_line.add_set("--solver", solver, std::set<std::string>(solvers.begin(), solvers.end()), "Linear solver to use");
+	command_line.add_option("--solver", solver, "Linear solver to use")->check(CLI::IsMember(solvers));
 
 	command_line.add_flag("--al", use_al, "Use augmented lagrangian");
 	command_line.add_option("-q,-p", discr_order, "Discretization order");
@@ -131,7 +129,7 @@ int main(int argc, char **argv)
 	command_line.add_flag("--compute_errors", compute_errors, "Computes the errors");
 
 	const std::vector<std::string> bc_methods = {"", "sample", "lsq"}; //, "integrate"};
-	command_line.add_set("--bc_method", bc_method, std::set<std::string>(bc_methods.begin(), bc_methods.end()), "Method used for boundary conditions");
+	command_line.add_option("--bc_method", bc_method, "Method used for boundary conditions")->check(CLI::IsMember(bc_methods));
 
 	command_line.add_option("--cache_size", cache_size, "Size of the cached assembly values");
 	command_line.add_option("--min_component", min_component, "Mimimum number of faces in connected compoment for contact");
@@ -163,12 +161,16 @@ int main(int argc, char **argv)
 	command_line.add_flag("--export_material_params", export_material_params, "Export material parameters");
 
 	const auto &time_integrator_names = ImplicitTimeIntegrator::get_time_integrator_names();
-	command_line.add_set("--time_integrator", time_integrator_name, std::set<std::string>(time_integrator_names.begin(), time_integrator_names.end()), "Time integrator name");
+	command_line.add_option("--time_integrator", time_integrator_name, "Time integrator name")
+		->check(CLI::IsMember(time_integrator_names));
 
 	// CCD
+	int ccd_max_iterations;
+	std::string broad_phase_method;
 	const std::vector<std::string> ccd_methods = {"", "brute_force", "spatial_hash", "hash_grid"};
 	command_line.add_option("--ccd_max_iterations", ccd_max_iterations, "Max number of CCD iterations");
-	command_line.add_set("--ccd_method", ccd_method, std::set<std::string>(ccd_methods.begin(), ccd_methods.end()), "CCD Method");
+	command_line.add_option("--broad_phase_method", broad_phase_method, "CCD Method")
+		->check(CLI::IsMember({"brute_force", "hash_grid", "spatial_hash"}));
 
 	CLI11_PARSE(command_line, argc, argv);
 
@@ -281,11 +283,11 @@ int main(int argc, char **argv)
 		in_args["export"]["wire_mesh"] = StringUtils::replace_ext(output_vtu, "obj");
 	}
 
-	if (ccd_max_iterations > 0)
-		in_args["solver_params"]["ccd_max_iterations"] = int(ccd_max_iterations);
+	if (has_arg(command_line, "ccd_max_iterations"))
+		in_args["solver_params"]["ccd_max_iterations"] = ccd_max_iterations;
 
-	if (ccd_method.empty())
-		in_args["solver_params"]["ccd_method"] = ccd_method;
+	if (has_arg(command_line, "broad_phase_method"))
+		in_args["solver_params"]["broad_phase_method"] = broad_phase_method;
 
 	if (min_component > 0)
 		in_args["min_component"] = min_component;

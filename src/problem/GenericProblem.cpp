@@ -1,5 +1,6 @@
 #include <polyfem/GenericProblem.hpp>
 #include <polyfem/State.hpp>
+#include <polyfem/JSONUtils.hpp>
 
 #include <iostream>
 
@@ -540,12 +541,12 @@ namespace polyfem
 
 	void GenericTensorProblem::set_parameters(const json &params)
 	{
-		if (params.contains("is_time_dependent"))
+		if (is_param_valid(params, "is_time_dependent"))
 		{
 			is_time_dept_ = params["is_time_dependent"];
 		}
 
-		if (params.contains("rhs"))
+		if (is_param_valid(params, "rhs"))
 		{
 			auto rr = params["rhs"];
 			if (rr.is_array())
@@ -555,47 +556,40 @@ namespace polyfem
 			}
 			else
 			{
+				logger().warn("Invalid problem rhs: should be an array.");
 				assert(false);
 			}
 		}
 
-		if (params.contains("exact"))
+		if (is_param_valid(params, "exact"))
 		{
 			auto ex = params["exact"];
-			has_exact_ = !ex.is_null();
-			if (has_exact_)
+			if (ex.is_array())
 			{
-				if (ex.is_array())
-				{
-					for (size_t k = 0; k < ex.size(); ++k)
-						exact_[k].init(ex[k]);
-				}
-				else
-				{
-					assert(false);
-				}
+				for (size_t k = 0; k < ex.size(); ++k)
+					exact_[k].init(ex[k]);
+			}
+			else
+			{
+				assert(false);
 			}
 		}
 
-		if (params.contains("exact_grad"))
+		if (is_param_valid(params, "exact_grad"))
 		{
 			auto ex = params["exact_grad"];
-			has_exact_grad_ = !ex.is_null();
-			if (has_exact_grad_)
+			if (ex.is_array())
 			{
-				if (ex.is_array())
-				{
-					for (size_t k = 0; k < ex.size(); ++k)
-						exact_grad_[k].init(ex[k]);
-				}
-				else
-				{
-					assert(false);
-				}
+				for (size_t k = 0; k < ex.size(); ++k)
+					exact_grad_[k].init(ex[k]);
+			}
+			else
+			{
+				assert(false);
 			}
 		}
 
-		if (params.contains("dirichlet_boundary"))
+		if (is_param_valid(params, "dirichlet_boundary"))
 		{
 			// boundary_ids_.clear();
 			int offset = boundary_ids_.size();
@@ -648,7 +642,7 @@ namespace polyfem
 			}
 		}
 
-		if (params.contains("neumann_boundary"))
+		if (is_param_valid(params, "neumann_boundary"))
 		{
 			// neumann_boundary_ids_.clear();
 			const int offset = neumann_boundary_ids_.size();
@@ -684,7 +678,7 @@ namespace polyfem
 			}
 		}
 
-		if (params.contains("pressure_boundary"))
+		if (is_param_valid(params, "pressure_boundary"))
 		{
 			// pressure_boundary_ids_.clear();
 			const int offset = pressure_boundary_ids_.size();
@@ -709,7 +703,7 @@ namespace polyfem
 			}
 		}
 
-		if (params.contains("initial_solution"))
+		if (is_param_valid(params, "initial_solution"))
 		{
 			auto rr = params["initial_solution"];
 			initial_position_.resize(rr.size());
@@ -724,7 +718,7 @@ namespace polyfem
 			}
 		}
 
-		if (params.contains("initial_velocity"))
+		if (is_param_valid(params, "initial_velocity"))
 		{
 			auto rr = params["initial_velocity"];
 			initial_velocity_.resize(rr.size());
@@ -739,7 +733,7 @@ namespace polyfem
 			}
 		}
 
-		if (params.contains("initial_acceleration"))
+		if (is_param_valid(params, "initial_acceleration"))
 		{
 			auto rr = params["initial_acceleration"];
 			initial_acceleration_.resize(rr.size());
@@ -1037,42 +1031,36 @@ namespace polyfem
 
 	void GenericScalarProblem::set_parameters(const json &params)
 	{
-		if (params.contains("is_time_dependent"))
+		if (is_param_valid(params, "is_time_dependent"))
 		{
 			is_time_dept_ = params["is_time_dependent"];
 		}
 
-		if (params.contains("rhs"))
+		if (is_param_valid(params, "rhs"))
 		{
 			rhs_.init(params["rhs"]);
 		}
 
-		if (params.contains("exact"))
+		if (is_param_valid(params, "exact"))
 		{
-			has_exact_ = !params["exact"].is_null();
-			if (has_exact_)
-				exact_.init(params["exact"]);
+			exact_.init(params["exact"]);
 		}
 
-		if (params.contains("exact_grad"))
+		if (is_param_valid(params, "exact_grad"))
 		{
 			auto ex = params["exact_grad"];
-			has_exact_grad_ = !ex.is_null();
-			if (has_exact_grad_)
+			if (ex.is_array())
 			{
-				if (ex.is_array())
-				{
-					for (size_t k = 0; k < ex.size(); ++k)
-						exact_grad_[k].init(ex[k]);
-				}
-				else
-				{
-					assert(false);
-				}
+				for (size_t k = 0; k < ex.size(); ++k)
+					exact_grad_[k].init(ex[k]);
+			}
+			else
+			{
+				assert(false);
 			}
 		}
 
-		if (params.contains("dirichlet_boundary"))
+		if (is_param_valid(params, "dirichlet_boundary"))
 		{
 			// boundary_ids_.clear();
 			const int offset = boundary_ids_.size();
@@ -1104,7 +1092,7 @@ namespace polyfem
 			}
 		}
 
-		if (params.contains("neumann_boundary"))
+		if (is_param_valid(params, "neumann_boundary"))
 		{
 			// neumann_boundary_ids_.clear();
 			const int offset = neumann_boundary_ids_.size();
