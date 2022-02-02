@@ -1010,10 +1010,8 @@ namespace polyfem
 		if (problem->is_time_dependent())
 		{
 			const double t0 = args["t0"];
-			double tend = args["tend"]; // default=1
-			int time_steps = args["time_steps"];
-			if (time_steps <= 0) // default=10
-				time_steps = 10;
+			double tend = args["tend"];          // default=1
+			int time_steps = args["time_steps"]; // default=10 set in State::State()
 			double dt = args["dt"];
 			if (tend > 0)
 				if (dt > 0) // Explicit timestep param. has priority
@@ -1136,7 +1134,9 @@ namespace polyfem
 		// Eigen::MatrixXd err_per_el(n_el, 5);
 		ElementAssemblyValues vals;
 
-		const double tend = args.value("tend", 1.0); // default=1
+		double tend = args.value("tend", 1.0);
+		if (tend <= 0)
+			tend = 1;
 
 		for (int e = 0; e < n_el; ++e)
 		{

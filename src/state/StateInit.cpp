@@ -127,9 +127,9 @@ namespace polyfem
 			{"friction_convergence_tol", 1e-2},
 
 			{"t0", 0},
-			{"tend", -1},       // Compute this automatically
-			{"dt", -1},         // Compute this automatically
-			{"time_steps", -1}, // Compute this automatically
+			{"tend", -1}, // Compute this automatically
+			{"dt", -1},   // Compute this automatically
+			{"time_steps", 10},
 			{"skip_frame", 1},
 			{"time_integrator", "ImplicitEuler"},
 			{"time_integrator_params",

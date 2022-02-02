@@ -614,7 +614,9 @@ void polyfem::UIState::draw_screenshot()
 	float p = ImGui::GetStyle().FramePadding.x;
 	if (ImGui::Button("Save VTU", ImVec2((w - p) / 2.f, 0)))
 	{
-		const double tend = state.args.value("tend", 1.0); // default=1
+		double tend = state.args.value("tend", 1.0); // default=1
+		if (tend <= 0)
+			tend = 1;
 
 		state.save_vtu("result.vtu", tend);
 	}
