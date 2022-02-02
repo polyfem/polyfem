@@ -81,7 +81,7 @@ namespace cppoptlib
 			do
 			{
 				{
-					POLYFEM_SCOPED_TIMER("[timing] constrain set update {}s", constrain_set_update_time);
+					POLYFEM_SCOPED_TIMER("[timing] constraint set update {}s", constraint_set_update_time);
 					objFunc.solution_changed(x);
 				}
 
@@ -337,7 +337,7 @@ namespace cppoptlib
 		double assembly_time;
 		double inverting_time;
 		double line_search_time;
-		double constrain_set_update_time;
+		double constraint_set_update_time;
 		double obj_fun_time;
 
 		void reset_times()
@@ -347,7 +347,7 @@ namespace cppoptlib
 			inverting_time = 0;
 			line_search_time = 0;
 			obj_fun_time = 0;
-			constrain_set_update_time = 0;
+			constraint_set_update_time = 0;
 			if (m_line_search)
 			{
 				m_line_search->reset_times();
@@ -377,16 +377,16 @@ namespace cppoptlib
 
 			if (m_line_search)
 			{
-				constrain_set_update_time += m_line_search->constrain_set_update_time;
+				constraint_set_update_time += m_line_search->constraint_set_update_time;
 			}
-			constrain_set_update_time /= per_iteration;
+			constraint_set_update_time /= per_iteration;
 			obj_fun_time /= per_iteration;
 
 			solver_info["time_grad"] = grad_time;
 			solver_info["time_assembly"] = assembly_time;
 			solver_info["time_inverting"] = inverting_time;
 			solver_info["time_line_search"] = line_search_time;
-			solver_info["time_constrain_set_update"] = constrain_set_update_time;
+			solver_info["time_constraint_set_update"] = constraint_set_update_time;
 			solver_info["time_obj_fun"] = obj_fun_time;
 
 			if (m_line_search)
@@ -403,12 +403,12 @@ namespace cppoptlib
 
 		void log_times()
 		{
-			polyfem::logger().debug("[timing] grad {}s, assembly {}s, inverting {}s, line_search {}s, constrain_set_update {}s, obj_fun {}s, checking_for_nan_inf {}s, broad_phase_ccd {}s, ccd {}s, classical_line_search {}s",
+			polyfem::logger().debug("[timing] grad {}s, assembly {}s, inverting {}s, line_search {}s, constraint_set_update {}s, obj_fun {}s, checking_for_nan_inf {}s, broad_phase_ccd {}s, ccd {}s, classical_line_search {}s",
 									grad_time,
 									assembly_time,
 									inverting_time,
 									line_search_time,
-									constrain_set_update_time + (m_line_search ? m_line_search->constrain_set_update_time : 0),
+									constraint_set_update_time + (m_line_search ? m_line_search->constraint_set_update_time : 0),
 									obj_fun_time,
 									m_line_search ? m_line_search->checking_for_nan_inf_time : 0,
 									m_line_search ? m_line_search->broad_phase_ccd_time : 0,

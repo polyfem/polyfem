@@ -145,7 +145,7 @@ namespace polyfem
 				TVector new_x = x + step_size * delta_x;
 
 				{
-					POLYFEM_SCOPED_TIMER("[timing] constrain set update in LS {}s", this->constrain_set_update_time);
+					POLYFEM_SCOPED_TIMER("[timing] constraint set update in LS {}s", this->constraint_set_update_time);
 					objFunc.solution_changed(new_x);
 				}
 

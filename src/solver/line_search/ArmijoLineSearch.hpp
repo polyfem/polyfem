@@ -77,7 +77,7 @@ namespace polyfem
 
 				TVector x1 = x + alpha * searchDir;
 				{
-					POLYFEM_SCOPED_TIMER("[timing] constrain set update in LS {}s", this->constrain_set_update_time);
+					POLYFEM_SCOPED_TIMER("[timing] constraint set update in LS {}s", this->constraint_set_update_time);
 					objFunc.solution_changed(x1);
 				}
 
@@ -99,7 +99,7 @@ namespace polyfem
 					x1 = x + alpha * searchDir;
 
 					{
-						POLYFEM_SCOPED_TIMER("[timing] constrain set update in LS {}s", this->constrain_set_update_time);
+						POLYFEM_SCOPED_TIMER("[timing] constraint set update in LS {}s", this->constraint_set_update_time);
 						objFunc.solution_changed(x1);
 					}
 
