@@ -374,37 +374,30 @@ namespace cppoptlib
 
 			double per_iteration = crit.iterations ? crit.iterations : 1;
 
-			grad_time /= per_iteration;
-			assembly_time /= per_iteration;
-			inverting_time /= per_iteration;
-			line_search_time /= per_iteration;
-
-			if (m_line_search)
-			{
-				// Remove double counting
-				m_line_search->classical_line_search_time -= m_line_search->constraint_set_update_time;
-				constraint_set_update_time += m_line_search->constraint_set_update_time;
-			}
-			constraint_set_update_time /= per_iteration;
-			obj_fun_time /= per_iteration;
-
 			solver_info["total_time"] = total_time;
-			solver_info["time_grad"] = grad_time;
-			solver_info["time_assembly"] = assembly_time;
-			solver_info["time_inverting"] = inverting_time;
-			solver_info["time_line_search"] = line_search_time;
-			solver_info["time_constraint_set_update"] = constraint_set_update_time;
-			solver_info["time_obj_fun"] = obj_fun_time;
+			solver_info["time_grad"] = grad_time / per_iteration;
+			solver_info["time_assembly"] = assembly_time / per_iteration;
+			solver_info["time_inverting"] = inverting_time / per_iteration;
+			solver_info["time_line_search"] = line_search_time / per_iteration;
+			solver_info["time_constraint_set_update"] = constraint_set_update_time / per_iteration;
+			solver_info["time_obj_fun"] = obj_fun_time / per_iteration;
 
 			if (m_line_search)
 			{
+				solver_info["line_search_iterations"] = m_line_search->iterations;
+
 				solver_info["time_checking_for_nan_inf"] =
 					m_line_search->checking_for_nan_inf_time / per_iteration;
 				solver_info["time_broad_phase_ccd"] =
 					m_line_search->broad_phase_ccd_time / per_iteration;
 				solver_info["time_ccd"] = m_line_search->ccd_time / per_iteration;
+				// Remove double counting
 				solver_info["time_classical_line_search"] =
-					m_line_search->classical_line_search_time / per_iteration;
+					(m_line_search->classical_line_search_time
+					 - m_line_search->constraint_set_update_time)
+					/ per_iteration;
+				solver_info["time_line_search_constraint_set_update"] =
+					m_line_search->constraint_set_update_time / per_iteration;
 			}
 		}
 

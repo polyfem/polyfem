@@ -142,6 +142,8 @@ namespace polyfem
 			bool is_step_valid = false;
 			while (step_size > this->min_step_size && this->cur_iter < this->max_step_size_iter)
 			{
+				this->iterations++;
+
 				TVector new_x = x + step_size * delta_x;
 
 				{
