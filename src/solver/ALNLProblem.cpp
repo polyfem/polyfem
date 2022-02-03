@@ -25,7 +25,7 @@ namespace polyfem
 		// stop_dist_ = 1e-2 * state.min_edge_length;
 
 		for (const auto bn : state.boundary_nodes)
-			entries.emplace_back(bn, bn, weight_);
+			entries.emplace_back(bn, bn, 1.0);
 
 		hessian_AL_.resize(state.n_bases * state.mesh->dimension(), state.n_bases * state.mesh->dimension());
 		hessian_AL_.setFromTriplets(entries.begin(), entries.end());
@@ -122,9 +122,9 @@ namespace polyfem
 	{
 		super::hessian_full(x, hessian);
 #ifdef POLYFEM_DIV_BARRIER_STIFFNESS
-		hessian += hessian_AL_ / _barrier_stiffness;
+		hessian += weight_ * hessian_AL_ / _barrier_stiffness;
 #else
-		hessian += hessian_AL_;
+		hessian += weight_ * hessian_AL_;
 #endif
 		hessian.makeCompressed();
 	}
