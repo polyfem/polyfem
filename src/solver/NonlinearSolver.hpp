@@ -71,7 +71,7 @@ namespace cppoptlib
 
 			double first_grad_norm = -1;
 
-			Timer timer("Non-linear solver time", this->total_time);
+			Timer timer("[timing] non-linear solver {}s", this->total_time);
 			timer.start();
 
 			m_line_search->use_grad_norm_tol = use_grad_norm_tol;
@@ -83,7 +83,11 @@ namespace cppoptlib
 					objFunc.solution_changed(x);
 				}
 
-				const double energy = objFunc.value(x);
+				double energy;
+				{
+					POLYFEM_SCOPED_TIMER("[timing] compute objective function {}s", obj_fun_time);
+					energy = objFunc.value(x);
+				}
 				if (!std::isfinite(energy))
 				{
 					this->m_status = Status::UserDefined;
@@ -377,6 +381,8 @@ namespace cppoptlib
 
 			if (m_line_search)
 			{
+				// Remove double counting
+				m_line_search->classical_line_search_time -= m_line_search->constraint_set_update_time;
 				constraint_set_update_time += m_line_search->constraint_set_update_time;
 			}
 			constraint_set_update_time /= per_iteration;

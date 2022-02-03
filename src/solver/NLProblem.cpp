@@ -583,7 +583,7 @@ namespace polyfem
 			return;
 		}
 
-		POLYFEM_SCOPED_TIMER_NO_GLOBAL("\tremoving costraint time {}s");
+		POLYFEM_SCOPED_TIMER("\tremoving costraint time {}s");
 
 		std::vector<Eigen::Triplet<double>> entries;
 
@@ -639,7 +639,7 @@ namespace polyfem
 
 		TVector full;
 		{
-			POLYFEM_SCOPED_TIMER_NO_GLOBAL("\treduced to full time {}s");
+			POLYFEM_SCOPED_TIMER("\treduced to full time {}s");
 			if (x.size() == reduced_size)
 				reduced_to_full(x, full);
 			else
@@ -649,7 +649,7 @@ namespace polyfem
 
 		THessian energy_hessian(full_size, full_size);
 		{
-			POLYFEM_SCOPED_TIMER_NO_GLOBAL("\telastic hessian time {}s");
+			POLYFEM_SCOPED_TIMER("\telastic hessian time {}s");
 
 			const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 			if (assembler.is_linear(rhs_assembler.formulation()))
@@ -671,33 +671,33 @@ namespace polyfem
 		THessian inertia_hessian(full_size, full_size);
 		if (!ignore_inertia && is_time_dependent)
 		{
-			POLYFEM_SCOPED_TIMER_NO_GLOBAL("\tinertia hessian time {}s");
+			POLYFEM_SCOPED_TIMER("\tinertia hessian time {}s");
 			inertia_hessian = state.mass;
 		}
 
 		THessian barrier_hessian(full_size, full_size), friction_hessian(full_size, full_size);
 		if (!disable_collision && state.args["has_collision"])
 		{
-			POLYFEM_SCOPED_TIMER_NO_GLOBAL("\tipc hessian(s) time {}s");
+			POLYFEM_SCOPED_TIMER("\tipc hessian(s) time {}s");
 
 			Eigen::MatrixXd displaced;
 			{
-				POLYFEM_SCOPED_TIMER_NO_GLOBAL("\t\tdisplace pts time {}s");
+				POLYFEM_SCOPED_TIMER("\t\tdisplace pts time {}s");
 				compute_displaced_points(full, displaced);
 			}
 
 			// {
-			// 	POLYFEM_SCOPED_TIMER_NO_GLOBAL("\t\tconstraint set time {}s");
+			// 	POLYFEM_SCOPED_TIMER("\t\tconstraint set time {}s");
 			// }
 
 			{
-				POLYFEM_SCOPED_TIMER_NO_GLOBAL("\t\tbarrier hessian time {}s");
+				POLYFEM_SCOPED_TIMER("\t\tbarrier hessian time {}s");
 				barrier_hessian = ipc::compute_barrier_potential_hessian(
 					displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat, project_to_psd);
 			}
 
 			{
-				POLYFEM_SCOPED_TIMER_NO_GLOBAL("\t\tfriction hessian time {}s");
+				POLYFEM_SCOPED_TIMER("\t\tfriction hessian time {}s");
 				friction_hessian = ipc::compute_friction_potential_hessian(
 					displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set,
 					_epsv * dt(), project_to_psd);

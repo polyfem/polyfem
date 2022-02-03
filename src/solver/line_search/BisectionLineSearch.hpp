@@ -33,7 +33,7 @@ namespace polyfem
 
 			double old_energy, step_size;
 			{
-				POLYFEM_SCOPED_TIMER_NO_GLOBAL("[timing] LS begin {}s");
+				POLYFEM_SCOPED_TIMER("[timing] LS begin {}s");
 
 				this->cur_iter = 0;
 
@@ -102,7 +102,7 @@ namespace polyfem
 			// -------------
 
 			{
-				POLYFEM_SCOPED_TIMER_NO_GLOBAL("[timing] safeguard in LS {}s");
+				POLYFEM_SCOPED_TIMER("[timing] safeguard in LS {}s");
 				step_size = this->compute_debug_collision_free_step_size(x, delta_x, objFunc, step_size, 0.5);
 			}
 
@@ -110,7 +110,7 @@ namespace polyfem
 #endif
 
 			{
-				POLYFEM_SCOPED_TIMER_NO_GLOBAL("[timing] LS end {}s");
+				POLYFEM_SCOPED_TIMER("[timing] LS end {}s");
 				objFunc.line_search_end();
 			}
 
