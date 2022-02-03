@@ -71,8 +71,8 @@ namespace cppoptlib
 
 			double first_grad_norm = -1;
 
-			Timer total_time("Non-linear solver time");
-			total_time.start();
+			Timer timer("Non-linear solver time", this->total_time);
+			timer.start();
 
 			m_line_search->use_grad_norm_tol = use_grad_norm_tol;
 
@@ -223,7 +223,7 @@ namespace cppoptlib
 				++this->m_current.iterations;
 			} while (objFunc.callback(this->m_current, x) && (this->m_status == Status::Continue));
 
-			total_time.stop();
+			timer.stop();
 
 			// -----------
 			// Log results
@@ -254,7 +254,7 @@ namespace cppoptlib
 			}
 			polyfem::logger().log(
 				level, "[{}] {}, took {}s (niters={} f={} ||∇f||={} ||Δx||={} Δx⋅∇f(x)={} g={} tol={})",
-				name(), msg, total_time.getElapsedTimeInSec(), this->m_current.iterations, old_energy, grad.norm(), delta_x.norm(),
+				name(), msg, timer.getElapsedTimeInSec(), this->m_current.iterations, old_energy, grad.norm(), delta_x.norm(),
 				delta_x.dot(grad), this->m_current.gradNorm, this->m_stop.gradNorm);
 
 			log_times();
@@ -331,6 +331,7 @@ namespace cppoptlib
 
 		json solver_info;
 
+		double total_time;
 		double grad_time;
 		double assembly_time;
 		double inverting_time;
@@ -340,6 +341,7 @@ namespace cppoptlib
 
 		void reset_times()
 		{
+			total_time = 0;
 			grad_time = 0;
 			assembly_time = 0;
 			inverting_time = 0;
@@ -380,6 +382,7 @@ namespace cppoptlib
 			constraint_set_update_time /= per_iteration;
 			obj_fun_time /= per_iteration;
 
+			solver_info["total_time"] = total_time;
 			solver_info["time_grad"] = grad_time;
 			solver_info["time_assembly"] = assembly_time;
 			solver_info["time_inverting"] = inverting_time;
