@@ -433,14 +433,14 @@ namespace polyfem
 			const double time = t0 + dt * t;
 
 			rhs_assembler.assemble(density, current_rhs, time);
+			current_rhs *= -1;
 			rhs_assembler.set_bc(std::vector<LocalBoundary>(), std::vector<int>(), args["n_boundary_samples"], local_neumann_boundary, current_rhs, time);
 
 			current_rhs *= time_integrator->acceleration_scaling();
 			current_rhs += mass * time_integrator->x_tilde();
 			rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], std::vector<LocalBoundary>(), current_rhs, time);
 
-			b = -current_rhs;
-
+			b = current_rhs;
 			A = stiffness * time_integrator->acceleration_scaling() + mass;
 			btmp = b;
 			spectrum = dirichlet_solve(*solver, A, btmp, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], t == 1 && args["export"]["spectrum"], assembler.is_fluid(formulation()), use_avg_pressure);
