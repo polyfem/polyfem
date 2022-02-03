@@ -67,6 +67,7 @@ namespace polyfem
 		bool is_time_dependent() const override { return is_time_dept_; }
 		void set_time_dependent(const bool val) { is_time_dept_ = val; }
 		bool is_constant_in_time() const override { return !is_time_dept_; }
+		bool might_have_no_dirichlet() override { return true; }
 
 		void velocity_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 		void acceleration_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
@@ -156,6 +157,7 @@ namespace polyfem
 		bool is_time_dependent() const override { return is_time_dept_; }
 		void set_time_dependent(const bool val) { is_time_dept_ = val; }
 		bool is_constant_in_time() const override { return !is_time_dept_; }
+		bool might_have_no_dirichlet() override { return true; }
 
 		void set_parameters(const json &params) override;
 
