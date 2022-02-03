@@ -102,21 +102,21 @@ namespace polyfem
 	// check that incomming json doesn't have any unkown keys to avoid stupid bugs
 	void check_for_unknown_args(const json &args, const json &args_in)
 	{
-		auto patch = json::diff(args, args_in);
-		for (auto &op : patch)
+		json patch = json::diff(args, args_in);
+		for (const json &op : patch)
 		{
-			if (op["op"].get<std::string>().compare("add") == 0)
+			if (op["op"].get<std::string>() == "add")
 			{
-				auto new_path = json::json_pointer(op["path"].get<std::string>());
+				json::json_pointer new_path(op["path"].get<std::string>());
 				if (!args_in[new_path.parent_pointer()].is_array()
 					&& new_path.back().size() != 0
 					&& new_path.back().front() != '#')
 				{
-					if (new_path.parent_pointer().back() != "solver_params"
-						&& new_path.parent_pointer().back() != "problem_params")
+					json::json_pointer parent = new_path.parent_pointer();
+					if (parent.empty() || (parent.back() != "solver_params" && parent.back() != "problem_params"))
 					{
 						logger().warn(
-							"Unknown key in json path={}",
+							"Unknown key in json (path={})",
 							op["path"].get<std::string>());
 					}
 				}
