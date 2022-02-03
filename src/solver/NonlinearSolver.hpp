@@ -31,13 +31,13 @@ namespace cppoptlib
 			: solver_params(solver_params)
 		{
 			auto criteria = this->criteria();
-			criteria.fDelta = solver_params.value("fDelta", 1e-10);
-			criteria.gradNorm = solver_params.value("gradNorm", 1e-8);
-			criteria.iterations = solver_params.value("nl_iterations", 1000);
+			criteria.fDelta = solver_params["fDelta"];
+			criteria.gradNorm = solver_params["gradNorm"];
+			criteria.iterations = solver_params["nl_iterations"];
 
-			use_gradient_norm = solver_params.value("useGradNorm", true);
-			normalize_gradient = solver_params.value("relativeGradient", false);
-			use_grad_norm_tol = solver_params.value("use_grad_norm_tol", 1e-4);
+			use_gradient_norm = solver_params["useGradNorm"];
+			normalize_gradient = solver_params["relativeGradient"];
+			use_grad_norm_tol = solver_params["use_grad_norm_tol"];
 			this->setStopCriteria(criteria);
 
 			setLineSearch("armijo");
@@ -55,8 +55,6 @@ namespace cppoptlib
 		{
 			using namespace polyfem;
 
-			// objFunc.set_ccd_max_iterations(objFunc.max_ccd_max_iterations() / 10);
-
 			// ---------------------------
 			// Initialize the minimization
 			// ---------------------------
@@ -73,19 +71,23 @@ namespace cppoptlib
 
 			double first_grad_norm = -1;
 
-			Timer total_time("Non-linear solver time");
-			total_time.start();
+			Timer timer("[timing] non-linear solver {}s", this->total_time);
+			timer.start();
 
 			m_line_search->use_grad_norm_tol = use_grad_norm_tol;
 
 			do
 			{
 				{
-					POLYFEM_SCOPED_TIMER("[timing] constrain set update {}s", constrain_set_update_time);
+					POLYFEM_SCOPED_TIMER("[timing] constraint set update {}s", constraint_set_update_time);
 					objFunc.solution_changed(x);
 				}
 
-				const double energy = objFunc.value(x);
+				double energy;
+				{
+					POLYFEM_SCOPED_TIMER("[timing] compute objective function {}s", obj_fun_time);
+					energy = objFunc.value(x);
+				}
 				if (!std::isfinite(energy))
 				{
 					this->m_status = Status::UserDefined;
@@ -225,7 +227,7 @@ namespace cppoptlib
 				++this->m_current.iterations;
 			} while (objFunc.callback(this->m_current, x) && (this->m_status == Status::Continue));
 
-			total_time.stop();
+			timer.stop();
 
 			// -----------
 			// Log results
@@ -256,7 +258,7 @@ namespace cppoptlib
 			}
 			polyfem::logger().log(
 				level, "[{}] {}, took {}s (niters={} f={} ||∇f||={} ||Δx||={} Δx⋅∇f(x)={} g={} tol={})",
-				name(), msg, total_time.getElapsedTimeInSec(), this->m_current.iterations, old_energy, grad.norm(), delta_x.norm(),
+				name(), msg, timer.getElapsedTimeInSec(), this->m_current.iterations, old_energy, grad.norm(), delta_x.norm(),
 				delta_x.dot(grad), this->m_current.gradNorm, this->m_stop.gradNorm);
 
 			log_times();
@@ -333,21 +335,23 @@ namespace cppoptlib
 
 		json solver_info;
 
+		double total_time;
 		double grad_time;
 		double assembly_time;
 		double inverting_time;
 		double line_search_time;
-		double constrain_set_update_time;
+		double constraint_set_update_time;
 		double obj_fun_time;
 
 		void reset_times()
 		{
+			total_time = 0;
 			grad_time = 0;
 			assembly_time = 0;
 			inverting_time = 0;
 			line_search_time = 0;
 			obj_fun_time = 0;
-			constrain_set_update_time = 0;
+			constraint_set_update_time = 0;
 			if (m_line_search)
 			{
 				m_line_search->reset_times();
@@ -377,21 +381,24 @@ namespace cppoptlib
 
 			if (m_line_search)
 			{
-				constrain_set_update_time += m_line_search->constrain_set_update_time;
+				// Remove double counting
+				m_line_search->classical_line_search_time -= m_line_search->constraint_set_update_time;
+				constraint_set_update_time += m_line_search->constraint_set_update_time;
 			}
-			constrain_set_update_time /= per_iteration;
+			constraint_set_update_time /= per_iteration;
 			obj_fun_time /= per_iteration;
 
+			solver_info["total_time"] = total_time;
 			solver_info["time_grad"] = grad_time;
 			solver_info["time_assembly"] = assembly_time;
 			solver_info["time_inverting"] = inverting_time;
 			solver_info["time_line_search"] = line_search_time;
-			solver_info["time_constrain_set_update"] = constrain_set_update_time;
+			solver_info["time_constraint_set_update"] = constraint_set_update_time;
 			solver_info["time_obj_fun"] = obj_fun_time;
 
 			if (m_line_search)
 			{
-				solver_info["time_chekcing_for_nan_inf"] =
+				solver_info["time_checking_for_nan_inf"] =
 					m_line_search->checking_for_nan_inf_time / per_iteration;
 				solver_info["time_broad_phase_ccd"] =
 					m_line_search->broad_phase_ccd_time / per_iteration;
@@ -403,12 +410,12 @@ namespace cppoptlib
 
 		void log_times()
 		{
-			polyfem::logger().debug("[timing] grad {}s, assembly {}s, inverting {}s, line_search {}s, constrain_set_update {}s, obj_fun {}s, chekcing_for_nan_inf {}s, broad_phase_ccd {}s, ccd {}s, classical_line_search {}s",
+			polyfem::logger().debug("[timing] grad {}s, assembly {}s, inverting {}s, line_search {}s, constraint_set_update {}s, obj_fun {}s, checking_for_nan_inf {}s, broad_phase_ccd {}s, ccd {}s, classical_line_search {}s",
 									grad_time,
 									assembly_time,
 									inverting_time,
 									line_search_time,
-									constrain_set_update_time + (m_line_search ? m_line_search->constrain_set_update_time : 0),
+									constraint_set_update_time + (m_line_search ? m_line_search->constraint_set_update_time : 0),
 									obj_fun_time,
 									m_line_search ? m_line_search->checking_for_nan_inf_time : 0,
 									m_line_search ? m_line_search->broad_phase_ccd_time : 0,

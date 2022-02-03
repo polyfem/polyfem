@@ -139,11 +139,10 @@ namespace polyfem
 
 		double heuristic_max_step(const TVector &dx);
 
-		inline int max_ccd_max_iterations() const { return _max_ccd_max_iterations; }
 		inline void set_ccd_max_iterations(int v) { _ccd_max_iterations = v; }
 
-		void set_projet_to_psd(bool val) { project_to_psd = val; }
-		bool is_projet_to_psd() const { return project_to_psd; }
+		void set_project_to_psd(bool val) { project_to_psd = val; }
+		bool is_project_to_psd() const { return project_to_psd; }
 
 	protected:
 		void compute_displaced_points(const TVector &full, Eigen::MatrixXd &displaced);
@@ -185,7 +184,7 @@ namespace polyfem
 
 		ipc::BroadPhaseMethod _broad_phase_method;
 		double _ccd_tolerance;
-		int _ccd_max_iterations, _max_ccd_max_iterations;
+		int _ccd_max_iterations;
 
 		const double &dt() const { return time_integrator->dt(); }
 

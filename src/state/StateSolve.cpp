@@ -815,7 +815,9 @@ namespace polyfem
 
 			if (al_weight >= max_al_weight)
 			{
-				logger().error("Unable to solve AL problem, weight {} >= {}, stopping", al_weight, max_al_weight);
+				std::string msg = fmt::format("Unable to solve AL problem, weight {} >= {}, stopping", al_weight, max_al_weight);
+				logger().error(msg);
+				throw msg;
 				break;
 			}
 		}

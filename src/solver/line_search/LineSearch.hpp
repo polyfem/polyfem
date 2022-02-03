@@ -31,14 +31,14 @@ namespace polyfem
 			checking_for_nan_inf_time = 0;
 			broad_phase_ccd_time = 0;
 			ccd_time = 0;
-			constrain_set_update_time = 0;
+			constraint_set_update_time = 0;
 			classical_line_search_time = 0;
 		}
 
 		double checking_for_nan_inf_time;
 		double broad_phase_ccd_time;
 		double ccd_time;
-		double constrain_set_update_time;
+		double constraint_set_update_time;
 		double classical_line_search_time;
 
 		double use_grad_norm_tol = -1;

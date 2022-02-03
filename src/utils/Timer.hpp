@@ -2,16 +2,27 @@
 
 #include <igl/Timer.h>
 
-#define POLYFEM_SCOPED_TIMER(msg, total_time) polyfem::Timer __polyfem_timer(msg, total_time)
-#define POLYFEM_SCOPED_TIMER_NO_GLOBAL(msg) polyfem::Timer __polyfem_timer(msg)
+#define POLYFEM_SCOPED_TIMER(...) polyfem::Timer __polyfem_timer(__VA_ARGS__)
 
 namespace polyfem
 {
 	class Timer
 	{
 	public:
+		Timer()
+			: m_total_time(nullptr)
+		{
+			start();
+		}
+
 		Timer(const std::string &msg)
 			: m_msg(msg), m_total_time(nullptr)
+		{
+			start();
+		}
+
+		Timer(double &total_time)
+			: m_total_time(&total_time)
 		{
 			start();
 		}
@@ -49,7 +60,10 @@ namespace polyfem
 
 		inline void log_msg()
 		{
-			polyfem::logger().trace(m_msg.c_str(), getElapsedTimeInSec());
+			if (!m_msg.empty())
+			{
+				polyfem::logger().trace(m_msg.c_str(), getElapsedTimeInSec());
+			}
 		}
 
 		inline const igl::Timer &igl_timer()

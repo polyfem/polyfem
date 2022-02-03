@@ -94,6 +94,8 @@ namespace polyfem
 		this->args = {
 			{"root_path", ""},
 			{"mesh", ""},
+			{"meshes", nullptr},
+			{"obstacles", nullptr},
 			{"force_linear_geometry", false},
 			{"bc_tag", ""},
 			{"boundary_id_threshold", -1.0},
@@ -125,12 +127,15 @@ namespace polyfem
 			{"friction_convergence_tol", 1e-2},
 
 			{"t0", 0},
+			{"tend", -1}, // Compute this automatically
+			{"dt", -1},   // Compute this automatically
 			{"time_steps", 10},
 			{"skip_frame", 1},
 			{"time_integrator", "ImplicitEuler"},
 			{"time_integrator_params",
 			 {{"gamma", 0.5},
-			  {"beta", 0.25}}},
+			  {"beta", 0.25},
+			  {"num_steps", 1}}},
 
 			{"scalar_formulation", "Laplacian"},
 			{"tensor_formulation", "LinearElasticity"},
@@ -159,7 +164,16 @@ namespace polyfem
 
 			{"solver_type", LinearSolver::defaultSolver()},
 			{"precond_type", LinearSolver::defaultPrecond()},
-			{"solver_params", json({})},
+			{"solver_params",
+			 {{"broad_phase_method", "hash_grid"},
+			  {"ccd_tolerance", 1e-6},
+			  {"ccd_max_iterations", 1e6},
+			  {"fDelta", 1e-10},
+			  {"gradNorm", 1e-8},
+			  {"nl_iterations", 1000},
+			  {"useGradNorm", true},
+			  {"relativeGradient", false},
+			  {"use_grad_norm_tol", 1e-4}}},
 
 			{"rhs_solver_type", LinearSolver::defaultSolver()},
 			{"rhs_precond_type", LinearSolver::defaultPrecond()},
@@ -189,7 +203,20 @@ namespace polyfem
 			  {"mus", {0.00407251192475097, 0.000167202574129608}},
 			  {"Ds", {9.4979, 1000000}}}},
 
-			{"problem_params", json({})},
+			{"problem_params",
+			 {{"is_time_dependent", false},
+			  {"rhs", nullptr},
+			  {"exact", nullptr},
+			  {"exact_grad", nullptr},
+			  {"dirichlet_boundary", nullptr},
+			  {"neumann_boundary", nullptr},
+			  {"pressure_boundary", nullptr},
+			  {"initial_solution", nullptr},
+			  {"initial_velocity", nullptr},
+			  {"initial_acceleration", nullptr}}},
+
+			{"body_params", nullptr},
+			{"boundary_sidesets", nullptr},
 
 			{"output", ""},
 			// {"solution", ""},
@@ -269,6 +296,8 @@ namespace polyfem
 		if (args_in.contains("default_params"))
 			apply_default_params(args_in);
 
+		check_for_unknown_args(args, args_in);
+
 		this->args.merge_patch(args_in);
 		has_dhat = args_in.contains("dhat");
 
@@ -276,7 +305,7 @@ namespace polyfem
 
 		if (args_in.contains("BDF_order"))
 		{
-			logger().warn("use export: time_integrator_params: { num_steps: <value> } instead of BDF_order");
+			logger().warn("use time_integrator_params: { num_steps: <value> } instead of BDF_order");
 			this->args["time_integrator_params"]["num_steps"] = args_in["BDF_order"];
 		}
 

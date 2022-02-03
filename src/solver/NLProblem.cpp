@@ -32,6 +32,21 @@ M (u^{t+1}_h - (u^t_h + \Delta t v^t_h)) - \frac{\Delta t^2} {2} A u^{t+1}_h
 // Root-finding form:
 // M(uₕᵗ⁺¹ - (uₕᵗ + Δtvₕᵗ)) - ½Δt²Auₕᵗ⁺¹ = 0
 
+// map BroadPhaseMethod values to JSON as strings
+namespace ipc
+{
+	NLOHMANN_JSON_SERIALIZE_ENUM(
+		ipc::BroadPhaseMethod,
+		{
+			{ipc::BroadPhaseMethod::HASH_GRID, "hash_grid"}, // also default
+			{ipc::BroadPhaseMethod::HASH_GRID, "HG"},
+			{ipc::BroadPhaseMethod::BRUTE_FORCE, "brute_force"},
+			{ipc::BroadPhaseMethod::BRUTE_FORCE, "BF"},
+			{ipc::BroadPhaseMethod::SPATIAL_HASH, "spatial_hash"},
+			{ipc::BroadPhaseMethod::SPATIAL_HASH, "SH"},
+		});
+}
+
 namespace polyfem
 {
 	namespace
@@ -78,25 +93,9 @@ namespace polyfem
 		time_integrator = ImplicitTimeIntegrator::construct_time_integrator(state.args["time_integrator"]);
 		time_integrator->set_parameters(state.args["time_integrator_params"]);
 
-		if (state.args["solver_params"].contains("ccd_method"))
-		{
-			const std::string ccd_method = state.args["solver_params"]["ccd_method"];
-
-			if (ccd_method == "brute_force")
-				_broad_phase_method = ipc::BroadPhaseMethod::BRUTE_FORCE;
-			else if (ccd_method == "spatial_hash")
-				_broad_phase_method = ipc::BroadPhaseMethod::SPATIAL_HASH;
-			else
-				_broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
-		}
-
-		else
-			_broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
-
-		_ccd_tolerance = state.args["solver_params"].value("ccd_tolerance", 1e-6);
-		_max_ccd_max_iterations = state.args["solver_params"].value("ccd_max_iterations", 1e6);
-
-		_ccd_max_iterations = _max_ccd_max_iterations;
+		_broad_phase_method = state.args["solver_params"]["broad_phase_method"];
+		_ccd_tolerance = state.args["solver_params"]["ccd_tolerance"];
+		_ccd_max_iterations = state.args["solver_params"]["ccd_max_iterations"];
 	}
 
 	void NLProblem::init(const TVector &full)
@@ -343,21 +342,23 @@ namespace polyfem
 			state.boundary_triangles, _ccd_tolerance, _ccd_max_iterations);
 		// polyfem::logger().trace("best step {}", max_step);
 
+#ifndef NDEBUG
 		// This will check for static intersections as a failsafe. Not needed if we use our conservative CCD.
-		// Eigen::MatrixXd displaced_toi = (displaced1 - displaced0) * max_step + displaced0;
-		// while (ipc::has_intersections(displaced_toi, state.boundary_edges, state.boundary_triangles, [&](size_t vi, size_t vj) { return can_vertices_collide(vi, vj); }))
-		// {
-		// 	double Linf = (displaced_toi - displaced0).lpNorm<Eigen::Infinity>();
-		// 	logger().warn("taking max_step results in intersections (max_step={:g})", max_step);
-		// 	max_step /= 2.0;
-		// 	if (max_step <= 0 || Linf == 0)
-		// 	{
-		// 		std::string msg = fmt::format("Unable to find an intersection free step size (max_step={:g} L∞={:g})", max_step, Linf);
-		// 		logger().error(msg);
-		// 		throw msg;
-		// 	}
-		// 	displaced_toi = (displaced1 - displaced0) * max_step + displaced0;
-		// }
+		Eigen::MatrixXd displaced_toi = (displaced1 - displaced0) * max_step + displaced0;
+		while (ipc::has_intersections(displaced_toi, state.boundary_edges, state.boundary_triangles, [&](size_t vi, size_t vj) { return can_vertices_collide(vi, vj); }))
+		{
+			double Linf = (displaced_toi - displaced0).lpNorm<Eigen::Infinity>();
+			logger().warn("taking max_step results in intersections (max_step={:g})", max_step);
+			max_step /= 2.0;
+			if (max_step <= 0 || Linf == 0)
+			{
+				std::string msg = fmt::format("Unable to find an intersection free step size (max_step={:g} L∞={:g})", max_step, Linf);
+				logger().error(msg);
+				throw msg;
+			}
+			displaced_toi = (displaced1 - displaced0) * max_step + displaced0;
+		}
+#endif
 
 		return max_step;
 	}
@@ -582,7 +583,7 @@ namespace polyfem
 			return;
 		}
 
-		POLYFEM_SCOPED_TIMER_NO_GLOBAL("\tremoving costraint time {}s");
+		POLYFEM_SCOPED_TIMER("\tremoving costraint time {}s");
 
 		std::vector<Eigen::Triplet<double>> entries;
 
@@ -638,7 +639,7 @@ namespace polyfem
 
 		TVector full;
 		{
-			POLYFEM_SCOPED_TIMER_NO_GLOBAL("\treduced to full time {}s");
+			POLYFEM_SCOPED_TIMER("\treduced to full time {}s");
 			if (x.size() == reduced_size)
 				reduced_to_full(x, full);
 			else
@@ -648,7 +649,7 @@ namespace polyfem
 
 		THessian energy_hessian(full_size, full_size);
 		{
-			POLYFEM_SCOPED_TIMER_NO_GLOBAL("\telastic hessian time {}s");
+			POLYFEM_SCOPED_TIMER("\telastic hessian time {}s");
 
 			const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 			if (assembler.is_linear(rhs_assembler.formulation()))
@@ -670,33 +671,33 @@ namespace polyfem
 		THessian inertia_hessian(full_size, full_size);
 		if (!ignore_inertia && is_time_dependent)
 		{
-			POLYFEM_SCOPED_TIMER_NO_GLOBAL("\tinertia hessian time {}s");
+			POLYFEM_SCOPED_TIMER("\tinertia hessian time {}s");
 			inertia_hessian = state.mass;
 		}
 
 		THessian barrier_hessian(full_size, full_size), friction_hessian(full_size, full_size);
 		if (!disable_collision && state.args["has_collision"])
 		{
-			POLYFEM_SCOPED_TIMER_NO_GLOBAL("\tipc hessian(s) time {}s");
+			POLYFEM_SCOPED_TIMER("\tipc hessian(s) time {}s");
 
 			Eigen::MatrixXd displaced;
 			{
-				POLYFEM_SCOPED_TIMER_NO_GLOBAL("\t\tdisplace pts time {}s");
+				POLYFEM_SCOPED_TIMER("\t\tdisplace pts time {}s");
 				compute_displaced_points(full, displaced);
 			}
 
 			// {
-			// 	POLYFEM_SCOPED_TIMER_NO_GLOBAL("\t\tconstraint set time {}s");
+			// 	POLYFEM_SCOPED_TIMER("\t\tconstraint set time {}s");
 			// }
 
 			{
-				POLYFEM_SCOPED_TIMER_NO_GLOBAL("\t\tbarrier hessian time {}s");
+				POLYFEM_SCOPED_TIMER("\t\tbarrier hessian time {}s");
 				barrier_hessian = ipc::compute_barrier_potential_hessian(
 					displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat, project_to_psd);
 			}
 
 			{
-				POLYFEM_SCOPED_TIMER_NO_GLOBAL("\t\tfriction hessian time {}s");
+				POLYFEM_SCOPED_TIMER("\t\tfriction hessian time {}s");
 				friction_hessian = ipc::compute_friction_potential_hessian(
 					displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set,
 					_epsv * dt(), project_to_psd);

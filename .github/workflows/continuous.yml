@@ -158,7 +158,7 @@ jobs:
         if: matrix.arc == 'x86' # no ARM vm on actions yet
         run: |
           cd build
-          python ../tests/test_runners.py
+          python3 ../tests/test_runners.py
           ./PolyFEM_bin --mesh ../data/data/contact/meshes/3D/simple/cube.msh --cmd --n_refs 1 --problem DrivenCavity --tform Stokes
           ./PolyFEM_bin --mesh ../data/data/contact/meshes/3D/simple/cube.msh --cmd --n_refs 1 --problem DrivenCavity --tform NavierStokes
 

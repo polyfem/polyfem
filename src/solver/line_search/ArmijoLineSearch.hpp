@@ -30,7 +30,7 @@ namespace polyfem
 			double alpha_init = default_alpha_init;
 
 			{
-				POLYFEM_SCOPED_TIMER_NO_GLOBAL("[timing] LS begin {}s");
+				POLYFEM_SCOPED_TIMER("[timing] LS begin {}s");
 
 				this->cur_iter = 0;
 
@@ -77,7 +77,7 @@ namespace polyfem
 
 				TVector x1 = x + alpha * searchDir;
 				{
-					POLYFEM_SCOPED_TIMER("[timing] constrain set update in LS {}s", this->constrain_set_update_time);
+					POLYFEM_SCOPED_TIMER("[timing] constraint set update in LS {}s", this->constraint_set_update_time);
 					objFunc.solution_changed(x1);
 				}
 
@@ -99,7 +99,7 @@ namespace polyfem
 					x1 = x + alpha * searchDir;
 
 					{
-						POLYFEM_SCOPED_TIMER("[timing] constrain set update in LS {}s", this->constrain_set_update_time);
+						POLYFEM_SCOPED_TIMER("[timing] constraint set update in LS {}s", this->constraint_set_update_time);
 						objFunc.solution_changed(x1);
 					}
 
@@ -127,7 +127,7 @@ namespace polyfem
 			if (this->cur_iter >= this->max_step_size_iter || alpha <= this->min_step_size)
 			{
 				{
-					POLYFEM_SCOPED_TIMER_NO_GLOBAL("[timing] LS end {}s");
+					POLYFEM_SCOPED_TIMER("[timing] LS end {}s");
 					objFunc.line_search_end();
 				}
 
@@ -143,7 +143,7 @@ namespace polyfem
 			// CCD safeguard
 			// -------------
 			{
-				POLYFEM_SCOPED_TIMER_NO_GLOBAL("[timing] safeguard in LS {}s");
+				POLYFEM_SCOPED_TIMER("[timing] safeguard in LS {}s");
 				alpha = this->compute_debug_collision_free_step_size(x, searchDir, objFunc, alpha, tau);
 			}
 
@@ -151,7 +151,7 @@ namespace polyfem
 #endif
 
 			{
-				POLYFEM_SCOPED_TIMER_NO_GLOBAL("[timing] LS end {}s");
+				POLYFEM_SCOPED_TIMER("[timing] LS end {}s");
 				objFunc.line_search_end();
 			}
 

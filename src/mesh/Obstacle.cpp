@@ -67,7 +67,7 @@ namespace polyfem
 
 		if (!mesh_in.contains("mesh"))
 		{
-			logger().error("Obstacle {} is mising a \"mesh\" field", mesh_in.get<std::string>());
+			logger().error("Obstacle {} is mising a \"mesh\" field", mesh_in.dump());
 			return;
 		}
 		const std::string mesh_path = resolve_path(jmesh["mesh"], root_path);

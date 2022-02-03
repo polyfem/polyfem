@@ -33,7 +33,7 @@ namespace polyfem
 
 			double old_energy, step_size;
 			{
-				POLYFEM_SCOPED_TIMER_NO_GLOBAL("[timing] LS begin {}s");
+				POLYFEM_SCOPED_TIMER("[timing] LS begin {}s");
 
 				this->cur_iter = 0;
 
@@ -72,6 +72,7 @@ namespace polyfem
 
 			{
 				POLYFEM_SCOPED_TIMER("[timing] CCD narrow-phase {}s", this->ccd_time);
+				logger().trace("Performing narrow-phase CCD");
 				step_size = this->compute_collision_free_step_size(x, delta_x, objFunc, step_size);
 				if (std::isnan(step_size))
 					return std::nan("");
@@ -101,7 +102,7 @@ namespace polyfem
 			// -------------
 
 			{
-				POLYFEM_SCOPED_TIMER_NO_GLOBAL("[timing] safeguard in LS {}s");
+				POLYFEM_SCOPED_TIMER("[timing] safeguard in LS {}s");
 				step_size = this->compute_debug_collision_free_step_size(x, delta_x, objFunc, step_size, 0.5);
 			}
 
@@ -109,7 +110,7 @@ namespace polyfem
 #endif
 
 			{
-				POLYFEM_SCOPED_TIMER_NO_GLOBAL("[timing] LS end {}s");
+				POLYFEM_SCOPED_TIMER("[timing] LS end {}s");
 				objFunc.line_search_end();
 			}
 
@@ -144,7 +145,7 @@ namespace polyfem
 				TVector new_x = x + step_size * delta_x;
 
 				{
-					POLYFEM_SCOPED_TIMER("[timing] constrain set update in LS {}s", this->constrain_set_update_time);
+					POLYFEM_SCOPED_TIMER("[timing] constraint set update in LS {}s", this->constraint_set_update_time);
 					objFunc.solution_changed(new_x);
 				}
 
