@@ -191,12 +191,12 @@ endif()
 # Required libraries
 ################################################################################
 
-include(ipc_toolkit)
-target_link_libraries(polyfem PUBLIC ipc::toolkit)
-
 # polysolve
 include(polysolver)
 target_link_libraries(polyfem PUBLIC polysolve)
+
+include(ipc_toolkit)
+target_link_libraries(polyfem PUBLIC ipc::toolkit)
 
 # Threading
 if(POLYFEM_THREADING STREQUAL "CPP")
