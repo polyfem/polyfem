@@ -211,6 +211,7 @@ jobs:
             -DPOLYFEM_WITH_CLIPPER=OFF ^
             -DPOLYFEM_THREADING=${{ matrix.threading }} ^
             -DPOLYSOLVE_WITH_CHOLMOD=OFF ^
+            -DPOLYSOLVE_WITH_MKL=OFF ^
             -B build ^
             -S .
           cd build
