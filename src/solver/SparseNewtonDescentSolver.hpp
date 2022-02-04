@@ -104,7 +104,7 @@ namespace cppoptlib
 					this->descent_strategy++;
 					// Warning if we switch to projected Newton, else error
 					polyfem::logger().log(
-						this->descent_strategy == 1 ? spdlog::level::warn : spdlog::level::err,
+						spdlog::level::debug,
 						"Unable to factorize Hessian: \"{}\"; reverting to {}",
 						err.what(), this->descent_strategy_name());
 					// polyfem::write_sparse_matrix_csv("problematic_hessian.csv", hessian);
@@ -120,14 +120,14 @@ namespace cppoptlib
 			{
 				this->descent_strategy++;
 				polyfem::logger().log(
-					this->descent_strategy == 1 ? spdlog::level::warn : spdlog::level::err,
+					spdlog::level::debug,
 					"nan linear solve residual {} (||∇f||={}); reverting to {}",
 					residual, grad.norm(), this->descent_strategy_name());
 				return false;
 			}
 			else if (residual > 1e-5)
 			{
-				polyfem::logger().warn("large linear solve residual {} (||∇f||={})", residual, grad.norm());
+				polyfem::logger().debug("large linear solve residual {} (||∇f||={})", residual, grad.norm());
 			}
 			else
 			{
@@ -138,7 +138,7 @@ namespace cppoptlib
 			{
 				this->descent_strategy++;
 				polyfem::logger().log(
-					this->descent_strategy == 1 ? spdlog::level::warn : spdlog::level::err,
+					spdlog::level::debug,
 					"Newton direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
 					direction.dot(grad), this->descent_strategy_name());
 				return false;
