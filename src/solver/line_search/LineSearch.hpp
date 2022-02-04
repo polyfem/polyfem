@@ -28,6 +28,7 @@ namespace polyfem
 
 		virtual void reset_times()
 		{
+			iterations = 0;
 			checking_for_nan_inf_time = 0;
 			broad_phase_ccd_time = 0;
 			ccd_time = 0;
@@ -35,6 +36,7 @@ namespace polyfem
 			classical_line_search_time = 0;
 		}
 
+		int iterations; ///< total number of backtracking iterations done
 		double checking_for_nan_inf_time;
 		double broad_phase_ccd_time;
 		double ccd_time;
