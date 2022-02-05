@@ -76,6 +76,11 @@ option(POLYFEM_WITH_OPENCL           "Enable OpenCL"                     OFF)
 option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
 set(POLYFEM_THREADING "TBB" CACHE STRING "Multithreading library to use (options: CPP, TBB, NONE)")
 set_property(CACHE POLYFEM_THREADING PROPERTY STRINGS "CPP" "TBB" "NONE")
+if(POLYFEM_THREADING STREQUAL "TBB")
+    set(MKL_THREADING "tbb" CACHE STRING "Threading layer to use with MKL (sequential, tbb or openmp)" FORCE)
+else()
+    set(MKL_THREADING "sequential" CACHE STRING "Threading layer to use with MKL (sequential, tbb or openmp)" FORCE)
+endif()
 
 option(POLYFEM_WITH_TESTS     "Build tests"             ON)
 option(POLYFEM_WITH_APPS      "Build the apps"          ON)
@@ -191,12 +196,12 @@ endif()
 # Required libraries
 ################################################################################
 
-include(ipc_toolkit)
-target_link_libraries(polyfem PUBLIC ipc::toolkit)
-
 # polysolve
 include(polysolver)
 target_link_libraries(polyfem PUBLIC polysolve)
+
+include(ipc_toolkit)
+target_link_libraries(polyfem PUBLIC ipc::toolkit)
 
 # Threading
 if(POLYFEM_THREADING STREQUAL "CPP")

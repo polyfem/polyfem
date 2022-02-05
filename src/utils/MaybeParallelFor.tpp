@@ -20,7 +20,7 @@ namespace polyfem
 		par_for(size, partial_for);
 #elif defined(POLYFEM_WITH_TBB)
 		tbb::parallel_for(tbb::blocked_range<int>(0, size), [&](const tbb::blocked_range<int> &r) {
-			partial_for(r.begin(), r.end(), tbb::task_arena::current_thread_index());
+			partial_for(r.begin(), r.end(), tbb::this_task_arena::current_thread_index());
 		});
 #else
 		partial_for(0, size, /*thread_id=*/0); // actually the full for loop
