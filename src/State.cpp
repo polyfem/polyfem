@@ -316,6 +316,32 @@ namespace polyfem
 		const int base_p = args["discr_order"];
 		disc_orders.setConstant(base_p);
 
+		const std::string discr_orders_path = args["discr_orders_path"];
+		const auto b_discr_orders = args["bodies_discr_order"];
+		if (!discr_orders_path.empty())
+		{
+			Eigen::MatrixXi tmp;
+			read_matrix(discr_orders_path, tmp);
+			assert(tmp.size() == disc_orders.size());
+			assert(tmp.cols() == 1);
+			disc_orders = tmp;
+		}
+		else if (b_discr_orders.size() > 0)
+		{
+			std::map<int, int> b_orders;
+			for (size_t i = 0; i < b_discr_orders.size(); ++i)
+			{
+				b_orders[b_discr_orders[i]["body_id"]] = b_discr_orders[i]["discr"];
+				logger().trace("bid {}, discr {}", b_discr_orders[i]["body_id"], b_discr_orders[i]["discr"]);
+			}
+
+			for (int e = 0; e < mesh->n_elements(); ++e)
+			{
+				const int bid = mesh->get_body_id(e);
+				disc_orders[e] = b_orders.at(bid);
+			}
+		}
+
 		Eigen::MatrixXi geom_disc_orders;
 		if (!iso_parametric())
 		{

@@ -99,7 +99,11 @@ namespace polyfem
 			{"force_linear_geometry", false},
 			{"bc_tag", ""},
 			{"boundary_id_threshold", -1.0},
+
 			{"n_refs", 0},
+			{"n_refs_path", ""},
+			{"bodies_n_refs", {}},
+
 			{"vismesh_rel_area", 0.00001},
 			{"refinenemt_location", 0.5},
 			{"bc_method", "lsq"},
@@ -144,7 +148,11 @@ namespace polyfem
 			{"h1_formula", false},
 
 			{"quadrature_order", -1},
+
 			{"discr_order", 1},
+			{"discr_orders_path", ""},
+			{"bodies_discr_order", {}},
+
 			{"poly_bases", "MFSHarmonic"},
 			{"serendipity", false},
 			{"discr_order_max", autogen::MAX_P_BASES},
