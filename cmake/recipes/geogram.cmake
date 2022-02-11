@@ -41,7 +41,7 @@ include(FetchContent)
 FetchContent_Declare(
     polyfem_geogram
     GIT_REPOSITORY https://github.com/polyfem/geogram.git
-    GIT_TAG        14001ad54398a478681c6bba7eaf10729068b5ce
+    GIT_TAG        516c151c244d9019a9076a1a468d52a0f6dd195d
     GIT_SHALLOW FALSE
 )
 FetchContent_MakeAvailable(polyfem_geogram)
