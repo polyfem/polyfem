@@ -723,7 +723,7 @@ namespace polyfem
 				displaced(i / problem_dim, i % problem_dim) += sol(i);
 			}
 
-			if (ipc::has_intersections(contact_surface_mesh, contact_surface_mesh.surface_vertices(displaced)))
+			if (ipc::has_intersections(collision_mesh, collision_mesh.vertices(displaced)))
 			{
 				logger().error("Unable to solve, initial solution has intersections!");
 				throw "Unable to solve, initial solution has intersections!";

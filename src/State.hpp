@@ -33,7 +33,7 @@
 #include <memory>
 #include <string>
 
-#include <ipc/surface_mesh.hpp>
+#include <ipc/collision_mesh.hpp>
 
 // Forward declaration
 namespace cppoptlib
@@ -185,14 +185,13 @@ namespace polyfem
 		//for high-order fem the faces are triangulated
 		//this is currently supported only for tri and tet meshes
 		Eigen::MatrixXd boundary_nodes_pos;
+		Eigen::MatrixXi boundary_edges;     // indices into full vertices
+		Eigen::MatrixXi boundary_triangles; // indices into full vertices
+		ipc::CollisionMesh collision_mesh;  // indices into surface vertices
+
 		Eigen::MatrixXd boundary_nodes_pos_pressure;
-		Eigen::VectorXi codimensional_nodes;
-		Eigen::MatrixXi boundary_edges;
 		Eigen::MatrixXi boundary_edges_pressure;
-		Eigen::MatrixXi boundary_triangles;
 		Eigen::MatrixXi boundary_triangles_pressure;
-		Eigen::MatrixXi boundary_faces_to_edges;
-		ipc::SurfaceMesh contact_surface_mesh;
 
 		//boundary visualization mesh
 		Eigen::MatrixXd boundary_vis_vertices;
@@ -354,7 +353,13 @@ namespace polyfem
 		//builds the bases step 2 of solve
 		void build_basis();
 		//extracts the boundary mesh for collision, called in build_basis
-		void extract_boundary_mesh(bool for_pressure = false);
+		void build_collision_mesh();
+		//extracts the boundary mesh
+		void extract_boundary_mesh(
+			const std::vector<ElementBases> &bases,
+			Eigen::MatrixXd &boundary_nodes_pos,
+			Eigen::MatrixXi &boundary_edges,
+			Eigen::MatrixXi &boundary_triangles) const;
 
 		//extracts the boundary mesh for visualization, called in build_basis
 		void extract_vis_boundary_mesh();

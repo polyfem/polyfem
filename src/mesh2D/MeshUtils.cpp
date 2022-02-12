@@ -11,6 +11,7 @@
 #include <unordered_set>
 
 #include <igl/PI.h>
+#include <igl/read_triangle_mesh.h>
 
 #include <geogram/mesh/mesh_io.h>
 #include <geogram/mesh/mesh_geometry.h>
@@ -471,15 +472,15 @@ namespace
 	// -----------------------------------------------------------------------------
 
 	/**
- * @brief      { Intersect a vertical ray with a triangle }
- *
- * @param[in]  M     { Mesh containing the triangle to intersect }
- * @param[in]  f     { Index of the facet to intersect }
- * @param[in]  q     { Query point (only XY coordinates are used) }
- * @param[out] z     { Intersection }
- *
- * @return     { {-1,0,1} depending on the sign of the intersection. }
- */
+	 * @brief      { Intersect a vertical ray with a triangle }
+	 *
+	 * @param[in]  M     { Mesh containing the triangle to intersect }
+	 * @param[in]  f     { Index of the facet to intersect }
+	 * @param[in]  q     { Query point (only XY coordinates are used) }
+	 * @param[out] z     { Intersection }
+	 *
+	 * @return     { {-1,0,1} depending on the sign of the intersection. }
+	 */
 	template <int X = 0, int Y = 1, int Z = 2>
 	int intersect_ray_z(const GEO::Mesh &M, GEO::index_t f, const GEO::vec3 &q, double &z)
 	{
@@ -1247,7 +1248,7 @@ void polyfem::read_surface_mesh(
 			return;
 		}
 	}
-	else
+	else if (!igl::read_triangle_mesh(mesh_path, vertices, faces))
 	{
 		GEO::Mesh mesh;
 		if (!GEO::mesh_load(mesh_path, mesh))

@@ -18,7 +18,6 @@ namespace polyfem
 		inline const Eigen::VectorXi &codim_v() const { return codim_v_; }
 		inline const Eigen::MatrixXi &f() const { return f_; }
 		inline const Eigen::MatrixXi &e() const { return e_; }
-		inline const Eigen::MatrixXi &f_2_e() const { return f_2_e_; }
 
 		inline const Eigen::MatrixXi &get_face_connectivity() const { return in_f_; }
 		inline const Eigen::MatrixXi &get_edge_connectivity() const { return in_e_; }
@@ -42,7 +41,6 @@ namespace polyfem
 		Eigen::VectorXi codim_v_;
 		Eigen::MatrixXi f_;
 		Eigen::MatrixXi e_;
-		Eigen::MatrixXi f_2_e_;
 
 		Eigen::VectorXi in_v_;
 		Eigen::MatrixXi in_f_;

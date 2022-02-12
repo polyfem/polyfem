@@ -6,7 +6,6 @@
 #include <polyfem/Logger.hpp>
 
 #include <igl/edges.h>
-#include <ipc/utils/faces_to_edges.hpp>
 #include <ipc/utils/eigen_ext.hpp>
 
 namespace polyfem
@@ -17,7 +16,6 @@ namespace polyfem
 		v_.resize(0, 0);
 		f_.resize(0, 0);
 		e_.resize(0, 0);
-		f_2_e_.resize(0, 0);
 
 		in_f_.resize(0, 0);
 		in_e_.resize(0, 0);
@@ -124,10 +122,6 @@ namespace polyfem
 
 			Eigen::MatrixXi edges;
 			igl::edges(faces, edges);
-
-			const Eigen::MatrixXi tmp_f_2_e = ipc::faces_to_edges(faces, edges);
-			f_2_e_.conservativeResize(f_2_e_.rows() + tmp_f_2_e.rows(), 3);
-			f_2_e_.bottomRows(tmp_f_2_e.rows()) = tmp_f_2_e.array() + e_.rows();
 
 			e_.conservativeResize(e_.rows() + edges.rows(), 2);
 			e_.bottomRows(edges.rows()) = edges.array() + v_.rows();
