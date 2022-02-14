@@ -139,7 +139,7 @@ namespace polyfem
 
 		const auto &gbases = iso_parametric() ? bases : geom_bases;
 
-		for (auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
+		for (auto it = total_local_boundary.begin(); it != total_local_boundary.end(); ++it)
 		{
 			const auto &lb = *it;
 			const auto &gbs = gbases[lb.element_id()];
@@ -341,7 +341,7 @@ namespace polyfem
 
 			std::vector<std::tuple<int, int, int>> tris;
 
-			for (const LocalBoundary &lb : local_boundary)
+			for (const LocalBoundary &lb : total_local_boundary)
 			{
 				const auto &b = (!for_pressure) ? bases[lb.element_id()] : pressure_bases[lb.element_id()];
 
@@ -481,7 +481,7 @@ namespace polyfem
 
 			std::vector<std::pair<int, int>> edges;
 
-			for (auto it = local_boundary.begin(); it != local_boundary.end(); ++it)
+			for (auto it = total_local_boundary.begin(); it != total_local_boundary.end(); ++it)
 			{
 				const auto &lb = *it;
 				const auto &b = (!for_pressure) ? bases[lb.element_id()] : pressure_bases[lb.element_id()];

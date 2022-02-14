@@ -283,6 +283,7 @@ namespace polyfem
 		geom_bases.clear();
 		boundary_nodes.clear();
 		local_boundary.clear();
+		total_local_boundary.clear();
 		local_neumann_boundary.clear();
 		polys.clear();
 		poly_edge_to_data.clear();
@@ -434,6 +435,9 @@ namespace polyfem
 		build_polygonal_basis();
 
 		auto &gbases = iso_parametric() ? bases : geom_bases;
+
+		for (const auto &lb : local_boundary)
+			total_local_boundary.emplace_back(lb);
 
 		n_flipped = 0;
 
