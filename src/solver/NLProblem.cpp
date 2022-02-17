@@ -46,8 +46,12 @@ namespace ipc
 			{ipc::BroadPhaseMethod::SPATIAL_HASH, "SH"},
 			{ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
 			{ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"},
+#ifdef IPC_TOOLKIT_WITH_CUDA
+			{ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "sweep_and_tiniest_queue_gpu"},
+			{ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "STQ_GPU"},
+#endif
 		});
-}
+} // namespace ipc
 
 namespace polyfem
 {
@@ -347,7 +351,11 @@ namespace polyfem
 		// }
 
 		double max_step;
-		if (_use_cached_candidates)
+		if (_use_cached_candidates
+#ifdef IPC_TOOLKIT_WITH_CUDA
+			&& _broad_phase_method != ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU
+#endif
+		)
 			max_step = ipc::compute_collision_free_stepsize(
 				_candidates, state.collision_mesh, V0, V1,
 				_ccd_tolerance, _ccd_max_iterations);
