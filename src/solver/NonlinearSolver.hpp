@@ -218,7 +218,7 @@ namespace cppoptlib
 				// if(rate >= 1 && next_hessian == this->m_current.iterations)
 				//	next_hessian += 2;
 
-				objFunc.post_step(x);
+				objFunc.post_step(this->m_current.iterations, x);
 
 				polyfem::logger().debug(
 					"[{}] iter={:} f={} ‖∇f‖={} ‖Δx‖={} Δx⋅∇f(x)={} g={} tol={} rate={} ‖step‖={}",

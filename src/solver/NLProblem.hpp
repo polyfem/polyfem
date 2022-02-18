@@ -41,7 +41,7 @@ namespace polyfem
 
 		void line_search_begin(const TVector &x0, const TVector &x1);
 		void line_search_end();
-		void post_step(const TVector &x0);
+		void post_step(const int iter_num, const TVector &x);
 
 #include <polyfem/DisableWarnings.hpp>
 		virtual void hessian(const TVector &x, THessian &hessian);

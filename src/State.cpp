@@ -1027,7 +1027,7 @@ namespace polyfem
 
 		igl::Timer timer;
 		timer.start();
-		logger().info("Solving {} with", formulation());
+		logger().info("Solving {}", formulation());
 
 		const json &params = solver_params();
 
