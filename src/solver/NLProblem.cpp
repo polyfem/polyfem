@@ -14,8 +14,6 @@
 
 #include <igl/write_triangle_mesh.h>
 
-#include <igl/Timer.h>
-
 static bool disable_collision = false;
 
 /*
@@ -51,16 +49,25 @@ namespace polyfem
 {
 	namespace
 	{
-		void write_triangle_mesh(const std::string &path, const Eigen::MatrixXd &v, const Eigen::MatrixXi &f)
+		bool writeOBJ(const std::string &path, const Eigen::MatrixXd &v, const Eigen::MatrixXi &e, const Eigen::MatrixXi &f)
 		{
-			std::ofstream os(path);
-			os.precision(15);
+			std::ofstream obj(path, std::ios::out);
+			if (!obj.is_open())
+				return false;
+
+			obj.precision(15);
 
 			for (int i = 0; i < v.rows(); ++i)
-				os << "v " << v(i, 0) << " " << v(i, 1) << " " << v(i, 2) << "\n";
+				obj << "v " << v(i, 0) << " " << v(i, 1) << " " << (v.cols() > 2 ? v(i, 2) : 0) << "\n";
 
-			for (int i = 0; i < f.rows(); ++i)
-				os << "f " << f(i, 0) + 1 << " " << f(i, 1) + 1 << " " << f(i, 2) + 1 << "\n";
+			if (v.cols() == 2)
+				for (int i = 0; i < f.rows(); ++i)
+					obj << "f " << f(i, 0) + 1 << " " << f(i, 1) + 1 << " " << f(i, 2) + 1 << "\n";
+			else
+				for (int i = 0; i < e.rows(); ++i)
+					obj << "l " << e(i, 0) + 1 << " " << e(i, 1) + 1 << "\n";
+
+			return true;
 		}
 	} // namespace
 
@@ -759,16 +766,16 @@ namespace polyfem
 		return 1;
 	}
 
-	void NLProblem::post_step(const TVector &x0)
+	void NLProblem::post_step(const int iter_num, const TVector &x)
 	{
 		if (disable_collision || !state.args["has_collision"])
 			return;
 
 		TVector full;
-		if (x0.size() == reduced_size)
-			reduced_to_full(x0, full);
+		if (x.size() == reduced_size)
+			reduced_to_full(x, full);
 		else
-			full = x0;
+			full = x;
 
 		assert(full.size() == full_size);
 
@@ -776,9 +783,15 @@ namespace polyfem
 
 		compute_displaced_points(full, displaced);
 
+		if (state.args["save_nl_solve_sequence"])
+		{
+			writeOBJ(state.resolve_output_path(fmt::format("step{:03d}.obj", iter_num)),
+					 displaced, state.boundary_edges, state.boundary_triangles);
+		}
+
 		const double dist_sqr = ipc::compute_minimum_distance(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set);
 		polyfem::logger().trace("min_dist {}", sqrt(dist_sqr));
-		// igl::write_triangle_mesh("step.obj", displaced, state.boundary_triangles);
+		// writeOBJ("step.obj", displaced, state.boundary_edges, state.boundary_triangles);
 		if (use_adaptive_barrier_stiffness)
 		{
 			if (is_time_dependent)

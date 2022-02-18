@@ -40,12 +40,23 @@ namespace cppoptlib
 			case 0:
 				return "Newton";
 			case 1:
-				return "projected Newton";
+				if (reg_weight == 0)
+					return "projected Newton";
+				return fmt::format("projected Newton w/ regularization weight={}", reg_weight);
 			case 2:
 				return "gradient descent";
 			default:
 				throw "invalid descent strategy";
 			}
+		}
+
+		void increase_descent_strategy()
+		{
+			if (this->descent_strategy == 0 || reg_weight > reg_weight_max)
+				this->descent_strategy++;
+			else
+				reg_weight = std::max(reg_weight_inc * reg_weight, reg_weight_min);
+			assert(this->descent_strategy <= 2);
 		}
 
 	private:
@@ -57,9 +68,18 @@ namespace cppoptlib
 
 		polyfem::StiffnessMatrix hessian; // Cached version of hessian
 
+		// Regularization Coefficients
+		double reg_weight = 0;
+		static constexpr double reg_weight_min = 1e-8;
+		static constexpr double reg_weight_max = 1e8;
+		static constexpr double reg_weight_inc = 10;
+		static constexpr double reg_weight_dec = 2;
+
 		void reset(const ProblemType &objFunc, const TVector &x) override
 		{
 			Superclass::reset(objFunc, x);
+
+			reg_weight = 0;
 
 			linear_solver = polysolve::LinearSolver::create(linear_solver_type, linear_precond_type);
 			linear_solver->setParameters(this->solver_params);
@@ -88,6 +108,13 @@ namespace cppoptlib
 					assert(false);
 
 				objFunc.hessian(x, hessian);
+
+				if (reg_weight > 0)
+				{
+					Eigen::SparseMatrix<double> I(hessian.rows(), hessian.cols());
+					I.setIdentity();
+					hessian += reg_weight * I;
+				}
 			}
 
 			{
@@ -101,14 +128,14 @@ namespace cppoptlib
 				}
 				catch (const std::runtime_error &err)
 				{
-					this->descent_strategy++;
-					// Warning if we switch to projected Newton, else error
+					increase_descent_strategy();
+					// warn if using gradient descent
 					polyfem::logger().log(
-						spdlog::level::debug,
+						this->descent_strategy == 2 ? spdlog::level::warn : spdlog::level::debug,
 						"Unable to factorize Hessian: \"{}\"; reverting to {}",
 						err.what(), this->descent_strategy_name());
 					// polyfem::write_sparse_matrix_csv("problematic_hessian.csv", hessian);
-					return false;
+					return compute_update_direction(objFunc, x, grad, direction);
 				}
 
 				linear_solver->solve(-grad, direction); // H Δx = -g
@@ -116,18 +143,23 @@ namespace cppoptlib
 
 			// gradient descent, check descent direction
 			const double residual = (hessian * direction + grad).norm(); // H Δx + g = 0
-			if (std::isnan(residual))                                    // || residual > 1e-7)
+			if (std::isnan(residual))
 			{
-				this->descent_strategy++;
+				increase_descent_strategy();
 				polyfem::logger().log(
-					spdlog::level::debug,
+					this->descent_strategy == 2 ? spdlog::level::warn : spdlog::level::debug,
 					"nan linear solve residual {} (||∇f||={}); reverting to {}",
 					residual, grad.norm(), this->descent_strategy_name());
-				return false;
+				return compute_update_direction(objFunc, x, grad, direction);
 			}
-			else if (residual > 1e-5)
+			else if (residual > std::max(1e-8 * grad.norm(), 1e-5))
 			{
-				polyfem::logger().debug("large linear solve residual {} (||∇f||={})", residual, grad.norm());
+				increase_descent_strategy();
+				polyfem::logger().log(
+					this->descent_strategy == 2 ? spdlog::level::warn : spdlog::level::debug,
+					"large linear solve residual {} (||∇f||={}); reverting to {}",
+					residual, grad.norm(), this->descent_strategy_name());
+				return compute_update_direction(objFunc, x, grad, direction);
 			}
 			else
 			{
@@ -136,17 +168,21 @@ namespace cppoptlib
 
 			if (grad.squaredNorm() != 0 && direction.dot(grad) >= 0)
 			{
-				this->descent_strategy++;
+				increase_descent_strategy();
 				polyfem::logger().log(
-					spdlog::level::debug,
+					this->descent_strategy == 2 ? spdlog::level::warn : spdlog::level::debug,
 					"Newton direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
 					direction.dot(grad), this->descent_strategy_name());
-				return false;
+				return compute_update_direction(objFunc, x, grad, direction);
 			}
 
 			json info;
 			linear_solver->getInfo(info);
 			internal_solver_info.push_back(info);
+
+			reg_weight /= reg_weight_dec;
+			if (reg_weight < 1e-8)
+				reg_weight = 0;
 
 			return true;
 		}

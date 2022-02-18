@@ -190,9 +190,6 @@ namespace polyfem
 			{"line_search", "armijo"},
 			{"nl_solver", "newton"},
 			{"nl_solver_rhs_steps", 1},
-			{"save_solve_sequence", false},
-			{"save_solve_sequence_debug", false},
-			{"save_time_sequence", true},
 
 			{"force_no_ref_for_harmonic", false},
 			{"lump_mass_matrix", false},
@@ -234,6 +231,11 @@ namespace polyfem
 			 {{"u_path", ""},
 			  {"v_path", ""},
 			  {"a_path", ""}}},
+
+			{"save_solve_sequence", false},
+			{"save_solve_sequence_debug", false},
+			{"save_time_sequence", true},
+			{"save_nl_solve_sequence", false},
 
 			{"export",
 			 {{"sol_at_node", -1},
