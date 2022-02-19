@@ -53,7 +53,8 @@ namespace polyfem
 		{
 			using namespace polyfem;
 
-			if (full_size == reduced_size)
+			// Reduced is already at the full size
+			if (full_size == reduced_size || full.size() == reduced_size)
 			{
 				reduced = full;
 				return;
@@ -83,7 +84,8 @@ namespace polyfem
 		{
 			using namespace polyfem;
 
-			if (full_size == reduced_size)
+			// Full is already at the reduced size
+			if (full_size == reduced_size || full_size == reduced.size())
 			{
 				full = reduced;
 				return;
@@ -126,10 +128,11 @@ namespace polyfem
 		virtual void update_quantities(const double t, const TVector &x);
 		void substepping(const double t);
 		void solution_changed(const TVector &newX);
-		void update_lagging(const TVector &x, bool start_of_timestep);
 
-		double compute_lagging_error(const TVector &x, bool do_lagging_update = true);
-		bool lagging_converged(const TVector &x, bool do_lagging_update = true);
+		void init_lagging(const TVector &x);
+		void update_lagging(const TVector &x);
+		double compute_lagging_error(const TVector &x);
+		bool lagging_converged(const TVector &x);
 
 		const Eigen::MatrixXd &current_rhs();
 
@@ -196,5 +199,6 @@ namespace polyfem
 
 		void compute_cached_stiffness();
 		void update_barrier_stiffness(const TVector &full);
+		void update_constraint_set(const Eigen::MatrixXd &displaced);
 	};
 } // namespace polyfem
