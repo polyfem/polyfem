@@ -1406,8 +1406,16 @@ namespace polyfem
 					lambdas(index) = lambda;
 					mus(index) = mu;
 
-					Es(index) = mu * (3.0 * lambda + 2.0 * mu) / (lambda + mu);
-					nus(index) = lambda / (2.0 * (lambda + mu));
+					if (mesh->is_volume())
+					{
+						Es(index) = mu * (3.0 * lambda + 2.0 * mu) / (lambda + mu);
+						nus(index) = lambda / (2.0 * (lambda + mu));
+					}
+					else
+					{
+						Es(index) = mu * (2.0 * lambda + 2.0 * mu) / (lambda + 2.0 * mu);
+						nus(index) = lambda / (lambda + 2.0 * mu);
+					}
 
 					rhos(index) = density(local_pts.row(j), vals.val.row(j), e);
 
