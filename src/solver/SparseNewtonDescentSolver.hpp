@@ -98,7 +98,7 @@ namespace cppoptlib
 			}
 
 			{
-				POLYFEM_SCOPED_TIMER("[timing] assembly time {}s", this->assembly_time);
+				POLYFEM_SCOPED_TIMER("assembly time", this->assembly_time);
 
 				if (this->descent_strategy == 1)
 					objFunc.set_project_to_psd(true);
@@ -118,7 +118,7 @@ namespace cppoptlib
 			}
 
 			{
-				POLYFEM_SCOPED_TIMER("[timing] linear solve {}s", this->inverting_time);
+				POLYFEM_SCOPED_TIMER("linear solve", this->inverting_time);
 				// TODO: get the correct size
 				linear_solver->analyzePattern(hessian, hessian.rows());
 

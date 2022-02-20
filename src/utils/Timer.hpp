@@ -15,8 +15,8 @@ namespace polyfem
 			start();
 		}
 
-		Timer(const std::string &msg)
-			: m_msg(msg), m_total_time(nullptr)
+		Timer(const std::string &name)
+			: m_name(name), m_total_time(nullptr)
 		{
 			start();
 		}
@@ -27,8 +27,8 @@ namespace polyfem
 			start();
 		}
 
-		Timer(const std::string &msg, double &total_time)
-			: m_msg(msg), m_total_time(&total_time)
+		Timer(const std::string &name, double &total_time)
+			: m_name(name), m_total_time(&total_time)
 		{
 			start();
 		}
@@ -60,9 +60,9 @@ namespace polyfem
 
 		inline void log_msg()
 		{
-			if (!m_msg.empty())
+			if (!m_name.empty())
 			{
-				polyfem::logger().trace(m_msg.c_str(), getElapsedTimeInSec());
+				polyfem::logger().trace("[timing] {} {}s", m_name, getElapsedTimeInSec());
 			}
 		}
 
@@ -72,7 +72,7 @@ namespace polyfem
 		}
 
 	protected:
-		std::string m_msg;
+		std::string m_name;
 		igl::Timer m_timer;
 		double *m_total_time;
 	};

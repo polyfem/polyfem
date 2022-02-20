@@ -71,7 +71,7 @@ namespace cppoptlib
 
 			double first_grad_norm = -1;
 
-			Timer timer("[timing] non-linear solver {}s", this->total_time);
+			Timer timer("non-linear solver", this->total_time);
 			timer.start();
 
 			m_line_search->use_grad_norm_tol = use_grad_norm_tol;
@@ -79,13 +79,13 @@ namespace cppoptlib
 			do
 			{
 				{
-					POLYFEM_SCOPED_TIMER("[timing] constraint set update {}s", constraint_set_update_time);
+					POLYFEM_SCOPED_TIMER("constraint set update", constraint_set_update_time);
 					objFunc.solution_changed(x);
 				}
 
 				double energy;
 				{
-					POLYFEM_SCOPED_TIMER("[timing] compute objective function {}s", obj_fun_time);
+					POLYFEM_SCOPED_TIMER("compute objective function", obj_fun_time);
 					energy = objFunc.value(x);
 				}
 				if (!std::isfinite(energy))
@@ -98,7 +98,7 @@ namespace cppoptlib
 				}
 
 				{
-					POLYFEM_SCOPED_TIMER("[timing] compute gradient {}s", grad_time);
+					POLYFEM_SCOPED_TIMER("compute gradient", grad_time);
 					objFunc.gradient(x, grad);
 				}
 
@@ -258,7 +258,7 @@ namespace cppoptlib
 
 		double line_search(const TVector &x, const TVector &delta_x, ProblemType &objFunc)
 		{
-			POLYFEM_SCOPED_TIMER("[timing] line search {}s", line_search_time);
+			POLYFEM_SCOPED_TIMER("line search", line_search_time);
 
 			if (!m_line_search)
 				return 1; // no linesearch

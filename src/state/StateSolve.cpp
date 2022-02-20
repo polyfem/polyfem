@@ -771,7 +771,7 @@ namespace polyfem
 		assert(tmp_sol.size() <= rhs.size());
 
 		{
-			POLYFEM_SCOPED_TIMER("Initializing lagging took {}s");
+			POLYFEM_SCOPED_TIMER("Initializing lagging");
 			nl_problem.init_lagging(sol);
 			alnl_problem.init_lagging(sol);
 		}
@@ -863,14 +863,14 @@ namespace polyfem
 		}
 
 		{
-			POLYFEM_SCOPED_TIMER("Update quantities took {}s");
+			POLYFEM_SCOPED_TIMER("Update quantities");
 			nl_problem.update_quantities(t0 + (t + 1) * dt, sol);
 			alnl_problem.update_quantities(t0 + (t + 1) * dt, sol);
 		}
 
 		if (args["save_time_sequence"] && !(t % args["skip_frame"].get<int>()))
 		{
-			POLYFEM_SCOPED_TIMER("Saving VTU took {}s");
+			POLYFEM_SCOPED_TIMER("Saving VTU");
 			if (!solve_export_to_file)
 				solution_frames.emplace_back();
 			save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), t0 + dt * t);

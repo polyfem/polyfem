@@ -33,7 +33,7 @@ namespace polyfem
 
 			double old_energy, step_size;
 			{
-				POLYFEM_SCOPED_TIMER("[timing] LS begin {}s");
+				POLYFEM_SCOPED_TIMER("LS begin");
 
 				this->cur_iter = 0;
 
@@ -52,7 +52,7 @@ namespace polyfem
 			// ----------------------------
 
 			{
-				POLYFEM_SCOPED_TIMER("[timing] LS compute finite energy step size {}s", this->checking_for_nan_inf_time);
+				POLYFEM_SCOPED_TIMER("LS compute finite energy step size", this->checking_for_nan_inf_time);
 				step_size = this->compute_nan_free_step_size(x, delta_x, objFunc, step_size, 0.5);
 				if (std::isnan(step_size))
 					return std::nan("");
@@ -65,13 +65,13 @@ namespace polyfem
 			// -----------------------------
 
 			{
-				POLYFEM_SCOPED_TIMER("[timing] CCD broad-phase {}s", this->broad_phase_ccd_time);
+				POLYFEM_SCOPED_TIMER("CCD broad-phase", this->broad_phase_ccd_time);
 				TVector new_x = x + step_size * delta_x;
 				objFunc.line_search_begin(x, new_x);
 			}
 
 			{
-				POLYFEM_SCOPED_TIMER("[timing] CCD narrow-phase {}s", this->ccd_time);
+				POLYFEM_SCOPED_TIMER("CCD narrow-phase", this->ccd_time);
 				logger().trace("Performing narrow-phase CCD");
 				step_size = this->compute_collision_free_step_size(x, delta_x, objFunc, step_size);
 				if (std::isnan(step_size))
@@ -85,7 +85,7 @@ namespace polyfem
 			// ----------------------
 
 			{
-				POLYFEM_SCOPED_TIMER("[timing] energy min in LS {}s", this->classical_line_search_time);
+				POLYFEM_SCOPED_TIMER("energy min in LS", this->classical_line_search_time);
 				step_size = compute_descent_step_size(x, delta_x, objFunc, old_energy, step_size);
 				if (std::isnan(step_size))
 				{
@@ -102,7 +102,7 @@ namespace polyfem
 			// -------------
 
 			{
-				POLYFEM_SCOPED_TIMER("[timing] safeguard in LS {}s");
+				POLYFEM_SCOPED_TIMER("safeguard in LS");
 				step_size = this->compute_debug_collision_free_step_size(x, delta_x, objFunc, step_size, 0.5);
 			}
 
@@ -110,7 +110,7 @@ namespace polyfem
 #endif
 
 			{
-				POLYFEM_SCOPED_TIMER("[timing] LS end {}s");
+				POLYFEM_SCOPED_TIMER("LS end");
 				objFunc.line_search_end();
 			}
 
@@ -147,7 +147,7 @@ namespace polyfem
 				TVector new_x = x + step_size * delta_x;
 
 				{
-					POLYFEM_SCOPED_TIMER("[timing] constraint set update in LS {}s", this->constraint_set_update_time);
+					POLYFEM_SCOPED_TIMER("constraint set update in LS", this->constraint_set_update_time);
 					objFunc.solution_changed(new_x);
 				}
 
