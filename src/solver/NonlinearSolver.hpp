@@ -276,7 +276,6 @@ namespace cppoptlib
 
 			if (std::isnan(rate) && descent_strategy < 2)
 			{
-				descent_strategy++;
 				polyfem::logger().log(
 					spdlog::level::warn,
 					"Line search failed; reverting to {}", descent_strategy_name());
