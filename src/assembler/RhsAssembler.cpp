@@ -68,7 +68,8 @@ namespace polyfem
 					//rhs_fun.col(d) = rhs_fun.col(d).array() * vals.det.array() * quadrature.weights.array();
 					for (int q = 0; q < quadrature.weights.size(); ++q)
 					{
-						const double rho = problem_.is_time_dependent() ? density(vals.quadrature.points.row(q), vals.val.row(q), vals.element_id) : 1;
+						// const double rho = problem_.is_time_dependent() ? density(vals.quadrature.points.row(q), vals.val.row(q), vals.element_id) : 1;
+						const double rho = density(vals.quadrature.points.row(q), vals.val.row(q), vals.element_id);
 						rhs_fun(q, d) *= vals.det(q) * quadrature.weights(q) * rho;
 					}
 				}
@@ -733,7 +734,8 @@ namespace polyfem
 								}
 							}
 						}
-						const double rho = problem_.is_time_dependent() ? density(vals.quadrature.points.row(p), vals.val.row(p), vals.element_id) : 1;
+						// const double rho = problem_.is_time_dependent() ? density(vals.quadrature.points.row(p), vals.val.row(p), vals.element_id) : 1;
+						const double rho = density(vals.quadrature.points.row(p), vals.val.row(p), vals.element_id);
 
 						for (int d = 0; d < size_; ++d)
 						{
