@@ -145,7 +145,8 @@ namespace polyfem
 		Eigen::MatrixXd displaced;
 		compute_displaced_points(full, displaced);
 
-		update_constraint_set(displaced);
+		Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
+		update_constraint_set(displaced_surface);
 		Eigen::VectorXd grad_barrier = ipc::compute_barrier_potential_gradient(
 			state.collision_mesh, displaced_surface, _constraint_set, _dhat);
 		grad_barrier = state.collision_mesh.to_full_dof(grad_barrier);
@@ -172,9 +173,11 @@ namespace polyfem
 		Eigen::MatrixXd displaced;
 		reduced_to_full_displaced_points(x, displaced);
 
+		Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
+
 		if (_mu != 0)
 		{
-			update_constraint_set(displaced);
+			update_constraint_set(displaced_surface);
 			ipc::construct_friction_constraint_set(
 				state.collision_mesh, displaced_surface, _constraint_set,
 				_dhat, _barrier_stiffness, _mu, _friction_constraint_set);
@@ -291,15 +294,14 @@ namespace polyfem
 		compute_displaced_points(full, displaced);
 	}
 
-	void NLProblem::update_constraint_set(const Eigen::MatrixXd &displaced)
+	void NLProblem::update_constraint_set(const Eigen::MatrixXd &displaced_surface)
 	{
 		// Store the previous value used to compute the constraint set to avoid
 		// duplicate computation.
-		static Eigen::MatrixXd cached_displaced;
-		if (cached_displaced.size() == displaced.size() && cached_displaced == displaced)
+		static Eigen::MatrixXd cached_displaced_surface;
+		if (cached_displaced_surface.size() == cached_displaced_surface.size()
+			&& cached_displaced_surface == displaced_surface)
 			return;
-
-		Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
 
 		if (_use_cached_candidates)
 			ipc::construct_constraint_set(
@@ -309,7 +311,7 @@ namespace polyfem
 			ipc::construct_constraint_set(
 				state.collision_mesh, displaced_surface, _dhat,
 				_constraint_set, /*dmin=*/0, _broad_phase_method);
-		cached_displaced = displaced;
+		cached_displaced_surface = displaced_surface;
 	}
 
 	void NLProblem::line_search_begin(const TVector &x0, const TVector &x1)
@@ -507,7 +509,6 @@ namespace polyfem
 		{
 			Eigen::MatrixXd displaced;
 			compute_displaced_points(full, displaced);
-
 			Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
 
 			collision_energy = ipc::compute_barrier_potential(
@@ -768,7 +769,7 @@ namespace polyfem
 		Eigen::MatrixXd displaced;
 		reduced_to_full_displaced_points(newX, displaced);
 
-		update_constraint_set(displaced);
+		update_constraint_set(state.collision_mesh.vertices(displaced));
 	}
 
 	double NLProblem::heuristic_max_step(const TVector &dx)
@@ -806,7 +807,7 @@ namespace polyfem
 		if (state.args["save_nl_solve_sequence"])
 		{
 			writeOBJ(state.resolve_output_path(fmt::format("step{:03d}.obj", iter_num)),
-					 displaced_surface, state.collision_mesh.edges, state.collision_mesh.faces);
+					 displaced_surface, state.collision_mesh.edges(), state.collision_mesh.faces());
 		}
 
 		const double dist_sqr = ipc::compute_minimum_distance(state.collision_mesh, displaced_surface, _constraint_set);

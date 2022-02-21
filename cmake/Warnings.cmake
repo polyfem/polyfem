@@ -74,7 +74,7 @@ set(MY_FLAGS
 
 		-Wctor-dtor-privacy
 		-Wlogical-op
-		-Wnoexcept
+		# -Wnoexcept
 		-Woverloaded-virtual
 		# -Wundef
 

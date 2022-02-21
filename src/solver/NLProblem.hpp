@@ -194,6 +194,6 @@ namespace polyfem
 
 		void compute_cached_stiffness();
 		void update_barrier_stiffness(const TVector &full);
-		void update_constraint_set(const Eigen::MatrixXd &displaced);
+		void update_constraint_set(const Eigen::MatrixXd &displaced_surface);
 	};
 } // namespace polyfem
