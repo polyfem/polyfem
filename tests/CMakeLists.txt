@@ -58,7 +58,7 @@ catch_discover_tests(unit_tests)
 # CUDA
 ################################################################################
 
-if(true)
+if(IPC_TOOLKIT_WITH_CUDA)
   include(CheckLanguage)
   check_language(CUDA)
   if(CMAKE_CUDA_COMPILER)
