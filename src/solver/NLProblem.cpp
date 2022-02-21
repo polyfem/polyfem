@@ -64,7 +64,7 @@ namespace polyfem
 {
 	namespace
 	{
-		bool writeOBJ(const std::string &path, const Eigen::MatrixXd &v, const Eigen::MatrixXi &e, const Eigen::MatrixXi &f)
+		bool write_obj(const std::string &path, const Eigen::MatrixXd &v, const Eigen::MatrixXi &e, const Eigen::MatrixXi &f)
 		{
 			std::ofstream obj(path, std::ios::out);
 			if (!obj.is_open())
@@ -366,11 +366,8 @@ namespace polyfem
 		Eigen::MatrixXd V0 = state.collision_mesh.vertices(displaced0);
 		Eigen::MatrixXd V1 = state.collision_mesh.vertices(displaced1);
 
-		// if (displaced0.cols() == 3)
-		// {
-		// 	igl::write_triangle_mesh("s0.obj", displaced0, state.boundary_triangles);
-		// 	igl::write_triangle_mesh("s1.obj", displaced1, state.boundary_triangles);
-		// }
+		// write_obj("s0.obj", V0, state.collision_mesh.edges(), state.collision_mesh.faces());
+		// write_obj("s1.obj", V1, state.collision_mesh.edges(), state.collision_mesh.faces());
 
 		double max_step;
 		if (_use_cached_candidates
@@ -428,20 +425,8 @@ namespace polyfem
 			return true;
 		}
 
-		// if (displaced0.cols() == 3)
-		// {
-		// 	igl::write_triangle_mesh("0.obj", displaced0, state.boundary_triangles);
-		// 	igl::write_triangle_mesh("1.obj", displaced1, state.boundary_triangles);
-		// }
-		// else
-		// {
-		// 	Eigen::MatrixXd asd(displaced0.rows(), 3);
-		// 	asd.setZero();
-		// 	asd.block(0, 0, displaced0.rows(), 2) = displaced0;
-		// 	igl::write_triangle_mesh("0.obj", asd, state.boundary_triangles);
-		// 	asd.block(0, 0, displaced1.rows(), 2) = displaced1;
-		// 	igl::write_triangle_mesh("1.obj", asd, state.boundary_triangles);
-		// }
+		// write_obj("0.obj", state.collision_mesh.vertices(displaced0), state.collision_mesh.edges(), state.collision_mesh.faces());
+		// write_obj("1.obj", state.collision_mesh.vertices(displaced1), state.collision_mesh.edges(), state.collision_mesh.faces());
 
 		bool is_valid;
 		if (_use_cached_candidates)
@@ -812,8 +797,8 @@ namespace polyfem
 
 		if (state.args["save_nl_solve_sequence"])
 		{
-			writeOBJ(state.resolve_output_path(fmt::format("step{:03d}.obj", iter_num)),
-					 displaced_surface, state.collision_mesh.edges(), state.collision_mesh.faces());
+			write_obj(state.resolve_output_path(fmt::format("step{:03d}.obj", iter_num)),
+					  displaced_surface, state.collision_mesh.edges(), state.collision_mesh.faces());
 		}
 
 		const double dist_sqr = ipc::compute_minimum_distance(state.collision_mesh, displaced_surface, _constraint_set);
