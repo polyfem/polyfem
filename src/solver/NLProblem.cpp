@@ -14,8 +14,6 @@
 
 #include <igl/write_triangle_mesh.h>
 
-#include <igl/Timer.h>
-
 static bool disable_collision = false;
 
 /*
@@ -57,16 +55,24 @@ namespace polyfem
 {
 	namespace
 	{
-		void write_triangle_mesh(const std::string &path, const Eigen::MatrixXd &v, const Eigen::MatrixXi &f)
+		bool writeOBJ(const std::string &path, const Eigen::MatrixXd &v, const Eigen::MatrixXi &e, const Eigen::MatrixXi &f)
 		{
-			std::ofstream os(path);
-			os.precision(15);
+			std::ofstream obj(path, std::ios::out);
+			if (!obj.is_open())
+				return false;
+
+			obj.precision(15);
 
 			for (int i = 0; i < v.rows(); ++i)
-				os << "v " << v(i, 0) << " " << v(i, 1) << " " << v(i, 2) << "\n";
+				obj << "v " << v(i, 0) << " " << v(i, 1) << " " << (v.cols() > 2 ? v(i, 2) : 0) << "\n";
+
+			for (int i = 0; i < e.rows(); ++i)
+				obj << "l " << e(i, 0) + 1 << " " << e(i, 1) + 1 << "\n";
 
 			for (int i = 0; i < f.rows(); ++i)
-				os << "f " << f(i, 0) + 1 << " " << f(i, 1) + 1 << " " << f(i, 2) + 1 << "\n";
+				obj << "f " << f(i, 0) + 1 << " " << f(i, 1) + 1 << " " << f(i, 2) + 1 << "\n";
+
+			return true;
 		}
 	} // namespace
 
@@ -139,21 +145,14 @@ namespace polyfem
 		Eigen::MatrixXd displaced;
 		compute_displaced_points(full, displaced);
 
-		Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
-		ipc::construct_constraint_set(
-			state.collision_mesh, displaced_surface, _dhat, _constraint_set,
-			/*dmin=*/0, _broad_phase_method);
+		update_constraint_set(displaced);
 		Eigen::VectorXd grad_barrier = ipc::compute_barrier_potential_gradient(
 			state.collision_mesh, displaced_surface, _constraint_set, _dhat);
 		grad_barrier = state.collision_mesh.to_full_dof(grad_barrier);
 
 		_barrier_stiffness = ipc::initial_barrier_stiffness(
-			ipc::world_bbox_diagonal_length(displaced_surface),
-			_dhat,
-			state.avg_mass,
-			grad_energy,
-			grad_barrier,
-			max_barrier_stiffness_);
+			ipc::world_bbox_diagonal_length(displaced), _dhat, state.avg_mass,
+			grad_energy, grad_barrier, max_barrier_stiffness_);
 		polyfem::logger().debug("adaptive barrier stiffness {}", _barrier_stiffness);
 	}
 
@@ -162,36 +161,28 @@ namespace polyfem
 		time_integrator->init(x_prev, v_prev, a_prev, dt);
 	}
 
-	void NLProblem::update_lagging(const TVector &x, bool start_of_timestep)
+	void NLProblem::init_lagging(const TVector &x)
+	{
+		reduced_to_full_displaced_points(x, displaced_prev);
+		update_lagging(x);
+	}
+
+	void NLProblem::update_lagging(const TVector &x)
 	{
 		Eigen::MatrixXd displaced;
 		reduced_to_full_displaced_points(x, displaced);
 
 		if (_mu != 0)
 		{
-			Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
-			ipc::construct_constraint_set(
-				state.collision_mesh, displaced_surface, _dhat, _constraint_set,
-				/*dmin=*/0, _broad_phase_method);
+			update_constraint_set(displaced);
 			ipc::construct_friction_constraint_set(
 				state.collision_mesh, displaced_surface, _constraint_set,
 				_dhat, _barrier_stiffness, _mu, _friction_constraint_set);
 		}
-
-		if (start_of_timestep)
-		{
-			displaced_prev = displaced;
-		}
 	}
 
-	double NLProblem::compute_lagging_error(const TVector &x, bool do_lagging_update)
+	double NLProblem::compute_lagging_error(const TVector &x)
 	{
-		if (do_lagging_update)
-		{
-			update_lagging(x, /*start_of_timestep=*/false);
-		}
-		// else assume the lagging was updated before
-
 		// Check || ∇B(xᵗ⁺¹) - h² Σ F(xᵗ⁺¹, λᵗ⁺¹, Tᵗ⁺¹)|| ≦ ϵ_d
 		//     ≡ || ∇B(xᵗ⁺¹) + ∇D(xᵗ⁺¹, λᵗ⁺¹, Tᵗ⁺¹)|| ≤ ϵ_d
 		TVector grad;
@@ -199,10 +190,10 @@ namespace polyfem
 		return grad.norm();
 	}
 
-	bool NLProblem::lagging_converged(const TVector &x, bool do_lagging_update)
+	bool NLProblem::lagging_converged(const TVector &x)
 	{
 		double tol = state.args.value("friction_convergence_tol", 1e-2);
-		double grad_norm = compute_lagging_error(x, do_lagging_update);
+		double grad_norm = compute_lagging_error(x);
 		logger().debug("Lagging convergece grad_norm={:g} tol={:g}", grad_norm, tol);
 		return grad_norm <= tol;
 	}
@@ -296,13 +287,29 @@ namespace polyfem
 	void NLProblem::reduced_to_full_displaced_points(const TVector &reduced, Eigen::MatrixXd &displaced)
 	{
 		TVector full;
-		if (reduced.size() == reduced_size)
-			reduced_to_full(reduced, full);
-		else
-			full = reduced;
-		assert(full.size() == full_size);
-
+		reduced_to_full(reduced, full);
 		compute_displaced_points(full, displaced);
+	}
+
+	void NLProblem::update_constraint_set(const Eigen::MatrixXd &displaced)
+	{
+		// Store the previous value used to compute the constraint set to avoid
+		// duplicate computation.
+		static Eigen::MatrixXd cached_displaced;
+		if (cached_displaced.size() == displaced.size() && cached_displaced == displaced)
+			return;
+
+		Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
+
+		if (_use_cached_candidates)
+			ipc::construct_constraint_set(
+				_candidates, state.collision_mesh, displaced_surface, _dhat,
+				_constraint_set);
+		else
+			ipc::construct_constraint_set(
+				state.collision_mesh, displaced_surface, _dhat,
+				_constraint_set, /*dmin=*/0, _broad_phase_method);
+		cached_displaced = displaced;
 	}
 
 	void NLProblem::line_search_begin(const TVector &x0, const TVector &x1)
@@ -468,11 +475,7 @@ namespace polyfem
 	double NLProblem::value(const TVector &x, const bool only_elastic)
 	{
 		TVector full;
-		if (x.size() == reduced_size)
-			reduced_to_full(x, full);
-		else
-			full = x;
-		assert(full.size() == full_size);
+		reduced_to_full(x, full);
 
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 
@@ -566,11 +569,7 @@ namespace polyfem
 		// scaling * (elastic_energy + body_energy) + intertia_energy + _barrier_stiffness * collision_energy;
 
 		TVector full;
-		if (x.size() == reduced_size)
-			reduced_to_full(x, full);
-		else
-			full = x;
-		assert(full.size() == full_size);
+		reduced_to_full(x, full);
 
 		const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 		assembler.assemble_energy_gradient(rhs_assembler.formulation(), state.mesh->is_volume(), state.n_bases, state.bases, gbases, state.ass_vals_cache, full, grad);
@@ -625,7 +624,7 @@ namespace polyfem
 			return;
 		}
 
-		POLYFEM_SCOPED_TIMER("\tremoving costraint time {}s");
+		POLYFEM_SCOPED_TIMER("\tremoving costraint time");
 
 		std::vector<Eigen::Triplet<double>> entries;
 
@@ -680,18 +679,11 @@ namespace polyfem
 		// scaling * (elastic_energy + body_energy) + intertia_energy + _barrier_stiffness * collision_energy;
 
 		TVector full;
-		{
-			POLYFEM_SCOPED_TIMER("\treduced to full time {}s");
-			if (x.size() == reduced_size)
-				reduced_to_full(x, full);
-			else
-				full = x;
-		}
-		assert(full.size() == full_size);
+		reduced_to_full(x, full);
 
 		THessian energy_hessian(full_size, full_size);
 		{
-			POLYFEM_SCOPED_TIMER("\telastic hessian time {}s");
+			POLYFEM_SCOPED_TIMER("\telastic hessian time");
 
 			const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 			if (assembler.is_linear(rhs_assembler.formulation()))
@@ -713,30 +705,30 @@ namespace polyfem
 		THessian inertia_hessian(full_size, full_size);
 		if (!ignore_inertia && is_time_dependent)
 		{
-			POLYFEM_SCOPED_TIMER("\tinertia hessian time {}s");
+			POLYFEM_SCOPED_TIMER("\tinertia hessian time");
 			inertia_hessian = state.mass;
 		}
 
 		THessian barrier_hessian(full_size, full_size), friction_hessian(full_size, full_size);
 		if (!disable_collision && state.args["has_collision"])
 		{
-			POLYFEM_SCOPED_TIMER("\tipc hessian(s) time {}s");
+			POLYFEM_SCOPED_TIMER("\tipc hessian(s) time");
 
 			Eigen::MatrixXd displaced;
 			{
-				POLYFEM_SCOPED_TIMER("\t\tdisplace pts time {}s");
+				POLYFEM_SCOPED_TIMER("\t\tdisplace pts time");
 				compute_displaced_points(full, displaced);
 			}
 
 			// {
-			// 	POLYFEM_SCOPED_TIMER("\t\tconstraint set time {}s");
+			// 	POLYFEM_SCOPED_TIMER("\t\tconstraint set time");
 			// }
 
 			Eigen::MatrixXd displaced_surface_prev = state.collision_mesh.vertices(displaced_prev);
 			Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
 
 			{
-				POLYFEM_SCOPED_TIMER("\t\tbarrier hessian time {}s");
+				POLYFEM_SCOPED_TIMER("\t\tbarrier hessian time");
 				barrier_hessian = ipc::compute_barrier_potential_hessian(
 					state.collision_mesh, displaced_surface, _constraint_set,
 					_dhat, project_to_psd);
@@ -744,7 +736,7 @@ namespace polyfem
 			}
 
 			{
-				POLYFEM_SCOPED_TIMER("\t\tfriction hessian time {}s");
+				POLYFEM_SCOPED_TIMER("\t\tfriction hessian time");
 				friction_hessian = ipc::compute_friction_potential_hessian(
 					state.collision_mesh, displaced_surface_prev, displaced_surface,
 					_friction_constraint_set, _epsv * dt(), project_to_psd);
@@ -776,16 +768,7 @@ namespace polyfem
 		Eigen::MatrixXd displaced;
 		reduced_to_full_displaced_points(newX, displaced);
 
-		Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
-
-		if (_use_cached_candidates)
-			ipc::construct_constraint_set(
-				_candidates, state.collision_mesh, displaced_surface, _dhat,
-				_constraint_set);
-		else
-			ipc::construct_constraint_set(
-				state.collision_mesh, displaced_surface, _dhat, _constraint_set,
-				/*dmin=*/0, _broad_phase_method);
+		update_constraint_set(displaced);
 	}
 
 	double NLProblem::heuristic_max_step(const TVector &dx)
@@ -807,29 +790,28 @@ namespace polyfem
 		return 1;
 	}
 
-	void NLProblem::post_step(const TVector &x0)
+	void NLProblem::post_step(const int iter_num, const TVector &x)
 	{
 		if (disable_collision || !state.args["has_collision"])
 			return;
 
 		TVector full;
-		if (x0.size() == reduced_size)
-			reduced_to_full(x0, full);
-		else
-			full = x0;
-
-		assert(full.size() == full_size);
+		reduced_to_full(x, full);
 
 		Eigen::MatrixXd displaced;
-
 		compute_displaced_points(full, displaced);
 
 		Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
 
-		const double dist_sqr = ipc::compute_minimum_distance(
-			state.collision_mesh, displaced_surface, _constraint_set);
+		if (state.args["save_nl_solve_sequence"])
+		{
+			writeOBJ(state.resolve_output_path(fmt::format("step{:03d}.obj", iter_num)),
+					 displaced_surface, state.collision_mesh.edges, state.collision_mesh.faces);
+		}
+
+		const double dist_sqr = ipc::compute_minimum_distance(state.collision_mesh, displaced_surface, _constraint_set);
 		polyfem::logger().trace("min_dist {}", sqrt(dist_sqr));
-		// igl::write_triangle_mesh("step.obj", displaced, state.boundary_triangles);
+
 		if (use_adaptive_barrier_stiffness)
 		{
 			if (is_time_dependent)

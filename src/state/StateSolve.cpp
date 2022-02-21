@@ -762,7 +762,6 @@ namespace polyfem
 		VectorXd tmp_sol;
 		NLProblem &nl_problem = *step_data.nl_problem;
 		ALNLProblem &alnl_problem = *step_data.alnl_problem;
-		igl::Timer timer;
 
 		double al_weight = args["al_weight"];
 		const double max_al_weight = args["max_al_weight"];
@@ -771,14 +770,11 @@ namespace polyfem
 		assert(sol.size() == rhs.size());
 		assert(tmp_sol.size() <= rhs.size());
 
-		timer.start();
-		logger().trace("Updating lagging...");
-
-		nl_problem.update_lagging(sol, /*start_of_timestep=*/true);
-		alnl_problem.update_lagging(sol, /*start_of_timestep=*/true);
-
-		timer.stop();
-		logger().trace("done, took {}s", timer.getElapsedTime());
+		{
+			POLYFEM_SCOPED_TIMER("Initializing lagging");
+			nl_problem.init_lagging(sol);
+			alnl_problem.init_lagging(sol);
+		}
 
 		if (args["friction_iterations"] > 0)
 		{
@@ -837,7 +833,8 @@ namespace polyfem
 
 		// Lagging loop (start at 1 because we already did an iteration above)
 		int lag_i;
-		bool lagging_converged = nl_problem.lagging_converged(tmp_sol, /*do_lagging_update=*/true);
+		nl_problem.update_lagging(tmp_sol);
+		bool lagging_converged = nl_problem.lagging_converged(tmp_sol);
 		for (lag_i = 1; !lagging_converged && lag_i < args["friction_iterations"]; lag_i++)
 		{
 			logger().debug("Lagging iteration {:d}", lag_i + 1);
@@ -851,7 +848,8 @@ namespace polyfem
 								   {"info", nl_solver_info}});
 
 			nl_problem.reduced_to_full(tmp_sol, sol);
-			lagging_converged = nl_problem.lagging_converged(tmp_sol, /*do_lagging_update=*/true);
+			nl_problem.update_lagging(tmp_sol);
+			lagging_converged = nl_problem.lagging_converged(tmp_sol);
 		}
 
 		if (args["friction_iterations"] > 0)
@@ -860,30 +858,23 @@ namespace polyfem
 				lagging_converged ? spdlog::level::info : spdlog::level::warn,
 				"{} {:d} lagging iteration(s) (err={:g} tol={:g})",
 				lagging_converged ? "Friction lagging converged using" : "Friction lagging maxed out at",
-				lag_i, nl_problem.compute_lagging_error(tmp_sol, /*do_lagging_update=*/false),
+				lag_i, nl_problem.compute_lagging_error(tmp_sol),
 				args["friction_convergence_tol"].get<double>());
 		}
 
-		timer.start();
-		logger().trace("Update quantities...");
-
-		nl_problem.update_quantities(t0 + (t + 1) * dt, sol);
-		alnl_problem.update_quantities(t0 + (t + 1) * dt, sol);
-		timer.stop();
-		logger().trace("done, took {}s", timer.getElapsedTime());
+		{
+			POLYFEM_SCOPED_TIMER("Update quantities");
+			nl_problem.update_quantities(t0 + (t + 1) * dt, sol);
+			alnl_problem.update_quantities(t0 + (t + 1) * dt, sol);
+		}
 
 		if (args["save_time_sequence"] && !(t % args["skip_frame"].get<int>()))
 		{
-			timer.start();
-			logger().trace("Saving VTU...");
-
+			POLYFEM_SCOPED_TIMER("Saving VTU");
 			if (!solve_export_to_file)
 				solution_frames.emplace_back();
 			save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), t0 + dt * t);
 			save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
-
-			timer.stop();
-			logger().trace("done, took {}s", timer.getElapsedTime());
 		}
 	}
 
@@ -1056,8 +1047,13 @@ namespace polyfem
 		const double max_al_weight = args["max_al_weight"];
 		nl_problem.full_to_reduced(sol, tmp_sol);
 
-		nl_problem.update_lagging(sol, /*start_of_timestep=*/true);
-		alnl_problem.update_lagging(sol, /*start_of_timestep=*/true);
+		nl_problem.init_lagging(sol);
+		alnl_problem.init_lagging(sol);
+
+		if (args["friction_iterations"] > 0)
+		{
+			logger().debug("Lagging iteration 1");
+		}
 
 		// TODO: maybe add linear solver here?
 
@@ -1101,8 +1097,8 @@ namespace polyfem
 			{
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
-				save_vtu(fmt::format("step_{:d}.vtu", index), 1);
-				save_wire(fmt::format("step_{:d}.obj", index));
+				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", index)), 1);
+				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", index)));
 			}
 			++index;
 		}
@@ -1114,10 +1110,57 @@ namespace polyfem
 		nlsolver->minimize(nl_problem, tmp_sol);
 		json nl_solver_info;
 		nlsolver->getInfo(nl_solver_info);
-
-		nl_problem.reduced_to_full(tmp_sol, sol);
 		solver_info.push_back({{"type", "rc"},
 							   {"info", nl_solver_info}});
+		nl_problem.reduced_to_full(tmp_sol, sol);
+
+		if (args["save_solve_sequence_debug"])
+		{
+			if (!solve_export_to_file)
+				solution_frames.emplace_back();
+			save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", index)), 1);
+			save_wire(resolve_output_path(fmt::format("step_{:d}.obj", index)));
+		}
+		++index;
+
+		// Lagging loop (start at 1 because we already did an iteration above)
+		int lag_i;
+		nl_problem.update_lagging(tmp_sol);
+		bool lagging_converged = nl_problem.lagging_converged(tmp_sol);
+		for (lag_i = 1; !lagging_converged && lag_i < args["friction_iterations"]; lag_i++)
+		{
+			logger().debug("Lagging iteration {:d}", lag_i + 1);
+			nl_problem.init(sol);
+			nlsolver->minimize(nl_problem, tmp_sol);
+
+			nlsolver->getInfo(nl_solver_info);
+			solver_info.push_back({{"type", "rc"},
+								   {"lag_i", lag_i},
+								   {"info", nl_solver_info}});
+
+			nl_problem.reduced_to_full(tmp_sol, sol);
+			nl_problem.update_lagging(tmp_sol);
+			lagging_converged = nl_problem.lagging_converged(tmp_sol);
+
+			if (args["save_solve_sequence_debug"])
+			{
+				if (!solve_export_to_file)
+					solution_frames.emplace_back();
+				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", index)), 1);
+				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", index)));
+			}
+			++index;
+		}
+
+		if (args["friction_iterations"] > 0)
+		{
+			logger().log(
+				lagging_converged ? spdlog::level::info : spdlog::level::warn,
+				"{} {:d} lagging iteration(s) (err={:g} tol={:g})",
+				lagging_converged ? "Friction lagging converged using" : "Friction lagging maxed out at",
+				lag_i, nl_problem.compute_lagging_error(tmp_sol),
+				args["friction_convergence_tol"].get<double>());
+		}
 
 		{
 			const std::string u_path = resolve_path(args["export"]["u_path"], args["root_path"]);

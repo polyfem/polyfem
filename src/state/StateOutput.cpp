@@ -1367,16 +1367,40 @@ namespace polyfem
 				const ElementBases &gbs = gbases[e];
 				const ElementBases &bs = bases[e];
 
-				if (mesh->is_simplex(e))
-					local_pts = sampler.simplex_points();
-				else if (mesh->is_cube(e))
-					local_pts = sampler.cube_points();
+				if (use_sampler)
+				{
+					if (mesh->is_simplex(e))
+						local_pts = sampler.simplex_points();
+					else if (mesh->is_cube(e))
+						local_pts = sampler.cube_points();
+					else
+					{
+						if (mesh->is_volume())
+							sampler.sample_polyhedron(polys_3d[e].first, polys_3d[e].second, local_pts, vis_faces_poly);
+						else
+							sampler.sample_polygon(polys[e], local_pts, vis_faces_poly);
+					}
+				}
 				else
 				{
 					if (mesh->is_volume())
-						sampler.sample_polyhedron(polys_3d[e].first, polys_3d[e].second, local_pts, vis_faces_poly);
+					{
+						if (mesh->is_simplex(e))
+							autogen::p_nodes_3d(disc_orders(e), local_pts);
+						else if (mesh->is_cube(e))
+							autogen::q_nodes_3d(disc_orders(e), local_pts);
+						else
+							continue;
+					}
 					else
-						sampler.sample_polygon(polys[e], local_pts, vis_faces_poly);
+					{
+						if (mesh->is_simplex(e))
+							autogen::p_nodes_2d(disc_orders(e), local_pts);
+						else if (mesh->is_cube(e))
+							autogen::q_nodes_2d(disc_orders(e), local_pts);
+						else
+							continue;
+					}
 				}
 
 				ElementAssemblyValues vals;
@@ -1390,8 +1414,16 @@ namespace polyfem
 					lambdas(index) = lambda;
 					mus(index) = mu;
 
-					Es(index) = mu * (3.0 * lambda + 2.0 * mu) / (lambda + mu);
-					nus(index) = lambda / (2.0 * (lambda + mu));
+					if (mesh->is_volume())
+					{
+						Es(index) = mu * (3.0 * lambda + 2.0 * mu) / (lambda + mu);
+						nus(index) = lambda / (2.0 * (lambda + mu));
+					}
+					else
+					{
+						Es(index) = mu * (2.0 * lambda + 2.0 * mu) / (lambda + 2.0 * mu);
+						nus(index) = lambda / (lambda + 2.0 * mu);
+					}
 
 					rhos(index) = density(local_pts.row(j), vals.val.row(j), e);
 
