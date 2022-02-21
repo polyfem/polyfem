@@ -1050,9 +1050,18 @@ namespace polyfem
 		nl_problem.init_lagging(sol);
 		alnl_problem.init_lagging(sol);
 
-		if (args["friction_iterations"] > 0)
+		const int friction_iterations = args["friction_iterations"];
+		assert(friction_iterations >= 0);
+		if (friction_iterations > 0)
 		{
 			logger().debug("Lagging iteration 1");
+		}
+
+		// Disable damping for the final lagged iteration
+		if (friction_iterations <= 1)
+		{
+			nl_problem.lagged_damping_weight() = 0;
+			alnl_problem.lagged_damping_weight() = 0;
 		}
 
 		// TODO: maybe add linear solver here?
@@ -1127,10 +1136,13 @@ namespace polyfem
 		int lag_i;
 		nl_problem.update_lagging(tmp_sol);
 		bool lagging_converged = nl_problem.lagging_converged(tmp_sol);
-		for (lag_i = 1; !lagging_converged && lag_i < args["friction_iterations"]; lag_i++)
+		for (lag_i = 1; !lagging_converged && lag_i < friction_iterations; lag_i++)
 		{
 			logger().debug("Lagging iteration {:d}", lag_i + 1);
 			nl_problem.init(sol);
+			// Disable damping for the final lagged iteration
+			if (lag_i == friction_iterations - 1)
+				nl_problem.lagged_damping_weight() = 0;
 			nlsolver->minimize(nl_problem, tmp_sol);
 
 			nlsolver->getInfo(nl_solver_info);
@@ -1152,7 +1164,7 @@ namespace polyfem
 			++index;
 		}
 
-		if (args["friction_iterations"] > 0)
+		if (friction_iterations > 0)
 		{
 			logger().log(
 				lagging_converged ? spdlog::level::info : spdlog::level::warn,

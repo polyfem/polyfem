@@ -83,6 +83,7 @@ namespace polyfem
 		_dhat = dhat;
 		_epsv = state.args["epsv"];
 		_mu = state.args["mu"];
+		_lagged_damping_weight = is_time_dependent ? 0 : state.args["lagged_damping_weight"].get<double>();
 		use_adaptive_barrier_stiffness = !state.args["barrier_stiffness"].is_number();
 		if (use_adaptive_barrier_stiffness)
 		{
@@ -174,6 +175,8 @@ namespace polyfem
 				_friction_constraint_set);
 		}
 
+		// Save the variables for use in lagged damping
+		reduced_to_full(x, x_lagged);
 	}
 
 	double NLProblem::compute_lagging_error(const TVector &x)
@@ -485,15 +488,14 @@ namespace polyfem
 			polyfem::logger().trace("collision_energy {}, friction_energy {}", collision_energy, friction_energy);
 		}
 
-		// logger().trace("|constraints|={} |friction_constraints|={}", _constraint_set.size(), _friction_constraint_set.size());
-		// logger().trace(
-		// 	"elastic_energy={:.16g} body_energy={:.16g} intertia_energy={:.16g} collision_energy={:.16g} friction_energy={:.16g}",
-		// 	scaling * elastic_energy, scaling * body_energy, intertia_energy, _barrier_stiffness * collision_energy, friction_energy);
+		double lagged_damping = lagged_damping_weight * (full - x_lagged).squaredNorm();
+
+		const double non_contact_terms = scaling * (elastic_energy + body_energy) + intertia_energy + friction_energy + lagged_damping;
 
 #ifdef POLYFEM_DIV_BARRIER_STIFFNESS
-		return (scaling * (elastic_energy + body_energy) + intertia_energy + friction_energy) / _barrier_stiffness + collision_energy;
+		return non_contact_terms / _barrier_stiffness + collision_energy;
 #else
-		return scaling * (elastic_energy + body_energy) + intertia_energy + _barrier_stiffness * collision_energy + friction_energy;
+		return non_contact_terms + _barrier_stiffness * collision_energy;
 #endif
 	}
 
@@ -526,14 +528,10 @@ namespace polyfem
 #endif
 
 		full_to_reduced(grad, gradv);
-
-		// std::cout<<"gradv\n"<<gradv<<"\n--------------\n"<<std::endl;
 	}
 
 	void NLProblem::gradient_no_rhs(const TVector &x, Eigen::MatrixXd &grad, const bool only_elastic)
 	{
-		// scaling * (elastic_energy + body_energy) + intertia_energy + _barrier_stiffness * collision_energy;
-
 		TVector full;
 		reduced_to_full(x, full);
 
@@ -546,92 +544,42 @@ namespace polyfem
 			grad += state.mass * full;
 		}
 
-		// logger().trace("grad norm {}", grad.norm());
-
-#ifdef POLYFEM_DIV_BARRIER_STIFFNESS
-		grad /= _barrier_stiffness;
-#endif
-
+		Eigen::VectorXd barrier_grad;
 		if (!only_elastic && !disable_collision && state.args["has_collision"])
 		{
 			Eigen::MatrixXd displaced;
 			compute_displaced_points(full, displaced);
 
-#ifdef POLYFEM_DIV_BARRIER_STIFFNESS
-			grad += ipc::compute_barrier_potential_gradient(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat);
+			barrier_grad = ipc::compute_barrier_potential_gradient(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat);
+
 			grad += ipc::compute_friction_potential_gradient(
-						displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set, _epsv * dt())
-					/ _barrier_stiffness;
-#else
-			grad += _barrier_stiffness * ipc::compute_barrier_potential_gradient(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat);
+				displaced_prev, displaced, state.boundary_edges, state.boundary_triangles,
+				_friction_constraint_set, _epsv * dt());
+
 			grad += ipc::compute_friction_potential_gradient(
 				displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set, _epsv * dt());
-#endif
-			// logger().trace("ipc grad norm {}", ipc::compute_barrier_potential_gradient(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat).norm());
+		}
+		else
+		{
+			barrier_grad.setZero(full_size);
 		}
 
+		grad += _lagged_damping_weight * (full - x_lagged);
+
+#ifdef POLYFEM_DIV_BARRIER_STIFFNESS
+		grad /= _barrier_stiffness;
+		grad += barrier_grad;
+#else
+		grad += _barrier_stiffness * barrier_grad;
+#endif
 		assert(grad.size() == full_size);
 	}
 
 	void NLProblem::hessian(const TVector &x, THessian &hessian)
 	{
-		THessian tmp;
-		hessian_full(x, tmp);
-
-		if (reduced_size == full_size)
-		{
-			hessian = tmp;
-			return;
-		}
-
-		POLYFEM_SCOPED_TIMER("\tremoving costraint time");
-
-		std::vector<Eigen::Triplet<double>> entries;
-
-		Eigen::VectorXi indices(full_size);
-
-		int index = 0;
-		size_t kk = 0;
-		for (int i = 0; i < full_size; ++i)
-		{
-			if (kk < state.boundary_nodes.size() && state.boundary_nodes[kk] == i)
-			{
-				++kk;
-				indices(i) = -1;
-				continue;
-			}
-
-			indices(i) = index++;
-		}
-		assert(index == reduced_size);
-
-		for (int k = 0; k < tmp.outerSize(); ++k)
-		{
-			if (indices(k) < 0)
-			{
-				continue;
-			}
-
-			for (THessian::InnerIterator it(tmp, k); it; ++it)
-			{
-				// std::cout<<it.row()<<" "<<it.col()<<" "<<k<<std::endl;
-				assert(it.col() == k);
-				if (indices(it.row()) < 0 || indices(it.col()) < 0)
-				{
-					continue;
-				}
-
-				assert(indices(it.row()) >= 0);
-				assert(indices(it.col()) >= 0);
-
-				entries.emplace_back(indices(it.row()), indices(it.col()), it.value());
-			}
-		}
-
-		hessian.resize(reduced_size, reduced_size);
-		hessian.setFromTriplets(entries.begin(), entries.end());
-		hessian.makeCompressed();
-		// write_sparse_matrix_csv("hessian.csv", hessian);
+		THessian full_hessian;
+		hessian_full(x, full_hessian);
+		full_hessian_to_reduced_hessian(full_hessian, hessian);
 	}
 
 	void NLProblem::hessian_full(const TVector &x, THessian &hessian)
@@ -698,20 +646,71 @@ namespace polyfem
 			}
 		}
 
+		THessian lagged_damping_hessian = _lagged_damping_weight * sparse_identity(full.size(), full.size());
+
 		// Summing the hessian matrices like this might be less efficient than multiple `hessian += ...`, but
 		// it is much easier to read and export the individual matrices for inspection.
+		THessian non_contact_hessian = energy_hessian + inertia_hessian + friction_hessian + lagged_damping_hessian;
 #ifdef POLYFEM_DIV_BARRIER_STIFFNESS
-		hessian = (energy_hessian + inertia_hessian + friction_hessian) / _barrier_stiffness + barrier_hessian;
+		hessian = non_contact_hessian / _barrier_stiffness + barrier_hessian;
 #else
-		hessian = energy_hessian + inertia_hessian + _barrier_stiffness * barrier_hessian + friction_hessian;
+		hessian = non_contact_hessian + _barrier_stiffness * barrier_hessian;
 #endif
 		assert(hessian.rows() == full_size);
 		assert(hessian.cols() == full_size);
+	}
 
-		// write_sparse_matrix_csv("energy_hessian.csv", energy_hessian);
-		// write_sparse_matrix_csv("inertia_hessian.csv", inertia_hessian);
-		// write_sparse_matrix_csv("barrier_hessian.csv", _barrier_stiffness * barrier_hessian);
-		// write_sparse_matrix_csv("friction_hessian.csv", friction_hessian);
+	void NLProblem::full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const
+	{
+		POLYFEM_SCOPED_TIMER("\tfull hessian to reduced hessian");
+
+		if (reduced_size == full_size || reduced_size == full.rows())
+		{
+			assert(reduced_size == full.rows() && reduced_size == full.cols());
+			reduced = full;
+			return;
+		}
+
+		Eigen::VectorXi indices(full_size);
+		int index = 0;
+		size_t kk = 0;
+		for (int i = 0; i < full_size; ++i)
+		{
+			if (kk < state.boundary_nodes.size() && state.boundary_nodes[kk] == i)
+			{
+				++kk;
+				indices(i) = -1;
+			}
+			else
+			{
+				indices(i) = index++;
+			}
+		}
+		assert(index == reduced_size);
+
+		std::vector<Eigen::Triplet<double>> entries;
+		entries.reserve(full.nonZeros()); // Conservative estimate
+		for (int k = 0; k < full.outerSize(); ++k)
+		{
+			if (indices(k) < 0)
+				continue;
+
+			for (THessian::InnerIterator it(full, k); it; ++it)
+			{
+				assert(it.col() == k);
+				if (indices(it.row()) < 0 || indices(it.col()) < 0)
+					continue;
+
+				assert(indices(it.row()) >= 0);
+				assert(indices(it.col()) >= 0);
+
+				entries.emplace_back(indices(it.row()), indices(it.col()), it.value());
+			}
+		}
+
+		reduced.resize(reduced_size, reduced_size);
+		reduced.setFromTriplets(entries.begin(), entries.end());
+		reduced.makeCompressed();
 	}
 
 	void NLProblem::solution_changed(const TVector &newX)
