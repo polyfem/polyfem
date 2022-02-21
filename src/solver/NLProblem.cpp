@@ -488,7 +488,7 @@ namespace polyfem
 			polyfem::logger().trace("collision_energy {}, friction_energy {}", collision_energy, friction_energy);
 		}
 
-		double lagged_damping = lagged_damping_weight * (full - x_lagged).squaredNorm();
+		double lagged_damping = _lagged_damping_weight * (full - x_lagged).squaredNorm();
 
 		const double non_contact_terms = scaling * (elastic_energy + body_energy) + intertia_energy + friction_energy + lagged_damping;
 
