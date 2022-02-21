@@ -27,6 +27,13 @@ namespace polyfem
 		return T(0);
 	}
 
+	inline Eigen::SparseMatrix<double> sparse_identity(int rows, int cols)
+	{
+		Eigen::SparseMatrix<double> I(rows, cols);
+		I.setIdentity();
+		return I;
+	}
+
 	template <typename T>
 	bool read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat);
 

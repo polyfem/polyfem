@@ -125,6 +125,8 @@ namespace polyfem
 			reduced_to_full_aux(state, full_size, reduced_size, reduced, current_rhs(), full);
 		}
 
+		void full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const;
+
 		virtual void update_quantities(const double t, const TVector &x);
 		void substepping(const double t);
 		void solution_changed(const TVector &newX);
@@ -146,6 +148,8 @@ namespace polyfem
 
 		void set_project_to_psd(bool val) { project_to_psd = val; }
 		bool is_project_to_psd() const { return project_to_psd; }
+
+		double &lagged_damping_weight() { return _lagged_damping_weight; }
 
 	protected:
 		void compute_displaced_points(const TVector &full, Eigen::MatrixXd &displaced);
@@ -178,6 +182,8 @@ namespace polyfem
 		double _epsv;                   ///< @brief The boundary between static and dynamic friction.
 		double _mu;                     ///< @brief Coefficient of friction.
 		Eigen::MatrixXd displaced_prev; ///< @brief Displaced vertices at the start of the time-step.
+		double _lagged_damping_weight;  ///< @brief Weight for lagged damping (static solve).
+		TVector x_lagged;               ///< @brief The full variables from the previous lagging solve.
 
 		ipc::BroadPhaseMethod _broad_phase_method;
 		double _ccd_tolerance;

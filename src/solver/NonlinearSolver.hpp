@@ -228,21 +228,21 @@ namespace cppoptlib
 			spdlog::level::level_enum level = spdlog::level::info;
 			if (this->m_status == Status::IterationLimit)
 			{
-				msg = fmt::format("[{}] Reached iteration limit");
+				msg = fmt::format("[{}] Reached iteration limit", name());
 				polyfem::logger().error(msg);
 				throw(msg);
 				level = spdlog::level::err;
 			}
 			else if (this->m_current.iterations == 0)
 			{
-				msg = fmt::format("[{}] Unable to take a step");
+				msg = fmt::format("[{}] Unable to take a step", name());
 				polyfem::logger().error(msg);
 				throw(msg);
 				level = this->m_status == Status::UserDefined ? spdlog::level::err : spdlog::level::warn;
 			}
 			else if (this->m_status == Status::UserDefined)
 			{
-				msg = fmt::format("[{}] Failed to find minimizer");
+				msg = fmt::format("[{}] Failed to find minimizer", name());
 				polyfem::logger().error(msg);
 				throw(msg);
 				level = spdlog::level::err;

@@ -129,6 +129,7 @@ namespace polyfem
 			{"mu", 0.0},
 			{"friction_iterations", 1},
 			{"friction_convergence_tol", 1e-2},
+			{"lagged_damping_weight", 0},
 
 			{"t0", 0},
 			{"tend", -1}, // Compute this automatically

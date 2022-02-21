@@ -111,9 +111,7 @@ namespace cppoptlib
 
 				if (reg_weight > 0)
 				{
-					Eigen::SparseMatrix<double> I(hessian.rows(), hessian.cols());
-					I.setIdentity();
-					hessian += reg_weight * I;
+					hessian += reg_weight * polyfem::sparse_identity(hessian.rows(), hessian.cols());
 				}
 			}
 
