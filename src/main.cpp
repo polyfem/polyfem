@@ -168,16 +168,20 @@ int main(int argc, char **argv)
 	int ccd_max_iterations;
 	std::string broad_phase_method;
 	command_line.add_option("--ccd_max_iterations", ccd_max_iterations, "Max number of CCD iterations");
-	command_line.add_option("--bp,--broad_phase_method", broad_phase_method, "CCD Method")
-		->check(CLI::IsMember({
-			"brute_force", "BF",              //
-			"hash_grid", "HG",                //
-			"spatial_hash", "SH",             //
-			"sweep_and_tiniest_queue", "STQ", //
 #ifdef IPC_TOOLKIT_WITH_CUDA
-			"sweep_and_tiniest_queue_gpu", "STQ_GPU" //
+	command_line.add_option("--bp,--broad_phase_method", broad_phase_method, "CCD Method")
+		->check(CLI::IsMember({"brute_force", "BF",
+							   "hash_grid", "HG",
+							   "spatial_hash", "SH",
+							   "sweep_and_tiniest_queue", "STQ",
+							   "sweep_and_tiniest_queue_gpu", "STQ_GPU"}));
+#else
+	command_line.add_option("--bp,--broad_phase_method", broad_phase_method, "CCD Method")
+		->check(CLI::IsMember({"brute_force", "BF",
+							   "hash_grid", "HG",
+							   "spatial_hash", "SH",
+							   "sweep_and_tiniest_queue", "STQ"}));
 #endif
-		}));
 
 	CLI11_PARSE(command_line, argc, argv);
 

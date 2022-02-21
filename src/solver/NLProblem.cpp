@@ -33,22 +33,31 @@ M (u^{t+1}_h - (u^t_h + \Delta t v^t_h)) - \frac{\Delta t^2} {2} A u^{t+1}_h
 // map BroadPhaseMethod values to JSON as strings
 namespace ipc
 {
+#ifdef IPC_TOOLKIT_WITH_CUDA
 	NLOHMANN_JSON_SERIALIZE_ENUM(
 		ipc::BroadPhaseMethod,
-		{
-			{ipc::BroadPhaseMethod::HASH_GRID, "hash_grid"}, // also default
-			{ipc::BroadPhaseMethod::HASH_GRID, "HG"},
-			{ipc::BroadPhaseMethod::BRUTE_FORCE, "brute_force"},
-			{ipc::BroadPhaseMethod::BRUTE_FORCE, "BF"},
-			{ipc::BroadPhaseMethod::SPATIAL_HASH, "spatial_hash"},
-			{ipc::BroadPhaseMethod::SPATIAL_HASH, "SH"},
-			{ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
-			{ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"},
-#ifdef IPC_TOOLKIT_WITH_CUDA
-			{ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "sweep_and_tiniest_queue_gpu"},
-			{ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "STQ_GPU"},
+		{{ipc::BroadPhaseMethod::HASH_GRID, "hash_grid"}, // also default
+		 {ipc::BroadPhaseMethod::HASH_GRID, "HG"},
+		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "brute_force"},
+		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "BF"},
+		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "spatial_hash"},
+		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "SH"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "sweep_and_tiniest_queue_gpu"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "STQ_GPU"}});
+#else
+	NLOHMANN_JSON_SERIALIZE_ENUM(
+		ipc::BroadPhaseMethod,
+		{{ipc::BroadPhaseMethod::HASH_GRID, "hash_grid"}, // also default
+		 {ipc::BroadPhaseMethod::HASH_GRID, "HG"},
+		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "brute_force"},
+		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "BF"},
+		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "spatial_hash"},
+		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "SH"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"}});
 #endif
-		});
 } // namespace ipc
 
 namespace polyfem
