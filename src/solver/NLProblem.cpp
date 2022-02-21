@@ -303,7 +303,7 @@ namespace polyfem
 		// Store the previous value used to compute the constraint set to avoid
 		// duplicate computation.
 		static Eigen::MatrixXd cached_displaced_surface;
-		if (cached_displaced_surface.size() == cached_displaced_surface.size()
+		if (cached_displaced_surface.size() == displaced_surface.size()
 			&& cached_displaced_surface == displaced_surface)
 			return;
 
