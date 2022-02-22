@@ -715,15 +715,15 @@ namespace polyfem
 			timer.start();
 			logger().trace("Checking collisions...");
 			const int problem_dim = mesh->dimension();
-			Eigen::MatrixXd tmp = boundary_nodes_pos;
-			assert(tmp.rows() * problem_dim == sol.size());
+			Eigen::MatrixXd displaced = boundary_nodes_pos;
+			assert(displaced.rows() * problem_dim == sol.size());
 			// Unflatten rowwises, so every problem_dim elements in full become a row.
 			for (int i = 0; i < sol.size(); ++i)
 			{
-				tmp(i / problem_dim, i % problem_dim) += sol(i);
+				displaced(i / problem_dim, i % problem_dim) += sol(i);
 			}
 
-			if (ipc::has_intersections(tmp, boundary_edges, boundary_triangles, [&](size_t vi, size_t vj) { return !is_obstacle_vertex(vi) || !is_obstacle_vertex(vj); }))
+			if (ipc::has_intersections(collision_mesh, collision_mesh.vertices(displaced)))
 			{
 				logger().error("Unable to solve, initial solution has intersections!");
 				throw "Unable to solve, initial solution has intersections!";

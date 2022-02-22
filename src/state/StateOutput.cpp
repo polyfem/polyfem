@@ -21,7 +21,6 @@
 #include <igl/facet_adjacency_matrix.h>
 #include <igl/connected_components.h>
 
-#include <ipc/utils/faces_to_edges.hpp>
 #include <ipc/ipc.hpp>
 
 #include <tinyxml2.h>
@@ -325,25 +324,23 @@ namespace polyfem
 		}
 	}
 
-	void State::extract_boundary_mesh(bool for_pressure)
+	void State::extract_boundary_mesh(
+		const std::vector<ElementBases> &bases,
+		Eigen::MatrixXd &boundary_nodes_pos,
+		Eigen::MatrixXi &boundary_edges,
+		Eigen::MatrixXi &boundary_triangles) const
 	{
-		auto &boundary_triangles_ = (!for_pressure) ? boundary_triangles : boundary_triangles_pressure;
-		auto &boundary_edges_ = (!for_pressure) ? boundary_edges : boundary_edges_pressure;
-		auto &boundary_nodes_pos_ = (!for_pressure) ? boundary_nodes_pos : boundary_nodes_pos_pressure;
-
-		if (!for_pressure)
-			boundary_faces_to_edges.resize(0, 0);
 		if (mesh->is_volume())
 		{
-			boundary_nodes_pos_.resize(n_bases, 3);
-			boundary_nodes_pos_.setZero();
+			boundary_nodes_pos.resize(n_bases, 3);
+			boundary_nodes_pos.setZero();
 			const Mesh3D &mesh3d = *dynamic_cast<Mesh3D *>(mesh.get());
 
 			std::vector<std::tuple<int, int, int>> tris;
 
 			for (const LocalBoundary &lb : total_local_boundary)
 			{
-				const auto &b = (!for_pressure) ? bases[lb.element_id()] : pressure_bases[lb.element_id()];
+				const ElementBases &b = bases[lb.element_id()];
 
 				for (int j = 0; j < lb.size(); ++j)
 				{
@@ -367,7 +364,7 @@ namespace polyfem
 							continue;
 
 						int gindex = glob.front().index;
-						boundary_nodes_pos_.row(gindex) = glob.front().node;
+						boundary_nodes_pos.row(gindex) = glob.front().node;
 						loc_nodes.push_back(gindex);
 					}
 
@@ -421,16 +418,16 @@ namespace polyfem
 				}
 			}
 
-			boundary_triangles_.resize(tris.size(), 3);
+			boundary_triangles.resize(tris.size(), 3);
 			for (int i = 0; i < tris.size(); ++i)
 			{
-				boundary_triangles_.row(i) << std::get<0>(tris[i]), std::get<2>(tris[i]), std::get<1>(tris[i]);
+				boundary_triangles.row(i) << std::get<0>(tris[i]), std::get<2>(tris[i]), std::get<1>(tris[i]);
 			}
 
 			if (args["min_component"] > 0)
 			{
 				Eigen::SparseMatrix<int> adj;
-				igl::facet_adjacency_matrix(boundary_triangles_, adj);
+				igl::facet_adjacency_matrix(boundary_triangles, adj);
 				Eigen::MatrixXi C, counts;
 				igl::connected_components(adj, C, counts);
 
@@ -452,31 +449,28 @@ namespace polyfem
 					{
 						if (v == C(i))
 						{
-							tris.emplace_back(boundary_triangles_(i, 0), boundary_triangles_(i, 1), boundary_triangles_(i, 2));
+							tris.emplace_back(boundary_triangles(i, 0), boundary_triangles(i, 1), boundary_triangles(i, 2));
 							break;
 						}
 					}
 				}
 
-				boundary_triangles_.resize(tris.size(), 3);
+				boundary_triangles.resize(tris.size(), 3);
 				for (int i = 0; i < tris.size(); ++i)
 				{
-					boundary_triangles_.row(i) << std::get<0>(tris[i]), std::get<1>(tris[i]), std::get<2>(tris[i]);
+					boundary_triangles.row(i) << std::get<0>(tris[i]), std::get<1>(tris[i]), std::get<2>(tris[i]);
 				}
 			}
 
-			if (boundary_triangles_.rows() > 0)
+			if (boundary_triangles.rows() > 0)
 			{
-				igl::edges(boundary_triangles_, boundary_edges_);
-				boundary_faces_to_edges = ipc::faces_to_edges(boundary_triangles_, boundary_edges_);
+				igl::edges(boundary_triangles, boundary_edges);
 			}
-
-			// igl::write_triangle_mesh("test.obj", boundary_nodes_pos_, boundary_triangles_);
 		}
 		else
 		{
-			boundary_nodes_pos_.resize(n_bases, 2);
-			boundary_nodes_pos_.setZero();
+			boundary_nodes_pos.resize(n_bases, 2);
+			boundary_nodes_pos.setZero();
 			const Mesh2D &mesh2d = *dynamic_cast<Mesh2D *>(mesh.get());
 
 			std::vector<std::pair<int, int>> edges;
@@ -484,7 +478,7 @@ namespace polyfem
 			for (auto it = total_local_boundary.begin(); it != total_local_boundary.end(); ++it)
 			{
 				const auto &lb = *it;
-				const auto &b = (!for_pressure) ? bases[lb.element_id()] : pressure_bases[lb.element_id()];
+				const ElementBases &b = bases[lb.element_id()];
 
 				for (int j = 0; j < lb.size(); ++j)
 				{
@@ -502,7 +496,7 @@ namespace polyfem
 							continue;
 
 						int gindex = glob.front().index;
-						boundary_nodes_pos_.row(gindex) << glob.front().node(0), glob.front().node(1);
+						boundary_nodes_pos.row(gindex) << glob.front().node(0), glob.front().node(1);
 
 						if (prev_node >= 0)
 							edges.emplace_back(prev_node, gindex);
@@ -511,19 +505,26 @@ namespace polyfem
 				}
 			}
 
-			boundary_triangles_.resize(0, 0);
-			boundary_edges_.resize(edges.size(), 2);
+			boundary_triangles.resize(0, 0);
+			boundary_edges.resize(edges.size(), 2);
 			for (int i = 0; i < edges.size(); ++i)
 			{
-				boundary_edges_.row(i) << edges[i].first, edges[i].second;
+				boundary_edges.row(i) << edges[i].first, edges[i].second;
 			}
 		}
+	}
 
-		if (!for_pressure && obstacle.n_vertices() > 0)
+	void State::build_collision_mesh()
+	{
+		extract_boundary_mesh(
+			bases, boundary_nodes_pos, boundary_edges, boundary_triangles);
+
+		Eigen::VectorXi codimensional_nodes;
+		if (obstacle.n_vertices() > 0)
 		{
-			const int n_v = boundary_nodes_pos.rows() - obstacle.n_vertices();
-			const int n_e = boundary_edges.rows();
 			// boundary_nodes_pos uses n_bases that already contains the obstacle
+			const int n_v = boundary_nodes_pos.rows() - obstacle.n_vertices();
+
 			if (obstacle.v().size())
 				boundary_nodes_pos.bottomRows(obstacle.v().rows()) = obstacle.v();
 
@@ -544,14 +545,21 @@ namespace polyfem
 				boundary_triangles.conservativeResize(boundary_triangles.rows() + obstacle.f().rows(), 3);
 				boundary_triangles.bottomRows(obstacle.f().rows()) = obstacle.f().array() + n_v;
 			}
-
-			if (obstacle.f_2_e().size())
-			{
-				const int tmp = std::max(boundary_faces_to_edges.cols(), obstacle.f_2_e().cols());
-				boundary_faces_to_edges.conservativeResize(boundary_faces_to_edges.rows() + obstacle.f_2_e().rows(), tmp);
-				boundary_faces_to_edges.bottomRows(obstacle.f_2_e().rows()) = obstacle.f_2_e().array() + n_e;
-			}
 		}
+
+		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(boundary_nodes_pos.rows(), boundary_edges);
+		for (int i = 0; i < codimensional_nodes.size(); i++)
+		{
+			is_on_surface[codimensional_nodes[i]] = true;
+		}
+
+		collision_mesh = ipc::CollisionMesh(is_on_surface, boundary_nodes_pos, boundary_edges, boundary_triangles);
+
+		collision_mesh.can_collide = [&](size_t vi, size_t vj) {
+			// obstacles do not collide with other obstacles
+			return !this->is_obstacle_vertex(collision_mesh.to_full_vertex_id(vi))
+				   || !this->is_obstacle_vertex(collision_mesh.to_full_vertex_id(vj));
+		};
 	}
 
 	std::string State::resolve_output_path(const std::string &path)
@@ -1608,15 +1616,14 @@ namespace polyfem
 			writer.add_field("solution", displaced);
 
 			displaced += boundary_nodes_pos;
+			Eigen::MatrixXd displaced_surface = collision_mesh.vertices(displaced);
 			ipc::Constraints constraint_set;
 			ipc::construct_constraint_set(
-				boundary_nodes_pos, displaced, codimensional_nodes,
-				boundary_edges, boundary_triangles, args["dhat"],
-				constraint_set, boundary_faces_to_edges, /*dmin=*/0,
-				ipc::BroadPhaseMethod::HASH_GRID, [&](size_t vi, size_t vj) {
-					return !is_obstacle_vertex(vi) || !is_obstacle_vertex(vj);
-				});
-			const Eigen::MatrixXd cgrad = ipc::compute_barrier_potential_gradient(displaced, boundary_edges, boundary_triangles, constraint_set, args["dhat"]);
+				collision_mesh, displaced_surface, args["dhat"], constraint_set,
+				/*dmin=*/0, ipc::BroadPhaseMethod::HASH_GRID);
+			Eigen::MatrixXd cgrad = ipc::compute_barrier_potential_gradient(
+				collision_mesh, displaced_surface, constraint_set, args["dhat"]);
+			cgrad = collision_mesh.to_full_dof(cgrad);
 			assert(cgrad.size() == sol.size());
 
 			Eigen::MatrixXd cgrad_reshaped(cgrad.size() / problem_dim, problem_dim);
@@ -1631,10 +1638,10 @@ namespace polyfem
 
 			writer.add_field("contact_forces", cgrad_reshaped);
 
-			if (problem_dim == 3)
-				writer.write_mesh(export_surface.substr(0, export_surface.length() - 4) + "_contact.vtu", boundary_nodes_pos, boundary_triangles);
-			else
-				writer.write_mesh(export_surface.substr(0, export_surface.length() - 4) + "_contact.vtu", boundary_nodes_pos, boundary_edges);
+			writer.write_mesh(
+				export_surface.substr(0, export_surface.length() - 4) + "_contact.vtu",
+				collision_mesh.vertices(boundary_nodes_pos),
+				problem_dim == 3 ? collision_mesh.faces() : collision_mesh.edges());
 		}
 
 		if (solve_export_to_file)

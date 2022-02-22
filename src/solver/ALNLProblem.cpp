@@ -79,7 +79,7 @@ namespace polyfem
 		const double AL_penalty = weight_ / 2 * distv.squaredNorm();
 
 		// TODO: Implement Lagrangian potential if needed (i.e., penalty weight exceeds maximum)
-		// ₙ     __
+		// ₙ    __
 		// ∑ -⎷ mₖ λₖᵀ (xₖ - x̂ₖ)
 		// ᵏ
 
@@ -92,7 +92,6 @@ namespace polyfem
 			ddd.conservativeResize(ddd.rows(), 3);
 			ddd.col(2).setZero();
 		}
-		// igl::write_triangle_mesh("step.obj", ddd, state.boundary_triangles);
 
 #ifdef POLYFEM_DIV_BARRIER_STIFFNESS
 		return val + AL_penalty / _barrier_stiffness;
