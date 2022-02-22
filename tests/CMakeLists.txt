@@ -22,7 +22,7 @@ add_executable(unit_tests ${test_sources})
 # Required Libraries
 ################################################################################
 
-target_link_libraries(unit_tests PUBLIC polyfem)
+target_link_libraries(unit_tests PUBLIC polyfem::polyfem)
 
 target_link_libraries(unit_tests PUBLIC warnings::all)
 

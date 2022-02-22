@@ -288,6 +288,7 @@ if(POLYFEM_WITH_CLIPPER)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_CLIPPER)
 endif()
 
+add_library(polyfem::polyfem ALIAS polyfem)
 
 ################################################################################
 # Polyfem binary
@@ -312,7 +313,7 @@ if(POLYFEM_TOPLEVEL_PROJECT)
     include(cli11)
     target_link_libraries(${PROJECT_NAME}_bin
         PUBLIC
-            polyfem
+            polyfem::polyfem
             warnings::all
             CLI11::CLI11
     )
