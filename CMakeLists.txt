@@ -76,11 +76,6 @@ option(POLYFEM_WITH_OPENCL           "Enable OpenCL"                     OFF)
 option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
 set(POLYFEM_THREADING "TBB" CACHE STRING "Multithreading library to use (options: CPP, TBB, NONE)")
 set_property(CACHE POLYFEM_THREADING PROPERTY STRINGS "CPP" "TBB" "NONE")
-if(POLYFEM_THREADING STREQUAL "TBB")
-    set(MKL_THREADING "tbb" CACHE STRING "Threading layer to use with MKL (sequential, tbb or openmp)" FORCE)
-else()
-    set(MKL_THREADING "sequential" CACHE STRING "Threading layer to use with MKL (sequential, tbb or openmp)" FORCE)
-endif()
 
 option(POLYFEM_WITH_TESTS     "Build tests"             ON)
 option(POLYFEM_WITH_APPS      "Build the apps"          ON)
@@ -206,8 +201,11 @@ target_link_libraries(polyfem PUBLIC ipc::toolkit)
 # Threading
 if(POLYFEM_THREADING STREQUAL "CPP")
     target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_CPP_THREADS)
+    # These definitions help avoid problems with GCC using TBB backend
+    target_compile_definitions(polyfem PUBLIC PSTL_USE_PARALLEL_POLICIES=0)
+    target_compile_definitions(polyfem PUBLIC _GLIBCXX_USE_TBB_PAR_BACKEND=0)
 elseif(POLYFEM_THREADING STREQUAL "TBB")
-    include(tbb)
+    include(onetbb)
     target_link_libraries(polyfem PUBLIC TBB::tbb)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_TBB)
 endif()
@@ -353,4 +351,30 @@ if(POLYFEM_TOPLEVEL_PROJECT)
         enable_testing()
         add_subdirectory(tests)
     endif()
+endif()
+
+################################################################################
+# CUDA
+################################################################################
+
+if(IPC_TOOLKIT_WITH_CUDA)
+  include(CheckLanguage)
+  check_language(CUDA)
+  if(CMAKE_CUDA_COMPILER)
+    enable_language(CUDA)
+  else()
+    message(FATAL_ERROR "No CUDA support found!")
+  endif()
+
+  set_target_properties(polyfem PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+  
+  # Nvidia RTX8000 -> compute_75
+  # Nvidia V100 -> compute_70
+  # Nvidia 1080/1080Ti -> compute_61
+  # Nvidia 3080Ti -> compute_86
+  if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+    set(CMAKE_CUDA_ARCHITECTURES 70 75 86)
+  endif()
+  set_target_properties(polyfem PROPERTIES CUDA_ARCHITECTURES "70;75;86")
+  set_target_properties(PolyFEM_bin PROPERTIES CUDA_ARCHITECTURES "70;75;86")
 endif()

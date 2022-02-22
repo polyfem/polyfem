@@ -33,23 +33,38 @@ M (u^{t+1}_h - (u^t_h + \Delta t v^t_h)) - \frac{\Delta t^2} {2} A u^{t+1}_h
 // map BroadPhaseMethod values to JSON as strings
 namespace ipc
 {
+#ifdef IPC_TOOLKIT_WITH_CUDA
 	NLOHMANN_JSON_SERIALIZE_ENUM(
 		ipc::BroadPhaseMethod,
-		{
-			{ipc::BroadPhaseMethod::HASH_GRID, "hash_grid"}, // also default
-			{ipc::BroadPhaseMethod::HASH_GRID, "HG"},
-			{ipc::BroadPhaseMethod::BRUTE_FORCE, "brute_force"},
-			{ipc::BroadPhaseMethod::BRUTE_FORCE, "BF"},
-			{ipc::BroadPhaseMethod::SPATIAL_HASH, "spatial_hash"},
-			{ipc::BroadPhaseMethod::SPATIAL_HASH, "SH"},
-		});
-}
+		{{ipc::BroadPhaseMethod::HASH_GRID, "hash_grid"}, // also default
+		 {ipc::BroadPhaseMethod::HASH_GRID, "HG"},
+		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "brute_force"},
+		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "BF"},
+		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "spatial_hash"},
+		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "SH"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "sweep_and_tiniest_queue_gpu"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "STQ_GPU"}});
+#else
+	NLOHMANN_JSON_SERIALIZE_ENUM(
+		ipc::BroadPhaseMethod,
+		{{ipc::BroadPhaseMethod::HASH_GRID, "hash_grid"}, // also default
+		 {ipc::BroadPhaseMethod::HASH_GRID, "HG"},
+		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "brute_force"},
+		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "BF"},
+		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "spatial_hash"},
+		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "SH"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"}});
+#endif
+} // namespace ipc
 
 namespace polyfem
 {
 	namespace
 	{
-		bool writeOBJ(const std::string &path, const Eigen::MatrixXd &v, const Eigen::MatrixXi &e, const Eigen::MatrixXi &f)
+		bool write_obj(const std::string &path, const Eigen::MatrixXd &v, const Eigen::MatrixXi &e, const Eigen::MatrixXi &f)
 		{
 			std::ofstream obj(path, std::ios::out);
 			if (!obj.is_open())
@@ -140,9 +155,11 @@ namespace polyfem
 		Eigen::MatrixXd displaced;
 		compute_displaced_points(full, displaced);
 
-		update_constraint_set(displaced);
+		Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
+		update_constraint_set(displaced_surface);
 		Eigen::VectorXd grad_barrier = ipc::compute_barrier_potential_gradient(
-			displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat);
+			state.collision_mesh, displaced_surface, _constraint_set, _dhat);
+		grad_barrier = state.collision_mesh.to_full_dof(grad_barrier);
 
 		_barrier_stiffness = ipc::initial_barrier_stiffness(
 			ipc::world_bbox_diagonal_length(displaced), _dhat, state.avg_mass,
@@ -166,13 +183,14 @@ namespace polyfem
 		Eigen::MatrixXd displaced;
 		reduced_to_full_displaced_points(x, displaced);
 
+		Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
+
 		if (_mu != 0)
 		{
-			update_constraint_set(displaced);
+			update_constraint_set(displaced_surface);
 			ipc::construct_friction_constraint_set(
-				displaced, state.boundary_edges, state.boundary_triangles,
-				_constraint_set, _dhat, _barrier_stiffness, _mu,
-				_friction_constraint_set);
+				state.collision_mesh, displaced_surface, _constraint_set,
+				_dhat, _barrier_stiffness, _mu, _friction_constraint_set);
 		}
 
 		// Save the variables for use in lagged damping
@@ -289,28 +307,24 @@ namespace polyfem
 		compute_displaced_points(full, displaced);
 	}
 
-	void NLProblem::update_constraint_set(const Eigen::MatrixXd &displaced)
+	void NLProblem::update_constraint_set(const Eigen::MatrixXd &displaced_surface)
 	{
 		// Store the previous value used to compute the constraint set to avoid
 		// duplicate computation.
-		static Eigen::MatrixXd cached_displaced;
-		if (cached_displaced.size() == displaced.size() && cached_displaced == displaced)
+		static Eigen::MatrixXd cached_displaced_surface;
+		if (cached_displaced_surface.size() == displaced_surface.size()
+			&& cached_displaced_surface == displaced_surface)
 			return;
 
-		if (_candidates.size() > 0)
+		if (_use_cached_candidates)
 			ipc::construct_constraint_set(
-				_candidates, state.boundary_nodes_pos, displaced,
-				state.boundary_edges, state.boundary_triangles, _dhat,
-				_constraint_set, state.boundary_faces_to_edges);
+				_candidates, state.collision_mesh, displaced_surface, _dhat,
+				_constraint_set);
 		else
 			ipc::construct_constraint_set(
-				state.boundary_nodes_pos, displaced, state.codimensional_nodes,
-				state.boundary_edges, state.boundary_triangles, _dhat,
-				_constraint_set, state.boundary_faces_to_edges, /*dmin=*/0,
-				_broad_phase_method, [&](size_t vi, size_t vj) {
-					return can_vertices_collide(vi, vj);
-				});
-		cached_displaced = displaced;
+				state.collision_mesh, displaced_surface, _dhat,
+				_constraint_set, /*dmin=*/0, _broad_phase_method);
+		cached_displaced_surface = displaced_surface;
 	}
 
 	void NLProblem::line_search_begin(const TVector &x0, const TVector &x1)
@@ -323,15 +337,20 @@ namespace polyfem
 		reduced_to_full_displaced_points(x1, displaced1);
 
 		ipc::construct_collision_candidates(
-			displaced0, displaced1, state.codimensional_nodes, state.boundary_edges,
-			state.boundary_triangles, _candidates,
+			state.collision_mesh,
+			state.collision_mesh.vertices(displaced0),
+			state.collision_mesh.vertices(displaced1),
+			_candidates,
 			/*inflation_radius=*/_dhat / 1.99, // divide by 1.99 instead of 2 to be conservative
-			_broad_phase_method, [&](size_t vi, size_t vj) { return can_vertices_collide(vi, vj); });
+			_broad_phase_method);
+
+		_use_cached_candidates = true;
 	}
 
 	void NLProblem::line_search_end()
 	{
 		_candidates.clear();
+		_use_cached_candidates = false;
 	}
 
 	double NLProblem::max_step_size(const TVector &x0, const TVector &x1)
@@ -343,24 +362,35 @@ namespace polyfem
 		reduced_to_full_displaced_points(x0, displaced0);
 		reduced_to_full_displaced_points(x1, displaced1);
 
-		// if (displaced0.cols() == 3)
-		// {
-		// 	igl::write_triangle_mesh("s0.obj", displaced0, state.boundary_triangles);
-		// 	igl::write_triangle_mesh("s1.obj", displaced1, state.boundary_triangles);
-		// }
+		// Extract surface only
+		Eigen::MatrixXd V0 = state.collision_mesh.vertices(displaced0);
+		Eigen::MatrixXd V1 = state.collision_mesh.vertices(displaced1);
 
-		double max_step = ipc::compute_collision_free_stepsize(
-			_candidates, displaced0, displaced1, state.boundary_edges,
-			state.boundary_triangles, _ccd_tolerance, _ccd_max_iterations);
-		// polyfem::logger().trace("best step {}", max_step);
+		// write_obj("s0.obj", V0, state.collision_mesh.edges(), state.collision_mesh.faces());
+		// write_obj("s1.obj", V1, state.collision_mesh.edges(), state.collision_mesh.faces());
+
+		double max_step;
+		if (_use_cached_candidates
+#ifdef IPC_TOOLKIT_WITH_CUDA
+			&& _broad_phase_method != ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU
+#endif
+		)
+			max_step = ipc::compute_collision_free_stepsize(
+				_candidates, state.collision_mesh, V0, V1,
+				_ccd_tolerance, _ccd_max_iterations);
+		else
+			max_step = ipc::compute_collision_free_stepsize(
+				state.collision_mesh, V0, V1,
+				_broad_phase_method, _ccd_tolerance, _ccd_max_iterations);
+			// polyfem::logger().trace("best step {}", max_step);
 
 #ifndef NDEBUG
 		// This will check for static intersections as a failsafe. Not needed if we use our conservative CCD.
-		Eigen::MatrixXd displaced_toi = (displaced1 - displaced0) * max_step + displaced0;
-		while (ipc::has_intersections(displaced_toi, state.boundary_edges, state.boundary_triangles, [&](size_t vi, size_t vj) { return can_vertices_collide(vi, vj); }))
+		Eigen::MatrixXd V_toi = (V1 - V0) * max_step + V0;
+		while (ipc::has_intersections(state.collision_mesh, V_toi))
 		{
-			double Linf = (displaced_toi - displaced0).lpNorm<Eigen::Infinity>();
-			logger().warn("taking max_step results in intersections (max_step={:g})", max_step);
+			double Linf = (V_toi - V0).lpNorm<Eigen::Infinity>();
+			logger().error("taking max_step results in intersections (max_step={:g})", max_step);
 			max_step /= 2.0;
 			if (max_step <= 0 || Linf == 0)
 			{
@@ -368,7 +398,7 @@ namespace polyfem
 				logger().error(msg);
 				throw msg;
 			}
-			displaced_toi = (displaced1 - displaced0) * max_step + displaced0;
+			V_toi = (V1 - V0) * max_step + V0;
 		}
 #endif
 
@@ -395,24 +425,22 @@ namespace polyfem
 			return true;
 		}
 
-		// if (displaced0.cols() == 3)
-		// {
-		// 	igl::write_triangle_mesh("0.obj", displaced0, state.boundary_triangles);
-		// 	igl::write_triangle_mesh("1.obj", displaced1, state.boundary_triangles);
-		// }
-		// else
-		// {
-		// 	Eigen::MatrixXd asd(displaced0.rows(), 3);
-		// 	asd.setZero();
-		// 	asd.block(0, 0, displaced0.rows(), 2) = displaced0;
-		// 	igl::write_triangle_mesh("0.obj", asd, state.boundary_triangles);
-		// 	asd.block(0, 0, displaced1.rows(), 2) = displaced1;
-		// 	igl::write_triangle_mesh("1.obj", asd, state.boundary_triangles);
-		// }
+		// write_obj("0.obj", state.collision_mesh.vertices(displaced0), state.collision_mesh.edges(), state.collision_mesh.faces());
+		// write_obj("1.obj", state.collision_mesh.vertices(displaced1), state.collision_mesh.edges(), state.collision_mesh.faces());
 
-		const bool is_valid = ipc::is_step_collision_free(
-			_candidates, displaced0, displaced1, state.boundary_edges,
-			state.boundary_triangles, _ccd_tolerance, _ccd_max_iterations);
+		bool is_valid;
+		if (_use_cached_candidates)
+			is_valid = ipc::is_step_collision_free(
+				_candidates, state.collision_mesh,
+				state.collision_mesh.vertices(displaced0),
+				state.collision_mesh.vertices(displaced1),
+				_ccd_tolerance, _ccd_max_iterations);
+		else
+			is_valid = ipc::is_step_collision_free(
+				state.collision_mesh,
+				state.collision_mesh.vertices(displaced0),
+				state.collision_mesh.vertices(displaced1),
+				ipc::BroadPhaseMethod::HASH_GRID, _ccd_tolerance, _ccd_max_iterations);
 
 		return is_valid;
 	}
@@ -425,9 +453,7 @@ namespace polyfem
 		Eigen::MatrixXd displaced;
 		reduced_to_full_displaced_points(x, displaced);
 
-		return !ipc::has_intersections(
-			displaced, state.boundary_edges, state.boundary_triangles,
-			[&](size_t vi, size_t vj) { return can_vertices_collide(vi, vj); });
+		return !ipc::has_intersections(state.collision_mesh, state.collision_mesh.vertices(displaced));
 	}
 
 	bool NLProblem::is_step_valid(const TVector &x0, const TVector &x1)
@@ -481,9 +507,13 @@ namespace polyfem
 		{
 			Eigen::MatrixXd displaced;
 			compute_displaced_points(full, displaced);
+			Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
 
-			collision_energy = ipc::compute_barrier_potential(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat);
-			friction_energy = ipc::compute_friction_potential(displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set, _epsv * dt());
+			collision_energy = ipc::compute_barrier_potential(
+				state.collision_mesh, displaced_surface, _constraint_set, _dhat);
+			friction_energy = ipc::compute_friction_potential(
+				state.collision_mesh, state.collision_mesh.vertices(displaced_prev),
+				displaced_surface, _friction_constraint_set, _epsv * dt());
 
 			polyfem::logger().trace("collision_energy {}, friction_energy {}", collision_energy, friction_energy);
 		}
@@ -544,33 +574,36 @@ namespace polyfem
 			grad += state.mass * full;
 		}
 
-		Eigen::VectorXd barrier_grad;
+		Eigen::VectorXd grad_barrier;
 		if (!only_elastic && !disable_collision && state.args["has_collision"])
 		{
 			Eigen::MatrixXd displaced;
 			compute_displaced_points(full, displaced);
 
-			barrier_grad = ipc::compute_barrier_potential_gradient(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat);
+			Eigen::MatrixXd displaced_surface_prev = state.collision_mesh.vertices(displaced_prev);
+			Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
 
-			grad += ipc::compute_friction_potential_gradient(
-				displaced_prev, displaced, state.boundary_edges, state.boundary_triangles,
+			grad_barrier = ipc::compute_barrier_potential_gradient(
+				state.collision_mesh, displaced_surface, _constraint_set, _dhat);
+			grad_barrier = state.collision_mesh.to_full_dof(grad_barrier);
+
+			Eigen::VectorXd grad_friction = ipc::compute_friction_potential_gradient(
+				state.collision_mesh, displaced_surface_prev, displaced_surface,
 				_friction_constraint_set, _epsv * dt());
-
-			grad += ipc::compute_friction_potential_gradient(
-				displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set, _epsv * dt());
+			grad += state.collision_mesh.to_full_dof(grad_friction);
 		}
 		else
 		{
-			barrier_grad.setZero(full_size);
+			grad_barrier.setZero(full_size);
 		}
 
 		grad += _lagged_damping_weight * (full - x_lagged);
 
 #ifdef POLYFEM_DIV_BARRIER_STIFFNESS
 		grad /= _barrier_stiffness;
-		grad += barrier_grad;
+		grad += grad_barrier;
 #else
-		grad += _barrier_stiffness * barrier_grad;
+		grad += _barrier_stiffness * grad_barrier;
 #endif
 		assert(grad.size() == full_size);
 	}
@@ -632,17 +665,23 @@ namespace polyfem
 			// 	POLYFEM_SCOPED_TIMER("\t\tconstraint set time");
 			// }
 
+			Eigen::MatrixXd displaced_surface_prev = state.collision_mesh.vertices(displaced_prev);
+			Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
+
 			{
 				POLYFEM_SCOPED_TIMER("\t\tbarrier hessian time");
 				barrier_hessian = ipc::compute_barrier_potential_hessian(
-					displaced, state.boundary_edges, state.boundary_triangles, _constraint_set, _dhat, project_to_psd);
+					state.collision_mesh, displaced_surface, _constraint_set,
+					_dhat, project_to_psd);
+				barrier_hessian = state.collision_mesh.to_full_dof(barrier_hessian);
 			}
 
 			{
 				POLYFEM_SCOPED_TIMER("\t\tfriction hessian time");
 				friction_hessian = ipc::compute_friction_potential_hessian(
-					displaced_prev, displaced, state.boundary_edges, state.boundary_triangles, _friction_constraint_set,
-					_epsv * dt(), project_to_psd);
+					state.collision_mesh, displaced_surface_prev, displaced_surface,
+					_friction_constraint_set, _epsv * dt(), project_to_psd);
+				friction_hessian = state.collision_mesh.to_full_dof(friction_hessian);
 			}
 		}
 
@@ -721,7 +760,7 @@ namespace polyfem
 		Eigen::MatrixXd displaced;
 		reduced_to_full_displaced_points(newX, displaced);
 
-		update_constraint_set(displaced);
+		update_constraint_set(state.collision_mesh.vertices(displaced));
 	}
 
 	double NLProblem::heuristic_max_step(const TVector &dx)
@@ -754,13 +793,15 @@ namespace polyfem
 		Eigen::MatrixXd displaced;
 		compute_displaced_points(full, displaced);
 
+		Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
+
 		if (state.args["save_nl_solve_sequence"])
 		{
-			writeOBJ(state.resolve_output_path(fmt::format("step{:03d}.obj", iter_num)),
-					 displaced, state.boundary_edges, state.boundary_triangles);
+			write_obj(state.resolve_output_path(fmt::format("step{:03d}.obj", iter_num)),
+					  displaced_surface, state.collision_mesh.edges(), state.collision_mesh.faces());
 		}
 
-		const double dist_sqr = ipc::compute_minimum_distance(displaced, state.boundary_edges, state.boundary_triangles, _constraint_set);
+		const double dist_sqr = ipc::compute_minimum_distance(state.collision_mesh, displaced_surface, _constraint_set);
 		polyfem::logger().trace("min_dist {}", sqrt(dist_sqr));
 
 		if (use_adaptive_barrier_stiffness)
@@ -770,7 +811,7 @@ namespace polyfem
 				double prev_barrier_stiffness = _barrier_stiffness;
 				ipc::update_barrier_stiffness(
 					_prev_distance, dist_sqr, max_barrier_stiffness_,
-					_barrier_stiffness, ipc::world_bbox_diagonal_length(displaced));
+					_barrier_stiffness, ipc::world_bbox_diagonal_length(displaced_surface));
 				if (prev_barrier_stiffness != _barrier_stiffness)
 				{
 					polyfem::logger().debug(

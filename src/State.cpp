@@ -515,9 +515,15 @@ namespace polyfem
 		n_bases += obstacle.n_vertices();
 
 		logger().info("Extracting boundary mesh...");
-		extract_boundary_mesh();
+		build_collision_mesh();
 		if (n_pressure_bases > 0)
-			extract_boundary_mesh(true);
+		{
+			extract_boundary_mesh(
+				pressure_bases,
+				boundary_nodes_pos_pressure,
+				boundary_edges_pressure,
+				boundary_triangles_pressure);
+		}
 		// const std::string export_surface = args["export"]["surface"];
 		// if (!export_surface.empty())
 		extract_vis_boundary_mesh();

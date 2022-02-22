@@ -155,12 +155,6 @@ namespace polyfem
 		void compute_displaced_points(const TVector &full, Eigen::MatrixXd &displaced);
 		void reduced_to_full_displaced_points(const TVector &reduced, Eigen::MatrixXd &displaced);
 
-		bool can_vertices_collide(const size_t vi, const size_t vj) const
-		{
-			// obstacles do not collide with other obstacles
-			return !state.is_obstacle_vertex(vi) || !state.is_obstacle_vertex(vj);
-		}
-
 		State &state;
 		bool use_adaptive_barrier_stiffness;
 		double _barrier_stiffness;
@@ -200,11 +194,12 @@ namespace polyfem
 		ipc::Constraints _constraint_set;
 		ipc::FrictionConstraints _friction_constraint_set;
 		ipc::Candidates _candidates;
+		bool _use_cached_candidates = false;
 
 		std::shared_ptr<ImplicitTimeIntegrator> time_integrator;
 
 		void compute_cached_stiffness();
 		void update_barrier_stiffness(const TVector &full);
-		void update_constraint_set(const Eigen::MatrixXd &displaced);
+		void update_constraint_set(const Eigen::MatrixXd &displaced_surface);
 	};
 } // namespace polyfem
