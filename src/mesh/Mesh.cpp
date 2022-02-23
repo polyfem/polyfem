@@ -19,25 +19,6 @@
 #include <filesystem>
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace
-{
-
-	bool is_planar(const GEO::Mesh &M)
-	{
-		if (M.vertices.dimension() == 2)
-		{
-			return true;
-		}
-		assert(M.vertices.dimension() == 3);
-		GEO::vec3 min_corner, max_corner;
-		GEO::get_bbox(M, &min_corner[0], &max_corner[0]);
-		const double diff = (max_corner[2] - min_corner[2]);
-
-		return fabs(diff) < 1e-5;
-	}
-
-} // anonymous namespace
-
 std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(GEO::Mesh &meshin)
 {
 	if (is_planar(meshin))
@@ -140,18 +121,18 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 	Eigen::MatrixXi cells;
 	std::vector<std::vector<int>> elements;
 	std::vector<std::vector<double>> weights;
-	std::vector<int> body_vertices_start, body_ids, boundary_ids;
+	std::vector<int> body_vertices_start, body_faces_start;
+	std::vector<int> body_ids, boundary_ids;
+
+	std::vector<std::string> bc_tag_paths;
 
 	int dim = 0;
 	int cell_cols = 0;
 
+	body_faces_start.push_back(0);
+
 	for (int i = 0; i < meshes.size(); i++)
 	{
-		Eigen::MatrixXd tmp_vertices;
-		Eigen::MatrixXi tmp_cells;
-		std::vector<std::vector<int>> tmp_elements;
-		std::vector<std::vector<double>> tmp_weights;
-
 		json jmesh;
 		apply_default_mesh_parameters(meshes[i], jmesh, fmt::format("/meshes[{}]", i));
 
@@ -167,7 +148,12 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 		}
 		const std::string mesh_path = resolve_path(jmesh["mesh"], root_path);
 
-		read_fem_mesh(mesh_path, tmp_vertices, tmp_cells, tmp_elements, tmp_weights);
+		Eigen::MatrixXd tmp_vertices;
+		Eigen::MatrixXi tmp_cells;
+		std::vector<std::vector<int>> tmp_elements;
+		std::vector<std::vector<double>> tmp_weights;
+		int n_boundary_faces;
+		read_fem_mesh(mesh_path, tmp_vertices, tmp_cells, tmp_elements, tmp_weights, n_boundary_faces);
 
 		if (tmp_vertices.size() == 0 || tmp_cells.size() == 0)
 		{
@@ -215,12 +201,21 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 
 		weights.insert(weights.end(), tmp_weights.begin(), tmp_weights.end());
 
+		// TriMesh: 3 * |C| - |E_boundary| = 2 * |E_interior|
+		// TetMesh: 4 * |C| - |F_boundary| = 2 * |F_interior|
+		const int n_interior_faces = (tmp_cells.size() - n_boundary_faces) / 2;
+		assert(tmp_cells.size() - n_boundary_faces == 2 * n_interior_faces);
+		const int n_faces = n_interior_faces + n_boundary_faces;
+		body_faces_start.push_back(body_faces_start.back() + n_faces);
+
 		for (int ci = 0; ci < tmp_cells.rows(); ci++)
 		{
 			body_ids.push_back(jmesh["body_id"].get<int>());
 		}
 
 		boundary_ids.push_back(jmesh["boundary_id"].get<int>());
+
+		bc_tag_paths.push_back(resolve_path(jmesh["bc_tag"], root_path));
 	}
 
 	if (vertices.size() == 0)
@@ -272,6 +267,38 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 		}
 		return boundary_ids.back();
 	});
+
+	assert(mesh->boundary_ids_.size() == (mesh->is_volume() ? mesh->n_faces() : mesh->n_edges()));
+	assert(body_faces_start.back() == (mesh->is_volume() ? mesh->n_faces() : mesh->n_edges()));
+	for (int i = 0; i < bc_tag_paths.size(); i++)
+	{
+		const std::string &path = bc_tag_paths[i];
+		if (path.empty())
+			continue;
+
+		std::ifstream file(path);
+		if (!file.is_open())
+		{
+			logger().error("Unable to open bc_tag file \"{}\"!", path);
+			continue;
+		}
+		std::string line;
+		int bindex = body_faces_start[i];
+		while (std::getline(file, line))
+		{
+			assert(bindex < mesh->boundary_ids_.size());
+			std::istringstream(line) >> mesh->boundary_ids_[bindex];
+			bindex++;
+		}
+
+		if (bindex != body_faces_start[i + 1])
+		{
+			logger().error(
+				"/meshes[{}]/bc_tag file \"{}\" is missing {} tag(s)!",
+				i, path, body_faces_start[i + 1] - bindex);
+			assert(false);
+		}
+	}
 
 	return mesh;
 }

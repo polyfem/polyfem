@@ -25,25 +25,18 @@
 #include <geogram/basic/logger.h>
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace polyfem
+bool polyfem::is_planar(const GEO::Mesh &M, const double tol)
 {
-	namespace
-	{
-		bool is_planar(const GEO::Mesh &M)
-		{
-			if (M.vertices.dimension() == 2)
-			{
-				return true;
-			}
-			assert(M.vertices.dimension() == 3);
-			GEO::vec3 min_corner, max_corner;
-			GEO::get_bbox(M, &min_corner[0], &max_corner[0]);
-			const double diff = (max_corner[2] - min_corner[2]);
+	if (M.vertices.dimension() == 2)
+		return true;
 
-			return fabs(diff) < 1e-5;
-		}
-	} // namespace
-} // namespace polyfem
+	assert(M.vertices.dimension() == 3);
+	GEO::vec3 min_corner, max_corner;
+	GEO::get_bbox(M, &min_corner[0], &max_corner[0]);
+	const double diff = (max_corner[2] - min_corner[2]);
+
+	return fabs(diff) < tol;
+}
 
 GEO::vec3 polyfem::mesh_vertex(const GEO::Mesh &M, GEO::index_t v)
 {
@@ -1005,6 +998,7 @@ void polyfem::apply_default_mesh_parameters(const json &mesh_in, json &mesh_out,
 				"enabled": true,
 				"body_id": 0,
 				"boundary_id": 0,
+				"bc_tag": "",
 				"displacement": [0.0, 0.0, 0.0]
 			})"_json;
 	check_for_unknown_args(mesh_out, mesh_in, path_prefix);
@@ -1016,7 +1010,8 @@ void polyfem::read_fem_mesh(
 	Eigen::MatrixXd &vertices,
 	Eigen::MatrixXi &cells,
 	std::vector<std::vector<int>> &elements,
-	std::vector<std::vector<double>> &weights)
+	std::vector<std::vector<double>> &weights,
+	int &num_boundary_elements)
 {
 	vertices.resize(0, 0);
 	cells.resize(0, 0);
@@ -1034,6 +1029,7 @@ void polyfem::read_fem_mesh(
 			logger().error("Unable to load mesh: {}", mesh_path);
 			return;
 		}
+		num_boundary_elements = count_boundary_elements(cells);
 	}
 	else
 	{
@@ -1093,6 +1089,15 @@ void polyfem::read_fem_mesh(
 			}
 		}
 		weights.resize(cells.rows());
+
+		if (dim == 2)
+			num_boundary_elements = int(mesh.edges.nb());
+		else
+		{
+			Mesh3DStorage m3D;
+			Mesh3D::geomesh_2_mesh_storage(mesh, m3D);
+			num_boundary_elements = int(m3D.faces.size());
+		}
 	}
 }
 
@@ -1354,4 +1359,56 @@ void polyfem::save_edges(const std::string &filename, const Eigen::MatrixXd &V, 
 	out << "# Vertices: " << V.rows() << "\n# Edges: " << E.rows() << "\n"
 		<< V.cast<float>().format(IOFormat(FullPrecision, DontAlignCols, " ", "\n", "v ", "", "", "\n"))
 		<< (E.array() + 1).format(IOFormat(FullPrecision, DontAlignCols, " ", "\n", "l ", "", "", "\n"));
+}
+
+namespace std
+{
+	template <>
+	struct hash<std::array<int, 3>>
+	{
+		size_t operator()(std::array<int, 3> const &x) const noexcept
+		{
+			std::hash<int> hasher;
+			return hasher(x[0]) ^ hasher(x[1]) ^ hasher(x[2]);
+		}
+	};
+} // namespace std
+
+int polyfem::count_boundary_elements(const Eigen::MatrixXi &cells)
+{
+	assert(cells.cols() == 4);
+
+	std::unordered_map<std::array<int, 3>, int> tri_to_tet(4 * cells.rows());
+	for (int ci = 0; ci < cells.rows(); ci++)
+	{
+		const Eigen::RowVector4i &cell = cells.row(ci);
+		tri_to_tet[{{cell[0], cell[2], cell[1]}}] = ci;
+		tri_to_tet[{{cell[0], cell[3], cell[2]}}] = ci;
+		tri_to_tet[{{cell[0], cell[1], cell[3]}}] = ci;
+		tri_to_tet[{{cell[1], cell[2], cell[3]}}] = ci;
+	}
+
+	// std::vector<Eigen::RowVector3i> tmpF;
+	int num_boundary_elements = 0;
+	for (const auto &[tri, ci] : tri_to_tet)
+	{
+		// find dual triangle with reversed indices:
+		bool is_surface_triangle =
+			tri_to_tet.find({{tri[2], tri[1], tri[0]}}) == tri_to_tet.end()
+			&& tri_to_tet.find({{tri[1], tri[0], tri[2]}}) == tri_to_tet.end()
+			&& tri_to_tet.find({{tri[0], tri[2], tri[1]}}) == tri_to_tet.end();
+		if (is_surface_triangle)
+		{
+			// tmpF.emplace_back(tri[0], tri[1], tri[2]);
+			num_boundary_elements++;
+		}
+	}
+
+	// F.resize(tmpF.size(), 3);
+	// for (int i = 0; i < F.rows(); i++)
+	// {
+	// 	F.row(i) = tmpF[i];
+	// }
+
+	return num_boundary_elements;
 }

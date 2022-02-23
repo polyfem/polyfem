@@ -199,13 +199,14 @@ namespace polyfem
 	///
 	/// @brief      read a mesh from json
 	///
-	/// @param[in]  mesh_path { path to mesh file }
-	/// @param[out] V         { #V x 3/2 output vertices positions }
-	/// @param[out] C         { #C cells (e.g., tri/tets/quad/hexes) }
-	/// @param[out] elements  { #C indices for high-order nodes }
-	/// @param[out] w         { #C weights for rational polynomials }
+	/// @param[in]  mesh_path             { path to mesh file }
+	/// @param[out] V                     { #V x 3/2 output vertices positions }
+	/// @param[out] C                     { #C cells (e.g., tri/tets/quad/hexes) }
+	/// @param[out] elements              { #C indices for high-order nodes }
+	/// @param[out] w                     { #C weights for rational polynomials }
+	/// @param[out] num_boundary_elements { # of elements on the boundary }
 	///
-	void read_fem_mesh(const std::string &mesh_path, Eigen::MatrixXd &vertices, Eigen::MatrixXi &cells, std::vector<std::vector<int>> &elements, std::vector<std::vector<double>> &weights);
+	void read_fem_mesh(const std::string &mesh_path, Eigen::MatrixXd &vertices, Eigen::MatrixXi &cells, std::vector<std::vector<int>> &elements, std::vector<std::vector<double>> &weights, int &num_boundary_elements);
 
 	///
 	/// @brief      read a surface mesh from json
@@ -225,5 +226,11 @@ namespace polyfem
 	/// @param[in,out] vertices { #V x 3/2 input and output vertices positions }
 	///
 	void transform_mesh_from_json(const json &mesh, Eigen::MatrixXd &vertices);
+
+	/// Determine if the given mesh is planar (2D or tiny z-range).
+	bool is_planar(const GEO::Mesh &M, const double tol = 1e-5);
+
+	/// Count the number of boundary elements (faces for tetmesh and edges for triangle mesh)
+	int count_boundary_elements(const Eigen::MatrixXi &cells);
 
 } // namespace polyfem
