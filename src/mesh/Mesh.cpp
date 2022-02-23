@@ -251,6 +251,10 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 	}
 
 	mesh->set_body_ids(body_ids);
+
+	for (auto &id : mesh->boundary_ids_)
+		id = -1;
+
 	assert(body_vertices_start.size() == boundary_ids.size());
 	mesh->compute_boundary_ids([&](const std::vector<int> &vis, bool is_boundary) {
 		if (!is_boundary)
