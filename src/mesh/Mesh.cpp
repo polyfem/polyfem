@@ -153,7 +153,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 		std::vector<std::vector<double>> tmp_weights;
 
 		json jmesh;
-		apply_default_mesh_parameters(meshes[i], jmesh);
+		apply_default_mesh_parameters(meshes[i], jmesh, fmt::format("/meshes[{}]", i));
 
 		if (!jmesh["enabled"].get<bool>())
 		{

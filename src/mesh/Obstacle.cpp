@@ -45,23 +45,23 @@ namespace polyfem
 			std::string type = obstacles[i].value("type", /*default=*/"mesh");
 			if (type == "mesh")
 			{
-				append_mesh(obstacles[i], root_path);
+				append_mesh(obstacles[i], root_path, i);
 			}
 			else if (type == "plane")
 			{
-				append_plane(obstacles[i]);
+				append_plane(obstacles[i], i);
 			}
 			else if (type == "ground")
 			{
-				append_ground(obstacles[i]);
+				append_ground(obstacles[i], i);
 			}
 		}
 	}
 
-	void Obstacle::append_mesh(const json &mesh_in, const std::string &root_path)
+	void Obstacle::append_mesh(const json &mesh_in, const std::string &root_path, const int i)
 	{
 		json jmesh;
-		apply_default_mesh_parameters(mesh_in, jmesh);
+		apply_default_mesh_parameters(mesh_in, jmesh, fmt::format("/obstacles[{}]", i));
 
 		if (!mesh_in.contains("mesh"))
 		{
@@ -148,13 +148,14 @@ namespace polyfem
 		endings_.push_back(v_.rows());
 	}
 
-	void Obstacle::append_plane(const json &plane_in)
+	void Obstacle::append_plane(const json &plane_in, const int i)
 	{
 		json plane = R"({
 			"position": [0.0, 0.0, 0.0],
 			"normal": [0.0, 1.0, 0.0]
 			"enabled": true
 		})"_json;
+		check_for_unknown_args(plane, plane_in, fmt::format("/obstacles[{}]", i));
 		plane.merge_patch(plane_in);
 
 		if (!plane["enabled"].get<bool>())
@@ -177,13 +178,14 @@ namespace polyfem
 		planes_.emplace_back(origin, normal);
 	}
 
-	void Obstacle::append_ground(const json &ground_in)
+	void Obstacle::append_ground(const json &ground_in, const int i)
 	{
 		json ground = R"({
 			"height": 0,
 			"normal": [0.0, 1.0, 0.0]
 			"enabled": true
 		})"_json;
+		check_for_unknown_args(ground, ground_in, fmt::format("/obstacles[{}]", i));
 		ground.merge_patch(ground_in);
 
 		VectorNd normal = ground["normal"];

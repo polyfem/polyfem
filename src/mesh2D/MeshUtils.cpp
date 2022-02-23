@@ -987,7 +987,7 @@ void polyfem::extract_parent_edges(const Eigen::MatrixXd &IV, const Eigen::Matri
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::apply_default_mesh_parameters(const json &mesh_in, json &mesh_out)
+void polyfem::apply_default_mesh_parameters(const json &mesh_in, json &mesh_out, const std::string &path_prefix)
 {
 	// NOTE: All units by default are expressed in standard SI units
 	// • position: position of the model origin
@@ -997,6 +997,7 @@ void polyfem::apply_default_mesh_parameters(const json &mesh_in, json &mesh_out)
 	//               "scale")
 	// • enabled: skip the body if this field is false
 	mesh_out = R"({
+				"mesh": null,
 				"position": [0.0, 0.0, 0.0],
 				"rotation": [0.0, 0.0, 0.0],
 				"rotation_mode": "xyz",
@@ -1006,6 +1007,7 @@ void polyfem::apply_default_mesh_parameters(const json &mesh_in, json &mesh_out)
 				"boundary_id": 0,
 				"displacement": [0.0, 0.0, 0.0]
 			})"_json;
+	check_for_unknown_args(mesh_out, mesh_in, path_prefix);
 	mesh_out.merge_patch(mesh_in);
 }
 

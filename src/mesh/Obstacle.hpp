@@ -32,9 +32,10 @@ namespace polyfem
 		inline const std::vector<Plane> &planes() const { return planes_; };
 
 	private:
-		void append_mesh(const json &mesh_in, const std::string &root_path);
-		void append_plane(const json &plane_in);
-		void append_ground(const json &ground_in);
+		// NOTE: index i is only for logging information
+		void append_mesh(const json &mesh_in, const std::string &root_path, const int i);
+		void append_plane(const json &plane_in, const int i);
+		void append_ground(const json &ground_in, const int i);
 
 		int dim_;
 		Eigen::MatrixXd v_;

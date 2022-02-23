@@ -194,7 +194,7 @@ namespace polyfem
 	/// @param[in]  mesh_in  { input json mesh parameters }
 	/// @param[out] mesh_out { output json mesh parameters }
 	///
-	void apply_default_mesh_parameters(const json &mesh_in, json &mesh_out);
+	void apply_default_mesh_parameters(const json &mesh_in, json &mesh_out, const std::string &path_prefix = "");
 
 	///
 	/// @brief      read a mesh from json
