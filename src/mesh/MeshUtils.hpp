@@ -204,9 +204,8 @@ namespace polyfem
 	/// @param[out] C                     { #C cells (e.g., tri/tets/quad/hexes) }
 	/// @param[out] elements              { #C indices for high-order nodes }
 	/// @param[out] w                     { #C weights for rational polynomials }
-	/// @param[out] num_boundary_elements { # of elements on the boundary }
 	///
-	void read_fem_mesh(const std::string &mesh_path, Eigen::MatrixXd &vertices, Eigen::MatrixXi &cells, std::vector<std::vector<int>> &elements, std::vector<std::vector<double>> &weights, int &num_boundary_elements);
+	void read_fem_mesh(const std::string &mesh_path, Eigen::MatrixXd &vertices, Eigen::MatrixXi &cells, std::vector<std::vector<int>> &elements, std::vector<std::vector<double>> &weights);
 
 	///
 	/// @brief      read a surface mesh from json
@@ -230,7 +229,7 @@ namespace polyfem
 	/// Determine if the given mesh is planar (2D or tiny z-range).
 	bool is_planar(const GEO::Mesh &M, const double tol = 1e-5);
 
-	/// Count the number of boundary elements (faces for tetmesh and edges for triangle mesh)
-	int count_boundary_elements(const Eigen::MatrixXi &cells);
+	/// Count the number of boundary elements (triangles for tetmesh and edges for triangle mesh)
+	int count_faces(const int dim, const Eigen::MatrixXi &cells);
 
 } // namespace polyfem

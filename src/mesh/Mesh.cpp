@@ -152,8 +152,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 		Eigen::MatrixXi tmp_cells;
 		std::vector<std::vector<int>> tmp_elements;
 		std::vector<std::vector<double>> tmp_weights;
-		int n_boundary_faces;
-		read_fem_mesh(mesh_path, tmp_vertices, tmp_cells, tmp_elements, tmp_weights, n_boundary_faces);
+		read_fem_mesh(mesh_path, tmp_vertices, tmp_cells, tmp_elements, tmp_weights);
 
 		if (tmp_vertices.size() == 0 || tmp_cells.size() == 0)
 		{
@@ -201,12 +200,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 
 		weights.insert(weights.end(), tmp_weights.begin(), tmp_weights.end());
 
-		// TriMesh: 3 * |C| - |E_boundary| = 2 * |E_interior|
-		// TetMesh: 4 * |C| - |F_boundary| = 2 * |F_interior|
-		const int n_interior_faces = (tmp_cells.size() - n_boundary_faces) / 2;
-		assert(tmp_cells.size() - n_boundary_faces == 2 * n_interior_faces);
-		const int n_faces = n_interior_faces + n_boundary_faces;
-		body_faces_start.push_back(body_faces_start.back() + n_faces);
+		body_faces_start.push_back(body_faces_start.back() + count_faces(dim, tmp_cells));
 
 		for (int ci = 0; ci < tmp_cells.rows(); ci++)
 		{
@@ -273,7 +267,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 	});
 
 	assert(mesh->boundary_ids_.size() == (mesh->is_volume() ? mesh->n_faces() : mesh->n_edges()));
-	assert(body_faces_start.back() == (mesh->is_volume() ? mesh->n_faces() : mesh->n_edges()));
+	assert(body_faces_start.back() == mesh->boundary_ids_.size());
 	for (int i = 0; i < bc_tag_paths.size(); i++)
 	{
 		const std::string &path = bc_tag_paths[i];

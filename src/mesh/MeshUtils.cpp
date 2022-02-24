@@ -1010,8 +1010,7 @@ void polyfem::read_fem_mesh(
 	Eigen::MatrixXd &vertices,
 	Eigen::MatrixXi &cells,
 	std::vector<std::vector<int>> &elements,
-	std::vector<std::vector<double>> &weights,
-	int &num_boundary_elements)
+	std::vector<std::vector<double>> &weights)
 {
 	vertices.resize(0, 0);
 	cells.resize(0, 0);
@@ -1029,7 +1028,6 @@ void polyfem::read_fem_mesh(
 			logger().error("Unable to load mesh: {}", mesh_path);
 			return;
 		}
-		num_boundary_elements = count_boundary_elements(cells);
 	}
 	else
 	{
@@ -1089,15 +1087,6 @@ void polyfem::read_fem_mesh(
 			}
 		}
 		weights.resize(cells.rows());
-
-		if (dim == 2)
-			num_boundary_elements = int(mesh.edges.nb());
-		else
-		{
-			Mesh3DStorage m3D;
-			Mesh3D::geomesh_2_mesh_storage(mesh, m3D);
-			num_boundary_elements = int(m3D.faces.size());
-		}
 	}
 }
 
@@ -1361,54 +1350,68 @@ void polyfem::save_edges(const std::string &filename, const Eigen::MatrixXd &V, 
 		<< (E.array() + 1).format(IOFormat(FullPrecision, DontAlignCols, " ", "\n", "l ", "", "", "\n"));
 }
 
-namespace std
+int polyfem::count_faces(const int dim, const Eigen::MatrixXi &cells)
 {
-	template <>
-	struct hash<std::array<int, 3>>
-	{
-		size_t operator()(std::array<int, 3> const &x) const noexcept
-		{
-			std::hash<int> hasher;
-			return hasher(x[0]) ^ hasher(x[1]) ^ hasher(x[2]);
-		}
+	auto hash = [](const std::vector<int> &v) {
+		std::hash<int> hasher;
+		int hash = hasher(v[0]);
+		for (int i = 1; i < v.size(); i++)
+			hash ^= hasher(v[i]);
+		return hash;
 	};
-} // namespace std
 
-int polyfem::count_boundary_elements(const Eigen::MatrixXi &cells)
-{
-	assert(cells.cols() == 4);
+	auto equal = [](const std::vector<int> &v1, const std::vector<int> &v2) {
+		assert(v1.size() == v2.size());
+		for (int i = 0; i < v1.size(); i++)
+			if (v1[i] != v2[i])
+				return false;
+		return true;
+	};
 
-	std::unordered_map<std::array<int, 3>, int> tri_to_tet(4 * cells.rows());
-	for (int ci = 0; ci < cells.rows(); ci++)
+	std::unordered_set<std::vector<int>, decltype(hash), decltype(equal)> boundaries(cells.rows(), hash, equal);
+
+	auto insert = [&](std::vector<int> v) {
+		std::sort(v.begin(), v.end());
+		boundaries.insert(v);
+	};
+
+	for (int i = 0; i < cells.rows(); i++)
 	{
-		const Eigen::RowVector4i &cell = cells.row(ci);
-		tri_to_tet[{{cell[0], cell[2], cell[1]}}] = ci;
-		tri_to_tet[{{cell[0], cell[3], cell[2]}}] = ci;
-		tri_to_tet[{{cell[0], cell[1], cell[3]}}] = ci;
-		tri_to_tet[{{cell[1], cell[2], cell[3]}}] = ci;
-	}
-
-	// std::vector<Eigen::RowVector3i> tmpF;
-	int num_boundary_elements = 0;
-	for (const auto &[tri, ci] : tri_to_tet)
-	{
-		// find dual triangle with reversed indices:
-		bool is_surface_triangle =
-			tri_to_tet.find({{tri[2], tri[1], tri[0]}}) == tri_to_tet.end()
-			&& tri_to_tet.find({{tri[1], tri[0], tri[2]}}) == tri_to_tet.end()
-			&& tri_to_tet.find({{tri[0], tri[2], tri[1]}}) == tri_to_tet.end();
-		if (is_surface_triangle)
+		const auto &cell = cells.row(i);
+		if (cells.cols() == 3) // triangle
 		{
-			// tmpF.emplace_back(tri[0], tri[1], tri[2]);
-			num_boundary_elements++;
+			insert({{cell(0), cell(1)}});
+			insert({{cell(1), cell(2)}});
+			insert({{cell(2), cell(0)}});
+		}
+		else if (cells.cols() == 4 && dim == 2) // quadralateral
+		{
+			insert({{cell(0), cell(1)}});
+			insert({{cell(1), cell(2)}});
+			insert({{cell(2), cell(3)}});
+			insert({{cell(3), cell(0)}});
+		}
+		else if (cells.cols() == 4 && dim == 3) // tetrahedron
+		{
+			insert({{cell(0), cell(2), cell(1)}});
+			insert({{cell(0), cell(3), cell(2)}});
+			insert({{cell(0), cell(1), cell(3)}});
+			insert({{cell(1), cell(2), cell(3)}});
+		}
+		else if (cells.cols() == 8) // hexahedron
+		{
+			insert({{cell(0), cell(1), cell(2), cell(3)}});
+			insert({{cell(1), cell(5), cell(6), cell(3)}});
+			insert({{cell(5), cell(4), cell(7), cell(6)}});
+			insert({{cell(0), cell(4), cell(7), cell(3)}});
+			insert({{cell(0), cell(4), cell(5), cell(1)}});
+			insert({{cell(2), cell(6), cell(7), cell(3)}});
+		}
+		else
+		{
+			throw "count_boundary_elements not implemented for polygons";
 		}
 	}
 
-	// F.resize(tmpF.size(), 3);
-	// for (int i = 0; i < F.rows(); i++)
-	// {
-	// 	F.row(i) = tmpF[i];
-	// }
-
-	return num_boundary_elements;
+	return boundaries.size();
 }
