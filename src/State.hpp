@@ -431,8 +431,13 @@ namespace polyfem
 		//returns a triangulated representation of the sideset. sidesets contains integers mapping to faces
 		void get_sidesets(Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXd &sidesets);
 
+		// Resolve path relative to args["root_path"] if the path is not absolute
+		std::string resolve_input_path(const std::string &path) const
+		{
+			return resolve_path(path, args["root_path"]);
+		}
 		// Resolve path relative to output_dir if the path is not absolute
-		std::string resolve_output_path(const std::string &path);
+		std::string resolve_output_path(const std::string &path) const;
 
 		//saves the output statistic to a stream
 		void save_json(std::ostream &out);
@@ -523,7 +528,7 @@ namespace polyfem
 		}
 
 		//returns the path of the input mesh (wrappers around the arguments)
-		inline std::string mesh_path() const { return resolve_path(args["mesh"], args["root_path"]); }
+		inline std::string mesh_path() const { return resolve_input_path(args["mesh"]); }
 
 		inline bool has_mesh() const
 		{

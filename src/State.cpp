@@ -766,6 +766,54 @@ namespace polyfem
 		n_bases += new_bases;
 	}
 
+	void State::build_collision_mesh()
+	{
+		extract_boundary_mesh(
+			bases, boundary_nodes_pos, boundary_edges, boundary_triangles);
+
+		Eigen::VectorXi codimensional_nodes;
+		if (obstacle.n_vertices() > 0)
+		{
+			// boundary_nodes_pos uses n_bases that already contains the obstacle
+			const int n_v = boundary_nodes_pos.rows() - obstacle.n_vertices();
+
+			if (obstacle.v().size())
+				boundary_nodes_pos.bottomRows(obstacle.v().rows()) = obstacle.v();
+
+			if (obstacle.codim_v().size())
+			{
+				codimensional_nodes.conservativeResize(codimensional_nodes.size() + obstacle.codim_v().size());
+				codimensional_nodes.tail(obstacle.codim_v().size()) = obstacle.codim_v().array() + n_v;
+			}
+
+			if (obstacle.e().size())
+			{
+				boundary_edges.conservativeResize(boundary_edges.rows() + obstacle.e().rows(), 2);
+				boundary_edges.bottomRows(obstacle.e().rows()) = obstacle.e().array() + n_v;
+			}
+
+			if (obstacle.f().size())
+			{
+				boundary_triangles.conservativeResize(boundary_triangles.rows() + obstacle.f().rows(), 3);
+				boundary_triangles.bottomRows(obstacle.f().rows()) = obstacle.f().array() + n_v;
+			}
+		}
+
+		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(boundary_nodes_pos.rows(), boundary_edges);
+		for (int i = 0; i < codimensional_nodes.size(); i++)
+		{
+			is_on_surface[codimensional_nodes[i]] = true;
+		}
+
+		collision_mesh = ipc::CollisionMesh(is_on_surface, boundary_nodes_pos, boundary_edges, boundary_triangles);
+
+		collision_mesh.can_collide = [&](size_t vi, size_t vj) {
+			// obstacles do not collide with other obstacles
+			return !this->is_obstacle_vertex(collision_mesh.to_full_vertex_id(vi))
+				   || !this->is_obstacle_vertex(collision_mesh.to_full_vertex_id(vj));
+		};
+	}
+
 	json State::build_json_params()
 	{
 		json params = args["params"];
