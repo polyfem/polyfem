@@ -995,6 +995,7 @@ void polyfem::apply_default_mesh_parameters(const json &mesh_in, json &mesh_out,
 				"rotation": [0.0, 0.0, 0.0],
 				"rotation_mode": "xyz",
 				"scale": [1.0, 1.0, 1.0],
+				"dimensions": null,
 				"enabled": true,
 				"body_id": 0,
 				"boundary_id": 0,
@@ -1286,7 +1287,7 @@ void polyfem::transform_mesh_from_json(const json &mesh, Eigen::MatrixXd &vertic
 	const int dim = vertices.cols();
 
 	RowVectorNd scale;
-	if (mesh.contains("dimensions"))
+	if (mesh["dimensions"].is_array()) // default is nullptr
 	{
 		VectorNd initial_dimensions =
 			(vertices.colwise().maxCoeff() - vertices.colwise().minCoeff()).cwiseAbs();

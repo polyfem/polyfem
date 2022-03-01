@@ -1883,8 +1883,8 @@ namespace polyfem
 			printer.CloseElement();
 		}
 
-		printer.CloseElement();
-		printer.CloseElement();
+		printer.CloseElement(); // Collection
+		printer.CloseElement(); // VTKFile
 
 		fclose(pvd_file);
 	}

@@ -151,17 +151,28 @@ namespace polyfem
 		if (!is_param_valid(args, "body_params"))
 			return;
 
+		const json default_material = R"({
+			"id": -1,
+			"E": 100,
+			"nu": 0.3,
+			"rho": 1,
+			"density": 1
+		})"_json;
+
 		const auto &body_params = args["body_params"];
 		assert(body_params.is_array());
 		Eigen::MatrixXd Es(mesh->n_elements(), 1), nus(mesh->n_elements(), 1), rhos(mesh->n_elements(), 1);
-		Es.setConstant(100);
-		nus.setConstant(0.3);
-		rhos.setOnes();
+		Es.setConstant(default_material["E"].get<double>());
+		nus.setConstant(default_material["nu"].get<double>());
+		rhos.setConstant(default_material["density"].get<double>());
 
 		std::map<int, std::tuple<double, double, double>> materials;
 		for (int i = 0; i < body_params.size(); ++i)
 		{
-			const auto &mat = body_params[i];
+			check_for_unknown_args(default_material, body_params[i], fmt::format("/body_params[{}]", i));
+			json mat = default_material;
+			mat.merge_patch(body_params[i]);
+
 			const int mid = mat["id"];
 			Density d;
 			d.init(mat);
@@ -171,7 +182,6 @@ namespace polyfem
 			const double nu = mat["nu"];
 
 			materials[mid] = std::tuple<double, double, double>(E, nu, rho);
-			// std::cout << mid << " " << E << " " << nu << " " << rho << " " << std::endl;
 		}
 
 		std::string missing = "";

@@ -151,10 +151,10 @@ namespace polyfem
 
 		double &lagged_damping_weight() { return _lagged_damping_weight; }
 
-	protected:
 		void compute_displaced_points(const TVector &full, Eigen::MatrixXd &displaced);
 		void reduced_to_full_displaced_points(const TVector &reduced, Eigen::MatrixXd &displaced);
 
+	protected:
 		State &state;
 		bool use_adaptive_barrier_stiffness;
 		double _barrier_stiffness;
