@@ -247,8 +247,8 @@ include(tinyxml)
 target_link_libraries(polyfem PUBLIC tinyxml2)
 
 # HighFive library (HDF5)
-include(high_five)
-target_link_libraries(polyfem PUBLIC HighFive)
+# include(high_five)
+# target_link_libraries(polyfem PUBLIC HighFive)
 
 ################################################################################
 # Optional libraries
