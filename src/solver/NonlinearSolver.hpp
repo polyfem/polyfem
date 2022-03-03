@@ -69,7 +69,33 @@ namespace cppoptlib
 			// Set these to nan to indicate they have not been computed yet
 			double old_energy = std::nan("");
 
-			double first_grad_norm = -1;
+			{
+				POLYFEM_SCOPED_TIMER("compute gradient", grad_time);
+				objFunc.gradient(x, grad);
+			}
+			double first_grad_norm = grad.norm();
+			if (std::isnan(first_grad_norm))
+			{
+				this->m_status = Status::UserDefined;
+				polyfem::logger().error("[{}] Initial gradient is nan; stopping", name());
+				m_error_code = ErrorCode::NanEncountered;
+				throw("Gradient is nan; stopping");
+				return;
+			}
+			this->m_current.gradNorm = first_grad_norm / (normalize_gradient ? first_grad_norm : 1);
+			this->m_current.fDelta = old_energy;
+
+			this->m_status = checkConvergence(this->m_stop, this->m_current);
+			if (this->m_status != Status::Continue)
+			{
+				POLYFEM_SCOPED_TIMER("compute objective function", obj_fun_time);
+				this->m_current.fDelta = objFunc.value(x);
+				polyfem::logger().log(
+					spdlog::level::info, "[{}] {} (f={} ||∇f||={} g={} tol={})",
+					name(), "Not even starting, grad is small enough", this->m_current.fDelta, first_grad_norm,
+					this->m_current.gradNorm, this->m_stop.gradNorm);
+				return;
+			}
 
 			Timer timer("non-linear solver", this->total_time);
 			timer.start();
@@ -111,9 +137,6 @@ namespace cppoptlib
 					throw("Gradient is nan; stopping");
 					break;
 				}
-
-				if (first_grad_norm < 0)
-					first_grad_norm = grad_norm;
 
 				// ------------------------
 				// Compute update direction
@@ -256,7 +279,8 @@ namespace cppoptlib
 			update_solver_info();
 		}
 
-		double line_search(const TVector &x, const TVector &delta_x, ProblemType &objFunc)
+		double
+		line_search(const TVector &x, const TVector &delta_x, ProblemType &objFunc)
 		{
 			POLYFEM_SCOPED_TIMER("line search", line_search_time);
 
