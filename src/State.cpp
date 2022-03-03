@@ -151,17 +151,28 @@ namespace polyfem
 		if (!is_param_valid(args, "body_params"))
 			return;
 
+		const json default_material = R"({
+			"id": -1,
+			"E": 100,
+			"nu": 0.3,
+			"rho": 1,
+			"density": 1
+		})"_json;
+
 		const auto &body_params = args["body_params"];
 		assert(body_params.is_array());
 		Eigen::MatrixXd Es(mesh->n_elements(), 1), nus(mesh->n_elements(), 1), rhos(mesh->n_elements(), 1);
-		Es.setConstant(100);
-		nus.setConstant(0.3);
-		rhos.setOnes();
+		Es.setConstant(default_material["E"].get<double>());
+		nus.setConstant(default_material["nu"].get<double>());
+		rhos.setConstant(default_material["density"].get<double>());
 
 		std::map<int, std::tuple<double, double, double>> materials;
 		for (int i = 0; i < body_params.size(); ++i)
 		{
-			const auto &mat = body_params[i];
+			check_for_unknown_args(default_material, body_params[i], fmt::format("/body_params[{}]", i));
+			json mat = default_material;
+			mat.merge_patch(body_params[i]);
+
 			const int mid = mat["id"];
 			Density d;
 			d.init(mat);
@@ -171,7 +182,6 @@ namespace polyfem
 			const double nu = mat["nu"];
 
 			materials[mid] = std::tuple<double, double, double>(E, nu, rho);
-			// std::cout << mid << " " << E << " " << nu << " " << rho << " " << std::endl;
 		}
 
 		std::string missing = "";
@@ -764,6 +774,54 @@ namespace polyfem
 		logger().info(" took {}s", computing_poly_basis_time);
 
 		n_bases += new_bases;
+	}
+
+	void State::build_collision_mesh()
+	{
+		extract_boundary_mesh(
+			bases, boundary_nodes_pos, boundary_edges, boundary_triangles);
+
+		Eigen::VectorXi codimensional_nodes;
+		if (obstacle.n_vertices() > 0)
+		{
+			// boundary_nodes_pos uses n_bases that already contains the obstacle
+			const int n_v = boundary_nodes_pos.rows() - obstacle.n_vertices();
+
+			if (obstacle.v().size())
+				boundary_nodes_pos.bottomRows(obstacle.v().rows()) = obstacle.v();
+
+			if (obstacle.codim_v().size())
+			{
+				codimensional_nodes.conservativeResize(codimensional_nodes.size() + obstacle.codim_v().size());
+				codimensional_nodes.tail(obstacle.codim_v().size()) = obstacle.codim_v().array() + n_v;
+			}
+
+			if (obstacle.e().size())
+			{
+				boundary_edges.conservativeResize(boundary_edges.rows() + obstacle.e().rows(), 2);
+				boundary_edges.bottomRows(obstacle.e().rows()) = obstacle.e().array() + n_v;
+			}
+
+			if (obstacle.f().size())
+			{
+				boundary_triangles.conservativeResize(boundary_triangles.rows() + obstacle.f().rows(), 3);
+				boundary_triangles.bottomRows(obstacle.f().rows()) = obstacle.f().array() + n_v;
+			}
+		}
+
+		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(boundary_nodes_pos.rows(), boundary_edges);
+		for (int i = 0; i < codimensional_nodes.size(); i++)
+		{
+			is_on_surface[codimensional_nodes[i]] = true;
+		}
+
+		collision_mesh = ipc::CollisionMesh(is_on_surface, boundary_nodes_pos, boundary_edges, boundary_triangles);
+
+		collision_mesh.can_collide = [&](size_t vi, size_t vj) {
+			// obstacles do not collide with other obstacles
+			return !this->is_obstacle_vertex(collision_mesh.to_full_vertex_id(vi))
+				   || !this->is_obstacle_vertex(collision_mesh.to_full_vertex_id(vj));
+		};
 	}
 
 	json State::build_json_params()

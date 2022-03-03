@@ -83,7 +83,7 @@ namespace polyfem
 			args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
 		RhsAssembler &rhs_assembler = *step_data.rhs_assembler;
 
-		const std::string u_path = resolve_path(args["import"]["u_path"], args["root_path"]);
+		const std::string u_path = resolve_input_path(args["import"]["u_path"]);
 		if (!u_path.empty())
 			read_matrix(u_path, sol);
 		else
@@ -401,8 +401,8 @@ namespace polyfem
 		solver->setParameters(params);
 		logger().info("{}...", solver->name());
 
-		const std::string v_path = resolve_path(args["import"]["v_path"], args["root_path"]);
-		const std::string a_path = resolve_path(args["import"]["a_path"], args["root_path"]);
+		const std::string v_path = resolve_input_path(args["import"]["v_path"]);
+		const std::string a_path = resolve_input_path(args["import"]["a_path"]);
 
 		Eigen::MatrixXd velocity, acceleration;
 
@@ -693,8 +693,8 @@ namespace polyfem
 		igl::Timer timer;
 		timer.start();
 		logger().trace("Reading matrices...");
-		const std::string v_path = resolve_path(args["import"]["v_path"], args["root_path"]);
-		const std::string a_path = resolve_path(args["import"]["a_path"], args["root_path"]);
+		const std::string v_path = resolve_input_path(args["import"]["v_path"]);
+		const std::string a_path = resolve_input_path(args["import"]["a_path"]);
 
 		Eigen::MatrixXd velocity, acceleration;
 
@@ -979,7 +979,7 @@ namespace polyfem
 			sol.setZero();
 		}
 
-		const std::string u_path = resolve_path(args["import"]["u_path"], args["root_path"]);
+		const std::string u_path = resolve_input_path(args["import"]["u_path"]);
 		if (!u_path.empty())
 			import_matrix(u_path, args["import"], sol);
 
@@ -1069,6 +1069,15 @@ namespace polyfem
 		solver_info = json::array();
 
 		int index = 0;
+
+		if (args["save_solve_sequence_debug"])
+		{
+			if (!solve_export_to_file)
+				solution_frames.emplace_back();
+			save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", index)), 1);
+			save_wire(resolve_output_path(fmt::format("step_{:d}.obj", index)));
+		}
+
 		nl_problem.line_search_begin(sol, tmp_sol);
 		bool force_al = args["force_al"];
 		while (force_al || !std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
@@ -1102,6 +1111,7 @@ namespace polyfem
 				break;
 			}
 
+			++index;
 			if (args["save_solve_sequence_debug"])
 			{
 				if (!solve_export_to_file)
@@ -1109,7 +1119,6 @@ namespace polyfem
 				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", index)), 1);
 				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", index)));
 			}
-			++index;
 		}
 		nl_problem.line_search_end();
 		logger().debug("Solving Problem");
@@ -1123,6 +1132,7 @@ namespace polyfem
 							   {"info", nl_solver_info}});
 		nl_problem.reduced_to_full(tmp_sol, sol);
 
+		++index;
 		if (args["save_solve_sequence_debug"])
 		{
 			if (!solve_export_to_file)
@@ -1130,7 +1140,8 @@ namespace polyfem
 			save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", index)), 1);
 			save_wire(resolve_output_path(fmt::format("step_{:d}.obj", index)));
 		}
-		++index;
+
+		nl_problem.lagged_damping_weight() = 0;
 
 		// Lagging loop (start at 1 because we already did an iteration above)
 		int lag_i;
@@ -1154,6 +1165,7 @@ namespace polyfem
 			nl_problem.update_lagging(tmp_sol);
 			lagging_converged = nl_problem.lagging_converged(tmp_sol);
 
+			++index;
 			if (args["save_solve_sequence_debug"])
 			{
 				if (!solve_export_to_file)
@@ -1161,7 +1173,6 @@ namespace polyfem
 				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", index)), 1);
 				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", index)));
 			}
-			++index;
 		}
 
 		if (friction_iterations > 0)
@@ -1175,7 +1186,7 @@ namespace polyfem
 		}
 
 		{
-			const std::string u_path = resolve_path(args["export"]["u_path"], args["root_path"]);
+			const std::string u_path = resolve_output_path(args["export"]["u_path"]);
 			if (!u_path.empty())
 				write_matrix(u_path, sol);
 		}

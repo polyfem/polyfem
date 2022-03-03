@@ -563,6 +563,7 @@ namespace polyfem
 
 		if (is_param_valid(params, "exact"))
 		{
+			has_exact_ = true;
 			auto ex = params["exact"];
 			if (ex.is_array())
 			{
@@ -577,6 +578,7 @@ namespace polyfem
 
 		if (is_param_valid(params, "exact_grad"))
 		{
+			has_exact_grad_ = true;
 			auto ex = params["exact_grad"];
 			if (ex.is_array())
 			{
@@ -1043,11 +1045,13 @@ namespace polyfem
 
 		if (is_param_valid(params, "exact"))
 		{
+			has_exact_ = true;
 			exact_.init(params["exact"]);
 		}
 
 		if (is_param_valid(params, "exact_grad"))
 		{
+			has_exact_grad_ = true;
 			auto ex = params["exact_grad"];
 			if (ex.is_array())
 			{
