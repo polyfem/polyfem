@@ -16,7 +16,9 @@ namespace polyfem
 	public:
 		Mesh2D() = default;
 		virtual ~Mesh2D() = default;
-		POLYFEM_DEFAULT_MOVE_COPY(Mesh2D)
+		// We cannot move or copy Mesh2D because it has unique_ptrs which do
+		// not support copy and GEO::Mesh which does not support move.
+		POLYFEM_DELETE_MOVE_COPY(Mesh2D);
 
 		void refine(const int n_refiniment, const double t, std::vector<int> &parent_nodes) override;
 

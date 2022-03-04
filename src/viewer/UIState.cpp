@@ -208,7 +208,7 @@ namespace polyfem
 
 		data(Visualizations::NavigationIndex).clear();
 
-		//if(layer == Visualizations::InputMesh)
+		// if(layer == Visualizations::InputMesh)
 		{
 			// const long n_tris = show_clipped_elements(tri_pts, tri_faces, element_ranges, valid_elements, false, Visualizations::NavigationIndex, recenter);
 			// color_mesh(n_tris, valid_elements, Visualizations::NavigationIndex);
@@ -269,7 +269,7 @@ namespace polyfem
 				const int range = element_ranges[i] - element_ranges[i - 1];
 
 				for (int c = 0; c < 3; ++c)
-					cols.block(from, c, range, 1).setConstant(tmp(state.disc_orders(i - 1) - 1, c));
+					cols.block(from, c, range, 1).setConstant(tmp(std::min(5, state.disc_orders(i - 1)) - 1, c));
 				from += range;
 			}
 		}
@@ -285,14 +285,14 @@ namespace polyfem
 
 				switch (type)
 				{
-					//violet
+					// violet
 				case ElementType::Simplex:
 					cols.block(from, 0, range, 1).setConstant(155. / 255.);
 					cols.block(from, 1, range, 1).setConstant(89. / 255.);
 					cols.block(from, 2, range, 1).setConstant(182. / 255.);
 					break;
 
-					//dark green
+					// dark green
 				case ElementType::RegularInteriorCube:
 				case ElementType::RegularBoundaryCube:
 					cols.block(from, 0, range, 1).setConstant(30. / 255.);
@@ -300,7 +300,7 @@ namespace polyfem
 					cols.block(from, 2, range, 1).setConstant(96. / 255.);
 					break;
 
-					//orange
+					// orange
 				case ElementType::SimpleSingularInteriorCube:
 				case ElementType::SimpleSingularBoundaryCube:
 				case ElementType::MultiSingularInteriorCube:
@@ -311,7 +311,7 @@ namespace polyfem
 					cols.block(from, 2, range, 1).setConstant(60. / 255.);
 					break;
 
-					//light blue
+					// light blue
 				case ElementType::BoundaryPolytope:
 				case ElementType::InteriorPolytope:
 					cols.block(from, 0, range, 1).setConstant(52. / 255.);
@@ -319,7 +319,7 @@ namespace polyfem
 					cols.block(from, 2, range, 1).setConstant(219. / 255.);
 					break;
 
-					//grey
+					// grey
 				case ElementType::Undefined:
 					cols.block(from, 0, range, 3).setConstant(0.5);
 					break;
@@ -722,7 +722,7 @@ namespace polyfem
 
 			if (assembler.is_solution_displacement(state.formulation()))
 			{
-				//apply displacement
+				// apply displacement
 				for (long i = 0; i < fun.cols(); ++i)
 					ttmp.col(i) += fun.col(i);
 			}
@@ -1047,8 +1047,8 @@ namespace polyfem
 									MatrixXd node = l2g.node;
 									data(Visualizations::BNodes).add_points(node, col);
 
-									//TODO text is impossible to hide :(
-									// data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(l2g.index));
+									// TODO text is impossible to hide :(
+									//  data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(l2g.index));
 								}
 							}
 						}
@@ -1177,8 +1177,8 @@ namespace polyfem
 							MatrixXd node = l2g.node;
 							data(Visualizations::PNodes).add_points(node, col);
 
-							//TODO text is impossible to hide :(
-							// data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(g_index));
+							// TODO text is impossible to hide :(
+							//  data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(g_index));
 						}
 					}
 				}
@@ -1219,8 +1219,8 @@ namespace polyfem
 						MatrixXd node = l2g.node;
 						data(Visualizations::Nodes).add_points(node, col);
 
-						//TODO text is impossible to hide :(
-						// data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(g_index));
+						// TODO text is impossible to hide :(
+						//  data(Visualizations::NodesId).add_label(node.transpose(), std::to_string(g_index));
 					}
 				}
 			}
@@ -1233,9 +1233,9 @@ namespace polyfem
 		if (visible_visualizations(Visualizations::Nodes))
 			show_data(Visualizations::Nodes);
 
-		//TODO text is impossible to hide :(
-		// if(visible_visualizations(Visualizations::NodesId))
-		// show_data(Visualizations::NodesId);
+		// TODO text is impossible to hide :(
+		//  if(visible_visualizations(Visualizations::NodesId))
+		//  show_data(Visualizations::NodesId);
 	}
 
 	void UIState::show_error()
@@ -1253,7 +1253,9 @@ namespace polyfem
 		{
 			return;
 		}
-		const double tend = state.args["tend"];
+		double tend = state.args.value("tend", 1.0); // default=1
+		if (tend <= 0)
+			tend = 1;
 
 		if (visible_visualizations(Visualizations::Error) && !available_visualizations[Visualizations::Error])
 		{
@@ -1359,8 +1361,7 @@ namespace polyfem
 
 	void UIState::show_linear_reproduction()
 	{
-		auto ff = [](double x, double y)
-		{ return -0.1 + .3 * x - .5 * y; };
+		auto ff = [](double x, double y) { return -0.1 + .3 * x - .5 * y; };
 
 		MatrixXd fun = MatrixXd::Zero(state.n_bases, 1);
 
@@ -1404,14 +1405,12 @@ namespace polyfem
 
 	void UIState::show_quadratic_reproduction()
 	{
-		auto ff = [](double x, double y)
-		{
+		auto ff = [](double x, double y) {
 			const double v = (2 * y - 0.9);
 			return v * v;
 		};
 
-		auto ff1 = [](double x, double y)
-		{
+		auto ff1 = [](double x, double y) {
 			Eigen::RowVector2d res;
 			res(0) = 0;
 			res(1) = 8 * y - 3.6;
@@ -1578,7 +1577,7 @@ namespace polyfem
 
 		if (state.mesh->is_volume())
 		{
-			//reverse all faces
+			// reverse all faces
 			for (long i = 0; i < vis_faces.rows(); ++i)
 			{
 				const int v0 = vis_faces(i, 0);

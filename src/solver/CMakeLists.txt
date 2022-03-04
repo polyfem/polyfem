@@ -1,10 +1,11 @@
 set(SOURCES
-	LbfgsSolver.hpp
+	NonlinearSolver.hpp
+	SparseNewtonDescentSolver.hpp
+	LBFGSSolver.hpp
 	NLProblem.cpp
 	NLProblem.hpp
 	ALNLProblem.cpp
 	ALNLProblem.hpp
-	SparseNewtonDescentSolver.hpp
 	NavierStokesSolver.cpp
 	NavierStokesSolver.hpp
 	TransientNavierStokesSolver.cpp
@@ -17,3 +18,9 @@ prepend_current_path(SOURCES)
 polyfem_copy_headers(${SOURCES})
 polyfem_set_source_group(${SOURCES})
 target_sources(polyfem PRIVATE ${SOURCES})
+
+################################################################################
+# Subfolders
+################################################################################
+
+add_subdirectory(line_search)

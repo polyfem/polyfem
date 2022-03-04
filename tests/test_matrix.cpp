@@ -8,7 +8,7 @@
 
 #include <Eigen/Dense>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
@@ -199,11 +199,11 @@ TEST_CASE("eigs3idautodiff", "[matrix]")
 TEST_CASE("cache", "[matrix]")
 {
 	SpareMatrixCache cache(10);
-	cache.add_value(0, 0, 1);
-	cache.add_value(0, 1, 2);
-	cache.add_value(9, 4, 3);
-	cache.add_value(9, 4, 3);
-	cache.add_value(9, 9, 4);
+	cache.add_value(0, 0, 0, 1);
+	cache.add_value(0, 0, 1, 2);
+	cache.add_value(0, 9, 4, 3);
+	cache.add_value(0, 9, 4, 3);
+	cache.add_value(0, 9, 9, 4);
 
 	const auto tmp = cache.get_matrix();
 
@@ -214,12 +214,12 @@ TEST_CASE("cache", "[matrix]")
 
 	///////////////////
 	SpareMatrixCache cache1(10);
-	cache1.add_value(0, 0, 1);
-	cache1.add_value(0, 1, 2);
+	cache1.add_value(0, 0, 0, 1);
+	cache1.add_value(0, 0, 1, 2);
 	cache1.prune();
-	cache1.add_value(9, 4, 3);
-	cache1.add_value(9, 4, 3);
-	cache1.add_value(9, 9, 4);
+	cache1.add_value(0, 9, 4, 3);
+	cache1.add_value(0, 9, 4, 3);
+	cache1.add_value(0, 9, 9, 4);
 
 	const auto tmp1 = cache1.get_matrix();
 
@@ -230,12 +230,12 @@ TEST_CASE("cache", "[matrix]")
 
 	///////////////////
 	SpareMatrixCache cache2(cache1);
-	cache2.add_value(0, 0, 1);
-	cache2.add_value(0, 1, 2);
+	cache2.add_value(0, 0, 0, 1);
+	cache2.add_value(0, 0, 1, 2);
 	cache2.prune();
-	cache2.add_value(9, 4, 3);
-	cache2.add_value(9, 4, 3);
-	cache2.add_value(9, 9, 4);
+	cache2.add_value(0, 9, 4, 3);
+	cache2.add_value(0, 9, 4, 3);
+	cache2.add_value(0, 9, 9, 4);
 
 	const auto tmp2 = cache2.get_matrix();
 

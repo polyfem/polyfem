@@ -7,6 +7,8 @@
 
 #include <polyfem/BoxSetter.hpp>
 
+#include <polyfem/JSONUtils.hpp>
+
 #include <igl/Timer.h>
 namespace polyfem
 {
@@ -22,6 +24,7 @@ namespace polyfem
 		polys.clear();
 		poly_edge_to_data.clear();
 		parent_elements.clear();
+		obstacle.clear();
 
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
@@ -69,12 +72,18 @@ namespace polyfem
 		if (!skip_boundary_sideset)
 			mesh->compute_boundary_ids(boundary_marker);
 		BoxSetter::set_sidesets(args, *mesh);
-		set_multimaterial([&](const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus, const Eigen::MatrixXd &rhos)
-						  {
-							  assembler.init_multimaterial(mesh->is_volume(), Es, nus);
-							  density.init_multimaterial(rhos);
-						  });
+		set_multimaterial([&](const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus, const Eigen::MatrixXd &rhos) {
+			assembler.init_multimaterial(mesh->is_volume(), Es, nus);
+			density.init_multimaterial(rhos);
+		});
 
+		timer.stop();
+		logger().info(" took {}s", timer.getElapsedTime());
+
+		timer.start();
+		logger().info("Loading obstacles...");
+		if (args.contains("obstacles"))
+			obstacle.init(args["obstacles"], args["root_path"], mesh->dimension());
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
@@ -92,6 +101,7 @@ namespace polyfem
 		polys.clear();
 		poly_edge_to_data.clear();
 		parent_elements.clear();
+		obstacle.clear();
 
 		stiffness.resize(0, 0);
 		rhs.resize(0, 0);
@@ -111,10 +121,10 @@ namespace polyfem
 				logger().info("Loading mesh {} ...", mesh_path());
 				mesh = Mesh::create(mesh_path());
 			}
-			else if (args.contains("meshes"))
+			else if (is_param_valid(args, "meshes"))
 			{
 				logger().info("Loading meshes ...");
-				mesh = Mesh::create(args["meshes"].get<std::vector<json>>());
+				mesh = Mesh::create(args["meshes"].get<std::vector<json>>(), args["root_path"]);
 			}
 		}
 		else
@@ -161,7 +171,7 @@ namespace polyfem
 
 		// mesh->set_tag(1712, ElementType::InteriorPolytope);
 
-		const std::string bc_tag_path = args["bc_tag"];
+		const std::string bc_tag_path = resolve_input_path(args["bc_tag"]);
 
 		double boundary_id_threshold = args["boundary_id_threshold"];
 		if (boundary_id_threshold <= 0)
@@ -175,16 +185,22 @@ namespace polyfem
 				mesh->load_boundary_ids(bc_tag_path);
 		}
 		BoxSetter::set_sidesets(args, *mesh);
-		set_multimaterial([&](const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus, const Eigen::MatrixXd &rhos)
-						  {
-							  assembler.init_multimaterial(mesh->is_volume(), Es, nus);
-							  density.init_multimaterial(rhos);
-						  });
+		set_multimaterial([&](const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus, const Eigen::MatrixXd &rhos) {
+			assembler.init_multimaterial(mesh->is_volume(), Es, nus);
+			density.init_multimaterial(rhos);
+		});
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
 		ref_element_sampler.init(mesh->is_volume(), mesh->n_elements(), args["vismesh_rel_area"]);
+
+		timer.start();
+		logger().info("Loading obstacles...");
+		if (is_param_valid(args, "obstacles"))
+			obstacle.init(args["obstacles"], args["root_path"], mesh->dimension());
+		timer.stop();
+		logger().info(" took {}s", timer.getElapsedTime());
 
 		// const double poly_percentage = 0.05;
 		// const double poly_percentage = 0;
@@ -286,6 +302,14 @@ namespace polyfem
 	void State::load_febio(const std::string &path, const json &args_in)
 	{
 		FEBioReader::load(path, args_in, *this);
+
+		igl::Timer timer;
+		timer.start();
+		logger().info("Loading obstacles...");
+		if (args.contains("obstacles"))
+			obstacle.init(args["obstacles"], args["root_path"], mesh->dimension());
+		timer.stop();
+		logger().info(" took {}s", timer.getElapsedTime());
 	}
 
 	void State::compute_mesh_stats()

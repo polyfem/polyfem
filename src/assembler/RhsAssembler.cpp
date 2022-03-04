@@ -1,5 +1,5 @@
 #include <polyfem/RhsAssembler.hpp>
-#include <polyfem/par_for.hpp>
+#include <polyfem/MaybeParallelFor.hpp>
 
 #include <polyfem/BoundarySampler.hpp>
 #include <polysolve/LinearSolver.hpp>
@@ -7,11 +7,6 @@
 #include <polyfem/Logger.hpp>
 
 #include <Eigen/Sparse>
-
-#ifdef POLYFEM_WITH_TBB
-#include <tbb/parallel_for.h>
-#include <tbb/enumerable_thread_specific.h>
-#endif
 
 #include <iostream>
 #include <map>
@@ -35,13 +30,13 @@ namespace polyfem
 		};
 	} // namespace
 
-	RhsAssembler::RhsAssembler(const AssemblerUtils &assembler, const Mesh &mesh,
+	RhsAssembler::RhsAssembler(const AssemblerUtils &assembler, const Mesh &mesh, const Obstacle &obstacle,
 							   const int n_basis, const int size,
 							   const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases, const AssemblyValsCache &ass_vals_cache,
 							   const std::string &formulation, const Problem &problem,
 							   const std::string bc_method,
 							   const std::string &solver, const std::string &preconditioner, const json &solver_params)
-		: assembler_(assembler), mesh_(mesh),
+		: assembler_(assembler), mesh_(mesh), obstacle_(obstacle),
 		  n_basis_(n_basis), size_(size),
 		  bases_(bases), gbases_(gbases), ass_vals_cache_(ass_vals_cache),
 		  formulation_(formulation), problem_(problem),
@@ -61,7 +56,8 @@ namespace polyfem
 			ElementAssemblyValues vals;
 			for (int e = 0; e < n_elements; ++e)
 			{
-				vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
+				// vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
+				ass_vals_cache_.compute(e, mesh_.is_volume(), bases_[e], gbases_[e], vals);
 
 				const Quadrature &quadrature = vals.quadrature;
 
@@ -72,7 +68,8 @@ namespace polyfem
 					//rhs_fun.col(d) = rhs_fun.col(d).array() * vals.det.array() * quadrature.weights.array();
 					for (int q = 0; q < quadrature.weights.size(); ++q)
 					{
-						const double rho = density(vals.val(q, 0), vals.val(q, 1), vals.val.cols() == 2 ? 0. : vals.val(q, 2), vals.element_id);
+						// const double rho = problem_.is_time_dependent() ? density(vals.quadrature.points.row(q), vals.val.row(q), vals.element_id) : 1;
+						const double rho = density(vals.quadrature.points.row(q), vals.val.row(q), vals.element_id);
 						rhs_fun(q, d) *= vals.det(q) * quadrature.weights(q) * rho;
 					}
 				}
@@ -95,22 +92,25 @@ namespace polyfem
 
 	void RhsAssembler::initial_solution(Eigen::MatrixXd &sol) const
 	{
-		time_bc([&](const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val)
-				{ problem_.initial_solution(mesh, global_ids, pts, val); },
+		time_bc([&](const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) {
+			problem_.initial_solution(mesh, global_ids, pts, val);
+		},
 				sol);
 	}
 
 	void RhsAssembler::initial_velocity(Eigen::MatrixXd &sol) const
 	{
-		time_bc([&](const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val)
-				{ problem_.initial_velocity(mesh, global_ids, pts, val); },
+		time_bc([&](const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) {
+			problem_.initial_velocity(mesh, global_ids, pts, val);
+		},
 				sol);
 	}
 
 	void RhsAssembler::initial_acceleration(Eigen::MatrixXd &sol) const
 	{
-		time_bc([&](const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val)
-				{ problem_.initial_acceleration(mesh, global_ids, pts, val); },
+		time_bc([&](const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) {
+			problem_.initial_acceleration(mesh, global_ids, pts, val);
+		},
 				sol);
 	}
 
@@ -122,54 +122,87 @@ namespace polyfem
 		const int n_elements = int(bases_.size());
 		ElementAssemblyValues vals;
 		Eigen::MatrixXi ids;
-		for (int e = 0; e < n_elements; ++e)
+
+		if (bc_method_ == "sample")
 		{
-			vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
-			ids.resize(vals.val.rows(), 1);
-			ids.setConstant(e);
-
-			const Quadrature &quadrature = vals.quadrature;
-			//problem_.initial_solution(vals.val, loc_sol);
-			fun(mesh_, ids, vals.val, loc_sol);
-
-			for (int d = 0; d < size_; ++d)
-				loc_sol.col(d) = loc_sol.col(d).array() * vals.det.array() * quadrature.weights.array();
-
-			const int n_loc_bases_ = int(vals.basis_values.size());
-			for (int i = 0; i < n_loc_bases_; ++i)
+			for (int e = 0; e < n_elements; ++e)
 			{
-				const AssemblyValues &v = vals.basis_values[i];
+				const ElementBases &bs = bases_[e];
+				// vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
+				ass_vals_cache_.compute(e, mesh_.is_volume(), bases_[e], gbases_[e], vals);
+				ids.resize(1, 1);
+				ids.setConstant(e);
 
-				for (int d = 0; d < size_; ++d)
+				for (long i = 0; i < bs.bases.size(); ++i)
 				{
-					const double sol_value = (loc_sol.col(d).array() * v.val.array()).sum();
-					for (std::size_t ii = 0; ii < v.global.size(); ++ii)
-						sol(v.global[ii].index * size_ + d) += sol_value * v.global[ii].val;
+					const auto &b = bs.bases[i];
+					const auto &glob = b.global();
+					assert(glob.size() == 1);
+					for (size_t ii = 0; ii < glob.size(); ++ii)
+					{
+						fun(mesh_, ids, glob[ii].node, loc_sol);
+
+						for (int d = 0; d < size_; ++d)
+						{
+							sol(glob[ii].index * size_ + d) = loc_sol(d) * glob[ii].val;
+						}
+					}
 				}
 			}
 		}
-
-		Eigen::MatrixXd b = sol;
-		sol.setZero();
-
-		const double mmin = b.minCoeff();
-		const double mmax = b.maxCoeff();
-
-		if (fabs(mmin) > 1e-8 || fabs(mmax) > 1e-8)
+		else
 		{
-			StiffnessMatrix mass;
-			Density d;
-			assembler_.assemble_mass_matrix(formulation_, size_ == 3, n_basis_, d, bases_, gbases_, ass_vals_cache_, mass);
-			auto solver = LinearSolver::create(solver_, preconditioner_);
-			solver->setParameters(solver_params_);
-			solver->analyzePattern(mass, mass.rows());
-			solver->factorize(mass);
 
-			for (long i = 0; i < b.cols(); ++i)
+			for (int e = 0; e < n_elements; ++e)
 			{
-				solver->solve(b.col(i), sol.col(i));
+				// vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
+				ass_vals_cache_.compute(e, mesh_.is_volume(), bases_[e], gbases_[e], vals);
+				ids.resize(vals.val.rows(), 1);
+				ids.setConstant(e);
+
+				const Quadrature &quadrature = vals.quadrature;
+				//problem_.initial_solution(vals.val, loc_sol);
+				fun(mesh_, ids, vals.val, loc_sol);
+
+				for (int d = 0; d < size_; ++d)
+					loc_sol.col(d) = loc_sol.col(d).array() * vals.det.array() * quadrature.weights.array();
+
+				const int n_loc_bases_ = int(vals.basis_values.size());
+				for (int i = 0; i < n_loc_bases_; ++i)
+				{
+					const AssemblyValues &v = vals.basis_values[i];
+
+					for (int d = 0; d < size_; ++d)
+					{
+						const double sol_value = (loc_sol.col(d).array() * v.val.array()).sum();
+						for (std::size_t ii = 0; ii < v.global.size(); ++ii)
+							sol(v.global[ii].index * size_ + d) += sol_value * v.global[ii].val;
+					}
+				}
 			}
-			logger().trace("mass matrix error {}", (mass * sol - b).norm());
+
+			Eigen::MatrixXd b = sol;
+			sol.setZero();
+
+			const double mmin = b.minCoeff();
+			const double mmax = b.maxCoeff();
+
+			if (fabs(mmin) > 1e-8 || fabs(mmax) > 1e-8)
+			{
+				StiffnessMatrix mass;
+				Density d;
+				assembler_.assemble_mass_matrix(formulation_, size_ == 3, n_basis_, d, bases_, gbases_, ass_vals_cache_, mass);
+				auto solver = LinearSolver::create(solver_, preconditioner_);
+				solver->setParameters(solver_params_);
+				solver->analyzePattern(mass, mass.rows());
+				solver->factorize(mass);
+
+				for (long i = 0; i < b.cols(); ++i)
+				{
+					solver->solve(b.col(i), sol.col(i));
+				}
+				logger().trace("mass matrix error {}", (mass * sol - b).norm());
+			}
 		}
 	}
 
@@ -212,7 +245,7 @@ namespace polyfem
 		for (const auto &lb : local_boundary)
 		{
 			const int e = lb.element_id();
-			bool has_samples = sample_boundary(lb, resolution, true, uv, samples, global_primitive_ids);
+			bool has_samples = BoundarySampler::sample_boundary(lb, resolution, mesh_, true, uv, samples, global_primitive_ids);
 
 			if (!has_samples)
 				continue;
@@ -263,7 +296,7 @@ namespace polyfem
 		for (const auto &lb : local_boundary)
 		{
 			const int e = lb.element_id();
-			bool has_samples = sample_boundary(lb, resolution, false, uv, samples, global_primitive_ids);
+			bool has_samples = BoundarySampler::sample_boundary(lb, resolution, mesh_, false, uv, samples, global_primitive_ids);
 
 			if (!has_samples)
 				continue;
@@ -463,7 +496,7 @@ namespace polyfem
 		for (const auto &lb : local_boundary)
 		{
 			const int e = lb.element_id();
-			bool has_samples = boundary_quadrature(lb, resolution, false, uv, samples, normals, weights, global_primitive_ids);
+			bool has_samples = BoundarySampler::boundary_quadrature(lb, resolution, mesh_, false, uv, samples, normals, weights, global_primitive_ids);
 
 			if (!has_samples)
 				continue;
@@ -536,7 +569,7 @@ namespace polyfem
 		for (const auto &lb : local_neumann_boundary)
 		{
 			const int e = lb.element_id();
-			bool has_samples = boundary_quadrature(lb, resolution, false, uv, points, normals, weights, global_primitive_ids);
+			bool has_samples = BoundarySampler::boundary_quadrature(lb, resolution, mesh_, false, uv, points, normals, weights, global_primitive_ids);
 
 			if (!has_samples)
 				continue;
@@ -591,32 +624,44 @@ namespace polyfem
 	void RhsAssembler::set_bc(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t) const
 	{
 		set_bc(
-			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val)
-			{ problem_.bc(mesh_, global_ids, uv, pts, t, val); },
-			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, Eigen::MatrixXd &val)
-			{ problem_.neumann_bc(mesh_, global_ids, uv, pts, normals, t, val); },
+			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) {
+				problem_.bc(mesh_, global_ids, uv, pts, t, val);
+			},
+			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, Eigen::MatrixXd &val) {
+				problem_.neumann_bc(mesh_, global_ids, uv, pts, normals, t, val);
+			},
 			local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs);
+
+		obstacle_.update_displacement(t, rhs);
 	}
 
-	void RhsAssembler::set_velocity_bc(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t) const
-	{
-		set_bc(
-			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val)
-			{ problem_.velocity_bc(mesh_, global_ids, uv, pts, t, val); },
-			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, Eigen::MatrixXd &val)
-			{ problem_.neumann_velocity_bc(mesh_, global_ids, uv, pts, normals, t, val); },
-			local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs);
-	}
+	// void RhsAssembler::set_velocity_bc(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t) const
+	// {
+	// 	set_bc(
+	// 		[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) {
+	// 			problem_.velocity_bc(mesh_, global_ids, uv, pts, t, val);
+	// 		},
+	// 		[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, Eigen::MatrixXd &val) {
+	// 			problem_.neumann_velocity_bc(mesh_, global_ids, uv, pts, normals, t, val);
+	// 		},
+	// 		local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs);
 
-	void RhsAssembler::set_acceleration_bc(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t) const
-	{
-		set_bc(
-			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val)
-			{ problem_.acceleration_bc(mesh_, global_ids, uv, pts, t, val); },
-			[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, Eigen::MatrixXd &val)
-			{ problem_.neumann_acceleration_bc(mesh_, global_ids, uv, pts, normals, t, val); },
-			local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs);
-	}
+	// 	obstacle_.set_zero(rhs);
+	// }
+
+	// void RhsAssembler::set_acceleration_bc(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const double t) const
+	// {
+	// 	set_bc(
+	// 		[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) {
+	// 			problem_.acceleration_bc(mesh_, global_ids, uv, pts, t, val);
+	// 		},
+	// 		[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, Eigen::MatrixXd &val) {
+	// 			problem_.neumann_acceleration_bc(mesh_, global_ids, uv, pts, normals, t, val);
+	// 		},
+	// 		local_boundary, bounday_nodes, resolution, local_neumann_boundary, rhs);
+
+	// 	obstacle_.set_zero(rhs);
+	// }
 
 	void RhsAssembler::compute_energy_grad(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const Density &density, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, const Eigen::MatrixXd &final_rhs, const double t, Eigen::MatrixXd &rhs) const
 	{
@@ -650,98 +695,63 @@ namespace polyfem
 
 		if (!problem_.is_rhs_zero())
 		{
-#if defined(POLYFEM_WITH_CPP_THREADS)
-			std::vector<LocalThreadScalarStorage> storages(polyfem::get_n_threads());
-#elif defined(POLYFEM_WITH_TBB)
-			typedef tbb::enumerable_thread_specific<LocalThreadScalarStorage> LocalStorage;
-			LocalStorage storages((LocalThreadScalarStorage()));
-#else
-			LocalThreadScalarStorage loc_storage;
-			Eigen::MatrixXd forces;
-#endif
-
+			auto storage = create_thread_storage(LocalThreadScalarStorage());
 			const int n_bases = int(bases_.size());
 
-#if defined(POLYFEM_WITH_CPP_THREADS)
-			polyfem::par_for(n_bases, [&](int start, int end, int t)
-							 {
-								 auto &loc_storage = storages[t];
-								 Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
-								 Eigen::MatrixXd forces;
-								 for (int e = start; e < end; ++e)
-								 {
-#elif defined(POLYFEM_WITH_TBB)
-			tbb::parallel_for(tbb::blocked_range<int>(0, n_bases), [&](const tbb::blocked_range<int> &r) {
-				LocalStorage::reference loc_storage = storages.local();
-				Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
+			maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+				LocalThreadScalarStorage &local_storage = get_local_thread_storage(storage, thread_id);
+				VectorNd local_displacement(size_);
 				Eigen::MatrixXd forces;
-				for (int e = r.begin(); e != r.end(); ++e)
+
+				for (int e = start; e < end; ++e)
 				{
-#else
-			Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
+					ElementAssemblyValues &vals = local_storage.vals;
+					// vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
+					ass_vals_cache_.compute(e, mesh_.is_volume(), bases_[e], gbases_[e], vals);
 
-			for (int e = 0; e < n_bases; ++e)
-			{
-#endif
-									 ElementAssemblyValues &vals = loc_storage.vals;
-									 vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
+					const Quadrature &quadrature = vals.quadrature;
+					const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
-									 const Quadrature &quadrature = vals.quadrature;
-									 const Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
+					problem_.rhs(assembler_, formulation_, vals.val, t, forces);
+					assert(forces.rows() == da.size());
+					assert(forces.cols() == size_);
 
-									 problem_.rhs(assembler_, formulation_, vals.val, t, forces);
-									 assert(forces.rows() == da.size());
-									 assert(forces.cols() == size_);
+					for (long p = 0; p < da.size(); ++p)
+					{
+						local_displacement.setZero();
 
-									 for (long p = 0; p < da.size(); ++p)
-									 {
-										 local_displacement.setZero();
+						for (size_t i = 0; i < vals.basis_values.size(); ++i)
+						{
+							const auto &bs = vals.basis_values[i];
+							assert(bs.val.size() == da.size());
+							const double b_val = bs.val(p);
 
-										 for (size_t i = 0; i < vals.basis_values.size(); ++i)
-										 {
-											 const auto &bs = vals.basis_values[i];
-											 assert(bs.val.size() == da.size());
-											 const double b_val = bs.val(p);
+							for (int d = 0; d < size_; ++d)
+							{
+								for (std::size_t ii = 0; ii < bs.global.size(); ++ii)
+								{
+									local_displacement(d) += (bs.global[ii].val * b_val) * displacement(bs.global[ii].index * size_ + d);
+								}
+							}
+						}
+						// const double rho = problem_.is_time_dependent() ? density(vals.quadrature.points.row(p), vals.val.row(p), vals.element_id) : 1;
+						const double rho = density(vals.quadrature.points.row(p), vals.val.row(p), vals.element_id);
 
-											 for (int d = 0; d < size_; ++d)
-											 {
-												 for (std::size_t ii = 0; ii < bs.global.size(); ++ii)
-												 {
-													 local_displacement(d) += (bs.global[ii].val * b_val) * displacement(bs.global[ii].index * size_ + d);
-												 }
-											 }
-										 }
-										 const double rho = density(vals.val(p, 0), vals.val(p, 1), vals.val.cols() == 2 ? 0. : vals.val(p, 2), vals.element_id);
-
-										 for (int d = 0; d < size_; ++d)
-										 {
-											 loc_storage.val += forces(p, d) * local_displacement(d) * da(p) * rho;
-											 // res += forces(p, d) * local_displacement(d) * da(p);
-										 }
-									 }
-#if defined(POLYFEM_WITH_CPP_THREADS) || defined(POLYFEM_WITH_TBB)
-								 }
-							 });
-#else
+						for (int d = 0; d < size_; ++d)
+						{
+							local_storage.val += forces(p, d) * local_displacement(d) * da(p) * rho;
+							// res += forces(p, d) * local_displacement(d) * da(p);
+						}
+					}
 				}
-#endif
+			});
 
-#if defined(POLYFEM_WITH_CPP_THREADS)
-			for (const auto &t : storages)
-			{
-				res += t.val;
-			}
-#elif defined(POLYFEM_WITH_TBB)
-				for (LocalStorage::iterator i = storages.begin(); i != storages.end(); ++i)
-				{
-					res += i->val;
-				}
-#else
-				res = loc_storage.val;
-#endif
+			// Serially merge local storages
+			for (const LocalThreadScalarStorage &local_storage : storage)
+				res += local_storage.val;
 		}
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> local_displacement(size_);
+		VectorNd local_displacement(size_);
 		Eigen::MatrixXd forces;
 
 		ElementAssemblyValues vals;
@@ -752,7 +762,7 @@ namespace polyfem
 		for (const auto &lb : local_neumann_boundary)
 		{
 			const int e = lb.element_id();
-			bool has_samples = boundary_quadrature(lb, resolution, false, uv, points, normals, weights, global_primitive_ids);
+			bool has_samples = BoundarySampler::boundary_quadrature(lb, resolution, mesh_, false, uv, points, normals, weights, global_primitive_ids);
 
 			if (!has_samples)
 				continue;
@@ -796,122 +806,6 @@ namespace polyfem
 		}
 
 		return res;
-	}
-
-	bool RhsAssembler::boundary_quadrature(const LocalBoundary &local_boundary, const int order, const bool skip_computation, Eigen::MatrixXd &uv, Eigen::MatrixXd &points, Eigen::MatrixXd &normals, Eigen::VectorXd &weights, Eigen::VectorXi &global_primitive_ids) const
-	{
-		uv.resize(0, 0);
-		points.resize(0, 0);
-		normals.resize(0, 0);
-		weights.resize(0);
-		global_primitive_ids.resize(0);
-
-		for (int i = 0; i < local_boundary.size(); ++i)
-		{
-			const int gid = local_boundary.global_primitive_id(i);
-			Eigen::MatrixXd tmp_p, tmp_uv, tmp_n;
-			Eigen::VectorXd tmp_w;
-			switch (local_boundary.type())
-			{
-			case BoundaryType::TriLine:
-				BoundarySampler::quadrature_for_tri_edge(local_boundary[i], order, gid, mesh_, tmp_uv, tmp_p, tmp_w);
-				BoundarySampler::normal_for_tri_edge(local_boundary[i], tmp_n);
-				break;
-			case BoundaryType::QuadLine:
-				BoundarySampler::quadrature_for_quad_edge(local_boundary[i], order, gid, mesh_, tmp_uv, tmp_p, tmp_w);
-				BoundarySampler::normal_for_quad_edge(local_boundary[i], tmp_n);
-				break;
-			case BoundaryType::Quad:
-				BoundarySampler::quadrature_for_quad_face(local_boundary[i], order, gid, mesh_, tmp_uv, tmp_p, tmp_w);
-				BoundarySampler::normal_for_quad_face(local_boundary[i], tmp_n);
-				break;
-			case BoundaryType::Tri:
-				BoundarySampler::quadrature_for_tri_face(local_boundary[i], order, gid, mesh_, tmp_uv, tmp_p, tmp_w);
-				BoundarySampler::normal_for_tri_face(local_boundary[i], tmp_n);
-				break;
-			case BoundaryType::Polygon:
-				BoundarySampler::quadrature_for_polygon_edge(local_boundary.element_id(), local_boundary.global_primitive_id(i), order, mesh_, tmp_uv, tmp_p, tmp_w);
-				BoundarySampler::normal_for_polygon_edge(local_boundary.element_id(), local_boundary.global_primitive_id(i), mesh_, tmp_n);
-				break;
-			case BoundaryType::Invalid:
-				assert(false);
-				break;
-			default:
-				assert(false);
-			}
-
-			uv.conservativeResize(uv.rows() + tmp_uv.rows(), tmp_uv.cols());
-			uv.bottomRows(tmp_uv.rows()) = tmp_uv;
-
-			points.conservativeResize(points.rows() + tmp_p.rows(), tmp_p.cols());
-			points.bottomRows(tmp_p.rows()) = tmp_p;
-
-			normals.conservativeResize(normals.rows() + tmp_p.rows(), tmp_p.cols());
-			for (int k = normals.rows() - tmp_p.rows(); k < normals.rows(); ++k)
-				normals.row(k) = tmp_n;
-
-			weights.conservativeResize(weights.rows() + tmp_w.rows(), tmp_w.cols());
-			weights.bottomRows(tmp_w.rows()) = tmp_w;
-
-			global_primitive_ids.conservativeResize(global_primitive_ids.rows() + tmp_p.rows());
-			global_primitive_ids.bottomRows(tmp_p.rows()).setConstant(gid);
-		}
-
-		assert(uv.rows() == global_primitive_ids.size());
-		assert(points.rows() == global_primitive_ids.size());
-		assert(normals.rows() == global_primitive_ids.size());
-		assert(weights.size() == global_primitive_ids.size());
-
-		return true;
-	}
-
-	bool RhsAssembler::sample_boundary(const LocalBoundary &local_boundary, const int n_samples, const bool skip_computation, Eigen::MatrixXd &uv, Eigen::MatrixXd &samples, Eigen::VectorXi &global_primitive_ids) const
-	{
-		uv.resize(0, 0);
-		samples.resize(0, 0);
-		global_primitive_ids.resize(0);
-
-		for (int i = 0; i < local_boundary.size(); ++i)
-		{
-			Eigen::MatrixXd tmp, tmp_uv;
-			switch (local_boundary.type())
-			{
-			case BoundaryType::TriLine:
-				BoundarySampler::sample_parametric_tri_edge(local_boundary[i], n_samples, tmp_uv, tmp);
-				break;
-			case BoundaryType::QuadLine:
-				BoundarySampler::sample_parametric_quad_edge(local_boundary[i], n_samples, tmp_uv, tmp);
-				break;
-			case BoundaryType::Quad:
-				BoundarySampler::sample_parametric_quad_face(local_boundary[i], n_samples, tmp_uv, tmp);
-				break;
-			case BoundaryType::Tri:
-				BoundarySampler::sample_parametric_tri_face(local_boundary[i], n_samples, tmp_uv, tmp);
-				break;
-			case BoundaryType::Polygon:
-				BoundarySampler::sample_polygon_edge(local_boundary.element_id(), local_boundary.global_primitive_id(i), n_samples, mesh_, tmp_uv, tmp);
-				break;
-			case BoundaryType::Invalid:
-				assert(false);
-				break;
-			default:
-				assert(false);
-			}
-
-			uv.conservativeResize(uv.rows() + tmp_uv.rows(), tmp_uv.cols());
-			uv.bottomRows(tmp_uv.rows()) = tmp_uv;
-
-			samples.conservativeResize(samples.rows() + tmp.rows(), tmp.cols());
-			samples.bottomRows(tmp.rows()) = tmp;
-
-			global_primitive_ids.conservativeResize(global_primitive_ids.rows() + tmp.rows());
-			global_primitive_ids.bottomRows(tmp.rows()).setConstant(local_boundary.global_primitive_id(i));
-		}
-
-		assert(uv.rows() == global_primitive_ids.size());
-		assert(samples.rows() == global_primitive_ids.size());
-
-		return true;
 	}
 
 } // namespace polyfem

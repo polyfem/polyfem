@@ -21,4 +21,4 @@ namespace polyfem
 		std::for_each(threads.begin(), threads.end(), [](std::thread &x) { x.join(); });
 #endif
 	}
-}
+} // namespace polyfem

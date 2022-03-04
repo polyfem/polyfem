@@ -30,6 +30,7 @@ namespace polyfem
 				return std::make_shared<NoInterpolation>();
 		}
 
+		//verify
 		template <typename XMLNode>
 		bool load_control(const XMLNode *control, json &args)
 		{
@@ -121,6 +122,7 @@ namespace polyfem
 				V.row(i) = vertices[i].transpose();
 		}
 
+		//Need to chage!
 		template <typename XMLNode>
 		int load_elements(const XMLNode *geometry, const int numV, const std::map<int, std::tuple<double, double, double, std::string>> &materials, Eigen::MatrixXi &T, std::vector<std::vector<int>> &nodes, Eigen::MatrixXd &Es, Eigen::MatrixXd &nus, Eigen::MatrixXd &rhos, std::vector<std::string> &mats, std::vector<int> &mids)
 		{
@@ -326,6 +328,7 @@ namespace polyfem
 			}
 		}
 
+		//Need to chage!
 		template <typename XMLNode>
 		void load_boundary_conditions(const XMLNode *boundaries, const std::map<std::string, int> &names, const double dt, const std::string &root_file, GenericTensorProblem &gproblem)
 		{
@@ -469,8 +472,7 @@ namespace polyfem
 				logger().trace("adding vector Dirichlet id={} centers={} values={} rbf={} eps={}", id, centers, values, rbf, eps);
 
 				gproblem.add_dirichlet_boundary(
-					id, [interp](double x, double y, double z, double t)
-					{
+					id, [interp](double x, double y, double z, double t) {
 						Eigen::Matrix<double, 3, 1> v;
 						v[0] = x;
 						v[1] = y;
@@ -507,8 +509,7 @@ namespace polyfem
 				const double scaling = atof(factors.c_str());
 				logger().trace("adding scaling Dirichlet id={} center=({},{},{}) scaling={}", id, center(0), center(1), center(2), scaling);
 				gproblem.add_dirichlet_boundary(
-					id, [center, scaling, is_time_dept](double x, double y, double z, double t)
-					{
+					id, [center, scaling, is_time_dept](double x, double y, double z, double t) {
 						Eigen::Matrix<double, 3, 1> v;
 						Eigen::Matrix<double, 3, 1> target;
 						v[0] = x;
@@ -526,6 +527,7 @@ namespace polyfem
 			}
 		}
 
+		//Need to chage!
 		template <typename XMLNode>
 		void load_loads(const XMLNode *loads, const std::map<std::string, int> &names, const double dt, GenericTensorProblem &gproblem)
 		{
@@ -576,6 +578,7 @@ namespace polyfem
 			}
 		}
 
+		//Need to chage!
 		template <typename XMLNode>
 		void load_body_loads(const XMLNode *loads, const std::map<std::string, int> &names, GenericTensorProblem &gproblem)
 		{
@@ -697,41 +700,21 @@ namespace polyfem
 				state.has_dhat = false;
 			}
 
-			if (!args_in.contains("project_to_psd"))
-				state.args["project_to_psd"] = true;
-
 			if (!args_in.contains("line_search"))
 				state.args["line_search"] = "bisection";
 
 			if (args_in.contains("solver_params"))
 			{
-				if (!args_in["solver_params"].contains("gradNorm"))
-					state.args["solver_params"]["gradNorm"] = 1e-5;
-
 				if (!args_in["solver_params"].contains("nl_iterations"))
 					state.args["solver_params"]["nl_iterations"] = 200;
-
-				if (!args_in["solver_params"].contains("useGradNorm"))
-					state.args["solver_params"]["useGradNorm"] = false;
-
-				if (!args_in["solver_params"].contains("conv_tol"))
-					state.args["solver_params"]["conv_tol"] = 1e-6;
 			}
 			else
 			{
-				state.args["solver_params"]["gradNorm"] = 1e-5;
 				state.args["solver_params"]["nl_iterations"] = 200;
-				state.args["solver_params"]["useGradNorm"] = false;
-				state.args["solver_params"]["conv_tol"] = 1e-6;
 			}
 		}
 
 		logger().trace("has_collision={}, dhat={}", has_collisions, double(state.args["dhat"]));
-		logger().trace("gradNorm={} nl_iterations={} useGradNorm={} conv_tol={}",
-					   state.args["solver_params"].contains("gradNorm") ? double(state.args["solver_params"]["gradNorm"]) : -1,
-					   state.args["solver_params"].contains("nl_iterations") ? int(state.args["solver_params"]["nl_iterations"]) : -1,
-					   state.args["solver_params"].contains("useGradNorm") ? bool(state.args["solver_params"]["useGradNorm"]) : false,
-					   state.args["solver_params"].contains("conv_tol") ? double(state.args["solver_params"]["conv_tol"]) : -1);
 
 		if (!args_in.contains("compute_error"))
 			state.args["compute_error"] = false;
@@ -774,33 +757,32 @@ namespace polyfem
 		std::vector<std::vector<int>> nodeSet;
 		std::map<std::string, int> names;
 		load_node_sets(geometry, V.rows(), nodeSet, names);
-		state.mesh->compute_boundary_ids([&nodeSet](const std::vector<int> &vs, bool is_boundary)
-										 {
-											 if (!is_boundary)
-												 return 0;
-											 std::vector<int> tmp;
-											 for (const int v : vs)
-												 tmp.insert(tmp.end(), nodeSet[v].begin(), nodeSet[v].end());
+		state.mesh->compute_boundary_ids([&nodeSet](const std::vector<int> &vs, bool is_boundary) {
+			if (!is_boundary)
+				return 0;
+			std::vector<int> tmp;
+			for (const int v : vs)
+				tmp.insert(tmp.end(), nodeSet[v].begin(), nodeSet[v].end());
 
-											 std::sort(tmp.begin(), tmp.end());
+			std::sort(tmp.begin(), tmp.end());
 
-											 int prev = -1;
-											 int count = 1;
-											 for (const int id : tmp)
-											 {
-												 if (id == prev)
-													 count++;
-												 else
-												 {
-													 count = 1;
-													 prev = id;
-												 }
-												 if (count == vs.size())
-													 return prev;
-											 }
+			int prev = -1;
+			int count = 1;
+			for (const int id : tmp)
+			{
+				if (id == prev)
+					count++;
+				else
+				{
+					count = 1;
+					prev = id;
+				}
+				if (count == vs.size())
+					return prev;
+			}
 
-											 return 0;
-										 });
+			return 0;
+		});
 
 		state.problem = ProblemFactory::factory().get_problem("GenericTensor");
 		GenericTensorProblem &gproblem = *dynamic_cast<GenericTensorProblem *>(state.problem.get());

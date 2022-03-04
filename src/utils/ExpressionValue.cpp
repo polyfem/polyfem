@@ -1,6 +1,8 @@
 #include <polyfem/ExpressionValue.hpp>
 #include <polyfem/Logger.hpp>
 
+#include <igl/PI.h>
+
 namespace polyfem
 {
 	ExpressionValue::~ExpressionValue()
@@ -32,8 +34,21 @@ namespace polyfem
 		value_ = val;
 	}
 
-	static double max(double a, double b) { return a > b ? a : b; }
 	static double min(double a, double b) { return a < b ? a : b; }
+	static double max(double a, double b) { return a > b ? a : b; }
+	static double deg2rad(double d) { return d * igl::PI / 180.0; }
+	static double rotate_2D_x(double x, double y, double theta)
+	{
+		return x * cos(theta) - y * sin(theta);
+	}
+	static double rotate_2D_y(double x, double y, double theta)
+	{
+		return x * sin(theta) + y * cos(theta);
+	}
+	static double smooth_abs(double x, double k)
+	{
+		return tanh(k * x) * x;
+	}
 
 	void ExpressionValue::init(const std::string &expr)
 	{
@@ -50,20 +65,25 @@ namespace polyfem
 
 		double x = 0, y = 0, z = 0, t = 0;
 
-		te_variable vars[] = {
-			{"max", (const void *)max, TE_FUNCTION2},
-			{"min", (const void *)min, TE_FUNCTION2},
+		std::vector<te_variable> vars = {
 			{"x", &x, TE_VARIABLE},
 			{"y", &y, TE_VARIABLE},
 			{"z", &z, TE_VARIABLE},
 			{"t", &t, TE_VARIABLE},
+			{"min", (const void *)min, TE_FUNCTION2},
+			{"max", (const void *)max, TE_FUNCTION2},
+			{"deg2rad", (const void *)deg2rad, TE_FUNCTION1},
+			{"rotate_2D_x", (const void *)rotate_2D_x, TE_FUNCTION3},
+			{"rotate_2D_y", (const void *)rotate_2D_y, TE_FUNCTION3},
+			{"smooth_abs", (const void *)smooth_abs, TE_FUNCTION2},
 		};
 
 		int err;
-		te_expr *tmp = te_compile(expr.c_str(), vars, 6, &err);
+		te_expr *tmp = te_compile(expr.c_str(), vars.data(), vars.size(), &err);
 		if (!tmp)
 		{
-			logger().error("Unable to parse {}, error, {}", expr, err);
+			logger().error("Unable to parse: {}", expr);
+			logger().error("Error near here: {0: >{1}}", "^", err - 1);
 			assert(false);
 		}
 		te_free(tmp);
@@ -87,8 +107,7 @@ namespace polyfem
 		tfunc_ = nullptr;
 		value_ = 0;
 
-		sfunc_ = [func](double x, double y, double z, double t)
-		{ return func(x, y, z); };
+		sfunc_ = [func](double x, double y, double z, double t) { return func(x, y, z); };
 	}
 
 	void ExpressionValue::init(const std::function<Eigen::MatrixXd(double x, double y, double z)> &func, const int coo)
@@ -97,8 +116,7 @@ namespace polyfem
 		sfunc_ = nullptr;
 		value_ = 0;
 
-		tfunc_ = [func](double x, double y, double z, double t)
-		{ return func(x, y, z); };
+		tfunc_ = [func](double x, double y, double z, double t) { return func(x, y, z); };
 		tfunc_coo_ = coo;
 	}
 
@@ -134,17 +152,21 @@ namespace polyfem
 			return value_;
 		}
 
-		te_variable vars[] = {
-			{"max", (const void *)max, TE_FUNCTION2},
-			{"min", (const void *)min, TE_FUNCTION2},
+		std::vector<te_variable> vars = {
 			{"x", &x, TE_VARIABLE},
 			{"y", &y, TE_VARIABLE},
 			{"z", &z, TE_VARIABLE},
 			{"t", &t, TE_VARIABLE},
+			{"min", (const void *)min, TE_FUNCTION2},
+			{"max", (const void *)max, TE_FUNCTION2},
+			{"deg2rad", (const void *)deg2rad, TE_FUNCTION1},
+			{"rotate_2D_x", (const void *)rotate_2D_x, TE_FUNCTION3},
+			{"rotate_2D_y", (const void *)rotate_2D_y, TE_FUNCTION3},
+			{"smooth_abs", (const void *)smooth_abs, TE_FUNCTION2},
 		};
 
 		int err;
-		te_expr *tmp = te_compile(expr_.c_str(), vars, 6, &err);
+		te_expr *tmp = te_compile(expr_.c_str(), vars.data(), vars.size(), &err);
 		assert(tmp != nullptr);
 		const auto res = te_eval(tmp);
 		te_free(tmp);

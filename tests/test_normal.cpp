@@ -3,7 +3,7 @@
 #include <polyfem/TriQuadrature.hpp>
 #include <polyfem/BoundarySampler.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 #include <iostream>
 ////////////////////////////////////////////////////////////////////////////////
 

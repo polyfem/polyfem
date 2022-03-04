@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <functional>
 
-#include <ghc/fs_std.hpp> // filesystem
+#include <filesystem>
 
 // Split a string into tokens
 std::vector<std::string> polyfem::StringUtils::split(const std::string &str, const std::string &delimiters)
@@ -45,7 +45,7 @@ bool polyfem::StringUtils::startswith(const std::string &str, const std::string 
 }
 
 // Tests whether a string ends with a given suffix
-bool polyfem::StringUtils::endswidth(const std::string &str, const std::string &suffix)
+bool polyfem::StringUtils::endswith(const std::string &str, const std::string &suffix)
 {
 	if (str.length() >= suffix.length())
 	{
@@ -109,17 +109,17 @@ std::string polyfem::resolve_path(
 		return path;
 	}
 
-	fs::path resolved_path(path);
+	std::filesystem::path resolved_path(path);
 	if (resolved_path.is_absolute())
 	{
 		return resolved_path.string();
 	}
-	else if (fs::exists(resolved_path))
+	else if (std::filesystem::exists(resolved_path))
 	{
-		return fs::weakly_canonical(resolved_path).string();
+		return std::filesystem::weakly_canonical(resolved_path).string();
 	}
 
-	return fs::weakly_canonical(
-			   fs::path(input_file_path).parent_path() / resolved_path)
+	return std::filesystem::weakly_canonical(
+			   std::filesystem::path(input_file_path).parent_path() / resolved_path)
 		.string();
 }

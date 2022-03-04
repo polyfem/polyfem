@@ -1,36 +1,11 @@
-################################################################################
-# Find Geogram and build it as part of the current build
-################################################################################
+# Geogram
+# License: (BSD)
 
 if(TARGET geogram)
-	return()
+    return()
 endif()
 
-################################################################################
-
-if(THIRD_PARTY_DIR)
-	set(GEOGRAM_SEARCH_PATHS ${THIRD_PARTY_DIR})
-else()
-	# set(GEOGRAM_SEARCH_PATHS
-	# 	${GEOGRAM_INSTALL_PREFIX}
-	# 	"$ENV{GEOGRAM_INSTALL_PREFIX}"
-	# 	"/usr/local/"
-	# 	"$ENV{PROGRAMFILES}/Geogram"
-	# 	"$ENV{PROGRAMW6432}/Geogram"
-	# 	"$ENV{HOME}/.local/")
-endif()
-
-find_path(GEOGRAM_SOURCE_INCLUDE_DIR
-		geogram/basic/common.h
-		PATHS ${GEOGRAM_SEARCH_PATHS}
-		PATH_SUFFIXES geogram/src/lib
-		NO_DEFAULT_PATH
-)
-
-set(GEOGRAM_ROOT ${GEOGRAM_SOURCE_INCLUDE_DIR}/../..)
-
-message("Found Geogram here: ${GEOGRAM_ROOT}")
-################################################################################
+message(STATUS "Third-party: creating target 'geogram'")
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	set(VORPALINE_ARCH_64 TRUE CACHE BOOL "" FORCE)
@@ -62,7 +37,27 @@ endif()
 
 ################################################################################
 
-add_subdirectory(${GEOGRAM_ROOT} geogram)
+include(FetchContent)
+FetchContent_Declare(
+    polyfem_geogram
+	GIT_REPOSITORY https://github.com/polyfem/geogram.git
+	GIT_TAG        516c151c244d9019a9076a1a468d52a0f6dd195d
+    GIT_SHALLOW FALSE
+)
+FetchContent_MakeAvailable(polyfem_geogram)
+
+find_path(GEOGRAM_SOURCE_INCLUDE_DIR
+		geogram/basic/common.h
+		PATHS ${polyfem_geogram_SOURCE_DIR}
+		PATH_SUFFIXES src/lib
+		NO_DEFAULT_PATH
+)
+
+set(GEOGRAM_ROOT ${GEOGRAM_SOURCE_INCLUDE_DIR}/../..)
+
+message(STATUS "Found Geogram here: ${GEOGRAM_ROOT}")
+
+# add_subdirectory(${GEOGRAM_ROOT} geogram)
 target_include_directories(geogram SYSTEM PUBLIC ${GEOGRAM_SOURCE_INCLUDE_DIR})
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
@@ -80,7 +75,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     		target_link_libraries(OpenMP_TARGET INTERFACE ${OpenMP_CXX_FLAGS})
 	endif()
 
-	target_link_libraries(polyfem PUBLIC OpenMP::OpenMP_CXX)
+	target_link_libraries(geogram PUBLIC OpenMP::OpenMP_CXX)
 endif()
 
 ################################################################################
@@ -100,13 +95,7 @@ if(MSVC OR MSYS)
 
 	# we want M_PI etc...
 	target_compile_definitions(geogram INTERFACE -D_USE_MATH_DEFINES)
-
-	# if(NOT VORPALINE_BUILD_DYNAMIC)
-	# 	# If we use static library, we link with the static C++ runtime.
-	# 	foreach(config ${CMAKE_CONFIGURATION_TYPES})
-	# 		string(TOUPPER ${config} config)
-	# 		string(REPLACE /MD /MT CMAKE_C_FLAGS_${config} "${CMAKE_C_FLAGS_${config}}")
-	# 		string(REPLACE /MD /MT CMAKE_CXX_FLAGS_${config} "${CMAKE_CXX_FLAGS_${config}}")
-	# 	endforeach()
-	# endif()
 endif()
+
+
+

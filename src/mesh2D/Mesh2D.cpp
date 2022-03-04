@@ -88,7 +88,7 @@ namespace polyfem
 
 		// mesh_.clear(false,false);
 
-		// if (!StringUtils::endswidth(path, "msh"))
+		// if (!StringUtils::endswith(path, "msh"))
 		// {
 		// 	Eigen::MatrixXd vertices;
 		// 	Eigen::MatrixXi cells;

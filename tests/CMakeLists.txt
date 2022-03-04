@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 3.1)
+################################################################################
+# Tests
 ################################################################################
 
 set(test_sources
@@ -15,25 +16,60 @@ set(test_sources
 	test_utils.cpp
 )
 
-polyfem_download_polyfem_data()
-
 add_executable(unit_tests ${test_sources})
+
+################################################################################
+# Required Libraries
+################################################################################
+
+target_link_libraries(unit_tests PUBLIC polyfem::polyfem)
+
+target_link_libraries(unit_tests PUBLIC warnings::all)
+
+include(catch2)
+target_link_libraries(unit_tests PUBLIC Catch2::Catch2)
+
+################################################################################
+# Compiler options
+################################################################################
+
+include(polyfem_data)
+target_compile_definitions(unit_tests PUBLIC -DPOLYFEM_DATA_DIR=\"${POLYFEM_DATA_DIR}\")
+
+target_compile_definitions(unit_tests PUBLIC CATCH_CONFIG_ENABLE_BENCHMARKING)
+
+################################################################################
+# Register tests
+################################################################################
 
 foreach(source IN ITEMS ${test_sources})
     source_group("tests" FILES "${source}")
 endforeach()
 
-target_link_libraries(unit_tests PUBLIC polyfem catch warnings::all)
-
-set(DATA_DIR "${THIRD_PARTY_DIR}/data/")
-target_compile_definitions(unit_tests PUBLIC -DPOLYFEM_DATA_DIR=\"${DATA_DIR}\")
-
-
-if(POLYFEM_WITH_SANITIZERS)
-	add_sanitizers(unit_tests)
-endif()
-
-# Register tests
 set(PARSE_CATCH_TESTS_ADD_TO_CONFIGURE_DEPENDS ON)
-include(Catch)
+
+# Include Catch2 and provide function `catch_discover_tests` to register tests.
+FetchContent_GetProperties(catch2)
+include("${catch2_SOURCE_DIR}/contrib/Catch.cmake")
+
 catch_discover_tests(unit_tests)
+
+################################################################################
+# CUDA
+################################################################################
+
+if(IPC_TOOLKIT_WITH_CUDA)
+  include(CheckLanguage)
+  check_language(CUDA)
+  if(CMAKE_CUDA_COMPILER)
+    enable_language(CUDA)
+  else()
+    message(FATAL_ERROR "No CUDA support found!")
+  endif()
+
+  # Nvidia 1080/1080Ti -> compute_61
+  # Nvidia V100 -> compute_70
+  # Nvidia RTX8000 -> compute_75
+  # Nvidia 3080Ti -> compute_86
+  set_target_properties(unit_tests PROPERTIES CUDA_ARCHITECTURES "70;75;86")
+endif()

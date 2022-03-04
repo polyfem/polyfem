@@ -188,4 +188,48 @@ namespace polyfem
 	///
 	void save_edges(const std::string &filename, const Eigen::MatrixXd &V, const Eigen::MatrixXi &E);
 
+	///
+	/// @brief      fill in missing json mesh parameters with the default values
+	///
+	/// @param[in]  mesh_in  { input json mesh parameters }
+	/// @param[out] mesh_out { output json mesh parameters }
+	///
+	void apply_default_mesh_parameters(const json &mesh_in, json &mesh_out, const std::string &path_prefix = "");
+
+	///
+	/// @brief      read a mesh from json
+	///
+	/// @param[in]  mesh_path             { path to mesh file }
+	/// @param[out] V                     { #V x 3/2 output vertices positions }
+	/// @param[out] C                     { #C cells (e.g., tri/tets/quad/hexes) }
+	/// @param[out] elements              { #C indices for high-order nodes }
+	/// @param[out] w                     { #C weights for rational polynomials }
+	///
+	void read_fem_mesh(const std::string &mesh_path, Eigen::MatrixXd &vertices, Eigen::MatrixXi &cells, std::vector<std::vector<int>> &elements, std::vector<std::vector<double>> &weights);
+
+	///
+	/// @brief      read a surface mesh from json
+	///
+	/// @param[in]  mesh_path      { path to mesh file }
+	/// @param[out] vertices       { #V x 3/2 output vertices positions }
+	/// @param[out] codim_vertices { indicies in vertices for the codimensional vertices }
+	/// @param[out] codim_edges    { indicies in vertices for the codimensional edges }
+	/// @param[out] faces          { indicies in vertices for the surface faces }
+	///
+	void read_surface_mesh(const std::string &mesh_path, Eigen::MatrixXd &vertices, Eigen::VectorXi &codim_vertices, Eigen::MatrixXi &codim_edges, Eigen::MatrixXi &faces);
+
+	///
+	/// @brief         Transform a mesh inplace using json parameters including scaling, rotation, and translation
+	///
+	/// @param[in]     mesh     { json object with the mesh data }
+	/// @param[in,out] vertices { #V x 3/2 input and output vertices positions }
+	///
+	void transform_mesh_from_json(const json &mesh, Eigen::MatrixXd &vertices);
+
+	/// Determine if the given mesh is planar (2D or tiny z-range).
+	bool is_planar(const GEO::Mesh &M, const double tol = 1e-5);
+
+	/// Count the number of boundary elements (triangles for tetmesh and edges for triangle mesh)
+	int count_faces(const int dim, const Eigen::MatrixXi &cells);
+
 } // namespace polyfem

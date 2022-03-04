@@ -441,16 +441,25 @@ namespace polyfem
 		multi_models_elasticity_.local_assembler().init_multimaterial(is_volume, Es, nus);
 		// ogden_elasticity_.local_assembler().init_multimaterial(is_volume, Es, nus);
 
-		// stokes_velocity_.local_assembler().init_multimaterial(is_volume, Es, nus);
-		// stokes_mixed_.local_assembler().init_multimaterial(is_volume, Es, nus);
-		// stokes_pressure_.local_assembler().init_multimaterial(is_volume, Es, nus);
-
-		//navier_stokes_velocity_.local_assembler().init_multimaterial(is_volume, Es, nus);
-		//navier_stokes_velocity_picard_.local_assembler().init_multimaterial(is_volume, Es, nus);
-
 		incompressible_lin_elast_displacement_.local_assembler().init_multimaterial(is_volume, Es, nus);
 		incompressible_lin_elast_mixed_.local_assembler().init_multimaterial(is_volume, Es, nus);
 		incompressible_lin_elast_pressure_.local_assembler().init_multimaterial(is_volume, Es, nus);
+	}
+
+	void AssemblerUtils::update_lame_params(const LameParameters &newParams)
+	{
+		linear_elasticity_.local_assembler().set_params(newParams);
+		linear_elasticity_energy_.local_assembler().set_params(newParams);
+		// hooke_linear_elasticity_.local_assembler().set_params(newParams);
+
+		// saint_venant_elasticity_.local_assembler().set_params(newParams);
+		neo_hookean_elasticity_.local_assembler().set_params(newParams);
+		multi_models_elasticity_.local_assembler().set_params(newParams);
+		// ogden_elasticity_.local_assembler().set_params(newParams);
+
+		incompressible_lin_elast_displacement_.local_assembler().set_params(newParams);
+		incompressible_lin_elast_mixed_.local_assembler().set_params(newParams);
+		incompressible_lin_elast_pressure_.local_assembler().set_params(newParams);
 	}
 
 	void AssemblerUtils::init_multimodels(const std::vector<std::string> &materials)

@@ -1,17 +1,13 @@
 #include <polyfem/MatrixUtils.hpp>
 
-#include <polyfem/par_for.hpp>
-
+#include <polyfem/MaybeParallelFor.hpp>
 #include <polyfem/Logger.hpp>
 
 #include <igl/list_to_matrix.h>
 
-#ifdef POLYFEM_WITH_TBB
-#include <tbb/parallel_for.h>
-#endif
-
 #include <iostream>
 #include <fstream>
+#include <iomanip> // setprecision
 #include <vector>
 
 void polyfem::show_matrix_stats(const Eigen::MatrixXd &M)
@@ -71,6 +67,25 @@ bool polyfem::read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynam
 	return true;
 }
 
+template <typename Mat>
+bool polyfem::write_matrix(const std::string &path, const Mat &mat)
+{
+	std::ofstream out(path);
+	if (!out.good())
+	{
+		logger().error("Failed to write to file: {}", path);
+		out.close();
+
+		return false;
+	}
+
+	out.precision(15);
+	out << mat;
+	out.close();
+
+	return true;
+}
+
 template <typename T>
 bool polyfem::read_matrix_binary(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat)
 {
@@ -116,6 +131,36 @@ bool polyfem::write_matrix_binary(const std::string &path, const Mat &mat)
 	out.write((const char *)(&cols), sizeof(Index));
 	out.write((const char *)mat.data(), rows * cols * sizeof(Scalar));
 	out.close();
+
+	return true;
+}
+
+bool polyfem::write_sparse_matrix_csv(const std::string &path, const Eigen::SparseMatrix<double> &mat)
+{
+	std::ofstream csv(path, std::ios::out);
+
+	if (!csv.good())
+	{
+		logger().error("Failed to write to file: {}", path);
+		csv.close();
+
+		return false;
+	}
+
+	csv << std::setprecision(std::numeric_limits<long double>::digits10 + 2);
+
+	csv << fmt::format("shape,{},{}\n", mat.rows(), mat.cols());
+	csv << "Row,Col,Val\n";
+	for (int k = 0; k < mat.outerSize(); ++k)
+	{
+		for (Eigen::SparseMatrix<double>::InnerIterator it(mat, k); it; ++it)
+		{
+			csv << it.row() << "," // row index
+				<< it.col() << "," // col index (here it is equal to k)
+				<< it.value() << "\n";
+		}
+	}
+	csv.close();
 
 	return true;
 }
@@ -188,27 +233,45 @@ void polyfem::SpareMatrixCache::set_zero()
 	std::fill(values_.begin(), values_.end(), 0);
 }
 
-void polyfem::SpareMatrixCache::add_value(const int i, const int j, const double value)
+void polyfem::SpareMatrixCache::add_value(const int e, const int i, const int j, const double value)
 {
 	if (mapping().empty())
 	{
 		entries_.emplace_back(i, j, value);
+		if (second_cache_entries_.size() <= e)
+			second_cache_entries_.resize(e + 1);
+		second_cache_entries_[e].emplace_back(i, j);
 	}
 	else
 	{
-		//mapping()[i].find(j)
-		const auto &map = mapping()[i];
-		bool found = false;
-		for (const auto &p : map)
+		if (use_second_cache_)
 		{
-			if (p.first == j)
+			if (e != current_e_)
 			{
-				assert(p.second < values_.size());
-				values_[p.second] += value;
-				found = true;
+				current_e_ = e;
+				current_e_index_ = 0;
 			}
+
+			values_[second_cache()[e][current_e_index_]] += value;
+			current_e_index_++;
 		}
-		assert(found);
+		else
+		{
+			//mapping()[i].find(j)
+			const auto &map = mapping()[i];
+			bool found = false;
+			for (const auto &p : map)
+			{
+				if (p.first == j)
+				{
+					assert(p.second < values_.size());
+					values_[p.second] += value;
+					found = true;
+					break;
+				}
+			}
+			assert(found);
+		}
 	}
 }
 
@@ -267,6 +330,39 @@ polyfem::StiffnessMatrix polyfem::SpareMatrixCache::get_matrix(const bool comput
 			}
 
 			logger().trace("Cache computed");
+
+			if (use_second_cache_)
+			{
+				second_cache_.clear();
+				second_cache_.resize(second_cache_entries_.size());
+				for (int e = 0; e < second_cache_entries_.size(); ++e)
+				{
+					for (const auto &p : second_cache_entries_[e])
+					{
+						const int i = p.first;
+						const int j = p.second;
+
+						const auto &map = mapping()[i];
+						int index = -1;
+						for (const auto &p : map)
+						{
+							if (p.first == j)
+							{
+								assert(p.second < values_.size());
+								index = p.second;
+								break;
+							}
+						}
+						assert(index >= 0);
+
+						second_cache_[e].emplace_back(index);
+					}
+				}
+
+				second_cache_entries_.resize(0);
+
+				logger().trace("Second cache computed");
+			}
 		}
 	}
 	else
@@ -275,7 +371,16 @@ polyfem::StiffnessMatrix polyfem::SpareMatrixCache::get_matrix(const bool comput
 		const auto &outer_index = main_cache_ == nullptr ? outer_index_ : main_cache_->outer_index_;
 		const auto &inner_index = main_cache_ == nullptr ? inner_index_ : main_cache_->inner_index_;
 		mat_ = Eigen::Map<const StiffnessMatrix>(size_, size_, values_.size(), &outer_index[0], &inner_index[0], &values_[0]);
-		logger().trace("Using cache");
+
+		if (use_second_cache_)
+		{
+			current_e_ = -1;
+			current_e_index_ = -1;
+
+			logger().trace("Using second cache");
+		}
+		else
+			logger().trace("Using cache");
 	}
 	std::fill(values_.begin(), values_.end(), 0);
 	return mat_;
@@ -288,6 +393,27 @@ polyfem::SpareMatrixCache polyfem::SpareMatrixCache::operator+(const SpareMatrix
 	if (a.mapping().empty() || mapping().empty())
 	{
 		out.mat_ = a.mat_ + mat_;
+		if (use_second_cache_)
+		{
+			const size_t this_e_size = second_cache_entries_.size();
+			const size_t a_e_size = a.second_cache_entries_.size();
+
+			out.second_cache_entries_.resize(std::max(this_e_size, a_e_size));
+			for (int e = 0; e < std::min(this_e_size, a_e_size); ++e)
+			{
+				assert(second_cache_entries_[e].size() == 0 || a.second_cache_entries_[e].size() == 0);
+				out.second_cache_entries_[e].insert(out.second_cache_entries_[e].end(), second_cache_entries_[e].begin(), second_cache_entries_[e].end());
+				out.second_cache_entries_[e].insert(out.second_cache_entries_[e].end(), a.second_cache_entries_[e].begin(), a.second_cache_entries_[e].end());
+			}
+
+			for (int e = std::min(this_e_size, a_e_size); e < std::max(this_e_size, a_e_size); ++e)
+			{
+				if (second_cache_entries_.size() < e)
+					out.second_cache_entries_[e].insert(out.second_cache_entries_[e].end(), second_cache_entries_[e].begin(), second_cache_entries_[e].end());
+				else
+					out.second_cache_entries_[e].insert(out.second_cache_entries_[e].end(), a.second_cache_entries_[e].begin(), a.second_cache_entries_[e].end());
+			}
+		}
 	}
 	else
 	{
@@ -299,26 +425,12 @@ polyfem::SpareMatrixCache polyfem::SpareMatrixCache::operator+(const SpareMatrix
 		assert(aouter_index.size() == outer_index.size());
 		assert(a.values_.size() == values_.size());
 
-#if defined(POLYFEM_WITH_CPP_THREADS)
-		polyfem::par_for(a.values_.size(), [&](int start, int end, int t)
-						 {
-							 for (int i = start; i < end; ++i)
-							 {
-#elif defined(POLYFEM_WITH_TBB)
-		tbb::parallel_for(tbb::blocked_range<int>(0, a.values_.size()), [&](const tbb::blocked_range<int> &r) {
-			for (int i = r.begin(); i != r.end(); ++i)
+		maybe_parallel_for(a.values_.size(), [&](int start, int end, int thread_id) {
+			for (int i = start; i < end; ++i)
 			{
-#else
-		for (int i = 0; i < a.values_.size(); ++i)
-		{
-#endif
-								 out.values_[i] = a.values_[i] + values_[i];
-#if defined(POLYFEM_WITH_CPP_THREADS) || defined(POLYFEM_WITH_TBB)
-							 }
-						 });
-#else
+				out.values_[i] = a.values_[i] + values_[i];
 			}
-#endif
+		});
 	}
 
 	return out;
@@ -329,6 +441,19 @@ void polyfem::SpareMatrixCache::operator+=(const SpareMatrixCache &o)
 	if (mapping().empty() || o.mapping().empty())
 	{
 		mat_ += o.mat_;
+
+		if (use_second_cache_)
+		{
+			const size_t this_e_size = second_cache_entries_.size();
+			const size_t o_e_size = o.second_cache_entries_.size();
+
+			second_cache_entries_.resize(std::max(this_e_size, o_e_size));
+			for (int e = 0; e < o_e_size; ++e)
+			{
+				assert(second_cache_entries_[e].size() == 0 || o.second_cache_entries_[e].size() == 0);
+				second_cache_entries_[e].insert(second_cache_entries_[e].end(), o.second_cache_entries_[e].begin(), o.second_cache_entries_[e].end());
+			}
+		}
 	}
 	else
 	{
@@ -340,32 +465,23 @@ void polyfem::SpareMatrixCache::operator+=(const SpareMatrixCache &o)
 		assert(outer_index.size() == oouter_index.size());
 		assert(values_.size() == o.values_.size());
 
-#if defined(POLYFEM_WITH_CPP_THREADS)
-		polyfem::par_for(o.values_.size(), [&](int start, int end, int t)
-						 {
-							 for (int i = start; i < end; ++i)
-							 {
-#elif defined(POLYFEM_WITH_TBB)
-		tbb::parallel_for(tbb::blocked_range<int>(0, o.values_.size()), [&](const tbb::blocked_range<int> &r) {
-				for (int i = r.begin(); i != r.end(); ++i)
-				{
-#else
-			for (int i = 0; i < o.values_.size(); ++i)
+		maybe_parallel_for(o.values_.size(), [&](int start, int end, int thread_id) {
+			for (int i = start; i < end; ++i)
 			{
-#endif
-								 values_[i] += o.values_[i];
-#if defined(POLYFEM_WITH_CPP_THREADS) || defined(POLYFEM_WITH_TBB)
-							 }
-						 });
-#else
-				}
-#endif
+				values_[i] += o.values_[i];
+			}
+		});
 	}
 }
 
 //template instantiation
 template bool polyfem::read_matrix<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
 template bool polyfem::read_matrix<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
+
+template bool polyfem::write_matrix<Eigen::MatrixXd>(const std::string &, const Eigen::MatrixXd &);
+template bool polyfem::write_matrix<Eigen::MatrixXf>(const std::string &, const Eigen::MatrixXf &);
+template bool polyfem::write_matrix<Eigen::VectorXd>(const std::string &, const Eigen::VectorXd &);
+template bool polyfem::write_matrix<Eigen::VectorXf>(const std::string &, const Eigen::VectorXf &);
 
 template bool polyfem::read_matrix_binary<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
 template bool polyfem::read_matrix_binary<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);

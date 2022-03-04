@@ -1,0 +1,75 @@
+# In order to persistently set default options for your project, copy this file
+# and remove the '.sample' suffix. Then uncomment the relevant options for your
+# project. Note that this file is included before `project(PolyFEM)` is defined,
+# so we can use it to define the C and C++ compilers, but some variables such as
+# PROJECT_SOURCE_DIR will not be defined yet. You can use CMAKE_SOURCE_DIR instead.
+
+################################################################################
+# CMake Options
+################################################################################
+
+# Specify a custom install prefix path
+# set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install CACHE STRING "Install directory used by install().")
+
+# Generates a `compile_commands.json` that can be used for autocompletion
+# set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "Enable/Disable output of compile commands during generation.")
+
+# Use ccache to speed up compilation of repeated builds
+# find_program(CCACHE_PROGRAM ccache)
+# if(CCACHE_PROGRAM)
+#     message(STATUS "Enabling Ccache support")
+#     set(CMAKE_C_COMPILER_LAUNCHER   ${CCACHE_PROGRAM} CACHE STRING "")
+#     set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE_PROGRAM} CACHE STRING "")
+# endif()
+
+# Use a specific C/C++ compiler, e.g. llvm-clang on macOS (so we can use clangd)
+# set(CMAKE_C_COMPILER   "/usr/local/opt/llvm/bin/clang"   CACHE STRING "C compiler")
+# set(CMAKE_CXX_COMPILER "/usr/local/opt/llvm/bin/clang++" CACHE STRING "C++ compiler")
+
+# Set deployment platform for macOS
+# set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "macOS deployment target")
+
+# Always add colored output (e.g. when using Ninja)
+# list(APPEND CMAKE_CXX_FLAGS -fdiagnostics-color=always) # GCC
+# list(APPEND CMAKE_CXX_FLAGS -fcolor-diagnostics) # Clang
+
+################################################################################
+# PolyFEM Options
+################################################################################
+
+# option(POLYFEM_NO_UI               "Disables the user interface"                OFF)
+# option(POLYFEM_WITH_TESTS          "Build tests"                                 ON)
+# option(POLYFEM_WITH_APPS           "Build the apps"                              ON)
+# option(POLYFEM_WITH_MISC           "Build misc targes"                           ON)
+# option(POLYFEM_WITH_CLIPPER        "Use clipper, necessary for polygonal bases"  ON)
+
+# Polyfem options for enabling/disabling optional libraries
+# option(POLYFEM_WITH_MMG            "Enable MMG library"                         OFF)
+# option(POLYFEM_WITH_OPENCL         "Enable OpenCL"                              OFF)
+# option(POLYFEM_REGENERATE_AUTOGEN  "Generate the python autogen files"          OFF)
+# set(POLYFEM_THREADING "TBB" CACHE STRING "Multithreading library to use (options: CPP, TBB, NONE)")
+
+# option(POLYSOLVE_WITH_CHOLMOD      "Enable Cholmod library"                      ON)
+# option(POLYSOLVE_WITH_UMFPACK      "Enable UmfPack library"                      ON)
+# option(POLYSOLVE_WITH_SUPERLU      "Enable SuperLU library"                      ON)
+# option(POLYSOLVE_WITH_MKL          "Enable MKL library"                          ON)
+# option(POLYSOLVE_WITH_PARDISO      "Enable Pardiso library"                     OFF)
+# option(POLYSOLVE_WITH_HYPRE        "Enable hypre"                                ON)
+# option(POLYSOLVE_WITH_AMGCL        "Use AMGCL"                                   ON)
+# option(POLYSOLVE_WITH_SPECTRA      "Enable computing spectrum"                  OFF)
+# option(POLYSOLVE_LARGE_INDEX       "Build for large indices"                    OFF)
+
+################################################################################
+# FetchContent Options
+################################################################################
+
+# option(FETCHCONTENT_FULLY_DISCONNECTED   "Disables all attempts to download or update content and assumes source dirs already exist")
+# option(FETCHCONTENT_UPDATES_DISCONNECTED "Enables UPDATE_DISCONNECTED behavior for all content population")
+# option(FETCHCONTENT_QUIET                "Enables QUIET option for all content population" ON)
+# set(FETCHCONTENT_BASE_DIR "${CMAKE_BINARY_DIR}/_deps" CACHE PATH "Directory under which to collect all populated content")
+
+################################################################################
+# Development Locations for Third Party Libraries
+################################################################################
+
+# set(POLYFEM_IPC_TOOLKIT_PATH "" CACHE STRING "path to ipc-toolkit")

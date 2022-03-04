@@ -21,12 +21,20 @@ set(SOURCES
 	Logger.hpp
 	InterpolatedFunction.cpp
 	InterpolatedFunction.hpp
+	JSONUtils.cpp
+	JSONUtils.hpp
 	MatrixUtils.cpp
 	MatrixUtils.hpp
+	MaybeParallelFor.hpp
+	MaybeParallelFor.tpp
 	MshReader.cpp
 	MshReader.hpp
+	OBJReader.cpp
+	OBJReader.hpp
 	par_for.cpp
 	par_for.hpp
+	raster.cpp
+	raster.hpp
 	RBFInterpolation.cpp
 	RBFInterpolation.hpp
 	RefElementSampler.cpp
@@ -35,6 +43,7 @@ set(SOURCES
 	StringUtils.hpp
 	ExpressionValue.cpp
 	ExpressionValue.hpp
+	Timer.hpp
 	Types.hpp
 )
 

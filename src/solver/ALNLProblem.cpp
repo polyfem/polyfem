@@ -13,8 +13,6 @@
 
 #include <unsupported/Eigen/SparseExtra>
 
-// #define USE_DIV_BARRIER_STIFFNESS
-
 namespace polyfem
 {
 	using namespace polysolve;
@@ -27,18 +25,15 @@ namespace polyfem
 		// stop_dist_ = 1e-2 * state.min_edge_length;
 
 		for (const auto bn : state.boundary_nodes)
-			entries.emplace_back(bn, bn, 2 * weight_);
+			entries.emplace_back(bn, bn, 1.0);
 
-		hessian_.resize(state.n_bases * state.mesh->dimension(), state.n_bases * state.mesh->dimension());
-		hessian_.setFromTriplets(entries.begin(), entries.end());
-		hessian_.makeCompressed();
+		hessian_AL_.resize(state.n_bases * state.mesh->dimension(), state.n_bases * state.mesh->dimension());
+		hessian_AL_.setFromTriplets(entries.begin(), entries.end());
+		hessian_AL_.makeCompressed();
 
-		displaced_.resize(hessian_.rows(), 1);
-		displaced_.setZero();
+		update_target(t);
 
-		rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, displaced_, t);
-
-		std::vector<bool> mask(hessian_.rows(), true);
+		std::vector<bool> mask(hessian_AL_.rows(), true);
 
 		for (const auto bn : state.boundary_nodes)
 			mask[bn] = false;
@@ -48,21 +43,24 @@ namespace polyfem
 				not_boundary_.push_back(i);
 	}
 
+	void ALNLProblem::update_target(const double t)
+	{
+		target_x_.setZero(hessian_AL_.rows(), 1);
+		rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, target_x_, t);
+	}
+
 	void ALNLProblem::update_quantities(const double t, const TVector &x)
 	{
 		super::update_quantities(t, x);
 		if (is_time_dependent)
 		{
-			displaced_.resize(hessian_.rows(), 1);
-			displaced_.setZero();
-
-			rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, displaced_, t);
+			update_target(t);
 		}
 	}
 
 	void ALNLProblem::compute_distance(const TVector &x, TVector &res)
 	{
-		res = x - displaced_;
+		res = x - target_x_;
 
 		for (const auto bn : not_boundary_)
 			res[bn] = 0;
@@ -71,11 +69,21 @@ namespace polyfem
 	double ALNLProblem::value(const TVector &x, const bool only_elastic)
 	{
 		const double val = super::value(x, only_elastic);
+
+		// ₙ
+		// ∑ ½ κ mₖ ‖ xₖ - x̂ₖ ‖²
+		// ᵏ
 		TVector distv;
 		compute_distance(x, distv);
-		const double dist = distv.squaredNorm();
+		// TODO: multiply by the (lumped?) mass matrix
+		const double AL_penalty = weight_ / 2 * distv.squaredNorm();
 
-		logger().trace("dist {}", sqrt(dist));
+		// TODO: Implement Lagrangian potential if needed (i.e., penalty weight exceeds maximum)
+		// ₙ    __
+		// ∑ -⎷ mₖ λₖᵀ (xₖ - x̂ₖ)
+		// ᵏ
+
+		logger().trace("AL_penalty={}", sqrt(AL_penalty));
 
 		Eigen::MatrixXd ddd;
 		compute_displaced_points(x, ddd);
@@ -84,38 +92,38 @@ namespace polyfem
 			ddd.conservativeResize(ddd.rows(), 3);
 			ddd.col(2).setZero();
 		}
-		igl::write_triangle_mesh("step.obj", ddd, state.boundary_triangles);
 
-#ifdef USE_DIV_BARRIER_STIFFNESS
-		return val + weight_ * dist / _barrier_stiffness;
+#ifdef POLYFEM_DIV_BARRIER_STIFFNESS
+		return val + AL_penalty / _barrier_stiffness;
 #else
-		return val + weight_ * dist;
+		return val + AL_penalty;
 #endif
 	}
 
 	void ALNLProblem::gradient_no_rhs(const TVector &x, Eigen::MatrixXd &gradv, const bool only_elastic)
 	{
-		TVector tmp;
 		super::gradient_no_rhs(x, gradv, only_elastic);
-		compute_distance(x, tmp);
+
+		TVector grad_AL;
+		compute_distance(x, grad_AL);
 		//logger().trace("dist grad {}", tmp.norm());
-#ifdef USE_DIV_BARRIER_STIFFNESS
-		tmp *= 2 * weight_ / _barrier_stiffness;
+#ifdef POLYFEM_DIV_BARRIER_STIFFNESS
+		grad_AL *= weight_ / _barrier_stiffness;
 #else
-		tmp *= 2 * weight_;
+		grad_AL *= weight_;
 #endif
 
-		gradv += tmp;
+		gradv += grad_AL;
 		// gradv = tmp;
 	}
 
 	void ALNLProblem::hessian_full(const TVector &x, THessian &hessian)
 	{
 		super::hessian_full(x, hessian);
-#ifdef USE_DIV_BARRIER_STIFFNESS
-		hessian += hessian_ / _barrier_stiffness;
+#ifdef POLYFEM_DIV_BARRIER_STIFFNESS
+		hessian += weight_ * hessian_AL_ / _barrier_stiffness;
 #else
-		hessian += hessian_;
+		hessian += weight_ * hessian_AL_;
 #endif
 		hessian.makeCompressed();
 	}

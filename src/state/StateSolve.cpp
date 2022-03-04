@@ -5,11 +5,11 @@
 #include <polyfem/OperatorSplittingSolver.hpp>
 #include <polyfem/NavierStokesSolver.hpp>
 
+#include <polyfem/SparseNewtonDescentSolver.hpp>
+#include <polyfem/LBFGSSolver.hpp>
+
 #include <polyfem/NLProblem.hpp>
 #include <polyfem/ALNLProblem.hpp>
-
-#include <polyfem/LbfgsSolver.hpp>
-#include <polyfem/SparseNewtonDescentSolver.hpp>
 
 #include <polysolve/LinearSolver.hpp>
 #include <polysolve/FEMSolver.hpp>
@@ -34,15 +34,93 @@ namespace polyfem
 				const int offset = import["offset"];
 
 				Eigen::MatrixXd tmp;
-				read_matrix_binary(path, tmp);
+				read_matrix(path, tmp);
 				mat.block(0, 0, offset, 1) = tmp.block(0, 0, offset, 1);
 			}
 			else
 			{
-				read_matrix_binary(path, mat);
+				read_matrix(path, mat);
 			}
 		}
 	} // namespace
+
+	template <typename ProblemType>
+	std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> State::make_nl_solver() const
+	{
+		std::string name = args["nl_solver"];
+		if (name == "newton" || name == "Newton")
+		{
+			return std::make_shared<cppoptlib::SparseNewtonDescentSolver<ProblemType>>(
+				solver_params(), solver_type(), precond_type());
+		}
+		else if (name == "lbfgs" || name == "LBFGS" || name == "L-BFGS")
+		{
+			return std::make_shared<cppoptlib::LBFGSSolver<ProblemType>>(
+				solver_params());
+		}
+		else
+		{
+			throw std::invalid_argument(fmt::format("invalid nonlinear solver type: {}", name));
+		}
+	}
+
+	void State::init_transient(Eigen::VectorXd &c_sol)
+	{
+		igl::Timer td_timer;
+		td_timer.start();
+		logger().trace("Setup rhs...");
+
+		const auto &gbases = iso_parametric() ? bases : geom_bases;
+		json rhs_solver_params = args["rhs_solver_params"];
+		rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
+
+		step_data.rhs_assembler = std::make_shared<RhsAssembler>(
+			assembler, *mesh, obstacle,
+			n_bases, problem->is_scalar() ? 1 : mesh->dimension(),
+			bases, gbases, ass_vals_cache,
+			formulation(), *problem,
+			args["bc_method"],
+			args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
+		RhsAssembler &rhs_assembler = *step_data.rhs_assembler;
+
+		const std::string u_path = resolve_input_path(args["import"]["u_path"]);
+		if (!u_path.empty())
+			read_matrix(u_path, sol);
+		else
+			rhs_assembler.initial_solution(sol);
+
+		if (assembler.is_mixed(formulation()))
+		{
+			pressure.resize(0, 0);
+			const int prev_size = sol.size();
+			sol.conservativeResize(rhs.size(), sol.cols());
+			// Zero initial pressure
+			sol.block(prev_size, 0, n_pressure_bases, sol.cols()).setZero();
+			sol(sol.size() - 1) = 0;
+		}
+
+		c_sol = sol;
+
+		if (assembler.is_mixed(formulation()))
+			sol_to_pressure();
+
+		td_timer.stop();
+		logger().trace("done, took {}s", td_timer.getElapsedTime());
+
+		if (args["save_time_sequence"])
+		{
+			td_timer.start();
+			logger().trace("Saving VTU...");
+
+			if (!solve_export_to_file)
+				solution_frames.emplace_back();
+			save_vtu(resolve_output_path("step_0.vtu"), 0);
+			save_wire(resolve_output_path("step_0.obj"));
+
+			td_timer.stop();
+			logger().trace("done, took {}s", td_timer.getElapsedTime());
+		}
+	}
 
 	void State::solve_transient_navier_stokes_split(const int time_steps, const double dt, const RhsAssembler &rhs_assembler)
 	{
@@ -137,20 +215,19 @@ namespace polyfem
 			rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, time);
 
 			/* export to vtu */
-			if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
+			if (args["save_time_sequence"] && !(t % args["skip_frame"].get<int>()))
 			{
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
 				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), time);
 				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
+
+				save_pvd(
+					resolve_output_path(args["export"]["time_sequence"]),
+					[](int i) { return fmt::format("step_{:d}.vtu", i); },
+					t, /*t0=*/0, dt, args["skip_frame"].get<int>());
 			}
 		}
-
-		save_pvd(
-			resolve_output_path("sim.pvd"),
-			[](int i)
-			{ return fmt::format("step_{:d}.vtu", i); },
-			time_steps, /*t0=*/0, dt);
 
 		const bool export_surface = args["export"]["surface"];
 
@@ -158,8 +235,7 @@ namespace polyfem
 		{
 			save_pvd(
 				resolve_output_path("sim_surf.pvd"),
-				[](int i)
-				{ return fmt::format("step_{:d}_surf.vtu", i); },
+				[](int i) { return fmt::format("step_{:d}_surf.vtu", i); },
 				time_steps, /*t0=*/0, dt);
 		}
 	}
@@ -178,7 +254,7 @@ namespace polyfem
 
 		Eigen::VectorXd prev_sol;
 
-		int BDF_order = args["BDF_order"];
+		int BDF_order = args["time_integrator_params"].value("num_steps", 1);
 		// int aux_steps = BDF_order-1;
 		BDF bdf(BDF_order);
 		bdf.new_solution(c_sol);
@@ -215,20 +291,19 @@ namespace polyfem
 			sol = c_sol;
 			sol_to_pressure();
 
-			if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
+			if (args["save_time_sequence"] && !(t % args["skip_frame"].get<int>()))
 			{
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
 				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), time);
 				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
+
+				save_pvd(
+					resolve_output_path(args["export"]["time_sequence"]),
+					[](int i) { return fmt::format("step_{:d}.vtu", i); },
+					t, t0, dt, args["skip_frame"].get<int>());
 			}
 		}
-
-		save_pvd(
-			resolve_output_path("sim.pvd"),
-			[](int i)
-			{ return fmt::format("step_{:d}.vtu", i); },
-			time_steps, t0, dt);
 
 		const bool export_surface = args["export"]["surface"];
 
@@ -236,8 +311,7 @@ namespace polyfem
 		{
 			save_pvd(
 				resolve_output_path("sim_surf.pvd"),
-				[](int i)
-				{ return fmt::format("step_{:d}_surf.vtu", i); },
+				[](int i) { return fmt::format("step_{:d}_surf.vtu", i); },
 				time_steps, t0, dt);
 		}
 	}
@@ -255,7 +329,7 @@ namespace polyfem
 		Eigen::VectorXd b;
 		Eigen::MatrixXd current_rhs = rhs;
 
-		const int BDF_order = args["BDF_order"];
+		const int BDF_order = args["time_integrator_params"].value("num_steps", 1);
 		// const int aux_steps = BDF_order-1;
 		BDF bdf(BDF_order);
 		bdf.new_solution(x);
@@ -274,7 +348,7 @@ namespace polyfem
 
 			if (assembler.is_mixed(formulation()))
 			{
-				//divergence free
+				// divergence free
 				int fluid_offset = use_avg_pressure ? (assembler.is_fluid(formulation()) ? 1 : 0) : 0;
 				current_rhs.block(current_rhs.rows() - n_pressure_bases - use_avg_pressure, 0, n_pressure_bases + use_avg_pressure, current_rhs.cols()).setZero();
 			}
@@ -290,26 +364,31 @@ namespace polyfem
 			bdf.new_solution(x);
 			sol = x;
 
+			const auto error = (A * x - b).norm();
+			if (error > 1e-4)
+				logger().error("Solver error: {}", error);
+			else
+				logger().debug("Solver error: {}", error);
+
 			if (assembler.is_mixed(formulation()))
 			{
 				sol_to_pressure();
 			}
 
-			if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
+			if (args["save_time_sequence"] && !(t % args["skip_frame"].get<int>()))
 			{
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
 
 				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), time);
 				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
+
+				save_pvd(
+					resolve_output_path(args["export"]["time_sequence"]),
+					[](int i) { return fmt::format("step_{:d}.vtu", i); },
+					t, t0, dt, args["skip_frame"].get<int>());
 			}
 		}
-
-		save_pvd(
-			resolve_output_path("sim.pvd"),
-			[](int i)
-			{ return fmt::format("step_{:d}.vtu", i); },
-			time_steps, t0, dt);
 	}
 
 	void State::solve_transient_tensor_linear(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler)
@@ -322,8 +401,8 @@ namespace polyfem
 		solver->setParameters(params);
 		logger().info("{}...", solver->name());
 
-		const std::string v_path = resolve_path(args["import"]["v_path"], args["root_path"]);
-		const std::string a_path = resolve_path(args["import"]["a_path"], args["root_path"]);
+		const std::string v_path = resolve_input_path(args["import"]["v_path"]);
+		const std::string a_path = resolve_input_path(args["import"]["a_path"]);
 
 		Eigen::MatrixXd velocity, acceleration;
 
@@ -341,72 +420,67 @@ namespace polyfem
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 		const int precond_num = problem_dim * n_bases;
 
-		//Newmark
-		const double gamma = 0.5;
-		const double beta = 0.25;
-		// makes the algorithm implicit and equivalent to the trapezoidal rule (unconditionally stable).
-
 		Eigen::MatrixXd temp, b;
 		StiffnessMatrix A;
 		Eigen::VectorXd x, btmp;
 
+		auto time_integrator = ImplicitTimeIntegrator::construct_time_integrator(args["time_integrator"]);
+		time_integrator->set_parameters(args["time_integrator_params"]);
+		time_integrator->init(sol, velocity, acceleration, dt);
+
 		for (int t = 1; t <= time_steps; ++t)
 		{
-			const double dt2 = dt * dt;
+			const double time = t0 + dt * t;
 
-			const Eigen::MatrixXd aOld = acceleration;
-			const Eigen::MatrixXd vOld = velocity;
-			const Eigen::MatrixXd uOld = sol;
-
-			rhs_assembler.assemble(density, current_rhs, t0 + dt * t);
+			rhs_assembler.assemble(density, current_rhs, time);
 			current_rhs *= -1;
+			rhs_assembler.set_bc(std::vector<LocalBoundary>(), std::vector<int>(), args["n_boundary_samples"], local_neumann_boundary, current_rhs, time);
 
-			temp = -(uOld + dt * vOld + ((1 / 2. - beta) * dt2) * aOld);
-			b = stiffness * temp + current_rhs;
+			current_rhs *= time_integrator->acceleration_scaling();
+			current_rhs += mass * time_integrator->x_tilde();
+			rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], std::vector<LocalBoundary>(), current_rhs, time);
 
-			rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, b, t0 + dt * t);
-
-			A = stiffness * beta * dt2 + mass;
+			b = current_rhs;
+			A = stiffness * time_integrator->acceleration_scaling() + mass;
 			btmp = b;
 			spectrum = dirichlet_solve(*solver, A, btmp, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], t == 1 && args["export"]["spectrum"], assembler.is_fluid(formulation()), use_avg_pressure);
-			acceleration = x;
+			time_integrator->update_quantities(x);
+			sol = x;
 
-			sol += dt * vOld + dt2 * ((1 / 2.0 - beta) * aOld + beta * acceleration);
-			velocity += dt * ((1 - gamma) * aOld + gamma * acceleration);
+			const auto error = (A * x - b).norm();
+			if (error > 1e-4)
+				logger().error("Solver error: {}", error);
+			else
+				logger().debug("Solver error: {}", error);
 
-			rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, t0 + dt * t);
-			rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, t0 + dt * t);
-			rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, t0 + dt * t);
-
-			if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
+			if (args["save_time_sequence"] && !(t % args["skip_frame"].get<int>()))
 			{
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
-				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), t0 + dt * t);
+				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), time);
 				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
+
+				save_pvd(
+					resolve_output_path(args["export"]["time_sequence"]),
+					[](int i) { return fmt::format("step_{:d}.vtu", i); },
+					t, t0, dt, args["skip_frame"].get<int>());
 			}
 
-			logger().info("{}/{} t={}", t, time_steps, t0 + dt * t);
+			logger().info("{}/{} t={}", t, time_steps, time);
 		}
 
 		{
-			const std::string u_path = resolve_output_path(args["export"]["u_path"]);
-			const std::string v_path = resolve_output_path(args["export"]["v_path"]);
-			const std::string a_path = resolve_output_path(args["export"]["a_path"]);
+			const std::string u_out_path = resolve_output_path(args["export"]["u_path"]);
+			const std::string v_out_path = resolve_output_path(args["export"]["v_path"]);
+			const std::string a_out_path = resolve_output_path(args["export"]["a_path"]);
 
-			if (!u_path.empty())
-				write_matrix_binary(u_path, sol);
-			if (!v_path.empty())
-				write_matrix_binary(v_path, velocity);
-			if (!a_path.empty())
-				write_matrix_binary(a_path, acceleration);
+			if (!u_out_path.empty())
+				write_matrix(u_out_path, sol);
+			if (!v_out_path.empty())
+				write_matrix(v_out_path, velocity);
+			if (!a_out_path.empty())
+				write_matrix(a_out_path, acceleration);
 		}
-
-		save_pvd(
-			resolve_output_path("sim.pvd"),
-			[](int i)
-			{ return fmt::format("step_{:d}.vtu", i); },
-			time_steps, t0, dt);
 
 		const bool export_surface = args["export"]["surface"];
 
@@ -414,13 +488,135 @@ namespace polyfem
 		{
 			save_pvd(
 				resolve_output_path("sim_surf.pvd"),
-				[](int i)
-				{ return fmt::format("step_{:d}_surf.vtu", i); },
+				[](int i) { return fmt::format("step_{:d}_surf.vtu", i); },
 				time_steps, t0, dt);
 		}
 	}
 
 	void State::solve_transient_tensor_non_linear(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler)
+	{
+		solve_transient_tensor_non_linear_init(t0, dt, rhs_assembler);
+
+		for (int t = 1; t <= time_steps; ++t)
+		{
+			solve_transient_tensor_non_linear_step(t0, dt, t, solver_info);
+			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
+
+			if (args["save_time_sequence"] && !(t % args["skip_frame"].get<int>()))
+			{
+				save_pvd(
+					resolve_output_path(args["export"]["time_sequence"]),
+					[](int i) { return fmt::format("step_{:d}.vtu", i); },
+					t, t0, dt, args["skip_frame"].get<int>());
+			}
+		}
+		// }
+		// else
+		// {
+		// 	nl_problem.full_to_reduced(sol, tmp_sol);
+
+		// 	for (int t = 1; t <= time_steps; ++t)
+		// 	{
+		// 		cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
+		// 		nlsolver.setLineSearch(args["line_search"]);
+		// 		nl_problem.init(sol);
+		// 		nlsolver.minimize(nl_problem, tmp_sol);
+
+		// 		if (nlsolver.error_code() == -10)
+		// 		{
+		// 			double substep_delta = 0.5;
+		// 			double substep = substep_delta;
+		// 			bool solved = false;
+
+		// 			while (substep_delta > 1e-4 && !solved)
+		// 			{
+		// 				logger().debug("Substepping {}/{}, dt={}", (t - 1 + substep) * dt, t * dt, substep_delta);
+		// 				nl_problem.substepping((t - 1 + substep) * dt);
+		// 				nl_problem.full_to_reduced(sol, tmp_sol);
+		// 				nlsolver.minimize(nl_problem, tmp_sol);
+
+		// 				if (nlsolver.error_code() == -10)
+		// 				{
+		// 					substep -= substep_delta;
+		// 					substep_delta /= 2;
+		// 				}
+		// 				else
+		// 				{
+		// 					logger().trace("Done {}/{}, dt={}", (t - 1 + substep) * dt, t * dt, substep_delta);
+		// 					nl_problem.reduced_to_full(tmp_sol, sol);
+		// 					substep_delta *= 2;
+		// 				}
+
+		// 				solved = substep >= 1;
+
+		// 				substep += substep_delta;
+		// 				if (substep >= 1)
+		// 				{
+		// 					substep_delta -= substep - 1;
+		// 					substep = 1;
+		// 				}
+		// 			}
+		// 		}
+
+		// 		if (nlsolver.error_code() == -10)
+		// 		{
+		// 			logger().error("Unable to solve t={}", t * dt);
+		// 			save_vtu("stop.vtu", dt * t);
+		// 			break;
+		// 		}
+
+		// 		logger().debug("Step solved!");
+
+		// 		nlsolver.getInfo(solver_info);
+		// 		nl_problem.reduced_to_full(tmp_sol, sol);
+		// 		if (assembler.is_mixed(formulation()))
+		// 		{
+		// 			sol_to_pressure();
+		// 		}
+
+		// 		// rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, dt * t);
+
+		// 		nl_problem.update_quantities((t + 1) * dt, sol);
+
+		// 		if (args["save_time_sequence"] && !(t % args["skip_frame"].get<int>()))
+		// 		{
+		// 			if (!solve_export_to_file)
+		// 				solution_frames.emplace_back();
+		// 			save_vtu(fmt::format("step_{:d}.vtu", t), dt * t);
+		// 			save_wire(fmt::format("step_{:d}.obj", t));
+		// 		}
+
+		// 		logger().info("{}/{}", t, time_steps);
+		// 	}
+		// }
+		const NLProblem &nl_problem = *step_data.nl_problem;
+
+		nl_problem.save_raw(
+			resolve_output_path(args["export"]["u_path"]),
+			resolve_output_path(args["export"]["v_path"]),
+			resolve_output_path(args["export"]["a_path"]));
+
+		const bool export_surface = args["export"]["surface"];
+		const bool contact_forces = args["export"]["contact_forces"] && !problem->is_scalar();
+
+		if (export_surface)
+		{
+			save_pvd(
+				resolve_output_path("sim_surf.pvd"),
+				[](int i) { return fmt::format("step_{:d}_surf.vtu", i); },
+				time_steps, t0, dt);
+
+			if (contact_forces)
+			{
+				save_pvd(
+					resolve_output_path("sim_surf_contact.pvd"),
+					[](int i) { return fmt::format("step_{:d}_surf_contact.vtu", i); },
+					time_steps, t0, dt);
+			}
+		}
+	}
+
+	void State::solve_transient_tensor_non_linear_init(const double t0, const double dt, const RhsAssembler &rhs_assembler)
 	{
 		assert(!problem->is_scalar() && (!assembler.is_linear(formulation()) || args["has_collision"]) && problem->is_time_dependent());
 		assert(!assembler.is_mixed(formulation()));
@@ -497,8 +693,8 @@ namespace polyfem
 		igl::Timer timer;
 		timer.start();
 		logger().trace("Reading matrices...");
-		const std::string v_path = resolve_path(args["import"]["v_path"], args["root_path"]);
-		const std::string a_path = resolve_path(args["import"]["a_path"], args["root_path"]);
+		const std::string v_path = resolve_input_path(args["import"]["v_path"]);
+		const std::string a_path = resolve_input_path(args["import"]["a_path"]);
 
 		Eigen::MatrixXd velocity, acceleration;
 
@@ -519,17 +715,15 @@ namespace polyfem
 			timer.start();
 			logger().trace("Checking collisions...");
 			const int problem_dim = mesh->dimension();
-			Eigen::MatrixXd tmp = boundary_nodes_pos;
-			assert(tmp.rows() * problem_dim == sol.size());
-			for (int i = 0; i < sol.size(); i += problem_dim)
+			Eigen::MatrixXd displaced = boundary_nodes_pos;
+			assert(displaced.rows() * problem_dim == sol.size());
+			// Unflatten rowwises, so every problem_dim elements in full become a row.
+			for (int i = 0; i < sol.size(); ++i)
 			{
-				for (int d = 0; d < problem_dim; ++d)
-				{
-					tmp(i / problem_dim, d) += sol(i + d);
-				}
+				displaced(i / problem_dim, i % problem_dim) += sol(i);
 			}
 
-			if (ipc::has_intersections(tmp, boundary_edges, boundary_triangles))
+			if (ipc::has_intersections(collision_mesh, collision_mesh.vertices(displaced)))
 			{
 				logger().error("Unable to solve, initial solution has intersections!");
 				throw "Unable to solve, initial solution has intersections!";
@@ -546,7 +740,8 @@ namespace polyfem
 		const int reduced_size = n_bases * mesh->dimension() - boundary_nodes.size();
 		VectorXd tmp_sol;
 
-		NLProblem nl_problem(*this, rhs_assembler, t0 + dt, args["dhat"], args["project_to_psd"]);
+		step_data.nl_problem = std::make_shared<NLProblem>(*this, rhs_assembler, t0 + dt, args["dhat"], args["project_to_psd"]);
+		NLProblem &nl_problem = *step_data.nl_problem;
 		nl_problem.init_time_integrator(sol, velocity, acceleration, dt);
 
 		solver_info = json::array();
@@ -554,235 +749,132 @@ namespace polyfem
 		// if (args["use_al"] || args["has_collision"])
 		// {
 		double al_weight = args["al_weight"];
-		const double max_al_weight = args["max_al_weight"];
-		ALNLProblem alnl_problem(*this, rhs_assembler, t0 + dt, args["dhat"], args["project_to_psd"], al_weight);
+		step_data.alnl_problem = std::make_shared<ALNLProblem>(*this, rhs_assembler, t0 + dt, args["dhat"], args["project_to_psd"], al_weight);
+		ALNLProblem &alnl_problem = *step_data.alnl_problem;
 		alnl_problem.init_time_integrator(sol, velocity, acceleration, dt);
 
 		timer.stop();
 		logger().trace("done, took {}s", timer.getElapsedTime());
+	}
 
-		for (int t = 1; t <= time_steps; ++t)
+	void State::solve_transient_tensor_non_linear_step(const double t0, const double dt, const int t, json &solver_info)
+	{
+		VectorXd tmp_sol;
+		NLProblem &nl_problem = *step_data.nl_problem;
+		ALNLProblem &alnl_problem = *step_data.alnl_problem;
+
+		double al_weight = args["al_weight"];
+		const double max_al_weight = args["max_al_weight"];
+
+		nl_problem.full_to_reduced(sol, tmp_sol);
+		assert(sol.size() == rhs.size());
+		assert(tmp_sol.size() <= rhs.size());
+
 		{
-			nl_problem.full_to_reduced(sol, tmp_sol);
-			assert(sol.size() == rhs.size());
-			assert(tmp_sol.size() < rhs.size());
+			POLYFEM_SCOPED_TIMER("Initializing lagging");
+			nl_problem.init_lagging(sol);
+			alnl_problem.init_lagging(sol);
+		}
 
-			timer.start();
-			logger().trace("Updating lagging...");
+		if (args["friction_iterations"] > 0)
+		{
+			logger().debug("Lagging iteration 1");
+		}
 
-			nl_problem.update_lagging(tmp_sol, /*start_of_timestep=*/true);
-			alnl_problem.update_lagging(sol, /*start_of_timestep=*/true);
-
-			timer.stop();
-			logger().trace("done, took {}s", timer.getElapsedTime());
-
-			if (args["friction_iterations"] > 0)
-			{
-				logger().debug("Lagging iteration 1");
-			}
-
-			nl_problem.line_search_begin(sol, tmp_sol);
-			while (!std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
-			{
-				nl_problem.line_search_end();
-				alnl_problem.set_weight(al_weight);
-				logger().debug("Solving AL Problem with weight {}", al_weight);
-
-				cppoptlib::SparseNewtonDescentSolver<ALNLProblem> alnlsolver(solver_params(), solver_type(), precond_type());
-				alnlsolver.setLineSearch(args["line_search"]);
-				alnl_problem.init(sol);
-				tmp_sol = sol;
-				alnlsolver.minimize(alnl_problem, tmp_sol);
-				json alnl_solver_info;
-				alnlsolver.getInfo(alnl_solver_info);
-
-				solver_info.push_back({{"type", "al"},
-									   {"t", t},
-									   {"weight", al_weight},
-									   {"info", alnl_solver_info}});
-
-				sol = tmp_sol;
-				nl_problem.full_to_reduced(sol, tmp_sol);
-				nl_problem.line_search_begin(sol, tmp_sol);
-
-				al_weight *= 2;
-
-				if (al_weight >= max_al_weight)
-				{
-					logger().error("Unable to solve AL problem, weight {} >= {}, stopping", al_weight, max_al_weight);
-					break;
-				}
-			}
+		nl_problem.line_search_begin(sol, tmp_sol);
+		bool force_al = args["force_al"];
+		while (force_al || !std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
+		{
+			force_al = false;
 			nl_problem.line_search_end();
-			al_weight = args["al_weight"];
-			logger().debug("Solving Problem");
+			alnl_problem.set_weight(al_weight);
+			logger().debug("Solving AL Problem with weight {}", al_weight);
 
-			cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
-			nlsolver.setLineSearch(args["line_search"]);
+			std::shared_ptr<cppoptlib::NonlinearSolver<ALNLProblem>> alnlsolver = make_nl_solver<ALNLProblem>();
+			alnlsolver->setLineSearch(args["line_search"]);
+			alnl_problem.init(sol);
+			tmp_sol = sol;
+			alnlsolver->minimize(alnl_problem, tmp_sol);
+			json alnl_solver_info;
+			alnlsolver->getInfo(alnl_solver_info);
+
+			solver_info.push_back({{"type", "al"},
+								   {"t", t},
+								   {"weight", al_weight},
+								   {"info", alnl_solver_info}});
+
+			sol = tmp_sol;
+			nl_problem.full_to_reduced(sol, tmp_sol);
+			nl_problem.line_search_begin(sol, tmp_sol);
+
+			al_weight *= 2;
+
+			if (al_weight >= max_al_weight)
+			{
+				std::string msg = fmt::format("Unable to solve AL problem, weight {} >= {}, stopping", al_weight, max_al_weight);
+				logger().error(msg);
+				throw msg;
+				break;
+			}
+		}
+		nl_problem.line_search_end();
+		logger().debug("Solving Problem");
+
+		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nlsolver = make_nl_solver<NLProblem>();
+		nlsolver->setLineSearch(args["line_search"]);
+		nl_problem.init(sol);
+		nlsolver->minimize(nl_problem, tmp_sol);
+		json nl_solver_info;
+		nlsolver->getInfo(nl_solver_info);
+		solver_info.push_back({{"type", "rc"},
+							   {"t", t},
+							   {"info", nl_solver_info}});
+		nl_problem.reduced_to_full(tmp_sol, sol);
+
+		// Lagging loop (start at 1 because we already did an iteration above)
+		int lag_i;
+		nl_problem.update_lagging(tmp_sol);
+		bool lagging_converged = nl_problem.lagging_converged(tmp_sol);
+		for (lag_i = 1; !lagging_converged && lag_i < args["friction_iterations"]; lag_i++)
+		{
+			logger().debug("Lagging iteration {:d}", lag_i + 1);
 			nl_problem.init(sol);
-			nlsolver.minimize(nl_problem, tmp_sol);
-			json nl_solver_info;
-			nlsolver.getInfo(nl_solver_info);
-			nl_problem.reduced_to_full(tmp_sol, sol);
+			nlsolver->minimize(nl_problem, tmp_sol);
 
-			// Lagging loop (start at 1 because we already did an iteration above)
-			int lag_i;
-			for (lag_i = 1; lag_i < args["friction_iterations"] && !nl_problem.lagging_converged(tmp_sol, /*do_lagging_update=*/true); lag_i++)
-			{
-				logger().debug("Lagging iteration {:d}", lag_i + 1);
-				nl_problem.init(sol);
-				nlsolver.minimize(nl_problem, tmp_sol);
-				json nl_solver_info;
-				nlsolver.getInfo(nl_solver_info);
-				nl_problem.reduced_to_full(tmp_sol, sol);
-			}
-
-			if (args["friction_iterations"] > 0)
-			{
-				logger().info(
-					lag_i >= args["friction_iterations"]
-						? "Maxed out at {:d} lagging iteration{}"
-						: "Converged using {:d} lagging iteration{}",
-					lag_i, lag_i > 1 ? "s" : "");
-			}
-
-			timer.start();
-			logger().trace("Update quantities...");
-
-			nl_problem.update_quantities(t0 + (t + 1) * dt, sol);
-			alnl_problem.update_quantities(t0 + (t + 1) * dt, sol);
-			timer.stop();
-			logger().trace("done, took {}s", timer.getElapsedTime());
-
-			if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
-			{
-				timer.start();
-				logger().trace("Saving VTU...");
-
-				if (!solve_export_to_file)
-					solution_frames.emplace_back();
-				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), t0 + dt * t);
-				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
-
-				timer.stop();
-				logger().trace("done, took {}s", timer.getElapsedTime());
-			}
-
-			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
-
+			nlsolver->getInfo(nl_solver_info);
 			solver_info.push_back({{"type", "rc"},
 								   {"t", t},
+								   {"lag_i", lag_i},
 								   {"info", nl_solver_info}});
+
+			nl_problem.reduced_to_full(tmp_sol, sol);
+			nl_problem.update_lagging(tmp_sol);
+			lagging_converged = nl_problem.lagging_converged(tmp_sol);
 		}
-		// }
-		// else
-		// {
-		// 	nl_problem.full_to_reduced(sol, tmp_sol);
 
-		// 	for (int t = 1; t <= time_steps; ++t)
-		// 	{
-		// 		cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
-		// 		nlsolver.setLineSearch(args["line_search"]);
-		// 		nl_problem.init(sol);
-		// 		nlsolver.minimize(nl_problem, tmp_sol);
-
-		// 		if (nlsolver.error_code() == -10)
-		// 		{
-		// 			double substep_delta = 0.5;
-		// 			double substep = substep_delta;
-		// 			bool solved = false;
-
-		// 			while (substep_delta > 1e-4 && !solved)
-		// 			{
-		// 				logger().debug("Substepping {}/{}, dt={}", (t - 1 + substep) * dt, t * dt, substep_delta);
-		// 				nl_problem.substepping((t - 1 + substep) * dt);
-		// 				nl_problem.full_to_reduced(sol, tmp_sol);
-		// 				nlsolver.minimize(nl_problem, tmp_sol);
-
-		// 				if (nlsolver.error_code() == -10)
-		// 				{
-		// 					substep -= substep_delta;
-		// 					substep_delta /= 2;
-		// 				}
-		// 				else
-		// 				{
-		// 					logger().trace("Done {}/{}, dt={}", (t - 1 + substep) * dt, t * dt, substep_delta);
-		// 					nl_problem.reduced_to_full(tmp_sol, sol);
-		// 					substep_delta *= 2;
-		// 				}
-
-		// 				solved = substep >= 1;
-
-		// 				substep += substep_delta;
-		// 				if (substep >= 1)
-		// 				{
-		// 					substep_delta -= substep - 1;
-		// 					substep = 1;
-		// 				}
-		// 			}
-		// 		}
-
-		// 		if (nlsolver.error_code() == -10)
-		// 		{
-		// 			logger().error("Unable to solve t={}", t * dt);
-		// 			save_vtu("stop.vtu", dt * t);
-		// 			break;
-		// 		}
-
-		// 		logger().debug("Step solved!");
-
-		// 		nlsolver.getInfo(solver_info);
-		// 		nl_problem.reduced_to_full(tmp_sol, sol);
-		// 		if (assembler.is_mixed(formulation()))
-		// 		{
-		// 			sol_to_pressure();
-		// 		}
-
-		// 		// rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, dt * t);
-
-		// 		nl_problem.update_quantities((t + 1) * dt, sol);
-
-		// 		if (args["save_time_sequence"] && !(t % (int)args["skip_frame"]))
-		// 		{
-		// 			if (!solve_export_to_file)
-		// 				solution_frames.emplace_back();
-		// 			save_vtu(fmt::format("step_{:d}.vtu", t), dt * t);
-		// 			save_wire(fmt::format("step_{:d}.obj", t));
-		// 		}
-
-		// 		logger().info("{}/{}", t, time_steps);
-		// 	}
-		// }
-		nl_problem.save_raw(
-			resolve_output_path(args["export"]["u_path"]),
-			resolve_output_path(args["export"]["v_path"]),
-			resolve_output_path(args["export"]["a_path"]));
-
-		save_pvd(
-			resolve_output_path("sim.pvd"),
-			[](int i)
-			{ return fmt::format("step_{:d}.vtu", i); },
-			time_steps, t0, dt);
-
-		const bool export_surface = args["export"]["surface"];
-		const bool contact_forces = args["export"]["contact_forces"] && !problem->is_scalar();
-
-		if (export_surface)
+		if (args["friction_iterations"] > 0)
 		{
-			save_pvd(
-				resolve_output_path("sim_surf.pvd"),
-				[](int i)
-				{ return fmt::format("step_{:d}_surf.vtu", i); },
-				time_steps, t0, dt);
+			logger().log(
+				lagging_converged ? spdlog::level::info : spdlog::level::warn,
+				"{} {:d} lagging iteration(s) (err={:g} tol={:g})",
+				lagging_converged ? "Friction lagging converged using" : "Friction lagging maxed out at",
+				lag_i, nl_problem.compute_lagging_error(tmp_sol),
+				args["friction_convergence_tol"].get<double>());
+		}
 
-			if (contact_forces)
-			{
-				save_pvd(
-					resolve_output_path("sim_surf_contact.pvd"),
-					[](int i)
-					{ return fmt::format("step_{:d}_surf_contact.vtu", i); },
-					time_steps, t0, dt);
-			}
+		{
+			POLYFEM_SCOPED_TIMER("Update quantities");
+			nl_problem.update_quantities(t0 + (t + 1) * dt, sol);
+			alnl_problem.update_quantities(t0 + (t + 1) * dt, sol);
+		}
+
+		if (args["save_time_sequence"] && !(t % args["skip_frame"].get<int>()))
+		{
+			POLYFEM_SCOPED_TIMER("Saving VTU");
+			if (!solve_export_to_file)
+				solution_frames.emplace_back();
+			save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), t0 + dt * t);
+			save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
 		}
 	}
 
@@ -799,7 +891,7 @@ namespace polyfem
 		json rhs_solver_params = args["rhs_solver_params"];
 		rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 		const int size = problem->is_scalar() ? 1 : mesh->dimension();
-		RhsAssembler rhs_assembler(assembler, *mesh,
+		RhsAssembler rhs_assembler(assembler, *mesh, obstacle,
 								   n_bases, size,
 								   bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 								   formulation(), *problem,
@@ -821,7 +913,11 @@ namespace polyfem
 		sol = x;
 		solver->getInfo(solver_info);
 
-		logger().debug("Solver error: {}", (A * sol - b).norm());
+		const auto error = (A * x - b).norm();
+		if (error > 1e-4)
+			logger().error("Solver error: {}", error);
+		else
+			logger().debug("Solver error: {}", error);
 
 		if (assembler.is_mixed(formulation()))
 		{
@@ -840,7 +936,7 @@ namespace polyfem
 		json rhs_solver_params = args["rhs_solver_params"];
 		rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 
-		RhsAssembler rhs_assembler(assembler, *mesh,
+		RhsAssembler rhs_assembler(assembler, *mesh, obstacle,
 								   n_bases, mesh->dimension(),
 								   bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 								   formulation(), *problem,
@@ -868,7 +964,7 @@ namespace polyfem
 		json rhs_solver_params = args["rhs_solver_params"];
 		rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 		const int size = problem->is_scalar() ? 1 : mesh->dimension();
-		RhsAssembler rhs_assembler(assembler, *mesh,
+		RhsAssembler rhs_assembler(assembler, *mesh, obstacle,
 								   n_bases, size,
 								   bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 								   formulation(), *problem,
@@ -877,16 +973,19 @@ namespace polyfem
 
 		Eigen::VectorXd tmp_sol;
 
-		sol.resizeLike(rhs);
-		sol.setZero();
+		if (sol.size() != rhs.size())
+		{
+			sol.resizeLike(rhs);
+			sol.setZero();
+		}
 
-		const std::string u_path = resolve_path(args["import"]["u_path"], args["root_path"]);
+		const std::string u_path = resolve_input_path(args["import"]["u_path"]);
 		if (!u_path.empty())
 			import_matrix(u_path, args["import"], sol);
 
 		// if (args["use_al"] || args["has_collision"])
 		// {
-		//FD
+		// FD
 		{
 			// 	ALNLProblem nl_problem(*this, rhs_assembler, 1, args["dhat"], false, 1e6);
 			// 	tmp_sol = rhs;
@@ -948,28 +1047,53 @@ namespace polyfem
 		const double max_al_weight = args["max_al_weight"];
 		nl_problem.full_to_reduced(sol, tmp_sol);
 
-		nl_problem.update_lagging(tmp_sol, /*start_of_timestep=*/true);
-		alnl_problem.update_lagging(sol, /*start_of_timestep=*/true);
+		nl_problem.init_lagging(sol);
+		alnl_problem.init_lagging(sol);
 
-		//TODO: maybe add linear solver here?
+		const int friction_iterations = args["friction_iterations"];
+		assert(friction_iterations >= 0);
+		if (friction_iterations > 0)
+		{
+			logger().debug("Lagging iteration 1");
+		}
+
+		// Disable damping for the final lagged iteration
+		if (friction_iterations <= 1)
+		{
+			nl_problem.lagged_damping_weight() = 0;
+			alnl_problem.lagged_damping_weight() = 0;
+		}
+
+		// TODO: maybe add linear solver here?
 
 		solver_info = json::array();
 
 		int index = 0;
-		nl_problem.line_search_begin(sol, tmp_sol);
-		while (!std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
+
+		if (args["save_solve_sequence_debug"])
 		{
+			if (!solve_export_to_file)
+				solution_frames.emplace_back();
+			save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", index)), 1);
+			save_wire(resolve_output_path(fmt::format("step_{:d}.obj", index)));
+		}
+
+		nl_problem.line_search_begin(sol, tmp_sol);
+		bool force_al = args["force_al"];
+		while (force_al || !std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
+		{
+			force_al = false;
 			nl_problem.line_search_end();
 			alnl_problem.set_weight(al_weight);
 			logger().debug("Solving AL Problem with weight {}", al_weight);
 
-			cppoptlib::SparseNewtonDescentSolver<ALNLProblem> alnlsolver(solver_params(), solver_type(), precond_type());
-			alnlsolver.setLineSearch(args["line_search"]);
+			std::shared_ptr<cppoptlib::NonlinearSolver<ALNLProblem>> alnlsolver = make_nl_solver<ALNLProblem>();
+			alnlsolver->setLineSearch(args["line_search"]);
 			alnl_problem.init(sol);
 			tmp_sol = sol;
-			alnlsolver.minimize(alnl_problem, tmp_sol);
+			alnlsolver->minimize(alnl_problem, tmp_sol);
 			json alnl_solver_info;
-			alnlsolver.getInfo(alnl_solver_info);
+			alnlsolver->getInfo(alnl_solver_info);
 
 			solver_info.push_back({{"type", "al"},
 								   {"weight", al_weight},
@@ -987,32 +1111,84 @@ namespace polyfem
 				break;
 			}
 
+			++index;
 			if (args["save_solve_sequence_debug"])
 			{
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
-				save_vtu(fmt::format("step_{:d}.vtu", index), 1);
-				save_wire(fmt::format("step_{:d}.obj", index));
+				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", index)), 1);
+				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", index)));
 			}
-			++index;
 		}
 		nl_problem.line_search_end();
 		logger().debug("Solving Problem");
-		cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
-		nlsolver.setLineSearch(args["line_search"]);
+		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nlsolver = make_nl_solver<NLProblem>();
+		nlsolver->setLineSearch(args["line_search"]);
 		nl_problem.init(sol);
-		nlsolver.minimize(nl_problem, tmp_sol);
+		nlsolver->minimize(nl_problem, tmp_sol);
 		json nl_solver_info;
-		nlsolver.getInfo(nl_solver_info);
-
-		nl_problem.reduced_to_full(tmp_sol, sol);
+		nlsolver->getInfo(nl_solver_info);
 		solver_info.push_back({{"type", "rc"},
 							   {"info", nl_solver_info}});
+		nl_problem.reduced_to_full(tmp_sol, sol);
+
+		++index;
+		if (args["save_solve_sequence_debug"])
+		{
+			if (!solve_export_to_file)
+				solution_frames.emplace_back();
+			save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", index)), 1);
+			save_wire(resolve_output_path(fmt::format("step_{:d}.obj", index)));
+		}
+
+		nl_problem.lagged_damping_weight() = 0;
+
+		// Lagging loop (start at 1 because we already did an iteration above)
+		int lag_i;
+		nl_problem.update_lagging(tmp_sol);
+		bool lagging_converged = nl_problem.lagging_converged(tmp_sol);
+		for (lag_i = 1; !lagging_converged && lag_i < friction_iterations; lag_i++)
+		{
+			logger().debug("Lagging iteration {:d}", lag_i + 1);
+			nl_problem.init(sol);
+			// Disable damping for the final lagged iteration
+			if (lag_i == friction_iterations - 1)
+				nl_problem.lagged_damping_weight() = 0;
+			nlsolver->minimize(nl_problem, tmp_sol);
+
+			nlsolver->getInfo(nl_solver_info);
+			solver_info.push_back({{"type", "rc"},
+								   {"lag_i", lag_i},
+								   {"info", nl_solver_info}});
+
+			nl_problem.reduced_to_full(tmp_sol, sol);
+			nl_problem.update_lagging(tmp_sol);
+			lagging_converged = nl_problem.lagging_converged(tmp_sol);
+
+			++index;
+			if (args["save_solve_sequence_debug"])
+			{
+				if (!solve_export_to_file)
+					solution_frames.emplace_back();
+				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", index)), 1);
+				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", index)));
+			}
+		}
+
+		if (friction_iterations > 0)
+		{
+			logger().log(
+				lagging_converged ? spdlog::level::info : spdlog::level::warn,
+				"{} {:d} lagging iteration(s) (err={:g} tol={:g})",
+				lagging_converged ? "Friction lagging converged using" : "Friction lagging maxed out at",
+				lag_i, nl_problem.compute_lagging_error(tmp_sol),
+				args["friction_convergence_tol"].get<double>());
+		}
 
 		{
-			const std::string u_path = resolve_path(args["export"]["u_path"], args["root_path"]);
+			const std::string u_path = resolve_output_path(args["export"]["u_path"]);
 			if (!u_path.empty())
-				write_matrix_binary(u_path, sol);
+				write_matrix(u_path, sol);
 		}
 		// }
 		// else
@@ -1249,4 +1425,8 @@ namespace polyfem
 		// }
 	}
 
+	////////////////////////////////////////////////////////////////////////
+	// Template instantiations
+	template std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> State::make_nl_solver() const;
+	template std::shared_ptr<cppoptlib::NonlinearSolver<ALNLProblem>> State::make_nl_solver() const;
 } // namespace polyfem

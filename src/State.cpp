@@ -1,7 +1,6 @@
 #include <polyfem/State.hpp>
 #include <polyfem/Common.hpp>
 
-#include <polyfem/StringUtils.hpp>
 #include <polyfem/MatrixUtils.hpp>
 
 #include <polyfem/Mesh2D.hpp>
@@ -31,6 +30,7 @@
 #include <polyfem/TriQuadrature.hpp>
 
 #include <polyfem/Logger.hpp>
+#include <polyfem/JSONUtils.hpp>
 
 #include <igl/Timer.h>
 
@@ -148,30 +148,40 @@ namespace polyfem
 
 	void State::set_multimaterial(const std::function<void(const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &)> &setter)
 	{
-		if (!args.contains("body_params"))
+		if (!is_param_valid(args, "body_params"))
 			return;
+
+		const json default_material = R"({
+			"id": -1,
+			"E": 100,
+			"nu": 0.3,
+			"rho": 1,
+			"density": 1
+		})"_json;
 
 		const auto &body_params = args["body_params"];
 		assert(body_params.is_array());
 		Eigen::MatrixXd Es(mesh->n_elements(), 1), nus(mesh->n_elements(), 1), rhos(mesh->n_elements(), 1);
-		Es.setConstant(100);
-		nus.setConstant(0.3);
-		rhos.setOnes();
+		Es.setConstant(default_material["E"].get<double>());
+		nus.setConstant(default_material["nu"].get<double>());
+		rhos.setConstant(default_material["density"].get<double>());
 
 		std::map<int, std::tuple<double, double, double>> materials;
 		for (int i = 0; i < body_params.size(); ++i)
 		{
-			const auto &mat = body_params[i];
+			check_for_unknown_args(default_material, body_params[i], fmt::format("/body_params[{}]", i));
+			json mat = default_material;
+			mat.merge_patch(body_params[i]);
+
 			const int mid = mat["id"];
 			Density d;
 			d.init(mat);
 
-			const double rho = d(0, 0, 0, 0);
+			const double rho = d(0, 0, 0, 0, 0, 0, 0);
 			const double E = mat["E"];
 			const double nu = mat["nu"];
 
 			materials[mid] = std::tuple<double, double, double>(E, nu, rho);
-			// std::cout << mid << " " << E << " " << nu << " " << rho << " " << std::endl;
 		}
 
 		std::string missing = "";
@@ -283,6 +293,7 @@ namespace polyfem
 		geom_bases.clear();
 		boundary_nodes.clear();
 		local_boundary.clear();
+		total_local_boundary.clear();
 		local_neumann_boundary.clear();
 		polys.clear();
 		poly_edge_to_data.clear();
@@ -311,10 +322,36 @@ namespace polyfem
 
 		local_boundary.clear();
 		local_neumann_boundary.clear();
-		std::map<int, InterfaceData> poly_edge_to_data_geom; //temp dummy variable
+		std::map<int, InterfaceData> poly_edge_to_data_geom; // temp dummy variable
 
 		const int base_p = args["discr_order"];
 		disc_orders.setConstant(base_p);
+
+		const std::string discr_orders_path = args["discr_orders_path"];
+		const auto b_discr_orders = args["bodies_discr_order"];
+		if (!discr_orders_path.empty())
+		{
+			Eigen::MatrixXi tmp;
+			read_matrix(discr_orders_path, tmp);
+			assert(tmp.size() == disc_orders.size());
+			assert(tmp.cols() == 1);
+			disc_orders = tmp;
+		}
+		else if (b_discr_orders.size() > 0)
+		{
+			std::map<int, int> b_orders;
+			for (size_t i = 0; i < b_discr_orders.size(); ++i)
+			{
+				b_orders[b_discr_orders[i]["body_id"]] = b_discr_orders[i]["discr"];
+				logger().trace("bid {}, discr {}", b_discr_orders[i]["body_id"], b_discr_orders[i]["discr"]);
+			}
+
+			for (int e = 0; e < mesh->n_elements(); ++e)
+			{
+				const int bid = mesh->get_body_id(e);
+				disc_orders[e] = b_orders.at(bid);
+			}
+		}
 
 		Eigen::MatrixXi geom_disc_orders;
 		if (!iso_parametric())
@@ -409,6 +446,9 @@ namespace polyfem
 
 		auto &gbases = iso_parametric() ? bases : geom_bases;
 
+		for (const auto &lb : local_boundary)
+			total_local_boundary.emplace_back(lb);
+
 		n_flipped = 0;
 
 		if (args["count_flipped_els"])
@@ -481,10 +521,19 @@ namespace polyfem
 		// auto it = std::unique(flipped_elements.begin(), flipped_elements.end());
 		// flipped_elements.resize(std::distance(flipped_elements.begin(), it));
 
+		const int prev_bases = n_bases;
+		n_bases += obstacle.n_vertices();
+
 		logger().info("Extracting boundary mesh...");
-		extract_boundary_mesh();
+		build_collision_mesh();
 		if (n_pressure_bases > 0)
-			extract_boundary_mesh(true);
+		{
+			extract_boundary_mesh(
+				pressure_bases,
+				boundary_nodes_pos_pressure,
+				boundary_edges_pressure,
+				boundary_triangles_pressure);
+		}
 		// const std::string export_surface = args["export"]["surface"];
 		// if (!export_surface.empty())
 		extract_vis_boundary_mesh();
@@ -494,13 +543,13 @@ namespace polyfem
 		problem->setup_bc(*mesh, bases, pressure_bases, local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes);
 		args["has_neumann"] = local_neumann_boundary.size() > 0 || local_boundary.size() < prev_b_size;
 		use_avg_pressure = !args["has_neumann"];
+		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 
-		//add a pressure node to avoid singular solution
+		// add a pressure node to avoid singular solution
 		if (assembler.is_mixed(formulation())) // && !assembler.is_fluid(formulation()))
 		{
 			if (!use_avg_pressure)
 			{
-				const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 				const bool has_neumann = args["has_neumann"];
 				if (!has_neumann)
 					boundary_nodes.push_back(n_bases * problem_dim + 0);
@@ -511,6 +560,12 @@ namespace polyfem
 				// boundary_nodes.push_back(n_bases * problem_dim + 3);
 				// boundary_nodes.push_back(n_bases * problem_dim + 215);
 			}
+		}
+
+		for (int i = prev_bases; i < n_bases; ++i)
+		{
+			for (int d = 0; d < problem_dim; ++d)
+				boundary_nodes.push_back(i * problem_dim + d);
 		}
 
 		const auto &curret_bases = iso_parametric() ? bases : geom_bases;
@@ -531,6 +586,8 @@ namespace polyfem
 			}
 		}
 
+		logger().info("n_bases {}", n_bases);
+
 		building_basis_time = timer.getElapsedTime();
 		logger().info(" took {}s", building_basis_time);
 
@@ -539,6 +596,7 @@ namespace polyfem
 		logger().info("n bases: {}", n_bases);
 		logger().info("n pressure bases: {}", n_pressure_bases);
 
+		ass_vals_cache.clear();
 		if (n_bases <= args["cache_size"])
 		{
 			timer.start();
@@ -671,7 +729,7 @@ namespace polyfem
 
 		// std::sort(boundary_nodes.begin(), boundary_nodes.end());
 
-		//mixed not supports polygonal bases
+		// mixed not supports polygonal bases
 		assert(n_pressure_bases == 0 || poly_edge_to_data.size() == 0);
 
 		int new_bases = 0;
@@ -716,6 +774,54 @@ namespace polyfem
 		logger().info(" took {}s", computing_poly_basis_time);
 
 		n_bases += new_bases;
+	}
+
+	void State::build_collision_mesh()
+	{
+		extract_boundary_mesh(
+			bases, boundary_nodes_pos, boundary_edges, boundary_triangles);
+
+		Eigen::VectorXi codimensional_nodes;
+		if (obstacle.n_vertices() > 0)
+		{
+			// boundary_nodes_pos uses n_bases that already contains the obstacle
+			const int n_v = boundary_nodes_pos.rows() - obstacle.n_vertices();
+
+			if (obstacle.v().size())
+				boundary_nodes_pos.bottomRows(obstacle.v().rows()) = obstacle.v();
+
+			if (obstacle.codim_v().size())
+			{
+				codimensional_nodes.conservativeResize(codimensional_nodes.size() + obstacle.codim_v().size());
+				codimensional_nodes.tail(obstacle.codim_v().size()) = obstacle.codim_v().array() + n_v;
+			}
+
+			if (obstacle.e().size())
+			{
+				boundary_edges.conservativeResize(boundary_edges.rows() + obstacle.e().rows(), 2);
+				boundary_edges.bottomRows(obstacle.e().rows()) = obstacle.e().array() + n_v;
+			}
+
+			if (obstacle.f().size())
+			{
+				boundary_triangles.conservativeResize(boundary_triangles.rows() + obstacle.f().rows(), 3);
+				boundary_triangles.bottomRows(obstacle.f().rows()) = obstacle.f().array() + n_v;
+			}
+		}
+
+		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(boundary_nodes_pos.rows(), boundary_edges);
+		for (int i = 0; i < codimensional_nodes.size(); i++)
+		{
+			is_on_surface[codimensional_nodes[i]] = true;
+		}
+
+		collision_mesh = ipc::CollisionMesh(is_on_surface, boundary_nodes_pos, boundary_edges, boundary_triangles);
+
+		collision_mesh.can_collide = [&](size_t vi, size_t vj) {
+			// obstacles do not collide with other obstacles
+			return !this->is_obstacle_vertex(collision_mesh.to_full_vertex_id(vi))
+				   || !this->is_obstacle_vertex(collision_mesh.to_full_vertex_id(vj));
+		};
 	}
 
 	json State::build_json_params()
@@ -795,7 +901,7 @@ namespace polyfem
 		}
 		else
 		{
-			if (!args["has_collision"]) //collisions are non-linear
+			if (!args["has_collision"]) // collisions are non-linear
 				assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, stiffness);
 			if (problem->is_time_dependent())
 			{
@@ -816,7 +922,7 @@ namespace polyfem
 			}
 
 			avg_mass /= mass.rows();
-			logger().trace("avg mass {}", avg_mass);
+			logger().info("avgerage mass {}", avg_mass);
 
 			if (args["lump_mass_matrix"])
 			{
@@ -891,7 +997,7 @@ namespace polyfem
 		json rhs_solver_params = args["rhs_solver_params"];
 		rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 
-		RhsAssembler rhs_assembler(assembler, *mesh,
+		RhsAssembler rhs_assembler(assembler, *mesh, obstacle,
 								   n_bases, size,
 								   bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 								   formulation(), *problem,
@@ -929,7 +1035,7 @@ namespace polyfem
 				assigning_rhs_time = 0;
 				return;
 			}
-			//Divergence free rhs
+			// Divergence free rhs
 			if (formulation() != "Bilaplacian" || local_neumann_boundary.empty())
 			{
 				rhs.block(prev_size, 0, n_larger, rhs.cols()).setZero();
@@ -939,7 +1045,7 @@ namespace polyfem
 				Eigen::MatrixXd tmp(n_pressure_bases, 1);
 				tmp.setZero();
 
-				RhsAssembler rhs_assembler1(assembler, *mesh,
+				RhsAssembler rhs_assembler1(assembler, *mesh, obstacle,
 											n_pressure_bases, size,
 											pressure_bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache,
 											formulation(), *problem,
@@ -985,7 +1091,7 @@ namespace polyfem
 
 		igl::Timer timer;
 		timer.start();
-		logger().info("Solving {} with", formulation());
+		logger().info("Solving {}", formulation());
 
 		const json &params = solver_params();
 
@@ -997,96 +1103,63 @@ namespace polyfem
 
 		if (problem->is_time_dependent())
 		{
-			double tend = args["tend"];
 			const double t0 = args["t0"];
-			double dt;
-			int time_steps;
-			if (args.contains("dt")) // Explicit timestep param. has priority
+			double tend = args["tend"];          // default=1
+			int time_steps = args["time_steps"]; // default=10 set in State::State()
+			double dt = args["dt"];
+			if (tend > 0)
+				if (dt > 0) // Explicit timestep param. has priority
+					time_steps = int(ceil((tend - t0) / dt));
+				else
+					dt = (tend - t0) / time_steps;
+			else if (dt > 0) // Compute tend from dt and time_steps
+				tend = dt * time_steps + t0;
+			else // Use default tend
 			{
-				dt = args["dt"];
-				time_steps = int(ceil((tend - t0) / dt));
-			}
-			else
-			{
-				time_steps = args["time_steps"];
+				tend = 1;
 				dt = (tend - t0) / time_steps;
 			}
+			assert(tend > 0 && dt > 0 && time_steps > 0);
+			// Store these for possible use later
+			args["tend"] = tend;
+			args["dt"] = dt;
+			args["time_steps"] = time_steps;
 
 			if (tend <= t0)
 			{
-				dt = args["dt"];
-				time_steps = args["time_steps"];
 				tend = t0 + time_steps * dt;
 			}
 			logger().info("t0={}, dt={}, tend={}", t0, dt, tend);
 
-			igl::Timer td_timer;
-			td_timer.start();
-			logger().trace("Setup rhs...");
-
-			const auto &gbases = iso_parametric() ? bases : geom_bases;
-			json rhs_solver_params = args["rhs_solver_params"];
-			rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
-
-			RhsAssembler rhs_assembler(assembler, *mesh,
-									   n_bases, problem->is_scalar() ? 1 : mesh->dimension(),
-									   bases, gbases, ass_vals_cache,
-									   formulation(), *problem,
-									   args["bc_method"],
-									   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
-
-			const std::string u_path = resolve_path(args["import"]["u_path"], args["root_path"]);
-			if (!u_path.empty())
-				read_matrix_binary(u_path, sol);
-			else
-				rhs_assembler.initial_solution(sol);
-
-			if (assembler.is_mixed(formulation()))
-			{
-				pressure.resize(0, 0);
-				const int prev_size = sol.size();
-				sol.conservativeResize(rhs.size(), sol.cols());
-				//Zero initial pressure
-				sol.block(prev_size, 0, n_pressure_bases, sol.cols()).setZero();
-				sol(sol.size() - 1) = 0;
-			}
-
-			Eigen::VectorXd c_sol = sol;
-
-			if (assembler.is_mixed(formulation()))
-				sol_to_pressure();
-
-			td_timer.stop();
-			logger().trace("done, took {}s", td_timer.getElapsedTime());
-
+			// Pre log the output path for easier watching
 			if (args["save_time_sequence"])
 			{
-				td_timer.start();
-				logger().trace("Saving VTU...");
-
-				if (!solve_export_to_file)
-					solution_frames.emplace_back();
-				save_vtu(resolve_output_path("step_0.vtu"), 0);
-				save_wire(resolve_output_path("step_0.obj"));
-
-				td_timer.stop();
-				logger().trace("done, took {}s", td_timer.getElapsedTime());
+				logger().info("Time sequence of simulation will be written to: {}",
+							  resolve_output_path(args["export"]["time_sequence"]));
 			}
+
+			Eigen::VectorXd c_sol;
+			init_transient(c_sol);
+			RhsAssembler &rhs_assembler = *step_data.rhs_assembler;
 
 			if (formulation() == "NavierStokes")
 				solve_transient_navier_stokes(time_steps, t0, dt, rhs_assembler, c_sol);
 			else if (formulation() == "OperatorSplitting")
-			{
 				solve_transient_navier_stokes_split(time_steps, dt, rhs_assembler);
-			}
 			else if (problem->is_scalar() || assembler.is_mixed(formulation()))
 				solve_transient_scalar(time_steps, t0, dt, rhs_assembler, c_sol);
-			else if (assembler.is_linear(formulation()) && !args["has_collision"])
+			else if (assembler.is_linear(formulation()) && !args["has_collision"]) // Collisions add nonlinearity to the problem
 				solve_transient_tensor_linear(time_steps, t0, dt, rhs_assembler);
 			else
 				solve_transient_tensor_non_linear(time_steps, t0, dt, rhs_assembler);
+
+			if (args["save_time_sequence"])
+			{
+				logger().info("Time sequence of simulation written to: {}",
+							  resolve_output_path(args["export"]["time_sequence"]));
+			}
 		}
-		else //if(!problem->is_time_dependent())
+		else // if(!problem->is_time_dependent())
 		{
 			if (formulation() == "NavierStokes")
 				solve_navier_stokes();
@@ -1155,7 +1228,9 @@ namespace polyfem
 		// Eigen::MatrixXd err_per_el(n_el, 5);
 		ElementAssemblyValues vals;
 
-		const double tend = args["tend"];
+		double tend = args.value("tend", 1.0);
+		if (tend <= 0)
+			tend = 1;
 
 		for (int e = 0; e < n_el; ++e)
 		{

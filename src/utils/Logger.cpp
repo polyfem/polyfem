@@ -1,65 +1,44 @@
 #include <polyfem/Logger.hpp>
 #include <polyfem/DisableWarnings.hpp>
 #include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/sinks/ostream_sink.h>
-#include <spdlog/details/registry.h>
-#include <spdlog/details/thread_pool.h>
 #include <polyfem/EnableWarnings.hpp>
-#include <memory>
-#include <mutex>
-#include <iostream>
 
 namespace polyfem
 {
-	std::shared_ptr<spdlog::async_logger> Logger::logger_;
-
-	// See https://github.com/gabime/spdlog#asynchronous-logger-with-multi-sinks
-	void Logger::init(std::vector<spdlog::sink_ptr> &sinks)
+	namespace
 	{
-		auto l = spdlog::get("polyfem");
-		bool had_polyfem = l != nullptr;
-		if (had_polyfem)
+
+		// Custom logger instance defined by the user, if any
+		std::shared_ptr<spdlog::logger> &get_shared_logger()
 		{
-			spdlog::drop("polyfem");
+			static std::shared_ptr<spdlog::logger> logger;
+			return logger;
 		}
 
-		if (spdlog::thread_pool() == nullptr)
-		{
-			spdlog::init_thread_pool(8192, 1);
-		}
-		Logger::logger_ =
-			std::make_shared<spdlog::async_logger>(
-				"polyfem",
-				sinks.begin(), sinks.end(),
-				spdlog::thread_pool(), spdlog::async_overflow_policy::block);
-		spdlog::register_logger(logger_);
+	} // namespace
 
-		if (had_polyfem)
-			logger().warn("Removed another polyfem logger");
+	// Retrieve current logger
+	spdlog::logger &logger()
+	{
+		if (get_shared_logger())
+		{
+			return *get_shared_logger();
+		}
+		else
+		{
+			// When using factory methods provided by spdlog (_st and _mt functions),
+			// names must be unique, since the logger is registered globally.
+			// Otherwise, you will need to create the logger manually. See
+			// https://github.com/gabime/spdlog/wiki/2.-Creating-loggers
+			static auto default_logger = spdlog::stdout_color_mt("polyfem");
+			return *default_logger;
+		}
 	}
 
-	void Logger::init(bool use_cout, const std::string &filename, bool truncate)
+	// Use a custom logger
+	void set_logger(std::shared_ptr<spdlog::logger> x)
 	{
-		std::vector<spdlog::sink_ptr> sinks;
-		if (use_cout)
-		{
-			sinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
-		}
-		if (!filename.empty())
-		{
-			sinks.emplace_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>(filename, truncate));
-		}
-
-		init(sinks);
-	}
-
-	void Logger::init(std::ostream &os)
-	{
-		std::vector<spdlog::sink_ptr> sinks;
-		sinks.emplace_back(std::make_shared<spdlog::sinks::ostream_sink_mt>(os, false));
-
-		init(sinks);
+		get_shared_logger() = std::move(x);
 	}
 
 } // namespace polyfem

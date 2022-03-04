@@ -83,7 +83,15 @@ namespace polyfem
 		void init(const json &params);
 		void init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus);
 
-		void lambda_mu(double x, double y, double z, int el_id, double &lambda, double &mu) const;
+		void lambda_mu(double px, double py, double pz, double x, double y, double z, int el_id, double &lambda, double &mu) const;
+		void lambda_mu(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, int el_id, double &lambda, double &mu) const
+		{
+			assert(param.size() == p.size());
+			lambda_mu(
+				param(0), param(1), param.size() == 2 ? 0. : param(2),
+				p(0), p(1), p.size() ? 0. : p(2),
+				el_id, lambda, mu);
+		}
 
 	private:
 		struct Internal
@@ -111,7 +119,14 @@ namespace polyfem
 		void init(const json &params);
 		void init_multimaterial(const Eigen::MatrixXd &rho);
 
-		double operator()(double x, double y, double z, int el_id) const;
+		double operator()(double px, double py, double pz, double x, double y, double z, int el_id) const;
+		double operator()(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, int el_id) const
+		{
+			assert(param.size() == p.size());
+			return (*this)(param(0), param(1), param.size() == 2 ? 0. : param(2),
+						   p(0), p(1), p.size() ? 0. : p(2),
+						   el_id);
+		}
 
 	private:
 		void set_rho(const json &rho);

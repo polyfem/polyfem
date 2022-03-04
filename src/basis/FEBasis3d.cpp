@@ -54,10 +54,10 @@ e5  = (  0, 0.5, 0.5)
 
 
 Corner nodes:
-      v7──────x─────v6
-      ╱┆     ╱      ╱│
-     ╱ ┆    ╱      ╱ │
-    x┄┄┼┄┄┄x┄┄┄┄┄┄x  │
+	  v7──────x─────v6
+	  ╱┆     ╱      ╱│
+	 ╱ ┆    ╱      ╱ │
+	x┄┄┼┄┄┄x┄┄┄┄┄┄x  │
    ╱   x  ╱      ╱┆  x
   ╱    ┆ ╱      ╱ ┆ ╱│
 v4─────┼x─────v5  ┆╱ │
@@ -80,9 +80,9 @@ v6 = (1, 1, 1)
 v7 = (0, 1, 1)
 
 Edge nodes:
-       x─────e10─────x
-      ╱┆     ╱      ╱│
-     ╱ ┆    ╱      ╱ │
+	   x─────e10─────x
+	  ╱┆     ╱      ╱│
+	 ╱ ┆    ╱      ╱ │
    e11┄┼┄┄┄x┄┄┄┄┄e9  │
    ╱  e7  ╱      ╱┆ e6
   ╱    ┆ ╱      ╱ ┆ ╱│
@@ -110,10 +110,10 @@ e10 = (0.5,   1,   1)
 e11 = (  0, 0.5,   1)
 
 Face nodes:
-      v7──────x─────v6
-      ╱┆     ╱      ╱│
-     ╱ ┆    ╱      ╱ │
-    x┄┄┼┄┄f5┄┄┄┄┄┄x  │
+	  v7──────x─────v6
+	  ╱┆     ╱      ╱│
+	 ╱ ┆    ╱      ╱ │
+	x┄┄┼┄┄f5┄┄┄┄┄┄x  │
    ╱   x  ╱  f3  ╱┆  x
   ╱    ┆ ╱      ╱ ┆ ╱│
 v4─────┼x─────v5  ┆╱ │
@@ -203,7 +203,9 @@ namespace
 		const int nn = p > 2 ? (p - 2) : 0;
 		const int n_loc_f = (nn * (nn + 1) / 2);
 		const int n_face_nodes = n_loc_f * 4;
-		const int n_cell_nodes = p == 4 ? 1 : 0; //P5 not supported
+		int n_cell_nodes = 0;
+		for (int pp = 4; pp <= p; ++pp)
+			n_cell_nodes += ((pp - 3) * ((pp - 3) + 1) / 2);
 
 		if (p == 0)
 		{
@@ -247,13 +249,13 @@ namespace
 			e[le] = index;
 		}
 
-		//vertices
+		// vertices
 		for (size_t lv = 0; lv < v.size(); ++lv)
 		{
 			res.push_back(nodes.node_id_from_primitive(v[lv]));
 		}
 
-		//Edges
+		// Edges
 		for (int le = 0; le < e.rows(); ++le)
 		{
 			const auto index = e[le];
@@ -285,7 +287,7 @@ namespace
 			}
 		}
 
-		//faces
+		// faces
 		for (int lf = 0; lf < f.rows(); ++lf)
 		{
 			const auto index = f[lf];
@@ -313,7 +315,7 @@ namespace
 			}
 		}
 
-		//cells
+		// cells
 		if (n_cell_nodes > 0)
 		{
 			const auto index = f[0];
@@ -383,14 +385,14 @@ namespace
 			f[lf] = index;
 		}
 
-		//vertices
+		// vertices
 		for (size_t lv = 0; lv < v.size(); ++lv)
 		{
 			res.push_back(nodes.node_id_from_primitive(v[lv]));
 		}
 		assert(res.size() == size_t(8));
 
-		//Edges
+		// Edges
 		for (int le = 0; le < e.rows(); ++le)
 		{
 			const auto index = e[le];
@@ -415,7 +417,7 @@ namespace
 		}
 		assert(res.size() == size_t(8 + n_edge_nodes));
 
-		//faces
+		// faces
 		for (int lf = 0; lf < f.rows(); ++lf)
 		{
 			const auto index = f[lf];
@@ -437,7 +439,7 @@ namespace
 		}
 		assert(res.size() == size_t(8 + n_edge_nodes + n_face_nodes));
 
-		//cells
+		// cells
 		if (n_cell_nodes > 0)
 		{
 			const auto index = f[0];
@@ -579,7 +581,7 @@ namespace
 		}
 	}
 
-} //anonymous namespace
+} // anonymous namespace
 
 Eigen::VectorXi polyfem::FEBasis3d::tet_face_local_nodes(const int p, const Mesh3D &mesh, Navigation3D::Index index)
 {
@@ -662,7 +664,7 @@ Eigen::VectorXi polyfem::FEBasis3d::tet_face_local_nodes(const int p, const Mesh
 		tmp = mesh.next_around_face(tmp);
 	}
 
-	//faces
+	// faces
 
 	Eigen::Matrix<int, 4, 3> fv;
 	fv.row(0) << l2g[0], l2g[1], l2g[2];
@@ -680,12 +682,139 @@ Eigen::VectorXi polyfem::FEBasis3d::tet_face_local_nodes(const int p, const Mesh
 
 	assert(lf < fv.rows());
 
-	if (n_face_nodes == 1)
-		result[ii++] = 4 + n_edge_nodes + lf;
-	else if (n_face_nodes == 3)
+	if (n_face_nodes == 0)
 	{
+	}
+	else if (n_face_nodes == 1)
+		result[ii++] = 4 + n_edge_nodes + lf;
+	else // if (n_face_nodes == 3)
+	{
+
+		const auto get_order = [&p, &nn, &n_face_nodes](const std::array<int, 3> &corners) {
+			int index;
+			int start;
+			int offset;
+
+			std::vector<int> order1(n_face_nodes); // A-> B
+			for (int k = 0; k < n_face_nodes; ++k)
+				order1[k] = k;
+
+			std::vector<int> order2(n_face_nodes); // B-> A
+			index = 0;
+			start = nn - 1;
+			for (int k = 0; k < nn; ++k)
+			{
+				for (int l = 0; l < nn - k; ++l)
+				{
+					order2[index] = start - l;
+					index++;
+				}
+				start += (nn - 1) - k;
+			}
+
+			std::vector<int> order3(n_face_nodes); // A->C
+			index = 0;
+			for (int k = 0; k < nn; ++k)
+			{
+				offset = k;
+				for (int l = 0; l < nn - k; ++l)
+				{
+					order3[index] = offset;
+					offset += nn - l;
+
+					index++;
+				}
+			}
+
+			std::vector<int> order4(n_face_nodes); // C-> A
+			index = 0;
+			start = n_face_nodes - 1;
+			for (int k = 0; k < nn; ++k)
+			{
+				offset = 0;
+				for (int l = 0; l < nn - k; ++l)
+				{
+					order4[index] = start - offset;
+					offset += k + 2 + l;
+					index++;
+				}
+
+				start += -k - 1;
+			}
+
+			std::vector<int> order5(n_face_nodes); // B-> C
+			index = 0;
+			start = nn - 1;
+			for (int k = 0; k < nn; ++k)
+			{
+				offset = 0;
+				for (int l = 0; l < nn - k; ++l)
+				{
+					order5[index] = start + offset;
+					offset += nn - 1 - l;
+					index++;
+				}
+
+				start--;
+			}
+
+			std::vector<int> order6(n_face_nodes); // C-> B
+			index = 0;
+			start = n_face_nodes;
+			for (int k = 0; k < nn; ++k)
+			{
+				offset = 0;
+				start = start - k - 1;
+				for (int l = 0; l < nn - k; ++l)
+				{
+					order6[index] = start - offset;
+					offset += l + 1 + k;
+					index++;
+				}
+			}
+
+			if (corners[0] == order1[0] && corners[1] == order1[nn - 1])
+			{
+				assert(corners[2] == order1[n_face_nodes - 1]);
+				return order1;
+			}
+
+			if (corners[0] == order2[0] && corners[1] == order2[nn - 1])
+			{
+				assert(corners[2] == order2[n_face_nodes - 1]);
+				return order2;
+			}
+
+			if (corners[0] == order3[0] && corners[1] == order3[nn - 1])
+			{
+				assert(corners[2] == order3[n_face_nodes - 1]);
+				return order3;
+			}
+
+			if (corners[0] == order4[0] && corners[1] == order4[nn - 1])
+			{
+				assert(corners[2] == order4[n_face_nodes - 1]);
+				return order4;
+			}
+
+			if (corners[0] == order5[0] && corners[1] == order5[nn - 1])
+			{
+				assert(corners[2] == order5[n_face_nodes - 1]);
+				return order5;
+			}
+
+			if (corners[0] == order6[0] && corners[1] == order6[nn - 1])
+			{
+				assert(corners[2] == order6[n_face_nodes - 1]);
+				return order6;
+			}
+
+			assert(false);
+			return order1;
+		};
+
 		Eigen::MatrixXd nodes;
-		autogen::p_nodes_3d(4, nodes);
+		autogen::p_nodes_3d(p, nodes);
 		// auto pos = polyfem::FEBasis3d::linear_tet_face_local_nodes_coordinates(mesh, index);
 		// Local to global mapping of node indices
 
@@ -709,11 +838,12 @@ Eigen::VectorXi polyfem::FEBasis3d::tet_face_local_nodes(const int p, const Mesh
 		bool found = false;
 		for (int lff = 0; lff < 4; ++lff)
 		{
-			Eigen::Matrix3d loc_nodes = nodes.block<3, 3>(offset + lff * n_face_nodes, 0);
+			Eigen::MatrixXd loc_nodes = nodes.block(offset + lff * n_face_nodes, 0, n_face_nodes, 3);
 			Eigen::RowVector3d node_bary = loc_nodes.colwise().mean();
 
 			if ((node_bary - bary).norm() < 1e-10)
 			{
+				std::array<int, 3> corners;
 				int sum = 0;
 				for (int m = 0; m < 3; ++m)
 				{
@@ -721,7 +851,7 @@ Eigen::VectorXi polyfem::FEBasis3d::tet_face_local_nodes(const int p, const Mesh
 					int min_n = -1;
 					double min_dis = 10000;
 
-					for (int n = 0; n < 3; ++n)
+					for (int n = 0; n < n_face_nodes; ++n)
 					{
 						double dis = (loc_nodes.row(n) - t).squaredNorm();
 						if (dis < min_dis)
@@ -732,29 +862,32 @@ Eigen::VectorXi polyfem::FEBasis3d::tet_face_local_nodes(const int p, const Mesh
 					}
 
 					assert(min_n >= 0);
-					assert(min_n < 3);
+					assert(min_n < n_face_nodes);
+					corners[m] = min_n;
+				}
 
+				const auto indices = get_order(corners);
+				for (int min_n : indices)
+				{
 					sum += min_n;
-
 					result[ii++] = 4 + n_edge_nodes + min_n + lf * n_face_nodes;
 				}
 
-				assert(sum == 3);
+				assert(sum == (n_face_nodes - 1) * n_face_nodes / 2);
 
 				found = true;
 				assert(lff == lf);
-			}
 
-			if (found)
 				break;
+			}
 		}
 
 		assert(found);
 	}
-	else
-	{
-		assert(n_face_nodes == 0);
-	}
+	// else
+	// {
+	// 	assert(n_face_nodes == 0);
+	// }
 
 	assert(ii == result.size());
 	return result;
@@ -846,7 +979,7 @@ Eigen::VectorXi polyfem::FEBasis3d::hex_face_local_nodes(const bool serendipity,
 		tmp = mesh.next_around_face(tmp);
 	}
 
-	//faces
+	// faces
 
 	Eigen::Matrix<int, 6, 4> fv;
 	fv.row(0) << l2g[0], l2g[3], l2g[4], l2g[7];
@@ -980,7 +1113,7 @@ int polyfem::FEBasis3d::build_bases(
 	// Navigation3D::switch_element_time = 0;
 
 	const int max_p = discr_orders.maxCoeff();
-	assert(max_p < 5); //P5 not supported
+	// assert(max_p < 5); //P5 not supported
 
 	const int nn = max_p > 1 ? (max_p - 1) : 0;
 	const int n_face_nodes = nn * nn;
@@ -1027,27 +1160,26 @@ int polyfem::FEBasis3d::build_bases(
 
 		if (mesh.is_cube(e))
 		{
-			// hex_quadrature.get_quadrature(quadrature_order, b.quadrature);
-			b.set_quadrature([quadrature_order](Quadrature &quad)
-							 {
-								 HexQuadrature hex_quadrature;
-								 hex_quadrature.get_quadrature(quadrature_order, quad);
-							 });
+			const int real_order = std::max(quadrature_order, (discr_order - 1) * 2 + 1);
+			// hex_quadrature.get_quadrature(real_order, b.quadrature);
+			b.set_quadrature([real_order](Quadrature &quad) {
+				HexQuadrature hex_quadrature;
+				hex_quadrature.get_quadrature(real_order, quad);
+			});
 
-			b.set_local_node_from_primitive_func([serendipity, discr_order, e](const int primitive_id, const Mesh &mesh)
-												 {
-													 const auto &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
-													 Navigation3D::Index index;
+			b.set_local_node_from_primitive_func([serendipity, discr_order, e](const int primitive_id, const Mesh &mesh) {
+				const auto &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
+				Navigation3D::Index index;
 
-													 for (int lf = 0; lf < 6; ++lf)
-													 {
-														 index = mesh3d.get_index_from_element(e, lf, 0);
-														 if (index.face == primitive_id)
-															 break;
-													 }
-													 assert(index.face == primitive_id);
-													 return hex_face_local_nodes(serendipity, discr_order, mesh3d, index);
-												 });
+				for (int lf = 0; lf < 6; ++lf)
+				{
+					index = mesh3d.get_index_from_element(e, lf, 0);
+					if (index.face == primitive_id)
+						break;
+				}
+				assert(index.face == primitive_id);
+				return hex_face_local_nodes(serendipity, discr_order, mesh3d, index);
+			});
 
 			for (int j = 0; j < n_el_bases; ++j)
 			{
@@ -1057,36 +1189,32 @@ int polyfem::FEBasis3d::build_bases(
 
 				const int dtmp = serendipity ? -2 : discr_order;
 
-				b.bases[j].set_basis([dtmp, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-									 { polyfem::autogen::q_basis_value_3d(dtmp, j, uv, val); });
-				b.bases[j].set_grad([dtmp, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-									{ polyfem::autogen::q_grad_basis_value_3d(dtmp, j, uv, val); });
+				b.bases[j].set_basis([dtmp, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::q_basis_value_3d(dtmp, j, uv, val); });
+				b.bases[j].set_grad([dtmp, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::q_grad_basis_value_3d(dtmp, j, uv, val); });
 			}
 		}
 		else if (mesh.is_simplex(e))
 		{
 			const int real_order = std::max(quadrature_order, (discr_order - 1) * 2 + 1);
 
-			b.set_quadrature([real_order](Quadrature &quad)
-							 {
-								 TetQuadrature tet_quadrature;
-								 tet_quadrature.get_quadrature(real_order, quad);
-							 });
+			b.set_quadrature([real_order](Quadrature &quad) {
+				TetQuadrature tet_quadrature;
+				tet_quadrature.get_quadrature(real_order, quad);
+			});
 
-			b.set_local_node_from_primitive_func([discr_order, e](const int primitive_id, const Mesh &mesh)
-												 {
-													 const auto &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
-													 Navigation3D::Index index;
+			b.set_local_node_from_primitive_func([discr_order, e](const int primitive_id, const Mesh &mesh) {
+				const auto &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
+				Navigation3D::Index index;
 
-													 for (int lf = 0; lf < mesh3d.n_cell_faces(e); ++lf)
-													 {
-														 index = mesh3d.get_index_from_element(e, lf, 0);
-														 if (index.face == primitive_id)
-															 break;
-													 }
-													 assert(index.face == primitive_id);
-													 return tet_face_local_nodes(discr_order, mesh3d, index);
-												 });
+				for (int lf = 0; lf < mesh3d.n_cell_faces(e); ++lf)
+				{
+					index = mesh3d.get_index_from_element(e, lf, 0);
+					if (index.face == primitive_id)
+						break;
+				}
+				assert(index.face == primitive_id);
+				return tet_face_local_nodes(discr_order, mesh3d, index);
+			});
 
 			const bool rational = is_geom_bases && mesh.is_rational() && !mesh.cell_weights(e).empty();
 			assert(!rational);
@@ -1099,10 +1227,8 @@ int polyfem::FEBasis3d::build_bases(
 					b.bases[j].init(discr_order, global_index, j, nodes.node_position(global_index));
 				}
 
-				b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-									 { polyfem::autogen::p_basis_value_3d(discr_order, j, uv, val); });
-				b.bases[j].set_grad([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
-									{ polyfem::autogen::p_grad_basis_value_3d(discr_order, j, uv, val); });
+				b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::p_basis_value_3d(discr_order, j, uv, val); });
+				b.bases[j].set_grad([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::p_grad_basis_value_3d(discr_order, j, uv, val); });
 			}
 		}
 		else
@@ -1127,7 +1253,7 @@ int polyfem::FEBasis3d::build_bases(
 
 				if (mesh.is_cube(e))
 				{
-					//TODO
+					// TODO
 					assert(false);
 				}
 				else if (mesh.is_simplex(e))

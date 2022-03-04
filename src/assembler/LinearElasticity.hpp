@@ -43,6 +43,9 @@ namespace polyfem
 		void compute_von_mises_stresses(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const;
 		//compute stress tensor for an element at the local points
 		void compute_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &tensor) const;
+		
+		void compute_dstress_dgradu_multiply_mat(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &mat, Eigen::MatrixXd &stress, Eigen::MatrixXd &result) const;
+		void compute_dstress_dmu_dlambda(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, Eigen::MatrixXd &dstress_dmu, Eigen::MatrixXd &dstress_dlambda) const;
 
 		//size of the problem, this is a tensor problem so the size is the size of the mesh
 		inline int &size() { return size_; }
@@ -55,6 +58,7 @@ namespace polyfem
 
 		//class that stores and compute lame parameters per point
 		const LameParameters &lame_params() const { return params_; }
+		void set_params(const LameParameters &params) { params_ = params; }
 
 	private:
 		int size_ = 2;

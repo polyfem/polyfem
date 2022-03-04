@@ -2,7 +2,7 @@
 function(polyfem_copy_headers)
 	foreach(filepath IN ITEMS ${ARGN})
 		get_filename_component(filename "${filepath}" NAME)
-		if(${filename} MATCHES ".*\.(hpp|h|ipp)$")
+		if(${filename} MATCHES ".*\.(hpp|h|ipp|tpp)$")
 			configure_file(${filepath} ${PROJECT_BINARY_DIR}/include/polyfem/${filename})
 		endif()
 	endforeach()
@@ -93,8 +93,4 @@ function(polyfem_add_application APP_SOURCE)
 
 	# Output directory for binaries
 	set_target_properties(${APP_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
-
-	if(POLYFEM_WITH_SANITIZERS)
-		add_sanitizers(${APP_NAME})
-	endif()
 endfunction()

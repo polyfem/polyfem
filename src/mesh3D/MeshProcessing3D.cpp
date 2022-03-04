@@ -321,11 +321,11 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi) {
 			hmi.FV(0, f.id) = f.vs[0];
 			hmi.FV(1, f.id) = f.vs[1];
 			hmi.FV(2, f.id) = f.vs[2];
-		
+
 			hmi.FE(0, f.id) = f.es[0];
 			hmi.FE(1, f.id) = f.es[1];
 			hmi.FE(2, f.id) = f.es[2];
-			
+
 			hmi.FH(0, f.id) = f.neighbor_hs[0];
 			for(int i=0;i<hmi.elements[f.neighbor_hs[0]].fs.size();i++)
 				if(f.id == hmi.elements[f.neighbor_hs[0]].fs[i])
@@ -347,7 +347,7 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi) {
 			hmi.HV(1, h.id) = h.vs[1];
 			hmi.HV(2, h.id) = h.vs[2];
 			hmi.HV(3, h.id) = h.vs[3];
-		
+
 			hmi.HF(0, h.id) = h.fs[0];
 			hmi.HF(1, h.id) = h.fs[1];
 			hmi.HF(2, h.id) = h.fs[2];
@@ -362,7 +362,7 @@ void MeshProcessing3D::build_connectivity(Mesh3DStorage &hmi) {
 		int ele0 = f.neighbor_hs[0], ele1 = f.neighbor_hs[1];
 		if((hmi.elements[ele0].hex && !hmi.elements[ele1].hex)|| (!hmi.elements[ele0].hex && hmi.elements[ele1].hex))
 			bf_flag[f.id] = true;
-	} 
+	}
 	for (uint32_t i = 0; i < hmi.faces.size(); ++i)
 		if (bf_flag[i]) for (uint32_t j = 0; j < hmi.faces[i].vs.size(); ++j) {
 			uint32_t eid = hmi.faces[i].es[j];
@@ -537,14 +537,14 @@ void MeshProcessing3D::global_orientation_hexes(Mesh3DStorage &hmi) {
 	mesh.type = MeshType::Hex;
 	mesh.points = hmi.points;
 	mesh.vertices.resize(hmi.vertices.size());
-	for (const auto v : hmi.vertices) {
+	for (const auto& v : hmi.vertices) {
 		Vertex v_;
 		v_.id = v.id;
 		v_.v = v.v;
 		mesh.vertices[v.id] = v;
 	}
 	vector<int> Ele_map(hmi.elements.size(), -1), Ele_map_reverse;
-	for (const auto ele : hmi.elements) {
+	for (const auto& ele : hmi.elements) {
 		if (!ele.hex)continue;
 		Element ele_;
 		ele_.id = mesh.elements.size();
@@ -581,7 +581,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 			for (int j = 0; j < 3; j++)v_.v[j] = M.points(j, v.id);
 			M_.vertices.push_back(v_);
 		}
-		
+
 		for (auto e : M.edges) {
 			Vertex v;
 			v.id = vn++;
@@ -638,7 +638,7 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 					}
 					assert(fid != -1);
 					top_vs[2] = F2V[fid];
-					
+
 					int v_ind = find(M.faces[fid].vs.begin(), M.faces[fid].vs.end(),vid) - M.faces[fid].vs.begin();
 					int e_pre = M.faces[fid].es[(v_ind - 1 + 4) % 4];
 					int e_aft = M.faces[fid].es[v_ind];
@@ -979,7 +979,7 @@ void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter) {
 		std::vector<bool> e_flag(M.edges.size(), false);
 
 		for (const auto &ele : M.elements) {//1 --> 8
-			
+
 			for (short i = 0; i < 4; i++) {//four corners
 				Element ele_;
 				ele_.id = M_.elements.size();
@@ -1053,7 +1053,7 @@ void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter) {
 		Vector3d c2 = M.points.col(t[2]);
 		Vector3d c3 = M.points.col(t[3]);
 		bool signed_volume = a_jacobian(c0, c1, c2, c3) > 0 ? true : false;
-		
+
 		for (auto &ele : M_.elements) {
 			c0 = M_.points.col(ele.vs[0]);
 			c1 = M_.points.col(ele.vs[1]);
@@ -1171,7 +1171,7 @@ void MeshProcessing3D::straight_sweeping(const Mesh3DStorage &Mi, int sweep_coor
 			f_.vs.push_back(Vlayers[i][v1]);
 			f_.vs.push_back(Vlayers[i + 1][v1]);
 			f_.vs.push_back(Vlayers[i + 1][v0]);
-			
+
 			Mo.faces.push_back(f_);
 			a_layer.push_back(f_.id);
 		}

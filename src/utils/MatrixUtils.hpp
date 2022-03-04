@@ -27,14 +27,26 @@ namespace polyfem
 		return T(0);
 	}
 
+	inline Eigen::SparseMatrix<double> sparse_identity(int rows, int cols)
+	{
+		Eigen::SparseMatrix<double> I(rows, cols);
+		I.setIdentity();
+		return I;
+	}
+
 	template <typename T>
 	bool read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat);
+
+	template <typename Mat>
+	bool write_matrix(const std::string &path, const Mat &mat);
 
 	template <typename T>
 	bool read_matrix_binary(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat);
 
 	template <typename Mat>
 	bool write_matrix_binary(const std::string &path, const Mat &mat);
+
+	bool write_sparse_matrix_csv(const std::string &path, const Eigen::SparseMatrix<double> &mat);
 
 	class SpareMatrixCache
 	{
@@ -56,12 +68,15 @@ namespace polyfem
 		inline size_t non_zeros() const { return mapping_.empty() ? mat_.nonZeros() : values_.size(); }
 		inline size_t mapping_size() const { return mapping_.size(); }
 
-		void add_value(const int i, const int j, const double value);
+		void add_value(const int e, const int i, const int j, const double value);
 		StiffnessMatrix get_matrix(const bool compute_mapping = true);
 		void prune();
 
 		SpareMatrixCache operator+(const SpareMatrixCache &a) const;
 		void operator+=(const SpareMatrixCache &o);
+
+		const StiffnessMatrix &mat() const { return mat_; }
+		const std::vector<Eigen::Triplet<double>> &entries() const { return entries_; }
 
 	private:
 		size_t size_;
@@ -72,10 +87,42 @@ namespace polyfem
 		std::vector<double> values_;
 		const SpareMatrixCache *main_cache_ = nullptr;
 
+		std::vector<std::vector<int>> second_cache_;
+		std::vector<std::vector<std::pair<int, int>>> second_cache_entries_;
+		bool use_second_cache_ = true;
+		int current_e_ = -1;
+		int current_e_index_ = -1;
+
 		inline const std::vector<std::vector<std::pair<int, size_t>>> &mapping() const
 		{
 			return main_cache_ == nullptr ? mapping_ : main_cache_->mapping_;
 		}
+
+		inline const std::vector<std::vector<int>> &second_cache() const
+		{
+			return main_cache_ == nullptr ? second_cache_ : main_cache_->second_cache_;
+		}
 	};
 
 } // namespace polyfem
+
+namespace std
+{
+	// https://github.com/ethz-asl/map_api/blob/master/map-api-common/include/map-api-common/eigen-hash.h
+	template <typename Scalar, int Rows, int Cols>
+	struct hash<Eigen::Matrix<Scalar, Rows, Cols>>
+	{
+		// https://wjngkoh.wordpress.com/2015/03/04/c-hash-function-for-eigen-matrix-and-vector/
+		size_t operator()(const Eigen::Matrix<Scalar, Rows, Cols> &matrix) const
+		{
+			size_t seed = 0;
+			for (size_t i = 0; i < matrix.size(); ++i)
+			{
+				Scalar elem = *(matrix.data() + i);
+				seed ^=
+					std::hash<Scalar>()(elem) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+			}
+			return seed;
+		}
+	};
+} // namespace std

@@ -37,10 +37,11 @@ namespace polyfem
 		bool is_step_valid(const TVector &x0, const TVector &x1);
 		bool is_step_collision_free(const TVector &x0, const TVector &x1);
 		double max_step_size(const TVector &x0, const TVector &x1);
+		bool is_intersection_free(const TVector &x);
 
 		void line_search_begin(const TVector &x0, const TVector &x1);
 		void line_search_end();
-		void post_step(const TVector &x0);
+		void post_step(const int iter_num, const TVector &x);
 
 #include <polyfem/DisableWarnings.hpp>
 		virtual void hessian(const TVector &x, THessian &hessian);
@@ -52,7 +53,8 @@ namespace polyfem
 		{
 			using namespace polyfem;
 
-			if (full_size == reduced_size)
+			// Reduced is already at the full size
+			if (full_size == reduced_size || full.size() == reduced_size)
 			{
 				reduced = full;
 				return;
@@ -82,7 +84,8 @@ namespace polyfem
 		{
 			using namespace polyfem;
 
-			if (full_size == reduced_size)
+			// Full is already at the reduced size
+			if (full_size == reduced_size || full_size == reduced.size())
 			{
 				full = reduced;
 				return;
@@ -109,32 +112,52 @@ namespace polyfem
 			assert(j == reduced.size());
 		}
 
-		void full_to_reduced(const Eigen::MatrixXd &full, TVector &reduced) const;
-		void reduced_to_full(const TVector &reduced, Eigen::MatrixXd &full);
+		// Templated to allow VectorX* or MatrixX* input, but the size of full
+		// will always be (fullsize, 1)
+		template <class FullVector>
+		void full_to_reduced(const FullVector &full, TVector &reduced) const
+		{
+			full_to_reduced_aux(state, full_size, reduced_size, full, reduced);
+		}
+		template <class FullVector>
+		void reduced_to_full(const TVector &reduced, FullVector &full)
+		{
+			reduced_to_full_aux(state, full_size, reduced_size, reduced, current_rhs(), full);
+		}
+
+		void full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const;
 
 		virtual void update_quantities(const double t, const TVector &x);
 		void substepping(const double t);
 		void solution_changed(const TVector &newX);
-		void update_lagging(const TVector &x, bool start_of_timestep);
 
-		bool lagging_converged(const TVector &x, bool do_lagging_update = true);
+		void init_lagging(const TVector &x);
+		void update_lagging(const TVector &x);
+		double compute_lagging_error(const TVector &x);
+		bool lagging_converged(const TVector &x);
 
 		const Eigen::MatrixXd &current_rhs();
 
 		virtual bool stop(const TVector &x) { return false; }
 
-		void save_raw(const std::string &x_path, const std::string &v_path, const std::string &a_path);
+		void save_raw(const std::string &x_path, const std::string &v_path, const std::string &a_path) const;
 
 		double heuristic_max_step(const TVector &dx);
 
-		inline int max_ccd_max_iterations() const { return _max_ccd_max_iterations; }
 		inline void set_ccd_max_iterations(int v) { _ccd_max_iterations = v; }
+
+		void set_project_to_psd(bool val) { project_to_psd = val; }
+		bool is_project_to_psd() const { return project_to_psd; }
+
+		double &lagged_damping_weight() { return _lagged_damping_weight; }
+
+		void compute_displaced_points(const TVector &full, Eigen::MatrixXd &displaced);
+		void reduced_to_full_displaced_points(const TVector &reduced, Eigen::MatrixXd &displaced);
 
 	protected:
 		State &state;
+		bool use_adaptive_barrier_stiffness;
 		double _barrier_stiffness;
-		void compute_displaced_points(const Eigen::MatrixXd &full, Eigen::MatrixXd &displaced);
-		void reduced_to_full_displaced_points(const TVector &reduced, Eigen::MatrixXd &displaced);
 		const RhsAssembler &rhs_assembler;
 		bool is_time_dependent;
 
@@ -143,6 +166,8 @@ namespace polyfem
 		Eigen::MatrixXd _current_rhs;
 		StiffnessMatrix cached_stiffness;
 		SpareMatrixCache mat_cache;
+
+		bool ignore_inertia;
 
 		const int full_size, reduced_size;
 		double t;
@@ -157,21 +182,24 @@ namespace polyfem
 		double _epsv;                   ///< @brief The boundary between static and dynamic friction.
 		double _mu;                     ///< @brief Coefficient of friction.
 		Eigen::MatrixXd displaced_prev; ///< @brief Displaced vertices at the start of the time-step.
+		double _lagged_damping_weight;  ///< @brief Weight for lagged damping (static solve).
+		TVector x_lagged;               ///< @brief The full variables from the previous lagging solve.
 
 		ipc::BroadPhaseMethod _broad_phase_method;
-		bool _ignore_codimensional_vertices = true;
 		double _ccd_tolerance;
-		int _ccd_max_iterations, _max_ccd_max_iterations;
+		int _ccd_max_iterations;
 
 		const double &dt() const { return time_integrator->dt(); }
 
 		ipc::Constraints _constraint_set;
 		ipc::FrictionConstraints _friction_constraint_set;
 		ipc::Candidates _candidates;
+		bool _use_cached_candidates = false;
 
 		std::shared_ptr<ImplicitTimeIntegrator> time_integrator;
 
 		void compute_cached_stiffness();
 		void update_barrier_stiffness(const TVector &full);
+		void update_constraint_set(const Eigen::MatrixXd &displaced_surface);
 	};
 } // namespace polyfem

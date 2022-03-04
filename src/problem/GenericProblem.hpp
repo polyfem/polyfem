@@ -67,6 +67,7 @@ namespace polyfem
 		bool is_time_dependent() const override { return is_time_dept_; }
 		void set_time_dependent(const bool val) { is_time_dept_ = val; }
 		bool is_constant_in_time() const override { return !is_time_dept_; }
+		bool might_have_no_dirichlet() override { return !is_all_; }
 
 		void velocity_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 		void acceleration_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
@@ -90,9 +91,25 @@ namespace polyfem
 		void add_neumann_boundary(const int id, const Eigen::RowVector3d &val, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
 		void add_pressure_boundary(const int id, const double val, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
 
+		void update_dirichlet_boundary(const int id, const Eigen::RowVector3d &val, const bool isx, const bool isy, const bool isz, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
+		void update_neumann_boundary(const int id, const Eigen::RowVector3d &val, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
+		void update_pressure_boundary(const int id, const double val, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
+
 		void add_dirichlet_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const bool isx, const bool isy, const bool isz, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
 		void add_neumann_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
 		void add_pressure_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
+
+		void update_dirichlet_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const bool isx, const bool isy, const bool isz, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
+		void update_neumann_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
+		void update_pressure_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
+
+		void add_dirichlet_boundary(const int id, const json &val, const bool isx, const bool isy, const bool isz, const std::string &interpolation = "");
+		void add_neumann_boundary(const int id, const json &val, const std::string &interpolation = "");
+		void add_pressure_boundary(const int id, json val, const std::string &interpolation = "");
+
+		void update_dirichlet_boundary(const int id, const json &val, const bool isx, const bool isy, const bool isz, const std::string &interpolation = "");
+		void update_neumann_boundary(const int id, const json &val, const std::string &interpolation = "");
+		void update_pressure_boundary(const int id, json val, const std::string &interpolation = "");
 
 		void set_rhs(double x, double y, double z);
 
@@ -140,6 +157,7 @@ namespace polyfem
 		bool is_time_dependent() const override { return is_time_dept_; }
 		void set_time_dependent(const bool val) { is_time_dept_ = val; }
 		bool is_constant_in_time() const override { return !is_time_dept_; }
+		bool might_have_no_dirichlet() override { return !is_all_; }
 
 		void set_parameters(const json &params) override;
 
@@ -149,8 +167,20 @@ namespace polyfem
 		void add_dirichlet_boundary(const int id, const double val, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
 		void add_neumann_boundary(const int id, const double val, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
 
+		void update_dirichlet_boundary(const int id, const double val, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
+		void update_neumann_boundary(const int id, const double val, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
+
 		void add_dirichlet_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
 		void add_neumann_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
+
+		void update_dirichlet_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
+		void update_neumann_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
+
+		void add_dirichlet_boundary(const int id, const json &val, const std::string &interp = "");
+		void add_neumann_boundary(const int id, const json &val, const std::string &interp = "");
+
+		void update_dirichlet_boundary(const int id, const json &val, const std::string &interp = "");
+		void update_neumann_boundary(const int id, const json &val, const std::string &interp = "");
 
 		void clear() override;
 

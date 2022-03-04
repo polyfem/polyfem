@@ -4,6 +4,10 @@ set(SOURCES
 	Mesh.hpp
 	MeshNodes.cpp
 	MeshNodes.hpp
+	MeshUtils.cpp
+	MeshUtils.hpp
+	Obstacle.cpp
+	Obstacle.hpp
 	VTUWriter.cpp
 	VTUWriter.hpp
 )

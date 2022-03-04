@@ -2,7 +2,7 @@
 #include <polyfem/MatrixUtils.hpp>
 #include <polyfem/RBFInterpolation.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 #include <iostream>
 #include <fstream>
 ////////////////////////////////////////////////////////////////////////////////

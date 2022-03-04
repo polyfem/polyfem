@@ -1,5 +1,6 @@
 #include <polyfem/GenericProblem.hpp>
 #include <polyfem/State.hpp>
+#include <polyfem/JSONUtils.hpp>
 
 #include <iostream>
 
@@ -219,6 +220,32 @@ namespace polyfem
 			all_dimensions_dirichlet_ = false;
 	}
 
+	void GenericTensorProblem::update_dirichlet_boundary(const int id, const Eigen::RowVector3d &val, const bool isx, const bool isy, const bool isz, const std::shared_ptr<Interpolation> &interp)
+	{
+		int index = -1;
+		for (int i = 0; i < boundary_ids_.size(); ++i)
+		{
+			if (boundary_ids_[i] == id)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+		{
+			throw "Invalid boundary id";
+		}
+
+		displacements_interpolation_[index] = interp;
+		for (size_t k = 0; k < val.size(); ++k)
+			displacements_[index][k].init(val[k]);
+
+		dirichlet_dimensions_[index] << isx, isy, isz;
+
+		if (!isx || !isy || !isz)
+			all_dimensions_dirichlet_ = false;
+	}
+
 	void GenericTensorProblem::add_neumann_boundary(const int id, const Eigen::RowVector3d &val, const std::shared_ptr<Interpolation> &interp)
 	{
 		neumann_boundary_ids_.push_back(id);
@@ -228,12 +255,52 @@ namespace polyfem
 			forces_.back()[k].init(val[k]);
 	}
 
+	void GenericTensorProblem::update_neumann_boundary(const int id, const Eigen::RowVector3d &val, const std::shared_ptr<Interpolation> &interp)
+	{
+		int index = -1;
+		for (int i = 0; i < neumann_boundary_ids_.size(); ++i)
+		{
+			if (neumann_boundary_ids_[i] == id)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+		{
+			throw "Invalid boundary id";
+		}
+
+		forces_interpolation_[index] = interp;
+		for (size_t k = 0; k < val.size(); ++k)
+			forces_[index][k].init(val[k]);
+	}
+
 	void GenericTensorProblem::add_pressure_boundary(const int id, const double val, const std::shared_ptr<Interpolation> &interp)
 	{
 		pressure_boundary_ids_.push_back(id);
 		pressure_interpolation_.emplace_back(interp);
 		pressures_.emplace_back();
 		pressures_.back().init(val);
+	}
+
+	void GenericTensorProblem::update_pressure_boundary(const int id, const double val, const std::shared_ptr<Interpolation> &interp)
+	{
+		int index = -1;
+		for (int i = 0; i < pressure_boundary_ids_.size(); ++i)
+		{
+			if (pressure_boundary_ids_[i] == id)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+		{
+			throw "Invalid boundary id";
+		}
+		pressure_interpolation_[index] = interp;
+		pressures_[index].init(val);
 	}
 
 	void GenericTensorProblem::add_dirichlet_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const bool isx, const bool isy, const bool isz, const std::shared_ptr<Interpolation> &interp)
@@ -250,6 +317,31 @@ namespace polyfem
 			all_dimensions_dirichlet_ = false;
 	}
 
+	void GenericTensorProblem::update_dirichlet_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const bool isx, const bool isy, const bool isz, const std::shared_ptr<Interpolation> &interp)
+	{
+		int index = -1;
+		for (int i = 0; i < boundary_ids_.size(); ++i)
+		{
+			if (boundary_ids_[i] == id)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+		{
+			throw "Invalid boundary id";
+		}
+		displacements_interpolation_[index] = interp;
+		for (size_t k = 0; k < displacements_.back().size(); ++k)
+			displacements_[index][k].init(func, k);
+
+		dirichlet_dimensions_[index] << isx, isy, isz;
+
+		if (!isx || !isy || !isz)
+			all_dimensions_dirichlet_ = false;
+	}
+
 	void GenericTensorProblem::add_neumann_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp)
 	{
 		neumann_boundary_ids_.push_back(id);
@@ -259,12 +351,185 @@ namespace polyfem
 			forces_.back()[k].init(func, k);
 	}
 
+	void GenericTensorProblem::update_neumann_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp)
+	{
+		int index = -1;
+		for (int i = 0; i < neumann_boundary_ids_.size(); ++i)
+		{
+			if (neumann_boundary_ids_[i] == id)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+		{
+			throw "Invalid boundary id";
+		}
+
+		forces_interpolation_[index] = interp;
+		for (size_t k = 0; k < forces_.back().size(); ++k)
+			forces_[index][k].init(func, k);
+	}
+
 	void GenericTensorProblem::add_pressure_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp)
 	{
 		pressure_boundary_ids_.push_back(id);
 		pressure_interpolation_.emplace_back(interp);
 		pressures_.emplace_back();
 		pressures_.back().init(func);
+	}
+
+	void GenericTensorProblem::update_pressure_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp)
+	{
+		int index = -1;
+		for (int i = 0; i < pressure_boundary_ids_.size(); ++i)
+		{
+			if (pressure_boundary_ids_[i] == id)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+		{
+			throw "Invalid boundary id";
+		}
+
+		pressure_interpolation_[index] = interp;
+		pressures_[index].init(func);
+	}
+
+	void GenericTensorProblem::add_dirichlet_boundary(const int id, const json &val, const bool isx, const bool isy, const bool isz, const std::string &interpolation)
+	{
+		if (!val.is_array())
+			throw "Val must be an array";
+
+		boundary_ids_.push_back(id);
+		displacements_.emplace_back();
+		if (interpolation.empty())
+			displacements_interpolation_.emplace_back(std::make_shared<NoInterpolation>());
+		else
+			displacements_interpolation_.emplace_back(Interpolation::build(interpolation));
+
+		for (size_t k = 0; k < val.size(); ++k)
+			displacements_.back()[k].init(val[k]);
+
+		dirichlet_dimensions_.emplace_back(isx, isy, isz);
+
+		if (!isx || !isy || !isz)
+			all_dimensions_dirichlet_ = false;
+	}
+
+	void GenericTensorProblem::add_neumann_boundary(const int id, const json &val, const std::string &interpolation)
+	{
+		if (!val.is_array())
+			throw "Val must be an array";
+
+		neumann_boundary_ids_.push_back(id);
+
+		if (interpolation.empty())
+			forces_interpolation_.emplace_back(std::make_shared<NoInterpolation>());
+		else
+			forces_interpolation_.emplace_back(Interpolation::build(interpolation));
+
+		forces_.emplace_back();
+		for (size_t k = 0; k < val.size(); ++k)
+			forces_.back()[k].init(val[k]);
+	}
+
+	void GenericTensorProblem::add_pressure_boundary(const int id, json val, const std::string &interpolation)
+	{
+		pressure_boundary_ids_.push_back(id);
+		if (interpolation.empty())
+			pressure_interpolation_.emplace_back(std::make_shared<NoInterpolation>());
+		else
+			pressure_interpolation_.emplace_back(Interpolation::build(interpolation));
+		pressures_.emplace_back();
+		pressures_.back().init(val);
+	}
+
+	void GenericTensorProblem::update_dirichlet_boundary(const int id, const json &val, const bool isx, const bool isy, const bool isz, const std::string &interpolation)
+	{
+		if (!val.is_array())
+			throw "Val must be an array";
+		int index = -1;
+		for (int i = 0; i < boundary_ids_.size(); ++i)
+		{
+			if (boundary_ids_[i] == id)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+		{
+			throw "Invalid boundary id";
+		}
+
+		if (interpolation.empty())
+			displacements_interpolation_[index] = std::make_shared<NoInterpolation>();
+		else
+			displacements_interpolation_[index] = Interpolation::build(interpolation);
+
+		for (size_t k = 0; k < val.size(); ++k)
+			displacements_[index][k].init(val[k]);
+
+		dirichlet_dimensions_[index] << isx, isy, isz;
+
+		if (!isx || !isy || !isz)
+			all_dimensions_dirichlet_ = false;
+	}
+
+	void GenericTensorProblem::update_neumann_boundary(const int id, const json &val, const std::string &interpolation)
+	{
+		if (!val.is_array())
+			throw "Val must be an array";
+
+		int index = -1;
+		for (int i = 0; i < neumann_boundary_ids_.size(); ++i)
+		{
+			if (neumann_boundary_ids_[i] == id)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+		{
+			throw "Invalid boundary id";
+		}
+
+		if (interpolation.empty())
+			forces_interpolation_[index] = std::make_shared<NoInterpolation>();
+		else
+			forces_interpolation_[index] = Interpolation::build(interpolation);
+
+		for (size_t k = 0; k < val.size(); ++k)
+			forces_[index][k].init(val[k]);
+	}
+
+	void GenericTensorProblem::update_pressure_boundary(const int id, json val, const std::string &interpolation)
+	{
+		int index = -1;
+		for (int i = 0; i < pressure_boundary_ids_.size(); ++i)
+		{
+			if (pressure_boundary_ids_[i] == id)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+		{
+			throw "Invalid boundary id";
+		}
+
+		if (interpolation.empty())
+			pressure_interpolation_[index] = std::make_shared<NoInterpolation>();
+		else
+			pressure_interpolation_[index] = Interpolation::build(interpolation);
+		pressures_[index].init(val);
 	}
 
 	void GenericTensorProblem::set_rhs(double x, double y, double z)
@@ -276,12 +541,12 @@ namespace polyfem
 
 	void GenericTensorProblem::set_parameters(const json &params)
 	{
-		if (params.contains("is_time_dependent"))
+		if (is_param_valid(params, "is_time_dependent"))
 		{
 			is_time_dept_ = params["is_time_dependent"];
 		}
 
-		if (params.contains("rhs"))
+		if (is_param_valid(params, "rhs"))
 		{
 			auto rr = params["rhs"];
 			if (rr.is_array())
@@ -291,47 +556,42 @@ namespace polyfem
 			}
 			else
 			{
+				logger().warn("Invalid problem rhs: should be an array.");
 				assert(false);
 			}
 		}
 
-		if (params.contains("exact"))
+		if (is_param_valid(params, "exact"))
 		{
+			has_exact_ = true;
 			auto ex = params["exact"];
-			has_exact_ = !ex.is_null();
-			if (has_exact_)
+			if (ex.is_array())
 			{
-				if (ex.is_array())
-				{
-					for (size_t k = 0; k < ex.size(); ++k)
-						exact_[k].init(ex[k]);
-				}
-				else
-				{
-					assert(false);
-				}
+				for (size_t k = 0; k < ex.size(); ++k)
+					exact_[k].init(ex[k]);
+			}
+			else
+			{
+				assert(false);
 			}
 		}
 
-		if (params.contains("exact_grad"))
+		if (is_param_valid(params, "exact_grad"))
 		{
+			has_exact_grad_ = true;
 			auto ex = params["exact_grad"];
-			has_exact_grad_ = !ex.is_null();
-			if (has_exact_grad_)
+			if (ex.is_array())
 			{
-				if (ex.is_array())
-				{
-					for (size_t k = 0; k < ex.size(); ++k)
-						exact_grad_[k].init(ex[k]);
-				}
-				else
-				{
-					assert(false);
-				}
+				for (size_t k = 0; k < ex.size(); ++k)
+					exact_grad_[k].init(ex[k]);
+			}
+			else
+			{
+				assert(false);
 			}
 		}
 
-		if (params.contains("dirichlet_boundary"))
+		if (is_param_valid(params, "dirichlet_boundary"))
 		{
 			// boundary_ids_.clear();
 			int offset = boundary_ids_.size();
@@ -384,7 +644,7 @@ namespace polyfem
 			}
 		}
 
-		if (params.contains("neumann_boundary"))
+		if (is_param_valid(params, "neumann_boundary"))
 		{
 			// neumann_boundary_ids_.clear();
 			const int offset = neumann_boundary_ids_.size();
@@ -420,7 +680,7 @@ namespace polyfem
 			}
 		}
 
-		if (params.contains("pressure_boundary"))
+		if (is_param_valid(params, "pressure_boundary"))
 		{
 			// pressure_boundary_ids_.clear();
 			const int offset = pressure_boundary_ids_.size();
@@ -445,7 +705,7 @@ namespace polyfem
 			}
 		}
 
-		if (params.contains("initial_solution"))
+		if (is_param_valid(params, "initial_solution"))
 		{
 			auto rr = params["initial_solution"];
 			initial_position_.resize(rr.size());
@@ -460,7 +720,7 @@ namespace polyfem
 			}
 		}
 
-		if (params.contains("initial_velocity"))
+		if (is_param_valid(params, "initial_velocity"))
 		{
 			auto rr = params["initial_velocity"];
 			initial_velocity_.resize(rr.size());
@@ -475,7 +735,7 @@ namespace polyfem
 			}
 		}
 
-		if (params.contains("initial_acceleration"))
+		if (is_param_valid(params, "initial_acceleration"))
 		{
 			auto rr = params["initial_acceleration"];
 			initial_acceleration_.resize(rr.size());
@@ -773,43 +1033,38 @@ namespace polyfem
 
 	void GenericScalarProblem::set_parameters(const json &params)
 	{
-		if (params.contains("is_time_dependent"))
+		if (is_param_valid(params, "is_time_dependent"))
 		{
 			is_time_dept_ = params["is_time_dependent"];
 		}
 
-		if (params.contains("rhs"))
+		if (is_param_valid(params, "rhs"))
 		{
-			// rhs_ = params["rhs"];
 			rhs_.init(params["rhs"]);
 		}
 
-		if (params.contains("exact"))
+		if (is_param_valid(params, "exact"))
 		{
-			has_exact_ = !params["exact"].is_null();
-			if (has_exact_)
-				exact_.init(params["exact"]);
+			has_exact_ = true;
+			exact_.init(params["exact"]);
 		}
 
-		if (params.contains("exact_grad"))
+		if (is_param_valid(params, "exact_grad"))
 		{
+			has_exact_grad_ = true;
 			auto ex = params["exact_grad"];
-			has_exact_grad_ = !ex.is_null();
-			if (has_exact_grad_)
+			if (ex.is_array())
 			{
-				if (ex.is_array())
-				{
-					for (size_t k = 0; k < ex.size(); ++k)
-						exact_grad_[k].init(ex[k]);
-				}
-				else
-				{
-					assert(false);
-				}
+				for (size_t k = 0; k < ex.size(); ++k)
+					exact_grad_[k].init(ex[k]);
+			}
+			else
+			{
+				assert(false);
 			}
 		}
 
-		if (params.contains("dirichlet_boundary"))
+		if (is_param_valid(params, "dirichlet_boundary"))
 		{
 			// boundary_ids_.clear();
 			const int offset = boundary_ids_.size();
@@ -841,7 +1096,7 @@ namespace polyfem
 			}
 		}
 
-		if (params.contains("neumann_boundary"))
+		if (is_param_valid(params, "neumann_boundary"))
 		{
 			// neumann_boundary_ids_.clear();
 			const int offset = neumann_boundary_ids_.size();
@@ -849,6 +1104,7 @@ namespace polyfem
 
 			neumann_boundary_ids_.resize(offset + j_boundary.size());
 			neumann_.resize(offset + j_boundary.size());
+			neumann_interpolation_.resize(offset + j_boundary.size());
 
 			for (size_t i = offset; i < neumann_boundary_ids_.size(); ++i)
 			{
@@ -873,12 +1129,52 @@ namespace polyfem
 		dirichlet_interpolation_.emplace_back(interp);
 	}
 
+	void GenericScalarProblem::update_dirichlet_boundary(const int id, const double val, const std::shared_ptr<Interpolation> &interp)
+	{
+		int index = -1;
+		for (int i = 0; i < boundary_ids_.size(); ++i)
+		{
+			if (boundary_ids_[i] == id)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+		{
+			throw "Invalid boundary id";
+		}
+
+		dirichlet_[index].init(val);
+		dirichlet_interpolation_[index] = interp;
+	}
+
 	void GenericScalarProblem::add_neumann_boundary(const int id, const double val, const std::shared_ptr<Interpolation> &interp)
 	{
 		neumann_boundary_ids_.push_back(id);
 		neumann_.emplace_back();
 		neumann_.back().init(val);
 		neumann_interpolation_.emplace_back(interp);
+	}
+
+	void GenericScalarProblem::update_neumann_boundary(const int id, const double val, const std::shared_ptr<Interpolation> &interp)
+	{
+		int index = -1;
+		for (int i = 0; i < neumann_boundary_ids_.size(); ++i)
+		{
+			if (neumann_boundary_ids_[i] == id)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+		{
+			throw "Invalid boundary id";
+		}
+
+		neumann_[index].init(val);
+		neumann_interpolation_[index] = interp;
 	}
 
 	void GenericScalarProblem::add_dirichlet_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp)
@@ -889,12 +1185,118 @@ namespace polyfem
 		dirichlet_interpolation_.emplace_back(interp);
 	}
 
+	void GenericScalarProblem::update_dirichlet_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp)
+	{
+		int index = -1;
+		for (int i = 0; i < boundary_ids_.size(); ++i)
+		{
+			if (boundary_ids_[i] == id)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+		{
+			throw "Invalid boundary id";
+		}
+		dirichlet_[index].init(func);
+		dirichlet_interpolation_[index] = interp;
+	}
+
 	void GenericScalarProblem::add_neumann_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp)
 	{
 		neumann_boundary_ids_.push_back(id);
 		neumann_.emplace_back();
 		neumann_.back().init(func);
 		neumann_interpolation_.emplace_back(interp);
+	}
+
+	void GenericScalarProblem::update_neumann_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp)
+	{
+		int index = -1;
+		for (int i = 0; i < neumann_boundary_ids_.size(); ++i)
+		{
+			if (neumann_boundary_ids_[i] == id)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+		{
+			throw "Invalid boundary id";
+		}
+		neumann_[index].init(func);
+		neumann_interpolation_[index] = interp;
+	}
+
+	void GenericScalarProblem::add_dirichlet_boundary(const int id, const json &val, const std::string &interp)
+	{
+		boundary_ids_.push_back(id);
+		dirichlet_.emplace_back();
+		dirichlet_.back().init(val);
+		if (interp.empty())
+			dirichlet_interpolation_.emplace_back(std::make_shared<NoInterpolation>());
+		else
+			dirichlet_interpolation_.emplace_back(Interpolation::build(interp));
+	}
+
+	void GenericScalarProblem::add_neumann_boundary(const int id, const json &val, const std::string &interp)
+	{
+		neumann_boundary_ids_.push_back(id);
+		neumann_.emplace_back();
+		neumann_.back().init(val);
+		if (interp.empty())
+			neumann_interpolation_.emplace_back(std::make_shared<NoInterpolation>());
+		else
+			neumann_interpolation_.emplace_back(Interpolation::build(interp));
+	}
+
+	void GenericScalarProblem::update_dirichlet_boundary(const int id, const json &val, const std::string &interp)
+	{
+		int index = -1;
+		for (int i = 0; i < boundary_ids_.size(); ++i)
+		{
+			if (boundary_ids_[i] == id)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+		{
+			throw "Invalid boundary id";
+		}
+
+		dirichlet_[index].init(val);
+		if (interp.empty())
+			dirichlet_interpolation_[index] = std::make_shared<NoInterpolation>();
+		else
+			dirichlet_interpolation_[index] = Interpolation::build(interp);
+	}
+
+	void GenericScalarProblem::update_neumann_boundary(const int id, const json &val, const std::string &interp)
+	{
+		int index = -1;
+		for (int i = 0; i < neumann_boundary_ids_.size(); ++i)
+		{
+			if (neumann_boundary_ids_[i] == id)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (index == -1)
+		{
+			throw "Invalid boundary id";
+		}
+		neumann_[index].init(val);
+
+		if (interp.empty())
+			neumann_interpolation_[index] = std::make_shared<NoInterpolation>();
+		else
+			neumann_interpolation_[index] = Interpolation::build(interp);
 	}
 
 	void GenericScalarProblem::clear()

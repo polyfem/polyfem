@@ -45,6 +45,10 @@ namespace polyfem
 
 		for (long p = 0; p < gradi.rows(); ++p)
 		{
+
+			double lambda, mu;
+			params_.lambda_mu(vals.quadrature.points.row(p), vals.val.row(p), vals.element_id, lambda, mu);
+
 			for (int di = 0; di < size(); ++di)
 			{
 				epsi.setZero();
@@ -55,9 +59,6 @@ namespace polyfem
 					epsj.setZero();
 					epsj.row(dj) = gradj.row(p);
 					epsj = ((epsj + epsj.transpose()) / 2.0).eval();
-
-					double lambda, mu;
-					params_.lambda_mu(vals.val(p, 0), vals.val(p, 1), size_ == 2 ? 0. : vals.val(p, 2), vals.element_id, lambda, mu);
 
 					res(dj * size() + di) += 2 * mu * (epsi.array() * epsj.array()).sum() * da(p);
 				}
@@ -110,7 +111,7 @@ namespace polyfem
 			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
 
 			double lambda, mu;
-			params_.lambda_mu(vals.val(p, 0), vals.val(p, 1), size_ == 2 ? 0. : vals.val(p, 2), vals.element_id, lambda, mu);
+			params_.lambda_mu(local_pts.row(p), vals.val.row(p), vals.element_id, lambda, mu);
 
 			const Eigen::MatrixXd strain = (displacement_grad + displacement_grad.transpose()) / 2;
 			const Eigen::MatrixXd stress = 2 * mu * strain + lambda * strain.trace() * Eigen::MatrixXd::Identity(size(), size());
@@ -200,7 +201,7 @@ namespace polyfem
 		for (long p = 0; p < da.size(); ++p)
 		{
 			double lambda, mu;
-			params_.lambda_mu(vals.val(p, 0), vals.val(p, 1), size_ == 2 ? 0. : vals.val(p, 2), vals.element_id, lambda, mu);
+			params_.lambda_mu(vals.quadrature.points.row(p), vals.val.row(p), vals.element_id, lambda, mu);
 
 			res += -phii(p) * phij(p) * da(p) / lambda;
 		}

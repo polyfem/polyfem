@@ -1,5 +1,20 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/MeshUtils.hpp>
+
+#include <polyfem/StringUtils.hpp>
+#include <polyfem/Logger.hpp>
+#include <polyfem/MshReader.hpp>
+#include <polyfem/OBJReader.hpp>
+#include <polyfem/JSONUtils.hpp>
+#include <polyfem/MatrixUtils.hpp>
+
+#include <unordered_set>
+
+#include <igl/PI.h>
+#include <igl/read_triangle_mesh.h>
+
+#include <geogram/mesh/mesh_io.h>
+#include <geogram/mesh/mesh_geometry.h>
 #include <geogram/basic/geometry.h>
 #include <geogram/mesh/mesh_preprocessing.h>
 #include <geogram/mesh/mesh_topology.h>
@@ -9,6 +24,19 @@
 #include <geogram/voronoi/CVT.h>
 #include <geogram/basic/logger.h>
 ////////////////////////////////////////////////////////////////////////////////
+
+bool polyfem::is_planar(const GEO::Mesh &M, const double tol)
+{
+	if (M.vertices.dimension() == 2)
+		return true;
+
+	assert(M.vertices.dimension() == 3);
+	GEO::vec3 min_corner, max_corner;
+	GEO::get_bbox(M, &min_corner[0], &max_corner[0]);
+	const double diff = (max_corner[2] - min_corner[2]);
+
+	return fabs(diff) < tol;
+}
 
 GEO::vec3 polyfem::mesh_vertex(const GEO::Mesh &M, GEO::index_t v)
 {
@@ -437,15 +465,15 @@ namespace
 	// -----------------------------------------------------------------------------
 
 	/**
- * @brief      { Intersect a vertical ray with a triangle }
- *
- * @param[in]  M     { Mesh containing the triangle to intersect }
- * @param[in]  f     { Index of the facet to intersect }
- * @param[in]  q     { Query point (only XY coordinates are used) }
- * @param[out] z     { Intersection }
- *
- * @return     { {-1,0,1} depending on the sign of the intersection. }
- */
+	 * @brief      { Intersect a vertical ray with a triangle }
+	 *
+	 * @param[in]  M     { Mesh containing the triangle to intersect }
+	 * @param[in]  f     { Index of the facet to intersect }
+	 * @param[in]  q     { Query point (only XY coordinates are used) }
+	 * @param[out] z     { Intersection }
+	 *
+	 * @return     { {-1,0,1} depending on the sign of the intersection. }
+	 */
 	template <int X = 0, int Y = 1, int Z = 2>
 	int intersect_ray_z(const GEO::Mesh &M, GEO::index_t f, const GEO::vec3 &q, double &z)
 	{
@@ -500,8 +528,7 @@ namespace
 			box.xyz_max[2] = max_corner[2];
 
 			std::vector<std::pair<double, int>> inter;
-			auto action = [&M, &inter, &center](GEO::index_t f)
-			{
+			auto action = [&M, &inter, &center](GEO::index_t f) {
 				double z;
 				if (int s = intersect_ray_z(M, f, center, z))
 				{
@@ -953,6 +980,364 @@ void polyfem::extract_parent_edges(const Eigen::MatrixXd &IV, const Eigen::Matri
 
 ////////////////////////////////////////////////////////////////////////////////
 
+void polyfem::apply_default_mesh_parameters(const json &mesh_in, json &mesh_out, const std::string &path_prefix)
+{
+	// NOTE: All units by default are expressed in standard SI units
+	// • position: position of the model origin
+	// • rotation: degrees as XYZ euler angles around the model origin
+	// • scale: scale the vertices around the model origin
+	// • dimensions: dimensions of the scaled object (mutually exclusive to
+	//               "scale")
+	// • enabled: skip the body if this field is false
+	mesh_out = R"({
+				"mesh": null,
+				"position": [0.0, 0.0, 0.0],
+				"rotation": [0.0, 0.0, 0.0],
+				"rotation_mode": "xyz",
+				"scale": [1.0, 1.0, 1.0],
+				"dimensions": null,
+				"enabled": true,
+				"body_id": 0,
+				"boundary_id": 0,
+				"bc_tag": "",
+				"displacement": [0.0, 0.0, 0.0]
+			})"_json;
+	check_for_unknown_args(mesh_out, mesh_in, path_prefix);
+	mesh_out.merge_patch(mesh_in);
+}
+
+void polyfem::read_fem_mesh(
+	const std::string &mesh_path,
+	Eigen::MatrixXd &vertices,
+	Eigen::MatrixXi &cells,
+	std::vector<std::vector<int>> &elements,
+	std::vector<std::vector<double>> &weights)
+{
+	vertices.resize(0, 0);
+	cells.resize(0, 0);
+	elements.clear();
+	weights.clear();
+
+	std::string lowername = mesh_path;
+	std::transform(
+		lowername.begin(), lowername.end(), lowername.begin(), ::tolower);
+
+	if (StringUtils::endswith(lowername, ".msh"))
+	{
+		if (!MshReader::load(mesh_path, vertices, cells, elements, weights))
+		{
+			logger().error("Unable to load mesh: {}", mesh_path);
+			return;
+		}
+	}
+	else
+	{
+		GEO::Mesh mesh;
+		if (!GEO::mesh_load(mesh_path, mesh))
+		{
+			logger().error("Unable to load mesh: {}", mesh_path);
+			return;
+		}
+
+		int dim = is_planar(mesh) ? 2 : 3;
+		vertices.resize(mesh.vertices.nb(), dim);
+		for (int vi = 0; vi < mesh.vertices.nb(); vi++)
+		{
+			const auto &v = mesh.vertices.point(vi);
+			for (int vj = 0; vj < dim; vj++)
+			{
+				vertices(vi, vj) = v[vj];
+			}
+		}
+
+		if (mesh.cells.nb())
+		{
+			int cell_cols = mesh.cells.nb_vertices(0);
+			cells.resize(mesh.cells.nb(), cell_cols);
+			for (int ci = 0; ci < mesh.cells.nb(); ci++)
+			{
+				assert(cell_cols == mesh.cells.nb_vertices(ci));
+				for (int cj = 0; cj < mesh.cells.nb_vertices(ci); cj++)
+				{
+					cells(ci, cj) = mesh.cells.vertex(ci, cj);
+				}
+			}
+		}
+		else
+		{
+			assert(mesh.facets.nb());
+			int cell_cols = mesh.facets.nb_vertices(0);
+			cells.resize(mesh.facets.nb(), cell_cols);
+			for (int ci = 0; ci < mesh.facets.nb(); ci++)
+			{
+				assert(cell_cols == mesh.facets.nb_vertices(ci));
+				for (int cj = 0; cj < mesh.facets.nb_vertices(ci); cj++)
+				{
+					cells(ci, cj) = mesh.facets.vertex(ci, cj);
+				}
+			}
+		}
+
+		elements.resize(cells.rows());
+		for (int ci = 0; ci < cells.rows(); ci++)
+		{
+			elements[ci].resize(cells.cols());
+			for (int cj = 0; cj < cells.cols(); cj++)
+			{
+				elements[ci][cj] = cells(ci, cj);
+			}
+		}
+		weights.resize(cells.rows());
+	}
+}
+
+void find_codim_vertices(
+	const Eigen::MatrixXd &vertices,
+	const Eigen::MatrixXi &codim_edges,
+	const Eigen::MatrixXi &faces,
+	Eigen::VectorXi &codim_vertices)
+{
+	std::vector<bool> is_vertex_codim(vertices.rows(), true);
+	for (int i = 0; i < codim_edges.rows(); i++)
+	{
+		for (int j = 0; j < codim_edges.cols(); j++)
+		{
+			is_vertex_codim[codim_edges(i, j)] = false;
+		}
+	}
+	for (int i = 0; i < faces.rows(); i++)
+	{
+		for (int j = 0; j < faces.cols(); j++)
+		{
+			is_vertex_codim[faces(i, j)] = false;
+		}
+	}
+	const auto n_codim_vertices = std::count(is_vertex_codim.begin(), is_vertex_codim.end(), true);
+	codim_vertices.resize(n_codim_vertices);
+	for (int i = 0, ci = 0; i < vertices.rows(); i++)
+	{
+		if (is_vertex_codim[i])
+		{
+			codim_vertices[ci++] = i;
+		}
+	}
+}
+
+void find_triangle_surface_from_tets(
+	const Eigen::MatrixXi &tets,
+	Eigen::MatrixXi &faces)
+{
+	std::unordered_set<Eigen::Vector3i> tri_to_tet(4 * tets.rows());
+	for (int i = 0; i < tets.rows(); i++)
+	{
+		tri_to_tet.emplace(tets(i, 0), tets(i, 2), tets(i, 1));
+		tri_to_tet.emplace(tets(i, 0), tets(i, 3), tets(i, 2));
+		tri_to_tet.emplace(tets(i, 0), tets(i, 1), tets(i, 3));
+		tri_to_tet.emplace(tets(i, 1), tets(i, 2), tets(i, 3));
+	}
+
+	std::vector<Eigen::RowVector3i> faces_vector;
+	for (const auto &tri : tri_to_tet)
+	{
+		// find dual triangle with reversed indices:
+		bool is_surface_triangle =
+			tri_to_tet.find(Eigen::Vector3i(tri[2], tri[1], tri[0])) == tri_to_tet.end()
+			&& tri_to_tet.find(Eigen::Vector3i(tri[1], tri[0], tri[2])) == tri_to_tet.end()
+			&& tri_to_tet.find(Eigen::Vector3i(tri[0], tri[2], tri[1])) == tri_to_tet.end();
+		if (is_surface_triangle)
+		{
+			faces_vector.emplace_back(tri[0], tri[1], tri[2]);
+		}
+	}
+
+	faces.resize(faces_vector.size(), 3);
+	for (int i = 0; i < faces.rows(); i++)
+	{
+		faces.row(i) = faces_vector[i];
+	}
+}
+
+void extract_triangle_surface_from_tets(
+	const Eigen::MatrixXd &vertices,
+	const Eigen::MatrixXi &tets,
+	Eigen::MatrixXd &surface_vertices,
+	Eigen::MatrixXi &tris)
+{
+	Eigen::MatrixXi full_tris;
+	find_triangle_surface_from_tets(tets, full_tris);
+
+	std::unordered_map<int, int> full_to_surface;
+	std::vector<size_t> surface_to_full;
+	for (int i = 0; i < full_tris.rows(); i++)
+	{
+		for (int j = 0; j < full_tris.cols(); j++)
+		{
+			if (full_to_surface.find(full_tris(i, j)) == full_to_surface.end())
+			{
+				full_to_surface[full_tris(i, j)] = surface_to_full.size();
+				surface_to_full.push_back(full_tris(i, j));
+			}
+		}
+	}
+
+	surface_vertices.resize(surface_to_full.size(), 3);
+	for (int i = 0; i < surface_to_full.size(); i++)
+	{
+		surface_vertices.row(i) = vertices.row(surface_to_full[i]);
+	}
+
+	tris.resize(full_tris.rows(), full_tris.cols());
+	for (int i = 0; i < tris.rows(); i++)
+	{
+		for (int j = 0; j < tris.cols(); j++)
+		{
+			tris(i, j) = full_to_surface[full_tris(i, j)];
+		}
+	}
+}
+
+void polyfem::read_surface_mesh(
+	const std::string &mesh_path,
+	Eigen::MatrixXd &vertices,
+	Eigen::VectorXi &codim_vertices,
+	Eigen::MatrixXi &codim_edges,
+	Eigen::MatrixXi &faces)
+{
+	vertices.resize(0, 0);
+	codim_vertices.resize(0);
+	codim_edges.resize(0, 0);
+	faces.resize(0, 0);
+
+	std::string lowername = mesh_path;
+	std::transform(
+		lowername.begin(), lowername.end(), lowername.begin(), ::tolower);
+
+	if (StringUtils::endswith(lowername, ".msh"))
+	{
+		Eigen::MatrixXi cells;
+		std::vector<std::vector<int>> elements;
+		std::vector<std::vector<double>> weights;
+		if (!MshReader::load(mesh_path, vertices, cells, elements, weights))
+		{
+			logger().error("Unable to load mesh: {}", mesh_path);
+			return;
+		}
+
+		if (cells.cols() == 1)
+			codim_vertices = cells;
+		else if (cells.cols() == 2)
+			codim_edges = cells;
+		else if (cells.cols() == 3)
+			faces = cells;
+		else
+		{
+			assert(cells.cols() == 4);
+			Eigen::MatrixXd surface_vertices;
+			extract_triangle_surface_from_tets(vertices, cells, surface_vertices, faces);
+			vertices = surface_vertices;
+		}
+	}
+	else if (StringUtils::endswith(lowername, ".obj")) // Use specialized OBJ reader function with polyline support
+	{
+		if (!OBJReader::load(mesh_path, vertices, codim_edges, faces))
+		{
+			logger().error("Unable to load mesh: {}", mesh_path);
+			return;
+		}
+	}
+	else if (!igl::read_triangle_mesh(mesh_path, vertices, faces))
+	{
+		GEO::Mesh mesh;
+		if (!GEO::mesh_load(mesh_path, mesh))
+		{
+			logger().error("Unable to load mesh: {}", mesh_path);
+			return;
+		}
+
+		int dim = is_planar(mesh) ? 2 : 3;
+		vertices.resize(mesh.vertices.nb(), dim);
+		for (int vi = 0; vi < mesh.vertices.nb(); vi++)
+		{
+			const auto &v = mesh.vertices.point(vi);
+			for (int vj = 0; vj < dim; vj++)
+			{
+				vertices(vi, vj) = v[vj];
+			}
+		}
+
+		// TODO: Check that this works even for a volumetric mesh
+		assert(mesh.facets.nb());
+		int face_cols = mesh.facets.nb_vertices(0);
+		faces.resize(mesh.facets.nb(), face_cols);
+		for (int fi = 0; fi < mesh.facets.nb(); fi++)
+		{
+			assert(face_cols == mesh.facets.nb_vertices(fi));
+			for (int fj = 0; fj < mesh.facets.nb_vertices(fi); fj++)
+			{
+				faces(fi, fj) = mesh.facets.vertex(fi, fj);
+			}
+		}
+	}
+
+	find_codim_vertices(vertices, codim_edges, faces, codim_vertices);
+}
+
+void polyfem::transform_mesh_from_json(const json &mesh, Eigen::MatrixXd &vertices)
+{
+	const int dim = vertices.cols();
+
+	RowVectorNd scale;
+	if (mesh["dimensions"].is_array()) // default is nullptr
+	{
+		VectorNd initial_dimensions =
+			(vertices.colwise().maxCoeff() - vertices.colwise().minCoeff()).cwiseAbs();
+		initial_dimensions =
+			(initial_dimensions.array() == 0).select(1, initial_dimensions);
+		scale = mesh["dimensions"];
+		const int scale_size = scale.size();
+		scale.conservativeResize(dim);
+		if (scale_size < dim)
+			scale.tail(dim - scale_size).setZero();
+		scale.array() /= initial_dimensions.array();
+	}
+	else if (mesh["scale"].is_number())
+	{
+		scale.setConstant(dim, mesh["scale"].get<double>());
+	}
+	else
+	{
+		assert(mesh["scale"].is_array());
+		scale = mesh["scale"];
+		const int scale_size = scale.size();
+		scale.conservativeResize(dim);
+		if (scale_size < dim)
+			scale.tail(dim - scale_size).setZero();
+	}
+	vertices *= scale.asDiagonal();
+
+	// Rotate around the models origin NOT the bodies center of mass.
+	// We could expose this choice as a "rotate_around" field.
+	MatrixNd R = MatrixNd::Identity(dim, dim);
+	if (dim == 2 && mesh["rotation"].is_number())
+	{
+		R = Eigen::Rotation2Dd(
+				deg2rad(mesh["rotation"].get<double>()))
+				.toRotationMatrix();
+	}
+	else if (dim == 3)
+	{
+		R = to_rotation_matrix(mesh["rotation"], mesh["rotation_mode"]);
+	}
+	vertices *= R.transpose(); // (R*Vᵀ)ᵀ = V*Rᵀ
+
+	RowVectorNd position = mesh["position"];
+	const int position_size = position.size();
+	position.conservativeResize(dim);
+	if (position_size < dim)
+		position.tail(dim - position_size).setZero();
+	vertices.rowwise() += position;
+}
+
 void polyfem::save_edges(const std::string &filename, const Eigen::MatrixXd &V, const Eigen::MatrixXi &E)
 {
 	using namespace Eigen;
@@ -964,4 +1349,70 @@ void polyfem::save_edges(const std::string &filename, const Eigen::MatrixXd &V, 
 	out << "# Vertices: " << V.rows() << "\n# Edges: " << E.rows() << "\n"
 		<< V.cast<float>().format(IOFormat(FullPrecision, DontAlignCols, " ", "\n", "v ", "", "", "\n"))
 		<< (E.array() + 1).format(IOFormat(FullPrecision, DontAlignCols, " ", "\n", "l ", "", "", "\n"));
+}
+
+int polyfem::count_faces(const int dim, const Eigen::MatrixXi &cells)
+{
+	auto hash = [](const std::vector<int> &v) {
+		std::hash<int> hasher;
+		int hash = hasher(v[0]);
+		for (int i = 1; i < v.size(); i++)
+			hash ^= hasher(v[i]);
+		return hash;
+	};
+
+	auto equal = [](const std::vector<int> &v1, const std::vector<int> &v2) {
+		assert(v1.size() == v2.size());
+		for (int i = 0; i < v1.size(); i++)
+			if (v1[i] != v2[i])
+				return false;
+		return true;
+	};
+
+	std::unordered_set<std::vector<int>, decltype(hash), decltype(equal)> boundaries(cells.rows(), hash, equal);
+
+	auto insert = [&](std::vector<int> v) {
+		std::sort(v.begin(), v.end());
+		boundaries.insert(v);
+	};
+
+	for (int i = 0; i < cells.rows(); i++)
+	{
+		const auto &cell = cells.row(i);
+		if (cells.cols() == 3) // triangle
+		{
+			insert({{cell(0), cell(1)}});
+			insert({{cell(1), cell(2)}});
+			insert({{cell(2), cell(0)}});
+		}
+		else if (cells.cols() == 4 && dim == 2) // quadralateral
+		{
+			insert({{cell(0), cell(1)}});
+			insert({{cell(1), cell(2)}});
+			insert({{cell(2), cell(3)}});
+			insert({{cell(3), cell(0)}});
+		}
+		else if (cells.cols() == 4 && dim == 3) // tetrahedron
+		{
+			insert({{cell(0), cell(2), cell(1)}});
+			insert({{cell(0), cell(3), cell(2)}});
+			insert({{cell(0), cell(1), cell(3)}});
+			insert({{cell(1), cell(2), cell(3)}});
+		}
+		else if (cells.cols() == 8) // hexahedron
+		{
+			insert({{cell(0), cell(1), cell(2), cell(3)}});
+			insert({{cell(1), cell(5), cell(6), cell(3)}});
+			insert({{cell(5), cell(4), cell(7), cell(6)}});
+			insert({{cell(0), cell(4), cell(7), cell(3)}});
+			insert({{cell(0), cell(4), cell(5), cell(1)}});
+			insert({{cell(2), cell(6), cell(7), cell(3)}});
+		}
+		else
+		{
+			throw "count_boundary_elements not implemented for polygons";
+		}
+	}
+
+	return boundaries.size();
 }

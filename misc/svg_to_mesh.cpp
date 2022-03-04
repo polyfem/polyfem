@@ -1,9 +1,10 @@
+#ifdef POLYFEM_WITH_CLIPPER
 ////////////////////////////////////////////////////////////////////////////////
 #include <CLI/CLI.hpp>
 #include <igl/write_triangle_mesh.h>
 #include <clipper/clipper.hpp>
 #define NANOSVG_ALL_COLOR_KEYWORDS // Include full list of color keywords.
-#define NANOSVG_IMPLEMENTATION	 // Expands implementation
+#define NANOSVG_IMPLEMENTATION     // Expands implementation
 #include <nanosvg.h>
 #include <complex>
 #include <vector>
@@ -119,3 +120,11 @@ int main(int argc, char *argv[])
 
 	return EXIT_SUCCESS;
 }
+#else
+#include <iostream>
+int main(int argc, char *argv[])
+{
+	std::cout << "Needs clipper!!!" << std::endl;
+	return EXIT_SUCCESS;
+}
+#endif

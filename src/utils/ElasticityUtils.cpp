@@ -489,7 +489,7 @@ namespace polyfem
 		initialized_ = false;
 	}
 
-	void LameParameters::lambda_mu(double x, double y, double z, int el_id, double &lambda, double &mu) const
+	void LameParameters::lambda_mu(double px, double py, double pz, double x, double y, double z, int el_id, double &lambda, double &mu) const
 	{
 		if (lambda_expr_)
 		{
@@ -740,7 +740,7 @@ namespace polyfem
 		initialized_ = false;
 	}
 
-	double Density::operator()(double x, double y, double z, int el_id) const
+	double Density::operator()(double px, double py, double pz, double x, double y, double z, int el_id) const
 	{
 		if (rho_expr_)
 		{

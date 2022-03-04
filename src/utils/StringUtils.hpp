@@ -19,7 +19,7 @@ namespace polyfem
 		bool startswith(const std::string &str, const std::string &prefix);
 
 		// Tests whether a string ends with a given suffix
-		bool endswidth(const std::string &str, const std::string &suffix);
+		bool endswith(const std::string &str, const std::string &suffix);
 
 		// Replace extension after the last "dot"
 		std::string replace_ext(const std::string &filename, const std::string &newext);
