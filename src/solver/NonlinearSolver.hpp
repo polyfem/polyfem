@@ -415,17 +415,22 @@ namespace cppoptlib
 
 		void log_times()
 		{
-			polyfem::logger().debug("[timing] grad {}s, assembly {}s, inverting {}s, line_search {}s, constraint_set_update {}s, obj_fun {}s, checking_for_nan_inf {}s, broad_phase_ccd {}s, ccd {}s, classical_line_search {}s",
-									grad_time,
-									assembly_time,
-									inverting_time,
-									line_search_time,
-									constraint_set_update_time + (m_line_search ? m_line_search->constraint_set_update_time : 0),
-									obj_fun_time,
-									m_line_search ? m_line_search->checking_for_nan_inf_time : 0,
-									m_line_search ? m_line_search->broad_phase_ccd_time : 0,
-									m_line_search ? m_line_search->ccd_time : 0,
-									m_line_search ? m_line_search->classical_line_search_time : 0);
+			polyfem::logger().debug(
+				"[timing] grad {:.3g}s, assembly {:.3g}s, inverting {:.3g}s, "
+				"line_search {:.3g}s, constraint_set_update {:.3g}s, "
+				"obj_fun {:.3g}s, checking_for_nan_inf {:.3g}s, "
+				"broad_phase_ccd {:.3g}s, ccd {:.3g}s, "
+				"classical_line_search {:.3g}s",
+				grad_time,
+				assembly_time,
+				inverting_time,
+				line_search_time,
+				constraint_set_update_time + (m_line_search ? m_line_search->constraint_set_update_time : 0),
+				obj_fun_time,
+				m_line_search ? m_line_search->checking_for_nan_inf_time : 0,
+				m_line_search ? m_line_search->broad_phase_ccd_time : 0,
+				m_line_search ? m_line_search->ccd_time : 0,
+				m_line_search ? m_line_search->classical_line_search_time : 0);
 		}
 	};
 } // namespace cppoptlib
