@@ -62,7 +62,7 @@ namespace polyfem
 		{
 			if (!m_name.empty())
 			{
-				polyfem::logger().trace("[timing] {} {}s", m_name, getElapsedTimeInSec());
+				polyfem::logger().trace("[timing] {} {:.3g}s", m_name, getElapsedTimeInSec());
 			}
 		}
 
