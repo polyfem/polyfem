@@ -624,13 +624,11 @@ namespace polyfem
 		const int n_bases = int(bases.size());
 
 		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
-			// igl::Timer timer; timer.start();
 			LocalThreadScalarStorage &local_storage = get_local_thread_storage(storage, thread_id);
 			ElementAssemblyValues &vals = local_storage.vals;
 
 			for (int e = start; e < end; ++e)
 			{
-				ElementAssemblyValues &vals = local_storage.vals;
 				cache.compute(e, is_volume, bases[e], gbases[e], vals);
 
 				const Quadrature &quadrature = vals.quadrature;

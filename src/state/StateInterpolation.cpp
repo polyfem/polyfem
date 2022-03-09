@@ -826,6 +826,81 @@ namespace polyfem
 		}
 	}
 
+	bool State::check_scalar_value(const Eigen::MatrixXd &fun, const bool use_sampler, const bool boundary_only)
+	{
+		if (!mesh)
+		{
+			logger().error("Load the mesh first!");
+			return true;
+		}
+		if (fun.size() <= 0)
+		{
+			logger().error("Solve the problem first!");
+			return true;
+		}
+
+		assert(!problem->is_scalar());
+
+		const auto &sampler = ref_element_sampler;
+
+		Eigen::MatrixXi vis_faces_poly;
+		Eigen::MatrixXd local_val;
+		const auto &gbases = iso_parametric() ? bases : geom_bases;
+
+		for (int i = 0; i < int(bases.size()); ++i)
+		{
+			if (boundary_only && mesh->is_volume() && !mesh->is_boundary_element(i))
+				continue;
+
+			const ElementBases &bs = bases[i];
+			const ElementBases &gbs = gbases[i];
+			Eigen::MatrixXd local_pts;
+
+			if (use_sampler)
+			{
+				if (mesh->is_simplex(i))
+					local_pts = sampler.simplex_points();
+				else if (mesh->is_cube(i))
+					local_pts = sampler.cube_points();
+				else
+				{
+					if (mesh->is_volume())
+						sampler.sample_polyhedron(polys_3d[i].first, polys_3d[i].second, local_pts, vis_faces_poly);
+					else
+						sampler.sample_polygon(polys[i], local_pts, vis_faces_poly);
+				}
+			}
+			else
+			{
+				if (mesh->is_volume())
+				{
+					if (mesh->is_simplex(i))
+						autogen::p_nodes_3d(disc_orders(i), local_pts);
+					else if (mesh->is_cube(i))
+						autogen::q_nodes_3d(disc_orders(i), local_pts);
+					else
+						continue;
+				}
+				else
+				{
+					if (mesh->is_simplex(i))
+						autogen::p_nodes_2d(disc_orders(i), local_pts);
+					else if (mesh->is_cube(i))
+						autogen::q_nodes_2d(disc_orders(i), local_pts);
+					else
+						continue;
+				}
+			}
+
+			assembler.compute_scalar_value(formulation(), i, bs, gbs, local_pts, fun, local_val);
+
+			if (std::isnan(local_val.norm()))
+				return false;
+		}
+
+		return true;
+	}
+
 	void State::compute_scalar_value(const int n_points, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, const bool use_sampler, const bool boundary_only)
 	{
 		if (!mesh)

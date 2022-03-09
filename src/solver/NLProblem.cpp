@@ -464,7 +464,9 @@ namespace polyfem
 		if (std::isnan(grad.norm()))
 			return false;
 
-		return true;
+		TVector x1_full;
+		reduced_to_full(x1, x1_full);
+		return state.check_scalar_value(x1_full, true, false);
 	}
 
 	double NLProblem::value(const TVector &x)
@@ -491,15 +493,12 @@ namespace polyfem
 			intertia_energy = 0.5 * tmp.transpose() * state.mass * tmp;
 		}
 
-		/*
-		\frac 1 2 (x-(x^t+hv^t+h^2M^{-1}f_e))^TM(x-(x^t+hv^t+h^2M^{-1}f_e))=\\
-		\frac 1 2 (x-x^t-hv^t-h^2M^{-1}f_e)^TM(x-x^t-hv^t-h^2M^{-1}f_e)=\\
-		\frac 1 2 (t-h^2M^{-1}f_e)^TM(t-h^2M^{-1}f_e)=\\
-		\frac 1 2 (t^T M-h^2f_e^T)(t-h^2M^{-1}f_e)=\\
-		\frac 1 2 (t^T M t - h^2 t^T f_e
-		-h^2f_e^T t + h^4f_e^T M^{-1}f_e)=\\
-		\frac 1 2 (t^T M t - 2 h^2 t^T f_e + h^4f_e^T M^{-1}f_e)
-		*/
+		// ½(x−(xᵗ+hvᵗ+h²M⁻¹fₑ))ᵀM(x−(xᵗ+hvᵗ+h²M⁻¹fₑ))
+		// = ½ (x−xᵗ−hvᵗ−h²M⁻¹fₑ)ᵀM(x−xᵗ−hvᵗ−h²M⁻¹fₑ)
+		// = ½ (t−h²M⁻¹fₑ)ᵀM(t−h²M⁻¹fₑ)
+		// = ½ (tᵀM - h²fₑᵀ)(t-h²M⁻¹fₑ)
+		// = ½ (tᵀMt - h²tᵀfₑ - h²fₑᵀt + h⁴fₑᵀM⁻¹fₑ)
+		// = ½ (t²Mt - 2h²tᵀfₑ + h⁴fₑᵀM⁻¹fₑ)
 
 		double collision_energy = 0;
 		double friction_energy = 0;
