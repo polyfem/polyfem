@@ -154,14 +154,25 @@ namespace cppoptlib
 					continue;
 				}
 
+				if (grad_norm != 0 && delta_x.dot(grad) >= 0)
+				{
+					increase_descent_strategy();
+					polyfem::logger().log(
+						spdlog::level::debug,
+						"[{}] direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
+						name(), delta_x.dot(grad), descent_strategy_name());
+					this->m_status = Status::Continue;
+					continue;
+				}
+
 				const double delta_x_norm = delta_x.norm();
 				if (std::isnan(delta_x_norm))
 				{
+					increase_descent_strategy();
 					this->m_status = Status::UserDefined;
-					polyfem::logger().error("[{}] Δx is nan; stopping", name());
-					m_error_code = ErrorCode::NanEncountered;
-					throw("Δx is nan; stopping");
-					break;
+					polyfem::logger().debug("[{}] Δx is nan; reverting to {}", name(), descent_strategy_name());
+					this->m_status = Status::Continue;
+					continue;
 				}
 
 				if (!use_gradient_norm)
@@ -184,19 +195,6 @@ namespace cppoptlib
 				this->m_status = checkConvergence(this->m_stop, this->m_current);
 
 				old_energy = energy;
-
-				// if (!use_gradient_norm && this->m_status != Status::Continue && this->m_status != Status::IterationLimit && grad_norm > 1e-2)
-				// {
-				// 	polyfem::logger().debug("[{}] converged with large gradient (||∇f||={}); continuing", name(), grad_norm);
-				// 	this->m_status = Status::Continue;
-				// }
-
-				// // Converge on the first iteration iff the line search failed and the gradient is small
-				// if ((descent_strategy == 2 || this->m_current.iterations > 0) && this->m_status != Status::Continue)
-				// {
-				// 	// converged
-				// 	break;
-				// }
 
 				// ---------------
 				// Variable update
@@ -222,10 +220,6 @@ namespace cppoptlib
 				descent_strategy = default_descent_strategy(); // Reset this for the next iterations
 
 				const double step = (rate * delta_x).norm();
-				// if (this->m_status == Status::Continue && step < 1e-10)
-				// {
-				// 	handle_small_step(step);
-				// }
 
 				if (objFunc.stop(x))
 				{
@@ -233,9 +227,6 @@ namespace cppoptlib
 					m_error_code = ErrorCode::Success;
 					polyfem::logger().debug("[{}] Objective decided to stop", name());
 				}
-
-				// if(rate >= 1 && next_hessian == this->m_current.iterations)
-				//	next_hessian += 2;
 
 				objFunc.post_step(this->m_current.iterations, x);
 
@@ -296,7 +287,7 @@ namespace cppoptlib
 
 			if (std::isnan(rate) && descent_strategy < 2) // 2 is the max, grad descent
 			{
-				descent_strategy++;
+				increase_descent_strategy();
 				polyfem::logger().warn(
 					"[{}] Line search failed; reverting to {}", name(), descent_strategy_name());
 				this->m_status = Status::Continue; // Try the step again with gradient descent
@@ -332,12 +323,12 @@ namespace cppoptlib
 		// Compute the search/update direction
 		virtual bool compute_update_direction(ProblemType &objFunc, const TVector &x_vec, const TVector &grad, TVector &direction) = 0;
 
-		// Special handling for small steps
-		virtual void handle_small_step(double step) {}
-
 	protected:
 		const json solver_params;
+
 		virtual int default_descent_strategy() = 0;
+		virtual void increase_descent_strategy() = 0;
+
 		virtual std::string descent_strategy_name(int descent_strategy) const = 0;
 		virtual std::string descent_strategy_name() const { return descent_strategy_name(this->descent_strategy); };
 
