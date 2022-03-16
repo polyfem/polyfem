@@ -70,6 +70,11 @@ namespace cppoptlib
 			double old_energy = std::nan("");
 
 			{
+				POLYFEM_SCOPED_TIMER("constraint set update", constraint_set_update_time);
+				objFunc.solution_changed(x);
+			}
+
+			{
 				POLYFEM_SCOPED_TIMER("compute gradient", grad_time);
 				objFunc.gradient(x, grad);
 			}
