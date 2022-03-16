@@ -33,6 +33,12 @@ namespace cppoptlib
 	protected:
 		virtual int default_descent_strategy() override { return 1; }
 
+		void lineSearchFailed(const TVector &x) override
+		{
+			polyfem::logger().debug("Line search failed, reset bfgs history");
+			m_bfgs.reset(x.size(), m_history_size);
+		}
+
 		using Superclass::descent_strategy_name;
 		std::string descent_strategy_name(int descent_strategy) const override
 		{
@@ -45,6 +51,13 @@ namespace cppoptlib
 			default:
 				throw "invalid descent strategy";
 			}
+		}
+
+		void increase_descent_strategy()
+		{
+			if (this->descent_strategy == 1)
+				this->descent_strategy++;
+			assert(this->descent_strategy <= 2);
 		}
 
 	protected:
@@ -97,6 +110,27 @@ namespace cppoptlib
 
 			m_prev_x = x;
 			m_prev_grad = grad;
+
+			if (std::isnan(direction.squaredNorm()))
+			{
+				reset(objFunc, x);
+				increase_descent_strategy();
+				polyfem::logger().log(
+					this->descent_strategy == 2 ? spdlog::level::warn : spdlog::level::debug,
+					"nan in direction {} (||∇f||={}); reverting to {}",
+					direction.dot(grad), this->descent_strategy_name());
+				return compute_update_direction(objFunc, x, grad, direction);
+			}
+			else if (grad.squaredNorm() != 0 && direction.dot(grad) >= 0)
+			{
+				reset(objFunc, x);
+				increase_descent_strategy();
+				polyfem::logger().log(
+					this->descent_strategy == 2 ? spdlog::level::warn : spdlog::level::debug,
+					"L-BFGS direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
+					direction.dot(grad), this->descent_strategy_name());
+				return compute_update_direction(objFunc, x, grad, direction);
+			}
 
 			return true;
 		}
