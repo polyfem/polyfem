@@ -33,12 +33,6 @@ namespace cppoptlib
 	protected:
 		virtual int default_descent_strategy() override { return 1; }
 
-		void lineSearchFailed(const TVector &x) override
-		{
-			polyfem::logger().debug("Line search failed, reset bfgs history");
-			m_bfgs.reset(x.size(), m_history_size);
-		}
-
 		using Superclass::descent_strategy_name;
 		std::string descent_strategy_name(int descent_strategy) const override
 		{
