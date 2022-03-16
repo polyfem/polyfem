@@ -336,8 +336,8 @@ namespace polyfem
 		{
 			if (!args_in.contains("line_search"))
 			{
-				args["line_search"] = "bisection";
-				logger().warn("Changing default linesearch to bisection");
+				args["line_search"] = "backtracking";
+				logger().warn("Changing default linesearch to backtracking");
 			}
 
 			if (args["friction_iterations"] == 0)

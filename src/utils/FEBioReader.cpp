@@ -701,7 +701,7 @@ namespace polyfem
 			}
 
 			if (!args_in.contains("line_search"))
-				state.args["line_search"] = "bisection";
+				state.args["line_search"] = "backtracking";
 
 			if (args_in.contains("solver_params"))
 			{
@@ -796,7 +796,7 @@ namespace polyfem
 		load_loads(loads, names, dt, gproblem);
 		load_body_loads(loads, names, gproblem);
 
-		// state.args["line_search"] = "bisection";
+		// state.args["line_search"] = "backtracking";
 		// state.args["project_to_psd"] = true;
 
 		timer.stop();
