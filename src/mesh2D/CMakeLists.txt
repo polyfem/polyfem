@@ -1,6 +1,8 @@
 set(SOURCES
 	Mesh2D.cpp
 	Mesh2D.hpp
+	ncMesh2D.cpp
+	ncMesh2D.hpp
 	Navigation.cpp
 	Navigation.hpp
 	PolygonUtils.cpp

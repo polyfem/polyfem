@@ -377,6 +377,9 @@ namespace polyfem
 			logger().info("min p: {} max p: {}", disc_orders.minCoeff(), disc_orders.maxCoeff());
 		}
 
+		if (mesh->ncmesh)
+			mesh->ncmesh->assignOrders(disc_orders);
+
 		if (mesh->is_volume())
 		{
 			const Mesh3D &tmp_mesh = *dynamic_cast<Mesh3D *>(mesh.get());

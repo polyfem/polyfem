@@ -433,16 +433,16 @@ namespace polyfem
 			if (mesh->is_simplex(i))
 			{
 				if (mesh->dimension() == 3)
-					autogen::p_nodes_3d(bs.bases.front().order(), local_pts);
+					autogen::p_nodes_3d(disc_orders(i), local_pts);
 				else
-					autogen::p_nodes_2d(bs.bases.front().order(), local_pts);
+					autogen::p_nodes_2d(disc_orders(i), local_pts);
 			}
 			else
 			{
 				if (mesh->dimension() == 3)
-					autogen::q_nodes_3d(bs.bases.front().order(), local_pts);
+					autogen::q_nodes_3d(disc_orders(i), local_pts);
 				else
-					autogen::q_nodes_2d(bs.bases.front().order(), local_pts);
+					autogen::q_nodes_2d(disc_orders(i), local_pts);
 			}
 			// else if(mesh->is_cube(i))
 			// 	local_pts = sampler.cube_points();
@@ -782,6 +782,17 @@ namespace polyfem
 
 	void State::interpolate_at_local_vals(const int el_index, const int actual_dim, const std::vector<ElementBases> &bases, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad)
 	{
+		interpolate_at_local_vals(el_index, actual_dim, bases, geom_bases, local_pts, fun, result, result_grad);
+	}
+
+    void State::interpolate_at_local_vals(const int el_index, const int actual_dim, const std::vector<ElementBases> &tmp_bases, const std::vector<ElementBases> &tmp_geom_bases, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad)
+    {
+		auto &gbases = iso_parametric() ? tmp_bases : tmp_geom_bases;
+		interpolate_at_local_vals(actual_dim, tmp_bases[el_index], gbases[el_index], local_pts, fun, result, result_grad);
+	}
+
+    void State::interpolate_at_local_vals(const int actual_dim, const ElementBases &tmp_base, const ElementBases &tmp_geom_base, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad)
+    {
 		if (!mesh)
 		{
 			logger().error("Load the mesh first!");
@@ -796,12 +807,12 @@ namespace polyfem
 		assert(local_pts.cols() == mesh->dimension());
 		assert(fun.cols() == 1);
 
-		const auto &gbases = iso_parametric() ? bases : geom_bases;
-		const ElementBases &gbs = gbases[el_index];
-		const ElementBases &bs = bases[el_index];
+		const auto &gbase = iso_parametric() ? tmp_base : tmp_geom_base;
+		const ElementBases &gbs = gbase;
+		const ElementBases &bs = tmp_base;
 
 		ElementAssemblyValues vals;
-		vals.compute(el_index, mesh->is_volume(), local_pts, bs, gbs);
+		vals.compute(mesh->is_volume(), local_pts, bs, gbs);
 
 		result.resize(vals.val.rows(), actual_dim);
 		result.setZero();

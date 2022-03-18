@@ -199,9 +199,165 @@ namespace polyfem
 		compute(el_index, is_volume, quadrature.points, basis, gbasis);
 	}
 
+	void ElementAssemblyValues::compute(const bool is_volume, const ElementBases &basis, const ElementBases &gbasis)
+	{
+		basis.compute_quadrature(quadrature);
+		compute(is_volume, quadrature.points, basis, gbasis);
+	}
+
 	void ElementAssemblyValues::compute(const int el_index, const bool is_volume, const Eigen::MatrixXd &pts, const ElementBases &basis, const ElementBases &gbasis)
 	{
 		element_id = el_index;
+		// const bool poly = !gbasis.has_parameterization;
+
+		basis_values.resize(basis.bases.size());
+
+		if (&basis != &gbasis)
+			g_basis_values_cache_.resize(gbasis.bases.size());
+
+		// Eigen::MatrixXd mval = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+
+		// Eigen::MatrixXd dxmv = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+		// Eigen::MatrixXd dymv = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+		// Eigen::MatrixXd dzmv = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
+
+		// igl::Timer timer0;
+		// timer0.start();
+
+		// auto values_and_grads = [&](const ElementBases &my_basis, auto v, auto dx, auto dy, auto dz)
+		// {
+		// 	my_basis.evaluate_bases(pts, *v);
+		// 	my_basis.evaluate_grads(pts, 0, *dx);
+		// 	my_basis.evaluate_grads(pts, 1, *dy);
+		// 	if(is_volume)
+		// 		my_basis.evaluate_grads(pts, 2, *dz);
+		// };
+
+		// auto vals = std::make_shared<Eigen::MatrixXd>();
+		// auto local_gradx = std::make_shared<Eigen::MatrixXd>();
+		// auto local_grady = std::make_shared<Eigen::MatrixXd>();
+		// auto local_gradz = std::make_shared<Eigen::MatrixXd>();
+		// values_and_grads(basis, vals, local_gradx, local_grady, local_gradz);
+
+		// auto gvals = std::make_shared<Eigen::MatrixXd>();
+		// auto local_g_gradx = std::make_shared<Eigen::MatrixXd>();
+		// auto local_g_grady = std::make_shared<Eigen::MatrixXd>();
+		// auto local_g_gradz = std::make_shared<Eigen::MatrixXd>();
+		// if (&basis == &gbasis) {
+		// 	gvals = vals;
+		// 	local_g_gradx = local_gradx;
+		// 	local_g_grady = local_grady;
+		// 	local_g_gradz = local_gradz;
+		// } else {
+		// 	values_and_grads(gbasis, gvals, local_g_gradx, local_g_grady, local_g_gradz);
+		// }
+
+		// timer0.stop();
+		// const double t = timer0.getElapsedTime();
+		// if (poly) { std::cout << "-- eval quadr points: " << t << std::endl; }
+
+
+		const int n_local_bases = int(basis.bases.size());
+		const int n_local_g_bases = int(gbasis.bases.size());
+
+		basis.evaluate_bases(pts, basis_values);
+		basis.evaluate_grads(pts, basis_values);
+
+		if (&basis != &gbasis)
+		{
+			gbasis.evaluate_bases(pts, g_basis_values_cache_);
+			gbasis.evaluate_grads(pts, g_basis_values_cache_);
+		}
+
+		for(int j = 0; j < n_local_bases; ++j)
+		{
+			AssemblyValues &ass_val = basis_values[j];
+			ass_val.global = basis.bases[j].global();
+			assert(ass_val.val.cols()==1);
+			assert(ass_val.grad.cols() == pts.cols());
+		}
+
+
+		// for(int j = 0; j < n_local_bases; ++j)
+		// {
+		// 	AssemblyValues &ass_val = basis_values[j];
+
+		// 	ass_val.global = basis.bases[j].global();
+		// 	ass_val.val = vals->col(j);
+		// 	assert(ass_val.val.cols()==1);
+
+		// 	ass_val.grad.resize(pts.rows(), pts.cols());
+
+		// 	ass_val.grad.col(0) = local_gradx->col(j);
+		// 	ass_val.grad.col(1) = local_grady->col(j);
+		// 	if(is_volume)
+		// 		ass_val.grad.col(2) = local_gradz->col(j);
+
+		// 	assert(ass_val.grad.cols() == pts.cols());
+		// }
+
+		if(!gbasis.has_parameterization) {
+			// v = G(pts)
+			finalize_global_element(pts);
+			return;
+		}
+
+		// for(int j = 0; j < n_local_g_bases; ++j)
+		// {
+		// 	const Basis &b=gbasis.bases[j];
+
+		// 	assert(gbasis.has_parameterization);
+
+		// 	for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+		// 	{
+		// 		for (long k = 0; k < gvals->rows(); ++k)
+		// 		{
+		// 			mval.row(k) += (*gvals)(k,j)    * b.global()[ii].node * b.global()[ii].val;
+
+		// 			dxmv.row(k) += (*local_g_gradx)(k,j) * b.global()[ii].node  * b.global()[ii].val;
+		// 			dymv.row(k) += (*local_g_grady)(k,j) * b.global()[ii].node  * b.global()[ii].val;
+		// 			if(is_volume)
+		// 				dzmv.row(k) += (*local_g_gradz)(k,j) * b.global()[ii].node  * b.global()[ii].val;
+		// 		}
+		// 	}
+		// }
+
+		// if(is_volume)
+		// 	finalize(mval, dxmv, dymv, dzmv);
+		// else
+		// 	finalize(mval, dxmv, dymv);
+
+		const auto &gbasis_values = (&basis == &gbasis) ? basis_values : g_basis_values_cache_;
+		assert(gbasis_values.size() == n_local_g_bases);
+		val.resize(pts.rows(), pts.cols());
+		val.setZero();
+		for(int j = 0; j < n_local_g_bases; ++j)
+		{
+			const Basis &b=gbasis.bases[j];
+			const auto &tmp = gbasis_values[j].val;
+
+			assert(gbasis.has_parameterization);
+			assert(tmp.size() == val.rows());
+
+			for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+			{
+				for (long k = 0; k < val.rows(); ++k)
+				{
+					val.row(k) += tmp(k) * b.global()[ii].node * b.global()[ii].val;
+				}
+			}
+		}
+
+		if(is_volume)
+			finalize3d(gbasis, gbasis_values);
+		else
+			finalize2d(gbasis, gbasis_values);
+
+	}
+
+	void ElementAssemblyValues::compute(const bool is_volume, const Eigen::MatrixXd &pts, const ElementBases &basis, const ElementBases &gbasis)
+	{
+		// element_id = el_index;
 		// const bool poly = !gbasis.has_parameterization;
 
 		basis_values.resize(basis.bases.size());

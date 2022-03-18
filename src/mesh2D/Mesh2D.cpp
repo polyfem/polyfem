@@ -517,6 +517,22 @@ namespace polyfem
 			const auto p = edge_barycenter(e);
 
 			boundary_ids_[e] = marker(p);
+			if (ncmesh->elements.size() == ncmesh->n_elements) {
+				int id = ncmesh->findEdge(ncmesh->valid2AllVertex(edge_vertex(e, 0)), ncmesh->valid2AllVertex(edge_vertex(e, 1)));
+				assert(id >= 0);
+				ncmesh->edges[id].boundary_flag = boundary_ids_[e];
+			}
+		}
+		
+		if (ncmesh->elements.size() > ncmesh->n_elements) {
+			for (int i = 0; i < n_edges(); i++) {
+				if (!is_boundary_edge(i))
+					continue;
+
+				int id = ncmesh->findEdge(ncmesh->valid2AllVertex(edge_vertex(i, 0)), ncmesh->valid2AllVertex(edge_vertex(i, 1)));
+				assert(id >= 0);
+				boundary_ids_[i] = ncmesh->edges[id].boundary_flag;
+			}
 		}
 	}
 
@@ -736,6 +752,31 @@ namespace polyfem
 		const auto C = point(index.vertex);
 
 		igl::barycentric_coordinates(p, A, B, C, coords);
+	}
+
+	void Mesh2D::remove_fake_boundary()
+	{
+		ncmesh->markBoundary();
+		for (int i = 0; i < ncmesh->n_verts; i++)
+			(*boundary_vertices_)[i] = ncmesh->vertices[ncmesh->valid2AllVertex(i)].isboundary;
+
+		assert(surface_index_map.size() == ncmesh->edges.size());
+		for (int id = 0; id < surface_index_map.size(); id++) {
+			if (surface_index_map[id] >= 0)
+				(*boundary_edges_)[surface_index_map[id]] = ncmesh->edges[id].isboundary;
+		}
+	}
+
+	void Mesh2D::build_surface_index_map()
+	{
+		surface_index_map.setConstant(ncmesh->edges.size(), 1, -1);
+
+		Eigen::Vector2i v;
+		for (int i = 0; i < n_edges(); i++) {
+			int id = ncmesh->findEdge(ncmesh->valid2AllVertex(edge_vertex(i, 0)), ncmesh->valid2AllVertex(edge_vertex(i, 1)));
+			assert(id >= 0 && id < surface_index_map.size());
+			surface_index_map[id] = i;
+		}
 	}
 
 } // namespace polyfem

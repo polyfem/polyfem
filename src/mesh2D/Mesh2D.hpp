@@ -9,6 +9,8 @@
 #include <Eigen/Dense>
 #include <geogram/mesh/mesh.h>
 
+#include <polyfem/ncMesh2D.hpp>
+
 namespace polyfem
 {
 	class Mesh2D : public Mesh
@@ -106,6 +108,9 @@ namespace polyfem
 		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
 		void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const override;
 		void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, const std::vector<bool> &valid_elements) const override;
+
+		void remove_fake_boundary() override;
+		void build_surface_index_map() override;
 
 	protected:
 		bool load(const std::string &path) override;

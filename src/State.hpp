@@ -348,6 +348,33 @@ namespace polyfem
 			solve_export_to_file = true;
 		}
 
+		void load_ncMesh(std::shared_ptr<ncMesh> ncmesh)
+		{
+			Eigen::MatrixXd v;
+			Eigen::MatrixXi f;
+
+			ncmesh->prepareMesh();
+			ncmesh->compress(v, f);
+
+			if (ncmesh->dim() == 2)
+				mesh = std::make_unique<polyfem::Mesh2D>();
+			else
+				mesh = std::make_unique<polyfem::Mesh3D>();
+			mesh->build_from_matrices(v, f);
+
+			for (auto& edge : ncmesh->edges)
+				edge.global_ids.clear();
+
+			for (auto& face : ncmesh->faces)
+				face.global_ids.clear();
+
+			mesh->ncmesh = ncmesh;
+			mesh->build_surface_index_map();
+			mesh->remove_fake_boundary();
+
+			load_mesh();
+		}
+		
 		//internal methods, they are called from solve
 
 		//builds the bases step 2 of solve
@@ -409,6 +436,9 @@ namespace polyfem
 		//interpolate the function fun and its gradient at in element el_index for the local_pts in the reference element using bases bases
 		//actual dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
 		void interpolate_at_local_vals(const int el_index, const int actual_dim, const std::vector<ElementBases> &bases, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad);
+		//interpolate the function fun and its gradient at in element el_index for the local_pts in the reference element using bases and geom_bases
+		void interpolate_at_local_vals(const int el_index, const int actual_dim, const std::vector<ElementBases> &tmp_bases, const std::vector<ElementBases> &tmp_geom_bases, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad);
+		void interpolate_at_local_vals(const int actual_dim, const ElementBases &tmp_base, const ElementBases &tmp_geom_base, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad);
 
 		bool check_scalar_value(const Eigen::MatrixXd &fun, const bool use_sampler, const bool boundary_only);
 		//computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)
@@ -551,7 +581,7 @@ namespace polyfem
 			if (mesh->is_rational())
 				return false;
 
-			if (args["use_p_ref"])
+			if (args["use_p_ref"] || args["use_posteriori_hp_ref"])
 				return false;
 
 			if (mesh->orders().size() <= 0)

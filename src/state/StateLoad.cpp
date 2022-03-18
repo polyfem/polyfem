@@ -145,8 +145,11 @@ namespace polyfem
 		// 		mesh->set_tag(el_id, ElementType::InteriorPolytope);
 		// }
 
-		if (args["normalize_mesh"])
+		if (args["normalize_mesh"]) {
 			mesh->normalize();
+			if (mesh->ncmesh)
+				mesh->ncmesh->normalize();
+		}
 
 		RowVectorNd min, max;
 		mesh->bounding_box(min, max);

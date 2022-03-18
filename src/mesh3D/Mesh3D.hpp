@@ -11,6 +11,8 @@
 #include <vector>
 #include <array>
 
+#include <polyfem/ncMesh3D.hpp>
+
 namespace polyfem
 {
 	class Mesh3D : public Mesh
@@ -124,6 +126,9 @@ namespace polyfem
 		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
 		void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const override;
 		void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, const std::vector<bool> &valid_elements) const override;
+
+		void remove_fake_boundary() override;
+		void build_surface_index_map() override;
 
 		//used for sweeping 2D mesh
 		Mesh3DStorage &mesh_storge()

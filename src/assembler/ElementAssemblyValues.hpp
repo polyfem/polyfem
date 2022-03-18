@@ -30,8 +30,10 @@ namespace polyfem
 
 		//computes the per element values at the quadrature points
 		void compute(const int el_index, const bool is_volume, const ElementBases &basis, const ElementBases &gbasis);
+		void compute(const bool is_volume, const ElementBases &basis, const ElementBases &gbasis);
 		//computes the per element values at the local (ref el) points (pts)
 		void compute(const int el_index, const bool is_volume, const Eigen::MatrixXd &pts, const ElementBases &basis, const ElementBases &gbasis);
+		void compute(const bool is_volume, const Eigen::MatrixXd &pts, const ElementBases &basis, const ElementBases &gbasis);
 		//check if the element is flipped
 		bool is_geom_mapping_positive(const bool is_volume, const ElementBases &gbasis) const;
 
