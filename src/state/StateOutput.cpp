@@ -1602,10 +1602,6 @@ namespace polyfem
 
 				Eigen::MatrixXd forces_reshaped = unflatten(forces, problem_dim);
 
-				logger().critical("kappa={} ‖friction_force‖∞={} {}",
-								  barrier_stiffness, forces.lpNorm<Eigen::Infinity>(),
-								  forces_reshaped.lpNorm<Eigen::Infinity>());
-
 				writer.add_field("friction_forces", forces_reshaped);
 			}
 
