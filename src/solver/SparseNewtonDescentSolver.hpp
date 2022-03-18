@@ -50,7 +50,7 @@ namespace cppoptlib
 			}
 		}
 
-		void increase_descent_strategy()
+		void increase_descent_strategy() override
 		{
 			if (this->descent_strategy == 0 || reg_weight > reg_weight_max)
 				this->descent_strategy++;
@@ -164,16 +164,6 @@ namespace cppoptlib
 				polyfem::logger().trace("linear solve residual {}", residual);
 			}
 
-			if (grad.squaredNorm() != 0 && direction.dot(grad) >= 0)
-			{
-				increase_descent_strategy();
-				polyfem::logger().log(
-					this->descent_strategy == 2 ? spdlog::level::warn : spdlog::level::debug,
-					"Newton direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
-					direction.dot(grad), this->descent_strategy_name());
-				return compute_update_direction(objFunc, x, grad, direction);
-			}
-
 			json info;
 			linear_solver->getInfo(info);
 			internal_solver_info.push_back(info);
@@ -183,29 +173,6 @@ namespace cppoptlib
 				reg_weight = 0;
 
 			return true;
-		}
-
-		void handle_small_step(double step) override
-		{
-			if (this->descent_strategy == 0) //try to project to psd
-				this->descent_strategy = 1;
-			// if (this->use_gradient_descent)
-			// {
-			// 	// How did this not converge then?
-			// 	// polyfem::logger().error(
-			// 	// 	"[{}] (iter={}) ||step||={} is too small; stopping",
-			// 	// 	name(), this->m_current.iterations, step);
-			// 	// this->m_status = Status::UserDefined;
-			// 	// this->m_error_code = Superclass::ErrorCode::StepTooSmall;
-			// }
-			// else
-			// {
-			// 	// Switching to gradient descent in this case will ruin quadratic convergence so don't.
-			// 	// polyfem::logger().warn(
-			// 	// 	"[{}] (iter={}) ||step||={} is too small; trying gradient descent",
-			// 	// 	name(), this->m_current.iterations, step);
-			// 	// this->use_gradient_descent = true;
-			// }
 		}
 
 		void update_solver_info() override

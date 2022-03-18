@@ -47,6 +47,16 @@ namespace cppoptlib
 			}
 		}
 
+		void increase_descent_strategy() override
+		{
+			if (this->descent_strategy == 1)
+				this->descent_strategy++;
+
+			m_bfgs.reset(m_prev_x.size(), m_history_size);
+
+			assert(this->descent_strategy <= 2);
+		}
+
 	protected:
 		LBFGSpp::BFGSMat<Scalar> m_bfgs; // Approximation to the Hessian matrix
 
