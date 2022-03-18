@@ -581,7 +581,7 @@ namespace polyfem
 			if (mesh->is_rational())
 				return false;
 
-			if (args["use_p_ref"] || args["use_posteriori_hp_ref"])
+			if (args["use_p_ref"])
 				return false;
 
 			if (mesh->orders().size() <= 0)
