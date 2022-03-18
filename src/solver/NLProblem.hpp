@@ -154,6 +154,9 @@ namespace polyfem
 		void compute_displaced_points(const TVector &full, Eigen::MatrixXd &displaced);
 		void reduced_to_full_displaced_points(const TVector &reduced, Eigen::MatrixXd &displaced);
 
+		double barrier_stiffness() const { return _barrier_stiffness; }
+		const Eigen::MatrixXd &displaced_prev() const { return _displaced_prev; }
+
 	protected:
 		State &state;
 		bool use_adaptive_barrier_stiffness;
@@ -179,11 +182,11 @@ namespace polyfem
 		double max_barrier_stiffness_;
 
 		// friction variables
-		double _epsv;                   ///< @brief The boundary between static and dynamic friction.
-		double _mu;                     ///< @brief Coefficient of friction.
-		Eigen::MatrixXd displaced_prev; ///< @brief Displaced vertices at the start of the time-step.
-		double _lagged_damping_weight;  ///< @brief Weight for lagged damping (static solve).
-		TVector x_lagged;               ///< @brief The full variables from the previous lagging solve.
+		double _epsv;                    ///< @brief The boundary between static and dynamic friction.
+		double _mu;                      ///< @brief Coefficient of friction.
+		Eigen::MatrixXd _displaced_prev; ///< @brief Displaced vertices at the start of the time-step.
+		double _lagged_damping_weight;   ///< @brief Weight for lagged damping (static solve).
+		TVector x_lagged;                ///< @brief The full variables from the previous lagging solve.
 
 		ipc::BroadPhaseMethod _broad_phase_method;
 		double _ccd_tolerance;

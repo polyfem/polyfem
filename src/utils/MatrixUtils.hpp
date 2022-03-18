@@ -104,6 +104,12 @@ namespace polyfem
 		}
 	};
 
+	// Flatten rowwises
+	Eigen::VectorXd flatten(const Eigen::MatrixXd &X);
+
+	// Unflatten rowwises, so every dim elements in x become a row.
+	Eigen::MatrixXd unflatten(const Eigen::VectorXd &x, int dim);
+
 } // namespace polyfem
 
 namespace std

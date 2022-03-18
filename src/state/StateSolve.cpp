@@ -513,13 +513,13 @@ namespace polyfem
 		// }
 		// else
 		// {
-		// 	nl_problem.full_to_reduced(sol, tmp_sol);
+		// 	step_data.nl_problem->full_to_reduced(sol, tmp_sol);
 
 		// 	for (int t = 1; t <= time_steps; ++t)
 		// 	{
 		// 		cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
 		// 		nlsolver.setLineSearch(args["line_search"]);
-		// 		nl_problem.init(sol);
+		// 		step_data.nl_problem->init(sol);
 		// 		nlsolver.minimize(nl_problem, tmp_sol);
 
 		// 		if (nlsolver.error_code() == -10)
@@ -531,8 +531,8 @@ namespace polyfem
 		// 			while (substep_delta > 1e-4 && !solved)
 		// 			{
 		// 				logger().debug("Substepping {}/{}, dt={}", (t - 1 + substep) * dt, t * dt, substep_delta);
-		// 				nl_problem.substepping((t - 1 + substep) * dt);
-		// 				nl_problem.full_to_reduced(sol, tmp_sol);
+		// 				step_data.nl_problem->substepping((t - 1 + substep) * dt);
+		// 				step_data.nl_problem->full_to_reduced(sol, tmp_sol);
 		// 				nlsolver.minimize(nl_problem, tmp_sol);
 
 		// 				if (nlsolver.error_code() == -10)
@@ -543,7 +543,7 @@ namespace polyfem
 		// 				else
 		// 				{
 		// 					logger().trace("Done {}/{}, dt={}", (t - 1 + substep) * dt, t * dt, substep_delta);
-		// 					nl_problem.reduced_to_full(tmp_sol, sol);
+		// 					step_data.nl_problem->reduced_to_full(tmp_sol, sol);
 		// 					substep_delta *= 2;
 		// 				}
 
@@ -568,7 +568,7 @@ namespace polyfem
 		// 		logger().debug("Step solved!");
 
 		// 		nlsolver.getInfo(solver_info);
-		// 		nl_problem.reduced_to_full(tmp_sol, sol);
+		// 		step_data.nl_problem->reduced_to_full(tmp_sol, sol);
 		// 		if (assembler.is_mixed(formulation()))
 		// 		{
 		// 			sol_to_pressure();
@@ -576,7 +576,7 @@ namespace polyfem
 
 		// 		// rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, dt * t);
 
-		// 		nl_problem.update_quantities((t + 1) * dt, sol);
+		// 		step_data.nl_problem->update_quantities((t + 1) * dt, sol);
 
 		// 		if (args["save_time_sequence"] && !(t % args["skip_frame"].get<int>()))
 		// 		{
@@ -714,14 +714,7 @@ namespace polyfem
 		{
 			timer.start();
 			logger().trace("Checking collisions...");
-			const int problem_dim = mesh->dimension();
-			Eigen::MatrixXd displaced = boundary_nodes_pos;
-			assert(displaced.rows() * problem_dim == sol.size());
-			// Unflatten rowwises, so every problem_dim elements in full become a row.
-			for (int i = 0; i < sol.size(); ++i)
-			{
-				displaced(i / problem_dim, i % problem_dim) += sol(i);
-			}
+			Eigen::MatrixXd displaced = boundary_nodes_pos + unflatten(sol, mesh->dimension());
 
 			if (ipc::has_intersections(collision_mesh, collision_mesh.vertices(displaced)))
 			{
@@ -1040,8 +1033,10 @@ namespace polyfem
 			// 	exit(0);
 		}
 
-		ALNLProblem alnl_problem(*this, rhs_assembler, 1, args["dhat"], args["project_to_psd"], args["al_weight"]);
-		NLProblem nl_problem(*this, rhs_assembler, 1, args["dhat"], args["project_to_psd"]);
+		step_data.nl_problem = std::make_shared<NLProblem>(*this, rhs_assembler, 1, args["dhat"], args["project_to_psd"]);
+		NLProblem &nl_problem = *(step_data.nl_problem);
+		step_data.alnl_problem = std::make_shared<ALNLProblem>(*this, rhs_assembler, 1, args["dhat"], args["project_to_psd"], args["al_weight"]);
+		ALNLProblem &alnl_problem = *(step_data.alnl_problem);
 
 		double al_weight = args["al_weight"];
 		const double max_al_weight = args["max_al_weight"];

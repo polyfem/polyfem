@@ -9,6 +9,9 @@
 #include <polyfem/auto_p_bases.hpp>
 #include <polyfem/auto_q_bases.hpp>
 
+#include <polyfem/NLProblem.hpp>
+#include <polyfem/ALNLProblem.hpp>
+
 // #ifdef POLYFEM_WITH_TBB
 // #include <tbb/task_scheduler_init.h>
 // #endif
@@ -1493,7 +1496,8 @@ namespace polyfem
 	{
 		const bool material_params = args["export"]["material_params"];
 		const bool body_ids = args["export"]["body_ids"];
-		const bool contact_forces = args["export"]["contact_forces"] && !problem->is_scalar();
+		const bool export_contact_forces = args["export"]["contact_forces"] && !problem->is_scalar();
+		const bool export_friction_forces = args["export"]["friction_forces"] && !problem->is_scalar();
 
 		VTUWriter writer;
 		Eigen::MatrixXd fun, interp_p, discr, vect;
@@ -1549,46 +1553,61 @@ namespace polyfem
 			}
 		}
 
-		if (contact_forces && solve_export_to_file)
+		if ((export_contact_forces || export_friction_forces) && solve_export_to_file)
 		{
 			const int problem_dim = mesh->dimension();
-			Eigen::MatrixXd displaced(sol.size() / problem_dim, problem_dim);
-			assert(displaced.rows() * problem_dim == sol.size());
-			for (int i = 0; i < sol.size(); i += problem_dim)
-			{
-				for (int d = 0; d < problem_dim; ++d)
-				{
-					displaced(i / problem_dim, d) = sol(i + d);
-				}
-			}
-			assert(displaced(0, 0) == sol(0));
-			assert(displaced(0, 1) == sol(1));
+			Eigen::MatrixXd displaced = unflatten(sol, problem_dim);
 
-			VTUWriter contact_writer;
 			writer.add_field("solution", displaced);
 
 			displaced += boundary_nodes_pos;
 			Eigen::MatrixXd displaced_surface = collision_mesh.vertices(displaced);
+
 			ipc::Constraints constraint_set;
 			ipc::construct_constraint_set(
 				collision_mesh, displaced_surface, args["dhat"], constraint_set,
 				/*dmin=*/0, ipc::BroadPhaseMethod::HASH_GRID);
-			Eigen::MatrixXd cgrad = ipc::compute_barrier_potential_gradient(
-				collision_mesh, displaced_surface, constraint_set, args["dhat"]);
-			cgrad = collision_mesh.to_full_dof(cgrad);
-			assert(cgrad.size() == sol.size());
 
-			Eigen::MatrixXd cgrad_reshaped(cgrad.size() / problem_dim, problem_dim);
-			assert(cgrad_reshaped.rows() * problem_dim == cgrad.size());
-			for (int i = 0; i < cgrad.size(); i += problem_dim)
+			const double barrier_stiffness = step_data.nl_problem != nullptr ? step_data.nl_problem->barrier_stiffness() : 1;
+
+			if (export_contact_forces)
 			{
-				for (int d = 0; d < problem_dim; ++d)
-				{
-					cgrad_reshaped(i / problem_dim, d) = cgrad(i + d);
-				}
+				Eigen::MatrixXd forces = -barrier_stiffness * ipc::compute_barrier_potential_gradient(collision_mesh, displaced_surface, constraint_set, args["dhat"]);
+				forces = collision_mesh.to_full_dof(forces);
+				assert(forces.size() == sol.size());
+
+				Eigen::MatrixXd forces_reshaped = unflatten(forces, problem_dim);
+
+				writer.add_field("contact_forces", forces_reshaped);
 			}
 
-			writer.add_field("contact_forces", cgrad_reshaped);
+			if (export_friction_forces)
+			{
+				Eigen::MatrixXd displaced_surface_prev =
+					(step_data.nl_problem != nullptr)
+						? collision_mesh.vertices(step_data.nl_problem->displaced_prev())
+						: displaced_surface;
+
+				ipc::FrictionConstraints friction_constraint_set;
+				ipc::construct_friction_constraint_set(
+					collision_mesh, displaced_surface, constraint_set,
+					args["dhat"], barrier_stiffness, args["mu"],
+					friction_constraint_set);
+
+				Eigen::MatrixXd forces = -ipc::compute_friction_potential_gradient(
+					collision_mesh, displaced_surface_prev, displaced_surface,
+					friction_constraint_set, args["epsv"].get<double>() * args["dt"].get<double>());
+				forces = collision_mesh.to_full_dof(forces);
+				assert(forces.size() == sol.size());
+
+				Eigen::MatrixXd forces_reshaped = unflatten(forces, problem_dim);
+
+				logger().critical("kappa={} ‖friction_force‖∞={} {}",
+								  barrier_stiffness, forces.lpNorm<Eigen::Infinity>(),
+								  forces_reshaped.lpNorm<Eigen::Infinity>());
+
+				writer.add_field("friction_forces", forces_reshaped);
+			}
 
 			writer.write_mesh(
 				export_surface.substr(0, export_surface.length() - 4) + "_contact.vtu",

@@ -174,7 +174,7 @@ namespace polyfem
 
 	void NLProblem::init_lagging(const TVector &x)
 	{
-		reduced_to_full_displaced_points(x, displaced_prev);
+		reduced_to_full_displaced_points(x, _displaced_prev);
 		update_lagging(x);
 	}
 
@@ -284,20 +284,7 @@ namespace polyfem
 	void NLProblem::compute_displaced_points(const TVector &full, Eigen::MatrixXd &displaced)
 	{
 		assert(full.size() == full_size);
-
-		const int problem_dim = state.mesh->dimension();
-		displaced.resize(full.size() / problem_dim, problem_dim);
-		assert(displaced.rows() * problem_dim == full.size());
-		// Unflatten rowwises, so every problem_dim elements in full become a row
-		for (int i = 0; i < full.size(); ++i)
-		{
-			displaced(i / problem_dim, i % problem_dim) = full(i);
-		}
-
-		assert(displaced(0, 0) == full(0));
-		assert(displaced(0, 1) == full(1));
-
-		displaced += state.boundary_nodes_pos;
+		displaced = state.boundary_nodes_pos + unflatten(full, state.mesh->dimension());
 	}
 
 	void NLProblem::reduced_to_full_displaced_points(const TVector &reduced, Eigen::MatrixXd &displaced)
@@ -511,7 +498,7 @@ namespace polyfem
 			collision_energy = ipc::compute_barrier_potential(
 				state.collision_mesh, displaced_surface, _constraint_set, _dhat);
 			friction_energy = ipc::compute_friction_potential(
-				state.collision_mesh, state.collision_mesh.vertices(displaced_prev),
+				state.collision_mesh, state.collision_mesh.vertices(displaced_prev()),
 				displaced_surface, _friction_constraint_set, _epsv * dt());
 
 			polyfem::logger().trace("collision_energy {}, friction_energy {}", collision_energy, friction_energy);
@@ -579,7 +566,7 @@ namespace polyfem
 			Eigen::MatrixXd displaced;
 			compute_displaced_points(full, displaced);
 
-			Eigen::MatrixXd displaced_surface_prev = state.collision_mesh.vertices(displaced_prev);
+			Eigen::MatrixXd displaced_surface_prev = state.collision_mesh.vertices(displaced_prev());
 			Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
 
 			grad_barrier = ipc::compute_barrier_potential_gradient(
@@ -664,7 +651,7 @@ namespace polyfem
 			// 	POLYFEM_SCOPED_TIMER("\t\tconstraint set time");
 			// }
 
-			Eigen::MatrixXd displaced_surface_prev = state.collision_mesh.vertices(displaced_prev);
+			Eigen::MatrixXd displaced_surface_prev = state.collision_mesh.vertices(displaced_prev());
 			Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
 
 			{
