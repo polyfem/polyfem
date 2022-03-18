@@ -1087,6 +1087,21 @@ namespace polyfem
 			return;
 		}
 
+		const bool export_volume = args["export"]["volume"];
+		if (export_volume)
+		{
+			save_volume(path, t);
+		}
+
+		const bool export_surface = args["export"]["surface"];
+		if (export_surface)
+		{
+			save_surface(path.substr(0, path.length() - 4) + "_surf.vtu");
+		}
+	}
+
+	void State::save_volume(const std::string &path, const double t)
+	{
 		Eigen::MatrixXd points;
 		Eigen::MatrixXi tets;
 		Eigen::MatrixXi el_id;
@@ -1483,12 +1498,6 @@ namespace polyfem
 			solution_frames.back().name = path;
 			solution_frames.back().points = points;
 			solution_frames.back().connectivity = tets;
-		}
-
-		const bool export_surface = args["export"]["surface"];
-		if (export_surface)
-		{
-			save_surface(path.substr(0, path.length() - 4) + "_surf.vtu");
 		}
 	}
 
