@@ -1089,6 +1089,7 @@ namespace polyfem
 
 		const bool export_volume = args["export"]["volume"];
 		const bool export_surface = args["export"]["surface"];
+		const bool export_wire = args["export"]["wireframe"];
 		const bool export_contact_forces = args["export"]["contact_forces"] && !problem->is_scalar();
 		const bool export_friction_forces = args["export"]["friction_forces"] && !problem->is_scalar();
 		const std::string f_name = path.substr(0, path.length() - 4);
@@ -1101,6 +1102,11 @@ namespace polyfem
 		if (export_surface)
 		{
 			save_surface(f_name + "_surf.vtu");
+		}
+
+		if (export_wire)
+		{
+			save_wire(f_name + "_wire.vtu");
 		}
 
 		if (!solve_export_to_file)
@@ -1127,6 +1133,13 @@ namespace polyfem
 				vtm << "<DataSet name=\"contact\" file=\"" << (f_name + "_surf_contact.vtu") << "\"/>\n";
 			}
 
+			vtm << "</Block>\n";
+		}
+
+		if (export_volume)
+		{
+			vtm << "<Block name=\"Wireframe\">\n";
+			vtm << "<DataSet name=\"data\" file=\"" << (f_name + "_wire.vtu") << "\"/>\n";
 			vtm << "</Block>\n";
 		}
 
@@ -1912,7 +1925,10 @@ namespace polyfem
 		}
 		edges.conservativeResize(new_size, edges.cols());
 
-		save_edges(name, points, edges);
+		// save_edges(name, points, edges);
+
+		VTUWriter writer;
+		writer.write_mesh(name, points, edges);
 	}
 
 	void State::save_pvd(const std::string &name, const std::function<std::string(int)> &vtu_names, int time_steps, double t0, double dt, int skip_frame)

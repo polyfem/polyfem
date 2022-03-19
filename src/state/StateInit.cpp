@@ -243,6 +243,7 @@ namespace polyfem
 			  {"high_order_mesh", true},
 			  {"volume", true},
 			  {"surface", false},
+			  {"wireframe", false},
 			  {"vis_mesh", ""},
 			  {"sol_on_grid", -1},
 			  {"paraview", ""},

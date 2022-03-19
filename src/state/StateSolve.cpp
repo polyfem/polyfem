@@ -115,7 +115,6 @@ namespace polyfem
 			if (!solve_export_to_file)
 				solution_frames.emplace_back();
 			save_vtu(resolve_output_path("step_0.vtu"), 0);
-			save_wire(resolve_output_path("step_0.obj"));
 
 			td_timer.stop();
 			logger().trace("done, took {}s", td_timer.getElapsedTime());
@@ -220,7 +219,6 @@ namespace polyfem
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
 				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), time);
-				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
 
 				save_pvd(
 					resolve_output_path(args["export"]["time_sequence"]),
@@ -286,7 +284,6 @@ namespace polyfem
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
 				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), time);
-				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
 
 				save_pvd(
 					resolve_output_path(args["export"]["time_sequence"]),
@@ -361,7 +358,6 @@ namespace polyfem
 					solution_frames.emplace_back();
 
 				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), time);
-				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
 
 				save_pvd(
 					resolve_output_path(args["export"]["time_sequence"]),
@@ -438,7 +434,6 @@ namespace polyfem
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
 				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), time);
-				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
 
 				save_pvd(
 					resolve_output_path(args["export"]["time_sequence"]),
@@ -553,7 +548,6 @@ namespace polyfem
 		// 			if (!solve_export_to_file)
 		// 				solution_frames.emplace_back();
 		// 			save_vtu(fmt::format("step_{:d}.vtu", t), dt * t);
-		// 			save_wire(fmt::format("step_{:d}.obj", t));
 		// 		}
 
 		// 		logger().info("{}/{}", t, time_steps);
@@ -818,7 +812,6 @@ namespace polyfem
 			if (!solve_export_to_file)
 				solution_frames.emplace_back();
 			save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), t0 + dt * t);
-			save_wire(resolve_output_path(fmt::format("step_{:d}.obj", t)));
 		}
 	}
 
@@ -1021,7 +1014,6 @@ namespace polyfem
 			if (!solve_export_to_file)
 				solution_frames.emplace_back();
 			save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", index)), 1);
-			save_wire(resolve_output_path(fmt::format("step_{:d}.obj", index)));
 		}
 
 		nl_problem.line_search_begin(sol, tmp_sol);
@@ -1063,7 +1055,6 @@ namespace polyfem
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
 				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", index)), 1);
-				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", index)));
 			}
 		}
 		nl_problem.line_search_end();
@@ -1084,7 +1075,6 @@ namespace polyfem
 			if (!solve_export_to_file)
 				solution_frames.emplace_back();
 			save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", index)), 1);
-			save_wire(resolve_output_path(fmt::format("step_{:d}.obj", index)));
 		}
 
 		nl_problem.lagged_damping_weight() = 0;
@@ -1117,7 +1107,6 @@ namespace polyfem
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
 				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", index)), 1);
-				save_wire(resolve_output_path(fmt::format("step_{:d}.obj", index)));
 			}
 		}
 
@@ -1168,7 +1157,6 @@ namespace polyfem
 		// 		if (!solve_export_to_file)
 		// 			solution_frames.emplace_back();
 		// 		save_vtu(fmt::format("step_{:d}.vtu", prev_t), 1);
-		// 		save_wire(fmt::format("step_{:d}.obj", prev_t));
 		// 	}
 
 		// 	igl::Timer update_timer;
@@ -1222,7 +1210,6 @@ namespace polyfem
 		// 				solution_frames.emplace_back();
 
 		// 			save_vtu(fmt::format("step_s_{:d}.vtu", t), 1);
-		// 			save_wire(fmt::format("step_s_{:d}.obj", t));
 
 		// 			sol = xxx;
 		// 		}
@@ -1303,7 +1290,6 @@ namespace polyfem
 		// 			if (!solve_export_to_file)
 		// 				solution_frames.emplace_back();
 		// 			save_vtu(fmt::format("step_{:d}.vtu", prev_t), 1);
-		// 			save_wire(fmt::format("step_{:d}.obj", prev_t));
 		// 		}
 		// 	}
 
