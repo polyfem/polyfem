@@ -1088,16 +1088,55 @@ namespace polyfem
 		}
 
 		const bool export_volume = args["export"]["volume"];
+		const bool export_surface = args["export"]["surface"];
+		const bool export_contact_forces = args["export"]["contact_forces"] && !problem->is_scalar();
+		const bool export_friction_forces = args["export"]["friction_forces"] && !problem->is_scalar();
+		const std::string f_name = path.substr(0, path.length() - 4);
+
 		if (export_volume)
 		{
 			save_volume(path, t);
 		}
 
-		const bool export_surface = args["export"]["surface"];
 		if (export_surface)
 		{
-			save_surface(path.substr(0, path.length() - 4) + "_surf.vtu");
+			save_surface(f_name + "_surf.vtu");
 		}
+
+		if (!solve_export_to_file)
+			return;
+
+		std::ofstream vtm(f_name + ".vtm");
+
+		vtm << "<VTKFile type=\"vtkMultiBlockDataSet\" version=\"1.0\">\n";
+		vtm << "<vtkMultiBlockDataSet>\n";
+		if (export_volume)
+		{
+			vtm << "<Block name=\"Volume\">\n";
+			vtm << "<DataSet name=\"data\" file=\"" << path << "\"/>\n";
+			vtm << "</Block>\n";
+		}
+
+		if (export_surface)
+		{
+			vtm << "<Block name=\"Surface\">\n";
+			vtm << "<DataSet name=\"surface\" file=\"" << (f_name + "_surf.vtu") << "\"/>\n";
+
+			if (export_contact_forces || export_friction_forces)
+			{
+				vtm << "<DataSet name=\"contact\" file=\"" << (f_name + "_surf_contact.vtu") << "\"/>\n";
+			}
+
+			vtm << "</Block>\n";
+		}
+
+		vtm << "</vtkMultiBlockDataSet>\n";
+		vtm << "<FieldData>\n";
+		vtm << "<DataArray type='Float32' Name='TimeValue'>\n";
+		vtm << t << "\n";
+		vtm << "</DataArray>\n";
+		vtm << "</FieldData>\n";
+		vtm << "</VTKFile>";
 	}
 
 	void State::save_volume(const std::string &path, const double t)
