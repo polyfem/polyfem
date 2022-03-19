@@ -1164,7 +1164,7 @@ namespace polyfem
 		tinyxml2::XMLElement *data_array = root->InsertNewChildElement("FieldData")->InsertNewChildElement("DataArray");
 		data_array->SetAttribute("type", "Float32");
 		data_array->SetAttribute("Name", "TimeValue");
-		data_array->InsertNewText(fmt::format("{}", t).c_str());
+		data_array->InsertNewText(std::to_string(t).c_str());
 
 		vtm.SaveFile((base_path + ".vtm").c_str());
 	}
