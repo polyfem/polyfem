@@ -1189,6 +1189,8 @@ namespace polyfem
 		const bool material_params = args["export"]["material_params"];
 		const bool body_ids = args["export"]["body_ids"];
 		const bool sol_on_grid = args["export"]["sol_on_grid"] > 0;
+		const bool export_velocity = args["export"]["velocity"];
+		const bool export_acceleration = args["export"]["acceleration"];
 
 		if (sol_on_grid)
 		{
@@ -1288,6 +1290,52 @@ namespace polyfem
 			writer.add_field("solution", fun);
 		else
 			solution_frames.back().solution = fun;
+
+		if (problem->is_time_dependent())
+		{
+			bool is_time_integrator_valid = step_data.nl_problem != nullptr && step_data.nl_problem->time_integrator() != nullptr;
+			if (export_velocity)
+			{
+				Eigen::MatrixXd vel = is_time_integrator_valid
+										  ? step_data.nl_problem->time_integrator()->v_prev()
+										  : Eigen::MatrixXd::Zero(sol.rows(), sol.cols());
+
+				Eigen::MatrixXd interp_vel;
+				interpolate_function(points.rows(), vel, interp_vel, use_sampler, boundary_only);
+				if (obstacle.n_vertices() > 0)
+				{
+					interp_vel.conservativeResize(interp_vel.rows() + obstacle.n_vertices(), interp_vel.cols());
+					obstacle.set_zero(interp_vel); // TODO
+				}
+
+				if (solve_export_to_file)
+				{
+					writer.add_field("velocity", interp_vel);
+				}
+				// TODO: else save to solution frames
+			}
+
+			if (export_acceleration)
+			{
+				Eigen::MatrixXd acc = is_time_integrator_valid
+										  ? step_data.nl_problem->time_integrator()->a_prev()
+										  : Eigen::MatrixXd::Zero(sol.rows(), sol.cols());
+
+				Eigen::MatrixXd interp_acc;
+				interpolate_function(points.rows(), acc, interp_acc, use_sampler, boundary_only);
+				if (obstacle.n_vertices() > 0)
+				{
+					interp_acc.conservativeResize(interp_acc.rows() + obstacle.n_vertices(), interp_acc.cols());
+					obstacle.set_zero(interp_acc); // TODO
+				}
+
+				if (solve_export_to_file)
+				{
+					writer.add_field("acceleration", interp_acc);
+				}
+				// TODO: else save to solution frames
+			}
+		}
 
 		// if(problem->is_mixed())
 		if (assembler.is_mixed(formulation()))
