@@ -32,6 +32,7 @@
 
 #include <polyfem/Logger.hpp>
 #include <polyfem/JSONUtils.hpp>
+#include <polyfem/MeshUtils.hpp>
 
 #include <igl/Timer.h>
 
@@ -42,6 +43,10 @@
 #include <iostream>
 #include <algorithm>
 #include <memory>
+
+#include <highfive/H5Easy.hpp>
+
+#include <igl/edges.h>
 
 #include <polyfem/autodiff.h>
 DECLARE_DIFFSCALAR_BASE();
@@ -782,47 +787,126 @@ namespace polyfem
 		extract_boundary_mesh(
 			bases, boundary_nodes_pos, boundary_edges, boundary_triangles);
 
-		Eigen::VectorXi codimensional_nodes;
-		if (obstacle.n_vertices() > 0)
+		if (!is_param_valid(args, "collision_mesh"))
 		{
+			Eigen::VectorXi codimensional_nodes;
+			if (obstacle.n_vertices() > 0)
+			{
+				// boundary_nodes_pos uses n_bases that already contains the obstacle
+				const int n_v = boundary_nodes_pos.rows() - obstacle.n_vertices();
+
+				if (obstacle.v().size())
+					boundary_nodes_pos.bottomRows(obstacle.v().rows()) = obstacle.v();
+
+				if (obstacle.codim_v().size())
+				{
+					codimensional_nodes.conservativeResize(codimensional_nodes.size() + obstacle.codim_v().size());
+					codimensional_nodes.tail(obstacle.codim_v().size()) = obstacle.codim_v().array() + n_v;
+				}
+
+				if (obstacle.e().size())
+				{
+					boundary_edges.conservativeResize(boundary_edges.rows() + obstacle.e().rows(), 2);
+					boundary_edges.bottomRows(obstacle.e().rows()) = obstacle.e().array() + n_v;
+				}
+
+				if (obstacle.f().size())
+				{
+					boundary_triangles.conservativeResize(boundary_triangles.rows() + obstacle.f().rows(), 3);
+					boundary_triangles.bottomRows(obstacle.f().rows()) = obstacle.f().array() + n_v;
+				}
+			}
+
+			std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(boundary_nodes_pos.rows(), boundary_edges);
+			for (int i = 0; i < codimensional_nodes.size(); i++)
+			{
+				is_on_surface[codimensional_nodes[i]] = true;
+			}
+
+			collision_mesh = ipc::CollisionMesh(is_on_surface, boundary_nodes_pos, boundary_edges, boundary_triangles);
+
+			collision_mesh.can_collide = [&](size_t vi, size_t vj) {
+				// obstacles do not collide with other obstacles
+				return !this->is_obstacle_vertex(collision_mesh.to_full_vertex_id(vi))
+					   || !this->is_obstacle_vertex(collision_mesh.to_full_vertex_id(vj));
+			};
+		}
+		else
+		{
+			std::string collision_mesh_path = resolve_input_path(args["collision_mesh"]["mesh"]);
+			Eigen::MatrixXd vertices;
+			Eigen::VectorXi codim_vertices;
+			Eigen::MatrixXi codim_edges, edges, faces;
+			read_surface_mesh(collision_mesh_path, vertices, codim_vertices, codim_edges, faces);
+			igl::edges(faces, edges);
+
+			Eigen::MatrixXd linear_map;
+			{
+				H5Easy::File linear_map_file(resolve_input_path(args["collision_mesh"]["linear_map"]));
+				Eigen::MatrixXd unordered_linear_map = H5Easy::load<Eigen::MatrixXd>(linear_map_file, "bary_matrix");
+				assert(unordered_linear_map.cols() == mesh->n_vertices());
+
+				linear_map.resize(unordered_linear_map.rows(), unordered_linear_map.cols());
+
+				std::vector<int> indx = primitive_to_node;
+				assert(indx.size() >= linear_map.cols());
+				for (int i = 0; i < linear_map.cols(); i++)
+					linear_map.col(indx[i]) = unordered_linear_map.col(i);
+			}
+
+			// Remap vertices incase the tet-meshes were modified during loading
+			assert(vertices.rows() == linear_map.rows());
+			vertices = linear_map * boundary_nodes_pos.topRows(mesh->n_vertices());
+
 			// boundary_nodes_pos uses n_bases that already contains the obstacle
-			const int n_v = boundary_nodes_pos.rows() - obstacle.n_vertices();
+			const int n_v = vertices.rows();
 
-			if (obstacle.v().size())
-				boundary_nodes_pos.bottomRows(obstacle.v().rows()) = obstacle.v();
-
-			if (obstacle.codim_v().size())
+			if (obstacle.n_vertices() > 0)
 			{
-				codimensional_nodes.conservativeResize(codimensional_nodes.size() + obstacle.codim_v().size());
-				codimensional_nodes.tail(obstacle.codim_v().size()) = obstacle.codim_v().array() + n_v;
+				if (obstacle.v().size())
+				{
+					boundary_nodes_pos.bottomRows(obstacle.v().rows()) = obstacle.v();
+					vertices.conservativeResize(vertices.rows() + obstacle.v().rows(), vertices.cols());
+					vertices.bottomRows(obstacle.v().rows()) = obstacle.v();
+				}
+
+				if (obstacle.codim_v().size())
+				{
+					codim_vertices.conservativeResize(codim_vertices.size() + obstacle.codim_v().size());
+					codim_vertices.tail(obstacle.codim_v().size()) = obstacle.codim_v().array() + n_v;
+				}
+
+				if (obstacle.e().size())
+				{
+					edges.conservativeResize(edges.rows() + obstacle.e().rows(), 2);
+					edges.bottomRows(obstacle.e().rows()) = obstacle.e().array() + n_v;
+				}
+
+				if (obstacle.f().size())
+				{
+					faces.conservativeResize(faces.rows() + obstacle.f().rows(), 3);
+					faces.bottomRows(obstacle.f().rows()) = obstacle.f().array() + n_v;
+				}
 			}
 
-			if (obstacle.e().size())
+			std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(vertices.rows(), edges);
+			for (int i = 0; i < codim_vertices.size(); i++)
 			{
-				boundary_edges.conservativeResize(boundary_edges.rows() + obstacle.e().rows(), 2);
-				boundary_edges.bottomRows(obstacle.e().rows()) = obstacle.e().array() + n_v;
+				is_on_surface[codim_vertices[i]] = true;
 			}
 
-			if (obstacle.f().size())
-			{
-				boundary_triangles.conservativeResize(boundary_triangles.rows() + obstacle.f().rows(), 3);
-				boundary_triangles.bottomRows(obstacle.f().rows()) = obstacle.f().array() + n_v;
-			}
+			collision_mesh = ipc::CollisionMesh(is_on_surface, vertices, edges, faces);
+
+			Eigen::MatrixXd full_linear_map = Eigen::MatrixXd::Zero(vertices.rows(), linear_map.cols() + obstacle.n_vertices());
+			full_linear_map.topLeftCorner(linear_map.rows(), linear_map.cols()) = linear_map;
+			full_linear_map.bottomRightCorner(obstacle.n_vertices(), obstacle.n_vertices()).setIdentity();
+			collision_mesh.set_linear_vertex_map(full_linear_map);
+
+			collision_mesh.can_collide = [n_v](size_t vi, size_t vj) {
+				// obstacles do not collide with other obstacles
+				return (long(vi) - n_v < 0) || (long(vj) - n_v < 0);
+			};
 		}
-
-		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(boundary_nodes_pos.rows(), boundary_edges);
-		for (int i = 0; i < codimensional_nodes.size(); i++)
-		{
-			is_on_surface[codimensional_nodes[i]] = true;
-		}
-
-		collision_mesh = ipc::CollisionMesh(is_on_surface, boundary_nodes_pos, boundary_edges, boundary_triangles);
-
-		collision_mesh.can_collide = [&](size_t vi, size_t vj) {
-			// obstacles do not collide with other obstacles
-			return !this->is_obstacle_vertex(collision_mesh.to_full_vertex_id(vi))
-				   || !this->is_obstacle_vertex(collision_mesh.to_full_vertex_id(vj));
-		};
 	}
 
 	json State::build_json_params()

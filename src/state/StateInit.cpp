@@ -96,6 +96,7 @@ namespace polyfem
 			{"mesh", ""},
 			{"meshes", nullptr},
 			{"obstacles", nullptr},
+			{"collision_mesh", nullptr},
 			{"force_linear_geometry", false},
 			{"bc_tag", ""},
 			{"boundary_id_threshold", -1.0},

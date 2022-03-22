@@ -244,8 +244,8 @@ include(wmtk)
 target_link_libraries(polyfem PUBLIC wmtk::toolkit)
 
 # HighFive library (HDF5)
-# include(high_five)
-# target_link_libraries(polyfem PUBLIC HighFive)
+include(high_five)
+target_link_libraries(polyfem PUBLIC HighFive)
 
 ################################################################################
 # Optional libraries

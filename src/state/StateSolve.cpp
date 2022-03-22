@@ -21,6 +21,8 @@
 
 #include <ipc/ipc.hpp>
 
+#include <igl/writeOBJ.h>
+
 #include <fstream>
 
 namespace polyfem
@@ -813,6 +815,11 @@ namespace polyfem
 			if (!solve_export_to_file)
 				solution_frames.emplace_back();
 			save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), t0 + dt * t);
+
+			// Save collision mesh
+			Eigen::MatrixXd displaced;
+			nl_problem.reduced_to_full_displaced_points(sol, displaced);
+			igl::writeOBJ(resolve_output_path(fmt::format("collision_mesh_{:d}.obj", t)), collision_mesh.vertices(displaced), collision_mesh.faces());
 		}
 	}
 
