@@ -105,7 +105,7 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
 			"vismesh_rel_area": 1.0
 		}
 	)"_json;
-    std::string mesh_path = path + "/contact/meshes/3D/simple/torus.msh";
+    std::string mesh_path = path + "/../../torus.msh";
 
 	State state(8);
 	state.init_logger("", 6, false);
