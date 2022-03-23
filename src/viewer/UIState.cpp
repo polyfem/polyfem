@@ -1810,7 +1810,7 @@ namespace polyfem
 		state.init_logger(log_file, log_level, is_quiet);
 		state.init(args);
 
-		viewer.core().background_color.setOnes();
+		// viewer.core().background_color.setOnes();
 		febio_file = febio_filei;
 		in_args = args;
 

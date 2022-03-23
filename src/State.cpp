@@ -1000,12 +1000,13 @@ namespace polyfem
 		json rhs_solver_params = args["rhs_solver_params"];
 		rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 
-		RhsAssembler rhs_assembler(assembler, *mesh, obstacle,
-								   n_bases, size,
-								   bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
-								   formulation(), *problem,
-								   args["bc_method"],
-								   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
+		step_data.rhs_assembler = std::make_shared<RhsAssembler>(
+			assembler, *mesh, obstacle,
+			n_bases, size,
+			bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
+			formulation(), *problem,
+			args["bc_method"],
+			args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
 
 		if (!rhs_path.empty() || rhs_in.size() > 0)
 		{
@@ -1023,7 +1024,7 @@ namespace polyfem
 		}
 		else
 		{
-			rhs_assembler.assemble(density, rhs);
+			step_data.rhs_assembler->assemble(density, rhs);
 			rhs *= -1;
 		}
 
@@ -1048,13 +1049,14 @@ namespace polyfem
 				Eigen::MatrixXd tmp(n_pressure_bases, 1);
 				tmp.setZero();
 
-				RhsAssembler rhs_assembler1(assembler, *mesh, obstacle,
-											n_pressure_bases, size,
-											pressure_bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache,
-											formulation(), *problem,
-											args["bc_method"],
-											args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
-				rhs_assembler1.set_bc(std::vector<LocalBoundary>(), std::vector<int>(), args["n_boundary_samples"], local_neumann_boundary, tmp);
+				RhsAssembler tmp_rhs_assembler(
+					assembler, *mesh, obstacle,
+					n_pressure_bases, size,
+					pressure_bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache,
+					formulation(), *problem,
+					args["bc_method"],
+					args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
+				tmp_rhs_assembler.set_bc(std::vector<LocalBoundary>(), std::vector<int>(), args["n_boundary_samples"], local_neumann_boundary, tmp);
 				rhs.block(prev_size, 0, n_larger, rhs.cols()) = tmp;
 			}
 		}
@@ -1143,7 +1145,7 @@ namespace polyfem
 
 			Eigen::VectorXd c_sol;
 			init_transient(c_sol);
-			RhsAssembler &rhs_assembler = *step_data.rhs_assembler;
+			RhsAssembler &rhs_assembler = *(step_data.rhs_assembler);
 
 			if (formulation() == "NavierStokes")
 				solve_transient_navier_stokes(time_steps, t0, dt, rhs_assembler, c_sol);

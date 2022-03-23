@@ -9,6 +9,9 @@
 #include <polyfem/auto_p_bases.hpp>
 #include <polyfem/auto_q_bases.hpp>
 
+#include <polyfem/NLProblem.hpp>
+#include <polyfem/ALNLProblem.hpp>
+
 // #ifdef POLYFEM_WITH_TBB
 // #include <tbb/task_scheduler_init.h>
 // #endif
@@ -1084,6 +1087,90 @@ namespace polyfem
 			return;
 		}
 
+		const bool export_volume = args["export"]["volume"];
+		const bool export_surface = args["export"]["surface"];
+		const bool export_wire = args["export"]["wireframe"];
+		const bool export_contact_forces = args["export"]["contact_forces"] && !problem->is_scalar();
+		const bool export_friction_forces = args["export"]["friction_forces"] && !problem->is_scalar();
+
+		const std::filesystem::path fs_path(path);
+		const std::string path_stem = fs_path.stem().string();
+		const std::string base_path = (fs_path.parent_path() / path_stem).string();
+
+		if (export_volume)
+		{
+			save_volume(path, t);
+		}
+
+		if (export_surface)
+		{
+			save_surface(base_path + "_surf.vtu");
+		}
+
+		if (export_wire)
+		{
+			save_wire(base_path + "_wire.vtu");
+		}
+
+		if (!solve_export_to_file)
+			return;
+
+		tinyxml2::XMLDocument vtm;
+		vtm.InsertEndChild(vtm.NewDeclaration());
+
+		tinyxml2::XMLElement *root = vtm.NewElement("VTKFile");
+		vtm.InsertEndChild(root);
+		root->SetAttribute("type", "vtkMultiBlockDataSet");
+		root->SetAttribute("version", "1.0");
+
+		tinyxml2::XMLElement *multiblock = root->InsertNewChildElement("vtkMultiBlockDataSet");
+
+		if (export_volume)
+		{
+			tinyxml2::XMLElement *block = multiblock->InsertNewChildElement("Block");
+			block->SetAttribute("name", "Volume");
+			tinyxml2::XMLElement *dataset = block->InsertNewChildElement("DataSet");
+			dataset->SetAttribute("name", "data");
+			dataset->SetAttribute("file", fs_path.filename().c_str());
+		}
+
+		if (export_surface)
+		{
+			tinyxml2::XMLElement *block = multiblock->InsertNewChildElement("Block");
+			block->SetAttribute("name", "Surface");
+
+			tinyxml2::XMLElement *dataset = block->InsertNewChildElement("DataSet");
+			dataset->SetAttribute("name", "surface");
+			dataset->SetAttribute("file", (path_stem + "_surf.vtu").c_str());
+
+			if (export_contact_forces || export_friction_forces)
+			{
+				tinyxml2::XMLElement *dataset = block->InsertNewChildElement("DataSet");
+				dataset->SetAttribute("name", "contact");
+				dataset->SetAttribute("file", (path_stem + "_surf_contact.vtu").c_str());
+			}
+		}
+
+		if (export_wire)
+		{
+			tinyxml2::XMLElement *block = multiblock->InsertNewChildElement("Block");
+			block->SetAttribute("name", "Wireframe");
+
+			tinyxml2::XMLElement *dataset = block->InsertNewChildElement("DataSet");
+			dataset->SetAttribute("name", "data");
+			dataset->SetAttribute("file", (path_stem + "_wire.vtu").c_str());
+		}
+
+		tinyxml2::XMLElement *data_array = root->InsertNewChildElement("FieldData")->InsertNewChildElement("DataArray");
+		data_array->SetAttribute("type", "Float32");
+		data_array->SetAttribute("Name", "TimeValue");
+		data_array->InsertNewText(std::to_string(t).c_str());
+
+		vtm.SaveFile((base_path + ".vtm").c_str());
+	}
+
+	void State::save_volume(const std::string &path, const double t)
+	{
 		Eigen::MatrixXd points;
 		Eigen::MatrixXi tets;
 		Eigen::MatrixXi el_id;
@@ -1102,6 +1189,8 @@ namespace polyfem
 		const bool material_params = args["export"]["material_params"];
 		const bool body_ids = args["export"]["body_ids"];
 		const bool sol_on_grid = args["export"]["sol_on_grid"] > 0;
+		const bool export_velocity = args["export"]["velocity"];
+		const bool export_acceleration = args["export"]["acceleration"];
 
 		if (sol_on_grid)
 		{
@@ -1201,6 +1290,52 @@ namespace polyfem
 			writer.add_field("solution", fun);
 		else
 			solution_frames.back().solution = fun;
+
+		if (problem->is_time_dependent())
+		{
+			bool is_time_integrator_valid = step_data.nl_problem != nullptr && step_data.nl_problem->time_integrator() != nullptr;
+			if (export_velocity)
+			{
+				Eigen::MatrixXd vel = is_time_integrator_valid
+										  ? step_data.nl_problem->time_integrator()->v_prev()
+										  : Eigen::MatrixXd::Zero(sol.rows(), sol.cols());
+
+				Eigen::MatrixXd interp_vel;
+				interpolate_function(points.rows(), vel, interp_vel, use_sampler, boundary_only);
+				if (obstacle.n_vertices() > 0)
+				{
+					interp_vel.conservativeResize(interp_vel.rows() + obstacle.n_vertices(), interp_vel.cols());
+					obstacle.set_zero(interp_vel); // TODO
+				}
+
+				if (solve_export_to_file)
+				{
+					writer.add_field("velocity", interp_vel);
+				}
+				// TODO: else save to solution frames
+			}
+
+			if (export_acceleration)
+			{
+				Eigen::MatrixXd acc = is_time_integrator_valid
+										  ? step_data.nl_problem->time_integrator()->a_prev()
+										  : Eigen::MatrixXd::Zero(sol.rows(), sol.cols());
+
+				Eigen::MatrixXd interp_acc;
+				interpolate_function(points.rows(), acc, interp_acc, use_sampler, boundary_only);
+				if (obstacle.n_vertices() > 0)
+				{
+					interp_acc.conservativeResize(interp_acc.rows() + obstacle.n_vertices(), interp_acc.cols());
+					obstacle.set_zero(interp_acc); // TODO
+				}
+
+				if (solve_export_to_file)
+				{
+					writer.add_field("acceleration", interp_acc);
+				}
+				// TODO: else save to solution frames
+			}
+		}
 
 		// if(problem->is_mixed())
 		if (assembler.is_mixed(formulation()))
@@ -1481,19 +1616,14 @@ namespace polyfem
 			solution_frames.back().points = points;
 			solution_frames.back().connectivity = tets;
 		}
-
-		const bool export_surface = args["export"]["surface"];
-		if (export_surface)
-		{
-			save_surface(path.substr(0, path.length() - 4) + "_surf.vtu");
-		}
 	}
 
 	void State::save_surface(const std::string &export_surface)
 	{
 		const bool material_params = args["export"]["material_params"];
 		const bool body_ids = args["export"]["body_ids"];
-		const bool contact_forces = args["export"]["contact_forces"] && !problem->is_scalar();
+		const bool export_contact_forces = args["export"]["contact_forces"] && !problem->is_scalar();
+		const bool export_friction_forces = args["export"]["friction_forces"] && !problem->is_scalar();
 
 		VTUWriter writer;
 		Eigen::MatrixXd fun, interp_p, discr, vect;
@@ -1549,46 +1679,57 @@ namespace polyfem
 			}
 		}
 
-		if (contact_forces && solve_export_to_file)
+		if ((export_contact_forces || export_friction_forces) && solve_export_to_file)
 		{
 			const int problem_dim = mesh->dimension();
-			Eigen::MatrixXd displaced(sol.size() / problem_dim, problem_dim);
-			assert(displaced.rows() * problem_dim == sol.size());
-			for (int i = 0; i < sol.size(); i += problem_dim)
-			{
-				for (int d = 0; d < problem_dim; ++d)
-				{
-					displaced(i / problem_dim, d) = sol(i + d);
-				}
-			}
-			assert(displaced(0, 0) == sol(0));
-			assert(displaced(0, 1) == sol(1));
+			Eigen::MatrixXd displaced = unflatten(sol, problem_dim);
 
-			VTUWriter contact_writer;
 			writer.add_field("solution", displaced);
 
 			displaced += boundary_nodes_pos;
 			Eigen::MatrixXd displaced_surface = collision_mesh.vertices(displaced);
+
 			ipc::Constraints constraint_set;
 			ipc::construct_constraint_set(
 				collision_mesh, displaced_surface, args["dhat"], constraint_set,
 				/*dmin=*/0, ipc::BroadPhaseMethod::HASH_GRID);
-			Eigen::MatrixXd cgrad = ipc::compute_barrier_potential_gradient(
-				collision_mesh, displaced_surface, constraint_set, args["dhat"]);
-			cgrad = collision_mesh.to_full_dof(cgrad);
-			assert(cgrad.size() == sol.size());
 
-			Eigen::MatrixXd cgrad_reshaped(cgrad.size() / problem_dim, problem_dim);
-			assert(cgrad_reshaped.rows() * problem_dim == cgrad.size());
-			for (int i = 0; i < cgrad.size(); i += problem_dim)
+			const double barrier_stiffness = step_data.nl_problem != nullptr ? step_data.nl_problem->barrier_stiffness() : 1;
+
+			if (export_contact_forces)
 			{
-				for (int d = 0; d < problem_dim; ++d)
-				{
-					cgrad_reshaped(i / problem_dim, d) = cgrad(i + d);
-				}
+				Eigen::MatrixXd forces = -barrier_stiffness * ipc::compute_barrier_potential_gradient(collision_mesh, displaced_surface, constraint_set, args["dhat"]);
+				forces = collision_mesh.to_full_dof(forces);
+				assert(forces.size() == sol.size());
+
+				Eigen::MatrixXd forces_reshaped = unflatten(forces, problem_dim);
+
+				writer.add_field("contact_forces", forces_reshaped);
 			}
 
-			writer.add_field("contact_forces", cgrad_reshaped);
+			if (export_friction_forces)
+			{
+				Eigen::MatrixXd displaced_surface_prev =
+					(step_data.nl_problem != nullptr)
+						? collision_mesh.vertices(step_data.nl_problem->displaced_prev())
+						: displaced_surface;
+
+				ipc::FrictionConstraints friction_constraint_set;
+				ipc::construct_friction_constraint_set(
+					collision_mesh, displaced_surface, constraint_set,
+					args["dhat"], barrier_stiffness, args["mu"],
+					friction_constraint_set);
+
+				Eigen::MatrixXd forces = -ipc::compute_friction_potential_gradient(
+					collision_mesh, displaced_surface_prev, displaced_surface,
+					friction_constraint_set, args["epsv"].get<double>() * args["dt"].get<double>());
+				forces = collision_mesh.to_full_dof(forces);
+				assert(forces.size() == sol.size());
+
+				Eigen::MatrixXd forces_reshaped = unflatten(forces, problem_dim);
+
+				writer.add_field("friction_forces", forces_reshaped);
+			}
 
 			writer.write_mesh(
 				export_surface.substr(0, export_surface.length() - 4) + "_contact.vtu",
@@ -1849,44 +1990,38 @@ namespace polyfem
 		}
 		edges.conservativeResize(new_size, edges.cols());
 
-		save_edges(name, points, edges);
+		// save_edges(name, points, edges);
+
+		VTUWriter writer;
+		writer.write_mesh(name, points, edges);
 	}
 
 	void State::save_pvd(const std::string &name, const std::function<std::string(int)> &vtu_names, int time_steps, double t0, double dt, int skip_frame)
 	{
-		FILE *pvd_file = fopen(name.c_str(), "w");
-		if (pvd_file == NULL)
-		{
-			logger().error("Unable to open PVD file \"{}\" for writing.", name);
-			return;
-		}
-
-		tinyxml2::XMLPrinter printer(pvd_file);
-		printer.PushHeader(true, true);
-
 		// https://www.paraview.org/Wiki/ParaView/Data_formats#PVD_File_Format
-		printer.OpenElement("VTKFile");
-		printer.PushAttribute("type", "Collection");
-		printer.PushAttribute("version", "0.1");
-		printer.PushAttribute("byte_order", "LittleEndian");
-		printer.PushAttribute("compressor", "vtkZLibDataCompressor");
 
-		printer.OpenElement("Collection");
+		tinyxml2::XMLDocument pvd;
+		pvd.InsertEndChild(pvd.NewDeclaration());
+
+		tinyxml2::XMLElement *root = pvd.NewElement("VTKFile");
+		pvd.InsertEndChild(root);
+		root->SetAttribute("type", "Collection");
+		root->SetAttribute("version", "0.1");
+		root->SetAttribute("byte_order", "LittleEndian");
+		root->SetAttribute("compressor", "vtkZLibDataCompressor");
+
+		tinyxml2::XMLElement *collection = root->InsertNewChildElement("Collection");
 
 		for (int i = 0; i <= time_steps; i += skip_frame)
 		{
-			printer.OpenElement("DataSet");
-			printer.PushAttribute("timestep", fmt::format("{:g}", t0 + i * dt).c_str());
-			printer.PushAttribute("group", "");
-			printer.PushAttribute("part", "0");
-			printer.PushAttribute("file", vtu_names(i).c_str());
-			printer.CloseElement();
+			tinyxml2::XMLElement *dataset = collection->InsertNewChildElement("DataSet");
+			dataset->SetAttribute("timestep", fmt::format("{:g}", t0 + i * dt).c_str());
+			dataset->SetAttribute("group", "");
+			dataset->SetAttribute("part", "0");
+			dataset->SetAttribute("file", vtu_names(i).c_str());
 		}
 
-		printer.CloseElement(); // Collection
-		printer.CloseElement(); // VTKFile
-
-		fclose(pvd_file);
+		pvd.SaveFile(name.c_str());
 	}
 
 } // namespace polyfem

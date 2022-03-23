@@ -489,6 +489,8 @@ namespace polyfem
 
 		//saves the vtu file for time t
 		void save_vtu(const std::string &name, const double t);
+		//saves the volume vtu file
+		void save_volume(const std::string &path, const double t);
 		//saves the surface vtu file for for surface quantites, eg traction forces
 		void save_surface(const std::string &name);
 		//saves an obj of the wireframe

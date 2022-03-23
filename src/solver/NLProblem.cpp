@@ -112,8 +112,8 @@ namespace polyfem
 			logger().debug("Using fixed barrier stiffness of {}", _barrier_stiffness);
 		}
 		_prev_distance = -1;
-		time_integrator = ImplicitTimeIntegrator::construct_time_integrator(state.args["time_integrator"]);
-		time_integrator->set_parameters(state.args["time_integrator_params"]);
+		_time_integrator = ImplicitTimeIntegrator::construct_time_integrator(state.args["time_integrator"]);
+		_time_integrator->set_parameters(state.args["time_integrator_params"]);
 
 		_broad_phase_method = state.args["solver_params"]["broad_phase_method"];
 		_ccd_tolerance = state.args["solver_params"]["ccd_tolerance"];
@@ -146,7 +146,7 @@ namespace polyfem
 
 		if (!ignore_inertia && is_time_dependent)
 		{
-			grad_energy *= time_integrator->acceleration_scaling();
+			grad_energy *= time_integrator()->acceleration_scaling();
 			grad_energy += state.mass * full;
 		}
 
@@ -169,12 +169,12 @@ namespace polyfem
 
 	void NLProblem::init_time_integrator(const TVector &x_prev, const TVector &v_prev, const TVector &a_prev, const double dt)
 	{
-		time_integrator->init(x_prev, v_prev, a_prev, dt);
+		_time_integrator->init(x_prev, v_prev, a_prev, dt);
 	}
 
 	void NLProblem::init_lagging(const TVector &x)
 	{
-		reduced_to_full_displaced_points(x, displaced_prev);
+		reduced_to_full_displaced_points(x, _displaced_prev);
 		update_lagging(x);
 	}
 
@@ -219,7 +219,7 @@ namespace polyfem
 		if (is_time_dependent)
 		{
 			if (!ignore_inertia)
-				time_integrator->update_quantities(x);
+				_time_integrator->update_quantities(x);
 
 			// rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, t);
 			// rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, t);
@@ -267,8 +267,8 @@ namespace polyfem
 
 			if (!ignore_inertia && is_time_dependent)
 			{
-				_current_rhs *= time_integrator->acceleration_scaling();
-				_current_rhs += state.mass * time_integrator->x_tilde();
+				_current_rhs *= time_integrator()->acceleration_scaling();
+				_current_rhs += state.mass * time_integrator()->x_tilde();
 			}
 
 			if (reduced_size != full_size)
@@ -284,20 +284,7 @@ namespace polyfem
 	void NLProblem::compute_displaced_points(const TVector &full, Eigen::MatrixXd &displaced)
 	{
 		assert(full.size() == full_size);
-
-		const int problem_dim = state.mesh->dimension();
-		displaced.resize(full.size() / problem_dim, problem_dim);
-		assert(displaced.rows() * problem_dim == full.size());
-		// Unflatten rowwises, so every problem_dim elements in full become a row
-		for (int i = 0; i < full.size(); ++i)
-		{
-			displaced(i / problem_dim, i % problem_dim) = full(i);
-		}
-
-		assert(displaced(0, 0) == full(0));
-		assert(displaced(0, 1) == full(1));
-
-		displaced += state.boundary_nodes_pos;
+		displaced = state.boundary_nodes_pos + unflatten(full, state.mesh->dimension());
 	}
 
 	void NLProblem::reduced_to_full_displaced_points(const TVector &reduced, Eigen::MatrixXd &displaced)
@@ -488,8 +475,8 @@ namespace polyfem
 		double scaling = 1;
 		if (!ignore_inertia && is_time_dependent)
 		{
-			scaling = time_integrator->acceleration_scaling();
-			const TVector tmp = full - time_integrator->x_tilde();
+			scaling = time_integrator()->acceleration_scaling();
+			const TVector tmp = full - time_integrator()->x_tilde();
 			intertia_energy = 0.5 * tmp.transpose() * state.mass * tmp;
 		}
 
@@ -511,7 +498,7 @@ namespace polyfem
 			collision_energy = ipc::compute_barrier_potential(
 				state.collision_mesh, displaced_surface, _constraint_set, _dhat);
 			friction_energy = ipc::compute_friction_potential(
-				state.collision_mesh, state.collision_mesh.vertices(displaced_prev),
+				state.collision_mesh, state.collision_mesh.vertices(displaced_prev()),
 				displaced_surface, _friction_constraint_set, _epsv * dt());
 
 			polyfem::logger().trace("collision_energy {}, friction_energy {}", collision_energy, friction_energy);
@@ -569,7 +556,7 @@ namespace polyfem
 
 		if (!ignore_inertia && is_time_dependent)
 		{
-			grad *= time_integrator->acceleration_scaling();
+			grad *= time_integrator()->acceleration_scaling();
 			grad += state.mass * full;
 		}
 
@@ -579,7 +566,7 @@ namespace polyfem
 			Eigen::MatrixXd displaced;
 			compute_displaced_points(full, displaced);
 
-			Eigen::MatrixXd displaced_surface_prev = state.collision_mesh.vertices(displaced_prev);
+			Eigen::MatrixXd displaced_surface_prev = state.collision_mesh.vertices(displaced_prev());
 			Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
 
 			grad_barrier = ipc::compute_barrier_potential_gradient(
@@ -638,7 +625,7 @@ namespace polyfem
 
 			if (!ignore_inertia && is_time_dependent)
 			{
-				energy_hessian *= time_integrator->acceleration_scaling();
+				energy_hessian *= time_integrator()->acceleration_scaling();
 			}
 		}
 
@@ -664,7 +651,7 @@ namespace polyfem
 			// 	POLYFEM_SCOPED_TIMER("\t\tconstraint set time");
 			// }
 
-			Eigen::MatrixXd displaced_surface_prev = state.collision_mesh.vertices(displaced_prev);
+			Eigen::MatrixXd displaced_surface_prev = state.collision_mesh.vertices(displaced_prev());
 			Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
 
 			{
@@ -828,6 +815,6 @@ namespace polyfem
 
 	void NLProblem::save_raw(const std::string &x_path, const std::string &v_path, const std::string &a_path) const
 	{
-		time_integrator->save_raw(x_path, v_path, a_path);
+		time_integrator()->save_raw(x_path, v_path, a_path);
 	}
 } // namespace polyfem

@@ -2,7 +2,7 @@
 
 #include <polyfem/LineSearch.hpp>
 #include <polyfem/ArmijoLineSearch.hpp>
-#include <polyfem/BisectionLineSearch.hpp>
+#include <polyfem/BacktrackingLineSearch.hpp>
 #include <polyfem/CppOptArmijoLineSearch.hpp>
 #include <polyfem/MoreThuenteLineSearch.hpp>
 
@@ -21,7 +21,12 @@ namespace polyfem
 		}
 		else if (name == "bisection" || name == "Bisection")
 		{
-			return std::make_shared<BisectionLineSearch<ProblemType>>();
+			logger().warn("{} linesearch was renamed to \"backtracking\"; using backtracking line-search", name);
+			return std::make_shared<BacktrackingLineSearch<ProblemType>>();
+		}
+		else if (name == "backtracking" || name == "Backtracking")
+		{
+			return std::make_shared<BacktrackingLineSearch<ProblemType>>();
 		}
 		else if (name == "more_thuente" || name == "MoreThuente")
 		{

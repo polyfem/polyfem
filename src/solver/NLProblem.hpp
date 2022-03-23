@@ -154,6 +154,10 @@ namespace polyfem
 		void compute_displaced_points(const TVector &full, Eigen::MatrixXd &displaced);
 		void reduced_to_full_displaced_points(const TVector &reduced, Eigen::MatrixXd &displaced);
 
+		double barrier_stiffness() const { return _barrier_stiffness; }
+		const Eigen::MatrixXd &displaced_prev() const { return _displaced_prev; }
+		const std::shared_ptr<const ImplicitTimeIntegrator> time_integrator() const { return _time_integrator; }
+
 	protected:
 		State &state;
 		bool use_adaptive_barrier_stiffness;
@@ -179,24 +183,24 @@ namespace polyfem
 		double max_barrier_stiffness_;
 
 		// friction variables
-		double _epsv;                   ///< @brief The boundary between static and dynamic friction.
-		double _mu;                     ///< @brief Coefficient of friction.
-		Eigen::MatrixXd displaced_prev; ///< @brief Displaced vertices at the start of the time-step.
-		double _lagged_damping_weight;  ///< @brief Weight for lagged damping (static solve).
-		TVector x_lagged;               ///< @brief The full variables from the previous lagging solve.
+		double _epsv;                    ///< @brief The boundary between static and dynamic friction.
+		double _mu;                      ///< @brief Coefficient of friction.
+		Eigen::MatrixXd _displaced_prev; ///< @brief Displaced vertices at the start of the time-step.
+		double _lagged_damping_weight;   ///< @brief Weight for lagged damping (static solve).
+		TVector x_lagged;                ///< @brief The full variables from the previous lagging solve.
 
 		ipc::BroadPhaseMethod _broad_phase_method;
 		double _ccd_tolerance;
 		int _ccd_max_iterations;
 
-		const double &dt() const { return time_integrator->dt(); }
+		const double &dt() const { return time_integrator()->dt(); }
 
 		ipc::Constraints _constraint_set;
 		ipc::FrictionConstraints _friction_constraint_set;
 		ipc::Candidates _candidates;
 		bool _use_cached_candidates = false;
 
-		std::shared_ptr<ImplicitTimeIntegrator> time_integrator;
+		std::shared_ptr<ImplicitTimeIntegrator> _time_integrator;
 
 		void compute_cached_stiffness();
 		void update_barrier_stiffness(const TVector &full);

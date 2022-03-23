@@ -9,14 +9,14 @@
 namespace polyfem
 {
 	template <typename ProblemType>
-	class BisectionLineSearch : public LineSearch<ProblemType>
+	class BacktrackingLineSearch : public LineSearch<ProblemType>
 	{
 	public:
 		using Superclass = LineSearch<ProblemType>;
 		using typename Superclass::Scalar;
 		using typename Superclass::TVector;
 
-		BisectionLineSearch()
+		BacktrackingLineSearch()
 		{
 			this->min_step_size = 0;
 			this->max_step_size_iter = 100; // std::numeric_limits<int>::max();

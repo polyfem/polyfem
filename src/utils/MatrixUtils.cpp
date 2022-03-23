@@ -474,6 +474,36 @@ void polyfem::SpareMatrixCache::operator+=(const SpareMatrixCache &o)
 	}
 }
 
+// Flatten rowwises
+Eigen::VectorXd polyfem::flatten(const Eigen::MatrixXd &X)
+{
+	Eigen::VectorXd x(X.size());
+	for (int i = 0; i < X.rows(); ++i)
+	{
+		for (int j = 0; j < X.cols(); ++j)
+		{
+			x(i * X.cols() + j) = x(i);
+		}
+	}
+	assert(X(0, 0) == x(0));
+	assert(X.cols() <= 1 || X(0, 1) == x(1));
+	return x;
+}
+
+// Unflatten rowwises, so every dim elements in x become a row.
+Eigen::MatrixXd polyfem::unflatten(const Eigen::VectorXd &x, int dim)
+{
+	assert(x.size() % dim == 0);
+	Eigen::MatrixXd X(x.size() / dim, dim);
+	for (int i = 0; i < x.size(); ++i)
+	{
+		X(i / dim, i % dim) = x(i);
+	}
+	assert(X(0, 0) == x(0));
+	assert(X.cols() <= 1 || X(0, 1) == x(1));
+	return X;
+}
+
 //template instantiation
 template bool polyfem::read_matrix<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
 template bool polyfem::read_matrix<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);

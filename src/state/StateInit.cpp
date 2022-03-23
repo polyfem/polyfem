@@ -241,7 +241,9 @@ namespace polyfem
 			{"export",
 			 {{"sol_at_node", -1},
 			  {"high_order_mesh", true},
+			  {"volume", true},
 			  {"surface", false},
+			  {"wireframe", false},
 			  {"vis_mesh", ""},
 			  {"sol_on_grid", -1},
 			  {"paraview", ""},
@@ -249,6 +251,9 @@ namespace polyfem
 			  {"material_params", false},
 			  {"body_ids", false},
 			  {"contact_forces", false},
+			  {"friction_forces", false},
+			  {"velocity", false},
+			  {"acceleration", false},
 			  {"nodes", ""},
 			  {"wire_mesh", ""},
 			  {"iso_mesh", ""},
@@ -336,8 +341,8 @@ namespace polyfem
 		{
 			if (!args_in.contains("line_search"))
 			{
-				args["line_search"] = "bisection";
-				logger().warn("Changing default linesearch to bisection");
+				args["line_search"] = "backtracking";
+				logger().warn("Changing default linesearch to backtracking");
 			}
 
 			if (args["friction_iterations"] == 0)
