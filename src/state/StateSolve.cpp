@@ -663,8 +663,9 @@ namespace polyfem
 
 			if (ipc::has_intersections(collision_mesh, collision_mesh.vertices(displaced)))
 			{
-				logger().error("Unable to solve, initial solution has intersections!");
-				throw "Unable to solve, initial solution has intersections!";
+				const std::string msg = "Unable to solve, initial solution has intersections!";
+				logger().error(msg);
+				throw std::runtime_error(msg);
 			}
 
 			timer.stop();
@@ -749,9 +750,9 @@ namespace polyfem
 
 			if (al_weight >= max_al_weight)
 			{
-				std::string msg = fmt::format("Unable to solve AL problem, weight {} >= {}, stopping", al_weight, max_al_weight);
+				const std::string msg = fmt::format("Unable to solve AL problem, weight {} >= {}, stopping", al_weight, max_al_weight);
 				logger().error(msg);
-				throw msg;
+				throw std::runtime_error(msg);
 				break;
 			}
 		}

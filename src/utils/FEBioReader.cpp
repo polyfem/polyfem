@@ -219,7 +219,7 @@ namespace polyfem
 				if (it == materials.end())
 				{
 					logger().error("Unable to find material {}", mids[i]);
-					throw "Invalid material";
+					throw std::runtime_error("Invalid material");
 				}
 				Es(i) = std::get<0>(it->second);
 				nus(i) = std::get<1>(it->second);
@@ -649,7 +649,7 @@ namespace polyfem
 		if (doc.Error())
 		{
 			logger().error("Unable to read {}, error {}", path, doc.ErrorStr());
-			throw "Invalid XML";
+			throw std::runtime_error("Invalid XML");
 		}
 
 		const auto *febio = doc.FirstChildElement("febio_spec");
@@ -658,7 +658,7 @@ namespace polyfem
 		if (ver != "2.5")
 		{
 			logger().error("Unsuppoted FEBio version {}, use 2.5", ver);
-			throw "Unsuppoted FEBio version";
+			throw std::runtime_error("Unsuppoted FEBio version");
 		}
 
 		const auto *control = febio->FirstChildElement("Control");
