@@ -1,6 +1,7 @@
 #include <polyfem/ElasticityUtils.hpp>
-#include <polyfem/MatrixUtils.hpp>
 #include <polyfem/Logger.hpp>
+
+#include <tinyexpr.h>
 
 namespace polyfem
 {
@@ -474,86 +475,51 @@ namespace polyfem
 		return res;
 	}
 
-	LameParameters::~LameParameters()
-	{
-		te_free(lambda_expr_);
-		te_free(mu_expr_);
-		delete vals_;
-	}
-
 	LameParameters::LameParameters()
 	{
-		lambda_expr_ = nullptr;
-		mu_expr_ = nullptr;
-		vals_ = new Internal();
 		initialized_ = false;
 	}
 
 	void LameParameters::lambda_mu(double px, double py, double pz, double x, double y, double z, int el_id, double &lambda, double &mu) const
 	{
-		if (lambda_expr_)
-		{
-			assert(mu_expr_);
-			vals_->x = x;
-			vals_->y = y;
-			vals_->z = z;
+		double llambda = lambda_(x, y, z, 0, el_id);
+		double mmu = mu_(x, y, z, 0, el_id);
 
-			double tmpl = te_eval(lambda_expr_);
-			double tmpm = te_eval(mu_expr_);
-			if (!is_lambda_mu_)
-			{
-				lambda = convert_to_lambda(size_ == 3, tmpl, tmpm);
-				mu = convert_to_mu(tmpl, tmpm);
-			}
-			else
-			{
-				lambda = tmpl;
-				mu = tmpm;
-			}
-		}
-		else if (lambda_mat_.size() > 0)
+		if (!is_lambda_mu_)
 		{
-			assert(mu_mat_.size() > 0);
-
-			lambda = lambda_mat_(el_id);
-			mu = mu_mat_(el_id);
+			lambda = convert_to_lambda(size_ == 3, llambda, mmu);
+			mu = convert_to_mu(llambda, mmu);
 		}
 		else
 		{
-			lambda = lambda_;
-			mu = mu_;
+			lambda = llambda;
+			mu = mmu;
 		}
-	}
-
-	double iflargerthanzerothenelse(double check, double ttrue, double ffalse)
-	{
-		return check >= 0 ? ttrue : ffalse;
 	}
 
 	void LameParameters::init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus)
 	{
-		lambda_mat_.resize(Es.size(), 1);
-		mu_mat_.resize(nus.size(), 1);
-		assert(lambda_mat_.size() == mu_mat_.size());
+		size_ = is_volume ? 3 : 2;
+		Eigen::MatrixXd lambda_mat(Es.size(), 1);
+		Eigen::MatrixXd mu_mat(nus.size(), 1);
+		assert(lambda_mat.size() == mu_mat.size());
 
-		for (int i = 0; i < lambda_mat_.size(); ++i)
+		for (int i = 0; i < lambda_mat.size(); ++i)
 		{
-			lambda_mat_(i) = convert_to_lambda(is_volume, Es(i), nus(i));
-			mu_mat_(i) = convert_to_mu(Es(i), nus(i));
+			lambda_mat(i) = convert_to_lambda(is_volume, Es(i), nus(i));
+			mu_mat(i) = convert_to_mu(Es(i), nus(i));
 		}
 
-		lambda_ = -1;
-		mu_ = -1;
+		lambda_.init(lambda_mat);
+		mu_.init(mu_mat);
+
 		initialized_ = true;
+		is_lambda_mu_ = true;
 	}
 
 	void LameParameters::init(const json &params)
 	{
 		size_ = params["size"];
-		te_free(lambda_expr_);
-		te_free(mu_expr_);
-		lambda_expr_ = nullptr;
-		mu_expr_ = nullptr;
 
 		if (initialized_)
 			return;
@@ -568,210 +534,38 @@ namespace polyfem
 		}
 		else
 		{
-			if (params["lambda"].is_number())
-			{
-				assert(params["mu"].is_number());
-
-				lambda_ = params["lambda"];
-				mu_ = params["mu"];
-
-				lambda_mat_.resize(0, 0);
-				mu_mat_.resize(0, 0);
-			}
-			else if (params["lambda"].is_array())
-			{
-				lambda_mat_.resize(params["lambda"].size(), 1);
-				mu_mat_.resize(params["mu"].size(), 1);
-
-				assert(lambda_mat_.size() == mu_mat_.size());
-
-				for (int i = 0; i < lambda_mat_.size(); ++i)
-				{
-					lambda_mat_(i) = params["lambda"][i];
-					mu_mat_(i) = params["mu"][i];
-				}
-
-				lambda_ = -1;
-				mu_ = -1;
-			}
-			else if (params["lambda"].is_string())
-			{
-				read_matrix(params["lambda"], lambda_mat_);
-				read_matrix(params["mu"], mu_mat_);
-
-				assert(lambda_mat_.size() == mu_mat_.size());
-
-				lambda_ = -1;
-				mu_ = -1;
-			}
-			else
-			{
-				te_variable vars[4];
-				vars[0] = {"x", &vals_->x};
-				vars[1] = {"y", &vals_->y};
-				vars[2] = {"z", &vals_->z};
-				vars[3].name = "if";
-				vars[3].address = (void *)&iflargerthanzerothenelse;
-				vars[3].type = TE_FUNCTION3;
-
-				assert(params["lambda"].is_string());
-				assert(params["mu"].is_string());
-
-				const std::string lambdas = params["lambda"];
-				const std::string mus = params["mu"];
-
-				int err;
-				lambda_expr_ = te_compile(lambdas.c_str(), vars, 4, &err);
-				mu_expr_ = te_compile(mus.c_str(), vars, 4, &err);
-
-				is_lambda_mu_ = true;
-
-				if (!lambda_expr_)
-				{
-					logger().error("Unable to parse {}, error, {}", lambdas, err);
-
-					assert(false);
-				}
-
-				if (!mu_expr_)
-				{
-					logger().error("Unable to parse {}, error, {}", mus, err);
-
-					assert(false);
-				}
-			}
+			lambda_.init(params["lambda"]);
+			mu_.init(params["mu"]);
+			is_lambda_mu_ = true;
 		}
 	}
 
 	void LameParameters::set_e_nu(const json &E, const json &nu)
 	{
-		if (E.is_number())
-		{
-			assert(nu.is_number());
-
-			lambda_ = convert_to_lambda(size_ == 3, E, nu);
-			mu_ = convert_to_mu(E, nu);
-
-			lambda_mat_.resize(0, 0);
-			mu_mat_.resize(0, 0);
-		}
-		else if (E.is_array())
-		{
-			lambda_mat_.resize(E.size(), 1);
-			mu_mat_.resize(nu.size(), 1);
-			assert(lambda_mat_.size() == mu_mat_.size());
-
-			for (int i = 0; i < lambda_mat_.size(); ++i)
-			{
-				lambda_mat_(i) = convert_to_lambda(size_ == 3, E[i], nu[i]);
-				mu_mat_(i) = convert_to_mu(E[i], nu[i]);
-			}
-
-			lambda_ = -1;
-			mu_ = -1;
-		}
-		else if (E.is_string())
-		{
-			Eigen::MatrixXd e_mat, nu_mat;
-			read_matrix(E, e_mat);
-			read_matrix(nu, nu_mat);
-
-			lambda_mat_.resize(e_mat.size(), 1);
-			mu_mat_.resize(nu_mat.size(), 1);
-			assert(lambda_mat_.size() == mu_mat_.size());
-
-			for (int i = 0; i < lambda_mat_.size(); ++i)
-			{
-				lambda_mat_(i) = convert_to_lambda(size_ == 3, e_mat(i), nu_mat(i));
-				mu_mat_(i) = convert_to_mu(e_mat(i), nu_mat(i));
-			}
-
-			lambda_ = -1;
-			mu_ = -1;
-		}
-		else
-		{
-			te_variable vars[4];
-			vars[0] = {"x", &vals_->x};
-			vars[1] = {"y", &vals_->y};
-			vars[2] = {"z", &vals_->z};
-			vars[3].name = "if";
-			vars[3].address = (void *)&iflargerthanzerothenelse;
-			vars[3].type = TE_FUNCTION3;
-
-			assert(E.is_string());
-			assert(nu.is_string());
-
-			const std::string Es = E;
-			const std::string nus = nu;
-
-			int err;
-			lambda_expr_ = te_compile(Es.c_str(), vars, 4, &err);
-			mu_expr_ = te_compile(nus.c_str(), vars, 4, &err);
-
-			is_lambda_mu_ = false;
-
-			if (!lambda_expr_)
-			{
-				logger().error("Unable to parse {}, error, {}", Es, err);
-
-				assert(false);
-			}
-
-			if (!mu_expr_)
-			{
-				logger().error("Unable to parse {}, error, {}", nus, err);
-
-				assert(false);
-			}
-		}
-	}
-
-	Density::~Density()
-	{
-		te_free(rho_expr_);
-		delete vals_;
+		//TODO: conversion is always called
+		is_lambda_mu_ = false;
+		lambda_.init(E);
+		mu_.init(nu);
 	}
 
 	Density::Density()
 	{
-		rho_expr_ = nullptr;
-		vals_ = new Internal();
 		initialized_ = false;
 	}
 
 	double Density::operator()(double px, double py, double pz, double x, double y, double z, int el_id) const
 	{
-		if (rho_expr_)
-		{
-			vals_->x = x;
-			vals_->y = y;
-			vals_->z = z;
-
-			return te_eval(rho_expr_);
-		}
-		else if (rho_mat_.size() > 0)
-		{
-			return rho_mat_(el_id);
-		}
-		else
-		{
-			return rho_;
-		}
+		return rho_(x, y, z, 0, el_id);
 	}
 
 	void Density::init_multimaterial(const Eigen::MatrixXd &rho)
 	{
-		rho_mat_ = rho;
-		rho_ = -1;
+		rho_.init(rho);
 		initialized_ = true;
 	}
 
 	void Density::init(const json &params)
 	{
-		te_free(rho_expr_);
-		rho_expr_ = nullptr;
-
 		if (initialized_)
 			return;
 
@@ -787,42 +581,7 @@ namespace polyfem
 
 	void Density::set_rho(const json &rho)
 	{
-		if (rho.is_number())
-		{
-			rho_ = rho;
-			rho_mat_.resize(0, 0);
-		}
-		else if (rho.is_array())
-		{
-			rho_mat_.resize(rho.size(), 1);
-
-			for (int i = 0; i < rho_mat_.size(); ++i)
-			{
-				rho_mat_(i) = rho[i];
-			}
-
-			rho_ = -1;
-		}
-		else if (rho.is_string())
-		{
-			te_variable vars[4];
-			vars[0] = {"x", &vals_->x};
-			vars[1] = {"y", &vals_->y};
-			vars[2] = {"z", &vals_->z};
-			vars[3].name = "if";
-			vars[3].address = (void *)&iflargerthanzerothenelse;
-			vars[3].type = TE_FUNCTION3;
-
-			const std::string rhos = rho;
-
-			int err;
-			rho_expr_ = te_compile(rhos.c_str(), vars, 4, &err);
-			if (!rho_expr_)
-			{
-				read_matrix(rho, rho_mat_);
-				rho_ = -1;
-			}
-		}
+		rho_.init(rho);
 	}
 
 	//template instantiation
