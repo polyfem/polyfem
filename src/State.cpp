@@ -787,36 +787,36 @@ namespace polyfem
 		extract_boundary_mesh(
 			bases, boundary_nodes_pos, boundary_edges, boundary_triangles);
 
-		if (!is_param_valid(args, "collision_mesh"))
+		Eigen::VectorXi codimensional_nodes;
+		if (obstacle.n_vertices() > 0)
 		{
-			Eigen::VectorXi codimensional_nodes;
-			if (obstacle.n_vertices() > 0)
+			// boundary_nodes_pos uses n_bases that already contains the obstacle
+			const int n_v = boundary_nodes_pos.rows() - obstacle.n_vertices();
+
+			if (obstacle.v().size())
+				boundary_nodes_pos.bottomRows(obstacle.v().rows()) = obstacle.v();
+
+			if (obstacle.codim_v().size())
 			{
-				// boundary_nodes_pos uses n_bases that already contains the obstacle
-				const int n_v = boundary_nodes_pos.rows() - obstacle.n_vertices();
-
-				if (obstacle.v().size())
-					boundary_nodes_pos.bottomRows(obstacle.v().rows()) = obstacle.v();
-
-				if (obstacle.codim_v().size())
-				{
-					codimensional_nodes.conservativeResize(codimensional_nodes.size() + obstacle.codim_v().size());
-					codimensional_nodes.tail(obstacle.codim_v().size()) = obstacle.codim_v().array() + n_v;
-				}
-
-				if (obstacle.e().size())
-				{
-					boundary_edges.conservativeResize(boundary_edges.rows() + obstacle.e().rows(), 2);
-					boundary_edges.bottomRows(obstacle.e().rows()) = obstacle.e().array() + n_v;
-				}
-
-				if (obstacle.f().size())
-				{
-					boundary_triangles.conservativeResize(boundary_triangles.rows() + obstacle.f().rows(), 3);
-					boundary_triangles.bottomRows(obstacle.f().rows()) = obstacle.f().array() + n_v;
-				}
+				codimensional_nodes.conservativeResize(codimensional_nodes.size() + obstacle.codim_v().size());
+				codimensional_nodes.tail(obstacle.codim_v().size()) = obstacle.codim_v().array() + n_v;
 			}
 
+			if (obstacle.e().size())
+			{
+				boundary_edges.conservativeResize(boundary_edges.rows() + obstacle.e().rows(), 2);
+				boundary_edges.bottomRows(obstacle.e().rows()) = obstacle.e().array() + n_v;
+			}
+
+			if (obstacle.f().size())
+			{
+				boundary_triangles.conservativeResize(boundary_triangles.rows() + obstacle.f().rows(), 3);
+				boundary_triangles.bottomRows(obstacle.f().rows()) = obstacle.f().array() + n_v;
+			}
+		}
+
+		if (!is_param_valid(args, "collision_mesh"))
+		{
 			std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(boundary_nodes_pos.rows(), boundary_edges);
 			for (int i = 0; i < codimensional_nodes.size(); i++)
 			{
@@ -839,37 +839,47 @@ namespace polyfem
 			Eigen::MatrixXi codim_edges, edges, faces;
 			read_surface_mesh(collision_mesh_path, vertices, codim_vertices, codim_edges, faces);
 			igl::edges(faces, edges);
+			const int n_v = vertices.rows();
 
-			Eigen::MatrixXd linear_map;
+			///////////////////////////////////////////////////////////////////
+			// Load weights
+
+			std::vector<Eigen::Triplet<double>> linear_map_triplets;
 			{
-				H5Easy::File linear_map_file(resolve_input_path(args["collision_mesh"]["linear_map"]));
-				Eigen::MatrixXd unordered_linear_map = H5Easy::load<Eigen::MatrixXd>(linear_map_file, "bary_matrix");
-				assert(unordered_linear_map.cols() == mesh->n_vertices());
+				H5Easy::File file(resolve_input_path(args["collision_mesh"]["linear_map"]));
+				Eigen::VectorXd values = H5Easy::load<Eigen::VectorXd>(file, "weight_triplets/values");
+				Eigen::VectorXi rows = H5Easy::load<Eigen::VectorXi>(file, "weight_triplets/rows");
+				Eigen::VectorXi cols = H5Easy::load<Eigen::VectorXi>(file, "weight_triplets/cols");
+				assert(rows.maxCoeff() < vertices.rows());
+				assert(cols.maxCoeff() < boundary_nodes_pos.rows() - obstacle.n_vertices());
 
-				linear_map.resize(unordered_linear_map.rows(), unordered_linear_map.cols());
+				linear_map_triplets.reserve(values.size() + obstacle.n_vertices());
 
-				std::vector<int> indx = primitive_to_node;
-				assert(indx.size() >= linear_map.cols());
-				for (int i = 0; i < linear_map.cols(); i++)
-					linear_map.col(indx[i]) = unordered_linear_map.col(i);
+				const std::vector<int> &indx = primitive_to_node;
+				for (int i = 0; i < values.size(); i++)
+				{
+					// Rearrange the columns based on the FEM mesh node order
+					linear_map_triplets.emplace_back(rows[i], indx[cols[i]], values[i]);
+				}
 			}
 
-			// Remap vertices incase the tet-meshes were modified during loading
-			assert(vertices.rows() == linear_map.rows());
-			vertices = linear_map * boundary_nodes_pos.topRows(mesh->n_vertices());
+			const int n_fem_v = boundary_nodes_pos.rows() - obstacle.n_vertices();
+			for (int i = 0; i < obstacle.n_vertices(); i++)
+			{
+				linear_map_triplets.emplace_back(n_v + i, n_fem_v + i, 1.0);
+			}
 
-			// boundary_nodes_pos uses n_bases that already contains the obstacle
-			const int n_v = vertices.rows();
+			Eigen::SparseMatrix<double> linear_map(n_v + obstacle.n_vertices(), boundary_nodes_pos.rows());
+			linear_map.setFromTriplets(linear_map_triplets.begin(), linear_map_triplets.end());
+
+			///////////////////////////////////////////////////////////////////
+			// Add obstacle to collision mesh
+
+			// Remap vertices incase the tet-meshes were modified during loading
+			vertices = linear_map * boundary_nodes_pos;
 
 			if (obstacle.n_vertices() > 0)
 			{
-				if (obstacle.v().size())
-				{
-					boundary_nodes_pos.bottomRows(obstacle.v().rows()) = obstacle.v();
-					vertices.conservativeResize(vertices.rows() + obstacle.v().rows(), vertices.cols());
-					vertices.bottomRows(obstacle.v().rows()) = obstacle.v();
-				}
-
 				if (obstacle.codim_v().size())
 				{
 					codim_vertices.conservativeResize(codim_vertices.size() + obstacle.codim_v().size());
@@ -896,12 +906,7 @@ namespace polyfem
 			}
 
 			collision_mesh = ipc::CollisionMesh(is_on_surface, vertices, edges, faces);
-
-			Eigen::MatrixXd full_linear_map = Eigen::MatrixXd::Zero(vertices.rows(), linear_map.cols() + obstacle.n_vertices());
-			full_linear_map.topLeftCorner(linear_map.rows(), linear_map.cols()) = linear_map;
-			full_linear_map.bottomRightCorner(obstacle.n_vertices(), obstacle.n_vertices()).setIdentity();
-			collision_mesh.set_linear_vertex_map(full_linear_map);
-
+			collision_mesh.set_linear_vertex_map(linear_map);
 			collision_mesh.can_collide = [n_v](size_t vi, size_t vj) {
 				// obstacles do not collide with other obstacles
 				return (long(vi) - n_v < 0) || (long(vj) - n_v < 0);
