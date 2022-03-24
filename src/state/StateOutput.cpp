@@ -1092,7 +1092,10 @@ namespace polyfem
 		const bool export_wire = args["export"]["wireframe"];
 		const bool export_contact_forces = args["export"]["contact_forces"] && !problem->is_scalar();
 		const bool export_friction_forces = args["export"]["friction_forces"] && !problem->is_scalar();
-		const std::string f_name = path.substr(0, path.length() - 4);
+
+		const std::filesystem::path fs_path(path);
+		const std::string path_stem = fs_path.stem().string();
+		const std::string base_path = (fs_path.parent_path() / path_stem).string();
 
 		if (export_volume)
 		{
@@ -1101,55 +1104,69 @@ namespace polyfem
 
 		if (export_surface)
 		{
-			save_surface(f_name + "_surf.vtu");
+			save_surface(base_path + "_surf.vtu");
 		}
 
 		if (export_wire)
 		{
-			save_wire(f_name + "_wire.vtu");
+			save_wire(base_path + "_wire.vtu");
 		}
 
 		if (!solve_export_to_file)
 			return;
 
-		std::ofstream vtm(f_name + ".vtm");
+		tinyxml2::XMLDocument vtm;
+		vtm.InsertEndChild(vtm.NewDeclaration());
 
-		vtm << "<VTKFile type=\"vtkMultiBlockDataSet\" version=\"1.0\">\n";
-		vtm << "<vtkMultiBlockDataSet>\n";
+		tinyxml2::XMLElement *root = vtm.NewElement("VTKFile");
+		vtm.InsertEndChild(root);
+		root->SetAttribute("type", "vtkMultiBlockDataSet");
+		root->SetAttribute("version", "1.0");
+
+		tinyxml2::XMLElement *multiblock = root->InsertNewChildElement("vtkMultiBlockDataSet");
+
 		if (export_volume)
 		{
-			vtm << "<Block name=\"Volume\">\n";
-			vtm << "<DataSet name=\"data\" file=\"" << path << "\"/>\n";
-			vtm << "</Block>\n";
+			tinyxml2::XMLElement *block = multiblock->InsertNewChildElement("Block");
+			block->SetAttribute("name", "Volume");
+			tinyxml2::XMLElement *dataset = block->InsertNewChildElement("DataSet");
+			dataset->SetAttribute("name", "data");
+			dataset->SetAttribute("file", fs_path.filename().c_str());
 		}
 
 		if (export_surface)
 		{
-			vtm << "<Block name=\"Surface\">\n";
-			vtm << "<DataSet name=\"surface\" file=\"" << (f_name + "_surf.vtu") << "\"/>\n";
+			tinyxml2::XMLElement *block = multiblock->InsertNewChildElement("Block");
+			block->SetAttribute("name", "Surface");
+
+			tinyxml2::XMLElement *dataset = block->InsertNewChildElement("DataSet");
+			dataset->SetAttribute("name", "surface");
+			dataset->SetAttribute("file", (path_stem + "_surf.vtu").c_str());
 
 			if (export_contact_forces || export_friction_forces)
 			{
-				vtm << "<DataSet name=\"contact\" file=\"" << (f_name + "_surf_contact.vtu") << "\"/>\n";
+				tinyxml2::XMLElement *dataset = block->InsertNewChildElement("DataSet");
+				dataset->SetAttribute("name", "contact");
+				dataset->SetAttribute("file", (path_stem + "_surf_contact.vtu").c_str());
 			}
-
-			vtm << "</Block>\n";
 		}
 
-		if (export_volume)
+		if (export_wire)
 		{
-			vtm << "<Block name=\"Wireframe\">\n";
-			vtm << "<DataSet name=\"data\" file=\"" << (f_name + "_wire.vtu") << "\"/>\n";
-			vtm << "</Block>\n";
+			tinyxml2::XMLElement *block = multiblock->InsertNewChildElement("Block");
+			block->SetAttribute("name", "Wireframe");
+
+			tinyxml2::XMLElement *dataset = block->InsertNewChildElement("DataSet");
+			dataset->SetAttribute("name", "data");
+			dataset->SetAttribute("file", (path_stem + "_wire.vtu").c_str());
 		}
 
-		vtm << "</vtkMultiBlockDataSet>\n";
-		vtm << "<FieldData>\n";
-		vtm << "<DataArray type='Float32' Name='TimeValue'>\n";
-		vtm << t << "\n";
-		vtm << "</DataArray>\n";
-		vtm << "</FieldData>\n";
-		vtm << "</VTKFile>";
+		tinyxml2::XMLElement *data_array = root->InsertNewChildElement("FieldData")->InsertNewChildElement("DataArray");
+		data_array->SetAttribute("type", "Float32");
+		data_array->SetAttribute("Name", "TimeValue");
+		data_array->InsertNewText(std::to_string(t).c_str());
+
+		vtm.SaveFile((base_path + ".vtm").c_str());
 	}
 
 	void State::save_volume(const std::string &path, const double t)
@@ -1172,6 +1189,8 @@ namespace polyfem
 		const bool material_params = args["export"]["material_params"];
 		const bool body_ids = args["export"]["body_ids"];
 		const bool sol_on_grid = args["export"]["sol_on_grid"] > 0;
+		const bool export_velocity = args["export"]["velocity"];
+		const bool export_acceleration = args["export"]["acceleration"];
 
 		if (sol_on_grid)
 		{
@@ -1271,6 +1290,52 @@ namespace polyfem
 			writer.add_field("solution", fun);
 		else
 			solution_frames.back().solution = fun;
+
+		if (problem->is_time_dependent())
+		{
+			bool is_time_integrator_valid = step_data.nl_problem != nullptr && step_data.nl_problem->time_integrator() != nullptr;
+			if (export_velocity)
+			{
+				Eigen::MatrixXd vel = is_time_integrator_valid
+										  ? step_data.nl_problem->time_integrator()->v_prev()
+										  : Eigen::MatrixXd::Zero(sol.rows(), sol.cols());
+
+				Eigen::MatrixXd interp_vel;
+				interpolate_function(points.rows(), vel, interp_vel, use_sampler, boundary_only);
+				if (obstacle.n_vertices() > 0)
+				{
+					interp_vel.conservativeResize(interp_vel.rows() + obstacle.n_vertices(), interp_vel.cols());
+					obstacle.set_zero(interp_vel); // TODO
+				}
+
+				if (solve_export_to_file)
+				{
+					writer.add_field("velocity", interp_vel);
+				}
+				// TODO: else save to solution frames
+			}
+
+			if (export_acceleration)
+			{
+				Eigen::MatrixXd acc = is_time_integrator_valid
+										  ? step_data.nl_problem->time_integrator()->a_prev()
+										  : Eigen::MatrixXd::Zero(sol.rows(), sol.cols());
+
+				Eigen::MatrixXd interp_acc;
+				interpolate_function(points.rows(), acc, interp_acc, use_sampler, boundary_only);
+				if (obstacle.n_vertices() > 0)
+				{
+					interp_acc.conservativeResize(interp_acc.rows() + obstacle.n_vertices(), interp_acc.cols());
+					obstacle.set_zero(interp_acc); // TODO
+				}
+
+				if (solve_export_to_file)
+				{
+					writer.add_field("acceleration", interp_acc);
+				}
+				// TODO: else save to solution frames
+			}
+		}
 
 		// if(problem->is_mixed())
 		if (assembler.is_mixed(formulation()))
@@ -1933,39 +1998,30 @@ namespace polyfem
 
 	void State::save_pvd(const std::string &name, const std::function<std::string(int)> &vtu_names, int time_steps, double t0, double dt, int skip_frame)
 	{
-		FILE *pvd_file = fopen(name.c_str(), "w");
-		if (pvd_file == NULL)
-		{
-			logger().error("Unable to open PVD file \"{}\" for writing.", name);
-			return;
-		}
-
-		tinyxml2::XMLPrinter printer(pvd_file);
-		printer.PushHeader(true, true);
-
 		// https://www.paraview.org/Wiki/ParaView/Data_formats#PVD_File_Format
-		printer.OpenElement("VTKFile");
-		printer.PushAttribute("type", "Collection");
-		printer.PushAttribute("version", "0.1");
-		printer.PushAttribute("byte_order", "LittleEndian");
-		printer.PushAttribute("compressor", "vtkZLibDataCompressor");
 
-		printer.OpenElement("Collection");
+		tinyxml2::XMLDocument pvd;
+		pvd.InsertEndChild(pvd.NewDeclaration());
+
+		tinyxml2::XMLElement *root = pvd.NewElement("VTKFile");
+		pvd.InsertEndChild(root);
+		root->SetAttribute("type", "Collection");
+		root->SetAttribute("version", "0.1");
+		root->SetAttribute("byte_order", "LittleEndian");
+		root->SetAttribute("compressor", "vtkZLibDataCompressor");
+
+		tinyxml2::XMLElement *collection = root->InsertNewChildElement("Collection");
 
 		for (int i = 0; i <= time_steps; i += skip_frame)
 		{
-			printer.OpenElement("DataSet");
-			printer.PushAttribute("timestep", fmt::format("{:g}", t0 + i * dt).c_str());
-			printer.PushAttribute("group", "");
-			printer.PushAttribute("part", "0");
-			printer.PushAttribute("file", vtu_names(i).c_str());
-			printer.CloseElement();
+			tinyxml2::XMLElement *dataset = collection->InsertNewChildElement("DataSet");
+			dataset->SetAttribute("timestep", fmt::format("{:g}", t0 + i * dt).c_str());
+			dataset->SetAttribute("group", "");
+			dataset->SetAttribute("part", "0");
+			dataset->SetAttribute("file", vtu_names(i).c_str());
 		}
 
-		printer.CloseElement(); // Collection
-		printer.CloseElement(); // VTKFile
-
-		fclose(pvd_file);
+		pvd.SaveFile(name.c_str());
 	}
 
 } // namespace polyfem

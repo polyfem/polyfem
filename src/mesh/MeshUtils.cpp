@@ -1410,7 +1410,7 @@ int polyfem::count_faces(const int dim, const Eigen::MatrixXi &cells)
 		}
 		else
 		{
-			throw "count_boundary_elements not implemented for polygons";
+			throw std::runtime_error("count_boundary_elements not implemented for polygons");
 		}
 	}
 

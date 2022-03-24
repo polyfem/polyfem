@@ -252,6 +252,8 @@ namespace polyfem
 			  {"body_ids", false},
 			  {"contact_forces", false},
 			  {"friction_forces", false},
+			  {"velocity", false},
+			  {"acceleration", false},
 			  {"nodes", ""},
 			  {"wire_mesh", ""},
 			  {"iso_mesh", ""},

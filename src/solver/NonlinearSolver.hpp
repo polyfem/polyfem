@@ -84,7 +84,7 @@ namespace cppoptlib
 				this->m_status = Status::UserDefined;
 				polyfem::logger().error("[{}] Initial gradient is nan; stopping", name());
 				m_error_code = ErrorCode::NanEncountered;
-				throw("Gradient is nan; stopping");
+				throw std::runtime_error("Gradient is nan; stopping");
 				return;
 			}
 			this->m_current.gradNorm = first_grad_norm / (normalize_gradient ? first_grad_norm : 1);
@@ -124,7 +124,7 @@ namespace cppoptlib
 					this->m_status = Status::UserDefined;
 					polyfem::logger().error("[{}] f(x) is nan or inf; stopping", name());
 					m_error_code = ErrorCode::NanEncountered;
-					throw("f(x) is nan or inf; stopping");
+					throw std::runtime_error("f(x) is nan or inf; stopping");
 					break;
 				}
 
@@ -139,7 +139,7 @@ namespace cppoptlib
 					this->m_status = Status::UserDefined;
 					polyfem::logger().error("[{}] Gradient is nan; stopping", name());
 					m_error_code = ErrorCode::NanEncountered;
-					throw("Gradient is nan; stopping");
+					throw std::runtime_error("Gradient is nan; stopping");
 					break;
 				}
 
@@ -247,23 +247,23 @@ namespace cppoptlib
 			spdlog::level::level_enum level = spdlog::level::info;
 			if (this->m_status == Status::IterationLimit)
 			{
-				msg = fmt::format("[{}] Reached iteration limit", name());
+				const std::string msg = fmt::format("[{}] Reached iteration limit", name());
 				polyfem::logger().error(msg);
-				throw(msg);
+				throw std::runtime_error(msg);
 				level = spdlog::level::err;
 			}
 			else if (this->m_current.iterations == 0)
 			{
-				msg = fmt::format("[{}] Unable to take a step", name());
+				const std::string msg = fmt::format("[{}] Unable to take a step", name());
 				polyfem::logger().error(msg);
-				throw(msg);
+				throw std::runtime_error(msg);
 				level = this->m_status == Status::UserDefined ? spdlog::level::err : spdlog::level::warn;
 			}
 			else if (this->m_status == Status::UserDefined)
 			{
-				msg = fmt::format("[{}] Failed to find minimizer", name());
+				const std::string msg = fmt::format("[{}] Failed to find minimizer", name());
 				polyfem::logger().error(msg);
-				throw(msg);
+				throw std::runtime_error(msg);
 				level = spdlog::level::err;
 			}
 			polyfem::logger().log(
@@ -297,7 +297,7 @@ namespace cppoptlib
 				assert(descent_strategy == 2); // failed on gradient descent
 				polyfem::logger().error("[{}] Line search failed on gradient descent; stopping", name());
 				this->m_status = Status::UserDefined; // Line search failed on gradient descent, so quit!
-				throw("Line search failed on gradient descent");
+				throw std::runtime_error("Line search failed on gradient descent");
 			}
 
 			return rate;

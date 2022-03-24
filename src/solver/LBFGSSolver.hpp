@@ -43,7 +43,7 @@ namespace cppoptlib
 			case 2:
 				return "gradient descent";
 			default:
-				throw "invalid descent strategy";
+				throw std::invalid_argument("invalid descent strategy");
 			}
 		}
 

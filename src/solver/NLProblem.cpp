@@ -112,8 +112,8 @@ namespace polyfem
 			logger().debug("Using fixed barrier stiffness of {}", _barrier_stiffness);
 		}
 		_prev_distance = -1;
-		time_integrator = ImplicitTimeIntegrator::construct_time_integrator(state.args["time_integrator"]);
-		time_integrator->set_parameters(state.args["time_integrator_params"]);
+		_time_integrator = ImplicitTimeIntegrator::construct_time_integrator(state.args["time_integrator"]);
+		_time_integrator->set_parameters(state.args["time_integrator_params"]);
 
 		_broad_phase_method = state.args["solver_params"]["broad_phase_method"];
 		_ccd_tolerance = state.args["solver_params"]["ccd_tolerance"];
@@ -146,7 +146,7 @@ namespace polyfem
 
 		if (!ignore_inertia && is_time_dependent)
 		{
-			grad_energy *= time_integrator->acceleration_scaling();
+			grad_energy *= time_integrator()->acceleration_scaling();
 			grad_energy += state.mass * full;
 		}
 
@@ -169,7 +169,7 @@ namespace polyfem
 
 	void NLProblem::init_time_integrator(const TVector &x_prev, const TVector &v_prev, const TVector &a_prev, const double dt)
 	{
-		time_integrator->init(x_prev, v_prev, a_prev, dt);
+		_time_integrator->init(x_prev, v_prev, a_prev, dt);
 	}
 
 	void NLProblem::init_lagging(const TVector &x)
@@ -219,7 +219,7 @@ namespace polyfem
 		if (is_time_dependent)
 		{
 			if (!ignore_inertia)
-				time_integrator->update_quantities(x);
+				_time_integrator->update_quantities(x);
 
 			// rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, t);
 			// rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, t);
@@ -267,8 +267,8 @@ namespace polyfem
 
 			if (!ignore_inertia && is_time_dependent)
 			{
-				_current_rhs *= time_integrator->acceleration_scaling();
-				_current_rhs += state.mass * time_integrator->x_tilde();
+				_current_rhs *= time_integrator()->acceleration_scaling();
+				_current_rhs += state.mass * time_integrator()->x_tilde();
 			}
 
 			if (reduced_size != full_size)
@@ -381,9 +381,9 @@ namespace polyfem
 			max_step /= 2.0;
 			if (max_step <= 0 || Linf == 0)
 			{
-				std::string msg = fmt::format("Unable to find an intersection free step size (max_step={:g} L∞={:g})", max_step, Linf);
+				const std::string msg = fmt::format("Unable to find an intersection free step size (max_step={:g} L∞={:g})", max_step, Linf);
 				logger().error(msg);
-				throw msg;
+				throw std::runtime_error(msg);
 			}
 			V_toi = (V1 - V0) * max_step + V0;
 		}
@@ -475,8 +475,8 @@ namespace polyfem
 		double scaling = 1;
 		if (!ignore_inertia && is_time_dependent)
 		{
-			scaling = time_integrator->acceleration_scaling();
-			const TVector tmp = full - time_integrator->x_tilde();
+			scaling = time_integrator()->acceleration_scaling();
+			const TVector tmp = full - time_integrator()->x_tilde();
 			intertia_energy = 0.5 * tmp.transpose() * state.mass * tmp;
 		}
 
@@ -556,7 +556,7 @@ namespace polyfem
 
 		if (!ignore_inertia && is_time_dependent)
 		{
-			grad *= time_integrator->acceleration_scaling();
+			grad *= time_integrator()->acceleration_scaling();
 			grad += state.mass * full;
 		}
 
@@ -625,7 +625,7 @@ namespace polyfem
 
 			if (!ignore_inertia && is_time_dependent)
 			{
-				energy_hessian *= time_integrator->acceleration_scaling();
+				energy_hessian *= time_integrator()->acceleration_scaling();
 			}
 		}
 
@@ -815,6 +815,6 @@ namespace polyfem
 
 	void NLProblem::save_raw(const std::string &x_path, const std::string &v_path, const std::string &a_path) const
 	{
-		time_integrator->save_raw(x_path, v_path, a_path);
+		time_integrator()->save_raw(x_path, v_path, a_path);
 	}
 } // namespace polyfem

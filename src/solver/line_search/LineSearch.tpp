@@ -38,7 +38,7 @@ namespace polyfem
 		}
 		else
 		{
-			std::string msg = fmt::format("Unknown line search {}!", name);
+			const std::string msg = fmt::format("Unknown line search {}!", name);
 			logger().error(msg);
 			throw std::invalid_argument(msg);
 		}
