@@ -47,6 +47,7 @@
 #include <highfive/H5Easy.hpp>
 
 #include <igl/edges.h>
+#include <igl/writeOBJ.h>
 
 #include <polyfem/autodiff.h>
 DECLARE_DIFFSCALAR_BASE();
@@ -911,6 +912,8 @@ namespace polyfem
 				// obstacles do not collide with other obstacles
 				return (long(vi) - n_v < 0) || (long(vj) - n_v < 0);
 			};
+
+			igl::writeOBJ(resolve_output_path("input.obj"), vertices, faces);
 		}
 	}
 
