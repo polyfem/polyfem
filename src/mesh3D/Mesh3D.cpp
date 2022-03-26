@@ -1217,9 +1217,9 @@ namespace polyfem
 
 	void Mesh3D::normalize()
 	{
+		RowVectorNd minV, maxV;
+		bounding_box(minV, maxV);
 		auto &V = mesh_.points;
-		Eigen::RowVector3d minV = V.rowwise().minCoeff().transpose();
-		Eigen::RowVector3d maxV = V.rowwise().maxCoeff().transpose();
 		const auto shift = V.rowwise().minCoeff().eval();
 		const double scaling = 1.0 / (V.rowwise().maxCoeff() - V.rowwise().minCoeff()).maxCoeff();
 		V = (V.colwise() - shift) * scaling;
@@ -1253,8 +1253,7 @@ namespace polyfem
 		logger().debug("   min   : {} {} {}", minV(0), minV(1), minV(2));
 		logger().debug("   max   : {} {} {}", maxV(0), maxV(1), maxV(2));
 		logger().debug("   extent: {} {} {}", maxV(0) - minV(0), maxV(1) - minV(1), maxV(2) - minV(2));
-		minV = V.rowwise().minCoeff().transpose();
-		maxV = V.rowwise().maxCoeff().transpose();
+		bounding_box(minV, maxV);
 		logger().debug("-- bbox after normalization:");
 		logger().debug("   min   : {} {} {}", minV(0), minV(1), minV(2));
 		logger().debug("   max   : {} {} {}", maxV(0), maxV(1), maxV(2));
@@ -1452,9 +1451,8 @@ namespace polyfem
 		boundary_ids_.resize(n_faces());
 		std::fill(boundary_ids_.begin(), boundary_ids_.end(), -1);
 
-		const auto &V = mesh_.points;
-		Eigen::RowVector3d minV = V.rowwise().minCoeff().transpose();
-		Eigen::RowVector3d maxV = V.rowwise().maxCoeff().transpose();
+		RowVectorNd minV, maxV;
+		bounding_box(minV, maxV);
 
 		for (int f = 0; f < n_faces(); ++f)
 		{

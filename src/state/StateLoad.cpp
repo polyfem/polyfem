@@ -171,14 +171,13 @@ namespace polyfem
 
 		// mesh->set_tag(1712, ElementType::InteriorPolytope);
 
-		const std::string bc_tag_path = resolve_input_path(args["bc_tag"]);
-
 		double boundary_id_threshold = args["boundary_id_threshold"];
 		if (boundary_id_threshold <= 0)
 			boundary_id_threshold = mesh->is_volume() ? 1e-2 : 1e-7;
 
 		if (!mesh->has_boundary_ids())
 		{
+			const std::string bc_tag_path = resolve_input_path(args["bc_tag"]);
 			if (bc_tag_path.empty())
 				mesh->compute_boundary_ids(boundary_id_threshold);
 			else
