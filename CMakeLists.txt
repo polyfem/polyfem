@@ -120,12 +120,7 @@ option(LIBIGL_WITH_PYTHON                 "Use Python"                   OFF)
 option(LIBIGL_WITH_TRIANGLE               "Use Triangle"                 OFF)
 option(LIBIGL_WITH_VIEWER                 "Use OpenGL viewer"            ON)
 option(LIBIGL_WITH_XML                    "Use XML"                      OFF)
-
-if(POLYFEM_TOPLEVEL_PROJECT AND POLYFEM_WITH_APPS)
-    set(LIBIGL_WITH_TETGEN ON CACHE BOOL "Use Tetgen" FORCE)
-else()
-    option(LIBIGL_WITH_TETGEN "Use Tetgen" OFF)
-endif()
+option(LIBIGL_WITH_TETGEN "Use Tetgen" OFF)
 
 
 if(POLYFEM_NO_UI)
