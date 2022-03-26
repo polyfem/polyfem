@@ -128,8 +128,7 @@ namespace polyfem
 	void State::extract_vis_boundary_mesh()
 	{
 		std::vector<Eigen::MatrixXd> lv, vertices, allnormals;
-		std::vector<int> el_ids;
-		Eigen::VectorXi global_primitive_ids;
+		std::vector<int> el_ids, global_primitive_ids;
 		Eigen::MatrixXd uv, local_pts, tmp_n, normals;
 		ElementAssemblyValues vals;
 		const auto &sampler = ref_element_sampler;
@@ -184,6 +183,7 @@ namespace polyfem
 				vertices.emplace_back();
 				lv.emplace_back(local_pts);
 				el_ids.push_back(lb.element_id());
+				global_primitive_ids.push_back(lb.global_primitive_id(k));
 				gbs.eval_geom_mapping(local_pts, vertices.back());
 				vals.compute(lb.element_id(), mesh->is_volume(), local_pts, bs, gbs);
 				const int tris_start = tris.size();
@@ -284,6 +284,7 @@ namespace polyfem
 		boundary_vis_vertices.resize(size, vertices.front().cols());
 		boundary_vis_local_vertices.resize(size, vertices.front().cols());
 		boundary_vis_elements_ids.resize(size, 1);
+		boundary_vis_primitive_ids.resize(size, 1);
 		boundary_vis_normals.resize(size, vertices.front().cols());
 
 		if (mesh->is_volume())
@@ -297,7 +298,8 @@ namespace polyfem
 		{
 			boundary_vis_vertices.block(index, 0, v.rows(), v.cols()) = v;
 			boundary_vis_local_vertices.block(index, 0, v.rows(), v.cols()) = lv[ii];
-			boundary_vis_elements_ids.block(index, 0, v.rows(), 1).setConstant(el_ids[ii++]);
+			boundary_vis_elements_ids.block(index, 0, v.rows(), 1).setConstant(el_ids[ii]);
+			boundary_vis_primitive_ids.block(index, 0, v.rows(), 1).setConstant(global_primitive_ids[ii++]);
 			index += v.rows();
 		}
 
@@ -1626,7 +1628,7 @@ namespace polyfem
 		const bool export_friction_forces = args["export"]["friction_forces"] && !problem->is_scalar();
 
 		VTUWriter writer;
-		Eigen::MatrixXd fun, interp_p, discr, vect;
+		Eigen::MatrixXd fun, interp_p, discr, vect, b_sidesets;
 
 		Eigen::MatrixXd lsol, lp, lgrad, lpgrad;
 
@@ -1639,8 +1641,17 @@ namespace polyfem
 		interp_p.resize(boundary_vis_vertices.rows(), 1);
 		vect.resize(boundary_vis_vertices.rows(), mesh->dimension());
 
+		b_sidesets.resize(boundary_vis_vertices.rows(), 1);
+		b_sidesets.setZero();
+
 		for (int i = 0; i < boundary_vis_vertices.rows(); ++i)
 		{
+			const auto s_id = mesh->get_boundary_id(boundary_vis_primitive_ids(i));
+			if (s_id > 0)
+			{
+				b_sidesets(i) = s_id;
+			}
+
 			const int el_index = boundary_vis_elements_ids(i);
 			interpolate_at_local_vals(el_index, boundary_vis_local_vertices.row(i), sol, lsol, lgrad);
 			assert(lsol.size() == actual_dim);
@@ -1744,6 +1755,7 @@ namespace polyfem
 			if (assembler.is_mixed(formulation()))
 				writer.add_field("pressure", interp_p);
 			writer.add_field("discr", discr);
+			writer.add_field("sidesets", b_sidesets);
 
 			if (actual_dim == 1)
 				writer.add_field("solution_grad", vect);

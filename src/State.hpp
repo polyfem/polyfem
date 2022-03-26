@@ -198,6 +198,7 @@ namespace polyfem
 		Eigen::MatrixXd boundary_vis_local_vertices;
 		Eigen::MatrixXi boundary_vis_elements;
 		Eigen::MatrixXi boundary_vis_elements_ids;
+		Eigen::MatrixXi boundary_vis_primitive_ids;
 		Eigen::MatrixXd boundary_vis_normals;
 
 		//grid mesh
