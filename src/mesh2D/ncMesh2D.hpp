@@ -24,11 +24,6 @@ public:
     void init(const Eigen::MatrixXd& v, const Eigen::MatrixXi& f) override;
     void init(const std::string& path) override;
 
-    std::shared_ptr<ncMesh> clone() const override
-    {
-        return std::make_shared<ncMesh2D>(*this);
-    }
-
     void writeOBJ(const std::string& path) const;
 
     // edges are created if not exist
@@ -81,14 +76,6 @@ public:
         min_order = order;
     };
 
-    // compute local coordinates of global points in elements[e]
-    void global2Local(const int e, Eigen::MatrixXd& points) const override;
-    // compute global coordinates of local points in elements[e]
-    void local2Global(const int e, Eigen::MatrixXd& points) const override;
-    // determine if points are inside elements[e]
-    void isInside(const int e, const Eigen::MatrixXd& points, std::vector<bool>& is_inside) const override;
-    bool isInside(const int e, const Eigen::MatrixXd& point) const override;
-
     // map the weight on edge to the barycentric coordinate in element
     static Eigen::Vector2d edgeWeight2ElemWeight(const int l, const double w);
     // map the barycentric coordinate in element to the weight on edge
@@ -102,9 +89,6 @@ public:
 
     // assign ncElement2D.master_edges and ncVertex2D.weight
     void buildElementVertexAdjacency() override;
-
-    int boundary_quadrature(const int ncelem_id, const int n_samples, Eigen::MatrixXd& local_pts, Eigen::MatrixXd& uv, Eigen::MatrixXd& normals, Eigen::VectorXd& weights, Eigen::VectorXi& face_ids) const override;
-    int boundary_quadrature(const int ncelem_id, const int ncface_id, const int n_samples, Eigen::MatrixXd& local_pts, Eigen::MatrixXd& normals, Eigen::VectorXd& weights) const override;
 };
 
 } // namespace polyfem

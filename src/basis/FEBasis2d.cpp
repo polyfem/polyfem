@@ -5,6 +5,8 @@
 #include <polyfem/auto_p_bases.hpp>
 #include <polyfem/auto_q_bases.hpp>
 
+#include <polyfem/MaybeParallelFor.hpp>
+
 #include <cassert>
 #include <array>
 ////////////////////////////////////////////////////////////////////////////////
@@ -517,6 +519,57 @@ namespace
 		}
 	}
 
+	/// @brief      map barycentric coordinates of a triangle to global coordinates
+	///
+	/// @param[in]  verts           The vertices of a triangle, 3 x 2
+	/// @param[in]  uv        		The barycentric coordinates, N x 2
+	/// @param[out] pts             Output global coordinates, N x 2
+	///
+	void local_to_global(const Eigen::MatrixXd& verts, const Eigen::MatrixXd& uv, Eigen::MatrixXd& pts)
+	{
+		const int dim = verts.cols();
+		const int N = uv.rows();
+		assert(dim == 2);
+		assert(uv.cols() == dim);
+		assert(verts.rows() == dim+1);
+
+		pts.setZero(N, dim);
+		for (int i = 0; i < N; i++)
+			pts.row(i) = uv(i, 0) * verts.row(1) + uv(i, 1) * verts.row(2) + (1.0 - uv(i, 0) - uv(i, 1)) * verts.row(0);
+	}
+
+	/// @brief      map global coordinates to barycentric coordinates of a triangle
+	///
+	/// @param[in]  verts           The vertices of a triangle, 3 x 2
+	/// @param[out] uv        		The barycentric coordinates, N x 2
+	/// @param[in]  pts             Output global coordinates, N x 2
+	///
+	void global_to_local(const Eigen::MatrixXd& verts, const Eigen::MatrixXd& pts, Eigen::MatrixXd& uv)
+	{
+		const int dim = verts.cols();
+		const int N = pts.rows();
+		assert(dim == 2);
+		assert(verts.rows() == dim+1);
+		assert(pts.cols() == dim);
+
+		Eigen::Matrix2d J;
+		for (int i = 0; i < dim; i++)
+			J.col(i) = verts.row(i+1) - verts.row(0);
+		
+		double detJ = J(0,0)*J(1,1) - J(0,1)*J(1,0);
+		J /= detJ;
+
+		uv.setZero(N, dim);
+		maybe_parallel_for(N, [&](int start, int end, int thread_id) {
+			for (int i = start; i < end; i++)
+			{
+				auto point = pts.row(i) - verts.row(0);
+				uv(i, 0) = J(1, 1) * point(i, 0) - J(0, 1) * point(i, 1);
+				uv(i, 1) = J(0, 0) * point(i, 1) - J(1, 0) * point(i, 0);
+			}
+		});
+	}
+
 } // anonymous namespace
 
 Eigen::VectorXi polyfem::FEBasis2d::tri_edge_local_nodes(const int p, const Mesh2D &mesh, Navigation::Index index)
@@ -901,15 +954,15 @@ int polyfem::FEBasis2d::build_bases(
 									b.bases[j].global().emplace_back(global_2[ii].index, global_2[ii].node, weight * global_2[ii].val);
 						}
 						else {
-							Eigen::MatrixXd node_position;
+							Eigen::MatrixXd global_position;
 							local_large_edge = -1;
 							// this node is a hanging vertex, and it's not on a slave edge
-							if (j < 3 && ncmesh.vertices[ncelem.vertices[j]].edge >= 0) {
+							if (j < 3) {
+								assert(ncmesh.vertices[ncelem.vertices[j]].edge >= 0);
 								large_edge = ncmesh.vertices[ncelem.vertices[j]].edge;
 								opposite_element = ncmesh.edges[large_edge].get_element();
-								
-								node_position = ncmesh.vertices[ncelem.vertices(j)].pos.transpose();
-								ncmesh.global2Local(opposite_element, node_position);
+
+								global_position = ncmesh.vertices[ncelem.vertices(j)].pos.transpose();
 							}
 							// this node is on a slave edge
 							else {
@@ -929,11 +982,22 @@ int polyfem::FEBasis2d::build_bases(
 								// the position of node j in the opposite element
 								Eigen::MatrixXd lnodes;
 								autogen::p_nodes_2d(discr_order, lnodes);
-								node_position = lnodes.row(j);
+								global_position = lnodes.row(j);
 
-								ncmesh.local2Global(e, node_position);
-								ncmesh.global2Local(opposite_element, node_position);
+								Eigen::MatrixXd verts(3, 2);
+								for (int i = 0; i < verts.rows(); i++)
+									verts.row(i) = ncmesh.vertices[ncmesh.elements[e].vertices(i)].pos;
+
+								Eigen::MatrixXd local_position = lnodes.row(j);
+								local_to_global(verts, local_position, global_position);
 							}
+
+							Eigen::MatrixXd verts(3, 2);
+							for (int i = 0; i < verts.rows(); i++)
+								verts.row(i) = ncmesh.vertices[ncmesh.elements[opposite_element].vertices(i)].pos;
+							
+							Eigen::MatrixXd node_position;
+							global_to_local(verts, global_position, node_position);
 
 							// evaluate the basis of the opposite element at this node
 							const auto& other_bases = bases[ncmesh.all2Valid(opposite_element)];

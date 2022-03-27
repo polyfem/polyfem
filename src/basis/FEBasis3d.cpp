@@ -140,6 +140,133 @@ f5  = (0.5, 0.5,   1)
 
 namespace
 {
+	/// @brief      map barycentric coordinates of a triangle to global coordinates
+	///
+	/// @param[in]  verts           The vertices of a triangle, 4 x 3
+	/// @param[in]  uv        		The barycentric coordinates, N x 3
+	/// @param[out] pts             Output global coordinates, N x 3
+	///
+	void local_to_global(const Eigen::MatrixXd& verts, const Eigen::MatrixXd& uv, Eigen::MatrixXd& pts)
+	{
+		const int dim = verts.cols();
+		const int N = uv.rows();
+		assert(dim == 3);
+		assert(uv.cols() == dim);
+		assert(verts.rows() == dim+1);
+
+		pts.setZero(N, dim);
+		for (int i = 0; i < N; i++)
+			pts.row(i) = uv(i, 0) * verts.row(1) + uv(i, 1) * verts.row(2) + uv(i, 2) * verts.row(3) + (1.0 - uv(i, 0) - uv(i, 1) - uv(i, 2)) * verts.row(0);
+	}
+
+	/// @brief      map global coordinates to barycentric coordinates of an edge
+	///
+	/// @param[in]  verts           The vertices of an edge, 2 x 3
+	/// @param[out] u        		The barycentric coordinates, N x 1
+	/// @param[in]  pts             The global coordinates, N x 2
+	///
+	void global_to_local_edge(const Eigen::MatrixXd& verts, const Eigen::MatrixXd& pts, Eigen::MatrixXd& u)
+	{
+		const int dim = verts.cols();
+		const int N = pts.rows();
+		assert(dim == 3);
+		assert(verts.rows() == 2);
+		assert(pts.cols() == dim);
+
+		double squared_length = (verts.row(1) - verts.row(0)).squaredNorm();
+
+		u.setZero(N, 1);
+		maybe_parallel_for(N, [&](int start, int end, int thread_id) {
+			for (int i = start; i < end; i++)
+			{
+				auto point = pts.row(i) - verts.row(0);
+				
+				u(i) = ((pts.row(i) - verts.row(0)).array() * (verts.row(1) - verts.row(0)).array()).sum() / squared_length;
+			}
+		});
+	}
+
+	/// @brief      map global coordinates to barycentric coordinates of a face
+	///
+	/// @param[in]  verts           The vertices of a face, 3 x 3
+	/// @param[out] uv       		The barycentric coordinates, N x 2
+	/// @param[in]  pts             The global coordinates, N x 2
+	///
+	void global_to_local_face(const Eigen::MatrixXd& verts, const Eigen::MatrixXd& pts, Eigen::MatrixXd& uv)
+	{
+		const int dim = verts.cols();
+		const int N = pts.rows();
+		assert(dim == 3);
+		assert(verts.rows() == 3);
+		assert(pts.cols() == dim);
+
+		uv.setZero(N, 2);
+
+		Eigen::Matrix3d J;
+		for (int i = 0; i < 2; i++)
+			J.col(i) = verts.row(i+1) - verts.row(0);
+
+		Eigen::Vector3d a = J.col(0);
+		Eigen::Vector3d b = J.col(1);
+		Eigen::Vector3d virtual_vert = a.cross(b);
+		J.col(2) = virtual_vert;
+
+		for (int i = 0; i < N; i++) {
+			Eigen::Vector3d x = J.colPivHouseholderQr().solve(pts.row(i).transpose() - verts.row(0).transpose());
+			uv.row(i) = x.block(0, 0, 2, 1);
+			assert(std::abs(x(2)) < 1e-12);
+		}
+	}
+
+	/// @brief      map barycentric coordinates to global coordinates of a face
+	///
+	/// @param[in]  verts           The vertices of a face, 3 x 3
+	/// @param[in]  uv       		The barycentric coordinates, N x 2
+	/// @param[out] pts             The global coordinates, N x 2
+	///
+	void local_to_global_face(const Eigen::MatrixXd& verts, const Eigen::MatrixXd& uv, Eigen::MatrixXd& pts)
+	{
+		const int dim = verts.cols();
+		const int N = uv.rows();
+		assert(dim == 3);
+		assert(verts.rows() == 3);
+		assert(uv.cols() == dim-1);
+
+		pts.setZero(N, dim);
+		for (int i = 0; i < N; i++)
+			pts.row(i) = verts.row(1) * uv(i, 0) + verts.row(2) * uv(i, 1) + verts.row(0) * (1.0 - uv(i, 0) - uv(i, 1));
+	}
+
+	/// @brief      map global coordinates to barycentric coordinates of a triangle
+	///
+	/// @param[in]  verts           The vertices of a triangle, 4 x 3
+	/// @param[out] uvw        		The barycentric coordinates, N x 3
+	/// @param[in]  pts             The global coordinates, N x 3
+	///
+	void global_to_local(const Eigen::MatrixXd& verts, const Eigen::MatrixXd& pts, Eigen::MatrixXd& uvw)
+	{
+		const int dim = verts.cols();
+		const int N = pts.rows();
+		assert(dim == 3);
+		assert(verts.rows() == dim+1);
+		assert(pts.cols() == dim);
+
+		Eigen::Matrix3d J;
+		for (int i = 0; i < dim; i++)
+			J.col(i) = verts.row(i+1) - verts.row(0);
+		
+		Eigen::Matrix3d Jinv = J.inverse();
+
+		uvw.setZero(N, dim);
+		maybe_parallel_for(N, [&](int start, int end, int thread_id) {
+			for (int i = start; i < end; i++)
+			{
+				auto point = pts.row(i) - verts.row(0);
+				
+				uvw.row(i) = Jinv * point.transpose();
+			}
+		});
+	}
 
 	template <class InputIterator, class T>
 	int find_index(InputIterator first, InputIterator last, const T &val)
@@ -1437,8 +1564,11 @@ int polyfem::FEBasis3d::build_bases(
 								else
 									assert(false);
 
-								Eigen::MatrixXd node_position = vert.pos.transpose();
-								ncmesh.global2Local(large_elem, node_position);
+								Eigen::MatrixXd verts(4, 3);
+								for (int i = 0; i < verts.rows(); i++)
+									verts.row(i) = ncmesh.vertices[ncmesh.elements[large_elem].vertices(i)].pos;
+								Eigen::MatrixXd node_position;
+								global_to_local(verts, vert.pos.transpose(), node_position);
 
 								// evaluate the basis of the large element at this node
 								const auto& other_bases = bases[ncmesh.all2Valid(large_elem)];
@@ -1498,17 +1628,22 @@ int polyfem::FEBasis3d::build_bases(
 									assert(false);
 
 								assert(large_elem >= 0 || need_extra_fake_nodes);
-								Eigen::MatrixXd lnodes;
-								autogen::p_nodes_3d(discr_order, lnodes);
-								Eigen::MatrixXd node_position = lnodes.row(j);
-								if (need_extra_fake_nodes) {
-									logger().trace("Need extra fake nodes for ncelem {} ncedge {}", e, edge_id);
-									// use a global way
-									// double edge_weight = ncMesh3D::elemWeight2edgeWeight(local_edge_id, node_position.transpose());
+								Eigen::MatrixXd global_position;
+								{
+									Eigen::MatrixXd lnodes;
+									autogen::p_nodes_3d(discr_order, lnodes);
+									Eigen::MatrixXd verts(4, 3);
+									for (int i = 0; i < verts.rows(); i++)
+										verts.row(i) = ncmesh.vertices[ncmesh.elements[e].vertices(i)].pos;
+									local_to_global(verts, lnodes.row(j), global_position);
+								}
 
+								if (need_extra_fake_nodes) {
+									Eigen::MatrixXd edge_verts(2, 3);
 									Eigen::MatrixXd point_weight;
-									ncmesh.local2Global(e, node_position);
-									ncmesh.global2LocalEdge(edge_id, node_position, point_weight);
+									edge_verts.row(0) = ncmesh.vertices[ncmesh.edges[edge_id].vertices(0)].pos;
+									edge_verts.row(1) = ncmesh.vertices[ncmesh.edges[edge_id].vertices(1)].pos;
+									global_to_local_edge(edge_verts, global_position, point_weight);
 
 									std::function<double(const int, const int, const double)> basis_1d = [](const int order, const int id, const double x) -> double {
 										assert(id <= order && id >= 0);
@@ -1525,7 +1660,7 @@ int polyfem::FEBasis3d::build_bases(
 										const int global_index = edge.global_ids[i];
 										// const double weight = basis_1d(edge.order, i+1, edge_weight);
 										Eigen::MatrixXd node_weight;
-										ncmesh.global2LocalEdge(edge_id, nodes.node_position(global_index), node_weight);
+										global_to_local_edge(edge_verts, nodes.node_position(global_index), node_weight);
 										const int basis_id = std::lround(node_weight(0) * edge.order);
 										const double weight = basis_1d(edge.order, basis_id, point_weight(0));
 										if (std::abs(weight) < 1e-12)
@@ -1537,9 +1672,8 @@ int polyfem::FEBasis3d::build_bases(
 									for (int i = 0; i < 2; i++) {
 										const int lv = ev_(local_edge_id, i);
 										const auto& global_ = b.bases[lv].global();
-										// double weight = basis_1d(edge.order, (i == 1) ? edge.order : 0, edge_weight);
 										Eigen::MatrixXd node_weight;
-										ncmesh.global2LocalEdge(edge_id, ncmesh.vertices[ncelem.vertices(lv)].pos.transpose(), node_weight);
+										global_to_local_edge(edge_verts, ncmesh.vertices[ncelem.vertices(lv)].pos.transpose(), node_weight);
 										const int basis_id = std::lround(node_weight(0) * edge.order);
 										const double weight = basis_1d(edge.order, basis_id, point_weight(0));
 										if (std::abs(weight) > 1e-12) {
@@ -1550,13 +1684,15 @@ int polyfem::FEBasis3d::build_bases(
 									}
 								}
 								else {
-									ncmesh.local2Global(e, node_position);
-									ncmesh.global2Local(large_elem, node_position);
+									Eigen::MatrixXd node_position;
+									Eigen::MatrixXd verts(4, 3);
+									for (int i = 0; i < verts.rows(); i++)
+										verts.row(i) = ncmesh.vertices[ncmesh.elements[large_elem].vertices(i)].pos;
+									global_to_local(verts, global_position, node_position);
 
 									// evaluate the basis of the large element at this node
 									const auto& other_bases = bases[ncmesh.all2Valid(large_elem)];
 									std::vector<AssemblyValues> w;
-									// other_bases.evaluate_bases(node_position, w);
 									evaluate_boundary_bases(ncmesh.elements[large_elem].order, other_bases, node_position, w);
 
 									// apply basis projection
@@ -1603,15 +1739,19 @@ int polyfem::FEBasis3d::build_bases(
 									assert(false);
 
 								assert(large_elem >= 0 || need_extra_fake_nodes);
+								Eigen::MatrixXd global_position;
 								Eigen::MatrixXd lnodes;
 								autogen::p_nodes_3d(discr_order, lnodes);
-								Eigen::MatrixXd node_position = lnodes.row(j);
+								Eigen::MatrixXd elem_verts(4, 3);
+								for (int i = 0; i < elem_verts.rows(); i++)
+									elem_verts.row(i) = ncmesh.vertices[ncmesh.elements[e].vertices(i)].pos;
+								local_to_global(elem_verts, lnodes.row(j), global_position);
 								if (need_extra_fake_nodes) {
-									logger().trace("Need extra fake nodes for ncelem {} ncface {}", e, face_id);
-									// auto face_weight = ncMesh3D::elemWeight2faceWeight(local_face_id, node_position.transpose());
-									ncmesh.local2Global(e, node_position);
 									Eigen::MatrixXd tmp;
-									ncmesh.global2LocalFace(face_id, node_position, tmp);
+									Eigen::MatrixXd face_verts(3, 3);
+									for (int i = 0; i < face_verts.rows(); i++)
+										face_verts.row(i) = ncmesh.vertices[ncmesh.faces[face_id].vertices(i)].pos;
+									global_to_local_face(face_verts, global_position, tmp);
 									Eigen::VectorXd face_weight = tmp.transpose();
 
 									std::function<double(const int, const int, const double)> basis_aux = [](const int order, const int id, const double x) -> double {
@@ -1632,7 +1772,7 @@ int polyfem::FEBasis3d::build_bases(
 									for (int global_ : ncface.global_ids) {
 										auto low_order_node = nodes.node_position(global_);
 										Eigen::MatrixXd low_order_node_face_weight;
-										ncmesh.global2LocalFace(face_id, low_order_node, low_order_node_face_weight);
+										global_to_local_face(face_verts, low_order_node, low_order_node_face_weight);
 										int x = round(low_order_node_face_weight(0) * ncface.order), y = round(low_order_node_face_weight(1) * ncface.order);
 										const double weight = basis_2d(ncface.order, x, y, face_weight);
 										if (std::abs(weight) < 1e-12)
@@ -1643,9 +1783,9 @@ int polyfem::FEBasis3d::build_bases(
 									// contribution to vertex nodes
 									for (int i = 0; i < 3; i++) {
 										const auto& global_ = b.bases[fv_(local_face_id, i)].global();
-										auto low_order_node = ncmesh.vertices[fv(local_face_id, i)].pos;
+										auto low_order_node = ncmesh.vertices[fv(local_face_id, i)].pos.transpose();
 										Eigen::MatrixXd low_order_node_face_weight;
-										ncmesh.global2LocalFace(face_id, low_order_node.transpose(), low_order_node_face_weight);
+										global_to_local_face(face_verts, low_order_node, low_order_node_face_weight);
 										int x = round(low_order_node_face_weight(0) * ncface.order), y = round(low_order_node_face_weight(1) * ncface.order);
 										double weight = basis_2d(ncface.order, x, y, face_weight);
 										if (std::abs(weight) > 1e-12) {
@@ -1669,46 +1809,17 @@ int polyfem::FEBasis3d::build_bases(
 												continue;
 											Eigen::MatrixXd face_weight(1, 2);
 											face_weight << (double) x / ncface.order, (double) y / ncface.order;
-											Eigen::MatrixXd pos;
-											ncmesh.local2GlobalFace(face_id, face_weight, pos);
-											ncmesh.global2Local(e, pos);
-											// RowVectorNd pos = (ncMesh3D::faceWeight2ElemWeight(local_face_id, Eigen::Vector2d((double)x / ncface.order, (double)y / ncface.order))).transpose();
-											Local2Global step1(idx, pos, weight);
+											Eigen::MatrixXd global_pos, local_pos;
+											local_to_global_face(face_verts, face_weight, global_pos);
+											global_to_local(elem_verts, global_pos, local_pos);
+											Local2Global step1(idx, local_pos, weight);
 											idx++;
 
-											// second step
-											// int le = -1;
-											// if (x == 0) le = 2;
-											// else if (z == 0) le = 1;
-											// else if (y == 0) le = 0;
-											// else assert(false);
-
-											// int ge = ncmesh.findEdge(fv(local_face_id, le), fv(local_face_id, (le+1)%3));
-											// const auto& edge = ncmesh.edges[ge];
-											// if (edge.master >= 0) {
-											// 	large_elem = ncmesh.getLowestOrderElementOnEdge(edge.master);
-											// }
-											// else if (edge.master_face >= 0) {
-											// 	large_elem = ncmesh.faces[edge.master_face].get_element();
-											// }
-											// else {
-											// 	// TODO: if haven't built min_order_elem?
-											// 	int min_order_elem = ncmesh.getLowestOrderElementOnEdge(ge);
-											// 	if (ncmesh.elements[min_order_elem].order < ncelem.order)
-											// 		large_elem = min_order_elem;
-											// 	else
-											// 		large_elem = e;
-											// }
-
-											Eigen::MatrixXd pos_ = pos;
-											// ncmesh.local2Global(e, pos_);
-											// ncmesh.global2Local(large_elem, pos_);
 											{
 												// evaluate the basis of the large element at this node
 												const auto& other_bases = bases[ncmesh.all2Valid(e)];
 												std::vector<AssemblyValues> w;
-												// other_bases.evaluate_bases(pos_, w);
-												evaluate_boundary_bases(ncmesh.elements[e].order, other_bases, pos_, w, 1);
+												evaluate_boundary_bases(ncmesh.elements[e].order, other_bases, local_pos, w, 1);
 
 												// apply basis projection
 												for (long i = 0; i < w.size(); ++i)
@@ -1730,8 +1841,11 @@ int polyfem::FEBasis3d::build_bases(
 									}
 								}
 								else {
-									ncmesh.local2Global(e, node_position);
-									ncmesh.global2Local(large_elem, node_position);
+									Eigen::MatrixXd node_position;
+									Eigen::MatrixXd verts(4, 3);
+									for (int i = 0; i < verts.rows(); i++)
+										verts.row(i) = ncmesh.vertices[ncmesh.elements[large_elem].vertices(i)].pos;
+									global_to_local(verts, global_position, node_position);
 
 									// evaluate the basis of the large element at this node
 									const auto& other_bases = bases[ncmesh.all2Valid(large_elem)];

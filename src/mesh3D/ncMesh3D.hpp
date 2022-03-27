@@ -26,11 +26,6 @@ public:
     void init(const Eigen::MatrixXd& v, const Eigen::MatrixXi& f) override;
     void init(const std::string& path) override;
 
-    std::shared_ptr<ncMesh> clone() const override
-    {
-        return std::make_shared<ncMesh3D>(*this);
-    }
-
     void writeMESH(const std::string& path) const;
 
     // edges are created if not exist
@@ -106,21 +101,6 @@ public:
     };
     bool checkOrders() const;
 
-    // compute local coordinates of global points in elements[e]
-    void global2Local(const int e, Eigen::MatrixXd& points) const override;
-    void global2Local(Eigen::MatrixXd& points, const Eigen::VectorXi& new_id) const;
-    // compute global coordinates of local points in elements[e]
-    void local2Global(const int e, Eigen::MatrixXd& points) const override;
-    void local2Global(Eigen::MatrixXd& points, const Eigen::VectorXi& new_id) const;
-    // determine if points are inside elements[e]
-    void isInside(const int e, const Eigen::MatrixXd& points, std::vector<bool>& is_inside) const override;
-    bool isInside(const int e, const Eigen::MatrixXd& point) const override;
-
-    void global2LocalEdge(const int edge, const Eigen::MatrixXd& points, Eigen::MatrixXd& uv) const;
-    void global2LocalFace(const int face, const Eigen::MatrixXd& points, Eigen::MatrixXd& uv) const;
-    void local2GlobalEdge(const int edge, const Eigen::MatrixXd& uv, Eigen::MatrixXd& points) const;
-    void local2GlobalFace(const int face, const Eigen::MatrixXd& uv, Eigen::MatrixXd& points) const;
-
     // map the weight on face to the barycentric coordinate in element
     static Eigen::Vector3d faceWeight2ElemWeight(const int l, const Eigen::Vector2d& pos);
     // map the barycentric coordinate in element to the weight on face
@@ -131,9 +111,6 @@ public:
     // map the barycentric coordinate in element to the weight on edge
     static double elemWeight2edgeWeight(const int l, const Eigen::Vector3d& pos);
 
-    void nodesOnEdge(const int v1, const int v2, std::set<int>& nodes) const;
-    void nodesOnFace(const int v1, const int v2, const int v3, std::set<int>& nodes) const;
-    void nodesOnElem(const int e, std::set<int>& nodes) const;
     // build the sparse matrix Adj
     void buildElementAdj(int ring = 1) override;
 
@@ -149,11 +126,13 @@ public:
     // assign ncElement3D.master_edges and ncVertex3D.weight
     void buildElementVertexAdjacency() override;
 
-    int boundary_quadrature(const int ncelem_id, const int n_samples, Eigen::MatrixXd& local_pts, Eigen::MatrixXd& uv, Eigen::MatrixXd& normals, Eigen::VectorXd& weights, Eigen::VectorXi& face_ids) const override;
-    int boundary_quadrature(const int ncelem_id, const int ncface_id, const int n_samples, Eigen::MatrixXd& local_pts, Eigen::MatrixXd& normals, Eigen::VectorXd& weights) const override;
-
 protected:
     std::unordered_map< Eigen::Vector3i, int, ArrayHasher3D >  faceMap;
+
+private:
+    void nodesOnEdge(const int v1, const int v2, std::set<int>& nodes) const;
+    void nodesOnFace(const int v1, const int v2, const int v3, std::set<int>& nodes) const;
+    void nodesOnElem(const int e, std::set<int>& nodes) const;
 };
 
 } // namespace polyfem

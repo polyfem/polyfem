@@ -180,8 +180,6 @@ public:
     virtual void init(const Eigen::MatrixXd& v, const Eigen::MatrixXi& f) = 0;
     virtual void init(const std::string& path) = 0;
     void initFromHistory(const json& input);
-
-    virtual std::shared_ptr<ncMesh> clone() const = 0;
     
     // normalize the mesh
     void normalize();
@@ -363,43 +361,6 @@ public:
         }
     };
 
-    // map the local_pts in elements[e1] to elements[e2]
-    void computeLocalCoordinates(int e1, int e2, Eigen::MatrixXd& local_pts) const
-    {
-        local2Global(e1, local_pts);
-        global2Local(e2, local_pts);
-    };
-    // compute local coordinates of global points in elements[e]
-    virtual void global2Local(const int e, Eigen::MatrixXd& points) const = 0;
-    // compute global coordinates of local points in elements[e]
-    virtual void local2Global(const int e, Eigen::MatrixXd& points) const = 0;
-    // determine if points are inside elements[e]
-    virtual void isInside(const int e, const Eigen::MatrixXd& points, std::vector<bool>& is_inside) const = 0;
-    virtual bool isInside(const int e, const Eigen::MatrixXd& point) const = 0;
-
-    // find which valid element a point is in
-    void pointInElement(const Eigen::MatrixXd& point, int &e) const 
-    {
-        assert(point.rows() == 1 && point.cols() == dim());
-        assert(e >= 0 && e < elements.size());
-
-        while (elements[e].is_not_valid()) {
-            const auto& children = elements[e].children;
-            bool flag = false;
-            for (int c = 0; c < children.size(); c++) {
-                if (isInside(children(c), point)) {
-                    e = children(c);
-                    flag = true;
-                    break;
-                }
-            }
-            if (!flag) {
-                e = -1;
-                return;
-            }
-        }
-    };
-
     // count the number of valid elements of different levels
     void getLevels(Eigen::VectorXi& levels, const int max_level) const
     {
@@ -470,9 +431,6 @@ public:
     std::vector<ncVert> vertices;
     std::vector<ncBoundary> edges;
     std::vector<ncBoundary> faces;
-
-    virtual int boundary_quadrature(const int ncelem_id, const int n_samples, Eigen::MatrixXd& local_pts, Eigen::MatrixXd& uv, Eigen::MatrixXd& normals, Eigen::VectorXd& weights, Eigen::VectorXi& face_ids) const = 0;
-    virtual int boundary_quadrature(const int ncelem_id, const int ncface_id, const int n_samples, Eigen::MatrixXd& local_pts, Eigen::MatrixXd& normals, Eigen::VectorXd& weights) const = 0;
 
     // functions to unify navigation of edges in 2D and faces in 3D
 
