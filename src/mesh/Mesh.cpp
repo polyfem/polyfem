@@ -68,8 +68,9 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path)
 		Eigen::MatrixXi cells;
 		std::vector<std::vector<int>> elements;
 		std::vector<std::vector<double>> weights;
+		Eigen::VectorXi body_ids;
 
-		if (!MshReader::load(path, vertices, cells, elements, weights))
+		if (!MshReader::load(path, vertices, cells, elements, weights, body_ids))
 			return nullptr;
 
 		std::unique_ptr<polyfem::Mesh> mesh;
@@ -94,6 +95,8 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path)
 				break;
 			}
 		}
+
+		mesh->set_body_ids(body_ids);
 
 		return mesh;
 	}
@@ -152,7 +155,8 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 		Eigen::MatrixXi tmp_cells;
 		std::vector<std::vector<int>> tmp_elements;
 		std::vector<std::vector<double>> tmp_weights;
-		read_fem_mesh(mesh_path, tmp_vertices, tmp_cells, tmp_elements, tmp_weights);
+		Eigen::VectorXi tmp_body_ids;
+		read_fem_mesh(mesh_path, tmp_vertices, tmp_cells, tmp_elements, tmp_weights, tmp_body_ids);
 
 		if (tmp_vertices.size() == 0 || tmp_cells.size() == 0)
 		{
@@ -202,10 +206,9 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 
 		body_faces_start.push_back(body_faces_start.back() + count_faces(dim, tmp_cells));
 
-		for (int ci = 0; ci < tmp_cells.rows(); ci++)
-		{
-			body_ids.push_back(jmesh["body_id"].get<int>());
-		}
+		if (meshes[i].contains("body_id")) // Constant body id has priority over mesh's stored ids
+			tmp_body_ids.setConstant(tmp_cells.rows(), jmesh["body_id"].get<int>());
+		body_ids.insert(body_ids.end(), tmp_body_ids.data(), tmp_body_ids.data() + tmp_body_ids.size());
 
 		boundary_ids.push_back(jmesh["boundary_id"].get<int>());
 

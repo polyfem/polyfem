@@ -1011,7 +1011,8 @@ void polyfem::read_fem_mesh(
 	Eigen::MatrixXd &vertices,
 	Eigen::MatrixXi &cells,
 	std::vector<std::vector<int>> &elements,
-	std::vector<std::vector<double>> &weights)
+	std::vector<std::vector<double>> &weights,
+	Eigen::VectorXi &body_ids)
 {
 	vertices.resize(0, 0);
 	cells.resize(0, 0);
@@ -1024,7 +1025,7 @@ void polyfem::read_fem_mesh(
 
 	if (StringUtils::endswith(lowername, ".msh"))
 	{
-		if (!MshReader::load(mesh_path, vertices, cells, elements, weights))
+		if (!MshReader::load(mesh_path, vertices, cells, elements, weights, body_ids))
 		{
 			logger().error("Unable to load mesh: {}", mesh_path);
 			return;
@@ -1088,6 +1089,8 @@ void polyfem::read_fem_mesh(
 			}
 		}
 		weights.resize(cells.rows());
+
+		body_ids.setConstant(cells.rows(), 0);
 	}
 }
 
@@ -1217,7 +1220,8 @@ void polyfem::read_surface_mesh(
 		Eigen::MatrixXi cells;
 		std::vector<std::vector<int>> elements;
 		std::vector<std::vector<double>> weights;
-		if (!MshReader::load(mesh_path, vertices, cells, elements, weights))
+		Eigen::VectorXi body_ids;
+		if (!MshReader::load(mesh_path, vertices, cells, elements, weights, body_ids))
 		{
 			logger().error("Unable to load mesh: {}", mesh_path);
 			return;

@@ -205,7 +205,7 @@ namespace polyfem
 	/// @param[out] elements              { #C indices for high-order nodes }
 	/// @param[out] w                     { #C weights for rational polynomials }
 	///
-	void read_fem_mesh(const std::string &mesh_path, Eigen::MatrixXd &vertices, Eigen::MatrixXi &cells, std::vector<std::vector<int>> &elements, std::vector<std::vector<double>> &weights);
+	void read_fem_mesh(const std::string &mesh_path, Eigen::MatrixXd &vertices, Eigen::MatrixXi &cells, std::vector<std::vector<int>> &elements, std::vector<std::vector<double>> &weights, Eigen::VectorXi &body_ids);
 
 	///
 	/// @brief      read a surface mesh from json
