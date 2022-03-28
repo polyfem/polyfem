@@ -14,7 +14,19 @@
 
 namespace polyfem
 {
-	bool MshReader::load(const std::string &path, Eigen::MatrixXd &vertices, Eigen::MatrixXi &cells, std::vector<std::vector<int>> &elements, std::vector<std::vector<double>> &weights)
+	template <typename Entity>
+	void map_entity_tag_to_physical_tag(const std::vector<Entity> &entities, std::unordered_map<int, int> &entity_tag_to_physical_tag)
+	{
+		for (int i = 0; i < entities.size(); i++)
+		{
+			entity_tag_to_physical_tag[entities[i].tag] =
+				entities[i].physical_group_tags.size() > 0
+					? entities[i].physical_group_tags.front()
+					: 0;
+		}
+	}
+
+	bool MshReader::load(const std::string &path, Eigen::MatrixXd &vertices, Eigen::MatrixXi &cells, std::vector<std::vector<int>> &elements, std::vector<std::vector<double>> &weights, Eigen::VectorXi &body_ids)
 	{
 		if (!std::filesystem::exists(path))
 		{
@@ -102,7 +114,14 @@ namespace polyfem
 		}
 		assert(cells_cols > 0);
 
+		std::unordered_map<int, int> entity_tag_to_physical_tag;
+		if (dim == 2)
+			map_entity_tag_to_physical_tag(spec.entities.surfaces, entity_tag_to_physical_tag);
+		else
+			map_entity_tag_to_physical_tag(spec.entities.volumes, entity_tag_to_physical_tag);
+
 		cells.resize(num_els, cells_cols);
+		body_ids.resize(num_els);
 		elements.resize(num_els);
 		weights.resize(num_els);
 		int cell_index = 0;
@@ -130,6 +149,11 @@ namespace polyfem
 						assert(v_index < n_vertices);
 						elements[cell_index].push_back(v_index);
 					}
+
+					const auto &it = entity_tag_to_physical_tag.find(e.entity_tag);
+					body_ids[cell_index] =
+						it != entity_tag_to_physical_tag.end() ? it->second : 0;
+
 					++cell_index;
 				}
 			}

@@ -381,9 +381,9 @@ namespace polyfem
 			max_step /= 2.0;
 			if (max_step <= 0 || Linf == 0)
 			{
-				std::string msg = fmt::format("Unable to find an intersection free step size (max_step={:g} L∞={:g})", max_step, Linf);
+				const std::string msg = fmt::format("Unable to find an intersection free step size (max_step={:g} L∞={:g})", max_step, Linf);
 				logger().error(msg);
-				throw msg;
+				throw std::runtime_error(msg);
 			}
 			V_toi = (V1 - V0) * max_step + V0;
 		}

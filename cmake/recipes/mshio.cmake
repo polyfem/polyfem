@@ -12,7 +12,7 @@ include(FetchContent)
 FetchContent_Declare(
     mshio
     GIT_REPOSITORY https://github.com/qnzhou/MshIO.git
-    GIT_TAG dbfe01f072a90d067a25c5e962ea1f87e34c4fd3
+    GIT_TAG a82fb59e25b5e4f586b29ec85a29c3bbc8117307
     GIT_SHALLOW FALSE
 )
 FetchContent_MakeAvailable(mshio)

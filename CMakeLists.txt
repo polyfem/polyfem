@@ -78,8 +78,6 @@ set(POLYFEM_THREADING "TBB" CACHE STRING "Multithreading library to use (options
 set_property(CACHE POLYFEM_THREADING PROPERTY STRINGS "CPP" "TBB" "NONE")
 
 option(POLYFEM_WITH_TESTS     "Build tests"             ON)
-option(POLYFEM_WITH_APPS      "Build the apps"          ON)
-option(POLYFEM_WITH_MISC      "Build misc targes"       ON)
 option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"       ON)
 
 option(POLYFEM_DIV_BARRIER_STIFFNESS "Divide the energy terms by the contact barrier stiffeness" OFF)
@@ -122,12 +120,7 @@ option(LIBIGL_WITH_PYTHON                 "Use Python"                   OFF)
 option(LIBIGL_WITH_TRIANGLE               "Use Triangle"                 OFF)
 option(LIBIGL_WITH_VIEWER                 "Use OpenGL viewer"            ON)
 option(LIBIGL_WITH_XML                    "Use XML"                      OFF)
-
-if(POLYFEM_TOPLEVEL_PROJECT AND POLYFEM_WITH_APPS)
-    set(LIBIGL_WITH_TETGEN ON CACHE BOOL "Use Tetgen" FORCE)
-else()
-    option(LIBIGL_WITH_TETGEN "Use Tetgen" OFF)
-endif()
+option(LIBIGL_WITH_TETGEN "Use Tetgen" OFF)
 
 
 if(POLYFEM_NO_UI)
@@ -339,15 +332,6 @@ add_subdirectory(src)
 
 # Compile extras only if this is a top-level project
 if(POLYFEM_TOPLEVEL_PROJECT)
-    # Auxiliary binaries
-    if(POLYFEM_WITH_APPS)
-        add_subdirectory(apps)
-    endif()
-
-    if(POLYFEM_WITH_MISC)
-        add_subdirectory(misc)
-    endif()
-
     # Unit tests
     if(POLYFEM_WITH_TESTS)
         include(CTest)
@@ -370,7 +354,7 @@ if(IPC_TOOLKIT_WITH_CUDA)
   endif()
 
   set_target_properties(polyfem PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-  
+
   # Nvidia RTX8000 -> compute_75
   # Nvidia V100 -> compute_70
   # Nvidia 1080/1080Ti -> compute_61

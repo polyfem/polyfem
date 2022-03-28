@@ -3,11 +3,12 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/ElementAssemblyValues.hpp>
 #include <polyfem/ElementBases.hpp>
+#include <polyfem/ExpressionValue.hpp>
 #include <polyfem/AutodiffTypes.hpp>
 #include <polyfem/Types.hpp>
 
 #include <Eigen/Dense>
-#include <tinyexpr.h>
+
 #include <vector>
 #include <array>
 #include <functional>
@@ -78,7 +79,6 @@ namespace polyfem
 	{
 	public:
 		LameParameters();
-		~LameParameters();
 
 		void init(const json &params);
 		void init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus);
@@ -94,18 +94,10 @@ namespace polyfem
 		}
 
 	private:
-		struct Internal
-		{
-			double x, y, z;
-		};
 		void set_e_nu(const json &E, const json &nu);
 
 		int size_;
-		double lambda_ = 1, mu_ = 1;
-		Eigen::MatrixXd lambda_mat_, mu_mat_;
-
-		te_expr *lambda_expr_, *mu_expr_;
-		Internal *vals_;
+		ExpressionValue lambda_, mu_;
 		bool is_lambda_mu_;
 		bool initialized_;
 	};
@@ -114,7 +106,6 @@ namespace polyfem
 	{
 	public:
 		Density();
-		~Density();
 
 		void init(const json &params);
 		void init_multimaterial(const Eigen::MatrixXd &rho);
@@ -131,16 +122,7 @@ namespace polyfem
 	private:
 		void set_rho(const json &rho);
 
-		struct Internal
-		{
-			double x, y, z;
-		};
-
-		double rho_ = 1;
-		Eigen::MatrixXd rho_mat_;
-
-		te_expr *rho_expr_;
-		Internal *vals_;
+		ExpressionValue rho_;
 		bool initialized_;
 	};
 } // namespace polyfem

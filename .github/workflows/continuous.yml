@@ -59,7 +59,6 @@ jobs:
           cmake .. \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
-            -DPOLYFEM_WITH_MISC=ON \
             -DPOLYFEM_WITH_CLIPPER=OFF \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
@@ -126,7 +125,6 @@ jobs:
           cmake .. \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
-            -DPOLYFEM_WITH_MISC=ON \
             -DPOLYFEM_WITH_CLIPPER=OFF \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
@@ -139,7 +137,6 @@ jobs:
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
             -DCMAKE_OSX_ARCHITECTURES=arm64 \
-            -DPOLYFEM_WITH_MISC=ON \
             -DPOLYFEM_WITH_CLIPPER=OFF \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
@@ -208,7 +205,6 @@ jobs:
           cmake -G Ninja ^
             -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ^
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
-            -DPOLYFEM_WITH_MISC=ON ^
             -DPOLYFEM_WITH_CLIPPER=OFF ^
             -DPOLYFEM_THREADING=${{ matrix.threading }} ^
             -DPOLYSOLVE_WITH_CHOLMOD=OFF ^

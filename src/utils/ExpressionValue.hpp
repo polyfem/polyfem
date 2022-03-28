@@ -2,18 +2,16 @@
 
 #include <polyfem/Common.hpp>
 
-#include <tinyexpr.h>
-
 namespace polyfem
 {
 
 	class ExpressionValue
 	{
 	public:
-		~ExpressionValue();
 		ExpressionValue();
 		void init(const json &vals);
 		void init(const double val);
+		void init(const Eigen::MatrixXd &val);
 		void init(const std::string &expr);
 
 		void init(const std::function<double(double x, double y, double z)> &func);
@@ -21,7 +19,7 @@ namespace polyfem
 		void init(const std::function<double(double x, double y, double z, double t)> &func);
 		void init(const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const int coo);
 
-		double operator()(double x, double y, double z = 0, double t = 0) const;
+		double operator()(double x, double y, double z = 0, double t = 0, int index = -1) const;
 
 		void clear();
 
@@ -34,6 +32,7 @@ namespace polyfem
 
 		std::string expr_;
 		double value_;
+		Eigen::MatrixXd mat_;
 	};
 
 } // namespace polyfem
