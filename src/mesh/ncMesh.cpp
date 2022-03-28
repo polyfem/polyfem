@@ -25,65 +25,11 @@ void ncMesh::normalize()
     }
 }
 
-void ncMesh::reorderElements(std::vector<int>& elementOrder) const
-{
-    elementOrder.clear();
-    elementOrder.reserve(n_elements);
-
-    int cur_level = 0;
-    while (elementOrder.size() < n_elements) {
-        for (int order = min_order; order <= max_order; order++) {
-            for (int i = 0; i < n_elements; i++) {
-                const auto& elem = elements[valid2All(i)];
-                if (elem.level != cur_level)
-                    continue;
-                if (elem.order != order)
-                    continue;
-                
-                elementOrder.push_back(valid2All(i));
-            }
-        }
-        cur_level++;
-    }
-}
-
-void ncMesh::reorderElements(std::vector<std::vector<int> >& elementOrder) const
-{
-    int max_level = 0;
-    for (const auto& elem : elements) {
-        if (elem.is_valid() && max_level < elem.level)
-            max_level = elem.level;
-    }
-    elementOrder.clear();
-    elementOrder.resize((max_level + 1) * (max_order - min_order + 1));
-    int N = 0;
-    int cur_level = 0;
-    while (cur_level <= max_level) {
-        int order = min_order;
-        while (order <= max_order) {
-            int cur_bucket = (max_order - min_order + 1) * cur_level + (order - min_order);
-            for (int i = 0; i < n_elements; i++) {
-                const auto& elem = elements[valid2All(i)];
-                if (elem.level != cur_level || elem.order != order)
-                    continue;
-
-                N++;
-                elementOrder[cur_bucket].push_back(valid2All(i));
-            }
-            order++;
-        }
-        cur_level++;
-    }
-}
-
 void ncMesh::initFromHistory(const json& input)
 {
     std::vector<int> tmp_refineHistory;
     for (const auto& i : input["refine"])
         tmp_refineHistory.push_back(i);
-    std::vector<int> orders;
-    for (const auto& o : input["order"])
-        orders.push_back(o);
 
     for (int id : tmp_refineHistory) {
         if (elements[id].is_valid())
@@ -112,17 +58,6 @@ void ncMesh::initFromHistory(const json& input)
             exit(0);
         }
     }
-
-    int id = 0;
-    max_order = 0;
-    min_order = 100;
-    for (int o : orders) {
-        elements[id].order = o;
-        max_order = std::max(o, max_order);
-        min_order = std::min(o, min_order);
-        id++;
-    }
-    assert(id == elements.size());
 }
 
 void ncMesh::traverseEdge(Eigen::Vector2i v, double p1, double p2, int depth, std::vector<slave_edge>& list) const

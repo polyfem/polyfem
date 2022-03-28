@@ -99,7 +99,6 @@ public:
         Eigen::VectorXi vertices;
 
         bool  isboundary = false; // valid only after calling markBoundary()
-        int   order = 100;        // basis order
 
         int               master = -1; // if this edge/face lies on a larger edge/face
         std::vector<int>  slaves;      // slaves of this edge/face
@@ -148,8 +147,6 @@ public:
         Eigen::VectorXi edges;
         Eigen::VectorXi faces;
         Eigen::VectorXi children;
-
-        int    order = 100; // basis order
 
         bool   is_refined = false;
         bool   is_ghost = false;
@@ -308,27 +305,6 @@ public:
     int all2ValidVertex(const int id) const { return all2ValidVertexMap[id]; };
     int valid2AllVertex(const int id) const { return valid2AllVertexMap[id]; };
 
-    // re-order elements so that master elements are built before slave elements, low order elements are built before high order
-    void reorderElements(std::vector<int>& elementOrder) const;
-    void reorderElements(std::vector<std::vector<int> >& elementOrder) const; // for parallel
-
-    // assign the orders to elements and edges, should call prepareMesh() first
-    virtual void assignOrders(Eigen::VectorXi& orders) = 0;
-    // assign constant order to elements and edges
-    virtual void assignOrders(const int order) = 0;
-    // get orders
-    void getOrders(Eigen::VectorXi& orders) const
-    {
-        orders.resize(n_elements);
-        for (int i = 0, j = 0; i < elements.size(); i++) {
-            const auto& e = elements[i];
-            if (e.is_valid()) {
-                orders(j) = e.order;
-                j++;
-            }
-        }
-    };
-
     // count the number of valid elements of different levels
     void getLevels(Eigen::VectorXi& levels, const int max_level) const
     {
@@ -405,10 +381,6 @@ protected:
     std::vector<int> all2ValidVertexMap, valid2AllVertexMap;
 
     std::vector<int> refineHistory;
-
-    // basis order of elements
-    int max_order;
-    int min_order;
 
     // elementAdj(i, j) = 1 iff element i touches element j
     Eigen::SparseMatrix<bool, Eigen::RowMajor> elementAdj;

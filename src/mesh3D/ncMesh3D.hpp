@@ -43,40 +43,11 @@ public:
     int getFace(Eigen::Vector3i v) override;
     int getFace(const int v1, const int v2, const int v3) override { return getFace(Eigen::Vector3i(v1, v2, v3)); };
 
-    // get the id of the lowest order element that share this edge
-    int getLowestOrderElementOnEdge(const int edge_id) const
-    {
-        int min_order_elem = edges[edge_id].get_element();
-        for (int elem : edges[edge_id].elem_list) {
-            if (elements[min_order_elem].order > elements[elem].order)
-                min_order_elem = elem;
-        }
-        return min_order_elem;
-    };
-
     // build a partial mesh including a subset of elements
     void buildPartialMesh(const std::vector<int>& elem_list, ncMesh3D& submesh) const;
 
     // mark the true boundary vertices
     void markBoundary() override;
-
-    // assign the orders to elements and edges, should call prepareMesh() first
-    void assignOrders(Eigen::VectorXi& orders) override;
-    void assignOrders(const int order) override
-    {
-        for (int i = 0; i < elements.size(); i++)
-            elements[i].order = order;
-        
-        for (int j = 0; j < edges.size(); j++)
-            edges[j].order = order;
-        
-        for (int k = 0; k < faces.size(); k++)
-            faces[k].order = order;
-        
-        max_order = order;
-        min_order = order;
-    };
-    bool checkOrders() const;
 
     // build the sparse matrix Adj
     void buildElementAdj(int ring = 1) override;

@@ -40,20 +40,6 @@ public:
     // mark the true boundary vertices
     void markBoundary() override;
 
-    // assign the orders to elements and edges, should call prepareMesh() first
-    void assignOrders(Eigen::VectorXi& orders) override;
-    void assignOrders(const int order) override
-    {
-        for (int i = 0; i < elements.size(); i++)
-            elements[i].order = order;
-        
-        for (int j = 0; j < edges.size(); j++)
-            edges[j].order = order;
-
-        max_order = order;
-        min_order = order;
-    };
-
     // map the weight on edge to the barycentric coordinate in element
     static Eigen::Vector2d edgeWeight2ElemWeight(const int l, const double w);
     // map the barycentric coordinate in element to the weight on edge

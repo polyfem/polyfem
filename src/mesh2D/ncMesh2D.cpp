@@ -133,9 +133,6 @@ void ncMesh2D::refineElement(int id)
         elements[id].children(2) = elements.size(); addElement(Eigen::Vector3i(v[2],v20,v12), id);
         elements[id].children(3) = elements.size(); addElement(Eigen::Vector3i(v12 ,v20,v01), id);
     }
-    
-    for (int i = 0; i < elements[id].children.size(); i++)
-        elements[elements[id].children(i)].order = elements[id].order;
 
     refineHistory.push_back(id);
 }
@@ -152,7 +149,6 @@ void ncMesh2D::coarsenElement(int id)
     for (int i = 0; i < parent.children.size(); i++) {
         auto& elem = elements[parent.children(i)];
         elem.is_ghost = true;
-        parent.order = std::max(parent.order, elem.order);
         n_elements--;
         for (int le = 0; le < elem.edges.size(); le++)
             edges[elem.edges(le)].remove_element(parent.children(i));
@@ -217,51 +213,6 @@ void ncMesh2D::buildEdgeSlaveChain()
             slaves.clear();
         }
     }
-}
-
-void ncMesh2D::assignOrders(Eigen::VectorXi& orders)
-{
-    assert(orders.size() == n_elements);
-
-    for (auto& edge : edges) {
-        edge.order = 100;
-    }
-
-    // assign orders to elements
-    for (int i = 0; i < n_elements; i++)
-		elements[valid2All(i)].order = orders[i];
-
-
-    // assign edge orders
-    for (int i = 0; i < n_elements; i++) {
-		auto &elem = elements[valid2All(i)];
-        for (int j = 0; j < 3; j++) {
-            auto& edge = edges[elem.edges[j]];
-            if (edge.order > elem.order)
-                edge.order = elem.order;
-        }
-    }
-    // for every master edge, reduce the order to the min of its slave edge orders
-	for (auto& small_edge : edges)
-	{
-		int large_edge_id = small_edge.master;
-		if (large_edge_id < 0)
-			continue;
-		auto &large_edge = edges[large_edge_id];
-		large_edge.order = std::min(small_edge.order, large_edge.order);
-	}
-    // for every slave edge, reduce the order to its master edge order
-	for (auto &small_edge : edges)
-	{
-		int large_edge_id = small_edge.master;
-		if (large_edge_id < 0)
-			continue;
-		auto &large_edge = edges[large_edge_id];
-		small_edge.order = std::min(small_edge.order, large_edge.order);
-	}
-
-    min_order = orders.minCoeff();
-    max_order = orders.maxCoeff();
 }
 
 void ncMesh2D::markBoundary()

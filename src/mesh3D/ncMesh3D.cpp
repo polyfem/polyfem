@@ -231,9 +231,6 @@ void ncMesh3D::refineElement(int id)
         elements[id].children(7) = elements.size(); addElement(Eigen::Vector4i(v6,v10,v9,v8), id);
     }
 
-    for (int i = 0; i < elements[id].children.size(); i++)
-        elements[elements[id].children(i)].order = elements[id].order;
-
     refineHistory.push_back(id);
 }
 
@@ -249,7 +246,6 @@ void ncMesh3D::coarsenElement(int id)
     for (int c = 0; c < parent.children.size(); c++) {
         auto& elem = elements[parent.children(c)];
         elem.is_ghost = true;
-        parent.order = std::max(parent.order, elem.order);
         n_elements--;
 
         for (int f = 0; f < elem.faces.size(); f++)
@@ -311,10 +307,8 @@ void ncMesh3D::buildPartialMesh(const std::vector<int>& elem_list, ncMesh3D& sub
         children_queue.push(x);
     while(!children_queue.empty()) {
         int x = children_queue.front(); children_queue.pop();
-        if (!elements[x].is_refined) {
-            submesh.elements[globalElemId2Local[x]].order = elements[x].order;
+        if (!elements[x].is_refined)
             continue;
-        }
         submesh.refineElement(globalElemId2Local[x]);
         for (int i = 0; i < submesh.elements[globalElemId2Local[x]].children.size(); i++) {
             globalElemId2Local[elements[x].children(i)] = submesh.elements[globalElemId2Local[x]].children(i);
@@ -357,144 +351,6 @@ void ncMesh3D::markBoundary()
             }
         }
     }
-}
-
-bool ncMesh3D::checkOrders() const
-{
-    for (auto& face : faces) {
-        if (face.n_elem() == 0)
-            continue;
-        for (int elem : face.elem_list) {
-            if (face.order > elements[elem].order) return false;
-        }
-
-        // for (int i = 0; i < face.vertices.size(); i++)
-        //     for (int j = 0; j < i; j++)
-        //         if (face.order > edges[findEdge(face.vertices(i),face.vertices(j))].order) return false;
-    }
-
-    for (auto& edge : edges) {
-        if (edge.master_face >= 0 && edge.master < 0)
-            if (faces[edge.master_face].order > edge.order) return false;
-    }
-
-	for (auto& small_face : faces) {
-		int large_face_id = small_face.master;
-		if (large_face_id < 0)
-			continue;
-		auto &large_face = faces[large_face_id];
-		const auto &small_element = elements[small_face.get_element()];
-        if (small_face.order != large_face.order) return false;
-	}
-
-    for (auto &face : faces) {
-        if (face.n_elem() == 0)
-            continue;
-        for (int i = 0; i < 3; i++) {
-            auto& edge = edges[findEdge(face.vertices(i),face.vertices((i+1)%3))];
-            if (edge.order > face.order) return false;
-        }
-    }
-
-	for (auto& small_edge : edges) {
-		int large_edge_id = small_edge.master;
-		if (large_edge_id < 0)
-			continue;
-		auto &large_edge = edges[large_edge_id];
-		if (large_edge.order != small_edge.order) return false;
-	}
-
-    return true;
-}
-
-void ncMesh3D::assignOrders(Eigen::VectorXi& orders)
-{
-    assert(orders.size() == n_elements);
-    
-    for (auto& edge : edges)
-        edge.order = 100;
-
-    for (auto& face : faces)
-        face.order = 100;
-
-    // assign orders to elements
-    for (int i = 0; i < n_elements; i++)
-        elements[valid2All(i)].order = orders[i];
-    
-    // assign face orders
-    for (auto& face : faces) {
-        if (face.n_elem() == 0)
-            continue;
-        for (int elem : face.elem_list) {
-            face.order = std::min(face.order, elements[elem].order);
-        }
-    }
-
-    do {
-        // for every master face, reduce the order to the min of its slave face orders
-        for (auto& small_face : faces) {
-            int large_face_id = small_face.master;
-            if (large_face_id < 0)
-                continue;
-            auto &large_face = faces[large_face_id];
-            const auto &small_element = elements[small_face.get_element()];
-            large_face.order = std::min(small_element.order, large_face.order);
-        }
-
-        // for every face, reduce the order to the min of its edges
-        // for (auto& face : faces) {
-        //     for (int i = 0; i < face.vertices.size(); i++)
-        //         for (int j = 0; j < i; j++)
-        //             face.order = std::min(face.order, edges[findEdge(face.vertices(i),face.vertices(j))].order);
-        // }
-
-        // for every slave face, reduce the order to its master face order
-        for (auto &small_face : faces) {
-            int large_face_id = small_face.master;
-            if (large_face_id < 0)
-                continue;
-            auto &large_face = faces[large_face_id];
-            small_face.order = std::min(small_face.order, large_face.order);
-        }
-
-        // for every edge, reduce the order to its adjacent face order
-        for (auto &face : faces) {
-            if (face.n_elem() == 0)
-                continue;
-            for (int i = 0; i < 3; i++) {
-                auto& edge = edges[findEdge(face.vertices(i),face.vertices((i+1)%3))];
-                edge.order = std::min(edge.order, face.order);
-            }
-        }
-
-        // for every master edge, reduce the order to the min of its slave edge orders
-        for (auto& small_edge : edges) {
-            int large_edge_id = small_edge.master;
-            if (large_edge_id < 0)
-                continue;
-            auto &large_edge = edges[large_edge_id];
-            large_edge.order = std::min(small_edge.order, large_edge.order);
-        }
-        // for every slave edge, reduce the order to its master edge order
-        for (auto &small_edge : edges) {
-            int large_edge_id = small_edge.master;
-            if (large_edge_id < 0)
-                continue;
-            auto &large_edge = edges[large_edge_id];
-            small_edge.order = std::min(small_edge.order, large_edge.order);
-        }
-
-        // if an edge lies in the interior of a face, the face order cannot exceed the edge order
-        for (auto& edge : edges) {
-            if (edge.n_elem() <= 0)
-                continue;
-            if (edge.master_face >= 0 && edge.master < 0)
-                faces[edge.master_face].order = std::min(edge.order, faces[edge.master_face].order);
-        }
-    } while (!checkOrders());
-
-    min_order = orders.minCoeff();
-    max_order = orders.maxCoeff();
 }
 
 void ncMesh3D::nodesOnEdge(const int v1, const int v2, std::set<int>& nodes) const
