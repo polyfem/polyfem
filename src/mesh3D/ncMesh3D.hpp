@@ -26,8 +26,6 @@ public:
     void init(const Eigen::MatrixXd& v, const Eigen::MatrixXi& f) override;
     void init(const std::string& path) override;
 
-    void writeMESH(const std::string& path) const;
-
     // edges are created if not exist
     // return the id of this new element
     int addElement(Eigen::Vector4i v, int parent = -1);
@@ -45,24 +43,6 @@ public:
     int getFace(Eigen::Vector3i v) override;
     int getFace(const int v1, const int v2, const int v3) override { return getFace(Eigen::Vector3i(v1, v2, v3)); };
 
-    const ncBoundary& interface(int id) const override
-    {
-        assert(id < faces.size() && id >= 0);
-        return faces[id];
-    };
-
-    int n_interfaces() const override
-    {
-        return faces.size();
-    };
-
-    int findInterface(Eigen::VectorXi v) const override
-    {
-        assert(v.size() == 3);
-        Eigen::Vector3i v_ = v;
-        return findFace(v_);
-    };
-
     // get the id of the lowest order element that share this edge
     int getLowestOrderElementOnEdge(const int edge_id) const
     {
@@ -73,9 +53,6 @@ public:
         }
         return min_order_elem;
     };
-
-    double faceArea(int f) const override;
-    double elementVolume(int e) const override;
 
     // build a partial mesh including a subset of elements
     void buildPartialMesh(const std::vector<int>& elem_list, ncMesh3D& submesh) const;
@@ -100,16 +77,6 @@ public:
         min_order = order;
     };
     bool checkOrders() const;
-
-    // map the weight on face to the barycentric coordinate in element
-    static Eigen::Vector3d faceWeight2ElemWeight(const int l, const Eigen::Vector2d& pos);
-    // map the barycentric coordinate in element to the weight on face
-    static Eigen::Vector2d elemWeight2faceWeight(const int l, const Eigen::Vector3d& pos);
-
-    // map the weight on edge to the barycentric coordinate in element
-    static Eigen::Vector3d edgeWeight2ElemWeight(const int l, const double& pos);
-    // map the barycentric coordinate in element to the weight on edge
-    static double elemWeight2edgeWeight(const int l, const Eigen::Vector3d& pos);
 
     // build the sparse matrix Adj
     void buildElementAdj(int ring = 1) override;

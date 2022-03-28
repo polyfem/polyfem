@@ -303,38 +303,6 @@ public:
         assert(e >= 0 && e < edges.size());
         return (vertices[edges[e].vertices(0)].pos - vertices[edges[e].vertices(1)].pos).norm();
     };
-    virtual double elementArea(int e) const
-    {
-        assert(false);
-        return 0;
-    };
-    virtual double faceArea(int f) const
-    {
-        assert(false);
-        return 0;
-    };
-    virtual double elementVolume(int e) const
-    {
-        assert(false);
-        return 0.;
-    };
-    double elementMeasure(int e) const
-    {
-        if (dim() == 2)
-            return elementArea(e);
-        else if (dim() == 3)
-            return elementVolume(e);
-
-        assert(false);
-        return 0.;
-    }
-
-    void get_elem_measures(Eigen::VectorXd& measure) const
-    {
-		measure.resize(n_elements);
-		for (int i = 0; i < n_elements; i++)
-			measure(i) = elementMeasure(valid2All(i));
-    }
 
     // index map from vertices to valid ones, and its inverse
     int all2ValidVertex(const int id) const { return all2ValidVertexMap[id]; };
@@ -418,10 +386,6 @@ public:
         buildIndexMapping();
     }
 
-    // save mesh
-    void writeToJson(const std::string& path) const;
-    void writeToJson(json& output) const;
-
     int n_elements = 0;
     int n_verts = 0;
 
@@ -431,15 +395,6 @@ public:
     std::vector<ncVert> vertices;
     std::vector<ncBoundary> edges;
     std::vector<ncBoundary> faces;
-
-    // functions to unify navigation of edges in 2D and faces in 3D
-
-    // call findEdge for 2D, findFace for 3D
-    virtual int findInterface(Eigen::VectorXi v) const = 0;
-    // #edges for 2D, #faces for 3D
-    virtual int n_interfaces() const = 0;
-    // return a const reference of the interface given id
-    virtual const ncBoundary& interface(int id) const = 0;
 
 protected:
 

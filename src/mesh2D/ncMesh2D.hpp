@@ -24,8 +24,6 @@ public:
     void init(const Eigen::MatrixXd& v, const Eigen::MatrixXi& f) override;
     void init(const std::string& path) override;
 
-    void writeOBJ(const std::string& path) const;
-
     // edges are created if not exist
     // return the id of this new element
     int addElement(Eigen::Vector3i v, int parent = -1);
@@ -36,28 +34,8 @@ public:
     // coarsen one element
     void coarsenElement(int id) override;
 
-    const ncBoundary& interface(int id) const override
-    {
-        assert(id < edges.size() && id >= 0);
-        return edges[id];
-    };
-
-    int n_interfaces() const override
-    {
-        return edges.size();
-    };
-
-    int findInterface(Eigen::VectorXi v) const override
-    {
-        assert(v.size() == 2);
-        Eigen::Vector2i v_ = v;
-        return findEdge(v_);
-    };
-
     // find the local index of edges[l] in the elements[e]
     int globalEdge2LocalEdge(const int e, const int l) const;
-
-    double elementArea(int e) const override;
 
     // mark the true boundary vertices
     void markBoundary() override;

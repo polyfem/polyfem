@@ -1,7 +1,6 @@
 #include "ncMesh3D.hpp"
 #include <stdlib.h>
 #include <algorithm>
-#include <igl/writeMESH.h>
 #include <igl/readMSH.h>
 #include <polyfem/auto_p_bases.hpp>
 #include <polyfem/TriQuadrature.hpp>
@@ -38,15 +37,6 @@ void ncMesh3D::init(const std::string& path)
 
     init(v, tet);
     mesh_path = path;
-}
-
-void ncMesh3D::writeMESH(const std::string& path) const
-{
-    assert(path.substr(path.find_last_of(".") + 1) == "mesh");
-    Eigen::MatrixXd v;
-    Eigen::MatrixXi tet;
-    compress(v, tet);
-    igl::writeMESH(path, v, tet, Eigen::MatrixXi());
 }
 
 int ncMesh3D::findFace(Eigen::Vector3i v) const
@@ -288,44 +278,6 @@ void ncMesh3D::coarsenElement(int id)
     refineHistory.push_back(parent_id);
 }
 
-// int ncMesh3D::globalFace2LocalFace(const int e, const int l) const
-// {
-//     for (int i = 0; i < elements[e].faces.size(); i++) {
-//         if (elements[e].faces[i] == l)
-//             return i;
-//     }
-//     assert(false);
-// }
-
-// int ncMesh3D::globalEdge2LocalEdge(const int e, const int l) const
-// {
-//     for (int i = 0; i < elements[e].edges.size(); i++) {
-//         if (elements[e].edges[i] == l)
-//             return i;
-//     }
-//     assert(false);
-// }
-
-double ncMesh3D::faceArea(int f) const
-{
-    assert(f >= 0 && f < faces.size());
-
-    Eigen::Vector3d x, y;
-    x = vertices[faces[f].vertices(1)].pos - vertices[faces[f].vertices(0)].pos;
-    y = vertices[faces[f].vertices(2)].pos - vertices[faces[f].vertices(0)].pos;
-
-    return (x.cross(y)).norm() / 2;
-};
-
-double ncMesh3D::elementVolume(int e) const
-{
-    Eigen::Matrix3d J;
-    for (int d = 0; d < 3; d++)
-        J.col(d) = vertices[elements[e].vertices(d + 1)].pos - vertices[elements[e].vertices(0)].pos;
-
-    return std::abs(J.determinant()) / 6;
-}
-
 void ncMesh3D::buildPartialMesh(const std::vector<int>& elem_list, ncMesh3D& submesh) const
 {
     int min_level = 100;
@@ -348,8 +300,6 @@ void ncMesh3D::buildPartialMesh(const std::vector<int>& elem_list, ncMesh3D& sub
     Eigen::MatrixXd v;
     ncMesh::buildPartialMesh(list, v, f);
     submesh.init(v, f);
-
-    igl::writeMESH("debug.mesh", v, f, Eigen::MatrixXi());
 
     std::vector<int> globalElemId2Local(elements.size(), -1);
     for (int i = 0; i < list.size(); i++) {
@@ -545,90 +495,6 @@ void ncMesh3D::assignOrders(Eigen::VectorXi& orders)
 
     min_order = orders.minCoeff();
     max_order = orders.maxCoeff();
-}
-
-Eigen::Vector3d ncMesh3D::faceWeight2ElemWeight(const int l, const Eigen::Vector2d& pos)
-{
-    Eigen::Matrix<double, 4, 3> v;
-    v.row(0) << 0, 0, 0;
-    v.row(1) << 1, 0, 0;
-    v.row(2) << 0, 1, 0;
-    v.row(3) << 0, 0, 1;
-    Eigen::Matrix<int, 4, 3> fv;
-    fv.row(0) << 0, 1, 2;
-    fv.row(1) << 0, 1, 3;
-    fv.row(2) << 1, 2, 3;
-    fv.row(3) << 2, 0, 3;
-
-    return v.row(fv(l, 0)) * (1 - pos(0) - pos(1)) + v.row(fv(l, 1)) * pos(0) + v.row(fv(l, 2)) * pos(1);
-}
-
-Eigen::Vector2d ncMesh3D::elemWeight2faceWeight(const int l, const Eigen::Vector3d& pos)
-{
-    Eigen::Matrix<double, 4, 3> v;
-    v.row(0) << 0, 0, 0;
-    v.row(1) << 1, 0, 0;
-    v.row(2) << 0, 1, 0;
-    v.row(3) << 0, 0, 1;
-    Eigen::Matrix<int, 4, 4> fv_; // extend fv to fv_ to include all vertices
-    fv_.row(0) << 0, 1, 2, 3;
-    fv_.row(1) << 0, 1, 3, 2;
-    fv_.row(2) << 1, 2, 3, 0;
-    fv_.row(3) << 2, 0, 3, 1;
-
-    Eigen::Matrix3d J;
-    for (int i = 0; i < 3; i++)
-        J.col(i) = v.row(fv_(l, i+1)) - v.row(fv_(l, 0));
-
-    Eigen::Vector3d x = J.colPivHouseholderQr().solve(pos - v.row(fv_(l, 0)).transpose());
-
-    Eigen::Vector2d uv = x.block(0, 0, 2, 1);
-    assert(std::abs(x(2)) < 1e-12);
-    return uv;
-}
-
-Eigen::Vector3d ncMesh3D::edgeWeight2ElemWeight(const int l, const double& pos)
-{
-    Eigen::Matrix<double, 4, 3> v;
-    v.row(0) << 0, 0, 0;
-    v.row(1) << 1, 0, 0;
-    v.row(2) << 0, 1, 0;
-    v.row(3) << 0, 0, 1;
-    Eigen::Matrix<int, 6, 2> ev;
-    ev.row(0) << 0, 1;
-    ev.row(1) << 1, 2;
-    ev.row(2) << 2, 0;
-
-    ev.row(3) << 0, 3;
-    ev.row(4) << 1, 3;
-    ev.row(5) << 2, 3;
-
-    return v.row(ev(l, 0)) * (1 - pos) + v.row(ev(l, 1)) * pos;
-}
-
-double ncMesh3D::elemWeight2edgeWeight(const int l, const Eigen::Vector3d& pos)
-{
-    Eigen::Matrix<double, 4, 3> v;
-    v.row(0) << 0, 0, 0;
-    v.row(1) << 1, 0, 0;
-    v.row(2) << 0, 1, 0;
-    v.row(3) << 0, 0, 1;
-    Eigen::Matrix<int, 6, 2> ev;
-    ev.row(0) << 0, 1;
-    ev.row(1) << 1, 2;
-    ev.row(2) << 2, 0;
-
-    ev.row(3) << 0, 3;
-    ev.row(4) << 1, 3;
-    ev.row(5) << 2, 3;
-
-    for (int d = 0; d < 3; d++) {
-        double D = v(ev(l, 1), d) - v(ev(l, 0), d);
-        if (std::abs(D) > 1e-12)
-            return (pos(d) - v(ev(l, 0), d)) / D;
-    }
-    assert(false);
-    return -1;
 }
 
 void ncMesh3D::nodesOnEdge(const int v1, const int v2, std::set<int>& nodes) const

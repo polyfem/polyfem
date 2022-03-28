@@ -231,40 +231,4 @@ void ncMesh::buildIndexMapping()
     }
 }
 
-void ncMesh::writeToJson(json& output) const
-{
-    output["refine"] = refineHistory;
-
-    logger().debug("Number of refine/coarsen operations: {}", refineHistory.size());
-
-    std::vector<int> orders;
-    for (const auto& elem : elements)
-        orders.push_back(elem.order);
-    output["order"] = orders;
-
-    logger().debug("Number of elements: {}", elements.size());
-
-    if (dim() == 3) {
-        std::vector<std::vector<int> > elem_verts(elements.size(), std::vector<int>(elements[0].vertices.size(), -1));
-        for (int e = 0; e < elements.size(); e++) {
-            const auto& elem = elements[e];
-            for (int v = 0; v < elem.vertices.size(); v++)
-                elem_verts[e][v] = elem.vertices[v];
-        }
-        output["element_vertices"] = elem_verts;
-    }
-}
-
-void ncMesh::writeToJson(const std::string& path) const
-{
-    std::ofstream outfile(path);
-
-    json args;
-    writeToJson(args);
-
-    outfile << args.dump() << std::endl;
-
-    outfile.close();
-}
-
 }

@@ -1,7 +1,6 @@
 #include "ncMesh2D.hpp"
 #include <stdlib.h>
 #include <algorithm>
-#include <igl/writeOBJ.h>
 #include <igl/readOBJ.h>
 #include <igl/readMSH.h>
 #include <boost/algorithm/string.hpp>
@@ -55,17 +54,6 @@ void ncMesh2D::init(const std::string& path)
 
     init(v, f);
     mesh_path = path;
-}
-
-void ncMesh2D::writeOBJ(const std::string& path) const
-{
-    Eigen::MatrixXd v;
-    Eigen::MatrixXi f;
-    compress(v, f);
-    Eigen::MatrixXd v_;
-    v_.setConstant(v.rows(), 3, 0.);
-    v_.block(0, 0, v.rows(), 2) = v;
-    igl::writeOBJ(path, v_, f);
 }
 
 int ncMesh2D::addElement(Eigen::Vector3i v, int parent)
@@ -191,15 +179,6 @@ int ncMesh2D::globalEdge2LocalEdge(const int e, const int l) const
     }
     assert(false);
     return 0;
-}
-
-double ncMesh2D::elementArea(int e) const
-{
-    const auto& v = elements[e].vertices;
-    Eigen::Vector2d e1 = vertices[v(1)].pos - vertices[v(0)].pos;
-    Eigen::Vector2d e2 = vertices[v(2)].pos - vertices[v(0)].pos;
-
-    return std::abs(e1(0) * e2(1) - e1(1) * e2(0)) / 2;
 }
 
 int find(const Eigen::Vector3i& vec, int x)
