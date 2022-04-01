@@ -2024,41 +2024,4 @@ namespace polyfem
 		igl::barycentric_coordinates(p, A, B, C, D, coord);
 	}
 
-	void Mesh3D::remove_fake_boundary()
-	{
-		auto &ncmesh3 = *dynamic_cast<ncMesh3D *>(ncmesh.get());
-		ncmesh3.markBoundary();
-		for (int i = 0; i < ncmesh3.n_verts; i++) {
-			mesh_.vertices[i].boundary = ncmesh3.vertices[ncmesh3.valid2AllVertex(i)].isboundary;
-		}
-		Eigen::Vector2i edge;
-		for (int i = 0; i < n_edges(); i++) {
-			edge << ncmesh3.valid2AllVertex(mesh_.edges[i].vs[0]), ncmesh3.valid2AllVertex(mesh_.edges[i].vs[1]);
-			int id = ncmesh3.findEdge(edge);
-			assert(id >= 0);
-			mesh_.edges[i].boundary = ncmesh3.edges[id].isboundary;
-		}
-		assert(surface_index_map.size() == ncmesh3.faces.size());
-		for (int id = 0; id < surface_index_map.size(); id++) {
-			if (surface_index_map[id] >= 0)
-				mesh_.faces[surface_index_map[id]].boundary = ncmesh3.faces[id].isboundary;
-		}
-	}
-
-	void Mesh3D::build_surface_index_map()
-	{
-		const auto &ncmesh3 = *dynamic_cast<ncMesh3D *>(ncmesh.get());
-		surface_index_map.setConstant(ncmesh3.faces.size(), 1, -1);
-
-		Eigen::Vector3i face;
-		for (int i = 0; i < n_faces(); i++) {
-			face << ncmesh3.valid2AllVertex(face_vertex(i, 0)),
-					ncmesh3.valid2AllVertex(face_vertex(i, 1)),
-					ncmesh3.valid2AllVertex(face_vertex(i, 2));
-			int id = ncmesh3.findFace(face);
-			assert(id >= 0 && id < surface_index_map.size());
-			surface_index_map[id] = i;
-		}
-	}
-
 } // namespace polyfem

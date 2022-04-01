@@ -1,7 +1,8 @@
 #ifndef SPLINE_BASIS_2D_HPP
 #define SPLINE_BASIS_2D_HPP
 
-#include <polyfem/Mesh2D.hpp>
+#include <polyfem/CMesh2D.hpp>
+#include <polyfem/NCMesh2D.hpp>
 #include <polyfem/ElementBases.hpp>
 #include <polyfem/LocalBoundary.hpp>
 

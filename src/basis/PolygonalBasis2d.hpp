@@ -1,7 +1,8 @@
 #ifndef POLYGONAL_BASIS_HPP
 #define POLYGONAL_BASIS_HPP
 
-#include <polyfem/Mesh2D.hpp>
+#include <polyfem/CMesh2D.hpp>
+#include <polyfem/NCMesh2D.hpp>
 #include <polyfem/AssemblerUtils.hpp>
 #include <polyfem/ElementBases.hpp>
 #include <polyfem/ElementAssemblyValues.hpp>

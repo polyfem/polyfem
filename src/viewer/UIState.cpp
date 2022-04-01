@@ -1,6 +1,7 @@
 #include "UIState.hpp"
 
-#include <polyfem/Mesh2D.hpp>
+#include <polyfem/CMesh2D.hpp>
+#include <polyfem/NCMesh2D.hpp>
 #include <polyfem/Mesh3D.hpp>
 
 #include <polyfem/AssemblerUtils.hpp>

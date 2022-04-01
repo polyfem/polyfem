@@ -7,7 +7,8 @@
 #include <polyfem/auto_p_bases.hpp>
 #include <polyfem/auto_q_bases.hpp>
 
-#include <polyfem/Mesh2D.hpp>
+#include <polyfem/CMesh2D.hpp>
+#include <polyfem/NCMesh2D.hpp>
 
 #include <cassert>
 
@@ -302,7 +303,7 @@ namespace polyfem
 	{
 		assert(!mesh.is_volume());
 
-		const Mesh2D &mesh2d = dynamic_cast<const Mesh2D &>(mesh);
+		const CMesh2D &mesh2d = dynamic_cast<const CMesh2D &>(mesh);
 
 		auto index = mesh2d.get_index_from_face(face_id);
 
@@ -340,7 +341,7 @@ namespace polyfem
 	{
 		assert(!mesh.is_volume());
 
-		const Mesh2D &mesh2d = dynamic_cast<const Mesh2D &>(mesh);
+		const CMesh2D &mesh2d = dynamic_cast<const CMesh2D &>(mesh);
 
 		auto index = mesh2d.get_index_from_face(face_id);
 
@@ -427,7 +428,7 @@ namespace polyfem
 	{
 		assert(!mesh.is_volume());
 
-		const Mesh2D &mesh2d = dynamic_cast<const Mesh2D &>(mesh);
+		const CMesh2D &mesh2d = dynamic_cast<const CMesh2D &>(mesh);
 
 		auto index = mesh2d.get_index_from_face(face_id);
 

@@ -2,7 +2,8 @@
 
 #include <polyfem/FEBioReader.hpp>
 
-#include <polyfem/Mesh2D.hpp>
+#include <polyfem/CMesh2D.hpp>
+#include <polyfem/NCMesh2D.hpp>
 #include <polyfem/Mesh3D.hpp>
 
 #include <polyfem/BoxSetter.hpp>
@@ -145,11 +146,8 @@ namespace polyfem
 		// 		mesh->set_tag(el_id, ElementType::InteriorPolytope);
 		// }
 
-		if (args["normalize_mesh"]) {
+		if (args["normalize_mesh"])
 			mesh->normalize();
-			if (mesh->ncmesh)
-				mesh->ncmesh->normalize();
-		}
 
 		RowVectorNd min, max;
 		mesh->bounding_box(min, max);

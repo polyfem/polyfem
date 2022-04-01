@@ -1,8 +1,6 @@
 set(SOURCES
 	Mesh3D.cpp
 	Mesh3D.hpp
-	ncMesh3D.cpp
-	ncMesh3D.hpp
 	Mesh3DStorage.hpp
 	MeshProcessing3D.cpp
 	MeshProcessing3D.hpp

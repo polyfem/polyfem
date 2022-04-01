@@ -19,7 +19,8 @@
 // Instead of including this do a forward declaration
 // #include <polyfem/NonlinearSolver.hpp>
 
-#include <polyfem/Mesh2D.hpp>
+#include <polyfem/NCMesh2D.hpp>
+#include <polyfem/CMesh2D.hpp>
 #include <polyfem/Mesh3D.hpp>
 #include <polyfem/StringUtils.hpp>
 
@@ -314,7 +315,7 @@ namespace polyfem
 		void load_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
 		{
 			if (V.cols() == 2)
-				mesh = std::make_unique<polyfem::Mesh2D>();
+				mesh = std::make_unique<polyfem::NCMesh2D>();
 			else
 				mesh = std::make_unique<polyfem::Mesh3D>();
 			mesh->build_from_matrices(V, F);
@@ -347,33 +348,6 @@ namespace polyfem
 			solution_frames.clear();
 			solve_problem();
 			solve_export_to_file = true;
-		}
-
-		void load_ncMesh(std::shared_ptr<ncMesh> ncmesh)
-		{
-			Eigen::MatrixXd v;
-			Eigen::MatrixXi f;
-
-			ncmesh->prepareMesh();
-			ncmesh->compress(v, f);
-
-			if (ncmesh->dim() == 2)
-				mesh = std::make_unique<polyfem::Mesh2D>();
-			else
-				mesh = std::make_unique<polyfem::Mesh3D>();
-			mesh->build_from_matrices(v, f);
-
-			for (auto& edge : ncmesh->edges)
-				edge.global_ids.clear();
-
-			for (auto& face : ncmesh->faces)
-				face.global_ids.clear();
-
-			mesh->ncmesh = ncmesh;
-			mesh->build_surface_index_map();
-			mesh->remove_fake_boundary();
-
-			load_mesh();
 		}
 		
 		//internal methods, they are called from solve

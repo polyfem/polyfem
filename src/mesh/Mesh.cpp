@@ -1,6 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/Mesh.hpp>
-#include <polyfem/Mesh2D.hpp>
+#include <polyfem/CMesh2D.hpp>
+#include <polyfem/NCMesh2D.hpp>
 #include <polyfem/Mesh3D.hpp>
 
 #include <polyfem/MeshUtils.hpp>
@@ -23,7 +24,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(GEO::Mesh &meshin)
 {
 	if (is_planar(meshin))
 	{
-		std::unique_ptr<polyfem::Mesh> mesh = std::make_unique<Mesh2D>();
+		std::unique_ptr<polyfem::Mesh> mesh = std::make_unique<CMesh2D>();
 		if (mesh->load(meshin))
 		{
 			return mesh;
@@ -75,7 +76,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path)
 
 		std::unique_ptr<polyfem::Mesh> mesh;
 		if (vertices.cols() == 2)
-			mesh = std::make_unique<Mesh2D>();
+			mesh = std::make_unique<CMesh2D>();
 		else
 			mesh = std::make_unique<Mesh3D>();
 
@@ -223,7 +224,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 	std::unique_ptr<polyfem::Mesh> mesh;
 	if (vertices.cols() == 2)
 	{
-		mesh = std::make_unique<Mesh2D>();
+		mesh = std::make_unique<CMesh2D>();
 	}
 	else
 	{

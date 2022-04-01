@@ -9,8 +9,6 @@
 #include <geogram/mesh/mesh.h>
 #include <memory>
 
-#include <polyfem/ncMesh.hpp>
-
 namespace polyfem
 {
 	// NOTE:
@@ -69,6 +67,7 @@ namespace polyfem
 		//Queries
 		virtual bool is_volume() const = 0;
 		int dimension() const { return (is_volume() ? 3 : 2); }
+		virtual bool is_conforming() const = 0;
 
 		int n_elements() const { return (is_volume() ? n_cells() : n_faces()); }
 
@@ -183,12 +182,6 @@ namespace polyfem
 		}
 
 		inline bool is_linear() { return orders_.size() == 0 || orders_.maxCoeff() == 1; }
-
-		std::shared_ptr<ncMesh> ncmesh;
-		Eigen::VectorXi surface_index_map;	// map ncmesh edge/face index to mesh edge/face index
-
-		virtual void remove_fake_boundary() = 0;
-		virtual void build_surface_index_map() = 0;
 
 	protected:
 		virtual bool load(const std::string &path) = 0;

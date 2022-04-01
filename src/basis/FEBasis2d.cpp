@@ -214,12 +214,10 @@ namespace
 				res.push_back(nodes.node_id_from_primitive(v[lv]));
 			else
 			{
-				if (mesh.ncmesh) {
-					auto &ncmesh = mesh.ncmesh;
-					auto &ncelem = ncmesh->elements[ncmesh->valid2All(f)];
-					assert(ncelem.vertices[lv] == ncmesh->valid2AllVertex(v[lv]));
+				if (!mesh.is_conforming()) {
+					const auto &ncmesh = dynamic_cast<const NCMesh2D&>(mesh);
 					// hanging vertex
-					if (ncmesh->vertices[ncelem.vertices[lv]].edge >= 0)
+					if (ncmesh.master_edge_of_vertex(ncmesh.face_vertex(f, lv)) >= 0)
 						res.push_back(-lv - 1);
 					else
 						res.push_back(nodes.node_id_from_primitive(v[lv]));
@@ -245,22 +243,21 @@ namespace
 			}
 			else
 			{
-				if (mesh.ncmesh) {
-					auto& ncmesh = mesh.ncmesh;
-					auto& ncelem = ncmesh->elements[ncmesh->valid2All(f)];
-					auto& ncedge = ncmesh->edges[ncelem.edges[le]];
+				if (!mesh.is_conforming()) {
+					const auto &ncmesh = dynamic_cast<const NCMesh2D&>(mesh);
+					const int edge_id = ncmesh.face_edge(f, le);
 					// slave edge
-					if (ncedge.master >= 0) {
+					if (ncmesh.master_edge_of_edge(edge_id) >= 0) {
 						for (int tmp = 0; tmp < p - 1; ++tmp)
 							res.push_back(-le - 1);
 					}
 					// master or conforming edge with constrained order
-					else if (edge_orders[ncelem.edges[le]] < discr_order[f]) {
+					else if (edge_orders[edge_id] < discr_order[f]) {
 						for (int tmp = 0; tmp < p - 1; ++tmp)
 							res.push_back(-le - 1);
 						// master edge
-						if (ncedge.slaves.size() > 0)
-							edge_virtual_nodes[ncelem.edges[le]] = nodes.node_ids_from_edge(index, edge_orders[ncelem.edges[le]] - 1);
+						if (ncmesh.n_slave_edges(edge_id) > 0)
+							edge_virtual_nodes[edge_id] = nodes.node_ids_from_edge(index, edge_orders[edge_id] - 1);
 					}
 					// master or conforming edge with unconstrained order
 					else {
@@ -408,8 +405,10 @@ namespace
 
 		element_nodes_id.resize(mesh.n_faces());
 
-		if (mesh.ncmesh)
-			edge_virtual_nodes.resize(mesh.ncmesh->edges.size());
+		if (!mesh.is_conforming()) {
+			const auto &ncmesh = dynamic_cast<const NCMesh2D&>(mesh);
+			edge_virtual_nodes.resize(ncmesh.n_edges());
+		}
 
 		for (int f = 0; f < mesh.n_faces(); ++f)
 		{
@@ -574,28 +573,22 @@ namespace
 	/// @param[in]  elem_orders		Element orders
 	/// @param[out] edge_orders     Edge orders
 	///
-	void compute_edge_orders(const polyfem::ncMesh2D &mesh, const Eigen::VectorXi& elem_orders, Eigen::VectorXi& edge_orders)
+	void compute_edge_orders(const polyfem::NCMesh2D &mesh, const Eigen::VectorXi& elem_orders, Eigen::VectorXi& edge_orders)
 	{
 		const int max_order = elem_orders.maxCoeff();
-		edge_orders.setConstant(mesh.edges.size(), max_order);
+		edge_orders.setConstant(mesh.n_edges(), max_order);
 
-		for (int i = 0; i < mesh.n_elements; i++) {
-			const auto& elem = mesh.elements[mesh.valid2All(i)];
-			for (int j = 0; j < elem.edges.size(); j++)
-				edge_orders[elem.edges(j)] = std::min(edge_orders[elem.edges(j)], elem_orders[i]);
-		}
+		for (int i = 0; i < mesh.n_faces(); i++)
+			for (int j = 0; j < mesh.n_face_vertices(i); j++)
+				edge_orders[mesh.face_edge(i, j)] = std::min(edge_orders[mesh.face_edge(i, j)], elem_orders[i]);
 
-		for (int i = 0; i < mesh.edges.size(); i++) {
-			const auto& edge = mesh.edges[i];
-			if (edge.master >= 0)
-				edge_orders[edge.master] = std::min(edge_orders[edge.master], edge_orders[i]);
-		}
+		for (int i = 0; i < mesh.n_edges(); i++)
+			if (mesh.master_edge_of_edge(i) >= 0)
+				edge_orders[mesh.master_edge_of_edge(i)] = std::min(edge_orders[mesh.master_edge_of_edge(i)], edge_orders[i]);
 
-		for (int i = 0; i < mesh.edges.size(); i++) {
-			const auto& edge = mesh.edges[i];
-			if (edge.master >= 0)
-				edge_orders[i] = std::min(edge_orders[edge.master], edge_orders[i]);
-		}
+		for (int i = 0; i < mesh.n_edges(); i++)
+			if (mesh.master_edge_of_edge(i) >= 0)
+				edge_orders[i] = std::min(edge_orders[mesh.master_edge_of_edge(i)], edge_orders[i]);
 	}
 } // anonymous namespace
 
@@ -700,8 +693,8 @@ int polyfem::FEBasis2d::build_bases(
 	const int n_face_nodes = std::max(nn * nn, max_p == 1 ? 1 : 0);
 
 	Eigen::VectorXi edge_orders;
-	if (mesh.ncmesh) {
-		const auto &ncmesh = *dynamic_cast<ncMesh2D*>(mesh.ncmesh.get());
+	if (!mesh.is_conforming()) {
+		const auto &ncmesh = dynamic_cast<const NCMesh2D&>(mesh);
 		compute_edge_orders(ncmesh, discr_orders, edge_orders);
 	}
 
@@ -900,17 +893,17 @@ int polyfem::FEBasis2d::build_bases(
 
 	if (!is_geom_bases)
 	{
-		if (mesh.ncmesh) {
-			const auto &ncmesh = *dynamic_cast<ncMesh2D*>(mesh.ncmesh.get());
+		if (!mesh.is_conforming()) {
+			const auto &ncmesh = dynamic_cast<const NCMesh2D&>(mesh);
 			
 			std::vector<std::vector<int> > elementOrder;
 			{
 				const int max_order = discr_orders.maxCoeff(), min_order = discr_orders.minCoeff();
 				int max_level = 0;
-				for (const auto& elem : ncmesh.elements) {
-					if (elem.is_valid() && max_level < elem.level)
-						max_level = elem.level;
-				}
+				for (int e = 0; e < ncmesh.n_faces(); e++)
+					if (max_level < ncmesh.face_ref_level(e))
+						max_level = ncmesh.face_ref_level(e);
+
 				elementOrder.resize((max_level + 1) * (max_order - min_order + 1));
 				int N = 0;
 				int cur_level = 0;
@@ -918,13 +911,12 @@ int polyfem::FEBasis2d::build_bases(
 					int order = min_order;
 					while (order <= max_order) {
 						int cur_bucket = (max_order - min_order + 1) * cur_level + (order - min_order);
-						for (int i = 0; i < ncmesh.n_elements; i++) {
-							const auto& elem = ncmesh.elements[ncmesh.valid2All(i)];
-							if (elem.level != cur_level || discr_orders[i] != order)
+						for (int i = 0; i < ncmesh.n_faces(); i++) {
+							if (ncmesh.face_ref_level(i) != cur_level || discr_orders[i] != order)
 								continue;
 
 							N++;
-							elementOrder[cur_bucket].push_back(ncmesh.valid2All(i));
+							elementOrder[cur_bucket].push_back(i);
 						}
 						order++;
 					}
@@ -935,15 +927,11 @@ int polyfem::FEBasis2d::build_bases(
 			for (const auto& bucket : elementOrder) {
 				if (bucket.size() == 0)
 					continue;
-				for (const int e : bucket) {
-					const int e_ = ncmesh.all2Valid(e);
+				for (const int e_ : bucket) {
+					const int e = ncmesh.valid2AllElem(e_);
 					ElementBases& b = bases[e_];
 					const int discr_order = discr_orders(e_);
 					const int n_el_bases = element_nodes_id[e_].size();
-
-					assert(mesh.face_vertex(e_, 0) == ncmesh.elements[e].vertices[0]);
-					assert(mesh.face_vertex(e_, 1) == ncmesh.elements[e].vertices[1]);
-					assert(mesh.face_vertex(e_, 2) == ncmesh.elements[e].vertices[2]);
 
 					for (int j = 0; j < n_el_bases; ++j)
 					{
@@ -953,28 +941,25 @@ int polyfem::FEBasis2d::build_bases(
 							b.bases[j].init(discr_order, global_index, j, nodes.node_position(global_index));
 						else
 						{
-							auto& ncelem = ncmesh.elements[e];
 							int large_edge = -1, local_large_edge = -1;
 							int opposite_element = -1;
+							bool is_on_master_edge = false;
 
 							if (j < 3 + 3 * (discr_order - 1) && j >= 3)
 							{
 								local_large_edge = (j - 3) / (discr_order - 1);
-								if (ncmesh.edges[ncelem.edges(local_large_edge)].slaves.size() > 0)
-									large_edge = ncelem.edges(local_large_edge);
+								large_edge = ncmesh.face_edge(e_, local_large_edge);
+								if (ncmesh.n_slave_edges(large_edge) > 0)
+									is_on_master_edge = true;
 							}
 
 							// this node is on a master edge, but its order is constrained
-							if (large_edge >= 0) {
+							if (is_on_master_edge >= 0) {
 								const int edge_order = edge_orders[large_edge];
-								assert(j >= 3 && j < 3 + 3 * (discr_order - 1));
-								assert(edge_order < discr_order);
 
 								// indices of fake nodes on this edge in the opposite element
 								Eigen::VectorXi indices;
 								indices.resize(discr_order + 1);
-								// indices[0] = local_large_edge;
-								// indices[indices.size() - 1] = (local_large_edge + 1) % 3;
 								for (int i = 0; i < discr_order - 1; i++) {
 									indices[i + 1] = 3 + local_large_edge * (discr_order - 1) + i;
 								}
@@ -996,7 +981,7 @@ int polyfem::FEBasis2d::build_bases(
 								};
 
 								// apply basis projection
-								double x = ncMesh2D::elemWeight2EdgeWeight(local_large_edge, node_position);
+								double x = NCMesh2D::elemWeight2EdgeWeight(local_large_edge, node_position);
 								for (int i = 0; i < edge_virtual_nodes[large_edge].size(); i++)
 								{
 									const int global_index = edge_virtual_nodes[large_edge][i];
@@ -1022,49 +1007,52 @@ int polyfem::FEBasis2d::build_bases(
 								local_large_edge = -1;
 								// this node is a hanging vertex, and it's not on a slave edge
 								if (j < 3) {
-									assert(ncmesh.vertices[ncelem.vertices[j]].edge >= 0);
-									large_edge = ncmesh.vertices[ncelem.vertices[j]].edge;
-									opposite_element = ncmesh.edges[large_edge].get_element();
-
-									global_position = ncmesh.vertices[ncelem.vertices(j)].pos.transpose();
+									const int v_id = ncmesh.face_vertex(e_, j);
+									large_edge = ncmesh.master_edge_of_vertex(v_id);
+									opposite_element = ncmesh.face_neighbor(large_edge);
+									global_position = ncmesh.point(v_id);
 								}
 								// this node is on a slave edge
 								else {
 									// find the local id of small edge
-									assert (j >= 3 && j < 3 + 3 * (discr_order - 1));
-
-									int small_edge = ncelem.edges[(j - 3) / (discr_order - 1)];
-									large_edge = ncmesh.edges[small_edge].master;
+									int small_edge = ncmesh.face_edge(e_, (j - 3) / (discr_order - 1));
+									large_edge = ncmesh.master_edge_of_edge(small_edge);
 
 									// this edge is non-conforming
-									if (ncmesh.edges[small_edge].n_elem() == 1)
-										opposite_element = ncmesh.edges[large_edge].get_element();
+									if (ncmesh.n_face_neighbors(small_edge) == 1)
+										opposite_element = ncmesh.face_neighbor(small_edge);
 									// this edge is conforming, but the order on two sides is different
-									else
-										opposite_element = ncmesh.edges[small_edge].find_opposite_element(e);
+									else {
+										Navigation::Index idx;
+										idx.edge = small_edge;
+										idx.vertex = ncmesh.edge_vertex(small_edge, 0);
+										idx.face_corner = -1;
+										idx.face = e_;
+										opposite_element = ncmesh.switch_face(idx).face;
+									}
 
 									// the position of node j in the opposite element
 									Eigen::MatrixXd lnodes;
 									autogen::p_nodes_2d(discr_order, lnodes);
 									global_position = lnodes.row(j);
 
-									Eigen::MatrixXd verts(3, 2);
+									Eigen::MatrixXd verts(ncmesh.n_face_vertices(e_), 2);
 									for (int i = 0; i < verts.rows(); i++)
-										verts.row(i) = ncmesh.vertices[ncmesh.elements[e].vertices(i)].pos;
+										verts.row(i) = ncmesh.point(ncmesh.face_vertex(e_, i));
 
 									Eigen::MatrixXd local_position = lnodes.row(j);
 									local_to_global(verts, local_position, global_position);
 								}
 
-								Eigen::MatrixXd verts(3, 2);
+								Eigen::MatrixXd verts(ncmesh.n_face_vertices(e_), 2);
 								for (int i = 0; i < verts.rows(); i++)
-									verts.row(i) = ncmesh.vertices[ncmesh.elements[opposite_element].vertices(i)].pos;
+									verts.row(i) = ncmesh.point(ncmesh.face_vertex(opposite_element, i));
 								
 								Eigen::MatrixXd node_position;
 								global_to_local(verts, global_position, node_position);
 
 								// evaluate the basis of the opposite element at this node
-								const auto& other_bases = bases[ncmesh.all2Valid(opposite_element)];
+								const auto& other_bases = bases[ncmesh.all2ValidElem(opposite_element)];
 								std::vector<AssemblyValues> w;
 								other_bases.evaluate_bases(node_position, w);
 

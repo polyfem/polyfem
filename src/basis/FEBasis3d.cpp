@@ -8,9 +8,6 @@
 #include <polyfem/auto_p_bases.hpp>
 #include <polyfem/auto_q_bases.hpp>
 
-#include <polyfem/MaybeParallelFor.hpp>
-#include <polyfem/Logger.hpp>
-
 #include <cassert>
 #include <array>
 ////////////////////////////////////////////////////////////////////////////////
@@ -18,20 +15,15 @@
 using namespace polyfem;
 
 /*
-
 Axes:
   z y
   │╱
   o──x
-
 Boundaries:
 X axis: left/right
 Y axis: front/back
 Z axis: bottom/top
-
-
 Corner nodes:
-
 v3──x──v2
  │⋱   ╱  ╲
  x  ⋱╱    ╲
@@ -39,23 +31,17 @@ v3──x──v2
  │ ╱     ⋱  ╲
  │╱         ⋱╲
 v0─────x──────v1
-
 v0 = (0, 0, 0)
 v1 = (1, 0, 0)
 v2 = (0, 1, 0)
 v3 = (0, 0, 1)
-
 Edge nodes:
-
 e0  = (0.5,   0,   0)
 e1  = (0.5, 0.5,   0)
 e2  = (  0, 0.5,   0)
 e3  = (  0, 0,   0.5)
 e4  = (0.5,   0, 0.5)
 e5  = (  0, 0.5, 0.5)
-
-
-
 Corner nodes:
 	  v7──────x─────v6
 	  ╱┆     ╱      ╱│
@@ -72,7 +58,6 @@ v4─────┼x─────v5  ┆╱ │
  │ ╱    ┆      │ ╱
  │╱     ┆      │╱
 v0──────x─────v1
-
 v0 = (0, 0, 0)
 v1 = (1, 0, 0)
 v2 = (1, 1, 0)
@@ -81,7 +66,6 @@ v4 = (0, 0, 1)
 v5 = (1, 0, 1)
 v6 = (1, 1, 1)
 v7 = (0, 1, 1)
-
 Edge nodes:
 	   x─────e10─────x
 	  ╱┆     ╱      ╱│
@@ -98,7 +82,6 @@ e4┄┄┄⌿┄┄x┄┄┄┄┄e5  ┆╱
  │ ╱    ┆      │ ╱
  │╱     ┆      │╱
  x─────e0──────x
-
 e0  = (0.5,   0,   0)
 e1  = (  1, 0.5,   0)
 e2  = (0.5,   1,   0)
@@ -111,7 +94,6 @@ e8  = (0.5,   0,   1)
 e9  = (  1, 0.5,   1)
 e10 = (0.5,   1,   1)
 e11 = (  0, 0.5,   1)
-
 Face nodes:
 	  v7──────x─────v6
 	  ╱┆     ╱      ╱│
@@ -128,265 +110,16 @@ v4─────┼x─────v5  ┆╱ │
  │ ╱    ┆      │ ╱
  │╱     ┆      │╱
 v0──────x─────v1
-
 f0  = (  0, 0.5, 0.5)
 f1  = (  1, 0.5, 0.5)
 f2  = (0.5,   0, 0.5)
 f3  = (0.5,   1, 0.5)
 f4  = (0.5, 0.5,   0)
 f5  = (0.5, 0.5,   1)
-
 */
 
 namespace
 {
-	/// @brief      map barycentric coordinates of a triangle to global coordinates
-	///
-	/// @param[in]  verts           The vertices of a triangle, 4 x 3
-	/// @param[in]  uv        		The barycentric coordinates, N x 3
-	/// @param[out] pts             Output global coordinates, N x 3
-	///
-	void local_to_global(const Eigen::MatrixXd& verts, const Eigen::MatrixXd& uv, Eigen::MatrixXd& pts)
-	{
-		const int dim = verts.cols();
-		const int N = uv.rows();
-		assert(dim == 3);
-		assert(uv.cols() == dim);
-		assert(verts.rows() == dim+1);
-
-		pts.setZero(N, dim);
-		for (int i = 0; i < N; i++)
-			pts.row(i) = uv(i, 0) * verts.row(1) + uv(i, 1) * verts.row(2) + uv(i, 2) * verts.row(3) + (1.0 - uv(i, 0) - uv(i, 1) - uv(i, 2)) * verts.row(0);
-	}
-
-	/// @brief      map global coordinates to barycentric coordinates of an edge
-	///
-	/// @param[in]  verts           The vertices of an edge, 2 x 3
-	/// @param[out] u        		The barycentric coordinates, N x 1
-	/// @param[in]  pts             The global coordinates, N x 2
-	///
-	void global_to_local_edge(const Eigen::MatrixXd& verts, const Eigen::MatrixXd& pts, Eigen::MatrixXd& u)
-	{
-		const int dim = verts.cols();
-		const int N = pts.rows();
-		assert(dim == 3);
-		assert(verts.rows() == 2);
-		assert(pts.cols() == dim);
-
-		double squared_length = (verts.row(1) - verts.row(0)).squaredNorm();
-
-		u.setZero(N, 1);
-		maybe_parallel_for(N, [&](int start, int end, int thread_id) {
-			for (int i = start; i < end; i++)
-			{
-				auto point = pts.row(i) - verts.row(0);
-				
-				u(i) = ((pts.row(i) - verts.row(0)).array() * (verts.row(1) - verts.row(0)).array()).sum() / squared_length;
-			}
-		});
-	}
-
-	/// @brief      map global coordinates to barycentric coordinates of a face
-	///
-	/// @param[in]  verts           The vertices of a face, 3 x 3
-	/// @param[out] uv       		The barycentric coordinates, N x 2
-	/// @param[in]  pts             The global coordinates, N x 2
-	///
-	void global_to_local_face(const Eigen::MatrixXd& verts, const Eigen::MatrixXd& pts, Eigen::MatrixXd& uv)
-	{
-		const int dim = verts.cols();
-		const int N = pts.rows();
-		assert(dim == 3);
-		assert(verts.rows() == 3);
-		assert(pts.cols() == dim);
-
-		uv.setZero(N, 2);
-
-		Eigen::Matrix3d J;
-		for (int i = 0; i < 2; i++)
-			J.col(i) = verts.row(i+1) - verts.row(0);
-
-		Eigen::Vector3d a = J.col(0);
-		Eigen::Vector3d b = J.col(1);
-		Eigen::Vector3d virtual_vert = a.cross(b);
-		J.col(2) = virtual_vert;
-
-		for (int i = 0; i < N; i++) {
-			Eigen::Vector3d x = J.colPivHouseholderQr().solve(pts.row(i).transpose() - verts.row(0).transpose());
-			uv.row(i) = x.block(0, 0, 2, 1);
-			assert(std::abs(x(2)) < 1e-12);
-		}
-	}
-
-	/// @brief      map barycentric coordinates to global coordinates of a face
-	///
-	/// @param[in]  verts           The vertices of a face, 3 x 3
-	/// @param[in]  uv       		The barycentric coordinates, N x 2
-	/// @param[out] pts             The global coordinates, N x 2
-	///
-	void local_to_global_face(const Eigen::MatrixXd& verts, const Eigen::MatrixXd& uv, Eigen::MatrixXd& pts)
-	{
-		const int dim = verts.cols();
-		const int N = uv.rows();
-		assert(dim == 3);
-		assert(verts.rows() == 3);
-		assert(uv.cols() == dim-1);
-
-		pts.setZero(N, dim);
-		for (int i = 0; i < N; i++)
-			pts.row(i) = verts.row(1) * uv(i, 0) + verts.row(2) * uv(i, 1) + verts.row(0) * (1.0 - uv(i, 0) - uv(i, 1));
-	}
-
-	/// @brief      map global coordinates to barycentric coordinates of a triangle
-	///
-	/// @param[in]  verts           The vertices of a triangle, 4 x 3
-	/// @param[out] uvw        		The barycentric coordinates, N x 3
-	/// @param[in]  pts             The global coordinates, N x 3
-	///
-	void global_to_local(const Eigen::MatrixXd& verts, const Eigen::MatrixXd& pts, Eigen::MatrixXd& uvw)
-	{
-		const int dim = verts.cols();
-		const int N = pts.rows();
-		assert(dim == 3);
-		assert(verts.rows() == dim+1);
-		assert(pts.cols() == dim);
-
-		Eigen::Matrix3d J;
-		for (int i = 0; i < dim; i++)
-			J.col(i) = verts.row(i+1) - verts.row(0);
-		
-		Eigen::Matrix3d Jinv = J.inverse();
-
-		uvw.setZero(N, dim);
-		maybe_parallel_for(N, [&](int start, int end, int thread_id) {
-			for (int i = start; i < end; i++)
-			{
-				auto point = pts.row(i) - verts.row(0);
-				
-				uvw.row(i) = Jinv * point.transpose();
-			}
-		});
-	}
-
-	/// @brief      check validity of edge/face orders, assure basis continuity
-	///
-	/// @param[in]  mesh            Input ncmesh
-	/// @param[in]  elem_orders		Element orders
-	/// @param[in]  edge_orders     Edge orders
-	/// @param[in]  face_orders     Face orders
-	///
-	bool is_edge_face_order_valid(const polyfem::ncMesh3D &mesh, const Eigen::VectorXi& elem_orders, const Eigen::VectorXi& edge_orders, const Eigen::VectorXi& face_orders)
-	{
-		for (int e = 0; e < mesh.n_elements; e++) {
-			for (int f = 0; f < mesh.elements[mesh.valid2All(e)].faces.size(); f++)
-				if (face_orders[mesh.elements[mesh.valid2All(e)].faces(f)] > elem_orders[e])
-					return false;
-
-			for (int edge = 0; edge < mesh.elements[mesh.valid2All(e)].edges.size(); edge++)
-				if (edge_orders[mesh.elements[mesh.valid2All(e)].edges(edge)] > elem_orders[e])
-					return false;
-		}
-
-		for (int f = 0; f < mesh.faces.size(); f++) {
-			if (mesh.faces[f].n_elem() == 0)
-				continue;
-			
-			const int master_face = mesh.faces[f].master;
-			if (master_face >= 0 && face_orders[f] != face_orders[master_face])
-				return false;
-		
-			for (int edge = 0; edge < 3; edge++) {
-				if (edge_orders[mesh.findEdge(mesh.faces[f].vertices(edge), mesh.faces[f].vertices((edge+1)%3))] > face_orders[f])
-					return false;
-			}
-		}
-
-		for (int edge = 0; edge < mesh.edges.size(); edge++) {
-			const int edge_master = mesh.edges[edge].master;
-			const int face_master = mesh.edges[edge].master_face;
-			if (edge_master >= 0 && edge_orders[edge] != edge_orders[edge_master])
-				return false;
-			else if (edge_master < 0 && face_master >= 0 && face_orders[face_master] > edge_orders[edge])
-				return false;
-		}
-
-		return true;
-	}
-
-	/// @brief      compute edge/face orders given element orders, assure basis continuity
-	///
-	/// @param[in]  mesh            Input ncmesh
-	/// @param[in]  elem_orders		Element orders
-	/// @param[out] edge_orders     Edge orders
-	/// @param[out] face_orders     Face orders
-	///
-	void compute_edge_face_orders(const polyfem::ncMesh3D &mesh, const Eigen::VectorXi& elem_orders, Eigen::VectorXi& edge_orders, Eigen::VectorXi& face_orders)
-	{
-		const int max_order = elem_orders.maxCoeff();
-		edge_orders.setConstant(mesh.edges.size(), max_order);
-		face_orders.setConstant(mesh.faces.size(), max_order);
-
-		for (int i = 0; i < mesh.n_elements; i++) {
-			const auto& elem = mesh.elements[mesh.valid2All(i)];
-			for (int j = 0; j < elem.faces.size(); j++)
-				face_orders[elem.faces(j)] = std::min(face_orders[elem.faces(j)], elem_orders[i]);
-		}
-
-		while (!is_edge_face_order_valid(mesh, elem_orders, edge_orders, face_orders)) {
-			for (int i = 0; i < mesh.faces.size(); i++) {
-				const auto& face = mesh.faces[i];
-				if (face.master >= 0)
-					face_orders[face.master] = std::min(face_orders[face.master], face_orders[i]);
-			}
-
-			for (int i = 0; i < mesh.faces.size(); i++) {
-				const auto& face = mesh.faces[i];
-				if (face.master >= 0)
-					face_orders[i] = std::min(face_orders[face.master], face_orders[i]);
-			}
-
-			for (int f = 0; f < mesh.faces.size(); f++) {
-				if (mesh.faces[f].n_elem() == 0)
-					continue;
-			
-				for (int edge = 0; edge < 3; edge++) {
-					const int edge_id = mesh.findEdge(mesh.faces[f].vertices(edge), mesh.faces[f].vertices((edge+1)%3));
-					edge_orders[edge_id] = std::min(edge_orders[edge_id], face_orders[f]);
-				}
-			}
-
-			for (int edge = 0; edge < mesh.edges.size(); edge++) {
-				const int edge_master = mesh.edges[edge].master;
-				const int face_master = mesh.edges[edge].master_face;
-				if (edge_master >= 0)
-					edge_orders[edge_master] = std::min(edge_orders[edge_master], edge_orders[edge]);
-			}
-
-			for (int edge = 0; edge < mesh.edges.size(); edge++) {
-				const int edge_master = mesh.edges[edge].master;
-				const int face_master = mesh.edges[edge].master_face;
-				if (edge_master >= 0)
-					edge_orders[edge] = std::min(edge_orders[edge_master], edge_orders[edge]);
-			}
-
-			for (int edge = 0; edge < mesh.edges.size(); edge++) {
-				const int edge_master = mesh.edges[edge].master;
-				const int face_master = mesh.edges[edge].master_face;
-				if (edge_master < 0 && face_master >= 0)
-					face_orders[face_master] = std::min(face_orders[face_master], edge_orders[edge]);
-			}
-		}
-	}
-
-	int lowest_order_elem_on_edge(const ncMesh3D &mesh, const Eigen::VectorXi &discr_order, const int edge)
-	{
-		int min_order_elem = mesh.edges[edge].get_element();
-		for (int elem : mesh.edges[edge].elem_list) {
-			if (discr_order[mesh.all2Valid(min_order_elem)] > discr_order[mesh.all2Valid(elem)])
-				min_order_elem = elem;
-		}
-		return min_order_elem;
-	}
 
 	template <class InputIterator, class T>
 	int find_index(InputIterator first, InputIterator last, const T &val)
@@ -447,7 +180,7 @@ namespace
 		return l2g;
 	}
 
-	void tet_local_to_global(const bool is_geom_bases, const int p, const Mesh3D &mesh, int c, const Eigen::VectorXi &discr_order, const Eigen::VectorXi &edge_orders, const Eigen::VectorXi &face_orders, std::vector<int> &res, polyfem::MeshNodes &nodes, std::vector<std::vector<int>> &edge_virtual_nodes, std::vector<std::vector<int>> &face_virtual_nodes)
+	void tet_local_to_global(const bool is_geom_bases, const int p, const Mesh3D &mesh, int c, const Eigen::VectorXi &discr_order, std::vector<int> &res, polyfem::MeshNodes &nodes)
 	{
 		const int n_edge_nodes = p > 1 ? ((p - 1) * 6) : 0;
 		const int nn = p > 2 ? (p - 2) : 0;
@@ -502,16 +235,7 @@ namespace
 		// vertices
 		for (size_t lv = 0; lv < v.size(); ++lv)
 		{
-			if (mesh.ncmesh && !is_geom_bases) {
-				auto& ncmesh = mesh.ncmesh;
-				// hanging vertex
-				if (ncmesh->vertices[ncmesh->valid2AllVertex(v[lv])].edge >= 0 || ncmesh->vertices[ncmesh->valid2AllVertex(v[lv])].face >= 0)
-					res.push_back(-lv - 1);
-				else
-					res.push_back(nodes.node_id_from_primitive(v[lv]));
-			}
-			else
-				res.push_back(nodes.node_id_from_primitive(v[lv]));
+			res.push_back(nodes.node_id_from_primitive(v[lv]));
 		}
 
 		// Edges
@@ -528,47 +252,20 @@ namespace
 			}
 			else
 			{
-				if (mesh.ncmesh && !is_geom_bases) {
-					auto &ncmesh = *dynamic_cast<ncMesh3D *>(mesh.ncmesh.get());
-					auto& ncelem = ncmesh.elements[ncmesh.valid2All(c)];
-					const int edge_id = ncmesh.findEdge(ncmesh.valid2AllVertex(ev(le, 0)), ncmesh.valid2AllVertex(ev(le, 1)));
-					auto& ncedge = ncmesh.edges[edge_id];
-					// slave edge
-					if (ncedge.master >= 0 || ncedge.master_face >= 0) {
-						for (int tmp = 0; tmp < p - 1; ++tmp)
-							res.push_back(-le - 1);
-					}
-					// master or conforming edge with constrained order
-					else if (edge_orders[edge_id] < discr_order[c]) {
-						for (int tmp = 0; tmp < p - 1; ++tmp)
-							res.push_back(-le - 1);
-
-						int min_order_elem = lowest_order_elem_on_edge(ncmesh, discr_order, edge_id);
-						// master edge, add extra nodes
-						if (min_order_elem == ncmesh.valid2All(c))
-							edge_virtual_nodes[edge_id] = nodes.node_ids_from_edge(index, edge_orders[edge_id] - 1);
-					}
-					else {
-						auto node_ids = nodes.node_ids_from_edge(index, p - 1);
-						res.insert(res.end(), node_ids.begin(), node_ids.end());
-					}
+				for (auto cid : neighs)
+				{
+					min_p = std::min(min_p, discr_order.size() > 0 ? discr_order(cid) : 0);
 				}
-				else {
-					for (auto cid : neighs)
-					{
-						min_p = std::min(min_p, discr_order.size() > 0 ? discr_order(cid) : 0);
-					}
 
-					if (discr_order.size() > 0 && discr_order(c) > min_p)
-					{
-						for (int tmp = 0; tmp < p - 1; ++tmp)
-							res.push_back(-le - 10);
-					}
-					else
-					{
-						auto node_ids = nodes.node_ids_from_edge(index, p - 1);
-						res.insert(res.end(), node_ids.begin(), node_ids.end());
-					}
+				if (discr_order.size() > 0 && discr_order(c) > min_p)
+				{
+					for (int tmp = 0; tmp < p - 1; ++tmp)
+						res.push_back(-le - 10);
+				}
+				else
+				{
+					auto node_ids = nodes.node_ids_from_edge(index, p - 1);
+					res.insert(res.end(), node_ids.begin(), node_ids.end());
 				}
 			}
 		}
@@ -588,40 +285,15 @@ namespace
 			}
 			else
 			{
-				if (mesh.ncmesh && !is_geom_bases) {
-					auto &ncmesh = *dynamic_cast<ncMesh3D *>(mesh.ncmesh.get());
-					auto &ncelem = ncmesh.elements[ncmesh.valid2All(c)];
-					const int face_id = ncmesh.findFace(ncmesh.valid2AllVertex(fv(lf, 0)), ncmesh.valid2AllVertex(fv(lf, 1)), ncmesh.valid2AllVertex(fv(lf, 2)));
-					auto &ncface = ncmesh.faces[face_id];
-					// slave face
-					if (ncface.master >= 0) {
-						for (int tmp = 0; tmp < n_loc_f; ++tmp)
-							res.push_back(-lf - 1);
-					}
-					// master face or conforming face with constrained order
-					else if (face_orders[face_id] < discr_order[c]) {
-						for (int tmp = 0; tmp < n_loc_f; ++tmp)
-							res.push_back(-lf - 1);
-						// master face
-						if (ncface.slaves.size() > 0 && face_orders[face_id] > 2)
-							face_virtual_nodes[face_id] = nodes.node_ids_from_face(index, face_orders[face_id] - 2);
-					}
-					else {
-						auto node_ids = nodes.node_ids_from_face(index, p - 2);
-						res.insert(res.end(), node_ids.begin(), node_ids.end());
-					}
+				if (skip_other)
+				{
+					for (int tmp = 0; tmp < n_loc_f; ++tmp)
+						res.push_back(-lf - 1);
 				}
-				else {
-					if (skip_other)
-					{
-						for (int tmp = 0; tmp < n_loc_f; ++tmp)
-							res.push_back(-lf - 1);
-					}
-					else
-					{
-						auto node_ids = nodes.node_ids_from_face(index, p - 2);
-						res.insert(res.end(), node_ids.begin(), node_ids.end());
-					}
+				else
+				{
+					auto node_ids = nodes.node_ids_from_face(index, p - 2);
+					res.insert(res.end(), node_ids.begin(), node_ids.end());
 				}
 			}
 		}
@@ -780,14 +452,10 @@ namespace
 	void compute_nodes(
 		const polyfem::Mesh3D &mesh,
 		const Eigen::VectorXi &discr_orders,
-		const Eigen::VectorXi &edge_orders,
-		const Eigen::VectorXi &face_orders,
 		const bool serendipity,
 		const bool has_polys,
 		const bool is_geom_bases,
 		MeshNodes &nodes,
-		std::vector<std::vector<int>> &edge_virtual_nodes,
-		std::vector<std::vector<int>> &face_virtual_nodes,
 		std::vector<std::vector<int>> &element_nodes_id,
 		std::vector<polyfem::LocalBoundary> &local_boundary,
 		std::map<int, polyfem::InterfaceData> &poly_face_to_data)
@@ -796,11 +464,6 @@ namespace
 		local_boundary.clear();
 		// local_boundary.resize(mesh.n_faces());
 		element_nodes_id.resize(mesh.n_faces());
-
-		if (mesh.ncmesh) {
-			edge_virtual_nodes.resize(mesh.ncmesh->edges.size());
-			face_virtual_nodes.resize(mesh.ncmesh->faces.size());
-		}
 
 		for (int c = 0; c < mesh.n_cells(); ++c)
 		{
@@ -836,7 +499,7 @@ namespace
 			else if (mesh.is_simplex(c))
 			{
 				// element_nodes_id[c] = polyfem::FEBasis3d::tet_local_to_global(discr_order, mesh, c, discr_orders, nodes);
-				tet_local_to_global(is_geom_bases, discr_order, mesh, c, discr_orders, edge_orders, face_orders, element_nodes_id[c], nodes, edge_virtual_nodes, face_virtual_nodes);
+				tet_local_to_global(is_geom_bases, discr_order, mesh, c, discr_orders, element_nodes_id[c], nodes);
 
 				auto v = tet_vertices_local_to_global(mesh, c);
 				Eigen::Matrix<int, 4, 3> fv;
@@ -1439,40 +1102,9 @@ int polyfem::FEBasis3d::build_bases(
 	const int n_face_nodes = nn * nn;
 	const int n_cells_nodes = nn * nn * nn;
 
-	Eigen::VectorXi edge_orders, face_orders;
-	if (mesh.ncmesh) {
-		auto &ncmesh = *dynamic_cast<ncMesh3D*>(mesh.ncmesh.get());
-		for (int c = 0; c < mesh.n_cells(); c++) {
-			const auto& verts = ncmesh.elements[ncmesh.valid2All(c)].vertices;
-			auto v = tet_vertices_local_to_global(mesh, c);
-			for (int i = 0; i < v.size(); i++)
-				v[i] = ncmesh.valid2AllVertex(v[i]);
-			for (int i = 0; i < v.size(); i++) {
-				if (v[i] != verts[i]) {
-					logger().trace("Different local vertex indexing of element {}", ncmesh.valid2All(c));
-					break;
-				}
-			}
-			for (int i = 0; i < v.size(); i++) {
-				bool flag = false;
-				for (int j = 0; j < verts.size(); j++) {
-					if (verts[j] == v[i])
-						flag = true;
-				}
-				assert(flag);
-			}
-			auto& verts_ = ncmesh.elements[ncmesh.valid2All(c)].vertices;
-			for (int i = 0; i < v.size(); i++)
-				verts_[i] = v[i];
-		}
-		compute_edge_face_orders(ncmesh, discr_orders, edge_orders, face_orders);
-	}
-
-	std::vector<std::vector<int>> edge_virtual_nodes, face_virtual_nodes;
-
 	MeshNodes nodes(mesh, has_polys, !is_geom_bases, nn, n_face_nodes * (is_geom_bases ? 2 : 1), max_p == 0 ? 1 : n_cells_nodes);
 	std::vector<std::vector<int>> element_nodes_id;
-	compute_nodes(mesh, discr_orders, edge_orders, face_orders, serendipity, has_polys, is_geom_bases, nodes, edge_virtual_nodes, face_virtual_nodes, element_nodes_id, local_boundary, poly_face_to_data);
+	compute_nodes(mesh, discr_orders, serendipity, has_polys, is_geom_bases, nodes, element_nodes_id, local_boundary, poly_face_to_data);
 	// boundary_nodes = nodes.boundary_nodes();
 
 	// std::cout<<"get_index_from_element_face_time " << Navigation3D::get_index_from_element_face_time <<std::endl;
@@ -1591,672 +1223,214 @@ int polyfem::FEBasis3d::build_bases(
 
 	if (!is_geom_bases)
 	{
-		if (mesh.ncmesh) {
-			auto evaluate_boundary_bases = [](const int p, const ElementBases &base, const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &w, int type = 2)
+		for (int pp = 2; pp <= autogen::MAX_P_BASES; ++pp)
+		{
+			for (int e : interface_elements)
 			{
-				int i = 0;
-				assert(p > 0);
-				int max_num;
-				if (type == 0)
-					max_num = 4;
-				else if (type == 1)
-					max_num = 4 + 6 * (p - 1);
-				else if (type >= 2)
-					max_num = 4 + 6 * (p - 1) + 2 * (p - 1) * (p - 2);
-				w.resize(max_num);
-				maybe_parallel_for(max_num, [&](int start, int end, int thread_id) {
-					for (int i = start; i < end; i++) {
-						base.bases[i].eval_basis(uv, w[i].val);
-						assert(i < max_num || abs(w[i].val(0)) < 1e-12);
-						assert(w[i].val.size() == uv.rows());
-					}
-				});
-			};
-
-			auto &ncmesh = *dynamic_cast<ncMesh3D *>(mesh.ncmesh.get());
-			
-			std::vector<std::vector<int> > elementOrder;
-			{
-				const int max_order = discr_orders.maxCoeff(), min_order = discr_orders.minCoeff();
-				int max_level = 0;
-				for (const auto& elem : ncmesh.elements) {
-					if (elem.is_valid() && max_level < elem.level)
-						max_level = elem.level;
-				}
-				elementOrder.resize((max_level + 1) * (max_order - min_order + 1));
-				int N = 0;
-				int cur_level = 0;
-				while (cur_level <= max_level) {
-					int order = min_order;
-					while (order <= max_order) {
-						int cur_bucket = (max_order - min_order + 1) * cur_level + (order - min_order);
-						for (int i = 0; i < ncmesh.n_elements; i++) {
-							const auto& elem = ncmesh.elements[ncmesh.valid2All(i)];
-							if (elem.level != cur_level || discr_orders[i] != order)
-								continue;
-
-							N++;
-							elementOrder[cur_bucket].push_back(ncmesh.valid2All(i));
-						}
-						order++;
-					}
-					cur_level++;
-				}
-			}
-
-			for (const auto& bucket : elementOrder) {
-				if (bucket.size() == 0)
+				ElementBases &b = bases[e];
+				const int discr_order = discr_orders(e);
+				const int n_el_bases = element_nodes_id[e].size();
+				assert(discr_order > 1);
+				if (discr_order != pp)
 					continue;
-				maybe_parallel_for(bucket.size(), [&](int start, int end, int thread_id) {
-				for (int e_aux = start; e_aux < end; e_aux++) {
-					const int e = bucket[e_aux];
-					const int e_ = ncmesh.all2Valid(e);
-					ElementBases& b = bases[e_];
-					const int discr_order = discr_orders(e_);
-					const int n_edge_nodes = discr_order - 1;
-					const int n_face_nodes = (discr_order - 1) * (discr_order - 2) / 2;
-					const int n_el_bases = element_nodes_id[e_].size();
 
-					auto v = tet_vertices_local_to_global(mesh, e_);
-					for (int i = 0; i < v.size(); i++)
-						v[i] = ncmesh.valid2AllVertex(v[i]);
-
-					Eigen::Matrix<int, 6, 2> ev;
-					ev.row(0) << v[0], v[1];
-					ev.row(1) << v[1], v[2];
-					ev.row(2) << v[2], v[0];
-					ev.row(3) << v[0], v[3];
-					ev.row(4) << v[1], v[3];
-					ev.row(5) << v[2], v[3];
-
-					Eigen::Matrix<int, 6, 2> ev_;
-					ev_.row(0) << 0, 1;
-					ev_.row(1) << 1, 2;
-					ev_.row(2) << 2, 0;
-					ev_.row(3) << 0, 3;
-					ev_.row(4) << 1, 3;
-					ev_.row(5) << 2, 3;
-
-					Eigen::Matrix<int, 4, 3> fv;
-					fv.row(0) << v[0], v[1], v[2];
-					fv.row(1) << v[0], v[1], v[3];
-					fv.row(2) << v[1], v[2], v[3];
-					fv.row(3) << v[2], v[0], v[3];
-
-					Eigen::Matrix<int, 4, 3> fv_;
-					fv_.row(0) << 0, 1, 2;
-					fv_.row(1) << 0, 1, 3;
-					fv_.row(2) << 1, 2, 3;
-					fv_.row(3) << 2, 0, 3;
-
-					for (int i = 0; i < ncmesh.elements[e].vertices.size(); i++)
-						assert(v[i] == ncmesh.elements[e].vertices(i));
-
-					for (int j = 0; j < n_el_bases; j++)
+				if (mesh.is_cube(e))
+				{
+					// TODO
+					assert(false);
+				}
+				else if (mesh.is_simplex(e))
+				{
+					for (int j = 0; j < n_el_bases; ++j)
 					{
-						const int global_index = element_nodes_id[e_][j];
+						const int global_index = element_nodes_id[e][j];
 
 						if (global_index >= 0)
 							b.bases[j].init(discr_order, global_index, j, nodes.node_position(global_index));
 						else
 						{
-							const auto& ncelem = ncmesh.elements[e];
-							
-							// vertex node - hanging vertex
-							if (j < 4) {
-								const auto& vert = ncmesh.vertices[v[j]];
-								int large_elem = -1;
-								if (vert.edge >= 0) {
-									large_elem = lowest_order_elem_on_edge(ncmesh, discr_orders, vert.edge);
-								}
-								else if (vert.face >= 0) {
-									large_elem = ncmesh.faces[vert.face].get_element();
-								}
-								else
-									assert(false);
+							const int lnn = max_p > 2 ? (discr_order - 2) : 0;
+							const int ln_edge_nodes = discr_order - 1;
+							const int ln_face_nodes = lnn * (lnn + 1) / 2;
 
-								Eigen::MatrixXd verts(4, 3);
-								for (int i = 0; i < verts.rows(); i++)
-									verts.row(i) = ncmesh.vertices[ncmesh.elements[large_elem].vertices(i)].pos;
-								Eigen::MatrixXd node_position;
-								global_to_local(verts, vert.pos.transpose(), node_position);
+							const auto v = tet_vertices_local_to_global(mesh, e);
+							Navigation3D::Index index;
+							if (global_index <= -30)
+							{
+								assert(false);
+								// const auto lv = -(global_index + 30);
+								// assert(lv>=0 && lv < 4);
+								// assert(j < 4);
 
-								// evaluate the basis of the large element at this node
-								const auto& other_bases = bases[ncmesh.all2Valid(large_elem)];
-								std::vector<AssemblyValues> w;
-								// other_bases.evaluate_bases(node_position, w);
-								evaluate_boundary_bases(discr_orders[large_elem], other_bases, node_position, w);
-
-								// apply basis projection
-								for (long i = 0; i < w.size(); ++i)
-								{
-									assert(w[i].val.size() == 1);
-									if (std::abs(w[i].val(0)) < 1e-12)
-										continue;
-									// else
-									// 	std::cout << "elem "<<e<<" node "<<j<<" -> elem "<<large_elem<<" node "<<i<<", w = " << w[i].val(0) << std::endl;
-
-									assert(other_bases.bases[i].global().size() > 0);
-									for (size_t ii = 0; ii < other_bases.bases[i].global().size(); ++ii)
-									{
-										const auto& other_global = other_bases.bases[i].global()[ii];
-										assert(other_global.index >= 0);
-										b.bases[j].global().emplace_back(other_global.index, other_global.node, w[i].val(0) * other_global.val);
-									}
-								}
+								// if(lv == 3)
+								// {
+								// 	index = mesh.switch_element(find_edge(mesh, e, v[lv], v[0]));
+								// 	if(index.element < 0)
+								// 		index = mesh.switch_element(find_edge(mesh, e, v[lv], v[1]));
+								// 	if(index.element < 0)
+								// 		index = mesh.switch_element(find_edge(mesh, e, v[lv], v[2]));
+								// }
+								// else
+								// {
+								// 	index = mesh.switch_element(find_edge(mesh, e, v[lv], v[(lv+1)%3]));
+								// 	if(index.element < 0)
+								// 		index = mesh.switch_element(find_edge(mesh, e, v[lv], v[(lv+2)%3]));
+								// 	if(index.element < 0)
+								// 		index = mesh.switch_element(find_edge(mesh, e, v[lv], v[3]));
+								// }
 							}
-							// edge node - slave edge / edge on face / constrained order
-							else if (j < 4 + 6 * n_edge_nodes) {
-								const int local_edge_id = (j - 4) / n_edge_nodes;
-								const int edge_id = ncmesh.findEdge(ev.row(local_edge_id));
-								const auto& edge = ncmesh.edges[edge_id];
-								bool need_extra_fake_nodes = false;
-								int large_elem = -1;
+							else if (global_index <= -10)
+							{
+								const auto le = -(global_index + 10);
+								assert(le >= 0 && le < 6);
+								assert(j >= 4 && j < 4 + 6 * ln_edge_nodes);
 
-								// slave edge
-								if (edge.master >= 0) {
-									large_elem = ncmesh.edges[edge.master].get_element();
-								}
-								// edge on face
-								else if (edge.master_face >= 0) {
-									large_elem = ncmesh.faces[edge.master_face].get_element();
-								}
-								// constrained order
-								else if (edge_orders[edge_id] < discr_order) {
-									int min_order_elem = lowest_order_elem_on_edge(ncmesh, discr_orders, edge_id);
-									// if haven't built min_order_elem? directly contribute to extra nodes
-									if (discr_orders[min_order_elem] < discr_order)
-										large_elem = min_order_elem;
+								Eigen::Matrix<int, 6, 2> ev;
+								ev.row(0) << v[0], v[1];
+								ev.row(1) << v[1], v[2];
+								ev.row(2) << v[2], v[0];
 
-									// constrained order, master edge -- need extra fake nodes
-									if (large_elem < 0) {
-										// assert((edge_orders[edge_id] < 2 || edge.global_ids.size() > 0) && edge.slaves.size() > 0);
-										need_extra_fake_nodes = true;
-									}
-								}
-								else
-									assert(false);
+								ev.row(3) << v[0], v[3];
+								ev.row(4) << v[1], v[3];
+								ev.row(5) << v[2], v[3];
 
-								assert(large_elem >= 0 || need_extra_fake_nodes);
-								Eigen::MatrixXd global_position;
+								// const auto edge_index = find_edge(mesh, e, ev(le, 0), ev(le, 1));
+								const auto edge_index = mesh.get_index_from_element_edge(e, ev(le, 0), ev(le, 1));
+								auto neighs = mesh.edge_neighs(edge_index.edge);
+								int min_p = discr_order;
+								int min_cell = index.element;
+
+								for (auto cid : neighs)
 								{
-									Eigen::MatrixXd lnodes;
-									autogen::p_nodes_3d(discr_order, lnodes);
-									Eigen::MatrixXd verts(4, 3);
-									for (int i = 0; i < verts.rows(); i++)
-										verts.row(i) = ncmesh.vertices[ncmesh.elements[e].vertices(i)].pos;
-									local_to_global(verts, lnodes.row(j), global_position);
-								}
-
-								if (need_extra_fake_nodes) {
-									Eigen::MatrixXd edge_verts(2, 3);
-									Eigen::MatrixXd point_weight;
-									edge_verts.row(0) = ncmesh.vertices[ncmesh.edges[edge_id].vertices(0)].pos;
-									edge_verts.row(1) = ncmesh.vertices[ncmesh.edges[edge_id].vertices(1)].pos;
-									global_to_local_edge(edge_verts, global_position, point_weight);
-
-									std::function<double(const int, const int, const double)> basis_1d = [](const int order, const int id, const double x) -> double {
-										assert(id <= order && id >= 0);
-										double y = 1;
-										for (int o = 0; o <= order; o++) {
-											if (o != id)
-												y *= (x * order - o) / (id - o);
-										}
-										return y;
-									};
-									
-									// contribution to edge nodes
-									for (int i = 0; i < edge.global_ids.size(); i++) {
-										const int global_index = edge.global_ids[i];
-										// const double weight = basis_1d(edge_orders[edge_id], i+1, edge_weight);
-										Eigen::MatrixXd node_weight;
-										global_to_local_edge(edge_verts, nodes.node_position(global_index), node_weight);
-										const int basis_id = std::lround(node_weight(0) * edge_orders[edge_id]);
-										const double weight = basis_1d(edge_orders[edge_id], basis_id, point_weight(0));
-										if (std::abs(weight) < 1e-12)
-											continue;
-										b.bases[j].global().emplace_back(global_index, nodes.node_position(global_index), weight);
-									}
-
-									// contribution to vertex nodes
-									for (int i = 0; i < 2; i++) {
-										const int lv = ev_(local_edge_id, i);
-										const auto& global_ = b.bases[lv].global();
-										Eigen::MatrixXd node_weight;
-										global_to_local_edge(edge_verts, ncmesh.vertices[ncelem.vertices(lv)].pos.transpose(), node_weight);
-										const int basis_id = std::lround(node_weight(0) * edge_orders[edge_id]);
-										const double weight = basis_1d(edge_orders[edge_id], basis_id, point_weight(0));
-										if (std::abs(weight) > 1e-12) {
-											assert(global_.size() > 0);
-											for (size_t ii = 0; ii < global_.size(); ++ii)
-												b.bases[j].global().emplace_back(global_[ii].index, global_[ii].node, weight * global_[ii].val);
-										}
-									}
-								}
-								else {
-									Eigen::MatrixXd node_position;
-									Eigen::MatrixXd verts(4, 3);
-									for (int i = 0; i < verts.rows(); i++)
-										verts.row(i) = ncmesh.vertices[ncmesh.elements[large_elem].vertices(i)].pos;
-									global_to_local(verts, global_position, node_position);
-
-									// evaluate the basis of the large element at this node
-									const auto& other_bases = bases[ncmesh.all2Valid(large_elem)];
-									std::vector<AssemblyValues> w;
-									evaluate_boundary_bases(discr_orders[large_elem], other_bases, node_position, w);
-
-									// apply basis projection
-									for (long i = 0; i < w.size(); ++i)
+									if (discr_orders[cid] < min_p)
 									{
-										assert(w[i].val.size() == 1);
-										if (std::abs(w[i].val(0)) < 1e-12)
-											continue;
-										// else
-										// 	std::cout << "elem "<<e<<" node "<<j<<" -> elem "<<large_elem<<" node "<<i<<", w = " << w[i].val(0) << std::endl;
+										min_p = discr_orders[cid];
+										min_cell = cid;
+									}
+								}
 
-										assert(other_bases.bases[i].global().size() > 0);
-										for (size_t ii = 0; ii < other_bases.bases[i].global().size(); ++ii)
+								bool found = false;
+								for (int lf = 0; lf < 4; ++lf)
+								{
+									for (int lv = 0; lv < 4; ++lv)
+									{
+										index = mesh.get_index_from_element(min_cell, lf, lv);
+
+										if (index.vertex == edge_index.vertex)
 										{
-											const auto& other_global = other_bases.bases[i].global()[ii];
-											assert(other_global.index >= 0);
-											b.bases[j].global().emplace_back(other_global.index, other_global.node, w[i].val(0) * other_global.val);
-										}
-									}
-								}
-							}
-							// face node - slave face / constrained order
-							else if (j < 4 + 6 * n_edge_nodes + 4 * n_face_nodes) {
-								const int local_face_id = (j - (4 + 6 * n_edge_nodes)) / n_face_nodes;
-								const int face_id = ncmesh.findFace(fv.row(local_face_id));
-								const auto& ncface = ncmesh.faces[face_id];
-								int large_elem = -1;
-								bool need_extra_fake_nodes = false;
-
-								// slave face
-								if (ncface.master >= 0) {
-									large_elem = ncmesh.faces[ncface.master].get_element();
-								}
-								// constrained order, conforming face
-								else if (face_orders[face_id] < discr_order && ncface.n_elem() == 2) {
-									large_elem = ncface.find_opposite_element(e);
-								}
-								// constrained order, master face -- need extra fake nodes
-								else if (face_orders[face_id] < discr_order && ncface.slaves.size() > 0) {
-									// assert(ncface.global_ids.size() > 0 || face_orders[face_id] < 3);
-									need_extra_fake_nodes = true;
-								}
-								else
-									assert(false);
-
-								assert(large_elem >= 0 || need_extra_fake_nodes);
-								Eigen::MatrixXd global_position;
-								Eigen::MatrixXd lnodes;
-								autogen::p_nodes_3d(discr_order, lnodes);
-								Eigen::MatrixXd elem_verts(4, 3);
-								for (int i = 0; i < elem_verts.rows(); i++)
-									elem_verts.row(i) = ncmesh.vertices[ncelem.vertices(i)].pos;
-								local_to_global(elem_verts, lnodes.row(j), global_position);
-								if (need_extra_fake_nodes) {
-									Eigen::MatrixXd tmp;
-									Eigen::MatrixXd face_verts(3, 3);
-									for (int i = 0; i < face_verts.rows(); i++)
-										face_verts.row(i) = ncmesh.vertices[ncmesh.faces[face_id].vertices(i)].pos;
-									global_to_local_face(face_verts, global_position, tmp);
-									Eigen::VectorXd face_weight = tmp.transpose();
-
-									std::function<double(const int, const int, const double)> basis_aux = [](const int order, const int id, const double x) -> double {
-										assert(id <= order && id >= 0);
-										double y = 1;
-										for (int o = 0; o < id; o++)
-											y *= (x * order - o) / (id - o);
-										return y;
-									};
-
-									std::function<double(const int, const int, const int, const Eigen::Vector2d)> basis_2d = [&basis_aux](const int order, const int i, const int j, const Eigen::Vector2d uv) -> double {
-										assert(i + j <= order && i >= 0 && j >= 0);
-										double u = uv(0), v = uv(1);
-										return basis_aux(order, i, u) * basis_aux(order, j, v) * basis_aux(order, order - i - j, 1 - u - v);
-									};
-
-									// contribution to face nodes
-									for (int global_ : ncface.global_ids) {
-										auto low_order_node = nodes.node_position(global_);
-										Eigen::MatrixXd low_order_node_face_weight;
-										global_to_local_face(face_verts, low_order_node, low_order_node_face_weight);
-										int x = round(low_order_node_face_weight(0) * face_orders[face_id]), y = round(low_order_node_face_weight(1) * face_orders[face_id]);
-										const double weight = basis_2d(face_orders[face_id], x, y, face_weight);
-										if (std::abs(weight) < 1e-12)
-											continue;
-										b.bases[j].global().emplace_back(global_, nodes.node_position(global_), weight);
-									}
-
-									// contribution to vertex nodes
-									for (int i = 0; i < 3; i++) {
-										const auto& global_ = b.bases[fv_(local_face_id, i)].global();
-										auto low_order_node = ncmesh.vertices[fv(local_face_id, i)].pos.transpose();
-										Eigen::MatrixXd low_order_node_face_weight;
-										global_to_local_face(face_verts, low_order_node, low_order_node_face_weight);
-										int x = round(low_order_node_face_weight(0) * face_orders[face_id]), y = round(low_order_node_face_weight(1) * face_orders[face_id]);
-										double weight = basis_2d(face_orders[face_id], x, y, face_weight);
-										if (std::abs(weight) > 1e-12) {
-											assert(global_.size() > 0);
-											for (size_t ii = 0; ii < global_.size(); ++ii)
-												b.bases[j].global().emplace_back(global_[ii].index, global_[ii].node, weight * global_[ii].val);
-										}
-									}
-
-									// contribution to edge nodes, two steps
-									for (int x = 0, idx = 0; x <= face_orders[face_id]; x++) {
-										for (int y = 0; x + y <= face_orders[face_id]; y++) {
-											const int z = face_orders[face_id] - x - y;
-											int flag = (int)(x == 0) + (int)(y == 0) + (int)(z == 0);
-											if (flag != 1)
-												continue;
-
-											// first step
-											const double weight = basis_2d(face_orders[face_id], x, y, face_weight);
-											if (std::abs(weight) < 1e-12)
-												continue;
-											Eigen::MatrixXd face_weight(1, 2);
-											face_weight << (double) x / face_orders[face_id], (double) y / face_orders[face_id];
-											Eigen::MatrixXd global_pos, local_pos;
-											local_to_global_face(face_verts, face_weight, global_pos);
-											global_to_local(elem_verts, global_pos, local_pos);
-											Local2Global step1(idx, local_pos, weight);
-											idx++;
-
+											if (index.edge != edge_index.edge)
 											{
-												// evaluate the basis of the large element at this node
-												const auto& other_bases = bases[ncmesh.all2Valid(e)];
-												std::vector<AssemblyValues> w;
-												evaluate_boundary_bases(discr_order, other_bases, local_pos, w, 1);
+												auto tmp = index;
+												index = mesh.switch_edge(tmp);
 
-												// apply basis projection
-												for (long i = 0; i < w.size(); ++i)
+												if (index.edge != edge_index.edge)
 												{
-													assert(w[i].val.size() == 1);
-													if (std::abs(w[i].val(0)) < 1e-12)
-														continue;
-
-													assert(other_bases.bases[i].global().size() > 0);
-													for (size_t ii = 0; ii < other_bases.bases[i].global().size(); ++ii)
-													{
-														const auto& other_global = other_bases.bases[i].global()[ii];
-														assert(other_global.index >= 0);
-														b.bases[j].global().emplace_back(other_global.index, other_global.node, step1.val * w[i].val(0) * other_global.val);
-													}
+													index = mesh.switch_edge(mesh.switch_face(tmp));
 												}
 											}
+											found = true;
+											break;
 										}
 									}
+
+									if (found)
+										break;
 								}
-								else {
-									Eigen::MatrixXd node_position;
-									Eigen::MatrixXd verts(4, 3);
-									for (int i = 0; i < verts.rows(); i++)
-										verts.row(i) = ncmesh.vertices[ncmesh.elements[large_elem].vertices(i)].pos;
-									global_to_local(verts, global_position, node_position);
 
-									// evaluate the basis of the large element at this node
-									const auto& other_bases = bases[ncmesh.all2Valid(large_elem)];
-									std::vector<AssemblyValues> w;
-									// other_bases.evaluate_bases(node_position, w);
-									evaluate_boundary_bases(discr_orders[large_elem], other_bases, node_position, w);
+								assert(found);
+								assert(index.vertex == edge_index.vertex && index.edge == edge_index.edge);
+								assert(index.element != edge_index.element);
+							}
+							else
+							{
+								const auto lf = -(global_index + 1);
+								assert(lf >= 0 && lf < 4);
+								assert(j >= 4 + 6 * ln_edge_nodes && j < 4 + 6 * ln_edge_nodes + 4 * ln_face_nodes);
 
-									// apply basis projection
-									for (long i = 0; i < w.size(); ++i)
-									{
-										assert(w[i].val.size() == 1);
-										if (std::abs(w[i].val(0)) < 1e-12)
-											continue;
+								Eigen::Matrix<int, 4, 3> fv;
+								fv.row(0) << v[0], v[1], v[2];
+								fv.row(1) << v[0], v[1], v[3];
+								fv.row(2) << v[1], v[2], v[3];
+								fv.row(3) << v[2], v[0], v[3];
 
-										assert(other_bases.bases[i].global().size() > 0);
-										for (size_t ii = 0; ii < other_bases.bases[i].global().size(); ++ii)
-										{
-											const auto& other_global = other_bases.bases[i].global()[ii];
-											assert(other_global.index >= 0);
-											b.bases[j].global().emplace_back(other_global.index, other_global.node, w[i].val(0) * other_global.val);
-										}
-									}
-								}						
+								index = mesh.switch_element(mesh.get_index_from_element_face(e, fv(lf, 0), fv(lf, 1), fv(lf, 2)));
+							}
+
+							const auto other_cell = index.element;
+							assert(other_cell >= 0);
+							assert(discr_order > discr_orders(other_cell));
+
+							auto indices = tet_face_local_nodes(discr_order, mesh, index);
+							Eigen::MatrixXd lnodes;
+							autogen::p_nodes_3d(discr_order, lnodes);
+							Eigen::RowVector3d node_position; // = lnodes.row(indices(ii));
+
+							if (j < 4)
+								node_position = lnodes.row(indices(0));
+							else if (j < 4 + 6 * ln_edge_nodes)
+								node_position = lnodes.row(indices(((j - 4) % ln_edge_nodes) + 3));
+							else if (j < 4 + 6 * ln_edge_nodes + 4 * ln_face_nodes)
+							{
+								// node_position = lnodes.row(indices(((j - 4 - 6*ln_edge_nodes) % ln_face_nodes) + 3 + 3*ln_edge_nodes));
+								auto me_indices = tet_face_local_nodes(discr_order, mesh, mesh.switch_element(index));
+								int ii;
+								for (ii = 0; ii < me_indices.size(); ++ii)
+								{
+									if (me_indices(ii) == j)
+										break;
+								}
+
+								assert(ii >= 3 + 3 * ln_edge_nodes);
+								assert(ii < me_indices.size());
+
+								node_position = lnodes.row(indices(ii));
 							}
 							else
 								assert(false);
-						
-							auto& global_ = b.bases[j].global();
-							if (global_.size() <= 1)
-								continue;
 
-							std::map<int, Local2Global> list;
-							for (size_t ii = 0; ii < global_.size(); ii++) {
-								auto pair = list.insert({global_[ii].index, global_[ii]});
-								if (!pair.second) {
-									assert((pair.first->second.node - global_[ii].node).norm() < 1e-12);
-									pair.first->second.val += global_[ii].val;
+							// std::cout<<indices.transpose()<<std::endl;
+							// auto asd = quadr_tri_edge_local_nodes(mesh, index);
+							// std::cout<<asd[0]<<" "<<asd[1]<<" "<<asd[2]<<std::endl;
+
+							// std::cout<<"\n"<<lnodes<<"\nnewp\n"<<node_position<<"\n"<<std::endl;
+							// const auto param_p = quadr_tri_edge_local_nodes_coordinates(mesh, index);
+
+							// if( j < 3)
+							// 	node_position = param_p.row(0);
+							// else if( j < 3 + 3*(discr_order-1)){
+							// 	node_position = param_p.row( (j-3) % (discr_order-1) + 1);
+							// }
+							// else
+							// 	assert(false);
+							// std::cout<<node_position<<"\n\n----\n"<<std::endl;
+
+							const auto &other_bases = bases[other_cell];
+							// Eigen::MatrixXd w;
+							std::vector<AssemblyValues> w;
+							other_bases.evaluate_bases(node_position, w);
+
+							assert(b.bases[j].global().size() == 0);
+
+							for (long i = 0; i < w.size(); ++i)
+							{
+								assert(w[i].val.size() == 1);
+								if (std::abs(w[i].val(0)) < 1e-8)
+									continue;
+
+								// assert(other_bases.bases[i].global().size() == 1);
+								for (size_t ii = 0; ii < other_bases.bases[i].global().size(); ++ii)
+								{
+									const auto &other_global = other_bases.bases[i].global()[ii];
+									// std::cout<<"e "<<e<<" " <<j << " gid "<<other_global.index<<std::endl;
+									b.bases[j].global().emplace_back(other_global.index, other_global.node, w[i].val(0) * other_global.val);
 								}
-							}
-
-							global_.clear();
-							for (auto it = list.begin(); it != list.end(); ++it) {
-								if (std::abs(it->second.val) > 1e-12)
-									global_.push_back(it->second);
 							}
 						}
 					}
 				}
-				});
-			}
-		}
-		else {
-			for (int pp = 2; pp <= autogen::MAX_P_BASES; ++pp)
-			{
-				for (int e : interface_elements)
+				else
 				{
-					ElementBases &b = bases[e];
-					const int discr_order = discr_orders(e);
-					const int n_el_bases = element_nodes_id[e].size();
-					assert(discr_order > 1);
-					if (discr_order != pp)
-						continue;
-
-					if (mesh.is_cube(e))
-					{
-						//TODO
-						assert(false);
-					}
-					else if (mesh.is_simplex(e))
-					{
-						for (int j = 0; j < n_el_bases; ++j)
-						{
-							const int global_index = element_nodes_id[e][j];
-
-							if (global_index >= 0)
-								b.bases[j].init(discr_order, global_index, j, nodes.node_position(global_index));
-							else
-							{
-								const int lnn = max_p > 2 ? (discr_order - 2) : 0;
-								const int ln_edge_nodes = discr_order - 1;
-								const int ln_face_nodes = lnn * (lnn + 1) / 2;
-
-								const auto v = tet_vertices_local_to_global(mesh, e);
-								Navigation3D::Index index;
-								if (global_index <= -30)
-								{
-									assert(false);
-									// const auto lv = -(global_index + 30);
-									// assert(lv>=0 && lv < 4);
-									// assert(j < 4);
-
-									// if(lv == 3)
-									// {
-									// 	index = mesh.switch_element(find_edge(mesh, e, v[lv], v[0]));
-									// 	if(index.element < 0)
-									// 		index = mesh.switch_element(find_edge(mesh, e, v[lv], v[1]));
-									// 	if(index.element < 0)
-									// 		index = mesh.switch_element(find_edge(mesh, e, v[lv], v[2]));
-									// }
-									// else
-									// {
-									// 	index = mesh.switch_element(find_edge(mesh, e, v[lv], v[(lv+1)%3]));
-									// 	if(index.element < 0)
-									// 		index = mesh.switch_element(find_edge(mesh, e, v[lv], v[(lv+2)%3]));
-									// 	if(index.element < 0)
-									// 		index = mesh.switch_element(find_edge(mesh, e, v[lv], v[3]));
-									// }
-								}
-								else if (global_index <= -10)
-								{
-									const auto le = -(global_index + 10);
-									assert(le >= 0 && le < 6);
-									assert(j >= 4 && j < 4 + 6 * ln_edge_nodes);
-
-									Eigen::Matrix<int, 6, 2> ev;
-									ev.row(0) << v[0], v[1];
-									ev.row(1) << v[1], v[2];
-									ev.row(2) << v[2], v[0];
-
-									ev.row(3) << v[0], v[3];
-									ev.row(4) << v[1], v[3];
-									ev.row(5) << v[2], v[3];
-
-									// const auto edge_index = find_edge(mesh, e, ev(le, 0), ev(le, 1));
-									const auto edge_index = mesh.get_index_from_element_edge(e, ev(le, 0), ev(le, 1));
-									auto neighs = mesh.edge_neighs(edge_index.edge);
-									int min_p = discr_order;
-									int min_cell = index.element;
-
-									for (auto cid : neighs)
-									{
-										if (discr_orders[cid] < min_p)
-										{
-											min_p = discr_orders[cid];
-											min_cell = cid;
-										}
-									}
-
-									bool found = false;
-									for (int lf = 0; lf < 4; ++lf)
-									{
-										for (int lv = 0; lv < 4; ++lv)
-										{
-											index = mesh.get_index_from_element(min_cell, lf, lv);
-
-											if (index.vertex == edge_index.vertex)
-											{
-												if (index.edge != edge_index.edge)
-												{
-													auto tmp = index;
-													index = mesh.switch_edge(tmp);
-
-													if (index.edge != edge_index.edge)
-													{
-														index = mesh.switch_edge(mesh.switch_face(tmp));
-													}
-												}
-												found = true;
-												break;
-											}
-										}
-
-										if (found)
-											break;
-									}
-
-									assert(found);
-									assert(index.vertex == edge_index.vertex && index.edge == edge_index.edge);
-									assert(index.element != edge_index.element);
-								}
-								else
-								{
-									const auto lf = -(global_index + 1);
-									assert(lf >= 0 && lf < 4);
-									assert(j >= 4 + 6 * ln_edge_nodes && j < 4 + 6 * ln_edge_nodes + 4 * ln_face_nodes);
-
-									Eigen::Matrix<int, 4, 3> fv;
-									fv.row(0) << v[0], v[1], v[2];
-									fv.row(1) << v[0], v[1], v[3];
-									fv.row(2) << v[1], v[2], v[3];
-									fv.row(3) << v[2], v[0], v[3];
-
-									index = mesh.switch_element(mesh.get_index_from_element_face(e, fv(lf, 0), fv(lf, 1), fv(lf, 2)));
-								}
-
-								const auto other_cell = index.element;
-								assert(other_cell >= 0);
-								assert(discr_order > discr_orders(other_cell));
-
-								auto indices = tet_face_local_nodes(discr_order, mesh, index);
-								Eigen::MatrixXd lnodes;
-								autogen::p_nodes_3d(discr_order, lnodes);
-								Eigen::RowVector3d node_position; // = lnodes.row(indices(ii));
-
-								if (j < 4)
-									node_position = lnodes.row(indices(0));
-								else if (j < 4 + 6 * ln_edge_nodes)
-									node_position = lnodes.row(indices(((j - 4) % ln_edge_nodes) + 3));
-								else if (j < 4 + 6 * ln_edge_nodes + 4 * ln_face_nodes)
-								{
-									// node_position = lnodes.row(indices(((j - 4 - 6*ln_edge_nodes) % ln_face_nodes) + 3 + 3*ln_edge_nodes));
-									auto me_indices = tet_face_local_nodes(discr_order, mesh, mesh.switch_element(index));
-									int ii;
-									for (ii = 0; ii < me_indices.size(); ++ii)
-									{
-										if (me_indices(ii) == j)
-											break;
-									}
-
-									assert(ii >= 3 + 3 * ln_edge_nodes);
-									assert(ii < me_indices.size());
-
-									node_position = lnodes.row(indices(ii));
-								}
-								else
-									assert(false);
-
-								// std::cout<<indices.transpose()<<std::endl;
-								// auto asd = quadr_tri_edge_local_nodes(mesh, index);
-								// std::cout<<asd[0]<<" "<<asd[1]<<" "<<asd[2]<<std::endl;
-
-								// std::cout<<"\n"<<lnodes<<"\nnewp\n"<<node_position<<"\n"<<std::endl;
-								// const auto param_p = quadr_tri_edge_local_nodes_coordinates(mesh, index);
-
-								// if( j < 3)
-								// 	node_position = param_p.row(0);
-								// else if( j < 3 + 3*(discr_order-1)){
-								// 	node_position = param_p.row( (j-3) % (discr_order-1) + 1);
-								// }
-								// else
-								// 	assert(false);
-								// std::cout<<node_position<<"\n\n----\n"<<std::endl;
-
-								const auto &other_bases = bases[other_cell];
-								// Eigen::MatrixXd w;
-								std::vector<AssemblyValues> w;
-								other_bases.evaluate_bases(node_position, w);
-
-								assert(b.bases[j].global().size() == 0);
-
-								for (long i = 0; i < w.size(); ++i)
-								{
-									assert(w[i].val.size() == 1);
-									if (std::abs(w[i].val(0)) < 1e-12)
-										continue;
-
-									// assert(other_bases.bases[i].global().size() == 1);
-									for (size_t ii = 0; ii < other_bases.bases[i].global().size(); ++ii)
-									{
-										const auto &other_global = other_bases.bases[i].global()[ii];
-										// std::cout<<"e "<<e<<" " <<j << " gid "<<other_global.index<<std::endl;
-										b.bases[j].global().emplace_back(other_global.index, other_global.node, w[i].val(0) * other_global.val);
-									}
-								}
-							}
-						}
-					}
-					else
-					{
-						// Polygon bases are built later on
-					}
+					// Polygon bases are built later on
 				}
 			}
 		}

@@ -4,8 +4,6 @@ set(SOURCES
 	Mesh.hpp
 	MeshNodes.cpp
 	MeshNodes.hpp
-	ncMesh.cpp
-	ncMesh.hpp
 	MeshUtils.cpp
 	MeshUtils.hpp
 	Obstacle.cpp
