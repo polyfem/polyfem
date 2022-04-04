@@ -205,7 +205,6 @@ public:
     // return the only element that has this edge
     int face_neighbor(const int e_id) const { return all_to_valid_elem(edges[valid_to_all_edge(e_id)].get_element()); }
 
-    int get_boundary_id(const int primitive) const override { return edges[valid_to_all_edge(primitive)].boundary_id; }
     bool is_boundary_vertex(const int vertex_global_id) const override { return vertices[valid_to_all_vertex(vertex_global_id)].isboundary; }
     bool is_boundary_edge(const int edge_global_id) const override { return edges[valid_to_all_edge(edge_global_id)].isboundary; }
     bool is_boundary_element(const int element_global_id) const override;
@@ -237,8 +236,13 @@ public:
     void compute_boundary_ids(const std::function<int(const RowVectorNd &)> &marker) override;
     void compute_boundary_ids(const std::function<int(const RowVectorNd &, bool)> &marker) override;
     void compute_boundary_ids(const std::function<int(const std::vector<int> &, bool)> &marker) override;
-
     void compute_body_ids(const std::function<int(const RowVectorNd &)> &marker) override;
+    void set_boundary_ids(const std::vector<int> &boundary_ids) override;
+    void set_body_ids(const std::vector<int> &body_ids) override;
+    void set_body_ids(const Eigen::VectorXi &body_ids) override;
+
+    int get_boundary_id(const int primitive) const override { return edges[valid_to_all_edge(primitive)].boundary_id; };
+    int get_body_id(const int primitive) const override { return elements[valid_to_all_elem(primitive)].body_id; };
 
     // Navigation wrapper
     Navigation::Index get_index_from_face(int f, int lv = 0) const override;
