@@ -34,11 +34,19 @@ namespace polyfem
 		return I;
 	}
 
+	/// Reads a matrix from a file. Determines the file format based on the path's extension.
 	template <typename T>
 	bool read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat);
 
+	/// Writes a matrix to a file. Determines the file format based on the path's extension.
 	template <typename Mat>
 	bool write_matrix(const std::string &path, const Mat &mat);
+
+	template <typename T>
+	bool read_matrix_ascii(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat);
+
+	template <typename Mat>
+	bool write_matrix_ascii(const std::string &path, const Mat &mat);
 
 	template <typename T>
 	bool read_matrix_binary(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat);

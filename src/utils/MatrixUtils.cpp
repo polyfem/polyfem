@@ -30,6 +30,52 @@ void polyfem::show_matrix_stats(const Eigen::MatrixXd &M)
 template <typename T>
 bool polyfem::read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat)
 {
+	std::string extension = std::filesystem::path(path).extension();
+	std::transform(extension.begin(), extension.end(), extension.begin(),
+				   [](unsigned char c) { return std::tolower(c); });
+
+	if (extension == ".txt")
+	{
+		return read_matrix_ascii(path, mat);
+	}
+	else if (extension == ".bin")
+	{
+		return read_matrix_binary(path, mat);
+	}
+	else
+	{
+		bool success = read_matrix_ascii(path, mat);
+		if (!success)
+			success = read_matrix_binary(path, mat); // Try with the binary format reader
+		return success;
+	}
+}
+
+template <typename Mat>
+bool polyfem::write_matrix(const std::string &path, const Mat &mat)
+{
+	std::string extension = std::filesystem::path(path).extension();
+	std::transform(extension.begin(), extension.end(), extension.begin(),
+				   [](unsigned char c) { return std::tolower(c); });
+
+	if (extension == ".txt")
+	{
+		return write_matrix_ascii(path, mat);
+	}
+	else if (extension == ".bin")
+	{
+		return write_matrix_binary(path, mat);
+	}
+	else
+	{
+		logger().warn("Uknown output matrix format (\"{}\"). Using ASCII format.");
+		return write_matrix_ascii(path, mat);
+	}
+}
+
+template <typename T>
+bool polyfem::read_matrix_ascii(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat)
+{
 	std::fstream file;
 	file.open(path.c_str());
 
@@ -68,7 +114,7 @@ bool polyfem::read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynam
 }
 
 template <typename Mat>
-bool polyfem::write_matrix(const std::string &path, const Mat &mat)
+bool polyfem::write_matrix_ascii(const std::string &path, const Mat &mat)
 {
 	std::ofstream out(path);
 	if (!out.good())
@@ -512,6 +558,14 @@ template bool polyfem::write_matrix<Eigen::MatrixXd>(const std::string &, const 
 template bool polyfem::write_matrix<Eigen::MatrixXf>(const std::string &, const Eigen::MatrixXf &);
 template bool polyfem::write_matrix<Eigen::VectorXd>(const std::string &, const Eigen::VectorXd &);
 template bool polyfem::write_matrix<Eigen::VectorXf>(const std::string &, const Eigen::VectorXf &);
+
+template bool polyfem::read_matrix_ascii<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
+template bool polyfem::read_matrix_ascii<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
+
+template bool polyfem::write_matrix_ascii<Eigen::MatrixXd>(const std::string &, const Eigen::MatrixXd &);
+template bool polyfem::write_matrix_ascii<Eigen::MatrixXf>(const std::string &, const Eigen::MatrixXf &);
+template bool polyfem::write_matrix_ascii<Eigen::VectorXd>(const std::string &, const Eigen::VectorXd &);
+template bool polyfem::write_matrix_ascii<Eigen::VectorXf>(const std::string &, const Eigen::VectorXf &);
 
 template bool polyfem::read_matrix_binary<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
 template bool polyfem::read_matrix_binary<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
