@@ -22,19 +22,19 @@ struct ArrayHasher3D
 class NCMesh2D: public Mesh2D
 {
 public:
-    struct slave_edge {
+    struct follower_edge {
         int id;
         double p1, p2;
 
-        slave_edge(int id_, double p1_, double p2_)
+        follower_edge(int id_, double p1_, double p2_)
         { id = id_; p1 = p1_; p2 = p2_; }
     };
 
-    struct slave_face {
+    struct follower_face {
         int id;
         Eigen::Vector2d p1, p2, p3;
 
-        slave_face(int id_, Eigen::Vector2d p1_, Eigen::Vector2d p2_, Eigen::Vector2d p3_)
+        follower_face(int id_, Eigen::Vector2d p1_, Eigen::Vector2d p2_, Eigen::Vector2d p3_)
         { id = id_; p1 = p1_; p2 = p2_; p3 = p3_; }
     };
 
@@ -108,17 +108,17 @@ public:
         bool  isboundary = false; // valid only after calling mark_boundary()
         int   boundary_id;
 
-        int               master = -1; // if this edge/face lies on a larger edge/face
-        std::vector<int>  slaves;      // slaves of this edge/face
+        int               leader = -1; // if this edge/face lies on a larger edge/face
+        std::vector<int>  followers;      // followers of this edge/face
 
-        int               master_face = -1; // if this edge lies in the interior of a face
+        int               leader_face = -1; // if this edge lies in the interior of a face
 
         std::vector<int>  global_ids;  // only used for building basis
 
         bool flag = false;           // flag for determining singularity
 
         // the following only used if it's an edge
-        Eigen::Vector2d   weights;     // position of this edge on its master edge
+        Eigen::Vector2d   weights;     // position of this edge on its leader edge
     };
 
     struct ncElem
@@ -195,11 +195,11 @@ public:
     int cell_vertex(const int f_id, const int lv_id) const override { return all_to_valid_vertex(elements[valid_to_all_elem(f_id)].vertices(lv_id)); }
 
     int face_edge(const int f_id, const int le_id) const { return all_to_valid_edge(elements[valid_to_all_elem(f_id)].edges(le_id)); }
-    int master_edge_of_vertex(const int v_id) const { assert(adj_prepared); return (vertices[valid_to_all_vertex(v_id)].edge < 0) ? -1 : all_to_valid_edge(vertices[valid_to_all_vertex(v_id)].edge); }
-    int master_edge_of_edge(const int e_id) const { assert(adj_prepared); return (edges[valid_to_all_edge(e_id)].master < 0) ? -1 : all_to_valid_edge(edges[valid_to_all_edge(e_id)].master); }
+    int leader_edge_of_vertex(const int v_id) const { assert(adj_prepared); return (vertices[valid_to_all_vertex(v_id)].edge < 0) ? -1 : all_to_valid_edge(vertices[valid_to_all_vertex(v_id)].edge); }
+    int leader_edge_of_edge(const int e_id) const { assert(adj_prepared); return (edges[valid_to_all_edge(e_id)].leader < 0) ? -1 : all_to_valid_edge(edges[valid_to_all_edge(e_id)].leader); }
     
-    // number of slave edges of a master edge
-    int n_slave_edges(const int e_id) const { assert(adj_prepared); return edges[valid_to_all_edge(e_id)].slaves.size(); }
+    // number of follower edges of a leader edge
+    int n_follower_edges(const int e_id) const { assert(adj_prepared); return edges[valid_to_all_edge(e_id)].followers.size(); }
     // number of elements have this edge
     int n_face_neighbors(const int e_id) const { return edges[valid_to_all_edge(e_id)].n_elem(); }
     // return the only element that has this edge
@@ -266,7 +266,7 @@ public:
     // call necessary functions before building bases
     void prepare_mesh() override
     {
-        build_edge_slave_chain();
+        build_edge_follower_chain();
         build_element_vertex_adjacency();
         build_index_mapping();
         compute_elements_tag();
@@ -307,13 +307,13 @@ protected:
     int get_edge(Eigen::Vector2i v);
     int get_edge(const int v1, const int v2) { return get_edge(Eigen::Vector2i(v1, v2)); };
 
-    // list all slave edges of a potential master edge, returns nothing if it's a slave or conforming edge
-    void traverse_edge(Eigen::Vector2i v, double p1, double p2, int depth, std::vector<slave_edge>& list) const;
+    // list all follower edges of a potential leader edge, returns nothing if it's a follower or conforming edge
+    void traverse_edge(Eigen::Vector2i v, double p1, double p2, int depth, std::vector<follower_edge>& list) const;
 
     // call traverse_edge() for every interface, and store everything needed
-    void build_edge_slave_chain();
+    void build_edge_follower_chain();
 
-    // assign ncElement2D.master_edges and ncVertex2D.weight
+    // assign ncElement2D.leader_edges and ncVertex2D.weight
     void build_element_vertex_adjacency();
 
     // edges are created if not exist

@@ -287,16 +287,16 @@ namespace polyfem
         return -1;
     }
 
-    void NCMesh2D::build_edge_slave_chain()
+    void NCMesh2D::build_edge_follower_chain()
     {
         for (auto& edge : edges) {
-            edge.master = -1;
-            edge.slaves.clear();
+            edge.leader = -1;
+            edge.followers.clear();
             edge.weights.setConstant(-1);
         }
 
         Eigen::Vector2i v;
-        std::vector<slave_edge> slaves;
+        std::vector<follower_edge> followers;
         for (int e_id = 0; e_id < elements.size(); e_id++) {
             const auto& element = elements[e_id];
             if (element.is_not_valid())
@@ -305,13 +305,13 @@ namespace polyfem
                 v << element.vertices[edge_local], element.vertices[(edge_local+1)%3];  // order is important here!
                 int edge_global = element.edges[edge_local];
                 assert(edge_global >= 0);
-                traverse_edge(v, 0, 1, 0, slaves);
-                for (auto& s : slaves) {
-                    edges[s.id].master = edge_global;
-                    edges[edge_global].slaves.push_back(s.id);
+                traverse_edge(v, 0, 1, 0, followers);
+                for (auto& s : followers) {
+                    edges[s.id].leader = edge_global;
+                    edges[edge_global].followers.push_back(s.id);
                     edges[s.id].weights << s.p1, s.p2;
                 }
-                slaves.clear();
+                followers.clear();
             }
         }
     }
@@ -326,9 +326,9 @@ namespace polyfem
         }
 
         for (auto& edge : edges) {
-            if (edge.master >= 0) {
+            if (edge.leader >= 0) {
                 edge.isboundary = false;
-                edges[edge.master].isboundary = false;
+                edges[edge.leader].isboundary = false;
             }
         }
 
@@ -368,7 +368,7 @@ namespace polyfem
             if (edges[small_edge].n_elem() == 0)
                 continue;
 
-            int large_edge = edges[small_edge].master;
+            int large_edge = edges[small_edge].leader;
             if (large_edge < 0)
                 continue;
             
@@ -462,10 +462,10 @@ namespace polyfem
         index_prepared = true;
     }
 
-    void NCMesh2D::traverse_edge(Eigen::Vector2i v, double p1, double p2, int depth, std::vector<slave_edge>& list) const
+    void NCMesh2D::traverse_edge(Eigen::Vector2i v, double p1, double p2, int depth, std::vector<follower_edge>& list) const
     {
         int v_mid = find_vertex(v);
-        std::vector<slave_edge> list1, list2;
+        std::vector<follower_edge> list1, list2;
         if (v_mid >= 0) {
             double p_mid = (p1 + p2) / 2;
             traverse_edge(Eigen::Vector2i(v[0], v_mid), p1, p_mid, depth+1, list1);
@@ -482,9 +482,9 @@ namespace polyfem
             );
         }
         if (depth > 0) {
-            int slave_id = find_edge(v);
-            if (slave_id >= 0 && edges[slave_id].n_elem() > 0)
-                list.emplace_back(slave_id, p1, p2);
+            int follower_id = find_edge(v);
+            if (follower_id >= 0 && edges[follower_id].n_elem() > 0)
+                list.emplace_back(follower_id, p1, p2);
         }
     }
 

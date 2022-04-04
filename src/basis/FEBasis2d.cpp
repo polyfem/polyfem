@@ -217,7 +217,7 @@ namespace
 				if (!mesh.is_conforming()) {
 					const auto &ncmesh = dynamic_cast<const NCMesh2D&>(mesh);
 					// hanging vertex
-					if (ncmesh.master_edge_of_vertex(ncmesh.face_vertex(f, lv)) >= 0)
+					if (ncmesh.leader_edge_of_vertex(ncmesh.face_vertex(f, lv)) >= 0)
 						res.push_back(-lv - 1);
 					else
 						res.push_back(nodes.node_id_from_primitive(v[lv]));
@@ -246,20 +246,20 @@ namespace
 				if (!mesh.is_conforming()) {
 					const auto &ncmesh = dynamic_cast<const NCMesh2D&>(mesh);
 					const int edge_id = ncmesh.face_edge(f, le);
-					// slave edge
-					if (ncmesh.master_edge_of_edge(edge_id) >= 0) {
+					// follower edge
+					if (ncmesh.leader_edge_of_edge(edge_id) >= 0) {
 						for (int tmp = 0; tmp < p - 1; ++tmp)
 							res.push_back(-le - 1);
 					}
-					// master or conforming edge with constrained order
+					// leader or conforming edge with constrained order
 					else if (edge_orders[edge_id] < discr_order[f]) {
 						for (int tmp = 0; tmp < p - 1; ++tmp)
 							res.push_back(-le - 1);
-						// master edge
-						if (ncmesh.n_slave_edges(edge_id) > 0)
+						// leader edge
+						if (ncmesh.n_follower_edges(edge_id) > 0)
 							edge_virtual_nodes[edge_id] = nodes.node_ids_from_edge(index, edge_orders[edge_id] - 1);
 					}
-					// master or conforming edge with unconstrained order
+					// leader or conforming edge with unconstrained order
 					else {
 						auto node_ids = nodes.node_ids_from_edge(index, p - 1);
 						res.insert(res.end(), node_ids.begin(), node_ids.end());
@@ -583,12 +583,12 @@ namespace
 				edge_orders[mesh.face_edge(i, j)] = std::min(edge_orders[mesh.face_edge(i, j)], elem_orders[i]);
 
 		for (int i = 0; i < mesh.n_edges(); i++)
-			if (mesh.master_edge_of_edge(i) >= 0)
-				edge_orders[mesh.master_edge_of_edge(i)] = std::min(edge_orders[mesh.master_edge_of_edge(i)], edge_orders[i]);
+			if (mesh.leader_edge_of_edge(i) >= 0)
+				edge_orders[mesh.leader_edge_of_edge(i)] = std::min(edge_orders[mesh.leader_edge_of_edge(i)], edge_orders[i]);
 
 		for (int i = 0; i < mesh.n_edges(); i++)
-			if (mesh.master_edge_of_edge(i) >= 0)
-				edge_orders[i] = std::min(edge_orders[mesh.master_edge_of_edge(i)], edge_orders[i]);
+			if (mesh.leader_edge_of_edge(i) >= 0)
+				edge_orders[i] = std::min(edge_orders[mesh.leader_edge_of_edge(i)], edge_orders[i]);
 	}
 } // anonymous namespace
 
@@ -942,18 +942,18 @@ int polyfem::FEBasis2d::build_bases(
 						{
 							int large_edge = -1, local_edge = -1;
 							int opposite_element = -1;
-							bool is_on_master_edge = false;
+							bool is_on_leader_edge = false;
 
 							if (j < 3 + 3 * (discr_order - 1) && j >= 3)
 							{
 								local_edge = (j - 3) / (discr_order - 1);
 								large_edge = ncmesh.face_edge(e, local_edge);
-								if (ncmesh.n_slave_edges(large_edge) > 0)
-									is_on_master_edge = true;
+								if (ncmesh.n_follower_edges(large_edge) > 0)
+									is_on_leader_edge = true;
 							}
 
-							// this node is on a master edge, but its order is constrained
-							if (is_on_master_edge) {
+							// this node is on a leader edge, but its order is constrained
+							if (is_on_leader_edge) {
 								const int edge_order = edge_orders[large_edge];
 
 								// indices of fake nodes on this edge in the opposite element
@@ -1003,18 +1003,18 @@ int polyfem::FEBasis2d::build_bases(
 							}
 							else {
 								Eigen::MatrixXd global_position;
-								// this node is a hanging vertex, and it's not on a slave edge
+								// this node is a hanging vertex, and it's not on a follower edge
 								if (j < 3) {
 									const int v_id = ncmesh.face_vertex(e, j);
-									large_edge = ncmesh.master_edge_of_vertex(v_id);
+									large_edge = ncmesh.leader_edge_of_vertex(v_id);
 									opposite_element = ncmesh.face_neighbor(large_edge);
 									global_position = ncmesh.point(v_id);
 								}
-								// this node is on a slave edge
+								// this node is on a follower edge
 								else {
 									// find the local id of small edge
 									int small_edge = ncmesh.face_edge(e, local_edge);
-									large_edge = ncmesh.master_edge_of_edge(small_edge);
+									large_edge = ncmesh.leader_edge_of_edge(small_edge);
 
 									// this edge is non-conforming
 									if (ncmesh.n_face_neighbors(small_edge) == 1)

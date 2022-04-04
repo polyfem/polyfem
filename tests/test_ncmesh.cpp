@@ -48,7 +48,7 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
     in_args["mesh"] = path + "/contact/meshes/2D/simple/circle/circle36.obj";
 
 	State state(8);
-	state.init_logger("", 1, false);
+	state.init_logger("", 6, false);
 	state.init(in_args);
 
     state.load_mesh(true);
