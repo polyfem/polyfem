@@ -548,4 +548,88 @@ namespace polyfem
 		return 0.5 * (point(v0) + point(v1));
 	}
 
+	void CMesh2D::compute_body_ids(const std::function<int(const RowVectorNd &)> &marker)
+	{
+		body_ids_.resize(n_elements());
+		std::fill(body_ids_.begin(), body_ids_.end(), -1);
+
+		for (int e = 0; e < n_elements(); ++e)
+		{
+			const auto bary = face_barycenter(e);
+			body_ids_[e] = marker(bary);
+		}
+	}
+
+	void CMesh2D::compute_boundary_ids(const double eps)
+	{
+		boundary_ids_.resize(n_edges());
+		std::fill(boundary_ids_.begin(), boundary_ids_.end(), -1);
+
+		RowVectorNd min_corner, max_corner;
+		bounding_box(min_corner, max_corner);
+
+		//implement me properly
+		for (int e = 0; e < n_edges(); ++e)
+		{
+			if (!is_boundary_edge(e))
+				continue;
+
+			const auto p = edge_barycenter(e);
+
+			if (fabs(p(0) - min_corner[0]) < eps)
+				boundary_ids_[e] = 1;
+			else if (fabs(p(1) - min_corner[1]) < eps)
+				boundary_ids_[e] = 2;
+			else if (fabs(p(0) - max_corner[0]) < eps)
+				boundary_ids_[e] = 3;
+			else if (fabs(p(1) - max_corner[1]) < eps)
+				boundary_ids_[e] = 4;
+
+			else
+				boundary_ids_[e] = 7;
+		}
+	}
+
+	void CMesh2D::compute_boundary_ids(const std::function<int(const RowVectorNd &)> &marker)
+	{
+		boundary_ids_.resize(n_edges());
+		std::fill(boundary_ids_.begin(), boundary_ids_.end(), -1);
+
+		//implement me properly
+		for (int e = 0; e < n_edges(); ++e)
+		{
+			if (!is_boundary_edge(e))
+				continue;
+
+			const auto p = edge_barycenter(e);
+
+			boundary_ids_[e] = marker(p);
+		}
+	}
+
+	void CMesh2D::compute_boundary_ids(const std::function<int(const RowVectorNd &, bool)> &marker)
+	{
+		boundary_ids_.resize(n_edges());
+
+		for (int e = 0; e < n_edges(); ++e)
+		{
+			const bool is_boundary = is_boundary_edge(e);
+			const auto p = edge_barycenter(e);
+			boundary_ids_[e] = marker(p, is_boundary);
+		}
+	}
+
+	void CMesh2D::compute_boundary_ids(const std::function<int(const std::vector<int> &, bool)> &marker)
+	{
+		boundary_ids_.resize(n_edges());
+
+		for (int e = 0; e < n_edges(); ++e)
+		{
+			bool is_boundary = is_boundary_edge(e);
+			std::vector<int> vs = {edge_vertex(e, 0), edge_vertex(e, 1)};
+			std::sort(vs.begin(), vs.end());
+			boundary_ids_[e] = marker(vs, is_boundary);
+		}
+	}
+
 } // namespace polyfem

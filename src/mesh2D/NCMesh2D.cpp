@@ -8,6 +8,31 @@
 
 namespace polyfem
 {
+    bool NCMesh2D::is_boundary_element(const int element_global_id) const
+    {
+        assert(index_prepared);
+        const auto& elem = elements[valid_to_all_elem(element_global_id)];
+        for (int le = 0; le < elem.edges.size(); le++)
+            if (is_boundary_edge(all_to_valid_edge(elem.edges(le))))
+                return true;
+        
+        return false;
+    }
+
+	void NCMesh2D::refine(const int n_refiniment, const double t, std::vector<int> &parent_nodes)
+    {
+        std::vector<bool> refine_mask(elements.size(), false);
+        for (int i = 0; i < elements.size(); i++)
+            if (elements[i].is_valid())
+                refine_mask[i] = true;
+
+        for (int i = 0; i < refine_mask.size(); i++)
+            if (refine_mask[i])
+                refine_element(i);
+
+        refine(n_refiniment - 1, t, parent_nodes);
+    }
+
     bool NCMesh2D::build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
     {
         GEO::Mesh mesh_;
@@ -21,7 +46,7 @@ namespace polyfem
             vertices.emplace_back(V.row(i));
         }
         for (int i = 0; i < F.rows(); i++) {
-            addElement(F.row(i), -1);
+            add_element(F.row(i), -1);
         }
 
         return true;
@@ -31,21 +56,14 @@ namespace polyfem
     {
         Eigen::MatrixXd v;
         v.setConstant(n_vertices(), 2, 0);
-        for (int i = 0, j = 0; i < vertices.size(); i++) {
-            if (vertices[i].n_elem) {
-                v.row(j) = vertices[i].pos;
-                j++;
-            }
-        }
+        for (int i = 0; i < v.rows(); i++)
+            v.row(i) = point(i);
 
         Eigen::MatrixXi f;
-        f.setConstant(n_elements, 2 + 1, -1);
-        for (int i = 0, j = 0; i < elements.size(); i++) {
-            if (elements[i].is_valid()) {
-                for (int lv = 0; lv < elements[i].vertices.size(); lv++)
-                    f(j, lv) = all2ValidVertex(elements[i].geom_vertices(lv));
-                j++;
-            }
+        f.setConstant(n_elements, 3, -1);
+        for (int i = 0; i < f.rows(); i++) {
+            for (int lv = 0; lv < n_face_vertices(i); lv++)
+                f(i, lv) = face_vertex(i, lv);
         }
 
         igl::writeOBJ(path, v, f);
@@ -53,8 +71,82 @@ namespace polyfem
         return true;
     }
 
+    void NCMesh2D::attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes)
+    {
+        for (int f = 0; f < n_faces(); ++f)
+            if (nodes[f].size() != 3)
+                throw std::runtime_error("NCMesh doesn't support high order mesh!");
+    }
+    RowVectorNd NCMesh2D::edge_node(const Navigation::Index &index, const int n_new_nodes, const int i) const
+    {
+        const auto v1 = point(index.vertex);
+        const auto v2 = point(switch_vertex(index).vertex);
 
-    int NCMesh2D::addElement(Eigen::Vector3i v, int parent)
+        const double t = i / (n_new_nodes + 1.0);
+
+        return (1 - t) * v1 + t * v2;
+    }
+    RowVectorNd NCMesh2D::face_node(const Navigation::Index &index, const int n_new_nodes, const int i, const int j) const
+    {
+        const auto v1 = point(index.vertex);
+        const auto v2 = point(switch_vertex(index).vertex);
+        const auto v3 = point(switch_vertex(switch_edge(index)).vertex);
+
+        const double b2 = i / (n_new_nodes + 2.0);
+        const double b3 = j / (n_new_nodes + 2.0);
+        const double b1 = 1 - b3 - b2;
+        assert(b3 < 1);
+        assert(b3 > 0);
+
+        return b1 * v1 + b2 * v2 + b3 * v3;
+    }
+
+    int NCMesh2D::find_vertex(Eigen::Vector2i v) const
+    {
+        std::sort(v.data(), v.data()+v.size());
+        auto search = midpointMap.find(v);
+        if (search != midpointMap.end())
+            return search->second;
+        else
+            return -1;
+    }
+
+    int NCMesh2D::get_vertex(Eigen::Vector2i v)
+    {
+        std::sort(v.data(), v.data()+v.size());
+        int id = find_vertex(v);
+        if (id < 0) {
+            Eigen::VectorXd v_mid = (vertices[v[0]].pos + vertices[v[1]].pos) / 2.;
+            id = vertices.size();
+            vertices.emplace_back(v_mid);
+            midpointMap.emplace(v, id);
+        }
+        return id;
+    }
+
+    int NCMesh2D::find_edge(Eigen::Vector2i v) const
+    {
+        std::sort(v.data(), v.data()+v.size());
+        auto search = edgeMap.find(v);
+        if (search != edgeMap.end())
+            return search->second;
+        else 
+            return -1;
+    }
+
+    int NCMesh2D::get_edge(Eigen::Vector2i v)
+    {
+        std::sort(v.data(), v.data()+v.size());
+        int id = find_edge(v);
+        if (id < 0) {
+            edges.emplace_back(v);
+            id = edges.size() - 1;
+            edgeMap.emplace(v, id);
+        }
+        return id;
+    }
+
+    int NCMesh2D::add_element(Eigen::Vector3i v, int parent)
     {
         const int id = elements.size();
         const int level = (parent < 0) ? 0 : elements[parent].level + 1;
@@ -64,9 +156,9 @@ namespace polyfem
             vertices[v(i)].n_elem++;
 
         // add edges if not exist
-        int edge01 = getEdge(Eigen::Vector2i(v[0],v[1]));
-        int edge12 = getEdge(Eigen::Vector2i(v[2],v[1]));
-        int edge20 = getEdge(Eigen::Vector2i(v[0],v[2]));
+        int edge01 = get_edge(Eigen::Vector2i(v[0],v[1]));
+        int edge12 = get_edge(Eigen::Vector2i(v[2],v[1]));
+        int edge20 = get_edge(Eigen::Vector2i(v[0],v[2]));
 
         elements[id].edges << edge01, edge12, edge20;
 
@@ -75,73 +167,91 @@ namespace polyfem
         edges[edge20].add_element(id);
 
         n_elements++;
+        index_prepared = false;
+        adj_prepared = false;
 
         return id;
     }
 
-    void NCMesh2D::refineElement(int id)
+    void NCMesh2D::refine_element(int id_full)
     {
-        const auto v = elements[id].vertices;
+        auto &elem = elements[id_full];
+        if (elem.is_not_valid())
+            throw std::runtime_error("Cannot refine an invalid element!");
 
-        assert(elements[id].is_valid() && "Invalid element in refining!");
-        elements[id].is_refined = true;
+        const auto v = elem.vertices;
+        elem.is_refined = true;
         n_elements--;
 
         // remove the old element from edge reference
         for (int e = 0; e < 3; e++)
-            edges[elements[id].edges(e)].remove_element(id);
+            edges[elem.edges(e)].remove_element(id_full);
 
         for (int i = 0; i < v.size(); i++)
             vertices[v(i)].n_elem--;
 
-        if (elements[id].children(0) >= 0) {
-            for (int c = 0; c < elements[id].children.size(); c++) {
-                auto& elem = elements[elements[id].children(c)];
-                elem.is_ghost = false;
+        if (elem.children(0) >= 0) {
+            for (int c = 0; c < elem.children.size(); c++) {
+                auto& child = elements[elem.children(c)];
+                child.is_ghost = false;
                 n_elements++;
-                for (int le = 0; le < elem.edges.size(); le++)
-                    edges[elem.edges(le)].add_element(elements[id].children(c));
-                for (int i = 0; i < elem.vertices.size(); i++)
-                    vertices[elem.vertices(i)].n_elem++;
+                for (int le = 0; le < child.edges.size(); le++)
+                    edges[child.edges(le)].add_element(child.children(c));
+                for (int i = 0; i < child.vertices.size(); i++)
+                    vertices[child.vertices(i)].n_elem++;
             }
         }
         else {
             // create mid-points if not exist
-            const int v01 = getVertex(Eigen::Vector2i(v[0],v[1]));
-            const int v12 = getVertex(Eigen::Vector2i(v[2],v[1]));
-            const int v20 = getVertex(Eigen::Vector2i(v[0],v[2]));
+            const int v01 = get_vertex(Eigen::Vector2i(v[0],v[1]));
+            const int v12 = get_vertex(Eigen::Vector2i(v[2],v[1]));
+            const int v20 = get_vertex(Eigen::Vector2i(v[0],v[2]));
 
             // inherite line singularity flag from parent edge
             for (int i = 0; i < v.size(); i++)
                 for (int j = 0; j < i; j++) {
-                    int mid_id = findVertex(v[i], v[j]);
-                    int edge_id = findEdge(v[i], v[j]);
-                    int edge1 = getEdge(v[i], mid_id);
-                    int edge2 = getEdge(v[j], mid_id);
+                    int mid_id = find_vertex(v[i], v[j]);
+                    int edge_id = find_edge(v[i], v[j]);
+                    int edge1 = get_edge(v[i], mid_id);
+                    int edge2 = get_edge(v[j], mid_id);
                     edges[edge1].flag = edges[edge_id].flag;
                     edges[edge2].flag = edges[edge_id].flag;
-                    edges[edge1].boundary_flag = edges[edge_id].boundary_flag;
-                    edges[edge2].boundary_flag = edges[edge_id].boundary_flag;
+                    edges[edge1].boundary_id = edges[edge_id].boundary_id;
+                    edges[edge2].boundary_id = edges[edge_id].boundary_id;
                     vertices[mid_id].flag = edges[edge_id].flag;
                 }
 
             // create and insert child elements
-            elements[id].children(0) = elements.size(); addElement(Eigen::Vector3i(v[0],v01,v20), id);
-            elements[id].children(1) = elements.size(); addElement(Eigen::Vector3i(v[1],v12,v01), id);
-            elements[id].children(2) = elements.size(); addElement(Eigen::Vector3i(v[2],v20,v12), id);
-            elements[id].children(3) = elements.size(); addElement(Eigen::Vector3i(v12 ,v20,v01), id);
+            elements[id_full].children(0) = elements.size(); add_element(Eigen::Vector3i(v[0],v01,v20), id_full);
+            elements[id_full].children(1) = elements.size(); add_element(Eigen::Vector3i(v[1],v12,v01), id_full);
+            elements[id_full].children(2) = elements.size(); add_element(Eigen::Vector3i(v[2],v20,v12), id_full);
+            elements[id_full].children(3) = elements.size(); add_element(Eigen::Vector3i(v12 ,v20,v01), id_full);
         }
 
-        refineHistory.push_back(id);
+        refineHistory.push_back(id_full);
+
+        index_prepared = false;
+        adj_prepared = false;
     }
 
-    void NCMesh2D::coarsenElement(int id)
+    void NCMesh2D::refine_elements(const std::vector<int>& ids)
     {
-        const int parent_id = elements[id].parent;
+        std::vector<int> full_ids(ids.size());
+        for (int i = 0; i < ids.size(); i++)
+            full_ids[i] = valid_to_all_elem(ids[i]);
+
+        for (int i : full_ids)
+            refine_element(i);
+    }
+
+    void NCMesh2D::coarsen_element(int id_full)
+    {
+        const int parent_id = elements[id_full].parent;
         auto& parent = elements[parent_id];
 
         for (int i = 0; i < parent.children.size(); i++)
-            assert(elements[parent.children(i)].is_valid() && "Invalid siblings in coarsening!");
+            if (elements[parent.children(i)].is_not_valid())
+                throw std::runtime_error("Coarsen operation invalid!");
 
         // remove elements
         for (int i = 0; i < parent.children.size(); i++) {
@@ -163,28 +273,21 @@ namespace polyfem
             vertices[parent.vertices(v)].n_elem++;
 
         refineHistory.push_back(parent_id);
-    }
 
-    int NCMesh2D::globalEdge2LocalEdge(const int e, const int l) const
-    {
-        for (int i = 0; i < 3; i++) {
-            if (elements[e].edges[i] == l)
-                return i;
-        }
-        assert(false);
-        return 0;
+        index_prepared = false;
+        adj_prepared = false;
     }
 
     int find(const Eigen::VectorXi& vec, int x)
     {
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < vec.size(); i++) {
             if (x == vec[i])
                 return i;
         }
         return -1;
     }
 
-    void NCMesh2D::buildEdgeSlaveChain()
+    void NCMesh2D::build_edge_slave_chain()
     {
         for (auto& edge : edges) {
             edge.master = -1;
@@ -202,7 +305,7 @@ namespace polyfem
                 v << element.vertices[edge_local], element.vertices[(edge_local+1)%3];  // order is important here!
                 int edge_global = element.edges[edge_local];
                 assert(edge_global >= 0);
-                traverseEdge(v, 0, 1, 0, slaves);
+                traverse_edge(v, 0, 1, 0, slaves);
                 for (auto& s : slaves) {
                     edges[s.id].master = edge_global;
                     edges[edge_global].slaves.push_back(s.id);
@@ -213,7 +316,7 @@ namespace polyfem
         }
     }
 
-    void NCMesh2D::markBoundary()
+    void NCMesh2D::mark_boundary()
     {
         for (auto& edge : edges) {
             if (edge.n_elem() == 1)
@@ -251,7 +354,7 @@ namespace polyfem
             return w2;
     }
 
-    void NCMesh2D::buildElementVertexAdjacency()
+    void NCMesh2D::build_element_vertex_adjacency()
     {
         for (auto& vert : vertices) {
             vert.edge = -1;
@@ -298,28 +401,6 @@ namespace polyfem
         }
     }
 
-    Eigen::Vector2d NCMesh2D::edgeWeight2ElemWeight(const int l, const double w)
-    {
-        Eigen::Vector2d pos;
-        switch(l) {
-            case 0:
-                pos(0) = w;
-                pos(1) = 0;
-                break;
-            case 1:
-                pos(0) = 1 - w;
-                pos(1) = w;
-                break;
-            case 2:
-                pos(0) = 0;
-                pos(1) = 1 - w;
-                break;
-            default:
-                assert(false);
-        }
-        return pos;
-    }
-
     double NCMesh2D::elemWeight2EdgeWeight(const int l, const Eigen::Vector2d& pos)
     {
         double w = -1;
@@ -342,57 +423,58 @@ namespace polyfem
         return w;
     }
 
-    void NCMesh2D::buildIndexMapping()
+    void NCMesh2D::build_index_mapping()
     {
-        all2ValidMap.assign(elements.size(), -1);
-        valid2AllMap.resize(n_elements);
+        all_to_valid_elemMap.assign(elements.size(), -1);
+        valid_to_all_elemMap.resize(n_elements);
 
         for (int i = 0, e = 0; i < elements.size(); i++) {
             if (elements[i].is_not_valid())
                 continue;
-            all2ValidMap[i] = e;
-            valid2AllMap[e] = i;
+            all_to_valid_elemMap[i] = e;
+            valid_to_all_elemMap[e] = i;
             e++;
         }
 
         const int n_verts = n_vertices();
 
-        all2ValidVertexMap.assign(vertices.size(), -1);
-        valid2AllVertexMap.resize(n_verts);
+        all_to_valid_vertexMap.assign(vertices.size(), -1);
+        valid_to_all_vertexMap.resize(n_verts);
 
         for (int i = 0, j = 0; i < vertices.size(); i++) {
             if (vertices[i].n_elem == 0)
                 continue;
-            all2ValidVertexMap[i] = j;
-            valid2AllVertexMap[j] = i;
+            all_to_valid_vertexMap[i] = j;
+            valid_to_all_vertexMap[j] = i;
             j++;
         }
 
-        all2ValidEdgeMap.assign(edges.size(), -1);
-        valid2AllEdgeMap.resize(n_edges());
+        all_to_valid_edgeMap.assign(edges.size(), -1);
+        valid_to_all_edgeMap.resize(n_edges());
 
         for (int i = 0, j = 0; i < edges.size(); i++) {
             if (edges[i].n_elem() == 0)
                 continue;
-            all2ValidEdgeMap[i] = j;
-            valid2AllEdgeMap[j] = i;
+            all_to_valid_edgeMap[i] = j;
+            valid_to_all_edgeMap[j] = i;
             j++;
         }
+        index_prepared = true;
     }
 
-    void NCMesh2D::traverseEdge(Eigen::Vector2i v, double p1, double p2, int depth, std::vector<slave_edge>& list) const
+    void NCMesh2D::traverse_edge(Eigen::Vector2i v, double p1, double p2, int depth, std::vector<slave_edge>& list) const
     {
-        int v_mid = findVertex(v);
+        int v_mid = find_vertex(v);
         std::vector<slave_edge> list1, list2;
         if (v_mid >= 0) {
             double p_mid = (p1 + p2) / 2;
-            traverseEdge(Eigen::Vector2i(v[0], v_mid), p1, p_mid, depth+1, list1);
+            traverse_edge(Eigen::Vector2i(v[0], v_mid), p1, p_mid, depth+1, list1);
             list.insert(
                 list.end(),
                 std::make_move_iterator(list1.begin()),
                 std::make_move_iterator(list1.end())
             );
-            traverseEdge(Eigen::Vector2i(v_mid, v[1]), p_mid, p2, depth+1, list2);
+            traverse_edge(Eigen::Vector2i(v_mid, v[1]), p_mid, p2, depth+1, list2);
             list.insert(
                 list.end(),
                 std::make_move_iterator(list2.begin()),
@@ -400,7 +482,7 @@ namespace polyfem
             );
         }
         if (depth > 0) {
-            int slave_id = findEdge(v);
+            int slave_id = find_edge(v);
             if (slave_id >= 0 && edges[slave_id].n_elem() > 0)
                 list.emplace_back(slave_id, p1, p2);
         }
@@ -437,8 +519,11 @@ namespace polyfem
             vertices.emplace_back(V.row(i));
         }
         for (int i = 0; i < F.rows(); i++) {
-            addElement(F.row(i), -1);
+            add_element(F.row(i), -1);
         }
+
+        prepare_mesh();
+        compute_elements_tag();
 
         return true;
     }
@@ -463,12 +548,12 @@ namespace polyfem
 
     Navigation::Index NCMesh2D::get_index_from_face(int f, int lv) const
     {
-        const auto& elem = elements[valid2AllElem(f)];
+        const auto& elem = elements[valid_to_all_elem(f)];
         
         Navigation::Index idx2;
         idx2.face = f;
-        idx2.vertex = all2ValidVertex(elem.vertices(lv));
-        idx2.edge = all2ValidEdge(elem.edges(lv));
+        idx2.vertex = all_to_valid_vertex(elem.vertices(lv));
+        idx2.edge = all_to_valid_edge(elem.edges(lv));
         idx2.face_corner = -1;
 
         return idx2;
@@ -476,14 +561,14 @@ namespace polyfem
 
     Navigation::Index NCMesh2D::switch_vertex(Navigation::Index idx) const
     {
-        const auto& elem = elements[valid2AllElem(idx.face)];
-        const auto& edge = edges[valid2AllEdge(idx.edge)];
+        const auto& elem = elements[valid_to_all_elem(idx.face)];
+        const auto& edge = edges[valid_to_all_edge(idx.edge)];
 
         Navigation::Index idx2;
         idx2.face = idx.face;
         idx2.edge = idx.edge;
         
-        int v1 = valid2AllVertex(idx.vertex);
+        int v1 = valid_to_all_vertex(idx.vertex);
         int v2 = -1;
         for (int i = 0; i < edge.vertices.size(); i++)
             if (edge.vertices(i) != v1) 
@@ -492,7 +577,7 @@ namespace polyfem
                 break;
             }
 
-        idx2.vertex = all2ValidVertex(v2);
+        idx2.vertex = all_to_valid_vertex(v2);
         idx2.face_corner = -1;
 
         return idx2;
@@ -500,7 +585,7 @@ namespace polyfem
 
     Navigation::Index NCMesh2D::switch_edge(Navigation::Index idx) const 
     {
-        const auto& elem = elements[valid2AllElem(idx.face)];
+        const auto& elem = elements[valid_to_all_elem(idx.face)];
 
         Navigation::Index idx2;
         idx2.face = idx.face;
@@ -510,7 +595,7 @@ namespace polyfem
         for (int i = 0; i < elem.edges.size(); i++)
         {
             const auto& edge = edges[elem.edges(i)];
-            const int valid_edge_id = all2ValidEdge(elem.edges(i));
+            const int valid_edge_id = all_to_valid_edge(elem.edges(i));
             if (valid_edge_id != idx.edge && find(edge.vertices, idx.vertex) >= 0)
             {
                 idx2.edge = valid_edge_id;
@@ -528,9 +613,9 @@ namespace polyfem
         idx2.vertex = idx.vertex;
         idx2.face_corner = -1;
 
-        const auto& edge = edges[valid2AllEdge(idx.edge)];
+        const auto& edge = edges[valid_to_all_edge(idx.edge)];
         if (edge.n_elem() == 2)
-            idx2.face = all2ValidElem(edge.find_opposite_element(valid2AllElem(idx.face)));
+            idx2.face = (edge.find_opposite_element(valid_to_all_elem(idx.face)));
         else
             idx2.face = -1;
 
@@ -546,7 +631,7 @@ namespace polyfem
         double scale = std::max(extent(0), extent(1));
 
         for (auto &v : vertices)
-            v.pos = (v.pos - min) / scale;
+            v.pos = (v.pos - min.transpose()) / scale;
     }
 
     double NCMesh2D::edge_length(const int gid) const
@@ -568,7 +653,7 @@ namespace polyfem
 
     void NCMesh2D::set_point(const int global_index, const RowVectorNd &p)
     {
-        vertices[valid2AllVertex(global_index)].pos = p;
+        vertices[valid_to_all_vertex(global_index)].pos = p;
     }
 
     RowVectorNd NCMesh2D::edge_barycenter(const int index) const
@@ -633,6 +718,96 @@ namespace polyfem
 
 			pts.block(pts_index, 0, local_pts[i].rows(), local_pts[i].cols()) = local_pts[i];
 			pts_index += local_pts[i].rows();
+		}
+	}
+
+	void NCMesh2D::compute_body_ids(const std::function<int(const RowVectorNd &)> &marker)
+	{
+		body_ids_.resize(n_faces());
+		std::fill(body_ids_.begin(), body_ids_.end(), -1);
+
+		for (int e = 0; e < n_faces(); ++e)
+		{
+			const auto bary = face_barycenter(e);
+			body_ids_[e] = marker(bary);
+            elements[valid_to_all_elem(e)].body_id = body_ids_[e];
+		}
+	}
+
+	void NCMesh2D::compute_boundary_ids(const double eps)
+	{
+		boundary_ids_.resize(n_edges());
+		std::fill(boundary_ids_.begin(), boundary_ids_.end(), -1);
+
+		RowVectorNd min_corner, max_corner;
+		bounding_box(min_corner, max_corner);
+
+		//implement me properly
+		for (int e = 0; e < n_edges(); ++e)
+		{
+			if (!is_boundary_edge(e))
+				continue;
+
+			const auto p = edge_barycenter(e);
+
+			if (fabs(p(0) - min_corner[0]) < eps)
+				boundary_ids_[e] = 1;
+			else if (fabs(p(1) - min_corner[1]) < eps)
+				boundary_ids_[e] = 2;
+			else if (fabs(p(0) - max_corner[0]) < eps)
+				boundary_ids_[e] = 3;
+			else if (fabs(p(1) - max_corner[1]) < eps)
+				boundary_ids_[e] = 4;
+
+			else
+				boundary_ids_[e] = 7;
+
+            edges[valid_to_all_edge(e)].boundary_id = boundary_ids_[e];
+		}
+	}
+
+	void NCMesh2D::compute_boundary_ids(const std::function<int(const RowVectorNd &)> &marker)
+	{
+		boundary_ids_.resize(n_edges());
+		std::fill(boundary_ids_.begin(), boundary_ids_.end(), -1);
+
+		//implement me properly
+		for (int e = 0; e < n_edges(); ++e)
+		{
+			if (!is_boundary_edge(e))
+				continue;
+
+			const auto p = edge_barycenter(e);
+
+			boundary_ids_[e] = marker(p);
+            edges[valid_to_all_edge(e)].boundary_id = boundary_ids_[e];
+		}
+	}
+
+	void NCMesh2D::compute_boundary_ids(const std::function<int(const RowVectorNd &, bool)> &marker)
+	{
+		boundary_ids_.resize(n_edges());
+
+		for (int e = 0; e < n_edges(); ++e)
+		{
+			const bool is_boundary = is_boundary_edge(e);
+			const auto p = edge_barycenter(e);
+			boundary_ids_[e] = marker(p, is_boundary);
+            edges[valid_to_all_edge(e)].boundary_id = boundary_ids_[e];
+		}
+	}
+
+	void NCMesh2D::compute_boundary_ids(const std::function<int(const std::vector<int> &, bool)> &marker)
+	{
+		boundary_ids_.resize(n_edges());
+
+		for (int e = 0; e < n_edges(); ++e)
+		{
+			bool is_boundary = is_boundary_edge(e);
+			std::vector<int> vs = {edge_vertex(e, 0), edge_vertex(e, 1)};
+			std::sort(vs.begin(), vs.end());
+			boundary_ids_[e] = marker(vs, is_boundary);
+            edges[valid_to_all_edge(e)].boundary_id = boundary_ids_[e];
 		}
 	}
 

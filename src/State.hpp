@@ -291,36 +291,39 @@ namespace polyfem
 		void compute_mesh_size(const Mesh &mesh, const std::vector<ElementBases> &bases, const int n_samples);
 
 		//loads the mesh from the json arguments
-		void load_mesh();
+		void load_mesh(bool non_conforming = false);
 		//loads a febio file, uses args_in for default
 		void load_febio(const std::string &path, const json &args_in);
 		//loads the mesh from a geogram mesh, skip_boundary_sideset = false it uses the lambda boundary_marker to assigm the sideset
 		//the input of the lambda is the face barycenter, the output is the sideset id
-		void load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd &)> &boundary_marker, bool skip_boundary_sideset = false);
+		void load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd &)> &boundary_marker, bool non_conforming = false, bool skip_boundary_sideset = false);
 		//loads a mesh from a path
-		void load_mesh(const std::string &path)
+		void load_mesh(const std::string &path, bool non_conforming = false)
 		{
 			args["mesh"] = path;
-			load_mesh();
+			load_mesh(non_conforming);
 		}
 		//loads a mesh from a path and uses the bc_tag to assign sideset ids
 		//the bc_tag file should contain a list of integers, one per face
-		void load_mesh(const std::string &path, const std::string &bc_tag)
+		void load_mesh(const std::string &path, const std::string &bc_tag, bool non_conforming = false)
 		{
 			args["mesh"] = path;
 			args["bc_tag"] = bc_tag;
-			load_mesh();
+			load_mesh(non_conforming);
 		}
 		//load the mesh from V and F, V is #vertices x dim, F is #elements x size (size = 3 for triangle mesh, size=4 for a quaud mesh if dim is 2)
-		void load_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
+		void load_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, bool non_conforming = false)
 		{
 			if (V.cols() == 2)
-				mesh = std::make_unique<polyfem::NCMesh2D>();
+				if (non_conforming)
+					mesh = std::make_unique<polyfem::NCMesh2D>();
+				else
+					mesh = std::make_unique<polyfem::CMesh2D>();
 			else
 				mesh = std::make_unique<polyfem::Mesh3D>();
 			mesh->build_from_matrices(V, F);
 
-			load_mesh();
+			load_mesh(non_conforming);
 		}
 
 		//set the multimaterial, this is mean for internal usage.

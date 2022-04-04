@@ -59,13 +59,6 @@ namespace polyfem
 		inline Navigation::Index next_around_face(Navigation::Index idx) const { return switch_edge(switch_vertex(idx)); }
 		inline Navigation::Index next_around_vertex(Navigation::Index idx) const { return switch_face(switch_edge(idx)); }
 
-		void compute_boundary_ids(const double eps) override;
-		void compute_boundary_ids(const std::function<int(const RowVectorNd &)> &marker) override;
-		void compute_boundary_ids(const std::function<int(const RowVectorNd &, bool)> &marker) override;
-		void compute_boundary_ids(const std::function<int(const std::vector<int> &, bool)> &marker) override;
-
-		void compute_body_ids(const std::function<int(const RowVectorNd &)> &marker) override;
-
 		void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const override;
 		void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, const std::vector<bool> &valid_elements) const override;
 	};

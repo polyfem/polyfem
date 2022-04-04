@@ -14,7 +14,7 @@
 namespace polyfem
 {
 
-	void State::load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd &)> &boundary_marker, bool skip_boundary_sideset)
+	void State::load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd &)> &boundary_marker, bool non_conforming, bool skip_boundary_sideset)
 	{
 		bases.clear();
 		pressure_bases.clear();
@@ -38,7 +38,7 @@ namespace polyfem
 		igl::Timer timer;
 		timer.start();
 		logger().info("Loading mesh...");
-		mesh = Mesh::create(meshin);
+		mesh = Mesh::create(meshin, non_conforming);
 		if (!mesh)
 		{
 			logger().error("Unable to load the mesh");
@@ -91,7 +91,7 @@ namespace polyfem
 		ref_element_sampler.init(mesh->is_volume(), mesh->n_elements(), args["vismesh_rel_area"]);
 	}
 
-	void State::load_mesh()
+	void State::load_mesh(bool non_conforming)
 	{
 		bases.clear();
 		pressure_bases.clear();
@@ -120,12 +120,12 @@ namespace polyfem
 			if (!mesh_path().empty())
 			{
 				logger().info("Loading mesh {} ...", mesh_path());
-				mesh = Mesh::create(mesh_path());
+				mesh = Mesh::create(mesh_path(), non_conforming);
 			}
 			else if (is_param_valid(args, "meshes"))
 			{
 				logger().info("Loading meshes ...");
-				mesh = Mesh::create(args["meshes"].get<std::vector<json>>(), args["root_path"]);
+				mesh = Mesh::create(args["meshes"].get<std::vector<json>>(), args["root_path"], non_conforming);
 			}
 		}
 		else
@@ -349,6 +349,8 @@ namespace polyfem
 		multi_singular_boundary_count = 0;
 
 		const auto &els_tag = mesh->elements_tag();
+
+		mesh->prepare_mesh();
 
 		for (size_t i = 0; i < els_tag.size(); ++i)
 		{

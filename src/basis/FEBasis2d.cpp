@@ -561,8 +561,8 @@ namespace
 			for (int i = start; i < end; i++)
 			{
 				auto point = pts.row(i) - verts.row(0);
-				uv(i, 0) = J(1, 1) * point(i, 0) - J(0, 1) * point(i, 1);
-				uv(i, 1) = J(0, 0) * point(i, 1) - J(1, 0) * point(i, 0);
+				uv(i, 0) = J(1, 1) * point(0) - J(0, 1) * point(1);
+				uv(i, 1) = J(0, 0) * point(1) - J(1, 0) * point(0);
 			}
 		});
 	}
@@ -927,41 +927,40 @@ int polyfem::FEBasis2d::build_bases(
 			for (const auto& bucket : elementOrder) {
 				if (bucket.size() == 0)
 					continue;
-				for (const int e_ : bucket) {
-					const int e = ncmesh.valid2AllElem(e_);
-					ElementBases& b = bases[e_];
-					const int discr_order = discr_orders(e_);
-					const int n_el_bases = element_nodes_id[e_].size();
+				for (const int e : bucket) {
+					ElementBases& b = bases[e];
+					const int discr_order = discr_orders(e);
+					const int n_el_bases = element_nodes_id[e].size();
 
 					for (int j = 0; j < n_el_bases; ++j)
 					{
-						const int global_index = element_nodes_id[e_][j];
+						const int global_index = element_nodes_id[e][j];
 
 						if (global_index >= 0)
 							b.bases[j].init(discr_order, global_index, j, nodes.node_position(global_index));
 						else
 						{
-							int large_edge = -1, local_large_edge = -1;
+							int large_edge = -1, local_edge = -1;
 							int opposite_element = -1;
 							bool is_on_master_edge = false;
 
 							if (j < 3 + 3 * (discr_order - 1) && j >= 3)
 							{
-								local_large_edge = (j - 3) / (discr_order - 1);
-								large_edge = ncmesh.face_edge(e_, local_large_edge);
+								local_edge = (j - 3) / (discr_order - 1);
+								large_edge = ncmesh.face_edge(e, local_edge);
 								if (ncmesh.n_slave_edges(large_edge) > 0)
 									is_on_master_edge = true;
 							}
 
 							// this node is on a master edge, but its order is constrained
-							if (is_on_master_edge >= 0) {
+							if (is_on_master_edge) {
 								const int edge_order = edge_orders[large_edge];
 
 								// indices of fake nodes on this edge in the opposite element
 								Eigen::VectorXi indices;
 								indices.resize(discr_order + 1);
 								for (int i = 0; i < discr_order - 1; i++) {
-									indices[i + 1] = 3 + local_large_edge * (discr_order - 1) + i;
+									indices[i + 1] = 3 + local_edge * (discr_order - 1) + i;
 								}
 								int index = indices[(j - 3) % (discr_order - 1) + 1];
 
@@ -981,7 +980,7 @@ int polyfem::FEBasis2d::build_bases(
 								};
 
 								// apply basis projection
-								double x = NCMesh2D::elemWeight2EdgeWeight(local_large_edge, node_position);
+								double x = NCMesh2D::elemWeight2EdgeWeight(local_edge, node_position);
 								for (int i = 0; i < edge_virtual_nodes[large_edge].size(); i++)
 								{
 									const int global_index = edge_virtual_nodes[large_edge][i];
@@ -991,8 +990,8 @@ int polyfem::FEBasis2d::build_bases(
 									b.bases[j].global().emplace_back(global_index, nodes.node_position(global_index), weight);
 								}
 
-								const auto& global_1 = b.bases[local_large_edge].global();
-								const auto& global_2 = b.bases[(local_large_edge+1)%3].global();
+								const auto& global_1 = b.bases[local_edge].global();
+								const auto& global_2 = b.bases[(local_edge+1)%3].global();
 								double weight = basis_1d(edge_order, 0, x);
 								if (std::abs(weight) > 1e-12)
 									for (size_t ii = 0; ii < global_1.size(); ++ii)
@@ -1004,10 +1003,9 @@ int polyfem::FEBasis2d::build_bases(
 							}
 							else {
 								Eigen::MatrixXd global_position;
-								local_large_edge = -1;
 								// this node is a hanging vertex, and it's not on a slave edge
 								if (j < 3) {
-									const int v_id = ncmesh.face_vertex(e_, j);
+									const int v_id = ncmesh.face_vertex(e, j);
 									large_edge = ncmesh.master_edge_of_vertex(v_id);
 									opposite_element = ncmesh.face_neighbor(large_edge);
 									global_position = ncmesh.point(v_id);
@@ -1015,19 +1013,19 @@ int polyfem::FEBasis2d::build_bases(
 								// this node is on a slave edge
 								else {
 									// find the local id of small edge
-									int small_edge = ncmesh.face_edge(e_, (j - 3) / (discr_order - 1));
+									int small_edge = ncmesh.face_edge(e, local_edge);
 									large_edge = ncmesh.master_edge_of_edge(small_edge);
 
 									// this edge is non-conforming
 									if (ncmesh.n_face_neighbors(small_edge) == 1)
-										opposite_element = ncmesh.face_neighbor(small_edge);
+										opposite_element = ncmesh.face_neighbor(large_edge);
 									// this edge is conforming, but the order on two sides is different
 									else {
 										Navigation::Index idx;
 										idx.edge = small_edge;
 										idx.vertex = ncmesh.edge_vertex(small_edge, 0);
 										idx.face_corner = -1;
-										idx.face = e_;
+										idx.face = e;
 										opposite_element = ncmesh.switch_face(idx).face;
 									}
 
@@ -1036,15 +1034,15 @@ int polyfem::FEBasis2d::build_bases(
 									autogen::p_nodes_2d(discr_order, lnodes);
 									global_position = lnodes.row(j);
 
-									Eigen::MatrixXd verts(ncmesh.n_face_vertices(e_), 2);
+									Eigen::MatrixXd verts(ncmesh.n_face_vertices(e), 2);
 									for (int i = 0; i < verts.rows(); i++)
-										verts.row(i) = ncmesh.point(ncmesh.face_vertex(e_, i));
+										verts.row(i) = ncmesh.point(ncmesh.face_vertex(e, i));
 
 									Eigen::MatrixXd local_position = lnodes.row(j);
 									local_to_global(verts, local_position, global_position);
 								}
 
-								Eigen::MatrixXd verts(ncmesh.n_face_vertices(e_), 2);
+								Eigen::MatrixXd verts(ncmesh.n_face_vertices(e), 2);
 								for (int i = 0; i < verts.rows(); i++)
 									verts.row(i) = ncmesh.point(ncmesh.face_vertex(opposite_element, i));
 								
@@ -1052,7 +1050,7 @@ int polyfem::FEBasis2d::build_bases(
 								global_to_local(verts, global_position, node_position);
 
 								// evaluate the basis of the opposite element at this node
-								const auto& other_bases = bases[ncmesh.all2ValidElem(opposite_element)];
+								const auto& other_bases = bases[opposite_element];
 								std::vector<AssemblyValues> w;
 								other_bases.evaluate_bases(node_position, w);
 

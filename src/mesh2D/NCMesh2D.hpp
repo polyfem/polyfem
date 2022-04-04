@@ -105,7 +105,8 @@ public:
         std::set<int>   elem_list; // elements that contain this edge/face
         Eigen::VectorXi vertices;
 
-        bool  isboundary = false; // valid only after calling markBoundary()
+        bool  isboundary = false; // valid only after calling mark_boundary()
+        int   boundary_id;
 
         int               master = -1; // if this edge/face lies on a larger edge/face
         std::vector<int>  slaves;      // slaves of this edge/face
@@ -115,7 +116,6 @@ public:
         std::vector<int>  global_ids;  // only used for building basis
 
         bool flag = false;           // flag for determining singularity
-        bool boundary_flag = 0;      // boundary id of this edge/face, for inheriting boundary condtion
 
         // the following only used if it's an edge
         Eigen::Vector2d   weights;     // position of this edge on its master edge
@@ -155,6 +155,8 @@ public:
         Eigen::VectorXi faces;
         Eigen::VectorXi children;
 
+        int    body_id;
+
         bool   is_refined = false;
         bool   is_ghost = false;
     };
@@ -186,90 +188,36 @@ public:
 
     inline int n_face_vertices(const int f_id) const { return 3; }
 
-    inline int face_ref_level(const int f_id) const { return elements[valid2AllElem(f_id)].level; }
+    inline int face_ref_level(const int f_id) const { return elements[valid_to_all_elem(f_id)].level; }
 
-    int face_vertex(const int f_id, const int lv_id) const override { return all2ValidVertex(elements[valid2AllElem(f_id)].vertices(lv_id)); }
-    int edge_vertex(const int e_id, const int lv_id) const override { return all2ValidVertex(edges[valid2AllEdge(e_id)].vertices(lv_id)); }
-    int cell_vertex(const int f_id, const int lv_id) const override { return all2ValidVertex(elements[valid2AllElem(f_id)].vertices(lv_id)); }
+    int face_vertex(const int f_id, const int lv_id) const override { return all_to_valid_vertex(elements[valid_to_all_elem(f_id)].vertices(lv_id)); }
+    int edge_vertex(const int e_id, const int lv_id) const override { return all_to_valid_vertex(edges[valid_to_all_edge(e_id)].vertices(lv_id)); }
+    int cell_vertex(const int f_id, const int lv_id) const override { return all_to_valid_vertex(elements[valid_to_all_elem(f_id)].vertices(lv_id)); }
 
-    int face_edge(const int f_id, const int le_id) const { return all2ValidEdge(elements[valid2AllElem(f_id)].edges(le_id)); }
-    
-    int master_edge_of_vertex(const int v_id) const { return (vertices[valid2AllVertex(v_id)].edge < 0) ? -1 : all2ValidEdge(vertices[valid2AllVertex(v_id)].edge); }
-    int master_edge_of_edge(const int e_id) const { return (edges[valid2AllEdge(e_id)].master < 0) ? -1 : all2ValidEdge(edges[valid2AllEdge(e_id)].master); }
+    int face_edge(const int f_id, const int le_id) const { return all_to_valid_edge(elements[valid_to_all_elem(f_id)].edges(le_id)); }
+    int master_edge_of_vertex(const int v_id) const { assert(adj_prepared); return (vertices[valid_to_all_vertex(v_id)].edge < 0) ? -1 : all_to_valid_edge(vertices[valid_to_all_vertex(v_id)].edge); }
+    int master_edge_of_edge(const int e_id) const { assert(adj_prepared); return (edges[valid_to_all_edge(e_id)].master < 0) ? -1 : all_to_valid_edge(edges[valid_to_all_edge(e_id)].master); }
     
     // number of slave edges of a master edge
-    int n_slave_edges(const int e_id) const { return edges[valid2AllEdge(e_id)].slaves.size(); }
+    int n_slave_edges(const int e_id) const { assert(adj_prepared); return edges[valid_to_all_edge(e_id)].slaves.size(); }
     // number of elements have this edge
-    int n_face_neighbors(const int e_id) const { return edges[valid2AllEdge(e_id)].n_elem(); }
+    int n_face_neighbors(const int e_id) const { return edges[valid_to_all_edge(e_id)].n_elem(); }
     // return the only element that has this edge
-    int face_neighbor(const int e_id) const { return all2ValidElem(edges[valid2AllEdge(e_id)].get_element()); }
+    int face_neighbor(const int e_id) const { return all_to_valid_elem(edges[valid_to_all_edge(e_id)].get_element()); }
 
-    bool is_boundary_vertex(const int vertex_global_id) const override
-    {
-        return vertices[vertex_global_id].isboundary;
-    }
+    int get_boundary_id(const int primitive) const override { return edges[valid_to_all_edge(primitive)].boundary_id; }
+    bool is_boundary_vertex(const int vertex_global_id) const override { return vertices[valid_to_all_vertex(vertex_global_id)].isboundary; }
+    bool is_boundary_edge(const int edge_global_id) const override { return edges[valid_to_all_edge(edge_global_id)].isboundary; }
+    bool is_boundary_element(const int element_global_id) const override;
 
-    bool is_boundary_edge(const int edge_global_id) const override
-    {
-        return edges[edge_global_id].isboundary;
-    }
-
-    bool is_boundary_element(const int element_global_id) const override
-    {
-        const auto& elem = elements[element_global_id];
-        for (int le = 0; le < elem.edges.size(); le++)
-            if (is_boundary_edge(elem.edges(le)))
-                return true;
-        
-        return false;
-    }
-
-	void refine(const int n_refiniment, const double t, std::vector<int> &parent_nodes) override
-    {
-        std::vector<bool> refine_mask(elements.size(), false);
-        for (int i = 0; i < elements.size(); i++)
-            if (elements[i].is_valid())
-                refine_mask[i] = true;
-
-        for (int i = 0; i < refine_mask.size(); i++)
-            if (refine_mask[i])
-                refineElement(i);
-
-        refine(n_refiniment - 1, t, parent_nodes);
-    };
+	void refine(const int n_refiniment, const double t, std::vector<int> &parent_nodes) override;
 
     bool build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F) override;
     bool save(const std::string &path) const override;
 
-    void attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes) override
-    {
-        for (int f = 0; f < n_faces(); ++f)
-            if (nodes[f].size() != 3)
-                throw std::runtime_error("NCMesh doesn't support high order mesh!");
-    }
-    RowVectorNd edge_node(const Navigation::Index &index, const int n_new_nodes, const int i) const override
-    {
-        const auto v1 = point(index.vertex);
-        const auto v2 = point(switch_vertex(index).vertex);
-
-        const double t = i / (n_new_nodes + 1.0);
-
-        return (1 - t) * v1 + t * v2;
-    }
-    RowVectorNd face_node(const Navigation::Index &index, const int n_new_nodes, const int i, const int j) const override
-    {
-        const auto v1 = point(index.vertex);
-        const auto v2 = point(switch_vertex(index).vertex);
-        const auto v3 = point(switch_vertex(switch_edge(index)).vertex);
-
-        const double b2 = i / (n_new_nodes + 2.0);
-        const double b3 = j / (n_new_nodes + 2.0);
-        const double b1 = 1 - b3 - b2;
-        assert(b3 < 1);
-        assert(b3 > 0);
-
-        return b1 * v1 + b2 * v2 + b3 * v3;
-    }
+    void attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes) override;
+    RowVectorNd edge_node(const Navigation::Index &index, const int n_new_nodes, const int i) const override;
+    RowVectorNd face_node(const Navigation::Index &index, const int n_new_nodes, const int i, const int j) const override;
 
     void normalize() override;
 
@@ -280,10 +228,17 @@ public:
 
     void set_point(const int global_index, const RowVectorNd &p) override;
 
-    RowVectorNd point(const int global_index) const override { return vertices[valid2AllVertex(global_index)].pos.transpose(); }
+    RowVectorNd point(const int global_index) const override { assert(index_prepared); return vertices[valid_to_all_vertex(global_index)].pos.transpose(); }
     RowVectorNd edge_barycenter(const int index) const override;
 
     void bounding_box(RowVectorNd &min, RowVectorNd &max) const override;
+
+    void compute_boundary_ids(const double eps) override;
+    void compute_boundary_ids(const std::function<int(const RowVectorNd &)> &marker) override;
+    void compute_boundary_ids(const std::function<int(const RowVectorNd &, bool)> &marker) override;
+    void compute_boundary_ids(const std::function<int(const std::vector<int> &, bool)> &marker) override;
+
+    void compute_body_ids(const std::function<int(const RowVectorNd &)> &marker) override;
 
     // Navigation wrapper
     Navigation::Index get_index_from_face(int f, int lv = 0) const override;
@@ -294,115 +249,81 @@ public:
     Navigation::Index switch_face(Navigation::Index idx) const override;
 
     void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
-
-    // edges are created if not exist
-    // return the id of this new element
-    int addElement(Eigen::Vector3i v, int parent = -1);
     
     // refine one element
-    void refineElement(int id);
+    void refine_element(int id_full);
+    void refine_elements(const std::vector<int>& ids);
 
     // coarsen one element
-    void coarsenElement(int id);
-
-    // find the local index of edges[l] in the elements[e]
-    int globalEdge2LocalEdge(const int e, const int l) const;
+    void coarsen_element(int id_full);
 
     // mark the true boundary vertices
-    void markBoundary();
+    void mark_boundary();
 
-    // map the weight on edge to the barycentric coordinate in element
-    static Eigen::Vector2d edgeWeight2ElemWeight(const int l, const double w);
     // map the barycentric coordinate in element to the weight on edge
     static double elemWeight2EdgeWeight(const int l, const Eigen::Vector2d& pos);
 
-    // list all slave edges of a potential master edge, returns nothing if it's a slave or conforming edge
-    void traverseEdge(Eigen::Vector2i v, double p1, double p2, int depth, std::vector<slave_edge>& list) const;
-
-    // call traverseEdge() for every interface, and store everything needed
-    void buildEdgeSlaveChain();
-
-    // assign ncElement2D.master_edges and ncVertex2D.weight
-    void buildElementVertexAdjacency();
-
     // call necessary functions before building bases
-    void prepareMesh()
+    void prepare_mesh() override
     {
-        buildEdgeSlaveChain();
-        buildElementVertexAdjacency();
-        buildIndexMapping();
+        build_edge_slave_chain();
+        build_element_vertex_adjacency();
+        build_index_mapping();
+        compute_elements_tag();
+        mark_boundary();
+        adj_prepared = true;
     }
 
-    // find the mid-point of edge v[0]v[1], return -1 if not exists
-    int findVertex(Eigen::Vector2i v) const
-    {
-        std::sort(v.data(), v.data()+v.size());
-        auto search = midpointMap.find(v);
-        if (search != midpointMap.end())
-            return search->second;
-        else
-            return -1;
-    };
-    int findVertex(const int v1, const int v2) const { return findVertex(Eigen::Vector2i(v1, v2)); };
-    // find the mid-point of edge v[0]v[1], create one if not exists
-    int getVertex(Eigen::Vector2i v)
-    {
-        std::sort(v.data(), v.data()+v.size());
-        int id = findVertex(v);
-        if (id < 0) {
-            Eigen::VectorXd v_mid = (vertices[v[0]].pos + vertices[v[1]].pos) / 2.;
-            id = vertices.size();
-            vertices.emplace_back(v_mid);
-            midpointMap.emplace(v, id);
-        }
-        return id;
-    };
-
-    // find the edge v[0]v[1], return -1 if not exists
-    int findEdge(Eigen::Vector2i v) const
-    {
-        std::sort(v.data(), v.data()+v.size());
-        auto search = edgeMap.find(v);
-        if (search != edgeMap.end())
-            return search->second;
-        else 
-            return -1;
-    };
-    int findEdge(const int v1, const int v2) const { return findEdge(Eigen::Vector2i(v1, v2)); };
-
-    // find the edge v[0]v[1], create one if not exists
-    int getEdge(Eigen::Vector2i v)
-    {
-        std::sort(v.data(), v.data()+v.size());
-        int id = findEdge(v);
-        if (id < 0) {
-            edges.emplace_back(v);
-            id = edges.size() - 1;
-            edgeMap.emplace(v, id);
-        }
-        return id;
-    };
-    int getEdge(const int v1, const int v2) { return getEdge(Eigen::Vector2i(v1, v2)); };
-
-    // index map from vertices to valid ones, and its inverse
-    inline int all2ValidVertex(const int id) const { return all2ValidVertexMap[id]; };
-    inline int valid2AllVertex(const int id) const { return valid2AllVertexMap[id]; };
-
-    // index map from edges to valid ones, and its inverse
-    inline int all2ValidEdge(const int id) const { return all2ValidEdgeMap[id]; };
-    inline int valid2AllEdge(const int id) const { return valid2AllEdgeMap[id]; };
-
-    // index map from elements to valid ones, and its inverse
-    inline int all2ValidElem(const int id) const { return all2ValidMap[id]; };
-    inline int valid2AllElem(const int id) const { return valid2AllMap[id]; };
-
-    void buildIndexMapping();
+    void build_index_mapping();
     
 protected:
     bool load(const std::string &path) override;
     bool load(const GEO::Mesh &mesh) override;
 
+    // index map from vertices to valid ones, and its inverse
+    inline int all_to_valid_vertex(const int id) const { assert(index_prepared); return all_to_valid_vertexMap[id]; };
+    inline int valid_to_all_vertex(const int id) const { assert(index_prepared); return valid_to_all_vertexMap[id]; };
+
+    // index map from edges to valid ones, and its inverse
+    inline int all_to_valid_edge(const int id) const { assert(index_prepared); return all_to_valid_edgeMap[id]; };
+    inline int valid_to_all_edge(const int id) const { assert(index_prepared); return valid_to_all_edgeMap[id]; };
+
+    // index map from elements to valid ones, and its inverse
+    inline int all_to_valid_elem(const int id) const { assert(index_prepared); return all_to_valid_elemMap[id]; };
+    inline int valid_to_all_elem(const int id) const { assert(index_prepared); return valid_to_all_elemMap[id]; };
+
+    // find the mid-point of edge v[0]v[1], return -1 if not exists
+    int find_vertex(Eigen::Vector2i v) const;
+    int find_vertex(const int v1, const int v2) const { return find_vertex(Eigen::Vector2i(v1, v2)); };
+    
+    // find the mid-point of edge v[0]v[1], create one if not exists
+    int get_vertex(Eigen::Vector2i v);
+
+    // find the edge v[0]v[1], return -1 if not exists
+    int find_edge(Eigen::Vector2i v) const;
+    int find_edge(const int v1, const int v2) const { return find_edge(Eigen::Vector2i(v1, v2)); };
+
+    // find the edge v[0]v[1], create one if not exists
+    int get_edge(Eigen::Vector2i v);
+    int get_edge(const int v1, const int v2) { return get_edge(Eigen::Vector2i(v1, v2)); };
+
+    // list all slave edges of a potential master edge, returns nothing if it's a slave or conforming edge
+    void traverse_edge(Eigen::Vector2i v, double p1, double p2, int depth, std::vector<slave_edge>& list) const;
+
+    // call traverse_edge() for every interface, and store everything needed
+    void build_edge_slave_chain();
+
+    // assign ncElement2D.master_edges and ncVertex2D.weight
+    void build_element_vertex_adjacency();
+
+    // edges are created if not exist
+    // return the id of this new element
+    int add_element(Eigen::Vector3i v, int parent = -1);
+
     int n_elements = 0;
+
+    bool index_prepared = false;
+    bool adj_prepared = false;
 
     std::vector<ncElem> elements;
     std::vector<ncVert> vertices;
@@ -411,9 +332,9 @@ protected:
     std::unordered_map< Eigen::Vector2i, int, ArrayHasher2D >  midpointMap;
     std::unordered_map< Eigen::Vector2i, int, ArrayHasher2D >  edgeMap;
 
-    std::vector<int> all2ValidMap, valid2AllMap;
-    std::vector<int> all2ValidVertexMap, valid2AllVertexMap;
-    std::vector<int> all2ValidEdgeMap, valid2AllEdgeMap;
+    std::vector<int> all_to_valid_elemMap, valid_to_all_elemMap;
+    std::vector<int> all_to_valid_vertexMap, valid_to_all_vertexMap;
+    std::vector<int> all_to_valid_edgeMap, valid_to_all_edgeMap;
 
     std::vector<int> refineHistory;
 
