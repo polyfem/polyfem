@@ -5,20 +5,6 @@
 namespace polyfem
 {
 
-struct ArrayHasher2D 
-{
-    long operator()(const Eigen::Vector2i& a) const {
-        return (long)((long)984120265 * a[0] + (long)125965121 * a[1]);
-    }
-};
-
-struct ArrayHasher3D 
-{
-    long operator()(const Eigen::Vector3i& a) const {
-        return (long)((long)984120265 * a[0] + (long)125965121 * a[1] + (long)495698413 * a[2]);
-    }
-};
-
 class NCMesh2D: public Mesh2D
 {
 public:
@@ -279,6 +265,14 @@ public:
     }
 
     void build_index_mapping();
+
+private:
+    struct ArrayHasher2D 
+    {
+        long operator()(const Eigen::Vector2i& a) const {
+            return (long)((long)984120265 * a[0] + (long)125965121 * a[1]);
+        }
+    };
     
 protected:
     bool load(const std::string &path) override;

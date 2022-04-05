@@ -414,9 +414,6 @@ namespace polyfem
 		//interpolate the function fun and its gradient at in element el_index for the local_pts in the reference element using bases bases
 		//actual dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
 		void interpolate_at_local_vals(const int el_index, const int actual_dim, const std::vector<ElementBases> &bases, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad);
-		//interpolate the function fun and its gradient at in element el_index for the local_pts in the reference element using bases and geom_bases
-		void interpolate_at_local_vals(const int el_index, const int actual_dim, const std::vector<ElementBases> &tmp_bases, const std::vector<ElementBases> &tmp_geom_bases, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad);
-		void interpolate_at_local_vals(const int actual_dim, const ElementBases &tmp_base, const ElementBases &tmp_geom_base, const MatrixXd &local_pts, const MatrixXd &fun, MatrixXd &result, MatrixXd &result_grad);
 
 		bool check_scalar_value(const Eigen::MatrixXd &fun, const bool use_sampler, const bool boundary_only);
 		//computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)
