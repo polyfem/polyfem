@@ -7,7 +7,7 @@
 
 namespace polyfem
 {
-	class TestProblem: public ProblemWithSolution
+	class TestProblem : public ProblemWithSolution
 	{
 	public:
 		TestProblem(const std::string &name);
@@ -21,11 +21,10 @@ namespace polyfem
 		void set_parameters(const json &params) override;
 
 	private:
-		template <typename T> T eval_impl(const T &pt) const;
+		template <typename T>
+		T eval_impl(const T &pt) const;
 
 	private:
 		json params_;
 	};
-}
-
-
+} // namespace polyfem

@@ -9,7 +9,6 @@
 
 #include <igl/Timer.h>
 
-
 namespace polyfem
 {
 	namespace
@@ -18,10 +17,10 @@ namespace polyfem
 		{
 			vec.resize(vals.size());
 
-			for(size_t i = 0; i < vals.size(); ++i)
+			for (size_t i = 0; i < vals.size(); ++i)
 				vec(i) = vals[i];
 		}
-	}
+	} // namespace
 
 	OgdenElasticity::OgdenElasticity()
 	{
@@ -39,17 +38,17 @@ namespace polyfem
 	{
 		set_size(params["size"]);
 
-		if(params.count("alphas"))
+		if (params.count("alphas"))
 		{
 			const std::vector<double> tmp = params["alphas"];
 			fill_mat_from_vect(tmp, alphas_);
 		}
-		if(params.count("mus"))
+		if (params.count("mus"))
 		{
 			const std::vector<double> tmp = params["mus"];
 			fill_mat_from_vect(tmp, mus_);
 		}
-		if(params.count("Ds"))
+		if (params.count("Ds"))
 		{
 			const std::vector<double> tmp = params["Ds"];
 			fill_mat_from_vect(tmp, Ds_);
@@ -87,7 +86,8 @@ namespace polyfem
 
 		const int n_bases = vals.basis_values.size();
 
-		return polyfem::gradient_from_energy(size(), n_bases, vals, displacement, da,
+		return polyfem::gradient_from_energy(
+			size(), n_bases, vals, displacement, da,
 			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 6, 1>>>(vals, displacement, da); },
 			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 8, 1>>>(vals, displacement, da); },
 			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 12, 1>>>(vals, displacement, da); },
@@ -98,8 +98,7 @@ namespace polyfem
 			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 81, 1>>>(vals, displacement, da); },
 			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>>>(vals, displacement, da); },
 			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, BIG_N, 1>>>(vals, displacement, da); },
-			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::VectorXd>>(vals, displacement, da); }
-		);
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar1<double, Eigen::VectorXd>>(vals, displacement, da); });
 	}
 
 	Eigen::MatrixXd
@@ -108,7 +107,8 @@ namespace polyfem
 		// igl::Timer time; time.start();
 
 		const int n_bases = vals.basis_values.size();
-		return polyfem::hessian_from_energy(size(), n_bases, vals, displacement, da,
+		return polyfem::hessian_from_energy(
+			size(), n_bases, vals, displacement, da,
 			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 6, 1>, Eigen::Matrix<double, 6, 6>>>(vals, displacement, da); },
 			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 8, 1>, Eigen::Matrix<double, 8, 8>>>(vals, displacement, da); },
 			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 12, 1>, Eigen::Matrix<double, 12, 12>>>(vals, displacement, da); },
@@ -118,25 +118,23 @@ namespace polyfem
 			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 60, 1>, Eigen::Matrix<double, 60, 60>>>(vals, displacement, da); },
 			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 81, 1>, Eigen::Matrix<double, 81, 81>>>(vals, displacement, da); },
 			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, SMALL_N, SMALL_N>>>(vals, displacement, da); },
-			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>>(vals, displacement, da); }
-		);
+			[&](const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) { return compute_energy_aux<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>>(vals, displacement, da); });
 	}
 
 	void OgdenElasticity::compute_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
 	{
-		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, size()*size(), stresses, [&](const Eigen::MatrixXd &stress)
-		{
+		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, size() * size(), stresses, [&](const Eigen::MatrixXd &stress) {
 			Eigen::MatrixXd tmp = stress;
-			auto a = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size()*size());
+			auto a = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size() * size());
 			return Eigen::MatrixXd(a);
 		});
 	}
 
 	void OgdenElasticity::compute_von_mises_stresses(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
 	{
-		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, 1, stresses, [&](const Eigen::MatrixXd &stress)
-		{
-			Eigen::Matrix<double, 1,1> res; res.setConstant(von_mises_stress_for_stress_tensor(stress));
+		assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, 1, stresses, [&](const Eigen::MatrixXd &stress) {
+			Eigen::Matrix<double, 1, 1> res;
+			res.setConstant(von_mises_stress_for_stress_tensor(stress));
 			return res;
 		});
 	}
@@ -148,7 +146,6 @@ namespace polyfem
 		assert(displacement.cols() == 1);
 		ElementAssemblyValues vals;
 		vals.compute(el_id, size() == 3, local_pts, bs, bs);
-
 
 		all.resize(local_pts.rows(), all_size);
 
@@ -168,7 +165,6 @@ namespace polyfem
 		// 		eps[0] = strain(0,0);
 		// 		eps[1] = strain(1,1);
 		// 		eps[2] = 2*strain(0,1);
-
 
 		// 		stress_tensor <<
 		// 		stress(eps, 0), stress(eps, 2),
@@ -202,11 +198,11 @@ namespace polyfem
 	}
 
 	//http://abaqus.software.polimi.it/v6.14/books/stm/default.htm?startat=ch04s06ath123.html Ogden form
-	template<typename T>
+	template <typename T>
 	T OgdenElasticity::compute_energy_aux(const ElementAssemblyValues &vals, const Eigen::MatrixXd &displacement, const QuadratureVector &da) const
 	{
-		typedef Eigen::Matrix<T, Eigen::Dynamic, 1> 							AutoDiffVect;
-		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> 		AutoDiffGradMat;
+		typedef Eigen::Matrix<T, Eigen::Dynamic, 1> AutoDiffVect;
+		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
 
 		assert(displacement.cols() == 1);
 
@@ -214,11 +210,14 @@ namespace polyfem
 
 		Eigen::Matrix<double, Eigen::Dynamic, 1> local_dispv(vals.basis_values.size() * size(), 1);
 		local_dispv.setZero();
-		for(size_t i = 0; i < vals.basis_values.size(); ++i){
+		for (size_t i = 0; i < vals.basis_values.size(); ++i)
+		{
 			const auto &bs = vals.basis_values[i];
-			for(size_t ii = 0; ii < bs.global.size(); ++ii){
-				for(int d = 0; d < size(); ++d){
-					local_dispv(i*size() + d) += bs.global[ii].val * displacement(bs.global[ii].index*size() + d);
+			for (size_t ii = 0; ii < bs.global.size(); ++ii)
+			{
+				for (int d = 0; d < size(); ++d)
+				{
+					local_dispv(i * size() + d) += bs.global[ii].val * displacement(bs.global[ii].index * size() + d);
 				}
 			}
 		}
@@ -229,77 +228,78 @@ namespace polyfem
 
 		const AutoDiffAllocator<T> allocate_auto_diff_scalar;
 
-		for(long i = 0; i < local_dispv.rows(); ++i){
+		for (long i = 0; i < local_dispv.rows(); ++i)
+		{
 			local_disp(i) = allocate_auto_diff_scalar(i, local_dispv(i));
 		}
 
 		AutoDiffGradMat def_grad(size(), size());
 
-		for(long p = 0; p < n_pts; ++p)
+		for (long p = 0; p < n_pts; ++p)
 		{
-			for(long k = 0; k < def_grad.size(); ++k)
+			for (long k = 0; k < def_grad.size(); ++k)
 				def_grad(k) = T(0);
 
-			for(size_t i = 0; i < vals.basis_values.size(); ++i)
+			for (size_t i = 0; i < vals.basis_values.size(); ++i)
 			{
 				const auto &bs = vals.basis_values[i];
 				const Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> grad = bs.grad.row(p);
 				assert(grad.size() == size());
 
-				for(int d = 0; d < size(); ++d)
+				for (int d = 0; d < size(); ++d)
 				{
-					for(int c = 0; c < size(); ++c)
+					for (int c = 0; c < size(); ++c)
 					{
-						def_grad(d, c) += grad(c) * local_disp(i*size() + d);
+						def_grad(d, c) += grad(c) * local_disp(i * size() + d);
 					}
 				}
 			}
 
 			AutoDiffGradMat jac_it(size(), size());
-			for(long k = 0; k < jac_it.size(); ++k)
+			for (long k = 0; k < jac_it.size(); ++k)
 				jac_it(k) = T(vals.jac_it[p](k));
 
 			def_grad = def_grad * jac_it;
 
 			//Id + grad d
-			for(int d = 0; d < size(); ++d)
-				def_grad(d,d) += T(1);
+			for (int d = 0; d < size(); ++d)
+				def_grad(d, d) += T(1);
 
 			Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1> eigs;
 
-			if(size() == 2)
+			if (size() == 2)
 				autogen::eigs_2d<T>(def_grad, eigs);
-			else if(size() == 3)
+			else if (size() == 3)
 				autogen::eigs_3d<T>(def_grad, eigs);
 			else
 				assert(false);
 
 			const T J = polyfem::determinant(def_grad);
-			const T Jdenom = pow(J, -1./size());
+			const T Jdenom = pow(J, -1. / size());
 
-			for(long i = 0; i < eigs.size(); ++i)
+			for (long i = 0; i < eigs.size(); ++i)
 				eigs(i) = eigs(i) * Jdenom;
 
 			auto val = T(0);
-			for(long N = 0; N < alphas_.size(); ++N)
+			for (long N = 0; N < alphas_.size(); ++N)
 			{
 				auto tmp = T(-size());
 				const double alpha = alphas_(N);
 				const double mu = mus_(N);
 
-				for(long i = 0; i < eigs.size(); ++i)
+				for (long i = 0; i < eigs.size(); ++i)
 					tmp += pow(eigs(i), alpha);
 
-				val += 2*mu/(alpha * alpha) * tmp;
+				val += 2 * mu / (alpha * alpha) * tmp;
 			}
 
 			// std::cout<<val<<std::endl;
 
-			for(long N = 0; N < Ds_.size(); ++N)
+			for (long N = 0; N < Ds_.size(); ++N)
 			{
 				const double D = Ds_(N);
 
-				val += 1./D * pow(J - T(1), 2*(N+1));
+				val += 1. / D * pow(J - T(1), 2 * (N + 1));
 			}
 
 			energy += val * da(p);
@@ -307,4 +307,4 @@ namespace polyfem
 		// std::cout<<"\n\n------------\n\n\n"<<std::endl;
 		return energy;
 	}
-}
+} // namespace polyfem

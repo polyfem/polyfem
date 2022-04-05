@@ -8,7 +8,6 @@ namespace polyfem
 	class RBFWithLinear
 	{
 	public:
-
 		///
 		/// @brief      { Initialize RBF functions over a polytope element. }
 		///
@@ -30,8 +29,8 @@ namespace polyfem
 		///                                   reproduction for the Poisson equation }
 		///
 		RBFWithLinear(const Eigen::MatrixXd &centers, const Eigen::MatrixXd &collocation_points,
-			const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
-			Eigen::MatrixXd &rhs, bool with_constraints = true);
+					  const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
+					  Eigen::MatrixXd &rhs, bool with_constraints = true);
 
 		///
 		/// @brief      { Evaluates one RBF function over a list of coordinates }
@@ -79,12 +78,12 @@ namespace polyfem
 
 		// Computes the relationship w = L v + t between the unknowns (v) and the weights w
 		void compute_constraints_matrix(const int num_bases, const Quadrature &quadr,
-			const Eigen::MatrixXd &local_basis_integral, Eigen::MatrixXd &L, Eigen::MatrixXd &t) const;
+										const Eigen::MatrixXd &local_basis_integral, Eigen::MatrixXd &L, Eigen::MatrixXd &t) const;
 
 		// Computes the weights by solving a (possibly constrained) linear least square
 		void compute_weights(const Eigen::MatrixXd &collocation_points,
-			const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
-			Eigen::MatrixXd &rhs, bool with_constraints);
+							 const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
+							 Eigen::MatrixXd &rhs, bool with_constraints);
 
 	private:
 		// #C x dim matrix of kernel center positions
@@ -93,4 +92,4 @@ namespace polyfem
 		// (#C + dim + 1) x #B matrix of weights extending the #B bases that are non-vanishing on the polytope
 		Eigen::MatrixXd weights_;
 	};
-}
+} // namespace polyfem

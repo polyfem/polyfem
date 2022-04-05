@@ -45,24 +45,24 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
 			"vismesh_rel_area": 1.0
 		}
 	)"_json;
-    in_args["mesh"] = path + "/contact/meshes/2D/simple/circle/circle36.obj";
+	in_args["mesh"] = path + "/contact/meshes/2D/simple/circle/circle36.obj";
 
 	State state(8);
 	state.init_logger("", 6, false);
 	state.init(in_args);
 
-    state.load_mesh(true);
-    NCMesh2D &ncmesh = *dynamic_cast<NCMesh2D* >(state.mesh.get());
+	state.load_mesh(true);
+	NCMesh2D &ncmesh = *dynamic_cast<NCMesh2D *>(state.mesh.get());
 
-    for (int n = 0; n < 1; n++)
-    {
-        ncmesh.prepare_mesh();
-        std::vector<int> ref_ids(ncmesh.n_faces() / 2);
-        for (int i = 0; i < ref_ids.size(); i++)
-            ref_ids[i] = 2 * i;
+	for (int n = 0; n < 1; n++)
+	{
+		ncmesh.prepare_mesh();
+		std::vector<int> ref_ids(ncmesh.n_faces() / 2);
+		for (int i = 0; i < ref_ids.size(); i++)
+			ref_ids[i] = 2 * i;
 
-        ncmesh.refine_elements(ref_ids);
-    }
+		ncmesh.refine_elements(ref_ids);
+	}
 
 	state.compute_mesh_stats();
 	state.build_basis();
@@ -71,12 +71,11 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
 	state.assemble_rhs();
 
 	state.solve_problem();
-    state.compute_errors();
+	state.compute_errors();
 
 	REQUIRE(fabs(state.h1_semi_err) < 1e-9);
-    REQUIRE(fabs(state.l2_err) < 1e-10);
+	REQUIRE(fabs(state.l2_err) < 1e-10);
 }
-
 
 // TEST_CASE("ncmesh3d", "[ncmesh]")
 // {
@@ -109,7 +108,7 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
 // 	State state(8);
 // 	state.init_logger("", 6, false);
 // 	state.init(in_args);
-	
+
 //     std::shared_ptr<ncMesh> ncmesh = std::make_shared<ncMesh3D>(mesh_path);
 
 //     int id = 0;

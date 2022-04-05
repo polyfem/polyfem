@@ -352,7 +352,7 @@ namespace polyfem
 			solve_problem();
 			solve_export_to_file = true;
 		}
-		
+
 		//internal methods, they are called from solve
 
 		//builds the bases step 2 of solve

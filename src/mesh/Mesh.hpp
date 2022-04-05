@@ -170,7 +170,7 @@ namespace polyfem
 
 		const std::vector<double> &cell_weights(const int cell_index) const { return cell_weights_[cell_index]; }
 
-		virtual void prepare_mesh() {};
+		virtual void prepare_mesh(){};
 
 		bool has_poly() const
 		{

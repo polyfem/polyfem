@@ -14,7 +14,8 @@
 #include <cassert>
 #include <array>
 
-namespace polyfem {
+namespace polyfem
+{
 
 	void Mesh2D::get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const
 	{
@@ -119,4 +120,4 @@ namespace polyfem {
 			}
 		}
 	}
-}
+} // namespace polyfem

@@ -8,34 +8,35 @@
 
 namespace polyfem
 {
-    namespace
-    {
-        void get_weight_and_points(const int order, Eigen::MatrixXd &points, Eigen::VectorXd &weights)
-        {
-            switch(order)
-            {
-				#include <polyfem/auto_tetrahedron.ipp>
+	namespace
+	{
+		void get_weight_and_points(const int order, Eigen::MatrixXd &points, Eigen::VectorXd &weights)
+		{
+			switch (order)
+			{
+#include <polyfem/auto_tetrahedron.ipp>
 
-                default:
-                assert(false);
-            };
-        }
-    }
+			default:
+				assert(false);
+			};
+		}
+	} // namespace
 
-    TetQuadrature::TetQuadrature()
-    { }
+	TetQuadrature::TetQuadrature()
+	{
+	}
 
-    void TetQuadrature::get_quadrature(const int order, Quadrature &quad)
-    {
-        Quadrature tmp;
+	void TetQuadrature::get_quadrature(const int order, Quadrature &quad)
+	{
+		Quadrature tmp;
 
-        get_weight_and_points(order, quad.points, quad.weights);
+		get_weight_and_points(order, quad.points, quad.weights);
 
-        assert(fabs(quad.weights.sum()-1)<1e-12);
-        assert(quad.points.minCoeff()>=0 && quad.points.maxCoeff()<=1);
+		assert(fabs(quad.weights.sum() - 1) < 1e-12);
+		assert(quad.points.minCoeff() >= 0 && quad.points.maxCoeff() <= 1);
 
-        assert(quad.points.rows()==quad.weights.size());
+		assert(quad.points.rows() == quad.weights.size());
 
-        quad.weights/=6;
-    }
-}
+		quad.weights /= 6;
+	}
+} // namespace polyfem

@@ -6,12 +6,13 @@
 
 namespace polyfem
 {
-	template<bool full_gradient>
+	template <bool full_gradient>
 	void NavierStokesVelocity<full_gradient>::set_parameters(const json &params)
 	{
 		set_size(params["size"]);
 
-		if (params.count("viscosity")) {
+		if (params.count("viscosity"))
+		{
 			viscosity_ = params["viscosity"];
 		}
 	}
@@ -52,11 +53,11 @@ namespace polyfem
 		ElementAssemblyValues vals;
 		vals.compute(-1, size() == 3, local_pts, bs, gbs);
 
-		for(long p = 0; p < local_pts.rows(); ++p)
+		for (long p = 0; p < local_pts.rows(); ++p)
 		{
 			vel.setZero();
 
-			for(std::size_t j = 0; j < bs.bases.size(); ++j)
+			for (std::size_t j = 0; j < bs.bases.size(); ++j)
 			{
 				const Basis &b = bs.bases[j];
 				const auto &loc_val = vals.basis_values[j];
@@ -65,11 +66,11 @@ namespace polyfem
 				assert(loc_val.val.rows() == local_pts.rows());
 				assert(loc_val.val.cols() == 1);
 
-				for(int d = 0; d < size(); ++d)
+				for (int d = 0; d < size(); ++d)
 				{
-					for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+					for (std::size_t ii = 0; ii < b.global().size(); ++ii)
 					{
-						vel(d) += b.global()[ii].val * loc_val.val(p) * velocity(b.global()[ii].index*size() + d);
+						vel(d) += b.global()[ii].val * loc_val.val(p) * velocity(b.global()[ii].index * size() + d);
 					}
 				}
 			}
@@ -89,11 +90,11 @@ namespace polyfem
 		ElementAssemblyValues vals;
 		vals.compute(-1, size() == 3, local_pts, bs, gbs);
 
-		for(long p = 0; p < local_pts.rows(); ++p)
+		for (long p = 0; p < local_pts.rows(); ++p)
 		{
 			vel.setZero();
 
-			for(std::size_t j = 0; j < bs.bases.size(); ++j)
+			for (std::size_t j = 0; j < bs.bases.size(); ++j)
 			{
 				const Basis &b = bs.bases[j];
 				const auto &loc_val = vals.basis_values[j];
@@ -102,11 +103,11 @@ namespace polyfem
 				assert(loc_val.grad.rows() == local_pts.rows());
 				assert(loc_val.grad.cols() == size());
 
-				for(int d = 0; d < size(); ++d)
+				for (int d = 0; d < size(); ++d)
 				{
-					for(std::size_t ii = 0; ii < b.global().size(); ++ii)
+					for (std::size_t ii = 0; ii < b.global().size(); ++ii)
 					{
-						vel(d) += b.global()[ii].val * loc_val.val(p) * velocity(b.global()[ii].index*size() + d);
+						vel(d) += b.global()[ii].val * loc_val.val(p) * velocity(b.global()[ii].index * size() + d);
 					}
 				}
 			}
@@ -120,7 +121,7 @@ namespace polyfem
 	NavierStokesVelocity<full_gradient>::assemble_grad(const ElementAssemblyValues &vals, const Eigen::MatrixXd &velocity, const QuadratureVector &da) const
 	{
 		assert(false);
-		return Eigen::VectorXd(vals.basis_values.size()*size());
+		return Eigen::VectorXd(vals.basis_values.size() * size());
 	}
 
 	template <bool full_gradient>
@@ -161,7 +162,6 @@ namespace polyfem
 			}
 		}
 
-
 		Eigen::MatrixXd N(size() * n_bases, size() * n_bases);
 		N.setZero();
 
@@ -171,10 +171,9 @@ namespace polyfem
 		Eigen::VectorXd vel(size(), 1);
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> phi_j(size(), 1);
 
-
 		for (long p = 0; p < n_pts; ++p)
 		{
-			vel .setZero();
+			vel.setZero();
 
 			for (size_t i = 0; i < n_bases; ++i)
 			{
@@ -300,4 +299,4 @@ namespace polyfem
 
 	template class NavierStokesVelocity<true>;
 	template class NavierStokesVelocity<false>;
-}
+} // namespace polyfem

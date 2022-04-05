@@ -169,7 +169,7 @@ void RBFWithQuadraticLagrange::compute_kernels_matrix(const Eigen::MatrixXd &sam
 	{
 		A.col(j) = (samples.rowwise() - centers_.row(j)).rowwise().norm().unaryExpr([this](double x) { return kernel(is_volume(), x); });
 	}
-	A.col(num_kernels).setOnes();				  // constant term
+	A.col(num_kernels).setOnes();                 // constant term
 	A.middleCols(num_kernels + 1, dim) = samples; // linear terms
 	if (dim == 2)
 	{

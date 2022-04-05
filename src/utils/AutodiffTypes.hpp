@@ -6,16 +6,15 @@
 
 namespace polyfem
 {
-	typedef DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>> 																	AutodiffScalarGrad;
-	typedef DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0 ,3, 3>>  AutodiffScalarHessian;
+	typedef DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>> AutodiffScalarGrad;
+	typedef DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>> AutodiffScalarHessian;
 
-	typedef Eigen::Matrix<AutodiffScalarGrad, 	 Eigen::Dynamic, 1, 0, 3, 1> AutodiffGradPt;
+	typedef Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> AutodiffGradPt;
 	typedef Eigen::Matrix<AutodiffScalarHessian, Eigen::Dynamic, 1, 0, 3, 1> AutodiffHessianPt;
 
 	// typedef DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>> 					AutodiffPt;
 
-
-	template<class T>
+	template <class T>
 	class AutoDiffAllocator
 	{
 	public:
@@ -25,7 +24,7 @@ namespace polyfem
 		}
 	};
 
-	template<>
+	template <>
 	class AutoDiffAllocator<double>
 	{
 	public:
@@ -34,5 +33,4 @@ namespace polyfem
 			return v;
 		}
 	};
-}
-
+} // namespace polyfem

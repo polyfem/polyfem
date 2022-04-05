@@ -25,7 +25,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(GEO::Mesh &meshin, const bo
 	if (is_planar(meshin))
 	{
 		std::unique_ptr<polyfem::Mesh> mesh;
-		if (non_conforming) 
+		if (non_conforming)
 			mesh = std::make_unique<NCMesh2D>();
 		else
 			mesh = std::make_unique<CMesh2D>();

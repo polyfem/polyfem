@@ -11,11 +11,12 @@ namespace polyfem
 		const Eigen::MatrixXd &gradj = vals.basis_values[j].grad_t_m;
 
 		double res = 0;
-		for (int k = 0; k < gradi.rows(); ++k) {
+		for (int k = 0; k < gradi.rows(); ++k)
+		{
 			res += gradi.row(k).dot(gradj.row(k)) * da(k);
 		}
 
-		res -= (vals.basis_values[i].val.array() * vals.basis_values[j].val.array() * da.array()).sum() * k_* k_;
+		res -= (vals.basis_values[i].val.array() * vals.basis_values[j].val.array() * da.array()).sum() * k_ * k_;
 
 		return Eigen::Matrix<double, 1, 1>::Constant(res);
 	}
@@ -30,7 +31,8 @@ namespace polyfem
 
 	void Helmholtz::set_parameters(const json &params)
 	{
-		if (params.contains("k")) {
+		if (params.contains("k"))
+		{
 			k_ = params["k"];
 		}
 	}
@@ -39,14 +41,14 @@ namespace polyfem
 	{
 		Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> res(1);
 
-		if(dim == 2)
-			res(0) = -0.25*bessy0(k_*r);
-		else if(dim == 3)
-			res(0) = 0.25*cos(k_*r)/(M_PI*r);
+		if (dim == 2)
+			res(0) = -0.25 * bessy0(k_ * r);
+		else if (dim == 3)
+			res(0) = 0.25 * cos(k_ * r) / (M_PI * r);
 		else
 			assert(false);
 
 		return res;
 	}
 
-}
+} // namespace polyfem

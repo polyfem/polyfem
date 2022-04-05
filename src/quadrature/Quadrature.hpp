@@ -11,6 +11,6 @@ namespace polyfem
 		Eigen::MatrixXd points;
 		Eigen::VectorXd weights;
 	};
-}
+} // namespace polyfem
 
 #endif //QUADRATURE_HPP

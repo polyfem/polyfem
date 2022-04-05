@@ -11,7 +11,6 @@
 #include <vector>
 #include <array>
 
-
 namespace polyfem
 {
 	class Mesh3D : public Mesh

@@ -208,8 +208,7 @@ namespace polyfem
 			}
 
 			Program program;
-			program.VertexShader = [&](const VertexAttributes &va, const UniformAttributes &uniform)
-			{
+			program.VertexShader = [&](const VertexAttributes &va, const UniformAttributes &uniform) {
 				VertexAttributes out;
 				out.position = uniform.M * va.position;
 				Vector3d color = ambient_light;
@@ -237,15 +236,13 @@ namespace polyfem
 				return out;
 			};
 
-			program.FragmentShader = [](const VertexAttributes &va, const UniformAttributes &uniform)
-			{
+			program.FragmentShader = [](const VertexAttributes &va, const UniformAttributes &uniform) {
 				FragmentAttributes out(va.color(0), va.color(1), va.color(2));
 				out.depth = -va.position(2);
 				return out;
 			};
 
-			program.BlendingShader = [](const FragmentAttributes &fa, const FrameBufferAttributes &previous)
-			{
+			program.BlendingShader = [](const FragmentAttributes &fa, const FrameBufferAttributes &previous) {
 				if (fa.depth < previous.depth)
 				{
 					FrameBufferAttributes out(fa.color[0] * 255, fa.color[1] * 255, fa.color[2] * 255, fa.color[3] * 255);

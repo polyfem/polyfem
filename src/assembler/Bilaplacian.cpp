@@ -7,8 +7,6 @@
 namespace polyfem
 {
 
-
-
 	Eigen::Matrix<double, 1, 1>
 	BilaplacianMain::compute_rhs(const AutodiffHessianPt &pt) const
 	{
@@ -18,7 +16,6 @@ namespace polyfem
 		return res;
 	}
 
-
 	Eigen::Matrix<double, 1, 1>
 	BilaplacianMixed::assemble(const ElementAssemblyValues &psi_vals, const ElementAssemblyValues &phi_vals, const int i, const int j, const QuadratureVector &da) const
 	{
@@ -27,7 +24,8 @@ namespace polyfem
 
 		// return ((psii.array() * phij.array()).rowwise().sum().array() * da.array()).colwise().sum();
 		double res = 0;
-		for (int k = 0; k < gradi.rows(); ++k) {
+		for (int k = 0; k < gradi.rows(); ++k)
+		{
 			res += gradi.row(k).dot(gradj.row(k)) * da(k);
 		}
 		return Eigen::Matrix<double, 1, 1>::Constant(res);
@@ -40,4 +38,4 @@ namespace polyfem
 		return Eigen::Matrix<double, 1, 1>::Constant(tmp);
 	}
 
-}
+} // namespace polyfem

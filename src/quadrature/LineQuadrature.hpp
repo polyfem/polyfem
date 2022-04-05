@@ -5,13 +5,13 @@
 
 namespace polyfem
 {
-    class LineQuadrature
-    {
-    public:
-        LineQuadrature();
+	class LineQuadrature
+	{
+	public:
+		LineQuadrature();
 
-        void get_quadrature(const int order, Quadrature &quad);
-    };
-}
+		void get_quadrature(const int order, Quadrature &quad);
+	};
+} // namespace polyfem
 
 #endif //LINE_QUADRATURE_HPP

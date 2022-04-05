@@ -5,15 +5,17 @@
 #include <array>
 #include <Eigen/Dense>
 
-namespace polyfem {
+namespace polyfem
+{
 	class QuadraticBSpline
 	{
 	public:
-		QuadraticBSpline() { }
+		QuadraticBSpline() {}
 		QuadraticBSpline(const std::array<double, 4> &knots)
-		: knots_(knots)
-		{ }
-		
+			: knots_(knots)
+		{
+		}
+
 		void init(const std::array<double, 4> &knots);
 
 		void interpolate(const Eigen::MatrixXd &ts, Eigen::MatrixXd &result) const;
@@ -25,5 +27,5 @@ namespace polyfem {
 	private:
 		std::array<double, 4> knots_;
 	};
-}
+} // namespace polyfem
 #endif //QUADRATIC_B_SPLINE_HPP

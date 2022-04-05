@@ -314,8 +314,7 @@ void polyfem::sample_polygon(const Eigen::MatrixXd &poly, int num_samples, Eigen
 	assert(poly.rows() >= 2);
 	int n = poly.rows();
 
-	auto length = [&](int i)
-	{
+	auto length = [&](int i) {
 		return (poly.row(i) - poly.row((i + 1) % n)).norm();
 	};
 

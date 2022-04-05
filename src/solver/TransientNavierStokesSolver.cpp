@@ -204,7 +204,7 @@ namespace polyfem
 			polyfem::logger().debug("\titer: {},  ||g||_2 = {}, ||step|| = {}\n",
 									it, nlres_norm, dx.norm());
 		}
-		
+
 		if (it >= iterations)
 		{
 			logger().error("Reaching the max number of iterations!");
