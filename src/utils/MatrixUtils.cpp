@@ -31,7 +31,7 @@ void polyfem::show_matrix_stats(const Eigen::MatrixXd &M)
 template <typename T>
 bool polyfem::read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat)
 {
-	std::string extension = std::filesystem::path(path).extension();
+	std::string extension = std::filesystem::path(path).extension().string();
 	std::transform(extension.begin(), extension.end(), extension.begin(),
 				   [](unsigned char c) { return std::tolower(c); });
 
@@ -55,7 +55,7 @@ bool polyfem::read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynam
 template <typename Mat>
 bool polyfem::write_matrix(const std::string &path, const Mat &mat)
 {
-	std::string extension = std::filesystem::path(path).extension();
+	std::string extension = std::filesystem::path(path).extension().string();
 	std::transform(extension.begin(), extension.end(), extension.begin(),
 				   [](unsigned char c) { return std::tolower(c); });
 
