@@ -35,6 +35,6 @@ namespace polyfem
 		// vital! the 3 arrays MUST have the same length
 	};
 
-}
+} // namespace polyfem
 
 #endif //INTERFACE_DATA_HPP

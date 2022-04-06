@@ -10,7 +10,8 @@ namespace polyfem
 		const Eigen::MatrixXd &gradj = vals.basis_values[j].grad_t_m;
 		// return ((gradi.array() * gradj.array()).rowwise().sum().array() * da.array()).colwise().sum();
 		double res = 0;
-		for (int k = 0; k < gradi.rows(); ++k) {
+		for (int k = 0; k < gradi.rows(); ++k)
+		{
 			res += gradi.row(k).dot(gradj.row(k)) * da(k);
 		}
 		return Eigen::Matrix<double, 1, 1>::Constant(res);
@@ -28,14 +29,14 @@ namespace polyfem
 	{
 		Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> res(1);
 
-		if(dim == 2)
-			res(0) = -1./(2*M_PI) * log(r);
-		else if(dim == 3)
-			res(0) = 1./(4*M_PI*r);
+		if (dim == 2)
+			res(0) = -1. / (2 * M_PI) * log(r);
+		else if (dim == 3)
+			res(0) = 1. / (4 * M_PI * r);
 		else
 			assert(false);
 
 		return res;
 	}
 
-}
+} // namespace polyfem

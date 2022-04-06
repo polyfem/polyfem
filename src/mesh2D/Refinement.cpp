@@ -110,164 +110,164 @@ void polyfem::edge_adjacency_graph(
 namespace
 {
 
-enum class PatternType
-{
-	NOT_PERIODIC,	// Opposite borders do not match
-	NOT_SYMMETRIC,   // At least one border is not symmetric along its bisector
-	SIMPLE_PERIODIC, // Opposite borders match individually
-	DOUBLE_PERIODIC, // All four borders match between each others
-};
+	enum class PatternType
+	{
+		NOT_PERIODIC,    // Opposite borders do not match
+		NOT_SYMMETRIC,   // At least one border is not symmetric along its bisector
+		SIMPLE_PERIODIC, // Opposite borders match individually
+		DOUBLE_PERIODIC, // All four borders match between each others
+	};
 
-// -----------------------------------------------------------------------------
+	// -----------------------------------------------------------------------------
 
-// Determine the type of periodicity of the given pattern. This function rely
-// only on the input vertex positions, but does not check if the underlying
-// topology is consistent.
-//
-// @param[in]  V                { #V x 3 matrix of vertex positions }
-// @param[in]  F                { #F x 3 matrix of triangle indexes }
-// @param[out] border_vertices  { List of vertices along each side }
-//
-// @return     { Type of periodicity of the pattern. }
-//
-PatternType compute_pattern_type(
-	const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
-	std::array<Eigen::VectorXi, 4> &border_vertices)
-{
-	Eigen::Vector2d lower = V.colwise().minCoeff().head<2>();
-	Eigen::Vector2d upper = V.colwise().maxCoeff().head<2>();
-
-	std::array<Eigen::MatrixXd, 2> border;
-
-	// Compute vertices along the border. Sides are numbered as follows:
+	// Determine the type of periodicity of the given pattern. This function rely
+	// only on the input vertex positions, but does not check if the underlying
+	// topology is consistent.
 	//
-	//        2
-	//   v3 ----- v2
-	//   |        |
-	// 3 |        | 1
-	//   |        |
-	//   v0 ----- v1
-	//        0
-	// ↑y
-	// └─→x
-	for (int d = 0; d < 2; ++d)
+	// @param[in]  V                { #V x 3 matrix of vertex positions }
+	// @param[in]  F                { #F x 3 matrix of triangle indexes }
+	// @param[out] border_vertices  { List of vertices along each side }
+	//
+	// @return     { Type of periodicity of the pattern. }
+	//
+	PatternType compute_pattern_type(
+		const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
+		std::array<Eigen::VectorXi, 4> &border_vertices)
 	{
-		std::vector<std::pair<double, int>> low, upp;
-		for (int i = 0; i < V.rows(); ++i)
-		{
-			if (V(i, 1 - d) == lower[1 - d])
-			{
-				low.emplace_back(V(i, d), i);
-			}
-			if (V(i, 1 - d) == upper[1 - d])
-			{
-				upp.emplace_back(V(i, d), i);
-			}
-		}
-		std::sort(low.begin(), low.end());
-		std::sort(upp.begin(), upp.end());
-		border_vertices[d ? 3 : 0].resize(low.size());
-		for (size_t i = 0; i < low.size(); ++i)
-		{
-			border_vertices[d ? 3 : 0][i] = low[i].second;
-		}
-		border_vertices[d ? 1 : 2].resize(upp.size());
-		for (size_t i = 0; i < upp.size(); ++i)
-		{
-			border_vertices[d ? 1 : 2][i] = upp[i].second;
-		}
-	}
-	for (int i : {2, 3})
-	{
-		border_vertices[i].reverseInPlace();
-	}
+		Eigen::Vector2d lower = V.colwise().minCoeff().head<2>();
+		Eigen::Vector2d upper = V.colwise().maxCoeff().head<2>();
 
-	// Check if borders have the same topology and geometry
-	for (int d = 0; d < 2; ++d)
-	{
-		std::vector<double> low, upp;
-		for (int i = 0; i < V.rows(); ++i)
-		{
-			if (V(i, d) == lower[d])
-			{
-				low.push_back(V(i, 1 - d));
-			}
-			if (V(i, d) == upper[d])
-			{
-				upp.push_back(V(i, 1 - d));
-			}
-		}
-		std::sort(low.begin(), low.end());
-		std::sort(upp.begin(), upp.end());
-		if (low.size() != upp.size())
-		{
-			return PatternType::NOT_PERIODIC;
-		}
-		size_t n = low.size();
-		border[d].resize(n, 2);
-		for (size_t i = 0; i < n; ++i)
-		{
-			border[d](i, 0) = low[i];
-			border[d](i, 1) = upp[i];
-		}
-		if (!border[d].col(0).isApprox(border[d].col(1)))
-		{
-			return PatternType::NOT_PERIODIC;
-		}
-	}
+		std::array<Eigen::MatrixXd, 2> border;
 
-	// Check if borders are symmetric
-	for (int d = 0; d < 2; ++d)
-	{
-		if (!(border[d].col(0).array() - lower[d]).isApprox(upper[d] - border[d].col(0).array().reverse()))
+		// Compute vertices along the border. Sides are numbered as follows:
+		//
+		//        2
+		//   v3 ----- v2
+		//   |        |
+		// 3 |        | 1
+		//   |        |
+		//   v0 ----- v1
+		//        0
+		// ↑y
+		// └─→x
+		for (int d = 0; d < 2; ++d)
 		{
-			return PatternType::NOT_SYMMETRIC;
+			std::vector<std::pair<double, int>> low, upp;
+			for (int i = 0; i < V.rows(); ++i)
+			{
+				if (V(i, 1 - d) == lower[1 - d])
+				{
+					low.emplace_back(V(i, d), i);
+				}
+				if (V(i, 1 - d) == upper[1 - d])
+				{
+					upp.emplace_back(V(i, d), i);
+				}
+			}
+			std::sort(low.begin(), low.end());
+			std::sort(upp.begin(), upp.end());
+			border_vertices[d ? 3 : 0].resize(low.size());
+			for (size_t i = 0; i < low.size(); ++i)
+			{
+				border_vertices[d ? 3 : 0][i] = low[i].second;
+			}
+			border_vertices[d ? 1 : 2].resize(upp.size());
+			for (size_t i = 0; i < upp.size(); ++i)
+			{
+				border_vertices[d ? 1 : 2][i] = upp[i].second;
+			}
 		}
-	}
+		for (int i : {2, 3})
+		{
+			border_vertices[i].reverseInPlace();
+		}
 
-	// Check if horizontal and vertical borders are matching
-	if (border[0].size() == border[1].size())
-	{
-		if (!border[0].col(0).isApprox(border[1].col(0)))
+		// Check if borders have the same topology and geometry
+		for (int d = 0; d < 2; ++d)
 		{
-			polyfem::logger().warn("Pattern boundaries have the same number of vertices, but their position differ slighly.");
-			Eigen::MatrixXd X(border[0].size(), 2);
-			X.col(0) = border[0].col(0);
-			X.col(1) = border[1].col(0);
-			//TODO
-			// std::cout << X << std::endl << std::endl;;
+			std::vector<double> low, upp;
+			for (int i = 0; i < V.rows(); ++i)
+			{
+				if (V(i, d) == lower[d])
+				{
+					low.push_back(V(i, 1 - d));
+				}
+				if (V(i, d) == upper[d])
+				{
+					upp.push_back(V(i, 1 - d));
+				}
+			}
+			std::sort(low.begin(), low.end());
+			std::sort(upp.begin(), upp.end());
+			if (low.size() != upp.size())
+			{
+				return PatternType::NOT_PERIODIC;
+			}
+			size_t n = low.size();
+			border[d].resize(n, 2);
+			for (size_t i = 0; i < n; ++i)
+			{
+				border[d](i, 0) = low[i];
+				border[d](i, 1) = upp[i];
+			}
+			if (!border[d].col(0).isApprox(border[d].col(1)))
+			{
+				return PatternType::NOT_PERIODIC;
+			}
 		}
-		return PatternType::DOUBLE_PERIODIC;
-	}
-	else
-	{
+
+		// Check if borders are symmetric
+		for (int d = 0; d < 2; ++d)
+		{
+			if (!(border[d].col(0).array() - lower[d]).isApprox(upper[d] - border[d].col(0).array().reverse()))
+			{
+				return PatternType::NOT_SYMMETRIC;
+			}
+		}
+
+		// Check if horizontal and vertical borders are matching
+		if (border[0].size() == border[1].size())
+		{
+			if (!border[0].col(0).isApprox(border[1].col(0)))
+			{
+				polyfem::logger().warn("Pattern boundaries have the same number of vertices, but their position differ slighly.");
+				Eigen::MatrixXd X(border[0].size(), 2);
+				X.col(0) = border[0].col(0);
+				X.col(1) = border[1].col(0);
+				//TODO
+				// std::cout << X << std::endl << std::endl;;
+			}
+			return PatternType::DOUBLE_PERIODIC;
+		}
+		else
+		{
+			return PatternType::SIMPLE_PERIODIC;
+		}
+
 		return PatternType::SIMPLE_PERIODIC;
 	}
 
-	return PatternType::SIMPLE_PERIODIC;
-}
+	// -----------------------------------------------------------------------------
 
-// -----------------------------------------------------------------------------
-
-Eigen::VectorXi vertex_degree(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
-{
-	Eigen::VectorXi count = Eigen::VectorXi::Zero(V.rows());
-
-	for (unsigned i = 0; i < F.rows(); ++i)
+	Eigen::VectorXi vertex_degree(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
 	{
-		for (unsigned j = 0; j < F.cols(); ++j)
+		Eigen::VectorXi count = Eigen::VectorXi::Zero(V.rows());
+
+		for (unsigned i = 0; i < F.rows(); ++i)
 		{
-			// Avoid duplicate edges
-			if (F(i, j) < F(i, (j + 1) % F.cols()))
+			for (unsigned j = 0; j < F.cols(); ++j)
 			{
-				count(F(i, j)) += 1;
-				count(F(i, (j + 1) % F.cols())) += 1;
+				// Avoid duplicate edges
+				if (F(i, j) < F(i, (j + 1) % F.cols()))
+				{
+					count(F(i, j)) += 1;
+					count(F(i, (j + 1) % F.cols())) += 1;
+				}
 			}
 		}
-	}
 
-	return count;
-}
+		return count;
+	}
 
 } // anonymous namespace
 

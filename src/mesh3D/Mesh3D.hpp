@@ -20,6 +20,8 @@ namespace polyfem
 		virtual ~Mesh3D() = default;
 		POLYFEM_DEFAULT_MOVE_COPY(Mesh3D)
 
+		bool is_conforming() const override { return true; }
+
 		void refine(const int n_refiniment, const double t, std::vector<int> &parent_nodes) override;
 
 		inline bool is_volume() const override { return true; }

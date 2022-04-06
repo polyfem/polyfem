@@ -18,12 +18,12 @@ namespace polyfem
 		static int build_bases(
 			const Mesh3D &mesh,
 			const int quadrature_order,
-			std::vector< ElementBases > &bases,
-			std::vector< LocalBoundary > &local_boundary,
+			std::vector<ElementBases> &bases,
+			std::vector<LocalBoundary> &local_boundary,
 			std::map<int, InterfaceData> &poly_face_to_data);
 
-		static void fit_nodes(const Mesh3D &mesh, const int n_bases, std::vector< ElementBases > &gbases);
+		static void fit_nodes(const Mesh3D &mesh, const int n_bases, std::vector<ElementBases> &gbases);
 	};
-}
+} // namespace polyfem
 
 #endif //SPLINE_BASIS_3D_HPP

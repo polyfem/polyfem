@@ -1,6 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/Mesh.hpp>
-#include <polyfem/Mesh2D.hpp>
+#include <polyfem/CMesh2D.hpp>
+#include <polyfem/NCMesh2D.hpp>
 #include <polyfem/Mesh3D.hpp>
 
 #include <polyfem/MeshUtils.hpp>
@@ -19,11 +20,15 @@
 #include <filesystem>
 ////////////////////////////////////////////////////////////////////////////////
 
-std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(GEO::Mesh &meshin)
+std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(GEO::Mesh &meshin, const bool non_conforming)
 {
 	if (is_planar(meshin))
 	{
-		std::unique_ptr<polyfem::Mesh> mesh = std::make_unique<Mesh2D>();
+		std::unique_ptr<polyfem::Mesh> mesh;
+		if (non_conforming)
+			mesh = std::make_unique<NCMesh2D>();
+		else
+			mesh = std::make_unique<CMesh2D>();
 		if (mesh->load(meshin))
 		{
 			return mesh;
@@ -43,7 +48,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(GEO::Mesh &meshin)
 	return nullptr;
 }
 
-std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path)
+std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path, const bool non_conforming)
 {
 	if (!std::filesystem::exists(path))
 	{
@@ -75,7 +80,10 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path)
 
 		std::unique_ptr<polyfem::Mesh> mesh;
 		if (vertices.cols() == 2)
-			mesh = std::make_unique<Mesh2D>();
+			if (non_conforming)
+				mesh = std::make_unique<NCMesh2D>();
+			else
+				mesh = std::make_unique<CMesh2D>();
 		else
 			mesh = std::make_unique<Mesh3D>();
 
@@ -105,14 +113,14 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path)
 		GEO::Mesh tmp;
 		if (GEO::mesh_load(path, tmp))
 		{
-			return create(tmp);
+			return create(tmp, non_conforming);
 		}
 	}
 	logger().error("Failed to load mesh: {}", path);
 	return nullptr;
 }
 
-std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &meshes, const std::string &root_path)
+std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &meshes, const std::string &root_path, const bool non_conforming)
 {
 	if (meshes.empty())
 	{
@@ -223,7 +231,10 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 	std::unique_ptr<polyfem::Mesh> mesh;
 	if (vertices.cols() == 2)
 	{
-		mesh = std::make_unique<Mesh2D>();
+		if (non_conforming)
+			mesh = std::make_unique<NCMesh2D>();
+		else
+			mesh = std::make_unique<CMesh2D>();
 	}
 	else
 	{

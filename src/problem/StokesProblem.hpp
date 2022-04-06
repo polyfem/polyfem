@@ -72,7 +72,6 @@ namespace polyfem
 		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 	};
 
-
 	class DrivenCavitySmooth : public TimeDepentendStokesProblem
 	{
 	public:
@@ -106,24 +105,24 @@ namespace polyfem
 		double outflow_amout_;
 	};
 
-class FlowWithObstacle : public TimeDepentendStokesProblem
-{
-public:
-	FlowWithObstacle(const std::string &name);
+	class FlowWithObstacle : public TimeDepentendStokesProblem
+	{
+	public:
+		FlowWithObstacle(const std::string &name);
 
-	void rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-	bool is_rhs_zero() const override { return true; }
+		void rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		bool is_rhs_zero() const override { return true; }
 
-	void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 
-	void set_parameters(const json &params) override;
+		void set_parameters(const json &params) override;
 
-private:
-	double U_;
-};
+	private:
+		double U_;
+	};
 
-class Kovnaszy : public Problem
-{
+	class Kovnaszy : public Problem
+	{
 	public:
 		Kovnaszy(const std::string &name);
 
@@ -145,39 +144,39 @@ class Kovnaszy : public Problem
 	public:
 		double viscosity_;
 		bool is_time_dependent_;
-};
+	};
 
-class CornerFlow : public TimeDepentendStokesProblem
-{
-public:
-	CornerFlow(const std::string &name);
+	class CornerFlow : public TimeDepentendStokesProblem
+	{
+	public:
+		CornerFlow(const std::string &name);
 
-	void rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-	bool is_rhs_zero() const override { return true; }
+		void rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		bool is_rhs_zero() const override { return true; }
 
-	void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 
-	void set_parameters(const json &params) override;
+		void set_parameters(const json &params) override;
 
-private:
-	double U_;
-};
+	private:
+		double U_;
+	};
 
-class Lshape : public TimeDepentendStokesProblem
-{
-public:
-	Lshape(const std::string &name);
+	class Lshape : public TimeDepentendStokesProblem
+	{
+	public:
+		Lshape(const std::string &name);
 
-	void rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-	bool is_rhs_zero() const override { return true; }
+		void rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		bool is_rhs_zero() const override { return true; }
 
-	void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 
-	void set_parameters(const json &params) override;
+		void set_parameters(const json &params) override;
 
-private:
-	double U_;
-};
+	private:
+		double U_;
+	};
 
 	class UnitFlowWithObstacle : public TimeDepentendStokesProblem
 	{

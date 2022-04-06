@@ -20,7 +20,7 @@ namespace polyfem
 	class Local2Global
 	{
 	public:
-		int index;	// global index of the actual node
+		int index;  // global index of the actual node
 		double val; // weight
 
 		RowVectorNd node; // node position
@@ -109,7 +109,7 @@ namespace polyfem
 
 	private:
 		std::vector<Local2Global> global_; // list of real nodes influencing the basis
-		int local_index_;				   // local index inside the element (for debugging purposes)
+		int local_index_;                  // local index inside the element (for debugging purposes)
 		int order_;
 
 		Fun basis_; //basis and gadient

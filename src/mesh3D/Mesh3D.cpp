@@ -2023,4 +2023,5 @@ namespace polyfem
 
 		igl::barycentric_coordinates(p, A, B, C, D, coord);
 	}
+
 } // namespace polyfem

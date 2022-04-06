@@ -6,18 +6,18 @@
 
 namespace polyfem
 {
-class BDF
-{
-public:
-    BDF(int order);
+	class BDF
+	{
+	public:
+		BDF(int order);
 
-    double alpha() const;
-    void rhs(Eigen::VectorXd &rhs) const;
+		double alpha() const;
+		void rhs(Eigen::VectorXd &rhs) const;
 
-    void new_solution(Eigen::VectorXd &rhs);
+		void new_solution(Eigen::VectorXd &rhs);
 
-private:
-    std::deque<Eigen::VectorXd> history_;
-    int order_;
-};
+	private:
+		std::deque<Eigen::VectorXd> history_;
+		int order_;
+	};
 } // namespace polyfem

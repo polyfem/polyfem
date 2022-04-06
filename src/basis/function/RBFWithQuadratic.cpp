@@ -99,7 +99,7 @@ void RBFWithQuadratic::setup_monomials_strong_2d(const int dim, const AssemblerU
 			//for d = 0 pt(q, 0), for d = 1 pt=(0, q)
 
 			//x
-			pt(d) = AutodiffScalarHessian(0, pts(i, 0));	 //pt=(x, 0) or pt=(0, x)
+			pt(d) = AutodiffScalarHessian(0, pts(i, 0));     //pt=(x, 0) or pt=(0, x)
 			tmp = assembler.compute_rhs(assembler_name, pt); //in R^dim
 			for (int d1 = 0; d1 < dim; ++d1)
 				strong[0](d * dim + d1, i) = tmp(d1) * da(i);
@@ -387,7 +387,7 @@ void RBFWithQuadratic::compute_kernels_matrix(const Eigen::MatrixXd &samples, Ei
 	{
 		A.col(j) = (samples.rowwise() - centers_.row(j)).rowwise().norm().unaryExpr([this](double x) { return kernel(is_volume(), x); });
 	}
-	A.col(num_kernels).setOnes();				  // constant term
+	A.col(num_kernels).setOnes();                 // constant term
 	A.middleCols(num_kernels + 1, dim) = samples; // linear terms
 	if (dim == 2)
 	{

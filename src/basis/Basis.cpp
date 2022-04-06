@@ -2,13 +2,12 @@
 
 #include <iostream>
 
-
 namespace polyfem
 {
 	Basis::Basis()
-	: order_(-1)
-	{ }
-
+		: order_(-1)
+	{
+	}
 
 	void Basis::init(const int order, const int global_index, const int local_index, const RowVectorNd &node)
 	{
@@ -21,4 +20,4 @@ namespace polyfem
 		local_index_ = local_index;
 	}
 
-}
+} // namespace polyfem

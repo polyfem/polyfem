@@ -8,7 +8,7 @@
 namespace polyfem
 {
 
-	class FrankeProblem: public ProblemWithSolution
+	class FrankeProblem : public ProblemWithSolution
 	{
 	public:
 		FrankeProblem(const std::string &name);
@@ -18,7 +18,6 @@ namespace polyfem
 		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt, const double t) const override;
 
 		bool is_scalar() const override { return true; }
-
 	};
 
 	class FrankeProblemOld : public ProblemWithSolution
@@ -32,6 +31,4 @@ namespace polyfem
 
 		bool is_scalar() const override { return true; }
 	};
-}
-
-
+} // namespace polyfem

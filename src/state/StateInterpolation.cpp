@@ -433,16 +433,16 @@ namespace polyfem
 			if (mesh->is_simplex(i))
 			{
 				if (mesh->dimension() == 3)
-					autogen::p_nodes_3d(bs.bases.front().order(), local_pts);
+					autogen::p_nodes_3d(disc_orders(i), local_pts);
 				else
-					autogen::p_nodes_2d(bs.bases.front().order(), local_pts);
+					autogen::p_nodes_2d(disc_orders(i), local_pts);
 			}
 			else
 			{
 				if (mesh->dimension() == 3)
-					autogen::q_nodes_3d(bs.bases.front().order(), local_pts);
+					autogen::q_nodes_3d(disc_orders(i), local_pts);
 				else
-					autogen::q_nodes_2d(bs.bases.front().order(), local_pts);
+					autogen::q_nodes_2d(disc_orders(i), local_pts);
 			}
 			// else if(mesh->is_cube(i))
 			// 	local_pts = sampler.cube_points();

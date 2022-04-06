@@ -3,15 +3,18 @@
 #include <polyfem/Mesh3DStorage.hpp>
 #include <polyfem/MeshProcessing3D.hpp>
 
-namespace polyfem{
-	namespace Navigation3D{
+namespace polyfem
+{
+	namespace Navigation3D
+	{
 		// extern double get_index_from_element_face_time;
 		// extern double switch_vertex_time;
 		// extern double switch_edge_time;
 		// extern double switch_face_time;
 		// extern double switch_element_time;
 
-		struct Index{
+		struct Index
+		{
 			int vertex;
 			int edge;
 			int face;
@@ -25,7 +28,7 @@ namespace polyfem{
 		Index get_index_from_element_face(const Mesh3DStorage &M, int hi, int lf, int lv = 0);
 		Index get_index_from_element_edge(const Mesh3DStorage &M, int hi, int v0, int v1);
 		Index get_index_from_element_tri(const Mesh3DStorage &M, int hi, int v0, int v1, int v2);
-		
+
 		// Navigation in a surface Mesh3DStorage
 		Index switch_vertex(const Mesh3DStorage &M, Index idx);
 		Index switch_edge(const Mesh3DStorage &M, Index idx);

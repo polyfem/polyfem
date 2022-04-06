@@ -54,9 +54,9 @@ namespace polyfem
 		};
 
 	public:
-		static std::unique_ptr<Mesh> create(const std::string &path);
-		static std::unique_ptr<Mesh> create(GEO::Mesh &M);
-		static std::unique_ptr<Mesh> create(const std::vector<json> &meshes, const std::string &root_path);
+		static std::unique_ptr<Mesh> create(const std::string &path, const bool non_conforming = false);
+		static std::unique_ptr<Mesh> create(GEO::Mesh &M, const bool non_conforming = false);
+		static std::unique_ptr<Mesh> create(const std::vector<json> &meshes, const std::string &root_path, const bool non_conforming = false);
 
 		Mesh() = default;
 		virtual ~Mesh() = default;
@@ -67,6 +67,7 @@ namespace polyfem
 		//Queries
 		virtual bool is_volume() const = 0;
 		int dimension() const { return (is_volume() ? 3 : 2); }
+		virtual bool is_conforming() const = 0;
 
 		int n_elements() const { return (is_volume() ? n_cells() : n_faces()); }
 
@@ -141,16 +142,16 @@ namespace polyfem
 		virtual void compute_boundary_ids(const std::function<int(const RowVectorNd &, bool)> &marker) = 0;
 		virtual void compute_boundary_ids(const std::function<int(const std::vector<int> &, bool)> &marker) = 0;
 		virtual void compute_body_ids(const std::function<int(const RowVectorNd &)> &marker) = 0;
-		void set_boundary_ids(const std::vector<int> &boundary_ids) { boundary_ids_ = boundary_ids; }
-		void set_body_ids(const std::vector<int> &body_ids) { body_ids_ = body_ids; }
-		void set_body_ids(const Eigen::VectorXi &body_ids)
+		virtual void set_boundary_ids(const std::vector<int> &boundary_ids) { boundary_ids_ = boundary_ids; }
+		virtual void set_body_ids(const std::vector<int> &body_ids) { body_ids_ = body_ids; }
+		virtual void set_body_ids(const Eigen::VectorXi &body_ids)
 		{
 			body_ids_ = std::vector<int>(body_ids.data(), body_ids.data() + body_ids.size());
 		}
 		void set_tag(const int el, const ElementType type) { elements_tag_[el] = type; }
 
-		inline int get_boundary_id(const int primitive) const { return boundary_ids_[primitive]; }
-		inline int get_body_id(const int primitive) const
+		virtual int get_boundary_id(const int primitive) const { return boundary_ids_[primitive]; }
+		virtual int get_body_id(const int primitive) const
 		{
 			if (has_body_ids())
 				return body_ids_[primitive];
@@ -158,8 +159,8 @@ namespace polyfem
 				return 0;
 		}
 
-		inline bool has_boundary_ids() const { return !boundary_ids_.empty(); }
-		inline bool has_body_ids() const { return !body_ids_.empty(); }
+		virtual bool has_boundary_ids() const { return !boundary_ids_.empty(); }
+		virtual bool has_body_ids() const { return !body_ids_.empty(); }
 
 		//Visualization methods
 		virtual void compute_element_barycenters(Eigen::MatrixXd &barycenters) const = 0;
@@ -168,6 +169,8 @@ namespace polyfem
 		virtual void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const = 0;
 
 		const std::vector<double> &cell_weights(const int cell_index) const { return cell_weights_[cell_index]; }
+
+		virtual void prepare_mesh(){};
 
 		bool has_poly() const
 		{

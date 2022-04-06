@@ -14,40 +14,55 @@
 
 using namespace polyfem;
 
-namespace {
+namespace
+{
 
-// Harmonic kernel
-double kernel(const bool is_volume, const double r) {
-	if (r < 1e-8) { return 0; }
+	// Harmonic kernel
+	double kernel(const bool is_volume, const double r)
+	{
+		if (r < 1e-8)
+		{
+			return 0;
+		}
 
-	if (is_volume) {
-		return 1/r;
-	} else {
-		return log(r);
+		if (is_volume)
+		{
+			return 1 / r;
+		}
+		else
+		{
+			return log(r);
+		}
 	}
-}
 
-double kernel_prime(const bool is_volume, const double r) {
-	if (r < 1e-8) { return 0; }
+	double kernel_prime(const bool is_volume, const double r)
+	{
+		if (r < 1e-8)
+		{
+			return 0;
+		}
 
-	if(is_volume) {
-		return -1/(r*r);
-	} else {
-		return 1/r;
+		if (is_volume)
+		{
+			return -1 / (r * r);
+		}
+		else
+		{
+			return 1 / r;
+		}
 	}
-}
 
 } // anonymous namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 
 RBFWithLinear::RBFWithLinear(
-		const Eigen::MatrixXd &centers,
-		const Eigen::MatrixXd &samples,
-		const Eigen::MatrixXd &local_basis_integral,
-		const Quadrature &quadr,
-		Eigen::MatrixXd &rhs,
-		bool with_constraints)
+	const Eigen::MatrixXd &centers,
+	const Eigen::MatrixXd &samples,
+	const Eigen::MatrixXd &local_basis_integral,
+	const Quadrature &quadr,
+	Eigen::MatrixXd &rhs,
+	bool with_constraints)
 	: centers_(centers)
 {
 	compute_weights(samples, local_basis_integral, quadr, rhs, with_constraints);
@@ -55,7 +70,8 @@ RBFWithLinear::RBFWithLinear(
 
 // -----------------------------------------------------------------------------
 
-void RBFWithLinear::basis(const int local_index, const Eigen::MatrixXd &samples, Eigen::MatrixXd &val) const {
+void RBFWithLinear::basis(const int local_index, const Eigen::MatrixXd &samples, Eigen::MatrixXd &val) const
+{
 	Eigen::MatrixXd tmp;
 	bases_values(samples, tmp);
 	val = tmp.col(local_index);
@@ -63,11 +79,13 @@ void RBFWithLinear::basis(const int local_index, const Eigen::MatrixXd &samples,
 
 // -----------------------------------------------------------------------------
 
-void RBFWithLinear::grad(const int local_index, const Eigen::MatrixXd &samples, Eigen::MatrixXd &val) const {
+void RBFWithLinear::grad(const int local_index, const Eigen::MatrixXd &samples, Eigen::MatrixXd &val) const
+{
 	Eigen::MatrixXd tmp;
 	const int dim = centers_.cols();
 	val.resize(samples.rows(), dim);
-	for (int d = 0; d < dim; ++d) {
+	for (int d = 0; d < dim; ++d)
+	{
 		bases_grads(d, samples, tmp);
 		val.col(d) = tmp.col(local_index);
 	}
@@ -75,7 +93,8 @@ void RBFWithLinear::grad(const int local_index, const Eigen::MatrixXd &samples, 
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void RBFWithLinear::bases_values(const Eigen::MatrixXd &samples, Eigen::MatrixXd &val) const {
+void RBFWithLinear::bases_values(const Eigen::MatrixXd &samples, Eigen::MatrixXd &val) const
+{
 	// Compute A
 	Eigen::MatrixXd A;
 	compute_kernels_matrix(samples, A);
@@ -86,7 +105,8 @@ void RBFWithLinear::bases_values(const Eigen::MatrixXd &samples, Eigen::MatrixXd
 
 // -----------------------------------------------------------------------------
 
-void RBFWithLinear::bases_grads(const int axis, const Eigen::MatrixXd &samples, Eigen::MatrixXd &val) const {
+void RBFWithLinear::bases_grads(const int axis, const Eigen::MatrixXd &samples, Eigen::MatrixXd &val) const
+{
 	const int num_kernels = centers_.rows();
 	const int dim = centers_.cols();
 
@@ -94,9 +114,9 @@ void RBFWithLinear::bases_grads(const int axis, const Eigen::MatrixXd &samples, 
 	Eigen::MatrixXd A_prime(samples.rows(), num_kernels + 1 + dim);
 	A_prime.setZero();
 
-	for (int j = 0; j < num_kernels; ++j) {
-		A_prime.col(j) = (samples.rowwise() - centers_.row(j)).rowwise().norm().unaryExpr([this](double x)
-			{ return kernel_prime(is_volume(), x) / x; });
+	for (int j = 0; j < num_kernels; ++j)
+	{
+		A_prime.col(j) = (samples.rowwise() - centers_.row(j)).rowwise().norm().unaryExpr([this](double x) { return kernel_prime(is_volume(), x) / x; });
 		A_prime.col(j) = (samples.col(axis).array() - centers_(j, axis)) * A_prime.col(j).array();
 	}
 	// Linear terms
@@ -108,18 +128,19 @@ void RBFWithLinear::bases_grads(const int axis, const Eigen::MatrixXd &samples, 
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void RBFWithLinear::compute_kernels_matrix(const Eigen::MatrixXd &samples, Eigen::MatrixXd &A) const {
+void RBFWithLinear::compute_kernels_matrix(const Eigen::MatrixXd &samples, Eigen::MatrixXd &A) const
+{
 	// Compute A
 	const int num_kernels = centers_.rows();
 	const int dim = centers_.cols();
 
 	A.resize(samples.rows(), num_kernels + 1 + dim);
-	for (int j = 0; j < num_kernels; ++j) {
-		A.col(j) = (samples.rowwise() - centers_.row(j)).rowwise().norm().unaryExpr([this](double x)
-			{ return kernel(is_volume(), x); });
+	for (int j = 0; j < num_kernels; ++j)
+	{
+		A.col(j) = (samples.rowwise() - centers_.row(j)).rowwise().norm().unaryExpr([this](double x) { return kernel(is_volume(), x); });
 	}
 	A.col(num_kernels).setOnes(); // constant term
-	A.rightCols(dim) = samples; // linear terms
+	A.rightCols(dim) = samples;   // linear terms
 }
 
 // -----------------------------------------------------------------------------
@@ -136,7 +157,8 @@ void RBFWithLinear::compute_constraints_matrix(
 
 	// Compute KI
 	Eigen::MatrixXd KI(num_kernels, dim);
-	for (int j = 0; j < num_kernels; ++j) {
+	for (int j = 0; j < num_kernels; ++j)
+	{
 		// ∫∇x(φj)(p) = Σ_q (xq - xk) * 1/r * h'(r) * wq
 		// - xq is the x coordinate of the q-th quadrature point
 		// - wq is the q-th quadrature weight
@@ -144,8 +166,7 @@ void RBFWithLinear::compute_constraints_matrix(
 		// - h is the RBFWithLinear RBF kernel (scalar function)
 		const Eigen::MatrixXd drdp = quadr.points.rowwise() - centers_.row(j);
 		const Eigen::VectorXd r = drdp.rowwise().norm();
-		KI.row(j) = (drdp.array().colwise() * (quadr.weights.array() * r.unaryExpr([this](double x)
-			{ return kernel_prime(is_volume(), x); }).array() / r.array())).colwise().sum();
+		KI.row(j) = (drdp.array().colwise() * (quadr.weights.array() * r.unaryExpr([this](double x) { return kernel_prime(is_volume(), x); }).array() / r.array())).colwise().sum();
 	}
 	KI /= quadr.weights.sum();
 
@@ -165,15 +186,16 @@ void RBFWithLinear::compute_constraints_matrix(
 // -----------------------------------------------------------------------------
 
 void RBFWithLinear::compute_weights(const Eigen::MatrixXd &samples,
-	const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
-	Eigen::MatrixXd &rhs, bool with_constraints)
+									const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
+									Eigen::MatrixXd &rhs, bool with_constraints)
 {
 	logger().trace("#kernel centers: {}", centers_.rows());
 	logger().trace("#collocation points: {}", samples.rows());
 	logger().trace("#quadrature points: {}", quadr.weights.size());
 	logger().trace("#non-vanishing bases: {}", rhs.cols());
 
-	if (!with_constraints) {
+	if (!with_constraints)
+	{
 		// Compute A
 		Eigen::MatrixXd A;
 		compute_kernels_matrix(samples, A);

@@ -279,7 +279,7 @@ namespace polyfem
 		params_.lambda_mu(0, 0, 0, 0, 0, 0, 0, lambda, mu);
 
 		// convert to nu!
-		nu = lambda / 2 / (lambda + mu);
+		nu = lambda / (lambda * (dim - 1) + 2 * mu);
 
 		if (dim == 2)
 		{
