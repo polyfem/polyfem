@@ -663,7 +663,10 @@ namespace polyfem
 				barrier_hessian = ipc::compute_barrier_potential_hessian(
 					state.collision_mesh, displaced_surface, _constraint_set,
 					_dhat, project_to_psd);
-				barrier_hessian = state.collision_mesh.to_full_dof(barrier_hessian);
+				{
+					POLYFEM_SCOPED_TIMER("\t\t\tcollision_mesh.to_full_dof time");
+					barrier_hessian = state.collision_mesh.to_full_dof(barrier_hessian);
+				}
 			}
 
 			{
@@ -671,7 +674,10 @@ namespace polyfem
 				friction_hessian = ipc::compute_friction_potential_hessian(
 					state.collision_mesh, displaced_surface_prev, displaced_surface,
 					_friction_constraint_set, _epsv * dt(), project_to_psd);
-				friction_hessian = state.collision_mesh.to_full_dof(friction_hessian);
+				{
+					POLYFEM_SCOPED_TIMER("\t\t\tcollision_mesh.to_full_dof time");
+					friction_hessian = state.collision_mesh.to_full_dof(friction_hessian);
+				}
 			}
 		}
 
