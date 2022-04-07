@@ -131,6 +131,9 @@ namespace polyfem
 		//FE pressure bases for mixed elements, the size is #elements
 		std::vector<ElementBases> pressure_bases;
 
+		// Mapping from input nodes to FE nodes
+		std::vector<int> primitive_to_node;
+
 		//Geometric mapping bases, if the elements are isoparametric, this list is empty
 		std::vector<ElementBases> geom_bases;
 

@@ -46,6 +46,8 @@ namespace polyfem
 		int face_from_node_id(int node_id) const;
 		int cell_from_node_id(int node_id) const;
 
+		const std::vector<int> &primitive_to_node() const { return primitive_to_node_; }
+
 		// Node position from node id
 		RowVectorNd node_position(int node_id) const { return nodes_.row(node_to_primitive_[node_id]); }
 
