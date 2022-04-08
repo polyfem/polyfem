@@ -477,6 +477,8 @@ namespace polyfem
 
 	LameParameters::LameParameters()
 	{
+		lambda_.init(1.0);
+		mu_.init(1.0);
 		initialized_ = false;
 	}
 
@@ -550,6 +552,7 @@ namespace polyfem
 
 	Density::Density()
 	{
+		rho_.init(1.0);
 		initialized_ = false;
 	}
 
