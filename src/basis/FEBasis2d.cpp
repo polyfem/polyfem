@@ -673,13 +673,14 @@ int polyfem::FEBasis2d::build_bases(
 	const bool is_geom_bases,
 	std::vector<ElementBases> &bases,
 	std::vector<LocalBoundary> &local_boundary,
-	std::map<int, InterfaceData> &poly_edge_to_data)
+	std::map<int, InterfaceData> &poly_edge_to_data,
+	std::vector<int> &primitive_to_node)
 {
 
 	Eigen::VectorXi discr_orders(mesh.n_faces());
 	discr_orders.setConstant(discr_order);
 
-	return build_bases(mesh, quadrature_order, discr_orders, serendipity, has_polys, is_geom_bases, bases, local_boundary, poly_edge_to_data);
+	return build_bases(mesh, quadrature_order, discr_orders, serendipity, has_polys, is_geom_bases, bases, local_boundary, poly_edge_to_data, primitive_to_node);
 }
 
 int polyfem::FEBasis2d::build_bases(
@@ -691,7 +692,8 @@ int polyfem::FEBasis2d::build_bases(
 	const bool is_geom_bases,
 	std::vector<ElementBases> &bases,
 	std::vector<LocalBoundary> &local_boundary,
-	std::map<int, InterfaceData> &poly_edge_to_data)
+	std::map<int, InterfaceData> &poly_edge_to_data,
+	std::vector<int> &primitive_to_node)
 {
 	assert(!mesh.is_volume());
 	assert(discr_orders.size() == mesh.n_faces());
@@ -1210,6 +1212,8 @@ int polyfem::FEBasis2d::build_bases(
 			}
 		}
 	}
+
+	primitive_to_node = nodes.primitive_to_node();
 
 	return nodes.n_nodes();
 }

@@ -45,7 +45,8 @@ namespace polyfem
 			const bool is_geom_bases,
 			std::vector<ElementBases> &bases,
 			std::vector<LocalBoundary> &local_boundary,
-			std::map<int, InterfaceData> &poly_edge_to_data);
+			std::map<int, InterfaceData> &poly_edge_to_data,
+			std::vector<int> &primitive_to_node);
 
 		///
 		/// @brief      Builds FE basis functions over the entire mesh (P1, P2 over triangles, Q1,
@@ -75,7 +76,8 @@ namespace polyfem
 			const bool is_geom_bases,
 			std::vector<ElementBases> &bases,
 			std::vector<LocalBoundary> &local_boundary,
-			std::map<int, InterfaceData> &poly_edge_to_data);
+			std::map<int, InterfaceData> &poly_edge_to_data,
+			std::vector<int> &primitive_to_node);
 
 		//return the local edge nodes for a tri or a quad of order p, index points to the edge
 		static Eigen::VectorXi tri_edge_local_nodes(const int p, const Mesh2D &mesh, Navigation::Index index);
