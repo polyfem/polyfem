@@ -201,6 +201,40 @@ namespace polyfem
 		planes_.emplace_back(origin, normal);
 	}
 
+	void Obstacle::change_displacement(const int oid, const Eigen::RowVector3d &val, const std::string &interp)
+	{
+		change_displacement(oid, val, interp.empty() ? std::make_shared<NoInterpolation>() : Interpolation::build(interp));
+	}
+	void Obstacle::change_displacement(const int oid, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const std::string &interp)
+	{
+		change_displacement(oid, func, interp.empty() ? std::make_shared<NoInterpolation>() : Interpolation::build(interp));
+	}
+	void Obstacle::change_displacement(const int oid, const json &val, const std::string &interp)
+	{
+		change_displacement(oid, val, interp.empty() ? std::make_shared<NoInterpolation>() : Interpolation::build(interp));
+	}
+
+	void Obstacle::change_displacement(const int oid, const Eigen::RowVector3d &val, const std::shared_ptr<Interpolation> &interp)
+	{
+		for (size_t k = 0; k < val.size(); ++k)
+			displacements_[oid][k].init(val[k]);
+		displacements_interpolation_[oid] = interp;
+	}
+
+	void Obstacle::change_displacement(const int oid, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp)
+	{
+		for (size_t k = 0; k < displacements_.back().size(); ++k)
+			displacements_[oid][k].init(func, k);
+		displacements_interpolation_[oid] = interp;
+	}
+
+	void Obstacle::change_displacement(const int oid, const json &val, const std::shared_ptr<Interpolation> &interp)
+	{
+		for (size_t k = 0; k < val.size(); ++k)
+			displacements_[oid][k].init(val[k]);
+		displacements_interpolation_[oid] = interp;
+	}
+
 	void Obstacle::update_displacement(const double t, Eigen::MatrixXd &sol) const
 	{
 		// NOTE: assumes obstacle displacements is stored at the bottom of sol
