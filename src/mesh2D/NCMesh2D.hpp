@@ -183,7 +183,7 @@ namespace polyfem
 			return n_verts;
 		}
 
-		inline int n_face_vertices(const int f_id) const { return 3; }
+		inline int n_face_vertices(const int f_id) const override { return 3; }
 
 		inline int face_ref_level(const int f_id) const { return elements[valid_to_all_elem(f_id)].level; }
 

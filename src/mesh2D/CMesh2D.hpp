@@ -29,7 +29,7 @@ namespace polyfem
 		int n_edges() const override { return mesh_.edges.nb(); }
 		int n_vertices() const override { return mesh_.vertices.nb(); }
 
-		inline int n_face_vertices(const int f_id) const { return mesh_.facets.nb_vertices(f_id); }
+		inline int n_face_vertices(const int f_id) const override { return mesh_.facets.nb_vertices(f_id); }
 
 		inline int face_vertex(const int f_id, const int lv_id) const override { return mesh_.facets.vertex(f_id, lv_id); }
 		inline int edge_vertex(const int e_id, const int lv_id) const override { return mesh_.edges.vertex(e_id, lv_id); }
