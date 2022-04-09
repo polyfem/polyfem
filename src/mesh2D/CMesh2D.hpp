@@ -21,7 +21,7 @@ namespace polyfem
 		// not support copy and GEO::Mesh which does not support move.
 		POLYFEM_DELETE_MOVE_COPY(CMesh2D)
 
-		void refine(const int n_refiniment, const double t, std::vector<int> &parent_nodes) override;
+		void refine(const int n_refinement, const double t, std::vector<int> &parent_nodes) override;
 
 		bool is_conforming() const override { return true; }
 

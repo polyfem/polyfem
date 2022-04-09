@@ -22,7 +22,7 @@ namespace polyfem
 
 		bool is_conforming() const override { return true; }
 
-		void refine(const int n_refiniment, const double t, std::vector<int> &parent_nodes) override;
+		void refine(const int n_refinement, const double t, std::vector<int> &parent_nodes) override;
 
 		inline bool is_volume() const override { return true; }
 
