@@ -21,7 +21,7 @@
 
 #include <polyfem/NCMesh2D.hpp>
 #include <polyfem/CMesh2D.hpp>
-#include <polyfem/Mesh3D.hpp>
+#include <polyfem/CMesh3D.hpp>
 #include <polyfem/StringUtils.hpp>
 
 #include <Eigen/Dense>
@@ -323,7 +323,7 @@ namespace polyfem
 				else
 					mesh = std::make_unique<polyfem::CMesh2D>();
 			else
-				mesh = std::make_unique<polyfem::Mesh3D>();
+				mesh = std::make_unique<polyfem::CMesh3D>();
 			mesh->build_from_matrices(V, F);
 
 			load_mesh(non_conforming);
