@@ -7,6 +7,8 @@
 #include <polyfem/Mesh.hpp>
 #include <polyfem/VTUWriter.hpp>
 
+#include <wmtk/TriMesh.h>
+
 #include <Eigen/Dense>
 
 #include <catch2/catch.hpp>
@@ -127,4 +129,9 @@ TEST_CASE("vtu_writer", "[utils]")
 	VTUWriter writer;
 	writer.add_field("test", v);
 	writer.write_mesh("test.vtu", pts, tris);
+}
+
+TEST_CASE("wmtk_instatiation", "[utils]")
+{
+	wmtk::TriMesh mesh;
 }
