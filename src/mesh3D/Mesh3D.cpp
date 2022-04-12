@@ -11,9 +11,9 @@
 
 namespace polyfem
 {
-	void Mesh3D::refine(const int n_refiniment, const double t, std::vector<int> &parent_nodes)
+	void Mesh3D::refine(const int n_refinement, const double t, std::vector<int> &parent_nodes)
 	{
-		if (n_refiniment <= 0)
+		if (n_refinement <= 0)
 		{
 			return;
 		}
@@ -22,7 +22,7 @@ namespace polyfem
 		orders_.resize(0, 0);
 		if (mesh_.type == MeshType::Tet)
 		{
-			MeshProcessing3D::refine_red_refinement_tet(mesh_, n_refiniment);
+			MeshProcessing3D::refine_red_refinement_tet(mesh_, n_refinement);
 		}
 		else
 		{
@@ -33,7 +33,7 @@ namespace polyfem
 			}
 
 			bool reverse_grow = false;
-			MeshProcessing3D::refine_catmul_clark_polar(mesh_, n_refiniment, reverse_grow, parent_nodes);
+			MeshProcessing3D::refine_catmul_clark_polar(mesh_, n_refinement, reverse_grow, parent_nodes);
 		}
 
 		Navigation3D::prepare_mesh(mesh_);
