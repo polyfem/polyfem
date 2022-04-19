@@ -472,7 +472,7 @@ namespace polyfem
 		//saves the surface vtu file for for surface quantites, eg traction forces
 		void save_surface(const std::string &name);
 		//saves an obj of the wireframe
-		void save_wire(const std::string &name, bool isolines = false);
+		void save_wire(const std::string &name, const double t);
 		// save a PVD of a time dependent simulation
 		void save_pvd(const std::string &name, const std::function<std::string(int)> &vtu_names, int time_steps, double t0, double dt, int skip_frame = 1);
 

@@ -256,7 +256,6 @@ namespace polyfem
 			  {"acceleration", false},
 			  {"nodes", ""},
 			  {"wire_mesh", ""},
-			  {"iso_mesh", ""},
 			  {"spectrum", false},
 			  {"solution", ""},
 			  {"full_mat", ""},

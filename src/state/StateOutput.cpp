@@ -16,9 +16,6 @@
 // #include <tbb/task_scheduler_init.h>
 // #endif
 
-#include <igl/remove_unreferenced.h>
-#include <igl/remove_duplicate_vertices.h>
-#include <igl/isolines.h>
 #include <igl/write_triangle_mesh.h>
 #include <igl/edges.h>
 #include <igl/facet_adjacency_matrix.h>
@@ -730,7 +727,6 @@ namespace polyfem
 		const std::string old_path = resolve_output_path(args["export"]["vis_mesh"]);
 		const std::string vis_mesh_path = resolve_output_path(paraview_path.empty() ? old_path : paraview_path);
 		const std::string wire_mesh_path = resolve_output_path(args["export"]["wire_mesh"]);
-		const std::string iso_mesh_path = resolve_output_path(args["export"]["iso_mesh"]);
 		const std::string nodes_path = resolve_output_path(args["export"]["nodes"]);
 		const std::string solution_path = resolve_output_path(args["export"]["solution"]);
 		const std::string solmat_path = resolve_output_path(args["export"]["solution_mat"]);
@@ -756,11 +752,7 @@ namespace polyfem
 		}
 		if (!wire_mesh_path.empty())
 		{
-			save_wire(wire_mesh_path);
-		}
-		if (!iso_mesh_path.empty())
-		{
-			save_wire(iso_mesh_path, true);
+			save_wire(wire_mesh_path, tend);
 		}
 		if (!nodes_path.empty())
 		{
@@ -1111,7 +1103,7 @@ namespace polyfem
 
 		if (export_wire)
 		{
-			save_wire(base_path + "_wire.vtu");
+			save_wire(base_path + "_wire.vtu", t);
 		}
 
 		if (!solve_export_to_file)
@@ -1820,7 +1812,7 @@ namespace polyfem
 		}
 	}
 
-	void State::save_wire(const std::string &name, bool isolines)
+	void State::save_wire(const std::string &name, const double t)
 	{
 		if (!solve_export_to_file) // TODO?
 			return;
@@ -1924,21 +1916,21 @@ namespace polyfem
 		Eigen::MatrixXd fun;
 		interpolate_function(pts_index, sol, fun, /*use_sampler*/ true, false);
 
-		// Eigen::MatrixXd exact_fun, err;
+		Eigen::MatrixXd exact_fun, err;
 
-		// if (problem->has_exact_sol())
-		// {
-		// 	problem->exact(points, exact_fun);
-		// 	err = (fun - exact_fun).eval().rowwise().norm();
-		// }
+		if (problem->has_exact_sol())
+		{
+			problem->exact(points, t, exact_fun);
+			err = (fun - exact_fun).eval().rowwise().norm();
+		}
 
 		if (fun.cols() != 1 && !mesh->is_volume())
 		{
 			fun.conservativeResize(fun.rows(), 3);
 			fun.col(2).setZero();
 
-			// 	exact_fun.conservativeResize(exact_fun.rows(), 3);
-			// 	exact_fun.col(2).setZero();
+			exact_fun.conservativeResize(exact_fun.rows(), 3);
+			exact_fun.col(2).setZero();
 		}
 
 		if (!mesh->is_volume())
@@ -1947,64 +1939,21 @@ namespace polyfem
 			points.col(2).setZero();
 		}
 
-		// writer.add_field("solution", fun);
-		// if (problem->has_exact_sol()) {
-		// 	writer.add_field("exact", exact_fun);
-		// 	writer.add_field("error", err);
-		// }
-
-		// if (fun.cols() != 1) {
-		// 	Eigen::MatrixXd scalar_val;
-		// 	compute_scalar_value(pts_index, sol, scalar_val);
-		// 	writer.add_field("scalar_value", scalar_val);
-		// }
+		VTUWriter writer;
+		writer.add_field("solution", fun);
+		if (problem->has_exact_sol())
+		{
+			writer.add_field("exact", exact_fun);
+			writer.add_field("error", err);
+		}
 
 		if (fun.cols() != 1)
 		{
-			assert(points.rows() == fun.rows());
-			assert(points.cols() == fun.cols());
-			points += fun;
-		}
-		else
-		{
-			if (isolines)
-				points.col(2) += fun;
+			Eigen::MatrixXd scalar_val;
+			compute_scalar_value(pts_index, sol, scalar_val, /*use_sampler*/ true, false);
+			writer.add_field("scalar_value", scalar_val);
 		}
 
-		if (isolines)
-		{
-			Eigen::MatrixXd isoV;
-			Eigen::MatrixXi isoE;
-			igl::isolines(points, faces, Eigen::VectorXd(fun), 20, isoV, isoE);
-			// igl::write_triangle_mesh("foo.obj", points, faces);
-			points = isoV;
-			edges = isoE;
-		}
-
-		Eigen::MatrixXd V;
-		Eigen::MatrixXi E;
-		Eigen::VectorXi I, J;
-		igl::remove_unreferenced(points, edges, V, E, I);
-		igl::remove_duplicate_vertices(V, E, 1e-14, points, I, J, edges);
-
-		// Remove loops
-		int last = edges.rows() - 1;
-		int new_size = edges.rows();
-		for (int i = 0; i <= last; ++i)
-		{
-			if (edges(i, 0) == edges(i, 1))
-			{
-				edges.row(i) = edges.row(last);
-				--last;
-				--i;
-				--new_size;
-			}
-		}
-		edges.conservativeResize(new_size, edges.cols());
-
-		// save_edges(name, points, edges);
-
-		VTUWriter writer;
 		writer.write_mesh(name, points, edges);
 	}
 
