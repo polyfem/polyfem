@@ -21,11 +21,6 @@ namespace polyfem
 
 		int n_cells() const override { return 0; }
 
-		virtual int n_face_vertices(const int f_id) const = 0;
-
-		virtual int face_vertex(const int f_id, const int lv_id) const = 0;
-		virtual int edge_vertex(const int e_id, const int lv_id) const = 0;
-
 		bool is_boundary_face(const int face_global_id) const override
 		{
 			assert(false);

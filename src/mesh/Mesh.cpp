@@ -413,3 +413,35 @@ bool polyfem::Mesh::is_simplex(const int el_id) const
 {
 	return elements_tag_[el_id] == ElementType::Simplex;
 }
+
+std::vector<std::pair<int, int>> polyfem::Mesh::edges() const
+{
+	std::vector<std::pair<int, int>> res;
+	res.reserve(n_edges());
+
+	for (int e_id = 0; e_id < n_edges(); ++e_id)
+	{
+		const int e0 = edge_vertex(e_id, 0);
+		const int e1 = edge_vertex(e_id, 1);
+
+		res.emplace_back(std::min(e0, e1), std::max(e0, e1));
+	}
+
+	return res;
+}
+
+std::vector<std::vector<int>> polyfem::Mesh::faces() const
+{
+	std::vector<std::vector<int>> res(n_faces());
+
+	for (int f_id = 0; f_id < n_faces(); ++f_id)
+	{
+		auto &tmp = res[f_id];
+		for (int lv_id = 0; lv_id < n_face_vertices(f_id); ++lv_id)
+			tmp.push_back(face_vertex(f_id, lv_id));
+
+		std::sort(tmp.begin(), tmp.end());
+	}
+
+	return res;
+}

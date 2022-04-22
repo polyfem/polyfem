@@ -47,6 +47,8 @@ namespace polyfem
 		int cell_from_node_id(int node_id) const;
 
 		const std::vector<int> &primitive_to_node() const { return primitive_to_node_; }
+		const std::vector<int> &node_to_primitive_gid() const { return node_to_primitive_gid_; }
+		const std::vector<int> &node_to_primitive() const { return node_to_primitive_; }
 
 		// Node position from node id
 		RowVectorNd node_position(int node_id) const { return nodes_.row(node_to_primitive_[node_id]); }
@@ -78,8 +80,9 @@ namespace polyfem
 		const int max_nodes_per_cell_;
 
 		// Map primitives to nodes back and forth
-		std::vector<int> primitive_to_node_; // #v + #e + #f + #c
-		std::vector<int> node_to_primitive_; // #assigned nodes
+		std::vector<int> primitive_to_node_;     // #v + #e + #f + #c
+		std::vector<int> node_to_primitive_;     // #assigned nodes
+		std::vector<int> node_to_primitive_gid_; // #assigned nodes
 
 		// Precomputed node data (#v + #e + #f + #c)
 		Eigen::MatrixXd nodes_;

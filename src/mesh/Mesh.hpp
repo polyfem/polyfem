@@ -76,6 +76,10 @@ namespace polyfem
 		virtual int n_edges() const = 0;
 		virtual int n_vertices() const = 0;
 
+		virtual int n_face_vertices(const int f_id) const = 0;
+		virtual int face_vertex(const int f_id, const int lv_id) const = 0;
+		virtual int edge_vertex(const int e_id, const int lv_id) const = 0;
+
 		virtual bool is_boundary_vertex(const int vertex_global_id) const = 0;
 		virtual bool is_boundary_edge(const int edge_global_id) const = 0;
 		virtual bool is_boundary_face(const int face_global_id) const = 0;
@@ -184,6 +188,9 @@ namespace polyfem
 		}
 
 		inline bool is_linear() { return orders_.size() == 0 || orders_.maxCoeff() == 1; }
+
+		std::vector<std::pair<int, int>> edges() const;
+		std::vector<std::vector<int>> faces() const;
 
 	protected:
 		virtual bool load(const std::string &path) = 0;
