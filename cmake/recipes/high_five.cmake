@@ -1,5 +1,5 @@
 # HighFive (https://github.com/BlueBrain/HighFive)
-# License: BSL-1.0 License 
+# License: BSL-1.0 License
 
 if(TARGET HighFive)
     return()
@@ -22,7 +22,7 @@ include(FetchContent)
 FetchContent_Declare(
     high_five
     GIT_REPOSITORY https://github.com/BlueBrain/HighFive.git
-    GIT_TAG v2.3.1
+    GIT_TAG v2.4.0
     GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(high_five)

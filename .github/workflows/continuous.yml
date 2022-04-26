@@ -36,7 +36,7 @@ jobs:
           libblas-dev \
           libglu1-mesa-dev \
           xorg-dev \
-          libhdf5 \
+          libhdf5-dev \
           ccache
           echo 'CACHE_PATH=~/.ccache' >> "$GITHUB_ENV"
 
@@ -178,9 +178,21 @@ jobs:
           fetch-depth: 10
       - uses: seanmiddleditch/gha-setup-ninja@master
 
+      - name: Stetup Conda
+        uses: s-weigand/setup-conda@v1
+        with:
+          update-conda: true
+          conda-channels: anaconda, conda-forge
+
+      - name: Install Dependencies
+        run: |
+          conda install hdf5 libblas libcblas suitesparse -y
+
       - name: Set env
         run: |
           echo "appdata=$env:LOCALAPPDATA" >> ${env:GITHUB_ENV}
+          conda init powershell
+
 
       - name: Cache build
         id: cache-build
