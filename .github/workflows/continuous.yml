@@ -36,6 +36,7 @@ jobs:
           libblas-dev \
           libglu1-mesa-dev \
           xorg-dev \
+          libhdf5 \
           ccache
           echo 'CACHE_PATH=~/.ccache' >> "$GITHUB_ENV"
 
@@ -101,7 +102,7 @@ jobs:
 
       - name: Dependencies
         run: |
-          brew install ccache
+          brew install ccache hdf5
           echo 'CACHE_PATH=~/Library/Caches/ccache' >> "$GITHUB_ENV"
 
       - name: Cache Build
