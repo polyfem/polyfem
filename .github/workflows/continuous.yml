@@ -73,6 +73,7 @@ jobs:
         run: |
           cd build
           python ../tests/test_runners.py
+          ./PolyFEM_bin --hdf5 ../data/data/test.hdf5 --cmd
           ./PolyFEM_bin --mesh ../data/data/contact/meshes/3D/simple/cube.msh --cmd --n_refs 1 --problem DrivenCavity --tform Stokes
           ./PolyFEM_bin --mesh ../data/data/contact/meshes/3D/simple/cube.msh --cmd --n_refs 1 --problem DrivenCavity --tform NavierStokes
 
@@ -153,6 +154,7 @@ jobs:
         run: |
           cd build
           python3 ../tests/test_runners.py
+          ./PolyFEM_bin --hdf5 ../data/data/test.hdf5 --cmd
           ./PolyFEM_bin --mesh ../data/data/contact/meshes/3D/simple/cube.msh --cmd --n_refs 1 --problem DrivenCavity --tform Stokes
           ./PolyFEM_bin --mesh ../data/data/contact/meshes/3D/simple/cube.msh --cmd --n_refs 1 --problem DrivenCavity --tform NavierStokes
 
@@ -236,5 +238,6 @@ jobs:
         run: |
           cd build
           python ..\tests\test_runners.py
+          .\PolyFEM_bin.exe --hdf5 ..\data\data\test.hdf5 --cmd
           .\PolyFEM_bin.exe --mesh ..\data\data\contact\meshes\3D\simple\cube.msh --cmd --n_refs 1 --problem DrivenCavity --tform Stokes
           .\PolyFEM_bin.exe --mesh ..\data\data\contact\meshes\3D\simple\cube.msh --cmd --n_refs 1 --problem DrivenCavity --tform NavierStokes
