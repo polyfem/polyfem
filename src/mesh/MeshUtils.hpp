@@ -226,6 +226,18 @@ namespace polyfem
 	///
 	void transform_mesh_from_json(const json &mesh, Eigen::MatrixXd &vertices);
 
+	///
+	/// @brief         			Extract triangular surface from a tetmesh
+	///
+	/// @param[in]     v,tets   { tet mesh }
+	/// @param[out] s_v,tris 	{ surface mesh }
+	///
+	void extract_triangle_surface_from_tets(
+		const Eigen::MatrixXd &vertices,
+		const Eigen::MatrixXi &tets,
+		Eigen::MatrixXd &surface_vertices,
+		Eigen::MatrixXi &tris);
+
 	/// Determine if the given mesh is planar (2D or tiny z-range).
 	bool is_planar(const GEO::Mesh &M, const double tol = 1e-5);
 

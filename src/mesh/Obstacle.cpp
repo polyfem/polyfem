@@ -29,7 +29,12 @@ namespace polyfem
 		planes_.clear();
 	}
 
-	void Obstacle::init(const json &obstacles, const std::string &root_path, const int dim)
+	void Obstacle::init(const json &obstacles,
+						const std::string &root_path,
+						const int dim,
+						const std::vector<std::string> &names,
+						const std::vector<Eigen::MatrixXi> &cells,
+						const std::vector<Eigen::MatrixXd> &vertices)
 	{
 		clear();
 
@@ -45,7 +50,7 @@ namespace polyfem
 			std::string type = obstacles[i].value("type", /*default=*/"mesh");
 			if (type == "mesh")
 			{
-				append_mesh(obstacles[i], root_path, i);
+				append_mesh(obstacles[i], root_path, i, names, cells, vertices);
 			}
 			else if (type == "plane")
 			{
@@ -58,7 +63,7 @@ namespace polyfem
 		}
 	}
 
-	void Obstacle::append_mesh(const json &mesh_in, const std::string &root_path, const int i)
+	void Obstacle::append_mesh(const json &mesh_in, const std::string &root_path, const int i, const std::vector<std::string> &names, const std::vector<Eigen::MatrixXi> &cells_in, const std::vector<Eigen::MatrixXd> &vertices_in)
 	{
 		json jmesh;
 		apply_default_mesh_parameters(mesh_in, jmesh, fmt::format("/obstacles[{}]", i));
@@ -68,12 +73,47 @@ namespace polyfem
 			logger().error("Obstacle {} is mising a \"mesh\" field", mesh_in.dump());
 			return;
 		}
-		const std::string mesh_path = resolve_path(jmesh["mesh"], root_path);
 
 		Eigen::MatrixXd vertices;
 		Eigen::VectorXi codim_vertices;
 		Eigen::MatrixXi codim_edges, faces;
-		read_surface_mesh(mesh_path, vertices, codim_vertices, codim_edges, faces);
+		if (names.empty())
+		{
+			const std::string mesh_path = resolve_path(jmesh["mesh"], root_path);
+
+			read_surface_mesh(mesh_path, vertices, codim_vertices, codim_edges, faces);
+		}
+		else
+		{
+			int index = -1;
+			for (int k = 0; k < names.size(); ++k)
+			{
+				if (names[k] == jmesh["mesh"])
+				{
+					index = k;
+					break;
+				}
+			}
+
+			assert(index >= 0);
+
+			vertices = vertices_in[index];
+			const auto &cells = cells_in[index];
+
+			if (cells.cols() == 1)
+				codim_vertices = cells;
+			else if (cells.cols() == 2)
+				codim_edges = cells;
+			else if (cells.cols() == 3)
+				faces = cells;
+			else
+			{
+				assert(cells.cols() == 4);
+				Eigen::MatrixXd surface_vertices;
+				extract_triangle_surface_from_tets(vertices, cells, surface_vertices, faces);
+				vertices = surface_vertices;
+			}
+		}
 
 		if (vertices.size() == 0)
 		{

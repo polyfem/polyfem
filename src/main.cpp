@@ -16,11 +16,15 @@
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>
 
+#include <highfive/H5File.hpp>
+#include <highfive/H5Easy.hpp>
+
 #include <filesystem>
 
 using namespace polyfem;
 using namespace polysolve;
 using namespace Eigen;
+using namespace HighFive;
 
 bool has_arg(const CLI::App &command_line, const std::string &value)
 {
@@ -41,6 +45,7 @@ int main(int argc, char **argv)
 	// Input
 	std::string mesh_file = "";
 	std::string json_file = "";
+	std::string hdf5_file = "";
 	std::string febio_file = "";
 
 	// Output
@@ -92,6 +97,7 @@ int main(int argc, char **argv)
 	command_line.add_option("--max_threads", max_threads, "Maximum number of threads");
 
 	command_line.add_option("-j,--json", json_file, "Simulation json file")->check(CLI::ExistingFile);
+	command_line.add_option("--hdf5", hdf5_file, "Simulation hdf5 file")->check(CLI::ExistingFile);
 	command_line.add_option("-m,--mesh", mesh_file, "Mesh path")->check(CLI::ExistingFile);
 	command_line.add_option("-b,--febio", febio_file, "FEBio file path")->check(CLI::ExistingFile);
 
@@ -185,6 +191,10 @@ int main(int argc, char **argv)
 
 	CLI11_PARSE(command_line, argc, argv);
 
+	std::vector<std::string> names;
+	std::vector<Eigen::MatrixXi> cells;
+	std::vector<Eigen::MatrixXd> vertices;
+
 	if (!screenshot.empty())
 	{
 		no_ui = false;
@@ -208,6 +218,28 @@ int main(int argc, char **argv)
 		{
 			apply_default_params(in_args);
 			in_args.erase("default_params"); // Remove this so state does not redo the apply
+		}
+	}
+	else if (!hdf5_file.empty())
+	{
+		File file(hdf5_file, File::ReadOnly);
+		std::string json_string = H5Easy::load<std::string>(file, "json");
+
+		in_args = json::parse(json_string);
+		in_args["root_path"] = hdf5_file;
+
+		Group meshes = file.getGroup("meshes");
+		names = meshes.listObjectNames();
+		cells.resize(names.size());
+		vertices.resize(names.size());
+
+		for (size_t i = 0; i < names.size(); ++i)
+		{
+			const auto &s = names[i];
+			const auto &tmp = meshes.getGroup(s);
+
+			tmp.getDataSet("c").read(cells[i]);
+			tmp.getDataSet("v").read(vertices[i]);
 		}
 	}
 	else
@@ -334,7 +366,7 @@ int main(int argc, char **argv)
 		if (!febio_file.empty())
 			state.load_febio(febio_file, in_args);
 		else
-			state.load_mesh();
+			state.load_mesh(false, names, cells, vertices);
 
 		// Mesh was not loaded successfully; load_mesh() logged the error.
 		if (state.mesh == nullptr)

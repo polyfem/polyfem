@@ -1160,7 +1160,7 @@ void find_triangle_surface_from_tets(
 	}
 }
 
-void extract_triangle_surface_from_tets(
+void polyfem::extract_triangle_surface_from_tets(
 	const Eigen::MatrixXd &vertices,
 	const Eigen::MatrixXi &tets,
 	Eigen::MatrixXd &surface_vertices,

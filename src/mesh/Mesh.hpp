@@ -56,7 +56,12 @@ namespace polyfem
 	public:
 		static std::unique_ptr<Mesh> create(const std::string &path, const bool non_conforming = false);
 		static std::unique_ptr<Mesh> create(GEO::Mesh &M, const bool non_conforming = false);
-		static std::unique_ptr<Mesh> create(const std::vector<json> &meshes, const std::string &root_path, const bool non_conforming = false);
+		static std::unique_ptr<Mesh> create(const std::vector<json> &meshes,
+											const std::string &root_path,
+											const bool non_conforming = false,
+											const std::vector<std::string> &names = std::vector<std::string>(),
+											const std::vector<Eigen::MatrixXi> &cells = std::vector<Eigen::MatrixXi>(),
+											const std::vector<Eigen::MatrixXd> &vertices = std::vector<Eigen::MatrixXd>());
 
 		Mesh() = default;
 		virtual ~Mesh() = default;
