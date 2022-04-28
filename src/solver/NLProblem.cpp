@@ -451,9 +451,13 @@ namespace polyfem
 		if (std::isnan(grad.norm()))
 			return false;
 
-		TVector x1_full;
-		reduced_to_full(x1, x1_full);
-		return state.check_scalar_value(x1_full, true, false);
+		// Check the scalar field in the output does not contain NANs.
+		// WARNING: Does not work because the energy is not evaluated at the same quadrature points.
+		//          This causes small step lengths in the LS. 
+		// TVector x1_full;
+		// reduced_to_full(x1, x1_full);
+		// return state.check_scalar_value(x1_full, true, false);
+		return true;
 	}
 
 	double NLProblem::value(const TVector &x)
