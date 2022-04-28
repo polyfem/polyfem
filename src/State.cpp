@@ -33,6 +33,7 @@
 #include <polyfem/Logger.hpp>
 #include <polyfem/JSONUtils.hpp>
 #include <polyfem/MeshUtils.hpp>
+#include <polyfem/OBJWriter.hpp>
 
 #include <igl/Timer.h>
 
@@ -47,7 +48,6 @@
 #include <highfive/H5Easy.hpp>
 
 #include <igl/edges.h>
-#include <igl/writeOBJ.h>
 
 #include <polyfem/autodiff.h>
 DECLARE_DIFFSCALAR_BASE();
@@ -839,7 +839,16 @@ namespace polyfem
 			Eigen::VectorXi codim_vertices;
 			Eigen::MatrixXi codim_edges, edges, faces;
 			read_surface_mesh(collision_mesh_path, vertices, codim_vertices, codim_edges, faces);
-			igl::edges(faces, edges);
+			if (faces.size())
+			{
+				igl::edges(faces, edges);
+				edges.conservativeResize(edges.rows() + codim_edges.rows(), 2);
+				edges.bottomRows(codim_edges.rows()) = codim_edges;
+			}
+			else
+			{
+				edges = codim_edges;
+			}
 			const int n_v = vertices.rows();
 
 			///////////////////////////////////////////////////////////////////
@@ -861,6 +870,7 @@ namespace polyfem
 				{
 					// Rearrange the columns based on the FEM mesh node order
 					linear_map_triplets.emplace_back(rows[i], indx[cols[i]], values[i]);
+					// linear_map_triplets.emplace_back(rows[i], cols[i], values[i]);
 				}
 			}
 
@@ -878,6 +888,9 @@ namespace polyfem
 
 			// Remap vertices incase the tet-meshes were modified during loading
 			vertices = linear_map * boundary_nodes_pos;
+			OBJWriter::save(
+				resolve_output_path("fem_input.obj"),
+				boundary_nodes_pos, boundary_edges, boundary_triangles);
 
 			if (obstacle.n_vertices() > 0)
 			{
@@ -913,7 +926,7 @@ namespace polyfem
 				return (long(vi) - n_v < 0) || (long(vj) - n_v < 0);
 			};
 
-			igl::writeOBJ(resolve_output_path("input.obj"), vertices, faces);
+			OBJWriter::save(resolve_output_path("input.obj"), vertices, edges, faces);
 		}
 	}
 

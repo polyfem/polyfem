@@ -19,9 +19,9 @@
 #include <polyfem/auto_p_bases.hpp>
 #include <polyfem/auto_q_bases.hpp>
 
-#include <ipc/ipc.hpp>
+#include <polyfem/OBJWriter.hpp>
 
-#include <igl/writeOBJ.h>
+#include <ipc/ipc.hpp>
 
 #include <fstream>
 
@@ -819,7 +819,10 @@ namespace polyfem
 			// Save collision mesh
 			Eigen::MatrixXd displaced;
 			nl_problem.reduced_to_full_displaced_points(sol, displaced);
-			igl::writeOBJ(resolve_output_path(fmt::format("collision_mesh_{:d}.obj", t)), collision_mesh.vertices(displaced), collision_mesh.faces());
+			OBJWriter::save(
+				resolve_output_path(fmt::format("collision_mesh_{:d}.obj", t)),
+				collision_mesh.vertices(displaced), collision_mesh.edges(),
+				collision_mesh.faces());
 		}
 	}
 

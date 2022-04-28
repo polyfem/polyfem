@@ -6,6 +6,7 @@
 #include <polyfem/Types.hpp>
 #include <polyfem/Timer.hpp>
 #include <polyfem/MatrixUtils.hpp>
+#include <polyfem/OBJWriter.hpp>
 
 #include <ipc/ipc.hpp>
 #include <ipc/barrier/barrier.hpp>
@@ -62,29 +63,6 @@ namespace ipc
 
 namespace polyfem
 {
-	namespace
-	{
-		bool write_obj(const std::string &path, const Eigen::MatrixXd &v, const Eigen::MatrixXi &e, const Eigen::MatrixXi &f)
-		{
-			std::ofstream obj(path, std::ios::out);
-			if (!obj.is_open())
-				return false;
-
-			obj.precision(15);
-
-			for (int i = 0; i < v.rows(); ++i)
-				obj << "v " << v(i, 0) << " " << v(i, 1) << " " << (v.cols() > 2 ? v(i, 2) : 0) << "\n";
-
-			for (int i = 0; i < e.rows(); ++i)
-				obj << "l " << e(i, 0) + 1 << " " << e(i, 1) + 1 << "\n";
-
-			for (int i = 0; i < f.rows(); ++i)
-				obj << "f " << f(i, 0) + 1 << " " << f(i, 1) + 1 << " " << f(i, 2) + 1 << "\n";
-
-			return true;
-		}
-	} // namespace
-
 	using namespace polysolve;
 
 	NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t, const double dhat, const bool project_to_psd, const bool no_reduced)
@@ -353,8 +331,8 @@ namespace polyfem
 		Eigen::MatrixXd V0 = state.collision_mesh.vertices(displaced0);
 		Eigen::MatrixXd V1 = state.collision_mesh.vertices(displaced1);
 
-		// write_obj("s0.obj", V0, state.collision_mesh.edges(), state.collision_mesh.faces());
-		// write_obj("s1.obj", V1, state.collision_mesh.edges(), state.collision_mesh.faces());
+		// OBJWriter::save("s0.obj", V0, state.collision_mesh.edges(), state.collision_mesh.faces());
+		// OBJWriter::save("s1.obj", V1, state.collision_mesh.edges(), state.collision_mesh.faces());
 
 		double max_step;
 		if (_use_cached_candidates
@@ -412,8 +390,8 @@ namespace polyfem
 			return true;
 		}
 
-		// write_obj("0.obj", state.collision_mesh.vertices(displaced0), state.collision_mesh.edges(), state.collision_mesh.faces());
-		// write_obj("1.obj", state.collision_mesh.vertices(displaced1), state.collision_mesh.edges(), state.collision_mesh.faces());
+		// OBJWriter::save("0.obj", state.collision_mesh.vertices(displaced0), state.collision_mesh.edges(), state.collision_mesh.faces());
+		// OBJWriter::save("1.obj", state.collision_mesh.vertices(displaced1), state.collision_mesh.edges(), state.collision_mesh.faces());
 
 		bool is_valid;
 		if (_use_cached_candidates)
@@ -453,7 +431,7 @@ namespace polyfem
 
 		// Check the scalar field in the output does not contain NANs.
 		// WARNING: Does not work because the energy is not evaluated at the same quadrature points.
-		//          This causes small step lengths in the LS. 
+		//          This causes small step lengths in the LS.
 		// TVector x1_full;
 		// reduced_to_full(x1, x1_full);
 		// return state.check_scalar_value(x1_full, true, false);
@@ -793,8 +771,8 @@ namespace polyfem
 
 		if (state.args["save_nl_solve_sequence"])
 		{
-			write_obj(state.resolve_output_path(fmt::format("step{:03d}.obj", iter_num)),
-					  displaced_surface, state.collision_mesh.edges(), state.collision_mesh.faces());
+			OBJWriter::save(state.resolve_output_path(fmt::format("step{:03d}.obj", iter_num)),
+							displaced_surface, state.collision_mesh.edges(), state.collision_mesh.faces());
 		}
 
 		const double dist_sqr = ipc::compute_minimum_distance(state.collision_mesh, displaced_surface, _constraint_set);

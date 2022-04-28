@@ -240,8 +240,8 @@ include(tinyxml)
 target_link_libraries(polyfem PUBLIC tinyxml2)
 
 # wmtk library
-include(wmtk)
-target_link_libraries(polyfem PUBLIC wmtk::toolkit)
+# include(wmtk)
+# target_link_libraries(polyfem PUBLIC wmtk::toolkit)
 
 # HighFive library (HDF5)
 include(high_five)

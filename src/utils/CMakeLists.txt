@@ -31,6 +31,8 @@ set(SOURCES
 	MshReader.hpp
 	OBJReader.cpp
 	OBJReader.hpp
+	OBJWriter.cpp
+	OBJWriter.hpp
 	par_for.cpp
 	par_for.hpp
 	raster.cpp
