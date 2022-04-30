@@ -445,3 +445,38 @@ std::vector<std::vector<int>> polyfem::Mesh::faces() const
 
 	return res;
 }
+
+std::unordered_map<std::pair<int, int>, size_t, polyfem::HashPair> polyfem::Mesh::edges_to_ids() const
+{
+	std::unordered_map<std::pair<int, int>, size_t, polyfem::HashPair> res;
+	res.reserve(n_edges());
+
+	for (int e_id = 0; e_id < n_edges(); ++e_id)
+	{
+		const int e0 = edge_vertex(e_id, 0);
+		const int e1 = edge_vertex(e_id, 1);
+
+		res[std::pair<int, int>(std::min(e0, e1), std::max(e0, e1))] = e_id;
+	}
+
+	return res;
+}
+
+std::unordered_map<std::vector<int>, size_t, polyfem::HashVector> polyfem::Mesh::faces_to_ids() const
+{
+	std::unordered_map<std::vector<int>, size_t, polyfem::HashVector> res;
+	res.reserve(n_faces());
+
+	for (int f_id = 0; f_id < n_faces(); ++f_id)
+	{
+		std::vector<int> f;
+		f.reserve(n_face_vertices(f_id));
+		for (int lv_id = 0; lv_id < n_face_vertices(f_id); ++lv_id)
+			f.push_back(face_vertex(f_id, lv_id));
+		std::sort(f.begin(), f.end());
+
+		res[f] = f_id;
+	}
+
+	return res;
+}

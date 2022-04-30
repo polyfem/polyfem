@@ -604,3 +604,11 @@ std::vector<int> polyfem::MeshNodes::boundary_nodes() const
 	}
 	return res;
 }
+
+int polyfem::MeshNodes::count_nonnegative_nodes(int start_i, int end_i) const
+{
+	int count = 0;
+	for (int i = start_i; i < end_i; i++)
+		count += primitive_to_node_[i] >= 0;
+	return count;
+}

@@ -4,6 +4,7 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/Navigation.hpp>
 #include <polyfem/Types.hpp>
+#include <polyfem/HashUtils.hpp>
 
 #include <Eigen/Dense>
 #include <geogram/mesh/mesh.h>
@@ -191,6 +192,9 @@ namespace polyfem
 
 		std::vector<std::pair<int, int>> edges() const;
 		std::vector<std::vector<int>> faces() const;
+
+		std::unordered_map<std::pair<int, int>, size_t, HashPair> edges_to_ids() const;
+		std::unordered_map<std::vector<int>, size_t, HashVector> faces_to_ids() const;
 
 	protected:
 		virtual bool load(const std::string &path) = 0;

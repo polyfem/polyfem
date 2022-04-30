@@ -15,6 +15,7 @@
 #include <polyfem/ElasticityUtils.hpp>
 #include <polyfem/Common.hpp>
 #include <polyfem/Logger.hpp>
+#include <polyfem/MeshNodes.hpp>
 
 // Instead of including this do a forward declaration
 // #include <polyfem/NonlinearSolver.hpp>
@@ -138,7 +139,7 @@ namespace polyfem
 		std::vector<ElementBases> pressure_bases;
 
 		// Mapping from input nodes to FE nodes
-		std::vector<int> primitive_to_node;
+		std::shared_ptr<MeshNodes> mesh_nodes;
 
 		//Geometric mapping bases, if the elements are isoparametric, this list is empty
 		std::vector<ElementBases> geom_bases;

@@ -17,6 +17,7 @@ set(SOURCES
 	FEBioReader.cpp
 	FEBioReader.hpp
 	getRSS.c
+	HashUtils.hpp
 	Logger.cpp
 	Logger.hpp
 	InterpolatedFunction.cpp

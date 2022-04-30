@@ -392,7 +392,7 @@ namespace polyfem
 				if (!iso_parametric())
 				{
 					logger().error("Splines must be isoparametric, ignoring...");
-					// FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], geom_disc_orders, has_polys, geom_bases, local_boundary, poly_edge_to_data_geom, primitive_to_node);
+					// FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], geom_disc_orders, has_polys, geom_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 					SplineBasis3d::build_bases(tmp_mesh, args["quadrature_order"], geom_bases, local_boundary, poly_edge_to_data);
 				}
 
@@ -404,15 +404,15 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], geom_disc_orders, false, has_polys, true, geom_bases, local_boundary, poly_edge_to_data_geom, primitive_to_node);
+					FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], geom_disc_orders, false, has_polys, true, geom_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 
-				n_bases = FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, args["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, primitive_to_node);
+				n_bases = FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, args["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
 
 			// if(problem->is_mixed())
 			if (assembler.is_mixed(formulation()))
 			{
-				n_pressure_bases = FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], int(args["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, primitive_to_node);
+				n_pressure_bases = FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], int(args["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 			}
 		}
 		else
@@ -424,7 +424,7 @@ namespace polyfem
 				if (!iso_parametric())
 				{
 					logger().error("Splines must be isoparametric, ignoring...");
-					// FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, has_polys, geom_bases, local_boundary, poly_edge_to_data_geom, primitive_to_node);
+					// FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, has_polys, geom_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 					n_bases = SplineBasis2d::build_bases(tmp_mesh, args["quadrature_order"], geom_bases, local_boundary, poly_edge_to_data);
 				}
 
@@ -436,15 +436,15 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], geom_disc_orders, false, has_polys, true, geom_bases, local_boundary, poly_edge_to_data_geom, primitive_to_node);
+					FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], geom_disc_orders, false, has_polys, true, geom_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 
-				n_bases = FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, args["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, primitive_to_node);
+				n_bases = FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, args["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
 
 			// if(problem->is_mixed())
 			if (assembler.is_mixed(formulation()))
 			{
-				n_pressure_bases = FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], int(args["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, primitive_to_node);
+				n_pressure_bases = FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], int(args["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, mesh_nodes);
 			}
 		}
 		timer.stop();
@@ -865,12 +865,117 @@ namespace polyfem
 
 				linear_map_triplets.reserve(values.size() + obstacle.n_vertices());
 
-				const std::vector<int> &indx = primitive_to_node;
+				////////////////////////////////////////////////////////////////
+				// overall we need a map input node id → polyfem node id
+				// to do this we do input node id → input primitive → primitive → node
+
+				const int num_nodes = boundary_nodes_pos.rows() - obstacle.v().rows();
+				const int num_vertex_nodes = mesh_nodes->num_vertex_nodes();
+				const int num_edge_nodes = mesh_nodes->num_edge_nodes();
+				const int num_face_nodes = mesh_nodes->num_face_nodes();
+				const int num_cell_nodes = mesh_nodes->num_cell_nodes();
+
+				const int num_primitives = mesh->n_vertices() + mesh->n_edges() + mesh->n_faces() + mesh->n_cells();
+
+				// input node → input primitive
+				Eigen::VectorXi in_node_to_in_primitive(num_nodes);
+				in_node_to_in_primitive.head(num_vertex_nodes).setLinSpaced(num_vertex_nodes, 0, num_vertex_nodes - 1); // vertex nodes
+				int prim_offset = mesh->n_vertices(), node_offset = num_vertex_nodes;
+				auto foo = [&](const int num_prims, const int num_nodes) {
+					if (num_prims > 0 && num_nodes > 0)
+					{
+						Eigen::VectorXi tmp = Eigen::VectorXi::LinSpaced(num_nodes, 0, num_nodes - 1) / (num_nodes / num_prims);
+						in_node_to_in_primitive.segment(node_offset, num_prims) = tmp.array() + prim_offset;
+						prim_offset += num_prims;
+						node_offset += num_nodes;
+					}
+				};
+				foo(mesh->n_edges(), num_edge_nodes);
+				foo(mesh->n_faces(), num_face_nodes);
+				foo(mesh->n_cells(), num_cell_nodes);
+
+				// input primitive → primitive
+				Eigen::VectorXi in_primitive_to_primitive;
+				in_primitive_to_primitive.setLinSpaced(num_primitives, 0, num_primitives - 1);
+
+				// NOTE: Assume in_vertex_to_vertex is identity
+
+				if (file.exist("ordered_edges"))
+				{
+					const Eigen::MatrixXi in_edges = H5Easy::load<Eigen::MatrixXi>(file, "ordered_edges");
+					auto edges_to_ids = mesh->edges_to_ids();
+					assert(in_edges.rows() == edges_to_ids.size());
+
+					const int offset = mesh->n_vertices();
+
+					for (int in_ei = 0; in_ei < in_edges.rows(); in_ei++)
+					{
+						const std::pair<int, int> in_edge(
+							in_edges.row(in_ei).minCoeff(), in_edges.row(in_ei).maxCoeff());
+						in_primitive_to_primitive[offset + in_ei] = offset + edges_to_ids[in_edge]; // offset edge ids
+					}
+				}
+				else
+				{
+					// Assume in_edge_to_edge is identity (not needed for P1 anyways)
+					assert(num_nodes == mesh->n_vertices());
+				}
+
+				if (file.exist("ordered_faces"))
+				{
+					Eigen::MatrixXi in_faces = H5Easy::load<Eigen::MatrixXi>(file, "ordered_faces");
+					auto faces_to_ids = mesh->faces_to_ids();
+					assert(in_faces.rows() == faces_to_ids.size());
+
+					const int offset = mesh->n_vertices() + mesh->n_edges();
+
+					for (int in_fi = 0; in_fi < in_faces.rows(); in_fi++)
+					{
+						std::vector<int> in_face(in_faces.cols());
+						for (int i = 0; i < in_face.size(); i++)
+							in_face[i] = in_faces(in_fi, i);
+						std::sort(in_face.begin(), in_face.end());
+
+						in_primitive_to_primitive[offset + in_fi] = offset + faces_to_ids[in_face]; // offset face ids
+					}
+				}
+				else
+				{
+					// Assume in_edge_to_edge is identity (not needed for P1 anyways)
+					assert(num_nodes == mesh->n_vertices());
+				}
+
+				// NOTE: Assume in_cells_to_cells is identity
+
+				// primitive → nodes
+				std::vector<std::vector<int>> primitive_to_nodes(num_primitives);
+				const std::vector<int> &grouped_nodes = mesh_nodes->primitive_to_node();
+				for (int i = 0; i < grouped_nodes.size(); i++)
+				{
+					int node = grouped_nodes[i];
+					if (node >= 0)
+					{
+						int primitive = mesh_nodes->node_to_primitive_gid()[node]
+										+ mesh_nodes->primitive_offset(i);
+						primitive_to_nodes[primitive].push_back(node);
+					}
+				}
+
+				// overall: input node id -> polyfem node id
+				Eigen::VectorXi in_node_to_node(num_nodes);
+				for (int i = 0; i < num_nodes; i++)
+				{
+					// input node id -> input primitive -> primitive -> node
+					const std::vector<int> &possible_nodes =
+						primitive_to_nodes[in_primitive_to_primitive[in_node_to_in_primitive[i]]];
+					assert(possible_nodes.size() == 1);
+					in_node_to_node[i] = possible_nodes[0];
+				}
+
 				for (int i = 0; i < values.size(); i++)
 				{
 					// Rearrange the columns based on the FEM mesh node order
-					linear_map_triplets.emplace_back(rows[i], indx[cols[i]], values[i]);
-					// linear_map_triplets.emplace_back(rows[i], cols[i], values[i]);
+					linear_map_triplets.emplace_back(rows[i], in_node_to_node[cols[i]], values[i]);
 				}
 			}
 

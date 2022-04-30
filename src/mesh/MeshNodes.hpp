@@ -40,6 +40,23 @@ namespace polyfem
 		int primitive_from_face(int f) const { return face_offset_ + f; }
 		int primitive_from_cell(int c) const { return cell_offset_ + c; }
 
+		int primitive_offset(int i) const
+		{
+			if (i < edge_offset_)
+				return 0; // vertex primitive
+			else if (i < face_offset_)
+				return edge_offset_; // edge primitive
+			else if (i < cell_offset_)
+				return face_offset_; // face primitve
+			else
+				return cell_offset_; // cell primitive
+		}
+
+		int num_vertex_nodes() const { return count_nonnegative_nodes(0, edge_offset_); }
+		int num_edge_nodes() const { return count_nonnegative_nodes(edge_offset_, face_offset_); }
+		int num_face_nodes() const { return count_nonnegative_nodes(face_offset_, cell_offset_); }
+		int num_cell_nodes() const { return count_nonnegative_nodes(cell_offset_, n_nodes()); }
+
 		// Primitive id from node id
 		int vertex_from_node_id(int node_id) const;
 		int edge_from_node_id(int node_id) const;
@@ -68,6 +85,8 @@ namespace polyfem
 		std::vector<int> boundary_nodes() const;
 
 	private:
+		int count_nonnegative_nodes(int start_i, int end_i) const;
+
 		const Mesh &mesh_;
 		const bool connect_nodes_;
 		// Offset to pack primitives ids into a single vector
