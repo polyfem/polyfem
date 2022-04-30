@@ -979,6 +979,15 @@ namespace polyfem
 				}
 			}
 
+			// Properly set the interior vertex nodes positions as well
+			// WARNING: the interior higher order nodes are still set to zero
+			const std::vector<int> &indx = primitive_to_node;
+			for (int i = 0; i < mesh->n_vertices(); i++)
+			{
+				boundary_nodes_pos.row(indx[i]) = mesh->point(i);
+			}
+			boundary_nodes_pos = V_fem;
+
 			const int n_fem_v = boundary_nodes_pos.rows() - obstacle.n_vertices();
 			for (int i = 0; i < obstacle.n_vertices(); i++)
 			{
@@ -993,9 +1002,14 @@ namespace polyfem
 
 			// Remap vertices incase the tet-meshes were modified during loading
 			vertices = linear_map * boundary_nodes_pos;
-			OBJWriter::save(
-				resolve_output_path("fem_input.obj"),
-				boundary_nodes_pos, boundary_edges, boundary_triangles);
+			if (faces.size())
+				OBJWriter::save(
+					resolve_output_path("fem_input.obj"),
+					boundary_nodes_pos, boundary_triangles);
+			else
+				OBJWriter::save(
+					resolve_output_path("fem_input.obj"),
+					boundary_nodes_pos, boundary_edges, boundary_triangles);
 
 			if (obstacle.n_vertices() > 0)
 			{
@@ -1031,7 +1045,10 @@ namespace polyfem
 				return (long(vi) - n_v < 0) || (long(vj) - n_v < 0);
 			};
 
-			OBJWriter::save(resolve_output_path("input.obj"), vertices, edges, faces);
+			if (faces.size())
+				OBJWriter::save(resolve_output_path("input.obj"), vertices, faces);
+			else
+				OBJWriter::save(resolve_output_path("input.obj"), vertices, edges, faces);
 		}
 	}
 

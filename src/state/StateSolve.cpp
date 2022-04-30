@@ -819,10 +819,11 @@ namespace polyfem
 			// Save collision mesh
 			Eigen::MatrixXd displaced;
 			nl_problem.reduced_to_full_displaced_points(sol, displaced);
-			OBJWriter::save(
-				resolve_output_path(fmt::format("collision_mesh_{:d}.obj", t)),
-				collision_mesh.vertices(displaced), collision_mesh.edges(),
-				collision_mesh.faces());
+			std::string collision_mesh_path = resolve_output_path(fmt::format("collision_mesh_{:d}.obj", t));
+			if (collision_mesh.faces().size())
+				OBJWriter::save(collision_mesh_path, collision_mesh.vertices(displaced), collision_mesh.faces());
+			else
+				OBJWriter::save(collision_mesh_path, collision_mesh.vertices(displaced), collision_mesh.edges(), collision_mesh.faces());
 		}
 	}
 
