@@ -977,16 +977,14 @@ namespace polyfem
 					// Rearrange the columns based on the FEM mesh node order
 					linear_map_triplets.emplace_back(rows[i], in_node_to_node[cols[i]], values[i]);
 				}
-			}
 
-			// Properly set the interior vertex nodes positions as well
-			// WARNING: the interior higher order nodes are still set to zero
-			const std::vector<int> &indx = primitive_to_node;
-			for (int i = 0; i < mesh->n_vertices(); i++)
-			{
-				boundary_nodes_pos.row(indx[i]) = mesh->point(i);
+				// Properly set the interior vertex nodes positions as well
+				// WARNING: the interior higher order nodes are still set to zero
+				for (int i = 0; i < mesh->n_vertices(); i++)
+				{
+					boundary_nodes_pos.row(in_node_to_node[i]) = mesh->point(i);
+				}
 			}
-			boundary_nodes_pos = V_fem;
 
 			const int n_fem_v = boundary_nodes_pos.rows() - obstacle.n_vertices();
 			for (int i = 0; i < obstacle.n_vertices(); i++)
