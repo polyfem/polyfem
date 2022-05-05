@@ -842,8 +842,11 @@ namespace polyfem
 			if (faces.size())
 			{
 				igl::edges(faces, edges);
-				edges.conservativeResize(edges.rows() + codim_edges.rows(), 2);
-				edges.bottomRows(codim_edges.rows()) = codim_edges;
+				if (codim_edges.rows())
+				{
+					edges.conservativeResize(edges.rows() + codim_edges.rows(), 2);
+					edges.bottomRows(codim_edges.rows()) = codim_edges;
+				}
 			}
 			else
 			{
