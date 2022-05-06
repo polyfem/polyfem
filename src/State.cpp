@@ -924,9 +924,6 @@ namespace polyfem
 						const std::pair<int, int> in_edge(
 							in_edges.row(in_ei).minCoeff(), in_edges.row(in_ei).maxCoeff());
 						in_primitive_to_primitive[offset + in_ei] = offset + edges_to_ids[in_edge]; // offset edge ids
-
-						// fmt::print("({}, {}) -> ({}, {})\n", in_edges(in_ei, 0), in_edges(in_ei, 1),
-						// 		   mesh->edge_vertex(edges_to_ids[in_edge], 0), mesh->edge_vertex(edges_to_ids[in_edge], 1));
 					}
 				}
 				else
@@ -997,7 +994,7 @@ namespace polyfem
 						primitive_to_nodes[in_primitive_to_primitive[in_node_to_in_primitive[i]]];
 					if (possible_nodes.size() > 1)
 					{
-						assert(mesh_nodes->is_edge_node(possible_nodes[0])); // TODO: Handle P4+
+						assert(mesh_nodes->is_edge_node(i)); // TODO: Handle P4+
 						int e_id = in_primitive_to_primitive[in_node_to_in_primitive[i]] - mesh->n_vertices();
 						RowVectorNd v0 = mesh_nodes->node_position(in_node_to_node[mesh->edge_vertex(e_id, 0)]);
 						RowVectorNd a = mesh_nodes->node_position(possible_nodes[0]);
@@ -1088,9 +1085,9 @@ namespace polyfem
 			};
 
 			if (faces.size())
-				OBJWriter::save(resolve_output_path("input.obj"), vertices, faces);
+				OBJWriter::save(resolve_output_path("collision_mesh_0.obj"), vertices, faces);
 			else
-				OBJWriter::save(resolve_output_path("input.obj"), vertices, edges, faces);
+				OBJWriter::save(resolve_output_path("collision_mesh_0.obj"), vertices, edges, faces);
 		}
 	}
 
