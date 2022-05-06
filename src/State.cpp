@@ -882,16 +882,24 @@ namespace polyfem
 
 				// input node → input primitive
 				Eigen::VectorXi in_node_to_in_primitive(num_nodes);
+				Eigen::VectorXi in_node_offset(num_nodes);
 				in_node_to_in_primitive.head(num_vertex_nodes).setLinSpaced(num_vertex_nodes, 0, num_vertex_nodes - 1); // vertex nodes
+				in_node_offset.head(num_vertex_nodes).setZero();
 				int prim_offset = mesh->n_vertices(), node_offset = num_vertex_nodes;
-				auto foo = [&](const int num_prims, const int num_nodes) {
-					if (num_prims > 0 && num_nodes > 0)
-					{
-						Eigen::VectorXi tmp = Eigen::VectorXi::LinSpaced(num_nodes, 0, num_nodes - 1) / (num_nodes / num_prims);
-						in_node_to_in_primitive.segment(node_offset, num_prims) = tmp.array() + prim_offset;
-						prim_offset += num_prims;
-						node_offset += num_nodes;
-					}
+				auto foo = [&](const int num_prims, const int num_prim_nodes) {
+					if (num_prims <= 0 || num_prim_nodes <= 0)
+						return;
+					const Eigen::VectorXi range = Eigen::VectorXi::LinSpaced(num_prim_nodes, 0, num_prim_nodes - 1);
+					const int node_per_prim = num_prim_nodes / num_prims;
+
+					in_node_to_in_primitive.segment(node_offset, num_prim_nodes) =
+						range.array() / node_per_prim + prim_offset;
+
+					in_node_offset.segment(node_offset, num_prim_nodes) =
+						range.unaryExpr([&](const int x) { return x % node_per_prim; });
+
+					prim_offset += num_prims;
+					node_offset += num_prim_nodes;
 				};
 				foo(mesh->n_edges(), num_edge_nodes);
 				foo(mesh->n_faces(), num_face_nodes);
@@ -916,6 +924,9 @@ namespace polyfem
 						const std::pair<int, int> in_edge(
 							in_edges.row(in_ei).minCoeff(), in_edges.row(in_ei).maxCoeff());
 						in_primitive_to_primitive[offset + in_ei] = offset + edges_to_ids[in_edge]; // offset edge ids
+
+						// fmt::print("({}, {}) -> ({}, {})\n", in_edges(in_ei, 0), in_edges(in_ei, 1),
+						// 		   mesh->edge_vertex(edges_to_ids[in_edge], 0), mesh->edge_vertex(edges_to_ids[in_edge], 1));
 					}
 				}
 				else
@@ -951,15 +962,28 @@ namespace polyfem
 				// NOTE: Assume in_cells_to_cells is identity
 
 				// primitive → nodes
+				const auto primitive_offset = [&](int node) {
+					if (mesh_nodes->is_vertex_node(node))
+						return 0;
+					else if (mesh_nodes->is_edge_node(node))
+						return mesh->n_vertices();
+					else if (mesh_nodes->is_face_node(node))
+						return mesh->n_vertices() + mesh->n_edges();
+					else if (mesh_nodes->is_cell_node(node))
+						return mesh->n_vertices() + mesh->n_edges() + mesh->n_faces();
+					throw std::runtime_error("Invalid node ID!");
+				};
+
 				std::vector<std::vector<int>> primitive_to_nodes(num_primitives);
 				const std::vector<int> &grouped_nodes = mesh_nodes->primitive_to_node();
 				for (int i = 0; i < grouped_nodes.size(); i++)
 				{
 					int node = grouped_nodes[i];
+					assert(node < num_nodes);
 					if (node >= 0)
 					{
-						int primitive = mesh_nodes->node_to_primitive_gid()[node]
-										+ mesh_nodes->primitive_offset(i);
+						int primitive = mesh_nodes->node_to_primitive_gid()[node] + primitive_offset(i);
+						assert(primitive < num_primitives);
 						primitive_to_nodes[primitive].push_back(node);
 					}
 				}
@@ -971,8 +995,25 @@ namespace polyfem
 					// input node id -> input primitive -> primitive -> node
 					const std::vector<int> &possible_nodes =
 						primitive_to_nodes[in_primitive_to_primitive[in_node_to_in_primitive[i]]];
-					assert(possible_nodes.size() == 1);
-					in_node_to_node[i] = possible_nodes[0];
+					if (possible_nodes.size() > 1)
+					{
+						assert(mesh_nodes->is_edge_node(possible_nodes[0])); // TODO: Handle P4+
+						int e_id = in_primitive_to_primitive[in_node_to_in_primitive[i]] - mesh->n_vertices();
+						RowVectorNd v0 = mesh_nodes->node_position(in_node_to_node[mesh->edge_vertex(e_id, 0)]);
+						RowVectorNd a = mesh_nodes->node_position(possible_nodes[0]);
+						RowVectorNd b = mesh_nodes->node_position(possible_nodes[1]);
+						// Assume possible nodes are ordered, so only need to check order of two nodes
+
+						// Input edges are sorted, so if a is closer to v0 then the order is correct
+						// otherwise the nodes are flipped.
+						assert(mesh->edge_vertex(e_id, 0) < mesh->edge_vertex(e_id, 1));
+						int offset = (a - v0).squaredNorm() < (b - v0).squaredNorm()
+										 ? in_node_offset[i]
+										 : (possible_nodes.size() - in_node_offset[i] - 1);
+						in_node_to_node[i] = possible_nodes[offset];
+					}
+					else
+						in_node_to_node[i] = possible_nodes[0];
 				}
 
 				for (int i = 0; i < values.size(); i++)

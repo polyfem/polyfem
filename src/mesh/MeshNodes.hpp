@@ -40,17 +40,10 @@ namespace polyfem
 		int primitive_from_face(int f) const { return face_offset_ + f; }
 		int primitive_from_cell(int c) const { return cell_offset_ + c; }
 
-		int primitive_offset(int i) const
-		{
-			if (i < edge_offset_)
-				return 0; // vertex primitive
-			else if (i < face_offset_)
-				return edge_offset_; // edge primitive
-			else if (i < cell_offset_)
-				return face_offset_; // face primitve
-			else
-				return cell_offset_; // cell primitive
-		}
+		bool is_vertex_node(int i) const { return i >= 0 && i < edge_offset_; }
+		bool is_edge_node(int i) const { return i >= edge_offset_ && i < face_offset_; }
+		bool is_face_node(int i) const { return i >= face_offset_ && i < cell_offset_; }
+		bool is_cell_node(int i) const { return i >= cell_offset_; }
 
 		int num_vertex_nodes() const { return count_nonnegative_nodes(0, edge_offset_); }
 		int num_edge_nodes() const { return count_nonnegative_nodes(edge_offset_, face_offset_); }
