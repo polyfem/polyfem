@@ -7,7 +7,6 @@
 
 #include <polyfem/MatrixUtils.hpp>
 
-#include <ipc/collision_constraint.hpp>
 #include <ipc/broad_phase/broad_phase.hpp>
 #include <ipc/friction/friction_constraint.hpp>
 
