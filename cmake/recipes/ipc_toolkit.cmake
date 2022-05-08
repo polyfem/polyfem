@@ -14,8 +14,10 @@ else()
     include(FetchContent)
     FetchContent_Declare(
         ipc_toolkit
-        GIT_REPOSITORY https://github.com/ipc-sim/ipc-toolkit.git
-        GIT_TAG 1a5cd55c2e8bd6f21c25e65b006c224bf94c7639
+        # GIT_REPOSITORY https://github.com/ipc-sim/ipc-toolkit.git
+        # GIT_TAG 1a5cd55c2e8bd6f21c25e65b006c224bf94c7639
+        GIT_REPOSITORY git@github.com:zfergus/ipc-toolkit.git
+        GIT_TAG 02bcf5a129eb10222c4a9e49364307d2ee3be9d2
         GIT_SHALLOW FALSE
     )
     FetchContent_MakeAvailable(ipc_toolkit)
