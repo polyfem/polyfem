@@ -2,6 +2,8 @@ set(SOURCES
 	LocalBoundary.hpp
 	Mesh.cpp
 	Mesh.hpp
+	MeshesJSON.cpp
+	MeshesJSON.hpp
 	MeshNodes.cpp
 	MeshNodes.hpp
 	MeshUtils.cpp

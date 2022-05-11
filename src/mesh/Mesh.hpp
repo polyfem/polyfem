@@ -148,6 +148,7 @@ namespace polyfem
 		virtual void compute_boundary_ids(const std::function<int(const std::vector<int> &, bool)> &marker) = 0;
 		virtual void compute_body_ids(const std::function<int(const RowVectorNd &)> &marker) = 0;
 		virtual void set_boundary_ids(const std::vector<int> &boundary_ids) { boundary_ids_ = boundary_ids; }
+		virtual void set_multibody_boundary_ids(const std::vector<int> &body_vertices_start, const std::vector<int> &body_faces_start, const std::vector<int> &boundary_ids, const std::vector<std::string> &bc_tag_paths);
 		virtual void set_body_ids(const std::vector<int> &body_ids) { body_ids_ = body_ids; }
 		virtual void set_body_ids(const Eigen::VectorXi &body_ids)
 		{

@@ -7,6 +7,7 @@
 #include <polyfem/OBJReader.hpp>
 #include <polyfem/JSONUtils.hpp>
 #include <polyfem/MatrixUtils.hpp>
+#include <polyfem/HashUtils.hpp>
 
 #include <unordered_set>
 
@@ -980,32 +981,6 @@ void polyfem::extract_parent_edges(const Eigen::MatrixXd &IV, const Eigen::Matri
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::apply_default_mesh_parameters(const json &mesh_in, json &mesh_out, const std::string &path_prefix)
-{
-	// NOTE: All units by default are expressed in standard SI units
-	// • position: position of the model origin
-	// • rotation: degrees as XYZ euler angles around the model origin
-	// • scale: scale the vertices around the model origin
-	// • dimensions: dimensions of the scaled object (mutually exclusive to
-	//               "scale")
-	// • enabled: skip the body if this field is false
-	mesh_out = R"({
-				"mesh": null,
-				"position": [0.0, 0.0, 0.0],
-				"rotation": [0.0, 0.0, 0.0],
-				"rotation_mode": "xyz",
-				"scale": [1.0, 1.0, 1.0],
-				"dimensions": null,
-				"enabled": true,
-				"body_id": 0,
-				"boundary_id": 0,
-				"bc_tag": "",
-				"displacement": [0.0, 0.0, 0.0]
-			})"_json;
-	check_for_unknown_args(mesh_out, mesh_in, path_prefix);
-	mesh_out.merge_patch(mesh_in);
-}
-
 void polyfem::read_fem_mesh(
 	const std::string &mesh_path,
 	Eigen::MatrixXd &vertices,
@@ -1286,62 +1261,6 @@ void polyfem::read_surface_mesh(
 	find_codim_vertices(vertices, codim_edges, faces, codim_vertices);
 }
 
-void polyfem::transform_mesh_from_json(const json &mesh, Eigen::MatrixXd &vertices)
-{
-	const int dim = vertices.cols();
-
-	RowVectorNd scale;
-	if (mesh["dimensions"].is_array()) // default is nullptr
-	{
-		VectorNd initial_dimensions =
-			(vertices.colwise().maxCoeff() - vertices.colwise().minCoeff()).cwiseAbs();
-		initial_dimensions =
-			(initial_dimensions.array() == 0).select(1, initial_dimensions);
-		scale = mesh["dimensions"];
-		const int scale_size = scale.size();
-		scale.conservativeResize(dim);
-		if (scale_size < dim)
-			scale.tail(dim - scale_size).setZero();
-		scale.array() /= initial_dimensions.array();
-	}
-	else if (mesh["scale"].is_number())
-	{
-		scale.setConstant(dim, mesh["scale"].get<double>());
-	}
-	else
-	{
-		assert(mesh["scale"].is_array());
-		scale = mesh["scale"];
-		const int scale_size = scale.size();
-		scale.conservativeResize(dim);
-		if (scale_size < dim)
-			scale.tail(dim - scale_size).setZero();
-	}
-	vertices *= scale.asDiagonal();
-
-	// Rotate around the models origin NOT the bodies center of mass.
-	// We could expose this choice as a "rotate_around" field.
-	MatrixNd R = MatrixNd::Identity(dim, dim);
-	if (dim == 2 && mesh["rotation"].is_number())
-	{
-		R = Eigen::Rotation2Dd(
-				deg2rad(mesh["rotation"].get<double>()))
-				.toRotationMatrix();
-	}
-	else if (dim == 3)
-	{
-		R = to_rotation_matrix(mesh["rotation"], mesh["rotation_mode"]);
-	}
-	vertices *= R.transpose(); // (R*Vᵀ)ᵀ = V*Rᵀ
-
-	RowVectorNd position = mesh["position"];
-	const int position_size = position.size();
-	position.conservativeResize(dim);
-	if (position_size < dim)
-		position.tail(dim - position_size).setZero();
-	vertices.rowwise() += position;
-}
-
 void polyfem::save_edges(const std::string &filename, const Eigen::MatrixXd &V, const Eigen::MatrixXi &E)
 {
 	using namespace Eigen;
@@ -1357,23 +1276,7 @@ void polyfem::save_edges(const std::string &filename, const Eigen::MatrixXd &V, 
 
 int polyfem::count_faces(const int dim, const Eigen::MatrixXi &cells)
 {
-	auto hash = [](const std::vector<int> &v) {
-		std::hash<int> hasher;
-		int hash = hasher(v[0]);
-		for (int i = 1; i < v.size(); i++)
-			hash ^= hasher(v[i]);
-		return hash;
-	};
-
-	auto equal = [](const std::vector<int> &v1, const std::vector<int> &v2) {
-		assert(v1.size() == v2.size());
-		for (int i = 0; i < v1.size(); i++)
-			if (v1[i] != v2[i])
-				return false;
-		return true;
-	};
-
-	std::unordered_set<std::vector<int>, decltype(hash), decltype(equal)> boundaries(cells.rows(), hash, equal);
+	std::unordered_set<std::vector<int>, HashVector> boundaries;
 
 	auto insert = [&](std::vector<int> v) {
 		std::sort(v.begin(), v.end());

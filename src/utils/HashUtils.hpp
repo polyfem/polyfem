@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cstddef> // size_t
 #include <vector>
 

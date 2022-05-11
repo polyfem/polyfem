@@ -1,5 +1,6 @@
 #include <polyfem/Obstacle.hpp>
 
+#include <polyfem/MeshesJSON.hpp>
 #include <polyfem/MeshUtils.hpp>
 #include <polyfem/JSONUtils.hpp>
 #include <polyfem/StringUtils.hpp>
