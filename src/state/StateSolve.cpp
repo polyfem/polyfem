@@ -21,6 +21,8 @@
 
 #include <ipc/ipc.hpp>
 
+#include <igl/write_triangle_mesh.h>
+
 #include <fstream>
 
 namespace polyfem
@@ -665,6 +667,7 @@ namespace polyfem
 			{
 				const std::string msg = "Unable to solve, initial solution has intersections!";
 				logger().error(msg);
+				igl::write_triangle_mesh(resolve_output_path("intersection.obj"), collision_mesh.vertices(displaced), collision_mesh.faces());
 				throw std::runtime_error(msg);
 			}
 
