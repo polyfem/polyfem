@@ -96,7 +96,9 @@ namespace polyfem
 		assert(!assembler.is_mixed(state.formulation()));
 
 		_dhat = dhat;
+		assert(_dhat > 0);
 		_epsv = state.args["epsv"];
+		assert(_epsv > 0);
 		_mu = state.args["mu"];
 		_lagged_damping_weight = is_time_dependent ? 0 : state.args["lagged_damping_weight"].get<double>();
 		use_adaptive_barrier_stiffness = !state.args["barrier_stiffness"].is_number();
@@ -169,6 +171,7 @@ namespace polyfem
 
 	void NLProblem::init_time_integrator(const TVector &x_prev, const TVector &v_prev, const TVector &a_prev, const double dt)
 	{
+		assert(dt > 0);
 		_time_integrator->init(x_prev, v_prev, a_prev, dt);
 	}
 
@@ -453,7 +456,7 @@ namespace polyfem
 
 		// Check the scalar field in the output does not contain NANs.
 		// WARNING: Does not work because the energy is not evaluated at the same quadrature points.
-		//          This causes small step lengths in the LS. 
+		//          This causes small step lengths in the LS.
 		// TVector x1_full;
 		// reduced_to_full(x1, x1_full);
 		// return state.check_scalar_value(x1_full, true, false);
