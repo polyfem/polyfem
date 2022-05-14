@@ -49,17 +49,22 @@ namespace polyfem
 	///
 	void transform_mesh_from_json(const json &mesh, Eigen::MatrixXd &vertices);
 
+	struct MeshParams
+	{
+		Eigen::MatrixXd vertices;
+		Eigen::MatrixXi cells;
+		std::vector<std::vector<int>> elements;
+		std::vector<std::vector<double>> weights;
+		std::vector<int> body_vertices_start;
+		std::vector<int> body_faces_start;
+		std::vector<int> body_ids;
+		std::vector<int> boundary_ids;
+		std::vector<std::string> bc_tag_paths;
+	};
+
 	void create_from_json(
 		const json &jmesh,
 		const std::string &root_path,
-		Eigen::MatrixXd &vertices,
-		Eigen::MatrixXi &cells,
-		std::vector<std::vector<int>> &elements,
-		std::vector<std::vector<double>> &weights,
-		std::vector<int> &body_vertices_start,
-		std::vector<int> &body_faces_start,
-		std::vector<int> &body_ids,
-		std::vector<int> &boundary_ids,
-		std::vector<std::string> &bc_tag_paths);
+		MeshParams &mesh);
 
 } // namespace polyfem

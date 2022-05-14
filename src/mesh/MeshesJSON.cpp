@@ -14,6 +14,8 @@
 #include <polyfem/JSONUtils.hpp>
 
 #include <Eigen/Core>
+
+#include <igl/edges.h>
 ////////////////////////////////////////////////////////////////////////////////
 
 std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &meshes, const std::string &root_path, const bool non_conforming)
@@ -24,27 +26,17 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 		return nullptr;
 	}
 
-	Eigen::MatrixXd vertices;
-	Eigen::MatrixXi cells;
-	std::vector<std::vector<int>> elements;
-	std::vector<std::vector<double>> weights;
-	std::vector<int> body_vertices_start;
-	std::vector<int> body_faces_start;
-	std::vector<int> body_ids;
-	std::vector<int> boundary_ids;
-	std::vector<std::string> bc_tag_paths;
-
-	body_faces_start.push_back(0);
-
+	MeshParams mesh_params;
+	mesh_params.body_faces_start.push_back(0);
 	for (int i = 0; i < meshes.size(); i++)
 	{
 		json jmesh;
 		apply_default_mesh_parameters(meshes[i], jmesh, fmt::format("/meshes[{}]", i));
-		create_from_json(
-			jmesh, root_path, vertices, cells, elements, weights,
-			body_vertices_start, body_faces_start, body_ids, boundary_ids,
-			bc_tag_paths);
+		create_from_json(jmesh, root_path, mesh_params);
 	}
+
+	const auto &[vertices, cells, elements, weights, body_vertices_start,
+				 body_faces_start, body_ids, boundary_ids, bc_tag_paths] = mesh_params;
 
 	////////////////////////////////////////////////////////////////////////////
 
@@ -132,15 +124,7 @@ void polyfem::apply_default_mesh_parameters(const json &mesh_in, json &mesh_out,
 void polyfem::create_from_json(
 	const json &jmesh,
 	const std::string &root_path,
-	Eigen::MatrixXd &vertices,
-	Eigen::MatrixXi &cells,
-	std::vector<std::vector<int>> &elements,
-	std::vector<std::vector<double>> &weights,
-	std::vector<int> &body_vertices_start,
-	std::vector<int> &body_faces_start,
-	std::vector<int> &body_ids,
-	std::vector<int> &boundary_ids,
-	std::vector<std::string> &bc_tag_paths)
+	MeshParams &mesh)
 {
 	using namespace polyfem;
 
@@ -155,23 +139,23 @@ void polyfem::create_from_json(
 
 	const std::string mesh_path = resolve_path(jmesh["mesh"], root_path);
 
-	Eigen::MatrixXd tmp_vertices;
-	Eigen::MatrixXi tmp_cells;
-	std::vector<std::vector<int>> tmp_elements;
-	std::vector<std::vector<double>> tmp_weights;
-	Eigen::VectorXi tmp_body_ids;
-	read_fem_mesh(mesh_path, tmp_vertices, tmp_cells, tmp_elements, tmp_weights, tmp_body_ids);
+	Eigen::MatrixXd vertices;
+	Eigen::MatrixXi cells;
+	std::vector<std::vector<int>> elements;
+	std::vector<std::vector<double>> weights;
+	Eigen::VectorXi body_ids;
+	read_fem_mesh(mesh_path, vertices, cells, elements, weights, body_ids);
 
-	if (tmp_vertices.size() == 0 || tmp_cells.size() == 0)
+	if (vertices.size() == 0 || cells.size() == 0)
 		return;
 
-	if (vertices.cols() != 0 && vertices.cols() != tmp_vertices.cols())
+	if (mesh.vertices.cols() != 0 && mesh.vertices.cols() != vertices.cols())
 	{
 		logger().error("Mixed dimension meshes is not implemented!");
 		return;
 	}
 
-	if (cells.size() != 0 && cells.cols() != tmp_cells.cols())
+	if (mesh.cells.size() != 0 && mesh.cells.cols() != cells.cols())
 	{
 		logger().error("Mixed tet and hex (tri and quad) meshes is not implemented!");
 		return;
@@ -181,57 +165,57 @@ void polyfem::create_from_json(
 
 	MatrixNd affine_transform;
 	RowVectorNd translation;
-	mesh_transform_from_json(jmesh, mesh_dimensions(tmp_vertices), affine_transform, translation);
-	transform_mesh(affine_transform, translation, tmp_vertices);
+	mesh_transform_from_json(jmesh, mesh_dimensions(vertices), affine_transform, translation);
+	transform_mesh(affine_transform, translation, vertices);
 
 	////////////////////////////////////////////////////////////////////////////
 
-	body_vertices_start.push_back(vertices.rows());
-	const int dim = std::max(vertices.cols(), tmp_vertices.cols());
+	mesh.body_vertices_start.push_back(mesh.vertices.rows());
+	const int dim = std::max(mesh.vertices.cols(), vertices.cols());
 	assert(dim == 2 || dim == 3);
-	vertices.conservativeResize(vertices.rows() + tmp_vertices.rows(), dim);
-	vertices.bottomRows(tmp_vertices.rows()) = tmp_vertices;
+	mesh.vertices.conservativeResize(mesh.vertices.rows() + vertices.rows(), dim);
+	mesh.vertices.bottomRows(vertices.rows()) = vertices;
 
 	////////////////////////////////////////////////////////////////////////////
 
-	const int cell_cols = std::max(cells.cols(), tmp_cells.cols());
-	cells.conservativeResize(cells.rows() + tmp_cells.rows(), cell_cols);
-	cells.bottomRows(tmp_cells.rows()) = tmp_cells.array() + body_vertices_start.back(); // Shift vertex ids in cells
+	const int cell_cols = std::max(mesh.cells.cols(), cells.cols());
+	mesh.cells.conservativeResize(mesh.cells.rows() + cells.rows(), cell_cols);
+	mesh.cells.bottomRows(cells.rows()) = cells.array() + mesh.body_vertices_start.back(); // Shift vertex ids in cells
 
 	////////////////////////////////////////////////////////////////////////////
 
 	// Shift vertex ids in elements
-	for (auto &element : tmp_elements)
+	for (auto &element : elements)
 	{
 		for (auto &id : element)
 		{
-			id += body_vertices_start.back();
+			id += mesh.body_vertices_start.back();
 		}
 	}
-	elements.insert(elements.end(), tmp_elements.begin(), tmp_elements.end());
+	mesh.elements.insert(mesh.elements.end(), elements.begin(), elements.end());
 
 	////////////////////////////////////////////////////////////////////////////
 
-	weights.insert(weights.end(), tmp_weights.begin(), tmp_weights.end());
+	mesh.weights.insert(mesh.weights.end(), weights.begin(), weights.end());
 
 	////////////////////////////////////////////////////////////////////////////
 
-	body_faces_start.push_back(body_faces_start.back() + count_faces(dim, tmp_cells));
+	mesh.body_faces_start.push_back(mesh.body_faces_start.back() + count_faces(dim, cells));
 
 	////////////////////////////////////////////////////////////////////////////
-	if (!is_param_valid(jmesh, "body_id")) // Constant body id has priority over mesh's stored ids
+	if (is_param_valid(jmesh, "body_id")) // Constant body id has priority over mesh's stored ids
 	{
-		tmp_body_ids.setConstant(tmp_cells.rows(), jmesh["body_id"].get<int>());
+		body_ids.setConstant(cells.rows(), jmesh["body_id"].get<int>());
 	}
-	body_ids.insert(body_ids.end(), tmp_body_ids.data(), tmp_body_ids.data() + tmp_body_ids.size());
+	mesh.body_ids.insert(mesh.body_ids.end(), body_ids.data(), body_ids.data() + body_ids.size());
 
 	////////////////////////////////////////////////////////////////////////////
 
-	boundary_ids.push_back(jmesh["boundary_id"].get<int>());
+	mesh.boundary_ids.push_back(jmesh["boundary_id"].get<int>());
 
 	////////////////////////////////////////////////////////////////////////////
 
-	bc_tag_paths.push_back(resolve_path(jmesh["bc_tag"], root_path));
+	mesh.bc_tag_paths.push_back(resolve_path(jmesh["bc_tag"], root_path));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
