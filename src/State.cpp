@@ -1040,7 +1040,10 @@ namespace polyfem
 			// Add obstacle to collision mesh
 
 			// Remap vertices incase the tet-meshes were modified during loading
-			vertices = linear_map * boundary_nodes_pos;
+			// TODO: Handle initial transformation in meshes
+			// vertices = linear_map * boundary_nodes_pos;
+			vertices.conservativeResize(linear_map.rows(), vertices.cols());
+			vertices.bottomRows(obstacle.n_vertices()) = obstacle.v();
 			if (faces.size())
 				OBJWriter::save(
 					resolve_output_path("fem_input.obj"),

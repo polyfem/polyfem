@@ -661,9 +661,11 @@ namespace polyfem
 		{
 			timer.start();
 			logger().trace("Checking collisions...");
-			Eigen::MatrixXd displaced = boundary_nodes_pos + unflatten(sol, mesh->dimension());
+			Eigen::MatrixXd sol_unflattened = unflatten(sol, mesh->dimension());
 
-			if (ipc::has_intersections(collision_mesh, collision_mesh.vertices(displaced)))
+			if (ipc::has_intersections(
+					collision_mesh,
+					collision_mesh.vertices_from_displacements(sol_unflattened)))
 			{
 				const std::string msg = "Unable to solve, initial solution has intersections!";
 				logger().error(msg);
@@ -817,13 +819,19 @@ namespace polyfem
 			save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), t0 + dt * t);
 
 			// Save collision mesh
-			Eigen::MatrixXd displaced;
-			nl_problem.reduced_to_full_displaced_points(sol, displaced);
+			Eigen::MatrixXd full_sol_unflattened;
+			nl_problem.reduced_to_full_unflattened(sol, full_sol_unflattened);
 			std::string collision_mesh_path = resolve_output_path(fmt::format("collision_mesh_{:d}.obj", t));
 			if (collision_mesh.faces().size())
-				OBJWriter::save(collision_mesh_path, collision_mesh.vertices(displaced), collision_mesh.faces());
+				OBJWriter::save(
+					collision_mesh_path,
+					collision_mesh.vertices_from_displacements(full_sol_unflattened),
+					collision_mesh.faces());
 			else
-				OBJWriter::save(collision_mesh_path, collision_mesh.vertices(displaced), collision_mesh.edges(), collision_mesh.faces());
+				OBJWriter::save(
+					collision_mesh_path,
+					collision_mesh.vertices_from_displacements(full_sol_unflattened),
+					collision_mesh.edges(), collision_mesh.faces());
 		}
 	}
 

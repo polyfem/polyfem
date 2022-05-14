@@ -130,17 +130,17 @@ namespace polyfem
 
 		grad_energy -= current_rhs();
 
-		Eigen::MatrixXd displaced;
-		compute_displaced_points(full, displaced);
+		Eigen::MatrixXd full_unflattened = unflatten(full);
 
-		Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
+		Eigen::MatrixXd displaced_surface =
+			state.collision_mesh.vertices_from_displacements(full_unflattened);
 		update_constraint_set(displaced_surface);
 		Eigen::VectorXd grad_barrier = ipc::compute_barrier_potential_gradient(
 			state.collision_mesh, displaced_surface, _constraint_set, _dhat);
 		grad_barrier = state.collision_mesh.to_full_dof(grad_barrier);
 
 		_barrier_stiffness = ipc::initial_barrier_stiffness(
-			ipc::world_bbox_diagonal_length(displaced), _dhat, state.avg_mass,
+			ipc::world_bbox_diagonal_length(displaced_surface), _dhat, state.avg_mass,
 			grad_energy, grad_barrier, max_barrier_stiffness_);
 		polyfem::logger().debug("adaptive barrier stiffness {}", _barrier_stiffness);
 	}
@@ -152,16 +152,17 @@ namespace polyfem
 
 	void NLProblem::init_lagging(const TVector &x)
 	{
-		reduced_to_full_displaced_points(x, _displaced_prev);
+		reduced_to_full(x, _full_x_prev);
 		update_lagging(x);
 	}
 
 	void NLProblem::update_lagging(const TVector &x)
 	{
-		Eigen::MatrixXd displaced;
-		reduced_to_full_displaced_points(x, displaced);
+		Eigen::MatrixXd full_X;
+		reduced_to_full_unflattened(x, full_X);
 
-		Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
+		Eigen::MatrixXd displaced_surface =
+			state.collision_mesh.vertices_from_displacements(full_X);
 
 		if (_mu != 0)
 		{
@@ -262,7 +263,7 @@ namespace polyfem
 	void NLProblem::compute_displaced_points(const TVector &full, Eigen::MatrixXd &displaced)
 	{
 		assert(full.size() == full_size);
-		displaced = state.boundary_nodes_pos + unflatten(full, state.mesh->dimension());
+		displaced = state.boundary_nodes_pos + unflatten(full);
 	}
 
 	void NLProblem::reduced_to_full_displaced_points(const TVector &reduced, Eigen::MatrixXd &displaced)
@@ -270,6 +271,13 @@ namespace polyfem
 		TVector full;
 		reduced_to_full(reduced, full);
 		compute_displaced_points(full, displaced);
+	}
+
+	void NLProblem::reduced_to_full_unflattened(const TVector &reduced, Eigen::MatrixXd &full_unflattened)
+	{
+		TVector full;
+		reduced_to_full(reduced, full);
+		full_unflattened = unflatten(full);
 	}
 
 	void NLProblem::update_constraint_set(const Eigen::MatrixXd &displaced_surface)
@@ -297,14 +305,14 @@ namespace polyfem
 		if (disable_collision || !state.args["has_collision"])
 			return;
 
-		Eigen::MatrixXd displaced0, displaced1;
-		reduced_to_full_displaced_points(x0, displaced0);
-		reduced_to_full_displaced_points(x1, displaced1);
+		Eigen::MatrixXd full_X0, full_X1;
+		reduced_to_full_unflattened(x0, full_X0);
+		reduced_to_full_unflattened(x1, full_X1);
 
 		ipc::construct_collision_candidates(
 			state.collision_mesh,
-			state.collision_mesh.vertices(displaced0),
-			state.collision_mesh.vertices(displaced1),
+			state.collision_mesh.vertices_from_displacements(full_X0),
+			state.collision_mesh.vertices_from_displacements(full_X1),
 			_candidates,
 			/*inflation_radius=*/_dhat / 1.99, // divide by 1.99 instead of 2 to be conservative
 			_broad_phase_method);
@@ -323,13 +331,13 @@ namespace polyfem
 		if (disable_collision || !state.args["has_collision"])
 			return 1;
 
-		Eigen::MatrixXd displaced0, displaced1;
-		reduced_to_full_displaced_points(x0, displaced0);
-		reduced_to_full_displaced_points(x1, displaced1);
+		Eigen::MatrixXd full_X0, full_X1;
+		reduced_to_full_unflattened(x0, full_X0);
+		reduced_to_full_unflattened(x1, full_X1);
 
 		// Extract surface only
-		Eigen::MatrixXd V0 = state.collision_mesh.vertices(displaced0);
-		Eigen::MatrixXd V1 = state.collision_mesh.vertices(displaced1);
+		Eigen::MatrixXd V0 = state.collision_mesh.vertices_from_displacements(full_X0);
+		Eigen::MatrixXd V1 = state.collision_mesh.vertices_from_displacements(full_X1);
 
 		// OBJWriter::save("s0.obj", V0, state.collision_mesh.edges(), state.collision_mesh.faces());
 		// OBJWriter::save("s1.obj", V1, state.collision_mesh.edges(), state.collision_mesh.faces());
@@ -378,33 +386,33 @@ namespace polyfem
 		// if (!state.problem->is_time_dependent())
 		// return false;
 
-		Eigen::MatrixXd displaced0, displaced1;
-		reduced_to_full_displaced_points(x0, displaced0);
-		reduced_to_full_displaced_points(x1, displaced1);
+		Eigen::MatrixXd full_X0, full_X1;
+		reduced_to_full_unflattened(x0, full_X0);
+		reduced_to_full_unflattened(x1, full_X1);
 
 		// Skip CCD if the displacement is zero.
-		if ((displaced1 - displaced0).lpNorm<Eigen::Infinity>() == 0.0)
+		if ((full_X1 - full_X0).lpNorm<Eigen::Infinity>() == 0.0)
 		{
 			// Assumes initially intersection-free
 			assert(is_intersection_free(x0));
 			return true;
 		}
 
-		// OBJWriter::save("0.obj", state.collision_mesh.vertices(displaced0), state.collision_mesh.edges(), state.collision_mesh.faces());
-		// OBJWriter::save("1.obj", state.collision_mesh.vertices(displaced1), state.collision_mesh.edges(), state.collision_mesh.faces());
+		// OBJWriter::save("0.obj", state.collision_mesh.vertices_from_displacements(full_X0), state.collision_mesh.edges(), state.collision_mesh.faces());
+		// OBJWriter::save("1.obj", state.collision_mesh.vertices_from_displacements(full_X1), state.collision_mesh.edges(), state.collision_mesh.faces());
 
 		bool is_valid;
 		if (_use_cached_candidates)
 			is_valid = ipc::is_step_collision_free(
 				_candidates, state.collision_mesh,
-				state.collision_mesh.vertices(displaced0),
-				state.collision_mesh.vertices(displaced1),
+				state.collision_mesh.vertices_from_displacements(full_X0),
+				state.collision_mesh.vertices_from_displacements(full_X1),
 				_ccd_tolerance, _ccd_max_iterations);
 		else
 			is_valid = ipc::is_step_collision_free(
 				state.collision_mesh,
-				state.collision_mesh.vertices(displaced0),
-				state.collision_mesh.vertices(displaced1),
+				state.collision_mesh.vertices_from_displacements(full_X0),
+				state.collision_mesh.vertices_from_displacements(full_X1),
 				ipc::BroadPhaseMethod::HASH_GRID, _ccd_tolerance, _ccd_max_iterations);
 
 		return is_valid;
@@ -415,10 +423,11 @@ namespace polyfem
 		if (disable_collision || !state.args["has_collision"])
 			return true;
 
-		Eigen::MatrixXd displaced;
-		reduced_to_full_displaced_points(x, displaced);
+		Eigen::MatrixXd full_X;
+		reduced_to_full_unflattened(x, full_X);
 
-		return !ipc::has_intersections(state.collision_mesh, state.collision_mesh.vertices(displaced));
+		return !ipc::has_intersections(
+			state.collision_mesh, state.collision_mesh.vertices_from_displacements(full_X));
 	}
 
 	bool NLProblem::is_step_valid(const TVector &x0, const TVector &x1)
@@ -473,15 +482,16 @@ namespace polyfem
 		double friction_energy = 0;
 		if (!only_elastic && !disable_collision && state.args["has_collision"])
 		{
-			Eigen::MatrixXd displaced;
-			compute_displaced_points(full, displaced);
-			Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
+			Eigen::MatrixXd displaced_surface_prev =
+				state.collision_mesh.vertices_from_displacements(unflatten(full_x_prev()));
+			Eigen::MatrixXd displaced_surface =
+				state.collision_mesh.vertices_from_displacements(unflatten(full));
 
 			collision_energy = ipc::compute_barrier_potential(
 				state.collision_mesh, displaced_surface, _constraint_set, _dhat);
 			friction_energy = ipc::compute_friction_potential(
-				state.collision_mesh, state.collision_mesh.vertices(displaced_prev()),
-				displaced_surface, _friction_constraint_set, _epsv * dt());
+				state.collision_mesh, displaced_surface_prev, displaced_surface,
+				_friction_constraint_set, _epsv * dt());
 
 			polyfem::logger().trace("collision_energy {}, friction_energy {}", collision_energy, friction_energy);
 		}
@@ -545,11 +555,10 @@ namespace polyfem
 		Eigen::VectorXd grad_barrier;
 		if (!only_elastic && !disable_collision && state.args["has_collision"])
 		{
-			Eigen::MatrixXd displaced;
-			compute_displaced_points(full, displaced);
-
-			Eigen::MatrixXd displaced_surface_prev = state.collision_mesh.vertices(displaced_prev());
-			Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
+			Eigen::MatrixXd displaced_surface_prev =
+				state.collision_mesh.vertices_from_displacements(unflatten(full_x_prev()));
+			Eigen::MatrixXd displaced_surface =
+				state.collision_mesh.vertices_from_displacements(unflatten(full));
 
 			grad_barrier = ipc::compute_barrier_potential_gradient(
 				state.collision_mesh, displaced_surface, _constraint_set, _dhat);
@@ -623,18 +632,18 @@ namespace polyfem
 		{
 			POLYFEM_SCOPED_TIMER("\tipc hessian(s) time");
 
-			Eigen::MatrixXd displaced;
+			Eigen::MatrixXd displaced_surface_prev, displaced_surface;
 			{
 				POLYFEM_SCOPED_TIMER("\t\tdisplace pts time");
-				compute_displaced_points(full, displaced);
+				displaced_surface_prev =
+					state.collision_mesh.vertices_from_displacements(unflatten(full_x_prev()));
+				displaced_surface =
+					state.collision_mesh.vertices_from_displacements(unflatten(full));
 			}
 
 			// {
 			// 	POLYFEM_SCOPED_TIMER("\t\tconstraint set time");
 			// }
-
-			Eigen::MatrixXd displaced_surface_prev = state.collision_mesh.vertices(displaced_prev());
-			Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
 
 			{
 				POLYFEM_SCOPED_TIMER("\t\tbarrier hessian time");
@@ -726,15 +735,15 @@ namespace polyfem
 		reduced.makeCompressed();
 	}
 
-	void NLProblem::solution_changed(const TVector &newX)
+	void NLProblem::solution_changed(const TVector &new_x)
 	{
 		if (disable_collision || !state.args["has_collision"])
 			return;
 
-		Eigen::MatrixXd displaced;
-		reduced_to_full_displaced_points(newX, displaced);
+		Eigen::MatrixXd full_new_X;
+		reduced_to_full_unflattened(new_x, full_new_X);
 
-		update_constraint_set(state.collision_mesh.vertices(displaced));
+		update_constraint_set(state.collision_mesh.vertices_from_displacements(full_new_X));
 	}
 
 	double NLProblem::heuristic_max_step(const TVector &dx)
@@ -764,10 +773,8 @@ namespace polyfem
 		TVector full;
 		reduced_to_full(x, full);
 
-		Eigen::MatrixXd displaced;
-		compute_displaced_points(full, displaced);
-
-		Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
+		Eigen::MatrixXd displaced_surface =
+			state.collision_mesh.vertices_from_displacements(unflatten(full));
 
 		if (state.args["save_nl_solve_sequence"])
 		{

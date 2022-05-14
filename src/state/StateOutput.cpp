@@ -1685,12 +1685,12 @@ namespace polyfem
 		if ((export_contact_forces || export_friction_forces) && solve_export_to_file)
 		{
 			const int problem_dim = mesh->dimension();
-			Eigen::MatrixXd displaced = unflatten(sol, problem_dim);
+			Eigen::MatrixXd sol_unflattened = unflatten(sol, problem_dim);
 
-			writer.add_field("solution", displaced);
+			writer.add_field("solution", sol_unflattened);
 
-			displaced += boundary_nodes_pos;
-			Eigen::MatrixXd displaced_surface = collision_mesh.vertices(displaced);
+			Eigen::MatrixXd displaced_surface =
+				collision_mesh.vertices_from_displacements(sol_unflattened);
 
 			ipc::Constraints constraint_set;
 			ipc::construct_constraint_set(
@@ -1710,11 +1710,12 @@ namespace polyfem
 				writer.add_field("contact_forces", forces_reshaped);
 			}
 
+			Eigen::MatrixXd full_X_prev = unflatten(step_data.nl_problem->full_x_prev(), problem_dim);
 			if (export_friction_forces)
 			{
 				Eigen::MatrixXd displaced_surface_prev =
 					(step_data.nl_problem != nullptr)
-						? collision_mesh.vertices(step_data.nl_problem->displaced_prev())
+						? collision_mesh.vertices_from_displacements(full_X_prev)
 						: displaced_surface;
 
 				ipc::FrictionConstraints friction_constraint_set;
@@ -1736,7 +1737,7 @@ namespace polyfem
 
 			writer.write_mesh(
 				export_surface.substr(0, export_surface.length() - 4) + "_contact.vtu",
-				collision_mesh.vertices(boundary_nodes_pos),
+				collision_mesh.vertices_at_rest(),
 				problem_dim == 3 ? collision_mesh.faces() : collision_mesh.edges());
 		}
 
