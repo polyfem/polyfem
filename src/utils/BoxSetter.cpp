@@ -99,7 +99,7 @@ namespace polyfem
 		}
 		else
 		{
-			assert(selection.is_number_integer());
+			assert(selection["axis"].is_number_integer());
 			axis_ = selection["axis"];
 			assert(std::abs(axis_) >= 1 && std::abs(axis_) <= 3);
 		}

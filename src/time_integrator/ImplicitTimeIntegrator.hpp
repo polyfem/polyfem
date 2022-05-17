@@ -39,7 +39,7 @@ namespace polyfem
 		const Eigen::VectorXd &a_prev() const { return a_prevs.front(); }
 
 	protected:
-		double _dt;
+		double _dt = 1; // default of one for static sims, this should be set using init()
 		// Store the necessary previous values for single or multi-step integration
 		std::deque<Eigen::VectorXd> x_prevs, v_prevs, a_prevs;
 

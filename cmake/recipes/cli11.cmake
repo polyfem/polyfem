@@ -16,7 +16,7 @@ if(TARGET CLI11::CLI11)
     return()
 endif()
 
-message(STATUS "Third-party (external): creating target 'CLI11::CLI11'")
+message(STATUS "Third-party: creating target 'CLI11::CLI11'")
 
 include(FetchContent)
 FetchContent_Declare(

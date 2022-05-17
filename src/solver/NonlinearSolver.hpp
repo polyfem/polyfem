@@ -99,6 +99,7 @@ namespace cppoptlib
 					spdlog::level::info, "[{}] {} (f={} ||∇f||={} g={} tol={})",
 					name(), "Not even starting, grad is small enough", this->m_current.fDelta, first_grad_norm,
 					this->m_current.gradNorm, this->m_stop.gradNorm);
+				update_solver_info();
 				return;
 			}
 
