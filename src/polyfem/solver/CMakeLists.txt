@@ -2,6 +2,7 @@ set(SOURCES
 	NonlinearSolver.hpp
 	SparseNewtonDescentSolver.hpp
 	LBFGSSolver.hpp
+	GradientDescentSolver.hpp
 	NLProblem.cpp
 	NLProblem.hpp
 	ALNLProblem.cpp
