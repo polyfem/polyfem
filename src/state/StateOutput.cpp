@@ -1619,7 +1619,6 @@ namespace polyfem
 		const bool export_contact_forces = args["export"]["contact_forces"] && !problem->is_scalar();
 		const bool export_friction_forces = args["export"]["friction_forces"] && !problem->is_scalar();
 
-		VTUWriter writer;
 		Eigen::MatrixXd fun, interp_p, discr, vect, b_sidesets;
 
 		Eigen::MatrixXd lsol, lp, lgrad, lpgrad;
@@ -1684,10 +1683,13 @@ namespace polyfem
 
 		if ((export_contact_forces || export_friction_forces) && solve_export_to_file)
 		{
+			VTUWriter writer;
+
 			const int problem_dim = mesh->dimension();
 			Eigen::MatrixXd displaced = unflatten(sol, problem_dim);
 
-			writer.add_field("solution", displaced);
+			Eigen::MatrixXd real_vertices = collision_mesh.vertices(displaced);
+			writer.add_field("solution", real_vertices);
 
 			displaced += boundary_nodes_pos;
 			Eigen::MatrixXd displaced_surface = collision_mesh.vertices(displaced);
@@ -1702,11 +1704,13 @@ namespace polyfem
 			if (export_contact_forces)
 			{
 				Eigen::MatrixXd forces = -barrier_stiffness * ipc::compute_barrier_potential_gradient(collision_mesh, displaced_surface, constraint_set, args["dhat"]);
-				forces = collision_mesh.to_full_dof(forces);
-				assert(forces.size() == sol.size());
+				// forces = collision_mesh.to_full_dof(forces);
+				// assert(forces.size() == sol.size());
 
 				Eigen::MatrixXd forces_reshaped = unflatten(forces, problem_dim);
 
+				assert(forces_reshaped.rows() == real_vertices.rows());
+				assert(forces_reshaped.cols() == real_vertices.cols());
 				writer.add_field("contact_forces", forces_reshaped);
 			}
 
@@ -1726,13 +1730,18 @@ namespace polyfem
 				Eigen::MatrixXd forces = -ipc::compute_friction_potential_gradient(
 					collision_mesh, displaced_surface_prev, displaced_surface,
 					friction_constraint_set, args["epsv"].get<double>() * args["dt"].get<double>());
-				forces = collision_mesh.to_full_dof(forces);
-				assert(forces.size() == sol.size());
+				// forces = collision_mesh.to_full_dof(forces);
+				// assert(forces.size() == sol.size());
 
 				Eigen::MatrixXd forces_reshaped = unflatten(forces, problem_dim);
 
+				assert(forces_reshaped.rows() == real_vertices.rows());
+				assert(forces_reshaped.cols() == real_vertices.cols());
 				writer.add_field("friction_forces", forces_reshaped);
 			}
+
+			assert(collision_mesh.vertices(boundary_nodes_pos).rows() == real_vertices.rows());
+			assert(collision_mesh.vertices(boundary_nodes_pos).cols() == real_vertices.cols());
 
 			writer.write_mesh(
 				export_surface.substr(0, export_surface.length() - 4) + "_contact.vtu",
@@ -1740,8 +1749,11 @@ namespace polyfem
 				problem_dim == 3 ? collision_mesh.faces() : collision_mesh.edges());
 		}
 
+		VTUWriter writer;
+
 		if (solve_export_to_file)
 		{
+
 			writer.add_field("normals", boundary_vis_normals);
 			writer.add_field("solution", fun);
 			if (assembler.is_mixed(formulation()))
@@ -1785,8 +1797,8 @@ namespace polyfem
 
 			writer.add_field("lambda", lambdas);
 			writer.add_field("mu", mus);
-			writer.add_field("lambda", Es);
-			writer.add_field("mu", nus);
+			writer.add_field("E", Es);
+			writer.add_field("nu", nus);
 			writer.add_field("rho", rhos);
 		}
 
