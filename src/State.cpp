@@ -900,16 +900,7 @@ namespace polyfem
 				const int num_face_nodes = mesh_nodes->num_face_nodes();
 				const int num_cell_nodes = mesh_nodes->num_cell_nodes();
 
-				long n_vertices;
-				if (file.hasAttribute("n_fem_vertices"))
-				{
-					file.getAttribute("n_fem_vertices").read(n_vertices);
-				}
-				else
-				{
-					logger().warn("Missing n_fem_vertices attribute in HDF5 weights file. Using {} instead.", mesh->n_vertices());
-					n_vertices = mesh->n_vertices();
-				}
+				const long n_vertices = num_vertex_nodes;
 				const int num_in_primitives = n_vertices + mesh->n_edges() + mesh->n_faces() + mesh->n_cells();
 				const int num_primitives = mesh->n_vertices() + mesh->n_edges() + mesh->n_faces() + mesh->n_cells();
 
@@ -1043,8 +1034,14 @@ namespace polyfem
 					assert(possible_nodes.size() > 0);
 					if (possible_nodes.size() > 1)
 					{
-						assert(mesh_nodes->is_edge_node(i)); // TODO: Handle P4+
+#ifndef NDEBUG
+						// assert(mesh_nodes->is_edge_node(i)); // TODO: Handle P4+
+						for (int possible_node : possible_nodes)
+							assert(mesh_nodes->is_edge_node(possible_node)); // TODO: Handle P4+
+#endif
+
 						int e_id = in_primitive_to_primitive[in_node_to_in_primitive[i]] - mesh->n_vertices();
+						assert(e_id < mesh->n_edges());
 						RowVectorNd v0 = mesh_nodes->node_position(in_node_to_node[mesh->edge_vertex(e_id, 0)]);
 						RowVectorNd a = mesh_nodes->node_position(possible_nodes[0]);
 						RowVectorNd b = mesh_nodes->node_position(possible_nodes[1]);

@@ -668,6 +668,10 @@ namespace polyfem
 					collision_mesh.vertices_from_displacements(sol_unflattened)))
 			{
 				const std::string msg = "Unable to solve, initial solution has intersections!";
+				OBJWriter::save(
+					resolve_input_path("intersection.obj"),
+					collision_mesh.vertices_from_displacements(sol_unflattened),
+					collision_mesh.faces());
 				logger().error(msg);
 				throw std::runtime_error(msg);
 			}
