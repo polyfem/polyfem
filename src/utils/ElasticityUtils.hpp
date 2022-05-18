@@ -93,6 +93,8 @@ namespace polyfem
 				el_id, lambda, mu);
 		}
 
+		void E_nu(double px, double py, double pz, double x, double y, double z, int el_id, double &E, double &nu) const;
+
 	private:
 		void set_e_nu(const json &E, const json &nu);
 

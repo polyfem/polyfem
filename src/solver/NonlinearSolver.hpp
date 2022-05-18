@@ -96,7 +96,7 @@ namespace cppoptlib
 				POLYFEM_SCOPED_TIMER("compute objective function", obj_fun_time);
 				this->m_current.fDelta = objFunc.value(x);
 				polyfem::logger().log(
-					spdlog::level::info, "[{}] {} (f={} ||∇f||={} g={} tol={})",
+					spdlog::level::critical, "[{}] {} (f={} ||∇f||={} g={} tol={})",
 					name(), "Not even starting, grad is small enough", this->m_current.fDelta, first_grad_norm,
 					this->m_current.gradNorm, this->m_stop.gradNorm);
 				update_solver_info();
@@ -155,16 +155,16 @@ namespace cppoptlib
 					continue;
 				}
 
-				if (grad_norm != 0 && delta_x.dot(grad) >= 0)
-				{
-					increase_descent_strategy();
-					polyfem::logger().log(
-						spdlog::level::debug,
-						"[{}] direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
-						name(), delta_x.dot(grad), descent_strategy_name());
-					this->m_status = Status::Continue;
-					continue;
-				}
+				// if (grad_norm != 0 && delta_x.dot(grad) >= 0)
+				// {
+				// 	increase_descent_strategy();
+				// 	polyfem::logger().log(
+				// 		spdlog::level::debug,
+				// 		"[{}] direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
+				// 		name(), delta_x.dot(grad), descent_strategy_name());
+				// 	this->m_status = Status::Continue;
+				// 	continue;
+				// }
 
 				const double delta_x_norm = delta_x.norm();
 				if (std::isnan(delta_x_norm))
@@ -250,7 +250,7 @@ namespace cppoptlib
 			{
 				const std::string msg = fmt::format("[{}] Reached iteration limit", name());
 				polyfem::logger().error(msg);
-				throw std::runtime_error(msg);
+				// throw std::runtime_error(msg);
 				level = spdlog::level::err;
 			}
 			else if (this->m_current.iterations == 0)

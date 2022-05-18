@@ -158,11 +158,15 @@ namespace polyfem
 		if (!is_param_valid(args, "body_params"))
 			return;
 
+		// "rho" has priority over "density". Set it to null, so we can detect if it is set by the user.
 		const json default_material = R"({
 			"id": -1,
-			"E": 100,
+			"lambda": null,
+			"mu": null,
+			"young": null,
+			"E": 1e5,
 			"nu": 0.3,
-			"rho": 1,
+			"rho": null,
 			"density": 1
 		})"_json;
 
@@ -173,25 +177,38 @@ namespace polyfem
 		nus.setConstant(default_material["nu"].get<double>());
 		rhos.setConstant(default_material["density"].get<double>());
 
-		std::map<int, std::tuple<double, double, double>> materials;
+		std::map<int, std::tuple<LameParameters, Density>> materials;
 		for (int i = 0; i < body_params.size(); ++i)
 		{
 			check_for_unknown_args(default_material, body_params[i], fmt::format("/body_params[{}]", i));
 			json mat = default_material;
 			mat.merge_patch(body_params[i]);
+			mat["size"] = mesh->dimension();
+
+			LameParameters lame_parameters;
+			lame_parameters.init(mat);
+
+			if (is_param_valid(mat, "rho") && mat["rho"].is_string())
+				mat["rho"] = resolve_input_path(mat["rho"], /*only_if_exists=*/true);
+			if (is_param_valid(mat, "density") && mat["density"].is_string())
+				mat["density"] = resolve_input_path(mat["density"], /*only_if_exists=*/true);
+
+			Density density;
+			density.init(mat);
 
 			const int mid = mat["id"];
-			Density d;
-			d.init(mat);
-
-			const double rho = d(0, 0, 0, 0, 0, 0, 0);
-			const double E = mat["E"];
-			const double nu = mat["nu"];
-
-			materials[mid] = std::tuple<double, double, double>(E, nu, rho);
+			materials[mid] = std::tuple<LameParameters, Density>(lame_parameters, density);
 		}
 
-		std::string missing = "";
+		std::set<int> missing;
+
+		std::map<int, int> body_element_count;
+		std::vector<int> eid_to_eid_in_body(mesh->n_elements());
+		for (int e = 0; e < mesh->n_elements(); ++e)
+		{
+			const int bid = mesh->get_body_id(e);
+			eid_to_eid_in_body[e] = body_element_count[bid]++;
+		}
 
 		for (int e = 0; e < mesh->n_elements(); ++e)
 		{
@@ -199,19 +216,21 @@ namespace polyfem
 			const auto it = materials.find(bid);
 			if (it == materials.end())
 			{
-				missing += fmt::format("{:d}, ", bid);
+				missing.insert(bid);
 				continue;
 			}
 
-			Es(e) = std::get<0>(it->second);
-			nus(e) = std::get<1>(it->second);
-			rhos(e) = std::get<2>(it->second);
-			// std::cout << e << " " << Es(e) << " " << nus(e) << std::endl;
+			const int eid_in_body = eid_to_eid_in_body[e];
+			std::get<0>(it->second).E_nu(0, 0, 0, 0, 0, 0, eid_in_body, Es(e), nus(e));
+			rhos(e) = std::get<1>(it->second)(0, 0, 0, 0, 0, 0, eid_in_body);
+			// std::cout << e << " " << Es(e) << " " << nus(e) << " " << rhos(e) << std::endl;
 		}
 
 		setter(Es, nus, rhos);
-		if (missing.size() > 0)
-			logger().warn("Missing parameters for {}", missing);
+		for (int bid : missing)
+		{
+			logger().warn("Missing material parameters for body {}", bid);
+		}
 	}
 
 	void compute_integral_constraints(
@@ -853,6 +872,7 @@ namespace polyfem
 				edges = codim_edges;
 			}
 			const int n_v = vertices.rows();
+			const int num_nodes = boundary_nodes_pos.rows() - obstacle.v().rows();
 
 			///////////////////////////////////////////////////////////////////
 			// Load weights
@@ -860,6 +880,9 @@ namespace polyfem
 			std::vector<Eigen::Triplet<double>> linear_map_triplets;
 			{
 				H5Easy::File file(resolve_input_path(args["collision_mesh"]["linear_map"]));
+				std::array<long, 2> shape;
+				file.getGroup("weight_triplets").getAttribute("shape").read(shape);
+				assert(shape[0] == n_v && shape[1] == num_nodes);
 				Eigen::VectorXd values = H5Easy::load<Eigen::VectorXd>(file, "weight_triplets/values");
 				Eigen::VectorXi rows = H5Easy::load<Eigen::VectorXi>(file, "weight_triplets/rows");
 				Eigen::VectorXi cols = H5Easy::load<Eigen::VectorXi>(file, "weight_triplets/cols");
@@ -872,12 +895,22 @@ namespace polyfem
 				// overall we need a map input node id → polyfem node id
 				// to do this we do input node id → input primitive → primitive → node
 
-				const int num_nodes = boundary_nodes_pos.rows() - obstacle.v().rows();
 				const int num_vertex_nodes = mesh_nodes->num_vertex_nodes();
 				const int num_edge_nodes = mesh_nodes->num_edge_nodes();
 				const int num_face_nodes = mesh_nodes->num_face_nodes();
 				const int num_cell_nodes = mesh_nodes->num_cell_nodes();
 
+				long n_vertices;
+				if (file.hasAttribute("n_fem_vertices"))
+				{
+					file.getAttribute("n_fem_vertices").read(n_vertices);
+				}
+				else
+				{
+					logger().warn("Missing n_fem_vertices attribute in HDF5 weights file. Using {} instead.", mesh->n_vertices());
+					n_vertices = mesh->n_vertices();
+				}
+				const int num_in_primitives = n_vertices + mesh->n_edges() + mesh->n_faces() + mesh->n_cells();
 				const int num_primitives = mesh->n_vertices() + mesh->n_edges() + mesh->n_faces() + mesh->n_cells();
 
 				// input node → input primitive
@@ -885,7 +918,7 @@ namespace polyfem
 				Eigen::VectorXi in_node_offset(num_nodes);
 				in_node_to_in_primitive.head(num_vertex_nodes).setLinSpaced(num_vertex_nodes, 0, num_vertex_nodes - 1); // vertex nodes
 				in_node_offset.head(num_vertex_nodes).setZero();
-				int prim_offset = mesh->n_vertices(), node_offset = num_vertex_nodes;
+				int prim_offset = n_vertices, node_offset = num_vertex_nodes;
 				auto foo = [&](const int num_prims, const int num_prim_nodes) {
 					if (num_prims <= 0 || num_prim_nodes <= 0)
 						return;
@@ -907,9 +940,19 @@ namespace polyfem
 
 				// input primitive → primitive
 				Eigen::VectorXi in_primitive_to_primitive;
-				in_primitive_to_primitive.setLinSpaced(num_primitives, 0, num_primitives - 1);
+				in_primitive_to_primitive.setLinSpaced(num_in_primitives, 0, num_in_primitives - 1);
 
-				// NOTE: Assume in_vertex_to_vertex is identity
+				if (file.exist("ordered_vertices"))
+				{
+					Eigen::VectorXi in_vertices = H5Easy::load<Eigen::VectorXi>(file, "ordered_vertices");
+					assert(in_vertices.size() == n_vertices);
+					in_primitive_to_primitive.head(n_vertices) = in_vertices;
+				}
+				else
+				{
+					// Assume in_edge_to_edge is identity (not needed for P1 anyways)
+					assert(num_nodes == n_vertices);
+				}
 
 				if (file.exist("ordered_edges"))
 				{
@@ -917,19 +960,20 @@ namespace polyfem
 					auto edges_to_ids = mesh->edges_to_ids();
 					assert(in_edges.rows() == edges_to_ids.size());
 
+					const int in_offset = n_vertices;
 					const int offset = mesh->n_vertices();
 
 					for (int in_ei = 0; in_ei < in_edges.rows(); in_ei++)
 					{
 						const std::pair<int, int> in_edge(
 							in_edges.row(in_ei).minCoeff(), in_edges.row(in_ei).maxCoeff());
-						in_primitive_to_primitive[offset + in_ei] = offset + edges_to_ids[in_edge]; // offset edge ids
+						in_primitive_to_primitive[in_offset + in_ei] = offset + edges_to_ids.at(in_edge); // offset edge ids
 					}
 				}
 				else
 				{
 					// Assume in_edge_to_edge is identity (not needed for P1 anyways)
-					assert(num_nodes == mesh->n_vertices());
+					assert(num_nodes == n_vertices);
 				}
 
 				if (file.exist("ordered_faces"))
@@ -938,6 +982,7 @@ namespace polyfem
 					auto faces_to_ids = mesh->faces_to_ids();
 					assert(in_faces.rows() == faces_to_ids.size());
 
+					const int in_offset = n_vertices + mesh->n_edges();
 					const int offset = mesh->n_vertices() + mesh->n_edges();
 
 					for (int in_fi = 0; in_fi < in_faces.rows(); in_fi++)
@@ -947,13 +992,13 @@ namespace polyfem
 							in_face[i] = in_faces(in_fi, i);
 						std::sort(in_face.begin(), in_face.end());
 
-						in_primitive_to_primitive[offset + in_fi] = offset + faces_to_ids[in_face]; // offset face ids
+						in_primitive_to_primitive[in_offset + in_fi] = offset + faces_to_ids.at(in_face); // offset face ids
 					}
 				}
 				else
 				{
 					// Assume in_edge_to_edge is identity (not needed for P1 anyways)
-					assert(num_nodes == mesh->n_vertices());
+					assert(num_nodes == n_vertices);
 				}
 
 				// NOTE: Assume in_cells_to_cells is identity
@@ -973,17 +1018,20 @@ namespace polyfem
 
 				std::vector<std::vector<int>> primitive_to_nodes(num_primitives);
 				const std::vector<int> &grouped_nodes = mesh_nodes->primitive_to_node();
+				int node_count = 0;
 				for (int i = 0; i < grouped_nodes.size(); i++)
 				{
 					int node = grouped_nodes[i];
 					assert(node < num_nodes);
 					if (node >= 0)
 					{
-						int primitive = mesh_nodes->node_to_primitive_gid()[node] + primitive_offset(i);
+						int primitive = mesh_nodes->node_to_primitive_gid().at(node) + primitive_offset(i);
 						assert(primitive < num_primitives);
 						primitive_to_nodes[primitive].push_back(node);
+						node_count++;
 					}
 				}
+				assert(node_count == num_nodes);
 
 				// overall: input node id -> polyfem node id
 				Eigen::VectorXi in_node_to_node(num_nodes);
@@ -992,6 +1040,7 @@ namespace polyfem
 					// input node id -> input primitive -> primitive -> node
 					const std::vector<int> &possible_nodes =
 						primitive_to_nodes[in_primitive_to_primitive[in_node_to_in_primitive[i]]];
+					assert(possible_nodes.size() > 0);
 					if (possible_nodes.size() > 1)
 					{
 						assert(mesh_nodes->is_edge_node(i)); // TODO: Handle P4+
@@ -1021,16 +1070,15 @@ namespace polyfem
 
 				// Properly set the interior vertex nodes positions as well
 				// WARNING: the interior higher order nodes are still set to zero
-				for (int i = 0; i < mesh->n_vertices(); i++)
-				{
-					boundary_nodes_pos.row(in_node_to_node[i]) = mesh->point(i);
-				}
+				// for (int i = 0; i < n_vertices; i++)
+				// {
+				// 	boundary_nodes_pos.row(in_node_to_node[i]) = mesh->point(i);
+				// }
 			}
 
-			const int n_fem_v = boundary_nodes_pos.rows() - obstacle.n_vertices();
 			for (int i = 0; i < obstacle.n_vertices(); i++)
 			{
-				linear_map_triplets.emplace_back(n_v + i, n_fem_v + i, 1.0);
+				linear_map_triplets.emplace_back(n_v + i, num_nodes + i, 1.0);
 			}
 
 			Eigen::SparseMatrix<double> linear_map(n_v + obstacle.n_vertices(), boundary_nodes_pos.rows());
@@ -1042,8 +1090,10 @@ namespace polyfem
 			// Remap vertices incase the tet-meshes were modified during loading
 			// TODO: Handle initial transformation in meshes
 			// vertices = linear_map * boundary_nodes_pos;
+			vertices *= args["collision_mesh"].value("scale", 1.0);
 			vertices.conservativeResize(linear_map.rows(), vertices.cols());
-			vertices.bottomRows(obstacle.n_vertices()) = obstacle.v();
+			if (obstacle.n_vertices() > 0)
+				vertices.bottomRows(obstacle.n_vertices()) = obstacle.v();
 			if (faces.size())
 				OBJWriter::save(
 					resolve_output_path("fem_input.obj"),

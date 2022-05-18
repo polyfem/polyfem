@@ -1721,7 +1721,7 @@ namespace polyfem
 				ipc::FrictionConstraints friction_constraint_set;
 				ipc::construct_friction_constraint_set(
 					collision_mesh, displaced_surface, constraint_set,
-					args["dhat"], barrier_stiffness, args["mu"],
+					args["dhat"], barrier_stiffness, args["mu"].get<double>(),
 					friction_constraint_set);
 
 				Eigen::MatrixXd forces = -ipc::compute_friction_potential_gradient(

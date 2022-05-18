@@ -102,7 +102,8 @@ std::string polyfem::StringUtils::trim(const std::string &string)
 
 std::string polyfem::resolve_path(
 	const std::string &path,
-	const std::string &input_file_path)
+	const std::string &input_file_path,
+	const bool only_if_exists)
 {
 	if (path.empty())
 	{
@@ -119,7 +120,12 @@ std::string polyfem::resolve_path(
 		return std::filesystem::weakly_canonical(resolved_path).string();
 	}
 
-	return std::filesystem::weakly_canonical(
-			   std::filesystem::path(input_file_path).parent_path() / resolved_path)
-		.string();
+	resolved_path = std::filesystem::weakly_canonical(
+		std::filesystem::path(input_file_path).parent_path() / resolved_path);
+
+	if (only_if_exists && !std::filesystem::exists(resolved_path))
+	{
+		return path; // return path unchanged
+	}
+	return resolved_path.string();
 }

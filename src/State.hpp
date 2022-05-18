@@ -16,6 +16,7 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/Logger.hpp>
 #include <polyfem/MeshNodes.hpp>
+#include <polyfem/JSONUtils.hpp>
 
 // Instead of including this do a forward declaration
 // #include <polyfem/NonlinearSolver.hpp>
@@ -447,10 +448,16 @@ namespace polyfem
 		//returns a triangulated representation of the sideset. sidesets contains integers mapping to faces
 		void get_sidesets(Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXd &sidesets);
 
-		// Resolve path relative to args["root_path"] if the path is not absolute
-		std::string resolve_input_path(const std::string &path) const
+		std::string root_path() const
 		{
-			return resolve_path(path, args["root_path"]);
+			if (is_param_valid(args, "root_path"))
+				return args["root_path"].get<std::string>();
+			return "";
+		}
+		// Resolve path relative to args["root_path"] if the path is not absolute
+		std::string resolve_input_path(const std::string &path, const bool only_if_exists = false) const
+		{
+			return resolve_path(path, root_path(), only_if_exists);
 		}
 		// Resolve path relative to output_dir if the path is not absolute
 		std::string resolve_output_path(const std::string &path) const;

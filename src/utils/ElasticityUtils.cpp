@@ -1,4 +1,5 @@
 #include <polyfem/ElasticityUtils.hpp>
+#include <polyfem/JSONUtils.hpp>
 #include <polyfem/Logger.hpp>
 
 #include <tinyexpr.h>
@@ -210,6 +211,18 @@ namespace polyfem
 	double convert_to_mu(const double E, const double nu)
 	{
 		return E / (2.0 * (1.0 + nu));
+	}
+
+	double convert_to_E(const double lambda, const double mu)
+	{
+		logger().critical("Need to verify convert_to_E()");
+		return (mu * (3 * lambda + 2 * mu)) / (lambda + mu);
+	}
+
+	double convert_to_nu(const double lambda, const double mu)
+	{
+		logger().critical("Need to verify convert_to_nu()");
+		return lambda / (2.0 * (lambda + mu));
 	}
 
 	void compute_diplacement_grad(const int size, const ElementBases &bs, const ElementAssemblyValues &vals, const Eigen::MatrixXd &local_pts, const int p, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &displacement_grad)
@@ -499,6 +512,23 @@ namespace polyfem
 		}
 	}
 
+	void LameParameters::E_nu(double px, double py, double pz, double x, double y, double z, int el_id, double &E, double &nu) const
+	{
+		double llambda = lambda_(x, y, z, 0, el_id);
+		double mmu = mu_(x, y, z, 0, el_id);
+
+		if (is_lambda_mu_)
+		{
+			E = convert_to_E(llambda, mmu);
+			nu = convert_to_mu(llambda, mmu);
+		}
+		else
+		{
+			E = llambda;
+			nu = mmu;
+		}
+	}
+
 	void LameParameters::init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus)
 	{
 		size_ = is_volume ? 3 : 2;
@@ -526,19 +556,16 @@ namespace polyfem
 		if (initialized_)
 			return;
 
-		if (params.count("young"))
-		{
-			set_e_nu(params["young"], params["nu"]);
-		}
-		else if (params.count("E"))
-		{
-			set_e_nu(params["E"], params["nu"]);
-		}
-		else
+		if (is_param_valid(params, "lambda") && is_param_valid(params, "mu"))
 		{
 			lambda_.init(params["lambda"]);
 			mu_.init(params["mu"]);
 			is_lambda_mu_ = true;
+		}
+		else
+		{
+			json E = is_param_valid(params, "young") ? params["young"] : params["E"];
+			set_e_nu(E, params["nu"]);
 		}
 	}
 
@@ -572,11 +599,11 @@ namespace polyfem
 		if (initialized_)
 			return;
 
-		if (params.count("rho"))
+		if (is_param_valid(params, "rho"))
 		{
 			set_rho(params["rho"]);
 		}
-		else if (params.count("density"))
+		else if (is_param_valid(params, "density"))
 		{
 			set_rho(params["density"]);
 		}

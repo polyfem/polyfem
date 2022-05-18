@@ -70,7 +70,7 @@ namespace cppoptlib
 
 		// Regularization Coefficients
 		double reg_weight = 0;
-		static constexpr double reg_weight_min = 1e-8;
+		static constexpr double reg_weight_min = 1e-8; // needs to be greater than zero
 		static constexpr double reg_weight_max = 1e8;
 		static constexpr double reg_weight_inc = 10;
 		static constexpr double reg_weight_dec = 2;
@@ -164,12 +164,21 @@ namespace cppoptlib
 				polyfem::logger().trace("linear solve residual {}", residual);
 			}
 
+			if (grad.dot(direction) >= 0)
+			{
+				increase_descent_strategy();
+				polyfem::logger().debug(
+					"[{}] direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
+					name(), direction.dot(grad), descent_strategy_name());
+				return compute_update_direction(objFunc, x, grad, direction);
+			}
+
 			json info;
 			linear_solver->getInfo(info);
 			internal_solver_info.push_back(info);
 
 			reg_weight /= reg_weight_dec;
-			if (reg_weight < 1e-8)
+			if (reg_weight < reg_weight_min)
 				reg_weight = 0;
 
 			return true;
