@@ -271,6 +271,18 @@ namespace polyfem
             return false;
         if (cur_lambdas.maxCoeff() > max_lambda || cur_mus.maxCoeff() > max_mu)
             return false;
+        if (opt_params.contains("min_phi") && opt_params["min_phi"].get<double>() > phi)
+            return false;
+        if (opt_params.contains("max_phi") && opt_params["max_phi"].get<double>() < phi)
+            return false;
+        if (opt_params.contains("min_psi") && opt_params["min_psi"].get<double>() > psi)
+            return false;
+        if (opt_params.contains("max_psi") && opt_params["max_psi"].get<double>() < psi)
+            return false;
+        if (opt_params.contains("min_mu") && opt_params["min_mu"].get<double>() > mu)
+            return false;
+        if (opt_params.contains("max_mu") && opt_params["max_mu"].get<double>() < mu)
+            return false;
         
         return true;
     }
@@ -282,7 +294,13 @@ namespace polyfem
 
     void MaterialProblem::solution_changed(const TVector &newX)
     {
+        static TVector cache_x;
+        if (cache_x.size() == newX.size() && cache_x == newX)
+            return;
+        
         x_to_param(newX, state);
         solve_pde(newX);
+
+        cache_x = newX;
     }
 }

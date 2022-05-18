@@ -693,6 +693,10 @@ namespace polyfem
 
     void ShapeProblem::solution_changed(const TVector &newX)
     {
+        static TVector cache_x;
+        if (cache_x.size() == newX.size() && cache_x == newX)
+            return;
+        
         Eigen::MatrixXd V;
         x_to_param(newX, V);
         auto& gbases = state.iso_parametric() ? state.bases : state.geom_bases;
@@ -703,6 +707,7 @@ namespace polyfem
         else
             solve_pde(newX);
 
+        cache_x = newX;
         cur_grad.resize(0);
         cur_val = std::nan("");
 
