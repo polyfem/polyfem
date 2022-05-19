@@ -279,9 +279,9 @@ namespace polyfem
             return false;
         if (opt_params.contains("max_psi") && opt_params["max_psi"].get<double>() < psi)
             return false;
-        if (opt_params.contains("min_mu") && opt_params["min_mu"].get<double>() > mu)
+        if (opt_params.contains("min_fric") && opt_params["min_fric"].get<double>() > mu)
             return false;
-        if (opt_params.contains("max_mu") && opt_params["max_mu"].get<double>() < mu)
+        if (opt_params.contains("max_fric") && opt_params["max_fric"].get<double>() < mu)
             return false;
         
         return true;
