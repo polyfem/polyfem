@@ -57,7 +57,7 @@ namespace polyfem
 				optimize_body_ids.insert(i);
 		}
 		else
-            logger().info("No optimization body specified, optimize shape of every mesh...");
+            logger().info("No optimization body specified, optimize initial condition of every mesh...");
 
 		// to get the initial velocity
 		{
@@ -327,6 +327,16 @@ namespace polyfem
 		std::shared_ptr<cppoptlib::NonlinearSolver<MaterialProblem>> nlsolver = make_nl_solver<MaterialProblem>(opt_params); // std::make_shared<cppoptlib::LBFGSSolver<MaterialProblem>>(opt_params);
 		nlsolver->setLineSearch(opt_params["line_search"]);
 
+        // fix certain object
+        std::set<int> optimize_body_ids;
+		if (opt_params.contains("optimize_body_ids"))
+		{
+			for (int i : opt_params["optimize_body_ids"])
+				optimize_body_ids.insert(i);
+		}
+		else
+            logger().info("No optimization body specified, optimize material of every mesh...");
+
 		const int dim = state.mesh->dimension();
 		const int dof = state.bases.size();
 
@@ -335,7 +345,7 @@ namespace polyfem
 		for (int e = 0; e < dof; e++)
 		{
 			const int body_id = state.mesh->get_body_id(e);
-			if (!body_id_map.count(body_id))
+			if (!body_id_map.count(body_id) && optimize_body_ids.count(body_id))
 			{
 				body_id_map[body_id] = {{e, n}}; 
 				n++;
@@ -531,7 +541,8 @@ namespace polyfem
 					for (int e = 0; e < dof; e++)
 					{
 						const int body_id = state.mesh->get_body_id(e);
-						
+						if (!body_id_map.count(body_id))
+							continue;
 						cur_lambdas(e) = std::exp(x(body_id_map[body_id][1] * 2 + 0));
 						cur_mus(e) = std::exp(x(body_id_map[body_id][1] * 2 + 1));
 					}
@@ -564,6 +575,8 @@ namespace polyfem
 					for (int e = 0; e < dof; e++)
 					{
 						const int body_id = state.mesh->get_body_id(e);
+						if (!body_id_map.count(body_id))
+							continue;
 						dx(body_id_map[body_id][1] * 2 + 0) += dparams(e) * cur_lambdas(e);
 						dx(body_id_map[body_id][1] * 2 + 1) += dparams(e+dof) * cur_mus(e);
 					}
