@@ -701,9 +701,9 @@ namespace polyfem
 			else if (opt_params["restriction"].get<std::string>() == "friction_damping") {
 				material_problem->x_to_param = [&](const MaterialProblem::TVector& x, State &state)
 				{
-					state.args["mu"] = std::exp(x(x.size()-3));
-					state.args["params"]["psi"] = std::exp(x(x.size()-2));
-					state.args["params"]["phi"] = std::exp(x(x.size()-1));
+					state.args["mu"] = x(x.size()-3);
+					state.args["params"]["psi"] = x(x.size()-2);
+					state.args["params"]["phi"] = x(x.size()-1);
 
 					logger().debug("friction coeff = {}", state.args["mu"].get<double>());
 					logger().debug("psi = {}, phi = {}", state.args["params"]["psi"].get<double>(), state.args["params"]["phi"].get<double>());
@@ -712,9 +712,9 @@ namespace polyfem
 				{
 					x.setZero(3);
 
-					x(x.size()-3) = std::log(state.args["mu"].get<double>());
-					x(x.size()-2) = std::log(state.args["params"]["psi"].get<double>());
-					x(x.size()-1) = std::log(state.args["params"]["phi"].get<double>());
+					x(x.size()-3) = state.args["mu"].get<double>();
+					x(x.size()-2) = state.args["params"]["psi"].get<double>();
+					x(x.size()-1) = state.args["params"]["phi"].get<double>();
 
 					logger().debug("friction coeff = {}", state.args["mu"].get<double>());
 					logger().debug("psi = {}, phi = {}", state.args["params"]["psi"].get<double>(), state.args["params"]["phi"].get<double>());
@@ -725,9 +725,31 @@ namespace polyfem
 
 					dx.tail(3) = dparams.tail(3);
 
-					dx(dx.size()-3) = dparams(dparams.size()-3) * state.args["mu"].get<double>();
-					dx(dx.size()-2) = dparams(dparams.size()-2) * state.args["params"]["psi"].get<double>();
-					dx(dx.size()-1) = dparams(dparams.size()-1) * state.args["params"]["phi"].get<double>();
+					logger().debug("opt grad: {}", dx.transpose());
+				};
+			}
+			else if (opt_params["restriction"].get<std::string>() == "damping") {
+				material_problem->x_to_param = [&](const MaterialProblem::TVector& x, State &state)
+				{
+					state.args["params"]["psi"] = x(x.size()-2);
+					state.args["params"]["phi"] = x(x.size()-1);
+					logger().debug("psi = {}, phi = {}", state.args["params"]["psi"].get<double>(), state.args["params"]["phi"].get<double>());
+				};
+				material_problem->param_to_x = [&](MaterialProblem::TVector& x, State &state)
+				{
+					x.setZero(2);
+
+					x(x.size()-2) = state.args["params"]["psi"].get<double>();
+					x(x.size()-1) = state.args["params"]["phi"].get<double>();
+
+					logger().debug("psi = {}, phi = {}", state.args["params"]["psi"].get<double>(), state.args["params"]["phi"].get<double>());
+				};
+				material_problem->dparam_to_dx = [&](MaterialProblem::TVector& dx, const Eigen::VectorXd& dparams, State& state)
+				{
+					dx.setZero(2);
+
+					dx.tail(2) = dparams.tail(2);
+
 					logger().debug("opt grad: {}", dx.transpose());
 				};
 			}
