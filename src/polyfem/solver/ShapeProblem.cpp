@@ -508,14 +508,14 @@ namespace polyfem
         x_to_param(x0, V0);
         x_to_param(x1, V1);
 
-		// Extract surface only
-		V0 = state.collision_mesh.vertices(V0);
-		V1 = state.collision_mesh.vertices(V1);
-
 		double max_step = 1;
         assert(!is_flipped(V0, elements));
         while(is_flipped(V0 + max_step * (V1 - V0), elements))
             max_step /= 2.;
+
+		// Extract surface only
+		V0 = state.collision_mesh.vertices(V0);
+		V1 = state.collision_mesh.vertices(V1);
         
         auto Vmid = V0 + max_step * (V1 - V0);
 		if (_use_cached_candidates)

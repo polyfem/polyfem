@@ -299,6 +299,7 @@ namespace polyfem
             return;
         
         x_to_param(newX, state);
+        state.build_basis();
         solve_pde(newX);
 
         cache_x = newX;
