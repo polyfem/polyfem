@@ -33,6 +33,7 @@
 #include <polyfem/Logger.hpp>
 #include <polyfem/JSONUtils.hpp>
 #include <polyfem/MeshUtils.hpp>
+#include <polyfem/MeshesJSON.hpp>
 #include <polyfem/OBJWriter.hpp>
 
 #include <igl/Timer.h>
@@ -853,7 +854,21 @@ namespace polyfem
 		}
 		else
 		{
-			std::string collision_mesh_path = resolve_input_path(args["collision_mesh"]["mesh"]);
+			json jmesh = R"({
+				"mesh": null,
+				"linear_map": null,
+				"position": [0.0, 0.0, 0.0],
+				"rotation": [0.0, 0.0, 0.0],
+				"rotation_mode": "xyz",
+				"scale": [1.0, 1.0, 1.0],
+				"dimensions": null,
+				"enabled": true
+			})"_json;
+			check_for_unknown_args(jmesh, args["collision_mesh"], "/collision_mesh");
+			jmesh.merge_patch(args["collision_mesh"]);
+			// TODO: check that mesh and linear_map files exist
+
+			std::string collision_mesh_path = resolve_input_path(jmesh["mesh"]);
 			Eigen::MatrixXd vertices;
 			Eigen::VectorXi codim_vertices;
 			Eigen::MatrixXi codim_edges, edges, faces;
@@ -874,12 +889,17 @@ namespace polyfem
 			const int n_v = vertices.rows();
 			const int num_nodes = boundary_nodes_pos.rows() - obstacle.v().rows();
 
+			// Remap vertices incase the tet-meshes were modified during loading
+			// TODO: Handle initial transformation in meshes
+			// vertices = linear_map * boundary_nodes_pos;
+			transform_mesh_from_json(jmesh, vertices);
+
 			///////////////////////////////////////////////////////////////////
 			// Load weights
 
 			std::vector<Eigen::Triplet<double>> linear_map_triplets;
 			{
-				H5Easy::File file(resolve_input_path(args["collision_mesh"]["linear_map"]));
+				H5Easy::File file(resolve_input_path(jmesh["linear_map"]));
 				std::array<long, 2> shape;
 				file.getGroup("weight_triplets").getAttribute("shape").read(shape);
 				assert(shape[0] == n_v && shape[1] == num_nodes);
@@ -1083,11 +1103,6 @@ namespace polyfem
 
 			///////////////////////////////////////////////////////////////////
 			// Add obstacle to collision mesh
-
-			// Remap vertices incase the tet-meshes were modified during loading
-			// TODO: Handle initial transformation in meshes
-			// vertices = linear_map * boundary_nodes_pos;
-			vertices *= args["collision_mesh"].value("scale", 1.0);
 			vertices.conservativeResize(linear_map.rows(), vertices.cols());
 			if (obstacle.n_vertices() > 0)
 				vertices.bottomRows(obstacle.n_vertices()) = obstacle.v();
