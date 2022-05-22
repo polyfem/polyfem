@@ -741,6 +741,30 @@ namespace polyfem
 					logger().debug("opt grad: {}", dx.transpose());
 				};
 			}
+			else if (opt_params["restriction"].get<std::string>() == "friction") {
+				material_problem->x_to_param = [&](const MaterialProblem::TVector& x, State &state)
+				{
+					state.args["mu"] = x(0);
+
+					logger().debug("friction coeff = {}", state.args["mu"].get<double>());
+				};
+				material_problem->param_to_x = [&](MaterialProblem::TVector& x, State &state)
+				{
+					x.setZero(1);
+
+					x(0) = state.args["mu"].get<double>();
+
+					logger().debug("friction coeff = {}", state.args["mu"].get<double>());
+				};
+				material_problem->dparam_to_dx = [&](MaterialProblem::TVector& dx, const Eigen::VectorXd& dparams, State& state)
+				{
+					dx.setZero(1);
+
+					dx(0) = dparams(dparams.size()-3);
+
+					logger().debug("opt grad: {}", dx.transpose());
+				};
+			}
 			else if (opt_params["restriction"].get<std::string>() == "damping") {
 				material_problem->x_to_param = [&](const MaterialProblem::TVector& x, State &state)
 				{

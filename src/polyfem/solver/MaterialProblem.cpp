@@ -150,11 +150,17 @@ namespace polyfem
     double MaterialProblem::max_step_size(const TVector &x0, const TVector &x1)
     {
         double size = 1;
+		const auto lambda0 = state.assembler.lame_params().lambda_mat_;
+ 		const auto mu0 = state.assembler.lame_params().mu_mat_;
         while (size > 0)
         {
             auto newX = x0 + (x1 - x0) * size;
             x_to_param(newX, state);
-            if (!is_step_valid(x0, newX))
+            const auto lambda1 = state.assembler.lame_params().lambda_mat_;
+            const auto mu1 = state.assembler.lame_params().mu_mat_;
+
+            const double max_change = opt_params.contains("max_change") ? opt_params["max_change"].get<double>() : 1e10;
+            if ((lambda1 - lambda0).cwiseAbs().maxCoeff() > max_change || (mu1 - mu0).cwiseAbs().maxCoeff() > max_change || !is_step_valid(x0, newX))
                 size /= 2.;
             else
                 break;
