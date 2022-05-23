@@ -55,7 +55,7 @@ namespace polyfem
     {
         IntegrableFunctional j = get_target_y_functional();
 
-        return state.J(j);
+        return sqrt(state.J(j));
     }
 
     Eigen::VectorXd TargetYFunctional::gradient(State &state, const std::string &type)
@@ -64,7 +64,7 @@ namespace polyfem
 
         Eigen::VectorXd grad = state.integral_gradient(j, type);
 
-        return grad;
+        return grad / 2 / energy(state);
     }
 
     IntegrableFunctional TargetYFunctional::get_target_y_functional()
@@ -118,7 +118,7 @@ namespace polyfem
     {
         IntegrableFunctional j = get_trajectory_functional(/*Doesn't matter for value*/ "");
 
-        return state.J(j);
+        return sqrt(state.J(j));
     }
 
     Eigen::VectorXd TrajectoryFunctional::gradient(State &state, const std::string &type)
@@ -127,7 +127,7 @@ namespace polyfem
 
         Eigen::VectorXd grad = state.integral_gradient(j, type);
 
-        return grad;
+        return grad / 2 / energy(state);
     }
 
     void TrajectoryFunctional::set_reference(State* state)
@@ -224,7 +224,7 @@ namespace polyfem
         SummableFunctional j = get_trajectory_functional();
         if (active_vertex_mask.size() > 0 && state.n_bases != active_vertex_mask.size())
             logger().error("vertex mask size doesn't match number of nodes!");
-        return state.J_static(j);
+        return sqrt(state.J_static(j));
     }
 
     Eigen::VectorXd NodeTrajectoryFunctional::gradient(State &state, const std::string &type)
@@ -235,7 +235,7 @@ namespace polyfem
         Eigen::VectorXd grad;
         state.dJ_material_static(j, grad);
 
-        return grad;
+        return grad / 2 / energy(state);
     }
 
     SummableFunctional NodeTrajectoryFunctional::get_trajectory_functional()
@@ -507,7 +507,7 @@ namespace polyfem
             return grad;
         };
 
-        return state.integral_gradient(js, func, type) / 2 / sqrt(energy(state));
+        return state.integral_gradient(js, func, type) / 2 / energy(state);
     }
 
     IntegrableFunctional CenterTrajectoryFunctional::get_center_trajectory_functional(const int d)
@@ -639,7 +639,7 @@ namespace polyfem
             return (x.head(2) / x(2) - target_series[step / sample_rate].head(2)).squaredNorm();
         };
 
-        return state.J_transient(js, func);
+        return sqrt(state.J_transient(js, func));
     }
     
     Eigen::VectorXd CenterXYTrajectoryFunctional::gradient(State &state, const std::string &type)
@@ -682,7 +682,7 @@ namespace polyfem
             return grad;
         };
 
-        return state.integral_gradient(js, func, type);
+        return state.integral_gradient(js, func, type) / 2 / energy(state);
     }
 
     IntegrableFunctional CenterXYTrajectoryFunctional::get_center_trajectory_functional(const int d)
