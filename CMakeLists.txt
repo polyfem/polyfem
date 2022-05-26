@@ -243,9 +243,12 @@ target_link_libraries(polyfem PUBLIC tinyxml2)
 include(wmtk)
 target_link_libraries(polyfem PUBLIC wmtk::toolkit)
 
-# HighFive library (HDF5)
+# HighFive + HDF5 library
+include(hdf5)
+target_link_libraries(polyfem PUBLIC hdf5::hdf5)
+
 include(high_five)
-target_link_libraries(polyfem PUBLIC HighFive)
+target_link_libraries(polyfem PUBLIC HighFive::HighFive)
 
 ################################################################################
 # Optional libraries

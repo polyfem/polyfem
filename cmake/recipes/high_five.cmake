@@ -1,7 +1,7 @@
 # HighFive (https://github.com/BlueBrain/HighFive)
 # License: BSL-1.0 License
 
-if(TARGET HighFive)
+if(TARGET HighFive::HighFive)
     return()
 endif()
 
@@ -17,6 +17,8 @@ option(HIGHFIVE_UNIT_TESTS "Enable unit tests" OFF)
 option(HIGHFIVE_EXAMPLES "Compile examples" OFF)
 option(HIGHFIVE_PARALLEL_HDF5 "Enable Parallel HDF5 support" OFF)
 option(HIGHFIVE_BUILD_DOCS "Enable documentation building" OFF)
+#Used to prevend looking for sys libraries
+set(HDF5_C_LIBRARIES "")
 
 include(FetchContent)
 FetchContent_Declare(
@@ -32,3 +34,6 @@ include(eigen)
 FetchContent_GetProperties(eigen)
 target_include_directories(libdeps SYSTEM INTERFACE $<BUILD_INTERFACE:${eigen_SOURCE_DIR}>)
 target_compile_definitions(libdeps INTERFACE H5_USE_EIGEN)
+
+
+add_library(HighFive::HighFive ALIAS HighFive)
