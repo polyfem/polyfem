@@ -168,10 +168,6 @@ target_compile_definitions(polyfem PUBLIC -DEIGEN_STACK_ALLOCATION_LIMIT=0)
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_SMALL_N=${POLYFEM_SMALL_N})
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_BIG_N=${POLYFEM_BIG_N})
 
-if("$ENV{CLUSTER}" STREQUAL "PRINCE")
-    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_ON_HPC)
-endif()
-
 ################################################################################
 # Required libraries
 ################################################################################
