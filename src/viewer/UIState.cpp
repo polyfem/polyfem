@@ -274,6 +274,10 @@ namespace polyfem
 				from += range;
 			}
 		}
+		else if (layer == Visualizations::NavigationIndex)
+		{
+			cols.col(1).setOnes();
+		}
 		else
 		{
 			for (std::size_t i = 1; i < element_ranges.size(); ++i)
