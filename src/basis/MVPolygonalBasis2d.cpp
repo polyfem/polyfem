@@ -8,6 +8,8 @@
 
 namespace polyfem
 {
+	using namespace assembler;
+
 	namespace
 	{
 

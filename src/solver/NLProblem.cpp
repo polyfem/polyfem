@@ -62,6 +62,8 @@ namespace ipc
 
 namespace polyfem
 {
+	using namespace assembler;
+
 	namespace
 	{
 		bool write_obj(const std::string &path, const Eigen::MatrixXd &v, const Eigen::MatrixXi &e, const Eigen::MatrixXi &f)

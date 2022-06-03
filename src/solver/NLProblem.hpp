@@ -21,7 +21,7 @@ namespace polyfem
 		using typename cppoptlib::Problem<double>::TVector;
 		typedef StiffnessMatrix THessian;
 
-		NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t, const double dhat, const bool project_to_psd, const bool no_reduced = false);
+		NLProblem(State &state, const assembler::RhsAssembler &rhs_assembler, const double t, const double dhat, const bool project_to_psd, const bool no_reduced = false);
 		void init(const TVector &displacement);
 		void init_time_integrator(const TVector &x_prev, const TVector &v_prev, const TVector &a_prev, const double dt);
 		TVector initial_guess();
@@ -161,11 +161,11 @@ namespace polyfem
 		State &state;
 		bool use_adaptive_barrier_stiffness;
 		double _barrier_stiffness;
-		const RhsAssembler &rhs_assembler;
+		const assembler::RhsAssembler &rhs_assembler;
 		bool is_time_dependent;
 
 	private:
-		AssemblerUtils &assembler;
+		assembler::AssemblerUtils &assembler;
 		Eigen::MatrixXd _current_rhs;
 		StiffnessMatrix cached_stiffness;
 		SpareMatrixCache mat_cache;

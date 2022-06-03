@@ -50,6 +50,8 @@ using namespace Eigen;
 
 namespace polyfem
 {
+	using namespace assembler;
+
 	void State::sol_to_pressure()
 	{
 		if (n_pressure_bases <= 0)

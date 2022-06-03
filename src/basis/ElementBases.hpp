@@ -19,7 +19,7 @@ namespace polyfem
 	{
 	public:
 		typedef std::function<Eigen::VectorXi(const int local_index, const Mesh &mesh)> LocalNodeFromPrimitiveFunc;
-		typedef std::function<void(const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &basis_values)> EvalBasesFunc;
+		typedef std::function<void(const Eigen::MatrixXd &uv, std::vector<assembler::AssemblyValues> &basis_values)> EvalBasesFunc;
 		typedef std::function<void(Quadrature &quadrature)> QuadratureFunction;
 
 		// one basis function per node in the element
@@ -70,7 +70,7 @@ namespace polyfem
 		void set_quadrature(const QuadratureFunction &fun) { quadrature_builder_ = fun; }
 
 		//evaluation functions
-		void evaluate_bases(const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &basis_values) const
+		void evaluate_bases(const Eigen::MatrixXd &uv, std::vector<assembler::AssemblyValues> &basis_values) const
 		{
 			if (eval_bases_func_)
 			{
@@ -81,7 +81,7 @@ namespace polyfem
 				evaluate_bases_default(uv, basis_values);
 			}
 		}
-		void evaluate_grads(const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &basis_values) const
+		void evaluate_grads(const Eigen::MatrixXd &uv, std::vector<assembler::AssemblyValues> &basis_values) const
 		{
 			if (eval_grads_func_)
 			{
@@ -100,8 +100,8 @@ namespace polyfem
 		void set_local_node_from_primitive_func(LocalNodeFromPrimitiveFunc fun) { local_node_from_primitive_ = fun; }
 
 	private:
-		void evaluate_bases_default(const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &basis_values) const;
-		void evaluate_grads_default(const Eigen::MatrixXd &uv, std::vector<AssemblyValues> &basis_values) const;
+		void evaluate_bases_default(const Eigen::MatrixXd &uv, std::vector<assembler::AssemblyValues> &basis_values) const;
+		void evaluate_grads_default(const Eigen::MatrixXd &uv, std::vector<assembler::AssemblyValues> &basis_values) const;
 
 	private:
 		EvalBasesFunc eval_bases_func_;

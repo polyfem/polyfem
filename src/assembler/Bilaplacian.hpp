@@ -12,62 +12,65 @@
 
 namespace polyfem
 {
-	//local assembler for bilaplacian, see laplacian
-	// 0 L
-	// L M
-	class BilaplacianMain
+	namespace assembler
 	{
-	public:
-		Eigen::Matrix<double, 1, 1>
-		assemble(const ElementAssemblyValues &vals, const int i, const int j, const QuadratureVector &da) const
+		//local assembler for bilaplacian, see laplacian
+		// 0 L
+		// L M
+		class BilaplacianMain
 		{
-			return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
-		}
+		public:
+			Eigen::Matrix<double, 1, 1>
+			assemble(const ElementAssemblyValues &vals, const int i, const int j, const QuadratureVector &da) const
+			{
+				return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
+			}
 
-		Eigen::Matrix<double, 1, 1>
-		compute_rhs(const AutodiffHessianPt &pt) const;
+			Eigen::Matrix<double, 1, 1>
+			compute_rhs(const AutodiffHessianPt &pt) const;
 
-		inline int size() const { return 1; }
+			inline int size() const { return 1; }
 
-		void set_parameters(const json &params) {}
-	};
+			void set_parameters(const json &params) {}
+		};
 
-	class BilaplacianMixed
-	{
-	public:
-		// res is R
-		Eigen::Matrix<double, 1, 1>
-		assemble(const ElementAssemblyValues &psi_vals, const ElementAssemblyValues &phi_vals, const int i, const int j, const QuadratureVector &da) const;
-
-		Eigen::Matrix<double, 1, 1>
-		compute_rhs(const AutodiffHessianPt &pt) const
+		class BilaplacianMixed
 		{
-			assert(false);
-			return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
-		}
+		public:
+			// res is R
+			Eigen::Matrix<double, 1, 1>
+			assemble(const ElementAssemblyValues &psi_vals, const ElementAssemblyValues &phi_vals, const int i, const int j, const QuadratureVector &da) const;
 
-		inline int rows() const { return 1; }
-		inline int cols() const { return 1; }
+			Eigen::Matrix<double, 1, 1>
+			compute_rhs(const AutodiffHessianPt &pt) const
+			{
+				assert(false);
+				return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
+			}
 
-		void set_parameters(const json &params) {}
-	};
+			inline int rows() const { return 1; }
+			inline int cols() const { return 1; }
 
-	class BilaplacianAux
-	{
-	public:
-		// res is R
-		Eigen::Matrix<double, 1, 1>
-		assemble(const ElementAssemblyValues &vals, const int i, const int j, const QuadratureVector &da) const;
+			void set_parameters(const json &params) {}
+		};
 
-		Eigen::Matrix<double, 1, 1>
-		compute_rhs(const AutodiffHessianPt &pt) const
+		class BilaplacianAux
 		{
-			assert(false);
-			return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
-		}
+		public:
+			// res is R
+			Eigen::Matrix<double, 1, 1>
+			assemble(const ElementAssemblyValues &vals, const int i, const int j, const QuadratureVector &da) const;
 
-		inline int size() const { return 1; }
+			Eigen::Matrix<double, 1, 1>
+			compute_rhs(const AutodiffHessianPt &pt) const
+			{
+				assert(false);
+				return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
+			}
 
-		void set_parameters(const json &params) {}
-	};
+			inline int size() const { return 1; }
+
+			void set_parameters(const json &params) {}
+		};
+	} // namespace assembler
 } // namespace polyfem

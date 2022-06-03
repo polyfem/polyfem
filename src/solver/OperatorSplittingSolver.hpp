@@ -367,7 +367,7 @@ namespace polyfem
 
 			// interpolation
 			vel = RowVectorNd::Zero(dim);
-			ElementAssemblyValues vals;
+			assembler::ElementAssemblyValues vals;
 			vals.compute(new_elem, dim == 3, local_pos, bases[new_elem], gbases[new_elem]);
 			for (int d = 0; d < dim; d++)
 			{
@@ -657,7 +657,7 @@ namespace polyfem
 									  Eigen::MatrixXd mapped;
 									  gbases[e].eval_geom_mapping(local_pts_particle, mapped);
 									  // construct interpolant (for velocity)
-									  ElementAssemblyValues vals;
+									  assembler::ElementAssemblyValues vals;
 									  vals.compute(e, dim == 3, local_pts_particle, bases[e], gbases[e]); // possibly higher-order
 									  for (int j = 0; j < ppe; ++j)
 									  {
@@ -715,7 +715,7 @@ namespace polyfem
 										  Eigen::MatrixXd local_pts_particle;
 										  calculate_local_pts(gbases[e], e, position_particle[pI], local_pts_particle);
 
-										  ElementAssemblyValues vals;
+										  assembler::ElementAssemblyValues vals;
 										  vals.compute(e, dim == 3, local_pts_particle, bases[e], gbases[e]); // possibly higher-order
 										  RowVectorNd FLIPdVel, PICVel;
 										  FLIPdVel.setZero(1, dim);
@@ -767,7 +767,7 @@ namespace polyfem
 							position_particle[pI](d) = mapped(0, d);
 
 						// construct interpolant (for velocity)
-						ElementAssemblyValues vals;
+						assembler::ElementAssemblyValues vals;
 						vals.compute(e, dim == 3, local_pts_particle, bases[e], gbases[e]); // possibly higher-order
 						velocity_particle[pI].setZero(1, dim);
 						for (int i = 0; i < vals.basis_values.size(); ++i)
@@ -781,7 +781,7 @@ namespace polyfem
 			}
 
 			// advect
-			std::vector<ElementAssemblyValues> velocity_interpolator(ppe * n_el);
+			std::vector<assembler::ElementAssemblyValues> velocity_interpolator(ppe * n_el);
 #ifdef POLYFEM_WITH_TBB
 			tbb::parallel_for(0, (int)(ppe * n_el), 1, [&](int pI)
 #else
@@ -827,7 +827,7 @@ namespace polyfem
 				{
 					continue;
 				}
-				ElementAssemblyValues &vals = velocity_interpolator[pI];
+				assembler::ElementAssemblyValues &vals = velocity_interpolator[pI];
 				for (int i = 0; i < vals.basis_values.size(); ++i)
 				{
 					new_sol.block(bases[cellI].bases[i].global()[0].index * dim, 0, dim, 1) +=
@@ -859,7 +859,7 @@ namespace polyfem
 			new_sol_w.array() += 1e-13;
 
 			const int ppe = shape; // particle per element
-			std::vector<ElementAssemblyValues> velocity_interpolator(ppe * n_el);
+			std::vector<assembler::ElementAssemblyValues> velocity_interpolator(ppe * n_el);
 			position_particle.resize(ppe * n_el);
 			velocity_particle.resize(ppe * n_el);
 			cellI_particle.resize(ppe * n_el);
@@ -883,7 +883,7 @@ namespace polyfem
 								  }
 
 								  // construct interpolant (linear for position)
-								  ElementAssemblyValues gvals;
+								  assembler::ElementAssemblyValues gvals;
 								  gvals.compute(e, dim == 3, local_pts_particle, gbases[e], gbases[e]);
 
 								  // compute global position of particles
@@ -897,7 +897,7 @@ namespace polyfem
 								  }
 
 								  // compute velocity
-								  ElementAssemblyValues vals;
+								  assembler::ElementAssemblyValues vals;
 								  vals.compute(e, dim == 3, local_pts_particle, bases[e], gbases[e]); // possibly higher-order
 								  for (int j = 0; j < ppe; ++j)
 								  {
@@ -949,7 +949,7 @@ namespace polyfem
 					{
 						continue;
 					}
-					ElementAssemblyValues &vals = velocity_interpolator[ppe * e + j];
+					assembler::ElementAssemblyValues &vals = velocity_interpolator[ppe * e + j];
 					for (int i = 0; i < vals.basis_values.size(); ++i)
 					{
 						new_sol.block(bases[cellI].bases[i].global()[0].index * dim, 0, dim, 1) +=
@@ -1010,7 +1010,7 @@ namespace polyfem
 		}
 
 		void external_force(const polyfem::Mesh &mesh,
-							const AssemblerUtils &assembler,
+							const assembler::AssemblerUtils &assembler,
 							const std::vector<polyfem::ElementBases> &gbases,
 							const std::vector<polyfem::ElementBases> &bases,
 							const double dt,
@@ -1124,7 +1124,7 @@ namespace polyfem
 			Eigen::VectorXd grad_pressure = Eigen::VectorXd::Zero(n_bases * dim);
 			Eigen::VectorXi traversed = Eigen::VectorXi::Zero(n_bases);
 
-			ElementAssemblyValues vals;
+			assembler::ElementAssemblyValues vals;
 			for (int e = 0; e < n_el; ++e)
 			{
 				vals.compute(e, dim == 3, local_pts, pressure_bases[e], gbases[e]);

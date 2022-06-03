@@ -27,6 +27,8 @@
 
 namespace polyfem
 {
+	using namespace assembler;
+
 	namespace
 	{
 		void import_matrix(const std::string &path, const json &import, Eigen::MatrixXd &mat)

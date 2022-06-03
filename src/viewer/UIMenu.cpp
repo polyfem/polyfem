@@ -234,7 +234,7 @@ void polyfem::UIState::draw_settings()
 	// ImGui::BeginChild("Forms", ImVec2(ImGui::GetWindowContentRegionWidth(), 100), true);
 	ImGui::Separator();
 
-	static const auto scalar_forms = polyfem::AssemblerUtils::scalar_assemblers();
+	static const auto scalar_forms = polyfem::assembler::AssemblerUtils::scalar_assemblers();
 
 	const bool is_scalar = state.problem->is_scalar();
 
@@ -257,7 +257,7 @@ void polyfem::UIState::draw_settings()
 
 	else
 	{
-		static const auto tensor_forms = polyfem::AssemblerUtils::tensor_assemblers();
+		static const auto tensor_forms = polyfem::assembler::AssemblerUtils::tensor_assemblers();
 		if (ImGui::BeginCombo("nD-Form", state.tensor_formulation().c_str()))
 		{
 			for (auto f : tensor_forms)

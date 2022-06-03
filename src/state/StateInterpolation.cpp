@@ -17,6 +17,7 @@
 
 namespace polyfem
 {
+	using namespace assembler;
 
 	void State::interpolate_boundary_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result)
 	{

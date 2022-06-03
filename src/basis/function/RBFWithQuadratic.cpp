@@ -16,6 +16,7 @@
 // #define VERBOSE
 
 using namespace polyfem;
+using namespace polyfem::assembler;
 
 namespace
 {

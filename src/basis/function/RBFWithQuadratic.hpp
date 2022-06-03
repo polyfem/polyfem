@@ -16,8 +16,8 @@ namespace polyfem
 			return ass_dim * ass_dim * d + ass_dim * beta + alpha;
 		}
 
-		static void setup_monomials_vals_2d(const int star_index, const Eigen::MatrixXd &pts, ElementAssemblyValues &vals);
-		static void setup_monomials_strong_2d(const int dim, const AssemblerUtils &assembler, const std::string &assembler_name, const Eigen::MatrixXd &pts, const QuadratureVector &da, std::array<Eigen::MatrixXd, 5> &strong);
+		static void setup_monomials_vals_2d(const int star_index, const Eigen::MatrixXd &pts, assembler::ElementAssemblyValues &vals);
+		static void setup_monomials_strong_2d(const int dim, const assembler::AssemblerUtils &assembler, const std::string &assembler_name, const Eigen::MatrixXd &pts, const QuadratureVector &da, std::array<Eigen::MatrixXd, 5> &strong);
 
 		///
 		/// @brief      { Initialize RBF functions over a polytope element. }
@@ -40,7 +40,7 @@ namespace polyfem
 		/// @param[in]  with_constraints      { Impose integral constraints to guarantee linear
 		///                                   reproduction for the Poisson equation }
 		///
-		RBFWithQuadratic(const AssemblerUtils &assembler, const std::string &assembler_name, const Eigen::MatrixXd &centers, const Eigen::MatrixXd &collocation_points,
+		RBFWithQuadratic(const assembler::AssemblerUtils &assembler, const std::string &assembler_name, const Eigen::MatrixXd &centers, const Eigen::MatrixXd &collocation_points,
 						 const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
 						 Eigen::MatrixXd &rhs, bool with_constraints = true);
 
@@ -93,15 +93,15 @@ namespace polyfem
 											   const Eigen::MatrixXd &local_basis_integral, Eigen::MatrixXd &L, Eigen::MatrixXd &t) const;
 
 		// Computes the relationship w = L v + t between the unknowns (v) and the weights w
-		void compute_constraints_matrix_2d(const AssemblerUtils &assembler, const std::string &assembler_name, const int num_bases, const Quadrature &quadr,
+		void compute_constraints_matrix_2d(const assembler::AssemblerUtils &assembler, const std::string &assembler_name, const int num_bases, const Quadrature &quadr,
 										   const Eigen::MatrixXd &local_basis_integral, Eigen::MatrixXd &L, Eigen::MatrixXd &t) const;
 
 		// Computes the relationship w = L v + t between the unknowns (v) and the weights w
-		void compute_constraints_matrix_3d(const AssemblerUtils &assembler, const std::string &assembler_name, const int num_bases, const Quadrature &quadr,
+		void compute_constraints_matrix_3d(const assembler::AssemblerUtils &assembler, const std::string &assembler_name, const int num_bases, const Quadrature &quadr,
 										   const Eigen::MatrixXd &local_basis_integral, Eigen::MatrixXd &L, Eigen::MatrixXd &t) const;
 
 		// Computes the weights by solving a (possibly constrained) linear least square
-		void compute_weights(const AssemblerUtils &assembler, const std::string &assembler_name, const Eigen::MatrixXd &collocation_points,
+		void compute_weights(const assembler::AssemblerUtils &assembler, const std::string &assembler_name, const Eigen::MatrixXd &collocation_points,
 							 const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
 							 Eigen::MatrixXd &rhs, bool with_constraints);
 

@@ -34,8 +34,8 @@ set(SOURCES
 	Stokes.hpp
 	NavierStokes.cpp
 	NavierStokes.hpp
-	utils/AssemblerUtils.cpp
-	utils/AssemblerUtils.hpp
+	AssemblerUtils.cpp
+	AssemblerUtils.hpp
 )
 
 prepend_current_path(SOURCES)

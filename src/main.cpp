@@ -20,6 +20,7 @@
 
 using namespace polyfem;
 using namespace polyfem::problem;
+using namespace polyfem::assembler;
 using namespace polysolve;
 using namespace Eigen;
 

@@ -7,6 +7,7 @@
 
 namespace polyfem
 {
+	using namespace assembler;
 	void OperatorSplittingSolver::save_density()
 	{
 #ifdef POLYFEM_WITH_OPENVDB

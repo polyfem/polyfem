@@ -66,7 +66,7 @@ namespace polyfem
 	class StepData
 	{
 	public:
-		std::shared_ptr<RhsAssembler> rhs_assembler;
+		std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
 		std::shared_ptr<NLProblem> nl_problem;
 		std::shared_ptr<ALNLProblem> alnl_problem;
 	};
@@ -124,7 +124,7 @@ namespace polyfem
 		std::string output_dir;
 
 		//assembler, it dispatches call to the differnt assembers based on the formulation
-		AssemblerUtils assembler;
+		assembler::AssemblerUtils assembler;
 		//current problem, it contains rhs and bc
 		std::shared_ptr<problem::Problem> problem;
 
@@ -143,8 +143,8 @@ namespace polyfem
 		std::vector<ElementBases> geom_bases;
 
 		//used to store assembly values for small problems
-		AssemblyValsCache ass_vals_cache;
-		AssemblyValsCache pressure_ass_vals_cache;
+		assembler::AssemblyValsCache ass_vals_cache;
+		assembler::AssemblyValsCache pressure_ass_vals_cache;
 
 		//list of boundary nodes
 		std::vector<int> boundary_nodes;
@@ -387,12 +387,12 @@ namespace polyfem
 		StepData step_data;
 		//Aux solving functions, c_sol=x are necessary since they contain the pressure, while sol dosent
 		void init_transient(Eigen::VectorXd &c_sol);
-		void solve_transient_navier_stokes_split(const int time_steps, const double dt, const RhsAssembler &rhs_assembler);
-		void solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler, Eigen::VectorXd &c_sol);
-		void solve_transient_scalar(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler, Eigen::VectorXd &x);
-		void solve_transient_tensor_linear(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler);
-		void solve_transient_tensor_non_linear(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler);
-		void solve_transient_tensor_non_linear_init(const double t0, const double dt, const RhsAssembler &rhs_assembler);
+		void solve_transient_navier_stokes_split(const int time_steps, const double dt, const assembler::RhsAssembler &rhs_assembler);
+		void solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler, Eigen::VectorXd &c_sol);
+		void solve_transient_scalar(const int time_steps, const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler, Eigen::VectorXd &x);
+		void solve_transient_tensor_linear(const int time_steps, const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler);
+		void solve_transient_tensor_non_linear(const int time_steps, const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler);
+		void solve_transient_tensor_non_linear_init(const double t0, const double dt, const assembler::RhsAssembler &rhs_assembler);
 		void solve_transient_tensor_non_linear_step(const double t0, const double dt, const int t, json &solver_info);
 		void solve_linear();
 		void solve_navier_stokes();

@@ -2,6 +2,8 @@
 
 namespace polyfem
 {
+	using namespace assembler;
+
 	bool ElementBases::is_complete() const
 	{
 		for (auto &b : bases)

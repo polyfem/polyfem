@@ -16,6 +16,7 @@
 namespace polyfem
 {
 	using namespace polysolve;
+	using namespace assembler;
 
 	ALNLProblem::ALNLProblem(State &state, const RhsAssembler &rhs_assembler, const double t, const double dhat, const bool project_to_psd, const double weight)
 		: super(state, rhs_assembler, t, dhat, project_to_psd, true), weight_(weight)
