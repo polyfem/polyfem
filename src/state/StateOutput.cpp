@@ -750,7 +750,7 @@ namespace polyfem
 		{
 			save_vtu(vis_mesh_path, tend);
 		}
-		if (!wire_mesh_path.empty())
+		else if (!wire_mesh_path.empty())
 		{
 			save_wire(wire_mesh_path, tend);
 		}
