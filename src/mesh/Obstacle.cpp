@@ -10,6 +10,8 @@
 
 namespace polyfem
 {
+	using namespace problem;
+
 	void Obstacle::clear()
 	{
 		dim_ = 0;

@@ -9,32 +9,36 @@
 
 namespace polyfem
 {
+
 	class State;
-
-	class KernelProblem : public ProblemWithSolution
+	namespace problem
 	{
-	public:
-		KernelProblem(const std::string &name);
 
-		VectorNd eval_fun(const VectorNd &pt, const double t) const override;
-		AutodiffGradPt eval_fun(const AutodiffGradPt &pt, const double t) const override;
-		AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt, const double t) const override
+		class KernelProblem : public ProblemWithSolution
 		{
-			assert(false);
-			return AutodiffHessianPt(1);
-		}
+		public:
+			KernelProblem(const std::string &name);
 
-		void rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			VectorNd eval_fun(const VectorNd &pt, const double t) const override;
+			AutodiffGradPt eval_fun(const AutodiffGradPt &pt, const double t) const override;
+			AutodiffHessianPt eval_fun(const AutodiffHessianPt &pt, const double t) const override
+			{
+				assert(false);
+				return AutodiffHessianPt(1);
+			}
 
-		void set_parameters(const json &params) override;
-		bool is_scalar() const override;
+			void rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 
-		State *state;
+			void set_parameters(const json &params) override;
+			bool is_scalar() const override;
 
-	private:
-		std::string formulation_ = "Laplacian";
-		int n_kernels_ = 5;
-		double kernel_distance_ = 0.05;
-		Eigen::VectorXd kernel_weights_;
-	};
+			State *state;
+
+		private:
+			std::string formulation_ = "Laplacian";
+			int n_kernels_ = 5;
+			double kernel_distance_ = 0.05;
+			Eigen::VectorXd kernel_weights_;
+		};
+	} // namespace problem
 } // namespace polyfem

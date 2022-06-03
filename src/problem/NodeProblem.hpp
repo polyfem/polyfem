@@ -9,59 +9,62 @@
 
 namespace polyfem
 {
-	class NodeValues
+	namespace problem
 	{
-	public:
-		NodeValues();
-
-		void load(const std::string &path);
-		void init(const Mesh &mesh);
-
-		double dirichlet_interpolate(const int p_id, const Eigen::MatrixXd &uv) const
+		class NodeValues
 		{
-			return interpolate(p_id, uv, true);
-		}
-		double neumann_interpolate(const int p_id, const Eigen::MatrixXd &uv) const
+		public:
+			NodeValues();
+
+			void load(const std::string &path);
+			void init(const Mesh &mesh);
+
+			double dirichlet_interpolate(const int p_id, const Eigen::MatrixXd &uv) const
+			{
+				return interpolate(p_id, uv, true);
+			}
+			double neumann_interpolate(const int p_id, const Eigen::MatrixXd &uv) const
+			{
+				return interpolate(p_id, uv, false);
+			}
+
+		private:
+			double interpolate(const int p_id, const Eigen::MatrixXd &uv, bool is_dirichlet) const;
+
+			std::vector<int> raw_ids_;
+			std::vector<std::vector<double>> raw_data_;
+			std::vector<bool> raw_dirichlet_;
+
+			std::vector<Eigen::VectorXd> data_;
+			std::vector<bool> dirichlet_;
+		};
+
+		class NodeProblem : public Problem
 		{
-			return interpolate(p_id, uv, false);
-		}
+		public:
+			NodeProblem(const std::string &name);
+			void init(const Mesh &mesh) override;
 
-	private:
-		double interpolate(const int p_id, const Eigen::MatrixXd &uv, bool is_dirichlet) const;
+			void rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			bool is_rhs_zero() const override { return abs(rhs_) < 1e-10; }
 
-		std::vector<int> raw_ids_;
-		std::vector<std::vector<double>> raw_data_;
-		std::vector<bool> raw_dirichlet_;
+			void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			void neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const override;
 
-		std::vector<Eigen::VectorXd> data_;
-		std::vector<bool> dirichlet_;
-	};
+			bool has_exact_sol() const override { return false; }
+			bool is_scalar() const override { return true; }
 
-	class NodeProblem : public Problem
-	{
-	public:
-		NodeProblem(const std::string &name);
-		void init(const Mesh &mesh) override;
+			void set_parameters(const json &params) override;
 
-		void rhs(const AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-		bool is_rhs_zero() const override { return abs(rhs_) < 1e-10; }
+			bool is_dimension_dirichet(const int tag, const int dim) const override;
+			bool all_dimensions_dirichlet() const override { return all_dimensions_dirichlet_; }
 
-		void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-		void neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const override;
-
-		bool has_exact_sol() const override { return false; }
-		bool is_scalar() const override { return true; }
-
-		void set_parameters(const json &params) override;
-
-		bool is_dimension_dirichet(const int tag, const int dim) const override;
-		bool all_dimensions_dirichlet() const override { return all_dimensions_dirichlet_; }
-
-	private:
-		bool all_dimensions_dirichlet_ = true;
-		std::vector<Eigen::Matrix<bool, 1, 3, Eigen::RowMajor>> dirichlet_dimensions_;
-		double rhs_;
-		NodeValues values_;
-		bool is_all_;
-	};
+		private:
+			bool all_dimensions_dirichlet_ = true;
+			std::vector<Eigen::Matrix<bool, 1, 3, Eigen::RowMajor>> dirichlet_dimensions_;
+			double rhs_;
+			NodeValues values_;
+			bool is_all_;
+		};
+	} // namespace problem
 } // namespace polyfem

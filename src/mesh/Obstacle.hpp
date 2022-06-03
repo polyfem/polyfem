@@ -23,9 +23,9 @@ namespace polyfem
 		inline const Eigen::MatrixXi &get_edge_connectivity() const { return in_e_; }
 		inline const Eigen::VectorXi &get_vertex_connectivity() const { return in_v_; }
 
-		void change_displacement(const int oid, const Eigen::RowVector3d &val, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
-		void change_displacement(const int oid, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
-		void change_displacement(const int oid, const json &val, const std::shared_ptr<Interpolation> &interp = std::make_shared<NoInterpolation>());
+		void change_displacement(const int oid, const Eigen::RowVector3d &val, const std::shared_ptr<problem::Interpolation> &interp = std::make_shared<problem::NoInterpolation>());
+		void change_displacement(const int oid, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const std::shared_ptr<problem::Interpolation> &interp = std::make_shared<problem::NoInterpolation>());
+		void change_displacement(const int oid, const json &val, const std::shared_ptr<problem::Interpolation> &interp = std::make_shared<problem::NoInterpolation>());
 
 		void change_displacement(const int oid, const Eigen::RowVector3d &val, const std::string &interp = "");
 		void change_displacement(const int oid, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const std::string &interp = "");
@@ -56,7 +56,7 @@ namespace polyfem
 		Eigen::MatrixXi in_e_;
 
 		std::vector<std::array<ExpressionValue, 3>> displacements_;
-		std::vector<std::shared_ptr<Interpolation>> displacements_interpolation_;
+		std::vector<std::shared_ptr<problem::Interpolation>> displacements_interpolation_;
 
 		std::vector<int> endings_;
 

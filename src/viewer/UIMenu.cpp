@@ -192,7 +192,7 @@ void polyfem::UIState::draw_settings()
 	// Problem type
 	static std::string problem_name = state.problem->name();
 	// static const char *problem_labels = "Linear\0Quadratic\0Franke\0Elastic\0Zero BC\0Franke3D\0ElasticExact\0\0";
-	static const auto problem_names = polyfem::ProblemFactory::factory().get_problem_names();
+	static const auto problem_names = polyfem::problem::ProblemFactory::factory().get_problem_names();
 	if (ImGui::BeginCombo("Problem", problem_name.c_str()))
 	{
 		for (auto p_name : problem_names)
@@ -202,12 +202,12 @@ void polyfem::UIState::draw_settings()
 			if (ImGui::Selectable(p_name.c_str(), is_selected))
 			{
 				problem_name = p_name;
-				state.problem = ProblemFactory::factory().get_problem(problem_name);
+				state.problem = polyfem::problem::ProblemFactory::factory().get_problem(problem_name);
 				state.problem->set_parameters(state.args["problem_params"]);
 
 				if (problem_name == "Kernel")
 				{
-					KernelProblem &kprob = *dynamic_cast<KernelProblem *>(state.problem.get());
+					auto &kprob = *dynamic_cast<polyfem::problem::KernelProblem *>(state.problem.get());
 					kprob.state = &state;
 				}
 			}

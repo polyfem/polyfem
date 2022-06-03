@@ -7,7 +7,6 @@
 #include <polyfem/Problem.hpp>
 #include <polyfem/Mesh.hpp>
 #include <polyfem/Obstacle.hpp>
-#include <polyfem/Problem.hpp>
 #include <polyfem/RefElementSampler.hpp>
 #include <polyfem/LocalBoundary.hpp>
 #include <polyfem/InterfaceData.hpp>
@@ -127,7 +126,7 @@ namespace polyfem
 		//assembler, it dispatches call to the differnt assembers based on the formulation
 		AssemblerUtils assembler;
 		//current problem, it contains rhs and bc
-		std::shared_ptr<Problem> problem;
+		std::shared_ptr<problem::Problem> problem;
 
 		//density of the input, default=1.
 		Density density;

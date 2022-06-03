@@ -14,6 +14,8 @@
 
 namespace polyfem
 {
+	using namespace problem;
+
 	namespace
 	{
 		struct BCData

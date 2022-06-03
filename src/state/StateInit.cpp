@@ -22,6 +22,8 @@
 
 namespace polyfem
 {
+	using namespace problem;
+
 	namespace
 	{
 		class GeoLoggerForward : public GEO::LoggerClient

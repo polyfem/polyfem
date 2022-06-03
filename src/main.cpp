@@ -19,6 +19,7 @@
 #include <filesystem>
 
 using namespace polyfem;
+using namespace polyfem::problem;
 using namespace polysolve;
 using namespace Eigen;
 

@@ -472,7 +472,7 @@ namespace polyfem
 
 		void advect_density_exact(const std::vector<polyfem::ElementBases> &gbases,
 								  const std::vector<polyfem::ElementBases> &bases,
-								  const std::shared_ptr<Problem> problem,
+								  const std::shared_ptr<problem::Problem> problem,
 								  const double t,
 								  const double dt,
 								  const int RK = 3)
@@ -1016,7 +1016,7 @@ namespace polyfem
 							const double dt,
 							Eigen::MatrixXd &sol,
 							const Eigen::MatrixXd &local_pts,
-							const std::shared_ptr<Problem> problem,
+							const std::shared_ptr<problem::Problem> problem,
 							const double time)
 		{
 #ifdef POLYFEM_WITH_TBB
@@ -1151,7 +1151,7 @@ namespace polyfem
 			}
 		}
 
-		void initialize_density(const std::shared_ptr<Problem> &problem)
+		void initialize_density(const std::shared_ptr<problem::Problem> &problem)
 		{
 			Eigen::MatrixXd pts(1, dim);
 			Eigen::MatrixXd tmp;
