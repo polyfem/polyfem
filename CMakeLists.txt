@@ -69,7 +69,7 @@ set(POLYFEM_SMALL_N  80 CACHE STRING "Maximum length for stack-allocated vectors
 set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vectors (gradient only).")
 
 option(POLYFEM_NO_UI            "Disables the user interface" OFF)
-option(POLYFEM_BUILD_DOCS       "Build doxygen"               ON)
+option(POLYFEM_BUILD_DOCS       "Build doxygen"               OFF)
 
 # Polyfem options for enabling/disabling optional libraries
 option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
