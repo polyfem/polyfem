@@ -6,6 +6,8 @@
 
 namespace polyfem
 {
+	using namespace basis;
+
 	namespace assembler
 	{
 		void StokesVelocity::set_parameters(const json &params)

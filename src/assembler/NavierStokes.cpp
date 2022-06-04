@@ -6,6 +6,8 @@
 
 namespace polyfem
 {
+	using namespace basis;
+
 	namespace assembler
 	{
 		template <bool full_gradient>

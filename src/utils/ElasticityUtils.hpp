@@ -44,7 +44,7 @@ namespace polyfem
 										const std::function<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>(const assembler::ElementAssemblyValues &, const Eigen::MatrixXd &, const QuadratureVector &)> &funn);
 
 	double von_mises_stress_for_stress_tensor(const Eigen::MatrixXd &stress);
-	void compute_diplacement_grad(const int size, const ElementBases &bs, const assembler::ElementAssemblyValues &vals, const Eigen::MatrixXd &local_pts, const int p, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &displacement_grad);
+	void compute_diplacement_grad(const int size, const basis::ElementBases &bs, const assembler::ElementAssemblyValues &vals, const Eigen::MatrixXd &local_pts, const int p, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &displacement_grad);
 
 	double convert_to_lambda(const bool is_volume, const double E, const double nu);
 	double convert_to_mu(const double E, const double nu);

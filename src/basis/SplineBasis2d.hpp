@@ -1,5 +1,4 @@
-#ifndef SPLINE_BASIS_2D_HPP
-#define SPLINE_BASIS_2D_HPP
+#pragma once
 
 #include <polyfem/CMesh2D.hpp>
 #include <polyfem/NCMesh2D.hpp>
@@ -14,18 +13,19 @@
 
 namespace polyfem
 {
-	class SplineBasis2d
+	namespace basis
 	{
-	public:
-		static int build_bases(
-			const Mesh2D &mesh,
-			const int quadrature_order,
-			std::vector<ElementBases> &bases,
-			std::vector<LocalBoundary> &local_boundary,
-			std::map<int, InterfaceData> &poly_edge_to_data);
+		class SplineBasis2d
+		{
+		public:
+			static int build_bases(
+				const Mesh2D &mesh,
+				const int quadrature_order,
+				std::vector<ElementBases> &bases,
+				std::vector<LocalBoundary> &local_boundary,
+				std::map<int, InterfaceData> &poly_edge_to_data);
 
-		static void fit_nodes(const Mesh2D &mesh, const int n_bases, std::vector<ElementBases> &gbases);
-	};
+			static void fit_nodes(const Mesh2D &mesh, const int n_bases, std::vector<ElementBases> &gbases);
+		};
+	} // namespace basis
 } // namespace polyfem
-
-#endif //SPLINE_BASIS_2D_HPP

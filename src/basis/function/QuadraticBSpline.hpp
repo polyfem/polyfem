@@ -1,5 +1,4 @@
-#ifndef QUADRATIC_B_SPLINE_HPP
-#define QUADRATIC_B_SPLINE_HPP
+#pragma once
 
 #include <cassert>
 #include <array>
@@ -7,25 +6,27 @@
 
 namespace polyfem
 {
-	class QuadraticBSpline
+	namespace basis
 	{
-	public:
-		QuadraticBSpline() {}
-		QuadraticBSpline(const std::array<double, 4> &knots)
-			: knots_(knots)
+		class QuadraticBSpline
 		{
-		}
+		public:
+			QuadraticBSpline() {}
+			QuadraticBSpline(const std::array<double, 4> &knots)
+				: knots_(knots)
+			{
+			}
 
-		void init(const std::array<double, 4> &knots);
+			void init(const std::array<double, 4> &knots);
 
-		void interpolate(const Eigen::MatrixXd &ts, Eigen::MatrixXd &result) const;
-		double interpolate(const double t) const;
+			void interpolate(const Eigen::MatrixXd &ts, Eigen::MatrixXd &result) const;
+			double interpolate(const double t) const;
 
-		void derivative(const Eigen::MatrixXd &ts, Eigen::MatrixXd &result) const;
-		double derivative(const double t) const;
+			void derivative(const Eigen::MatrixXd &ts, Eigen::MatrixXd &result) const;
+			double derivative(const double t) const;
 
-	private:
-		std::array<double, 4> knots_;
-	};
+		private:
+			std::array<double, 4> knots_;
+		};
+	} // namespace basis
 } // namespace polyfem
-#endif //QUADRATIC_B_SPLINE_HPP

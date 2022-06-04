@@ -13,7 +13,7 @@
 
 using namespace polyfem;
 using namespace polyfem::assembler;
-
+using namespace polyfem::basis;
 /*
 
 Axes:
@@ -120,7 +120,7 @@ namespace
 		return std::distance(first, std::find(first, last, val));
 	}
 
-	polyfem::Navigation::Index find_edge(const polyfem::Mesh2D &mesh, int f, int v1, int v2)
+	Navigation::Index find_edge(const Mesh2D &mesh, int f, int v1, int v2)
 	{
 		std::array<int, 2> v = {{v1, v2}};
 		std::array<int, 2> u;
@@ -173,7 +173,7 @@ namespace
 		return l2g;
 	}
 
-	void tri_local_to_global(const bool is_geom_bases, const int p, const Mesh2D &mesh, int f, const Eigen::VectorXi &discr_order, const Eigen::VectorXi &edge_orders, std::vector<int> &res, polyfem::MeshNodes &nodes, std::vector<std::vector<int>> &edge_virtual_nodes)
+	void tri_local_to_global(const bool is_geom_bases, const int p, const Mesh2D &mesh, int f, const Eigen::VectorXi &discr_order, const Eigen::VectorXi &edge_orders, std::vector<int> &res, MeshNodes &nodes, std::vector<std::vector<int>> &edge_virtual_nodes)
 	{
 		int edge_offset = mesh.n_vertices();
 		int face_offset = edge_offset + mesh.n_edges();
@@ -302,7 +302,7 @@ namespace
 		// return res;
 	}
 
-	void quad_local_to_global(const bool serendipity, const int q, const Mesh2D &mesh, int f, const Eigen::VectorXi &discr_order, std::vector<int> &res, polyfem::MeshNodes &nodes)
+	void quad_local_to_global(const bool serendipity, const int q, const Mesh2D &mesh, int f, const Eigen::VectorXi &discr_order, std::vector<int> &res, MeshNodes &nodes)
 	{
 		int edge_offset = mesh.n_vertices();
 		int face_offset = edge_offset + mesh.n_edges();
@@ -396,7 +396,7 @@ namespace
 	/// @param[out] poly_edge_to_data  Data for edges at the interface with a polygon
 	///
 	void compute_nodes(
-		const polyfem::Mesh2D &mesh,
+		const Mesh2D &mesh,
 		const Eigen::VectorXi &discr_orders,
 		const Eigen::VectorXi &edge_orders,
 		const bool serendipity,
@@ -405,8 +405,8 @@ namespace
 		MeshNodes &nodes,
 		std::vector<std::vector<int>> &edge_virtual_nodes,
 		std::vector<std::vector<int>> &element_nodes_id,
-		std::vector<polyfem::LocalBoundary> &local_boundary,
-		std::map<int, polyfem::InterfaceData> &poly_edge_to_data)
+		std::vector<LocalBoundary> &local_boundary,
+		std::map<int, InterfaceData> &poly_edge_to_data)
 	{
 		// Step 1: Assign global node ids for each quads
 		local_boundary.clear();
@@ -503,18 +503,18 @@ namespace
 
 					if (mesh.is_cube(f2))
 					{
-						indices = polyfem::FEBasis2d::quad_edge_local_nodes(discr_order, mesh, index2);
+						indices = FEBasis2d::quad_edge_local_nodes(discr_order, mesh, index2);
 					}
 					else if (mesh.is_simplex(f2))
 					{
-						indices = polyfem::FEBasis2d::tri_edge_local_nodes(discr_order, mesh, index2);
+						indices = FEBasis2d::tri_edge_local_nodes(discr_order, mesh, index2);
 					}
 					else
 					{
 						// assert(false);
 						continue;
 					}
-					polyfem::InterfaceData data;
+					InterfaceData data;
 					assert(indices.size() == 2 + discr_order - 1);
 					data.local_indices.insert(data.local_indices.begin(), indices.data(), indices.data() + indices.size());
 					assert(indices.size() == data.local_indices.size());
@@ -582,7 +582,7 @@ namespace
 	/// @param[in]  elem_orders		Element orders
 	/// @param[out] edge_orders     Edge orders
 	///
-	void compute_edge_orders(const polyfem::NCMesh2D &mesh, const Eigen::VectorXi &elem_orders, Eigen::VectorXi &edge_orders)
+	void compute_edge_orders(const NCMesh2D &mesh, const Eigen::VectorXi &elem_orders, Eigen::VectorXi &edge_orders)
 	{
 		const int max_order = elem_orders.maxCoeff();
 		edge_orders.setConstant(mesh.n_edges(), max_order);
@@ -601,7 +601,7 @@ namespace
 	}
 } // anonymous namespace
 
-Eigen::VectorXi polyfem::FEBasis2d::tri_edge_local_nodes(const int p, const Mesh2D &mesh, Navigation::Index index)
+Eigen::VectorXi FEBasis2d::tri_edge_local_nodes(const int p, const Mesh2D &mesh, Navigation::Index index)
 {
 	int f = index.face;
 	assert(mesh.is_simplex(f));
@@ -632,7 +632,7 @@ Eigen::VectorXi polyfem::FEBasis2d::tri_edge_local_nodes(const int p, const Mesh
 	return result;
 }
 
-Eigen::VectorXi polyfem::FEBasis2d::quad_edge_local_nodes(const int q, const Mesh2D &mesh, Navigation::Index index)
+Eigen::VectorXi FEBasis2d::quad_edge_local_nodes(const int q, const Mesh2D &mesh, Navigation::Index index)
 {
 	int f = index.face;
 	assert(mesh.is_cube(f));
@@ -665,7 +665,7 @@ Eigen::VectorXi polyfem::FEBasis2d::quad_edge_local_nodes(const int q, const Mes
 
 // -----------------------------------------------------------------------------
 
-int polyfem::FEBasis2d::build_bases(
+int FEBasis2d::build_bases(
 	const Mesh2D &mesh,
 	const int quadrature_order,
 	const int discr_order,
@@ -684,7 +684,7 @@ int polyfem::FEBasis2d::build_bases(
 	return build_bases(mesh, quadrature_order, discr_orders, serendipity, has_polys, is_geom_bases, bases, local_boundary, poly_edge_to_data, primitive_to_node);
 }
 
-int polyfem::FEBasis2d::build_bases(
+int FEBasis2d::build_bases(
 	const Mesh2D &mesh,
 	const int quadrature_order,
 	const Eigen::VectorXi &discr_orders,
@@ -775,8 +775,8 @@ int polyfem::FEBasis2d::build_bases(
 
 				const int dtmp = serendipity ? -2 : discr_order;
 
-				b.bases[j].set_basis([dtmp, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::q_basis_value_2d(dtmp, j, uv, val); });
-				b.bases[j].set_grad([dtmp, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::q_grad_basis_value_2d(dtmp, j, uv, val); });
+				b.bases[j].set_basis([dtmp, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::q_basis_value_2d(dtmp, j, uv, val); });
+				b.bases[j].set_grad([dtmp, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::q_grad_basis_value_2d(dtmp, j, uv, val); });
 			}
 		}
 		else if (mesh.is_simplex(e))
@@ -819,14 +819,14 @@ int polyfem::FEBasis2d::build_bases(
 					assert(w.size() == 6);
 
 					b.bases[j].set_basis([discr_order, j, w](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {
-						polyfem::autogen::p_basis_value_2d(discr_order, j, uv, val);
+						autogen::p_basis_value_2d(discr_order, j, uv, val);
 						Eigen::MatrixXd denom = val;
 						denom.setZero();
 						Eigen::MatrixXd tmp;
 
 						for (int k = 0; k < 6; ++k)
 						{
-							polyfem::autogen::p_basis_value_2d(discr_order, k, uv, tmp);
+							autogen::p_basis_value_2d(discr_order, k, uv, tmp);
 							denom += w[k] * tmp;
 						}
 
@@ -835,8 +835,8 @@ int polyfem::FEBasis2d::build_bases(
 
 					b.bases[j].set_grad([discr_order, j, w](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) {
 						Eigen::MatrixXd b;
-						polyfem::autogen::p_basis_value_2d(discr_order, j, uv, b);
-						polyfem::autogen::p_grad_basis_value_2d(discr_order, j, uv, val);
+						autogen::p_basis_value_2d(discr_order, j, uv, b);
+						autogen::p_grad_basis_value_2d(discr_order, j, uv, val);
 						Eigen::MatrixXd denom = b;
 						denom.setZero();
 						Eigen::MatrixXd denom_prime = val;
@@ -845,10 +845,10 @@ int polyfem::FEBasis2d::build_bases(
 
 						for (int k = 0; k < 6; ++k)
 						{
-							polyfem::autogen::p_basis_value_2d(discr_order, k, uv, tmp);
+							autogen::p_basis_value_2d(discr_order, k, uv, tmp);
 							denom += w[k] * tmp;
 
-							polyfem::autogen::p_grad_basis_value_2d(discr_order, k, uv, tmp);
+							autogen::p_grad_basis_value_2d(discr_order, k, uv, tmp);
 							denom_prime += w[k] * tmp;
 						}
 
@@ -858,8 +858,8 @@ int polyfem::FEBasis2d::build_bases(
 				}
 				else
 				{
-					b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::p_basis_value_2d(discr_order, j, uv, val); });
-					b.bases[j].set_grad([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { polyfem::autogen::p_grad_basis_value_2d(discr_order, j, uv, val); });
+					b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::p_basis_value_2d(discr_order, j, uv, val); });
+					b.bases[j].set_grad([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::p_grad_basis_value_2d(discr_order, j, uv, val); });
 				}
 			}
 		}

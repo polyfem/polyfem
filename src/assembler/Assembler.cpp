@@ -24,6 +24,8 @@
 
 namespace polyfem
 {
+	using namespace basis;
+
 	namespace assembler
 	{
 		namespace

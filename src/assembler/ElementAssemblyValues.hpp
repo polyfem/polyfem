@@ -31,11 +31,11 @@ namespace polyfem
 			bool has_parameterization = true;
 
 			//computes the per element values at the quadrature points
-			void compute(const int el_index, const bool is_volume, const ElementBases &basis, const ElementBases &gbasis);
+			void compute(const int el_index, const bool is_volume, const basis::ElementBases &basis, const basis::ElementBases &gbasis);
 			//computes the per element values at the local (ref el) points (pts)
-			void compute(const int el_index, const bool is_volume, const Eigen::MatrixXd &pts, const ElementBases &basis, const ElementBases &gbasis);
+			void compute(const int el_index, const bool is_volume, const Eigen::MatrixXd &pts, const basis::ElementBases &basis, const basis::ElementBases &gbasis);
 			//check if the element is flipped
-			bool is_geom_mapping_positive(const bool is_volume, const ElementBases &gbasis) const;
+			bool is_geom_mapping_positive(const bool is_volume, const basis::ElementBases &gbasis) const;
 
 		private:
 			std::vector<AssemblyValues> g_basis_values_cache_;
@@ -44,8 +44,8 @@ namespace polyfem
 
 			// void finalize(const Eigen::MatrixXd &v, const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy);
 			// void finalize(const Eigen::MatrixXd &v, const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy, const Eigen::MatrixXd &dz);
-			void finalize2d(const ElementBases &gbasis, const std::vector<AssemblyValues> &gbasis_values);
-			void finalize3d(const ElementBases &gbasis, const std::vector<AssemblyValues> &gbasis_values);
+			void finalize2d(const basis::ElementBases &gbasis, const std::vector<AssemblyValues> &gbasis_values);
+			void finalize3d(const basis::ElementBases &gbasis, const std::vector<AssemblyValues> &gbasis_values);
 
 			bool is_geom_mapping_positive(const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy, const Eigen::MatrixXd &dz) const;
 			bool is_geom_mapping_positive(const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy) const;

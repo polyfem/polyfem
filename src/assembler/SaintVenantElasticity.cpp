@@ -9,6 +9,8 @@
 
 namespace polyfem
 {
+	using namespace basis;
+
 	namespace assembler
 	{
 		namespace
@@ -155,7 +157,7 @@ namespace polyfem
 			});
 		}
 
-		void SaintVenantElasticity::compute_von_mises_stresses(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
+		void SaintVenantElasticity::compute_von_mises_stresses(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
 		{
 			assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, 1, stresses, [&](const Eigen::MatrixXd &stress) {
 				Eigen::Matrix<double, 1, 1> res;

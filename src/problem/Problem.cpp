@@ -18,6 +18,8 @@
 
 namespace polyfem
 {
+	using namespace basis;
+
 	namespace problem
 	{
 		Problem::Problem(const std::string &name)

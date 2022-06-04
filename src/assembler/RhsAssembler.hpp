@@ -14,6 +14,8 @@
 
 namespace polyfem
 {
+	using namespace basis;
+
 	namespace assembler
 	{
 		//computes the rhs of a problem by \int \phi rho rhs
@@ -26,7 +28,7 @@ namespace polyfem
 			//and solver used internally
 			RhsAssembler(const AssemblerUtils &assembler, const Mesh &mesh, const Obstacle &obstacle,
 						 const int n_basis, const int size,
-						 const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases, const AssemblyValsCache &ass_vals_cache,
+						 const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const AssemblyValsCache &ass_vals_cache,
 						 const std::string &formulation, const problem::Problem &problem,
 						 const std::string bc_method,
 						 const std::string &solver, const std::string &preconditioner, const json &solver_params);
@@ -90,8 +92,8 @@ namespace polyfem
 			const Obstacle &obstacle_;
 			const int n_basis_;
 			const int size_;
-			const std::vector<ElementBases> &bases_;
-			const std::vector<ElementBases> &gbases_;
+			const std::vector<basis::ElementBases> &bases_;
+			const std::vector<basis::ElementBases> &gbases_;
 			const AssemblyValsCache &ass_vals_cache_;
 			const std::string formulation_;
 			const problem::Problem &problem_;

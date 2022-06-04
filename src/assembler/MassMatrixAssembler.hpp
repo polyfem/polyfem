@@ -28,8 +28,8 @@ namespace polyfem
 				const int size,
 				const int n_basis,
 				const Density &density,
-				const std::vector<ElementBases> &bases,
-				const std::vector<ElementBases> &gbases,
+				const std::vector<basis::ElementBases> &bases,
+				const std::vector<basis::ElementBases> &gbases,
 				const AssemblyValsCache &cache,
 				StiffnessMatrix &mass) const;
 		};

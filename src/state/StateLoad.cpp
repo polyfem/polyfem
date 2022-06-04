@@ -13,6 +13,7 @@
 #include <igl/Timer.h>
 namespace polyfem
 {
+	using namespace basis;
 
 	void State::load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd &)> &boundary_marker, bool non_conforming, bool skip_boundary_sideset)
 	{

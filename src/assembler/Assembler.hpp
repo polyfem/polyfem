@@ -27,8 +27,8 @@ namespace polyfem
 			void assemble(
 				const bool is_volume,
 				const int n_basis,
-				const std::vector<ElementBases> &bases,
-				const std::vector<ElementBases> &gbases,
+				const std::vector<basis::ElementBases> &bases,
+				const std::vector<basis::ElementBases> &gbases,
 				const AssemblyValsCache &cache,
 				StiffnessMatrix &stiffness) const;
 
@@ -51,9 +51,9 @@ namespace polyfem
 				const bool is_volume,
 				const int n_psi_basis,
 				const int n_phi_basis,
-				const std::vector<ElementBases> &psi_bases,
-				const std::vector<ElementBases> &phi_bases,
-				const std::vector<ElementBases> &gbases,
+				const std::vector<basis::ElementBases> &psi_bases,
+				const std::vector<basis::ElementBases> &phi_bases,
+				const std::vector<basis::ElementBases> &gbases,
 				const AssemblyValsCache &psi_cache,
 				const AssemblyValsCache &phi_cache,
 				StiffnessMatrix &stiffness) const;
@@ -74,8 +74,8 @@ namespace polyfem
 			void assemble_grad(
 				const bool is_volume,
 				const int n_basis,
-				const std::vector<ElementBases> &bases,
-				const std::vector<ElementBases> &gbases,
+				const std::vector<basis::ElementBases> &bases,
+				const std::vector<basis::ElementBases> &gbases,
 				const AssemblyValsCache &cache,
 				const Eigen::MatrixXd &displacement,
 				Eigen::MatrixXd &rhs) const;
@@ -84,8 +84,8 @@ namespace polyfem
 				const bool is_volume,
 				const int n_basis,
 				const bool project_to_psd,
-				const std::vector<ElementBases> &bases,
-				const std::vector<ElementBases> &gbases,
+				const std::vector<basis::ElementBases> &bases,
+				const std::vector<basis::ElementBases> &gbases,
 				const AssemblyValsCache &cache,
 				const Eigen::MatrixXd &displacement,
 				SpareMatrixCache &mat_cache,
@@ -94,8 +94,8 @@ namespace polyfem
 			//assemble energy
 			double assemble(
 				const bool is_volume,
-				const std::vector<ElementBases> &bases,
-				const std::vector<ElementBases> &gbases,
+				const std::vector<basis::ElementBases> &bases,
+				const std::vector<basis::ElementBases> &gbases,
 				const AssemblyValsCache &cache,
 				const Eigen::MatrixXd &displacement) const;
 

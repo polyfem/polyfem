@@ -16,7 +16,7 @@ namespace polyfem
 		public:
 			// Weighted sum to express the current ("virtual") node as a linear-combination
 			// of the real (unknown) nodes
-			std::vector<Local2Global> global;
+			std::vector<basis::Local2Global> global;
 
 			// Evaluation of the basis over the quadrature points of the element
 			Eigen::MatrixXd val; // R^m

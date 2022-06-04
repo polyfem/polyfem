@@ -6,6 +6,8 @@
 
 namespace polyfem
 {
+	using namespace basis;
+
 	namespace assembler
 	{
 		void ElementAssemblyValues::finalize_global_element(const Eigen::MatrixXd &v)

@@ -21,8 +21,8 @@ namespace polyfem
 	{
 	public:
 		void initialize_grid(const polyfem::Mesh &mesh,
-							 const std::vector<polyfem::ElementBases> &gbases,
-							 const std::vector<polyfem::ElementBases> &bases,
+							 const std::vector<basis::ElementBases> &gbases,
+							 const std::vector<basis::ElementBases> &bases,
 							 const double &density_dx)
 		{
 			resolution = density_dx;
@@ -254,8 +254,8 @@ namespace polyfem
 		}
 
 		//         void initialize_solution(const polyfem::Mesh& mesh,
-		//         const std::vector<polyfem::ElementBases>& gbases,
-		//         const std::vector<polyfem::ElementBases>& bases,
+		//         const std::vector<basis::ElementBases>& gbases,
+		//         const std::vector<basis::ElementBases>& bases,
 		//         const std::shared_ptr<Problem> problem,
 		//         Eigen::MatrixXd& sol,
 		//         const Eigen::MatrixXd& local_pts)
@@ -332,8 +332,8 @@ namespace polyfem
 			return idx;
 		}
 
-		int trace_back(const std::vector<polyfem::ElementBases> &gbases,
-					   const std::vector<polyfem::ElementBases> &bases,
+		int trace_back(const std::vector<basis::ElementBases> &gbases,
+					   const std::vector<basis::ElementBases> &bases,
 					   const RowVectorNd &pos_1,
 					   const RowVectorNd &vel_1,
 					   RowVectorNd &pos_2,
@@ -347,8 +347,8 @@ namespace polyfem
 			return interpolator(gbases, bases, pos_2, vel_2, local_pos, sol);
 		}
 
-		int interpolator(const std::vector<polyfem::ElementBases> &gbases,
-						 const std::vector<polyfem::ElementBases> &bases,
+		int interpolator(const std::vector<basis::ElementBases> &gbases,
+						 const std::vector<basis::ElementBases> &bases,
 						 const RowVectorNd &pos,
 						 RowVectorNd &vel,
 						 Eigen::MatrixXd &local_pos,
@@ -417,8 +417,8 @@ namespace polyfem
 		}
 
 		void advection(const polyfem::Mesh &mesh,
-					   const std::vector<polyfem::ElementBases> &gbases,
-					   const std::vector<polyfem::ElementBases> &bases,
+					   const std::vector<basis::ElementBases> &gbases,
+					   const std::vector<basis::ElementBases> &bases,
 					   Eigen::MatrixXd &sol,
 					   const double dt,
 					   const Eigen::MatrixXd &local_pts,
@@ -470,8 +470,8 @@ namespace polyfem
 			sol.swap(new_sol);
 		}
 
-		void advect_density_exact(const std::vector<polyfem::ElementBases> &gbases,
-								  const std::vector<polyfem::ElementBases> &bases,
+		void advect_density_exact(const std::vector<basis::ElementBases> &gbases,
+								  const std::vector<basis::ElementBases> &bases,
 								  const std::shared_ptr<problem::Problem> problem,
 								  const double t,
 								  const double dt,
@@ -543,8 +543,8 @@ namespace polyfem
 			density.swap(new_density);
 		}
 
-		void advect_density(const std::vector<polyfem::ElementBases> &gbases,
-							const std::vector<polyfem::ElementBases> &bases,
+		void advect_density(const std::vector<basis::ElementBases> &gbases,
+							const std::vector<basis::ElementBases> &bases,
 							const Eigen::MatrixXd &sol,
 							const double dt,
 							const int RK = 3)
@@ -616,7 +616,7 @@ namespace polyfem
 			density.swap(new_density);
 		}
 
-		void advection_FLIP(const polyfem::Mesh &mesh, const std::vector<polyfem::ElementBases> &gbases, const std::vector<polyfem::ElementBases> &bases, Eigen::MatrixXd &sol, const double dt, const Eigen::MatrixXd &local_pts, const int order = 1)
+		void advection_FLIP(const polyfem::Mesh &mesh, const std::vector<basis::ElementBases> &gbases, const std::vector<basis::ElementBases> &bases, Eigen::MatrixXd &sol, const double dt, const Eigen::MatrixXd &local_pts, const int order = 1)
 		{
 			const int ppe = shape; // particle per element
 			const double FLIPRatio = 1;
@@ -851,7 +851,7 @@ namespace polyfem
 #endif
 		}
 
-		void advection_PIC(const polyfem::Mesh &mesh, const std::vector<polyfem::ElementBases> &gbases, const std::vector<polyfem::ElementBases> &bases, Eigen::MatrixXd &sol, const double dt, const Eigen::MatrixXd &local_pts, const int order = 1)
+		void advection_PIC(const polyfem::Mesh &mesh, const std::vector<basis::ElementBases> &gbases, const std::vector<basis::ElementBases> &bases, Eigen::MatrixXd &sol, const double dt, const Eigen::MatrixXd &local_pts, const int order = 1)
 		{
 			// to store new velocity and weights for particle grid transfer
 			Eigen::MatrixXd new_sol = Eigen::MatrixXd::Zero(sol.size(), 1);
@@ -1011,8 +1011,8 @@ namespace polyfem
 
 		void external_force(const polyfem::Mesh &mesh,
 							const assembler::AssemblerUtils &assembler,
-							const std::vector<polyfem::ElementBases> &gbases,
-							const std::vector<polyfem::ElementBases> &bases,
+							const std::vector<basis::ElementBases> &gbases,
+							const std::vector<basis::ElementBases> &bases,
 							const double dt,
 							Eigen::MatrixXd &sol,
 							const Eigen::MatrixXd &local_pts,
@@ -1114,9 +1114,9 @@ namespace polyfem
 		}
 
 		void projection(int n_bases,
-						const std::vector<polyfem::ElementBases> &gbases,
-						const std::vector<polyfem::ElementBases> &bases,
-						const std::vector<polyfem::ElementBases> &pressure_bases,
+						const std::vector<basis::ElementBases> &gbases,
+						const std::vector<basis::ElementBases> &bases,
+						const std::vector<basis::ElementBases> &pressure_bases,
 						const Eigen::MatrixXd &local_pts,
 						Eigen::MatrixXd &pressure,
 						Eigen::MatrixXd &sol)
@@ -1181,7 +1181,7 @@ namespace polyfem
 			}
 		}
 
-		long search_cell(const std::vector<polyfem::ElementBases> &gbases, const RowVectorNd &pos, Eigen::MatrixXd &local_pts)
+		long search_cell(const std::vector<basis::ElementBases> &gbases, const RowVectorNd &pos, Eigen::MatrixXd &local_pts)
 		{
 			Eigen::Matrix<long, Eigen::Dynamic, 1> pos_int(dim);
 			for (int d = 0; d < dim; d++)
@@ -1335,7 +1335,7 @@ namespace polyfem
 			}
 		}
 
-		void calculate_local_pts(const polyfem::ElementBases &gbase,
+		void calculate_local_pts(const basis::ElementBases &gbase,
 								 const int elem_idx,
 								 const RowVectorNd &pos,
 								 Eigen::MatrixXd &local_pos)

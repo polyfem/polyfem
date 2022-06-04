@@ -39,8 +39,8 @@ namespace polyfem
 			void assemble_problem(const std::string &assembler,
 								  const bool is_volume,
 								  const int n_basis,
-								  const std::vector<ElementBases> &bases,
-								  const std::vector<ElementBases> &gbases,
+								  const std::vector<basis::ElementBases> &bases,
+								  const std::vector<basis::ElementBases> &gbases,
 								  const AssemblyValsCache &cache,
 								  StiffnessMatrix &stiffness) const;
 			//mass matrix assembler, assembler is the name of the formulation
@@ -48,8 +48,8 @@ namespace polyfem
 									  const bool is_volume,
 									  const int n_basis,
 									  const Density &density,
-									  const std::vector<ElementBases> &bases,
-									  const std::vector<ElementBases> &gbases,
+									  const std::vector<basis::ElementBases> &bases,
+									  const std::vector<basis::ElementBases> &gbases,
 									  const AssemblyValsCache &cache,
 									  StiffnessMatrix &mass) const;
 
@@ -58,9 +58,9 @@ namespace polyfem
 										const bool is_volume,
 										const int n_psi_basis,
 										const int n_phi_basis,
-										const std::vector<ElementBases> &psi_bases,
-										const std::vector<ElementBases> &phi_bases,
-										const std::vector<ElementBases> &gbases,
+										const std::vector<basis::ElementBases> &psi_bases,
+										const std::vector<basis::ElementBases> &phi_bases,
+										const std::vector<basis::ElementBases> &gbases,
 										const AssemblyValsCache &psi_cache,
 										const AssemblyValsCache &phi_cache,
 										StiffnessMatrix &stiffness) const;
@@ -68,16 +68,16 @@ namespace polyfem
 			void assemble_pressure_problem(const std::string &assembler,
 										   const bool is_volume,
 										   const int n_basis,
-										   const std::vector<ElementBases> &bases,
-										   const std::vector<ElementBases> &gbases,
+										   const std::vector<basis::ElementBases> &bases,
+										   const std::vector<basis::ElementBases> &gbases,
 										   const AssemblyValsCache &cache,
 										   StiffnessMatrix &stiffness) const;
 
 			//Non linear energy, assembler is the name of the formulation
 			double assemble_energy(const std::string &assembler,
 								   const bool is_volume,
-								   const std::vector<ElementBases> &bases,
-								   const std::vector<ElementBases> &gbases,
+								   const std::vector<basis::ElementBases> &bases,
+								   const std::vector<basis::ElementBases> &gbases,
 								   const AssemblyValsCache &cache,
 								   const Eigen::MatrixXd &displacement) const;
 
@@ -85,8 +85,8 @@ namespace polyfem
 			void assemble_energy_gradient(const std::string &assembler,
 										  const bool is_volume,
 										  const int n_basis,
-										  const std::vector<ElementBases> &bases,
-										  const std::vector<ElementBases> &gbases,
+										  const std::vector<basis::ElementBases> &bases,
+										  const std::vector<basis::ElementBases> &gbases,
 										  const AssemblyValsCache &cache,
 										  const Eigen::MatrixXd &displacement,
 										  Eigen::MatrixXd &grad) const;
@@ -95,8 +95,8 @@ namespace polyfem
 										 const bool is_volume,
 										 const int n_basis,
 										 const bool project_to_psd,
-										 const std::vector<ElementBases> &bases,
-										 const std::vector<ElementBases> &gbases,
+										 const std::vector<basis::ElementBases> &bases,
+										 const std::vector<basis::ElementBases> &gbases,
 										 const AssemblyValsCache &cache,
 										 const Eigen::MatrixXd &displacement,
 										 SpareMatrixCache &mat_cache,
@@ -105,16 +105,16 @@ namespace polyfem
 			//plotting (eg von mises), assembler is the name of the formulation
 			void compute_scalar_value(const std::string &assembler,
 									  const int el_id,
-									  const ElementBases &bs,
-									  const ElementBases &gbs,
+									  const basis::ElementBases &bs,
+									  const basis::ElementBases &gbs,
 									  const Eigen::MatrixXd &local_pts,
 									  const Eigen::MatrixXd &fun,
 									  Eigen::MatrixXd &result) const;
 			//computes tensor, assembler is the name of the formulation
 			void compute_tensor_value(const std::string &assembler,
 									  const int el_id,
-									  const ElementBases &bs,
-									  const ElementBases &gbs,
+									  const basis::ElementBases &bs,
+									  const basis::ElementBases &gbs,
 									  const Eigen::MatrixXd &local_pts,
 									  const Eigen::MatrixXd &fun,
 									  Eigen::MatrixXd &result) const;

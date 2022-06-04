@@ -17,6 +17,7 @@
 
 using namespace polyfem;
 using namespace polyfem::assembler;
+using namespace polyfem::basis;
 
 namespace
 {
