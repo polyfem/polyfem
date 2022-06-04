@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/utils/MatrixUtils.hpp>
-#include <polyfem/RBFInterpolation.hpp>
+#include <polyfem/utils/RBFInterpolation.hpp>
 
 #include <catch2/catch.hpp>
 #include <iostream>

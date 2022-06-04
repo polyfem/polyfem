@@ -1,11 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/InterpolatedFunction.hpp>
-#include <polyfem/RBFInterpolation.hpp>
-#include <polyfem/Bessel.hpp>
+#include <polyfem/utils/InterpolatedFunction.hpp>
+#include <polyfem/utils/RBFInterpolation.hpp>
+#include <polyfem/utils/Bessel.hpp>
 #include <polyfem/utils/ExpressionValue.hpp>
 #include <polyfem/utils/MshReader.hpp>
 #include <polyfem/mesh/Mesh.hpp>
-#include <polyfem/VTUWriter.hpp>
+#include <polyfem/mesh/VTUWriter.hpp>
 
 #ifdef POLYFEM_WITH_REMESHING
 #include <wmtk/TriMesh.h>

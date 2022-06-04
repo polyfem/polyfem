@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <polyfem/TriQuadrature.hpp>
+#include <polyfem/quadrature/TriQuadrature.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
 
 #include <catch2/catch.hpp>

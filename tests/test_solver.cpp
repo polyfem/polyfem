@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <polyfem/TriQuadrature.hpp>
+#include <polyfem/quadrature/TriQuadrature.hpp>
 #include <polyfem/basis/FEBasis2d.hpp>
 
 #include <catch2/catch.hpp>
