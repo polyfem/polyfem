@@ -3,11 +3,11 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
-#include <polyfem/NonlinearSolver.hpp>
+#include "NonlinearSolver.hpp"
 #include <polysolve/LinearSolver.hpp>
-#include <polyfem/MatrixUtils.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
-#include <polyfem/Logger.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <igl/Timer.h>
 

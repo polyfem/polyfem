@@ -1,6 +1,6 @@
-#include <polyfem/ProblemWithSolution.hpp>
+#include "ProblemWithSolution.hpp"
 
-#include <polyfem/AssemblerUtils.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
 
 namespace polyfem
 {

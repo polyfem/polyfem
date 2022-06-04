@@ -1,11 +1,11 @@
-#include <polyfem/MaybeParallelFor.hpp>
+#include <polyfem/utils/MaybeParallelFor.hpp>
 
 #if defined(POLYFEM_WITH_TBB)
 #include <tbb/parallel_for.h>
 #include <tbb/parallel_reduce.h>
 #include <tbb/enumerable_thread_specific.h>
 #elif defined(POLYFEM_WITH_CPP_THREADS)
-#include <polyfem/par_for.hpp>
+#include <polyfem/utils/par_for.hpp>
 #include <execution>
 #else
 // Not using parallel for

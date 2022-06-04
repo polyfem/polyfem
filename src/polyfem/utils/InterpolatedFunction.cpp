@@ -1,4 +1,4 @@
-#include <polyfem/InterpolatedFunction.hpp>
+#include "InterpolatedFunction.hpp"
 
 #include <igl/in_element.h>
 #include <igl/barycentric_coordinates.h>

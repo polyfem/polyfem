@@ -1,4 +1,4 @@
-#include <polyfem/Basis.hpp>
+#include <polyfem/basis/Basis.hpp>
 
 #include <iostream>
 

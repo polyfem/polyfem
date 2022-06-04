@@ -1,27 +1,27 @@
 #pragma once
 
-#include <polyfem/ElementBases.hpp>
-#include <polyfem/ElementAssemblyValues.hpp>
-#include <polyfem/AssemblyValsCache.hpp>
-#include <polyfem/RhsAssembler.hpp>
-#include <polyfem/Problem.hpp>
-#include <polyfem/Mesh.hpp>
-#include <polyfem/Obstacle.hpp>
-#include <polyfem/RefElementSampler.hpp>
-#include <polyfem/LocalBoundary.hpp>
-#include <polyfem/InterfaceData.hpp>
-#include <polyfem/AssemblerUtils.hpp>
-#include <polyfem/ElasticityUtils.hpp>
+#include <polyfem/basis/ElementBases.hpp>
+#include <polyfem/assembler/ElementAssemblyValues.hpp>
+#include <polyfem/assembler/AssemblyValsCache.hpp>
+#include <polyfem/assembler/RhsAssembler.hpp>
+#include <polyfem/problem/Problem.hpp>
+#include <polyfem/mesh/Mesh.hpp>
+#include <polyfem/mesh/Obstacle.hpp>
+#include <polyfem/utils/RefElementSampler.hpp>
+#include <polyfem/mesh/LocalBoundary.hpp>
+#include <polyfem/basis/InterfaceData.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/Common.hpp>
-#include <polyfem/Logger.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 // Instead of including this do a forward declaration
 // #include <polyfem/NonlinearSolver.hpp>
 
-#include <polyfem/NCMesh2D.hpp>
-#include <polyfem/CMesh2D.hpp>
-#include <polyfem/Mesh3D.hpp>
-#include <polyfem/StringUtils.hpp>
+#include <polyfem/mesh2D/NCMesh2D.hpp>
+#include <polyfem/mesh2D/CMesh2D.hpp>
+#include <polyfem/mesh3D/Mesh3D.hpp>
+#include <polyfem/utils/StringUtils.hpp>
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>

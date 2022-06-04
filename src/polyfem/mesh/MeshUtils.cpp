@@ -1,12 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/MeshUtils.hpp>
+#include <polyfem/mesh/MeshUtils.hpp>
 
-#include <polyfem/StringUtils.hpp>
-#include <polyfem/Logger.hpp>
-#include <polyfem/MshReader.hpp>
-#include <polyfem/OBJReader.hpp>
-#include <polyfem/JSONUtils.hpp>
-#include <polyfem/MatrixUtils.hpp>
+#include <polyfem/utils/StringUtils.hpp>
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/MshReader.hpp>
+#include <polyfem/utils/OBJReader.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <unordered_set>
 

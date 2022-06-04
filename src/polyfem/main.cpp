@@ -1,17 +1,17 @@
 #include <CLI/CLI.hpp>
 #include <polyfem/State.hpp>
 #ifndef POLYFEM_NO_UI
-#include <polyfem/UIState.hpp>
+#include <polyfem/viewer/UIState.hpp>
 #endif
 
 #include <polysolve/LinearSolver.hpp>
-#include <polyfem/StringUtils.hpp>
-#include <polyfem/Logger.hpp>
+#include <polyfem/utils/StringUtils.hpp>
+#include <polyfem/utils/Logger.hpp>
 
-#include <polyfem/Problem.hpp>
-#include <polyfem/ImplicitTimeIntegrator.hpp>
-#include <polyfem/AssemblerUtils.hpp>
-#include <polyfem/JSONUtils.hpp>
+#include <polyfem/problem/Problem.hpp>
+#include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
 
 #include <geogram/basic/command_line.h>
 #include <geogram/basic/command_line_args.h>

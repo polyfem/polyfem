@@ -1,5 +1,5 @@
-#include <polyfem/VTUWriter.hpp>
-#include <polyfem/Logger.hpp>
+#include "VTUWriter.hpp"
+#include <polyfem/utils/Logger.hpp>
 namespace polyfem
 {
 	namespace mesh

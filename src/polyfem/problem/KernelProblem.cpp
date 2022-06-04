@@ -1,6 +1,6 @@
+#include "KernelProblem.hpp"
 #include <polyfem/State.hpp>
-#include <polyfem/KernelProblem.hpp>
-#include <polyfem/AssemblerUtils.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
 
 #include <iostream>
 #include <fstream>

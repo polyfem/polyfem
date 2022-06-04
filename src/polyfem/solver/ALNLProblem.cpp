@@ -1,9 +1,9 @@
-#include <polyfem/ALNLProblem.hpp>
+#include "ALNLProblem.hpp"
 
 #include <polysolve/LinearSolver.hpp>
 #include <polysolve/FEMSolver.hpp>
 
-#include <polyfem/Types.hpp>
+#include <polyfem/utils/Types.hpp>
 
 #include <ipc/ipc.hpp>
 #include <ipc/barrier/barrier.hpp>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/Mesh2D.hpp>
+#include <polyfem/mesh2D/Mesh2D.hpp>
 
 namespace polyfem
 {

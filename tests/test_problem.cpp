@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/Problem.hpp>
-#include <polyfem/AssemblerUtils.hpp>
+#include <polyfem/problem/Problem.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/Common.hpp>
 
 #include <catch2/catch.hpp>

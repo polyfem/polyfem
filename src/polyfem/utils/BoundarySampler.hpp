@@ -1,7 +1,7 @@
 #pragma once
 
-#include <polyfem/Mesh.hpp>
-#include <polyfem/LocalBoundary.hpp>
+#include <polyfem/mesh/Mesh.hpp>
+#include <polyfem/mesh/LocalBoundary.hpp>
 
 #include <Eigen/Dense>
 

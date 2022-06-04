@@ -1,15 +1,15 @@
 #include <polyfem/State.hpp>
 
-#include <polyfem/auto_p_bases.hpp>
-#include <polyfem/auto_q_bases.hpp>
+#include <polyfem/autogen/auto_p_bases.hpp>
+#include <polyfem/autogen/auto_q_bases.hpp>
 
-#include <polyfem/Logger.hpp>
-#include <polyfem/KernelProblem.hpp>
-#include <polyfem/par_for.hpp>
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/problem/KernelProblem.hpp>
+#include <polyfem/utils/par_for.hpp>
 
 #include <polysolve/LinearSolver.hpp>
 
-#include <polyfem/JSONUtils.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
 
 #include <geogram/basic/logger.h>
 #include <geogram/basic/command_line.h>

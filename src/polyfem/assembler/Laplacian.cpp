@@ -1,4 +1,4 @@
-#include <polyfem/Laplacian.hpp>
+#include "Laplacian.hpp"
 
 #include <iostream>
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/Quadrature.hpp>
+#include "Quadrature.hpp"
 #include <geogram/mesh/mesh.h>
 
 namespace polyfem

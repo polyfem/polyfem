@@ -1,16 +1,16 @@
 #include <polyfem/State.hpp>
 
-#include <polyfem/BoundarySampler.hpp>
+#include <polyfem/utils/BoundarySampler.hpp>
 
-#include <polyfem/HexQuadrature.hpp>
-#include <polyfem/QuadQuadrature.hpp>
-#include <polyfem/TetQuadrature.hpp>
-#include <polyfem/TriQuadrature.hpp>
+#include <polyfem/quadrature/HexQuadrature.hpp>
+#include <polyfem/quadrature/QuadQuadrature.hpp>
+#include <polyfem/quadrature/TetQuadrature.hpp>
+#include <polyfem/quadrature/TriQuadrature.hpp>
 
-#include <polyfem/auto_p_bases.hpp>
-#include <polyfem/auto_q_bases.hpp>
+#include <polyfem/autogen/auto_p_bases.hpp>
+#include <polyfem/autogen/auto_q_bases.hpp>
 
-#include <polyfem/Logger.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <igl/AABB.h>
 #include <igl/per_face_normals.h>

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <polyfem/Mesh3D.hpp>
-#include <polyfem/ElementBases.hpp>
-#include <polyfem/LocalBoundary.hpp>
-#include <polyfem/InterfaceData.hpp>
+#include <polyfem/mesh3D/Mesh3D.hpp>
+#include <polyfem/basis/ElementBases.hpp>
+#include <polyfem/mesh/LocalBoundary.hpp>
+#include <polyfem/basis/InterfaceData.hpp>
 
 #include <Eigen/Dense>
 #include <vector>

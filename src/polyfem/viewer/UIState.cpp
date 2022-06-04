@@ -1,18 +1,18 @@
 #include "UIState.hpp"
 
-#include <polyfem/CMesh2D.hpp>
-#include <polyfem/NCMesh2D.hpp>
-#include <polyfem/Mesh3D.hpp>
+#include <polyfem/mesh2D/CMesh2D.hpp>
+#include <polyfem/mesh2D/NCMesh2D.hpp>
+#include <polyfem/mesh3D/Mesh3D.hpp>
 
-#include <polyfem/AssemblerUtils.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
 
-#include <polyfem/ElasticProblem.hpp>
-#include <polyfem/RefElementSampler.hpp>
+#include <polyfem/problem/ElasticProblem.hpp>
+#include <polyfem/utils/RefElementSampler.hpp>
 
 // #include <polyfem/LinearSolver.hpp>
-#include <polyfem/EdgeSampler.hpp>
+#include <polyfem/utils/EdgeSampler.hpp>
 
-#include <polyfem/Logger.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <igl/per_face_normals.h>
 #include <igl/per_corner_normals.h>

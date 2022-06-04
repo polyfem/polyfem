@@ -1,5 +1,4 @@
-#ifndef QUADRATURE_HPP
-#define QUADRATURE_HPP
+#pragma once
 
 #include <Eigen/Dense>
 
@@ -12,5 +11,3 @@ namespace polyfem
 		Eigen::VectorXd weights;
 	};
 } // namespace polyfem
-
-#endif //QUADRATURE_HPP

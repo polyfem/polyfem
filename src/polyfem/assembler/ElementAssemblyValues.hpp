@@ -1,7 +1,7 @@
 #pragma once
 
-#include <polyfem/AssemblyValues.hpp>
-#include <polyfem/ElementBases.hpp>
+#include <polyfem/assembler/AssemblyValues.hpp>
+#include <polyfem/basis/ElementBases.hpp>
 
 #include <vector>
 

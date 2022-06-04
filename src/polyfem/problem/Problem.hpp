@@ -1,9 +1,9 @@
 #pragma once
 
-#include <polyfem/ElementBases.hpp>
-#include <polyfem/AssemblerUtils.hpp>
-#include <polyfem/LocalBoundary.hpp>
-#include <polyfem/Mesh.hpp>
+#include <polyfem/basis/ElementBases.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/mesh/LocalBoundary.hpp>
+#include <polyfem/mesh/Mesh.hpp>
 
 #include <polyfem/Common.hpp>
 

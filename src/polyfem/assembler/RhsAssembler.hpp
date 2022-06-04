@@ -1,13 +1,13 @@
 #pragma once
 
-#include <polyfem/ElementAssemblyValues.hpp>
-#include <polyfem/AssemblerUtils.hpp>
-#include <polyfem/Obstacle.hpp>
+#include <polyfem/assembler/ElementAssemblyValues.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/mesh/Obstacle.hpp>
 
-#include <polyfem/Problem.hpp>
-#include <polyfem/LocalBoundary.hpp>
-#include <polyfem/ElasticityUtils.hpp>
-#include <polyfem/Types.hpp>
+#include <polyfem/problem/Problem.hpp>
+#include <polyfem/mesh/LocalBoundary.hpp>
+#include <polyfem/utils/ElasticityUtils.hpp>
+#include <polyfem/utils/Types.hpp>
 
 #include <functional>
 #include <vector>

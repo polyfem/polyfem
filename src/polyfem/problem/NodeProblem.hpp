@@ -1,8 +1,8 @@
 #pragma once
 
-#include <polyfem/Problem.hpp>
-#include <polyfem/InterpolatedFunction.hpp>
-#include <polyfem/RBFInterpolation.hpp>
+#include "Problem.hpp"
+#include <polyfem/utils/InterpolatedFunction.hpp>
+#include <polyfem/utils/RBFInterpolation.hpp>
 
 #include <vector>
 #include <Eigen/Dense>

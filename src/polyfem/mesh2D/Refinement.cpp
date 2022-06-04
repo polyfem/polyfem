@@ -1,9 +1,9 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/Refinement.hpp>
-#include <polyfem/Navigation.hpp>
-#include <polyfem/MeshUtils.hpp>
-#include <polyfem/PolygonUtils.hpp>
-#include <polyfem/Logger.hpp>
+#include "Refinement.hpp"
+#include "Navigation.hpp"
+#include <polyfem/mesh/MeshUtils.hpp>
+#include "PolygonUtils.hpp"
+#include <polyfem/utils/Logger.hpp>
 
 #include <iostream>
 #include <vector>

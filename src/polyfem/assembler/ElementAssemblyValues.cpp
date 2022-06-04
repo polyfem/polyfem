@@ -1,5 +1,5 @@
-#include <polyfem/ElementAssemblyValues.hpp>
-#include <polyfem/Logger.hpp>
+#include <polyfem/assembler/ElementAssemblyValues.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <igl/Timer.h>
 #include <memory>

@@ -1,15 +1,15 @@
-#include <polyfem/SplineBasis3d.hpp>
+#include "SplineBasis3d.hpp"
 
-#include <polyfem/QuadraticBSpline3d.hpp>
-#include <polyfem/HexQuadrature.hpp>
+#include "function/QuadraticBSpline3d.hpp"
+#include <polyfem/quadrature/HexQuadrature.hpp>
 
 #include <polysolve/LinearSolver.hpp>
-#include <polyfem/MeshNodes.hpp>
-#include <polyfem/FEBasis3d.hpp>
-#include <polyfem/Types.hpp>
+#include <polyfem/mesh/MeshNodes.hpp>
+#include <polyfem/basis/FEBasis3d.hpp>
+#include <polyfem/utils/Types.hpp>
 
 #include <polyfem/Common.hpp>
-#include <polyfem/auto_q_bases.hpp>
+#include <polyfem/autogen/auto_q_bases.hpp>
 
 #include <Eigen/Sparse>
 

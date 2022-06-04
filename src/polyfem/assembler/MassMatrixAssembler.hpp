@@ -1,8 +1,8 @@
 #pragma once
 
-#include <polyfem/ElementAssemblyValues.hpp>
-#include <polyfem/AssemblyValsCache.hpp>
-#include <polyfem/ElasticityUtils.hpp>
+#include <polyfem/assembler/ElementAssemblyValues.hpp>
+#include <polyfem/assembler/AssemblyValsCache.hpp>
+#include <polyfem/utils/ElasticityUtils.hpp>
 
 #include <Eigen/Sparse>
 #include <vector>

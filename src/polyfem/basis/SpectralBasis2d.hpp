@@ -1,11 +1,11 @@
 #pragma once
 
-#include <polyfem/CMesh2D.hpp>
-#include <polyfem/NCMesh2D.hpp>
-#include <polyfem/ElementBases.hpp>
-#include <polyfem/LocalBoundary.hpp>
+#include <polyfem/mesh2D/CMesh2D.hpp>
+#include <polyfem/mesh2D/NCMesh2D.hpp>
+#include <polyfem/basis/ElementBases.hpp>
+#include <polyfem/mesh/LocalBoundary.hpp>
 
-#include <polyfem/InterfaceData.hpp>
+#include <polyfem/basis/InterfaceData.hpp>
 
 #include <Eigen/Dense>
 #include <vector>

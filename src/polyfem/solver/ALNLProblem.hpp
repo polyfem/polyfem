@@ -1,8 +1,8 @@
 #pragma once
 
-#include <polyfem/NLProblem.hpp>
-#include <polyfem/AssemblerUtils.hpp>
-#include <polyfem/RhsAssembler.hpp>
+#include "NLProblem.hpp"
+#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/assembler/RhsAssembler.hpp>
 #include <polyfem/State.hpp>
 
 #include <cppoptlib/problem.h>
@@ -29,9 +29,9 @@ namespace polyfem
 
 		bool stop(const TVector &x) override;
 
-#include <polyfem/DisableWarnings.hpp>
+#include <polyfem/utils/DisableWarnings.hpp>
 		void hessian_full(const TVector &x, THessian &gradv) override;
-#include <polyfem/EnableWarnings.hpp>
+#include <polyfem/utils/EnableWarnings.hpp>
 
 	private:
 		double weight_;

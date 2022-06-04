@@ -1,16 +1,16 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
-#include <polyfem/ElasticityUtils.hpp>
+#include <polyfem/utils/ElasticityUtils.hpp>
 
-#include <polyfem/LinearElasticity.hpp>
-// #include <polyfem/SaintVenantElasticity.hpp>
-#include <polyfem/NeoHookeanElasticity.hpp>
+#include "LinearElasticity.hpp"
+// #include "SaintVenantElasticity.hpp"
+#include "NeoHookeanElasticity.hpp"
 
-#include <polyfem/ElementAssemblyValues.hpp>
-#include <polyfem/ElementBases.hpp>
-#include <polyfem/AutodiffTypes.hpp>
-#include <polyfem/Types.hpp>
+#include <polyfem/assembler/ElementAssemblyValues.hpp>
+#include <polyfem/basis/ElementBases.hpp>
+#include <polyfem/utils/AutodiffTypes.hpp>
+#include <polyfem/utils/Types.hpp>
 
 #include <Eigen/Dense>
 #include <array>

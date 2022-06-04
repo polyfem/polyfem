@@ -1,10 +1,10 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
-#include <polyfem/Mesh.hpp>
+#include <polyfem/mesh/Mesh.hpp>
 
-#include <polyfem/Navigation3D.hpp>
-#include <polyfem/Mesh3DStorage.hpp>
+#include "Navigation3D.hpp"
+#include "Mesh3DStorage.hpp"
 #include <geogram/mesh/mesh.h>
 #include <iostream>
 #include <Eigen/Dense>

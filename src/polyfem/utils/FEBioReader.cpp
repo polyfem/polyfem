@@ -1,12 +1,12 @@
-#include <polyfem/FEBioReader.hpp>
+#include "FEBioReader.hpp"
 
-#include <polyfem/GenericProblem.hpp>
-#include <polyfem/AssemblerUtils.hpp>
-#include <polyfem/RBFInterpolation.hpp>
+#include <polyfem/problem/GenericProblem.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/utils/RBFInterpolation.hpp>
 
-#include <polyfem/StringUtils.hpp>
-#include <polyfem/MatrixUtils.hpp>
-#include <polyfem/Logger.hpp>
+#include <polyfem/utils/StringUtils.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <igl/Timer.h>
 

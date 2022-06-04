@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <polyfem/TriQuadrature.hpp>
-#include <polyfem/FEBasis2d.hpp>
+#include <polyfem/basis/FEBasis2d.hpp>
 
 #include <catch2/catch.hpp>
 #include <iostream>

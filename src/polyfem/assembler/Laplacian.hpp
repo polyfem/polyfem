@@ -1,9 +1,9 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
-#include <polyfem/AutodiffTypes.hpp>
+#include <polyfem/utils/AutodiffTypes.hpp>
 
-#include <polyfem/ElementAssemblyValues.hpp>
+#include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <Eigen/Dense>
 
 //local assembler for laplace equation

@@ -150,7 +150,7 @@ polyfem_autogen(polyfem q_bases.py auto_q_bases)
 polyfem_autogen(polyfem elasticity_rhs.py auto_elasticity_rhs)
 
 # Public include directory for polyfem
-target_include_directories(polyfem PUBLIC ${PROJECT_BINARY_DIR}/include)
+target_include_directories(polyfem PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # Extra warnings
 target_link_libraries(polyfem PRIVATE warnings::all)

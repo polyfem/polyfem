@@ -1,7 +1,7 @@
 #pragma once
 
-#include <polyfem/Mesh.hpp>
-#include <polyfem/Mesh3D.hpp>
+#include <polyfem/mesh/Mesh.hpp>
+#include <polyfem/mesh3D/Mesh3D.hpp>
 #include <geogram/mesh/mesh.h>
 #include <Eigen/Dense>
 #include <vector>

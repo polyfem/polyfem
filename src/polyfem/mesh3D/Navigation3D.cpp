@@ -1,4 +1,4 @@
-#include <polyfem/Navigation3D.hpp>
+#include "Navigation3D.hpp"
 
 // #include <igl/Timer.h>
 #include <algorithm>

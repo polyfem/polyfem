@@ -26,8 +26,8 @@ set(SOURCES
 	PolygonalBasis2d.hpp
 	PolygonalBasis3d.cpp
 	PolygonalBasis3d.hpp
-	SpectralBasis2d.cpp
-	SpectralBasis2d.hpp
+	# SpectralBasis2d.cpp
+	# SpectralBasis2d.hpp
 	SplineBasis2d.cpp
 	SplineBasis2d.hpp
 	SplineBasis3d.cpp
@@ -35,6 +35,5 @@ set(SOURCES
 )
 
 prepend_current_path(SOURCES)
-polyfem_copy_headers(${SOURCES})
 polyfem_set_source_group(${SOURCES})
 target_sources(polyfem PRIVATE ${SOURCES})

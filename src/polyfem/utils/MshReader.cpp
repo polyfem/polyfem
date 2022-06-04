@@ -1,7 +1,7 @@
 #include "MshReader.hpp"
 
-#include <polyfem/Logger.hpp>
-#include <polyfem/StringUtils.hpp>
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/StringUtils.hpp>
 
 #include <mshio/mshio.h>
 

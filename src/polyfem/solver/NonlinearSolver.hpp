@@ -3,10 +3,10 @@
 #include <polyfem/Common.hpp>
 
 // Line search methods
-#include <polyfem/LineSearch.hpp>
+#include "line_search/LineSearch.hpp"
 
-#include <polyfem/Logger.hpp>
-#include <polyfem/Timer.hpp>
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/Timer.hpp>
 
 #include <cppoptlib/solver/isolver.h>
 

@@ -1,6 +1,6 @@
-#include <polyfem/ExpressionValue.hpp>
-#include <polyfem/Logger.hpp>
-#include <polyfem/MatrixUtils.hpp>
+#include "ExpressionValue.hpp"
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <igl/PI.h>
 

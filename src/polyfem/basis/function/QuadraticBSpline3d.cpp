@@ -1,4 +1,4 @@
-#include <polyfem/QuadraticBSpline3d.hpp>
+#include "QuadraticBSpline3d.hpp"
 
 namespace polyfem
 {

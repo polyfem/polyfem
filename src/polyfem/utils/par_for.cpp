@@ -1,4 +1,4 @@
-#include <polyfem/par_for.hpp>
+#include "par_for.hpp"
 
 #include <vector>
 

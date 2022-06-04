@@ -1,4 +1,4 @@
-#include <polyfem/ElementBases.hpp>
+#include <polyfem/basis/ElementBases.hpp>
 
 namespace polyfem
 {

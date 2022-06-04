@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/ElementAssemblyValues.hpp>
+#include <polyfem/assembler/ElementAssemblyValues.hpp>
 
 namespace polyfem
 {

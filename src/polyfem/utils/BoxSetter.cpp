@@ -1,8 +1,8 @@
-#include <polyfem/BoxSetter.hpp>
+#include "BoxSetter.hpp"
 
-#include <polyfem/Logger.hpp>
-#include <polyfem/Types.hpp>
-#include <polyfem/JSONUtils.hpp>
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/Types.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
 
 #include <memory>
 

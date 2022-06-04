@@ -1,7 +1,6 @@
-#ifndef TET_QUADRATURE_HPP
-#define TET_QUADRATURE_HPP
+#pragma once
 
-#include <polyfem/Quadrature.hpp>
+#include "Quadrature.hpp"
 
 namespace polyfem
 {
@@ -13,5 +12,3 @@ namespace polyfem
 		void get_quadrature(const int order, Quadrature &quad);
 	};
 } // namespace polyfem
-
-#endif //TET_QUADRATURE_HPP

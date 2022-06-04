@@ -1,7 +1,7 @@
 #pragma once
 
-#include <polyfem/Quadrature.hpp>
-#include <polyfem/AssemblerUtils.hpp>
+#include <polyfem/quadrature/Quadrature.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
 #include <Eigen/Dense>
 
 namespace polyfem

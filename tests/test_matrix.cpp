@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/MatrixUtils.hpp>
-#include <polyfem/auto_eigs.hpp>
-#include <polyfem/AutodiffTypes.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/autogen/auto_eigs.hpp>
+#include <polyfem/utils/AutodiffTypes.hpp>
 
 #include <iostream>
 #include <cmath>

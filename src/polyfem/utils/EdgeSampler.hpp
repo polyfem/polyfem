@@ -1,5 +1,4 @@
-#ifndef EDGE_SAMPLER_HPP
-#define EDGE_SAMPLER_HPP
+#pragma once
 
 #include <Eigen/Dense>
 
@@ -16,5 +15,3 @@ namespace polyfem
 		static void sample_3d_cube(const int resolution, Eigen::MatrixXd &samples);
 	};
 } // namespace polyfem
-
-#endif //EDGE_SAMPLER_HPP

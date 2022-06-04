@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/Quadrature.hpp>
+#include <polyfem/quadrature/Quadrature.hpp>
 #include <Eigen/Dense>
 
 namespace polyfem

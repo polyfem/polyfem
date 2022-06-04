@@ -1,16 +1,16 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/PolygonalBasis3d.hpp>
-#include <polyfem/PolyhedronQuadrature.hpp>
-#include <polyfem/FEBasis3d.hpp>
-#include <polyfem/MeshUtils.hpp>
-#include <polyfem/Refinement.hpp>
-#include <polyfem/RefElementSampler.hpp>
-#include <polyfem/RBFWithLinear.hpp>
-#include <polyfem/RBFWithQuadratic.hpp>
-#include <polyfem/RBFWithQuadraticLagrange.hpp>
-#include <polyfem/Logger.hpp>
+#include "PolygonalBasis3d.hpp"
+#include <polyfem/quadrature/PolyhedronQuadrature.hpp>
+#include <polyfem/basis/FEBasis3d.hpp>
+#include <polyfem/mesh/MeshUtils.hpp>
+#include <polyfem/mesh2D/Refinement.hpp>
+#include <polyfem/utils/RefElementSampler.hpp>
+#include "function/RBFWithLinear.hpp"
+#include "function/RBFWithQuadratic.hpp"
+#include "function/RBFWithQuadraticLagrange.hpp"
+#include <polyfem/utils/Logger.hpp>
 
-#include <polyfem/auto_q_bases.hpp>
+#include <polyfem/autogen/auto_q_bases.hpp>
 
 #include <igl/per_vertex_normals.h>
 #include <random>

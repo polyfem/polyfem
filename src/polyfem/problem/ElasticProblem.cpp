@@ -1,4 +1,4 @@
-#include <polyfem/ElasticProblem.hpp>
+#include "ElasticProblem.hpp"
 #include <polyfem/State.hpp>
 
 #include <iostream>

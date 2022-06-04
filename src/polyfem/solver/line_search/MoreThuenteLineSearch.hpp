@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/LineSearch.hpp>
+#include "LineSearch.hpp"
 
 #include <cppoptlib/linesearch/morethuente.h>
 

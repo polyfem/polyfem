@@ -1,17 +1,17 @@
-#include <polyfem/Problem.hpp>
+#include "Problem.hpp"
 
-#include <polyfem/ProblemWithSolution.hpp>
-#include <polyfem/MiscProblem.hpp>
-#include <polyfem/FrankeProblem.hpp>
-#include <polyfem/ElasticProblem.hpp>
-#include <polyfem/PointBasedProblem.hpp>
-#include <polyfem/GenericProblem.hpp>
-#include <polyfem/KernelProblem.hpp>
-#include <polyfem/StokesProblem.hpp>
-#include <polyfem/TestProblem.hpp>
-#include <polyfem/NodeProblem.hpp>
+#include "ProblemWithSolution.hpp"
+#include "MiscProblem.hpp"
+#include "FrankeProblem.hpp"
+#include "ElasticProblem.hpp"
+#include "PointBasedProblem.hpp"
+#include "GenericProblem.hpp"
+#include "KernelProblem.hpp"
+#include "StokesProblem.hpp"
+#include "TestProblem.hpp"
+#include "NodeProblem.hpp"
 
-#include <polyfem/Logger.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <memory>
 #include <iostream>

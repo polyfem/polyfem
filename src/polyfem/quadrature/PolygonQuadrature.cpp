@@ -1,5 +1,5 @@
-#include <polyfem/PolygonQuadrature.hpp>
-#include <polyfem/TriQuadrature.hpp>
+#include "PolygonQuadrature.hpp"
+#include "TriQuadrature.hpp"
 
 #include <vector>
 #include <cassert>

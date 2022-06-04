@@ -1,10 +1,10 @@
 #pragma once
 
-#include <polyfem/Basis.hpp>
-#include <polyfem/Quadrature.hpp>
-#include <polyfem/Mesh.hpp>
+#include <polyfem/basis/Basis.hpp>
+#include <polyfem/quadrature/Quadrature.hpp>
+#include <polyfem/mesh/Mesh.hpp>
 
-#include <polyfem/AssemblyValues.hpp>
+#include <polyfem/assembler/AssemblyValues.hpp>
 
 #include <vector>
 

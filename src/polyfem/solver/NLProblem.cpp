@@ -1,11 +1,11 @@
-#include <polyfem/NLProblem.hpp>
+#include "NLProblem.hpp"
 
 #include <polysolve/LinearSolver.hpp>
 #include <polysolve/FEMSolver.hpp>
 
-#include <polyfem/Types.hpp>
-#include <polyfem/Timer.hpp>
-#include <polyfem/MatrixUtils.hpp>
+#include <polyfem/utils/Types.hpp>
+#include <polyfem/utils/Timer.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <ipc/ipc.hpp>
 #include <ipc/barrier/barrier.hpp>

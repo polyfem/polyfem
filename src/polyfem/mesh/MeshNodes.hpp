@@ -1,10 +1,10 @@
 #pragma once
 
-#include <polyfem/Mesh.hpp>
-#include <polyfem/Types.hpp>
+#include <polyfem/mesh/Mesh.hpp>
+#include <polyfem/utils/Types.hpp>
 
-#include <polyfem/Navigation.hpp>
-#include <polyfem/Navigation3D.hpp>
+#include <polyfem/mesh2D/Navigation.hpp>
+#include <polyfem/mesh3D/Navigation3D.hpp>
 
 #include <Eigen/Dense>
 

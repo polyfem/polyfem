@@ -1,11 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/FEBasis2d.hpp>
-#include <polyfem/TriQuadrature.hpp>
-#include <polyfem/QuadQuadrature.hpp>
-#include <polyfem/auto_p_bases.hpp>
-#include <polyfem/auto_q_bases.hpp>
+#include "FEBasis2d.hpp"
 
-#include <polyfem/MaybeParallelFor.hpp>
+#include <polyfem/quadrature/TriQuadrature.hpp>
+#include <polyfem/quadrature/QuadQuadrature.hpp>
+#include <polyfem/autogen/auto_p_bases.hpp>
+#include <polyfem/autogen/auto_q_bases.hpp>
+
+#include <polyfem/utils/MaybeParallelFor.hpp>
 
 #include <cassert>
 #include <array>

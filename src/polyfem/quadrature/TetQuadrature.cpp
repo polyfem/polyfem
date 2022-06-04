@@ -1,5 +1,5 @@
-#include <polyfem/TetQuadrature.hpp>
-#include <polyfem/LineQuadrature.hpp>
+#include "TetQuadrature.hpp"
+#include "LineQuadrature.hpp"
 
 #include <vector>
 #include <cassert>
@@ -14,7 +14,7 @@ namespace polyfem
 		{
 			switch (order)
 			{
-#include <polyfem/auto_tetrahedron.ipp>
+#include <polyfem/autogen/auto_tetrahedron.ipp>
 
 			default:
 				assert(false);

@@ -1,5 +1,5 @@
-#include <polyfem/AssemblyValsCache.hpp>
-#include <polyfem/MaybeParallelFor.hpp>
+#include <polyfem/assembler/AssemblyValsCache.hpp>
+#include <polyfem/utils/MaybeParallelFor.hpp>
 
 namespace polyfem
 {

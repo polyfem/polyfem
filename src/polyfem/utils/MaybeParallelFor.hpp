@@ -5,7 +5,7 @@
 #include <tbb/parallel_reduce.h>
 #include <tbb/enumerable_thread_specific.h>
 #elif defined(POLYFEM_WITH_CPP_THREADS)
-#include <polyfem/par_for.hpp>
+#include <polyfem/utils/par_for.hpp>
 #else
 // Not using parallel for
 #endif
@@ -31,4 +31,4 @@ namespace polyfem
 
 } // namespace polyfem
 
-#include <polyfem/MaybeParallelFor.tpp>
+#include "MaybeParallelFor.tpp"

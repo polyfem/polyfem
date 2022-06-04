@@ -1,10 +1,10 @@
 #pragma once
 
-#include <polyfem/Mesh3D.hpp>
-#include <polyfem/AssemblerUtils.hpp>
-#include <polyfem/ElementBases.hpp>
-#include <polyfem/ElementAssemblyValues.hpp>
-#include <polyfem/InterfaceData.hpp>
+#include <polyfem/mesh3D/Mesh3D.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/basis/ElementBases.hpp>
+#include <polyfem/assembler/ElementAssemblyValues.hpp>
+#include <polyfem/basis/InterfaceData.hpp>
 
 #include <Eigen/Dense>
 #include <vector>

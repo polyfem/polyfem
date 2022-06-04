@@ -1,13 +1,13 @@
 #pragma once
 
-#include <polyfem/ElementBases.hpp>
-#include <polyfem/CMesh2D.hpp>
-#include <polyfem/NCMesh2D.hpp>
-#include <polyfem/LocalBoundary.hpp>
-#include <polyfem/InterfaceData.hpp>
-#include <polyfem/Navigation.hpp>
+#include <polyfem/basis/ElementBases.hpp>
+#include <polyfem/mesh2D/CMesh2D.hpp>
+#include <polyfem/mesh2D/NCMesh2D.hpp>
+#include <polyfem/mesh/LocalBoundary.hpp>
+#include <polyfem/basis/InterfaceData.hpp>
+#include <polyfem/mesh2D/Navigation.hpp>
 
-#include <polyfem/MeshNodes.hpp>
+#include <polyfem/mesh/MeshNodes.hpp>
 
 #include <Eigen/Dense>
 #include <vector>

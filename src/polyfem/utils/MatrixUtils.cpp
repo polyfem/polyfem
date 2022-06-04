@@ -1,7 +1,7 @@
-#include <polyfem/MatrixUtils.hpp>
+#include "MatrixUtils.hpp"
 
-#include <polyfem/MaybeParallelFor.hpp>
-#include <polyfem/Logger.hpp>
+#include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <igl/list_to_matrix.h>
 

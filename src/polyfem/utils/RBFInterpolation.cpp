@@ -1,6 +1,6 @@
 #include "RBFInterpolation.hpp"
 
-#include <polyfem/Logger.hpp>
+#include <polyfem/utils/Logger.hpp>
 #include <cmath>
 #include <iostream>
 

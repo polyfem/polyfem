@@ -1,4 +1,4 @@
-#include <polyfem/MiscProblem.hpp>
+#include "MiscProblem.hpp"
 
 #include <iostream>
 

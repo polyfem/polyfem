@@ -1,4 +1,4 @@
-#include <polyfem/StringUtils.hpp>
+#include "StringUtils.hpp"
 #include <iomanip>
 #include <algorithm>
 #include <functional>

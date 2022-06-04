@@ -1,12 +1,12 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
-#include <polyfem/LocalBoundary.hpp>
-#include <polyfem/Problem.hpp>
+#include <polyfem/mesh/LocalBoundary.hpp>
+#include <polyfem/problem/Problem.hpp>
 #include <polysolve/FEMSolver.hpp>
-#include <polyfem/Logger.hpp>
+#include <polyfem/utils/Logger.hpp>
 
-#include <polyfem/AssemblerUtils.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
 #include <memory>
 
 #ifdef POLYFEM_WITH_TBB

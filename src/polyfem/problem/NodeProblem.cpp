@@ -1,5 +1,5 @@
-#include <polyfem/NodeProblem.hpp>
-#include <polyfem/Logger.hpp>
+#include "NodeProblem.hpp"
+#include <polyfem/utils/Logger.hpp>
 
 #include <iostream>
 #include <fstream>

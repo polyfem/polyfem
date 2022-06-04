@@ -1,5 +1,5 @@
-#include <polyfem/AssemblerUtils.hpp>
-#include <polyfem/Logger.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <unsupported/Eigen/SparseExtra>
 

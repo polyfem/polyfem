@@ -1,22 +1,22 @@
-#include <polyfem/Assembler.hpp>
+#include "Assembler.hpp"
 
-#include <polyfem/Laplacian.hpp>
-#include <polyfem/Helmholtz.hpp>
-#include <polyfem/Bilaplacian.hpp>
+#include "Laplacian.hpp"
+#include "Helmholtz.hpp"
+#include "Bilaplacian.hpp"
 
-#include <polyfem/LinearElasticity.hpp>
-#include <polyfem/HookeLinearElasticity.hpp>
-#include <polyfem/SaintVenantElasticity.hpp>
-#include <polyfem/NeoHookeanElasticity.hpp>
-#include <polyfem/MultiModel.hpp>
-// #include <polyfem/OgdenElasticity.hpp>
+#include "LinearElasticity.hpp"
+#include "HookeLinearElasticity.hpp"
+#include "SaintVenantElasticity.hpp"
+#include "NeoHookeanElasticity.hpp"
+#include "MultiModel.hpp"
+// #include "OgdenElasticity.hpp"
 
-#include <polyfem/Stokes.hpp>
-#include <polyfem/NavierStokes.hpp>
-#include <polyfem/IncompressibleLinElast.hpp>
+#include "Stokes.hpp"
+#include "NavierStokes.hpp"
+#include "IncompressibleLinElast.hpp"
 
-#include <polyfem/Logger.hpp>
-#include <polyfem/MaybeParallelFor.hpp>
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/MaybeParallelFor.hpp>
 
 #include <igl/Timer.h>
 

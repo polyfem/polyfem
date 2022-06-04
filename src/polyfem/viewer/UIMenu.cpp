@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "UIState.hpp"
 #include <polysolve/LinearSolver.hpp>
-#include <polyfem/StringUtils.hpp>
-#include <polyfem/Mesh3D.hpp>
-#include <polyfem/AssemblerUtils.hpp>
-#include <polyfem/KernelProblem.hpp>
+#include <polyfem/utils/StringUtils.hpp>
+#include <polyfem/mesh3D/Mesh3D.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/problem/KernelProblem.hpp>
 
 #include <igl/colormap.h>
 #include <imgui/imgui.h>

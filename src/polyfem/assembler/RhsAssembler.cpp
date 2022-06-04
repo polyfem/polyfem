@@ -1,10 +1,10 @@
-#include <polyfem/RhsAssembler.hpp>
-#include <polyfem/MaybeParallelFor.hpp>
+#include "RhsAssembler.hpp"
+#include <polyfem/utils/MaybeParallelFor.hpp>
 
-#include <polyfem/BoundarySampler.hpp>
+#include <polyfem/utils/BoundarySampler.hpp>
 #include <polysolve/LinearSolver.hpp>
 
-#include <polyfem/Logger.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <Eigen/Sparse>
 

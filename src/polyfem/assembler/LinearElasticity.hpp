@@ -2,11 +2,11 @@
 
 #include <polyfem/Common.hpp>
 
-#include <polyfem/ElementAssemblyValues.hpp>
-#include <polyfem/ElementBases.hpp>
-#include <polyfem/ElasticityUtils.hpp>
+#include <polyfem/assembler/ElementAssemblyValues.hpp>
+#include <polyfem/basis/ElementBases.hpp>
+#include <polyfem/utils/ElasticityUtils.hpp>
 
-#include <polyfem/AutodiffTypes.hpp>
+#include <polyfem/utils/AutodiffTypes.hpp>
 
 #include <Eigen/Dense>
 #include <functional>

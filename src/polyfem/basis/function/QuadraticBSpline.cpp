@@ -1,4 +1,4 @@
-#include <polyfem/QuadraticBSpline.hpp>
+#include "QuadraticBSpline.hpp"
 
 #include <cmath>
 

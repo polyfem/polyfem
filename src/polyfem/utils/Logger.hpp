@@ -1,10 +1,10 @@
 #pragma once
 
-#include <polyfem/DisableWarnings.hpp>
+#include <polyfem/utils/DisableWarnings.hpp>
 #include <spdlog/fmt/bundled/ranges.h>
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
-#include <polyfem/EnableWarnings.hpp>
+#include <polyfem/utils/EnableWarnings.hpp>
 
 namespace polyfem
 {

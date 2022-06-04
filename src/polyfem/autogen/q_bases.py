@@ -140,7 +140,7 @@ if __name__ == "__main__":
     orders = [0, 1, 2, 3, -2]
 
 
-    cpp = "#include <polyfem/auto_q_bases.hpp>\n\n\n"
+    cpp = "#include \"auto_q_bases.hpp\"\n\n\n"
     cpp = cpp + "namespace polyfem {\nnamespace autogen " + "{\nnamespace " + "{\n"
 
     hpp = "#pragma once\n\n#include <Eigen/Dense>\n\n"

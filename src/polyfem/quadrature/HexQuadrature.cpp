@@ -1,5 +1,5 @@
-#include <polyfem/HexQuadrature.hpp>
-#include <polyfem/LineQuadrature.hpp>
+#include "HexQuadrature.hpp"
+#include "LineQuadrature.hpp"
 
 #include <vector>
 #include <cassert>

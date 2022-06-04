@@ -1,7 +1,7 @@
 #include <polyfem/State.hpp>
 
-#include <polyfem/auto_p_bases.hpp>
-#include <polyfem/auto_q_bases.hpp>
+#include <polyfem/autogen/auto_p_bases.hpp>
+#include <polyfem/autogen/auto_q_bases.hpp>
 
 namespace polyfem
 {

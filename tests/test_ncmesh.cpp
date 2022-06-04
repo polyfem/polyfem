@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/State.hpp>
-#include <polyfem/auto_p_bases.hpp>
-#include <polyfem/auto_q_bases.hpp>
+#include <polyfem/autogen/auto_p_bases.hpp>
+#include <polyfem/autogen/auto_q_bases.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -10,7 +10,7 @@
 #include <Eigen/Dense>
 #include <unsupported/Eigen/SparseExtra>
 
-#include <polyfem/MaybeParallelFor.hpp>
+#include <polyfem/utils/MaybeParallelFor.hpp>
 
 #include <catch2/catch.hpp>
 

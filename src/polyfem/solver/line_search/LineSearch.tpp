@@ -1,10 +1,10 @@
 #pragma once
 
-#include <polyfem/LineSearch.hpp>
-#include <polyfem/ArmijoLineSearch.hpp>
-#include <polyfem/BacktrackingLineSearch.hpp>
-#include <polyfem/CppOptArmijoLineSearch.hpp>
-#include <polyfem/MoreThuenteLineSearch.hpp>
+#include "LineSearch.hpp"
+#include "ArmijoLineSearch.hpp"
+#include "BacktrackingLineSearch.hpp"
+#include "CppOptArmijoLineSearch.hpp"
+#include "MoreThuenteLineSearch.hpp"
 
 namespace polyfem
 {

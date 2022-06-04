@@ -1,4 +1,4 @@
-#include <polyfem/EdgeSampler.hpp>
+#include "EdgeSampler.hpp"
 
 namespace polyfem
 {

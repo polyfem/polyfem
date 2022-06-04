@@ -21,7 +21,6 @@ set(SOURCES
 	auto_tetrahedron.ipp
 	auto_triangle.ipp
 )
-polyfem_copy_headers(${N_BASES})
 add_library(lib_n_bases ${N_BASES})
 target_include_directories(lib_n_bases PRIVATE ${PROJECT_BINARY_DIR}/include)
 
@@ -30,7 +29,6 @@ target_link_libraries(lib_n_bases PRIVATE Eigen3::Eigen)
 prepend_current_path(SOURCES)
 prepend_current_path(AUTOGEN)
 polyfem_set_source_group(${SOURCES} ${AUTOGEN} ${AUTOGEN_BASES})
-polyfem_copy_headers(${SOURCES})
 if(WIN32)
 	SET_SOURCE_FILES_PROPERTIES(${AUTOGEN_BASES} PROPERTIES COMPILE_FLAGS -Od)
 endif()

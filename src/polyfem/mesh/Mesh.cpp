@@ -1,14 +1,14 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/Mesh.hpp>
-#include <polyfem/CMesh2D.hpp>
-#include <polyfem/NCMesh2D.hpp>
-#include <polyfem/Mesh3D.hpp>
+#include <polyfem/mesh/Mesh.hpp>
+#include <polyfem/mesh2D/CMesh2D.hpp>
+#include <polyfem/mesh2D/NCMesh2D.hpp>
+#include <polyfem/mesh3D/Mesh3D.hpp>
 
-#include <polyfem/MeshUtils.hpp>
-#include <polyfem/StringUtils.hpp>
-#include <polyfem/MshReader.hpp>
+#include <polyfem/mesh/MeshUtils.hpp>
+#include <polyfem/utils/StringUtils.hpp>
+#include <polyfem/utils/MshReader.hpp>
 
-#include <polyfem/Logger.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <geogram/mesh/mesh_io.h>
 #include <geogram/mesh/mesh_geometry.h>

@@ -6,9 +6,9 @@
 #include <polyfem/QuadQuadrature.hpp>
 #include <polyfem/HexQuadrature.hpp>
 
-#include <polyfem/FEBasis3d.hpp>
-#include <polyfem/auto_p_bases.hpp>
-#include <polyfem/auto_q_bases.hpp>
+#include <polyfem/basis/FEBasis3d.hpp>
+#include <polyfem/autogen/auto_p_bases.hpp>
+#include <polyfem/autogen/auto_q_bases.hpp>
 
 #include <polyfem/MVPolygonalBasis2d.hpp>
 

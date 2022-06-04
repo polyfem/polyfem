@@ -1,8 +1,8 @@
-#include <polyfem/Stokes.hpp>
+#include "Stokes.hpp"
 
-#include <polyfem/Basis.hpp>
-#include <polyfem/ElementAssemblyValues.hpp>
-#include <polyfem/ElasticityUtils.hpp>
+#include <polyfem/basis/Basis.hpp>
+#include <polyfem/assembler/ElementAssemblyValues.hpp>
+#include <polyfem/utils/ElasticityUtils.hpp>
 
 namespace polyfem
 {

@@ -155,8 +155,8 @@ if __name__ == "__main__":
     args = parse_args()
     dims = [2, 3]
     names = ["linear_elasticity", "hooke", "saint_venant", "neo_hookean"]
-    cpp = "#include <polyfem/auto_elasticity_rhs.hpp>\n\n\n"
-    hpp = "#pragma once\n\n#include <polyfem/ElasticityUtils.hpp>\n#include <polyfem/AutodiffTypes.hpp>\n#include <Eigen/Dense>\n\n"
+    cpp = "#include <polyfem/autogen/auto_elasticity_rhs.hpp>\n\n\n"
+    hpp = "#pragma once\n\n#include <polyfem/utils/ElasticityUtils.hpp>\n#include <polyfem/utils/AutodiffTypes.hpp>\n#include <Eigen/Dense>\n\n"
     cpp = cpp + "namespace polyfem {\nnamespace autogen " + "{\n"
     hpp = hpp + "namespace polyfem {\nnamespace autogen " + "{\n"
 

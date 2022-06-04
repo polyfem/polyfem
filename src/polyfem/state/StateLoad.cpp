@@ -1,14 +1,14 @@
 #include <polyfem/State.hpp>
 
-#include <polyfem/FEBioReader.hpp>
+#include <polyfem/utils/FEBioReader.hpp>
 
-#include <polyfem/CMesh2D.hpp>
-#include <polyfem/NCMesh2D.hpp>
-#include <polyfem/Mesh3D.hpp>
+#include <polyfem/mesh2D/CMesh2D.hpp>
+#include <polyfem/mesh2D/NCMesh2D.hpp>
+#include <polyfem/mesh3D/Mesh3D.hpp>
 
-#include <polyfem/BoxSetter.hpp>
+#include <polyfem/utils/BoxSetter.hpp>
 
-#include <polyfem/JSONUtils.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
 
 #include <igl/Timer.h>
 namespace polyfem

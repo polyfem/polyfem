@@ -1,8 +1,8 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
-#include <polyfem/GenericProblem.hpp>
-#include <polyfem/ExpressionValue.hpp>
+#include <polyfem/problem/GenericProblem.hpp>
+#include <polyfem/utils/ExpressionValue.hpp>
 
 #include <Eigen/Dense>
 

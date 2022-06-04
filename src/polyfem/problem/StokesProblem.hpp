@@ -1,7 +1,7 @@
 #pragma once
 
-#include <polyfem/Problem.hpp>
-#include <polyfem/ProblemWithSolution.hpp>
+#include "Problem.hpp"
+#include "ProblemWithSolution.hpp"
 
 #include <vector>
 #include <Eigen/Dense>

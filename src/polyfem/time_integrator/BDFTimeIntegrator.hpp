@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/ImplicitTimeIntegrator.hpp>
+#include "ImplicitTimeIntegrator.hpp"
 
 namespace polyfem
 {

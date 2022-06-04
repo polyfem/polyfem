@@ -1,11 +1,11 @@
-#include <polyfem/SpectralBasis2d.hpp>
+#include "SpectralBasis2d.hpp"
 
-#include <polyfem/QuadraticBSpline2d.hpp>
-#include <polyfem/QuadQuadrature.hpp>
-#include <polyfem/MeshNodes.hpp>
+#include "QuadraticBSpline2d.hpp"
+#include <polyfem/quadrature/QuadQuadrature.hpp>
+#include <polyfem/mesh/MeshNodes.hpp>
 
-#include <polyfem/FEBasis2d.hpp>
-#include <polyfem/Types.hpp>
+#include <polyfem/basis/FEBasis2d.hpp>
+#include <polyfem/utils/Types.hpp>
 
 #include <polyfem/Common.hpp>
 

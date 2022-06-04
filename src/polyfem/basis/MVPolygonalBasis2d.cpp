@@ -1,8 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/MVPolygonalBasis2d.hpp>
-#include <polyfem/PolygonQuadrature.hpp>
+#include "MVPolygonalBasis2d.hpp"
+#include <polyfem/quadrature/PolygonQuadrature.hpp>
 
-#include <polyfem/AssemblerUtils.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
 
 #include <memory>
 

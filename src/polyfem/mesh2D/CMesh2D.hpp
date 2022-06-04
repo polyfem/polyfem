@@ -1,14 +1,14 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
-#include <polyfem/Mesh.hpp>
-#include <polyfem/Navigation.hpp>
-#include <polyfem/Types.hpp>
+#include <polyfem/mesh/Mesh.hpp>
+#include <polyfem/mesh2D/Navigation.hpp>
+#include <polyfem/utils/Types.hpp>
 
 #include <Eigen/Dense>
 #include <geogram/mesh/mesh.h>
 
-#include <polyfem/Mesh2D.hpp>
+#include <polyfem/mesh2D/Mesh2D.hpp>
 
 namespace polyfem
 {

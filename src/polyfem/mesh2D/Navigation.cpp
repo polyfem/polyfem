@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/Navigation.hpp>
+#include <polyfem/mesh2D/Navigation.hpp>
 
-#include <polyfem/Logger.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <algorithm>
 #include <cassert>

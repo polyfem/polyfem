@@ -1,7 +1,7 @@
-#include <polyfem/Logger.hpp>
-#include <polyfem/DisableWarnings.hpp>
+#include "Logger.hpp"
+#include <polyfem/utils/DisableWarnings.hpp>
 #include <spdlog/sinks/stdout_color_sinks.h>
-#include <polyfem/EnableWarnings.hpp>
+#include <polyfem/utils/EnableWarnings.hpp>
 
 namespace polyfem
 {

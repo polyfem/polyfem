@@ -1,5 +1,5 @@
-#include <polyfem/ElasticityUtils.hpp>
-#include <polyfem/Logger.hpp>
+#include "ElasticityUtils.hpp"
+#include <polyfem/utils/Logger.hpp>
 
 #include <tinyexpr.h>
 

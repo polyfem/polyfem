@@ -1,11 +1,11 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
-#include <polyfem/ElementAssemblyValues.hpp>
-#include <polyfem/ElementBases.hpp>
-#include <polyfem/ExpressionValue.hpp>
-#include <polyfem/AutodiffTypes.hpp>
-#include <polyfem/Types.hpp>
+#include <polyfem/assembler/ElementAssemblyValues.hpp>
+#include <polyfem/basis/ElementBases.hpp>
+#include <polyfem/utils/ExpressionValue.hpp>
+#include <polyfem/utils/AutodiffTypes.hpp>
+#include <polyfem/utils/Types.hpp>
 
 #include <Eigen/Dense>
 

@@ -1,11 +1,11 @@
 #pragma once
 
-#include <polyfem/AssemblerUtils.hpp>
-#include <polyfem/RhsAssembler.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/assembler/RhsAssembler.hpp>
 #include <polyfem/State.hpp>
-#include <polyfem/ImplicitTimeIntegrator.hpp>
+#include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 
-#include <polyfem/MatrixUtils.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <ipc/broad_phase/broad_phase.hpp>
 #include <ipc/friction/friction_constraint.hpp>
@@ -42,10 +42,10 @@ namespace polyfem
 		void line_search_end();
 		void post_step(const int iter_num, const TVector &x);
 
-#include <polyfem/DisableWarnings.hpp>
+#include <polyfem/utils/DisableWarnings.hpp>
 		virtual void hessian(const TVector &x, THessian &hessian);
 		virtual void hessian_full(const TVector &x, THessian &gradv);
-#include <polyfem/EnableWarnings.hpp>
+#include <polyfem/utils/EnableWarnings.hpp>
 
 		template <class FullMat, class ReducedMat>
 		static void full_to_reduced_aux(State &state, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced)

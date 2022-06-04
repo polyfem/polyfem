@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/Types.hpp>
+#include <polyfem/utils/Types.hpp>
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>

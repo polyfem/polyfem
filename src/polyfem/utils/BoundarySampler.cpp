@@ -1,14 +1,14 @@
-#include <polyfem/BoundarySampler.hpp>
+#include "BoundarySampler.hpp"
 
-#include <polyfem/LineQuadrature.hpp>
-#include <polyfem/TriQuadrature.hpp>
-#include <polyfem/QuadQuadrature.hpp>
+#include <polyfem/quadrature/LineQuadrature.hpp>
+#include <polyfem/quadrature/TriQuadrature.hpp>
+#include <polyfem/quadrature/QuadQuadrature.hpp>
 
-#include <polyfem/auto_p_bases.hpp>
-#include <polyfem/auto_q_bases.hpp>
+#include <polyfem/autogen/auto_p_bases.hpp>
+#include <polyfem/autogen/auto_q_bases.hpp>
 
-#include <polyfem/CMesh2D.hpp>
-#include <polyfem/NCMesh2D.hpp>
+#include <polyfem/mesh2D/CMesh2D.hpp>
+#include <polyfem/mesh2D/NCMesh2D.hpp>
 
 #include <cassert>
 

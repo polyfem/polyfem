@@ -1,4 +1,4 @@
-#include <polyfem/ImplicitNewmark.hpp>
+#include "ImplicitNewmark.hpp"
 
 namespace polyfem
 {

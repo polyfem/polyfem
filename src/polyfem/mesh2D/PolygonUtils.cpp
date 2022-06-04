@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/PolygonUtils.hpp>
+#include "PolygonUtils.hpp"
 #ifdef POLYFEM_WITH_CLIPPER
 #include <clipper.hpp>
 #endif

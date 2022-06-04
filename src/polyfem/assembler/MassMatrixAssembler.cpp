@@ -1,7 +1,7 @@
 #include "MassMatrixAssembler.hpp"
 
-#include <polyfem/MaybeParallelFor.hpp>
-#include <polyfem/Logger.hpp>
+#include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 namespace polyfem
 {

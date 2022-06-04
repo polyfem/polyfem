@@ -1,9 +1,9 @@
-#include <polyfem/HookeLinearElasticity.hpp>
+#include "HookeLinearElasticity.hpp"
 
-#include <polyfem/Basis.hpp>
-#include <polyfem/ElementAssemblyValues.hpp>
+#include <polyfem/basis/Basis.hpp>
+#include <polyfem/assembler/ElementAssemblyValues.hpp>
 
-#include <polyfem/auto_elasticity_rhs.hpp>
+#include <polyfem/autogen/auto_elasticity_rhs.hpp>
 
 namespace polyfem
 {

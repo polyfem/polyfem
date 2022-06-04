@@ -1,16 +1,16 @@
 #include <polyfem/State.hpp>
-#include <polyfem/par_for.hpp>
+#include <polyfem/utils/par_for.hpp>
 
-#include <polyfem/BoundarySampler.hpp>
+#include <polyfem/utils/BoundarySampler.hpp>
 
-#include <polyfem/VTUWriter.hpp>
-#include <polyfem/MeshUtils.hpp>
+#include <polyfem/mesh/VTUWriter.hpp>
+#include <polyfem/mesh/MeshUtils.hpp>
 
-#include <polyfem/auto_p_bases.hpp>
-#include <polyfem/auto_q_bases.hpp>
+#include <polyfem/autogen/auto_p_bases.hpp>
+#include <polyfem/autogen/auto_q_bases.hpp>
 
-#include <polyfem/NLProblem.hpp>
-#include <polyfem/ALNLProblem.hpp>
+#include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/solver/ALNLProblem.hpp>
 
 // #ifdef POLYFEM_WITH_TBB
 // #include <tbb/task_scheduler_init.h>

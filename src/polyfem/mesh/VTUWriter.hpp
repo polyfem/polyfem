@@ -1,7 +1,7 @@
 #pragma once
 
-#include <polyfem/Logger.hpp>
-#include <polyfem/base64Layer.hpp>
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/base64Layer.hpp>
 
 #include <Eigen/Dense>
 

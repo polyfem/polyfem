@@ -1,10 +1,10 @@
-#include <polyfem/ImplicitTimeIntegrator.hpp>
+#include "ImplicitTimeIntegrator.hpp"
 
-#include <polyfem/ImplicitEuler.hpp>
-#include <polyfem/ImplicitNewmark.hpp>
-#include <polyfem/BDFTimeIntegrator.hpp>
-#include <polyfem/Logger.hpp>
-#include <polyfem/MatrixUtils.hpp>
+#include "ImplicitEuler.hpp"
+#include "ImplicitNewmark.hpp"
+#include "BDFTimeIntegrator.hpp"
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <fstream>
 

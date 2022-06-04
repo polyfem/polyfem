@@ -79,7 +79,7 @@ if __name__ == "__main__":
 
     dims = [2, 3]
 
-    cpp = "#include <polyfem/auto_eigs.hpp>\n\n\n"
+    cpp = "#include <polyfem/autogen/auto_eigs.hpp>\n\n\n"
     hpp = "#pragma once\n\n#include <Eigen/Dense>\n\n"
     cpp = cpp + "namespace polyfem {\nnamespace autogen " + "{\n"
     hpp = hpp + "namespace polyfem {\nnamespace autogen " + "{\n"

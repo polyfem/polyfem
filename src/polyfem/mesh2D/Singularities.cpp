@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/Singularities.hpp>
-#include <polyfem/Navigation.hpp>
-#include <polyfem/MeshUtils.hpp>
+#include "Singularities.hpp"
+#include "Navigation.hpp"
+#include <polyfem/mesh/MeshUtils.hpp>
 #include <algorithm>
 ////////////////////////////////////////////////////////////////////////////////
 

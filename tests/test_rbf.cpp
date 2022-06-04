@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/MatrixUtils.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/RBFInterpolation.hpp>
 
 #include <catch2/catch.hpp>

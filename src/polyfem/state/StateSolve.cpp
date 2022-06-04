@@ -1,23 +1,23 @@
 #include <polyfem/State.hpp>
 
-#include <polyfem/BDF.hpp>
-#include <polyfem/TransientNavierStokesSolver.hpp>
-#include <polyfem/OperatorSplittingSolver.hpp>
-#include <polyfem/NavierStokesSolver.hpp>
+#include <polyfem/time_integrator/BDF.hpp>
+#include <polyfem/solver/TransientNavierStokesSolver.hpp>
+#include <polyfem/solver/OperatorSplittingSolver.hpp>
+#include <polyfem/solver/NavierStokesSolver.hpp>
 
-#include <polyfem/SparseNewtonDescentSolver.hpp>
-#include <polyfem/LBFGSSolver.hpp>
+#include <polyfem/solver/SparseNewtonDescentSolver.hpp>
+#include <polyfem/solver/LBFGSSolver.hpp>
 
-#include <polyfem/NLProblem.hpp>
-#include <polyfem/ALNLProblem.hpp>
+#include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/solver/ALNLProblem.hpp>
 
 #include <polysolve/LinearSolver.hpp>
 #include <polysolve/FEMSolver.hpp>
 
-#include <polyfem/StringUtils.hpp>
+#include <polyfem/utils/StringUtils.hpp>
 
-#include <polyfem/auto_p_bases.hpp>
-#include <polyfem/auto_q_bases.hpp>
+#include <polyfem/autogen/auto_p_bases.hpp>
+#include <polyfem/autogen/auto_q_bases.hpp>
 
 #include <ipc/ipc.hpp>
 

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <polyfem/Problem.hpp>
-#include <polyfem/AssemblerUtils.hpp>
+#include "Problem.hpp"
+#include <polyfem/assembler/AssemblerUtils.hpp>
 
-#include <polyfem/AutodiffTypes.hpp>
+#include <polyfem/utils/AutodiffTypes.hpp>
 
 namespace polyfem
 {

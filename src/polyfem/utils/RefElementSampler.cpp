@@ -1,5 +1,5 @@
-#include <polyfem/RefElementSampler.hpp>
-#include <polyfem/MeshUtils.hpp>
+#include "RefElementSampler.hpp"
+#include <polyfem/mesh/MeshUtils.hpp>
 
 #include <igl/edges.h>
 #include <igl/upsample.h>

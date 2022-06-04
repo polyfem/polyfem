@@ -1,8 +1,9 @@
 #pragma once
 
-#include <polyfem/ElementAssemblyValues.hpp>
-#include <polyfem/AssemblyValsCache.hpp>
-#include <polyfem/MatrixUtils.hpp>
+#include "AssemblyValsCache.hpp"
+
+#include <polyfem/assembler/ElementAssemblyValues.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <Eigen/Sparse>
 #include <vector>

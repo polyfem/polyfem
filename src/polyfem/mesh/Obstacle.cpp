@@ -1,9 +1,9 @@
-#include <polyfem/Obstacle.hpp>
+#include <polyfem/mesh/Obstacle.hpp>
 
-#include <polyfem/MeshUtils.hpp>
-#include <polyfem/JSONUtils.hpp>
-#include <polyfem/StringUtils.hpp>
-#include <polyfem/Logger.hpp>
+#include <polyfem/mesh/MeshUtils.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/utils/StringUtils.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <igl/edges.h>
 #include <ipc/utils/eigen_ext.hpp>

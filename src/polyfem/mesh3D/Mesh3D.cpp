@@ -1,8 +1,8 @@
-#include <polyfem/Mesh3D.hpp>
-#include <polyfem/MeshUtils.hpp>
-#include <polyfem/StringUtils.hpp>
+#include <polyfem/mesh3D/Mesh3D.hpp>
+#include <polyfem/mesh/MeshUtils.hpp>
+#include <polyfem/utils/StringUtils.hpp>
 
-#include <polyfem/Logger.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <igl/barycentric_coordinates.h>
 

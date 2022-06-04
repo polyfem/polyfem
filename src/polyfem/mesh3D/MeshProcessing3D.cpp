@@ -1,5 +1,5 @@
-#include <polyfem/MeshProcessing3D.hpp>
-#include <polyfem/Logger.hpp>
+#include "MeshProcessing3D.hpp"
+#include <polyfem/utils/Logger.hpp>
 
 #include <Eigen/Dense>
 

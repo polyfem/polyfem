@@ -7,7 +7,7 @@
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
 // obtain one at http://mozilla.org/MPL/2.0/.
 
-#include <polyfem/OBJReader.hpp>
+#include "OBJReader.hpp"
 
 #include <cstdio>
 #include <fstream>
@@ -18,7 +18,7 @@
 #include <igl/edges.h>
 #include <igl/list_to_matrix.h>
 
-#include <polyfem/Logger.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 namespace polyfem
 {

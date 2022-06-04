@@ -2,25 +2,25 @@
 
 #include <polyfem/Common.hpp>
 
-#include <polyfem/Assembler.hpp>
-#include <polyfem/MassMatrixAssembler.hpp>
+#include "Assembler.hpp"
+#include "MassMatrixAssembler.hpp"
 
-#include <polyfem/Laplacian.hpp>
-#include <polyfem/Bilaplacian.hpp>
-#include <polyfem/Helmholtz.hpp>
+#include "Laplacian.hpp"
+#include "Bilaplacian.hpp"
+#include "Helmholtz.hpp"
 
-#include <polyfem/LinearElasticity.hpp>
-#include <polyfem/HookeLinearElasticity.hpp>
-#include <polyfem/SaintVenantElasticity.hpp>
-#include <polyfem/NeoHookeanElasticity.hpp>
-#include <polyfem/MultiModel.hpp>
-// #include <polyfem/OgdenElasticity.hpp>
+#include "LinearElasticity.hpp"
+#include "HookeLinearElasticity.hpp"
+#include "SaintVenantElasticity.hpp"
+#include "NeoHookeanElasticity.hpp"
+#include "MultiModel.hpp"
+// #include "OgdenElasticity.hpp"
 
-#include <polyfem/Stokes.hpp>
-#include <polyfem/NavierStokes.hpp>
-#include <polyfem/IncompressibleLinElast.hpp>
+#include "Stokes.hpp"
+#include "NavierStokes.hpp"
+#include "IncompressibleLinElast.hpp"
 
-#include <polyfem/MatrixUtils.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <vector>
 

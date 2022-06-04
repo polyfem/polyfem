@@ -1,8 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/MeshNodes.hpp>
-#include <polyfem/CMesh2D.hpp>
-#include <polyfem/NCMesh2D.hpp>
-#include <polyfem/Mesh3D.hpp>
+#include <polyfem/mesh/MeshNodes.hpp>
+#include <polyfem/mesh2D/CMesh2D.hpp>
+#include <polyfem/mesh2D/NCMesh2D.hpp>
+#include <polyfem/mesh3D/Mesh3D.hpp>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;

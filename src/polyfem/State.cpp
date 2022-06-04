@@ -1,37 +1,37 @@
 #include <polyfem/State.hpp>
 #include <polyfem/Common.hpp>
 
-#include <polyfem/MatrixUtils.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
-#include <polyfem/CMesh2D.hpp>
-#include <polyfem/NCMesh2D.hpp>
-#include <polyfem/Mesh3D.hpp>
+#include <polyfem/mesh2D/CMesh2D.hpp>
+#include <polyfem/mesh2D/NCMesh2D.hpp>
+#include <polyfem/mesh3D/Mesh3D.hpp>
 
-#include <polyfem/FEBasis2d.hpp>
-#include <polyfem/FEBasis3d.hpp>
+#include <polyfem/basis/FEBasis2d.hpp>
+#include <polyfem/basis/FEBasis3d.hpp>
 
-#include <polyfem/SpectralBasis2d.hpp>
+#include <polyfem/basis/SpectralBasis2d.hpp>
 
-#include <polyfem/SplineBasis2d.hpp>
-#include <polyfem/SplineBasis3d.hpp>
+#include <polyfem/basis/SplineBasis2d.hpp>
+#include <polyfem/basis/SplineBasis3d.hpp>
 
-#include <polyfem/MVPolygonalBasis2d.hpp>
+#include <polyfem/basis/MVPolygonalBasis2d.hpp>
 
-#include <polyfem/PolygonalBasis2d.hpp>
-#include <polyfem/PolygonalBasis3d.hpp>
+#include <polyfem/basis/PolygonalBasis2d.hpp>
+#include <polyfem/basis/PolygonalBasis3d.hpp>
 
-#include <polyfem/EdgeSampler.hpp>
+#include <polyfem/utils/EdgeSampler.hpp>
 
-#include <polyfem/auto_p_bases.hpp>
-#include <polyfem/auto_q_bases.hpp>
+#include <polyfem/autogen/auto_p_bases.hpp>
+#include <polyfem/autogen/auto_q_bases.hpp>
 
-#include <polyfem/HexQuadrature.hpp>
-#include <polyfem/QuadQuadrature.hpp>
-#include <polyfem/TetQuadrature.hpp>
-#include <polyfem/TriQuadrature.hpp>
+#include <polyfem/quadrature/HexQuadrature.hpp>
+#include <polyfem/quadrature/QuadQuadrature.hpp>
+#include <polyfem/quadrature/TetQuadrature.hpp>
+#include <polyfem/quadrature/TriQuadrature.hpp>
 
-#include <polyfem/Logger.hpp>
-#include <polyfem/JSONUtils.hpp>
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
 
 #include <igl/Timer.h>
 
@@ -43,7 +43,7 @@
 #include <algorithm>
 #include <memory>
 
-#include <polyfem/autodiff.h>
+#include <polyfem/utils/autodiff.h>
 DECLARE_DIFFSCALAR_BASE();
 
 using namespace Eigen;

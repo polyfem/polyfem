@@ -1,9 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/RBFWithQuadraticLagrange.hpp>
-#include <polyfem/RBFWithQuadratic.hpp>
-#include <polyfem/Types.hpp>
-#include <polyfem/MatrixUtils.hpp>
-#include <polyfem/Logger.hpp>
+#include "RBFWithQuadraticLagrange.hpp"
+#include "RBFWithQuadratic.hpp"
+
+#include <polyfem/utils/Types.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <igl/Timer.h>
 #include <Eigen/Dense>

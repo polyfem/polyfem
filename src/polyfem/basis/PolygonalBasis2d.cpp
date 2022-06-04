@@ -1,14 +1,14 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/PolygonalBasis2d.hpp>
-#include <polyfem/PolygonQuadrature.hpp>
-#include <polyfem/PolygonUtils.hpp>
-#include <polyfem/FEBasis2d.hpp>
-#include <polyfem/RBFWithLinear.hpp>
-#include <polyfem/RBFWithQuadratic.hpp>
-#include <polyfem/RBFWithQuadraticLagrange.hpp>
-#include <polyfem/Logger.hpp>
+#include "PolygonalBasis2d.hpp"
+#include <polyfem/quadrature/PolygonQuadrature.hpp>
+#include <polyfem/mesh2D/PolygonUtils.hpp>
+#include <polyfem/basis/FEBasis2d.hpp>
+#include "function/RBFWithLinear.hpp"
+#include "function/RBFWithQuadratic.hpp"
+#include "function/RBFWithQuadraticLagrange.hpp"
+#include <polyfem/utils/Logger.hpp>
 
-#include <polyfem/auto_q_bases.hpp>
+#include <polyfem/autogen/auto_q_bases.hpp>
 
 #include <random>
 #include <memory>

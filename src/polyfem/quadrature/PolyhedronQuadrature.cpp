@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/PolyhedronQuadrature.hpp>
-#include <polyfem/TetQuadrature.hpp>
-#include <polyfem/MeshUtils.hpp>
+#include "PolyhedronQuadrature.hpp"
+#include "TetQuadrature.hpp"
+#include <polyfem/mesh/MeshUtils.hpp>
 #include <geogram/mesh/mesh_io.h>
 #include <igl/writeMESH.h>
 #ifdef POLYFEM_WITH_MMG

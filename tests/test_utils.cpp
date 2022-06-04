@@ -2,9 +2,9 @@
 #include <polyfem/InterpolatedFunction.hpp>
 #include <polyfem/RBFInterpolation.hpp>
 #include <polyfem/Bessel.hpp>
-#include <polyfem/ExpressionValue.hpp>
-#include <polyfem/MshReader.hpp>
-#include <polyfem/Mesh.hpp>
+#include <polyfem/utils/ExpressionValue.hpp>
+#include <polyfem/utils/MshReader.hpp>
+#include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/VTUWriter.hpp>
 
 #ifdef POLYFEM_WITH_REMESHING

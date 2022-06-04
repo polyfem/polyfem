@@ -1,7 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/RBFWithLinear.hpp>
-#include <polyfem/Types.hpp>
-#include <polyfem/Logger.hpp>
+#include "RBFWithLinear.hpp"
+
+#include <polyfem/utils/Types.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <igl/Timer.h>
 

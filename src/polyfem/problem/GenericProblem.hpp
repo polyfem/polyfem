@@ -1,7 +1,7 @@
 #pragma once
 
-#include <polyfem/Problem.hpp>
-#include <polyfem/ExpressionValue.hpp>
+#include <polyfem/problem/Problem.hpp>
+#include <polyfem/utils/ExpressionValue.hpp>
 
 #include <Eigen/Dense>
 

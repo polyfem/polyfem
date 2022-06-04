@@ -1,13 +1,13 @@
-#include <polyfem/CMesh2D.hpp>
-#include <polyfem/Navigation.hpp>
+#include <polyfem/mesh2D/CMesh2D.hpp>
+#include <polyfem/mesh2D/Navigation.hpp>
 
-#include <polyfem/MeshUtils.hpp>
-#include <polyfem/Refinement.hpp>
+#include <polyfem/mesh/MeshUtils.hpp>
+#include <polyfem/mesh2D/Refinement.hpp>
 
-#include <polyfem/StringUtils.hpp>
-#include <polyfem/MshReader.hpp>
+#include <polyfem/utils/StringUtils.hpp>
+#include <polyfem/utils/MshReader.hpp>
 
-#include <polyfem/Logger.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <geogram/basic/file_system.h>
 #include <geogram/mesh/mesh_io.h>

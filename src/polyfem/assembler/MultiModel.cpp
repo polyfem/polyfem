@@ -1,9 +1,9 @@
 // #define EIGEN_STACK_ALLOCATION_LIMIT 0
 
-#include <polyfem/MultiModel.hpp>
+#include "MultiModel.hpp"
 
-#include <polyfem/Basis.hpp>
-#include <polyfem/auto_elasticity_rhs.hpp>
+#include <polyfem/basis/Basis.hpp>
+#include <polyfem/autogen/auto_elasticity_rhs.hpp>
 
 #include <igl/Timer.h>
 

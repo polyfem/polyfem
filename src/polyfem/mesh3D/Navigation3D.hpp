@@ -1,7 +1,7 @@
 #pragma once
 
-#include <polyfem/Mesh3DStorage.hpp>
-#include <polyfem/MeshProcessing3D.hpp>
+#include "Mesh3DStorage.hpp"
+#include "MeshProcessing3D.hpp"
 
 namespace polyfem
 {

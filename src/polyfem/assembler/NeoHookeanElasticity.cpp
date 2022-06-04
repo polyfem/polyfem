@@ -1,9 +1,9 @@
-#include <polyfem/NeoHookeanElasticity.hpp>
+#include "NeoHookeanElasticity.hpp"
 
-#include <polyfem/Basis.hpp>
-#include <polyfem/auto_elasticity_rhs.hpp>
+#include <polyfem/basis/Basis.hpp>
+#include <polyfem/autogen/auto_elasticity_rhs.hpp>
 
-#include <polyfem/MatrixUtils.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 #include <igl/Timer.h>
 
 namespace polyfem
