@@ -8,6 +8,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
+using namespace polyfem::problem;
+using namespace polyfem::assembler;
+using namespace polyfem::basis;
+using namespace polyfem::mesh;
 
 const double k = 0.2;
 const double lambda = 0.375, mu = 0.375;

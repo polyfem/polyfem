@@ -17,6 +17,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
+using namespace polyfem::assembler;
+using namespace polyfem::basis;
+using namespace polyfem::mesh;
 
 /////////////////////////////////////////
 constexpr std::array<std::array<int, 2>, 8> linear_tri_local_node = {{
