@@ -141,7 +141,7 @@ include(sanitizers)
 ################################################################################
 
 # add_library() can only be called without any source since CMake 3.11 ...
-add_library(polyfem src/State.cpp)
+add_library(polyfem src/polyfem/State.cpp)
 
 # Must be call in the same "CMakeLists.txt" where add_library(polyfem ...) is called
 polyfem_autogen(polyfem eigs.py auto_eigs)
@@ -287,15 +287,15 @@ add_library(polyfem::polyfem ALIAS polyfem)
 
 # Main executable
 if(POLYFEM_TOPLEVEL_PROJECT)
-    add_executable(${PROJECT_NAME}_bin src/main.cpp)
+    add_executable(${PROJECT_NAME}_bin src/polyfem/main.cpp)
 
-    source_group("gui" FILES src/main.cpp)
+    source_group("gui" FILES src/polyfem/main.cpp)
     if(NOT POLYFEM_NO_UI)
-        source_group("gui" FILES src/viewer/UIState.cpp)
-        source_group("gui" FILES src/viewer/UIState.hpp)
-        source_group("gui" FILES src/viewer/UIMenu.cpp)
+        source_group("gui" FILES src/polyfem/viewer/UIState.cpp)
+        source_group("gui" FILES src/polyfem/viewer/UIState.hpp)
+        source_group("gui" FILES src/polyfem/viewer/UIMenu.cpp)
 
-        target_include_directories(${PROJECT_NAME}_bin PUBLIC src/viewer)
+        target_include_directories(${PROJECT_NAME}_bin PUBLIC src/polyfem/viewer)
     else()
         target_compile_definitions(${PROJECT_NAME}_bin PUBLIC -DPOLYFEM_NO_UI)
     endif()
@@ -348,7 +348,7 @@ endif()
 ################################################################################
 
 # Other sources
-add_subdirectory(src)
+add_subdirectory(src/polyfem)
 
 # Compile extras only if this is a top-level project
 if(POLYFEM_TOPLEVEL_PROJECT)

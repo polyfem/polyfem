@@ -20,7 +20,7 @@ endfunction()
 # Autogen helper function
 function(polyfem_autogen MAIN_TARGET PYTHON_SCRIPT OUTPUT_BASE)
 	if(NOT POLYFEM_REGENERATE_AUTOGEN)
-		polyfem_copy_headers(${PROJECT_SOURCE_DIR}/src/autogen/${OUTPUT_BASE}.hpp)
+		polyfem_copy_headers(${PROJECT_SOURCE_DIR}/src/polyfem/autogen/${OUTPUT_BASE}.hpp)
 		return()
 	endif()
 	find_package(PythonInterp 3 QUIET)
