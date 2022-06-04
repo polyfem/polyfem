@@ -5,6 +5,8 @@
 
 namespace polyfem
 {
+	using namespace mesh;
+
 	namespace
 	{
 		template <typename V1, typename V2>

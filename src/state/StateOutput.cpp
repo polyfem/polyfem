@@ -32,6 +32,7 @@ extern "C" size_t getPeakRSS();
 namespace polyfem
 {
 	using namespace assembler;
+	using namespace mesh;
 
 	void State::get_sidesets(Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXd &sidesets)
 	{

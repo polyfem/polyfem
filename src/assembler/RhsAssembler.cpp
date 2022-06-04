@@ -15,6 +15,8 @@
 namespace polyfem
 {
 	using namespace polysolve;
+	using namespace mesh;
+
 	namespace assembler
 	{
 		namespace

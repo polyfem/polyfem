@@ -17,7 +17,7 @@ namespace polyfem
 			NodeValues();
 
 			void load(const std::string &path);
-			void init(const Mesh &mesh);
+			void init(const mesh::Mesh &mesh);
 
 			double dirichlet_interpolate(const int p_id, const Eigen::MatrixXd &uv) const
 			{
@@ -43,13 +43,13 @@ namespace polyfem
 		{
 		public:
 			NodeProblem(const std::string &name);
-			void init(const Mesh &mesh) override;
+			void init(const mesh::Mesh &mesh) override;
 
 			void rhs(const assembler::AssemblerUtils &assembler, const std::string &formulation, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			bool is_rhs_zero() const override { return abs(rhs_) < 1e-10; }
 
-			void bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
-			void neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const override;
+			void bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
+			void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const override;
 
 			bool has_exact_sol() const override { return false; }
 			bool is_scalar() const override { return true; }

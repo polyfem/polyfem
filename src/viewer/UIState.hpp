@@ -1,5 +1,4 @@
-#ifndef UI_UISTATE_HPP
-#define UI_UISTATE_HPP
+#pragma once
 
 #include <polyfem/State.hpp>
 
@@ -10,6 +9,9 @@
 
 namespace polyfem
 {
+	//This is bad, but just ui
+	using namespace mesh;
+
 	class UIState : public igl::opengl::glfw::imgui::ImGuiMenu
 	{
 	private:
@@ -172,4 +174,3 @@ namespace polyfem
 	};
 
 } // namespace polyfem
-#endif //UI_UISTATE_HPP

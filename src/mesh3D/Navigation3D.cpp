@@ -6,17 +6,17 @@
 #include <set>
 #include <cassert>
 
-using namespace polyfem::Navigation3D;
+using namespace polyfem::mesh::Navigation3D;
 using namespace polyfem;
 using namespace std;
 
-// double polyfem::Navigation3D::get_index_from_element_face_time;
-// double polyfem::Navigation3D::switch_vertex_time;
-// double polyfem::Navigation3D::switch_edge_time;
-// double polyfem::Navigation3D::switch_face_time;
-// double polyfem::Navigation3D::switch_element_time;
+// double polyfem::mesh::Navigation3D::get_index_from_element_face_time;
+// double polyfem::mesh::Navigation3D::switch_vertex_time;
+// double polyfem::mesh::Navigation3D::switch_edge_time;
+// double polyfem::mesh::Navigation3D::switch_face_time;
+// double polyfem::mesh::Navigation3D::switch_element_time;
 
-void polyfem::Navigation3D::prepare_mesh(Mesh3DStorage &M)
+void polyfem::mesh::Navigation3D::prepare_mesh(Mesh3DStorage &M)
 {
 	if (M.type != MeshType::Tet)
 		M.type = MeshType::Hyb;
@@ -24,7 +24,7 @@ void polyfem::Navigation3D::prepare_mesh(Mesh3DStorage &M)
 	MeshProcessing3D::global_orientation_hexes(M);
 }
 
-polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_face(const Mesh3DStorage &M, int hi)
+polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::get_index_from_element_face(const Mesh3DStorage &M, int hi)
 {
 	// igl::Timer timer; timer.start();
 
@@ -86,7 +86,7 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_face(
 	return idx;
 }
 
-polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_face(const Mesh3DStorage &M, int hi, int lf, int lv)
+polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::get_index_from_element_face(const Mesh3DStorage &M, int hi, int lf, int lv)
 {
 	// igl::Timer timer; timer.start();
 	Index idx;
@@ -114,7 +114,7 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_face(
 
 	return idx;
 }
-polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_edge(const Mesh3DStorage &M, int hi, int v0i, int v1i)
+polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::get_index_from_element_edge(const Mesh3DStorage &M, int hi, int v0i, int v1i)
 {
 	Index idx;
 	idx.element = hi;
@@ -187,7 +187,7 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_edge(
 	return idx;
 }
 
-polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_tri(const Mesh3DStorage &M, int hi, int v0i, int v1i, int v2i)
+polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::get_index_from_element_tri(const Mesh3DStorage &M, int hi, int v0i, int v1i, int v2i)
 {
 	int v0 = v0i;
 	int v1 = v1i;
@@ -264,7 +264,7 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::get_index_from_element_tri(c
 	return idx;
 }
 // Navigation in a surface mesh
-polyfem::Navigation3D::Index polyfem::Navigation3D::switch_vertex(const Mesh3DStorage &M, Index idx)
+polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::switch_vertex(const Mesh3DStorage &M, Index idx)
 {
 	// igl::Timer timer; timer.start();
 
@@ -299,7 +299,7 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::switch_vertex(const Mesh3DSt
 	return idx;
 }
 
-polyfem::Navigation3D::Index polyfem::Navigation3D::switch_edge(const Mesh3DStorage &M, Index idx)
+polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::switch_edge(const Mesh3DStorage &M, Index idx)
 {
 	// igl::Timer timer; timer.start();
 
@@ -322,7 +322,7 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::switch_edge(const Mesh3DStor
 	return idx;
 }
 
-polyfem::Navigation3D::Index polyfem::Navigation3D::switch_face(const Mesh3DStorage &M, Index idx)
+polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::switch_face(const Mesh3DStorage &M, Index idx)
 {
 	// igl::Timer timer; timer.start();
 	if (M.type == MeshType::Tet)
@@ -377,7 +377,7 @@ polyfem::Navigation3D::Index polyfem::Navigation3D::switch_face(const Mesh3DStor
 	return idx;
 }
 
-polyfem::Navigation3D::Index polyfem::Navigation3D::switch_element(const Mesh3DStorage &M, Index idx)
+polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::switch_element(const Mesh3DStorage &M, Index idx)
 {
 	// igl::Timer timer; timer.start();
 

@@ -25,7 +25,7 @@
 #include <geogram/basic/logger.h>
 ////////////////////////////////////////////////////////////////////////////////
 
-bool polyfem::is_planar(const GEO::Mesh &M, const double tol)
+bool polyfem::mesh::is_planar(const GEO::Mesh &M, const double tol)
 {
 	if (M.vertices.dimension() == 2)
 		return true;
@@ -38,7 +38,7 @@ bool polyfem::is_planar(const GEO::Mesh &M, const double tol)
 	return fabs(diff) < tol;
 }
 
-GEO::vec3 polyfem::mesh_vertex(const GEO::Mesh &M, GEO::index_t v)
+GEO::vec3 polyfem::mesh::mesh_vertex(const GEO::Mesh &M, GEO::index_t v)
 {
 	using GEO::index_t;
 	GEO::vec3 p(0, 0, 0);
@@ -58,20 +58,20 @@ GEO::vec3 polyfem::mesh_vertex(const GEO::Mesh &M, GEO::index_t v)
 
 // -----------------------------------------------------------------------------
 
-GEO::vec3 polyfem::facet_barycenter(const GEO::Mesh &M, GEO::index_t f)
+GEO::vec3 polyfem::mesh::facet_barycenter(const GEO::Mesh &M, GEO::index_t f)
 {
 	using GEO::index_t;
 	GEO::vec3 p(0, 0, 0);
 	for (index_t lv = 0; lv < M.facets.nb_vertices(f); ++lv)
 	{
-		p += polyfem::mesh_vertex(M, M.facets.vertex(f, lv));
+		p += polyfem::mesh::mesh_vertex(M, M.facets.vertex(f, lv));
 	}
 	return p / M.facets.nb_vertices(f);
 }
 
 // -----------------------------------------------------------------------------
 
-GEO::index_t polyfem::mesh_create_vertex(GEO::Mesh &M, const GEO::vec3 &p)
+GEO::index_t polyfem::mesh::mesh_create_vertex(GEO::Mesh &M, const GEO::vec3 &p)
 {
 	using GEO::index_t;
 	auto v = M.vertices.create_vertex();
@@ -91,7 +91,7 @@ GEO::index_t polyfem::mesh_create_vertex(GEO::Mesh &M, const GEO::vec3 &p)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::compute_element_tags(const GEO::Mesh &M, std::vector<ElementType> &element_tags)
+void polyfem::mesh::compute_element_tags(const GEO::Mesh &M, std::vector<ElementType> &element_tags)
 {
 	using GEO::index_t;
 
@@ -288,9 +288,9 @@ namespace
 			 c + 1 < M.facets.corners_end(f); c++)
 		{
 			index_t v1 = M.facet_corners.vertex(c);
-			const vec3 &p1 = polyfem::mesh_vertex(M, v1);
+			const vec3 &p1 = polyfem::mesh::mesh_vertex(M, v1);
 			index_t v2 = M.facet_corners.vertex(c + 1);
-			const vec3 &p2 = polyfem::mesh_vertex(M, v2);
+			const vec3 &p2 = polyfem::mesh::mesh_vertex(M, v2);
 			result += Geom::triangle_signed_area(vec2(&p0[0]), vec2(&p1[0]), vec2(&p2[0]));
 		}
 		return result;
@@ -298,7 +298,7 @@ namespace
 
 } // anonymous namespace
 
-void polyfem::orient_normals_2d(GEO::Mesh &M)
+void polyfem::mesh::orient_normals_2d(GEO::Mesh &M)
 {
 	using namespace GEO;
 	vector<index_t> component;
@@ -319,7 +319,7 @@ void polyfem::orient_normals_2d(GEO::Mesh &M)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::reorder_mesh(Eigen::MatrixXd &V, Eigen::MatrixXi &F, const Eigen::VectorXi &C, Eigen::VectorXi &R)
+void polyfem::mesh::reorder_mesh(Eigen::MatrixXd &V, Eigen::MatrixXi &F, const Eigen::VectorXi &C, Eigen::VectorXi &R)
 {
 	assert(V.rows() == C.size());
 	int num_colors = C.maxCoeff() + 1;
@@ -569,7 +569,7 @@ namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::to_geogram_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, GEO::Mesh &M)
+void polyfem::mesh::to_geogram_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, GEO::Mesh &M)
 {
 	M.clear();
 	// Setup vertices
@@ -603,7 +603,7 @@ void polyfem::to_geogram_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F
 	}
 }
 
-// void polyfem::to_geogram_mesh_3d(const Eigen::MatrixXd &V, const Eigen::MatrixXi &C, GEO::Mesh &M) {
+// void polyfem::mesh::to_geogram_mesh_3d(const Eigen::MatrixXd &V, const Eigen::MatrixXi &C, GEO::Mesh &M) {
 // 	M.clear();
 // 	// Setup vertices
 // 	M.vertices.create_vertices((int) V.rows());
@@ -633,7 +633,7 @@ void polyfem::to_geogram_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F
 
 // -----------------------------------------------------------------------------
 
-void polyfem::from_geogram_mesh(const GEO::Mesh &M, Eigen::MatrixXd &V, Eigen::MatrixXi &F, Eigen::MatrixXi &T)
+void polyfem::mesh::from_geogram_mesh(const GEO::Mesh &M, Eigen::MatrixXd &V, Eigen::MatrixXi &F, Eigen::MatrixXi &T)
 {
 	V.resize(M.vertices.nb(), 3);
 	for (int i = 0; i < (int)M.vertices.nb(); ++i)
@@ -663,8 +663,8 @@ void polyfem::from_geogram_mesh(const GEO::Mesh &M, Eigen::MatrixXd &V, Eigen::M
 
 // -----------------------------------------------------------------------------
 
-void polyfem::signed_squared_distances(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
-									   const Eigen::MatrixXd &P, Eigen::VectorXd &D)
+void polyfem::mesh::signed_squared_distances(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
+											 const Eigen::MatrixXd &P, Eigen::VectorXd &D)
 {
 	GEO::Mesh M;
 	to_geogram_mesh(V, F, M);
@@ -675,7 +675,7 @@ void polyfem::signed_squared_distances(const Eigen::MatrixXd &V, const Eigen::Ma
 
 // -----------------------------------------------------------------------------
 
-double polyfem::signed_volume(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
+double polyfem::mesh::signed_volume(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
 {
 	assert(F.cols() == 3);
 	assert(V.cols() == 3);
@@ -696,7 +696,7 @@ double polyfem::signed_volume(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F
 
 // -----------------------------------------------------------------------------
 
-void polyfem::orient_closed_surface(const Eigen::MatrixXd &V, Eigen::MatrixXi &F, bool positive)
+void polyfem::mesh::orient_closed_surface(const Eigen::MatrixXd &V, Eigen::MatrixXi &F, bool positive)
 {
 	if ((positive ? 1 : -1) * signed_volume(V, F) < 0)
 	{
@@ -709,7 +709,7 @@ void polyfem::orient_closed_surface(const Eigen::MatrixXd &V, Eigen::MatrixXi &F
 
 // -----------------------------------------------------------------------------
 
-void polyfem::extract_polyhedra(const Mesh3D &mesh, std::vector<std::unique_ptr<GEO::Mesh>> &polys, bool triangulated)
+void polyfem::mesh::extract_polyhedra(const Mesh3D &mesh, std::vector<std::unique_ptr<GEO::Mesh>> &polys, bool triangulated)
 {
 	std::vector<int> vertex_g2l(mesh.n_vertices() + mesh.n_faces(), -1);
 	std::vector<int> vertex_l2g;
@@ -805,7 +805,7 @@ void polyfem::extract_polyhedra(const Mesh3D &mesh, std::vector<std::unique_ptr<
 // v0────v1
 //
 
-void polyfem::to_geogram_mesh(const Mesh3D &mesh, GEO::Mesh &M)
+void polyfem::mesh::to_geogram_mesh(const Mesh3D &mesh, GEO::Mesh &M)
 {
 	M.clear();
 	// Convert vertices
@@ -863,8 +863,8 @@ void polyfem::to_geogram_mesh(const Mesh3D &mesh, GEO::Mesh &M)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::tertrahedralize_star_shaped_surface(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
-												  const Eigen::RowVector3d &kernel, Eigen::MatrixXd &OV, Eigen::MatrixXi &OF, Eigen::MatrixXi &OT)
+void polyfem::mesh::tertrahedralize_star_shaped_surface(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
+														const Eigen::RowVector3d &kernel, Eigen::MatrixXd &OV, Eigen::MatrixXi &OF, Eigen::MatrixXi &OT)
 {
 	assert(V.cols() == 3);
 	OV.resize(V.rows() + 1, V.cols());
@@ -878,8 +878,8 @@ void polyfem::tertrahedralize_star_shaped_surface(const Eigen::MatrixXd &V, cons
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::sample_surface(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, int num_samples,
-							 Eigen::MatrixXd &P, Eigen::MatrixXd *N, int num_lloyd, int num_newton)
+void polyfem::mesh::sample_surface(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, int num_samples,
+								   Eigen::MatrixXd &P, Eigen::MatrixXd *N, int num_lloyd, int num_newton)
 {
 	assert(num_samples > 3);
 	GEO::Mesh M;
@@ -940,8 +940,8 @@ namespace
 
 // -----------------------------------------------------------------------------
 
-void polyfem::extract_parent_edges(const Eigen::MatrixXd &IV, const Eigen::MatrixXi &IE,
-								   const Eigen::MatrixXd &BV, const Eigen::MatrixXi &BE, Eigen::MatrixXi &OE)
+void polyfem::mesh::extract_parent_edges(const Eigen::MatrixXd &IV, const Eigen::MatrixXi &IE,
+										 const Eigen::MatrixXd &BV, const Eigen::MatrixXi &BE, Eigen::MatrixXi &OE)
 {
 	assert(IV.cols() == 2 || IV.cols() == 3);
 	assert(BV.cols() == 2 || BV.cols() == 3);
@@ -980,7 +980,7 @@ void polyfem::extract_parent_edges(const Eigen::MatrixXd &IV, const Eigen::Matri
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::apply_default_mesh_parameters(const json &mesh_in, json &mesh_out, const std::string &path_prefix)
+void polyfem::mesh::apply_default_mesh_parameters(const json &mesh_in, json &mesh_out, const std::string &path_prefix)
 {
 	// NOTE: All units by default are expressed in standard SI units
 	// • position: position of the model origin
@@ -1006,7 +1006,7 @@ void polyfem::apply_default_mesh_parameters(const json &mesh_in, json &mesh_out,
 	mesh_out.merge_patch(mesh_in);
 }
 
-void polyfem::read_fem_mesh(
+void polyfem::mesh::read_fem_mesh(
 	const std::string &mesh_path,
 	Eigen::MatrixXd &vertices,
 	Eigen::MatrixXi &cells,
@@ -1199,7 +1199,7 @@ void extract_triangle_surface_from_tets(
 	}
 }
 
-void polyfem::read_surface_mesh(
+void polyfem::mesh::read_surface_mesh(
 	const std::string &mesh_path,
 	Eigen::MatrixXd &vertices,
 	Eigen::VectorXi &codim_vertices,
@@ -1286,7 +1286,7 @@ void polyfem::read_surface_mesh(
 	find_codim_vertices(vertices, codim_edges, faces, codim_vertices);
 }
 
-void polyfem::transform_mesh_from_json(const json &mesh, Eigen::MatrixXd &vertices)
+void polyfem::mesh::transform_mesh_from_json(const json &mesh, Eigen::MatrixXd &vertices)
 {
 	const int dim = vertices.cols();
 
@@ -1342,7 +1342,7 @@ void polyfem::transform_mesh_from_json(const json &mesh, Eigen::MatrixXd &vertic
 	vertices.rowwise() += position;
 }
 
-void polyfem::save_edges(const std::string &filename, const Eigen::MatrixXd &V, const Eigen::MatrixXi &E)
+void polyfem::mesh::save_edges(const std::string &filename, const Eigen::MatrixXd &V, const Eigen::MatrixXi &E)
 {
 	using namespace Eigen;
 	std::ofstream out(filename);
@@ -1355,7 +1355,7 @@ void polyfem::save_edges(const std::string &filename, const Eigen::MatrixXd &V, 
 		<< (E.array() + 1).format(IOFormat(FullPrecision, DontAlignCols, " ", "\n", "l ", "", "", "\n"));
 }
 
-int polyfem::count_faces(const int dim, const Eigen::MatrixXi &cells)
+int polyfem::mesh::count_faces(const int dim, const Eigen::MatrixXi &cells)
 {
 	auto hash = [](const std::vector<int> &v) {
 		std::hash<int> hasher;

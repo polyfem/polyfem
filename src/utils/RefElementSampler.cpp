@@ -8,6 +8,7 @@
 
 namespace polyfem
 {
+	using namespace mesh;
 
 	///
 	/// Generate a canonical triangle/quad subdivided from a regular grid

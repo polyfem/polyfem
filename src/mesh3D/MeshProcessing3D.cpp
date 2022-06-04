@@ -10,7 +10,7 @@
 #include <iterator>
 #include <cassert>
 
-using namespace polyfem::MeshProcessing3D;
+using namespace polyfem::mesh;
 using namespace polyfem;
 using namespace std;
 using namespace Eigen;

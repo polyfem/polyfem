@@ -115,6 +115,7 @@ using namespace Eigen;
 namespace polyfem
 {
 	using namespace assembler;
+	using namespace mesh;
 
 	void UIState::get_plot_edges(const Mesh &mesh, const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases, const int n_samples, const std::vector<bool> &valid_elements, const Visualizations &layer, Eigen::MatrixXd &pp0, Eigen::MatrixXd &pp1)
 	{

@@ -26,6 +26,8 @@ namespace polyfem
 	using namespace polysolve;
 	using namespace Eigen;
 	using namespace assembler;
+	using namespace mesh;
+
 	namespace basis
 	{
 		namespace

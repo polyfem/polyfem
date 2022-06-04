@@ -37,14 +37,14 @@ namespace polyfem
 			/// @return     The number of basis functions created.
 			///
 			static int build_bases(
-				const Mesh3D &mesh,
+				const mesh::Mesh3D &mesh,
 				const int quadrature_order,
 				const int discr_order,
 				const bool serendipity,
 				const bool has_polys,
 				const bool is_geom_bases,
 				std::vector<ElementBases> &bases,
-				std::vector<LocalBoundary> &local_boundary,
+				std::vector<mesh::LocalBoundary> &local_boundary,
 				std::map<int, InterfaceData> &poly_face_to_data,
 				std::vector<int> &primitive_to_node);
 
@@ -68,23 +68,23 @@ namespace polyfem
 			/// @return     The number of basis functions created.
 			///
 			static int build_bases(
-				const Mesh3D &mesh,
+				const mesh::Mesh3D &mesh,
 				const int quadrature_order,
 				const Eigen::VectorXi &discr_order,
 				const bool serendipity,
 				const bool has_polys,
 				const bool is_geom_bases,
 				std::vector<ElementBases> &bases,
-				std::vector<LocalBoundary> &local_boundary,
+				std::vector<mesh::LocalBoundary> &local_boundary,
 				std::map<int, InterfaceData> &poly_face_to_data,
 				std::vector<int> &primitive_to_node);
 
 			//return the local faces nodes for a tet or a hex of order p, index points to a face
-			static Eigen::VectorXi tet_face_local_nodes(const int p, const Mesh3D &mesh, Navigation3D::Index index);
-			static Eigen::VectorXi hex_face_local_nodes(const bool serendipity, const int q, const Mesh3D &mesh, Navigation3D::Index index);
+			static Eigen::VectorXi tet_face_local_nodes(const int p, const mesh::Mesh3D &mesh, mesh::Navigation3D::Index index);
+			static Eigen::VectorXi hex_face_local_nodes(const bool serendipity, const int q, const mesh::Mesh3D &mesh, mesh::Navigation3D::Index index);
 
 		private:
-			static Eigen::MatrixXd linear_hex_face_local_nodes_coordinates(const Mesh3D &mesh, Navigation3D::Index index);
+			static Eigen::MatrixXd linear_hex_face_local_nodes_coordinates(const mesh::Mesh3D &mesh, mesh::Navigation3D::Index index);
 
 			static Eigen::RowVector3d quadr_hex_local_node_coordinates(int local_index);
 		};

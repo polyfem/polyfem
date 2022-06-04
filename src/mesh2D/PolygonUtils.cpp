@@ -49,8 +49,8 @@ namespace
 
 // -----------------------------------------------------------------------------
 
-void polyfem::clip_polygon_by_half_plane(const Eigen::MatrixXd &P_in,
-										 const Eigen::RowVector2d &q1, const Eigen::RowVector2d &q2, Eigen::MatrixXd &P_out)
+void polyfem::mesh::clip_polygon_by_half_plane(const Eigen::MatrixXd &P_in,
+											   const Eigen::RowVector2d &q1, const Eigen::RowVector2d &q2, Eigen::MatrixXd &P_out)
 {
 	using namespace GEO;
 	assert(P_in.cols() == 2);
@@ -119,7 +119,7 @@ void polyfem::clip_polygon_by_half_plane(const Eigen::MatrixXd &P_in,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::compute_visibility_kernel(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV)
+void polyfem::mesh::compute_visibility_kernel(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV)
 {
 	assert(IV.cols() == 2 || IV.cols() == 3);
 
@@ -149,7 +149,7 @@ void polyfem::compute_visibility_kernel(const Eigen::MatrixXd &IV, Eigen::Matrix
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool polyfem::is_star_shaped(const Eigen::MatrixXd &IV, Eigen::RowVector3d &bary)
+bool polyfem::mesh::is_star_shaped(const Eigen::MatrixXd &IV, Eigen::RowVector3d &bary)
 {
 	Eigen::MatrixXd OV;
 	compute_visibility_kernel(IV, OV);
@@ -224,7 +224,7 @@ namespace
 
 // -----------------------------------------------------------------------------
 
-void polyfem::offset_polygon(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, double eps)
+void polyfem::mesh::offset_polygon(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, double eps)
 {
 #ifdef POLYFEM_WITH_CLIPPER
 	using namespace ClipperLib;
@@ -287,7 +287,7 @@ namespace
 
 // -----------------------------------------------------------------------------
 
-int polyfem::is_inside(const Eigen::MatrixXd &IV, const Eigen::MatrixXd &Q, std::vector<bool> &inside)
+int polyfem::mesh::is_inside(const Eigen::MatrixXd &IV, const Eigen::MatrixXd &Q, std::vector<bool> &inside)
 {
 	assert(IV.cols() == 2);
 	Eigen::RowVector2d minV = IV.colwise().minCoeff().array();
@@ -309,7 +309,7 @@ int polyfem::is_inside(const Eigen::MatrixXd &IV, const Eigen::MatrixXd &Q, std:
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::sample_polygon(const Eigen::MatrixXd &poly, int num_samples, Eigen::MatrixXd &S)
+void polyfem::mesh::sample_polygon(const Eigen::MatrixXd &poly, int num_samples, Eigen::MatrixXd &S)
 {
 	assert(poly.rows() >= 2);
 	int n = poly.rows();

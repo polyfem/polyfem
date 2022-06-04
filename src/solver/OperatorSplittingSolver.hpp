@@ -20,7 +20,7 @@ namespace polyfem
 	class OperatorSplittingSolver
 	{
 	public:
-		void initialize_grid(const polyfem::Mesh &mesh,
+		void initialize_grid(const mesh::Mesh &mesh,
 							 const std::vector<basis::ElementBases> &gbases,
 							 const std::vector<basis::ElementBases> &bases,
 							 const double &density_dx)
@@ -38,9 +38,9 @@ namespace polyfem
 				density = Eigen::VectorXd::Zero((grid_cell_num(0) + 1) * (grid_cell_num(1) + 1) * (grid_cell_num(2) + 1));
 		}
 
-		void initialize_mesh(const polyfem::Mesh &mesh,
+		void initialize_mesh(const mesh::Mesh &mesh,
 							 const int shape, const int n_el,
-							 const std::vector<LocalBoundary> &local_boundary)
+							 const std::vector<mesh::LocalBoundary> &local_boundary)
 		{
 			dim = mesh.dimension();
 			mesh.bounding_box(min_domain, max_domain);
@@ -73,7 +73,7 @@ namespace polyfem
 			}
 		}
 
-		void initialize_hashtable(const polyfem::Mesh &mesh)
+		void initialize_hashtable(const mesh::Mesh &mesh)
 		{
 			Eigen::MatrixXd p0, p1, p;
 			mesh.get_edges(p0, p1);
@@ -154,9 +154,9 @@ namespace polyfem
 
 		OperatorSplittingSolver() {}
 
-		void initialize_solver(const polyfem::Mesh &mesh,
+		void initialize_solver(const mesh::Mesh &mesh,
 							   const int shape_, const int n_el_,
-							   const std::vector<LocalBoundary> &local_boundary,
+							   const std::vector<mesh::LocalBoundary> &local_boundary,
 							   const std::vector<int> &bnd_nodes)
 		{
 			shape = shape_;
@@ -167,17 +167,17 @@ namespace polyfem
 			initialize_hashtable(mesh);
 		}
 
-		OperatorSplittingSolver(const polyfem::Mesh &mesh,
+		OperatorSplittingSolver(const mesh::Mesh &mesh,
 								const int shape, const int n_el,
-								const std::vector<LocalBoundary> &local_boundary,
+								const std::vector<mesh::LocalBoundary> &local_boundary,
 								const std::vector<int> &bnd_nodes)
 		{
 			initialize_solver(mesh, shape, n_el, local_boundary, bnd_nodes);
 		}
 
-		OperatorSplittingSolver(const polyfem::Mesh &mesh,
+		OperatorSplittingSolver(const mesh::Mesh &mesh,
 								const int shape, const int n_el,
-								const std::vector<LocalBoundary> &local_boundary,
+								const std::vector<mesh::LocalBoundary> &local_boundary,
 								const std::vector<int> &boundary_nodes_,
 								const std::vector<int> &pressure_boundary_nodes,
 								const std::vector<int> &bnd_nodes,
@@ -253,7 +253,7 @@ namespace polyfem
 			logger().info("Prefactorization ends!");
 		}
 
-		//         void initialize_solution(const polyfem::Mesh& mesh,
+		//         void initialize_solution(const mesh::Mesh& mesh,
 		//         const std::vector<basis::ElementBases>& gbases,
 		//         const std::vector<basis::ElementBases>& bases,
 		//         const std::shared_ptr<Problem> problem,
@@ -416,7 +416,7 @@ namespace polyfem
 				}
 		}
 
-		void advection(const polyfem::Mesh &mesh,
+		void advection(const mesh::Mesh &mesh,
 					   const std::vector<basis::ElementBases> &gbases,
 					   const std::vector<basis::ElementBases> &bases,
 					   Eigen::MatrixXd &sol,
@@ -616,7 +616,7 @@ namespace polyfem
 			density.swap(new_density);
 		}
 
-		void advection_FLIP(const polyfem::Mesh &mesh, const std::vector<basis::ElementBases> &gbases, const std::vector<basis::ElementBases> &bases, Eigen::MatrixXd &sol, const double dt, const Eigen::MatrixXd &local_pts, const int order = 1)
+		void advection_FLIP(const mesh::Mesh &mesh, const std::vector<basis::ElementBases> &gbases, const std::vector<basis::ElementBases> &bases, Eigen::MatrixXd &sol, const double dt, const Eigen::MatrixXd &local_pts, const int order = 1)
 		{
 			const int ppe = shape; // particle per element
 			const double FLIPRatio = 1;
@@ -851,7 +851,7 @@ namespace polyfem
 #endif
 		}
 
-		void advection_PIC(const polyfem::Mesh &mesh, const std::vector<basis::ElementBases> &gbases, const std::vector<basis::ElementBases> &bases, Eigen::MatrixXd &sol, const double dt, const Eigen::MatrixXd &local_pts, const int order = 1)
+		void advection_PIC(const mesh::Mesh &mesh, const std::vector<basis::ElementBases> &gbases, const std::vector<basis::ElementBases> &bases, Eigen::MatrixXd &sol, const double dt, const Eigen::MatrixXd &local_pts, const int order = 1)
 		{
 			// to store new velocity and weights for particle grid transfer
 			Eigen::MatrixXd new_sol = Eigen::MatrixXd::Zero(sol.size(), 1);
@@ -1009,7 +1009,7 @@ namespace polyfem
 			}
 		}
 
-		void external_force(const polyfem::Mesh &mesh,
+		void external_force(const mesh::Mesh &mesh,
 							const assembler::AssemblerUtils &assembler,
 							const std::vector<basis::ElementBases> &gbases,
 							const std::vector<basis::ElementBases> &bases,

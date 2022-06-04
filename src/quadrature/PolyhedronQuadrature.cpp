@@ -107,7 +107,7 @@ namespace polyfem
 		double scaling = (V.colwise().maxCoeff() - V.colwise().minCoeff()).maxCoeff();
 		Eigen::RowVector3d translation = V.colwise().minCoeff();
 
-		polyfem::tertrahedralize_star_shaped_surface(V, F, kernel, TV, TF, tets);
+		polyfem::mesh::tertrahedralize_star_shaped_surface(V, F, kernel, TV, TF, tets);
 
 #ifdef POLYFEM_WITH_MMG
 		if (tet_quadr_pts.weights.size() * tets.rows() > max_num_quadrature_points)

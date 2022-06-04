@@ -6,6 +6,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
+using namespace polyfem::mesh;
 
 // -----------------------------------------------------------------------------
 
@@ -63,7 +64,7 @@ namespace
 
 // -----------------------------------------------------------------------------
 
-polyfem::MeshNodes::MeshNodes(const Mesh &mesh, const bool has_poly, const bool connect_nodes, const int max_nodes_per_edge, const int max_nodes_per_face, const int max_nodes_per_cell)
+MeshNodes::MeshNodes(const Mesh &mesh, const bool has_poly, const bool connect_nodes, const int max_nodes_per_edge, const int max_nodes_per_face, const int max_nodes_per_cell)
 	: mesh_(mesh), connect_nodes_(connect_nodes), edge_offset_(mesh.n_vertices()), face_offset_(edge_offset_ + mesh.n_edges() * max_nodes_per_edge), cell_offset_(face_offset_ + mesh.n_faces() * max_nodes_per_face)
 
 	  ,
@@ -155,7 +156,7 @@ polyfem::MeshNodes::MeshNodes(const Mesh &mesh, const bool has_poly, const bool 
 
 ////////////////////////////////////////////////////////////////////////////////
 
-int polyfem::MeshNodes::node_id_from_primitive(int primitive_id)
+int MeshNodes::node_id_from_primitive(int primitive_id)
 {
 	if (primitive_to_node_[primitive_id] < 0 || !connect_nodes_)
 	{
@@ -175,7 +176,7 @@ int polyfem::MeshNodes::node_id_from_primitive(int primitive_id)
 	return primitive_to_node_[primitive_id];
 }
 
-std::vector<int> polyfem::MeshNodes::node_ids_from_edge(const Navigation::Index &index, const int n_new_nodes)
+std::vector<int> MeshNodes::node_ids_from_edge(const Navigation::Index &index, const int n_new_nodes)
 {
 	std::vector<int> res;
 	if (n_new_nodes <= 0)
@@ -250,7 +251,7 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_edge(const Navigation::Index 
 	return res;
 }
 
-std::vector<int> polyfem::MeshNodes::node_ids_from_edge(const Navigation3D::Index &index, const int n_new_nodes)
+std::vector<int> MeshNodes::node_ids_from_edge(const Navigation3D::Index &index, const int n_new_nodes)
 {
 	std::vector<int> res;
 	if (n_new_nodes <= 0)
@@ -308,7 +309,7 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_edge(const Navigation3D::Inde
 	return res;
 }
 
-std::vector<int> polyfem::MeshNodes::node_ids_from_face(const Navigation::Index &index, const int n_new_nodes)
+std::vector<int> MeshNodes::node_ids_from_face(const Navigation::Index &index, const int n_new_nodes)
 {
 	std::vector<int> res;
 	if (n_new_nodes <= 0)
@@ -366,7 +367,7 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_face(const Navigation::Index 
 	return res;
 }
 
-std::vector<int> polyfem::MeshNodes::node_ids_from_face(const Navigation3D::Index &index, const int n_new_nodes)
+std::vector<int> MeshNodes::node_ids_from_face(const Navigation3D::Index &index, const int n_new_nodes)
 {
 	std::vector<int> res;
 	if (n_new_nodes <= 0)
@@ -460,7 +461,7 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_face(const Navigation3D::Inde
 	return res;
 }
 
-std::vector<int> polyfem::MeshNodes::node_ids_from_cell(const Navigation3D::Index &index, const int n_new_nodes)
+std::vector<int> MeshNodes::node_ids_from_cell(const Navigation3D::Index &index, const int n_new_nodes)
 {
 	std::vector<int> res;
 	const int start = cell_offset_ + index.element * max_nodes_per_cell_;
@@ -538,50 +539,50 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_cell(const Navigation3D::Inde
 	return res;
 }
 
-int polyfem::MeshNodes::node_id_from_vertex(int v)
+int MeshNodes::node_id_from_vertex(int v)
 {
 	return node_id_from_primitive(v);
 }
 
-int polyfem::MeshNodes::node_id_from_edge(int e)
+int MeshNodes::node_id_from_edge(int e)
 {
 	return node_id_from_primitive(edge_offset_ + e * max_nodes_per_edge_);
 }
 
-int polyfem::MeshNodes::node_id_from_face(int f)
+int MeshNodes::node_id_from_face(int f)
 {
 	return node_id_from_primitive(face_offset_ + f * max_nodes_per_face_);
 }
 
-int polyfem::MeshNodes::node_id_from_cell(int c)
+int MeshNodes::node_id_from_cell(int c)
 {
 	return node_id_from_primitive(cell_offset_ + c * max_nodes_per_cell_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-int polyfem::MeshNodes::vertex_from_node_id(int node_id) const
+int MeshNodes::vertex_from_node_id(int node_id) const
 {
 	const int res = node_to_primitive_[node_id];
 	assert(res >= 0 && res < edge_offset_);
 	return res;
 }
 
-int polyfem::MeshNodes::edge_from_node_id(int node_id) const
+int MeshNodes::edge_from_node_id(int node_id) const
 {
 	const int res = node_to_primitive_[node_id];
 	assert(res >= edge_offset_ && res < face_offset_);
 	return res - edge_offset_;
 }
 
-int polyfem::MeshNodes::face_from_node_id(int node_id) const
+int MeshNodes::face_from_node_id(int node_id) const
 {
 	const int res = node_to_primitive_[node_id];
 	assert(res >= face_offset_ && res < cell_offset_);
 	return res - face_offset_;
 }
 
-int polyfem::MeshNodes::cell_from_node_id(int node_id) const
+int MeshNodes::cell_from_node_id(int node_id) const
 {
 	const int res = node_to_primitive_[node_id];
 	assert(res >= cell_offset_ && res < n_nodes());
@@ -590,7 +591,7 @@ int polyfem::MeshNodes::cell_from_node_id(int node_id) const
 
 ////////////////////////////////////////////////////////////////////////////////
 
-std::vector<int> polyfem::MeshNodes::boundary_nodes() const
+std::vector<int> MeshNodes::boundary_nodes() const
 {
 	std::vector<int> res;
 	res.reserve(n_nodes());

@@ -61,6 +61,6 @@ namespace polyfem
 	class BoxSetter
 	{
 	public:
-		static void set_sidesets(const json &args, Mesh &mesh);
+		static void set_sidesets(const json &args, mesh::Mesh &mesh);
 	};
 } // namespace polyfem

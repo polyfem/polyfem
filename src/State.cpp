@@ -51,6 +51,7 @@ using namespace Eigen;
 namespace polyfem
 {
 	using namespace assembler;
+	using namespace mesh;
 
 	void State::sol_to_pressure()
 	{

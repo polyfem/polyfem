@@ -20,13 +20,13 @@ namespace polyfem
 		public:
 			static int build_bases(
 				const std::string &assembler_name,
-				const Mesh2D &mesh,
+				const mesh::Mesh2D &mesh,
 				const int n_bases,
 				const int quadrature_order,
 				std::vector<ElementBases> &bases,
 				const std::vector<ElementBases> &gbases,
 				const std::map<int, InterfaceData> &poly_edge_to_data,
-				std::vector<LocalBoundary> &local_boundary,
+				std::vector<mesh::LocalBoundary> &local_boundary,
 				std::map<int, Eigen::MatrixXd> &mapped_boundary);
 
 			static void meanvalue(const Eigen::MatrixXd &polygon, const Eigen::RowVector2d &point, Eigen::MatrixXd &b, const double tol);

@@ -8,7 +8,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace GEO;
-using namespace polyfem::Navigation;
+using namespace polyfem::mesh::Navigation;
 
 namespace
 {
@@ -24,7 +24,7 @@ namespace
 
 // -----------------------------------------------------------------------------
 
-void polyfem::Navigation::prepare_mesh(GEO::Mesh &M)
+void polyfem::mesh::Navigation::prepare_mesh(GEO::Mesh &M)
 {
 	M.facets.connect();
 	M.cells.connect();
@@ -93,7 +93,7 @@ void polyfem::Navigation::prepare_mesh(GEO::Mesh &M)
 // -----------------------------------------------------------------------------
 
 // Retrieve the index (v,e,f) of one vertex incident to the given face
-Index polyfem::Navigation::get_index_from_face(const GEO::Mesh &M, const GEO::Attribute<GEO::index_t> &c2e, int f, int lv)
+Index polyfem::mesh::Navigation::get_index_from_face(const GEO::Mesh &M, const GEO::Attribute<GEO::index_t> &c2e, int f, int lv)
 {
 	// GEO::Attribute<index_t> c2e(M.facet_corners.attributes(), "edge_id");
 	Index idx;
@@ -112,7 +112,7 @@ Index polyfem::Navigation::get_index_from_face(const GEO::Mesh &M, const GEO::At
 
 ////////////////////////////////////////////////////////////////////////////////
 
-Index polyfem::Navigation::switch_vertex(const GEO::Mesh &M, Index idx)
+Index polyfem::mesh::Navigation::switch_vertex(const GEO::Mesh &M, Index idx)
 {
 	index_t c1 = M.facets.next_corner_around_facet(idx.face, idx.face_corner);
 	index_t v1 = M.facet_corners.vertex(c1);
@@ -133,7 +133,7 @@ Index polyfem::Navigation::switch_vertex(const GEO::Mesh &M, Index idx)
 	}
 }
 
-Index polyfem::Navigation::switch_edge(const GEO::Mesh &M, const GEO::Attribute<GEO::index_t> &c2e, Index idx)
+Index polyfem::mesh::Navigation::switch_edge(const GEO::Mesh &M, const GEO::Attribute<GEO::index_t> &c2e, Index idx)
 {
 	index_t v2 = M.edges.vertex(idx.edge, 0);
 	if (v2 == (index_t)idx.vertex)
@@ -156,7 +156,7 @@ Index polyfem::Navigation::switch_edge(const GEO::Mesh &M, const GEO::Attribute<
 	}
 }
 
-Index polyfem::Navigation::switch_face(const GEO::Mesh &M, const GEO::Attribute<GEO::index_t> &c2e, Index idx)
+Index polyfem::mesh::Navigation::switch_face(const GEO::Mesh &M, const GEO::Attribute<GEO::index_t> &c2e, Index idx)
 {
 	// GEO::Attribute<index_t> c2e(M.facet_corners.attributes(), "edge_id");
 	index_t c1 = idx.face_corner;

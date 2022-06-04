@@ -19,12 +19,12 @@ namespace polyfem
 		{
 		public:
 			static int build_bases(
-				const Mesh2D &mesh,
+				const mesh::Mesh2D &mesh,
 				const int quadrature_order,
 				const int order,
 				std::vector<ElementBases> &bases,
 				std::vector<ElementBases> &gbases,
-				std::vector<LocalBoundary> &local_boundary);
+				std::vector<mesh::LocalBoundary> &local_boundary);
 		};
 	} // namespace basis
 } // namespace polyfem

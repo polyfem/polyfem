@@ -33,7 +33,7 @@ namespace polyfem
 			}
 		}
 
-		void TimeDepentendStokesProblem::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+		void TimeDepentendStokesProblem::initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 			// val = Eigen::MatrixXd::Ones(pts.rows(), pts.cols())*(1 - exp(-5 * 0.01));
@@ -50,7 +50,7 @@ namespace polyfem
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
 
-		void ConstantVelocity::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void ConstantVelocity::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 
@@ -79,12 +79,12 @@ namespace polyfem
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
 
-		void TwoSpheres::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void TwoSpheres::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
 
-		void TwoSpheres::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+		void TwoSpheres::initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 
@@ -143,7 +143,7 @@ namespace polyfem
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
 
-		void DrivenCavity::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void DrivenCavity::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 
@@ -174,7 +174,7 @@ namespace polyfem
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
 
-		void DrivenCavityC0::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void DrivenCavityC0::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 
@@ -209,7 +209,7 @@ namespace polyfem
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
 
-		void DrivenCavitySmooth::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void DrivenCavitySmooth::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 
@@ -253,7 +253,7 @@ namespace polyfem
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
 
-		void Flow::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void Flow::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 
@@ -349,7 +349,7 @@ namespace polyfem
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
 
-		void FlowWithObstacle::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void FlowWithObstacle::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 
@@ -395,7 +395,7 @@ namespace polyfem
 			is_time_dependent_ = false;
 		}
 
-		void Kovnaszy::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+		void Kovnaszy::initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 		{
 			exact(pts, 0, val);
 		}
@@ -457,7 +457,7 @@ namespace polyfem
 			val.setZero();
 		}
 
-		void Kovnaszy::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void Kovnaszy::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			exact(pts, t, val);
 		}
@@ -475,7 +475,7 @@ namespace polyfem
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
 
-		void CornerFlow::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void CornerFlow::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 
@@ -521,7 +521,7 @@ namespace polyfem
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
 
-		void Lshape::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void Lshape::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 
@@ -568,7 +568,7 @@ namespace polyfem
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
 
-		void UnitFlowWithObstacle::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void UnitFlowWithObstacle::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 
@@ -657,7 +657,7 @@ namespace polyfem
 			is_time_dependent_ = false;
 		}
 
-		void StokesLawProblem::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+		void StokesLawProblem::initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 		{
 			exact(pts, 0, val);
 		}
@@ -716,7 +716,7 @@ namespace polyfem
 			val.setZero();
 		}
 
-		void StokesLawProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void StokesLawProblem::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val.resize(pts.rows(), pts.cols());
 			val.setZero();
@@ -752,7 +752,7 @@ namespace polyfem
 			is_time_dependent_ = false;
 		}
 
-		void Airfoil::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+		void Airfoil::initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 		{
 			exact(pts, 0, val);
 		}
@@ -793,7 +793,7 @@ namespace polyfem
 			val.setZero();
 		}
 
-		void Airfoil::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void Airfoil::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val.resize(pts.rows(), pts.cols());
 			val.setZero();
@@ -817,7 +817,7 @@ namespace polyfem
 			boundary_ids_ = {1, 2, 3, 4, 5, 6, 7};
 		}
 
-		void TaylorGreenVortexProblem::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+		void TaylorGreenVortexProblem::initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 		{
 			exact(pts, 0, val);
 		}
@@ -896,7 +896,7 @@ namespace polyfem
 			val.setZero();
 		}
 
-		void TaylorGreenVortexProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void TaylorGreenVortexProblem::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			exact(pts, t, val);
 		}
@@ -1178,7 +1178,7 @@ namespace polyfem
 		{
 		}
 
-		void TransientStokeProblemExact::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+		void TransientStokeProblemExact::initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 		{
 			exact(pts, 0, val);
 		}
@@ -1266,7 +1266,7 @@ namespace polyfem
 			val *= -1;
 		}
 
-		void TransientStokeProblemExact::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void TransientStokeProblemExact::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			exact(pts, t, val);
 		}

@@ -8,6 +8,8 @@
 
 namespace polyfem
 {
+	using namespace mesh;
+
 	std::shared_ptr<Selection> Selection::build(const json &selection, const Selection::BBox &mesh_bbox)
 	{
 		std::shared_ptr<Selection> res = nullptr;

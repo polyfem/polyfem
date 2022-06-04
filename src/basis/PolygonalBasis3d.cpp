@@ -20,6 +20,8 @@
 namespace polyfem
 {
 	using namespace assembler;
+	using namespace mesh;
+
 	namespace basis
 	{
 		namespace

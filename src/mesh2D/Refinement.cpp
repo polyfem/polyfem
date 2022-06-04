@@ -11,7 +11,7 @@
 #include <numeric>
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::edge_adjacency_graph(
+void polyfem::mesh::edge_adjacency_graph(
 	const Eigen::MatrixXi &Q, Eigen::MatrixXi &edge_index,
 	std::vector<std::vector<int>> &adj,
 	std::vector<std::pair<int, int>> *pairs_of_edges,
@@ -273,7 +273,7 @@ namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool polyfem::instantiate_pattern(
+bool polyfem::mesh::instantiate_pattern(
 	const Eigen::MatrixXd &IV, const Eigen::MatrixXi &IQ,
 	const Eigen::MatrixXd &PV, const Eigen::MatrixXi &PF,
 	Eigen::MatrixXd &OV, Eigen::MatrixXi &OF, Eigen::VectorXi *SF,
@@ -502,7 +502,7 @@ bool polyfem::instantiate_pattern(
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::refine_quad_mesh(
+void polyfem::mesh::refine_quad_mesh(
 	const Eigen::MatrixXd &IV, const Eigen::MatrixXi &IF,
 	Eigen::MatrixXd &OV, Eigen::MatrixXi &OF)
 {
@@ -529,7 +529,7 @@ void polyfem::refine_quad_mesh(
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::Polygons::polar_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, std::vector<std::vector<int>> &OF, double t)
+void polyfem::mesh::Polygons::polar_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, std::vector<std::vector<int>> &OF, double t)
 {
 	assert(IV.cols() == 2 || IV.cols() == 3);
 	Eigen::RowVector3d bary;
@@ -578,7 +578,7 @@ void polyfem::Polygons::polar_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &
 
 // -----------------------------------------------------------------------------
 
-void polyfem::Polygons::catmul_clark_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, std::vector<std::vector<int>> &OF)
+void polyfem::mesh::Polygons::catmul_clark_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, std::vector<std::vector<int>> &OF)
 {
 	assert(IV.cols() == 2 || IV.cols() == 3);
 	// std::cout << IV.rows() << std::endl;
@@ -604,7 +604,7 @@ void polyfem::Polygons::catmul_clark_split(const Eigen::MatrixXd &IV, Eigen::Mat
 
 // -----------------------------------------------------------------------------
 
-void polyfem::Polygons::no_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, std::vector<std::vector<int>> &OF)
+void polyfem::mesh::Polygons::no_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, std::vector<std::vector<int>> &OF)
 {
 	OV = IV;
 	OF.clear();
@@ -615,7 +615,7 @@ void polyfem::Polygons::no_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, Polygons::SplitFunction split_func)
+void polyfem::mesh::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, Polygons::SplitFunction split_func)
 {
 	using GEO::index_t;
 	using Navigation::Index;
@@ -697,7 +697,7 @@ void polyfem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, Pol
 		std::vector<std::vector<int>> F;
 		for (index_t k = 0; k < n; ++k)
 		{
-			GEO::vec3 pk = polyfem::mesh_vertex(M_out, hole[k]);
+			GEO::vec3 pk = polyfem::mesh::mesh_vertex(M_out, hole[k]);
 			P.row(k) << pk[0], pk[1];
 		}
 		split_func(P, V, F);
@@ -731,7 +731,7 @@ void polyfem::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out, Pol
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::refine_triangle_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out)
+void polyfem::mesh::refine_triangle_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_out)
 {
 	using GEO::index_t;
 	using Navigation::Index;

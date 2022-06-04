@@ -268,7 +268,7 @@ namespace polyfem
 				}
 			}
 			assert(_current_rhs.size() == full_size);
-			rhs_assembler.set_bc(std::vector<LocalBoundary>(), std::vector<int>(), state.args["n_boundary_samples"], state.local_neumann_boundary, _current_rhs, t);
+			rhs_assembler.set_bc(std::vector<mesh::LocalBoundary>(), std::vector<int>(), state.args["n_boundary_samples"], state.local_neumann_boundary, _current_rhs, t);
 
 			if (!ignore_inertia && is_time_dependent)
 			{
@@ -279,7 +279,7 @@ namespace polyfem
 			if (reduced_size != full_size)
 			{
 				// rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, _current_rhs, t);
-				rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], std::vector<LocalBoundary>(), _current_rhs, t);
+				rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], std::vector<mesh::LocalBoundary>(), _current_rhs, t);
 			}
 		}
 

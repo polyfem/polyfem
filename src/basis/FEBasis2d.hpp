@@ -39,14 +39,14 @@ namespace polyfem
 			/// @return     The number of basis functions created.
 			///
 			static int build_bases(
-				const Mesh2D &mesh,
+				const mesh::Mesh2D &mesh,
 				const int quadrature_order,
 				const int discr_order,
 				const bool serendipity,
 				const bool has_polys,
 				const bool is_geom_bases,
 				std::vector<ElementBases> &bases,
-				std::vector<LocalBoundary> &local_boundary,
+				std::vector<mesh::LocalBoundary> &local_boundary,
 				std::map<int, InterfaceData> &poly_edge_to_data,
 				std::vector<int> &primitive_to_node);
 
@@ -70,20 +70,20 @@ namespace polyfem
 			/// @return     The number of basis functions created.
 			///
 			static int build_bases(
-				const Mesh2D &mesh,
+				const mesh::Mesh2D &mesh,
 				const int quadrature_order,
 				const Eigen::VectorXi &discr_order,
 				const bool serendipity,
 				const bool has_polys,
 				const bool is_geom_bases,
 				std::vector<ElementBases> &bases,
-				std::vector<LocalBoundary> &local_boundary,
+				std::vector<mesh::LocalBoundary> &local_boundary,
 				std::map<int, InterfaceData> &poly_edge_to_data,
 				std::vector<int> &primitive_to_node);
 
 			//return the local edge nodes for a tri or a quad of order p, index points to the edge
-			static Eigen::VectorXi tri_edge_local_nodes(const int p, const Mesh2D &mesh, Navigation::Index index);
-			static Eigen::VectorXi quad_edge_local_nodes(const int q, const Mesh2D &mesh, Navigation::Index index);
+			static Eigen::VectorXi tri_edge_local_nodes(const int p, const mesh::Mesh2D &mesh, mesh::Navigation::Index index);
+			static Eigen::VectorXi quad_edge_local_nodes(const int q, const mesh::Mesh2D &mesh, mesh::Navigation::Index index);
 		};
 	} // namespace basis
 } // namespace polyfem

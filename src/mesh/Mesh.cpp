@@ -19,12 +19,13 @@
 
 #include <filesystem>
 ////////////////////////////////////////////////////////////////////////////////
+using namespace polyfem::mesh;
 
-std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(GEO::Mesh &meshin, const bool non_conforming)
+std::unique_ptr<Mesh> Mesh::create(GEO::Mesh &meshin, const bool non_conforming)
 {
 	if (is_planar(meshin))
 	{
-		std::unique_ptr<polyfem::Mesh> mesh;
+		std::unique_ptr<Mesh> mesh;
 		if (non_conforming)
 			mesh = std::make_unique<NCMesh2D>();
 		else
@@ -36,7 +37,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(GEO::Mesh &meshin, const bo
 	}
 	else
 	{
-		std::unique_ptr<polyfem::Mesh> mesh = std::make_unique<Mesh3D>();
+		std::unique_ptr<Mesh> mesh = std::make_unique<Mesh3D>();
 		meshin.cells.connect();
 		if (mesh->load(meshin))
 		{
@@ -48,7 +49,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(GEO::Mesh &meshin, const bo
 	return nullptr;
 }
 
-std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path, const bool non_conforming)
+std::unique_ptr<Mesh> Mesh::create(const std::string &path, const bool non_conforming)
 {
 	if (!std::filesystem::exists(path))
 	{
@@ -61,7 +62,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path, co
 	std::transform(lowername.begin(), lowername.end(), lowername.begin(), ::tolower);
 	if (StringUtils::endswith(lowername, ".hybrid"))
 	{
-		std::unique_ptr<polyfem::Mesh> mesh = std::make_unique<Mesh3D>();
+		std::unique_ptr<Mesh> mesh = std::make_unique<Mesh3D>();
 		if (mesh->load(path))
 		{
 			return mesh;
@@ -78,7 +79,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path, co
 		if (!MshReader::load(path, vertices, cells, elements, weights, body_ids))
 			return nullptr;
 
-		std::unique_ptr<polyfem::Mesh> mesh;
+		std::unique_ptr<Mesh> mesh;
 		if (vertices.cols() == 2)
 			if (non_conforming)
 				mesh = std::make_unique<NCMesh2D>();
@@ -120,7 +121,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path, co
 	return nullptr;
 }
 
-std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &meshes, const std::string &root_path, const bool non_conforming)
+std::unique_ptr<Mesh> Mesh::create(const std::vector<json> &meshes, const std::string &root_path, const bool non_conforming)
 {
 	if (meshes.empty())
 	{
@@ -228,7 +229,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 		return nullptr;
 	}
 
-	std::unique_ptr<polyfem::Mesh> mesh;
+	std::unique_ptr<Mesh> mesh;
 	if (vertices.cols() == 2)
 	{
 		if (non_conforming)
@@ -317,7 +318,7 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::Mesh::edge_barycenters(Eigen::MatrixXd &barycenters) const
+void Mesh::edge_barycenters(Eigen::MatrixXd &barycenters) const
 {
 	barycenters.resize(n_edges(), dimension());
 	for (int e = 0; e < n_edges(); ++e)
@@ -326,7 +327,7 @@ void polyfem::Mesh::edge_barycenters(Eigen::MatrixXd &barycenters) const
 	}
 }
 
-void polyfem::Mesh::face_barycenters(Eigen::MatrixXd &barycenters) const
+void Mesh::face_barycenters(Eigen::MatrixXd &barycenters) const
 {
 	barycenters.resize(n_faces(), dimension());
 	for (int f = 0; f < n_faces(); ++f)
@@ -335,7 +336,7 @@ void polyfem::Mesh::face_barycenters(Eigen::MatrixXd &barycenters) const
 	}
 }
 
-void polyfem::Mesh::cell_barycenters(Eigen::MatrixXd &barycenters) const
+void Mesh::cell_barycenters(Eigen::MatrixXd &barycenters) const
 {
 	barycenters.resize(n_cells(), dimension());
 	for (int c = 0; c < n_cells(); ++c)
@@ -347,7 +348,7 @@ void polyfem::Mesh::cell_barycenters(Eigen::MatrixXd &barycenters) const
 ////////////////////////////////////////////////////////////////////////////////
 
 // Queries on the tags
-bool polyfem::Mesh::is_spline_compatible(const int el_id) const
+bool Mesh::is_spline_compatible(const int el_id) const
 {
 	if (is_volume())
 	{
@@ -367,7 +368,7 @@ bool polyfem::Mesh::is_spline_compatible(const int el_id) const
 
 // -----------------------------------------------------------------------------
 
-bool polyfem::Mesh::is_cube(const int el_id) const
+bool Mesh::is_cube(const int el_id) const
 {
 	return elements_tag_[el_id] == ElementType::InterfaceCube
 		   || elements_tag_[el_id] == ElementType::RegularInteriorCube
@@ -380,13 +381,13 @@ bool polyfem::Mesh::is_cube(const int el_id) const
 
 // -----------------------------------------------------------------------------
 
-bool polyfem::Mesh::is_polytope(const int el_id) const
+bool Mesh::is_polytope(const int el_id) const
 {
 	return elements_tag_[el_id] == ElementType::InteriorPolytope
 		   || elements_tag_[el_id] == ElementType::BoundaryPolytope;
 }
 
-void polyfem::Mesh::load_boundary_ids(const std::string &path)
+void Mesh::load_boundary_ids(const std::string &path)
 {
 	boundary_ids_.resize(is_volume() ? n_faces() : n_edges());
 
@@ -409,12 +410,12 @@ void polyfem::Mesh::load_boundary_ids(const std::string &path)
 	file.close();
 }
 
-bool polyfem::Mesh::is_simplex(const int el_id) const
+bool Mesh::is_simplex(const int el_id) const
 {
 	return elements_tag_[el_id] == ElementType::Simplex;
 }
 
-std::vector<std::pair<int, int>> polyfem::Mesh::edges() const
+std::vector<std::pair<int, int>> Mesh::edges() const
 {
 	std::vector<std::pair<int, int>> res;
 	res.reserve(n_edges());
@@ -430,7 +431,7 @@ std::vector<std::pair<int, int>> polyfem::Mesh::edges() const
 	return res;
 }
 
-std::vector<std::vector<int>> polyfem::Mesh::faces() const
+std::vector<std::vector<int>> Mesh::faces() const
 {
 	std::vector<std::vector<int>> res(n_faces());
 

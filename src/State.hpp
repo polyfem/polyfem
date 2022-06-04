@@ -151,18 +151,18 @@ namespace polyfem
 		//list of neumann boundary nodes
 		std::vector<int> pressure_boundary_nodes;
 		//mapping from elements to nodes for all mesh
-		std::vector<LocalBoundary> total_local_boundary;
+		std::vector<mesh::LocalBoundary> total_local_boundary;
 		//mapping from elements to nodes for dirichlet boundary conditions
-		std::vector<LocalBoundary> local_boundary;
+		std::vector<mesh::LocalBoundary> local_boundary;
 		//mapping from elements to nodes for neumann boundary conditions
-		std::vector<LocalBoundary> local_neumann_boundary;
+		std::vector<mesh::LocalBoundary> local_neumann_boundary;
 		//nodes on the boundary of polygonal elements, used for harmonic bases
 		std::map<int, InterfaceData> poly_edge_to_data;
 
 		//current mesh, it can be a Mesh2D or Mesh3D
-		std::unique_ptr<Mesh> mesh;
+		std::unique_ptr<mesh::Mesh> mesh;
 		//Obstacles used in collisions
-		Obstacle obstacle;
+		mesh::Obstacle obstacle;
 		//used to sample the solution
 		RefElementSampler ref_element_sampler;
 
@@ -296,7 +296,7 @@ namespace polyfem
 		//computes the mesh size, it samples every edges n_samples times
 		//uses curved_mesh_size (false by default) to compute the size of
 		//the linear mesh
-		void compute_mesh_size(const Mesh &mesh, const std::vector<ElementBases> &bases, const int n_samples);
+		void compute_mesh_size(const mesh::Mesh &mesh, const std::vector<ElementBases> &bases, const int n_samples);
 
 		//loads the mesh from the json arguments
 		void load_mesh(bool non_conforming = false);
@@ -324,11 +324,11 @@ namespace polyfem
 		{
 			if (V.cols() == 2)
 				if (non_conforming)
-					mesh = std::make_unique<polyfem::NCMesh2D>();
+					mesh = std::make_unique<mesh::NCMesh2D>();
 				else
-					mesh = std::make_unique<polyfem::CMesh2D>();
+					mesh = std::make_unique<mesh::CMesh2D>();
 			else
-				mesh = std::make_unique<polyfem::Mesh3D>();
+				mesh = std::make_unique<mesh::Mesh3D>();
 			mesh->build_from_matrices(V, F);
 
 			load_mesh(non_conforming);
@@ -339,9 +339,9 @@ namespace polyfem
 
 		//set the boundary sideset
 		//from a lambda that takes the face/edge barycenter
-		void set_boundary_side_set(const std::function<int(const polyfem::RowVectorNd &)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
+		void set_boundary_side_set(const std::function<int(const RowVectorNd &)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
 		//from a lambda that takes the face/edge barycenter and a flag if the face/edge is boundary or not (used to set internal boundaries)
-		void set_boundary_side_set(const std::function<int(const polyfem::RowVectorNd &, bool)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
+		void set_boundary_side_set(const std::function<int(const RowVectorNd &, bool)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
 		//from a lambda that takes the face/edge vertices and a flag if the face/edge is boundary or not (used to set internal boundaries)
 		void set_boundary_side_set(const std::function<int(const std::vector<int> &, bool)> &boundary_marker) { mesh->compute_boundary_ids(boundary_marker); }
 
@@ -603,8 +603,8 @@ namespace polyfem
 		// inline std::string mixed_formulation() const { return args["mixed_formulation"]; }
 
 		//compute a priori prefinement in 2d and 3d, fills disc_orders
-		void p_refinement(const Mesh2D &mesh2d);
-		void p_refinement(const Mesh3D &mesh3d);
+		void p_refinement(const mesh::Mesh2D &mesh2d);
+		void p_refinement(const mesh::Mesh3D &mesh3d);
 
 		bool is_obstacle_vertex(const size_t vi) const
 		{

@@ -31,7 +31,7 @@ namespace polyfem
 			static void compute_integral_constraints(
 				const assembler::AssemblerUtils &assembler,
 				const std::string &assembler_name,
-				const Mesh3D &mesh,
+				const mesh::Mesh3D &mesh,
 				const int n_bases,
 				const std::vector<ElementBases> &bases,
 				const std::vector<ElementBases> &gbases,
@@ -67,7 +67,7 @@ namespace polyfem
 				const assembler::AssemblerUtils &assembler,
 				const std::string &assembler_name,
 				const int n_samples_per_edge,
-				const Mesh3D &mesh,
+				const mesh::Mesh3D &mesh,
 				const int n_bases,
 				const int quadrature_order,
 				const int integral_constraints,

@@ -48,7 +48,7 @@ namespace polyfem
 			file.close();
 		}
 
-		void NodeValues::init(const Mesh &mesh)
+		void NodeValues::init(const mesh::Mesh &mesh)
 		{
 			const int n_primitive = mesh.is_volume() ? mesh.n_faces() : mesh.n_edges();
 			if (!data_.empty())
@@ -88,7 +88,7 @@ namespace polyfem
 		{
 		}
 
-		void NodeProblem::init(const Mesh &mesh)
+		void NodeProblem::init(const mesh::Mesh &mesh)
 		{
 			values_.init(mesh);
 		}
@@ -98,7 +98,7 @@ namespace polyfem
 			val = Eigen::MatrixXd::Constant(pts.rows(), pts.cols(), rhs_);
 		}
 
-		void NodeProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void NodeProblem::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), 1);
 
@@ -124,7 +124,7 @@ namespace polyfem
 			}
 		}
 
-		void NodeProblem::neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const
+		void NodeProblem::neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), 1);
 

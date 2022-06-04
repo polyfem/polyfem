@@ -99,7 +99,7 @@ namespace polyfem
 			return true;
 		}
 
-		void GenericTensorProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void GenericTensorProblem::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
 
@@ -135,7 +135,7 @@ namespace polyfem
 			}
 		}
 
-		void GenericTensorProblem::neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const
+		void GenericTensorProblem::neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), mesh.dimension());
 
@@ -790,19 +790,19 @@ namespace polyfem
 			return 4 * max / diag;
 		}
 
-		void GenericTensorProblem::velocity_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void GenericTensorProblem::velocity_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			//TODO
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
 
-		void GenericTensorProblem::acceleration_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void GenericTensorProblem::acceleration_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			//TODO
 			val = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
 		}
 
-		void GenericTensorProblem::initial_solution(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+		void GenericTensorProblem::initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 		{
 			val.resize(pts.rows(), pts.cols());
 			if (initial_position_.empty())
@@ -835,7 +835,7 @@ namespace polyfem
 			}
 		}
 
-		void GenericTensorProblem::initial_velocity(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+		void GenericTensorProblem::initial_velocity(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 		{
 			val.resize(pts.rows(), pts.cols());
 			if (initial_velocity_.empty())
@@ -868,7 +868,7 @@ namespace polyfem
 			}
 		}
 
-		void GenericTensorProblem::initial_acceleration(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
+		void GenericTensorProblem::initial_acceleration(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const
 		{
 			val.resize(pts.rows(), pts.cols());
 			if (initial_acceleration_.empty())
@@ -951,7 +951,7 @@ namespace polyfem
 			}
 		}
 
-		void GenericScalarProblem::bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
+		void GenericScalarProblem::bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), 1);
 
@@ -981,7 +981,7 @@ namespace polyfem
 			}
 		}
 
-		void GenericScalarProblem::neumann_bc(const Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const
+		void GenericScalarProblem::neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(pts.rows(), 1);
 
