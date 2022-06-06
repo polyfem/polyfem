@@ -170,7 +170,7 @@ namespace polyfem
 			const assembler::AssemblerUtils &assembler;
 			Eigen::MatrixXd _current_rhs;
 			StiffnessMatrix cached_stiffness;
-			SpareMatrixCache mat_cache;
+			utils::SpareMatrixCache mat_cache;
 
 			bool ignore_inertia;
 

@@ -57,7 +57,7 @@ namespace polyfem
 			Eigen::MatrixXi in_f_;
 			Eigen::MatrixXi in_e_;
 
-			std::vector<std::array<ExpressionValue, 3>> displacements_;
+			std::vector<std::array<utils::ExpressionValue, 3>> displacements_;
 			std::vector<std::shared_ptr<problem::Interpolation>> displacements_interpolation_;
 
 			std::vector<int> endings_;

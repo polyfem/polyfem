@@ -20,6 +20,7 @@ namespace polyfem
 	using namespace assembler;
 	using namespace quadrature;
 	using namespace mesh;
+	using namespace utils;
 
 	void State::interpolate_boundary_function(const MatrixXd &pts, const MatrixXi &faces, const MatrixXd &fun, const bool compute_avg, MatrixXd &result)
 	{
@@ -65,9 +66,9 @@ namespace polyfem
 					continue;
 
 				if (mesh3d.is_simplex(e))
-					BoundarySampler::quadrature_for_tri_face(lf, 4, face_id, mesh3d, uv, points, weights);
+					utils::BoundarySampler::quadrature_for_tri_face(lf, 4, face_id, mesh3d, uv, points, weights);
 				else if (mesh3d.is_cube(e))
-					BoundarySampler::quadrature_for_quad_face(lf, 4, face_id, mesh3d, uv, points, weights);
+					utils::BoundarySampler::quadrature_for_quad_face(lf, 4, face_id, mesh3d, uv, points, weights);
 				else
 					assert(false);
 
@@ -302,9 +303,9 @@ namespace polyfem
 				for (; lfid < mesh3d.n_cell_faces(e); ++lfid)
 				{
 					if (mesh->is_simplex(e))
-						loc_v = BoundarySampler::tet_local_node_coordinates_from_face(lfid);
+						loc_v = utils::BoundarySampler::tet_local_node_coordinates_from_face(lfid);
 					else if (mesh->is_cube(e))
-						loc_v = BoundarySampler::hex_local_node_coordinates_from_face(lfid);
+						loc_v = utils::BoundarySampler::hex_local_node_coordinates_from_face(lfid);
 					else
 						assert(false);
 
@@ -337,13 +338,13 @@ namespace polyfem
 
 				if (mesh->is_simplex(e))
 				{
-					BoundarySampler::quadrature_for_tri_face(lfid, 4, face_id, mesh3d, uv, points, weights);
-					BoundarySampler::normal_for_tri_face(lfid, tmp_n);
+					utils::BoundarySampler::quadrature_for_tri_face(lfid, 4, face_id, mesh3d, uv, points, weights);
+					utils::BoundarySampler::normal_for_tri_face(lfid, tmp_n);
 				}
 				else if (mesh->is_cube(e))
 				{
-					BoundarySampler::quadrature_for_quad_face(lfid, 4, face_id, mesh3d, uv, points, weights);
-					BoundarySampler::normal_for_quad_face(lfid, tmp_n);
+					utils::BoundarySampler::quadrature_for_quad_face(lfid, 4, face_id, mesh3d, uv, points, weights);
+					utils::BoundarySampler::normal_for_quad_face(lfid, tmp_n);
 				}
 				else
 					assert(false);

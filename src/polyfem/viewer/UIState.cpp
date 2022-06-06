@@ -36,6 +36,7 @@ const int line_width = 2;
 // });
 
 using namespace Eigen;
+using namespace polyfem::utils;
 
 // int offscreen_screenshot(igl::opengl::glfw::Viewer &viewer, const std::string &path);
 

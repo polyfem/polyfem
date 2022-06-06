@@ -6,6 +6,8 @@
 
 namespace polyfem
 {
+	using namespace utils;
+
 	namespace problem
 	{
 		std::shared_ptr<Interpolation> Interpolation::build(const json &params)

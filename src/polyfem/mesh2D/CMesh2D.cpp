@@ -19,6 +19,8 @@
 
 namespace polyfem
 {
+	using namespace utils;
+
 	namespace mesh
 	{
 		void CMesh2D::refine(const int n_refinement, const double t, std::vector<int> &parent_nodes)

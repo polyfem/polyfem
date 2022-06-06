@@ -99,7 +99,7 @@ namespace polyfem
 										 const std::vector<basis::ElementBases> &gbases,
 										 const AssemblyValsCache &cache,
 										 const Eigen::MatrixXd &displacement,
-										 SpareMatrixCache &mat_cache,
+										 utils::SpareMatrixCache &mat_cache,
 										 StiffnessMatrix &hessian) const;
 
 			//plotting (eg von mises), assembler is the name of the formulation

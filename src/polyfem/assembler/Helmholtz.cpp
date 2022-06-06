@@ -44,7 +44,7 @@ namespace polyfem
 			Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> res(1);
 
 			if (dim == 2)
-				res(0) = -0.25 * bessy0(k_ * r);
+				res(0) = -0.25 * utils::bessy0(k_ * r);
 			else if (dim == 3)
 				res(0) = 0.25 * cos(k_ * r) / (M_PI * r);
 			else

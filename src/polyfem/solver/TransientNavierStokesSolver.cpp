@@ -17,6 +17,7 @@ namespace polyfem
 {
 	using namespace polysolve;
 	using namespace assembler;
+	using namespace utils;
 
 	namespace solver
 	{

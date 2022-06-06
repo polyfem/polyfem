@@ -82,8 +82,8 @@ namespace polyfem
 
 			private:
 				Eigen::Vector3d val;
-				InterpolatedFunction2d tri_func;
-				RBFInterpolation rbf_func;
+				utils::InterpolatedFunction2d tri_func;
+				utils::RBFInterpolation rbf_func;
 				bool is_val;
 				bool is_tri;
 				int coordiante_0 = 0;

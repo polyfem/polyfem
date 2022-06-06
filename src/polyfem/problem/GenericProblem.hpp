@@ -124,22 +124,22 @@ namespace polyfem
 			bool is_time_dept_ = false;
 			// bool is_mixed_ = false;
 
-			std::vector<std::array<ExpressionValue, 3>> forces_;
+			std::vector<std::array<utils::ExpressionValue, 3>> forces_;
 			std::vector<std::shared_ptr<Interpolation>> forces_interpolation_;
-			std::vector<std::array<ExpressionValue, 3>> displacements_;
+			std::vector<std::array<utils::ExpressionValue, 3>> displacements_;
 			std::vector<std::shared_ptr<Interpolation>> displacements_interpolation_;
-			std::vector<ExpressionValue> pressures_;
+			std::vector<utils::ExpressionValue> pressures_;
 			std::vector<std::shared_ptr<Interpolation>> pressure_interpolation_;
 
-			std::vector<std::pair<int, std::array<ExpressionValue, 3>>> initial_position_;
-			std::vector<std::pair<int, std::array<ExpressionValue, 3>>> initial_velocity_;
-			std::vector<std::pair<int, std::array<ExpressionValue, 3>>> initial_acceleration_;
+			std::vector<std::pair<int, std::array<utils::ExpressionValue, 3>>> initial_position_;
+			std::vector<std::pair<int, std::array<utils::ExpressionValue, 3>>> initial_velocity_;
+			std::vector<std::pair<int, std::array<utils::ExpressionValue, 3>>> initial_acceleration_;
 
 			std::vector<Eigen::Matrix<bool, 1, 3>> dirichlet_dimensions_;
 
-			std::array<ExpressionValue, 3> rhs_;
-			std::array<ExpressionValue, 3> exact_;
-			std::array<ExpressionValue, 9> exact_grad_;
+			std::array<utils::ExpressionValue, 3> rhs_;
+			std::array<utils::ExpressionValue, 3> exact_;
+			std::array<utils::ExpressionValue, 9> exact_grad_;
 			bool is_all_;
 		};
 
@@ -187,15 +187,15 @@ namespace polyfem
 			void clear() override;
 
 		private:
-			std::vector<ExpressionValue> neumann_;
-			std::vector<ExpressionValue> dirichlet_;
+			std::vector<utils::ExpressionValue> neumann_;
+			std::vector<utils::ExpressionValue> dirichlet_;
 
 			std::vector<std::shared_ptr<Interpolation>> neumann_interpolation_;
 			std::vector<std::shared_ptr<Interpolation>> dirichlet_interpolation_;
 
-			ExpressionValue rhs_;
-			ExpressionValue exact_;
-			std::array<ExpressionValue, 3> exact_grad_;
+			utils::ExpressionValue rhs_;
+			utils::ExpressionValue exact_;
+			std::array<utils::ExpressionValue, 3> exact_grad_;
 			bool is_all_;
 			bool has_exact_ = false;
 			bool has_exact_grad_ = false;

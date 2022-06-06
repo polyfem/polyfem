@@ -7,6 +7,8 @@
 
 namespace polyfem
 {
+	using namespace utils;
+
 	namespace problem
 	{
 		bool PointBasedTensorProblem::BCValue::init(const json &data)

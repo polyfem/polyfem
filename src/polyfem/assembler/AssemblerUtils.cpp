@@ -6,6 +6,7 @@
 namespace polyfem
 {
 	using namespace basis;
+	using namespace utils;
 
 	namespace assembler
 	{
@@ -224,7 +225,7 @@ namespace polyfem
 													 const std::vector<ElementBases> &gbases,
 													 const AssemblyValsCache &cache,
 													 const Eigen::MatrixXd &displacement,
-													 SpareMatrixCache &mat_cache,
+													 utils::SpareMatrixCache &mat_cache,
 													 StiffnessMatrix &hessian) const
 		{
 			if (assembler == "SaintVenant")

@@ -20,6 +20,7 @@ namespace polyfem
 {
 	using namespace basis;
 	using namespace mesh;
+	using namespace utils;
 
 	namespace problem
 	{

@@ -82,7 +82,7 @@ namespace cppoptlib
 			if (std::isnan(first_grad_norm))
 			{
 				this->m_status = Status::UserDefined;
-				polyfem::logger().error("[{}] Initial gradient is nan; stopping", name());
+				polyfem::utils::logger().error("[{}] Initial gradient is nan; stopping", name());
 				m_error_code = ErrorCode::NanEncountered;
 				throw std::runtime_error("Gradient is nan; stopping");
 				return;
@@ -95,7 +95,7 @@ namespace cppoptlib
 			{
 				POLYFEM_SCOPED_TIMER("compute objective function", obj_fun_time);
 				this->m_current.fDelta = objFunc.value(x);
-				polyfem::logger().log(
+				polyfem::utils::logger().log(
 					spdlog::level::info, "[{}] {} (f={} ||∇f||={} g={} tol={})",
 					name(), "Not even starting, grad is small enough", this->m_current.fDelta, first_grad_norm,
 					this->m_current.gradNorm, this->m_stop.gradNorm);
@@ -103,7 +103,7 @@ namespace cppoptlib
 				return;
 			}
 
-			Timer timer("non-linear solver", this->total_time);
+			utils::Timer timer("non-linear solver", this->total_time);
 			timer.start();
 
 			m_line_search->use_grad_norm_tol = use_grad_norm_tol;
@@ -123,7 +123,7 @@ namespace cppoptlib
 				if (!std::isfinite(energy))
 				{
 					this->m_status = Status::UserDefined;
-					polyfem::logger().error("[{}] f(x) is nan or inf; stopping", name());
+					polyfem::utils::logger().error("[{}] f(x) is nan or inf; stopping", name());
 					m_error_code = ErrorCode::NanEncountered;
 					throw std::runtime_error("f(x) is nan or inf; stopping");
 					break;
@@ -138,7 +138,7 @@ namespace cppoptlib
 				if (std::isnan(grad_norm))
 				{
 					this->m_status = Status::UserDefined;
-					polyfem::logger().error("[{}] Gradient is nan; stopping", name());
+					polyfem::utils::logger().error("[{}] Gradient is nan; stopping", name());
 					m_error_code = ErrorCode::NanEncountered;
 					throw std::runtime_error("Gradient is nan; stopping");
 					break;
@@ -158,7 +158,7 @@ namespace cppoptlib
 				if (grad_norm != 0 && delta_x.dot(grad) >= 0)
 				{
 					increase_descent_strategy();
-					polyfem::logger().log(
+					polyfem::utils::logger().log(
 						spdlog::level::debug,
 						"[{}] direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
 						name(), delta_x.dot(grad), descent_strategy_name());
@@ -171,7 +171,7 @@ namespace cppoptlib
 				{
 					increase_descent_strategy();
 					this->m_status = Status::UserDefined;
-					polyfem::logger().debug("[{}] Δx is nan; reverting to {}", name(), descent_strategy_name());
+					polyfem::utils::logger().debug("[{}] Δx is nan; reverting to {}", name(), descent_strategy_name());
 					this->m_status = Status::Continue;
 					continue;
 				}
@@ -226,12 +226,12 @@ namespace cppoptlib
 				{
 					this->m_status = Status::UserDefined;
 					m_error_code = ErrorCode::Success;
-					polyfem::logger().debug("[{}] Objective decided to stop", name());
+					polyfem::utils::logger().debug("[{}] Objective decided to stop", name());
 				}
 
 				objFunc.post_step(this->m_current.iterations, x);
 
-				polyfem::logger().debug(
+				polyfem::utils::logger().debug(
 					"[{}] iter={:} f={} ‖∇f‖={} ‖Δx‖={} Δx⋅∇f(x)={} g={} tol={} rate={} ‖step‖={}",
 					name(), this->m_current.iterations, energy, grad_norm, delta_x_norm, delta_x.dot(grad),
 					this->m_current.gradNorm, this->m_stop.gradNorm, rate, step);
@@ -249,25 +249,25 @@ namespace cppoptlib
 			if (this->m_status == Status::IterationLimit)
 			{
 				const std::string msg = fmt::format("[{}] Reached iteration limit", name());
-				polyfem::logger().error(msg);
+				polyfem::utils::logger().error(msg);
 				throw std::runtime_error(msg);
 				level = spdlog::level::err;
 			}
 			else if (this->m_current.iterations == 0)
 			{
 				const std::string msg = fmt::format("[{}] Unable to take a step", name());
-				polyfem::logger().error(msg);
+				polyfem::utils::logger().error(msg);
 				throw std::runtime_error(msg);
 				level = this->m_status == Status::UserDefined ? spdlog::level::err : spdlog::level::warn;
 			}
 			else if (this->m_status == Status::UserDefined)
 			{
 				const std::string msg = fmt::format("[{}] Failed to find minimizer", name());
-				polyfem::logger().error(msg);
+				polyfem::utils::logger().error(msg);
 				throw std::runtime_error(msg);
 				level = spdlog::level::err;
 			}
-			polyfem::logger().log(
+			polyfem::utils::logger().log(
 				level, "[{}] {}, took {}s (niters={} f={} ||∇f||={} ||Δx||={} Δx⋅∇f(x)={} g={} tol={})",
 				name(), msg, timer.getElapsedTimeInSec(), this->m_current.iterations, old_energy, grad.norm(), delta_x.norm(),
 				delta_x.dot(grad), this->m_current.gradNorm, this->m_stop.gradNorm);
@@ -289,14 +289,14 @@ namespace cppoptlib
 			if (std::isnan(rate) && descent_strategy < 2) // 2 is the max, grad descent
 			{
 				increase_descent_strategy();
-				polyfem::logger().warn(
+				polyfem::utils::logger().warn(
 					"[{}] Line search failed; reverting to {}", name(), descent_strategy_name());
 				this->m_status = Status::Continue; // Try the step again with gradient descent
 			}
 			else if (std::isnan(rate))
 			{
 				assert(descent_strategy == 2); // failed on gradient descent
-				polyfem::logger().error("[{}] Line search failed on gradient descent; stopping", name());
+				polyfem::utils::logger().error("[{}] Line search failed on gradient descent; stopping", name());
 				this->m_status = Status::UserDefined; // Line search failed on gradient descent, so quit!
 				throw std::runtime_error("Line search failed on gradient descent");
 			}
@@ -412,7 +412,7 @@ namespace cppoptlib
 
 		void log_times()
 		{
-			polyfem::logger().debug(
+			polyfem::utils::logger().debug(
 				"[timing] grad {:.3g}s, assembly {:.3g}s, inverting {:.3g}s, "
 				"line_search {:.3g}s, constraint_set_update {:.3g}s, "
 				"obj_fun {:.3g}s, checking_for_nan_inf {:.3g}s, "

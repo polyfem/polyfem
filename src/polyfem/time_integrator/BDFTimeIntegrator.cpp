@@ -4,6 +4,8 @@
 
 namespace polyfem
 {
+	using namespace utils;
+
 	namespace time_integrator
 	{
 		void BDFTimeIntegrator::set_parameters(const nlohmann::json &params)

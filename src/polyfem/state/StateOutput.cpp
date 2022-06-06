@@ -34,6 +34,7 @@ namespace polyfem
 	using namespace assembler;
 	using namespace mesh;
 	using namespace solver;
+	using namespace utils;
 
 	void State::get_sidesets(Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXd &sidesets)
 	{
@@ -152,24 +153,24 @@ namespace polyfem
 				switch (lb.type())
 				{
 				case BoundaryType::TriLine:
-					BoundarySampler::normal_for_tri_edge(lb[k], tmp_n);
-					BoundarySampler::sample_parametric_tri_edge(lb[k], n_samples, uv, local_pts);
+					utils::BoundarySampler::normal_for_tri_edge(lb[k], tmp_n);
+					utils::BoundarySampler::sample_parametric_tri_edge(lb[k], n_samples, uv, local_pts);
 					break;
 				case BoundaryType::QuadLine:
-					BoundarySampler::normal_for_quad_edge(lb[k], tmp_n);
-					BoundarySampler::sample_parametric_quad_edge(lb[k], n_samples, uv, local_pts);
+					utils::BoundarySampler::normal_for_quad_edge(lb[k], tmp_n);
+					utils::BoundarySampler::sample_parametric_quad_edge(lb[k], n_samples, uv, local_pts);
 					break;
 				case BoundaryType::Quad:
-					BoundarySampler::normal_for_quad_face(lb[k], tmp_n);
-					BoundarySampler::sample_parametric_quad_face(lb[k], n_samples, uv, local_pts);
+					utils::BoundarySampler::normal_for_quad_face(lb[k], tmp_n);
+					utils::BoundarySampler::sample_parametric_quad_face(lb[k], n_samples, uv, local_pts);
 					break;
 				case BoundaryType::Tri:
-					BoundarySampler::normal_for_tri_face(lb[k], tmp_n);
-					BoundarySampler::sample_parametric_tri_face(lb[k], n_samples, uv, local_pts);
+					utils::BoundarySampler::normal_for_tri_face(lb[k], tmp_n);
+					utils::BoundarySampler::sample_parametric_tri_face(lb[k], n_samples, uv, local_pts);
 					break;
 				case BoundaryType::Polygon:
-					BoundarySampler::normal_for_polygon_edge(lb[k], lb.global_primitive_id(k), *mesh, tmp_n);
-					BoundarySampler::sample_polygon_edge(lb.element_id(), lb.global_primitive_id(k), n_samples, *mesh, uv, local_pts);
+					utils::BoundarySampler::normal_for_polygon_edge(lb[k], lb.global_primitive_id(k), *mesh, tmp_n);
+					utils::BoundarySampler::sample_polygon_edge(lb.element_id(), lb.global_primitive_id(k), n_samples, *mesh, uv, local_pts);
 					break;
 				case BoundaryType::Polyhedron:
 					assert(false);

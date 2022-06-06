@@ -25,7 +25,7 @@ namespace polyfem
 				}
 				else if (name == "bisection" || name == "Bisection")
 				{
-					logger().warn("{} linesearch was renamed to \"backtracking\"; using backtracking line-search", name);
+					utils::logger().warn("{} linesearch was renamed to \"backtracking\"; using backtracking line-search", name);
 					return std::make_shared<BacktrackingLineSearch<ProblemType>>();
 				}
 				else if (name == "backtracking" || name == "Backtracking")
@@ -43,7 +43,7 @@ namespace polyfem
 				else
 				{
 					const std::string msg = fmt::format("Unknown line search {}!", name);
-					logger().error(msg);
+					utils::logger().error(msg);
 					throw std::invalid_argument(msg);
 				}
 			}
@@ -116,7 +116,7 @@ namespace polyfem
 
 				if (cur_iter >= max_step_size_iter || step_size <= min_step_size)
 				{
-					logger().error(
+					utils::logger().error(
 						"Line search failed to find a valid finite energy step (cur_iter={:d} step_size={:g})!",
 						cur_iter, step_size);
 					return std::nan("");
@@ -139,7 +139,7 @@ namespace polyfem
 				double max_step_size = objFunc.max_step_size(x, new_x);
 				if (max_step_size == 0)
 				{
-					logger().error("Line search failed because CCD produced a stepsize of zero!");
+					utils::logger().error("Line search failed because CCD produced a stepsize of zero!");
 					objFunc.line_search_end();
 					return std::nan("");
 				}
@@ -152,7 +152,7 @@ namespace polyfem
 				std::fesetround(current_round);
 			} // clang-format on
 
-				// logger().trace("\t\tpre TOI={}, ss={}", max_step_size, step_size);
+				// utils::logger().trace("\t\tpre TOI={}, ss={}", max_step_size, step_size);
 
 				// while (max_step_size != 1)
 				// {
@@ -163,7 +163,7 @@ namespace polyfem
 				// 	step_size *= max_step_size; // TODO: check me if correct
 				// 	std::fesetround(current_roudn);
 				// 	if (max_step_size != 1)
-				// 		logger().trace("\t\trepeating TOI={}, ss={}", max_step_size, step_size);
+				// 		utils::logger().trace("\t\trepeating TOI={}, ss={}", max_step_size, step_size);
 				// }
 
 				return step_size;
@@ -189,7 +189,7 @@ namespace polyfem
 				// safe guard check
 				while (!objFunc.is_step_collision_free(x, new_x))
 				{
-					logger().error("step is not collision free!!");
+					utils::logger().error("step is not collision free!!");
 					step_size *= rate;
 					new_x = x + step_size * delta_x;
 					{

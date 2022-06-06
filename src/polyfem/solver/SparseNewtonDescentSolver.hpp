@@ -111,7 +111,7 @@ namespace cppoptlib
 
 				if (reg_weight > 0)
 				{
-					hessian += reg_weight * polyfem::sparse_identity(hessian.rows(), hessian.cols());
+					hessian += reg_weight * polyfem::utils::sparse_identity(hessian.rows(), hessian.cols());
 				}
 			}
 
@@ -128,7 +128,7 @@ namespace cppoptlib
 				{
 					increase_descent_strategy();
 					// warn if using gradient descent
-					polyfem::logger().log(
+					polyfem::utils::logger().log(
 						this->descent_strategy == 2 ? spdlog::level::warn : spdlog::level::debug,
 						"Unable to factorize Hessian: \"{}\"; reverting to {}",
 						err.what(), this->descent_strategy_name());
@@ -144,7 +144,7 @@ namespace cppoptlib
 			if (std::isnan(residual))
 			{
 				increase_descent_strategy();
-				polyfem::logger().log(
+				polyfem::utils::logger().log(
 					this->descent_strategy == 2 ? spdlog::level::warn : spdlog::level::debug,
 					"nan linear solve residual {} (||∇f||={}); reverting to {}",
 					residual, grad.norm(), this->descent_strategy_name());
@@ -153,7 +153,7 @@ namespace cppoptlib
 			else if (residual > std::max(1e-8 * grad.norm(), 1e-5))
 			{
 				increase_descent_strategy();
-				polyfem::logger().log(
+				polyfem::utils::logger().log(
 					this->descent_strategy == 2 ? spdlog::level::warn : spdlog::level::debug,
 					"large linear solve residual {} (||∇f||={}); reverting to {}",
 					residual, grad.norm(), this->descent_strategy_name());
@@ -161,14 +161,14 @@ namespace cppoptlib
 			}
 			else
 			{
-				polyfem::logger().trace("linear solve residual {}", residual);
+				polyfem::utils::logger().trace("linear solve residual {}", residual);
 			}
 
 			// do this check here because we need to repeat the solve without resetting reg_weight
 			if (grad.dot(direction) >= 0)
 			{
 				increase_descent_strategy();
-				polyfem::logger().log(
+				polyfem::utils::logger().log(
 					this->descent_strategy == 2 ? spdlog::level::warn : spdlog::level::debug,
 					"[{}] direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
 					name(), direction.dot(grad), descent_strategy_name());

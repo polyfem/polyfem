@@ -44,7 +44,7 @@ namespace polyfem
 						old_energy = objFunc.value(x);
 						if (std::isnan(old_energy))
 						{
-							logger().error("Original energy in line search is nan!");
+							utils::logger().error("Original energy in line search is nan!");
 							return std::nan("");
 						}
 
@@ -76,7 +76,7 @@ namespace polyfem
 
 					{
 						POLYFEM_SCOPED_TIMER("CCD narrow-phase", this->ccd_time);
-						logger().trace("Performing narrow-phase CCD");
+						utils::logger().trace("Performing narrow-phase CCD");
 						step_size = this->compute_collision_free_step_size(x, delta_x, objFunc, step_size);
 						if (std::isnan(step_size))
 							return std::nan("");
@@ -118,7 +118,7 @@ namespace polyfem
 						objFunc.line_search_end();
 					}
 
-					logger().debug(
+					utils::logger().debug(
 						"Line search finished (nan_free_step_size={} collision_free_step_size={} descent_step_size={} final_step_size={})",
 						nan_free_step_size, collision_free_step_size, descent_step_size, step_size);
 
@@ -165,7 +165,7 @@ namespace polyfem
 
 						is_step_valid = objFunc.is_step_valid(x, new_x);
 
-						logger().trace("ls it: {} delta: {} invalid: {} ", this->cur_iter, (cur_energy - old_energy), !is_step_valid);
+						utils::logger().trace("ls it: {} delta: {} invalid: {} ", this->cur_iter, (cur_energy - old_energy), !is_step_valid);
 
 						// if (!std::isfinite(cur_energy) || (cur_energy >= old_energy && fabs(cur_energy - old_energy) > 1e-12) || !is_step_valid)
 						if (!std::isfinite(cur_energy) || cur_energy > old_energy || !is_step_valid)
@@ -183,7 +183,7 @@ namespace polyfem
 
 					if (this->cur_iter >= this->max_step_size_iter || step_size <= this->min_step_size)
 					{
-						logger().warn(
+						utils::logger().warn(
 							"Line search failed to find descent step (f(x)={:g} f(x+αΔx)={:g} α_CCD={:g} α={:g}, ||Δx||={:g} is_step_valid={} iter={:d})",
 							old_energy, cur_energy, starting_step_size, step_size, delta_x.norm(),
 							is_step_valid ? "true" : "false", this->cur_iter);

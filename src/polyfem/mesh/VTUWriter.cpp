@@ -115,7 +115,7 @@ namespace polyfem
 					tmp.row(2).setZero();
 				}
 
-				base64Layer base64(os);
+				utils::base64Layer base64(os);
 
 				os << "<DataArray type=\"Float64\" NumberOfComponents=\"3\" format=\"binary\">\n";
 				const uint64_t size = tmp.size() * sizeof(double);
@@ -157,7 +157,7 @@ namespace polyfem
 			const int n_cells = cells.rows();
 			const int n_cell_vertices = cells.cols();
 			os << "<Cells>\n";
-			base64Layer base64(os);
+			utils::base64Layer base64(os);
 
 			///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			if (binary_)
@@ -253,7 +253,7 @@ namespace polyfem
 		{
 			const int n_cells = cells.size();
 			os << "<Cells>\n";
-			base64Layer base64(os);
+			utils::base64Layer base64(os);
 
 			int n_cells_indices = 0;
 			for (const auto &c : cells)

@@ -6,7 +6,7 @@
 #include <filesystem>
 
 // Split a string into tokens
-std::vector<std::string> polyfem::StringUtils::split(const std::string &str, const std::string &delimiters)
+std::vector<std::string> polyfem::utils::StringUtils::split(const std::string &str, const std::string &delimiters)
 {
 	// Skip delimiters at beginning.
 	std::string::size_type lastPos = str.find_first_not_of(delimiters, 0);
@@ -28,7 +28,7 @@ std::vector<std::string> polyfem::StringUtils::split(const std::string &str, con
 }
 
 // Skip comments in a stream
-std::istream &polyfem::StringUtils::skip(std::istream &in, char x)
+std::istream &polyfem::utils::StringUtils::skip(std::istream &in, char x)
 {
 	std::string dummy;
 	while ((in >> std::ws).peek() == std::char_traits<char>::to_int_type(x))
@@ -39,13 +39,13 @@ std::istream &polyfem::StringUtils::skip(std::istream &in, char x)
 }
 
 // Tests whether a string starts with a given prefix
-bool polyfem::StringUtils::startswith(const std::string &str, const std::string &prefix)
+bool polyfem::utils::StringUtils::startswith(const std::string &str, const std::string &prefix)
 {
 	return (str.compare(0, prefix.size(), prefix) == 0);
 }
 
 // Tests whether a string ends with a given suffix
-bool polyfem::StringUtils::endswith(const std::string &str, const std::string &suffix)
+bool polyfem::utils::StringUtils::endswith(const std::string &str, const std::string &suffix)
 {
 	if (str.length() >= suffix.length())
 	{
@@ -58,7 +58,7 @@ bool polyfem::StringUtils::endswith(const std::string &str, const std::string &s
 }
 
 // Replace extension after the last "dot"
-std::string polyfem::StringUtils::replace_ext(const std::string &filename, const std::string &newext)
+std::string polyfem::utils::StringUtils::replace_ext(const std::string &filename, const std::string &newext)
 {
 	std::string ext = "";
 	if (!newext.empty())
@@ -95,12 +95,12 @@ namespace
 } // namespace
 
 // trim from both ends (copying)
-std::string polyfem::StringUtils::trim(const std::string &string)
+std::string polyfem::utils::StringUtils::trim(const std::string &string)
 {
 	return rtrim(ltrim(string));
 }
 
-std::string polyfem::resolve_path(
+std::string polyfem::utils::resolve_path(
 	const std::string &path,
 	const std::string &input_file_path)
 {

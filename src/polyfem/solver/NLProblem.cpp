@@ -63,6 +63,8 @@ namespace ipc
 namespace polyfem
 {
 	using namespace assembler;
+	using namespace utils;
+
 	namespace solver
 	{
 

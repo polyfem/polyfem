@@ -6,8 +6,8 @@ set(SOURCES
 	Bessel.hpp
 	BoundarySampler.cpp
 	BoundarySampler.hpp
-	BoxSetter.cpp
-	BoxSetter.hpp
+	Selection.cpp
+	Selection.hpp
 	DisableWarnings.hpp
 	EdgeSampler.cpp
 	EdgeSampler.hpp

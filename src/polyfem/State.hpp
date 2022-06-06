@@ -168,7 +168,7 @@ namespace polyfem
 		//Obstacles used in collisions
 		mesh::Obstacle obstacle;
 		//used to sample the solution
-		RefElementSampler ref_element_sampler;
+		utils::RefElementSampler ref_element_sampler;
 
 		//polygons, used since poly have no geom mapping
 		std::map<int, Eigen::MatrixXd> polys;
@@ -452,7 +452,7 @@ namespace polyfem
 		// Resolve path relative to args["root_path"] if the path is not absolute
 		std::string resolve_input_path(const std::string &path) const
 		{
-			return resolve_path(path, args["root_path"]);
+			return utils::resolve_path(path, args["root_path"]);
 		}
 		// Resolve path relative to output_dir if the path is not absolute
 		std::string resolve_output_path(const std::string &path) const;

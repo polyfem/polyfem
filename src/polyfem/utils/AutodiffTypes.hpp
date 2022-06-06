@@ -6,6 +6,7 @@
 
 namespace polyfem
 {
+
 	typedef DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>> AutodiffScalarGrad;
 	typedef DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>> AutodiffScalarHessian;
 

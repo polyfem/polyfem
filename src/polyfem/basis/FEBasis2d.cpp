@@ -17,6 +17,8 @@ using namespace polyfem::assembler;
 using namespace polyfem::basis;
 using namespace polyfem::mesh;
 using namespace polyfem::quadrature;
+using namespace polyfem::utils;
+
 /*
 
 Axes:

@@ -6,6 +6,7 @@
 namespace polyfem
 {
 	using namespace mesh;
+	using namespace utils;
 
 	namespace
 	{

@@ -18,6 +18,8 @@ namespace polyfem
 {
 	using namespace polysolve;
 	using namespace assembler;
+	using namespace utils;
+
 	namespace solver
 	{
 		NavierStokesSolver::NavierStokesSolver(double viscosity, const json &solver_param, const json &problem_params, const std::string &solver_type, const std::string &precond_type)

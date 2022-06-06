@@ -97,7 +97,7 @@ namespace polyfem
 		void set_e_nu(const json &E, const json &nu);
 
 		int size_;
-		ExpressionValue lambda_, mu_;
+		utils::ExpressionValue lambda_, mu_;
 		bool is_lambda_mu_;
 		bool initialized_;
 	};
@@ -122,7 +122,7 @@ namespace polyfem
 	private:
 		void set_rho(const json &rho);
 
-		ExpressionValue rho_;
+		utils::ExpressionValue rho_;
 		bool initialized_;
 	};
 } // namespace polyfem

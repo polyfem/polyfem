@@ -25,6 +25,8 @@
 #include <geogram/basic/logger.h>
 ////////////////////////////////////////////////////////////////////////////////
 
+using namespace polyfem::utils;
+
 bool polyfem::mesh::is_planar(const GEO::Mesh &M, const double tol)
 {
 	if (M.vertices.dimension() == 2)

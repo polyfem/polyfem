@@ -16,63 +16,65 @@
 
 namespace polyfem
 {
-	class OBJReader
+	namespace utils
 	{
-	public:
-		/// @brief Read a mesh from an ascii obj file
-		///
-		/// Fills in vertex positions, normals and texture coordinates. Mesh may
-		/// have faces of any number of degree.
-		///
-		/// @param[in] obj_file_name  path to .obj file
-		/// @param[out] V             double matrix of vertex positions
-		/// @param[out] TC            double matrix of texture coordinates
-		/// @param[out] N             double matrix of corner normals #N by 3
-		/// @param[out] F             #F list of face indices into vertex positions
-		/// @param[out] FTC           #F list of face indices into vertex texture
-		///                           coordinates
-		/// @param[out] FN            #F list of face indices into vertex normals
-		/// @param[out] L             list of polyline indices into vertex positions
-		///
-		/// @returns true on success, false on errors
-		static bool load(
-			const std::string obj_file_name,
-			std::vector<std::vector<double>> &V,
-			std::vector<std::vector<double>> &TC,
-			std::vector<std::vector<double>> &N,
-			std::vector<std::vector<int>> &F,
-			std::vector<std::vector<int>> &FTC,
-			std::vector<std::vector<int>> &FN,
-			std::vector<std::vector<int>> &L);
+		class OBJReader
+		{
+		public:
+			/// @brief Read a mesh from an ascii obj file
+			///
+			/// Fills in vertex positions, normals and texture coordinates. Mesh may
+			/// have faces of any number of degree.
+			///
+			/// @param[in] obj_file_name  path to .obj file
+			/// @param[out] V             double matrix of vertex positions
+			/// @param[out] TC            double matrix of texture coordinates
+			/// @param[out] N             double matrix of corner normals #N by 3
+			/// @param[out] F             #F list of face indices into vertex positions
+			/// @param[out] FTC           #F list of face indices into vertex texture
+			///                           coordinates
+			/// @param[out] FN            #F list of face indices into vertex normals
+			/// @param[out] L             list of polyline indices into vertex positions
+			///
+			/// @returns true on success, false on errors
+			static bool load(
+				const std::string obj_file_name,
+				std::vector<std::vector<double>> &V,
+				std::vector<std::vector<double>> &TC,
+				std::vector<std::vector<double>> &N,
+				std::vector<std::vector<int>> &F,
+				std::vector<std::vector<int>> &FTC,
+				std::vector<std::vector<int>> &FN,
+				std::vector<std::vector<int>> &L);
 
-		/// @brief Read a mesh from an already opened ascii obj file
-		/// @param[in] obj_file  pointer to already opened .obj file
-		static bool load(
-			FILE *obj_file,
-			std::vector<std::vector<double>> &V,
-			std::vector<std::vector<double>> &TC,
-			std::vector<std::vector<double>> &N,
-			std::vector<std::vector<int>> &F,
-			std::vector<std::vector<int>> &FTC,
-			std::vector<std::vector<int>> &FN,
-			std::vector<std::vector<int>> &L);
+			/// @brief Read a mesh from an already opened ascii obj file
+			/// @param[in] obj_file  pointer to already opened .obj file
+			static bool load(
+				FILE *obj_file,
+				std::vector<std::vector<double>> &V,
+				std::vector<std::vector<double>> &TC,
+				std::vector<std::vector<double>> &N,
+				std::vector<std::vector<int>> &F,
+				std::vector<std::vector<int>> &FTC,
+				std::vector<std::vector<int>> &FN,
+				std::vector<std::vector<int>> &L);
 
-		/// @brief Just read V, F, and L from obj file
-		static bool load(
-			const std::string obj_file_name,
-			std::vector<std::vector<double>> &V,
-			std::vector<std::vector<int>> &F,
-			std::vector<std::vector<int>> &L);
+			/// @brief Just read V, F, and L from obj file
+			static bool load(
+				const std::string obj_file_name,
+				std::vector<std::vector<double>> &V,
+				std::vector<std::vector<int>> &F,
+				std::vector<std::vector<int>> &L);
 
-		/// @brief Eigen Wrappers of read_obj.
-		/// @retruns These will return true only if the data is perfectly
-		///          "rectangular": All faces are the same degree, all have the same
-		///          number of textures/normals etc.
-		static bool load(
-			const std::string str,
-			Eigen::MatrixXd &V,
-			Eigen::MatrixXi &E,
-			Eigen::MatrixXi &F);
-	};
-
+			/// @brief Eigen Wrappers of read_obj.
+			/// @retruns These will return true only if the data is perfectly
+			///          "rectangular": All faces are the same degree, all have the same
+			///          number of textures/normals etc.
+			static bool load(
+				const std::string str,
+				Eigen::MatrixXd &V,
+				Eigen::MatrixXi &E,
+				Eigen::MatrixXi &F);
+		};
+	} // namespace utils
 } // namespace polyfem

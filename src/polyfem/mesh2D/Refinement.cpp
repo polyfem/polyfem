@@ -11,6 +11,8 @@
 #include <numeric>
 ////////////////////////////////////////////////////////////////////////////////
 
+using namespace polyfem::utils;
+
 void polyfem::mesh::edge_adjacency_graph(
 	const Eigen::MatrixXi &Q, Eigen::MatrixXi &edge_index,
 	std::vector<std::vector<int>> &adj,
@@ -230,7 +232,7 @@ namespace
 		{
 			if (!border[0].col(0).isApprox(border[1].col(0)))
 			{
-				polyfem::logger().warn("Pattern boundaries have the same number of vertices, but their position differ slighly.");
+				polyfem::utils::logger().warn("Pattern boundaries have the same number of vertices, but their position differ slighly.");
 				Eigen::MatrixXd X(border[0].size(), 2);
 				X.col(0) = border[0].col(0);
 				X.col(1) = border[1].col(0);

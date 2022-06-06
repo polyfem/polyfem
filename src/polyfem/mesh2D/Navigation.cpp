@@ -9,6 +9,7 @@
 
 using namespace GEO;
 using namespace polyfem::mesh::Navigation;
+using namespace polyfem::utils;
 
 namespace
 {

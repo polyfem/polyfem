@@ -4,6 +4,8 @@
 
 namespace polyfem
 {
+	using namespace utils;
+
 	namespace problem
 	{
 		namespace

@@ -6,6 +6,8 @@
 
 namespace polyfem
 {
+	using namespace utils;
+
 	namespace problem
 	{
 		NodeValues::NodeValues()

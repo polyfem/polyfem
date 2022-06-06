@@ -11,7 +11,7 @@
 #include <vector>
 #include <filesystem>
 
-void polyfem::show_matrix_stats(const Eigen::MatrixXd &M)
+void polyfem::utils::show_matrix_stats(const Eigen::MatrixXd &M)
 {
 	Eigen::FullPivLU<Eigen::MatrixXd> lu(M);
 	Eigen::JacobiSVD<Eigen::MatrixXd> svd(M);
@@ -29,7 +29,7 @@ void polyfem::show_matrix_stats(const Eigen::MatrixXd &M)
 }
 
 template <typename T>
-bool polyfem::read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat)
+bool polyfem::utils::read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat)
 {
 	std::string extension = std::filesystem::path(path).extension().string();
 	std::transform(extension.begin(), extension.end(), extension.begin(),
@@ -53,7 +53,7 @@ bool polyfem::read_matrix(const std::string &path, Eigen::Matrix<T, Eigen::Dynam
 }
 
 template <typename Mat>
-bool polyfem::write_matrix(const std::string &path, const Mat &mat)
+bool polyfem::utils::write_matrix(const std::string &path, const Mat &mat)
 {
 	std::string extension = std::filesystem::path(path).extension().string();
 	std::transform(extension.begin(), extension.end(), extension.begin(),
@@ -75,7 +75,7 @@ bool polyfem::write_matrix(const std::string &path, const Mat &mat)
 }
 
 template <typename T>
-bool polyfem::read_matrix_ascii(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat)
+bool polyfem::utils::read_matrix_ascii(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat)
 {
 	std::fstream file;
 	file.open(path.c_str());
@@ -115,7 +115,7 @@ bool polyfem::read_matrix_ascii(const std::string &path, Eigen::Matrix<T, Eigen:
 }
 
 template <typename Mat>
-bool polyfem::write_matrix_ascii(const std::string &path, const Mat &mat)
+bool polyfem::utils::write_matrix_ascii(const std::string &path, const Mat &mat)
 {
 	std::ofstream out(path);
 	if (!out.good())
@@ -134,7 +134,7 @@ bool polyfem::write_matrix_ascii(const std::string &path, const Mat &mat)
 }
 
 template <typename T>
-bool polyfem::read_matrix_binary(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat)
+bool polyfem::utils::read_matrix_binary(const std::string &path, Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &mat)
 {
 	typedef typename Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>::Index Index;
 
@@ -159,7 +159,7 @@ bool polyfem::read_matrix_binary(const std::string &path, Eigen::Matrix<T, Eigen
 }
 
 template <typename Mat>
-bool polyfem::write_matrix_binary(const std::string &path, const Mat &mat)
+bool polyfem::utils::write_matrix_binary(const std::string &path, const Mat &mat)
 {
 	typedef typename Mat::Index Index;
 	typedef typename Mat::Scalar Scalar;
@@ -182,7 +182,7 @@ bool polyfem::write_matrix_binary(const std::string &path, const Mat &mat)
 	return true;
 }
 
-bool polyfem::write_sparse_matrix_csv(const std::string &path, const Eigen::SparseMatrix<double> &mat)
+bool polyfem::utils::write_sparse_matrix_csv(const std::string &path, const Eigen::SparseMatrix<double> &mat)
 {
 	std::ofstream csv(path, std::ios::out);
 
@@ -212,7 +212,7 @@ bool polyfem::write_sparse_matrix_csv(const std::string &path, const Eigen::Spar
 	return true;
 }
 
-polyfem::SpareMatrixCache::SpareMatrixCache(const size_t size)
+polyfem::utils::SpareMatrixCache::SpareMatrixCache(const size_t size)
 	: size_(size)
 {
 	tmp_.resize(size_, size_);
@@ -220,7 +220,7 @@ polyfem::SpareMatrixCache::SpareMatrixCache(const size_t size)
 	mat_.setZero();
 }
 
-polyfem::SpareMatrixCache::SpareMatrixCache(const size_t rows, const size_t cols)
+polyfem::utils::SpareMatrixCache::SpareMatrixCache(const size_t rows, const size_t cols)
 	: size_(rows == cols ? rows : 0)
 {
 	tmp_.resize(rows, cols);
@@ -228,12 +228,12 @@ polyfem::SpareMatrixCache::SpareMatrixCache(const size_t rows, const size_t cols
 	mat_.setZero();
 }
 
-polyfem::SpareMatrixCache::SpareMatrixCache(const SpareMatrixCache &other)
+polyfem::utils::SpareMatrixCache::SpareMatrixCache(const polyfem::utils::SpareMatrixCache &other)
 {
 	init(other);
 }
 
-void polyfem::SpareMatrixCache::init(const size_t size)
+void polyfem::utils::SpareMatrixCache::init(const size_t size)
 {
 	assert(mapping().empty() || size_ == size);
 
@@ -243,7 +243,7 @@ void polyfem::SpareMatrixCache::init(const size_t size)
 	mat_.setZero();
 }
 
-void polyfem::SpareMatrixCache::init(const size_t rows, const size_t cols)
+void polyfem::utils::SpareMatrixCache::init(const size_t rows, const size_t cols)
 {
 	assert(mapping().empty());
 
@@ -253,7 +253,7 @@ void polyfem::SpareMatrixCache::init(const size_t rows, const size_t cols)
 	mat_.setZero();
 }
 
-void polyfem::SpareMatrixCache::init(const SpareMatrixCache &other)
+void polyfem::utils::SpareMatrixCache::init(const SpareMatrixCache &other)
 {
 	if (main_cache_ == nullptr)
 	{
@@ -272,7 +272,7 @@ void polyfem::SpareMatrixCache::init(const SpareMatrixCache &other)
 	std::fill(values_.begin(), values_.end(), 0);
 }
 
-void polyfem::SpareMatrixCache::set_zero()
+void polyfem::utils::SpareMatrixCache::set_zero()
 {
 	tmp_.setZero();
 	mat_.setZero();
@@ -280,7 +280,7 @@ void polyfem::SpareMatrixCache::set_zero()
 	std::fill(values_.begin(), values_.end(), 0);
 }
 
-void polyfem::SpareMatrixCache::add_value(const int e, const int i, const int j, const double value)
+void polyfem::utils::SpareMatrixCache::add_value(const int e, const int i, const int j, const double value)
 {
 	if (mapping().empty())
 	{
@@ -322,7 +322,7 @@ void polyfem::SpareMatrixCache::add_value(const int e, const int i, const int j,
 	}
 }
 
-void polyfem::SpareMatrixCache::prune()
+void polyfem::utils::SpareMatrixCache::prune()
 {
 	if (mapping().empty())
 	{
@@ -340,7 +340,7 @@ void polyfem::SpareMatrixCache::prune()
 	}
 }
 
-polyfem::StiffnessMatrix polyfem::SpareMatrixCache::get_matrix(const bool compute_mapping)
+polyfem::StiffnessMatrix polyfem::utils::SpareMatrixCache::get_matrix(const bool compute_mapping)
 {
 	prune();
 
@@ -433,9 +433,9 @@ polyfem::StiffnessMatrix polyfem::SpareMatrixCache::get_matrix(const bool comput
 	return mat_;
 }
 
-polyfem::SpareMatrixCache polyfem::SpareMatrixCache::operator+(const SpareMatrixCache &a) const
+polyfem::utils::SpareMatrixCache polyfem::utils::SpareMatrixCache::operator+(const SpareMatrixCache &a) const
 {
-	SpareMatrixCache out(a);
+	polyfem::utils::SpareMatrixCache out(a);
 
 	if (a.mapping().empty() || mapping().empty())
 	{
@@ -483,7 +483,7 @@ polyfem::SpareMatrixCache polyfem::SpareMatrixCache::operator+(const SpareMatrix
 	return out;
 }
 
-void polyfem::SpareMatrixCache::operator+=(const SpareMatrixCache &o)
+void polyfem::utils::SpareMatrixCache::operator+=(const SpareMatrixCache &o)
 {
 	if (mapping().empty() || o.mapping().empty())
 	{
@@ -522,7 +522,7 @@ void polyfem::SpareMatrixCache::operator+=(const SpareMatrixCache &o)
 }
 
 // Flatten rowwises
-Eigen::VectorXd polyfem::flatten(const Eigen::MatrixXd &X)
+Eigen::VectorXd polyfem::utils::flatten(const Eigen::MatrixXd &X)
 {
 	Eigen::VectorXd x(X.size());
 	for (int i = 0; i < X.rows(); ++i)
@@ -538,7 +538,7 @@ Eigen::VectorXd polyfem::flatten(const Eigen::MatrixXd &X)
 }
 
 // Unflatten rowwises, so every dim elements in x become a row.
-Eigen::MatrixXd polyfem::unflatten(const Eigen::VectorXd &x, int dim)
+Eigen::MatrixXd polyfem::utils::unflatten(const Eigen::VectorXd &x, int dim)
 {
 	assert(x.size() % dim == 0);
 	Eigen::MatrixXd X(x.size() / dim, dim);
@@ -552,26 +552,26 @@ Eigen::MatrixXd polyfem::unflatten(const Eigen::VectorXd &x, int dim)
 }
 
 //template instantiation
-template bool polyfem::read_matrix<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
-template bool polyfem::read_matrix<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
+template bool polyfem::utils::read_matrix<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
+template bool polyfem::utils::read_matrix<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
 
-template bool polyfem::write_matrix<Eigen::MatrixXd>(const std::string &, const Eigen::MatrixXd &);
-template bool polyfem::write_matrix<Eigen::MatrixXf>(const std::string &, const Eigen::MatrixXf &);
-template bool polyfem::write_matrix<Eigen::VectorXd>(const std::string &, const Eigen::VectorXd &);
-template bool polyfem::write_matrix<Eigen::VectorXf>(const std::string &, const Eigen::VectorXf &);
+template bool polyfem::utils::write_matrix<Eigen::MatrixXd>(const std::string &, const Eigen::MatrixXd &);
+template bool polyfem::utils::write_matrix<Eigen::MatrixXf>(const std::string &, const Eigen::MatrixXf &);
+template bool polyfem::utils::write_matrix<Eigen::VectorXd>(const std::string &, const Eigen::VectorXd &);
+template bool polyfem::utils::write_matrix<Eigen::VectorXf>(const std::string &, const Eigen::VectorXf &);
 
-template bool polyfem::read_matrix_ascii<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
-template bool polyfem::read_matrix_ascii<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
+template bool polyfem::utils::read_matrix_ascii<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
+template bool polyfem::utils::read_matrix_ascii<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
 
-template bool polyfem::write_matrix_ascii<Eigen::MatrixXd>(const std::string &, const Eigen::MatrixXd &);
-template bool polyfem::write_matrix_ascii<Eigen::MatrixXf>(const std::string &, const Eigen::MatrixXf &);
-template bool polyfem::write_matrix_ascii<Eigen::VectorXd>(const std::string &, const Eigen::VectorXd &);
-template bool polyfem::write_matrix_ascii<Eigen::VectorXf>(const std::string &, const Eigen::VectorXf &);
+template bool polyfem::utils::write_matrix_ascii<Eigen::MatrixXd>(const std::string &, const Eigen::MatrixXd &);
+template bool polyfem::utils::write_matrix_ascii<Eigen::MatrixXf>(const std::string &, const Eigen::MatrixXf &);
+template bool polyfem::utils::write_matrix_ascii<Eigen::VectorXd>(const std::string &, const Eigen::VectorXd &);
+template bool polyfem::utils::write_matrix_ascii<Eigen::VectorXf>(const std::string &, const Eigen::VectorXf &);
 
-template bool polyfem::read_matrix_binary<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
-template bool polyfem::read_matrix_binary<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
+template bool polyfem::utils::read_matrix_binary<int>(const std::string &, Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> &);
+template bool polyfem::utils::read_matrix_binary<double>(const std::string &, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> &);
 
-template bool polyfem::write_matrix_binary<Eigen::MatrixXd>(const std::string &, const Eigen::MatrixXd &);
-template bool polyfem::write_matrix_binary<Eigen::MatrixXf>(const std::string &, const Eigen::MatrixXf &);
-template bool polyfem::write_matrix_binary<Eigen::VectorXd>(const std::string &, const Eigen::VectorXd &);
-template bool polyfem::write_matrix_binary<Eigen::VectorXf>(const std::string &, const Eigen::VectorXf &);
+template bool polyfem::utils::write_matrix_binary<Eigen::MatrixXd>(const std::string &, const Eigen::MatrixXd &);
+template bool polyfem::utils::write_matrix_binary<Eigen::MatrixXf>(const std::string &, const Eigen::MatrixXf &);
+template bool polyfem::utils::write_matrix_binary<Eigen::VectorXd>(const std::string &, const Eigen::VectorXd &);
+template bool polyfem::utils::write_matrix_binary<Eigen::VectorXf>(const std::string &, const Eigen::VectorXf &);

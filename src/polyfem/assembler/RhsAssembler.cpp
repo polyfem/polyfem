@@ -17,6 +17,7 @@ namespace polyfem
 	using namespace polysolve;
 	using namespace mesh;
 	using namespace quadrature;
+	using namespace utils;
 
 	namespace assembler
 	{
@@ -250,7 +251,7 @@ namespace polyfem
 			for (const auto &lb : local_boundary)
 			{
 				const int e = lb.element_id();
-				bool has_samples = BoundarySampler::sample_boundary(lb, resolution, mesh_, true, uv, samples, global_primitive_ids);
+				bool has_samples = utils::BoundarySampler::sample_boundary(lb, resolution, mesh_, true, uv, samples, global_primitive_ids);
 
 				if (!has_samples)
 					continue;
@@ -301,7 +302,7 @@ namespace polyfem
 			for (const auto &lb : local_boundary)
 			{
 				const int e = lb.element_id();
-				bool has_samples = BoundarySampler::sample_boundary(lb, resolution, mesh_, false, uv, samples, global_primitive_ids);
+				bool has_samples = utils::BoundarySampler::sample_boundary(lb, resolution, mesh_, false, uv, samples, global_primitive_ids);
 
 				if (!has_samples)
 					continue;
@@ -501,7 +502,7 @@ namespace polyfem
 			for (const auto &lb : local_boundary)
 			{
 				const int e = lb.element_id();
-				bool has_samples = BoundarySampler::boundary_quadrature(lb, resolution, mesh_, false, uv, samples, normals, weights, global_primitive_ids);
+				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh_, false, uv, samples, normals, weights, global_primitive_ids);
 
 				if (!has_samples)
 					continue;
@@ -574,7 +575,7 @@ namespace polyfem
 			for (const auto &lb : local_neumann_boundary)
 			{
 				const int e = lb.element_id();
-				bool has_samples = BoundarySampler::boundary_quadrature(lb, resolution, mesh_, false, uv, points, normals, weights, global_primitive_ids);
+				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh_, false, uv, points, normals, weights, global_primitive_ids);
 
 				if (!has_samples)
 					continue;
@@ -767,7 +768,7 @@ namespace polyfem
 			for (const auto &lb : local_neumann_boundary)
 			{
 				const int e = lb.element_id();
-				bool has_samples = BoundarySampler::boundary_quadrature(lb, resolution, mesh_, false, uv, points, normals, weights, global_primitive_ids);
+				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh_, false, uv, points, normals, weights, global_primitive_ids);
 
 				if (!has_samples)
 					continue;

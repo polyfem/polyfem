@@ -20,6 +20,7 @@
 #include <filesystem>
 ////////////////////////////////////////////////////////////////////////////////
 using namespace polyfem::mesh;
+using namespace polyfem::utils;
 
 std::unique_ptr<Mesh> Mesh::create(GEO::Mesh &meshin, const bool non_conforming)
 {

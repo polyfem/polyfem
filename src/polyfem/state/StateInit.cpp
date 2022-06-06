@@ -23,6 +23,7 @@
 namespace polyfem
 {
 	using namespace problem;
+	using namespace utils;
 
 	namespace
 	{

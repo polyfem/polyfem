@@ -90,11 +90,11 @@ TEST_CASE("expression", "[utils]")
 	json jexpr2d = {{"value", "x^2+sqrt(x*y)"}};
 	json jval = {{"value", 1}};
 
-	ExpressionValue expr;
+	utils::ExpressionValue expr;
 	expr.init(jexpr["value"]);
-	ExpressionValue expr2d;
+	utils::ExpressionValue expr2d;
 	expr2d.init(jexpr2d["value"]);
-	ExpressionValue val;
+	utils::ExpressionValue val;
 	val.init(jval["value"]);
 
 	REQUIRE(expr(2, 3, 4) == Approx(2. * 2. + sqrt(2. * 3.) + sin(4.) * 2.).margin(1e-10));

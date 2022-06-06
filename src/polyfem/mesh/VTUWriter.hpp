@@ -46,7 +46,7 @@ namespace polyfem
 
 					if (binary_)
 					{
-						base64Layer base64(os);
+						utils::base64Layer base64(os);
 
 						os << "<DataArray type=\"" << numeric_type_ << "\" Name=\"" << name_ << "\" NumberOfComponents=\"" << n_components_ << "\" format=\"binary\">\n";
 						const uint64_t size = data_.size() * sizeof(T);

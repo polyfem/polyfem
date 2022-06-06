@@ -31,6 +31,7 @@ namespace polyfem
 	using namespace mesh;
 	using namespace solver;
 	using namespace time_integrator;
+	using namespace utils;
 
 	namespace
 	{

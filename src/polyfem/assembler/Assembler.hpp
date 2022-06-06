@@ -89,7 +89,7 @@ namespace polyfem
 				const std::vector<basis::ElementBases> &gbases,
 				const AssemblyValsCache &cache,
 				const Eigen::MatrixXd &displacement,
-				SpareMatrixCache &mat_cache,
+				utils::SpareMatrixCache &mat_cache,
 				StiffnessMatrix &grad) const;
 
 			//assemble energy

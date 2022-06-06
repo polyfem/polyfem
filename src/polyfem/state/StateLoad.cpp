@@ -6,7 +6,7 @@
 #include <polyfem/mesh2D/NCMesh2D.hpp>
 #include <polyfem/mesh3D/Mesh3D.hpp>
 
-#include <polyfem/utils/BoxSetter.hpp>
+#include <polyfem/utils/Selection.hpp>
 
 #include <polyfem/utils/JSONUtils.hpp>
 
@@ -15,6 +15,7 @@ namespace polyfem
 {
 	using namespace basis;
 	using namespace mesh;
+	using namespace utils;
 
 	void State::load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd &)> &boundary_marker, bool non_conforming, bool skip_boundary_sideset)
 	{

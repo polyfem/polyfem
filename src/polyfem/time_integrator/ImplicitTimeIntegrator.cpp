@@ -10,6 +10,8 @@
 
 namespace polyfem
 {
+	using namespace utils;
+
 	namespace time_integrator
 	{
 		void ImplicitTimeIntegrator::init(const Eigen::VectorXd &x_prev, const Eigen::VectorXd &v_prev, const Eigen::VectorXd &a_prev, double dt)
