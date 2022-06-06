@@ -4,11 +4,14 @@
 
 namespace polyfem
 {
-	class LineQuadrature
+	namespace quadrature
 	{
-	public:
-		LineQuadrature();
+		class LineQuadrature
+		{
+		public:
+			LineQuadrature();
 
-		void get_quadrature(const int order, Quadrature &quad);
-	};
+			void get_quadrature(const int order, Quadrature &quad);
+		};
+	} // namespace quadrature
 } // namespace polyfem

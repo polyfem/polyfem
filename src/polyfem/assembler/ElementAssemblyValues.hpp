@@ -18,7 +18,7 @@ namespace polyfem
 			//inverse transpose jacobian of geom mapping
 			std::vector<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>> jac_it;
 
-			Quadrature quadrature;
+			quadrature::Quadrature quadrature;
 			int element_id;
 
 			// img of quadrature points through the geom mapping (global pos in the mesh)

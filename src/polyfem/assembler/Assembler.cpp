@@ -25,6 +25,7 @@
 namespace polyfem
 {
 	using namespace basis;
+	using namespace quadrature;
 
 	namespace assembler
 	{

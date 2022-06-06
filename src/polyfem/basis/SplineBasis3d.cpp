@@ -28,6 +28,7 @@ namespace polyfem
 	using namespace polysolve;
 	using namespace assembler;
 	using namespace mesh;
+	using namespace quadrature;
 
 	namespace basis
 	{

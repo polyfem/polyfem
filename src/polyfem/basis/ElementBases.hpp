@@ -21,13 +21,13 @@ namespace polyfem
 		public:
 			typedef std::function<Eigen::VectorXi(const int local_index, const mesh::Mesh &mesh)> LocalNodeFromPrimitiveFunc;
 			typedef std::function<void(const Eigen::MatrixXd &uv, std::vector<assembler::AssemblyValues> &basis_values)> EvalBasesFunc;
-			typedef std::function<void(Quadrature &quadrature)> QuadratureFunction;
+			typedef std::function<void(quadrature::Quadrature &quadrature)> QuadratureFunction;
 
 			// one basis function per node in the element
 			std::vector<Basis> bases;
 
 			// quadrature points to evaluate the basis functions inside the element
-			void compute_quadrature(Quadrature &quadrature) const { quadrature_builder_(quadrature); }
+			void compute_quadrature(quadrature::Quadrature &quadrature) const { quadrature_builder_(quadrature); }
 			Eigen::VectorXi local_nodes_for_primitive(const int local_index, const mesh::Mesh &mesh) const { return local_node_from_primitive_(local_index, mesh); }
 
 			// whether the basis functions should be evaluated in the parametric domain (FE bases),

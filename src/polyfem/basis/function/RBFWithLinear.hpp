@@ -31,7 +31,7 @@ namespace polyfem
 			///                                   reproduction for the Poisson equation }
 			///
 			RBFWithLinear(const Eigen::MatrixXd &centers, const Eigen::MatrixXd &collocation_points,
-						  const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
+						  const Eigen::MatrixXd &local_basis_integral, const quadrature::Quadrature &quadr,
 						  Eigen::MatrixXd &rhs, bool with_constraints = true);
 
 			///
@@ -79,12 +79,12 @@ namespace polyfem
 			void compute_kernels_matrix(const Eigen::MatrixXd &samples, Eigen::MatrixXd &A) const;
 
 			// Computes the relationship w = L v + t between the unknowns (v) and the weights w
-			void compute_constraints_matrix(const int num_bases, const Quadrature &quadr,
+			void compute_constraints_matrix(const int num_bases, const quadrature::Quadrature &quadr,
 											const Eigen::MatrixXd &local_basis_integral, Eigen::MatrixXd &L, Eigen::MatrixXd &t) const;
 
 			// Computes the weights by solving a (possibly constrained) linear least square
 			void compute_weights(const Eigen::MatrixXd &collocation_points,
-								 const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
+								 const Eigen::MatrixXd &local_basis_integral, const quadrature::Quadrature &quadr,
 								 Eigen::MatrixXd &rhs, bool with_constraints);
 
 		private:

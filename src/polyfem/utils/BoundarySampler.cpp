@@ -15,6 +15,8 @@
 namespace polyfem
 {
 	using namespace mesh;
+	using namespace quadrature;
+
 	namespace
 	{
 		Eigen::RowVector2d quad_local_node_coordinates(int local_index)

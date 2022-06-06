@@ -4,10 +4,13 @@
 
 namespace polyfem
 {
-	class Quadrature
+	namespace quadrature
 	{
-	public:
-		Eigen::MatrixXd points;
-		Eigen::VectorXd weights;
-	};
+		class Quadrature
+		{
+		public:
+			Eigen::MatrixXd points;
+			Eigen::VectorXd weights;
+		};
+	} // namespace quadrature
 } // namespace polyfem

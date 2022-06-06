@@ -37,7 +37,7 @@ namespace polyfem
 			///                                   reproduction for the Poisson equation }
 			///
 			RBFWithQuadraticLagrange(const assembler::AssemblerUtils &assembler, const std::string &assembler_name, const Eigen::MatrixXd &centers, const Eigen::MatrixXd &collocation_points,
-									 const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
+									 const Eigen::MatrixXd &local_basis_integral, const quadrature::Quadrature &quadr,
 									 Eigen::MatrixXd &rhs, bool with_constraints = true);
 
 			///
@@ -85,15 +85,15 @@ namespace polyfem
 			void compute_kernels_matrix(const Eigen::MatrixXd &samples, Eigen::MatrixXd &A) const;
 
 			// Computes the constraint matrix C that we want to impose (C w = d)
-			void compute_constraints_matrix_2d_old(const int num_bases, const Quadrature &quadr, Eigen::MatrixXd &C) const;
-			void compute_constraints_matrix_2d(const assembler::AssemblerUtils &assembler, const std::string &assembler_name, const int num_bases, const Quadrature &quadr, Eigen::MatrixXd &C) const;
+			void compute_constraints_matrix_2d_old(const int num_bases, const quadrature::Quadrature &quadr, Eigen::MatrixXd &C) const;
+			void compute_constraints_matrix_2d(const assembler::AssemblerUtils &assembler, const std::string &assembler_name, const int num_bases, const quadrature::Quadrature &quadr, Eigen::MatrixXd &C) const;
 
 			// Computes the constraint matrix C that we want to impose (C w = d)
-			void compute_constraints_matrix_3d(const int num_bases, const Quadrature &quadr, Eigen::MatrixXd &C) const;
+			void compute_constraints_matrix_3d(const int num_bases, const quadrature::Quadrature &quadr, Eigen::MatrixXd &C) const;
 
 			// Computes the weights by solving a (possibly constrained) linear least square
 			void compute_weights(const assembler::AssemblerUtils &assembler, const std::string &assembler_name, const Eigen::MatrixXd &collocation_points,
-								 const Eigen::MatrixXd &local_basis_integral, const Quadrature &quadr,
+								 const Eigen::MatrixXd &local_basis_integral, const quadrature::Quadrature &quadr,
 								 Eigen::MatrixXd &rhs, bool with_constraints);
 
 		private:
