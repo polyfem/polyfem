@@ -4,23 +4,24 @@
 
 namespace polyfem
 {
-
-	void ImplicitEuler::update_quantities(const Eigen::VectorXd &x)
+	namespace time_integrator
 	{
-		Eigen::VectorXd v = (x - x_prev()) / dt();
-		a_prev() = (v - v_prev()) / dt();
-		v_prev() = v;
-		x_prev() = x;
-	}
+		void ImplicitEuler::update_quantities(const Eigen::VectorXd &x)
+		{
+			Eigen::VectorXd v = (x - x_prev()) / dt();
+			a_prev() = (v - v_prev()) / dt();
+			v_prev() = v;
+			x_prev() = x;
+		}
 
-	Eigen::VectorXd ImplicitEuler::x_tilde() const
-	{
-		return x_prev() + dt() * v_prev();
-	}
+		Eigen::VectorXd ImplicitEuler::x_tilde() const
+		{
+			return x_prev() + dt() * v_prev();
+		}
 
-	double ImplicitEuler::acceleration_scaling() const
-	{
-		return dt() * dt();
-	}
-
+		double ImplicitEuler::acceleration_scaling() const
+		{
+			return dt() * dt();
+		}
+	} // namespace time_integrator
 } // namespace polyfem

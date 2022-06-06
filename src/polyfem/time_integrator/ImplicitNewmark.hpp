@@ -4,22 +4,23 @@
 
 namespace polyfem
 {
-
-	class ImplicitNewmark : public ImplicitTimeIntegrator
+	namespace time_integrator
 	{
-	public:
-		ImplicitNewmark() {}
+		class ImplicitNewmark : public ImplicitTimeIntegrator
+		{
+		public:
+			ImplicitNewmark() {}
 
-		void set_parameters(const nlohmann::json &params) override;
+			void set_parameters(const nlohmann::json &params) override;
 
-		void update_quantities(const Eigen::VectorXd &x) override;
+			void update_quantities(const Eigen::VectorXd &x) override;
 
-		Eigen::VectorXd x_tilde() const override;
+			Eigen::VectorXd x_tilde() const override;
 
-		double acceleration_scaling() const override;
+			double acceleration_scaling() const override;
 
-	protected:
-		double gamma = 0.5, beta = 0.25;
-	};
-
+		protected:
+			double gamma = 0.5, beta = 0.25;
+		};
+	} // namespace time_integrator
 } // namespace polyfem

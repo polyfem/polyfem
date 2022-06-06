@@ -4,17 +4,18 @@
 
 namespace polyfem
 {
-
-	class ImplicitEuler : public ImplicitTimeIntegrator
+	namespace time_integrator
 	{
-	public:
-		ImplicitEuler() {}
+		class ImplicitEuler : public ImplicitTimeIntegrator
+		{
+		public:
+			ImplicitEuler() {}
 
-		void update_quantities(const Eigen::VectorXd &x) override;
+			void update_quantities(const Eigen::VectorXd &x) override;
 
-		Eigen::VectorXd x_tilde() const override;
+			Eigen::VectorXd x_tilde() const override;
 
-		double acceleration_scaling() const override;
-	};
-
+			double acceleration_scaling() const override;
+		};
+	} // namespace time_integrator
 } // namespace polyfem

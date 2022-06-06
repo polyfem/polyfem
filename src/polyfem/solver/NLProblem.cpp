@@ -118,7 +118,7 @@ namespace polyfem
 				logger().debug("Using fixed barrier stiffness of {}", _barrier_stiffness);
 			}
 			_prev_distance = -1;
-			_time_integrator = ImplicitTimeIntegrator::construct_time_integrator(state.args["time_integrator"]);
+			_time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(state.args["time_integrator"]);
 			_time_integrator->set_parameters(state.args["time_integrator_params"]);
 
 			_broad_phase_method = state.args["solver_params"]["broad_phase_method"];

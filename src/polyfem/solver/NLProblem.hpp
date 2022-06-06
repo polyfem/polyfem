@@ -157,7 +157,7 @@ namespace polyfem
 
 			double barrier_stiffness() const { return _barrier_stiffness; }
 			const Eigen::MatrixXd &displaced_prev() const { return _displaced_prev; }
-			const std::shared_ptr<const ImplicitTimeIntegrator> time_integrator() const { return _time_integrator; }
+			const std::shared_ptr<const time_integrator::ImplicitTimeIntegrator> time_integrator() const { return _time_integrator; }
 
 		protected:
 			const State &state;
@@ -205,7 +205,7 @@ namespace polyfem
 			ipc::Candidates _candidates;
 			bool _use_cached_candidates = false;
 
-			std::shared_ptr<ImplicitTimeIntegrator> _time_integrator;
+			std::shared_ptr<time_integrator::ImplicitTimeIntegrator> _time_integrator;
 
 			void compute_cached_stiffness();
 			void update_barrier_stiffness(const TVector &full);

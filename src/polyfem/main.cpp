@@ -162,7 +162,7 @@ int main(int argc, char **argv)
 
 	command_line.add_flag("--export_material_params", export_material_params, "Export material parameters");
 
-	const auto &time_integrator_names = ImplicitTimeIntegrator::get_time_integrator_names();
+	const auto &time_integrator_names = time_integrator::ImplicitTimeIntegrator::get_time_integrator_names();
 	command_line.add_option("--time_integrator", time_integrator_name, "Time integrator name")
 		->check(CLI::IsMember(time_integrator_names));
 

@@ -30,6 +30,7 @@ namespace polyfem
 	using namespace assembler;
 	using namespace mesh;
 	using namespace solver;
+	using namespace time_integrator;
 
 	namespace
 	{
