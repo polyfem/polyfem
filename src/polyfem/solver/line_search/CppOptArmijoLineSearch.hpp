@@ -6,20 +6,26 @@
 
 namespace polyfem
 {
-	template <typename ProblemType>
-	class CppOptArmijoLineSearch : public LineSearch<ProblemType>
+	namespace solver
 	{
-	public:
-		using Superclass = LineSearch<ProblemType>;
-		using typename Superclass::Scalar;
-		using typename Superclass::TVector;
-
-		double line_search(
-			const TVector &x,
-			const TVector &searchDir,
-			ProblemType &objFunc) override
+		namespace line_search
 		{
-			return cppoptlib::Armijo<ProblemType, 1>::linesearch(x, searchDir, objFunc);
-		}
-	};
+			template <typename ProblemType>
+			class CppOptArmijoLineSearch : public LineSearch<ProblemType>
+			{
+			public:
+				using Superclass = LineSearch<ProblemType>;
+				using typename Superclass::Scalar;
+				using typename Superclass::TVector;
+
+				double line_search(
+					const TVector &x,
+					const TVector &searchDir,
+					ProblemType &objFunc) override
+				{
+					return cppoptlib::Armijo<ProblemType, 1>::linesearch(x, searchDir, objFunc);
+				}
+			};
+		} // namespace line_search
+	}     // namespace solver
 } // namespace polyfem

@@ -47,7 +47,7 @@ namespace cppoptlib
 
 		void setLineSearch(const std::string &line_search_name)
 		{
-			m_line_search = polyfem::LineSearch<ProblemType>::construct_line_search(line_search_name);
+			m_line_search = polyfem::solver::line_search::LineSearch<ProblemType>::construct_line_search(line_search_name);
 			solver_info["line_search"] = line_search_name;
 		}
 
@@ -333,7 +333,7 @@ namespace cppoptlib
 		virtual std::string descent_strategy_name(int descent_strategy) const = 0;
 		virtual std::string descent_strategy_name() const { return descent_strategy_name(this->descent_strategy); };
 
-		std::shared_ptr<polyfem::LineSearch<ProblemType>> m_line_search;
+		std::shared_ptr<polyfem::solver::line_search::LineSearch<ProblemType>> m_line_search;
 
 		int descent_strategy; //0, newton, 1 spd, 2 gradiant
 

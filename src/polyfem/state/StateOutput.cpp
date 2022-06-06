@@ -33,6 +33,7 @@ namespace polyfem
 {
 	using namespace assembler;
 	using namespace mesh;
+	using namespace solver;
 
 	void State::get_sidesets(Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXd &sidesets)
 	{

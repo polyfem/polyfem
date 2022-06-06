@@ -61,14 +61,18 @@ namespace polyfem
 		Eigen::MatrixXd scalar_value_avg;
 	};
 
-	class NLProblem;
-	class ALNLProblem;
+	namespace solver
+	{
+		class NLProblem;
+		class ALNLProblem;
+	} // namespace solver
+
 	class StepData
 	{
 	public:
 		std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
-		std::shared_ptr<NLProblem> nl_problem;
-		std::shared_ptr<ALNLProblem> alnl_problem;
+		std::shared_ptr<solver::NLProblem> nl_problem;
+		std::shared_ptr<solver::ALNLProblem> alnl_problem;
 	};
 
 	//main class that contains the polyfem solver

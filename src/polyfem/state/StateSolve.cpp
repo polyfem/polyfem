@@ -29,6 +29,7 @@ namespace polyfem
 {
 	using namespace assembler;
 	using namespace mesh;
+	using namespace solver;
 
 	namespace
 	{

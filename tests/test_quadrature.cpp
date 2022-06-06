@@ -10,6 +10,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
+using namespace polyfem::quadrature;
 
 const double pi = 3.14159265358979323846264338327950288419717;
 
