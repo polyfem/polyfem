@@ -8,6 +8,7 @@ using namespace polyfem::problem;
 using namespace polyfem::assembler;
 using namespace polyfem::basis;
 using namespace polyfem::mesh;
+using namespace polyfem::utils;
 
 TEST_CASE("hessian_lin", "[assembler]")
 {

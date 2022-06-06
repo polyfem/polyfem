@@ -8,6 +8,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
+using namespace polyfem::utils;
 
 TEST_CASE("interpolation", "[rbf_test]")
 {

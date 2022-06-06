@@ -18,6 +18,7 @@
 
 using namespace polyfem;
 using namespace polyfem::mesh;
+using namespace polyfem::utils;
 
 TEST_CASE("interpolated_fun_2d", "[utils]")
 {
