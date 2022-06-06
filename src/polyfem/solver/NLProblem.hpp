@@ -21,7 +21,7 @@ namespace polyfem
 		using typename cppoptlib::Problem<double>::TVector;
 		typedef StiffnessMatrix THessian;
 
-		NLProblem(State &state, const assembler::RhsAssembler &rhs_assembler, const double t, const double dhat, const bool project_to_psd, const bool no_reduced = false);
+		NLProblem(const State &state, const assembler::RhsAssembler &rhs_assembler, const double t, const double dhat, const bool project_to_psd, const bool no_reduced = false);
 		void init(const TVector &displacement);
 		void init_time_integrator(const TVector &x_prev, const TVector &v_prev, const TVector &a_prev, const double dt);
 		TVector initial_guess();
@@ -48,7 +48,7 @@ namespace polyfem
 #include <polyfem/utils/EnableWarnings.hpp>
 
 		template <class FullMat, class ReducedMat>
-		static void full_to_reduced_aux(State &state, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced)
+		static void full_to_reduced_aux(const State &state, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced)
 		{
 			using namespace polyfem;
 
@@ -79,7 +79,7 @@ namespace polyfem
 		}
 
 		template <class ReducedMat, class FullMat>
-		static void reduced_to_full_aux(State &state, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full)
+		static void reduced_to_full_aux(const State &state, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full)
 		{
 			using namespace polyfem;
 
@@ -158,14 +158,14 @@ namespace polyfem
 		const std::shared_ptr<const ImplicitTimeIntegrator> time_integrator() const { return _time_integrator; }
 
 	protected:
-		State &state;
+		const State &state;
 		bool use_adaptive_barrier_stiffness;
 		double _barrier_stiffness;
 		const assembler::RhsAssembler &rhs_assembler;
 		bool is_time_dependent;
 
 	private:
-		assembler::AssemblerUtils &assembler;
+		const assembler::AssemblerUtils &assembler;
 		Eigen::MatrixXd _current_rhs;
 		StiffnessMatrix cached_stiffness;
 		SpareMatrixCache mat_cache;

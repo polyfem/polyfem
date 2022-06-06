@@ -89,7 +89,7 @@ namespace polyfem
 
 	using namespace polysolve;
 
-	NLProblem::NLProblem(State &state, const RhsAssembler &rhs_assembler, const double t, const double dhat, const bool project_to_psd, const bool no_reduced)
+	NLProblem::NLProblem(const State &state, const RhsAssembler &rhs_assembler, const double t, const double dhat, const bool project_to_psd, const bool no_reduced)
 		: state(state), assembler(state.assembler), rhs_assembler(rhs_assembler),
 		  full_size((assembler.is_mixed(state.formulation()) ? state.n_pressure_bases : 0) + state.n_bases * state.mesh->dimension()),
 		  reduced_size(full_size - (no_reduced ? 0 : state.boundary_nodes.size())),

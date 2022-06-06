@@ -17,7 +17,7 @@ namespace polyfem
 		using typename cppoptlib::Problem<double>::TVector;
 		using typename super::THessian;
 
-		ALNLProblem(State &state, const assembler::RhsAssembler &rhs_assembler, const double t, const double dhat, const bool project_to_psd, const double weight);
+		ALNLProblem(const State &state, const assembler::RhsAssembler &rhs_assembler, const double t, const double dhat, const bool project_to_psd, const double weight);
 		TVector initial_guess();
 		void set_weight(const double w) { weight_ = w; }
 
