@@ -63,6 +63,7 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
 
 		ncmesh.refine_elements(ref_ids);
 	}
+	ncmesh.prepare_mesh();
 
 	state.compute_mesh_stats();
 	state.build_basis();
@@ -77,61 +78,89 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
 	REQUIRE(fabs(state.l2_err) < 1e-10);
 }
 
-// TEST_CASE("ncmesh3d", "[ncmesh]")
-// {
-// 	const std::string path = POLYFEM_DATA_DIR;
-// 	json in_args = R"(
-// 		{
-// 			"problem": "GenericScalar",
-// 			"scalar_formulation": "Laplacian",
-//             "export":{
-//                 "high_order_mesh": false
-//             },
-// 			"n_refs": 0,
-// 			"discr_order": 2,
-// 			"iso_parametric": false,
-//             "bc_method": "sample",
-// 			"problem_params": {
-// 				"dirichlet_boundary": [{
-// 					"id": "all",
-// 					"value": "x^2+y^2+z^2"
-// 				}],
-//                 "exact": "x^2+y^2+z^2",
-//                 "exact_grad": ["2*x","2*y","2*z"],
-// 				"rhs": 6
-// 			},
-// 			"vismesh_rel_area": 1.0
-// 		}
-// 	)"_json;
-//     std::string mesh_path = path + "/../../torus.msh";
+TEST_CASE("ncmesh3d", "[ncmesh]")
+{
+	const std::string path = POLYFEM_DATA_DIR;
+	// json in_args = R"(
+	// 	{
+	// 		"problem": "GenericScalar",
+	// 		"scalar_formulation": "Laplacian",
+    //         "export":{
+    //             "high_order_mesh": false
+    //         },
+	// 		"n_refs": 0,
+	// 		"solver_type": "Eigen::SimplicialLDLT",
+	// 		"discr_order": 2,
+	// 		"iso_parametric": true,
+    //         "bc_method": "sample",
+	// 		"problem_params": {
+	// 			"dirichlet_boundary": [{
+	// 				"id": "all",
+	// 				"value": "x^2+y^2+z^2"
+	// 			}],
+    //             "exact": "x^2+y^2+z^2",
+    //             "exact_grad": ["2*x","2*y","2*z"],
+	// 			"rhs": 6
+	// 		},
+	// 		"vismesh_rel_area": 1.0
+	// 	}
+	// )"_json;
+	json in_args = R"(
+		{
+			"problem": "GenericScalar",
+			"scalar_formulation": "Laplacian",
+            "export":{
+                "high_order_mesh": false
+            },
+			"n_refs": 0,
+			"solver_type": "Eigen::SimplicialLDLT",
+			"discr_order": 1,
+			"iso_parametric": true,
+            "bc_method": "sample",
+			"problem_params": {
+				"dirichlet_boundary": [{
+					"id": "all",
+					"value": "x+y+2*z"
+				}],
+                "exact": "x+y+2*z",
+                "exact_grad": [1,1,2],
+				"rhs": 0
+			},
+			"vismesh_rel_area": 1.0
+		}
+	)"_json;
+	in_args["mesh"] = path + "/../../lbar-extrude.msh";
 
-// 	State state(8);
-// 	state.init_logger("", 6, false);
-// 	state.init(in_args);
+	State state(8);
+	state.init_logger("", 1, false);
+	state.init(in_args);
 
-//     std::shared_ptr<ncMesh> ncmesh = std::make_shared<ncMesh3D>(mesh_path);
+	state.load_mesh(true);
+	NCMesh3D &ncmesh = *dynamic_cast<NCMesh3D *>(state.mesh.get());
+	std::vector<int> parent_nodes;
+	// ncmesh.refine(1, 0., parent_nodes);
+	for (int n = 0; n < 2; n++)
+	{
+		ncmesh.prepare_mesh();
+		std::vector<int> ref_ids(int(ncmesh.n_cells()/2.01));
+		for (int i = 0; i < ref_ids.size(); i++)
+			ref_ids[i] = i * 2;
 
-//     int id = 0;
-//     int n = 0;
-//     do {
-//         id = rand() % ncmesh->elements.size();
-//         if (ncmesh->elements[id].is_valid())
-//         {
-//             ncmesh->refine_element(id);
-//             n++;
-//         }
-//     } while (n < 20);
+		ncmesh.refine_elements(ref_ids);
+	}
+	ncmesh.prepare_mesh();
 
-//     state.load_ncMesh(ncmesh);
-// 	state.compute_mesh_stats();
-// 	state.build_basis();
+	state.compute_mesh_stats();
+	state.build_basis();
 
-// 	state.assemble_stiffness_mat();
-// 	state.assemble_rhs();
+	state.assemble_stiffness_mat();
+	state.assemble_rhs();
 
-// 	state.solve_problem();
-//     state.compute_errors();
+	state.solve_problem();
+	state.compute_errors();
 
-// 	REQUIRE(fabs(state.h1_semi_err) < 1e-8);
-//     REQUIRE(fabs(state.l2_err) < 1e-9);
-// }
+	state.save_vtu(state.resolve_output_path("debug.vtu"), 1.);
+
+	REQUIRE(fabs(state.h1_semi_err) < 1e-9);
+	REQUIRE(fabs(state.l2_err) < 1e-10);
+}

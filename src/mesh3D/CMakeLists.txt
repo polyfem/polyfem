@@ -3,6 +3,8 @@ set(SOURCES
 	Mesh3D.hpp
 	CMesh3D.cpp
 	CMesh3D.hpp
+	NCMesh3D.cpp
+	NCMesh3D.hpp
 	Mesh3DStorage.hpp
 	MeshProcessing3D.cpp
 	MeshProcessing3D.hpp

@@ -49,7 +49,6 @@ namespace polyfem
 			double weight = -1.; // only 2d, the local position of this vertex on the edge
 
 			int n_elem = 0;    // number of valid elements that share this vertex
-			bool flag = false; // vertex flag for determining singularity
 		};
 
 		struct ncBoundary
@@ -103,7 +102,7 @@ namespace polyfem
 			Eigen::VectorXi vertices;
 
 			bool isboundary = false; // valid only after calling mark_boundary()
-			int boundary_id;
+			int boundary_id = -1;
 
 			int leader = -1;            // if this edge/face lies on a larger edge/face
 			std::vector<int> followers; // followers of this edge/face
@@ -111,8 +110,6 @@ namespace polyfem
 			int leader_face = -1; // if this edge lies in the interior of a face
 
 			std::vector<int> global_ids; // only used for building basis
-
-			bool flag = false; // flag for determining singularity
 
 			// the following only used if it's an edge
 			Eigen::Vector2d weights; // position of this edge on its leader edge
@@ -267,18 +264,18 @@ namespace polyfem
 
 		void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
 
-		// refine one element
+		// refine
 		void refine_element(int id_full);
 		void refine_elements(const std::vector<int> &ids);
 
-		// coarsen one element
+		// coarsen
 		void coarsen_element(int id_full);
 
 		// mark the true boundary vertices
 		void mark_boundary();
 
 		// map the barycentric coordinate in element to the weight on edge
-		static double elemWeight2EdgeWeight(const int l, const Eigen::Vector2d &pos);
+		static double element_weight_to_edge_weight(const int l, const Eigen::Vector2d &pos);
 
 		// call necessary functions before building bases
 		void prepare_mesh() override
@@ -322,11 +319,13 @@ namespace polyfem
 		inline int all_to_valid_edge(const int id) const
 		{
 			assert(index_prepared);
+			assert(id < all_to_valid_edgeMap.size());
 			return all_to_valid_edgeMap[id];
 		};
 		inline int valid_to_all_edge(const int id) const
 		{
 			assert(index_prepared);
+			assert(id < valid_to_all_edgeMap.size());
 			return valid_to_all_edgeMap[id];
 		};
 

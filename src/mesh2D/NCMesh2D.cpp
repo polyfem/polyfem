@@ -11,9 +11,8 @@ namespace polyfem
 	bool NCMesh2D::is_boundary_element(const int element_global_id) const
 	{
 		assert(index_prepared);
-		const auto &elem = elements[valid_to_all_elem(element_global_id)];
-		for (int le = 0; le < elem.edges.size(); le++)
-			if (is_boundary_edge(all_to_valid_edge(elem.edges(le))))
+		for (int le = 0; le < n_face_vertices(element_global_id); le++)
+			if (is_boundary_edge(face_edge(element_global_id, le)))
 				return true;
 
 		return false;
@@ -43,6 +42,15 @@ namespace polyfem
 		orient_normals_2d(mesh_);
 
 		n_elements = 0;
+		elements.clear();
+		vertices.clear();
+		edges.clear();
+		midpointMap.clear();
+		edgeMap.clear();
+		refineHistory.clear();
+		index_prepared = false;
+		adj_prepared = false;
+
 		vertices.reserve(V.rows());
 		for (int i = 0; i < V.rows(); i++)
 		{
@@ -52,6 +60,8 @@ namespace polyfem
 		{
 			add_element(F.row(i), -1);
 		}
+
+		prepare_mesh();
 
 		return true;
 	}
@@ -159,6 +169,9 @@ namespace polyfem
 		const int level = (parent < 0) ? 0 : elements[parent].level + 1;
 		elements.emplace_back(2, v, level, parent);
 
+		if (parent >= 0)
+			elements[id].body_id = elements[parent].body_id;
+
 		for (int i = 0; i < v.size(); i++)
 			vertices[v(i)].n_elem++;
 
@@ -225,11 +238,8 @@ namespace polyfem
 					int edge_id = find_edge(v[i], v[j]);
 					int edge1 = get_edge(v[i], mid_id);
 					int edge2 = get_edge(v[j], mid_id);
-					edges[edge1].flag = edges[edge_id].flag;
-					edges[edge2].flag = edges[edge_id].flag;
 					edges[edge1].boundary_id = edges[edge_id].boundary_id;
 					edges[edge2].boundary_id = edges[edge_id].boundary_id;
-					vertices[mid_id].flag = edges[edge_id].flag;
 				}
 
 			// create and insert child elements
@@ -432,7 +442,7 @@ namespace polyfem
 		}
 	}
 
-	double NCMesh2D::elemWeight2EdgeWeight(const int l, const Eigen::Vector2d &pos)
+	double NCMesh2D::element_weight_to_edge_weight(const int l, const Eigen::Vector2d &pos)
 	{
 		double w = -1;
 		switch (l)
@@ -561,7 +571,6 @@ namespace polyfem
 		}
 
 		prepare_mesh();
-		compute_elements_tag();
 
 		return true;
 	}
@@ -573,14 +582,13 @@ namespace polyfem
 
 		for (const auto &v : vertices)
 		{
-			if (v.pos[0] > max[0])
-				max[0] = v.pos[0];
-			if (v.pos[1] > max[1])
-				max[1] = v.pos[1];
-			if (v.pos[0] < min[0])
-				min[0] = v.pos[0];
-			if (v.pos[1] < min[1])
-				min[1] = v.pos[1];
+            for (int d = 0; d < 2; d++)
+            {
+                if (v.pos[d] > max[d])
+                    max[d] = v.pos[d];
+                if (v.pos[d] < min[d])
+                    min[d] = v.pos[d];
+            }
 		}
 	}
 

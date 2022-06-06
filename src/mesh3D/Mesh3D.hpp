@@ -24,21 +24,28 @@ namespace polyfem
 
 		virtual int n_face_vertices(const int f_id) const = 0;
 		virtual int n_cell_vertices(const int c_id) const = 0;
+		virtual int n_cell_edges(const int c_id) const = 0;
 		virtual int n_cell_faces(const int c_id) const = 0;
 		virtual int cell_face(const int c_id, const int lf_id) const = 0;
 		virtual int cell_edge(const int c_id, const int le_id) const = 0;
 		virtual int face_vertex(const int f_id, const int lv_id) const = 0;
+		virtual int edge_vertex(const int e_id, const int lv_id) const = 0;
 
 		void elements_boxes(std::vector<std::array<Eigen::Vector3d, 2>> &boxes) const override;
 		void barycentric_coords(const RowVectorNd &p, const int el_id, Eigen::MatrixXd &coord) const override;
 
 		virtual RowVectorNd kernel(const int cell_id) const = 0;
+		
+		double tri_area(const int gid) const override;
 
 		virtual bool save(const std::vector<int> &fs, const int ringN, const std::string &path) const = 0;
 
 		RowVectorNd edge_node(const Navigation3D::Index &index, const int n_new_nodes, const int i) const;
 		RowVectorNd face_node(const Navigation3D::Index &index, const int n_new_nodes, const int i, const int j) const;
 		RowVectorNd cell_node(const Navigation3D::Index &index, const int n_new_nodes, const int i, const int j, const int k) const;
+
+		void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const override;
+		void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, const std::vector<bool> &valid_elements) const override;
 
 		//navigation wrapper
 		virtual Navigation3D::Index get_index_from_element(int hi, int lf, int lv) const = 0;
@@ -72,7 +79,7 @@ namespace polyfem
 		//  │╱    │╱
 		// v0────v1
 		std::array<int, 8> get_ordered_vertices_from_hex(const int element_index) const;
-		std::array<int, 4> get_ordered_vertices_from_tet(const int element_index) const;
+		virtual std::array<int, 4> get_ordered_vertices_from_tet(const int element_index) const;
 
 		virtual void get_vertex_elements_neighs(const int v_id, std::vector<int> &ids) const = 0;
 		virtual void get_edge_elements_neighs(const int e_id, std::vector<int> &ids) const = 0;

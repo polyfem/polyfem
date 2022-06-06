@@ -360,6 +360,23 @@ namespace polyfem
 					}
 
 					std::vector<int> loc_nodes;
+					
+					bool is_follower = false;
+					if (!mesh3d.is_conforming()) {
+						for (long n = 0; n < nodes.size(); ++n)
+						{
+							auto &bs = b.bases[nodes(n)];
+							const auto &glob = bs.global();
+							if (glob.size() != 1) 
+							{
+								is_follower = true;
+								break;
+							}
+						}
+					}
+					
+					if (is_follower)
+						continue;
 
 					for (long n = 0; n < nodes.size(); ++n)
 					{

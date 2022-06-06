@@ -2,7 +2,8 @@
 #include <polyfem/MeshNodes.hpp>
 #include <polyfem/CMesh2D.hpp>
 #include <polyfem/NCMesh2D.hpp>
-#include <polyfem/Mesh3D.hpp>
+#include <polyfem/CMesh3D.hpp>
+#include <polyfem/NCMesh3D.hpp>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;

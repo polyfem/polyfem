@@ -990,7 +990,7 @@ int polyfem::FEBasis2d::build_bases(
 								};
 
 								// apply basis projection
-								double x = NCMesh2D::elemWeight2EdgeWeight(local_edge, node_position);
+								double x = NCMesh2D::element_weight_to_edge_weight(local_edge, node_position);
 								for (int i = 0; i < edge_virtual_nodes[large_edge].size(); i++)
 								{
 									const int global_index = edge_virtual_nodes[large_edge][i];

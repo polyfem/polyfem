@@ -1,7 +1,8 @@
 #pragma once
 
 #include <polyfem/ElementBases.hpp>
-#include <polyfem/Mesh3D.hpp>
+#include <polyfem/CMesh3D.hpp>
+#include <polyfem/NCMesh3D.hpp>
 #include <polyfem/LocalBoundary.hpp>
 #include <polyfem/InterfaceData.hpp>
 #include <polyfem/Navigation3D.hpp>

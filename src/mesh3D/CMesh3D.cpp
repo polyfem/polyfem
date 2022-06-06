@@ -1317,53 +1317,6 @@ namespace polyfem
 		return pt;
 	}
 
-	void CMesh3D::get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const
-	{
-		p0.resize(mesh_.edges.size(), 3);
-		p1.resize(p0.rows(), p0.cols());
-
-		for (std::size_t e = 0; e < mesh_.edges.size(); ++e)
-		{
-			const int v0 = mesh_.edges[e].vs[0];
-			const int v1 = mesh_.edges[e].vs[1];
-
-			p0.row(e) = point(v0);
-			p1.row(e) = point(v1);
-		}
-	}
-
-	void CMesh3D::get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, const std::vector<bool> &valid_elements) const
-	{
-		int count = 0;
-		for (size_t i = 0; i < valid_elements.size(); ++i)
-		{
-			if (valid_elements[i])
-			{
-				count += mesh_.elements[i].es.size();
-			}
-		}
-
-		p0.resize(count, 3);
-		p1.resize(count, 3);
-
-		count = 0;
-
-		for (size_t i = 0; i < valid_elements.size(); ++i)
-		{
-			if (!valid_elements[i])
-				continue;
-
-			for (size_t ei = 0; ei < mesh_.elements[i].es.size(); ++ei)
-			{
-				const int e = mesh_.elements[i].es[ei];
-				p0.row(count) = point(mesh_.edges[e].vs[0]);
-				p1.row(count) = point(mesh_.edges[e].vs[1]);
-
-				++count;
-			}
-		}
-	}
-
 	void CMesh3D::compute_elements_tag()
 	{
 		std::vector<ElementType> &ele_tag = elements_tag_;
@@ -1585,23 +1538,6 @@ namespace polyfem
 		const Vector3d e3 = (v3 - v4).transpose();
 
 		return e0.cross(e1).norm() / 2 + e2.cross(e3).norm() / 2;
-	}
-
-	double CMesh3D::tri_area(const int gid) const
-	{
-		const int n_vertices = n_face_vertices(gid);
-		assert(n_vertices == 3);
-
-		const auto &vertices = mesh_.faces[gid].vs;
-
-		const auto v1 = point(vertices[0]);
-		const auto v2 = point(vertices[1]);
-		const auto v3 = point(vertices[2]);
-
-		const Vector3d e0 = (v2 - v1).transpose();
-		const Vector3d e1 = (v3 - v1).transpose();
-
-		return e0.cross(e1).norm() / 2;
 	}
 
 	RowVectorNd CMesh3D::edge_barycenter(const int e) const

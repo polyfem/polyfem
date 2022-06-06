@@ -11,6 +11,68 @@
 
 namespace polyfem
 {
+	double Mesh3D::tri_area(const int gid) const
+	{
+		const int n_vertices = n_face_vertices(gid);
+		assert(n_vertices == 3);
+
+		const auto v1 = point(face_vertex(gid, 0));
+		const auto v2 = point(face_vertex(gid, 1));
+		const auto v3 = point(face_vertex(gid, 2));
+
+		const Vector3d e0 = (v2 - v1).transpose();
+		const Vector3d e1 = (v3 - v1).transpose();
+
+		return e0.cross(e1).norm() / 2;
+	}
+
+	void Mesh3D::get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const
+	{
+		p0.resize(n_edges(), 3);
+		p1.resize(p0.rows(), p0.cols());
+
+		for (std::size_t e = 0; e < n_edges(); ++e)
+		{
+			const int v0 = edge_vertex(e, 0);
+			const int v1 = edge_vertex(e, 1);
+
+			p0.row(e) = point(v0);
+			p1.row(e) = point(v1);
+		}
+	}
+
+	void Mesh3D::get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, const std::vector<bool> &valid_elements) const
+	{
+		int count = 0;
+		for (size_t i = 0; i < valid_elements.size(); ++i)
+		{
+			if (valid_elements[i])
+			{
+				count += n_cell_edges(i);
+			}
+		}
+
+		p0.resize(count, 3);
+		p1.resize(count, 3);
+
+		count = 0;
+
+		for (size_t i = 0; i < valid_elements.size(); ++i)
+		{
+			if (!valid_elements[i])
+				continue;
+
+			for (size_t ei = 0; ei < n_cell_edges(i); ++ei)
+			{
+				const int e = cell_edge(i, ei);
+				p0.row(count) = point(edge_vertex(e, 0));
+				p1.row(count) = point(edge_vertex(e, 1));
+
+				++count;
+			}
+		}
+	}
+
 	RowVectorNd Mesh3D::edge_node(const Navigation3D::Index &index, const int n_new_nodes, const int i) const
 	{
 		if (orders_.size() <= 0 || orders_(index.element) == 1 || edge_nodes_.empty() || edge_nodes_[index.edge].nodes.rows() != n_new_nodes)

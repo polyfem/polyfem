@@ -3,6 +3,7 @@
 #include <polyfem/CMesh2D.hpp>
 #include <polyfem/NCMesh2D.hpp>
 #include <polyfem/CMesh3D.hpp>
+#include <polyfem/NCMesh3D.hpp>
 
 #include <polyfem/MeshUtils.hpp>
 #include <polyfem/StringUtils.hpp>
@@ -36,7 +37,11 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(GEO::Mesh &meshin, const bo
 	}
 	else
 	{
-		std::unique_ptr<polyfem::Mesh> mesh = std::make_unique<CMesh3D>();
+		std::unique_ptr<polyfem::Mesh> mesh;
+		if (non_conforming)
+			mesh = std::make_unique<NCMesh3D>();
+		else
+			mesh = std::make_unique<CMesh3D>();
 		meshin.cells.connect();
 		if (mesh->load(meshin))
 		{
@@ -61,7 +66,11 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path, co
 	std::transform(lowername.begin(), lowername.end(), lowername.begin(), ::tolower);
 	if (StringUtils::endswith(lowername, ".hybrid"))
 	{
-		std::unique_ptr<polyfem::Mesh> mesh = std::make_unique<CMesh3D>();
+		std::unique_ptr<polyfem::Mesh> mesh;
+		if (non_conforming)
+			mesh = std::make_unique<NCMesh3D>();
+		else
+			mesh = std::make_unique<CMesh3D>();
 		if (mesh->load(path))
 		{
 			return mesh;
@@ -85,7 +94,10 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::string &path, co
 			else
 				mesh = std::make_unique<CMesh2D>();
 		else
-			mesh = std::make_unique<CMesh3D>();
+			if (non_conforming)
+				mesh = std::make_unique<NCMesh3D>();
+			else
+				mesh = std::make_unique<CMesh3D>();
 
 		mesh->build_from_matrices(vertices, cells);
 		// Only tris and tets
@@ -238,7 +250,10 @@ std::unique_ptr<polyfem::Mesh> polyfem::Mesh::create(const std::vector<json> &me
 	}
 	else
 	{
-		mesh = std::make_unique<CMesh3D>();
+		if (non_conforming)
+			mesh = std::make_unique<NCMesh3D>();
+		else
+			mesh = std::make_unique<CMesh3D>();
 	}
 
 	mesh->build_from_matrices(vertices, cells);
