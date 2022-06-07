@@ -775,7 +775,7 @@ namespace polyfem
 				if (args["space"]["advanced"]["poly_bases"] == "MeanValue")
 				{
 					logger().error("MeanValue bases not supported in 3D");
-					throw "not implemented"
+					throw "not implemented";
 				}
 				new_bases = PolygonalBasis3d::build_bases(assembler, formulation(), args["space"]["advanced"]["n_harmonic_samples"], *dynamic_cast<Mesh3D *>(mesh.get()), n_bases, args["space"]["advanced"]["quadrature_order"], args["space"]["advanced"]["integral_constraints"], bases, geom_bases, poly_edge_to_data, polys_3d);
 			}
@@ -992,7 +992,7 @@ namespace polyfem
 			rhs_path = args["PDE"]["rhs"];
 
 		json p_params = {};
-		p_params["formulation"] = args["PDE"]["TYPE"]
+		p_params["formulation"] = args["PDE"]["type"];
 		//TESEO check on this -> formulation();
 		{
 			RowVectorNd min, max, delta;
