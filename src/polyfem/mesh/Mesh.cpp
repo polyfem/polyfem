@@ -122,7 +122,13 @@ std::unique_ptr<Mesh> Mesh::create(const std::string &path, const bool non_confo
 	return nullptr;
 }
 
-std::unique_ptr<Mesh> Mesh::create(const std::vector<json> &meshes, const std::string &root_path, const bool non_conforming)
+std::unique_ptr<polyfem::mesh::Mesh> polyfem::mesh::Mesh::create(
+	const std::vector<json> &meshes,
+	const std::string &root_path,
+	const bool non_conforming,
+	const std::vector<std::string> &names,
+	const std::vector<Eigen::MatrixXi> &cells_in,
+	const std::vector<Eigen::MatrixXd> &vertices_in)
 {
 	if (meshes.empty())
 	{
@@ -159,14 +165,48 @@ std::unique_ptr<Mesh> Mesh::create(const std::vector<json> &meshes, const std::s
 			logger().error("Mesh {} is mising a \"mesh\" field", meshes[i].get<std::string>());
 			continue;
 		}
-		const std::string mesh_path = resolve_path(jmesh["mesh"], root_path);
-
 		Eigen::MatrixXd tmp_vertices;
 		Eigen::MatrixXi tmp_cells;
 		std::vector<std::vector<int>> tmp_elements;
 		std::vector<std::vector<double>> tmp_weights;
 		Eigen::VectorXi tmp_body_ids;
-		read_fem_mesh(mesh_path, tmp_vertices, tmp_cells, tmp_elements, tmp_weights, tmp_body_ids);
+
+		if (names.empty())
+		{
+			const std::string mesh_path = resolve_path(jmesh["mesh"], root_path);
+
+			read_fem_mesh(mesh_path, tmp_vertices, tmp_cells, tmp_elements, tmp_weights, tmp_body_ids);
+		}
+		else
+		{
+			int index = -1;
+			for (int k = 0; k < names.size(); ++k)
+			{
+				if (names[k] == jmesh["mesh"])
+				{
+					index = k;
+					break;
+				}
+			}
+
+			assert(index >= 0);
+
+			tmp_cells = cells_in[index];
+			tmp_vertices = vertices_in[index];
+
+			tmp_elements.resize(tmp_cells.rows());
+			for (int ci = 0; ci < tmp_cells.rows(); ci++)
+			{
+				tmp_elements[ci].resize(tmp_cells.cols());
+				for (int cj = 0; cj < tmp_cells.cols(); cj++)
+				{
+					tmp_elements[ci][cj] = tmp_cells(ci, cj);
+				}
+			}
+			tmp_weights.resize(tmp_cells.rows());
+
+			tmp_body_ids.setConstant(tmp_cells.rows(), 0);
+		}
 
 		if (tmp_vertices.size() == 0 || tmp_cells.size() == 0)
 		{

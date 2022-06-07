@@ -303,7 +303,10 @@ namespace polyfem
 		void compute_mesh_size(const mesh::Mesh &mesh, const std::vector<ElementBases> &bases, const int n_samples);
 
 		//loads the mesh from the json arguments
-		void load_mesh(bool non_conforming = false);
+		void load_mesh(bool non_conforming = false,
+					   const std::vector<std::string> &names = std::vector<std::string>(),
+					   const std::vector<Eigen::MatrixXi> &cells = std::vector<Eigen::MatrixXi>(),
+					   const std::vector<Eigen::MatrixXd> &vertices = std::vector<Eigen::MatrixXd>());
 		//loads a febio file, uses args_in for default
 		void load_febio(const std::string &path, const json &args_in);
 		//loads the mesh from a geogram mesh, skip_boundary_sideset = false it uses the lambda boundary_marker to assigm the sideset

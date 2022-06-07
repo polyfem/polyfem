@@ -97,8 +97,14 @@ namespace polyfem
 		ref_element_sampler.init(mesh->is_volume(), mesh->n_elements(), args["output"]["paraview"]["vismesh_rel_area"]);
 	}
 
-	void State::load_mesh(bool non_conforming)
+	void State::load_mesh(bool non_conforming,
+						  const std::vector<std::string> &names,
+						  const std::vector<Eigen::MatrixXi> &cells,
+						  const std::vector<Eigen::MatrixXd> &vertices)
 	{
+		assert(names.size() == cells.size());
+		assert(vertices.size() == cells.size());
+
 		bases.clear();
 		pressure_bases.clear();
 		geom_bases.clear();
@@ -125,13 +131,36 @@ namespace polyfem
 		{
 			if (!mesh_path().empty())
 			{
-				logger().info("Loading mesh {} ...", mesh_path());
-				mesh = Mesh::create(mesh_path(), non_conforming);
+				if (names.empty())
+				{
+					logger().info("Loading mesh {} ...", mesh_path());
+					mesh = Mesh::create(mesh_path(), non_conforming);
+				}
+				else
+				{
+					int index = -1;
+					for (int i = 0; i < names.size(); ++i)
+					{
+						if (names[i] == args["meshes"])
+						{
+							index = i;
+							break;
+						}
+					}
+
+					assert(index >= 0);
+
+					if (vertices[index].cols() == 2)
+						mesh = std::make_unique<polyfem::CMesh2D>();
+					else
+						mesh = std::make_unique<polyfem::Mesh3D>();
+					mesh->build_from_matrices(vertices[index], cells[index]);
+				}
 			}
 			else if (is_param_valid(args, "meshes"))
 			{
 				logger().info("Loading meshes ...");
-				mesh = Mesh::create(args["meshes"].get<std::vector<json>>(), args["root_path"], non_conforming);
+				mesh = Mesh::create(args["meshes"].get<std::vector<json>>(), args["root_path"], non_conforming, names, cells, vertices);
 			}
 		}
 		else
@@ -204,7 +233,7 @@ namespace polyfem
 		timer.start();
 		logger().info("Loading obstacles...");
 		if (is_param_valid(args, "obstacles"))
-			obstacle.init(args["obstacles"], args["root_path"], mesh->dimension());
+			obstacle.init(args["obstacles"], args["root_path"], mesh->dimension(), names, cells, vertices);
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 

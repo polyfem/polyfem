@@ -13,7 +13,12 @@ namespace polyfem
 		class Obstacle
 		{
 		public:
-			void init(const json &json, const std::string &root_path, const int dim);
+			void init(const json &json,
+					  const std::string &root_path,
+					  const int dim,
+					  const std::vector<std::string> &names = std::vector<std::string>(),
+					  const std::vector<Eigen::MatrixXi> &cells = std::vector<Eigen::MatrixXi>(),
+					  const std::vector<Eigen::MatrixXd> &vertices = std::vector<Eigen::MatrixXd>());
 
 			inline int n_vertices() const { return v_.rows(); }
 			inline const Eigen::MatrixXd &v() const { return v_; }
@@ -43,7 +48,7 @@ namespace polyfem
 
 		private:
 			// NOTE: index i is only for logging information
-			void append_mesh(const json &mesh_in, const std::string &root_path, const int i);
+			void append_mesh(const json &mesh_in, const std::string &root_path, const int i, const std::vector<std::string> &names, const std::vector<Eigen::MatrixXi> &cells, const std::vector<Eigen::MatrixXd> &vertices);
 			void append_plane(const json &plane_in, const int i);
 			void append_ground(const json &ground_in, const int i);
 

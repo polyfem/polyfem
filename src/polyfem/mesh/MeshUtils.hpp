@@ -182,6 +182,18 @@ namespace polyfem
 								  const Eigen::MatrixXd &BV, const Eigen::MatrixXi &BE, Eigen::MatrixXi &OE);
 
 		///
+		/// @brief         			Extract triangular surface from a tetmesh
+		///
+		/// @param[in]     v,tets   { tet mesh }
+		/// @param[out] s_v,tris 	{ surface mesh }
+		///
+		void extract_triangle_surface_from_tets(
+			const Eigen::MatrixXd &vertices,
+			const Eigen::MatrixXi &tets,
+			Eigen::MatrixXd &surface_vertices,
+			Eigen::MatrixXi &tris);
+
+		///
 		/// @brief      Save edge-graph into a .obj
 		///
 		/// @param[in]  filename  { Filename to write to }

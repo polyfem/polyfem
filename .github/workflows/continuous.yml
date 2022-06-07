@@ -73,6 +73,7 @@ jobs:
         run: |
           cd build
           python ../tests/test_runners.py
+          ./PolyFEM_bin --hdf5 ../data/data/test.hdf5 --cmd
           ./PolyFEM_bin --mesh ../data/data/contact/meshes/3D/simple/cube.msh --cmd --n_refs 1 --problem DrivenCavity --tform Stokes
           ./PolyFEM_bin --mesh ../data/data/contact/meshes/3D/simple/cube.msh --cmd --n_refs 1 --problem DrivenCavity --tform NavierStokes
 
@@ -87,7 +88,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest]
-        arc: [x86, arm64]
+        arc: [x86]
         config: [Debug, Release]
         threading: [CPP, TBB, NONE]
         include:
@@ -153,6 +154,7 @@ jobs:
         run: |
           cd build
           python3 ../tests/test_runners.py
+          ./PolyFEM_bin --hdf5 ../data/data/test.hdf5 --cmd
           ./PolyFEM_bin --mesh ../data/data/contact/meshes/3D/simple/cube.msh --cmd --n_refs 1 --problem DrivenCavity --tform Stokes
           ./PolyFEM_bin --mesh ../data/data/contact/meshes/3D/simple/cube.msh --cmd --n_refs 1 --problem DrivenCavity --tform NavierStokes
 
@@ -178,9 +180,21 @@ jobs:
           fetch-depth: 10
       - uses: seanmiddleditch/gha-setup-ninja@master
 
+      - name: Stetup Conda
+        uses: s-weigand/setup-conda@v1
+        with:
+          update-conda: true
+          conda-channels: anaconda, conda-forge
+
+      - name: Install Dependencies
+        run: |
+          conda install libblas libcblas suitesparse -y
+
       - name: Set env
         run: |
           echo "appdata=$env:LOCALAPPDATA" >> ${env:GITHUB_ENV}
+          conda init powershell
+
 
       - name: Cache build
         id: cache-build
@@ -224,5 +238,6 @@ jobs:
         run: |
           cd build
           python ..\tests\test_runners.py
+          .\PolyFEM_bin.exe --hdf5 ..\data\data\test.hdf5 --cmd
           .\PolyFEM_bin.exe --mesh ..\data\data\contact\meshes\3D\simple\cube.msh --cmd --n_refs 1 --problem DrivenCavity --tform Stokes
           .\PolyFEM_bin.exe --mesh ..\data\data\contact\meshes\3D\simple\cube.msh --cmd --n_refs 1 --problem DrivenCavity --tform NavierStokes
