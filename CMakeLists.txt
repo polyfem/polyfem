@@ -69,19 +69,16 @@ set(POLYFEM_SMALL_N  80 CACHE STRING "Maximum length for stack-allocated vectors
 set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vectors (gradient only).")
 
 option(POLYFEM_NO_UI            "Disables the user interface" OFF)
+option(POLYFEM_BUILD_DOCS       "Build doxygen"               OFF)
 
 # Polyfem options for enabling/disabling optional libraries
-# option(POLYFEM_WITH_MMG              "Enable MMG library"                OFF)
-option(POLYFEM_WITH_OPENCL           "Enable OpenCL"                     OFF)
 option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
 set(POLYFEM_THREADING "TBB" CACHE STRING "Multithreading library to use (options: CPP, TBB, NONE)")
 set_property(CACHE POLYFEM_THREADING PROPERTY STRINGS "CPP" "TBB" "NONE")
 
-option(POLYFEM_WITH_TESTS     "Build tests"             ON)
-option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"       ON)
-
-option(POLYFEM_DIV_BARRIER_STIFFNESS "Divide the energy terms by the contact barrier stiffeness" OFF)
-mark_as_advanced(POLYFEM_DIV_BARRIER_STIFFNESS)
+option(POLYFEM_WITH_REMESHING "Uses VMTK for remeshing"                     OFF)
+option(POLYFEM_WITH_TESTS     "Build tests"                                 ON)
+option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"  ON)
 
 #Solver
 option(POLYSOLVE_WITH_CHOLMOD          "Enable Cholmod library"            ON)
@@ -144,7 +141,7 @@ include(sanitizers)
 ################################################################################
 
 # add_library() can only be called without any source since CMake 3.11 ...
-add_library(polyfem src/State.cpp)
+add_library(polyfem src/polyfem/State.cpp)
 
 # Must be call in the same "CMakeLists.txt" where add_library(polyfem ...) is called
 polyfem_autogen(polyfem eigs.py auto_eigs)
@@ -153,7 +150,7 @@ polyfem_autogen(polyfem q_bases.py auto_q_bases)
 polyfem_autogen(polyfem elasticity_rhs.py auto_elasticity_rhs)
 
 # Public include directory for polyfem
-target_include_directories(polyfem PUBLIC ${PROJECT_BINARY_DIR}/include)
+target_include_directories(polyfem PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # Extra warnings
 target_link_libraries(polyfem PRIVATE warnings::all)
@@ -171,14 +168,6 @@ target_compile_definitions(polyfem PUBLIC -DEIGEN_STACK_ALLOCATION_LIMIT=0)
 # Max stack-size small vectors (for gradient and Hessian)
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_SMALL_N=${POLYFEM_SMALL_N})
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_BIG_N=${POLYFEM_BIG_N})
-
-if("$ENV{CLUSTER}" STREQUAL "PRINCE")
-    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_ON_HPC)
-endif()
-
-if(POLYFEM_DIV_BARRIER_STIFFNESS)
-    target_compile_definitions(polyfem PUBLIC POLYFEM_DIV_BARRIER_STIFFNESS)
-endif()
 
 ################################################################################
 # Required libraries
@@ -239,9 +228,13 @@ target_link_libraries(polyfem PUBLIC tinyexpr::tinyexpr)
 include(tinyxml)
 target_link_libraries(polyfem PUBLIC tinyxml2)
 
-# wmtk library
-include(wmtk)
-target_link_libraries(polyfem PUBLIC wmtk::toolkit)
+
+if(POLYFEM_WITH_REMESHING)
+    # wmtk library
+    include(wmtk)
+    target_link_libraries(polyfem PUBLIC wmtk::toolkit)
+    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_REMESHING)
+endif()
 
 # HighFive + HDF5 library
 include(hdf5)
@@ -297,15 +290,15 @@ add_library(polyfem::polyfem ALIAS polyfem)
 
 # Main executable
 if(POLYFEM_TOPLEVEL_PROJECT)
-    add_executable(${PROJECT_NAME}_bin src/main.cpp)
+    add_executable(${PROJECT_NAME}_bin src/polyfem/main.cpp)
 
-    source_group("gui" FILES src/main.cpp)
+    source_group("gui" FILES src/polyfem/main.cpp)
     if(NOT POLYFEM_NO_UI)
-        source_group("gui" FILES src/viewer/UIState.cpp)
-        source_group("gui" FILES src/viewer/UIState.hpp)
-        source_group("gui" FILES src/viewer/UIMenu.cpp)
+        source_group("gui" FILES src/polyfem/viewer/UIState.cpp)
+        source_group("gui" FILES src/polyfem/viewer/UIState.hpp)
+        source_group("gui" FILES src/polyfem/viewer/UIMenu.cpp)
 
-        target_include_directories(${PROJECT_NAME}_bin PUBLIC src/viewer)
+        target_include_directories(${PROJECT_NAME}_bin PUBLIC src/polyfem/viewer)
     else()
         target_compile_definitions(${PROJECT_NAME}_bin PUBLIC -DPOLYFEM_NO_UI)
     endif()
@@ -328,6 +321,29 @@ if(POLYFEM_TOPLEVEL_PROJECT)
     if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
         set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_bin)
     endif()
+
+    if(POLYFEM_BUILD_DOCS)
+        # check if Doxygen is installed
+        find_package(Doxygen)
+        if (DOXYGEN_FOUND)
+            # set input and output files
+            set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile.in)
+            set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+
+            # request to configure the file
+            configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
+            message("Doxygen build started")
+
+            # note the option ALL which allows to build the docs together with the application
+            add_custom_target( polyfem_doc_doxygen ALL
+                COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                COMMENT "Generating API documentation with Doxygen"
+                VERBATIM )
+        else (DOXYGEN_FOUND)
+            message("Doxygen need to be installed to generate the doxygen documentation")
+        endif (DOXYGEN_FOUND)
+    endif()
 endif()
 
 ################################################################################
@@ -335,7 +351,7 @@ endif()
 ################################################################################
 
 # Other sources
-add_subdirectory(src)
+add_subdirectory(src/polyfem)
 
 # Compile extras only if this is a top-level project
 if(POLYFEM_TOPLEVEL_PROJECT)

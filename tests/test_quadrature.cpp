@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/LineQuadrature.hpp>
-#include <polyfem/TriQuadrature.hpp>
-#include <polyfem/TetQuadrature.hpp>
+#include <polyfem/quadrature/LineQuadrature.hpp>
+#include <polyfem/quadrature/TriQuadrature.hpp>
+#include <polyfem/quadrature/TetQuadrature.hpp>
 #include <iostream>
 #include <cmath>
 #include <Eigen/Dense>
@@ -10,6 +10,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
+using namespace polyfem::quadrature;
 
 const double pi = 3.14159265358979323846264338327950288419717;
 

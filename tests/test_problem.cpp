@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/Problem.hpp>
-#include <polyfem/AssemblerUtils.hpp>
+#include <polyfem/problem/Problem.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/Common.hpp>
 
 #include <catch2/catch.hpp>
@@ -8,6 +8,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
+using namespace polyfem::problem;
+using namespace polyfem::assembler;
+using namespace polyfem::basis;
+using namespace polyfem::mesh;
 
 const double k = 0.2;
 const double lambda = 0.375, mu = 0.375;
