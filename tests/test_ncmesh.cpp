@@ -81,30 +81,6 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
 TEST_CASE("ncmesh3d", "[ncmesh]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
-	// json in_args = R"(
-	// 	{
-	// 		"problem": "GenericScalar",
-	// 		"scalar_formulation": "Laplacian",
-    //         "export":{
-    //             "high_order_mesh": false
-    //         },
-	// 		"n_refs": 0,
-	// 		"solver_type": "Eigen::SimplicialLDLT",
-	// 		"discr_order": 2,
-	// 		"iso_parametric": true,
-    //         "bc_method": "sample",
-	// 		"problem_params": {
-	// 			"dirichlet_boundary": [{
-	// 				"id": "all",
-	// 				"value": "x^2+y^2+z^2"
-	// 			}],
-    //             "exact": "x^2+y^2+z^2",
-    //             "exact_grad": ["2*x","2*y","2*z"],
-	// 			"rhs": 6
-	// 		},
-	// 		"vismesh_rel_area": 1.0
-	// 	}
-	// )"_json;
 	json in_args = R"(
 		{
 			"problem": "GenericScalar",
@@ -114,19 +90,19 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
             },
 			"n_refs": 0,
 			"solver_type": "Eigen::SimplicialLDLT",
-			"discr_order": 1,
+			"discr_order": 2,
 			"iso_parametric": true,
             "bc_method": "sample",
+			"vismesh_rel_area": 1e-6,
 			"problem_params": {
 				"dirichlet_boundary": [{
 					"id": "all",
-					"value": "x+y+2*z"
+					"value": "x^2+y^2+z^2"
 				}],
-                "exact": "x+y+2*z",
-                "exact_grad": [1,1,2],
-				"rhs": 0
-			},
-			"vismesh_rel_area": 1.0
+                "exact": "x^2+y^2+z^2",
+                "exact_grad": ["2*x","2*y","2*z"],
+				"rhs": 6
+			}
 		}
 	)"_json;
 	in_args["mesh"] = path + "/../../lbar-extrude.msh";
