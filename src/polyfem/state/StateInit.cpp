@@ -104,9 +104,6 @@ namespace polyfem
         					"discr_order": 1,
         					"pressure_discr_order": 1,
 
-        					"discr_orders_path": "",
-        					"bodies_discr_order": {},
-
         					"use_p_ref": false,
 
         					"advanced": {
@@ -149,11 +146,7 @@ namespace polyfem
 							}
 						},
 
-						"contact": {
-							"dhat": 1e-3,
-							"dhat_percentage": 0.8,
-							"epsv": 1e-3
-						},
+						"contact": null,
 
 						"solver": {
 							"linear": {
@@ -321,8 +314,15 @@ namespace polyfem
 
 		this->args.merge_patch(args_in);
 		has_dhat = args_in.contains("dhat");
-
-		use_avg_pressure = !args["has_neumann"];
+		//TESEO fix me
+		//TODO move togheter with others
+		// const json default_contact = R"({
+		// 	"dhat": 1e-3,
+		// 	"dhat_percentage": 0.8,
+		// 	"epsv": 1e-3
+		// })"_json;
+		// const json contact = args["contact"];
+		// contact.merge_patch(default_contact);
 
 		if (args_in.contains("BDF_order"))
 		{
