@@ -48,10 +48,11 @@ namespace polyfem
 			return;
 		}
 
-		if (args["normalize_mesh"])
-		{
-			mesh->normalize();
-		}
+		//TODO
+		// if (args["normalize_mesh"])
+		// {
+		// 	mesh->normalize();
+		// }
 		RowVectorNd min, max;
 		mesh->bounding_box(min, max);
 
@@ -60,38 +61,40 @@ namespace polyfem
 		else
 			logger().info("mesh bb min [{} {} {}], max [{} {} {}]", min(0), min(1), min(2), max(0), max(1), max(2));
 
-		int n_refs = args["n_refs"];
+		//TODO
+		// int n_refs = args["n_refs"];
 
-		if (n_refs <= 0 && args["poly_bases"] == "MFSHarmonic" && mesh->has_poly())
-		{
-			if (args["force_no_ref_for_harmonic"])
-				logger().warn("Using harmonic bases without refinement");
-			else
-				n_refs = 1;
-		}
+		// if (n_refs <= 0 && args["poly_bases"] == "MFSHarmonic" && mesh->has_poly())
+		// {
+		// 	if (args["force_no_ref_for_harmonic"])
+		// 		logger().warn("Using harmonic bases without refinement");
+		// 	else
+		// 		n_refs = 1;
+		// }
 
-		if (n_refs > 0)
-			mesh->refine(n_refs, args["refinenemt_location"], parent_elements);
+		// if (n_refs > 0)
+		// 	mesh->refine(n_refs, args["refinenemt_location"], parent_elements);
 
-		if (!skip_boundary_sideset)
-			mesh->compute_boundary_ids(boundary_marker);
-		BoxSetter::set_sidesets(args, *mesh);
-		set_multimaterial([&](const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus, const Eigen::MatrixXd &rhos) {
-			assembler.init_multimaterial(mesh->is_volume(), Es, nus);
-			density.init_multimaterial(rhos);
-		});
+		// if (!skip_boundary_sideset)
+		// 	mesh->compute_boundary_ids(boundary_marker);
+		// BoxSetter::set_sidesets(args, *mesh);
+		// set_multimaterial([&](const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus, const Eigen::MatrixXd &rhos) {
+		// 	assembler.init_multimaterial(mesh->is_volume(), Es, nus);
+		// 	density.init_multimaterial(rhos);
+		// });
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
 		timer.start();
 		logger().info("Loading obstacles...");
-		if (args.contains("obstacles"))
-			obstacle.init(args["obstacles"], args["root_path"], mesh->dimension());
+		//TODO
+		// if (args.contains("obstacles"))
+		// 	obstacle.init(args["obstacles"], args["root_path"], mesh->dimension());
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
-		ref_element_sampler.init(mesh->is_volume(), mesh->n_elements(), args["vismesh_rel_area"]);
+		ref_element_sampler.init(mesh->is_volume(), mesh->n_elements(), args["output"]["paraview"]["vismesh_rel_area"]);
 	}
 
 	void State::load_mesh(bool non_conforming)

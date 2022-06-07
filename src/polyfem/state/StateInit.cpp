@@ -94,182 +94,184 @@ namespace polyfem
 
 		problem = ProblemFactory::factory().get_problem("Linear");
 
-		this->args = {
-			{"root_path", ""},
-			{"mesh", ""},
-			{"meshes", nullptr},
-			{"obstacles", nullptr},
-			{"force_linear_geometry", false},
-			{"bc_tag", ""},
-			{"boundary_id_threshold", -1.0},
+		this->args = R"({
+						"defaults": "",
+						"root_path": "",
 
-			{"n_refs", 0},
-			// {"n_refs_path", ""},
-			// {"bodies_n_refs", {}},
+						"geometries": null,
 
-			{"vismesh_rel_area", 0.00001},
-			{"refinenemt_location", 0.5},
-			{"bc_method", "lsq"},
-			{"n_boundary_samples", 6},
-			{"problem", "Franke"},
-			{"normalize_mesh", true},
-			{"compute_error", true},
+					    "space": {
+        					"discr_order": 1,
+        					"pressure_discr_order": 1,
 
-			{"curved_mesh_size", false},
+        					"discr_orders_path": "",
+        					"bodies_discr_order": {},
 
-			{"count_flipped_els", false},
-			{"project_to_psd", false},
-			{"use_al", false},
-			{"min_component", -1},
+        					"use_p_ref": false,
 
-			{"has_collision", false},
-			{"dhat", 1e-3},
-			{"dhat_percentage", 0.8},
-			{"barrier_stiffness", "adaptive"},
-			{"force_al", false},
-			{"ignore_inertia", false},
-			{"epsv", 1e-3},
-			{"mu", 0.0},
-			{"friction_iterations", 1},
-			{"friction_convergence_tol", 1e-2},
-			{"lagged_damping_weight", 0},
+        					"advanced": {
+            					"discr_order_max": 4,
 
-			{"t0", 0},
-			{"tend", -1}, // Compute this automatically
-			{"dt", -1},   // Compute this automatically
-			{"time_steps", 10},
-			{"skip_frame", 1},
-			{"time_integrator", "ImplicitEuler"},
-			{"time_integrator_params",
-			 {{"gamma", 0.5},
-			  {"beta", 0.25},
-			  {"num_steps", 1}}},
+								"serendipity": false,
+								"isoparametric": false,
+								"use_spline": false,
 
-			{"scalar_formulation", "Laplacian"},
-			{"tensor_formulation", "LinearElasticity"},
+								"bc_method": "lsq",
 
-			{"B", 3},
-			{"h1_formula", false},
+								"n_boundary_samples": -1, // Fix in code
+								"quadrature_order": -1,
 
-			{"quadrature_order", -1},
+								"poly_bases": "MFSHarmonic",
+								"integral_constraints": 2,
+								"n_harmonic_samples": 10,
+								"force_no_ref_for_harmonic": false,
 
-			{"discr_order", 1},
-			{"discr_orders_path", ""},
-			{"bodies_discr_order", {}},
+								"B": 3,
+								"h1_formula": false,
 
-			{"poly_bases", "MFSHarmonic"},
-			{"serendipity", false},
-			{"discr_order_max", autogen::MAX_P_BASES},
-			{"pressure_discr_order", 1},
-			{"use_p_ref", false},
-			{"has_neumann", false},
-			{"use_spline", false},
-			{"iso_parametric", false},
-			{"integral_constraints", 2},
-			{"cache_size", 900000},
-			{"al_weight", 1e6},
-			{"max_al_weight", 1e11},
+								"count_flipped_els": true // always enabled
+        					}
+    					},
 
-			// {"fit_nodes", false},
+    					"time": {
+        					"t0": 0,
+        					"tend": -1,
+        					"dt": -1,
+        					"time_steps": 10,
 
-			{"n_harmonic_samples", 10},
+        					"integrator": "ImplicitEuler",
+							"newmark": {
+								"gamma": 0.5,
+								"beta": 0.25
+							},
+							"BDF": {
+								"steps": 1
+							}
+						},
 
-			{"solver_type", LinearSolver::defaultSolver()},
-			{"precond_type", LinearSolver::defaultPrecond()},
-			{"solver_params",
-			 {{"broad_phase_method", "hash_grid"},
-			  {"ccd_tolerance", 1e-6},
-			  {"ccd_max_iterations", 1e6},
-			  {"fDelta", 1e-10},
-			  {"gradNorm", 1e-8},
-			  {"nl_iterations", 1000},
-			  {"useGradNorm", true},
-			  {"relativeGradient", false},
-			  {"use_grad_norm_tol", 1e-4}}},
+						"contact": {
+							"dhat": 1e-3,
+							"dhat_percentage": 0.8,
+							"epsv": 1e-3
+						},
 
-			{"rhs_solver_type", LinearSolver::defaultSolver()},
-			{"rhs_precond_type", LinearSolver::defaultPrecond()},
-			{"rhs_solver_params", json({})},
+						"solver": {
+							"linear": {
+								"solver": "",
+								"precond": "",
 
-			{"line_search", "armijo"},
-			{"nl_solver", "newton"},
-			// {"nl_solver_rhs_steps", 1},
+								"max_iter" : 1000,
+								"conv_tol" : 1e-10,
+								"tolerance" : 1e-10,
 
-			{"force_no_ref_for_harmonic", false},
-			{"lump_mass_matrix", false},
+								"advanced": {}
+							},
 
-			{"rhs_path", ""},
+							"nonlinear": {
+								"solver" : "newton",
+								"f_delta" : 1e-10,
+								"grad_norm" : 1e-8,
+								"max_iterations" : 1000,
+								"use_grad_norm" : true,
+								"relative_gradient" : false,
 
-			{"params",
-			 {{"lambda", 0.32967032967032966},
-			  {"mu", 0.3846153846153846},
-			  {"k", 1.0},
-			  {"elasticity_tensor", json({})},
-			  {"E", 1e5},
-			  {"nu", 0.3},
-			  {"density", 1},
-			  {"alphas", {2.13185026692482, -0.600299816209491}},
-			  {"mus", {0.00407251192475097, 0.000167202574129608}},
-			  {"Ds", {9.4979, 1000000}}}},
+								"line_search": {
+									"method" : "backtracking",
+									"use_grad_norm_tol" : 1e-4
+								}
+							},
 
-			{"problem_params",
-			 {{"is_time_dependent", false},
-			  {"rhs", nullptr},
-			  {"exact", nullptr},
-			  {"exact_grad", nullptr},
-			  {"dirichlet_boundary", nullptr},
-			  {"neumann_boundary", nullptr},
-			  {"pressure_boundary", nullptr},
-			  {"initial_solution", nullptr},
-			  {"initial_velocity", nullptr},
-			  {"initial_acceleration", nullptr}}},
+							"augmented_lagrangian" : {
+								"initial_weight" : 1e6,
+								"max_weight" : 1e11,
 
-			{"body_params", nullptr},
-			{"boundary_sidesets", nullptr},
+								"force" : false
+							},
 
-			{"output", ""},
-			// {"solution", ""},
-			// {"stiffness_mat_save_path", ""},
+							"contact": {
+								"CCD" : {
+									"broad_phase" : "hash_grid",
+									"tolerance" : 1e-6,
+									"max_iterations" : 1e6
+								},
+								"friction_iterations" : 1,
+								"friction_convergence_tol": 1e-2,
+								"barrier_stiffness": "adaptive",
+								"lagged_damping_weight": 0
+							}
 
-			{"import",
-			 {{"u_path", ""},
-			  {"v_path", ""},
-			  {"a_path", ""}}},
+							"ignore_inertia" : false,
 
-			// {"save_solve_sequence", false},
-			{"save_solve_sequence_debug", false},
-			{"save_time_sequence", true},
-			{"save_nl_solve_sequence", false},
+							"advanced": {
+								"cache_size" : 900000,
+								"lump_mass_matrix" : false
+							}
+						},
 
-			{"export",
-			 {{"sol_at_node", -1},
-			  {"high_order_mesh", true},
-			  {"volume", true},
-			  {"surface", false},
-			  {"wireframe", false},
-			  {"vis_mesh", ""},
-			  {"sol_on_grid", -1},
-			  {"paraview", ""},
-			  {"vis_boundary_only", false},
-			  {"material_params", false},
-			  {"body_ids", false},
-			  {"contact_forces", false},
-			  {"friction_forces", false},
-			  {"velocity", false},
-			  {"acceleration", false},
-			  {"nodes", ""},
-			  {"wire_mesh", ""},
-			  {"spectrum", false},
-			  {"solution", ""},
-			  {"full_mat", ""},
-			  {"stiffness_mat", ""},
-			  {"solution_mat", ""},
-			  {"stress_mat", ""},
-			  {"u_path", ""},
-			  {"v_path", ""},
-			  {"a_path", ""},
-			  {"mises", ""},
-			  {"time_sequence", "sim.pvd"}}}};
+						"PDE": {
+							"type" : "Laplacian",
+							"default_problem" : "Franke",
+
+							"materials" : null,
+						}
+
+						"output": {
+							"json" : "",
+
+							"paraview" : {
+								"file_name" : "",
+								"vismesh_rel_area" : 0.00001,
+
+								"skip_frame" : 1,
+
+								"high_order_mesh" : true,
+
+								"volume" : true,
+								"surface" : false,
+								"wireframe" : false,
+
+								"options" : {
+									"material" : false,
+									"body_ids" : false,
+									"contact_forces" : false,
+									"friction_forces" : false,
+									"velocity" : false,
+									"acceleration" : false
+								}
+							},
+
+							"data" : {
+								"solution" : "",
+								"full_mat" : "",
+								"stiffness_mat" : "",
+								"solution_mat" : "",
+								"stress_mat" : "",
+								"u_path" : "",
+								"v_path" : "",
+								"a_path" : "",
+								"mises" : ""
+								"nodes" : ""
+							},
+
+							"advanced": {
+								"timestep_prefix" : "step_"
+								"sol_on_grid" : -1,
+
+								"compute_error" : true,
+
+								"sol_at_node" : -1,
+
+								"vis_boundary_only" : false,
+
+								"curved_mesh_size" : false,
+								"save_solve_sequence_debug" : false,
+								"save_time_sequence" : true,
+								"save_nl_solve_sequence" : false,
+
+								"spectrum" : false
+							}
+						}
+					})"_json;
 	}
 
 	void State::init_logger(const std::string &log_file, int log_level, const bool is_quiet)
