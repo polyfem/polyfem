@@ -45,7 +45,7 @@ namespace polyfem
 		inline auto create_thread_storage(const LocalStorage &initial_local_storage)
 		{
 #if defined(POLYFEM_WITH_CPP_THREADS)
-			return std::vector<LocalStorage>(polyfem::get_n_threads(), initial_local_storage);
+			return std::vector<LocalStorage>(get_n_threads(), initial_local_storage);
 #elif defined(POLYFEM_WITH_TBB)
 			return tbb::enumerable_thread_specific<LocalStorage>(initial_local_storage);
 #else
