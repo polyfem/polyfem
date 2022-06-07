@@ -236,9 +236,12 @@ if(POLYFEM_WITH_REMESHING)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_REMESHING)
 endif()
 
-# HighFive library (HDF5)
-# include(high_five)
-# target_link_libraries(polyfem PUBLIC HighFive)
+# HighFive + HDF5 library
+include(hdf5)
+target_link_libraries(polyfem PUBLIC hdf5::hdf5)
+
+include(high_five)
+target_link_libraries(polyfem PUBLIC HighFive::HighFive)
 
 ################################################################################
 # Optional libraries
