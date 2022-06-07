@@ -3,8 +3,8 @@
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/utils/Types.hpp>
 
-#include <polyfem/mesh2D/Navigation.hpp>
-#include <polyfem/mesh3D/Navigation3D.hpp>
+#include <polyfem/mesh/mesh2D/Navigation.hpp>
+#include <polyfem/mesh/mesh3D/Navigation3D.hpp>
 
 #include <Eigen/Dense>
 

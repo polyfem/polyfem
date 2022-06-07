@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/mesh2D/Navigation.hpp>
+#include <polyfem/mesh/mesh2D/Navigation.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 

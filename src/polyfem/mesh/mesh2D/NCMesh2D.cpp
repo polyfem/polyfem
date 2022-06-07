@@ -1,4 +1,4 @@
-#include <polyfem/mesh2D/NCMesh2D.hpp>
+#include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 

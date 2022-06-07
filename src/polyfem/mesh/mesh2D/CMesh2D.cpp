@@ -1,8 +1,8 @@
-#include <polyfem/mesh2D/CMesh2D.hpp>
-#include <polyfem/mesh2D/Navigation.hpp>
+#include <polyfem/mesh/mesh2D/CMesh2D.hpp>
+#include <polyfem/mesh/mesh2D/Navigation.hpp>
 
 #include <polyfem/mesh/MeshUtils.hpp>
-#include <polyfem/mesh2D/Refinement.hpp>
+#include <polyfem/mesh/mesh2D/Refinement.hpp>
 
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/MshReader.hpp>

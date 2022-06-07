@@ -2,7 +2,7 @@
 
 #include <polyfem/Common.hpp>
 #include <polyfem/mesh/Mesh.hpp>
-#include <polyfem/mesh2D/Navigation.hpp>
+#include <polyfem/mesh/mesh2D/Navigation.hpp>
 #include <polyfem/utils/Types.hpp>
 
 #include <Eigen/Dense>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/mesh3D/Mesh3D.hpp>
+#include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/basis/InterfaceData.hpp>

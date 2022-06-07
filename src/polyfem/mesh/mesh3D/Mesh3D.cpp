@@ -1,4 +1,4 @@
-#include <polyfem/mesh3D/Mesh3D.hpp>
+#include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 

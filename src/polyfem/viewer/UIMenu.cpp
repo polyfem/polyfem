@@ -2,7 +2,7 @@
 #include "UIState.hpp"
 #include <polysolve/LinearSolver.hpp>
 #include <polyfem/utils/StringUtils.hpp>
-#include <polyfem/mesh3D/Mesh3D.hpp>
+#include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/problem/KernelProblem.hpp>
 

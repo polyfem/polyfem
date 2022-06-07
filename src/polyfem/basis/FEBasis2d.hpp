@@ -1,11 +1,11 @@
 #pragma once
 
 #include <polyfem/basis/ElementBases.hpp>
-#include <polyfem/mesh2D/CMesh2D.hpp>
-#include <polyfem/mesh2D/NCMesh2D.hpp>
+#include <polyfem/mesh/mesh2D/CMesh2D.hpp>
+#include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/basis/InterfaceData.hpp>
-#include <polyfem/mesh2D/Navigation.hpp>
+#include <polyfem/mesh/mesh2D/Navigation.hpp>
 
 #include <polyfem/mesh/MeshNodes.hpp>
 

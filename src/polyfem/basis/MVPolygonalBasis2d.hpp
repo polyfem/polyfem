@@ -1,7 +1,7 @@
 #pragma once
 
-#include <polyfem/mesh2D/CMesh2D.hpp>
-#include <polyfem/mesh2D/NCMesh2D.hpp>
+#include <polyfem/mesh/mesh2D/CMesh2D.hpp>
+#include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/basis/InterfaceData.hpp>

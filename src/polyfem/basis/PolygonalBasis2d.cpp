@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "PolygonalBasis2d.hpp"
 #include <polyfem/quadrature/PolygonQuadrature.hpp>
-#include <polyfem/mesh2D/PolygonUtils.hpp>
+#include <polyfem/mesh/mesh2D/PolygonUtils.hpp>
 #include <polyfem/basis/FEBasis2d.hpp>
 #include "function/RBFWithLinear.hpp"
 #include "function/RBFWithQuadratic.hpp"

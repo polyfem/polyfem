@@ -3,7 +3,7 @@
 #include <polyfem/quadrature/PolyhedronQuadrature.hpp>
 #include <polyfem/basis/FEBasis3d.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
-#include <polyfem/mesh2D/Refinement.hpp>
+#include <polyfem/mesh/mesh2D/Refinement.hpp>
 #include <polyfem/utils/RefElementSampler.hpp>
 #include "function/RBFWithLinear.hpp"
 #include "function/RBFWithQuadratic.hpp"
