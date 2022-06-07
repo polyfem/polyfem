@@ -1015,10 +1015,9 @@ namespace polyfem
 
 		timer.start();
 		logger().info("Assigning rhs...");
-		//TESEO STOP
 
 		const int size = problem->is_scalar() ? 1 : mesh->dimension();
-		json rhs_solver_params = args["rhs_solver_params"];
+		json rhs_solver_params = args["solver"]["linear"];
 		rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 
 		step_data.rhs_assembler = std::make_shared<RhsAssembler>(
@@ -1026,8 +1025,8 @@ namespace polyfem
 			n_bases, size,
 			bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 			formulation(), *problem,
-			args["bc_method"],
-			args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
+			args["space"]["advanced"]["bc_method"],
+			args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"], rhs_solver_params);
 
 		if (!rhs_path.empty() || rhs_in.size() > 0)
 		{
@@ -1036,7 +1035,7 @@ namespace polyfem
 			if (rhs_in.size())
 				rhs = rhs_in;
 			else
-				read_matrix(args["rhs_path"], rhs);
+				read_matrix(rhs_path, rhs);
 
 			StiffnessMatrix tmp_mass;
 			assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, density, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, tmp_mass);
@@ -1075,9 +1074,13 @@ namespace polyfem
 					n_pressure_bases, size,
 					pressure_bases, iso_parametric() ? bases : geom_bases, pressure_ass_vals_cache,
 					formulation(), *problem,
-					args["bc_method"],
-					args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
-				tmp_rhs_assembler.set_bc(std::vector<LocalBoundary>(), std::vector<int>(), args["n_boundary_samples"], local_neumann_boundary, tmp);
+					args["space"]["advanced"]["bc_method"],
+					args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"], rhs_solver_params);
+				const int n_b_samples_j = args["space"]["advanced"]["n_boundary_samples"];
+				const int discr_order = mesh->orders().maxCoeff();
+				//TODO verify me
+				const int n_b_samples = std::max(n_b_samples_j, discr_order * 2 + 1);
+				tmp_rhs_assembler.set_bc(std::vector<LocalBoundary>(), std::vector<int>(), n_b_samples, local_neumann_boundary, tmp);
 				rhs.block(prev_size, 0, n_larger, rhs.cols()) = tmp;
 			}
 		}
@@ -1089,10 +1092,10 @@ namespace polyfem
 
 	void State::init_timesteps()
 	{
-		const double t0 = args["t0"];
-		double tend = args["tend"];          // default=1
-		int time_steps = args["time_steps"]; // default=10 set in State::State()
-		double dt = args["dt"];
+		const double t0 = args["time"]["t0"];
+		double tend = args["time"]["tend"];          // default=1
+		int time_steps = args["time"]["time_steps"]; // default=10 set in State::State()
+		double dt = args["time"]["dt"];
 
 		if (tend > 0)
 		{
@@ -1122,9 +1125,9 @@ namespace polyfem
 		}
 
 		// Store these for possible use later
-		args["tend"] = tend;
-		args["dt"] = dt;
-		args["time_steps"] = time_steps;
+		args["time"]["tend"] = tend;
+		args["time"]["dt"] = dt;
+		args["time"]["time_steps"] = time_steps;
 
 		logger().info("t0={}, dt={}, tend={}", t0, dt, tend);
 	}
@@ -1142,7 +1145,7 @@ namespace polyfem
 			return;
 		}
 
-		if (assembler.is_linear(formulation()) && !args["has_collision"] && stiffness.rows() <= 0)
+		if (assembler.is_linear(formulation()) && args["contact"].is_null() && stiffness.rows() <= 0)
 		{
 			logger().error("Assemble the stiffness matrix first!");
 			return;
@@ -1163,7 +1166,7 @@ namespace polyfem
 
 		const json &params = solver_params();
 
-		const std::string full_mat_path = args["export"]["full_mat"];
+		const std::string full_mat_path = args["output"]["data"]["full_mat"];
 		if (!full_mat_path.empty())
 		{
 			Eigen::saveMarket(stiffness, full_mat_path);
@@ -1172,15 +1175,15 @@ namespace polyfem
 		if (problem->is_time_dependent())
 		{
 			init_timesteps();
-			const double t0 = args["t0"];
-			const int time_steps = args["time_steps"];
-			const double dt = args["dt"];
+			const double t0 = args["time"]["t0"];
+			const int time_steps = args["time"]["time_steps"];
+			const double dt = args["time"]["dt"];
 
 			// Pre log the output path for easier watching
-			if (args["save_time_sequence"])
+			if (args["output"]["advanced"]["save_time_sequence"])
 			{
 				logger().info("Time sequence of simulation will be written to: {}",
-							  resolve_output_path(args["export"]["time_sequence"]));
+							  resolve_output_path(args["output"]["paraview"]["file_name"]));
 			}
 
 			Eigen::VectorXd c_sol;
@@ -1193,22 +1196,16 @@ namespace polyfem
 				solve_transient_navier_stokes_split(time_steps, dt, rhs_assembler);
 			else if (problem->is_scalar() || assembler.is_mixed(formulation()))
 				solve_transient_scalar(time_steps, t0, dt, rhs_assembler, c_sol);
-			else if (assembler.is_linear(formulation()) && !args["has_collision"]) // Collisions add nonlinearity to the problem
+			else if (assembler.is_linear(formulation()) && args["contact"].is_null()) // Collisions add nonlinearity to the problem
 				solve_transient_tensor_linear(time_steps, t0, dt, rhs_assembler);
 			else
 				solve_transient_tensor_non_linear(time_steps, t0, dt, rhs_assembler);
-
-			if (args["save_time_sequence"])
-			{
-				logger().info("Time sequence of simulation written to: {}",
-							  resolve_output_path(args["export"]["time_sequence"]));
-			}
 		}
 		else // if(!problem->is_time_dependent())
 		{
 			if (formulation() == "NavierStokes")
 				solve_navier_stokes();
-			else if (assembler.is_linear(formulation()) && !args["has_collision"])
+			else if (assembler.is_linear(formulation()) && args["contact"].is_null())
 				solve_linear();
 			else
 				solve_non_linear();
@@ -1243,7 +1240,7 @@ namespace polyfem
 			return;
 		}
 
-		if (!args["compute_error"])
+		if (!args["output"]["advanced"]["compute_error"])
 			return;
 
 		int actual_dim = 1;
@@ -1273,7 +1270,7 @@ namespace polyfem
 		// Eigen::MatrixXd err_per_el(n_el, 5);
 		ElementAssemblyValues vals;
 
-		double tend = args.value("tend", 1.0);
+		double tend = args["time"].value("tend", 1.0);
 		if (tend <= 0)
 			tend = 1;
 
