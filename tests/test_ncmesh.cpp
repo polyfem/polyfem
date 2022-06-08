@@ -30,17 +30,17 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
                 "high_order_mesh": false
             },
 			"n_refs": 0,
-			"discr_order": 2,
+			"discr_order": 5,
 			"iso_parametric": false,
             "bc_method": "sample",
 			"problem_params": {
 				"dirichlet_boundary": [{
 					"id": "all",
-					"value": "x^2+y^2"
+					"value": "x^5+y^5"
 				}],
-                "exact": "x^2+y^2",
-                "exact_grad": ["2*x","2*y"],
-				"rhs": 4
+                "exact": "x^5+y^5",
+                "exact_grad": ["5*x^4","5*y^4"],
+				"rhs": "20*x^3+20*y^3"
 			},
 			"vismesh_rel_area": 1.0
 		}
@@ -89,19 +89,18 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
                 "high_order_mesh": false
             },
 			"n_refs": 0,
-			"solver_type": "Eigen::SimplicialLDLT",
-			"discr_order": 2,
+			"discr_order": 5,
 			"iso_parametric": true,
             "bc_method": "sample",
-			"vismesh_rel_area": 1e-6,
+			"vismesh_rel_area": 1,
 			"problem_params": {
 				"dirichlet_boundary": [{
 					"id": "all",
-					"value": "x^2+y^2+z^2"
+					"value": "x^5+y^5+z^5"
 				}],
-                "exact": "x^2+y^2+z^2",
-                "exact_grad": ["2*x","2*y","2*z"],
-				"rhs": 6
+                "exact": "x^5+y^5+z^5",
+                "exact_grad": ["5*x^4","5*y^4","5*z^4"],
+				"rhs": "20*x^3+20*y^3+20*z^3"
 			}
 		}
 	)"_json;
@@ -113,8 +112,6 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
 
 	state.load_mesh(true);
 	NCMesh3D &ncmesh = *dynamic_cast<NCMesh3D *>(state.mesh.get());
-	std::vector<int> parent_nodes;
-	// ncmesh.refine(1, 0., parent_nodes);
 	for (int n = 0; n < 2; n++)
 	{
 		ncmesh.prepare_mesh();

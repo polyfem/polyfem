@@ -416,8 +416,8 @@ namespace polyfem
         idx.element_patch = lf;
         idx.face = cell_face(hi, lf);
 
-        if (lv >= 3)
-            lv = lv % 3;
+        if (lv >= 4)
+            lv = lv % 4;
         idx.face_corner = lv;
         idx.vertex = face_vertex(idx.face, idx.face_corner);
 
@@ -696,9 +696,11 @@ namespace polyfem
                         int facei = get_face(v[i], vij, vik);
                         int facej = get_face(v[j], vjk, vij);
                         int facek = get_face(v[k], vjk, vik);
+                        int facem = get_face(vij, vjk, vik);
                         faces[facei].boundary_id = faces[fid].boundary_id;
                         faces[facej].boundary_id = faces[fid].boundary_id;
                         faces[facek].boundary_id = faces[fid].boundary_id;
+                        faces[facem].boundary_id = faces[fid].boundary_id;
                     }
 
             // create children
