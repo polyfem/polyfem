@@ -696,11 +696,11 @@ namespace polyfem
 
 			if (has_collisions)
 			{
-				state.args["has_collision"] = true;
+				state.args["contact"]["enabled"] = true;
 
 				if (!args_in.contains("dhat"))
 				{
-					state.args["dhat"] = 1e-3 * diag;
+					state.args["contact"]["dhat"] = 1e-3 * diag;
 					state.has_dhat = false;
 				}
 
@@ -718,7 +718,7 @@ namespace polyfem
 				}
 			}
 
-			logger().trace("has_collision={}, dhat={}", has_collisions, double(state.args["dhat"]));
+			logger().trace("has_collision={}, dhat={}", has_collisions, double(state.args["contact"]["dhat"]));
 
 			if (!args_in.contains("compute_error"))
 				state.args["compute_error"] = false;

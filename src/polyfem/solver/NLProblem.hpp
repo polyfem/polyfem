@@ -23,7 +23,7 @@ namespace polyfem
 			using typename cppoptlib::Problem<double>::TVector;
 			typedef StiffnessMatrix THessian;
 
-			NLProblem(const State &state, const assembler::RhsAssembler &rhs_assembler, const double t, const double dhat, const bool project_to_psd, const bool no_reduced = false);
+			NLProblem(const State &state, const assembler::RhsAssembler &rhs_assembler, const double t, const double dhat, const bool no_reduced = false);
 			void init(const TVector &displacement);
 			void init_time_integrator(const TVector &x_prev, const TVector &v_prev, const TVector &a_prev, const double dt);
 			TVector initial_guess();

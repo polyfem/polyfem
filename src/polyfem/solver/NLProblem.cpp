@@ -93,11 +93,11 @@ namespace polyfem
 
 		using namespace polysolve;
 
-		NLProblem::NLProblem(const State &state, const RhsAssembler &rhs_assembler, const double t, const double dhat, const bool project_to_psd, const bool no_reduced)
+		NLProblem::NLProblem(const State &state, const RhsAssembler &rhs_assembler, const double t, const double dhat, const bool no_reduced)
 			: state(state), assembler(state.assembler), rhs_assembler(rhs_assembler),
 			  full_size((assembler.is_mixed(state.formulation()) ? state.n_pressure_bases : 0) + state.n_bases * state.mesh->dimension()),
 			  reduced_size(full_size - (no_reduced ? 0 : state.boundary_nodes.size())),
-			  t(t), rhs_computed(false), is_time_dependent(state.problem->is_time_dependent()), ignore_inertia(state.args["ignore_inertia"]), project_to_psd(project_to_psd)
+			  t(t), rhs_computed(false), is_time_dependent(state.problem->is_time_dependent()), ignore_inertia(state.args["ignore_inertia"]), project_to_psd(false)
 		{
 			assert(!assembler.is_mixed(state.formulation()));
 
@@ -120,8 +120,9 @@ namespace polyfem
 				logger().debug("Using fixed barrier stiffness of {}", _barrier_stiffness);
 			}
 			_prev_distance = -1;
-			_time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(state.args["time_integrator"]);
-			_time_integrator->set_parameters(state.args["time"]["BDF"]["steps"]);
+			_time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(state.args["time"]["integrator"]);
+			_time_integrator->set_parameters(state.args["time"]["BDF"]);
+			_time_integrator->set_parameters(state.args["time"]["newmark"]);
 
 			_broad_phase_method = state.args["solver_params"]["broad_phase_method"];
 			_ccd_tolerance = state.args["solver_params"]["ccd_tolerance"];
@@ -130,7 +131,7 @@ namespace polyfem
 
 		void NLProblem::init(const TVector &full)
 		{
-			if (disable_collision || !state.args["has_collision"])
+			if (disable_collision || !state.args["contact"]["enabled"])
 				return;
 
 			assert(full.size() == full_size);
@@ -145,7 +146,7 @@ namespace polyfem
 		{
 			assert(full.size() == full_size);
 			_barrier_stiffness = 1;
-			if (disable_collision || !state.args["has_collision"])
+			if (disable_collision || !state.args["contact"]["enabled"])
 				return;
 
 			Eigen::MatrixXd grad_energy;
@@ -325,7 +326,7 @@ namespace polyfem
 
 		void NLProblem::line_search_begin(const TVector &x0, const TVector &x1)
 		{
-			if (disable_collision || !state.args["has_collision"])
+			if (disable_collision || !state.args["contact"]["enabled"])
 				return;
 
 			Eigen::MatrixXd displaced0, displaced1;
@@ -351,7 +352,7 @@ namespace polyfem
 
 		double NLProblem::max_step_size(const TVector &x0, const TVector &x1)
 		{
-			if (disable_collision || !state.args["has_collision"])
+			if (disable_collision || !state.args["contact"]["enabled"])
 				return 1;
 
 			Eigen::MatrixXd displaced0, displaced1;
@@ -403,7 +404,7 @@ namespace polyfem
 
 		bool NLProblem::is_step_collision_free(const TVector &x0, const TVector &x1)
 		{
-			if (disable_collision || !state.args["has_collision"])
+			if (disable_collision || !state.args["contact"]["enabled"])
 				return true;
 
 			// if (!state.problem->is_time_dependent())
@@ -443,7 +444,7 @@ namespace polyfem
 
 		bool NLProblem::is_intersection_free(const TVector &x)
 		{
-			if (disable_collision || !state.args["has_collision"])
+			if (disable_collision || !state.args["contact"]["enabled"])
 				return true;
 
 			Eigen::MatrixXd displaced;
@@ -502,7 +503,7 @@ namespace polyfem
 
 			double collision_energy = 0;
 			double friction_energy = 0;
-			if (!only_elastic && !disable_collision && state.args["has_collision"])
+			if (!only_elastic && !disable_collision && state.args["contact"]["enabled"])
 			{
 				Eigen::MatrixXd displaced;
 				compute_displaced_points(full, displaced);
@@ -566,7 +567,7 @@ namespace polyfem
 			}
 
 			Eigen::VectorXd grad_barrier;
-			if (!only_elastic && !disable_collision && state.args["has_collision"])
+			if (!only_elastic && !disable_collision && state.args["contact"]["enabled"])
 			{
 				Eigen::MatrixXd displaced;
 				compute_displaced_points(full, displaced);
@@ -637,7 +638,7 @@ namespace polyfem
 			}
 
 			THessian barrier_hessian(full_size, full_size), friction_hessian(full_size, full_size);
-			if (!disable_collision && state.args["has_collision"])
+			if (!disable_collision && state.args["contact"]["enabled"])
 			{
 				POLYFEM_SCOPED_TIMER("\tipc hessian(s) time");
 
@@ -737,7 +738,7 @@ namespace polyfem
 
 		void NLProblem::solution_changed(const TVector &newX)
 		{
-			if (disable_collision || !state.args["has_collision"])
+			if (disable_collision || !state.args["contact"]["enabled"])
 				return;
 
 			Eigen::MatrixXd displaced;
@@ -748,7 +749,7 @@ namespace polyfem
 
 		double NLProblem::heuristic_max_step(const TVector &dx)
 		{
-			// if (disable_collision || !state.args["has_collision"])
+			// if (disable_collision || !state.args["contact"]["enabled"])
 			// 	return 1;
 
 			// //pSize = average(searchDir)
@@ -767,7 +768,7 @@ namespace polyfem
 
 		void NLProblem::post_step(const int iter_num, const TVector &x)
 		{
-			if (disable_collision || !state.args["has_collision"])
+			if (disable_collision || !state.args["contact"]["enabled"])
 				return;
 
 			TVector full;

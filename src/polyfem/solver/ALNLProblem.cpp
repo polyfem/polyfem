@@ -22,8 +22,8 @@ namespace polyfem
 	namespace solver
 	{
 
-		ALNLProblem::ALNLProblem(const State &state, const RhsAssembler &rhs_assembler, const double t, const double dhat, const bool project_to_psd, const double weight)
-			: super(state, rhs_assembler, t, dhat, project_to_psd, true), weight_(weight)
+		ALNLProblem::ALNLProblem(const State &state, const RhsAssembler &rhs_assembler, const double t, const double dhat, const double weight)
+			: super(state, rhs_assembler, t, dhat, true), weight_(weight)
 		{
 			std::vector<Eigen::Triplet<double>> entries;
 

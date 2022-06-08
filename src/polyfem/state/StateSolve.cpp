@@ -288,6 +288,7 @@ namespace polyfem
 		Eigen::VectorXd b;
 		Eigen::MatrixXd current_rhs = rhs;
 
+		//TODO unify with other one!!!
 		const int BDF_order = args["time"]["BDF"]["steps"];
 		// const int aux_steps = BDF_order-1;
 		BDF bdf(BDF_order);
@@ -321,7 +322,7 @@ namespace polyfem
 				b[i] = 0;
 			b += current_rhs;
 
-			spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], t == time_steps && args["export"]["spectrum"], assembler.is_fluid(formulation()), use_avg_pressure);
+			spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, args["output"]["data"]["stiffness_mat"], t == time_steps && args["output"]["advanced"]["spectrum"], assembler.is_fluid(formulation()), use_avg_pressure);
 			bdf.new_solution(x);
 			sol = x;
 
@@ -342,7 +343,7 @@ namespace polyfem
 
 	void State::solve_transient_tensor_linear(const int time_steps, const double t0, const double dt, const RhsAssembler &rhs_assembler)
 	{
-		assert(!problem->is_scalar() && assembler.is_linear(formulation()) && !args["has_collision"] && problem->is_time_dependent());
+		assert(!problem->is_scalar() && assembler.is_linear(formulation()) && !args["contact"]["enabled"] && problem->is_time_dependent());
 		assert(!assembler.is_mixed(formulation()));
 
 		const json &params = solver_params();
@@ -350,15 +351,17 @@ namespace polyfem
 		solver->setParameters(params);
 		logger().info("{}...", solver->name());
 
-		const std::string v_path = resolve_input_path(args["import"]["v_path"]);
-		const std::string a_path = resolve_input_path(args["import"]["a_path"]);
+		const std::string v_path = resolve_input_path(args["input"]["data"]["v_path"]);
+		const std::string a_path = resolve_input_path(args["input"]["data"]["a_path"]);
 
 		Eigen::MatrixXd velocity, acceleration;
 
+		//TODO offset
 		if (!v_path.empty())
 			import_matrix(v_path, args["import"], velocity);
 		else
 			rhs_assembler.initial_velocity(velocity);
+		//TODO offset
 		if (!a_path.empty())
 			import_matrix(a_path, args["import"], acceleration);
 		else
@@ -373,8 +376,9 @@ namespace polyfem
 		StiffnessMatrix A;
 		Eigen::VectorXd x, btmp;
 
-		auto time_integrator = ImplicitTimeIntegrator::construct_time_integrator(args["time_integrator"]);
-		time_integrator->set_parameters(args["time"]["BDF"]["steps"]);
+		auto time_integrator = ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
+		time_integrator->set_parameters(args["time"]["BDF"]);
+		time_integrator->set_parameters(args["time"]["newmark"]);
 		time_integrator->init(sol, velocity, acceleration, dt);
 
 		const int n_b_samples = n_boundary_samples();
@@ -394,7 +398,7 @@ namespace polyfem
 			b = current_rhs;
 			A = stiffness * time_integrator->acceleration_scaling() + mass;
 			btmp = b;
-			spectrum = dirichlet_solve(*solver, A, btmp, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], t == 1 && args["export"]["spectrum"], assembler.is_fluid(formulation()), use_avg_pressure);
+			spectrum = dirichlet_solve(*solver, A, btmp, boundary_nodes, x, precond_num, args["output"]["data"]["stiffness_mat"], t == 1 && args["output"]["advanced"]["spectrum"], assembler.is_fluid(formulation()), use_avg_pressure);
 			time_integrator->update_quantities(x);
 			sol = x;
 
@@ -409,9 +413,9 @@ namespace polyfem
 		}
 
 		{
-			const std::string u_out_path = resolve_output_path(args["export"]["u_path"]);
-			const std::string v_out_path = resolve_output_path(args["export"]["v_path"]);
-			const std::string a_out_path = resolve_output_path(args["export"]["a_path"]);
+			const std::string u_out_path = resolve_output_path(args["output"]["data"]["u_path"]);
+			const std::string v_out_path = resolve_output_path(args["output"]["data"]["v_path"]);
+			const std::string a_out_path = resolve_output_path(args["output"]["data"]["a_path"]);
 
 			if (!u_out_path.empty())
 				write_matrix(u_out_path, sol);
@@ -435,14 +439,14 @@ namespace polyfem
 		const NLProblem &nl_problem = *step_data.nl_problem;
 
 		nl_problem.save_raw(
-			resolve_output_path(args["export"]["u_path"]),
-			resolve_output_path(args["export"]["v_path"]),
-			resolve_output_path(args["export"]["a_path"]));
+			resolve_output_path(args["output"]["data"]["u_path"]),
+			resolve_output_path(args["output"]["data"]["v_path"]),
+			resolve_output_path(args["output"]["data"]["a_path"]));
 	}
 
 	void State::solve_transient_tensor_non_linear_init(const double t0, const double dt, const RhsAssembler &rhs_assembler)
 	{
-		assert(!problem->is_scalar() && (!assembler.is_linear(formulation()) || args["has_collision"]) && problem->is_time_dependent());
+		assert(!problem->is_scalar() && (!assembler.is_linear(formulation()) || args["contact"]["enabled"]) && problem->is_time_dependent());
 		assert(!assembler.is_mixed(formulation()));
 
 		// FD for debug
@@ -451,7 +455,7 @@ namespace polyfem
 		// 	boundary_nodes.clear();
 		// 	local_boundary.clear();
 		// 	// local_neumann_boundary.clear();
-		// 	NLProblem nl_problem(*this, rhs_assembler, t0, args["dhat"], false);
+		// 	NLProblem nl_problem(*this, rhs_assembler, t0, args["contact"]["dhat"], false);
 		// 	Eigen::MatrixXd tmp_sol = rhs;
 
 		// 	// tmp_sol.setRandom();
@@ -517,15 +521,17 @@ namespace polyfem
 		igl::Timer timer;
 		timer.start();
 		logger().trace("Reading matrices...");
-		const std::string v_path = resolve_input_path(args["import"]["v_path"]);
-		const std::string a_path = resolve_input_path(args["import"]["a_path"]);
+		const std::string v_path = resolve_input_path(args["input"]["data"]["v_path"]);
+		const std::string a_path = resolve_input_path(args["input"]["data"]["a_path"]);
 
 		Eigen::MatrixXd velocity, acceleration;
 
+		//TODO import
 		if (!v_path.empty())
 			import_matrix(v_path, args["import"], velocity);
 		else
 			rhs_assembler.initial_velocity(velocity);
+		//TODO import
 		if (!a_path.empty())
 			import_matrix(a_path, args["import"], acceleration);
 		else
@@ -534,7 +540,7 @@ namespace polyfem
 		timer.stop();
 		logger().trace("done, took {}s", timer.getElapsedTime());
 
-		if (args["has_collision"])
+		if (args["contact"]["enabled"])
 		{
 			timer.start();
 			logger().trace("Checking collisions...");
@@ -559,16 +565,16 @@ namespace polyfem
 		const int reduced_size = n_bases * mesh->dimension() - boundary_nodes.size();
 		VectorXd tmp_sol;
 
-		step_data.nl_problem = std::make_shared<NLProblem>(*this, rhs_assembler, t0 + dt, args["dhat"], args["project_to_psd"]);
+		step_data.nl_problem = std::make_shared<NLProblem>(*this, rhs_assembler, t0 + dt, args["contact"]["dhat"]);
 		NLProblem &nl_problem = *step_data.nl_problem;
 		nl_problem.init_time_integrator(sol, velocity, acceleration, dt);
 
 		solver_info = json::array();
 
-		// if (args["use_al"] || args["has_collision"])
+		// if (args["use_al"] || args["contact"]["enabled"])
 		// {
 		double al_weight = args["al_weight"];
-		step_data.alnl_problem = std::make_shared<ALNLProblem>(*this, rhs_assembler, t0 + dt, args["dhat"], args["project_to_psd"], al_weight);
+		step_data.alnl_problem = std::make_shared<ALNLProblem>(*this, rhs_assembler, t0 + dt, args["contact"]["dhat"], al_weight);
 		ALNLProblem &alnl_problem = *step_data.alnl_problem;
 		alnl_problem.init_time_integrator(sol, velocity, acceleration, dt);
 
@@ -693,7 +699,7 @@ namespace polyfem
 	void State::solve_linear()
 	{
 		assert(!problem->is_time_dependent());
-		assert(assembler.is_linear(formulation()) && !args["has_collision"]);
+		assert(assembler.is_linear(formulation()) && !args["contact"]["enabled"]);
 		const json &params = solver_params();
 		auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
 		solver->setParameters(params);
@@ -721,7 +727,7 @@ namespace polyfem
 		A = stiffness;
 		Eigen::VectorXd x;
 		b = rhs;
-		spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], args["export"]["spectrum"], assembler.is_fluid(formulation()), use_avg_pressure);
+		spectrum = dirichlet_solve(*solver, A, b, boundary_nodes, x, precond_num, args["output"]["data"]["stiffness_mat"], args["output"]["advanced"]["spectrum"], assembler.is_fluid(formulation()), use_avg_pressure);
 		sol = x;
 		solver->getInfo(solver_info);
 
@@ -763,7 +769,7 @@ namespace polyfem
 	void State::solve_non_linear()
 	{
 		assert(!problem->is_time_dependent());
-		assert(!assembler.is_linear(formulation()) || args["has_collision"]);
+		assert(!assembler.is_linear(formulation()) || args["contact"]["enabled"]);
 
 		const int full_size = n_bases * mesh->dimension();
 		const int reduced_size = n_bases * mesh->dimension() - boundary_nodes.size();
@@ -795,11 +801,11 @@ namespace polyfem
 		if (!u_path.empty())
 			import_matrix(u_path, args["import"], sol);
 
-		// if (args["use_al"] || args["has_collision"])
+		// if (args["use_al"] || args["contact"]["enabled"])
 		// {
 		// FD
 		{
-			// 	ALNLProblem nl_problem(*this, rhs_assembler, 1, args["dhat"], false, 1e6);
+			// 	ALNLProblem nl_problem(*this, rhs_assembler, 1, args["contact"]["dhat"], 1e6);
 			// 	tmp_sol = rhs;
 			// 	tmp_sol.setRandom();
 			// 	// tmp_sol.setOnes();
@@ -852,9 +858,9 @@ namespace polyfem
 			// 	exit(0);
 		}
 
-		step_data.nl_problem = std::make_shared<NLProblem>(*this, rhs_assembler, 1, args["dhat"], args["project_to_psd"]);
+		step_data.nl_problem = std::make_shared<NLProblem>(*this, rhs_assembler, 1, args["contact"]["dhat"]);
 		NLProblem &nl_problem = *(step_data.nl_problem);
-		step_data.alnl_problem = std::make_shared<ALNLProblem>(*this, rhs_assembler, 1, args["dhat"], args["project_to_psd"], args["al_weight"]);
+		step_data.alnl_problem = std::make_shared<ALNLProblem>(*this, rhs_assembler, 1, args["contact"]["dhat"], args["al_weight"]);
 		ALNLProblem &alnl_problem = *(step_data.alnl_problem);
 
 		double al_weight = args["al_weight"];
@@ -996,7 +1002,7 @@ namespace polyfem
 		}
 
 		{
-			const std::string u_path = resolve_output_path(args["export"]["u_path"]);
+			const std::string u_path = resolve_output_path(args["output"]["data"]["u_path"]);
 			if (!u_path.empty())
 				write_matrix(u_path, sol);
 		}

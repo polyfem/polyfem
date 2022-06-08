@@ -9,9 +9,6 @@
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
 
-#include <polyfem/solver/NLProblem.hpp>
-#include <polyfem/solver/ALNLProblem.hpp>
-
 #include <polyfem/utils/Timer.hpp>
 
 // #ifdef POLYFEM_WITH_TBB
@@ -1711,14 +1708,14 @@ namespace polyfem
 
 			ipc::Constraints constraint_set;
 			ipc::construct_constraint_set(
-				collision_mesh, displaced_surface, args["dhat"], constraint_set,
+				collision_mesh, displaced_surface, args["contact"]["dhat"], constraint_set,
 				/*dmin=*/0, ipc::BroadPhaseMethod::HASH_GRID);
 
 			const double barrier_stiffness = step_data.nl_problem != nullptr ? step_data.nl_problem->barrier_stiffness() : 1;
 
 			if (export_contact_forces)
 			{
-				Eigen::MatrixXd forces = -barrier_stiffness * ipc::compute_barrier_potential_gradient(collision_mesh, displaced_surface, constraint_set, args["dhat"]);
+				Eigen::MatrixXd forces = -barrier_stiffness * ipc::compute_barrier_potential_gradient(collision_mesh, displaced_surface, constraint_set, args["contact"]["dhat"]);
 				// forces = collision_mesh.to_full_dof(forces);
 				// assert(forces.size() == sol.size());
 
@@ -1739,7 +1736,7 @@ namespace polyfem
 				ipc::FrictionConstraints friction_constraint_set;
 				ipc::construct_friction_constraint_set(
 					collision_mesh, displaced_surface, constraint_set,
-					args["dhat"], barrier_stiffness, args["mu"],
+					args["contact"]["dhat"], barrier_stiffness, args["mu"],
 					friction_constraint_set);
 
 				Eigen::MatrixXd forces = -ipc::compute_friction_potential_gradient(
