@@ -318,7 +318,8 @@ namespace polyfem
 		disc_orders.resize(mesh->n_elements());
 
 		const auto params = build_json_params();
-		assembler.set_parameters(params);
+		//TODO TESEO fix me
+		// assembler.set_parameters(params);
 		density.init(params);
 		problem->init(*mesh);
 
@@ -588,7 +589,7 @@ namespace polyfem
 		const int n_samples = 10;
 		compute_mesh_size(*mesh, curret_bases, n_samples);
 
-		if (!args["contact"].is_null())
+		if (args["contact"]["enabled"])
 		{
 			if (!has_dhat && args["contact"]["dhat"] > min_edge_length)
 			{
@@ -921,7 +922,7 @@ namespace polyfem
 		}
 		else
 		{
-			if (!args["contact"].is_null()) // collisions are non-linear
+			if (!args["contact"]["enabled"]) // collisions are non-linear
 				assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, stiffness);
 			if (problem->is_time_dependent())
 			{
@@ -1018,7 +1019,9 @@ namespace polyfem
 
 		const int size = problem->is_scalar() ? 1 : mesh->dimension();
 		json rhs_solver_params = args["solver"]["linear"];
-		rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
+		if (!rhs_solver_params.contains("Pardiso"))
+			rhs_solver_params["Pardiso"] = {};
+		rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 
 		step_data.rhs_assembler = std::make_shared<RhsAssembler>(
 			assembler, *mesh, obstacle,
@@ -1145,7 +1148,7 @@ namespace polyfem
 			return;
 		}
 
-		if (assembler.is_linear(formulation()) && args["contact"].is_null() && stiffness.rows() <= 0)
+		if (assembler.is_linear(formulation()) && !args["contact"]["enabled"] && stiffness.rows() <= 0)
 		{
 			logger().error("Assemble the stiffness matrix first!");
 			return;
@@ -1196,7 +1199,7 @@ namespace polyfem
 				solve_transient_navier_stokes_split(time_steps, dt, rhs_assembler);
 			else if (problem->is_scalar() || assembler.is_mixed(formulation()))
 				solve_transient_scalar(time_steps, t0, dt, rhs_assembler, c_sol);
-			else if (assembler.is_linear(formulation()) && args["contact"].is_null()) // Collisions add nonlinearity to the problem
+			else if (assembler.is_linear(formulation()) && !args["contact"]["enabled"]) // Collisions add nonlinearity to the problem
 				solve_transient_tensor_linear(time_steps, t0, dt, rhs_assembler);
 			else
 				solve_transient_tensor_non_linear(time_steps, t0, dt, rhs_assembler);
@@ -1205,7 +1208,7 @@ namespace polyfem
 		{
 			if (formulation() == "NavierStokes")
 				solve_navier_stokes();
-			else if (assembler.is_linear(formulation()) && args["contact"].is_null())
+			else if (assembler.is_linear(formulation()) && !args["contact"]["enabled"])
 				solve_linear();
 			else
 				solve_non_linear();

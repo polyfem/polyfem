@@ -181,8 +181,9 @@ namespace polyfem
 		// 		mesh->set_tag(el_id, ElementType::InteriorPolytope);
 		// }
 
-		if (args["normalize_mesh"])
-			mesh->normalize();
+		//TODO fix me Zach
+		// if (args["normalize_mesh"])
+		// 	mesh->normalize();
 
 		RowVectorNd min, max;
 		mesh->bounding_box(min, max);
@@ -192,48 +193,54 @@ namespace polyfem
 		else
 			logger().info("mesh bb min [{}, {}, {}], max [{}, {}, {}]", min(0), min(1), min(2), max(0), max(1), max(2));
 
-		int n_refs = args["n_refs"];
+		//TODO fix me Zach
+		// int n_refs = args["n_refs"];
 
-		if (n_refs <= 0 && args["poly_bases"] == "MFSHarmonic" && mesh->has_poly())
-		{
-			if (args["force_no_ref_for_harmonic"])
-				logger().warn("Using harmonic bases without refinement");
-			else
-				n_refs = 1;
-		}
+		// if (n_refs <= 0 && args["poly_bases"] == "MFSHarmonic" && mesh->has_poly())
+		// {
+		// 	if (args["force_no_ref_for_harmonic"])
+		// 		logger().warn("Using harmonic bases without refinement");
+		// 	else
+		// 		n_refs = 1;
+		// }
 
-		if (n_refs > 0)
-			mesh->refine(n_refs, args["refinenemt_location"], parent_elements);
+		// if (n_refs > 0)
+		// 	mesh->refine(n_refs, args["refinenemt_location"], parent_elements);
 
 		// mesh->set_tag(1712, ElementType::InteriorPolytope);
 
-		double boundary_id_threshold = args["boundary_id_threshold"];
-		if (boundary_id_threshold <= 0)
-			boundary_id_threshold = mesh->is_volume() ? 1e-2 : 1e-7;
+		//TODO fix me Zach
+		const double boundary_id_threshold = mesh->is_volume() ? 1e-2 : 1e-7;
+		mesh->compute_boundary_ids(boundary_id_threshold);
 
-		if (!mesh->has_boundary_ids())
-		{
-			const std::string bc_tag_path = resolve_input_path(args["bc_tag"]);
-			if (bc_tag_path.empty())
-				mesh->compute_boundary_ids(boundary_id_threshold);
-			else
-				mesh->load_boundary_ids(bc_tag_path);
-		}
-		BoxSetter::set_sidesets(args, *mesh);
-		set_multimaterial([&](const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus, const Eigen::MatrixXd &rhos) {
-			assembler.init_multimaterial(mesh->is_volume(), Es, nus);
-			density.init_multimaterial(rhos);
-		});
+		// double boundary_id_threshold = args["boundary_id_threshold"];
+		// if (boundary_id_threshold <= 0)
+		// 	boundary_id_threshold = mesh->is_volume() ? 1e-2 : 1e-7;
+
+		// if (!mesh->has_boundary_ids())
+		// {
+		// 	const std::string bc_tag_path = resolve_input_path(args["bc_tag"]);
+		// 	if (bc_tag_path.empty())
+		// 		mesh->compute_boundary_ids(boundary_id_threshold);
+		// 	else
+		// 		mesh->load_boundary_ids(bc_tag_path);
+		// }
+		// BoxSetter::set_sidesets(args, *mesh);
+		// set_multimaterial([&](const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus, const Eigen::MatrixXd &rhos) {
+		// 	assembler.init_multimaterial(mesh->is_volume(), Es, nus);
+		// 	density.init_multimaterial(rhos);
+		// });
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
-		ref_element_sampler.init(mesh->is_volume(), mesh->n_elements(), args["vismesh_rel_area"]);
+		ref_element_sampler.init(mesh->is_volume(), mesh->n_elements(), args["output"]["paraview"]["vismesh_rel_area"]);
 
 		timer.start();
-		logger().info("Loading obstacles...");
-		if (is_param_valid(args, "obstacles"))
-			obstacle.init(args["obstacles"], args["root_path"], mesh->dimension(), names, cells, vertices);
+		//TODO fix me Zach
+		// logger().info("Loading obstacles...");
+		// if (is_param_valid(args, "obstacles"))
+		// 	obstacle.init(args["obstacles"], args["root_path"], mesh->dimension(), names, cells, vertices);
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
@@ -340,6 +347,7 @@ namespace polyfem
 
 		igl::Timer timer;
 		timer.start();
+		//TODO fix me Zach
 		logger().info("Loading obstacles...");
 		if (args.contains("obstacles"))
 			obstacle.init(args["obstacles"], args["root_path"], mesh->dimension());

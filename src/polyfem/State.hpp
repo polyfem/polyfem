@@ -315,6 +315,7 @@ namespace polyfem
 		//loads a mesh from a path
 		void load_mesh(const std::string &path, bool non_conforming = false)
 		{
+			//TODO fix Zach
 			args["mesh"] = path;
 			load_mesh(non_conforming);
 		}
@@ -322,6 +323,7 @@ namespace polyfem
 		//the bc_tag file should contain a list of integers, one per face
 		void load_mesh(const std::string &path, const std::string &bc_tag, bool non_conforming = false)
 		{
+			//TODO fix Zach
 			args["mesh"] = path;
 			args["bc_tag"] = bc_tag;
 			load_mesh(non_conforming);
@@ -491,75 +493,81 @@ namespace polyfem
 		//samples to solution on the visualization mesh and return the vis mesh (points and tets) and the interpolated values (fun)
 		void get_sampled_solution(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXd &fun, bool boundary_only = false)
 		{
-			Eigen::MatrixXd discr;
-			Eigen::MatrixXi el_id;
-			const bool tmp = args["export"]["vis_boundary_only"];
-			args["export"]["vis_boundary_only"] = boundary_only;
+			//TODO fix me TESEO
+			// Eigen::MatrixXd discr;
+			// Eigen::MatrixXi el_id;
+			// const bool tmp = args["export"]["vis_boundary_only"];
+			// args["export"]["vis_boundary_only"] = boundary_only;
 
-			build_vis_mesh(points, tets, el_id, discr);
-			interpolate_function(points.rows(), sol, fun, false, boundary_only);
+			// build_vis_mesh(points, tets, el_id, discr);
+			// interpolate_function(points.rows(), sol, fun, false, boundary_only);
 
-			args["export"]["vis_boundary_only"] = tmp;
+			// args["export"]["vis_boundary_only"] = tmp;
 		}
 
 		//samples to stess tensor on the visualization mesh and return them (fun)
 		void get_stresses(Eigen::MatrixXd &fun, bool boundary_only = false)
 		{
-			Eigen::MatrixXd points;
-			Eigen::MatrixXi tets;
-			Eigen::MatrixXi el_id;
-			Eigen::MatrixXd discr;
-			const bool tmp = args["export"]["vis_boundary_only"];
-			args["export"]["vis_boundary_only"] = boundary_only;
+			//TODO fix me TESEO
+			// Eigen::MatrixXd points;
+			// Eigen::MatrixXi tets;
+			// Eigen::MatrixXi el_id;
+			// Eigen::MatrixXd discr;
+			// const bool tmp = args["export"]["vis_boundary_only"];
+			// args["export"]["vis_boundary_only"] = boundary_only;
 
-			build_vis_mesh(points, tets, el_id, discr);
-			compute_tensor_value(points.rows(), sol, fun, false, boundary_only);
+			// build_vis_mesh(points, tets, el_id, discr);
+			// compute_tensor_value(points.rows(), sol, fun, false, boundary_only);
 
-			args["export"]["vis_boundary_only"] = tmp;
+			// args["export"]["vis_boundary_only"] = tmp;
 		}
 
 		//samples to von mises stesses on the visualization mesh and return them (fun)
 		void get_sampled_mises(Eigen::MatrixXd &fun, bool boundary_only = false)
 		{
-			Eigen::MatrixXd points;
-			Eigen::MatrixXi tets;
-			Eigen::MatrixXi el_id;
-			Eigen::MatrixXd discr;
-			const bool tmp = args["export"]["vis_boundary_only"];
-			args["export"]["vis_boundary_only"] = boundary_only;
+			//TODO fix me TESEO
+			// Eigen::MatrixXd points;
+			// Eigen::MatrixXi tets;
+			// Eigen::MatrixXi el_id;
+			// Eigen::MatrixXd discr;
+			// const bool tmp = args["export"]["vis_boundary_only"];
+			// args["export"]["vis_boundary_only"] = boundary_only;
 
-			build_vis_mesh(points, tets, el_id, discr);
-			compute_scalar_value(points.rows(), sol, fun, false, boundary_only);
+			// build_vis_mesh(points, tets, el_id, discr);
+			// compute_scalar_value(points.rows(), sol, fun, false, boundary_only);
 
-			args["export"]["vis_boundary_only"] = tmp;
+			// args["export"]["vis_boundary_only"] = tmp;
 		}
 
 		//samples to averaged von mises stesses on the visualization mesh and return them (fun)
 		void get_sampled_mises_avg(Eigen::MatrixXd &fun, Eigen::MatrixXd &tfun, bool boundary_only = false)
 		{
-			Eigen::MatrixXd points;
-			Eigen::MatrixXi tets;
-			Eigen::MatrixXi el_id;
-			Eigen::MatrixXd discr;
-			const bool tmp = args["export"]["vis_boundary_only"];
-			args["export"]["vis_boundary_only"] = boundary_only;
+			//TODO fix me TESEO
+			// Eigen::MatrixXd points;
+			// Eigen::MatrixXi tets;
+			// Eigen::MatrixXi el_id;
+			// Eigen::MatrixXd discr;
+			// const bool tmp = args["export"]["vis_boundary_only"];
+			// args["export"]["vis_boundary_only"] = boundary_only;
 
-			build_vis_mesh(points, tets, el_id, discr);
-			average_grad_based_function(points.rows(), sol, fun, tfun, false, boundary_only);
+			// build_vis_mesh(points, tets, el_id, discr);
+			// average_grad_based_function(points.rows(), sol, fun, tfun, false, boundary_only);
 
-			args["export"]["vis_boundary_only"] = tmp;
+			// args["export"]["vis_boundary_only"] = tmp;
 		}
 
 		//returns the path of the input mesh (wrappers around the arguments)
+		//TODO fix me Zach
 		inline std::string mesh_path() const { return resolve_input_path(args["mesh"]); }
 
 		inline bool has_mesh() const
 		{
+			//TODO fix me Zach
 			return !mesh_path().empty() || (args.contains("meshes") && !args["meshes"].empty());
 		}
 
 		//return the formulation (checks if the problem is scalar or not)
-		inline std::string formulation() const { return problem->is_scalar() ? scalar_formulation() : tensor_formulation(); }
+		inline std::string formulation() const { return args["PDE"]["type"]; }
 
 		//check if using iso parametric bases
 		inline bool iso_parametric() const
@@ -567,47 +575,43 @@ namespace polyfem
 			if (non_regular_count > 0 || non_regular_boundary_count > 0 || undefined_count > 0)
 				return true;
 
-			if (args["use_spline"])
+			if (args["space"]["advanced"]["use_spline"])
 				return true;
 
 			if (mesh->is_rational())
 				return false;
 
-			if (args["use_p_ref"])
+			if (args["space"]["use_p_ref"])
 				return false;
 
 			if (mesh->orders().size() <= 0)
 			{
-				if (args["discr_order"] == 1)
+				if (args["space"]["discr_order"] == 1)
 					return true;
 				else
-					return args["iso_parametric"];
+					return args["space"]["advanced"]["iso_parametric"];
 			}
 
 			if (mesh->orders().minCoeff() != mesh->orders().maxCoeff())
 				return false;
 
-			if (args["discr_order"] == mesh->orders().minCoeff())
+			if (args["space"]["discr_order"] == mesh->orders().minCoeff())
 				return true;
 
-			if (args["discr_order"] == 1 && args["force_linear_geometry"])
-				return true;
+			//TODO?
+			// if (args["space"]["discr_order"] == 1 && args["force_linear_geometry"])
+			// 	return true;
 
-			return args["iso_parametric"];
+			return args["space"]["advanced"]["iso_parametric"];
 		}
 
 		template <typename ProblemType>
 		std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver() const;
 
 		//returns solver, preconditioner and solver parameters (wrappers around the arguments)
-		inline std::string solver_type() const { return args["solver_type"]; }
-		inline std::string precond_type() const { return args["precond_type"]; }
-		inline const json &solver_params() const { return args["solver_params"]; }
-
-		//returns the tensor and scalar formulation (wrappers around the arguments)
-		inline std::string scalar_formulation() const { return args["scalar_formulation"]; }
-		inline std::string tensor_formulation() const { return args["tensor_formulation"]; }
-		// inline std::string mixed_formulation() const { return args["mixed_formulation"]; }
+		inline std::string solver_type() const { return args["solver"]["linear"]["solver"]; }
+		inline std::string precond_type() const { return args["solver"]["linear"]["precond"]; }
+		inline const json &solver_params() const { return args["solver"]["linear"]; }
 
 		//compute a priori prefinement in 2d and 3d, fills disc_orders
 		void p_refinement(const mesh::Mesh2D &mesh2d);

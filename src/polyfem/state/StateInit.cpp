@@ -115,7 +115,7 @@ namespace polyfem
 
 								"bc_method": "lsq",
 
-								"n_boundary_samples": -1, // Fix in code
+								"n_boundary_samples": -1,
 								"quadrature_order": -1,
 
 								"poly_bases": "MFSHarmonic",
@@ -126,7 +126,7 @@ namespace polyfem
 								"B": 3,
 								"h1_formula": false,
 
-								"count_flipped_els": true // always enabled
+								"count_flipped_els": true
         					}
     					},
 
@@ -146,18 +146,17 @@ namespace polyfem
 							}
 						},
 
-						"contact": null,
+						"contact": {
+        					"enabled": false,
+        					"dhat": 1e-3,
+        					"dhat_percentage": 0.8,
+        					"epsv": 1e-3
+    					},
 
 						"solver": {
 							"linear": {
 								"solver": "",
-								"precond": "",
-
-								"max_iter" : 1000,
-								"conv_tol" : 1e-10,
-								"tolerance" : 1e-10,
-
-								"advanced": {}
+								"precond": ""
 							},
 
 							"nonlinear": {
@@ -191,7 +190,7 @@ namespace polyfem
 								"friction_convergence_tol": 1e-2,
 								"barrier_stiffness": "adaptive",
 								"lagged_damping_weight": 0
-							}
+							},
 
 							"ignore_inertia" : false,
 
@@ -203,10 +202,12 @@ namespace polyfem
 
 						"PDE": {
 							"type" : "Laplacian",
-							"default_problem" : "Franke",
+							"problem" : "",
 
-							"materials" : null,
-						}
+							"is_time_dependent": false,
+
+							"materials" : null
+						},
 
 						"output": {
 							"json" : "",
@@ -242,12 +243,12 @@ namespace polyfem
 								"u_path" : "",
 								"v_path" : "",
 								"a_path" : "",
-								"mises" : ""
+								"mises" : "",
 								"nodes" : ""
 							},
 
 							"advanced": {
-								"timestep_prefix" : "step_"
+								"timestep_prefix" : "step_",
 								"sol_on_grid" : -1,
 
 								"compute_error" : true,
@@ -265,6 +266,9 @@ namespace polyfem
 							}
 						}
 					})"_json;
+
+		this->args["solver"]["linear"]["solver"] = LinearSolver::defaultSolver();
+		this->args["solver"]["linear"]["precond"] = LinearSolver::defaultPrecond();
 	}
 
 	void State::init_logger(const std::string &log_file, int log_level, const bool is_quiet)
@@ -313,78 +317,61 @@ namespace polyfem
 		check_for_unknown_args(args, args_in);
 
 		this->args.merge_patch(args_in);
-		has_dhat = args_in.contains("dhat");
-		//TESEO fix me
-		//TODO move togheter with others
-		// const json default_contact = R"({
-		// 	"dhat": 1e-3,
-		// 	"dhat_percentage": 0.8,
-		// 	"epsv": 1e-3
-		// })"_json;
-		// const json contact = args["contact"];
-		// contact.merge_patch(default_contact);
+		has_dhat = args_in["contact"].contains("dhat");
 
-		if (args_in.contains("BDF_order"))
+		// if (this->args["contact"]["enabled"])
+		// {
+		// 	if (!args_in.contains("line_search"))
+		// 	{
+		// 		args["line_search"] = "backtracking";
+		// 		logger().warn("Changing default linesearch to backtracking");
+		// 	}
+
+		// 	if (args["friction_iterations"] == 0)
+		// 	{
+		// 		logger().info("specified friction_iterations is 0; disabling friction");
+		// 		args["mu"] = 0.0;
+		// 	}
+		// 	else if (args["friction_iterations"] < 0)
+		// 	{
+		// 		args["friction_iterations"] = std::numeric_limits<int>::max();
+		// 	}
+
+		// 	if (args["mu"] == 0.0)
+		// 	{
+		// 		args["friction_iterations"] = 0;
+		// 	}
+		// }
+		// else
+		// {
+		// 	args["friction_iterations"] = 0;
+		// 	args["mu"] = 0;
+		// }
+
+		const std::string problem_name = args["PDE"]["problem"];
+		if (problem_name.size() <= 0)
 		{
-			logger().warn("use time_integrator_params: { num_steps: <value> } instead of BDF_order");
-			this->args["time_integrator_params"]["num_steps"] = args_in["BDF_order"];
-		}
-
-		if (args_in.contains("stiffness_mat_save_path") && !args_in["stiffness_mat_save_path"].empty())
-		{
-			logger().warn("use export: { stiffness_mat: 'path' } instead of stiffness_mat_save_path");
-			this->args["export"]["stiffness_mat"] = args_in["stiffness_mat_save_path"];
-		}
-
-		if (args_in.contains("solution") && !args_in["solution"].empty())
-		{
-			logger().warn("use export: { solution: 'path' } instead of solution");
-			this->args["export"]["solution"] = args_in["solution"];
-		}
-
-		if (this->args["has_collision"])
-		{
-			if (!args_in.contains("line_search"))
-			{
-				args["line_search"] = "backtracking";
-				logger().warn("Changing default linesearch to backtracking");
-			}
-
-			if (args["friction_iterations"] == 0)
-			{
-				logger().info("specified friction_iterations is 0; disabling friction");
-				args["mu"] = 0.0;
-			}
-			else if (args["friction_iterations"] < 0)
-			{
-				args["friction_iterations"] = std::numeric_limits<int>::max();
-			}
-
-			if (args["mu"] == 0.0)
-			{
-				args["friction_iterations"] = 0;
-			}
+			if (assembler.is_scalar(args["PDE"]["type"]))
+				problem = ProblemFactory::factory().get_problem("GenericScalar");
+			else
+				problem = ProblemFactory::factory().get_problem("GenericTensor");
 		}
 		else
-		{
-			args["friction_iterations"] = 0;
-			args["mu"] = 0;
-		}
-
-		problem = ProblemFactory::factory().get_problem(args["problem"]);
+			problem = ProblemFactory::factory().get_problem(problem_name);
 		problem->clear();
-		if (args["problem"] == "Kernel")
+		if (args["PDEs"]["problem"] == "Kernel")
 		{
 			KernelProblem &kprob = *dynamic_cast<KernelProblem *>(problem.get());
 			kprob.state = this;
 		}
 		// important for the BC
-		problem->set_parameters(args["problem_params"]);
+		problem->set_parameters(args["PDE"]);
 
-		if (args["use_spline"] && args["n_refs"] == 0)
-		{
-			logger().warn("n_refs > 0 with spline");
-		}
+		//TODO
+		// if (args["use_spline"] && args["n_refs"] == 0)
+		// {
+		// 	logger().warn("n_refs > 0 with spline");
+		// }
 
 		// Save output directory and resolve output paths dynamically
 		this->output_dir = output_dir;

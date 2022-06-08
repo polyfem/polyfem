@@ -241,40 +241,40 @@ void polyfem::UIState::draw_settings()
 
 	const bool is_scalar = state.problem->is_scalar();
 
-	if (is_scalar)
-	{
-		if (ImGui::BeginCombo("1D-Form", state.scalar_formulation().c_str()))
-		{
-			for (auto f : scalar_forms)
-			{
-				bool is_selected = state.scalar_formulation() == f;
+	// if (is_scalar)
+	// {
+	// 	if (ImGui::BeginCombo("1D-Form", state.scalar_formulation().c_str()))
+	// 	{
+	// 		for (auto f : scalar_forms)
+	// 		{
+	// 			bool is_selected = state.scalar_formulation() == f;
 
-				if (ImGui::Selectable(f.c_str(), is_selected))
-					state.args["scalar_formulation"] = f;
-				if (is_selected)
-					ImGui::SetItemDefaultFocus();
-			}
-			ImGui::EndCombo();
-		}
-	}
+	// 			if (ImGui::Selectable(f.c_str(), is_selected))
+	// 				state.args["scalar_formulation"] = f;
+	// 			if (is_selected)
+	// 				ImGui::SetItemDefaultFocus();
+	// 		}
+	// 		ImGui::EndCombo();
+	// 	}
+	// }
 
-	else
-	{
-		static const auto tensor_forms = polyfem::assembler::AssemblerUtils::tensor_assemblers();
-		if (ImGui::BeginCombo("nD-Form", state.tensor_formulation().c_str()))
-		{
-			for (auto f : tensor_forms)
-			{
-				bool is_selected = state.tensor_formulation() == f;
+	// else
+	// {
+	// 	static const auto tensor_forms = polyfem::assembler::AssemblerUtils::tensor_assemblers();
+	// 	if (ImGui::BeginCombo("nD-Form", state.tensor_formulation().c_str()))
+	// 	{
+	// 		for (auto f : tensor_forms)
+	// 		{
+	// 			bool is_selected = state.tensor_formulation() == f;
 
-				if (ImGui::Selectable(f.c_str(), is_selected))
-					state.args["tensor_formulation"] = f;
-				if (is_selected)
-					ImGui::SetItemDefaultFocus();
-			}
-			ImGui::EndCombo();
-		}
-	}
+	// 			if (ImGui::Selectable(f.c_str(), is_selected))
+	// 				state.args["tensor_formulation"] = f;
+	// 			if (is_selected)
+	// 				ImGui::SetItemDefaultFocus();
+	// 		}
+	// 		ImGui::EndCombo();
+	// 	}
+	// }
 
 	// if(is_mixed)
 	// {

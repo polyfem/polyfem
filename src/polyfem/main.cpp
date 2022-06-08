@@ -59,8 +59,7 @@ int main(int argc, char **argv)
 
 	// Problem
 	std::string problem_name = "";
-	std::string scalar_formulation = "";
-	std::string tensor_formulation = "";
+	std::string formulation = "";
 	std::string time_integrator_name = "";
 	std::string solver = "";
 
@@ -114,9 +113,9 @@ int main(int argc, char **argv)
 
 	const auto sa = AssemblerUtils::scalar_assemblers();
 	const auto ta = AssemblerUtils::tensor_assemblers();
-	command_line.add_option("--sform", scalar_formulation, "Scalar formulation")->check(CLI::IsMember(sa));
-	command_line.add_option("--tform", tensor_formulation, "Tensor formulation")->check(CLI::IsMember(ta));
-	// command_line.add_option("--mform", mixed_formulation,  "Mixed formulation")->check(CLI::IsMember(assembler.mixed_assemblers()));
+	std::vector forms = sa;
+	forms.insert(forms.end(), ta.begin(), ta.end());
+	command_line.add_option("--PDE", formulation, "PDE")->check(CLI::IsMember(forms));
 
 	const std::vector<std::string> solvers = LinearSolver::availableSolvers();
 	command_line.add_option("--solver", solver, "Linear solver to use")->check(CLI::IsMember(solvers));
@@ -272,10 +271,8 @@ int main(int argc, char **argv)
 		if (has_arg(command_line, "al"))
 			in_args["use_al"] = use_al;
 
-		if (!scalar_formulation.empty())
-			in_args["scalar_formulation"] = scalar_formulation;
-		if (!tensor_formulation.empty())
-			in_args["tensor_formulation"] = tensor_formulation;
+		if (!formulation.empty())
+			in_args["PDE"]["type"] = formulation;
 
 		if (has_arg(command_line, "p") || has_arg(command_line, "q"))
 			in_args["discr_order"] = discr_order;
