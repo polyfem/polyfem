@@ -623,7 +623,10 @@ void polyfem::UIState::draw_screenshot()
 	ImGui::SameLine(0, p);
 	if (ImGui::Button("Save Wire", ImVec2((w - p) / 2.f, 0)))
 	{
-		state.save_wire("result.obj");
+		double tend = state.args.value("tend", 1.0); // default=1
+		if (tend <= 0)
+			tend = 1;
+		state.save_wire("result.vtu", tend);
 	}
 
 	ImGui::Separator();

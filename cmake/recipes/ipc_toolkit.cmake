@@ -15,7 +15,7 @@ else()
     FetchContent_Declare(
         ipc_toolkit
         GIT_REPOSITORY https://github.com/ipc-sim/ipc-toolkit.git
-        GIT_TAG 1a5cd55c2e8bd6f21c25e65b006c224bf94c7639
+        GIT_TAG 913f3886a7c1c41e94ef6dcc2bda6215da92edbf
         GIT_SHALLOW FALSE
     )
     FetchContent_MakeAvailable(ipc_toolkit)

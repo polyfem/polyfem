@@ -7,7 +7,6 @@
 
 #include <polyfem/MatrixUtils.hpp>
 
-#include <ipc/collision_constraint.hpp>
 #include <ipc/broad_phase/broad_phase.hpp>
 #include <ipc/friction/friction_constraint.hpp>
 
@@ -193,7 +192,11 @@ namespace polyfem
 		double _ccd_tolerance;
 		int _ccd_max_iterations;
 
-		const double &dt() const { return time_integrator()->dt(); }
+		const double &dt() const
+		{
+			assert(time_integrator()->dt() > 0);
+			return time_integrator()->dt();
+		}
 
 		ipc::Constraints _constraint_set;
 		ipc::FrictionConstraints _friction_constraint_set;

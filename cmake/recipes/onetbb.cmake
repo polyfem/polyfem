@@ -20,7 +20,8 @@ include(FetchContent)
 FetchContent_Declare(
     tbb
     GIT_REPOSITORY https://github.com/oneapi-src/oneTBB.git
-    GIT_TAG 1098f48187c718ef782b0aa01861184886906cf4
+    GIT_TAG v2021.6.0-rc1
+    GIT_SHALLOW TRUE
 )
 
 option(TBB_TEST "Enable testing" OFF)

@@ -37,6 +37,8 @@
 
 #include <ipc/collision_mesh.hpp>
 
+#include <ipc/utils/logger.hpp>
+
 // Forward declaration
 namespace cppoptlib
 {
@@ -96,11 +98,15 @@ namespace polyfem
 		void init(const json &args, const std::string &output_dir = "");
 		// void init(const std::string &json);
 
+		void init_timesteps();
+
 		//change log level, log_level 0 all message, 6 no message. 2 is info, 1 is debug
 		void set_log_level(int log_level)
 		{
-			log_level = std::max(0, std::min(6, log_level));
-			spdlog::set_level(static_cast<spdlog::level::level_enum>(log_level));
+			spdlog::level::level_enum level =
+				static_cast<spdlog::level::level_enum>(std::max(0, std::min(6, log_level)));
+			spdlog::set_level(level);
+			IPC_LOG(set_level(level));
 		}
 
 		//get the output log as json
@@ -476,7 +482,7 @@ namespace polyfem
 		//saves the surface vtu file for for surface quantites, eg traction forces
 		void save_surface(const std::string &name);
 		//saves an obj of the wireframe
-		void save_wire(const std::string &name, bool isolines = false);
+		void save_wire(const std::string &name, const double t);
 		// save a PVD of a time dependent simulation
 		void save_pvd(const std::string &name, const std::function<std::string(int)> &vtu_names, int time_steps, double t0, double dt, int skip_frame = 1);
 

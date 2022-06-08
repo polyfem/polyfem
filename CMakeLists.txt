@@ -71,17 +71,13 @@ set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vector
 option(POLYFEM_NO_UI            "Disables the user interface" OFF)
 
 # Polyfem options for enabling/disabling optional libraries
-# option(POLYFEM_WITH_MMG              "Enable MMG library"                OFF)
-option(POLYFEM_WITH_OPENCL           "Enable OpenCL"                     OFF)
 option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
 set(POLYFEM_THREADING "TBB" CACHE STRING "Multithreading library to use (options: CPP, TBB, NONE)")
 set_property(CACHE POLYFEM_THREADING PROPERTY STRINGS "CPP" "TBB" "NONE")
 
-option(POLYFEM_WITH_TESTS     "Build tests"             ON)
-option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"       ON)
-
-option(POLYFEM_DIV_BARRIER_STIFFNESS "Divide the energy terms by the contact barrier stiffeness" OFF)
-mark_as_advanced(POLYFEM_DIV_BARRIER_STIFFNESS)
+option(POLYFEM_WITH_REMESHING "Uses VMTK for remeshing"                     OFF)
+option(POLYFEM_WITH_TESTS     "Build tests"                                 ON)
+option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"  ON)
 
 #Solver
 option(POLYSOLVE_WITH_CHOLMOD          "Enable Cholmod library"            ON)
@@ -172,14 +168,6 @@ target_compile_definitions(polyfem PUBLIC -DEIGEN_STACK_ALLOCATION_LIMIT=0)
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_SMALL_N=${POLYFEM_SMALL_N})
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_BIG_N=${POLYFEM_BIG_N})
 
-if("$ENV{CLUSTER}" STREQUAL "PRINCE")
-    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_ON_HPC)
-endif()
-
-if(POLYFEM_DIV_BARRIER_STIFFNESS)
-    target_compile_definitions(polyfem PUBLIC POLYFEM_DIV_BARRIER_STIFFNESS)
-endif()
-
 ################################################################################
 # Required libraries
 ################################################################################
@@ -239,9 +227,13 @@ target_link_libraries(polyfem PUBLIC tinyexpr::tinyexpr)
 include(tinyxml)
 target_link_libraries(polyfem PUBLIC tinyxml2)
 
-# wmtk library
-include(wmtk)
-target_link_libraries(polyfem PUBLIC wmtk::toolkit)
+
+if(POLYFEM_WITH_REMESHING)
+    # wmtk library
+    include(wmtk)
+    target_link_libraries(polyfem PUBLIC wmtk::toolkit)
+    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_REMESHING)
+endif()
 
 # HighFive library (HDF5)
 # include(high_five)

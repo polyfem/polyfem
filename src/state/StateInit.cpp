@@ -101,8 +101,8 @@ namespace polyfem
 			{"boundary_id_threshold", -1.0},
 
 			{"n_refs", 0},
-			{"n_refs_path", ""},
-			{"bodies_n_refs", {}},
+			// {"n_refs_path", ""},
+			// {"bodies_n_refs", {}},
 
 			{"vismesh_rel_area", 0.00001},
 			{"refinenemt_location", 0.5},
@@ -167,7 +167,7 @@ namespace polyfem
 			{"al_weight", 1e6},
 			{"max_al_weight", 1e11},
 
-			{"fit_nodes", false},
+			// {"fit_nodes", false},
 
 			{"n_harmonic_samples", 10},
 
@@ -190,7 +190,7 @@ namespace polyfem
 
 			{"line_search", "armijo"},
 			{"nl_solver", "newton"},
-			{"nl_solver_rhs_steps", 1},
+			// {"nl_solver_rhs_steps", 1},
 
 			{"force_no_ref_for_harmonic", false},
 			{"lump_mass_matrix", false},
@@ -233,7 +233,7 @@ namespace polyfem
 			  {"v_path", ""},
 			  {"a_path", ""}}},
 
-			{"save_solve_sequence", false},
+			// {"save_solve_sequence", false},
 			{"save_solve_sequence_debug", false},
 			{"save_time_sequence", true},
 			{"save_nl_solve_sequence", false},
@@ -256,7 +256,6 @@ namespace polyfem
 			  {"acceleration", false},
 			  {"nodes", ""},
 			  {"wire_mesh", ""},
-			  {"iso_mesh", ""},
 			  {"spectrum", false},
 			  {"solution", ""},
 			  {"full_mat", ""},
@@ -294,15 +293,16 @@ namespace polyfem
 
 	void State::init_logger(std::vector<spdlog::sink_ptr> &sinks, int log_level)
 	{
-		log_level = std::max(0, std::min(6, log_level));
-		spdlog::set_level(static_cast<spdlog::level::level_enum>(log_level));
+		spdlog::level::level_enum level =
+			static_cast<spdlog::level::level_enum>(std::max(0, std::min(6, log_level)));
+		spdlog::set_level(level);
 
 		GEO::Logger *geo_logger = GEO::Logger::instance();
 		geo_logger->unregister_all_clients();
 		geo_logger->register_client(new GeoLoggerForward(logger().clone("geogram")));
 		geo_logger->set_pretty(false);
 
-		IPC_LOG(set_level(static_cast<spdlog::level::level_enum>(log_level)));
+		IPC_LOG(set_level(level));
 	}
 
 	void State::init(const json &p_args_in, const std::string &output_dir)

@@ -16,9 +16,6 @@
 // #include <tbb/task_scheduler_init.h>
 // #endif
 
-#include <igl/remove_unreferenced.h>
-#include <igl/remove_duplicate_vertices.h>
-#include <igl/isolines.h>
 #include <igl/write_triangle_mesh.h>
 #include <igl/edges.h>
 #include <igl/facet_adjacency_matrix.h>
@@ -747,7 +744,6 @@ namespace polyfem
 		const std::string old_path = resolve_output_path(args["export"]["vis_mesh"]);
 		const std::string vis_mesh_path = resolve_output_path(paraview_path.empty() ? old_path : paraview_path);
 		const std::string wire_mesh_path = resolve_output_path(args["export"]["wire_mesh"]);
-		const std::string iso_mesh_path = resolve_output_path(args["export"]["iso_mesh"]);
 		const std::string nodes_path = resolve_output_path(args["export"]["nodes"]);
 		const std::string solution_path = resolve_output_path(args["export"]["solution"]);
 		const std::string solmat_path = resolve_output_path(args["export"]["solution_mat"]);
@@ -771,13 +767,9 @@ namespace polyfem
 		{
 			save_vtu(vis_mesh_path, tend);
 		}
-		if (!wire_mesh_path.empty())
+		else if (!wire_mesh_path.empty())
 		{
-			save_wire(wire_mesh_path);
-		}
-		if (!iso_mesh_path.empty())
-		{
-			save_wire(iso_mesh_path, true);
+			save_wire(wire_mesh_path, tend);
 		}
 		if (!nodes_path.empty())
 		{
@@ -1128,7 +1120,7 @@ namespace polyfem
 
 		if (export_wire)
 		{
-			save_wire(base_path + "_wire.vtu");
+			save_wire(base_path + "_wire.vtu", t);
 		}
 
 		if (!solve_export_to_file)
@@ -1644,7 +1636,6 @@ namespace polyfem
 		const bool export_contact_forces = args["export"]["contact_forces"] && !problem->is_scalar();
 		const bool export_friction_forces = args["export"]["friction_forces"] && !problem->is_scalar();
 
-		VTUWriter writer;
 		Eigen::MatrixXd fun, interp_p, discr, vect, b_sidesets;
 
 		Eigen::MatrixXd lsol, lp, lgrad, lpgrad;
@@ -1709,10 +1700,13 @@ namespace polyfem
 
 		if ((export_contact_forces || export_friction_forces) && solve_export_to_file)
 		{
+			VTUWriter writer;
+
 			const int problem_dim = mesh->dimension();
 			Eigen::MatrixXd displaced = unflatten(sol, problem_dim);
 
-			writer.add_field("solution", displaced);
+			Eigen::MatrixXd real_vertices = collision_mesh.vertices(displaced);
+			writer.add_field("solution", real_vertices);
 
 			displaced += boundary_nodes_pos;
 			Eigen::MatrixXd displaced_surface = collision_mesh.vertices(displaced);
@@ -1727,11 +1721,13 @@ namespace polyfem
 			if (export_contact_forces)
 			{
 				Eigen::MatrixXd forces = -barrier_stiffness * ipc::compute_barrier_potential_gradient(collision_mesh, displaced_surface, constraint_set, args["dhat"]);
-				forces = collision_mesh.to_full_dof(forces);
-				assert(forces.size() == sol.size());
+				// forces = collision_mesh.to_full_dof(forces);
+				// assert(forces.size() == sol.size());
 
 				Eigen::MatrixXd forces_reshaped = unflatten(forces, problem_dim);
 
+				assert(forces_reshaped.rows() == real_vertices.rows());
+				assert(forces_reshaped.cols() == real_vertices.cols());
 				writer.add_field("contact_forces", forces_reshaped);
 			}
 
@@ -1751,13 +1747,18 @@ namespace polyfem
 				Eigen::MatrixXd forces = -ipc::compute_friction_potential_gradient(
 					collision_mesh, displaced_surface_prev, displaced_surface,
 					friction_constraint_set, args["epsv"].get<double>() * args["dt"].get<double>());
-				forces = collision_mesh.to_full_dof(forces);
-				assert(forces.size() == sol.size());
+				// forces = collision_mesh.to_full_dof(forces);
+				// assert(forces.size() == sol.size());
 
 				Eigen::MatrixXd forces_reshaped = unflatten(forces, problem_dim);
 
+				assert(forces_reshaped.rows() == real_vertices.rows());
+				assert(forces_reshaped.cols() == real_vertices.cols());
 				writer.add_field("friction_forces", forces_reshaped);
 			}
+
+			assert(collision_mesh.vertices(boundary_nodes_pos).rows() == real_vertices.rows());
+			assert(collision_mesh.vertices(boundary_nodes_pos).cols() == real_vertices.cols());
 
 			writer.write_mesh(
 				export_surface.substr(0, export_surface.length() - 4) + "_contact.vtu",
@@ -1765,8 +1766,11 @@ namespace polyfem
 				problem_dim == 3 ? collision_mesh.faces() : collision_mesh.edges());
 		}
 
+		VTUWriter writer;
+
 		if (solve_export_to_file)
 		{
+
 			writer.add_field("normals", boundary_vis_normals);
 			writer.add_field("solution", fun);
 			if (assembler.is_mixed(formulation()))
@@ -1810,8 +1814,8 @@ namespace polyfem
 
 			writer.add_field("lambda", lambdas);
 			writer.add_field("mu", mus);
-			writer.add_field("lambda", Es);
-			writer.add_field("mu", nus);
+			writer.add_field("E", Es);
+			writer.add_field("nu", nus);
 			writer.add_field("rho", rhos);
 		}
 
@@ -1837,7 +1841,7 @@ namespace polyfem
 		}
 	}
 
-	void State::save_wire(const std::string &name, bool isolines)
+	void State::save_wire(const std::string &name, const double t)
 	{
 		if (!solve_export_to_file) // TODO?
 			return;
@@ -1941,21 +1945,21 @@ namespace polyfem
 		Eigen::MatrixXd fun;
 		interpolate_function(pts_index, sol, fun, /*use_sampler*/ true, false);
 
-		// Eigen::MatrixXd exact_fun, err;
+		Eigen::MatrixXd exact_fun, err;
 
-		// if (problem->has_exact_sol())
-		// {
-		// 	problem->exact(points, exact_fun);
-		// 	err = (fun - exact_fun).eval().rowwise().norm();
-		// }
+		if (problem->has_exact_sol())
+		{
+			problem->exact(points, t, exact_fun);
+			err = (fun - exact_fun).eval().rowwise().norm();
+		}
 
 		if (fun.cols() != 1 && !mesh->is_volume())
 		{
 			fun.conservativeResize(fun.rows(), 3);
 			fun.col(2).setZero();
 
-			// 	exact_fun.conservativeResize(exact_fun.rows(), 3);
-			// 	exact_fun.col(2).setZero();
+			exact_fun.conservativeResize(exact_fun.rows(), 3);
+			exact_fun.col(2).setZero();
 		}
 
 		if (!mesh->is_volume())
@@ -1964,64 +1968,21 @@ namespace polyfem
 			points.col(2).setZero();
 		}
 
-		// writer.add_field("solution", fun);
-		// if (problem->has_exact_sol()) {
-		// 	writer.add_field("exact", exact_fun);
-		// 	writer.add_field("error", err);
-		// }
-
-		// if (fun.cols() != 1) {
-		// 	Eigen::MatrixXd scalar_val;
-		// 	compute_scalar_value(pts_index, sol, scalar_val);
-		// 	writer.add_field("scalar_value", scalar_val);
-		// }
+		VTUWriter writer;
+		writer.add_field("solution", fun);
+		if (problem->has_exact_sol())
+		{
+			writer.add_field("exact", exact_fun);
+			writer.add_field("error", err);
+		}
 
 		if (fun.cols() != 1)
 		{
-			assert(points.rows() == fun.rows());
-			assert(points.cols() == fun.cols());
-			points += fun;
-		}
-		else
-		{
-			if (isolines)
-				points.col(2) += fun;
+			Eigen::MatrixXd scalar_val;
+			compute_scalar_value(pts_index, sol, scalar_val, /*use_sampler*/ true, false);
+			writer.add_field("scalar_value", scalar_val);
 		}
 
-		if (isolines)
-		{
-			Eigen::MatrixXd isoV;
-			Eigen::MatrixXi isoE;
-			igl::isolines(points, faces, Eigen::VectorXd(fun), 20, isoV, isoE);
-			// igl::write_triangle_mesh("foo.obj", points, faces);
-			points = isoV;
-			edges = isoE;
-		}
-
-		Eigen::MatrixXd V;
-		Eigen::MatrixXi E;
-		Eigen::VectorXi I, J;
-		igl::remove_unreferenced(points, edges, V, E, I);
-		igl::remove_duplicate_vertices(V, E, 1e-14, points, I, J, edges);
-
-		// Remove loops
-		int last = edges.rows() - 1;
-		int new_size = edges.rows();
-		for (int i = 0; i <= last; ++i)
-		{
-			if (edges(i, 0) == edges(i, 1))
-			{
-				edges.row(i) = edges.row(last);
-				--last;
-				--i;
-				--new_size;
-			}
-		}
-		edges.conservativeResize(new_size, edges.cols());
-
-		// save_edges(name, points, edges);
-
-		VTUWriter writer;
 		writer.write_mesh(name, points, edges);
 	}
 

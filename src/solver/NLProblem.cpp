@@ -96,7 +96,9 @@ namespace polyfem
 		assert(!assembler.is_mixed(state.formulation()));
 
 		_dhat = dhat;
+		assert(_dhat > 0);
 		_epsv = state.args["epsv"];
+		assert(_epsv > 0);
 		_mu = state.args["mu"];
 		_lagged_damping_weight = is_time_dependent ? 0 : state.args["lagged_damping_weight"].get<double>();
 		use_adaptive_barrier_stiffness = !state.args["barrier_stiffness"].is_number();
@@ -169,6 +171,7 @@ namespace polyfem
 
 	void NLProblem::init_time_integrator(const TVector &x_prev, const TVector &v_prev, const TVector &a_prev, const double dt)
 	{
+		assert(dt > 0);
 		_time_integrator->init(x_prev, v_prev, a_prev, dt);
 	}
 
@@ -451,9 +454,13 @@ namespace polyfem
 		if (std::isnan(grad.norm()))
 			return false;
 
-		TVector x1_full;
-		reduced_to_full(x1, x1_full);
-		return state.check_scalar_value(x1_full, true, false);
+		// Check the scalar field in the output does not contain NANs.
+		// WARNING: Does not work because the energy is not evaluated at the same quadrature points.
+		//          This causes small step lengths in the LS.
+		// TVector x1_full;
+		// reduced_to_full(x1, x1_full);
+		// return state.check_scalar_value(x1_full, true, false);
+		return true;
 	}
 
 	double NLProblem::value(const TVector &x)
@@ -508,11 +515,7 @@ namespace polyfem
 
 		const double non_contact_terms = scaling * (elastic_energy + body_energy) + intertia_energy + friction_energy + lagged_damping;
 
-#ifdef POLYFEM_DIV_BARRIER_STIFFNESS
-		return non_contact_terms / _barrier_stiffness + collision_energy;
-#else
 		return non_contact_terms + _barrier_stiffness * collision_energy;
-#endif
 	}
 
 	void NLProblem::compute_cached_stiffness()
@@ -537,11 +540,7 @@ namespace polyfem
 		Eigen::MatrixXd grad;
 		gradient_no_rhs(x, grad, only_elastic);
 
-#ifdef POLYFEM_DIV_BARRIER_STIFFNESS
-		grad -= current_rhs() / _barrier_stiffness;
-#else
 		grad -= current_rhs();
-#endif
 
 		full_to_reduced(grad, gradv);
 	}
@@ -584,13 +583,8 @@ namespace polyfem
 		}
 
 		grad += _lagged_damping_weight * (full - x_lagged);
-
-#ifdef POLYFEM_DIV_BARRIER_STIFFNESS
-		grad /= _barrier_stiffness;
-		grad += grad_barrier;
-#else
 		grad += _barrier_stiffness * grad_barrier;
-#endif
+
 		assert(grad.size() == full_size);
 	}
 
@@ -676,11 +670,8 @@ namespace polyfem
 		// Summing the hessian matrices like this might be less efficient than multiple `hessian += ...`, but
 		// it is much easier to read and export the individual matrices for inspection.
 		THessian non_contact_hessian = energy_hessian + inertia_hessian + friction_hessian + lagged_damping_hessian;
-#ifdef POLYFEM_DIV_BARRIER_STIFFNESS
-		hessian = non_contact_hessian / _barrier_stiffness + barrier_hessian;
-#else
 		hessian = non_contact_hessian + _barrier_stiffness * barrier_hessian;
-#endif
+
 		assert(hessian.rows() == full_size);
 		assert(hessian.cols() == full_size);
 	}

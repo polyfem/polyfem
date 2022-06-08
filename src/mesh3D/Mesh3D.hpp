@@ -22,14 +22,11 @@ namespace polyfem
 
 		inline bool is_volume() const override { return true; }
 
-		virtual int n_face_vertices(const int f_id) const = 0;
 		virtual int n_cell_vertices(const int c_id) const = 0;
 		virtual int n_cell_edges(const int c_id) const = 0;
 		virtual int n_cell_faces(const int c_id) const = 0;
 		virtual int cell_face(const int c_id, const int lf_id) const = 0;
 		virtual int cell_edge(const int c_id, const int le_id) const = 0;
-		virtual int face_vertex(const int f_id, const int lv_id) const = 0;
-		virtual int edge_vertex(const int e_id, const int lv_id) const = 0;
 
 		void elements_boxes(std::vector<std::array<Eigen::Vector3d, 2>> &boxes) const override;
 		void barycentric_coords(const RowVectorNd &p, const int el_id, Eigen::MatrixXd &coord) const override;

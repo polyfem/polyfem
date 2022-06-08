@@ -162,6 +162,7 @@ int polyfem::MeshNodes::node_id_from_primitive(int primitive_id)
 	{
 		primitive_to_node_[primitive_id] = n_nodes();
 		node_to_primitive_.push_back(primitive_id);
+		node_to_primitive_gid_.push_back(primitive_id);
 
 		if (primitive_id < edge_offset_)
 			nodes_.row(primitive_id) = mesh_.point(primitive_id);
@@ -213,7 +214,9 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_edge(const Navigation::Index 
 			const int primitive_id = start + i - 1;
 			assert(primitive_id < primitive_to_node_.size());
 			primitive_to_node_[primitive_id] = n_nodes();
+
 			node_to_primitive_.push_back(primitive_id);
+			node_to_primitive_gid_.push_back(index.edge);
 
 			// nodes_.row(primitive_id) = (1 - t) * v1 + t * v2;
 			nodes_.row(primitive_id) = mesh2d->edge_node(index, n_new_nodes, i);
@@ -271,6 +274,7 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_edge(const Navigation3D::Inde
 			const int primitive_id = start + i - 1;
 			primitive_to_node_[primitive_id] = n_nodes();
 			node_to_primitive_.push_back(primitive_id);
+			node_to_primitive_gid_.push_back(index.edge);
 
 			// nodes_.row(primitive_id) = (1 - t) * v1 + t * v2;
 			nodes_.row(primitive_id) = mesh3d->edge_node(index, n_new_nodes, i);
@@ -338,6 +342,7 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_face(const Navigation::Index 
 				const int primitive_id = start + loc_index;
 				primitive_to_node_[primitive_id] = n_nodes();
 				node_to_primitive_.push_back(primitive_id);
+				node_to_primitive_gid_.push_back(index.face);
 
 				// nodes_.row(primitive_id) = b1 * v1 + b2 * v2 + b3 * v3;
 				nodes_.row(primitive_id) = mesh2d->face_node(index, n_new_nodes, i, j);
@@ -403,6 +408,7 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_face(const Navigation3D::Inde
 				const int primitive_id = start + loc_index;
 				primitive_to_node_[primitive_id] = n_nodes();
 				node_to_primitive_.push_back(primitive_id);
+				node_to_primitive_gid_.push_back(index.face);
 
 				nodes_.row(primitive_id) = mesh3d->face_node(index, n_new_nodes, i, j);
 
@@ -476,6 +482,7 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_cell(const Navigation3D::Inde
 
 					primitive_to_node_[primitive_id] = n_nodes();
 					node_to_primitive_.push_back(primitive_id);
+					node_to_primitive_gid_.push_back(index.element);
 
 					nodes_.row(primitive_id) = mesh3d->cell_node(index, n_new_nodes, i, j, k);
 					res.push_back(primitive_to_node_[primitive_id]);
@@ -498,6 +505,7 @@ std::vector<int> polyfem::MeshNodes::node_ids_from_cell(const Navigation3D::Inde
 
 					primitive_to_node_[primitive_id] = n_nodes();
 					node_to_primitive_.push_back(primitive_id);
+					node_to_primitive_gid_.push_back(index.element);
 
 					nodes_.row(primitive_id) = mesh3d->cell_node(index, n_new_nodes, i, j, k);
 					res.push_back(primitive_to_node_[primitive_id]);

@@ -291,7 +291,7 @@ int main(int argc, char **argv)
 	if (!output_vtu.empty())
 	{
 		in_args["export"]["vis_mesh"] = output_vtu;
-		in_args["export"]["wire_mesh"] = StringUtils::replace_ext(output_vtu, "obj");
+		in_args["export"]["wire_mesh"] = StringUtils::replace_ext(output_vtu, "_wire.vtu");
 	}
 
 	if (has_arg(command_line, "ccd_max_iterations"))

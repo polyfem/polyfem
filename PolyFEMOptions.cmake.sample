@@ -37,13 +37,12 @@
 # PolyFEM Options
 ################################################################################
 
-# option(POLYFEM_NO_UI               "Disables the user interface"                OFF)
+# option(POLYFEM_NO_UI               "Disables the user interface"                 OFF)
+# option(POLYFEM_WITH_REMESHING      "Uses VMTK for remeshing"                     OFF)
 # option(POLYFEM_WITH_TESTS          "Build tests"                                 ON)
 # option(POLYFEM_WITH_CLIPPER        "Use clipper, necessary for polygonal bases"  ON)
 
 # Polyfem options for enabling/disabling optional libraries
-# option(POLYFEM_WITH_MMG            "Enable MMG library"                         OFF)
-# option(POLYFEM_WITH_OPENCL         "Enable OpenCL"                              OFF)
 # option(POLYFEM_REGENERATE_AUTOGEN  "Generate the python autogen files"          OFF)
 # set(POLYFEM_THREADING "TBB" CACHE STRING "Multithreading library to use (options: CPP, TBB, NONE)")
 
