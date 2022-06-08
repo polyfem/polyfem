@@ -51,28 +51,6 @@ using namespace Eigen;
 
 namespace polyfem
 {
-	void global_to_local(const Eigen::MatrixXd &verts, const Eigen::MatrixXd pts, Eigen::MatrixXd &uv)
-	{
-		const int dim = verts.cols();
-		const int N = pts.rows();
-		assert(dim == 3);
-		assert(verts.rows() == dim + 1);
-		assert(pts.cols() == dim);
-
-		Eigen::Matrix3d J;
-		for (int i = 0; i < dim; i++)
-			J.col(i) = verts.row(i + 1) - verts.row(0);
-
-		Eigen::Matrix3d Jinv = J.inverse();
-
-		uv.setZero(N, dim);
-		for (int i = 0; i < N; i++)
-		{
-			auto point = pts.row(i) - verts.row(0);
-			uv.row(i) = Jinv * point.transpose();
-		}
-	}
-
 	void State::sol_to_pressure()
 	{
 		if (n_pressure_bases <= 0)
