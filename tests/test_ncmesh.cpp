@@ -104,10 +104,10 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
 			}
 		}
 	)"_json;
-	in_args["mesh"] = path + "/../../lbar-extrude.msh";
+	in_args["mesh"] = path + "/contact/meshes/3D/simple/bar/bar-186.msh";
 
 	State state(8);
-	state.init_logger("", 1, false);
+	state.init_logger("", 6, false);
 	state.init(in_args);
 
 	state.load_mesh(true);
@@ -132,8 +132,6 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
 	state.solve_problem();
 	state.compute_errors();
 
-	state.save_vtu(state.resolve_output_path("debug.vtu"), 1.);
-
-	REQUIRE(fabs(state.h1_semi_err) < 1e-9);
+	REQUIRE(fabs(state.h1_semi_err) < 1e-7);
 	REQUIRE(fabs(state.l2_err) < 1e-10);
 }

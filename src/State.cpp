@@ -466,43 +466,6 @@ namespace polyfem
 		}
 		timer.stop();
 
-		// if (!mesh->is_conforming()) {
-		// 	// check correctness of isoparametric geometric basis
-		// 	for (int e = 0; e < bases.size(); e++) {
-		// 		const auto &bs = bases[e];
-		// 		const int discr_order = disc_orders[e];
-		// 		Eigen::MatrixXd lnodes, mapped;
-		// 		if (mesh->dimension() == 2)
-		// 			autogen::p_nodes_2d(discr_order, lnodes);
-		// 		else if (mesh->dimension() == 3)
-		// 			autogen::p_nodes_3d(discr_order, lnodes);
-		// 		bs.eval_geom_mapping(lnodes, mapped);
-
-		// 		const int n_edge_nodes = discr_order - 1;
-		// 		const int n_face_nodes = (discr_order - 1) * (discr_order - 2) / 2;
-		// 		const int n_edges = 3 * (mesh->dimension() - 1);
-		// 		const int n_verts = mesh->dimension() + 1;
-
-		// 		Eigen::MatrixXd verts(n_verts, mesh->dimension());
-		// 		for (int v = 0; v < n_verts; v++)
-		// 			verts.row(v) = mesh->point(mesh->cell_vertex(e, v));
-		// 		global_to_local(verts, mapped, mapped);
-
-		// 		Eigen::MatrixXd diff = mapped - lnodes;
-		// 		for (int i = 0; i < diff.rows(); i++)
-		// 			if (diff.row(i).norm() > 1e-10) {
-		// 				if (i < n_verts)
-		// 					logger().error("Element {} Vert {} local basis {} is wrong! Diff = {}", e, i, i, diff.row(i).norm());
-		// 				else if (i < n_verts + n_edges * n_edge_nodes)
-		// 					logger().error("Element {} Edge {} local basis {} is wrong! Diff = {}", e, (i - n_verts) / n_edge_nodes, i, diff.row(i).norm());
-		// 				else if (mesh->dimension() == 3 && i < n_verts + n_edges * n_edge_nodes + 4 * n_face_nodes)
-		// 					logger().error("Element {} Face {} local basis {} is wrong! Diff = {}", e, (i - (n_verts + n_edges * n_edge_nodes)) / n_face_nodes, i, diff.row(i).norm());
-		// 				else
-		// 					logger().error("Element {} internal local basis {} is wrong! Diff = {}", e, i, diff.row(i).norm());
-		// 			}
-		// 	}
-		// }
-
 		build_polygonal_basis();
 
 		auto &gbases = iso_parametric() ? bases : geom_bases;
