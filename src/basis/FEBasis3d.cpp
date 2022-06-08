@@ -185,11 +185,14 @@ namespace
 	int lowest_order_elem_on_edge(const polyfem::NCMesh3D &mesh, const Eigen::VectorXi &discr_orders, const int eid)
 	{
 		auto elem_list = mesh.edge_neighs(eid);
-		int min = 1e10;
+		int min = 1e8;
 		int elem = -1;
 		for (const auto e : elem_list)
 			if (discr_orders[e] < min)
+			{
 				elem = e;
+				min = discr_orders[e];
+			}
 		return elem;
 	}
 
