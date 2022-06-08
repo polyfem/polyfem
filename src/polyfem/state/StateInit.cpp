@@ -264,6 +264,14 @@ namespace polyfem
 
 								"spectrum" : false
 							}
+						},
+
+						"input": {
+							"data" : {
+								"u_path" : "",
+								"v_path" : "",
+								"a_path" : ""
+							}
 						}
 					})"_json;
 

@@ -489,6 +489,8 @@ namespace polyfem
 		void save_wire(const std::string &name, const double t);
 		// save a PVD of a time dependent simulation
 		void save_pvd(const std::string &name, const std::function<std::string(int)> &vtu_names, int time_steps, double t0, double dt, int skip_frame = 1);
+		// saves a timestep
+		void save_timestep(const double time, const int t, const double t0, const double dt);
 
 		//samples to solution on the visualization mesh and return the vis mesh (points and tets) and the interpolated values (fun)
 		void get_sampled_solution(Eigen::MatrixXd &points, Eigen::MatrixXi &tets, Eigen::MatrixXd &fun, bool boundary_only = false)
@@ -620,6 +622,16 @@ namespace polyfem
 		bool is_obstacle_vertex(const size_t vi) const
 		{
 			return vi >= boundary_nodes_pos.rows() - obstacle.n_vertices();
+		}
+
+		int n_boundary_samples() const
+		{
+			const int n_b_samples_j = args["space"]["advanced"]["n_boundary_samples"];
+			const int discr_order = mesh->orders().maxCoeff();
+			//TODO verify me
+			const int n_b_samples = std::max(n_b_samples_j, discr_order * 2 + 1);
+
+			return n_b_samples;
 		}
 
 	private:

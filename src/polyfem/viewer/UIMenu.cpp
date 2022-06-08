@@ -300,7 +300,7 @@ void polyfem::UIState::draw_settings()
 	static int solver_num = std::distance(solvers.begin(), std::find(solvers.begin(), solvers.end(), state.solver_type()));
 	if (ImGui::Combo("Solver", &solver_num, solvers))
 	{
-		state.args["solver_type"] = solvers[solver_num];
+		state.args["solver"]["linear"]["solver"] = solvers[solver_num];
 	}
 
 	// Preconditioner
@@ -308,7 +308,7 @@ void polyfem::UIState::draw_settings()
 	static int precond_num = std::distance(precond.begin(), std::find(precond.begin(), precond.end(), state.precond_type()));
 	if (ImGui::Combo("Precond", &precond_num, precond))
 	{
-		state.args["precond_type"] = precond[precond_num];
+		state.args["solver"]["linear"]["precond"] = precond[precond_num];
 	}
 
 	ImGui::Separator();

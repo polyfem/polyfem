@@ -317,7 +317,7 @@ int main(int argc, char **argv)
 	if (!output_json.empty())
 		in_args["output"] = output_json;
 	if (!solver.empty())
-		in_args["solver_type"] = solver;
+		in_args["solver"]["linear"]["solver"] = solver;
 	if (cache_size >= 0)
 		in_args["cache_size"] = cache_size;
 	if (!output_vtu.empty())
@@ -348,11 +348,6 @@ int main(int argc, char **argv)
 		const auto parent = path(output_json).parent_path();
 		if (!parent.empty())
 			create_directories(parent);
-	}
-
-	if (!in_args.contains("rhs_solver_type") && in_args.contains("solver_type"))
-	{
-		in_args["rhs_solver_type"] = in_args["solver_type"];
 	}
 
 #ifndef POLYFEM_NO_UI

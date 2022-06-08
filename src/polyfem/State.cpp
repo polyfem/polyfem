@@ -1079,11 +1079,8 @@ namespace polyfem
 					formulation(), *problem,
 					args["space"]["advanced"]["bc_method"],
 					args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"], rhs_solver_params);
-				const int n_b_samples_j = args["space"]["advanced"]["n_boundary_samples"];
-				const int discr_order = mesh->orders().maxCoeff();
-				//TODO verify me
-				const int n_b_samples = std::max(n_b_samples_j, discr_order * 2 + 1);
-				tmp_rhs_assembler.set_bc(std::vector<LocalBoundary>(), std::vector<int>(), n_b_samples, local_neumann_boundary, tmp);
+
+				tmp_rhs_assembler.set_bc(std::vector<LocalBoundary>(), std::vector<int>(), n_boundary_samples(), local_neumann_boundary, tmp);
 				rhs.block(prev_size, 0, n_larger, rhs.cols()) = tmp;
 			}
 		}

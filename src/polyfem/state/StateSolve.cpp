@@ -55,7 +55,7 @@ namespace polyfem
 	template <typename ProblemType>
 	std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> State::make_nl_solver() const
 	{
-		std::string name = args["nl_solver"];
+		std::string name = args["solver"]["nonlinear"];
 		if (name == "newton" || name == "Newton")
 		{
 			return std::make_shared<cppoptlib::SparseNewtonDescentSolver<ProblemType>>(
@@ -79,19 +79,21 @@ namespace polyfem
 		logger().trace("Setup rhs...");
 
 		const auto &gbases = iso_parametric() ? bases : geom_bases;
-		json rhs_solver_params = args["rhs_solver_params"];
-		rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
+		json rhs_solver_params = args["solver"]["linear"];
+		if (!rhs_solver_params.contains("Pardiso"))
+			rhs_solver_params["Pardiso"] = {};
+		rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 
 		step_data.rhs_assembler = std::make_shared<RhsAssembler>(
 			assembler, *mesh, obstacle,
 			n_bases, problem->is_scalar() ? 1 : mesh->dimension(),
 			bases, gbases, ass_vals_cache,
 			formulation(), *problem,
-			args["bc_method"],
-			args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
+			args["space"]["advanced"]["bc_method"],
+			args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"], rhs_solver_params);
 		RhsAssembler &rhs_assembler = *step_data.rhs_assembler;
 
-		const std::string u_path = resolve_input_path(args["import"]["u_path"]);
+		const std::string u_path = resolve_input_path(args["input"]["data"]["u_path"]);
 		if (!u_path.empty())
 			read_matrix(u_path, sol);
 		else
@@ -115,18 +117,7 @@ namespace polyfem
 		td_timer.stop();
 		logger().trace("done, took {}s", td_timer.getElapsedTime());
 
-		if (args["save_time_sequence"])
-		{
-			td_timer.start();
-			logger().trace("Saving VTU...");
-
-			if (!solve_export_to_file)
-				solution_frames.emplace_back();
-			save_vtu(resolve_output_path("step_0.vtu"), 0);
-
-			td_timer.stop();
-			logger().trace("done, took {}s", td_timer.getElapsedTime());
-		}
+		save_timestep(0, 0, 0, 0);
 	}
 
 	void State::solve_transient_navier_stokes_split(const int time_steps, const double dt, const RhsAssembler &rhs_assembler)
@@ -138,16 +129,16 @@ namespace polyfem
 		if (mesh->dimension() == 2)
 		{
 			if (gbases[0].bases.size() == 3)
-				autogen::p_nodes_2d(args["discr_order"], local_pts);
+				autogen::p_nodes_2d(args["space"]["discr_order"], local_pts);
 			else
-				autogen::q_nodes_2d(args["discr_order"], local_pts);
+				autogen::q_nodes_2d(args["space"]["discr_order"], local_pts);
 		}
 		else
 		{
 			if (gbases[0].bases.size() == 4)
-				autogen::p_nodes_3d(args["discr_order"], local_pts);
+				autogen::p_nodes_3d(args["space"]["discr_order"], local_pts);
 			else
-				autogen::q_nodes_3d(args["discr_order"], local_pts);
+				autogen::q_nodes_3d(args["space"]["discr_order"], local_pts);
 		}
 		std::vector<int> bnd_nodes;
 		bnd_nodes.reserve(boundary_nodes.size() / mesh->dimension());
@@ -178,11 +169,12 @@ namespace polyfem
 		mixed_stiffness = mixed_stiffness.transpose();
 		logger().info("Matrices assembly ends!");
 
-		OperatorSplittingSolver ss(*mesh, shape, n_el, local_boundary, boundary_nodes, pressure_boundary_nodes, bnd_nodes, mass, stiffness_viscosity, stiffness, velocity_mass, dt, viscosity_, args["solver_type"], args["precond_type"], params, args["export"]["stiffness_mat"]);
+		OperatorSplittingSolver ss(*mesh, shape, n_el, local_boundary, boundary_nodes, pressure_boundary_nodes, bnd_nodes, mass, stiffness_viscosity, stiffness, velocity_mass, dt, viscosity_, args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"], params, args["output"]["data"]["stiffness_mat"]);
 
 		/* initialize solution */
 		pressure = Eigen::MatrixXd::Zero(n_pressure_bases, 1);
 
+		const int n_b_samples = n_boundary_samples();
 		for (int t = 1; t <= time_steps; t++)
 		{
 			double time = t * dt;
@@ -190,14 +182,14 @@ namespace polyfem
 
 			/* advection */
 			logger().info("Advection...");
-			if (args["particle"])
+			if (args["space"]["advanced"]["particle"])
 				ss.advection_FLIP(*mesh, gbases, bases, sol, dt, local_pts);
 			else
 				ss.advection(*mesh, gbases, bases, sol, dt, local_pts);
 			logger().info("Advection finished!");
 
 			/* apply boundary condition */
-			rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, time);
+			rhs_assembler.set_bc(local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, sol, time);
 
 			/* viscosity */
 			logger().info("Solving diffusion...");
@@ -219,20 +211,10 @@ namespace polyfem
 			pressure = pressure / dt;
 
 			/* apply boundary condition */
-			rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, time);
+			rhs_assembler.set_bc(local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, sol, time);
 
 			/* export to vtu */
-			if (args["save_time_sequence"] && !(t % args["skip_frame"].get<int>()))
-			{
-				if (!solve_export_to_file)
-					solution_frames.emplace_back();
-				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), time);
-
-				save_pvd(
-					resolve_output_path(args["export"]["time_sequence"]),
-					[](int i) { return fmt::format("step_{:d}.vtm", i); },
-					t, /*t0=*/0, dt, args["skip_frame"].get<int>());
-			}
+			save_timestep(time, t, 0, dt);
 		}
 	}
 
@@ -250,7 +232,7 @@ namespace polyfem
 
 		Eigen::VectorXd prev_sol;
 
-		int BDF_order = args["time_integrator_params"].value("num_steps", 1);
+		int BDF_order = args["time"]["BDF"].value("steps", 1);
 		// int aux_steps = BDF_order-1;
 		BDF bdf(BDF_order);
 		bdf.new_solution(c_sol);
@@ -262,6 +244,8 @@ namespace polyfem
 		TransientNavierStokesSolver ns_solver(solver_params(), build_json_params(), solver_type(), precond_type());
 		const int n_larger = n_pressure_bases + (use_avg_pressure ? 1 : 0);
 
+		const int n_b_samples = n_boundary_samples();
+
 		for (int t = 1; t <= time_steps; ++t)
 		{
 			double time = t0 + t * dt;
@@ -270,8 +254,8 @@ namespace polyfem
 			logger().info("{}/{} steps, dt={}s t={}s", t, time_steps, current_dt, time);
 
 			bdf.rhs(prev_sol);
-			rhs_assembler.compute_energy_grad(local_boundary, boundary_nodes, density, args["n_boundary_samples"], local_neumann_boundary, rhs, time, current_rhs);
-			rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, current_rhs, time);
+			rhs_assembler.compute_energy_grad(local_boundary, boundary_nodes, density, n_b_samples, local_neumann_boundary, rhs, time, current_rhs);
+			rhs_assembler.set_bc(local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, current_rhs, time);
 
 			const int prev_size = current_rhs.size();
 			if (prev_size != rhs.size())
@@ -287,17 +271,7 @@ namespace polyfem
 			sol = c_sol;
 			sol_to_pressure();
 
-			if (args["save_time_sequence"] && !(t % args["skip_frame"].get<int>()))
-			{
-				if (!solve_export_to_file)
-					solution_frames.emplace_back();
-				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), time);
-
-				save_pvd(
-					resolve_output_path(args["export"]["time_sequence"]),
-					[](int i) { return fmt::format("step_{:d}.vtm", i); },
-					t, t0, dt, args["skip_frame"].get<int>());
-			}
+			save_timestep(time, t, t0, dt);
 		}
 	}
 
@@ -306,7 +280,7 @@ namespace polyfem
 		assert((problem->is_scalar() || assembler.is_mixed(formulation())) && problem->is_time_dependent());
 
 		const json &params = solver_params();
-		auto solver = polysolve::LinearSolver::create(args["solver_type"], args["precond_type"]);
+		auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
 		solver->setParameters(params);
 		logger().info("{}...", solver->name());
 
@@ -314,7 +288,7 @@ namespace polyfem
 		Eigen::VectorXd b;
 		Eigen::MatrixXd current_rhs = rhs;
 
-		const int BDF_order = args["time_integrator_params"].value("num_steps", 1);
+		const int BDF_order = args["time"]["BDF"]["steps"];
 		// const int aux_steps = BDF_order-1;
 		BDF bdf(BDF_order);
 		bdf.new_solution(x);
@@ -322,14 +296,16 @@ namespace polyfem
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 		const int precond_num = problem_dim * n_bases;
 
+		const int n_b_samples = n_boundary_samples();
+
 		for (int t = 1; t <= time_steps; ++t)
 		{
 			double time = t0 + t * dt;
 			double current_dt = dt;
 
 			logger().info("{}/{} {}s", t, time_steps, time);
-			rhs_assembler.compute_energy_grad(local_boundary, boundary_nodes, density, args["n_boundary_samples"], local_neumann_boundary, rhs, time, current_rhs);
-			rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, current_rhs, time);
+			rhs_assembler.compute_energy_grad(local_boundary, boundary_nodes, density, n_b_samples, local_neumann_boundary, rhs, time, current_rhs);
+			rhs_assembler.set_bc(local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, current_rhs, time);
 
 			if (assembler.is_mixed(formulation()))
 			{
@@ -360,18 +336,7 @@ namespace polyfem
 				sol_to_pressure();
 			}
 
-			if (args["save_time_sequence"] && !(t % args["skip_frame"].get<int>()))
-			{
-				if (!solve_export_to_file)
-					solution_frames.emplace_back();
-
-				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), time);
-
-				save_pvd(
-					resolve_output_path(args["export"]["time_sequence"]),
-					[](int i) { return fmt::format("step_{:d}.vtm", i); },
-					t, t0, dt, args["skip_frame"].get<int>());
-			}
+			save_timestep(time, t, t0, dt);
 		}
 	}
 
@@ -381,7 +346,7 @@ namespace polyfem
 		assert(!assembler.is_mixed(formulation()));
 
 		const json &params = solver_params();
-		auto solver = polysolve::LinearSolver::create(args["solver_type"], args["precond_type"]);
+		auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
 		solver->setParameters(params);
 		logger().info("{}...", solver->name());
 
@@ -409,8 +374,10 @@ namespace polyfem
 		Eigen::VectorXd x, btmp;
 
 		auto time_integrator = ImplicitTimeIntegrator::construct_time_integrator(args["time_integrator"]);
-		time_integrator->set_parameters(args["time_integrator_params"]);
+		time_integrator->set_parameters(args["time"]["BDF"]["steps"]);
 		time_integrator->init(sol, velocity, acceleration, dt);
+
+		const int n_b_samples = n_boundary_samples();
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
@@ -418,11 +385,11 @@ namespace polyfem
 
 			rhs_assembler.assemble(density, current_rhs, time);
 			current_rhs *= -1;
-			rhs_assembler.set_bc(std::vector<LocalBoundary>(), std::vector<int>(), args["n_boundary_samples"], local_neumann_boundary, current_rhs, time);
+			rhs_assembler.set_bc(std::vector<LocalBoundary>(), std::vector<int>(), n_b_samples, local_neumann_boundary, current_rhs, time);
 
 			current_rhs *= time_integrator->acceleration_scaling();
 			current_rhs += mass * time_integrator->x_tilde();
-			rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], std::vector<LocalBoundary>(), current_rhs, time);
+			rhs_assembler.set_bc(local_boundary, boundary_nodes, n_b_samples, std::vector<LocalBoundary>(), current_rhs, time);
 
 			b = current_rhs;
 			A = stiffness * time_integrator->acceleration_scaling() + mass;
@@ -437,18 +404,7 @@ namespace polyfem
 			else
 				logger().debug("Solver error: {}", error);
 
-			if (args["save_time_sequence"] && !(t % args["skip_frame"].get<int>()))
-			{
-				if (!solve_export_to_file)
-					solution_frames.emplace_back();
-				save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), time);
-
-				save_pvd(
-					resolve_output_path(args["export"]["time_sequence"]),
-					[](int i) { return fmt::format("step_{:d}.vtm", i); },
-					t, t0, dt, args["skip_frame"].get<int>());
-			}
-
+			save_timestep(time, t, t0, dt);
 			logger().info("{}/{} t={}", t, time_steps, time);
 		}
 
@@ -474,93 +430,8 @@ namespace polyfem
 		{
 			solve_transient_tensor_non_linear_step(t0, dt, t, solver_info);
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
-
-			if (args["save_time_sequence"] && !(t % args["skip_frame"].get<int>()))
-			{
-				save_pvd(
-					resolve_output_path(args["export"]["time_sequence"]),
-					[](int i) { return fmt::format("step_{:d}.vtm", i); },
-					t, t0, dt, args["skip_frame"].get<int>());
-			}
 		}
-		// }
-		// else
-		// {
-		// 	step_data.nl_problem->full_to_reduced(sol, tmp_sol);
 
-		// 	for (int t = 1; t <= time_steps; ++t)
-		// 	{
-		// 		cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
-		// 		nlsolver.setLineSearch(args["line_search"]);
-		// 		step_data.nl_problem->init(sol);
-		// 		nlsolver.minimize(nl_problem, tmp_sol);
-
-		// 		if (nlsolver.error_code() == -10)
-		// 		{
-		// 			double substep_delta = 0.5;
-		// 			double substep = substep_delta;
-		// 			bool solved = false;
-
-		// 			while (substep_delta > 1e-4 && !solved)
-		// 			{
-		// 				logger().debug("Substepping {}/{}, dt={}", (t - 1 + substep) * dt, t * dt, substep_delta);
-		// 				step_data.nl_problem->substepping((t - 1 + substep) * dt);
-		// 				step_data.nl_problem->full_to_reduced(sol, tmp_sol);
-		// 				nlsolver.minimize(nl_problem, tmp_sol);
-
-		// 				if (nlsolver.error_code() == -10)
-		// 				{
-		// 					substep -= substep_delta;
-		// 					substep_delta /= 2;
-		// 				}
-		// 				else
-		// 				{
-		// 					logger().trace("Done {}/{}, dt={}", (t - 1 + substep) * dt, t * dt, substep_delta);
-		// 					step_data.nl_problem->reduced_to_full(tmp_sol, sol);
-		// 					substep_delta *= 2;
-		// 				}
-
-		// 				solved = substep >= 1;
-
-		// 				substep += substep_delta;
-		// 				if (substep >= 1)
-		// 				{
-		// 					substep_delta -= substep - 1;
-		// 					substep = 1;
-		// 				}
-		// 			}
-		// 		}
-
-		// 		if (nlsolver.error_code() == -10)
-		// 		{
-		// 			logger().error("Unable to solve t={}", t * dt);
-		// 			save_vtu("stop.vtu", dt * t);
-		// 			break;
-		// 		}
-
-		// 		logger().debug("Step solved!");
-
-		// 		nlsolver.getInfo(solver_info);
-		// 		step_data.nl_problem->reduced_to_full(tmp_sol, sol);
-		// 		if (assembler.is_mixed(formulation()))
-		// 		{
-		// 			sol_to_pressure();
-		// 		}
-
-		// 		// rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, sol, dt * t);
-
-		// 		step_data.nl_problem->update_quantities((t + 1) * dt, sol);
-
-		// 		if (args["save_time_sequence"] && !(t % args["skip_frame"].get<int>()))
-		// 		{
-		// 			if (!solve_export_to_file)
-		// 				solution_frames.emplace_back();
-		// 			save_vtu(fmt::format("step_{:d}.vtu", t), dt * t);
-		// 		}
-
-		// 		logger().info("{}/{}", t, time_steps);
-		// 	}
-		// }
 		const NLProblem &nl_problem = *step_data.nl_problem;
 
 		nl_problem.save_raw(
@@ -816,13 +687,7 @@ namespace polyfem
 			alnl_problem.update_quantities(t0 + (t + 1) * dt, sol);
 		}
 
-		if (args["save_time_sequence"] && !(t % args["skip_frame"].get<int>()))
-		{
-			POLYFEM_SCOPED_TIMER("Saving VTU");
-			if (!solve_export_to_file)
-				solution_frames.emplace_back();
-			save_vtu(resolve_output_path(fmt::format("step_{:d}.vtu", t)), t0 + dt * t);
-		}
+		save_timestep(t0 + dt * t, t, t0, dt);
 	}
 
 	void State::solve_linear()
@@ -830,7 +695,7 @@ namespace polyfem
 		assert(!problem->is_time_dependent());
 		assert(assembler.is_linear(formulation()) && !args["has_collision"]);
 		const json &params = solver_params();
-		auto solver = polysolve::LinearSolver::create(args["solver_type"], args["precond_type"]);
+		auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
 		solver->setParameters(params);
 		StiffnessMatrix A;
 		Eigen::VectorXd b;
@@ -846,9 +711,9 @@ namespace polyfem
 								   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
 
 		if (formulation() != "Bilaplacian")
-			rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs);
+			rhs_assembler.set_bc(local_boundary, boundary_nodes, n_boundary_samples(), local_neumann_boundary, rhs);
 		else
-			rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], std::vector<LocalBoundary>(), rhs);
+			rhs_assembler.set_bc(local_boundary, boundary_nodes, n_boundary_samples(), std::vector<LocalBoundary>(), rhs);
 
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 		const int precond_num = problem_dim * n_bases;
@@ -889,7 +754,7 @@ namespace polyfem
 								   formulation(), *problem,
 								   args["bc_method"],
 								   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
-		rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, rhs);
+		rhs_assembler.set_bc(local_boundary, boundary_nodes, n_boundary_samples(), local_neumann_boundary, rhs);
 		ns_solver.minimize(*this, rhs, x);
 		sol = x;
 		sol_to_pressure();
@@ -1135,236 +1000,6 @@ namespace polyfem
 			if (!u_path.empty())
 				write_matrix(u_path, sol);
 		}
-		// }
-		// else
-		// {
-		// 	int steps = args["nl_solver_rhs_steps"];
-		// 	if (steps <= 0)
-		// 	{
-		// 		RowVectorNd min, max;
-		// 		mesh->bounding_box(min, max);
-		// 		steps = problem->n_incremental_load_steps((max - min).norm());
-		// 	}
-		// 	steps = std::max(steps, 1);
-
-		// 	double step_t = 1.0 / steps;
-		// 	double t = step_t;
-		// 	double prev_t = 0;
-
-		// 	StiffnessMatrix nlstiffness;
-		// 	Eigen::VectorXd b;
-		// 	Eigen::MatrixXd grad;
-		// 	Eigen::MatrixXd prev_rhs;
-
-		// 	prev_rhs.resizeLike(rhs);
-		// 	prev_rhs.setZero();
-
-		// 	b.resizeLike(sol);
-		// 	b.setZero();
-
-		// 	if (args["save_solve_sequence"])
-		// 	{
-		// 		if (!solve_export_to_file)
-		// 			solution_frames.emplace_back();
-		// 		save_vtu(fmt::format("step_{:d}.vtu", prev_t), 1);
-		// 	}
-
-		// 	igl::Timer update_timer;
-		// 	auto solver = polysolve::LinearSolver::create(args["solver_type"], args["precond_type"]);
-
-		// 	while (t <= 1)
-		// 	{
-		// 		if (step_t < 1e-10)
-		// 		{
-		// 			logger().error("Step too small, giving up");
-		// 			break;
-		// 		}
-
-		// 		logger().info("t: {} prev: {} step: {}", t, prev_t, step_t);
-
-		// 		NLProblem nl_problem(*this, rhs_assembler, t, args["dhat"], args["project_to_psd"]);
-
-		// 		logger().debug("Updating starting point...");
-		// 		update_timer.start();
-
-		// 		{
-		// 			nl_problem.hessian_full(sol, nlstiffness);
-		// 			nl_problem.gradient_no_rhs(sol, grad);
-		// 			rhs_assembler.set_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, grad, t);
-
-		// 			b = grad;
-		// 			for (int bId : boundary_nodes)
-		// 				b(bId) = -(nl_problem.current_rhs()(bId) - prev_rhs(bId));
-		// 			dirichlet_solve(*solver, nlstiffness, b, boundary_nodes, x, precond_num, args["export"]["stiffness_mat"], args["export"]["spectrum"]);
-		// 			logger().trace("Checking step");
-		// 			const bool valid = nl_problem.is_step_collision_free(sol, (sol - x).eval());
-		// 			if (valid)
-		// 				x = sol - x;
-		// 			else
-		// 				x = sol;
-		// 			logger().trace("Done checking step, was {}valid", valid ? "" : "in");
-		// 			// logger().debug("Solver error: {}", (nlstiffness * sol - b).norm());
-		// 		}
-
-		// 		nl_problem.full_to_reduced(x, tmp_sol);
-		// 		update_timer.stop();
-		// 		logger().debug("done!, took {}s", update_timer.getElapsedTime());
-
-		// 		if (args["save_solve_sequence_debug"])
-		// 		{
-		// 			Eigen::MatrixXd xxx = sol;
-		// 			sol = x;
-		// 			if (assembler.is_mixed(formulation()))
-		// 				sol_to_pressure();
-		// 			if (!solve_export_to_file)
-		// 				solution_frames.emplace_back();
-
-		// 			save_vtu(fmt::format("step_s_{:d}.vtu", t), 1);
-
-		// 			sol = xxx;
-		// 		}
-
-		// 		bool has_nan = false;
-		// 		for (int k = 0; k < tmp_sol.size(); ++k)
-		// 		{
-		// 			if (std::isnan(tmp_sol[k]))
-		// 			{
-		// 				has_nan = true;
-		// 				break;
-		// 			}
-		// 		}
-
-		// 		if (has_nan)
-		// 		{
-		// 			do
-		// 			{
-		// 				step_t /= 2;
-		// 				t = prev_t + step_t;
-		// 			} while (t >= 1);
-		// 			continue;
-		// 		}
-
-		// 		if (args["nl_solver"] == "newton")
-		// 		{
-		// 			cppoptlib::SparseNewtonDescentSolver<NLProblem> nlsolver(solver_params(), solver_type(), precond_type());
-		// 			nlsolver.setLineSearch(args["line_search"]);
-		// 			nl_problem.init(x);
-		// 			nlsolver.minimize(nl_problem, tmp_sol);
-
-		// 			if (nlsolver.error_code() == -10) //Nan
-		// 			{
-		// 				do
-		// 				{
-		// 					step_t /= 2;
-		// 					t = prev_t + step_t;
-		// 				} while (t >= 1);
-		// 				continue;
-		// 			}
-		// 			else
-		// 			{
-		// 				prev_t = t;
-		// 				step_t *= 2;
-		// 			}
-
-		// 			if (step_t > 1.0 / steps)
-		// 				step_t = 1.0 / steps;
-
-		// 			nlsolver.getInfo(solver_info);
-		// 		}
-		// 		else if (args["nl_solver"] == "lbfgs")
-		// 		{
-		// 			cppoptlib::LbfgsSolverL2<NLProblem> nlsolver;
-		// 			nlsolver.setLineSearch(args["line_search"]);
-		// 			nlsolver.setDebug(cppoptlib::DebugLevel::High);
-		// 			nlsolver.minimize(nl_problem, tmp_sol);
-
-		// 			prev_t = t;
-		// 		}
-		// 		else
-		// 		{
-		// 			throw std::invalid_argument("[State] invalid solver type for non-linear problem");
-		// 		}
-
-		// 		t = prev_t + step_t;
-		// 		if ((prev_t < 1 && t > 1) || abs(t - 1) < 1e-10)
-		// 			t = 1;
-
-		// 		nl_problem.reduced_to_full(tmp_sol, sol);
-
-		// 		// std::ofstream of("sol.txt");
-		// 		// of<<sol<<std::endl;
-		// 		// of.close();
-		// 		prev_rhs = nl_problem.current_rhs();
-		// 		if (args["save_solve_sequence"])
-		// 		{
-		// 			if (!solve_export_to_file)
-		// 				solution_frames.emplace_back();
-		// 			save_vtu(fmt::format("step_{:d}.vtu", prev_t), 1);
-		// 		}
-		// 	}
-
-		// 	if (assembler.is_mixed(formulation()))
-		// 	{
-		// 		sol_to_pressure();
-		// 	}
-
-		// 	// {
-		// 	// 	boundary_nodes.clear();
-		// 	// 	NLProblem nl_problem(*this, rhs_assembler, 1, args["dhat"]);
-		// 	// 	tmp_sol = rhs;
-
-		// 	// 	// tmp_sol.setRandom();
-		// 	// 	tmp_sol.setOnes();
-		// 	// 	Eigen::Matrix<double, Eigen::Dynamic, 1> actual_grad;
-		// 	// 	nl_problem.gradient(tmp_sol, actual_grad);
-
-		// 	// 	StiffnessMatrix hessian;
-		// 	// 	// Eigen::MatrixXd expected_hessian;
-		// 	// 	nl_problem.hessian(tmp_sol, hessian);
-		// 	// 	// nl_problem.finiteGradient(tmp_sol, expected_grad, 0);
-
-		// 	// 	Eigen::MatrixXd actual_hessian = Eigen::MatrixXd(hessian);
-		// 	// 	// std::cout << "hhh\n"<< actual_hessian<<std::endl;
-
-		// 	// 	for (int i = 0; i < actual_hessian.rows(); ++i)
-		// 	// 	{
-		// 	// 		double hhh = 1e-6;
-		// 	// 		VectorXd xp = tmp_sol; xp(i) += hhh;
-		// 	// 		VectorXd xm = tmp_sol; xm(i) -= hhh;
-
-		// 	// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_p;
-		// 	// 		nl_problem.gradient(xp, tmp_grad_p);
-
-		// 	// 		Eigen::Matrix<double, Eigen::Dynamic, 1> tmp_grad_m;
-		// 	// 		nl_problem.gradient(xm, tmp_grad_m);
-
-		// 	// 		Eigen::Matrix<double, Eigen::Dynamic, 1> fd_h = (tmp_grad_p - tmp_grad_m)/(hhh*2.);
-
-		// 	// 		const double vp = nl_problem.value(xp);
-		// 	// 		const double vm = nl_problem.value(xm);
-
-		// 	// 		const double fd = (vp-vm)/(hhh*2.);
-		// 	// 		const double  diff = std::abs(actual_grad(i) - fd);
-		// 	// 		if(diff > 1e-5)
-		// 	// 			std::cout<<"diff grad "<<i<<": "<<actual_grad(i)<<" vs "<<fd <<" error: " <<diff<<" rrr: "<<actual_grad(i)/fd<<std::endl;
-
-		// 	// 		for(int j = 0; j < actual_hessian.rows(); ++j)
-		// 	// 		{
-		// 	// 			const double diff = std::abs(actual_hessian(i,j) - fd_h(j));
-
-		// 	// 			if(diff > 1e-4)
-		// 	// 				std::cout<<"diff H "<<i<<", "<<j<<": "<<actual_hessian(i,j)<<" vs "<<fd_h(j)<<" error: " <<diff<<" rrr: "<<actual_hessian(i,j)/fd_h(j)<<std::endl;
-
-		// 	// 		}
-		// 	// 	}
-
-		// 	// 	// std::cout<<"diff grad max "<<(actual_grad - expected_grad).array().abs().maxCoeff()<<std::endl;
-		// 	// 	// std::cout<<"diff \n"<<(actual_grad - expected_grad)<<std::endl;
-		// 	// 	exit(0);
-		// 	// }
-
-		// 	// NLProblem::reduced_to_full_aux(full_size, reduced_size, tmp_sol, rhs, sol);
-		// }
 	}
 
 	////////////////////////////////////////////////////////////////////////

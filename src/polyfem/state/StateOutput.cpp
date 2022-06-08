@@ -12,6 +12,8 @@
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/ALNLProblem.hpp>
 
+#include <polyfem/utils/Timer.hpp>
+
 // #ifdef POLYFEM_WITH_TBB
 // #include <tbb/task_scheduler_init.h>
 // #endif
@@ -35,6 +37,26 @@ namespace polyfem
 	using namespace mesh;
 	using namespace solver;
 	using namespace utils;
+
+	void State::save_timestep(const double time, const int t, const double t0, const double dt)
+	{
+		if (args["output"]["advanced"]["save_time_sequence"] && !(t % args["output"]["paraview"]["skip_frame"].get<int>()))
+		{
+			logger().trace("Saving VTU...");
+			POLYFEM_SCOPED_TIMER("Saving VTU");
+			const std::string step_name = args["output"]["advanced"]["timestep_prefix"];
+
+			if (!solve_export_to_file)
+				solution_frames.emplace_back();
+
+			save_vtu(resolve_output_path(fmt::format(step_name + "_{:d}.vtu", t)), time);
+
+			save_pvd(
+				resolve_output_path(args["output"]["paraview"]["file_name"]),
+				[step_name](int i) { return fmt::format(step_name + "_{:d}.vtm", i); },
+				t, t0, dt, args["output"]["paraview"]["skip_frame"].get<int>());
+		}
+	}
 
 	void State::get_sidesets(Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXd &sidesets)
 	{
@@ -570,28 +592,16 @@ namespace polyfem
 		logger().info("Saving json...");
 
 		j["args"] = args;
-		j["quadrature_order"] = args["quadrature_order"];
+
 		j["mesh_path"] = mesh_path();
-		j["discr_order"] = args["discr_order"];
+
 		j["geom_order"] = mesh->orders().size() > 0 ? mesh->orders().maxCoeff() : 1;
 		j["geom_order_min"] = mesh->orders().size() > 0 ? mesh->orders().minCoeff() : 1;
 		j["discr_order_min"] = disc_orders.minCoeff();
 		j["discr_order_max"] = disc_orders.maxCoeff();
-		j["harmonic_samples_res"] = args["n_harmonic_samples"];
-		j["use_splines"] = args["use_spline"];
 		j["iso_parametric"] = iso_parametric();
 		j["problem"] = problem->name();
 		j["mat_size"] = mat_size;
-		j["solver_type"] = args["solver_type"];
-		j["precond_type"] = args["precond_type"];
-		j["line_search"] = args["line_search"];
-		j["nl_solver"] = args["nl_solver"];
-		j["params"] = args["params"];
-
-		j["refinenemt_location"] = args["refinenemt_location"];
-
-		j["num_boundary_samples"] = args["n_boundary_samples"];
-		j["num_refs"] = args["n_refs"];
 		j["num_bases"] = n_bases;
 		j["num_pressure_bases"] = n_pressure_bases;
 		j["num_non_zero"] = nn_zero;

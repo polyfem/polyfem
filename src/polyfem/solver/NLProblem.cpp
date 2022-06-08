@@ -121,7 +121,7 @@ namespace polyfem
 			}
 			_prev_distance = -1;
 			_time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(state.args["time_integrator"]);
-			_time_integrator->set_parameters(state.args["time_integrator_params"]);
+			_time_integrator->set_parameters(state.args["time"]["BDF"]["steps"]);
 
 			_broad_phase_method = state.args["solver_params"]["broad_phase_method"];
 			_ccd_tolerance = state.args["solver_params"]["ccd_tolerance"];
@@ -230,8 +230,8 @@ namespace polyfem
 				if (!ignore_inertia)
 					_time_integrator->update_quantities(x);
 
-				// rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, t);
-				// rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, t);
+				// rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, state.n_boundary_samples(), local_neumann_boundary, velocity, t);
+				// rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, state.n_boundary_samples(), local_neumann_boundary, acceleration, t);
 
 				rhs_computed = false;
 				this->t = t;
@@ -250,8 +250,8 @@ namespace polyfem
 				rhs_computed = false;
 				this->t = t;
 
-				// rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, velocity, t);
-				// rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, args["n_boundary_samples"], local_neumann_boundary, acceleration, t);
+				// rhs_assembler.set_velocity_bc(local_boundary, boundary_nodes, state.n_boundary_samples(), local_neumann_boundary, velocity, t);
+				// rhs_assembler.set_acceleration_bc(local_boundary, boundary_nodes, state.n_boundary_samples(), local_neumann_boundary, acceleration, t);
 			}
 		}
 
@@ -259,7 +259,7 @@ namespace polyfem
 		{
 			if (!rhs_computed)
 			{
-				rhs_assembler.compute_energy_grad(state.local_boundary, state.boundary_nodes, state.density, state.args["n_boundary_samples"], state.local_neumann_boundary, state.rhs, t, _current_rhs);
+				rhs_assembler.compute_energy_grad(state.local_boundary, state.boundary_nodes, state.density, state.n_boundary_samples(), state.local_neumann_boundary, state.rhs, t, _current_rhs);
 				rhs_computed = true;
 
 				if (assembler.is_mixed(state.formulation()))
@@ -272,7 +272,7 @@ namespace polyfem
 					}
 				}
 				assert(_current_rhs.size() == full_size);
-				rhs_assembler.set_bc(std::vector<mesh::LocalBoundary>(), std::vector<int>(), state.args["n_boundary_samples"], state.local_neumann_boundary, _current_rhs, t);
+				rhs_assembler.set_bc(std::vector<mesh::LocalBoundary>(), std::vector<int>(), state.n_boundary_samples(), state.local_neumann_boundary, _current_rhs, t);
 
 				if (!ignore_inertia && is_time_dependent)
 				{
@@ -282,8 +282,8 @@ namespace polyfem
 
 				if (reduced_size != full_size)
 				{
-					// rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, _current_rhs, t);
-					rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], std::vector<mesh::LocalBoundary>(), _current_rhs, t);
+					// rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.n_boundary_samples(), state.local_neumann_boundary, _current_rhs, t);
+					rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.n_boundary_samples(), std::vector<mesh::LocalBoundary>(), _current_rhs, t);
 				}
 			}
 
@@ -482,7 +482,7 @@ namespace polyfem
 			const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
 
 			const double elastic_energy = assembler.assemble_energy(rhs_assembler.formulation(), state.mesh->is_volume(), state.bases, gbases, state.ass_vals_cache, full);
-			const double body_energy = rhs_assembler.compute_energy(full, state.local_neumann_boundary, state.density, state.args["n_boundary_samples"], t);
+			const double body_energy = rhs_assembler.compute_energy(full, state.local_neumann_boundary, state.density, state.n_boundary_samples(), t);
 
 			double intertia_energy = 0;
 			double scaling = 1;

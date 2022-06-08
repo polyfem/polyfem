@@ -51,7 +51,7 @@ namespace polyfem
 		void ALNLProblem::update_target(const double t)
 		{
 			target_x_.setZero(hessian_AL_.rows(), 1);
-			rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.args["n_boundary_samples"], state.local_neumann_boundary, target_x_, t);
+			rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.n_boundary_samples(), state.local_neumann_boundary, target_x_, t);
 		}
 
 		void ALNLProblem::update_quantities(const double t, const TVector &x)
