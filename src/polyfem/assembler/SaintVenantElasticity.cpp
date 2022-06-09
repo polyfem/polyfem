@@ -47,7 +47,7 @@ namespace polyfem
 		{
 			assert(size_ == 2 || size_ == 3);
 
-			if (params["elasticity_tensor"].empty())
+			if (!params.contains("elasticity_tensor"))
 			{
 				if (params.count("young"))
 				{
@@ -59,7 +59,7 @@ namespace polyfem
 					if (params["E"].is_number() && params["nu"].is_number())
 						elasticity_tensor_.set_from_young_poisson(params["E"], params["nu"]);
 				}
-				else
+				else if (params.count("lambda"))
 				{
 					if (params["lambda"].is_number() && params["mu"].is_number())
 						elasticity_tensor_.set_from_lambda_mu(params["lambda"], params["mu"]);

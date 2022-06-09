@@ -537,7 +537,7 @@ namespace polyfem
 		{
 			set_e_nu(params["E"], params["nu"]);
 		}
-		else
+		else if (params.count("lambda"))
 		{
 			lambda_.init(params["lambda"]);
 			mu_.init(params["mu"]);
