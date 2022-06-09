@@ -97,17 +97,17 @@ namespace polyfem
 			: state(state), assembler(state.assembler), rhs_assembler(rhs_assembler),
 			  full_size((assembler.is_mixed(state.formulation()) ? state.n_pressure_bases : 0) + state.n_bases * state.mesh->dimension()),
 			  reduced_size(full_size - (no_reduced ? 0 : state.boundary_nodes.size())),
-			  t(t), rhs_computed(false), is_time_dependent(state.problem->is_time_dependent()), ignore_inertia(state.args["ignore_inertia"]), project_to_psd(false)
+			  t(t), rhs_computed(false), is_time_dependent(state.problem->is_time_dependent()), ignore_inertia(state.args["solver"]["ignore_inertia"]), project_to_psd(false)
 		{
 			assert(!assembler.is_mixed(state.formulation()));
 
 			_dhat = dhat;
 			assert(_dhat > 0);
-			_epsv = state.args["epsv"];
+			_epsv = state.args["contact"]["epsv"];
 			assert(_epsv > 0);
-			_mu = state.args["mu"];
-			_lagged_damping_weight = is_time_dependent ? 0 : state.args["lagged_damping_weight"].get<double>();
-			use_adaptive_barrier_stiffness = !state.args["barrier_stiffness"].is_number();
+			_mu = state.args["PDE"]["friction_coefficient"];
+			_lagged_damping_weight = is_time_dependent ? 0 : state.args["solver"]["contact"]["lagged_damping_weight"].get<double>();
+			use_adaptive_barrier_stiffness = !state.args["solver"]["contact"]["barrier_stiffness"].is_number();
 			if (use_adaptive_barrier_stiffness)
 			{
 				_barrier_stiffness = 1;
@@ -115,8 +115,8 @@ namespace polyfem
 			}
 			else
 			{
-				assert(state.args["barrier_stiffness"].is_number());
-				_barrier_stiffness = state.args["barrier_stiffness"];
+				assert(state.args["solver"]["contact"]["barrier_stiffness"].is_number());
+				_barrier_stiffness = state.args["solver"]["contact"]["barrier_stiffness"];
 				logger().debug("Using fixed barrier stiffness of {}", _barrier_stiffness);
 			}
 			_prev_distance = -1;
@@ -124,9 +124,9 @@ namespace polyfem
 			_time_integrator->set_parameters(state.args["time"]["BDF"]);
 			_time_integrator->set_parameters(state.args["time"]["newmark"]);
 
-			_broad_phase_method = state.args["solver_params"]["broad_phase_method"];
-			_ccd_tolerance = state.args["solver_params"]["ccd_tolerance"];
-			_ccd_max_iterations = state.args["solver_params"]["ccd_max_iterations"];
+			_broad_phase_method = state.args["solver"]["contact"]["CCD"]["broad_phase_method"];
+			_ccd_tolerance = state.args["solver"]["contact"]["CCD"]["ccd_tolerance"];
+			_ccd_max_iterations = state.args["solver"]["contact"]["CCD"]["ccd_max_iterations"];
 		}
 
 		void NLProblem::init(const TVector &full)
@@ -218,7 +218,7 @@ namespace polyfem
 
 		bool NLProblem::lagging_converged(const TVector &x)
 		{
-			double tol = state.args.value("friction_convergence_tol", 1e-2);
+			double tol = state.args["solver"]["contact"].value("friction_convergence_tol", 1e-2);
 			double grad_norm = compute_lagging_error(x);
 			logger().debug("Lagging convergece grad_norm={:g} tol={:g}", grad_norm, tol);
 			return grad_norm <= tol;
@@ -779,7 +779,7 @@ namespace polyfem
 
 			Eigen::MatrixXd displaced_surface = state.collision_mesh.vertices(displaced);
 
-			if (state.args["save_nl_solve_sequence"])
+			if (state.args["output"]["advanced"]["save_nl_solve_sequence"])
 			{
 				write_obj(state.resolve_output_path(fmt::format("step{:03d}.obj", iter_num)),
 						  displaced_surface, state.collision_mesh.edges(), state.collision_mesh.faces());
