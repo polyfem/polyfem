@@ -124,9 +124,9 @@ namespace polyfem
 			_time_integrator->set_parameters(state.args["time"]["BDF"]);
 			_time_integrator->set_parameters(state.args["time"]["newmark"]);
 
-			_broad_phase_method = state.args["solver"]["contact"]["CCD"]["broad_phase_method"];
-			_ccd_tolerance = state.args["solver"]["contact"]["CCD"]["ccd_tolerance"];
-			_ccd_max_iterations = state.args["solver"]["contact"]["CCD"]["ccd_max_iterations"];
+			_broad_phase_method = state.args["solver"]["contact"]["CCD"]["broad_phase"];
+			_ccd_tolerance = state.args["solver"]["contact"]["CCD"]["tolerance"];
+			_ccd_max_iterations = state.args["solver"]["contact"]["CCD"]["max_iterations"];
 		}
 
 		void NLProblem::init(const TVector &full)

@@ -1189,7 +1189,7 @@ namespace polyfem
 
 		Eigen::MatrixXd fun, exact_fun, err;
 		const bool boundary_only = use_sampler && args["output"]["advanced"]["vis_boundary_only"];
-		const bool material_params = args["output"]["paraview"]["options"]["material_params"];
+		const bool material_params = args["output"]["paraview"]["options"]["material"];
 		const bool body_ids = args["output"]["paraview"]["options"]["body_ids"];
 		const bool sol_on_grid = args["output"]["paraview"]["options"]["sol_on_grid"] > 0;
 		const bool export_velocity = args["output"]["paraview"]["options"]["velocity"];
@@ -1623,7 +1623,7 @@ namespace polyfem
 
 	void State::save_surface(const std::string &export_surface)
 	{
-		const bool material_params = args["output"]["paraview"]["options"]["material_params"];
+		const bool material_params = args["output"]["paraview"]["options"]["material"];
 		const bool body_ids = args["output"]["paraview"]["options"]["body_ids"];
 		const bool export_contact_forces = args["output"]["paraview"]["options"]["contact_forces"] && !problem->is_scalar();
 		const bool export_friction_forces = args["output"]["paraview"]["options"]["friction_forces"] && !problem->is_scalar();

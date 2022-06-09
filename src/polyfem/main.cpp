@@ -69,14 +69,13 @@ int main(int argc, char **argv)
 
 	int n_refs = 0;
 	bool use_splines = false;
-	bool count_flipped_els = false;
-	bool skip_normalization = false;
+	bool count_flipped_els = true;
+	bool skip_normalization = true;
 	bool no_ui = false;
 	bool p_ref = false;
 	bool force_linear = false;
 	bool isoparametric = false;
 	bool serendipity = false;
-	bool project_to_psd = false;
 	bool export_material_params = false;
 	bool save_solve_sequence_debug = false;
 	bool compute_errors = false;
@@ -86,7 +85,6 @@ int main(int argc, char **argv)
 	bool stop_after_build_basis = false;
 	bool lump_mass_mat = false;
 	spdlog::level::level_enum log_level = spdlog::level::debug;
-	int nl_solver_rhs_steps = 1;
 	int cache_size = -1;
 	size_t max_threads = std::numeric_limits<size_t>::max();
 	double f_delta = 0;
@@ -130,9 +128,7 @@ int main(int argc, char **argv)
 	command_line.add_flag("--serendipity", serendipity, "Use of serendipity elements, only for Q2");
 	command_line.add_flag("--stop_after_build_basis", stop_after_build_basis, "Stop after build bases");
 	command_line.add_option("--vis_mesh_res", vis_mesh_res, "Vis mesh resolution");
-	command_line.add_flag("--project_to_psd", project_to_psd, "Project local matrices to psd");
-	command_line.add_option("--n_incr_load", nl_solver_rhs_steps, "Number of incremeltal load");
-	command_line.add_flag("--save_incr_load", save_solve_sequence_debug, "Save incremental steps");
+	command_line.add_flag("--save_solve_sequence_debug", save_solve_sequence_debug, "Save incremental steps");
 	command_line.add_flag("--lump_mass_mat", lump_mass_mat, "Lump the mass matrix");
 	command_line.add_flag("--compute_errors", compute_errors, "Computes the errors");
 
@@ -216,10 +212,10 @@ int main(int argc, char **argv)
 
 		in_args["root_path"] = json_file;
 
-		if (in_args.contains("default_params"))
+		if (in_args.contains("defaults"))
 		{
 			apply_default_params(in_args);
-			in_args.erase("default_params"); // Remove this so state does not redo the apply
+			in_args.erase("defaults"); // Remove this so state does not redo the apply
 		}
 	}
 	else if (!hdf5_file.empty())
@@ -250,93 +246,193 @@ int main(int argc, char **argv)
 		if (has_arg(command_line, "mesh") || has_arg(command_line, "m"))
 			in_args["mesh"] = mesh_file;
 
-		if (has_arg(command_line, "lin_geom"))
-			in_args["force_linear_geometry"] = force_linear;
+		//TODO
+		// if (has_arg(command_line, "lin_geom"))
+		// 	in_args["force_linear_geometry"] = force_linear;
 
-		if (has_arg(command_line, "n_refs"))
-			in_args["n_refs"] = n_refs;
+		// if (has_arg(command_line, "n_refs"))
+		// 	in_args["n_refs"] = n_refs;
+
+		// if (has_arg(command_line, "not_norm"))
+		// 	in_args["normalize_mesh"] = !skip_normalization;
 
 		if (!problem_name.empty())
-			in_args["problem"] = problem_name;
+		{
+			in_args["PDE"] = {};
+			in_args["PDE"]["problem"] = problem_name;
+		}
 
 		if (!time_integrator_name.empty())
-			in_args["time_integrator"] = time_integrator_name;
-
-		if (has_arg(command_line, "not_norm"))
-			in_args["normalize_mesh"] = !skip_normalization;
-
-		if (has_arg(command_line, "project_to_psd"))
-			in_args["project_to_psd"] = project_to_psd;
-
-		if (has_arg(command_line, "al"))
-			in_args["use_al"] = use_al;
+		{
+			in_args["time"] = {};
+			in_args["time"]["integrator"] = time_integrator_name;
+		}
 
 		if (!formulation.empty())
+		{
+			if (!in_args.contains("PDE"))
+				in_args["PDE"] = {};
 			in_args["PDE"]["type"] = formulation;
+		}
 
 		if (has_arg(command_line, "p") || has_arg(command_line, "q"))
+		{
+			in_args["space"] = {};
 			in_args["space"]["discr_order"] = discr_order;
+		}
 
 		if (has_arg(command_line, "spline"))
-			in_args["use_spline"] = use_splines;
+		{
+			if (!in_args.contains("space"))
+				in_args["space"] = {};
+			in_args["space"]["advanced"] = {};
+			in_args["space"]["advanced"]["use_spline"] = use_splines;
+		}
 
 		if (has_arg(command_line, "count_flipped_els"))
-			in_args["count_flipped_els"] = count_flipped_els;
+		{
+			if (!in_args.contains("space"))
+				in_args["space"] = {};
+			if (!in_args["space"].contains("advanced"))
+				in_args["space"]["advanced"] = {};
+			in_args["space"]["advanced"]["count_flipped_els"] = count_flipped_els;
+		}
 
 		if (has_arg(command_line, "p_ref"))
-			in_args["use_p_ref"] = p_ref;
+		{
+			if (!in_args.contains("space"))
+				in_args["space"] = {};
+			in_args["space"]["use_p_ref"] = p_ref;
+		}
 		if (has_arg(command_line, "isoparametric"))
-			in_args["iso_parametric"] = isoparametric;
+		{
+			if (!in_args.contains("space"))
+				in_args["space"] = {};
+			if (!in_args["space"].contains("advanced"))
+				in_args["space"]["advanced"] = {};
+			in_args["space"]["advanced"]["iso_parametric"] = isoparametric;
+		}
 		if (has_arg(command_line, "serendipity"))
-			in_args["serendipity"] = serendipity;
+		{
+			if (!in_args.contains("space"))
+				in_args["space"] = {};
+			if (!in_args["space"].contains("advanced"))
+				in_args["space"]["advanced"] = {};
+			in_args["space"]["advanced"]["serendipity"] = serendipity;
+		}
 
-		if (has_arg(command_line, "n_incr_load"))
-			in_args["nl_solver_rhs_steps"] = nl_solver_rhs_steps;
-		if (has_arg(command_line, "save_incr_load"))
-			in_args["save_solve_sequence_debug"] = save_solve_sequence_debug;
+		if (has_arg(command_line, "save_solve_sequence_debug"))
+		{
+			in_args["output"] = {};
+			in_args["output"]["advanced"] = {};
+			in_args["output"]["advanced"]["save_solve_sequence_debug"] = save_solve_sequence_debug;
+		}
 
 		if (has_arg(command_line, "export_material_params"))
-			in_args["export"]["material_params"] = true;
+		{
+			if (!in_args.contains("output"))
+				in_args["output"]["options"] = {};
+			in_args["output"]["options"]["material"] = true;
+		}
 
 		if (has_arg(command_line, "f_delta"))
 		{
-			in_args["solver_params"] = {};
-			in_args["solver_params"]["fDelta"] = f_delta;
+			in_args["solver"] = {};
+			in_args["solver"]["nonlinear"] = {};
+			in_args["solver"]["nonlinear"]["fDelta"] = f_delta;
 		}
 	}
 
 	if (!bc_method.empty())
-		in_args["bc_method"] = bc_method;
+	{
+		if (!in_args.contains("space"))
+			in_args["space"] = {};
+		if (!in_args["space"].contains("advanced"))
+			in_args["space"]["advanced"] = {};
+		in_args["space"]["advanced"]["bc_method"] = bc_method;
+	}
 
 	if (!in_args.contains("lump_mass_matrix") && has_arg(command_line, "lump_mass_mat"))
-		in_args["lump_mass_matrix"] = lump_mass_mat;
+	{
+		if (!in_args.contains("solver"))
+			in_args["solver"] = {};
+		if (!in_args["solver"].contains("advanced"))
+			in_args["solver"]["advanced"] = {};
+		in_args["solver"]["advanced"]["lump_mass_matrix"] = lump_mass_mat;
+	}
 
 	if (has_arg(command_line, "compute_errors"))
-		in_args["compute_error"] = compute_errors;
+	{
+		if (!in_args.contains("output"))
+			in_args["output"] = {};
+		if (!in_args["output"].contains("advanced"))
+			in_args["output"]["advanced"] = {};
+		in_args["output"]["advanced"]["compute_error"] = compute_errors;
+	}
 
 	if (!output_json.empty())
-		in_args["output"] = output_json;
+	{
+		if (!in_args.contains("output"))
+			in_args["output"] = {};
+		in_args["output"]["json"] = output_json;
+	}
 	if (!solver.empty())
+	{
+		if (!in_args.contains("solver"))
+			in_args["solver"] = {};
+		if (!in_args["solver"].contains("linear"))
+			in_args["solver"]["linear"] = {};
 		in_args["solver"]["linear"]["solver"] = solver;
+	}
 	if (cache_size >= 0)
-		in_args["cache_size"] = cache_size;
+	{
+		if (!in_args.contains("solver"))
+			in_args["solver"] = {};
+		if (!in_args["solver"].contains("advanced"))
+			in_args["solver"]["advanced"] = {};
+		in_args["solver"]["advanced"]["cache_size"] = cache_size;
+	}
 	if (!output_vtu.empty())
 	{
-		in_args["export"]["vis_mesh"] = output_vtu;
-		in_args["export"]["wire_mesh"] = StringUtils::replace_ext(output_vtu, "_wire.vtu");
+		if (!in_args.contains("output"))
+			in_args["output"] = {};
+		if (!in_args["output"].contains("paraview"))
+			in_args["output"]["paraview"] = {};
+		in_args["output"]["paraview"]["file_name"] = output_vtu;
 	}
 
 	if (has_arg(command_line, "ccd_max_iterations"))
-		in_args["solver_params"]["ccd_max_iterations"] = ccd_max_iterations;
+	{
+		if (!in_args.contains("solver"))
+			in_args["solver"] = {};
+		in_args["solver"]["contact"] = {};
+		in_args["solver"]["contact"]["CCD"] = {};
+		in_args["solver"]["contact"]["CCD"]["max_iterations"] = ccd_max_iterations;
+	}
 
 	if (has_arg(command_line, "broad_phase_method"))
-		in_args["solver_params"]["broad_phase_method"] = broad_phase_method;
+	{
+		if (!in_args.contains("solver"))
+			in_args["solver"] = {};
+		if (!in_args["solver"].contains("contact"))
+			in_args["solver"]["contact"] = {};
+		if (!in_args["solver"]["contact"].contains("CCD"))
+			in_args["solver"]["contact"]["CCD"] = {};
+		in_args["solver"]["contact"]["CCD"]["broad_phase"] = broad_phase_method;
+	}
 
-	if (min_component > 0)
-		in_args["min_component"] = min_component;
+	//TODO
+	// if (min_component > 0)
+	// 	in_args["min_component"] = min_component;
 
 	if (vis_mesh_res > 0)
+	{
+		if (!in_args.contains("output"))
+			in_args["output"] = {};
+		if (!in_args["output"].contains("paraview"))
+			in_args["output"]["paraview"] = {};
 		in_args["vismesh_rel_area"] = vis_mesh_res;
+	}
 
 	if (!output_dir.empty())
 	{
