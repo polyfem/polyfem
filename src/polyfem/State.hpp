@@ -627,7 +627,7 @@ namespace polyfem
 		int n_boundary_samples() const
 		{
 			const int n_b_samples_j = args["space"]["advanced"]["n_boundary_samples"];
-			const int discr_order = mesh->orders().maxCoeff();
+			const int discr_order = mesh->orders().size() <= 0 ? 1 : mesh->orders().maxCoeff();
 			//TODO verify me
 			const int n_b_samples = std::max(n_b_samples_j, discr_order * 2 + 1);
 
