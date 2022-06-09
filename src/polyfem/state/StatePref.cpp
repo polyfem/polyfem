@@ -51,11 +51,11 @@ namespace polyfem
 		mesh2d.get_edges(p0, p1);
 		const auto tmp = p0 - p1;
 		const double h_ref = tmp.rowwise().norm().mean();
-		const double B = args["B"];
-		const bool h1_formula = args["h1_formula"];
-		const int p_ref = args["discr_order"];
+		const double B = args["space"]["advanced"]["B"];
+		const bool h1_formula = args["space"]["advanced"]["h1_formula"];
+		const int p_ref = args["space"]["discr_order"];
 		const double rho_ref = sqrt(3.0) / 6.0 * h_ref;
-		const int p_max = std::min(autogen::MAX_P_BASES, args["discr_order_max"].get<int>());
+		const int p_max = std::min(autogen::MAX_P_BASES, args["space"]["advanced"]["discr_order_max"].get<int>());
 
 		sigma_avg = 0;
 		sigma_max = 0;
@@ -138,11 +138,11 @@ namespace polyfem
 		mesh3d.get_edges(p0, p1);
 		const auto tmp = p0 - p1;
 		const double h_ref = tmp.rowwise().norm().mean();
-		const double B = args["B"];
-		const bool h1_formula = args["h1_formula"];
-		const int p_ref = args["discr_order"];
+		const double B = args["space"]["advanced"]["B"];
+		const bool h1_formula = args["space"]["advanced"]["h1_formula"];
+		const int p_ref = args["space"]["discr_order"];
 		const double rho_ref = sqrt(6.) / 12. * h_ref;
-		const int p_max = std::min(autogen::MAX_P_BASES, args["discr_order_max"].get<int>());
+		const int p_max = std::min(autogen::MAX_P_BASES, args["space"]["advanced"]["discr_order_max"].get<int>());
 
 		sigma_avg = 0;
 		sigma_max = 0;

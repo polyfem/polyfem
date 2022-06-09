@@ -275,7 +275,7 @@ int main(int argc, char **argv)
 			in_args["PDE"]["type"] = formulation;
 
 		if (has_arg(command_line, "p") || has_arg(command_line, "q"))
-			in_args["discr_order"] = discr_order;
+			in_args["space"]["discr_order"] = discr_order;
 
 		if (has_arg(command_line, "spline"))
 			in_args["use_spline"] = use_splines;

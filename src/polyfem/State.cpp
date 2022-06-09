@@ -1350,7 +1350,7 @@ namespace polyfem
 			// 	const double rho = 3 * V / S;
 			// 	const double hp = en.maxCoeff();
 			// 	const int pp = disc_orders(e);
-			// 	const int p_ref = args["discr_order"];
+			// 	const int p_ref = args["space"]["discr_order"];
 
 			// 	err_per_el(e, 0) = err.mean();
 			// 	err_per_el(e, 1) = err.maxCoeff();

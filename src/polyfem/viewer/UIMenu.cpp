@@ -148,9 +148,9 @@ void polyfem::UIState::draw_settings()
 {
 	ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.50f);
 	// ImGui::InputInt("quad", &state.quadrature_order);
-	int discr_order = state.args["discr_order"];
+	int discr_order = state.args["space"]["discr_order"];
 	ImGui::InputInt("discr", &discr_order);
-	state.args["discr_order"] = discr_order;
+	state.args["space"]["discr_order"] = discr_order;
 
 	// ImGui::InputInt("b", &state.n_boundary_samples);
 

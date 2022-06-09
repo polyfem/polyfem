@@ -730,10 +730,10 @@ namespace polyfem
 			Eigen::MatrixXd Es, nus, rhos;
 			std::vector<std::string> mats;
 			const int element_order = load_elements(geometry, V.rows(), materials, T, nodes, Es, nus, rhos, mats, mids);
-			const int current_order = state.args["discr_order"];
-			state.args["discr_order"] = std::max(current_order, element_order);
+			const int current_order = state.args["space"]["discr_order"];
+			state.args["space"]["discr_order"] = std::max(current_order, element_order);
 
-			if (state.args["discr_order"] == 1)
+			if (state.args["space"]["discr_order"] == 1)
 				state.args["vismesh_rel_area"] = 100000;
 
 			state.load_mesh(V, T);
