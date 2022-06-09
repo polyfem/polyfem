@@ -751,7 +751,7 @@ namespace polyfem
 			else
 			{
 				json params = state.args["params"];
-				params["size"] = 3;
+				state.assembler.set_size(3);
 				state.assembler.set_parameters(params);
 				state.assembler.init_multimaterial(true, Es, nus);
 				state.assembler.init_multimodels(mats);

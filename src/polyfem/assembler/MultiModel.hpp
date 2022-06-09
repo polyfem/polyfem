@@ -60,7 +60,7 @@ namespace polyfem
 			}
 
 		private:
-			int size_ = 2;
+			int size_ = -1;
 			std::vector<std::string> multi_material_models_;
 
 			// SaintVenantElasticity saint_venant_;

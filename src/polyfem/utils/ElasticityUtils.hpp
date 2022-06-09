@@ -80,7 +80,7 @@ namespace polyfem
 	public:
 		LameParameters();
 
-		void init(const json &params);
+		void init(const json &params, const int size);
 		void init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus);
 
 		void lambda_mu(double px, double py, double pz, double x, double y, double z, int el_id, double &lambda, double &mu) const;

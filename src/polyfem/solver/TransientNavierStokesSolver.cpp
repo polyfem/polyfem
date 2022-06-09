@@ -22,11 +22,13 @@ namespace polyfem
 	namespace solver
 	{
 
-		TransientNavierStokesSolver::TransientNavierStokesSolver(const json &solver_param, const json &problem_params, const std::string &solver_type, const std::string &precond_type)
-			: solver_param(solver_param), problem_params(problem_params), solver_type(solver_type), precond_type(precond_type)
+		TransientNavierStokesSolver::TransientNavierStokesSolver(const json &solver_param)
+			: solver_param(solver_param),
+			  solver_type(solver_param["linear"]["solver"]),
+			  precond_type(solver_param["linear"]["precond"])
 		{
-			gradNorm = solver_param.count("gradNorm") ? double(solver_param["gradNorm"]) : 1e-8;
-			iterations = solver_param.count("nl_iterations") ? int(solver_param["nl_iterations"]) : 100;
+			gradNorm = solver_param["nonlinear"]["grad_norm"];
+			iterations = solver_param["nonlinear"]["max_iterations"];
 		}
 
 		void TransientNavierStokesSolver::minimize(

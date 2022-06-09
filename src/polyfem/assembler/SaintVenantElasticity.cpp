@@ -41,12 +41,11 @@ namespace polyfem
 
 		SaintVenantElasticity::SaintVenantElasticity()
 		{
-			set_size(size_);
 		}
 
 		void SaintVenantElasticity::set_parameters(const json &params)
 		{
-			set_size(params["size"]);
+			assert(size_ == 2 || size_ == 3);
 
 			if (params["elasticity_tensor"].empty())
 			{

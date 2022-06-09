@@ -47,7 +47,7 @@ namespace polyfem
 			void set_params(const LameParameters &params) { params_ = params; }
 
 		private:
-			int size_ = 2;
+			int size_ = -1;
 
 			LameParameters params_;
 

@@ -16,7 +16,7 @@ namespace polyfem
 		class TransientNavierStokesSolver
 		{
 		public:
-			TransientNavierStokesSolver(const json &solver_param, const json &problem_params, const std::string &solver_type, const std::string &precond_type);
+			TransientNavierStokesSolver(const json &solver_param);
 
 			void minimize(const State &state, const double alpha, const double dt, const Eigen::VectorXd &prev_sol,
 						  const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
@@ -45,7 +45,6 @@ namespace polyfem
 			int iterations;
 
 			json solver_info;
-			json problem_params;
 
 			json internal_solver = json::array();
 

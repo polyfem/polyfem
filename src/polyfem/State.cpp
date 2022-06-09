@@ -317,10 +317,11 @@ namespace polyfem
 
 		disc_orders.resize(mesh->n_elements());
 
-		const auto params = build_json_params();
-		//TODO TESEO fix me
-		// assembler.set_parameters(params);
-		density.init(params);
+		if (!args["PDE"]["material"].is_null() && !args["PDE"]["material"].is_array())
+		{
+			assembler.set_parameters(args["PDE"]["material"]);
+			density.init(args["PDE"]["material"]);
+		}
 		problem->init(*mesh);
 
 		logger().info("Building {} basis...", (iso_parametric() ? "isoparametric" : "not isoparametric"));
@@ -844,15 +845,6 @@ namespace polyfem
 		};
 	}
 
-	json State::build_json_params()
-	{
-		//TESEO TODO
-		json params = args["params"];
-		params["size"] = mesh->dimension();
-
-		return params;
-	}
-
 	void State::assemble_stiffness_mat()
 	{
 		if (!mesh)
@@ -1005,9 +997,6 @@ namespace polyfem
 				p_params["bbox_center"] = {delta(0), delta(1)};
 		}
 		problem->set_parameters(p_params);
-
-		// const auto params = build_json_params();
-		// assembler.set_parameters(params);
 
 		// stiffness.resize(0, 0);
 		rhs.resize(0, 0);
@@ -1163,8 +1152,6 @@ namespace polyfem
 		igl::Timer timer;
 		timer.start();
 		logger().info("Solving {}", formulation());
-
-		const json &params = solver_params();
 
 		const std::string full_mat_path = args["output"]["data"]["full_mat"];
 		if (!full_mat_path.empty())

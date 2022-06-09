@@ -32,14 +32,13 @@ namespace polyfem
 			void compute_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &tensor) const;
 
 			inline int size() const { return size_; }
-
 			void set_size(const int size);
 
 			//sets the elasticty tensor
 			void set_parameters(const json &params);
 
 		private:
-			int size_ = 2;
+			int size_ = -1;
 
 			ElasticityTensor elasticity_tensor_;
 

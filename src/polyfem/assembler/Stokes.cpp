@@ -12,7 +12,7 @@ namespace polyfem
 	{
 		void StokesVelocity::set_parameters(const json &params)
 		{
-			set_size(params["size"]);
+			assert(size_ == 2 || size_ == 3);
 
 			if (params.count("viscosity"))
 			{
@@ -137,7 +137,7 @@ namespace polyfem
 
 		void StokesMixed::set_parameters(const json &params)
 		{
-			set_size(params["size"]);
+			assert(size_ == 2 || size_ == 3);
 		}
 
 		void StokesMixed::set_size(const int size)

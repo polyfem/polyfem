@@ -52,7 +52,7 @@ namespace polyfem
 			void compute_stress_tensor(const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &velocity, Eigen::MatrixXd &tensor) const;
 
 		private:
-			int size_ = 2;
+			int size_ = -1;
 			double viscosity_ = 1;
 
 			Eigen::MatrixXd compute_N(const ElementAssemblyValues &vals, const Eigen::MatrixXd &velocity, const QuadratureVector &da) const;

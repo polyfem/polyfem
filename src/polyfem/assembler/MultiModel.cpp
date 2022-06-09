@@ -18,11 +18,13 @@ namespace polyfem
 			size_ = size;
 			// saint_venant_.set_size(size);
 			neo_hookean_.set_size(size);
-			linear_elasticity_.size() = size;
+			linear_elasticity_.set_size(size);
 		}
 
 		void MultiModel::init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus)
 		{
+			assert(size_ == 2 || size_ == 3);
+
 			// saint_venant_.init_multimaterial(Es, nus);
 			neo_hookean_.init_multimaterial(is_volume, Es, nus);
 			linear_elasticity_.init_multimaterial(is_volume, Es, nus);
@@ -30,7 +32,7 @@ namespace polyfem
 
 		void MultiModel::set_parameters(const json &params)
 		{
-			set_size(params["size"]);
+			assert(size_ == 2 || size_ == 3);
 
 			// saint_venant_.set_parameters(params);
 			neo_hookean_.set_parameters(params);

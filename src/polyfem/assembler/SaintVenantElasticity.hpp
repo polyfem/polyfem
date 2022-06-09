@@ -40,7 +40,7 @@ namespace polyfem
 			void set_parameters(const json &params);
 
 		private:
-			int size_ = 2;
+			int size_ = -1;
 
 			ElasticityTensor elasticity_tensor_;
 

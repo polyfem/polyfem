@@ -13,7 +13,7 @@ namespace polyfem
 		template <bool full_gradient>
 		void NavierStokesVelocity<full_gradient>::set_parameters(const json &params)
 		{
-			set_size(params["size"]);
+			assert(size_ == 2 || size_ == 3);
 
 			if (params.count("viscosity"))
 			{

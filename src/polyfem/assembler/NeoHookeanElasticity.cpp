@@ -14,19 +14,20 @@ namespace polyfem
 	{
 		NeoHookeanElasticity::NeoHookeanElasticity()
 		{
-			set_size(size_);
 		}
 
 		void NeoHookeanElasticity::init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus)
 		{
+			assert(size_ == 2 || size_ == 3);
+
 			params_.init_multimaterial(is_volume, Es, nus);
 		}
 
 		void NeoHookeanElasticity::set_parameters(const json &params)
 		{
-			set_size(params["size"]);
+			assert(size_ == 2 || size_ == 3);
 
-			params_.init(params);
+			params_.init(params, size_);
 		}
 
 		void NeoHookeanElasticity::set_size(const int size)

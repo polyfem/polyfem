@@ -293,10 +293,6 @@ namespace polyfem
 		bool solve_export_to_file = true;
 		std::vector<SolutionFrame> solution_frames;
 
-		//utility function that gets the problem params (eg material)
-		//it adds the problem dimension from the problem and PDE
-		json build_json_params();
-
 		//computes the mesh size, it samples every edges n_samples times
 		//uses curved_mesh_size (false by default) to compute the size of
 		//the linear mesh
@@ -609,11 +605,6 @@ namespace polyfem
 
 		template <typename ProblemType>
 		std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver() const;
-
-		//returns solver, preconditioner and solver parameters (wrappers around the arguments)
-		inline std::string solver_type() const { return args["solver"]["linear"]["solver"]; }
-		inline std::string precond_type() const { return args["solver"]["linear"]["precond"]; }
-		inline const json &solver_params() const { return args["solver"]["linear"]; }
 
 		//compute a priori prefinement in 2d and 3d, fills disc_orders
 		void p_refinement(const mesh::Mesh2D &mesh2d);

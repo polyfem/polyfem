@@ -22,22 +22,21 @@ namespace polyfem
 
 	namespace solver
 	{
-		NavierStokesSolver::NavierStokesSolver(double viscosity, const json &solver_param, const json &problem_params, const std::string &solver_type, const std::string &precond_type)
-			: viscosity(viscosity), solver_param(solver_param), problem_params(problem_params), solver_type(solver_type), precond_type(precond_type)
+		NavierStokesSolver::NavierStokesSolver(const json &solver_param)
+			: solver_param(solver_param),
+			  solver_type(solver_param["linear"]["solver"]),
+			  precond_type(solver_param["linear"]["precond"])
 		{
-			gradNorm = solver_param.count("gradNorm") ? double(solver_param["gradNorm"]) : 1e-8;
-			iterations = solver_param.count("nl_iterations") ? int(solver_param["nl_iterations"]) : 100;
+			gradNorm = solver_param["nonlinear"]["grad_norm"];
+			iterations = solver_param["nonlinear"]["max_iterations"];
 		}
 
 		void NavierStokesSolver::minimize(const State &state, const Eigen::MatrixXd &rhs, Eigen::VectorXd &x)
 		{
 			const auto &assembler = state.assembler;
 
-			// problem_params["viscosity"] = 1;
-			// assembler.set_parameters(problem_params);
-
 			auto solver = LinearSolver::create(solver_type, precond_type);
-			solver->setParameters(solver_param);
+			solver->setParameters(solver_param["linear"]);
 			polyfem::logger().debug("\tinternal solver {}", solver->name());
 
 			const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
@@ -93,7 +92,6 @@ namespace polyfem
 			assembly_time = 0;
 			inverting_time = 0;
 
-			// velocity_stiffness *= viscosity;
 			int it = 0;
 			double nlres_norm = 0;
 			b = rhs;

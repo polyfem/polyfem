@@ -206,7 +206,7 @@ namespace polyfem
 
 							"is_time_dependent": false,
 
-							"materials" : null,
+							"material" : null,
 
 							"friction_coefficient": 0
 						},

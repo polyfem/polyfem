@@ -435,6 +435,29 @@ namespace polyfem
 			}
 		}
 
+		void AssemblerUtils::set_size(const int dim)
+		{
+			linear_elasticity_.local_assembler().set_size(dim);
+			linear_elasticity_energy_.local_assembler().set_size(dim);
+			hooke_linear_elasticity_.local_assembler().set_size(dim);
+
+			saint_venant_elasticity_.local_assembler().set_size(dim);
+			neo_hookean_elasticity_.local_assembler().set_size(dim);
+			multi_models_elasticity_.local_assembler().set_size(dim);
+			// ogden_elasticity_.local_assembler().set_size(dim);
+
+			incompressible_lin_elast_displacement_.local_assembler().set_size(dim);
+			incompressible_lin_elast_mixed_.local_assembler().set_size(dim);
+			incompressible_lin_elast_pressure_.local_assembler().set_size(dim);
+
+			stokes_velocity_.local_assembler().set_size(dim);
+			stokes_mixed_.local_assembler().set_size(dim);
+			// stokes_pressure_.local_assembler().set_size(dim);
+
+			navier_stokes_velocity_.local_assembler().set_size(dim);
+			navier_stokes_velocity_picard_.local_assembler().set_size(dim);
+		}
+
 		void AssemblerUtils::init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus)
 		{
 			linear_elasticity_.local_assembler().init_multimaterial(is_volume, Es, nus);

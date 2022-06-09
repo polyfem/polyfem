@@ -59,12 +59,12 @@ namespace polyfem
 		if (name == "newton" || name == "Newton")
 		{
 			return std::make_shared<cppoptlib::SparseNewtonDescentSolver<ProblemType>>(
-				solver_params(), solver_type(), precond_type());
+				args["solver"]["nonlinear"], args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
 		}
 		else if (name == "lbfgs" || name == "LBFGS" || name == "L-BFGS")
 		{
 			return std::make_shared<cppoptlib::LBFGSSolver<ProblemType>>(
-				solver_params());
+				args["solver"]["nonlinear"]);
 		}
 		else
 		{
@@ -123,7 +123,6 @@ namespace polyfem
 	void State::solve_transient_navier_stokes_split(const int time_steps, const double dt, const RhsAssembler &rhs_assembler)
 	{
 		assert(formulation() == "OperatorSplitting" && problem->is_time_dependent());
-		const json &params = solver_params();
 		Eigen::MatrixXd local_pts;
 		auto &gbases = iso_parametric() ? bases : geom_bases;
 		if (mesh->dimension() == 2)
@@ -152,7 +151,8 @@ namespace polyfem
 		const int dim = mesh->dimension();
 		const int n_el = int(bases.size());       // number of elements
 		const int shape = gbases[0].bases.size(); // number of geometry vertices in an element
-		const double viscosity_ = build_json_params()["viscosity"];
+		//TODO fix me
+		const double viscosity_ = -1; //build_json_params()["viscosity"];
 
 		logger().info("Matrices assembly...");
 		StiffnessMatrix stiffness_viscosity, mixed_stiffness, velocity_mass;
@@ -169,7 +169,7 @@ namespace polyfem
 		mixed_stiffness = mixed_stiffness.transpose();
 		logger().info("Matrices assembly ends!");
 
-		OperatorSplittingSolver ss(*mesh, shape, n_el, local_boundary, boundary_nodes, pressure_boundary_nodes, bnd_nodes, mass, stiffness_viscosity, stiffness, velocity_mass, dt, viscosity_, args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"], params, args["output"]["data"]["stiffness_mat"]);
+		OperatorSplittingSolver ss(*mesh, shape, n_el, local_boundary, boundary_nodes, pressure_boundary_nodes, bnd_nodes, mass, stiffness_viscosity, stiffness, velocity_mass, dt, viscosity_, args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"], args["solver"]["linear"], args["output"]["data"]["stiffness_mat"]);
 
 		/* initialize solution */
 		pressure = Eigen::MatrixXd::Zero(n_pressure_bases, 1);
@@ -241,7 +241,7 @@ namespace polyfem
 		assembler.assemble_mixed_problem(formulation(), mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases, pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
 		assembler.assemble_pressure_problem(formulation(), mesh->is_volume(), n_pressure_bases, pressure_bases, gbases, pressure_ass_vals_cache, pressure_stiffness);
 
-		TransientNavierStokesSolver ns_solver(solver_params(), build_json_params(), solver_type(), precond_type());
+		TransientNavierStokesSolver ns_solver(args["solver"]);
 		const int n_larger = n_pressure_bases + (use_avg_pressure ? 1 : 0);
 
 		const int n_b_samples = n_boundary_samples();
@@ -279,9 +279,8 @@ namespace polyfem
 	{
 		assert((problem->is_scalar() || assembler.is_mixed(formulation())) && problem->is_time_dependent());
 
-		const json &params = solver_params();
 		auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
-		solver->setParameters(params);
+		solver->setParameters(args["solver"]["linear"]);
 		logger().info("{}...", solver->name());
 
 		StiffnessMatrix A;
@@ -346,9 +345,8 @@ namespace polyfem
 		assert(!problem->is_scalar() && assembler.is_linear(formulation()) && !args["contact"]["enabled"] && problem->is_time_dependent());
 		assert(!assembler.is_mixed(formulation()));
 
-		const json &params = solver_params();
 		auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
-		solver->setParameters(params);
+		solver->setParameters(args["solver"]["linear"]);
 		logger().info("{}...", solver->name());
 
 		const std::string v_path = resolve_input_path(args["input"]["data"]["v_path"]);
@@ -698,9 +696,8 @@ namespace polyfem
 	{
 		assert(!problem->is_time_dependent());
 		assert(assembler.is_linear(formulation()) && !args["contact"]["enabled"]);
-		const json &params = solver_params();
 		auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
-		solver->setParameters(params);
+		solver->setParameters(args["solver"]["linear"]);
 		StiffnessMatrix A;
 		Eigen::VectorXd b;
 		logger().info("{}...", solver->name());
@@ -747,9 +744,8 @@ namespace polyfem
 	{
 		assert(!problem->is_time_dependent());
 		assert(formulation() == "NavierStokes");
-		auto params = build_json_params();
-		const double viscosity = params.count("viscosity") ? double(params["viscosity"]) : 1.;
-		NavierStokesSolver ns_solver(viscosity, solver_params(), build_json_params(), solver_type(), precond_type());
+
+		NavierStokesSolver ns_solver(args["solver"]);
 		Eigen::VectorXd x;
 		json rhs_solver_params = args["solver"]["linear"];
 		if (!rhs_solver_params.contains("Pardiso"))

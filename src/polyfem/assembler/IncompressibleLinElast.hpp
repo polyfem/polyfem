@@ -85,6 +85,7 @@ namespace polyfem
 			}
 
 			inline int size() const { return 1; }
+			void set_size(const int size) { size_ = size; }
 
 			void set_parameters(const json &params);
 			void init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus);

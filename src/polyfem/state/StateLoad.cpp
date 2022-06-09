@@ -61,6 +61,8 @@ namespace polyfem
 		else
 			logger().info("mesh bb min [{} {} {}], max [{} {} {}]", min(0), min(1), min(2), max(0), max(1), max(2));
 
+		assembler.set_size(mesh->dimension());
+
 		//TODO
 		// int n_refs = args["n_refs"];
 
@@ -192,6 +194,8 @@ namespace polyfem
 			logger().info("mesh bb min [{}, {}], max [{}, {}]", min(0), min(1), max(0), max(1));
 		else
 			logger().info("mesh bb min [{}, {}, {}], max [{}, {}, {}]", min(0), min(1), min(2), max(0), max(1), max(2));
+
+		assembler.set_size(mesh->dimension());
 
 		//TODO fix me Zach
 		// int n_refs = args["n_refs"];

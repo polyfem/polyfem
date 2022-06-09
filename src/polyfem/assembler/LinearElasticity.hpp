@@ -50,7 +50,7 @@ namespace polyfem
 			void compute_dstress_dmu_dlambda(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, Eigen::MatrixXd &dstress_dmu, Eigen::MatrixXd &dstress_dlambda) const;
 
 			//size of the problem, this is a tensor problem so the size is the size of the mesh
-			inline int &size() { return size_; }
+			void set_size(const int size) { size_ = size; }
 			inline int size() const { return size_; }
 
 			//inialize material parameter
@@ -63,7 +63,7 @@ namespace polyfem
 			void set_params(const LameParameters &params) { params_ = params; }
 
 		private:
-			int size_ = 2;
+			int size_ = -1;
 			//class that stores and compute lame parameters per point
 			LameParameters params_;
 

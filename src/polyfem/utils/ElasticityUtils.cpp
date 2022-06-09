@@ -520,9 +520,9 @@ namespace polyfem
 		is_lambda_mu_ = true;
 	}
 
-	void LameParameters::init(const json &params)
+	void LameParameters::init(const json &params, const int size)
 	{
-		size_ = params["size"];
+		size_ = size;
 
 		if (initialized_)
 			return;

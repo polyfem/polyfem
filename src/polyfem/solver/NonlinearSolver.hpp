@@ -31,13 +31,13 @@ namespace cppoptlib
 			: solver_params(solver_params)
 		{
 			auto criteria = this->criteria();
-			criteria.fDelta = solver_params["fDelta"];
-			criteria.gradNorm = solver_params["gradNorm"];
-			criteria.iterations = solver_params["nl_iterations"];
+			criteria.fDelta = solver_params["f_delta"];
+			criteria.gradNorm = solver_params["grad_norm"];
+			criteria.iterations = solver_params["max_iterations"];
 
-			use_gradient_norm = solver_params["useGradNorm"];
-			normalize_gradient = solver_params["relativeGradient"];
-			use_grad_norm_tol = solver_params["use_grad_norm_tol"];
+			use_gradient_norm = solver_params["use_grad_norm"];
+			normalize_gradient = solver_params["relative_gradient"];
+			use_grad_norm_tol = solver_params["line_search"]["use_grad_norm_tol"];
 			this->setStopCriteria(criteria);
 
 			setLineSearch("armijo");

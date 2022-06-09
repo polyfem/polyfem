@@ -13,30 +13,16 @@ namespace polyfem
 	{
 		void LinearElasticity::init_multimaterial(const bool is_volume, const Eigen::MatrixXd &Es, const Eigen::MatrixXd &nus)
 		{
+			assert(size_ == 2 || size_ == 3);
+
 			params_.init_multimaterial(is_volume, Es, nus);
 		}
 
 		void LinearElasticity::set_parameters(const json &params)
 		{
-			size() = params["size"];
+			assert(size_ == 2 || size_ == 3);
 
-			params_.init(params);
-
-			// if(params.count("young")) {
-			// 	lambda() = convert_to_lambda(size_ == 3, params["young"], params["nu"]);
-			// 	mu() = convert_to_mu(params["young"], params["nu"]);
-			// } else if(params.count("E")) {
-			// 	lambda() = convert_to_lambda(size_ == 3, params["E"], params["nu"]);
-			// 	mu() = convert_to_mu(params["E"], params["nu"]);
-			// }
-			// else
-			// {
-			// 	lambda() = params["lambda"];
-			// 	mu() = params["mu"];
-			// }
-
-			// std::cout<<mu_<<std::endl;
-			// std::cout<<lambda_<<std::endl;
+			params_.init(params, size_);
 		}
 
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>

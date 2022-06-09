@@ -26,7 +26,6 @@ namespace polyfem
 
 		OgdenElasticity::OgdenElasticity()
 		{
-			set_size(size_);
 			alphas_.resize(1);
 			mus_.resize(1);
 			Ds_.resize(1);
@@ -38,7 +37,7 @@ namespace polyfem
 
 		void OgdenElasticity::set_parameters(const json &params)
 		{
-			set_size(params["size"]);
+			assert(size_ == 2 || size_ == 3);
 
 			if (params.count("alphas"))
 			{
