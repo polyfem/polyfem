@@ -331,28 +331,28 @@ namespace polyfem
 		// {
 		// 	if (!args_in.contains("line_search"))
 		// 	{
-		// 		args["line_search"] = "backtracking";
+		// 		args["solver"]["nonlinear"]["line_search"]["method"] = "backtracking";
 		// 		logger().warn("Changing default linesearch to backtracking");
 		// 	}
 
-		// 	if (args["friction_iterations"] == 0)
+		// 	if (args["solver"]["contact"]["friction_iterations"] == 0)
 		// 	{
 		// 		logger().info("specified friction_iterations is 0; disabling friction");
 		// 		args["mu"] = 0.0;
 		// 	}
-		// 	else if (args["friction_iterations"] < 0)
+		// 	else if (args["solver"]["contact"]["friction_iterations"] < 0)
 		// 	{
-		// 		args["friction_iterations"] = std::numeric_limits<int>::max();
+		// 		args["solver"]["contact"]["friction_iterations"] = std::numeric_limits<int>::max();
 		// 	}
 
 		// 	if (args["mu"] == 0.0)
 		// 	{
-		// 		args["friction_iterations"] = 0;
+		// 		args["solver"]["contact"]["friction_iterations"] = 0;
 		// 	}
 		// }
 		// else
 		// {
-		// 	args["friction_iterations"] = 0;
+		// 	args["solver"]["contact"]["friction_iterations"] = 0;
 		// 	args["mu"] = 0;
 		// }
 

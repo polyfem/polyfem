@@ -571,9 +571,7 @@ namespace polyfem
 
 		solver_info = json::array();
 
-		// if (args["use_al"] || args["contact"]["enabled"])
-		// {
-		double al_weight = args["al_weight"];
+		double al_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
 		step_data.alnl_problem = std::make_shared<ALNLProblem>(*this, rhs_assembler, t0 + dt, args["contact"]["dhat"], al_weight);
 		ALNLProblem &alnl_problem = *step_data.alnl_problem;
 		alnl_problem.init_time_integrator(sol, velocity, acceleration, dt);
@@ -588,8 +586,8 @@ namespace polyfem
 		NLProblem &nl_problem = *step_data.nl_problem;
 		ALNLProblem &alnl_problem = *step_data.alnl_problem;
 
-		double al_weight = args["al_weight"];
-		const double max_al_weight = args["max_al_weight"];
+		double al_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
+		const double max_al_weight = args["solver"]["augmented_lagrangian"]["max_weight"];
 
 		nl_problem.full_to_reduced(sol, tmp_sol);
 		assert(sol.size() == rhs.size());
@@ -601,13 +599,13 @@ namespace polyfem
 			alnl_problem.init_lagging(sol);
 		}
 
-		if (args["friction_iterations"] > 0)
+		if (args["solver"]["contact"]["friction_iterations"] > 0)
 		{
 			logger().debug("Lagging iteration 1");
 		}
 
 		nl_problem.line_search_begin(sol, tmp_sol);
-		bool force_al = args["force_al"];
+		bool force_al = args["solver"]["augmented_lagrangian"]["force"];
 		while (force_al || !std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
 		{
 			force_al = false;
@@ -616,7 +614,7 @@ namespace polyfem
 			logger().debug("Solving AL Problem with weight {}", al_weight);
 
 			std::shared_ptr<cppoptlib::NonlinearSolver<ALNLProblem>> alnlsolver = make_nl_solver<ALNLProblem>();
-			alnlsolver->setLineSearch(args["line_search"]);
+			alnlsolver->setLineSearch(args["solver"]["nonlinear"]["line_search"]["method"]);
 			alnl_problem.init(sol);
 			tmp_sol = sol;
 			alnlsolver->minimize(alnl_problem, tmp_sol);
@@ -646,7 +644,7 @@ namespace polyfem
 		logger().debug("Solving Problem");
 
 		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nlsolver = make_nl_solver<NLProblem>();
-		nlsolver->setLineSearch(args["line_search"]);
+		nlsolver->setLineSearch(args["solver"]["nonlinear"]["line_search"]["method"]);
 		nl_problem.init(sol);
 		nlsolver->minimize(nl_problem, tmp_sol);
 		json nl_solver_info;
@@ -660,7 +658,7 @@ namespace polyfem
 		int lag_i;
 		nl_problem.update_lagging(tmp_sol);
 		bool lagging_converged = nl_problem.lagging_converged(tmp_sol);
-		for (lag_i = 1; !lagging_converged && lag_i < args["friction_iterations"]; lag_i++)
+		for (lag_i = 1; !lagging_converged && lag_i < args["solver"]["contact"]["friction_iterations"]; lag_i++)
 		{
 			logger().debug("Lagging iteration {:d}", lag_i + 1);
 			nl_problem.init(sol);
@@ -677,14 +675,14 @@ namespace polyfem
 			lagging_converged = nl_problem.lagging_converged(tmp_sol);
 		}
 
-		if (args["friction_iterations"] > 0)
+		if (args["solver"]["contact"]["friction_iterations"] > 0)
 		{
 			logger().log(
 				lagging_converged ? spdlog::level::info : spdlog::level::warn,
 				"{} {:d} lagging iteration(s) (err={:g} tol={:g})",
 				lagging_converged ? "Friction lagging converged using" : "Friction lagging maxed out at",
 				lag_i, nl_problem.compute_lagging_error(tmp_sol),
-				args["friction_convergence_tol"].get<double>());
+				args["solver"]["contact"]["friction_convergence_tol"].get<double>());
 		}
 
 		{
@@ -706,15 +704,17 @@ namespace polyfem
 		StiffnessMatrix A;
 		Eigen::VectorXd b;
 		logger().info("{}...", solver->name());
-		json rhs_solver_params = args["rhs_solver_params"];
-		rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
+		json rhs_solver_params = args["solver"]["linear"];
+		if (!rhs_solver_params.contains("Pardiso"))
+			rhs_solver_params["Pardiso"] = {};
+		rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 		const int size = problem->is_scalar() ? 1 : mesh->dimension();
 		RhsAssembler rhs_assembler(assembler, *mesh, obstacle,
 								   n_bases, size,
 								   bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 								   formulation(), *problem,
-								   args["bc_method"],
-								   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
+								   args["space"]["advanced"]["bc_method"],
+								   args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"], rhs_solver_params);
 
 		if (formulation() != "Bilaplacian")
 			rhs_assembler.set_bc(local_boundary, boundary_nodes, n_boundary_samples(), local_neumann_boundary, rhs);
@@ -751,15 +751,17 @@ namespace polyfem
 		const double viscosity = params.count("viscosity") ? double(params["viscosity"]) : 1.;
 		NavierStokesSolver ns_solver(viscosity, solver_params(), build_json_params(), solver_type(), precond_type());
 		Eigen::VectorXd x;
-		json rhs_solver_params = args["rhs_solver_params"];
-		rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
+		json rhs_solver_params = args["solver"]["linear"];
+		if (!rhs_solver_params.contains("Pardiso"))
+			rhs_solver_params["Pardiso"] = {};
+		rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 
 		RhsAssembler rhs_assembler(assembler, *mesh, obstacle,
 								   n_bases, mesh->dimension(),
 								   bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 								   formulation(), *problem,
-								   args["bc_method"],
-								   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
+								   args["space"]["advanced"]["bc_method"],
+								   args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"], rhs_solver_params);
 		rhs_assembler.set_bc(local_boundary, boundary_nodes, n_boundary_samples(), local_neumann_boundary, rhs);
 		ns_solver.minimize(*this, rhs, x);
 		sol = x;
@@ -779,15 +781,17 @@ namespace polyfem
 
 		const auto &gbases = iso_parametric() ? bases : geom_bases;
 
-		json rhs_solver_params = args["rhs_solver_params"];
-		rhs_solver_params["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
+		json rhs_solver_params = args["solver"]["linear"];
+		if (!rhs_solver_params.contains("Pardiso"))
+			rhs_solver_params["Pardiso"] = {};
+		rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
 		const int size = problem->is_scalar() ? 1 : mesh->dimension();
 		RhsAssembler rhs_assembler(assembler, *mesh, obstacle,
 								   n_bases, size,
 								   bases, iso_parametric() ? bases : geom_bases, ass_vals_cache,
 								   formulation(), *problem,
-								   args["bc_method"],
-								   args["rhs_solver_type"], args["rhs_precond_type"], rhs_solver_params);
+								   args["space"]["advanced"]["bc_method"],
+								   args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"], rhs_solver_params);
 
 		Eigen::VectorXd tmp_sol;
 
@@ -798,6 +802,7 @@ namespace polyfem
 		}
 
 		const std::string u_path = resolve_input_path(args["import"]["u_path"]);
+		//TODO fix import
 		if (!u_path.empty())
 			import_matrix(u_path, args["import"], sol);
 
@@ -860,17 +865,17 @@ namespace polyfem
 
 		step_data.nl_problem = std::make_shared<NLProblem>(*this, rhs_assembler, 1, args["contact"]["dhat"]);
 		NLProblem &nl_problem = *(step_data.nl_problem);
-		step_data.alnl_problem = std::make_shared<ALNLProblem>(*this, rhs_assembler, 1, args["contact"]["dhat"], args["al_weight"]);
+		step_data.alnl_problem = std::make_shared<ALNLProblem>(*this, rhs_assembler, 1, args["contact"]["dhat"], args["solver"]["augmented_lagrangian"]["initial_weight"]);
 		ALNLProblem &alnl_problem = *(step_data.alnl_problem);
 
-		double al_weight = args["al_weight"];
-		const double max_al_weight = args["max_al_weight"];
+		double al_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
+		const double max_al_weight = args["solver"]["augmented_lagrangian"]["max_weight"];
 		nl_problem.full_to_reduced(sol, tmp_sol);
 
 		nl_problem.init_lagging(sol);
 		alnl_problem.init_lagging(sol);
 
-		const int friction_iterations = args["friction_iterations"];
+		const int friction_iterations = args["solver"]["contact"]["friction_iterations"];
 		assert(friction_iterations >= 0);
 		if (friction_iterations > 0)
 		{
@@ -890,7 +895,7 @@ namespace polyfem
 
 		int index = 0;
 
-		if (args["save_solve_sequence_debug"])
+		if (args["output"]["advanced"]["save_solve_sequence_debug"])
 		{
 			if (!solve_export_to_file)
 				solution_frames.emplace_back();
@@ -898,7 +903,7 @@ namespace polyfem
 		}
 
 		nl_problem.line_search_begin(sol, tmp_sol);
-		bool force_al = args["force_al"];
+		bool force_al = args["solver"]["augmented_lagrangian"]["force"];
 		while (force_al || !std::isfinite(nl_problem.value(tmp_sol)) || !nl_problem.is_step_valid(sol, tmp_sol) || !nl_problem.is_step_collision_free(sol, tmp_sol))
 		{
 			force_al = false;
@@ -907,7 +912,7 @@ namespace polyfem
 			logger().debug("Solving AL Problem with weight {}", al_weight);
 
 			std::shared_ptr<cppoptlib::NonlinearSolver<ALNLProblem>> alnlsolver = make_nl_solver<ALNLProblem>();
-			alnlsolver->setLineSearch(args["line_search"]);
+			alnlsolver->setLineSearch(args["solver"]["nonlinear"]["line_search"]["method"]);
 			alnl_problem.init(sol);
 			tmp_sol = sol;
 			alnlsolver->minimize(alnl_problem, tmp_sol);
@@ -931,7 +936,7 @@ namespace polyfem
 			}
 
 			++index;
-			if (args["save_solve_sequence_debug"])
+			if (args["output"]["advanced"]["save_solve_sequence_debug"])
 			{
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
@@ -941,7 +946,7 @@ namespace polyfem
 		nl_problem.line_search_end();
 		logger().debug("Solving Problem");
 		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nlsolver = make_nl_solver<NLProblem>();
-		nlsolver->setLineSearch(args["line_search"]);
+		nlsolver->setLineSearch(args["solver"]["nonlinear"]["line_search"]["method"]);
 		nl_problem.init(sol);
 		nlsolver->minimize(nl_problem, tmp_sol);
 		json nl_solver_info;
@@ -951,7 +956,7 @@ namespace polyfem
 		nl_problem.reduced_to_full(tmp_sol, sol);
 
 		++index;
-		if (args["save_solve_sequence_debug"])
+		if (args["output"]["advanced"]["save_solve_sequence_debug"])
 		{
 			if (!solve_export_to_file)
 				solution_frames.emplace_back();
@@ -983,7 +988,7 @@ namespace polyfem
 			lagging_converged = nl_problem.lagging_converged(tmp_sol);
 
 			++index;
-			if (args["save_solve_sequence_debug"])
+			if (args["output"]["advanced"]["save_solve_sequence_debug"])
 			{
 				if (!solve_export_to_file)
 					solution_frames.emplace_back();
@@ -998,7 +1003,7 @@ namespace polyfem
 				"{} {:d} lagging iteration(s) (err={:g} tol={:g})",
 				lagging_converged ? "Friction lagging converged using" : "Friction lagging maxed out at",
 				lag_i, nl_problem.compute_lagging_error(tmp_sol),
-				args["friction_convergence_tol"].get<double>());
+				args["solver"]["contact"]["friction_convergence_tol"].get<double>());
 		}
 
 		{
