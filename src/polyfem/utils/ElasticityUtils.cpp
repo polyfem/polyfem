@@ -480,7 +480,9 @@ namespace polyfem
 	{
 		lambda_.init(1.0);
 		mu_.init(1.0);
+		is_lambda_mu_ = true;
 		initialized_ = false;
+		size_ = 2;
 	}
 
 	void LameParameters::lambda_mu(double px, double py, double pz, double x, double y, double z, int el_id, double &lambda, double &mu) const
