@@ -6,6 +6,9 @@
 #include <polyfem/mesh/VTUWriter.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
 
+#include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/solver/ALNLProblem.hpp>
+
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
 
@@ -450,43 +453,44 @@ namespace polyfem
 				boundary_triangles.row(i) << std::get<0>(tris[i]), std::get<2>(tris[i]), std::get<1>(tris[i]);
 			}
 
-			if (args["min_component"] > 0)
-			{
-				Eigen::SparseMatrix<int> adj;
-				igl::facet_adjacency_matrix(boundary_triangles, adj);
-				Eigen::MatrixXi C, counts;
-				igl::connected_components(adj, C, counts);
+			//TODO Zach
+			// if (args["min_component"] > 0)
+			// {
+			// 	Eigen::SparseMatrix<int> adj;
+			// 	igl::facet_adjacency_matrix(boundary_triangles, adj);
+			// 	Eigen::MatrixXi C, counts;
+			// 	igl::connected_components(adj, C, counts);
 
-				std::vector<int> valid;
-				const int min_count = args["min_component"];
+			// 	std::vector<int> valid;
+			// 	const int min_count = args["min_component"];
 
-				for (int i = 0; i < counts.size(); ++i)
-				{
-					if (counts(i) >= min_count)
-					{
-						valid.push_back(i);
-					}
-				}
+			// 	for (int i = 0; i < counts.size(); ++i)
+			// 	{
+			// 		if (counts(i) >= min_count)
+			// 		{
+			// 			valid.push_back(i);
+			// 		}
+			// 	}
 
-				tris.clear();
-				for (int i = 0; i < C.size(); ++i)
-				{
-					for (int v : valid)
-					{
-						if (v == C(i))
-						{
-							tris.emplace_back(boundary_triangles(i, 0), boundary_triangles(i, 1), boundary_triangles(i, 2));
-							break;
-						}
-					}
-				}
+			// 	tris.clear();
+			// 	for (int i = 0; i < C.size(); ++i)
+			// 	{
+			// 		for (int v : valid)
+			// 		{
+			// 			if (v == C(i))
+			// 			{
+			// 				tris.emplace_back(boundary_triangles(i, 0), boundary_triangles(i, 1), boundary_triangles(i, 2));
+			// 				break;
+			// 			}
+			// 		}
+			// 	}
 
-				boundary_triangles.resize(tris.size(), 3);
-				for (int i = 0; i < tris.size(); ++i)
-				{
-					boundary_triangles.row(i) << std::get<0>(tris[i]), std::get<1>(tris[i]), std::get<2>(tris[i]);
-				}
-			}
+			// 	boundary_triangles.resize(tris.size(), 3);
+			// 	for (int i = 0; i < tris.size(); ++i)
+			// 	{
+			// 		boundary_triangles.row(i) << std::get<0>(tris[i]), std::get<1>(tris[i]), std::get<2>(tris[i]);
+			// 	}
+			// }
 
 			if (boundary_triangles.rows() > 0)
 			{
@@ -551,7 +555,7 @@ namespace polyfem
 
 	void State::save_json()
 	{
-		const std::string out_path = resolve_output_path(args["output"]);
+		const std::string out_path = resolve_output_path(args["output"]["json"]);
 		if (!out_path.empty())
 		{
 			std::ofstream out(out_path);
@@ -682,9 +686,9 @@ namespace polyfem
 
 		std::vector<double> sol_at_node(actual_dim);
 
-		if (args["export"]["sol_at_node"] >= 0)
+		if (args["output"]["advanced"]["sol_at_node"] >= 0)
 		{
-			const int node_id = args["export"]["sol_at_node"];
+			const int node_id = args["output"]["advanced"]["sol_at_node"];
 
 			for (int d = 0; d < actual_dim; ++d)
 			{
@@ -735,15 +739,12 @@ namespace polyfem
 
 		// Export vtu mesh of solution + wire mesh of deformed input
 		// + mesh colored with the bases
-		const std::string paraview_path = resolve_output_path(args["export"]["paraview"]);
-		const std::string old_path = resolve_output_path(args["export"]["vis_mesh"]);
-		const std::string vis_mesh_path = resolve_output_path(paraview_path.empty() ? old_path : paraview_path);
-		const std::string wire_mesh_path = resolve_output_path(args["export"]["wire_mesh"]);
-		const std::string nodes_path = resolve_output_path(args["export"]["nodes"]);
-		const std::string solution_path = resolve_output_path(args["export"]["solution"]);
-		const std::string solmat_path = resolve_output_path(args["export"]["solution_mat"]);
-		const std::string stress_path = resolve_output_path(args["export"]["stress_mat"]);
-		const std::string mises_path = resolve_output_path(args["export"]["mises"]);
+		const std::string vis_mesh_path = resolve_output_path(args["output"]["paraview"]["file_name"]);
+		const std::string nodes_path = resolve_output_path(args["output"]["data"]["nodes"]);
+		const std::string solution_path = resolve_output_path(args["output"]["data"]["solution"]);
+		const std::string solmat_path = resolve_output_path(args["output"]["data"]["solution_mat"]);
+		const std::string stress_path = resolve_output_path(args["output"]["data"]["stress_mat"]);
+		const std::string mises_path = resolve_output_path(args["output"]["data"]["mises"]);
 
 		if (!solution_path.empty())
 		{
@@ -761,10 +762,6 @@ namespace polyfem
 		if (!vis_mesh_path.empty())
 		{
 			save_vtu(vis_mesh_path, tend);
-		}
-		else if (!wire_mesh_path.empty())
-		{
-			save_wire(wire_mesh_path, tend);
 		}
 		if (!nodes_path.empty())
 		{
@@ -834,7 +831,7 @@ namespace polyfem
 		int tet_total_size = 0;
 		int pts_total_size = 0;
 
-		const bool boundary_only = args["export"]["vis_boundary_only"];
+		const bool boundary_only = args["output"]["advanced"]["vis_boundary_only"];
 
 		Eigen::MatrixXd vis_pts_poly;
 		Eigen::MatrixXi vis_faces_poly;
@@ -1093,11 +1090,11 @@ namespace polyfem
 			return;
 		}
 
-		const bool export_volume = args["export"]["volume"];
-		const bool export_surface = args["export"]["surface"];
-		const bool export_wire = args["export"]["wireframe"];
-		const bool export_contact_forces = args["export"]["contact_forces"] && !problem->is_scalar();
-		const bool export_friction_forces = args["export"]["friction_forces"] && !problem->is_scalar();
+		const bool export_volume = args["output"]["paraview"]["volume"];
+		const bool export_surface = args["output"]["paraview"]["surface"];
+		const bool export_wire = args["output"]["paraview"]["wireframe"];
+		const bool export_contact_forces = args["output"]["paraview"]["options"]["contact_forces"] && !problem->is_scalar();
+		const bool export_friction_forces = args["output"]["paraview"]["options"]["friction_forces"] && !problem->is_scalar();
 
 		const std::filesystem::path fs_path(path);
 		const std::string path_stem = fs_path.stem().string();
@@ -1183,7 +1180,7 @@ namespace polyfem
 		Eigen::MatrixXd discr;
 		std::vector<std::vector<int>> elements;
 
-		const bool use_sampler = !(mesh->is_linear() && solve_export_to_file && args["export"]["high_order_mesh"]);
+		const bool use_sampler = !(mesh->is_linear() && solve_export_to_file && args["output"]["paraview"]["high_order_mesh"]);
 
 		if (use_sampler)
 			build_vis_mesh(points, tets, el_id, discr);
@@ -1191,12 +1188,12 @@ namespace polyfem
 			build_high_oder_vis_mesh(points, elements, el_id, discr);
 
 		Eigen::MatrixXd fun, exact_fun, err;
-		const bool boundary_only = use_sampler && args["export"]["vis_boundary_only"];
-		const bool material_params = args["export"]["material_params"];
-		const bool body_ids = args["export"]["body_ids"];
-		const bool sol_on_grid = args["export"]["sol_on_grid"] > 0;
-		const bool export_velocity = args["export"]["velocity"];
-		const bool export_acceleration = args["export"]["acceleration"];
+		const bool boundary_only = use_sampler && args["output"]["advanced"]["vis_boundary_only"];
+		const bool material_params = args["output"]["paraview"]["options"]["material_params"];
+		const bool body_ids = args["output"]["paraview"]["options"]["body_ids"];
+		const bool sol_on_grid = args["output"]["paraview"]["options"]["sol_on_grid"] > 0;
+		const bool export_velocity = args["output"]["paraview"]["options"]["velocity"];
+		const bool export_acceleration = args["output"]["paraview"]["options"]["acceleration"];
 
 		if (sol_on_grid)
 		{
@@ -1417,7 +1414,7 @@ namespace polyfem
 				}
 			}
 
-			if (!args["use_spline"])
+			if (!args["space"]["advanced"]["use_spline"])
 			{
 				average_grad_based_function(points.rows(), sol, vals, tvals, use_sampler, boundary_only);
 				if (obstacle.n_vertices() > 0)
@@ -1626,10 +1623,10 @@ namespace polyfem
 
 	void State::save_surface(const std::string &export_surface)
 	{
-		const bool material_params = args["export"]["material_params"];
-		const bool body_ids = args["export"]["body_ids"];
-		const bool export_contact_forces = args["export"]["contact_forces"] && !problem->is_scalar();
-		const bool export_friction_forces = args["export"]["friction_forces"] && !problem->is_scalar();
+		const bool material_params = args["output"]["paraview"]["options"]["material_params"];
+		const bool body_ids = args["output"]["paraview"]["options"]["body_ids"];
+		const bool export_contact_forces = args["output"]["paraview"]["options"]["contact_forces"] && !problem->is_scalar();
+		const bool export_friction_forces = args["output"]["paraview"]["options"]["friction_forces"] && !problem->is_scalar();
 
 		Eigen::MatrixXd fun, interp_p, discr, vect, b_sidesets;
 
@@ -1736,12 +1733,12 @@ namespace polyfem
 				ipc::FrictionConstraints friction_constraint_set;
 				ipc::construct_friction_constraint_set(
 					collision_mesh, displaced_surface, constraint_set,
-					args["contact"]["dhat"], barrier_stiffness, args["mu"],
+					args["contact"]["dhat"], barrier_stiffness, args["PDE"]["friction_coefficient"],
 					friction_constraint_set);
 
 				Eigen::MatrixXd forces = -ipc::compute_friction_potential_gradient(
 					collision_mesh, displaced_surface_prev, displaced_surface,
-					friction_constraint_set, args["epsv"].get<double>() * args["dt"].get<double>());
+					friction_constraint_set, args["contact"]["epsv"].get<double>() * args["time"]["dt"].get<double>());
 				// forces = collision_mesh.to_full_dof(forces);
 				// assert(forces.size() == sol.size());
 
