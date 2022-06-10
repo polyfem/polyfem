@@ -386,7 +386,7 @@ namespace polyfem
 			problem = ProblemFactory::factory().get_problem(args["preset_problem"]["name"]);
 
 			problem->clear();
-			if (args["preset_problem"]["name"] s == "Kernel")
+			if (args["preset_problem"]["name"] == "Kernel")
 			{
 				KernelProblem &kprob = *dynamic_cast<KernelProblem *>(problem.get());
 				kprob.state = this;
