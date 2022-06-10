@@ -12,7 +12,7 @@ include(FetchContent)
 FetchContent_Declare(
     polysolve
     GIT_REPOSITORY https://github.com/polyfem/polysolve.git
-    GIT_TAG b2c639c94b5550ee6e8e780b0e02cf0689a59eda
+    GIT_TAG 58dd11fe7c05adc88497861743bd42ce440b3e03
     GIT_SHALLOW FALSE
 )
 FetchContent_MakeAvailable(polysolve)
