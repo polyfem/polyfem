@@ -105,7 +105,7 @@ namespace polyfem
 			assert(_dhat > 0);
 			_epsv = state.args["contact"]["epsv"];
 			assert(_epsv > 0);
-			_mu = state.args["PDE"]["friction_coefficient"];
+			_mu = state.args["contact"]["friction_coefficient"];
 			_lagged_damping_weight = is_time_dependent ? 0 : state.args["solver"]["contact"]["lagged_damping_weight"].get<double>();
 			use_adaptive_barrier_stiffness = !state.args["solver"]["contact"]["barrier_stiffness"].is_number();
 			if (use_adaptive_barrier_stiffness)

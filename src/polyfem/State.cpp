@@ -54,6 +54,44 @@ namespace polyfem
 	using namespace mesh;
 	using namespace utils;
 
+	std::string State::formulation() const
+	{
+		assert(!args["materials"].is_null());
+		if (args["materials"].is_null())
+		{
+			logger().error("specify some 'materials'");
+			throw "invalid input";
+		}
+
+		if (args["materials"].is_array())
+		{
+			std::string current = "";
+			for (const auto &m : args["materials"])
+			{
+				const std::string tmp = m["type"];
+				if (current.empty())
+					current = tmp;
+				else if (current != tmp)
+				{
+					if (current == "LinearElasticity" || current == "NeoHookean" || current == "MultiModels")
+					{
+						if (tmp == "LinearElasticity" || tmp == "NeoHookean")
+							current = "MultiModels";
+						else
+						{
+							logger().error("Current material is {}, new material is {}, multimaterial supported only for LinearElasticity and NeoHookean", current, tmp);
+							throw "invalid input";
+						}
+					}
+				}
+			}
+
+			return current;
+		}
+		else
+			return args["materials"]["type"];
+	}
+
 	void State::sol_to_pressure()
 	{
 		if (n_pressure_bases <= 0)
@@ -164,7 +202,7 @@ namespace polyfem
 			"density": 1
 		})"_json;
 
-		const auto &body_params = args["PDE"]["materials"];
+		const auto &body_params = args["materials"];
 		assert(body_params.is_array());
 		Eigen::MatrixXd Es(mesh->n_elements(), 1), nus(mesh->n_elements(), 1), rhos(mesh->n_elements(), 1);
 		Es.setConstant(default_material["E"].get<double>());
@@ -317,10 +355,10 @@ namespace polyfem
 
 		disc_orders.resize(mesh->n_elements());
 
-		if (!args["PDE"]["material"].is_null() && !args["PDE"]["material"].is_array())
+		if (!args["materials"].is_null() && !args["materials"].is_array())
 		{
-			assembler.set_parameters(args["PDE"]["material"]);
-			density.init(args["PDE"]["material"]);
+			assembler.set_parameters(args["materials"]);
+			density.init(args["materials"]);
 		}
 		problem->init(*mesh);
 
@@ -981,12 +1019,11 @@ namespace polyfem
 
 		igl::Timer timer;
 		std::string rhs_path = "";
-		if (args["PDE"]["rhs"].is_string())
-			rhs_path = args["PDE"]["rhs"];
+		if (args.contains("boundary_conditions") && args["boundary_conditions"].contains("rhs") && args["boundary_conditions"]["rhs"].is_string())
+			rhs_path = args["boundary_conditions"]["rhs"];
 
 		json p_params = {};
-		p_params["formulation"] = args["PDE"]["type"];
-		//TESEO check on this -> formulation();
+		p_params["formulation"] = formulation();
 		{
 			RowVectorNd min, max, delta;
 			mesh->bounding_box(min, max);

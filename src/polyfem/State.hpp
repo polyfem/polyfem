@@ -565,7 +565,7 @@ namespace polyfem
 		}
 
 		//return the formulation (checks if the problem is scalar or not)
-		inline std::string formulation() const { return args["PDE"]["type"]; }
+		std::string formulation() const;
 
 		//check if using iso parametric bases
 		inline bool iso_parametric() const

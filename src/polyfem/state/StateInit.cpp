@@ -130,27 +130,15 @@ namespace polyfem
         					}
     					},
 
-    					"time": {
-        					"t0": 0,
-        					"tend": -1,
-        					"dt": -1,
-        					"time_steps": 10,
-
-        					"integrator": "ImplicitEuler",
-							"newmark": {
-								"gamma": 0.5,
-								"beta": 0.25
-							},
-							"BDF": {
-								"steps": 1
-							}
-						},
+    					"time": null,
 
 						"contact": {
         					"enabled": false,
         					"dhat": 1e-3,
         					"dhat_percentage": 0.8,
-        					"epsv": 1e-3
+        					"epsv": 1e-3,
+
+							"friction_coefficient": 0
     					},
 
 						"solver": {
@@ -200,16 +188,7 @@ namespace polyfem
 							}
 						},
 
-						"PDE": {
-							"type" : "Laplacian",
-							"problem" : "",
-
-							"is_time_dependent": false,
-
-							"material" : null,
-
-							"friction_coefficient": 0
-						},
+						"materials" : null,
 
 						"output": {
 							"json" : "",
@@ -329,6 +308,29 @@ namespace polyfem
 		this->args.merge_patch(args_in);
 		has_dhat = args_in["contact"].contains("dhat");
 
+		if (!args["time"].is_null())
+		{
+			const auto time_default = R"({
+				"t0": 0,
+				"tend": -1,
+				"dt": -1,
+				"time_steps": 10,
+
+				"integrator": "ImplicitEuler",
+				"newmark": {
+					"gamma": 0.5,
+					"beta": 0.25
+				},
+				"BDF": {
+					"steps": 1
+				}
+			})"_json;
+
+			const auto tmp = args["time"];
+			args["time"] = time_default;
+			args["time"].merge_patch(tmp);
+		}
+
 		// if (this->args["contact"]["enabled"])
 		// {
 		// 	if (!args_in.contains("line_search"))
@@ -358,24 +360,40 @@ namespace polyfem
 		// 	args["mu"] = 0;
 		// }
 
-		const std::string problem_name = args["PDE"]["problem"];
-		if (problem_name.size() <= 0)
+		if (!args.contains("preset_problem"))
 		{
-			if (assembler.is_scalar(args["PDE"]["type"]))
+			if (assembler.is_scalar(formulation()))
 				problem = ProblemFactory::factory().get_problem("GenericScalar");
 			else
 				problem = ProblemFactory::factory().get_problem("GenericTensor");
+
+			problem->clear();
+			if (!args["time"].is_null())
+			{
+				const auto tmp = R"({"is_time_dependent": true})"_json;
+				problem->set_parameters(tmp);
+			}
+			// important for the BC
+			problem->set_parameters(args["boundary_conditions"]);
+			if (args.contains("initial_conditions"))
+				problem->set_parameters(args["initial_conditions"]);
+
+			if (args["output"].contains("reference"))
+				problem->set_parameters(args["output"]["reference"]);
 		}
 		else
-			problem = ProblemFactory::factory().get_problem(problem_name);
-		problem->clear();
-		if (args["PDEs"]["problem"] == "Kernel")
 		{
-			KernelProblem &kprob = *dynamic_cast<KernelProblem *>(problem.get());
-			kprob.state = this;
+			problem = ProblemFactory::factory().get_problem(args["preset_problem"]["name"]);
+
+			problem->clear();
+			if (args["preset_problem"]["name"] s == "Kernel")
+			{
+				KernelProblem &kprob = *dynamic_cast<KernelProblem *>(problem.get());
+				kprob.state = this;
+			}
+			// important for the BC
+			problem->set_parameters(args["preset_problem"]);
 		}
-		// important for the BC
-		problem->set_parameters(args["PDE"]);
 
 		//TODO
 		// if (args["use_spline"] && args["n_refs"] == 0)

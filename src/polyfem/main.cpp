@@ -258,8 +258,8 @@ int main(int argc, char **argv)
 
 		if (!problem_name.empty())
 		{
-			in_args["PDE"] = {};
-			in_args["PDE"]["problem"] = problem_name;
+			in_args["preset_problem"] = {};
+			in_args["preset_problem"]["name"] = problem_name;
 		}
 
 		if (!time_integrator_name.empty())
@@ -270,9 +270,8 @@ int main(int argc, char **argv)
 
 		if (!formulation.empty())
 		{
-			if (!in_args.contains("PDE"))
-				in_args["PDE"] = {};
-			in_args["PDE"]["type"] = formulation;
+			in_args["materials"] = {};
+			in_args["materials"]["type"] = formulation;
 		}
 
 		if (has_arg(command_line, "p") || has_arg(command_line, "q"))
