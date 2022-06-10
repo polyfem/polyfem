@@ -1690,7 +1690,7 @@ namespace polyfem
 			}
 		}
 
-		if ((export_contact_forces || export_friction_forces) && solve_export_to_file)
+		if (args["contact"]["enabled"] && (export_contact_forces || export_friction_forces) && solve_export_to_file)
 		{
 			VTUWriter writer;
 
@@ -1736,9 +1736,12 @@ namespace polyfem
 					args["contact"]["dhat"], barrier_stiffness, args["contact"]["friction_coefficient"],
 					friction_constraint_set);
 
+				double dt = 1;
+				if (!args["time"].is_null())
+					dt = args["time"]["dt"];
 				Eigen::MatrixXd forces = -ipc::compute_friction_potential_gradient(
 					collision_mesh, displaced_surface_prev, displaced_surface,
-					friction_constraint_set, args["contact"]["epsv"].get<double>() * args["time"]["dt"].get<double>());
+					friction_constraint_set, args["contact"]["epsv"].get<double>() * dt);
 				// forces = collision_mesh.to_full_dof(forces);
 				// assert(forces.size() == sol.size());
 

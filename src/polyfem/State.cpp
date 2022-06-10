@@ -1294,9 +1294,15 @@ namespace polyfem
 		// Eigen::MatrixXd err_per_el(n_el, 5);
 		ElementAssemblyValues vals;
 
-		double tend = args["time"].value("tend", 1.0);
-		if (tend <= 0)
-			tend = 1;
+		double tend;
+		if (!args["time"].is_null())
+		{
+			tend = args["time"].value("tend", 1.0);
+			if (tend <= 0)
+				tend = 1;
+		}
+		else
+			tend = 0;
 
 		for (int e = 0; e < n_el; ++e)
 		{
