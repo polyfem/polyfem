@@ -542,26 +542,27 @@ namespace polyfem
 
 		const int prev_b_size = local_boundary.size();
 		problem->setup_bc(*mesh, bases, pressure_bases, local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes);
-		args["has_neumann"] = local_neumann_boundary.size() > 0 || local_boundary.size() < prev_b_size;
+		const bool has_pressure_stablization = args["params"].contains("delta") && (args["params"]["delta"].get<double>() > 0);
+		args["has_neumann"] = local_neumann_boundary.size() > 0 || local_boundary.size() < prev_b_size || has_pressure_stablization;
 		use_avg_pressure = !args["has_neumann"];
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 
 		// add a pressure node to avoid singular solution
-		if (assembler.is_mixed(formulation())) // && !assembler.is_fluid(formulation()))
-		{
-			if (!use_avg_pressure)
-			{
-				const bool has_neumann = args["has_neumann"];
-				if (!has_neumann)
-					boundary_nodes.push_back(n_bases * problem_dim + 0);
+		// if (assembler.is_mixed(formulation())) // && !assembler.is_fluid(formulation()))
+		// {
+		// 	if (!use_avg_pressure)
+		// 	{
+		// 		const bool has_neumann = args["has_neumann"];
+		// 		if (!has_neumann)
+		// 			boundary_nodes.push_back(n_bases * problem_dim + 0);
 
-				// boundary_nodes.push_back(n_bases * problem_dim + 1);
-				// boundary_nodes.push_back(n_bases * problem_dim + 2);
-				// boundary_nodes.push_back(n_bases * problem_dim + 3);
-				// boundary_nodes.push_back(n_bases * problem_dim + 3);
-				// boundary_nodes.push_back(n_bases * problem_dim + 215);
-			}
-		}
+		// 		// boundary_nodes.push_back(n_bases * problem_dim + 1);
+		// 		// boundary_nodes.push_back(n_bases * problem_dim + 2);
+		// 		// boundary_nodes.push_back(n_bases * problem_dim + 3);
+		// 		// boundary_nodes.push_back(n_bases * problem_dim + 3);
+		// 		// boundary_nodes.push_back(n_bases * problem_dim + 215);
+		// 	}
+		// }
 
 		for (int i = prev_bases; i < n_bases; ++i)
 		{

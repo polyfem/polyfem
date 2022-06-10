@@ -170,4 +170,37 @@ namespace polyfem
 		assert(false);
 		return res;
 	}
+
+	void StokesPressure::set_parameters(const json &params)
+	{
+		if (params.contains("delta"))
+			delta_ = params["delta"];
+	}
+
+	Eigen::Matrix<double, 1, 1>
+	StokesPressure::assemble(const ElementAssemblyValues &vals, const int i, const int j, const QuadratureVector &da) const
+	{
+		// -delta * (gradphii : gradphij)
+
+		Eigen::Matrix<double, 1, 1> res;
+		res.setZero();
+
+		const Eigen::MatrixXd &gradphii = vals.basis_values[i].grad_t_m;
+		const Eigen::MatrixXd &gradphij = vals.basis_values[j].grad_t_m;
+
+		for (int k = 0; k < gradphij.rows(); ++k)
+		{
+			res(0) -= gradphii.row(k).dot(gradphij.row(k)) * da(k);
+		}
+
+		return res;
+	}
+
+	Eigen::Matrix<double, 1, 1>
+	StokesPressure::compute_rhs(const AutodiffHessianPt &pt) const
+	{
+		Eigen::Matrix<double, 1, 1> res;
+		assert(false);
+		return res;
+	}
 } // namespace polyfem
