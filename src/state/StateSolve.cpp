@@ -667,15 +667,18 @@ namespace polyfem
 
 			if (ipc::has_intersections(
 					collision_mesh,
-					collision_mesh.vertices_from_displacements(sol_unflattened)))
+					collision_mesh.displace_vertices(sol_unflattened)))
 			{
 				const std::string msg = "Unable to solve, initial solution has intersections!";
 				OBJWriter::save(
 					resolve_input_path("intersection.obj"),
-					collision_mesh.vertices_from_displacements(sol_unflattened),
+					collision_mesh.displace_vertices(sol_unflattened),
 					collision_mesh.faces());
 				logger().error(msg);
-				igl::write_triangle_mesh(resolve_output_path("intersection.obj"), collision_mesh.vertices(displaced), collision_mesh.faces());
+				igl::write_triangle_mesh(
+					resolve_output_path("intersection.obj"),
+					collision_mesh.displace_vertices(sol_unflattened),
+					collision_mesh.faces());
 				throw std::runtime_error(msg);
 			}
 
@@ -832,12 +835,12 @@ namespace polyfem
 			if (collision_mesh.faces().size())
 				OBJWriter::save(
 					collision_mesh_path,
-					collision_mesh.vertices_from_displacements(full_sol_unflattened),
+					collision_mesh.displace_vertices(full_sol_unflattened),
 					collision_mesh.faces());
 			else
 				OBJWriter::save(
 					collision_mesh_path,
-					collision_mesh.vertices_from_displacements(full_sol_unflattened),
+					collision_mesh.displace_vertices(full_sol_unflattened),
 					collision_mesh.edges(), collision_mesh.faces());
 		}
 	}

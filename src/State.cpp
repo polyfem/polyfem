@@ -1142,8 +1142,7 @@ namespace polyfem
 				is_on_surface[codim_vertices[i]] = true;
 			}
 
-			collision_mesh = ipc::CollisionMesh(is_on_surface, vertices, edges, faces);
-			collision_mesh.set_linear_vertex_map(linear_map);
+			collision_mesh = ipc::CollisionMesh(is_on_surface, vertices, edges, faces, linear_map);
 			collision_mesh.can_collide = [n_v](size_t vi, size_t vj) {
 				// obstacles do not collide with other obstacles
 				return (long(vi) - n_v < 0) || (long(vj) - n_v < 0);
