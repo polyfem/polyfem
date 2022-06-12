@@ -974,11 +974,56 @@ namespace polyfem
 
 				{
 					index = get_index_from_element(c);
+					std::array<int, 4> indices;
 
-					attach_p3_face(index, nodes_ids, 19);
-					attach_p3_face(switch_face(index), nodes_ids, 17);
-					attach_p3_face(switch_face(next_around_face(index)), nodes_ids, 18);
-					attach_p3_face(switch_face(next_around_face(next_around_face(index))), nodes_ids, 16);
+					{
+						std::array<int, 3> f16 = {{nodes_ids[0], nodes_ids[1], nodes_ids[2]}};
+						std::array<int, 3> f17 = {{nodes_ids[3], nodes_ids[1], nodes_ids[0]}};
+						std::array<int, 3> f18 = {{nodes_ids[0], nodes_ids[2], nodes_ids[3]}};
+						std::array<int, 3> f19 = {{nodes_ids[1], nodes_ids[2], nodes_ids[3]}};
+						std::sort(f16.begin(), f16.end());
+						std::sort(f17.begin(), f17.end());
+						std::sort(f18.begin(), f18.end());
+						std::sort(f19.begin(), f19.end());
+
+						auto tmp = index;
+						std::array<int, 3> f0 = {{face_vertex(tmp.face, 0), face_vertex(tmp.face, 1), face_vertex(tmp.face, 2)}};
+						tmp = switch_face(index);
+						std::array<int, 3> f1 = {{face_vertex(tmp.face, 0), face_vertex(tmp.face, 1), face_vertex(tmp.face, 2)}};
+						tmp = switch_face(next_around_face(index));
+						std::array<int, 3> f2 = {{face_vertex(tmp.face, 0), face_vertex(tmp.face, 1), face_vertex(tmp.face, 2)}};
+						tmp = switch_face(next_around_face(next_around_face(index)));
+						std::array<int, 3> f3 = {{face_vertex(tmp.face, 0), face_vertex(tmp.face, 1), face_vertex(tmp.face, 2)}};
+
+						std::sort(f0.begin(), f0.end());
+						std::sort(f1.begin(), f1.end());
+						std::sort(f2.begin(), f2.end());
+						std::sort(f3.begin(), f3.end());
+
+						const std::array<std::array<int, 3>, 4> faces = {{f0, f1, f2, f3}};
+						const std::array<std::array<int, 3>, 4> nodes = {{f16, f17, f18, f19}};
+						for (int i = 0; i < 4; ++i)
+						{
+							const auto &f = faces[i];
+							bool found = false;
+							for (int j = 0; j < 4; ++j)
+							{
+								if (nodes[j] == f)
+								{
+									indices[i] = j + 16;
+									found = true;
+									break;
+								}
+							}
+
+							assert(found);
+						}
+					}
+
+					attach_p3_face(index, nodes_ids, indices[0]);
+					attach_p3_face(switch_face(index), nodes_ids, indices[1]);
+					attach_p3_face(switch_face(next_around_face(index)), nodes_ids, indices[2]);
+					attach_p3_face(switch_face(next_around_face(next_around_face(index))), nodes_ids, indices[3]);
 				}
 			}
 			// P4

@@ -93,11 +93,7 @@ namespace polyfem
 			ddd.col(2).setZero();
 		}
 
-#ifdef POLYFEM_DIV_BARRIER_STIFFNESS
-		return val + AL_penalty / _barrier_stiffness;
-#else
 		return val + AL_penalty;
-#endif
 	}
 
 	void ALNLProblem::gradient_no_rhs(const TVector &x, Eigen::MatrixXd &gradv, const bool only_elastic)
@@ -107,11 +103,7 @@ namespace polyfem
 		TVector grad_AL;
 		compute_distance(x, grad_AL);
 		//logger().trace("dist grad {}", tmp.norm());
-#ifdef POLYFEM_DIV_BARRIER_STIFFNESS
-		grad_AL *= weight_ / _barrier_stiffness;
-#else
 		grad_AL *= weight_;
-#endif
 
 		gradv += grad_AL;
 		// gradv = tmp;
@@ -120,11 +112,7 @@ namespace polyfem
 	void ALNLProblem::hessian_full(const TVector &x, THessian &hessian)
 	{
 		super::hessian_full(x, hessian);
-#ifdef POLYFEM_DIV_BARRIER_STIFFNESS
-		hessian += weight_ * hessian_AL_ / _barrier_stiffness;
-#else
 		hessian += weight_ * hessian_AL_;
-#endif
 		hessian.makeCompressed();
 	}
 

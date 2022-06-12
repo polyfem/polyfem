@@ -23,6 +23,8 @@
 
 #include <ipc/ipc.hpp>
 
+#include <igl/write_triangle_mesh.h>
+
 #include <fstream>
 
 namespace polyfem
@@ -673,6 +675,7 @@ namespace polyfem
 					collision_mesh.vertices_from_displacements(sol_unflattened),
 					collision_mesh.faces());
 				logger().error(msg);
+				igl::write_triangle_mesh(resolve_output_path("intersection.obj"), collision_mesh.vertices(displaced), collision_mesh.faces());
 				throw std::runtime_error(msg);
 			}
 

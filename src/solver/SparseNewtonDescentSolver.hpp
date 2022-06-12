@@ -164,10 +164,12 @@ namespace cppoptlib
 				polyfem::logger().trace("linear solve residual {}", residual);
 			}
 
+			// do this check here because we need to repeat the solve without resetting reg_weight
 			if (grad.dot(direction) >= 0)
 			{
 				increase_descent_strategy();
-				polyfem::logger().debug(
+				polyfem::logger().log(
+					this->descent_strategy == 2 ? spdlog::level::warn : spdlog::level::debug,
 					"[{}] direction is not a descent direction (Δx⋅g={}≥0); reverting to {}",
 					name(), direction.dot(grad), descent_strategy_name());
 				return compute_update_direction(objFunc, x, grad, direction);

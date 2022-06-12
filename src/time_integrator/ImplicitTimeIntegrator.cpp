@@ -22,6 +22,7 @@ namespace polyfem
 		a_prevs.clear();
 		a_prevs.push_front(a_prev);
 
+		assert(dt > 0);
 		_dt = dt;
 	}
 

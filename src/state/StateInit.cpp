@@ -102,8 +102,8 @@ namespace polyfem
 			{"boundary_id_threshold", -1.0},
 
 			{"n_refs", 0},
-			{"n_refs_path", ""},
-			{"bodies_n_refs", {}},
+			// {"n_refs_path", ""},
+			// {"bodies_n_refs", {}},
 
 			{"vismesh_rel_area", 0.00001},
 			{"refinenemt_location", 0.5},
@@ -168,7 +168,7 @@ namespace polyfem
 			{"al_weight", 1e6},
 			{"max_al_weight", 1e11},
 
-			{"fit_nodes", false},
+			// {"fit_nodes", false},
 
 			{"n_harmonic_samples", 10},
 
@@ -191,7 +191,7 @@ namespace polyfem
 
 			{"line_search", "armijo"},
 			{"nl_solver", "newton"},
-			{"nl_solver_rhs_steps", 1},
+			// {"nl_solver_rhs_steps", 1},
 
 			{"force_no_ref_for_harmonic", false},
 			{"lump_mass_matrix", false},
@@ -238,7 +238,7 @@ namespace polyfem
 			  {"v_path", ""},
 			  {"a_path", ""}}},
 
-			{"save_solve_sequence", false},
+			// {"save_solve_sequence", false},
 			{"save_solve_sequence_debug", false},
 			{"save_time_sequence", true},
 			{"save_nl_solve_sequence", false},

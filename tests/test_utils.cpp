@@ -7,7 +7,9 @@
 #include <polyfem/Mesh.hpp>
 #include <polyfem/VTUWriter.hpp>
 
+#ifdef POLYFEM_WITH_REMESHING
 #include <wmtk/TriMesh.h>
+#endif
 
 #include <Eigen/Dense>
 
@@ -131,7 +133,9 @@ TEST_CASE("vtu_writer", "[utils]")
 	writer.write_mesh("test.vtu", pts, tris);
 }
 
+#ifdef POLYFEM_WITH_REMESHING
 TEST_CASE("wmtk_instatiation", "[utils]")
 {
 	wmtk::TriMesh mesh;
 }
+#endif
