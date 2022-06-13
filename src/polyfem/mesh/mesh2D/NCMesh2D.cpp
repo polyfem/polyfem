@@ -787,7 +787,7 @@ namespace polyfem
 			}
 		}
 
-		void NCMesh2D::compute_body_ids(const std::function<int(const RowVectorNd &)> &marker)
+		void NCMesh2D::compute_body_ids(const std::function<int(const size_t, const RowVectorNd &)> &marker)
 		{
 			body_ids_.resize(n_faces());
 			std::fill(body_ids_.begin(), body_ids_.end(), -1);
@@ -795,7 +795,7 @@ namespace polyfem
 			for (int e = 0; e < n_faces(); ++e)
 			{
 				const auto bary = face_barycenter(e);
-				body_ids_[e] = marker(bary);
+				body_ids_[e] = marker(e, bary);
 				elements[valid_to_all_elem(e)].body_id = body_ids_[e];
 			}
 		}
@@ -859,6 +859,19 @@ namespace polyfem
 				const bool is_boundary = is_boundary_edge(e);
 				const auto p = edge_barycenter(e);
 				boundary_ids_[e] = marker(p, is_boundary);
+				edges[valid_to_all_edge(e)].boundary_id = boundary_ids_[e];
+			}
+		}
+
+		void NCMesh2D::compute_boundary_ids(const std::function<int(const size_t, const RowVectorNd &, bool)> &marker)
+		{
+			boundary_ids_.resize(n_edges());
+
+			for (int e = 0; e < n_edges(); ++e)
+			{
+				const bool is_boundary = is_boundary_edge(e);
+				const auto p = edge_barycenter(e);
+				boundary_ids_[e] = marker(e, p, is_boundary);
 				edges[valid_to_all_edge(e)].boundary_id = boundary_ids_[e];
 			}
 		}

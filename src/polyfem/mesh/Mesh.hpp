@@ -57,12 +57,7 @@ namespace polyfem
 		public:
 			static std::unique_ptr<Mesh> create(const std::string &path, const bool non_conforming = false);
 			static std::unique_ptr<Mesh> create(GEO::Mesh &M, const bool non_conforming = false);
-			static std::unique_ptr<Mesh> create(const std::vector<json> &meshes,
-												const std::string &root_path,
-												const bool non_conforming = false,
-												const std::vector<std::string> &names = std::vector<std::string>(),
-												const std::vector<Eigen::MatrixXi> &cells = std::vector<Eigen::MatrixXi>(),
-												const std::vector<Eigen::MatrixXd> &vertices = std::vector<Eigen::MatrixXd>());
+			static std::unique_ptr<Mesh> create(const Eigen::MatrixXd &vertices, const Eigen::MatrixXi &cells, const bool non_conforming = false);
 
 			Mesh() = default;
 			virtual ~Mesh() = default;
@@ -98,6 +93,7 @@ namespace polyfem
 			virtual void attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes) = 0;
 			inline const Eigen::MatrixXi &orders() const { return orders_; }
 			inline bool is_rational() const { return is_rational_; }
+			inline void set_is_rational(const bool in_is_rational) { is_rational_ = in_is_rational; }
 
 			virtual void normalize() = 0;
 
@@ -150,8 +146,9 @@ namespace polyfem
 			virtual void compute_boundary_ids(const double eps) = 0;
 			virtual void compute_boundary_ids(const std::function<int(const RowVectorNd &)> &marker) = 0;
 			virtual void compute_boundary_ids(const std::function<int(const RowVectorNd &, bool)> &marker) = 0;
+			virtual void compute_boundary_ids(const std::function<int(const size_t, const RowVectorNd &, bool)> &marker) = 0;
 			virtual void compute_boundary_ids(const std::function<int(const std::vector<int> &, bool)> &marker) = 0;
-			virtual void compute_body_ids(const std::function<int(const RowVectorNd &)> &marker) = 0;
+			virtual void compute_body_ids(const std::function<int(const size_t, const RowVectorNd &)> &marker) = 0;
 			virtual void set_boundary_ids(const std::vector<int> &boundary_ids) { boundary_ids_ = boundary_ids; }
 			virtual void set_body_ids(const std::vector<int> &body_ids) { body_ids_ = body_ids; }
 			virtual void set_body_ids(const Eigen::VectorXi &body_ids)
@@ -179,6 +176,7 @@ namespace polyfem
 			virtual void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const = 0;
 
 			const std::vector<double> &cell_weights(const int cell_index) const { return cell_weights_[cell_index]; }
+			void set_cell_weights(const std::vector<std::vector<double>> &in_cell_weights) { cell_weights_ = in_cell_weights; }
 
 			virtual void prepare_mesh(){};
 

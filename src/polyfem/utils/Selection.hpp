@@ -12,58 +12,133 @@ namespace polyfem
 		public:
 			typedef std::array<RowVectorNd, 2> BBox;
 
-			virtual bool inside(const RowVectorNd &p) const = 0;
-			static std::shared_ptr<Selection> build(const json &selection, const BBox &mesh_bbox);
+			Selection(
+				const int id,
+				const size_t start_element_id = 0,
+				const size_t end_element_id = std::numeric_limits<size_t>::max());
+
 			virtual ~Selection() {}
+
+			virtual bool inside(
+				const size_t element_id, const RowVectorNd &p) const;
+			virtual int id(const size_t element_id) const { return id_; }
+
+			static std::shared_ptr<Selection> build(
+				const json &selection,
+				const BBox &mesh_bbox,
+				const size_t start_element_id = 0,
+				const size_t end_element_id = std::numeric_limits<size_t>::max());
+
+		protected:
+			size_t id_;
+			size_t start_element_id_;
+			size_t end_element_id_;
 		};
 
-		class Box : public Selection
+		///////////////////////////////////////////////////////////////////////
+
+		class BoxSelection : public Selection
 		{
 		public:
-			Box(const json &selection, const BBox &mesh_bbox);
-			bool inside(const RowVectorNd &p) const override;
+			BoxSelection(
+				const json &selection,
+				const BBox &mesh_bbox,
+				const size_t start_element_id = 0,
+				const size_t end_element_id = std::numeric_limits<size_t>::max());
+			bool inside(const size_t element_id, const RowVectorNd &p) const override;
 
-		private:
+		protected:
 			BBox bbox_;
 		};
 
-		class Sphere : public Selection
+		///////////////////////////////////////////////////////////////////////
+
+		class SphereSelection : public Selection
 		{
 		public:
-			Sphere(const json &selection, const BBox &mesh_bbox);
-			bool inside(const RowVectorNd &p) const override;
+			SphereSelection(
+				const json &selection,
+				const BBox &mesh_bbox,
+				const size_t start_element_id = 0,
+				const size_t end_element_id = std::numeric_limits<size_t>::max());
+			bool inside(const size_t element_id, const RowVectorNd &p) const override;
+			int id() const { return id_; }
 
-		private:
+		protected:
 			RowVectorNd center_;
 			double radius2_;
 		};
 
-		class AxisPlane : public Selection
+		///////////////////////////////////////////////////////////////////////
+
+		class AxisPlaneSelection : public Selection
 		{
 		public:
-			AxisPlane(const json &selection, const BBox &mesh_bbox);
-			bool inside(const RowVectorNd &p) const override;
+			AxisPlaneSelection(
+				const json &selection,
+				const BBox &mesh_bbox,
+				const size_t start_element_id = 0,
+				const size_t end_element_id = std::numeric_limits<size_t>::max());
+			bool inside(const size_t element_id, const RowVectorNd &p) const override;
 
-		private:
+		protected:
 			int axis_;
 			double position_;
 		};
 
-		class Plane : public Selection
+		///////////////////////////////////////////////////////////////////////
+
+		class PlaneSelection : public Selection
 		{
 		public:
-			Plane(const json &selection, const BBox &mesh_bbox);
-			bool inside(const RowVectorNd &p) const override;
+			PlaneSelection(
+				const json &selection,
+				const BBox &mesh_bbox,
+				const size_t start_element_id = 0,
+				const size_t end_element_id = std::numeric_limits<size_t>::max());
+			bool inside(const size_t element_id, const RowVectorNd &p) const override;
 
-		private:
+		protected:
 			RowVectorNd normal_;
 			RowVectorNd point_;
 		};
 
-		class BoxSetter
+		///////////////////////////////////////////////////////////////////////
+
+		class UniformSelection : public Selection
 		{
 		public:
-			static void set_sidesets(const json &args, mesh::Mesh &mesh);
+			UniformSelection(
+				const int id,
+				const size_t start_element_id = 0,
+				const size_t end_element_id = std::numeric_limits<size_t>::max())
+				: Selection(id, start_element_id, end_element_id) {}
+		};
+
+		///////////////////////////////////////////////////////////////////////
+
+		class SpecifiedSelection : public Selection
+		{
+		public:
+			SpecifiedSelection(
+				const std::vector<int> &ids,
+				const size_t start_element_id = 0,
+				const size_t end_element_id = std::numeric_limits<size_t>::max());
+			int id(const size_t element_id) const override;
+
+		protected:
+			std::vector<int> ids_;
+		};
+
+		///////////////////////////////////////////////////////////////////////
+
+		class FileSelection : public SpecifiedSelection
+		{
+		public:
+			FileSelection(
+				const std::string &file_path,
+				const size_t start_element_id = 0,
+				const size_t end_element_id = std::numeric_limits<size_t>::max());
 		};
 	} // namespace utils
 } // namespace polyfem
