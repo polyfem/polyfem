@@ -72,7 +72,9 @@ namespace polyfem
 				continue;
 
 			// TODO: handle loading obstacles
-			assert(!complete_geometry["is_obstacle"].get<bool>());
+			if (complete_geometry["is_obstacle"].get<bool>())
+				log_and_throw_error("Collision obstacles not implemented!");
+
 			load_mesh(
 				complete_geometry, root_path, vertices, cells, elements,
 				weights, num_faces, surface_selections, volume_selections);
