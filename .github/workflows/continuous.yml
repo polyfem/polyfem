@@ -191,7 +191,6 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
 
       - name: Prepare sccache
-        shell: powershell
         run: |
           iwr -useb 'https://raw.githubusercontent.com/scoopinstaller/install/master/install.ps1' -outfile 'install.ps1'
           .\install.ps1 -RunAsAdmin
@@ -199,11 +198,11 @@ jobs:
           # Scoop modifies the PATH so we make it available for the next steps of the job
           echo "${env:PATH}" >> ${env:GITHUB_PATH}
 
-      - name: Configure and build
-        shell: powershell
+      - name: Configure x64
         run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
-          cmake --version
+      - name: Configure cmake
+        run: |
           cmake -G Ninja ^
             -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ^
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
@@ -213,6 +212,8 @@ jobs:
             -DPOLYSOLVE_WITH_MKL=OFF ^
             -B build ^
             -S .
+      - name: Build
+        run: |
           cd build
           ninja -j1
 
