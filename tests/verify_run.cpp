@@ -6,6 +6,7 @@
 #include "spdlog/spdlog.h"
 #include <polyfem/Common.hpp>
 
+#include <filesystem>
 #include <iostream>
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -13,6 +14,7 @@ using namespace polyfem;
 using namespace polyfem::problem;
 using namespace polyfem::assembler;
 using namespace polyfem::utils;
+namespace fs = std::filesystem;
 
 int authenticate_json(std::string json_file)
 {
@@ -86,7 +88,7 @@ int authenticate_json(std::string json_file)
 	else
 	{
 		logger().warn("Appending JSON..");
-		
+
 		in_args["authentication"] = out;
 		std::ofstream file(json_file);
 		file << in_args;
@@ -97,6 +99,10 @@ int authenticate_json(std::string json_file)
 
 TEST_CASE("runners", "[.]")
 {
-	auto flag = authenticate_json("../tests/example.json");
-	REQUIRE(flag == 0);
+	std::string path = "json_dir/";
+	for (const auto &entry : fs::directory_iterator(path))
+	{
+		if (entry.path().extension() == ".json")
+			CHECK(authenticate_json(entry.path()) == 0);
+	}
 }
