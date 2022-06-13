@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/MatrixUtils.hpp>
-#include <polyfem/auto_eigs.hpp>
-#include <polyfem/AutodiffTypes.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/autogen/auto_eigs.hpp>
+#include <polyfem/utils/AutodiffTypes.hpp>
 
 #include <iostream>
 #include <cmath>
@@ -12,13 +12,14 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
+using namespace polyfem::utils;
 
 TEST_CASE("determinant2", "[matrix]")
 {
 	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat(2, 2);
 	mat.setRandom();
 
-	REQUIRE(polyfem::determinant(mat) == Approx(mat.determinant()).margin(1e-12));
+	REQUIRE(determinant(mat) == Approx(mat.determinant()).margin(1e-12));
 }
 
 TEST_CASE("determinant3", "[matrix]")
@@ -26,7 +27,7 @@ TEST_CASE("determinant3", "[matrix]")
 	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat(3, 3);
 	mat.setRandom();
 
-	REQUIRE(polyfem::determinant(mat) == Approx(mat.determinant()).margin(1e-12));
+	REQUIRE(determinant(mat) == Approx(mat.determinant()).margin(1e-12));
 }
 
 TEST_CASE("eigs2id", "[matrix]")

@@ -1,6 +1,9 @@
 name: Build
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [main]
+  pull_request:
 
 env:
   CTEST_OUTPUT_ON_FAILURE: ON
@@ -34,6 +37,7 @@ jobs:
           sudo apt-get update
           sudo apt-get -o Acquire::Retries=3 install \
           libblas-dev \
+          doxygen \
           libglu1-mesa-dev \
           xorg-dev \
           ccache
@@ -68,13 +72,6 @@ jobs:
       - name: Tests
         run: cd build; ctest --verbose --output-on-failure
 
-      - name: Runner
-        run: |
-          cd build
-          python ../tests/test_runners.py
-          ./PolyFEM_bin --mesh ../data/data/contact/meshes/3D/simple/cube.msh --cmd --n_refs 1 --problem DrivenCavity --tform Stokes
-          ./PolyFEM_bin --mesh ../data/data/contact/meshes/3D/simple/cube.msh --cmd --n_refs 1 --problem DrivenCavity --tform NavierStokes
-
   ####################
   # MacOS
   ####################
@@ -86,7 +83,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest]
-        arc: [x86, arm64]
+        arc: [x86]
         config: [Debug, Release]
         threading: [CPP, TBB, NONE]
         include:
@@ -101,7 +98,7 @@ jobs:
 
       - name: Dependencies
         run: |
-          brew install ccache
+          brew install ccache doxygen
           echo 'CACHE_PATH=~/Library/Caches/ccache' >> "$GITHUB_ENV"
 
       - name: Cache Build
@@ -147,81 +144,3 @@ jobs:
         if: matrix.arc == 'x86' # no ARM vm on actions yet
         run: cd build; ctest --verbose --output-on-failure
 
-      - name: Runner
-        if: matrix.arc == 'x86' # no ARM vm on actions yet
-        run: |
-          cd build
-          python3 ../tests/test_runners.py
-          ./PolyFEM_bin --mesh ../data/data/contact/meshes/3D/simple/cube.msh --cmd --n_refs 1 --problem DrivenCavity --tform Stokes
-          ./PolyFEM_bin --mesh ../data/data/contact/meshes/3D/simple/cube.msh --cmd --n_refs 1 --problem DrivenCavity --tform NavierStokes
-
-  ####################
-  # Windows
-  ####################
-
-  Windows:
-    runs-on: windows-2019
-    env:
-      CC: cl.exe
-      CXX: cl.exe
-      SCCACHE_IDLE_TIMEOUT: "12000"
-    strategy:
-      fail-fast: false
-      matrix:
-        config: [Debug]
-        threading: [TBB, NONE]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v1
-        with:
-          fetch-depth: 10
-      - uses: seanmiddleditch/gha-setup-ninja@master
-
-      - name: Set env
-        run: |
-          echo "appdata=$env:LOCALAPPDATA" >> ${env:GITHUB_ENV}
-
-      - name: Cache build
-        id: cache-build
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.appdata }}\Mozilla\sccache
-          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
-
-      - name: Prepare sccache
-        run: |
-          iwr -useb 'https://raw.githubusercontent.com/scoopinstaller/install/master/install.ps1' -outfile 'install.ps1'
-          .\install.ps1 -RunAsAdmin
-          scoop install sccache --global
-          # Scoop modifies the PATH so we make it available for the next steps of the job
-          echo "${env:PATH}" >> ${env:GITHUB_PATH}
-
-      - name: Configure and build
-        shell: cmd
-        run: |
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
-          cmake --version
-          cmake -G Ninja ^
-            -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ^
-            -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
-            -DPOLYFEM_WITH_CLIPPER=OFF ^
-            -DPOLYFEM_THREADING=${{ matrix.threading }} ^
-            -DPOLYSOLVE_WITH_CHOLMOD=OFF ^
-            -DPOLYSOLVE_WITH_MKL=OFF ^
-            -B build ^
-            -S .
-          cd build
-          ninja -j1
-
-      - name: Tests
-        run: |
-          cd build
-          ctest --verbose --output-on-failure
-
-      - name: Runner
-        run: |
-          cd build
-          python ..\tests\test_runners.py
-          .\PolyFEM_bin.exe --mesh ..\data\data\contact\meshes\3D\simple\cube.msh --cmd --n_refs 1 --problem DrivenCavity --tform Stokes
-          .\PolyFEM_bin.exe --mesh ..\data\data\contact\meshes\3D\simple\cube.msh --cmd --n_refs 1 --problem DrivenCavity --tform NavierStokes

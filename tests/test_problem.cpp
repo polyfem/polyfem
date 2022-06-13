@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/Problem.hpp>
-#include <polyfem/AssemblerUtils.hpp>
+#include <polyfem/problem/Problem.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/Common.hpp>
 
 #include <catch2/catch.hpp>
@@ -8,19 +8,20 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
+using namespace polyfem::problem;
+using namespace polyfem::assembler;
+using namespace polyfem::basis;
+using namespace polyfem::mesh;
 
 const double k = 0.2;
 const double lambda = 0.375, mu = 0.375;
 
-template <typename T>
-json get_params(const T &pts)
+json get_params()
 {
 	return {
 		{"k", k},
-		{"size", pts.cols()},
 		{"lambda", lambda},
-		{"mu", mu},
-		{"elasticity_tensor", {}}};
+		{"mu", mu}};
 }
 
 TEST_CASE("franke 2d", "[problem]")
@@ -30,9 +31,10 @@ TEST_CASE("franke 2d", "[problem]")
 	pts.setRandom();
 
 	const auto &probl = ProblemFactory::factory().get_problem("Franke");
-	const json params = get_params(pts);
+	const json params = get_params();
 
 	AssemblerUtils assembler;
+	assembler.set_size(2);
 	assembler.set_parameters(params);
 
 	auto x = pts.col(0).array();
@@ -122,9 +124,10 @@ TEST_CASE("franke 3d", "[problem]")
 	pts.setRandom();
 
 	const auto &probl = ProblemFactory::factory().get_problem("Franke");
-	const json params = get_params(pts);
+	const json params = get_params();
 
 	AssemblerUtils assembler;
+	assembler.set_size(3);
 	assembler.set_parameters(params);
 
 	auto x = pts.col(0).array();
@@ -201,9 +204,10 @@ TEST_CASE("linear", "[problem]")
 	pts.setRandom();
 
 	const auto &probl = ProblemFactory::factory().get_problem("Linear");
-	const json params = get_params(pts);
+	const json params = get_params();
 
 	AssemblerUtils assembler;
+	assembler.set_size(2);
 	assembler.set_parameters(params);
 
 	auto x = pts.col(0).array();
@@ -260,9 +264,11 @@ TEST_CASE("quadratic", "[problem]")
 	pts.setRandom();
 
 	const auto &probl = ProblemFactory::factory().get_problem("Quadratic");
-	const json params = get_params(pts);
+
+	const json params = get_params();
 
 	AssemblerUtils assembler;
+	assembler.set_size(2);
 	assembler.set_parameters(params);
 
 	auto x = pts.col(0).array();
@@ -318,9 +324,10 @@ TEST_CASE("zero bc 2d", "[problem]")
 	pts.setRandom();
 
 	const auto &probl = ProblemFactory::factory().get_problem("Zero_BC");
-	const json params = get_params(pts);
+	const json params = get_params();
 
 	AssemblerUtils assembler;
+	assembler.set_size(2);
 	assembler.set_parameters(params);
 
 	auto x = pts.col(0).array();
@@ -351,9 +358,10 @@ TEST_CASE("zero bc 3d", "[problem]")
 	pts.setRandom();
 
 	const auto &probl = ProblemFactory::factory().get_problem("Zero_BC");
-	const json params = get_params(pts);
+	const json params = get_params();
 
 	AssemblerUtils assembler;
+	assembler.set_size(2);
 	assembler.set_parameters(params);
 
 	auto x = pts.col(0).array();
@@ -384,9 +392,10 @@ TEST_CASE("elasticity 2d", "[problem]")
 	pts.setRandom();
 
 	const auto &probl = ProblemFactory::factory().get_problem("ElasticExact");
-	const json params = get_params(pts);
+	const json params = get_params();
 
 	AssemblerUtils assembler;
+	assembler.set_size(2);
 	assembler.set_parameters(params);
 
 	auto x = pts.col(0).array();
@@ -453,9 +462,10 @@ TEST_CASE("elasticity 3d", "[problem]")
 	pts.setRandom();
 
 	const auto &probl = ProblemFactory::factory().get_problem("ElasticExact");
-	const json params = get_params(pts);
+	const json params = get_params();
 
 	AssemblerUtils assembler;
+	assembler.set_size(3);
 	assembler.set_parameters(params);
 
 	auto x = pts.col(0).array();

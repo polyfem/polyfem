@@ -1,11 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/InterpolatedFunction.hpp>
-#include <polyfem/RBFInterpolation.hpp>
-#include <polyfem/Bessel.hpp>
-#include <polyfem/ExpressionValue.hpp>
-#include <polyfem/MshReader.hpp>
-#include <polyfem/Mesh.hpp>
-#include <polyfem/VTUWriter.hpp>
+#include <polyfem/utils/InterpolatedFunction.hpp>
+#include <polyfem/utils/RBFInterpolation.hpp>
+#include <polyfem/utils/Bessel.hpp>
+#include <polyfem/utils/ExpressionValue.hpp>
+#include <polyfem/utils/MshReader.hpp>
+#include <polyfem/mesh/Mesh.hpp>
+#include <polyfem/mesh/VTUWriter.hpp>
 
 #ifdef POLYFEM_WITH_REMESHING
 #include <wmtk/TriMesh.h>
@@ -17,6 +17,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
+using namespace polyfem::mesh;
+using namespace polyfem::utils;
 
 TEST_CASE("interpolated_fun_2d", "[utils]")
 {
@@ -89,11 +91,11 @@ TEST_CASE("expression", "[utils]")
 	json jexpr2d = {{"value", "x^2+sqrt(x*y)"}};
 	json jval = {{"value", 1}};
 
-	ExpressionValue expr;
+	utils::ExpressionValue expr;
 	expr.init(jexpr["value"]);
-	ExpressionValue expr2d;
+	utils::ExpressionValue expr2d;
 	expr2d.init(jexpr2d["value"]);
-	ExpressionValue val;
+	utils::ExpressionValue val;
 	val.init(jval["value"]);
 
 	REQUIRE(expr(2, 3, 4) == Approx(2. * 2. + sqrt(2. * 3.) + sin(4.) * 2.).margin(1e-10));
