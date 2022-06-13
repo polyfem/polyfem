@@ -191,6 +191,7 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
 
       - name: Prepare sccache
+        shell: powershell
         run: |
           iwr -useb 'https://raw.githubusercontent.com/scoopinstaller/install/master/install.ps1' -outfile 'install.ps1'
           .\install.ps1 -RunAsAdmin
@@ -199,7 +200,7 @@ jobs:
           echo "${env:PATH}" >> ${env:GITHUB_PATH}
 
       - name: Configure and build
-        shell: cmd
+        shell: powershell
         run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
           cmake --version
