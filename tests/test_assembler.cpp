@@ -14,7 +14,8 @@ TEST_CASE("hessian_lin", "[assembler]")
 {
 	const std::string path = POLYFEM_DATA_DIR;
 	json in_args = json({});
-	in_args["mesh"] = path + "/circle2.msh";
+	in_args["geometry"] = {};
+	in_args["geometry"]["mesh"] = path + "/circle2.msh";
 	in_args["force_linear_geometry"] = true;
 
 	in_args["preset_problem"] = {};
