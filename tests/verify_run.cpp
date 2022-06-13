@@ -3,6 +3,7 @@
 
 #include "polyfem/utils/JSONUtils.hpp"
 #include "polyfem/State.hpp"
+#include "spdlog/spdlog.h"
 #include <polyfem/Common.hpp>
 
 #include <iostream>
@@ -16,36 +17,32 @@ using namespace polyfem::utils;
 int authenticate_json(std::string json_file)
 {
 	json in_args = json({});
-	std::ifstream file(json_file);
+	{
+		std::ifstream file(json_file);
 
-	if (file.is_open())
-	{
-		file >> in_args;
-		file.close();
-	}
-	else
-	{
-		logger().error("unable to open {} file", json_file);
-		return 1;
+		if (file.is_open())
+		{
+			file >> in_args;
+			file.close();
+		}
+		else
+		{
+			logger().error("unable to open {} file", json_file);
+			return 1;
+		}
 	}
 
 	in_args["root_path"] = json_file;
 	size_t max_threads = std::numeric_limits<size_t>::max();
-	if (in_args.contains("authentication"))
-	{
-		// authenticate mode enabled
-		logger().info("Authenticating..");
-		auto authen_fields = in_args["authentication"];
-	}
 
 	State state(max_threads);
-	state.init_logger("", 6, false);
+	state.init_logger("", 1, false);
 	state.init(in_args, "");
+	state.load_mesh();
 
-	// Mesh was not loaded successfully; load_mesh() logged the error.
 	if (state.mesh == nullptr)
 	{
-		// Cannot proceed without a mesh.
+		spdlog::warn("No Mesh is Read!!");
 		return 1;
 	}
 
@@ -60,12 +57,46 @@ int authenticate_json(std::string json_file)
 
 	state.compute_errors();
 
-	// state.save_json();
-	// state.export_data();
+	json out = json({});
+	out["err_l2"] = state.l2_err;
+	out["err_h1"] = state.h1_err;
+	out["err_h1_semi"] = state.h1_semi_err;
+	out["err_linf"] = state.linf_err;
+	out["err_linf_grad"] = state.grad_max_err;
+	out["err_lp"] = state.lp_err;
+	out["margin"] = 1e-8;
+
+	if (in_args.contains("authentication"))
+	{
+		logger().info("Authenticating..");
+		auto authen = in_args.at("authentication");
+		auto margin = authen.at("margin").get<double>();
+		for (auto &el : out.items())
+		{
+			auto gt_val = authen[el.key()].get<double>();
+			auto relerr = std::abs((gt_val - el.value().get<double>()) / std::max(std::abs(gt_val), margin));
+			if (relerr > margin)
+			{
+				logger().error("Violating Authenticate {}", el.key());
+				return 2;
+			}
+		}
+		logger().info("Authenticated ✅");
+	}
+	else
+	{
+		logger().warn("Appending JSON..");
+		
+		in_args["authentication"] = out;
+		std::ofstream file(json_file);
+		file << in_args;
+	}
+
 	return 0;
 }
 
 TEST_CASE("runners", "[.]")
 {
-	authenticate_json("../data/data/contact/examples/3D/unit-tests/5-cubes-fast.json");
+	auto flag = authenticate_json("../tests/example.json");
+	REQUIRE(flag == 0);
 }
