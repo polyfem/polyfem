@@ -140,6 +140,10 @@ namespace polyfem
 		// Mapping from input nodes to FE nodes
 		std::vector<int> primitive_to_node;
 
+		// position of nodes, number of rows = n_bases
+		Eigen::MatrixXd nodes_position;
+		Eigen::MatrixXd pressure_nodes_position;
+
 		//Geometric mapping bases, if the elements are isoparametric, this list is empty
 		std::vector<ElementBases> geom_bases;
 
@@ -159,6 +163,9 @@ namespace polyfem
 		std::vector<LocalBoundary> local_neumann_boundary;
 		//nodes on the boundary of polygonal elements, used for harmonic bases
 		std::map<int, InterfaceData> poly_edge_to_data;
+
+		//index mapping into periodic dofs
+		Eigen::VectorXi periodic_reduce_map;
 
 		//current mesh, it can be a Mesh2D or Mesh3D
 		std::unique_ptr<Mesh> mesh;
@@ -383,6 +390,9 @@ namespace polyfem
 		void assemble_rhs();
 		//solves the proble, step 5
 		void solve_problem();
+
+		//add lagrangian multiplier rows for pure neumann boundary condition, returns the number of rows added
+		int remove_pure_neumann_singularity(StiffnessMatrix &A, Eigen::VectorXd &b);
 
 		//timedependent stuff cached
 		StepData step_data;

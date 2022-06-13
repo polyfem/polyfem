@@ -398,15 +398,15 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], geom_disc_orders, false, has_polys, true, geom_bases, local_boundary, poly_edge_to_data_geom, primitive_to_node);
+					FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], geom_disc_orders, false, has_polys, true, geom_bases, local_boundary, poly_edge_to_data_geom, primitive_to_node, nodes_position);
 
-				n_bases = FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, args["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, primitive_to_node);
+				n_bases = FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, args["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, primitive_to_node, nodes_position);
 			}
 
 			// if(problem->is_mixed())
 			if (assembler.is_mixed(formulation()))
 			{
-				n_pressure_bases = FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], int(args["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, primitive_to_node);
+				n_pressure_bases = FEBasis3d::build_bases(tmp_mesh, args["quadrature_order"], int(args["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, primitive_to_node, pressure_nodes_position);
 			}
 		}
 		else
@@ -430,15 +430,15 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], geom_disc_orders, false, has_polys, true, geom_bases, local_boundary, poly_edge_to_data_geom, primitive_to_node);
+					FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], geom_disc_orders, false, has_polys, true, geom_bases, local_boundary, poly_edge_to_data_geom, primitive_to_node, nodes_position);
 
-				n_bases = FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, args["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, primitive_to_node);
+				n_bases = FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], disc_orders, args["serendipity"], has_polys, false, bases, local_boundary, poly_edge_to_data, primitive_to_node, nodes_position);
 			}
 
 			// if(problem->is_mixed())
 			if (assembler.is_mixed(formulation()))
 			{
-				n_pressure_bases = FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], int(args["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, primitive_to_node);
+				n_pressure_bases = FEBasis2d::build_bases(tmp_mesh, args["quadrature_order"], int(args["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, primitive_to_node, pressure_nodes_position);
 			}
 		}
 		timer.stop();
@@ -449,6 +449,91 @@ namespace polyfem
 
 		for (const auto &lb : local_boundary)
 			total_local_boundary.emplace_back(lb);
+
+		if (args["problem_params"]["periodic"].get<bool>())
+		{
+			const int dim = mesh->dimension();
+			const int problem_dim = problem->is_scalar() ? 1 : dim;
+			periodic_reduce_map.setConstant(n_bases * problem_dim, 1, -1);
+			bool no_dirichlet = boundary_nodes.size() == 0;
+
+			Eigen::VectorXi dependent_map(n_bases);
+			dependent_map.setConstant(-1);
+
+			// find corresponding periodic boundary nodes
+			Eigen::Vector3i dependent_face({1,2,5}), target_face({3,4,6});
+			for (int d = 0; d < dim; d++)
+			{
+				const int dependent_boundary_id = dependent_face(d);
+				const int target_boundary_id = target_face(d);
+
+				std::set<int> dependent_ids, target_ids;
+
+				for (const auto &lb : total_local_boundary)
+				{
+					const int e = lb.element_id();
+					const ElementBases &bs = bases[e];
+
+					for (int i = 0; i < lb.size(); ++i)
+					{
+						const int primitive_global_id = lb.global_primitive_id(i);
+						const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, *mesh);
+
+						for (long n = 0; n < nodes.size(); ++n)
+						{
+							for (int j = 0; j < bs.bases[nodes(n)].global().size(); j++)
+							{
+								const int gid = bs.bases[nodes(n)].global()[j].index;
+								if (mesh->get_boundary_id(primitive_global_id) == dependent_boundary_id)
+									dependent_ids.insert(gid);
+								else if (mesh->get_boundary_id(primitive_global_id) == target_boundary_id)
+									target_ids.insert(gid);
+							}
+						}
+					}
+				}
+
+				for (int i : dependent_ids)
+				{
+					bool found_target = false;
+					for (int j : target_ids)
+					{
+						RowVectorNd projected_diff = nodes_position.row(j) - nodes_position.row(i);
+						projected_diff(d) = 0;
+						if (projected_diff.norm() < 1e-6)
+						{
+							dependent_map(i) = j;
+							found_target = true;
+							break;
+						}
+					}
+					if (!found_target)
+						throw std::runtime_error("Periodic boundary condition failed to find corresponding nodes!");
+				}
+			}
+
+			// break dependency chains into direct dependency
+			for (int d = 0; d < dim; d++)
+				for (int i = 0; i < dependent_map.size(); i++)
+					if (dependent_map(i) >= 0 && dependent_map(dependent_map(i)) >= 0)
+						dependent_map(i) = dependent_map(dependent_map(i));
+			
+			// new indexing for independent dof
+			int independent_dof = 0;
+			for (int i = 0; i < dependent_map.size(); i++)
+				if (dependent_map(i) < 0)
+				{
+					for (int d = 0; d < problem_dim; d++)
+						periodic_reduce_map(i * problem_dim + d) = independent_dof * problem_dim + d;
+					independent_dof++;
+					dependent_map(i) = i;
+				}
+
+			for (int i = 0; i < dependent_map.size(); i++)
+				if (dependent_map(i) >= 0)
+					for (int d = 0; d < problem_dim; d++)
+						periodic_reduce_map(i * problem_dim + d) = periodic_reduce_map(dependent_map(i) * problem_dim + d);
+		}
 
 		n_flipped = 0;
 
@@ -879,7 +964,7 @@ namespace polyfem
 													 velocity_stiffness, mixed_stiffness, pressure_stiffness,
 													 stiffness);
 
-				if (problem->is_time_dependent())
+				// if (problem->is_time_dependent())
 				{
 					StiffnessMatrix velocity_mass;
 					assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, density, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, velocity_mass);
@@ -905,7 +990,7 @@ namespace polyfem
 		{
 			if (!args["has_collision"]) // collisions are non-linear
 				assembler.assemble_problem(formulation(), mesh->is_volume(), n_bases, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, stiffness);
-			if (problem->is_time_dependent())
+			// if (problem->is_time_dependent())
 			{
 				assembler.assemble_mass_matrix(formulation(), mesh->is_volume(), n_bases, density, bases, iso_parametric() ? bases : geom_bases, ass_vals_cache, mass);
 			}
