@@ -253,15 +253,15 @@ namespace polyfem
 			"mesh": null,
 			"is_obstacle": false,
 			"enabled": true,
-			
+
 			"transformation": {
 				"translation": [0.0, 0.0, 0.0],
-				"rotation": [0.0, 0.0, 0.0],
+				"rotation": null,
 				"rotation_mode": "xyz",
 				"scale": [1.0, 1.0, 1.0],
-				"dimensions": null,
-			}
-			
+				"dimensions": null
+			},
+
 			"extract": "volume",
 
 			"point_selection": null,
@@ -269,7 +269,7 @@ namespace polyfem
 			"surface_selection": null,
 			"volume_selection": null,
 
-			"n_refs": 0, 
+			"n_refs": 0,
 
 			"advanced": {
 				"force_linear_geometry": false,
@@ -332,17 +332,20 @@ namespace polyfem
 		// Rotate around the models origin NOT the bodies center of mass.
 		// We could expose this choice as a "rotate_around" field.
 		MatrixNd R = MatrixNd::Identity(dim, dim);
-		if (dim == 2)
+		if (!transform["rotation"].is_null())
 		{
-			if (transform["rotation"].is_number())
-				R = Eigen::Rotation2Dd(deg2rad(transform["rotation"].get<double>()))
-						.toRotationMatrix();
-			else
-				log_and_throw_error("Invalid 2D rotation; 2D rotations can only be a angle in degrees.");
-		}
-		else if (dim == 3)
-		{
-			R = to_rotation_matrix(transform["rotation"], transform["rotation_mode"]);
+			if (dim == 2)
+			{
+				if (transform["rotation"].is_number())
+					R = Eigen::Rotation2Dd(deg2rad(transform["rotation"].get<double>()))
+							.toRotationMatrix();
+				else
+					log_and_throw_error("Invalid 2D rotation; 2D rotations can only be a angle in degrees.");
+			}
+			else if (dim == 3)
+			{
+				R = to_rotation_matrix(transform["rotation"], transform["rotation_mode"]);
+			}
 		}
 
 		vertices *= R.transpose(); // (R*Vᵀ)ᵀ = V*Rᵀ
@@ -393,7 +396,7 @@ namespace polyfem
 					s, bbox, start_element_id, end_element_id));
 			}
 		}
-		else
+		else if (!new_selections.is_null())
 		{
 			log_and_throw_error(fmt::format("Invalid selections: {}", new_selections));
 		}

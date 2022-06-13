@@ -98,7 +98,7 @@ namespace polyfem
 						"defaults": "",
 						"root_path": "",
 
-						"geometries": null,
+						"geometry": null,
 
 					    "space": {
         					"discr_order": 1,
