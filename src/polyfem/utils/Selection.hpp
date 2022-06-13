@@ -62,7 +62,6 @@ namespace polyfem
 				const size_t start_element_id = 0,
 				const size_t end_element_id = std::numeric_limits<size_t>::max());
 			bool inside(const size_t element_id, const RowVectorNd &p) const override;
-			int id() const { return id_; }
 
 		protected:
 			RowVectorNd center_;

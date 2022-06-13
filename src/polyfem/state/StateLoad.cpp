@@ -132,42 +132,33 @@ namespace polyfem
 
 		if (mesh == nullptr)
 		{
-			if (!mesh_path().empty())
-			{
-				if (names.empty())
-				{
-					logger().info("Loading mesh {} ...", mesh_path());
-					mesh = Mesh::create(mesh_path(), non_conforming);
-				}
-				else
-				{
-					int index = -1;
-					for (int i = 0; i < names.size(); ++i)
-					{
-						if (names[i] == args["meshes"])
-						{
-							index = i;
-							break;
-						}
-					}
 
-					assert(index >= 0);
+			// TODO fix me for hdf5
+			// {
+			// 	int index = -1;
+			// 	for (int i = 0; i < names.size(); ++i)
+			// 	{
+			// 		if (names[i] == args["meshes"])
+			// 		{
+			// 			index = i;
+			// 			break;
+			// 		}
+			// 	}
 
-					if (vertices[index].cols() == 2)
-						mesh = std::make_unique<polyfem::CMesh2D>();
-					else
-						mesh = std::make_unique<polyfem::Mesh3D>();
-					mesh->build_from_matrices(vertices[index], cells[index]);
-				}
-			}
-			else
-			{
-				assert(is_param_valid(args, "geometry"));
-				logger().info("Loading geometry ...");
-				load_geometry(
-					args["geometry"], args["root_path"], mesh, obstacle,
-					names, vertices, cells, non_conforming);
-			}
+			// 	assert(index >= 0);
+
+			// 	if (vertices[index].cols() == 2)
+			// 		mesh = std::make_unique<polyfem::CMesh2D>();
+			// 	else
+			// 		mesh = std::make_unique<polyfem::Mesh3D>();
+			// 	mesh->build_from_matrices(vertices[index], cells[index]);
+			// }
+
+			assert(is_param_valid(args, "geometry"));
+			logger().info("Loading geometry ...");
+			load_geometry(
+				args["geometry"], args["root_path"], mesh, obstacle,
+				names, vertices, cells, non_conforming);
 		}
 		else
 		{

@@ -72,7 +72,9 @@ namespace polyfem
 				continue;
 
 			// TODO: handle loading obstacles
-			assert(!complete_geometry["is_obstacle"].get<bool>());
+			if (complete_geometry["is_obstacle"].get<bool>())
+				log_and_throw_error("Collision obstacles not implemented!");
+
 			load_mesh(
 				complete_geometry, root_path, vertices, cells, elements,
 				weights, num_faces, surface_selections, volume_selections);
@@ -147,7 +149,7 @@ namespace polyfem
 		Eigen::MatrixXi cells;
 		std::vector<std::vector<int>> elements;
 		std::vector<std::vector<double>> weights;
-		Eigen::VectorXi volume_ids;
+		std::vector<int> volume_ids;
 		bool read_success = read_fem_mesh(
 			mesh_path, vertices, cells, elements, weights, volume_ids);
 
@@ -195,28 +197,18 @@ namespace polyfem
 		in_weights.insert(in_weights.end(), weights.begin(), weights.end());
 		// }
 
-		///////////////////////////////////////////////////////////////////////////
-
-		// TODO:
-		// "point_tags": {
-		// 	"ids": 0,
-		// 	"offset": 0
-		// },
-
-		// TODO:
-		// "curve_tags": {
-		// 	"ids": 0,
-		// 	"offset": 0
-		// },
-
-		///////////////////////////////////////////////////////////////////////////
-
-		// "surface_tags": {
-		// 	"ids": 0,
-		// 	"offset": 0
-		// },
+		///////////////////////////////////////////////////////////////////////
 
 		const Selection::BBox bbox = {{vertices.colwise().minCoeff(), vertices.colwise().maxCoeff()}};
+
+		if (!jmesh["point_selection"].is_null())
+			logger().warn("Geometry point seleections are not implemented nor used!");
+
+		if (!jmesh["curve_selection"].is_null())
+			logger().warn("Geometry point seleections are not implemented nor used!");
+
+		///////////////////////////////////////////////////////////////////////////
+
 		const size_t num_local_faces = count_faces(dim, cells);
 		append_selections(
 			jmesh["surface_selection"], bbox, num_faces,
@@ -224,11 +216,6 @@ namespace polyfem
 		num_faces += num_local_faces;
 
 		////////////////////////////////////////////////////////////////////////////
-
-		// "volume_tags": {
-		// 	"ids": 0,
-		// 	"offset": 0
-		// },
 
 		// Specified volume selection has priority over mesh's stored ids
 		append_selections(
@@ -266,38 +253,23 @@ namespace polyfem
 			"mesh": null,
 			"is_obstacle": false,
 			"enabled": true,
-			
+
 			"transformation": {
 				"translation": [0.0, 0.0, 0.0],
-				"rotation": [0.0, 0.0, 0.0],
+				"rotation": null,
 				"rotation_mode": "xyz",
 				"scale": [1.0, 1.0, 1.0],
-				"dimensions": null,
-			}
-			
+				"dimensions": null
+			},
+
 			"extract": "volume",
 
-			"point_tags": {
-				"ids": 0,
-				"offset": 0
-			},
-			
-			"curve_tags": {
-				"ids": 0,
-				"offset": 0
-			},
-			
-			"surface_tags": {
-				"ids": 0,
-				"offset": 0
-			},
-			
-			"volume_tags": {
-				"ids": 0,
-				"offset": 0
-			},
+			"point_selection": null,
+			"curve_selection": null,
+			"surface_selection": null,
+			"volume_selection": null,
 
-			"n_refs": 0, 
+			"n_refs": 0,
 
 			"advanced": {
 				"force_linear_geometry": false,
@@ -360,17 +332,20 @@ namespace polyfem
 		// Rotate around the models origin NOT the bodies center of mass.
 		// We could expose this choice as a "rotate_around" field.
 		MatrixNd R = MatrixNd::Identity(dim, dim);
-		if (dim == 2)
+		if (!transform["rotation"].is_null())
 		{
-			if (transform["rotation"].is_number())
-				R = Eigen::Rotation2Dd(deg2rad(transform["rotation"].get<double>()))
-						.toRotationMatrix();
-			else
-				log_and_throw_error("Invalid 2D rotation; 2D rotations can only be a angle in degrees.");
-		}
-		else if (dim == 3)
-		{
-			R = to_rotation_matrix(transform["rotation"], transform["rotation_mode"]);
+			if (dim == 2)
+			{
+				if (transform["rotation"].is_number())
+					R = Eigen::Rotation2Dd(deg2rad(transform["rotation"].get<double>()))
+							.toRotationMatrix();
+				else
+					log_and_throw_error("Invalid 2D rotation; 2D rotations can only be a angle in degrees.");
+			}
+			else if (dim == 3)
+			{
+				R = to_rotation_matrix(transform["rotation"], transform["rotation_mode"]);
+			}
 		}
 
 		vertices *= R.transpose(); // (R*Vᵀ)ᵀ = V*Rᵀ
@@ -421,7 +396,7 @@ namespace polyfem
 					s, bbox, start_element_id, end_element_id));
 			}
 		}
-		else
+		else if (!new_selections.is_null())
 		{
 			log_and_throw_error(fmt::format("Invalid selections: {}", new_selections));
 		}
