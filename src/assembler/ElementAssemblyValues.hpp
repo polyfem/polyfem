@@ -34,6 +34,8 @@ namespace polyfem
 		void compute(const int el_index, const bool is_volume, const Eigen::MatrixXd &pts, const ElementBases &basis, const ElementBases &gbasis);
 		//check if the element is flipped
 		bool is_geom_mapping_positive(const bool is_volume, const ElementBases &gbasis) const;
+		bool is_geom_mapping_degenerate(const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy, const Eigen::MatrixXd &dz) const;
+		bool is_geom_mapping_degenerate(const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy) const;
 
 	private:
 		std::vector<AssemblyValues> g_basis_values_cache_;

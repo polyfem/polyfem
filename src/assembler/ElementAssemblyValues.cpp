@@ -59,6 +59,43 @@ namespace polyfem
 		return true;
 	}
 
+	bool ElementAssemblyValues::is_geom_mapping_degenerate(const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy, const Eigen::MatrixXd &dz) const
+	{
+		Eigen::Matrix3d tmp;
+		for (long i = 0; i < dx.rows(); ++i)
+		{
+			tmp.row(0) = dx.row(i);
+			tmp.row(1) = dy.row(i);
+			tmp.row(2) = dz.row(i);
+
+			if (tmp.determinant() <= 1e-8)
+			{
+				// std::cout<<tmp.determinant()<<std::endl;
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	bool ElementAssemblyValues::is_geom_mapping_degenerate(const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy) const
+	{
+		Eigen::Matrix2d tmp;
+		for (long i = 0; i < dx.rows(); ++i)
+		{
+			tmp.row(0) = dx.row(i);
+			tmp.row(1) = dy.row(i);
+
+			if (tmp.determinant() <= 1e-8)
+			{
+				// std::cout<<tmp.determinant()<<std::endl;
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	// void ElementAssemblyValues::finalize(const Eigen::MatrixXd &v, const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy, const Eigen::MatrixXd &dz)
 	// {
 	// 	val = v;
