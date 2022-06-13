@@ -144,3 +144,80 @@ jobs:
         if: matrix.arc == 'x86' # no ARM vm on actions yet
         run: cd build; ctest --verbose --output-on-failure
 
+  ####################
+  # Windows
+  ####################
+
+  Windows:
+    runs-on: windows-2019
+    env:
+      CC: cl.exe
+      CXX: cl.exe
+      SCCACHE_IDLE_TIMEOUT: "12000"
+    strategy:
+      fail-fast: false
+      matrix:
+        config: [Debug]
+        threading: [TBB, NONE]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 10
+      - uses: seanmiddleditch/gha-setup-ninja@master
+
+      - name: Stetup Conda
+        uses: s-weigand/setup-conda@v1
+        with:
+          update-conda: true
+          conda-channels: anaconda, conda-forge
+
+      - name: Install Dependencies
+        run: |
+          conda install libblas libcblas suitesparse -y
+
+      - name: Set env
+        run: |
+          echo "appdata=$env:LOCALAPPDATA" >> ${env:GITHUB_ENV}
+          conda init powershell
+
+
+      - name: Cache build
+        id: cache-build
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.appdata }}\Mozilla\sccache
+          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
+
+      - name: Prepare sccache
+        run: |
+          iwr -useb 'https://raw.githubusercontent.com/scoopinstaller/install/master/install.ps1' -outfile 'install.ps1'
+          .\install.ps1 -RunAsAdmin
+          scoop install sccache --global
+          # Scoop modifies the PATH so we make it available for the next steps of the job
+          echo "${env:PATH}" >> ${env:GITHUB_PATH}
+
+      - name: Configure x64
+        run: |
+          "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
+      - name: Configure cmake
+        run: |
+          cmake -G Ninja ^
+            -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ^
+            -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
+            -DPOLYFEM_WITH_CLIPPER=OFF ^
+            -DPOLYFEM_THREADING=${{ matrix.threading }} ^
+            -DPOLYSOLVE_WITH_CHOLMOD=OFF ^
+            -DPOLYSOLVE_WITH_MKL=OFF ^
+            -B build ^
+            -S .
+      - name: Build
+        run: |
+          cd build
+          ninja -j1
+
+      - name: Tests
+        run: |
+          cd build
+          ctest --verbose --output-on-failure
