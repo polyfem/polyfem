@@ -147,7 +147,7 @@ namespace polyfem
 		Eigen::MatrixXi cells;
 		std::vector<std::vector<int>> elements;
 		std::vector<std::vector<double>> weights;
-		Eigen::VectorXi volume_ids;
+		std::vector<int> volume_ids;
 		bool read_success = read_fem_mesh(
 			mesh_path, vertices, cells, elements, weights, volume_ids);
 

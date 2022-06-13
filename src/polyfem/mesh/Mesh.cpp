@@ -75,7 +75,7 @@ std::unique_ptr<Mesh> Mesh::create(const std::string &path, const bool non_confo
 		Eigen::MatrixXi cells;
 		std::vector<std::vector<int>> elements;
 		std::vector<std::vector<double>> weights;
-		Eigen::VectorXi body_ids;
+		std::vector<int> body_ids;
 
 		if (!MshReader::load(path, vertices, cells, elements, weights, body_ids))
 			return nullptr;
