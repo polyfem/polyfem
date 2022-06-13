@@ -408,15 +408,13 @@ namespace polyfem
 		Eigen::MatrixXi geom_disc_orders;
 		if (!iso_parametric())
 		{
-			//TODO, maybe?
-			// if (args["force_linear_geometry"] || mesh->orders().size() <= 0)
-			// {
-			// 	geom_disc_orders.resizeLike(disc_orders);
-			// 	geom_disc_orders.setConstant(1);
-			// }
-			// else
-
-			geom_disc_orders = mesh->orders();
+			if (mesh->orders().size() <= 0)
+			{
+				geom_disc_orders.resizeLike(disc_orders);
+				geom_disc_orders.setConstant(1);
+			}
+			else
+				geom_disc_orders = mesh->orders();
 		}
 
 		igl::Timer timer;
@@ -599,24 +597,6 @@ namespace polyfem
 		const bool has_neumann = local_neumann_boundary.size() > 0 || local_boundary.size() < prev_b_size;
 		use_avg_pressure = !has_neumann;
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
-
-		// add a pressure node to avoid singular solution
-		//TODO check me!
-		// if (assembler.is_mixed(formulation())) // && !assembler.is_fluid(formulation()))
-		// {
-		// 	if (!use_avg_pressure)
-		// 	{
-		// 		const bool has_neumann = args["has_neumann"];
-		// 		if (!has_neumann)
-		// 			boundary_nodes.push_back(n_bases * problem_dim + 0);
-
-		// 		// boundary_nodes.push_back(n_bases * problem_dim + 1);
-		// 		// boundary_nodes.push_back(n_bases * problem_dim + 2);
-		// 		// boundary_nodes.push_back(n_bases * problem_dim + 3);
-		// 		// boundary_nodes.push_back(n_bases * problem_dim + 3);
-		// 		// boundary_nodes.push_back(n_bases * problem_dim + 215);
-		// 	}
-		// }
 
 		for (int i = prev_bases; i < n_bases; ++i)
 		{

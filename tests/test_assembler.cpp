@@ -16,7 +16,12 @@ TEST_CASE("hessian_lin", "[assembler]")
 	json in_args = json({});
 	in_args["mesh"] = path + "/circle2.msh";
 	in_args["force_linear_geometry"] = true;
-	in_args["problem"] = "ElasticExact";
+
+	in_args["preset_problem"] = {};
+	in_args["preset_problem"]["name"] = "ElasticExact";
+
+	in_args["materials"] = {};
+	in_args["materials"]["type"] = "LinearElasticity";
 
 	State state;
 	state.init_logger("", 6, false);

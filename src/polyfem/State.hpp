@@ -587,7 +587,7 @@ namespace polyfem
 				if (args["space"]["discr_order"] == 1)
 					return true;
 				else
-					return args["space"]["advanced"]["iso_parametric"];
+					return args["space"]["advanced"]["isoparametric"];
 			}
 
 			if (mesh->orders().minCoeff() != mesh->orders().maxCoeff())
@@ -600,7 +600,7 @@ namespace polyfem
 			// if (args["space"]["discr_order"] == 1 && args["force_linear_geometry"])
 			// 	return true;
 
-			return args["space"]["advanced"]["iso_parametric"];
+			return args["space"]["advanced"]["isoparametric"];
 		}
 
 		template <typename ProblemType>
