@@ -827,27 +827,27 @@ namespace polyfem
 		const auto& gbases = iso_parametric() ? bases : geom_bases;
 		if (formulation() == "Laplacian")
 		{
-			// Eigen::VectorXd coeffs(n_bases);
-			// coeffs.setZero();
-			// for (int e = 0; e < bases.size(); e++)
-			// {
-			// 	ElementAssemblyValues vals;
-			// 	vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
+			Eigen::VectorXd coeffs(n_bases);
+			coeffs.setZero();
+			for (int e = 0; e < bases.size(); e++)
+			{
+				ElementAssemblyValues vals;
+				vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
 
-			// 	const int n_loc_bases = int(vals.basis_values.size());
-			// 	for (int i = 0; i < n_loc_bases; ++i) 
-			// 	{
-			// 		const auto &val = vals.basis_values[i];
-			// 		for (size_t ii = 0; ii < val.global.size(); ++ii) 
-			// 		{
-			// 			Eigen::MatrixXd tmp = val.global[ii].val * val.val;
-			// 			coeffs(val.global[ii].index) += (tmp.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-			// 		}
-			// 	}
-			// }
-			Eigen::VectorXd test_func;
-			test_func.setOnes(n_bases, 1);
-			Eigen::VectorXd coeffs = mass * test_func;
+				const int n_loc_bases = int(vals.basis_values.size());
+				for (int i = 0; i < n_loc_bases; ++i) 
+				{
+					const auto &val = vals.basis_values[i];
+					for (size_t ii = 0; ii < val.global.size(); ++ii) 
+					{
+						Eigen::MatrixXd tmp = val.global[ii].val * val.val;
+						coeffs(val.global[ii].index) += (tmp.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+					}
+				}
+			}
+			// Eigen::VectorXd test_func;
+			// test_func.setOnes(n_bases, 1);
+			// Eigen::VectorXd coeffs = mass * test_func;
 
 			std::vector<Eigen::Triplet<double>> entries;
 			entries.reserve(A.nonZeros() + coeffs.size() * 2);
@@ -949,45 +949,43 @@ namespace polyfem
 			Eigen::MatrixXd coeffs(n_bases * problem_dim, test_func.cols());
 			coeffs.setZero();
 
-			coeffs = mass * test_func;
+			// coeffs = mass * test_func;
 
-			// for (int k = 0; k < test_func.cols(); k++)
-			// {
-			// 	for (int e = 0; e < bases.size(); e++)
-			// 	{
-			// 		ElementAssemblyValues vals;
-			// 		vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
+			for (int k = 0; k < test_func.cols(); k++)
+			{
+				for (int e = 0; e < bases.size(); e++)
+				{
+					ElementAssemblyValues vals;
+					vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
 
-			// 		Eigen::MatrixXd result;
-			// 		result.setZero(vals.val.rows(), mesh->dimension());
+					Eigen::MatrixXd result;
+					result.setZero(vals.val.rows(), mesh->dimension());
 
-			// 		const int n_loc_bases = int(vals.basis_values.size());
-			// 		for (int i = 0; i < n_loc_bases; ++i) 
-			// 		{
-			// 			const auto &val = vals.basis_values[i];
-			// 			for (size_t ii = 0; ii < val.global.size(); ++ii) 
-			// 			{
-			// 				for (int d = 0; d < problem_dim; ++d)
-			// 				{
-			// 					result.col(d) += val.global[ii].val * test_func(val.global[ii].index * problem_dim + d) * val.val;
-			// 				}
-			// 			}
-			// 		}
+					const int n_loc_bases = int(vals.basis_values.size());
+					for (int i = 0; i < n_loc_bases; ++i) 
+					{
+						const auto &val = vals.basis_values[i];
+						for (size_t ii = 0; ii < val.global.size(); ++ii) 
+						{
+							for (int d = 0; d < problem_dim; ++d)
+							{
+								result.col(d) += val.global[ii].val * test_func(val.global[ii].index * problem_dim + d, k) * val.val;
+							}
+						}
+					}
 
-			// 		for (int i = 0; i < n_loc_bases; ++i) 
-			// 		{
-			// 			const auto &val = vals.basis_values[i];
-			// 			for (size_t ii = 0; ii < val.global.size(); ++ii) 
-			// 			{
-			// 				for (int d = 0; d < problem_dim; d++)
-			// 				{
-			// 					Eigen::MatrixXd tmp = val.global[ii].val * val.val;
-			// 					coeffs(val.global[ii].index * problem_dim + d, k) += (tmp.array() * result.col(d).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-			// 				}
-			// 			}
-			// 		}
-			// 	}
-			// }
+					for (int i = 0; i < n_loc_bases; ++i) 
+					{
+						const auto &val = vals.basis_values[i];
+						for (size_t ii = 0; ii < val.global.size(); ++ii) 
+						{
+							Eigen::MatrixXd tmp = val.global[ii].val * val.val;
+							for (int d = 0; d < problem_dim; d++)
+								coeffs(val.global[ii].index * problem_dim + d, k) += (tmp.array() * result.col(d).array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+						}
+					}
+				}
+			}
 			
 			std::vector<Eigen::Triplet<double>> entries;
 			entries.reserve(A.nonZeros() + coeffs.size() * 2);
@@ -1032,33 +1030,34 @@ namespace polyfem
 		}
 		else if (formulation() == "Stokes" || formulation() == "NavierStokes")
 		{
-			// Eigen::VectorXd coeffs(n_bases);
-			// coeffs.setZero();
-			// for (int e = 0; e < bases.size(); e++)
-			// {
-			// 	ElementAssemblyValues vals;
-			// 	vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
+			Eigen::MatrixXd coeffs(n_bases * problem_dim, problem_dim);
+			coeffs.setZero();
+			for (int e = 0; e < bases.size(); e++)
+			{
+				ElementAssemblyValues vals;
+				vals.compute(e, mesh->is_volume(), bases[e], gbases[e]);
 
-			// 	const int n_loc_bases = int(vals.basis_values.size());
-			// 	for (int i = 0; i < n_loc_bases; ++i) 
-			// 	{
-			// 		const auto &val = vals.basis_values[i];
-			// 		for (size_t ii = 0; ii < val.global.size(); ++ii) 
-			// 		{
-			// 			Eigen::MatrixXd tmp = val.global[ii].val * val.val;
-			// 			coeffs(val.global[ii].index) += (tmp.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
-			// 		}
-			// 	}
-			// }
-
-			Eigen::MatrixXd test_func;
-			test_func.setZero(n_bases * problem_dim, problem_dim);
-			for (int i = 0; i < n_bases; i++)
-				for (int d = 0; d < problem_dim; d++)
+				const int n_loc_bases = int(vals.basis_values.size());
+				for (int i = 0; i < n_loc_bases; ++i) 
 				{
-					test_func(i * problem_dim + d, d) = 1;
+					const auto &val = vals.basis_values[i];
+					for (size_t ii = 0; ii < val.global.size(); ++ii) 
+					{
+						Eigen::MatrixXd tmp = val.global[ii].val * val.val;
+						for (int d = 0; d < problem_dim; d++)
+							coeffs(val.global[ii].index * problem_dim + d, d) += (tmp.array() * vals.det.array() * vals.quadrature.weights.array()).sum();
+					}
 				}
-			Eigen::MatrixXd coeffs = mass.topLeftCorner(test_func.rows(), test_func.rows()) * test_func;
+			}
+
+			// Eigen::MatrixXd test_func;
+			// test_func.setZero(n_bases * problem_dim, problem_dim);
+			// for (int i = 0; i < n_bases; i++)
+			// 	for (int d = 0; d < problem_dim; d++)
+			// 	{
+			// 		test_func(i * problem_dim + d, d) = 1;
+			// 	}
+			// Eigen::MatrixXd coeffs = mass.topLeftCorner(test_func.rows(), test_func.rows()) * test_func;
 
 			std::vector<Eigen::Triplet<double>> entries;
 			entries.reserve(A.nonZeros() + coeffs.size() * 2 * problem_dim);
