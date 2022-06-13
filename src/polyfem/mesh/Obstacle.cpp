@@ -34,110 +34,18 @@ namespace polyfem
 			planes_.clear();
 		}
 
-		void Obstacle::init(const json &obstacles,
-							const std::string &root_path,
-							const int dim,
-							const std::vector<std::string> &names,
-							const std::vector<Eigen::MatrixXi> &cells,
-							const std::vector<Eigen::MatrixXd> &vertices)
+		void Obstacle::append_mesh(
+			const Eigen::MatrixXd &vertices,
+			const Eigen::VectorXi &codim_vertices,
+			const Eigen::MatrixXi &codim_edges,
+			const Eigen::MatrixXi &faces)
 		{
-			clear();
-
-			dim_ = dim;
-
-			for (int i = 0; i < obstacles.size(); i++)
-			{
-				if (!obstacles[i].value("enabled", true))
-				{
-					continue;
-				}
-
-				std::string type = obstacles[i].value("type", /*default=*/"mesh");
-				if (type == "mesh")
-				{
-					append_mesh(obstacles[i], root_path, i, names, cells, vertices);
-				}
-				else if (type == "plane")
-				{
-					append_plane(obstacles[i], i);
-				}
-				else if (type == "ground")
-				{
-					append_ground(obstacles[i], i);
-				}
-			}
-		}
-
-		void Obstacle::append_mesh(const json &mesh_in, const std::string &root_path, const int i, const std::vector<std::string> &names, const std::vector<Eigen::MatrixXi> &cells_in, const std::vector<Eigen::MatrixXd> &vertices_in)
-		{
-			json jmesh;
-			apply_default_mesh_parameters(mesh_in, jmesh, fmt::format("/obstacles[{}]", i));
-
-			if (!mesh_in.contains("mesh"))
-			{
-				logger().error("Obstacle {} is mising a \"mesh\" field", mesh_in.dump());
-				return;
-			}
-
-			Eigen::MatrixXd vertices;
-			Eigen::VectorXi codim_vertices;
-			Eigen::MatrixXi codim_edges, faces;
-			if (names.empty())
-			{
-				const std::string mesh_path = resolve_path(jmesh["mesh"], root_path);
-
-				read_surface_mesh(mesh_path, vertices, codim_vertices, codim_edges, faces);
-			}
-			else
-			{
-				int index = -1;
-				for (int k = 0; k < names.size(); ++k)
-				{
-					if (names[k] == jmesh["mesh"])
-					{
-						index = k;
-						break;
-					}
-				}
-
-				assert(index >= 0);
-
-				vertices = vertices_in[index];
-				const auto &cells = cells_in[index];
-
-				if (cells.cols() == 1)
-					codim_vertices = cells;
-				else if (cells.cols() == 2)
-					codim_edges = cells;
-				else if (cells.cols() == 3)
-					faces = cells;
-				else
-				{
-					assert(cells.cols() == 4);
-					Eigen::MatrixXd surface_vertices;
-					mesh::extract_triangle_surface_from_tets(vertices, cells, surface_vertices, faces);
-					vertices = surface_vertices;
-				}
-			}
-
 			if (vertices.size() == 0)
-			{
 				return;
-			}
 
-			if (dim_ < vertices.cols()) // Drop the extra dimensions
-			{
-				assert(vertices.rightCols(vertices.cols() - dim_).isZero());
-				vertices.conservativeResize(vertices.rows(), dim_);
-			}
-			else if (dim_ > vertices.cols()) // Pad the vertices with zero in the extra dimensions
-			{
-				const int vertices_cols = vertices.cols();
-				vertices.conservativeResize(vertices.rows(), dim_);
-				vertices.rightCols(dim_ - vertices_cols).setZero();
-			}
-
-			transform_mesh_from_json(jmesh, vertices);
+			if (dim_ == 0)
+				dim_ = vertices.cols();
+			assert(dim_ == vertices.cols());
 
 			if (codim_vertices.size())
 			{
@@ -180,70 +88,22 @@ namespace polyfem
 			v_.conservativeResize(v_.rows() + vertices.rows(), dim_);
 			v_.bottomRows(vertices.rows()) = vertices;
 
+			// initialize to zero displacement
 			displacements_.emplace_back();
-			for (size_t k = 0; k < dim_; ++k)
-				displacements_.back()[k].init(jmesh["displacement"][k]);
-
-			const std::string interpolation = jmesh.value("interpolation", /*default=*/"");
-			if (interpolation.empty())
-				displacements_interpolation_.emplace_back(std::make_shared<NoInterpolation>());
-			else
-				displacements_interpolation_.emplace_back(Interpolation::build(interpolation));
+			for (size_t d = 0; d < dim_; ++d)
+				displacements_.back()[d].init(0);
+			displacements_interpolation_.emplace_back(std::make_shared<NoInterpolation>());
 
 			endings_.push_back(v_.rows());
 		}
 
-		void Obstacle::append_plane(const json &plane_in, const int i)
+		void Obstacle::append_plane(const VectorNd &origin, const VectorNd &normal)
 		{
-			json plane = R"({
-			"position": [0.0, 0.0, 0.0],
-			"normal": [0.0, 1.0, 0.0]
-			"enabled": true
-		})"_json;
-			check_for_unknown_args(plane, plane_in, fmt::format("/obstacles[{}]", i));
-			plane.merge_patch(plane_in);
-
-			if (!plane["enabled"].get<bool>())
-			{
-				return;
-			}
-
-			VectorNd origin = plane["position"];
-			VectorNd normal = plane["normal"];
-
 			if (dim_ == 0)
 				dim_ = origin.size();
-
 			assert(normal.size() >= dim_);
-			normal = normal.head(dim_).normalized();
-
 			assert(origin.size() >= dim_);
-			origin = origin.head(dim_);
-
-			planes_.emplace_back(origin, normal);
-		}
-
-		void Obstacle::append_ground(const json &ground_in, const int i)
-		{
-			json ground = R"({
-			"height": 0,
-			"normal": [0.0, 1.0, 0.0]
-			"enabled": true
-		})"_json;
-			check_for_unknown_args(ground, ground_in, fmt::format("/obstacles[{}]", i));
-			ground.merge_patch(ground_in);
-
-			VectorNd normal = ground["normal"];
-
-			if (dim_ == 0)
-				dim_ = normal.size();
-
-			assert(normal.size() >= dim_);
-			normal = normal.head(dim_).normalized();
-
-			VectorNd origin = ground["height"].get<double>() * normal;
-
-			planes_.emplace_back(origin, normal);
+			planes_.emplace_back(origin.head(dim_), normal.head(dim_).normalized());
 		}
 
 		void Obstacle::change_displacement(const int oid, const Eigen::RowVector3d &val, const std::string &interp)

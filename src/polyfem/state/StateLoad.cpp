@@ -2,6 +2,7 @@
 
 #include <polyfem/utils/FEBioReader.hpp>
 
+#include <polyfem/mesh/GeometryReader.hpp>
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
@@ -159,10 +160,13 @@ namespace polyfem
 					mesh->build_from_matrices(vertices[index], cells[index]);
 				}
 			}
-			else if (is_param_valid(args, "meshes"))
+			else
 			{
-				logger().info("Loading meshes ...");
-				mesh = Mesh::create(args["meshes"].get<std::vector<json>>(), args["root_path"], non_conforming, names, cells, vertices);
+				assert(is_param_valid(args, "geometry"));
+				logger().info("Loading geometry ...");
+				load_geometry(
+					args["geometry"], args["root_path"], mesh, obstacle,
+					names, vertices, cells, non_conforming);
 			}
 		}
 		else
@@ -183,7 +187,7 @@ namespace polyfem
 		// 		mesh->set_tag(el_id, ElementType::InteriorPolytope);
 		// }
 
-		//TODO fix me Zach
+		// TODO: fix me @zfergus
 		// if (args["normalize_mesh"])
 		// 	mesh->normalize();
 
@@ -197,7 +201,7 @@ namespace polyfem
 
 		assembler.set_size(mesh->dimension());
 
-		//TODO fix me Zach
+		// TODO: fix me @zfergus
 		// int n_refs = args["n_refs"];
 
 		// if (n_refs <= 0 && args["poly_bases"] == "MFSHarmonic" && mesh->has_poly())
@@ -213,7 +217,7 @@ namespace polyfem
 
 		// mesh->set_tag(1712, ElementType::InteriorPolytope);
 
-		//TODO fix me Zach
+		// TODO: fix me @zfergus
 		const double boundary_id_threshold = mesh->is_volume() ? 1e-2 : 1e-7;
 		mesh->compute_boundary_ids(boundary_id_threshold);
 
@@ -241,7 +245,7 @@ namespace polyfem
 		ref_element_sampler.init(mesh->is_volume(), mesh->n_elements(), args["output"]["paraview"]["vismesh_rel_area"]);
 
 		timer.start();
-		//TODO fix me Zach
+		// TODO: fix me @zfergus
 		// logger().info("Loading obstacles...");
 		// if (is_param_valid(args, "obstacles"))
 		// 	obstacle.init(args["obstacles"], args["root_path"], mesh->dimension(), names, cells, vertices);
@@ -349,14 +353,14 @@ namespace polyfem
 	{
 		FEBioReader::load(path, args_in, *this);
 
-		igl::Timer timer;
-		timer.start();
-		//TODO fix me Zach
-		logger().info("Loading obstacles...");
-		if (args.contains("obstacles"))
-			obstacle.init(args["obstacles"], args["root_path"], mesh->dimension());
-		timer.stop();
-		logger().info(" took {}s", timer.getElapsedTime());
+		// igl::Timer timer;
+		// timer.start();
+		// TODO: fix me @zfergus
+		// logger().info("Loading obstacles...");
+		// if (args.contains("obstacles"))
+		// 	obstacle.init(args["obstacles"], args["root_path"], mesh->dimension());
+		// timer.stop();
+		// logger().info(" took {}s", timer.getElapsedTime());
 	}
 
 	void State::compute_mesh_stats()

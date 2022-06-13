@@ -1479,6 +1479,18 @@ namespace polyfem
 			}
 		}
 
+		void Mesh3D::compute_boundary_ids(const std::function<int(const size_t, const RowVectorNd &, bool)> &marker)
+		{
+			boundary_ids_.resize(n_faces());
+
+			for (int f = 0; f < n_faces(); ++f)
+			{
+				const bool is_boundary = is_boundary_face(f);
+				const auto p = face_barycenter(f);
+				boundary_ids_[f] = marker(f, p, is_boundary);
+			}
+		}
+
 		void Mesh3D::compute_boundary_ids(const std::function<int(const std::vector<int> &, bool)> &marker)
 		{
 			boundary_ids_.resize(n_faces());
@@ -1528,7 +1540,7 @@ namespace polyfem
 			}
 		}
 
-		void Mesh3D::compute_body_ids(const std::function<int(const RowVectorNd &)> &marker)
+		void Mesh3D::compute_body_ids(const std::function<int(const size_t, const RowVectorNd &)> &marker)
 		{
 			body_ids_.resize(n_elements());
 			std::fill(body_ids_.begin(), body_ids_.end(), -1);
@@ -1536,7 +1548,7 @@ namespace polyfem
 			for (int e = 0; e < n_elements(); ++e)
 			{
 				const auto bary = cell_barycenter(e);
-				body_ids_[e] = marker(bary);
+				body_ids_[e] = marker(e, bary);
 			}
 		}
 

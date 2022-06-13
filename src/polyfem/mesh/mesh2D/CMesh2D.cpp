@@ -552,7 +552,7 @@ namespace polyfem
 			return 0.5 * (point(v0) + point(v1));
 		}
 
-		void CMesh2D::compute_body_ids(const std::function<int(const RowVectorNd &)> &marker)
+		void CMesh2D::compute_body_ids(const std::function<int(const size_t, const RowVectorNd &)> &marker)
 		{
 			body_ids_.resize(n_elements());
 			std::fill(body_ids_.begin(), body_ids_.end(), -1);
@@ -560,7 +560,7 @@ namespace polyfem
 			for (int e = 0; e < n_elements(); ++e)
 			{
 				const auto bary = face_barycenter(e);
-				body_ids_[e] = marker(bary);
+				body_ids_[e] = marker(e, bary);
 			}
 		}
 
@@ -620,6 +620,18 @@ namespace polyfem
 				const bool is_boundary = is_boundary_edge(e);
 				const auto p = edge_barycenter(e);
 				boundary_ids_[e] = marker(p, is_boundary);
+			}
+		}
+
+		void CMesh2D::compute_boundary_ids(const std::function<int(const size_t, const RowVectorNd &, bool)> &marker)
+		{
+			boundary_ids_.resize(n_edges());
+
+			for (int e = 0; e < n_edges(); ++e)
+			{
+				const bool is_boundary = is_boundary_edge(e);
+				const auto p = edge_barycenter(e);
+				boundary_ids_[e] = marker(e, p, is_boundary);
 			}
 		}
 

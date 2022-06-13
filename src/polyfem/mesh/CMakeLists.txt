@@ -1,4 +1,6 @@
 set(SOURCES
+	GeometryReader.cpp
+	GeometryReader.hpp
 	LocalBoundary.hpp
 	Mesh.cpp
 	Mesh.hpp

@@ -11,26 +11,50 @@ namespace polyfem
 	using namespace mesh;
 	namespace utils
 	{
-		std::shared_ptr<Selection> Selection::build(const json &selection, const Selection::BBox &mesh_bbox)
+		Selection::Selection(
+			const int id,
+			const size_t start_element_id,
+			const size_t end_element_id)
+			: id_(id),
+			  start_element_id_(start_element_id),
+			  end_element_id_(end_element_id)
+		{
+		}
+
+		bool Selection::inside(const size_t element_id, const RowVectorNd &p) const
+		{
+			return element_id >= this->start_element_id_ && element_id < this->end_element_id_;
+		}
+
+		std::shared_ptr<Selection> Selection::build(
+			const json &selection,
+			const Selection::BBox &mesh_bbox,
+			const size_t start_element_id,
+			const size_t end_element_id)
 		{
 			std::shared_ptr<Selection> res = nullptr;
 			if (selection.contains("box"))
-				res = std::make_shared<Box>(selection, mesh_bbox);
+				res = std::make_shared<BoxSelection>(selection, mesh_bbox);
 			else if (selection.contains("center"))
-				res = std::make_shared<Sphere>(selection, mesh_bbox);
+				res = std::make_shared<SphereSelection>(selection, mesh_bbox);
 			else if (selection.contains("axis"))
-				res = std::make_shared<AxisPlane>(selection, mesh_bbox);
+				res = std::make_shared<AxisPlaneSelection>(selection, mesh_bbox);
 			else if (selection.contains("normal"))
-				res = std::make_shared<Plane>(selection, mesh_bbox);
+				res = std::make_shared<PlaneSelection>(selection, mesh_bbox);
 			else
-			{
-				logger().error("Selection not recognised: {}", selection.dump());
-			}
+				logger().error("Selection not recognized: {}", selection.dump());
 
 			return res;
 		}
 
-		Box::Box(const json &selection, const Selection::BBox &mesh_bbox)
+		///////////////////////////////////////////////////////////////////////
+
+		BoxSelection::BoxSelection(
+			const json &selection,
+			const Selection::BBox &mesh_bbox,
+			const size_t start_element_id,
+			const size_t end_element_id)
+			: Selection(selection["id"].get<int>(), start_element_id, end_element_id)
 		{
 			auto bboxj = selection["box"];
 
@@ -48,8 +72,11 @@ namespace polyfem
 			}
 		}
 
-		bool Box::inside(const RowVectorNd &p) const
+		bool BoxSelection::inside(const size_t element_id, const RowVectorNd &p) const
 		{
+			if (!Selection::inside(element_id, p))
+				return false;
+
 			assert(bbox_[0].size() == p.size());
 			assert(bbox_[1].size() == p.size());
 			bool inside = true;
@@ -66,7 +93,14 @@ namespace polyfem
 			return inside;
 		}
 
-		Sphere::Sphere(const json &selection, const Selection::BBox &mesh_bbox)
+		///////////////////////////////////////////////////////////////////////
+
+		SphereSelection::SphereSelection(
+			const json &selection,
+			const Selection::BBox &mesh_bbox,
+			const size_t start_element_id,
+			const size_t end_element_id)
+			: Selection(selection["id"].get<int>(), start_element_id, end_element_id)
 		{
 			center_ = selection["center"];
 			radius2_ = selection["radius"];
@@ -79,16 +113,28 @@ namespace polyfem
 			}
 
 			radius2_ *= radius2_;
+
+			id_ = selection["id"];
 		}
 
-		bool Sphere::inside(const RowVectorNd &p) const
+		bool SphereSelection::inside(const size_t element_id, const RowVectorNd &p) const
 		{
+			if (!Selection::inside(element_id, p))
+				return false;
+
 			assert(center_.size() == p.size());
 
 			return (p - center_).squaredNorm() <= radius2_;
 		}
 
-		AxisPlane::AxisPlane(const json &selection, const Selection::BBox &mesh_bbox)
+		///////////////////////////////////////////////////////////////////////
+
+		AxisPlaneSelection::AxisPlaneSelection(
+			const json &selection,
+			const Selection::BBox &mesh_bbox,
+			const size_t start_element_id,
+			const size_t end_element_id)
+			: Selection(selection["id"].get<int>(), start_element_id, end_element_id)
 		{
 			position_ = selection["position"];
 
@@ -114,8 +160,11 @@ namespace polyfem
 			}
 		}
 
-		bool AxisPlane::inside(const RowVectorNd &p) const
+		bool AxisPlaneSelection::inside(const size_t element_id, const RowVectorNd &p) const
 		{
+			if (!Selection::inside(element_id, p))
+				return false;
+
 			const double v = p[std::abs(axis_) - 1];
 
 			if (axis_ > 0)
@@ -124,7 +173,14 @@ namespace polyfem
 				return v <= position_;
 		}
 
-		Plane::Plane(const json &selection, const Selection::BBox &mesh_bbox)
+		///////////////////////////////////////////////////////////////////////
+
+		PlaneSelection::PlaneSelection(
+			const json &selection,
+			const Selection::BBox &mesh_bbox,
+			const size_t start_element_id,
+			const size_t end_element_id)
+			: Selection(selection["id"].get<int>(), start_element_id, end_element_id)
 		{
 			normal_ = selection["normal"];
 			normal_.normalized();
@@ -138,69 +194,65 @@ namespace polyfem
 				point_ = normal_ * selection.value("offset", 0.0);
 		}
 
-		bool Plane::inside(const RowVectorNd &p) const
+		bool PlaneSelection::inside(const size_t element_id, const RowVectorNd &p) const
 		{
+			if (!Selection::inside(element_id, p))
+				return false;
+
 			assert(p.size() == normal_.size());
 			const RowVectorNd pp = p - point_;
 			return pp.dot(normal_) >= 0;
 		}
 
-		namespace
+		///////////////////////////////////////////////////////////////////////
+
+		SpecifiedSelection::SpecifiedSelection(
+			const std::vector<int> &ids,
+			const size_t start_element_id,
+			const size_t end_element_id)
+			: Selection(0, start_element_id, end_element_id),
+			  ids_(ids)
 		{
-			std::vector<std::pair<int, std::shared_ptr<Selection>>> get_selections(const json &args, const std::string &key, const Selection::BBox &mesh_bbox)
-			{
-				std::vector<std::pair<int, std::shared_ptr<Selection>>> selections;
+			assert(ids.size() == end_element_id - start_element_id);
+		}
 
-				if (is_param_valid(args, key))
-				{
-					const auto boundary = args[key];
-					assert(boundary.is_array());
-
-					for (size_t i = 0; i < boundary.size(); ++i)
-					{
-						const auto selection = boundary[i];
-						int id = selection["id"];
-
-						selections.emplace_back(id, Selection::build(selection, mesh_bbox));
-					}
-				}
-
-				return selections;
-			}
-		} // namespace
-
-		void BoxSetter::set_sidesets(const json &args, Mesh &mesh)
+		int SpecifiedSelection::id(const size_t element_id) const
 		{
-			Selection::BBox mesh_bbox;
-			mesh.bounding_box(mesh_bbox[0], mesh_bbox[1]);
+			assert(element_id >= this->start_element_id_);
+			assert(element_id < this->end_element_id_);
+			return ids_.at(element_id - this->start_element_id_);
+		}
 
-			std::vector<std::pair<int, std::shared_ptr<Selection>>> boundary = get_selections(args, "boundary_sidesets", mesh_bbox);
-			std::vector<std::pair<int, std::shared_ptr<Selection>>> body = get_selections(args, "body_ids", mesh_bbox);
+		///////////////////////////////////////////////////////////////////////
 
-			if (!boundary.empty())
+		FileSelection::FileSelection(
+			const std::string &file_path,
+			const size_t start_element_id,
+			const size_t end_element_id)
+			: SpecifiedSelection(std::vector<int>(), start_element_id, end_element_id)
+		{
+			std::ifstream file(file_path);
+			if (!file.is_open())
 			{
-				mesh.compute_boundary_ids([&boundary](const RowVectorNd &p) {
-					for (const auto &[id, selection] : boundary)
-					{
-						if (selection->inside(p))
-							return id;
-					}
-
-					return 0;
-				});
+				logger().error("Unable to open selection file \"{}\"!", file_path);
+				return;
 			}
 
-			if (!body.empty())
-			{
-				mesh.compute_body_ids([&body](const RowVectorNd &p) {
-					for (const auto &[id, selection] : body)
-					{
-						if (selection->inside(p))
-							return id;
-					}
+			this->ids_.resize(end_element_id - start_element_id, 0);
 
-					return 0;
-				});
+			std::string line;
+			int i = 0;
+			while (std::getline(file, line))
+			{
+				assert(i < this->ids_.size());
+				std::istringstream(line) >> this->ids_[i++];
+			}
+
+			if (i != this->ids_.size())
+			{
+				logger().warn(
+					"Selection file \"{}\" is missing {} tag(s). Using 0 as default.",
+					file_path, this->ids_.size() - i);
 			}
 		}
 	} // namespace utils
