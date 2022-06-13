@@ -988,7 +988,7 @@ bool polyfem::mesh::read_fem_mesh(
 	Eigen::MatrixXi &cells,
 	std::vector<std::vector<int>> &elements,
 	std::vector<std::vector<double>> &weights,
-	Eigen::VectorXi &body_ids)
+	std::vector<int> &body_ids)
 {
 	vertices.resize(0, 0);
 	cells.resize(0, 0);
@@ -1066,7 +1066,7 @@ bool polyfem::mesh::read_fem_mesh(
 		}
 		weights.resize(cells.rows());
 
-		body_ids.setConstant(cells.rows(), 0);
+		body_ids = std::vector<int>(cells.rows(), 0);
 	}
 
 	return true;

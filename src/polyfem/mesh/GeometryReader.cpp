@@ -195,28 +195,18 @@ namespace polyfem
 		in_weights.insert(in_weights.end(), weights.begin(), weights.end());
 		// }
 
-		///////////////////////////////////////////////////////////////////////////
-
-		// TODO:
-		// "point_tags": {
-		// 	"ids": 0,
-		// 	"offset": 0
-		// },
-
-		// TODO:
-		// "curve_tags": {
-		// 	"ids": 0,
-		// 	"offset": 0
-		// },
-
-		///////////////////////////////////////////////////////////////////////////
-
-		// "surface_tags": {
-		// 	"ids": 0,
-		// 	"offset": 0
-		// },
+		///////////////////////////////////////////////////////////////////////
 
 		const Selection::BBox bbox = {{vertices.colwise().minCoeff(), vertices.colwise().maxCoeff()}};
+
+		if (!jmesh["point_selection"].is_null())
+			logger().warn("Geometry point seleections are not implemented nor used!");
+
+		if (!jmesh["curve_selection"].is_null())
+			logger().warn("Geometry point seleections are not implemented nor used!");
+
+		///////////////////////////////////////////////////////////////////////////
+
 		const size_t num_local_faces = count_faces(dim, cells);
 		append_selections(
 			jmesh["surface_selection"], bbox, num_faces,
@@ -224,11 +214,6 @@ namespace polyfem
 		num_faces += num_local_faces;
 
 		////////////////////////////////////////////////////////////////////////////
-
-		// "volume_tags": {
-		// 	"ids": 0,
-		// 	"offset": 0
-		// },
 
 		// Specified volume selection has priority over mesh's stored ids
 		append_selections(
@@ -277,25 +262,10 @@ namespace polyfem
 			
 			"extract": "volume",
 
-			"point_tags": {
-				"ids": 0,
-				"offset": 0
-			},
-			
-			"curve_tags": {
-				"ids": 0,
-				"offset": 0
-			},
-			
-			"surface_tags": {
-				"ids": 0,
-				"offset": 0
-			},
-			
-			"volume_tags": {
-				"ids": 0,
-				"offset": 0
-			},
+			"point_selection": null,
+			"curve_selection": null,
+			"surface_selection": null,
+			"volume_selection": null,
 
 			"n_refs": 0, 
 

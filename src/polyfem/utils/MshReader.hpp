@@ -17,7 +17,7 @@ namespace polyfem
 				Eigen::MatrixXi &cells,
 				std::vector<std::vector<int>> &elements,
 				std::vector<std::vector<double>> &weights,
-				Eigen::VectorXi &body_ids);
+				std::vector<int> &body_ids);
 		};
 	} // namespace utils
 } // namespace polyfem

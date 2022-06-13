@@ -28,7 +28,7 @@ namespace polyfem
 			}
 		}
 
-		bool MshReader::load(const std::string &path, Eigen::MatrixXd &vertices, Eigen::MatrixXi &cells, std::vector<std::vector<int>> &elements, std::vector<std::vector<double>> &weights, Eigen::VectorXi &body_ids)
+		bool MshReader::load(const std::string &path, Eigen::MatrixXd &vertices, Eigen::MatrixXi &cells, std::vector<std::vector<int>> &elements, std::vector<std::vector<double>> &weights, std::vector<int> &body_ids)
 		{
 			if (!std::filesystem::exists(path))
 			{
