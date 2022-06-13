@@ -215,6 +215,7 @@ namespace polyfem
 			  {"exact", nullptr},
 			  {"exact_grad", nullptr},
 			  {"dirichlet_boundary", nullptr},
+			  {"periodic", false},
 			  {"neumann_boundary", nullptr},
 			  {"pressure_boundary", nullptr},
 			  {"initial_solution", nullptr},

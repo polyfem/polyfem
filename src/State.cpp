@@ -450,10 +450,10 @@ namespace polyfem
 		for (const auto &lb : local_boundary)
 			total_local_boundary.emplace_back(lb);
 
+		const int dim = mesh->dimension();
+		const int problem_dim = problem->is_scalar() ? 1 : dim;
 		if (args["problem_params"]["periodic"].get<bool>())
 		{
-			const int dim = mesh->dimension();
-			const int problem_dim = problem->is_scalar() ? 1 : dim;
 			periodic_reduce_map.setConstant(n_bases * problem_dim, 1, -1);
 			bool no_dirichlet = boundary_nodes.size() == 0;
 
@@ -533,6 +533,12 @@ namespace polyfem
 				if (dependent_map(i) >= 0)
 					for (int d = 0; d < problem_dim; d++)
 						periodic_reduce_map(i * problem_dim + d) = periodic_reduce_map(dependent_map(i) * problem_dim + d);
+		}
+		else
+		{
+			periodic_reduce_map.setZero(n_bases * problem_dim);
+			for (int i = 0; i < periodic_reduce_map.size(); i++)
+				periodic_reduce_map(i) = i;
 		}
 
 		n_flipped = 0;
@@ -630,7 +636,6 @@ namespace polyfem
 		const bool has_pressure_stablization = args["params"].contains("delta") && (args["params"]["delta"].get<double>() > 0);
 		args["has_neumann"] = local_neumann_boundary.size() > 0 || local_boundary.size() < prev_b_size || has_pressure_stablization;
 		use_avg_pressure = !args["has_neumann"];
-		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 
 		// add a pressure node to avoid singular solution
 		// if (assembler.is_mixed(formulation())) // && !assembler.is_fluid(formulation()))

@@ -869,29 +869,29 @@ int polyfem::FEBasis2d::build_bases(
 			// Polygon bases are built later on
 		}
 
-#ifndef NDEBUG
-		Eigen::MatrixXd uv(4, 2);
-		uv << 0.1, 0.1, 0.3, 0.3, 0.9, 0.01, 0.01, 0.9;
-		Eigen::MatrixXd dx(4, 1);
-		dx.setConstant(1e-6);
-		Eigen::MatrixXd uvdx = uv;
-		uvdx.col(0) += dx;
-		Eigen::MatrixXd uvdy = uv;
-		uvdy.col(1) += dx;
-		Eigen::MatrixXd grad, val, vdx, vdy;
+// #ifndef NDEBUG
+// 		Eigen::MatrixXd uv(4, 2);
+// 		uv << 0.1, 0.1, 0.3, 0.3, 0.9, 0.01, 0.01, 0.9;
+// 		Eigen::MatrixXd dx(4, 1);
+// 		dx.setConstant(1e-6);
+// 		Eigen::MatrixXd uvdx = uv;
+// 		uvdx.col(0) += dx;
+// 		Eigen::MatrixXd uvdy = uv;
+// 		uvdy.col(1) += dx;
+// 		Eigen::MatrixXd grad, val, vdx, vdy;
 
-		for (int j = 0; j < n_el_bases; ++j)
-		{
-			b.bases[j].eval_grad(uv, grad);
+// 		for (int j = 0; j < n_el_bases; ++j)
+// 		{
+// 			b.bases[j].eval_grad(uv, grad);
 
-			b.bases[j].eval_basis(uv, val);
-			b.bases[j].eval_basis(uvdx, vdx);
-			b.bases[j].eval_basis(uvdy, vdy);
+// 			b.bases[j].eval_basis(uv, val);
+// 			b.bases[j].eval_basis(uvdx, vdx);
+// 			b.bases[j].eval_basis(uvdy, vdy);
 
-			assert((grad.col(0) - (vdx - val) / 1e-6).norm() < 1e-4);
-			assert((grad.col(1) - (vdy - val) / 1e-6).norm() < 1e-4);
-		}
-#endif
+// 			assert((grad.col(0) - (vdx - val) / 1e-6).norm() < 1e-4);
+// 			assert((grad.col(1) - (vdy - val) / 1e-6).norm() < 1e-4);
+// 		}
+// #endif
 	}
 
 	if (!is_geom_bases)
