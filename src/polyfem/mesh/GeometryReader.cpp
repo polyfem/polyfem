@@ -15,9 +15,9 @@
 #include <igl/edges.h>
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace polyfem
+namespace polyfem::mesh
 {
-	using namespace utils;
+	using namespace polyfem::utils;
 
 	void log_and_throw_error(const std::string &msg)
 	{
@@ -25,17 +25,33 @@ namespace polyfem
 		throw std::runtime_error(msg);
 	}
 
-	void mesh::load_geometry(
+	void read_fem_meshes(
 		const json &geometry,
 		const std::string &root_path,
 		std::unique_ptr<Mesh> &mesh,
-		Obstacle &obstacle,
 		const std::vector<std::string> &_names,
 		const std::vector<Eigen::MatrixXd> &_vertices,
 		const std::vector<Eigen::MatrixXi> &_cells,
 		const bool non_conforming)
 	{
-		// TODO: use these values
+		// TODO: fix me for hdf5
+		// {
+		// 	int index = -1;
+		// 	for (int i = 0; i < names.size(); ++i)
+		// 	{
+		// 		if (names[i] == args["meshes"])
+		// 		{
+		// 			index = i;
+		// 			break;
+		// 		}
+		// 	}
+		// 	assert(index >= 0);
+		// 	if (vertices[index].cols() == 2)
+		// 		mesh = std::make_unique<polyfem::CMesh2D>();
+		// 	else
+		// 		mesh = std::make_unique<polyfem::Mesh3D>();
+		// 	mesh->build_from_matrices(vertices[index], cells[index]);
+		// }
 		assert(_names.empty());
 		assert(_vertices.empty());
 		assert(_cells.empty());
@@ -115,7 +131,7 @@ namespace polyfem
 			return -1;
 		});
 
-		// TODO: default boundary ids are all -1
+		// TODO: set default boundary ids to the side of the cube thing
 
 		///////////////////////////////////////////////////////////////////////
 
@@ -129,7 +145,7 @@ namespace polyfem
 
 	///////////////////////////////////////////////////////////////////////////
 
-	void mesh::load_mesh(
+	void load_mesh(
 		const json &jmesh,
 		const std::string &root_path,
 		Eigen::MatrixXd &in_vertices,
@@ -186,20 +202,23 @@ namespace polyfem
 
 		////////////////////////////////////////////////////////////////////////////
 
-		// TODO: Use force_linear_geometry does.
-		// if (!jmesh["advanced"]["force_linear_geometry"].get<bool>())
-		// {
+		if (!jmesh["advanced"]["force_linear_geometry"].get<bool>())
+			log_and_throw_error("Option \"force_linear_geometry\" in geometry not implement yet!");
+
 		// Shift vertex ids in elements
 		for (auto &element : elements)
 			for (auto &id : element)
 				id += num_in_vertices;
 		in_elements.insert(in_elements.end(), elements.begin(), elements.end());
 		in_weights.insert(in_weights.end(), weights.begin(), weights.end());
-		// }
 
 		///////////////////////////////////////////////////////////////////////
 
 		const Selection::BBox bbox = {{vertices.colwise().minCoeff(), vertices.colwise().maxCoeff()}};
+
+		// TODO: use tolerences in the selection
+		// const double boundary_id_threshold = mesh->is_volume() ? 1e-2 : 1e-7;
+		// mesh->compute_boundary_ids(boundary_id_threshold);
 
 		if (!jmesh["point_selection"].is_null())
 			logger().warn("Geometry point seleections are not implemented nor used!");
@@ -239,11 +258,49 @@ namespace polyfem
 
 		if (jmesh["advanced"]["min_component"].get<int>() != -1)
 			log_and_throw_error("Option \"min_component\" in geometry not implement yet!");
+		// TODO:
+		// if (args["min_component"] > 0)
+		// {
+		// 	Eigen::SparseMatrix<int> adj;
+		// 	igl::facet_adjacency_matrix(boundary_triangles, adj);
+		// 	Eigen::MatrixXi C, counts;
+		// 	igl::connected_components(adj, C, counts);
+
+		// 	std::vector<int> valid;
+		// 	const int min_count = args["min_component"];
+
+		// 	for (int i = 0; i < counts.size(); ++i)
+		// 	{
+		// 		if (counts(i) >= min_count)
+		// 		{
+		// 			valid.push_back(i);
+		// 		}
+		// 	}
+
+		// 	tris.clear();
+		// 	for (int i = 0; i < C.size(); ++i)
+		// 	{
+		// 		for (int v : valid)
+		// 		{
+		// 			if (v == C(i))
+		// 			{
+		// 				tris.emplace_back(boundary_triangles(i, 0), boundary_triangles(i, 1), boundary_triangles(i, 2));
+		// 				break;
+		// 			}
+		// 		}
+		// 	}
+
+		// 	boundary_triangles.resize(tris.size(), 3);
+		// 	for (int i = 0; i < tris.size(); ++i)
+		// 	{
+		// 		boundary_triangles.row(i) << std::get<0>(tris[i]), std::get<1>(tris[i]), std::get<2>(tris[i]);
+		// 	}
+		// }
 	}
 
 	///////////////////////////////////////////////////////////////////////////
 
-	void mesh::apply_default_geometry_parameters(
+	void apply_default_geometry_parameters(
 		const json &geometry_in,
 		json &geometry_out,
 		const std::string &path_prefix)
@@ -284,7 +341,7 @@ namespace polyfem
 
 	///////////////////////////////////////////////////////////////////////////
 
-	void mesh::transform_mesh_from_json(const json &transform, Eigen::MatrixXd &vertices)
+	void transform_mesh_from_json(const json &transform, Eigen::MatrixXd &vertices)
 	{
 		const int dim = vertices.cols();
 		assert(dim == 2 || dim == 3);
@@ -365,7 +422,7 @@ namespace polyfem
 
 	////////////////////////////////////////////////////////////////////////////////
 
-	void mesh::append_selections(
+	void append_selections(
 		const json &new_selections,
 		const Selection::BBox &bbox,
 		const size_t &start_element_id,
@@ -402,4 +459,4 @@ namespace polyfem
 		}
 	}
 
-} // namespace polyfem
+} // namespace polyfem::mesh
