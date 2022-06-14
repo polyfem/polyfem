@@ -1189,8 +1189,6 @@ namespace polyfem
 			logger().info("Pure Neumann boundary condition, use Lagrange multiplier to find unique solution...");
 			n_lagrange_multiplier = remove_pure_neumann_singularity(A, b);
 		}
-
-		// Eigen::saveMarket(A, "A.mat");
 		
 		spectrum = dirichlet_solve(*solver, A, b, boundary_nodes_tmp, x, precond_num, args["export"]["stiffness_mat"], args["export"]["spectrum"], assembler.is_fluid(formulation()), use_avg_pressure);
 		solver->getInfo(solver_info);
@@ -1223,7 +1221,6 @@ namespace polyfem
 
 		if (assembler.is_mixed(formulation()))
 		{
-			// TODO: periodic
 			sol_to_pressure();
 		}
 	}

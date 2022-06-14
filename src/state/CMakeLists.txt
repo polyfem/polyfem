@@ -4,6 +4,7 @@ set(SOURCES
 	StateLoad.cpp
 	StateOutput.cpp
 	StatePref.cpp
+	StateHomogenization.cpp
 	StateSolve.cpp
 )
 
