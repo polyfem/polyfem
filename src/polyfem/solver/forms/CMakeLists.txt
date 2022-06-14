@@ -10,6 +10,8 @@ set(SOURCES
 	InertiaForm.cpp
 	LaggedRegForm.cpp
 	LaggedRegForm.hpp
+	FrictionForm.cpp
+	FrictionForm.hpp
 )
 
 prepend_current_path(SOURCES)
