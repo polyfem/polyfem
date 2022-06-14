@@ -241,6 +241,27 @@ def PolyFEM_convert(old):
         else:
             rename_entry("problem_params", old, "preset_problem", j)
             j["preset_problem"]["name"] = old["problem"]
+    else:
+        print("Missing problem assuming generic")
+        if "problem_params" in old:
+            if "boundary_conditions" not in j:
+                j["boundary_conditions"] = {}
+            copy_entry("rhs", old["problem_params"],
+                        j["boundary_conditions"])
+            copy_entry("dirichlet_boundary",
+                        old["problem_params"], j["boundary_conditions"])
+            copy_entry("neumann_boundary",
+                        old["problem_params"], j["boundary_conditions"])
+            copy_entry("pressure_boundary",
+                        old["problem_params"], j["boundary_conditions"])
+
+            j["initial_conditions"] = {}
+            rename_entry(
+                "initial_solution", old["problem_params"], "solution", j["initial_conditions"])
+            rename_entry(
+                "initial_velocity", old["problem_params"], "velocity", j["initial_conditions"])
+            rename_entry(
+                "initial_acceleration", old["problem_params"], "acceleration", j["initial_conditions"])
 
     # Materials
 
