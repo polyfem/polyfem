@@ -37,7 +37,6 @@ def remove_empty_dicts_from_dict(di):
 
 
 def PolyFEM_convert(old):
-
     j = {}
     rename_entry("default_params", old, "defaults", j)
     copy_entry("root_path", old, j)
@@ -80,7 +79,7 @@ def PolyFEM_convert(old):
 
     # Obstacles to Geometry
     if "obstacles" in old:
-        for o in old["obstacles"]:
+        for i, o in enumerate(old["obstacles"]):
             n = {}
             copy_entry("type", o, n)
             copy_entry("mesh", o, n)
@@ -99,11 +98,14 @@ def PolyFEM_convert(old):
             n["advanced"] = {}
             copy_entry("refinement_location", old, n["advanced"])
 
-            if "boundary_conditions" not in j:
-                j["boundary_conditions"] = {"obstacle_displacements": []}
-
-            j["boundary_conditions"]["obstacle_displacements"].append(
-                [0, 0, 0] if "displacement" not in o else o["displacement"])
+            if "displacement" in o:
+                if "boundary_conditions" not in j:
+                    j["boundary_conditions"] = {"obstacle_displacements": []}
+                n["surface_selection"] = 1000 + i
+                j["boundary_conditions"]["obstacle_displacements"].append({
+                    "id": 1000 + i,
+                    "displacement": o["displacement"]
+                })
 
             j["geometry"].append(n)
 
@@ -114,7 +116,6 @@ def PolyFEM_convert(old):
     copy_entry("use_p_ref", old, j["space"])
 
     j["space"]["advanced"] = {}
-
     copy_entry("particle", old, j["space"]["advanced"])
     copy_entry("discr_order_max", old, j["space"]["advanced"])
     copy_entry("serendipity", old, j["space"]["advanced"])
@@ -247,13 +248,13 @@ def PolyFEM_convert(old):
             if "boundary_conditions" not in j:
                 j["boundary_conditions"] = {}
             copy_entry("rhs", old["problem_params"],
-                        j["boundary_conditions"])
+                       j["boundary_conditions"])
             copy_entry("dirichlet_boundary",
-                        old["problem_params"], j["boundary_conditions"])
+                       old["problem_params"], j["boundary_conditions"])
             copy_entry("neumann_boundary",
-                        old["problem_params"], j["boundary_conditions"])
+                       old["problem_params"], j["boundary_conditions"])
             copy_entry("pressure_boundary",
-                        old["problem_params"], j["boundary_conditions"])
+                       old["problem_params"], j["boundary_conditions"])
 
             j["initial_conditions"] = {}
             rename_entry(
@@ -306,10 +307,16 @@ def PolyFEM_convert(old):
     j["output"] = {}
 
     rename_entry("output", old, "json", j["output"])
+    j["output"]["paraview"] = {}
     if "export" in old:
-        j["output"]["paraview"] = {}
-        rename_entry("paraview", old["export"],
-                     "file_name", j["output"]["paraview"])
+        if "time_sequence" in old["export"]:
+            rename_entry("time_sequence",
+                         old["export"], "file_name", j["output"]["paraview"])
+        elif old.get("save_time_sequence", False):
+            j["output"]["paraview"]["file_name"] = "sim.pvd"
+        else:
+            rename_entry("paraview", old["export"],
+                         "file_name", j["output"]["paraview"])
 
         j["output"]["data"] = {}
         copy_entry("solution", old["export"], j["output"]["data"])
@@ -322,6 +329,26 @@ def PolyFEM_convert(old):
         copy_entry("a_path", old["export"], j["output"]["data"])
         copy_entry("mises", old["export"], j["output"]["data"])
 
+        copy_entry("skip_frame", old["export"], j["output"]["paraview"])
+        copy_entry("high_order_mesh", old["export"], j["output"]["paraview"])
+        copy_entry("volume", old["export"], j["output"]["paraview"])
+        copy_entry("surface", old["export"], j["output"]["paraview"])
+        copy_entry("wireframe", old["export"], j["output"]["paraview"])
+
+        j["output"]["paraview"]["options"] = {}
+        rename_entry("material_params", old["export"], "materials",
+                     j["output"]["paraview"]["options"])
+        copy_entry("body_ids", old["export"],
+                   j["output"]["paraview"]["options"])
+        copy_entry("contact_forces", old["export"],
+                   j["output"]["paraview"]["options"])
+        copy_entry("friction_forces", old["export"],
+                   j["output"]["paraview"]["options"])
+        copy_entry("velocity", old["export"],
+                   j["output"]["paraview"]["options"])
+        copy_entry("acceleration", old["export"],
+                   j["output"]["paraview"]["options"])
+
     j["output"]["advanced"] = {}
 
     copy_entry("compute_error", old, j["output"]["advanced"])
@@ -329,6 +356,7 @@ def PolyFEM_convert(old):
     copy_entry("save_solve_sequence_debug", old, j["output"]["advanced"])
     copy_entry("save_time_sequence", old, j["output"]["advanced"])
     copy_entry("save_nl_solve_sequence", old, j["output"]["advanced"])
+    copy_entry("vismesh_rel_area", old, j["output"]["paraview"])
 
     if "export" in old:
         copy_entry("sol_on_grid", old["export"], j["output"]["advanced"])
