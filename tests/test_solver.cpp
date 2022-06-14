@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <polyfem/TriQuadrature.hpp>
-#include <polyfem/FEBasis2d.hpp>
+#include <polyfem/quadrature/TriQuadrature.hpp>
+#include <polyfem/basis/FEBasis2d.hpp>
 
 #include <catch2/catch.hpp>
 #include <iostream>
@@ -12,6 +12,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
+using namespace polyfem::assembler;
+using namespace polyfem::basis;
+using namespace polyfem::mesh;
 
 class Rosenbrock : public cppoptlib::Problem<double>
 {
