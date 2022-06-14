@@ -388,8 +388,8 @@ namespace polyfem
 			std::map<int, int> b_orders;
 			for (size_t i = 0; i < b_discr_orders.size(); ++i)
 			{
-				b_orders[b_discr_orders[i]["body_id"]] = b_discr_orders[i]["discr"];
-				logger().trace("bid {}, discr {}", b_discr_orders[i]["body_id"], b_discr_orders[i]["discr"]);
+				b_orders[b_discr_orders[i]["id"]] = b_discr_orders[i]["order"];
+				logger().trace("bid {}, discr {}", b_discr_orders[i]["id"], b_discr_orders[i]["order"]);
 			}
 
 			for (int e = 0; e < mesh->n_elements(); ++e)
