@@ -194,6 +194,11 @@ namespace polyfem
 		if (!is_param_valid(args, "materials"))
 			return;
 
+		const auto &body_params = args["materials"];
+
+		if (!body_params.is_array())
+			return;
+
 		//FIXME with the new stuff
 		const json default_material = R"({
 			"id": -1,
@@ -203,8 +208,6 @@ namespace polyfem
 			"density": 1
 		})"_json;
 
-		const auto &body_params = args["materials"];
-		assert(body_params.is_array());
 		Eigen::MatrixXd Es(mesh->n_elements(), 1), nus(mesh->n_elements(), 1), rhos(mesh->n_elements(), 1);
 		Es.setConstant(default_material["E"].get<double>());
 		nus.setConstant(default_material["nu"].get<double>());
