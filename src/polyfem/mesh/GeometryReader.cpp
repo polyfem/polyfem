@@ -203,7 +203,6 @@ namespace polyfem::mesh
 			apply_default_geometry_parameters(
 				geometries[i], complete_geometry, fmt::format("/geometry[{}]", i));
 
-			// TODO: handle loading obstacles
 			if (!complete_geometry["is_obstacle"].get<bool>())
 				continue;
 
