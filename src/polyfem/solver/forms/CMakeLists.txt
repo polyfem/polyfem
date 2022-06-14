@@ -6,6 +6,10 @@ set(SOURCES
 	ElasticForm.cpp
 	InertiaForm.hpp
 	InertiaForm.cpp
+	InertiaForm.hpp
+	InertiaForm.cpp
+	LaggedRegForm.cpp
+	LaggedRegForm.hpp
 )
 
 prepend_current_path(SOURCES)
