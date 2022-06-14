@@ -564,10 +564,10 @@ namespace polyfem
 				}
 			}
 
-			if (is_param_valid(params, "exact"))
+			if (is_param_valid(params, "solution"))
 			{
 				has_exact_ = true;
-				auto ex = params["exact"];
+				auto ex = params["solution"];
 				if (ex.is_array())
 				{
 					for (size_t k = 0; k < ex.size(); ++k)
@@ -579,10 +579,10 @@ namespace polyfem
 				}
 			}
 
-			if (is_param_valid(params, "exact_grad"))
+			if (is_param_valid(params, "gradient"))
 			{
 				has_exact_grad_ = true;
-				auto ex = params["exact_grad"];
+				auto ex = params["gradient"];
 				if (ex.is_array())
 				{
 					for (size_t k = 0; k < ex.size(); ++k)
@@ -1046,16 +1046,16 @@ namespace polyfem
 				rhs_.init(params["rhs"]);
 			}
 
-			if (is_param_valid(params, "exact"))
+			if (is_param_valid(params, "solution"))
 			{
 				has_exact_ = true;
-				exact_.init(params["exact"]);
+				exact_.init(params["solution"]);
 			}
 
-			if (is_param_valid(params, "exact_grad"))
+			if (is_param_valid(params, "gradient"))
 			{
 				has_exact_grad_ = true;
-				auto ex = params["exact_grad"];
+				auto ex = params["gradient"];
 				if (ex.is_array())
 				{
 					for (size_t k = 0; k < ex.size(); ++k)
