@@ -54,6 +54,7 @@ namespace polyfem
 			{
 				add_element(F.row(i), -1);
 			}
+			prepare_mesh();
 
 			return true;
 		}
