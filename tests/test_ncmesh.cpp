@@ -169,8 +169,6 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
 	state.solve_problem();
 	state.compute_errors();
 
-	state.save_vtu("debug.vtu", 1);
-
 	REQUIRE(fabs(state.h1_semi_err) < 1e-7);
 	REQUIRE(fabs(state.l2_err) < 1e-8);
 }
