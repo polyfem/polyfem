@@ -18,8 +18,7 @@ namespace polyfem
 				const Eigen::VectorXi &codim_vertices,
 				const Eigen::MatrixXi &codim_edges,
 				const Eigen::MatrixXi &faces,
-				const json &displacement,
-				const std::string &displacement_interpolation = "");
+				const json &displacement);
 			void append_plane(const VectorNd &origin, const VectorNd &normal);
 
 			inline int n_vertices() const { return v_.rows(); }

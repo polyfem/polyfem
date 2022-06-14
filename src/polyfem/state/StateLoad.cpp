@@ -93,9 +93,9 @@ namespace polyfem
 
 		timer.start();
 		logger().info("Loading obstacles...");
-		//TODO
-		// if (args.contains("obstacles"))
-		// 	obstacle.init(args["obstacles"], args["root_path"], mesh->dimension());
+		mesh::read_obstacle_geometry(
+			args["geometry"], args["boundary_conditions"]["obstacle_displacements"],
+			args["root_path"], obstacle);
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
@@ -119,7 +119,7 @@ namespace polyfem
 		if (mesh == nullptr)
 		{
 			assert(is_param_valid(args, "geometry"));
-			mesh::read_fem_meshes(
+			mesh::read_fem_geometry(
 				args["geometry"], args["root_path"], mesh,
 				names, vertices, cells, non_conforming);
 		}
@@ -184,10 +184,10 @@ namespace polyfem
 		ref_element_sampler.init(mesh->is_volume(), mesh->n_elements(), args["output"]["paraview"]["vismesh_rel_area"]);
 
 		timer.start();
-		// TODO: fix me @zfergus
-		// logger().info("Loading obstacles...");
-		// if (is_param_valid(args, "obstacles"))
-		// 	obstacle.init(args["obstacles"], args["root_path"], mesh->dimension(), names, cells, vertices);
+		logger().info("Loading obstacles...");
+		mesh::read_obstacle_geometry(
+			args["geometry"], args["boundary_conditions"]["obstacle_displacements"],
+			args["root_path"], obstacle, names, vertices, cells);
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 	}
@@ -196,14 +196,14 @@ namespace polyfem
 	{
 		FEBioReader::load(path, args_in, *this);
 
-		// igl::Timer timer;
-		// timer.start();
-		// TODO: fix me @zfergus
-		// logger().info("Loading obstacles...");
-		// if (args.contains("obstacles"))
-		// 	obstacle.init(args["obstacles"], args["root_path"], mesh->dimension());
-		// timer.stop();
-		// logger().info(" took {}s", timer.getElapsedTime());
+		igl::Timer timer;
+		timer.start();
+		logger().info("Loading obstacles...");
+		mesh::read_obstacle_geometry(
+			args["geometry"], args["boundary_conditions"]["obstacle_displacements"],
+			args["root_path"], obstacle);
+		timer.stop();
+		logger().info(" took {}s", timer.getElapsedTime());
 	}
 
 	void State::compute_mesh_stats()

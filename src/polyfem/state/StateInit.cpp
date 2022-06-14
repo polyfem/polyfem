@@ -190,6 +190,14 @@ namespace polyfem
 
 						"materials" : null,
 
+						"boundary_conditions": {
+							"rhs": null,
+							"dirichlet_boundary": [],
+							"neumann_boundary": [],
+							"pressure_boundary": [],
+							"obstacle_displacements": []
+						}
+
 						"output": {
 							"json" : "",
 
@@ -331,34 +339,27 @@ namespace polyfem
 			args["time"].merge_patch(tmp);
 		}
 
-		// if (this->args["contact"]["enabled"])
-		// {
-		// 	if (!args_in.contains("line_search"))
-		// 	{
-		// 		args["solver"]["nonlinear"]["line_search"]["method"] = "backtracking";
-		// 		logger().warn("Changing default linesearch to backtracking");
-		// 	}
-
-		// 	if (args["solver"]["contact"]["friction_iterations"] == 0)
-		// 	{
-		// 		logger().info("specified friction_iterations is 0; disabling friction");
-		// 		args["mu"] = 0.0;
-		// 	}
-		// 	else if (args["solver"]["contact"]["friction_iterations"] < 0)
-		// 	{
-		// 		args["solver"]["contact"]["friction_iterations"] = std::numeric_limits<int>::max();
-		// 	}
-
-		// 	if (args["mu"] == 0.0)
-		// 	{
-		// 		args["solver"]["contact"]["friction_iterations"] = 0;
-		// 	}
-		// }
-		// else
-		// {
-		// 	args["solver"]["contact"]["friction_iterations"] = 0;
-		// 	args["mu"] = 0;
-		// }
+		if (this->args["contact"]["enabled"])
+		{
+			if (args["solver"]["contact"]["friction_iterations"] == 0)
+			{
+				logger().info("specified friction_iterations is 0; disabling friction");
+				args["mu"] = 0.0;
+			}
+			else if (args["solver"]["contact"]["friction_iterations"] < 0)
+			{
+				args["solver"]["contact"]["friction_iterations"] = std::numeric_limits<int>::max();
+			}
+			if (args["mu"] == 0.0)
+			{
+				args["solver"]["contact"]["friction_iterations"] = 0;
+			}
+		}
+		else
+		{
+			args["solver"]["contact"]["friction_iterations"] = 0;
+			args["mu"] = 0;
+		}
 
 		if (!args.contains("preset_problem"))
 		{
