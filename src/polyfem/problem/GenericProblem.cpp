@@ -564,10 +564,10 @@ namespace polyfem
 				}
 			}
 
-			if (is_param_valid(params, "solution"))
+			if (is_param_valid(params["reference"], "solution"))
 			{
 				has_exact_ = true;
-				auto ex = params["solution"];
+				auto ex = params["reference"]["solution"];
 				if (ex.is_array())
 				{
 					for (size_t k = 0; k < ex.size(); ++k)
@@ -579,10 +579,10 @@ namespace polyfem
 				}
 			}
 
-			if (is_param_valid(params, "gradient"))
+			if (is_param_valid(params["reference"], "gradient"))
 			{
 				has_exact_grad_ = true;
-				auto ex = params["gradient"];
+				auto ex = params["reference"]["gradient"];
 				if (ex.is_array())
 				{
 					for (size_t k = 0; k < ex.size(); ++k)
@@ -708,9 +708,9 @@ namespace polyfem
 				}
 			}
 
-			if (is_param_valid(params, "initial_solution"))
+			if (is_param_valid(params, "solution"))
 			{
-				auto rr = params["initial_solution"];
+				auto rr = params["solution"];
 				initial_position_.resize(rr.size());
 				assert(rr.is_array());
 
@@ -723,9 +723,9 @@ namespace polyfem
 				}
 			}
 
-			if (is_param_valid(params, "initial_velocity"))
+			if (is_param_valid(params, "velocity"))
 			{
-				auto rr = params["initial_velocity"];
+				auto rr = params["velocity"];
 				initial_velocity_.resize(rr.size());
 				assert(rr.is_array());
 
@@ -738,9 +738,9 @@ namespace polyfem
 				}
 			}
 
-			if (is_param_valid(params, "initial_acceleration"))
+			if (is_param_valid(params, "acceleration"))
 			{
-				auto rr = params["initial_acceleration"];
+				auto rr = params["acceleration"];
 				initial_acceleration_.resize(rr.size());
 				assert(rr.is_array());
 
@@ -1046,16 +1046,16 @@ namespace polyfem
 				rhs_.init(params["rhs"]);
 			}
 
-			if (is_param_valid(params, "solution"))
+			if (is_param_valid(params["reference"], "solution"))
 			{
 				has_exact_ = true;
-				exact_.init(params["solution"]);
+				exact_.init(params["reference"]["solution"]);
 			}
 
-			if (is_param_valid(params, "gradient"))
+			if (is_param_valid(params["reference"], "gradient"))
 			{
 				has_exact_grad_ = true;
-				auto ex = params["gradient"];
+				auto ex = params["reference"]["gradient"];
 				if (ex.is_array())
 				{
 					for (size_t k = 0; k < ex.size(); ++k)

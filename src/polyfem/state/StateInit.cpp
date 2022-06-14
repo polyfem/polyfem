@@ -190,6 +190,12 @@ namespace polyfem
 
 						"materials" : null,
 
+						"initial_conditions": {
+							"solution": null,
+							"velocity": null,
+							"acceleration": null
+						},
+
 						"output": {
 							"json" : "",
 
@@ -375,11 +381,10 @@ namespace polyfem
 			}
 			// important for the BC
 			problem->set_parameters(args["boundary_conditions"]);
-			if (args.contains("initial_conditions"))
-				problem->set_parameters(args["initial_conditions"]);
+			problem->set_parameters(args["initial_conditions"]);
 
 			if (args["output"].contains("reference"))
-				problem->set_parameters(args["output"]["reference"]);
+				problem->set_parameters(args["output"]);
 		}
 		else
 		{
