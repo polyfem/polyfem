@@ -300,7 +300,7 @@ namespace polyfem
 	{
 		json args_in = p_args_in; // mutable copy
 
-		if (args_in.contains("default_params"))
+		if (args_in.contains("defaults"))
 			apply_default_params(args_in);
 
 		check_for_unknown_args(args, args_in);

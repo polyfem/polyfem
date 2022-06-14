@@ -55,7 +55,7 @@ namespace polyfem
 	template <typename ProblemType>
 	std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> State::make_nl_solver() const
 	{
-		std::string name = args["solver"]["nonlinear"];
+		std::string name = args["solver"]["nonlinear"]["solver"];
 		if (name == "newton" || name == "Newton")
 		{
 			return std::make_shared<cppoptlib::SparseNewtonDescentSolver<ProblemType>>(
