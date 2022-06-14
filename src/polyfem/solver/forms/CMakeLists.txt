@@ -4,6 +4,8 @@ set(SOURCES
 	BodyForm.cpp
 	ElasticForm.hpp
 	ElasticForm.cpp
+	InertiaForm.hpp
+	InertiaForm.cpp
 )
 
 prepend_current_path(SOURCES)

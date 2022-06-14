@@ -1,43 +1,41 @@
-#pragma once
+#include "InertiaForm.hpp"
 
-#include <polyfem/utils/Types.hpp>
+#include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 
 namespace polyfem
 {
 	namespace solver
 	{
-		InertiaForm::InertiaForm()
+		InertiaForm::InertiaForm(const StiffnessMatrix &mass, std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator)
+			: mass_(mass), time_integrator_(time_integrator)
 		{
-			_time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(state.args["time"]["integrator"]);
-			_time_integrator->set_parameters(state.args["time"]["BDF"]);
-			_time_integrator->set_parameters(state.args["time"]["newmark"]);
+			//TODO
+			// time_integrator_ = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(state.args["time"]["integrator"]);
+			// time_integrator_->set_parameters(state.args["time"]["BDF"]);
+			// time_integrator_->set_parameters(state.args["time"]["newmark"]);
 		}
 
 		double InertiaForm::value(const Eigen::VectorXd &x)
 		{
-			const Eigen::VectorXd tmp = x - time_integrator()->x_tilde();
-			return 0.5 * (tmp.transpose() * state.mass * tmp) / time_integrator()->acceleration_scaling();
+			const Eigen::VectorXd tmp = x - time_integrator_->x_tilde();
+			const double prod = tmp.transpose() * mass_ * tmp;
+			const double energy = 0.5 * prod / time_integrator_->acceleration_scaling();
+			return energy;
 		}
 
 		void InertiaForm::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
 		{
-			if (!ignore_inertia && is_time_dependent)
-			{
-				_current_rhs *= time_integrator()->acceleration_scaling();
-				_current_rhs += state_.mass * time_integrator()->x_tilde();
-			}
-			return state.mass * full / time_integrator()->acceleration_scaling();
+			gradv = (mass_ * (x - time_integrator_->x_tilde())) / time_integrator_->acceleration_scaling();
 		}
 
 		void InertiaForm::hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 		{
-			inertia_hessian = state.mass / time_integrator()->acceleration_scaling();
+			hessian = mass_ / time_integrator_->acceleration_scaling();
 		}
 
-		void InertiaForm::update_quantities(const double t, const Eigen::VectorXd &x)
+		void InertiaForm::update_quantities(const double, const Eigen::VectorXd &x)
 		{
-			_time_integrator->update_quantities(x);
-			this->t = t;
+			time_integrator_->update_quantities(x);
 		}
 
 	} // namespace solver
