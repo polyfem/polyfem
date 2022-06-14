@@ -16,6 +16,7 @@ def PolyFEM_convert(old):
     j = {}
     rename_entry("default_params", old, "defaults", j)
     copy_entry("root_path",old,j)
+    copy_entry("authen_t1",old,j)
 
     # Meshes to Geometry
     j["geometry"] = []
