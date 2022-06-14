@@ -11,7 +11,7 @@ namespace polyfem
 		public:
 			Form();
 
-			void init(const Eigen::VectorXd &displacement);
+			virtual void init(const Eigen::VectorXd &displacement) {}
 
 			virtual double value(const Eigen::VectorXd &x) = 0;
 			virtual void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) = 0;
@@ -27,17 +27,17 @@ namespace polyfem
 
 			virtual void solution_changed(const Eigen::VectorXd &newX){};
 
-			//virtual void update_quantities(const double t, const Eigen::VectorXd &x);
+			virtual void update_quantities(const double t, const Eigen::VectorXd &x) = 0;
 
 			//more than one step?
 			virtual void init_lagging(const Eigen::VectorXd &x){};
 			virtual void update_lagging(const Eigen::VectorXd &x){};
 
-			void set_project_to_psd(bool val) { project_to_psd = val; }
-			bool is_project_to_psd() const { return project_to_psd; }
+			void set_project_to_psd(bool val) { project_to_psd_ = val; }
+			bool is_project_to_psd() const { return project_to_psd_; }
 
 		protected:
-			bool project_to_psd;
+			bool project_to_psd_;
 		};
 	} // namespace solver
 } // namespace polyfem

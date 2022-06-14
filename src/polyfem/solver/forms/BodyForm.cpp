@@ -6,61 +6,55 @@ namespace polyfem
 {
 	namespace solver
 	{
-		BodyForm::BodyForm()
+		BodyForm::BodyForm(const State &state, const assembler::RhsAssembler &rhs_assembler_)
+			: state_(state), rhs_assembler_(rhs_assembler_)
 		{
+			rhs_computed_ = false;
+			t_ = 0;
 		}
 
 		double BodyForm::value(const Eigen::VectorXd &x)
 		{
-			const auto &gbases = state.iso_parametric() ? state.bases : state.geom_bases;
-			return rhs_assembler.compute_energy(full, state.local_neumann_boundary, state.density, state.n_boundary_samples(), t);
+			const auto &gbases = state_.iso_parametric() ? state_.bases : state_.geom_bases;
+			return rhs_assembler_.compute_energy(x, state_.local_neumann_boundary, state_.density, state_.n_boundary_samples(), t_);
 		}
 
-		void BodyForm::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
+		void BodyForm::gradient(const Eigen::VectorXd &, Eigen::VectorXd &gradv)
 		{
 			//REMEMBER -!!!!!
-			return current_rhs();
+			gradv = current_rhs();
 		}
 
 		void BodyForm::update_quantities(const double t, const Eigen::VectorXd &x)
 		{
-			rhs_computed = false;
-			this->t = t;
+			rhs_computed_ = false;
+			this->t_ = t;
 		}
 
 		const Eigen::MatrixXd &BodyForm::current_rhs()
 		{
-			if (!rhs_computed)
+			if (!rhs_computed_)
 			{
-				rhs_assembler.compute_energy_grad(state.local_boundary, state.boundary_nodes, state.density, state.n_boundary_samples(), state.local_neumann_boundary, state.rhs, t, _current_rhs);
-				rhs_computed = true;
+				rhs_assembler_.compute_energy_grad(state_.local_boundary, state_.boundary_nodes, state_.density, state_.n_boundary_samples(), state_.local_neumann_boundary, state_.rhs, t, current_rhs_);
+				rhs_computed_ = true;
 
-				if (assembler.is_mixed(state.formulation()))
+				if (assembler_.is_mixed(state_.formulation()))
 				{
-					const int prev_size = _current_rhs.size();
-					if (prev_size < full_size)
-					{
-						_current_rhs.conservativeResize(prev_size + state.n_pressure_bases, _current_rhs.cols());
-						_current_rhs.block(prev_size, 0, state.n_pressure_bases, _current_rhs.cols()).setZero();
-					}
-				}
-				assert(_current_rhs.size() == full_size);
-				rhs_assembler.set_bc(std::vector<mesh::LocalBoundary>(), std::vector<int>(), state.n_boundary_samples(), state.local_neumann_boundary, _current_rhs, t);
-
-				if (!ignore_inertia && is_time_dependent)
-				{
-					_current_rhs *= time_integrator()->acceleration_scaling();
-					_current_rhs += state.mass * time_integrator()->x_tilde();
+					const int prev_size = current_rhs_.size();
+					//TODO check me
+					// if (prev_size < full_size)
+					current_rhs_.conservativeResize(prev_size + state_.n_pressure_bases, current_rhs_.cols());
+					current_rhs_.block(prev_size, 0, state_.n_pressure_bases, current_rhs_.cols()).setZero();
 				}
 
-				if (reduced_size != full_size)
-				{
-					// rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.n_boundary_samples(), state.local_neumann_boundary, _current_rhs, t);
-					rhs_assembler.set_bc(state.local_boundary, state.boundary_nodes, state.n_boundary_samples(), std::vector<mesh::LocalBoundary>(), _current_rhs, t);
-				}
+				rhs_assembler_.set_bc(std::vector<mesh::LocalBoundary>(), std::vector<int>(), state_.n_boundary_samples(), state_.local_neumann_boundary, current_rhs_, t);
+
+				//TODO: Check me
+				//if (reduced_size != full_size)
+				rhs_assembler_.set_bc(state_.local_boundary, state_.boundary_nodes, state_.n_boundary_samples(), std::vector<mesh::LocalBoundary>(), current_rhs_, t);
 			}
 
-			return _current_rhs;
+			return current_rhs_;
 		}
 
 	} // namespace solver

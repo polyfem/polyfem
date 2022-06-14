@@ -21,6 +21,11 @@ namespace polyfem
 
 		void InertiaForm::gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv)
 		{
+			if (!ignore_inertia && is_time_dependent)
+			{
+				_current_rhs *= time_integrator()->acceleration_scaling();
+				_current_rhs += state_.mass * time_integrator()->x_tilde();
+			}
 			return state.mass * full / time_integrator()->acceleration_scaling();
 		}
 
