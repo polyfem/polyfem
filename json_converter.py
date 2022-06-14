@@ -46,6 +46,11 @@ def PolyFEM_convert(old):
             copy_entry("min_component",old,n["advanced"])
 
             j["geometry"].append(n)
+    
+    if "mesh" in old:
+        n = {}
+        n["mesh"] = old["mesh"]
+        j["geometry"].append(n)
 
     # Obstacles to Geometry
     # if "obstacles" in old:
