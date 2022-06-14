@@ -1636,10 +1636,10 @@ namespace polyfem
 
 	void UIState::load_mesh()
 	{
-		if (!state.has_mesh() && febio_file.empty())
-		{
-			viewer.open_dialog_load_mesh();
-		}
+		// if (!state.has_mesh() && febio_file.empty())
+		// {
+		// 	viewer.open_dialog_load_mesh();
+		// }
 		available_visualizations.setConstant(false);
 
 		element_ranges.clear();

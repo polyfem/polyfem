@@ -56,6 +56,9 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
 				"reference": {
 	            	"solution": "x^5+y^5",
 	            	"gradient": ["5*x^4","5*y^4"]
+				},
+				"paraview": {
+					"high_order_mesh": false
 				}
 			},
 
@@ -94,6 +97,8 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
 	state.solve_problem();
 	state.compute_errors();
 
+	state.save_vtu("debug.vtu", 1.);
+
 	REQUIRE(fabs(state.h1_semi_err) < 1e-9);
 	REQUIRE(fabs(state.l2_err) < 1e-10);
 }
@@ -131,6 +136,9 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
 				"reference": {
 					"solution": "x^5+y^5+z^5",
 					"gradient": ["5*x^4","5*y^4","5*z^4"]
+				},
+				"paraview": {
+					"high_order_mesh": false
 				}
 			},
 
@@ -168,6 +176,8 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
 
 	state.solve_problem();
 	state.compute_errors();
+
+	state.save_vtu("debug.vtu", 1.);
 
 	REQUIRE(fabs(state.h1_semi_err) < 1e-7);
 	REQUIRE(fabs(state.l2_err) < 1e-8);
