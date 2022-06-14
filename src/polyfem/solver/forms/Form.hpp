@@ -11,6 +11,8 @@ namespace polyfem
 		public:
 			Form();
 
+			virtual ~Form() {}
+
 			virtual void init(const Eigen::VectorXd &displacement) {}
 
 			virtual double value(const Eigen::VectorXd &x) = 0;

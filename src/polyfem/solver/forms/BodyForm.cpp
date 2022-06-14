@@ -1,13 +1,11 @@
-#pragma once
-
-#include <polyfem/utils/Types.hpp>
+#include "BodyForm.hpp"
 
 namespace polyfem
 {
 	namespace solver
 	{
-		BodyForm::BodyForm(const State &state, const assembler::RhsAssembler &rhs_assembler_)
-			: state_(state), rhs_assembler_(rhs_assembler_)
+		BodyForm::BodyForm(const State &state, const assembler::RhsAssembler &rhs_assembler)
+			: state_(state), rhs_assembler_(rhs_assembler), assembler_(state.assembler)
 		{
 			rhs_computed_ = false;
 			t_ = 0;
@@ -35,7 +33,7 @@ namespace polyfem
 		{
 			if (!rhs_computed_)
 			{
-				rhs_assembler_.compute_energy_grad(state_.local_boundary, state_.boundary_nodes, state_.density, state_.n_boundary_samples(), state_.local_neumann_boundary, state_.rhs, t, current_rhs_);
+				rhs_assembler_.compute_energy_grad(state_.local_boundary, state_.boundary_nodes, state_.density, state_.n_boundary_samples(), state_.local_neumann_boundary, state_.rhs, t_, current_rhs_);
 				rhs_computed_ = true;
 
 				if (assembler_.is_mixed(state_.formulation()))
@@ -47,11 +45,11 @@ namespace polyfem
 					current_rhs_.block(prev_size, 0, state_.n_pressure_bases, current_rhs_.cols()).setZero();
 				}
 
-				rhs_assembler_.set_bc(std::vector<mesh::LocalBoundary>(), std::vector<int>(), state_.n_boundary_samples(), state_.local_neumann_boundary, current_rhs_, t);
+				rhs_assembler_.set_bc(std::vector<mesh::LocalBoundary>(), std::vector<int>(), state_.n_boundary_samples(), state_.local_neumann_boundary, current_rhs_, t_);
 
 				//TODO: Check me
 				//if (reduced_size != full_size)
-				rhs_assembler_.set_bc(state_.local_boundary, state_.boundary_nodes, state_.n_boundary_samples(), std::vector<mesh::LocalBoundary>(), current_rhs_, t);
+				rhs_assembler_.set_bc(state_.local_boundary, state_.boundary_nodes, state_.n_boundary_samples(), std::vector<mesh::LocalBoundary>(), current_rhs_, t_);
 			}
 
 			return current_rhs_;
