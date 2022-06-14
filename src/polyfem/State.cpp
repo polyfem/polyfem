@@ -999,8 +999,8 @@ namespace polyfem
 
 		igl::Timer timer;
 		// std::string rhs_path = "";
-		// if (args.contains("boundary_conditions") && args["boundary_conditions"].contains("rhs") && args["boundary_conditions"]["rhs"].is_string())
-		// 	rhs_path = args["boundary_conditions"]["rhs"];
+		// if (args["boundary_conditions"]["rhs"].is_string())
+		// 	rhs_path = resolve_input_path(args["boundary_conditions"]["rhs"]);
 
 		json p_params = {};
 		p_params["formulation"] = formulation();
