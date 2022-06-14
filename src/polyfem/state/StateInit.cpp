@@ -218,6 +218,11 @@ namespace polyfem
 									"friction_forces" : false,
 									"velocity" : false,
 									"acceleration" : false
+								},
+
+								"reference": {
+									"solution": null,
+									"gradient": null
 								}
 							},
 
@@ -383,8 +388,7 @@ namespace polyfem
 			problem->set_parameters(args["boundary_conditions"]);
 			problem->set_parameters(args["initial_conditions"]);
 
-			if (args["output"].contains("reference"))
-				problem->set_parameters(args["output"]);
+			problem->set_parameters(args["output"]);
 		}
 		else
 		{
