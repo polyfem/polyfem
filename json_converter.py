@@ -47,7 +47,7 @@ def PolyFEM_convert(old):
             copy_entry("min_component",old,n["advanced"])
 
             j["geometry"].append(n)
-    
+
     if "mesh" in old:
         n = {}
         n["mesh"] = old["mesh"]
@@ -128,7 +128,7 @@ def PolyFEM_convert(old):
     copy_entry("dhat_percentage",old,j["contact"])
     copy_entry("dhat",old,j["contact"])
     copy_entry("epsv",old,j["contact"])
-    copy_entry("coeff_friction",old,j["contact"])
+    rename_entry("coeff_friction",old,"friction_coefficient",j["contact"])
 
     # Solver
 
@@ -150,7 +150,7 @@ def PolyFEM_convert(old):
         rename_entry("relativeGradient",old["solver_params"],"relative_gradient",j["solver"]["nonlinear"])
         rename_entry("use_grad_norm_tol",old["solver_params"],"use_grad_norm_tol",j["solver"]["nonlinear"]["line_search"])
 
-    rename_entry("line_search",old,"line_search",j["solver"]["nonlinear"]["line_search"])
+    rename_entry("line_search",old,"method",j["solver"]["nonlinear"]['line_search'])
 
     j["solver"]["augmented_lagrangian"] = {}
     rename_entry("force_al",old,"force",j["solver"]["augmented_lagrangian"])
