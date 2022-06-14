@@ -41,45 +41,47 @@ int authenticate_json(std::string json_file, const bool allow_append)
 	}
 
 	auto args = in_args;
-	args["output"] = json({});
-	json t_args = args["time"];
-	if (t_args.contains("tend") || t_args.contains("dt"))
+	if (in_args["json_version"] == "1.0")
 	{
-		if (!t_args.contains("dt"))
+		args["output"] = json({});
+		json t_args = args["time"];
+		if (t_args.contains("tend") || t_args.contains("dt"))
 		{
-			t_args["dt"] = t_args["tend"].get<double>() / t_args["time_steps"].get<int>();
+			if (!t_args.contains("dt"))
+			{
+				t_args["dt"] = t_args["tend"].get<double>() / t_args["time_steps"].get<int>();
+			}
+			if (!t_args.contains("time_steps"))
+			{
+				t_args["time_steps"] = t_args["tend"].get<double>() / t_args["dt"].get<double>();
+			}
+			t_args["tend"] = t_args["dt"].get<double>();
+			t_args["time_steps"] = 1;
 		}
-		if (!t_args.contains("time_steps")) 
-		{
-			t_args["time_steps"] = t_args["tend"].get<double>() / t_args["dt"].get<double>();
-		}
-		t_args["tend"] = t_args["dt"].get<double>();
-		t_args["time_steps"] = 1;
+		args["time"] = t_args;
+		args["root_path"] = json_file;
 	}
-	args["time"] = t_args;
-	args["root_path"] = json_file;
-
-
-	// old 
-	/*
-	args["export"] = json({});
-	args["save_time_sequence"] = false;
-	args["output"] = "";
-	if (args.contains("tend") || args.contains("dt"))
+	else
 	{
-		if (!args.contains("dt"))
+		// old
+		args["export"] = json({});
+		args["save_time_sequence"] = false;
+		args["output"] = "";
+		if (args.contains("tend") || args.contains("dt"))
 		{
-			args["dt"] = args["tend"].get<double>() / args["time_steps"].get<int>();
+			if (!args.contains("dt"))
+			{
+				args["dt"] = args["tend"].get<double>() / args["time_steps"].get<int>();
+			}
+			if (!args.contains("time_steps"))
+			{
+				args["time_steps"] = args["tend"].get<double>() / args["dt"].get<double>();
+			}
+			args["tend"] = args["dt"].get<double>();
+			args["time_steps"] = 1;
 		}
-		if (!args.contains("time_steps")) 
-		{
-			args["time_steps"] = args["tend"].get<double>() / args["dt"].get<double>();
-		}
-		args["tend"] = args["dt"].get<double>();
-		args["time_steps"] = 1;
+		args["root_path"] = json_file;
 	}
-	args["root_path"] = json_file;
-	*/
 
 	size_t max_threads = std::numeric_limits<size_t>::max();
 
@@ -151,19 +153,20 @@ TEST_CASE("runners", "[.]")
 	spdlog::set_level(spdlog::level::info);
 	while (std::getline(file, line))
 	{
-		DYNAMIC_SECTION(line){
-		auto allow_append = false;
-		if (line[0] == '#')
-			continue;
-		if (line[0] == '*')
+		DYNAMIC_SECTION(line)
 		{
-			allow_append = true;
-			line = line.substr(1);
-		}
-		spdlog::info("Processing {}", line);
-		auto flag = authenticate_json(line, allow_append);
-		CAPTURE(line);
-		CHECK(flag == 0);
+			auto allow_append = false;
+			if (line[0] == '#')
+				continue;
+			if (line[0] == '*')
+			{
+				allow_append = true;
+				line = line.substr(1);
+			}
+			spdlog::info("Processing {}", line);
+			auto flag = authenticate_json(line, allow_append);
+			CAPTURE(line);
+			CHECK(flag == 0);
 		}
 	}
 }
