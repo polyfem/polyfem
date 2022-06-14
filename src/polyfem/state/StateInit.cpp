@@ -196,7 +196,7 @@ namespace polyfem
 							"neumann_boundary": [],
 							"pressure_boundary": [],
 							"obstacle_displacements": []
-						}
+						},
 
 						"initial_conditions": {
 							"solution": null,
